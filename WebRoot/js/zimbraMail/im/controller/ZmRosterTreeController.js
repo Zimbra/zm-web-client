@@ -2,7 +2,7 @@
  * ***** BEGIN LICENSE BLOCK *****
  *
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
+ * Copyright (C) 2008 Zimbra, Inc.
  *
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -15,260 +15,55 @@
  * ***** END LICENSE BLOCK *****
  */
 
-// This has a bunch of listeners that might potentially be called from
-// more than one place.  Should merge this class with
-// ZmChatListController and rename to ZmImController or something.
-
 ZmRosterTreeController = function() {
-	this._imApp = appCtxt.getApp(ZmApp.IM);
-	this._confirmDeleteRosterItemFormatter = new AjxMessageFormat(ZmMsg.imConfirmDeleteRosterItem);
-
-	this._listeners = {};
-	this._listeners[ZmOperation.NEW_ROSTER_ITEM] = new AjxListener(this, this._newRosterItemListener);
-	this._listeners[ZmOperation.IM_NEW_CHAT] = new AjxListener(this, this._imNewChatListener);
-	this._listeners[ZmOperation.IM_NEW_GROUP_CHAT] = new AjxListener(this, this._imNewGroupChatListener);
-	this._listeners[ZmOperation.EDIT_PROPS] = new AjxListener(this, this._editRosterItemListener);
-	this._listeners[ZmOperation.IM_CREATE_CONTACT] = new AjxListener(this, this._imCreateContactListener);
-	this._listeners[ZmOperation.IM_ADD_TO_CONTACT] = new AjxListener(this, this._imAddToContactListener);
-	this._listeners[ZmOperation.IM_EDIT_CONTACT] = new AjxListener(this, this._imEditContactListener);
-	this._listeners[ZmOperation.IM_GATEWAY_LOGIN] = new AjxListener(this, this._imGatewayLoginListener);
-	this._listeners[ZmOperation.DELETE] = new AjxListener(this, this._deleteListener);
-	this._listeners[ZmOperation.IM_BLOCK_BUDDY] = new AjxListener(this, this._blockBuddyListener);
-	this._listeners[ZmOperation.IM_UNBLOCK_BUDDY] = new AjxListener(this, this._unblockBuddyListener);
-	this._listeners[ZmOperation.IM_DELETE_GROUP] = new AjxListener(this, this._deleteGroupListener);
+	ZmController.call(this, ZmOrganizer.ROSTER_TREE_ITEM);
+	this._opc = appCtxt.getOverviewController();
+	this._treeView = {};	// hash of tree views of this type, by overview ID
 };
+
+ZmRosterTreeController.prototype = new ZmController;
+ZmRosterTreeController.prototype.constructor = ZmRosterTreeController;
 
 ZmRosterTreeController.prototype.toString = function() {
 	return "ZmRosterTreeController";
 };
 
-ZmRosterTreeController.prototype.getFloatingBuddyListWin = function(ev) {
-	return this.__floatingBuddyListWin;
-};
-
-ZmRosterTreeController.prototype._deleteListener =
-function(ev) {
-	var ds = this._deleteShield = appCtxt.getYesNoCancelMsgDialog();
-	ds.reset();
-	ds.registerCallback(DwtDialog.YES_BUTTON, this._deleteShieldYesCallback, this, ev.buddy);
-	ds.registerCallback(DwtDialog.NO_BUTTON, this._clearDialog, this, this._deleteShield);
-	var msg = this._confirmDeleteRosterItemFormatter.format([ ev.buddy.getAddress() ]);
-	ds.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
-	ds.popup();
-};
-
-ZmRosterTreeController.prototype._deleteShieldYesCallback =
-function(buddy) {
-	buddy._delete();
-	this._clearDialog(this._deleteShield);
-};
-
-ZmRosterTreeController.prototype._clearDialog = function(dlg) {
-	dlg.popdown();
-};
-
-ZmRosterTreeController.prototype._imGatewayLoginListener = function(ev) {
-	var dlg = appCtxt.getIMGatewayLoginDialog();
-	if (!this._registerGatewayCb) {
-		this._registerGatewayCb = new AjxCallback(this, this._registerGatewayCallback);
+// Public methods
+ZmRosterTreeController.prototype.show =
+function(params) {
+	var id = params.overviewId;
+	if (!this._treeView[id] || params.forceCreate) {
+		this._treeView[id] = this._createTreeView(id);
 	}
-	if (ev && ev.gwType)
-		dlg.selectGwType(ev.gwType);
-	ZmController.showDialog(dlg, this._registerGatewayCb);
+	return this._treeView[id];
 };
 
-ZmRosterTreeController.prototype._registerGatewayCallback = function(service, screenName, password) {
-	appCtxt.getIMGatewayLoginDialog().popdown();
-	AjxDispatcher.run("GetRoster").registerGateway(service, screenName, password);
+/** Returns the tree control. Implemented for consistency with ZmTreeController */
+ZmRosterTreeController.prototype.getTreeView =
+function(overviewId) {
+	return this._treeView[overviewId];
 };
 
-ZmRosterTreeController.prototype._newRosterItemListener =
-function(ev) {
-	var newDialog = appCtxt.getNewRosterItemDialog();
-	newDialog.setTitle(ZmMsg.createNewRosterItem);
-	if (!this._newRosterItemCb) {
-		this._newRosterItemCb = new AjxCallback(this, this._newRosterItemCallback);
-	}
-	ZmController.showDialog(newDialog, this._newRosterItemCb);
-	if (ev) {
-		if (ev.group)
-			newDialog.setGroups(ev.group);
-		if (ev.name)
-			newDialog.setName(ev.name);
-		if (ev.address)
-			newDialog.setAddress(ev.address);
+/** Clears the tree control. Implemented for consistency with ZmTreeController */
+ZmRosterTreeController.prototype.clearTreeView =
+function(overviewId) {
+	if (this._treeView[overviewId]) {
+		this._treeView[overviewId].dispose();
+		delete this._treeView[overviewId];
 	}
 };
 
-ZmRosterTreeController.prototype._editRosterItemListener =
-function(ev) {
-	var newDialog = appCtxt.getNewRosterItemDialog();
-	newDialog.setTitle(ZmMsg.editRosterItem);
-	if (!this._newRosterItemCb) {
-		this._newRosterItemCb = new AjxCallback(this, this._newRosterItemCallback);
-	}
-	ZmController.showDialog(newDialog, this._newRosterItemCb);
-	var ri = ev.buddy;
-	newDialog.setAddress(ri.getAddress(), true);
-	newDialog.setName(ri.getName());
-	newDialog.setGroups(ri.getGroups());
+// Protected methods
+ZmRosterTreeController.prototype._createTreeView =
+function(overviewId) {
+	var overview = this._opc.getOverview(overviewId);
+	var treeArgs = {
+		posStyle: Dwt.STATIC_STYLE,
+		noAssistant: true,
+		isOverview: true,
+		expanded: overviewId == ZmApp.IM
+	};
+	var imOverview = new ZmImOverview(overview, treeArgs);
+	return imOverview.getTree();
 };
 
-
-ZmRosterTreeController.prototype._imNewChatListener =
-function(ev) {
-	if (ev && ev.buddy) {
-		var clc = AjxDispatcher.run("GetChatListController");
-		clc.chatWithRosterItem(ev.buddy);
-	} else {
-		// select from GAL
-		ZmImNewChatDlg.show(
-			{ onAutocomplete: AjxCallback.simpleClosure(this._newChatAutoCompleteCallback, this),
-			  onOk: AjxCallback.simpleClosure(this._newChatOkCallback, this) 
-			}
-		);
-	}
-};
-
-ZmRosterTreeController.prototype._newChatAutoCompleteCallback =
-function(contact, dlg, text, el, match) {
-	var item = this._getRosterItemForChat(contact, match.fullAddress);
-	if (item) {
-		dlg.popdown();
-		var clc = AjxDispatcher.run("GetChatListController");
-		clc.chatWithRosterItem(item);
-	}
-};
-
-ZmRosterTreeController.prototype._newChatOkCallback =
-function(selectedContact, contactText) {
-	var item = this._getRosterItemForChat(selectedContact, contactText);
-	if (item) {
-		var clc = AjxDispatcher.run("GetChatListController");
-		clc.chatWithRosterItem(item);
-		return true;
-	}
-};
-
-ZmRosterTreeController.prototype._getRosterItemForChat =
-function(contact, fullAddress){
-	var addr;
-	if (contact) {
-		addr = contact.getIMAddress();
-		addr = ZmImAddress.parse(addr);
-	}
-	var roster = AjxDispatcher.run("GetRoster");
-	if (addr) {
-		addr = roster.makeServerAddress(addr.screenName, addr.service);
-	}
-	if (!addr && contact) {
-		addr = contact.getEmail();
-	}
-	if (!addr && fullAddress) {
-		addr = fullAddress;
-	}
-	if (!addr) {
-		return null;
-	}
-	var list = roster.getRosterItemList();
-	var item = list.getByAddr(addr);
-	if (!item) {
-		// create a temporary item
-		var name = contact ? contact.getAttendeeText(null, true) : addr,
-			presence = new ZmRosterPresence(ZmRosterPresence.SHOW_UNKNOWN, null, ZmMsg.unknown);
-		item = new ZmRosterItem(addr, list, name, presence);
-	}
-	return item;
-};
-
-ZmRosterTreeController.prototype._imNewGroupChatListener =
-function(ev) {
-	// NOT IMPLEMENTED
-// 	var org = this._getActionedOrganizer(ev);
-// 	var clc = AjxDispatcher.run("GetChatListController");
-// 	clc.chatWithRosterItems(org.getRosterItems(), org.getName()+" "+ZmMsg.imGroupChat);
-};
-
-// Create a roster item
-ZmRosterTreeController.prototype._newRosterItemCallback =
-function(addr, rname, groups) {
-	appCtxt.getNewRosterItemDialog().popdown();
-	this._imApp.getRoster().createRosterItem(addr, rname, groups);
-};
-
-ZmRosterTreeController.prototype._imCreateContactListener = function(ev) {
-	var item = ev.buddy;
-	var contact = new ZmContact(null);
-        var roster = AjxDispatcher.run("GetRoster");
-	contact.setAttr(ZmContact.F_imAddress1, roster.makeGenericAddress(item.getAddress()));
-	AjxDispatcher.run("GetContactController").show(contact, true);
-};
-
-ZmRosterTreeController.prototype._imAddToContactListener = function(ev) {
-	var item = ev.buddy;
-	ZmImNewChatDlg.show(
-		{
-			onAutocomplete: AjxCallback.simpleClosure(function(contact, dlg) {
-				if (!contact) {
-					return;
-				}
-				dlg.popdown();
-				var fields = [ ZmContact.F_imAddress1, ZmContact.F_imAddress2, ZmContact.F_imAddress3 ];
-                                var roster = AjxDispatcher.run("GetRoster");
-				for (var i = 0; i < fields.length; ++i) {
-					var f = fields[i];
-					var orig = contact.getAttr(f);
-					if (!orig || !/\S/.test(orig)) {
-						contact.setAttr(f, roster.makeGenericAddress(item.getAddress()));
-						AjxDispatcher.run("GetContactController").show(contact, true);
-						// reset the attribute now so that
-						// ZmContactView thinks it's been
-						// modified.  sort of makes sense. ;-)
-						contact.setAttr(f, orig);
-						break;
-					}
-				}
-				if (i == fields.length) {
-					// not set as all IM fields are filed
-					// XXX: warn?
-				}
-			}, this )
-		}
-	);
-};
-
-ZmRosterTreeController.prototype._imEditContactListener = function(ev) {
-	var item = ev.buddy;
-	AjxDispatcher.run("GetContactController").show(item.getContact(), false);
-};
-
-ZmRosterTreeController.prototype._blockBuddyListener = function(ev) {
-	var item = ev.buddy;
-	var roster = AjxDispatcher.run("GetRoster");
-	var pl = roster.getPrivacyList();
-	pl.block(item.getAddress());
-	var doc = AjxSoapDoc.create("IMSetPrivacyListRequest", "urn:zimbraIM");
-	pl.toSoap(doc);
-	appCtxt.getAppController().sendRequest({ soapDoc: doc, asyncMode: true });
-};
-
-ZmRosterTreeController.prototype._unblockBuddyListener = function(ev) {
-	var item = ev.buddy;
-	var roster = AjxDispatcher.run("GetRoster");
-	var pl = roster.getPrivacyList();
-	pl.unblock(item.getAddress());
-	var doc = AjxSoapDoc.create("IMSetPrivacyListRequest", "urn:zimbraIM");
-	pl.toSoap(doc);
-	appCtxt.getAppController().sendRequest({ soapDoc: doc, asyncMode: true });
-};
-
-ZmRosterTreeController.prototype._deleteGroupListener = function(ev) {
-	var treeItem = ev.actionedItem;
-	if (treeItem.getItemCount()) {
-		var dialog = appCtxt.getMsgDialog();
-		dialog.setMessage(ZmMsg.deleteGroupError, DwtMessageDialog.CRITICAL_STYLE);
-		dialog.popup();
-	} else {
-		treeItem.dispose();
-	}
-};

@@ -391,7 +391,7 @@ function(ev) {
 				menuItems: [newChat]
 			};
 			this._contextMenu = new ZmActionMenu(menuArgs);
-			var treeController = ZmImApp.INSTANCE.getRosterTreeController();
+			var treeController = ZmImApp.INSTANCE.getImController();
 			this._contextMenu.getOp(newChat).addSelectionListener(treeController._listeners[newChat]);
 		}
 		this._contextMenu.popup(0, ev.docX,  ev.docY);
