@@ -534,8 +534,11 @@ ZmImApp.prototype._setRoster =
 function(roster) {
 	this._roster = roster;
 	if (this._rosterItemListListeners) {
+		var event = new ZmEvent(ZmItem.ROSTER_ITEM);
+		event.event = ZmEvent.E_LOAD;
 		var rosterItemList = roster.getRosterItemList();
 		for (var i = 0, count = this._rosterItemListListeners.length; i < count; i++) {
+			this._rosterItemListListeners[i].handleEvent(event);
 			rosterItemList.addChangeListener(this._rosterItemListListeners[i]);
 		}
 	}

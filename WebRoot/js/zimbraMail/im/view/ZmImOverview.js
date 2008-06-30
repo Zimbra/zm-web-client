@@ -355,11 +355,14 @@ ZmImOverview.login = function() {
 };
 
 ZmImOverview.prototype._createFilterItem =
-function(ev) {
+function(expand) {
 	if (ZmImOverview.FILTER_SEARCH && !this._filterItem) {
 		// enable the search filter
 		this._filterItem = new ZmBuddyFilterItem({parent:this._rootItem, overview: this});
 		this._filterItem.setData("ZmImOverview.data", { type: "filter" });
+		if (expand) {
+			this._rootItem.setExpanded(true);
+		}
 	}
 };
 
@@ -371,7 +374,7 @@ function(ev) {
 	if (this._loggedOutItem) {
 		this._loggedOutItem.dispose();
 		this._loggedOutItem = null;
-		this._createFilterItem();
+		this._createFilterItem(true);
 	}
 	var fields = ev.getDetail("fields");
 	if (ev.event == ZmEvent.E_CREATE) {
