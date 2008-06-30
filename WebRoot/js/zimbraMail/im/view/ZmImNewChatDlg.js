@@ -41,9 +41,8 @@ ZmImNewChatDlg.prototype._init = function() {
 
         var list = new ZmImOverview(this, { posStyle    : Dwt.STATIC_STYLE,
                                             isFloating  : true,
-                                            noAssistant : true,
-											expanded	: true
-										  });
+                                            noAssistant : true
+                                          });
         list.reparentHtmlElement(id + "_buddyListCont");
         list.setSize(Dwt.DEFAULT, 200);
 };
