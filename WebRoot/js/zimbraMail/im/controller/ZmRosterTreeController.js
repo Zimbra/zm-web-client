@@ -24,6 +24,8 @@ ZmRosterTreeController = function() {
 ZmRosterTreeController.prototype = new ZmController;
 ZmRosterTreeController.prototype.constructor = ZmRosterTreeController;
 
+ZmRosterTreeController._expanded = false;
+
 ZmRosterTreeController.prototype.toString = function() {
 	return "ZmRosterTreeController";
 };
@@ -60,10 +62,34 @@ function(overviewId) {
 	var treeArgs = {
 		posStyle: Dwt.STATIC_STYLE,
 		noAssistant: true,
-		isOverview: true,
-		expanded: overviewId == ZmApp.IM
+		overviewId: overviewId,
+		expanded: (overviewId == ZmApp.IM) || ZmRosterTreeController._expanded
 	};
 	var imOverview = new ZmImOverview(overview, treeArgs);
-	return imOverview.getTree();
+	var result = imOverview.getTree();
+	result.addTreeListener(new AjxListener(this, this._treeListener));
+	return result;
+};
+
+ZmRosterTreeController.prototype._treeListener =
+function(ev) {
+	// Keep all the tree views in sync, sort of. Only syncing the root
+	// item though to try and keep the code relatively simple.
+	// (Somewhat ripped off from ZmTreeController)
+	if (ev.items.length) {
+		var item = ev.items[0];
+		var overview = item._tree.parent;
+		var overviewId = overview._options.overviewId;
+		if ((overviewId != ZmApp.IM) && (item == overview._rootItem)) {
+			ZmRosterTreeController._expanded = ev.detail == DwtTree.ITEM_EXPANDED;
+			for (var ovId in this._treeView) {
+				if ((ovId == overviewId) || (ovId == ZmApp.IM)) {
+					continue;
+				}
+				var treeView = this._treeView[ovId];
+				treeView.parent._rootItem.setExpanded(ZmRosterTreeController._expanded, null, true);
+			}
+		}
+	}
 };
 

@@ -287,7 +287,7 @@ ZmImOverview.prototype._init = function() {
 
 	var treeArgs = {
 		parent:this,
-		className: this._options.isOverview ? "OverviewTree" : null
+		className: this._options.overviewId ? "OverviewTree" : null
 	};
 	var tree = this._tree = new DwtTree(treeArgs);
 	tree.getHtmlElement().style.width = "100%";
@@ -300,11 +300,6 @@ ZmImOverview.prototype._init = function() {
 	this._rootItem.setData("ZmImOverview.data", { type: "root" });
 	this._rootItem.setText(ZmMsg.buddyList);
 	this._rootItem.enableSelection(false);
-	if (this._options.expanded) {
-		this._rootItem.setExpanded(true);
-	} else {
-		tree.addTreeListener(new AjxListener(this, this._treeListener));
-	}
 
 	if (!this._options.noAssistant) {
 		// Zimbra Assistant buddy
@@ -331,10 +326,15 @@ ZmImOverview.prototype._init = function() {
 	}
 	tree.addSeparator();
 
-	if (!this._options.isOverview) {
+	if (!this._options.overviewId) {
 		this.addControlListener(new AjxListener(this, this._controlListener));
 	}
 
+	if (this._options.expanded) {
+		this._rootItem.setExpanded(true);
+	} else {
+		tree.addTreeListener(new AjxListener(this, this._treeListener));
+	}
 };
 
 ZmImOverview.prototype._treeListener =
