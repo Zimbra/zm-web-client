@@ -587,6 +587,8 @@
 		<!-- copy icons -->
 		<copy todir="${build.web.dir}" flatten="true" overwrite="true">
 			<fileset dir='${img.dir}' includes='**/favicon.ico,**/apple-touch-icon.png'/>
+		</copy>
+		<copy todir="${build.web.dir}" flatten="true" overwrite="true" failonerror="false">
 			<fileset dir='${customer.img.dir}' includes='**/favicon.ico,**/apple-touch-icon.png'/>
 		</copy>
 	</target>
