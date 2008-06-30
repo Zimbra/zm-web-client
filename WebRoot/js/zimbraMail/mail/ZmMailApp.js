@@ -1371,11 +1371,12 @@ function(organizer) {
 				unreadCount += (acct.unread || 0);
 			}
 		}
-		if (AjxEnv.isMac) {
+		if (AjxEnv.isMac && window.platform) {
 			window.platform.icon().badgeText = (unreadCount > 0)
 				? unreadCount : null;
 		}
-		/*
+		/* Commentted until we get better support
+		 *
 		else if (AjxEnv.isWindows) {
 			window.platform.icon().imageSpec = (unreadCount > 0)
 				? "resource://webapp/icons/default/newmail.png"
@@ -1383,6 +1384,7 @@ function(organizer) {
 			window.platform.icon().title = (unreadCount > 0)
 				? AjxMessageFormat.format(ZmMsg.unreadCount, unreadCount) : null;
 		}
+		*
 		*/
 	}
 };

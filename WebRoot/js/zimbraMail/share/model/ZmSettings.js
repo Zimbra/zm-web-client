@@ -231,16 +231,6 @@ function(callback, accountName, result) {
 		appCtxt.numVisibleAccounts = count;
 	}
 
-	// reset mailto account Id in case user has added removed accounts
-	if (accounts && appCtxt.isOffline) {
-		var setting = this._settings[ZmSetting.OFFLINE_MAILTO_ACCOUNT_ID];
-		if (setting) {
-			if (!appCtxt.getAccount(setting.getValue())) {
-				setting.setValue(appCtxt.getMainAccount(true).id);
-			}
-		}
-	}
-
 	// handle settings whose values may depend on other settings
 	var setting = this._settings[ZmSetting.REPLY_TO_ADDRESS];
 	if (setting) {
@@ -680,7 +670,6 @@ function() {
 	this.registerSetting("OFFLINE_SUPPORTS_MAILTO",			{type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, isGlobal:true});
 	this.registerSetting("OFFLINE_SUPPORTS_DOCK_UPDATE",	{type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, isGlobal:true});
 	this.registerSetting("OFFLINE_IS_MAILTO_HANDLER",		{name:"zimbraPrefMailtoHandlerEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, isGlobal:true});
-	this.registerSetting("OFFLINE_MAILTO_ACCOUNT_ID",		{name:"zimbraPrefMailtoAccountId", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, isGlobal:true});
 	this.registerSetting("OFFLINE_REPORT_EMAIL",			{type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, defaultValue:"zdesktop-report@zimbra.com", isGlobal:true});
 
 	// reset the help URI to zimbra.com for offline

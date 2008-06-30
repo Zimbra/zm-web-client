@@ -222,9 +222,7 @@ function() {
 				control = this._setupCustom(id, setup, value);
 			}
 			else if (type == ZmPref.TYPE_SELECT) {
-				control = (id == ZmSetting.OFFLINE_MAILTO_ACCOUNT_ID)
-					? this._setupAccountSelect(id, setup, value)
-					: this._setupSelect(id, setup, value);
+				control = this._setupSelect(id, setup, value);
 			}
 			else if (type == ZmPref.TYPE_COMBOBOX) {
 				control = this._setupComboBox(id, setup, value);
@@ -541,35 +539,6 @@ function(id, setup, value) {
 	return text;
 };
 
-ZmPreferencesPage.prototype._setupAccountSelect =
-function(id, setup, value) {
-	if (!appCtxt.multiAccounts) { return; }
-
-	var selObj = new DwtSelect({parent:this});
-	this.setFormObject(id, selObj);
-
-	var accounts = appCtxt.getZimbraAccounts();
-	var first = appCtxt.getMainAccount(true);
-	for (var i in accounts) {
-		var acct = accounts[i];
-		if (acct.visible) {
-			selObj.addOption(acct.getDisplayName(), acct == first, acct.id);
-		}
-	}
-
-	if (selObj.size() > 1) {
-		selObj.setName(id);
-		selObj.setEnabled(appCtxt.get(ZmSetting.OFFLINE_IS_MAILTO_HANDLER));
-		return selObj;
-	} else {
-		var htmlElId = [this._htmlElId, "_", id, "_CONTAINER"].join("");
-		var container = document.getElementById(htmlElId);
-		if (container) {
-			Dwt.setVisible(container, false);
-		}
-	}
-};
-
 ZmPreferencesPage.prototype._setupSelect =
 function(id, setup, value) {
 	value = this._prepareValue(id, setup, value);
@@ -710,8 +679,6 @@ function(id, setup, value) {
 	else if (id == ZmSetting.NOTIF_ENABLED) {
 		this._handleNotifyChange();
 		checkbox.addSelectionListener(new AjxListener(this, this._handleNotifyChange));
-	} else if (id == ZmSetting.OFFLINE_IS_MAILTO_HANDLER) {
-		checkbox.addSelectionListener(new AjxListener(this, this._handleOfflineMailto));
 	}
 	return checkbox;
 };
@@ -905,15 +872,6 @@ function(ev) {
 		input.setRequired(checkbox.isSelected());
 	}
 };
-
-ZmPreferencesPage.prototype._handleOfflineMailto =
-function(ev) {
-	var select = this.getFormObject(ZmSetting.OFFLINE_MAILTO_ACCOUNT_ID);
-	if (select) {
-		var cbox = this.getFormObject(ZmSetting.OFFLINE_IS_MAILTO_HANDLER);
-		select.setEnabled(cbox && cbox.isSelected());
-	}
-}
 
 // Popup the change password dialog.
 ZmPreferencesPage.prototype._changePasswordListener =

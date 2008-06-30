@@ -149,8 +149,7 @@ function() {
 				ZmSetting.SKIN_NAME,
 				ZmSetting.CLIENT_TYPE,
 				ZmSetting.DEFAULT_TIMEZONE,
-				ZmSetting.OFFLINE_IS_MAILTO_HANDLER,
-				ZmSetting.OFFLINE_MAILTO_ACCOUNT_ID
+				ZmSetting.OFFLINE_IS_MAILTO_HANDLER
 			]
 		},
 		COMPOSING: {
@@ -289,10 +288,6 @@ function() {
 		ZmPref.registerPref("OFFLINE_IS_MAILTO_HANDLER", {
 			displayName:		ZmMsg.offlineAllowMailTo,
 			displayContainer:	ZmPref.TYPE_CHECKBOX
-		});
-
-		ZmPref.registerPref("OFFLINE_MAILTO_ACCOUNT_ID", {
-			displayContainer:	ZmPref.TYPE_SELECT
 		});
 	}
 

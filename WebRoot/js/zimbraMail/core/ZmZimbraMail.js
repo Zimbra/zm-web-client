@@ -392,14 +392,8 @@ function(uri, callback) {
 		var query = "to=" + decodeURIComponent(uri.substring(idx+7));
 		query = query.replace(/\?/g, "&");
 
-		var preferredAcct = appCtxt.getAccount(appCtxt.get(ZmSetting.OFFLINE_MAILTO_ACCOUNT_ID));
-		if (preferredAcct && preferredAcct != appCtxt.getActiveAccount()) {
-			var respCallback = new AjxCallback(mailApp, mailApp._showComposeView, [callback, query]);
-			appCtxt.getCurrentApp().expandAccordionForAccount(preferredAcct, true, respCallback);
-		} else {
-			mailApp._showComposeView(callback, query);
-			return true;
-		}
+		mailApp._showComposeView(callback, query);
+		return true;
 	}
 	return false;
 };
