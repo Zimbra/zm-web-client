@@ -138,7 +138,7 @@ function() {
 							  qsArg:				"voicemail",
 							  chooserTooltipKey:	"goToVoice",
 							  defaultSearch:		ZmId.SEARCH_MAIL,
-							  overviewTrees:		[ZmOrganizer.VOICE],
+							  overviewTrees:		[ZmOrganizer.VOICE, ZmOrganizer.ROSTER_TREE_ITEM],
 							  showZimlets:			true,
 							  searchTypes:			[ZmItem.VOICEMAIL],
 							  gotoActionCode:		ZmKeyMap.GOTO_VOICE,

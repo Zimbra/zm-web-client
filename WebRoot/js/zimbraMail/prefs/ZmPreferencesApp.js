@@ -123,7 +123,7 @@ function() {
 							  icon:					"Preferences",
 							  chooserTooltipKey:	"goToOptions",
 							  button:				appCtxt.isChildWindow ? null : ZmAppChooser.B_OPTIONS,
-							  overviewTrees:		[ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG],
+							  overviewTrees:		[ZmOrganizer.FOLDER, ZmOrganizer.ROSTER_TREE_ITEM, ZmOrganizer.SEARCH, ZmOrganizer.TAG],
 							  showZimlets:			true,
 							  searchTypes:			[ZmItem.MSG, ZmItem.CONV],
 							  gotoActionCode:		ZmKeyMap.GOTO_OPTIONS,
