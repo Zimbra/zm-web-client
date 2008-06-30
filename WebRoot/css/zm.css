@@ -2087,6 +2087,24 @@ HTML>BODY .appt-selected .appt_allday_body
 	@ActiveCursor@
 }
 
+.ZmBuddyFilterItem {
+	width: 96%;
+	padding-left: 4px;
+	padding-right: 4px;
+}
+
+.ZmBuddyFilterItem .DwtSimpleInput {
+	width: 100%;
+}
+
+.ZmNotLoggedInTreeItem {
+	margin: 4px;
+	margin-top: 1px;
+}
+.ZmNotLoggedInTreeItem .FakeAnchor {
+	font-weight: bold;
+}
+
 /*
  *	App chooser
  */

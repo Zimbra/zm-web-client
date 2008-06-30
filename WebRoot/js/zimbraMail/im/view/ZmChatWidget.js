@@ -410,7 +410,7 @@ ZmChatWidget.prototype._getAddToBuddyListTooltip = function() {
 };
 
 ZmChatWidget.prototype._addToBuddyListListener = function() {
-	appCtxt.getApp("IM").getRosterTreeController()._newRosterItemListener(
+	appCtxt.getApp("IM").getImController()._newRosterItemListener(
 		{
 			name	: this.chat.getRosterItem().getDisplayName(),
 			address	: this.chat.getRosterItem().getAddress()

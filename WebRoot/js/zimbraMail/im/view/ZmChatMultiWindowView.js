@@ -168,7 +168,7 @@ function() {
 
 		btn.addListener(DwtEvent.ONMOUSEDOWN, new AjxListener(this, function(gw, ev) {
 			var imApp = appCtxt.getApp(ZmApp.IM);
-			var treeController = imApp.getRosterTreeController();
+			var treeController = imApp.getImController();
 			treeController._imGatewayLoginListener({ gwType : gw.type });
 		}, [ gw ]));
 

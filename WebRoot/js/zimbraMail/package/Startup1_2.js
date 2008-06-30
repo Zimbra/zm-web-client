@@ -70,6 +70,9 @@ AjxPackage.require("zimbraMail.share.controller.ZmSearchTreeController");
 AjxPackage.require("zimbraMail.share.controller.ZmOverviewController");
 AjxPackage.require("zimbraMail.share.controller.ZmSearchController");
 
+AjxPackage.require("zimbraMail.im.view.ZmImOverview");
+AjxPackage.require("zimbraMail.im.controller.ZmRosterTreeController");
+
 AjxPackage.require("zimbraMail.core.ZmAppViewMgr");
 AjxPackage.require("zimbraMail.core.ZmRequestMgr");
 AjxPackage.require("zimbraMail.core.ZmZimbraMail");

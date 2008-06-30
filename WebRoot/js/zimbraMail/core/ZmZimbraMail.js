@@ -1122,6 +1122,14 @@ function() {
 							 openSetting:		ZmSetting.TAG_TREE_OPEN
 							});
 
+	ZmOrganizer.registerOrg(ZmOrganizer.ROSTER_TREE_ITEM,
+							{app:				ZmApp.IM,
+							 precondition:		ZmSetting.IM_ENABLED,
+							 defaultFolder:		ZmOrganizer.ID_ROSTER_LIST,
+							 orgPackage:		"IMCore",
+							 treeController:	"ZmRosterTreeController",
+							 deferrable:		false
+							});
 	// Technically, we don't need to do this because the drop listeners for dragged organizers typically do their
 	// own checks on the class of the dragged object. But it's better to do it anyway, in case it ever gets
 	// validated within the drop target against the valid types.

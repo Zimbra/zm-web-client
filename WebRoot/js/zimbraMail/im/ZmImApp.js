@@ -97,7 +97,6 @@ function() {
     ZmOperation.registerOp(ZmId.OP_IM_GATEWAY_LOGIN, { textKey: "imGatewayLogin", image: "ExternalLink" });
     ZmOperation.registerOp(ZmId.OP_IM_TOGGLE_OFFLINE, { textKey: "imToggleOffline" });
     ZmOperation.registerOp(ZmId.OP_IM_TOGGLE_BLOCKED, { textKey: "imToggleBlocked" });
-    ZmOperation.registerOp(ZmId.OP_IM_FLOATING_LIST, { textKey: "imFloatingBuddyList", image: "ImGroup" });
 
     ZmOperation.registerOp(ZmId.OP_IM_SORT_BY_PRESENCE, { textKey: "imSortListByPresence" });
     ZmOperation.registerOp(ZmId.OP_IM_SORT_BY_NAME, { textKey: "imSortListByName" });
@@ -145,6 +144,7 @@ function() {
 			    chooserTooltipKey : "goToIm",
 			    defaultSearch     : ZmId.SEARCH_MAIL,
 			    gotoActionCode    : ZmKeyMap.GOTO_IM,
+				overviewTrees	  : [ZmOrganizer.ROSTER_TREE_ITEM],
 			    chooserSort	      : 40,
 			    defaultSort	      : 50,
 			    newOrgOps		  : newOrgOps,
@@ -350,7 +350,7 @@ ZmImApp.prototype._registerPrefs = function() {
 ZmImApp.prototype._setupCurrentAppToolbar =
 function() {
 	var callback = new AjxCallback(this,function(ev){
-		this.getRosterTreeController()._newRosterItemListener(ev);
+		this.getImController()._newRosterItemListener(ev);
 	});
 	ZmCurrentAppToolBar.registerApp(this.getName(), ZmOperation.NEW_ROSTER_ITEM,null,callback);
 };
@@ -392,11 +392,11 @@ ZmImApp.prototype.handleOp = function(op) {
 	switch (op) {
 		case ZmOperation.IM_NEW_CHAT:
 			this.prepareVisuals(); // ... and create views, if not yet done
-			this.getRosterTreeController()._imNewChatListener();
+			this.getImController()._imNewChatListener();
 			break;
 		case ZmOperation.NEW_ROSTER_ITEM:
 			this.prepareVisuals(); // ... and create views, if not yet done
-			this.getRosterTreeController()._newRosterItemListener()
+			this.getImController()._newRosterItemListener()
 			break;
 		case ZmOperation.IM_PRESENCE_MENU:
 			if (this._presenceButton) {
@@ -429,7 +429,7 @@ function(components) {
 		};
 		this._presenceButton = new ZmPresenceButton(buttonArgs);
 		this._updatePresenceButton(null, this._presenceButton, false, true);
-		ZmImApp.addImPresenceMenu(this._presenceButton, true);
+		ZmImApp.addImPresenceMenu(this._presenceButton);
 		components[ZmAppViewMgr.C_PRESENCE] = this._presenceButton;
 
 		// Fix the size of the skin container.
@@ -483,11 +483,11 @@ ZmImApp.prototype._handleLoadLaunch = function(callback) {
 	}
 };
 
-ZmImApp.prototype.getRosterTreeController = function() {
-	if (!this._rosterTreeController) {
-		this._rosterTreeController = new ZmRosterTreeController();
+ZmImApp.prototype.getImController = function() {
+	if (!this._imController) {
+		this._imController = new ZmImController();
 	}
-	return this._rosterTreeController;
+	return this._imController;
 };
 
 ZmImApp.prototype.isActive = function() {
@@ -511,6 +511,20 @@ function() {
 	return this._roster;
 };
 
+/**
+* Lazily adds a change listener to the roster item list. Allows ui elements
+* to create their listeners without loading the im package.
+*/
+ZmImApp.prototype.addRosterItemListListener =
+function(listener) {
+	if (this._roster) {
+		this._roster.getRosterItemList().addChangeListener(listener);
+	} else {
+		this._rosterItemListListeners = this._rosterItemListListeners || [];
+		this._rosterItemListListeners.push(listener);
+	}
+};
+
 ZmImApp.prototype.hasRoster =
 function(){
         return !!this._roster;  
@@ -519,6 +533,13 @@ function(){
 ZmImApp.prototype._setRoster =
 function(roster) {
 	this._roster = roster;
+	if (this._rosterItemListListeners) {
+		var rosterItemList = roster.getRosterItemList();
+		for (var i = 0, count = this._rosterItemListListeners.length; i < count; i++) {
+			rosterItemList.addChangeListener(this._rosterItemListListeners[i]);
+		}
+	}
+
 	if (this._presenceButton) {
 		this.syncImPresenceButton(this._presenceButton, false, true);
 	}
@@ -544,8 +565,8 @@ function() {
 };
 
 ZmImApp.addImPresenceMenu =
-function(button, addFloatingBuddyItem) {
-	button.setMenu(new AjxCallback(ZmImApp.INSTANCE, ZmImApp.INSTANCE._createImPresenceMenu, [button, addFloatingBuddyItem]));
+function(button) {
+	button.setMenu(new AjxCallback(ZmImApp.INSTANCE, ZmImApp.INSTANCE._createImPresenceMenu, [button]));
 };
 
 ZmImApp.prototype.syncImPresenceButton =
@@ -565,12 +586,6 @@ ZmImApp.prototype.prepareVisuals = function() {
 	}
 };
 
-ZmImApp.prototype.getOverviewPanelContent = function() {
-	if (!this._imOvw)
-		this._imOvw = new ZmImOverview(this._container);
-	return this._imOvw;
-};
-
 ZmImApp.INCOMING_MSG_NOTIFICATION = "incoming";
 ZmImApp.prototype.playAlert = function(type){
 	AjxDispatcher.require("Alert");
@@ -582,9 +597,9 @@ ZmImApp.prototype.playAlert = function(type){
 };
 
 ZmImApp.prototype._createImPresenceMenu =
-function(button, addFloatingBuddyItem) {
+function(button) {
 	AjxDispatcher.require(["IMCore", "IM"]);
-	var menu = new ZmPresenceMenu(button, addFloatingBuddyItem);
+	var menu = new ZmPresenceMenu(button);
 	button.setMenu(menu);
 	return menu;
 };

@@ -15,7 +15,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmPresenceMenu = function(parent, addFloatingBuddyItem) {
+ZmPresenceMenu = function(parent) {
 	ZmPopupMenu.call(this, parent);
 	var list = ZmPresenceMenu._getOperations();
 	var presenceListener = new AjxListener(this, this._presenceItemListener);
@@ -31,12 +31,6 @@ ZmPresenceMenu = function(parent, addFloatingBuddyItem) {
 	this._mruSeparator = this._addOperation(ZmOperation.SEP);
 	var customListener = new AjxListener(this, this._presenceCustomItemListener);
 	this._addOperation(ZmOperation.IM_PRESENCE_CUSTOM_MSG, customListener)
-
-	if (addFloatingBuddyItem) {
-		this._addOperation(ZmOperation.SEP);
-		var buddyListener = new AjxListener(this, this._buddyListListener);
-		this._addOperation(ZmOperation.IM_FLOATING_LIST, buddyListener, DwtMenuItem.CHECK_STYLE);
-	}
 };
 
 ZmPresenceMenu.prototype = new ZmPopupMenu;
@@ -213,17 +207,3 @@ function(message, batchCommand) {
 	settings.save([setting], null, batchCommand);
 };
 
-ZmPresenceMenu.prototype._buddyListListener =
-function() {
-	ZmImApp.INSTANCE.prepareVisuals();
-	var buddyWindow = ZmBuddyListWindow.instance;
-	if (!buddyWindow) {
-		ZmBuddyListWindow.create();
-	} else {
-		if (buddyWindow.isPoppedUp()) {
-			buddyWindow.popdown();
-		} else {
-			buddyWindow.popup();
-		}
-	}
-};
