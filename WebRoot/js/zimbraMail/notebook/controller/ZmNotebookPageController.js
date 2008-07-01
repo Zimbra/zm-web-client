@@ -217,7 +217,9 @@ ZmNotebookPageController.prototype._showIndex = function(folderId) {
 	var params = {id:folderId};	
 //	var index = cache.getPageByName(folderId, ZmNotebook.PAGE_INDEX, true);
 	var index = cache.getItemInfo(params);
-	this.show(index);
+	if (index) {
+		this.show(index);
+	}
 };
 
 //
