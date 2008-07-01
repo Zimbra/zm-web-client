@@ -126,12 +126,6 @@ function() {
 				// bug #4368 - dont save if only FileAs changed unless custom
 				if (a != ZmContact.F_fileAs)
 					foundOne = true;
-			} else {
-				val = AjxStringUtil.trim(this._contact.getAttr(a));
-				if (val && val.length > 0) {
-					mods[a] = val;
-					foundOne = true;
-				}
 			}
 		}
 
