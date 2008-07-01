@@ -59,14 +59,14 @@ ZmHtmlEditor.__toUpperCase = function(s) {
 
 ZmHtmlEditor.FONT_FAMILY = {};
 (function() {
-	var i, value;
-	for (i = 1; value = AjxMsg["fontFamilyIntl"+i]; i++) {
-		name = ZmHtmlEditor.__makeFontName(value);
-		ZmHtmlEditor.FONT_FAMILY[name] = {name:name, value:value};
-	}
-	for (i = 1; value = AjxMsg["fontFamilyBase"+i]; i++) {
-		name = ZmHtmlEditor.__makeFontName(value);
-		ZmHtmlEditor.FONT_FAMILY[name] = {name:name, value:value};
+	var KEYS = [ "fontFamilyIntl", "fontFamilyBase" ];
+	var i, j, key, value, name;
+	for (j = 0; j < KEYS.length; j++) {
+		for (i = 1; value = AjxMsg[KEYS[j]+i+".css"]; i++) {
+			if (value.match(/^#+$/)) break;
+			name = AjxMsg[KEYS[j]+i+".display"];
+			ZmHtmlEditor.FONT_FAMILY[value] = {name:name, value:value};
+		}
 	}
 })();
 
@@ -558,7 +558,7 @@ function(ev) {
 
 ZmHtmlEditor.prototype._fontFamilyListener =
 function(ev) {
-	var id = ZmHtmlEditor.__makeFontName(ev.item.getData(ZmHtmlEditor._VALUE));
+	var id = ev.item.getData(ZmHtmlEditor._VALUE);
 	this.setFont(ZmHtmlEditor.FONT_FAMILY[id].value);
 	this._fontFamilyButton.setText(ZmHtmlEditor.FONT_FAMILY[id].name);
 };
@@ -1266,10 +1266,14 @@ function(ev) {
                 // and an un-updated toolbar, rather than the other way around.  I'll commit suicide
                 // next; if you find a better solution please tell my son after about 12 years.  >:)
 
- 	        if (ev.fontFamily)
- 		        this._fontFamilyButton.setText(ZmHtmlEditor.__makeFontName(ev.fontFamily));
+ 	        if (ev.fontFamily) {
+				var id = ev.fontFamily;
+				var name = ZmHtmlEditor.FONT_FAMILY[id] && ZmHtmlEditor.FONT_FAMILY[id].name;
+				name = name || ZmHtmlEditor.__makeFontName(id);
+				this._fontFamilyButton.setText(name);
+			}
 
- 	        if (ev.fontSize) {
+			 if (ev.fontSize) {
  		        var mi = this._fontSizeButton.getMenu().getItem(ev.fontSize-1);
  		        this._fontSizeButton.setText(mi.getText());
  	        }
