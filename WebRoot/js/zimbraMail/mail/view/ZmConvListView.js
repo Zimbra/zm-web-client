@@ -277,7 +277,7 @@ function(conv, fieldId) {
 			} else if (part2.length > 1 && j > 0) {
 				html[idx++] = ", ";
 			}
-			var p2 = (part2 && part2[j] && part2[j].index) ? part2[j].index : "";
+			var p2 = (part2 && part2[j] && (part2[j].index != null)) ? part2[j].index : "";
 			var spanId = [fieldId, p2].join(DwtId.SEP);
 			html[idx++] = "<span style='white-space: nowrap' id='";
 			html[idx++] = spanId;
