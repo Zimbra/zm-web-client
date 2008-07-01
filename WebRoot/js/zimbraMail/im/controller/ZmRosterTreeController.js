@@ -50,7 +50,7 @@ function(overviewId) {
 ZmRosterTreeController.prototype.clearTreeView =
 function(overviewId) {
 	if (this._treeView[overviewId]) {
-		this._treeView[overviewId].dispose();
+		this._treeView[overviewId].parent.dispose();
 		delete this._treeView[overviewId];
 	}
 };

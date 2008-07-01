@@ -80,6 +80,18 @@ function() {
 	return "ZmImOverview";
 };
 
+ZmImOverview.prototype.dispose =
+function() {
+	for (var name in this._actionMenuOps) {
+		var menu = this._actionMenuOps[name]._dwtControl;
+		if (menu) {
+			menu.dispose();
+		}
+	}
+	ZmImApp.INSTANCE.removeRosterItemListListener(this._rosterItemListListenerObj);
+	DwtComposite.prototype.dispose.call(this);	
+};
+
 ZmImOverview.prototype.getTree =
 function() {
 	return this._tree;
@@ -309,7 +321,8 @@ ZmImOverview.prototype._init = function() {
 		this._createTreeItems("assistant", assistant);
 	}
 
-	ZmImApp.INSTANCE.addRosterItemListListener(new AjxListener(this, this._rosterItemListListener));
+	this._rosterItemListListenerObj = new AjxListener(this, this._rosterItemListListener);
+	ZmImApp.INSTANCE.addRosterItemListListener(this._rosterItemListListenerObj);
 	if (ZmImApp.INSTANCE.hasRoster()) {
 		this._createFilterItem();
 		var roster = this._roster = AjxDispatcher.run("GetRoster");
@@ -523,30 +536,30 @@ ZmImOverview.prototype._modifyBuddies = function(buddies, fields) {
 };
 
 ZmImOverview.prototype._removeBuddy = function(buddy) {
-        var items = this._itemsById[buddy.getAddress()];
-        items.foreach("dispose");
-        this._itemsById[buddy.getAddress()] = null;
+	var items = this._itemsById[buddy.getAddress()];
+	items.foreach("dispose");
+	this._itemsById[buddy.getAddress()] = null;
 };
 
 ZmImOverview.prototype.getGroupItem = function(group) {
-        if (!group)
-                return this._rootItem;
-        var g = this._groupItems[group];
-        if (!g) {
-                g = this._groupItems[group] = new DwtTreeItem({parent:this._rootItem,
-                                                               index:this.getSortIndex(group), // index
-                                                               text:group, // text
-                                                               imageInfo:"ImGroup" // image
-											                });
-                g.setToolTipContent("-");
-                g.getToolTipContent = function() {
-                        var data = this.getData("ZmImOverview.data");
-                        return AjxMessageFormat.format(ZmMsg.imGroupItemTooltip, [ data.group, this.getItemCount() ]);
-                };
-                g.setData("ZmImOverview.data", { type: "group", group: group });
-                g.setDropTarget(this._groupDropTgt);
-        }
-        return g;
+	if (!group)
+		return this._rootItem;
+	var g = this._groupItems[group];
+	if (!g) {
+		g = this._groupItems[group] = new DwtTreeItem({parent:this._rootItem,
+			index:this.getSortIndex(group), // index
+			text:group, // text
+			imageInfo:"ImGroup" // image
+		});
+		g.setToolTipContent("-");
+		g.getToolTipContent = function() {
+			var data = this.getData("ZmImOverview.data");
+			return AjxMessageFormat.format(ZmMsg.imGroupItemTooltip, [ data.group, this.getItemCount() ]);
+		};
+		g.setData("ZmImOverview.data", { type: "group", group: group });
+		g.setDropTarget(this._groupDropTgt);
+	}
+	return g;
 };
 
 ZmImOverview.prototype.getSortIndex = function(label, root) {
