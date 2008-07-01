@@ -7,9 +7,10 @@
 
 <fmt:bundle basename="/keys/ZhKeys">
     <c:set var="msgkey" value="${fn:trim(msgkey)}"/>
-    <fmt:message var="keyseqlist" key="${msgkey}${suffix}"/>
+    <c:set var="msgkeyDisp" value="${msgkey}.display"/>
+    <fmt:message var="keyseqlist" key="${msgkeyDisp}${suffix}"/>
     <c:if test="${fn:startsWith(keyseqlist, '???')}">
-        <fmt:message var="keyseqlist" key="${msgkey}"/>
+        <fmt:message var="keyseqlist" key="${msgkeyDisp}"/>
     </c:if>
     <fmt:message var="msgkeyDesc" key="${msgkey}.description"/>
     <c:if test="${not empty msgkeyDesc and not fn:startsWith(keyseqlist, '???')}">

@@ -54,7 +54,7 @@
                 }
                 //alert(ev.which +" "+ev.charCode+" "+ev.keyCode);
                 var kc = ev.keyCode;
-                if (kc == 16 || kc == 17 || kc == 18 || kc == 91) return true;
+                if (kc == 16 || kc == 17 || kc == 18 || kc == 91 || kc == 224) return true;
                 var k = (ev.altKey ? 'a' : '') + (ev.ctrlKey ? 'c' : '') + (ev.metaKey ? 'm' : '') + (ev.shiftKey ? 's' : '') + kc;
                 pendingKey += ":" + k;
                 if (isMulti(pendingKey + ":")) {
