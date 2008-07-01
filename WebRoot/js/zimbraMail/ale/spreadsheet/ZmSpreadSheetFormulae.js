@@ -74,14 +74,14 @@ ZmSpreadSheetFormulae.TOKEN = {
         },
 
         NUMBER     : { match   : /^([0-9]*\.?[0-9]+)/,
-                       getVal  : function(a) { return parseFloat(a[1]); },
+                       getVal  : function(a) { return parseFloat(a[1], 10); },
                        isOpr   : true,
                        isNumber: true,
                        type    : "number"
         },
 
         CURRENCY   : { match   : /^\$\s*([0-9]*\.?[0-9]+)/,
-                       getVal  : function(a) { return parseFloat(a[1]); },
+                       getVal  : function(a) { return parseFloat(a[1], 10); },
                        isOpr   : true,
                        isNumber: true,
                        type    : "currency"
@@ -134,12 +134,12 @@ ZmSpreadSheetFormulae.TOKEN = {
 ZmSpreadSheetFormulae.parseFloat = function(n, defVal) {
         if (typeof n == "boolean") {
                 return n ? 1 : 0;
-    }
-    n = parseFloat(n);
+        }
+        n = parseFloat(n, 10);
         if (isNaN(n)) {
                 n = defVal ? defVal : 0;
-    }
-    return n;
+        }
+        return n;
 };
 
 // describe some operator properties that are needed in order to compute
