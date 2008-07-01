@@ -258,6 +258,28 @@ function() {
 };
 
 /**
+ * This method gets called if user clicks on mailto link while compose view is
+ * already being used.
+ */
+ZmComposeController.prototype.resetComposeForMailto =
+function(params) {
+	if (this._popShield && this._popShield.isPoppedUp()) {
+		return false;
+	}
+
+	var ps = this._popShield = appCtxt.getYesNoCancelMsgDialog();
+	ps.reset();
+	ps.setMessage(ZmMsg.askSaveDraft, DwtMessageDialog.WARNING_STYLE);
+	ps.registerCallback(DwtDialog.YES_BUTTON, this._popShieldYesCallback, this, params);
+	ps.registerCallback(DwtDialog.NO_BUTTON, this._popShieldNoCallback, this, params);
+	ps.registerCallback(DwtDialog.CANCEL_BUTTON, this._popShieldDismissCallback, this);
+	ps.addPopdownListener(this._dialogPopdownListener);
+	ps.popup(this._composeView._getDialogXY());
+
+	return true;
+};
+
+/**
 * Sends the message represented by the content of the compose view.
 */
 ZmComposeController.prototype.sendMsg =
@@ -496,13 +518,13 @@ function(actionCode) {
 			this._composeView._setPriority(ZmItem.FLAG_HIGH_PRIORITY);
 			break;
 
-        case ZmKeyMap.NORMAL_PRIORITY:
-            this._composeView._setPriority("");
-            break;
+		case ZmKeyMap.NORMAL_PRIORITY:
+			this._composeView._setPriority("");
+			break;
 
-        case ZmKeyMap.LOW_PRIORITY:
-            this._composeView._setPriority(ZmItem.FLAG_LOW_PRIORITY);
-            break;
+		case ZmKeyMap.LOW_PRIORITY:
+			this._composeView._setPriority(ZmItem.FLAG_LOW_PRIORITY);
+			break;
 
 		default:
 			return ZmMailListController.prototype.handleKeyAction.call(this, actionCode);
@@ -597,7 +619,7 @@ function(params) {
 	params.identity = identity;
 	this._currentSignatureId = identity.signature;
 
-    this._composeMode = params.composeMode ? params.composeMode : this._getComposeMode(msg, identity);
+	this._composeMode = params.composeMode ? params.composeMode : this._getComposeMode(msg, identity);
 	if (!this._composeView) {
 		this.initComposeView(null, this._composeMode);
 	} else {
@@ -763,8 +785,8 @@ function(action) {
 		var op = list[i];
 		if (op == ZmOperation.SEP) { continue; }
 		overrides[op] = {};
-        overrides[op].style = DwtMenuItem.RADIO_STYLE;
-        overrides[op].radioGroupId = ZmComposeController.RADIO_GROUP[op];
+		overrides[op].style = DwtMenuItem.RADIO_STYLE;
+		overrides[op].radioGroupId = ZmComposeController.RADIO_GROUP[op];
 		if (op == ZmOperation.REPLY) {
 			overrides[op].text = ZmMsg.replySender;
 		}
@@ -869,18 +891,18 @@ function(mode) {
 		this._formatWarningDialog.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
 		this._formatWarningDialog.popup(this._composeView._getDialogXY());
 	} else {
-                // bug 26658: remove the signature before changing mode, and
-                //            add it back after
-                var tmp = this._currentSignatureId;
-                if (tmp) {
-                        this.setSelectedSignature("");
-                        this._composeView.applySignature(this._getBodyContent(), tmp);
-                }
-                this._composeView.setComposeMode(mode);
-                if (tmp) {
-                        this.setSelectedSignature(tmp);
-                        this._composeView.applySignature(this._getBodyContent(), tmp);
-                }
+		// bug 26658: remove the signature before changing mode, and
+		//            add it back after
+		var tmp = this._currentSignatureId;
+		if (tmp) {
+			this.setSelectedSignature("");
+			this._composeView.applySignature(this._getBodyContent(), tmp);
+		}
+		this._composeView.setComposeMode(mode);
+		if (tmp) {
+			this.setSelectedSignature(tmp);
+			this._composeView.applySignature(this._getBodyContent(), tmp);
+		}
 	}
 };
 
@@ -906,37 +928,37 @@ function(draftType, msg, resp) {
 			this._app.popView(true);
 		}
 	} else {
-        // TODO - disable save draft button indicating a draft was saved
-        if (appCtxt.isChildWindow) {
-            appCtxt.setStatusMsg(ZmMsg.draftSaved);
-            this._composeView.processMsgDraft(msg);
-            //Check if Mail App view has been created and then update the MailListController
-            var pAppCtxt = window.parentAppCtxt;
-            if(pAppCtxt.getAppViewMgr().getAppView(ZmApp.MAIL)) {
-                var listController = pAppCtxt.getApp(ZmApp.MAIL).getMailListController();
-                if (listController && listController._draftSaved) {
-                    //Pass the mail response to the parent window such that the ZmMailMsg obj is created in the parent window.
-                    listController._draftSaved(null, resp.m[0]);
-                }
-            }
-        } else {
-            var message;
-            var transitions;
-            if (draftType == ZmComposeController.DRAFT_TYPE_AUTO) {
-                var time = AjxDateUtil.computeTimeString(new Date());
-                this._autoSaveFormat = this._autoSaveFormat || new AjxMessageFormat(ZmMsg.draftSavedAuto);
-                message = this._autoSaveFormat.format(time);
-                transitions = [ ZmToast.FADE_IN, ZmToast.IDLE, ZmToast.PAUSE, ZmToast.FADE_OUT ];
-            } else {
-                message = ZmMsg.draftSaved;
-            }
-            appCtxt.setStatusMsg(message, ZmStatusView.LEVEL_INFO, null, transitions);
-            this._composeView.processMsgDraft(msg);
-            if (this._listController && this._listController._draftSaved) {
-                this._listController._draftSaved(msg);
-            }
-        }
-    }
+		// TODO - disable save draft button indicating a draft was saved
+		if (appCtxt.isChildWindow) {
+			appCtxt.setStatusMsg(ZmMsg.draftSaved);
+			this._composeView.processMsgDraft(msg);
+			//Check if Mail App view has been created and then update the MailListController
+			var pAppCtxt = window.parentAppCtxt;
+			if(pAppCtxt.getAppViewMgr().getAppView(ZmApp.MAIL)) {
+				var listController = pAppCtxt.getApp(ZmApp.MAIL).getMailListController();
+				if (listController && listController._draftSaved) {
+					//Pass the mail response to the parent window such that the ZmMailMsg obj is created in the parent window.
+					listController._draftSaved(null, resp.m[0]);
+				}
+			}
+		} else {
+			var message;
+			var transitions;
+			if (draftType == ZmComposeController.DRAFT_TYPE_AUTO) {
+				var time = AjxDateUtil.computeTimeString(new Date());
+				this._autoSaveFormat = this._autoSaveFormat || new AjxMessageFormat(ZmMsg.draftSavedAuto);
+				message = this._autoSaveFormat.format(time);
+				transitions = [ ZmToast.FADE_IN, ZmToast.IDLE, ZmToast.PAUSE, ZmToast.FADE_OUT ];
+			} else {
+				message = ZmMsg.draftSaved;
+			}
+			appCtxt.setStatusMsg(message, ZmStatusView.LEVEL_INFO, null, transitions);
+			this._composeView.processMsgDraft(msg);
+			if (this._listController && this._listController._draftSaved) {
+				this._listController._draftSaved(msg);
+			}
+		}
+	}
 };
 
 
@@ -1039,7 +1061,7 @@ function(op) {
 	if (incOption) {
 		var curText = this._getBodyContent();
 		if (this._curIncOption == ZmOperation.INC_NO_PREFIX || this._curIncOption == ZmOperation.INC_PREFIX ||
-                    this._curIncOption == ZmOperation.INC_PREFIX_FULL ||
+			this._curIncOption == ZmOperation.INC_PREFIX_FULL ||
 		    this._curIncOption == ZmOperation.INC_SMART) {
 			var idx = curText.indexOf(this._composeView._includedPreface.replace(/\s+$/, ""));
 			if (idx) {
@@ -1049,7 +1071,7 @@ function(op) {
 			}
 		}
 		this._composeView.resetBody(this._action, this._msg, curText, incOption,
-                                            true /* don't reattach signature (bug 26831) */);
+									true /* don't reattach signature (bug 26831) */);
 		this._curIncOption = ZmComposeController.INC_OP[incOption];
 	}
 };
@@ -1147,16 +1169,21 @@ function() {
 	this._composeView.reEnableDesignMode();
 };
 
-// Called as: Yes, save as draft
-//			  Yes, go ahead and cancel
+/**
+ * Called as: Yes, save as draft
+ * 			  Yes, go ahead and cancel
+ *
+ * @param mailtoParams		[Object]*	Used by offline client to pass on mailto handler params
+ */
 ZmComposeController.prototype._popShieldYesCallback =
-function() {
+function(mailtoParams) {
 	this._popShield.removePopdownListener(this._dialogPopdownListener);
 	this._popShield.popdown();
 	this._composeView.enableInputs(true);
 	if (appCtxt.get(ZmSetting.SAVE_DRAFT_ENABLED)) {
 		// save as draft
-		this.sendMsg(null, ZmComposeController.DRAFT_TYPE_MANUAL);
+		var callback = mailtoParams ? (new AjxCallback(this, this.doAction, mailtoParams)) : null;
+		this.sendMsg(null, ZmComposeController.DRAFT_TYPE_MANUAL, callback);
 	} else {
 		// cancel
 		if (appCtxt.isChildWindow && window.parentController) {
@@ -1164,14 +1191,20 @@ function() {
 		} else {
 			this._composeView.reset(false);
 		}
+		if (mailtoParams) {
+			this.doAction(mailtoParams);
+		}
 	}
-	appCtxt.getAppViewMgr().showPendingView(true);
+
+	if (!mailtoParams) {
+		appCtxt.getAppViewMgr().showPendingView(true);
+	}
 };
 
 // Called as: No, don't save as draft
 //			  No, don't cancel
 ZmComposeController.prototype._popShieldNoCallback =
-function() {
+function(mailtoParams) {
 	this._popShield.removePopdownListener(this._dialogPopdownListener);
 	this._popShield.popdown();
 	this._composeView.enableInputs(true);
@@ -1181,10 +1214,18 @@ function() {
 		} else {
 			this._composeView.reset(false);
 		}
-		appCtxt.getAppViewMgr().showPendingView(true);
+		if (!mailtoParams) {
+			appCtxt.getAppViewMgr().showPendingView(true);
+		}
 	} else {
-		appCtxt.getAppViewMgr().showPendingView(false);
+		if (!mailtoParams) {
+			appCtxt.getAppViewMgr().showPendingView(false);
+		}
 		this._composeView.reEnableDesignMode();
+	}
+
+	if (mailtoParams) {
+		this.doAction(mailtoParams);
 	}
 };
 

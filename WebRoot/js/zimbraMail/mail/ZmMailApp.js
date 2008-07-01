@@ -205,11 +205,11 @@ function() {
 				ZmSetting.SHOW_FRAGMENTS,
 				ZmSetting.VACATION_MSG_ENABLED,
 				ZmSetting.VACATION_MSG,
-                ZmSetting.START_DATE_ENABLED,
-                ZmSetting.END_DATE_ENABLED,
-                ZmSetting.VACATION_FROM,
-                ZmSetting.VACATION_UNTIL,
-                ZmSetting.VIEW_AS_HTML
+				ZmSetting.START_DATE_ENABLED,
+				ZmSetting.END_DATE_ENABLED,
+				ZmSetting.VACATION_FROM,
+				ZmSetting.VACATION_UNTIL,
+				ZmSetting.VIEW_AS_HTML
 			],
 			createView: function(parent, section, controller) {
 				return new ZmMailPrefsPage(parent, section, controller);
@@ -490,15 +490,15 @@ function() {
 		errorMessage:		ZmMsg.missingAwayMessage
 	});
 
-    ZmPref.registerPref("START_DATE_ENABLED", {
-        displayContainer:	ZmPref.TYPE_CHECKBOX,
-        displayName:		ZmMsg.startDate,
-        precondition:		ZmSetting.VACATION_MSG_FEATURE_ENABLED
+	ZmPref.registerPref("START_DATE_ENABLED", {
+		displayContainer:	ZmPref.TYPE_CHECKBOX,
+		displayName:		ZmMsg.startDate,
+		precondition:		ZmSetting.VACATION_MSG_FEATURE_ENABLED
 	});
-    ZmPref.registerPref("END_DATE_ENABLED", {
-        displayName:		ZmMsg.endDate,
-        displayContainer:	ZmPref.TYPE_CHECKBOX,
-        precondition:		ZmSetting.VACATION_MSG_FEATURE_ENABLED
+	ZmPref.registerPref("END_DATE_ENABLED", {
+		displayName:		ZmMsg.endDate,
+		displayContainer:	ZmPref.TYPE_CHECKBOX,
+		precondition:		ZmSetting.VACATION_MSG_FEATURE_ENABLED
 	});
 };
 
@@ -601,7 +601,7 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_INC_NONE, {textKey:"includeMenuNone"});
 	ZmOperation.registerOp(ZmId.OP_INC_NO_PREFIX, {textKey:"includeMenuNoPrefix"});
 	ZmOperation.registerOp(ZmId.OP_INC_PREFIX, {textKey:"includeMenuPrefix"});
-        ZmOperation.registerOp(ZmId.OP_INC_PREFIX_FULL, {textKey:"includeMenuPrefixFull"});
+	ZmOperation.registerOp(ZmId.OP_INC_PREFIX_FULL, {textKey:"includeMenuPrefixFull"});
 	ZmOperation.registerOp(ZmId.OP_INC_SMART, {textKey:"includeMenuSmart"});
 	ZmOperation.registerOp(ZmId.OP_MARK_READ, {textKey:"markAsRead", image:"ReadMessage"});
 	ZmOperation.registerOp(ZmId.OP_MARK_UNREAD, {textKey:"markAsUnread", image:"UnreadMessage"});
@@ -681,15 +681,15 @@ function() {
 
 ZmMailApp.prototype._setupSearchToolbar =
 function() {
-    if(appCtxt.get(ZmSetting.MAIL_ENABLED)){
-	ZmSearchToolBar.addMenuItem(ZmId.SEARCH_MAIL,
-								{msgKey:		"searchMail",
-								 tooltipKey:	"searchMail",
-								 icon:			"Message",
-								 shareIcon:		"SharedMailFolder",
-								 id:			ZmId.getMenuItemId(ZmId.SEARCH, ZmId.SEARCH_MAIL)
-								});
-    }
+	if (appCtxt.get(ZmSetting.MAIL_ENABLED)) {
+		ZmSearchToolBar.addMenuItem(ZmId.SEARCH_MAIL,
+									{msgKey:		"searchMail",
+									 tooltipKey:	"searchMail",
+									 icon:			"Message",
+									 shareIcon:		"SharedMailFolder",
+									 id:			ZmId.getMenuItemId(ZmId.SEARCH, ZmId.SEARCH_MAIL)
+									});
+	}
 };
 
 ZmMailApp.prototype._setupCurrentAppToolbar =
@@ -1210,7 +1210,7 @@ function(query, callback, response) {
 	types.add(this.getGroupMailBy());
 
 	var params = {
-        searchFor: ZmId.SEARCH_MAIL,
+		searchFor: ZmId.SEARCH_MAIL,
 		query: query,
 		types: types,
 		getHtml: appCtxt.get(ZmSetting.VIEW_AS_HTML),
@@ -1280,7 +1280,17 @@ function(callback, queryStr) {
 		extraBodyText: body,
 		callback: callback
 	};
-	cc.doAction(params);
+
+	// this can happen in offlie where user clicks on mailto link and we're
+	// already in compose view
+	if (appCtxt.isOffline &&
+		appCtxt.get(ZmSetting.OFFLINE_SUPPORTS_MAILTO) &&
+		appCtxt.getCurrentViewId() == ZmId.VIEW_COMPOSE)
+	{
+		cc.resetComposeForMailto(params);
+	} else {
+		cc.doAction(params);W
+	}
 
 	if (!this._hasRendered) {
 		appCtxt.getAppController().appRendered(this._name);
