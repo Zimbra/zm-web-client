@@ -52,6 +52,7 @@
 		File basedir = new File(servletContext.getRealPath("/"));
 		File imageFile = getImageSrc(basedir, imageSrc, locale);
 		imageSrc = imageFile.getAbsolutePath().substring(basedir.getAbsolutePath().length());
+		imageSrc = imageSrc.replace(File.separatorChar, '/');
 		// save so we don't have to do this again
 		images.put(value, imageSrc);
 	}
