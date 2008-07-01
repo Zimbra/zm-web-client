@@ -381,11 +381,12 @@ ZmImApp.prototype._onSettingChange = function(ev) {
 
 ZmImApp.prototype.refresh =
 function() {
-        if (this._roster) {
-                // better not call getRoster() here since we don't
-                // want to reinit. IM if it wasn't already.
-	        this._roster.refresh();
-        }
+	delete this._lastSeq;
+	if (this._roster) {
+		// better not call getRoster() here since we don't
+		// want to reinit. IM if it wasn't already.
+		this._roster.refresh();
+	}
 };
 
 ZmImApp.prototype.handleOp = function(op) {
@@ -520,8 +521,18 @@ function(listener) {
 	if (this._roster) {
 		this._roster.getRosterItemList().addChangeListener(listener);
 	} else {
-		this._rosterItemListListeners = this._rosterItemListListeners || [];
-		this._rosterItemListListeners.push(listener);
+		this._rosterItemListListeners = this._rosterItemListListeners || new AjxVector();
+		this._rosterItemListListeners.add(listener);
+	}
+};
+
+ZmImApp.prototype.removeRosterItemListListener =
+function(listener) {
+	if (this._rosterItemListListeners) {
+		this._rosterItemListListeners.remove(listener);
+	}
+	if (this._roster) {
+		this._roster.getRosterItemList().removeChangeListener(listener);
 	}
 };
 
@@ -537,9 +548,10 @@ function(roster) {
 		var event = new ZmEvent(ZmItem.ROSTER_ITEM);
 		event.event = ZmEvent.E_LOAD;
 		var rosterItemList = roster.getRosterItemList();
-		for (var i = 0, count = this._rosterItemListListeners.length; i < count; i++) {
-			this._rosterItemListListeners[i].handleEvent(event);
-			rosterItemList.addChangeListener(this._rosterItemListListeners[i]);
+		for (var i = 0, count = this._rosterItemListListeners.size(); i < count; i++) {
+			var listener = this._rosterItemListListeners.get(i);
+			listener.handleEvent(event);
+			rosterItemList.addChangeListener(listener);
 		}
 	}
 
