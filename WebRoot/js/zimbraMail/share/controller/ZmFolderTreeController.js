@@ -364,7 +364,7 @@ function(ev) {
 		ds.reset();
 		ds.registerCallback(DwtDialog.OK_BUTTON, this._deleteShieldYesCallback, this, organizer);
 		ds.registerCallback(DwtDialog.CANCEL_BUTTON, this._clearDialog, this, this._deleteShield);
-		var confirm = (organizer.type == ZmOrganizer.SEARCH) ? ZmMsg.confirmDeleteSavedSearch : ZmMsg.confirmEmptyFolder;
+		var confirm = (organizer.type == ZmOrganizer.SEARCH) ? ZmMsg.confirmDeleteSavedSearch : (organizer.nId==ZmFolder.ID_TRASH)?ZmMsg.confirmEmptyTrashFolder:ZmMsg.confirmEmptyFolder;
 		var msg = AjxMessageFormat.format(confirm, organizer.getName());
 		ds.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
 		ds.popup();
@@ -388,9 +388,11 @@ function(ev) {
 	ds.reset();
 	ds.registerCallback(DwtDialog.OK_BUTTON, this._emptyShieldYesCallback, this, organizer);
 	ds.registerCallback(DwtDialog.CANCEL_BUTTON, this._clearDialog, this, this._emptyShield);
-
-	var msg = AjxMessageFormat.format(ZmMsg.confirmEmptyFolder, organizer.getName());
-	ds.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
+    var msg = ZmMsg.confirmEmptyTrashFolder; 
+    if(organizer.nId != ZmFolder.ID_TRASH){
+        msg  = AjxMessageFormat.format(ZmMsg.confirmEmptyFolder, organizer.getName());
+    }
+    ds.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
 	ds.popup();
 
 	if(!(organizer.nId == ZmFolder.ID_SPAM || organizer.isInTrash())){
