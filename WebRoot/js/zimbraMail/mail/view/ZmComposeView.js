@@ -1498,41 +1498,41 @@ function(action, msg, extraBodyText, incOption, nosig) {
 				if (!ZmComposeView._replyPrefixFormatter) {
 					ZmComposeView._replyPrefixFormatter = new AjxMessageFormat(ZmMsg.replyPrefix);
 				}
-				preface = ZmComposeView._replyPrefixFormatter.format(from.toString());
+				var fromText = from.toString();
+				if (composingHtml) {
+					fromText = AjxStringUtil.htmlEncode(fromText);
+				}
+				preface = ZmComposeView._replyPrefixFormatter.format(fromText);
 			}
 			this._includedPreface = preface;
 			preface = preface + (composingHtml ? '<br>' : '\n');
 			var prefix = appCtxt.get(ZmSetting.REPLY_PREFIX);
+			if (composingHtml) {
+				prefix = AjxStringUtil.htmlEncode(prefix);
+			}
 			var sep = composingHtml ? '<br>' : '\n';
 			var wrapParams = {text:body, len:ZmComposeView.WRAP_LENGTH, pre:prefix + " ", eol:sep, htmlMode:composingHtml};
 			if (incOption == ZmSetting.INCLUDE_PREFIX) {
 				value += leadingText + preface + AjxStringUtil.wordWrap(wrapParams);
 			} else if (incOption == ZmSetting.INCLUDE_PREFIX_FULL) {
-                                var headers = [];
-                                for (var i = 0; i < ZmComposeView.QUOTED_HDRS.length; i++) {
-				        var h = msg.getHeaderStr(ZmComposeView.QUOTED_HDRS[i]);
-				        if (h) {
-                                                h = h.replace(/\n+$/, "");
-					        if (composingHtml){
-						        h = AjxStringUtil.convertToHtml(h);
-					        }
-					        headers.push(h);
-				        }
-			        }
-                                wrapParams.text = headers.join(crlf);
-                                wrapParams.len = 120; // headers tend to be longer
-                                headers = AjxStringUtil.wordWrap(wrapParams);
-
-                                wrapParams.text = body;
-                                wrapParams.len = ZmComposeView.WRAP_LENGTH;
-                                //console.log("leadingText: %o", leadingText);
-                                //console.log("preface: %o", preface);
-                                //console.log("headers: %o", headers);
-                                //console.log("wrapParams: %o", wrapParams);
-                                value += leadingText + preface + headers +
-                                        (composingHtml ? sep : '') +
-                                        prefix + sep + AjxStringUtil.wordWrap(wrapParams);
-                        } else if (incOption == ZmSetting.INCLUDE_SMART) {
+				var headers = [];
+				for (var i = 0; i < ZmComposeView.QUOTED_HDRS.length; i++) {
+					var h = msg.getHeaderStr(ZmComposeView.QUOTED_HDRS[i]);
+					if (h) {
+						h = h.replace(/\n+$/, "");
+						if (composingHtml){
+							h = AjxStringUtil.convertToHtml(h);
+						}
+						headers.push(h);
+					}
+				}
+				wrapParams.text = headers.join(crlf);
+				wrapParams.len = 120; // headers tend to be longer
+				headers = AjxStringUtil.wordWrap(wrapParams);
+				wrapParams.text = body;
+				wrapParams.len = ZmComposeView.WRAP_LENGTH;
+				value += leadingText + preface + headers + (composingHtml ? sep : '') + prefix + sep + AjxStringUtil.wordWrap(wrapParams);
+			} else if (incOption == ZmSetting.INCLUDE_SMART) {
 				var chunks = AjxStringUtil.getTopLevel(body);
 				for (var i = 0; i < chunks.length; i++) {
 					wrapParams.text = chunks[i];
