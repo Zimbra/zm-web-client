@@ -312,7 +312,7 @@
 																<td class='ImgSkin_Toolbar'>
 																	<table cellspacing=0 cellpadding=0 class='Tb'>
 																	<tr>
-																	<c:if test="${selected != 'contacts' and selected != 'calendar'}">
+																	<c:if test="${selected != 'contacts' and selected != 'calendar' and mailbox.features.mail}">
 																		<app:button name="actionNewFolder" src="startup/ImgNewFolder.gif" tooltip="folderNew" text="folderNew"/>
 																	</c:if>
 																	<c:if test="${selected eq 'contacts' and mailbox.features.newAddrBookEnabled}">
