@@ -37,6 +37,7 @@ AjxPackage.require("zimbraMail.mail.view.ZmMailMsgView");
 AjxPackage.require("zimbraMail.mail.view.ZmMailMsgListView");
 AjxPackage.require("zimbraMail.mail.view.ZmConvListView");
 
+AjxPackage.require("zimbraMail.mail.controller.ZmMailFolderTreeController");
 AjxPackage.require("zimbraMail.mail.controller.ZmMailListController");
 AjxPackage.require("zimbraMail.mail.controller.ZmDoublePaneController");
 AjxPackage.require("zimbraMail.mail.controller.ZmConvListController");
