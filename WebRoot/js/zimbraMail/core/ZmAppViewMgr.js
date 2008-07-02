@@ -792,8 +792,11 @@ function(components, resetToolbar) {
 					comp.setBounds(contBds.x, contBds.y, contBds.width, contBds.height);
                 }
 
-				if (cid == ZmAppViewMgr.C_TOOLBAR_TOP) {
-					this.fitAppToolbar(resetToolbar); // fit toolbar according to resolution.
+				if (cid == ZmAppViewMgr.C_TOOLBAR_TOP ||
+					cid == ZmAppViewMgr.C_APP_CHOOSER)
+				{
+					// fit toolbars according to resolution
+					this.fitAppToolbar(resetToolbar);
 				}
             }
 		}
@@ -1030,6 +1033,11 @@ function(resetToolbar) {
 
 	if (toolbar && toolbar.autoAdjustWidth) {
 		toolbar.autoAdjustWidth(this._containers[ZmAppViewMgr.C_TOOLBAR_TOP], resetToolbar);
+	}
+
+	var appChooser = appCtxt.getAppController().getAppChooser();
+	if (appChooser && AjxEnv.is800x600orLower) {
+		appChooser.autoAdjustWidth(this._containers[ZmAppViewMgr.C_TOOLBAR_TOP]);
 	}
 };
 

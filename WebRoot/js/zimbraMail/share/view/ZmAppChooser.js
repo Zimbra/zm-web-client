@@ -84,17 +84,54 @@ function(id) {
 
 ZmAppChooser.prototype.setSelected =
 function(id) {
-	if (this._selectedId && this._buttons[this._selectedId]) {
+	var oldBtn = this._buttons[this._selectedId];
+	if (this._selectedId && oldBtn) {
         this.__markPrevNext(this._selectedId, false);
-		this._buttons[this._selectedId].setSelected(false);
+		oldBtn.setSelected(false);
     }
 
-    if (this._buttons[id]) {
-		this._buttons[id].setSelected(true);
+	var newBtn = this._buttons[id];
+	if (newBtn) {
+		newBtn.setSelected(true);
         this.__markPrevNext(id, true);
     }
 
-    this._selectedId = id;
+	if (newBtn._toggleText != null && newBtn._toggleText != "") {
+		// hide text for previously selected button first
+		if (oldBtn) {
+			oldBtn._toggleText = (oldBtn._toggleText != null && oldBtn._toggleText != "")
+				? oldBtn._toggleText : oldBtn.getText();
+			oldBtn.setText("");
+		}
+
+		// reset original text for  newly selected button
+		newBtn.setText(newBtn._toggleText);
+		newBtn._toggleText = null;
+	}
+
+	this._selectedId = id;
+};
+
+ZmAppChooser.prototype.autoAdjustWidth =
+function(refElement) {
+	var el = this.getHtmlElement();
+	if (!el || !refElement) { return; }
+
+	var offset1 = refElement.offsetWidth;
+	var offset2 = el.firstChild ? el.firstChild.offsetWidth : offset1;
+
+	if ((offset1 > 0 && offset2 > offset1)) {
+		for (var i in this._buttons) {
+			var b = this._buttons[i];
+			if (!b || (b && (!b.getImage() || !b.getVisible()))) { continue; }
+
+			if (offset2 > offset1) {
+				b._toggleText = (b._toggleText != null && b._toggleText != "")
+					? b._toggleText : b.getText();
+				b.setText("");
+			}
+		}
+	}
 };
 
 ZmAppChooser.prototype._createButton =
