@@ -1437,7 +1437,9 @@ function() {
 	var url;
 	try { url = skin.hints.helpButton.url; } catch (e) { /* ignore */ }
 	url = url || appCtxt.get(ZmSetting.HELP_URI);
-	window.open(url + "?locid=" + AjxEnv.DEFAULT_LOCALE);
+	var sep = url.match(/\?/) ? "&" : "?";
+	url = [ url, sep, "locid=", AjxEnv.DEFAULT_LOCALE ].join("");
+	window.open(url);
 };
 
 ZmZimbraMail.sendRedirect =
