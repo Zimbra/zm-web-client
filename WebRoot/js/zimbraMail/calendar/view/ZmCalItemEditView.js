@@ -200,9 +200,9 @@ function() {
  */
 ZmCalItemEditView.prototype.addAttachmentField =
 function(calItem, attach) {
-	if (this._attachCount == 0)
+	if (this._attachCount == 0) {
 		this._initAttachContainer();
-
+	}
 	if (this._attachCount == ZmCalItemEditView.SHOW_MAX_ATTACHMENTS) {
 		this._attachDiv.style.height = Dwt.getSize(this._attachDiv).y + "px";
 	}
@@ -234,8 +234,9 @@ function(calItem, attach) {
 		div.innerHTML = html.join("");
 	}
 
-	if (this._attachDiv == null)
+	if (this._attachDiv == null) {
 		this._attachDiv = document.getElementById(this._attachDivId);
+	}
 	this._attachDiv.appendChild(div);
 
 	// scroll to the new attachment if needed
@@ -261,7 +262,7 @@ function(calItem, attach) {
 
 ZmCalItemEditView.prototype.resize =
 function(newWidth, newHeight) {
-	if (!this._rendered) return;
+	if (!this._rendered) { return; }
 
 	if (newWidth) {
 		this.setSize(newWidth);
@@ -427,11 +428,11 @@ function(calItem) {
 	var m = calItem._reminderMinutes;
 	this._reminderSelect.setSelectedValue(m);
 	
-	//if the reminder is not within supported options
-	if(this._reminderSelect.getValue() != m) {
+	// if the reminder is not within supported options
+	if (this._reminderSelect.getValue() != m) {
 		var closestValue = 0;
-		for(var i in this._reminderOptions) {
-			if( this._reminderOptions[i] > m) {
+		for (var i in this._reminderOptions) {
+			if (this._reminderOptions[i] > m) {
 				break;
 			}			
 			closestValue = this._reminderOptions[i];
@@ -440,11 +441,13 @@ function(calItem) {
 	}	
 };
 
-ZmCalItemEditView.prototype._setRepeatDesc = function(calItem) {
+ZmCalItemEditView.prototype._setRepeatDesc =
+function(calItem) {
 	if (calItem.isCustomRecurrence()) {
 		this._repeatDescField.innerHTML = calItem.getRecurBlurb();
 	} else {
-		this._repeatDescField.innerHTML = calItem.getRecurType() != "NON" ? AjxStringUtil.htmlEncode(ZmMsg.customize) : "";
+		this._repeatDescField.innerHTML = (calItem.getRecurType() != "NON")
+			? AjxStringUtil.htmlEncode(ZmMsg.customize) : "";
 	}
 };
 
@@ -458,7 +461,8 @@ function(calItem, mode) {
 		this._controller.setFormatBtnItem(true, DwtHtmlEditor.HTML);
 		this.setComposeMode(DwtHtmlEditor.HTML);
 		this._notesHtmlEditor.setContent(calItem.getNotesPart(ZmMimeTable.TEXT_HTML));
-	} else {
+	}
+	else {
 		this._controller.setFormatBtnItem(true, ZmMimeTable.TEXT_PLAIN);
 		this.setComposeMode(DwtHtmlEditor.TEXT);
 		this._notesHtmlEditor.setContent(calItem.getNotesPart(ZmMimeTable.TEXT_PLAIN));
@@ -573,7 +577,7 @@ function() {
 	this._folderLabelField 	= document.getElementById(this._htmlElId + "_folderLabel");
 	this._startDateField 	= document.getElementById(this._htmlElId + "_startDateField");
 	this._endDateField 		= document.getElementById(this._htmlElId + "_endDateField");
-	this._repeatDescField 	= document.getElementById(this._repeatDescId); 			// dont delete!
+	this._repeatDescField 	= document.getElementById(this._repeatDescId); 		// dont delete!
 };
 
 ZmCalItemEditView.prototype._resetFolderSelect =
@@ -650,9 +654,10 @@ ZmCalItemEditView.prototype._gotAttachments =
 function() {
 	var atts = document.getElementsByName(ZmCalItemEditView.UPLOAD_FIELD_NAME);
 
-	for (var i = 0; i < atts.length; i++)
+	for (var i = 0; i < atts.length; i++) {
 		if (atts[i].value.length)
 			return true;
+	}
 
 	return false;
 };
@@ -660,14 +665,15 @@ function() {
 ZmCalItemEditView.prototype._removedAttachments =
 function(){
     var attCheckboxes = document.getElementsByName(ZmCalItem.ATTACHMENT_CHECKBOX_NAME);
-		if (attCheckboxes && attCheckboxes.length > 0) {
-			for (var i = 0; i < attCheckboxes.length; i++) {
-				if (!attCheckboxes[i].checked)
-					return true;
+	if (attCheckboxes && attCheckboxes.length > 0) {
+		for (var i = 0; i < attCheckboxes.length; i++) {
+			if (!attCheckboxes[i].checked) {
+				return true;
+			}
 		}
 	}
     return false;
-}
+};
 
 ZmCalItemEditView.prototype._removeAttachment =
 function(removeId) {
@@ -681,15 +687,16 @@ function(removeId) {
 		} else {
 			this._attachCount--;
 		}
-		if (this._attachCount == ZmCalItemEditView.SHOW_MAX_ATTACHMENTS)
+		if (this._attachCount == ZmCalItemEditView.SHOW_MAX_ATTACHMENTS) {
 			this._attachDiv.style.height = "";
+		}
 		this._resizeNotes();
 	}
 };
 
 ZmCalItemEditView.prototype._removeAllAttachments =
 function() {
-	if (this._attachCount == 0) return;
+	if (this._attachCount == 0) { return; }
 
 	// let's be paranoid and really cleanup
 	delete this._uploadFormId;
@@ -755,8 +762,7 @@ function() {
 	}
 
 	var size = this.getSize();
-	if (size.x <= 0 || size.y <= 0)
-		return;
+	if (size.x <= 0 || size.y <= 0) { return; }
 
 	var topDiv = document.getElementById(this._htmlElId + "_top");
 	var topHeight = Dwt.getSize(topDiv).y;
@@ -769,16 +775,19 @@ function() {
 ZmCalItemEditView.prototype._handleRepeatDescFieldHover =
 function(ev, isHover) {
 	if (isHover) {
-		this._repeatDescField.style.cursor = this._repeatSelectDisabled
-			? "default" : "pointer";
+		var html = this._repeatDescField.innerHTML;
+		if (html && html.length > 0) {
+			this._repeatDescField.style.cursor = this._repeatSelectDisabled
+				? "default" : "pointer";
 
-		if (this._rdfTooltip == null) {
-			this._rdfTooltip = appCtxt.getShell().getToolTip();
+			if (this._rdfTooltip == null) {
+				this._rdfTooltip = appCtxt.getShell().getToolTip();
+			}
+
+			var content = ["<div style='width:300px'>", html, "</div>"].join("");
+			this._rdfTooltip.setContent(content);
+			this._rdfTooltip.popup((ev.pageX || ev.clientX), (ev.pageY || ev.clientY));
 		}
-
-		var content = "<div style='width:300px'>" + this._repeatDescField.innerHTML + "</div>";
-		this._rdfTooltip.setContent(content);
-		this._rdfTooltip.popup((ev.pageX || ev.clientX), (ev.pageY || ev.clientY));
 	} else {
 		if (this._rdfTooltip) {
 			this._rdfTooltip.popdown();
@@ -833,11 +842,15 @@ function(ev) {
 	var calItem = this._calItem;
 	var repeatType = this._repeatSelect.getValue();
 	
-	if(calItem.isCustomRecurrence() && (this._mode != ZmCalItem.MODE_EDIT_SINGLE_INSTANCE)){
+	if (calItem.isCustomRecurrence() &&
+		this._mode != ZmCalItem.MODE_EDIT_SINGLE_INSTANCE)
+	{
 		this._checkRecurrenceValidity = true;
 		this._initRecurDialog(repeatType);
 		this._recurOkListener();		
-	}else{
+	}
+	else
+	{
 		var sd = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
 		this._calItem._recurrence._startDate.setTime(sd.getTime());
 		this._setRepeatDesc(this._calItem);
@@ -869,77 +882,78 @@ function(ev) {
 			// update the recur language
 			var temp = this._getClone(this._calItem);
 			this._getRecurrence(temp);
-            var sd = (AjxDateUtil.simpleParseDateStr(this._startDateField.value));
-            if(temp._recurrence._startDate.getDate()!= sd.getDate() ||
-                temp._recurrence._startDate.getMonth()!= sd.getMonth() ||
-                temp._recurrence._startDate.getFullYear()!= sd.getFullYear() ){            // If date changed...chnage the values
-               	if(this._checkRecurrenceValidity) {
-	                this.validateRecurrence(temp._recurrence._startDate, temp._recurrence._startDate, sd, temp);
-               		this._checkRecurrenceValidity = false;
-               	}else{
-	                this._startDateField.value = AjxDateUtil.simpleComputeDateStr(temp._recurrence._startDate);
-    	            this._endDateField.value = AjxDateUtil.simpleComputeDateStr(temp._recurrence._startDate);
-	                this.startDate = temp._recurrence._startDate;
-    	            this.endDate = temp._recurrence._startDate;
-        	        this._calItem._startDate = this.startDate ;
-            	    this._calItem._endDate = this.startDate ;
+			var sd = (AjxDateUtil.simpleParseDateStr(this._startDateField.value));
+			// If date changed...chnage the values
+			if (temp._recurrence._startDate.getDate() != sd.getDate() ||
+				temp._recurrence._startDate.getMonth() != sd.getMonth() ||
+				temp._recurrence._startDate.getFullYear() != sd.getFullYear())
+			{
+				if (this._checkRecurrenceValidity) {
+					this.validateRecurrence(temp._recurrence._startDate, temp._recurrence._startDate, sd, temp);
+					this._checkRecurrenceValidity = false;
+				} else {
+					this._startDateField.value = AjxDateUtil.simpleComputeDateStr(temp._recurrence._startDate);
+					this._endDateField.value = AjxDateUtil.simpleComputeDateStr(temp._recurrence._startDate);
+					this.startDate = temp._recurrence._startDate;
+					this.endDate = temp._recurrence._startDate;
+					this._calItem._startDate = this.startDate ;
+					this._calItem._endDate = this.startDate ;
 					this._setRepeatDesc(temp);
-               	}
+				}
 
-            }else{
+			} else {
 				this._setRepeatDesc(temp);
-            }
+			}
 		} else {
 			// give feedback to user about errors in recur dialog
 			popdown = false;
 		}
 	}
 
-	if (popdown)
+	if (popdown) {
 		this._recurDialog.popdown();
+	}
 };
 
 ZmCalItemEditView.prototype.validateRecurrence =
 function(startDate,  endDate, sd, temp) {
-	
 	this._newRecurrenceStartDate = startDate;
 	this._newRecurrenceEndDate = endDate;	
-	
+
 	var ps = this._dateResetWarningDlg = appCtxt.getYesNoMsgDialog();
 	ps.reset();
 	ps.setMessage(ZmMsg.validateRecurrence, DwtMessageDialog.WARNING_STYLE);
-	
+
 	ps.registerCallback(DwtDialog.YES_BUTTON, this._dateChangeCallback, this, [startDate, endDate, sd, temp]);
 	ps.registerCallback(DwtDialog.NO_BUTTON, this._ignoreDateChangeCallback, this, [startDate, endDate, sd, temp]);
 	ps.popup();
-
 };
 
 ZmCalItemEditView.prototype._dateChangeCallback =
 function(startDate,  endDate, sd, temp) {
 	this._dateResetWarningDlg .popdown();
-    this._startDateField.value = AjxDateUtil.simpleComputeDateStr(temp._recurrence._startDate);
-    this._endDateField.value = AjxDateUtil.simpleComputeDateStr(temp._recurrence._startDate);
-    this.startDate = temp._recurrence._startDate;
-    this.endDate = temp._recurrence._startDate;
-    this._calItem._startDate = this.startDate ;
-    this._calItem._endDate = this.startDate ;
+	this._startDateField.value = AjxDateUtil.simpleComputeDateStr(temp._recurrence._startDate);
+	this._endDateField.value = AjxDateUtil.simpleComputeDateStr(temp._recurrence._startDate);
+	this.startDate = temp._recurrence._startDate;
+	this.endDate = temp._recurrence._startDate;
+	this._calItem._startDate = this.startDate ;
+	this._calItem._endDate = this.startDate ;
 	this._setRepeatDesc(temp);
 };
 
 ZmCalItemEditView.prototype._ignoreDateChangeCallback =
 function(startDate,  endDate, sd, temp) {
-	this._dateResetWarningDlg .popdown();
-	if(this._oldStartDate && this._oldEndDate){
-	    this._startDateField.value = AjxDateUtil.simpleComputeDateStr(this._oldStartDate);
-    	this._endDateField.value = AjxDateUtil.simpleComputeDateStr(this._oldEndDate);
-	    this.startDate = this._oldStartDate;
-    	this.endDate = this._oldEndDate;
-	    this._calItem._startDate = this.startDate;
-    	this._calItem._endDate = this.endDate;
-    	if(this._calItem._recurrence) {
+	this._dateResetWarningDlg.popdown();
+	if (this._oldStartDate && this._oldEndDate) {
+		this._startDateField.value = AjxDateUtil.simpleComputeDateStr(this._oldStartDate);
+		this._endDateField.value = AjxDateUtil.simpleComputeDateStr(this._oldEndDate);
+		this.startDate = this._oldStartDate;
+		this.endDate = this._oldEndDate;
+		this._calItem._startDate = this.startDate;
+		this._calItem._endDate = this.endDate;
+		if (this._calItem._recurrence) {
 			this._calItem._recurrence._startDate.setTime(this.startDate.getTime());
-    	}
+		}
 		this._setRepeatDesc(this._calItem);
 	}
 };
@@ -956,28 +970,28 @@ function(ev) {
 
 ZmCalItemEditView.prototype._attsDoneCallback =
 function(status, attId) {
-    DBG.println(AjxDebug.DBG1, "Attachments: status = " + status + ", attId = " + attId);
-    if (status == AjxPost.SC_OK) {
-        //Checking for Zero sized/wrong path attachments
-        var zeroSizedAttachments = false;
-        if(typeof attId != "string"){
-            var attachmentIds = [];
-            for (var i = 0; i < attId.length; i++) {
-                var att = attId[i];
-                if (att.s == 0) {
-                    zeroSizedAttachments = true;
-                    continue;
-                }
-                attachmentIds.push(att.aid);
-            }
-            attId = attachmentIds.length > 0 ? attachmentIds.join(",") : null;
-        }
-        if (zeroSizedAttachments){
-            appCtxt.setStatusMsg(ZmMsg.zeroSizedAtts);
-        }
-        this._controller.saveCalItem(attId);
+	DBG.println(AjxDebug.DBG1, "Attachments: status = " + status + ", attId = " + attId);
+	if (status == AjxPost.SC_OK) {
+		//Checking for Zero sized/wrong path attachments
+		var zeroSizedAttachments = false;
+		if (typeof attId != "string") {
+			var attachmentIds = [];
+			for (var i = 0; i < attId.length; i++) {
+				var att = attId[i];
+				if (att.s == 0) {
+					zeroSizedAttachments = true;
+					continue;
+				}
+				attachmentIds.push(att.aid);
+			}
+			attId = attachmentIds.length > 0 ? attachmentIds.join(",") : null;
+		}
+		if (zeroSizedAttachments){
+			appCtxt.setStatusMsg(ZmMsg.zeroSizedAtts);
+		}
+		this._controller.saveCalItem(attId);
 
-    } else if (status == AjxPost.SC_UNAUTHORIZED) {
+	} else if (status == AjxPost.SC_UNAUTHORIZED) {
 		// auth failed during att upload - let user relogin, continue with compose action
 		var ex = new AjxException("401 response during attachment upload", ZmCsfeException.SVC_AUTH_EXPIRED);
 		var callback = new AjxCallback(this._controller, isDraft ? this._controller._saveDraft : this._controller._send);
@@ -992,7 +1006,7 @@ function(status, attId) {
 		}
 
 		this._controller.popupErrorDialog(msg + ZmMsg.errorTryAgain, null, null, true);		
-	}              
+	}
 };
 
 ZmCalItemEditView.prototype._getDefaultFocusItem =
@@ -1015,14 +1029,18 @@ ZmCalItemEditView.prototype.handleStartDateChange =
 function(sd) {	
 	var calItem = this._calItem;
 	var repeatType = this._repeatSelect.getValue();
-	if(calItem.isCustomRecurrence() && (this._mode != ZmCalItem.MODE_EDIT_SINGLE_INSTANCE)){
+	if (calItem.isCustomRecurrence() &&
+		this._mode != ZmCalItem.MODE_EDIT_SINGLE_INSTANCE)
+	{
 		var temp = this._getClone(this._calItem);		
 		this._oldStartDate = temp._startDate;
 		this._oldEndDate = temp._endDate;
 		this._checkRecurrenceValidity = true;
 		this._initRecurDialog(repeatType);
 		this._recurOkListener();		
-	}else{
+	}
+	else
+	{
 		calItem._recurrence._startDate.setTime(sd.getTime());
 		this._setRepeatDesc(calItem);
 	}
@@ -1081,5 +1099,5 @@ function(ev) {
 
 	var calItem = edv._calItem;
 	var sd = AjxDateUtil.simpleParseDateStr(sdField.value);
-	edv.handleStartDateChange(sd);	
+	edv.handleStartDateChange(sd);
 };
