@@ -197,7 +197,8 @@ function() {
 	var row = table.insertRow(-1);
 	var labelCell = row.insertCell(-1);
 	labelCell.width = "1%";
-	labelCell.className = "Label";
+    labelCell.style.whiteSpace = 'nowrap';
+    labelCell.className = "Label";
 	labelCell.innerHTML = ZmMsg.pageLabel;
 	var inputCell = row.insertCell(-1);
 	inputCell.width = "1%";
