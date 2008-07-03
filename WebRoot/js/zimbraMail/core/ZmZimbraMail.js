@@ -1019,12 +1019,17 @@ function(ex) {
 			this._pollInterval = 1000 * 60 * 2;
 		}
 	}
-	// restart poll timer if we didn't get an exception
-	this._kickPolling(false);
 
-	return (ex.code != ZmCsfeException.SVC_AUTH_EXPIRED &&
-			ex.code != ZmCsfeException.SVC_AUTH_REQUIRED &&
-			ex.code != ZmCsfeException.NO_AUTH_TOKEN);
+	var isAuthEx = (ex.code == ZmCsfeException.SVC_AUTH_EXPIRED ||
+					ex.code == ZmCsfeException.SVC_AUTH_REQUIRED ||
+					ex.code == ZmCsfeException.NO_AUTH_TOKEN);
+
+	// restart poll timer if we didn't get an auth exception
+	if (!isAuthEx) {
+		this._kickPolling(false);
+	}
+
+	return !isAuthEx;
 };
 
 ZmZimbraMail.prototype._handleResponseDoPoll =

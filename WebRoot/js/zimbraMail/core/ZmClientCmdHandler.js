@@ -74,7 +74,7 @@ function(cmdStr, searchController) {
 		if (!argv[1]) return;
 		appCtxt.set(ZmSetting.POLLING_INTERVAL, argv[1]);
 		var pi = appCtxt.get(ZmSetting.POLLING_INTERVAL); // LDAP time format converted to seconds
-		if (appCtxt.getAppController().setPollInterval()) {
+		if (appCtxt.getAppController().setPollInterval(true)) {
 			this._alert("Set polling interval to " + pi + " seconds");
 		} else {
 			this._alert("Ignoring polling interval b/c we are in Instant_Polling mode ($set:instant_notify 0|1)");
