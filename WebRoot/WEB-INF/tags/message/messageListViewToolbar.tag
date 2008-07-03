@@ -98,7 +98,25 @@
                         <c:choose>
                             <c:when test="${context.folder.isTrash}">
                                 <td><div class='vertSep'></div><input type="hidden" name="contextFolderId" value="${context.selectedId}"></td>
-                                <app:button name="actionEmpty" src="startup/ImgDelete.gif" tooltip="emptyTrash" text="emptyTrash"/>
+                                <app:button extra="onclick='return validatefn();'" name="actionEmpty" src="startup/ImgDelete.gif" tooltip="emptyTrash" text="emptyTrash"/>
+                                <input type="hidden" name="confirmed" value="0"/>
+                                <script type="text/javascript">
+                                    var validatefn = function(){
+                                        if(confirm('<fmt:message key="confirmEmptyTrashFolder"><fmt:param value=""/><fmt:param value=""/><fmt:param value=""/></fmt:message>')){
+                                            if(document.forms.zform.confirmed.length > 1){
+                                                document.forms.zform.confirmed[0].value = "1";
+                                                document.forms.zform.confirmed[1].value = "1";
+                                            }
+                                            return true;
+                                        }else{
+                                            if(document.forms.zform.confirmed.length > 1){
+                                                document.forms.zform.confirmed[0].value = "0";
+                                                document.forms.zform.confirmed[1].value = "0";
+                                            }
+                                            return false;
+                                        }
+                                    }
+                                </script>
                             </c:when>
                             <c:when test="${context.folder.isSpam}">
                                 <td><div class='vertSep'></div><input type="hidden" name="contextFolderId" value="${context.selectedId}"></td>
