@@ -323,7 +323,11 @@ function(ev) {
 
 			// skip if this item does not belong in this list.
 			var folderId = this._controller.getList().search.folderId;
-			if (folderId && folderId != item.folderId)
+            if(appCtxt.getById(folderId) && appCtxt.getById(folderId).isRemote()){
+                folderId = appCtxt.getById(folderId)._remoteId;//getRemoteId();
+            }
+
+            if (folderId && folderId != item.folderId)
 				continue;
 
 			if (this._list && this._list.contains(item)) // skip if we already have it
