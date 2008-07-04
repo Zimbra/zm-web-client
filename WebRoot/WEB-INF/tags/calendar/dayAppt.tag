@@ -110,7 +110,8 @@
             </tr>
             <tr>
                 <td colspan="2" height="100%" class='${color}${needsAction ? '' : 'Bg'}' valign="top">
-                    <a id="${apptId}" href="${fn:escapeXml(apptUrl)}">${fn:escapeXml(subject)}</a>
+                    <a id="${apptId}" href="${fn:escapeXml(apptUrl)}">${fn:escapeXml(subject)}</a> <br/>
+                    <a id="l${apptId}" href="${fn:escapeXml(apptUrl)}">${fn:escapeXml(appt.location)}</a>
                 </td>
             </tr>
             <c:if test="${appt.duration gt zm:MSECS_PER_HOUR()}">
