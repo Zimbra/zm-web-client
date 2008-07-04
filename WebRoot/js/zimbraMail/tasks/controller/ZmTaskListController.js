@@ -343,7 +343,7 @@ function(task, mode, ev) {
 ZmTaskListController.prototype._newListener =
 function(ev, op, params) {
 	params = params || {};
-	params.folderId = this._list.folderId;
+	params.folderId = /*this._list.folderId ||*/ this._list.search.folderId;
 	ZmListController.prototype._newListener.call(this, ev, op, params);
 };
 
