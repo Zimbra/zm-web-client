@@ -42,7 +42,7 @@
 
 							<c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
 							<tr>
-								<td nowrap>${hit.callHit.displayCaller}</td>
+								<td nowrap>${useTo ? hit.callHit.displayRecipient : hit.callHit.displayCaller}</td>
 								<td nowrap>${fn:escapeXml(zm:displayDuration(pageContext, hit.callHit.duration))}</td>
 								<td nowrap>${fn:escapeXml(zm:displayVoiceDate(pageContext, hit.callHit.date))}</td>
 							</tr>
