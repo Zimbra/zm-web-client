@@ -896,12 +896,6 @@ function(creates, force) {
 
 ZmMailApp.prototype._handleAlerts =
 function(creates, mailCreates) {
-	var soundAlertsOn = appCtxt.get(ZmSetting.MAIL_NOTIFY_SOUNDS);
-	var appAlertsOn = appCtxt.get(ZmSetting.MAIL_NOTIFY_APP);
-	var browserAlertsOn = appCtxt.get(ZmSetting.MAIL_NOTIFY_BROWSER);
-
-	if (!soundAlertsOn && !appAlertsOn && !browserAlertsOn) { return; }
-
 	var alertNewMail = false;
 	if (this._tradController && (appCtxt.getCurrentController() == this._tradController)) {
 		// can't get to another controller without running a search
@@ -915,6 +909,11 @@ function(creates, mailCreates) {
 			alertNewMail = this._checkList(creates, this._convController.getList(), this._convController) || alertNewMail;
 		}
 	}
+
+	var soundAlertsOn = appCtxt.get(ZmSetting.MAIL_NOTIFY_SOUNDS);
+	var appAlertsOn = appCtxt.get(ZmSetting.MAIL_NOTIFY_APP);
+	var browserAlertsOn = appCtxt.get(ZmSetting.MAIL_NOTIFY_BROWSER);
+	if (!soundAlertsOn && !appAlertsOn && !browserAlertsOn) { return; }
 
 	// If we didn't display an alert-worthy new message, loop thru all creates looking for one.
 	var accountAlerts;
