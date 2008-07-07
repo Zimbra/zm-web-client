@@ -44,7 +44,7 @@
 							<tr>
 								<td nowrap>${hit.callHit.displayCaller}</td>
 								<td nowrap>${fn:escapeXml(zm:displayDuration(pageContext, hit.callHit.duration))}</td>
-								<td nowrap>${fn:escapeXml(zm:displayMsgDate(pageContext, hit.callHit.date))}</td>
+								<td nowrap>${fn:escapeXml(zm:displayVoiceDate(pageContext, hit.callHit.date))}</td>
 							</tr>
 							</c:forEach>
 						</table>

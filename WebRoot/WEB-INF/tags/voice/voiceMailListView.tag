@@ -75,7 +75,7 @@
 										</c:otherwise>
 									</c:choose>
 									<td nowrap>${fn:escapeXml(zm:displayDuration(pageContext, hit.voiceMailItemHit.duration))}</td>
-									<td nowrap>${fn:escapeXml(zm:displayMsgDate(pageContext, hit.voiceMailItemHit.date))}</td>
+									<td nowrap>${fn:escapeXml(zm:displayVoiceDate(pageContext, hit.voiceMailItemHit.date))}</td>
 								</tr>
 								</c:forEach>
 							</table>
