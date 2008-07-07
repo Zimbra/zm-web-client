@@ -61,7 +61,7 @@
 								<table cellpadding="10" cellspacing="0"><tr>
 									<td class="ZhVoiceMailCellLeft">
 										<div class="ZhVoiceMailData"><span class="ZhVoiceMailLabel"><fmt:message key="from"/>: </span> ${message.displayCaller}</div>
-										<div class="ZhVoiceMailData"><span class="ZhVoiceMailLabel"><fmt:message key="date"/>: </span> ${fn:escapeXml(zm:displayMsgDate(pageContext, message.voiceMailItemHit.date))}</div>
+										<div class="ZhVoiceMailData"><span class="ZhVoiceMailLabel"><fmt:message key="date"/>: </span> ${fn:escapeXml(zm:displayVoiceDate(pageContext, message.voiceMailItemHit.date))}</div>
 										<div class="ZhVoiceMailData"><span class="ZhVoiceMailLabel"><fmt:message key="duration"/>: </span> ${fn:escapeXml(zm:displayDuration(pageContext, message.voiceMailItemHit.duration))}</div>
 									</td>
 									<td class="ZhVoiceMailCellRight">
