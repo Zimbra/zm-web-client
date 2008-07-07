@@ -432,9 +432,11 @@ function(params, result) {
 		this.setPollInterval(true);
 	} else {
 		// register mailto: handler
-		if (appCtxt.get(ZmSetting.OFFLINE_SUPPORTS_MAILTO)) {
-			var callback = AjxCallback.simpleClosure(this.handleOfflineMailTo, this);
+		if (appCtxt.get(ZmSetting.OFFLINE_SUPPORTS_MAILTO) &&
+			appCtxt.get(ZmSetting.OFFLINE_IS_MAILTO_HANDLER))
+		{
 			if (window.platform) { // do the check so we can still debug in FF
+				var callback = AjxCallback.simpleClosure(this.handleOfflineMailTo, this);
 				window.platform.registerProtocolHandler("mailto", "http://localhost:7633/desktop/login.jsp?mailto=%s", callback);
 			}
 		}
