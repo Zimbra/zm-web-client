@@ -20,7 +20,6 @@ ZmChatWidget = function(parent, posStyle) {
 	DwtComposite.call(this, {parent:parent, className:"ZmChatWidget", posStyle:posStyle});
 	this._chatChangeListenerListener = new AjxListener(this, this._chatChangeListener);
 	this._init();
-        //console.timeEnd("ZmChatWidget");
 };
 
 ZmChatWidget.prototype = new DwtComposite;
@@ -47,7 +46,7 @@ ZmChatWidget.prototype._setChat = function(chat) {
 		this.handleMessage(this.chat._messages[i]);
 	}
 	var listItem = AjxDispatcher.run("GetRoster").getRosterItem(item.getAddress());
-	this._addToBuddyListBtn.setVisible(!listItem);
+	this._setAddBuddyVisible(!listItem);
 	if (chat.isZimbraAssistant()) {
 		// disallow HTML mode for assistant chats.  FIXME:
 		// clean this up.  If we're chatting with Zimbra
@@ -56,6 +55,15 @@ ZmChatWidget.prototype._setChat = function(chat) {
 		// ZmLiteHtmlEditor for this (but we should have
 		// this.chat before _init()).
 		this._changEditorModeBtn.setVisible(false);
+	}
+};
+
+ZmChatWidget.prototype._setAddBuddyVisible = function(visible) {
+	if (visible != this._addToBuddyListBtn.getVisible()) {
+		this._addToBuddyListBtn.setVisible(visible);
+		var width = 20; // TODO: this returns 0....this._addToBuddyListBtn.getW();
+		this._minToolBarSize += visible ? width : -width;
+		this._updateLabelSize();
 	}
 };
 
@@ -74,7 +82,7 @@ ZmChatWidget.prototype._rosterItemChangeListener = function(item, fields, setAll
 
 	if (this.chat.getRosterSize() == 1) {
 		var listItem = AjxDispatcher.run("GetRoster").getRosterItem(this.chat.getRosterItem().getAddress());
-		this._addToBuddyListBtn.setVisible(!listItem);
+		this._setAddBuddyVisible(!listItem);
 		if (doShow) this.setImage(item.getPresence().getIcon());
 		if (doShow || doUnread) {
 			var title = new AjxBuffer();
@@ -142,14 +150,6 @@ ZmChatWidget.prototype.handleMessage = function(msg) {
     var str = msg.displayHtml(this.chat, this.__lastFrom);
 	this.__lastFrom = (msg.isSystem && !msg.from) ? "@@system" : msg.from;
 	if (!msg.isSystem) {
-		if (this.isImportant()) {
-			// make sure the tab is selected
-			this.parent.setActiveTabWidget(this);
-			if (appCtxt.getCurrentAppName() != "IM" &&
-			    !this.isSticky()) {
-				this.setSticky(true);
-			}
-		}
 		this._setUnreadStatus();
 	}
 	return this.handleHtmlMessage(str, true);
@@ -346,6 +346,10 @@ ZmChatWidget.prototype._init = function() {
 	this._closeListener = new AjxListener(this, this._closeListener);
 	this._close.addSelectionListener(this._closeListener);
 
+	this._minimize = new DwtLtIconButton(this._toolbar, null, "RoundMinus");
+	this._minimize.setToolTipContent(ZmMsg.imMinimize);
+	this._minimize.addSelectionListener(new AjxListener(this, this._minimizeListener));
+
         // XXX: does it work implementing a "light label" widget?
 	this._label = new DwtLabel(this._toolbar, DwtLabel.IMAGE_LEFT | DwtLabel.ALIGN_LEFT, "ZmChatWindowLabel");
 	this._label.setScrollStyle(Dwt.CLIP);
@@ -361,18 +365,6 @@ ZmChatWidget.prototype._init = function() {
 	var btn = new DwtLtIconButton(this._toolbar, null, "Send");
 	btn.setToolTipContent(ZmMsg.sendByEmail);
 	btn.addSelectionListener(new AjxListener(this, this._sendByEmailListener));
-
-	var btn = this._importantBtn = new DwtLtIconButton(this._toolbar, DwtButton.TOGGLE_STYLE, "UnImportant");
-	btn.setToolTipContent(ZmMsg.imMarkChatImportant);
-	btn.addSelectionListener(new AjxListener(this, this._importantListener));
-
-	// this._toolbar.addSeparator("vertSep");
-	new DwtControl({parent:this._toolbar, className:"vertSep"});
-
-	this._sticky = new DwtLtIconButton(this._toolbar, DwtButton.TOGGLE_STYLE);
-	this._sticky.setImage(this.isSticky() ? "StickyOn" : "StickyOff");
-	this._sticky.setToolTipContent(ZmMsg.stickyWindow);
-	this._sticky.addSelectionListener(new AjxListener(this, this._stickyListener));
 
 	this._content = new DwtComposite(this, "ZmChatWindowChat", Dwt.ABSOLUTE_STYLE);
 	this._content._setAllowSelection();
@@ -398,6 +390,21 @@ ZmChatWidget.prototype._init = function() {
 	this.addDisposeListener(new AjxListener(this, this._disposeListener));
 
 	this._setupSash();
+
+	// Calculate the size of the toolbar excluding the label size.
+	// This value will be used when resizing so that the label doesn't
+	// Take up to much space.
+	var count = this._toolbar.getItemCount();
+	var width = 0;
+	for (var i = 0; i < count; i++) {
+		var item = this._toolbar.getItem(i);
+		if (item != this._label) {
+			width += item.getW();
+		}
+	}
+	this._minToolBarSize = width + 15; // width + a little extra padding to the right of the label.
+
+	this._updateLabelSize();
 
 	// notify zimlets that a chat widget is being shown.
 	if (appCtxt.zimletsPresent()) {
@@ -497,31 +504,34 @@ ZmChatWidget.prototype._doResize = function() {
 	// var self_pos = this.getLocation();
 	var self = this;
 
-	function placeElement(widget, cont, fuzz) {
-                var tmp = cont;
-		cont = self._getElement(cont);
+	function placeElement(widget, name, fuzz) {
+		var cont = self._getElement(name);
+		var visible = Dwt.getVisible(cont);
+		widget.setVisible(visible);
+		if (visible) {
 
-                // var p1 = Dwt.getLocation(cont);
-		// var x = p1.x - self_pos.x;
-		// var y = p1.y - self_pos.y;
+					// var p1 = Dwt.getLocation(cont);
+			// var x = p1.x - self_pos.x;
+			// var y = p1.y - self_pos.y;
 
-                var x = cont.offsetLeft;
-                var y = AjxEnv.isSafari
-                        ? cont.parentNode.offsetTop
-                        : cont.offsetTop; // Bug 22102: in Safari, offsetTop is totally wrong for these <td>-s
+			var x = cont.offsetLeft;
+			var y = AjxEnv.isSafari
+					? cont.parentNode.offsetTop
+					: cont.offsetTop; // Bug 22102: in Safari, offsetTop is totally wrong for these <td>-s
 
-		var left = x + "px";
-		var top = y + "px";
-		var w = cont.offsetWidth;
-		var h = cont.offsetHeight;
-		if (!AjxEnv.isIE && fuzz) {
-			w -= fuzz; // FIXME!! manually substracting padding/border!  Track CSS changes.
-			h -= fuzz;
+			var left = x + "px";
+			var top = y + "px";
+			var w = cont.offsetWidth;
+			var h = cont.offsetHeight;
+			if (!AjxEnv.isIE && fuzz) {
+				w -= fuzz; // FIXME!! manually substracting padding/border!  Track CSS changes.
+				h -= fuzz;
+			}
+			var width = w + "px";
+			var height = h + "px";
+
+			widget.setBounds(left, top, width, height);
 		}
-		var width = w + "px";
-		var height = h + "px";
-
-		widget.setBounds(left, top, width, height);
 	};
 
 	placeElement(this._toolbar, "toolbarLayout");
@@ -542,25 +552,6 @@ function() {
 		this._label.setSize(labelWidth, Dwt.DEFAULT);
 	}
 };
-
-ZmChatWidget.prototype.prepopup =
-function() {
-	// Calculate the size of the toolbar excluding the label size.
-	// This value will be used when resizing so that the label doesn't
-	// Take up to much space.
-	var count = this._toolbar.getItemCount();
-	var width = 0;
-	for (var i = 0; i < count; i++) {
-		var item = this._toolbar.getItem(i);
-		if (item != this._label) {
-			width += item.getW();
-		}
-	}
-	this._minToolBarSize = width + 15; // width + a little extra padding to the right of the label.
-
-	this._updateLabelSize();
-};
-
 
 ZmChatWidget.prototype.setBounds =
 function(x, y, width, height) {
@@ -614,10 +605,6 @@ ZmChatWidget.prototype._setUnreadStatus = function() {
 				}, 150);
 			}
 		}
-		
-		if (this.getChatWindow().isSticky()) {
-			ZmImApp.INSTANCE.stopAlert();
-		}
 	}
 };
 
@@ -655,9 +642,8 @@ ZmChatWidget.prototype.detach = function(pos) {
 	var win = this.getChatWindow();
 	if (tabs.size() > 1) {
 		var wm = win.getWindowManager();
-		var sticky = win._sticky;
 		tabs.detachChatWidget(this);
-		win = new ZmChatWindow(wm, this, sticky, win.getSize());
+		win = new ZmChatWindow(wm, this, win.getSize());
 		wm.manageWindow(win, pos);
 	} else {
 		win.setLocation(pos.x, pos.y);
@@ -671,92 +657,54 @@ ZmChatWidget.prototype.dispose = function() {
 };
 
 ZmChatWidget.prototype.close = function() {
-	ZmChatMultiWindowView.getInstance().endChat(this.chat);
+	var size;
+	var chatTabs = this.parent;
+	while (size = chatTabs.size()) {
+		var chatWidget = chatTabs.getTabWidget(size - 1);
+		ZmChatMultiWindowView.getInstance().endChat(chatWidget.chat);
+	}
 };
 
 ZmChatWidget.prototype._closeListener = function() {
 	this.close();
 };
 
-ZmChatWidget.prototype._importantListener = function() {
-        this._importantBtn.setImage(this.isImportant() ? "Important" : "UnImportant");
+ZmChatWidget.prototype._minimizeListener =
+function() {
+	this.getChatWindow().toggleMinimized();
 };
 
-ZmChatWidget.prototype.isImportant = function() {
-	return this._importantBtn.isToggled();
+ZmChatWidget.prototype.getMinimizedSize =
+function() {
+	this._toolbarHeight = this._toolbarHeight || (Dwt.getSize(this._getElement("toolbarLayout")).y + 4);
+	return { x: 165, y: this._toolbarHeight }; 
 };
 
-ZmChatWidget.prototype.isSticky = function() {
-	return this.getChatWindow()._sticky;
-};
-
-ZmChatWidget.prototype.setSticky = function(sticky, keepPos) {
-	this.parent.saveScrollPositions();
-	var view = ZmChatMultiWindowView.getInstance();
-	var win = this.getChatWindow();
-	var wp = Dwt.toWindow(win.getHtmlElement(), 0, 0);
-	var wm;
-	var prevPos = { x: win._loc.x, y: win._loc.y };
-	if (sticky) {
-		wm = view.getShellWindowManager();
-	} else {
-		wm = view.getWindowManager();
-	}
-	if (keepPos) {
-		// button.setImage(sticky ? "RoundMinus" : "RoundPlus");
-		win.popdown();
-		var p = Dwt.toWindow(wm.getHtmlElement(), 0, 0);
-		if (p.x == Dwt.LOC_NOWHERE) {
-			// kind of ugly; if the WM is "hidden", we get -10000
-			// (Dwt.LOC_NOWHERE) which messes everything up.
-			p.x = 20;
-			p.y = 20;
-		}
-		wp.x -= p.x;
-		wp.y -= p.y;
-	} else {
-		// try to figure out previous position
-		wp = win._prevPos;
-		if (!wp) {
-			if (sticky) {
-				// put it in the bottom-right corner
-				var s = win.getSize();
-				var ws = wm.getSize();
-				wp = { x: ws.x - s.x - 16,
-				       y: ws.y - s.y - 40 };
-			} else
-				wp = null; // let the WM figure it out
+// 'protected' but called by ZmChatWindow
+ZmChatWidget.prototype._onMinimize =
+function(minimize) {
+	// Hide visible elements.
+	for (var i = 0, count = ZmChatWidget.IDS.length; i < count; i++) {
+		var name = ZmChatWidget.IDS[i];
+		if (name != "toolbarLayout") {
+			var element = this._getElement(name);
+			if (element) {
+				Dwt.setVisible(element, !minimize);
+			}
 		}
 	}
-	if (wp) {
-		if (wp.x < 0)
-			wp.x = 0;
-		if (wp.y < 0)
-			wp.y = 0;
+	this._doResize();
+
+	// Update label and minimize/restore button.
+	if (minimize && this.parent.size() > 1) {
+		this._minimizedFormat = this._minimizedFormat || new AjxMessageFormat(ZmMsg.imMinimizedLabel);
+		this._label.setText(this._minimizedFormat.format(this.parent.size()));
+	} else {
+		this._label.setText(this._titleStr);
 	}
-	wm.manageWindow(win, wp); // does popup automagically
-	win._sticky = sticky;
-	win._prevPos = prevPos;
-	this.parent.restoreScrollPositions();
-	this.parent.updateStickyButtons();
-        this._sticky.setImage(sticky ? "StickyOn" : "StickyOff");
+	this._minimize.setImage(minimize ? "RoundPlus" : "RoundMinus");
+	this._minimize.setToolTipContent(minimize ? ZmMsg.imRestore : ZmMsg.imMinimize);
 };
-
-ZmChatWidget.prototype._stickyListener = function() {
-	this.setSticky(this._sticky.isToggled(), true);
-        this._sticky._on_mouseOut(); // XXX: we must remove the hovered state
-};
-
-// ZmChatWidget.prototype._dropOnContentListener = function(ev) {
-// 	if (ev.action == DwtDropEvent.DRAG_DROP) {
-// 		var item = ev.srcData;
-// 		var roster = AjxDispatcher.run("GetRoster");
-// 		roster.modifyChatRequest(this.chat.getConfThread(),
-// 					 "adduser", item.getAddress(),
-// 					 "Join my conference..." // XXX: customize this
-// 					);
-// 	}
-// };
 
 ZmChatWidget.prototype._dropOnEditorListener = function(ev) {
         if (ev.action == DwtDropEvent.DRAG_DROP) {

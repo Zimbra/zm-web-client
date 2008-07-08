@@ -38,6 +38,14 @@ ZmChatTabs.prototype.__initCtrl = function() {
 	this.__tabBarEl = cont.firstChild;
 };
 
+ZmChatTabs.prototype.setTabsVisible = function(visible) {
+	Dwt.setVisible(this.__tabBarEl, visible);
+};
+
+ZmChatTabs.prototype.getTabsVisible = function(visible) {
+	return Dwt.getVisible(this.__tabBarEl);
+};
+
 ZmChatTabs.prototype.size = function() {
 	return this.__tabs.size();
 };
@@ -84,15 +92,6 @@ ZmChatTabs.prototype.setActiveTab = function(index) {
 		this.__currentTab = index;
 		this._showTab();
 		this.parent.select(); // activate window
-	}
-};
-
-ZmChatTabs.prototype.updateStickyButtons = function() {
-	var win = this.parent;
-	var sticky = !!win._sticky;
-	for (var i = this.__tabs.size(); --i >= 0;) {
-		var chatWidget = this.__tabs.get(i);
-		chatWidget._sticky.setSelected(sticky);
 	}
 };
 
@@ -154,7 +153,6 @@ ZmChatTabs.prototype.addTab = function(chat, index) {
 	this.__tabs.add(child, index);
 	this.parent.enableMoveWithElement(child._toolbar);
 	this._createTabButton(child, true, index);
-	this.updateStickyButtons();
 	return child;
 };
 

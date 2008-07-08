@@ -15,21 +15,25 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmChatWindow = function(parent, chat, sticky, initialSize) {
+ZmChatWindow = function(parent, chat, initialSize) {
         //console.time("ZmChatWindow");
 	if (arguments.length == 0) return;
 	DwtResizableWindow.call(this, parent);
 	if (!initialSize)
 		initialSize = { x: 400, y: 300 };
-	this._init(chat, sticky, initialSize);
+	this._init(chat, initialSize);
         //console.timeEnd("ZmChatWindow");
 };
 
 ZmChatWindow.prototype = new DwtResizableWindow;
 ZmChatWindow.prototype.constructor = ZmChatWindow;
 
-ZmChatWindow.prototype._init = function(chat, sticky, initialSize) {
-	this._sticky = !!sticky;
+ZmChatWindow.prototype.toString =
+function() {
+    return "ZmChatWindow";
+};
+
+ZmChatWindow.prototype._init = function(chat, initialSize) {
 	var tabs = this._tabs = new ZmChatTabs(this);
 	tabs.addDisposeListener(new AjxListener(this, this._tabsDisposeListener));
 	this.setView(tabs);
@@ -56,13 +60,19 @@ ZmChatWindow.prototype.addTab = function(chat) {
 	return this._tabs.addTab(chat);
 };
 
-ZmChatWindow.prototype.isSticky = function() {
-	return this._sticky;
+ZmChatWindow.prototype.minimize =
+function(minimize) {
+	if (minimize == this._minimized) {
+		return;
+	}
+	DwtResizableWindow.prototype.minimize.call(this, minimize);
+	this._tabs.setTabsVisible(!minimize);
+	this.getCurrentChatWidget()._onMinimize(minimize);
 };
 
-ZmChatWindow.prototype.popup = function(pos) {
-    this.getCurrentChatWidget().prepopup();
-    DwtResizableWindow.prototype.popup.call(this, pos);
+ZmChatWindow.prototype._getMinimizedSize =
+function() {
+	return this.getCurrentChatWidget().getMinimizedSize();
 };
 
 ZmChatWindow.prototype._selectionListener = function(ev) {
