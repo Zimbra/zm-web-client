@@ -328,6 +328,21 @@ ZmChatWidget.prototype._init = function() {
 	this.setContent(AjxTemplate.expand("im.Chat#ChatWidget", { id: base_id }));
 
 	this._initEditor(this);
+
+	var editorToolbar = this._liteEditor.getBasicToolBar();
+
+	editorToolbar.addSeparator();
+	var btn = new DwtLtIconButton(editorToolbar, null, "Send", null);
+	btn.setToolTipContent(ZmMsg.sendByEmail);
+	btn.addSelectionListener(new AjxListener(this, this._sendByEmailListener));
+
+	var btn = this._addToBuddyListBtn = new DwtLtIconButton(editorToolbar, null, "NewContact", null);
+	btn.setToolTipContent("-");
+	btn.getToolTipContent = AjxCallback.simpleClosure(this._getAddToBuddyListTooltip, this);
+	btn.addSelectionListener(new AjxListener(this, this._addToBuddyListListener));
+	btn.setVisible(false);
+
+
 	var sendParent = this._getElement("sendButton");
 	if (sendParent) {
 		var sendButton = this._sendButton = new DwtButton({parent:this, parentElement: sendParent, posStyle:Dwt.ABSOLUTE_STYLE});
@@ -341,30 +356,20 @@ ZmChatWidget.prototype._init = function() {
 	
 	this._toolbar = new DwtToolBar({parent:this, posStyle:Dwt.ABSOLUTE_STYLE});
 
-	this._close = new DwtLtIconButton(this._toolbar, null, "Close");
-	this._close.setToolTipContent(ZmMsg.imCloseWindow);
-	this._closeListener = new AjxListener(this, this._closeListener);
-	this._close.addSelectionListener(this._closeListener);
-
-	this._minimize = new DwtLtIconButton(this._toolbar, null, "RoundMinus");
-	this._minimize.setToolTipContent(ZmMsg.imMinimize);
-	this._minimize.addSelectionListener(new AjxListener(this, this._minimizeListener));
-
         // XXX: does it work implementing a "light label" widget?
 	this._label = new DwtLabel(this._toolbar, DwtLabel.IMAGE_LEFT | DwtLabel.ALIGN_LEFT, "ZmChatWindowLabel");
 	this._label.setScrollStyle(Dwt.CLIP);
 
 	this._toolbar.addFiller();
 
-	var btn = this._addToBuddyListBtn = new DwtLtIconButton(this._toolbar, null, "NewContact");
-	btn.setToolTipContent("-");
-	btn.getToolTipContent = AjxCallback.simpleClosure(this._getAddToBuddyListTooltip, this);
-	btn.addSelectionListener(new AjxListener(this, this._addToBuddyListListener));
-	btn.setVisible(false);
+	this._minimize = new DwtLtIconButton(this._toolbar, null, "RoundMinus");
+	this._minimize.setToolTipContent(ZmMsg.imMinimize);
+	this._minimize.addSelectionListener(new AjxListener(this, this._minimizeListener));
 
-	var btn = new DwtLtIconButton(this._toolbar, null, "Send");
-	btn.setToolTipContent(ZmMsg.sendByEmail);
-	btn.addSelectionListener(new AjxListener(this, this._sendByEmailListener));
+	this._close = new DwtLtIconButton(this._toolbar, null, "Close");
+	this._close.setToolTipContent(ZmMsg.imCloseWindow);
+	this._closeListener = new AjxListener(this, this._closeListener);
+	this._close.addSelectionListener(this._closeListener);
 
 	this._content = new DwtComposite(this, "ZmChatWindowChat", Dwt.ABSOLUTE_STYLE);
 	this._content._setAllowSelection();
@@ -879,8 +884,8 @@ ZmChatWidget.prototype._handleOnclickErrorDetails = function(msg) {
 
 /// @class DwtLtIconButton
 
-DwtLtIconButton = function(parent, type, icon, className) {
-        DwtControl.call(this, {parent:parent, className:className || "DwtLtIconButton"});
+DwtLtIconButton = function(parent, type, icon, className, index) {
+        DwtControl.call(this, {parent:parent, className:className || "DwtLtIconButton", index: index});
         this._selected = null;
         if (type != null && (type & DwtButton.TOGGLE_STYLE))
                 this._selected = false;
