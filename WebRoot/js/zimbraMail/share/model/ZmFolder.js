@@ -105,7 +105,6 @@ ZmFolder.QUERY_NAME[ZmFolder.ID_INBOX]			= "inbox";
 ZmFolder.QUERY_NAME[ZmFolder.ID_TRASH]			= "trash";
 ZmFolder.QUERY_NAME[ZmFolder.ID_SPAM]			= "junk";
 ZmFolder.QUERY_NAME[ZmFolder.ID_SENT]			= "sent";
-ZmFolder.QUERY_NAME[ZmFolder.ID_SYNC_FAILURES]	= '"Sync Failures"';
 ZmFolder.QUERY_NAME[ZmFolder.ID_ARCHIVE]		= "archive";
 ZmFolder.QUERY_NAME[ZmFolder.ID_OUTBOX]			= "outbox";
 ZmFolder.QUERY_NAME[ZmFolder.ID_DRAFTS]			= "drafts";
@@ -398,7 +397,7 @@ function(pathOnly) {
 	if (!this.isRemote() && this.isSystem()) {
 		return pathOnly
 			? ZmFolder.QUERY_NAME[this.nId]
-			: ("in:" + ZmFolder.QUERY_NAME[this.nId]);
+			: ("in:" + (ZmFolder.QUERY_NAME[this.nId] || ('"'+this.name+'"')));
 	}
 	var path = this.name;
 	var f = this.parent;
