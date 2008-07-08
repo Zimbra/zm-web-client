@@ -342,7 +342,7 @@ ZmChatWidget.prototype._init = function() {
 	this._toolbar = new DwtToolBar({parent:this, posStyle:Dwt.ABSOLUTE_STYLE});
 
 	this._close = new DwtLtIconButton(this._toolbar, null, "Close");
-	this._close.setToolTipContent(ZmMsg.imEndChat);
+	this._close.setToolTipContent(ZmMsg.imCloseWindow);
 	this._closeListener = new AjxListener(this, this._closeListener);
 	this._close.addSelectionListener(this._closeListener);
 
@@ -656,7 +656,7 @@ ZmChatWidget.prototype.dispose = function() {
 	DwtComposite.prototype.dispose.call(this);
 };
 
-ZmChatWidget.prototype.close = function() {
+ZmChatWidget.prototype.closeAll = function() {
 	var size;
 	var chatTabs = this.parent;
 	while (size = chatTabs.size()) {
@@ -665,8 +665,12 @@ ZmChatWidget.prototype.close = function() {
 	}
 };
 
+ZmChatWidget.prototype.close = function() {
+	ZmChatMultiWindowView.getInstance().endChat(this.chat);
+};
+
 ZmChatWidget.prototype._closeListener = function() {
-	this.close();
+	this.closeAll();
 };
 
 ZmChatWidget.prototype._minimizeListener =

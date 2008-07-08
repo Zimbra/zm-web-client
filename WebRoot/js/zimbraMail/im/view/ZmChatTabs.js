@@ -205,7 +205,7 @@ ZmChatTabs.prototype._createTabButton = function(chatWidget, active, index) {
 
 	var close = new DwtLtIconButton(cont, null, chatWidget.getIcon());
         close.reparentHtmlElement(tb[0]);
-	close.addSelectionListener(chatWidget._closeListener); // ;-)
+	close.addSelectionListener(new AjxListener(this, this._closeListener));
 	close.setHoverImage("Close");
 
 	var t = this.__tabBarEl;
@@ -256,4 +256,8 @@ ZmChatTabs._labelGetDragProxy = function() {
 	DwtShell.getShell(window).getHtmlElement().appendChild(icon);
 	Dwt.setZIndex(icon, Dwt.Z_DND);
 	return icon;
+};
+
+ZmChatTabs.prototype._closeListener = function() {
+	this.getCurrentChatWidget().close();
 };
