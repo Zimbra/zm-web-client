@@ -350,6 +350,7 @@ function() {
     	this._addMenuListeners(this._participantActionMenu);
 		this._participantActionMenu.addPopdownListener(this._menuPopdownListener);
 		this._setupTagMenu(this._participantActionMenu);
+		this._setupEditButton(this._participantActionMenu);
 	}
 	return this._participantActionMenu;
 };
@@ -426,11 +427,15 @@ function(){
 
 ZmMailListController.prototype._initializeActionMenu =
 function() {
+	var isInitialized = (this._actionMenu != null);
 	ZmListController.prototype._initializeActionMenu.call(this);
 
 	if (this._actionMenu) {
 		this._setupSpamButton(this._actionMenu);
 		this._setupReplyForwardOps(this._actionMenu);
+		if (!isInitialized) {
+			this._setupEditButton(this._actionMenu);
+		}
 	}
 };
 
@@ -807,6 +812,16 @@ function(parent) {
 		if (item.setToolTipContent) {
 			item.setToolTipContent(inSpamFolder ? ZmMsg.notJunkTooltip : ZmMsg.junkTooltip);
 		}
+	}
+};
+
+ZmMailListController.prototype._setupEditButton =
+function(parent) {
+	if (!parent) { return; }
+
+	var item = parent.getOp(ZmOperation.EDIT);
+	if (item) {
+		item.setText(ZmMsg.editAsNew);
 	}
 };
 
