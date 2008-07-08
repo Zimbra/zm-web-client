@@ -20,7 +20,7 @@
     <c:if test="${!part.isMssage}">
         <c:set var="pname" value="${part.displayName}"/>
         <c:if test="${empty pname}"><fmt:message key="unknownContentType" var="pname"><fmt:param value="${part.contentType}"/></fmt:message></c:if>
-    
+
         <c:set var="url" value="/service/home/~/?id=${message.id}&amp;part=${part.partName}&amp;auth=co"/>
         <table cellspacing="8">
             <tr>
@@ -36,8 +36,16 @@
                         </c:otherwise>
                     </c:choose>
                 </td>
+                <fmt:message var="_b" key="b"/>
+                <fmt:message var="_kb" key="kb"/>
+                <fmt:message var="_mb" key="mb"/>
+                <fmt:message var="_gb" key="gb"/>
+                <c:set value="${fn:replace(part.displaySize,' B',_b)}" var="dsize"/>
+                <c:set value="${fn:replace(dsize,' KB',_kb)}" var="dsize"/>
+                <c:set value="${fn:replace(dsize,' MB',_mb)}" var="dsize"/>
+                <c:set value="${fn:replace(dsize,' GB',_gb)}" var="dsize"/>
                 <td><b>${fn:escapeXml(pname)}</b><br />
-                        ${part.displaySize}&nbsp;
+                        ${dsize}&nbsp;
                     <a target="_blank" href="${url}&amp;disp=i"><fmt:message key="view"/></a>&nbsp;
                     <c:if test="${mailbox.features.viewInHtml and part.isViewAsHtmlTarget}">
                         <a target="_blank" href="${url}&amp;view=html"><fmt:message key="viewAsHtml"/></a>
