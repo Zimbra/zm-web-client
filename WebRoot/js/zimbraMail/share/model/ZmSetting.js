@@ -177,23 +177,47 @@ function() {
 };
 
 /**
-* Returns the current value of this setting.
-*
-* @param key 			optional key for use by hash table data type
-*/
+ * Returns the current value of this setting.
+ *
+ * @param key			[string]*		optional key for use by hash table data type
+ * @param serialize		[boolean]*		if true, serialize non-string value into string
+ */
 ZmSetting.prototype.getValue =
-function(key) {
+function(key, serialize) {
+	var value = null;
 	if (this.value != null) {
-		return key ? this.value[key] : this.value;
+		value = key ? this.value[key] : this.value;
 	} else if (this.defaultValue != null) {
-		return key ? this.defaultValue[key] : this.defaultValue;
+		value = key ? this.defaultValue[key] : this.defaultValue;
 	} else {
 		return null;
 	}
+
+	if (serialize) {
+		if (this.dataType == ZmSetting.D_BOOLEAN) {
+			value = value ? "TRUE" : "FALSE";
+		} else if (this.dataType == ZmSetting.D_HASH) {
+			var keys = [];
+			for (var key in value) {
+				keys.push(key);
+			}
+			keys.sort();
+			var pairs = [];
+			for (var j = 0; j < keys.length; j++) {
+				var key = keys[j];
+				pairs.push([key, value[key]].join(":"));
+			}
+			value = pairs.join(",");
+		} else if (this.dataType == ZmSetting.D_LIST) {
+			value = value.join(",");
+		}
+	}
+	
+	return value;
 };
 
 /**
-* Returns the default value of this setting.
+* Retrns the default value of this setting.
 *
 * @param key 			optional key for use by hash table data type
 */

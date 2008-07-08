@@ -91,6 +91,27 @@ function(newHeight) {
 
 // Private / protected methods
 
+ZmMailListView.prototype._getHeaders =
+function(viewId, headerList, headerHash) {
+	var hList = [];
+
+	var userHeaders = appCtxt.get(ZmSetting.LIST_VIEW_COLUMNS, viewId);
+	var headers = userHeaders ? userHeaders.split(ZmListView.COL_JOIN) : headerList;
+	for (var i = 0, len = headers.length; i < len; i++) {
+		var header = headers[i];
+		var field = header.substr(0, 2);
+		var hdrParams = headerHash[field];
+		var pre = hdrParams.precondition;
+		if (!pre || appCtxt.get(pre)) {
+			hdrParams.field = field;
+			hdrParams.visible = (header.indexOf("*") == -1);
+			hList.push(new DwtListHeaderItem(hdrParams));
+		}
+	}
+
+	return hList;
+};
+
 ZmMailListView.prototype._resetFromColumnLabel =
 function() {
 	var isFolder = this._isSentOrDraftsFolder();
@@ -297,8 +318,8 @@ function(participants, participantsElided, width) {
 };
 
 ZmMailListView.prototype._getActionMenuForColHeader = 
-function() {
-	if (!this._colHeaderActionMenu) {
+function(force) {
+	if (!this._colHeaderActionMenu || force) {
 		// create a action menu for the header list
 		this._colHeaderActionMenu = new ZmPopupMenu(this);
 		var actionListener = new AjxListener(this, this._colHeaderActionListener);
@@ -308,7 +329,7 @@ function() {
 			if (hCol._width) {
 				var mi = this._colHeaderActionMenu.createMenuItem(hCol._id, {text:hCol._name, style:DwtMenuItem.CHECK_STYLE});
 				mi.setData(ZmMailListView.KEY_ID, hCol._id);
-				mi.setChecked(true, true);
+				mi.setChecked(hCol._visible, true);
                 if (hCol._noRemove) {
 					mi.setEnabled(false);
 				}

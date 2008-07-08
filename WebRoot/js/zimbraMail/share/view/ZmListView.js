@@ -67,6 +67,8 @@ ZmListView.FIELD_CLASS[ZmItem.F_ATTACHMENT]	= "Attach";
 ZmListView.ITEM_FLAG_CLICKED 				= DwtListView._LAST_REASON + 1;
 ZmListView.DEFAULT_REPLENISH_THRESHOLD		= 0;
 
+ZmListView.COL_JOIN = "|";
+
 ZmListView.prototype._getHeaderList = function() {};
 
 ZmListView.prototype.getController =
@@ -730,4 +732,25 @@ function() {
 	if (item) {
 		this.setSelection(item, false);
 	}
+};
+
+ZmListView.prototype._relayout =
+function() {
+	DwtListView.prototype._relayout.call(this);
+	this._checkColumns();
+	
+};
+
+ZmListView.prototype._checkColumns =
+function() {
+	var numCols = this._headerList.length;
+	var fields = [];
+	for (var i = 0; i < numCols; i++) {
+		var headerCol = this._headerList[i];
+		fields.push(headerCol._field + (headerCol._visible ? "" : "*"));
+	}
+	var setting = appCtxt.getSettings().getSetting(ZmSetting.LIST_VIEW_COLUMNS);
+	setting.setValue(fields.join(ZmListView.COL_JOIN), this.view);
+	
+	this._getActionMenuForColHeader(true); // re-create action menu so order is correct
 };

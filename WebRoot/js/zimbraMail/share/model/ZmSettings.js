@@ -117,9 +117,18 @@ function(list) {
 		var val = list[i];
 		var setting = this._settings[this._nameToId[i]];
 		if (setting) {
+			if (setting.dataType == ZmSetting.D_HASH) {
+				var pairs = val.split(",");
+				var value = {};
+				for (var j = 0; j < pairs.length; j++) {
+					var fields = pairs[j].split(":");
+					value[fields[0]] = fields[1];
+				}
+				val = value;
+			}
 			setting.setValue(val);
 			if (ZmSetting.IS_IMPLICIT[setting.id]) {
-				setting.origValue = setting.getValue();
+				setting.origValue = setting.getValue(null, true);
 			}
 		} else {
 			DBG.println(AjxDebug.DBG3, "*** Unrecognized setting: " + i);
@@ -163,14 +172,14 @@ ZmSettings.prototype._handleResponseLoadUserSettings =
 function(callback, accountName, result) {
 	var obj = this.getInfoResponse = result.getResponse().GetInfoResponse;
 
-	if (obj.name) 			this._settings[ZmSetting.USERNAME].setValue(obj.name);
-	if (obj.lifetime)		this._settings[ZmSetting.TOKEN_LIFETIME].setValue(obj.lifetime);
-	if (obj.accessed)		this._settings[ZmSetting.LAST_ACCESS].setValue(obj.accessed);
-	if (obj.prevSession)	this._settings[ZmSetting.PREVIOUS_SESSION].setValue(obj.prevSession);
-	if (obj.recent)			this._settings[ZmSetting.RECENT_MESSAGES].setValue(obj.recent);
-	if (obj.used)			this._settings[ZmSetting.QUOTA_USED].setValue(obj.used);
-    if (obj.rest)			this._settings[ZmSetting.REST_URL].setValue(obj.rest);
-	if (obj.license)		this._settings[ZmSetting.LICENSE_STATUS].setValue(obj.license.status);
+	if (obj.name) 			{ this._settings[ZmSetting.USERNAME].setValue(obj.name); }
+	if (obj.lifetime)		{ this._settings[ZmSetting.TOKEN_LIFETIME].setValue(obj.lifetime); }
+	if (obj.accessed)		{ this._settings[ZmSetting.LAST_ACCESS].setValue(obj.accessed); }
+	if (obj.prevSession)	{ this._settings[ZmSetting.PREVIOUS_SESSION].setValue(obj.prevSession); }
+	if (obj.recent)			{ this._settings[ZmSetting.RECENT_MESSAGES].setValue(obj.recent); }
+	if (obj.used)			{ this._settings[ZmSetting.QUOTA_USED].setValue(obj.used); }
+    if (obj.rest)			{ this._settings[ZmSetting.REST_URL].setValue(obj.rest); }
+	if (obj.license)		{ this._settings[ZmSetting.LICENSE_STATUS].setValue(obj.license.status); }
 
 	if (obj.prefs && obj.prefs._attrs) {
 		this.createFromJs(obj.prefs._attrs);
@@ -394,19 +403,19 @@ function(list, callback, batchCommand) {
 			DBG.println(AjxDebug.DBG2, "Modify internal pref: " + setting.id);
 			continue;
 		}
-		var value = setting.getValue();
-		if (setting.dataType == ZmSetting.D_BOOLEAN) {
-			value = value ? "TRUE" : "FALSE";
-		}
 		if (setting.dataType == ZmSetting.D_LIST) {
+			// LDAP supports multi-valued attrs, so don't serialize list
+			var value = setting.getValue();
 			for (var j = 0; j < value.length; j++) {
 				var node = soapDoc.set("pref", value[j]);
 				node.setAttribute("name", setting.name);
 			}
 		} else {
+			var value = setting.getValue(null, true);
 			var node = soapDoc.set("pref", value);
 			node.setAttribute("name", setting.name);
 		}
+			
 		gotOne = true;
 	}
 
@@ -432,7 +441,7 @@ function(list, callback, result) {
 		// notify each changed setting's listeners
 		for (var i = 0; i < list.length; i++) {
 			var setting = list[i];
-			setting.origValue = setting.value;
+			setting.origValue = setting.getValue(null, true);
 			setting._notify(ZmEvent.E_MODIFY);
 		}
 		// notify any listeners on the settings as a whole
@@ -636,6 +645,7 @@ function() {
 	this.registerSetting("FILTERS",							{type: ZmSetting.T_PREF, dataType: ZmSetting.D_HASH});
 	this.registerSetting("IDENTITIES",						{type: ZmSetting.T_PREF, dataType: ZmSetting.D_HASH});
 	this.registerSetting("INITIALLY_SEARCH_GAL",			{name:"zimbraPrefGalSearchEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
+	this.registerSetting("LIST_VIEW_COLUMNS",				{name:"zimbraPrefListViewColumns", type:ZmSetting.T_PREF, dataType:ZmSetting.D_HASH, isImplicit:true});
 	this.registerSetting("LOCALE_NAME",						{name:"zimbraPrefLocale", type:ZmSetting.T_PREF, defaultValue:"en_US", isGlobal:true});
 	this.registerSetting("SHOW_SELECTION_CHECKBOX",			{name:"zimbraPrefShowSelectionCheckbox", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true, isGlobal:true});
 	this.registerSetting("PASSWORD",						{type:ZmSetting.T_PREF, dataType:ZmSetting.D_NONE});
@@ -790,7 +800,7 @@ function() {
 	var list = [];
 	for (var id in ZmSetting.CHANGED_IMPLICIT) {
 		var setting = this.getSetting(id);
-		if (setting.getValue() != setting.origValue) {
+		if (setting.getValue(null, true) != setting.origValue) {
 			list.push(setting);
 		}
 	}

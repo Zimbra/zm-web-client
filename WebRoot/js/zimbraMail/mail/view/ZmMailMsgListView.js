@@ -18,6 +18,7 @@
 ZmMailMsgListView = function(params) {
 	this._mode = params.mode;
 	params.view = params.view || params.mode;
+	this.view = params.view;
 	params.type = ZmItem.MSG;
 	params.headerList = this._getHeaderList(params.parent);
 	ZmMailListView.call(this, params);
@@ -30,6 +31,22 @@ ZmMailMsgListView.prototype.constructor = ZmMailMsgListView;
 // Consts
 
 ZmMailMsgListView.COL_WIDTH_FROM = 105;
+
+ZmMailMsgListView.HEADERS = [ZmItem.F_SELECTION, ZmItem.F_FLAG, ZmItem.F_PRIORITY, ZmItem.F_TAG, ZmItem.F_STATUS,
+							 ZmItem.F_FROM, ZmItem.F_ATTACHMENT, ZmItem.F_SUBJECT, ZmItem.F_FOLDER, ZmItem.F_SIZE, ZmItem.F_DATE];
+
+ZmMailMsgListView.HEADER = {};
+ZmMailMsgListView.HEADER[ZmItem.F_SELECTION]	= {icon:"TaskCheckbox", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.selection, resizeable:true, precondition:ZmSetting.SHOW_SELECTION_CHECKBOX};
+ZmMailMsgListView.HEADER[ZmItem.F_FLAG]			= {icon:"FlagRed", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.flag, resizeable:true, precondition:ZmSetting.FLAGGING_ENABLED};
+ZmMailMsgListView.HEADER[ZmItem.F_PRIORITY]		= {icon:"PriorityHigh_list", width:ZmListView.COL_WIDTH_NARROW_ICON, name:ZmMsg.priority, resizeable:true, precondition:ZmSetting.MAIL_PRIORITY_ENABLED};
+ZmMailMsgListView.HEADER[ZmItem.F_TAG]			= {icon:"Tag", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.tag, resizeable:true, precondition:ZmSetting.TAGGING_ENABLED};
+ZmMailMsgListView.HEADER[ZmItem.F_STATUS]		= {icon:"MsgStatus", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.status, resizeable:true};
+ZmMailMsgListView.HEADER[ZmItem.F_FROM]			= {text:ZmMsg.from, width:ZmMailMsgListView.COL_WIDTH_FROM, resizeable:true};
+ZmMailMsgListView.HEADER[ZmItem.F_ATTACHMENT]	= {icon:"Attachment", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.attachment, resizeable:true};
+ZmMailMsgListView.HEADER[ZmItem.F_SUBJECT]		= {text:ZmMsg.subject, sortable:ZmItem.F_SUBJECT, noRemove:true, resizeable:true};
+ZmMailMsgListView.HEADER[ZmItem.F_FOLDER]		= {text:ZmMsg.folder, width:ZmMsg.COLUMN_WIDTH_FOLDER, resizeable:true};
+ZmMailMsgListView.HEADER[ZmItem.F_SIZE]			= {text:ZmMsg.size, width:ZmMsg.COLUMN_WIDTH_SIZE, resizeable:true};
+ZmMailMsgListView.HEADER[ZmItem.F_DATE]			= {text:ZmMsg.received, width:ZmMsg.COLUMN_WIDTH_DATE, sortable:ZmItem.F_DATE, resizeable:true};
 
 // Public methods
 
@@ -307,33 +324,7 @@ function(msg) {
 
 ZmMailMsgListView.prototype._getHeaderList =
 function(parent) {
-
-	var hList = [];
-	if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
-		hList.push(new DwtListHeaderItem({field:ZmItem.F_SELECTION, icon:"TaskCheckbox", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.selection, resizeable:true}));
-	}
-	if (appCtxt.get(ZmSetting.FLAGGING_ENABLED)) {
-		hList.push(new DwtListHeaderItem({field:ZmItem.F_FLAG, icon:"FlagRed", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.flag, resizeable:true}));
-	}
-    if (appCtxt.get(ZmSetting.MAIL_PRIORITY_ENABLED)) {
-        hList.push(new DwtListHeaderItem({field:ZmItem.F_PRIORITY, icon:"PriorityHigh_list", width:ZmListView.COL_WIDTH_NARROW_ICON, name:ZmMsg.priority, resizeable:true}));
-    }
-    if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
-		hList.push(new DwtListHeaderItem({field:ZmItem.F_TAG, icon:"Tag", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.tag, resizeable:true}));
-	}
-	hList.push(new DwtListHeaderItem({field:ZmItem.F_STATUS, icon:"MsgStatus", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.status, resizeable:true}));
-	hList.push(new DwtListHeaderItem({field:ZmItem.F_FROM, text:ZmMsg.from, width:ZmMailMsgListView.COL_WIDTH_FROM, sortable:ZmItem.F_FROM, resizeable:true}));
-	hList.push(new DwtListHeaderItem({field:ZmItem.F_ATTACHMENT, icon:"Attachment", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.attachment, resizeable:true}));
-
-	var isConvView = (this._mode == ZmId.VIEW_CONV);
-	var sortBy = isConvView ? null : ZmItem.F_SUBJECT;
-	var colName = isConvView ? ZmMsg.fragment : ZmMsg.subject;
-	hList.push(new DwtListHeaderItem({field:ZmItem.F_SUBJECT, text:colName, sortable:sortBy, noRemove:true, resizeable:true}));
-	hList.push(new DwtListHeaderItem({field:ZmItem.F_FOLDER, text:ZmMsg.folder, width:ZmMsg.COLUMN_WIDTH_FOLDER, resizeable:true}));
-	hList.push(new DwtListHeaderItem({field:ZmItem.F_SIZE, text:ZmMsg.size, width:ZmMsg.COLUMN_WIDTH_SIZE, resizeable:true}));
-	hList.push(new DwtListHeaderItem({field:ZmItem.F_DATE, text:ZmMsg.received, width:ZmMsg.COLUMN_WIDTH_DATE, sortable:ZmItem.F_DATE, resizeable:true}));
-
-	return hList;
+	return this._getHeaders(this.view, ZmMailMsgListView.HEADERS, ZmMailMsgListView.HEADER);
 };
 
 ZmMailMsgListView.prototype._sortColumn = 
