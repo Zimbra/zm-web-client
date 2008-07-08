@@ -344,6 +344,6 @@ function()
                 this._ZIMLETS[j]._organizer.name = eval(str1);
                 //this._ZIMLETS[j]._organizer.rename("aaaaaaaaa",null,null,null);
             }
-        }                                                                      z
+        }
     }
 };
