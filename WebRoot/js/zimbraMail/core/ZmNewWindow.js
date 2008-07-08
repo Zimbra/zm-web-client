@@ -479,7 +479,7 @@ function(msg) {
 		}
 	}
 
-	if (msg._attachments.length > 0) {
+	if (msg._attachments && msg._attachments.length > 0) {
 		for (var i in msg._attachments) {
 			newMsg._attachments.push(msg._attachments[i]);
 		}
