@@ -670,6 +670,21 @@ ZmChatWidget.prototype.closeAll = function() {
 	}
 };
 
+ZmChatWidget.prototype.closeOthers = function() {
+	var size;
+	var skipped = false;
+	var chatTabs = this.parent;
+	while ((size = chatTabs.size()) > 1) {
+		var index = skipped ? size - 2 : size - 1;
+		var chatWidget = chatTabs.getTabWidget(index);
+		if (chatWidget == this) {
+			skipped = true;
+		} else {
+			ZmChatMultiWindowView.getInstance().endChat(chatWidget.chat);
+		}
+	}
+};
+
 ZmChatWidget.prototype.close = function() {
 	ZmChatMultiWindowView.getInstance().endChat(this.chat);
 };

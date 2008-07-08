@@ -25,6 +25,11 @@ ZmChatTabs = function(parent) {
 ZmChatTabs.prototype = new DwtComposite;
 ZmChatTabs.prototype.constructor = ZmChatTabs;
 
+ZmChatTabs.prototype.toString =
+function() {
+    return "ZmChatTabs";
+};
+
 ZmChatTabs.prototype.__initCtrl = function() {
 	DwtComposite.prototype.__initCtrl.call(this);
 	var cont = this.getHtmlElement();
@@ -51,9 +56,9 @@ ZmChatTabs.prototype.size = function() {
 };
 
 ZmChatTabs.prototype.getTabWidget = function(index) {
-	if (index == null)
+	if (typeof index == "undefined")
 		index = this.__currentTab;
-	return this.__tabs.get(this.__currentTab);
+	return this.__tabs.get(index);
 };
 
 ZmChatTabs.prototype.getTabContentDiv = function(index) {
@@ -198,32 +203,32 @@ ZmChatTabs.prototype.restoreScrollPositions = function() {
 };
 
 ZmChatTabs.prototype._createTabButton = function(chatWidget, active, index) {
-        //console.time("createTabButton");
+	//console.time("createTabButton");
 	var cont = new DwtComposite(this, "ZmChatTabs-Tab");
-        cont.setContent("<table cellpadding='0' cellspacing='0'><tr><td style='padding-right: 3px'></td><td></td></tr></table>");
+	cont.setContent("<table cellpadding='0' cellspacing='0'><tr><td style='padding-right: 3px'></td><td></td></tr></table>");
 	var tb = cont.getHtmlElement().firstChild.rows[0].cells;
 
 	var close = new DwtLtIconButton(cont, null, chatWidget.getIcon());
-        close.reparentHtmlElement(tb[0]);
+	close.reparentHtmlElement(tb[0]);
 	close.addSelectionListener(new AjxListener(this, this._closeListener));
 	close.setHoverImage("Close");
 
 	var t = this.__tabBarEl;
 	cont.reparentHtmlElement(t, index);
 	Dwt.delClass(t, /ZmChatTabs-TabBarCount-[0-9]+/,
-		     "ZmChatTabs-TabBarCount-" + this.__tabs.size());
+			"ZmChatTabs-TabBarCount-" + this.__tabs.size());
 
 	index = this.__tabs.size() - 1;
 	this.setActiveTab(index);
 	var label = new DwtControl({parent:cont});
-        label.reparentHtmlElement(tb[1]);
-        label.setText = label.setContent;
+	label.reparentHtmlElement(tb[1]);
+	label.setText = label.setContent;
 	label.setText(AjxStringUtil.htmlEncode(chatWidget._titleStr));
 
 	cont.label = label;
 	cont.closeBtn = close;
 
-	var listener = new AjxListener(this, this.setActiveTabWidget, [ chatWidget ]);
+	var listener = new AjxListener(this, this._mouseDownListener, [ chatWidget ]);
 	label._setMouseEventHdlrs();
 	label.addListener(DwtEvent.ONMOUSEDOWN, listener);
 
@@ -261,3 +266,47 @@ ZmChatTabs._labelGetDragProxy = function() {
 ZmChatTabs.prototype._closeListener = function() {
 	this.getCurrentChatWidget().close();
 };
+
+ZmChatTabs.prototype._mouseDownListener =
+function(chatWidget, ev) {
+	if (ev.button == DwtMouseEvent.LEFT) {
+		this.setActiveTabWidget(chatWidget);
+	} else {
+		if (!this._tabMenu) {
+			var items = [
+				ZmOperation.IM_CLOSE_TAB,
+				ZmOperation.IM_CLOSE_OTHER_TABS,
+				ZmOperation.IM_CLOSE_ALL_TABS
+			];
+			var listeners = { }
+			listeners[ZmOperation.IM_CLOSE_TAB] = this._closeTabListener;
+			listeners[ZmOperation.IM_CLOSE_OTHER_TABS] = this._closeOtherTabsListener;
+			listeners[ZmOperation.IM_CLOSE_ALL_TABS] = this._closeAllTabsListener;
+
+			this._tabMenu = new ZmActionMenu({parent: appCtxt.getShell(), menuItems: items});
+			for (var operation in listeners) {
+				var listener = new AjxListener(this, listeners[operation]);
+				this._tabMenu.getOp(operation).addSelectionListener(listener);
+			}
+		}
+		this._actionedChatWidget = chatWidget;
+		this._tabMenu.getOp(ZmOperation.IM_CLOSE_OTHER_TABS).setEnabled(this.size() > 1);
+		this._tabMenu.popup(0, ev.docX, ev.docY);
+	}
+};
+
+ZmChatTabs.prototype._closeTabListener =
+function() {
+	this._actionedChatWidget.close();
+};
+
+ZmChatTabs.prototype._closeOtherTabsListener =
+function() {
+	this._actionedChatWidget.closeOthers();
+};
+
+ZmChatTabs.prototype._closeAllTabsListener =
+function() {
+	this._actionedChatWidget.closeAll();
+};
+
