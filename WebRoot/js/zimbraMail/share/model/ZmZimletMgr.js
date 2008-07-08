@@ -219,7 +219,8 @@ function(zimletArray, zimletNames, callback) {
 
 ZmZimletMgr.prototype._finished_loadIncludes =
 function(zimletNames, callback) {
-	this.loaded = true;
+	this.renameZimletsLabel();
+    this.loaded = true;
 	var zimlets = this.getZimletsHash();
 	for (var i = 0; i < zimletNames.length; i++) {
 		var name = zimletNames[i];
@@ -323,4 +324,26 @@ function(zimletArray, zimletNames, isJS) {
 	}
 
 	return includes;
+};
+
+ZmZimletMgr.prototype.renameZimletsLabel =
+function()
+{     //this._ZIMLETS[0]._organizer._zimletContext.name;
+    for(var j=0;j<this._ZIMLETS.length;j++)
+    {
+        if(this._ZIMLETS[j]._organizer)
+        {
+            var currentLabel = this._ZIMLETS[j]._organizer.name;
+            if(currentLabel.indexOf('$') >= 0)
+            {
+                var replaceLabel = currentLabel.substring(6,currentLabel.length-1);
+                var str1 = "window[this._ZIMLETS[j].name]."+ replaceLabel;
+                var zimletTextCellID =  "zti|Mail|"+ this._ZIMLETS[j]._organizer.id+"_textCell";
+               if(document.getElementById(zimletTextCellID))
+                   document.getElementById(zimletTextCellID).innerHTML = eval(str1);
+                this._ZIMLETS[j]._organizer.name = eval(str1);
+                //this._ZIMLETS[j]._organizer.rename("aaaaaaaaa",null,null,null);
+            }
+        }                                                                      z
+    }
 };
