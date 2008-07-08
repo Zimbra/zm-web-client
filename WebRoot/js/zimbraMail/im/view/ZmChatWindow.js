@@ -20,7 +20,7 @@ ZmChatWindow = function(parent, chat, initialSize) {
 	if (arguments.length == 0) return;
 	DwtResizableWindow.call(this, parent);
 	if (!initialSize)
-		initialSize = { x: 400, y: 300 };
+		initialSize = { x: 350, y: 250 };
 	this._init(chat, initialSize);
         //console.timeEnd("ZmChatWindow");
 };
