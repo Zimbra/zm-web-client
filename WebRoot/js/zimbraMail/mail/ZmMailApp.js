@@ -924,7 +924,7 @@ function(creates, mailCreates) {
 			if (mc.f && (mc.f.indexOf(ZmItem.FLAG_UNREAD) != -1)) {
 				parsedId = ZmOrganizer.parseId(mc.l, parsedId);
 				if (parsedId.id == ZmOrganizer.ID_INBOX &&
-					!parsedId.account.isOfflineInitialSync())
+					parsedId.account && !parsedId.account.isOfflineInitialSync())
 				{
 					if (parsedId.account == appCtxt.getActiveAccount()) {
 						alertNewMail = true;
