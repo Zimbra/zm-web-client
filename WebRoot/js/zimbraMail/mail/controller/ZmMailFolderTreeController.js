@@ -52,8 +52,9 @@ ZmMailFolderTreeController.prototype._deleteListener = function(ev) {
 ZmMailFolderTreeController.prototype._dropListener = function(ev) {
 	// check for associated data source
 	if (appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED) && ev.action == DwtDropEvent.DRAG_DROP) {
-		var organizer = ev.srcData.data;
-		if (organizer.isDataSource()) {
+		var item = ev.srcData.data;
+		var organizer = item instanceof ZmOrganizer ? item : null;
+		if (organizer && organizer.isDataSource()) {
 			var accounts = appCtxt.getDataSourceCollection().getPopAccountsFor(organizer.id);
 			var args = [ organizer.getName(), accounts[0].getName() ];
 			var message = AjxMessageFormat.format(ZmMsg.errorMovePopFolder, args);
