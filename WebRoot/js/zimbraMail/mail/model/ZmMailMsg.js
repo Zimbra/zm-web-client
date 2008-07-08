@@ -1030,9 +1030,9 @@ function(findHits) {
 			var useCL = false;
 			// set size info in any
 			if (attach.s != null && attach.s >= 0) {
-				if (attach.s < 1024)		props.size = attach.s + " B";
-				else if (attach.s < 1024^2)	props.size = Math.round((attach.s / 1024) * 10) / 10 + " KB";
-				else						props.size = Math.round((attach.s / (1024*1024)) * 10) / 10 + " MB";
+				if (attach.s < 1024)		props.size = attach.s + " "+ZmMsg.b;//" B";
+				else if (attach.s < 1024^2)	props.size = Math.round((attach.s / 1024) * 10) / 10 + " "+ZmMsg.kb;//" KB";
+				else						props.size = Math.round((attach.s / (1024*1024)) * 10) / 10 + " "+ZmMsg.mb;//" MB";
 			} else {
 				useCL = attach.cl && (attach.relativeCl || ZmMailMsg.URL_RE.test(attach.cl));
 			}
