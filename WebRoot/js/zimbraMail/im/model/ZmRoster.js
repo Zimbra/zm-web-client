@@ -382,9 +382,6 @@ function(im) {
 					}
 					if (chat) {
 						if (!chatMessage.fromMe) {
-							if (appCtxt.get(ZmSetting.IM_PREF_FLASH_ICON)) {
-								this._imApp.startAlert();
-							}
 							if (appCtxt.get(ZmSetting.IM_PREF_FLASH_BROWSER))  {
 								ZmBrowserAlert.getInstance().start(ZmMsg.newInstantMessage);
 							}

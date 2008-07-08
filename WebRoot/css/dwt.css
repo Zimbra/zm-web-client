@@ -608,6 +608,15 @@
 .DwtResizableWindow-S  { cursor: s-resize; }
 .DwtResizableWindow-SE { cursor: se-resize; }
 
+.Minimize .DwtResizableWindow-NW { cursor: default; }
+.Minimize .DwtResizableWindow-N  { cursor: default; }
+.Minimize .DwtResizableWindow-NE { cursor: default; }
+.Minimize .DwtResizableWindow-W  { cursor: default; }
+.Minimize .DwtResizableWindow-E  { cursor: default; }
+.Minimize .DwtResizableWindow-SW { cursor: default; }
+.Minimize .DwtResizableWindow-S  { cursor: default; }
+.Minimize .DwtResizableWindow-SE { cursor: default; }
+
 .DwtResizableWindow-inactiveCover { position: absolute; left: 3px; top: 3px; right: 3px; bottom: 3px; }
 .DwtResizableWindow-focused .DwtResizableWindow-inactiveCover { display: none; }
 .DwtResizableWindow-resizing { @DisableSelection@ /* make sure content is unselectable while resizing */ }

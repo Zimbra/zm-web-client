@@ -85,22 +85,13 @@ ZmChatMultiWindowView.prototype._hideJive = function() {
 };
 
 ZmChatMultiWindowView.prototype.__createChatWidget = function(chat, win) {
-	var activeApp = appCtxt.getCurrentAppName();
-	if (!win)
-		win = this.__useTab;
+	var wm = this.getShellWindowManager();
+	win = win || wm.getWindowByType(ZmChatWindow) || this.__useTab;
 	this.__useTab = null;
-	var wm, sticky;
 	if (!win) {
-		sticky = activeApp != "IM";
-		wm = sticky ? this.getShellWindowManager() : this.getWindowManager();
-		if (sticky)
-			// reuse windows on global WM, so we don't clutter the display too much
-			win = wm.getWindowByType(ZmChatWindow);
-	}
-	if (!win) {
-		win = new ZmChatWindow(wm, chat, sticky);
+		win = new ZmChatWindow(wm, chat);
 		var pos = this._initialWindowPlacement();
-		if (sticky && !pos) {
+		if (!pos) {
 			// put it in the bottom-right corner
 			var s = win.getSize();
 			var ws = wm.getSize();
@@ -109,6 +100,7 @@ ZmChatMultiWindowView.prototype.__createChatWidget = function(chat, win) {
 		}
 		wm.manageWindow(win, pos);
 	} else {
+		win.minimize(false);
 		win.addTab(chat);
 	}
 	return win.getCurrentChatWidget();
@@ -223,8 +215,10 @@ ZmChatMultiWindowView.prototype._changeListener = function(ev) {
 
 ZmChatMultiWindowView.prototype.selectChat = function(chat, text) {
 	var cw = this._getChatWidgetForChat(chat);
-	if (cw)
+	if (cw) {
+		cw.getChatWindow().minimize(false);
 		cw.select();
+	}
 	if (text)
 		cw.setEditorContent(AjxStringUtil.trim(text));
 };
