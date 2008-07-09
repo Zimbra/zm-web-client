@@ -160,7 +160,7 @@ ZmConvListView.prototype._getDiv =
 function(item, params) {
 	var div = DwtListView.prototype._getDiv.apply(this, arguments);
 	if ((item.type == ZmItem.MSG) && !params.isMatched) {
-		div.style.backgroundColor = "EEEEFF";	// XXX: move to skins
+		Dwt.addClass(div, "ZmConvExpanded");
 	}
 	return div;
 };

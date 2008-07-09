@@ -315,6 +315,10 @@ td.DDSepInvisible div {
 	font-weight: normal;
 }
 
+.ZmConvExpanded {
+	background-color:#eeeeff;
+}
+
 /* Conversation view outer container (header, list and reading pane) */
 .ZmConvView {}
 
