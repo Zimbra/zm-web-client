@@ -56,8 +56,8 @@ ZmChatWindow.prototype.getCurrentChatWidget = function() {
 	return this._tabs.getCurrentChatWidget();
 };
 
-ZmChatWindow.prototype.addTab = function(chat) {
-	return this._tabs.addTab(chat);
+ZmChatWindow.prototype.addTab = function(chat, active) {
+	return this._tabs.addTab(chat, active);
 };
 
 ZmChatWindow.prototype.minimize =

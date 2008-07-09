@@ -87,7 +87,7 @@ ZmChatTabs.prototype.setActiveTabWidget = function(chatWidget) {
 	this.setActiveTab(this.__tabs.indexOf(chatWidget));
 };
 
-ZmChatTabs.prototype.setActiveTab = function(index) {
+ZmChatTabs.prototype.setActiveTab = function(index, background) {
 	var max = this.__tabs.size() - 1;
 	if (index > max)
 		index = max;
@@ -95,7 +95,7 @@ ZmChatTabs.prototype.setActiveTab = function(index) {
 		if (this.__currentTab != null)
 			this._hideTab();
 		this.__currentTab = index;
-		this._showTab();
+		this._showTab(background);
 		this.parent.select(); // activate window
 	}
 };
@@ -109,9 +109,8 @@ ZmChatTabs.prototype._hideTab = function(index) {
 	Dwt.delClass(div, "ZmChatTabs-Container-Active");
 };
 
-ZmChatTabs.prototype._showTab = function(index) {
-	if (index == null)
-		index = this.__currentTab;
+ZmChatTabs.prototype._showTab = function(background) {
+	var index = this.__currentTab;
 	var div = this.getTabLabelDiv(index);
 	Dwt.addClass(div, "ZmChatTabs-Tab-Active");
 	div = this.getTabContentDiv(index);
@@ -121,7 +120,9 @@ ZmChatTabs.prototype._showTab = function(index) {
 		var size = this.getSize();
 		w.setSize(size.x, size.y);
 	}
-	w.focus();
+	if(!background) {
+		w.focus();
+	}
 };
 
 ZmChatTabs.prototype.getCurrentChat = function() {
@@ -137,7 +138,7 @@ ZmChatTabs.prototype.__onResize = function(ev) {
 	});
 };
 
-ZmChatTabs.prototype.addTab = function(chat, index) {
+ZmChatTabs.prototype.addTab = function(chat, active) {
 	var child;
 	if (chat instanceof ZmChatWidget) {
 		if (chat.parent === this)
@@ -152,12 +153,12 @@ ZmChatTabs.prototype.addTab = function(chat, index) {
 	cont.className = "ZmChatTabs-Container";
 	this.getHtmlElement().appendChild(cont);
 	child._tabContainer = cont;
-	child.reparentHtmlElement(cont, index);
+	child.reparentHtmlElement(cont);
 	if (!child.chat)
 		child._setChat(chat);
-	this.__tabs.add(child, index);
+	this.__tabs.add(child);
 	this.parent.enableMoveWithElement(child._toolbar);
-	this._createTabButton(child, true, index);
+	this._createTabButton(child, active);
 	return child;
 };
 
@@ -202,7 +203,7 @@ ZmChatTabs.prototype.restoreScrollPositions = function() {
 	this.__tabs.foreach("restoreScrollPos");
 };
 
-ZmChatTabs.prototype._createTabButton = function(chatWidget, active, index) {
+ZmChatTabs.prototype._createTabButton = function(chatWidget, active) {
 	//console.time("createTabButton");
 	var cont = new DwtComposite(this, "ZmChatTabs-Tab");
 	cont.setContent("<table cellpadding='0' cellspacing='0'><tr><td style='padding-right: 3px'></td><td></td></tr></table>");
@@ -210,16 +211,18 @@ ZmChatTabs.prototype._createTabButton = function(chatWidget, active, index) {
 
 	var close = new DwtLtIconButton(cont, null, chatWidget.getIcon());
 	close.reparentHtmlElement(tb[0]);
-	close.addSelectionListener(new AjxListener(this, this._closeListener));
+	close.addSelectionListener(new AjxListener(this, this._closeListener, [chatWidget]));
 	close.setHoverImage("Close");
 
 	var t = this.__tabBarEl;
-	cont.reparentHtmlElement(t, index);
+	cont.reparentHtmlElement(t);
 	Dwt.delClass(t, /ZmChatTabs-TabBarCount-[0-9]+/,
 			"ZmChatTabs-TabBarCount-" + this.__tabs.size());
 
-	index = this.__tabs.size() - 1;
-	this.setActiveTab(index);
+	var index = this.__tabs.size() - 1;
+	if (active || (index == 0)) {
+		this.setActiveTab(index, !active);
+	}
 	var label = new DwtControl({parent:cont});
 	label.reparentHtmlElement(tb[1]);
 	label.setText = label.setContent;
@@ -263,8 +266,8 @@ ZmChatTabs._labelGetDragProxy = function() {
 	return icon;
 };
 
-ZmChatTabs.prototype._closeListener = function() {
-	this.getCurrentChatWidget().close();
+ZmChatTabs.prototype._closeListener = function(chatWidget) {
+	chatWidget.close();
 };
 
 ZmChatTabs.prototype._mouseDownListener =
