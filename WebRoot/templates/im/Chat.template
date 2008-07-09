@@ -96,6 +96,38 @@
   </td></tr></table>
 </template>
 
+<template id="im.Chat#RosterItemsTooltip">
+  <table><tr><td>
+
+    <table cellpadding="4" cellspacing="0" border="0" align="center" width="100%">
+      <$
+        for (var i = 0, count = data.buddies.length; i < count; i++) {
+        var buddy = data.buddies[i];
+      $>
+	    <tr valign="middle">
+		  <$ if (i + 1 < count) { $>
+            <td colspan="2" align="left" style="border-bottom: 1px solid black;">
+          <$ } else { $>
+			<td colspan="2" align="left">
+		  <$ } $>
+			  <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                <tr valign="middle">
+                  <td valign="middle" width="20px"><$= AjxImg.getImageHtml(buddy.getPresence().getIcon()) $></td>
+                  <td valign="middle" align="left">&nbsp;&nbsp;
+                    <b>
+                      <$= AjxStringUtil.htmlEncode(buddy.getDisplayName()) $>
+                      (<$= buddy.getPresence().getShowText() $>)
+                    </b>
+                  </td>
+                </tr>
+              </table>
+          </td>
+        </tr>
+      <$ } $>
+    </table>
+  </td></tr></table>
+</template>
+
 <template id="im.Chat#ChatMessageError">
   <div class="ZmChatWindowChatEntry ZmChatWindowChatEntryError">
 	 <div class="from"><img src="<$= appContextPath $>/img/dwt/ImgCritical_12.gif"/><$= "&nbsp;&nbsp;" $><$= ZmMsg.errorCap $></div>

@@ -39,8 +39,8 @@ ZmChatWidget.prototype._setChat = function(chat) {
 	chat.addChangeListener(this._chatChangeListenerListener);
 	this._rosterItemChangeListener(item, null, true);
 	item.chatStarted(chat, this);
-	this._label.setToolTipContent(this.chat.getRosterItem().getToolTip());
-	
+	this._label.setToolTipCallback(new AjxCallback(this, this._getLabelToolTip));
+
 	// TODO: clean up this interface!
 	for (var i = 0; i < chat._messages.length; i++) {
 		this.handleMessage(this.chat._messages[i]);
@@ -55,6 +55,20 @@ ZmChatWidget.prototype._setChat = function(chat) {
 		// ZmLiteHtmlEditor for this (but we should have
 		// this.chat before _init()).
 		this._changEditorModeBtn.setVisible(false);
+	}
+};
+
+ZmChatWidget.prototype._getLabelToolTip = function() {
+	var chatTabs = this.parent;
+	if (this.getChatWindow().isMinimized() && (chatTabs.size() > 1)) {
+		var count = chatTabs.size();
+		var buddies = new Array(count);
+		for (var i = 0; i < count; i++) {
+			buddies[i] = chatTabs.getTabWidget(i).chat.getRosterItem();
+		}
+		return AjxTemplate.expand("im.Chat#RosterItemsTooltip", { buddies: buddies });
+	} else {
+		return this.chat.getRosterItem().getToolTip();
 	}
 };
 
@@ -201,6 +215,9 @@ ZmChatWidget.prototype.scrollTo = function(el, append) {
 };
 
 ZmChatWidget.prototype.setImage = function(imageInfo) {
+	if (this.getChatWindow().isMinimized() && (chatTabs.size() > 1)) {
+		return; // Don't show presence icon for multi-tab minimized window.
+	}
 	this._label.setImage(imageInfo);
 	var tab = this.parent.getTabLabelWidget(this);
 	if (tab) {
@@ -723,8 +740,11 @@ function(minimize) {
 	if (minimize && this.parent.size() > 1) {
 		this._minimizedFormat = this._minimizedFormat || new AjxMessageFormat(ZmMsg.imMinimizedLabel);
 		this._label.setText(this._minimizedFormat.format(this.parent.size()));
+		this._label.setImage("Blank_16");
 	} else {
 		this._label.setText(this._titleStr);
+		this.chat.getRosterItem().getAddress()
+		this._label.setImage(this.chat.getRosterItem().getPresence().getIcon());
 	}
 	this._minimize.setImage(minimize ? "RoundPlus" : "RoundMinus");
 	this._minimize.setToolTipContent(minimize ? ZmMsg.imRestore : ZmMsg.imMinimize);
