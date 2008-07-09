@@ -98,12 +98,12 @@ ZmChatMultiWindowView.prototype.__createChatWidget = function(chat, win) {
 			pos = { x: ws.x - s.x - 16,
 				y: ws.y - s.y - 40 };
 		}
-		wm.manageWindow(win, pos);
+		wm.manageWindow(win, pos, !this._controller.focusNewChat);
+		return win.getCurrentChatWidget();
 	} else {
 		win.minimize(false);
-		win.addTab(chat);
+		return win.addTab(chat, this._controller.focusNewChat);
 	}
-	return win.getCurrentChatWidget();
 };
 
 ZmChatMultiWindowView.prototype._postSet = function() {
@@ -200,9 +200,8 @@ function() {
 ZmChatMultiWindowView.prototype._changeListener = function(ev) {
 	if (ev.event == ZmEvent.E_CREATE) {
 		var chat = ev._details.items[0];
-        	var cw = this.__createChatWidget(chat);
+		var cw = this.__createChatWidget(chat);
 		this._addChatWidget(cw, chat);
-		cw.select();
 	} else if (ev.event == ZmEvent.E_DELETE) {
 		var chat = ev._details.items[0];
 		var cw = this._getChatWidgetForChat(chat);

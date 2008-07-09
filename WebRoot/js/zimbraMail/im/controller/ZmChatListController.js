@@ -329,17 +329,22 @@ ZmChatListController.prototype.selectChatForRosterItem = function(item) {
 };
 
 ZmChatListController.prototype.chatWithContacts = function(contacts, mailMsg, text) {
+	this.focusNewChat = true;
 	var buddies = contacts.map("getBuddy").sub(AjxCallback.isNull);
 	// XXX: we can only use one buddy for now -- no support for group chat
-	if (buddies.size() > 0)
+	if (buddies.size() > 0) {
 		this.chatWithRosterItem(buddies.get(0), text);
+	}
+	this.focusNewChat = false;
 };
 
 ZmChatListController.prototype.chatWithRosterItem = function(item, text) {
-        appCtxt.getApp(ZmApp.IM).prepareVisuals();
+	this.focusNewChat = true;
+	appCtxt.getApp(ZmApp.IM).prepareVisuals();
 	var chat = this._list.getChatByRosterItem(item, true);
 	// currentview or all? probably all...
 	this._getView().selectChat(chat, text);
+	this.focusNewChat = false;
 };
 
 ZmChatListController.prototype.chatWithRosterItems = function(items, chatName) {
