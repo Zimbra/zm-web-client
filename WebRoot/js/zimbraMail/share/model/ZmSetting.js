@@ -267,9 +267,12 @@ function(value, key, setDefault, skipNotify) {
 		}
 	} else if (this.dataType == ZmSetting.D_HASH) {
 		if (key) {
-			this.value[key] = value;
-		}
-		else {
+			if (value) {
+				this.value[key] = value;
+			} else {
+				delete this.value[key];
+			}
+		} else {
 			this.value = value;
 		}
 	} else if (this.dataType == ZmSetting.D_LIST) {
