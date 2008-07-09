@@ -1,0 +1,17 @@
+<template id='share.Widgets#ZmAppChooserButton'>
+	<div id='${id}_title' class='skin_google_app_chooser_button'></div>
+</template>
+
+<template id='share.Widgets#ZmSearchToolBar'>
+	<table border=0 cellpadding=0 cellspacing=0 width='100%'>
+		<tr>
+			<td id='${id}_inputField' width='100%' class='ZmSearchToolbarCell'></td>
+			<td id='${id}_searchMenuButton' class='ZmSearchToolbarCell'></td>
+			<td id='${id}_searchButton' hint='text' class='ZmSearchToolbarCell'></td>
+			<td>
+				<div id='${id}_saveButton' hint='text' class='ZmSearchToolbarCell'></div>
+				<div id='${id}_advancedButton' hint='text' class='ZmSearchToolbarCell'></idv>
+			</td>
+		</tr>
+	</table>
+</template>

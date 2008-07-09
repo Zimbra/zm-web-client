@@ -1,0 +1,28 @@
+.DwtTreeItem-selected {
+	background-color: #c3d9ff !important;
+	@Text-anchor@
+	@tlRadius@:3px; @blRadius@:3px;
+	font-weight:bold;
+}
+
+/* text style for a right-clicked tree item */
+.DwtTreeItem-actioned {
+	@RightClickBg@
+	@Text-anchor@
+	@TreeItemSpacing@
+}
+
+.DwtDialogTitle {
+	background-color:#e0edfe;
+	color:#000000;
+	padding:8px;
+	font-size:12pt;
+	font-weight:bold;
+	@NoWrap@
+	vertical-align:top;
+	@MoveCursor@
+}
+
+.DwtChooserListView {
+	border-width:1px;
+}
