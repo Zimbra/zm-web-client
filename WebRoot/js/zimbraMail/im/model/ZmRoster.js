@@ -383,6 +383,7 @@ function(im) {
 					if (chat) {
 						if (!chatMessage.fromMe) {
 							if (appCtxt.get(ZmSetting.IM_PREF_FLASH_BROWSER))  {
+								AjxDispatcher.require("Alert");
 								ZmBrowserAlert.getInstance().start(ZmMsg.newInstantMessage);
 							}
 						}
