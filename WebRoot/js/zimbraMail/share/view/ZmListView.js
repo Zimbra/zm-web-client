@@ -749,8 +749,9 @@ function() {
 		var headerCol = this._headerList[i];
 		fields.push(headerCol._field + (headerCol._visible ? "" : "*"));
 	}
-	var setting = appCtxt.getSettings().getSetting(ZmSetting.LIST_VIEW_COLUMNS);
-	setting.setValue(fields.join(ZmListView.COL_JOIN), this.view);
+	var value = fields.join(ZmListView.COL_JOIN);
+	value = (value == this._defaultCols) ? "" : value;
+	appCtxt.set(ZmSetting.LIST_VIEW_COLUMNS, value, this.view);
 	
 	this._getActionMenuForColHeader(true); // re-create action menu so order is correct
 };

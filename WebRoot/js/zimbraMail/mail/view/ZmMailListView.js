@@ -95,12 +95,14 @@ ZmMailListView.prototype._getHeaders =
 function(viewId, headerList, headerHash) {
 	var hList = [];
 
+	this._defaultCols = headerList.join(ZmListView.COL_JOIN);
 	var userHeaders = appCtxt.get(ZmSetting.LIST_VIEW_COLUMNS, viewId);
 	var headers = userHeaders ? userHeaders.split(ZmListView.COL_JOIN) : headerList;
 	for (var i = 0, len = headers.length; i < len; i++) {
 		var header = headers[i];
 		var field = header.substr(0, 2);
 		var hdrParams = headerHash[field];
+		if (!hdrParams) { continue; }
 		var pre = hdrParams.precondition;
 		if (!pre || appCtxt.get(pre)) {
 			hdrParams.field = field;
