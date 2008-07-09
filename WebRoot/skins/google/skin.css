@@ -1,0 +1,231 @@
+#skin_container_app_chooser {
+	position:static;
+	width:auto;
+	z-index:auto;
+	height:auto;
+}
+
+#skin_container_app_top_toolbar {
+	@tlRadius@:3px; @trRadius@:3px;
+}
+
+#skin_container_app_main {
+	border:0px;
+	background-color: #ffffff;
+}
+
+#skin_container_switch,
+#skin_container_help,
+#skin_container_logoff {
+	padding:0px;
+}
+
+#skin_container_username {
+	padding-top:0px;
+}
+
+#skin_table_outer {
+	padding:0px;
+}
+
+#skin_outer_td_main {
+	padding:8px;
+}
+
+#skin_tr_toolbar {
+	background-color: #c3d9ff;
+}
+
+#skin_container_tree_app_sash,
+#skin_td_tree_app_sash,
+#z_sash {
+	display:none;
+}
+
+/*#skin_spacing_search_builder {*/
+#skin_outer_td_search_builder {
+}
+
+#skin_spacing_search_builder {
+	border:3px solid #69c17d;
+	@tlRadius@:3px; @trRadius@:3px; @blRadius@:3px; @brRadius@:3px;
+	padding-bottom:0px;
+	margin:8px;
+}
+
+#skin_container_current_app {
+	margin-bottom:10px;
+}
+
+#skin_container_current_app .ZWidgetTitle {
+	font-weight:bold;
+	@Text-anchor@
+}
+
+#skin_spacing_search {
+	width:50%;
+	padding-left:8px;
+}
+
+#zb_newFolder_left_icon div {
+	display:none;
+}
+
+.ZmAppChooser {
+	background-image: none !important;
+}
+
+.ZmAppChooser .ZButton {
+	padding-right:10px;
+}
+
+.skin_google_app_chooser_button {
+	color:rgb(0,0,204);
+	text-decoration:underline;
+	cursor:pointer;
+	font-size:13px;
+	font-family:arial;
+}
+
+.skin_google_app_chooser {
+	border-bottom:1px solid #c9d7f1;
+}
+
+.skin_google_loading {
+	font-family:arial,sans-serif;
+	font-weight: bold;
+	font-size:16px;
+	margin:1em;
+}
+
+.skin_google_main_container {
+	background-color: #c3d9ff;
+	border: 8px solid #c3d9ff;
+	/* also see skin_container_app_top_toolbar for gmail parity */
+	/*border-right-width:0px;*/
+	@tlRadius@:4px; @trRadius@:4px; @blRadius@:4px; @brRadius@:4px;
+}
+
+.skin_google_outer_container {
+	border:1px solid #3a5774;
+}
+
+.skin_google_light_outer_container {
+	border:1px solid @darken(AppC,40)@;
+}
+
+.ZSelected .skin_google_app_chooser_button {
+	text-decoration:none;
+	font-weight:bold;
+	color:#000000;
+	cursor:default;
+}
+
+.ZMenuItemSeparator {
+	height:3px;
+	border-bottom: 1px solid #e8eef7;
+}
+
+.ZmSearchToolbar {
+	height:auto;
+}
+
+.ZmSearchToolbarCell .ZToolbarButton {
+	height:auto !important;
+}
+
+.ZmSearchToolbarCell .ZToolbarButton .ZWidgetTitle {
+	@Text-anchor@
+	font-family:verdana,arial,sans-serif;
+	font-size:8px;
+	height:auto;
+}
+
+.ZmConvExpanded {
+	background-color:#fbfbfb;
+}
+
+.ZmBrowseView {
+	background-color:#c9edcc;
+}
+
+.ZToolbar .ZWidgetTitle {
+	color:#FFFFFF;
+}
+
+.ZmPicker {
+	border-right:1px solid #cccccc;
+}
+
+.ZmPickerLabel .ZWidgetTitle {
+	color:#000000;
+}
+
+.ZLoginSwitchMsg {
+	position:absolute;
+	right:20px;
+	bottom:30px;
+	font-size:12px;
+	font-weight:normal;
+	color: #000000;
+}
+
+#ztih__Briefcase__TAG,
+#ztih__Calendar__TAG,
+#ztih__Contacts__TAG,
+#ztih__Mail__TAG,
+#ztih__Notebook__TAG,
+#ztih__Tasks__TAG {
+	@tlRadius@:3px; @trRadius@:3px; @blRadius@:3px; @brRadius@:3px;
+	margin-right:5px;
+	border: 3px solid #b5edbc;
+}
+
+#ztih__Briefcase__TAG_div,
+#ztih__Calendar__TAG_div,
+#ztih__Contacts__TAG_div,
+#ztih__Mail__TAG_div,
+#ztih__Notebook__TAG_div,
+#ztih__Tasks__TAG_div {
+	background-color:#b5edbc;
+}
+
+#ztih__Briefcase__TAG .DwtTreeItem-selected,
+#ztih__Briefcase__TAG .DwtTreeItem-Text,
+#ztih__Calendar__TAG .DwtTreeItem-selected,
+#ztih__Calendar__TAG .DwtTreeItem-Text,
+#ztih__Contacts__TAG .DwtTreeItem-selected,
+#ztih__Contacts__TAG .DwtTreeItem-Text
+#ztih__Mail__TAG .DwtTreeItem-selected,
+#ztih__Mail__TAG .DwtTreeItem-Text,
+#ztih__Notebook__TAG .DwtTreeItem-selected,
+#ztih__Notebook__TAG .DwtTreeItem-Text,
+#ztih__Tasks__TAG .DwtTreeItem-selected,
+#ztih__Tasks__TAG .DwtTreeItem-Text {
+	background-color: #ffffff !important;
+	color: rgb(0,102,51);
+	border:0px;
+	font-weight:normal;
+}
+
+#zv__COMPOSE .ZWidgetTitle {
+	color: #000000;
+}
+
+.Summary {
+	background-color:#efefef;
+}
+
+.dialogOverview td {
+	@Text-anchor@
+}
+
+.calendar_heading_day-selected {
+	background-color:@darken(AppC,15)@ !important;
+}
+
+.calendar_heading_day_today-selected {
+	background-color:@darken(AppC,25)@ !important;
+	@Text-today@
+	font-weight:bold;
+}
