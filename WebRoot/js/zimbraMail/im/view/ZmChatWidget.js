@@ -60,7 +60,7 @@ ZmChatWidget.prototype._setChat = function(chat) {
 
 ZmChatWidget.prototype._getLabelToolTip = function() {
 	var chatTabs = this.parent;
-	if (this.getChatWindow().isMinimized() && (chatTabs.size() > 1)) {
+	if (this._isMultiTabMinimized()) {
 		var count = chatTabs.size();
 		var buddies = new Array(count);
 		for (var i = 0; i < count; i++) {
@@ -215,7 +215,7 @@ ZmChatWidget.prototype.scrollTo = function(el, append) {
 };
 
 ZmChatWidget.prototype.setImage = function(imageInfo) {
-	if (this.getChatWindow().isMinimized() && (chatTabs.size() > 1)) {
+	if (this._isMultiTabMinimized()) {
 		return; // Don't show presence icon for multi-tab minimized window.
 	}
 	this._label.setImage(imageInfo);
@@ -229,7 +229,9 @@ ZmChatWidget.prototype.setImage = function(imageInfo) {
 
 ZmChatWidget.prototype.setTitle = function(text) {
 	this._titleStr = text;
-	this._label.setText(text);
+	if (!this._isMultiTabMinimized()) {
+		this._label.setText(text);
+	}
 };
 
 ZmChatWidget.prototype.setStatusTitle = function(text) {
@@ -256,6 +258,10 @@ ZmChatWidget.prototype.addRosterItem = function(item) {
 // 	}
 // 	this.chat.addRosterItem(item);
 // 	this._updateGroupChatTitle(forceTitle);
+};
+
+ZmChatWidget.prototype._isMultiTabMinimized = function() {
+	return this.getChatWindow().isMinimized() && (this.parent.size() > 1)
 };
 
 ZmChatWidget.prototype._keypressNotifyItems = function(last_key, enter) {
@@ -596,6 +602,7 @@ ZmChatWidget.prototype._removeUnreadStatus = function() {
 	if (!this.chat.isZimbraAssistant()) {
 		var tab = this.getTabLabel();
 		Dwt.delClass(tab.getHtmlElement(), "ZmChatTab-Unread");
+		this.getChatWindow().showAlert(false);
 		if (tab.label)
 			tab.label.setText(AjxStringUtil.htmlEncode(this._titleStr));
 		this.chat.resetUnread();
@@ -607,6 +614,11 @@ ZmChatWidget.prototype._setUnreadStatus = function() {
 		var tab = this.getTabLabel();
 		if (tab) {
 			var tab_el = tab.getHtmlElement();
+
+			var chatWindow = this.getChatWindow();
+			if (chatWindow.isMinimized()) {
+				chatWindow.showAlert(true);
+			}
 
 			// Only if it's not already active -- the easiest way is to
 			// check the className.  Hopefully no one will change it.
@@ -748,6 +760,10 @@ function(minimize) {
 	}
 	this._minimize.setImage(minimize ? "RoundPlus" : "RoundMinus");
 	this._minimize.setToolTipContent(minimize ? ZmMsg.imRestore : ZmMsg.imMinimize);
+
+	if (!minimize) {
+		this._removeUnreadStatus();
+	}
 };
 
 ZmChatWidget.prototype._dropOnEditorListener = function(ev) {

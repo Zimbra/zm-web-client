@@ -2000,6 +2000,8 @@ HTML>BODY .appt-selected .appt_allday_body
   -moz-border-radius: 0 2px 2px 0;
 }
 
+.ZAlert .DwtResizableWindow-topcont { @AlertColor@ }
+
 /* hide the tab bar unless we have 2 or more tabs */
 .ZmChatTabs-TabBarCount-0 /*, .ZmChatTabs-TabBarCount-1 */ { display: none; }
 
@@ -2015,6 +2017,7 @@ HTML>BODY .appt-selected .appt_allday_body
   -moz-border-radius-bottomright: 2px;
 }
 
+.ZmChatTabs-TabBar .ZmChatTab-Unread { @AlertColor@ }
 .ZmChatTab-Unread .ZWidgetTitle { color: #c00; }
 .ZmChatTab-Flash .ZWidgetTitle { visibility: hidden; }
 
