@@ -683,7 +683,7 @@ function() {
 	this.registerSetting("OFFLINE_REPORT_EMAIL",			{type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, defaultValue:"zdesktop-report@zimbra.com", isGlobal:true});
 
 	// reset the help URI to zimbra.com for offline
-	this.registerSetting("HELP_URI",						{type:ZmSetting.T_CONFIG, defaultValue:"http://www.zimbra.com/desktop/help"});
+	this.registerSetting("HELP_URI",						{type:ZmSetting.T_CONFIG, defaultValue:"http://www.zimbra.com/desktop/"});
 };
 
 /**

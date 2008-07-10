@@ -1440,12 +1440,16 @@ ZmZimbraMail.helpLinkCallback =
 function() {
 	ZmZimbraMail.unloadHackCallback();
 
-	var appCtxt = window.parentAppCtxt || window.appCtxt;
+	var ac = window.parentAppCtxt || window.appCtxt;
 	var url;
-	try { url = skin.hints.helpButton.url; } catch (e) { /* ignore */ }
-	url = url || appCtxt.get(ZmSetting.HELP_URI);
-	var sep = url.match(/\?/) ? "&" : "?";
-	url = [ url, sep, "locid=", AjxEnv.DEFAULT_LOCALE ].join("");
+	if (!ac.isOffline) {
+		try { url = skin.hints.helpButton.url; } catch (e) { /* ignore */ }
+		url = url || ac.get(ZmSetting.HELP_URI);
+		var sep = url.match(/\?/) ? "&" : "?";
+		url = [url, sep, "locid=", AjxEnv.DEFAULT_LOCALE].join("");
+	} else {
+		url = [ac.get(ZmSetting.HELP_URI), AjxEnv.DEFAULT_LOCALE, "/help"].join("");
+	}
 	window.open(url);
 };
 
