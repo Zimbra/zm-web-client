@@ -174,7 +174,7 @@ function(account, app) {
 ZmOverviewController.prototype.updateAccountIcon =
 function(account, icon) {
 	// if multi-account, update accordion item's status icon for each account
-	if (appCtxt.multiAccounts) {
+	if (appCtxt.numVisibleAccounts > 1) {
 		for (var i in this._accordion) {
 			var accordionItem = this._accordion[i].getItem(account.itemId);
 			if (accordionItem) {
