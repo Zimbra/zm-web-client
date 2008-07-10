@@ -291,7 +291,8 @@ function(im) {
 						item = new ZmRosterItem(not.to, list, ( not.name || not.to ), null, not.groups);
                         list.addItem(item);
 						if (notifications) {
-							appCtxt.setStatusMsg("Waiting for " + not.to + " to accept your request");
+							this._watingFormatter = this._watingFormatter || new AjxMessageFormat(ZmMsg.imSubscribeAuthRequest_waiting);
+							appCtxt.setStatusMsg(this._watingFormatter.format(not.to));
 						}
 					}
 				} else if (not.ask == "unsubscribe" && not.to) {
