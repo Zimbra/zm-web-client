@@ -473,6 +473,11 @@ ZmContactsApp.prototype._handleResponseActivateAccordion =
 function(contactList) {
 	var fid = ZmOrganizer.getSystemId(ZmFolder.ID_CONTACTS);
 	var folder = appCtxt.getById(fid);
+
+	if (appCtxt.getAppViewMgr().getCurrentViewId() == ZmId.VIEW_CONTACT) {
+		return;
+	}
+
 	if (folder) {
 		this.showFolder(folder);
 
