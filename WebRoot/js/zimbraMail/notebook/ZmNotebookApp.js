@@ -80,7 +80,7 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_SEND_PAGE, {textKey:"send", tooltipKey:"sendPageTT", image:"Send"}, ZmSetting.MAIL_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_SHARE_NOTEBOOK, {textKey:"shareNotebook", image:"Notebook"}, ZmSetting.SHARING_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_REVERT_PAGE, {textKey:"revert", tooltipKey:"restorePage", image:"Edit"});
-        ZmOperation.registerOp("BROWSE_FOLDER", {textKey:"browse", image:"Browse"});
+	ZmOperation.registerOp("BROWSE_FOLDER", {textKey:"browse", image:"Browse"});
 };
 
 ZmNotebookApp.prototype._registerItems =
@@ -96,10 +96,10 @@ function() {
 						 dropTargets:	[ZmOrganizer.TAG],
 						 searchType:	"wiki",
 						 resultsList:
-		AjxCallback.simpleClosure(function(search) {
-			AjxDispatcher.require("NotebookCore");
-			return new ZmPageList(search);
-		}, this)
+							AjxCallback.simpleClosure(function(search) {
+								AjxDispatcher.require("NotebookCore");
+								return new ZmPageList(search);
+							}, this)
 						});
 
 	ZmItem.registerItem(ZmItem.DOCUMENT,
@@ -113,10 +113,10 @@ function() {
 						 dropTargets:	[ZmOrganizer.TAG],
 						 searchType:	"document",
 						 resultsList:
-		AjxCallback.simpleClosure(function(search) {
-			AjxDispatcher.require("NotebookCore");
-			return new ZmPageList(search, ZmItem.DOCUMENT);
-		}, this)
+							AjxCallback.simpleClosure(function(search) {
+								AjxDispatcher.require("NotebookCore");
+								return new ZmPageList(search, ZmItem.DOCUMENT);
+							}, this)
 						});
 };
 
@@ -190,7 +190,8 @@ function() {
 							  gotoActionCode:		ZmKeyMap.GOTO_NOTEBOOK,
 							  newActionCode:		ZmKeyMap.NEW_PAGE,
 							  chooserSort:			50,
-							  defaultSort:			30
+							  defaultSort:			30,
+							  supportsMultiMbox:	true
 							  });
 };
 
@@ -198,7 +199,6 @@ function() {
 
 ZmNotebookApp.prototype.deleteNotify =
 function(ids, force) {
-
 	if (!force && this._deferNotifications("delete", ids)) { return; }
 
 	var nextData = null;
@@ -216,13 +216,13 @@ function(ids, force) {
 
 	for (var i = 0; i < ids.length; i++) {
 		var tmp = treeView.getNextData(ids[i]);
-                //next node might also be in the delete list : parent deleted
-                if(tmp && idStr.indexOf(tmp.id+",")<0){
-                        nextData = tmp;
-                }
-                if (shownPage && shownPage.id == ids[i]) {
-                        pageInUse = true;
-                }
+		//next node might also be in the delete list : parent deleted
+		if(tmp && idStr.indexOf(tmp.id+",")<0){
+			nextData = tmp;
+		}
+		if (shownPage && shownPage.id == ids[i]) {
+			pageInUse = true;
+		}
 	}
 
 	for (var i = 0; i < ids.length; i++) {
@@ -232,29 +232,25 @@ function(ids, force) {
 			cache.removePage(page);
 			page.notifyDelete();
 		} else {
-                        var folder = appCtxt.getById(ids[i]);
-                        cache.removeItem(folder);
-                        folder.notifyDelete();
-                }
+			var folder = appCtxt.getById(ids[i]);
+			cache.removeItem(folder);
+			folder.notifyDelete();
+		}
 		appCtxt.cacheRemove(ids[i]);
 	}
 
-	if(pageInUse){
-                var pageRef = { folderId: (nextData ? nextData.id : shownPage.folderId) , name: ZmNotebook.PAGE_INDEX };
-                notebookController.gotoPage(pageRef);
+	if (pageInUse) {
+		var pageRef = { folderId: (nextData ? nextData.id : shownPage.folderId) , name: ZmNotebook.PAGE_INDEX };
+		notebookController.gotoPage(pageRef);
 	}
 
-
-        for (var i = 0; i < ids.length; i++) {
+	for (var i = 0; i < ids.length; i++) {
 		var tmp1 = treeView.getTreeItemById(ids[i]);
-		DBG.println("tmp1:"+tmp1+","+page);//cdebugs
-		if(tmp1){
+		if (tmp1) {
 			tmp1.dispose();
 		}
 		ids[i] = null;
-
 	}
-
 };
 
 /**
@@ -335,13 +331,13 @@ function(modifies, force) {
 
 				// re-render current page, if necessary
 				var notebookController = AjxDispatcher.run("GetNotebookController");
-				if(!notebookController.isIframeEnabled()){
-				var shownPage = notebookController.getPage();
-				if (shownPage && shownPage.folderId == page.folderId) {
-					if (shownPage.name == ZmNotebook.PAGE_INDEX || shownPage.name == page.name) {
-						notebookController.gotoPage(shownPage);
+				if (!notebookController.isIframeEnabled()) {
+					var shownPage = notebookController.getPage();
+					if (shownPage && shownPage.folderId == page.folderId) {
+						if (shownPage.name == ZmNotebook.PAGE_INDEX || shownPage.name == page.name) {
+							notebookController.gotoPage(shownPage);
+						}
 					}
-				}
 				}
 				mod._handled = true;
 			} else if (name == "doc") {
@@ -450,21 +446,24 @@ function(active) {
 	/***/
 };
 
-ZmNotebookApp.prototype.getNotebookController = function() {
+ZmNotebookApp.prototype.getNotebookController =
+function() {
 	if (!this._notebookController) {
 		this._notebookController = new ZmNotebookPageController(this._container, this);
 	}
 	return this._notebookController;
 };
 
-ZmNotebookApp.prototype.getPageEditController = function() {
+ZmNotebookApp.prototype.getPageEditController =
+function() {
 	if (!this._pageController) {
 		this._pageController = new ZmPageEditController(this._container, this);
 	}
 	return this._pageController;
 };
 
-ZmNotebookApp.prototype.getFileController = function() {
+ZmNotebookApp.prototype.getFileController =
+function() {
 	if (!this._fileController) {
 		this._fileController = new ZmNotebookFileController(this._container, this);
 	}
@@ -489,20 +488,19 @@ function(parent, name, color) {
 
 ZmNotebookApp.prototype.generateUniqueName =
 function(folderId) {
-
 	var pages = this.getNotebookCache().getPagesInFolder(folderId);
 	var pagenames = [];
 	for (var p in pages) {
-        pagenames.push(pages[p].name.toLowerCase());
+		pagenames.push(pages[p].name.toLowerCase());
 	}
-    pagenames = "/" + pagenames.join("/") + "/";
+	pagenames = "/" + pagenames.join("/") + "/";
 
-    var pageName = ZmMsg.defaultPageName.toLowerCase();
-    for(var i=1; i<100; i++){
-        if(pagenames.indexOf(["/",pageName,i,"/"].join("")) == -1){
-            return (ZmMsg.defaultPageName+i);
-        }
-    }
+	var pageName = ZmMsg.defaultPageName.toLowerCase();
+	for(var i=1; i<100; i++){
+		if(pagenames.indexOf(["/",pageName,i,"/"].join("")) == -1){
+			return (ZmMsg.defaultPageName+i);
+		}
+	}
 
 	return ZmMsg.untitled;
 };
