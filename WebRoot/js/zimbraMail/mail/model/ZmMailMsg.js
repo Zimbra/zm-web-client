@@ -859,7 +859,7 @@ function(request, contactList, isDraft, accountName) {
 	{
 		var attachNode = msgNode.attach = {};
 		if (this.attId) {
-			attachNode.setAttribute("aid", this.attId);
+			attachNode.aid = this.attId;
 		}
 
 		// attach mail msgs
