@@ -443,7 +443,7 @@ function(viewId, force) {
 		var view = this._views[viewId];
 		if (view) {
 			var appContent = view[ZmAppViewMgr.C_APP_CONTENT] || view[ZmAppViewMgr.C_APP_CONTENT_FULL];
-			viewController = appContent.getController();
+			viewController = appContent.getController && appContent.getController();
 		}
 	}
 	DBG.println(AjxDebug.DBG1, "pushView: " + viewId);
