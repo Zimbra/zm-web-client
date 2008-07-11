@@ -187,8 +187,7 @@ function(msg) {
 		if (!invite.isEmpty() && !invite.hasMultipleComponents() &&
 			invite.getStatus() != ZmCalendarApp.STATUS_CANC &&
 			msg.folderId != ZmFolder.ID_TRASH &&
-			appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED) &&
-			!msg.isShared())
+			appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED))
 		{
 			var topToolbar = this._getInviteToolbar();
 			topToolbar.reparentHtmlElement(contentDiv);
