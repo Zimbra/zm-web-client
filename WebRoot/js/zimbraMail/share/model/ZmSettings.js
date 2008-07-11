@@ -154,18 +154,25 @@ function(name) {
  * @param errorCallback 	[AjxCallback]*		callback to run error is received
  * @param accountName		[String]*			name of account to load settings for
  * @param response			[object]*			pre-determined JSON response object
+ * @param batchCommand		[ZmBatchCommand]*	set if part of a batch request
  */
 ZmSettings.prototype.loadUserSettings =
-function(callback, errorCallback, accountName, response) {
-	var params = {
-		soapDoc: (response ? null : AjxSoapDoc.create("GetInfoRequest", "urn:zimbraAccount")),
-		accountName: accountName,
-		asyncMode: true,
-		callback: (new AjxCallback(this, this._handleResponseLoadUserSettings, [callback, accountName])),
-		errorCallback: errorCallback,
-		response: response
-	};
-	appCtxt.getAppController().sendRequest(params);
+function(callback, errorCallback, accountName, response, batchCommand) {
+	if (batchCommand) {
+		var soapDoc = AjxSoapDoc.create("GetInfoRequest", "urn:zimbraAccount");
+		var respCallback = new AjxCallback(this, this._handleResponseLoadUserSettings, [callback, accountName]);
+		batchCommand.addNewRequestParams(soapDoc, respCallback);
+	} else {
+		var params = {
+			soapDoc: (response ? null : AjxSoapDoc.create("GetInfoRequest", "urn:zimbraAccount")),
+			accountName: accountName,
+			asyncMode: true,
+			callback: (new AjxCallback(this, this._handleResponseLoadUserSettings, [callback, accountName])),
+			errorCallback: errorCallback,
+			response: response
+		};
+		appCtxt.getAppController().sendRequest(params);
+	}
 };
 
 ZmSettings.prototype._handleResponseLoadUserSettings =

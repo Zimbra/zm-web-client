@@ -213,7 +213,7 @@ function(node) {
 };
 
 ZmZimbraAccount.prototype.load =
-function(callback, batchCmd) {
+function(callback) {
 	if (!this.loaded) {
 		// create new ZmSetting for this account
 		this.settings = new ZmSettings();
@@ -233,10 +233,27 @@ function(callback, batchCmd) {
 			}
 		}
 
+		var command = new ZmBatchCommand(null, this.name);
+
 		// load user settings retrieved from server now
-		var respCallback = new AjxCallback(this, this._handleResponseLoad, callback);
-		var errorCallback = new AjxCallback(this, this._handleErrorLoad);
-		this.settings.loadUserSettings(respCallback, errorCallback, this.name, batchCmd);
+		var loadCallback = new AjxCallback(this, this._handleLoadSettings);
+		this.settings.loadUserSettings(loadCallback, null, this.name, null, command);
+
+		// get folder info for this account
+		var folderDoc = AjxSoapDoc.create("GetFolderRequest", "urn:zimbraMail");
+		var method = folderDoc.getMethod();
+		method.setAttribute("visible", "1");
+		var folderCallback = new AjxCallback(this, this._handleLoadFolders);
+		command.addNewRequestParams(folderDoc, folderCallback);
+
+		// get tag info for this account
+		var tagDoc = AjxSoapDoc.create("GetTagRequest", "urn:zimbraMail");
+		var tagCallback = new AjxCallback(this, this._handleLoadTags);
+		command.addNewRequestParams(tagDoc, tagCallback);
+
+		var respCallback = new AjxCallback(this, this._handleLoadUserInfo, callback);
+		var errCallback = new AjxCallback(this, this._handleErrorLoad);
+		command.run(respCallback, errCallback);
 	} else {
 		// always reload account-specific shortcuts
 		this.settings.loadShortcuts();
@@ -263,58 +280,39 @@ function(callback, errorCallback, batchCmd) {
 // Protected methods
 //
 
-ZmZimbraAccount.prototype._handleResponseLoad =
-function(callback, result) {
+ZmZimbraAccount.prototype._handleLoadSettings =
+function(result) {
 	DBG.println(AjxDebug.DBG1, "Account settings successfully loaded for " + this.name);
 
 	// initialize identities/data-sources/signatures for this account
-	var obj = result.getResponse().GetInfoResponse
+	var obj = result.getResponse().GetInfoResponse;
 	appCtxt.getIdentityCollection().initialize(obj.identities);
 	AjxDispatcher.run("GetDataSourceCollection").initialize(obj.dataSources);
 	appCtxt.getSignatureCollection().initialize(obj.signatures);
-
-	// get folder info for this account
-	var soapDoc = AjxSoapDoc.create("GetFolderRequest", "urn:zimbraMail");
-	var method = soapDoc.getMethod();
-	method.setAttribute("visible", "1");
-
-	var params = {
-		soapDoc: soapDoc,
-		accountName: this.name,
-		asyncMode: true,
-		callback: new AjxCallback(this, this._handleResponseLoad1, callback)
-	};
-	appCtxt.getRequestMgr().sendRequest(params);
 };
 
-ZmZimbraAccount.prototype._handleResponseLoad1 =
-function(callback, result) {
+ZmZimbraAccount.prototype._handleLoadFolders =
+function(result) {
 	var resp = result.getResponse().GetFolderResponse;
 	var folders = resp ? resp.folder[0] : null;
 	if (folders) {
 		appCtxt.getRequestMgr()._loadTree(ZmOrganizer.FOLDER, null, resp.folder[0], "folder", this);
 	}
-
-	var soapDoc = AjxSoapDoc.create("GetTagRequest", "urn:zimbraMail");
-	var params = {
-		soapDoc: soapDoc,
-		accountName: this.name,
-		asyncMode: true,
-		callback: new AjxCallback(this, this._handleResponseLoad2, callback)
-	};
-	appCtxt.getRequestMgr().sendRequest(params);
 };
 
-ZmZimbraAccount.prototype._handleResponseLoad2 =
-function(callback, result) {
+ZmZimbraAccount.prototype._handleLoadTags =
+function(result) {
 	var resp = result.getResponse().GetTagResponse;
 	var tags = (resp && resp.tag) ? resp.tag[0] : null;
 	appCtxt.getRequestMgr()._loadTree(ZmOrganizer.TAG, null, resp, null, this);
+};
 
+ZmZimbraAccount.prototype._handleLoadUserInfo =
+function(callback) {
 	this.loaded = true;
 
 	if (callback) {
-		callback.run(this);
+		callback.run();
 	}
 };
 

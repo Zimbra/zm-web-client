@@ -21,10 +21,12 @@ ZmSignatureCollection = function() {
 	this._nameMap= {};
 	this._size = 0;
 };
+
 ZmSignatureCollection.prototype = new ZmModel;
 ZmSignatureCollection.prototype.constructor = ZmSignatureCollection;
 
-ZmSignatureCollection.prototype.toString = function() {
+ZmSignatureCollection.prototype.toString =
+function() {
 	return "ZmSignatureCollection";
 };
 
@@ -32,7 +34,8 @@ ZmSignatureCollection.prototype.toString = function() {
 // Public methods
 //
 
-ZmSignatureCollection.prototype.add = function(signature) {
+ZmSignatureCollection.prototype.add =
+function(signature) {
 	if (!this._idMap[signature.id]) {
 		this._idMap[signature.id] = signature;
 		this._nameMap[signature.name] = signature;
@@ -40,7 +43,9 @@ ZmSignatureCollection.prototype.add = function(signature) {
 		this._notify(ZmEvent.E_CREATE, { item: signature });
 	}
 };
-ZmSignatureCollection.prototype.remove = function(signature) {
+
+ZmSignatureCollection.prototype.remove =
+function(signature) {
 	if (this._idMap[signature.id]) {
 		delete this._idMap[signature.id];
 		delete this._nameMap[signature.name];
@@ -49,15 +54,18 @@ ZmSignatureCollection.prototype.remove = function(signature) {
 	}
 };
 
-ZmSignatureCollection.prototype.getSize = function() {
+ZmSignatureCollection.prototype.getSize =
+function() {
 	return this._size;
 };
 
-ZmSignatureCollection.prototype.getSignatures = function() {
+ZmSignatureCollection.prototype.getSignatures =
+function() {
 	return AjxUtil.values(this._idMap);
 };
 
-ZmSignatureCollection.prototype.getSignatureOptions = function() {
+ZmSignatureCollection.prototype.getSignatureOptions =
+function() {
 	// collect signatures
 	var signatures = [];
 	for (var id in this._idMap) {
@@ -75,10 +83,13 @@ ZmSignatureCollection.prototype.getSignatureOptions = function() {
 	return options;
 };
 
-ZmSignatureCollection.prototype.getById = function(id) {
+ZmSignatureCollection.prototype.getById =
+function(id) {
 	return this._idMap[id];
 };
-ZmSignatureCollection.prototype.getByName = function(name) {
+
+ZmSignatureCollection.prototype.getByName =
+function(name) {
 	var lname = name.toLowerCase();
 	for (var key in this._nameMap) {
 		if (key.toLowerCase() == lname) {
@@ -87,7 +98,8 @@ ZmSignatureCollection.prototype.getByName = function(name) {
 	}
 };
 
-ZmSignatureCollection.prototype.initialize = function(data) {
+ZmSignatureCollection.prototype.initialize =
+function(data) {
 	if (this._size) return;
 
 	var signatures = data.signature;
@@ -103,6 +115,7 @@ ZmSignatureCollection.prototype.initialize = function(data) {
 // Static functions
 //
 
-ZmSignatureCollection.BY_NAME = function(a, b) {
+ZmSignatureCollection.BY_NAME =
+function(a, b) {
 	return a.name.localeCompare(b.name);
 };
