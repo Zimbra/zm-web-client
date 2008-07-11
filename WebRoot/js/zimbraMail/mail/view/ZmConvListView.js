@@ -334,7 +334,7 @@ function(conv, msg, offset) {
 		var num = Math.min(limit, msgList.size() - offset);
 		for (var i = 0; i < num; i++) {
 			var msg = a[offset + i];
-			var div = this._createItemHtml(msg, {now:this._now});
+			var div = this._createItemHtml(msg);
 			this._addRow(div, index + i + 1);
 			this._msgRowIdList[item.id].push(div.id);
 		}
@@ -563,7 +563,7 @@ function(ev) {
 	// if we get a new msg that's part of an expanded conv, insert it into the
 	// expanded conv, and don't move that conv
 	if (!isConv && (ev.event == ZmEvent.E_CREATE)) {
-		var div = this._createItemHtml(item, {now:this._now});
+		var div = this._createItemHtml(item);
 		if (!this._expanded[item.cid]) {
 			Dwt.setVisible(div, false);
 		}
@@ -581,7 +581,7 @@ function(ev) {
 		// a virtual conv has become real, and changed its ID
 		var div = document.getElementById(this._getItemId({id:item._oldId}));
 		if (div) {
-			this._createItemHtml(item, {now:this._now, div:div});
+			this._createItemHtml(item, {div:div});
 			this.associateItemWithElement(item, div, DwtListView.TYPE_LIST_ITEM);
 			DBG.println(AjxDebug.DBG1, "conv updated from ID " + item._oldId + " to ID " + item.id);
 		}

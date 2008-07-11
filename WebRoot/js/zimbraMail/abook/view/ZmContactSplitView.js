@@ -582,10 +582,11 @@ function() {
 		this._data[cDiv.id] = null;
 	}
 
+	var now = new Date();
 	var size = this._list.size();
 	for (var i = 0; i < size; i++) {
 		var item = this._list.get(i);
-		var div = item ? this._createItemHtml(item, {now:this._now}) : null;
+		var div = item ? this._createItemHtml(item, {now:now}) : null;
 		if (div) {
 			this._addRow(div);
 		}
