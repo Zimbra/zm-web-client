@@ -79,6 +79,12 @@
 	padding-right:10px;
 }
 
+.ZmPicker .ZButtonBorder,
+.ZmPicker .ZHover .ZButtonBorder {
+	border:0px !important;
+	background-image:none !important;
+}
+
 .skin_google_app_chooser_button {
 	color:rgb(0,0,204);
 	text-decoration:underline;
