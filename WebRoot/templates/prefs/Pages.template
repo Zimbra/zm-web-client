@@ -224,10 +224,12 @@ and the container element is replaced with that control.
 						<td class='ZOptionsLabel'>&nbsp;</td>
 						<td class='ZOptionsField'><input id='${id}_MAIL_NOTIFY_BROWSER' tabindex='107' type=checkbox></td>
 					</tr>
-					<tr>
-						<td class='ZOptionsLabel'>&nbsp;</td>
-						<td class='ZOptionsField'><input id='${id}_OFFLINE_MAIL_TOASTER_ENABELD' tabindex='108' type=checkbox></td>
-					</tr>
+					<$ if (appCtxt.isOffline) { $>
+						<tr>
+							<td class='ZOptionsLabel'>&nbsp;</td>
+							<td class='ZOptionsField'><input id='${id}_OFFLINE_MAIL_TOASTER_ENABELD' tabindex='108' type=checkbox></td>
+						</tr>
+					<$ } $>
 					<$ if (data.isEnabled(ZmSetting.MAIL_FORWARDING_ENABLED)) { $>
 						<tr>
 							<td class='ZOptionsLabel'>&nbsp;</td>
@@ -1165,11 +1167,12 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 
 <template id='prefs.Pages#Calendar'>
 	<div align=right>
-	<table class='ZOptionsDefaultsTable'>
-		<tr><td class='ZOptionsDefaultsField'><div id='${id}_REVERT_PAGE' tabindex='10'></div></td></tr>
-	</table>
+		<table class='ZOptionsDefaultsTable'>
+			<tr>
+				<td class='ZOptionsDefaultsField'><div id='${id}_REVERT_PAGE' tabindex='10'></div></td>
+			</tr>
+		</table>
 	</div>
-
 	<table border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
@@ -1180,51 +1183,58 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>	
 		<tr>
 			<td class='ZOptionsSectionMain'>
-			<table width=100%>
-				<tr><td class='ZOptionsLabel'><$=ZmMsg.defaultViewLabel$></td>
-					<td class='ZOptionsField'><select id='${id}_CALENDAR_INITIAL_VIEW' tabindex='20'></select></td>
-				</tr>
+				<table width=100%>
+					<tr>
+						<td class='ZOptionsLabel'><$=ZmMsg.defaultViewLabel$></td>
+						<td class='ZOptionsField'><select id='${id}_CALENDAR_INITIAL_VIEW' tabindex='20'></select></td>
+					</tr>
 
-				<tr><td class='ZOptionsLabel'><$=ZmMsg.calendarStartWeekLabel$></td>
-					<td class='ZOptionsField'><select id='${id}_CAL_FIRST_DAY_OF_WEEK' tabindex='30'></select></td>
-				</tr>
+					<tr>
+						<td class='ZOptionsLabel'><$=ZmMsg.calendarStartWeekLabel$></td>
+						<td class='ZOptionsField'><select id='${id}_CAL_FIRST_DAY_OF_WEEK' tabindex='30'></select></td>
+					</tr>
 
-				<tr><td colspan=2><hr></td></tr>
+					<tr><td colspan=2><hr></td></tr>
 
-				<tr><td class='ZOptionsLabel'>&nbsp;</td>
-					<td class='ZOptionsField'><input id='${id}_CAL_ALWAYS_SHOW_MINI_CAL' tabindex='40' type=checkbox></td>
-				</tr>
+					<tr>
+						<td class='ZOptionsLabel'>&nbsp;</td>
+						<td class='ZOptionsField'><input id='${id}_CAL_ALWAYS_SHOW_MINI_CAL' tabindex='40' type=checkbox></td>
+					</tr>
 
+					<tr><td colspan=2><hr></td></tr>
 
-				<tr><td colspan=2><hr></td></tr>
+					<tr>
+						<td class='ZOptionsLabel'><$=ZmMsg.deleteInviteOnReplyLabel$></td>
+						<td class='ZOptionsField'><input id='${id}_DELETE_INVITE_ON_REPLY' tabindex='50' type=checkbox></td>
+					</tr>
 
-				<tr><td class='ZOptionsLabel'><$=ZmMsg.deleteInviteOnReplyLabel$></td>
-					<td class='ZOptionsField'><input id='${id}_DELETE_INVITE_ON_REPLY' tabindex='50' type=checkbox></td>
-				</tr>
+					<tr><td colspan=2><hr></td></tr>
 
-				<tr><td colspan=2><hr></td></tr>
+					<tr>
+						<td class='ZOptionsLabel'><$=ZmMsg.apptReminderLabel$></td>
+						<td class='ZOptionsField'><select id='${id}_CAL_REMINDER_WARNING_TIME' tabindex='60'></select></td>
+					</tr>
 
-				<tr><td class='ZOptionsLabel'><$=ZmMsg.apptReminderLabel$></td>
-					<td class='ZOptionsField'><select id='${id}_CAL_REMINDER_WARNING_TIME' tabindex='60'></select></td>
-				</tr>
+					<tr>
+						<td class='ZOptionsLabel'>&nbsp;</td>
+						<td class='ZOptionsField'><input id='${id}_CAL_REMINDER_NOTIFY_SOUNDS' tabindex='65' type=checkbox></td>
+					</tr>
 
-				<tr><td class='ZOptionsLabel'>&nbsp;</td>
-					<td class='ZOptionsField'>
-						<input id='${id}_CAL_REMINDER_NOTIFY_SOUNDS' tabindex='65' type=checkbox>
-					</td>
-				</tr>
+					<tr>
+						<td class='ZOptionsLabel'>&nbsp;</td>
+						<td class='ZOptionsField'><input id='${id}_CAL_REMINDER_NOTIFY_BROWSER' tabindex='68' type=checkbox></td>
+					</tr>
 
-				<tr><td class='ZOptionsLabel'>&nbsp;</td>
-					<td class='ZOptionsField'>
-						<input id='${id}_CAL_REMINDER_NOTIFY_BROWSER' tabindex='68' type=checkbox>
-					</td>
-				</tr>
-
-			</table>
+					<$ if (appCtxt.isOffline) { $>
+						<tr>
+							<td class='ZOptionsLabel'>&nbsp;</td>
+							<td class='ZOptionsField'><input id='${id}_OFFLINE_CALENDAR_TOASTER_ENABELD' tabindex='70' type=checkbox></td>
+						</tr>
+					<$ } $>
+				</table>
 			</td>
 		</tr>
 	</table>
-
 	<table border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
@@ -1235,21 +1245,22 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>	
 		<tr>
 			<td class='ZOptionsSectionMain'>
-			<table width=100%>
-				<tr><td class='ZOptionsLabel'>&nbsp;</td>
-					<td class='ZOptionsField'><input id='${id}_CAL_USE_QUICK_ADD' tabindex='70' type=checkbox></td>
-				</tr>
+				<table width=100%>
+					<tr>
+						<td class='ZOptionsLabel'>&nbsp;</td>
+						<td class='ZOptionsField'><input id='${id}_CAL_USE_QUICK_ADD' tabindex='70' type=checkbox></td>
+					</tr>
 
-				<tr><td colspan=2><hr></td></tr>
+					<tr><td colspan=2><hr></td></tr>
 
-				<tr><td class='ZOptionsLabel'>&nbsp;</td>
-					<td class='ZOptionsField'><input id='${id}_CAL_SHOW_TIMEZONE' tabindex='80' type=checkbox></td>
-				</tr>
-			</table>
+					<tr>
+						<td class='ZOptionsLabel'>&nbsp;</td>
+						<td class='ZOptionsField'><input id='${id}_CAL_SHOW_TIMEZONE' tabindex='80' type=checkbox></td>
+					</tr>
+				</table>
 			</td>
 		</tr>
 	</table>
-
 	<table border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
@@ -1258,32 +1269,35 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 		</tr>
 	</table>
 	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
-		<tr><td class='ZOptionsSectionMain'>
-			<table width=100%>
-				<tr><td colspan=2><$= AjxMessageFormat.format(ZmMsg.calPermsNote, data.domain) $></td></tr>
-				<tr><td colspan=2>&nbsp;</td></tr>
-				<tr><td class='ZOptionsLabelTop'><$=ZmMsg.freeBusyLabel$></td>
-					<td class='ZOptionsField'><div id='${id}_CAL_FREE_BUSY_ACL' tabindex='82'></div></td>
-				</tr>
-                <tr>
-                	<td>&nbsp;</td>
-                    <td>
-                        <textarea id='${id}_CAL_FREE_BUSY_ACL_USERS' tabindex='84' rows=3 cols=70></textarea>
-                    </td>
-                </tr>
-				<tr><td class='ZOptionsLabelTop'><$=ZmMsg.invitesLabel$></td>
-					<td class='ZOptionsField'><div id='${id}_CAL_INVITE_ACL' tabindex='86'></div></td>
-				</tr>
-                <tr>
-                	<td>&nbsp;</td>
-                    <td>
-                        <textarea id='${id}_CAL_INVITE_ACL_USERS' tabindex='88' rows=3 cols=70></textarea>
-                    </td>
-                </tr>
-			</table>
-		</td></tr>
-	</table>
+		<tr>
+			<td class='ZOptionsSectionMain'>
+				<table width=100%>
+					<tr>
+						<td colspan=2><$= AjxMessageFormat.format(ZmMsg.calPermsNote, data.domain) $></td>
+					</tr>
 
+					<tr><td colspan=2>&nbsp;</td></tr>
+
+					<tr>
+						<td class='ZOptionsLabelTop'><$=ZmMsg.freeBusyLabel$></td>
+						<td class='ZOptionsField'><div id='${id}_CAL_FREE_BUSY_ACL' tabindex='82'></div></td>
+					</tr>
+					<tr>
+						<td>&nbsp;</td>
+						<td><textarea id='${id}_CAL_FREE_BUSY_ACL_USERS' tabindex='84' rows=3 cols=70></textarea></td>
+					</tr>
+					<tr>
+						<td class='ZOptionsLabelTop'><$=ZmMsg.invitesLabel$></td>
+						<td class='ZOptionsField'><div id='${id}_CAL_INVITE_ACL' tabindex='86'></div></td>
+					</tr>
+					<tr>
+						<td>&nbsp;</td>
+						<td><textarea id='${id}_CAL_INVITE_ACL_USERS' tabindex='88' rows=3 cols=70></textarea></td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
 	<table border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
@@ -1294,24 +1308,27 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr>
 			<td class='ZOptionsSectionMain'>
-			<table width=100%>
-				<tr><td class='ZOptionsLabel'><$=ZmMsg.importLabel$></td>
-					<td class='ZOptionsInfo'><$=ZmMsg.importFromICSHint$></td>
-				</tr>
-				<tr><td class='ZOptionsLabel'>&nbsp;</td>
-					<td class='ZOptionsInfo'><div id='${id}_CAL_IMPORT' tabindex='90'></div></td>
-				</tr>
+				<table width=100%>
+					<tr>
+						<td class='ZOptionsLabel'><$=ZmMsg.importLabel$></td>
+						<td class='ZOptionsInfo'><$=ZmMsg.importFromICSHint$></td>
+					</tr>
+					<tr>
+						<td class='ZOptionsLabel'>&nbsp;</td>
+						<td class='ZOptionsInfo'><div id='${id}_CAL_IMPORT' tabindex='90'></div></td>
+					</tr>
 
-				<tr><td colspan=2><hr></td></tr>
+					<tr><td colspan=2><hr></td></tr>
 
-				<tr><td class='ZOptionsLabel'><$=ZmMsg.exportLabel$></td>
-					<td class='ZOptionsInfo'><$=ZmMsg.exportToICSHint$></td>
-				</tr>
-				<tr><td class='ZOptionsLabel'>&nbsp;</td>
-					<td class='ZOptionsInfo'><div id='${id}_CAL_EXPORT' tabindex='100'></div></td>
-				</tr>
-
-			</table>
+					<tr>
+						<td class='ZOptionsLabel'><$=ZmMsg.exportLabel$></td>
+						<td class='ZOptionsInfo'><$=ZmMsg.exportToICSHint$></td>
+					</tr>
+					<tr>
+						<td class='ZOptionsLabel'>&nbsp;</td>
+						<td class='ZOptionsInfo'><div id='${id}_CAL_EXPORT' tabindex='100'></div></td>
+					</tr>
+				</table>
 			</td>
 		</tr>
 	</table>

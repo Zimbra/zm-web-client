@@ -21,10 +21,12 @@
 */
 ZmReminderDialog = function(parent, reminderController, calController) {
 	var selectId = Dwt.getNextId();
-	var html = new Array(5);
+
+	var html = [];
 	var i = 0;
-    // TODO: i18n
-    html[i++] = "<td valign='middle' class='ZmReminderField'>";
+
+	// TODO: i18n
+	html[i++] = "<td valign='middle' class='ZmReminderField'>";
 	html[i++] = ZmMsg.snoozeAll;
 	html[i++] = "</td><td valign='middle' id='";
 	html[i++] = selectId;
@@ -70,8 +72,8 @@ function(selectId) {
 
 	var snooze = [1, 5, 10, 15, 30, 45, 60];
 	this._select = new DwtSelect({parent:this});
-    var snoozeFormatter = new AjxMessageFormat(ZmMsg.reminderSnoozeMinutes);
-    for (var i = 0; i < snooze.length; i++) {
+	var snoozeFormatter = new AjxMessageFormat(ZmMsg.reminderSnoozeMinutes);
+	for (var i = 0; i < snooze.length; i++) {
 		var label = snoozeFormatter.format(snooze[i]);
 		this._select.addOption(label, i==0, snooze[i]);
 	}
@@ -93,19 +95,15 @@ function(html, title, value, data) {
 ZmReminderDialog.prototype._updateDelta = 
 function(data) {
 	var td = document.getElementById(data.deltaId);
-	if (td == null) return;
-	
-	var startDelta = ZmReminderDialog._computeDelta(data.appt);
-    if (startDelta >= 0) {
-        td.className = 'ZmReminderOverdue';
-    }
-    else if (startDelta > ZmReminderDialog.SOON) {
-        td.className = 'ZmReminderSoon';
-    }
-    else {
-        td.className = 'ZmReminderFuture';
-    }
-    td.innerHTML = ZmReminderDialog._formatReminderString(startDelta);
+	if (td) {
+		var startDelta = this._computeDelta(data.appt);
+
+		if (startDelta >= 0) 							td.className = 'ZmReminderOverdue';
+		else if (startDelta > ZmReminderDialog.SOON)	td.className = 'ZmReminderSoon';
+		else											td.className = 'ZmReminderFuture';
+
+		td.innerHTML = this._formatDeltaString(startDelta);
+	}
 };
 
 ZmReminderDialog.prototype._rowId = 
@@ -118,13 +116,12 @@ function(data) {
 ZmReminderDialog.prototype._addAppt = 
 function(html, appt, data, needSep) {
 
-	var startDelta = ZmReminderDialog._computeDelta(appt);
 	data.buttonId = Dwt.getNextId();
 	data.deltaId = Dwt.getNextId();
 	data.rowIds = [];
 
-    var calName = appt.folderId != ZmOrganizer.ID_CALENDAR && this._calController
-            ? this._calController.getCalendarName(appt.folderId) : null;
+	var calName = appt.folderId != ZmOrganizer.ID_CALENDAR && this._calController
+		? this._calController.getCalendarName(appt.folderId) : null;
 	
 	if (needSep) html.append("<tr id='", this._rowId(data), "'><td colspan=4><div class=horizSep></div></td></tr>");
 	html.append("<tr width=100% id='", this._rowId(data), "'>");
@@ -145,14 +142,14 @@ function(html, appt, data, needSep) {
 ZmReminderDialog.prototype.getDurationText =
 function(appt) {
 	var isMultiDay = appt.isMultiDay();
-    var start = appt._alarmInstStart ? new Date(appt._alarmInstStart) : appt.startDate;
-    //bug: 28598 - alarm for recurring appt might still point to old alarm time
-    //cannot take endTime directly
-    var endTime = appt._alarmInstStart ? (start.getTime() + appt.getDuration()) : appt.getEndTime();
-    var end = new Date(endTime); 
+	var start = appt._alarmInstStart ? new Date(appt._alarmInstStart) : appt.startDate;
+	// bug: 28598 - alarm for recurring appt might still point to old alarm time
+	// cannot take endTime directly
+	var endTime = appt._alarmInstStart ? (start.getTime() + appt.getDuration()) : appt.getEndTime();
+	var end = new Date(endTime);
 
-    if (appt.isAllDayEvent()) {
-        end = new Date(endTime - (isMultiDay ? 2 * AjxDateUtil.MSEC_PER_HOUR : 0));
+	if (appt.isAllDayEvent()) {
+		end = new Date(endTime - (isMultiDay ? 2 * AjxDateUtil.MSEC_PER_HOUR : 0));
 		var pattern = isMultiDay ? ZmMsg.apptTimeAllDayMulti : ZmMsg.apptTimeAllDay;
 		return AjxMessageFormat.format(pattern, [start, end]);
 	}
@@ -260,23 +257,40 @@ function() {
 		AjxPackage.require("Alert");
 		ZmBrowserAlert.getInstance().start(ZmMsg.appointmentReminder);
 	}
+
 	if (appCtxt.get(ZmSetting.CAL_REMINDER_NOTIFY_SOUNDS)) {
 		AjxPackage.require("Alert");
 		ZmSoundAlert.getInstance().start();
 	}
+
+	if (appCtxt.isOffline && window.platform &&
+		(AjxEnv.isMac || AjxEnv.isWindows) &&
+		appCtxt.get(ZmSetting.OFFLINE_CALENDAR_TOASTER_ENABELD))
+	{
+		var winText = [];
+		var appts = this._list.getArray();
+		// only show, at most, five appointment reminders
+		for (var i = 0; i < appts.length && i < 5; i++) {
+			var appt = appts[i];
+			var delta = this._formatDeltaString(this._computeDelta(appt));
+			var text = [appt.getName(), ", ", this.getDurationText(appt), "\n(", delta, ")"].join("");
+			if (AjxEnv.isMac) {
+				window.platform.showNotification(ZmMsg.appointmentReminder, text, "resource://webapp/icons/default/launcher.icns");
+			} else if (AjxEnv.isWindows) {
+				winText.push(text);
+			}
+		}
+
+		if (AjxEnv.isWindows && winText.length > 0) {
+			if (appts.length > 5) {
+				winText.push(ZmMsg.andMore);
+			}
+			window.platform.icon().showBalloonTip(ZmMsg.appointmentReminder, winText.join("\n"), 5);
+		}
+	}
+
 	DwtDialog.prototype.popup.call(this);
 	this._cancelSnooze();
-};
-
-ZmReminderDialog._computeDelta =
-function(appt) {
-	if(appt.alarm && appt.alarmData && appt.alarmData.length > 0) {
-		var alarmData = appt.alarmData[0];
-		var alarmInstStart = alarmData.alarmInstStart;		
-		return (new Date()).getTime() - alarmInstStart;
-	}else {
-		return (new Date()).getTime() - appt.getStartTime();
-	}
 };
 
 ZmReminderDialog.prototype._handleSnoozeButton =
@@ -303,14 +317,21 @@ function() {
 	this.popdown();
 	this._reminderController.dismissAppt(this._list);
 };
-	
-ZmReminderDialog._formatReminderString =
-function(deltaMSec) {
-    var prefix = deltaMSec < 0 ? "In" : "OverdueBy";
-    deltaMSec = Math.abs(deltaMSec);
 
-    // calculate parts
-    var years =  Math.floor(deltaMSec / (AjxDateUtil.MSEC_PER_DAY * 365));
+ZmReminderDialog.prototype._computeDelta =
+function(appt) {
+	return (appt.alarm && appt.alarmData && appt.alarmData.length > 0)
+		? ((new Date()).getTime() - appt.alarmData[0].alarmInstStart)
+		: ((new Date()).getTime() - appt.getStartTime());
+};
+	
+ZmReminderDialog.prototype._formatDeltaString =
+function(deltaMSec) {
+	var prefix = deltaMSec < 0 ? "In" : "OverdueBy";
+	deltaMSec = Math.abs(deltaMSec);
+
+	// calculate parts
+	var years =  Math.floor(deltaMSec / (AjxDateUtil.MSEC_PER_DAY * 365));
 	if (years != 0)
 		deltaMSec -= years * AjxDateUtil.MSEC_PER_DAY * 365;
 	var months = Math.floor(deltaMSec / (AjxDateUtil.MSEC_PER_DAY * 30.42));
@@ -330,34 +351,34 @@ function(deltaMSec) {
 
 	var secs = 0;
 
-    // determine message
-    var amount;
-    if (years > 0) {
-        amount = "Years";
-        if (years <= 3 && months > 0) {
-            amount = "YearsMonths";
-        }
-    } else if (months > 0) {
-        amount = "Months";
-        if (months <= 3 && days > 0) {
-            amount = "MonthsDays";
-        }
-    } else if (days > 0) {
-        amount = "Days";
-        if (days <= 2 && hours > 0) {
-            amount = "DaysHours";
-        }
-    } else if (hours > 0) {
-        amount = "Hours";
-        if (hours < 5 && mins > 0) {
-            amount = "HoursMinutes";
-        }
-    } else {
-        amount = "Minutes";        
-    }
+	// determine message
+	var amount;
+	if (years > 0) {
+		amount = "Years";
+		if (years <= 3 && months > 0) {
+			amount = "YearsMonths";
+		}
+	} else if (months > 0) {
+		amount = "Months";
+		if (months <= 3 && days > 0) {
+			amount = "MonthsDays";
+		}
+	} else if (days > 0) {
+		amount = "Days";
+		if (days <= 2 && hours > 0) {
+			amount = "DaysHours";
+		}
+	} else if (hours > 0) {
+		amount = "Hours";
+		if (hours < 5 && mins > 0) {
+			amount = "HoursMinutes";
+		}
+	} else {
+		amount = "Minutes";
+	}
 
-    // format message
-    var key = ["reminder",prefix,amount].join("");
-    var args = [deltaMSec, years, months, days, hours, mins, secs];
-    return AjxMessageFormat.format(ZmMsg[key], args);
+	// format message
+	var key = ["reminder",prefix,amount].join("");
+	var args = [deltaMSec, years, months, days, hours, mins, secs];
+	return AjxMessageFormat.format(ZmMsg[key], args);
 };
