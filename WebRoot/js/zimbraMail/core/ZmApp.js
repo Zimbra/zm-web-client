@@ -249,7 +249,8 @@ function() {
 	return this._name;
 }
 
-ZmApp.prototype.getDisplayName = function() {
+ZmApp.prototype.getDisplayName =
+function() {
 	return ZmMsg[ZmApp.NAME[this._name]];
 };
 
@@ -594,6 +595,30 @@ function(accordionItem, byUser, callback) {
 	if (appCtxt.isOffline) {
 		var interval = (AjxEnv.isFirefox2_0up && !AjxEnv.isFirefox3up) ? 10000 : 100;
 		AjxTimedAction.scheduleAction(new AjxTimedAction(ac, ac.setInstantNotify, true), interval);
+
+		if (appCtxt.inStartup) {
+			// load settings for all accounts
+			var accounts = appCtxt.getZimbraAccounts();
+			var unloaded = [];
+			for (var i in accounts) {
+				var acct = accounts[i];
+				if (acct.visible && !acct.loaded) {
+					unloaded.push(acct);
+				}
+			}
+			if (unloaded.length > 0) {
+				this._loadOfflineAccount(unloaded);
+			}
+		}
+	}
+};
+
+ZmApp.prototype._loadOfflineAccount =
+function(accounts) {
+	var acct = accounts.shift();
+	if (acct) {
+		var callback = new AjxCallback(this, this._loadOfflineAccount, [accounts]);
+		acct.load(callback);
 	}
 };
 

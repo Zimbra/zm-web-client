@@ -108,6 +108,7 @@ function(settings) {
     settings.registerSetting("DETACH_COMPOSE_ENABLED",          {name:"zimbraFeatureComposeInNewWindowEnabled",type:ZmSetting.T_PREF,dataType:ZmSetting.D_BOOLEAN,defaultValue:true});
     settings.registerSetting("DETACH_MAILVIEW_ENABLED",         {name:"zimbraFeatureOpenMailInNewWindowEnabled",type:ZmSetting.T_PREF,dataType:ZmSetting.D_BOOLEAN,defaultValue:true});
     settings.registerSetting("DISPLAY_EXTERNAL_IMAGES",			{name:"zimbraPrefDisplayExternalImages", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
+	settings.registerSetting("END_DATE_ENABLED",				{type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("FILTERS_ENABLED",					{name:"zimbraFeatureFiltersEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN,	defaultValue:false});
 	settings.registerSetting("FORWARD_INCLUDE_ORIG",			{name:"zimbraPrefForwardIncludeOriginalText", type:ZmSetting.T_PREF, defaultValue:ZmSetting.INCLUDE});
 	settings.registerSetting("FORWARD_MENU_ENABLED",			{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
@@ -129,6 +130,9 @@ function(settings) {
 	settings.registerSetting("MAIL_LIFETIME_TRASH",				{name:"zimbraPrefTrashLifetime", type:ZmSetting.T_PREF, defaultValue:"0"}); // dataType: DURATION
 	settings.registerSetting("MAIL_LIFETIME_TRASH_GLOBAL",		{name:"zimbraMailTrashLifetime", type:ZmSetting.T_COS, defaultValue:"0"}); // dataType: DURATION
 	settings.registerSetting("MAIL_LOCAL_DELIVERY_DISABLED",	{name:"zimbraPrefMailLocalDeliveryDisabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
+	settings.registerSetting("MAIL_NOTIFY_SOUNDS",				{name:"zimbraPrefMailSoundsEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
+	settings.registerSetting("MAIL_NOTIFY_APP",					{name:"zimbraPrefMailFlashIcon", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
+	settings.registerSetting("MAIL_NOTIFY_BROWSER",				{name:"zimbraPrefMailFlashTitle", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("MAIL_PRIORITY_ENABLED",	        {name:"zimbraFeatureMailPriorityEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("MARK_MSG_READ",	      			{name:"zimbraPrefMarkMsgRead", type:ZmSetting.T_PREF, dataType:ZmSetting.D_INT, defaultValue:0});
 	settings.registerSetting("MAX_MESSAGE_SIZE",				{type:ZmSetting.T_PREF, defaultValue:"100000"});
@@ -156,18 +160,13 @@ function(settings) {
 	settings.registerSetting("SIGNATURE_ENABLED",				{name:"zimbraPrefMailSignatureEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("SIGNATURE_STYLE",					{name:"zimbraPrefMailSignatureStyle", type:ZmSetting.T_PREF, defaultValue:ZmSetting.SIG_OUTLOOK});
 	settings.registerSetting("SPAM_ENABLED",					{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
-	settings.registerSetting("USER_FOLDERS_ENABLED",			{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
-
 	settings.registerSetting("START_DATE_ENABLED",				{type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
-	settings.registerSetting("END_DATE_ENABLED",				{type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
+	settings.registerSetting("USER_FOLDERS_ENABLED",			{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	settings.registerSetting("VACATION_FROM",       			{name:"zimbraPrefOutOfOfficeFromDate", type:ZmSetting.T_PREF, defaultValue:""});
-	settings.registerSetting("VACATION_UNTIL",       			{name:"zimbraPrefOutOfOfficeUntilDate", type:ZmSetting.T_PREF, defaultValue:""});
 	settings.registerSetting("VACATION_MSG",					{name:"zimbraPrefOutOfOfficeReply", type:ZmSetting.T_PREF, defaultValue:""});
 	settings.registerSetting("VACATION_MSG_ENABLED",			{name:"zimbraPrefOutOfOfficeReplyEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("VACATION_MSG_FEATURE_ENABLED",	{name:"zimbraFeatureOutOfOfficeReplyEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
-	settings.registerSetting("MAIL_NOTIFY_SOUNDS",				{name:"zimbraPrefMailSoundsEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
-	settings.registerSetting("MAIL_NOTIFY_APP",					{name:"zimbraPrefMailFlashIcon", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
-	settings.registerSetting("MAIL_NOTIFY_BROWSER",				{name:"zimbraPrefMailFlashTitle", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
+	settings.registerSetting("VACATION_UNTIL",       			{name:"zimbraPrefOutOfOfficeUntilDate", type:ZmSetting.T_PREF, defaultValue:""});
 
     ZmMailApp._setGroupByMaps();
 };
@@ -258,6 +257,10 @@ function() {
 		}
 	};
 
+	if (appCtxt.isOffline) {
+		sections["MAIL"].prefs.push(ZmSetting.OFFLINE_MAIL_TOASTER_ENABELD);
+	}
+
 	for (var id in sections) {
 		ZmPref.registerPrefSection(id, sections[id]);
 	}
@@ -283,6 +286,12 @@ function() {
 	ZmPref.registerPref("DISPLAY_EXTERNAL_IMAGES", {
 		displayName:		ZmMsg.showExternalImages,
 		displayContainer:	ZmPref.TYPE_CHECKBOX
+	});
+
+	ZmPref.registerPref("END_DATE_ENABLED", {
+		displayName:		ZmMsg.endDate,
+		displayContainer:	ZmPref.TYPE_CHECKBOX,
+		precondition:		ZmSetting.VACATION_MSG_FEATURE_ENABLED
 	});
 
 	ZmPref.registerPref("INITIAL_SEARCH", {
@@ -457,6 +466,12 @@ function() {
 		displayContainer:	ZmPref.TYPE_CUSTOM
 	});
 
+	ZmPref.registerPref("START_DATE_ENABLED", {
+		displayContainer:	ZmPref.TYPE_CHECKBOX,
+		displayName:		ZmMsg.startDate,
+		precondition:		ZmSetting.VACATION_MSG_FEATURE_ENABLED
+	});
+
 	ZmPref.registerPref("VACATION_FROM", {
 		displayName:		ZmMsg.startDate,
 		displayContainer:	ZmPref.TYPE_INPUT,
@@ -490,16 +505,12 @@ function() {
 		errorMessage:		ZmMsg.missingAwayMessage
 	});
 
-	ZmPref.registerPref("START_DATE_ENABLED", {
-		displayContainer:	ZmPref.TYPE_CHECKBOX,
-		displayName:		ZmMsg.startDate,
-		precondition:		ZmSetting.VACATION_MSG_FEATURE_ENABLED
-	});
-	ZmPref.registerPref("END_DATE_ENABLED", {
-		displayName:		ZmMsg.endDate,
-		displayContainer:	ZmPref.TYPE_CHECKBOX,
-		precondition:		ZmSetting.VACATION_MSG_FEATURE_ENABLED
-	});
+	if (appCtxt.isOffline) {
+		ZmPref.registerPref("OFFLINE_MAIL_TOASTER_ENABELD", {
+			displayName:		(AjxEnv.isMac ? ZmMsg.showPopupMac : ZmMsg.showPopup),
+			displayContainer:	ZmPref.TYPE_CHECKBOX
+		});
+	}
 };
 
 ZmMailApp.validateMailLocalDeliveryDisabled =
@@ -910,35 +921,42 @@ function(creates, mailCreates) {
 		}
 	}
 
-	var soundAlertsOn = appCtxt.get(ZmSetting.MAIL_NOTIFY_SOUNDS);
-	var appAlertsOn = appCtxt.get(ZmSetting.MAIL_NOTIFY_APP);
-	var browserAlertsOn = appCtxt.get(ZmSetting.MAIL_NOTIFY_BROWSER);
-	if (!soundAlertsOn && !appAlertsOn && !browserAlertsOn) { return; }
+	// get alert prefs for all accounts
+	var soundAlertsOn, appAlertsOn, browserAlertsOn = false;
+	var accounts = appCtxt.getZimbraAccounts();
+	for (var i in accounts) {
+		var acct = accounts[i];
+		if (acct.visible) {
+			if (appCtxt.get(ZmSetting.MAIL_NOTIFY_SOUNDS, null, acct))	soundAlertsOn = true;
+			if (appCtxt.get(ZmSetting.MAIL_NOTIFY_APP, null, acct))		appAlertsOn = true;
+			if (appCtxt.get(ZmSetting.MAIL_NOTIFY_BROWSER, null, acct))	browserAlertsOn = true;
+		}
+	}
 
-	// If we didn't display an alert-worthy new message, loop thru all creates looking for one.
-	var accountAlerts;
+	// if not a single account has alert prefs turned on, bail - and for offline,
+	// we additionally popup a toaster so always follow thru   
+	if (!soundAlertsOn && !appAlertsOn && !browserAlertsOn && !appCtxt.isOffline) { return; }
+
+	// If we didn't display an alert-worthy new message, loop thru all creates
+	// for all accounts looking for one.
+	var accountAlerts = [];
 	if (mailCreates && (!alertNewMail || appCtxt.multiAccounts)) {
 		var parsedId;
 		for (var i = 0, count = mailCreates.length; i < count; i++) {
 			var mc = mailCreates[i];
-			if (mc.f && (mc.f.indexOf(ZmItem.FLAG_UNREAD) != -1)) {
-				parsedId = ZmOrganizer.parseId(mc.l, parsedId);
-				if (parsedId.id == ZmOrganizer.ID_INBOX &&
-					parsedId.account && !parsedId.account.isOfflineInitialSync())
-				{
-					if (parsedId.account == appCtxt.getActiveAccount()) {
-						alertNewMail = true;
-					} else {
-						accountAlerts = accountAlerts || {};
-						accountAlerts[parsedId.account.id] = parsedId.account;
-					}
-				}
+			var parsedId = (mc && mc.f && (mc.f.indexOf(ZmItem.FLAG_UNREAD) != -1))
+				? ZmOrganizer.parseId(mc.l) : null;
+
+			if (parsedId && parsedId.id == ZmOrganizer.ID_INBOX &&
+				parsedId.account && !parsedId.account.isOfflineInitialSync())
+			{
+				accountAlerts.push(parsedId.account);
 			}
 		}
 	}
 
 	// If any alert-worthy mail, beep and flash browser.
-	if ((alertNewMail || accountAlerts)){
+	if (alertNewMail || (accountAlerts.length > 0)) {
 		AjxDispatcher.require("Alert");
 		if (soundAlertsOn) {
 			ZmSoundAlert.getInstance().start();
@@ -949,17 +967,63 @@ function(creates, mailCreates) {
 	}
 
 	// Do any alert on the mail app tab.
-	if (appAlertsOn && alertNewMail &&
+	if (appAlertsOn && (alertNewMail || (accountAlerts.length > 0)) &&
 		(appCtxt.getActiveAccount() == appCtxt.getMainAccount()))
 	{
 		this.startAlert();
 	}
 
-	// Do any alert on account accordion items.
-	if (appAlertsOn && accountAlerts) {
+	// Do any account-specifc alerts (i.e. flash accordion item)
+	if (accountAlerts.length > 0) {
 		AjxDispatcher.require("Alert");
-		for (var accountId in accountAlerts) {
-			ZmAccountAlert.get(accountAlerts[accountId]).start(this);
+		for (var i = 0; i < accountAlerts.length; i++) {
+			ZmAccountAlert.get(accountAlerts[i]).start(this, creates);
+		}
+
+		if (appCtxt.isOffline && window.platform &&
+			(AjxEnv.isWindows || AjxEnv.isMac) &&
+			appCtxt.get(ZmSetting.OFFLINE_MAIL_TOASTER_ENABELD))
+		{
+			var winText = {};
+			var msgs = creates["m"] || [];
+			for (var i = 0; i < msgs.length && i < 5; i++) {
+				var id = msgs[i].id;
+				var msg = appCtxt.getById(id);
+				
+				if (msg) {
+					var pid = ZmOrganizer.parseId(id);
+					var text = (msg.subject)
+						? ([msg.subject, " - ", (msg.fragment || "")].join(""))
+						: (msg.fragment || "");
+
+					if (AjxEnv.isMac) {
+						var title = (appCtxt.numVisibleAccounts > 1)
+							? ([ZmMsg.newMail, " (", pid.account.getDisplayName(), ")"].join(""))
+							: ZmMsg.newMail;
+						window.platform.showNotification(title, text, "resource://webapp/icons/default/launcher.icns");
+					} else if (AjxEnv.isWindows) {
+						var disp = pid.account.getDisplayName();
+						if (!winText[disp]) {
+							winText[disp] = [];
+						}
+						winText[disp].push(text);
+					}
+				}
+			}
+
+			if (AjxEnv.isWindows) {
+				window.platform.icon().showBalloonTip("test", "test2", 5);
+				var balloonText = [];
+				for (var j in winText) {
+					balloonText.push(j + "\n  " + winText[j].join("\n  "));
+				}
+				if (balloonText.length > 0) {
+					if (msgs.length > 5) {
+						balloonText.push(ZmMsg.andMore);
+					}
+					window.platform.icon().showBalloonTip(ZmMsg.newMail, balloonText.join("\n"), 5);
+				}
+			}
 		}
 	}
 };
