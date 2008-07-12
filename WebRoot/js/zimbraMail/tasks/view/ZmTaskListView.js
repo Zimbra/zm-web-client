@@ -323,15 +323,18 @@ function(ev) {
 
 			// skip if this item does not belong in this list.
 			var folderId = this._controller.getList().search.folderId;
-            if(appCtxt.getById(folderId) && appCtxt.getById(folderId).isRemote()){
-                folderId = appCtxt.getById(folderId)._remoteId;//getRemoteId();
-            }
+			if (appCtxt.getById(folderId) &&
+				appCtxt.getById(folderId).isRemote())
+			{
+				folderId = appCtxt.getById(folderId)._remoteId; //getRemoteId();
+			}
 
-            if (folderId && folderId != item.folderId)
-				continue;
+			if (appCtxt.isOffline && appCtxt.multiAccounts) {
+				folderId = ZmOrganizer.getSystemId(folderId);
+			}
 
-			if (this._list && this._list.contains(item)) // skip if we already have it
-				continue;
+			if (folderId && folderId != item.folderId) { continue; }			// does not belong to this folder
+			if (this._list && this._list.contains(item)) { continue; }			// skip if we already have it
 
 			// add new item at the beg. of list view's internal list
 			var idx = this._list && this._list.size() > 0 ? 1 : null;
