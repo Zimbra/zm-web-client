@@ -136,10 +136,11 @@ and the container element is replaced with that control.
 <template id='prefs.Pages#Mail'>
 	<div align=right>
 		<table class='ZOptionsDefaultsTable'>
-			<tr><td class='ZOptionsDefaultsField'><div id='${id}_REVERT_PAGE' tabindex='10'></div></td></tr>
+			<tr>
+				<td class='ZOptionsDefaultsField'><div id='${id}_REVERT_PAGE' tabindex='10'></div></td>
+			</tr>
 		</table>
 	</div>
-
 	<table border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
@@ -151,50 +152,55 @@ and the container element is replaced with that control.
 		<tr>
 			<td class='ZOptionsSectionMain'>
 				<table width=100%>
-					<tr><td class='ZOptionsLabel'><$=ZmMsg.displayMessagesLabel$></td>
+					<tr>
+						<td class='ZOptionsLabel'><$=ZmMsg.displayMessagesLabel$></td>
 						<td class='ZOptionsField'><input id='${id}_PAGE_SIZE' tabindex='20'></td>
 					</tr>
 	
 					<$ if (!appCtxt.isOffline && data.isEnabled(ZmSetting.POLLING_INTERVAL_ENABLED)) { $>
-					<tr>
-	                    <td class='ZOptionsLabel'><$=ZmMsg.pollingIntervalLabel$></td>
-	                    <td class='ZOptionsField'><input id='${id}_POLLING_INTERVAL' tabindex='40' size='3'></td>
-					</tr>
+						<tr>
+							<td class='ZOptionsLabel'><$=ZmMsg.pollingIntervalLabel$></td>
+							<td class='ZOptionsField'><input id='${id}_POLLING_INTERVAL' tabindex='40' size='3'></td>
+						</tr>
 					<$ } $>
 	
-					<tr><td class='ZOptionsLabel'><$=ZmMsg.displayMail$></td>
+					<tr>
+						<td class='ZOptionsLabel'><$=ZmMsg.displayMail$></td>
 						<td class='ZOptionsField'><select id='${id}_VIEW_AS_HTML' tabindex='50'></select></td>
 					</tr>
 	
 					<tr><td colspan=2><hr></td></tr>
 	
-					<tr><td class='ZOptionsLabel'><$=ZmMsg.messagePreviewLabel$></td>
+					<tr>
+						<td class='ZOptionsLabel'><$=ZmMsg.messagePreviewLabel$></td>
 						<td class='ZOptionsField'><div id='${id}_SHOW_FRAGMENTS' tabindex='70'></div></td>
 					</tr>
 	
-					<tr><td class='ZOptionsLabel'></td>
+					<tr>
+						<td class='ZOptionsLabel'></td>
 						<td class='ZOptionsField'><div id='${id}_OPEN_MAIL_IN_NEW_WIN' tabindex='80'></div></td>
 					</tr>
 	
-					<tr><td class='ZOptionsLabel'><$=ZmMsg.imagesLabel$></td>
+					<tr>
+						<td class='ZOptionsLabel'><$=ZmMsg.imagesLabel$></td>
 						<td class='ZOptionsField'><div id='${id}_DISPLAY_EXTERNAL_IMAGES' tabindex='90'></div></td>
 					</tr>
 					
-					<tr><td class='ZOptionsLabelTop'><$=ZmMsg.messageReadLabel$></td>
+					<tr>
+						<td class='ZOptionsLabelTop'><$=ZmMsg.messageReadLabel$></td>
 						<td class='ZOptionsField'><select id='${id}_MARK_MSG_READ' tabindex='95'></select></td>
 					</tr>
 					
 					<tr><td colspan=2><hr></td></tr>
 	
-					<tr><td class='ZOptionsLabel'><$=ZmMsg.initialMailSearchLabel$></td>
+					<tr>
+						<td class='ZOptionsLabel'><$=ZmMsg.initialMailSearchLabel$></td>
 						<td class='ZOptionsField'><div id='${id}_INITIAL_SEARCH' tabindex='100'></div></td>
 					</tr>
 				</table>
 			</td>
 		</tr>
 	</table>
-
-
 	<table border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
@@ -206,63 +212,63 @@ and the container element is replaced with that control.
 		<tr>
 			<td class='ZOptionsSectionMain'>
 				<table width=100%>
-					<tr><td class='ZOptionsLabel'><$=ZmMsg.messageArrivalLabel$></td>
-						<td class='ZOptionsField'>
-							<input id='${id}_MAIL_NOTIFY_SOUNDS' tabindex='105' type=checkbox>
-						</td>
+					<tr>
+						<td class='ZOptionsLabel'><$=ZmMsg.messageArrivalLabel$></td>
+						<td class='ZOptionsField'><input id='${id}_MAIL_NOTIFY_SOUNDS' tabindex='105' type=checkbox></td>
 					</tr>
-					<tr><td class='ZOptionsLabel'>&nbsp;</td>
-						<td class='ZOptionsField'>
-							<input id='${id}_MAIL_NOTIFY_APP' tabindex='105' type=checkbox>
-						</td>
+					<tr>
+						<td class='ZOptionsLabel'>&nbsp;</td>
+						<td class='ZOptionsField'><input id='${id}_MAIL_NOTIFY_APP' tabindex='106' type=checkbox></td>
 					</tr>
-					<tr><td class='ZOptionsLabel'>&nbsp;</td>
-						<td class='ZOptionsField'>
-							<input id='${id}_MAIL_NOTIFY_BROWSER' tabindex='105' type=checkbox>
-						</td>
+					<tr>
+						<td class='ZOptionsLabel'>&nbsp;</td>
+						<td class='ZOptionsField'><input id='${id}_MAIL_NOTIFY_BROWSER' tabindex='107' type=checkbox></td>
+					</tr>
+					<tr>
+						<td class='ZOptionsLabel'>&nbsp;</td>
+						<td class='ZOptionsField'><input id='${id}_OFFLINE_MAIL_TOASTER_ENABELD' tabindex='108' type=checkbox></td>
 					</tr>
 					<$ if (data.isEnabled(ZmSetting.MAIL_FORWARDING_ENABLED)) { $>
-					<tr><td class='ZOptionsLabel'>&nbsp;</td>
-						<!--<td class='ZOptionsField'><div id='${id}_MAIL_FORWARDING_ADDRESS-ON'></div></td>-->
-						<td class='ZOptionsField'><$=ZmMsg.forwardCopyTo$></td>
-					</tr>
-					<tr><td class='ZOptionsLabel'>&nbsp;</td>
-						<td class='ZOptionsField' style='padding-left:2em;'>
-							<input id='${id}_MAIL_FORWARDING_ADDRESS' tabindex='110' title='<$= ZmMsg.enterEmailAddress $>'>
-						</td>
-					</tr>
-					<tr><td class='ZOptionsLabel'>&nbsp;</td>
-						<td class='ZOptionsField' style='padding-left:2em;'>
-							<input id='${id}_MAIL_LOCAL_DELIVERY_DISABLED' tabindex='120' type=checkbox>
-						</td>
-					</tr>
+						<tr>
+							<td class='ZOptionsLabel'>&nbsp;</td>
+							<!--<td class='ZOptionsField'><div id='${id}_MAIL_FORWARDING_ADDRESS-ON'></div></td>-->
+							<td class='ZOptionsField'><$=ZmMsg.forwardCopyTo$></td>
+						</tr>
+						<tr>
+							<td class='ZOptionsLabel'>&nbsp;</td>
+							<td class='ZOptionsField' style='padding-left:2em;'><input id='${id}_MAIL_FORWARDING_ADDRESS' tabindex='110' title='<$= ZmMsg.enterEmailAddress $>'></td>
+						</tr>
+						<tr>
+							<td class='ZOptionsLabel'>&nbsp;</td>
+							<td class='ZOptionsField' style='padding-left:2em;'><input id='${id}_MAIL_LOCAL_DELIVERY_DISABLED' tabindex='120' type=checkbox></td>
+						</tr>
 					<$ } $>
 	
 					<$ if (data.isEnabled(ZmSetting.NOTIF_FEATURE_ENABLED)) { $>
 						<$ if (data.isEnabled(ZmSetting.MAIL_FORWARDING_ENABLED)) { $>
-						<tr><td>&nbsp;</td><td><hr></td></tr>
+							<tr><td>&nbsp;</td><td><hr></td></tr>
 						<$ } $>
-					<tr><td class='ZOptionsLabel'>
+						<tr>
+							<td class='ZOptionsLabel'>
 						<$ if (!data.isEnabled(ZmSetting.MAIL_FORWARDING_ENABLED)) { $>
 							<$=ZmMsg.messageArrivalLabel$>
 						<$ } else { $>
 							&nbsp;
 						<$ } $>
-						</td>
+							</td>
 						<td class='ZOptionsField'><input id='${id}_NOTIF_ENABLED' tabindex='130' type=checkbox></td>
 					</tr>
-					<tr><td class='ZOptionsLabel'>&nbsp;</td>
-						<td class='ZOptionsField' style='padding-left:2em;'>
-							<input id='${id}_NOTIF_ADDRESS' tabindex='140' title='<$= ZmMsg.enterEmailAddress $>'>
-						</td>
+					<tr>
+						<td class='ZOptionsLabel'>&nbsp;</td>
+						<td class='ZOptionsField' style='padding-left:2em;'><input id='${id}_NOTIF_ADDRESS' tabindex='140' title='<$= ZmMsg.enterEmailAddress $>'></td>
 					</tr>
 					<$ } $>
 	
 					<$ if (data.isEnabled(ZmSetting.VACATION_MSG_FEATURE_ENABLED)) { $>
 						<$ if (data.isEnabled(ZmSetting.MAIL_FORWARDING_ENABLED,ZmSetting.NOTIF_FEATURE_ENABLED)) { $>
-						<tr><td>&nbsp;</td><td><hr></td></tr>
+							<tr><td>&nbsp;</td><td><hr></td></tr>
 						<$ } $>
-					<tr><td class='ZOptionsLabel'>
+						<tr><td class='ZOptionsLabel'>
 						<$ if (!data.isEnabled(ZmSetting.MAIL_FORWARDING_ENABLED) && !data.isEnabled(ZmSetting.NOTIF_FEATURE_ENABLED)) { $>
 							<$=ZmMsg.messageArrivalLabel$>
 						<$ } else { $>
@@ -271,46 +277,64 @@ and the container element is replaced with that control.
 						</td>
 						<td class='ZOptionsField'><input id='${id}_VACATION_MSG_ENABLED' tabindex='150' type=checkbox></td>
 					</tr>
-					<tr><td class='ZOptionsLabel'>&nbsp;</td>
+					<tr>
+						<td class='ZOptionsLabel'>&nbsp;</td>
 						<td class='ZOptionsField' style='padding-left:2em;'>
-	                        <table border="0">
-	                            <tr>
-	                                <td>
-	                                    <textarea id='${id}_VACATION_MSG' tabindex='160' rows=3 cols=70></textarea>
-	                                    <span style="display:none">
-	                                        <input type="hidden" name="st_dt" id="${id}_VACATION_FROM"/>
-	                                        <input type="hidden" name="ed_dt" id="${id}_VACATION_UNTIL"/>
-	                                    </span>
-	                                </td>
-	                            </tr>
-	                            <tr>
-	                                <td>
-	                                    <table><tr><td>
-	                                        <fieldset>
-	                                            <legend> <input type="checkbox" id="${id}_START_DATE_ENABLED"> </legend>
-	                                            <table><tr><td> <$=ZmMsg.startOn$></td><td><input style='height:22px;' type='text' autocomplete='off' size=8 maxlength=10 id='${id}_VACATION_FROM1'></td> <td id='${id}_startMiniCal'></td></tr></table>
-	                                        </fieldset>
-	                                    </td>
-	                                    <td>
-	                                       <fieldset>
-	                                            <legend> <input type="checkbox" id="${id}_END_DATE_ENABLED"></legend>
-	                                            <table><tr><td> <$=ZmMsg.endOn$></td><td><input style='height:22px;' type='text' autocomplete='off' size=8 maxlength=10 id='${id}_VACATION_UNTIL1'></td><td id='${id}_endMiniCal'></td></tr></table>
-	                                        </fieldset>
-	                                    </td>
-	                                    </tr>
-	                                    </table>
-	                            </tr>
-	                        </table>
-	                    </td>
+							<table border="0">
+								<tr>
+									<td>
+										<textarea id='${id}_VACATION_MSG' tabindex='160' rows=3 cols=70></textarea>
+										<span style="display:none">
+											<input type="hidden" name="st_dt" id="${id}_VACATION_FROM"/>
+											<input type="hidden" name="ed_dt" id="${id}_VACATION_UNTIL"/>
+										</span>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<table>
+											<tr>
+												<td>
+													<fieldset>
+														<legend><input type="checkbox" id="${id}_START_DATE_ENABLED"></legend>
+														<table>
+															<tr>
+																<td> <$=ZmMsg.startOn$></td>
+																<td><input style='height:22px;' type='text' autocomplete='off' size=8 maxlength=10 id='${id}_VACATION_FROM1'></td>
+																<td id='${id}_startMiniCal'></td>
+															</tr>
+														</table>
+													</fieldset>
+												</td>
+												<td>
+												   <fieldset>
+														<legend><input type="checkbox" id="${id}_END_DATE_ENABLED"></legend>
+														<table>
+															<tr>
+																<td> <$=ZmMsg.endOn$></td>
+																<td><input style='height:22px;' type='text' autocomplete='off' size=8 maxlength=10 id='${id}_VACATION_UNTIL1'></td>
+																<td id='${id}_endMiniCal'></td>
+															</tr>
+														</table>
+													</fieldset>
+												</td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+							</table>
+						</td>
 					</tr>
-	                <$ } $>
-	
+					<$ } $>
+
 					<tr><td colspan=2><hr></td></tr>
-	
-					<tr><td class='ZOptionsLabel'><$=ZmMsg.removeDupesToSelfLabel$></td>
+
+					<tr>
+						<td class='ZOptionsLabel'><$=ZmMsg.removeDupesToSelfLabel$></td>
 						<td class='ZOptionsField'><$=ZmMsg.removeDupesToSelf$></td>
 					</tr>
-					<tr><td class='ZOptionsLabel'>&nbsp;</td>
+					<tr>
+						<td class='ZOptionsLabel'>&nbsp;</td>
 						<td class='ZOptionsField'><div id='${id}_DEDUPE_MSG_TO_SELF' tabindex='170'></div></td>
 					</tr>
 				</table>
@@ -329,17 +353,17 @@ and the container element is replaced with that control.
 	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr>
 			<td class='ZOptionsSectionMain'>
-			<table width=100%>
-				<tr><td class='ZOptionsLabelTop'><$=ZmMsg.externalAccessPop$></td>
-					<td class='ZOptionsField'>
-						<input id='${id}_POP_DOWNLOAD_SINCE' tabindex='180' type=radio>
-					</td>
-				<tr><td></td>
-					<td class='ZOptionsInfo'>
-						<span id='${id}_POP_DOWNLOAD_SINCE_VALUE'></span>
-					</td>
-				</tr>
-			</table>
+				<table width=100%>
+					<tr>
+						<td class='ZOptionsLabelTop'><$=ZmMsg.externalAccessPop$></td>
+						<td class='ZOptionsField'><input id='${id}_POP_DOWNLOAD_SINCE' tabindex='180' type=radio></td>
+					</tr>
+					<tr>
+						<td></td>
+						<td class='ZOptionsInfo'><span id='${id}_POP_DOWNLOAD_SINCE_VALUE'></span></td>
+					</tr>
+				</table>
+			</td>
 		</tr>
 	</table>
 	<$ } $>
