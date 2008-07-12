@@ -212,6 +212,8 @@ function(creates, force) {
 
 	for (var name in creates) {
 		var list = creates[name];
+		if (!list) { continue; }
+
 		for (var i = 0; i < list.length; i++) {
 			var create = list[i];
 			if (appCtxt.cacheGet(create.id)) { continue; }
@@ -221,11 +223,11 @@ function(creates, force) {
 			} else if (name == "link") {
 				this._handleCreateLink(create, ZmOrganizer.TASKS);
 			} else if (name == "task") {
-				var currList = appCtxt.getCurrentList();
-				if (currList && (currList instanceof ZmTaskList)) {
-					currList.notifyCreate(create);
+				// bug fix #29833 - always attempt to process new tasks
+				var taskList = this.getTaskListController().getList();
+				if (taskList) {
+					taskList.notifyCreate(create);
 				}
-				create._handled = true;
 			}
 		}
 	}
