@@ -89,13 +89,14 @@ function(parent, type, id) {
 
 	// user folder or Folders header
 	var nId = ZmOrganizer.normalizeId(id, this.type);
-	if (nId == ZmOrganizer.ID_ROOT || ((!folder.isSystem()) && !folder.isSyncIssuesFolder()))	{
+	if (nId == ZmOrganizer.ID_ROOT || ((!folder.isSystem()) && !folder.isSyncIssuesFolder())) {
 		parent.enableAll(true);
 		parent.enable(ZmOperation.SYNC, folder.isFeed()/* || folder.hasFeeds()*/);
 		parent.enable(ZmOperation.SYNC_ALL, folder.isFeed() || folder.hasFeeds());
 		parent.enable([ZmOperation.SHARE_FOLDER, ZmOperation.MOUNT_FOLDER], (!folder.link || folder.isAdmin()));
 		parent.enable(ZmOperation.EMPTY_FOLDER, (hasContent || folder.link));	// numTotal is not set for shared folders
 		parent.enable(ZmOperation.RENAME_FOLDER, !folder.isDataSource());		// dont allow datasource'd folder to be renamed via overview
+		parent.enable(ZmOperation.NEW_FOLDER, !folder.disallowSubFolder);
 
 		if (folder.isRemote() && folder.isReadOnly()) {
 			parent.enable([ZmOperation.NEW_FOLDER, ZmOperation.MARK_ALL_READ, ZmOperation.EMPTY_FOLDER], false);
@@ -105,10 +106,11 @@ function(parent, type, id) {
 	else {
 		parent.enableAll(false);
 		// can't create folders under Drafts or Junk
-		if (nId == ZmFolder.ID_INBOX ||
-			nId == ZmFolder.ID_SENT  ||
-			nId == ZmFolder.ID_TRASH ||
-			nId == ZmFolder.ID_ARCHIVE)
+		if (!folder.disallowSubFolder &&
+			(nId == ZmFolder.ID_INBOX ||
+			 nId == ZmFolder.ID_SENT  ||
+			 nId == ZmFolder.ID_TRASH ||
+			 nId == ZmFolder.ID_ARCHIVE))
 		{
 			parent.enable(ZmOperation.NEW_FOLDER, true);
 		}
@@ -388,14 +390,13 @@ function(ev) {
 	ds.reset();
 	ds.registerCallback(DwtDialog.OK_BUTTON, this._emptyShieldYesCallback, this, organizer);
 	ds.registerCallback(DwtDialog.CANCEL_BUTTON, this._clearDialog, this, this._emptyShield);
-    var msg = ZmMsg.confirmEmptyTrashFolder; 
-    if(organizer.nId != ZmFolder.ID_TRASH){
-        msg  = AjxMessageFormat.format(ZmMsg.confirmEmptyFolder, organizer.getName());
-    }
-    ds.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
+	var msg = (organizer.nId != ZmFolder.ID_TRASH)
+		? (AjxMessageFormat.format(ZmMsg.confirmEmptyFolder, organizer.getName()))
+		: ZmMsg.confirmEmptyTrashFolder;
+	ds.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
 	ds.popup();
 
-	if(!(organizer.nId == ZmFolder.ID_SPAM || organizer.isInTrash())){
+	if (!(organizer.nId == ZmFolder.ID_SPAM || organizer.isInTrash())) {
 		var cancelButton = ds.getButton(DwtDialog.CANCEL_BUTTON);
 		cancelButton.focus();
 	}
