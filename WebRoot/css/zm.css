@@ -2086,14 +2086,6 @@ HTML>BODY .appt-selected .appt_allday_body
 #ENDIF
 }
 
-.ZmImToastText {
-	@Text-anchor@
-}
-.ZmImToastText-hover {
-	@Text-anchor-hover@
-	@ActiveCursor@
-}
-
 .ZmBuddyFilterItem {
 	width: 96%;
 	padding-left: 4px;
