@@ -79,7 +79,7 @@
 							</td>
 							<td>
 								<label for="emailNotificationActive"><fmt:message key="sendEmailNotification"/></label>&nbsp;&nbsp;
-								<input name="emailNotificationAddress" type="text" size="25" value="${features.voiceMailPrefs.emailNotificationAddress}"
+								<input name="emailNotificationAddress" type="text" size="25" value="${not empty requestScope.emailNotificationAddress ? requestScope.emailNotificationAddress : features.voiceMailPrefs.emailNotificationAddress}"
 									<c:if test="${!account.hasVoiceMail}"> disabled</c:if>
 								>
 							</td>

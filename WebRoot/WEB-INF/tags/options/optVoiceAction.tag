@@ -11,9 +11,14 @@
 
 <c:if test="${zm:actionSet(param, 'actionSave')}">
     <c:choose>
+        <c:when test="${param.emailNotificationActive and not zm:isValidEmailAddress(param.emailNotificationAddress)}">
+            <app:status style="Critical"><fmt:message key="invalidEmailAddress"/></app:status>
+			<c:set var="emailNotificationAddress" scope="request" value="${param.emailNotificationAddress}"></c:set>
+		</c:when>
         <c:when test="${param.callForwardingAllActive and not zm:isValidPhoneNumber(param.callForwardingAllNumber)}">
             <app:status style="Critical"><fmt:message key="invalidForwardNumber"/></app:status>
-			<c:set var="badCallForwardingAll" scope="request" value="${param.callForwardingAllNumber}"></c:set>
+            <c:set var="emailNotificationAddress" scope="request" value="${param.emailNotificationAddress}"></c:set>
+            <c:set var="badCallForwardingAll" scope="request" value="${param.callForwardingAllNumber}"></c:set>
 		</c:when>
         <c:otherwise>
             <zm:modifyCallFeatures var="result" phone="${param.phone}"
