@@ -617,7 +617,9 @@ function(params) {
 	var identityCollection = appCtxt.getIdentityCollection();
 	var identity = (msg && msg.identity) ? msg.identity : identityCollection.selectIdentity(msg);
 	params.identity = identity;
-	this._currentSignatureId = identity.signature;
+	if (identity) {
+		this._currentSignatureId = identity.signature;
+	}
 
 	this._composeMode = params.composeMode ? params.composeMode : this._getComposeMode(msg, identity);
 	if (!this._composeView) {
