@@ -183,6 +183,7 @@ function(doc, newName) {
 
 ZmNotebookCache.prototype.removeItem = 
 function(item) {
+	if (!item) { return; }
 	if(item.path){
 		delete this._pathMap[item.path];
 	}
