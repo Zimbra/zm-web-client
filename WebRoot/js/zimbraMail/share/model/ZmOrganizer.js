@@ -119,14 +119,16 @@ ZmOrganizer.F_REST_URL			= "rest";
 
 // server representation of org flags
 ZmOrganizer.FLAG_CHECKED			= "#";
-ZmOrganizer.FLAG_IMAP_SUBSCRIBED	= "*";
+ZmOrganizer.FLAG_DISALLOW_SUBFOLDER	= "o";
 ZmOrganizer.FLAG_EXCLUDE_FREE_BUSY	= "b";
+ZmOrganizer.FLAG_IMAP_SUBSCRIBED	= "*";
 ZmOrganizer.FLAG_OFFLINE_SYNCABLE	= "y";
 ZmOrganizer.FLAG_OFFLINE_SYNCING	= "~";
 ZmOrganizer.ALL_FLAGS = [
 	ZmOrganizer.FLAG_CHECKED,
 	ZmOrganizer.FLAG_IMAP_SUBSCRIBED,
 	ZmOrganizer.FLAG_EXCLUDE_FREE_BUSY,
+	ZmOrganizer.FLAG_DISALLOW_SUBFOLDER,
 	ZmOrganizer.FLAG_OFFLINE_SYNCABLE,
 	ZmOrganizer.FLAG_OFFLINE_SYNCING
 ];
@@ -136,6 +138,7 @@ ZmOrganizer.FLAG_PROP = {};
 ZmOrganizer.FLAG_PROP[ZmOrganizer.FLAG_CHECKED]				= "isChecked";
 ZmOrganizer.FLAG_PROP[ZmOrganizer.FLAG_IMAP_SUBSCRIBED]		= "imapSubscribed";
 ZmOrganizer.FLAG_PROP[ZmOrganizer.FLAG_EXCLUDE_FREE_BUSY]	= "excludeFreeBusy";
+ZmOrganizer.FLAG_PROP[ZmOrganizer.FLAG_DISALLOW_SUBFOLDER]	= "disallowSubFolder";
 ZmOrganizer.FLAG_PROP[ZmOrganizer.FLAG_OFFLINE_SYNCABLE]	= "isOfflineSyncable";
 ZmOrganizer.FLAG_PROP[ZmOrganizer.FLAG_OFFLINE_SYNCING]		= "isOfflineSyncing";
 

@@ -352,6 +352,10 @@ function() {
 		}
 	}
 
+	if (!msg && parentFolder.disallowSubFolder) {
+		msg = AjxMessageFormat.format(ZmMsg.errorSubFolderNotAllowed, parentFolder.name);
+	}
+
 	return (msg ? this._showError(msg) : {l:parentFolder.id, name:name, color:color, url:url});
 };
 
