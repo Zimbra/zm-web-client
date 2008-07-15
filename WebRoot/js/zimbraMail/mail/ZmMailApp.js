@@ -1502,9 +1502,9 @@ function(parent) {
 };
 
 ZmMailApp.prototype.getDataSourceCollection =
-function() {
+function(account) {
 	var appCtxt = window.parentAppCtxt || window.appCtxt;
-	var activeAcct = appCtxt.getActiveAccount().name;
+	var activeAcct = account ? account.name : appCtxt.getActiveAccount().name;
 
 	if (!this._dataSourceCollection[activeAcct]) {
 		this._dataSourceCollection[activeAcct] = new ZmDataSourceCollection();
@@ -1516,7 +1516,7 @@ function() {
 };
 
 ZmMailApp.prototype.getIdentityCollection =
-function() {
+function(account) {
 	// child window always gets its own identitiy collection
 	if (appCtxt.isChildWindow) {
 		if (!this._identityCollection) {
@@ -1525,7 +1525,7 @@ function() {
 		return this._identityCollection;
 	}
 
-	var activeAcct = appCtxt.getActiveAccount().name;
+	var activeAcct = account ? account.name : appCtxt.getActiveAccount().name;
 
 	if (!this._identityCollection[activeAcct]) {
 		this._identityCollection[activeAcct] = new ZmIdentityCollection();
@@ -1537,9 +1537,9 @@ function() {
 };
 
 ZmMailApp.prototype.getSignatureCollection =
-function() {
+function(account) {
 	var appCtxt = window.parentAppCtxt || window.appCtxt;
-	var activeAcct = appCtxt.getActiveAccount().name;
+	var activeAcct = account ? account.name : appCtxt.getActiveAccount().name;
 
 	if (!this._signatureCollection[activeAcct]) {
 		this._signatureCollection[activeAcct] = new ZmSignatureCollection();

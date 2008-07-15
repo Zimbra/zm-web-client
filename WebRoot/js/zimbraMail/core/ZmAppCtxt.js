@@ -623,21 +623,21 @@ function(listener, index) {
 };
 
 ZmAppCtxt.prototype.getIdentityCollection =
-function() {
+function(account) {
 	var context = this.isChildWindow ? window.opener : window;
-	return context.AjxDispatcher.run("GetIdentityCollection");
+	return context.AjxDispatcher.run("GetIdentityCollection", account);
 };
 
 ZmAppCtxt.prototype.getDataSourceCollection =
-function() {
+function(account) {
 	var context = this.isChildWindow ? window.opener : window;
-	return context.AjxDispatcher.run("GetDataSourceCollection");
+	return context.AjxDispatcher.run("GetDataSourceCollection", account);
 };
 
 ZmAppCtxt.prototype.getSignatureCollection =
-function() {
+function(account) {
 	var context = this.isChildWindow ? window.opener : window;
-	return context.AjxDispatcher.run("GetSignatureCollection");
+	return context.AjxDispatcher.run("GetSignatureCollection", account);
 };
 
 ZmAppCtxt.prototype.getTree =
