@@ -25,12 +25,13 @@
                 </app:status>
             </c:when>
             <c:otherwise>
+                <c:set var="otherFlags" value="${fn:replace(fn:replace(folder.flags,'#',''), 'b', '')}"/>
                 <zm:updateFolder
                         parentid="${empty param.folderParentId ? folder.parentId : param.folderParentId}"
                         id="${param.folderId}"
                         name="${param.folderName}"
                         color="${empty param.folderColor ? folder.color : param.folderColor}"
-                        flags="${param.folderExcludeFlag}${param.folderCheckedFlag}"/>
+                        flags="${otherFlags}${param.folderExcludeFlag}${param.folderCheckedFlag}"/>
                 <c:if test="${not empty param.folderUrl and param.folderUrl ne folder.remoteURL}">
                     <zm:modifyFolderUrl id="${param.folderId}" url="${param.folderUrl}"/>
                 </c:if>

@@ -41,11 +41,12 @@
                 </app:status>
             </c:when>
             <c:otherwise>
+                <c:set var="otherFlags" value="${fn:replace(fn:replace(folder.flags,'#',''), 'b', '')}"/>
                 <zm:updateFolder
                         id="${uploader.params.folderId}"
                         name="${uploader.params.folderName}"
                         color="${uploader.params.folderColor}"
-                        flags="${uploader.params.folderExcludeFlag}${uploader.params.folderCheckedFlag}"/>
+                        flags="${otherFlags}${uploader.params.folderExcludeFlag}${uploader.params.folderCheckedFlag}"/>
                 <c:if test="${not empty uploader.params.folderUrl and uploader.params.folderUrl ne folder.remoteURL}">
                     <zm:modifyFolderUrl id="${uploader.params.folderId}" url="${uploader.params.folderUrl}"/>
                 </c:if>
