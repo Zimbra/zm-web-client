@@ -804,9 +804,9 @@ function(obj, x, y) {
 	if (obj.__toolTipContent != null) {
 		var shell = DwtShell.getShell(window);
 		var manager = shell.getHoverMgr();
-		if ((manager.getHoverObject() != this || !manager.isHovering()) && !DwtMenu.menuShowing()) {
+		if ((manager.getHoverObject() != obj || !manager.isHovering()) && !DwtMenu.menuShowing()) {
 			manager.reset();
-			manager.setHoverObject(this);
+			manager.setHoverObject(obj);
 			manager.setHoverOverData(obj);
 			manager.setHoverOverDelay(DwtToolTip.TOOLTIP_DELAY);
 			manager.setHoverOverListener(obj._hoverOverListener);
