@@ -865,6 +865,7 @@ function(bEnableInputs) {
 			this.identitySelect.addOption(identityOptions[i]);
 		}
 
+		this._setIdentityVisible();
 		this._accountChanged = false;
 	}
 

@@ -286,9 +286,9 @@ function(result) {
 
 	// initialize identities/data-sources/signatures for this account
 	var obj = result.getResponse().GetInfoResponse;
-	appCtxt.getIdentityCollection().initialize(obj.identities);
-	AjxDispatcher.run("GetDataSourceCollection").initialize(obj.dataSources);
-	appCtxt.getSignatureCollection().initialize(obj.signatures);
+	appCtxt.getIdentityCollection(this).initialize(obj.identities);
+	appCtxt.getDataSourceCollection(this).initialize(obj.dataSources);
+	appCtxt.getSignatureCollection(this).initialize(obj.signatures);
 };
 
 ZmZimbraAccount.prototype._handleLoadFolders =
