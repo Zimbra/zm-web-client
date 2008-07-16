@@ -80,6 +80,11 @@ function() {
 	return "ZmImOverview";
 };
 
+ZmImOverview.NO_MESSAGE = 0;
+ZmImOverview.NOT_LOGGED_IN = 1;
+ZmImOverview.LOADING = 2;
+ZmImOverview.NO_BUDDIES = 3;
+
 ZmImOverview.prototype.dispose =
 function() {
 	for (var name in this._actionMenuOps) {
@@ -308,7 +313,7 @@ ZmImOverview.prototype._init = function() {
 	tree.addListener(DwtEvent.ONMOUSEUP, new AjxListener(this, this._treeMouseUpListener));
 
 	// create the root item
-	this._rootItem = new DwtTreeItem({parent:tree, className:"overviewHeader"});
+	this._rootItem = new ZmRootBuddyItem({parent:tree, className:"overviewHeader"});
 	this._rootItem.setData("ZmImOverview.data", { type: "root" });
 	this._rootItem.setText(ZmMsg.buddyList);
 	this._rootItem.enableSelection(false);
@@ -324,18 +329,17 @@ ZmImOverview.prototype._init = function() {
 	this._rosterItemListListenerObj = new AjxListener(this, this._rosterItemListListener);
 	ZmImApp.INSTANCE.addRosterItemListListener(this._rosterItemListListenerObj);
 	if (ZmImApp.INSTANCE.hasRoster()) {
+		roster = this._roster = AjxDispatcher.run("GetRoster");
+		buddyList = roster.getRosterItemList();
+	}
+	if (roster && buddyList.size()) {
 		this._createFilterItem();
-		var roster = this._roster = AjxDispatcher.run("GetRoster");
-		var buddyList = roster.getRosterItemList();
-
-		// ZmRosterItemList might not be initially empty
 		buddyList.getVector().foreach(this._createBuddy, this);
 		this.sort();
 	} else {
-		this._loggedOutItem = new ZmNotLoggedInTreeItem({parent:this._rootItem});
-		var notLoggedIn = AjxMessageFormat.format(ZmMsg.imNotLoggedIn, "ZmImOverview.login()");
-		this._loggedOutItem.setText(notLoggedIn);
-		this._loggedOutItem.setData("ZmImOverview.data", { type: "loggedOut" });
+		this._infoItem = new ZmInfoTreeItem({parent:this._rootItem});
+		this._infoItem.setData("ZmImOverview.data", { type: "infoItem" });
+		this._showInfoItem(roster ? ZmImOverview.NO_BUDDIES : ZmImOverview.NOT_LOGGED_IN);
 	}
 	tree.addSeparator();
 
@@ -385,6 +389,11 @@ ZmImOverview.login = function() {
 	AjxDispatcher.run("GetRoster");
 };
 
+ZmImOverview.newBuddy = function() {
+	ZmImApp.INSTANCE.prepareVisuals();
+	ZmImApp.INSTANCE.getImController()._newRosterItemListener();
+};
+
 ZmImOverview.prototype._createFilterItem =
 function(expand) {
 	if (ZmImOverview.FILTER_SEARCH && !this._filterItem) {
@@ -397,19 +406,50 @@ function(expand) {
 	}
 };
 
+ZmImOverview.prototype._showInfoItem =
+function(type) {
+	if (this._infoItem) {
+		switch(type) {
+		case ZmImOverview.NO_MESSAGE:
+			// Once we have buddies we can just delete the info item.
+			this._showInfoItem(ZmImOverview.NO_MESSAGE);
+			this._infoItem = null;
+			break;
+		case ZmImOverview.NOT_LOGGED_IN:
+			this._infoItem.setText(AjxMessageFormat.format(ZmMsg.imNotLoggedIn, "ZmImOverview.login()"));
+			break;
+		case ZmImOverview.LOADING:
+			this._infoItem.setText(ZmMsg.loading);
+			break;
+		case ZmImOverview.NO_BUDDIES:
+			this._infoItem.setText(AjxMessageFormat.format(ZmMsg.imNoBuddies, "ZmImOverview.newBuddy()"));
+			break;
+		}
+	}
+};
+
 ZmImOverview.prototype._rosterItemListListener =
 function(ev) {
 	if (!this._roster) {
 		this._roster = ZmImApp.INSTANCE.getRoster();
 	}
-	if (this._loggedOutItem) {
-		var expand = this._rootItem.getExpanded();
-		this._loggedOutItem.dispose();
-		this._loggedOutItem = null;
-		this._createFilterItem(expand);
-	}
 	var fields = ev.getDetail("fields");
-	if (ev.event == ZmEvent.E_CREATE) {
+	if (ev.event == ZmEvent.E_LOAD) {
+		if (this._infoItem) {
+			this._showInfoItem(ZmImOverview.LOADING);
+			this._loadingAction = new AjxTimedAction(this, this._loadingTimedOut);
+			AjxTimedAction.scheduleAction(this._loadingAction, 5000);
+		}
+	} else if (ev.event == ZmEvent.E_CREATE) {
+		if (this._infoItem) {
+			var expand = this._rootItem.getExpanded();
+			this._infoItem.dispose();
+			this._infoItem = null;
+			this._createFilterItem(expand);
+		}
+		if (this._loadingAction) {
+			AjxTimedAction.cancelAction(this._loadingAction);
+		}
 		var buddies = AjxVector.fromArray(ev.getItems());
 		buddies.foreach(this._createBuddy, this);
 		if (buddies.size()) {
@@ -421,6 +461,13 @@ function(ev) {
 			   ev.event == ZmEvent.E_DELETE) {
 		var buddies = AjxVector.fromArray(ev.getItems());
 		buddies.foreach(this._removeBuddy, this);
+	}
+};
+
+ZmImOverview.prototype._loadingTimedOut = function() {
+	delete this._loadingAction;
+	if (this._infoItem) {
+		this._showInfoItem(ZmImOverview.NO_BUDDIES);
 	}
 };
 
@@ -573,7 +620,7 @@ ZmImOverview.prototype.getSortIndex = function(label, root) {
 	for (var i = 0; i < items.length; ++i) {
 		var item = items[i];
 		var data = item.getData("ZmImOverview.data");
-		if (data.type == "filter" || data.type == "loggedOut") {
+		if (data.type == "filter" || data.type == "infoItem") {
 			continue;
 		}
 		if (type == "buddy") {
@@ -759,6 +806,31 @@ ZmImOverview.FILTER_SEARCH = {
 
 ///////////////////////////////////////////////////////////////////////////
 
+ZmRootBuddyItem = function(params) {
+	DwtTreeItem.call(this, params);
+}
+
+ZmRootBuddyItem.prototype = new DwtTreeItem;
+ZmRootBuddyItem.prototype.constructor = ZmRootBuddyItem;
+
+ZmRootBuddyItem.prototype.TEMPLATE = "im.Chat#ZmRootBuddyItem";
+
+ZmRootBuddyItem.prototype.toString =
+function() {
+	return "ZmRootBuddyItem";
+};
+
+ZmRootBuddyItem.prototype._initialize =
+function() {
+	DwtTreeItem.prototype._initialize.apply(this, arguments);
+	var buttonEl = document.getElementById(this._htmlElId + "_newBuddyButton");
+	if (buttonEl) {
+		buttonEl.onclick = ZmImOverview.newBuddy;
+	}
+};
+
+///////////////////////////////////////////////////////////////////////////
+
 ZmBuddyFilterItem = function(params) {
 	this.overview = params.overview;
 	params.className = "ZmBuddyFilterItem";
@@ -793,19 +865,17 @@ function(templateId, data) {
 
 ///////////////////////////////////////////////////////////////////////////
 
-ZmNotLoggedInTreeItem = function(params) {
-	params.className = "ZmNotLoggedInTreeItem";
+ZmInfoTreeItem = function(params) {
+	params.className = "ZmInfoTreeItem";
 	DwtTreeItem.call(this, params);
 }
 
-ZmNotLoggedInTreeItem.prototype = new DwtTreeItem;
-ZmNotLoggedInTreeItem.prototype.constructor = ZmNotLoggedInTreeItem;
+ZmInfoTreeItem.prototype = new DwtTreeItem;
+ZmInfoTreeItem.prototype.constructor = ZmInfoTreeItem;
 
-ZmNotLoggedInTreeItem.prototype.TEMPLATE = "im.Chat#ZmNotLoggedInTreeItem";
+ZmInfoTreeItem.prototype.TEMPLATE = "im.Chat#ZmInfoTreeItem";
 
-ZmNotLoggedInTreeItem.prototype.toString =
+ZmInfoTreeItem.prototype.toString =
 function() {
-	return "ZmNotLoggedInTreeItem";
+	return "ZmInfoTreeItem";
 };
-
-
