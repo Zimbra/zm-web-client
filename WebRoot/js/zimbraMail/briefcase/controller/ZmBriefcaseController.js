@@ -147,7 +147,7 @@ function(parent, num) {
 	parent.enable([ ZmOperation.OPEN_FILE, ZmOperation.SEND_FILE], isItemSelected && !multiFolderSelect );
 	parent.enable([ ZmOperation.DELETE ], !isReadOnly && isItemSelected );
 	parent.enable([ ZmOperation.TAG_MENU ], !isShared && isItemSelected && !isFolderSelected);
-	parent.enable([ ZmOperation.VIEW_MENU ], true);
+	parent.enable([ ZmOperation.NEW_FILE, ZmOperation.VIEW_MENU ], true);
 	parent.enable([ ZmOperation.SEND_FILE ], isItemSelected && !isFolderSelected );
 };
 
