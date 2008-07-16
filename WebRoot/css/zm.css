@@ -2104,11 +2104,11 @@ HTML>BODY .appt-selected .appt_allday_body
 	width: 100%;
 }
 
-.ZmNotLoggedInTreeItem {
+.ZmInfoTreeItem {
 	margin: 4px;
 	margin-top: 1px;
 }
-.ZmNotLoggedInTreeItem .FakeAnchor {
+.ZmInfoTreeItem .FakeAnchor {
 	font-weight: bold;
 }
 
