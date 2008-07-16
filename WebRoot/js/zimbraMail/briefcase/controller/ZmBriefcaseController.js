@@ -434,14 +434,14 @@ function(docs,folderId) {
 			item.set(doc);
 			item.folderId = folderId;
 			//item.remoteFolderId = remoteFolderId; // REVISIT
-			this.putItem(item);
 			items.push(item);
 		}
 		else {
 			item.set(doc);
 			items.push(item);
 		}
-	}
+		this.putItem(item);        
+    }
 
 	//recursive search not done yet : workaround
 	var folder = appCtxt.getById(folderId);
