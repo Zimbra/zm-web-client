@@ -80,9 +80,8 @@ function(folderId, callback, errorCallback) {
 	var path = notebook.getSearchPath();
 	var search = 'in:"'+path+'"';
 	/***/
-	var search = (AjxUtil.isNumeric(folderId))
-		? ('inid:"' + folderId + '"')
-		: (['"', folderId, '"'].join(""));
+	var idText = AjxUtil.isNumeric(folderId) ? folderId : ['"', folderId, '"'].join("");
+	var search = "inid:" + idText;
 	/***/
 
 	var soapDoc = AjxSoapDoc.create("SearchRequest", "urn:zimbraMail");
