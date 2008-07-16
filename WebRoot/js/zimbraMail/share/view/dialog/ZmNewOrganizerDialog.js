@@ -347,7 +347,7 @@ function() {
 	var url = null;
 	if (!msg && this._remoteCheckboxField) {
 		url = this._remoteCheckboxField.checked ? this._urlField.value : null;
-		if (url) {
+		if (url || url != null) {
 			msg = ZmOrganizer.checkUrl(url);
 		}
 	}
