@@ -1012,3 +1012,13 @@ function(item, listView) {
 	};
     return AjxTemplate.expand("briefcase.Briefcase#Tooltip", subs);
 };
+
+
+//offline related modules
+ZmBriefcaseController.prototype.handleMailboxChange =
+function() {
+    this._foldersMap = {};
+    this._idMap = {};
+    
+    this.show(null, true);
+};

@@ -512,3 +512,11 @@ function() {
 	}
 	return this._versionController;
 };
+
+ZmNotebookApp.prototype._activateAccordionItem =
+function(accordionItem) {
+	ZmApp.prototype._activateAccordionItem.call(this, accordionItem);
+
+	var notebookController = AjxDispatcher.run("GetNotebookController");
+	notebookController.handleMailboxChange();
+};

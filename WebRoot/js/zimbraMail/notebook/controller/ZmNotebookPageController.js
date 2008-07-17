@@ -333,3 +333,10 @@ function(organizer) {
     }
 	return true;
 };
+
+
+//offline related modules
+ZmNotebookPageController.prototype.handleMailboxChange =
+function() {
+	this.show(null, true);
+};

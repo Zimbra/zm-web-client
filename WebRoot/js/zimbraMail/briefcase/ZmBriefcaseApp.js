@@ -479,3 +479,11 @@ function(url, restUrlAuthority) {
 	}
 	return url;
 };
+
+ZmBriefcaseApp.prototype._activateAccordionItem =
+function(accordionItem) {
+	ZmApp.prototype._activateAccordionItem.call(this, accordionItem);
+
+	var bc = AjxDispatcher.run("GetBriefcaseController");
+	bc.handleMailboxChange();
+};
