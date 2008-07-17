@@ -260,7 +260,7 @@
 				<td align=center nowrap id='${id}_nodeCell'></td>
 				<td nowrap class='imageCell' id='${id}_imageCell'></td>
 				<td nowrap class='${textClassName}' id='${id}_textCell' width="100%"></td>
-				<td class='${textClassName} FakeAnchor' id='${id}_newBuddyButton' style="padding-right:4px"><div class="ImgNewContact"/></td>
+				<td class='${textClassName} FakeAnchor' style="padding-right:4px"><div id='${id}_newBuddyButton' class="ImgNewContact"/></td>
 			</tr>
 		</table>
 	</div>
