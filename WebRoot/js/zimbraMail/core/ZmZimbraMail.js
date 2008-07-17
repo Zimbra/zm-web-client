@@ -1448,7 +1448,8 @@ function() {
 		var sep = url.match(/\?/) ? "&" : "?";
 		url = [url, sep, "locid=", AjxEnv.DEFAULT_LOCALE].join("");
 	} else {
-		url = [ac.get(ZmSetting.HELP_URI), "/help/", AjxEnv.DEFAULT_LOCALE, "Zimbra_User_Help.htm"].join("");
+		url = ac.get(ZmSetting.HELP_URI).replace(/\/$/,"");
+		url = [url, "help", AjxEnv.DEFAULT_LOCALE, "Zimbra_User_Help.htm"].join("/");
 	}
 	window.open(url);
 };
