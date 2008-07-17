@@ -834,14 +834,24 @@ function(page){
 		var separator = "&nbsp;&raquo;&nbsp;";
 		var a = [ ];
 		var folderId = page.folderId;
-		while (folderId != rootId) {
+		while ((folderId != null) && (folderId != rootId)) {
 			var notebook = appCtxt.getById(folderId);
-			a.unshift(notebook.name);
-			folderId = notebook.parent.id;
+
+            if(!(notebook instanceof ZmNotebook)) {
+                break;
+            }
+            a.unshift(notebook.name);
+
+            if(!notebook.parent) {
+                break;
+            }
+
+            folderId = notebook.parent.id;
 			if (folderId != rootId) {
 				a.unshift(separator);
 			}
-		}
+
+        }
 		content = a.join("");
 	}
 
