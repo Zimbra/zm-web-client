@@ -327,7 +327,7 @@ function(list) {
 			html[idx++] = "<tr>";
 		html[idx++] = "<td valign=top height=100%>";
 
-		html[idx++] = "<div style='height:100%; width:2.2in; border:1px solid #CCCCCC; overflow-x:hidden'>";
+		html[idx++] = "<div style='width:2.2in; border:1px solid #CCCCCC;overflow-x:hidden;'>";
 		html[idx++] = contact.isGroup()
 			? ZmGroupView.getPrintHtml(contact, true)
 			: ZmContactView.getPrintHtml(contact, true);
