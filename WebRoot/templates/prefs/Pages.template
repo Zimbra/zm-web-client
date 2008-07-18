@@ -123,7 +123,7 @@ and the container element is replaced with that control.
 					<$ if (data.isEnabled(ZmSetting.OFFLINE_SUPPORTS_MAILTO)) { $>
 						<tr><td colspan=2><hr></td></tr>
 						<tr>
-							<td class='ZOptionsLabel'><$=ZmMsg.offlineRegisterMailTo$></td>
+							<td class='ZOptionsLabel'><$=ZmMsg.systemDefaults$></td>
 							<td class='ZOptionsField'><div id='${id}_OFFLINE_IS_MAILTO_HANDLER' tabindex='100'></div></td>
 						</tr>
 					<$ } $>
