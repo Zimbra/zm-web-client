@@ -44,10 +44,12 @@ function() {
 
 ZmIdentityCollection.prototype.getIdentities =
 function(sort) {
-	var i = 0;
-	var result = [];
+	var identity, i = 0, result = [], isOffline = appCtxt.isOffline;
 	for (var id in this._idToIdentity) {
-		result[i++] = this._idToIdentity[id];
+		identity = this._idToIdentity[id];
+		// bug: 30009
+		if (isOffline && identity.isFromDataSource) continue;
+		result[i++] = identity;
 	}
 	if (sort) {
 		result.sort(ZmIdentityCollection._comparator);

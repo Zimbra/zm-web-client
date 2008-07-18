@@ -1766,11 +1766,14 @@ function(templateId, data) {
 	this.identitySelect = new DwtSelect({parent:this, options:identityOptions});
 	this.identitySelect.setToolTipContent(ZmMsg.chooseIdentity);
 
-	var identityCollection = appCtxt.getIdentityCollection();
 	if (!this._identityChangeListenerObj) {
 		this._identityChangeListenerObj = new AjxListener(this, this._identityChangeListener);
 	}
-	identityCollection.addChangeListener(this._identityChangeListenerObj);
+	var accounts = appCtxt.getZimbraAccounts();
+	for (var id in accounts) {
+		var identityCollection = appCtxt.getIdentityCollection(accounts[id]);
+		identityCollection.addChangeListener(this._identityChangeListenerObj);
+	}
 
 	this.identitySelect.replaceElement(data.identitySelectId);
 	this._setIdentityVisible();
