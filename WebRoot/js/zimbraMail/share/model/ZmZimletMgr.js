@@ -328,21 +328,36 @@ function(zimletArray, zimletNames, isJS) {
 
 ZmZimletMgr.prototype.renameZimletsLabel =
 function()
-{     //this._ZIMLETS[0]._organizer._zimletContext.name;
-    for(var j=0;j<this._ZIMLETS.length;j++)
-    {
-        if(this._ZIMLETS[j]._organizer)
+{
+    var treeView = appCtxt.getOverviewController().getTreeController("ZIMLET").getTreeView("Mail");
+	if(treeView){
+        var root = treeView.getItems()[0];
+	    if (root) {
+            var items = root.getItems();
+            for (var i = 0; i < items.length; i++) {
+                this.changeZimletLabel(items[i]);
+            }
+	    }
+    }
+};
+
+ZmZimletMgr.prototype.changeZimletLabel =
+function(item)
+{
+    var zimlet = item.getData(Dwt.KEY_OBJECT);
+    if(zimlet){
+        var currentLabel = zimlet.getName();
+        var regEx = /\$/;
+        if(currentLabel.match(regEx))
         {
-            var currentLabel = this._ZIMLETS[j]._organizer.name;
-            if(currentLabel.indexOf('$') >= 0)
-            {
-                var replaceLabel = currentLabel.substring(6,currentLabel.length-1);
-                var str1 = "window[this._ZIMLETS[j].name]."+ replaceLabel;
-                var zimletTextCellID =  "zti|Mail|"+ this._ZIMLETS[j]._organizer.id+"_textCell";
-               if(document.getElementById(zimletTextCellID))
-                   document.getElementById(zimletTextCellID).innerHTML = eval(str1);
-                this._ZIMLETS[j]._organizer.name = eval(str1);
-                //this._ZIMLETS[j]._organizer.rename("aaaaaaaaa",null,null,null);
+            var replaceLabel = currentLabel.replace(/\${msg./,'').replace(/}/,'');
+            var zimletContextName = zimlet.getZimletContext().name;
+            if(window[zimletContextName]){
+            var str = window[zimletContextName][replaceLabel];
+                if(str){
+                    item.setText(str);
+                    zimlet.setName(str);
+                }
             }
         }
     }

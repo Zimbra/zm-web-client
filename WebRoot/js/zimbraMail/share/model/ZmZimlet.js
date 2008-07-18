@@ -40,6 +40,11 @@ function() {
 	return "ZmZimlet - " + this.name;
 };
 
+ZmZimlet.prototype.setName =
+function(name) {
+	this.name = name;
+};
+
 // Static methods
 ZmZimlet.createFromJs =
 function(parent, obj, tree, link) {
