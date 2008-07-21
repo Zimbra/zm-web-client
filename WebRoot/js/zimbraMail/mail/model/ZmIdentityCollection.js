@@ -39,7 +39,8 @@ function() {
 
 ZmIdentityCollection.prototype.getSize =
 function() {
-	return this._size;
+	// bug: 30009
+	return this.getIdentities().length;
 };
 
 ZmIdentityCollection.prototype.getIdentities =
