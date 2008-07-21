@@ -414,8 +414,24 @@ function(im) {
 			} else if (not.type == "gwStatus") {
 				var gw = this.getGatewayByType(not.service);
 				gw.setState(not.name || null, not.state);
-				if (not.state == ZmImGateway.STATE.BAD_AUTH) {
-					appCtxt.setStatusMsg(ZmMsg.errorNotAuthenticated, ZmStatusView.LEVEL_WARNING);
+				var message,
+					level = ZmStatusView.LEVEL_INFO;
+				switch (not.state) {
+				case ZmImGateway.STATE.BAD_AUTH:
+					message = ZmMsg.errorNotAuthenticated;
+					level = ZmStatusView.LEVEL_WARNING;
+					break;
+				case ZmImGateway.STATE.ONLINE:
+					this._gatewayOnlineFormat = this._gatewayOnlineFormat || new AjxMessageFormat(ZmMsg.imToastGwOnline);
+					message = this._gatewayOnlineFormat.format(ZmMsg["imGateway_" + not.service]);
+					break;
+				case ZmImGateway.STATE.SHUTDOWN:
+					this._gatewayOfflineFormat = this._gatewayOfflineFormat || new AjxMessageFormat(ZmMsg.imToastGwOffline);
+					message = this._gatewayOfflineFormat.format(ZmMsg["imGateway_" + not.service]);
+					break;
+				}
+				if (message) {
+					appCtxt.setStatusMsg(message, level);
 				}
 			} else if (not.type == "invited") {
 				appCtxt.getApp(ZmApp.IM).prepareVisuals();
