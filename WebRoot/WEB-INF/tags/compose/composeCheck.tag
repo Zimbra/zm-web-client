@@ -35,6 +35,12 @@
         <c:when test="${uploader.isAttachDone}">
             <c:set var="needComposeView" value="${true}"/>
             <c:if test="${uploader.compose.hasFileItems}">
+                <c:forEach var="part" items="${uploader.compose.fileItems}" varStatus="status">
+                    <c:set var="emptyfile" value="${part.size eq 0 ? true : false}"/> 
+                    <c:if test="${emptyfile}">
+                       <app:status><fmt:message key="zeroSizedAtts"/></app:status> 
+                    </c:if>
+                </c:forEach>
                 <zm:saveDraft var="draftResult" compose="${uploader.compose}" draftid="${uploader.compose.draftId}"/>
                 <c:set scope="request" var="draftid" value="${draftResult.id}"/>                
             </c:if>
