@@ -978,7 +978,7 @@ function(content) {
 	// widget will be initialized when this code is running.
 	content = content || "";
 	var identity = this.getIdentity();
-	content = this._insertSignature(content, identity.getSignatureStyle(),
+	content = this._insertSignature(content, appCtxt.get(ZmSetting.SIGNATURE_STYLE),
                                         this.getSignatureContent(),
                                         this._getSignatureNewLine());
 
