@@ -276,7 +276,7 @@
 	</div>
 </template>
 
-<template id='im.Chat#ZmStatusIconItem'>
+<template id='im.Chat#ZmStatusImageItem'>
 	<table class='ZWidgetTable ZMenuItemTable ZMenuItemBorder' cellspacing=0 cellpadding=0><tr>
 		<td id='${id}_check'	 	class='ZCheckIcon'><div></div></td>
 		<td id='${id}_left_icon'	class='ZLeftIcon ZWidgetIcon'><div></div></td>
