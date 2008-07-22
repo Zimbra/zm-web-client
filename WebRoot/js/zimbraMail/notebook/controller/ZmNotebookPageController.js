@@ -20,6 +20,7 @@ ZmNotebookPageController = function(container, app) {
 	ZmNotebookController.call(this, container, app);
 
 	this._history = [];
+    this._listeners[ZmOperation.CLOSE] = new AjxListener(this, this._closeListener);    
 }
 ZmNotebookPageController.prototype = new ZmNotebookController;
 ZmNotebookPageController.prototype.constructor = ZmNotebookPageController;
@@ -119,7 +120,7 @@ ZmNotebookPageController.prototype.showLink = function(link) {
 
 ZmNotebookPageController.prototype.show = function(pageOrFolderId, force, fromSearch) {
 	if (/*force ||*/ !(pageOrFolderId instanceof ZmPage)) {
-		this._showIndex(pageOrFolderId || ZmNotebookItem.DEFAULT_FOLDER);
+        this._showIndex(pageOrFolderId || ZmNotebookItem.DEFAULT_FOLDER, force, fromSearch);
 		return;
 	}
 
@@ -192,6 +193,11 @@ ZmNotebookPageController.prototype._resetOperations =
 function(toolbarOrActionMenu, num) {
 	if (!toolbarOrActionMenu) return;
 	ZmNotebookController.prototype._resetOperations.call(this, toolbarOrActionMenu, num);
+
+    var button = toolbarOrActionMenu.getButton(ZmOperation.CLOSE);
+	if(button) {
+		button.setVisible(this._fromSearch);
+	}
 };
 
 // listeners
@@ -212,13 +218,13 @@ function(ev) {
 
 // notebook page view
 
-ZmNotebookPageController.prototype._showIndex = function(folderId) {
+ZmNotebookPageController.prototype._showIndex = function(folderId, force, fromSearch) {
 	var cache = this._app.getNotebookCache();
 	var params = {id:folderId};	
 //	var index = cache.getPageByName(folderId, ZmNotebook.PAGE_INDEX, true);
 	var index = cache.getItemInfo(params);
 	if (index) {
-		this.show(index);
+        this.show(index, force, fromSearch);
 	}
 };
 
@@ -334,6 +340,11 @@ function(organizer) {
 	return true;
 };
 
+
+ZmNotebookPageController.prototype._closeListener =
+function(ev) {
+	this.show(null, true);
+};
 
 //offline related modules
 ZmNotebookPageController.prototype.handleMailboxChange =
