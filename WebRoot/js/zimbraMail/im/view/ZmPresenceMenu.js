@@ -182,7 +182,7 @@ function(statusImage) {
 				var gateway = gateways[i];
 				var type = gateway.type;
 				if (!this._gatewayItems[type]) {
-					var mi = new ZmStatusIconItem({parent:this});
+					var mi = new ZmStatusImageItem({parent:this});
 					mi.setImage("WebSearch"); // TODO: need icons.)
 					mi.setMenu(new AjxCallback(this, this._createGatewaySubmenu, [mi, gateway]));
 					this._gatewayItems[type] = {item: mi};
@@ -297,37 +297,37 @@ function(message, batchCommand) {
 ///////////////////////////////////////////////////////////////////////////
 
 /**
- * ZmStatusIconItem is a menu item with a second icon for a service's online status.
+ * ZmStatusImageItem is a menu item with a second icon for a service's online status.
  */
-ZmStatusIconItem = function(params) {
-	params.className = "ZmStatusIconItem";
+ZmStatusImageItem = function(params) {
+	params.className = "ZmStatusImageItem";
 	DwtMenuItem.call(this, params);
 }
 
-ZmStatusIconItem.prototype = new DwtMenuItem;
-ZmStatusIconItem.prototype.constructor = ZmStatusIconItem;
+ZmStatusImageItem.prototype = new DwtMenuItem;
+ZmStatusImageItem.prototype.constructor = ZmStatusImageItem;
 
-ZmStatusIconItem.prototype.TEMPLATE = "im.Chat#ZmStatusIconItem";
+ZmStatusImageItem.prototype.TEMPLATE = "im.Chat#ZmStatusImageItem";
 
-ZmStatusIconItem.prototype.toString =
+ZmStatusImageItem.prototype.toString =
 function() {
-	return "ZmStatusIconItem";
+	return "ZmStatusImageItem";
 };
 
-ZmStatusIconItem.prototype.dispose =
+ZmStatusImageItem.prototype.dispose =
 function() {
 	this._statusIconEl = null;
 	DwtMenuItem.prototype.dispose.call(this);
 };
 
-ZmStatusIconItem.prototype.setStatusImage =
+ZmStatusImageItem.prototype.setStatusImage =
 function(imageInfo) {
 	if (this._statusIconEl) {
 		AjxImg.setImage(this._statusIconEl, imageInfo);
 	}
 };
 
-ZmStatusIconItem.prototype._createHtmlFromTemplate =
+ZmStatusImageItem.prototype._createHtmlFromTemplate =
 function(templateId, data) {
     DwtMenuItem.prototype._createHtmlFromTemplate.call(this, templateId, data);
     this._statusIconEl = document.getElementById(data.id + "_status_icon");
