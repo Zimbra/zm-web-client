@@ -55,11 +55,20 @@
         --%>
     </c:choose>
     <c:if test="${uiv=='1'}">
-        <zm:computeSearchContext var="context" usecache="true" query="${sq}" limit="${sessionScope.limit}"/>
+        <c:choose>
+            <c:when test="${not empty param.actionSearch && empty param.sq}">
+                 <c:set var="context" value="${pcontext}"/>
+                 <div style="padding:5px;"><div class="StatusWarning"><fmt:message key="actionNoSearchQuerySpecified"/></div></div>
+            </c:when>
+            <c:otherwise>
+                <zm:computeSearchContext var="context" usecache="true" query="${sq}" limit="${sessionScope.limit}"/>
+            </c:otherwise>
+        </c:choose>
     </c:if>
     <c:if test="${uiv != '1'}">
         <zm:computeSearchContext var="context" usecache="true" query="${sq}"/>
     </c:if>
+    <c:set var="pcontext" value="${context}" scope="session"/>
 </mo:handleError>
 
 <%-- switch based on context search types --%>
