@@ -81,14 +81,26 @@
             	<img id="search_img" alt="<fmt:message key="search"/>" src="<app:imgurl value='mobile/Search.gif' />" border="0" width="55" height="48">
             </td>
         </tr>
-        
+
         </table>
         <div style="width:100%;display:block" class="Stripes" id="SEARCH_BOX">
         <table width="100%" align="center">
             <tr class="searchbar">
                 <td>
-                    <form action="${context_url}" style="width:100%;">
-                               <input type="hidden" name="showSearch" value="1"/> 
+                    <form method="get" action="${context_url}" style="width:100%;" onsubmit="if(!this.sq.value){var v = document.getElementById('d_msg');v.innerHTML='<fmt:message key="actionNoSearchQuerySpecified"/>';v.style.display='block';return false;}else{return true;}">
+                               <c:if test="${not empty param.action}">
+                                   <input type="hidden" name="action" value="${param.action}"/>
+                               </c:if>
+                               <c:if test="${empty param.view}">
+                                   <input type="hidden" name="view" value="month"/>
+                               </c:if>
+                               <c:if test="${not empty param.view}">
+                                    <input type="hidden" name="view" value="${param.view}"/>
+                               </c:if>
+                               <c:if test="${not empty param.invId}">
+                                   <input type="hidden" name="invId" value="${param.invId}"/>
+                               </c:if>
+                               <input type="hidden" name="showSearch" value="1"/>
                                <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
                                 <table cellspacing="0" cellpadding="0" width="100%">
                                     <tr>
@@ -114,7 +126,7 @@
                                                                name="sq" value="${param.sq}"/>
                                                     </td>
                                                     <td align="right">
-                                                        <input type="submit" name="actionSearch" 
+                                                        <input type="submit" name="actionSearch"
                                                                value="<fmt:message key="search"/>"/>
                                                     </td>
                                                 </tr>
@@ -132,9 +144,9 @@
                 </td>
             </tr>
         </table>
-        </div>    
-    
-    <table border="0" cellpadding="0" cellspacing="0" width="100%" border="0">        
+        </div>
+        <div style="padding:5px;"><div style="display:none;" class="StatusWarning" id="d_msg"></div></div>
+    <table border="0" cellpadding="0" cellspacing="0" width="100%" border="0">
         <tr>
             <td colspan="2" height="100%" valign="top">
                        <mo:handleError>
@@ -177,7 +189,7 @@
                         </a>
                         (${mailbox.accountInfo.attrs["uid"][0]})
             </td>
-        
+
             <td class="zo_m_list_frag" align="right">
                         <fmt:message key="MO_quota"/>:
                         <c:set var="max" value="${mailbox.attrs.zimbraMailQuota[0]}"/>
