@@ -1,11 +1,12 @@
 <template id="share.App#UserInfo">
 	<$ if (!appCtxt.isOffline) { $>
-		<a href='/zimbra/m/'>Mobile</a>&nbsp;<font color="gray">|</font>&nbsp;
+		<a href='/zimbra/m/'><$= ZmMsg.mobile $></a>&nbsp;<font color="gray">|</font>&nbsp;
 	<$ } else { $>
-		<a href='javascript:;' onclick='ZmZimbraMail._onClickLogOff();'>Setup</a>&nbsp;<font color="gray">|</font>&nbsp;
+		<a href='http://www.yahoo.com' target='_blank'><$= ZmMsg.yahooYahoo $></a>&nbsp;<font color="gray">|</font>&nbsp;
+		<a href='http://my.yahoo.com' target='_blank'><$= ZmMsg.yahooMyYahoo $></a>&nbsp;<font color='gray'>|</font>&nbsp;
+		<a href='#logoff' onclick='ZmZimbraMail._onClickLogOff();return false'><$= ZmMsg.setup $></a>&nbsp;<font color="gray">|</font>&nbsp;
 	<$ } $>
-	<span id="skin_yahoo_options_span"><a id="skin_yahoo_options" href='javascript:skin.gotoPrefs()'>Options</a>&nbsp;<font color="gray">|</font>&nbsp;</span>
-	<a href='javascript:;' onclick='ZmZimbraMail.helpLinkCallback();'><$= ZmMsg.help $></a>
+	<a href='#help' onclick='ZmZimbraMail.helpLinkCallback();return false'><$= ZmMsg.help $></a>
 
 	<!-- HACK HACK HACK -->
 	<!-- In Y! skin, when in offline mode, we want to hide standard place of "Sign Out" link   -->

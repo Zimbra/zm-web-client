@@ -15,3 +15,8 @@
 .ZmSearchToolbarCell .ZWidgetTitle {
 	height: 18px;
 }
+
+.ZFocused .ZToolbarButtonBorder {
+	@ButtonBorder-hover@
+	border-color: inherit;
+}

@@ -16,12 +16,6 @@
 						<td class='skin_yahoo_userinfo'>
 							<table cellspacing=0 cellpadding=0 border=0>
 								<tr>
-									<td id='skin_container_username'></td>
-									<!-- YAHOO SKIN DOES NOT HAVE QUOTA INFO.
-									<td>
-										<div id='skin_container_quota' class='skin_container'></div>
-									</td>
-									-->
 									<td>
 										<div id='skin_container_presence'></div>
                                     </td>
@@ -31,7 +25,7 @@
 									<td colspan=3>
 										<nobr>
 											<span id='skin_td_logoff'>
-												<a href='javascript:;' onclick='ZmZimbraMail._onClickLogOff();'>Sign Out</a>,
+												<a href='#logoff' onclick='ZmZimbraMail._onClickLogOff();return false'>Sign Out</a>,
 												<a href="/?client=standard">Mail Classic</a>
 											</span>
 										</nobr>
@@ -39,15 +33,25 @@
 								</tr>
 							</table>
 						</td>
-						<td valign=middle align=right>
-							<div id='skin_yahoo_links'>
-								<a href='http://www.yahoo.com' target='_blank'>Yahoo!</a><span id="skin_yahoo_myyahoo"><font color='gray'> | </font>
-								<a id='skin_yahoo_myyahoolink' href='http://my.yahoo.com' target='_blank'>My Yahoo!</a></span><font color='gray'> | </font>
-								<a href='http://news.yahoo.com' target='_blank'>News</a>
-							</div>
-						</td>
 						<td id='skin_spacing_search'>
 							<div id='skin_container_search' class='skin_container'></div>
+						</td>
+						<td align="right" style="padding-right:4px;">
+							<div id='skin_container_web_search' class='skin_container'>
+								<table cellspacing=0 cellpadding=0>
+									<tr>
+										<td width='100%' class='DwtInputField-hint'>
+											<input id='skin_search_web_input' value='[Search the Web...]' style='width:100%;' onfocus='skin.searchWebFocus(event,this)' onblur='skin.searchWebBlur(event, this);' onkeypress='return skin.searchWebKey(event, this);'>
+										</td>
+										<td>
+											<input id='skin_search_web_button' type='button' class='skin_yahoo_websearch_button' value='[Web Search]' onclick='this.blur();skin.searchWeb(skin._getEl("skin_search_web_input").value);'>
+										</td>
+										<td>
+											<input id='skin_search_local_button' type='button' class='skin_yahoo_websearch_button' value='[Local Search]' onclick='this.blur();skin.searchLocal(skin._getEl("skin_search_web_input").value);'>
+										</td>
+									</tr>
+								</table>
+							</div>
 						</td>
 					</tr>
 				</table>
@@ -80,20 +84,6 @@
 													</td>
 												</tr>
 											</table>
-											<center>
-												<div id='skin_container_web_search' class='skin_container'>
-													<table cellspacing=0 cellpadding=0>
-														<tr>
-															<td width='100%' class='DwtInputField-hint'>
-																<input id='skin_search_web_input' value='Search the Web...' style='width:100%;' onfocus='skin.searchWebFocus(event,this)' onblur='skin.searchWebBlur(event, this);' onkeypress='return skin.searchWebKey(event, this);'>
-															</td>
-															<td>
-																<input type='button' class='skin_yahoo_websearch_button' value='Go' onclick='skin.searchWeb(skin._getEl("skin_search_web_input").value);'>
-															</td>
-														</tr>
-													</table>
-												</div>
-											</center>
 										</div>
 									</td>
 								</tr>
@@ -162,5 +152,11 @@
 <script>
 	var el = document.getElementById('skin_search_web_input');
 	if (el) { el.value = ZmMsg.searchWebPrompt; }
+
+	el = document.getElementById("skin_search_web_button");
+	if (el) { el.value = ZmMsg.yahooWebSearchButton; }
+
+	el = document.getElementById("skin_search_local_button");
+	if (el) { el.value = ZmMsg.yahooLocalSearchButton; }
 </script>
 <!-- END SKIN -->

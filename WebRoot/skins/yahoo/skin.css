@@ -23,8 +23,16 @@
 }
 #skin_search_web_input			{
 	border:1px solid @SelC@;
-	border-right-width: 0px;
+	padding: 2px 4px;
 	height:20px;
+	width: 11em;
+}
+#skin_border_app_chooser {
+	height: 25px;
+}
+#skin_container_app_chooser {
+	margin-top: 0px;
+	height: 25px;
 }
 #skin_container_app_chooser .ZToolbarTable {
 	background-color:@AppC@;
@@ -59,9 +67,10 @@
 
 .skin_yahoo_websearch_button	{
 	border:1px solid #7f7f7f;
-	width:35px;
+	margin-left: 4px;
 	height:20px;
-	@trRadius@:4px;
-	@brRadius@:4px;
-	background: #ffffff url('/zimbra/skins/_base/base2/img/gradient/10x32,v,0-15,3,0.png') left top repeat-x;
+	background: #ffdc8a url('/zimbra/skins/_base/base2/img/gradient/10x32,v,16-31,3,0.png') repeat-x left -7px;
+}
+.skin_yahoo_websearch_button:hover {
+	background-color: @lighten(#ffdc8a,40)@;
 }
