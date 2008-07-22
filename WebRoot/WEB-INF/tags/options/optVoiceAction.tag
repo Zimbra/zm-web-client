@@ -11,10 +11,21 @@
 
 <c:if test="${zm:actionSet(param, 'actionSave')}">
     <c:choose>
-        <c:when test="${param.emailNotificationActive and not zm:isValidEmailAddress(param.emailNotificationAddress)}">
+        <c:when test="${param.emailNotificationActive and empty param.emailNotificationAddress}">
+            <app:status style="Critical"><fmt:message key="missingEmailAddress"/></app:status>
+			<c:set var="emailNotificationAddress" scope="request" value=""></c:set>
+            <c:set var="emailNotificationActive" scope="request" value="TRUE"></c:set>
+        </c:when>
+        <c:when test="${param.emailNotificationActive and not empty param.emailNotificationAddress and not zm:isValidEmailAddress(param.emailNotificationAddress)}">
             <app:status style="Critical"><fmt:message key="invalidEmailAddress"/></app:status>
 			<c:set var="emailNotificationAddress" scope="request" value="${param.emailNotificationAddress}"></c:set>
-		</c:when>
+            <c:set var="emailNotificationActive" scope="request" value="TRUE"></c:set>
+        </c:when>
+        <c:when test="${not param.emailNotificationActive and not empty param.emailNotificationAddress and not zm:isValidEmailAddress(param.emailNotificationAddress)}">
+            <app:status style="Critical"><fmt:message key="invalidEmailAddress"/></app:status>
+			<c:set var="emailNotificationAddress" scope="request" value="${param.emailNotificationAddress}"></c:set>
+            <c:set var="emailNotificationActive" scope="request" value="FALSE"></c:set>
+        </c:when>
         <c:when test="${param.callForwardingAllActive and not zm:isValidPhoneNumber(param.callForwardingAllNumber)}">
             <app:status style="Critical"><fmt:message key="invalidForwardNumber"/></app:status>
             <c:set var="emailNotificationAddress" scope="request" value="${param.emailNotificationAddress}"></c:set>
@@ -27,9 +38,13 @@
                 numberPerPage="${param.numberPerPage}"
             />
             <c:choose>
+                <c:when  test="${not param.emailNotificationActive and zm:isValidEmailAddress(param.emailNotificationAddress)}">
+                    <app:status><fmt:message key="lostEmailNotification"/></app:status>
+                </c:when>
                 <c:when test="${result}">
                     <app:status><fmt:message key="optionsSaved"/></app:status>
                 </c:when>
+
                 <c:otherwise>
                     <app:status><fmt:message key="noOptionsChanged"/></app:status>
                 </c:otherwise>
