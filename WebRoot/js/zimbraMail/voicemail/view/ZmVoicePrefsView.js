@@ -64,7 +64,7 @@ function(item) {
 
 ZmVoicePrefsView.prototype.validate =
 function() {
-	if (!this._item) {
+    if (!this._item) {
 		return true;
 	}
 	var errors = [];
@@ -73,7 +73,7 @@ function() {
 		if (!ui._checkbox || ui._checkbox.isSelected()) {
 			ui.validate(errors);
 		}
-	}
+    }
 	this._errors = errors;
 	return this._errors.length == 0;
 };
@@ -285,13 +285,12 @@ function(value) {
 	}
 	return value;
 };
-
 ZmVoicePrefsView._validateEmailAddress =
 function(value) {
 	if (value == "") {
-		throw AjxMsg.valueIsRequired;
+        throw AjxMsg.valueIsRequired;
 	} else if (!AjxEmailAddress.isValid(value)) {
-		throw ZmMsg.errorInvalidEmail;
+        throw ZmMsg.errorInvalidEmail;
 	}
 	return value;
 };
@@ -339,7 +338,14 @@ function(text, id) {
 
 ZmCallFeatureUI.prototype._checkboxListener =
 function(ev) {
-	this.setEnabled(this._checkbox.isSelected());
+	if(this.toString() == "ZmEmailNotificationUI" && !this._checkbox.isSelected() && this._getSelectedValue() != ""){
+        var value  =  this._getSelectedValue();
+        if (!AjxEmailAddress.isValid(value))
+           appCtxt.setStatusMsg(ZmMsg.invalidEmailAddress);
+        else
+            appCtxt.setStatusMsg(ZmMsg.lostEmailNotification);
+    }
+    this.setEnabled(this._checkbox.isSelected());
 };
 
 ZmCallFeatureUI.prototype._populatePhoneComboBox =
@@ -383,10 +389,11 @@ function(comboBox) {
 
 ZmCallFeatureUI.prototype._validateComboBox =
 function(comboBox, errorList, message) {
-	if (comboBox.input.isValid() === null) {
-		errorList.push(message);
-	}
+	if (comboBox.input.isValid() == null) {
+        errorList.push(message);
+	}    
 };
+
 
 // "Abstract" methods:
 ZmCallFeatureUI.prototype.getName =
@@ -529,7 +536,6 @@ function() {
 
 ZmEmailNotificationUI.prototype.setEnabled =
 function(enabled) {
-	this._checkbox.setEnabled(enabled);
 	this._comboBox.setEnabled(enabled);
 };
 
@@ -540,8 +546,18 @@ function() {
 
 ZmEmailNotificationUI.prototype.validate =
 function(errors) {
-	this._validateComboBox(this._comboBox, errors, ZmMsg.emailNotificationError);
+   this._validateEmailAddress(this._comboBox,errors);
 };
+
+ZmEmailNotificationUI.prototype._validateEmailAddress =
+function(comboBox,errors){
+    var value  =  comboBox.input.getValue();
+    if (value == "") {
+       errors.push(ZmMsg.missingEmailAddress);
+	} else if (!AjxEmailAddress.isValid(value)) {
+        errors.push(ZmMsg.invalidEmailAddress);
+	}
+}
 
 ZmEmailNotificationUI.prototype._getSelectedValue =
 function() {

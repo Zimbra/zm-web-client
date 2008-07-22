@@ -73,13 +73,20 @@
 						<tr>
 							<td class="ZhOptVoiceCBCell">
 								<input id="emailNotificationActive" type=checkbox name="emailNotificationActive" value="TRUE"
-									<c:if test="${!empty features.voiceMailPrefs.emailNotificationAddress}">checked</c:if>
-									<c:if test="${!account.hasVoiceMail}"> disabled</c:if>
+									   <c:choose>
+                                            <c:when  test="${requestScope.emailNotificationActive eq null and !empty features.voiceMailPrefs.emailNotificationAddress}">
+                                                checked
+                                            </c:when>
+                                            <c:when test="${requestScope.emailNotificationActive eq 'TRUE'}">
+                                                checked
+                                            </c:when>
+                                        </c:choose>
+                                        <c:if test="${!account.hasVoiceMail}"> disabled</c:if>
 								>
 							</td>
 							<td>
 								<label for="emailNotificationActive"><fmt:message key="sendEmailNotification"/></label>&nbsp;&nbsp;
-								<input name="emailNotificationAddress" type="text" size="25" value="${not empty requestScope.emailNotificationAddress ? requestScope.emailNotificationAddress : features.voiceMailPrefs.emailNotificationAddress}"
+                                <input name="emailNotificationAddress" type="text" size="25" value="${requestScope.emailNotificationAddress ne null? requestScope.emailNotificationAddress : features.voiceMailPrefs.emailNotificationAddress}"
 									<c:if test="${!account.hasVoiceMail}"> disabled</c:if>
 								>
 							</td>
