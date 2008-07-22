@@ -1736,7 +1736,7 @@ function(msg, preferHtml, callback) {
 				} else {
 					content = bodyPart.content;
 				}
-				html[idx++] = "<span style='font-family: courier'>";
+				html[idx++] = "<span style='font-family: monospace'>";
 				html[idx++] = AjxStringUtil.nl2br(AjxStringUtil.htmlEncode(content, true));
 				html[idx++] = "</span>";
 			}
