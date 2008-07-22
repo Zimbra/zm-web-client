@@ -27,6 +27,10 @@
 	height:20px;
 	width: 11em;
 }
+#skin_search_local_button {
+	/* this needs to be made visible by com_zimbra_local zimlet! */
+	display: none;
+}
 #skin_border_app_chooser {
 	height: 25px;
 }
@@ -70,6 +74,7 @@
 	margin-left: 4px;
 	height:20px;
 	background: #ffdc8a url('/zimbra/skins/_base/base2/img/gradient/10x32,v,16-31,3,0.png') repeat-x left -7px;
+	cursor: pointer;
 }
 .skin_yahoo_websearch_button:hover {
 	background-color: @lighten(#ffdc8a,40)@;
