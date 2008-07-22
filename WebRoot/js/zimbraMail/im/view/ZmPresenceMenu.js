@@ -314,7 +314,7 @@ function() {
 	return "ZmStatusIconItem";
 };
 
-DwtLabel.prototype.dispose =
+ZmStatusIconItem.prototype.dispose =
 function() {
 	this._statusIconEl = null;
 	DwtMenuItem.prototype.dispose.call(this);
