@@ -139,11 +139,16 @@ ZmPrefController.prototype.handleKeyAction =
 function(actionCode) {
 	DBG.println("ZmPrefController.handleKeyAction");
 	switch (actionCode) {
-		case ZmKeyMap.CANCEL:
+
+        case ZmKeyMap.CANCEL:
 			this._backListener();
 			break;
-			
-		default:
+
+        case ZmKeyMap.SAVE:
+            this._saveListener();
+            break;
+
+        default:
 			return ZmController.prototype.handleKeyAction.call(this, actionCode);
 			break;
 	}
