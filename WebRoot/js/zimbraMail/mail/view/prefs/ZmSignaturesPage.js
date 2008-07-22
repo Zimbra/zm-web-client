@@ -140,7 +140,11 @@ ZmSignaturesPage.prototype.validate = function() {
             this._errorMsg = isNameEmpty ? ZmMsg.signatureNameMissingRequired : ZmMsg.signatureValueMissingRequired;
 			return false;
         }
-		if (signature.value.length > maxLength) {
+        var sigValue = signature.value;
+        if(signature.contentType == ZmMimeTable.TEXT_HTML){
+            sigValue = AjxStringUtil.stripTags(signature.value);
+        }
+        if (sigValue.length > maxLength) {
 			this._errorMsg = AjxMessageFormat.format(ZmMsg.errorSignatureTooLong, maxLength);
 			return false;
 		}
