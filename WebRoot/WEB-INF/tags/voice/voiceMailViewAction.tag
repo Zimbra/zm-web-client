@@ -9,8 +9,8 @@
 <zm:requirePost/>
 <zm:checkCrumb crumb="${param.crumb}"/>
 <zm:getMailbox var="mailbox"/>
-<c:set var="ids" value="${zm:deserializeVoiceMailItemIds(paramValues.voiceId, paramValues.phone)}"/>
-<c:set var="phone" value="${fn:join(paramValues.phone, ',')}"/>
+<c:set var="phone" value="${param.phone}"/>
+<c:set var="ids" value="${zm:deserializeVoiceMailItemIds(paramValues.voiceId, phone)}"/>
 <c:set var="folderId" value="${not empty paramValues.folderId[0] ? paramValues.folderId[0] : paramValues.folderId[1]}"/>
 <c:set var="actionOp" value="${not empty paramValues.actionOp[0] ? paramValues.actionOp[0] :  paramValues.actionOp[1]}"/>
 <c:choose>
@@ -42,7 +42,7 @@
         </app:status>
     </c:when>
     <c:when test="${zm:actionSet(param, 'actionReplyByEmail') or zm:actionSet(param, 'actionForwardByEmail')}">
-        <c:set var="hits" value="${zm:deserializeVoiceMailItemHits(paramValues.voiceId, paramValues.phone)}"/>
+        <c:set var="hits" value="${zm:deserializeVoiceMailItemHits(paramValues.voiceId, phone)}"/>
         <c:choose>
             <c:when test="${empty paramValues.voiceId}">
                 <app:status style="Warning">
