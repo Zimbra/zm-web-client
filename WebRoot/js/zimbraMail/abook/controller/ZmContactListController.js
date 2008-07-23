@@ -79,7 +79,8 @@ function(searchResult, bIsGalSearch, folderId) {
 	this._searchType = bIsGalSearch
 		? ZmContactListController.SEARCH_TYPE_GAL
 		: ZmContactListController.SEARCH_TYPE_CANONICAL;
-	this._folderId = folderId;
+
+    this._folderId = folderId;
 
 	// use toString() here due to flakiness of 'instanceof' for ZmContactList
 	if (searchResult instanceof ZmContactList) {
@@ -87,7 +88,8 @@ function(searchResult, bIsGalSearch, folderId) {
 		this._list._isShared = false;		// this list is not a search of shared items
 		if (!this._currentView)
 			this._currentView = this._defaultView();
-	} else if (searchResult instanceof ZmSearchResult) {
+        this._contactSearchResults = false;
+    } else if (searchResult instanceof ZmSearchResult) {
 		this._searchType |= ZmContactListController.SEARCH_TYPE_NEW;
 		this._list = searchResult.getResults(ZmItem.CONTACT);
 
@@ -111,7 +113,8 @@ function(searchResult, bIsGalSearch, folderId) {
 		this._list.setHasMore(searchResult.getAttribute("more"));
 
 		ZmListController.prototype.show.apply(this, [searchResult, this._currentView]);
-	}
+        this._contactSearchResults = true;
+    }
 
 	// reset offset if list view has been created
 	var view = this._currentView;

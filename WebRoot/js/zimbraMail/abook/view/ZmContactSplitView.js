@@ -504,12 +504,18 @@ function() {
 		ZmContactsBaseView.prototype._setNoResultsHtml.call(this);
 	} else {
 		var	div = document.createElement("div");
-        //bug:28365  Show custom "No Results" for Trash folder.
-        if(this._folderId == ZmFolder.ID_TRASH && AjxTemplate.getTemplate("abook.Contacts#SimpleView-NoResults-Trash") ){
-            div.innerHTML = AjxTemplate.expand("abook.Contacts#SimpleView-NoResults-Trash");
+
+        var isSearch = this._controller._contactSearchResults;
+        if(isSearch){
+            isSearch = !(this._controller._currentSearch && this._controller._currentSearch.folderId);
+
+        }
+        //bug:28365  Show custom "No Results" for Search.
+        if((isSearch || this._folderId == ZmFolder.ID_TRASH) && AjxTemplate.getTemplate("abook.Contacts#SimpleView-NoResults-Search")){
+            div.innerHTML = AjxTemplate.expand("abook.Contacts#SimpleView-NoResults-Search");
         }else{
             // Shows "No Results", unless the skin has overridden to show links to plaxo.
-		    div.innerHTML = AjxTemplate.expand("abook.Contacts#SimpleView-NoResults");
+            div.innerHTML = AjxTemplate.expand("abook.Contacts#SimpleView-NoResults");
         }
 		this._addRow(div);
 	}
