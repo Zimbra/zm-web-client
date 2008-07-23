@@ -405,7 +405,7 @@ function(attId, isDraft) {
 				var cid = Dwt.getNextId();
 				msg.addInlineAttachmentId(cid, att.aid);
 				if (AjxEnv.isIE) {
-					this._htmlEditor.insertImage("cid:" + cid, true, 300, 300);
+					this._htmlEditor.insertImage("cid:" + cid, true, 300, 225);
 				} else {
 					this._htmlEditor.insertImage("cid:" + cid);
 				}
