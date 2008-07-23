@@ -64,7 +64,7 @@ function(item) {
 
 ZmVoicePrefsView.prototype.validate =
 function() {
-    if (!this._item) {
+	if (!this._item) {
 		return true;
 	}
 	var errors = [];
@@ -73,7 +73,7 @@ function() {
 		if (!ui._checkbox || ui._checkbox.isSelected()) {
 			ui.validate(errors);
 		}
-    }
+	}
 	this._errors = errors;
 	return this._errors.length == 0;
 };
@@ -288,9 +288,9 @@ function(value) {
 ZmVoicePrefsView._validateEmailAddress =
 function(value) {
 	if (value == "") {
-        throw AjxMsg.valueIsRequired;
+		throw AjxMsg.valueIsRequired;
 	} else if (!AjxEmailAddress.isValid(value)) {
-        throw ZmMsg.errorInvalidEmail;
+		throw ZmMsg.errorInvalidEmail;
 	}
 	return value;
 };
@@ -345,7 +345,7 @@ function(ev) {
         else
             appCtxt.setStatusMsg(ZmMsg.lostEmailNotification);
     }
-    this.setEnabled(this._checkbox.isSelected());
+	this.setEnabled(this._checkbox.isSelected());
 };
 
 ZmCallFeatureUI.prototype._populatePhoneComboBox =
@@ -387,13 +387,17 @@ function(comboBox) {
 	}
 };
 
-ZmCallFeatureUI.prototype._validateComboBox =
-function(comboBox, errorList, message) {
-	if (comboBox.input.isValid() == null) {
-        errorList.push(message);
-	}    
+ZmCallFeatureUI.prototype._isComboBoxValid =
+function(comboBox) {
+	return comboBox.input.isValid() !== null;
 };
 
+ZmCallFeatureUI.prototype._validateComboBox =
+function(comboBox, errorList, message) {
+	if (!this._isComboBoxValid(comboBox)) {
+		errorList.push(message);
+	}
+};
 
 // "Abstract" methods:
 ZmCallFeatureUI.prototype.getName =
@@ -445,10 +449,7 @@ function(feature) {
 
 ZmCallForwardingUI.prototype._isValueDirty =
 function() {
-	if (this._getSelectedValue() != this._feature.data.ft) {
-		return true;
-	}
-	return false;
+	return !this._isComboBoxValid(this._comboBox) || (this._getSelectedValue() != this._feature.data.ft);
 };
 
 ZmCallForwardingUI.prototype.getFeature =
