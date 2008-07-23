@@ -29,7 +29,6 @@ ZmVoicePrefsView = function(parent, controller) {
     this._section = ZmPref.getPrefSectionWithPref(ZmSetting.VOICE_ACCOUNTS);
 	this._title = [ZmMsg.zimbraTitle, controller.getApp().getDisplayName(), this._section && this._section.title].join(": ");
 	this._ui = [
-		new ZmVoicePageSizeUI(this),
 		new ZmEmailNotificationUI(this),
 		new ZmCallForwardingUI(this)
 	];
@@ -135,6 +134,18 @@ function() {
 	this._list.replaceElement(id + "_list");
 	this._list.sortingEnabled = false;
 
+	// Initialize the page size selector.
+	var current = appCtxt.get(ZmSetting.VOICE_PAGE_SIZE);
+	var choices = ["10", "25", "50", "100"];
+	var options = [];
+	for (var i = 0, count = choices.length; i < count; i++) {
+		var choice = choices[i];
+		var selected = current == choice;
+		options[i] = new DwtSelectOptionData(choice, choice, selected);
+	}
+	this._pageSizeSelect = new DwtSelect({parent:this, options:options});
+	this._pageSizeSelect.replaceElement(id + "_itemsPerPageSelect");
+
 	for(var i = 0, count = this._ui.length; i < count; i++) {
 		this._ui[i]._initialize(id);
 		this._ui[i].updateMyCard();
@@ -145,10 +156,16 @@ function() {
 	this._hasRendered = true;
 };
 
+
+ZmVoicePrefsView.prototype.isPageSizeDirty =
+function() {
+	return this._pageSizeSelect.getValue() != appCtxt.get(ZmSetting.VOICE_PAGE_SIZE);
+};
+
 ZmVoicePrefsView.prototype.isDirty =
 function() {
 	this._getChanges();
-	return this._changes != null;
+	return this._changes != null || this.isPageSizeDirty();
 };
 
 ZmVoicePrefsView.prototype._getChanges =
@@ -177,6 +194,7 @@ function(ui) {
 
 ZmVoicePrefsView.prototype.reset =
 function() {
+	this._pageSizeSelect.setSelectedValue(appCtxt.get(ZmSetting.VOICE_PAGE_SIZE));
 	this._changes = null;
 	this.showItem(this._item);
 };
@@ -222,7 +240,7 @@ function(batchCommand) {
 		var callback = null;
 		if (first) {
 			if (!this._handleResponseObj) {
-				this._handleResponseObj = new AjxCallback(this, this._handleResponse);
+				this._handleResponseObj = new AjxCallback(this, this._handleResponseCallFeatures);
 			}
 			callback = this._handleResponseObj;
 			first = false;
@@ -234,22 +252,22 @@ function(batchCommand) {
 		}
 		phone.modifyCallFeatures(batchCommand, list, callback);
 	 }
+	if (this.isPageSizeDirty()) {
+		var settings = appCtxt.getSettings();
+		var pageSizeSetting = settings.getSetting(ZmSetting.VOICE_PAGE_SIZE);
+		pageSizeSetting.setValue(this._pageSizeSelect.getValue());
+		settings.save([pageSizeSetting], new AjxCallback(this, this._handleResponsePageSize), batchCommand);
+	}
 };
 
-ZmVoicePrefsView.prototype._handleResponse =
+ZmVoicePrefsView.prototype._handleResponseCallFeatures =
 function() {
-	var redoSearch;
-	for (var phone in this._changes) {
-		var changeObj = this._changes[phone];
-		if (changeObj.features && changeObj.features[ZmCallFeature.NUMBER_PER_PAGE]) {
-			redoSearch = true;
-			break;
-		}
-	}
 	this._changes = null;
-	if (redoSearch) {
-		appCtxt.getApp(ZmApp.VOICE).redoSearch();
-	}
+};
+
+ZmVoicePrefsView.prototype._handleResponsePageSize =
+function() {
+	appCtxt.getApp(ZmApp.VOICE).redoSearch();
 };
 
 ZmVoicePrefsView.prototype._containsMyCard =
@@ -576,64 +594,6 @@ function(id) {
 	};
 	this._comboBox = new DwtComboBox({parent:this._view, inputParams:inputParams});
 	this._comboBox.replaceElement(id + "_emailNotificationComboBox");
-};
-
-/////////////////////////////////////////////////////////////////////////
-
-ZmVoicePageSizeUI = function(view) {
-	ZmCallFeatureUI.call(this, view);
-}
-ZmVoicePageSizeUI.prototype = new ZmCallFeatureUI;
-ZmVoicePageSizeUI.prototype.constructor = ZmVoicePageSizeUI;
-ZmVoicePageSizeUI.prototype.toString =
-function() {
-	return "ZmVoicePageSizeUI";
-}
-
-ZmVoicePageSizeUI.prototype.getName =
-function() {
-	return ZmCallFeature.NUMBER_PER_PAGE;
-};
-
-ZmVoicePageSizeUI.prototype.show =
-function(feature) {
-	// No-op.
-};
-
-ZmVoicePageSizeUI.prototype._isValueDirty =
-function() {
-	return this._select.getValue() != appCtxt.get(ZmSetting.VOICE_PAGE_SIZE);
-};
-
-ZmVoicePageSizeUI.prototype.getFeature =
-function() {
-	var result = ZmCallFeatureUI.prototype.getFeature.call(this);
-	result.data.value = this._select.getValue();
-	return result;
-};
-
-ZmVoicePageSizeUI.prototype.setEnabled =
-function(enabled) {
-	this._select.setEnabled(enabled);
-};
-
-ZmVoicePageSizeUI.prototype._getSelectedValue =
-function() {
-	return this._select.getValue();
-};
-
-ZmVoicePageSizeUI.prototype._initialize =
-function(id) {
-	var current = appCtxt.get(ZmSetting.VOICE_PAGE_SIZE);
-	var choices = ["10", "25", "50", "100"];
-	var options = [];
-	for (var i = 0, count = choices.length; i < count; i++) {
-		var choice = choices[i];
-		var selected = current == choice;
-		options[i] = new DwtSelectOptionData(choice, choice, selected);
-	}
-	this._select = new DwtSelect({parent:this._view, options:options});
-	this._select.replaceElement(id + "_itemsPerPageSelect");
 };
 
 /*
