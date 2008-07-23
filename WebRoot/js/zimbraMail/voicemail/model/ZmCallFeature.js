@@ -50,8 +50,7 @@ ZmCallFeature.CALL_FEATURES = [ZmCallFeature.ANONYNOUS_REJECTION, ZmCallFeature.
 
 // Voicemail preferences.
 ZmCallFeature.EMAIL_NOTIFICATION = "vmPrefEmailNotifAddress";
-ZmCallFeature.NUMBER_PER_PAGE = "zimbraPrefVoiceItemsPerPage";
-ZmCallFeature.VOICE_FEATURES = [ZmCallFeature.EMAIL_NOTIFICATION, ZmCallFeature.NUMBER_PER_PAGE];
+ZmCallFeature.VOICE_FEATURES = [ZmCallFeature.EMAIL_NOTIFICATION];
 
 
 ZmCallFeature.prototype.createProxy = 
@@ -119,10 +118,6 @@ function(feature) {
 		if (i != "_object_") { // Ignore proxy field.
 			this.data[i] = feature.data[i];
 		}
-	}
-	// For NUMBER_PER_PAGE, update the global setting. 
-	if (this.name == ZmCallFeature.NUMBER_PER_PAGE) {
-		appCtxt.set(ZmSetting.VOICE_PAGE_SIZE, this.data.value);
 	}
 };
 
