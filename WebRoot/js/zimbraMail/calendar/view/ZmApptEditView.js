@@ -91,8 +91,10 @@ ZmApptEditView.prototype.cleanup =
 function() {
 	ZmCalItemEditView.prototype.cleanup.call(this);
 
-	this._attInputField[ZmCalBaseItem.PERSON].setValue("");
-	this._attInputField[ZmCalBaseItem.LOCATION].setValue("");
+    if(this.GROUP_CALENDAR_ENABLED) {
+        this._attInputField[ZmCalBaseItem.PERSON].setValue("");
+    }
+    this._attInputField[ZmCalBaseItem.LOCATION].setValue("");
 
 	if (this._resourcesContainer) {
 		Dwt.setDisplay(this._resourcesContainer, Dwt.DISPLAY_NONE);
@@ -118,9 +120,10 @@ function() {
 ZmApptEditView.prototype.enableInputs =
 function(bEnableInputs) {
 	ZmCalItemEditView.prototype.enableInputs.call(this, bEnableInputs);
-
-	this._attInputField[ZmCalBaseItem.PERSON].setEnabled(bEnableInputs);
-	this._attInputField[ZmCalBaseItem.LOCATION].setEnabled(bEnableInputs);
+    if(this.GROUP_CALENDAR_ENABLED) {
+	    this._attInputField[ZmCalBaseItem.PERSON].setEnabled(bEnableInputs);
+    }
+    this._attInputField[ZmCalBaseItem.LOCATION].setEnabled(bEnableInputs);
 };
 
 ZmApptEditView.prototype.isValid =
@@ -195,8 +198,10 @@ ZmApptEditView.prototype._addTabGroupMembers =
 function(tabGroup) {
 	tabGroup.addMember(this._subjectField);
 	tabGroup.addMember(this._attInputField[ZmCalBaseItem.LOCATION]);
-	tabGroup.addMember(this._attInputField[ZmCalBaseItem.PERSON]);
-	var bodyFieldId = this._notesHtmlEditor.getBodyFieldId();
+    if(this.GROUP_CALENDAR_ENABLED) {
+        tabGroup.addMember(this._attInputField[ZmCalBaseItem.PERSON]);
+    }
+    var bodyFieldId = this._notesHtmlEditor.getBodyFieldId();
 	tabGroup.addMember(document.getElementById(bodyFieldId));
 };
 
@@ -311,8 +316,10 @@ function(calItem, mode) {
 	var tp;
 	var attendees = calItem.getAttendees(ZmCalBaseItem.PERSON);
 	if (attendees && attendees.length) {
-		this._attInputField[ZmCalBaseItem.PERSON].setValue(calItem.getAttendeesText(ZmCalBaseItem.PERSON));
-		this._attendees[ZmCalBaseItem.PERSON] = AjxVector.fromArray(attendees);
+        if(this.GROUP_CALENDAR_ENABLED) {
+            this._attInputField[ZmCalBaseItem.PERSON].setValue(calItem.getAttendeesText(ZmCalBaseItem.PERSON));
+        }
+        this._attendees[ZmCalBaseItem.PERSON] = AjxVector.fromArray(attendees);
 		tp = this.parent.getTabPage(ZmApptComposeView.TAB_ATTENDEES);
 		if (tp) tp._chooser.transfer(attendees, null, true);
 	}
@@ -403,14 +410,16 @@ function(width) {
 
 	this._attInputField = {};
 
-	// add attendee input field
-	var params = {parent: this, type: DwtInputField.STRING, skipCaretHack: true, rows: 3, parentElement: (this._htmlElId + "_person")};
-	var input = this._attInputField[ZmCalBaseItem.PERSON] = new DwtInputField(params);
-	var inputEl = input.getInputElement();
-	Dwt.setSize(inputEl, "100%", "50px");
-	inputEl._attType = ZmCalBaseItem.PERSON;
+    if(this.GROUP_CALENDAR_ENABLED) {
+        // add attendee input field
+	    var params = {parent: this, type: DwtInputField.STRING, skipCaretHack: true, rows: 3, parentElement: (this._htmlElId + "_person")};
+    	var input = this._attInputField[ZmCalBaseItem.PERSON] = new DwtInputField(params);
+    	var inputEl = input.getInputElement();
+	    Dwt.setSize(inputEl, "100%", "50px");
+	    inputEl._attType = ZmCalBaseItem.PERSON;
+    }
 
-	// add location input field
+    // add location input field
 	params = {parent: this, type: DwtInputField.STRING, skipCaretHack: true, parentElement: (this._htmlElId + "_location")};
 	var input = this._attInputField[ZmCalBaseItem.LOCATION] = new DwtInputField(params);
 	var inputEl = input.getInputElement();
@@ -546,11 +555,13 @@ function() {
 	this._allDayCheckbox._editViewId = this._repeatDescField._editViewId = edvId;
 	this._startDateField._editViewId = this._endDateField._editViewId = edvId;
 
-	var inputEl = this._attInputField[ZmCalBaseItem.PERSON].getInputElement();
-	inputEl.onfocus = AjxCallback.simpleClosure(this._handleOnFocus, this, inputEl);
-	inputEl.onblur = AjxCallback.simpleClosure(this._handleOnBlur, this, inputEl);
+    if(this._attInputField[ZmCalBaseItem.PERSON]) {
+        var inputEl = this._attInputField[ZmCalBaseItem.PERSON].getInputElement();
+	    inputEl.onfocus = AjxCallback.simpleClosure(this._handleOnFocus, this, inputEl);
+	    inputEl.onblur = AjxCallback.simpleClosure(this._handleOnBlur, this, inputEl);
+    }
 
-	inputEl = this._attInputField[ZmCalBaseItem.LOCATION].getInputElement();
+    inputEl = this._attInputField[ZmCalBaseItem.LOCATION].getInputElement();
 	inputEl.onkeypress = AjxCallback.simpleClosure(this._handleKeyPress, this);
 };
 

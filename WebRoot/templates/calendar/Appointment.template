@@ -105,17 +105,17 @@
 					</fieldset>
 				</td>
 			</tr>
-		 	<$ if(data.isAppt) { $>
+		 	<$ if(data.isAppt && data.isGroupCalEnabled) { $>
 				<tr>
 					<td colspan=2>
-						<!-- appointment attendees / resources -->
+                        <!-- appointment attendees / resources -->
 						<table border=0 width=100%>
 							<tr>
 								<td width='1%' align='right' valign='top' class='ZmApptTabViewPageField'><$= ZmMsg.attendeesLabel $></td>
 								<td id='${id}_person'></td>
 							</tr>
 
-						<$ if (data.isGalEnabled && data.isGroupCalEnabled) { $>
+						<$ if (data.isGalEnabled) { $>
 							<tr>
 								<td colspan=2>
 									<div id='${id}_resourcesContainer' style='display:none'>
@@ -130,7 +130,7 @@
 							</tr>
 						<$ } $>
 						</table>
-					</td>
+                    </td>
 				</tr>
 			<$ } $>
 		</table>
