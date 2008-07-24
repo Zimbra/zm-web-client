@@ -219,7 +219,9 @@ function(zimletArray, zimletNames, callback) {
 
 ZmZimletMgr.prototype._finished_loadIncludes =
 function(zimletNames, callback) {
-	this.renameZimletsLabel();
+	if(!appCtxt.isChildWindow){
+        this.renameZimletsLabel();
+    }
     this.loaded = true;
 	var zimlets = this.getZimletsHash();
 	for (var i = 0; i < zimletNames.length; i++) {
