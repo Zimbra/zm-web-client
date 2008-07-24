@@ -405,7 +405,7 @@ function(viewMode, callback, errorCallback, ignoreOutOfDate) {
 		var respErrorCallback = !ignoreOutOfDate
 			? (new AjxCallback(this, this._handleErrorGetDetails, [mode, callback, errorCallback]))
 			: errorCallback;
-		this.message.load({callback:respCallback, errorCallback:respErrorCallback, noBusyOverlay:this._noBusyOverlay});
+		this.message.load({callback:respCallback, errorCallback:respErrorCallback, noBusyOverlay:this._noBusyOverlay, ridZ : (seriesMode ? null : this.ridZ)});
 	} else {
 		this.setFromMessage(this.message, mode);
 		if (callback)
@@ -1319,8 +1319,9 @@ function(calItemNode, instNode) {
 	this.compNum 		= this._getAttr(calItemNode, instNode, "compNum") || "0";
 	this.parseAlarmData(this.alarmData);
 	this.seriesInvId 	= this.recurring ? calItemNode.invId : null;
+    this.ridZ 			= instNode && instNode.ridZ;
 
-	if (calItemNode.t) {
+    if (calItemNode.t) {
 		this._parseTags(calItemNode.t);
 	}
 };

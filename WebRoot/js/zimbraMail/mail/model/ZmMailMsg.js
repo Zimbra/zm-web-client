@@ -84,6 +84,7 @@ ZmMailMsg.requestHeaders = {};
  *        sender		[ZmZimbraMail]	provides access to sendRequest()
  *        msgId			[int]			ID of the msg to be fetched.
  *        partId 		[int]* 			msg part ID (if retrieving attachment part, i.e. rfc/822)
+ *        ridZ   		[int]* 			RECURRENCE-ID in Z (UTC) timezone
  *        getHtml		[boolean]*		if true, try to fetch html from the server
  *        markRead		[boolean]*		if true, mark msg read
  *        callback		[AjxCallback]*	async callback
@@ -107,7 +108,11 @@ function(params) {
 		m.html = 1;
 	}
 
-	for (var hdr in ZmMailMsg.requestHeaders) {
+    if(params.ridZ) {
+        m.ridZ = params.ridZ;
+    }
+
+    for (var hdr in ZmMailMsg.requestHeaders) {
 		if (!m.header) { m.header = []; }
 		m.header.push({n:hdr});
 	}
