@@ -56,7 +56,7 @@
 				<td class="ZOptionsTableLabel" style="vertical-align:top;"><fmt:message key="optionsDisplay"/> :</td>
 				<td>
 					<select name="numberPerPage">
-						<c:set var="numberPerPage" value="${features.voiceMailPrefs.numberPerPage}"/>
+						<c:set var="numberPerPage" value="${mailbox.prefs.voiceItemsPerPage}"/>
 						<option	<c:if test="${numberPerPage eq 10}"> selected</c:if> >10</option>
 						<option <c:if test="${numberPerPage eq 25}"> selected</c:if> >25</option>
 						<option <c:if test="${numberPerPage eq 50}"> selected</c:if> >50</option>
