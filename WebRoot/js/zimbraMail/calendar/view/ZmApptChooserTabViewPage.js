@@ -61,7 +61,7 @@ ZmApptChooserTabViewPage.COL_LABEL[ZmItem.F_CAPACITY]	= "capacity";
 ZmApptChooserTabViewPage.COL_LABEL["FBSTATUS"]          = "status";
 
 ZmApptChooserTabViewPage.COL_IMAGE = {};
-ZmApptChooserTabViewPage.COL_IMAGE[ZmItem.F_NOTES]		= "SearchNotes";
+ZmApptChooserTabViewPage.COL_IMAGE[ZmItem.F_NOTES]		= "Page";
 
 ZmApptChooserTabViewPage.COL_WIDTH = {};
 ZmApptChooserTabViewPage.COL_WIDTH[ZmItem.F_FOLDER]		= 120;
@@ -86,7 +86,7 @@ ZmApptChooserTabViewPage.SF_ATT_NAME	= i++;
 ZmApptChooserTabViewPage.SF_NAME		= i++;
 ZmApptChooserTabViewPage.SF_SOURCE		= i++;
 ZmApptChooserTabViewPage.SF_CAPACITY	= i++;
-ZmApptChooserTabViewPage.SF_NOTES		= i++;
+ZmApptChooserTabViewPage.SF_DESCRIPTION	= i++;
 ZmApptChooserTabViewPage.SF_SITE		= i++;
 ZmApptChooserTabViewPage.SF_BUILDING	= i++;
 ZmApptChooserTabViewPage.SF_FLOOR		= i++;
@@ -98,7 +98,7 @@ ZmApptChooserTabViewPage.SF_LABEL[ZmApptChooserTabViewPage.SF_ATT_NAME]	= "find"
 ZmApptChooserTabViewPage.SF_LABEL[ZmApptChooserTabViewPage.SF_NAME]		= "_name";
 ZmApptChooserTabViewPage.SF_LABEL[ZmApptChooserTabViewPage.SF_SOURCE]	= "source";
 ZmApptChooserTabViewPage.SF_LABEL[ZmApptChooserTabViewPage.SF_CAPACITY]	= "minimumCapacity";
-ZmApptChooserTabViewPage.SF_LABEL[ZmApptChooserTabViewPage.SF_NOTES]	= "notes";
+ZmApptChooserTabViewPage.SF_LABEL[ZmApptChooserTabViewPage.SF_DESCRIPTION]	= "description";
 ZmApptChooserTabViewPage.SF_LABEL[ZmApptChooserTabViewPage.SF_CONTACT]	= "contact";
 ZmApptChooserTabViewPage.SF_LABEL[ZmApptChooserTabViewPage.SF_SITE]		= "site";
 ZmApptChooserTabViewPage.SF_LABEL[ZmApptChooserTabViewPage.SF_BUILDING]	= "building";
@@ -106,13 +106,13 @@ ZmApptChooserTabViewPage.SF_LABEL[ZmApptChooserTabViewPage.SF_FLOOR]	= "floor"
 
 // corresponding attributes for search command
 ZmApptChooserTabViewPage.SF_ATTR = {};
-ZmApptChooserTabViewPage.SF_ATTR[ZmApptChooserTabViewPage.SF_NAME]		= "displayName";
-ZmApptChooserTabViewPage.SF_ATTR[ZmApptChooserTabViewPage.SF_CAPACITY]	= "zimbraCalResCapacity";
-ZmApptChooserTabViewPage.SF_ATTR[ZmApptChooserTabViewPage.SF_NOTES]		= "description";
-ZmApptChooserTabViewPage.SF_ATTR[ZmApptChooserTabViewPage.SF_CONTACT]	= "zimbraCalResContactName";
-ZmApptChooserTabViewPage.SF_ATTR[ZmApptChooserTabViewPage.SF_SITE]		= "zimbraCalResSite";
-ZmApptChooserTabViewPage.SF_ATTR[ZmApptChooserTabViewPage.SF_BUILDING]	= "zimbraCalResBuilding";
-ZmApptChooserTabViewPage.SF_ATTR[ZmApptChooserTabViewPage.SF_FLOOR]		= "zimbraCalResFloor";
+ZmApptChooserTabViewPage.SF_ATTR[ZmApptChooserTabViewPage.SF_NAME]		  = "displayName";
+ZmApptChooserTabViewPage.SF_ATTR[ZmApptChooserTabViewPage.SF_CAPACITY]	  = "zimbraCalResCapacity";
+ZmApptChooserTabViewPage.SF_ATTR[ZmApptChooserTabViewPage.SF_DESCRIPTION] = "description";
+ZmApptChooserTabViewPage.SF_ATTR[ZmApptChooserTabViewPage.SF_CONTACT]	  = "zimbraCalResContactName";
+ZmApptChooserTabViewPage.SF_ATTR[ZmApptChooserTabViewPage.SF_SITE]		  = "zimbraCalResSite";
+ZmApptChooserTabViewPage.SF_ATTR[ZmApptChooserTabViewPage.SF_BUILDING]	  = "zimbraCalResBuilding";
+ZmApptChooserTabViewPage.SF_ATTR[ZmApptChooserTabViewPage.SF_FLOOR]		  = "zimbraCalResFloor";
 
 // search field compares ops - listed here if not substring ("has")
 ZmApptChooserTabViewPage.SF_OP = {};
@@ -133,10 +133,10 @@ ZmApptChooserTabViewPage.SEARCH_FIELDS[ZmCalBaseItem.PERSON] =
 ZmApptChooserTabViewPage.SEARCH_FIELDS[ZmCalBaseItem.LOCATION] =
 	[ZmApptChooserTabViewPage.SF_NAME, ZmApptChooserTabViewPage.SF_SITE,
 	 ZmApptChooserTabViewPage.SF_CAPACITY, ZmApptChooserTabViewPage.SF_BUILDING,
-	 ZmApptChooserTabViewPage.SF_NOTES, ZmApptChooserTabViewPage.SF_FLOOR];
+	 ZmApptChooserTabViewPage.SF_DESCRIPTION, ZmApptChooserTabViewPage.SF_FLOOR];
 ZmApptChooserTabViewPage.SEARCH_FIELDS[ZmCalBaseItem.EQUIPMENT] =
 	[ZmApptChooserTabViewPage.SF_NAME, ZmApptChooserTabViewPage.SF_SITE,
-	 ZmApptChooserTabViewPage.SF_NOTES, ZmApptChooserTabViewPage.SF_BUILDING,
+	 ZmApptChooserTabViewPage.SF_DESCRIPTION, ZmApptChooserTabViewPage.SF_BUILDING,
 	 ZmApptChooserTabViewPage.SF_CONTACT, ZmApptChooserTabViewPage.SF_FLOOR];
 
 ZmApptChooserTabViewPage.SORT_BY = {};
@@ -886,8 +886,10 @@ function() {
 
 ZmApptChooserListView.prototype._getCellContents =
 function(html, idx, item, field, colIdx, params) {
-	html[idx++] = "&nbsp;";
-	if (field == ZmItem.F_FOLDER) {
+    if(field != ZmItem.F_NOTES) {
+        html[idx++] = "&nbsp;";
+    }
+    if (field == ZmItem.F_FOLDER) {
 		var name = "";
 		if (item.isGal) {
 			name = ZmMsg.GAL;
@@ -916,7 +918,7 @@ function(html, idx, item, field, colIdx, params) {
 		if (notes) {
 			var notesId = this._getFieldId(item, field);
 			this._notes[notesId] = notes;
-			html[idx++] = AjxImg.getImageHtml("SearchNotes", null, ["id='", notesId, "'"].join(""));
+            html[idx++] = AjxImg.getImageHtml("Page", null, ["id='", notesId, "'"].join(""));
 		}
 	} else if (field == "FBSTATUS" && item.__fbStatus) {
                 html[idx++] = item.__fbStatus.txt;
@@ -940,8 +942,16 @@ function(ev, div) {
 			}
 		}
 	} else {
-		var note = this._notes[id];
-		if (note) {
+        var note = this._notes[id];
+        if(note == null) {
+            var item = this.getItemFromElement(div);
+            if(item) {
+                var notesId = this._getFieldId(item, ZmItem.F_NOTES);
+                note = this._notes[notesId];
+            }
+            
+        }
+        if (note != null) {
 			this.setToolTipContent(note);
 		}
 	}
