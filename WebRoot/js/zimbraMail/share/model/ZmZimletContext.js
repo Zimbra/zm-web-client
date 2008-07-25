@@ -60,8 +60,11 @@ ZmZimletContext = function(id, zimlet) {
 	this._panelActionMenu = null;
 	if (zimlet.zimletPanelItem) {
 		this.zimletPanelItem = zimlet.zimletPanelItem[0];
+		if (this.zimletPanelItem.label) {
+			this.zimletPanelItem.label = this.process(this.zimletPanelItem.label);
+		}
 		if (this.zimletPanelItem.toolTipText) {
-			this.zimletPanelItem.toolTipText = this.zimletPanelItem.toolTipText[0]._content;
+			this.zimletPanelItem.toolTipText = this.process(this.zimletPanelItem.toolTipText[0]._content);
 		}
 		if (this.zimletPanelItem.icon) {
 			this.icon = this.zimletPanelItem.icon;
@@ -303,7 +306,7 @@ ZmZimletContext.prototype._makeMenu = function(obj) {
 		if (!data.id) {
 			menu.createSeparator();
 		} else {
-			var item = menu.createMenuItem(data.id, {image:data.icon, text:this.processMessage(data.label),
+			var item = menu.createMenuItem(data.id, {image:data.icon, text:this.process(data.label),
 													 disImage:data.disabledIcon});
 			item.setData("xmlMenuItem", data);
 			item.addSelectionListener(this._handleMenuItemSelected);
@@ -326,10 +329,22 @@ ZmZimletContext.APP = {
 	currentSkin: appCurrentSkin
 };
 
+// NOTE: I have no idea why these regexes start with (^|[^\\]). But
+//       since they have always been public, I can't change them now.
 ZmZimletContext.RE_SCAN_APP = /(^|[^\\])\$\{app\.([\$a-zA-Z0-9_]+)\}/g;
 ZmZimletContext.RE_SCAN_OBJ = /(^|[^\\])\$\{(?:obj|src)\.([\$a-zA-Z0-9_]+)\}/g;
 ZmZimletContext.RE_SCAN_PROP = /(^|[^\\])\$\{prop\.([\$a-zA-Z0-9_]+)\}/g;
 ZmZimletContext.RE_SCAN_MSG = /(^|[^\\])\$\{msg\.([\$a-zA-Z0-9_]+)\}/g;
+
+ZmZimletContext.__RE_SCAN_SETTING = /\$\{setting\.([\$a-zA-Z0-9_]+)\}/g;
+
+ZmZimletContext.prototype.process = function(str, obj, props) {
+	if (obj) str = this.processString(str, obj);
+	str = this.replaceObj(ZmZimletContext.RE_SCAN_PROP, str, props || this._propsById);
+	str = this.replaceObj(ZmZimletContext.RE_SCAN_APP, str, ZmZimletContext.APP);
+	str = str.replace(ZmZimletContext.__RE_SCAN_SETTING, ZmZimletContext.__replaceSetting);
+	return str;
+};
 
 ZmZimletContext.prototype.processString = function(str, obj) {
 	return this.replaceObj(ZmZimletContext.RE_SCAN_OBJ, str, obj);
@@ -374,10 +389,13 @@ ZmZimletContext.prototype.replaceObj = function(re, str, obj) {
 		});
 };
 
+ZmZimletContext.__replaceSetting = function($0, name) {
+	return appCtxt.get(name);
+};
+
 ZmZimletContext.prototype.makeURL = function(actionUrl, obj, props) {
 	//All URL's to have REST substitutions
-	var url = this.replaceObj(ZmZimletContext.RE_SCAN_PROP, actionUrl.target, props || this._propsById);
-	url = this.replaceObj(ZmZimletContext.RE_SCAN_APP, url, ZmZimletContext.APP);
+	var url = this.process(actionUrl.target, obj, props);
 	//var url = actionUrl.target;
 	var param = [];
 	if (actionUrl.param) {
@@ -386,11 +404,7 @@ ZmZimletContext.prototype.makeURL = function(actionUrl, obj, props) {
 			// trim whitespace as it's almost certain that the
 			// developer didn't intend it.
 			var val = AjxStringUtil.trim(a[i]._content || a[i]);
-			if (obj) {
-				val = this.processString(val, obj);
-			}
-			val = this.replaceObj(ZmZimletContext.RE_SCAN_PROP, val, props || this._propsById);
-			val = this.replaceObj(ZmZimletContext.RE_SCAN_APP, val, ZmZimletContext.APP);
+			val = this.process(val, obj, props);
 			param.push([ AjxStringUtil.urlEncode(a[i].name),
 				     "=",
 				     AjxStringUtil.urlEncode(val) ].join(""));
