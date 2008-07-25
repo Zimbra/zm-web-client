@@ -14,7 +14,6 @@
 <c:if test="${zm:actionSet(param, 'actionNew')}"><input type="hidden" name="actionNew" value="true"/></c:if>
 <c:if test="${zm:actionSet(param, 'actionNewGroup')}"><input type="hidden" name="actionNewGroup" value="true"/></c:if>
 <c:if test="${zm:actionSet(param, 'actionEdit')}"><input type="hidden" name="actionEdit" value="true"/></c:if>
-
 <table width=100% cellspacing=0 cellpadding=0>
 <tr>
     <td class='ZhBottomSep'>
@@ -66,29 +65,41 @@
             </td>
         </tr>
         <tr>
-            <td>
-                <table border="0" cellpadding="0" cellspacing="3" width="100%">
-                    <tr>
-                        <td class="editContactGroupLabel"><label for="dlist"><fmt:message key="AB_GROUP_MEMBERS"/>:</label></td>
-                        <td class="editContactGroupHintLabel"><fmt:message key="enterAddresses"/></td>
+            <td class="List">
+                <c:set var="contactValues" value="${empty paramValues.dlist ? contact.groupMembers : paramValues.dlist}"/>
+                <table class="topborder" cellpadding="2" cellspacing="0" width="100%">
+                    <tr valign="top">
+                        <th width="4%">
+                              &nbsp;&nbsp;
+                        </th>
+                        <th width="96%">
+                             <fmt:message key="AB_GROUP_MEMBERS"/>
+                        </th>
                     </tr>
+                    <c:forEach var="gMember" items="${requestScope.groupSearchContacts}">
+                    <tr>
+                        <td><input checked name="dlist" value="${fn:escapeXml(gMember)}" type="checkbox"></td>
+                        <td>${fn:escapeXml(gMember)}</td>
+                    </tr>
+                    </c:forEach>
+                    <c:forEach var="gMember" items="${contactValues}">
+                    <tr>
+                        <td><input checked name="dlist" value="${fn:escapeXml(gMember)}" type="checkbox"></td>
+                        <td>${fn:escapeXml(gMember)}</td>
+                    </tr>
+                    </c:forEach>
                 </table>
+                <c:if test="${empty contactValues and empty requestScope.groupSearchContacts}">
+                    <div class="NoResults"><fmt:message key="addMembers"/></div>
+                </c:if>
             </td>
+
         </tr>
         <tr>
             <td>
-                <c:set var="contactValue" value="${fn:escapeXml(not empty param.dlist ? param.dlist : contact.groupMembersPerLine)}" />
-                <c:if test="${not empty requestScope.groupSearchContacts}" >
-                    <c:choose>
-                        <c:when test="${not empty contactValue}">
-                            <c:set var="contactValue" value="${contactValue}, ${requestScope.groupSearchContacts}" />
-                        </c:when>
-                        <c:otherwise>
-                            <c:set var="contactValue" value="${requestScope.groupSearchContacts}" />
-                        </c:otherwise>
-                    </c:choose>
-                </c:if>
-                <textarea id="dlist" rows="40" cols="60" style="width:100%" name="dlist">${contactValue}</textarea>
+               <c:if test="${not empty contactValues or not empty requestScope.groupSearchContacts}">
+                    <fmt:message key="uncheckToRemoveMembers"/>
+               </c:if>
             </td>
         </tr>
     </c:when>

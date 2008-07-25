@@ -65,7 +65,7 @@
     <c:if test="${not empty param.dlist and param.isgroup}">
         <zm:field name="fileAs" value="8:${param.nickname}"/>
         <zm:field name="nickname" value="${param.nickname}"/>
-        <zm:field name="dlist" value="${zm:joinLines(param.dlist,', ')}"/>
+        <zm:field name="dlist" value="${fn:join(paramValues.dlist,', ')}"/>
         <zm:field name="type" value="group"/>
     </c:if>
     

@@ -63,8 +63,15 @@
     </c:otherwise>
 </c:choose>
 
-<c:set var="groupSearchContacts" value="${fn:join(paramValues.addToGroup, ', ')}" scope="request"/>
-
+<c:choose>
+    <c:when test="${zm:actionSet(param,'actionAddSepMembers')}">
+        <c:set var="groupSearchContacts" value="${fn:split(param.nGroupMembers,',')}" scope="request"/>
+    </c:when>
+    <c:otherwise>
+        <c:set var="groupSearchContacts" value="${paramValues.addToGroup}" scope="request"/>
+    </c:otherwise>
+</c:choose>
+    
 </app:handleError>
 
 <c:set var="isGroup" value="${contact.isGroup or newGroup}"/>
@@ -140,6 +147,21 @@
         <tr>
             <td class='List' colspan="2">
                 <app:contactAddListView groupMode="${true}" searchResult="${search}" searchGalResult="${searchGal}"/>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <span><fmt:message key="enterAddrBelow"/></span>
+                <table width=100% cellpadding=2 cellspacing=0>
+                    <tr>
+                        <td>
+                            <textarea id="ngroupmembers" rows="4" cols="40" style="width:100%" name="nGroupMembers"></textarea>
+                        </td>
+                        <td align="center">
+                            <input id="doAddMembers" class="tbButton" type=submit name='actionAddSepMembers' value="<fmt:message key="add"/>">
+                        </td>
+                    </tr>
+                </table>
             </td>
         </tr>
     </table>
