@@ -67,8 +67,11 @@ ZmSearchController.prototype.fromSearch =
 function(address) {
 	// always search for mail when doing a "from: <address>" search
 	var groupBy = appCtxt.getApp(ZmApp.MAIL).getGroupMailBy();
-	var query = "from:(" + address + ")";
-	this.search({query:query, types:[groupBy]});
+	var query = address instanceof Array ? address.concat() : [ address ];
+	for (var i = 0; i < query.length; i++) {
+		query[i] = ["from:(", query[i], ")"].join("");
+	}
+	this.search({query:query.join(" OR "), types:[groupBy]});
 };
 
 ZmSearchController.prototype.fromBrowse =

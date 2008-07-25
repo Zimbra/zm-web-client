@@ -515,6 +515,11 @@ function() {
 
 // List listeners
 
+ZmContactListController.prototype._participantSearchListener = function(ev) {
+	var addresses = this._actionEv.contact.getEmails();
+	appCtxt.getSearchController().fromSearch(addresses);
+};
+
 // Double click displays a contact.
 ZmContactListController.prototype._listSelectionListener =
 function(ev) {
