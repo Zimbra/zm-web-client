@@ -16,8 +16,8 @@
 	        <file>../_base/base2/ZmSkin.js</file>
 	    </script>
 		<html>
-			<file>../google/skin.html</file>
-			<file>../google/splash.html</file>
+			<file>skin.html</file>
+			<file>splash.html</file>
 		</html>
 		<templates>
 			<file>templates/dwt/Widgets.template</file>
