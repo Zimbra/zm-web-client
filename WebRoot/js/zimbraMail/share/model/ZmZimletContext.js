@@ -263,14 +263,14 @@ ZmZimletContext.prototype.getProp = function(name) {
 };
 
 ZmZimletContext.prototype._translateConfig = function() {
-	if (this.config && this.config.global && this.config.global[0]) {
+	if (this.config.global && this.config.global[0]) {
 		var prop = this.config.global[0].property;
 		this.config.global = {};
 		for (var i in prop) {
 			this.config.global[prop[i].name] = prop[i]._content;
 		}
 	}
-	if (this.config && this.config.local && this.config.local[0]) {
+	if (this.config.local && this.config.local[0]) {
 		var propLocal = this.config.local[0].property;
 		this.config.local = {};
 		for (var j in propLocal) {
@@ -280,10 +280,10 @@ ZmZimletContext.prototype._translateConfig = function() {
 };
 
 ZmZimletContext.prototype.getConfig = function(name) {
-	if (this.config && this.config.local && this.config.local[name]) {
+	if (this.config.local && this.config.local[name]) {
 		return this.config.local[name];
 	}
-	if (this.config && this.config.global && this.config.global[name]) {
+	if (this.config.global && this.config.global[name]) {
 		return this.config.global[name];
 	}
 	return null;
