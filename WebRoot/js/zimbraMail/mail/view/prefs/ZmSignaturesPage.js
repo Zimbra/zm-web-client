@@ -512,12 +512,15 @@ ZmSignaturesPage.prototype._handleEditButton = function(id, evt){
     var size = Dwt.getSize(comps.value.getHtmlElement().parentNode);
     htmlEditor.setSize(size.x, size.y);
     htmlEditor.setVisibility(true);
+    htmlEditor.setContent(signature.value);
     htmlEditor.reparentHtmlElement(comps.value.getHtmlElement().parentNode);
-    AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._setSignatureContent, [htmlEditor, signature]), 10);
+    if(htmlEditor.getContent() != signature.value){
+        AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._setSignatureContent, [htmlEditor, signature]), 100);
+    }
 };
 
 ZmSignaturesPage.prototype._setSignatureContent = function(editor, signature){
-    editor.setContent(signature.value || "");
+    editor.setContent(signature.value);
 };
 
 // ZmSignaturesPage.prototype.getPreSaveCallback = function() {
