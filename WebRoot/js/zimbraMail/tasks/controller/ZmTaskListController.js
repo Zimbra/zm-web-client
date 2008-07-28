@@ -204,7 +204,6 @@ function(parent, num) {
 	ZmListController.prototype._resetOperations.call(this, parent, num);
 
 	// a valid folderId means user clicked on a task list
-	var isParent = appCtxt.getActiveAccount().isMain;
 	var folderId = (this._activeSearch && this._activeSearch.search) ? this._activeSearch.search.folderId : null;
 	if (folderId) {
 		var folder = appCtxt.getById(folderId);
@@ -213,9 +212,7 @@ function(parent, num) {
 
 		parent.enable([ZmOperation.MOVE, ZmOperation.DELETE], canEdit && num > 0);
 		parent.enable(ZmOperation.EDIT, canEdit && num == 1);
-		parent.enable(ZmOperation.TAG_MENU, (isParent && !isShare && num > 0));
-	} else {
-		parent.enable(ZmOperation.TAG_MENU, isParent);
+		parent.enable(ZmOperation.TAG_MENU, (!isShare && num > 0));
 	}
 };
 
