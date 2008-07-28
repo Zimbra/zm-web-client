@@ -1012,7 +1012,6 @@ function(creates, mailCreates) {
 			}
 
 			if (AjxEnv.isWindows) {
-				window.platform.icon().showBalloonTip("test", "test2", 5);
 				var balloonText = [];
 				for (var j in winText) {
 					balloonText.push(j + "\n  " + winText[j].join("\n  "));
