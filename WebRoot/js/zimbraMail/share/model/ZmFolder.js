@@ -487,6 +487,7 @@ function(what, folderType) {
 				   (what.type == ZmOrganizer.FOLDER && thisType == ZmOrganizer.SEARCH) ||
 				   (what.type == ZmOrganizer.SEARCH && thisType == ZmOrganizer.FOLDER && this.nId == ZmOrganizer.ID_ROOT) ||
 				   (what.id == this.id) ||
+				   (what.disallowSubFolder) ||
 				   (what.isRemote() && what.parent && what.parent.isRemote()));	// this means a remote folder can be DnD but not its children
 	} else {
 		// An item or an array of items is being moved
