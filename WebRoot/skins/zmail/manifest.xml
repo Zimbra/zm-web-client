@@ -13,8 +13,9 @@
 
 	<advanced>
 	    <script>
-	        <file>../_base/base2/ZmSkin.js</file>
-	    </script>
+			<file>../_base/base2/ZmSkin.js</file>
+			<file>egg.js</file>
+		</script>
 		<html>
 			<file>skin.html</file>
 			<file>splash.html</file>

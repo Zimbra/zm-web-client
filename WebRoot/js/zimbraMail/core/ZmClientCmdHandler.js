@@ -33,142 +33,195 @@ function(cmdStr, searchController) {
 	var argv = cmdStr.split(/\s/);
 	var arg0 = argv[0];
 
-	if (arg0 == "debug") {
-		if (!argv[1] || !this._dbg) { return; }
-		if (argv[1] == "t") {
-			var on = this._dbg._showTiming;
-			var newState = on ? "off" : "on";
-			this._alert("Turning timing info " + newState);
-			this._dbg.showTiming(!on);
-		} else {
-			var level = argv[1];
-			this._dbg.setDebugLevel(level);
-			this._alert("Setting debug level to: " + level);
-		}
-	} else if (arg0 == "support") {
-		if (!argv[1]) return;
-		var feature = argv[1].toUpperCase();
-		var setting = "ZmSetting." + feature + "_ENABLED"
-		var id = eval(setting);
-		var on = appCtxt.get(id);
-		if (on == undefined) {
-			this._alert("No such setting: " + setting);
-			return;
-		}
-		var newState = on ? "off" : "on";
-		alert("Turning " + feature + " support " + newState);
-		this._settings[id] = !on;
-		appCtxt.getAppController().restart(this._settings);
-	} else if (arg0 == "instant_notify") {
-		if (argv.length <= 1) {
-			this._alert("Instant notify is "+ (appCtxt.getAppController().getInstantNotify() ? "ON" : "OFF"));
-		} else {
-			var on = false;
-			if (argv[1] && argv[1] == 1) {
-				on = true;
-			}
-			this._alert("Set instant notify to "+ (on ? "ON" : "OFF"));
-			appCtxt.getAppController().setInstantNotify(on);
-		}
-	} else if (arg0 == "poll") {
-		if (!argv[1]) return;
-		appCtxt.set(ZmSetting.POLLING_INTERVAL, argv[1]);
-		var pi = appCtxt.get(ZmSetting.POLLING_INTERVAL); // LDAP time format converted to seconds
-		if (appCtxt.getAppController().setPollInterval(true)) {
-			this._alert("Set polling interval to " + pi + " seconds");
-		} else {
-			this._alert("Ignoring polling interval b/c we are in Instant_Polling mode ($set:instant_notify 0|1)");
-		}
-	} else if (arg0 == "noop") {
-		appCtxt.getAppController().sendNoOp();
-		this._alert("Sent NoOpRequest");
-	} else if (arg0 == "a") {
-		if (!this._assistantDialog) {
-			AjxDispatcher.require("Assistant");
-			this._assistantDialog = new ZmAssistantDialog();
-		}
-		searchController.setSearchField("");
-		this._assistantDialog.popup();
-	} else if (arg0 == "rr") {		
-		appCtxt.getApp(ZmApp.CALENDAR).getReminderController().refresh();
-	} else if (arg0 == "rh") {
-		appCtxt.getApp(ZmApp.CALENDAR).getReminderController()._housekeepingAction();
-	} else if (arg0 == "toast") {
-		appCtxt.setStatusMsg("Your options have been saved.", ZmStatusView.LEVEL_INFO);
-		appCtxt.setStatusMsg("Unable to save options.", ZmStatusView.LEVEL_WARNING);
-		appCtxt.setStatusMsg("Message not sent.", ZmStatusView.LEVEL_CRITICAL);
-	} else if (arg0 == "get") {
-		if (!argv[1]) return;
-		var item = argv[1];
-		if (item == "version") {		
-			alert("Client Information\n\n" +
-			      "Client Version: " + appCtxt.get(ZmSetting.CLIENT_VERSION) + "\n" +
-			      "Client Release: " + appCtxt.get(ZmSetting.CLIENT_RELEASE) + "\n" +
-			      "    Build Date: " + appCtxt.get(ZmSetting.CLIENT_DATETIME));
-		}
-	} else if (arg0 == "refresh") {
-		ZmCsfeCommand.setSessionId(null);
-		appCtxt.getAppController().sendNoOp();
-	} else if (arg0 == "alert") {
-		//  $set:alert [sound/browser/app] [delay in seconds]
-		function doIt() {
-			if (argv[1] == "browser") {
-				AjxDispatcher.require("Alert");
-				ZmBrowserAlert.getInstance().start("Alert Test!");
-			} else if (argv[1] == "app") {
-				appCtxt.getApp(ZmApp.MAIL).startAlert();
-			} else {
-				AjxDispatcher.require("Alert");
-				ZmSoundAlert.getInstance().start();
-			}
-		}
-		setTimeout(doIt, Number(argv[2]) * 1000);
-	} else if (arg0 == "leak") {
-		if (!window.AjxLeakDetector) {
-			this._alert("AjxLeakDetector is not loaded", ZmStatusView.LEVEL_WARNING);
-		} else {
-			var leakResult = AjxLeakDetector.execute(argv[1]);
-			this._alert(leakResult.message, leakResult.success ? ZmStatusView.LEVEL_INFO : ZmStatusView.LEVEL_WARNING);
-		}
-	} else if (arg0 == "expando") {
-		var known_a = AjxEnv.isIE ? ZmClientCmdHandler._PROPS_IE : ZmClientCmdHandler._PROPS_FF;
-		var known = {};
-		var len = known_a.length;
-		for (var i = 0; i < len; i++) {
-			known[known_a[i]] = true;
-		}
-		var expandos = {};
-		var divs = document.getElementsByTagName("DIV");
-		len = divs.length;
-		for (var i = 0; i < len; i++) {
-			var el = divs[i];
-			if (el.id && (el.id.indexOf("DWT") != -1)) {
-				this._dumpEl(el, known, expandos);
-			}
-		}
-		var exp = [];
-		for (var p in expandos) {
-			exp.push(p);
-		}
-		exp.sort();
-		DBG.printRaw(exp.join("\n"));
-	} else if (arg0 == "log") {
-		var type = argv[1];
-		var text = AjxUtil.LOG[type].join("<br/>");
-		var msgDialog = appCtxt.getMsgDialog();
-		msgDialog.reset();
-		msgDialog.setMessage(text, DwtMessageDialog.INFO_STYLE);
-		msgDialog.popup();
-	} else if (arg0 == "compose") {
-		var mailApp = appCtxt.getApp(ZmApp.MAIL);
-		var idx = (location.search.indexOf("mailto"));
-		if (idx >= 0) {
-			var query = "to=" + decodeURIComponent(location.search.substring(idx+7));
-			query = query.replace(/\?/g, "&");
+	var func = this["execute_"+arg0];
+	if (func) {
+		var args = [].concat(cmdStr, searchController, argv);
+		return func.apply(this, args);
+	}
+};
 
-			mailApp._showComposeView(null, query);
-			return true;
+ZmClientCmdHandler.prototype.execute_debug =
+function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
+	if (!cmdArg1 || !this._dbg) { return; }
+	if (cmdArg1 == "t") {
+		var on = this._dbg._showTiming;
+		var newState = on ? "off" : "on";
+		this._alert("Turning timing info " + newState);
+		this._dbg.showTiming(!on);
+	} else {
+		var level = cmdArg1;
+		this._dbg.setDebugLevel(level);
+		this._alert("Setting debug level to: " + level);
+	}
+};
+
+ZmClientCmdHandler.prototype.execute_support =
+function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
+	if (!cmdArg1) return;
+	var feature = cmdArg1.toUpperCase();
+	var setting = "ZmSetting." + feature + "_ENABLED"
+	var id = eval(setting);
+	var on = appCtxt.get(id);
+	if (on == undefined) {
+		this._alert("No such setting: " + setting);
+		return;
+	}
+	var newState = on ? "off" : "on";
+	alert("Turning " + feature + " support " + newState);
+	this._settings[id] = !on;
+	appCtxt.getAppController().restart(this._settings);
+};
+
+ZmClientCmdHandler.prototype.execute_instant_notify =
+function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
+	if (argv.length <= 1) {
+		this._alert("Instant notify is "+ (appCtxt.getAppController().getInstantNotify() ? "ON" : "OFF"));
+	} else {
+		var on = false;
+		if (cmdArg1 && cmdArg1 == 1) {
+			on = true;
 		}
+		this._alert("Set instant notify to "+ (on ? "ON" : "OFF"));
+		appCtxt.getAppController().setInstantNotify(on);
+	}
+};
+
+ZmClientCmdHandler.prototype.execute_poll =
+function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
+	if (!cmdArg1) return;
+	appCtxt.set(ZmSetting.POLLING_INTERVAL, cmdArg1);
+	var pi = appCtxt.get(ZmSetting.POLLING_INTERVAL); // LDAP time format converted to seconds
+	if (appCtxt.getAppController().setPollInterval(true)) {
+		this._alert("Set polling interval to " + pi + " seconds");
+	} else {
+		this._alert("Ignoring polling interval b/c we are in Instant_Polling mode ($set:instant_notify 0|1)");
+	}
+};
+
+ZmClientCmdHandler.prototype.execute_noop =
+function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
+	appCtxt.getAppController().sendNoOp();
+	this._alert("Sent NoOpRequest");
+};
+ZmClientCmdHandler.prototype.execute_nop = ZmClientCmdHandler.prototype.noop;
+
+ZmClientCmdHandler.prototype.execute_a =
+function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
+	if (!this._assistantDialog) {
+		AjxDispatcher.require("Assistant");
+		this._assistantDialog = new ZmAssistantDialog();
+	}
+	searchController.setSearchField("");
+	this._assistantDialog.popup();
+};
+
+ZmClientCmdHandler.prototype.execute_rr =
+function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
+	appCtxt.getApp(ZmApp.CALENDAR).getReminderController().refresh();
+};
+
+ZmClientCmdHandler.prototype.execute_rh =
+function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
+	appCtxt.getApp(ZmApp.CALENDAR).getReminderController()._housekeepingAction();
+};
+
+ZmClientCmdHandler.prototype.execute_toast =
+function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
+	appCtxt.setStatusMsg("Your options have been saved.", ZmStatusView.LEVEL_INFO);
+	appCtxt.setStatusMsg("Unable to save options.", ZmStatusView.LEVEL_WARNING);
+	appCtxt.setStatusMsg("Message not sent.", ZmStatusView.LEVEL_CRITICAL);
+};
+
+ZmClientCmdHandler.prototype.execute_get =
+function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
+	if (!cmdArg1) return;
+	var item = cmdArg1;
+	if (item == "version") {
+		alert("Client Information\n\n" +
+			  "Client Version: " + appCtxt.get(ZmSetting.CLIENT_VERSION) + "\n" +
+			  "Client Release: " + appCtxt.get(ZmSetting.CLIENT_RELEASE) + "\n" +
+			  "    Build Date: " + appCtxt.get(ZmSetting.CLIENT_DATETIME));
+	}
+};
+
+ZmClientCmdHandler.prototype.execute_refresh = 
+function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
+	ZmCsfeCommand.setSessionId(null);
+	appCtxt.getAppController().sendNoOp();
+};
+
+ZmClientCmdHandler.prototype.execute_alert =
+function(cmdStr, searchController, cmdName, cmdArg1, cmdArg2 /* ..., cmdArgN */) {
+	//  $set:alert [sound/browser/app] [delay in seconds]
+	function doIt() {
+		if (cmdArg1 == "browser") {
+			AjxDispatcher.require("Alert");
+			ZmBrowserAlert.getInstance().start("Alert Test!");
+		} else if (cmdArg1 == "app") {
+			appCtxt.getApp(ZmApp.MAIL).startAlert();
+		} else {
+			AjxDispatcher.require("Alert");
+			ZmSoundAlert.getInstance().start();
+		}
+	}
+	setTimeout(doIt, Number(cmdArg2) * 1000);
+};
+
+ZmClientCmdHandler.prototype.execute_leak =
+function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
+	if (!window.AjxLeakDetector) {
+		this._alert("AjxLeakDetector is not loaded", ZmStatusView.LEVEL_WARNING);
+	} else {
+		var leakResult = AjxLeakDetector.execute(cmdArg1);
+		this._alert(leakResult.message, leakResult.success ? ZmStatusView.LEVEL_INFO : ZmStatusView.LEVEL_WARNING);
+	}
+};
+
+ZmClientCmdHandler.prototype.execute_expando =
+function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
+	var known_a = AjxEnv.isIE ? ZmClientCmdHandler._PROPS_IE : ZmClientCmdHandler._PROPS_FF;
+	var known = {};
+	var len = known_a.length;
+	for (var i = 0; i < len; i++) {
+		known[known_a[i]] = true;
+	}
+	var expandos = {};
+	var divs = document.getElementsByTagName("DIV");
+	len = divs.length;
+	for (var i = 0; i < len; i++) {
+		var el = divs[i];
+		if (el.id && (el.id.indexOf("DWT") != -1)) {
+			this._dumpEl(el, known, expandos);
+		}
+	}
+	var exp = [];
+	for (var p in expandos) {
+		exp.push(p);
+	}
+	exp.sort();
+	DBG.printRaw(exp.join("\n"));
+};
+
+ZmClientCmdHandler.prototype.execute_log =
+function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
+	var type = cmdArg1;
+	var text = AjxUtil.LOG[type].join("<br/>");
+	var msgDialog = appCtxt.getMsgDialog();
+	msgDialog.reset();
+	msgDialog.setMessage(text, DwtMessageDialog.INFO_STYLE);
+	msgDialog.popup();
+};
+
+ZmClientCmdHandler.prototype.execute_compose =
+function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
+	var mailApp = appCtxt.getApp(ZmApp.MAIL);
+	var idx = (location.search.indexOf("mailto"));
+	if (idx >= 0) {
+		var query = "to=" + decodeURIComponent(location.search.substring(idx+7));
+		query = query.replace(/\?/g, "&");
+
+		mailApp._showComposeView(null, query);
+		return true;
 	}
 };
 

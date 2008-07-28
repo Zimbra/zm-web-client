@@ -235,3 +235,7 @@
 	@Text-today@
 	font-weight:bold;
 }
+
+.ImgEggBanner {
+	background-image: url("@LogoImgDir@/EggBanner.png") !important;
+}
