@@ -604,7 +604,13 @@ function(calItem, mode) {
 		var cal = data[i];
 		var id = cal.link ? cal.getRemoteId() : cal.id;
 		this._calendarOrgs[id] = cal.owner;
-		// don't show calendar if feed, or remote and don't have write perms
+
+        //bug: 28363 owner attribute is not available for shared sub folder for mountpoints
+        if(cal.isRemote() && !cal.owner && cal.parent && cal.parent.isRemote()) {
+            this._calendarOrgs[id] = cal.parent.getOwner();
+        }
+
+        // don't show calendar if feed, or remote and don't have write perms
 		if (cal.isFeed() ||
 			(cal.link && cal.shares && cal.shares.length > 0 && !cal.shares[0].isWrite()))
 		{
