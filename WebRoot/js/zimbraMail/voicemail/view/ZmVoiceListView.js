@@ -121,6 +121,7 @@ function(htmlArr, idx, voicemail, field, colIdx, params) {
 	if (field == ZmVoiceListView.F_CALLER) {
 		htmlArr[idx++] = this._getCallerNameHtml(voicemail);
 	} else if (field == ZmVoiceListView.F_DATE) {
+		params.now = params.now || new Date();
 		htmlArr[idx++] = AjxDateUtil.computeWordyDateStr(params.now, voicemail.date);
 	} else {
 		idx = ZmListView.prototype._getCellContents.call(this, htmlArr, idx, voicemail, field, colIdx, params); 
