@@ -96,6 +96,8 @@ function(ev) {
 			newDialog.setName(ev.name);
 		if (ev.address)
 			newDialog.setAddress(ev.address);
+		if (ev.service)
+			newDialog.setService(ev.service);
 	}
 };
 
