@@ -649,6 +649,146 @@ function(presence, button, doText, doTooltip) {
 	}
 };
 
+// Constants used when handling the im context menu items.
+ZmImApp._NEW_IM = "NEW_IM";
+ZmImApp._NEW_BUDDY_FROM_IM_ADDRESS = "NEW_BUDDY_FROM_IM_ADDRESS";
+ZmImApp._NEW_BUDDY = "NEW_BUDDY";
+
+/**
+ * Updates the im context menu item when a contact is selected.
+ * @param item {DwtMenuItem} menu item
+ * @param contact {ZmContact} selected contact
+ * @param address {AjxEmailAddress} email address selected. Optional.
+ */
+ZmImApp.updateImMenuItemByContact =
+function(item, contact, address) {
+	// If not logged in, disable the item.
+	var loggedOut = ZmImApp._updateImMenuItemByLogin(item);
+	if (loggedOut) {
+		return;
+	}
+
+	// If the contact has a buddy, update the menu item for that buddy.
+	var buddy = contact.getBuddy();
+	if (buddy) {
+		ZmImApp._updateImMenuItemByBuddy(item, buddy);
+		return;
+	}
+
+	// If the contact has any im address, update the menu item for that address.
+	var imAddress = contact.getIMAddress();
+	if (imAddress) {
+		item.setText(ZmImApp._getNewBuddyText(contact.getFullName()));
+		item.setImage("NewContact");
+		item._imData = { op: ZmImApp._NEW_BUDDY_FROM_IM_ADDRESS, contact: contact, imAddress: imAddress };
+		return;
+	}
+
+	// Contact has no buddy or im address, so update the item to create a buddy by name.
+	var name = address && address.getName() ? address.getName() : contact.getFullName(); 
+	item.setText(ZmImApp._getNewBuddyText(name));
+	item.setImage("NewContact");
+	item._imData = { op: ZmImApp._NEW_BUDDY, address: address, name: name };
+};
+
+/**
+ * Updates the im context menu item when an email address is selected.
+ * @param item {DwtMenuItem} menu item
+ * @param address {AjxEmailAddress} email address selected
+ */
+ZmImApp.updateImMenuItemByAddress =
+function(item, address) {
+	// If not logged in, disable the item.
+	var loggedOut = ZmImApp._updateImMenuItemByLogin(item);
+	if (loggedOut) {
+		return;
+	}
+
+	// If we can find a buddy with the address, use the buddy menu item.
+	var buddy = AjxDispatcher.run("GetRoster").getRosterItem(address.getAddress());
+	if (buddy) {
+		ZmImApp._updateImMenuItemByBuddy(item, buddy);
+		return;
+	}
+
+	// Figure out if there's a contact for the address, update the menu item for that contact.
+	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+		var contactList = AjxDispatcher.run("GetContacts");
+		if (contactList) {
+			var contact = contactList.getContactByEmail(address.getAddress());
+			if (contact) {
+				ZmImApp.updateImMenuItemByContact(item, contact, address);
+				return;
+			}
+		}
+	}
+
+	// Address has no contact or buddy. Use create buddy menu item.
+	item.setText(ZmImApp._getNewBuddyText(address.getName() || address.getAddress()));
+	item.setImage("NewContact");
+	item._imData = { op: ZmImApp._NEW_BUDDY, address: address, name: address.getName() };
+};
+
+ZmImApp.getImMenuItemListener =
+function() {
+	ZmImApp._imMenuItemListenerObj = ZmImApp._imMenuItemListenerObj || new AjxListener(null, ZmImApp._imMenuItemListener);
+	return ZmImApp._imMenuItemListenerObj;
+};
+
+ZmImApp._updateImMenuItemByBuddy =
+function(item, buddy) {
+	ZmImApp._newChatFormat = ZmImApp._newChatFormat || new AjxMessageFormat(ZmMsg.imNewChatName);
+	item.setText(ZmImApp._newChatFormat.format(buddy.getDisplayName()));
+	item.setImage(buddy.getPresence().getIcon());
+	item._imData = { op: ZmImApp._NEW_IM, buddy: buddy };
+};
+
+ZmImApp._updateImMenuItemByLogin =
+function(item) {
+	// If not logged in, disable the item.
+	if (!ZmImApp.loggedIn()) {
+		item.setText(ZmMsg.newIM);
+		item.setImage("ImStartChat");
+		item.setEnabled(false);
+		item._imData = null;
+		return true;
+	}
+	item.setEnabled(true);
+	return false;
+};
+
+ZmImApp._getNewBuddyText =
+function(name) {
+	ZmImApp._newBuddyFormat = ZmImApp._newBuddyFormat || new AjxMessageFormat(ZmMsg.imNewBuddy);
+	return ZmImApp._newBuddyFormat.format(name);
+};
+
+/**
+ * Handles a click on the im item in a context menu. Can create a buddy or start a chat,
+ * depending on the selected contact or address.
+ */
+ZmImApp._imMenuItemListener =
+function(ev) {
+	ZmImApp.INSTANCE.prepareVisuals();
+
+	var imData = ev.dwtObj._imData;
+	switch (imData.op) {
+		case ZmImApp._NEW_IM:
+			ZmImApp.INSTANCE.getChatListController().chatWithRosterItem(imData.buddy);
+			break;
+		case ZmImApp._NEW_BUDDY_FROM_IM_ADDRESS:
+			//TODO: here's where we should pass the im address' service to the new buddy dialog...
+			var imAddress = ZmImAddress.parse(imData.imAddress);
+			var data = { address: imAddress.screenName, name: imData.contact.getFullName() };
+			ZmImApp.INSTANCE.getImController()._newRosterItemListener(data);
+			break;
+		case ZmImApp._NEW_BUDDY:
+			data = { address: imData.address ? imData.address.getAddress() : null,  name: imData.name };
+			ZmImApp.INSTANCE.getImController()._newRosterItemListener(data);
+			break;
+	}
+};
+
 ZmPresenceButton = function(params) {
 	params.className = params.className || "ZToolbarButton";
 	DwtButton.call(this, params);

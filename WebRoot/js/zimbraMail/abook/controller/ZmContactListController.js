@@ -559,11 +559,8 @@ function(ev) {
 	} else {
 		this._setContactText(!this.isGalSearch());
 		if (appCtxt.get(ZmSetting.IM_ENABLED)) {
-			var buddy = contact.getBuddy();
-			actionMenu.getOp(ZmOperation.IM).setEnabled(buddy != null);
-			if (buddy) {
-				actionMenu.getOp(ZmOperation.IM).setImage(buddy.getPresence().getIcon());
-			}
+			var imItem = actionMenu.getOp(ZmOperation.IM);
+			ZmImApp.updateImMenuItemByContact(imItem, contact);
 		}
 	}
 	ZmOperation.setOperation(actionMenu, ZmOperation.TAG_MENU, ZmOperation.TAG_MENU, contact.isGroup() ? ZmMsg.AB_TAG_GROUP : ZmMsg.AB_TAG_CONTACT);

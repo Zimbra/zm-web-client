@@ -523,17 +523,14 @@ function(ev) {
 		this._initializeParticipantActionMenu();
 		this._setTagMenu(this._participantActionMenu);
 		this._actionEv.address = address;
+		if (appCtxt.get(ZmSetting.IM_ENABLED)) {
+			var imItem = this._participantActionMenu.getOp(ZmOperation.IM);
+			ZmImApp.updateImMenuItemByAddress(imItem, address);
+		}
 		if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
 			var contacts = AjxDispatcher.run("GetContacts");
 			var c = this._actionEv.contact = contacts.getContactByEmail(this._actionEv.address.getAddress());
 			this._setContactText(c != null);
-			if (appCtxt.get(ZmSetting.IM_ENABLED) && ZmImApp.loggedIn()) {
-				var buddy = c && c.getBuddy();
-				this._participantActionMenu.getOp(ZmOperation.IM).setEnabled(buddy != null);
-				if (buddy) {
-					this._participantActionMenu.getOp(ZmOperation.IM).setImage(buddy.getPresence().getIcon());
-				}
-			}
 		}
 		this._setupSpamButton(this._participantActionMenu);
 		this._enableFlags(this._participantActionMenu, bHasUnread, bHasRead);
