@@ -777,9 +777,8 @@ function(ev) {
 			ZmImApp.INSTANCE.getChatListController().chatWithRosterItem(imData.buddy);
 			break;
 		case ZmImApp._NEW_BUDDY_FROM_IM_ADDRESS:
-			//TODO: here's where we should pass the im address' service to the new buddy dialog...
 			var imAddress = ZmImAddress.parse(imData.imAddress);
-			var data = { address: imAddress.screenName, name: imData.contact.getFullName() };
+			var data = { address: imAddress.screenName, name: imData.contact.getFullName(), service: imAddress.service };
 			ZmImApp.INSTANCE.getImController()._newRosterItemListener(data);
 			break;
 		case ZmImApp._NEW_BUDDY:
