@@ -20,7 +20,7 @@
                 <c:forEach var="keyseq" items="${fn:split(keyseqlist, ';')}" varStatus="keyseqStatus">
                     <c:set var="keyseq" value="${fn:trim(keyseq)}"/>
                     <c:if test="${not keyseqStatus.first}">
-                        <fmt:message key="keyseq.or"/>
+                        &nbsp; <fmt:message key="keyseq.or"/> &nbsp;
                     </c:if>
                     <span class='shortcutKeyCombo'>
                         <c:forEach var="key" items="${fn:split(keyseq, ',')}" varStatus="keyStatus">
