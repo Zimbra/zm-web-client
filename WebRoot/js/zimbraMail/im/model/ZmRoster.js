@@ -89,13 +89,28 @@ function() {
 
 ZmRoster.prototype.getRosterItem =
 function(addr, isGenericAddr) {
-        if (isGenericAddr) {
-                addr = ZmImAddress.parse(addr);
-                if (addr)
-                        addr = this.makeServerAddress(addr.screenName, addr.service);
-        }
-        if (addr)
-	        return this.getRosterItemList().getByAddr(addr);
+	if (!addr) {
+		return null;
+	}
+	
+	addr = addr.toLowerCase();
+	var item = this.getRosterItemList().getByAddr(addr);
+	if (item) {
+		return item;
+	}
+	if (isGenericAddr) {
+		addr = ZmImAddress.parse(addr);
+		item = this.getRosterItemList().getByAddr(addr.screenName);
+		if (item) {
+			return item;
+		}
+		if (addr) {
+			addr = this.makeServerAddress(addr.screenName, addr.service);
+			if (addr) {
+				return this.getRosterItemList().getByAddr(addr);
+			}
+		}
+	}
 };
 
 ZmRoster.prototype.getRosterItemList =
