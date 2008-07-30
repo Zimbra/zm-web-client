@@ -41,10 +41,6 @@ ZmImController.prototype.toString = function() {
 	return "ZmImController";
 };
 
-ZmImController.prototype.getFloatingBuddyListWin = function(ev) {
-	return this.__floatingBuddyListWin;
-};
-
 ZmImController.prototype._deleteListener =
 function(ev) {
 	var ds = this._deleteShield = appCtxt.getYesNoCancelMsgDialog();
