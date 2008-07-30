@@ -93,7 +93,10 @@
         <td class='TabSpacerR'/>
         </c:if>    
         <td class='TabSpacer'/>
-        <td class='TabFiller'>
+        <td class='TabFiller' style="text-align:right;">
+            <c:if test="${not empty mailbox.attrs.zimbraIsAdminAccount and not empty adminReference }">
+                ${adminReference}
+            </c:if>
             &nbsp;
         </td>
     </tr>
