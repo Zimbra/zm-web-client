@@ -1,5 +1,5 @@
 <template id="share.App#UserInfo">
-	<span id="admin_link_container"></span>
+	<span id="admin_link_container"></span><span id="admin_link_or">&nbsp;<font color='gray'>|</font>&nbsp;</span>
     <$ if (!appCtxt.isOffline) { $>
 		<a href='/zimbra/m/'><$= ZmMsg.mobile $></a>&nbsp;<font color="gray">|</font>&nbsp;
 	<$ } else { $>
@@ -19,10 +19,10 @@
 			}
 		}
         var isAdmin = appCtxt.getSettings().getInfoResponse.attrs._attrs["zimbraIsAdminAccount"];
-        if(isAdmin){
-                var container = document.getElementById("admin_link_container");
+        if(!isAdmin){
+                var container = document.getElementById("admin_link_or");
                 if (container) {
-                    container.innerHTML = container.innerHTML + "&nbsp;<font color="gray">|</font>&nbsp;";
+                    container.style.display="none";
                 }
         }
     $>
