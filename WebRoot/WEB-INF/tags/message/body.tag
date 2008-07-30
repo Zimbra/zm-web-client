@@ -18,7 +18,15 @@
             <c:param name="bodypart" value="${body.partName}"/>
             <c:param name="xim" value="${param.xim}"/>
         </c:url>
-		<app:messageIframe theBody="${theBody}" parentId="iframeBody${counter}" iframeUrl="${iframeUrl}"/>
+
+        <c:forEach var="part" items="${message.attachments}">
+           <c:set var="cid" value="${fn:replace(part.contentId,'<' ,'')}"/>
+           <c:set var="cid" value="cid:${fn:replace(cid,'>' ,'')}"/>
+           <c:set var="imageUrl" value="/service/home/~/?id=${message.id}&amp;part=${part.partName}&amp;auth=co"/>
+           <c:set var="theBody" value="${fn:replace(theBody,cid,imageUrl)}"/>
+        </c:forEach>
+        
+        <app:messageIframe theBody="${theBody}" parentId="iframeBody${counter}" iframeUrl="${iframeUrl}"/>
     </c:when>
     <c:otherwise>
         ${theBody}
