@@ -1008,7 +1008,7 @@ function(contentPartType, contentPart) {
  * to build href's by the caller
 */
 ZmMailMsg.prototype.getAttachmentLinks =
-function(findHits) {
+function(findHits, includeInlineImages) {
 	// cache the attachment links once they've been generated.
 	// NOPE. foundInMsgBody can change after we call this function, it's safer not to cache the links
 	// if (this._attLinks != null)
@@ -1022,7 +1022,7 @@ function(findHits) {
 		for (var i = 0; i < this.attachments.length; i++) {
 			var attach = this.attachments[i];
 
-			if (!this.isRealAttachment(attach) || attach.foundInMsgBody) {
+			if (!this.isRealAttachment(attach) || (attach.foundInMsgBody && !includeInlineImages)) {
 				continue;
 			}
 
@@ -1123,8 +1123,8 @@ function(findHits) {
 			if (!useCL)
 				props.url = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI) + "&loc=" + AjxEnv.DEFAULT_LOCALE + "&id=" + this.id + "&part=" + attach.part;
 
-			if(attach.ci){
-				props.ci = attach.ci;
+			if(attach.ci || (includeInlineImages && attach.cd == "inline")){ // bug: 28741
+				props.ci = true;
 			}
 
 			// and finally, add to attLink array

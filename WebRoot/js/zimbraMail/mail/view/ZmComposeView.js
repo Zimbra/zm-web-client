@@ -168,12 +168,15 @@ function(params) {
 		for (var i = 0; i < bodyParts.length; i++) {
 			var bodyPart = bodyParts[i];
 			var contentType = bodyPart.ct;
-			if (contentType != ZmMimeTable.TEXT_PLAIN && contentType != ZmMimeTable.TEXT_HTML) {
-				var mimePart = new ZmMimePart();
-				mimePart.setContentType(contentType);
-				mimePart.setContent(bodyPart.content);
-				this.addMimePart(mimePart);
-			}
+
+			if (contentType == ZmMimeTable.TEXT_PLAIN) continue;
+			if (contentType == ZmMimeTable.TEXT_HTML) continue;
+			if (ZmMimeTable.isRenderableImage(contentType) && bodyPart.cd == "inline") continue; // bug: 28741
+
+			var mimePart = new ZmMimePart();
+			mimePart.setContentType(contentType);
+			mimePart.setContent(bodyPart.content);
+			this.addMimePart(mimePart);
 		}
 	}
 
@@ -1412,6 +1415,7 @@ function(action, msg, extraBodyText, incOption, nosig) {
 		}
 	}
 
+	var hasInlineImages = false;
 	this._msgAttId = null;
 	if (incOption == ZmSetting.INCLUDE_NONE || action == ZmOperation.NEW_MESSAGE) {
 		value = extraBodyText ? extraBodyText + value : value;
@@ -1431,7 +1435,12 @@ function(action, msg, extraBodyText, incOption, nosig) {
 			var bodyArr = [];
 			for (var k = 0; k < parts.length; k++) {
 				var part = parts[k];
-				if (part.ct == ZmMimeTable.TEXT_PLAIN || composingHtml) {
+				// bug: 28741
+				if (ZmMimeTable.isRenderableImage(part.ct)) {
+					bodyArr.push([crlf,"[",part.ct,":",(part.filename||"..."),"]",crlf].join(""));
+					hasInlineImages = true;
+				}
+				else if (part.ct == ZmMimeTable.TEXT_PLAIN || composingHtml) {
 					bodyArr.push(part.content);
 				} else if (part.ct == ZmMimeTable.TEXT_HTML) {
 					var div = document.createElement("div");
@@ -1575,7 +1584,7 @@ function(action, msg, extraBodyText, incOption, nosig) {
 		this._htmlEditor.setContent(value);
 	}
 
-	this._showForwardField(msg, action, incOption);
+	this._showForwardField(msg, action, incOption, hasInlineImages);
 	this._fixMultipartRelatedImages_onTimer(msg);
 };
 
@@ -1923,7 +1932,7 @@ function() {
 };
 
 ZmComposeView.prototype._showForwardField =
-function(msg, action, replyPref) {
+function(msg, action, replyPref, includeInlineImages) {
 
 	var html = "";
 	if (!(this._msgIds && this._msgIds.length) &&
@@ -1932,9 +1941,9 @@ function(msg, action, replyPref) {
 		html = AjxTemplate.expand("mail.Message#ForwardOneMessage", {message:msg});
 		this._attachCount = 1;
 	}
-	else if (msg && msg.hasAttach)
+	else if (msg && (msg.hasAttach || includeInlineImages))
 	{
-		var attLinks = msg.getAttachmentLinks();
+		var attLinks = msg.getAttachmentLinks(false, includeInlineImages);
 		if (attLinks.length > 0) {
 			var data = {
 				attachments: attLinks,
