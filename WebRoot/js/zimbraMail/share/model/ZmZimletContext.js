@@ -340,6 +340,7 @@ ZmZimletContext.__RE_SCAN_SETTING = /\$\{setting\.([\$a-zA-Z0-9_]+)\}/g;
 
 ZmZimletContext.prototype.process = function(str, obj, props) {
 	if (obj) str = this.processString(str, obj);
+	str = this.processMessage(str); 
 	str = this.replaceObj(ZmZimletContext.RE_SCAN_PROP, str, props || this._propsById);
 	str = this.replaceObj(ZmZimletContext.RE_SCAN_APP, str, ZmZimletContext.APP);
 	str = str.replace(ZmZimletContext.__RE_SCAN_SETTING, ZmZimletContext.__replaceSetting);
