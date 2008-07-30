@@ -79,6 +79,31 @@ ZmImController.prototype._registerGatewayCallback = function(service, screenName
 
 ZmImController.prototype._newRosterItemListener =
 function(ev) {
+	// Special handling for yahoo email addresses. Don't allow them unless signed in
+	// to y! interop, and make sure the service is correctly initialized.
+	if (ev && ev.address) {
+		var match = /(.*)@yahoo\.com/.exec(ev.address);
+		if (match) {
+			var gateway = ZmImApp.INSTANCE.getRoster().getGatewayByType("yahoo");
+			if (!gateway) {
+				var msgDialog = appCtxt.getMsgDialog();
+				msgDialog.setMessage(ZmMsg.imErrorYahooBuddy, DwtMessageDialog.CRITICAL_STYLE);
+				msgDialog.popup();
+				return;
+			} else if (!gateway.isOnline()) {
+				var yesNoDialog = appCtxt.getYesNoMsgDialog();
+				yesNoDialog.reset();
+				yesNoDialog.registerCallback(DwtDialog.YES_BUTTON, this._loginYesCallback, this, [yesNoDialog]);
+				yesNoDialog.registerCallback(DwtDialog.NO_BUTTON, this._loginNoCallback, this, [yesNoDialog]);
+				yesNoDialog.setMessage(ZmMsg.imErrorYahooBuddyLogin, DwtMessageDialog.WARNING_STYLE);
+				yesNoDialog.popup();
+				return;
+			}
+			ev.address = match[1];
+			ev.service = "yahoo";
+		}
+	}
+
 	var newDialog = appCtxt.getNewRosterItemDialog();
 	newDialog.setTitle(ZmMsg.createNewRosterItem);
 	if (!this._newRosterItemCb) {
@@ -95,6 +120,17 @@ function(ev) {
 		if (ev.service)
 			newDialog.setService(ev.service);
 	}
+};
+
+ZmImController.prototype._loginYesCallback =
+function(dialog, ev) {
+	dialog.popdown();
+	this._imGatewayLoginListener({ gwType: "yahoo" });
+};
+
+ZmImController.prototype._loginNoCallback =
+function(dialog, ev) {
+	dialog.popdown();
 };
 
 ZmImController.prototype._editRosterItemListener =
