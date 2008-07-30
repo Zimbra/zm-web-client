@@ -219,7 +219,12 @@ ZmNewRosterItemDialog.prototype._getRosterItemData = function() {
 
 	var address = AjxStringUtil.trim(this._addrEntry.getValue());
 	if (address) address = address.replace(/;$/, "");
-	address = AjxDispatcher.run("GetRoster").makeServerAddress(address, this._serviceTypeSelect.getValue());
+
+	var serviceType = this._serviceTypeSelect.getValue();
+	if (serviceType == "yahoo") {
+		address = address.replace(/@yahoo.com/i, "");
+	}
+	address = AjxDispatcher.run("GetRoster").makeServerAddress(address, serviceType);
 	if (!msg) msg = ZmRosterItem.checkAddress(address);
 
 	var groups = AjxStringUtil.trim(this._groupsEntry.getValue());

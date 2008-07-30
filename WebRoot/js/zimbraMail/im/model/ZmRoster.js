@@ -166,12 +166,12 @@ function(args) {
 		}
 	}
 	if (roster.presence) {
-                // <temporary> hack for bug 21442
-                // remove when a proper fix is available!
-                if (/XA|AWAY/.test(roster.presence.show)) {
-                        roster.presence.show = "ONLINE";
-                        this.setPresence("ONLINE");
-                }
+		// <temporary> hack for bug 21442
+		// remove when a proper fix is available!
+		if (/XA|AWAY/.test(roster.presence.show)) {
+			roster.presence.show = "ONLINE";
+			this.setPresence("ONLINE");
+		}
                 // </temporary>
 		this.getPresence().setFromJS(roster.presence);
 		this._notifyPresence();
@@ -184,8 +184,8 @@ function(args) {
  */
 ZmRoster.prototype.createRosterItem =
 function(addr, name, groups) {
-        var soapDoc = AjxSoapDoc.create("IMSubscribeRequest", "urn:zimbraIM");
-        var method = soapDoc.getMethod();
+	var soapDoc = AjxSoapDoc.create("IMSubscribeRequest", "urn:zimbraIM");
+	var method = soapDoc.getMethod();
 	method.setAttribute("addr", addr);
 	if (name) method.setAttribute("name", name);
 	if (groups) method.setAttribute("groups", groups);
@@ -603,16 +603,16 @@ ZmRoster.prototype.getGateways = function() {
 ZmRoster.prototype.makeServerAddress = function(addr, type) {
 	if (type == null || /^(xmpp|local)$/i.test(type))
 		return addr;
-        var gw = this.getGatewayByType(type);
-        if (gw)
-	        return addr + "@" + gw.domain;
+	var gw = this.getGatewayByType(type);
+	if (gw)
+		return addr + "@" + gw.domain;
 };
 
 ZmRoster.prototype.makeGenericAddress = function(addr) {
-        addr = this.breakDownAddress(addr);
-        if (addr.type.toLowerCase() == "xmpp") // XXX
-                addr.type = "local";
-        return ZmImAddress.make(addr.type, addr.addr);
+	addr = this.breakDownAddress(addr);
+	if (addr.type.toLowerCase() == "xmpp") // XXX
+		addr.type = "local";
+	return ZmImAddress.make(addr.type, addr.addr);
 };
 
 ZmRoster.prototype.breakDownAddress = function(addr) {
