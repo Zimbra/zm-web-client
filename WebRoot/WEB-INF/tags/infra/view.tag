@@ -31,6 +31,7 @@
 <zm:getDomainInfo var="domainInfo" by="virtualHostname" value="${zm:getServerName(pageContext)}" />
 <c:if test="${not empty domainInfo}">
 	<c:set var="helpUrl" value="${domainInfo.attrs.zimbraHelpStandardURL}" scope='request' />
+    <c:set var="adminReference" value="${domainInfo.attrs.zimbraWebClientAdminReference}" scope="request"/>
 </c:if>
 <c:if test="${empty helpUrl}">
 	<%-- we use <c:url> below to add the locid param so don't need to do it here --%>

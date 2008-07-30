@@ -14,7 +14,10 @@
 			<td id='${id}_suffix' valign=bottom>
 				<div class='ZAppTabSpacer'></div>
 			</td>
-		</tr>
+            <td width="100%" valign="middle" align="right" style="padding-right: 10px;" id="admin_link_container">
+                &nbsp;
+            </td>
+        </tr>
 	</table>
 </template>
 
