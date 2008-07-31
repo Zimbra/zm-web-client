@@ -54,7 +54,7 @@ ZmCalColView._OPACITY_APPT_FREE = 40;
 ZmCalColView._OPACITY_APPT_BUSY = 100;
 ZmCalColView._OPACITY_APPT_TENTATIVE = 60;
 
-ZmCalColView._HOURS_DIV_WIDTH = 50; // width of div holding hours text (1:00am, etc)
+ZmCalColView._HOURS_DIV_WIDTH = 55; // width of div holding hours text (1:00am, etc)
 ZmCalColView._UNION_DIV_WIDTH = 30; // width of div holding union in sched view
 
 ZmCalColView._ALL_DAY_SEP_HEIGHT = 5; // height of separator between all day appts and body
