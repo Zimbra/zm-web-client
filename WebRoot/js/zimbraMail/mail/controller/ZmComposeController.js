@@ -490,6 +490,7 @@ function(actionCode) {
 			break;
 
 		case ZmKeyMap.SPELLCHECK:
+			if (!appCtxt.get(ZmSetting.SPELL_CHECK_ENABLED)) break;
 			this.toggleSpellCheckButton(true);
 			this._spellCheckListener();
 			break;
