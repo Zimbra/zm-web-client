@@ -10,6 +10,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <app:skin />
+<c:set value="/img" var="iconPath" scope="request"/>
 <rest:head  title="${title}" rssfeed="${rssfeed}"/>
 <body <c:if test="${not empty onload}">onload="${onload}"</c:if>>
 <jsp:doBody/>	

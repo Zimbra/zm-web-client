@@ -231,6 +231,7 @@ if (application.getInitParameter("offlineMode") != null)  {
     <fmt:message key="favIconUrl" var="favIconUrl"/>
     <link rel="SHORTCUT ICON" href="<c:url value='${favIconUrl}'/>">
 </head>
+<c:set value="/img" var="iconPath" scope="request"/>
 <body onload="onLoad();">
 <table width="100%" style="height:100%;">
     <tr>
