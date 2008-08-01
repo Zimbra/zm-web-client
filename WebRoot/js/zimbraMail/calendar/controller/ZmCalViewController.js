@@ -851,8 +851,12 @@ function(startDate, duration, folderId) {
 	newAppt.resetRepeatMonthlyDayList();
 	newAppt.resetRepeatYearlyMonthsList(startDate.getMonth()+1);
 	newAppt.resetRepeatCustomDayOfWeek();
+    var defaultWarningTime = appCtxt.get(ZmSetting.CAL_REMINDER_WARNING_TIME);
+    if(defaultWarningTime) {
+        newAppt.setReminderMinutes(defaultWarningTime);
+    }
 
-	if (folderId) {
+    if (folderId) {
 		newAppt.setFolderId(folderId);
     }else {
         //bug: 27646 case where only one calendar is checked
