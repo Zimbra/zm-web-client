@@ -110,6 +110,9 @@ function() {
 
 ZmBriefcaseItem.prototype.createFromAttachment =
 function(msgId, partId, name, folderId) {
+	// bug 30208: server only accepts local ids
+	var acctId = appCtxt.getActiveAccount().id;
+	if (msgId.indexOf(acctId) == 0) msgId = msgId.substr(msgId.indexOf(":")+1);
 
 	var soapDoc = AjxSoapDoc.create("SaveDocumentRequest", "urn:zimbraMail");
 	var doc = soapDoc.set("doc");
