@@ -142,10 +142,10 @@ function(actionCode) {
 			break;
 
 		case ZmKeyMap.GOTO_TAG:
-			if (appCtxt.get(ZmSetting.SEARCH_ENABLED)) {
+			if (shortcut && appCtxt.get(ZmSetting.SEARCH_ENABLED)) {
 				var tagId = (appCtxt.multiAccounts && !appCtxt.getActiveAccount().isMain)
 					? ZmOrganizer.getSystemId(shortcut.arg) : shortcut.arg;
-				var tag = shortcut ? appCtxt.getById(tagId) : null;
+				var tag = appCtxt.getById(tagId);
 				if (tag) {
 					appCtxt.getSearchController().search({query: 'tag:"' + tag.name + '"'});
 				}
@@ -153,8 +153,10 @@ function(actionCode) {
 			break;
 
 		case ZmKeyMap.SAVED_SEARCH:
-			if (appCtxt.get(ZmSetting.SEARCH_ENABLED)) {
-				var searchFolder = shortcut ? appCtxt.getById(shortcut.arg) : null;
+			if (shortcut && appCtxt.get(ZmSetting.SEARCH_ENABLED)) {
+				var sid = (appCtxt.multiAccounts && !appCtxt.getActiveAccount().isMain)
+					? ZmOrganizer.getSystemId(shortcut.arg) : shortcut.arg;
+				var searchFolder = appCtxt.getById(sid);
 				if (searchFolder) {
 					appCtxt.getSearchController().redoSearch(searchFolder.search);
 				}
@@ -334,10 +336,10 @@ function(ex, continuation) {
 	} else {
 		// bug fix #5603 - error msg for mail.SEND_FAILURE takes an argument
 		var args = null;
-        switch (ex.code) {
-            case ZmCsfeException.MAIL_NO_SUCH_ITEM: args = ex.data.itemId; break;
-            case ZmCsfeException.MAIL_SEND_FAILURE: args = ex.code; break;
-        }
+		switch (ex.code) {
+			case ZmCsfeException.MAIL_NO_SUCH_ITEM: args = ex.data.itemId; break;
+			case ZmCsfeException.MAIL_SEND_FAILURE: args = ex.code; break;
+		}
 		var msg = ex.getErrorMsg ? ex.getErrorMsg(args) : ex.msg ? ex.msg : ex.message;
 		// silently ignore polling exceptions
 		if (ex.method != "NoOpRequest") {
