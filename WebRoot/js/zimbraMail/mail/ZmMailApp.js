@@ -989,8 +989,9 @@ function(creates, mailCreates) {
 			for (var i = 0; i < msgs.length && i < 5; i++) {
 				var id = msgs[i].id;
 				var msg = appCtxt.getById(id);
-				
-				if (msg) {
+				var folder = msg ? appCtxt.getById(msg.folderId) : null;
+
+				if (folder && folder.nId == ZmFolder.ID_INBOX) {
 					var pid = ZmOrganizer.parseId(id);
 					var text = (msg.subject)
 						? ([msg.subject, " - ", (msg.fragment || "")].join(""))
