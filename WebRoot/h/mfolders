@@ -77,11 +77,26 @@
                                             </a>
                                         </td>
                                         <td><div class='vertSep'></div></td>
-                                        <app:button id="OPNEWFOLD" name="actionNewFolder" src="startup/ImgNewFolder.gif" tooltip="folderNew" text="folderNew"/>
+                                        <td>   
+                                        <a id="actionNewFolder" href="<c:url value="/h/mfolders?actionNewFolder"/>">
+                                                <app:img src="startup/ImgNewFolder.gif" alt="folderNew"/><span style='padding-left:5px'><fmt:message key="folderNew"/></span>
+                                        </a>
+                                        </td>
+                                       <%-- <app:button id="OPNEWFOLD" name="actionNewFolder" src="startup/ImgNewFolder.gif" tooltip="folderNew" text="folderNew"/> --%>
                                         <td><div class='vertSep'></div></td>
-                                        <app:button id="OPNEWRSS" name="actionNewFeedFolder" src="startup/ImgNewFolder.gif" tooltip="folderNewRssAtomFeed" text="folderNewRssAtomFeed"/>
+                                       <%-- <app:button id="OPNEWRSS" name="actionNewFeedFolder" src="startup/ImgNewFolder.gif" tooltip="folderNewRssAtomFeed" text="folderNewRssAtomFeed"/> --%>
+                                        <td>
+                                        <a id="actionNewFeedFolder" href="<c:url value="/h/mfolders?actionNewFeedFolder"/>">
+                                                <app:img src="startup/ImgNewFolder.gif" alt="folderNewRssAtomFeed"/><span style='padding-left:5px'><fmt:message key="folderNewRssAtomFeed"/></span>
+                                        </a>
+                                        </td>
                                         <td><div class='vertSep'></div></td>
-                                        <app:button id="OPNEWSEARCH" name="actionNewSearchFolder" src="startup/ImgNewFolder.gif" tooltip="folderNewSearchFolder" text="folderNewSearchFolder"/>
+                                        <%--<app:button id="OPNEWSEARCH" name="actionNewSearchFolder" src="startup/ImgNewFolder.gif" tooltip="folderNewSearchFolder" text="folderNewSearchFolder"/>--%>
+                                        <td>
+                                        <a id="actionNewSearchFolder" href="<c:url value="/h/mfolders?actionNewSearchFolder"/>">
+                                                <app:img src="startup/ImgNewFolder.gif" alt="folderNewSearchFolder"/><span style='padding-left:5px'><fmt:message key="folderNewSearchFolder"/></span>
+                                        </a>
+                                        </td>
                                     </tr>
                                 </table>
                             </td>

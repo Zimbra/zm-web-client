@@ -162,7 +162,7 @@
         </app:status>
     </c:when>
     <c:otherwise>
-
+         <c:redirect url="/h/mfolders" />
     </c:otherwise>
 </c:choose>
 </app:handleError>
