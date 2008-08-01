@@ -60,9 +60,8 @@ function(ev) {
 	var setting = ev.source;
 	if (setting.id != ZmSetting.CAL_REMINDER_WARNING_TIME) return;
 
-
 	var oldWarningTime = this._warningTime;
-	var newWarningTime = this._warningTime = setting.getValue();	
+	var newWarningTime = this._warningTime = setting.getValue();
 	if (newWarningTime == 0) {
 		this._cancelRefreshAction();
 		this._cancelHousekeepingAction();
@@ -71,7 +70,7 @@ function(ev) {
 			this.refresh();
 		} else {
 			this._cancelHousekeepingAction();
-			this._housekeepingAction();		
+			this._housekeepingAction();
 		}
 	}
 	this._warningTime = newWarningTime;
@@ -118,8 +117,8 @@ function() {
 ZmReminderController.prototype._cancelRefreshAction =
 function() {
 	if (this._refreshActionId) {
-	 	AjxTimedAction.cancelAction(this._refreshActionId);
-	 	delete this._refreshActionId;
+		AjxTimedAction.cancelAction(this._refreshActionId);
+		delete this._refreshActionId;
  	}
 };
 
@@ -137,20 +136,20 @@ function() {
 */
 ZmReminderController.prototype._refreshCallback =
 function(list) {
-
-	if(this._refreshDelay > 0) {
+	if (this._refreshDelay > 0) {
 		AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._refreshCallback, [list]), this._refreshDelay);
 		this._refreshDelay = 0;
 		return;
 	}
-	
-	if (list instanceof ZmCsfeException) {	
+
+	if (list instanceof ZmCsfeException) {
 		this._calController._handleError(list, new AjxCallback(this, this._maintErrorHandler));
 		return;
 	}
 	this._cachedAppts = list.clone();
-    this._cachedAppts.sort(ZmCalBaseItem.compareByTimeAndDuration);
+	this._cachedAppts.sort(ZmCalBaseItem.compareByTimeAndDuration);
 	this._activeAppts.removeAll();
+
 	// cancel outstanding timed action and update now...
 	this._cancelHousekeepingAction();
 	this._housekeepingAction();
@@ -167,7 +166,6 @@ function(uid) {
 */
 ZmReminderController.prototype._housekeepingAction =
 function() {
-	
 	var rd = this.getReminderDialog();
 	if (!ZmCsfeCommand.getAuthToken()) {
 		DBG.println(AjxDebug.DBG1, "reminder check: no auth token, bailing");
@@ -178,7 +176,7 @@ function() {
 	}
 
 	var cachedSize = this._cachedAppts.size();
-	var activeSize = this._activeAppts.size();	
+	var activeSize = this._activeAppts.size();
 	if (cachedSize == 0 && activeSize == 0) return;
 
 	var numNotify = 0;
@@ -191,11 +189,10 @@ function() {
 
 	for (var i=0; i < cachedSize; i++) {
 		var appt = this._cachedAppts.get(i);
-
-		if(appt && this._snoozedAppt) {
+		if (appt && this._snoozedAppt) {
 			var uid = appt.getUniqueId(true);
-			if(this._snoozedAppt[uid]) {
-				this._apptState[uid] = ZmReminderController._STATE_ACTIVE;				
+			if (this._snoozedAppt[uid]) {
+				this._apptState[uid] = ZmReminderController._STATE_ACTIVE;
 				toRemove.push(appt);
 				numNotify++;
 				this._activeAppts.add(appt);
@@ -203,10 +200,10 @@ function() {
 				continue;
 			}
 		}
-		
+
 		if (!appt || appt.isAllDayEvent() || appt.ptst == ZmCalBaseItem.PSTATUS_DECLINED) {
 			toRemove.push(appt);
-		} else if (appt.alarm && appt.isAlarmInRange()) {			
+		} else if (appt.alarm && appt.isAlarmInRange()) {
 			var uid = appt.getUniqueId(true);
 			var state = this._apptState[uid];
 			var addToActiveList = false;
@@ -220,12 +217,12 @@ function() {
 				addToActiveList = true;
 				this._apptState[uid] = ZmReminderController._STATE_ACTIVE;
 			}
-			
-			if(addToActiveList) {
-				toRemove.push(appt);	
+
+			if (addToActiveList) {
+				toRemove.push(appt);
 				this._activeAppts.add(appt);
 			}
-		}		
+		}
 	}
 
 	// remove any appts in cachedAppts that are no longer supposed to be in there	
@@ -243,7 +240,7 @@ function() {
 			if (!rd.isPoppedUp()) rd.popup();
 		}
 	}
-	
+
 	// need to schedule housekeeping callback, ideally right before next _cachedAppt start time - lead,
 	// for now just check once a minute...
 	this._housekeepingActionId = AjxTimedAction.scheduleAction(this._housekeepingTimedAction, 60*1000);
@@ -255,18 +252,17 @@ function() {
 ZmReminderController.prototype.dismissAppt =
 function(list) {
 	var appt;
-	if(!(list instanceof AjxVector)) {
+	if (!(list instanceof AjxVector)) {
 		list = AjxVector.fromArray((list instanceof Array)? list: [list]);
 	}
 
-	for(var i=0; i<list.size(); i++) {
+	for (var i=0; i<list.size(); i++) {
 		var appt = list.get(i);
 		this._apptState[appt.getUniqueId(true)] = ZmReminderController._STATE_DISMISSED;
 		this._activeAppts.remove(appt);
 	}
 
 	this.dismissApptRequest(list);
-	
 };
 
 ZmReminderController.prototype.snoozeAppt =
@@ -274,7 +270,7 @@ function(list) {
 	var snoozedIds = [];
 	var appt;
 	var uid;
-	for(var i=0; i<list.size(); i++) {
+	for (var i = 0; i < list.size(); i++) {
 		appt = list.get(i);
 		uid = appt.getUniqueId(true);
 		this._apptState[uid] = ZmReminderController._STATE_SNOOZED;
@@ -291,49 +287,50 @@ function(list) {
 	if (rd && rd.isPoppedUp()) {
 		rd.popdown();
 	}
-	
-	if(this._snoozedAppt == null) {
+
+	if (this._snoozedAppt == null) {
 		this._snoozedAppt = {};
 	}
-	
+
 	var appt;
 	var uid;
-	
-	for(var i=0; i<list.size(); i++) {
+	for (var i = 0; i < list.size(); i++) {
 		appt = list.get(i);
-		if(appt) {
+		if (appt) {
 			uid = appt.getUniqueId(true);
 			this._snoozedAppt[uid] = true;
 		}
 	}
-	
+
 	this._cancelHousekeepingAction();
 	this._housekeepingAction();
 };
 
 ZmReminderController.prototype.dismissApptRequest = 
 function(list) {
-		
-		var soapDoc = AjxSoapDoc.create("DismissCalendarItemAlarmRequest", "urn:zimbraMail");
-		
-		var dismissedAt = (new Date()).getTime();
-		for(var i=0; i<list.size(); i++) {
-			var appt = list.get(i);
-			var apptNode = soapDoc.set("appt");
-			apptNode.setAttribute("id", appt.id);
-			apptNode.setAttribute("dismissedAt", dismissedAt);
-		}
-		
-		var respCallback = new AjxCallback(this, this._handleDismissAppt, [list]);
-		var errorCallback = new AjxCallback(this, this._handleErrorDismissAppt, [list]);
-		var params = {
-			soapDoc: soapDoc,
-			asyncMode: true,
-			callback: respCallback,
-			errorCallback: errorCallback
-		};
-		appCtxt.getAppController().sendRequest(params);
-		return true;	
+	var soapDoc = AjxSoapDoc.create("DismissCalendarItemAlarmRequest", "urn:zimbraMail");
+
+	var dismissedAt = (new Date()).getTime();
+	for (var i = 0; i < list.size(); i++) {
+		var appt = list.get(i);
+		var apptNode = soapDoc.set("appt");
+		apptNode.setAttribute("id", appt.id);
+		apptNode.setAttribute("dismissedAt", dismissedAt);
+	}
+
+	// always specify account name when in multi-account mode to avoid confusion
+	//     NOTE: we assume all items in list are from the same account.
+	var acct = (appCtxt.numVisibleAccounts > 0) 
+		? (ZmOrganizer.parseId(list.get(0).id).account) : null;
+	var params = {
+		soapDoc: soapDoc,
+		asyncMode: true,
+		accountName: (acct ? acct.name : null),
+		callback: (new AjxCallback(this, this._handleDismissAppt, [list])),
+		errorCallback: (new AjxCallback(this, this._handleErrorDismissAppt, [list]))
+	};
+	appCtxt.getAppController().sendRequest(params);
+	return true;
 };
 
 ZmReminderController.prototype.setAlarmData =
@@ -368,7 +365,6 @@ function(list, result) {
 			}
 		}
 	}
-	
 };
 
 ZmReminderController.prototype._handleErrorDismissAppt =
