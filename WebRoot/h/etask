@@ -6,6 +6,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <app:handleError>
+    ${zm:clearMessageCache(mailbox)}
     <zm:getMailbox var="mailbox"/>
     <c:choose>
     <c:when test="${not empty mailbox.prefs.locale}">
