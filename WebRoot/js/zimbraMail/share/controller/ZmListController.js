@@ -67,7 +67,9 @@ ZmListController = function(container, app) {
 	this._listeners[ZmOperation.SEARCH] = new AjxListener(this, this._participantSearchListener);
 	this._listeners[ZmOperation.BROWSE] = new AjxListener(this, this._participantBrowseListener);
 	this._listeners[ZmOperation.NEW_MESSAGE] = new AjxListener(this, this._participantComposeListener);
-	this._listeners[ZmOperation.IM] = ZmImApp.getImMenuItemListener();
+	if (window.ZmImApp) {
+		this._listeners[ZmOperation.IM] = ZmImApp.getImMenuItemListener();
+	}
 	this._listeners[ZmOperation.CONTACT] = new AjxListener(this, this._participantContactListener);
 	this._listeners[ZmOperation.VIEW] = new AjxListener(this, this._viewMenuItemListener);
 	this._listeners[ZmOperation.SYNC_OFFLINE] = new AjxListener(this, this._syncOfflineListener);
