@@ -45,9 +45,10 @@
         </c:when>
         <c:otherwise>
             <zm:getContact id="${contactId}" var="contact"/>
+            <c:set var="noDisplayAs"><fmt:message key="noDisplayAs"/></c:set>
             <c:set var="messageKey" value="${contact.isGroup ? 'editGroup': 'editContact'}"/>
             <fmt:message var="title" key="${messageKey}">
-                <fmt:param>${contact.displayFileAs}</fmt:param>
+                <fmt:param>${empty contact.displayFileAs ? noDisplayAs : contact.displayFileAs}</fmt:param>
             </fmt:message>
         </c:otherwise>
     </c:choose>
