@@ -6,6 +6,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
+<c:set var="iconPath" value="/img" scope="request"/>
 <c:if test="${not empty param.ui}">
     <c:set var="uiv" value="${param.ui}" scope="session"/>
 </c:if>
