@@ -1151,6 +1151,17 @@ function(appName) {
 	if (!this._apps[appName]) {
 		this._createApp(appName);
 	}
+
+	// bug: 30408
+	// make sure app's core package is loaded
+	// NOTE: We do this here instead of in the app's constructor
+	//       because all of the enabled apps are instantiated at
+	//       initial load. So this avoids loading packages we may
+	//       not need right away.
+	if (ZmApp.MAIN_PKG[appName]) {
+		AjxPackage.require(ZmApp.MAIN_PKG[appName]);
+	}
+
 	return this._apps[appName];
 };
 
