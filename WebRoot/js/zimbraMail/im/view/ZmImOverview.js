@@ -308,6 +308,9 @@ ZmImOverview.prototype._init = function() {
 	};
 	var tree = this._tree = new DwtTree(treeArgs);
 	tree.getHtmlElement().style.width = "100%";
+	if (!this._options.overviewId) {
+		tree.getHtmlElement().style.overflow = "auto";
+	}
 	if (!this._options.inactiveTree)
 		tree.addSelectionListener(new AjxListener(this, this._treeSelectionListener));
 	tree.addListener(DwtEvent.ONMOUSEUP, new AjxListener(this, this._treeMouseUpListener));

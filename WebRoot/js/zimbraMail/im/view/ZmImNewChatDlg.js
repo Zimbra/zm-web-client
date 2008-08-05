@@ -37,15 +37,15 @@ ZmImNewChatDlg.prototype._init = function() {
 	field.reparentHtmlElement(id + "_entryCell");
 	this._initAutocomplete();
 	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._okButtonListener));
-        this.setButtonListener(DwtDialog.CANCEL_BUTTON, new AjxListener(this, this._cancelButtonListener));
+	this.setButtonListener(DwtDialog.CANCEL_BUTTON, new AjxListener(this, this._cancelButtonListener));
 
-        var list = new ZmImOverview(this, { posStyle    : Dwt.STATIC_STYLE,
-                                            isFloating  : true,
-                                            noAssistant : true,
-											expanded	: true
-										  });
-        list.reparentHtmlElement(id + "_buddyListCont");
-        list.setSize(Dwt.DEFAULT, 200);
+	var list = new ZmImOverview(this, { posStyle	: Dwt.STATIC_STYLE,
+		isFloating  : true,
+		noAssistant : true,
+		expanded	: true
+	});
+	list.reparentHtmlElement(id + "_buddyListCont");
+	list.setSize(220, 200);
 };
 
 ZmImNewChatDlg._INSTANCE = null;
