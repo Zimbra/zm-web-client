@@ -67,6 +67,8 @@ ZmListView.FIELD_CLASS[ZmItem.F_ATTACHMENT]	= "Attach";
 ZmListView.ITEM_FLAG_CLICKED 				= DwtListView._LAST_REASON + 1;
 ZmListView.DEFAULT_REPLENISH_THRESHOLD		= 0;
 
+ZmListView.COL_JOIN = "|";
+
 ZmListView.prototype._getHeaderList = function() {};
 
 ZmListView.prototype.getController =
@@ -747,7 +749,7 @@ function() {
 		var headerCol = this._headerList[i];
 		fields.push(headerCol._field + (headerCol._visible ? "" : "*"));
 	}
-	var value = fields.join("|");
+	var value = fields.join(ZmListView.COL_JOIN);
 	value = (value == this._defaultCols) ? "" : value;
 	appCtxt.set(ZmSetting.LIST_VIEW_COLUMNS, value, this.view);
 	
