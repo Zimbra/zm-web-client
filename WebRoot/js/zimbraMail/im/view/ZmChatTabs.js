@@ -96,7 +96,7 @@ ZmChatTabs.prototype.setActiveTab = function(index, background) {
 			this._hideTab();
 		this.__currentTab = index;
 		this._showTab(background);
-		this.parent.select(); // activate window
+		this.parent.setActive(!background); // activate window
 	}
 };
 
