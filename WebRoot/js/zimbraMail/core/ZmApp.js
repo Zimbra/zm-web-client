@@ -332,6 +332,21 @@ function() {
 		return this._overviewPanelContent;
 	}
 
+	// bug: 30408 30499
+	// make sure app's organizer(s) package is loaded
+	// NOTE: We do this here instead of in the app's constructor
+	//       because all of the enabled apps are instantiated at
+	//       initial load. So this avoids loading packages we may
+	//       not need right away.
+	var orgs = ZmOrganizer.APP2ORGANIZER[this.name];
+	var orgCount = orgs && orgs.length, org;
+	for (var i = 0; i < orgCount; i++) {
+		org = orgs[i];
+		if (ZmOrganizer.ORG_PACKAGE[org]) {
+			AjxPackage.require(ZmOrganizer.ORG_PACKAGE[org]);
+		}
+	}
+
 	if (appCtxt.multiAccounts && ZmApp.SUPPORTS_MULTI_MBOX[this._name]) {
 		// create accordion
 		var accordionId = this.getOverviewPanelContentId();

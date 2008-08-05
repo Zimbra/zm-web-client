@@ -214,6 +214,8 @@ ZmOrganizer.DEFERRABLE 		= {};		// creation can be deferred to app launch
 ZmOrganizer.PATH_IN_NAME	= {};		// if true, provide full path when asked for name
 ZmOrganizer.OPEN_SETTING	= {};		// setting that controls whether the tree view is open
 
+ZmOrganizer.APP2ORGANIZER	= {};		// organizer types, keyed by app name
+
 // Abstract methods
 
 /**
@@ -249,7 +251,13 @@ ZmOrganizer.OPEN_SETTING	= {};		// setting that controls whether the tree view i
 ZmOrganizer.registerOrg =
 function(org, params) {
 	if (params.nameKey)			{ ZmOrganizer.MSG_KEY[org]				= params.nameKey; }
-	if (params.app)				{ ZmOrganizer.APP[org]					= params.app; }
+	if (params.app)				{
+		ZmOrganizer.APP[org] = params.app;
+		if (!ZmOrganizer.APP2ORGANIZER[params.app]) {
+			ZmOrganizer.APP2ORGANIZER[params.app] = [];
+		}
+		ZmOrganizer.APP2ORGANIZER[params.app].push(org);
+	}
 	if (params.defaultFolder)	{ ZmOrganizer.DEFAULT_FOLDER[org]		= params.defaultFolder; }
 	if (params.precondition)	{ ZmOrganizer.PRECONDITION[org]			= params.precondition; }
 	if (params.soapCmd)			{ ZmOrganizer.SOAP_CMD[org]				= params.soapCmd; }
