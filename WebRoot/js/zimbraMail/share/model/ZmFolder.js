@@ -571,6 +571,10 @@ function() {
  */
 ZmFolder.prototype.isHardDelete =
 function() {
-	return (this.isInTrash() || (appCtxt.isOffline && this.isUnder(ZmOrganizer.ID_SYNC_FAILURES)));
+	return (this.isInTrash() || this.isInSpam() || (appCtxt.isOffline && this.isUnder(ZmOrganizer.ID_SYNC_FAILURES)));
+};
 
+ZmFolder.prototype.isInSpam =
+function(){
+    return this.isUnder(ZmFolder.ID_SPAM);
 };
