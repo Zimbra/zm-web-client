@@ -46,7 +46,7 @@
             </fmt:message>
         </app:status>
     </c:when>
-    <c:when test="${zm:actionSet(param, 'actionEmpty') and (param.confirmed eq '1') and (param.contextFolderId eq mailbox.trash.id or param.contextFolderId eq mailbox.spam.id)}">
+    <c:when test="${zm:actionSet(param, 'actionEmpty') and ((param.contextFolderId eq mailbox.trash.id and param.confirmed eq '1') or param.contextFolderId eq mailbox.spam.id)}">
         <zm:emptyFolder id="${param.contextFolderId}"/>
         <app:status>
             <fmt:message key="folderEmptied">
