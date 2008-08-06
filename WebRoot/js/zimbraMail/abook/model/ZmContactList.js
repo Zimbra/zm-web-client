@@ -1188,15 +1188,13 @@ function(str, aclv, callback) {
 
 ZmContactList.prototype._handleResponseGetGalMatches =
 function(str, aclv, callback, result) {
+	aclv.setWaiting(false);
+
 	delete this._galRequests[str];
 	var resp = result.getResponse();
-	
+
 	// Bug 21873 - don't cache GAL results if tokenized
 	this._galResults[str] = {isTokenized:resp.isTokenized};
-	if (resp.isTokenized) {
-		callback.run();
-		return;
-	}
 	
 	var list = resp.getResults(ZmItem.CONTACT);
 	var a = list ? list.getArray() : [];
@@ -1234,8 +1232,16 @@ function(str, aclv, callback, result) {
 	this._galResults[str].more = resp._respEl.more;
 
 	this._galFailures = 0;	// successful response, reset counter
-	aclv.setWaiting(false);
 	callback.run();
+
+	// Bug 21873 - don't cache GAL results if tokenized
+	if (resp.isTokenized) {
+		// pop GAL results off end of array
+		for (var i = this._acAddrList[str].length; i > 0; i--) {
+			if (typeof this._acAddrList[str][i - 1] == "string") { break; }
+		}
+		this._acAddrList[str].length = i;
+	}
 };
 
 ZmContactList.prototype._addGalResults =
