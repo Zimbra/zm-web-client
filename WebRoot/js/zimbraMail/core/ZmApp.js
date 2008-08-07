@@ -338,12 +338,12 @@ function() {
 	//       because all of the enabled apps are instantiated at
 	//       initial load. So this avoids loading packages we may
 	//       not need right away.
-	var orgs = ZmOrganizer.APP2ORGANIZER[this.name];
+	var orgs = ZmOrganizer.APP2ORGANIZER[this._name];
 	var orgCount = orgs && orgs.length, org;
 	for (var i = 0; i < orgCount; i++) {
 		org = orgs[i];
 		if (ZmOrganizer.ORG_PACKAGE[org]) {
-			AjxPackage.require(ZmOrganizer.ORG_PACKAGE[org]);
+			AjxDispatcher.require(ZmOrganizer.ORG_PACKAGE[org]);
 		}
 	}
 

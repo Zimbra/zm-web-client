@@ -569,6 +569,7 @@ ZmMailApp.prototype._registerOrganizers =  function() {
 							 soapCmd:			"FolderAction",
 							 firstUserId:		256,
 							 orgClass:			"ZmFolder",
+							 orgPackage:		"MailCore",
 							 treeController:	"ZmMailFolderTreeController",
 							 labelKey:			"folders",
 							 itemsKey:			"messages",
