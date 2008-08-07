@@ -25,8 +25,8 @@
 									<td colspan=3>
 										<nobr>
 											<span id='skin_td_logoff'>
-												<a href='#logoff' onclick='ZmZimbraMail._onClickLogOff();return false'>Sign Out</a>,
-												<a href="/?client=standard">Mail Classic</a>
+												<a id='skin_sign_out_link' href='#logoff' onclick='ZmZimbraMail._onClickLogOff();return false'>[Sign Out]</a>,
+												<a id='skin_standard_client_link' href="/?client=standard">[Mail Classic]</a>
 											</span>
 										</nobr>
 									</td>
@@ -158,5 +158,11 @@
 
 	el = document.getElementById("skin_search_local_button");
 	if (el) { el.value = ZmMsg.yahooLocalSearchButton; }
+
+	el = document.getElementById("skin_sign_out_link");
+	if (el) { el.innerHTML = ZmMsg.yahooSignOutLink; }
+
+	el = document.getElementById("skin_standard_client_link");
+	if (el) { el.innerHTML = ZmMsg.yahooStandardClientLink; }
 </script>
 <!-- END SKIN -->
