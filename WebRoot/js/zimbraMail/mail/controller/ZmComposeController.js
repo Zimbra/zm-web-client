@@ -294,8 +294,8 @@ function(attId, draftType, callback) {
 	var isCancel = (inviteMode == ZmOperation.REPLY_CANCEL);
 	var isModify = (inviteMode == ZmOperation.REPLY_MODIFY);
 
+	var origMsg = msg._origMsg;
 	if (isCancel || isModify) {
-		var origMsg = msg._origMsg;
 		var appt = origMsg._appt;
 		var respCallback = new AjxCallback(this, this._handleResponseCancelOrModifyAppt);
 		if (isCancel) {
@@ -311,6 +311,15 @@ function(attId, draftType, callback) {
 		var acctName = (isDraft && !ac.isOffline)
 			? (ac.getMainAccount().name)
 			: ((folder && folder.isRemote()) ? folder.getOwner() : this._accountName);
+
+		// If this message had been saved from draft and it has a sender (meaning it's a reply from someone
+		// else's account) then get the account name from the from field.
+		if (!acctName && !isDraft && origMsg && origMsg.isDraft && origMsg._addrs[ZmMailMsg.HDR_FROM] &&
+			origMsg._addrs[ZmMailMsg.HDR_SENDER] && origMsg._addrs[ZmMailMsg.HDR_SENDER].size())
+		{
+			acctName =  origMsg._addrs[ZmMailMsg.HDR_FROM].get(0).address;
+		}	
+		
 		var contactList = !isDraft ? AjxDispatcher.run("GetContacts") : null;
 		var respCallback = new AjxCallback(this, this._handleResponseSendMsg, [draftType, msg, callback]);
 		var errorCallback = new AjxCallback(this, this._handleErrorSendMsg);
