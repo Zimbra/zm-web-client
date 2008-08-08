@@ -177,7 +177,7 @@ function() {
 
 	var currentTime = (new Date()).getTime();
 
-    return (currentTime > this._nextAlarmTime); 
+    return (currentTime >= this._nextAlarmTime); 
 };
 
 ZmCalBaseItem.prototype._loadFromDom =
