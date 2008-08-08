@@ -102,7 +102,9 @@ function(dialog) {
 
 ZmMailAssistant.prototype._handleResponseSendMsg =
 function(dialog) {
-	appCtxt.setStatusMsg(ZmMsg.messageSent);	
+	if (!appCtxt.isOffline) { // see bug #29372
+		appCtxt.setStatusMsg(ZmMsg.messageSent);
+	}
 	dialog.popdown();
 };
 

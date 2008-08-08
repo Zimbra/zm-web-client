@@ -924,9 +924,13 @@ function(draftType, msg, resp) {
 	if (!isDraft) {
 		if (appCtxt.isChildWindow && window.parentController) {
 			window.onbeforeunload = null;
-			window.parentController.setStatusMsg(ZmMsg.messageSent);
+			if (!appCtxt.isOffline) { // see bug #29372
+				window.parentController.setStatusMsg(ZmMsg.messageSent);
+			}
 		} else {
-			appCtxt.setStatusMsg(ZmMsg.messageSent);
+			if (!appCtxt.isOffline) { // see bug #29372
+				appCtxt.setStatusMsg(ZmMsg.messageSent);
+			}
 		}
 
 		if (resp || !appCtxt.get(ZmSetting.SAVE_TO_SENT)) {
