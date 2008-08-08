@@ -50,7 +50,8 @@
                                    <td class='Img'><app:img src="${hit.contactHit.image}" altkey="${hit.contactHit.imageAltKey}"/></td>
                                    <td ><span style='padding:3px'>
                                        <zm:currentResultUrl var="contactUrl" value="/h/search" id="${hit.contactHit.id}" index="${status.index}" context="${context}"/>
-                                       <c:set var="noName" value="<No Name> ${not empty hit.contactHit.email ? hit.contactHit.email : hit.contactHit.email2 }" />
+                                       <fmt:message var="noNameStr" key="noName"/>
+                                       <c:set var="noName" value="${noNameStr} ${not empty hit.contactHit.email ? hit.contactHit.email : hit.contactHit.email2 }" />
                                        <a  href="${fn:escapeXml(contactUrl)}" id="A${status.index}">
                                                ${fn:escapeXml(empty hit.contactHit.fileAsStr ? noName : hit.contactHit.fileAsStr)}
                                        </a></span>
