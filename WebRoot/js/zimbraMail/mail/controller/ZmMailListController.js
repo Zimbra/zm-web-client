@@ -825,7 +825,9 @@ function(parent) {
 ZmMailListController.prototype._setupCheckMailButton =
 function(parent) {
 	if (!parent) { return; }
-	var checkMailBtn = parent.getButton(ZmOperation.CHECK_MAIL);
+	var checkMailBtn = appCtxt.isOffline
+		? parent.getButton(ZmOperation.SYNC_OFFLINE)
+		: parent.getButton(ZmOperation.CHECK_MAIL);
 	if (!checkMailBtn) { return; }
 
 	var folderId = this._getSearchFolderId();
@@ -848,7 +850,8 @@ function(parent) {
 		checkMailBtn.setToolTipContent(ZmMsg.checkExternalMail);
 	}
 	else {
-		checkMailBtn.setText(ZmMsg.checkMail);
+		var checkMailMsg = appCtxt.isOffline ? ZmMsg.sendReceive : ZmMsg.checkMail;
+		checkMailBtn.setText(checkMailMsg);
 		checkMailBtn.setToolTipContent(ZmMsg.checkMailTooltip);
 	}
 };
