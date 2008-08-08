@@ -58,9 +58,8 @@ ZmButtonToolBar = function(params) {
 	this.opList = ZmOperation.filterOperations(buttons);
 
 	// make a copy of opList and sort the copy by precedence value
-	this.precendenceList = new Array();
-	this.precendenceList = this.precendenceList.concat(this.opList);
-	this.precendenceList.sort(ZmOperation.sortByPrecendence);
+	this.precedenceList = [].concat(this.opList);
+	this.precedenceList.sort(ZmOperation.sortByPrecedence);
 
 	this._buttons = ZmOperation.createOperations(this, this.opList, params.overrides);
 };
@@ -150,23 +149,22 @@ function(refElement, reset) {
 	var offset2 = el.firstChild ? el.firstChild.offsetWidth : offset1;
 
 	if ((offset1 > 0 && offset2 > offset1) || reset) {
-		for (var i = 0; i < this.precendenceList.length; i++) {
-			var b = this._buttons[this.precendenceList[i]];
-			if (!b || (b && (!b.getImage() || !b.getVisible()))) { continue; }
+		// restore all button labels first
+		for (var i = 0; i < this.precedenceList.length; i++) {
+			var b = this._buttons[this.precedenceList[i]];
+			if (!b || !b._toggleText) { continue; }
+
+			b.setText(b._toggleText);
+			b._toggleText = null;
+		}
+		// now remove button labels as needed
+		for (var i = 0; i < this.precedenceList.length; i++) {
+			var b = this._buttons[this.precedenceList[i]];
+			if (!b || !b.getImage() || !b.getVisible()) { continue; }
 
 			if (offset2 > offset1) {
-				b._toggleText = (b._toggleText != null && b._toggleText != "")
-					? b._toggleText : b.getText();
+				b._toggleText = b.getText();
 				b.setText("");
-			}
-			else if (b._toggleText) {
-				b.setText(b._toggleText);
-				// after adding back label, check if its bigger then avail space
-				if (el.firstChild && el.firstChild.offsetWidth > offset1) {
-					b.setText("");	// Nope. Back it out!
-					break;			// And bail. Chances are subsequent labels won't fit either
-				}
-				b._toggleText = null;
 			}
 
 			// re-calc firstChild offset since we may have removed its label

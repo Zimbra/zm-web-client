@@ -369,7 +369,7 @@ function(list) {
 	return newList1;
 };
 
-ZmOperation.sortByPrecendence =
+ZmOperation.sortByPrecedence =
 function(a, b) {
 	if (a == ZmOperation.SEP) return -1;
 	if (b == ZmOperation.SEP) return 1;
@@ -377,14 +377,12 @@ function(a, b) {
 	var precA = ZmOperation.getProp(a, "precedence");
 	var precB = ZmOperation.getProp(b, "precedence");
 
-	if (precA && precB) {
-		if (precA > precB) return 1;
-		if (precA < precB) return -1;
-		return 0;
-	}
-
 	if (!precA && precB) return -1;
 	if (!precB && precA) return 1;
+
+	if (precA > precB) return 1;
+	if (precA < precB) return -1;
+
 	return 0;
 };
 
