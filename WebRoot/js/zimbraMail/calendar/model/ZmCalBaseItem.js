@@ -169,7 +169,7 @@ function(emptyAllDay,startOnly) {
 
 ZmCalBaseItem.prototype.isAlarmInRange =
 function() {
-	if (!this.alarm || !this.alarmData) { return false; }
+	if (!this.alarmData) { return false; }
 
 	var alarmData = this.alarmData[0];
 	this._nextAlarmTime = alarmData.nextAlarm;
@@ -177,9 +177,7 @@ function() {
 
 	var currentTime = (new Date()).getTime();
 
-	return (this._alarmInstStart == this.getStartTime())
-		? (currentTime > this._nextAlarmTime && currentTime < this.getEndTime())
-		: (currentTime > this._nextAlarmTime); // remind older alarms
+    return (currentTime > this._nextAlarmTime); 
 };
 
 ZmCalBaseItem.prototype._loadFromDom =

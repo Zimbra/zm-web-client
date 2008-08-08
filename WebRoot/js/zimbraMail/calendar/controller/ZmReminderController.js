@@ -203,7 +203,7 @@ function() {
 
 		if (!appt || appt.isAllDayEvent() || appt.ptst == ZmCalBaseItem.PSTATUS_DECLINED) {
 			toRemove.push(appt);
-		} else if (appt.alarm && appt.isAlarmInRange()) {
+		} else if (appt.isAlarmInRange()) {
 			var uid = appt.getUniqueId(true);
 			var state = this._apptState[uid];
 			var addToActiveList = false;
