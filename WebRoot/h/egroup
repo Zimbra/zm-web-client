@@ -83,7 +83,7 @@
             <td class='TbBt'>
                 <table cellspacing=0 cellpadding=0 class='Tb'>
                     <tr>
-                        <app:button name="actionContactAdd" src="contacts/ImgContactsPicker.gif" tooltip="addSelected" text="addSelected"/>
+                        <app:button name="actionContactAdd" src="img/contacts/ImgContactsPicker.gif" tooltip="addSelected" text="addSelected"/>
                     </tr>
                 </table>
             </td>
@@ -149,7 +149,7 @@
                 <app:contactAddListView groupMode="${true}" searchResult="${search}" searchGalResult="${searchGal}"/>
             </td>
         </tr>
-        <tr>
+        <!-- tr>
             <td>
                 <span><fmt:message key="enterAddrBelow"/></span>
                 <table width=100% cellpadding=2 cellspacing=0>
@@ -163,7 +163,7 @@
                     </tr>
                 </table>
             </td>
-        </tr>
+        </tr -->
     </table>
 </td>
         </tr>
