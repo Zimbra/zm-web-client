@@ -136,6 +136,21 @@ function(newList) {
 	}
 };
 
+/**
+ * <strong>Note:</strong>
+ * This is a bit of a HACK that is an attempt to overcome an
+ * offline issue. The problem is during initial sync when more
+ * messages come in: the forward navigation arrow doesn't get
+ * enabled.
+ */
+ZmListController.prototype.setHasMore = function(hasMore) {
+	if (hasMore) {
+		// bug: 30546
+		this._list.setHasMore(hasMore);
+		this._resetNavToolBarButtons(this._currentView);
+	}
+};
+
 ZmListController.prototype.handleKeyAction =
 function(actionCode) {
 	DBG.println(AjxDebug.DBG3, "ZmListController.handleKeyAction");

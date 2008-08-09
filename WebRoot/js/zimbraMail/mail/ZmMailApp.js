@@ -1067,6 +1067,17 @@ function(creates, list, controller) {
 	if (gotConvs.gotItem || gotMsgs.gotItem) {
 		list.notifyCreate(convs, msgs);
 	}
+	if (gotConvs.hasMore || gotMsgs.hasMore) {
+		// bug: 30546
+		var controller;
+		switch (appCtxt.getAppViewMgr().getCurrentViewId()) {
+			case ZmId.VIEW_CONVLIST: controller = this.getConvListController(); break;
+			case ZmId.VIEW_TRAD: controller = this.getTradController(); break;
+		}
+		if (controller) {
+			controller.setHasMore(true);
+		}
+	}
 	return gotMsgs.gotAlertMessage;
 };
 
@@ -1101,7 +1112,17 @@ function(creates, type, items, currList, sortBy, cutoff, convs) {
 		if (currList.type == ZmItem.MSG && type == ZmItem.CONV) { continue; }
 
 		// perform stricter checking if we're in offline mode
-		if (appCtxt.isOffline && !this._checkCreate(create, type, currList, sortBy, cutoff)) { continue; }
+		if (appCtxt.isOffline) {
+			if ((ZmList.ITEM_TYPE[nodeName] != currList.type) && (currList.type != ZmItem.CONV)) {
+				DBG.println(AjxDebug.DBG2, "new " + type + " not of current type");
+				continue;
+			}
+			if (!this._checkCreate(create, type, currList, sortBy, cutoff)) {
+				// bug: 30546
+				result.hasMore = true;
+				continue;
+			}
+		}
 
 		DBG.println(AjxDebug.DBG1, "ZmMailApp: handling CREATE for node: " + nodeName);
 		var itemClass = eval(ZmList.ITEM_CLASS[type]);
@@ -1128,15 +1149,6 @@ function(creates, type, items, currList, sortBy, cutoff, convs) {
  */
 ZmMailApp.prototype._checkCreate =
 function(create, type, currList, sortBy, cutoff) {
-
-	var nodeName = ZmList.NODE[type];
-
-	// ignore items that are not of the current type (except CLV, since a new
-	// msg may affect fields in its conv)
-	if ((ZmList.ITEM_TYPE[nodeName] != currList.type) && (currList.type != ZmItem.CONV)) {
-		DBG.println(AjxDebug.DBG2, "new " + type + " not of current type");
-		return false;
-	}
 
 	// ignore mail that falls outside our range
 	if (sortBy == ZmSearch.DATE_DESC && (create.d < cutoff)) {
