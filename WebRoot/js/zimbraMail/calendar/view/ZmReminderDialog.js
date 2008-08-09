@@ -320,7 +320,7 @@ function() {
 
 ZmReminderDialog.prototype._computeDelta =
 function(appt) {
-	return (appt.alarm && appt.alarmData && appt.alarmData.length > 0)
+	return (appt.alarmData && appt.alarmData.length > 0)
 		? ((new Date()).getTime() - appt.alarmData[0].alarmInstStart)
 		: ((new Date()).getTime() - appt.getStartTime());
 };
