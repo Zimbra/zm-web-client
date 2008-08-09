@@ -367,12 +367,12 @@ if (application.getInitParameter("offlineMode") != null)  {
 			                                </td>
                                         </tr>
 										<tr>
-                                            <td nowrap id="ZloginClientLevelContainer">
+                                            <td id="ZloginClientLevelContainer">
                                                 <fmt:message key="clientLoginNotice"/>
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td nowrap id="ZloginLicenseContainer">
+                                            <td id="ZloginLicenseContainer">
                                                 <fmt:message key="splashScreenCopyright"/>
                                             </td>
                                         </tr>
