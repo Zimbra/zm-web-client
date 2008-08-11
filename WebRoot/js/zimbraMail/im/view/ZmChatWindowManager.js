@@ -26,8 +26,7 @@ ZmChatWindowManager.prototype = new DwtWindowManager;
 ZmChatWindowManager.prototype.constructor = ZmChatWindowManager;
 
 ZmChatWindowManager.prototype.takeOver = function(take) {
-	var el = this.getHtmlElement();
-	el.style.width = el.style.height = take ? "100%" : "";
+	this.setVisibility(take);
 };
 
 ZmChatWindowManager.prototype._dropListener = function(ev) {
