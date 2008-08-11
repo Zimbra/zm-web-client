@@ -99,6 +99,14 @@
          </c:when>
      </c:choose>
 
+    <c:if test="${param.st eq 'web'}">
+        <fmt:message var="searchURL" key="searchURL" />
+        <fmt:message var="searchParam" key="searchFieldName" />
+        <c:redirect url="${searchURL}">
+            <c:param name="${searchParam}" value="${param.sq}"/>
+        </c:redirect>
+    </c:if>
+
     <c:if test="${param.st eq 'calendar'}">
         <c:redirect url="/h/calendar" />            
     </c:if>

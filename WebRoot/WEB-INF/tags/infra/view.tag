@@ -213,13 +213,8 @@
 						<td width='100%'>&nbsp;</td>
                         <td id='skin_td_search' align='right'>
                             <!-- search box -->				
-                            <app:appTop mailbox="${mailbox}" keys="${keys}" query="${empty context.query ? param.sq : context.query}" calendars="${calendars}" tasks="${tasks}" voice="${voice}"/>					
+                            <app:appTop mailbox="${mailbox}" keys="${keys}" query="${empty context.query ? param.sq : context.query}" web="${mailbox.features.webSearchEnabled}" calendars="${calendars}" tasks="${tasks}" voice="${voice}"/>					
 						</td>
-						<c:if test="${mailbox.features.webSearchEnabled}">
-                               <td>
-                                    <app:appTopYSearch keys="${keys}" />
-                                </td>
-                        </c:if>
                     </tr>
 					</table>
 				</td>
