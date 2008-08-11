@@ -4,6 +4,7 @@
 <%@ attribute name="calendars" rtexprvalue="true" required="false" %>
 <%@ attribute name="tasks" rtexprvalue="true" required="false" %>
 <%@ attribute name="voice" rtexprvalue="true" required="false" %>
+<%@ attribute name="web" rtexprvalue="true" required="false" %>
 <%@ attribute name="mailbox" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZMailboxBean"%>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
@@ -22,7 +23,7 @@
                 <c:url var="searchUrl" value="/h/search"/>
             </c:otherwise>
         </c:choose>
-        <form method="get" action="${fn:escapeXml(searchUrl)}">
+        <form method="get" onsubmit="return searchClick(this);" action="${fn:escapeXml(searchUrl)}">
             <c:set var="query">${fn:escapeXml((!empty query and mailbox.prefs.showSearchString) ? query : param.sq)}</c:set>
             <c:if test="${voice}">
                 <c:set var="query"/>
@@ -43,6 +44,9 @@
                 <c:otherwise><c:set var="isMail" value="${true}"/></c:otherwise>
             </c:choose>
             <select name="st">
+                <c:if test="${web}">
+                    <option value="web"/><fmt:message key="searchWeb"/>
+                </c:if>
                 <c:if test="${mailbox.features.mail}">
                     <option <c:if test="${isMail}">selected </c:if>value="${mailbox.features.conversations ? mailbox.prefs.groupMailBy : 'message'}"/><fmt:message key="searchMail"/>
                 </c:if>
@@ -71,4 +75,15 @@
     </td>
 </tr>
 </table>
-
+<fmt:message var="searchUrl" key="searchURL" />
+<fmt:message var="searchParam" key="searchFieldName" />
+<script type="text/javascript">
+searchClick = function(_form){
+      if(_form.st.options[_form.st.selectedIndex].value == "web"){
+          window.open("${searchUrl}?${searchParam}="+_form.sq.value);
+          return false;
+      }else{
+          return true;
+      }
+}
+</script>
