@@ -11,6 +11,11 @@
 <noscript>
 	<iframe style="width:100%; height:600px" scrolling="auto" marginWidth="0" marginHeight="0" frameBorder="0" src="${fn:escapeXml(iframeUrl)}"/>
 </noscript>
+<c:choose>
+<c:when test="${fn:length(theBody) gt 100000}">
+    <iframe style="width:100%; height:600px" scrolling="auto" marginWidth="0" marginHeight="0" frameBorder="0" src="${fn:escapeXml(iframeUrl)}"/>    
+</c:when>
+    <c:otherwise>
 <script type="text/javascript">
 	(function() {
 		var isKonqueror = /KHTML/.test(navigator.userAgent);
@@ -19,7 +24,7 @@
 		iframe.style.width = "100%";
 		iframe.style.height = "20px";
 		iframe.style.overflowX = "auto";
-		iframe.scrolling = "no";
+        iframe.scrolling = "no";
 		iframe.marginWidth = 0;
 		iframe.marginHeight = 0;
 		iframe.border = 0;
@@ -36,7 +41,7 @@
 					iframe.style.width = b.scrollWidth + "px";
 				}
 				iframe.style.height = b.scrollHeight + 30 + "px";
-			}
+            }
 		};
 		document.getElementById("${parentId}").appendChild(iframe);
 		var doc = iframe.contentWindow ? iframe.contentWindow.document : iframe.contentDocument;
@@ -58,4 +63,5 @@
 		if (isIE) iframe.onreadystatechange = onIframeLoad; else iframe.onload = onIframeLoad;
 	})();
 </script>
-
+</c:otherwise>
+</c:choose>
