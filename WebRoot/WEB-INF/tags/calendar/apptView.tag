@@ -25,7 +25,7 @@
     
 </app:handleError>
 
-<app:view mailbox="${mailbox}" title="${msg.subject}" context="${null}" selected='calendar' calendars="true" keys="false" minical="true" date="${requestScope.dateContext}" tags="false">
+<app:view mailbox="${mailbox}" title="${msg.subject}" context="${null}" selected='calendar' calendars="true" keys="false" minical="true" date="${requestScope.dateContext}" tags="true">
     <app:keyboard mailbox="${mailbox}" globals="true" cache="cal.apptView">
         <zm:bindKey message="global.Cancel" id="OPCLOSE"/>
     </app:keyboard>

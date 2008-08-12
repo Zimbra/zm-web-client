@@ -131,8 +131,6 @@
                                 <td  nowrap valign=middle>
                                     <select name="actionOp">
                                         <option value="" selected/><fmt:message key="moreActions"/>
-                                        <option value="flag"/><fmt:message key="actionAddFlag"/>
-                                        <option value="unflag"/><fmt:message key="actionRemoveFlag"/>
                                         <app:tagOptions mailbox="${mailbox}" keys="${true}"/>
                                     </select>
                                 </td>
