@@ -17,12 +17,12 @@
 
 P, TD, DIV, SPAN, SELECT, INPUT, TEXTAREA, BUTTON, A {
    font-family: Tahoma,Ariel,Helvetica,sans-serif,mingliu;
-   font-size:16px;
+   font-size:12px;
    *font-size:12px;
 }
 #ZLoginClientLevelContainer,#ZLoginLicenseContainer,#ZLoginWhatsThisAnchor{
    font-family: Tahoma,Ariel,Helvetica,sans-serif,mingliu;
-   font-size:16px;
+   font-size:12px;
    *font-size:12px;
 }
 #ZLoginPanel{

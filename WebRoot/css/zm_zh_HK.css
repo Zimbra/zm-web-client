@@ -46,7 +46,7 @@
 */
 body *{
    font-family: Tahoma,Ariel,Helvetica,sans-serif,mingliu!important;
-   font-size:16px!important;
+   font-size:12px;
 }
 /* IE hack */
 body *{
