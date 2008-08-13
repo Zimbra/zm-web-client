@@ -339,7 +339,16 @@ function(calItem, mode) {
 		}
 	}
 
-	// set the equipment attendee(s)
+    // privacy
+    if (this._privacySelect) {
+        var isRemote = calItem.isShared();
+        var cal = isRemote ? appCtxt.getById(calItem.folderId) : null;
+        var isEnabled = !isRemote || (cal && cal.hasPrivateAccess());
+        this._privacySelect.setSelectedValue(isEnabled ? (calItem.privacy || "PUB") : "PUB");
+        this._privacySelect.setEnabled(isEnabled);
+    }
+
+    // set the equipment attendee(s)
 	var equipment = calItem.getAttendees(ZmCalBaseItem.EQUIPMENT);
 	if (equipment && equipment.length) {
 		this._attendees[ZmCalBaseItem.EQUIPMENT] = AjxVector.fromArray(equipment);
@@ -442,8 +451,7 @@ function(width) {
 		var option = ZmApptEditView.PRIVACY_OPTIONS[j];
 		this._privacySelect.addOption(option.label, option.selected, option.value);
 	}
-	this._privacySelect.addChangeListener(new AjxListener(this, this._privacyListener));
-	this._folderSelect.addChangeListener(new AjxListener(this, this._privacyListener));	
+	this._folderSelect.addChangeListener(new AjxListener(this, this._folderListener));
 
 	// time ZmTimeSelect
 	var timeSelectListener = new AjxListener(this, this._timeChangeListener);
@@ -467,21 +475,18 @@ function(width) {
 	}
 };
 
-ZmApptEditView.prototype._privacyListener =
-function() {
-	if (!this._privacySelect || !this._folderSelect) { return; }
+ZmApptEditView.prototype._folderListener = function() {
+	if (!this._privacySelect) { return; }
 
-	var value = this._privacySelect.getValue();
 	var calId = this._folderSelect.getValue();
     var cal = appCtxt.getById(calId);
-    var isRemote = (calId.match(/:/));
 
-	if(value == "PRI" && isRemote && !cal.hasPrivateAccess()) {
-		this._privacySelect.setSelectedValue("PUB");
-		this._privacySelect.disable();
-	} else {
-		this._privacySelect.enable();
-	}
+    var acct = appCtxt.getActiveAccount();
+    var id = String(cal.id);
+    var isRemote = (id.indexOf(":") != -1) && (id.indexOf(acct.id) != 0);
+    var isEnabled = !isRemote || cal.hasPrivateAccess();
+
+    this._privacySelect.setEnabled(isEnabled);
 };
 
 ZmApptEditView.prototype._initAutocomplete =
