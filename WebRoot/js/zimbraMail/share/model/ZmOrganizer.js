@@ -49,7 +49,7 @@ ZmOrganizer = function(params) {
 	this.type = params.type;
 	var id = this.id = params.id;
 	this.nId = ZmOrganizer.normalizeId(id);
-	this.name = ZmFolder.MSG_KEY[id] ? ZmMsg[ZmFolder.MSG_KEY[id]] : params.name;
+	this.name = ZmFolder.MSG_KEY[this.nId] ? ZmMsg[ZmFolder.MSG_KEY[this.nId]] : params.name;
 	this.parent = params.parent;
 	this.tree = params.tree;
 	this.numUnread = params.numUnread || 0;
