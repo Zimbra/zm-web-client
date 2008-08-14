@@ -936,72 +936,76 @@ ZmChatWidget.prototype._handleOnclickErrorDetails = function(msg) {
 /// @class DwtLtIconButton
 
 DwtLtIconButton = function(parent, type, icon, className, index) {
-        DwtControl.call(this, {parent:parent, className:className || "DwtLtIconButton", index: index});
-        this._selected = null;
-        if (type != null && (type & DwtButton.TOGGLE_STYLE))
-                this._selected = false;
-//         this._setEventHdlrs([ DwtEvent.ONMOUSEOVER,
-//                               DwtEvent.ONMOUSEOUT,
-//                               DwtEvent.ONMOUSEDOWN,
-//                               DwtEvent.ONMOUSEUP ]);
-        this._setMouseEventHdlrs();
-        this.addListener(DwtEvent.ONMOUSEOVER, new AjxListener(this, this._on_mouseOver));
+	DwtControl.call(this, {parent:parent, className:className || "DwtLtIconButton", index: index});
+	this._selected = null;
+	if (type != null && (type & DwtButton.TOGGLE_STYLE))
+		this._selected = false;
+	this._setMouseEventHdlrs();
+	this.addListener(DwtEvent.ONMOUSEOVER, new AjxListener(this, this._on_mouseOver));
 	this.addListener(DwtEvent.ONMOUSEOUT, new AjxListener(this, this._on_mouseOut));
 	this.addListener(DwtEvent.ONMOUSEDOWN, new AjxListener(this, this._on_mouseDown));
 	this.addListener(DwtEvent.ONMOUSEUP, new AjxListener(this, this._on_mouseUp));
-        this.setImage(icon);
+	this.setImage(icon);
 };
 DwtLtIconButton.prototype = new DwtControl;
 DwtLtIconButton.prototype.constructor = DwtControl;
 
 DwtLtIconButton.prototype.setImage = function(icon) {
-        this._img = icon;
-        AjxImg.setImage(this.getHtmlElement(), icon);
+	this._img = icon;
+	AjxImg.setImage(this.getHtmlElement(), icon);
 };
 
 DwtLtIconButton.prototype.isToggled = function() {
-        return this._selected;
+	return this._selected;
 };
 
 DwtLtIconButton.prototype.setEnabledImage = DwtLtIconButton.prototype.setImage;
 
 DwtLtIconButton.prototype.setHoverImage = function(icon) {
-        this._img_hover = icon;
+	this._img_hover = icon;
 };
 
 DwtLtIconButton.prototype.setSelected = function(selected) {
-        if (this._selected != selected) {
-                this._selected = selected;
-                this.condClassName(this._selected, "DwtLtIconButton-selected");
-        }
+	if (this._selected != selected) {
+		this._selected = selected;
+		this.condClassName(this._selected, "DwtLtIconButton-selected");
+	}
 };
 
 DwtLtIconButton.prototype.addSelectionListener = function(handler) {
-        this.addListener(DwtEvent.SELECTION, handler);
+	this.addListener(DwtEvent.SELECTION, handler);
 };
 
 DwtLtIconButton.prototype._on_mouseOver = function() {
-        this.addClassName("DwtLtIconButton-hover");
-        if (this._img_hover)
-                AjxImg.setImage(this.getHtmlElement(), this._img_hover);
+	this.addClassName("DwtLtIconButton-hover");
+	if (this._img_hover)
+		AjxImg.setImage(this.getHtmlElement(), this._img_hover);
 };
 
 DwtLtIconButton.prototype._on_mouseOut = function() {
-        this.delClassName("DwtLtIconButton-hover");
-        this.delClassName("DwtLtIconButton-pressed");
-        if (this._img && this._img_hover)
-                AjxImg.setImage(this.getHtmlElement(), this._img);
+	this.delClassName("DwtLtIconButton-hover");
+	this.delClassName("DwtLtIconButton-pressed");
+	if (this._img && this._img_hover)
+		AjxImg.setImage(this.getHtmlElement(), this._img);
 };
 
-DwtLtIconButton.prototype._on_mouseDown = function() {
-        this.addClassName("DwtLtIconButton-pressed");
+DwtLtIconButton.prototype._on_mouseDown = function(ev) {
+	if (ev.button != DwtMouseEvent.LEFT) {
+		return;
+	}
+
+	this.addClassName("DwtLtIconButton-pressed");
 };
 
-DwtLtIconButton.prototype._on_mouseUp = function() {
-        this.delClassName("DwtLtIconButton-pressed");
-        if (this._selected != null)
-                this.setSelected(!this.isToggled());
-        this.notifyListeners(DwtEvent.SELECTION);
+DwtLtIconButton.prototype._on_mouseUp = function(ev) {
+	if (ev.button != DwtMouseEvent.LEFT) {
+		return;
+	}
+
+	this.delClassName("DwtLtIconButton-pressed");
+	if (this._selected != null)
+		this.setSelected(!this.isToggled());
+	this.notifyListeners(DwtEvent.SELECTION);
 };
 
 /// @class
