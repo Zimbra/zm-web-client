@@ -352,7 +352,7 @@ if (application.getInitParameter("offlineMode") != null)  {
 													
 													function onLoad() {
 														document.loginForm.username.focus();
-														clientChange("${client}");
+														clientChange("${zm:cook(client)}");
 													}
 													document.write("<a href='#' onclick='showWhatsThis()' id='ZLoginWhatsThisAnchor'><fmt:message key="whatsThis"/><"+"/a>");
 												</script>
