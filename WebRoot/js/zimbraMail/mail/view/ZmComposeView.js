@@ -124,18 +124,18 @@ function(params) {
 	if (msg) {
 		msg.onChange = this._onMsgDataChange;
 	}
-	if (params.identity) {
-		this.identitySelect.setSelectedValue(params.identity.id);
-		if (appCtxt.get(ZmSetting.SIGNATURES_ENABLED)) {
-			this._controller.setSelectedSignature(params.identity.signature || "");
-		}
-	}
 
 	// list of msg Id's to add as attachments
 	this._msgIds = params.msgIds;
 
 	this.reset(true);
 
+	if (params.identity) {
+		this.identitySelect.setSelectedValue(params.identity.id);
+		if (appCtxt.get(ZmSetting.SIGNATURES_ENABLED)) {
+			this._controller.setSelectedSignature(params.identity.signature || "");
+		}
+	}
 
 	// reset To/Cc/Bcc fields
 	this._showAddressField(AjxEmailAddress.TO, true, true, true);
