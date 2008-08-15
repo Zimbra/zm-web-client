@@ -16,14 +16,15 @@
  */
 
 ZmImNotification = function(parent, id) {
-        if (arguments.length > 0) {
-	        DwtComposite.call(this, {parent:parent, className:"ZmImNotification", posStyle:DwtControl.ABSOLUTE_STYLE});
-                this._anim = new AjxAnimation({ onUpdate : new AjxCallback(this, this._animUpdate),
-					        length   : 20,
-					        speed    : 25
-				              });
-                this._notId = id;
-        }
+	if (arguments.length > 0) {
+		DwtComposite.call(this, {parent:parent, className:"ZmImNotification", posStyle:DwtControl.ABSOLUTE_STYLE});
+		this._anim = new AjxAnimation({ onUpdate : new AjxCallback(this, this._animUpdate),
+			length   : 20,
+			speed	: 25
+		});
+		this._notId = id;
+		this.setVisibility(true);
+	}
 };
 
 ZmImNotification.prototype = new DwtComposite;
