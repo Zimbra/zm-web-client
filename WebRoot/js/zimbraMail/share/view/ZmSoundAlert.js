@@ -88,11 +88,21 @@ function(embedId, tries) {
 ZmSoundAlert.prototype._blurEmbed =
 function(embedId, tries) {
 	this._blurActionId = null;
+
+	// Take focus from the embed.
 	var embedEl = document.getElementById(embedId);
 	if (embedEl && embedEl.blur) {
 		embedEl.blur();
-		if (tries < 2) {
-			this._blurEmbedTimer(embedId, tries + 1);
-		}
+	}
+
+	// Force focus to the keyboard manager's focus obj.
+	var focusObj = appCtxt.getShell().getKeyboardMgr().getFocusObj();
+	if (focusObj && focusObj.focus) {
+		focusObj.focus();
+	}
+
+	// Repeat hack.
+	if (tries < 2) {
+		this._blurEmbedTimer(embedId, tries + 1);
 	}
 };
