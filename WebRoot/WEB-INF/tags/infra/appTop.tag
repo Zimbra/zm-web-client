@@ -65,9 +65,9 @@
             <td style="padding-left: 10px;">
             <input class="SearchButton" type="submit" name="search" value="<fmt:message key="search"/>">
             <c:if test="${calendars}">
-                <c:if test="${not empty param.tz}"><input type="hidden" name="tz" value='${param.tz}'/></c:if>
-                <c:if test="${not empty param.date}"><input type="hidden" name="date" value='${param.date}'/></c:if>
-                <c:if test="${not empty param.view}"><input type="hidden" name="view" value='${param.view}'/></c:if>
+				<c:if test="${not empty param.tz}"><input type="hidden" name="tz" value='${fn:escapeXml(param.tz)}'/></c:if>
+                <c:if test="${not empty param.date}"><input type="hidden" name="date" value='${fn:escapeXml(param.date)}'/></c:if>
+                <c:if test="${not empty param.view}"><input type="hidden" name="view" value='${fn:escapeXml(param.view)}'/></c:if>
             </c:if>
             </td>
             </tr></table>
