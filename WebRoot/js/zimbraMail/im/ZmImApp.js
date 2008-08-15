@@ -243,7 +243,7 @@ ZmImApp.prototype._registerSettings = function(settings) {
 								 });
 
 	settings.registerSetting("IM_PREF_BUDDY_SORT",
-								 {
+								 { name			: "zimbraPrefIMBuddyListSort",
 								   type			: ZmSetting.T_PREF,
 								   dataType		: ZmSetting.D_STRING,
 								   defaultValue : ZmImApp.BUDDY_SORT_NAME,
