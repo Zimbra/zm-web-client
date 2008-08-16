@@ -624,6 +624,9 @@ function() {
 	this.registerSetting("PREVIOUS_SESSION",				{type:ZmSetting.T_COS, dataType:ZmSetting.D_INT});
 	this.registerSetting("RECENT_MESSAGES",					{type:ZmSetting.T_COS, dataType:ZmSetting.D_INT});
 	this.registerSetting("REST_URL",						{name:"rest" , type:ZmSetting.T_COS});
+	this.registerSetting("IS_ADMIN",						{name:"zimbraIsAdminAccount" , type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue: false});
+	this.registerSetting("IS_DOMAIN_ADMIN",					{name:"zimbraIsDomainAdminAccount" , type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue: false});
+	this.registerSetting("ADMIN_REFERENCE",                 {name:"zimbraWebClientAdminReference", type:ZmSetting.T_COS, dataType:ZmSetting.D_STRING});
 
 	// CLIENT SIDE FEATURE SUPPORT
 	this.registerSetting("ATTACHMENT_ENABLED",				{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});

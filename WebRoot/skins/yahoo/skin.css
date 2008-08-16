@@ -79,3 +79,18 @@
 .skin_yahoo_websearch_button:hover {
 	background-color: @lighten(#ffdc8a,40)@;
 }
+
+.skin_yahoo_link, .skin_yahoo_link:link .skin_yahoo_link:visited,
+A.skin_yahoo_link, A.skin_yahoo_link:link A.skin_yahoo_link:visited 
+{
+	color: #255ed1;
+	cursor: pointer;
+	text-decoration: none;
+}
+.skin_yahoo_link:hover, A.skin_yahoo_link:hover {
+	text-decoration: underline !important;
+}
+
+.Overview {
+	padding:0px 6px 0px 0px !important; 
+}
