@@ -120,11 +120,11 @@ function(useActionedItem, ev) {
 	switch (operation) {
 
 		case ZmOperation.IM_SORT_BY_PRESENCE:
-			this.sort(ZmImApp.BUDDY_SORT_PRESENCE);
+			this.sort(ZmImApp.BUDDY_SORT_PRESENCE, true);
 			break;
 
 		case ZmOperation.IM_SORT_BY_NAME:
-			this.sort(ZmImApp.BUDDY_SORT_NAME);
+			this.sort(ZmImApp.BUDDY_SORT_NAME, true);
 			break;
 
 		case ZmOperation.IM_TOGGLE_OFFLINE:
@@ -192,11 +192,27 @@ ZmImOverview.CMP_SORT_BY_PRESENCE = function(a, b) {
         return ai - bi;
 };
 
-ZmImOverview.prototype.sort = function(by) {
+ZmImOverview.prototype.sort = function(by, immediate) {
 	if (by && (by != this._sortBy)) {
 		this._sortBy = by;
 		appCtxt.getSettings().getSetting("IM_PREF_BUDDY_SORT").setValue(by);
 	}
+	// Unless specifically requested, sort on a timer to prevent lots
+	// of sorts when starting up.
+	if (immediate) {
+		if (this._sortActionId) {
+			AjxTimedAction.cancelAction(this._sortActionId);
+		}
+		this._doSort();
+	} else if (!this._sortActionId) {
+		this._doSortAction = this._doSortAction || new AjxTimedAction(this, this._doSort);
+		this._sortActionId = AjxTimedAction.scheduleAction(this._doSortAction, 1000);
+	}
+};
+
+ZmImOverview.prototype._doSort = function() {
+	this._sortActionId = null;
+
 	var root = this._rootItem;
         // groups are always sorted by name
 	var items = root.getItems();
