@@ -1,7 +1,9 @@
 <template id="share.App#UserInfo">
-	<span id="admin_link_container"></span><span id="admin_link_or">&nbsp;<font color='gray'>|</font>&nbsp;</span>
+	<$ if (appCtxt.get(ZmSetting.IS_DOMAIN_ADMIN) && appCtxt.get(ZmSetting.ADMIN_REFERENCE)) { $>
+		<a target="_new" href="<$=appCtxt.get(ZmSetting.ADMIN_REFERENCE)$>"><$= ZmMsg.adminLinkLabel $></a>&nbsp;<font color="gray">|</font>&nbsp;
+	<$ } $>
     <$ if (!appCtxt.isOffline) { $>
-		<a href='/zimbra/m/'><$= ZmMsg.mobile $></a>&nbsp;<font color="gray">|</font>&nbsp;
+		<a href='<$= ZmMsg.yahooYahooMailURL $>'><$= ZmMsg.yahooYahooMail $></a>&nbsp;<font color="gray">|</font>&nbsp;
 	<$ } else { $>
 		<a href='http://www.yahoo.com' target='_blank'><$= ZmMsg.yahooYahoo $></a>&nbsp;<font color="gray">|</font>&nbsp;
 		<a href='http://my.yahoo.com' target='_blank'><$= ZmMsg.yahooMyYahoo $></a>&nbsp;<font color='gray'>|</font>&nbsp;

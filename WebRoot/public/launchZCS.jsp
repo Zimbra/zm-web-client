@@ -248,18 +248,6 @@
 </c:if>
 
 <script>
-	<zm:getDomainInfo var="domainInfo" by="virtualHostname" value="${zm:getServerName(pageContext)}"/>
-		var settings = {
-			"dummy":1<c:forEach var="pref" items="${requestScope.authResult.prefs}">,
-			"${pref.key}":"${zm:jsEncode(pref.value[0])}"</c:forEach>
-			<c:forEach var="attr" items="${requestScope.authResult.attrs}">,
-			"${attr.key}":"${zm:jsEncode(attr.value[0])}"</c:forEach>
-			<c:if test="${not empty domainInfo}"> 
-			<c:forEach var="info" items="${domainInfo.attrs}">,
-			"${info.key}":"${zm:jsEncode(info.value)}"</c:forEach> 
-			</c:if>
-		};
-
 	var cacheKillerVersion = "${zm:jsEncode(vers)}";
 	function launch() {
 		// quit if this function has already been called
@@ -299,6 +287,22 @@
 		<c:if test="${isLeakDetectorOn}">
 		AjxLeakDetector.begin();
 		</c:if>
+
+		// NOTE: Domain info settings moved into launch function to
+		//       prevent sloppy code from accessing extraneous window
+		//       scoped variable.
+		<zm:getDomainInfo var="domainInfo" by="virtualHostname" value="${zm:getServerName(pageContext)}"/>
+		var settings = {
+			"dummy":1<c:forEach var="pref" items="${requestScope.authResult.prefs}">,
+			"${pref.key}":"${zm:jsEncode(pref.value[0])}"</c:forEach>
+			<c:forEach var="attr" items="${requestScope.authResult.attrs}">,
+			"${attr.key}":"${zm:jsEncode(attr.value[0])}"</c:forEach>
+			<c:if test="${not empty domainInfo}">
+			<c:forEach var="info" items="${domainInfo.attrs}">,
+			"${info.key}":"${zm:jsEncode(info.value)}"</c:forEach>
+			</c:if>
+		};
+
 		var params = {app:"${app}", offlineMode:${isOfflineMode}, devMode:${isDevMode}, settings:settings,
 					  protocolMode:protocolMode, noSplashScreen:noSplashScreen, batchInfoResponse:batchInfoResponse};
 		ZmZimbraMail.run(params);

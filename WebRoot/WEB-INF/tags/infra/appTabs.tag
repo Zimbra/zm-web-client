@@ -3,6 +3,7 @@
 <%@ attribute name="keys" rtexprvalue="true" required="true" %>
 <%@ attribute name="mailbox" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZMailboxBean"%>
 <%@ attribute name="context" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.tag.SearchContext"%>
+<%@ attribute name="nofiller" rtexprvalue="true" required="false" type="java.lang.Boolean" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
@@ -92,12 +93,9 @@
         </td>
         <td class='TabSpacerR'/>
         </c:if>    
-        <td class='TabSpacer'/>
-        <td class='TabFiller' style="text-align:right;">
-            <c:if test="${not empty mailbox.attrs.zimbraIsAdminAccount and not empty adminReference }">
-                <span style="text-decoration:underline;color:blue;">${adminReference}</span>
-            </c:if>
-            &nbsp;
-        </td>
+	    <c:if test='${empty nofiller or not nofiller}'>
+		    <td class='TabSpacer'/>
+		    <td class="TabFiller">&nbsp;</td>
+	    </c:if>
     </tr>
 </table>

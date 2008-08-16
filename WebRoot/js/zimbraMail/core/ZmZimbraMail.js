@@ -1348,17 +1348,6 @@ function() {
 		}
 		el.innerHTML = AjxTemplate.expand("share.App#UserInfo", data);
 	}
-    var isAdmin = appCtxt.getSettings().getInfoResponse.attrs._attrs["zimbraIsAdminAccount"];
-    if(isAdmin){
-        var lcontainer = document.getElementById("admin_link_container");
-        if(lcontainer){
-            var v  = settings.zimbraWebClientAdminReference;//appCtxt.get(ZmSetting.SKIN_HINTS, "adminLinkReference.v");
-            if(v){
-                lcontainer.innerHTML = v;
-            }
-        }
-    }
-    
 };
 
 ZmZimbraMail.prototype.setUserInfo =
