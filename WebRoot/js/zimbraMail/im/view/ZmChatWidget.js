@@ -218,7 +218,6 @@ ZmChatWidget.prototype.setImage = function(imageInfo) {
 	if (this._isMultiTabMinimized()) {
 		return; // Don't show presence icon for multi-tab minimized window.
 	}
-	this._label.setImage(imageInfo);
 	var tab = this.parent.getTabLabelWidget(this);
 	if (tab) {
 		// tabs might not be initialized yet
@@ -379,20 +378,19 @@ ZmChatWidget.prototype._init = function() {
 	
 	this._toolbar = new DwtToolBar({parent:this, posStyle:Dwt.ABSOLUTE_STYLE});
 
-        // XXX: does it work implementing a "light label" widget?
-	this._label = new DwtLabel(this._toolbar, DwtLabel.IMAGE_LEFT | DwtLabel.ALIGN_LEFT, "ZmChatWindowLabel");
-	this._label.setScrollStyle(Dwt.CLIP);
-
-	this._toolbar.addFiller();
+	this._close = new DwtLtIconButton(this._toolbar, null, "Close");
+	this._close.setToolTipContent(ZmMsg.imCloseWindow);
+	this._closeListener = new AjxListener(this, this._closeListener);
+	this._close.addSelectionListener(this._closeListener);
 
 	this._minimize = new DwtLtIconButton(this._toolbar, null, "RoundMinus");
 	this._minimize.setToolTipContent(ZmMsg.imMinimize);
 	this._minimize.addSelectionListener(new AjxListener(this, this._minimizeListener));
 
-	this._close = new DwtLtIconButton(this._toolbar, null, "Close");
-	this._close.setToolTipContent(ZmMsg.imCloseWindow);
-	this._closeListener = new AjxListener(this, this._closeListener);
-	this._close.addSelectionListener(this._closeListener);
+	this._label = new DwtLabel(this._toolbar, DwtLabel.IMAGE_LEFT | DwtLabel.ALIGN_LEFT, "ZmChatWindowLabel");
+	this._label.setScrollStyle(Dwt.CLIP);
+
+	this._toolbar.addFiller();
 
 	this._content = new DwtComposite(this, "ZmChatWindowChat", Dwt.ABSOLUTE_STYLE);
 	this._content._setAllowSelection();
@@ -752,11 +750,9 @@ function(minimize) {
 	if (minimize && this.parent.size() > 1) {
 		this._minimizedFormat = this._minimizedFormat || new AjxMessageFormat(ZmMsg.imMinimizedLabel);
 		this._label.setText(this._minimizedFormat.format(this.parent.size()));
-		this._label.setImage("Blank_16");
 	} else {
 		this._label.setText(this._titleStr);
 		this.chat.getRosterItem().getAddress()
-		this._label.setImage(this.chat.getRosterItem().getPresence().getIcon());
 	}
 	this._minimize.setImage(minimize ? "RoundPlus" : "RoundMinus");
 	this._minimize.setToolTipContent(minimize ? ZmMsg.imRestore : ZmMsg.imMinimize);
