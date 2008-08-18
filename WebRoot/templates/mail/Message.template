@@ -180,7 +180,7 @@
                     <td nowrap width='1%'>
                         <table border=0 cellspacing=0 cellpadding=0>
                             <tr>
-                                <td style='<$=labelStyle$>' nowrap="nowrap"><$=ZmMsg.priorityLabel$>&nbsp;</td>
+                                <td align=right style='<$=labelStyle$>' nowrap="nowrap"><$=ZmMsg.priorityLabel$>&nbsp;</td>
                                 <td id="${priorityId}"></td>
                             </tr>
                         </table>
@@ -194,8 +194,10 @@
 		<tr id='${attRowId}'>
 			<td colspan=3><div id='${attDivId}'></div></td>
 		</tr>
+		<tr>
+			<td colspan=10><div id='zdnd_tooltip'><$=ZmMsg.dndTooltip$></div></td>
+		</tr>
 	</table>
-	<div id='zdnd_tooltip'><$=ZmMsg.dndTooltip$></div>
 	<!-- compose editor is automatically appended below the header -->
 </template>
 
