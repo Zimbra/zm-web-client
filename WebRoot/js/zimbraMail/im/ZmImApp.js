@@ -250,6 +250,22 @@ ZmImApp.prototype._registerSettings = function(settings) {
 								   isImplicit	: true
 								 });
 
+	settings.registerSetting("IM_PREF_HIDE_OFFLINE",
+								 { name			: "zimbraPrefIMHideOfflineBuddies",
+								   type			: ZmSetting.T_PREF,
+								   dataType		: ZmSetting.D_BOOLEAN,
+								   defaultValue : false,
+								   isImplicit	: true
+								 });
+
+	settings.registerSetting("IM_PREF_HIDE_BLOCKED",
+								 { name			: "zimbraPrefIMHideBlockedBuddies",
+								   type			: ZmSetting.T_PREF,
+								   dataType		: ZmSetting.D_BOOLEAN,
+								   defaultValue : false,
+								   isImplicit	: true
+								 });
+
 
 		var listener = new AjxListener(this, this._onSettingChange);
 	settings.getSetting(ZmSetting.IM_PREF_INSTANT_NOTIFY).addChangeListener(listener);
