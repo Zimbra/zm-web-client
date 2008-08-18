@@ -414,14 +414,14 @@ function(apps) {
 		return ZmZimbraMail.hashSortCompare(ZmApp.LOAD_SORT, a, b);
 	});
 
-	appCtxt.set(ZmSetting.IM_ENABLED, false);	// defaults to true in LDAP
-
 	// instantiate enabled apps - this will invoke app registration
 	for (var i = 0; i < ZmApp.APPS.length; i++) {
 		var app = ZmApp.APPS[i];
-		var setting = ZmApp.SETTING[app];
-		if (!setting || appCtxt.get(setting)) {
-			this._createApp(app);
+		if (app != ZmApp.IM) { // Don't create im app. Seems like the safest way to avoid ever logging in.
+			var setting = ZmApp.SETTING[app];
+			if (!setting || appCtxt.get(setting)) {
+				this._createApp(app);
+			}
 		}
 	}
 };

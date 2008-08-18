@@ -683,7 +683,7 @@ function() {
 
 	buttons.push(ZmOperation.CANCEL);
 
-	if (appCtxt.get(ZmSetting.IM_ENABLED)) {
+	if (!appCtxt.isChildWindow && appCtxt.get(ZmSetting.IM_ENABLED)) {
 		buttons.push(ZmOperation.IM);
 	}
 
