@@ -287,8 +287,6 @@ ZmImOverview.prototype._getActionMenu = function(nodeType, buddy, group) {
 			menu.getOp(ZmOperation.IM_EDIT_CONTACT).setVisible(!!contact);
 		}
 		return menu;
-	} else {
-		console.log("ERROR: no such node type for _getActionMenu: %s", nodeType);
 	}
 };
 
@@ -309,30 +307,32 @@ ZmImOverview.prototype._treeMouseUpListener = function(ev) {
 };
 
 ZmImOverview.prototype._treeSelectionListener = function(ev) {
-        if (ev.detail != DwtTree.ITEM_ACTIONED &&
-            ev.detail != DwtTree.ITEM_SELECTED &&
-            ev.detail != DwtTree.ITEM_DBL_CLICKED)
-                return;
+	if (ev.detail != DwtTree.ITEM_ACTIONED &&
+		ev.detail != DwtTree.ITEM_SELECTED &&
+		ev.detail != DwtTree.ITEM_DBL_CLICKED)
+		return;
 
-        var data = ev.item.getData("ZmImOverview.data");
-        var type = data.type;
-        var group = data.group;
-        var buddy = data.buddy;
+	var data = ev.item.getData("ZmImOverview.data");
+	var type = data.type;
+	var group = data.group;
+	var buddy = data.buddy;
 
-        if (ev.detail == DwtTree.ITEM_ACTIONED) {
-                var menu = this._getActionMenu(type, buddy, group);
-                this._actionedItem = ev.item;
-                menu.popup(0, ev.docX, ev.docY);
-        } else if (ev.detail == DwtTree.ITEM_SELECTED && buddy) {
-                var ctrl = AjxDispatcher.run("GetChatListController");
-                ctrl.selectChatForRosterItem(buddy);
-        } else if (ev.detail == DwtTree.ITEM_DBL_CLICKED) {
-                if (buddy) {
-                        this.chatWithBuddy(buddy);
-                } else if (group) {
-                        ev.item.setExpanded(!ev.item.getExpanded());
-                }
-        }
+	if (ev.detail == DwtTree.ITEM_ACTIONED) {
+		var menu = this._getActionMenu(type, buddy, group);
+		if (menu) {
+			this._actionedItem = ev.item;
+			menu.popup(0, ev.docX, ev.docY);
+		}
+	} else if (ev.detail == DwtTree.ITEM_SELECTED && buddy) {
+		var ctrl = AjxDispatcher.run("GetChatListController");
+		ctrl.selectChatForRosterItem(buddy);
+	} else if (ev.detail == DwtTree.ITEM_DBL_CLICKED) {
+		if (buddy) {
+			this.chatWithBuddy(buddy);
+		} else if (group) {
+			ev.item.setExpanded(!ev.item.getExpanded());
+		}
+	}
 };
 
 ZmImOverview.prototype._init = function() {
