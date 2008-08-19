@@ -710,12 +710,12 @@ ZmImOverview.prototype.removeFilter = function(f) {
 
 	// this is needed even if the array is empty in order to
 	// redisplay any hidden items
-	this.applyFilters();
+	this.applyFilters(null, true);
 };
 
-ZmImOverview.prototype.applyFilters = function(items) {
+ZmImOverview.prototype.applyFilters = function(items, doEmpty) {
 	var filters = this.__filters;
-	if (!filters.length)
+	if (!filters.length && !doEmpty)
 		return;
 	this._firstFilterItem = null;
 	var doItems = function(items) {
@@ -739,7 +739,7 @@ ZmImOverview.prototype.applyFilters = function(items) {
 	};
 	if (items) {
 		doItems.call(this, items);
-	} else {
+	} else if (this._rootItem) {
 		var root = this._rootItem;
 		var groups = root.getItems();
 		for (var i = groups.length; --i >= 0;) {
