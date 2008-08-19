@@ -231,6 +231,19 @@
   </table>
 </template>
 
+<template id="im.Chat#JiveNotification">
+  <table>
+    <tr>
+      <td style="text-align: center"><span class="ImgImStartChat inlineIcon">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><$= ZmMsg.imPoweredBy $></td>
+    </tr>
+    <tr>
+      <td class="ZmChatJiveIcon ImgJiveBig" style="text-align: center; padding-top: 10px;">
+          &nbsp;
+      </td>
+    </tr>
+  </table>
+</template>
+
 <template id="im.Chat#NewChatDlg">
   <fieldset>
     <legend><$= ZmMsg.buddies $></legend>

@@ -20,6 +20,15 @@ ZmChatWidget = function(parent, posStyle) {
 	DwtComposite.call(this, {parent:parent, className:"ZmChatWidget", posStyle:posStyle});
 	this._chatChangeListenerListener = new AjxListener(this, this._chatChangeListener);
 	this._init();
+
+	if (!ZmChatWidget._showedJive) {
+		ZmChatWidget._showedJive = true;
+		var statusArgs = {
+			msg: AjxTemplate.expand("im.Chat#JiveNotification"),
+			transitions: [ { type: "fade-in", duration: 500 }, { type: "pause", duration: 5000 }, { type: "fade-out", duration: 500 } ]
+		};
+		appCtxt.setStatusMsg(statusArgs);
+	}
 };
 
 ZmChatWidget.prototype = new DwtComposite;
