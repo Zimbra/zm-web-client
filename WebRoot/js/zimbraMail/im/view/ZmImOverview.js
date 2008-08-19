@@ -129,14 +129,21 @@ function(menuItem, checked) {
 	menuItem.setImage(checked ? "Check" : null);
 };
 
+ZmImOverview.prototype._setCheckOp =
+function(menu, op, checked) {
+	var item = menu.getMenuItem(op);
+	if (item) {
+		this._setCheck(item, checked);
+	}
+};
+
 ZmImOverview.prototype._updateFilter =
-function(filter, on, ev) {
+function(filter, on) {
 	if (on) {
 		this.addFilter(filter);
 	} else {
 		this.removeFilter(filter);
 	}
-	this._setCheck(ev.dwtObj, on);
 };
 
 ZmImOverview.prototype._actionMenuListener =
@@ -155,13 +162,13 @@ function(useActionedItem, ev) {
 		case ZmOperation.IM_TOGGLE_OFFLINE:
 			this.__filterOffline = !this.__filterOffline;
 			appCtxt.getSettings().getSetting(ZmSetting.IM_PREF_HIDE_OFFLINE).setValue(this.__filterOffline);
-			this._updateFilter(ZmImOverview.FILTER_OFFLINE_BUDDIES, this.__filterOffline, ev);
+			this._updateFilter(ZmImOverview.FILTER_OFFLINE_BUDDIES, this.__filterOffline);
 			break;
 
 		case ZmOperation.IM_TOGGLE_BLOCKED:
 			this.__filterBlocked = !this.__filterBlocked;
 			appCtxt.getSettings().getSetting(ZmSetting.IM_PREF_HIDE_BLOCKED).setValue(this.__filterBlocked);
-			this._updateFilter(ZmImOverview.FILTER_BLOCKED_BUDDIES, this.__filterBlocked, ev);
+			this._updateFilter(ZmImOverview.FILTER_BLOCKED_BUDDIES, this.__filterBlocked);
 			break;
 
 		default:
@@ -264,16 +271,8 @@ ZmImOverview.prototype._getActionMenu = function(nodeType, buddy, group) {
 				menuItems : ops });
 			var listener = new AjxListener(this, this._actionMenuListener, [true]);
 			for (var i = 0; i < menu.opList.length; ++i) {
-				var op = menu.opList[i];
-				var item = menu.getMenuItem(op);
-				if (item) {
-					item.addSelectionListener(listener);
-					if (op == ZmOperation.IM_TOGGLE_OFFLINE) {
-						this._setCheck(item, this.__filterOffline)
-					} else if (op == ZmOperation.IM_TOGGLE_BLOCKED) {
-						this._setCheck(item, this.__filterBlocked)
-					}
-				}
+				var item = menu.opList[i];
+				menu.addSelectionListener(item, listener);
 			}
 			menu.addPopdownListener(this._actionMenuPopdownListener);
 		}
@@ -285,6 +284,11 @@ ZmImOverview.prototype._getActionMenu = function(nodeType, buddy, group) {
 			menu.getOp(ZmOperation.IM_ADD_TO_CONTACT).setVisible(!contact);
 			menu.getOp(ZmOperation.IM_CREATE_CONTACT).setVisible(!contact);
 			menu.getOp(ZmOperation.IM_EDIT_CONTACT).setVisible(!!contact);
+		} else if (nodeType == "root") {
+			this._setCheckOp(menu, ZmOperation.IM_TOGGLE_OFFLINE, this.__filterOffline);
+			this._setCheckOp(menu, ZmOperation.IM_TOGGLE_BLOCKED, this.__filterBlocked);
+			this._setCheckOp(menu, ZmOperation.IM_SORT_BY_PRESENCE, this._sortBy == ZmImApp.BUDDY_SORT_PRESENCE);
+			this._setCheckOp(menu, ZmOperation.IM_SORT_BY_NAME, this._sortBy == ZmImApp.BUDDY_SORT_NAME);
 		}
 		return menu;
 	}
