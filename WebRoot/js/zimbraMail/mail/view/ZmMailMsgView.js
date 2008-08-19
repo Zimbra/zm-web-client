@@ -609,9 +609,6 @@ function(doc) {
 	this.lazyFindMailMsgObjects(500, doc);
 
 	DBG.timePt("-- END _processHtmlDoc");
-
-	// bug fix #8632 - finally, set the attachment links
-	this._setAttachmentLinks();
 };
 
 ZmMailMsgView.prototype.lazyFindMailMsgObjects =
@@ -924,10 +921,6 @@ function(container, html, isTextMsg, isTruncated) {
 		Dwt.setHandler(msgTruncated, DwtEvent.ONCLICK, AjxCallback.simpleClosure(this._handleMsgTruncated, this));
 	}
 
-	if (isTextMsg || appCtxt.isChildWindow) {
-		this._setAttachmentLinks();
-	}
-
 	// set height of view according to height of iframe on timer
 	this._resetIframeHeightOnTimer(ifw.getIframe());
 };
@@ -1133,11 +1126,10 @@ function(msg, container, callback) {
 					this._makeIframeProxy(el, bodyPart.content, true, bodyPart.truncated);
 				}
 			}
-		} else {
-			this._setAttachmentLinks();
 		}
 	}
-
+    
+    this._setAttachmentLinks();
 	this._expandRows(this._expandHeader);
 
 	if (callback) { callback.run(); }
