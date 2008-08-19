@@ -25,7 +25,7 @@ ZmChatWidget = function(parent, posStyle) {
 		ZmChatWidget._showedJive = true;
 		var statusArgs = {
 			msg: AjxTemplate.expand("im.Chat#JiveNotification"),
-			transitions: [ { type: "fade-in", duration: 500 }, { type: "pause", duration: 5000 }, { type: "fade-out", duration: 500 } ]
+			transitions: [ { type: "fade-in", duration: 1000 }, { type: "pause", duration: 4000 }, { type: "fade-out", duration: 1000 } ]
 		};
 		appCtxt.setStatusMsg(statusArgs);
 	}
