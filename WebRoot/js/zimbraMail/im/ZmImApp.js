@@ -243,10 +243,26 @@ ZmImApp.prototype._registerSettings = function(settings) {
 								 });
 
 	settings.registerSetting("IM_PREF_BUDDY_SORT",
-								 {
+								 { name			: "zimbraPrefIMBuddyListSort",
 								   type			: ZmSetting.T_PREF,
 								   dataType		: ZmSetting.D_STRING,
 								   defaultValue : ZmImApp.BUDDY_SORT_NAME,
+								   isImplicit	: true
+								 });
+
+	settings.registerSetting("IM_PREF_HIDE_OFFLINE",
+								 { name			: "zimbraPrefIMHideOfflineBuddies",
+								   type			: ZmSetting.T_PREF,
+								   dataType		: ZmSetting.D_BOOLEAN,
+								   defaultValue : false,
+								   isImplicit	: true
+								 });
+
+	settings.registerSetting("IM_PREF_HIDE_BLOCKED",
+								 { name			: "zimbraPrefIMHideBlockedBuddies",
+								   type			: ZmSetting.T_PREF,
+								   dataType		: ZmSetting.D_BOOLEAN,
+								   defaultValue : false,
 								   isImplicit	: true
 								 });
 
