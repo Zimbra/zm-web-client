@@ -584,8 +584,15 @@ function(inputEl, attendee, useException) {
 		attendee = attendee ? attendee : ZmApptViewHelper.getAttendeeFromItem(value, type, true);
 		if (attendee) {
 			var email = attendee.getEmail();
-			this._emailToIdx[email] = idx;
-			// go get this attendee's free/busy info if we haven't already
+            if(email instanceof Array) {
+                for(var i in email) {
+                    this._emailToIdx[email[i]] = idx;                    
+                }
+
+            }else {
+                this._emailToIdx[email] = idx;
+            }
+            // go get this attendee's free/busy info if we haven't already
 			if (sched.uid != email) {
 				this._getFreeBusyInfo(this._getStartTime(), email, this._fbCallback);
 			}
@@ -747,7 +754,14 @@ function(index, attendee, type, isOrganizer) {
 	}	
 	
 	var email = attendee.getEmail();
-	this._emailToIdx[email] = index;
+    if(email instanceof Array) {
+        for(var i in email) {
+            this._emailToIdx[email[i]] = index;                    
+        }
+
+    }else {
+        this._emailToIdx[email] = index;
+    }
 
 	return email;
 };
