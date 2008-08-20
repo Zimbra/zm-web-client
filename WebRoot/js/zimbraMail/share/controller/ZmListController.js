@@ -72,7 +72,6 @@ ZmListController = function(container, app) {
 	}
 	this._listeners[ZmOperation.CONTACT] = new AjxListener(this, this._participantContactListener);
 	this._listeners[ZmOperation.VIEW] = new AjxListener(this, this._viewMenuItemListener);
-	this._listeners[ZmOperation.SYNC_OFFLINE] = new AjxListener(this, this._syncOfflineListener);
 
 	this._menuPopdownListener = new AjxListener(this, this._menuPopdownActionListener);
 
@@ -604,11 +603,6 @@ function(ev) {
 	{
 		this.switchView(ev.item.getData(ZmOperation.MENUITEM_ID));
 	}
-};
-
-ZmListController.prototype._syncOfflineListener =
-function(ev) {
-	appCtxt.getAppController().sendSync();
 };
 
 // Navbar listeners
