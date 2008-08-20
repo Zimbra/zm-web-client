@@ -109,6 +109,7 @@ ZmChatListController.prototype._setView =
 function(view, clear, pushOnly) {
 	this.prepareVisuals(view);
 	var result = (clear ? this._app.setView(view) : this._app.pushView(view));
+	this._getView().hideJiveOnTimer();
 	return result;
 };
 

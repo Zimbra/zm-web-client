@@ -400,7 +400,7 @@ function() {
 
 ZmMailMsgView.prototype._moveAppt =
 function(ev) {
-	var select = ev.item.parent.parent;
+	var select = ev.item.parent.parent; 
 	var ofolder = this._lastApptFolder || ZmOrganizer.ID_CALENDAR;
 	var nfolder = select.getValue();
 	if (ofolder == nfolder) return;
@@ -997,11 +997,11 @@ function(msg, container, callback) {
 	var folder = appCtxt.getById(msg.folderId);
 	var isSyncFailureMsg = (folder && folder.nId == ZmOrganizer.ID_SYNC_FAILURES);
 
-	this._hdrTableId       = ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_HDR_TABLE, this._mode);
-	this._closeBtnCellId   = ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_CLOSE_BTN_CELL, this._mode);
-	this._reportBtnCellId  = ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_REPORT_BTN_CELL, this._mode);
-	this._expandRowId      = ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_EXPAND_ROW, this._mode);
-	this._expandHeaderId   = ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_EXPAND_HDR, this._mode);
+	this._hdrTableId		= ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_HDR_TABLE, this._mode);
+	this._closeBtnCellId	= ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_CLOSE_BTN_CELL, this._mode);
+	this._reportBtnCellId	= ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_REPORT_BTN_CELL, this._mode);
+	this._expandRowId		= ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_EXPAND_ROW, this._mode);
+	this._expandHeaderId	= ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_EXPAND_HDR, this._mode);
 
 	var subs = {
 		id                : this._htmlElId,
@@ -1079,8 +1079,8 @@ function(msg, container, callback) {
 		for (var i = 0; i < len; i++) {
 			var bp = bodyParts[i];
 			if (ZmMimeTable.isRenderableImage(bp.ct)) {
-				// Hack: (Bug:27320) Done specifically for sMime implementationu are.
-				var imgHtml = (bp.content)
+                                // Hack: (Bug:27320) Done specifically for sMime implementationu are.
+                                var imgHtml = (bp.content)
 					? ["<img zmforced='1' class='InlineImage' src='", bp.content, "'>"].join("")
 					: ["<img zmforced='1' class='InlineImage' src='", appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI), "&id=", msg.id, "&part=", bp.part, "'>"].join("");
 				html.push(imgHtml);
@@ -1806,6 +1806,7 @@ function(self, iframe, attempt) {
 		}
 
 		var doc = iframe.contentWindow.document;
+
 		var origHeight = AjxEnv.isIE ? doc.body.scrollHeight : 0;
 
 		// first off, make it wide enough to fill ZmMailMsgView.
