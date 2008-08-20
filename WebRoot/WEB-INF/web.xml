@@ -211,20 +211,7 @@
         <url-pattern>/h/*</url-pattern>
     </filter-mapping>
     -->
-    <!-- Xss Filter -->
 
-    <filter>
-        <filter-name>XssFilter</filter-name>
-        <filter-class>
-            com.zimbra.webClient.xss.XssFilter
-        </filter-class>
-    </filter>
-
-    <filter-mapping>
-        <filter-name>XssFilter</filter-name>
-        <url-pattern>/m/*</url-pattern>
-    </filter-mapping>
-    
     <error-page>
 		<error-code>404</error-code>
 		<location>/public/404.html</location>
