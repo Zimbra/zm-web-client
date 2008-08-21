@@ -58,7 +58,7 @@ function() {
 
 ZmBriefcaseApp.prototype._registerOperations =
 function() {
-	ZmOperation.registerOp("NEW_BRIEFCASEITEM", {textKey:"newBriefcase", image:"NewFolder"});
+	ZmOperation.registerOp("NEW_BRIEFCASEITEM", {textKey:"newBriefcase", image:"NewFolder", tooltipKey:"newBriefcaseTooltip"});
 	ZmOperation.registerOp("NEW_FILE", {textKey:"uploadNewFile", tooltipKey:"uploadNewFile", image:"NewPage"});
 	ZmOperation.registerOp("SHARE_BRIEFCASE", {textKey:"shareFolder", image:"SharedMailFolder"}, ZmSetting.SHARING_ENABLED);
 	ZmOperation.registerOp("MOUNT_BRIEFCASE", {textKey:"mountBriefcase", image:"Notebook"}, ZmSetting.SHARING_ENABLED);
@@ -108,6 +108,7 @@ function() {
 							  createFunc     : "ZmOrganizer.create",
 							  compareFunc    : "ZmBriefcase.sortCompare",
 							  deferrable     : true,
+							  newOp			 : ZmOperation.NEW_BRIEFCASEITEM,
 							  hasColor       : true
 							});
 };
@@ -120,11 +121,6 @@ function() {
 								 tooltipKey:	"searchForPages",
 								 icon:			"SearchNotes"
 								});*/
-};
-
-ZmBriefcaseApp.prototype._setupCurrentAppToolbar =
-function() {
-	ZmCurrentAppToolBar.registerApp(this.getName(), ZmOperation.NEW_BRIEFCASEITEM, ZmOrganizer.BRIEFCASE);
 };
 
 ZmBriefcaseApp.prototype._registerApp =

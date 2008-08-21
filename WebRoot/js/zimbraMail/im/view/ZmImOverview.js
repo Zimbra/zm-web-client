@@ -358,7 +358,16 @@ ZmImOverview.prototype._init = function() {
 	tree.addListener(DwtEvent.ONMOUSEUP, new AjxListener(this, this._treeMouseUpListener));
 
 	// create the root item
-	this._rootItem = new ZmRootBuddyItem({parent:tree, overview: this, className:"overviewHeader"});
+	this._rootItem = new DwtHeaderTreeItem({
+		parent:tree,
+		overview: this,
+		className:"overviewHeader",
+		button: {
+			image: "NewContact",
+			tooltip: ZmMsg.createNewRosterItem,
+			callback: new AjxCallback(null, ZmImOverview.newBuddy)
+		}
+	});
 	this._rootItem.setData("ZmImOverview.data", { type: "root" });
 	this._rootItem.setText(ZmMsg.buddyList);
 	this._rootItem.enableSelection(false);
@@ -845,55 +854,7 @@ ZmImOverview.FILTER_SEARCH = {
 	}
 };
 
-///////////////////////////////////////////////////////////////////////////
 
-ZmRootBuddyItem = function(params) {
-	this.overview = params.overview;
-	DwtTreeItem.call(this, params);
-}
-
-ZmRootBuddyItem.prototype = new DwtTreeItem;
-ZmRootBuddyItem.prototype.constructor = ZmRootBuddyItem;
-
-ZmRootBuddyItem.prototype.TEMPLATE = "im.Chat#ZmRootBuddyItem";
-
-ZmRootBuddyItem.prototype.toString =
-function() {
-	return "ZmRootBuddyItem";
-};
-
-ZmRootBuddyItem.prototype._initialize =
-function() {
-	DwtTreeItem.prototype._initialize.apply(this, arguments);
-	this._newBuddyId = this._htmlElId + "_newBuddyButton";
-	var buttonEl = document.getElementById(this._newBuddyId);
-	if (buttonEl) {
-		buttonEl.onclick = ZmImOverview.newBuddy;
-		this._setEventHdlrs[DwtEvent.ONMOUSEOVER, DwtEvent.ONMOUSEOUT, DwtEvent.ONMOUSEENTER, DwtEvent.ONMOUSELEAVE];
-		var mouseOverListener = new AjxListener(this, this._mouseOverListener);
-		var mouseOutListener = new AjxListener(this, this._mouseOutListener);
-		this.addListener(DwtEvent.ONMOUSEOVER, mouseOverListener);
-		this.addListener(DwtEvent.ONMOUSEENTER, mouseOverListener);
-		this.addListener(DwtEvent.ONMOUSEOUT, mouseOutListener);
-		this.addListener(DwtEvent.ONMOUSELEAVE, mouseOutListener);
-	}
-};
-
-ZmRootBuddyItem.prototype._mouseOverListener =
-function(ev) {
-	var el = DwtUiEvent.getTarget(ev);
-	if (el && (el.id == this._newBuddyId)) {
-		this.setToolTipContent(ZmMsg.createNewRosterItem);
-	}
-};
-
-ZmRootBuddyItem.prototype._mouseOutListener =
-function(ev) {
-	var el = DwtUiEvent.getTarget(ev);
-	if (el && (el.id == this._newBuddyId)) {
-		this.setToolTipContent(null);
-	}
-};
 
 ///////////////////////////////////////////////////////////////////////////
 

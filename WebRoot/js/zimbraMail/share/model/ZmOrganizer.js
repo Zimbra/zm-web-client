@@ -41,6 +41,7 @@
 * @param zid		[string]*		Zimbra ID of owner, if remote folder
 * @param rid		[string]*		Remote ID of organizer, if remote folder
 * @param restUrl	[string]*		REST URL of this organizer.
+* @param newOp		[string]*		Name of operation run by button in overview header
 */
 ZmOrganizer = function(params) {
 
@@ -213,6 +214,7 @@ ZmOrganizer.MOUNT_KEY 		= {};		// keys for label "mount [org]"
 ZmOrganizer.DEFERRABLE 		= {};		// creation can be deferred to app launch
 ZmOrganizer.PATH_IN_NAME	= {};		// if true, provide full path when asked for name
 ZmOrganizer.OPEN_SETTING	= {};		// setting that controls whether the tree view is open
+ZmOrganizer.NEW_OP			= {};		// name of operation for new button in tree header (optional)
 
 ZmOrganizer.APP2ORGANIZER	= {};		// organizer types, keyed by app name
 
@@ -273,6 +275,7 @@ function(org, params) {
 	if (params.deferrable)		{ ZmOrganizer.DEFERRABLE[org]			= params.deferrable; }
 	if (params.pathInName)		{ ZmOrganizer.PATH_IN_NAME[org]			= params.pathInName; }
 	if (params.openSetting)		{ ZmOrganizer.OPEN_SETTING[org]			= params.openSetting; }
+	if (params.newOp)			{ ZmOrganizer.NEW_OP[org]				= params.newOp; }
 
 	if (!appCtxt.isChildWindow) {
 		if (params.compareFunc)		{ ZmTreeView.COMPARE_FUNC[org]			= params.compareFunc; }

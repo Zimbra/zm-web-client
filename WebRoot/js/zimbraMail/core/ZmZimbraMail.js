@@ -300,9 +300,6 @@ function(params) {
 			this._createUserInfo("BannerTextUser", ZmAppViewMgr.C_USER_INFO, ZmId.USER_NAME);
 		this._components[ZmAppViewMgr.C_QUOTA_INFO] = this._usedQuotaField =
 			this._createUserInfo("BannerTextQuota", ZmAppViewMgr.C_QUOTA_INFO, ZmId.USER_QUOTA);
-		var currentAppToolbar = new ZmCurrentAppToolBar(this._shell, ZmId.CURRENT_APP_TOOLBAR);
-		appCtxt.setCurrentAppToolbar(currentAppToolbar);
-		this._components[ZmAppViewMgr.C_CURRENT_APP] = currentAppToolbar;
 		this._components[ZmAppViewMgr.C_STATUS] = this.statusView =
 			new ZmStatusView(this._shell, "ZmStatus", Dwt.ABSOLUTE_STYLE, ZmId.STATUS_VIEW);
 	}
@@ -1102,6 +1099,7 @@ function() {
 							 createFunc:		"ZmSearchFolder.create",
 							 compareFunc:		"ZmFolder.sortCompare",
 							 shortcutKey:		"S",
+							 newOp:				ZmOperation.BROWSE,
 							 openSetting:		ZmSetting.SEARCH_TREE_OPEN
 							});
 
@@ -1120,6 +1118,7 @@ function() {
 							 createFunc:		"ZmTag.create",
 							 compareFunc:		"ZmTag.sortCompare",
 							 shortcutKey:		"T",
+							 newOp:				ZmOperation.NEW_TAG,
 							 openSetting:		ZmSetting.TAG_TREE_OPEN
 							});
 
@@ -1250,12 +1249,6 @@ function(appName, view) {
 
 	// app not actually enabled if this is result of upsell view push
 	var appEnabled = appCtxt.get(ZmApp.SETTING[appName]);
-
-	// update current app toolbar
-	var toolbar = appEnabled ? appCtxt.getCurrentAppToolbar() : null;
-	if (toolbar) {
-		toolbar.setupView(appName);
-	}
 
 	if (this._activeApp != appName) {
 		// deactivate previous app
