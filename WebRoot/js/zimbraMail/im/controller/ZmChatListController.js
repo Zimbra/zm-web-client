@@ -251,29 +251,6 @@ ZmChatListController.prototype._viewButtonListener = function(ev) {
 	this.switchView(ev.item.getData(ZmOperation.MENUITEM_ID));
 };
 
-// // Create menu for View button and add listeners.
-// ZmChatListController.prototype._setupViewMenu = function(view) {
-//  XXX: MIHAI: VIEW MENU IS NO LONGER IN ZmCurrentAppToolbar. SEE ZmMailListController
-// 	var appToolbar = appCtxt.getCurrentAppToolbar();
-// 	var menu = appToolbar.getViewMenu(view);
-// 	if (!menu) {
-// 		var menu = new ZmPopupMenu(appToolbar.getViewButton());
-// 		for (var i = 0; i < ZmChatListController.VIEWS.length; i++) {
-// 			var id = ZmChatListController.VIEWS[i];
-// 			var mi = menu.createMenuItem(id, { image : ZmChatListController.ICON[id],
-// 							   text	 : ZmMsg[ZmChatListController.MSG_KEY[id]],
-// 							   style : DwtMenuItem.RADIO_STYLE
-// 							 });
-// 			mi.setData(ZmOperation.MENUITEM_ID, id);
-// 			mi.addSelectionListener(this._listeners[ZmOperation.VIEW]);
-// 			if (id == view)
-// 				mi.setChecked(true, true);
-// 		}
-// 		appToolbar.setViewMenu(view, menu);
-// 	}
-// 	return menu;
-// };
-
 ZmChatListController.prototype._refreshListener = function(ev) {
 	var soapDoc = AjxSoapDoc.create("NoOpRequest", "urn:zimbraMail");
 	appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true});
