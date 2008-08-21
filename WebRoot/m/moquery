@@ -18,7 +18,7 @@
     </c:choose>
     <fmt:setBundle basename="/messages/ZhMsg" scope="request"/>
     
-    <c:set var="action" value="${empty param.paction ? param.action : param.paction}" scope="request"/>
+    <c:set var="action" value="${zm:cook(empty param.paction ? param.action : param.paction)}" scope="request"/>
     <zm:computeSearchContext var="context" usecache="true"/>
 </mo:handleError>
 <mo:view title="${mailbox.name}" context="${context}" mailbox="${mailbox}">

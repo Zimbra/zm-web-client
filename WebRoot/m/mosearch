@@ -17,7 +17,7 @@
     </c:choose>
     <fmt:setBundle basename="/messages/ZhMsg" scope="request"/>
     <mo:composeCheck/>
-    <c:set var="action" value="${empty param.paction ? param.action : param.paction}" scope="request"/>
+    <c:set var="action" value="${zm:cook(empty param.paction ? param.action : param.paction)}" scope="request"/>
     <c:choose>
         <c:when test="${not empty param.actionSearch}">
             <c:if test="${not empty param.sq_size}"><c:set var="sq_size"
