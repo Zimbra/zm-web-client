@@ -1093,7 +1093,7 @@ function(findHits, includeInlineImages) {
 					if (attach.ct == ZmMimeTable.TEXT_VCARD ||
 						attach.ct == ZmMimeTable.TEXT_DIRECTORY)
 					{
-						var onclickStr = "ZmMailMsgView.vcardCallback(" + this.id + ",\"" + attach.part + "\");";
+						var onclickStr = "ZmMailMsgView.vcardCallback(" + "\"" + this.id + "\"" +  ",\"" + attach.part + "\");";
 						props.vcardLink = "<a style='text-decoration:underline' class='AttLink' href='javascript:;' onclick='" + onclickStr + "'>";
 					}
 					else if (ZmMimeTable.hasHtmlVersion(attach.ct) &&
