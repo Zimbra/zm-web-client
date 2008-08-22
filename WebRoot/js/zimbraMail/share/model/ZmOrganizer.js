@@ -59,6 +59,7 @@ ZmOrganizer = function(params) {
 	this.url = params.url;
 	this.owner = params.owner;
 	this.link = params.link || (Boolean(params.zid)) || (this.parent && this.parent.link);
+	this.isMountpoint = params.link;
 	this.zid = params.zid;
 	this.rid = params.rid;
 	this.restUrl = params.restUrl;
@@ -879,7 +880,7 @@ function(obj, details) {
 	var doNotify = false;
 	var details = details || {};
 	var fields = {};
-	if (obj.name != null && this.name != obj.name && !obj._isRemote) {
+	if (obj.name != null && this.name != obj.name) {
 		details.oldName = this.name;
 		this.name = obj.name;
 		fields[ZmOrganizer.F_NAME] = true;
@@ -943,13 +944,15 @@ function(obj, details) {
 		this._notify(ZmEvent.E_MODIFY, details);
 	}
 
-	if (this.parent && obj.l != null && obj.l != this.parent.id && !obj._isRemote) {
+	if (this.parent && obj.l != null && obj.l != this.parent.id) {
 		var newParent = this._getNewParent(obj.l);
-		this.reparent(newParent);
-		this._notify(ZmEvent.E_MOVE);
-		// could be moving search between Folders and Searches - make sure
-		// it has the correct tree
-		this.tree = newParent.tree;
+		if (newParent) {
+			this.reparent(newParent);
+			this._notify(ZmEvent.E_MOVE);
+			// could be moving search between Folders and Searches - make sure
+			// it has the correct tree
+			this.tree = newParent.tree;
+		}
 	}
 };
 
@@ -1227,6 +1230,10 @@ function() {
 	return this._hasPrivateAccess;
 };
 
+/**
+ * Returns true if this organizer is "remote". That applies to mountpoints (links),
+ * the folders they represent, and any subfolders we know about.
+ */
 ZmOrganizer.prototype.isRemote =
 function() {
 	if (this._isRemote == null) {
