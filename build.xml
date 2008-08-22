@@ -550,6 +550,17 @@
         </if>
     </target>
 
+	<target name='keys-check' depends='compile'>
+		<taskdef name='keycheck'
+		         classname='com.zimbra.kabuki.tools.i18n.CompareKeysTask'
+		         classpath='${build.classes.dir}'
+		/>
+		<keycheck dir='${web.dir}' verbose='${keys-check-verbose}'>
+			<keyfile basename='/keys/AjxKeys' />
+			<keyfile basename='/keys/ZmKeys' />
+		</keycheck>
+	</target>
+
 	<target name='images' depends='images-init'>
 		<mkdir dir='${build.img.dir}' />
 		<mkdir dir='${build.skin.dir}' />
