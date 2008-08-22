@@ -37,11 +37,15 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
     if (ext == null) ext = "";
 %>
 <!-- bootstrap classes -->
-<script type="text/javascript">
-<jsp:include>
-	<jsp:attribute name='page'>/js/Boot_all.js<%= isDevMode ? "" : ".min" %></jsp:attribute>
-</jsp:include>
-</script>
+<% if (isDevMode) { %>
+	<jsp:include page="jsp/Boot.jsp" />
+<% } else { %>
+	<script type="text/javascript">
+	<jsp:include>
+		<jsp:attribute name='page'>/js/Boot_all.js<%= isDevMode ? "" : ".min" %></jsp:attribute>
+	</jsp:include>
+	</script>
+<% } %>
 
 <script type="text/javascript">
 AjxPackage.setBasePath("<%=contextPath%>/js");
