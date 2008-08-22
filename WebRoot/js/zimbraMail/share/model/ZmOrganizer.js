@@ -814,7 +814,7 @@ ZmOrganizer.prototype._empty =
 function() {
 	DBG.println(AjxDebug.DBG1, "emptying: " + this.name + ", ID: " + this.id);
 	var isEmptyOp = ((this.type == ZmOrganizer.FOLDER || this.type == ZmOrganizer.ADDRBOOK) &&
-					 (this.nId == ZmFolder.ID_SPAM || this.nId == ZmFolder.ID_TRASH || this.nId == ZmOrganizer.ID_SYNC_FAILURES));
+					 (this.nId == ZmFolder.ID_SPAM || this.nId == ZmFolder.ID_TRASH || this.nId == ZmFolder.ID_CHATS || this.nId == ZmOrganizer.ID_SYNC_FAILURES));
 	// make sure we're not emptying a system object (unless it's SPAM/TRASH/SYNCFAILURES)
 	if (this.isSystem() && !isEmptyOp) return;
 
