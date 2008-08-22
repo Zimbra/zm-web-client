@@ -715,16 +715,6 @@ function() {
 	return this._uploadManager;
 };
 
-ZmAppCtxt.prototype.getCurrentAppToolbar =
-function() { 
-	return this._currentAppToolbar;
-};
-
-ZmAppCtxt.prototype.setCurrentAppToolbar =
-function(toolbar) {
-	this._currentAppToolbar = toolbar;
-};
-
 ZmAppCtxt.prototype.getCurrentSearch =
 function() { 
 	return this.getCurrentApp().currentSearch;

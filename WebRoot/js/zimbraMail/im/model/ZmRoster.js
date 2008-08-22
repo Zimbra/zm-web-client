@@ -361,7 +361,7 @@ function(im) {
 					var old_pres = ri.getPresence().getShow();
 					if (ri.getPresence().setFromJS(p)) {
 						ri._notifyPresence();
-						var toast = this._presenceToastFormatter.format([ri.getDisplayName(), ri.getPresence().getShowText()]);
+						var toast = this._presenceToastFormatter.format([ri.getDisplayName(), AjxStringUtil.htmlEncode(ri.getPresence().getShowText())]);
 						var is_status = old_pres == ri.getPresence().getShow();
 						if (notifications && ( (!is_status && appCtxt.get(ZmSetting.IM_PREF_NOTIFY_PRESENCE)) ||
 											   (is_status && appCtxt.get(ZmSetting.IM_PREF_NOTIFY_STATUS)) ) ) {
