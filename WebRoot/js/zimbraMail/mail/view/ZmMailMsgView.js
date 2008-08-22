@@ -663,30 +663,67 @@ function(img) {
 
 ZmMailMsgView.prototype._fixMultipartRelatedImages =
 function(msg, idoc) {
+    // fix <img> tags
 	var images = idoc.getElementsByTagName("img");
-	var num = 0;
+	var hasExternalImages = false;
 	for (var i = 0; i < images.length; i++) {
-		var dfsrc = images[i].getAttribute("dfsrc");
-		if (dfsrc) {
-			if (dfsrc.substring(0,4) == "cid:") {
-				num++;
-				var cid = "<" + dfsrc.substring(4) + ">";
-				var src = msg.getContentPartAttachUrl(ZmMailMsg.CONTENT_PART_ID, cid);
-				if (src) {
-					images[i].src = src;
-					images[i].setAttribute("dfsrc", src);
-				}
-			} else if (dfsrc.indexOf("//") == -1) { // check for content-location verison
-				var src = msg.getContentPartAttachUrl(ZmMailMsg.CONTENT_PART_LOCATION, dfsrc);
-				if (src) {
-					num++;
-					images[i].src = src;
-					images[i].setAttribute("dfsrc", src);
-				}
-			}
-		}
-	}
-	return (num == images.length);
+        hasExternalImages = ZmMailMsgView.__unfangInternalImage(msg, images[i], "src") || hasExternalImages;
+    }
+    // fix all elems with "background" attribute
+    var place = idoc.body, root = place;
+    while (place) {
+        if (place.nodeType == AjxUtil.ELEMENT_NODE) {
+            hasExternalImages = ZmMailMsgView.__unfangInternalImage(msg, place, "background") || hasExternalImages;
+        }
+        if (place.firstChild) {
+            place = place.firstChild;
+            continue;
+        }
+        if (place.nextSibling) {
+            place = place.nextSibling;
+            continue;
+        }
+        while (true) {
+            place = place.parentNode;
+            if (place === root) {
+                place = null;
+                break;
+            }
+            if (place.nextSibling) {
+                place = place.nextSibling;
+                break;
+            }
+        }
+    }
+
+    // did we get them all?
+	return !hasExternalImages;
+};
+
+ZmMailMsgView.__unfangInternalImage = function(msg, elem, aname) {
+    var df_aname = "df"+aname;
+    var avalue = elem.getAttribute(df_aname);
+    if (avalue) {
+        if (avalue.substr(0,4) == "cid:") {
+            var cid = "<" + avalue.substr(4) + ">";
+            avalue = msg.getContentPartAttachUrl(ZmMailMsg.CONTENT_PART_ID, cid);
+            if (avalue) {
+                elem.setAttribute(aname, avalue);
+                elem.setAttribute(df_aname, avalue)
+                return false;
+            }
+        } 
+        else if (avalue.indexOf("//") == -1) { // check for content-location verison
+            avalue = msg.getContentPartAttachUrl(ZmMailMsg.CONTENT_PART_LOCATION, avalue);
+            if (avalue) {
+                elem.setAttribute(aname, avalue);
+                elem.setAttribute(df_aname, avalue)
+                return false;
+            }
+        }
+        return true;
+    }
+    return false;
 };
 
 ZmMailMsgView.prototype._createDisplayImageClickClosure =
