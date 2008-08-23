@@ -1208,7 +1208,8 @@ function(ev, acListView, result) {
 	var key = DwtKeyEvent.getCharCode(ev);
 	// process any printable character or enter/backspace/delete keys
 	if (result && AjxStringUtil.isPrintKey(key) ||
-		key == 3 || key == 13 || key == 8 || key == 46)
+		key == 3 || key == 13 || key == 8 || key == 46 ||
+		(AjxEnv.isMac && key == 224)) // bug fix #24670
 	{
 		this._adjustAddrHeight(DwtUiEvent.getTargetWithProp(ev, "id"));
 	}
@@ -1787,22 +1788,23 @@ function(templateId, data) {
 	this.identitySelect.replaceElement(data.identitySelectId);
 	this._setIdentityVisible();
 
-    if (appCtxt.get(ZmSetting.MAIL_PRIORITY_ENABLED)) {
+	if (appCtxt.get(ZmSetting.MAIL_PRIORITY_ENABLED)) {
 		var buttonId = ZmId.getButtonId(this._view, ZmId.CMP_PRIORITY);
-        this._priorityButton = new DwtButton({parent:this, id:buttonId});
-        this._priorityButton.setMenu(new AjxCallback(this, this._priorityButtonMenuCallback));
-        this._priorityButton.reparentHtmlElement(data.priorityId);
+		this._priorityButton = new DwtButton({parent:this, id:buttonId});
+		this._priorityButton.setMenu(new AjxCallback(this, this._priorityButtonMenuCallback));
+		this._priorityButton.reparentHtmlElement(data.priorityId);
 		this._priorityButton.setToolTipContent(ZmMsg.setPriority);
 	}
 
-    //Toggle BCC
-    this._toggleBccEl = document.getElementById(data.bccToggleId);
-    if (this._toggleBccEl) {
-	    Dwt.setHandler(this._toggleBccEl,DwtEvent.ONCLICK, AjxCallback.simpleClosure(this._toggleBccField, this));
-    }
+	//Toggle BCC
+	this._toggleBccEl = document.getElementById(data.bccToggleId);
+	if (this._toggleBccEl) {
+		Dwt.setHandler(this._toggleBccEl,DwtEvent.ONCLICK, AjxCallback.simpleClosure(this._toggleBccField, this));
+	}
 };
 
-ZmComposeView.prototype._toggleBccField = function(ev, force){
+ZmComposeView.prototype._toggleBccField =
+function(ev, force){
     var isBccFieldVisible = Dwt.getVisible(this._divEl[AjxEmailAddress.BCC]);
     if (typeof force != "undefined") isBccFieldVisible = !force;
     this._showAddressField(AjxEmailAddress.BCC, !isBccFieldVisible);
@@ -2005,9 +2007,9 @@ function(type, show, skipNotify, skipFocus) {
 	if (setting) {
 		appCtxt.set(setting, show, null, false, skipNotify);
 	}
-    if(type == AjxEmailAddress.BCC){
-       Dwt.setInnerHtml(this._toggleBccEl, show ? ZmMsg.hideBCC : ZmMsg.showBCC );
-    }
+	if (type == AjxEmailAddress.BCC) {
+	   Dwt.setInnerHtml(this._toggleBccEl, show ? ZmMsg.hideBCC : ZmMsg.showBCC );
+	}
 	this._resetBodySize();
 };
 
