@@ -36,4 +36,12 @@
 		<c:set var="skin" scope="request" value="${initParam.zimbraDefaultSkin}" />
 	</c:otherwise>
 </c:choose>
+<c:choose>
+    <c:when test="${skin eq 'yahoo'}">
+        <c:set var="iconPath" value="/skins/yahoo/img" scope="request" />
+    </c:when>
+    <c:otherwise>
+        <c:set var="iconPath" value="/img" scope="request" />
+    </c:otherwise>
+</c:choose>
 

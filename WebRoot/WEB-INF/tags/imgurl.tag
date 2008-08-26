@@ -45,7 +45,12 @@
 	// find image 
 	String imageSrc = images.get(value);
 	if (imageSrc == null) {
-		String iconPath = (String)pageContext.findAttribute("iconPath");
+		String iconPath = null;
+		if (!value.startsWith("/")) {
+			iconPath = (String)pageContext.findAttribute("iconPath");
+			if (iconPath == null) iconPath = "/img";
+			if (iconPath.endsWith("/")) iconPath = iconPath.substring(0, iconPath.length() - 1);
+		}
 		imageSrc = iconPath != null ? iconPath+"/"+value : value;
 		// find image
 		ServletContext servletContext = pageContext.getServletContext();
