@@ -390,7 +390,13 @@
 				</td>
 			</tr>
 	</table>
-	</c:when>
+    <script type="text/javascript">
+    if (screen.width<=800) {
+        /*remove sidebar ad when resolution is less than eq 800 x 600*/
+        document.getElementById("_sidebarAd").style.display='none';
+    }
+    </script>
+    </c:when>
 <c:otherwise>
 	<table width="100%" cellpadding="0" cellspacing="0">
 		<tr>
