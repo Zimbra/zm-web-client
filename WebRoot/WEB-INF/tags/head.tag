@@ -23,6 +23,7 @@
 			<c:param name="client"	value="standard" />
 			<c:param name="skin"	value="${skin}" />
 			<c:param name="v"		value="${version}" />
+            <c:param name="debug"   value="${param.dev}" />
 		</c:url>
 		<link rel="stylesheet" type="text/css" href="${cssurl}">
     </c:if>
