@@ -786,7 +786,9 @@ function(ev) {
 			break;
 		case ZmImApp._NEW_BUDDY_FROM_IM_ADDRESS:
 			var imAddress = ZmImAddress.parse(imData.imAddress);
-			var data = { address: imAddress.screenName, name: imData.contact.getFullName(), service: imAddress.service };
+			var data = imAddress
+				? { address: imAddress.screenName, name: imData.contact.getFullName(), service: imAddress.service }
+				: { };
 			ZmImApp.INSTANCE.getImController()._newRosterItemListener(data);
 			break;
 		case ZmImApp._NEW_BUDDY:
