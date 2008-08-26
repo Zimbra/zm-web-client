@@ -501,8 +501,6 @@ function(what, folderType) {
 			invalid = true;														// bug fix #25175 - nothing can be moved to outbox
 		} else if (this.nId == ZmOrganizer.ID_SYNC_FAILURES) {
 			invalid = true;														// nothing can be moved to "sync failures"
-		} else if (this.link) {
-			invalid = this.isReadOnly();										// cannot drop anything onto a read-only item
 		} else if (thisType == ZmOrganizer.SEARCH) {
 			invalid = true;														// can't drop items into saved searches
 		} else if ((item.type == ZmItem.CONTACT) && item.isGal) {
@@ -553,6 +551,9 @@ function(what, folderType) {
 				}
 			}
 		}
+        if (!invalid && this.link) {
+			invalid = this.isReadOnly();										// cannot drop anything onto a read-only item
+        }
 	}
 	return !invalid;
 };
