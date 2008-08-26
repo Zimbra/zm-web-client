@@ -144,6 +144,7 @@ function(params) {
 		params.dataTree = dataTree;
 		var setting = ZmOrganizer.OPEN_SETTING[this.type];
 		params.collapsed = !(!setting || (appCtxt.get(setting) !== false));
+		this._setupNewOp(params);
 		this._treeView[id].set(params);
 		this._checkTreeView(id, params.account);
 	}
@@ -202,6 +203,28 @@ function(account) {
 
 // Private and protected methods
 
+/**
+ * Sets up the params for the new button in the header item
+ *
+ * @param overviewId		[constant]	overview ID
+ */
+ZmTreeController.prototype._setupNewOp =
+function(params) {
+	if (!params.noNewButton) {
+		var newOp = ZmOrganizer.NEW_OP[this.type];
+		if (newOp) {
+			var newSetting = ZmOperation.SETTING[newOp];
+			if (!newSetting || appCtxt.get(newSetting)) {
+				var tooltipKey = ZmOperation.getProp(newOp, "tooltipKey")
+				params.newButton = {
+					image: ZmOperation.getProp(newOp, "image"),
+					tooltip: tooltipKey ? ZmMsg[tooltipKey] : null,
+					callback: new AjxCallback(this, this._newListener)
+				};
+			}
+		}
+	}
+};
 
 ZmTreeController.prototype._getTreeChangeListener =
 function() {
