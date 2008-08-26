@@ -488,7 +488,7 @@ function(what, folderType) {
 				   (what.type == ZmOrganizer.SEARCH && thisType == ZmOrganizer.FOLDER && this.nId == ZmOrganizer.ID_ROOT) ||
 				   (what.id == this.id) ||
 				   (what.disallowSubFolder) ||
-				   (what.isRemote() && what.parent && what.parent.isRemote()));	// this means a remote folder can be DnD but not its children
+				   (what.isRemote() && !this._remoteMoveOk(what)));	// this means a remote folder can be DnD but not its children
 	} else {
 		// An item or an array of items is being moved
 		var items = (what instanceof Array) ? what : [what];
@@ -578,4 +578,24 @@ function() {
 ZmFolder.prototype.isInSpam =
 function(){
     return this.isUnder(ZmFolder.ID_SPAM);
+};
+
+/**
+ * Returns true if the given remote folder can be moved into this remote folder. The source and
+ * the target folder must belong to the same account. The source must have delete permission and
+ * the target must have insert permission.
+ *
+ * @param folder  [ZmFolder]    source folder
+ */
+ZmFolder.prototype._remoteMoveOk =
+function(folder) {
+    if (!this.link || !folder.link) { return false; }
+    if (this.zid != folder.zid) { return false; }
+    if (this.id.split(":")[0] != folder.id.split(":")[0]) { return false; }
+    var share = this.shares && this.shares[0];
+    if (!(share && share.isInsert())) { return false; }
+    share = folder.shares && folder.shares[0];
+    if (!(share && share.isDelete())) { return false; }
+
+    return true;
 };
