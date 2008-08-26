@@ -100,7 +100,7 @@ function(addr, isGenericAddr) {
 	}
 	if (isGenericAddr) {
 		addr = ZmImAddress.parse(addr);
-		item = this.getRosterItemList().getByAddr(addr.screenName);
+		item = addr ? this.getRosterItemList().getByAddr(addr.screenName) : null;
 		if (item) {
 			return item;
 		}
