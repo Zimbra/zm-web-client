@@ -39,7 +39,6 @@
 </c:if>
 <c:choose>
 <c:when test="${skin eq 'yahoo'}">
-<c:set value="/skins/yahoo/img/" var="iconPath" scope="request"/>
 <table width="100%" cellpadding="6" cellspacing='0' border="0"><td>
 <table width="100%" cellpadding="0" cellspacing="0" border="0">
     <tr><td colspan="${empty editmode ? 4 : 3}" style="padding-bottom:6px;">
@@ -129,7 +128,6 @@
 </c:when>
 
 <c:when test="${skin eq 'velodrome2'}">
-	<c:set var="iconPath" value="/img" scope="request"/>
 <div class='${requestScope.statusClass}'><app:appStatus/></div>
 	<table width="100%" cellspacing="0" cellpadding="0" border="0" height="100%">
 	<tr>
@@ -394,7 +392,6 @@
 	</table>
 	</c:when>
 <c:otherwise>
-	<c:set value="/img" var="iconPath" scope="request"/>
 	<table width="100%" cellpadding="0" cellspacing="0">
 		<tr>
 			<td class='TopContent' colspan="3"  align="right" valign="top"><div style='height:6px'></div></td>
