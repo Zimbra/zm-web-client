@@ -76,20 +76,22 @@ elements:
 
   destdir  The destination directory for the compiled output.
   prefix   (Optional) Specifies a prefix for the output template.
+  authoritative (Optional) Specifies whether the compiled templates
+           will take precedence over other templates defined with
+           the same ID.
   fileset  Specifies the template files that should be compiled.
            Multiple fileset child elements can be specified.
 
-When a source file is compiled, its file extension is changed to
-".js" and contains native JavaScript code. This code defines a
-function that is registered by name with the AjxTemplate class. For
-example, if the source template file is located at the following
-location:
+When a source file is compiled, the ".js" file extension is added
+and contains native JavaScript code. This code defines a function
+that is registered by name with the AjxTemplate class. For example,
+if the source template file is located at the following location:
 
-  {basedir}/foo/bar/Baz.html
+  {basedir}/foo/bar/Baz.template
 
 then the output file will be:
 
-  {destdir}/foo/bar/Baz.js
+  {destdir}/foo/bar/Baz.template.js
 
 
 USING TEMPLATES
