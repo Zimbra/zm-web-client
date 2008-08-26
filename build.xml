@@ -684,7 +684,7 @@
         </condition>
     </target>
 
-    <target name='package-skin' depends='templates,images' if='env.CUSTOMER_SKIN'>
+    <target name='package-skin' depends='prod,templates,images' if='env.CUSTOMER_SKIN'>
         <fail unless="skinname">Must specify skinname property.</fail>
 
         <property name='dist.skin.dir' value='${build.dir}/skins'/>
