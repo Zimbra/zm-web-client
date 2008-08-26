@@ -369,7 +369,7 @@ function(obj) {
 	var details = {};
 	var fields = {};
 	var doNotify = false;
-	if (obj.name != null && this.name != obj.name && !obj._isRemote) {
+	if (obj.name != null && this.name != obj.name) {
 		details.oldPath = this.getPath();
 		this.name = obj.name;
 		fields[ZmOrganizer.F_NAME] = true;
@@ -382,7 +382,7 @@ function(obj) {
 		this._notify(ZmEvent.E_MODIFY, details);
 	}
 
-	if (obj.l != null && (!this.parent || (obj.l != this.parent.id)) && !obj._isRemote) {
+	if (obj.l != null && (!this.parent || (obj.l != this.parent.id))) {
 		var newParent = this._getNewParent(obj.l);
 		if (newParent) {
 			this.reparent(newParent);
@@ -501,8 +501,6 @@ function(what, folderType) {
 			invalid = true;														// bug fix #25175 - nothing can be moved to outbox
 		} else if (this.nId == ZmOrganizer.ID_SYNC_FAILURES) {
 			invalid = true;														// nothing can be moved to "sync failures"
-		} else if (this.link) {
-			invalid = this.isReadOnly();										// cannot drop anything onto a read-only item
 		} else if (thisType == ZmOrganizer.SEARCH) {
 			invalid = true;														// can't drop items into saved searches
 		} else if ((item.type == ZmItem.CONTACT) && item.isGal) {
@@ -553,6 +551,9 @@ function(what, folderType) {
 				}
 			}
 		}
+        if (!invalid && this.link) {
+			invalid = this.isReadOnly();										// cannot drop anything onto a read-only item
+        }
 	}
 	return !invalid;
 };
