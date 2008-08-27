@@ -701,8 +701,16 @@
 
         <property name='dist.skin.dir' value='${build.dir}/skins'/>
 
+		<fileset id='customer.img.fileset' dir='${build.web.dir}' excludes='**' />
+		<if><available file='${customer.img.dir}' />
+			<then>
+				<fileset id='customer.img.fileset' dir='${build.web.dir}' includes='img/**' />
+			</then>
+		</if>
+
         <mkdir dir='${dist.skin.dir}'/>
         <zip destfile='${dist.skin.dir}/${skinname}.zip'>
+			<fileset refid="customer.img.fileset" />
             <fileset dir='${customer.web.dir}'
                      includes='skins/${skinname}/**'
                      excludes='skins/${skinname}/img/_sourceimages/**'
