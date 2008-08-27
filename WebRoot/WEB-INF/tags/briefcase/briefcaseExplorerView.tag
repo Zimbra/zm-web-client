@@ -75,7 +75,7 @@
                         <c:forEach var="subFolder" items="${folders.subFolders}" varStatus="status">
                              <c:url var="url" value="/h/search">
                                  <c:param name="sfi" value="${subFolder.id}"/>
-                                 <c:param name="st" value="document"/>
+                                 <c:param name="st" value="briefcase"/>
                                  <c:param name="view" value="${param.view}"/>
                              </c:url>
                              <div class="ZhThumbnailItem">
