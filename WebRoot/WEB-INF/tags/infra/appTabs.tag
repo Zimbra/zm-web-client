@@ -68,6 +68,7 @@
             </td>
             <td class='TabSpacerR'/>
         </c:if>
+        <!--
         <c:if test="${mailbox.features.briefcases}">
             <td class='TabSpacer'/>
             <td class='Tab ${selected=='briefcases' ? 'TabSelected' :'TabNormal'}'>
@@ -76,6 +77,7 @@
             </td>
             <td class='TabSpacerR'/>
         </c:if>
+        -->
         <c:if test="${mailbox.features.options}">
 	        <td class='TabSpacer'/>
 	        <td class='Tab ${selected=='options' ? 'TabSelected' :'TabNormal'}'>

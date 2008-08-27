@@ -41,16 +41,16 @@
                         <div class="ZhThumbnailItem">
                             <div class="ZhThumbnailIcon">
                                 <c:choose>
-                                    <c:when test="${zm:contains(briefHit.briefcase.contentType,'image')}">
+                                    <c:when test="${zm:contains(briefHit.document.contentType,'image')}">
                                         <app:img clazz="ZhThumbnailImg" src="large/ImgImageDoc_48.gif"/>
                                     </c:when>
-                                    <c:when test="${zm:contains(briefHit.briefcase.contentType,'video')}">
+                                    <c:when test="${zm:contains(briefHit.document.contentType,'video')}">
                                         <app:img clazz="ZhThumbnailImg" src="large/ImgVideoDoc_48.gif"/>
                                     </c:when>
-                                    <c:when test="${zm:contains(briefHit.briefcase.contentType,'pdf')}">
+                                    <c:when test="${zm:contains(briefHit.document.contentType,'pdf')}">
                                         <app:img clazz="ZhThumbnailImg" src="large/ImgPDFDoc_48.gif"/>
                                     </c:when>
-                                    <c:when test="${zm:contains(briefHit.briefcase.contentType,'zip')}">
+                                    <c:when test="${zm:contains(briefHit.document.contentType,'zip')}">
                                         <app:img clazz="ZhThumbnailImg" src="large/ImgZipDoc_48.gif"/>
                                     </c:when>
                                     <c:otherwise>
@@ -60,8 +60,8 @@
                             </div>
                             <div class="ZhThumbnailName">
                             <span>
-                                <a href="${fn:escapeXml(briefHit.briefcase.restUrl)}" id="${aid}">
-                                    <c:set var='docName' value="${empty briefHit.briefcase.name ? unknownSubject : zm:truncate(briefHit.briefcase.name,16,true)}"/>
+                                <a href="${fn:escapeXml(briefHit.document.restUrl)}" id="${aid}">
+                                    <c:set var='docName' value="${empty briefHit.document.name ? unknownSubject : zm:truncate(briefHit.document.name,16,true)}"/>
                                     <c:out value="${docName}"/>
                                 </a>
                             </span>
