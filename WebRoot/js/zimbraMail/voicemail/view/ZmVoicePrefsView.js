@@ -323,7 +323,7 @@ function(feature) {
 	this.show(feature);
 	if (this._checkbox) {
 		this._checkbox.setSelected(feature.isActive);
-		this._checkbox.setEnabled(feature.isSubscribed);
+		this._checkbox.setEnabled(feature.isActive);
 	}
 	this.setEnabled(feature.isActive);
 };
