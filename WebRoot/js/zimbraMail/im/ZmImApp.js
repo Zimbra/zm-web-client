@@ -243,10 +243,26 @@ ZmImApp.prototype._registerSettings = function(settings) {
 								 });
 
 	settings.registerSetting("IM_PREF_BUDDY_SORT",
-								 {
+								 { name			: "zimbraPrefIMBuddyListSort",
 								   type			: ZmSetting.T_PREF,
 								   dataType		: ZmSetting.D_STRING,
 								   defaultValue : ZmImApp.BUDDY_SORT_NAME,
+								   isImplicit	: true
+								 });
+
+	settings.registerSetting("IM_PREF_HIDE_OFFLINE",
+								 { name			: "zimbraPrefIMHideOfflineBuddies",
+								   type			: ZmSetting.T_PREF,
+								   dataType		: ZmSetting.D_BOOLEAN,
+								   defaultValue : false,
+								   isImplicit	: true
+								 });
+
+	settings.registerSetting("IM_PREF_HIDE_BLOCKED",
+								 { name			: "zimbraPrefIMHideBlockedBuddies",
+								   type			: ZmSetting.T_PREF,
+								   dataType		: ZmSetting.D_BOOLEAN,
+								   defaultValue : false,
 								   isImplicit	: true
 								 });
 
@@ -349,14 +365,6 @@ ZmImApp.prototype._registerPrefs = function() {
                               precondition     : ZmSetting.IM_PREF_REPORT_IDLE
                             });
 
-};
-
-ZmImApp.prototype._setupCurrentAppToolbar =
-function() {
-	var callback = new AjxCallback(this,function(ev){
-		this.getImController()._newRosterItemListener(ev);
-	});
-	ZmCurrentAppToolBar.registerApp(this.getName(), ZmOperation.NEW_ROSTER_ITEM,null,callback);
 };
 
 ZmImApp.prototype._onSettingChange = function(ev) {

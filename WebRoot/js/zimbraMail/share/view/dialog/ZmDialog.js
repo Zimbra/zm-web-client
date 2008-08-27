@@ -167,7 +167,7 @@ function(params) {
  */
 ZmDialog.prototype._renderOverview =
 function(overview, treeIds, omit, noRootSelect, account) {
-	overview.set(treeIds, omit, account);
+	overview.set(treeIds, omit, account, true);
 	if (!noRootSelect) {
 		for (var i = 0; i < treeIds.length; i++) {
 			var treeView = overview.getTreeView(treeIds[i]);

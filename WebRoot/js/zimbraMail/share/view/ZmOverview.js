@@ -76,14 +76,15 @@ function() {
  * @param treeIds	[array]				list of organizer types
  * @param omit		[hash]*				hash of organizer IDs to ignore
  * @param account	[ZmZimbraAccount]*	account to set overview for
+ * @param noNewButton	[boolean]*		true to *not* display new button
  */
 ZmOverview.prototype.set =
-function(treeIds, omit, account) {
+function(treeIds, omit, account, noNewButton) {
 	if (!(treeIds && treeIds.length)) { return; }
 	this._treeIds = treeIds;
 	this.account = account;
 	for (var i = 0; i < treeIds.length; i++) {
-		this.setTreeView(treeIds[i], omit, account);
+		this.setTreeView(treeIds[i], omit, account, noNewButton);
 	}
 };
 
@@ -96,9 +97,10 @@ function(treeIds, omit, account) {
  * @param treeId	[constant]			organizer ID
  * @param omit		[hash]*				hash of organizer IDs to ignore
  * @param account	[ZmZimbraAccount]*	account to set overview for
+ * @param noNewButton	[boolean]*		true to *not* display new button
  */
 ZmOverview.prototype.setTreeView =
-function(treeId, omit, account) {
+function(treeId, omit, account, noNewButton) {
 	// check for false since setting precondition is optional (can be null)
 	if (appCtxt.get(ZmOrganizer.PRECONDITION[treeId]) === false) { return; }
 
@@ -111,7 +113,8 @@ function(treeId, omit, account) {
 		omit: omit,
 		hideEmpty: this.hideEmpty,
 		showUnread: this.showUnread,
-		account: account
+		account: account,
+		noNewButton: noNewButton
 	};
 	this._treeHash[treeId] = treeController.show(params);	// render tree view
 };
