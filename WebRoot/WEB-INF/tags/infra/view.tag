@@ -135,7 +135,7 @@
 			<table width=99% cellspacing=0 cellpadding=0 align="center">
 				<tr>
 					<td class='R1Text'>hi,</td>
-					<td><div id='skin_container_username' class='R1Text'><nobr><b>${fn:escapeXml(empty mailbox.accountInfo.name ? mailbox.name : mailbox.accountInfo.name)}</b></nobr></div></td>
+					<td><div id='skin_container_username' class='R1Text'><nobr><b>${fn:escapeXml(mailbox.name)}</b></nobr></div></td>
 					<td id='#skin_container_logoff_lite' class='R1Link'><nobr><a href="<c:url value="/?loginOp=logout"/>"><fmt:message key="logOut" /></a></nobr></td>
 					<td class='R1Sep'>|</td>
 					<td class='R1Link'><nobr><a href="https://acctmgt.bbt1.cistest.att.net:9003/Comcast/AcctMgt/acctmgt.cmd?CM.src=top" target=_new >My Account</a></nobr></td>
@@ -383,7 +383,7 @@
 							<td><a href="http://www.comcast.net/terms/" target="_new">Terms of Service</a></td>
 							<td><a href="http://www.comcast.net/help/contact" target="_new">Contact Us</a></td>
 							<td><a href="http://www.comcast.com/shop/buyflow/default.ashx" target="_new">Add Comcast Services</a></td>
-							<td><a href="http://www.comcastsupport.com/forms/net/sccfeedback.asp" target="_new">Tell Us What You Think</a></td>
+							<td><a href="http://www.comcastsupport.com/sdcxuser/lachat/user/webmailfeedback.asp" target="_new">Tell Us What You Think</a></td>
 							<td width=1 align=right><a href="http://www.comcast.net/" target="_new"><div class='ImgSkin_Customer_Logo_Bottom'></div></a></td>
 						</tr>
 					</table>
