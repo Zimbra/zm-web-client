@@ -63,11 +63,6 @@ ZmRequestMgr.RETRY_ON_EXCEPTION[ZmCsfeException.EMPTY_RESPONSE] = true;
 
 ZmRequestMgr._nextReqId = 1;
 
-ZmRequestMgr.getNextReqId =
-function() {
-	return "Req_" + ZmRequestMgr._nextReqId++;
-};
-
 ZmRequestMgr.prototype.toString =
 function() {
 	return "ZmRequestMgr";
@@ -103,7 +98,7 @@ function(params) {
 		return this._handleResponseSendRequest(params, new ZmCsfeResult(params.response));
 	}
 	
-	var reqId = params.reqId = ZmRequestMgr.getNextReqId();
+	var reqId = params.reqId = ("Req_"+ZmRequestMgr._nextReqId++);
 	var timeout = (params.timeout != null) ? params.timeout : this._stdTimeout;
 	if (timeout) {
 		timeout = timeout * 1000; // convert seconds to ms
