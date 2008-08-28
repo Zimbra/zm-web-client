@@ -20,15 +20,6 @@ ZmChatWidget = function(parent, posStyle) {
 	DwtComposite.call(this, {parent:parent, className:"ZmChatWidget", posStyle:posStyle});
 	this._chatChangeListenerListener = new AjxListener(this, this._chatChangeListener);
 	this._init();
-
-	if (!ZmChatWidget._showedJive) {
-		ZmChatWidget._showedJive = true;
-		var statusArgs = {
-			msg: AjxTemplate.expand("im.Chat#JiveNotification"),
-			transitions: [ { type: "fade-in", duration: 1000 }, { type: "pause", duration: 4000 }, { type: "fade-out", duration: 1000 } ]
-		};
-		appCtxt.setStatusMsg(statusArgs);
-	}
 };
 
 ZmChatWidget.prototype = new DwtComposite;
@@ -227,6 +218,7 @@ ZmChatWidget.prototype.setImage = function(imageInfo) {
 	if (this._isMultiTabMinimized()) {
 		return; // Don't show presence icon for multi-tab minimized window.
 	}
+	this._label.setImage(imageInfo);
 	var tab = this.parent.getTabLabelWidget(this);
 	if (tab) {
 		// tabs might not be initialized yet
@@ -387,19 +379,20 @@ ZmChatWidget.prototype._init = function() {
 	
 	this._toolbar = new DwtToolBar({parent:this, posStyle:Dwt.ABSOLUTE_STYLE});
 
-	this._close = new DwtLtIconButton(this._toolbar, null, "Close");
-	this._close.setToolTipContent(ZmMsg.imCloseWindow);
-	this._closeListener = new AjxListener(this, this._closeListener);
-	this._close.addSelectionListener(this._closeListener);
+        // XXX: does it work implementing a "light label" widget?
+	this._label = new DwtLabel(this._toolbar, DwtLabel.IMAGE_LEFT | DwtLabel.ALIGN_LEFT, "ZmChatWindowLabel");
+	this._label.setScrollStyle(Dwt.CLIP);
+
+	this._toolbar.addFiller();
 
 	this._minimize = new DwtLtIconButton(this._toolbar, null, "RoundMinus");
 	this._minimize.setToolTipContent(ZmMsg.imMinimize);
 	this._minimize.addSelectionListener(new AjxListener(this, this._minimizeListener));
 
-	this._label = new DwtLabel(this._toolbar, DwtLabel.IMAGE_LEFT | DwtLabel.ALIGN_LEFT, "ZmChatWindowLabel");
-	this._label.setScrollStyle(Dwt.CLIP);
-
-	this._toolbar.addFiller();
+	this._close = new DwtLtIconButton(this._toolbar, null, "Close");
+	this._close.setToolTipContent(ZmMsg.imCloseWindow);
+	this._closeListener = new AjxListener(this, this._closeListener);
+	this._close.addSelectionListener(this._closeListener);
 
 	this._content = new DwtComposite(this, "ZmChatWindowChat", Dwt.ABSOLUTE_STYLE);
 	this._content._setAllowSelection();
@@ -759,9 +752,11 @@ function(minimize) {
 	if (minimize && this.parent.size() > 1) {
 		this._minimizedFormat = this._minimizedFormat || new AjxMessageFormat(ZmMsg.imMinimizedLabel);
 		this._label.setText(this._minimizedFormat.format(this.parent.size()));
+		this._label.setImage("Blank_16");
 	} else {
 		this._label.setText(this._titleStr);
 		this.chat.getRosterItem().getAddress()
+		this._label.setImage(this.chat.getRosterItem().getPresence().getIcon());
 	}
 	this._minimize.setImage(minimize ? "RoundPlus" : "RoundMinus");
 	this._minimize.setToolTipContent(minimize ? ZmMsg.imRestore : ZmMsg.imMinimize);
@@ -891,7 +886,6 @@ ZmChatWidget.prototype._setupSash = function() {
 		mouseMoveHdlr:AjxCallback.simpleClosure(this._sashMouseMove, this),
 		mouseUpHdlr:AjxCallback.simpleClosure(this._sashMouseUp, this)
 	});
-		null, // no mouse wheel
 	this._getElement("sash").onmousedown = AjxCallback.simpleClosure(this._sashMouseDown, this);
 };
 
@@ -941,76 +935,72 @@ ZmChatWidget.prototype._handleOnclickErrorDetails = function(msg) {
 /// @class DwtLtIconButton
 
 DwtLtIconButton = function(parent, type, icon, className, index) {
-	DwtControl.call(this, {parent:parent, className:className || "DwtLtIconButton", index: index});
-	this._selected = null;
-	if (type != null && (type & DwtButton.TOGGLE_STYLE))
-		this._selected = false;
-	this._setMouseEventHdlrs();
-	this.addListener(DwtEvent.ONMOUSEOVER, new AjxListener(this, this._on_mouseOver));
+        DwtControl.call(this, {parent:parent, className:className || "DwtLtIconButton", index: index});
+        this._selected = null;
+        if (type != null && (type & DwtButton.TOGGLE_STYLE))
+                this._selected = false;
+//         this._setEventHdlrs([ DwtEvent.ONMOUSEOVER,
+//                               DwtEvent.ONMOUSEOUT,
+//                               DwtEvent.ONMOUSEDOWN,
+//                               DwtEvent.ONMOUSEUP ]);
+        this._setMouseEventHdlrs();
+        this.addListener(DwtEvent.ONMOUSEOVER, new AjxListener(this, this._on_mouseOver));
 	this.addListener(DwtEvent.ONMOUSEOUT, new AjxListener(this, this._on_mouseOut));
 	this.addListener(DwtEvent.ONMOUSEDOWN, new AjxListener(this, this._on_mouseDown));
 	this.addListener(DwtEvent.ONMOUSEUP, new AjxListener(this, this._on_mouseUp));
-	this.setImage(icon);
+        this.setImage(icon);
 };
 DwtLtIconButton.prototype = new DwtControl;
 DwtLtIconButton.prototype.constructor = DwtControl;
 
 DwtLtIconButton.prototype.setImage = function(icon) {
-	this._img = icon;
-	AjxImg.setImage(this.getHtmlElement(), icon);
+        this._img = icon;
+        AjxImg.setImage(this.getHtmlElement(), icon);
 };
 
 DwtLtIconButton.prototype.isToggled = function() {
-	return this._selected;
+        return this._selected;
 };
 
 DwtLtIconButton.prototype.setEnabledImage = DwtLtIconButton.prototype.setImage;
 
 DwtLtIconButton.prototype.setHoverImage = function(icon) {
-	this._img_hover = icon;
+        this._img_hover = icon;
 };
 
 DwtLtIconButton.prototype.setSelected = function(selected) {
-	if (this._selected != selected) {
-		this._selected = selected;
-		this.condClassName(this._selected, "DwtLtIconButton-selected");
-	}
+        if (this._selected != selected) {
+                this._selected = selected;
+                this.condClassName(this._selected, "DwtLtIconButton-selected");
+        }
 };
 
 DwtLtIconButton.prototype.addSelectionListener = function(handler) {
-	this.addListener(DwtEvent.SELECTION, handler);
+        this.addListener(DwtEvent.SELECTION, handler);
 };
 
 DwtLtIconButton.prototype._on_mouseOver = function() {
-	this.addClassName("DwtLtIconButton-hover");
-	if (this._img_hover)
-		AjxImg.setImage(this.getHtmlElement(), this._img_hover);
+        this.addClassName("DwtLtIconButton-hover");
+        if (this._img_hover)
+                AjxImg.setImage(this.getHtmlElement(), this._img_hover);
 };
 
 DwtLtIconButton.prototype._on_mouseOut = function() {
-	this.delClassName("DwtLtIconButton-hover");
-	this.delClassName("DwtLtIconButton-pressed");
-	if (this._img && this._img_hover)
-		AjxImg.setImage(this.getHtmlElement(), this._img);
+        this.delClassName("DwtLtIconButton-hover");
+        this.delClassName("DwtLtIconButton-pressed");
+        if (this._img && this._img_hover)
+                AjxImg.setImage(this.getHtmlElement(), this._img);
 };
 
-DwtLtIconButton.prototype._on_mouseDown = function(ev) {
-	if (ev.button != DwtMouseEvent.LEFT) {
-		return;
-	}
-
-	this.addClassName("DwtLtIconButton-pressed");
+DwtLtIconButton.prototype._on_mouseDown = function() {
+        this.addClassName("DwtLtIconButton-pressed");
 };
 
-DwtLtIconButton.prototype._on_mouseUp = function(ev) {
-	if (ev.button != DwtMouseEvent.LEFT) {
-		return;
-	}
-
-	this.delClassName("DwtLtIconButton-pressed");
-	if (this._selected != null)
-		this.setSelected(!this.isToggled());
-	this.notifyListeners(DwtEvent.SELECTION);
+DwtLtIconButton.prototype._on_mouseUp = function() {
+        this.delClassName("DwtLtIconButton-pressed");
+        if (this._selected != null)
+                this.setSelected(!this.isToggled());
+        this.notifyListeners(DwtEvent.SELECTION);
 };
 
 /// @class
