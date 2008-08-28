@@ -570,7 +570,7 @@ ZmImOverview.prototype._createTreeItems = function(type, buddy) {
 		var parent = this.getGroupItem(groups[i]);
 		var item = new DwtTreeItem({parent:parent,
 			index:this.getSortIndex(buddy, parent),
-			text:label,
+			text:AjxStringUtil.htmlEncode(label),
 			imageInfo:icon});
 		item.addClassName("ZmImPresence-" + buddy.getPresence().getShow());
 		item.setToolTipContent("-"); // force it to have a tooltip
