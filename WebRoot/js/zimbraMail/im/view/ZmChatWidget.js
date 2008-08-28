@@ -184,7 +184,9 @@ ZmChatWidget.prototype.handleHtmlMessage = function(str, useObjectManager) {
 	if (useObjectManager) {
 		this._objectManager.findObjectsInNode(div);
 	}
-	return this.scrollTo(div, true);
+	this._content.getHtmlElement().appendChild(div);
+	this.scrollTo(div);
+	return div;
 };
 
 ZmChatWidget.prototype.handleErrorMessage = function(msg) {
@@ -209,18 +211,37 @@ ZmChatWidget.prototype.restoreScrollPos = function() {
 	this._content.getHtmlElement().scrollTop = this._scrollPos;
 };
 
-ZmChatWidget.prototype.scrollTo = function(el, append) {
+ZmChatWidget.prototype.scrollTo = function(el) {
+	if (this.getChatWindow().isMinimized() || !this._isTabVisible) {
+		if (!this._scrollToEl) {
+			this._scrollToEl = el;
+		}
+	} else {
+		this._scrollTo(el);
+	}
+};
+
+/** Positions the content scroll bar after restoring or setting active tab */ 
+ZmChatWidget.prototype._updateScroll = function() {
+	if (this._scrollToEl) {
+		this._scrollTo(this._scrollToEl);
+		delete this._scrollToEl;
+	} else {
+		var content = this._content.getHtmlElement();
+		content.scrollTop = 999999; // Scrolls to bottom.
+	}
+};
+
+ZmChatWidget.prototype._scrollTo = function(el) {
 	var content = this._content.getHtmlElement();
 	if (typeof el == "number") {
 		content.scrollTop = el;
 	} else {
-		if (typeof el == "string")
+		if (typeof el == "string") {
 			el = document.getElementById(el);
-		if (append)
-			content.appendChild(el);
+		}
 		content.scrollTop = el.offsetTop;
 	}
-	return el;
 };
 
 ZmChatWidget.prototype.setImage = function(imageInfo) {
@@ -740,6 +761,15 @@ function() {
 	return { x: 165, y: this._toolbarHeight }; 
 };
 
+// 'protected' but called by ZmChatTabs
+ZmChatWidget.prototype._onShowTab =
+function(visible) {
+	this._isTabVisible = visible;
+	if (visible) {
+		this._updateScroll();
+	}
+};
+
 // 'protected' but called by ZmChatWindow
 ZmChatWidget.prototype._onMinimize =
 function(minimize) {
@@ -768,6 +798,7 @@ function(minimize) {
 
 	if (!minimize) {
 		this._removeUnreadStatus();
+		this._updateScroll();
 	}
 };
 
@@ -882,6 +913,7 @@ ZmChatWidget.prototype._sendByEmailListener = function() {
 
 ZmChatWidget.prototype._disposeListener = function() {
 	this.parent.detachChatWidget(this);
+	delete this._scrollToEl;
 };
 
 ZmChatWidget.prototype._setupSash = function() {
