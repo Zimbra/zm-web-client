@@ -379,7 +379,7 @@
 				<td id='skin_td_R4' class='ImgSkin_Chrome_R4' colspan="2">
 					<table width=100% id='skin_table_R4' class='skin_table fullSize' cellspacing=0 cellpadding=0>
 						<tr>
-							<td style='text-align:left;padding-left:20px;'>&copy; 2007 Comcast Cable Communications</td>
+							<td style='text-align:left;padding-left:20px;'><fmt:message key="splashScreenCopyright" /></td>
 							<td><a href="http://www.comcast.net/privacy/" target="_new">Privacy Statement</a></td>
 							<td><a href="http://www.comcast.net/terms/" target="_new">Terms of Service</a></td>
 							<td><a href="http://www.comcast.net/help/contact" target="_new">Contact Us</a></td>
