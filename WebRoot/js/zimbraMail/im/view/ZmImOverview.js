@@ -649,7 +649,7 @@ ZmImOverview.prototype.getGroupItem = function(group) {
 	if (!g) {
 		g = this._groupItems[group] = new DwtTreeItem({parent:this._rootItem,
 			index:this.getSortIndex(group), // index
-			text:group, // text
+			text:AjxStringUtil.htmlEncode(group), // text
 			imageInfo:"ImGroup" // image
 		});
 		g.setToolTipContent("-");
