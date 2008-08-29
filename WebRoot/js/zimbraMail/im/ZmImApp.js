@@ -494,6 +494,7 @@ ZmImApp.prototype._handleLoadLaunch = function(callback) {
 
 ZmImApp.prototype.getImController = function() {
 	if (!this._imController) {
+		AjxDispatcher.require([ "IMCore", "IM" ]);
 		this._imController = new ZmImController();
 	}
 	return this._imController;
