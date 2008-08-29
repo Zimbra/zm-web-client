@@ -190,7 +190,7 @@
 			if(document.getElementById("C"+idex).checked) {cid = document.getElementById("C"+idex).value;break; }
 				idex++ ;
 			}
-	         window.open("/h/printmessage?mid="+cid);
+	         window.open("/h/printmessage?xim=1&mid="+cid);
         }
     //-->
 </SCRIPT>

@@ -240,7 +240,7 @@
                                 <td><div class='vertSep'></div></td>
                                 <td style='padding: 0 2px 0 2px'>
                                     <c:if test="${not empty newWindowUrl}">
-                                    <a accesskey='10' target="_blank" href="${fn:escapeXml(newWindowUrl)}&amp;print=true">
+                                    <a accesskey='10' target="_blank" href="${fn:escapeXml(newWindowUrl)}&amp;print=true&amp;xim=1">
                                         <app:img src="startup/ImgPrint.gif" altkey="print" title="print"/>
                                         &nbsp;
                                         <span><fmt:message key="print"/></span>
