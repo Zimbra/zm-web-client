@@ -347,10 +347,16 @@ function(params) {
 					if (this.markRead) {
 						request.read = 1;
 					}
-				}
-			}
-		}
-	}
+                    if(this.headers) {
+                        request.header = [];
+                        for (var hdr in this.headers) {
+                            request.header.push({n:hdr});
+                        }
+                    }
+                }
+            }
+        }
+    }
 		
 	var respCallback = new AjxCallback(this, this._handleResponseExecute,
 						[this.isGalSearch, this.isGalAutocompleteSearch, this.isCalResSearch, params.callback]);
