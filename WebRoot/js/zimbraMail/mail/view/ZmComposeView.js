@@ -396,6 +396,7 @@ function(attId, isDraft) {
     var zeroSizedAttachments = false;
 	// handle Inline Attachments
 	var inline = this._isInline();
+    var images = [], j=0;
 	if (this._attachDialog && inline && attId) {
 		for (var i = 0; i < attId.length; i++) {
 			var att = attId[i];
@@ -407,15 +408,12 @@ function(attId, isDraft) {
 			if (contentType && contentType.indexOf("image") != -1) {
 				var cid = Dwt.getNextId();
 				msg.addInlineAttachmentId(cid, att.aid);
-				if (AjxEnv.isIE) {
-					this._htmlEditor.insertImage("cid:" + cid, true, 300, 225);
-				} else {
-					this._htmlEditor.insertImage("cid:" + cid);
-				}
+                images[j++] = {src:"cid:"+cid};
 			} else {
 				msg.addAttachmentId(att.aid);
 			}
 		}
+        this._htmlEditor.insertImages(images);        
 	} else if (attId && typeof attId != "string") {
 		for (var i = 0; i < attId.length; i++) {
             if (attId[i].s == 0) {
