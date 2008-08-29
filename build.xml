@@ -96,6 +96,7 @@
 	<fileset id='customer.skins.img.fileset' dir='${build.dir}' excludes='**' />
 	<fileset id='customer.webinf.fileset' dir='${build.dir}' excludes='**'/>
     <fileset id='customer.package.fileset' dir='${build.dir}' excludes='**' />
+    <fileset id='customer.jsp.fileset' dir='${build.dir}' excludes='**' />    
 
     <!-- Targets -->
 
@@ -225,6 +226,11 @@
             <zipfileset dir='${web.dir}' includes='${web.includes}' excludes='${web.excludes},${customer.web.files}'/>
 			<zipfileset refid='customer.web.fileset'/>
             <zipfileset dir='${jsp.dir}' includes='${jsp.includes}' excludes='${jsp.excludes}' prefix='public'/>
+            <!-- For customer jsp files
+            <zipfileset dir='${customer.jsp.dir}' includes='${customer.jsp.includes}' excludes='${customer.jsp.excludes}'  prefix='public'/>
+            -->
+            <zipfileset refid="customer.jsp.fileset" prefix="public"/>
+
             <zipfileset dir='${build.web.dir}' includes='${build.web.includes}' excludes='${build.web.excludes}'/>
 			<zipfileset dir='${build.web.dir}' includes='js/Boot_all.js${jsmin.ext}' />
             <!--<zipfileset dir='${img.dir}' includes='${img.includes}' excludes='${img.excludes}' prefix='img'/>-->
@@ -346,7 +352,8 @@
             <then>
                 <property name='customer.dir' value='../ZimbraCustomerServices/${env.CUSTOMER_SKIN}'/>
                 <property name='customer.web.dir' value='${customer.dir}/ZimbraWebClient/WebRoot'/>
-				<property name='customer.img.dir' value='${customer.web.dir}/img' />
+                <property name='customer.jsp.dir' value='${customer.web.dir}/public'/>
+                <property name='customer.img.dir' value='${customer.web.dir}/img' />
                 <property name='customer.skin.dir' value='${customer.web.dir}/skins'/>
                 <property name='customer.portal.dir' value='${customer.web.dir}/portals'/>
                 <property name='customer.zimlet.dir' value='${customer.dir}/Zimlet'/>
@@ -400,6 +407,14 @@
                         <fileset id='customer.package.fileset'
                                  dir='${customer.web.dir}/js'
                                  includes='*/packages/*.js,*/package/*.js'
+                        />
+                    </then>
+                </if>
+                 <if><available file='${customer.jsp.dir}' />
+                    <then>
+                        <fileset id='customer.jsp.fileset'
+                                 dir='${customer.jsp.dir}'
+                                 includes='**'
                         />
                     </then>
                 </if>
