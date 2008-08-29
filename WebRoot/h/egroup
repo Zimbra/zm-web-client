@@ -67,9 +67,9 @@
     <c:when test="${zm:actionSet(param,'actionAddSepMembers')}">
         <c:set var="groupSearchContacts" value="${fn:split(param.nGroupMembers,',')}" scope="request"/>
     </c:when>
-    <c:otherwise>
+    <c:when test="${zm:actionSet(param,'actionContactAdd')}">
         <c:set var="groupSearchContacts" value="${paramValues.addToGroup}" scope="request"/>
-    </c:otherwise>
+    </c:when>
 </c:choose>
     
 </app:handleError>
@@ -83,7 +83,7 @@
             <td class='TbBt'>
                 <table cellspacing=0 cellpadding=0 class='Tb'>
                     <tr>
-                        <app:button name="actionContactAdd" src="img/contacts/ImgContactsPicker.gif" tooltip="addSelected" text="addSelected"/>
+                        <app:button name="actionContactAdd" src="/contacts/ImgContactsPicker.gif" tooltip="addSelected" text="addSelected"/>
                     </tr>
                 </table>
             </td>
