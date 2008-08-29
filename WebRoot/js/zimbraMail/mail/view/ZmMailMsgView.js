@@ -137,10 +137,12 @@ function() {
 	if (this._inviteToolbar) {
 		this._inviteToolbar.setVisible(Dwt.DISPLAY_NONE);
 		this._inviteToolbar.reparentHtmlElement(this.parent.getHtmlElement());
+        this._hasInviteToolbar = false;
 	}
 	if (this._shareToolbar) {
 		this._shareToolbar.setVisible(Dwt.DISPLAY_NONE);
 		this._shareToolbar.reparentHtmlElement(this.parent.getHtmlElement());
+        this._hasShareToolbar = false;
 	}
 
 	this.getHtmlElement().innerHTML = "";
@@ -204,6 +206,7 @@ function(msg) {
 			}
 			this._inviteMoveSelect.setVisible(visible);
 			this._lastApptFolder = ZmOrganizer.ID_CALENDAR;
+            this._hasInviteToolbar = true;
 		}
 	}
 	else if (appCtxt.get(ZmSetting.SHARING_ENABLED) &&
@@ -223,6 +226,7 @@ function(msg) {
 			var topToolbar = this._getShareToolbar();
 			topToolbar.reparentHtmlElement(contentDiv);
 			topToolbar.setVisible(Dwt.DISPLAY_BLOCK);
+            this._hasShareToolbar = true;
 		}
 	}
 	var respCallback = new AjxCallback(this, this._handleResponseSet, [msg, oldMsg]);
@@ -863,7 +867,9 @@ function(container, html, isTextMsg, isTruncated) {
 	}
 
 	var msgTruncated;
+    this._isMsgTruncated = false;
 	if (isTruncated) {
+        this._isMsgTruncated = true;
 		var msgTruncatedDiv = document.getElementById(this._msgTruncatedId);
 		if (!msgTruncatedDiv) {
 			var infoBarDiv = document.getElementById(this._infoBarId);
@@ -1824,8 +1830,13 @@ function(self, iframe, attempt) {
 		substract(self._hdrTableId);
 		substract(self._displayImagesId);
 		substract(self._highlightObjectsId);
-		if (self._inviteToolbar)
+        if(self._isMsgTruncated){
+            substract(self._msgTruncatedId);
+        }        
+        if (self._hasInviteToolbar && self._inviteToolbar)
 			substract(self._inviteToolbar.getHtmlElement());
+        if(self._hasShareToolbar && self._shareToolbar)
+            substract(self._shareToolbar.getHtmlElement());
 		iframe.style.height = h + "px";
 	} else {
 		if (attempt == null)
