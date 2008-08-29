@@ -411,7 +411,7 @@ action_stop                         stop checkbox (true)
                             <option value="tag"><fmt:message key="EFILT_NEW_ACTION_TAG"/>
                             </c:if>
                             <option value="mark"><fmt:message key="EFILT_NEW_ACTION_MARK"/>
-                            <c:if test="${mailbox.features.mailForwarding}">
+                            <c:if test="${mailbox.features.mailForwardingInFilter}">
                             <option value="redirect"><fmt:message key="EFILT_NEW_ACTION_REDIRECT"/>
                             </c:if>
                         </select>
