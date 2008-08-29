@@ -38,7 +38,7 @@
 					b.style.overflow = "auto";
 					b.style.width = w + "px";
 				} else {
-					iframe.style.width = b.scrollWidth + "px";
+					iframe.style.width = b.scrollWidth -20 + "px";
 				}
 				iframe.style.height = b.scrollHeight + 30 + "px";
             }
