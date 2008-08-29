@@ -158,7 +158,7 @@
 			if(document.getElementById("C"+idex).checked) {cid = document.getElementById("C"+idex).value;break; }
 				idex++ ;
 			}
-	         window.open("/h/printconversations?cid="+cid);
+	         window.open("/h/printconversations?xim=1&cid="+cid);
         }
         //-->
     </SCRIPT>
