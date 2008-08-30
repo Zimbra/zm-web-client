@@ -348,8 +348,8 @@ function(params) {
 						request.read = 1;
 					}
                     if(this.headers) {
-                        request.header = [];
                         for (var hdr in this.headers) {
+                            if(!request.header) request.header = [];
                             request.header.push({n:hdr});
                         }
                     }
