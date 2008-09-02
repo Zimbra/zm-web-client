@@ -97,15 +97,18 @@ function() {
 ZmReminderController.prototype.getRefreshParams =
 function() {
 	
-	// grab appts -1 hour through +23 hours
-	// schedule another refresh in + 12 hours
-	var start = new Date();
-	start.setMinutes(0, 0, 0);
-	var startTime = start.getTime() - AjxDateUtil.MSEC_PER_HOUR;
-	var endTime = startTime + (AjxDateUtil.MSEC_PER_HOUR * ZmReminderController._CACHE_RANGE);
+    var endOfDay = new Date();
+    endOfDay.setHours(23,59,59,999);
+
+    //grab a week's appt backwards
+    var end = new Date(endOfDay.getTime());
+    endOfDay.setDate(endOfDay.getDate()-7);
+    var start = endOfDay;
+    start.setHours(0,0,0, 0);
+
 	var params = {
-		start: startTime,
-		end: endTime,
+		start: start.getTime(),
+		end: end.getTime(),
 		fanoutAllDay: false,
 		folderIds: this._calController.getCheckedCalendarFolderIds(true),
 		callback: (new AjxCallback(this, this._refreshCallback)),
@@ -136,23 +139,43 @@ function() {
 */
 ZmReminderController.prototype._refreshCallback =
 function(list) {
-	if (this._refreshDelay > 0) {
-		AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._refreshCallback, [list]), this._refreshDelay);
-		this._refreshDelay = 0;
-		return;
-	}
+    if (this._refreshDelay > 0) {
+        AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._refreshCallback, [list]), this._refreshDelay);
+        this._refreshDelay = 0;
+        return;
+    }
 
-	if (list instanceof ZmCsfeException) {
-		this._calController._handleError(list, new AjxCallback(this, this._maintErrorHandler));
-		return;
-	}
-	this._cachedAppts = list.clone();
-	this._cachedAppts.sort(ZmCalBaseItem.compareByTimeAndDuration);
-	this._activeAppts.removeAll();
+    if (list instanceof ZmCsfeException) {
+        this._calController._handleError(list, new AjxCallback(this, this._maintErrorHandler));
+        return;
+    }
+
+    var newList = new AjxVector();
+    var alarmMap = {};
+
+    //filter recurring appt instances, the alarmData is common for all the instances
+    var size = list.size();
+    for(var i=0;i<size;i++) {
+        var appt = list.get(i);
+        var id = appt.id;
+
+        if(appt.hasAlarmData()) {
+                if(!alarmMap[id]) {
+                    alarmMap[id] = appt;
+                    newList.add(appt);
+                }
+
+        }
+
+    }
+
+    this._cachedAppts = newList.clone();
+    this._cachedAppts.sort(ZmCalBaseItem.compareByTimeAndDuration);
+    this._activeAppts.removeAll();
 
 	// cancel outstanding timed action and update now...
-	this._cancelHousekeepingAction();
-	this._housekeepingAction();
+    this._cancelHousekeepingAction();
+    this._housekeepingAction();
 };
 
 ZmReminderController.prototype.isApptSnoozed =

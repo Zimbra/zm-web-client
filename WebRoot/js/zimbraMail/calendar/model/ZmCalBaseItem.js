@@ -180,6 +180,21 @@ function() {
     return (currentTime >= this._nextAlarmTime); 
 };
 
+ZmCalBaseItem.prototype.isAlarmInstance =
+function() {
+    if (!this.alarmData) { return false; }
+
+    var alarmData = this.alarmData[0];
+    this._alarmInstStart = alarmData.alarmInstStart;
+
+    return (this._alarmInstStart == this.startDate.getTime());
+};
+
+ZmCalBaseItem.prototype.hasAlarmData =
+function() {
+    return (this.alarmData !=  null);
+}
+
 ZmCalBaseItem.prototype._loadFromDom =
 function(calItemNode, instNode) {
 
@@ -240,3 +255,19 @@ function(d) {
 	var formatter = AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT);
 	return formatter.format(d);
 };
+
+
+ZmCalBaseItem.prototype.getReminderLocation =
+function()
+{
+    var alarmData = this.alarmData[0];
+    return alarmData.loc ? alarmData.loc : "";
+}
+
+
+ZmCalBaseItem.prototype.getReminderName =
+function()
+{
+    var alarmData = this.alarmData[0];
+    return alarmData.name ? alarmData.name : "";
+}
