@@ -155,6 +155,22 @@
                     <c:set var="idsMarkedUnread" value="${paramValues.id}" scope="request"/>
                 </c:if>
             </c:when>
+            <c:when test="${actionOp eq 'actionSpam'}">
+                <zm:markConversationSpam  var="result" id="${param.contextConvId}" spam="true"/>
+                <app:status>
+                    <fmt:message key="actionConvMarkedSpam">
+                        <fmt:param value="${result.idCount}"/>
+                    </fmt:message>
+                </app:status>
+            </c:when>
+            <c:when test="${actionOp eq 'actionNotSpam'}">
+                <zm:markConversationSpam  var="result" id="${param.contextConvId}" spam="false"/>
+                <app:status>
+                    <fmt:message key="actionConvMarkedNotSpam">
+                        <fmt:param value="${result.idCount}"/>
+                    </fmt:message>
+                </app:status>
+            </c:when>
             <c:when test="${actionOp eq 'flag' or actionOp eq 'unflag'}">
                 <zm:checkCrumb crumb="${param.crumb}"/>
                 <zm:flagMessage var="result" id="${ids}" flag="${actionOp eq 'flag'}"/>

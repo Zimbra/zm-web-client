@@ -84,19 +84,26 @@
                             <c:if test="${mailbox.features.flagging}">
                             <option <c:if test="${keys}">id="OPFLAG" </c:if> value="flag"><fmt:message key="actionAddFlag"/>
                             <option <c:if test="${keys}">id="OPUNFLAG" </c:if> value="unflag"><fmt:message key="actionRemoveFlag"/>
-                                </c:if>
+                            </c:if>
+                            <c:if test="${!context.isFolderSearch or (context.isFolderSearch and !context.folder.isSpam)}">
+                                <option <c:if test="${keys}">id="OPSPAM" </c:if> value="actionSpam"/><fmt:message key="actionSpam"/>
+                            </c:if>
+                            <c:if test="${context.isFolderSearch and context.folder.isSpam}">
+                                <option <c:if test="${keys}">id="OPNOTSPAM" </c:if> value="actionNotSpam"/><fmt:message key="actionNotSpam"/>
+                            </c:if>
                                 <app:tagOptions mailbox="${mailbox}" keys="${keys}"/>
                         </select>
                     </td>
                     <app:button id="${keys ? 'OPGO' : ''}" name="action" tooltip="actionConvGoTT" text="actionGo"/>
-
+                   <%--
                     <td><div class='vertSep'></div></td>
-                    <c:if test="${!context.isFolderSearch or (context.isFolderSearch and !context.folder.isSpam)}">
+                   <c:if test="${!context.isFolderSearch or (context.isFolderSearch and !context.folder.isSpam)}">
                         <app:button id="${keys ? 'OPSPAM' : ''}" name="actionSpam" tooltip="actionSpamTT" text="actionSpam" src="mail/ImgJunkMail.gif"/>
                     </c:if>
                     <c:if test="${context.isFolderSearch and context.folder.isSpam}">
                         <app:button id="${keys  ?'OPSPAM' : ''}" name="actionNotSpam" tooltip="actionNotSpamTT" text="actionNotSpam" src="startup/ImgInbox.gif"/>
                     </c:if>
+                    --%>
                     <c:if test="${context.isFolderSearch}">
 
                         <c:choose>
