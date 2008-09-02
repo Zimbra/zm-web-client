@@ -950,7 +950,6 @@ function(content, replaceSignatureId){
     //Caching previous Signature state.
     this._previousSignature = signature;
     this._previousSignatureMode = this._htmlEditor.getMode();
-
 };
 
 ZmComposeView.prototype.getSignatureContent = function(signatureId) {
@@ -979,6 +978,7 @@ function(content) {
 	// since HTML composing in new window doesnt guarantee the html editor
 	// widget will be initialized when this code is running.
 	content = content || "";
+	var identity = this.getIdentity();
 	content = this._insertSignature(content, appCtxt.get(ZmSetting.SIGNATURE_STYLE),
                                         this.getSignatureContent(),
                                         this._getSignatureNewLine());

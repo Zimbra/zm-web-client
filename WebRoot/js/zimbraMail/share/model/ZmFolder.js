@@ -369,7 +369,7 @@ function(obj) {
 	var details = {};
 	var fields = {};
 	var doNotify = false;
-	if (obj.name != null && this.name != obj.name) {
+	if (obj.name != null && this.name != obj.name && !obj._isRemote) {
 		details.oldPath = this.getPath();
 		this.name = obj.name;
 		fields[ZmOrganizer.F_NAME] = true;
@@ -382,7 +382,7 @@ function(obj) {
 		this._notify(ZmEvent.E_MODIFY, details);
 	}
 
-	if (obj.l != null && (!this.parent || (obj.l != this.parent.id))) {
+	if (obj.l != null && (!this.parent || (obj.l != this.parent.id)) && !obj._isRemote) {
 		var newParent = this._getNewParent(obj.l);
 		if (newParent) {
 			this.reparent(newParent);
@@ -488,7 +488,7 @@ function(what, folderType) {
 				   (what.type == ZmOrganizer.SEARCH && thisType == ZmOrganizer.FOLDER && this.nId == ZmOrganizer.ID_ROOT) ||
 				   (what.id == this.id) ||
 				   (what.disallowSubFolder) ||
-				   (what.isRemote() && !this._remoteMoveOk(what)));	// this means a remote folder can be DnD but not its children
+				   (what.isRemote() && what.parent && what.parent.isRemote()));	// this means a remote folder can be DnD but not its children
 	} else {
 		// An item or an array of items is being moved
 		var items = (what instanceof Array) ? what : [what];
@@ -501,6 +501,8 @@ function(what, folderType) {
 			invalid = true;														// bug fix #25175 - nothing can be moved to outbox
 		} else if (this.nId == ZmOrganizer.ID_SYNC_FAILURES) {
 			invalid = true;														// nothing can be moved to "sync failures"
+		} else if (this.link) {
+			invalid = this.isReadOnly();										// cannot drop anything onto a read-only item
 		} else if (thisType == ZmOrganizer.SEARCH) {
 			invalid = true;														// can't drop items into saved searches
 		} else if ((item.type == ZmItem.CONTACT) && item.isGal) {
@@ -551,9 +553,6 @@ function(what, folderType) {
 				}
 			}
 		}
-        if (!invalid && this.link) {
-			invalid = this.isReadOnly();										// cannot drop anything onto a read-only item
-        }
 	}
 	return !invalid;
 };
@@ -578,24 +577,4 @@ function() {
 ZmFolder.prototype.isInSpam =
 function(){
     return this.isUnder(ZmFolder.ID_SPAM);
-};
-
-/**
- * Returns true if the given remote folder can be moved into this remote folder. The source and
- * the target folder must belong to the same account. The source must have delete permission and
- * the target must have insert permission.
- *
- * @param folder  [ZmFolder]    source folder
- */
-ZmFolder.prototype._remoteMoveOk =
-function(folder) {
-    if (!this.link || !folder.link) { return false; }
-    if (this.zid != folder.zid) { return false; }
-    if (this.id.split(":")[0] != folder.id.split(":")[0]) { return false; }
-    var share = this.shares && this.shares[0];
-    if (!(share && share.isInsert())) { return false; }
-    share = folder.shares && folder.shares[0];
-    if (!(share && share.isDelete())) { return false; }
-
-    return true;
 };
