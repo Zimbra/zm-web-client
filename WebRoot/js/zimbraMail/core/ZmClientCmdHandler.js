@@ -74,7 +74,7 @@ function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
 
 ZmClientCmdHandler.prototype.execute_instant_notify =
 function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
-	if (argv.length <= 1) {
+	if (typeof cmdArg1 == "undefined") {
 		this._alert("Instant notify is "+ (appCtxt.getAppController().getInstantNotify() ? "ON" : "OFF"));
 	} else {
 		var on = false;
@@ -225,12 +225,12 @@ function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
 	}
 };
 
-ZmClientCmdHandler.prototype._alert = 
+ZmClientCmdHandler.prototype._alert =
 function(msg, level) {
 	appCtxt.setStatusMsg(msg, level);
 };
 
-ZmClientCmdHandler.prototype._dumpEl = 
+ZmClientCmdHandler.prototype._dumpEl =
 function dumpEl(el, known, expandos) {
 	var props = [];
 	for (var p in el) {
