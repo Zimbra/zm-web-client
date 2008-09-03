@@ -259,7 +259,7 @@ function() {
 	};
 
 	if (appCtxt.isOffline) {
-		sections["MAIL"].prefs.push(ZmSetting.OFFLINE_MAIL_TOASTER_ENABELD);
+		sections["MAIL"].prefs.push(ZmSetting.OFFLINE_MAIL_TOASTER_ENABLED);
 	}
 
 	for (var id in sections) {
@@ -507,7 +507,7 @@ function() {
 	});
 
 	if (appCtxt.isOffline) {
-		ZmPref.registerPref("OFFLINE_MAIL_TOASTER_ENABELD", {
+		ZmPref.registerPref("OFFLINE_MAIL_TOASTER_ENABLED", {
 			displayName:		(AjxEnv.isMac ? ZmMsg.showPopupMac : ZmMsg.showPopup),
 			displayContainer:	ZmPref.TYPE_CHECKBOX
 		});
@@ -900,128 +900,108 @@ function(creates, force) {
 		}
 	}
 
-	this._handleAlerts(creates, mailCreates);
-};
-
-ZmMailApp.prototype._handleAlerts =
-function(creates, mailCreates) {
-	var alertNewMail = false;
 	if (this._tradController && (appCtxt.getCurrentController() == this._tradController)) {
 		// can't get to another controller without running a search
-		alertNewMail = this._checkList(creates, this._tradController.getList(), this._tradController);
+		this._checkList(creates, this._tradController.getList(), this._tradController);
 	} else {
 		// these two controllers can be active together without an intervening search
 		if (this._convListController) {
-			alertNewMail = this._checkList(creates, this._convListController.getList(), this._convListController);
+			this._checkList(creates, this._convListController.getList(), this._convListController);
 		}
 		if (this._convController) {
-			alertNewMail = this._checkList(creates, this._convController.getList(), this._convController) || alertNewMail;
+			this._checkList(creates, this._convController.getList(), this._convController);
 		}
 	}
 
-	// get alert prefs for all accounts
-	var soundAlertsOn, appAlertsOn, browserAlertsOn = false;
-	var accounts = appCtxt.getZimbraAccounts();
-	for (var i in accounts) {
-		var acct = accounts[i];
-		if (acct.visible) {
-			if (appCtxt.get(ZmSetting.MAIL_NOTIFY_SOUNDS, null, acct))	soundAlertsOn = true;
-			if (appCtxt.get(ZmSetting.MAIL_NOTIFY_APP, null, acct))		appAlertsOn = true;
-			if (appCtxt.get(ZmSetting.MAIL_NOTIFY_BROWSER, null, acct))	browserAlertsOn = true;
-		}
-	}
+	this._handleAlerts(creates);
+};
 
-	// if not a single account has alert prefs turned on, bail - and for offline,
-	// we additionally popup a toaster so always follow thru   
-	if (!soundAlertsOn && !appAlertsOn && !browserAlertsOn && !appCtxt.isOffline) { return; }
+ZmMailApp.prototype._handleAlerts =
+function(creates) {
+	var mailCreates = creates["m"] || [];
+	if (mailCreates.length == 0) { return; }
 
-	// If we didn't display an alert-worthy new message, loop thru all creates
-	// for all accounts looking for one.
-	var accountAlerts = [];
-	if (mailCreates && (!alertNewMail || appCtxt.multiAccounts)) {
-		var parsedId;
-		for (var i = 0, count = mailCreates.length; i < count; i++) {
-			var mc = mailCreates[i];
-			var parsedId = (mc && mc.f && (mc.f.indexOf(ZmItem.FLAG_UNREAD) != -1))
-				? ZmOrganizer.parseId(mc.l) : null;
+	AjxDispatcher.require("Alert");
 
-			if (parsedId && parsedId.id == ZmOrganizer.ID_INBOX &&
-				parsedId.account && !parsedId.account.isOfflineInitialSync())
+	var activeAcct = appCtxt.getActiveAccount();
+	var didAppAlert, didSoundAlert, didBrowserAlert = false;
+
+	// OFFLINE:
+	var offlineWinText = {};
+	var offlineToasterCount = 0;
+	var offlineToasterSupported = (appCtxt.isOffline && window.platform && (AjxEnv.isWindows || AjxEnv.isMac));
+
+	for (var i = 0; i < mailCreates.length; i++) {
+		var mc = mailCreates[i];
+		var parsedId = (mc && mc.f && (mc.f.indexOf(ZmItem.FLAG_UNREAD) != -1))
+			? ZmOrganizer.parseId(mc.l) : null;
+
+		if (parsedId && parsedId.id == ZmOrganizer.ID_INBOX) {
+			var acct = parsedId.account;
+			if (!acct || (acct && acct.isOfflineInitialSync())) { continue; }
+
+			// for multi-account, highlite the non-active accordion item
+			if (appCtxt.multiAccounts) {
+				ZmAccountAlert.get(acct).start(this);
+			}
+
+			// alert mail app tab for the active account and set flag so we only do it *once*
+			if (!didAppAlert && acct == activeAcct &&
+				appCtxt.get(ZmSetting.MAIL_NOTIFY_APP, null, acct))
 			{
-				accountAlerts.push(parsedId.account);
+				this.startAlert();
+				didAppAlert = true;
 			}
-		}
-	}
 
-	// If any alert-worthy mail, beep and flash browser.
-	if (alertNewMail || (accountAlerts.length > 0)) {
-		AjxDispatcher.require("Alert");
-		if (soundAlertsOn) {
-			ZmSoundAlert.getInstance().start();
-		}
-		if (browserAlertsOn) {
-			ZmBrowserAlert.getInstance().start(ZmMsg.newMessage);
-		}
-	}
+			// do audible alert for this account and set flag so we only do it *once*
+			if (!didSoundAlert && appCtxt.get(ZmSetting.MAIL_NOTIFY_SOUNDS, null, acct)) {
+				ZmSoundAlert.getInstance().start();
+				didSoundAlert = true;
+			}
 
-	// Do any alert on the mail app tab.
-	if (appAlertsOn && (alertNewMail || (accountAlerts.length > 0)) &&
-		(appCtxt.getActiveAccount() == appCtxt.getMainAccount()))
-	{
-		this.startAlert();
-	}
+			// do browser alert for this account and set flag so we only do it *once*
+			if (!didBrowserAlert && appCtxt.get(ZmSetting.MAIL_NOTIFY_BROWSER, null, acct)) {
+				ZmBrowserAlert.getInstance().start(ZmMsg.newMessage);
+				didBrowserAlert = true;
+			}
 
-	// Do any account-specifc alerts (i.e. flash accordion item)
-	if (accountAlerts.length > 0) {
-		AjxDispatcher.require("Alert");
-		for (var i = 0; i < accountAlerts.length; i++) {
-			ZmAccountAlert.get(accountAlerts[i]).start(this, creates);
-		}
+			// OFFLINE: generate toaster message if applicable
+			if (appCtxt.get(ZmSetting.OFFLINE_MAIL_TOASTER_ENABLED, null, acct) &&
+				offlineToasterSupported && offlineToasterCount < 5)
+			{
+				var msg = appCtxt.getById(mc.id);
+				var text = (msg.subject)
+					? ([msg.subject, " - ", (msg.fragment || "")].join(""))
+					: (msg.fragment || "");
 
-		if (appCtxt.isOffline && window.platform &&
-			(AjxEnv.isWindows || AjxEnv.isMac) &&
-			appCtxt.get(ZmSetting.OFFLINE_MAIL_TOASTER_ENABELD))
-		{
-			var winText = {};
-			var msgs = creates["m"] || [];
-			for (var i = 0; i < msgs.length && i < 5; i++) {
-				var id = msgs[i].id;
-				var msg = appCtxt.getById(id);
-				var folder = msg ? appCtxt.getById(msg.folderId) : null;
-
-				if (folder && folder.nId == ZmFolder.ID_INBOX) {
-					var pid = ZmOrganizer.parseId(id);
-					var text = (msg.subject)
-						? ([msg.subject, " - ", (msg.fragment || "")].join(""))
-						: (msg.fragment || "");
-
-					if (AjxEnv.isMac) {
-						var title = (appCtxt.numVisibleAccounts > 1)
-							? ([ZmMsg.newMail, " (", pid.account.getDisplayName(), ")"].join(""))
-							: ZmMsg.newMail;
-						window.platform.showNotification(title, text, "resource://webapp/icons/default/launcher.icns");
-					} else if (AjxEnv.isWindows) {
-						var disp = pid.account.getDisplayName();
-						if (!winText[disp]) {
-							winText[disp] = [];
-						}
-						winText[disp].push(text);
+				if (AjxEnv.isMac) {
+					var title = (appCtxt.numVisibleAccounts > 1)
+						? ([ZmMsg.newMail, " (", acct.getDisplayName(), ")"].join(""))
+						: ZmMsg.newMail;
+					window.platform.showNotification(title, text, "resource://webapp/icons/default/launcher.icns");
+				} else if (AjxEnv.isWindows) {
+					var disp = acct.getDisplayName();
+					if (!offlineWinText[disp]) {
+						offlineWinText[disp] = [];
 					}
+					offlineWinText[disp].push(text);
 				}
+				offlineToasterCount++;
 			}
+		}
+	}
 
-			if (AjxEnv.isWindows) {
-				var balloonText = [];
-				for (var j in winText) {
-					balloonText.push(j + "\n  " + winText[j].join("\n  "));
-				}
-				if (balloonText.length > 0) {
-					if (msgs.length > 5) {
-						balloonText.push(ZmMsg.andMore);
-					}
-					window.platform.icon().showBalloonTip(ZmMsg.newMail, balloonText.join("\n"), 5);
-				}
+	// in windows, we aggregate the toaster messages into one message
+	if (offlineToasterSupported && AjxEnv.isWindows) {
+		var balloonText = [];
+		for (var j in offlineWinText) {
+			balloonText.push(j + "\n  " + offlineWinText[j].join("\n  "));
+		}
+		if (balloonText.length > 0) {
+			if (msgs.length > 5) {
+				balloonText.push(ZmMsg.andMore);
 			}
+			window.platform.icon().showBalloonTip(ZmMsg.newMail, balloonText.join("\n"), 5);
 		}
 	}
 };
@@ -1058,24 +1038,27 @@ function(creates, list, controller) {
 	var cutoff = last ? last.date : null;
 	DBG.println(AjxDebug.DBG2, "cutoff = " + cutoff + ", list size = " + a.length);
 
-	var gotConvs = this._checkType(creates, ZmItem.CONV, convs, list, sortBy, cutoff);
-	var gotMsgs = this._checkType(creates, ZmItem.MSG, msgs, list, sortBy, cutoff, convs);
+	var convResults = this._checkType(creates, ZmItem.CONV, convs, list, sortBy, cutoff);
+	var msgResults  = this._checkType(creates, ZmItem.MSG, msgs, list, sortBy, cutoff, convs);
 
-	if (gotConvs.gotItem || gotMsgs.gotItem) {
+	if (convResults.gotMail || msgResults.gotMail) {
 		list.notifyCreate(convs, msgs);
 	}
-	if (gotConvs.hasMore || gotMsgs.hasMore) {
-		// bug: 30546
+
+	// bug: 30546
+	if (convResults.hasMore || msgResults.hasMore) {
 		var controller;
-		switch (appCtxt.getAppViewMgr().getCurrentViewId()) {
-			case ZmId.VIEW_CONVLIST: controller = this.getConvListController(); break;
-			case ZmId.VIEW_TRAD: controller = this.getTradController(); break;
+		var vid = appCtxt.getAppViewMgr().getCurrentViewId();
+		if (vid == ZmId.VIEW_CONVLIST) {
+			controller = this.getConvListController();
+		} else if (vid == ZmId.VIEW_TRAD) {
+			controller = this.getTradController();
 		}
+
 		if (controller) {
 			controller.setHasMore(true);
 		}
 	}
-	return gotMsgs.gotAlertMessage;
 };
 
 /**
@@ -1093,10 +1076,11 @@ function(creates, list, controller) {
  */
 ZmMailApp.prototype._checkType =
 function(creates, type, items, currList, sortBy, cutoff, convs) {
-	var result = { gotItem: false, gotAlertMessage: false};
+	var result = { gotMail:false, hasMore:false};
 	var nodeName = ZmList.NODE[type];
 	var list = creates[nodeName];
 	if (!(list && list.length)) { return result; }
+
 	for (var i = 0; i < list.length; i++) {
 		var create = list[i];
 		if (create._handled) { continue; }
@@ -1114,9 +1098,8 @@ function(creates, type, items, currList, sortBy, cutoff, convs) {
 				DBG.println(AjxDebug.DBG2, "new " + type + " not of current type");
 				continue;
 			}
-			if (!this._checkCreate(create, type, currList, sortBy, cutoff)) {
-				// bug: 30546
-				result.hasMore = true;
+			if (!this._checkCreate(create, sortBy, cutoff)) {
+				result.hasMore = true; // bug: 30546
 				continue;
 			}
 		}
@@ -1125,10 +1108,7 @@ function(creates, type, items, currList, sortBy, cutoff, convs) {
 		var itemClass = eval(ZmList.ITEM_CLASS[type]);
 		var item = itemClass.createFromDom(create, {}, true);
 		items[item.id] = item;
-		result.gotItem = true;
-		if ((item.folderId == ZmOrganizer.ID_INBOX) && item.isUnread && !appCtxt.getActiveAccount().isOfflineInitialSync()) {
-			result.gotAlertMessage = true;
-		}
+		result.gotMail = true;
 	}
 	return result;
 };
@@ -1139,21 +1119,16 @@ function(creates, type, items, currList, sortBy, cutoff, convs) {
  * sync for the offline client, where we get a flood of mail creates.
  *
  * @param create	[object]		the JSON node for the create
- * @param type		[constant]		mail item type
- * @param currList	[ZmMailList]	list currently being displayed to user
  * @param sortBy	[constant]		sort order
  * @param cutoff	[int]			timestamp of last item in list
  */
 ZmMailApp.prototype._checkCreate =
-function(create, type, currList, sortBy, cutoff) {
-
+function(create, sortBy, cutoff) {
 	// ignore mail that falls outside our range
 	if (sortBy == ZmSearch.DATE_DESC && (create.d < cutoff)) {
-		DBG.println(AjxDebug.DBG2, "new " + type + " is too old: " + create.d);
 		return false;
 	}
 	if (sortBy == ZmSearch.DATE_ASC && (create.d > cutoff)) {
-		DBG.println(AjxDebug.DBG2, "new " + type + " is too new: " + create.d);
 		return false;
 	}
 

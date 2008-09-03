@@ -478,12 +478,6 @@ function(convNode) {
 			this.msgIds.push(convNode.m[i].id);
 		}
 	}
-	if (convNode._folders) {
-		var folders = convNode._folders.split(",");
-		for (var i = 0; i < folders.length; i++) {
-			this.folders[folders[i]] = true;
-		}
-	}
 };
 
 ZmConv.prototype._loadFromMsg =

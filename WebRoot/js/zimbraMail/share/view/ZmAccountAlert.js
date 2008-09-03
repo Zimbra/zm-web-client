@@ -48,9 +48,7 @@ function(account) {
 
 ZmAccountAlert.prototype.start =
 function(app) {
-	if (this.account != appCtxt.getActiveAccount() &&
-		appCtxt.get(ZmSetting.MAIL_NOTIFY_APP, null, this.account))
-	{
+	if (this.account != appCtxt.getActiveAccount()) {
 		this._started = true;
 		this._doIt(true);
 		if (app) {

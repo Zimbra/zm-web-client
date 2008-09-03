@@ -862,7 +862,7 @@ function(on) {
 	if (on) {
 		this._pollInstantNotifications = true;
 		// set nonzero poll interval so cant ever get into a full-speed request loop
-		this._pollInterval = 100;
+		this._pollInterval = appCtxt.get(ZmSetting.INSTANT_NOTIFY_INTERVAL);
 		if (this._pollActionId) {
 			AjxTimedAction.cancelAction(this._pollActionId);
 			this._pollActionId = null;
@@ -903,7 +903,7 @@ function(kickMe) {
 		}
 		return true;
 	} else {
-		this._pollInterval = 100;
+		this._pollInterval = appCtxt.get(ZmSetting.INSTANT_NOTIFY_INTERVAL);
 		DBG.println(AjxDebug.DBG1, "Ignoring Poll Interval (in instant-notify mode)");
 		return false;
 	}
@@ -931,10 +931,6 @@ function(kickMe) {
  */
 ZmZimbraMail.prototype._kickPolling =
 function(resetBackoff) {
-	if (appCtxt.isOffline && appCtxt.multiAccounts && appCtxt.getActiveAccount().isMain) {
-		return;
-	}
-
 	DBG.println(AjxDebug.DBG2, [
 		"ZmZimbraMail._kickPolling ",
 		this._pollInterval, ", ",
@@ -950,8 +946,9 @@ function(resetBackoff) {
 
 	if (resetBackoff && this._pollInstantNotifications) {
 		// we *were* backed off -- reset the delay back to 1s fastness
-		if (this._pollInterval > 100)
-			this._pollInterval = 100;
+		var interval = appCtxt.get(ZmSetting.INSTANT_NOTIFY_INTERVAL);
+		if (this._pollInterval > interval)
+			this._pollInterval = interval;
 	}
 
 	if (this._pollInterval && !this._pollRequest) {
