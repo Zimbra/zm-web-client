@@ -392,7 +392,8 @@ function(folderId) {
 };
 
 ZmCalViewController.prototype.getCalendars = function(includeLinks) {
-	var calendars = [];
+    this._updateCheckedCalendars();
+    var calendars = [];
 	var organizers = appCtxt.getFolderTree().getByType(ZmOrganizer.CALENDAR);
 	for (var i = 0; i < organizers.length; i++) {
 		var organizer = organizers[i];

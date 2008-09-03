@@ -242,7 +242,7 @@ function(control, day) {
 ZmCalMgr.prototype.getApptSummaries =
 function(params) {
 	var apptVec = this.setSearchParams(params);
-	
+
 	if(apptVec != null && (apptVec instanceof AjxVector)) {
         return apptVec;
 	}
@@ -400,7 +400,8 @@ function(searchResp, params) {
 
 ZmCalMgr.prototype.getCalendarName =
 function(folderId) {
-	return this._folderNames[folderId];
+    var app = appCtxt.getApp(ZmApp.CALENDAR);
+    return app.getCalendarName(folderId);
 };
 
 // Mini calendar action menu listeners, calview controller is loaded and than
@@ -425,27 +426,8 @@ function(ev) {
 
 ZmCalMgr.prototype.getCheckedCalendarFolderIds =
 function(localOnly) {
-    var folderIds = [];
     var app = appCtxt.getApp(ZmApp.CALENDAR);
-    if(app._calController !=null) {
-        folderIds = app._calController.getCheckedCalendarFolderIds(localOnly);
-    }else {
-        //will be used in reminder dialog
-        this._folderNames = {};
-        for (var i = 0; i < app._deferredFolders.length; i++) {
-            var params = app._deferredFolders[i];
-            var str = (params && params.obj && params.obj.f) ? params.obj.f : "";
-            if(str && (str.indexOf(ZmOrganizer.FLAG_CHECKED) != -1)) {
-                //if(params && params.obj && (params.obj.f == ZmOrganizer.FLAG_CHECKED)) {
-                if(localOnly &&  (params.obj.zid != null)) {
-                    continue;
-                }
-                folderIds.push(params.obj.id);
-                this._folderNames[params.obj.id] = params.obj.name;
-            }
-        }
-    }
-    return folderIds;
+    return app.getCheckedCalendarFolderIds(localOnly);    
 };
 
 ZmCalMgr.prototype._handleError =
