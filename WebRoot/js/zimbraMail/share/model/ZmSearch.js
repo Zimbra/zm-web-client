@@ -423,7 +423,14 @@ function(params) {
 		if (this.getHtml) {
 			request.html = 1;		// get it as HTML
 		}
-	}
+        //added headers to the request
+        if(ZmMailMsg.requestHeaders) {
+            for (var hdr in ZmMailMsg.requestHeaders) {
+                if(!request.header) request.header = [];
+                request.header.push({n:hdr});
+            }
+        }
+    }
 
 	if (!params.noTruncate) {
 		request.max = appCtxt.get(ZmSetting.MAX_MESSAGE_SIZE);
