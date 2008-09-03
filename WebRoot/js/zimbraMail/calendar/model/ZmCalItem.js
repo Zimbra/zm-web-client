@@ -259,38 +259,48 @@ function(startTime, endTime) {
 
 ZmCalItem.prototype.parseAlarmData =
 function() {
-	if (!this.alarmData) { return; }
+    if (!this.alarmData) { return; }
 
-	for (var i in this.alarmData) {
-		var alarm = this.alarmData[i].alarm;
-		if (alarm) {
-			var m, h, d;
-			for (var j in alarm) {
-				var tmp = alarm[j];
-				var trigger = (tmp) ? tmp.trigger : null;
-				var rel = (trigger && (trigger.length > 0)) ? trigger[0].rel : null;				
-				m = (rel && (rel.length > 0)) ? rel[0].m : null;
-				d = (rel && (rel.length > 0)) ? rel[0].d : null;
-				h = (rel && (rel.length > 0)) ? rel[0].h : null;
+    for (var i in this.alarmData) {
+        var alarm = this.alarmData[i].alarm;
+        if (alarm) {
+            for (var j in alarm) {
+                this.parseAlarm(alarm[j]);
+            }
+        }
+    }
+};
 
-				this._reminderMinutes = 0;
-				if (tmp && (tmp.action == "DISPLAY")) {
-					if (m != null) {
-						this._reminderMinutes = m;
-					}
-					if (h != null) {
-						h = parseInt(h);
-						this._reminderMinutes = h*60;
-					}
-					if (d != null) {
-						d = parseInt(d);
-						this._reminderMinutes = d*24*60;
-					}					
-					break;
-				}
-			}
-		}
-	}
+ZmCalItem.prototype.parseAlarm =
+function(tmp) {
+
+    if(!tmp) {
+        return;
+    }
+
+    var m, h, d;
+    var trigger = (tmp) ? tmp.trigger : null;
+    var rel = (trigger && (trigger.length > 0)) ? trigger[0].rel : null;
+    m = (rel && (rel.length > 0)) ? rel[0].m : null;
+    d = (rel && (rel.length > 0)) ? rel[0].d : null;
+    h = (rel && (rel.length > 0)) ? rel[0].h : null;
+
+    this._reminderMinutes = 0;
+    if (tmp && (tmp.action == "DISPLAY")) {
+        if (m != null) {
+            this._reminderMinutes = m;
+        }
+        if (h != null) {
+            h = parseInt(h);
+            this._reminderMinutes = h*60;
+        }
+        if (d != null) {
+            d = parseInt(d);
+            this._reminderMinutes = d*24*60;
+        }
+        return;
+    }
+
 };
 
 /**

@@ -152,6 +152,12 @@ function(compNum) {
 	return this.components[cn] ? this.components[cn].name : null;
 };
 
+ZmInvite.prototype.getAlarm = 
+function(compNum) {
+	var cn = compNum || 0;
+	return this.components[cn] ? this.components[cn].alarm : null;
+};
+
 ZmInvite.prototype.getOrganizerEmail = 
 function(compNum) {
 	var cn = compNum || 0;

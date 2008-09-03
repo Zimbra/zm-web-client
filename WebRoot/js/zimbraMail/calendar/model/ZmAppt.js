@@ -466,6 +466,23 @@ function(message) {
 			}
 		}
 	}
+
+    this._setAlarmFromMessage(message);
+
+};
+
+ZmAppt.prototype._setAlarmFromMessage =
+function(message) {
+    this._reminderMinutes = 0;
+    var alarm = message.invite.getAlarm();
+    if(alarm) {
+        for(var i in alarm) {
+            if(alarm[i] && (alarm[i].action == "DISPLAY")) {
+                this.parseAlarm(alarm[i]);
+                break;
+            }
+        }
+    }
 };
 
 ZmAppt.prototype._getTextSummaryTime =
