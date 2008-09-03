@@ -121,14 +121,18 @@
 
                             <tr>
                                 <app:button id="ccbutton"  name="actionContactAdd" width="1%" clazz="tobutton" tooltip="addFromContacts" text="cc"/>
-                                <td colspan="2" nowrap>
+                                <td  nowrap>
                                     <div class="ZhAC ZhACCc">
                                     	<textarea id="ccField" rows="2" style='width:99%;height:40px;position:relative;' cols='80' name="cc" >${fn:escapeXml(compose.cc)}</textarea>
                                         <br><div class='ZhACCont' id="ccContainer" style='width:99%;'></div>
                                     </div>
                                 </td>
+                                <td>
+                                    <div id="show_bcc" style="display:block;"><a href="javascript:showHideBcc();"><fmt:message key="showBcc"/></a></div>
+                                    <div id="hide_bcc" style="display:none;"><a href="javascript:showHideBcc();"><fmt:message key="hideBcc"/></a></div>
+                                </td>
                             </tr>
-                            <tr>
+                            <tr id="bcc_tr" style="display:none">
                                 <app:button id="bccbutton" name="actionContactAdd" width="1%" clazz="tobutton" tooltip="addFromContacts" text="bcc"/>
                                 <td colspan="2" nowrap>
                                     <div class="ZhAC ZhAcBcc">
@@ -197,7 +201,7 @@
                             </c:if>
                             <tr>
                                 <td colspan="3"  width="100%" >
-                                    <textarea class='MsgCompose' name="body" id="body" rows="30" cols="80" style='<c:if test="${isHtml}">visibility:hidden;</c:if>width:100%'>${fn:escapeXml(isHtml ? (empty compose.htmlContent ?  compose.content : compose.htmlContent) : compose.content)}</textarea>
+                                    <textarea class='MsgCompose' name="body" id="body" rows="20" cols="80" style='<c:if test="${isHtml}">visibility:hidden;</c:if>width:100%'>${fn:escapeXml(isHtml ? (empty compose.htmlContent ?  compose.content : compose.htmlContent) : compose.content)}</textarea>
                                     <!-- <textarea class='MsgCompose' name="body"  rows="30" cols="80" style='width:100%'>${fn:escapeXml(compose.content)}</textarea> -->
                                    <input type="hidden" id="bodyText" class='MsgCompose' name="bodyText" value="" style='width:100%' /> 
                                     
@@ -399,6 +403,16 @@
 </c:choose>
 <script type="text/javascript">
 <!--
+var showHideBcc = function(){
+    var bcc = document.getElementById("bcc_tr");
+    var showBcc = document.getElementById("show_bcc");
+    var hideBcc = document.getElementById("hide_bcc");
+
+    bcc.style.display=(bcc.style.display=="none"?"":"none");
+    showBcc.style.display=(showBcc.style.display=="block"?"none":"block") ;
+    hideBcc.style.display=(hideBcc.style.display=="block"?"none":"block") ;
+
+}
 /* List of IDs for which onbeforeunload has to be cancelled */
 var expElemts = new Array("SOPADDRECIP","SOPCANCEL","Stobutton","Sccbutton","Sbccbutton","SOPDRAFT","SOPATTACH","SDOPCANCEL","SDOPADDRECIP","SDOPDRAFT","SDOPATTACH");
 var x;
