@@ -39,7 +39,7 @@ ZmChatWindow.prototype._init = function(chat, initialSize) {
 	this.setView(tabs);
 	tabs.addTab(chat);
 	this.setSize(initialSize.x, initialSize.y);
-	this.setMinSize(300, 100);
+	this.setMinSize(300, 150);
 	this.setMinPos(0, 0);
 	tabs = null;
 	this.addSelectionListener(new AjxListener(this, this._selectionListener));
