@@ -70,6 +70,10 @@ function(minimize) {
 	this.getCurrentChatWidget()._onMinimize(minimize);
 };
 
+ZmChatWindow.prototype.getPadding = function() {
+	return { bottom: 34, right: 8 };
+};
+
 ZmChatWindow.prototype._getMinimizedSize =
 function() {
 	return this.getCurrentChatWidget().getMinimizedSize();
