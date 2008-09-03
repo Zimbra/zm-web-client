@@ -379,7 +379,7 @@ function(calItem) {
 
 		var htmlPart = new ZmMimePart();
 		htmlPart.setContentType(ZmMimeTable.TEXT_HTML);
-		htmlPart.setContent(this._notesHtmlEditor.getContent(true));
+		htmlPart.setContent(this._notesHtmlEditor.getContent(true, true));
 		top.children.add(htmlPart);
 	} else {
 		top.setContentType(ZmMimeTable.TEXT_PLAIN);
