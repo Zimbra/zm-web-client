@@ -109,6 +109,9 @@
 	appExtension   = "js";
 	appDevMode     = true;
 </script>
+<script>
+<jsp:include page="/js/ajax/util/AjxTimezoneData.js" />
+</script>
 <%
 	String packages = "NewWindow_1,NewWindow_2";
 

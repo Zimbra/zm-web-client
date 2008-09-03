@@ -130,6 +130,9 @@
 -->
 </style>
 <jsp:include page="Boot.jsp"/>
+<script>
+<jsp:include page="/js/ajax/util/AjxTimezoneData.js" />
+</script>
 <%
     String packages = "Ajax,XForms,Zimbra,Admin";
 
