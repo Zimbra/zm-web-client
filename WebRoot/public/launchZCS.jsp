@@ -199,6 +199,9 @@
 		switchToStandardClient();
 	}
 </script>
+<script>
+<jsp:include page="/js/ajax/util/AjxTimezoneData.js" />
+</script>
 <%
 	String allPackages = "Startup1_1,Startup1_2";
     if (extraPackages != null) {

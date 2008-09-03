@@ -49,7 +49,6 @@ AjxPackage.require("ajax.events.AjxListener");
 AjxPackage.require("ajax.util.AjxText");
 AjxPackage.require("ajax.util.AjxCache");
 AjxPackage.require("ajax.util.AjxEmailAddress");
-AjxPackage.require("ajax.util.AjxTimezoneData");
 AjxPackage.require("ajax.util.AjxTimezone");
 
 AjxPackage.require("ajax.dwt.core.Dwt");

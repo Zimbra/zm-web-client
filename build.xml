@@ -214,8 +214,8 @@
         <war warfile="${build.war.file}" webxml='${build.dir}/web.xml' compress='${war.compress}'>
             <webinf dir='${webinf.dir}' includes='${webinf.includes}' excludes='${webinf.excludes},${customer.webinf.files}' />
 			<webinf refid='customer.webinf.fileset' />
-            <classes dir='${build.classes.dir}' excludes='**/kabuki/tools/**,**/build/**'/>
-			<classes dir='${build.classes.dir}' includes='**/kabuki/util/**,**/kabuki/tools/img/**,**/kabuki/tools/templates/**' />
+            <classes dir='${build.classes.dir}' excludes='**/kabuki/tools/i18n/**,**/build/**'/>
+			<classes dir='${build.classes.dir}' includes='**/kabuki/util/**,**/kabuki/tools/**' />
 			<classes dir='${java.dir}' includes='**/*.properties' />
             <classes dir='${web.dir}' includes='messages/**,keys/**'/>
             <lib dir='${lib.dir}' includes='gifencoder.jar'/>
