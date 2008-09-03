@@ -233,7 +233,7 @@ function() {
 			childWin.win.close();
 		}
 	}
-	window._zimbraMail = window.onload = window.onunload = window.onresize = window.document.onkeypress = null;
+	window._zimbraMail = window.onload = window.onresize = window.document.onkeypress = null;
 };
 
 /**
@@ -300,6 +300,9 @@ function(params) {
 			this._createUserInfo("BannerTextUser", ZmAppViewMgr.C_USER_INFO, ZmId.USER_NAME);
 		this._components[ZmAppViewMgr.C_QUOTA_INFO] = this._usedQuotaField =
 			this._createUserInfo("BannerTextQuota", ZmAppViewMgr.C_QUOTA_INFO, ZmId.USER_QUOTA);
+		var currentAppToolbar = new ZmCurrentAppToolBar(this._shell, ZmId.CURRENT_APP_TOOLBAR);
+		appCtxt.setCurrentAppToolbar(currentAppToolbar);
+		this._components[ZmAppViewMgr.C_CURRENT_APP] = currentAppToolbar;
 		this._components[ZmAppViewMgr.C_STATUS] = this.statusView =
 			new ZmStatusView(this._shell, "ZmStatus", Dwt.ABSOLUTE_STYLE, ZmId.STATUS_VIEW);
 	}
@@ -329,8 +332,8 @@ function(params) {
 			girJSON.Body = {};
 			girJSON.Body.GetInfoResponse = br.GetInfoResponse[0];
 			girJSON.Header = params.batchInfoResponse.Header;
-			if (girJSON.Header && girJSON.Header.context && girJSON.Header.context.session) {
-				ZmCsfeCommand.setSessionId(girJSON.Header.context.session);
+			if (girJSON.Header && girJSON.Header.context && girJSON.Header.context.sessionId) {
+				ZmCsfeCommand.setSessionId(girJSON.Header.context.sessionId);
 			}
 			DBG.println(AjxDebug.DBG1, ["<H4> RESPONSE (from JSP tag)</H4>"].join(""), "GetInfoResponse");
 			DBG.dumpObj(AjxDebug.DBG1, girJSON, -1);
@@ -1099,7 +1102,6 @@ function() {
 							 createFunc:		"ZmSearchFolder.create",
 							 compareFunc:		"ZmFolder.sortCompare",
 							 shortcutKey:		"S",
-							 newOp:				ZmOperation.BROWSE,
 							 openSetting:		ZmSetting.SEARCH_TREE_OPEN
 							});
 
@@ -1118,7 +1120,6 @@ function() {
 							 createFunc:		"ZmTag.create",
 							 compareFunc:		"ZmTag.sortCompare",
 							 shortcutKey:		"T",
-							 newOp:				ZmOperation.NEW_TAG,
 							 openSetting:		ZmSetting.TAG_TREE_OPEN
 							});
 
@@ -1250,6 +1251,12 @@ function(appName, view) {
 	// app not actually enabled if this is result of upsell view push
 	var appEnabled = appCtxt.get(ZmApp.SETTING[appName]);
 
+	// update current app toolbar
+	var toolbar = appEnabled ? appCtxt.getCurrentAppToolbar() : null;
+	if (toolbar) {
+		toolbar.setupView(appName);
+	}
+
 	if (this._activeApp != appName) {
 		// deactivate previous app
 	    if (this._activeApp) {
@@ -1339,7 +1346,7 @@ function() {
 			logoutIcon: (appCtxt.get(ZmSetting.SKIN_HINTS, "logoutButton.hideIcon") ? null : "Logoff"),
 			logoutText: (appCtxt.isOffline ? ZmMsg.setup : ZmMsg.logOff)
 		}
-		el.innerHTML = AjxTemplate.expand("share.App#UserInfo", data);
+		el.innerHTML = AjxTemplate.expand("share.App#UserInfo", data)
 	}
 };
 
@@ -1769,21 +1776,6 @@ function(actionCode, ev) {
 		case ZmKeyMap.FOCUS_CONTENT_PANE: {
 			this.focusContentPane();
 			break;
-		}
-
-		case ZmKeyMap.CANCEL: {
-			// see if there's a current drag operation we can cancel
-			var handled = false;
-			var captureObj = (DwtMouseEventCapture.getId() == "DwtControl") ? DwtMouseEventCapture.getCaptureObj() : null;
-			var obj = captureObj && captureObj.targetObj;
-			if (obj && (obj._dragging == DwtControl._DRAGGING)) {
-				captureObj.release();
-				obj.__lastDestDwtObj = null;
-				obj._setDragProxyState(false);					// turn dnd icon red so user knows no drop is happening
-				DwtControl.__badDrop(obj, DwtShell.mouseEvent);	// shell's mouse ev should have latest info
-				handled = true;
-			}
-			if (handled) { break; }
 		}
 
 		default: {
