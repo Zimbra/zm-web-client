@@ -20,7 +20,7 @@
             <app:img altkey="ALT_ATTACHMENT" src="startup/ImgAttachment.gif"/>
             <c:set var="firstAttachment" value="${false}"/>
         </c:if>
-    </td>
+    </td>                                                                                                  ~
     <c:set var="pname" value="${displayName}"/>
     <c:if test="${empty displayName}">
         <fmt:message key="unknownContentType" var="displayName">
@@ -35,7 +35,7 @@
                 </td>
                 <td>&nbsp;</td>
                 <td>
-                    <a target="_blank" href="${fn:escapeXml(url)}&amp;disp=i">${fn:escapeXml(displayName)}</a>&nbsp;<c:if test="${displaySize}">(${displaySize})</c:if>
+                    <a target="_blank" title="${fn:escapeXml(displayName)}" href="${fn:escapeXml(url)}&amp;disp=i">${zm:truncate(fn:escapeXml(displayName),80,true)}</a>&nbsp;<c:if test="${displaySize}">(${displaySize})</c:if>
                 </td>
             </tr>
         </table>
