@@ -333,7 +333,7 @@ function() {
 							 createFunc:		"ZmCalendar.create",
 							 compareFunc:		"ZmCalendar.sortCompare",
 							 newOp:				ZmOperation.NEW_CALENDAR,
-							 deferrable:		false
+							 deferrable:		true
 							});
 };
 
@@ -674,6 +674,51 @@ function(ev) {
 		controller.setDate(date, 0, true);
 	}
 };
+
+/**
+ * returns the list of checked calendar Ids, gets the list from deferred folders
+ * to keep things lite when calendar packages are not loaded
+ *
+ * @localOnly       decides whether shared folders needs to be excluded
+*/
+ZmCalendarApp.prototype.getCheckedCalendarFolderIds =
+function(localOnly) {
+    var folderIds = [];
+    if(AjxDispatcher.loaded("CalendarCore")) {
+        folderIds = this.getCalController().getCheckedCalendarFolderIds(localOnly);
+    }else {
+        //will be used in reminder dialog
+        this._folderNames = {};
+        for (var i = 0; i < this._deferredFolders.length; i++) {
+            var params = this._deferredFolders[i];
+            var str = (params && params.obj && params.obj.f) ? params.obj.f : "";
+            if(str && (str.indexOf(ZmOrganizer.FLAG_CHECKED) != -1)) {
+                if(localOnly &&  (params.obj.zid != null)) {
+                    continue;
+                }
+                folderIds.push(params.obj.id);
+                // _folderNames are used when deferred folders are not created and calendar name is required
+                // example: calendar name requirement in reminder module
+                this._folderNames[params.obj.id] = params.obj.name;
+            }
+        }
+    }
+    return folderIds;
+};
+
+
+/**
+ * returns the name of the calendar with specified id
+ *
+ * @id      id of the calendar
+*/
+ZmCalendarApp.prototype.getCalendarName =
+function(id) {
+      // _folderNames are used when deferred folders are not created and calendar name is required
+      // example: calendar name requirement in reminder module
+      return appCtxt.getById(id) ? appCtxt.getById(id).name : this._folderNames[id];
+}
+
 
 /**
  * creates a new button with a DwtCalendar as its menu
