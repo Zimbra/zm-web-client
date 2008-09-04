@@ -303,15 +303,6 @@ function() {
 	return this._pageConflictDialog;
 };
 
-ZmAppCtxt.prototype.getNewImDialog =
-function() {
-	if (!this._newImDialog) {
-		AjxDispatcher.require("IM");
-		this._newImDialog = new ZmNewImDialog(this._shell);
-	}
-	return this._newImDialog;
-};
-
 ZmAppCtxt.prototype.getNewRosterItemDialog =
 function() {
 	if (!this._newRosterItemDialog) {
