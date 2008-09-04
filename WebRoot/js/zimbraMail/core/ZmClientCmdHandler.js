@@ -150,6 +150,12 @@ function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
 	appCtxt.getAppController().sendNoOp();
 };
 
+ZmClientCmdHandler.prototype.execute_relogin =
+function(cmdStr, searchController, cmdName, cmdArg1, cmdArg2 /* ..., cmdArgN */) {
+	ZmCsfeCommand.clearAuthToken();
+	appCtxt.getAppController().sendNoOp();
+};
+
 ZmClientCmdHandler.prototype.execute_alert =
 function(cmdStr, searchController, cmdName, cmdArg1, cmdArg2 /* ..., cmdArgN */) {
 	//  $set:alert [sound/browser/app] [delay in seconds]
