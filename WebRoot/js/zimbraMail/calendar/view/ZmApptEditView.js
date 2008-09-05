@@ -271,7 +271,9 @@ function(calItem) {
 	// set any recurrence rules LAST
 	this._getRecurrence(calItem);
 
-	return calItem;
+    calItem.setRsvp(this._requestResponsesCheckbox.checked);
+
+    return calItem;
 };
 
 ZmApptEditView.prototype._populateForEdit =
@@ -357,6 +359,9 @@ function(calItem, mode) {
 	}
 
 	this._addResourcesDiv();
+
+    
+    this._requestResponsesCheckbox.checked = calItem.shouldRsvp();
 };
 
 ZmApptEditView.prototype._addResourcesDiv =
@@ -462,7 +467,11 @@ function(width) {
 	this._endTimeSelect.reparentHtmlElement(this._htmlElId + "_endTimeSelect");
 	this._endTimeSelect.addChangeListener(timeSelectListener);
 
-	// timezone DwtSelect
+
+    this._requestResponsesCheckbox = document.getElementById(this._htmlElId + "_requestResponses");
+
+
+    // timezone DwtSelect
 	var timezoneListener = new AjxListener(this, this._timezoneListener);
 
 	this._tzoneSelect = new DwtSelect({parent:this, parentElement: (this._htmlElId + "_tzoneSelect")});
