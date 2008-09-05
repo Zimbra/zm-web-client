@@ -1044,7 +1044,7 @@ function(msg, container, callback) {
 				if (email.address) {
 					parts[idx++] = this._objectManager
 						? (this._objectManager.findObjects(email, true, ZmObjectManager.EMAIL))
-						: email.address;
+						: AjxStringUtil.htmlEncode(email.address);
 				} else {
 					parts[idx++] = AjxStringUtil.htmlEncode(email.name);
 				}

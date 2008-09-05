@@ -251,7 +251,7 @@ function(content, htmlEncode, type, isTextMsg) {
 				if(lowestHandler) {
 					this.generateSpan(lowestHandler, html, idx, content, null);
 				} else {
-					html[idx++] = content;
+					html[idx++] = AjxStringUtil.htmlEncode(content.toString());
 				}
 				return html.join("");
 			}
