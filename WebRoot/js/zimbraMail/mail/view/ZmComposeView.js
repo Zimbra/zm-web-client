@@ -870,6 +870,9 @@ function(bEnableInputs) {
 
 		this._setIdentityVisible();
 		this._accountChanged = false;
+
+		// account changed.. so reset the signatures
+		this._controller._signatureChangeListener();
 	}
 
     //reset state of previous Signature cache variable.
