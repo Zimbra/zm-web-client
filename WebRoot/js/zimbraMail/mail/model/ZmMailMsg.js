@@ -642,7 +642,7 @@ function(contactList, edited, componentId, callback, errorCallback, instanceDate
 		this.setAddress(AjxEmailAddress.TO, (new AjxEmailAddress(to)));
 	}
 
-	request.updateOrganizer = "TRUE";
+	request.updateOrganizer = this._origMsg.needsRsvp() ? "TRUE" : "FALSE";
 	if (instanceDate) {
 		var serverDateTime = AjxDateUtil.getServerDateTime(instanceDate);
 		var timeZone = AjxTimezone.getServerId(AjxTimezone.DEFAULT);

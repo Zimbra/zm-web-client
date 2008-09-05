@@ -25,8 +25,9 @@ ZmAppt = function(list, noinit) {
 	this.startDate = new Date();
 	this.endDate = new Date(this.startDate.getTime() + (30*60*1000));
 	this.otherAttendees = false;
+    this.rsvp = true;
 
-	// attendees by type
+    // attendees by type
 	this._attendees = {};
 	this._attendees[ZmCalBaseItem.PERSON]	= [];
 	this._attendees[ZmCalBaseItem.LOCATION]	= [];
@@ -469,6 +470,17 @@ function(message) {
 
     this._setAlarmFromMessage(message);
 
+    if(message.invite.hasOtherAttendees()) {
+        var attendees = message.invite.getAttendees();
+        var rsvp = false;
+        for(var i in attendees) {
+            if(attendees[i].rsvp) {
+                rsvp = true;
+                break;
+            }
+        }
+        this.rsvp = rsvp;
+    }
 };
 
 ZmAppt.prototype._setAlarmFromMessage =
@@ -573,6 +585,16 @@ function(soapDoc, inv, comp) {
     
 };
 
+ZmAppt.prototype.setRsvp =
+function(rsvp) {
+    this.rsvp = rsvp;    
+};
+
+ZmAppt.prototype.shouldRsvp =
+function() {
+    return this.rsvp;
+}
+
 ZmAppt.prototype._addAttendeesToSoap =
 function(soapDoc, inv, m, notifyList, onBehalfOf) {
 	for (var x in this._attendees) {
@@ -633,7 +655,7 @@ function(soapDoc, inv, m, notifyList, attendee, type) {
 		if (type != ZmCalBaseItem.PERSON) {
 			at.setAttribute("cutype", ZmCalendarApp.CUTYPE_RESOURCE);
 		}
-		at.setAttribute("rsvp", "1");
+		at.setAttribute("rsvp", this.rsvp ? "1" : "0");
 
 		if (address instanceof Array) {
 			address = address[0];

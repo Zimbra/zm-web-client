@@ -111,11 +111,19 @@
                         <!-- appointment attendees / resources -->
 						<table border=0 width=100%>
 							<tr>
-								<td width='1%' align='right' valign='top' class='ZmApptTabViewPageField'><$= ZmMsg.attendeesLabel $></td>
+								<td rowspan='2' width='1%' align='right' valign='top' class='ZmApptTabViewPageField'><$= ZmMsg.attendeesLabel $></td>
 								<td id='${id}_person'></td>
 							</tr>
+                            <tr>
+                                <td>
+                                    <table border=0 cellpadding=0 cellspacing=0><tr>
+                                        <td><input type='checkbox' id='${id}_requestResponses'></td>
+                                        <td class='ZmFieldLabelLeft'><nobr>&nbsp;<$= ZmMsg.requestResponses $></nobr></td>
+                                    </tr></table>
+                                </td>
+                            </tr>
 
-						<$ if (data.isGalEnabled) { $>
+                        <$ if (data.isGalEnabled) { $>
 							<tr>
 								<td colspan=2>
 									<div id='${id}_resourcesContainer' style='display:none'>
@@ -126,7 +134,7 @@
 											</tr>
 										</table>
 									</div>
-								</td>
+                                </td>
 							</tr>
 						<$ } $>
 						</table>
