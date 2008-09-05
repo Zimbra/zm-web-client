@@ -207,7 +207,8 @@ function(msg) {
 			this._inviteMoveSelect.setVisible(visible);
 			this._lastApptFolder = ZmOrganizer.ID_CALENDAR;
             this._hasInviteToolbar = true;
-		}
+            this.enableInviteReplyMenus(invite.shouldRsvp());
+        }
 	}
 	else if (appCtxt.get(ZmSetting.SHARING_ENABLED) &&
 			 msg.share && msg.folderId != ZmFolder.ID_TRASH &&
@@ -399,7 +400,27 @@ function() {
 	select.addChangeListener(new AjxListener(this, this._moveAppt));
 	this._inviteMoveSelect = select;
 
-	return this._inviteToolbar;
+    return this._inviteToolbar;
+};
+
+ZmMailMsgView.prototype.enableInviteReplyMenus =
+function(enable) {
+
+    if(!this._inviteToolbar){ return; }
+
+    var operationButtonIds = [ZmOperation.REPLY_ACCEPT, ZmOperation.REPLY_TENTATIVE, ZmOperation.REPLY_DECLINE];
+    var replyButtonIds = [ZmOperation.INVITE_REPLY_ACCEPT,ZmOperation.INVITE_REPLY_TENTATIVE,ZmOperation.INVITE_REPLY_DECLINE];
+
+    for (var i = 0; i < operationButtonIds.length; i++) {
+        var button = this._inviteToolbar.getButton(operationButtonIds[i]);
+        if(button) {
+            var menu = button.getMenu();
+            var menuItem = menu.getMenuItem(replyButtonIds[i]);
+            if(menuItem) {
+                menuItem.setEnabled(enable);
+            }
+        }
+    }
 };
 
 ZmMailMsgView.prototype._moveAppt =
