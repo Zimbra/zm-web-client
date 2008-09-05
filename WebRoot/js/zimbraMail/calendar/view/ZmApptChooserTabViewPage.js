@@ -897,22 +897,22 @@ function(html, idx, item, field, colIdx, params) {
 			var folder = appCtxt.getById(item.folderId);
 			name = folder ? folder.name : "";
 		}
-		html[idx++] = name;
+		html[idx++] = AjxStringUtil.htmlEncode(name);
 	} else if (field == ZmItem.F_NAME) {
 		var name = (this._chooserType == ZmCalBaseItem.PERSON) ? item.getFullName() : item.getAttr(ZmResource.F_name);
-		html[idx++] = name;
+		html[idx++] = AjxStringUtil.htmlEncode(name);
 	} else if (field == ZmItem.F_EMAIL) {
-		html[idx++] = item.getEmail();
+		html[idx++] = AjxStringUtil.htmlEncode(item.getEmail());
 	} else if (field == ZmItem.F_WORK_PHONE) {
-		html[idx++] = item.getAttr(ZmContact.F_workPhone);
+		html[idx++] = AjxStringUtil.htmlEncode(item.getAttr(ZmContact.F_workPhone));
 	} else if (field == ZmItem.F_HOME_PHONE) {
-		html[idx++] = item.getAttr(ZmContact.F_homePhone);
+		html[idx++] = AjxStringUtil.htmlEncode(item.getAttr(ZmContact.F_homePhone));
 	} else if (field == ZmItem.F_LOCATION) {
-		html[idx++] = item.getAttr(ZmResource.F_locationName);
+		html[idx++] = AjxStringUtil.htmlEncode(item.getAttr(ZmResource.F_locationName));
 	} else if (field == ZmItem.F_CONTACT) {
-		html[idx++] = item.getAttr(ZmResource.F_contactMail);
+		html[idx++] = AjxStringUtil.htmlEncode(item.getAttr(ZmResource.F_contactMail));
 	} else if (field == ZmItem.F_CAPACITY) {
-		html[idx++] = item.getAttr(ZmResource.F_capacity);
+		html[idx++] = AjxStringUtil.htmlEncode(item.getAttr(ZmResource.F_capacity));
 	} else if (field == ZmItem.F_NOTES) {
 		var notes = item.getAttr(ZmContact.F_description);
 		if (notes) {
@@ -952,7 +952,7 @@ function(ev, div) {
             
         }
         if (note != null) {
-			this.setToolTipContent(note);
+			this.setToolTipContent(AjxStringUtil.htmlEncode(note));
 		}
 	}
 
