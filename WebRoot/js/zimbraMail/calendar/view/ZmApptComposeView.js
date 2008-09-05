@@ -70,10 +70,8 @@ ZmApptComposeView = function(parent, className, calApp, controller) {
 		if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
 			this._tabIds.push(ZmApptComposeView.TAB_ATTENDEES);
 		}
-		if (appCtxt.get(ZmSetting.GAL_ENABLED)) {
-			this._tabIds.push(ZmApptComposeView.TAB_LOCATIONS);
-			this._tabIds.push(ZmApptComposeView.TAB_EQUIPMENT);
-		}
+		this._tabIds.push(ZmApptComposeView.TAB_LOCATIONS);
+		this._tabIds.push(ZmApptComposeView.TAB_EQUIPMENT);
 	}
 
 	this._initialize();
