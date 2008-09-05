@@ -114,11 +114,16 @@ function(parent, type, id) {
 		{
 			parent.enable(ZmOperation.NEW_FOLDER, true);
 		}
-		// "Empty" for Junk and Trash
+		// "Empty" for Chats, Junk and Trash
 		if (nId == ZmFolder.ID_SPAM ||
-			nId == ZmFolder.ID_TRASH)
+			nId == ZmFolder.ID_TRASH ||
+			nId == ZmFolder.ID_CHATS)
 		{
-			emptyText = (nId == ZmFolder.ID_SPAM) ? ZmMsg.emptyJunk : ZmMsg.emptyTrash;
+			if (nId == ZmFolder.ID_SPAM) {
+				emptyText = ZmMsg.emptyJunk;
+			} else if (nId == ZmFolder.ID_TRASH) {
+				 emptyText = ZmMsg.emptyTrash;
+			}
 			parent.enable(ZmOperation.EMPTY_FOLDER, hasContent);
 		}
 		// only allow Inbox and Sent system folders to be share-able for now

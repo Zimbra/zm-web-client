@@ -292,30 +292,6 @@ ZmNotebookController.prototype._setViewContents = function(view) {
 	}
 };
 
-/*** TODO: This will be exposed later.
-ZmNotebookController.prototype._setViewMenu = function(view) {
-	var appToolbar = appCtxt.getCurrentAppToolbar();
-	var menu = appToolbar.getViewMenu(view);
-	if (!menu) {
-		var listener = this._listeners[ZmOperation.VIEW];
-
-		menu = new ZmPopupMenu(appToolbar.getViewButton());
-
-		var item = menu.createMenuItem(ZmNotebookApp.PAGE, {image:"Page", text:ZmMsg.notebookPageView, style:DwtMenuItem.RADIO_STYLE});
-		item.setData(ZmOperation.MENUITEM_ID, ZmId.VIEW_NOTEBOOK_PAGE);
-		item.addSelectionListener(listener);
-
-		var item = menu.createMenuItem(ZmNotebookApp.FILE, {image:"Folder", text:ZmMsg.notebookFileView, style:DwtMenuItem.RADIO_STYLE});
-		item.setData(ZmOperation.MENUITEM_ID, ZmId.VIEW_NOTEBOOK_FILE);
-		item.addSelectionListener(listener);
-	}
-
-	var item = menu.getItemById(ZmOperation.MENUITEM_ID, view);
-	item.setChecked(true, true);
-
-	appToolbar.setViewMenu(view, menu);
-};
-/***/
 
 // listeners
 

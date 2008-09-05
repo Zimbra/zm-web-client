@@ -171,6 +171,12 @@ function(view, elements, isAppView, clear, pushOnly, isTransient) {
 		var menu = button.getMenu();
 		menu.checkItem(ZmPageEditor.KEY_FORMAT, this._format, true);
 	}
+    //Dwt.setTitle(this._listView[view].getTitle());
+    if(!this._page || !this._page.name){
+        Dwt.setTitle(ZmMsg.zimbraTitle);        
+    }else{
+        Dwt.setTitle([ZmMsg.zimbraTitle, this._page.name].join(": "));
+    }
 };
 
 ZmPageEditController.prototype._setViewContents =
