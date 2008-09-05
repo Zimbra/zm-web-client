@@ -79,6 +79,10 @@
 				<!--<tr><td class="TbTop"></td></tr>-->
 				<tr><td valign="top">
 					<table cellspacing="0" cellpadding="0" border="0" align="center" width="100%">
+					<tr><td>
+						<app:appTopUser mailbox="${mailbox}" keys="${keys}" />
+						</td>
+					</tr>
 					<tr><td style="background-color: white;" valign="top">
 						<app:overviewTree mailbox="${mailbox}" keys="${keys}" minical="${minical}" calendars="${calendars}" contacts="${contacts}" voice="${voice}" tasks="${tasks}" briefcases="${briefcases}" tags="${tags}" searches="${searches}" folders="${folders}" editmode="${editmode}" date="${date}"/>
 						</td>
