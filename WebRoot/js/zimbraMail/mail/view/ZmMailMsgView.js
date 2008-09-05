@@ -1842,7 +1842,7 @@ function(self, iframe, attempt) {
 		if (attempt == null)
 			attempt = 0;
 		try {
-			if (!iframe.contentWindow || !iframe.contentWindow.document) {
+			if ( !iframe.contentWindow || !iframe.contentWindow.document || ( AjxEnv.isFirefox3up && attempt == 0 ) ) {
 				if (attempt++ < ZmMailMsgView.SETHEIGHT_MAX_TRIES)
 					self._resetIframeHeightOnTimer(iframe, attempt);
 				return; // give up
