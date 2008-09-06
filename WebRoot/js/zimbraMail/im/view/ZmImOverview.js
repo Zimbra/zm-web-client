@@ -29,6 +29,7 @@ ZmImOverview = function(parent, args) {
 	this._actionMenuOps = {
 
 		root : [ ZmOperation.NEW_ROSTER_ITEM,
+			ZmOperation.NEW_ROSTER_GROUP,	
 			ZmOperation.SEP, //-----------
 			ZmOperation.IM_GATEWAY_LOGIN,
 			ZmOperation.SEP, //-----------
@@ -148,6 +149,26 @@ function(filter, on) {
 	}
 };
 
+ZmImOverview.prototype._newGroupOkCallback =
+function(data) {
+	var message;
+	if (!data.value) {
+		message = ZmMsg.nameEmpty;
+	} else if (this._groupItems[data.value]) {
+		message = ZmMsg.imGroupExists;
+	}
+	if (message) {
+		var dialog = appCtxt.getMsgDialog();
+		dialog.reset();
+		dialog.setMessage(message, DwtMessageDialog.CRITICAL_STYLE);
+		dialog.popup();
+	} else {
+		this._showInfoItem(ZmImOverview.NO_MESSAGE);
+		this.getGroupItem(data.value).setExpanded(true);
+		data.dialog.popdown();
+	}
+};
+
 ZmImOverview.prototype._actionMenuListener =
 function(useActionedItem, ev) {
 	var operation = ev.item.getData(ZmOperation.KEY_ID);
@@ -171,6 +192,17 @@ function(useActionedItem, ev) {
 			this.__filterBlocked = !this.__filterBlocked;
 			appCtxt.getSettings().getSetting(ZmSetting.IM_PREF_HIDE_BLOCKED).setValue(this.__filterBlocked);
 			this._updateFilter(ZmImOverview.FILTER_BLOCKED_BUDDIES, this.__filterBlocked);
+			break;
+
+		case ZmOperation.NEW_ROSTER_GROUP:
+			this._newGroupOkCallbackObj = this._newGroupOkCallbackObj || new AjxCallback(this, this._newGroupOkCallback);
+			AjxDispatcher.require([ "IM"]);
+			var dialogArgs = {
+				title: ZmMsg.imCreateNewGroup,
+				label: ZmMsg.imGroupName,
+				callback: this._newGroupOkCallbackObj
+			};	
+			ZmPromptDialog.getInstance().popup(dialogArgs);
 			break;
 
 		default:
@@ -287,10 +319,19 @@ ZmImOverview.prototype._getActionMenu = function(nodeType, buddy, group) {
 			menu.getOp(ZmOperation.IM_CREATE_CONTACT).setVisible(!contact);
 			menu.getOp(ZmOperation.IM_EDIT_CONTACT).setVisible(!!contact);
 		} else if (nodeType == "root") {
-			this._setCheckOp(menu, ZmOperation.IM_TOGGLE_OFFLINE, this.__filterOffline);
-			this._setCheckOp(menu, ZmOperation.IM_TOGGLE_BLOCKED, this.__filterBlocked);
-			this._setCheckOp(menu, ZmOperation.IM_SORT_BY_PRESENCE, this._sortBy == ZmImApp.BUDDY_SORT_PRESENCE);
-			this._setCheckOp(menu, ZmOperation.IM_SORT_BY_NAME, this._sortBy == ZmImApp.BUDDY_SORT_NAME);
+			var loggedIn = ZmImApp.loggedIn();
+			for (var i = 0, count = menu.opList.length; i < count; i++) {
+				var item = menu.getMenuItem(menu.opList[i]);
+				if (item) {
+					item.setEnabled(loggedIn);
+				}
+			}
+			if (loggedIn) {
+				this._setCheckOp(menu, ZmOperation.IM_TOGGLE_OFFLINE, this.__filterOffline);
+				this._setCheckOp(menu, ZmOperation.IM_TOGGLE_BLOCKED, this.__filterBlocked);
+				this._setCheckOp(menu, ZmOperation.IM_SORT_BY_PRESENCE, this._sortBy == ZmImApp.BUDDY_SORT_PRESENCE);
+				this._setCheckOp(menu, ZmOperation.IM_SORT_BY_NAME, this._sortBy == ZmImApp.BUDDY_SORT_NAME);
+			}
 		}
 		return menu;
 	}
@@ -468,7 +509,7 @@ function(type) {
 		switch(type) {
 		case ZmImOverview.NO_MESSAGE:
 			// Once we have buddies we can just delete the info item.
-			this._showInfoItem(ZmImOverview.NO_MESSAGE);
+			this._infoItem.dispose();
 			this._infoItem = null;
 			break;
 		case ZmImOverview.NOT_LOGGED_IN:
@@ -499,8 +540,7 @@ function(ev) {
 	} else if (ev.event == ZmEvent.E_CREATE) {
 		if (this._infoItem) {
 			var expand = this._rootItem.getExpanded();
-			this._infoItem.dispose();
-			this._infoItem = null;
+			this._showInfoItem(ZmImOverview.NO_MESSAGE);
 			this._createFilterItem(expand);
 		}
 		if (this._loadingAction) {
