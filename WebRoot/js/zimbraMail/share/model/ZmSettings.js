@@ -393,9 +393,10 @@ function(response) {
  * @param list			[array]				a list of ZmSetting
  * @param callback		[AjxCallback]		callback to run after response is received
  * @param batchCommand	[ZmBatchCommand]*	batch command
+ * @param acctName		[String]*			name of the account to save under
  */
 ZmSettings.prototype.save =
-function(list, callback, batchCommand) {
+function(list, callback, batchCommand, acctName) {
 	if (!(list && list.length)) return;
 
 	var soapDoc = AjxSoapDoc.create("ModifyPrefsRequest", "urn:zimbraAccount");
@@ -436,7 +437,7 @@ function(list, callback, batchCommand) {
 		if (batchCommand) {
 			batchCommand.addNewRequestParams(soapDoc, respCallback);
 		} else {
-			appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:asyncMode, callback:respCallback});
+			appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:asyncMode, callback:respCallback, accountName:acctName});
 		}
 	}
 };
@@ -805,21 +806,4 @@ function(dialog) {
 	window.onbeforeunload = null;
 	var url = AjxUtil.formatUrl({});
 	ZmZimbraMail.sendRedirect(url); // redirect to self to force reload
-};
-
-/**
- * Saves implicit prefs. Because it's done onunload, the save is sync.
- */
-ZmSettings.prototype.saveImplicitPrefs =
-function() {
-	var list = [];
-	for (var id in ZmSetting.CHANGED_IMPLICIT) {
-		var setting = this.getSetting(id);
-		if (setting.getValue(null, true) != setting.origValue) {
-			list.push(setting);
-		}
-	}
-	if (list && list.length) {
-		this.save(list);
-	}
 };

@@ -276,6 +276,27 @@ function(callback, errorCallback, batchCmd) {
 	return (this.getIdentity().save(callback, errorCallback, batchCmd));
 };
 
+/**
+ * Saves implicit prefs. Because it's done onunload, the save is sync.
+ */
+ZmZimbraAccount.prototype.saveImplicitPrefs =
+function() {
+	// HACK: in multi-account, hanging noop gets dropped and somehow the auth token changes
+	ZmCsfeCommand._curAuthToken = ZmCsfeCommand.getAuthToken();
+
+	var list = [];
+	for (var id in ZmSetting.CHANGED_IMPLICIT) {
+		var setting = this.settings.getSetting(id);
+		if (setting.getValue(null, true) != setting.origValue) {
+			list.push(setting);
+		}
+	}
+	if (list && list.length) {
+		this.settings.save(list, null, null, this.name);
+	}
+};
+
+
 //
 // Protected methods
 //
