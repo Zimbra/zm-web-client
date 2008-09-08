@@ -1871,18 +1871,23 @@ function() {
 
 ZmZimbraMail._endSession =
 function() {
-	// Let the server know that the session is ending.
-	var self = window._zimbraMail;
-	if (self) {
-		self._settings.saveImplicitPrefs();
-		var errorCallback = new AjxCallback(null, function() { return true; } ); // Ignores any error.
-		var args = {
-			jsonObj: { EndSessionRequest: { _jsns: "urn:zimbraAccount" } },
-			asyncMode: true,
-			errorCallback: errorCallback
-		};
-		self.sendRequest(args);
+	// save implicit prefs for all accounts
+	var accounts = appCtxt.getZimbraAccounts();
+	for (var i in accounts) {
+		var acct = accounts[i];
+		if (acct.visible) {
+			acct.saveImplicitPrefs();
+		}
 	}
+
+	// Let the server know that the session is ending.
+	var errorCallback = new AjxCallback(null, function() { return true; } ); // Ignores any error.
+	var args = {
+		jsonObj: { EndSessionRequest: { _jsns: "urn:zimbraAccount" } },
+		asyncMode: true,
+		errorCallback: errorCallback
+	};
+	appCtxt.getAppController().sendRequest(args);
 };
 
 // YUCK:
