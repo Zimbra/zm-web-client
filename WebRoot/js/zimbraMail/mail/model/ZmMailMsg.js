@@ -611,11 +611,7 @@ ZmMailMsg.prototype.sendInviteReply =
 function(contactList, edited, componentId, callback, errorCallback, instanceDate, accountName) {
 	this._origMsg = this._origMsg || this;
 
-	if (!this._origMsg.invite.hasMultipleComponents()) {
-		return this._sendInviteReply(contactList, edited, componentId || 0, callback, errorCallback, instanceDate, accountName);
-	} else {
-		// TODO ... don't understand multiple invites too well yet.
-	}
+	return this._sendInviteReply(contactList, edited, componentId || 0, callback, errorCallback, instanceDate, accountName);
 };
 
 ZmMailMsg.prototype._sendInviteReply =
