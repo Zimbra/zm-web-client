@@ -29,12 +29,12 @@
         </tr></table>
         <hr/>
 
-    <table cellpadding="0" cellspacing="5" >
-    <c:forEach items="${contactIds}" var="contactId" varStatus="status">
-        <zm:getContact id="${contactId}" var="contact"/>
+    <table cellpadding="0" cellspacing="5" style="width:850px;">
         <tr>
         <td>
-            <div  style="border: 1px solid rgb(204, 204, 204); padding-bottom:4px;overflow-x:hidden;  width: 2.2in;">
+    <c:forEach items="${contactIds}" var="contactId" varStatus="status">
+        <zm:getContact id="${contactId}" var="contact"/>
+            <div  style="border: 1px solid rgb(204, 204, 204); padding:4px 4px 6px 4px;min-width:250px; float:left;height:150px;margin:10px;">
         <table  cellpadding=2 cellspacing=0 width="100%" >
             <tr>
                 <td nowrap colspan="2" style="font-family: Arial; white-space: nowrap; font-weight: bold; background-color: rgb(221, 221, 221);"><c:if test="${contact.isGroup}"><fmt:message key="AB_GROUP_NAME"/> : </c:if>${fn:escapeXml(contact.displayFileAs)}</td>
@@ -54,7 +54,7 @@
 	        </c:if>
 	        <c:if test="${not empty contact.jobTitle}">
 	        <tr>
-	                <td nowrap><fmt:message key="AB_FIELD_jobTitle"/> </td> 
+	                <td nowrap><fmt:message key="AB_FIELD_jobTitle"/> </td>
 	                <td nowrap>: ${fn:escapeXml(contact.jobTitle)}</td>
 	            </tr>
 	        </c:if>
@@ -77,15 +77,15 @@
         </tr>
     	<c:forEach var="member" items="${contact.groupMembers}">
         	<tr>
-            	<td><nobr>${fn:escapeXml(member)}</nobr></td>            
+            	<td><nobr>${fn:escapeXml(member)}</nobr></td>
         	</tr>
     	</c:forEach>
 		</c:if>
         </table>
         </div>
+    </c:forEach>
         </td>
         </tr>
-    </c:forEach>
     </table>
 
     <c:if test="${empty paramValues.id}">
