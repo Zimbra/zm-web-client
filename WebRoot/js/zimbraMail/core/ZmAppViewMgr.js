@@ -239,7 +239,7 @@ function(components, doFit, noSetZ) {
 					// XXX: we no longer throw an exception b/c some skins want
 					// to omit certain containers (i.e. quota).
 					//throw new AjxException("Skin container '" + contId + "' not found.");
-					DBG.println("Skin container '" + contId + "' not found.");
+					DBG.println(AjxDebug.DBG1, "Skin container '" + contId + "' not found.");
 					continue;
 				}
 				this._containers[cid] = contEl;
