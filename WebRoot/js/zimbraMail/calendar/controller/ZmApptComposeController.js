@@ -100,20 +100,20 @@ function(attId) {
 				}
 			}
 		}
-        // otherwise, just save the appointment
+		// otherwise, just save the appointment
 		this._saveCalItemFoRealz(appt, attId);
 	}
 	return true;
 };
 
 ZmApptComposeController.prototype.getFreeBusyInfo = 
-function(startTime, endTime, emailList, callback) {
+function(startTime, endTime, emailList, callback, errorCallback) {
 	var soapDoc = AjxSoapDoc.create("GetFreeBusyRequest", "urn:zimbraMail");
 	soapDoc.setMethodAttribute("s", startTime);
 	soapDoc.setMethodAttribute("e", endTime);
 	soapDoc.setMethodAttribute("uid", emailList);
 
-	appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: callback});
+	appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:callback, errorCallback:errorCallback});
 };
 
 ZmApptComposeController.prototype._createComposeView =

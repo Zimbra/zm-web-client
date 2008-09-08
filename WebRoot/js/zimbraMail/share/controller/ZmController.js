@@ -488,7 +488,8 @@ function(ex) {
 			ex.code == ZmCsfeException.NETWORK_ERROR ||
 		   	ex.code == ZmCsfeException.EMPTY_RESPONSE ||
 		   	ex.code == ZmCsfeException.BAD_JSON_RESPONSE ||
-		   	ex.code == ZmCsfeException.TOO_MANY_TAGS);
+		   	ex.code == ZmCsfeException.TOO_MANY_TAGS ||
+			ex.code == ZmCsfeException.OFFLINE_ONLINE_ONLY_OP);
 };
 
 /*********** Msg dialog Callbacks */
