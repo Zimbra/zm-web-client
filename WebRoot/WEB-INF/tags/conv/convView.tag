@@ -243,7 +243,8 @@
             </tr>
             <tr>
                 <td class='TbBottom'>
-                    <app:convToolbar context="${context}" convSearchResult="${convSearchResult}" convCursor="${convCursor}" keys="false"/>
+                <app:convToolbar context="${context}" convSearchResult="${convSearchResult}" convCursor="${convCursor}" keys="true"/>
+               
                 </td>
             </tr>
         </table>
