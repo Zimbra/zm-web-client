@@ -1016,7 +1016,6 @@ if (ext == null) ext = "";
         <antcall target='webxml-deploy-replace'/>
     	
         <ant dir="${server.dir}" target="start-jetty" inheritAll="false"/>
-    	<antcall target='reset-skins-config'/>
     </target>
 
     <target name='webxml-package-replace' depends='init'>
