@@ -3,7 +3,7 @@
 		<a target="_new" href="<$=appCtxt.get(ZmSetting.ADMIN_REFERENCE)$>"><$= ZmMsg.adminLinkLabel $></a>&nbsp;<font color="gray">|</font>&nbsp;
 	<$ } $>
     <$ if (!appCtxt.isOffline) { $>
-		<a href='/m'>Mobile</a>&nbsp;<font color="gray">|</font>&nbsp;<a href='<$= ZmMsg.yahooYahooMailURL $>'><$= ZmMsg.yahooYahooMail $></a>&nbsp;<font color="gray">|</font>&nbsp;
+		<a href='<$= ZmMsg.yahooYahooMailURL $>'><$= ZmMsg.yahooYahooMail $></a>&nbsp;<font color="gray">|</font>&nbsp;
 	<$ } else { $>
 		<a href='http://www.yahoo.com' target='_blank'><$= ZmMsg.yahooYahoo $></a>&nbsp;<font color="gray">|</font>&nbsp;
 		<a href='http://my.yahoo.com' target='_blank'><$= ZmMsg.yahooMyYahoo $></a>&nbsp;<font color='gray'>|</font>&nbsp;
