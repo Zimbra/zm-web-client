@@ -111,3 +111,9 @@
         </c:otherwise>
     </c:choose>
 </app:handleError>
+<script type="text/javascript">
+    <!--
+    setTimeout('window.print()', 2000);
+
+    // -->
+</script>
