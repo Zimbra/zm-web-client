@@ -784,10 +784,9 @@ function(ev) {
 	if (object.handler.hasToolTipText()) {
 		var shell = DwtShell.getShell(window);
 		var manager = shell.getHoverMgr();
-		if ((!manager.isHovering() || manager.getHoverObject() != object) && !DwtMenu.menuShowing()) {
+		if (!manager.isHovering()) {
 			manager.reset();
 			manager.setHoverOverDelay(ZmObjectManager._TOOLTIP_DELAY);
-			manager.setHoverObject(object);
 			manager.setHoverOverData(object);
 			manager.setHoverOverListener(this._hoverOverListener);
 			manager.hoverOver(ev.docX, ev.docY);
