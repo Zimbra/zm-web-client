@@ -1,0 +1,113 @@
+<%@ page buffer="8kb" autoFlush="true" %>
+<%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
+<%@ taglib prefix="zm" uri="com.zimbra.zm" %>
+<%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
+
+<app:handleError>
+
+    <zm:getMailbox var="mailbox"/>
+    <c:choose>
+        <c:when test="${not empty mailbox.prefs.locale}">
+            <fmt:setLocale value='${mailbox.prefs.locale}' scope='request' />
+        </c:when>
+        <c:otherwise>
+            <fmt:setLocale value='${pageContext.request.locale}' scope='request' />
+        </c:otherwise>
+    </c:choose>
+    <fmt:setBundle basename="/messages/ZhMsg" scope='request' />
+
+    <c:if test="${not empty param.st and param.st ne 'appointment'}">
+        <c:redirect url="/h/search">
+            <c:param name="sq" value="${param.sq}"/>
+            <c:param name="st" value="${param.st}"/>
+        </c:redirect>
+    </c:if>
+
+    <c:choose>
+        <c:when test="${not empty param.tz}">
+            <fmt:setTimeZone var="tz" value="${param.tz}" scope="request"/>
+        </c:when>
+        <c:otherwise>
+            <c:set var="tz" value="${mailbox.prefs.timeZone}" scope="request"/>
+        </c:otherwise>
+    </c:choose>
+
+    <c:choose>
+        <c:when test="${not empty param.date}">
+            <fmt:parseDate timeZone="${tz}" var="date" pattern="yyyyMMdd" value="${param.date}"/>
+            <c:set scope="request" var="dateContext" value="${zm:getCalendarMidnight(date.time, tz)}"/>
+        </c:when>
+        <c:otherwise>
+            <c:set scope="request" var="dateContext" value="${zm:getToday(tz)}"/>
+        </c:otherwise>
+    </c:choose>
+
+    <c:choose>
+        <c:when test="${param.action eq 'compose'}">
+            <app:composeCheck/>
+            <c:set var="needViewAppt" value="${true}"/>
+        </c:when>
+        <c:otherwise>
+            <app:editapptCheck/>
+        </c:otherwise>
+    </c:choose>
+
+
+    <c:set scope="request" var="calendarQuery" value="${param.sq}"/>
+
+    <jsp:useBean id="expanded" scope="session" class="java.util.HashMap" />
+
+    <c:if test="${not empty param.expand}">
+        <c:set target="${sessionScope.expanded}" property="${param.expand}" value="expand"/>
+    </c:if>
+    <c:if test="${not empty param.collapse}">
+        <c:set target="${sessionScope.expanded}" property="${param.collapse}" value="collapse"/>
+    </c:if>
+
+
+    <c:if test="${not empty param.check}">
+        <zm:checkFolder checked="true" id="${param.check}"/>
+    </c:if>
+    <c:if test="${not empty param.uncheck}">
+        <zm:checkFolder checked="false" id="${param.uncheck}"/>
+    </c:if>
+
+    <c:if test="${not empty param.refresh}">
+        <zm:clearApptSummaryCache/>
+    </c:if>
+
+    <c:if test="${not empty param.sync}">
+        <zm:syncFolder id="${param.sync}"/>
+        <c:set var="folderName" value="${zm:getFolderName(pageContext, param.sync)}"/>
+        <app:status>
+            <fmt:message key="actionCalendarReloaded">
+                <fmt:param value="${folderName}"/>
+            </fmt:message>
+        </app:status>
+    </c:if>
+
+</app:handleError>
+
+<app:handleError>
+    <c:set var="view" value="${param.view}"  />
+    <c:choose>
+        <c:when test="${view eq 'day'}">
+            <app:multiDayPrintView timezone="${tz}" date="${dateContext}" view='${view}' numdays="${not empty param.numdays ? param.numdays : 1}"/>
+        </c:when>
+        <c:when test="${view eq 'workWeek'}">
+            <app:multiDayPrintView timezone="${tz}" date="${dateContext}" view='${view}' numdays="5"/>
+        </c:when>
+        <c:when test="${view eq 'week'}">
+            <app:multiDayPrintView timezone="${tz}" date="${dateContext}" view='${view}' numdays="7"/>
+        </c:when>
+        <c:when test="${view eq 'schedule'}">
+            <app:multiDayPrintView timezone="${tz}" date="${dateContext}" numdays="1" view="${view}"/>
+        </c:when>
+        <c:otherwise>
+            <app:monthPrintView timezone="${tz}" date="${dateContext}"/>
+        </c:otherwise>
+    </c:choose>
+</app:handleError>
