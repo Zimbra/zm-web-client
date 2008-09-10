@@ -463,6 +463,10 @@ function(icon) {
 		return;
 	this.xmlObj().icon = icon;
 	var treeView = appCtxt.getAppViewMgr().getCurrentViewComponent(ZmAppViewMgr.C_TREE);
+    //For offline Accordion setup, zimlets fail here.
+    if(treeView instanceof DwtAccordion){
+        treeView = treeView.getItem(appCtxt.getActiveAccount().itemId).control.getTreeView(ZmOrganizer.ZIMLET);        
+    }
 	var treeItem = treeView && treeView.getTreeItemById(this.xmlObj().getOrganizer().id);
 	if (treeItem) {
 		treeItem.setImage(icon);
