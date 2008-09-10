@@ -286,8 +286,8 @@ function() {
 
 	var list = [];
 	for (var id in ZmSetting.CHANGED_IMPLICIT) {
-		var setting = this.settings.getSetting(id);
-		if (setting.getValue(null, true) != setting.origValue) {
+		var setting = this.settings ? this.settings.getSetting(id) : null;
+		if (setting && (setting.getValue(null, true) != setting.origValue)) {
 			list.push(setting);
 		}
 	}
