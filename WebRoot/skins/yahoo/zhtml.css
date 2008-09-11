@@ -1,0 +1,11 @@
+#skin_container_tree_top {
+    background-image: none;
+	background-color: @AltC@;
+    margin-bottom: 5px;
+	@BigRoundCorners@
+	border-color: @Darken(AppTabColor,20)@;
+}
+
+.Tree {
+    border-color: @Darken(AppTabColor,20)@;
+}

@@ -59,7 +59,47 @@
         <name>taskFolderTree</name>
         <path>/WEB-INF/tags/task/taskFolderTree.tag</path>
     </tag-file>
+
+    <tag-file>
+        <name>newBriefCheck</name>
+        <path>/WEB-INF/tags/briefcase/newBriefCheck.tag</path>
+    </tag-file>
     
+    <tag-file>
+        <name>briefcaseAction</name>
+        <path>/WEB-INF/tags/overview/briefcaseAction.tag</path>
+    </tag-file>
+    
+    <tag-file>
+        <name>briefcaseListViewAction</name>
+        <path>/WEB-INF/tags/briefcase/briefcaseListViewAction.tag</path>
+    </tag-file>
+    
+    <tag-file>
+        <name>briefcaseListView</name>
+        <path>/WEB-INF/tags/briefcase/briefcaseListView.tag</path>
+    </tag-file>
+
+    <tag-file>
+        <name>briefcaseListViewToolbar</name>
+        <path>/WEB-INF/tags/briefcase/briefcaseListViewToolbar.tag</path>
+    </tag-file>
+
+    <tag-file>
+        <name>briefcaseExplorerView</name>
+        <path>/WEB-INF/tags/briefcase/briefcaseExplorerView.tag</path>
+    </tag-file>
+
+    <tag-file>
+        <name>briefcaseFolderTree</name>
+        <path>/WEB-INF/tags/briefcase/briefcaseFolderTree.tag</path>
+    </tag-file>
+
+    <tag-file>
+        <name>briefcaseFolder</name>
+        <path>/WEB-INF/tags/briefcase/briefcaseFolder.tag</path>
+    </tag-file>
+
    <tag-file>
        <name>convListView</name>
         <path>/WEB-INF/tags/conv/convListView.tag</path>
