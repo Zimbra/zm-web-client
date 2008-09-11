@@ -684,35 +684,13 @@ function(tb) {
 
 	new DwtControl({parent:tb, className:"vertSep"});
 
-	var insListener = new AjxListener(this, this._insElementListener);
-	var params = {parent:tb, style:DwtButton.TOGGLE_STYLE};
-	this._listButton = new DwtToolBarButton(params);
-	this._listButton.setToolTipContent(ZmMsg.bulletedList);
-	this._listButton.setImage("BulletedList");
-	this._listButton.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.UNORDERED_LIST);
-	this._listButton.addSelectionListener(insListener);
+	this._createListMenu(tb);
 
-	this._numberedListButton = new DwtToolBarButton(params);
-	this._numberedListButton.setToolTipContent(ZmMsg.numberedList);
-	this._numberedListButton.setImage("NumberedList");
-	this._numberedListButton.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.ORDERED_LIST);
-	this._numberedListButton.addSelectionListener(insListener);
-
-	var listener = new AjxListener(this, this._indentListener);
-	this._outdentButton = new DwtToolBarButton({parent:tb});
-	this._outdentButton.setToolTipContent(ZmMsg.outdent);
-	this._outdentButton.setImage("Outdent");
-	this._outdentButton.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.OUTDENT);
-	this._outdentButton.addSelectionListener(listener);
-
-	this._indentButton = new DwtToolBarButton({parent:tb});
-	this._indentButton.setToolTipContent(ZmMsg.indent);
-	this._indentButton.setImage("Indent");
-	this._indentButton.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.INDENT);
-	this._indentButton.addSelectionListener(listener);
+	this._createIndentMenu(tb);
 
 	new DwtControl({parent:tb, className:"vertSep"});
 
+    var params = {parent:tb, style:DwtButton.TOGGLE_STYLE};
 	var listener = new AjxListener(this, this._fontStyleListener);
 	this._boldButton = new DwtToolBarButton(params);
 	this._boldButton.setImage("Bold");
@@ -1152,6 +1130,57 @@ function(tb) {
 	s.setMenu(menu);
 };
 
+
+
+ZmHtmlEditor.prototype._createListMenu =
+function(tb) {
+
+    var b = new DwtToolBarButton({parent:tb});
+	b.dontStealFocus();
+	b.setImage("BulletedList");
+	b.setToolTipContent(ZmMsg.bulletedList);
+
+    var listListener = new AjxListener(this, this._insElementListener);
+
+    var menu = this._listMenu = new ZmPopupMenu(b);
+
+    var bulletListMenu = this._bulletListMenuItem = menu.createMenuItem(DwtHtmlEditor.UNORDERED_LIST, {image:"BulletedList", style:DwtMenuItem.SELECT_STYLE});
+    bulletListMenu.addSelectionListener(listListener);
+    bulletListMenu.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.UNORDERED_LIST);
+
+    var numberListMenu = this._numberListMenuItem = menu.createMenuItem(DwtHtmlEditor.ORDERED_LIST, {image:"NumberedList", style:DwtMenuItem.SELECT_STYLE});
+    numberListMenu.addSelectionListener(listListener);
+    numberListMenu.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.ORDERED_LIST);
+
+    b.setMenu(menu);
+
+};
+
+
+ZmHtmlEditor.prototype._createIndentMenu =
+function(tb) {
+
+    var b = new DwtToolBarButton({parent:tb});
+	b.dontStealFocus();
+	b.setImage("Outdent");
+	b.setToolTipContent(ZmMsg.indentTooltip);
+
+    var listener = new AjxListener(this, this._indentListener);
+
+    var menu = this._indentMenu = new ZmPopupMenu(b);
+
+    var indentMenu = this._indentMenuItem = menu.createMenuItem(DwtHtmlEditor.OUTDENT, {image:"Outdent", style:DwtMenuItem.SELECT_STYLE});
+    indentMenu.addSelectionListener(listener);
+    indentMenu.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.OUTDENT);
+
+    var outdentMenu = this._outdentMenuItem = menu.createMenuItem(DwtHtmlEditor.INDENT, {image:"Indent", style:DwtMenuItem.SELECT_STYLE});
+    outdentMenu.addSelectionListener(listener);
+    outdentMenu.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.INDENT);
+
+    b.setMenu(menu);
+
+};
+
 ZmHtmlEditor.prototype._createJustifyMenu =
 function(tb) {
 	var b = new DwtToolBarButton({parent:tb});
@@ -1240,9 +1269,6 @@ function(ev) {
  		this._subscriptButton.setSelected(ev.isSubscript);
  	if (this._superscriptButton)
  		this._superscriptButton.setSelected(ev.isSuperscript);
-
- 	this._numberedListButton.setSelected(ev.isOrderedList);
- 	this._listButton.setSelected(ev.isUnorderedList);
 
  	if (ev.color)
  		this._fontColorButton.setColor(ev.color);
