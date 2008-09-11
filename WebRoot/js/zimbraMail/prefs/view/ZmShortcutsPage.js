@@ -372,6 +372,14 @@ function(keys, mapNames, html, i) {
 		var action = isMap ? null : parts[1];
 		var field = parts[parts.length - 1];
 
+		// HACK: multi-account setting gets set too late for precondition to be applied
+		if (map == "global" &&
+			(action == "GoToNextAccount" || action == "GoToPrevAccount" || action == "GoToAccount") && 
+			appCtxt.numVisibleAccounts <= 1)
+		{
+			continue;
+		}
+
 		if (action) {
 			// make sure shortcut is defined && available
 			var ks = kmm.getKeySequences(mapNames[map], action);
@@ -704,7 +712,8 @@ function(html, i, closeLinkId) {
 		html[i++] = "<li>";
 		var propName = [shortcuts[j], "display"].join(".");
 		var value = ZmKeys[propName];
-		if (value) {			var keySeqs = ZmKeys[propName].split(/\s*;\s*/);
+		if (value) {
+			var keySeqs = ZmKeys[propName].split(/\s*;\s*/);
 			var ks = keySeqs[0];
 			var parts = ks.split(",");
 			var scText = AjxMessageFormat.format(ZmMsg.shortcutExample, [ZmShortcutsPageTabViewList._formatKeySequence(parts[0]),

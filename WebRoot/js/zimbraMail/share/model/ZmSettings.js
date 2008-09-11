@@ -234,6 +234,9 @@ function(callback, accountName, result) {
 	if (accounts) {
 		// init visible account count - for offline, main account is always invisible
 		var count = appCtxt.isOffline ? 0 : 1;
+		var kmm = appCtxt.getAppController().getKeyMapMgr();
+		var seqs = kmm.getKeySequences("Global", "GoToAccount");
+		var ks = seqs[0];
 
 		// create a ZmZimbraAccount for each child account
 		for (var i = 0; i < accounts.length; i++) {
@@ -242,9 +245,22 @@ function(callback, accountName, result) {
 			if (acct.visible) {
 				count++;
 				appCtxt.multiAccounts = true;
+
+				// dynamically add keyboard mapping for switching accounts by index
+				var newKs = ks.replace(/NNN/, (48+count));
+				kmm.setMapping("Global", newKs, "GoToAccount"+count);
 			}
 		}
 		appCtxt.numVisibleAccounts = count;
+
+		if (count > 1) {
+			// be sure to add keyboard shortcut for the visible main account for non-offline
+			if (!appCtxt.isOffline) {
+				var newKs = ks.replace(/NNN/, "49"); // main account is always "1"
+				kmm.setMapping("Global", newKs, "GoToAccount1");
+			}
+			kmm.reloadMap("Global");
+		}
 	}
 
 	// handle settings whose values may depend on other settings

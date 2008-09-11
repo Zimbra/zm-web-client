@@ -1768,6 +1768,18 @@ function(actionCode, ev) {
 			break;
 		}
 
+		case ZmKeyMap.GOTO_PREV_ACCT:
+		case ZmKeyMap.GOTO_NEXT_ACCT: {
+			var active = (appCtxt.numVisibleAccounts > 1) ? appCtxt.getActiveAccount() : null;
+			if (active) {
+				var index = (actionCode == ZmKeyMap.GOTO_PREV_ACCT)
+					? ((active.itemId > 0) ? (active.itemId-1) : null)
+					: ((active.itemId < (appCtxt.numVisibleAccounts-1)) ? (active.itemId+1) : null);
+				this._switchToAccount(index);
+			}
+			break;
+		}
+
 		case ZmKeyMap.CANCEL: {
 			// see if there's a current drag operation we can cancel
 			var handled = false;
@@ -1784,10 +1796,20 @@ function(actionCode, ev) {
 		}
 
 		default: {
-			var ctlr = appCtxt.getCurrentController();
-			return (ctlr && ctlr.handleKeyAction)
-				? ctlr.handleKeyAction(actionCode, ev)
-				: false;
+			if (appCtxt.numVisibleAccounts > 1) {
+				// Handle action code like "GoToAcct3"
+				var m = actionCode.match(ZmKeyMap.GOTO_ACCT_RE);
+				if (m && m.length) {
+					this._switchToAccount(m[1]-1);
+					break;
+				}
+				return false;
+			} else {
+				var ctlr = appCtxt.getCurrentController();
+				return (ctlr && ctlr.handleKeyAction)
+					? ctlr.handleKeyAction(actionCode, ev)
+					: false;
+			}
 		}
 	}
 	return true;
@@ -1802,6 +1824,15 @@ function() {
 	var content = ctlr ? ctlr.getCurrentView() : null;
 	if (content) {
 		appCtxt.getKeyboardMgr().grabFocus(content);
+	}
+};
+
+ZmZimbraMail.prototype._switchToAccount =
+function(index) {
+	var app = appCtxt.getCurrentApp();
+	var item = app.getOverviewPanelContent().getItemByIndex(index);;
+	if (item) {
+		app.expandAccordionForAccount(item.data.account, true);
 	}
 };
 
