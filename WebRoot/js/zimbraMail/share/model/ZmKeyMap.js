@@ -49,6 +49,9 @@ ZmKeyMap = function() {
 ZmKeyMap.prototype = new DwtKeyMap(true);
 ZmKeyMap.prototype.constructor = ZmKeyMap;
 
+// for showing the user their aliased shortcuts
+ZmKeyMap.MAP_CUSTOM = "custom";
+
 // translations for map names used in properties file
 ZmKeyMap.MAP_NAME = {};
 ZmKeyMap.MAP_NAME["global"]				= "Global";
@@ -70,6 +73,15 @@ ZmKeyMap.MAP_NAME["editTask"]			= "ZmTaskController";
 ZmKeyMap.MAP_NAME["tabView"]			= "DwtTabView";
 ZmKeyMap.MAP_NAME["voicemail"]			= "ZmVoicemailListController";
 ZmKeyMap.MAP_NAME["call"]				= "ZmCallListController";
+ZmKeyMap.MAP_NAME["custom"]             = "";
+
+// reverse map of above
+ZmKeyMap.MAP_NAME_R = {};
+(function() {
+    for (var i in ZmKeyMap.MAP_NAME) {
+        ZmKeyMap.MAP_NAME_R[ZmKeyMap.MAP_NAME[i]] = i;
+    }
+})();
 
 // Action codes
 ZmKeyMap.ADDRESS_PICKER		= "AddressPicker";
@@ -241,7 +253,7 @@ function() {
 	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.NEW_NOTEBOOK]		= ZmSetting.NOTEBOOK_ENABLED;
 	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.NEW_PAGE]			= ZmSetting.NOTEBOOK_ENABLED;
 	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.NEW_ROSTER_ITEM]	= ZmSetting.IM_ENABLED;
-	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.NEW_TAG]			= ZmSetting.TAGGING_ENABLED;
+	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.NEW_TAG]		= ZmSetting.TAGGING_ENABLED;
 	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.NEW_TASK]			= ZmSetting.TASKS_ENABLED;
 	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.PRESENCE_MENU]		= ZmSetting.IM_ENABLED;
 	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.SAVED_SEARCH]		= ZmSetting.SAVED_SEARCHES_ENABLED;
@@ -253,7 +265,7 @@ function() {
 	ZmKeyMap.ACTION_PRECONDITION["ZmComposeController"][ZmKeyMap.NEW_WINDOW]		= ZmSetting.NEW_WINDOW_COMPOSE;
 	ZmKeyMap.ACTION_PRECONDITION["ZmComposeController"][ZmKeyMap.SAVE]				= ZmSetting.SAVE_DRAFT_ENABLED;
 	ZmKeyMap.ACTION_PRECONDITION["ZmComposeController"][ZmKeyMap.HIGH_PRIORITY]		= ZmSetting.MAIL_PRIORITY_ENABLED;
-	ZmKeyMap.ACTION_PRECONDITION["ZmComposeController"][ZmKeyMap.NORMAL_PRIORITY]	= ZmSetting.MAIL_PRIORITY_ENABLED;
+	ZmKeyMap.ACTION_PRECONDITION["ZmComposeController"][ZmKeyMap.NORMAL_PRIORITY]		= ZmSetting.MAIL_PRIORITY_ENABLED;
 	ZmKeyMap.ACTION_PRECONDITION["ZmComposeController"][ZmKeyMap.LOW_PRIORITY]		= ZmSetting.MAIL_PRIORITY_ENABLED;
 	ZmKeyMap.ACTION_PRECONDITION["ZmApptComposeController"] = {};
 	ZmKeyMap.ACTION_PRECONDITION["ZmApptComposeController"][ZmKeyMap.HTML_FORMAT]	= ZmSetting.HTML_COMPOSE_ENABLED;
