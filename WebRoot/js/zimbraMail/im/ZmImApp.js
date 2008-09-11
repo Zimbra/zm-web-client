@@ -90,7 +90,6 @@ function() {
     ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_XA, { textKey: "imStatusExtAway", image: "ImExtendedAway" });
     ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_CUSTOM_MRU, { image: "ImAvailable" });
     ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_MENU, { }); // Keyboard only.
-    ZmOperation.registerOp(ZmId.OP_NEW_ROSTER_GROUP, { textKey: "imNewGroup", image: "ImGroup" });
     ZmOperation.registerOp(ZmId.OP_NEW_ROSTER_ITEM, { textKey: "newRosterItem", image: "ImBuddy" });
     ZmOperation.registerOp(ZmId.OP_IM_CREATE_CONTACT, { textKey: "addToNewContact", image: "NewContact" });
     ZmOperation.registerOp(ZmId.OP_IM_ADD_TO_CONTACT, { textKey: "addToExistingContact", image: "Edit" });
@@ -98,17 +97,21 @@ function() {
     ZmOperation.registerOp(ZmId.OP_IM_GATEWAY_LOGIN, { textKey: "imGatewayLogin", image: "ExternalLink" });
     ZmOperation.registerOp(ZmId.OP_IM_TOGGLE_OFFLINE, { textKey: "imToggleOffline" });
     ZmOperation.registerOp(ZmId.OP_IM_TOGGLE_BLOCKED, { textKey: "imToggleBlocked" });
+
     ZmOperation.registerOp(ZmId.OP_IM_SORT_BY_PRESENCE, { textKey: "imSortListByPresence" });
     ZmOperation.registerOp(ZmId.OP_IM_SORT_BY_NAME, { textKey: "imSortListByName" });
+
     ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_CUSTOM_MSG, { textKey: "imCustomStatusMsg", image: "ImAvailable"});
+
     ZmOperation.registerOp(ZmId.OP_IM_BLOCK_BUDDY, { textKey: "imBlock", image: "BlockUser" });
     ZmOperation.registerOp(ZmId.OP_IM_UNBLOCK_BUDDY, { textKey: "imUnblock", image: "AllowUser" });
+
 	ZmOperation.registerOp(ZmId.OP_IM_HTML, { image: "HtmlDoc", tooltipKey: "changeEditorMode" });
 	ZmOperation.registerOp(ZmId.OP_IM_DELETE_GROUP, { image: "Delete", textKey: "del" });
+
 	ZmOperation.registerOp(ZmId.OP_IM_CLOSE_ALL_TABS, { textKey: "imCloseAllTabs" });
 	ZmOperation.registerOp(ZmId.OP_IM_CLOSE_OTHER_TABS, { textKey: "imCloseOtherTabs" });
 	ZmOperation.registerOp(ZmId.OP_IM_CLOSE_TAB, { textKey: "imCloseTab" });
-	ZmOperation.registerOp(ZmId.OP_IM_BUDDY_ARCHIVE, { textKey: "imBuddyArchive", image: "ChatFolder" });
 };
 
 ZmImApp.prototype._registerItems =
@@ -240,26 +243,10 @@ ZmImApp.prototype._registerSettings = function(settings) {
 								 });
 
 	settings.registerSetting("IM_PREF_BUDDY_SORT",
-								 { name			: "zimbraPrefIMBuddyListSort",
+								 {
 								   type			: ZmSetting.T_PREF,
 								   dataType		: ZmSetting.D_STRING,
 								   defaultValue : ZmImApp.BUDDY_SORT_NAME,
-								   isImplicit	: true
-								 });
-
-	settings.registerSetting("IM_PREF_HIDE_OFFLINE",
-								 { name			: "zimbraPrefIMHideOfflineBuddies",
-								   type			: ZmSetting.T_PREF,
-								   dataType		: ZmSetting.D_BOOLEAN,
-								   defaultValue : false,
-								   isImplicit	: true
-								 });
-
-	settings.registerSetting("IM_PREF_HIDE_BLOCKED",
-								 { name			: "zimbraPrefIMHideBlockedBuddies",
-								   type			: ZmSetting.T_PREF,
-								   dataType		: ZmSetting.D_BOOLEAN,
-								   defaultValue : false,
 								   isImplicit	: true
 								 });
 
@@ -362,6 +349,14 @@ ZmImApp.prototype._registerPrefs = function() {
                               precondition     : ZmSetting.IM_PREF_REPORT_IDLE
                             });
 
+};
+
+ZmImApp.prototype._setupCurrentAppToolbar =
+function() {
+	var callback = new AjxCallback(this,function(ev){
+		this.getImController()._newRosterItemListener(ev);
+	});
+	ZmCurrentAppToolBar.registerApp(this.getName(), ZmOperation.NEW_ROSTER_ITEM,null,callback);
 };
 
 ZmImApp.prototype._onSettingChange = function(ev) {
