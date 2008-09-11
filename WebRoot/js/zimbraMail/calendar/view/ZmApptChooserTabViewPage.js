@@ -692,7 +692,13 @@ function(items, callback) {
 	for (var i = list.length; --i >= 0;) {
 		var item = list[i];
 		emails[i] = item.getEmail();
-		items_by_id[emails[i]] = item;
+
+        //bug: 30824 - Don't list all addresses/aliases of a resource in GetFreeBusyRequest.  One should suffice.
+        if(emails[i] instanceof Array) {
+            emails[i] = emails[i][0];
+        }
+        
+        items_by_id[emails[i]] = item;
 		item.__fbStatus = { txt: ZmMsg.unknown };
 	}
 	this._controller.getFreeBusyInfo(tf.start.getTime(),
