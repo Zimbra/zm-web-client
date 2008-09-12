@@ -8,7 +8,7 @@
 <c:set var="emptyStatus" value="${empty requestScope.statusMessage}"/>
 <c:if test="${param.dmsg == null && not emptyStatus}">
 <div id="app_st_msg_div" style="display:block;">
-    <table  class='${requestScope.statusClass}' cellpadding=2 cellspacing=2 width="100%" align="center">
+    <table  class='${requestScope.statusClass}' cellpadding=2 cellspacing=2 align="center">
     <tr>
         <td class="Status">
             &nbsp;${requestScope.statusHtml ? requestScope.statusMessage : fn:escapeXml(requestScope.statusMessage)}
