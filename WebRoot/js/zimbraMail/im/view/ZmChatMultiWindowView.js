@@ -73,17 +73,6 @@ ZmChatMultiWindowView.prototype.getActiveWM = function() {
 		: this.getWindowManager();
 };
 
-ZmChatMultiWindowView.prototype.hideJiveOnTimer = function() {
-	if (this._jiveLogo && this._jiveLogo.getVisible()) {
-		var action = new AjxTimedAction(this, this._hideJive);
-		AjxTimedAction.scheduleAction(action, 6000);
-	}
-};
-
-ZmChatMultiWindowView.prototype._hideJive = function() {
-	this._jiveLogo.setVisible(false);
-};
-
 ZmChatMultiWindowView.prototype.__createChatWidget = function(chat, win) {
 	var wm = this.getShellWindowManager();
 	win = win || wm.getWindowByType(ZmChatWindow) || this.__useTab;
@@ -125,7 +114,6 @@ function() {
 	// s.top = "100%";
 	s.right = s.bottom = "20px";
 	var toolbar = new DwtToolBar({parent:cont});
-	this._jiveLogo = new DwtLabel({parent:toolbar, className:"ZmChatJiveIcon ImgJiveBig"});
 	toolbar.addFiller();
 	for (var i = 1; i < gws.length; ++i) {
 		var gw = gws[i];
