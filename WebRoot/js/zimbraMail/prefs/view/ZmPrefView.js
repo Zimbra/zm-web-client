@@ -79,7 +79,7 @@ function() {
 			? (section.createView(this._parent, section, this._controller))
 			: (new ZmPreferencesPage(this, section, this._controller));
 		this.prefView[section.id] = view;
-		var tabButtonId = ZmId.getTabId(this._controller._currentView, section.title);
+		var tabButtonId = ZmId.getTabId(this._controller._currentView, section.title.replace(/[' ]/ig,"_"));
 		var tabId = this.addTab(section.title, view, tabButtonId);
         this._tabId[section.id] = tabId;
     }
