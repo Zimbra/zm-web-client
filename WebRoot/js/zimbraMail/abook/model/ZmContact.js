@@ -840,6 +840,10 @@ function(lower) {
 		this._fileAs = ZmContact.computeFileAs(this);
 		this._fileAsLC = this._fileAs ? this._fileAs.toLowerCase() : null;
 	}
+	// if for some reason fileAsLC is not set even though fileAs is, reset it
+	if (lower && !this._fileAsLC) {
+		this._fileAsLC = this._fileAs.toLowerCase();
+	}
 	return lower ? this._fileAsLC : this._fileAs;
 };
 

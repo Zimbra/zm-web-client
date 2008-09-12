@@ -319,6 +319,12 @@ function(result) {
 	if (folders) {
 		appCtxt.getRequestMgr()._loadTree(ZmOrganizer.FOLDER, null, resp.folder[0], "folder", this);
 	}
+
+	// in dev mode, 
+	if (AjxDispatcher.loaded("Contacts")) {
+		var capp = appCtxt.getApp(ZmApp.CONTACTS);
+		capp._createDeferredFolders(ZmOrganizer.ADDRBOOK);
+	}
 };
 
 ZmZimbraAccount.prototype._handleLoadTags =
