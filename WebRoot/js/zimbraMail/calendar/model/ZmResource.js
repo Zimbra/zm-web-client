@@ -68,7 +68,8 @@ function() {
 
 ZmResource.prototype.getEmail =
 function() {
-	return this.getAttr(ZmResource.F_mail);
+	var attr = this.getAttr(ZmResource.F_mail);
+	return attr instanceof Array ? attr[0] : attr;
 };
 
 ZmResource.prototype.getFullName =
