@@ -688,43 +688,70 @@ function(items, callback) {
 	var tf = this._getTimeFrame();
 	var list = (items instanceof AjxVector) ? items.getArray() : (items instanceof Array) ? items : [items];
 	var emails = [];
-	var items_by_id = {};
+	var itemsById = {};
 	for (var i = list.length; --i >= 0;) {
 		var item = list[i];
 		emails[i] = item.getEmail();
 
         //bug: 30824 - Don't list all addresses/aliases of a resource in GetFreeBusyRequest.  One should suffice.
-        if(emails[i] instanceof Array) {
-            emails[i] = emails[i][0];
-        }
-        
-        items_by_id[emails[i]] = item;
+		if (emails[i] instanceof Array) {
+			emails[i] = emails[i][0];
+		}
+
+		itemsById[emails[i]] = item;
 		item.__fbStatus = { txt: ZmMsg.unknown };
 	}
-	this._controller.getFreeBusyInfo(tf.start.getTime(),
-									 tf.end.getTime(),
-									 emails.join(","),
-									 new AjxCallback(this, function(result) {
-										 var args = result.getResponse().GetFreeBusyResponse.usr;
-										 for (var i = args.length; --i >= 0;) {
-											 var el = args[i];
-											 var id = el.id;
-											 if (!id) { continue; }
-											 var item = items_by_id[id];
-											 if (!item) { continue; }
-											 var status = ZmMsg.free;
-											 item.__fbStatus.status = 0;
-											 if (el.b) {
-												 status = "<b style='color: red'>" + ZmMsg.busy + "</b>";
-												 item.__fbStatus.status = 1;
-											 } else if (el.u) {
-												 status = "<b style='color: red'>" + ZmMsg.outOfOffice + "</b>";
-												 item.__fbStatus.status = 2;
-											 }
-											 item.__fbStatus.txt = status;
-										 }
-										 callback(items);
-									 }));
+	callback(items);
+
+	if (this._freeBusyRequest) {
+		appCtxt.getRequestMgr().cancelRequest(this._freeBusyRequest, null, true);
+	}
+	this._freeBusyRequest = this._controller.getFreeBusyInfo(tf.start.getTime(),
+															 tf.end.getTime(),
+															 emails.join(","),
+															 new AjxCallback(this, this._handleResponseFreeBusy, [itemsById]),
+															 null,
+															 true);
+};
+
+ZmApptChooserTabViewPage.prototype._handleResponseFreeBusy =
+function(itemsById, result) {
+	this._freeBusyRequest = null;
+
+	var args = result.getResponse().GetFreeBusyResponse.usr;
+	for (var i = args.length; --i >= 0;) {
+		var el = args[i];
+		var id = el.id;
+		if (!id) {
+			continue;
+		}
+		var item = itemsById[id];
+		if (!item) {
+			continue;
+		}
+		var status = ZmMsg.free;
+		item.__fbStatus.status = 0;
+		if (el.b) {
+			status = "<b style='color: red'>" + ZmMsg.busy + "</b>";
+			item.__fbStatus.status = 1;
+		} else if (el.u) {
+			status = "<b style='color: red'>" + ZmMsg.outOfOffice + "</b>";
+			item.__fbStatus.status = 2;
+		}
+		item.__fbStatus.txt = status;
+		this._updateStatus(item, this._chooser.sourceListView);
+		this._updateStatus(item, this._chooser.targetListView);
+	}
+};
+
+ZmApptChooserTabViewPage.prototype._updateStatus =
+function(item, view) {
+	var id = view._getFieldId(item, "FBSTATUS"),
+		element = document.getElementById(id);
+	
+	if (element) {
+		element.innerHTML = item.__fbStatus.txt;
+	}
 };
 
 ZmApptChooserTabViewPage.prototype._handleResponseSearchCalendarResources =
@@ -888,6 +915,11 @@ function() {
 	}
 
 	return headerList;
+};
+
+ZmApptChooserListView.prototype._getCellId =
+function(item, field) {
+	return field == "FBSTATUS" ? this._getFieldId(item, field) : null;
 };
 
 ZmApptChooserListView.prototype._getCellContents =

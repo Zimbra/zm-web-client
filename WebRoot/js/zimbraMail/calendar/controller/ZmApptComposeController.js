@@ -107,13 +107,14 @@ function(attId) {
 };
 
 ZmApptComposeController.prototype.getFreeBusyInfo = 
-function(startTime, endTime, emailList, callback, errorCallback) {
+function(startTime, endTime, emailList, callback, errorCallback, noBusyOverlay) {
 	var soapDoc = AjxSoapDoc.create("GetFreeBusyRequest", "urn:zimbraMail");
 	soapDoc.setMethodAttribute("s", startTime);
 	soapDoc.setMethodAttribute("e", endTime);
 	soapDoc.setMethodAttribute("uid", emailList);
 
-	appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:callback, errorCallback:errorCallback});
+	return appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:callback,
+												   errorCallback:errorCallback, noBusyOverlay:noBusyOverlay});
 };
 
 ZmApptComposeController.prototype._createComposeView =
