@@ -171,8 +171,8 @@ function(setting, right) {
 		newUsers.sort();
 	}
 	var newHash = AjxUtil.arrayAsHash(newUsers);
-	
-	var contacts = appCtxt.getApp(ZmApp.CONTACTS).getContactList();
+
+	var contacts = AjxDispatcher.run("GetContacts");
 	var grants = [];
 	var revokes = [];
 	if (newUsers.length > 0) {
