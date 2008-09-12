@@ -21,7 +21,7 @@ ZmRecurrence = function(calItem) {
 	this.repeatCustom			= "0";  										// 1|0
 	this.repeatCustomCount		= 1; 											// ival
 	this.repeatCustomDayOfWeek	= "SU"; 										// (DAY|WEEKDAY|WEEKEND) | (SU|MO|TU|WE|TH|FR|SA)
-	this.repeatCustomOrdinal	= "1";
+	this.repeatBySetPos	= "1";
 	this.repeatCustomMonthDay	= this._startDate.getDate();
 	this.repeatCustomType		= "S"; 											// (S)pecific, (O)rdinal
 	this.repeatEnd				= null;
@@ -45,6 +45,11 @@ ZmRecurrence.DAILY		= "DAI";
 ZmRecurrence.WEEKLY		= "WEE";
 ZmRecurrence.MONTHLY	= "MON";
 ZmRecurrence.YEARLY		= "YEA";
+
+
+ZmRecurrence.RECURRENCE_DAY = -1;
+ZmRecurrence.RECURRENCE_WEEKEND = -2;
+ZmRecurrence.RECURRENCE_WEEKDAY = -3
 
 ZmRecurrence.prototype.setSoap =
 function(soapDoc, inv) {
@@ -96,21 +101,47 @@ function(soapDoc, inv) {
 			bmd.setAttribute("modaylist", this.repeatMonthlyDayList);
 		} else {
 			var bwd = soapDoc.set("byday", null, rule);
-			wkDay = soapDoc.set("wkday", null, bwd);
-			wkDay.setAttribute("ordwk", this.repeatCustomOrdinal);
-			wkDay.setAttribute("day", this.repeatCustomDayOfWeek);
-		}
-	}
+
+            if(this.repeatCustomDays) {
+                for(var i=0; i < this.repeatCustomDays.length; i++) {
+                    wkDay = soapDoc.set("wkday", null, bwd);
+                    wkDay.setAttribute("day", this.repeatCustomDays[i]);
+                    if(this.repeatCustomOrdinal) {
+                        wkDay.setAttribute("ordwk", this.repeatCustomOrdinal);
+                    }
+                }
+            }
+
+            if(this.repeatCustomOrdinal == null) {
+                var bysetpos = soapDoc.set("bysetpos", null, rule);
+                bysetpos.setAttribute("poslist", this.repeatBySetPos);
+            }
+        }
+    }
 	else if (this.repeatType == ZmRecurrence.YEARLY)
 	{
 		var bm = soapDoc.set("bymonth", null, rule);
 		bm.setAttribute("molist", this.repeatYearlyMonthsList);
 		if (this.repeatCustomType == "O") {
 			var bwd = soapDoc.set("byday", null, rule);
-			wkDay = soapDoc.set("wkday", null, bwd);
-			wkDay.setAttribute("ordwk", this.repeatCustomOrdinal);
-			wkDay.setAttribute("day", this.repeatCustomDayOfWeek);
-		} else {
+			
+            if(this.repeatCustomDays) {
+                for(var i=0; i < this.repeatCustomDays.length; i++) {
+                    wkDay = soapDoc.set("wkday", null, bwd);
+			        //wkDay.setAttribute("ordwk", this.repeatCustomOrdinal);
+                    wkDay.setAttribute("day", this.repeatCustomDays[i]);
+                    if(this.repeatCustomOrdinal) {
+                        wkDay.setAttribute("ordwk", this.repeatCustomOrdinal);
+                    }
+                }
+            }
+
+            if(this.repeatCustomOrdinal == null) {
+                var bysetpos = soapDoc.set("bysetpos", null, rule);
+                bysetpos.setAttribute("poslist", this.repeatBySetPos);
+            }
+
+        } else {
 			var bmd = soapDoc.set("bymonthday", null, rule);
 			bmd.setAttribute("modaylist", this.repeatCustomMonthDay);
 		}
@@ -166,13 +197,31 @@ function() {
 				every.push(formatter.format([ date, count ]));
 			} else {
 				var ordinal = Number(this.repeatCustomOrdinal);
-				var dayofweek = AjxUtil.indexOf(ZmCalItem.SERVER_WEEK_DAYS, this.repeatCustomDayOfWeek);
+                var bysetpos = Number(this.repeatBySetPos);                                
+                var dayofweek = AjxUtil.indexOf(ZmCalItem.SERVER_WEEK_DAYS, this.repeatCustomDayOfWeek);
 				var day = new Date();
 				day.setDate(day.getDate() - day.getDay() + dayofweek);
-				var count = Number(this.repeatCustomCount);
+                var count = Number(this.repeatCustomCount);
 
-				var formatter = new AjxMessageFormat(ZmMsg.recurMonthlyEveryNumMonthsNumDay);
-				every.push(formatter.format([ ordinal, day, count ]));
+                var days = this.repeatCustomDays.join(",");
+                var workWeekDays = ZmCalItem.SERVER_WEEK_DAYS.slice(1,6).join(","); 
+                var weekEndDays = [ZmCalItem.SERVER_WEEK_DAYS[AjxDateUtil.SUNDAY], ZmCalItem.SERVER_WEEK_DAYS[AjxDateUtil.SATURDAY]].join(",");
+
+                if((ZmCalItem.SERVER_WEEK_DAYS.join(",") == days) || (workWeekDays == days) || (weekEndDays == days)) {
+                    var formatter = new AjxMessageFormat(ZmMsg.recurMonthlyEveryNumMonthsWeekDays);
+                    var dayType = -1;
+                    if(workWeekDays == days) {
+                        dayType = 1;
+                    }else if(weekEndDays == days) {
+                        dayType = 0;
+                    }
+                    every.push(formatter.format([ bysetpos || ordinal, dayType, count ]));
+                }else {
+                    var day = new Date();
+                    day.setDate(day.getDate() - day.getDay() + dayofweek);
+                    var formatter = new AjxMessageFormat(ZmMsg.recurMonthlyEveryNumMonthsNumDay);
+                    every.push(formatter.format([ bysetpos || ordinal, day, count ]));
+                }
 			}
 			break;
 		}
@@ -186,15 +235,32 @@ function() {
 				every.push(formatter.format([ month, day ]));
 			} else {
 				var ordinal = Number(this.repeatCustomOrdinal);
-				var dayofweek = AjxUtil.indexOf(ZmCalItem.SERVER_WEEK_DAYS, this.repeatCustomDayOfWeek);
-				var day = new Date();
-				day.setDate(day.getDate() - day.getDay() + dayofweek);
-				var month = new Date();
-				month.setMonth(Number(this.repeatYearlyMonthsList)-1);
+                var bysetpos = Number(this.repeatBySetPos);                
+                var dayofweek = AjxUtil.indexOf(ZmCalItem.SERVER_WEEK_DAYS, this.repeatCustomDayOfWeek);
+                var month = new Date();
+                month.setMonth(Number(this.repeatYearlyMonthsList)-1);
 
-				var formatter = new AjxMessageFormat(ZmMsg.recurYearlyEveryMonthNumDay);
-				every.push(formatter.format([ ordinal, day, month ]));
-			}
+                var days = this.repeatCustomDays.join(",");
+                var workWeekDays = ZmCalItem.SERVER_WEEK_DAYS.slice(1,6).join(",");
+                var weekEndDays = [ZmCalItem.SERVER_WEEK_DAYS[AjxDateUtil.SUNDAY], ZmCalItem.SERVER_WEEK_DAYS[AjxDateUtil.SATURDAY]].join(",");
+
+                if((ZmCalItem.SERVER_WEEK_DAYS.join(",") == days) || (workWeekDays == days) || (weekEndDays == days)) {
+                    var formatter = new AjxMessageFormat(ZmMsg.recurYearlyEveryMonthWeekDays);
+                    var dayType = -1;
+                    if(workWeekDays == days) {
+                        dayType = 1;
+                    }else if(weekEndDays == days) {
+                        dayType = 0;
+                    }
+                    every.push(formatter.format([ bysetpos || ordinal, dayType, month ]));
+                }else {
+
+                    var day = new Date();
+                    day.setDate(day.getDate() - day.getDay() + dayofweek);
+                    var formatter = new AjxMessageFormat(ZmMsg.recurYearlyEveryMonthNumDay);
+                    every.push(formatter.format([ bysetpos || ordinal, day, month ]));
+                }
+            }
 			break;
 		}
 	}
@@ -275,8 +341,18 @@ function(recurRules) {
 						}
 					} else {
 						this.repeatCustomDayOfWeek = wkday[0].day;
-						this.repeatCustomOrdinal = wkday[0].ordwk;
-						this.repeatCustomType = "O";
+                        var days = [];
+                        for(var i in wkday) {
+                            days.push(wkday[i].day);
+                        }
+                        this.repeatCustomDays = days;                        
+                        this.repeatCustomOrdinal = wkday[0].ordwk;
+                        this.repeatBySetPos  = (rule.bysetpos && (rule.bysetpos.length > 0)) ? rule.bysetpos[0].poslist : null;
+                        //ical sends only ordwk in recurrence rule, we follow outlook behavior in setting repeatbysetpos instead of ordwk
+                        if(this.repeatBySetPos == null && this.repeatCustomOrdinal) {
+                            this.repeatBySetPos  = this.repeatCustomOrdinal; 
+                        }
+                        this.repeatCustomType = "O";
 					}
 				}
 				if (rule.until) {
