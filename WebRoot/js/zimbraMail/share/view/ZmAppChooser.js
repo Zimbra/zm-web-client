@@ -93,20 +93,19 @@ function(id) {
 	var newBtn = this._buttons[id];
 	if (newBtn) {
 		newBtn.setSelected(true);
-        this.__markPrevNext(id, true);
-    }
 
-	if (newBtn._toggleText != null && newBtn._toggleText != "") {
-		// hide text for previously selected button first
-		if (oldBtn) {
-			oldBtn._toggleText = (oldBtn._toggleText != null && oldBtn._toggleText != "")
-				? oldBtn._toggleText : oldBtn.getText();
-			oldBtn.setText("");
+		if (newBtn._toggleText != null && newBtn._toggleText != "") {
+			// hide text for previously selected button first
+			if (oldBtn) {
+				oldBtn._toggleText = (oldBtn._toggleText != null && oldBtn._toggleText != "")
+					? oldBtn._toggleText : oldBtn.getText();
+				oldBtn.setText("");
+			}
+
+			// reset original text for  newly selected button
+			newBtn.setText(newBtn._toggleText);
+			newBtn._toggleText = null;
 		}
-
-		// reset original text for  newly selected button
-		newBtn.setText(newBtn._toggleText);
-		newBtn._toggleText = null;
 	}
 
 	this._selectedId = id;
