@@ -348,6 +348,13 @@ function(callback) {
 	this._shareAction("!grant", actionAttrs, null, respCallback);
 };
 
+ZmShare.prototype.revokeMultiple =
+function(callback, args, batchCmd) {
+	var actionAttrs = { zid: this.isPublic() ? ZmShare.ZID_PUBLIC : this.grantee.id };
+	var respCallback = new AjxCallback(this, this._handleResponseRevoke, [callback]);
+	this._shareAction("!grant", actionAttrs, null, respCallback, batchCmd);
+};
+
 ZmShare.prototype._handleResponseRevoke =
 function(callback) {
 	if (callback) {
