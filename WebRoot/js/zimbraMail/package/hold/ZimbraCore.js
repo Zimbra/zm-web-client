@@ -63,7 +63,6 @@ AjxPackage.require("zimbraMail.share.view.ZmTagMenu");
 AjxPackage.require("zimbraMail.share.view.ZmListView");
 AjxPackage.require("zimbraMail.share.view.ZmChicletButton");
 AjxPackage.require("zimbraMail.share.view.ZmAppChooser");
-AjxPackage.require("zimbraMail.share.view.ZmCurrentAppToolBar");
 AjxPackage.require("zimbraMail.share.view.ZmStatusView");
 AjxPackage.require("zimbraMail.share.view.ZmOverview");
 

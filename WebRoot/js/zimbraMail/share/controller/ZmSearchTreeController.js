@@ -78,6 +78,7 @@ function(params) {
 		params.omitParents = true;
         var setting = ZmOrganizer.OPEN_SETTING[this.type];
         params.collapsed = !(!setting || (appCtxt.get(setting) !== false));
+		this._setupNewOp(params);
 		this._treeView[id].set(params);
 		this._checkTreeView(id, params.account);
 	}
@@ -97,6 +98,13 @@ function(parent, type, id) {
 	var search = appCtxt.getById(id);
 	parent.enable(ZmOperation.EXPAND_ALL, (search.size() > 0));
 };
+
+ZmSearchTreeController.prototype._newListener =
+function(ev){
+	AjxDispatcher.require("Browse");
+	appCtxt.getSearchController().showBrowseView();
+};
+
 
 ZmSearchTreeController.prototype._browseListener =
 function(ev){

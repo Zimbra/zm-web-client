@@ -478,6 +478,22 @@ function(attId, isDraft) {
 		}
 
 		var defangedContent = this._htmlEditor.getContent(true);
+
+        // Bug 27422 - Firefox and Safari implementation of execCommand("bold") etc use styles, and some
+        // email clients (Entourage) don't process the styles and the text remains plain. So we post-process
+        // and convert those to the tags (which are what the IE version of execCommand() does).
+        if (AjxEnv.isFirefox) {
+            defangedContent = defangedContent.replace(/<span style="font-weight: bold;">(.+?)<\/span>/, "<strong>$1</strong>");
+            defangedContent = defangedContent.replace(/<span style="font-style: italic;">(.+?)<\/span>/, "<em>$1</em>");
+            defangedContent = defangedContent.replace(/<span style="text-decoration: underline;">(.+?)<\/span>/, "<u>$1</u>");
+            defangedContent = defangedContent.replace(/<span style="text-decoration: line-through;">(.+?)<\/span>/, "<strike>$1</strike>");
+        } else if (AjxEnv.isSafari) {
+            defangedContent = defangedContent.replace(/<span class="Apple-style-span" style="font-weight: bold;">(.+?)<\/span>/, "<strong>$1</strong>");
+            defangedContent = defangedContent.replace(/<span class="Apple-style-span" style="font-style: italic;">(.+?)<\/span>/, "<em>$1</em>");
+            defangedContent = defangedContent.replace(/<span class="Apple-style-span" style="text-decoration: underline;">(.+?)<\/span>/, "<u>$1</u>");
+            defangedContent = defangedContent.replace(/<span class="Apple-style-span" style="text-decoration: line-through;">(.+?)<\/span>/, "<strike>$1</strike>");
+        }
+        
 		htmlPart.setContent(defangedContent);
 
 		if (inline) {
@@ -955,6 +971,7 @@ function(content, replaceSignatureId){
     //Caching previous Signature state.
     this._previousSignature = signature;
     this._previousSignatureMode = this._htmlEditor.getMode();
+
 };
 
 ZmComposeView.prototype.getSignatureContent = function(signatureId) {
@@ -983,7 +1000,6 @@ function(content) {
 	// since HTML composing in new window doesnt guarantee the html editor
 	// widget will be initialized when this code is running.
 	content = content || "";
-	var identity = this.getIdentity();
 	content = this._insertSignature(content, appCtxt.get(ZmSetting.SIGNATURE_STYLE),
                                         this.getSignatureContent(),
                                         this._getSignatureNewLine());

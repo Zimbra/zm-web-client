@@ -3,6 +3,7 @@
 <%@ attribute name="keys" rtexprvalue="true" required="true" %>
 <%@ attribute name="calendars" rtexprvalue="true" required="false" %>
 <%@ attribute name="tasks" rtexprvalue="true" required="false" %>
+<%@ attribute name="briefcases" rtexprvalue="true" required="false" %>
 <%@ attribute name="voice" rtexprvalue="true" required="false" %>
 <%@ attribute name="web" rtexprvalue="true" required="false" %>
 <%@ attribute name="mailbox" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZMailboxBean"%>
