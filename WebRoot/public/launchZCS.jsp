@@ -194,7 +194,7 @@
 	<c:set var="enforceMinDisplay" value="${requestScope.authResult.prefs.zimbraPrefAdvancedClientEnforceMinDisplay[0]}"/>
 	<c:if test="${param.client ne 'advanced'}">
 		var enforceMinDisplay = ${enforceMinDisplay ne 'FALSE'};
-		var unsupported = (screen && (screen.width <= 800 && screen.height <= 600)) || (AjxEnv.isSafari && !AjxEnv.isSafari3);
+		var unsupported = (screen && (screen.width <= 800 && screen.height <= 600) && !${isOfflineMode}) || (AjxEnv.isSafari && !AjxEnv.isSafari3);
 		if (enforceMinDisplay && unsupported) {
 			switchToStandardClient();
 		}
