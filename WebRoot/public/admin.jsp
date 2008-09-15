@@ -156,6 +156,9 @@
 %>
 <script type="text/javascript">
 AjxEnv.DEFAULT_LOCALE = "<%=request.getLocale()%>";
+if(!AjxEnv.isFirefox1up && !AjxEnv.isFirefox3up && !AjxEnv.isFirefox2_0up && !AjxEnv.isNav7 && !AjxEnv.isIE6up && !AjxEnv.isIE7up)
+	alert(ZaMsg.ERROR_BROWSER_UNSUPORTED_TXT);
+	
 </script>
     <script type="text/javascript" language="JavaScript">
 	   function launch() {
