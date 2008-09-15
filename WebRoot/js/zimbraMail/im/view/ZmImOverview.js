@@ -406,7 +406,7 @@ ZmImOverview.prototype._init = function() {
 		overview: this,
 		className:"overviewHeader",
 		button: {
-			image: "NewContact",
+			image: "AddBuddy",
 			tooltip: ZmMsg.createNewRosterItem,
 			callback: new AjxCallback(null, ZmImOverview.newBuddy)
 		}
