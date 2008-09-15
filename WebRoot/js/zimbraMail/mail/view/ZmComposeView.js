@@ -82,7 +82,7 @@ ZmComposeView.MAX_ATTACHMENT_HEIGHT = (ZmComposeView.SHOW_MAX_ATTACHMENTS * 23) 
 
 // Reply/forward stuff
 ZmComposeView.EMPTY_FORM_RE			= /^[\s\|]*$/;
-ZmComposeView.SUBJ_PREFIX_RE		= new RegExp("^\\s*(" + ZmMsg.re + "|" + ZmMsg.fwd + "|" + ZmMsg.fw + "):" + "\\s*", "i");
+ZmComposeView.SUBJ_PREFIX_RE		= new RegExp("^\\s*(Re|Fw|Fwd|" + ZmMsg.re + "|" + ZmMsg.fwd + "|" + ZmMsg.fw + "):" + "\\s*", "i");
 ZmComposeView.QUOTED_CONTENT_RE		= new RegExp("^----- ", "m");
 ZmComposeView.HTML_QUOTED_CONTENT_RE= new RegExp("<br>----- ", "i");
 ZmComposeView.ADDR_SETTING			= {}; // XXX: may not be necessary anymore?
@@ -1359,10 +1359,10 @@ function(action, msg, subjOverride) {
 	var prefix = "";
 	switch (action) {
 		case ZmOperation.REPLY:
-		case ZmOperation.REPLY_ALL: 		prefix = ZmMsg.re + ": "; break;
+		case ZmOperation.REPLY_ALL: 		prefix = "Re: "; break;
 		case ZmOperation.REPLY_CANCEL: 		prefix = ZmMsg.cancelled + ": "; break;
 		case ZmOperation.FORWARD_INLINE:
-		case ZmOperation.FORWARD_ATT: 		prefix = ZmMsg.fwd + ": "; break;
+		case ZmOperation.FORWARD_ATT: 		prefix = "Fwd: "; break;
 		case ZmOperation.REPLY_ACCEPT:		prefix = ZmMsg.subjectAccept + ": "; break;
 		case ZmOperation.REPLY_DECLINE:		prefix = ZmMsg.subjectDecline + ": "; break;
 		case ZmOperation.REPLY_TENTATIVE:	prefix = ZmMsg.subjectTentative + ": "; break;
