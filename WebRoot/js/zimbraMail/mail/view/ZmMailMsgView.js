@@ -1007,6 +1007,12 @@ function(msg, container, callback) {
 
 	if (this._objectManager) {
 		this._lazyCreateObjectManager();
+
+		// notify zimlets that we're finding objects in the message
+		if (appCtxt.zimletsPresent()) {
+			appCtxt.getZimletMgr().notifyZimlets("onFindMsgObjects", msg, this._objectManager, this);
+		}
+
 		this._objectManager.setHandlerAttr(ZmObjectManager.DATE,
 											ZmObjectManager.ATTR_CURRENT_DATE,
 											this._dateObjectHandlerDate);
