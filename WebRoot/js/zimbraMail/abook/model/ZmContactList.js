@@ -1180,7 +1180,7 @@ function(str, aclv, callback) {
 	var params = {query:str, types:types, sortBy:sortBy, offset:0, limit:ZmContactList.AC_MAX, isGalAutocompleteSearch:true};
 	var search = new ZmSearch(params);
 	var respCallback = new AjxCallback(this, this._handleResponseGetGalMatches, [str, aclv, callback]);
-	var errorCallback = new AjxCallback(this, this._handleErrorGetGalMatches, [aclv, callback]);
+	var errorCallback = new AjxCallback(this, this._handleErrorGetGalMatches, [str, aclv, callback]);
 	search.execute({callback: respCallback, errorCallback: errorCallback, timeout: ZmContactList.AC_GAL_TIMEOUT,
 					noBusyOverlay: true});
 	this._galRequests[str] = true;
@@ -1277,8 +1277,9 @@ function(str, list, substr) {
  * current session. The user can re-enable it in Options.
  */
 ZmContactList.prototype._handleErrorGetGalMatches =
-function(aclv, callback, ex) {
+function(str, aclv, callback, ex) {
 	aclv.setWaiting(false);
+	delete this._galRequests[str];
 	this._galFailures++;
 	appCtxt.setStatusMsg(ZmMsg.galAutocompleteTimedOut);
 	if (this._galFailures >= ZmContactList.AC_GAL_FAILURES) {
@@ -1286,10 +1287,10 @@ function(aclv, callback, ex) {
 		var settings = appCtxt.getSettings();
 		var setting = settings.getSetting(ZmSetting.GAL_AUTOCOMPLETE_SESSION);
 		setting.setValue(false);
-        AjxDispatcher.run("GetPrefController").setDirty("CONTACTS", true);
 		this._galFailures = 0;
 	}
-	callback.run();
+
+	return true;
 };
 
 ZmContactList.prototype._settingChangeListener =
@@ -1301,6 +1302,25 @@ function(ev) {
 
 		this._acAddrList = {};
 		this._setGalAutocompleteEnabled();
+
+		// make sure Address Book prefs tab shows or hides setting for re-enabling GAL
+		// autocomplete
+		if (setting.id == ZmSetting.GAL_AUTOCOMPLETE_SESSION) {
+			var prefCtlr = AjxDispatcher.run("GetPrefController");
+			prefCtlr.setDirty("CONTACTS", true);
+			var prefsView = prefCtlr._prefsView;
+			if (prefsView) {
+				var tabId = prefsView._tabId["CONTACTS"];
+				var tab = prefsView._tabs[tabId];
+				var page = tab && tab.view;
+				if (page) {
+					page._hasRendered = null;
+				}
+				if (prefsView._currentTabKey == tabId) {
+					page.showMe(); // force re-render
+				}
+			}
+		}
 	}
 };
 

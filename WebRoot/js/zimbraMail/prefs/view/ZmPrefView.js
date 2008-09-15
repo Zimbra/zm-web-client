@@ -282,14 +282,14 @@ function(section, viewPage, dirtyCheck, noValidation, list, errors, view) {
 									  (origValue == null ||
 									   origValue == ""));
 		}
+
 		// don't try to update on server if it's client-side pref
 		var addToList = (!unchanged && (pref.name != null));
-
-		if (dirtyCheck) {
-			if (addToList) {
+		if (dirtyCheck && addToList) {
 				return true;
-			}
-		} else if (!unchanged) {
+		}
+
+		if (!unchanged) {
 			var maxLength = setup ? setup.maxLength : null
 			var validationFunc = setup ? setup.validationFunction : null;
 			var isValid = true;

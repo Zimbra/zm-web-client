@@ -640,6 +640,10 @@ and the container element is replaced with that control.
 							<td class='ZOptionsLabel'>&nbsp;</td>
 							<td class='ZOptionsField'><input id='${id}_GAL_AUTOCOMPLETE' tabindex='50' type=checkbox></td>
 						</tr>
+					    <tr id='${id}_GAL_AUTOCOMPLETE_SESSION_tr' style='display:none'>
+							<td class='ZOptionsLabel'>&nbsp;</td>
+							<td class='ZOptionsField'><input id='${id}_GAL_AUTOCOMPLETE_SESSION' tabindex='50' type=checkbox></td>
+						</tr>
 					<$ } $>
 					<$ if (data.isEnabled(ZmSetting.INITIALLY_SEARCH_GAL)) { $>
 						<tr>
