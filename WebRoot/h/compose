@@ -202,8 +202,8 @@
                             <tr>
                                 <td colspan="3"  width="100%" >
                                     <textarea class='MsgCompose' name="body" id="body" rows="20" cols="80" style='<c:if test="${isHtml}">visibility:hidden;</c:if>width:100%'>${fn:escapeXml(isHtml ? (empty compose.htmlContent ?  compose.content : compose.htmlContent) : compose.content)}</textarea>
-                                    <!-- <textarea class='MsgCompose' name="body"  rows="30" cols="80" style='width:100%'>${fn:escapeXml(compose.content)}</textarea> -->
-                                   <input type="hidden" id="bodyText" class='MsgCompose' name="bodyText" value="" style='width:100%' /> 
+                                    <!-- <textarea class='MsgCompose' name="bodyText" id="bodyText" rows="30" cols="80" style='width:100%'>${fn:escapeXml(compose.content)}</textarea> -->
+                                  <input type="hidden" id="bodyText" class='MsgCompose' name="bodyText" value="" style='width:100%' />
                                     
                                 </td>
                             </tr>
@@ -270,9 +270,20 @@
 
             saveContentToTextarea = function(){
                 myEditor.saveHTML();
+                var _htmlval = document.getElementById("body").value;
                 var stripHTML = /<\S[^><]*>/g;
                 var stripNBSP  = /&nbsp;/g
-                document.getElementById("bodyText").value = document.getElementById("body").value.replace(stripNBSP, ' ').replace(/<br>/gi, '\n').replace(stripHTML, '').replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
+                document.getElementById("bodyText").value = _htmlval.replace(stripNBSP, ' ').replace(/<br>/gi, '\n').replace(stripHTML, '').replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
+            }
+
+             saveToTextareaToSend = function(){
+                myEditor.saveHTML();
+                var _htmlval = document.getElementById("body").value;
+                var stripHTML = /<\S[^><]*>/g;
+                var stripNBSP  = /&nbsp;/g
+                document.getElementById("bodyText").value = _htmlval.replace(stripNBSP, ' ').replace(/<br>/gi, '\n').replace(stripHTML, '').replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
+
+                document.getElementById("body").value = "<html><head><style> body {height: 100%; color:${mailbox.prefs.htmlEditorDefaultFontColor}; font-size:${mailbox.prefs.htmlEditorDefaultFontSize}; font-family:${mailbox.prefs.htmlEditorDefaultFontFamily},helvetica,clean,sans-serif;}</style></head><body>"+_htmlval+"</body></html>";
             }
             
             var myEditor = new YAHOO.widget.Editor('body', {
@@ -293,7 +304,7 @@
             enableSpellCheck(myEditor);
             myEditor.on('editorContentLoaded', function() {
                 var b = document.getElementById('body');
-                var html = b.innerHTML.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+                var html = b.innerHTML.replace(/&amp;/g, '&').replace(/&gt;/g, '>').replace(/&lt;/g, '<');
                 myEditor.setEditorHTML((html=="")? "<br/>" : html);
             }, myEditor, true);
 
@@ -423,27 +434,16 @@ for (x in expElemts){
     }
 }
 
-// for Mail Send
-var ele = document.getElementById("SOPSEND");
-ele.onclick = function () {
-	cancelOnbeforeUnload();
-	return checkSubject();
+/* List of elements that has to be handled for send */
+var sendElemts = new Array("SOPSEND", "SDOPSEND", "IOPSEND", "IDOPSEND");
+var y;
+for (y in sendElemts){
+    var _elemA = document.getElementById(sendElemts[y]);
+    _elemA.onclick = function () {
+        prepToSend();
+    }
 }
-var ele = document.getElementById("SDOPSEND");
-ele.onclick = function () {
-	cancelOnbeforeUnload();
-	return checkSubject();
-}
-var eleI = document.getElementById("IOPSEND");
-eleI.onclick = function () {
-	cancelOnbeforeUnload();
-	return checkSubject();
-}
-var eleI = document.getElementById("IDOPSEND");
-eleI.onclick = function () {
-	cancelOnbeforeUnload();
-	return checkSubject();
-}
+
 function checkSubject() {
 	var elesub = document.getElementById("subjectField");
 	if(trim(elesub.value) == '') {
@@ -529,6 +529,15 @@ cancelOnbeforeUnload = function(){
            saveContentToTextarea();
 </c:if>
 }
+
+prepToSend = function(){
+    window.onbeforeunload = null;
+    checkSubject();
+    /*process HTML before sending*/
+    <c:if test="${(isHtml)}" >
+        saveToTextareaToSend();
+    </c:if>
+};
 
 // -->
 </script>
