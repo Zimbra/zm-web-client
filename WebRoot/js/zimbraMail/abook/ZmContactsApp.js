@@ -235,7 +235,6 @@ function() {
 							 mountKey:			"mountAddrBook",
 							 createFunc:		"ZmOrganizer.create",
 							 compareFunc:		"ZmAddrBook.sortCompare",
-							 newOp:             ZmOperation.NEW_ADDRBOOK,
 							 deferrable:		true
 							});
 };
@@ -397,6 +396,9 @@ function() {
 
 ZmContactsApp.prototype.launch =
 function(params, callback) {
+	if (appCtxt.get(ZmSetting.NEW_ADDR_BOOK_ENABLED)) {
+		ZmCurrentAppToolBar.registerApp(this.getName(), ZmOperation.NEW_ADDRBOOK, ZmOrganizer.ADDRBOOK);
+	}
 	var loadCallback = new AjxCallback(this, this._handleLoadLaunch, [callback]);
 	AjxDispatcher.require(["ContactsCore", "Contacts"], true, loadCallback, null, true);
 };
