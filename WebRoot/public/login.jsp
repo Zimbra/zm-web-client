@@ -197,6 +197,7 @@ if (application.getInitParameter("offlineMode") != null)  {
 
 <%
 	Cookie testCookie = new Cookie("ZM_TEST", "true");
+	testCookie.setSecure(com.zimbra.cs.taglib.ZJspSession.secureAuthTokenCookie(request));
 	response.addCookie(testCookie);
 %>
 
