@@ -348,20 +348,33 @@ function() {
 	if (appCtxt.isOffline) {
 		// offline folders which are "syncable" but currently not syncing should
 		// display a different message
-		var folder;
-		var fid = this._controller._getSearchFolderId();
-		if (fid) {
-			if (appCtxt.multiAccounts)
-				fid = ZmOrganizer.getSystemId(fid);
-			folder = appCtxt.getById(fid);
-		}
-		if (folder && folder.isOfflineSyncable && !folder.isOfflineSyncing) {
-			var link = "ZmMailListView.toggleSync('" + folder.id + "', '" + this._htmlElId + "');";
-			return AjxMessageFormat.format(ZmMsg.notSyncing, link);
+		var fid = ZmOrganizer.getSystemId(this._controller._getSearchFolderId());
+		var folder = (fid != null) ? appCtxt.getById(fid) : null;
+		if (folder) {
+			if (folder.nId == ZmFolder.ID_ARCHIVE) {
+				var link = "ZmMailListView.createLocalFolder('" + folder.nId + "', '" + this._htmlElId + "');";
+				return AjxMessageFormat.format(ZmMsg.archiveHint, link);
+			}
+			else if (folder.isOfflineSyncable && !folder.isOfflineSyncing) {
+				var link = "ZmMailListView.toggleSync('" + folder.id + "', '" + this._htmlElId + "');";
+				return AjxMessageFormat.format(ZmMsg.notSyncing, link);
+			}
 		}
 	}
 
 	return DwtListView.prototype._getNoResultsMessage.call(this);
+};
+
+ZmMailListView.createLocalFolder =
+function(folderId, htmlElementId) {
+	var folder = appCtxt.getById(folderId);
+	var htmlEl = folder ? document.getElementById(htmlElementId) : null;
+	var listview = htmlEl ? DwtControl.fromElement(htmlEl) : null;
+	if (listview) {
+		var dlg = appCtxt.getNewFolderDialog();
+		var cb = listview._controller.getNewFolderCallback();
+		ZmController.showDialog(dlg, cb, folder);
+	}
 };
 
 ZmMailListView.toggleSync =

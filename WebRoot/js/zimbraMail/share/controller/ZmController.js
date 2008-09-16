@@ -174,19 +174,14 @@ function(ev, op) {
 	switch (op) {
 		// new organizers
 		case ZmOperation.NEW_FOLDER: {
-			var dialog = appCtxt.getNewFolderDialog();
-			if (!this._newFolderCb) {
-				this._newFolderCb = new AjxCallback(this, this._newFolderCallback);
-			}
-			ZmController.showDialog(dialog, this._newFolderCb);
+			ZmController.showDialog(appCtxt.getNewFolderDialog(), this.getNewFolderCallback());
 			break;
 		}
 		case ZmOperation.NEW_TAG: {
-			var dialog = appCtxt.getNewTagDialog();
 			if (!this._newTagCb) {
 				this._newTagCb = new AjxCallback(this, this._newTagCallback);
 			}
-			ZmController.showDialog(dialog, this._newTagCb);
+			ZmController.showDialog(appCtxt.getNewTagDialog(), this._newTagCb);
 			break;
 		}
 	}
@@ -226,6 +221,14 @@ function(tabGroup) {
 ZmController.prototype.getTabGroup =
 function() {
 	return this._tabGroup;
+};
+
+ZmController.prototype.getNewFolderCallback =
+function() {
+	if (!this._newFolderCb) {
+		this._newFolderCb = new AjxCallback(this, this._newFolderCallback);
+	}
+	return this._newFolderCb;
 };
 
 // Remember the currently focused item before this view is hidden. Typically
