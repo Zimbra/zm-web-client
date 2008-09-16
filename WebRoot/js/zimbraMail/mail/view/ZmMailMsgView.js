@@ -707,7 +707,7 @@ function(msg, idoc) {
 		}
 		while (true) {
 			place = place.parentNode;
-			if (place === root) {
+			if (place === root || !place) {
 				place = null;
 				break;
 			}
