@@ -236,6 +236,31 @@ function(msg, level) {
 	appCtxt.setStatusMsg(msg, level);
 };
 
+ZmClientCmdHandler.prototype.execute_chat =
+function(cmdStr, searchController, cmdName, cmdArg1, cmdArg2 /* ..., cmdArgN */) {
+	function doIt() {
+		var jsonObj = {
+			n: [
+				{
+				  body: [
+					{
+					  _content: cmdArg2 || "<span style=''>:) Whatever </span>",
+					  html: true
+					}
+				   ],
+				  from: "user2@secondchair-lm-corp-yahoo-com.local",
+				  seq: 0,
+				  thread: "user2@secondchair-lm-corp-yahoo-com.local-5",
+				  ts: 1215626211402,
+				  type: "message"
+				 }
+			   ]
+		};
+		AjxDispatcher.run("GetRoster").pushNotification(jsonObj);
+	}
+	AjxTimedAction.scheduleAction(new AjxTimedAction(null, doIt), (cmdArg1 || 0) * 1000);
+};
+
 ZmClientCmdHandler.prototype._dumpEl =
 function dumpEl(el, known, expandos) {
 	var props = [];
