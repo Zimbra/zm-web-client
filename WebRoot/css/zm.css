@@ -2098,6 +2098,7 @@ HTML>BODY .appt-selected .appt_allday_body
 	width: 96%;
 	padding-left: 4px;
 	padding-right: 4px;
+	padding-bottom: 1px;
 }
 
 .ZmBuddyFilterItem .DwtSimpleInput {
