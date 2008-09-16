@@ -169,6 +169,7 @@ function() {
 ZmCalItemEditView.prototype.setComposeMode =
 function(composeMode) {
 	this._composeMode = composeMode || this._composeMode;
+    this._notesHtmlModeFirstTime = !this._notesHtmlEditor.isHtmlModeInited();
 	this._notesHtmlEditor.setMode(this._composeMode, true);
 	this._resizeNotes();
 };
@@ -313,7 +314,7 @@ function(calItem, mode, firstTime) {
 
 	// if first time reset'ing, delay saving form value since all widgets
 	// (i.e. html editor) may not have finished initializing yet.
-	if (firstTime) {
+    if (firstTime || this._notesHtmlModeFirstTime) {   // Also, handling HTML mode specially as it takes some time to initialize.
 		var ta = new AjxTimedAction(this, this._finishReset);
 		AjxTimedAction.scheduleAction(ta, 250);
 	} else {
