@@ -86,7 +86,7 @@ ZmFolder.MSG_KEY[ZmOrganizer.ID_NOTEBOOK]		= "notebook";
 ZmFolder.MSG_KEY[ZmOrganizer.ID_BRIEFCASE]		= "briefcase";
 ZmFolder.MSG_KEY[ZmOrganizer.ID_CHATS]			= "chats";
 ZmFolder.MSG_KEY[ZmFolder.ID_OUTBOX]			= "outbox";
-ZmFolder.MSG_KEY[ZmFolder.ID_ARCHIVE]			= "archive";
+ZmFolder.MSG_KEY[ZmFolder.ID_ARCHIVE]			= "localFolders";
 ZmFolder.MSG_KEY[ZmFolder.ID_SYNC_FAILURES]		= "errorReports";
 
 // system folder icons
@@ -108,7 +108,7 @@ ZmFolder.QUERY_NAME[ZmFolder.ID_INBOX]			= "inbox";
 ZmFolder.QUERY_NAME[ZmFolder.ID_TRASH]			= "trash";
 ZmFolder.QUERY_NAME[ZmFolder.ID_SPAM]			= "junk";
 ZmFolder.QUERY_NAME[ZmFolder.ID_SENT]			= "sent";
-ZmFolder.QUERY_NAME[ZmFolder.ID_ARCHIVE]		= "archive";
+ZmFolder.QUERY_NAME[ZmFolder.ID_ARCHIVE]		= "Local Folders";
 ZmFolder.QUERY_NAME[ZmFolder.ID_OUTBOX]			= "outbox";
 ZmFolder.QUERY_NAME[ZmFolder.ID_DRAFTS]			= "drafts";
 ZmFolder.QUERY_NAME[ZmFolder.ID_CONTACTS]		= "contacts";
@@ -397,10 +397,14 @@ function(obj) {
 ZmFolder.prototype.createQuery =
 function(pathOnly) {
 	if (!this.isRemote() && this.isSystem()) {
+		var qName = this.nId == ZmOrganizer.ID_ARCHIVE
+			? ('"' + ZmFolder.QUERY_NAME[this.nId] + '"')
+			: ZmFolder.QUERY_NAME[this.nId];
 		return pathOnly
-			? ZmFolder.QUERY_NAME[this.nId]
-			: ("in:" + (ZmFolder.QUERY_NAME[this.nId] || ('"'+this.name+'"')));
+			? qName
+			: ("in:" + (qName || ('"'+this.name+'"')));
 	}
+
 	var path = this.name;
 	var f = this.parent;
 	while (f && (f.nId != ZmFolder.ID_ROOT) && f.name.length) {
@@ -487,19 +491,20 @@ function(what, folderType) {
 				   (what.type == ZmOrganizer.SEARCH && thisType == ZmOrganizer.FOLDER && this.nId == ZmOrganizer.ID_ROOT) ||
 				   (what.id == this.id) ||
 				   (what.disallowSubFolder) ||
-				   (what.isRemote() && !this._remoteMoveOk(what)));	// this means a remote folder can be DnD but not its children
+				   (what.nId == ZmFolder.ID_ARCHIVE) ||
+				   (what.isRemote() && !this._remoteMoveOk(what)));				// a remote folder can be DnD but not its children
 	} else {
 		// An item or an array of items is being moved
 		var items = (what instanceof Array) ? what : [what];
 		var item = items[0];
 		var searchFolder = (item.list && item.list.search) ? appCtxt.getById(item.list.search.folderId) : null;
 
-		if (this.nId == ZmOrganizer.ID_ROOT) {
-			invalid = true;														// container can only have folders/searches
-		} else if (this.nId == ZmOrganizer.ID_OUTBOX) {
-			invalid = true;														// bug fix #25175 - nothing can be moved to outbox
-		} else if (this.nId == ZmOrganizer.ID_SYNC_FAILURES) {
-			invalid = true;														// nothing can be moved to "sync failures"
+		if (this.nId == ZmOrganizer.ID_ROOT ||									// container can only have folders/searches
+			this.nId == ZmOrganizer.ID_OUTBOX ||								// nothing can be moved to outbox/sync failures/archive folders
+			this.nId == ZmOrganizer.ID_SYNC_FAILURES ||
+			this.nId == ZmOrganizer.ID_ARCHIVE)
+		{
+			invalid = true;
 		} else if (thisType == ZmOrganizer.SEARCH) {
 			invalid = true;														// can't drop items into saved searches
 		} else if ((item.type == ZmItem.CONTACT) && item.isGal) {
