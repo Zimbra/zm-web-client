@@ -52,7 +52,7 @@ action_count                        number of actions (includes stop)
 action_stop                         stop checkbox (true)     
 
 --%>
-<input type="hidden" name="origname" value="${not empty param.origname ? param.origname : rule.name }"/>
+<input type="hidden" name="origname" value="${not empty param.origname ? fn:escapeXml(param.origname) : fn:escapeXml(rule.name) }"/>
 <input type="hidden" name="frompost" value="1"/>
 
 <table cellspacing=3 cellpadding=3>
