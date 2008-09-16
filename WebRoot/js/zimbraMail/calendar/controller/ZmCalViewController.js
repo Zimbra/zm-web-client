@@ -434,16 +434,17 @@ function(ev) {
 
 ZmCalViewController.prototype._getToolBarOps =
 function() {
-	return [ZmOperation.NEW_MENU, ZmOperation.CAL_REFRESH,
-			ZmOperation.SEP,
-			ZmOperation.DELETE, ZmOperation.PRINT,
-			ZmOperation.SEP,
-			ZmOperation.TAG_MENU,
-			ZmOperation.SEP,
-			ZmOperation.DAY_VIEW, ZmOperation.WORK_WEEK_VIEW, ZmOperation.WEEK_VIEW, ZmOperation.MONTH_VIEW, ZmOperation.SCHEDULE_VIEW,
-			ZmOperation.SEP,
-			ZmOperation.TODAY,
-			];
+	return [
+		ZmOperation.NEW_MENU, ZmOperation.CAL_REFRESH,
+		ZmOperation.SEP,
+		ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.PRINT,
+		ZmOperation.SEP,
+		ZmOperation.TAG_MENU,
+		ZmOperation.SEP,
+		ZmOperation.DAY_VIEW, ZmOperation.WORK_WEEK_VIEW, ZmOperation.WEEK_VIEW, ZmOperation.MONTH_VIEW, ZmOperation.SCHEDULE_VIEW,
+		ZmOperation.SEP,
+		ZmOperation.TODAY,
+	];
 };
 
 /* This method is called from ZmListController._setup. We control when this method is called in our
@@ -982,6 +983,30 @@ function() {
  	}
 };
 
+ZmCalViewController.prototype._getMoveParams =
+function() {
+	var params = ZmListController.prototype._getMoveParams.call(this);
+    var omit = {};
+	var folderTree = appCtxt.getFolderTree();
+	if (!folderTree) { return params; }
+
+	var folders = folderTree.getByType(ZmOrganizer.CALENDAR);
+	for (var i = 0; i < folders.length; i++) {
+		var folder = folders[i];
+		if (folder.link && folder.isReadOnly()) {
+			omit[folder.id] = true;
+		}
+	}
+	params.omit = omit;
+	params.overviewId = "ZmCalViewController";
+	return params;
+};
+
+ZmCalViewController.prototype._getMoveDialogTitle =
+function(num) {
+	return (num == 1) ? ZmMsg.moveAppt : ZmMsg.moveAppts;
+};
+
 ZmCalViewController.prototype._showTypeDialog =
 function(appt, mode) {
 	if (this._typeDialog == null) {
@@ -1366,7 +1391,7 @@ function(parent, num) {
 	if (currViewName == ZmId.VIEW_CAL_APPT)
 	{
 		// disable DELETE since CAL_APPT_VIEW is a read-only view
-		parent.enable([ZmOperation.DELETE, ZmOperation.CAL_REFRESH, ZmOperation.TODAY], false);
+		parent.enable([ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.CAL_REFRESH, ZmOperation.TODAY], false);
 	}
 	else
 	{
@@ -1379,7 +1404,7 @@ function(parent, num) {
 		var isShared = calendar ? calendar.isRemote() : false;
 		var disabled = isSynced || isReadOnly || (num == 0);
 		var isPrivate = appt && appt.isPrivate() && calendar.isRemote() && !calendar.hasPrivateAccess();
-		parent.enable(ZmOperation.DELETE, !disabled);
+		parent.enable([ZmOperation.DELETE, ZmOperation.MOVE], !disabled);
 		parent.enable(ZmOperation.TAG_MENU, (!isShared && !isSynced && num > 0));
 		parent.enable(ZmOperation.VIEW_APPOINTMENT, !isPrivate);
 	}
@@ -1582,7 +1607,7 @@ function() {
 		ZmOperation.SEP,
 		ZmOperation.REPLY_ACCEPT, ZmOperation.REPLY_TENTATIVE, ZmOperation.REPLY_DECLINE, ZmOperation.INVITE_REPLY_MENU,
 		ZmOperation.SEP,
-		ZmOperation.DELETE, ZmOperation.TAG_MENU
+		ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.TAG_MENU
 	];
 };
 
