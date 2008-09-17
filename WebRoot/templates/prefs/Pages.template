@@ -1505,6 +1505,25 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 	</table>
 </template>
 
+<template id='im.Chat#ZmImGatewayControl'>
+	<table>
+		<tr>
+			<td class="ImAccountLabel">${nameLabel}</td>
+			<td><div id='${id}_nameField'/></td>
+		</tr>
+		<tr>
+			<td class="ImAccountLabel"><$=ZmMsg.passwordLabel$></td>
+			<td><div id='${id}_passwordField'/></td>
+		</tr>
+		<tr>
+			<td class="ImAccountLabel">&nbsp</td>
+			<td>
+				<div id='${id}_clearButton'/>
+			</td>
+		</tr>
+	</table>
+</template>
+
 
 <template id='prefs.Pages#Shortcuts'>
 		<table border=0 cellspacing=0 cellpadding=0 width=100%>

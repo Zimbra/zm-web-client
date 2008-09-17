@@ -49,8 +49,8 @@ AjxPackage.require("zimbraMail.mail.view.prefs.ZmAccountTestDialog");
 AjxPackage.require("zimbraMail.mail.view.prefs.ZmMailPrefsPage");
 AjxPackage.require("zimbraMail.mail.view.prefs.ZmSignaturesPage");
 
-AjxPackage.require("zimbraMail.im.view.ZmImPrefsPage");
-AjxPackage.require("zimbraMail.im.view.ZmImGatewayControl");
+AjxPackage.require("zimbraMail.im.view.prefs.ZmImPrefsPage");
+AjxPackage.require("zimbraMail.im.view.prefs.ZmImGatewayControl");
 
 AjxPackage.require("zimbraMail.prefs.controller.ZmPrefController");
 AjxPackage.require("zimbraMail.prefs.controller.ZmFilterRulesController");
