@@ -74,7 +74,7 @@ function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
 
 ZmClientCmdHandler.prototype.execute_instant_notify =
 function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
-	if (typeof cmdArg1 == "undefined") {
+	if (argv.length <= 1) {
 		this._alert("Instant notify is "+ (appCtxt.getAppController().getInstantNotify() ? "ON" : "OFF"));
 	} else {
 		var on = false;
@@ -147,12 +147,6 @@ function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
 ZmClientCmdHandler.prototype.execute_refresh = 
 function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
 	ZmCsfeCommand.setSessionId(null);
-	appCtxt.getAppController().sendNoOp();
-};
-
-ZmClientCmdHandler.prototype.execute_relogin =
-function(cmdStr, searchController, cmdName, cmdArg1, cmdArg2 /* ..., cmdArgN */) {
-	ZmCsfeCommand.clearAuthToken();
 	appCtxt.getAppController().sendNoOp();
 };
 
@@ -231,37 +225,12 @@ function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
 	}
 };
 
-ZmClientCmdHandler.prototype._alert =
+ZmClientCmdHandler.prototype._alert = 
 function(msg, level) {
 	appCtxt.setStatusMsg(msg, level);
 };
 
-ZmClientCmdHandler.prototype.execute_chat =
-function(cmdStr, searchController, cmdName, cmdArg1, cmdArg2 /* ..., cmdArgN */) {
-	function doIt() {
-		var jsonObj = {
-			n: [
-				{
-				  body: [
-					{
-					  _content: cmdArg2 || "<span style=''>:) Whatever </span>",
-					  html: true
-					}
-				   ],
-				  from: "user2@secondchair-lm-corp-yahoo-com.local",
-				  seq: 0,
-				  thread: "user2@secondchair-lm-corp-yahoo-com.local-5",
-				  ts: 1215626211402,
-				  type: "message"
-				 }
-			   ]
-		};
-		AjxDispatcher.run("GetRoster").pushNotification(jsonObj);
-	}
-	AjxTimedAction.scheduleAction(new AjxTimedAction(null, doIt), (cmdArg1 || 0) * 1000);
-};
-
-ZmClientCmdHandler.prototype._dumpEl =
+ZmClientCmdHandler.prototype._dumpEl = 
 function dumpEl(el, known, expandos) {
 	var props = [];
 	for (var p in el) {

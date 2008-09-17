@@ -303,6 +303,15 @@ function() {
 	return this._pageConflictDialog;
 };
 
+ZmAppCtxt.prototype.getNewImDialog =
+function() {
+	if (!this._newImDialog) {
+		AjxDispatcher.require("IM");
+		this._newImDialog = new ZmNewImDialog(this._shell);
+	}
+	return this._newImDialog;
+};
+
 ZmAppCtxt.prototype.getNewRosterItemDialog =
 function() {
 	if (!this._newRosterItemDialog) {
@@ -704,6 +713,16 @@ function() {
 		this._uploadManager = new AjxPost(this.getUploadFrameId());
 	}
 	return this._uploadManager;
+};
+
+ZmAppCtxt.prototype.getCurrentAppToolbar =
+function() { 
+	return this._currentAppToolbar;
+};
+
+ZmAppCtxt.prototype.setCurrentAppToolbar =
+function(toolbar) {
+	this._currentAppToolbar = toolbar;
 };
 
 ZmAppCtxt.prototype.getCurrentSearch =
