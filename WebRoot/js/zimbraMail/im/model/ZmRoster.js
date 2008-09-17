@@ -41,6 +41,8 @@ ZmRoster.F_PRESENCE = "ZmRoster.presence";
 
 ZmRoster.NOTIFICATION_FOO_TIMEOUT = 10000; // 10 sec.
 
+ZmRoster.GATEWAY_EVENT = "gateway list";
+
 ZmRoster.prototype.toString =
 function() {
 	return "ZmRoster";
@@ -505,6 +507,10 @@ ZmRoster.prototype.sendSubscribeAuthorization = function(accept, add, addr) {
 	appCtxt.getAppController().sendRequest({ soapDoc: sd, asyncMode: true });
 };
 
+ZmRoster.prototype.addGatewayListListener = function(listener) {
+	this._evtMgr.addListener(ZmRoster.GATEWAY_EVENT, listener);
+};
+
 ZmRoster.prototype.reconnectGateway = function(gw) {
 	var sd = AjxSoapDoc.create("IMGatewayRegisterRequest", "urn:zimbraIM");
 	var method = sd.getMethod();
@@ -514,24 +520,23 @@ ZmRoster.prototype.reconnectGateway = function(gw) {
 	this.__avoidNotifyTimeout = new Date().getTime();
 };
 
-ZmRoster.prototype.unregisterGateway = function(service, callback, batchCmd) {
+ZmRoster.prototype.unregisterGateway = function(service, batchCmd) {
 	var sd = AjxSoapDoc.create("IMGatewayRegisterRequest", "urn:zimbraIM");
 	var method = sd.getMethod();
 	method.setAttribute("op", "unreg");
 	method.setAttribute("service", service);
 	if (batchCmd) {
-		batchCmd.addNewRequestParams(sd, callback);
+		batchCmd.addNewRequestParams(sd);
 	} else {
 		appCtxt.getAppController().sendRequest({
 			soapDoc: sd,
-			asyncMode: true,
-			callback: callback
+			asyncMode: true
 		});
 	}
 	this.__avoidNotifyTimeout = new Date().getTime();
 };
 
-ZmRoster.prototype.registerGateway = function(service, screenName, password, callback, batchCmd) {
+ZmRoster.prototype.registerGateway = function(service, screenName, password, batchCmd) {
 	var sd = AjxSoapDoc.create("IMGatewayRegisterRequest", "urn:zimbraIM");
 	var method = sd.getMethod();
 	method.setAttribute("op", "reg");
@@ -539,12 +544,11 @@ ZmRoster.prototype.registerGateway = function(service, screenName, password, cal
 	method.setAttribute("name", screenName);
 	method.setAttribute("password", password);
 	if (batchCmd) {
-		batchCmd.addNewRequestParams(sd, callback);
+		batchCmd.addNewRequestParams(sd);
 	} else {
 		appCtxt.getAppController().sendRequest({
 			soapDoc: sd,
-			asyncMode: true,
-			callback: callback
+			asyncMode: true
 		});
 	}
 	this.__avoidNotifyTimeout = new Date().getTime();
@@ -577,14 +581,11 @@ ZmRoster.prototype._requestGateways = function() {
 // };
 
 ZmRoster.prototype._handleRequestGateways = function(resp) {
-// 	var resp = resp.getResponse();
-// 	if (!resp || !resp.IMGatewayListResponse)
-// 		return;
- 	var a = resp.IMGatewayListResponse.service;
-        if (!a)
-                a = [];
-	a.unshift({ type   : "XMPP",
-		    domain : "XMPP" });
+	var a = resp.IMGatewayListResponse.service;
+	if (!a) {
+		a = [];
+	}
+	a.unshift({ type   : "XMPP", domain : "XMPP" });
 	var byService = {};
 	var byDomain = {};
 	for (var i = 0; i < a.length; ++i) {
@@ -593,12 +594,14 @@ ZmRoster.prototype._handleRequestGateways = function(resp) {
 		byDomain[a[i].domain.toLowerCase()] = gw;
 	}
 	this._gateways = { byService : byService,
-			   byDomain  : byDomain,
-			   array     : a
-			 };
-        for (var i = 0; i < this._notificationBuffer.length; ++i)
-                this.handleNotification(this._notificationBuffer[i]);
-        this._notificationBuffer = [];
+		byDomain  : byDomain,
+		array	 : a
+	};
+	for (var i = 0; i < this._notificationBuffer.length; ++i)
+		this.handleNotification(this._notificationBuffer[i]);
+	this._notificationBuffer = [];
+
+	this._evtMgr.notifyListeners(ZmRoster.GATEWAY_EVENT, { roster: this });
 };
 
 ZmRoster.prototype.getGatewayByType = function(type) {

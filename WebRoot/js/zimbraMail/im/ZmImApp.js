@@ -527,6 +527,21 @@ function() {
 };
 
 /**
+* Lazily adds a change listener to the gateway list. Allows ui elements
+* to create their listeners without loading the im package or logging
+* in to im.
+*/
+ZmImApp.prototype.addGatewayListListener =
+function(listener) {
+	if (this._roster) {
+		this._roster.addGatewayListListener(listener);
+	} else {
+		this._gatewayListListeners = this._gatewayListListeners || new AjxVector();
+		this._gatewayListListeners.add(listener);
+	}
+};
+
+/**
 * Lazily adds a change listener to the roster item list. Allows ui elements
 * to create their listeners without loading the im package.
 */
@@ -566,6 +581,11 @@ function(roster) {
 			var listener = this._rosterItemListListeners.get(i);
 			listener.handleEvent(event);
 			rosterItemList.addChangeListener(listener);
+		}
+	}
+	if (this._gatewayListListeners) {
+		for (var i = 0, count = this._gatewayListListeners.size(); i < count; i++) {
+			roster.addGatewayListListener(this._gatewayListListeners.get(i));
 		}
 	}
 

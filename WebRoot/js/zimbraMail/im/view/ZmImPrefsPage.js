@@ -30,8 +30,7 @@ ZmImPrefsPage.prototype.toString = function() {
 
 ZmImPrefsPage.login =
 function() {
-	//TODO.....
-	alert('work in progress.')
+	AjxDispatcher.run("GetRoster");
 };
 
 ZmImPrefsPage.prototype.showMe =
@@ -96,35 +95,30 @@ function(useDefaults) {
 		if (control) {
 			control.reset();
 		}
-	//TODO: Do I need to add/remove controls if the gateway list changed????
 	}
 };
 
 ZmImPrefsPage.prototype._getTemplateData =
 function() {
 	var data = ZmPreferencesPage.prototype._getTemplateData.call(this);
-	data.loginMsg = AjxMessageFormat.format(ZmMsg.imNotLoggedInPrefs, "ZmImPrefsPage.login");
+	data.loginMsg = AjxMessageFormat.format(ZmMsg.imNotLoggedInPrefs, "ZmImPrefsPage.login()");
 	return data;
 };
 
-ZmImPrefsPage.prototype._createControls =
+ZmImPrefsPage.prototype._createGatewayControls =
 function() {
-	ZmPreferencesPage.prototype._createControls.apply(this, arguments);
-	this._notLoggedInEl = document.getElementById(this._htmlElId + "_imAccountsNotLoggedIn");
-	this._accountsEl = document.getElementById(this._htmlElId + "_imAccounts");
-	var loggedIn = ZmImApp.loggedIn();
-	Dwt.setVisible(this._notLoggedInEl, !loggedIn);
-	Dwt.setVisible(this._accountsEl, loggedIn);
-	if (loggedIn) {
-		var gateways = ZmImApp.INSTANCE.getRoster().getGateways();
-		for (var i = 1, count = gateways.length; i < count; i++) {
-			var gateway = gateways[i];
+	var gateways = ZmImApp.INSTANCE.getRoster().getGateways();
+	for (var i = 1, count = gateways.length; i < count; i++) {
+		var gateway = gateways[i];
+		if (this._gatewayControls[gateway.type]) {
+			this._gatewayControls[gateway.type].setGateway(gateway);
+		} else {
 			var row = this._accountsEl.insertRow(-1);
 			var labelCell = row.insertCell(-1);
 			labelCell.className = "ZOptionsLabel";
 			var args = {
 				name: AjxStringUtil.capitalize(gateway.type),
-				nameLower: gateway.type 
+				nameLower: gateway.type
 			};
 			labelCell.innerHTML = AjxTemplate.expand("prefs.Pages#ImAccountLabel", args);
 			var valueCell = row.insertCell(-1);
@@ -137,7 +131,30 @@ function() {
 			};
 			this._gatewayControls[gateway.type] = new ZmImGatewayControl(controlArgs);
 		}
+	}
+};
+
+ZmImPrefsPage.prototype._createControls =
+function() {
+	ZmImApp.INSTANCE.addGatewayListListener(new AjxListener(this, this._gatewayListListener));
+	ZmPreferencesPage.prototype._createControls.apply(this, arguments);
+	this._notLoggedInEl = document.getElementById(this._htmlElId + "_imAccountsNotLoggedIn");
+	this._accountsEl = document.getElementById(this._htmlElId + "_imAccounts");
+	this._updateAccountsSection();
+};
+
+ZmImPrefsPage.prototype._updateAccountsSection =
+function() {
+	var loggedIn = ZmImApp.loggedIn();
+	Dwt.setVisible(this._notLoggedInEl, !loggedIn);
+	Dwt.setVisible(this._accountsEl, loggedIn);
+	if (loggedIn) {
+		this._createGatewayControls();
 		this._resetGateways();
 	}
 };
 
+ZmImPrefsPage.prototype._gatewayListListener =
+function() {
+	this._updateAccountsSection();
+};

@@ -2075,6 +2075,10 @@ HTML>BODY .appt-selected .appt_allday_body
 	font-weight: bold;
 }
 
+.ImAccountLogin .FakeAnchor {
+	font-weight: bold;
+}
+
 .ZmChatGwIcon-offline {
  opacity: 0.3;
 

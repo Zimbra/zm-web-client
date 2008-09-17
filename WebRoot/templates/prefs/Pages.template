@@ -1487,7 +1487,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 	<tr>
 		<td class='ZOptionsSectionMain'>
 
-			<div id="${id}_imAccountsNotLoggedIn">
+			<div class="ImAccountLogin" id="${id}_imAccountsNotLoggedIn">
 				${loginMsg}
 			</div>
 			<table id="${id}_imAccounts" width="100%"/>

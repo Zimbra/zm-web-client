@@ -18,7 +18,7 @@
 ZmImGatewayControl = function(params) {
 	params.className = params.className || "ZmImGatewayControl";
 	DwtComposite.apply(this, arguments);
-	this._gateway = params.gateway;
+	this._setGateway(params.gateway)
 	this._createHtml();
 };
 
@@ -32,8 +32,14 @@ ZmImGatewayControl.prototype.toString = function() {
 
 ZmImGatewayControl.prototype.TEMPLATE = 'im.Chat#ZmImGatewayControl'
 
+/** Changes the gateway that this controls displays. */
+ZmImGatewayControl.prototype.setGateway =
+function(gateway) {
+	this._setGateway(gateway)
+	this.reset();
+};
 
-
+/** Resets the control to show the current values of its gateway. */
 ZmImGatewayControl.prototype.reset =
 function() {
 	if (this._gateway.isOnline()) {
@@ -61,6 +67,17 @@ ZmImGatewayControl.prototype.getPassword =
 function() {
    return this._passwordInput.getValue();
 };
+
+ZmImGatewayControl.prototype._gatewayListener =
+function() {
+	this.reset();
+};
+
+ZmImGatewayControl.prototype._setGateway =
+function(gateway) {
+	this._gateway = gateway;
+	gateway.addListener(ZmImGateway.EVENT_SET_STATE, new AjxListener(this, this._gatewayListener));
+}
 
 ZmImGatewayControl.prototype._clearButtonListener =
 function() {
