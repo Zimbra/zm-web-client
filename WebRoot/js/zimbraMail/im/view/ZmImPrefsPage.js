@@ -113,6 +113,12 @@ function() {
 		if (this._gatewayControls[gateway.type]) {
 			this._gatewayControls[gateway.type].setGateway(gateway);
 		} else {
+			if (this._hasGatewayControl) {
+				var hrRow = this._accountsEl.insertRow(-1);
+				var hrCell = hrRow.insertCell(-1);
+				hrCell.colSpan = 2;
+				hrCell.innerHTML = "<hr>";
+			}
 			var row = this._accountsEl.insertRow(-1);
 			var labelCell = row.insertCell(-1);
 			labelCell.className = "ZOptionsLabel";
@@ -123,6 +129,7 @@ function() {
 			labelCell.innerHTML = AjxTemplate.expand("prefs.Pages#ImAccountLabel", args);
 			var valueCell = row.insertCell(-1);
 			valueCell.className = "ZOptionsField";
+			valueCell.style.width = "100%";
 			var controlArgs = {
 				parent: this,
 				parentElement: valueCell,
@@ -130,6 +137,7 @@ function() {
 				gateway: gateway
 			};
 			this._gatewayControls[gateway.type] = new ZmImGatewayControl(controlArgs);
+			this._hasGatewayControl = true;
 		}
 	}
 };
