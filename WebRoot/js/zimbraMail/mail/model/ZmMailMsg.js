@@ -425,6 +425,21 @@ function() {
 };
 
 /**
+ * Looks through this msg's attachments for one with the given CID.
+ */
+ZmMailMsg.prototype.findInlineAtt =
+function(cid) {
+	if (!(this.attachments && this.attachments.length)) { return null; }
+
+	for (var i = 0; i < this.attachments.length; i++) {
+		if (this.attachments[i].ci == cid) {
+			return this.attachments[i];
+		}
+	}
+	return null;
+};
+
+/**
 * Sets the IDs of messages to attach (as a forward)
 *
 * @param ids	[Array]		list of mail message IDs
