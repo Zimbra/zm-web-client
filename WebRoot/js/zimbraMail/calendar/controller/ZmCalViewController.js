@@ -33,7 +33,6 @@ ZmCalViewController = function(container, calApp) {
 
 	var apptListener = new AjxListener(this, this._handleApptRespondAction);
 	var apptEditListener = new AjxListener(this, this._handleApptEditRespondAction);
-	var calViewListener = new AjxListener(this, this._calViewButtonListener);
 
 	// get view based on op
 	ZmCalViewController.OP_TO_VIEW = {};
@@ -57,11 +56,6 @@ ZmCalViewController = function(container, calApp) {
 	this._listeners[ZmOperation.EDIT_REPLY_TENTATIVE] = apptEditListener;
 	this._listeners[ZmOperation.VIEW_APPOINTMENT] = new AjxListener(this, this._handleMenuViewAction);
 	this._listeners[ZmOperation.TODAY] = new AjxListener(this, this._todayButtonListener);
-	this._listeners[ZmOperation.DAY_VIEW] = calViewListener;
-	this._listeners[ZmOperation.WEEK_VIEW] = calViewListener;
-	this._listeners[ZmOperation.WORK_WEEK_VIEW] = calViewListener;
-	this._listeners[ZmOperation.MONTH_VIEW] = calViewListener;
-	this._listeners[ZmOperation.SCHEDULE_VIEW] = calViewListener;
 	this._listeners[ZmOperation.NEW_APPT] = new AjxListener(this, this._newApptAction);
 	this._listeners[ZmOperation.NEW_ALLDAY_APPT] = new AjxListener(this, this._newAllDayApptAction);
 	this._listeners[ZmOperation.SEARCH_MAIL] = new AjxListener(this, this._searchMailAction);
@@ -441,7 +435,7 @@ function() {
 		ZmOperation.SEP,
 		ZmOperation.TAG_MENU,
 		ZmOperation.SEP,
-		ZmOperation.DAY_VIEW, ZmOperation.WORK_WEEK_VIEW, ZmOperation.WEEK_VIEW, ZmOperation.MONTH_VIEW, ZmOperation.SCHEDULE_VIEW,
+		ZmOperation.VIEW_MENU,
 		ZmOperation.SEP,
 		ZmOperation.TODAY,
 	];
@@ -486,14 +480,29 @@ function(viewId) {
 	toolbar.enable([ZmOperation.WEEK_VIEW, ZmOperation.MONTH_VIEW, ZmOperation.DAY_VIEW], true);
 
 	toolbar.addFiller();
-	var tb = new ZmNavToolBar({parent:toolbar, className:"ZmNavToolbar ZmCalendarNavToolbar",
-							   context:ZmId.VIEW_CAL});
+
+	var tb = new ZmNavToolBar({parent:toolbar, className:"ZmNavToolbar ZmCalendarNavToolbar", context:ZmId.VIEW_CAL});
 	this._setNavToolBar(tb, ZmId.VIEW_CAL);
 
 	this._setNewButtonProps(viewId, ZmMsg.createNewAppt, "NewAppointment", "NewAppointmentDis", ZmOperation.NEW_APPT);
+
 	var printButton = toolbar.getButton(ZmOperation.PRINT);
 	if (printButton) {
 		printButton.setToolTipContent(ZmMsg.printCalendar);
+	}
+
+	var viewButton = toolbar.getButton(ZmOperation.VIEW_MENU);
+	if (viewButton) {
+		viewButton.setMenu(new AjxCallback(this, this._setupViewMenuItems, [toolbar]));
+		var icon;
+		switch (this._defaultView()) {
+			case ZmId.VIEW_CAL_DAY: 		icon = ZmOperation.getProp(ZmOperation.DAY_VIEW, "image"); break;
+			case ZmId.VIEW_CAL_WORK_WEEK:	icon = ZmOperation.getProp(ZmOperation.WORK_WEEK_VIEW, "image"); break;
+			case ZmId.VIEW_CAL_WEEK:		icon = ZmOperation.getProp(ZmOperation.WEEK_VIEW, "image"); break;
+			case ZmId.VIEW_CAL_MONTH:		icon = ZmOperation.getProp(ZmOperation.MONTH_VIEW, "image"); break;
+			case ZmId.VIEW_CAL_SCHEDULE:	icon = ZmOperation.getProp(ZmOperation.SCHEDULE_VIEW, "image"); break;
+		}
+		viewButton.setImage(icon);
 	}
 };
 
@@ -511,6 +520,49 @@ function(num) {
 ZmCalViewController.prototype._createNewView =
 function(viewId) {
 	return this._viewMgr.createView(viewId);
+};
+
+ZmCalViewController.prototype._setupViewMenuItems =
+function(toolbar) {
+	var viewBtn = toolbar.getButton(ZmOperation.VIEW_MENU);
+	var menu = new ZmPopupMenu(viewBtn);
+	viewBtn.setMenu(menu);
+
+	var defaultViewId = this._defaultView();
+	var calViews = ZmCalViewController.OPS;
+	for (var i = 0; i < calViews.length; i++) {
+		var id = calViews[i];
+		var params = {
+			image:ZmOperation.getProp(id, "image"),
+			text:ZmMsg[ZmOperation.getProp(id, "textKey")],
+			style:DwtMenuItem.RADIO_STYLE
+		};
+		var mi = menu.createMenuItem(id, params);
+		mi.setData(ZmOperation.MENUITEM_ID, id);
+		mi.addSelectionListener(this._listeners[ZmOperation.VIEW]);
+		var viewId = ZmCalViewController.OP_TO_VIEW[id];
+		if (viewId == defaultViewId) {
+			mi.setChecked(true, true);
+		}
+	}
+
+	return menu;
+};
+
+// Switch to selected view.
+ZmCalViewController.prototype._viewMenuItemListener =
+function(ev) {
+	if (ev.detail == DwtMenuItem.CHECKED ||
+		ev.detail == DwtMenuItem.UNCHECKED)
+	{
+		var id = ev.item.getData(ZmOperation.MENUITEM_ID);
+		var viewBtn = this._toolbar[ZmId.VIEW_CAL].getButton(ZmOperation.VIEW_MENU);
+		if (viewBtn) {
+			var icon = ZmOperation.getProp(id, "image");
+			viewBtn.setImage(icon);
+		}
+		this.show(ZmCalViewController.OP_TO_VIEW[id]);
+	}
 };
 
 /**
@@ -691,14 +743,6 @@ function(delay) {
 		this._createMiniCalendar(null, delay);
 	}
 	return this._miniCalendar;
-};
-
-ZmCalViewController.prototype._calViewButtonListener =
-function(ev) {
-	var id = ev.item.getData(ZmOperation.KEY_ID);
-	if (id) {
-		this.show(ZmCalViewController.OP_TO_VIEW[id]);
-	}
 };
 
 ZmCalViewController.prototype._todayButtonListener =
