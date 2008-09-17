@@ -118,7 +118,7 @@ function(params) {
 	}
 
 	if (!params.noTruncate) {
-		m.max = appCtxt.get(ZmSetting.MAX_MESSAGE_SIZE);
+		m.max = appCtxt.get(ZmSetting.MAX_MESSAGE_SIZE) || ZmMailApp.DEFAULT_MAX_MESSAGE_SIZE;
 	}
 
 	var newParams = {
