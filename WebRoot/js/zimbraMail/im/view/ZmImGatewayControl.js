@@ -109,6 +109,11 @@ function(templateId) {
 	this._clearButton = new DwtButton({ parent: this, parentElement: this._htmlElId + "_clearButton" });
 	this._clearButton.setText(ZmMsg.clear);
 	this._clearButton.addSelectionListener(new AjxListener(this, this._clearButtonListener));
+
+	this.tabGroup = new DwtTabGroup(this._gateway.type);
+	this.tabGroup.addMember(this._nameInput);
+	this.tabGroup.addMember(this._passwordInput);
+	this.tabGroup.addMember(this._clearButton);
 };
 
 

@@ -136,8 +136,10 @@ function() {
 				id: this._htmlElId + gateway.type,
 				gateway: gateway
 			};
-			this._gatewayControls[gateway.type] = new ZmImGatewayControl(controlArgs);
+			var control = new ZmImGatewayControl(controlArgs);
+			this._gatewayControls[gateway.type] = control;
 			this._hasGatewayControl = true;
+			this._tabGroup.addMember(control.tabGroup);
 		}
 	}
 };
