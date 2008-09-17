@@ -7,255 +7,257 @@
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 
 <app:handleError>
-    <zm:getMailbox var="mailbox"/>
-    <c:choose>
+<zm:getMailbox var="mailbox"/>
+<c:choose>
     <c:when test="${not empty mailbox.prefs.locale}">
         <fmt:setLocale value='${mailbox.prefs.locale}' scope='request' />
     </c:when>
     <c:otherwise>
         <fmt:setLocale value='${pageContext.request.locale}' scope='request' />
     </c:otherwise>
-    </c:choose>
-    <fmt:setBundle basename="/messages/ZhMsg" scope='request' />
-    <fmt:message var="title" key="compose"/>
-    <zm:composeUploader var="uploader"/>
-    <c:set var="compose" value="${uploader.compose}"/>
-    <c:set var="composeformat" value="${mailbox.prefs.composeFormat}" />
-    <c:if test="${mailbox.prefs.forwardReplyInOriginalFormat && !empty param.rf && (param.rf eq 'html' || param.rf eq 'text')}">
-            <c:set var="composeformat" value="${param.rf}"/>        
-    </c:if>
-    <c:set var="isHtml" value="${composeformat eq 'html'}"/>
+</c:choose>
+<fmt:setBundle basename="/messages/ZhMsg" scope='request' />
+<fmt:message var="title" key="compose"/>
+<zm:composeUploader var="uploader"/>
+<c:set var="compose" value="${uploader.compose}"/>
+<c:set var="composeformat" value="${mailbox.prefs.composeFormat}" />
+<c:if test="${mailbox.prefs.forwardReplyInOriginalFormat && !empty param.rf && (param.rf eq 'html' || param.rf eq 'text')}">
+    <c:set var="composeformat" value="${param.rf}"/>
+</c:if>
+<c:set var="isHtml" value="${composeformat eq 'html'}"/>
 </app:handleError>
 
 <app:handleError>
-    <c:choose>
-        <c:when test="${!empty param.id or !empty compose.draftId or !empty requestScope.draftid}">
-            <c:choose>
-                <c:when test="${!empty compose.draftId or !empty requestScope.draftid}">
-                    <zm:getMessage var="message" id="${empty requestScope.draftid ? compose.draftId : requestScope.draftid}" wanthtml="${(isHtml ? true : false)}"/>
-                </c:when>
-                <c:otherwise>
-                    <zm:getMessage var="message" id="${param.id}" part="${param.part}" wanthtml="${(isHtml ? true : false)}"/>
-                </c:otherwise>
-            </c:choose>
-        </c:when>
-        <c:otherwise>
-            <c:set var="message" value="${null}"/>
-        </c:otherwise>
-    </c:choose>
-
-    <c:choose>
-        <c:when test="${empty compose }">
-            <zm:messageCompose var="compose" message="${message}" action="${message.isDraft ? 'draft' : param.op}"/>
-        </c:when>
-        <c:when test="${uploader.isUpload and !empty message}">
-            <c:if test="${!requestScope.uploadError}">
-                <zm:fixupMessageCompose message="${message}" compose="${compose}" newattachments="${uploader.compose.hasFileItems or not empty uploader.compose.uploadedAttachment or uploader.isDraft}"/>
-            </c:if>
-        </c:when>
-    </c:choose>
-    <c:if test="${!empty param.voiceid}">
-        <zm:voiceMailCompose compose="${compose}" voiceid="${param.voiceid}" operation="${param.vmop}"/>
-    </c:if>
-
-    <c:set var="priority" value=""/>
-    <c:if test="${not empty message and message.isDraft}">
+<c:choose>
+    <c:when test="${!empty param.id or !empty compose.draftId or !empty requestScope.draftid}">
         <c:choose>
-            <c:when test="${message.isHighPriority}">
-                <c:set var="priority" value="!"/>
+            <c:when test="${!empty compose.draftId or !empty requestScope.draftid}">
+                <zm:getMessage var="message" id="${empty requestScope.draftid ? compose.draftId : requestScope.draftid}" wanthtml="${(isHtml ? true : false)}"/>
             </c:when>
             <c:otherwise>
-                <c:if test="${message.isLowPriority}">
-                    <c:set var="priority" value="?"/>
-                </c:if>
+                <zm:getMessage var="message" id="${param.id}" part="${param.part}" wanthtml="${(isHtml ? true : false)}"/>
             </c:otherwise>
         </c:choose>
-    </c:if>
+    </c:when>
+    <c:otherwise>
+        <c:set var="message" value="${null}"/>
+    </c:otherwise>
+</c:choose>
+
+<c:choose>
+    <c:when test="${empty compose }">
+        <zm:messageCompose var="compose" message="${message}" action="${message.isDraft ? 'draft' : param.op}"/>
+    </c:when>
+    <c:when test="${uploader.isUpload and !empty message}">
+        <c:if test="${!requestScope.uploadError}">
+            <zm:fixupMessageCompose message="${message}" compose="${compose}" newattachments="${uploader.compose.hasFileItems or not empty uploader.compose.uploadedAttachment or uploader.isDraft}"/>
+        </c:if>
+    </c:when>
+</c:choose>
+<c:if test="${!empty param.voiceid}">
+    <zm:voiceMailCompose compose="${compose}" voiceid="${param.voiceid}" operation="${param.vmop}"/>
+</c:if>
+
+<c:set var="priority" value=""/>
+<c:if test="${not empty message and message.isDraft}">
+    <c:choose>
+        <c:when test="${message.isHighPriority}">
+            <c:set var="priority" value="!"/>
+        </c:when>
+        <c:otherwise>
+            <c:if test="${message.isLowPriority}">
+                <c:set var="priority" value="?"/>
+            </c:if>
+        </c:otherwise>
+    </c:choose>
+</c:if>
 
 </app:handleError>
 
 <c:set var="focusField" value="${param.op eq 'reply' or param.op eq 'replyAll' ? 'bodyField' : 'toField'}"/>
 <app:view mailbox="${mailbox}" title="${not empty compose.subject ? compose.subject : title}" selected='compose' folders="true" tags="true" searches="true" context="${null}" keys="false"
-        onload="var e=document.getElementById('${focusField}'); if (e) {e.focus(); if (e.setSelectionRange) e.setSelectionRange(0,0);}" >
+          onload="var e=document.getElementById('${focusField}'); if (e) {e.focus(); if (e.setSelectionRange) e.setSelectionRange(0,0);}" >
 <body class="yui-skin-sam">
 <form action="" method="post" name="composeForm" enctype="multipart/form-data" accept-charset="utf-8"  >
 <table width="100%" cellpadding="0" cellspacing="0">
 <tr>
-                <td class='TbTop'>
-                    <table width="100%" cellspacing="0" cellpadding="0">
-                        <tr valign='middle'>
-                            <td align=left class="TbBt">
-                                <table cellspacing="0" cellpadding="0" class='Tb'>
-                                    <tr>
-                                        <app:button id="OPSEND" name="actionSend" src="mail/ImgSend.gif" tooltip="send" text="send"/>
-                                        <td><div class='vertSep'></div></td>
-                                        <app:button id="OPCANCEL" name="actionCancel" src="common/ImgCancel.gif" tooltip="cancel" text="cancel"/>
-                                        <td><div class='vertSep'></div></td>
-                                        <app:button id="OPDRAFT" name="actionDraft" src="startup/ImgDraftFolder.gif" tooltip="saveDraft" text="saveDraft"/>
-                                        <td><div class='vertSep'></div></td>
-                                        <app:button id="OPATTACH" name="actionAttachAdd" src="startup/ImgAttachment.gif" tooltip="addAttachments" text="addAttachments"/>
-                                        <c:if test="${mailbox.features.contacts or mailbox.features.gal}">
-                                            <td><div class='vertSep'></div></td>
-                                            <app:button id="OPADDRECIP" name="actionContactAdd" src="contacts/ImgContactsPicker.gif" tooltip="addFromContacts" text="addFromContacts"/>
-                                        </c:if>
-                                    </tr>
-                                </table>
-                            </td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-            <tr>
-                <td class='ZhAppContent'>
-                    <div>
-                        <table cellpadding="2" cellspacing="5" style="height:80%;" width="100%" class='Compose' border="0">
-                            <tr>
-                                <app:button id="tobutton" name="actionContactAdd" width="1%" clazz="tobutton" tooltip="addFromContacts" text="to"/>
-                                <td colspan="2" nowrap>
-                                    <div class="ZhAC ZhACTo">
-                                    <textarea  id="toField" rows="2" style='width:99%;height:40px;position:relative;' cols="80" onkeydown="return handleEnter(event, this);"
-                                        	onkeypress="return handleEnter(event, this);" name="to" >${fn:escapeXml(compose.to)}</textarea>
-                                        <br><div class='ZhACCont' id="toContainer" style='width:99%;top:3em;'></div></div>
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <app:button id="ccbutton"  name="actionContactAdd" width="1%" clazz="tobutton" tooltip="addFromContacts" text="cc"/>
-                                <td  nowrap>
-                                    <div class="ZhAC ZhACCc">
-                                    	<textarea id="ccField" rows="2" style='width:99%;height:40px;position:relative;' cols='80' name="cc" >${fn:escapeXml(compose.cc)}</textarea>
-                                        <br><div class='ZhACCont' id="ccContainer" style='width:99%;'></div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div id="show_bcc" style="display:block;"><a href="javascript:showHideBcc();"><fmt:message key="showBcc"/></a></div>
-                                    <div id="hide_bcc" style="display:none;"><a href="javascript:showHideBcc();"><fmt:message key="hideBcc"/></a></div>
-                                </td>
-                            </tr>
-                            <tr id="bcc_tr" style="display:none">
-                                <app:button id="bccbutton" name="actionContactAdd" width="1%" clazz="tobutton" tooltip="addFromContacts" text="bcc"/>
-                                <td colspan="2" nowrap>
-                                    <div class="ZhAC ZhAcBcc">
-                                        <textarea id="bccField" rows="2" style='width:99%;height:40px;position:relative;' cols='80' name="bcc" >${fn:escapeXml(compose.bcc)}</textarea>
-                                        <br><div class='ZhACCont' id="bccContainer" style='width:99%;'></div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td valign='top' align="right" nowrap  style='padding-top:4px;'> <label for="subjectField"><fmt:message key="subject"/>: </label></td>
-                                <c:choose>
-                                    <c:when test="${mailbox.features.mailPriority}">
-                                        <td nowrap style='padding-top:4px;'><input style='width:100%; height:18px;' type="text" size="100" name="subject" id="subjectField" onkeydown="return handleEnter(event);" onkeypress="return handleEnter(event);" value="${fn:escapeXml(compose.subject)}"></td>
-                                        <td nowrap align='right' style='width:5%; padding-right:10px; padding-top:4px;'>
-                                            <c:if test="${mailbox.features.mailPriority}">
-                                                <fmt:message key="priority"/>:
-                                                <select name="priority">
-                                                    <option id="OPPRIORITYHIGH" value="!"<c:if test="${priority eq '!'}"> selected</c:if>> <fmt:message key="high"/>
-                                                    <option id="OPPRIORITYNORMAL" value="" <c:if test="${priority eq ''}"> selected</c:if>><fmt:message key="normal"/>
-                                                    <option id="OPPRIORITYLOW" value="?"<c:if test="${priority eq '?'}"> selected</c:if>><fmt:message key="low"/>
-                                                </select>
-                                            </c:if>
-                                        </td>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <td colspan="2" nowrap><input style='width:99%' type="text" size="100" onkeydown="return handleEnter(event);"
-                                        	onkeypress="return handleEnter(event);" name="subject" id="subjectField" value="${fn:escapeXml(compose.subject)}"></td>
-                                    </c:otherwise>
-                                </c:choose>
-                            </tr>
-                            <c:set var="firstAttachment" value="${true}"/>
-                            <c:if test="${not empty compose.messageAttachments and empty compose.draftId and empty requestScope.draftid}">
-                                <c:forEach var="ma" items="${compose.messageAttachments}" varStatus="status">
-                                    <tr>
-                                        <td align='right'>
-                                            <c:if test="${firstAttachment}">
-                                                <app:img altkey="ALT_ATTACHMENT" src="startup/ImgAttachment.gif"/>
-                                                <c:set var="firstAttachment" value="${false}"/>
-                                            </c:if>
-                                        </td>
-                                        <td colspan="2">
-                                            <c:choose>
-                                                <c:when test="${empty ma.subject}"><fmt:message var="subj" key="noSubject"/></c:when>
-                                                <c:otherwise><c:set var="subj" value="${zm:truncate(ma.subject,100,true)}"/></c:otherwise>
-                                            </c:choose>
-                                                ${fn:escapeXml(subj)}
-                                            <input type="hidden" name="messageAttachment" value="${ma.id}:${fn:escapeXml(ma.subject)}"/>
-                                        </td>
-                                    </tr>
-                                </c:forEach>
+    <td class='TbTop'>
+        <table width="100%" cellspacing="0" cellpadding="0">
+            <tr valign='middle'>
+                <td align=left class="TbBt">
+                    <table cellspacing="0" cellpadding="0" class='Tb'>
+                        <tr>
+                            <app:button id="OPSEND" name="actionSend" src="mail/ImgSend.gif" tooltip="send" text="send"/>
+                            <td><div class='vertSep'></div></td>
+                            <app:button id="OPCANCEL" name="actionCancel" src="common/ImgCancel.gif" tooltip="cancel" text="cancel"/>
+                            <td><div class='vertSep'></div></td>
+                            <app:button id="OPDRAFT" name="actionDraft" src="startup/ImgDraftFolder.gif" tooltip="saveDraft" text="saveDraft"/>
+                            <td><div class='vertSep'></div></td>
+                            <app:button id="OPATTACH" name="actionAttachAdd" src="startup/ImgAttachment.gif" tooltip="addAttachments" text="addAttachments"/>
+                            <c:if test="${mailbox.features.contacts or mailbox.features.gal}">
+                                <td><div class='vertSep'></div></td>
+                                <app:button id="OPADDRECIP" name="actionContactAdd" src="contacts/ImgContactsPicker.gif" tooltip="addFromContacts" text="addFromContacts"/>
                             </c:if>
-                            <c:if test="${!empty compose.originalAttachments}">
-                                <c:forEach var="part" items="${compose.originalAttachments}" varStatus="status">
-                                    <app:attachment firstAttachment="${firstAttachment}" url="/service/home/~/?id=${message.id}&part=${part.partName}&auth=co"
-                                            displayName="${part.displayName}" contentType="${part.contentType}"
-                                            checked="${compose.checkedAttachmentNames[part.partName] or (part.isMssage and not empty compose.messageAttachments)}" displaySize="${part.displaySize}"
-                                            value="${part.partName}" name="originalAttachment"/>
-                                    <c:set var="firstAttachment" value="${false}"/>
-                                </c:forEach>
-                            </c:if>
-                            <c:if test="${(not empty param.attachId) and (not empty param.attachUrl) and (not empty param.attachName)}">
-                                <app:attachment firstAttachment="${firstAttachment}" url="${param.attachUrl}"
-                                        displayName="${param.attachName}"
-                                        checked="true"
-                                        value="${param.attachId}" name="uploadedAttachment"/>
-                            </c:if>
-                            <tr>
-                                <td colspan="3"  width="100%" >
-                                    <textarea class='MsgCompose' name="body" id="body" rows="20" cols="80" style='<c:if test="${isHtml}">visibility:hidden;</c:if>width:100%'>${fn:escapeXml(isHtml ? (empty compose.htmlContent ?  compose.content : compose.htmlContent) : compose.content)}</textarea>
-                                    <!-- <textarea class='MsgCompose' name="bodyText" id="bodyText" rows="30" cols="80" style='width:100%'>${fn:escapeXml(compose.content)}</textarea> -->
-                                  <input type="hidden" id="bodyText" class='MsgCompose' name="bodyText" value="" style='width:100%' />
-                                    
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td class='TbBottom'>
-                    <table width="100%" cellspacing="0" cellpadding="0">
-                        <tr valign='middle'>
-                            <td align=left class="TbBt">
-                                <table cellspacing="0" cellpadding="0" class='Tb'>
-                                    <tr>
-                                        <app:button id="DOPSEND" name="actionSend" src="mail/ImgSend.gif" tooltip="send" text="send"/>
-                                        <td><div class='vertSep'></div></td>
-                                        <app:button id="DOPCANCEL" name="actionCancel" src="common/ImgCancel.gif" tooltip="cancel" text="cancel"/>
-                                        <td><div class='vertSep'></div></td>
-                                        <app:button id="DOPDRAFT" name="actionDraft" src="startup/ImgDraftFolder.gif" tooltip="saveDraft" text="saveDraft"/>
-                                        <td><div class='vertSep'></div></td>
-                                        <app:button id="DOPATTACH" name="actionAttachAdd" src="startup/ImgAttachment.gif" tooltip="addAttachments" text="addAttachments"/>
-                                        <c:if test="${mailbox.features.contacts or mailbox.features.gal}">
-                                            <td><div class='vertSep'></div></td>
-                                            <app:button id="DOPADDRECIP" name="actionContactAdd" src="contacts/ImgContactsPicker.gif" tooltip="addFromContacts" text="addFromContacts"/>
-                                        </c:if>
-                                    </tr>
-                                </table>
-                            </td>
                         </tr>
                     </table>
                 </td>
             </tr>
         </table>
-        <input type="hidden" name="sendUID" value="${fn:escapeXml(compose.sendUID)}"/>
-        <input type="hidden" name="replyto" value="${fn:escapeXml(compose.replyTo)}"/>
-        <input type="hidden" name="from" value="${fn:escapeXml(compose.from)}"/>
-        <input type="hidden" name="inreplyto" value="${fn:escapeXml(compose.inReplyTo)}"/>
-        <input type="hidden" name="messageid" value="${fn:escapeXml(compose.messageId)}"/>
-        <input type="hidden" name="compNum" value="${fn:escapeXml(compose.compNum)}"/>
-        <input type="hidden" name="instCompNum" value="${fn:escapeXml(compose.instanceCompNum)}"/>
-        <input type="hidden" name="replytype" value="${fn:escapeXml(compose.replyType)}"/>
-        <input type="hidden" name="inviteReplyVerb" value="${fn:escapeXml(compose.inviteReplyVerb)}"/>
-        <input type="hidden" name="inviteReplyInst" value="${fn:escapeXml(compose.inviteReplyInst)}"/>
-        <input type="hidden" name="inviteReplyAllDay" value="${fn:escapeXml(compose.inviteReplyAllDay)}"/>        
-        <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
-        <c:if test="${message.isDraft}">
-            <input type="hidden" name="draftid" value="${message.id}"/>
-        </c:if>
-    </form>
-	<form id="SpellCheckForm">
-		<input type="hidden" id="SpellCheckData" name="SpellCheckData" value=""/>
-	</form>
+    </td>
+</tr>
+<tr>
+<td class='ZhAppContent'>
+<div>
+<table cellpadding="2" cellspacing="5" style="height:80%;" width="100%" class='Compose' border="0">
+<tr>
+    <app:button id="tobutton" name="actionContactAdd" width="1%" clazz="tobutton" tooltip="addFromContacts" text="to"/>
+    <td colspan="2" nowrap>
+        <div class="ZhAC ZhACTo">
+            <textarea  id="toField" rows="2" style='width:99%;height:40px;position:relative;' cols="80" onkeydown="return handleEnter(event, this);"
+                       onkeypress="return handleEnter(event, this);" name="to" >${fn:escapeXml(compose.to)}</textarea>
+            <br><div class='ZhACCont' id="toContainer" style='width:99%;top:3em;'></div></div>
+    </td>
+</tr>
+
+<tr>
+    <app:button id="ccbutton"  name="actionContactAdd" width="1%" clazz="tobutton" tooltip="addFromContacts" text="cc"/>
+    <td  nowrap>
+        <div class="ZhAC ZhACCc">
+            <textarea id="ccField" rows="2" style='width:99%;height:40px;position:relative;' cols='80' name="cc" >${fn:escapeXml(compose.cc)}</textarea>
+            <br><div class='ZhACCont' id="ccContainer" style='width:99%;'></div>
+        </div>
+    </td>
+    <td>
+        <div id="show_bcc" style="display:block;"><a href="javascript:showHideBcc();"><fmt:message key="showBcc"/></a></div>
+        <div id="hide_bcc" style="display:none;"><a href="javascript:showHideBcc();"><fmt:message key="hideBcc"/></a></div>
+    </td>
+</tr>
+<tr id="bcc_tr" style="display:none">
+    <app:button id="bccbutton" name="actionContactAdd" width="1%" clazz="tobutton" tooltip="addFromContacts" text="bcc"/>
+    <td colspan="2" nowrap>
+        <div class="ZhAC ZhAcBcc">
+            <textarea id="bccField" rows="2" style='width:99%;height:40px;position:relative;' cols='80' name="bcc" >${fn:escapeXml(compose.bcc)}</textarea>
+            <br><div class='ZhACCont' id="bccContainer" style='width:99%;'></div>
+        </div>
+    </td>
+</tr>
+<tr>
+    <td valign='top' align="right" nowrap  style='padding-top:4px;'> <label for="subjectField"><fmt:message key="subject"/>: </label></td>
+    <c:choose>
+        <c:when test="${mailbox.features.mailPriority}">
+            <td nowrap style='padding-top:4px;'><input style='width:100%; height:18px;' type="text" size="100" name="subject" id="subjectField" onkeydown="return handleEnter(event);" onkeypress="return handleEnter(event);" value="${fn:escapeXml(compose.subject)}"></td>
+            <td nowrap align='right' style='width:5%; padding-right:10px; padding-top:4px;'>
+                <c:if test="${mailbox.features.mailPriority}">
+                    <fmt:message key="priority"/>:
+                    <select name="priority">
+                        <option id="OPPRIORITYHIGH" value="!"<c:if test="${priority eq '!'}"> selected</c:if>> <fmt:message key="high"/>
+                        <option id="OPPRIORITYNORMAL" value="" <c:if test="${priority eq ''}"> selected</c:if>><fmt:message key="normal"/>
+                        <option id="OPPRIORITYLOW" value="?"<c:if test="${priority eq '?'}"> selected</c:if>><fmt:message key="low"/>
+                    </select>
+                </c:if>
+            </td>
+        </c:when>
+        <c:otherwise>
+            <td colspan="2" nowrap><input style='width:99%' type="text" size="100" onkeydown="return handleEnter(event);"
+                                          onkeypress="return handleEnter(event);" name="subject" id="subjectField" value="${fn:escapeXml(compose.subject)}"></td>
+        </c:otherwise>
+    </c:choose>
+</tr>
+<c:set var="firstAttachment" value="${true}"/>
+<c:if test="${not empty compose.messageAttachments and empty compose.draftId and empty requestScope.draftid}">
+    <c:forEach var="ma" items="${compose.messageAttachments}" varStatus="status">
+        <tr>
+            <td align='right'>
+                <c:if test="${firstAttachment}">
+                    <app:img altkey="ALT_ATTACHMENT" src="startup/ImgAttachment.gif"/>
+                    <c:set var="firstAttachment" value="${false}"/>
+                </c:if>
+            </td>
+            <td colspan="2">
+                <c:choose>
+                    <c:when test="${empty ma.subject}"><fmt:message var="subj" key="noSubject"/></c:when>
+                    <c:otherwise><c:set var="subj" value="${zm:truncate(ma.subject,100,true)}"/></c:otherwise>
+                </c:choose>
+                ${fn:escapeXml(subj)}
+                <input type="hidden" name="messageAttachment" value="${ma.id}:${fn:escapeXml(ma.subject)}"/>
+            </td>
+        </tr>
+    </c:forEach>
+</c:if>
+<c:if test="${!empty compose.originalAttachments}">
+    <c:forEach var="part" items="${compose.originalAttachments}" varStatus="status">
+        <app:attachment firstAttachment="${firstAttachment}" url="/service/home/~/?id=${message.id}&part=${part.partName}&auth=co"
+                        displayName="${part.displayName}" contentType="${part.contentType}"
+                        checked="${compose.checkedAttachmentNames[part.partName] or (part.isMssage and not empty compose.messageAttachments)}" displaySize="${part.displaySize}"
+                        value="${part.partName}" name="originalAttachment"/>
+        <c:set var="firstAttachment" value="${false}"/>
+    </c:forEach>
+</c:if>
+<c:if test="${(not empty param.attachId) and (not empty param.attachUrl) and (not empty param.attachName)}">
+    <app:attachment firstAttachment="${firstAttachment}" url="${param.attachUrl}"
+                    displayName="${param.attachName}"
+                    checked="true"
+                    value="${param.attachId}" name="uploadedAttachment"/>
+</c:if>
+<tr>
+    <td colspan="3"  width="100%" >
+        <%--<c:set var="isHtmlCont" value="${compose.contentType eq 'text/html' or not empty compose.htmlContent}" />--%>
+        <c:set var="isHtmlCont" value="${not empty compose.htmlContent}" />
+        <textarea class='MsgCompose' name="body" id="body" rows="20" cols="80" style='<c:if test="${isHtml}">visibility:hidden;</c:if>width:100%'>${isHtml ? (empty compose.htmlContent ?  compose.content : fn:escapeXml(compose.htmlContent)) : compose.content}</textarea>
+        <!--<textarea class='MsgCompose' rows="30" cols="80" style='width:100%'>${isHtml ? (empty compose.htmlContent ?  fn:escapeXml(compose.content) : fn:escapeXml(compose.htmlContent)) : compose.content}</textarea>-->
+        <input type="hidden" id="bodyText" class='MsgCompose' name="bodyText" value="" style='width:100%' />
+
+    </td>
+</tr>
+</table>
+</div>
+</td>
+</tr>
+<tr>
+    <td class='TbBottom'>
+        <table width="100%" cellspacing="0" cellpadding="0">
+            <tr valign='middle'>
+                <td align=left class="TbBt">
+                    <table cellspacing="0" cellpadding="0" class='Tb'>
+                        <tr>
+                            <app:button id="DOPSEND" name="actionSend" src="mail/ImgSend.gif" tooltip="send" text="send"/>
+                            <td><div class='vertSep'></div></td>
+                            <app:button id="DOPCANCEL" name="actionCancel" src="common/ImgCancel.gif" tooltip="cancel" text="cancel"/>
+                            <td><div class='vertSep'></div></td>
+                            <app:button id="DOPDRAFT" name="actionDraft" src="startup/ImgDraftFolder.gif" tooltip="saveDraft" text="saveDraft"/>
+                            <td><div class='vertSep'></div></td>
+                            <app:button id="DOPATTACH" name="actionAttachAdd" src="startup/ImgAttachment.gif" tooltip="addAttachments" text="addAttachments"/>
+                            <c:if test="${mailbox.features.contacts or mailbox.features.gal}">
+                                <td><div class='vertSep'></div></td>
+                                <app:button id="DOPADDRECIP" name="actionContactAdd" src="contacts/ImgContactsPicker.gif" tooltip="addFromContacts" text="addFromContacts"/>
+                            </c:if>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </td>
+</tr>
+</table>
+<input type="hidden" name="sendUID" value="${fn:escapeXml(compose.sendUID)}"/>
+<input type="hidden" name="replyto" value="${fn:escapeXml(compose.replyTo)}"/>
+<input type="hidden" name="from" value="${fn:escapeXml(compose.from)}"/>
+<input type="hidden" name="inreplyto" value="${fn:escapeXml(compose.inReplyTo)}"/>
+<input type="hidden" name="messageid" value="${fn:escapeXml(compose.messageId)}"/>
+<input type="hidden" name="compNum" value="${fn:escapeXml(compose.compNum)}"/>
+<input type="hidden" name="instCompNum" value="${fn:escapeXml(compose.instanceCompNum)}"/>
+<input type="hidden" name="replytype" value="${fn:escapeXml(compose.replyType)}"/>
+<input type="hidden" name="inviteReplyVerb" value="${fn:escapeXml(compose.inviteReplyVerb)}"/>
+<input type="hidden" name="inviteReplyInst" value="${fn:escapeXml(compose.inviteReplyInst)}"/>
+<input type="hidden" name="inviteReplyAllDay" value="${fn:escapeXml(compose.inviteReplyAllDay)}"/>
+<input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
+<c:if test="${message.isDraft}">
+    <input type="hidden" name="draftid" value="${message.id}"/>
+</c:if>
+</form>
+<form id="SpellCheckForm">
+    <input type="hidden" id="SpellCheckData" name="SpellCheckData" value=""/>
+</form>
 
 <app:autoComplete>
     initAuto("toField","toContainer");
@@ -264,153 +266,158 @@
 </app:autoComplete>
 
 <c:choose>
-	<c:when test="${(isHtml)}" >
-		<script type="text/javascript">
-			<!--
+<c:when test="${(isHtml)}" >
+<script type="text/javascript">
+<!--
 
-            saveContentToTextarea = function(){
-                myEditor.saveHTML();
-                var _htmlval = document.getElementById("body").value;
-                var stripHTML = /<\S[^><]*>/g;
-                var stripNBSP  = /&nbsp;/g
-                document.getElementById("bodyText").value = _htmlval.replace(stripNBSP, ' ').replace(/<br>/gi, '\n').replace(stripHTML, '').replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
+saveContentToTextarea = function(){
+    myEditor.saveHTML();
+    var _htmlval = document.getElementById("body").value;
+    var stripHTML = /<\S[^><]*>/g;
+    var stripNBSP  = /&nbsp;/g
+    document.getElementById("bodyText").value = _htmlval.replace(stripNBSP, ' ').replace(/<br>/gi, '\n').replace(stripHTML, '').replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
+}
+
+saveToTextareaToSend = function(){
+    myEditor.saveHTML();
+    var _htmlval = document.getElementById("body").value;
+    var stripHTML = /<\S[^><]*>/g;
+    var stripNBSP  = /&nbsp;/g
+    document.getElementById("bodyText").value = _htmlval.replace(stripNBSP, ' ').replace(/<br>/gi, '\n').replace(stripHTML, '').replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
+
+    document.getElementById("body").value = "<html><head><style> body {height: 100%; color:${mailbox.prefs.htmlEditorDefaultFontColor}; font-size:${mailbox.prefs.htmlEditorDefaultFontSize}; font-family:${mailbox.prefs.htmlEditorDefaultFontFamily},helvetica,clean,sans-serif;}</style></head><body>"+_htmlval+"</body></html>";
+}
+
+var myEditor = new YAHOO.widget.Editor('body', {
+    height: '300px',
+    width: '100%',
+    dompath: false, //Turns on the bar at the bottom
+    animate: true, //Animates the opening, closing and moving of Editor windows
+        <c:choose> <c:when test="${isHtmlCont}">
+    plainText: false,
+        </c:when><c:otherwise>
+    plainText: true,
+        </c:otherwise></c:choose>
+        <c:if test="${param.op eq 'reply' or param.op eq 'replyAll'}" >
+    focusAtStart: true,
+        </c:if>
+    css: 'html {height: 95%;}body {height: 100%;padding: 7px; background-color: #fff; color:<c:out value="${mailbox.prefs.htmlEditorDefaultFontColor}"/>; font-size:${mailbox.prefs.htmlEditorDefaultFontSize}; font-family: <c:out value="${mailbox.prefs.htmlEditorDefaultFontFamily}"/>,helvetica,clean,sans-serif;}a {color: blue;text-decoration: underline;cursor: pointer;}.warning-localfile {border-bottom: 1px dashed red !important;}.yui-busy {cursor: wait !important;}img.selected { border: 2px dotted #808080;}img {cursor: pointer !important;border: none;}',
+    extracss: '.yui-spellcheck { background-color: yellow; }',
+    collapse: true,
+    draggable: false,
+    buttonType: 'advanced'
+});
+enableSpellCheck(myEditor);
+myEditor.on('editorContentLoaded', function() {
+    var html = document.getElementById('body').innerHTML;;
+    if(html==""){
+        myEditor.setEditorHTML("<br/>");
+    }
+}, myEditor, true);
+
+/*hide titlebar*/
+myEditor._defaultToolbar.titlebar = false;
+
+/* insert span when no selection*/
+myEditor.on('toolbarLoaded', function() {
+    this.toolbar.on('fontnameClick', function(o) {
+        if (!this._hasSelection()) {
+            var button = o.button;
+            this._createCurrentElement('span', {
+                fontFamily: button.value
+            });
+            var el = this.currentElement[0];
+            if (this.browser.webkit) {
+                //Little Safari Hackery here..
+                el.innerHTML = '<span class="yui-non"> </span>';
+                el = el.firstChild;
+                this._getSelection().setBaseAndExtent(el, 1, el, el.innerText.length);
+            } else if (this.browser.ie || this.browser.opera) {
+                el.innerHTML = ' ';
             }
+            this._focusWindow();
+            this._selectNode(el);
+            return false;
+        }
+    }, this, true);
 
-             saveToTextareaToSend = function(){
-                myEditor.saveHTML();
-                var _htmlval = document.getElementById("body").value;
-                var stripHTML = /<\S[^><]*>/g;
-                var stripNBSP  = /&nbsp;/g
-                document.getElementById("bodyText").value = _htmlval.replace(stripNBSP, ' ').replace(/<br>/gi, '\n').replace(stripHTML, '').replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
-
-                document.getElementById("body").value = "<html><head><style> body {height: 100%; color:${mailbox.prefs.htmlEditorDefaultFontColor}; font-size:${mailbox.prefs.htmlEditorDefaultFontSize}; font-family:${mailbox.prefs.htmlEditorDefaultFontFamily},helvetica,clean,sans-serif;}</style></head><body>"+_htmlval+"</body></html>";
+    this.toolbar.on('fontsizeClick', function(o) {
+        if (!this._hasSelection()) {
+            var button = o.button;
+            this._createCurrentElement('span', {
+                fontSize: button.get('label') + 'px'
+            });
+            var el = this.currentElement[0];
+            if (this.browser.webkit) {
+                //Little Safari Hackery here..
+                el.innerHTML = '<span class="yui-non"> </span>';
+                el = el.firstChild;
+                this._getSelection().setBaseAndExtent(el, 1, el, el.innerText.length);
+            } else if (this.browser.ie || this.browser.opera) {
+                el.innerHTML = ' ';
             }
-            
-            var myEditor = new YAHOO.widget.Editor('body', {
-                height: '300px',
-                width: '100%',
-                dompath: false, //Turns on the bar at the bottom
-                animate: true, //Animates the opening, closing and moving of Editor windows
-                plainText: true,
-                <c:if test="${param.op eq 'reply' or param.op eq 'replyAll'}" >
-                           focusAtStart: true,
-                </c:if>
-                css: 'html {height: 95%;}body {height: 100%;padding: 7px; background-color: #fff; color:<c:out value="${mailbox.prefs.htmlEditorDefaultFontColor}"/>; font-size:${mailbox.prefs.htmlEditorDefaultFontSize}; font-family: <c:out value="${mailbox.prefs.htmlEditorDefaultFontFamily}"/>,helvetica,clean,sans-serif;}a {color: blue;text-decoration: underline;cursor: pointer;}.warning-localfile {border-bottom: 1px dashed red !important;}.yui-busy {cursor: wait !important;}img.selected { border: 2px dotted #808080;}img {cursor: pointer !important;border: none;}',
-                extracss: '.yui-spellcheck { background-color: yellow; }',
-                collapse: true,
-                draggable: false,
-                buttonType: 'advanced'
-            });
-            enableSpellCheck(myEditor);
-            myEditor.on('editorContentLoaded', function() {
-                var b = document.getElementById('body');
-                var html = b.innerHTML.replace(/&amp;/g, '&').replace(/&gt;/g, '>').replace(/&lt;/g, '<');
-                myEditor.setEditorHTML((html=="")? "<br/>" : html);
-            }, myEditor, true);
+            this._focusWindow();
+            this._selectNode(el);
+            return false;
+        }
+    }, this, true);
+});
+/*enable buttons that are disabled by default */
+myEditor.on('afterNodeChange', function() {
+    this.toolbar.enableButton('fontname');
+    this.toolbar.enableButton('fontsize');
+    this.toolbar.enableButton('subscript');
+    this.toolbar.enableButton('superscript');
+    this.toolbar.enableButton('forecolor');
+    this.toolbar.enableButton('backcolor');
+    this.toolbar.enableButton('indent');
+    this.toolbar.enableButton('outdent');
+    this.toolbar.enableButton('heading');
+    this.toolbar.enableButton('createlink');
 
-            /*hide titlebar*/
-            myEditor._defaultToolbar.titlebar = false;
+});
+myEditor.render();
+// -->
+</script>
+</c:when>
+<c:otherwise>
+    <script type="text/javascript">
+        <!-- <%-- Move the body caret to the top of the textarea--%>
+        var bodyEl = document.getElementById('body');
+        if (bodyEl.setSelectionRange) { <%-- FF --%>
+                                          bodyEl.setSelectionRange(0, 0);
+        } else if (bodyEl.createTextRange && /\S/.test(bodyEl.value)) { // IE
+            var range = bodyEl.createTextRange();
+            range.collapse(true);
+            range.moveStart("character", -60000);
+            range.collapse(true);
+            range.select();
+            window._composerBookmark = document.selection.createRange().getBookmark();
+            setTimeout(function(){
+                bodyEl.onfocus = _on_composerFocus_IE;
+                bodyEl.onmouseup = bodyEl.onkeyup = _on_composerEvent_IE;
+            }, 10);
+        }
 
-            /* insert span when no selection*/
-            myEditor.on('toolbarLoaded', function() {
-                 this.toolbar.on('fontnameClick', function(o) {
-                    if (!this._hasSelection()) {
-                        var button = o.button;
-                        this._createCurrentElement('span', {
-                            fontFamily: button.value
-                        });
-                        var el = this.currentElement[0];
-                        if (this.browser.webkit) {
-                            //Little Safari Hackery here..
-                            el.innerHTML = '<span class="yui-non"> </span>';
-                            el = el.firstChild;
-                            this._getSelection().setBaseAndExtent(el, 1, el, el.innerText.length);
-                        } else if (this.browser.ie || this.browser.opera) {
-                            el.innerHTML = ' ';
-                        }
-                        this._focusWindow();
-                        this._selectNode(el);
-                        return false;
-                    }
-                }, this, true);
+        function _on_composerFocus_IE() {
+            if (window._composerBookmark) {
+                setTimeout(function() {
+                    var range = document.selection.createRange();
+                    range.moveToBookmark(window._composerBookmark);
+                    range.select();
+                }, 10);
+            }
+        }
 
-                this.toolbar.on('fontsizeClick', function(o) {
-                    if (!this._hasSelection()) {
-                        var button = o.button;
-                        this._createCurrentElement('span', {
-                            fontSize: button.get('label') + 'px'
-                        });
-                        var el = this.currentElement[0];
-                        if (this.browser.webkit) {
-                            //Little Safari Hackery here..
-                            el.innerHTML = '<span class="yui-non"> </span>';
-                            el = el.firstChild;
-                            this._getSelection().setBaseAndExtent(el, 1, el, el.innerText.length);
-                        } else if (this.browser.ie || this.browser.opera) {
-                            el.innerHTML = ' ';
-                        }
-                        this._focusWindow();
-                        this._selectNode(el);
-                        return false;
-                    }
-                }, this, true);
-            });
-            /*enable buttons that are disabled by default */
-            myEditor.on('afterNodeChange', function() {
-                this.toolbar.enableButton('fontname');
-                this.toolbar.enableButton('fontsize');
-                this.toolbar.enableButton('subscript');
-                this.toolbar.enableButton('superscript');
-                this.toolbar.enableButton('forecolor');
-                this.toolbar.enableButton('backcolor');
-                this.toolbar.enableButton('indent');
-                this.toolbar.enableButton('outdent');
-                this.toolbar.enableButton('heading');
-                this.toolbar.enableButton('createlink');
-
-            });
-            myEditor.render();
-			// -->
-		</script>
-	</c:when>
-	<c:otherwise>
-		<script type="text/javascript">
-		<!-- <%-- Move the body caret to the top of the textarea--%>
-			var bodyEl = document.getElementById('body');
-			if (bodyEl.setSelectionRange) { <%-- FF --%>
-				bodyEl.setSelectionRange(0, 0);
-			} else if (bodyEl.createTextRange && /\S/.test(bodyEl.value)) { // IE
-				var range = bodyEl.createTextRange();
-				range.collapse(true);
-				range.moveStart("character", -60000);
-				range.collapse(true);
-				range.select();
-				window._composerBookmark = document.selection.createRange().getBookmark();
-				setTimeout(function(){
-					bodyEl.onfocus = _on_composerFocus_IE;
-					bodyEl.onmouseup = bodyEl.onkeyup = _on_composerEvent_IE;
-				}, 10);
-			}
-
-			function _on_composerFocus_IE() {
-				if (window._composerBookmark) {
-					setTimeout(function() {
-						var range = document.selection.createRange();
-						range.moveToBookmark(window._composerBookmark);
-						range.select();
-					}, 10);
-				}
-			}
-
-			function _on_composerEvent_IE(ev) {
-				var range = document.selection.createRange();
-				if (range.parentElement() === this) /*this* is the textarea*/ {
-					window._composerBookmark = range.getBookmark();
-				}
-			}
-		// -->
-		</script>
-	</c:otherwise>
+        function _on_composerEvent_IE(ev) {
+            var range = document.selection.createRange();
+            if (range.parentElement() === this) /*this* is the textarea*/ {
+                window._composerBookmark = range.getBookmark();
+            }
+        }
+        // -->
+    </script>
+</c:otherwise>
 </c:choose>
 <script type="text/javascript">
 <!--
@@ -445,29 +452,29 @@ for (y in sendElemts){
 }
 
 function checkSubject() {
-	var elesub = document.getElementById("subjectField");
-	if(trim(elesub.value) == '') {
-		if(confirm("<fmt:message key="compSubjectMissing"/>")) {
-		return true;
-	} else{
-		return false;
-	}
-	} else {
-		return true;
-	}
+    var elesub = document.getElementById("subjectField");
+    if(trim(elesub.value) == '') {
+        if(confirm("<fmt:message key="compSubjectMissing"/>")) {
+        return true;
+    } else{
+        return false;
+    }
+    } else {
+        return true;
+    }
 }
 function trim(strVal){
-	return strVal.replace(/^\s*/, "").replace(/\s*$/, "");
+    return strVal.replace(/^\s*/, "").replace(/\s*$/, "");
 }
 
 
 function handleEnter (ev, _field) {
-	var keyCode = ev.keyCode ? ev.keyCode : ev.which ? ev.which : ev.charCode;
+    var keyCode = ev.keyCode ? ev.keyCode : ev.which ? ev.which : ev.charCode;
     if (keyCode == 13){
-    if(_field){
-    if (trim(_field.value) == "") { return false } else return true ;
-    }else
-    return false;
+        if(_field){
+            if (trim(_field.value) == "") { return false } else return true ;
+        }else
+            return false;
     }
     else return true;
 }
@@ -480,50 +487,50 @@ var _form = document.forms["composeForm"];
 var _fields = {} ;
 
 grabFieldValues = function(){
-	var _el = _form.elements;
-	for ( var _i=0;_i < _el.length; _i++){
-		if(_el[_i].type == "text" || _el[_i].type == "textarea" ){
-			_fields[_el[_i].name] = _el[_i].value;
-		}
-	}
-	<c:if test="${(isHtml)}" >
-	setTimeout(function() { myEditor.saveHTML() }, 1000);  // Saves to content text area
-	_fields["body"] = trim(document.getElementById("body").value);
-	</c:if>
+    var _el = _form.elements;
+    for ( var _i=0;_i < _el.length; _i++){
+        if(_el[_i].type == "text" || _el[_i].type == "textarea" ){
+            _fields[_el[_i].name] = _el[_i].value;
+        }
+    }
+<c:if test="${(isHtml)}" >
+           setTimeout(function() { myEditor.saveHTML() }, 1000);  // Saves to content text area
+    _fields["body"] = trim(document.getElementById("body").value);
+</c:if>
 }
 grabFieldValues();
 
 checkForChanges = function(){
-	var _checkFail = false;
-	var _el = _form.elements;
-	for ( var _i=0;_i < _el.length; _i++){
-		if(_el[_i].type == "text" || _el[_i].type == "textarea"){
-			if(_fields[_el[_i].name] != _el[_i].value) { _checkFail = true;}
-		}
-	}
+    var _checkFail = false;
+    var _el = _form.elements;
+    for ( var _i=0;_i < _el.length; _i++){
+        if(_el[_i].type == "text" || _el[_i].type == "textarea"){
+            if(_fields[_el[_i].name] != _el[_i].value) { _checkFail = true;}
+        }
+    }
 <c:if test="${(isHtml)}">
-	myEditor.saveHTML();
-	_bodyVal = trim(document.getElementById("body").value);
-	if(trim(_fields["body"]) != _bodyVal) {
-		_checkFail = true;
-		if(_fields["body"] == "<html><body>"+_bodyVal+"</body></html>"){  // Allow after save draft
-			_checkFail = false;
-			}
+           myEditor.saveHTML();
+    _bodyVal = trim(document.getElementById("body").value);
+    if(trim(_fields["body"]) != _bodyVal) {
+        _checkFail = true;
+        if(_fields["body"] == "<html><body>"+_bodyVal+"</body></html>"){  // Allow after save draft
+            _checkFail = false;
+        }
 
-	}
+    }
 </c:if>
 
-if(_checkFail){
-		return "<fmt:message key="composeExitConfirmation"/>";
-	}else{
-		return;
-	}
+    if(_checkFail){
+        return "<fmt:message key="composeExitConfirmation"/>";
+    }else{
+        return;
+    }
 }
 
 window.onbeforeunload = checkForChanges;
 
 cancelOnbeforeUnload = function(){
-	window.onbeforeunload = null;
+    window.onbeforeunload = null;
 //do save to textearea before quitting the page
 <c:if test="${(isHtml)}" >
            saveContentToTextarea();
@@ -534,23 +541,23 @@ prepToSend = function(){
     window.onbeforeunload = null;
     checkSubject();
     /*process HTML before sending*/
-    <c:if test="${(isHtml)}" >
-        saveToTextareaToSend();
-    </c:if>
+<c:if test="${(isHtml)}" >
+           saveToTextareaToSend();
+</c:if>
 };
 
 // -->
 </script>
 
-    <app:keyboard cache="mail.compose" globals="false" passspecial="true" mailbox="${mailbox}">
-        <zm:bindKey message="compose.Send" func="function() { zclick('SOPSEND')}"/>
-        <zm:bindKey message="compose.Save" func="function() { zclick('SOPDRAFT')}"/>
-        <zm:bindKey message="compose.Attachment" func="function() { zclick('SOPATTACH')}"/>
-        <zm:bindKey message="compose.AddressPicker" func="function() { zclick('SOPADDRECIP')}"/>
-        <zm:bindKey message="compose.HighPriority" func="function() { zselect('OPPRIORITYHIGH')}"/>
-        <zm:bindKey message="compose.NormalPriority" func="function() { zselect('OPPRIORITYNORMAL')}"/>
-        <zm:bindKey message="compose.LowPriority" func="function() { zselect('OPPRIORITYLOW')}"/>
-   </app:keyboard>
+<app:keyboard cache="mail.compose" globals="false" passspecial="true" mailbox="${mailbox}">
+    <zm:bindKey message="compose.Send" func="function() { zclick('SOPSEND')}"/>
+    <zm:bindKey message="compose.Save" func="function() { zclick('SOPDRAFT')}"/>
+    <zm:bindKey message="compose.Attachment" func="function() { zclick('SOPATTACH')}"/>
+    <zm:bindKey message="compose.AddressPicker" func="function() { zclick('SOPADDRECIP')}"/>
+    <zm:bindKey message="compose.HighPriority" func="function() { zselect('OPPRIORITYHIGH')}"/>
+    <zm:bindKey message="compose.NormalPriority" func="function() { zselect('OPPRIORITYNORMAL')}"/>
+    <zm:bindKey message="compose.LowPriority" func="function() { zselect('OPPRIORITYLOW')}"/>
+</app:keyboard>
 </body>
 </app:view>
 
