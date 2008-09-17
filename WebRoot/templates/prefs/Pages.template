@@ -1497,7 +1497,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 </template>
 
 <template id='prefs.Pages#ImAccountLabel'>
-	<table style='text-align:right; width:100%'>
+	<table class="ImAccountLabel">
 		<tr>
 			<td>${name}</td>
 			<td style='width:1%;'><img src="<$=appContextPath$>/public/tmp/${nameLower}.png"/></td>
@@ -1505,19 +1505,19 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 	</table>
 </template>
 
-<template id='im.Chat#ZmImGatewayControl'>
+<template id='prefs.Pages#ZmImGatewayControl'>
 	<table>
 		<tr>
-			<td class="ImAccountLabel">${nameLabel}</td>
-			<td><div id='${id}_nameField'/></td>
+			<td class="ImAccountGatewayLabel">${nameLabel}</td>
+			<td class="ImAccountGatewayValue"><div id='${id}_nameField'/></td>
 		</tr>
 		<tr>
-			<td class="ImAccountLabel"><$=ZmMsg.passwordLabel$></td>
-			<td><div id='${id}_passwordField'/></td>
+			<td class="ImAccountGatewayLabel"><$=ZmMsg.passwordLabel$></td>
+			<td class="ImAccountGatewayValue"><div id='${id}_passwordField'/></td>
 		</tr>
 		<tr>
 			<td class="ImAccountLabel">&nbsp</td>
-			<td>
+			<td class="ImAccountGatewayValue">
 				<div id='${id}_clearButton'/>
 			</td>
 		</tr>

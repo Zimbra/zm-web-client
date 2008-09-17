@@ -2070,9 +2070,20 @@ HTML>BODY .appt-selected .appt_allday_body
 .ImgJiveBig { background-image: url("/zimbra/public/tmp/jive.png"); }
 
 .ImAccountLabel {
+	width: 150px;
+	font-weight: bold;
+	white-space: nowrap;
+	text-align: right;
+	line-height:20px;
+}
+
+.ImAccountGatewayLabel {
 	width: 100px;
 	text-align: right;
-	font-weight: bold;
+}
+
+.ImAccountGatewayValue {
+	width: 90%;
 }
 
 .ImAccountLogin .FakeAnchor {

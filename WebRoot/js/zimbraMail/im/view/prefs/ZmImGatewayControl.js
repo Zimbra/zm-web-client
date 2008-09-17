@@ -30,7 +30,7 @@ ZmImGatewayControl.prototype.toString = function() {
 };
 
 
-ZmImGatewayControl.prototype.TEMPLATE = 'im.Chat#ZmImGatewayControl'
+ZmImGatewayControl.prototype.TEMPLATE = 'prefs.Pages#ZmImGatewayControl';
 
 /** Changes the gateway that this controls displays. */
 ZmImGatewayControl.prototype.setGateway =
