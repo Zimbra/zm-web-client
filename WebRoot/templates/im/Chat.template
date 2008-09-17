@@ -289,7 +289,7 @@
 <template id='im.Chat#ZmImGatewayControl'>
 	<table>
 		<tr>
-			<td class="ImAccountLabel"><$=ZmMsg.imScreenName$></td>
+			<td class="ImAccountLabel">${nameLabel}</td>
 			<td><div id='${id}_nameField'/></td>
 		</tr>
 		<tr>

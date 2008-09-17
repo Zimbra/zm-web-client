@@ -87,10 +87,16 @@ function() {
 
 ZmImGatewayControl.prototype._createHtml =
 function(templateId) {
-    var data = {
+	var type = this._gateway.type;
+	var nameLabel = type == "yahoo" ? ZmMsg.imScreenNameYahoo :
+					type == "msn" ? ZmMsg.imScreenNameMsn :
+					ZmMsg.imScreenName;
+
+	var data = {
 		id: this._htmlElId,
-		name: AjxStringUtil.capitalize(this._gateway.type),
-		nameLower: this._gateway.type 
+		name: AjxStringUtil.capitalize(type),
+		nameLower: type,
+		nameLabel: nameLabel
 	};
     this._createHtmlFromTemplate(templateId || this.TEMPLATE, data);
 
@@ -110,7 +116,7 @@ function(templateId) {
 	this._clearButton.setText(ZmMsg.clear);
 	this._clearButton.addSelectionListener(new AjxListener(this, this._clearButtonListener));
 
-	this.tabGroup = new DwtTabGroup(this._gateway.type);
+	this.tabGroup = new DwtTabGroup(type);
 	this.tabGroup.addMember(this._nameInput);
 	this.tabGroup.addMember(this._passwordInput);
 	this.tabGroup.addMember(this._clearButton);
