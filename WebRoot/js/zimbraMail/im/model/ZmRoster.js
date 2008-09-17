@@ -514,26 +514,39 @@ ZmRoster.prototype.reconnectGateway = function(gw) {
 	this.__avoidNotifyTimeout = new Date().getTime();
 };
 
-ZmRoster.prototype.unregisterGateway = function(service, screenName) {
+ZmRoster.prototype.unregisterGateway = function(service, callback, batchCmd) {
 	var sd = AjxSoapDoc.create("IMGatewayRegisterRequest", "urn:zimbraIM");
 	var method = sd.getMethod();
 	method.setAttribute("op", "unreg");
 	method.setAttribute("service", service);
-	appCtxt.getAppController().sendRequest({ soapDoc	 : sd,
-						       asyncMode : true });
+	if (batchCmd) {
+		batchCmd.addNewRequestParams(sd, callback);
+	} else {
+		appCtxt.getAppController().sendRequest({
+			soapDoc: sd,
+			asyncMode: true,
+			callback: callback
+		});
+	}
 	this.__avoidNotifyTimeout = new Date().getTime();
 };
 
-ZmRoster.prototype.registerGateway = function(service, screenName, password) {
+ZmRoster.prototype.registerGateway = function(service, screenName, password, callback, batchCmd) {
 	var sd = AjxSoapDoc.create("IMGatewayRegisterRequest", "urn:zimbraIM");
 	var method = sd.getMethod();
 	method.setAttribute("op", "reg");
 	method.setAttribute("service", service);
 	method.setAttribute("name", screenName);
 	method.setAttribute("password", password);
-	appCtxt.getAppController().sendRequest({ soapDoc	 : sd,
-						       asyncMode : true
-						     });
+	if (batchCmd) {
+		batchCmd.addNewRequestParams(sd, callback);
+	} else {
+		appCtxt.getAppController().sendRequest({
+			soapDoc: sd,
+			asyncMode: true,
+			callback: callback
+		});
+	}
 	this.__avoidNotifyTimeout = new Date().getTime();
 	// since it's not returned by a gwStatus notification, let's
 	// set a nick here so the icon becomes "online" if a

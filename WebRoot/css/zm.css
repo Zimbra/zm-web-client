@@ -2069,6 +2069,12 @@ HTML>BODY .appt-selected .appt_allday_body
 .ImgAolBig { background-image: url("/zimbra/public/tmp/aol.png"); }
 .ImgJiveBig { background-image: url("/zimbra/public/tmp/jive.png"); }
 
+.ImAccountLabel {
+	width: 100px;
+	text-align: right;
+	font-weight: bold;
+}
+
 .ZmChatGwIcon-offline {
  opacity: 0.3;
 

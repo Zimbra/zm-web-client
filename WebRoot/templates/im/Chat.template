@@ -286,3 +286,21 @@
 	</tr></table>
 </template>
 
+<template id='im.Chat#ZmImGatewayControl'>
+	<table>
+		<tr>
+			<td class="ImAccountLabel"><$=ZmMsg.imScreenName$></td>
+			<td><div id='${id}_nameField'/></td>
+		</tr>
+		<tr>
+			<td class="ImAccountLabel"><$=ZmMsg.passwordLabel$></td>
+			<td><div id='${id}_passwordField'/></td>
+		</tr>
+		<tr>
+			<td class="ImAccountLabel">&nbsp</td>
+			<td>
+				<div id='${id}_clearButton'/>
+			</td>
+		</tr>
+	</table>
+</template>

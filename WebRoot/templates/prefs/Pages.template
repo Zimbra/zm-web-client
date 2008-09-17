@@ -1339,94 +1339,172 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 </template>
 
 <template id='prefs.Pages#IM'>
-	<div align=right>
-		<table class='ZOptionsDefaultsTable'>
-			<tr><td class='ZOptionsDefaultsField'><div id='${id}_REVERT_PAGE' tabindex='10'></div></td></tr>
-		</table>
-	</div>
-
-	<table border=0 cellspacing=0 cellpadding=0 width=100%>
-		<tr class='ZOptionsHeaderRow'>
-			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
-			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.options$></td>
-			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
-		</tr>
-	</table>
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+<div align=right>
+	<table class='ZOptionsDefaultsTable'>
 		<tr>
-			<td class='ZOptionsSectionMain'>
-			<table width=100%>
-				<tr><td class='ZOptionsLabel'><$=ZmMsg.imLoginLabel$></td>
-					<td class='ZOptionsField'><div id='${id}_IM_PREF_AUTO_LOGIN' tabindex='20'></div></td>
-				</tr>
-
-				<tr><td colspan=2><hr></td></tr>
-
-				<tr><td class='ZOptionsLabel'><$=ZmMsg.imNotificationsLabel$></td>
-					<td class='ZOptionsField'><div id='${id}_IM_PREF_INSTANT_NOTIFY' tabindex='30'></div></td>
-				</tr>
-
-				<tr><td class='ZOptionsLabel'>&nbsp;</td>
-					<td class='ZOptionsField'><div id='${id}_IM_PREF_NOTIFY_PRESENCE' tabindex='50'></div></td>
-				</tr>
-
-				<tr><td class='ZOptionsLabel'>&nbsp;</td>
-					<td class='ZOptionsField'><div id='${id}_IM_PREF_NOTIFY_STATUS' tabindex='60'></div></td>
-				</tr>
-				
-				<tr><td colspan=2><hr></td></tr>
-
-				<tr><td class='ZOptionsLabel'><$=ZmMsg.imArrivalLabel$></td>
-					<td class='ZOptionsField'><div id='${id}_IM_PREF_NOTIFY_SOUNDS' tabindex='35'></div></td>
-				</tr>
-				
-				<tr><td class='ZOptionsLabel'>&nbsp;</td>
-					 <td class='ZOptionsField'><div id='${id}_IM_PREF_FLASH_ICON' tabindex='40'></div></td>
-				</tr>
-
-				<tr><td class='ZOptionsLabel'>&nbsp;</td>
-					 <td class='ZOptionsField'><div id='${id}_IM_PREF_FLASH_BROWSER' tabindex='40'></div></td>
-				</tr>
-
-				<tr><td colspan=2><hr></td></tr>
-				
-				<tr><td class='ZOptionsLabel'><$=ZmMsg.imChat $></td>
-					<td class='ZOptionsField'><div id='${id}_IM_PREF_LOGCHATS_ENABLED' tabindex='70'></div></td>
-				</tr>
-
-                                <tr><td class='ZOptionsLabel'>&nbsp;</td>
-					<td class='ZOptionsField'>
-                                          <table cellspacing="0" cellpadding="0">
-                                            <tr>
-                                              <td colspan="2">
-                                                <div id='${id}_IM_PREF_REPORT_IDLE' tabindex='70'></div>
-                                              </td>
-                                            </tr>
-                                            <tr>
-                                              <td style="padding-left: 10px; text-align: right;">
-                                                <$=ZmMsg.imPrefIdleTimeoutLabel $>
-                                              </td>
-                                              <td style="padding: 3px">
-                                                <div id='${id}_IM_PREF_IDLE_TIMEOUT' tabindex='80'></div>
-                                              </td>
-                                            </tr>
-                                            <tr>
-                                              <td style="padding-left: 10px; text-align: right;">
-                                                <$=ZmMsg.imPrefIdleStatusLabel $>
-                                              </td>
-                                              <td style="padding: 3px">
-                                                <div id='${id}_IM_PREF_IDLE_STATUS' tabindex='90'></div>
-                                              </td>
-                                            </tr>
-                                          </table>
-                                        </td>
-				</tr>
-
-			</table>
+			<td class='ZOptionsDefaultsField'>
+				<div id='${id}_REVERT_PAGE' tabindex='10'></div>
 			</td>
 		</tr>
 	</table>
+</div>
+
+<table border=0 cellspacing=0 cellpadding=0 width=100%>
+	<tr class='ZOptionsHeaderRow'>
+		<td class='ZOptionsHeaderL'>
+			<div class='ImgPrefsHeader_L'></div>
+		</td>
+		<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.options$></td>
+		<td class='ZOptionsHeaderR'>
+			<div class='ImgPrefsHeader_R'></div>
+		</td>
+	</tr>
+</table>
+<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+	<tr>
+		<td class='ZOptionsSectionMain'>
+			<table width=100%>
+				<tr>
+					<td class='ZOptionsLabel'><$=ZmMsg.imLoginLabel$></td>
+					<td class='ZOptionsField'>
+						<div id='${id}_IM_PREF_AUTO_LOGIN' tabindex='20'></div>
+					</td>
+				</tr>
+
+				<tr>
+					<td colspan=2>
+						<hr>
+					</td>
+				</tr>
+
+				<tr>
+					<td class='ZOptionsLabel'><$=ZmMsg.imNotificationsLabel$></td>
+					<td class='ZOptionsField'>
+						<div id='${id}_IM_PREF_INSTANT_NOTIFY' tabindex='30'></div>
+					</td>
+				</tr>
+
+				<tr>
+					<td class='ZOptionsLabel'>&nbsp;</td>
+					<td class='ZOptionsField'>
+						<div id='${id}_IM_PREF_NOTIFY_PRESENCE' tabindex='50'></div>
+					</td>
+				</tr>
+
+				<tr>
+					<td class='ZOptionsLabel'>&nbsp;</td>
+					<td class='ZOptionsField'>
+						<div id='${id}_IM_PREF_NOTIFY_STATUS' tabindex='60'></div>
+					</td>
+				</tr>
+
+				<tr>
+					<td colspan=2>
+						<hr>
+					</td>
+				</tr>
+
+				<tr>
+					<td class='ZOptionsLabel'><$=ZmMsg.imArrivalLabel$></td>
+					<td class='ZOptionsField'>
+						<div id='${id}_IM_PREF_NOTIFY_SOUNDS' tabindex='35'></div>
+					</td>
+				</tr>
+
+				<tr>
+					<td class='ZOptionsLabel'>&nbsp;</td>
+					<td class='ZOptionsField'>
+						<div id='${id}_IM_PREF_FLASH_ICON' tabindex='40'></div>
+					</td>
+				</tr>
+
+				<tr>
+					<td class='ZOptionsLabel'>&nbsp;</td>
+					<td class='ZOptionsField'>
+						<div id='${id}_IM_PREF_FLASH_BROWSER' tabindex='40'></div>
+					</td>
+				</tr>
+
+				<tr>
+					<td colspan=2>
+						<hr>
+					</td>
+				</tr>
+
+				<tr>
+					<td class='ZOptionsLabel'><$=ZmMsg.imChat $></td>
+					<td class='ZOptionsField'>
+						<div id='${id}_IM_PREF_LOGCHATS_ENABLED' tabindex='70'></div>
+					</td>
+				</tr>
+
+				<tr>
+					<td class='ZOptionsLabel'>&nbsp;</td>
+					<td class='ZOptionsField'>
+						<table cellspacing="0" cellpadding="0">
+							<tr>
+								<td colspan="2">
+									<div id='${id}_IM_PREF_REPORT_IDLE' tabindex='70'></div>
+								</td>
+							</tr>
+							<tr>
+								<td style="padding-left: 10px; text-align: right;">
+									<$=ZmMsg.imPrefIdleTimeoutLabel $>
+								</td>
+								<td style="padding: 3px">
+									<div id='${id}_IM_PREF_IDLE_TIMEOUT' tabindex='80'></div>
+								</td>
+							</tr>
+							<tr>
+								<td style="padding-left: 10px; text-align: right;">
+									<$=ZmMsg.imPrefIdleStatusLabel $>
+								</td>
+								<td style="padding: 3px">
+									<div id='${id}_IM_PREF_IDLE_STATUS' tabindex='90'></div>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+			</table>
+		</td>
+	</tr>
+</table>
+
+<table border=0 cellspacing=0 cellpadding=0 width=100%>
+	<tr class='ZOptionsHeaderRow'>
+		<td class='ZOptionsHeaderL'>
+			<div class='ImgPrefsHeader_L'></div>
+		</td>
+		<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.imAccounts$></td>
+		<td class='ZOptionsHeaderR'>
+			<div class='ImgPrefsHeader_R'></div>
+		</td>
+	</tr>
+</table>
+<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+	<tr>
+		<td class='ZOptionsSectionMain'>
+
+			<div id="${id}_imAccountsNotLoggedIn">
+				${loginMsg}
+			</div>
+			<table id="${id}_imAccounts" width="100%"/>
+		</td>
+	</tr>
+</table>
 </template>
+
+<template id='prefs.Pages#ImAccountLabel'>
+	<table style='text-align:right; width:100%'>
+		<tr>
+			<td>${name}</td>
+			<td style='width:1%;'><img src="<$=appContextPath$>/public/tmp/${nameLower}.png"/></td>
+		</tr>
+	</table>
+</template>
+
 
 <template id='prefs.Pages#Shortcuts'>
 		<table border=0 cellspacing=0 cellpadding=0 width=100%>
