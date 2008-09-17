@@ -395,7 +395,7 @@ function(attId, isDraft) {
 
     var zeroSizedAttachments = false;
 	// handle Inline Attachments
-	var inline = this._isInline();
+	var inline = this._isInline(); // XXX: not necessarily accurate for fwd/reply
 	if (this._attachDialog && inline && attId) {
 		for (var i = 0; i < attId.length; i++) {
 			var att = attId[i];
@@ -406,11 +406,7 @@ function(attId, isDraft) {
 			var contentType = att.ct;
 			if (contentType && contentType.indexOf("image") != -1) {
 				var cid = Dwt.getNextId();
-                if (AjxEnv.isIE) {
-					this._htmlEditor.insertImage("cid:" + cid, true);
-				} else {
-					this._htmlEditor.insertImage("cid:" + cid);
-				}
+				this._htmlEditor.insertImage("cid:" + cid, AjxEnv.isIE);
 				msg.addInlineAttachmentId(cid, att.aid);
 			} else {
 				msg.addAttachmentId(att.aid);
@@ -493,7 +489,7 @@ function(attId, isDraft) {
             defangedContent = defangedContent.replace(/<span class="Apple-style-span" style="text-decoration: underline;">(.+?)<\/span>/, "<u>$1</u>");
             defangedContent = defangedContent.replace(/<span class="Apple-style-span" style="text-decoration: line-through;">(.+?)<\/span>/, "<strike>$1</strike>");
         }
-        
+
 		htmlPart.setContent(defangedContent);
 
 		if (inline) {
@@ -503,6 +499,30 @@ function(attId, isDraft) {
 			top.children.add(relatedPart);
 		} else {
 			top.children.add(htmlPart);
+		}
+
+		// Bug 31535 - inline img atts not preserved on reply/forward
+		// Try to find inline imgs in the composer that were brought into it from the orig msg,
+		// and add them to the new msg's inline atts so that the server sends them.
+		if (this._action == ZmOperation.REPLY || this._action == ZmOperation.FORWARD_INLINE) {
+			var idoc = this._htmlEditor._getIframeDoc();
+			var images = idoc.getElementsByTagName("img");
+			for (var i = 0; i < images.length; i++) {
+				var dfsrc = images[i].getAttribute("dfsrc") || images[i].src;
+				if (dfsrc) {
+					if (dfsrc.substring(0,4) == "cid:") {
+						var cid = dfsrc.substring(4);
+						var ci = "<" + cid + ">";
+						var inlineAtt = msg.findInlineAtt(ci);
+						if (!inlineAtt) {
+							inlineAtt = this._msg.findInlineAtt(ci);
+							if (inlineAtt) {
+								msg.addInlineAttachmentId(cid, null, inlineAtt.part);
+							}
+						}
+					}
+				}
+			}
 		}
 	} else {
 		var textPart = (this._extraParts || inline) ? new ZmMimePart() : top;
