@@ -590,13 +590,9 @@ function(ev) {
 ZmListController.prototype._getMoveParams =
 function() {
 	var org = ZmApp.ORGANIZER[this._app._name] || ZmOrganizer.FOLDER;
-	return {
-		data:this._pendingActionData,
-		treeIds:[org],
-		overviewId:"ZmListController",
-		title:this._getMoveDialogTitle(this._pendingActionData.length),
-		description:ZmMsg.targetFolder
-	};
+	var title = this._getMoveDialogTitle(this._pendingActionData.length);
+	return {data:this._pendingActionData, treeIds:[org], overviewId:"ZmListController",
+			title:title, description:ZmMsg.targetFolder};
 };
 
 // Switch to selected view.

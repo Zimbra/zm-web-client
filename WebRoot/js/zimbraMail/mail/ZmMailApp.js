@@ -585,7 +585,6 @@ ZmMailApp.prototype._registerOrganizers =  function() {
 							 createFunc:		"ZmOrganizer.create",
 							 compareFunc:		"ZmFolder.sortCompare",
 							 shortcutKey:		"F",
-							 newOp:				ZmOperation.NEW_FOLDER,
 							 openSetting:		ZmSetting.FOLDER_TREE_OPEN
 							});
 
@@ -705,6 +704,11 @@ function() {
 									 id:			ZmId.getMenuItemId(ZmId.SEARCH, ZmId.SEARCH_MAIL)
 									});
 	}
+};
+
+ZmMailApp.prototype._setupCurrentAppToolbar =
+function() {
+	ZmCurrentAppToolBar.registerApp(this.getName(), ZmOperation.NEW_FOLDER, ZmOrganizer.FOLDER);
 };
 
 ZmMailApp.prototype._registerApp =
