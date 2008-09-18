@@ -635,16 +635,6 @@ ZmImApp.prototype.prepareVisuals = function() {
 	}
 };
 
-ZmImApp.INCOMING_MSG_NOTIFICATION = "incoming";
-ZmImApp.prototype.playAlert = function(type){
-	AjxDispatcher.require("Alert");
-	switch (type) {
-		case ZmImApp.INCOMING_MSG_NOTIFICATION:
-			ZmSoundAlert.getInstance().start();
-			break;
-	}
-};
-
 ZmImApp.prototype._createImPresenceMenu =
 function(button) {
 	AjxDispatcher.require(["IMCore", "IM"]);

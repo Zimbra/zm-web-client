@@ -167,8 +167,9 @@ ZmChatWidget.prototype.handleMessage = function(msg) {
 		return;
 	}
 
-	if(appCtxt.get(ZmSetting.IM_PREF_NOTIFY_SOUNDS) && !msg.fromMe){
-        appCtxt.getApp("IM").playAlert(ZmImApp.INCOMING_MSG_NOTIFICATION);
+	if(appCtxt.get(ZmSetting.IM_PREF_NOTIFY_SOUNDS) && !msg.fromMe && !msg.isSystem){
+		AjxDispatcher.require("Alert");
+		ZmSoundAlert.getInstance().start();
     }
     var str = msg.displayHtml(this.chat, this.__lastFrom);
 	this.__lastFrom = (msg.isSystem && !msg.from) ? "@@system" : msg.from;
