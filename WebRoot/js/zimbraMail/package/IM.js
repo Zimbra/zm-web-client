@@ -47,8 +47,6 @@ AjxPackage.require("ajax.dwt.widgets.DwtSoundPlugin");
 // AjxPackage.require("zimbraMail.im.model.ZmChatMessage");
 // AjxPackage.require("zimbraMail.im.model.ZmImPrivacyList");
 
-AjxPackage.require("zimbraMail.share.view.dialog.ZmPromptDialog");
-
 AjxPackage.require("zimbraMail.im.model.ZmAssistantBuddy");
 
 AjxPackage.require("zimbraMail.im.view.ZmChatWindowManager");
@@ -58,6 +56,7 @@ AjxPackage.require("zimbraMail.im.view.ZmChatWidget");
 AjxPackage.require("zimbraMail.im.view.ZmChatMemberListView");
 AjxPackage.require("zimbraMail.im.view.ZmChatBaseView");
 AjxPackage.require("zimbraMail.im.view.ZmChatMultiWindowView");
+AjxPackage.require("zimbraMail.im.view.ZmNewImDialog");
 AjxPackage.require("zimbraMail.im.view.ZmNewRosterItemDialog");
 AjxPackage.require("zimbraMail.im.view.ZmExternalGatewayDlg");
 AjxPackage.require("zimbraMail.im.view.ZmImNotification");
