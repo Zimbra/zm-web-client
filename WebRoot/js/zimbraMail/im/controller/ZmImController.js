@@ -35,6 +35,7 @@ ZmImController = function() {
 	this._listeners[ZmOperation.IM_BLOCK_BUDDY] = new AjxListener(this, this._blockBuddyListener);
 	this._listeners[ZmOperation.IM_UNBLOCK_BUDDY] = new AjxListener(this, this._unblockBuddyListener);
 	this._listeners[ZmOperation.IM_DELETE_GROUP] = new AjxListener(this, this._deleteGroupListener);
+	this._listeners[ZmOperation.IM_BUDDY_ARCHIVE] = new AjxListener(this, this._buddyArchiveListener);
 };
 
 ZmImController.prototype.toString = function() {
@@ -305,3 +306,15 @@ ZmImController.prototype._deleteGroupListener = function(ev) {
 		treeItem.dispose();
 	}
 };
+
+ZmImController.prototype._buddyArchiveListener = function(ev) {
+	var item = ev.buddy;
+	var args = {
+		query: "in:chats from:" + item.id,
+		types: [appCtxt.getApp(ZmApp.MAIL).getGroupMailBy()],
+		getHtml: appCtxt.get(ZmSetting.VIEW_AS_HTML),
+		searchFor: ZmId.SEARCH_MAIL
+	};
+	appCtxt.getSearchController().search(args);
+};
+

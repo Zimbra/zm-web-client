@@ -98,6 +98,7 @@ function() {
 							 createFunc:		"ZmOrganizer.create",
 							 compareFunc:		"ZmTaskFolder.sortCompare",
 							 deferrable:		true,
+							 newOp:				ZmOperation.NEW_TASK_FOLDER,
 							 pathInName:		true
 							});
 };
@@ -112,11 +113,6 @@ function() {
 								 setting:		ZmSetting.TASKS_ENABLED,
 								 id:			ZmId.getMenuItemId(ZmId.SEARCH, ZmId.ITEM_TASK)
 								});
-};
-
-ZmTasksApp.prototype._setupCurrentAppToolbar =
-function() {
-	ZmCurrentAppToolBar.registerApp(this.getName(), ZmOperation.NEW_TASK_FOLDER, ZmOrganizer.TASKS);
 };
 
 ZmTasksApp.prototype._registerApp =

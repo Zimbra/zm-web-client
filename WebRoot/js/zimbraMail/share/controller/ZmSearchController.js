@@ -586,6 +586,9 @@ function(ev) {
 		} else {
 			queryString = this._currentQuery ? this._currentQuery : "";
 		}
+		if (appCtxt.zimletsPresent()) {
+			appCtxt.getZimletMgr().notifyZimlets("onSearchButtonClick", queryString);
+		}
 		var getHtml = appCtxt.get(ZmSetting.VIEW_AS_HTML);
 		this.search({query: queryString, userText: userText, getHtml: getHtml});
 	}

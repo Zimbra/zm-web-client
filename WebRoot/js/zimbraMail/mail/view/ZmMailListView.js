@@ -95,9 +95,9 @@ ZmMailListView.prototype._getHeaders =
 function(viewId, headerList, headerHash) {
 	var hList = [];
 
-	this._defaultCols = headerList.join("|");
+	this._defaultCols = headerList.join(ZmListView.COL_JOIN);
 	var userHeaders = appCtxt.get(ZmSetting.LIST_VIEW_COLUMNS, viewId);
-	var headers = userHeaders ? userHeaders.split("|") : headerList;
+	var headers = userHeaders ? userHeaders.split(ZmListView.COL_JOIN) : headerList;
 	for (var i = 0, len = headers.length; i < len; i++) {
 		var header = headers[i];
 		var field = header.substr(0, 2);
@@ -481,48 +481,6 @@ function(clickedEl, ev) {
 					}
 				}
 			}
-		}
-	}
-};
-
-ZmMailListView.MAIL_VIEWS = [ZmId.VIEW_TRAD, ZmId.VIEW_CONVLIST, ZmId.VIEW_CONV];
-ZmMailListView.MAIL_CTLR = {};
-ZmMailListView.MAIL_CTLR[ZmId.VIEW_TRAD]		= "_tradController";
-ZmMailListView.MAIL_CTLR[ZmId.VIEW_CONVLIST]	= "_convListController";
-ZmMailListView.MAIL_CTLR[ZmId.VIEW_CONV]		= "_convController";
-
-/**
- * Propagate changes to the columns in the mail list view to other mail list views,
- * since from the user's point of view it's all the same view. It's done by editing
- * the setting for the other views. If another view has already been created, destroy
- * its controller so that it's recreated with the newly changed setting the next time
- * it displays results.
- */
-ZmMailListView.prototype._checkColumns =
-function() {
-	// change the setting for this view
-	ZmListView.prototype._checkColumns.call(this);
-
-	for (var i = 0; i < ZmMailListView.MAIL_VIEWS.length; i++) {
-		var viewId = ZmMailListView.MAIL_VIEWS[i];
-		if (this.view == viewId) { continue; }
-		var app = this._controller._app;
-		// wipe out controller, so that view gets re-created
-		app[ZmMailListView.MAIL_CTLR[viewId]] = null;
-
-		var userColumns = appCtxt.get(ZmSetting.LIST_VIEW_COLUMNS, this.view);
-		if (userColumns) {
-			var newColumns;
-			// code below depends on knowing that the only difference between the mail views
-			// is that CLV is the only one with the F_EXPAND column
-			if (viewId == ZmId.VIEW_CONVLIST) {
-				newColumns = userColumns.replace(/\|/, "|" + ZmItem.F_EXPAND + "|");
-			} else if (this.view == ZmId.VIEW_CONVLIST){
-				newColumns = userColumns.replace(ZmItem.F_EXPAND, "").replace(/\|{2,}/, "|");
-			} else {
-				newColumns = userColumns;
-			}
-			appCtxt.set(ZmSetting.LIST_VIEW_COLUMNS, newColumns, viewId);
 		}
 	}
 };

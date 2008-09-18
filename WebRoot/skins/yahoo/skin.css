@@ -21,6 +21,18 @@
 	overflow:hidden;
 	border-bottom:1px solid @darken(AppC,50)@;
 }
+#skin_container_username {
+}
+#skin_container_username .BannerTextUser {
+    text-align: center;
+}
+#skin_container_quota {
+}
+
+#yahoo_userarea {
+    background-color: @Lighten(AppC,20)@;
+}
+
 #skin_search_web_input			{
 	border:1px solid @SelC@;
 	padding: 2px 4px;
@@ -93,4 +105,8 @@ A.skin_yahoo_link, A.skin_yahoo_link:link A.skin_yahoo_link:visited
 
 .Overview {
 	padding:0px 6px 0px 0px !important; 
+}
+
+.overviewHeader {
+	padding: 1px;
 }

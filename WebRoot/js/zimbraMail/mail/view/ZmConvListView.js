@@ -336,7 +336,10 @@ function(conv, msg, offset) {
 			var msg = a[offset + i];
 			var div = this._createItemHtml(msg);
 			this._addRow(div, index + i + 1);
-			this._msgRowIdList[item.id].push(div.id);
+			var list = this._msgRowIdList[item.id];
+			if (list) {
+				list.push(div.id);
+			}
 		}
 	}
 
