@@ -67,6 +67,7 @@ ZmKeyMap.MAP_NAME["editAppointment"]	= "ZmApptComposeController";
 ZmKeyMap.MAP_NAME["options"]			= "ZmPrefController";
 ZmKeyMap.MAP_NAME["mixed"]				= "ZmMixedController";
 ZmKeyMap.MAP_NAME["notebook"]			= "ZmNotebookPageController";
+ZmKeyMap.MAP_NAME["editPage"]			= "ZmPageEditController";
 ZmKeyMap.MAP_NAME["briefcase"]			= "ZmBriefcaseController";
 ZmKeyMap.MAP_NAME["tasks"]				= "ZmTaskListController";
 ZmKeyMap.MAP_NAME["editTask"]			= "ZmTaskController";

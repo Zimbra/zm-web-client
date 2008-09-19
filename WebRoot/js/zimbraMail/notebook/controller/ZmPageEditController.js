@@ -74,6 +74,28 @@ function() {
 	return this._page;
 };
 
+ZmPageEditController.prototype.getKeyMapName =
+function() {
+	return "ZmPageEditController";
+};
+
+ZmPageEditController.prototype.handleKeyAction =
+function(actionCode) {
+	DBG.println(AjxDebug.DBG2, "ZmPageEditController.handleKeyAction");
+	switch (actionCode) {
+
+		case ZmKeyMap.SAVE:
+			this._saveListener();
+			break;
+
+		case ZmKeyMap.CANCEL:
+			this._closeListener();
+			break;
+	}
+	return true;
+};
+
+
 // Protected methods
 
 ZmPageEditController.prototype._getToolBarOps =
