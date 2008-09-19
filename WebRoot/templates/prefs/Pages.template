@@ -1490,7 +1490,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 			<div class="ImAccountLogin" id="${id}_imAccountsNotLoggedIn">
 				${loginMsg}
 			</div>
-			<table id="${id}_imAccounts" width="100%"/>
+			<div id="${id}_imAccounts" width="100%"/>
 		</td>
 	</tr>
 </table>
@@ -1503,6 +1503,26 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 			<td style='width:1%;'><img src="<$=appContextPath$>/public/tmp/${nameLower}.png"/></td>
 		</tr>
 	</table>
+</template>
+
+<template id='prefs.Pages#ZmImAccountRow'>
+	<table>
+		<tr>
+			<td class="ZOptionsLabel" style="vertical-align:top;">
+				<table class="ImAccountLabel">
+					<tr>
+						<td>${name}</td>
+						<td style='width:1%;'><img src="<$=appContextPath$>/public/tmp/${nameLower}.png"/></td>
+					</tr>
+				</table>
+			</td>
+			<td id = "${id}_valueCell" class="ZOptionsField" width="100%"></td>
+		</tr>
+	</table>
+</template>
+
+<template id='prefs.Pages#ZmImAccountSeparator'>
+	<hr>
 </template>
 
 <template id='prefs.Pages#ZmImGatewayControl'>

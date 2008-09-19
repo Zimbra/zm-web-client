@@ -113,26 +113,23 @@ function() {
 		if (this._gatewayControls[gateway.type]) {
 			this._gatewayControls[gateway.type].setGateway(gateway);
 		} else {
+			
 			if (this._hasGatewayControl) {
-				var hrRow = this._accountsEl.insertRow(-1);
-				var hrCell = hrRow.insertCell(-1);
-				hrCell.colSpan = 2;
-				hrCell.innerHTML = "<hr>";
+				var separatorDiv = document.createElement("DIV");
+				separatorDiv.innerHTML = AjxTemplate.expand("prefs.Pages#ZmImAccountSeparator");
+				this._accountsEl.appendChild(separatorDiv);
 			}
-			var row = this._accountsEl.insertRow(-1);
-			var labelCell = row.insertCell(-1);
-			labelCell.className = "ZOptionsLabel";
+			var div = document.createElement("DIV");
 			var args = {
+				id: this._htmlElId + "_" + gateway.type,
 				name: AjxStringUtil.capitalize(gateway.type),
 				nameLower: gateway.type
 			};
-			labelCell.innerHTML = AjxTemplate.expand("prefs.Pages#ImAccountLabel", args);
-			var valueCell = row.insertCell(-1);
-			valueCell.className = "ZOptionsField";
-			valueCell.style.width = "100%";
+			div.innerHTML = AjxTemplate.expand("prefs.Pages#ZmImAccountRow", args);
+			this._accountsEl.appendChild(div);
 			var controlArgs = {
 				parent: this,
-				parentElement: valueCell,
+				parentElement: args.id + "_valueCell",
 				id: this._htmlElId + gateway.type,
 				gateway: gateway
 			};
