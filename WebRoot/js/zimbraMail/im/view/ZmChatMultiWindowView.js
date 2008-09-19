@@ -49,13 +49,6 @@ ZmChatMultiWindowView.getInstance = function() {
 	return ZmChatMultiWindowView._INSTANCE;
 };
 
-ZmChatMultiWindowView.prototype.getWindowManager = function() {
-	if (!this._wm) {
-		this._wm = new ZmChatWindowManager(this, Dwt.Z_VIEW_WINDOW_MANAGER);
-	}
-	return this._wm;
-};
-
 ZmChatMultiWindowView.prototype.getShellWindowManager = function() {
 	if (!this._shellWm) {
 		this._shellWm = new ZmChatWindowManager(DwtShell.getShell(window), Dwt.Z_WINDOW_MANAGER);
@@ -68,9 +61,7 @@ ZmChatMultiWindowView.prototype.getShellWindowManager = function() {
 };
 
 ZmChatMultiWindowView.prototype.getActiveWM = function() {
-	return appCtxt.getCurrentAppName() != "IM"
-		? this.getShellWindowManager()
-		: this.getWindowManager();
+	return this.getShellWindowManager();
 };
 
 ZmChatMultiWindowView.prototype.__createChatWidget = function(chat, win) {

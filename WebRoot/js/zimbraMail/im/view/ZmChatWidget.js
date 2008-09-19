@@ -276,20 +276,6 @@ ZmChatWidget.prototype.getEditorContent = function(){
 	return this._liteEditor.getContent();
 };
 
-ZmChatWidget.prototype.addRosterItem = function(item) {
-// 	var forceTitle = false;
-// 	if (this.chat.getRosterSize() > 0 && this._memberListView == null) {
-// 		if (!this.chat.isGroupChat()) {
-// 			this.chat.setName(ZmMsg.imGroupChat);
-// 			forceTitle = true;
-// 		}
-// 		this._memberListView = new ZmChatMemberListView(this, this.chat._getRosterItemList());
-// 		this._controlListener();
-// 	}
-// 	this.chat.addRosterItem(item);
-// 	this._updateGroupChatTitle(forceTitle);
-};
-
 ZmChatWidget.prototype._isMultiTabMinimized = function() {
 	return this.getChatWindow().isMinimized() && (this.parent.size() > 1)
 };
