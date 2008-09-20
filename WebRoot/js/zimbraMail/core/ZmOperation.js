@@ -162,6 +162,8 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_VIEW, {textKey:"view", image:"SplitView"});
 	ZmOperation.registerOp(ZmId.OP_VIEW_MENU, {tooltipKey:"viewTooltip", textKey:"view", image:"SplitPane", precedence:80});
 	ZmOperation.registerOp(ZmId.OP_ZIMLET, {image:"ZimbraIcon"});
+
+    ZmOperation.registerOp(ZmId.OP_NOTIFY, {textKey: "notify", image:"Refresh"});
 };
 
 /**

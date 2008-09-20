@@ -364,6 +364,14 @@ function() {
 	return this._pickTagDialog;
 };
 
+ZmAppCtxt.prototype.getFolderNotifyDialog =
+function() {
+	if (!this._folderNotifyDialog) {
+		this._folderNotifyDialog = new ZmFolderNotifyDialog(this._shell);
+	}
+	return this._folderNotifyDialog;
+};
+
 ZmAppCtxt.prototype.getFolderPropsDialog =
 function() {
 	if (!this._folderPropsDialog) {

@@ -29,6 +29,7 @@ ZmPageEditController = function(container, app) {
 	//this._listeners[ZmOperation.ATTACHMENT] = new AjxListener(this, this._addDocsListener);
 	this._listeners[ZmOperation.SPELL_CHECK] = new AjxListener(this, this._spellCheckListener);
 	this._listeners[ZmOperation.COMPOSE_FORMAT] = new AjxListener(this, this._formatListener);
+    this._listeners[ZmOperation.NOTIFY] = new AjxListener(this, this._notifyListener);
 }
 ZmPageEditController.prototype = new ZmListController;
 ZmPageEditController.prototype.constructor = ZmPageEditController;
@@ -111,6 +112,8 @@ function() {
 	if (appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
 		list.push(ZmOperation.COMPOSE_FORMAT);
 	}
+
+    list.push(ZmOperation.NOTIFY);
 
 	return list;
 };
@@ -424,6 +427,12 @@ function(content, mineOrTheirs, conflict) {
 ZmPageEditController.prototype._closeListener =
 function(ev) {
 	this._app.popView();
+};
+
+ZmPageEditController.prototype._notifyListener =
+function(ev){
+    var folderNotifyDlg = appCtxt.getFolderNotifyDialog();
+    folderNotifyDlg.popup(this.getPage().getNotebook());
 };
 
 /***
