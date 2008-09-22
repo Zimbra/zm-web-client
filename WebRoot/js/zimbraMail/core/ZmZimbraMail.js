@@ -1875,6 +1875,7 @@ function() {
 	window.AjxDebug.prototype.setDebugLevel	= function() {};
 	window.AjxDebug.prototype.setTitle		= function() {};
 	window.AjxDebug.prototype.showTiming	= function() {};
+	window.AjxDebug.prototype._getTimeStamp	= function() {};
 	window.AjxDebug.prototype.timePt		= function() {};
 	window.DBG = new window.AjxDebug();
 };
