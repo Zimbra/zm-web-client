@@ -113,9 +113,3 @@ ZmApptTabViewPage.prototype._getDefaultFocusItem =
 function() {
 	this._editView._getDefaultFocusItem();
 };
-
-ZmApptTabViewPage.prototype.toggleAllDayField =
-function() {
-	this._editView.toggleAllDayField();
-};
-
