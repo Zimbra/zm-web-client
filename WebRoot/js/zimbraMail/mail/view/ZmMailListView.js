@@ -172,18 +172,6 @@ function(item, field) {
 		: ZmListView.prototype._getCellId.apply(this, arguments);
 };
 
-ZmMailListView.prototype._getFragmentSpan =
-function(item) {
-	return ["<span class='ZmConvListFragment' id='",
-			this._getFieldId(item, ZmItem.F_FRAGMENT),
-			"'>", this._getFragmentHtml(item), "</span>"].join("");
-};
-
-ZmMailListView.prototype._getFragmentHtml =
-function(item) {
-	return [" - ", AjxStringUtil.htmlEncode(item.fragment, true)].join("");
-};
-
 ZmMailListView.prototype._getHeaderToolTip =
 function(field, itemIdx) {
     var isFolder = this._isSentOrDraftsFolder();

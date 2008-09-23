@@ -405,17 +405,7 @@ function(ev) {
 
 // END LIST-RELATED
 
-ZmCalBaseView.prototype.setNumDays = 
-function (num) {
-	this._numDays = num;
-};
-
-ZmCalBaseView.prototype.getNumDays = 
-function (num) {
-	return this._numDays;
-};
-
-ZmCalBaseView.prototype.getTitle = 
+ZmCalBaseView.prototype.getTitle =
 function() {
 	return [ZmMsg.zimbraTitle, this.getCalTitle()].join(": ");
 }
@@ -543,7 +533,7 @@ ZmCalBaseView.prototype._updateRange =
 function() { 
 	this._updateDays();
 	this._timeRangeStart = this._days[0].date.getTime();
-	this._timeRangeEnd = this._days[this.getNumDays()-1].date.getTime() + AjxDateUtil.MSEC_PER_DAY;
+	this._timeRangeEnd = this._days[this.numDays-1].date.getTime() + AjxDateUtil.MSEC_PER_DAY;
 };
 
 // override 

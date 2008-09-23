@@ -33,6 +33,7 @@ ZmCalListView = function(parent, posStyle, controller, dropTgt, view, numDays) {
 	this._timeRangeStart = 0;
 	this._timeRangeEnd = 0;
 	this._currentIdForTooltip = {};
+	this._title = "";
 };
 
 ZmCalListView.prototype = new ZmListView;
@@ -42,7 +43,9 @@ ZmCalListView.prototype.constructor = ZmCalListView;
 // Consts
 ZmCalListView.DEFAULT_CALENDAR_PERIOD	= AjxDateUtil.MSEC_PER_DAY*14;			// 14 days
 ZmCalListView.DEFAULT_SEARCH_PERIOD		= AjxDateUtil.MSEC_PER_DAY*31;			// 31 days
-ZmCalListView.COL_WIDTH_LOCATION		= 95;
+ZmCalListView.COL_WIDTH_DATE			= 95;
+ZmCalListView.COL_WIDTH_LOCATION		= 175;
+ZmCalListView.COL_WIDTH_STATUS			= 80;
 ZmCalListView.KEY_ID					= "_keyId";
 
 
@@ -53,14 +56,23 @@ function() {
 	return "ZmCalListView";
 };
 
-// ZmCalBaseView methods - override and do nothing
+
+// ZmCalBaseView methods
+
 ZmCalListView.prototype.getTimeRange =
 function() {
 	return { start:this._timeRangeStart, end:this._timeRangeEnd };
 };
 
-ZmCalListView.prototype.getTitle = function() {};
-ZmCalListView.prototype.getCalTitle = function() { return ""; };
+ZmCalListView.prototype.getTitle =
+function() {
+	return [ZmMsg.zimbraTitle, this.getCalTitle()].join(": ");
+};
+
+ZmCalListView.prototype.getCalTitle =
+function() {
+	return this._title;
+};
 
 ZmCalListView.prototype.needsRefresh =
 function() {
@@ -86,6 +98,8 @@ function(date, duration, roll) {
 	d.setHours(0, 0, 0, 0);
 	this._timeRangeStart = d.getTime();
 	this._timeRangeEnd = d.getTime() + ZmCalListView.DEFAULT_CALENDAR_PERIOD;
+
+	this._updateTitle();
 };
 
 ZmCalListView.prototype.getRollField =
@@ -103,6 +117,25 @@ function() {
 	// do nothing
 };
 
+ZmCalListView.prototype._updateTitle =
+function() {
+	var dayFormatter = DwtCalendar.getDayFormatter();
+	var start = new Date(this._timeRangeStart);
+	var end = new Date(this._timeRangeEnd);
+
+	this._title = [
+		dayFormatter.format(start), " - ", dayFormatter.format(end)
+	].join("");
+};
+
+
+// DwtListView methods
+
+ZmCalListView.prototype._getFieldId =
+function(item, field) {
+	return DwtId.getListViewItemId(DwtId.WIDGET_ITEM_FIELD, this._view, item.getUniqueId(true), field);
+};
+
 ZmCalListView.prototype._getCellId =
 function(item, field) {
 	if (field == ZmItem.F_SUBJECT ||
@@ -114,9 +147,17 @@ function(item, field) {
 
 ZmCalListView.prototype._getCellContents =
 function(htmlArr, idx, appt, field, colIdx, params) {
-
 	if (field == ZmItem.F_SELECTION) {
 		var icon = params.bContained ? "TaskCheckboxCompleted" : "TaskCheckbox";
+		idx = this._getImageHtml(htmlArr, idx, icon, this._getFieldId(appt, field));
+
+	} else if (field == ZmItem.F_RECURRENCE) {
+		var icon;
+		if (appt.isException) {
+			icon = "ApptException";
+		} else if (appt.isRecurring()) {
+			icon = "ApptRecur";
+		}
 		idx = this._getImageHtml(htmlArr, idx, icon, this._getFieldId(appt, field));
 
 	} else if (field == ZmItem.F_SUBJECT) {
@@ -125,16 +166,21 @@ function(htmlArr, idx, appt, field, colIdx, params) {
 		} else {
 			htmlArr[idx++] = AjxStringUtil.htmlEncode(appt.getName(), true);
 		}
-
-	} else if (field == ZmItem.F_FOLDER) {
-		htmlArr[idx++] = appt.getFolder().getName();
+		if (appCtxt.get(ZmSetting.SHOW_FRAGMENTS) && appt.fragment) {
+			htmlArr[idx++] = this._getFragmentSpan(appt);
+		}
 
 	} else if (field == ZmItem.F_LOCATION) {
 		htmlArr[idx++] = AjxStringUtil.htmlEncode(appt.getLocation(), true);
 
+	} else if (field == ZmItem.F_STATUS) {
+		if (appt.otherAttendees) {
+			htmlArr[idx++] = appt.getParticipantStatusStr();
+		}
 	} else if (field == ZmItem.F_DATE) {
-		// todo - refine later.
-		htmlArr[idx++] = AjxDateUtil.simpleComputeDateStr(appt.startDate)
+		htmlArr[idx++] = (appt.isAllDayEvent())
+			? AjxMessageFormat.format(ZmMsg.apptDateTimeAllDay, [appt.startDate])
+			: AjxMessageFormat.format(ZmMsg.apptDateTime, [appt.startDate, appt.startDate]);
 
 	} else {
 		idx = ZmListView.prototype._getCellContents.apply(this, arguments);
@@ -235,8 +281,9 @@ function(parent) {
 	hList.push(new DwtListHeaderItem({field:ZmItem.F_ATTACHMENT, icon:"Attachment", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.attachment}));
 	hList.push(new DwtListHeaderItem({field:ZmItem.F_SUBJECT, text:ZmMsg.subject, noRemove:true}));
 	hList.push(new DwtListHeaderItem({field:ZmItem.F_LOCATION, text:ZmMsg.location, width:ZmCalListView.COL_WIDTH_LOCATION, resizeable:true}));
-	hList.push(new DwtListHeaderItem({field:ZmItem.F_FOLDER, text:ZmMsg.calendar, width:ZmMsg.COLUMN_WIDTH_CALENDAR, resizeable:true}));
-	hList.push(new DwtListHeaderItem({field:ZmItem.F_DATE, text:ZmMsg.date, width:ZmMsg.COLUMN_WIDTH_DATE, sortable:ZmItem.F_DATE}));
+	hList.push(new DwtListHeaderItem({field:ZmItem.F_STATUS, text:ZmMsg.status, width:ZmCalListView.COL_WIDTH_STATUS, resizeable:true}));
+	hList.push(new DwtListHeaderItem({field:ZmItem.F_RECURRENCE, icon:"ApptRecur", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.recurrence}));
+	hList.push(new DwtListHeaderItem({field:ZmItem.F_DATE, text:ZmMsg.startDate, width:ZmCalListView.COL_WIDTH_DATE, sortable:ZmItem.F_DATE}));
 
 	return hList;
 };

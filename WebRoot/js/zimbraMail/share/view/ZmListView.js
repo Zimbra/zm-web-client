@@ -300,6 +300,18 @@ function(item, field, imageInfo) {
 	}
 };
 
+ZmListView.prototype._getFragmentSpan =
+function(item) {
+	return ["<span class='ZmConvListFragment' id='",
+			this._getFieldId(item, ZmItem.F_FRAGMENT),
+			"'>", this._getFragmentHtml(item), "</span>"].join("");
+};
+
+ZmListView.prototype._getFragmentHtml =
+function(item) {
+	return [" - ", AjxStringUtil.htmlEncode(item.fragment, true)].join("");
+};
+
 /**
  * Parse the DOM ID to figure out what got clicked. IDs consist of three to five parts
  * joined by the "|" character.
@@ -494,7 +506,7 @@ function(obj, bContained) {
 	var selFieldId = item ? this._getFieldId(item, ZmItem.F_SELECTION) : null;
 	var selField = selFieldId ? document.getElementById(selFieldId) : null;
 	if (selField) {
-		selField.className = bContained	? "ImgTaskCheckbox"	: "ImgTaskCheckboxCompleted";
+		selField.className = bContained ? "ImgTaskCheckbox" : "ImgTaskCheckboxCompleted";
 		this._setItemData(obj, "origSelClassName", selField.className);
 	}
 };

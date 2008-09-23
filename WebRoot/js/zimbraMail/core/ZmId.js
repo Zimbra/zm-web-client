@@ -688,6 +688,7 @@ ZmId.FLD_NOTES			= "no";
 ZmId.FLD_PARTICIPANT	= "pa";
 ZmId.FLD_PCOMPLETE		= "pc"; // Tasks
 ZmId.FLD_PRIORITY		= "pr"; // Tasks
+ZmId.FLD_RECURRENCE		= "re";	// Calendar
 ZmId.FLD_SELECTION		= "se";
 ZmId.FLD_SIZE			= "sz";
 ZmId.FLD_STATUS			= "st";
