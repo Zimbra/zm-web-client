@@ -344,8 +344,12 @@ function(optionsSaved, callback, noPop, result) {
 		? result._data.BatchResponse.Fault : null;
 
 	if (!noPop && (!result || !hasFault)) {
-		// pass force flag - we just saved, so we know view isn't dirty
-		appCtxt.getAppViewMgr().popView(true);
+		try {
+			// pass force flag - we just saved, so we know view isn't dirty
+			appCtxt.getAppViewMgr().popView(true);
+		} catch (ex) {
+			// do nothing - sometimes popView throws an exception ala history mgr
+		}
 	}
 	
 	if (callback) {

@@ -428,15 +428,7 @@ function(params, result) {
 	if (!appCtxt.isOffline) {
 		this.setPollInterval(true);
 	} else {
-		// register mailto: handler
-		if (appCtxt.get(ZmSetting.OFFLINE_SUPPORTS_MAILTO) &&
-			appCtxt.get(ZmSetting.OFFLINE_IS_MAILTO_HANDLER))
-		{
-			if (window.platform) { // do the check so we can still debug in FF
-				var callback = AjxCallback.simpleClosure(this.handleOfflineMailTo, this);
-				window.platform.registerProtocolHandler("mailto", "http://localhost:7633/desktop/login.jsp?mailto=%s", callback);
-			}
-		}
+		this.registerMailtoHandler();
 	}
 
 	window.onbeforeunload = ZmZimbraMail._confirmExitMethod;
@@ -877,6 +869,18 @@ function(on) {
 ZmZimbraMail.prototype.getInstantNotify =
 function() {
 	return this._pollInstantNotifications;
+};
+
+ZmZimbraMail.prototype.registerMailtoHandler =
+function() {
+	// register mailto: handler
+	if (appCtxt.get(ZmSetting.OFFLINE_SUPPORTS_MAILTO) &&
+		appCtxt.get(ZmSetting.OFFLINE_IS_MAILTO_HANDLER) &&
+		window.platform) // do this check so we can still debug in FF
+	{
+		var callback = AjxCallback.simpleClosure(this.handleOfflineMailTo, this);
+		window.platform.registerProtocolHandler("mailto", "http://localhost:7633/desktop/login.jsp?mailto=%s", callback);
+	}
 };
 
 /**
