@@ -199,12 +199,12 @@ function() {
 		displayOptions:		[ZmMsg.apptRemindNever, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore],
 		options:			[0, 1, 5, 10, 15, 30, 45, 60]
 	});
-	
+
 	ZmPref.registerPref("CAL_SHOW_TIMEZONE", {
 	 	displayName:		ZmMsg.shouldShowTimezone,
 	 	displayContainer:	ZmPref.TYPE_CHECKBOX
 	 });
-	
+
 	ZmPref.registerPref("CAL_USE_QUICK_ADD", {
 	 	displayName:		ZmMsg.useQuickAdd,
 	 	displayContainer:	ZmPref.TYPE_CHECKBOX
@@ -213,8 +213,8 @@ function() {
 	ZmPref.registerPref("CALENDAR_INITIAL_VIEW", {
 	 	displayName:		ZmMsg.calendarInitialView,
 	 	displayContainer:	ZmPref.TYPE_SELECT,
-		displayOptions:		[ZmMsg.calViewDay, ZmMsg.calViewWorkWeek, ZmMsg.calViewWeek, ZmMsg.calViewMonth, ZmMsg.calViewSchedule],
-		options:			[ZmSetting.CAL_DAY, ZmSetting.CAL_WORK_WEEK, ZmSetting.CAL_WEEK, ZmSetting.CAL_MONTH, ZmSetting.CAL_SCHEDULE]
+		displayOptions:		[ZmMsg.calViewDay, ZmMsg.calViewWorkWeek, ZmMsg.calViewWeek, ZmMsg.calViewMonth, ZmMsg.calViewList, ZmMsg.calViewSchedule],
+		options:			[ZmSetting.CAL_DAY, ZmSetting.CAL_WORK_WEEK, ZmSetting.CAL_WEEK, ZmSetting.CAL_MONTH, ZmSetting.CAL_LIST, ZmSetting.CAL_SCHEDULE]
 	});
 	
 	ZmPref.registerPref("CAL_REMINDER_NOTIFY_SOUNDS", {
@@ -242,6 +242,7 @@ function() {
 
 ZmCalendarApp.prototype._registerOperations =
 function() {
+	ZmOperation.registerOp(ZmId.OP_CAL_LIST_VIEW, {textKey:"list", tooltipKey:"viewCalListTooltip", image:"CalListView"});
 	ZmOperation.registerOp(ZmId.OP_CAL_REFRESH, {textKey:"refresh", tooltipKey:"calRefreshTooltip", image:"Refresh"});
 	ZmOperation.registerOp(ZmId.OP_CAL_VIEW_MENU, {textKey:"view", image:"Appointment"}, null,
 		AjxCallback.simpleClosure(function(parent) {
@@ -512,11 +513,15 @@ function(params, callback) {
 		} else if (search.match(/\bview=month\b/)) {
 			found = true;
 			view = ZmId.VIEW_CAL_MONTH;
+		} else if (search.match(/\bview=list\b/)) {
+			found = true;
+			view = ZmId.VIEW_CAL_LIST;
 		}
 
 		if (found) {
-			var match = search.match(/\bdate=([^&]+)/)[1];
-			var parsed = match ? AjxDateUtil.parseServerDateTime(match) : null;
+			var match = search.match(/\bdate=([^&]+)/);
+			var pDate = (match && match.length > 1) ? match[1] : null;
+			var parsed = pDate ? AjxDateUtil.parseServerDateTime(pDate) : null;
 			if (parsed && !isNaN(parsed))
 				sd = new Date((parsed).setHours(0,0,0,0));
 		}
@@ -807,7 +812,10 @@ function(parent) {
  */
 ZmCalendarApp.addCalViewMenu =
 function(parent) {
-	var list = [ZmOperation.DAY_VIEW, ZmOperation.WORK_WEEK_VIEW, ZmOperation.WEEK_VIEW, ZmOperation.MONTH_VIEW, ZmOperation.SCHEDULE_VIEW];
+	var list = [
+		ZmOperation.DAY_VIEW, ZmOperation.WORK_WEEK_VIEW, ZmOperation.WEEK_VIEW,
+		ZmOperation.MONTH_VIEW, ZmOperation.CAL_LIST_VIEW, ZmOperation.SCHEDULE_VIEW
+	];
 	var menu = new ZmActionMenu({parent:parent, menuItems:list});
 	parent.setMenu(menu);
 	return menu;

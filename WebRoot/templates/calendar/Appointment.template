@@ -522,7 +522,7 @@
 					<td align='right' style='padding-right:5px;' nowrap><b>
 						<$= AjxMessageFormat.format(ZmMsg.makeLabel, AjxStringUtil.htmlEncode(i)) $>
 					</b></td>
-					<td nowrap> &nbsp; <$= ptstStatus[i] $></td>
+					<td nowrap><$= ptstStatus[i] $></td>
 				</tr>
 			<$ } 
 			} 

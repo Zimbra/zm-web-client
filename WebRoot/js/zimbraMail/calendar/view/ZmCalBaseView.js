@@ -59,6 +59,7 @@ ZmCalBaseView = function(parent, className, posStyle, controller, view) {
 	this.addControlListener(new AjxListener(this, this._controlListener));	
 	this._createHtml();
 	this._needsRefresh = true;
+	this._currentIdForTooltip = {};
 }
 
 ZmCalBaseView.prototype = new DwtComposite;
@@ -163,7 +164,7 @@ function() {
 		a[i].className = this._getStyle(this._getItemData(a[i], "type"));
 	}
 	this._selectedItems.removeAll();
-}
+};
 
 /**
  * Returns a style appropriate to the given item type. Subclasses should override to return
@@ -176,7 +177,9 @@ function() {
  */
 ZmCalBaseView.prototype._getStyle =
 function(type, selected, disabled, item) {
-	return !selected ? this._normalClass : disabled ? this._disabledSelectedClass : this._selectedClass;
+	return (!selected)
+		? this._normalClass
+		: (disabled ? this._disabledSelectedClass : this._selectedClass);
 };
 
 ZmCalBaseView.prototype._mouseOverListener = 
@@ -185,7 +188,7 @@ function(ev) {
 	if (!div) { return; }
 	
 	this._mouseOverAction(ev, div);
-}
+};
 
 ZmCalBaseView.prototype._mouseOverAction = 
 function(ev, div) {
@@ -197,35 +200,23 @@ function(ev, div) {
 	var mouseEv = DwtShell.mouseEvent;
 	mouseEv.setFromDhtmlEvent(ev, obj);
 	
-	if (item instanceof ZmAppt) {			
+	if (item instanceof ZmAppt) {
 		this.setToolTipContent(item.getToolTip(this._controller));
-		if (item.otherAttendees && (item._ptstHashMap == null)) {
-			// getDetails of original appt will reset the start date and time
-			// and will break the ui layout
+		if (item.otherAttendees &&
+			(item._ptstHashMap == null) &&
+			(!this._currentIdForTooltip[item.id]))
+		{
+			this._currentIdForTooltip[item.id] = true;
+			// getDetails() of original appt will reset the start date/time and
+			// will break the ui layout
 			var clone = ZmAppt.quickClone(item);
-			var callback = new AjxCallback(this, this._loadParticipantStatus, [clone,item, obj]);
-			var errorCallback = new AjxCallback(this, this._handleParticipantStatusError, [clone, item]);
-			this._toolTipBusy = true;
-			var uid = clone.getUniqueId();
-			this._currentMouseOverApptId  = uid;
-			AjxTimedAction.scheduleAction(new AjxTimedAction(this, this.getApptDetails, [clone, callback, errorCallback, uid]),2000);			
-		} else {
-			this._currentMouseOverApptId  = null;
+			var callback = new AjxCallback(null, ZmApptViewHelper.refreshApptTooltip, [this, clone, item, obj]);
+			AjxTimedAction.scheduleAction(new AjxTimedAction(clone, clone.getDetails, [null, callback, null, null, true]), 2000);
 		}
 	} else {
 		this.setToolTipContent(null);
 	}
 	return true;
-}
-
-ZmCalBaseView.prototype.getApptDetails =
-function(appt, callback, errorCallback, uid) {
-	if(!this._currentMouseOverApptId) {	return;	}
-	if(this._currentMouseOverApptId == uid) {	
-		this._currentMouseOverApptId = null;
-		appt.setNoBusyOverlay(true);
-		appt.getDetails(null, callback, errorCallback);
-	}
 };
 
 ZmCalBaseView.prototype._mouseOutListener = 
@@ -240,33 +231,30 @@ function(ev) {
 	//		 being displayed when we re-enter the listview even though
 	//		 we're not over a list item.
 	if (this._getItemData(div, "type") == ZmCalBaseView.TYPE_APPT) {
-		this._toolTipBusy = false;
 		this.setToolTipContent(null);
-		this._currentMouseOverApptId = null;
 	}
 	this._mouseOutAction(ev, div);
-}
+};
 
 ZmCalBaseView.prototype._mouseOutAction = 
 function(ev, div) {
-	
 	return true;
-}
+};
 
 
 ZmCalBaseView.prototype._mouseMoveListener = 
 function(ev) {
-	if (!this._clickDiv) { return; }
-}
+	// do nothing
+};
 
 // XXX: why not use Dwt.findAncestor?
 ZmCalBaseView.prototype._findAncestor =
 function(elem, attr) {
-	while (elem && (elem[attr] == null)){
+	while (elem && (elem[attr] == null)) {
 		elem = elem.parentNode;
 	}
 	return elem;
-}
+};
 
 ZmCalBaseView.prototype._mouseDownListener = 
 function(ev) {
@@ -753,7 +741,8 @@ function() {};
 ZmCalBaseView.prototype._controlListener =
 function(ev) {
 	if ((ev.oldWidth != ev.newWidth) ||
-		(ev.oldHeight != ev.newHeight)) {
+		(ev.oldHeight != ev.newHeight))
+	{
 		this._layout();
 	}
 };
@@ -778,46 +767,4 @@ function(date, duration, isDblClick, allDay, folderId, shiftKey) {
 	sev.shiftKey = shiftKey;
 	this.notifyListeners(ZmCalBaseView.TIME_SELECTION, this._selectionEvent);
 	sev._isDblClick = false;
-}
-
-//once the message is loaded, attendee participation status will be available
-//need to show this on tooptip
-ZmCalBaseView.prototype._loadParticipantStatus =
-function(item, origItem, obj) {
-	if(!item) {  return; }
-
-	item._updateParticipantStatus();				
-	origItem.setAttendeeToolTipData(item.getAttendeeToolTipData());
-	this.setToolTipContent(item.getToolTip(this._controller, true));
-	var mouseEv = DwtShell.mouseEvent;
-	if(mouseEv && mouseEv.docX > 0 && mouseEv.docY > 0) {
-		this._showToolTipOnDemand(obj, mouseEv.docX, mouseEv.docY);
-		this._toolTipBusy = false;
-	}
 };
-
-//after the attendee status is updated the tooltip has to be shown
-//explicitly
-ZmCalBaseView.prototype._showToolTipOnDemand =
-function(obj, x, y) {
-	if(!obj) return;
-	if (obj.__toolTipContent != null) {
-		var shell = DwtShell.getShell(window);
-		var manager = shell.getHoverMgr();
-		if (((manager.getHoverObject() == obj) && manager.isHovering()) && !DwtMenu.menuShowing()) {
-			manager.reset();
-			manager.setHoverObject(obj);
-			manager.setHoverOverData(obj);
-			manager.setHoverOverDelay(DwtToolTip.TOOLTIP_DELAY);
-			manager.setHoverOverListener(obj._hoverOverListener);
-			manager.hoverOver(x, y);
-		}
-	}
-};
-
-ZmCalBaseView.prototype._handleParticipantStatusError =
-function(item, origItem) {
-	this._toolTipBusy = false;	
-	return;
-};
-

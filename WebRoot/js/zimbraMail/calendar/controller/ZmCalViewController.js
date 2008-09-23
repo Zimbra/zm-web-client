@@ -40,6 +40,7 @@ ZmCalViewController = function(container, calApp) {
 	ZmCalViewController.OP_TO_VIEW[ZmOperation.WEEK_VIEW]		= ZmId.VIEW_CAL_WEEK;
 	ZmCalViewController.OP_TO_VIEW[ZmOperation.WORK_WEEK_VIEW]	= ZmId.VIEW_CAL_WORK_WEEK;
 	ZmCalViewController.OP_TO_VIEW[ZmOperation.MONTH_VIEW]		= ZmId.VIEW_CAL_MONTH;
+	ZmCalViewController.OP_TO_VIEW[ZmOperation.CAL_LIST_VIEW]	= ZmId.VIEW_CAL_LIST;
 	ZmCalViewController.OP_TO_VIEW[ZmOperation.SCHEDULE_VIEW]	= ZmId.VIEW_CAL_SCHEDULE;
 
 	// get op based on view
@@ -65,16 +66,11 @@ ZmCalViewController = function(container, calApp) {
 	this._maintTimedAction = new AjxTimedAction(this, this._maintenanceAction);
 	this._pendingWork = ZmCalViewController.MAINT_NONE;
 	this._apptCache = new ZmApptCache(this);
-	ZmCalViewController.OPS = [ZmOperation.DAY_VIEW, ZmOperation.WORK_WEEK_VIEW, ZmOperation.WEEK_VIEW,
-							   ZmOperation.MONTH_VIEW, ZmOperation.SCHEDULE_VIEW];
 
-	// get view based on op
-	ZmCalViewController.OP_TO_VIEW = {};
-	ZmCalViewController.OP_TO_VIEW[ZmOperation.DAY_VIEW]		= ZmId.VIEW_CAL_DAY;
-	ZmCalViewController.OP_TO_VIEW[ZmOperation.WEEK_VIEW]		= ZmId.VIEW_CAL_WEEK;
-	ZmCalViewController.OP_TO_VIEW[ZmOperation.WORK_WEEK_VIEW]	= ZmId.VIEW_CAL_WORK_WEEK;
-	ZmCalViewController.OP_TO_VIEW[ZmOperation.MONTH_VIEW]		= ZmId.VIEW_CAL_MONTH;
-	ZmCalViewController.OP_TO_VIEW[ZmOperation.SCHEDULE_VIEW]	= ZmId.VIEW_CAL_SCHEDULE;
+	ZmCalViewController.OPS = [
+		ZmOperation.DAY_VIEW, ZmOperation.WORK_WEEK_VIEW, ZmOperation.WEEK_VIEW,
+		ZmOperation.MONTH_VIEW, ZmOperation.CAL_LIST_VIEW, ZmOperation.SCHEDULE_VIEW
+	];
 
 	this._errorCallback = new AjxCallback(this, this._handleError);
 };
@@ -96,6 +92,7 @@ ZmCalViewController.ACTION_CODE_TO_VIEW[ZmKeyMap.CAL_DAY_VIEW]			= ZmId.VIEW_CAL
 ZmCalViewController.ACTION_CODE_TO_VIEW[ZmKeyMap.CAL_WEEK_VIEW]			= ZmId.VIEW_CAL_WEEK;
 ZmCalViewController.ACTION_CODE_TO_VIEW[ZmKeyMap.CAL_WORK_WEEK_VIEW]	= ZmId.VIEW_CAL_WORK_WEEK;
 ZmCalViewController.ACTION_CODE_TO_VIEW[ZmKeyMap.CAL_MONTH_VIEW]		= ZmId.VIEW_CAL_MONTH;
+ZmCalViewController.ACTION_CODE_TO_VIEW[ZmKeyMap.CAL_LIST_VIEW]			= ZmId.VIEW_CAL_LIST;
 ZmCalViewController.ACTION_CODE_TO_VIEW[ZmKeyMap.CAL_SCHEDULE_VIEW]		= ZmId.VIEW_CAL_SCHEDULE;
 
 ZmCalViewController.prototype.toString =
@@ -125,6 +122,7 @@ function() {
 		case "workWeek": 	return ZmId.VIEW_CAL_WORK_WEEK;
 		case "week": 		return ZmId.VIEW_CAL_WEEK;
 		case "month": 		return ZmId.VIEW_CAL_MONTH;
+		case "list":		return ZmId.VIEW_CAL_LIST;
 		case "schedule": 	return ZmId.VIEW_CAL_SCHEDULE;
 		default:  			return ZmId.VIEW_CAL_WORK_WEEK;
 	}
@@ -138,17 +136,18 @@ function() {
 ZmCalViewController.prototype.show =
 function(viewId, startDate, skipMaintenance) {
 	AjxDispatcher.require(["CalendarCore", "Calendar"]);
-	if (!viewId || viewId == ZmId.VIEW_CAL)
+	if (!viewId || viewId == ZmId.VIEW_CAL) {
 		viewId = this._currentView ? this._currentView : this._defaultView();
+	}
 
 	if (!this._calTreeController) {
 		this._calTreeController = appCtxt.getOverviewController().getTreeController(ZmOrganizer.CALENDAR);
 		if (this._calTreeController) {
 			this._calTreeController.addSelectionListener(this._app.getOverviewId(), this._treeSelectionListener);
 			var calTree = appCtxt.getFolderTree();
-			if (calTree)
+			if (calTree) {
 				calTree.addChangeListener(new AjxListener(this, this._calTreeChangeListener));
-			// add change listener
+			}
 		}
 		DBG.timePt("getting tree controller", true);
 	}
@@ -158,15 +157,11 @@ function(viewId, startDate, skipMaintenance) {
 
 		if (!this._miniCalendar) {
 			this._createMiniCalendar(newDate);
-			//DBG.timePt("_createMiniCalendar");
 		}
 
 		this._viewMgr = new ZmCalViewMgr(this._container, this, this._dropTgt);
-		//DBG.timePt("created view manager");
 		this._viewMgr.setDate(newDate);
-		//DBG.timePt("_viewMgr.setDate");
 		this._setup(viewId);
-		//DBG.timePt("this._setup");
 		this._viewMgr.addTimeSelectionListener(new AjxListener(this, this._timeSelectionListener));
 		this._viewMgr.addDateRangeListener(new AjxListener(this, this._dateRangeListener));
 		this._viewMgr.addViewActionListener(new AjxListener(this, this._viewActionListener));
@@ -210,6 +205,11 @@ function(viewId, startDate, skipMaintenance) {
 			this._miniCalendar.setSelectionMode(DwtCalendar.DAY);
 			this._navToolBar[ZmId.VIEW_CAL].setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previousMonth);
 			this._navToolBar[ZmId.VIEW_CAL].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.nextMonth);
+			break;
+		case ZmId.VIEW_CAL_LIST:
+			this._miniCalendar.setSelectionMode(DwtCalendar.DAY);
+			this._navToolBar[ZmId.VIEW_CAL].setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previous);
+			this._navToolBar[ZmId.VIEW_CAL].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.next);
 			break;
 	}
 	DBG.timePt("switching selection mode and tooltips");
@@ -451,27 +451,13 @@ function(viewId) {
 	ZmListController.prototype._initializeToolBar.call(this, ZmId.VIEW_CAL_DAY);
 	var toolbar = this._toolbar[ZmId.VIEW_CAL_DAY];
 
-	// bug fix #5720
-	if (AjxEnv.is800x600orLower) {
-		var buttons = [
-			ZmOperation.DAY_VIEW,
-			ZmOperation.WEEK_VIEW,
-			ZmOperation.WORK_WEEK_VIEW,
-			ZmOperation.MONTH_VIEW,
-			ZmOperation.SCHEDULE_VIEW,
-			ZmOperation.DELETE
-		];
-		for (var i = 0; i < buttons.length; i++) {
-			var button = toolbar.getButton(buttons[i]);
-			if (button) button.setText("");
-		}
-	}
-
-	// Set the other view toolbar entries to point to the Day view entry. I.e. this is a trick
+	// Set the other view toolbar entries to point to the Day view entry. Hack
 	// to fool the ZmListController into thinking there are multiple toolbars
 	this._toolbar[ZmId.VIEW_CAL_SCHEDULE] = this._toolbar[ZmId.VIEW_CAL_WEEK] =
 	this._toolbar[ZmId.VIEW_CAL_WORK_WEEK] = this._toolbar[ZmId.VIEW_CAL_MONTH] =
-	this._toolbar[ZmId.VIEW_CAL_APPT] = this._toolbar[ZmId.VIEW_CAL_DAY];
+	this._toolbar[ZmId.VIEW_CAL_APPT] = this._toolbar[ZmId.VIEW_CAL_LIST] =
+	this._toolbar[ZmId.VIEW_CAL_DAY];
+
 	this._toolbar[ZmId.VIEW_CAL] = toolbar;
 
 	// Setup the toolbar stuff
@@ -500,6 +486,7 @@ function(viewId) {
 			case ZmId.VIEW_CAL_WORK_WEEK:	icon = ZmOperation.getProp(ZmOperation.WORK_WEEK_VIEW, "image"); break;
 			case ZmId.VIEW_CAL_WEEK:		icon = ZmOperation.getProp(ZmOperation.WEEK_VIEW, "image"); break;
 			case ZmId.VIEW_CAL_MONTH:		icon = ZmOperation.getProp(ZmOperation.MONTH_VIEW, "image"); break;
+			case ZmId.VIEW_CAL_LIST:		icon = ZmOperation.getProp(ZmOperation.CAL_LIST_VIEW, "image"); break;
 			case ZmId.VIEW_CAL_SCHEDULE:	icon = ZmOperation.getProp(ZmOperation.SCHEDULE_VIEW, "image"); break;
 		}
 		viewButton.setImage(icon);
@@ -573,12 +560,12 @@ function(ev) {
 ZmCalViewController.prototype._createMiniCalendar =
 function(date) {
     var calMgr = appCtxt.getCalManager();
-    if(calMgr._miniCalendar == null) {
+    if (calMgr._miniCalendar == null) {
         calMgr._createMiniCalendar(date);
         this._miniCalendar = calMgr.getMiniCalendar();
-    }else {
+    } else {
         this._miniCalendar = calMgr.getMiniCalendar();
-        if(date != null) {
+        if (date != null) {
             this._miniCalendar.setDate(date, true);
         }
     }
@@ -844,8 +831,11 @@ ZmCalViewController.prototype.setDate =
 function(date, duration, roll) {
 	AjxDispatcher.require(["CalendarCore", "Calendar"]);
 	// set mini-cal first so it will cache appts we might need
-	if (this._miniCalendar.getDate() == null || this._miniCalendar.getDate().getTime() != date.getTime())
+	if (this._miniCalendar.getDate() == null ||
+		this._miniCalendar.getDate().getTime() != date.getTime())
+	{
 		this._miniCalendar.setDate(date, true, roll);
+	}
 	if (this._viewMgr != null) {
 		this._viewMgr.setDate(date, duration, roll);
 		var viewId = this._viewMgr.getCurrentViewName();
@@ -1567,11 +1557,10 @@ function(msgDialog) {
 
 ZmCalViewController.prototype._initCalViewMenu =
 function(menu) {
-	menu.addSelectionListener(ZmOperation.DAY_VIEW, this._listeners[ZmOperation.DAY_VIEW]);
-	menu.addSelectionListener(ZmOperation.WORK_WEEK_VIEW, this._listeners[ZmOperation.WORK_WEEK_VIEW]);
-	menu.addSelectionListener(ZmOperation.WEEK_VIEW, this._listeners[ZmOperation.WEEK_VIEW]);
-	menu.addSelectionListener(ZmOperation.MONTH_VIEW, this._listeners[ZmOperation.MONTH_VIEW]);
-	menu.addSelectionListener(ZmOperation.SCHEDULE_VIEW, this._listeners[ZmOperation.SCHEDULE_VIEW]);
+	for (var i = 0; i < ZmCalViewController.OPS.length; i++) {
+		var op = ZmCalViewController.OPS[i];
+		menu.addSelectionListener(op, this._listeners[op]);
+	}
 };
 
 /**

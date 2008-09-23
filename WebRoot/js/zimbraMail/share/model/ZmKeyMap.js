@@ -90,6 +90,7 @@ ZmKeyMap.ALL_DAY			= "AllDay";
 ZmKeyMap.ASSISTANT			= "Assistant";
 ZmKeyMap.ATTACHMENT			= "Attachment";
 ZmKeyMap.CAL_DAY_VIEW		= "DayView";
+ZmKeyMap.CAL_LIST_VIEW		= "CalListView";
 ZmKeyMap.CAL_MONTH_VIEW		= "MonthView";
 ZmKeyMap.CAL_SCHEDULE_VIEW	= "ScheduleView";
 ZmKeyMap.CAL_WEEK_VIEW		= "WeekView";
