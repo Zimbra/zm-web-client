@@ -941,7 +941,7 @@ if (ext == null) ext = "";
                         <copy tofile="@{var}${nodebug.ext}" file='@{var}'/>
                         <echo>Stripping debug to @{var}${nodebug.ext}</echo>
                         <replaceregexp byline="true">
-                            <regexp pattern="DBG\.\w+\(.*\);"/>
+                            <regexp pattern="^\s*DBG\.\w+\(.*\);\s*$"/>
                             <substitution expression=" "/>
                             <fileset file="@{var}${nodebug.ext}"/>
                         </replaceregexp>
