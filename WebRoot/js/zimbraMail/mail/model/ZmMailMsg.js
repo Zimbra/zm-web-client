@@ -1321,7 +1321,7 @@ function(addrNodes, parentNode, isDraft, accountName) {
 		}
 		addrNodes.push(node);
 
-		if (!ac.isOffline) {
+		if (!ac.isOffline && !isDraft) {
 			// the main account is *always* the sender
 			addrNodes.push({t:"s", a:mainAcct});
 		}
@@ -1337,7 +1337,9 @@ function(addrNodes, parentNode, isDraft, accountName) {
 				addrNode.a = from.address;
 				addrNodes.push(addrNode);
 				// if sending obo, always set sender as main account
-				addrNodes.push({t:"s", a:mainAcct});
+				if (!isDraft) {
+					addrNodes.push({t:"s", a:mainAcct});
+				}
 				parentNode.e = addrNodes;
 				return;
 			}
