@@ -479,7 +479,6 @@ function() {
 
 ZmPreferencesPage.prototype._postSave =
 function(list) {
-debugger;
 	for (var i = 0; i < list.length; i++) {
 		var setting = list[i];
 		if (setting.id == ZmSetting.OFFLINE_IS_MAILTO_HANDLER) {
