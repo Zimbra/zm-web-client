@@ -37,6 +37,7 @@ ZmSharePropsDialog = function(shell, className) {
 
 	// set view
 	this.setView(this._createView());
+    this._tabGroupComplete = false;
 };
 
 ZmSharePropsDialog.prototype = new DwtDialog;
@@ -100,10 +101,14 @@ function(mode, object, share) {
 		this._inheritEl.checked = share ? share.link.inh : isNewShare;
 	}
 
-
+    if (!this._tabGroupComplete) {
+        this._tabGroup.addMember(this._granteeInput, 0);
+        this._tabGroupComplete = true;
+    }
+    
 	var perm = share ? share.link.perm : null;
 
-	if(perm != null) {
+	if (perm != null) {
 		perm = perm.replace(/-./g, "");
 		this._privateEl.checked = (perm.indexOf(ZmShare.PERM_PRIVATE) != -1);
 		perm = perm.replace(/p/g, "");

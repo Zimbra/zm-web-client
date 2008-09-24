@@ -2069,6 +2069,27 @@ HTML>BODY .appt-selected .appt_allday_body
 .ImgAolBig { background-image: url("/zimbra/public/tmp/aol.png"); }
 .ImgJiveBig { background-image: url("/zimbra/public/tmp/jive.png"); }
 
+.ImAccountLabel {
+	width: 150px;
+	font-weight: bold;
+	white-space: nowrap;
+	text-align: right;
+	line-height:20px;
+}
+
+.ImAccountGatewayLabel {
+	width: 100px;
+	text-align: right;
+}
+
+.ImAccountGatewayValue {
+	width: 90%;
+}
+
+.ImAccountLogin .FakeAnchor {
+	font-weight: bold;
+}
+
 .ZmChatGwIcon-offline {
  opacity: 0.3;
 
@@ -2086,10 +2107,19 @@ HTML>BODY .appt-selected .appt_allday_body
 #ENDIF
 }
 
+.ZmImToastText {
+	@Text-anchor@
+}
+.ZmImToastText-hover {
+	@Text-anchor-hover@
+	@ActiveCursor@
+}
+
 .ZmBuddyFilterItem {
 	width: 96%;
 	padding-left: 4px;
 	padding-right: 4px;
+	padding-bottom: 1px;
 }
 
 .ZmBuddyFilterItem .DwtSimpleInput {

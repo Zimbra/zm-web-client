@@ -296,7 +296,31 @@ function(organizer) {
 	return new AjxEmailAddress(orgAddress, null, orgName);
 };
 
-/*
+/**
+ * Callback triggered when tooltip is finished loading participant status for
+ * attendees of an appointment.
+ *
+ * @param obj			[DwtControl]			control for which the tooltip belongs
+ * @param appt			[ZmAppt]				cloned ZmAppt object
+ * @param origAppt		[ZmAppt]				the original ZmAppt object
+ * @param view			[DwtComposite]			the view showing the tooltip (i.e. DwtListView or ZmCalBaseView)
+ */
+ZmApptViewHelper.refreshApptTooltip =
+function(obj, appt, origAppt, view) {
+DBG.println("ZmApptViewHelper.refreshApptTooltip =1");
+	if (!appt) { return; }
+	appt._updateParticipantStatus();
+	origAppt.setAttendeeToolTipData(appt.getAttendeeToolTipData());
+	view.setToolTipContent(appt.getToolTip(obj._controller, true));
+
+	// force obj's tooltip to refresh itself since the tooltip content has changed.
+	if (obj) {
+		delete obj._currentIdForTooltip[appt.id];
+		obj.refreshTooltip();
+	}
+};
+
+/**
 * Creates a string from a list of attendees/locations/resources. If an item
 * doesn't have a name, its address is used.
 *

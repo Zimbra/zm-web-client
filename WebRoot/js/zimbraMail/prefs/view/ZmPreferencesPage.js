@@ -463,6 +463,34 @@ ZmPreferencesPage.prototype.isDirty = function() { return false; };
 ZmPreferencesPage.prototype.validate = function() {	return true; };
 ZmPreferencesPage.prototype.addCommand = function(batchCmd) {};
 
+ZmPreferencesPage.prototype.getPostSaveCallback =
+function() {
+	if (this._section.id == "GENERAL" &&
+		appCtxt.get(ZmSetting.OFFLINE_SUPPORTS_MAILTO) &&
+		appCtxt.get(ZmSetting.OFFLINE_IS_MAILTO_HANDLER))
+	{
+		var prefView = {"GENERAL": this.parent.prefView["GENERAL"]};
+		var list = this.parent.getChangedPrefs(false, false, null, prefView);
+
+		return (list && list.length) ? (new AjxCallback(this, this._postSave, [list])) : null;
+	}
+    return null;
+};
+
+ZmPreferencesPage.prototype._postSave =
+function(list) {
+debugger;
+	for (var i = 0; i < list.length; i++) {
+		var setting = list[i];
+		if (setting.id == ZmSetting.OFFLINE_IS_MAILTO_HANDLER) {
+			if (setting.value === true) {
+				appCtxt.getAppController().registerMailtoHandler();
+			}
+			break;
+		}
+	}
+};
+
 ZmPreferencesPage.prototype.getPreSaveCallback =
 function() {
 	// in offline mode, general (aka global) prefs apply to the *parent* account

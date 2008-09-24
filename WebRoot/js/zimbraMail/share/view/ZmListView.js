@@ -67,6 +67,8 @@ ZmListView.FIELD_CLASS[ZmItem.F_ATTACHMENT]	= "Attach";
 ZmListView.ITEM_FLAG_CLICKED 				= DwtListView._LAST_REASON + 1;
 ZmListView.DEFAULT_REPLENISH_THRESHOLD		= 0;
 
+ZmListView.COL_JOIN = "|";
+
 ZmListView.prototype._getHeaderList = function() {};
 
 ZmListView.prototype.getController =
@@ -298,6 +300,18 @@ function(item, field, imageInfo) {
 	}
 };
 
+ZmListView.prototype._getFragmentSpan =
+function(item) {
+	return ["<span class='ZmConvListFragment' id='",
+			this._getFieldId(item, ZmItem.F_FRAGMENT),
+			"'>", this._getFragmentHtml(item), "</span>"].join("");
+};
+
+ZmListView.prototype._getFragmentHtml =
+function(item) {
+	return [" - ", AjxStringUtil.htmlEncode(item.fragment, true)].join("");
+};
+
 /**
  * Parse the DOM ID to figure out what got clicked. IDs consist of three to five parts
  * joined by the "|" character.
@@ -492,7 +506,7 @@ function(obj, bContained) {
 	var selFieldId = item ? this._getFieldId(item, ZmItem.F_SELECTION) : null;
 	var selField = selFieldId ? document.getElementById(selFieldId) : null;
 	if (selField) {
-		selField.className = bContained	? "ImgTaskCheckbox"	: "ImgTaskCheckboxCompleted";
+		selField.className = bContained ? "ImgTaskCheckbox" : "ImgTaskCheckboxCompleted";
 		this._setItemData(obj, "origSelClassName", selField.className);
 	}
 };
@@ -747,7 +761,7 @@ function() {
 		var headerCol = this._headerList[i];
 		fields.push(headerCol._field + (headerCol._visible ? "" : "*"));
 	}
-	var value = fields.join("|");
+	var value = fields.join(ZmListView.COL_JOIN);
 	value = (value == this._defaultCols) ? "" : value;
 	appCtxt.set(ZmSetting.LIST_VIEW_COLUMNS, value, this.view);
 	
