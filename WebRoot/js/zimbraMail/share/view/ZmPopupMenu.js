@@ -118,6 +118,17 @@ function(id, params) {
 	return mi;
 };
 
+/**
+* Returns the menu item with the given ID.
+*
+* @param id		an operation ID
+*/
+ZmPopupMenu.prototype.getMenuItem =
+function(id) {
+	return this._menuItems[id];
+};
+
+
 ZmPopupMenu.prototype.createSeparator =
 function() {
 	new DwtMenuItem({parent:this, style:DwtMenuItem.SEPARATOR_STYLE});

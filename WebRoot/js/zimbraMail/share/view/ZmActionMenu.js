@@ -82,16 +82,6 @@ function(id, params) {
 	return mi;
 };
 
-/**
-* Returns the menu item with the given ID.
-*
-* @param id		an operation ID
-*/
-ZmActionMenu.prototype.getMenuItem =
-function(id) {
-	return this._menuItems[id];
-};
-
 ZmActionMenu.prototype.addOp =
 function(id) {
 	ZmOperation.addOperation(this, id, this._menuItems);

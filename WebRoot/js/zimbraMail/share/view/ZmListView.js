@@ -53,6 +53,11 @@ function() {
 	return "ZmListView";
 }
 
+
+// Consts
+
+ZmListView.KEY_ID							= "_keyId";
+
 // column widths
 ZmListView.COL_WIDTH_ICON 					= 19;
 ZmListView.COL_WIDTH_NARROW_ICON			= 11;
@@ -557,6 +562,45 @@ function() {
 	this.setSelectionHdrCbox(false);
 };
 
+ZmListView.prototype._getActionMenuForColHeader =
+function(force) {
+	if (!this._colHeaderActionMenu || force) {
+		// create a action menu for the header list
+		this._colHeaderActionMenu = new ZmPopupMenu(this);
+		var actionListener = new AjxListener(this, this._colHeaderActionListener);
+		for (var i = 0; i < this._headerList.length; i++) {
+			var hCol = this._headerList[i];
+			// lets not allow columns w/ relative width to be removed (for now) - it messes stuff up
+			if (hCol._width) {
+				var mi = this._colHeaderActionMenu.createMenuItem(hCol._id, {text:hCol._name, style:DwtMenuItem.CHECK_STYLE});
+				mi.setData(ZmListView.KEY_ID, hCol._id);
+				mi.setChecked(hCol._visible, true);
+                if (hCol._noRemove) {
+					mi.setEnabled(false);
+				}
+                this._colHeaderActionMenu.addSelectionListener(hCol._id, actionListener);
+			}
+		}
+	}
+	return this._colHeaderActionMenu;
+};
+
+ZmListView.prototype._colHeaderActionListener =
+function(ev) {
+
+	var menuItemId = ev.item.getData(ZmListView.KEY_ID);
+
+	for (var i = 0; i < this._headerList.length; i++) {
+		var col = this._headerList[i];
+		if (col._id == menuItemId) {
+			col._visible = !col._visible;
+			break;
+		}
+	}
+
+	this._relayout();
+};
+
 ZmListView.prototype._getHeaderToolTip =
 function(field, itemIdx, isFolder) {
     var tooltip = null;
@@ -764,6 +808,6 @@ function() {
 	var value = fields.join(ZmListView.COL_JOIN);
 	value = (value == this._defaultCols) ? "" : value;
 	appCtxt.set(ZmSetting.LIST_VIEW_COLUMNS, value, this.view);
-	
+
 	this._getActionMenuForColHeader(true); // re-create action menu so order is correct
 };

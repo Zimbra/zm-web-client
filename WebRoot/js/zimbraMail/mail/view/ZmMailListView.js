@@ -27,9 +27,6 @@ ZmMailListView = function(params) {
 ZmMailListView.prototype = new ZmListView;
 ZmMailListView.prototype.constructor = ZmMailListView;
 
-// Consts
-
-ZmMailListView.KEY_ID = "_keyId";
 
 // Public methods
 
@@ -119,14 +116,17 @@ function() {
 	var isFolder = this._isSentOrDraftsFolder();
 
 	// set the from column name based on query string
-	var colLabel = (isFolder.sent || isFolder.drafts) ? ZmMsg.to : ZmMsg.from;
 	var headerCol = this._headerHash[ZmItem.F_FROM];
-	var fromColSpan = document.getElementById(DwtId.getListViewHdrId(DwtId.WIDGET_HDR_LABEL, this._view, headerCol._field));
-	if (fromColSpan) {
-		fromColSpan.innerHTML = "&nbsp;" + colLabel;
-	}
-	if (this._colHeaderActionMenu) {
-		this._colHeaderActionMenu.getItem(headerCol._index).setText(colLabel);
+	if (headerCol) {
+		var colLabel = (isFolder.sent || isFolder.drafts) ? ZmMsg.to : ZmMsg.from;
+
+		var fromColSpan = document.getElementById(DwtId.getListViewHdrId(DwtId.WIDGET_HDR_LABEL, this._view, headerCol._field));
+		if (fromColSpan) {
+			fromColSpan.innerHTML = "&nbsp;" + colLabel;
+		}
+		if (this._colHeaderActionMenu) {
+			this._colHeaderActionMenu.getItem(headerCol._index).setText(colLabel);
+		}
 	}
 
 	return isFolder;
@@ -307,28 +307,17 @@ function(participants, participantsElided, width) {
 	return [originator];
 };
 
-ZmMailListView.prototype._getActionMenuForColHeader = 
+ZmMailListView.prototype._getActionMenuForColHeader =
 function(force) {
-	if (!this._colHeaderActionMenu || force) {
-		// create a action menu for the header list
-		this._colHeaderActionMenu = new ZmPopupMenu(this);
-		var actionListener = new AjxListener(this, this._colHeaderActionListener);
-		for (var i = 0; i < this._headerList.length; i++) {
-			var hCol = this._headerList[i];
-			// lets not allow columns w/ relative width to be removed (for now) - it messes stuff up
-			if (hCol._width) {
-				var mi = this._colHeaderActionMenu.createMenuItem(hCol._id, {text:hCol._name, style:DwtMenuItem.CHECK_STYLE});
-				mi.setData(ZmMailListView.KEY_ID, hCol._id);
-				mi.setChecked(hCol._visible, true);
-                if (hCol._noRemove) {
-					mi.setEnabled(false);
-				}
-                this._colHeaderActionMenu.addSelectionListener(hCol._id, actionListener);
-			}
-		}
+	var doReset = (!this._colHeaderActionMenu || force);
+
+	var menu = ZmListView.prototype._getActionMenuForColHeader.call(this, force);
+
+	if (doReset) {
 		this._resetFromColumnLabel();
 	}
-	return this._colHeaderActionMenu;
+
+	return menu;
 };
 
 ZmMailListView.prototype._getNoResultsMessage =
@@ -425,22 +414,6 @@ function(ev) {
 	if (!ev.handled) {
 		ZmListView.prototype._changeListener.call(this, ev);
 	}
-};
-
-ZmMailListView.prototype._colHeaderActionListener =
-function(ev) {
-
-	var menuItemId = ev.item.getData(ZmMailListView.KEY_ID);
-
-	for (var i = 0; i < this._headerList.length; i++) {
-		var col = this._headerList[i];
-		if (col._id == menuItemId) {
-			col._visible = !col._visible;
-			break;
-		}
-	}
-	
-	this._relayout();
 };
 
 /**

@@ -15,7 +15,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmCalListView = function(parent, posStyle, controller, dropTgt, view, numDays) {
+ZmCalListView = function(parent, posStyle, controller, dropTgt) {
 	if (arguments.length == 0) { return; }
 
 	var params = {
@@ -23,8 +23,8 @@ ZmCalListView = function(parent, posStyle, controller, dropTgt, view, numDays) {
 		posStyle: posStyle,
 		controller: controller,
 		dropTgt: dropTgt,
-		view:view,
-		headerList:this._getHeaderList(parent)
+		view: ZmId.VIEW_CAL_LIST,
+		headerList: this._getHeaderList(parent)
 	}
 
 	ZmListView.call(this, params);
@@ -43,10 +43,9 @@ ZmCalListView.prototype.constructor = ZmCalListView;
 // Consts
 ZmCalListView.DEFAULT_CALENDAR_PERIOD	= AjxDateUtil.MSEC_PER_DAY*14;			// 14 days
 ZmCalListView.DEFAULT_SEARCH_PERIOD		= AjxDateUtil.MSEC_PER_DAY*31;			// 31 days
-ZmCalListView.COL_WIDTH_DATE			= 95;
+ZmCalListView.COL_WIDTH_DATE			= 105;
 ZmCalListView.COL_WIDTH_LOCATION		= 175;
 ZmCalListView.COL_WIDTH_STATUS			= 80;
-ZmCalListView.KEY_ID					= "_keyId";
 
 
 // Public methods
@@ -221,41 +220,6 @@ function(ev, div) {
 		}
 	}
 	return true;
-};
-
-ZmCalListView.prototype._getActionMenuForColHeader =
-function() {
-	if (!this._colHeaderActionMenu) {
-		// create a action menu for the header list
-		this._colHeaderActionMenu = new ZmPopupMenu(this);
-		var actionListener = new AjxListener(this, this._colHeaderActionListener);
-		for (var i = 0; i < this._headerList.length; i++) {
-			var hCol = this._headerList[i];
-			var mi = this._colHeaderActionMenu.createMenuItem(hCol._id, {text:hCol._name, style:DwtMenuItem.CHECK_STYLE});
-			mi.setData(ZmCalListView.KEY_ID, hCol._id);
-			mi.setChecked(true, true);
-			if (hCol._noRemove) {
-				mi.setEnabled(false);
-			}
-			this._colHeaderActionMenu.addSelectionListener(hCol._id, actionListener);
-		}
-	}
-	return this._colHeaderActionMenu;
-};
-
-ZmCalListView.prototype._colHeaderActionListener =
-function(ev) {
-	var menuItemId = ev.item.getData(ZmCalListView.KEY_ID);
-
-	for (var i = 0; i < this._headerList.length; i++) {
-		var col = this._headerList[i];
-		if (col._id == menuItemId) {
-			col._visible = !col._visible;
-			break;
-		}
-	}
-
-	this._relayout();
 };
 
 ZmCalListView.prototype._getHeaderToolTip =
