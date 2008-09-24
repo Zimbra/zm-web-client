@@ -403,7 +403,11 @@ function(ev) {
 		? (AjxMessageFormat.format(ZmMsg.confirmEmptyFolder, organizer.getName()))
 		: ZmMsg.confirmEmptyTrashFolder;
 	ds.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
-	ds.popup();
+
+    var focusButtonId = (organizer.nId == ZmFolder.ID_TRASH || organizer.nId == ZmFolder.ID_SPAM) ?  DwtDialog.OK_BUTTON : DwtDialog.CANCEL_BUTTON;
+    ds.associateEnterWithButton(focusButtonId);
+    ds.popup(null, focusButtonId);
+
 
 	if (!(organizer.nId == ZmFolder.ID_SPAM || organizer.isInTrash())) {
 		var cancelButton = ds.getButton(DwtDialog.CANCEL_BUTTON);
