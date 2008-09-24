@@ -785,6 +785,7 @@ function(containerDiv, settingId, setup) {
 	containerDiv.innerHTML = AjxTemplate.expand("prefs.Pages#Export", exportDivId);
 
 	//Export Options
+	var format = settingId == "CAL_EXPORT" ? "ics" : "csv"; 
 	var selFormat = null;
 	var optionsDiv = document.getElementById(exportDivId+"_options");
 	if(optionsDiv && (setup.options && setup.options.length > 0) ) {
@@ -797,7 +798,7 @@ function(containerDiv, settingId, setup) {
 	buttonDiv.setAttribute("tabindex", containerDiv.getAttribute("tabindex"));
 
 	var btnLabel = setup.displayName || ZmMsg._export;
-	var btn = this._addButton(buttonDiv, btnLabel, 110, new AjxListener(this, this._exportButtonListener, [selFormat]));
+	var btn = this._addButton(buttonDiv, btnLabel, 110, new AjxListener(this, this._exportButtonListener, [format, selFormat]));
 	btn.setData(Dwt.KEY_ID, settingId);
 };
 
@@ -911,15 +912,15 @@ function(ev) {
 };
 
 ZmPreferencesPage.prototype._exportButtonListener =
-function(formatSelectObj, ev) {
+function(format, formatSelectObj, ev) {
 	var settingId = ev.dwtObj.getData(Dwt.KEY_ID);
 
 	//Get Format
-	var format = formatSelectObj? formatSelectObj.getValue() : null;
+	var subFormat = formatSelectObj? formatSelectObj.getValue() : null;
 
 	var dialog = appCtxt.getChooseFolderDialog();
 	dialog.reset();
-	dialog.registerCallback(DwtDialog.OK_BUTTON, this._exportOkCallback, this, [dialog, settingId, format]);
+	dialog.registerCallback(DwtDialog.OK_BUTTON, this._exportOkCallback, this, [dialog, format, subFormat]);
 
 	var omit = {};
 	omit[ZmFolder.ID_TRASH] = true;
@@ -1065,16 +1066,20 @@ function(ex) {
 };
 
 ZmPreferencesPage.prototype._exportOkCallback =
-function(dialog, settingId, format, folder) {
+function(dialog, format, subFormat, folder) {
 	var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
 	if (folder && folder.id && folder.id != rootId) {
 		var portPrefix = (location.port == "" || location.port == "80")
 			? ""
 			: (":" + location.port);
-		format = format || (settingId == ZmSetting.IMPORT || settingId == ZmSetting.EXPORT) ? "csv" : "ics";
 		var folderName = folder._systemName || AjxStringUtil.urlEncode(folder.getPath());
 		var username = appCtxt.multiAccounts ? (AjxStringUtil.urlComponentEncode(appCtxt.get(ZmSetting.USERNAME))) : "~";
-		var uri = [location.protocol, "//", document.domain, portPrefix, "/service/home/", username, "/", folderName, "?auth=co&fmt=", format].join("");
+		var uri = [
+			location.protocol, "//", document.domain, portPrefix, "/service/home/",
+			username, "/", folderName,
+			"?auth=co&fmt=", format,
+			subFormat ? "&"+format+"fmt="+subFormat : "" // e.g. csvfmt=zimbra-csv
+		].join("");
 		window.open(uri, "_blank");
 
 		dialog.popdown();
