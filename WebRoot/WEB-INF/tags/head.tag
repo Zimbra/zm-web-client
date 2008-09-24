@@ -62,9 +62,22 @@
 			.yui-skin-sam .yui-editor-panel .yui-spellcheck-list li {
 				padding-left: 5px;
 			}
-		</style>
+        </style>
     </c:if>
-
+    <style type="text/css" media="screen">
+        .dragoverclass{
+            background-color:orange;
+        }
+        .proxy{
+            background-color : #cecece;
+            border : 2px solid #ccc;
+            cursor : move;
+            color : #000;
+        }
+        .proxy a {
+            text-decoration : none;
+        }
+    </style>
     <fmt:message key="favIconUrl" var="favIconUrl"/>
     <link rel="SHORTCUT ICON" href="<c:url value='${favIconUrl}'/>">
     <jsp:doBody/>
