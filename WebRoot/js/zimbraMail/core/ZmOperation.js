@@ -104,7 +104,7 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_CLEAR_ALL, {textKey:"clearAll", image:"Cancel"});
 	ZmOperation.registerOp(ZmId.OP_CLOSE, {textKey:"close", tooltipKey:"closeTooltip", image:"Close"});
 	ZmOperation.registerOp(ZmId.OP_COMPOSE_FORMAT, {textKey:"format", tooltipKey:"formatTooltip", image:"SwitchFormat"}, ZmSetting.HTML_COMPOSE_ENABLED);
-	ZmOperation.registerOp(ZmId.OP_DELETE, {textKey:"del", tooltipKey:"deleteTooltip", image:"Delete", precedence:60});
+	ZmOperation.registerOp(ZmId.OP_DELETE, {textKey:"del", tooltipKey:"deleteTooltip", image:"Delete", shortcut:ZmKeyMap.DEL, precedence:60});
 	ZmOperation.registerOp(ZmId.OP_DETACH, {tooltipKey:"detachTT", image:"OpenInNewWindow"});
     ZmOperation.registerOp(ZmId.OP_DETACH_WIN, {textKey:"detachTT", tooltipKey:"detachTT", image:"OpenInNewWindow"});
     ZmOperation.registerOp(ZmId.OP_EDIT, {textKey:"edit", tooltipKey:"editTooltip", image:"Edit"});
@@ -122,12 +122,12 @@ function() {
 		AjxCallback.simpleClosure(function(parent) {
 			ZmOperation.addDeferredMenu(ZmOperation.addNewMenu, parent);
 		}));
-	ZmOperation.registerOp(ZmId.OP_NEW_TAG, {textKey:"newTag", tooltipKey:"newTagTooltip", image:"NewTag"}, ZmSetting.TAGGING_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_NEW_TAG, {textKey:"newTag", tooltipKey:"newTagTooltip", image:"NewTag", shortcut:ZmKeyMap.NEW_TAG}, ZmSetting.TAGGING_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_PAGE_BACK, {image:"LeftArrow"});
 	ZmOperation.registerOp(ZmId.OP_PAGE_DBL_BACK, {image:"LeftDoubleArrow"});
 	ZmOperation.registerOp(ZmId.OP_PAGE_DBL_FORW, {image:"RightDoubleArrow"});
 	ZmOperation.registerOp(ZmId.OP_PAGE_FORWARD, {image:"RightArrow"});
-	ZmOperation.registerOp(ZmId.OP_PRINT, {textKey:"print", tooltipKey:"printTooltip", image:"Print", precedence:30}, ZmSetting.PRINT_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_PRINT, {textKey:"print", tooltipKey:"printTooltip", image:"Print", shortcut:ZmKeyMap.PRINT, precedence:30}, ZmSetting.PRINT_ENABLED);
     ZmOperation.registerOp(ZmId.OP_REFRESH, {textKey:"refresh", tooltipKey:"refreshTooltip"});
 	ZmOperation.registerOp(ZmId.OP_RENAME_FOLDER, {textKey:"renameFolder", image:"Rename"});
 	ZmOperation.registerOp(ZmId.OP_RENAME_SEARCH, {textKey:"renameSearch", image:"Rename"});
@@ -226,9 +226,11 @@ function(baseId, overrides) {
 	var image = ZmOperation.getProp(baseId, "image");
 	var disImage = ZmOperation.getProp(baseId, "disImage");
 	var enabled = (overrides && (overrides.enabled !== false));
-    var style = ZmOperation.getProp(baseId, "style");
+	var style = ZmOperation.getProp(baseId, "style");
+	var shortcut = ZmOperation.getProp(baseId, "shortcut");
 
-    var opDesc = {id:id, text:text, image:image, disImage:disImage, enabled:enabled, tooltip:tooltip, style:style};
+    var opDesc = {id:id, text:text, image:image, disImage:disImage, enabled:enabled,
+				  tooltip:tooltip, style:style, shortcut:shortcut};
 	if (overrides) {
 		for (var i in overrides) {
 			opDesc[i] = overrides[i];
@@ -261,10 +263,8 @@ function(id, prop) {
 
 ZmOperation.addOperation =
 function(parent, id, opHash, index) {
-	var opDesc = ZmOperation._operationDesc[id];
-	if (!opDesc) {
-		opDesc = ZmOperation.defineOperation({id: id});
-	}
+
+	var opDesc = ZmOperation._operationDesc[id] || ZmOperation.defineOperation({id:id});
 
 	if (id == ZmOperation.SEP) {
         if (parent instanceof DwtMenu) {
@@ -278,8 +278,10 @@ function(parent, id, opHash, index) {
 	} else if (id == ZmOperation.FILLER) {	// toolbar only
 		parent.addFiller(null, index);
 	} else {
-		if(index) opDesc.index = index;
-		opHash[id] = parent.createOp(id, opDesc );
+		if (index) {
+			opDesc.index = index;
+		}
+		opHash[id] = parent.createOp(id, opDesc);
 	}
 	var callback = ZmOperation.CALLBACK[id];
 	if (callback) {
@@ -442,4 +444,20 @@ function(parent) {
 		mi.setData(ZmOperation.MENUITEM_ID, color);
 	}
 	return menu;
+};
+
+/**
+ * Returns the tooltip for the operation with the given ID. If the operation has a shortcut associated
+ * with it, a shortcut hint is appended to the end of the tooltip.
+ *
+ * @param id		[string]	operation ID
+ * @param keyMap	[string]	key map (for resolving shortcut)
+ * @param tooltip	[string]*	tooltip override
+ */
+ZmOperation.getToolTip =
+function(id, keyMap, tooltip) {
+	var opDesc = ZmOperation._operationDesc[id] || ZmOperation.defineOperation({id:id});
+	tooltip = tooltip || opDesc.tooltip;
+	var sc = tooltip && appCtxt._getShortcutHint(keyMap, opDesc.shortcut);
+	return sc ?  [tooltip, " [", sc, "]"].join("") : tooltip;
 };

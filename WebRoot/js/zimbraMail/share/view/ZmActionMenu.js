@@ -16,27 +16,28 @@
  */
 
 /**
- * Creates an action menu with the given menu items.
- * @constructor
- * @class
- * This class represents an action menu, which is a popup menu with a few added features.
- * It can be easily created using a set of standard operations, and/or custom menu items
- * can be provided. This class is designed for use with items (ZmItem), so it can for
- * example contain a tab submenu. See also ZmButtonToolBar.
- *
- * @author Conrad Damon
- *
- * @param params		[hash]				hash of params:
- *        parent		[DwtComposite]		the containing widget
- *        menuItems		[array]*			a list of operation IDs
- *        overrides		[hash]*				hash of overrides by op ID
- *        context		[string]*			context (used to create ID)
- *        menuType		[const]*			menu type (used to generate menu item IDs)
- */
+  * Creates an action menu with the given menu items.
+  * @constructor
+  * @class
+  * This class represents an action menu, which is a popup menu with a few added features.
+  * It can be easily created using a set of standard operations, and/or custom menu items
+  * can be provided. This class is designed for use with items (ZmItem), so it can for
+  * example contain a tab submenu. See also ZmButtonToolBar.
+  *
+  * @author Conrad Damon
+  *
+  * @param params		[hash]				hash of params:
+  *        parent		[DwtComposite]		the containing widget
+  *        controller	[ZmController]*		owning controller
+  *        menuItems	[array]*			a list of operation IDs
+  *        overrides	[hash]*				hash of overrides by op ID
+  *        context		[string]*			context (used to create ID)
+  *        menuType		[const]*			menu type (used to generate menu item IDs)
+  */
 ZmActionMenu = function(params) {
 
     var id = params.context ? ZmId.getMenuId(params.context, params.menuType) : null;
-	ZmPopupMenu.call(this, params.parent, null, id);
+	ZmPopupMenu.call(this, params.parent, null, id, params.controller);
 
 	// standard menu items default to Tag/Print/Delete
 	var menuItems = params.menuItems;
@@ -49,6 +50,7 @@ ZmActionMenu = function(params) {
 	this.opList = ZmOperation.filterOperations(menuItems);
 	var extraItems = params.extraMenuItems;
 	this._context = params.context;
+
 	this._menuItems = ZmOperation.createOperations(this, this.opList, params.overrides);
 }
 
@@ -66,12 +68,13 @@ function() {
  * Creates a menu item and adds its operation ID as data.
  * 
  * @param id			[string]		name of the operation
- * @param text			[string]*		menu item text
- * @param image			[string]*		icon class for the menu item
- * @param disImage		[string]*		disabled version of icon
- * @param enabled		[boolean]*		if true, menu item is enabled
- * @param style			[constant]*		menu item style
- * @param radioGroupId	[string]*		ID of radio group for this menu item
+ *        text			[string]*		menu item text
+ *        image			[string]*		icon class for the menu item
+ *        disImage		[string]*		disabled version of icon
+ *        enabled		[boolean]*		if true, menu item is enabled
+ *        style			[constant]*		menu item style
+ *        radioGroupId	[string]*		ID of radio group for this menu item
+ *        shortcut		[constant]*		shortcut ID (from ZmKeyMap) for showing hint
  */
 ZmActionMenu.prototype.createOp =
 function(id, params) {

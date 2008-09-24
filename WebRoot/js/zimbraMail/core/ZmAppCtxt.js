@@ -876,3 +876,33 @@ function(account, callback) {
 	var id = account ? account.id : this._activeAccount ? this._activeAccount.id : ZmZimbraAccount.DEFAULT_ID;
 	return this._accounts[id] && this._accounts[id].acl;
 };
+
+// Returns brief display version of the given shortcut
+ZmAppCtxt.prototype._getShortcutHint =
+function(keyMap, shortcut) {
+	var text = null;
+	keyMap = keyMap || "global";
+	while (!text && keyMap) {
+		var scKey = [keyMap, shortcut, "display"].join(".");
+		var text = ZmKeys[scKey];
+		if (text) {
+			// try to pick first single-character shortcut
+			var list = text.split(/;\s*/);
+			var sc = list[0];
+			for (var i = 0; i < list.length; i++) {
+				var s = list[i];
+				if (s.indexOf(",") == -1) {
+					sc = list[i];
+					break;
+				}
+			}
+			sc = sc.replace(/\b[A-Z]\b/g, function(let) { return let.toLowerCase(); });
+			text = sc.replace(",", "");
+		} else {
+			var key = [keyMap, "INHERIT"].join(".");
+			keyMap = ZmKeys[key];
+		}
+	}
+
+	return text;
+};

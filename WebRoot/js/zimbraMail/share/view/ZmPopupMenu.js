@@ -27,12 +27,19 @@
  * @param parent		[DwtComposite]		the containing widget
  * @param className		[string]*			CSS class
  * @param id			[string]*			an explicit ID to use for the control's HTML element
+ * @param controller	[ZmController]*		owning controller
  */
-ZmPopupMenu = function(parent, className, id) {
+ZmPopupMenu = function(parent, className, id, controller) {
 
 	if (arguments.length == 0) return;
 	className = className ? className : "ActionMenu";
 	DwtMenu.call(this, {parent:parent, style:DwtMenu.POPUP_STYLE, className:className, id:id});
+
+	controller = controller || appCtxt.getCurrentController();
+	if (controller) {
+		this._controller = controller;
+		this._keyMap = ZmKeyMap.MAP_NAME_R[this._controller.getKeyMapName()];
+	}
 
 	this._menuItems = {};
 };
@@ -94,14 +101,16 @@ function(enabled) {
 
 /**
  * Adds a menu item to this menu.
- * 
- * @param id			[string]		menu item ID
- * @param text			[string]*		menu item text
- * @param image			[string]*		icon class for the or menu item
- * @param disImage		[string]*		disabled version of icon
- * @param enabled		[boolean]*		if true, menu item is enabled
- * @param style			[constant]*		menu item style
- * @param radioGroupId	[string]*		ID of radio group for this menu item
+ *
+ * @param params		[hash]			hash of params:
+ *        id			[string]		menu item ID
+ *        text			[string]*		menu item text
+ *        image			[string]*		icon class for the or menu item
+ *        disImage		[string]*		disabled version of icon
+ *        enabled		[boolean]*		if true, menu item is enabled
+ *        style			[constant]*		menu item style
+ *        radioGroupId	[string]*		ID of radio group for this menu item
+ *        shortcut		[constant]*		shortcut ID (from ZmKeyMap) for showing hint
  */
 ZmPopupMenu.prototype.createMenuItem =
 function(id, params) {
@@ -113,6 +122,10 @@ function(id, params) {
 	if (params.text) {
 		mi.setText(params.text);
 	}
+	if (params.shortcut) {
+		mi.setShortcut(appCtxt._getShortcutHint(this._keyMap, params.shortcut));
+	}
+
 	mi.setEnabled(params.enabled !== false);
 
 	return mi;
