@@ -79,6 +79,7 @@ ZmMailListController.GROUP_BY_SETTING	= {};	// associated setting on server
 // Stuff for the View menu
 ZmMailListController.GROUP_BY_ICON = {};
 ZmMailListController.GROUP_BY_MSG_KEY = {};
+ZmMailListController.GROUP_BY_SHORTCUT = {};
 ZmMailListController.GROUP_BY_VIEWS = [];
 
 // convert key mapping to folder to search
@@ -1090,11 +1091,13 @@ function(view) {
 		var id = ZmMailListController.GROUP_BY_VIEWS[i];
 		var mi = menu.createMenuItem(id, {image:ZmMailListController.GROUP_BY_ICON[id],
 										  text:ZmMsg[ZmMailListController.GROUP_BY_MSG_KEY[id]],
+										  shortcut:ZmMailListController.GROUP_BY_SHORTCUT[id],
 										  style:DwtMenuItem.RADIO_STYLE});
 		mi.setData(ZmOperation.MENUITEM_ID, id);
 		mi.addSelectionListener(this._listeners[ZmOperation.VIEW]);
-		if (id == this._defaultView())
+		if (id == this._defaultView()) {
 			mi.setChecked(true, true);
+		}
 	}
 	this._setupReadingPaneMenuItem(view, menu, this.isReadingPaneOn());
 

@@ -58,7 +58,7 @@ function() {
 
 ZmBriefcaseApp.prototype._registerOperations =
 function() {
-	ZmOperation.registerOp("NEW_BRIEFCASEITEM", {textKey:"newBriefcase", image:"NewFolder", tooltipKey:"newBriefcaseTooltip"});
+	ZmOperation.registerOp("NEW_BRIEFCASEITEM", {textKey:"newBriefcase", image:"NewFolder", tooltipKey:"newBriefcaseTooltip", shortcut:ZmKeyMap.NEW_BRIEFCASEITEM});
 	ZmOperation.registerOp("NEW_FILE", {textKey:"uploadNewFile", tooltipKey:"uploadNewFile", image:"NewPage"});
 	ZmOperation.registerOp("SHARE_BRIEFCASE", {textKey:"shareFolder", image:"SharedMailFolder"}, ZmSetting.SHARING_ENABLED);
 	ZmOperation.registerOp("MOUNT_BRIEFCASE", {textKey:"mountBriefcase", image:"Notebook"}, ZmSetting.SHARING_ENABLED);
@@ -126,13 +126,13 @@ function() {
 ZmBriefcaseApp.prototype._registerApp =
 function() {
 	var newItemOps = {};
-	newItemOps[ZmOperation.NEW_FILE] = "file";
+	newItemOps[ZmOperation.NEW_FILE] = "uploadNewFile";
 
 	var newOrgOps = {};
-	newOrgOps[ZmOperation.NEW_BRIEFCASEITEM] = "folder";
+	newOrgOps[ZmOperation.NEW_BRIEFCASEITEM] = "briefcase";
 
 	var actionCodes = {};
-	actionCodes[ZmKeyMap.NEW_FILE]		= ZmOperation.NEW_FILE;
+	actionCodes[ZmKeyMap.NEW_FILE]			= ZmOperation.NEW_FILE;
 	actionCodes[ZmKeyMap.NEW_BRIEFCASEITEM]	= ZmOperation.NEW_BRIEFCASEITEM;
 
 	ZmApp.registerApp(ZmApp.BRIEFCASE,

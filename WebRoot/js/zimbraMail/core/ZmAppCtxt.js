@@ -897,7 +897,7 @@ function(keyMap, shortcut) {
 				}
 			}
 			sc = sc.replace(/\b[A-Z]\b/g, function(let) { return let.toLowerCase(); });
-			text = sc.replace(",", "");
+			text = [" [", sc.replace(",", ""), "]"].join("");
 		} else {
 			var key = [keyMap, "INHERIT"].join(".");
 			keyMap = ZmKeys[key];

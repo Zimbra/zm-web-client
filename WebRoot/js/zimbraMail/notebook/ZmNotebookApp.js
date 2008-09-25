@@ -74,7 +74,7 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_FORMAT_RICH_TEXT, {textKey:"formatRichText"}, ZmSetting.HTML_COMPOSE_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_FORMAT_TWIKI, {textKey:"formatTWiki"}, ZmSetting.HTML_COMPOSE_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_MOUNT_NOTEBOOK, {textKey:"mountNotebook", image:"Notebook"}, ZmSetting.SHARING_ENABLED);
-	ZmOperation.registerOp(ZmId.OP_NEW_NOTEBOOK, {textKey:"newNotebook", image:"NewNotebook", tooltipKey:"newNotebookTooltip"});
+	ZmOperation.registerOp(ZmId.OP_NEW_NOTEBOOK, {textKey:"newNotebook", image:"NewNotebook", tooltipKey:"newNotebookTooltip", shortcut:ZmKeyMap.NEW_NOTEBOOK});
 	ZmOperation.registerOp(ZmId.OP_NEW_PAGE, {textKey:"newPage", tooltipKey:"createNewPage", image:"NewPage"});
 	ZmOperation.registerOp(ZmId.OP_IMPORT_FILE, {textKey:"_import", tooltipKey:"importDocs"});
 	ZmOperation.registerOp(ZmId.OP_SEND_PAGE, {textKey:"send", tooltipKey:"sendPageTT", image:"Send"}, ZmSetting.MAIL_ENABLED);
