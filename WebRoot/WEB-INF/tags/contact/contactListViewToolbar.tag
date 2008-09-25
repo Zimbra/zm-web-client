@@ -17,7 +17,7 @@
                 <tr>
                     <td nowrap>
                         <zm:currentResultUrl var="refreshUrl" value="/h/search" context="${context}" refresh="true" />
-                        <a href="${fn:escapeXml(refreshUrl)}" <c:if test="${keys}"></c:if>><app:img src="arrows/ImgRefresh.gif" altkey="refresh"/><span style='padding-left:5px'><fmt:message key="refresh"/></span></a>
+                        <a href="${fn:escapeXml(refreshUrl)}" <c:if test="${keys}"></c:if>><app:img src="arrows/ImgRefresh.gif" altkey="refresh"/><span style='padding-left:5px;padding-right:5px'><fmt:message key="refresh"/></span></a>
                     </td>
                     <td><div class='vertSep'></div></td>
                     <app:button name="actionNew" id="${keys ? 'NEW_CONTACT' : ''}" src="contacts/ImgNewContact.gif" tooltip="newContact" text="contact"/>
