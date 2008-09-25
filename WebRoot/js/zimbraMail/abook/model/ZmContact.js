@@ -33,6 +33,7 @@
  * @param list		[ZmContactList]*	list that contains this contact
  * @param type		[constant]*			item type
  */
+if (!window.ZmContact) {
 ZmContact = function(id, list, type) {
 	if (arguments.length == 0) { return; }
 
@@ -1174,3 +1175,5 @@ ZmContact._AB_FILE_AS = {
 	6:						ZmMsg.AB_FILE_AS_companyLastFirst,
 	7:						ZmMsg.AB_FILE_AS_companyFirstLast
 };
+
+} // if (!window.ZmContact)
