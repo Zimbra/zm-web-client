@@ -107,6 +107,7 @@ ZmChatTabs.prototype._hideTab = function(index) {
 	Dwt.delClass(div, "ZmChatTabs-Tab-Active");
 	div = this.getTabContentDiv(index);
 	Dwt.delClass(div, "ZmChatTabs-Container-Active");
+	this.getTabWidget(index)._onShowTab(false);
 };
 
 ZmChatTabs.prototype._showTab = function(background) {
@@ -123,6 +124,7 @@ ZmChatTabs.prototype._showTab = function(background) {
 	if(!background) {
 		w.focus();
 	}
+	this.getTabWidget(index)._onShowTab(true);
 };
 
 ZmChatTabs.prototype.getCurrentChat = function() {
