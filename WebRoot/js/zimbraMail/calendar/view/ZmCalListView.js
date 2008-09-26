@@ -32,7 +32,6 @@ ZmCalListView = function(parent, posStyle, controller, dropTgt) {
 	this._needsRefresh = true;
 	this._timeRangeStart = 0;
 	this._timeRangeEnd = 0;
-	this._currentIdForTooltip = {};
 	this._title = "";
 };
 
@@ -99,11 +98,22 @@ function(date, duration, roll) {
 	this._timeRangeEnd = d.getTime() + ZmCalListView.DEFAULT_CALENDAR_PERIOD;
 
 	this._updateTitle();
+
+	// Notify any listeners
+	if (this.isListenerRegistered(DwtEvent.DATE_RANGE)) {
+		if (!this._dateRangeEvent) {
+			this._dateRangeEvent = new DwtDateRangeEvent(true);
+		}
+		this._dateRangeEvent.item = this;
+		this._dateRangeEvent.start = new Date(this._timeRangeStart);
+		this._dateRangeEvent.end = new Date(this._timeRangeEnd);
+		this.notifyListeners(DwtEvent.DATE_RANGE, this._dateRangeEvent);
+	}
 };
 
 ZmCalListView.prototype.getRollField =
 function() {
-	return AjxDateUtil.MONTH;
+	return AjxDateUtil.TWO_WEEKS;
 };
 
 ZmCalListView.prototype._fanoutAllDay =
@@ -127,8 +137,28 @@ function() {
 	].join("");
 };
 
+ZmCalListView.prototype.addTimeSelectionListener =
+function(listener) {
+	// do nothing
+};
+
+ZmCalListView.prototype.addDateRangeListener =
+function(listener) {
+	this.addListener(DwtEvent.DATE_RANGE, listener);
+};
+
+ZmCalListView.prototype.addViewActionListener =
+function(listener) {
+	// do nothing
+};
+
 
 // DwtListView methods
+
+ZmCalListView.prototype._getItemId =
+function(item) {
+	return DwtId.getListViewItemId(DwtId.WIDGET_ITEM, this._view, item.getUniqueId(true));
+};
 
 ZmCalListView.prototype._getFieldId =
 function(item, field) {
@@ -146,11 +176,7 @@ function(item, field) {
 
 ZmCalListView.prototype._getCellContents =
 function(htmlArr, idx, appt, field, colIdx, params) {
-	if (field == ZmItem.F_SELECTION) {
-		var icon = params.bContained ? "TaskCheckboxCompleted" : "TaskCheckbox";
-		idx = this._getImageHtml(htmlArr, idx, icon, this._getFieldId(appt, field));
-
-	} else if (field == ZmItem.F_RECURRENCE) {
+	if (field == ZmItem.F_RECURRENCE) {
 		var icon;
 		if (appt.isException) {
 			icon = "ApptException";
@@ -176,6 +202,7 @@ function(htmlArr, idx, appt, field, colIdx, params) {
 		if (appt.otherAttendees) {
 			htmlArr[idx++] = appt.getParticipantStatusStr();
 		}
+
 	} else if (field == ZmItem.F_DATE) {
 		htmlArr[idx++] = (appt.isAllDayEvent())
 			? AjxMessageFormat.format(ZmMsg.apptDateTimeAllDay, [appt.startDate])
@@ -204,22 +231,34 @@ function(ev, div) {
 	} else {
 		var item = this.getItemFromElement(div);
 		if (item) {
-			this.setToolTipContent(item.getToolTip(this._controller));
 
-			// load attendee status if necessary
-			if (item.otherAttendees &&
-				(item._ptstHashMap == null) &&
-				(!this._currentIdForTooltip[item.id]))
-			{
-				var obj = DwtControl.getTargetControl(ev);
-				var clone = ZmAppt.quickClone(item);
-				this._currentIdForTooltip[item.id] = true; // used to prevent processing multiple times
-				var callback = new AjxCallback(null, ZmApptViewHelper.refreshApptTooltip, [this, clone, item, obj]);
-				AjxTimedAction.scheduleAction(new AjxTimedAction(clone, clone.getDetails, [null, callback, null, null, true]), 2000);
+			var match = this._parseId(id);
+			if (match && match.field && match.field == ZmItem.F_SELECTION) {
+				this.setToolTipContent(this._getToolTip(match.field, item, ev, div, match));
+			} else {
+				this.setToolTipContent(item.getToolTip(this._controller));
+
+				// load attendee status if necessary
+				if (item.otherAttendees && (item.ptstHashMap == null)) {
+					var clone = ZmAppt.quickClone(item);
+					var uid = this._currentMouseOverApptId = clone.getUniqueId();
+					var callback = new AjxCallback(null, ZmApptViewHelper.refreshApptTooltip, [clone, this]);
+					AjxTimedAction.scheduleAction(new AjxTimedAction(this, this.getApptDetails, [clone, callback, uid]), 2000);
+				}
 			}
 		}
 	}
 	return true;
+};
+
+ZmCalListView.prototype.getApptDetails =
+function(appt, callback, uid) {
+	if (this._currentMouseOverApptId &&
+		this._currentMouseOverApptId == uid)
+	{
+		this._currentMouseOverApptId = null;
+		appt.getDetails(null, callback, null, null, true);
+	}
 };
 
 ZmCalListView.prototype._getHeaderToolTip =

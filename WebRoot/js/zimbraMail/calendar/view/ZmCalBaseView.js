@@ -59,7 +59,6 @@ ZmCalBaseView = function(parent, className, posStyle, controller, view) {
 	this.addControlListener(new AjxListener(this, this._controlListener));	
 	this._createHtml();
 	this._needsRefresh = true;
-	this._currentIdForTooltip = {};
 }
 
 ZmCalBaseView.prototype = new DwtComposite;
@@ -202,21 +201,29 @@ function(ev, div) {
 	
 	if (item instanceof ZmAppt) {
 		this.setToolTipContent(item.getToolTip(this._controller));
-		if (item.otherAttendees &&
-			(item._ptstHashMap == null) &&
-			(!this._currentIdForTooltip[item.id]))
-		{
-			this._currentIdForTooltip[item.id] = true;
+
+		if (item.otherAttendees && (item.ptstHashMap == null)) {
 			// getDetails() of original appt will reset the start date/time and
 			// will break the ui layout
 			var clone = ZmAppt.quickClone(item);
-			var callback = new AjxCallback(null, ZmApptViewHelper.refreshApptTooltip, [this, clone, item, obj]);
-			AjxTimedAction.scheduleAction(new AjxTimedAction(clone, clone.getDetails, [null, callback, null, null, true]), 2000);
+			var uid = this._currentMouseOverApptId = clone.getUniqueId();
+			var callback = new AjxCallback(null, ZmApptViewHelper.refreshApptTooltip, [clone, this]);
+			AjxTimedAction.scheduleAction(new AjxTimedAction(this, this.getApptDetails, [clone, callback, uid]), 2000);
 		}
 	} else {
 		this.setToolTipContent(null);
 	}
 	return true;
+};
+
+ZmCalBaseView.prototype.getApptDetails =
+function(appt, callback, uid) {
+	if (this._currentMouseOverApptId &&
+		this._currentMouseOverApptId == uid)
+	{
+		this._currentMouseOverApptId = null;
+		appt.getDetails(null, callback, null, null, true);
+	}
 };
 
 ZmCalBaseView.prototype._mouseOutListener = 
