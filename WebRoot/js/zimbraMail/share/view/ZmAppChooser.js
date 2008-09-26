@@ -141,7 +141,7 @@ function(id, isLast) {
     var b = new ZmChicletButton(this, outerClass, ZmApp.ICON[id], text, isLast, buttonId);
 	var tooltip = ZmMsg[ZmApp.CHOOSER_TOOLTIP[id]];
 	var sc = appCtxt._getShortcutHint(null, ZmApp.GOTO_ACTION_CODE[id]);
-	b.setToolTipContent(sc ?  [tooltip, " [", sc, "]"].join("") : tooltip);
+	b.setToolTipContent(sc ?  [tooltip, sc].join("") : tooltip);
 	b.setData(Dwt.KEY_ID, id);
 	this._buttons[id] = b;
 };
