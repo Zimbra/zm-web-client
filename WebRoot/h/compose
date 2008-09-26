@@ -265,160 +265,10 @@
     initAuto("bccField","bccContainer");
 </app:autoComplete>
 
-<c:choose>
-<c:when test="${(isHtml)}" >
-<script type="text/javascript">
-<!--
+<c:if test="${(isHtml)}" >
+<app:htmlCompose isHtmlCont="${isHtmlCont}" mailbox="${mailbox}" />
+</c:if>
 
-saveContentToTextarea = function(){
-    myEditor.saveHTML();
-    var _htmlval = document.getElementById("body").value;
-    var stripHTML = /<\S[^><]*>/g;
-    var stripNBSP  = /&nbsp;/g
-    document.getElementById("bodyText").value = _htmlval.replace(stripNBSP, ' ').replace(/<br>/gi, '\n').replace(stripHTML, '').replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
-}
-
-saveToTextareaToSend = function(){
-    myEditor.saveHTML();
-    var _htmlval = document.getElementById("body").value;
-    var stripHTML = /<\S[^><]*>/g;
-    var stripNBSP  = /&nbsp;/g
-    document.getElementById("bodyText").value = _htmlval.replace(stripNBSP, ' ').replace(/<br>/gi, '\n').replace(stripHTML, '').replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
-
-    document.getElementById("body").value = "<html><head><style> body {height: 100%; color:${mailbox.prefs.htmlEditorDefaultFontColor}; font-size:${mailbox.prefs.htmlEditorDefaultFontSize}; font-family:${mailbox.prefs.htmlEditorDefaultFontFamily},helvetica,clean,sans-serif;}</style></head><body>"+_htmlval+"</body></html>";
-}
-
-var myEditor = new YAHOO.widget.Editor('body', {
-    height: '300px',
-    width: '100%',
-    dompath: false, //Turns on the bar at the bottom
-    animate: true, //Animates the opening, closing and moving of Editor windows
-        <c:choose> <c:when test="${isHtmlCont}">
-    plainText: false,
-        </c:when><c:otherwise>
-    plainText: true,
-        </c:otherwise></c:choose>
-        <c:if test="${param.op eq 'reply' or param.op eq 'replyAll'}" >
-    focusAtStart: true,
-        </c:if>
-    css: 'html {height: 95%;}body {height: 100%;padding: 7px; background-color: #fff; color:<c:out value="${mailbox.prefs.htmlEditorDefaultFontColor}"/>; font-size:${mailbox.prefs.htmlEditorDefaultFontSize}; font-family: <c:out value="${mailbox.prefs.htmlEditorDefaultFontFamily}"/>,helvetica,clean,sans-serif;}a {color: blue;text-decoration: underline;cursor: pointer;}.warning-localfile {border-bottom: 1px dashed red !important;}.yui-busy {cursor: wait !important;}img.selected { border: 2px dotted #808080;}img {cursor: pointer !important;border: none;}',
-    extracss: '.yui-spellcheck { background-color: yellow; }',
-    collapse: true,
-    draggable: false,
-    buttonType: 'advanced'
-});
-enableSpellCheck(myEditor);
-myEditor.on('editorContentLoaded', function() {
-    var html = document.getElementById('body').innerHTML;;
-    if(html==""){
-        myEditor.setEditorHTML("<br/>");
-    }
-}, myEditor, true);
-
-/*hide titlebar*/
-myEditor._defaultToolbar.titlebar = false;
-
-/* insert span when no selection*/
-myEditor.on('toolbarLoaded', function() {
-    this.toolbar.on('fontnameClick', function(o) {
-        if (!this._hasSelection()) {
-            var button = o.button;
-            this._createCurrentElement('span', {
-                fontFamily: button.value
-            });
-            var el = this.currentElement[0];
-            if (this.browser.webkit) {
-                //Little Safari Hackery here..
-                el.innerHTML = '<span class="yui-non"> </span>';
-                el = el.firstChild;
-                this._getSelection().setBaseAndExtent(el, 1, el, el.innerText.length);
-            } else if (this.browser.ie || this.browser.opera) {
-                el.innerHTML = ' ';
-            }
-            this._focusWindow();
-            this._selectNode(el);
-            return false;
-        }
-    }, this, true);
-
-    this.toolbar.on('fontsizeClick', function(o) {
-        if (!this._hasSelection()) {
-            var button = o.button;
-            this._createCurrentElement('span', {
-                fontSize: button.get('label') + 'px'
-            });
-            var el = this.currentElement[0];
-            if (this.browser.webkit) {
-                //Little Safari Hackery here..
-                el.innerHTML = '<span class="yui-non"> </span>';
-                el = el.firstChild;
-                this._getSelection().setBaseAndExtent(el, 1, el, el.innerText.length);
-            } else if (this.browser.ie || this.browser.opera) {
-                el.innerHTML = ' ';
-            }
-            this._focusWindow();
-            this._selectNode(el);
-            return false;
-        }
-    }, this, true);
-});
-/*enable buttons that are disabled by default */
-myEditor.on('afterNodeChange', function() {
-    this.toolbar.enableButton('fontname');
-    this.toolbar.enableButton('fontsize');
-    this.toolbar.enableButton('subscript');
-    this.toolbar.enableButton('superscript');
-    this.toolbar.enableButton('forecolor');
-    this.toolbar.enableButton('backcolor');
-    this.toolbar.enableButton('indent');
-    this.toolbar.enableButton('outdent');
-    this.toolbar.enableButton('heading');
-    this.toolbar.enableButton('createlink');
-
-});
-myEditor.render();
-// -->
-</script>
-</c:when>
-<c:otherwise>
-    <script type="text/javascript">
-        <!-- <%-- Move the body caret to the top of the textarea--%>
-        var bodyEl = document.getElementById('body');
-        if (bodyEl.setSelectionRange) { <%-- FF --%>
-                                          bodyEl.setSelectionRange(0, 0);
-        } else if (bodyEl.createTextRange && /\S/.test(bodyEl.value)) { // IE
-            var range = bodyEl.createTextRange();
-            range.collapse(true);
-            range.moveStart("character", -60000);
-            range.collapse(true);
-            range.select();
-            window._composerBookmark = document.selection.createRange().getBookmark();
-            setTimeout(function(){
-                bodyEl.onfocus = _on_composerFocus_IE;
-                bodyEl.onmouseup = bodyEl.onkeyup = _on_composerEvent_IE;
-            }, 10);
-        }
-
-        function _on_composerFocus_IE() {
-            if (window._composerBookmark) {
-                setTimeout(function() {
-                    var range = document.selection.createRange();
-                    range.moveToBookmark(window._composerBookmark);
-                    range.select();
-                }, 10);
-            }
-        }
-
-        function _on_composerEvent_IE(ev) {
-            var range = document.selection.createRange();
-            if (range.parentElement() === this) /*this* is the textarea*/ {
-                window._composerBookmark = range.getBookmark();
-            }
-        }
-        // -->
-    </script>
-</c:otherwise>
-</c:choose>
 <script type="text/javascript">
 <!--
 var showHideBcc = function(){
@@ -429,46 +279,13 @@ var showHideBcc = function(){
     bcc.style.display=(bcc.style.display=="none"?"":"none");
     showBcc.style.display=(showBcc.style.display=="block"?"none":"block") ;
     hideBcc.style.display=(hideBcc.style.display=="block"?"none":"block") ;
-
-}
-/* List of IDs for which onbeforeunload has to be cancelled */
-var expElemts = new Array("SOPADDRECIP","SOPCANCEL","Stobutton","Sccbutton","Sbccbutton","SOPDRAFT","SOPATTACH","SDOPCANCEL","SDOPADDRECIP","SDOPDRAFT","SDOPATTACH");
-var x;
-for (x in expElemts){
-    var _elem = document.getElementById(expElemts[x]);
-    _elem.onclick = function () {
-        cancelOnbeforeUnload();
-    }
 }
 
-/* List of elements that has to be handled for send */
-var sendElemts = new Array("SOPSEND", "SDOPSEND", "IOPSEND", "IDOPSEND");
-var y;
-for (y in sendElemts){
-    var _elemA = document.getElementById(sendElemts[y]);
-    _elemA.onclick = function () {
-        prepToSend();
-    }
-}
-
-function checkSubject() {
-    var elesub = document.getElementById("subjectField");
-    if(trim(elesub.value) == '') {
-        if(confirm("<fmt:message key="compSubjectMissing"/>")) {
-        return true;
-    } else{
-        return false;
-    }
-    } else {
-        return true;
-    }
-}
-function trim(strVal){
+var trim = function(strVal){
     return strVal.replace(/^\s*/, "").replace(/\s*$/, "");
 }
 
-
-function handleEnter (ev, _field) {
+var handleEnter= function(ev, _field) {
     var keyCode = ev.keyCode ? ev.keyCode : ev.which ? ev.which : ev.charCode;
     if (keyCode == 13){
         if(_field){
@@ -482,72 +299,9 @@ function handleEnter (ev, _field) {
 var zclick = function(id) { var e = document.getElementById(id); if (e) e.click(); }
 var zselect = function(id) { var e = document.getElementById(id); if (e) { e.selected = true; }}
 
-var _form = document.forms["composeForm"];
-
-var _fields = {} ;
-
-grabFieldValues = function(){
-    var _el = _form.elements;
-    for ( var _i=0;_i < _el.length; _i++){
-        if(_el[_i].type == "text" || _el[_i].type == "textarea" ){
-            _fields[_el[_i].name] = _el[_i].value;
-        }
-    }
-<c:if test="${(isHtml)}" >
-           setTimeout(function() { myEditor.saveHTML() }, 1000);  // Saves to content text area
-    _fields["body"] = trim(document.getElementById("body").value);
-</c:if>
-}
-grabFieldValues();
-
-checkForChanges = function(){
-    var _checkFail = false;
-    var _el = _form.elements;
-    for ( var _i=0;_i < _el.length; _i++){
-        if(_el[_i].type == "text" || _el[_i].type == "textarea"){
-            if(_fields[_el[_i].name] != _el[_i].value) { _checkFail = true;}
-        }
-    }
-<c:if test="${(isHtml)}">
-           myEditor.saveHTML();
-    _bodyVal = trim(document.getElementById("body").value);
-    if(trim(_fields["body"]) != _bodyVal) {
-        _checkFail = true;
-        if(_fields["body"] == "<html><body>"+_bodyVal+"</body></html>"){  // Allow after save draft
-            _checkFail = false;
-        }
-
-    }
-</c:if>
-
-    if(_checkFail){
-        return "<fmt:message key="composeExitConfirmation"/>";
-    }else{
-        return;
-    }
-}
-
-window.onbeforeunload = checkForChanges;
-
-cancelOnbeforeUnload = function(){
-    window.onbeforeunload = null;
-//do save to textearea before quitting the page
-<c:if test="${(isHtml)}" >
-           saveContentToTextarea();
-</c:if>
-}
-
-prepToSend = function(){
-    window.onbeforeunload = null;
-    checkSubject();
-    /*process HTML before sending*/
-<c:if test="${(isHtml)}" >
-           saveToTextareaToSend();
-</c:if>
-};
-
 // -->
 </script>
+<app:composeValidation isHtml="${isHtml}" />
 
 <app:keyboard cache="mail.compose" globals="false" passspecial="true" mailbox="${mailbox}">
     <zm:bindKey message="compose.Send" func="function() { zclick('SOPSEND')}"/>

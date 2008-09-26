@@ -207,6 +207,16 @@
     </tag-file>
 
     <tag-file>
+        <name>htmlCompose</name>
+        <path>/WEB-INF/tags/compose/htmlCompose.tag</path>
+    </tag-file>
+
+    <tag-file>
+        <name>composeValidation</name>
+        <path>/WEB-INF/tags/compose/composeValidation.tag</path>
+    </tag-file>
+
+    <tag-file>
         <name>attachments</name>
         <path>/WEB-INF/tags/message/attachments.tag</path>
     </tag-file>
@@ -638,6 +648,11 @@
     </tag-file>
 
     <tag-file>
+            <name>multiDayPrintView</name>
+            <path>/WEB-INF/tags/calendar/multiDayPrintView.tag</path>
+    </tag-file>
+
+    <tag-file>
         <name>multiDay</name>
         <path>/WEB-INF/tags/calendar/multiDay.tag</path>
     </tag-file>
@@ -645,6 +660,11 @@
     <tag-file>
         <name>monthView</name>
         <path>/WEB-INF/tags/calendar/monthView.tag</path>
+    </tag-file>
+
+    <tag-file>
+        <name>monthPrintView</name>
+        <path>/WEB-INF/tags/calendar/monthPrintView.tag</path>
     </tag-file>
 
     <tag-file>
@@ -671,7 +691,7 @@
         <name>autoComplete</name>
         <path>/WEB-INF/tags/autoComplete.tag</path>
     </tag-file>
-
+    
     <tag-file>
         <name>keyboard</name>
         <path>/WEB-INF/tags/keyboard.tag</path>
