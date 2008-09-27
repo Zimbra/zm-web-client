@@ -25,7 +25,7 @@
                     <app:button name="actionNewGroup" id="${keys ? 'NEW_GROUP' : ''}" src="mail/ImgNewGroup.gif" tooltip="newGroup" text="group"/>
                     <td><div class='vertSep'></div></td>
                     <td height="100%" nowrap valign="middle" style="padding: 0 2px 0 2px">
-                        <td height="100%" nowrap valign="middle" style="padding: 0 2px 0 2px">
+                    <td height="100%" nowrap valign="middle" style="padding: 0 2px 0 2px">
                         <input onclick="zprint();return false;" id="${keys ? 'IOPPRINT' : ''}" name="actionPrint" type="image" src="${iconPath}/startup/ImgPrint.gif" alt='<fmt:message key="actionPrint" />' title='<fmt:message key="actionPrint" />' />
                     </td>
                     <td height="100%" nowrap valign="middle" style="padding: 0 2px 0 2px">
@@ -45,6 +45,8 @@
                         </c:otherwise>
                     </c:choose>
                     <td><div class='vertSep'></div></td>
+                    <app:button id="${keys ? 'OPCOMPOSE' : ''}" src="startup/ImgNewMessage.gif" name="actionCompose" text="compose" tooltip="compose"/>
+                    <td><div class='vertSep'></div></td>
                     <td nowrap>
                         <select name="folderId" onchange="zclick('SOPMOVE')">
                             <option value="" selected/><fmt:message key="moveAction"/>
@@ -57,12 +59,6 @@
                         </select>
                     </td>
                     <app:button  id="${keys ? 'OPMOVE' :''}" name="actionMove" text="actionMove" tooltip="actionMoveTT"/>
-                    <td><div class='vertSep'></div></td>
-                    <td nowrap>
-                        <label for="searchField"><fmt:message key="find"/>&nbsp;:&nbsp;</label>
-                        <input onkeydown="handleEnter(event);" style="background-color:#FFFFFF;height:auto;padding:2px 4px;cursor:text;" type="text" id="searchField" maxlength="50" name="contactsq" value="${fn:escapeXml(param.sq)}">
-                    </td>
-                    <app:button name="actionSearch" id="${keys ? 'SEARCH_CONTACT' : ''}" tooltip="search" text="search"/>
                     <td><div class='vertSep'></div></td>
                     <c:if test="${mailbox.features.tagging and mailbox.hasTags}">
                     <td nowrap>
