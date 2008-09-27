@@ -39,6 +39,16 @@ ZmSignaturesPage.SIGNATURE_TEMPLATE = "prefs.Pages#Signature";
 // Public methods
 //
 
+ZmSignaturesPage.prototype.showMe =
+function() {
+	ZmPreferencesPage.prototype.showMe.call(this);
+	// bug fix #31849 - reset the signature html editor when in multi-account mode
+	// since the view gets re-rendered whenever the account changes
+	if (appCtxt.multiAccounts) {
+		this._signatureEditor = null;
+	}
+};
+
 ZmSignaturesPage.prototype.getAllSignatures = function(includeEmpty, includeNonModified) {
 	return [].concat(
 		this.getNewSignatures(includeEmpty),
