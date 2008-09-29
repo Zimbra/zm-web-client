@@ -165,7 +165,7 @@
 		<$	} $>
 		<$	if (data.status && data.status != "") { $>
 			<tr>
-				<td align=right><$= ZmMsg.status $>:</td>
+				<td align=right valign=top><$= ZmMsg.status $>:</td>
 				<td>${status}</td>
 			</tr>
 		<$	} $>

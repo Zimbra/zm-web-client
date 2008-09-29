@@ -199,7 +199,7 @@ function() {
 		case "offline":		return ZmMsg.imStatusOffline;
 		case "online":		return ZmMsg.imStatusOnline;
 		case "running":		return ZmMsg.running;
-		case "authfail":	return ZmMsg.authFailure;
+		case "authfail":	return AjxMessageFormat.format(ZmMsg.authFailure, this.getEmail());
 		case "error":		return ZmMsg.error;
 	}
 	return "";
