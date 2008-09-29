@@ -389,6 +389,15 @@ function(attId, isDraft) {
 		this._badAddrsOkay = false;
 	}
 
+    //Mandatory Spell Check
+    if(!isDraft && appCtxt.get(ZmSetting.MAIL_MANDATORY_SPELLCHECK) && !this._spellCheckOkay){
+        if(this._htmlEditor.checkMisspelledWords(new AjxCallback(this, this._spellCheckShield))){
+            return;
+        }
+    } else {
+        this._spellCheckOkay = false;
+    }
+
 	// Create Msg Object
 	var msg = new ZmMailMsg();
 	msg.setSubject(subject);
@@ -886,7 +895,7 @@ function(bEnableInputs) {
 	this._origFormValue = "";
 
 	// reset dirty shields
-	this._noSubjectOkay = this._badAddrsOkay = false;
+	this._noSubjectOkay = this._badAddrsOkay = this._spellCheckOkay = false;
 
 	// remove extra mime parts
 	this._extraParts = null;
@@ -2272,6 +2281,50 @@ function(isDraft, status, attId) {
 		this._controller.popupErrorDialog(msg + ZmMsg.errorTryAgain, null, null, true);
 		this._controller.resetToolbarOperations()
 	}
+};
+
+
+//Mandatory Spellcheck Callback
+ZmComposeView.prototype._spellCheckShield =
+function(words){
+    if (words && words.available) {
+        if(words.misspelled != null && words.misspelled.length != 0){
+            var msgDialog = appCtxt.getYesNoMsgDialog();
+            msgDialog.setMessage(AjxMessageFormat.format(ZmMsg.misspellingsMessage, [words.misspelled.length]));
+            msgDialog.registerCallback(DwtDialog.YES_BUTTON, this._spellCheckShieldOkListener, this, [ msgDialog, words ] );
+            msgDialog.registerCallback(DwtDialog.NO_BUTTON, this._spellCheckShieldCancelListener, this, msgDialog);
+            msgDialog.associateEnterWithButton(DwtDialog.NO_BUTTON);
+            msgDialog.popup(null, DwtDialog.NO_BUTTON);
+        }
+    }else{
+        this._spellCheckOkay = true;
+        this._controller.sendMsg();
+    }
+};
+
+ZmComposeView.prototype._spellCheckShieldOkListener =
+function(msgDialog, words, ev){
+
+    this._controller._toolbar.enableAll(true);
+
+    this._controller.toggleSpellCheckButton(true);
+    this._htmlEditor.discardMisspelledWords();
+
+    this._spellCheckOkay = false;
+    msgDialog.popdown();
+
+    this._htmlEditor.onExitSpellChecker = new AjxCallback(this._controller, this._controller.toggleSpellCheckButton, true)
+    this._htmlEditor._spellCheckCallback(words);
+};
+
+ZmComposeView.prototype._spellCheckShieldCancelListener =
+function(msgDialog, ev){
+
+    this._spellCheckOkay = true;
+    msgDialog.popdown();
+
+    this._controller.sendMsg();
+
 };
 
 ZmComposeView.prototype._setFormValue =
