@@ -361,7 +361,7 @@ function() {
 	var html = [];
 	var i = 0;
 	html[i++] = "<div style='padding:10px'>";
-	var customKeys = this._getCustomKeys();
+	var customKeys = appCtxt._getCustomKeys();
     if (customKeys) {
         i = this._getKeysHtml(customKeys, ZmKeyMap.MAP_NAME, html, i, true);
     }
@@ -491,49 +491,6 @@ function(ks) {
 ZmShortcutsPageTabViewList._formatKey =
 function(key) {
 	return ["<span class='shortcutKey'>", key, "</span>"].join("");
-};
-
-/**
- * Returns an object that looks like a keys properties map, which contains the
- * properties needed to display the user's aliased shortcuts.
- */
-ZmShortcutsPageTabViewList.prototype._getCustomKeys =
-function() {
-	var kmm = appCtxt.getAppController().getKeyMapMgr();
-	var setting = appCtxt.get(ZmSetting.SHORTCUTS);
-	var shortcuts = kmm ? ZmShortcut.parse(setting, kmm) : null;
-	if (!(shortcuts && shortcuts.length)) { return null; }
-
-	var c = ZmKeyMap.MAP_CUSTOM;
-	var customKeys = {};
-	var key, key1;
-	key = key1 = [c, "description"].join(".");
-	customKeys[key] = ZmKeys[key1];
-	key = key1 = [c, "sort"].join(".");
-	customKeys[key] = ZmKeys[key1];
-	var regex = new RegExp(ZmShortcut.ALIAS, "g");
-
-	for (var i = 0, count = shortcuts.length; i < count; i++) {
-		var sc = shortcuts[i];
-		var org = appCtxt.getById(sc.arg);
-		if (!org) {
-			continue;
-		}
-		var map = ZmKeyMap.MAP_NAME_R[sc.mapName];
-		key = [map, sc.baseAction, "display"].join(".");
-		var keySeq = ZmKeys[key];
-		keySeq = keySeq.replace(regex, sc.num);
-		key = [c, sc.action, "display"].join(".");
-		customKeys[key] = keySeq;
-		key = [c, sc.action, "description"].join(".");
-		key1 = [map, sc.baseAction, "summary"].join(".");
-		customKeys[key] = AjxMessageFormat.format(ZmKeys[key1], org.getName());
-		key = [c, sc.action, "sort"].join(".");
-		key1 = [map, sc.baseAction, "sort"].join(".");
-		customKeys[key] = Number(sc.num) + Number(ZmKeys[key1]); 
-	}
-
-	return customKeys;
 };
 
 /**

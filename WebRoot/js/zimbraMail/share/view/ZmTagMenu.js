@@ -159,6 +159,7 @@ function(items, tagList) {
 // tags that can be removed.
 ZmTagMenu.prototype._render =
 function(tagList, addRemove) {
+
 	var sz = tagList.size();
 	var a = tagList.children.getArray();
 	var removeList = [];
@@ -235,6 +236,7 @@ function(menu, newTag, add, index, tagHash) {
 	mi.setData(ZmTagMenu.KEY_TAG_ADDED, add);
 	mi.setData(Dwt.KEY_OBJECT, newTag);
 	mi.addSelectionListener(new AjxListener(this, this._menuItemSelectionListener), 0);
+	mi.setShortcut(appCtxt._getShortcutHint(null, ZmKeyMap.TAG, newTag.id));
 	tagHash[newTag.id] = mi;
 }
 
