@@ -934,7 +934,19 @@ function(ev) {
 
 ZmCalViewController.prototype._printListener =
 function(ev) {
-	appCtxt.getPrintView().render(this._viewMgr);
+    //appCtxt.getPrintView().render(this._viewMgr);
+    var date = this._viewMgr ? this._viewMgr.getDate() : new Date();
+    var _date = (date.getDate() < 10) ? '0'+date.getDate() : date.getDate();
+    var _month = date.getMonth()+1; _month = (_month < 10 ) ? '0'+_month : _month;
+    var _year = date.getFullYear();
+
+        switch (this._viewMgr.getCurrentViewName()) {
+			case ZmId.VIEW_CAL_DAY: 		view = "day" ; break;
+			case ZmId.VIEW_CAL_WORK_WEEK:	view = "workWeek"; break;
+			case ZmId.VIEW_CAL_WEEK:		view = "week"; break;
+			case ZmId.VIEW_CAL_MONTH:		view = "month"; break;
+		}
+    var win = window.open("/h/printcalendar?view="+view+"&date="+_year+_month+_date, "_blank");
 };
 
 ZmCalViewController.prototype._deleteListener =
