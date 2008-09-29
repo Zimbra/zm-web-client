@@ -491,11 +491,6 @@ function(items, markAsSpam, folder) {
 
 // Callbacks
 
-ZmConvListController.prototype._processPrePopView = 
-function(view) {
-	this._resetNavToolBarButtons(view);
-};
-
 ZmConvListController.prototype._handleResponsePaginate = 
 function(view, saveSelection, loadIndex, offset, result, ignoreResetSelection) {
 	// bug fix #5134 - overload to ignore resetting the selection since it is handled by setView

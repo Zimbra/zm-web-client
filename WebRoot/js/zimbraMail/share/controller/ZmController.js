@@ -282,11 +282,6 @@ function() {
 	return true;
 };
 
-ZmController.prototype._processPrePopView = 
-function(view) {
-	// overload me
-};
-
 /**
  * Common exception handling entry point for sync and async commands.
  */

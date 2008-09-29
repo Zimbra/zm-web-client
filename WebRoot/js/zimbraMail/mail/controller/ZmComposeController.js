@@ -148,6 +148,9 @@ function(params) {
 		newWinObj.command = "compose";
 		newWinObj.params = params;
 	} else {
+		if (appCtxt.multiAccounts) {
+			appCtxt.getApp(ZmApp.MAIL).getOverviewPanelContent().setEnabled(false);
+		}
 		this._setView(params);
 		this._listController = params.listController;
 	}
@@ -254,6 +257,15 @@ function() {
 			AjxTimedAction.scheduleAction(ta, 10);
 		}
 		this._composeView._setBodyFieldCursor();
+	}
+};
+
+ZmComposeController.prototype._postHideCallback =
+function() {
+	ZmController.prototype._postShowCallback.call(this);
+
+	if (appCtxt.multiAccounts) {
+		appCtxt.getApp(ZmApp.MAIL).getOverviewPanelContent().setEnabled(true);
 	}
 };
 
@@ -402,6 +414,7 @@ function(initHide, composeMode) {
 	callbacks[ZmAppViewMgr.CB_PRE_HIDE] = new AjxCallback(this, this._preHideCallback);
 	callbacks[ZmAppViewMgr.CB_PRE_UNLOAD] = new AjxCallback(this, this._preUnloadCallback);
 	callbacks[ZmAppViewMgr.CB_POST_SHOW] = new AjxCallback(this, this._postShowCallback);
+	callbacks[ZmAppViewMgr.CB_POST_HIDE] = new AjxCallback(this, this._postHideCallback);
 	var elements = {};
 	this._initializeToolBar();
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
