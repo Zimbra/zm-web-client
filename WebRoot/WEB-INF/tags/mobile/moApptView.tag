@@ -26,20 +26,22 @@
 </mo:handleError>
 
 <mo:view mailbox="${mailbox}" title="${msg.subject}" context="${null}" clazz="zo_obj_body" scale="true">
-
-
-
-                <table width=100% cellspacing="0" cellpadding="2" border=0 class="ToolbarBg">
-                    <tr>
-                        <td>
-                                    <mo:calendarUrl var="backurl" action="${null}"/>
-                                    <a href="${backurl}">
-                                        <fmt:message key="close"/>
-                                    </a>
-								</td>
-                                </tr>
-                            </table>
-    <table width=100% height=100% class="Stripes" border="0">
+    <table width=100% cellspacing="0" cellpadding="2" border=0 class="ToolbarBg">
+        <tr>
+            <td>
+                <mo:calendarUrl var="backurl" action="${null}"/>
+                <a href="${backurl}">
+                    <fmt:message key="close"/>
+                </a>
+            </td>
+            <td align="right">
+                <a href="${context_url}?st=newappt">
+                    <fmt:message key="add"/>
+                </a>
+            </td>
+        </tr>
+    </table>
+    <table width=100% class="Stripes" border="0">
         <tr>
             <td>
                 <c:set var="extImageUrl" value=""/>
@@ -57,8 +59,33 @@
                 <mo:displayAppointment mailbox="${mailbox}" message="${msg}" invite="${invite}"
                                        showInviteReply="${not readOnly}" externalImageUrl="${extImageUrl}"
                                        composeUrl="${composeUrl}" newWindowUrl=""/>
+                <c:set var="repeat" value="${invite.component.simpleRecurrence}"/>
+                <c:if test="${repeat != null && repeat.type != null && !repeat.type.none}">
+                <div class="View">
+                    <span class="label"><fmt:message
+                            key="repeats"/> :</span> ${fn:escapeXml(zm:getRepeatBlurb(repeat,pageContext,mailbox.prefs.timeZone, invite.component.start.date))}
+                </div>
+                </c:if>
+                <div class="View">
+                        <%--<c:set var="apptFolder" value="${zm:getFolder(pageContext, appt.folderId)}"/>--%>
+                    <c:if test="${invite.component.isOrganizer}">
+                        <a id="_edit_link" href="<c:url value="/m/mainx?st=newappt&invId=${id}&useInstance=0"/>"
+                           style="display:none;">&nbsp;</a>
+                        <input type="button" onclick="zClickLink('_edit_link')"
+                               value="<fmt:message key="edit"/>"/>
+                    </c:if>
+                        <%-- <c:choose>
+                            <c:when test="${not context.folder.isInTrash}">
+                                <input name="actionDelete" type="submit" value="<fmt:message key="delete"/>"/>
+                            </c:when>
+                            <c:otherwise>
+                                <input name="actionHardDelete" type="submit" value="<fmt:message key="delete"/>"/>
+                            </c:otherwise>
+                        </c:choose>--%>
+                </div>
+
             </td>
         </tr>
-    </table>
 
+    </table>
 </mo:view>

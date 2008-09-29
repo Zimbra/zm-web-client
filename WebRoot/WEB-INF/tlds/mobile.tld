@@ -192,6 +192,11 @@
      </tag-file>
 
     <tag-file>
+        <name>apptComposeCheck</name>
+        <path>/WEB-INF/tags/mobile/moApptComposeCheck.tag</path>
+     </tag-file>
+    
+    <tag-file>
         <name>attachment</name>
         <path>/WEB-INF/tags/mobile/moAttachment.tag</path>
      </tag-file>

@@ -11,7 +11,7 @@
 <zm:getMailbox var="mailbox"/>
 <c:set var="ids" value="${fn:join(paramValues.id, ',')}"/>
 <c:set var="_selectedIds" scope="request" value=",${ids},"/>
-<c:set var="actionOp" value="${not empty paramValues.actionOp[0] ? paramValues.actionOp[0] :  paramValues.actionOp[1]}"/>
+<c:set var="anAction" value="${not empty paramValues.anAction[0] ? paramValues.anAction[0] :  paramValues.anAction[1]}"/>
 <c:choose>
     <c:when test="${zm:actionSet(param, 'actionAdd')}">
         <zm:createContact var="result">
@@ -50,7 +50,10 @@
              <c:set var="currentContactId" value="${result}" scope="request"/>
         </c:if>
     </c:when>
-    <c:when test="${zm:actionSet(param, 'actionDelete')}">
+    <c:when test="${(zm:actionSet(param,'moreActions') && empty anAction) }">
+        <mo:status style="Warning"><fmt:message key="actionNoActionSelected"/></mo:status>
+    </c:when>
+    <c:when test="${zm:actionSet(param, 'actionDelete') || (zm:actionSet(param,'actionDelete') && anAction == 'actionDelete')}">
         <zm:trashContact var="result" id="${ids}"/>
         <c:set var="op" value="x" scope="request"/>
         <mo:status>
@@ -60,7 +63,7 @@
         </mo:status>
     </c:when>
 
-    <c:when test="${zm:actionSet(param, 'actionHardDelete')}">
+    <c:when test="${zm:actionSet(param, 'actionHardDelete' || (zm:actionSet(param,'actionHardDelete') && anAction == 'actionHardDelete'))}">
     <zm:deleteContact var="result" id="${ids}"/>
     <c:set var="op" value="x" scope="request"/>
     <mo:status>
@@ -69,10 +72,8 @@
         </fmt:message>
     </mo:status>
     </c:when>
-    <c:when test="${(zm:actionSet(param,'moreActions') && empty param.anAction) }">
-        <mo:status style="Warning"><fmt:message key="actionNoActionSelected"/></mo:status>
-    </c:when>
-    <c:when test="${zm:actionSet(param, 'actionFlag') || (zm:actionSet(param,'moreActions') && param.anAction == 'actionFlag')}">
+
+    <c:when test="${zm:actionSet(param, 'actionFlag') || (zm:actionSet(param,'moreActions') && anAction == 'actionFlag')}">
         <zm:flagContact var="result" id="${ids}" flag="${true}"/>
         <mo:status>
             <fmt:message key="actionContactFlag">
@@ -80,7 +81,7 @@
             </fmt:message>
         </mo:status>
     </c:when>
-    <c:when test="${zm:actionSet(param, 'actionUnflag') || (zm:actionSet(param,'moreActions') && param.anAction == 'actionUnflag')}">
+    <c:when test="${zm:actionSet(param, 'actionUnflag') || (zm:actionSet(param,'moreActions') && anAction == 'actionUnflag')}">
         <zm:flagContact var="result" id="${ids}" flag="${false}"/>
         <mo:status>
             <fmt:message key="actionContactUnflag">
@@ -88,10 +89,10 @@
             </fmt:message>
         </mo:status>
     </c:when>
-    <c:when test="${zm:actionSet(param, 'actionAddTag') || (zm:actionSet(param,'moreActions') && fn:startsWith(param.anAction,'addTag_'))}">
+    <c:when test="${zm:actionSet(param, 'actionAddTag') || (zm:actionSet(param,'moreActions') && fn:startsWith(anAction,'addTag_'))}">
         <c:set var="tag" value="${param.tagId}"/>
         <c:if test="${tag == null}">
-            <c:set var="tag" value="${fn:replace(param.anAction,'addTag_','')}"/>
+            <c:set var="tag" value="${fn:replace(anAction,'addTag_','')}"/>
         </c:if>
         <zm:tagContact tagid="${tag}" var="result" id="${ids}" tag="${true}"/>
         <mo:status>
@@ -101,10 +102,10 @@
             </fmt:message>
         </mo:status>
     </c:when>
-    <c:when test="${zm:actionSet(param, 'actionRemoveTag') || (zm:actionSet(param,'moreActions') && fn:startsWith(param.anAction,'remTag_'))}">
+    <c:when test="${zm:actionSet(param, 'actionRemoveTag') || (zm:actionSet(param,'moreActions') && fn:startsWith(anAction,'remTag_'))}">
         <c:set var="tag" value="${param.tagRemoveId}"/>
         <c:if test="${tag == null}">
-            <c:set var="tag" value="${fn:replace(param.anAction,'remTag_','')}"/>
+            <c:set var="tag" value="${fn:replace(anAction,'remTag_','')}"/>
         </c:if>
         <zm:tagContact tagid="${tag}" var="result" id="${ids}" tag="${false}"/>
         <mo:status>
@@ -116,8 +117,8 @@
     </c:when>
     <c:when test="${zm:actionSet(param, 'actionMove') || zm:actionSet(param,'moreActions')}">
         <c:choose>
-            <c:when test="${fn:startsWith(param.anAction,'moveTo_')}">
-            <c:set var="folderId" value="${fn:replace(param.anAction,'moveTo_','')}"/>
+            <c:when test="${fn:startsWith(anAction,'moveTo_')}">
+            <c:set var="folderId" value="${fn:replace(anAction,'moveTo_','')}"/>
             <zm:moveContact folderid="${folderId}" var="result" id="${ids}"/>
                 <mo:status>
                     <fmt:message key="actionContactMoved">

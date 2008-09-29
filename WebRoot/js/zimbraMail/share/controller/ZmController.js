@@ -91,6 +91,11 @@ function() {
 	return this._currentView;
 };
 
+ZmController.prototype.getKeyMapName =
+function() {
+	return "ZmController";
+};
+
 ZmController.prototype.handleKeyAction =
 function(actionCode) {
 	DBG.println(AjxDebug.DBG3, "ZmController.handleKeyAction");
