@@ -148,7 +148,7 @@ function(params) {
 		newWinObj.command = "compose";
 		newWinObj.params = params;
 	} else {
-		if (appCtxt.multiAccounts) {
+		if (appCtxt.numVisibleAccounts > 1) {
 			appCtxt.getApp(ZmApp.MAIL).getOverviewPanelContent().setEnabled(false);
 		}
 		this._setView(params);
@@ -264,7 +264,7 @@ ZmComposeController.prototype._postHideCallback =
 function() {
 	ZmController.prototype._postShowCallback.call(this);
 
-	if (appCtxt.multiAccounts) {
+	if (appCtxt.numVisibleAccounts > 1) {
 		appCtxt.getApp(ZmApp.MAIL).getOverviewPanelContent().setEnabled(true);
 	}
 };
