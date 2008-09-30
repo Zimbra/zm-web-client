@@ -609,8 +609,10 @@ function(width, height) {
 };
 
 ZmChatWidget.prototype.focus = function() {
-	this._removeUnreadStatus();
-	this._liteEditor.focus();
+	if (!this.getChatWindow().isMinimized()) {
+		this._removeUnreadStatus();
+		this._liteEditor.focus();
+	}
 };
 
 ZmChatWidget.prototype._removeUnreadStatus = function() {
