@@ -20,13 +20,13 @@
         <input type="hidden" name="doContactAction" value="1"/>
         <script>document.write('<input name="moreActions" type="hidden" value="<fmt:message key="actionGo"/>"/>');</script>
         <table width=100% cellspacing="0" cellpadding="0" border="0">
-            <c:if test="${context.searchResult.size gt 0}">
+            <%--<c:if test="${context.searchResult.size gt 0}">--%>
                 <tr>
                     <td>
                         <mo:toolbar context="${context}" urlTarget="${context_url}" isTop="true"/>
                     </td>
                 </tr>
-            </c:if>
+           <%-- </c:if>--%>
             <tr>
                 <td valign="top" height="100%">
                     <table width=100% cellpadding="4" cellspacing="0" border="0">
@@ -72,13 +72,13 @@
                     </c:if>
                 </td>
             </tr>
-            <c:if test="${context.searchResult.size gt 0}">
+            <%--<c:if test="${context.searchResult.size gt 0}">--%>
                 <tr>
                     <td>
                         <mo:toolbar context="${context}" urlTarget="${context_url}" isTop="false"/>
                     </td>
                 </tr>
-            </c:if>
+           <%-- </c:if>--%>
                 <%--<tr onclick='zClickLink("ABOOKS")'>
                     <td class='Folders zo_m_list_row' style='padding: 5px;'>
                         <a id="ABOOKS" href="${fn:escapeXml(context_url)}?st=ab">

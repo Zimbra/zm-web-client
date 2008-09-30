@@ -5,6 +5,16 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
+<c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'mainx'}"/>
+<c:set var="caction" value="${context_url}"/>
+<c:if test="${param.bt != null}">
+    <c:set var="bt" value="${param.bt}"/>
+    <c:url var="caction" value='${context_url}?${fn:replace(param.bt,"|","&")}'/>
+</c:if>
+<c:if test="${param.bt == null}">
+    <c:set var="caction" value='${header["referer"]}'/>
+    <c:set var="bt" value="${fn:replace(fn:replace(fn:substringAfter(header['referer'],'?'),'appmsg=messageSent',''),'&','|')}"/>
+</c:if>
 <mo:handleError>
     <c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:(uiv =='1'?'mainx':'mosearch')}"/>
     <zm:getMailbox var="mailbox"/>
@@ -54,16 +64,6 @@
 <c:set var="focusField" value="${param.op eq 'reply' or param.op eq 'replyAll' ? 'bodyField' : 'toField'}"/>
 <mo:view mailbox="${mailbox}" title="${not empty compose.subject ? compose.subject : title}" context="${null}"
          onload="var e=document.getElementById('${focusField}'); if (e) {e.focus(); if (e.setSelectionRange) e.setSelectionRange(0,0);}">
-
-<c:set var="caction" value="${context_url}"/>
-<c:if test="${param.bt != null}">
-        <c:set var="bt" value="${param.bt}"/>
-        <c:url var="caction" value='${context_url}?${fn:replace(param.bt,"|","&")}'/>
-</c:if>
-<c:if test="${param.bt == null}">
-        <c:set var="caction" value='${header["referer"]}'/>
-        <c:set var="bt" value="${fn:replace(fn:substringAfter(header['referer'],'?'),'&','|')}"/>
-</c:if>
 <c:set var="nmail" value="st=newmail"/>
 <c:if test="${uiv != '1'}">
     <c:set var="nmail" value="action=compose"/>
@@ -76,24 +76,25 @@
         <table width=100% cellspacing="0" cellpadding="0" class="ToolbarBg">
             <tr>
                 <td>
-                            <table cellspacing="0" cellpadding="0">
-                                <tr>
-                                    <td style='padding-left:5px' class='zo_tb_submit'>
-                                        <input name="actionSend" type="submit" value="<fmt:message key="send"/>">
-                                    </td>
-                                    <td style='padding-left:5px' class='zo_tb_submit'>
-                                        <input id='actionCancel' name="actionCancel" style="display:none;" ${uiv=='1'?'onclick=zClickLink("_back_to")':''}
-                                               type="${uiv=='1'?'button':'submit'}" value="<fmt:message key="cancel"/>">
-                                        <noscript><a href="${caction}"><fmt:message key="cancel"/></a></noscript>
-                                    </td>
-                                    <script type="text/javascript">document.getElementById('actionCancel').style.display='';</script>
-                                    <td
-                                            <c:if test="${uiv=='1'}">align="right"</c:if> style='padding-left:5px'
-                                            class='zo_tb_submit'>
-                                        <input name="actionDraft" type="submit" value="<fmt:message key="save"/>">
-                                    </td>
-                                </tr>
-                            </table>
+                    <table cellspacing="0" cellpadding="0">
+                        <tr>
+                            <td style='padding-left:5px' class='zo_tb_submit'>
+                                <input name="actionSend" type="submit" value="<fmt:message key="send"/>">
+                            </td>
+                            <td style='padding-left:5px' class='zo_tb_submit'>
+                                <input id='actionCancel' name="actionCancel"
+                                       style="display:none;" ${uiv=='1'?'onclick=zClickLink("_back_to")':''}
+                                       type="${uiv=='1'?'button':'submit'}" value="<fmt:message key="cancel"/>">
+                                <noscript><a href="${caction}"><fmt:message key="cancel"/></a></noscript>
+                            </td>
+                            <script type="text/javascript">document.getElementById('actionCancel').style.display = '';</script>
+                            <td
+                                    <c:if test="${uiv=='1'}">align="right"</c:if> style='padding-left:5px'
+                                    class='zo_tb_submit'>
+                                <input name="actionDraft" type="submit" value="<fmt:message key="save"/>">
+                            </td>
+                        </tr>
+                    </table>
                 </td>
 
             </tr>
@@ -101,134 +102,141 @@
     </td>
 </tr>
 <tr>
-    <td>
-                <div class="View">
-                <table cellpadding="0" cellspacing="0" width="100%" border="0">
-                    <tr>
-                        <td class='label' valign='top' width="35" align=right nowrap="nowrap">
-                        <label for="toField"><fmt:message key="to"/>: </label></td>
-                        <td>
-                        	<div class="ZhAC ZhACTo">
-                            	<textarea id="toField" rows="1" name="to" class="Textarea">${fn:escapeXml(compose.to)}</textarea>
-                            	<div class='ZhACCont' id="toContainer" style='width:99%;top:1.5em;'></div>
-                            </div>
-                        </td>
-                    </tr>
-                </table>
-                </div>
-                
-                <div class="View">
-                <table cellpadding="0" cellspacing="0" width="100%" border="0">
-                                       <tr>
-                        <td align=right class="label" width="35" nowrap="nowrap"><label for="ccField"><fmt:message
-                                key="cc"/>: </label></td>
-                        <td>
-                            <div class="ZhAC ZhACCc">
-                            	<input class="Textarea" id="ccField" type="text" value="${fn:escapeXml(compose.cc)}" name="cc">
-                            	<div class='ZhACCont' id="ccContainer" style='width:99%;'></div>
-                            </div>
-                        </td>
-                    </tr>
-                </table>
-                </div>
-                <div class="View">
-                <table cellpadding=0 cellspacing=0 width=100% border="0">
-                    <tr>
-                        <td class='label' align=right nowrap="nowrap" width="35"><label for="subjectField"><fmt:message key="subject"/>: </label></td>
-                        <td><input  class="Textarea" type="text" name="subject"
-                                                                         id="subjectField"
-                                                                         value="${fn:escapeXml(compose.subject)}"></td>
-                    </tr>
-                    </table>
-                    </div>
-                   
-                    <c:set var="firstAttachment" value="${true}"/>
-                    <c:if test="${!empty compose.messageAttachments}">
-                        <c:forEach var="ma" items="${compose.messageAttachments}" varStatus="status">
-                          <div class="View">
-                      <table cellpadding=0 cellspacing=0 width=100% border="0">
-                            <tr>
-                                <td align='right'>
-                                    <c:if test="${firstAttachment}">
-                                        <mo:img altkey="ALT_ATTACHMENT" src="startup/ImgAttachment.gif"/>
-                                        <c:set var="firstAttachment" value="${false}"/>
-                                    </c:if>
-                                 <c:choose>
-                                        <c:when test="${empty ma.subject}"><fmt:message var="subj"
-                                                                                        key="noSubject"/></c:when>
-                                        <c:otherwise><c:set var="subj"
-                                                            value="${zm:truncate(ma.subject,100,true)}"/></c:otherwise>
-                                    </c:choose>
-                                        ${fn:escapeXml(subj)}
-                                    <input type="hidden" name="messageAttachment"
-                                           value="${ma.id}:${fn:escapeXml(ma.subject)}"/>
-                               
-                        </c:forEach>
-                    </c:if>
-                    
-                    
-                    <c:if test="${!empty compose.originalAttachments}">
-                        <c:forEach var="part" items="${compose.originalAttachments}" varStatus="status">
-                            <table width="100%"><mo:attachment firstAttachment="${firstAttachment}"
-                                           url="/service/home/~/?id=${message.id}&part=${part.partName}&auth=co"
-                                           displayName="${part.displayName}" contentType="${part.contentType}"
-                                           checked="${compose.checkedAttachmentNames[part.partName]}"
-                                           displaySize="${part.displaySize}"
-                                           value="${part.partName}" name="originalAttachment"/>
-                            <c:set var="firstAttachment" value="${false}"/>
-                            </table>     
-                        </c:forEach>
-                    </c:if>
-                    <c:if test="${(!empty param.attachId) and (!empty param.attachUrl) and (!empty param.attachName)}">
-                        <table width="100%"> <mo:attachment firstAttachment="${firstAttachment}" url="${param.attachUrl}"
-                                       displayName="${param.attachName}"
-                                       checked="true"
-                                       value="${param.attachId}" name="uploadedAttachment"/>
-                       </table> </td>
-                      </tr>
-                    </table>
-                    </div>
-                    </c:if>
-                  
-                    <div class="View">
-                    <table cellpadding=0 cellspacing=0 width=100%>
-                    <tr><td>
-                            <textarea rows="20" cols="40" class="Textarea"
-                                      id="bodyField" name="body">${fn:escapeXml(compose.content)}</textarea>
-                            <!-- Shd be removed later-->
-                            <input type="hidden" id="bodyText" class='MsgCompose' name="bodyText" value=""
-                                   />
+<td>
+<div class="View">
+    <table cellpadding="0" cellspacing="0" width="100%" border="0">
+        <tr>
+            <td class='label' valign='top' width="35" align=right nowrap="nowrap">
+                <label for="toField"><fmt:message key="to"/>: </label></td>
+            <td>
+                <div class="ZhAC ZhACTo">
+                    <textarea id="toField" rows="1" name="to" class="Textarea">${fn:escapeXml(compose.to)}</textarea>
 
-                        </td>
-                    </tr>
-                </table>
+                    <div class='ZhACCont' id="toContainer" style='width:99%;top:1.5em;'></div>
                 </div>
-    </td>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div class="View">
+    <table cellpadding="0" cellspacing="0" width="100%" border="0">
+        <tr>
+            <td align=right class="label" width="35" nowrap="nowrap"><label for="ccField"><fmt:message
+                    key="cc"/>: </label></td>
+            <td>
+                <div class="ZhAC ZhACCc">
+                    <input class="Textarea" id="ccField" type="text" value="${fn:escapeXml(compose.cc)}" name="cc">
+
+                    <div class='ZhACCont' id="ccContainer" style='width:99%;'></div>
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="View">
+    <table cellpadding=0 cellspacing=0 width=100% border="0">
+        <tr>
+            <td class='label' align=right nowrap="nowrap" width="35"><label for="subjectField"><fmt:message
+                    key="subject"/>: </label></td>
+            <td><input class="Textarea" type="text" name="subject"
+                       id="subjectField"
+                       value="${fn:escapeXml(compose.subject)}"></td>
+        </tr>
+    </table>
+</div>
+
+<c:set var="firstAttachment" value="${true}"/>
+<c:if test="${!empty compose.messageAttachments}">
+<c:forEach var="ma" items="${compose.messageAttachments}" varStatus="status">
+<div class="View">
+    <table cellpadding=0 cellspacing=0 width=100% border="0">
+        <tr>
+            <td align='right'>
+                <c:if test="${firstAttachment}">
+                    <mo:img altkey="ALT_ATTACHMENT" src="startup/ImgAttachment.gif"/>
+                    <c:set var="firstAttachment" value="${false}"/>
+                </c:if>
+                <c:choose>
+                    <c:when test="${empty ma.subject}"><fmt:message var="subj"
+                                                                    key="noSubject"/></c:when>
+                    <c:otherwise><c:set var="subj"
+                                        value="${zm:truncate(ma.subject,100,true)}"/></c:otherwise>
+                </c:choose>
+                    ${fn:escapeXml(subj)}
+                <input type="hidden" name="messageAttachment"
+                       value="${ma.id}:${fn:escapeXml(ma.subject)}"/>
+
+                </c:forEach>
+                </c:if>
+
+
+                <c:if test="${!empty compose.originalAttachments}">
+                    <c:forEach var="part" items="${compose.originalAttachments}" varStatus="status">
+                        <table width="100%"><mo:attachment firstAttachment="${firstAttachment}"
+                                                           url="/service/home/~/?id=${message.id}&part=${part.partName}&auth=co"
+                                                           displayName="${part.displayName}"
+                                                           contentType="${part.contentType}"
+                                                           checked="${compose.checkedAttachmentNames[part.partName]}"
+                                                           displaySize="${part.displaySize}"
+                                                           value="${part.partName}" name="originalAttachment"/>
+                            <c:set var="firstAttachment" value="${false}"/>
+                        </table>
+                    </c:forEach>
+                </c:if>
+                <c:if test="${(!empty param.attachId) and (!empty param.attachUrl) and (!empty param.attachName)}">
+                <table width="100%"><mo:attachment firstAttachment="${firstAttachment}" url="${param.attachUrl}"
+                                                   displayName="${param.attachName}"
+                                                   checked="true"
+                                                   value="${param.attachId}" name="uploadedAttachment"/>
+                </table>
+            </td>
+        </tr>
+    </table>
+</div>
+</c:if>
+
+<div class="View">
+    <table cellpadding=0 cellspacing=0 width=100%>
+        <tr>
+            <td>
+                <textarea rows="20" cols="40" class="Textarea"
+                          id="bodyField" name="body">${fn:escapeXml(compose.content)}</textarea>
+                <!-- Shd be removed later-->
+                <input type="hidden" id="bodyText" class='MsgCompose' name="bodyText" value=""
+                        />
+
+            </td>
+        </tr>
+    </table>
+</div>
+</td>
 </tr>
 <tr>
     <td>
         <fmt:setBundle basename="/messages/ZhMsg" scope="request"/>
         <table width=100% cellspacing="0" cellpadding="0">
             <tr>
-               <td class="ToolbarBg">
-                            <table cellspacing="0" cellpadding="0">
-                                <tr>
-                                    <td style='padding-left:5px' class='zo_tb_submit'>
-                                        <input name="actionSend" type="submit" value="<fmt:message key="send"/>">
-                                    </td>
-                                    <td style='padding-left:5px' class='zo_tb_submit'>
-                                        <input id="actionCancel1" style="display:none" name="actionCancel" ${uiv=='1'?'onclick=zClickLink("_back_to")':''}
-                                               type="${uiv=='1'?'button':'submit'}" value="<fmt:message key="cancel"/>">
-                                        <noscript><a href="${caction}"><fmt:message key="cancel"/></a></noscript>
-                                    </td>
-                                    <script type="text/javascript">document.getElementById('actionCancel1').style.display='';</script>
-                                    <td
-                                            <c:if test="${uiv=='1'}">align="right"</c:if> style='padding-left:5px'
-                                            class='zo_tb_submit'>
-                                        <input name="actionDraft" type="submit" value="<fmt:message key="save"/>">
-                                    </td>
-                                </tr>
-                            </table>
+                <td class="ToolbarBg">
+                    <table cellspacing="0" cellpadding="0">
+                        <tr>
+                            <td style='padding-left:5px' class='zo_tb_submit'>
+                                <input name="actionSend" type="submit" value="<fmt:message key="send"/>">
+                            </td>
+                            <td style='padding-left:5px' class='zo_tb_submit'>
+                                <input id="actionCancel1" style="display:none"
+                                       name="actionCancel" ${uiv=='1'?'onclick=zClickLink("_back_to")':''}
+                                       type="${uiv=='1'?'button':'submit'}" value="<fmt:message key="cancel"/>">
+                                <noscript><a href="${caction}"><fmt:message key="cancel"/></a></noscript>
+                            </td>
+                            <script type="text/javascript">document.getElementById('actionCancel1').style.display = '';</script>
+                            <td
+                                    <c:if test="${uiv=='1'}">align="right"</c:if> style='padding-left:5px'
+                                    class='zo_tb_submit'>
+                                <input name="actionDraft" type="submit" value="<fmt:message key="save"/>">
+                            </td>
+                        </tr>
+                    </table>
                 </td>
 
             </tr>

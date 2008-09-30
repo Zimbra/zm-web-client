@@ -75,10 +75,10 @@
         </c:choose>
         <optgroup label="Flag">
             <c:if test="${not contact.isFlagged}">
-                <option value="actionFlag">Add</option>
+                <option value="actionFlag"><fmt:message key="add"/></option>
             </c:if>
             <c:if test="${contact.isFlagged}">
-                <option value="actionUnflag">Remove</option>
+                <option value="actionUnflag"><fmt:message key="remove"/></option>
             </c:if>
         </optgroup>
         <optgroup label="<fmt:message key="moveAction"/>">
@@ -114,21 +114,14 @@
 </td>
 
 <td align="right" class="Padding">
-    <c:if test="${context.st=='message' || context.st=='conversation'}">
-        <c:url var="composeUrl" value="${urlTarget}?action=compose"/>
-        <a href="${composeUrl}" class='zo_button'>
-            <fmt:message key="compose"/>
-        </a>
-    </c:if>
-    <c:if test="${context.st=='contact'}">
-        <c:url var="addUrl" value="${closeUrl}">
+       <c:url var="addUrl" value="${closeUrl}">
             <c:param name="action" value="edit"/>
             <c:param name="pid" value="${contact.id}"/>
+            <c:param name="folderid" value="${context.folder.id}"/>
         </c:url>
         <a href="${addUrl}" class='zo_button'>
             <fmt:message key="add"/>
         </a>
-    </c:if>
 </td>
 </tr>
 </table>

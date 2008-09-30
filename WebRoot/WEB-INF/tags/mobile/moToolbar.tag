@@ -110,8 +110,8 @@
             </c:if>
 
             <optgroup label="Flag">
-                <option value="actionFlag">Add</option>
-                <option value="actionUnflag">Remove</option>
+                <option value="actionFlag"> <fmt:message key="add"/></option>
+                <option value="actionUnflag"> <fmt:message key="remove"/></option>
             </optgroup>
 
             <optgroup label="<fmt:message key="moveAction"/>">
@@ -174,6 +174,7 @@
         <c:if test="${context.st=='contact'}">
             <c:url var="composeUrl" value="${closeUrl}">
                 <c:param name="action" value="edit"/>
+                <c:param name="folderid" value="${context.folder.id}"/>
             </c:url>
             <a href="${composeUrl}" class="zo_button">
                 <fmt:message key="add"/>

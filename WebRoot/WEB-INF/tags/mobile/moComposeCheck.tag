@@ -4,7 +4,17 @@
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
-
+<%@ taglib prefix="mo" uri="com.zimbra.mobileclient" %>
+<c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'mainx'}"/>
+<c:set var="caction" value="${context_url}"/>
+<c:if test="${param.bt != null}">
+    <c:set var="bt" value="${param.bt}"/>
+    <c:url var="caction" value='${context_url}?${fn:replace(param.bt,"|","&")}'/>
+</c:if>
+<c:if test="${param.bt == null}">
+    <c:set var="caction" value='${header["referer"]}'/>
+    <c:set var="bt" value="${fn:replace(fn:substringAfter(header['referer'],'?'),'&','|')}"/>
+</c:if>
 <mo:handleError>
     <zm:composeUploader var="uploader"/>
     <c:set var="needComposeView" value="${param.action eq 'compose'}"/>
@@ -57,6 +67,9 @@
                     </c:choose>
                         <%-- TODO: check for errors, etc, set success message var and forward to prev page, or set error message and continue --%>
                     <app:status><fmt:message key="messageSent"/></app:status>
+                    <c:redirect url="${caction}">
+                        <c:param name="appmsg" value="messageSent"></c:param>
+                    </c:redirect>
                     <c:if test="${!empty uploader.compose.draftId}">
                         <c:catch>
                             <zm:deleteMessage var="actionResult" id="${uploader.compose.draftId}"/>
@@ -64,8 +77,7 @@
                     </c:if>
                     <c:set var="needComposeView" value="${false}"/>
                 </mo:handleError>
-
-            </c:when>
+           </c:when>
             <c:when test="${uploader.isDraft}">
                 <zm:checkCrumb crumb="${uploader.paramValues['crumb'][0]}"/>
                 <zm:saveDraft var="draftResult" compose="${uploader.compose}" draftid="${uploader.compose.draftId}"/>

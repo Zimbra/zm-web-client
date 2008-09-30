@@ -61,28 +61,30 @@
                                        composeUrl="${composeUrl}" newWindowUrl=""/>
                 <c:set var="repeat" value="${invite.component.simpleRecurrence}"/>
                 <c:if test="${repeat != null && repeat.type != null && !repeat.type.none}">
-                <div class="View">
+                    <div class="View">
                     <span class="label"><fmt:message
                             key="repeats"/> :</span> ${fn:escapeXml(zm:getRepeatBlurb(repeat,pageContext,mailbox.prefs.timeZone, invite.component.start.date))}
-                </div>
+                    </div>
                 </c:if>
-                <div class="View">
-                        <%--<c:set var="apptFolder" value="${zm:getFolder(pageContext, appt.folderId)}"/>--%>
-                    <c:if test="${invite.component.isOrganizer}">
+                    <%--<c:set var="apptFolder" value="${zm:getFolder(pageContext, appt.folderId)}"/>--%>
+                <c:if test="${invite.component.isOrganizer}">
+                    <div class="View">
+
                         <a id="_edit_link" href="<c:url value="/m/mainx?st=newappt&invId=${id}&useInstance=0"/>"
                            style="display:none;">&nbsp;</a>
                         <input type="button" onclick="zClickLink('_edit_link')"
                                value="<fmt:message key="edit"/>"/>
-                    </c:if>
-                        <%-- <c:choose>
-                            <c:when test="${not context.folder.isInTrash}">
-                                <input name="actionDelete" type="submit" value="<fmt:message key="delete"/>"/>
-                            </c:when>
-                            <c:otherwise>
-                                <input name="actionHardDelete" type="submit" value="<fmt:message key="delete"/>"/>
-                            </c:otherwise>
-                        </c:choose>--%>
-                </div>
+                    </div>
+
+                </c:if>
+                    <%-- <c:choose>
+                        <c:when test="${not context.folder.isInTrash}">
+                            <input name="actionDelete" type="submit" value="<fmt:message key="delete"/>"/>
+                        </c:when>
+                        <c:otherwise>
+                            <input name="actionHardDelete" type="submit" value="<fmt:message key="delete"/>"/>
+                        </c:otherwise>
+                    </c:choose>--%>
 
             </td>
         </tr>

@@ -45,8 +45,9 @@
     <c:set var="factionurl" value="${caction}"/>
 </c:if>--%>
 <form action="${caction}" method="post" accept-charset="utf-8">
-
-
+<c:if test="${not empty param.folderid}">
+<input type="hidden" name="folderid" value="${fn:escapeXml(param.folderid)}"/>    
+</c:if>
 <input type="hidden" name="doContactAction" value="1"/>
 <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
 <table cellspacing="0" cellpadding="0" class="ToolbarBg" width="100%">

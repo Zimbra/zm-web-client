@@ -28,11 +28,18 @@
     </c:if>
     <c:set value="${true}" var="headIncluded" scope="request"/>
 </c:if>
-<c:if test="${not empty requestScope.statusMessage && requestScope.headIncluded != null && !requestScope.statusMsgRendered}">
+<c:if test="${(not empty requestScope.statusMessage || not empty param.appmsg ) && requestScope.headIncluded != null && !requestScope.statusMsgRendered}">
     <table width="100%" cellpadding="0" cellspacing="0">
         <tr>
             <td style='padding:5px'>
-                <div class='${requestScope.statusClass}'>${fn:escapeXml(requestScope.statusMessage)}</div>
+                    <c:choose>
+                        <c:when test="${not empty param.appmsg}">
+                            <div class='StatusInfo'><fmt:message key="${fn:escapeXml(param.appmsg)}"/></div>
+                        </c:when>
+                        <c:otherwise>
+                            <div class="${requestScope.statusClass}">${fn:escapeXml(requestScope.statusMessage)} </div>
+                        </c:otherwise>
+                    </c:choose>
             </td>
         </tr>
     </table>

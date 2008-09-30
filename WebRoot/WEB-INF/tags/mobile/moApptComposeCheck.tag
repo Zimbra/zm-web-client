@@ -1,10 +1,20 @@
-<%@ tag body-content="empty" %>
+se<%@ tag body-content="empty" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
-
+<%@ taglib prefix="mo" uri="com.zimbra.mobileclient" %>
+<c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'mainx'}"/>
+<c:set var="caction" value="${context_url}"/>
+<c:if test="${param.bt != null}">
+    <c:set var="bt" value="${param.bt}"/>
+    <c:url var="caction" value='${context_url}?${fn:replace(param.bt,"|","&")}'/>
+</c:if>
+<c:if test="${param.bt == null}">
+    <c:set var="caction" value='${header["referer"]}'/>
+    <c:set var="bt" value="${fn:replace(fn:substringAfter(header['referer'],'?'),'&','|')}"/>
+</c:if>
 <mo:handleError>
     <%--<zm:getMailbox var="mailbox"/>--%>
     <zm:composeUploader var="uploader"/>
@@ -146,6 +156,9 @@
                     </c:if>
                     <%-- TODO: check for errors, etc, set success message var and forward to prev page, or set error message and continue --%>
                     <app:status><fmt:message key="${empty message ? 'actionApptCreated' : 'actionApptSaved'}"/></app:status>
+                    <c:redirect url="${caction}">
+                        <c:param name="appmsg" value="${empty message ? 'actionApptCreated' : 'actionApptSaved'}"></c:param>
+                    </c:redirect>    
                     <c:set var="needEditView" value="${false}"/>
                 </mo:handleError>
             </c:when>

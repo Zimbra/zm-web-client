@@ -14,7 +14,7 @@
 <c:set var="anAction" value="${not empty paramValues.anAction[0] ? paramValues.anAction[0] :  paramValues.anAction[1]}"/>
 <c:choose>
     <c:when test="${zm:actionSet(param, 'actionAdd')}">
-        <zm:createContact var="result">
+        <zm:createContact var="result" folderid="${param.folderid}">
             <zm:field name="firstName" value="${param.firstName}"/>
             <zm:field name="lastName" value="${param.lastName}"/>
             <zm:field name="email" value="${param.email}"/>
@@ -53,7 +53,7 @@
     <c:when test="${(zm:actionSet(param,'moreActions') && empty anAction) }">
         <mo:status style="Warning"><fmt:message key="actionNoActionSelected"/></mo:status>
     </c:when>
-    <c:when test="${zm:actionSet(param, 'actionDelete') || (zm:actionSet(param,'actionDelete') && anAction == 'actionDelete')}">
+    <c:when test="${zm:actionSet(param, 'actionDelete') || (zm:actionSet(param,'moreActions') && anAction == 'actionDelete')}">
         <zm:trashContact var="result" id="${ids}"/>
         <c:set var="op" value="x" scope="request"/>
         <mo:status>
@@ -63,7 +63,7 @@
         </mo:status>
     </c:when>
 
-    <c:when test="${zm:actionSet(param, 'actionHardDelete' || (zm:actionSet(param,'actionHardDelete') && anAction == 'actionHardDelete'))}">
+    <c:when test="${zm:actionSet(param, 'actionHardDelete' || (zm:actionSet(param,'moreActions') && anAction == 'actionHardDelete'))}">
     <zm:deleteContact var="result" id="${ids}"/>
     <c:set var="op" value="x" scope="request"/>
     <mo:status>

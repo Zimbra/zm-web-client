@@ -30,13 +30,13 @@
         <input type="hidden" name="doMessageAction" value="1"/>
         <script>document.write('<input name="moreActions" type="hidden" value="<fmt:message key="actionGo"/>"/>');</script>
         <table cellspacing="0" cellpadding="0" width="100%">
-            <c:if test="${context.searchResult.size gt 0}">
+            <%--<c:if test="${context.searchResult.size gt 0}">--%>
                 <tr>
                     <td>
                         <mo:toolbar urlTarget="${context_url}" context="${context}" isTop="true"/>
                     </td>
                 </tr>
-            </c:if>
+          <%--  </c:if>--%>
             <tr>
                 <td>
                     <table width="100%" cellpadding="0" cellspacing="0" class='zo_m_list'>
@@ -128,13 +128,13 @@
                     </c:if>
                 </td>
             </tr>
-            <c:if test="${context.searchResult.size gt 0}">
+            <%--<c:if test="${context.searchResult.size gt 0}">--%>
                 <tr>
                     <td>
                         <mo:toolbar urlTarget="${context_url}" context="${context}" isTop="false"/>
                     </td>
                 </tr>
-            </c:if>
+           <%-- </c:if>--%>
         </table>
     </form>
 </mo:view>
