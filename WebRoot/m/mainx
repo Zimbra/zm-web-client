@@ -47,7 +47,7 @@
             <!-- Tabs starts here -->
             <c:set var="aurl" value="${context_url}?"/>
             <a id="mails" href="${aurl}"><img id="mail_img" alt="<fmt:message key="mail"/>"
-                                              src="<app:imgurl value='mobile/Mail${empty param.st || param.st == "message" || param.st == "conversation" ? "-sel" : ""}.gif' />"
+                                              src="<app:imgurl value='mobile/Mail${param.showSearch!="1" && (empty param.st || param.st == "message" || param.st == "conversation") ? "-sel" : ""}.gif' />"
                                               border="0" width="55" height="48">
                     <%-- c:if test="${mailbox.inbox.hasUnread}">&nbsp;(${mailbox.inbox.unreadCount})</c:if --%>
             </a>
@@ -56,7 +56,7 @@
             <c:if test="${mailbox.features.contacts}">
                 <c:set var="aurl" value="${context_url}?st=contact"/>
                 <a id="contacts" href="${aurl}"><img alt="<fmt:message key="contacts"/>" id="contact_img"
-                                                     src="<app:imgurl value='mobile/Contacts${param.st eq "contact" || param.st eq "ab" ? "-sel" : ""}.gif' />"
+                                                     src="<app:imgurl value='mobile/Contacts${param.showSearch!="1" && (param.st eq "contact" || param.st eq "ab") ? "-sel" : ""}.gif' />"
                                                      border="0" width="55" height="48"></a>
             </c:if>
         </td>
@@ -64,28 +64,35 @@
             <c:if test="${mailbox.features.calendar}">
                 <c:set var="aurl" value="${context_url}?st=cal"/>
                 <a id="cal" href="${aurl}"><img alt="<fmt:message key="calendar"/>" id="cal_img"
-                                                src="<app:imgurl value='mobile/Calendar${param.st eq "cal" ? "-sel" : ""}.gif' />"
+                                                src="<app:imgurl value='mobile/Calendar${param.showSearch!="1" && param.st eq "cal" ? "-sel" : ""}.gif' />"
                                                 border="0" width="55" height="48"></a>
             </c:if>
         </td>
         <td width="5%" align="center" valign="top">
             <c:set var="aurl" value="${context_url}?st=folders"/>
             <a id="folders" href="${aurl}"><img alt="<fmt:message key="folder"/>" id="folder_img"
-                                                src="<app:imgurl value='mobile/Folders${param.st eq "folders" ? "-sel" : ""}.gif' />"
+                                                src="<app:imgurl value='mobile/Folders${param.showSearch!="1" && param.st eq "folders" ? "-sel" : ""}.gif' />"
                                                 border="0" width="55" height="48"></a>
         </td>
-        <td id="search_tab" width="5%" align="center" valign="top" onclick="javascript:toggleSearch()">
-            <img id="search_img" alt="<fmt:message key="search"/>" src="<app:imgurl value='mobile/Search.gif' />"
-                 border="0" width="55" height="48">
+        <td id="search_tab" width="5%" align="center" valign="top">
+            <c:set var="surl" value="?"/>
+            <c:if test="${not empty param.st}">
+                <c:set var="surl" value="${surl}${fn:replace(pageContext.request.queryString,'showSearch=1','')}&"/>
+            </c:if>
+            <c:if test="${param.showSearch != '1'}">
+                <c:set var="surl" value="${surl}showSearch=1"/>
+            </c:if>
+            <a onclick="return toggleSearch();" href="${surl}"><img id="search_img" alt="<fmt:message key="search"/>" src="<app:imgurl value='mobile/Search${param.showSearch!="1"?"":"-sel"}.gif' />"
+                 border="0" width="55" height="48"></a>
         </td>
     </tr>
 
 </table>
-<div style="width:100%;display:block" class="Stripes" id="SEARCH_BOX">
-    <table width="100%" align="center">
+<div class="View" style="${param.showSearch!='1'?'display:none;':''};margin:2px;padding:2px;" class="Stripes" id="SEARCH_BOX">
+    <!--<table width="100%" align="center">
         <tr class="searchbar">
-            <td>
-                <form method="get" action="${context_url}" style="width:100%;"
+            <td>-->
+                <form method="get" action="${context_url}" style=";"
                       onsubmit="if(!this.sq.value){var v = document.getElementById('d_msg');v.innerHTML='<div class=StatusWarning><fmt:message key="actionNoSearchQuerySpecified"/></div>';v.style.display='block';return false;}else{return true;}">
                     <c:if test="${not empty param.action}">
                         <input type="hidden" name="action" value="${zm:cook(param.action)}"/>
@@ -104,7 +111,7 @@
                     <table cellspacing="0" cellpadding="0" width="100%">
                         <tr>
                             <td>
-                                <table cellspacing="1" cellpadding="1" width="100%" align="right">
+                                <table cellspacing="1" cellpadding="1" width="99%" align="right">
                                     <tr>
                                         <td class="zo_m_list_row">
                                                 <%--<fmt:message key="in"/>--%>
@@ -127,9 +134,7 @@
                                             </select>
                                         </td>
                                         <td align="left" style="padding-right:2px;">
-                                            <input type="text"
-                                                   style="width:99%;border:1px solid lightslategray;"
-                                                   name="sq" value="${zm:cook(param.sq)}"/>
+                                            <input type="text" name="sq" value="${zm:cook(param.sq)}"/>
                                         </td>
                                         <td align="right">
                                             <input type="submit" name="actionSearch"
@@ -146,10 +151,10 @@
                         </tr>
                     </table>
                 </form>
-
+<%--
             </td>
         </tr>
-    </table>
+    </table>--%>
 </div>
 <div style="padding:5px;display:none;" id="d_msg"></div>
 <table border="0" cellpadding="0" cellspacing="0" width="100%" border="0">
@@ -219,9 +224,9 @@
     </tr>
 </table>
 <script type="text/javascript" language="JavaScript">
-    <c:if test="${param.showSearch == null || param.showSearch != '1'}">
+   <%-- <c:if test="${param.showSearch == null || param.showSearch != '1'}">
     document.getElementById("SEARCH_BOX").style.display = "none";
-    </c:if>
+    </c:if>--%>
     //document.getElementById("search_tab").style.display="";
     var toggleSearch = function() {
         if (document.getElementById("SEARCH_BOX").style.display == "block") {
@@ -234,6 +239,7 @@
             document.getElementById("search_img").src = "<app:imgurl value='mobile/Search-sel.gif' />";
             document.getElementById(selectedImgId).src = document.getElementById(selectedImgId).src.replace("-sel", "");
         }
+        return false;
     };
     var changeListSize = function(size) {
         var url = window.location.href;

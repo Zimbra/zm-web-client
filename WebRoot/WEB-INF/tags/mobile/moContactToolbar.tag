@@ -128,7 +128,7 @@
 <c:if test="${isTop}">
     <div style="padding:5px;background:#efefef;font-size:small;">
         <a href="${fn:escapeXml(closeUrl)}#cn${contact.id}" class='zo_leftbutton'>
-            <fmt:message key="close"/>
+             ${fn:escapeXml(zm:truncate(context.shortBackTo,15,true))}
         </a>
     </div>
 </c:if>  

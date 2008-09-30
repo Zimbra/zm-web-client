@@ -113,7 +113,7 @@
                         <input id='actionCancel' name="actionCancel"
                                style="display:none;" ${uiv=='1'?'onclick=zClickLink("_back_to")':''}
                                type="${uiv=='1'?'button':'submit'}" value="<fmt:message key="cancel"/>">
-                        <noscript><a href="${caction}"><fmt:message key="cancel"/></a></noscript>
+                        <noscript><a href="${caction}" class="button"><fmt:message key="cancel"/></a></noscript>
                     </td>
                     <script type="text/javascript">document.getElementById('actionCancel').style.display = '';</script>
                 </tr>
@@ -263,8 +263,8 @@
     <input type=radio name='repeatType'
            <c:if test="${compose.repeatType eq 'NONE'}">checked </c:if> value="NONE">
     <fmt:message key="recurNone"/>
-    <input type=radio name='repeatType' value="BASIC" <c:if test="${compose.repeatType eq 'BASIC'}">checked </c:if>>
-    <select name="repeatBasicType">
+    <input type=radio id="rpttypeid" name='repeatType' value="BASIC" <c:if test="${compose.repeatType eq 'BASIC'}">checked </c:if>>
+    <select name="repeatBasicType" onchange="document.getElementById('rpttypeid').checked='checked';">
         <option value="DAILY" <c:if test="${compose.repeatBasicType eq 'DAILY'}">selected </c:if>><fmt:message
                 key="recurBasicSelectDaily"/></option>
         <option value="WEEKLY" <c:if test="${compose.repeatBasicType eq 'WEEKLY'}">selected </c:if>><fmt:message
@@ -370,7 +370,7 @@
                         <input id="actionCancel1" style="display:none"
                                name="actionCancel" ${uiv=='1'?'onclick=zClickLink("_back_to")':''}
                                type="${uiv=='1'?'button':'submit'}" value="<fmt:message key="cancel"/>">
-                        <noscript><a href="${caction}"><fmt:message key="cancel"/></a></noscript>
+                        <noscript><a href="${caction}" class="button"><fmt:message key="cancel"/></a></noscript>
                     </td>
                     <script type="text/javascript">document.getElementById('actionCancel1').style.display = '';</script>
 

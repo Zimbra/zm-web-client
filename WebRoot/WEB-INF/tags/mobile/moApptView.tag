@@ -31,7 +31,7 @@
             <td>
                 <mo:calendarUrl var="backurl" action="${null}"/>
                 <a href="${backurl}">
-                    <fmt:message key="close"/>
+                    <fmt:message key="back"/>
                 </a>
             </td>
             <td align="right">
@@ -69,11 +69,13 @@
                     <%--<c:set var="apptFolder" value="${zm:getFolder(pageContext, appt.folderId)}"/>--%>
                 <c:if test="${invite.component.isOrganizer}">
                     <div class="View">
-
-                        <a id="_edit_link" href="<c:url value="/m/mainx?st=newappt&invId=${id}&useInstance=0"/>"
-                           style="display:none;">&nbsp;</a>
-                        <input type="button" onclick="zClickLink('_edit_link')"
+                        <a id="_edit_link" class="button" href="<c:url value="/m/mainx?st=newappt&invId=${id}&useInstance=0"/>"><fmt:message key="edit"/></a>
+                        <input id="edtbtn" style="display:none;" type="button" onclick="zClickLink('_edit_link')"
                                value="<fmt:message key="edit"/>"/>
+                        <script type="text/javascript">
+                            document.getElementById('edtbtn').style.display='';
+                            document.getElementById('_edit_link').style.display='none';
+                      </script>
                     </div>
 
                 </c:if>

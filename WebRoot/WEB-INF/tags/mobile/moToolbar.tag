@@ -151,7 +151,7 @@
         </select>
         <noscript><input name="moreActions" type="submit" value="<fmt:message key="actionGo"/>"/></noscript>
     </td>
-    <script type="text/javascript">document.getElementById('select_container').style.display = '';</script>
+    <%--<script type="text/javascript">document.getElementById('select_container').style.display = '';</script>--%>
 </c:if>
 </tr>
 </table>

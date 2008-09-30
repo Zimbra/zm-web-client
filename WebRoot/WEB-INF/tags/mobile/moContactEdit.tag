@@ -59,9 +59,11 @@
             <c:if test="${contact==null}">
                 <input name="actionAdd" type="submit" value="<fmt:message key="add"/>">
             </c:if>
-            <input name="actionCancel" onclick='zClickLink("_back_to")' type="button"
-                   value="<fmt:message key="cancel"/>">
-
+            <input id='actionCancel' name="actionCancel"
+                               style="display:none;" ${uiv=='1'?'onclick=zClickLink("_back_to")':''}
+                               type="${uiv=='1'?'button':'submit'}" value="<fmt:message key="cancel"/>">
+                        <noscript><a href="${caction}" class="button"><fmt:message key="cancel"/></a></noscript>
+            <script type="text/javascript">document.getElementById('actionCancel').style.display = '';</script>
         </td>
 
     </tr>
@@ -167,8 +169,11 @@
             <c:if test="${contact==null}">
                 <input name="actionAdd" type="submit" value="<fmt:message key="add"/>">
             </c:if>
-            <input name="actionCancel" onclick='zClickLink("_back_to")' type="button"
-                   value="<fmt:message key="cancel"/>">
+            <input id='actionCancel1' name="actionCancel"
+                               style="display:none;" ${uiv=='1'?'onclick=zClickLink("_back_to")':''}
+                               type="${uiv=='1'?'button':'submit'}" value="<fmt:message key="cancel"/>">
+                        <noscript><a href="${caction}" class="button"><fmt:message key="cancel"/></a></noscript>
+            <script type="text/javascript">document.getElementById('actionCancel1').style.display = '';</script>
 
         </td>
 

@@ -54,7 +54,7 @@
                     <c:if test="${mailbox.accountInfo.attrs.zimbraFeatureNewAddrBookEnabled[0]=='TRUE'}">
 
                         <td align="right">
-                            <a href="javascript:void(0)" onclick="showHideElemForm('naddrfrm');"><fmt:message
+                           <a href="?st=ab${empty param.showABCreate?'&showABCreate=1':''}#abooks" onclick="return showHideElemForm('naddrfrm');"><fmt:message
                                     key="create"/></a>
                         </td>
                     </c:if>
@@ -62,7 +62,7 @@
                 </tr>
             </table>
             <c:if test="${mailbox.accountInfo.attrs.zimbraFeatureNewAddrBookEnabled[0]=='TRUE'}">
-            <div class="View" id="naddrfrm" style="display:none;margin:2px;">
+            <div class="View" id="naddrfrm" style="${empty param.showABCreate?'display:none':''};margin:2px;">
                 <form action="" method="post" style="padding:0px;margin:0px;">
                     <input type="hidden" name="doFolderAction" value="1">
                     <input name="crumb" type="hidden" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
@@ -79,12 +79,14 @@
                     <input type="submit" name="actionSaveAddrFolder" value="<fmt:message key='save'/>">
                 </form>
             </div>
+            <a name="folders" style="padding:0px;margin:0px;"/>    
             </c:if>
-                <mo:doContactFolderTree skiproot="${false}" skipsystem="false" skiptrash="true"/>
+       </td>
+    </tr>        
+    <mo:doContactFolderTree skiproot="${false}" skipsystem="false" skiptrash="true"/>
 
-                <mo:overviewFolder types="contact" folder="${mailbox.trash}" base="${context_url}"/>
-                <mo:doContactFolderTree skiproot="${true}" parentid="${mailbox.trash.id}" skipsystem="false"/>
-
+    <mo:overviewFolder types="contact" folder="${mailbox.trash}" base="${context_url}"/>
+    <mo:doContactFolderTree skiproot="${true}" parentid="${mailbox.trash.id}" skipsystem="false"/>
     <tr>
         <td>
             <table width="100%" class="ToolbarBg">
@@ -94,17 +96,16 @@
                     </td>
 
                     <td align="right">
-                        <a href="javascript:void(0)" onclick="showHideElemForm('ntagfrm');"><fmt:message
+                        <a href="?st=ab${empty param.showTagCreate?'&showTagCreate=1':''}#tags" onclick="return showHideElemForm('ntagfrm');"><fmt:message
                                 key="create"/></a>
                     </td>
                 </tr>
             </table>
-            <div class="View" id="ntagfrm" style="display:none;">
+            <div class="View" id="ntagfrm" style="${empty param.showTagCreate?'display:none':''};margin:2px;">
                 <form action="" method="post" style="padding:0px;margin:0px;">
                     <input type="hidden" name="doFolderAction" value="1">
                     <input name="crumb" type="hidden" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
                     <span class="label"><fmt:message key="name"/>:</span> <input type="text" style="width:100px;"
-                                                                                 name="tag_name">
                     <select name="tag_color">
                         <optgroup label="<fmt:message key='color'/>">
                             <option value="cyan"><fmt:message key="cyan"/></option>
@@ -119,6 +120,7 @@
                     <input type="submit" name="actionSaveTag" value="<fmt:message key='save'/>">
                 </form>
             </div>
+           <a name="tags" style="padding:0px;margin:0px;"/>
         </td>
     </tr>
 

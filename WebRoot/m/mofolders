@@ -53,11 +53,11 @@
                 </td>
 
                 <td align="right">
-                    <a href="javascript:void(0)" onclick="showHideElemForm('nfldrfrm');"><fmt:message key="create"/></a>
+                    <a href="?st=folders${empty param.showFolderCreate?'&showFolderCreate=1':''}#folders" onclick="return showHideElemForm('nfldrfrm');"><fmt:message key="create"/></a>
                 </td>
             </tr>
         </table>
-        <div class="View" id="nfldrfrm" style="display:none;margin:2px;">
+        <div class="View" id="nfldrfrm" style="${empty param.showFolderCreate?'display:none':''};margin:2px;">
             <form action="" method="post" style="padding:0px;margin:0px;">
                 <input type="hidden" name="doFolderAction" value="1">
                 <input name="crumb" type="hidden" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
@@ -80,10 +80,16 @@
                         <option value="${fldr.id}">${fn:escapeXml(fldr.rootRelativePath)}</option>
                     </c:if>
                 </zm:forEachFolder>
+                <zm:forEachFolder var="fldr" skiproot="${true}" skipsystem="${true}" skiptopsearch="${true}">
+                    <c:if test="${fldr.isConversationView || fldr.isMailView}">
+                        <option value="${fldr.id}">${fn:escapeXml(fldr.rootRelativePath)}</option>
+                    </c:if>
+                </zm:forEachFolder>
             </select>
                 <input type="submit" name="actionSaveFolder" value="<fmt:message key='save'/>">
             </form>
         </div>
+        <a name="folders" style="padding:0px;margin:0px;"/>
     </td>
 </tr>
 <c:if test="${param.sq == null || param.sq == '' || fn:containsIgnoreCase(mailbox.inbox.name,param.sq)}">
@@ -129,17 +135,16 @@
                     </td>
 
                     <td align="right">
-                        <a href="javascript:void(0)" onclick="showHideElemForm('ntagfrm');"><fmt:message
+                        <a href="?st=folders${empty param.showTagCreate?'&showTagCreate=1':''}#tags" onclick="return showHideElemForm('ntagfrm');"><fmt:message
                                 key="create"/></a>
                     </td>
                 </tr>
             </table>
-            <div class="View" id="ntagfrm" style="display:none;margin:2px;">
+            <div class="View" id="ntagfrm" style="${empty param.showTagCreate?'display:none':''};margin:2px;">
                 <form action="" method="post" style="padding:0px;margin:0px;">
                     <input type="hidden" name="doFolderAction" value="1">
                     <input name="crumb" type="hidden" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
                     <span class="label"><fmt:message key="name"/>:</span> <input type="text" style="width:100px;"
-                                                                                 name="tag_name">
                     <select name="tag_color">
                         <optgroup label="<fmt:message key='color'/>">
                             <option value="cyan"><fmt:message key="cyan"/></option>
@@ -154,6 +159,7 @@
                     <input type="submit" name="actionSaveTag" value="<fmt:message key='save'/>">
                 </form>
             </div>
+           <a name="tags" style="padding:0px;margin:0px;"/>
         </td>
     </tr>
     <zm:forEachTag var="tag">
@@ -170,6 +176,7 @@
         } else {
             elem.style.display = 'none';
         }
+        return false;
     }
 </script>
 </mo:view>
