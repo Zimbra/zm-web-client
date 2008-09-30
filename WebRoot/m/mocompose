@@ -85,7 +85,7 @@
                                 <input id='actionCancel' name="actionCancel"
                                        style="display:none;" ${uiv=='1'?'onclick=zClickLink("_back_to")':''}
                                        type="${uiv=='1'?'button':'submit'}" value="<fmt:message key="cancel"/>">
-                                <noscript><a href="${caction}"><fmt:message key="cancel"/></a></noscript>
+                                <noscript><a href="${caction}" class="button"><fmt:message key="cancel"/></a></noscript>
                             </td>
                             <script type="text/javascript">document.getElementById('actionCancel').style.display = '';</script>
                             <td
@@ -102,9 +102,26 @@
     </td>
 </tr>
 <tr>
-<td>
-<div class="View">
-    <table cellpadding="0" cellspacing="0" width="100%" border="0">
+<td>             
+ <div class="View">
+<c:if test="${fn:length(mailbox.accountInfo.identities) gt 1 }">
+    <table>
+    <tr>
+            <td class='label' valign='top' width="35" align=right nowrap="nowrap">
+                <fmt:message key="from"/>: </td>
+            <td>
+                <select id="fromField" name="from">
+                    <c:forEach var="identity" items="${mailbox.accountInfo.identities}">
+                        <option <c:if test="${identity.default}">selected='true'</c:if> value="${fn:escapeXml(identity.fromEmailAddress.fullAddressQuoted)}"><%--${fn:escapeXml(identity.name)}::--%>${fn:escapeXml(identity.fromEmailAddress.fullAddressQuoted)}</option>
+                    </c:forEach>
+
+                </select>
+            </td>
+        </tr>
+        </table>
+    <hr size="1" style="color:silver;"/>
+</c:if>
+<table cellpadding="0" cellspacing="0" width="100%" border="0">
         <tr>
             <td class='label' valign='top' width="35" align=right nowrap="nowrap">
                 <label for="toField"><fmt:message key="to"/>: </label></td>
@@ -117,9 +134,12 @@
             </td>
         </tr>
     </table>
+     <hr size="1" style="color:silver;"/>
+<!--
 </div>
 
 <div class="View">
+-->
     <table cellpadding="0" cellspacing="0" width="100%" border="0">
         <tr>
             <td align=right class="label" width="35" nowrap="nowrap"><label for="ccField"><fmt:message
@@ -227,7 +247,7 @@
                                 <input id="actionCancel1" style="display:none"
                                        name="actionCancel" ${uiv=='1'?'onclick=zClickLink("_back_to")':''}
                                        type="${uiv=='1'?'button':'submit'}" value="<fmt:message key="cancel"/>">
-                                <noscript><a href="${caction}"><fmt:message key="cancel"/></a></noscript>
+                                <noscript><a href="${caction}" class="button"><fmt:message key="cancel"/></a></noscript>
                             </td>
                             <script type="text/javascript">document.getElementById('actionCancel1').style.display = '';</script>
                             <td
