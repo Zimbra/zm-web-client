@@ -146,6 +146,7 @@ function() {
 		return;
 	}
 
+	this._dwtObjects = {}; // always reset in case account has changed
 	this._createPageTemplate();
 	this._createControls();
 }
@@ -163,7 +164,7 @@ ZmPreferencesPage.prototype._getTemplateData =
 function() {
 	var data = {
 		id: this._htmlElId,
-		isMultiAccount: (appCtxt.numAccounts > 1)
+		isMultiAccount: (appCtxt.numVisibleAccounts > 1)
 	};
 	data.isEnabled = AjxCallback.simpleClosure(this._isEnabled, this, data);
 	data.expandField = AjxCallback.simpleClosure(this._expandField, this, data);
