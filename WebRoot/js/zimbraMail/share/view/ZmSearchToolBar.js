@@ -55,6 +55,26 @@ ZmSearchToolBar.SHARE_ICON				= {};									// icon for shared menu item
 ZmSearchToolBar.ID 						= {};									// ID for menu item
 
 
+// Public static methods
+
+ZmSearchToolBar.addMenuItem =
+function(id, params) {
+	if (params.msgKey)		{ ZmSearchToolBar.MSG_KEY[id]		= params.msgKey; }
+	if (params.tooltipKey)	{ ZmSearchToolBar.TT_MSG_KEY[id]	= params.tooltipKey; }
+	if (params.icon)		{ ZmSearchToolBar.ICON[id]			= params.icon; }
+	if (params.shareIcon)	{ ZmSearchToolBar.SHARE_ICON[id]	= params.shareIcon; }
+	if (params.setting)		{ ZmSearchToolBar.SETTING[id]		= params.setting; }
+	if (params.id)			{ ZmSearchToolBar.ID[id]			= params.id; }
+
+	// test for null since index value can be zero :)
+	if (params.index == null || params.index < 0 || params.index >= ZmSearchToolBar.MENU_ITEMS.length) {
+		ZmSearchToolBar.MENU_ITEMS.push(id);
+	} else {
+		ZmSearchToolBar.MENU_ITEMS.splice(params.index, 0, id);
+	}
+};
+
+
 // Public methods
 
 ZmSearchToolBar.prototype.toString =
@@ -113,23 +133,6 @@ function(menu) {
 	}
 	if (!children[children.length-1].__text) {	 // No trailing separators
 		menu.removeChild(children[children.length-1]);
-	}
-}
-
-ZmSearchToolBar.addMenuItem =
-function(id, params) {
-	if (params.msgKey)		{ ZmSearchToolBar.MSG_KEY[id]		= params.msgKey; }
-	if (params.tooltipKey)	{ ZmSearchToolBar.TT_MSG_KEY[id]	= params.tooltipKey; }
-	if (params.icon)		{ ZmSearchToolBar.ICON[id]			= params.icon; }
-	if (params.shareIcon)	{ ZmSearchToolBar.SHARE_ICON[id]	= params.shareIcon; }
-	if (params.setting)		{ ZmSearchToolBar.SETTING[id]		= params.setting; }
-	if (params.id)			{ ZmSearchToolBar.ID[id]			= params.id; }
-
-	// test for null since index value can be zero :)
-	if (params.index == null || params.index < 0 || params.index >= ZmSearchToolBar.MENU_ITEMS.length) {
-		ZmSearchToolBar.MENU_ITEMS.push(id);
-	} else {
-		ZmSearchToolBar.MENU_ITEMS.splice(params.index, 0, id);
 	}
 };
 

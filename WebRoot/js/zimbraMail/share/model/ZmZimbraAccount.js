@@ -37,6 +37,7 @@ ZmZimbraAccount = function(id, name, visible, list) {
 	this.trees = {};
 	this.loaded = false;
 	this.acl = new ZmAccessControlList();
+	this.isZimbraAccount = true; // false if non-zimbra, i.e. gmail, yahoo, etc.
 };
 
 ZmZimbraAccount.prototype = new ZmAccount;
@@ -310,6 +311,9 @@ function(result) {
 	appCtxt.getIdentityCollection(this).initialize(obj.identities);
 	appCtxt.getDataSourceCollection(this).initialize(obj.dataSources);
 	appCtxt.getSignatureCollection(this).initialize(obj.signatures);
+
+	// data sources are disabled for Zimbra accounts
+	this.isZimbraAccount = !(appCtxt.getDataSourceCollection(this).getItems().length > 0);
 };
 
 ZmZimbraAccount.prototype._handleLoadFolders =

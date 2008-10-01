@@ -298,7 +298,20 @@ function(search, noRender, changes, callback, errorCallback) {
 	}
 
 	this._doSearch(params, noRender, callback, errorCallback);
-}
+};
+
+/**
+ * This is used by the offline client to "reset" the toolbar whenever user
+ * switches between accounts.
+ */
+ZmSearchController.prototype.resetSearchToolbar =
+function() {
+	var smb = this._searchToolBar.getButton(ZmSearchToolBar.SEARCH_MENU_BUTTON);
+	var mi = smb ? smb.getMenu().getItemById(ZmSearchToolBar.MENUITEM_ID, ZmId.SEARCH_GAL) : null;
+	if (mi) {
+		mi.setVisible(appCtxt.getActiveAccount().isZimbraAccount);
+	}
+};
 
 /**
  * Assembles a list of item types to return based on a search menu value (which can

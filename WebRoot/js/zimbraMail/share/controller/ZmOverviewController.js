@@ -169,7 +169,8 @@ function(account, app) {
  * For offline/zdesktop, this method updates the status icon for each account
  * as returned by each server response in the context part of the SOAP header
  *
- * @param accountList	[Array]		JSON list of accounts that need to be updated
+ * @param 	account		[ZmZimbraAccount]		zimbra account to update account icon for
+ * @param 	icon		[String]				name of icon to set
  */
 ZmOverviewController.prototype.updateAccountIcon =
 function(account, icon) {
