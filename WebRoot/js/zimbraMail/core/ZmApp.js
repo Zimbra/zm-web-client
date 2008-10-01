@@ -833,6 +833,11 @@ function(create, org) {
 	}
 };
 
+ZmApp.prototype._accountChangeListener =
+function(ev) {
+	appCtxt.getSearchController().resetSearchToolbar();
+};
+
 // Abstract/protected methods
 
 /**
@@ -854,11 +859,16 @@ function(active) {
 	if (active) {
 		// during startup, if offline, and multi-mbox scenario, set active the
 		// first non-main account (spurs a GetInfoRequest and sets accordion)
-		if (appCtxt.inStartup && appCtxt.multiAccounts && appCtxt.isOffline) {
+		if (appCtxt.inStartup && appCtxt.numVisibleAccounts > 1 && appCtxt.isOffline) {
 			this.expandAccordionForAccount(appCtxt.getMainAccount(true));
 		}
 		this.setOverviewPanelContent();
 		this.stopAlert();
+
+		if (appCtxt.numVisibleAccounts > 1 && appCtxt.isOffline && !this._acctChangeListener) {
+			this._acctChangeListener = new AjxListener(this, this._accountChangeListener);
+			this.getOverviewPanelContent().addSelectionListener(this._acctChangeListener);
+		}
 	}
 };
 

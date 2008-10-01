@@ -472,6 +472,11 @@ function(params, result) {
 			AjxDispatcher.enableLoadFunctions(true);
 			appCtxt.inStartup = false;
 			this._evtMgr.notifyListeners(ZmAppEvent.POST_STARTUP, this._evt);
+
+			// bug fix #31996
+			if (appCtxt.isOffline) {
+				appCtxt.getSearchController().resetSearchToolbar();
+			}
 		});
 	this.addPostRenderCallback(callback, 6, 100);
 
