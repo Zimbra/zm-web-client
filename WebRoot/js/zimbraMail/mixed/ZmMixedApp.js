@@ -58,7 +58,8 @@ function() {
 							  icon:				"Globe",
 							  overviewTrees:	[ZmOrganizer.FOLDER, ZmOrganizer.ADDRBOOK, ZmOrganizer.ROSTER_TREE_ITEM, ZmOrganizer.SEARCH, ZmOrganizer.TAG],
 							  showZimlets:		true,
-							  searchTypes:		[ZmItem.MSG, ZmItem.CONV]
+							  searchTypes:		[ZmItem.MSG, ZmItem.CONV],
+							  supportsMultiMbox:true
 							  });
 };
 
@@ -87,6 +88,20 @@ function() {
 		trees.push(id);
 	}
 	return trees;
+};
+
+ZmMixedApp.prototype._activateAccordionItem =
+function(accordionItem, callback) {
+	ZmApp.prototype._activateAccordionItem.call(this, accordionItem);
+
+	if (appCtxt.isOffline || !appCtxt.inStartup) {
+		var params = {
+			query: appCtxt.getCurrentSearch().query,
+			searchFor: ZmId.SEARCH_ANY,
+			getHtml: appCtxt.get(ZmSetting.VIEW_AS_HTML)
+		};
+		appCtxt.getSearchController().search(params);
+	}	
 };
 
 ZmMixedApp.prototype.showSearchResults =
