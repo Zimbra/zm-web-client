@@ -484,6 +484,10 @@ function(list) {
 		if (setting.id == ZmSetting.OFFLINE_IS_MAILTO_HANDLER) {
 			if (setting.value === true) {
 				appCtxt.getAppController().registerMailtoHandler();
+				var cbox = this.getFormObject(ZmSetting.OFFLINE_IS_MAILTO_HANDLER);
+				if (cbox) {
+					cbox.setEnabled(false);
+				}
 			}
 			break;
 		}
@@ -698,6 +702,7 @@ function(id, setup, value) {
 	var cboxLabel = ZmPreferencesPage.__formatLabel(setup.displayName, value);
 	checkbox.setText(cboxLabel);
 	checkbox.setSelected(value);
+
 	// TODO: Factor this out
 	if (id == ZmSetting.MAIL_LOCAL_DELIVERY_DISABLED) {
 		this._handleDontKeepCopyChange();
@@ -706,6 +711,11 @@ function(id, setup, value) {
 	else if (id == ZmSetting.NOTIF_ENABLED) {
 		this._handleNotifyChange();
 		checkbox.addSelectionListener(new AjxListener(this, this._handleNotifyChange));
+	}
+	else if (id == ZmSetting.OFFLINE_IS_MAILTO_HANDLER) {
+		if (window.platform && window.platform.isRegisteredProtocolHandler("mailto")) {
+			checkbox.setEnabled(false);
+		}
 	}
 	return checkbox;
 };
