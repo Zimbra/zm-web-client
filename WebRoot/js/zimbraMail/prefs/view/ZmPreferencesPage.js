@@ -396,7 +396,16 @@ function(id, value, setup, control) {
 		if (type == ZmPref.TYPE_COLOR) {
 			object.setColor(value);
 		} else if (type == ZmPref.TYPE_CHECKBOX) {
-			object.setSelected(value);
+			if (id == ZmSetting.OFFLINE_IS_MAILTO_HANDLER &&
+				window.platform && !window.platform.isRegisteredProtocolHandler("mailto"))
+			{
+				object.setEnabled(true);
+				object.setSelected(false);
+				appCtxt.set(id, false, null, null, true);
+			}
+			else {
+				object.setSelected(value);
+			}
 		} else if (type == ZmPref.TYPE_RADIO_GROUP) {
 			object.setSelectedValue(value);
 		} else if (type == ZmPref.TYPE_COMBOBOX) {

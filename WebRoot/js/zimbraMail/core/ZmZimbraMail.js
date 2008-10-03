@@ -427,8 +427,6 @@ function(params, result) {
 
 	if (!appCtxt.isOffline) {
 		this.setPollInterval(true);
-	} else {
-		this.registerMailtoHandler();
 	}
 
 	window.onbeforeunload = ZmZimbraMail._confirmExitMethod;
@@ -881,7 +879,6 @@ function() {
 	// register mailto: handler
 	if (appCtxt.get(ZmSetting.OFFLINE_SUPPORTS_MAILTO) &&
 		appCtxt.get(ZmSetting.OFFLINE_IS_MAILTO_HANDLER) &&
-		window.platform && // do this check so we can still debug in FF
 		!window.platform.isRegisteredProtocolHandler("mailto"))
 	{
 		var callback = AjxCallback.simpleClosure(this.handleOfflineMailTo, this);

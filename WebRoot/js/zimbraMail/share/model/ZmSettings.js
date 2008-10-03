@@ -227,6 +227,10 @@ function(callback, accountName, result) {
 			if (setting) {
 				setting.setValue(true);
 			}
+			setting = this._settings[ZmSetting.OFFLINE_IS_MAILTO_HANDLER];
+			if (setting && !window.platform.isRegisteredProtocolHandler("mailto")) {
+				setting.setValue(false);
+			}
 		}
 	}
 

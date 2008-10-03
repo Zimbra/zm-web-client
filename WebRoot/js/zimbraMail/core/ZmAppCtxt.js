@@ -126,7 +126,7 @@ function(id, value, key, setDefault, skipNotify) {
 	// for offline / multi-account, global settings should always come from the
 	// invisible parent account
 	var setting = (this.isOffline && this.multiAccounts && ZmSetting.IS_GLOBAL[id])
-		? this.getSettings(this.getMainAccount())
+		? this.getSettings(this.getMainAccount()).getSetting(id)
 		: this.getSettings().getSetting(id);
 
 	if (setting) {
