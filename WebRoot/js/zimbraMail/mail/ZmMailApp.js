@@ -1342,7 +1342,7 @@ function(callback, queryStr) {
 	{
 		cc.resetComposeForMailto(params);
 	} else {
-		cc.doAction(params);W
+		cc.doAction(params);
 	}
 
 	if (!this._hasRendered) {
