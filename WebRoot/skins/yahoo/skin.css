@@ -4,7 +4,6 @@
 #skin_container_tree_footer		{	border-width:1px;				}
 #skin_spacing_search			{	width:46%;						}
 #skin_container_web_search		{	width:95%; height:20px;			}
-#skin_container_offline_status	{	position:static;				}
 #skin_container_app_top_toolbar	{
 	border-left-width:1px;
 	border-left-color:@darken(AppC,50)@;
