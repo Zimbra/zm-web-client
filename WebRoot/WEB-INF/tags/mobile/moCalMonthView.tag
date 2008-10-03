@@ -102,8 +102,6 @@
                 </tr>
             </c:forEach>
         </table>
-        <div  style="border-top:5px outset #cccccc;"/>
-        <div style="border-top:3px solid #eeeeee;"/>
     </td>
 </tr>
 

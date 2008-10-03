@@ -53,6 +53,7 @@ ZmApp = function(name, container, parentController) {
 	this._registerOrganizers();
 	if (!parentController) {
 		this._setupSearchToolbar();
+		this._setupCurrentAppToolbar();
 	}
 	this._registerApp();
 
@@ -226,6 +227,7 @@ ZmApp.prototype._registerOperations		= function() {};
 ZmApp.prototype._registerItems			= function() {};
 ZmApp.prototype._registerOrganizers		= function() {};
 ZmApp.prototype._setupSearchToolbar		= function() {};
+ZmApp.prototype._setupCurrentAppToolbar = function() {};
 ZmApp.prototype._registerApp			= function() {};
 ZmApp.prototype._registerPrefs			= function() {};						// called when Preferences pkg is loaded
 
