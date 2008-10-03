@@ -929,6 +929,7 @@ function(creates) {
 	var didAppAlert, didSoundAlert, didBrowserAlert = false;
 
 	// OFFLINE:
+	var msgCount = 0;
 	var offlineWinText = {};
 	var offlineToasterCount = 0;
 	var offlineToasterSupported = (appCtxt.isOffline && window.platform && (AjxEnv.isWindows || AjxEnv.isMac));
@@ -990,6 +991,7 @@ function(creates) {
 				}
 				offlineToasterCount++;
 			}
+			msgCount++;
 		}
 	}
 
@@ -1000,7 +1002,7 @@ function(creates) {
 			balloonText.push(j + "\n  " + offlineWinText[j].join("\n  "));
 		}
 		if (balloonText.length > 0) {
-			if (msgs.length > 5) {
+			if (msgCount.length > 5) {
 				balloonText.push(ZmMsg.andMore);
 			}
 			window.platform.icon().showBalloonTip(ZmMsg.newMail, balloonText.join("\n"), 5);
