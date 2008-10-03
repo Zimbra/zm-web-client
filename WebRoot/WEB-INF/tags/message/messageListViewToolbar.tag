@@ -60,6 +60,8 @@
                     <td><div class='vertSep'></div></td>
                     <c:if test="${!context.folder.isDrafts}">
                         <td  nowrap valign=middle>
+                            <input  type="hidden" value="" id="drag_target_folder" name="dragTargetFolder" />
+                            <input  type="hidden" value="" id="drag_msg_id" name="dragMsgId" />
                             <select name="folderId" onchange="zclick('SOPMOVE')">
                                 <option value="" selected/><fmt:message key="moveAction"/>
                                 <option disabled /><fmt:message key="actionOptSep"/>
@@ -69,6 +71,7 @@
                                     </c:if>
                                 </zm:forEachFolder>
                             </select>
+
                         </td>
                         <app:button id="${keys ? 'OPMOVE' : ''}" name="actionMove" text="actionMove" tooltip="actionMoveTT"/>
                         <td><div class='vertSep'></div></td>

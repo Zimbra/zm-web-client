@@ -16,7 +16,10 @@
         </c:otherwise>
     </c:choose>
     <fmt:setBundle basename="/messages/ZhMsg" scope="request"/>
+    <c:if test="${uiv!='1'}">
     <mo:composeCheck/>
+    <mo:apptComposeCheck/>    
+    </c:if>
     <c:set var="action" value="${zm:cook(empty param.paction ? param.action : param.paction)}" scope="request"/>
     <c:choose>
         <c:when test="${not empty param.actionSearch}">

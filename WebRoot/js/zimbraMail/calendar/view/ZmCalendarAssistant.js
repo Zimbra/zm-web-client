@@ -52,36 +52,42 @@ function(dialog, verb, args) {
 	}
 
 	match = args.match(RegExp("\\b("
-								+ZmMsg.viewCalForDay+"|"
-								+ZmMsg.viewCalForWeek+"|"
-								+ZmMsg.viewCalForWorkWeek+"|"
-								+ZmMsg.viewCalForMonth+")\\b"));
+							  +ZmMsg.viewCalForDay+"|"
+							  +ZmMsg.viewCalForWeek+"|"
+							  +ZmMsg.viewCalForWorkWeek+"|"
+							  +ZmMsg.viewCalForList+"|"
+							  +ZmMsg.viewCalForMonth+")\\b"));
 	var view = (match) ? match[1] : null;
 	var icon;
 	switch (view) {
-	case ZmMsg.viewCalForDay:
-		icon = 'DayView';
-		this._view = ZmId.VIEW_CAL_DAY;
-		view = ZmMsg.viewDay;
-		break;
-	case ZmMsg.viewCalForWeek:
-		icon = 'WeekView';
-		this._view = ZmId.VIEW_CAL_WEEK;
-		view = ZmMsg.viewWeek;
-		break;
-	case ZmMsg.viewCalForWorkWeek:
-		icon = 'WorkWeekView';
-		this._view = ZmId.VIEW_CAL_WORK_WEEK;
-		view = ZmMsg.viewWorkWeek;
-		break;
-	case ZmMsg.viewCalForMonth:
-		icon = 'MonthView';
-		this._view = ZmId.VIEW_CAL_MONTH;
-		view = ZmMsg.viewMonth;
-		break;
-	default:
-		icon = "CalendarApp";
-		this._view = null;
+		case ZmMsg.viewCalForDay:
+			icon = 'DayView';
+			this._view = ZmId.VIEW_CAL_DAY;
+			view = ZmMsg.viewDay;
+			break;
+		case ZmMsg.viewCalForWeek:
+			icon = 'WeekView';
+			this._view = ZmId.VIEW_CAL_WEEK;
+			view = ZmMsg.viewWeek;
+			break;
+		case ZmMsg.viewCalForWorkWeek:
+			icon = 'WorkWeekView';
+			this._view = ZmId.VIEW_CAL_WORK_WEEK;
+			view = ZmMsg.viewWorkWeek;
+			break;
+		case ZmMsg.viewCalForMonth:
+			icon = 'MonthView';
+			this._view = ZmId.VIEW_CAL_MONTH;
+			view = ZmMsg.viewMonth;
+			break;
+		case ZmMsg.viewCalForList:
+			icon = 'TasksListView';
+			this._view = ZmId.VIEW_CAL_LIST;
+			view = ZmMsg.viewList;
+			break;
+		default:
+			icon = "CalendarApp";
+			this._view = null;
 	}
 
 	dialog._setOkButton(AjxMsg.ok, true, true); //, true, icon);

@@ -15,7 +15,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
-
+<c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'mosearch'}"/>
 
 <c:if test="${(not empty value) or isaddress}">
 	<fmt:message key="${label}" var="label"/>
@@ -49,8 +49,11 @@
                     <a href="${fn:escapeXml(url)}">${fn:escapeXml(value)}</a>
                 </c:when>
                 <c:when test="${isemail}">
-                    <c:url value="/m/mosearch" var="url">
-                        <c:param name="action" value="compose"/>
+                    <c:url value="${context_url}" var="url">
+                        <c:param name="st" value="newmail"/>
+                        <c:if test="${uiv != '1'}">
+                            <c:param name="action" value="compose"/>
+                        </c:if>
                         <c:param name="to" value="${value}"/>
                     </c:url>
                     <a href="${fn:escapeXml(url)}">${fn:escapeXml(value)}</a>
