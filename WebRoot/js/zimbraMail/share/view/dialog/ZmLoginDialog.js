@@ -125,11 +125,6 @@ function(visible, transparentBg) {
 	}
 
 	Dwt.setHandler(this.getHtmlElement(), DwtEvent.ONKEYDOWN, ZLoginFactory.handleKeyPress);
-
-	var passwordField = ZLoginFactory.get(ZLoginFactory.PASSWORD_ID);
-	if (passwordField && passwordField.focus) {
-		passwordField.focus();
-	}
 };
 
 ZmLoginDialog.prototype.addChild =
@@ -159,15 +154,9 @@ function() {
 
 ZmLoginDialog._loginListener =
 function(target) {
-	// Get the dialog instance.
-	var element = target;
-	while (element) {
-		var object = DwtControl.fromElement(element);
-		if (object instanceof ZmLoginDialog) {
-			object._loginSelListener();
-			break;
-		}
-		element = element.parentNode;
+	var dialog = DwtControl.fromElement(target);
+	if (dialog) {
+		dialog._loginSelListener();
 	}
 };
 

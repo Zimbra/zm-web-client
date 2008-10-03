@@ -1,17 +1,17 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- *
+ * 
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
- *
+ * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- *
+ * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- *
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -1236,12 +1236,16 @@ function(msgNode) {
 		try {
 			this.invite = ZmInvite.createFromDom(msgNode.inv);
 			this.invite.setMessageId(this.id);
-			// bug fix #18613
-			var desc = this.invite.getComponentDescription();
-			if (desc && this._bodyParts.length == 0) {
-				var textPart = { ct:ZmMimeTable.TEXT_PLAIN, s:desc.length, content:desc };
-				this._bodyParts.push(textPart);
-			}
+            //bug:18613
+            var desc = this.invite.getComponentDescription();
+            if((this._bodyParts.length == 0) && desc){
+                var textPart = new Object();
+                textPart.ct = ZmMimeTable.TEXT_PLAIN;
+                textPart.s = desc.length;
+                textPart.content = desc;
+                this._bodyParts.push(textPart);
+            }
+            this._loaded = this._bodyParts.length > 0  || this.attachments.length > 0;
 		} catch (ex) {
 			// do nothing - this means we're trying to load an ZmInvite in new
 			// window, which we dont currently load (re: support).
@@ -1269,7 +1273,7 @@ function(addrNodes, type, contactList, isDraft) {
 			var addr = addrs.get(i);
 			var email = addr.getAddress();
 			var addrNode = {t:AjxEmailAddress.toSoapType[type], a:email};
-
+	
 			// tell server to add this email to address book if not found
 			if (contactList && !isDraft && appCtxt.get(ZmSetting.AUTO_ADD_ADDRESS) &&
 				!contactList.getContactByEmail(email))

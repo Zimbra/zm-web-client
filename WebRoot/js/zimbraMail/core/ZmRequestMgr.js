@@ -89,7 +89,6 @@ function() {
  *        response				[object]*		pre-determined response (no request will be made)
  *        skipAuthCheck			[boolean]*		don't check if auth token has changed
  *        resend				[constant]*		reason for resending request
- *        noSession				[boolean]*		if true, no session info is included
  */
 ZmRequestMgr.prototype.sendRequest =
 function(params) {
@@ -124,8 +123,7 @@ function(params) {
 		logRequest:this._logRequest,
 		highestNotifySeen:this._highestNotifySeen,
 		skipAuthCheck:params.skipAuthCheck,
-		resend:params.resend,
-		noSession:params.noSession
+		resend:params.resend
 	};
 	var methodName = params.methodName = ZmCsfeCommand.getMethodName(cmdParams.jsonObj || cmdParams.soapDoc);
 
@@ -543,7 +541,7 @@ function(modifies) {
 			DBG.println(AjxDebug.DBG2, "ZmRequestMgr: handling modified notif for ID " + mod.id + ", node type = " + name);
 			var item = appCtxt.cacheGet(mod.id);
 			if (item) {
-				mod._isRemote = (name == "folder" && item.link);	// remote subfolder
+				mod._isRemote = (name == "folder" && item.link);
 				item.notifyModify(mod);
 			}
 		}

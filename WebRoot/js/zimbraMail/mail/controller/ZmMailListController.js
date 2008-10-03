@@ -79,7 +79,6 @@ ZmMailListController.GROUP_BY_SETTING	= {};	// associated setting on server
 // Stuff for the View menu
 ZmMailListController.GROUP_BY_ICON = {};
 ZmMailListController.GROUP_BY_MSG_KEY = {};
-ZmMailListController.GROUP_BY_SHORTCUT = {};
 ZmMailListController.GROUP_BY_VIEWS = [];
 
 // convert key mapping to folder to search
@@ -346,7 +345,7 @@ function() {
 		if (ops && ops.length) {
 			menuItems = menuItems.concat(ops);
 		}
-		this._participantActionMenu = new ZmActionMenu({parent:this._shell, menuItems:menuItems, controller:this,
+		this._participantActionMenu = new ZmActionMenu({parent:this._shell, menuItems:menuItems,
 														context:this._currentView, menuType:ZmId.MENU_PARTICIPANT});
 		this._addMenuListeners(this._participantActionMenu);
 		this._participantActionMenu.addPopdownListener(this._menuPopdownListener);
@@ -784,13 +783,10 @@ function(parent) {
 	var inTrashFolder = (this._getSearchFolderId() == ZmFolder.ID_TRASH);
 	var deleteButton = parent.getButton(ZmOperation.DELETE);
 	var deleteMenuButton = parent.getButton(ZmOperation.DELETE_MENU);
-	var tooltip = inTrashFolder ? ZmMsg.deletePermanentTooltip : ZmMsg.deleteTooltip;
-	if (deleteButton) {
-		deleteButton.setToolTipContent(ZmOperation.getToolTip(ZmOperation.DELETE, ZmKeyMap.MAP_NAME_R[this.getKeyMapName()], tooltip));
-	}
-	if (deleteMenuButton) {
-		deleteMenuButton.setToolTipContent(ZmOperation.getToolTip(ZmOperation.DELETE_MENU, ZmKeyMap.MAP_NAME_R[this.getKeyMapName()], tooltip));
-	}
+	if (deleteButton)
+		deleteButton.setToolTipContent(inTrashFolder ? ZmMsg.deletePermanentTooltip : ZmMsg.deleteTooltip);
+	if (deleteMenuButton)
+		deleteMenuButton.setToolTipContent(inTrashFolder ? ZmMsg.deletePermanentTooltip : ZmMsg.deleteTooltip);
 };
 
 // If we're in the Spam folder, the "Spam" button becomes the "Not Spam" button
@@ -804,8 +800,7 @@ function(parent) {
 		item.setText(inSpamFolder ? ZmMsg.notJunk : ZmMsg.junk);
 		item.setImage(inSpamFolder ? 'Inbox' : 'JunkMail');
 		if (item.setToolTipContent) {
-			var tooltip = inSpamFolder ? ZmMsg.notJunkTooltip : ZmMsg.junkTooltip; 
-			item.setToolTipContent(ZmOperation.getToolTip(ZmOperation.SPAM, ZmKeyMap.MAP_NAME_R[this.getKeyMapName()], tooltip));
+			item.setToolTipContent(inSpamFolder ? ZmMsg.notJunkTooltip : ZmMsg.junkTooltip);
 		}
 	}
 };
@@ -1091,13 +1086,11 @@ function(view) {
 		var id = ZmMailListController.GROUP_BY_VIEWS[i];
 		var mi = menu.createMenuItem(id, {image:ZmMailListController.GROUP_BY_ICON[id],
 										  text:ZmMsg[ZmMailListController.GROUP_BY_MSG_KEY[id]],
-										  shortcut:ZmMailListController.GROUP_BY_SHORTCUT[id],
 										  style:DwtMenuItem.RADIO_STYLE});
 		mi.setData(ZmOperation.MENUITEM_ID, id);
 		mi.addSelectionListener(this._listeners[ZmOperation.VIEW]);
-		if (id == this._defaultView()) {
+		if (id == this._defaultView())
 			mi.setChecked(true, true);
-		}
 	}
 	this._setupReadingPaneMenuItem(view, menu, this.isReadingPaneOn());
 
