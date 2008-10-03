@@ -126,9 +126,10 @@
 </tr>
 </table>
 <c:if test="${isTop}">
-    <div style="padding:5px;background:#efefef;font-size:small;">
-        <a href="${fn:escapeXml(closeUrl)}#cn${contact.id}" class='zo_leftbutton'>
+    <div class="SubToolbar">
+         <a href="${context_url}?st=ab"><fmt:message key="addressBooks"/></a> &#171;
+         <a href="${fn:escapeXml(closeUrl)}#cn${contact.id}" class='zo_leftbutton'>
              ${fn:escapeXml(zm:truncate(context.shortBackTo,15,true))}
-        </a>
+        </a> &#171; ${fn:escapeXml(fn:substring(contact.firstName,0,8))}...
     </div>
 </c:if>  

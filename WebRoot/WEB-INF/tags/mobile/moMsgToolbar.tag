@@ -13,6 +13,7 @@
 <zm:currentResultUrl var="closeUrl" value="${urlTarget}" context="${context}"/>
 <zm:computeNextPrevItem var="cursor" searchResult="${context.searchResult}" index="${context.currentItemIndex}"/>
 
+<%--
 <c:if test="${!isTop}">
 <div style="padding:5px;background:#efefef;font-size:small;">
 
@@ -21,6 +22,7 @@
     </a>
 </div>
 </c:if>
+--%>
 
 <table class="ToolbarBg" cellpadding="0" cellspacing="0" border="0" width="100%">
     <tr>
@@ -143,10 +145,10 @@
 </table>
 
 <c:if test="${isTop}">
-<div style="padding:5px;background:#efefef;font-size:small;">
-
-    <a href="${fn:escapeXml(closeUrl)}#msg${mid}" class='zo_leftbutton'>
-            ${fn:escapeXml(zm:truncate(context.shortBackTo,15,true))}
+<div class="SubToolbar">
+    <a href="${context_url}?st=folders"><fmt:message key="folders"/></a> &#171; <a href="${fn:escapeXml(closeUrl)}#msg${cid}" class='zo_leftbutton'>
+                ${fn:escapeXml(zm:truncate(context.shortBackTo,15,true))}
     </a>
+     &#171; ${fn:escapeXml(fn:substring(msg.subject,0,8))}...
 </div>
 </c:if>

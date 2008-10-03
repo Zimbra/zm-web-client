@@ -62,7 +62,7 @@
                 <input type="hidden" name="doFolderAction" value="1">
                 <input name="crumb" type="hidden" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
                 <span class="label"><fmt:message key="name"/>:</span> <input type="text" name="folder_name"
-                                                                             style="width:100px;">
+                                                                             style="width:100px;"  class="Textarea">
                 <fmt:message key="in"/>: <select name="parentid" style="width:100px;">
                 <option value="${mailbox.inbox.parentId}">--<fmt:message key="folder"/>--</option>
                 <zm:forEachFolder parentid="${mailbox.inbox.id}" var="fldr" skiproot="false">
@@ -144,7 +144,7 @@
                 <form action="" method="post" style="padding:0px;margin:0px;">
                     <input type="hidden" name="doFolderAction" value="1">
                     <input name="crumb" type="hidden" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
-                    <span class="label"><fmt:message key="name"/>:</span> <input type="text" style="width:100px;"
+                    <span class="label"><fmt:message key="name"/>:</span> <input type="text" style="width:100px;"  class="Textarea" name="tag_name">
                     <select name="tag_color">
                         <optgroup label="<fmt:message key='color'/>">
                             <option value="cyan"><fmt:message key="cyan"/></option>

@@ -87,11 +87,20 @@ html,body {
     background: url(/img/mobile/iPhoneToolbar.png) #6d84a2 repeat-x;
     height: 37px;
 }
+.SubToolbar{
+    font-size:small;
+    padding:5px;
+    background:#efefef;
+    border-bottom:1px outset white;
+}
 .ToolbarBg a{ font-size:medium;}
-.searchbar input[type='text']{height:20px;font-size:100%;}
+.searchbar input[type='text']{font-size: medium;}
 .ToolbarBg{
 	background: #e7e7e6 url("/img/mobile/ToolbarBg.gif") repeat-x top left;
 	height: 37px;
+}
+.zo_button_active{
+    color:gray;
 }
 .zo_m_list_from{
     color:#000000;
@@ -138,7 +147,7 @@ a.zo_button_disabled {color:gray;background-color:none;}
 
 .Padding{padding: 0 4px;}
 
-.Textarea{border: 0; padding: 3px; font: inherit; width: 100%;}
+.Textarea{border: 1px solid #DDDDDD;  padding: 3px; font: inherit; width: 100%;}
 
 .SmallText{font-size: small; color: black;}
 

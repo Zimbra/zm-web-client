@@ -16,7 +16,7 @@
     <zm:searchConv var="convSearchResult" id="${not empty param.cid ? param.cid : context.currentItem.id}" limit="100"
                    context="${context}" fetch="none" markread="false" sort="${param.css}"/>
 </c:if>
-<c:if test="${!isTop}">
+<%--<c:if test="${!isTop}">
     <div style="padding:5px;background:#efefef;font-size:small;">
         <c:if test="${isConv!=null && isConv}">
             <zm:currentResultUrl var="closeurl" value="${urlTarget}"
@@ -37,7 +37,7 @@
         </c:if>
 
     </div>
-</c:if>
+</c:if>--%>
 <table class="ToolbarBg" cellpadding="0" cellspacing="0" border="0" width="100%">
 <tr>
 <td align="left" class="Padding">
@@ -259,7 +259,7 @@
 </tr>
 </table>
 <c:if test="${isTop}">
-    <div style="padding:5px;background:#efefef;font-size:small;">
+    <div class="SubToolbar">
         <c:if test="${isConv!=null && isConv}">
             <zm:currentResultUrl var="closeurl" value="${urlTarget}"
                                  index="${context.currentItemIndex}"
@@ -268,14 +268,18 @@
         <zm:currentResultUrl var="closeurl" value="${urlTarget}"
                              index="${context.currentItemIndex}"
                              context="${context}"/>
-        <a href="${fn:escapeXml(closeurl)}#conv${cid}" class='zo_leftbutton'>
+        
+
+         <a href="${context_url}?st=folders"><fmt:message key="folders"/></a> &#171; <a href="${fn:escapeXml(closeurl)}#conv${cid}" class='zo_leftbutton'>
                 ${fn:escapeXml(zm:truncate(context.shortBackTo,15,true))}
         </a>
+        <c:if test="${isConv!=null && isConv}">
+            &#171; <fmt:message key="backToConv"/>
+        </c:if>    
         <c:if test="${isConv==null || !isConv }">
-        <zm:currentResultUrl var="closeUrl" value="${urlTarget}" action='view' context="${context}"
+            <zm:currentResultUrl var="closeUrl" value="${urlTarget}" action='view' context="${context}"
                              cso="${param.cso}" csi="${param.csi}" css="${param.css}"/>
-        &laquo; <a href="${fn:escapeXml(closeUrl)}" class='zo_leftbutton'>
-            <fmt:message key="backToConv"/>
+            &#171; <a href="${fn:escapeXml(closeUrl)}" class='zo_leftbutton'> <fmt:message key="backToConv"/> </a> &#171; ${fn:escapeXml(fn:substring(message.subject,0,8))}...
         </c:if>
 
     </div>

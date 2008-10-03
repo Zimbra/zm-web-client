@@ -9,7 +9,7 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <zm:currentResultUrl var="closeUrl" value="${urlTarget}" context="${context}"/>
 
-<c:if test="${!isTop && uiv == '1'}">
+<%--<c:if test="${!isTop && uiv == '1'}">
     <div style="padding:5px;background:#efefef;font-size:small;">
     <c:if test="${context.isContactSearch}">
             <a id="ABOOKS" href="${fn:escapeXml(context_url)}?st=ab">
@@ -25,7 +25,7 @@
             </a>
     </c:if>
      </div>
-</c:if>
+</c:if>--%>
 <table class="ToolbarBg" cellpadding="0" cellspacing="0" border="0" width="100%">
 <tr>
 <td align="left" class="Padding">
@@ -184,3 +184,15 @@
 </td>
 </tr>
 </table>
+<c:if test="${isTop}">
+    <div class="SubToolbar">
+        <c:choose>
+            <c:when test="${context.isContactSearch}">
+                <a href="${context_url}?st=ab"><fmt:message key="addressBooks"/></a> &#171; ${context.shortBackTo}
+            </c:when>
+            <c:otherwise>
+                <a href="${context_url}?st=folders"><fmt:message key="folders"/></a> &#171; ${context.shortBackTo}
+            </c:otherwise>
+        </c:choose>
+    </div>
+</c:if>  

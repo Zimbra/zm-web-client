@@ -92,4 +92,19 @@
         </tr>
 
     </table>
+     <table width=100% cellspacing="0" cellpadding="2" border=0 class="ToolbarBg">
+        <tr>
+            <td>
+                <mo:calendarUrl var="backurl" action="${null}"/>
+                <a href="${backurl}">
+                    <fmt:message key="back"/>
+                </a>
+            </td>
+            <td align="right">
+                <a href="${context_url}?st=newappt">
+                    <fmt:message key="add"/>
+                </a>
+            </td>
+        </tr>
+    </table>
 </mo:view>

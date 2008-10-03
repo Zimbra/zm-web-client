@@ -111,11 +111,11 @@
                     <table cellspacing="0" cellpadding="0" width="100%">
                         <tr>
                             <td>
-                                <table cellspacing="1" cellpadding="1" width="99%" align="right">
+                                <table cellspacing="1" cellpadding="1" border="0">
                                     <tr>
                                         <td class="zo_m_list_row">
                                                 <%--<fmt:message key="in"/>--%>
-                                            <select name="st" style="width:100%;">
+                                            <select name="st">
                                                 <option value="${(mailbox.features.conversations ? mailbox.prefs.groupMailBy : 'message')}">
                                                     <fmt:message key="mail"/></option>
                                                 <c:if test="${mailbox.features.contacts}">
@@ -134,7 +134,7 @@
                                             </select>
                                         </td>
                                         <td align="left" style="padding-right:2px;">
-                                            <input type="text" name="sq" value="${zm:cook(param.sq)}"/>
+                                            <input type="text"  class="Textarea" name="sq" value="${zm:cook(param.sq)}"/>
                                         </td>
                                         <td align="right">
                                             <input type="submit" name="actionSearch"
@@ -223,6 +223,10 @@
         </td>
     </tr>
 </table>
+<hr size="1"/>
+<div align="center" style="height:30px;">
+    <a target="_blank" href="<fmt:message key="logoURL"/>"><fmt:message key="footerCopyright"/></a>
+</div>
 <script type="text/javascript" language="JavaScript">
    <%-- <c:if test="${param.showSearch == null || param.showSearch != '1'}">
     document.getElementById("SEARCH_BOX").style.display = "none";

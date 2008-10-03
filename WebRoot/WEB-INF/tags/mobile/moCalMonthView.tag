@@ -161,7 +161,11 @@
         </div>
     </td>
 </tr>
-
+<tr>
+    <td>
+        <mo:calendarViewToolbar date="${date}" openurl="false"/>
+    </td>
+</tr>
 </table>
 <script type="text/javascript">
     var currentDate = '${curId}';
