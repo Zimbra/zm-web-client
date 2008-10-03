@@ -369,7 +369,7 @@ function(reloginMode, continuation) {
 	}
 	
 	var username = appCtxt.getUsername();
-	if (!username) {
+	if (!username || appCtxt.isOffline) {
 		ZmZimbraMail.logOff();
 		return;
 	}
