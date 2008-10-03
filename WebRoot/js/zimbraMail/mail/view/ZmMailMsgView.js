@@ -54,10 +54,7 @@ ZmMailMsgView = function(params) {
 		}
 	}
 
-	// bug fix #30835 - prism does not handle this well.
-	if (!appCtxt.isOffline || !AjxEnv.isPrism) {
-		this._setMouseEventHdlrs(); // needed by object manager
-	}
+	this._setMouseEventHdlrs(); // needed by object manager
 
 	// XXX: for now, turn off object handling in new window
 	if (!appCtxt.isChildWindow) {
