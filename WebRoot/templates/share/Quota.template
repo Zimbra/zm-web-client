@@ -42,7 +42,19 @@
 			<$
 				var tooltipMsg = AjxMessageFormat.format(ZmMsg.quotaDescLimited, [data.size, data.limit]);
 			$>
-			<tr><td><center><$= ZmMsg.quota $>: ${percent}% (<$= tooltipMsg $>)</center></td></tr>
+			<tr>
+                <td>
+                    <center><$= ZmMsg.quota $>: ${percent}% (<$= tooltipMsg $>)</center>
+                </td>
+            </tr>
 		<$ } $>
+        <$ if (data.offlineStatus) { $>
+            <tr>
+                <td>
+                    <hr size=1></hr>
+                    ${offlineStatus}
+                </td>
+            </tr>
+        <$ } $>
 	</table>
 </template>

@@ -1386,6 +1386,10 @@ function() {
 	}
 	this._usedQuotaField.getHtmlElement().innerHTML = AjxTemplate.expand('share.Quota#'+quotaTemplateId, data)
 
+	if (appCtxt.isOffline && appCtxt.numVisibleAccounts == 1) {
+		data.offlineStatus = appCtxt.getActiveAccount().getToolTip();
+	}
+
 	// tooltip for username/quota fields
 	var html = AjxTemplate.expand('share.Quota#Tooltip', data);
 	this._components[ZmAppViewMgr.C_USER_INFO].setToolTipContent(html);
