@@ -128,10 +128,10 @@ function() {
 ZmImApp.prototype._registerApp =
 function() {
 	var newItemOps = {};
-	newItemOps[ZmOperation.IM_NEW_CHAT] = "chat";
+	newItemOps[ZmOperation.IM_NEW_CHAT]		= "chat";
 
 	var newOrgOps = {};
-	newOrgOps[ZmOperation.NEW_ROSTER_ITEM] = "rosterItem";
+	newOrgOps[ZmOperation.NEW_ROSTER_ITEM] = "buddy";
 
 	var actionCodes = {};
 	actionCodes[ZmKeyMap.NEW_CHAT] = ZmOperation.IM_NEW_CHAT;
