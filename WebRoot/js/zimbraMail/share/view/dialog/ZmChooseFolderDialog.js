@@ -47,18 +47,19 @@ function() {
  * able to create different sorts of overviews based on what the calling function
  * wants. By default, we show the folder tree view.
  * 
- * @param params		[hash]*		hash of params:
- *        data			[object]	array of items, a folder, an item, or null
- *        treeIds		[array]		list of trees to show
- *        overviewId	[string]*	ID to use as base for overview ID
- *        omit			[hash]*		IDs to not show
- *        noSelect		[hash]*		IDs to disable selection for
- *        title			[string]*	dialog title
- *        description	[string]*	description of what the user is selecting
- *        skipReadOnly	[boolean]* 	if true, read-only folders will not be displayed
- *        hideNewButton [boolean]*	if true, New button will not be shown
- *        orgType		[constant]*	primary tree type
- *        noRootSelect	[boolean]*	if true, don't make root tree item(s) selectable
+ * @param params				[hash]*			hash of params:
+ *        data					[object]		array of items, a folder, an item, or null
+ *        treeIds				[array]			list of trees to show
+ *        overviewId			[string]*		ID to use as base for overview ID
+ *        omit					[hash]*			IDs to not show
+ *        noSelect				[hash]*			IDs to disable selection for
+ *        title					[string]*		dialog title
+ *        description			[string]*		description of what the user is selecting
+ *        skipReadOnly			[boolean]* 		if true, read-only folders will not be displayed
+ *        skipSyncFailureSubs	[boolean]*		if true, don't show "Local Folders"
+ *        hideNewButton 		[boolean]*		if true, New button will not be shown
+ *        orgType				[constant]*		primary tree type
+ *        noRootSelect			[boolean]*		if true, don't make root tree item(s) selectable
  */
 ZmChooseFolderDialog.prototype.popup =
 function(params) {
@@ -78,6 +79,17 @@ function(params) {
 			var folder = folders[i];
 			if (folder.link && folder.isReadOnly()) {
 				omit[folder.id] = true;
+			}
+		}
+	}
+
+	if (appCtxt.isOffline && params.skipSyncFailureSubs) {
+		// omit any folders that are under "Local Folders" if applicable
+		var folders = folderTree.asList();
+		for (var i = 0; i < folders.length; i++) {
+			var folder = folders[i];
+			if (folder.isUnder(ZmOrganizer.ID_ARCHIVE)) {
+				omit[folder.nId] = true;
 			}
 		}
 	}

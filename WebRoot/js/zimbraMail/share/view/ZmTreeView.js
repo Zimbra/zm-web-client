@@ -316,7 +316,7 @@ function(params) {
 			params.treeNode.addSeparator();
 			addSep = false;
 		}
-		this._addNew(params.treeNode, child, null, params.noTooltips);
+		this._addNew(params.treeNode, child, null, params.noTooltips, params.omit);
 		numItems++;
 	}
 };
@@ -328,9 +328,10 @@ function(params) {
  * @param organizer		[ZmOrganizer]	organizer for the new node
  * @param index			[int]*			position at which to add the new node
  * @param noTooltips	[boolean]*		if true, don't show tooltips for tree items
+ * @param omit			[Object]*		hash of system folder IDs to ignore
  */
 ZmTreeView.prototype._addNew =
-function(parentNode, organizer, index, noTooltips) {
+function(parentNode, organizer, index, noTooltips, omit) {
 	var ti;
 	// check if we're adding a datasource folder
 	var dsColl = (organizer.type == ZmOrganizer.FOLDER) && appCtxt.getDataSourceCollection();
@@ -396,7 +397,7 @@ function(parentNode, organizer, index, noTooltips) {
 
 	// recursively add children
 	if (organizer.children && organizer.children.size()) {
-		this._render({treeNode:ti, organizer:organizer});
+		this._render({treeNode:ti, organizer:organizer, omit:omit});
 	}
 
 	if (ds && ds.type == ZmAccount.IMAP) {
