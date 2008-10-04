@@ -679,7 +679,7 @@ function(ev) {
 	dialog.reset();
 	dialog.setTitle((type == ZmFilterRule.TYPE_FOLDER_PICKER) ? ZmMsg.chooseFolder : ZmMsg.chooseTag);
 	dialog.registerCallback(DwtDialog.OK_BUTTON, this._browseSelectionCallback, this, ev.item);
-	dialog.popup({overviewId:this.toString()});
+	dialog.popup({overviewId:this.toString(),skipSyncFailureSubs:appCtxt.isOffline});
 };
 
 /*
