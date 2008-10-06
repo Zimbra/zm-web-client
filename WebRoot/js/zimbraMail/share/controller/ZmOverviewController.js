@@ -183,10 +183,7 @@ function(account, icon) {
 			}
 		}
 	} else {
-		var el = document.getElementById(ZmId.SKIN_OFFLINE_STATUS);
-		if (el) {
-			el.className = icon;
-		}
+		appCtxt.getAppController().offlineStatusField.getHtmlElement().className = icon;
 	}
 };
 
