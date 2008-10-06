@@ -5,7 +5,7 @@
 				<td>
 					<table id='${hdrTableId}' cellspacing=0 cellpadding=0 border=0 width=100%>
 						<tr id='${hdrTableTopRowId}'>
-							<$ if (data.hasHeaderCloseBtn) { $>
+							<$ if (data.closeBtnCellId) { $>
 								<td id='${closeBtnCellId}'></td>
 								<td>&nbsp;</td>
 							<$ } $>
@@ -49,7 +49,7 @@
 							</td>
 						</tr>
                         
-                        <$ if ( data.obo && ( AjxStringUtil.stripTags(data.obo) != AjxStringUtil.stripTags(data.sentBy) ) ) { //If Email zimlet is deployed. $>
+                        <$ if (data.obo && (AjxStringUtil.stripTags(data.obo) != AjxStringUtil.stripTags(data.sentBy))) { // if Email zimlet is deployed. $>
 							<tr>
 								<td width='110' valign='top' class='LabelColName'><$= ZmMsg.onBehalfOfLabel $></td>
 								<td class='LabelColValue' colspan=10><$= data.obo $></td>
@@ -64,7 +64,7 @@
 								<td class='LabelColValue' colspan='10'><$= data.participants[i].partStr $></td>
                             </tr>
                         <$ } $>
-                        <$ if(data.hasAttachments) { $>
+                        <$ if (data.hasAttachments) { $>
                             <tr id="${attachId}_tr">
                                 <td width="100" class="LabelColName">
                                     <$= ZmMsg.attachments$>:

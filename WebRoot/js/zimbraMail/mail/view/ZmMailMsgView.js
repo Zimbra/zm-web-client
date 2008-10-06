@@ -36,9 +36,6 @@ ZmMailMsgView = function(params) {
 	this._expandHeader = true;
 	this._expandDivId = ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_EXPAND_DIV, this._mode);
 
-	// do we add a close button in the header section?
-	this._hasHeaderCloseBtn = (this._mode == ZmId.VIEW_MSG && !appCtxt.isChildWindow);
-
 	//this.SCROLL_WITH_IFRAME = ZmMailMsgView.SCROLL_WITH_IFRAME;
 	this._scrollWithIframe = ZmMailMsgView.SCROLL_WITH_IFRAME; // Making it local var
 	this._limitAttachments = this._scrollWithIframe ? 3 : 0; //making it local
@@ -986,11 +983,12 @@ function(container, html, isTextMsg, isTruncated) {
 
 ZmMailMsgView.prototype._renderMessage =
 function(msg, container, callback) {
-
 	var acctId = appCtxt.getActiveAccount().id;
-	var cl = null;
-	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-		cl = appCtxt.getApp(ZmApp.CONTACTS).contactsLoaded[acctId] ? AjxDispatcher.run("GetContacts") : null;
+	var cl;
+	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) &&
+		appCtxt.getApp(ZmApp.CONTACTS).contactsLoaded[acctId])
+	{
+		cl = AjxDispatcher.run("GetContacts");
 	}
 	var subject = msg.subject || ZmMsg.noSubject;
 	var dateFormatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.LONG, AjxDateFormat.SHORT);
@@ -1059,23 +1057,26 @@ function(msg, container, callback) {
 	var attachmentsCount = msg.getAttachmentLinks(true).length;
 	var hasAttachments = attachmentsCount != 0;
 
+	// do we add a close button in the header section?
+	var hasHeaderCloseBtn = (this._mode == ZmId.VIEW_MSG && !appCtxt.isChildWindow);
+
 	var folder = appCtxt.getById(msg.folderId);
 	var isSyncFailureMsg = (folder && folder.nId == ZmOrganizer.ID_SYNC_FAILURES);
 
-	this._hdrTableId       = ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_HDR_TABLE, this._mode);
-	this._closeBtnCellId   = ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_CLOSE_BTN_CELL, this._mode);
-	this._reportBtnCellId  = ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_REPORT_BTN_CELL, this._mode);
-	this._expandRowId      = ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_EXPAND_ROW, this._mode);
-	this._expandHeaderId   = ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_EXPAND_HDR, this._mode);
+	this._hdrTableId		= ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_HDR_TABLE, this._mode);
+	var closeBtnCellId		= hasHeaderCloseBtn ? ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_CLOSE_BTN_CELL, this._mode) : null;
+	var reportBtnCellId		= ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_REPORT_BTN_CELL, this._mode);
+	this._expandRowId		= ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_EXPAND_ROW, this._mode);
+	var expandHeaderId		= ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_EXPAND_HDR, this._mode);
 
 	var subs = {
 		id                : this._htmlElId,
 		hdrTableId        : this._hdrTableId,
 		hdrTableTopRowId  : ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_HDR_TABLE_TOP_ROW, this._mode),
-		closeBtnCellId    : this._closeBtnCellId,
-		reportBtnCellId   : this._reportBtnCellId,
+		closeBtnCellId    : closeBtnCellId,
+		reportBtnCellId   : reportBtnCellId,
 		expandRowId       : this._expandRowId,
-		expandHeaderId    : this._expandHeaderId,
+		expandHeaderId    : expandHeaderId,
 		attachId          : this._attLinksId,
 		infoBarId         : this._infoBarId,
 		subject           : subject,
@@ -1085,7 +1086,6 @@ function(msg, container, callback) {
 		sentByIcon        : sentByIcon,
 		obo               : obo,
 		participants      : participants,
-		hasHeaderCloseBtn : this._hasHeaderCloseBtn,
 		hasAttachments    : hasAttachments,
 		attachmentsCount  : attachmentsCount,
 		isSyncFailureMsg  : isSyncFailureMsg
@@ -1102,36 +1102,33 @@ function(msg, container, callback) {
 	/**************************************************************************/
 
 	// add the expand/collapse arrow button now that we have add to the DOM tree
-	var expandHeaderEl = document.getElementById(this._expandHeaderId);
+	var expandHeaderEl = document.getElementById(expandHeaderId);
 	if (expandHeaderEl) {
-		var image = this._expandHeader ? "HeaderExpanded" : "HeaderCollapsed";
-		//Added for bug 26579. Creating this control at object level was not working in IE
+		// Added for bug 26579. Creating this control at object level was not working in IE
 		var id = ZmId.getButtonId(this._mode, ZmId.OP_EXPAND, ZmId.MSG_VIEW);
 		if (this._expandButton) {
 			this._expandButton.dispose();
 		}
-		this._expandButton = new DwtToolBarButton({parent:this, id:id});
+		this._expandButton = new DwtToolBarButton({parent:this, id:id, parentElement:expandHeaderId});
 		this._expandButton.addSelectionListener(new AjxListener(this, this._expandButtonListener));
-		this._expandButton.setImage(image);
-		this._expandButton.reparentHtmlElement(this._expandHeaderId);
+		this._expandButton.setImage(this._expandHeader ? "HeaderExpanded" : "HeaderCollapsed");
 		this._expandButton.setVisible(Dwt.DISPLAY_BLOCK);
 	}
 
 	// add the close button if applicable
-	if (this._hasHeaderCloseBtn) {
+	if (hasHeaderCloseBtn) {
 		var id = ZmId.getButtonId(this._mode, ZmOperation.CLOSE, ZmId.MSG_VIEW);
-		this._closeButton = new DwtButton({parent:this, id:id});
-		this._closeButton.setImage("Close");
-		this._closeButton.setText(ZmMsg.close);
-		this._closeButton.reparentHtmlElement(this._closeBtnCellId);
-		this._closeButton.addSelectionListener(new AjxListener(this, this._closeButtonListener));
+		var closeButton = new DwtButton({parent:this, id:id, parentElement:closeBtnCellId});
+		closeButton.setImage("Close");
+		closeButton.setText(ZmMsg.close);
+		closeButton.addSelectionListener(new AjxListener(this, this._closeButtonListener));
 	}
 
 	// add the report button if applicable
-	var reportBtnCell = document.getElementById(this._reportBtnCellId);
+	var reportBtnCell = document.getElementById(reportBtnCellId);
 	if (reportBtnCell) {
 		var id = ZmId.getButtonId(this._mode, ZmId.REPORT, ZmId.MSG_VIEW);
-		var reportBtn = new DwtButton({parent:this, parentElement:reportBtnCell});
+		var reportBtn = new DwtButton({parent:this, id:id, parentElement:reportBtnCell});
 		reportBtn.setText(ZmMsg.reportSyncFailure);
 		reportBtn.addSelectionListener(new AjxListener(this, this._reportButtonListener, msg));
 	}

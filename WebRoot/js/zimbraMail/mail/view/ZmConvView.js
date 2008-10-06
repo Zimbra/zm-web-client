@@ -161,11 +161,11 @@ function() {
 	this._summary.getHtmlElement().innerHTML = AjxTemplate.expand("mail.Message#MessageListHeader", subs);
 
 	// add the close button
-	this._closeButton = new DwtButton({parent:this, className:"DwtToolbarButton"});
-	this._closeButton.setImage("Close");
-	this._closeButton.setText(ZmMsg.close);
-	this._closeButton.reparentHtmlElement(this._htmlElId + "_closeBtnCell");
-	this._closeButton.addSelectionListener(new AjxListener(this, this._closeButtonListener));
+	var closeButtonId = this._htmlElId + "_closeBtnCell";
+	var closeButton = new DwtButton({parent:this, className:"DwtToolbarButton", parentElement:closeButtonId});
+	closeButton.setImage("Close");
+	closeButton.setText(ZmMsg.close);
+	closeButton.addSelectionListener(new AjxListener(this, this._closeButtonListener));
 	
 	// save the necessary DOM objects we just created
 	this._subjectDiv = document.getElementById(this._htmlElId + "_subjDiv");

@@ -136,30 +136,27 @@ function(calItem) {
 	this._lazyCreateObjectManager();
 
 	var subs = this._getSubs(calItem);
-	var closeBtnCellId = this._htmlElId + "_closeBtnCell";
-    var saveBtnCellId = this._htmlElId + "_saveBtnCell";
-    var moveSelectId = this._htmlElId + "_folderCell";
-    var reminderSelectId = this._htmlElId + "_reminderCell";
-    this._hdrTableId = this._htmlElId + "_hdrTable";
-
 	var el = this.getHtmlElement();
 	el.innerHTML = AjxTemplate.expand("calendar.Appointment#ReadOnlyView", subs);
 
-	// add the close button
-	this._closeButton = new DwtButton({parent:this, className:"DwtToolbarButton"});
-	this._closeButton.setImage("Close");
-	this._closeButton.setText(ZmMsg.close);
-	this._closeButton.addSelectionListener(new AjxListener(this, this.close));
-	this._closeButton.reparentHtmlElement(closeBtnCellId);
+	this._hdrTableId = this._htmlElId + "_hdrTable";
 
-    // add the save button for reminders and  move select
-    this._closeButton = new DwtButton({parent:this, className:"DwtToolbarButton"});
-    this._closeButton.setImage("Save");
-    this._closeButton.setText(ZmMsg.save);
-    this._closeButton.addSelectionListener(new AjxListener(this, this.save));
-    this._closeButton.reparentHtmlElement(saveBtnCellId);
+	// add the close button
+	var closeBtnCellId = this._htmlElId + "_closeBtnCell";
+	var closeButton = new DwtButton({parent:this, className:"DwtToolbarButton", parentElement:closeBtnCellId});
+	closeButton.setImage("Close");
+	closeButton.setText(ZmMsg.close);
+	closeButton.addSelectionListener(new AjxListener(this, this.close));
+
+	// add the save button for reminders and  move select
+	var saveBtnCellId = this._htmlElId + "_saveBtnCell";
+	var saveButton = new DwtButton({parent:this, className:"DwtToolbarButton", parentElement:saveBtnCellId});
+	saveButton.setImage("Save");
+	saveButton.setText(ZmMsg.save);
+	saveButton.addSelectionListener(new AjxListener(this, this.save));
 
     // add the move select
+	var moveSelectId = this._htmlElId + "_folderCell";
 	if (document.getElementById(moveSelectId) && subs.folders.length > 0) {
 		this._moveSelect = new DwtSelect({parent: this});
 		this._moveSelect.clearOptions();
@@ -171,6 +168,7 @@ function(calItem) {
 	}
 
     // add the reminder select
+	var reminderSelectId = this._htmlElId + "_reminderCell";
 	if (document.getElementById(reminderSelectId)) {
 		var	displayOptions = [ZmMsg.apptRemindNever, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNHoursBefore, ZmMsg.apptRemindNHoursBefore, ZmMsg.apptRemindNHoursBefore, ZmMsg.apptRemindNHoursBefore, ZmMsg.apptRemindNHoursBefore ];
 	    var	options = this._reminderOptions = [0, 1, 5, 10, 15, 30, 45, 60, 120, 180, 240, 300, 1080];
@@ -295,7 +293,8 @@ function() {
 	}
 };
 
-ZmApptView.prototype.move = function(ev) {
+ZmApptView.prototype.move =
+function(ev) {
 	var item = this._calItem 
 	var ofolder = item.folderId;
 	var nfolder = ev.item.parent.parent.getValue();
@@ -307,37 +306,37 @@ ZmApptView.prototype.move = function(ev) {
 	item.move(nfolder, callback, errorCallback);
 };
 
-ZmApptView.prototype.save = function(ev) {
-    var item = this._calItem
-    var folderId = item.folderId;
-    var reminderMinutes = this._reminderSelect.getValue();
-    var isDirty = false;
+ZmApptView.prototype.save =
+function(ev) {
+	var item = this._calItem
+	var isDirty = false;
 
-    if(this._reminderSelect && this._reminderSelect.getValue() != item._reminderMinutes) {
-        item.setReminderMinutes(reminderMinutes);
-        isDirty = true;
-    }
-    if(this._moveSelect && this._moveSelect.getValue() != folderId) {
-        item.folderId = this._moveSelect.getValue();
-        isDirty = true;
-    }
+	if (this._reminderSelect && this._reminderSelect.getValue() != item._reminderMinutes) {
+		item.setReminderMinutes(this._reminderSelect.getValue());
+		isDirty = true;
+	}
+	if (this._moveSelect && this._moveSelect.getValue() != item.folderId) {
+		item.folderId = this._moveSelect.getValue();
+		isDirty = true;
+	}
 
-    if(!isDirty) {
-        return;    
-    }
+	if (!isDirty) {
+		return;
+	}
 
-    var viewMode = ZmCalItem.MODE_EDIT;
-    if (item.isRecurring()) {
-          viewMode = item.isException ?  ZmCalItem.MODE_EDIT_SINGLE_INSTANCE : ZmCalItem.MODE_EDIT_SERIES;
-    }
-    item.setViewMode(viewMode);
-    var callback = new AjxCallback(this, this._saveCallback);
-    var errorCallback = new AjxCallback(this, this._handleErrorSave);
-    item.save(null, callback, errorCallback);
+	var viewMode = ZmCalItem.MODE_EDIT;
+	if (item.isRecurring()) {
+		viewMode = item.isException ? ZmCalItem.MODE_EDIT_SINGLE_INSTANCE : ZmCalItem.MODE_EDIT_SERIES;
+	}
+	item.setViewMode(viewMode);
+	var callback = new AjxCallback(this, this._saveCallback);
+	var errorCallback = new AjxCallback(this, this._handleErrorSave);
+	item.save(null, callback, errorCallback);
 };
 
-ZmApptView.prototype._saveCallback = function() {
-  appCtxt.setStatusMsg(ZmMsg.savedAppointment);
+ZmApptView.prototype._saveCallback =
+function() {
+	appCtxt.setStatusMsg(ZmMsg.savedAppointment);
 };
 
 ZmApptView.prototype._handleErrorSave =
