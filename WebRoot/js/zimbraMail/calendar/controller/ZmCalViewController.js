@@ -278,7 +278,7 @@ function() {
 	if (this._calTreeController) {
 		cc = this._calTreeController.getCheckedCalendars(this._app.getOverviewId());
 		// bug fix #25512 - avoid race condition
-		if (cc == "" && this._app._overviewPanelContent == null) {
+		if (cc == "" && this._app.getOverviewPanelContent(true)) {
 			this._app.setOverviewPanelContent(true);
 			cc = this._calTreeController.getCheckedCalendars(this._app.getOverviewId());
 		}
@@ -437,7 +437,7 @@ function() {
 		ZmOperation.SEP,
 		ZmOperation.VIEW_MENU,
 		ZmOperation.SEP,
-		ZmOperation.TODAY,
+		ZmOperation.TODAY
 	];
 };
 

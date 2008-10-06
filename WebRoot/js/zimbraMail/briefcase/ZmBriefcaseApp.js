@@ -109,6 +109,7 @@ function() {
 							  compareFunc    : "ZmBriefcase.sortCompare",
 							  deferrable     : true,
 							  newOp			 : ZmOperation.NEW_BRIEFCASEITEM,
+							  displayOrder	 : 100,
 							  hasColor       : true
 							});
 };

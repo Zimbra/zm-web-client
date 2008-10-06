@@ -334,6 +334,7 @@ function() {
 							 createFunc:		"ZmCalendar.create",
 							 compareFunc:		"ZmCalendar.sortCompare",
 							 newOp:				ZmOperation.NEW_CALENDAR,
+							 displayOrder:		100,
 							 deferrable:		true
 							});
 };

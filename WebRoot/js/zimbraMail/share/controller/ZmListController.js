@@ -269,12 +269,13 @@ function(view) {
 
 	// we want to know when user switches accounts but can't do it until the
 	// overview panel content has been created. So, let's always check here.
-	if (appCtxt.multiAccounts &&
-		this._app._overviewPanelContent &&
-		!this._initMultiAccount)
-	{
-		this._initMultiAccount = true;
-		this._app._overviewPanelContent.addListener(DwtEvent.SELECTION, new AjxListener(this, this._accordionSelectionListener));
+	if (appCtxt.multiAccounts) {
+		var overviewContent = this._app.getOverviewPanelContent(true);
+		if (overviewContent && !this._initMultiAccount)
+		{
+			this._initMultiAccount = true;
+			overviewContent.addListener(DwtEvent.SELECTION, new AjxListener(this, this._accordionSelectionListener));
+		}
 	}
 
 	this._initializeToolBar(view);

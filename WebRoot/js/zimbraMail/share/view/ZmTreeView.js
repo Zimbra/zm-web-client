@@ -42,8 +42,8 @@ ZmTreeView = function(params) {
 
 	var className = params.className || "OverviewTree";
 	var treeStyle = params.treeStyle || DwtTree.SINGLE_STYLE;
-	DwtTree.call(this, {parent:params.parent, style:treeStyle, className:className,
-						posStyle:params.posStyle, id:params.id});
+	DwtTree.call(this, {parent:params.parent, parentElement: params.parentElement, style:treeStyle, 
+						className:className, posStyle:params.posStyle, id:params.id});
 
 	this._headerClass = params.headerClass ? params.headerClass : "overviewHeader";
 	this.overviewId = params.overviewId;
@@ -269,11 +269,6 @@ function(params) {
 				proxy.organizer = child;
 				this._render(proxy);
 				continue; 
-			}
-			// if this is a tree view of saved searches, make sure to only show saved searches
-			// that are for one of the given types
-			if ((child.type == ZmOrganizer.SEARCH) && params.searchTypes && !child._typeMatch(params.searchTypes)) {
-				continue;
 			}
 			if (this._allowedTypes && !this._allowedTypes[child.type]) {
 				if (params.omitParents) continue;

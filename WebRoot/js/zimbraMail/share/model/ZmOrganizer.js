@@ -219,6 +219,7 @@ ZmOrganizer.DEFERRABLE 		= {};		// creation can be deferred to app launch
 ZmOrganizer.PATH_IN_NAME	= {};		// if true, provide full path when asked for name
 ZmOrganizer.OPEN_SETTING	= {};		// setting that controls whether the tree view is open
 ZmOrganizer.NEW_OP			= {};		// name of operation for new button in tree header (optional)
+ZmOrganizer.DISPLAY_ORDER	= {};		// sort number to determine order of tree view (optional)
 
 ZmOrganizer.APP2ORGANIZER	= {};		// organizer types, keyed by app name
 
@@ -253,6 +254,7 @@ ZmOrganizer.APP2ORGANIZER	= {};		// organizer types, keyed by app name
  *        shortcutKey		[string]	letter encoding of this org type for custom shortcuts
  *        pathInName		[boolean]	if true, provide full path when asked for name
  *        openSetting		[const]		setting that controls whether the tree view is open
+ *        displayOrder		[int]		A number that is used when sorting the display of trees. (Lower number means higher display.)
  */
 ZmOrganizer.registerOrg =
 function(org, params) {
@@ -280,6 +282,7 @@ function(org, params) {
 	if (params.pathInName)		{ ZmOrganizer.PATH_IN_NAME[org]			= params.pathInName; }
 	if (params.openSetting)		{ ZmOrganizer.OPEN_SETTING[org]			= params.openSetting; }
 	if (params.newOp)			{ ZmOrganizer.NEW_OP[org]				= params.newOp; }
+	if (params.displayOrder)	{ ZmOrganizer.DISPLAY_ORDER[org]			= params.displayOrder; }
 
 	if (!appCtxt.isChildWindow) {
 		if (params.compareFunc)		{ ZmTreeView.COMPARE_FUNC[org]			= params.compareFunc; }

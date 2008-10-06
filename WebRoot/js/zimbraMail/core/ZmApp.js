@@ -323,61 +323,13 @@ function() {
  * or DwtComposite instead.
  */
 ZmApp.prototype.getOverviewPanelContent =
+function(dontCreate) {
+	return this.getAccordionController().getAccordion(dontCreate);
+};
+
+ZmApp.prototype.getAccordionController =
 function() {
-	if (this._overviewPanelContent) {
-		return this._overviewPanelContent;
-	}
-
-	// bug: 30408 30499 - make sure app's organizer(s) package is loaded
-	// NOTE: We do this here instead of in the app's constructor because all of
-	//       the enabled apps are instantiated at initial load. So this avoids
-	//       loading packages we may not need right away.
-	var orgs = ZmOrganizer.APP2ORGANIZER[this._name];
-	var orgCount = orgs && orgs.length, org;
-	for (var i = 0; i < orgCount; i++) {
-		org = orgs[i];
-		if (ZmOrganizer.ORG_PACKAGE[org]) {
-			AjxDispatcher.require(ZmOrganizer.ORG_PACKAGE[org]);
-		}
-	}
-
-	if (appCtxt.multiAccounts && ZmApp.SUPPORTS_MULTI_MBOX[this._name]) {
-		// create accordion
-		var accordionId = this.getOverviewPanelContentId();
-		var accordion = this._overviewPanelContent = this._opc.createAccordion({accordionId:accordionId});
-		accordion.addListener(DwtEvent.SELECTION, new AjxListener(this, this._accordionSelectionListener));
-		// for now, we only care to show tooltip for offline client
-		if (appCtxt.isOffline) {
-			accordion.addListener(DwtEvent.ONMOUSEOVER, new AjxListener(this, this._accordionMouseoverListener));
-		}
-
-		// add an accordion item for each account, and create overview for main account
-		var accts = appCtxt.getZimbraAccounts();
-		this._overview = {};
-		for (var i in accts) {
-			var data = {};
-			var acct = data.account = accts[i];
-			if (acct.visible) {
-				var params = {
-					title: acct.getTitle(),
-					data: data,
-					icon: acct.getStatusIcon(),
-					hideHeader: (appCtxt.isOffline && appCtxt.numVisibleAccounts == 1)	// HACK
-				};
-				var item = accordion.addAccordionItem(params);
-				acct.itemId = item.id;
-				if (appCtxt.getActiveAccount() == acct) {
-					this._activateAccordionItem(item);
-				}
-			}
-		}
-	} else {
-		var params = this._getOverviewParams();
-		var overview = this._overviewPanelContent = this._opc.createOverview(params);
-		overview.set(this._getOverviewTrees());
-	}
-
-	return this._overviewPanelContent;
+	return ZmAppAccordionController.getInstance();
 };
 
 /**
@@ -388,25 +340,27 @@ function() {
 ZmApp.prototype.setOverviewPanelContent =
 function(reset) {
 	if (reset) {
-		this._overviewPanelContent = null;
+		this.getAccordionController().reset();
 	}
 
 	// only set overview panel content if not in full screen mode
 	var avm = appCtxt.getAppViewMgr();
 	if (!avm.isFullScreen()) {
-		var opc = this.getOverviewPanelContent();
-		// if we're in mult-mbox mode, check if accordion is in-sync when changing apps
-		if (appCtxt.multiAccounts && ZmApp.SUPPORTS_MULTI_MBOX[this._name]) {
-			var activeItemId = appCtxt.getActiveAccount().itemId;
-			if (this.accordionItem.id != activeItemId) {
-				this.getOverviewPanelContent().getItem(appCtxt.getActiveAccount().itemId)
-				var accordionItem = opc.getItem(activeItemId);
-				if (accordionItem) {
-					this._handleSetActiveAccount(accordionItem);
+		var accordion = this.getAccordionController().getAccordion();
+		var expandedItem = accordion.getExpandedItem();
+		if (expandedItem) {
+			if (appCtxt.multiAccounts && ZmApp.SUPPORTS_MULTI_MBOX[this._name]) {
+				if (this.accordionItem) {
+					if (this.accordionItem != expandedItem) {
+						this._activateAccordionItem(expandedItem);
+					}
 				}
+				this.accordionItem = expandedItem;
 			}
+
+			this.getAccordionController().showOverview(expandedItem);
 		}
-		avm.setComponent(ZmAppViewMgr.C_TREE, opc);
+		avm.setComponent(ZmAppViewMgr.C_TREE, accordion);
 	}
 };
 
@@ -415,7 +369,7 @@ function(reset) {
  */
 ZmApp.prototype.getOverviewPanelContentId =
 function() {
-	return this._name;
+	return ZmAppAccordionController.ID;
 };
 
 /**
@@ -445,33 +399,7 @@ function(overviewId) {
  */
 ZmApp.prototype.getOverviewId =
 function(account) {
-	if (appCtxt.multiAccounts && ZmApp.SUPPORTS_MULTI_MBOX[this._name]) {
-		if (!account) {
-			// bug #20310 - default to main account if all else fails
-			account = this.accordionItem
-				? this.accordionItem.data.account
-				: appCtxt.getMainAccount(true);
-		}
-		return ([this.getOverviewPanelContentId(), account.name].join(":"));
-	}
-
-	return this.getOverviewPanelContentId();
-};
-
-/**
- * Returns a hash of params with the standard overview options.
- */
-ZmApp.prototype._getOverviewParams =
-function() {
-	return {
-		overviewId:this.getOverviewPanelContentId(),
-		posStyle:Dwt.ABSOLUTE_STYLE,
-		selectionSupported:true,
-		actionSupported:true,
-		dndSupported:true,
-		showUnread:true,
-		hideEmpty:this._getHideEmpty()
-	};
+	return this.getAccordionController().getOverviewId();
 };
 
 /**
@@ -507,128 +435,10 @@ function() {
 		}
 		newList.push(list[i]);
 	}
+	if (window[ZmOverviewController.CONTROLLER[ZmOrganizer.ZIMLET]] && ZmApp.SHOW_ZIMLETS[this._name]) {
+		newList.push(ZmOrganizer.ZIMLET);
+	}
 	return newList;
-};
-
-/**
- * Returns a hash detailing which tree views to not show if they are empty.
- */
-ZmApp.prototype._getHideEmpty =
-function() {
-	var hideEmpty = {};
-	hideEmpty[ZmOrganizer.SEARCH] = true;
-	hideEmpty[ZmOrganizer.ZIMLET] = true;
-
-	return hideEmpty;
-};
-
-/**
- * Handles a click on on accordion item.
- * 
- * @param ev	[DwtUiEvent]	the click event
- */
-ZmApp.prototype._accordionSelectionListener =
-function(ev) {
-	// before loading the selected account, "unload" the existing one
-	appCtxt.getActiveAccount().unload();
-
-	this._expandAccordionItem(ev.detail, true);
-	return true;
-};
-
-ZmApp.prototype._accordionMouseoverListener =
-function(ev) {
-	if (ev.detail && ev.item) {
-		var account = ev.detail.data.account;
-		ev.item.setToolTipContent(account.getToolTip());
-	}
-	return true;
-};
-
-ZmApp.prototype._expandAccordionItem =
-function(accordionItem, byUser, callback) {
-	if (accordionItem == this.accordionItem) { return; }
-
-	this.accordionItem = accordionItem;
-	DBG.println(AjxDebug.DBG1, "Accordion switching to item: " + accordionItem.title);
-
-	// hide and clear advanced search since it may have overviews for previous account
-	if (appCtxt.get(ZmSetting.BROWSE_ENABLED)) {
-		var searchCtlr = appCtxt.getSearchController();
-		var bvc = searchCtlr._browseViewController;
-		if (bvc) {
-			bvc.removeAllPickers();
-			bvc.setBrowseViewVisible(false);
-		}
-	}
-
-	var activeAcct = this.accordionItem.data.account;
-
-	// enable/disable app tabs based on whether app supports multi-mbox
-	var appChooser = appCtxt.getAppController().getAppChooser();
-	for (var i = 0; i < ZmApp.APPS.length; i++) {
-		var app = ZmApp.APPS[i];
-		var b = appChooser.getButton(app);
-		if (!b) { continue; }
-
-		if (activeAcct.isMain) {
-			b.setEnabled(true);
-		} else {
-			b.setEnabled(ZmApp.SUPPORTS_MULTI_MBOX[app]);
-		}
-	}
-
-	var respCallback = new AjxCallback(this, this._handleSetActiveAccount, [this.accordionItem, byUser, callback]);
-	appCtxt.setActiveAccount(activeAcct, respCallback);
-};
-
-ZmApp.prototype._handleSetActiveAccount =
-function(accordionItem, byUser, callback) {
-	if (byUser) {
-		// reset unread count for all accordion items
-		var accounts = appCtxt.getZimbraAccounts();
-		for (var i in accounts) {
-			var acct = accounts[i];
-			if (acct.visible) {
-				this._opc.updateAccountTitle(acct.itemId, acct.getTitle());
-			}
-		}
-	}
-
-	var ac = appCtxt.getAppController();
-	ac.setUserInfo();
-	this._activateAccordionItem(accordionItem, callback);
-	this._setMiniCalForActiveAccount(byUser);
-
-	// reset instant notify every time account changes
-	if (appCtxt.isOffline) {
-		var interval = (AjxEnv.isFirefox2_0up && !AjxEnv.isFirefox3up) ? 10000 : 100;
-		AjxTimedAction.scheduleAction(new AjxTimedAction(ac, ac.setInstantNotify, true), interval);
-
-		if (appCtxt.inStartup) {
-			// load settings for all accounts
-			var accounts = appCtxt.getZimbraAccounts();
-			var unloaded = [];
-			for (var i in accounts) {
-				var acct = accounts[i];
-				if (acct.visible && !acct.loaded) {
-					unloaded.push(acct);
-				}
-			}
-			if (unloaded.length > 0) {
-				this._loadOfflineAccount(unloaded);
-			}
-		}
-	}
-};
-
-ZmApp.prototype._loadOfflineAccount =
-function(accounts) {
-	var acct = accounts.shift();
-	if (acct) {
-		var callback = new AjxCallback(this, this._loadOfflineAccount, [accounts]);
-		acct.load(callback);
-	}
 };
 
 // NOTE: calendar overloads this method since it handles minical independently
@@ -657,16 +467,6 @@ function(byUser) {
 ZmApp.prototype._activateAccordionItem =
 function(item) {
 	this.accordionItem = item;
-	var accordion = item.accordion;
-	accordion.expandItem(item.id);
-	var overviewId = this.getOverviewId();
-	if (!this._opc.getOverview(overviewId)) {
-		var params = this._getOverviewParams();
-		params.overviewId = overviewId;
-		var overview = this._opc.createOverview(params);
-		overview.set(this._getOverviewTrees(), null, item.data.account);
-		accordion.setItemContent(item.id, overview);
-	}
 };
 
 /**
@@ -709,8 +509,8 @@ function(type) {
  */
 ZmApp.prototype._handleRefresh =
 function(refresh) {
-	if (this._overviewPanelContent) {
-		this.resetOverview();
+	if (this.getAccordionController().getAccordion(true)) {
+		this.resetOverview();		
 	}
 };
 

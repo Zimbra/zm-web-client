@@ -587,6 +587,7 @@ ZmMailApp.prototype._registerOrganizers =  function() {
 							 compareFunc:		"ZmFolder.sortCompare",
 							 shortcutKey:		"F",
 							 newOp:				ZmOperation.NEW_FOLDER,
+							 displayOrder:		100,
 							 openSetting:		ZmSetting.FOLDER_TREE_OPEN
 							});
 
@@ -1156,9 +1157,7 @@ function(refresh) {
 	}
 
 	if (!appCtxt.inStartup) {
-		var account = (appCtxt.multiAccounts && !appCtxt.isOffline)
-			? appCtxt.getMainAccount(true) : null;
-		this.resetOverview(this.getOverviewId(account));
+		this.resetOverview(this.getOverviewId());
 		var req = appCtxt.currentRequestParams;
 		if (appCtxt.getCurrentAppName() == this._name && req.resend && req.methodName == "NoOpRequest") {
 			var curView = appCtxt.getCurrentViewId();

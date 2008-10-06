@@ -25,6 +25,7 @@
  *
  * @param params 				[hash]					hash of params:
  *        overviewId			[constant]				overview ID
+ *        treeIds				[array]					array of organizer types that may be displayed in this overview
  *        parent				[DwtControl]*			containing widget
  *        overviewClass			[string]*				class name for overview DIV
  *        posStyle				[constant]*				positioning style for overview DIV
@@ -60,6 +61,17 @@ ZmOverview = function(params, controller) {
 	
 	this._treeIds	= [];
 	this._treeHash	= {};
+
+	// Create a parent div for each overview tree.
+	this._treeParents = {};
+	var doc = document;
+	var element = this.getHtmlElement();
+	for (var i = 0, count = params.treeIds.length; i < count; i++) {
+		var div = doc.createElement("DIV");
+		var treeId = params.treeIds[i];
+		this._treeParents[treeId] = div.id = [this.id, treeId].join("-parent-");
+		element.appendChild(div);
+	}
 }
 
 ZmOverview.prototype = new DwtComposite;
@@ -68,6 +80,35 @@ ZmOverview.prototype.constructor = ZmOverview;
 ZmOverview.prototype.toString =
 function() {
 	return "ZmOverview";
+};
+
+/**
+ * Returns the id of the parent element for the given tree.
+ */
+ZmOverview.prototype.getTreeParent =
+function(treeId) {
+	return this._treeParents[treeId];
+};
+
+/**
+ * Sets the list of trees that are visible. All trees that are not
+ * in treeIds are hidden.
+ *
+ * @param treeIds	[array]				list of organizer types
+ */
+ZmOverview.prototype.setVisibleTrees =
+function(treeIds) {
+	var doc = document;
+	for (var id in this._treeParents) {
+		Dwt.setVisible(doc.getElementById(this._treeParents[id]), false);
+	}
+	for (var i = 0, count = treeIds.length; i < count; i++) {
+		var orgId = treeIds[i];
+		if (!this._treeHash[orgId]) {
+			this.setTreeView(orgId);
+		}
+		Dwt.setVisible(doc.getElementById(this._treeParents[orgId]), true);
+	}
 };
 
 /**
@@ -81,7 +122,6 @@ function() {
 ZmOverview.prototype.set =
 function(treeIds, omit, account, noNewButton) {
 	if (!(treeIds && treeIds.length)) { return; }
-	this._treeIds = treeIds;
 	this.account = account;
 	for (var i = 0; i < treeIds.length; i++) {
 		this.setTreeView(treeIds[i], omit, account, noNewButton);
@@ -104,7 +144,9 @@ function(treeId, omit, account, noNewButton) {
 	// check for false since setting precondition is optional (can be null)
 	if (appCtxt.get(ZmOrganizer.PRECONDITION[treeId]) === false) { return; }
 
+	AjxDispatcher.require(ZmOrganizer.ORG_PACKAGE[treeId]);
 	var treeController = this._controller.getTreeController(treeId);
+	this._treeIds.push(treeId);
 	if (this._treeHash[treeId]) {
 		treeController.clearTreeView(this.id);
 	}

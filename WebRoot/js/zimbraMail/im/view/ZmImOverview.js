@@ -15,15 +15,16 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmImOverview = function(parent, args) {
-	if (!args)
-		args = {};
+ZmImOverview = function(parent, params) {
+	if (!params)
+		params = {};
 
-	DwtComposite.call(this, {parent:parent, posStyle:args.posStyle || Dwt.ABSOLUTE_STYLE});
+	DwtComposite.call(this, {parent:parent, parentElement: params.parentElement, posStyle:params.posStyle || Dwt.ABSOLUTE_STYLE});
 
 	this._groupItems = {};
 	this._itemsById = {};
-	this._options = args;
+	delete params.parentElement;
+	this._options = params;
 	this._sortBy = appCtxt.get("IM_PREF_BUDDY_SORT");
 
 	this._actionMenuOps = {

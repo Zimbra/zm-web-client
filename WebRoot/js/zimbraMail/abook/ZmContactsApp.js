@@ -235,6 +235,7 @@ function() {
 							 mountKey:			"mountAddrBook",
 							 createFunc:		"ZmOrganizer.create",
 							 compareFunc:		"ZmAddrBook.sortCompare",
+							 displayOrder:		100,
 							 newOp:             ZmOperation.NEW_ADDRBOOK,
 							 deferrable:		true
 							});

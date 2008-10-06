@@ -142,6 +142,7 @@ function() {
 							 createFunc:		"ZmOrganizer.create",
 							 compareFunc:		"ZmNotebook.sortCompare",
 							 newOp:				ZmOperation.NEW_NOTEBOOK,
+							 displayOrder:		100,
 							 deferrable:		true
 							});
 };

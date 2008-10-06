@@ -118,13 +118,14 @@ function() {
 							 defaultFolder:		0,
 							 firstUserId:		256,
 							 orgClass:			"ZmVoiceFolder",
-							 orgPackage:		"VoicemailCore",
+							 orgPackage:		"Voicemail",
 							 treeController:	"ZmVoiceTreeController",
 							 labelKey:			"voicemail",
 							 itemsKey:			"messages",
 							 views:				["voicemail"],
 							 createFunc:		"ZmOrganizer.create",
 							 compareFunc:		"ZmVoiceFolder.sortCompare",
+							 displayOrder:		100,
 							 deferrable:		false
 							});
 };
@@ -192,33 +193,16 @@ function(modifies) {
 	this._handleModifies(modifies);
 };
 
-ZmVoiceApp.prototype.getOverviewPanelContent =
+ZmVoiceApp.prototype.getOverviewPanelContentId =
 function() {
-	if (this._overviewPanelContent) {
-		return this._overviewPanelContent;
-	}
-
-	// create accordion
-	var accordionId = this._name;
-	var opc = appCtxt.getOverviewController();
-	var params = {accordionId:accordionId};
-	this._overviewPanelContent = opc.createAccordion(params);
-	this._overviewPanelContent.addSelectionListener(new AjxListener(this, this._accordionSelectionListener));
-
-	if (!this.phones.length) {
-		// GetVoiceInfo hasn't been called yet.
-		var currentApp = appCtxt.getCurrentApp();
-		this.getVoiceInfo(new AjxCallback(this, this._handleResponseGetOverviewPanelContent, [currentApp]));
-	} else {
-		this._createAccordionItems();
-	}
-	return this._overviewPanelContent;
+	return this._name;
 };
 
-
-ZmVoiceApp.prototype._handleResponseGetOverviewPanelContent =
-function(currentApp) {
-	this._createAccordionItems();
+ZmVoiceApp.prototype.getAccordionController =
+function() {
+	AjxDispatcher.require("Voicemail");
+	this._accordionController = this._accordionController || new ZmVoiceAccordionController(this, this._name);
+	return this._accordionController;
 };
 
 ZmVoiceApp.prototype.getOverviewId =
@@ -349,55 +333,6 @@ function(phone, foldersObj) {
 			folder.notifyModify(folderObj);
 		}
 	}
-};
-
-ZmVoiceApp.prototype._createAccordionItems =
-function() {
-	for (var i = 0; i < this.phones.length; i++) {
-		var data = {lastFolder:null, appName:this._name};
-		var phone = this.phones[i];
-		data.phone = phone;
-		var item = this._overviewPanelContent.addAccordionItem({title:phone.getDisplay(), data:data});
-		if (i == 0) {
-			this._activateAccordionItem(item);
-		}
-	}
-};
-
-ZmVoiceApp.prototype._accordionSelectionListener =
-function(ev) {
-	var accordionItem = ev.detail;
-	if (accordionItem == this.accordionItem) { return; }
-	if (accordionItem.data.appName != this._name) { return; }
-
-	// Save most recent search.
-	if (this.accordionItem) {
-		var folder = appCtxt.getCurrentController().getFolder();
-		if (folder && folder.phone == this.accordionItem.data.phone) {
-			this.accordionItem.data.lastFolder = folder;
-		}
-	}
-
-	// Run new search inside of accordion item.
-	this.accordionItem = accordionItem;
-	var folder = this.accordionItem.data.lastFolder;
-	var phone = this.accordionItem.data.phone;
-	if (!folder) {
-		folder = ZmVoiceFolder.get(phone, ZmVoiceFolder.VOICEMAIL_ID);
-	}
-	if (folder) {
-		// Highlight the folder.
-		var overview = this._opc.getOverview(this.getOverviewId());
-		if (overview) {
-			var treeView = overview.getTreeView(ZmOrganizer.VOICE);
-			var treeItem = treeView.getTreeItemById(folder.id);
-			treeView.setSelection(treeItem, true);
-		}
-		
-		// Run search.
-		this.search(folder);
-	}
-	this._activateAccordionItem(accordionItem);
 };
 
 ZmVoiceApp.prototype.search =
@@ -582,3 +517,7 @@ ZmVoiceApp.prototype._handleModifies =
 function(list) {
 };
 
+ZmVoiceApp.prototype._getOverviewTrees =
+function() {
+	return [ZmOrganizer.VOICE, ZmOrganizer.ROSTER_TREE_ITEM];
+};

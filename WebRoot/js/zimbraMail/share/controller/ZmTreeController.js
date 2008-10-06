@@ -330,6 +330,7 @@ function(overviewId) {
 	var overview = this._opc.getOverview(overviewId);
 	var params = {
 		parent: overview,
+		parentElement: overview.getTreeParent(this.type),
 		overviewId: overviewId,
 		type: this.type,
 		headerClass: overview.headerClass,

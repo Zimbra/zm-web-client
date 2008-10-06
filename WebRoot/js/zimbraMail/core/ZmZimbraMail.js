@@ -1107,7 +1107,8 @@ function() {
 							 compareFunc:		"ZmFolder.sortCompare",
 							 shortcutKey:		"S",
 							 newOp:				ZmOperation.BROWSE,
-							 openSetting:		ZmSetting.SEARCH_TREE_OPEN
+							 openSetting:		ZmSetting.SEARCH_TREE_OPEN,
+							 displayOrder:		300
 							});
 
 	ZmOrganizer.registerOrg(ZmOrganizer.TAG,
@@ -1126,7 +1127,8 @@ function() {
 							 compareFunc:		"ZmTag.sortCompare",
 							 shortcutKey:		"T",
 							 newOp:				ZmOperation.NEW_TAG,
-							 openSetting:		ZmSetting.TAG_TREE_OPEN
+							 openSetting:		ZmSetting.TAG_TREE_OPEN,
+							 displayOrder:		400
 							});
 
 	ZmOrganizer.registerOrg(ZmOrganizer.ROSTER_TREE_ITEM,
@@ -1135,8 +1137,17 @@ function() {
 							 defaultFolder:		ZmOrganizer.ID_ROSTER_LIST,
 							 orgPackage:		"IMCore",
 							 treeController:	"ZmRosterTreeController",
-							 deferrable:		false
+							 deferrable:		false,
+							 displayOrder:		200
 							});
+	ZmOrganizer.registerOrg(ZmOrganizer.ZIMLET,
+							{orgClass:			"ZmZimlet",
+							 treeController:	"ZmZimletTreeController",
+							 labelKey:			"zimlets",
+							 compareFunc:		"ZmZimlet.sortCompare",
+							 openSetting:		ZmSetting.ZIMLET_TREE_OPEN
+							});
+	
 	// Technically, we don't need to do this because the drop listeners for dragged organizers typically do their
 	// own checks on the class of the dragged object. But it's better to do it anyway, in case it ever gets
 	// validated within the drop target against the valid types.
@@ -1915,17 +1926,6 @@ function() {
 ZmZimbraMail.prototype._postLoadZimlet =
 function() {
 	appCtxt.setZimletsPresent(true);
-	ZmOrganizer.registerOrg(ZmOrganizer.ZIMLET,
-							{orgClass:			"ZmZimlet",
-							 treeController:	"ZmZimletTreeController",
-							 labelKey:			"zimlets",
-							 compareFunc:		"ZmZimlet.sortCompare",
-							 openSetting:		ZmSetting.ZIMLET_TREE_OPEN
-							});
-	for (var app in ZmApp.SHOW_ZIMLETS) {
-		var trees = ZmApp.OVERVIEW_TREES[app] || [];
-		trees.push(ZmOrganizer.ZIMLET);
-	}
 };
 
 ZmZimbraMail._endSession =
@@ -1950,4 +1950,4 @@ function() {
 };
 
 // YUCK:
-ZmOrganizer.ZIMLET = "Zimlet";
+ZmOrganizer.ZIMLET = "ZIMLET";
