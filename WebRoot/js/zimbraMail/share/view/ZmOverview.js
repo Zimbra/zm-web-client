@@ -100,15 +100,27 @@ ZmOverview.prototype.setVisibleTrees =
 function(treeIds) {
 	var doc = document;
 	for (var id in this._treeParents) {
-		Dwt.setVisible(doc.getElementById(this._treeParents[id]), false);
+		this.setTreeVisible(id, false, doc);
 	}
 	for (var i = 0, count = treeIds.length; i < count; i++) {
-		var orgId = treeIds[i];
-		if (!this._treeHash[orgId]) {
-			this.setTreeView(orgId);
-		}
-		Dwt.setVisible(doc.getElementById(this._treeParents[orgId]), true);
+		this.setTreeVisible(treeIds[i], true, doc);
 	}
+};
+
+/**
+ * Sets the visibility of the tree with the given id.
+ *
+ * @param treeId	[string]				id of tree
+ * @param visible	[boolean]				visibility
+ * @param doc		[document]				optional document
+ */
+ZmOverview.prototype.setTreeVisible =
+function(treeId, visible, doc) {
+	if (visible && !this._treeHash[treeId]) {
+		this.setTreeView(treeId);
+	}
+	doc = doc || document;
+	Dwt.setVisible(document.getElementById(this._treeParents[treeId]), visible);
 };
 
 /**

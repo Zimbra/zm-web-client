@@ -1926,6 +1926,13 @@ function() {
 ZmZimbraMail.prototype._postLoadZimlet =
 function() {
 	appCtxt.setZimletsPresent(true);
+
+	// If the app overview has been created, show the zimlets tree.
+	var accordionController = ZmAppAccordionController.getInstance();
+	var accordion = accordionController.getAccordion(true);
+	if (accordion) {
+		accordionController.getCurrentOverview().setTreeVisible(ZmOrganizer.ZIMLET, true);
+	}
 };
 
 ZmZimbraMail._endSession =
