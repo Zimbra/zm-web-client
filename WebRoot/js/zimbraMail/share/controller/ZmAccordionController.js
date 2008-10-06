@@ -61,7 +61,7 @@ function() {
 		var items = this._accordion.getItems();
 		for (var i = 0, count = items.length; i < count; i++) {
 			var item = items[i];
-			if (item) {
+			if (item && item.control) {
 				item.control.clear();
 			}
 		}
