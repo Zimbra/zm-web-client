@@ -165,6 +165,24 @@ function(insertFontStyle, onlyInnerContent ) {
 	return content;
 };
 
+ZmHtmlEditor.prototype.checkMisspelledWords =
+function(callback, onExitCallback){
+    var text = this.getTextVersion();
+    if (/\S/.test(text)) {
+		AjxDispatcher.require("Extras");
+		this._spellChecker = new ZmSpellChecker(this);
+		this._spellCheck = null;
+        this._spellCheckSuggestionListenerObj = new AjxListener(this, this._spellCheckSuggestionListener);
+        if (!this.onExitSpellChecker) {
+            this.onExitSpellChecker = onExitCallback;
+		}
+        this._spellChecker.check(text, callback);
+		return true;
+	}
+
+	return false;
+};
+
 ZmHtmlEditor.prototype.spellCheck =
 function(callback) {
 	var text = this.getTextVersion();

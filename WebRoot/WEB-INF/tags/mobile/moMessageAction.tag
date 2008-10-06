@@ -4,7 +4,6 @@
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="mo" uri="com.zimbra.mobileclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
-
 <zm:requirePost/>
 <zm:checkCrumb crumb="${param.crumb}"/>
 <zm:getMailbox var="mailbox"/>
@@ -17,11 +16,11 @@
     <c:set var="ids" value="${ids1},${ids!=null?ids:''}"/>
 </c:forEach>
 <c:set var="selectedCidsString" scope="request" value=",${requestScope.selectedIdsString},"/>
-<c:set var="actionOp"
-       value="${not empty paramValues.actionOp[0] ? paramValues.actionOp[0] :  paramValues.actionOp[1]}"/>
+<c:set var="anAction"
+       value="${not empty paramValues.anAction[0] ? paramValues.anAction[0] :  paramValues.anAction[1]}"/>
 <c:choose>
 <c:when test="${zm:actionSet(param, 'actionCompose')}">
-    <jsp:forward page="/m/mocompose"/>
+    <jsp:forward page="/m/mainx?st=newmail"/>
 </c:when>
 <c:when test="${zm:actionSet(param, 'actionMarkTagRead')}">
     <c:set var="tagName" value="${zm:getTagName(pageContext, param.contextTagId)}"/>
@@ -109,7 +108,7 @@
         </fmt:message>
     </mo:status>
 </c:when>
-<c:when test="${zm:actionSet(param, 'actionDelete')}">
+<%--<c:when test="${zm:actionSet(param, 'actionDelete')}">
     <zm:trashMessage var="result" id="${ids}"/>
     <c:set var="op" value="x" scope="request"/>
     <mo:status>
@@ -126,11 +125,31 @@
             <fmt:param value="${result.idCount}"/>
         </fmt:message>
     </mo:status>
-</c:when>
-<c:when test="${(zm:actionSet(param,'moreActions') && empty param.anAction) }">
+</c:when>--%>
+<c:when test="${(zm:actionSet(param,'moreActions') && empty anAction) }">
     <mo:status style="Warning"><fmt:message key="actionNoActionSelected"/></mo:status>
 </c:when>
-<c:when test="${zm:actionSet(param, 'actionMarkRead') || (zm:actionSet(param,'moreActions') && param.anAction == 'actionMarkRead') }">
+
+<c:when test="${zm:actionSet(param, 'actionDelete') || (zm:actionSet(param,'moreActions') && anAction == 'actionDelete') }">
+    <zm:trashMessage var="result" id="${ids}"/>
+    <c:set var="op" value="x" scope="request"/>
+    <mo:status>
+        <fmt:message key="actionMessageMovedTrash">
+            <fmt:param value="${result.idCount}"/>
+        </fmt:message>
+    </mo:status>
+</c:when>
+<c:when test="${zm:actionSet(param, 'actionHardDelete') || (zm:actionSet(param,'moreActions') && anAction == 'actionHardDelete') }">
+    <zm:deleteMessage var="result" id="${ids}"/>
+    <c:set var="op" value="x" scope="request"/>
+    <mo:status>
+        <fmt:message key="actionMessageHardDeleted">
+            <fmt:param value="${result.idCount}"/>
+        </fmt:message>
+    </mo:status>
+</c:when>
+
+<c:when test="${zm:actionSet(param, 'actionMarkRead') || (zm:actionSet(param,'moreActions') && anAction == 'actionMarkRead') }">
     <zm:markMessageRead var="result" id="${ids}" read="${true}"/>
     <mo:status>
         <fmt:message key="actionMessageMarkedRead">
@@ -139,7 +158,7 @@
     </mo:status>
 
 </c:when>
-<c:when test="${zm:actionSet(param, 'actionMarkUnread') || (zm:actionSet(param,'moreActions') && param.anAction == 'actionMarkUnread')}">
+<c:when test="${zm:actionSet(param, 'actionMarkUnread') || (zm:actionSet(param,'moreActions') && anAction == 'actionMarkUnread')}">
     <zm:markMessageRead var="result" id="${ids}" read="${false}"/>
     <mo:status>
         <fmt:message key="actionMessageMarkedUnread">
@@ -148,7 +167,7 @@
     </mo:status>
     <c:set var="idsMarkedUnread" value="${paramValues.id}" scope="request"/>
 </c:when>
-<c:when test="${zm:actionSet(param, 'actionFlag') || (zm:actionSet(param,'moreActions') && param.anAction == 'actionFlag')}">
+<c:when test="${zm:actionSet(param, 'actionFlag') || (zm:actionSet(param,'moreActions') && anAction == 'actionFlag')}">
     <zm:flagMessage var="result" id="${ids}" flag="${true}"/>
     <mo:status>
         <fmt:message key="actionMessageFlag">
@@ -156,7 +175,7 @@
         </fmt:message>
     </mo:status>
 </c:when>
-<c:when test="${zm:actionSet(param, 'actionUnflag') || (zm:actionSet(param,'moreActions') && param.anAction == 'actionUnflag')}">
+<c:when test="${zm:actionSet(param, 'actionUnflag') || (zm:actionSet(param,'moreActions') && anAction == 'actionUnflag')}">
     <zm:flagMessage var="result" id="${ids}" flag="${false}"/>
     <mo:status>
         <fmt:message key="actionMessageUnflag">
@@ -164,10 +183,10 @@
         </fmt:message>
     </mo:status>
 </c:when>
-<c:when test="${zm:actionSet(param, 'actionAddTag') || (zm:actionSet(param,'moreActions') && fn:startsWith(param.anAction,'addTag_'))}">
+<c:when test="${zm:actionSet(param, 'actionAddTag') || (zm:actionSet(param,'moreActions') && fn:startsWith(anAction,'addTag_'))}">
     <c:set var="tag" value="${param.tagId}"/>
     <c:if test="${tag == null}">
-        <c:set var="tag" value="${fn:replace(param.anAction,'addTag_','')}"/>
+        <c:set var="tag" value="${fn:replace(anAction,'addTag_','')}"/>
     </c:if>
     <zm:tagMessage tagid="${tag}" var="result" id="${ids}" tag="${true}"/>
     <mo:status>
@@ -177,10 +196,10 @@
         </fmt:message>
     </mo:status>
 </c:when>
-<c:when test="${zm:actionSet(param, 'actionRemoveTag') || (zm:actionSet(param,'moreActions') && fn:startsWith(param.anAction,'remTag_'))}">
+<c:when test="${zm:actionSet(param, 'actionRemoveTag') || (zm:actionSet(param,'moreActions') && fn:startsWith(anAction,'remTag_'))}">
     <c:set var="tag" value="${param.tagRemoveId}"/>
     <c:if test="${tag == null}">
-        <c:set var="tag" value="${fn:replace(param.anAction,'remTag_','')}"/>
+        <c:set var="tag" value="${fn:replace(anAction,'remTag_','')}"/>
     </c:if>
     <zm:tagMessage tagid="${tag}" var="result" id="${ids}" tag="${false}"/>
     <mo:status>
@@ -192,8 +211,8 @@
 </c:when>
 <c:when test="${zm:actionSet(param, 'actionMove') || zm:actionSet(param,'moreActions')}">
     <c:choose>
-        <c:when test="${fn:startsWith(param.anAction,'moveTo_')}">
-        <c:set var="folderId" value="${fn:replace(param.anAction,'moveTo_','')}"/>
+        <c:when test="${fn:startsWith(anAction,'moveTo_')}">
+        <c:set var="folderId" value="${fn:replace(anAction,'moveTo_','')}"/>
 	    <zm:moveMessage folderid="${folderId}" var="result" id="${ids}"/>
             <mo:status>
                 <fmt:message key="actionMessageMoved">

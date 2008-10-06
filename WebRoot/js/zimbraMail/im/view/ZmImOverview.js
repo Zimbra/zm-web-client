@@ -15,61 +15,75 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmImOverview = function(parent, args) {
-        if (!args)
-                args = {};
+ZmImOverview = function(parent, params) {
+	if (!params)
+		params = {};
 
-        DwtComposite.call(this, {parent:parent, posStyle:args.posStyle || Dwt.ABSOLUTE_STYLE});
+	DwtComposite.call(this, {parent:parent, parentElement: params.parentElement, posStyle:params.posStyle || Dwt.ABSOLUTE_STYLE});
 
-        this._groupItems = {};
-        this._itemsById = {};
-        this._options = args;
-        this._sortBy = appCtxt.get("IM_PREF_BUDDY_SORT");
+	this._groupItems = {};
+	this._itemsById = {};
+	delete params.parentElement;
+	this._options = params;
+	this._sortBy = appCtxt.get("IM_PREF_BUDDY_SORT");
 
-        this._actionMenuOps = {
+	this._actionMenuOps = {
 
-                root : [ ZmOperation.NEW_ROSTER_ITEM,
-                         ZmOperation.SEP, //-----------
-                         ZmOperation.IM_GATEWAY_LOGIN,
-                         ZmOperation.SEP, //-----------
-                         ZmOperation.IM_TOGGLE_OFFLINE,
-                         ZmOperation.IM_TOGGLE_BLOCKED,
-                         ZmOperation.SEP, //-----------
-                         ZmOperation.IM_SORT_BY_PRESENCE,
-                         ZmOperation.IM_SORT_BY_NAME
-                       ],
+		root : [ ZmOperation.NEW_ROSTER_ITEM,
+			ZmOperation.NEW_ROSTER_GROUP,	
+			ZmOperation.SEP, //-----------
+			ZmOperation.IM_GATEWAY_LOGIN,
+			ZmOperation.SEP, //-----------
+			ZmOperation.IM_TOGGLE_OFFLINE,
+			ZmOperation.IM_TOGGLE_BLOCKED,
+			ZmOperation.SEP, //-----------
+			ZmOperation.IM_SORT_BY_PRESENCE,
+			ZmOperation.IM_SORT_BY_NAME
+		],
 
-                buddy : [ ZmOperation.IM_NEW_CHAT,
+		buddy : [ ZmOperation.IM_NEW_CHAT,
+			ZmOperation.IM_BUDDY_ARCHIVE,
 
-                          // privacy
-                          ZmOperation.IM_BLOCK_BUDDY,
-                          ZmOperation.IM_UNBLOCK_BUDDY,
+			// privacy
+			ZmOperation.SEP, //-----------
+			ZmOperation.IM_BLOCK_BUDDY,
+			ZmOperation.IM_UNBLOCK_BUDDY,
 
-                          //ZmOperation.IM_BLOCK_DOMAIN,
-                          //ZmOperation.IM_UNBLOCK_DOMAIN,
+			//ZmOperation.IM_BLOCK_DOMAIN,
+			//ZmOperation.IM_UNBLOCK_DOMAIN,
 
-                          ZmOperation.SEP, //-----------
-                          ZmOperation.EDIT_PROPS, ZmOperation.DELETE,
-                          ZmOperation.SEP, //-----------
-                          ZmOperation.IM_CREATE_CONTACT, ZmOperation.IM_ADD_TO_CONTACT, ZmOperation.IM_EDIT_CONTACT
-                        ],
+			ZmOperation.SEP, //-----------
+			ZmOperation.EDIT_PROPS, ZmOperation.DELETE,
+			ZmOperation.SEP, //-----------
+			ZmOperation.IM_CREATE_CONTACT, ZmOperation.IM_ADD_TO_CONTACT, ZmOperation.IM_EDIT_CONTACT
+		],
 
-                assistant : [ ZmOperation.IM_NEW_CHAT ],
+		assistant : [ ZmOperation.IM_NEW_CHAT ],
 
-                group : [ // ZmOperation.IM_NEW_GROUP_CHAT,
-                          // ZmOperation.SEP,
-                          ZmOperation.NEW_ROSTER_ITEM,
-						  ZmOperation.IM_DELETE_GROUP
-						]
+		group : [ // ZmOperation.IM_NEW_GROUP_CHAT,
+			// ZmOperation.SEP,
+			ZmOperation.NEW_ROSTER_ITEM,
+			ZmOperation.IM_DELETE_GROUP
+		]
 
-        };
+	};
 
-        this._actionMenuPopdownListener = new AjxListener(this, this._actionMenuPopdownListener);
+	this._actionMenuPopdownListener = new AjxListener(this, this._actionMenuPopdownListener);
 
-        this._im_dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
-        this._im_dragSrc.addDragListener(new AjxListener(this, this._dragListener));
+	this._im_dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
+	this._im_dragSrc.addDragListener(new AjxListener(this, this._dragListener));
 
-        this._init();
+	this.__filters = [];
+	this.__filterOffline = appCtxt.get(ZmSetting.IM_PREF_HIDE_OFFLINE);
+	if (this.__filterOffline) {
+		this.__filters.push(ZmImOverview.FILTER_OFFLINE_BUDDIES);
+	}
+	this.__filterBlocked = appCtxt.get(ZmSetting.IM_PREF_HIDE_BLOCKED);
+	if (this.__filterBlocked) {
+		this.__filters.push(ZmImOverview.FILTER_BLOCKED_BUDDIES);
+	}
+
+	this._init();
 };
 
 ZmImOverview.prototype = new DwtComposite;
@@ -114,39 +128,82 @@ ZmImOverview.prototype._dragListener = function(ev) {
         }
 };
 
+ZmImOverview.prototype._setCheck =
+function(menuItem, checked) {
+	menuItem.setImage(checked ? "Check" : null);
+};
+
+ZmImOverview.prototype._setCheckOp =
+function(menu, op, checked) {
+	var item = menu.getMenuItem(op);
+	if (item) {
+		this._setCheck(item, checked);
+	}
+};
+
+ZmImOverview.prototype._updateFilter =
+function(filter, on) {
+	if (on) {
+		this.addFilter(filter);
+	} else {
+		this.removeFilter(filter);
+	}
+};
+
+ZmImOverview.prototype._newGroupOkCallback =
+function(data) {
+	var message;
+	if (!data.value) {
+		message = ZmMsg.nameEmpty;
+	} else if (this._groupItems[data.value]) {
+		message = ZmMsg.imGroupExists;
+	}
+	if (message) {
+		var dialog = appCtxt.getMsgDialog();
+		dialog.reset();
+		dialog.setMessage(message, DwtMessageDialog.CRITICAL_STYLE);
+		dialog.popup();
+	} else {
+		this._showInfoItem(ZmImOverview.NO_MESSAGE);
+		this.getGroupItem(data.value).setExpanded(true);
+		data.dialog.popdown();
+	}
+};
+
 ZmImOverview.prototype._actionMenuListener =
 function(useActionedItem, ev) {
 	var operation = ev.item.getData(ZmOperation.KEY_ID);
 	switch (operation) {
 
 		case ZmOperation.IM_SORT_BY_PRESENCE:
-			this.sort(ZmImApp.BUDDY_SORT_PRESENCE);
+			this.sort(ZmImApp.BUDDY_SORT_PRESENCE, true);
 			break;
 
 		case ZmOperation.IM_SORT_BY_NAME:
-			this.sort(ZmImApp.BUDDY_SORT_NAME);
+			this.sort(ZmImApp.BUDDY_SORT_NAME, true);
 			break;
 
 		case ZmOperation.IM_TOGGLE_OFFLINE:
 			this.__filterOffline = !this.__filterOffline;
-			if (this.__filterOffline) {
-				ev.dwtObj.setImage("Check");
-				this.addFilter(ZmImOverview.FILTER_OFFLINE_BUDDIES);
-			} else {
-				ev.dwtObj.setImage(null);
-				this.removeFilter(ZmImOverview.FILTER_OFFLINE_BUDDIES);
-			}
+			appCtxt.getSettings().getSetting(ZmSetting.IM_PREF_HIDE_OFFLINE).setValue(this.__filterOffline);
+			this._updateFilter(ZmImOverview.FILTER_OFFLINE_BUDDIES, this.__filterOffline);
 			break;
 
 		case ZmOperation.IM_TOGGLE_BLOCKED:
 			this.__filterBlocked = !this.__filterBlocked;
-			if (this.__filterBlocked) {
-				ev.dwtObj.setImage("Check");
-				this.addFilter(ZmImOverview.FILTER_BLOCKED_BUDDIES);
-			} else {
-				ev.dwtObj.setImage(null);
-				this.removeFilter(ZmImOverview.FILTER_BLOCKED_BUDDIES);
-			}
+			appCtxt.getSettings().getSetting(ZmSetting.IM_PREF_HIDE_BLOCKED).setValue(this.__filterBlocked);
+			this._updateFilter(ZmImOverview.FILTER_BLOCKED_BUDDIES, this.__filterBlocked);
+			break;
+
+		case ZmOperation.NEW_ROSTER_GROUP:
+			this._newGroupOkCallbackObj = this._newGroupOkCallbackObj || new AjxCallback(this, this._newGroupOkCallback);
+			AjxDispatcher.require([ "IM"]);
+			var dialogArgs = {
+				title: ZmMsg.imCreateNewGroup,
+				label: ZmMsg.imGroupName,
+				callback: this._newGroupOkCallbackObj
+			};	
+			ZmPromptDialog.getInstance().popup(dialogArgs);
 			break;
 
 		default:
@@ -192,11 +249,27 @@ ZmImOverview.CMP_SORT_BY_PRESENCE = function(a, b) {
         return ai - bi;
 };
 
-ZmImOverview.prototype.sort = function(by) {
+ZmImOverview.prototype.sort = function(by, immediate) {
 	if (by && (by != this._sortBy)) {
 		this._sortBy = by;
 		appCtxt.getSettings().getSetting("IM_PREF_BUDDY_SORT").setValue(by);
 	}
+	// Unless specifically requested, sort on a timer to prevent lots
+	// of sorts when starting up.
+	if (immediate) {
+		if (this._sortActionId) {
+			AjxTimedAction.cancelAction(this._sortActionId);
+		}
+		this._doSort();
+	} else if (!this._sortActionId) {
+		this._doSortAction = this._doSortAction || new AjxTimedAction(this, this._doSort);
+		this._sortActionId = AjxTimedAction.scheduleAction(this._doSortAction, 1000);
+	}
+};
+
+ZmImOverview.prototype._doSort = function() {
+	this._sortActionId = null;
+
 	var root = this._rootItem;
         // groups are always sorted by name
 	var items = root.getItems();
@@ -222,36 +295,47 @@ ZmImOverview.prototype._actionMenuPopdownListener = function() {
 };
 
 ZmImOverview.prototype._getActionMenu = function(nodeType, buddy, group) {
-        var ops = this._actionMenuOps[nodeType];
-        if (ops) {
-                var menu = ops._dwtControl;
-                if (!menu) {
-                        var dialog = this;
-                        while (dialog && !(dialog instanceof DwtDialog))
-                                dialog = dialog.parent;
-                        menu = ops._dwtControl = new ZmActionMenu({ parent    : this,
-                                                                    menuItems : ops });
-						var listener = new AjxListener(this, this._actionMenuListener, [true]);
-						for (var i = 0; i < menu.opList.length; ++i) {
-                                var item = menu.opList[i];
-                                menu.addSelectionListener(item, listener);
-                        }
-
-                        menu.addPopdownListener(this._actionMenuPopdownListener);
-                }
-                if (nodeType == "buddy") {
-                        // update menu items depending on wether we do
-                        // or don't have an Abook contact associated
-                        // with this buddy
-                        var contact = buddy.getContact();
-                        menu.getOp(ZmOperation.IM_ADD_TO_CONTACT).setVisible(!contact);
-                        menu.getOp(ZmOperation.IM_CREATE_CONTACT).setVisible(!contact);
-                        menu.getOp(ZmOperation.IM_EDIT_CONTACT).setVisible(!!contact);
-                }
-                return menu;
-        } else {
-                console.log("ERROR: no such node type for _getActionMenu: %s", nodeType);
-        }
+	var ops = this._actionMenuOps[nodeType];
+	if (ops) {
+		var menu = ops._dwtControl;
+		if (!menu) {
+			var dialog = this;
+			while (dialog && !(dialog instanceof DwtDialog))
+				dialog = dialog.parent;
+			menu = ops._dwtControl = new ZmActionMenu({ parent	: this,
+				menuItems : ops });
+			var listener = new AjxListener(this, this._actionMenuListener, [true]);
+			for (var i = 0; i < menu.opList.length; ++i) {
+				var item = menu.opList[i];
+				menu.addSelectionListener(item, listener);
+			}
+			menu.addPopdownListener(this._actionMenuPopdownListener);
+		}
+		if (nodeType == "buddy") {
+			// update menu items depending on wether we do
+			// or don't have an Abook contact associated
+			// with this buddy
+			var contact = buddy.getContact();
+			menu.getOp(ZmOperation.IM_ADD_TO_CONTACT).setVisible(!contact);
+			menu.getOp(ZmOperation.IM_CREATE_CONTACT).setVisible(!contact);
+			menu.getOp(ZmOperation.IM_EDIT_CONTACT).setVisible(!!contact);
+		} else if (nodeType == "root") {
+			var loggedIn = ZmImApp.loggedIn();
+			for (var i = 0, count = menu.opList.length; i < count; i++) {
+				var item = menu.getMenuItem(menu.opList[i]);
+				if (item) {
+					item.setEnabled(loggedIn);
+				}
+			}
+			if (loggedIn) {
+				this._setCheckOp(menu, ZmOperation.IM_TOGGLE_OFFLINE, this.__filterOffline);
+				this._setCheckOp(menu, ZmOperation.IM_TOGGLE_BLOCKED, this.__filterBlocked);
+				this._setCheckOp(menu, ZmOperation.IM_SORT_BY_PRESENCE, this._sortBy == ZmImApp.BUDDY_SORT_PRESENCE);
+				this._setCheckOp(menu, ZmOperation.IM_SORT_BY_NAME, this._sortBy == ZmImApp.BUDDY_SORT_NAME);
+			}
+		}
+		return menu;
+	}
 };
 
 // This is called when the clicking in the tree view, but only if
@@ -271,30 +355,32 @@ ZmImOverview.prototype._treeMouseUpListener = function(ev) {
 };
 
 ZmImOverview.prototype._treeSelectionListener = function(ev) {
-        if (ev.detail != DwtTree.ITEM_ACTIONED &&
-            ev.detail != DwtTree.ITEM_SELECTED &&
-            ev.detail != DwtTree.ITEM_DBL_CLICKED)
-                return;
+	if (ev.detail != DwtTree.ITEM_ACTIONED &&
+		ev.detail != DwtTree.ITEM_SELECTED &&
+		ev.detail != DwtTree.ITEM_DBL_CLICKED)
+		return;
 
-        var data = ev.item.getData("ZmImOverview.data");
-        var type = data.type;
-        var group = data.group;
-        var buddy = data.buddy;
+	var data = ev.item.getData("ZmImOverview.data");
+	var type = data.type;
+	var group = data.group;
+	var buddy = data.buddy;
 
-        if (ev.detail == DwtTree.ITEM_ACTIONED) {
-                var menu = this._getActionMenu(type, buddy, group);
-                this._actionedItem = ev.item;
-                menu.popup(0, ev.docX, ev.docY);
-        } else if (ev.detail == DwtTree.ITEM_SELECTED && buddy) {
-                var ctrl = AjxDispatcher.run("GetChatListController");
-                ctrl.selectChatForRosterItem(buddy);
-        } else if (ev.detail == DwtTree.ITEM_DBL_CLICKED) {
-                if (buddy) {
-                        this.chatWithBuddy(buddy);
-                } else if (group) {
-                        ev.item.setExpanded(!ev.item.getExpanded());
-                }
-        }
+	if (ev.detail == DwtTree.ITEM_ACTIONED) {
+		var menu = this._getActionMenu(type, buddy, group);
+		if (menu) {
+			this._actionedItem = ev.item;
+			menu.popup(0, ev.docX, ev.docY);
+		}
+	} else if (ev.detail == DwtTree.ITEM_SELECTED && buddy) {
+		var ctrl = AjxDispatcher.run("GetChatListController");
+		ctrl.selectChatForRosterItem(buddy);
+	} else if (ev.detail == DwtTree.ITEM_DBL_CLICKED) {
+		if (buddy) {
+			this.chatWithBuddy(buddy);
+		} else if (group) {
+			ev.item.setExpanded(!ev.item.getExpanded());
+		}
+	}
 };
 
 ZmImOverview.prototype._init = function() {
@@ -316,7 +402,16 @@ ZmImOverview.prototype._init = function() {
 	tree.addListener(DwtEvent.ONMOUSEUP, new AjxListener(this, this._treeMouseUpListener));
 
 	// create the root item
-	this._rootItem = new ZmRootBuddyItem({parent:tree, overview: this, className:"overviewHeader"});
+	this._rootItem = new DwtHeaderTreeItem({
+		parent:tree,
+		overview: this,
+		className:"overviewHeader",
+		button: {
+			image: "AddBuddy",
+			tooltip: ZmMsg.createNewRosterItem,
+			callback: new AjxCallback(null, ZmImOverview.newBuddy)
+		}
+	});
 	this._rootItem.setData("ZmImOverview.data", { type: "root" });
 	this._rootItem.setText(ZmMsg.buddyList);
 	this._rootItem.enableSelection(false);
@@ -415,7 +510,7 @@ function(type) {
 		switch(type) {
 		case ZmImOverview.NO_MESSAGE:
 			// Once we have buddies we can just delete the info item.
-			this._showInfoItem(ZmImOverview.NO_MESSAGE);
+			this._infoItem.dispose();
 			this._infoItem = null;
 			break;
 		case ZmImOverview.NOT_LOGGED_IN:
@@ -446,8 +541,7 @@ function(ev) {
 	} else if (ev.event == ZmEvent.E_CREATE) {
 		if (this._infoItem) {
 			var expand = this._rootItem.getExpanded();
-			this._infoItem.dispose();
-			this._infoItem = null;
+			this._showInfoItem(ZmImOverview.NO_MESSAGE);
 			this._createFilterItem(expand);
 		}
 		if (this._loadingAction) {
@@ -519,7 +613,7 @@ ZmImOverview.prototype._createTreeItems = function(type, buddy) {
 		var parent = this.getGroupItem(groups[i]);
 		var item = new DwtTreeItem({parent:parent,
 			index:this.getSortIndex(buddy, parent),
-			text:label,
+			text:AjxStringUtil.htmlEncode(label),
 			imageInfo:icon});
 		item.addClassName("ZmImPresence-" + buddy.getPresence().getShow());
 		item.setToolTipContent("-"); // force it to have a tooltip
@@ -598,7 +692,7 @@ ZmImOverview.prototype.getGroupItem = function(group) {
 	if (!g) {
 		g = this._groupItems[group] = new DwtTreeItem({parent:this._rootItem,
 			index:this.getSortIndex(group), // index
-			text:group, // text
+			text:AjxStringUtil.htmlEncode(group), // text
 			imageInfo:"ImGroup" // image
 		});
 		g.setToolTipContent("-");
@@ -649,213 +743,161 @@ ZmImOverview.prototype.getSortIndex = function(label, root) {
 };
 
 ZmImOverview.prototype.addFilter = function(f) {
-        if (!this.__filters)
-                this.__filters = [];
+	// don't add same filter twice
+	for (var i = this.__filters.length; --i >= 0;) {
+		if (this.__filters[i] === f) {
+			this.__filters.splice(i, 1);
+		}
+	}
 
-        // don't add same filter twice
-        for (var i = this.__filters.length; --i >= 0;)
-                if (this.__filters[i] === f)
-                        this.__filters.splice(i, 1);
-
-        this.__filters.push(f);
-        this.applyFilters();
+	this.__filters.push(f);
+	this.applyFilters();
 };
 
 ZmImOverview.prototype.removeFilter = function(f) {
-        if (!this.__filters)
-                return;
+	if (!this.__filters.length)
+		return;
 
-        for (var i = this.__filters.length; --i >= 0;)
-                if (this.__filters[i] === f)
-                        this.__filters.splice(i, 1);
+	for (var i = this.__filters.length; --i >= 0;) {
+		if (this.__filters[i] === f) {
+			this.__filters.splice(i, 1);
+		}
+	}
 
-        // this is needed even if the array is empty in order to
-        // redisplay any hidden items
-        this.applyFilters();
-
-        if (this.__filters.length == 0) {
-                // completely drop it so we don't spend useful
-                // time in applyFilters if there are no filters
-                this.__filters = null;
-        }
+	// this is needed even if the array is empty in order to
+	// redisplay any hidden items
+	this.applyFilters(null, true);
 };
 
-ZmImOverview.prototype.applyFilters = function(items) {
-        var filters = this.__filters;
-        if (!filters)
-                return;
-        this._firstFilterItem = null;
-        var doItems = function(items) {
-                var oneVisible = false;
-                for (var j = items.length; --j >= 0;) {
-                        var item = items[j];
-                        var display = true;
-                        for (var k = filters.length; --k >= 0;) {
-                                var f = filters[k];
-                                if (f.call(this, item)) {
-                                        display = false;
-                                        break;
-                                }
-                        }
-                        if (!this._firstFilterItem && display)
-                                this._firstFilterItem = item;
-                        oneVisible = oneVisible || display;
-                        item.setVisible(display);
-                }
-                return oneVisible;
-        };
-        if (items) {
-                doItems.call(this, items);
-        } else {
-                var root = this._rootItem;
-                var groups = root.getItems();
-                for (var i = groups.length; --i >= 0;) {
-                        var group = groups[i];
-                        var items = group.getItems();
-                        var oneVisible = doItems.call(this, items) || items.length == 0;
-                        group.setVisible(oneVisible);
-                        if (oneVisible)
-                                group.setExpanded(true);
-                }
-        }
+ZmImOverview.prototype.applyFilters = function(items, doEmpty) {
+	var filters = this.__filters;
+	if (!filters.length && !doEmpty)
+		return;
+	this._firstFilterItem = null;
+	var doItems = function(items) {
+		var oneVisible = false;
+		for (var j = items.length; --j >= 0;) {
+			var item = items[j];
+			var display = true;
+			for (var k = filters.length; --k >= 0;) {
+				var f = filters[k];
+				if (f.call(this, item)) {
+					display = false;
+					break;
+				}
+			}
+			if (!this._firstFilterItem && display)
+				this._firstFilterItem = item;
+			oneVisible = oneVisible || display;
+			item.setVisible(display);
+		}
+		return oneVisible;
+	};
+	if (items) {
+		doItems.call(this, items);
+	} else if (this._rootItem) {
+		var root = this._rootItem;
+		var groups = root.getItems();
+		for (var i = groups.length; --i >= 0;) {
+			var group = groups[i];
+			var items = group.getItems();
+			var oneVisible = doItems.call(this, items) || items.length == 0;
+			group.setVisible(oneVisible);
+			if (oneVisible)
+				group.setExpanded(true);
+		}
+	}
 };
 
 ZmImOverview.FILTER_OFFLINE_BUDDIES = function(item) {
-        var rti = item.getData("ZmImOverview.data").buddy;
-        var presence = rti.getPresence();
-        return presence.getShow() == ZmRosterPresence.SHOW_OFFLINE;
+	var rti = item.getData("ZmImOverview.data").buddy;
+	var presence = rti.getPresence();
+	return presence.getShow() == ZmRosterPresence.SHOW_OFFLINE;
 };
 
 ZmImOverview.FILTER_BLOCKED_BUDDIES = function(item) {
-        var rti = item.getData("ZmImOverview.data").buddy;
-        return AjxDispatcher.run("GetRoster").getPrivacyList().isDenied(rti.getAddress());
+	var rti = item.getData("ZmImOverview.data").buddy;
+	return AjxDispatcher.run("GetRoster").getPrivacyList().isDenied(rti.getAddress());
 };
 
 // comment this out if we want to disable the search input field
 ZmImOverview.FILTER_SEARCH = {
-        func : function(item) {
-                var search = this.__searchInputEl.value.toLowerCase();
-                var rti = item.getData("ZmImOverview.data").buddy;
-                if (/^#/.test(search)) {
-                        // search address -- easy way to display only Y! buddies, for instance.
-                        return rti.getAddress().indexOf(search.substr(1)) < 0;
-                } else {
-                        return rti.getDisplayName().toLowerCase().indexOf(search) < 0;
-                }
-        },
+	func : function(item) {
+		var search = this.__searchInputEl.value.toLowerCase();
+		var rti = item.getData("ZmImOverview.data").buddy;
+		if (/^#/.test(search)) {
+			// search address -- easy way to display only Y! buddies, for instance.
+			return rti.getAddress().indexOf(search.substr(1)) < 0;
+		} else {
+			return rti.getDisplayName().toLowerCase().indexOf(search) < 0;
+		}
+	},
 
-        _doKeyPress : function() {
-                var search = this.__searchInputEl.value;
-                if (!/\S/.test(search) || search == ZmMsg.filter)
-                        this.removeFilter(ZmImOverview.FILTER_SEARCH.func);
-                else
-                        this.addFilter(ZmImOverview.FILTER_SEARCH.func);
-        },
+	_doKeyPress : function() {
+		var search = this.__searchInputEl.value;
+		if (!/\S/.test(search) || search == ZmMsg.filter)
+			this.removeFilter(ZmImOverview.FILTER_SEARCH.func);
+		else
+			this.addFilter(ZmImOverview.FILTER_SEARCH.func);
+	},
 
-        inputFocus : function() {
-                Dwt.delClass(this.__searchInputEl, "DwtSimpleInput-hint", "DwtSimpleInput-focused");
-                if (this.__searchInputEl.value == ZmMsg.filter)
-                        this.__searchInputEl.value = "";
-                else try {
-                        this.__searchInputEl.select();
-                } catch(ex) {};
-        },
+	inputFocus : function() {
+		Dwt.delClass(this.__searchInputEl, "DwtSimpleInput-hint", "DwtSimpleInput-focused");
+		if (this.__searchInputEl.value == ZmMsg.filter)
+			this.__searchInputEl.value = "";
+		else try {
+			this.__searchInputEl.select();
+		} catch(ex) { }
+		;
+	},
 
-        inputBlur : function() {
-                Dwt.delClass(this.__searchInputEl, "DwtSimpleInput-focused", "DwtSimpleInput-hint");
-                if (!/\S/.test(this.__searchInputEl.value))
-                        this.__searchInputEl.value = ZmMsg.filter;
-        },
+	inputBlur : function() {
+		Dwt.delClass(this.__searchInputEl, "DwtSimpleInput-focused", "DwtSimpleInput-hint");
+		if (!/\S/.test(this.__searchInputEl.value))
+			this.__searchInputEl.value = ZmMsg.filter;
+	},
 
-        inputKeyPress : function(ev) {
-                if (!ev)
-                        ev = window.event;
+	inputKeyPress : function(ev) {
+		if (!ev)
+			ev = window.event;
 
-                if (this.__searchInputTimeout)
-                        clearTimeout(this.__searchInputTimeout);
+		if (this.__searchInputTimeout)
+			clearTimeout(this.__searchInputTimeout);
 
-                if (ev.keyCode == 27) {
-                        this.__searchInputEl.value = "";
-                        ZmImOverview.FILTER_SEARCH._doKeyPress.call(this);
-                        ZmImOverview.FILTER_SEARCH.inputBlur.call(this);
-                        this.__searchInputEl.blur();
-                }
+		if (ev.keyCode == 27) {
+			this.__searchInputEl.value = "";
+			ZmImOverview.FILTER_SEARCH._doKeyPress.call(this);
+			ZmImOverview.FILTER_SEARCH.inputBlur.call(this);
+			this.__searchInputEl.blur();
+		}
 
-                if (ev.keyCode == 13) {
-                        // filter right now
-                        ZmImOverview.FILTER_SEARCH._doKeyPress.call(this);
+		if (ev.keyCode == 13) {
+			// filter right now
+			ZmImOverview.FILTER_SEARCH._doKeyPress.call(this);
 
-                        if (!/\S/.test(this.__searchInputEl.value))
-                                return;
+			if (!/\S/.test(this.__searchInputEl.value))
+				return;
 
                         // initiate chat with the first item, if found
-                        if (this._firstFilterItem) {
-                                this.chatWithBuddy(rti);
+			if (this._firstFilterItem) {
+				this.chatWithBuddy(rti);
 
                                 // and clear value to reset filters
-                                this.__searchInputEl.value = "";
+				this.__searchInputEl.value = "";
 
-                                ZmImOverview.FILTER_SEARCH.inputBlur.call(this);
-                                this.__searchInputEl.blur();
-                        }
-                }
+				ZmImOverview.FILTER_SEARCH.inputBlur.call(this);
+				this.__searchInputEl.blur();
+			}
+		}
 
-                this.__searchInputTimeout = setTimeout(
-                        AjxCallback.simpleClosure(
-                                ZmImOverview.FILTER_SEARCH._doKeyPress, this
-                        ), 500);
-        }
-};
-
-///////////////////////////////////////////////////////////////////////////
-
-ZmRootBuddyItem = function(params) {
-	this.overview = params.overview;
-	DwtTreeItem.call(this, params);
-}
-
-ZmRootBuddyItem.prototype = new DwtTreeItem;
-ZmRootBuddyItem.prototype.constructor = ZmRootBuddyItem;
-
-ZmRootBuddyItem.prototype.TEMPLATE = "im.Chat#ZmRootBuddyItem";
-
-ZmRootBuddyItem.prototype.toString =
-function() {
-	return "ZmRootBuddyItem";
-};
-
-ZmRootBuddyItem.prototype._initialize =
-function() {
-	DwtTreeItem.prototype._initialize.apply(this, arguments);
-	this._newBuddyId = this._htmlElId + "_newBuddyButton";
-	var buttonEl = document.getElementById(this._newBuddyId);
-	if (buttonEl) {
-		buttonEl.onclick = ZmImOverview.newBuddy;
-		this._setEventHdlrs[DwtEvent.ONMOUSEOVER, DwtEvent.ONMOUSEOUT, DwtEvent.ONMOUSEENTER, DwtEvent.ONMOUSELEAVE];
-		var mouseOverListener = new AjxListener(this, this._mouseOverListener);
-		var mouseOutListener = new AjxListener(this, this._mouseOutListener);
-		this.addListener(DwtEvent.ONMOUSEOVER, mouseOverListener);
-		this.addListener(DwtEvent.ONMOUSEENTER, mouseOverListener);
-		this.addListener(DwtEvent.ONMOUSEOUT, mouseOutListener);
-		this.addListener(DwtEvent.ONMOUSELEAVE, mouseOutListener);
+		this.__searchInputTimeout = setTimeout(
+				AjxCallback.simpleClosure(
+						ZmImOverview.FILTER_SEARCH._doKeyPress, this
+						), 500);
 	}
 };
 
-ZmRootBuddyItem.prototype._mouseOverListener =
-function(ev) {
-	var el = DwtUiEvent.getTarget(ev);
-	if (el && (el.id == this._newBuddyId)) {
-		this.setToolTipContent(ZmMsg.createNewRosterItem);
-	}
-};
 
-ZmRootBuddyItem.prototype._mouseOutListener =
-function(ev) {
-	var el = DwtUiEvent.getTarget(ev);
-	if (el && (el.id == this._newBuddyId)) {
-		this.setToolTipContent(null);
-	}
-};
 
 ///////////////////////////////////////////////////////////////////////////
 

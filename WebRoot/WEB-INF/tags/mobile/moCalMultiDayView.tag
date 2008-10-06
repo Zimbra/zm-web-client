@@ -74,7 +74,7 @@
         <tr>
             <td>
                 <table width="100%" border="0" cellpadding="0" cellspacing="0">
-                    <tr>
+                    <tr  style="height:35px;">
                         <mo:calendarUrl var="prevUrl" rawdate="${prevDate}" timezone="${timezone}"/>
                         <mo:calendarUrl var="nextUrl" rawdate="${nextDate}" timezone="${timezone}"/>
                         <td width="1%">
@@ -94,6 +94,11 @@
         <tr>
             <td>
                 ${multiDay}
+            </td>
+        </tr>
+         <tr>
+            <td>
+                <mo:calendarViewToolbar date="${date}"/>
             </td>
         </tr>
     </table>

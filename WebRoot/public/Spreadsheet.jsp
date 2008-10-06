@@ -60,8 +60,11 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 		<jsp:param name="skin" value="${skin}" />
 	</jsp:include>
 	<jsp:include page="Boot.jsp"/>
+	<script type="text/javascript" language="JavaScript">
+		<jsp:include page="/js/ajax/util/AjxTimezoneData.js" />
+	</script>
     <%
-      String packages = "Ajax,Spreadsheet";
+      String packages = "Ajax,SpreadsheetALE";
 
       String extraPackages = request.getParameter("packages");
       if (extraPackages != null) packages += ","+extraPackages;

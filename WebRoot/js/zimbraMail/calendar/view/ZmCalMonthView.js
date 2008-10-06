@@ -17,10 +17,10 @@
 
 ZmCalMonthView = function(parent, posStyle, controller, dropTgt) {
 	ZmCalBaseView.call(this, parent, "calendar_view", posStyle, controller, ZmId.VIEW_CAL_MONTH, dropTgt);	
-	//this.getHtmlElement().style.overflow = "hidden";
+
 	this.setScrollStyle(DwtControl.CLIP);
 	this._needFirstLayout = true;
-	this.setNumDays(42);
+	this.numDays = 42;
 
 	this._monthItemClass = "calendar_month_day_item_row";
 	this._monthItemSelectedClass = [this._monthItemClass, DwtCssStyle.SELECTED].join('-');
