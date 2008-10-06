@@ -130,12 +130,7 @@ function(params) {
 	// create header item
 	var root = this._dataTree.root;
 	var treeItemId = ZmId.getTreeItemId(this.overviewId, null, this.type);
-	var ti = this._headerItem = new DwtHeaderTreeItem({
-		parent:this,
-		className:this._headerClass,
-		id:treeItemId,
-		button: params.newButton
-	});
+	var ti = this._headerItem = new DwtTreeItem({parent:this, className:this._headerClass, id:treeItemId});
 	ti.enableSelection(false); // by default, disallow selection
 	ti._isHeader = true;
 	var name = ZmMsg[ZmOrganizer.LABEL[this.type]];

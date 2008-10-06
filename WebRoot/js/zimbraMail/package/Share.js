@@ -37,4 +37,3 @@ AjxPackage.require("zimbraMail.share.view.dialog.ZmSharePropsDialog");
 AjxPackage.require("zimbraMail.share.view.dialog.ZmRevokeShareDialog");
 AjxPackage.require("zimbraMail.share.view.dialog.ZmMountFolderDialog");
 AjxPackage.require("zimbraMail.share.view.dialog.ZmFindnReplaceDialog");
-AjxPackage.require("zimbraMail.share.view.dialog.ZmFolderNotifyDialog");
