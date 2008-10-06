@@ -390,6 +390,15 @@ function(refresh) {
 
 	// Run any app-requested refresh routines
 	this._controller.runAppFunction("refresh", false, refresh);
+
+	// Reset the overview that is shared by most apps.
+	ZmAppAccordionController.getInstance().reset();
+
+	// Redisplay the current app's overview.
+	var currentApp = appCtxt.getCurrentApp();
+	if (currentApp) {
+		currentApp.setOverviewPanelContent(true);
+	}
 };
 
 /**

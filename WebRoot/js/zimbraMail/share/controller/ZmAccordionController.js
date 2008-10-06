@@ -58,8 +58,13 @@ function(dontCreate) {
 ZmAccordionController.prototype.reset =
 function() {
 	if (this._accordion) {
-		this._accordion.dispose();
-		this._accordion = null;
+		var items = this._accordion.getItems();
+		for (var i = 0, count = items.length; i < count; i++) {
+			var item = items[i];
+			if (item) {
+				item.control.clear();
+			}
+		}
 	}
 };
 

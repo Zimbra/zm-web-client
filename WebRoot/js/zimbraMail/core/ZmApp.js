@@ -509,9 +509,6 @@ function(type) {
  */
 ZmApp.prototype._handleRefresh =
 function(refresh) {
-	if (this.getAccordionController().getAccordion(true)) {
-		this.resetOverview();		
-	}
 };
 
 ZmApp.prototype._setupDropTargets =

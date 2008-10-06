@@ -251,6 +251,7 @@ function() {
 		if (this._treeHash[treeId]) {
 			var treeController = this._controller.getTreeController(treeId);
 			treeController.clearTreeView(this.id);
+			delete this._treeHash[treeId];
 		}
 	}
 };
