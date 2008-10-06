@@ -144,7 +144,7 @@ function() {
     ZmOperation.registerOp(ZmId.OP_SYNC_ALL, {textKey:"checkAllFeed", image:"Refresh"});
 	ZmOperation.registerOp(ZmId.OP_SYNC_OFFLINE_FOLDER, {textKey:"syncOfflineFolderOff", image:"Refresh"}, ZmSetting.OFFLINE_ENABLED); /* offline only */
 	ZmOperation.registerOp(ZmId.OP_TAG, null, ZmSetting.TAGGING_ENABLED);
-	ZmOperation.registerOp(ZmId.OP_TAG_COLOR_MENU, {textKey:"tagColor"}, ZmSetting.TAGGING_ENABLED,
+	ZmOperation.registerOp(ZmId.OP_TAG_COLOR_MENU, {textKey:"tagColor", image:"TagStack"}, ZmSetting.TAGGING_ENABLED,
 		AjxCallback.simpleClosure(function(parent) {
 			ZmOperation.addDeferredMenu(ZmOperation.addColorMenu, parent);
 		}));
