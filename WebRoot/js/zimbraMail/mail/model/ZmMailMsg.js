@@ -1379,11 +1379,6 @@ function(what, a, b, c) {
 	}
 };
 
-ZmMailMsg.prototype.getPrintHtml =
-function(preferHtml, callback) {
-	ZmMailMsgView.getPrintHtml(this, preferHtml, callback);
-};
-
 ZmMailMsg.prototype.getStatusIcon =
 function() {
 	var imageInfo;

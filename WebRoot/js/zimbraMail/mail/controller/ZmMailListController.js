@@ -1030,6 +1030,17 @@ function(ev, callback) {
 	if (callback) { callback.run(); }
 };
 
+ZmMailListController.prototype._printListener =
+function(ev) {
+	var listView = this._listView[this._currentView];
+	var items = listView.getSelection();
+	var item = (items instanceof Array) ? items[0] : items;
+	var url = (item.toString() == "ZmConv")
+		? ("/h/printconversations?xim=1&cid=" + item.id)
+		: ("/h/printmessage?mid=" + item.id);
+	window.open(appContextPath+url, "_blank");
+};
+
 ZmMailListController.prototype._editListener =
 function(ev) {
 	this._doAction({ev:ev, action:ZmOperation.DRAFT});
