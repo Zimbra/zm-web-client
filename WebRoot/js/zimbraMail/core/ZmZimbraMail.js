@@ -233,7 +233,7 @@ function() {
 			childWin.win.close();
 		}
 	}
-	window._zimbraMail = window.onload = window.onunload = window.onresize = window.document.onkeypress = null;
+	window._zimbraMail = window.onload = window.onresize = window.document.onkeypress = null;
 };
 
 /**
@@ -303,6 +303,9 @@ function(params) {
 		if (appCtxt.isOffline) {
 			this._components[ZmAppViewMgr.C_OFFLINE_STATUS] = this.offlineStatusField = this._createOfflineStatus();
 		}
+		var currentAppToolbar = new ZmCurrentAppToolBar(this._shell, ZmId.CURRENT_APP_TOOLBAR);
+		appCtxt.setCurrentAppToolbar(currentAppToolbar);
+		this._components[ZmAppViewMgr.C_CURRENT_APP] = currentAppToolbar;
 		this._components[ZmAppViewMgr.C_STATUS] = this.statusView =
 			new ZmStatusView(this._shell, "ZmStatus", Dwt.ABSOLUTE_STYLE, ZmId.STATUS_VIEW);
 	}
@@ -332,8 +335,8 @@ function(params) {
 			girJSON.Body = {};
 			girJSON.Body.GetInfoResponse = br.GetInfoResponse[0];
 			girJSON.Header = params.batchInfoResponse.Header;
-			if (girJSON.Header && girJSON.Header.context && girJSON.Header.context.session) {
-				ZmCsfeCommand.setSessionId(girJSON.Header.context.session);
+			if (girJSON.Header && girJSON.Header.context && girJSON.Header.context.sessionId) {
+				ZmCsfeCommand.setSessionId(girJSON.Header.context.sessionId);
 			}
 			DBG.println(AjxDebug.DBG1, ["<H4> RESPONSE (from JSP tag)</H4>"].join(""), "GetInfoResponse");
 			DBG.dumpObj(AjxDebug.DBG1, girJSON, -1);
@@ -1106,9 +1109,7 @@ function() {
 							 createFunc:		"ZmSearchFolder.create",
 							 compareFunc:		"ZmFolder.sortCompare",
 							 shortcutKey:		"S",
-							 newOp:				ZmOperation.BROWSE,
-							 openSetting:		ZmSetting.SEARCH_TREE_OPEN,
-							 displayOrder:		300
+							 openSetting:		ZmSetting.SEARCH_TREE_OPEN
 							});
 
 	ZmOrganizer.registerOrg(ZmOrganizer.TAG,
@@ -1126,9 +1127,7 @@ function() {
 							 createFunc:		"ZmTag.create",
 							 compareFunc:		"ZmTag.sortCompare",
 							 shortcutKey:		"T",
-							 newOp:				ZmOperation.NEW_TAG,
-							 openSetting:		ZmSetting.TAG_TREE_OPEN,
-							 displayOrder:		400
+							 openSetting:		ZmSetting.TAG_TREE_OPEN
 							});
 
 	ZmOrganizer.registerOrg(ZmOrganizer.ROSTER_TREE_ITEM,
@@ -1137,17 +1136,8 @@ function() {
 							 defaultFolder:		ZmOrganizer.ID_ROSTER_LIST,
 							 orgPackage:		"IMCore",
 							 treeController:	"ZmRosterTreeController",
-							 deferrable:		false,
-							 displayOrder:		200
+							 deferrable:		false
 							});
-	ZmOrganizer.registerOrg(ZmOrganizer.ZIMLET,
-							{orgClass:			"ZmZimlet",
-							 treeController:	"ZmZimletTreeController",
-							 labelKey:			"zimlets",
-							 compareFunc:		"ZmZimlet.sortCompare",
-							 openSetting:		ZmSetting.ZIMLET_TREE_OPEN
-							});
-	
 	// Technically, we don't need to do this because the drop listeners for dragged organizers typically do their
 	// own checks on the class of the dragged object. But it's better to do it anyway, in case it ever gets
 	// validated within the drop target against the valid types.
@@ -1268,6 +1258,12 @@ function(appName, view) {
 	// app not actually enabled if this is result of upsell view push
 	var appEnabled = appCtxt.get(ZmApp.SETTING[appName]);
 
+	// update current app toolbar
+	var toolbar = appEnabled ? appCtxt.getCurrentAppToolbar() : null;
+	if (toolbar) {
+		toolbar.setupView(appName);
+	}
+
 	if (this._activeApp != appName) {
 		// deactivate previous app
 	    if (this._activeApp) {
@@ -1357,7 +1353,7 @@ function() {
 			logoutIcon: (appCtxt.get(ZmSetting.SKIN_HINTS, "logoutButton.hideIcon") ? null : "Logoff"),
 			logoutText: (appCtxt.isOffline ? ZmMsg.setup : ZmMsg.logOff)
 		}
-		el.innerHTML = AjxTemplate.expand("share.App#UserInfo", data);
+		el.innerHTML = AjxTemplate.expand("share.App#UserInfo", data)
 	}
 };
 
@@ -1806,48 +1802,11 @@ function(actionCode, ev) {
 			break;
 		}
 
-		case ZmKeyMap.GOTO_PREV_ACCT:
-		case ZmKeyMap.GOTO_NEXT_ACCT: {
-			var active = (appCtxt.numVisibleAccounts > 1) ? appCtxt.getActiveAccount() : null;
-			if (active) {
-				var index = (actionCode == ZmKeyMap.GOTO_PREV_ACCT)
-					? ((active.itemId > 0) ? (active.itemId-1) : null)
-					: ((active.itemId < (appCtxt.numVisibleAccounts-1)) ? (active.itemId+1) : null);
-				this._switchToAccount(index);
-			}
-			break;
-		}
-
-		case ZmKeyMap.CANCEL: {
-			// see if there's a current drag operation we can cancel
-			var handled = false;
-			var captureObj = (DwtMouseEventCapture.getId() == "DwtControl") ? DwtMouseEventCapture.getCaptureObj() : null;
-			var obj = captureObj && captureObj.targetObj;
-			if (obj && (obj._dragging == DwtControl._DRAGGING)) {
-				captureObj.release();
-				obj.__lastDestDwtObj = null;
-				obj._setDragProxyState(false);					// turn dnd icon red so user knows no drop is happening
-				DwtControl.__badDrop(obj, DwtShell.mouseEvent);	// shell's mouse ev should have latest info
-				handled = true;
-			}
-			if (handled) { break; }
-		}
-
 		default: {
-			if (appCtxt.numVisibleAccounts > 1) {
-				// Handle action code like "GoToAcct3"
-				var m = actionCode.match(ZmKeyMap.GOTO_ACCT_RE);
-				if (m && m.length) {
-					this._switchToAccount(m[1]-1);
-					break;
-				}
-				return false;
-			} else {
-				var ctlr = appCtxt.getCurrentController();
-				return (ctlr && ctlr.handleKeyAction)
-					? ctlr.handleKeyAction(actionCode, ev)
-					: false;
-			}
+			var ctlr = appCtxt.getCurrentController();
+			return (ctlr && ctlr.handleKeyAction)
+				? ctlr.handleKeyAction(actionCode, ev)
+				: false;
 		}
 	}
 	return true;
@@ -1862,15 +1821,6 @@ function() {
 	var content = ctlr ? ctlr.getCurrentView() : null;
 	if (content) {
 		appCtxt.getKeyboardMgr().grabFocus(content);
-	}
-};
-
-ZmZimbraMail.prototype._switchToAccount =
-function(index) {
-	var app = appCtxt.getCurrentApp();
-	var item = app.getOverviewPanelContent().getItemByIndex(index);;
-	if (item) {
-		app.expandAccordionForAccount(item.data.account, true);
 	}
 };
 
@@ -1913,7 +1863,6 @@ function() {
 	window.AjxDebug.prototype.setDebugLevel	= function() {};
 	window.AjxDebug.prototype.setTitle		= function() {};
 	window.AjxDebug.prototype.showTiming	= function() {};
-	window.AjxDebug.prototype._getTimeStamp	= function() {};
 	window.AjxDebug.prototype.timePt		= function() {};
 	window.DBG = new window.AjxDebug();
 };
@@ -1926,12 +1875,16 @@ function() {
 ZmZimbraMail.prototype._postLoadZimlet =
 function() {
 	appCtxt.setZimletsPresent(true);
-
-	// If the app overview has been created, show the zimlets tree.
-	var accordionController = ZmAppAccordionController.getInstance();
-	var accordion = accordionController.getAccordion(true);
-	if (accordion) {
-		accordionController.getCurrentOverview().setTreeVisible(ZmOrganizer.ZIMLET, true);
+	ZmOrganizer.registerOrg(ZmOrganizer.ZIMLET,
+							{orgClass:			"ZmZimlet",
+							 treeController:	"ZmZimletTreeController",
+							 labelKey:			"zimlets",
+							 compareFunc:		"ZmZimlet.sortCompare",
+							 openSetting:		ZmSetting.ZIMLET_TREE_OPEN
+							});
+	for (var app in ZmApp.SHOW_ZIMLETS) {
+		var trees = ZmApp.OVERVIEW_TREES[app] || [];
+		trees.push(ZmOrganizer.ZIMLET);
 	}
 };
 
@@ -1957,4 +1910,4 @@ function() {
 };
 
 // YUCK:
-ZmOrganizer.ZIMLET = "ZIMLET";
+ZmOrganizer.ZIMLET = "Zimlet";
