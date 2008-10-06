@@ -48,13 +48,5 @@
                 </td>
             </tr>
 		<$ } $>
-        <$ if (data.offlineStatus) { $>
-            <tr>
-                <td>
-                    <hr size=1></hr>
-                    ${offlineStatus}
-                </td>
-            </tr>
-        <$ } $>
 	</table>
 </template>

@@ -300,6 +300,9 @@ function(params) {
 			this._createUserInfo("BannerTextUser", ZmAppViewMgr.C_USER_INFO, ZmId.USER_NAME);
 		this._components[ZmAppViewMgr.C_QUOTA_INFO] = this._usedQuotaField =
 			this._createUserInfo("BannerTextQuota", ZmAppViewMgr.C_QUOTA_INFO, ZmId.USER_QUOTA);
+		if (appCtxt.isOffline) {
+			this._components[ZmAppViewMgr.C_OFFLINE_STATUS] = this.offlineStatusField = this._createOfflineStatus();
+		}
 		this._components[ZmAppViewMgr.C_STATUS] = this.statusView =
 			new ZmStatusView(this._shell, "ZmStatus", Dwt.ABSOLUTE_STYLE, ZmId.STATUS_VIEW);
 	}
@@ -1386,14 +1389,14 @@ function() {
 	}
 	this._usedQuotaField.getHtmlElement().innerHTML = AjxTemplate.expand('share.Quota#'+quotaTemplateId, data)
 
-	if (appCtxt.isOffline && appCtxt.numVisibleAccounts == 1) {
-		data.offlineStatus = appCtxt.getActiveAccount().getToolTip();
-	}
-
 	// tooltip for username/quota fields
 	var html = AjxTemplate.expand('share.Quota#Tooltip', data);
 	this._components[ZmAppViewMgr.C_USER_INFO].setToolTipContent(html);
 	this._components[ZmAppViewMgr.C_QUOTA_INFO].setToolTipContent(html);
+
+	if (appCtxt.isOffline && appCtxt.numVisibleAccounts == 1) {
+		this._components[ZmAppViewMgr.C_OFFLINE_STATUS].setToolTipContent(appCtxt.getActiveAccount().getToolTip());
+	}
 };
 
 
@@ -1623,6 +1626,19 @@ function(className, cid, id) {
 		var w = container ? Dwt.getSize(document.getElementById("skin_td_tree")).x : null;
 		if (w) ui.setSize(w);
 	}
+	ui._setMouseEventHdlrs();
+	return ui;
+};
+
+ZmZimbraMail.prototype._createOfflineStatus =
+function() {
+	var params = {
+		parent: this._shell,
+		className: "OfflineStatusField",
+		posStyle: Dwt.ABSOLUTE_STYLE,
+		id:ZmId.SKIN_OFFLINE_STATUS
+	};
+	var ui = new DwtComposite(params);
 	ui._setMouseEventHdlrs();
 	return ui;
 };
