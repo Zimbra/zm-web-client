@@ -31,7 +31,6 @@ ZmCalViewMgr = function(parent, controller, dropTgt) {
 	this._viewFactory[ZmId.VIEW_CAL_WORK_WEEK]	= ZmCalWorkWeekView;
 	this._viewFactory[ZmId.VIEW_CAL_WEEK]		= ZmCalWeekView;
 	this._viewFactory[ZmId.VIEW_CAL_MONTH]		= ZmCalMonthView;
-	this._viewFactory[ZmId.VIEW_CAL_LIST]		= ZmCalListView;
 	this._viewFactory[ZmId.VIEW_CAL_SCHEDULE]	= ZmCalScheduleView;
 	this._viewFactory[ZmId.VIEW_CAL_APPT]		= ZmApptView;
 };
@@ -105,8 +104,8 @@ function(date, duration, roll) {
 ZmCalViewMgr.prototype.createView =
 function(viewName) {
 	var view = new this._viewFactory[viewName](this, DwtControl.ABSOLUTE_STYLE, this._controller, this._dropTgt);
-
 	if (viewName != ZmId.VIEW_CAL_APPT) {
+		view.setDragSource(this._dragSrc);
 		view.addTimeSelectionListener(new AjxListener(this, this._viewTimeSelectionListener));	
 		view.addDateRangeListener(new AjxListener(this, this._viewDateRangeListener));
 		view.addViewActionListener(new AjxListener(this, this._viewActionListener));	
@@ -172,8 +171,10 @@ function(mgr) {
 ZmCalViewMgr.prototype._layout =
 function() {
 	var mySz = this.getSize();
-	if (mySz.x == 0 || mySz.y == 0) { return; }
-
+//DBG.println("_layout");
+//DBG.dumpObj(mySz);
+	if (mySz.x == 0 || mySz.y == 0)
+		return;
 	var view = this._views[this._currentViewName];
 	var width = mySz.x - ZmCalViewMgr._SEP;
 	var height = mySz.y;
@@ -187,6 +188,8 @@ function() {
 
 ZmCalViewMgr.prototype._controlListener =
 function(ev) {
+//DBG.println("ZmCalViewMgr._controlListener!!! this._oldHeight="+this._oldHeight+" this._oldWidth="+this._oldWidth);
+//DBG.dumpObj(ev);
 	if (ev.oldHeight != ev.newHeight ||
 		ev.oldWidth != ev.newWidth)
 	{

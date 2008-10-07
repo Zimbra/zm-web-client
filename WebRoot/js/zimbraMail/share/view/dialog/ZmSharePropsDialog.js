@@ -37,7 +37,6 @@ ZmSharePropsDialog = function(shell, className) {
 
 	// set view
 	this.setView(this._createView());
-    this._tabGroupComplete = false;
 };
 
 ZmSharePropsDialog.prototype = new DwtDialog;
@@ -101,14 +100,10 @@ function(mode, object, share) {
 		this._inheritEl.checked = share ? share.link.inh : isNewShare;
 	}
 
-    if (!this._tabGroupComplete) {
-        this._tabGroup.addMember(this._granteeInput, 0);
-        this._tabGroupComplete = true;
-    }
-    
+
 	var perm = share ? share.link.perm : null;
 
-	if (perm != null) {
+	if(perm != null) {
 		perm = perm.replace(/-./g, "");
 		this._privateEl.checked = (perm.indexOf(ZmShare.PERM_PRIVATE) != -1);
 		perm = perm.replace(/p/g, "");
@@ -131,7 +126,7 @@ function(mode, object, share) {
 	this._reply.setReplyType(ZmShareReply.STANDARD);
 	this._reply.setReplyNote("");
 
-    this._populateUrls(object);
+	this._urlEl.innerHTML = AjxStringUtil.htmlEncode(this._object.getRestUrl());
 
 	DwtDialog.prototype.popup.call(this);
 	this.setButtonEnabled(DwtDialog.OK_BUTTON, false);
@@ -139,21 +134,6 @@ function(mode, object, share) {
 		this._userRadioEl.checked = true;
 		this._granteeInput.focus();
 	}
-};
-
-ZmSharePropsDialog.prototype._populateUrls =
-function(object){
-
-    var restUrl = AjxStringUtil.htmlEncode(this._object.getRestUrl());
-    if(object.type == ZmOrganizer.CALENDAR){
-        var htmlUrl = restUrl + ".html";
-        this._urlEl.innerHTML = [
-            "<div>", ZmMsg.ics, ":&nbsp;&nbsp;&nbsp;&nbsp;", restUrl, "</div>",
-            "<div>", ZmMsg.view, ":&nbsp;&nbsp;", htmlUrl,"</div>"
-        ].join("");
-    }else{
-        this._urlEl.innerHTML = "<div style='padding-left:2em;'>" + restUrl + "</div>";
-    }
 };
 
 ZmSharePropsDialog.prototype.popdown =
@@ -610,7 +590,7 @@ function() {
 	var urlHtml = [
 		"<div>",
 			"<div style='margin-bottom:.25em'>",ZmMsg.shareUrlInfo,"</div>",
-			"<div style='cursor:text' id='",urlId,"'></div>",
+			"<div style='padding-left:2em;cursor:text' id='",urlId,"'></div>",
 		"</div>"
 	].join("");
 

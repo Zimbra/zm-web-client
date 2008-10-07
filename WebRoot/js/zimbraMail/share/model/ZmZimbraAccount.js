@@ -143,7 +143,7 @@ function(acctInfo) {
 	if (this.status != acctInfo.status) {
 		this.status = acctInfo.status;
 		if (this.isMain || this.visible) {
-			ZmAppAccordionController.getInstance().updateAccountIcon(this, this.getStatusIcon());
+			appCtxt.getOverviewController().updateAccountIcon(this, this.getStatusIcon());
 			appCtxt.getAppController().setOfflineStatus();
 		}
 	}
@@ -152,7 +152,7 @@ function(acctInfo) {
 	if (this.visible && acctInfo.unread != this.unread) {
 		this.unread = acctInfo.unread;
 		if (appCtxt.multiAccounts && appCtxt.getActiveAccount() != this) {
-			ZmAppAccordionController.getInstance().updateAccountTitle(this.itemId, this.getTitle());
+			appCtxt.getOverviewController().updateAccountTitle(this.itemId, this.getTitle());
 		}
 	}
 };
