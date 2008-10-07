@@ -137,7 +137,8 @@ function(params) {
 			overviewId: overviewId,
 			overviewClass: "dialogOverview",
 			headerClass: "DwtTreeItem",
-			noTooltips: true
+			noTooltips: true,
+			treeIds: params.treeIds
 		};
 		overview = this._overview[overviewId] = this._opc.createOverview(ovParams);
 		this._renderOverview(overview, params.treeIds, params.omit, params.noRootSelect, params.account);
@@ -167,7 +168,7 @@ function(params) {
  */
 ZmDialog.prototype._renderOverview =
 function(overview, treeIds, omit, noRootSelect, account) {
-	overview.set(treeIds, omit, account);
+	overview.set(treeIds, omit, account, true);
 	if (!noRootSelect) {
 		for (var i = 0; i < treeIds.length; i++) {
 			var treeView = overview.getTreeView(treeIds[i]);

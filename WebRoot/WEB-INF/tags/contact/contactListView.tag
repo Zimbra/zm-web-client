@@ -26,6 +26,17 @@
                <table width="100%" cellspacing="0" cellpadding="0">
                <tr>
                    <td width="200" class='List' valign='top'>
+                       <table>
+                           <tr>
+                               <td nowrap="nowrap">
+                                   <label for="searchField"><fmt:message key="find"/>&nbsp;:&nbsp;</label>
+                                   <input onkeydown="handleEnter(event);" style="background-color:#FFFFFF;height:auto;padding:2px 4px;cursor:text;" type="text" id="searchField" maxlength="50" name="contactsq" value="${fn:escapeXml(param.sq)}">
+                               </td>
+                               <td>
+                                   <app:button name="actionSearch" id="SEARCH_CONTACT" tooltip="search" text="search"/>
+                               </td>
+                           </tr>
+                       </table>
                        <table width="100%" cellpadding="2" cellspacing="0">
                            <tr>
                                <th class='CB'><input id="OPCHALL" onClick="checkAll(document.zform.id,this)" type=checkbox name="allids"/>

@@ -18,11 +18,10 @@
 ZmCalColView = function(parent, posStyle, controller, dropTgt, view, numDays, scheduleMode) {
 	if (arguments.length == 0) { return; }
 
-	numDays = numDays || 1;
 	view = view || ZmId.VIEW_CAL_DAY;
 	// set before call to parent
 	this._scheduleMode = scheduleMode;
-	this.setNumDays(numDays);
+	this.numDays = numDays || 1;
 	this._daySepWidth = scheduleMode ? 2 : 1;									// width of separator between days
 	this._columns = [];
 	this._layoutMap = [];
@@ -123,18 +122,17 @@ function() {
 	var list = this.getList();
 	var numAppts = list ? list.size() : 0;
 	var nextDay = new Date(startDate);
-	var numDays = this.getNumDays();
 
 	// single day print out requires all details for each appointment
-	if (numDays == 1) {
+	if (this.numDays == 1) {
 		this._loadDetailsForAppts(list, numAppts);
 	}
 
 	var columnFormatter = DwtCalendar.getDateFormatter();
 	var timeFormatter = AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT);
-	for (var i = 0; i < numDays; i++) {
+	for (var i = 0; i < this.numDays; i++) {
 		html[idx++] = "<tr><td width=100%>";
-		if (numDays > 1) {
+		if (this.numDays > 1) {
 			// XXX: set the styles inline so we force the printer to acknowledge them!
 			var style = "background-color:#EEEEEE; text-align:center; font-family:Arial; font-size:14px; font-weight:bold; border:1px solid #EEEEEE;";
 			html[idx++] = "<div style='" + style + "'>";
@@ -149,7 +147,7 @@ function() {
 			var apptStartTime = appt.startDate.getTime();
 			var apptEndTime = appt.endDate.getTime();
 			var dayTime = nextDay.getTime();
-			if ( (appt.startDate.getDate() == nextDay.getDate()) || ((dayTime >= apptStartTime) && (dayTime < apptEndTime)) || numDays == 1) {
+			if ( (appt.startDate.getDate() == nextDay.getDate()) || ((dayTime >= apptStartTime) && (dayTime < apptEndTime)) || this.numDays == 1) {
 				var loc = appt.getLocation();
 				var status = appt.getParticipantStatusStr();
 				if (appt.isAllDayEvent()) {
@@ -161,7 +159,7 @@ function() {
 						html[idx++] = " (" + loc + ")";
 					html[idx++] = " [" + status + "]";
 					// print more detail if we're printing a single day
-					if (numDays == 1) {
+					if (this.numDays == 1) {
 						html[idx++] = this._printApptDetails(appt);
 					}
 					html[idx++] = "</td></tr></table>";
@@ -185,7 +183,7 @@ function() {
 					html[idx++] = " [" + status + "]";
 					html[idx++] = "</td></tr>";
 
-					if (numDays == 1) {
+					if (this.numDays == 1) {
 						html[idx++] = "<tr><td></td><td></td><td></td><td>";
 						html[idx++] = this._printApptDetails(appt);
 						html[idx++] = "</td></tr>";
@@ -305,7 +303,7 @@ function() {
 	var timeRange = this.getTimeRange();
 	var startDate = new Date(timeRange.start);
 
-	if (this.getNumDays() > 1) {
+	if (this.numDays > 1) {
 		var formatter = AjxDateFormat.getDateInstance(AjxDateFormat.LONG);
 		var endDate = new Date(timeRange.end - AjxDateUtil.MSEC_PER_DAY);
 		var startWeek = formatter.format(startDate);
@@ -559,10 +557,9 @@ function(hour) {
 
 ZmCalColView.prototype._updateTitle =
 function() {
-	var numDays = this.getNumDays();
 	var dayFormatter = DwtCalendar.getDayFormatter();
 
-	if (numDays == 1) {
+	if (this.numDays == 1) {
 		var colFormatter = DwtCalendar.getDateFormatter();
 		var date = this._date;
 		this._title = this._scheduleMode
@@ -570,7 +567,7 @@ function() {
 			: dayFormatter.format(date);
 	} else {
 		var first = this._days[0].date;
-		var last = this._days[numDays-1].date;
+		var last = this._days[this.numDays-1].date;
 		this._title = [
 			dayFormatter.format(first), " - ", dayFormatter.format(last)
 		].join("");
@@ -579,9 +576,9 @@ function() {
 
 ZmCalColView.prototype._dayTitle =
 function(date) {
-	var formatter = this.getNumDays() == 1
-				? DwtCalendar.getDateLongFormatter()
-				: DwtCalendar.getDateFormatter();
+	var formatter = this.numDays == 1
+		? DwtCalendar.getDateLongFormatter()
+		: DwtCalendar.getDateFormatter();
 	return formatter.format(date);
 };
 
@@ -617,10 +614,9 @@ function() {
 	var today = new Date();
 	today.setHours(0,0,0,0);
 
-	var numDays = this.getNumDays();
-	var lastDay = numDays - 1;
+	var lastDay = this.numDays - 1;
 
-	for (var i=0; i < numDays; i++) {
+	for (var i=0; i < this.numDays; i++) {
 		var day = this._days[i] = {};
 		day.index = i;
 		day.date = new Date(d);
@@ -885,9 +881,8 @@ function(abook) {
 
 	this._allDayRows = new Array();
 
-	var numDays = this.getNumDays();
 	if (!this._scheduleMode) {
-		for (var i =0; i < numDays; i++) {
+		for (var i =0; i < this.numDays; i++) {
 			this._columns[i] = {
 				index: i,
 				dayIndex: i,
@@ -933,7 +928,7 @@ function(abook) {
 	// all day headings
 	html.append("<div id='", this._allDayHeadingDivId, "' class=calendar_heading style='position:absolute'>");
 	if (!this._scheduleMode) {
-		for (var i =0; i < this.getNumDays(); i++) {
+		for (var i =0; i < this.numDays; i++) {
 			html.append("<div id='", this._columns[i].titleId, "' class=calendar_heading_day style='position:absolute;'></div>");
 		}
 	}
@@ -941,7 +936,7 @@ function(abook) {
 
 	// divs to separate day headings
 	if (!this._scheduleMode) {
-		for (var i =0; i < numDays; i++) {
+		for (var i =0; i < this.numDays; i++) {
 			html.append("<div id='", this._columns[i].headingDaySepDivId, "' class='calendar_day_separator' style='position:absolute'></div>");
 		}
 	}
@@ -981,7 +976,7 @@ function(abook) {
 	html.append("<div id='", this._timeSelectionDivId, "' class='calendar_time_selection' style='position:absolute; display:none;'></div>");
 	html.append("<div id='", this._newApptDivId, "' class='appt-Selected' style='position:absolute; display:none;'></div>");
 	if (!this._scheduleMode) {
-		for (var i =0; i < numDays; i++) {
+		for (var i =0; i < this.numDays; i++) {
 		  html.append("<div id='", this._columns[i].daySepDivId, "' class='calendar_day_separator' style='position:absolute'></div>");
 		}
 	}
@@ -1224,7 +1219,7 @@ function() {
 	var rowY = ZmCalColView._ALL_DAY_APPT_HEIGHT_PAD + 2;
 	for (var i=0; i < rows.length; i++) {
 		var row = rows[i];
-		var num = this._scheduleMode ? this._numCalendars : this.getNumDays();
+		var num = this._scheduleMode ? this._numCalendars : this.numDays;
 		for (var j=0; j < num; j++) {
 			var slot = row[j];
 			if (slot.data) {
@@ -1765,7 +1760,7 @@ function(ev, div) {
 		var date = this._days[dayIndex].date;
 		var cc = appCtxt.getCurrentController();
 
-		if (this.getNumDays() > 1) {
+		if (this.numDays > 1) {
 			cc.setDate(date);
 			cc.show(ZmId.VIEW_CAL_DAY);
 		} else {
