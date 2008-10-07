@@ -161,8 +161,8 @@ ZmAppViewMgr.ALL_COMPONENTS = [ZmAppViewMgr.C_BANNER, ZmAppViewMgr.C_USER_INFO, 
 ZmAppViewMgr.APP_COMPONENTS = [
     ZmAppViewMgr.C_CURRENT_APP,
     ZmAppViewMgr.C_TREE, ZmAppViewMgr.C_TREE_FOOTER,
-    ZmAppViewMgr.C_STATUS, ZmAppViewMgr.C_SASH ,
-    ZmAppViewMgr.C_PRESENCE
+    ZmAppViewMgr.C_OFFLINE_STATUS, ZmAppViewMgr.C_STATUS,
+	ZmAppViewMgr.C_SASH, ZmAppViewMgr.C_PRESENCE
 ];
 
 // keys for getting container IDs
