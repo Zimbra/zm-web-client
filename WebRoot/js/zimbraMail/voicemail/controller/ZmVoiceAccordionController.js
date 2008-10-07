@@ -38,14 +38,9 @@ function() {
 	return "ZmVoiceAccordionController";
 };
 
-ZmVoiceAccordionController.prototype._createAccordion =
+ZmVoiceAccordionController.prototype._initAccordion =
 function() {
-	// create accordion
-	var opc = appCtxt.getOverviewController();
-	var params = {accordionId:this._accordionId};
-	this._accordion = opc.createAccordion(params);
 	this._accordion.addSelectionListener(new AjxListener(this, this._accordionSelectionListener));
-
 	this._app.getVoiceInfo(new AjxCallback(this, this._createAccordionItems));
 };
 

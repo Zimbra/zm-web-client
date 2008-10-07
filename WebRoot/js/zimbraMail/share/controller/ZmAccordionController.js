@@ -49,7 +49,11 @@ ZmAccordionController.prototype._getAllOverviewTrees = null;
 ZmAccordionController.prototype.getAccordion =
 function(dontCreate) {
 	if (!this._accordion && !dontCreate) {
-		this._createAccordion();
+		this._accordion = new DwtAccordion(appCtxt.getShell());
+		this._accordion.id = this._accordionId;
+		this._accordion.setScrollStyle(Dwt.CLIP);
+
+		this._initAccordion();
 	}
 	return this._accordion;
 };

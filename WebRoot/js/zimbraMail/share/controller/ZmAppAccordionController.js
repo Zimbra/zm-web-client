@@ -57,9 +57,58 @@ function() {
 	return ([this._accordionId, account.name].join(":"));
 };
 
-ZmAppAccordionController.prototype._createAccordion =
+ZmAppAccordionController.prototype.getCurrentOverview =
 function() {
-	this._accordion = appCtxt.getOverviewController().createAccordion({accordionId: this._accordionId});
+	return this.getAccordion().getExpandedItem().control;
+};
+
+/**
+ * Returns the accordion item for the given account.
+ *
+ * @param account	[ZmAccount]	The account
+ */
+ZmAppAccordionController.prototype.getAccordionItem =
+function(account) {
+	return this._accordion ? this._accordion.getItem(account.itemId) : null;
+};
+
+/**
+ * For offline/zdesktop, this method updates the status icon for each account
+ * as returned by each server response in the context part of the SOAP header
+ *
+ * @param 	account		[ZmZimbraAccount]		zimbra account to update account icon for
+ * @param 	icon		[String]				name of icon to set
+ */
+ZmAppAccordionController.prototype.updateAccountIcon =
+function(account, icon) {
+	if (!this._accordion) {
+		return;
+	}
+
+	// if multi-account, update accordion item's status icon for each account
+	if (appCtxt.numVisibleAccounts > 1) {
+		var accordionItem = this.getAccordionItem(account);
+		if (accordionItem) {
+			accordionItem.setIcon(icon);
+		}
+	} else {
+		appCtxt.getAppController().offlineStatusField.getHtmlElement().className = icon;
+	}
+};
+
+ZmAppAccordionController.prototype.updateAccountTitle =
+function(itemId, newTitle) {
+	if (!this._accordion || !itemId || !newTitle) {
+		return;
+	}
+	var accordionItem = this._accordion.getItem(itemId);
+	if (accordionItem) {
+		accordionItem.setTitle(newTitle);
+	}
+};
+
+ZmAppAccordionController.prototype._initAccordion =
+function() {
 	this._accordion.addListener(DwtEvent.SELECTION, new AjxListener(this, this._accordionSelectionListener));
 
 	// for now, we only care to show tooltip for offline client
@@ -149,11 +198,10 @@ function(accordionItem, byUser, callback) {
 	if (byUser) {
 		// reset unread count for all accordion items
 		var accounts = appCtxt.getZimbraAccounts();
-		var opc = appCtxt.getOverviewController();
 		for (var i in accounts) {
 			var acct = accounts[i];
 			if (acct.visible) {
-				opc.updateAccountTitle(acct.itemId, acct.getTitle());
+				this.updateAccountTitle(acct.itemId, acct.getTitle());
 			}
 		}
 	}

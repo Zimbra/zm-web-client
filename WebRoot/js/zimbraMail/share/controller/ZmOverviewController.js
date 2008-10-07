@@ -34,7 +34,6 @@ ZmOverviewController = function(container) {
 	ZmController.call(this, container);
 	
 	this._overview		= {};
-	this._accordion		= {};
 	this._controller	= {};
 	this._treeIds		= {};
 	this._treeIdHash	= {};
@@ -52,31 +51,6 @@ ZmOverviewController.prototype.constructor = ZmOverviewController;
 ZmOverviewController.prototype.toString = 
 function() {
 	return "ZmOverviewController";
-};
-
-/**
- * Creates a new accordion.
- *
- * @param accordionId	[constant]		overview ID
- * @param parent		[DwtControl]*	containing widget
- */
-ZmOverviewController.prototype.createAccordion =
-function(params) {
-	var accordion = this._accordion[params.accordionId] = new DwtAccordion(this._shell);
-	accordion.id = params.accordionId;
-	accordion.setScrollStyle(Dwt.CLIP);
-	
-	return accordion;
-};
-
-/**
- * Returns the accordion with the given ID.
- *
- * @param accordionId		[constant]	accordion ID
- */
-ZmOverviewController.prototype.getAccordion =
-function(accordionId) {
-	return this._accordion[accordionId];
 };
 
 /**
@@ -144,60 +118,6 @@ ZmOverviewController.prototype.getTreeView =
 function(overviewId, treeId) {
 	if (!overviewId || !treeId) { return null; }
 	return this.getOverview(overviewId).getTreeView(treeId);
-};
-
-/**
- * Returns the app's overview's accordion item.
- *
- * @param account	[ZmAccount]	The account
- * @param app		[ZmApp]	The app
- */
-ZmOverviewController.prototype.getAccordionItem =
-function(account, app) {
-	if (appCtxt.multiAccounts) {
-		app = app || appCtxt.getCurrentApp(); 
-		var id = app.getOverviewPanelContentId();
-		var accordion = this._accordion[id];
-		if (accordion) {
-			return accordion.getItem(account.itemId);
-		}
-	}
-	// return null;
-};
-
-/**
- * For offline/zdesktop, this method updates the status icon for each account
- * as returned by each server response in the context part of the SOAP header
- *
- * @param 	account		[ZmZimbraAccount]		zimbra account to update account icon for
- * @param 	icon		[String]				name of icon to set
- */
-ZmOverviewController.prototype.updateAccountIcon =
-function(account, icon) {
-	// if multi-account, update accordion item's status icon for each account
-	if (appCtxt.numVisibleAccounts > 1) {
-		for (var i in this._accordion) {
-			var accordionItem = this._accordion[i].getItem(account.itemId);
-			if (accordionItem) {
-				accordionItem.setIcon(icon);
-			}
-		}
-	} else {
-		appCtxt.getAppController().offlineStatusField.getHtmlElement().className = icon;
-	}
-};
-
-ZmOverviewController.prototype.updateAccountTitle =
-function(itemId, newTitle) {
-	if (itemId == null || !newTitle) { return; }
-
-	// update accordion for each app loaded
-	for (var i in this._accordion) {
-		var accordionItem = this._accordion[i].getItem(itemId);
-		if (accordionItem) {
-			accordionItem.setTitle(newTitle);
-		}
-	}
 };
 
 ZmOverviewController.prototype.isAppOverviewId =

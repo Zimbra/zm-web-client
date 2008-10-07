@@ -140,7 +140,7 @@ function(acctInfo) {
 	if (this.status != acctInfo.status) {
 		this.status = acctInfo.status;
 		if (this.isMain || this.visible) {
-			appCtxt.getOverviewController().updateAccountIcon(this, this.getStatusIcon());
+			ZmAppAccordionController.getInstance().updateAccountIcon(this, this.getStatusIcon());
 
 			// update tooltip for offline, single account
 			if (!appCtxt.multiAccounts) {
@@ -168,7 +168,7 @@ function(acctInfo) {
 	if (this.visible && acctInfo.unread != this.unread) {
 		this.unread = acctInfo.unread;
 		if (appCtxt.multiAccounts && appCtxt.getActiveAccount() != this) {
-			appCtxt.getOverviewController().updateAccountTitle(this.itemId, this.getTitle());
+			ZmAppAccordionController.getInstance().updateAccountTitle(this.itemId, this.getTitle());
 		}
 	}
 };
