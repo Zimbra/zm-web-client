@@ -416,7 +416,8 @@ function(account, unloadCurrent, callback) {
 		if (unloadCurrent) {
 			appCtxt.getActiveAccount().unload();
 		}
-		this._expandAccordionItem(accordionItem, false, callback);
+		var ac = ZmAppAccordionController.getInstance();
+		ac._expandAccordionItem(accordionItem, false, callback);
 	}
 };
 
