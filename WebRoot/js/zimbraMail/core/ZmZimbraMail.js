@@ -510,13 +510,16 @@ function() {
  * 	- kill splash, show UI
  * 	- check license
  *
- * @param app		[constant]		starting app
+ * @param params			[hash]			hash of params:
+ *        app				[constant]		starting app
+ *        settingOverrides	[Object]		hash of overrides of user settings
  */
 ZmZimbraMail.prototype._handleResponseStartup1 =
 function(params) {
 
 	this._setExternalLinks();
 	this.setUserInfo();
+	this.setOfflineStatus();
 
 	if (appCtxt.get(ZmSetting.SEARCH_ENABLED)) {
 		this._components[ZmAppViewMgr.C_SEARCH] = appCtxt.getSearchController().getSearchPanel();
@@ -1404,9 +1407,12 @@ function() {
 	var html = AjxTemplate.expand('share.Quota#Tooltip', data);
 	this._components[ZmAppViewMgr.C_USER_INFO].setToolTipContent(html);
 	this._components[ZmAppViewMgr.C_QUOTA_INFO].setToolTipContent(html);
+};
 
+ZmZimbraMail.prototype.setOfflineStatus =
+function() {
 	if (appCtxt.isOffline && appCtxt.numVisibleAccounts == 1) {
-		this._components[ZmAppViewMgr.C_OFFLINE_STATUS].setToolTipContent(appCtxt.getActiveAccount().getToolTip());
+		this.offlineStatusField.setToolTipContent(appCtxt.getActiveAccount().getToolTip());
 	}
 };
 

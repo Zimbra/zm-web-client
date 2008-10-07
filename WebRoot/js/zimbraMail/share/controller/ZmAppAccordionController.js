@@ -92,7 +92,7 @@ function(account, icon) {
 			accordionItem.setIcon(icon);
 		}
 	} else {
-		appCtxt.getAppController().offlineStatusField.getHtmlElement().className = icon;
+		appCtxt.getAppController().offlineStatusField.setClassName(icon);
 	}
 };
 

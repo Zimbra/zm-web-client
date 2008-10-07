@@ -136,35 +136,19 @@ function() {
 
 ZmZimbraAccount.prototype.updateState =
 function(acctInfo) {
+	// update last sync timestamp
 	this.lastSync = acctInfo.lastsync;
+
+	// update offline status if changed
 	if (this.status != acctInfo.status) {
 		this.status = acctInfo.status;
 		if (this.isMain || this.visible) {
 			ZmAppAccordionController.getInstance().updateAccountIcon(this, this.getStatusIcon());
-
-			// update tooltip for offline, single account
-			if (!appCtxt.multiAccounts) {
-				var avm = appCtxt.getAppViewMgr();
-				var tt = this.getToolTip();
-				var sep = "<hr size=1>";
-				var userInfo = avm.getCurrentViewComponent(ZmAppViewMgr.C_USER_INFO);
-				if (userInfo) {
-					if (!this._origUserInfoTT) {
-						this._origUserInfoTT = userInfo.getToolTipContent() + sep;
-					}
-					userInfo.setToolTipContent(this._origUserInfoTT + tt);
-				}
-				var quotaInfo = avm.getCurrentViewComponent(ZmAppViewMgr.C_QUOTA_INFO);
-				if (quotaInfo) {
-					if (!this._origQuotaInfoTT) {
-						this._origQuotaInfoTT = quotaInfo.getToolTipContent() + sep;
-					}
-					quotaInfo.setToolTipContent(this._origQuotaInfoTT + tt);
-				}
-			}
+			appCtxt.getAppController().setOfflineStatus();
 		}
 	}
 
+	// update accordion title per unread count if changed
 	if (this.visible && acctInfo.unread != this.unread) {
 		this.unread = acctInfo.unread;
 		if (appCtxt.multiAccounts && appCtxt.getActiveAccount() != this) {
