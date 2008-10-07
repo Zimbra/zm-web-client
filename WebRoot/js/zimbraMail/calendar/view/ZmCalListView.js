@@ -33,6 +33,8 @@ ZmCalListView = function(parent, posStyle, controller, dropTgt) {
 	this._timeRangeStart = 0;
 	this._timeRangeEnd = 0;
 	this._title = "";
+
+	this.setDragSource(controller._dragSrc);
 };
 
 ZmCalListView.prototype = new ZmListView;

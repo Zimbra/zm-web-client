@@ -107,7 +107,6 @@ function(viewName) {
 	var view = new this._viewFactory[viewName](this, DwtControl.ABSOLUTE_STYLE, this._controller, this._dropTgt);
 
 	if (viewName != ZmId.VIEW_CAL_APPT) {
-		view.setDragSource(this._dragSrc);
 		view.addTimeSelectionListener(new AjxListener(this, this._viewTimeSelectionListener));	
 		view.addDateRangeListener(new AjxListener(this, this._viewDateRangeListener));
 		view.addViewActionListener(new AjxListener(this, this._viewActionListener));	

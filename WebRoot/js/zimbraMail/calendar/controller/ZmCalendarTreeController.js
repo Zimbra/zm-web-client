@@ -243,47 +243,52 @@ function(organizer, app) {
 // Handles a drop event
 ZmCalendarTreeController.prototype._dropListener =
 function(ev) {
-	var appt = ev.srcData.data;
+	var data = ev.srcData.data;
+	var appts = (!(data instanceof Array)) ? [data] : data;
 	var dropFolder = ev.targetControl.getData(Dwt.KEY_OBJECT);
 	var isShiftKey = (ev.shiftKey || ev.uiEvent.shiftKey);
 
 	if (ev.action == DwtDropEvent.DRAG_ENTER) {
-		if (!(appt instanceof ZmAppt)) {
+		if (!(appts[0] instanceof ZmAppt)) {
 			ev.doIt = false;
 		}
-		else if (appt.isReadOnly() || dropFolder.isReadOnly()) {
-			ev.doIt = false;
-		} else if (appt.getFolder().id == dropFolder.id) {
-			ev.doIt = false;
-		} else {
-			ev.doIt = this._dropTgt.isValidTarget(appt);
-			var action = (appt instanceof ZmItem)
-				? appt.getDefaultDndAction(isShiftKey) : null;
+		else if (this._dropTgt.isValidTarget(data)) {
+			var type = ev.targetControl.getData(ZmTreeView.KEY_TYPE);
+			ev.doIt = dropFolder.mayContain(data, type);
+
+			var action;
+			// walk thru the array and find out what action is allowed
+			for (var i = 0; i < appts.length; i++) {
+				if (appts[i] instanceof ZmItem) {
+					action |= appts[i].getDefaultDndAction(isShiftKey);
+				}
+			}
 
 			if (((action & ZmItem.DND_ACTION_COPY) != 0)) {
 				var plusDiv = ev.dndProxy.firstChild.nextSibling;
 				Dwt.setVisibility(plusDiv, true);
 			}
 		}
-	} else if (ev.action == DwtDropEvent.DRAG_DROP) {
+	}
+	else if (ev.action == DwtDropEvent.DRAG_DROP) {
 		var ctlr = ev.srcData.controller;
 		var cc = AjxDispatcher.run("GetCalController");
-		if (!isShiftKey && cc.isMovingBetwAccounts(appt, dropFolder.id)) {
+		if (!isShiftKey && cc.isMovingBetwAccounts(appts, dropFolder.id)) {
 			var dlg = appCtxt.getYesNoMsgDialog();
-			dlg.registerCallback(DwtDialog.YES_BUTTON, this._changeOrgCallback, this, [ctlr, dlg, appt, dropFolder]);
+			dlg.registerCallback(DwtDialog.YES_BUTTON, this._changeOrgCallback, this, [ctlr, dlg, appts, dropFolder]);
 			var msg = AjxMessageFormat.format(ZmMsg.orgChange, dropFolder.getOwner());
 			dlg.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
 			dlg.popup();
 		} else {
-			ctlr._doMove(appt, dropFolder, null, !isShiftKey);
+			ctlr._doMove(appts, dropFolder, null, !isShiftKey);
 		}
 	}
 };
 
 ZmCalendarTreeController.prototype._changeOrgCallback =
-function(controller, dialog, appt, dropFolder) {
+function(controller, dialog, appts, dropFolder) {
 	dialog.popdown();
-	controller._doMove(appt, dropFolder, null, true);
+	controller._doMove(appts, dropFolder, null, true);
 };
 
 /*

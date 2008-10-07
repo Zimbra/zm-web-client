@@ -73,6 +73,10 @@ ZmCalViewController = function(container, calApp) {
 	];
 
 	this._errorCallback = new AjxCallback(this, this._handleError);
+
+	// needed by ZmCalListView:
+	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
+	this._dragSrc.addDragListener(new AjxListener(this, this._dragListener));
 };
 
 ZmCalViewController.prototype = new ZmListController();
@@ -1892,16 +1896,21 @@ function(refresh) {
 
 // returns true if moving given appt from local to remote folder or vice versa
 ZmCalViewController.prototype.isMovingBetwAccounts =
-function(appt, newFolderId) {
+function(appts, newFolderId) {
+	appts = (!(appts instanceof Array)) ? [appts] : appts;
 	var isMovingBetw = false;
-	if (appt._orig) {
-		var origFolder = appt._orig.getFolder();
-		var newFolder = appCtxt.getById(newFolderId);
-		if (origFolder && newFolder) {
-			if ((origFolder.id != newFolderId) &&
-				((origFolder.link && !newFolder.link) || (!origFolder.link && newFolder.link)))
-			{
-				isMovingBetw = true;
+	for (var i = 0; i < appts.length; i++) {
+		var appt = appts[i];
+		if (appt._orig) {
+			var origFolder = appt._orig.getFolder();
+			var newFolder = appCtxt.getById(newFolderId);
+			if (origFolder && newFolder) {
+				if ((origFolder.id != newFolderId) &&
+					((origFolder.link && !newFolder.link) || (!origFolder.link && newFolder.link)))
+				{
+					isMovingBetw = true;
+					break;
+				}
 			}
 		}
 	}
