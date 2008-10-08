@@ -94,7 +94,8 @@ function() {
 	return "ZmContactList";
 };
 
-ZmContactList.prototype.addLoadedCallback = function(callback) {
+ZmContactList.prototype.addLoadedCallback =
+function(callback) {
 	if (this.isLoaded) {
 		callback.run();
 		return;
@@ -105,7 +106,8 @@ ZmContactList.prototype.addLoadedCallback = function(callback) {
 	this._loadedCallbacks.push(callback);
 };
 
-ZmContactList.prototype._finishLoading = function() {
+ZmContactList.prototype._finishLoading =
+function() {
 	this.isLoaded = true;
 	if (this._loadedCallbacks) {
 		var callback;

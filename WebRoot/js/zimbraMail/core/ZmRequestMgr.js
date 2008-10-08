@@ -540,6 +540,16 @@ function(modifies) {
 			if (mod._handled) { continue; }
 			DBG.println(AjxDebug.DBG2, "ZmRequestMgr: handling modified notif for ID " + mod.id + ", node type = " + name);
 			var item = appCtxt.cacheGet(mod.id);
+
+			// bug fix #31991 - for contact modifies, check the contact list
+			// Since we lazily create ZmContact items, it wont be in the global cache.
+			if (!item && name == "cn" && AjxDispatcher.loaded("ContactsCore")) {
+				var capp = appCtxt.getApp(ZmApp.CONTACTS);
+				if (capp.isContactListLoaded()) {
+					item = capp.getContactList().getById(mod.id);
+				}
+			}
+
 			if (item) {
 				mod._isRemote = (name == "folder" && item.link);
 				item.notifyModify(mod);

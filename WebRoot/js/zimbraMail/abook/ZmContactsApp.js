@@ -438,7 +438,8 @@ function(callback) {
 	this._initialized = true;
 };
 
-ZmContactsApp.prototype._showContactList = function() {
+ZmContactsApp.prototype._showContactList =
+function() {
 	var clc = AjxDispatcher.run("GetContactListController");
 	var acctId = appCtxt.getActiveAccount().id;
 	clc.show(this._contactList[acctId], null, ZmOrganizer.ID_ADDRBOOK);
@@ -511,6 +512,12 @@ function(active) {
 		var clc = AjxDispatcher.run("GetContactListController");
 		clc.show();
 	}
+};
+
+ZmContactsApp.prototype.isContactListLoaded =
+function(acctId) {
+	var aid = (acctId || appCtxt.getActiveAccount().id);
+	return (this._contactList[aid] && this._contactList[aid].isLoaded);
 };
 
 ZmContactsApp.prototype.getContactList =
