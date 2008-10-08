@@ -93,6 +93,12 @@ function(item) {
 	}
 };
 
+/** Returns the overview in the currently expanded accordion item. */
+ZmAccordionController.prototype.getCurrentOverview =
+function() {
+	return this.getAccordion().getExpandedItem().control;
+};
+
 ZmAccordionController.prototype._getOverviewParams =
 function() {
 	return {

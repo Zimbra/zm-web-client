@@ -33,6 +33,7 @@ ZmAppAccordionController.prototype.constructor = ZmAppAccordionController;
 
 ZmAppAccordionController.ID = "DefaultOverviewId";
 
+/** Returns the one and only ZmAppAccordionController. */
 ZmAppAccordionController.getInstance =
 function() {
 	if (!ZmAppAccordionController._instance) {
@@ -57,11 +58,6 @@ function() {
 	return ([this._accordionId, account.name].join(":"));
 };
 
-ZmAppAccordionController.prototype.getCurrentOverview =
-function() {
-	return this.getAccordion().getExpandedItem().control;
-};
-
 /**
  * Returns the accordion item for the given account.
  *
@@ -73,7 +69,7 @@ function(account) {
 };
 
 /**
- * For offline/zdesktop, this method updates the status icon for each account
+ * For offline/zdesktop, this method updates the status icon for the account
  * as returned by each server response in the context part of the SOAP header
  *
  * @param 	account		[ZmZimbraAccount]		zimbra account to update account icon for
@@ -96,6 +92,7 @@ function(account, icon) {
 	}
 };
 
+/** Updates the display of the account's title. */
 ZmAppAccordionController.prototype.updateAccountTitle =
 function(itemId, newTitle) {
 	if (!this._accordion || !itemId || !newTitle) {
@@ -132,7 +129,6 @@ function() {
 			var item = this._accordion.addAccordionItem(params);
 			acct.itemId = item.id;
 			if (appCtxt.getActiveAccount() == acct) {
-				//TODO
 				this._activateAccordionItem(item);
 			}
 		}
