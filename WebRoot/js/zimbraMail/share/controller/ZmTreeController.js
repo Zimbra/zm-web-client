@@ -75,6 +75,8 @@ ZmTreeController.COLOR_CLASS[ZmOrganizer.C_YELLOW]	= "YellowBg";
 ZmTreeController.COLOR_CLASS[ZmOrganizer.C_PINK]	= "PinkBg";
 ZmTreeController.COLOR_CLASS[ZmOrganizer.C_GRAY]	= "Gray";	// not GrayBg so it doesn't blend in
 
+ZmTreeController.TREE_SELECTION_SHORTCUT_DELAY = 500;
+
 // valid sources for drop target for different tree controllers
 ZmTreeController.DROP_SOURCES = {};
 
@@ -338,7 +340,8 @@ function(overviewId) {
 		dropTgt: (overview.dndSupported ? this._dropTgt : null),
 		treeStyle: (this.getTreeStyle() || overview.treeStyle),
 		allowedTypes: this._getAllowedTypes(),
-		allowedSubTypes: this._getAllowedSubTypes()
+		allowedSubTypes: this._getAllowedSubTypes(),
+		headerSelect: overview.headerSelect
 	};
 	params.id = ZmId.getTreeId(overviewId, params.type);
 	var treeView = this._createTreeView(params);
@@ -590,12 +593,32 @@ function(ev) {
 		}
 	} else if ((ev.detail == DwtTree.ITEM_SELECTED) && item) {
 		// left click
-		overview.itemSelected(type);
-		if (overview.selectionSupported || item._showFoldersCallback) {
-			this._itemClicked(item);
+		if (ev.kbNavEvent && ZmTreeController.TREE_SELECTION_SHORTCUT_DELAY) {
+			if (this._treeSelectionShortcutDelayActionId) {
+				AjxTimedAction.cancelAction(this._treeSelectionShortcutDelayActionId);
+			}
+			var action = new AjxTimedAction(this, this._treeSelectionTimedAction, [item, type, overview]);
+			this._treeSelectionShortcutDelayActionId =
+				AjxTimedAction.scheduleAction(action, ZmTreeController.TREE_SELECTION_SHORTCUT_DELAY);
+		} else {
+			overview.itemSelected(type);
+			if (overview.selectionSupported || item._showFoldersCallback) {
+				this._itemClicked(item);
+			}
 		}
 	} else if ((ev.detail == DwtTree.ITEM_DBL_CLICKED) && item) {
 		this._itemDblClicked(item);
+	}
+};
+
+ZmTreeController.prototype._treeSelectionTimedAction =
+function(item, type, overview) {
+	if (this._treeSelectionShortcutDelayActionId) {
+		AjxTimedAction.cancelAction(this._treeSelectionShortcutDelayActionId);
+	}
+	overview.itemSelected(type);
+	if (overview.selectionSupported || item._showFoldersCallback) {
+		this._itemClicked(item);
 	}
 };
 

@@ -38,6 +38,7 @@
  *        treeStyle				[constant]*				default display style for tree views
  *        hideEmpty				[hash]*					IDs of trees to hide if they lack data
  *        noTooltips			[boolean]*				if true, don't show tooltips for tree items
+ *        headerSelect			[boolean]*				if true, header tree items are selectable
  * @param controller			[ZmOverviewController]	the overview controller
  */
 ZmOverview = function(params, controller) {
@@ -58,6 +59,7 @@ ZmOverview = function(params, controller) {
 	this.treeStyle			= params.treeStyle;
 	this.hideEmpty			= params.hideEmpty;
 	this.noTooltips			= params.noTooltips;
+	this.headerSelect		= params.headerSelect;
 	
 	this._treeIds	= [];
 	this._treeHash	= {};
@@ -253,5 +255,28 @@ function() {
 			treeController.clearTreeView(this.id);
 			delete this._treeHash[treeId];
 		}
+	}
+};
+
+ZmOverview.prototype._focus =
+function() {
+	var item = this.focusedTreeItem;
+	if (!item) {
+		var tree = this._treeHash[this._treeIds[0]];
+		if (tree) {
+			item = tree._getNextTreeItem(null, true);
+		}
+	}
+
+	if (item) {
+		item.focus();
+	}
+};
+
+ZmOverview.prototype._blur =
+function() {
+	var item = this.focusedTreeItem;
+	if (item) {
+		item._blur();
 	}
 };

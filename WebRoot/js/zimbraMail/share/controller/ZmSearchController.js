@@ -194,7 +194,6 @@ function() {
 
 	var tg = this._createTabGroup();
 	tg.addMember(this._searchToolBar.getSearchField());
-	tg.addMember(this._searchToolBar);
 
 	// Register keyboard callback for search field
 	this._searchToolBar.registerCallback(this._searchFieldCallback, this);
@@ -504,7 +503,7 @@ function(results, search, isMixed) {
 	app.currentSearch = search;
 	app.currentQuery = search.query;
 	app.showSearchResults(results, loadCallback, isInGal, search.folderId);
-	appCtxt.getAppController().focusContentPane();
+//	appCtxt.getAppController().focusContentPane();
 };
 
 ZmSearchController.prototype._handleLoadShowResults =

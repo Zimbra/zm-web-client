@@ -467,6 +467,12 @@ function(params, result) {
 		});
 	this.addPostRenderCallback(callback, 3, 100, true);
 
+	callback = new AjxCallback(this,
+		function() {
+			this._setupTabGroups();
+		});
+	this.addPostRenderCallback(callback, 4, 100, true);
+
 	// miscellaneous post-startup housekeeping
 	callback = new AjxCallback(this,
 		function() {
@@ -1072,25 +1078,31 @@ function() {
 		kbMgr.enable(true);
 		kbMgr.registerKeyMap(new ZmKeyMap());
 		kbMgr.pushDefaultHandler(this);
-
-		DBG.println(AjxDebug.DBG2, "SETTING SEARCH CONTROLLER TAB GROUP");
-		var rootTg = appCtxt.getRootTabGroup();
-		if (appCtxt.get(ZmSetting.SEARCH_ENABLED)) {
-			rootTg.addMember(appCtxt.getSearchController().getTabGroup());
-		}
-		var appChooserTg = new DwtTabGroup("ZmAppChooser");
-		appChooserTg.addMember(this._components[ZmAppViewMgr.C_APP_CHOOSER]);
-		rootTg.addMember(appChooserTg);
-
-		// Add dummy app view tab group. This will get replaced right away when the
-		// app view comes into play
-		var dummyTg = new DwtTabGroup("DUMMY APPVIEW");
-		ZmController._setCurrentAppViewTabGroup(dummyTg);
-		rootTg.addMember(dummyTg);
-		kbMgr.setTabGroup(rootTg);
 	} else {
 		kbMgr.enable(false);
 	}
+};
+
+ZmZimbraMail.prototype._setupTabGroups =
+function() {
+	DBG.println(AjxDebug.DBG2, "SETTING SEARCH CONTROLLER TAB GROUP");
+	var rootTg = appCtxt.getRootTabGroup();
+	if (appCtxt.get(ZmSetting.SEARCH_ENABLED)) {
+		rootTg.addMember(appCtxt.getSearchController().getTabGroup());
+	}
+	var appChooserTg = new DwtTabGroup("ZmAppChooser");
+	appChooserTg.addMember(this._components[ZmAppViewMgr.C_APP_CHOOSER]);
+	rootTg.addMember(appChooserTg);
+
+	var overview = appCtxt.getOverviewController().getOverview(appCtxt.getCurrentApp().getOverviewId());
+	rootTg.addMember(overview);
+	
+	// Add dummy app view tab group. This will get replaced right away when the
+	// app view comes into play
+	var dummyTg = new DwtTabGroup("DUMMY APPVIEW");
+	ZmController._setCurrentAppViewTabGroup(dummyTg);
+	rootTg.addMember(dummyTg);
+	appCtxt.getKeyboardMgr().setTabGroup(rootTg);
 };
 
 ZmZimbraMail.prototype._registerOrganizers =

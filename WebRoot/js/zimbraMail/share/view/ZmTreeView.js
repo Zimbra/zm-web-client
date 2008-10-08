@@ -35,6 +35,7 @@
  *        treeStyle			[constant]*			tree style (see DwtTree)
  *        allowedTypes		[hash]*				org types this tree may display
  *        allowedSubTypes	[hash]*				org types this tree may display below top level
+ *        headerSelect	[boolean]*			if true, header tree items are selectable
  */
 ZmTreeView = function(params) {
 
@@ -50,6 +51,7 @@ ZmTreeView = function(params) {
 	this.type = params.type;
 	this.allowedTypes = params.allowedTypes;
 	this.allowedSubTypes = params.allowedSubTypes;
+	this._headerSelect = params.headerSelect;
 	
 	this._dragSrc = params.dragSrc;
 	this._dropTgt = params.dropTgt;
@@ -134,7 +136,8 @@ function(params) {
 		parent:this,
 		className:this._headerClass,
 		id:treeItemId,
-		button: params.newButton
+		button: params.newButton,
+		selectable: this._headerSelect
 	});
 	ti.enableSelection(false); // by default, disallow selection
 	ti._isHeader = true;
@@ -219,6 +222,15 @@ function(show) {
 			ti.showCheckBox(show);
 			ti.enableSelection(!show);
 		}
+	}
+};
+
+ZmTreeView.prototype.setFocusedItem =
+function(treeItem) {
+	this._focusedTreeItem = treeItem;
+	var overview = appCtxt.getOverviewController().getOverview(this.overviewId);
+	if (overview) {
+		overview.focusedTreeItem = treeItem;
 	}
 };
 
