@@ -40,7 +40,15 @@ function() {
 	return ZmPromptDialog._INSTANCE;
 };
 
-
+/**
+ * Pops up the dialog.
+ *  
+ * @param params				[hash]			hash of params:
+ *        title					[String]		Dialog box title
+ *        label					[String]		Label next to the dialog's input field
+ *        value					[String]		Initial value of input field
+ *        callback				[AjxCallback]	Callback to run when ok button is pressed
+ */
 ZmPromptDialog.prototype.popup =
 function(params) {
 	this.setTitle(params.title);
