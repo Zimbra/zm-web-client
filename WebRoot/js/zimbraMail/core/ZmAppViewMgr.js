@@ -134,7 +134,6 @@ ZmAppViewMgr.C_PRESENCE					= "presence";
 ZmAppViewMgr.C_SEARCH					= "search";
 ZmAppViewMgr.C_SEARCH_BUILDER			= "searchBuilder";
 ZmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR	= "searchBuilderToolbar";
-ZmAppViewMgr.C_CURRENT_APP				= "appView";
 ZmAppViewMgr.C_APP_CHOOSER				= "appChooser";
 ZmAppViewMgr.C_TREE						= "tree";
 ZmAppViewMgr.C_TREE_FOOTER				= "treeFooter";
@@ -148,7 +147,7 @@ ZmAppViewMgr.C_SASH						= "sash";
 ZmAppViewMgr.ALL_COMPONENTS = [ZmAppViewMgr.C_BANNER, ZmAppViewMgr.C_USER_INFO, ZmAppViewMgr.C_QUOTA_INFO,
 							   ZmAppViewMgr.C_OFFLINE_STATUS, ZmAppViewMgr.C_PRESENCE,
 							   ZmAppViewMgr.C_SEARCH, ZmAppViewMgr.C_SEARCH_BUILDER,
-							   ZmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR, ZmAppViewMgr.C_CURRENT_APP,
+							   ZmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR, 
 							   ZmAppViewMgr.C_APP_CHOOSER, ZmAppViewMgr.C_TREE, ZmAppViewMgr.C_TREE_FOOTER,
 							   ZmAppViewMgr.C_TOOLBAR_TOP, ZmAppViewMgr.C_TOOLBAR_BOTTOM,
 							   ZmAppViewMgr.C_APP_CONTENT, ZmAppViewMgr.C_APP_CONTENT_FULL,
@@ -159,7 +158,6 @@ ZmAppViewMgr.ALL_COMPONENTS = [ZmAppViewMgr.C_BANNER, ZmAppViewMgr.C_USER_INFO, 
  * in full screen mode.
  */
 ZmAppViewMgr.APP_COMPONENTS = [
-    ZmAppViewMgr.C_CURRENT_APP,
     ZmAppViewMgr.C_TREE, ZmAppViewMgr.C_TREE_FOOTER,
     ZmAppViewMgr.C_OFFLINE_STATUS, ZmAppViewMgr.C_STATUS,
 	ZmAppViewMgr.C_SASH, ZmAppViewMgr.C_PRESENCE
@@ -191,7 +189,6 @@ function() {
 	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_SEARCH]					= ZmId.SKIN_SEARCH;
 	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_SEARCH_BUILDER]			= ZmId.SKIN_SEARCH_BUILDER;
 	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR]	= ZmId.SKIN_SEARCH_BUILDER_TOOLBAR;
-	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_CURRENT_APP]			= ZmId.SKIN_CURRENT_APP;
 	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_APP_CHOOSER]			= ZmId.SKIN_APP_CHOOSER;
 	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_TREE]					= ZmId.SKIN_TREE;
 	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_TREE_FOOTER]			= ZmId.SKIN_TREE_FOOTER;
@@ -245,7 +242,7 @@ function(components, doFit, noSetZ) {
 					// XXX: we no longer throw an exception b/c some skins want
 					// to omit certain containers (i.e. quota).
 					//throw new AjxException("Skin container '" + contId + "' not found.");
-					DBG.println("Skin container '" + contId + "' not found.");
+					DBG.println(AjxDebug.DBG1, "Skin container '" + contId + "' not found.");
 					continue;
 				}
 				this._containers[cid] = contEl;
@@ -308,7 +305,7 @@ function(visible) {
 	this._components[ZmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR].zShow(visible);
 	this._components[ZmAppViewMgr.C_SEARCH_BUILDER].zShow(visible);
 	var list = [ZmAppViewMgr.C_SEARCH_BUILDER, ZmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR,
-				ZmAppViewMgr.C_CURRENT_APP, ZmAppViewMgr.C_APP_CHOOSER, ZmAppViewMgr.C_TREE,
+				ZmAppViewMgr.C_APP_CHOOSER, ZmAppViewMgr.C_TREE,
 				ZmAppViewMgr.C_TREE_FOOTER, ZmAppViewMgr.C_TOOLBAR_TOP,
                 ZmAppViewMgr.C_APP_CONTENT, ZmAppViewMgr.C_APP_CONTENT_FULL];
 	this._fitToContainer(list);
