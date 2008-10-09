@@ -33,6 +33,8 @@ ZmCalListView = function(parent, posStyle, controller, dropTgt) {
 	this._timeRangeStart = 0;
 	this._timeRangeEnd = 0;
 	this._title = "";
+	this._bSortAsc = true;
+	this._defaultSortField = ZmItem.F_DATE;
 
 	this.setDragSource(controller._dragSrc);
 };
@@ -157,6 +159,16 @@ function(listener) {
 
 // DwtListView methods
 
+ZmCalListView.prototype.set =
+function(list, skipMiniCalUpdate, skipSort) {
+	if (!skipSort) {
+		if (!this._bSortAsc && this._defaultSortField == ZmItem.F_DATE) {
+			list.reverse();
+		}
+	}
+	ZmListView.prototype.set.call(this, list, this._defaultSortField);
+};
+
 ZmCalListView.prototype._getItemId =
 function(item) {
 	return DwtId.getListViewItemId(DwtId.WIDGET_ITEM, this._view, item.getUniqueId(true));
@@ -204,6 +216,9 @@ function(htmlArr, idx, appt, field, colIdx, params) {
 		if (appt.otherAttendees) {
 			htmlArr[idx++] = appt.getParticipantStatusStr();
 		}
+
+	} else if (field == ZmItem.F_FOLDER) {
+		htmlArr[idx++] = appt.getFolder().getName();
 
 	} else if (field == ZmItem.F_DATE) {
 		htmlArr[idx++] = (appt.isAllDayEvent())
@@ -263,6 +278,15 @@ function(appt, callback, uid) {
 	}
 };
 
+ZmCalListView.prototype._sortColumn =
+function(columnItem, bSortAsc) {
+	if (columnItem._sortable == ZmItem.F_DATE) {
+		var list = this.getList().clone();
+		list.reverse();
+		this.set(list, null, true);
+	}
+};
+
 ZmCalListView.prototype._getHeaderToolTip =
 function(field, itemIdx) {
 	switch (field) {
@@ -286,7 +310,8 @@ function(parent) {
 	hList.push(new DwtListHeaderItem({field:ZmItem.F_ATTACHMENT, icon:"Attachment", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.attachment}));
 	hList.push(new DwtListHeaderItem({field:ZmItem.F_SUBJECT, text:ZmMsg.subject, noRemove:true}));
 	hList.push(new DwtListHeaderItem({field:ZmItem.F_LOCATION, text:ZmMsg.location, width:ZmCalListView.COL_WIDTH_LOCATION, resizeable:true}));
-	hList.push(new DwtListHeaderItem({field:ZmItem.F_STATUS, text:ZmMsg.status, width:ZmCalListView.COL_WIDTH_STATUS, resizeable:true}));
+	hList.push(new DwtListHeaderItem({field:ZmItem.F_STATUS, text:ZmMsg.status, width:ZmCalListView.COL_WIDTH_STATUS, resizeable:true, sortable:ZmItem.F_STATUS}));
+	hList.push(new DwtListHeaderItem({field:ZmItem.F_FOLDER, text:ZmMsg.calendar, width:ZmCalListView.COL_WIDTH_STATUS, resizeable:true, sortable:ZmItem.F_FOLDER}));
 	hList.push(new DwtListHeaderItem({field:ZmItem.F_RECURRENCE, icon:"ApptRecur", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.recurrence}));
 	hList.push(new DwtListHeaderItem({field:ZmItem.F_DATE, text:ZmMsg.startDate, width:ZmCalListView.COL_WIDTH_DATE, sortable:ZmItem.F_DATE}));
 

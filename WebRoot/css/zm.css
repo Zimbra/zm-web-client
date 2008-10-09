@@ -1299,10 +1299,6 @@ line-height:normal;
 	padding-left:@BoxPaddingSize@;
 }
 
-
-
-
-
 /* label of a calendar day when shown in a hover balloon */
 .calendar_tooltip_month_day_label {
 	@NoWrap@
@@ -1310,6 +1306,12 @@ line-height:normal;
 	text-align:center;
 }
 
+.calendar_tooltip_attendees {
+	border-bottom: 1px solid black;
+	padding: 1px;
+	white-space: nowrap;
+	font-weight:bold;
+}
 
 
 
@@ -3271,91 +3273,91 @@ HTML>BODY .appt-selected .appt_allday_body
 /*briefcase app*/
 
 .ZmBriefcaseView {
-background-color: #ffffff;
+	background-color: #ffffff;
 }
 
 .ZmBriefcaseItem,.ZmBriefcaseItemSelected {
-background-color:transparent;
-background-repeat:no-repeat;
-cursor:pointer;
-float:left;
-height:120px;
-margin:8px;
-vertical-align:middle;
-width:100px;
+	background-color:transparent;
+	background-repeat:no-repeat;
+	cursor:pointer;
+	float:left;
+	height:120px;
+	margin:8px;
+	vertical-align:middle;
+	width:100px;
 }
 
-.ZmBriefcaseItem .ZmThumbnailItem,.ZmBriefcaseItemSelected .ZmThumbnailItem{
-background-color:transparent;
-border:2px solid #CCCCCC;
-font-size:1px;
-height:100px;
-line-height:100px;
-text-align:center;
-width:96px;
+.ZmBriefcaseItem .ZmThumbnailItem,.ZmBriefcaseItemSelected .ZmThumbnailItem {
+	background-color:transparent;
+	border:2px solid #CCCCCC;
+	font-size:1px;
+	height:100px;
+	line-height:100px;
+	text-align:center;
+	width:96px;
 }
 
-.ZmBriefcaseItem .ZmThumbnailName,.ZmBriefcaseItemSelected .ZmThumbnailName{
-display:block;
-@FontSize-smaller@
-@FontFamily-html@
-margin:3px 0pt 0pt 0px;
-text-align:center;
-height: 14px;
-overflow: hidden;
+.ZmBriefcaseItem .ZmThumbnailName,.ZmBriefcaseItemSelected .ZmThumbnailName {
+	display:block;
+	@FontSize-smaller@
+	@FontFamily-html@
+	margin:3px 0pt 0pt 0px;
+	text-align:center;
+	height: 14px;
+	overflow: hidden;
 }
 
-.ZmBriefcaseItemSelected{
-color:#FFFFFF;
+.ZmBriefcaseItemSelected {
+	color:#FFFFFF;
 }
 
-.ZmBriefcaseItemSelected .ZmThumbnailItem{
-border-color: #316AC5;
+.ZmBriefcaseItemSelected .ZmThumbnailItem {
+	border-color: #316AC5;
 }
 
 .ZmBriefcaseItemSelected .ZmThumbnailName span {
-background:#316AC5 none repeat scroll 0%;
-color:#FFFFFF;
-}
-.ZmBriefcaseItemSelected .ZmThumbnailName span a {
-color:#FFFFFF;
+	background:#316AC5 none repeat scroll 0%;
+	color:#FFFFFF;
 }
 
-.ZmThumbnailIcon{
-margin:26px 24px;
+.ZmBriefcaseItemSelected .ZmThumbnailName span a {
+	color:#FFFFFF;
+}
+
+.ZmThumbnailIcon {
+	margin:26px 24px;
 }
 
 
 /*IE hack - To stop the button shake in the MSg Header*/
 
 #IFDEF MSIE
-.arrowbtn div .ZToolbarButtonBorder{
- margin: 0px;
-
+.arrowbtn div .ZToolbarButtonBorder {
+	margin: 0px;
 }
 #ENDIF
 
 
 .ZmColListDiv {
-width: 250px;
-background: transparent;
-overflow-x: hidden;
-overflow-y: scroll;
+	width: 250px;
+	background: transparent;
+	overflow-x: hidden;
+	overflow-y: scroll;
 }
 
 .ZmColListCell {
-vertical-align: top;
+	vertical-align: top;
 }
 
 .ZmMultiColView {
-background-color: white;
-overflow-x: auto;
-overflow-y: hidden;
+	background-color: white;
+	overflow-x: auto;
+	overflow-y: hidden;
 }
 
 .ZmFilePropertiesLabel {
-@TreeHeaderText@
-white-space: nowrap;
+	@TreeHeaderText@
+	white-space: nowrap;
 }
 
 .ZmSpreadSheetDoc { background-color: #eee; }
