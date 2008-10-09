@@ -33,20 +33,6 @@ AjxPackage.require("ajax.dwt.widgets.DwtButtonColorPicker");
 AjxPackage.require("zimbraMail.share.view.htmlEditor.ZmLiteHtmlEditor");
 AjxPackage.require("ajax.dwt.widgets.DwtSoundPlugin");
 
-// Moved in IMCore.js (please don't remove this comment)
-//
-// AjxPackage.require("ajax.dwt.events.DwtIdleTimer");
-//
-// AjxPackage.require("zimbraMail.im.model.ZmImGateway");
-// AjxPackage.require("zimbraMail.im.model.ZmRoster");
-// AjxPackage.require("zimbraMail.im.model.ZmRosterItem");
-// AjxPackage.require("zimbraMail.im.model.ZmRosterItemList");
-// AjxPackage.require("zimbraMail.im.model.ZmRosterPresence");
-// AjxPackage.require("zimbraMail.im.model.ZmChat");
-// AjxPackage.require("zimbraMail.im.model.ZmChatList");
-// AjxPackage.require("zimbraMail.im.model.ZmChatMessage");
-// AjxPackage.require("zimbraMail.im.model.ZmImPrivacyList");
-
 AjxPackage.require("zimbraMail.share.view.dialog.ZmPromptDialog");
 
 AjxPackage.require("zimbraMail.im.model.ZmAssistantBuddy");

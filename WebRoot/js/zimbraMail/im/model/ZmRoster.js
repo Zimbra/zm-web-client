@@ -18,7 +18,9 @@
 ZmRoster = function(imApp) {
 	ZmModel.call(this, ZmEvent.S_ROSTER);
 
-    this._notificationBuffer = [];
+	ZmRoster._createService();
+
+	this._notificationBuffer = [];
 	this._newRosterItemtoastFormatter = new AjxMessageFormat(ZmMsg.imNewRosterItemToast);
 	this._presenceToastFormatter = new AjxMessageFormat(ZmMsg.imStatusToast);
 	this._leftChatFormatter = new AjxMessageFormat(ZmMsg.imLeftChat);
@@ -48,24 +50,30 @@ function() {
 	return "ZmRoster";
 };
 
+ZmRoster._createService =
+function() {
+	if (!ZmImService.INSTANCE) {
+		new ZmZimbraImService();
+	}
+};
+
 // Creates a roster asyncronously without a busy overlay so that the user can get on with
 // reading his mail or whatever while logging into im.
 ZmRoster.createInBackground =
 function(callback) {
-	var requestCallback = new AjxCallback(null, ZmRoster._backgroundGatewayCallback, [callback]);
+	ZmRoster._createService();	
 	var args = {
-		soapDoc: AjxSoapDoc.create("IMGatewayListRequest", "urn:zimbraIM"),
-		callback: requestCallback,
 		asyncMode: true,
 		noBusyOverlay: true
 	};
-	appCtxt.getAppController().sendRequest(args);
+	var serviceCallback = new AjxCallback(null, ZmRoster._backgroundGatewayCallback, [callback]);
+	ZmImService.INSTANCE.getGateways(serviceCallback, args)
 };
 
 ZmRoster._backgroundGatewayCallback =
-function(callback, response) {
+function(callback, gateways) {
 	var roster = new ZmRoster(ZmImApp.INSTANCE);
-	roster._handleRequestGateways(response.getResponse());
+	roster._handleRequestGateways(gateways);
 	if (callback) {
 		callback.run(roster);
 	}
@@ -141,16 +149,19 @@ function() {
 ZmRoster.prototype.reload =
 function(noBusyOverlay) {
 	this.getRosterItemList().removeAllItems();
-	var soapDoc = AjxSoapDoc.create("IMGetRosterRequest", "urn:zimbraIM");
-	var respCallback = new AjxCallback(this, this._handleResponseReload);
-	appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, noBusyOverlay: noBusyOverlay, callback: respCallback});
+	var callback = new AjxCallback(this, this._handleResponseReload);
+	var args = {
+		asyncMode: true,
+		noBusyOverlay: noBusyOverlay
+	};
+	ZmImService.INSTANCE.getRoster(callback, args);
 };
 
 ZmRoster.prototype._handleResponseReload =
-function(args) {
-	var resp = args.getResponse()
-	if (!resp || !resp.IMGetRosterResponse) return;
-	var roster = resp.IMGetRosterResponse;
+function(roster) {
+	if (!roster) {
+		return;
+	}
 	var list = this.getRosterItemList();
 	if (roster.items && roster.items.item) {
 		var items = roster.items.item;
@@ -186,13 +197,7 @@ function(args) {
  */
 ZmRoster.prototype.createRosterItem =
 function(addr, name, groups) {
-	var soapDoc = AjxSoapDoc.create("IMSubscribeRequest", "urn:zimbraIM");
-	var method = soapDoc.getMethod();
-	method.setAttribute("addr", addr);
-	if (name) method.setAttribute("name", name);
-	if (groups) method.setAttribute("groups", groups);
-	method.setAttribute("op", "add");
-	appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true});
+	ZmImService.INSTANCE.createRosterItem(addr, name, groups);
 };
 
 /**
@@ -559,43 +564,22 @@ ZmRoster.prototype.registerGateway = function(service, screenName, password, bat
 };
 
 ZmRoster.prototype._requestGateways = function() {
-	var sd = AjxSoapDoc.create("IMGatewayListRequest", "urn:zimbraIM");
-	var response = appCtxt.getAppController().sendRequest(
-		{ soapDoc   : sd,
-		  asyncMode : false
-		}
-	);
-        this._handleRequestGateways(response);
+	var args = { asyncMode: false };
+	var gateways = ZmImService.INSTANCE.getGateways(null, args);
+	this._handleRequestGateways(gateways);
 };
 
-// {"IMGatewayListResponse": {"service": [
-// 				   {"type":"msn","domain":"msn.ibm"},
-// 				   {"type":"aol","domain":"aol.ibm"},
-// 				   {"registration": [
-// 					    {"state":"online","name":"mihai_bazon2"}
-// 				    ],
-// 				    "type":"yahoo",
-// 				    "domain":"yahoo.ibm"
-// 				   }],
-// 			   "_jsns":"urn:zimbraIM"}
-// };
-
-ZmRoster.prototype._handleRequestGateways = function(resp) {
-	var a = resp.IMGatewayListResponse.service;
-	if (!a) {
-		a = [];
-	}
-	a.unshift({ type   : "XMPP", domain : "XMPP" });
+ZmRoster.prototype._handleRequestGateways = function(gateways) {
 	var byService = {};
 	var byDomain = {};
-	for (var i = 0; i < a.length; ++i) {
-		var gw = a[i] = new ZmImGateway(a[i]);
-		byService[a[i].type.toLowerCase()] = gw;
-		byDomain[a[i].domain.toLowerCase()] = gw;
+	for (var i = 0; i < gateways.length; ++i) {
+		var gw = gateways[i] = new ZmImGateway(gateways[i]);
+		byService[gateways[i].type.toLowerCase()] = gw;
+		byDomain[gateways[i].domain.toLowerCase()] = gw;
 	}
 	this._gateways = { byService : byService,
 		byDomain  : byDomain,
-		array	 : a
+		array	 : gateways
 	};
 	for (var i = 0; i < this._notificationBuffer.length; ++i)
 		this.handleNotification(this._notificationBuffer[i]);
