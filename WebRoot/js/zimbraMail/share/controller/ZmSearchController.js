@@ -703,7 +703,9 @@ function(ev, id) {
 
 /**
  * Selects the appropriate item in the overview based on the search. Selection only happens
- * if the search was a simple search for a folder, tag, or saved search.
+ * if the search was a simple search for a folder, tag, or saved search. A check is done to
+ * make sure that item is not already selected, so selection should only occur for a query
+ * manually run by the user.
  *
  * @param search		[ZmSearch]		the current search
  */
@@ -728,9 +730,12 @@ function(search) {
 	if (id) {
 		var treeView = overview.getTreeView(type);
 		if (treeView) {
-			treeView.setSelected(id, true);
+			var ti = treeView.getTreeItemById(id);
+			if (overview._selectedTreeItem != ti) {
+				treeView.setSelected(id, true);
+				overview.itemSelected(ti);
+			}
 		}
-		overview.itemSelected(type);
 	} else {
 		// clear overview of selection
 		overview.itemSelected();

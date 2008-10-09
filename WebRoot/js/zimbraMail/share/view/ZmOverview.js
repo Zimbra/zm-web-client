@@ -160,9 +160,10 @@ function(treeId, omit, account, noNewButton) {
 
 	AjxDispatcher.require(ZmOrganizer.ORG_PACKAGE[treeId]);
 	var treeController = this._controller.getTreeController(treeId);
-	this._treeIds.push(treeId);
 	if (this._treeHash[treeId]) {
 		treeController.clearTreeView(this.id);
+	} else {
+		this._treeIds.push(treeId);
 	}
 	var params = {
 		overviewId: this.id,
@@ -232,15 +233,11 @@ function() {
  * @param treeId			[constant]	organizer type
  */
 ZmOverview.prototype.itemSelected =
-function(treeId) {
-	for (var i = 0; i < this._treeIds.length; i++) {
-		if (this._treeIds[i] != treeId) {
-			var treeView = this._treeHash[this._treeIds[i]];
-			if (treeView) {
-				treeView.deselectAll();
-			}
-		}
+function(treeItem) {
+	if (this._selectedTreeItem && (this._selectedTreeItem._tree != (treeItem && treeItem._tree))) {
+		this._selectedTreeItem._tree.deselectAll();
 	}
+	this._selectedTreeItem = treeItem;
 };
 
 /**
@@ -260,11 +257,11 @@ function() {
 
 ZmOverview.prototype._focus =
 function() {
-	var item = this.focusedTreeItem;
+	var item = this._selectedTreeItem;
 	if (!item) {
 		var tree = this._treeHash[this._treeIds[0]];
 		if (tree) {
-			item = tree._getNextTreeItem(null, true);
+			item = tree._getNextTreeItem(true);
 		}
 	}
 
@@ -275,8 +272,40 @@ function() {
 
 ZmOverview.prototype._blur =
 function() {
-	var item = this.focusedTreeItem;
+	var item = this._selectedTreeItem;
 	if (item) {
 		item._blur();
 	}
+};
+
+/**
+ * Returns the next/previous selectable tree item within this overview, starting with the
+ * tree immediately after/before the given one. Used to handle tree item selection that
+ * spans trees.
+ *
+ * @param next		[boolean]		if true, look for next item as opposed to previous item
+ * @param tree		[ZmTreeView]    tree that we are just leaving
+ */
+ZmOverview.prototype._getNextTreeItem =
+function(next, tree) {
+
+	for (var i = 0; i < this._treeIds.length; i++) {
+		if (this._treeHash[this._treeIds[i]] == tree) {
+			break;
+		}
+	}
+
+	var nextItem = null;
+	var idx = next ? i + 1 : i - 1;
+	tree = this._treeHash[this._treeIds[idx]];
+	while (tree) {
+		nextItem = DwtTree.prototype._getNextTreeItem.call(tree, next);
+		if (nextItem) {
+			break;
+		}
+		idx = next ? idx + 1 : idx - 1;
+		tree = this._treeHash[this._treeIds[idx]];
+	}
+
+	return nextItem;
 };

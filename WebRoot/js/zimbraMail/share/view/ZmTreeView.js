@@ -52,6 +52,8 @@ ZmTreeView = function(params) {
 	this.allowedTypes = params.allowedTypes;
 	this.allowedSubTypes = params.allowedSubTypes;
 	this._headerSelect = params.headerSelect;
+
+	this._overview = appCtxt.getOverviewController().getOverview(this.overviewId);
 	
 	this._dragSrc = params.dragSrc;
 	this._dropTgt = params.dropTgt;
@@ -222,15 +224,6 @@ function(show) {
 			ti.showCheckBox(show);
 			ti.enableSelection(!show);
 		}
-	}
-};
-
-ZmTreeView.prototype.setFocusedItem =
-function(treeItem) {
-	this._focusedTreeItem = treeItem;
-	var overview = appCtxt.getOverviewController().getOverview(this.overviewId);
-	if (overview) {
-		overview.focusedTreeItem = treeItem;
 	}
 };
 
@@ -492,4 +485,10 @@ function(params) {
 				params.len = 0;
 			}
 		}), 100);
+};
+
+ZmTreeView.prototype._getNextTreeItem =
+function(next) {
+	var nextItem = DwtTree.prototype._getNextTreeItem.apply(this, arguments);
+	return nextItem || this._overview._getNextTreeItem(next, this);
 };
