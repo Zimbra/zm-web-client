@@ -945,7 +945,7 @@ function(creates) {
 			if (!acct || (acct && acct.isOfflineInitialSync())) { continue; }
 
 			// for multi-account, highlite the non-active accordion item
-			if (appCtxt.multiAccounts) {
+			if (appCtxt.numVisibleAccounts > 1) {
 				ZmAccountAlert.get(acct).start(this);
 			}
 
