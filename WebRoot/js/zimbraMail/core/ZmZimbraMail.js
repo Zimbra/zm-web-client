@@ -877,6 +877,7 @@ function(on) {
 		this._kickPolling(true);
 	} else {
 		this._pollInstantNotifications = false;
+		this._cancelInstantNotify();
 		this.setPollInterval(true);
 	}
 };
@@ -925,6 +926,19 @@ function(kickMe) {
 		this._pollInterval = appCtxt.get(ZmSetting.INSTANT_NOTIFY_INTERVAL);
 		DBG.println(AjxDebug.DBG1, "Ignoring Poll Interval (in instant-notify mode)");
 		return false;
+	}
+};
+
+ZmZimbraMail.prototype._cancelInstantNotify =
+function() {
+	if (this._pollRequest) {
+		this._requestMgr.cancelRequest(this._pollRequest);
+		this._pollRequest = null;
+	}
+
+	if (this._pollActionId) {
+		AjxTimedAction.cancelAction(this._pollActionId);
+		this._pollActionId = null;
 	}
 };
 
@@ -985,12 +999,7 @@ function(resetBackoff) {
  */
 ZmZimbraMail.prototype._execPoll =
 function() {
-	if (this._pollRequest) {
-		this._requestMgr.cancelRequest(this._pollRequest);
-		this._pollRequest = null;
-	}
-
-	this._pollActionId = null;
+	this._cancelInstantNotify();
 
 	// It'd be more efficient to make these instance variables, but for some
 	// reason that breaks polling in IE.
