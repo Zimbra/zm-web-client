@@ -326,6 +326,12 @@ ZmZimbraAccount.prototype._handleLoadUserInfo =
 function(callback) {
 	this.loaded = true;
 
+	var ac = appCtxt.getCurrentApp().getAccordionController();
+	var expandedItem = ac.getAccordion().getExpandedItem();
+	if (expandedItem) {
+		ac.showOverview(expandedItem);
+	}
+
 	if (callback) {
 		callback.run();
 	}

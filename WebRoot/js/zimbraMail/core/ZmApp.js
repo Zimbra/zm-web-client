@@ -339,26 +339,27 @@ function() {
  */
 ZmApp.prototype.setOverviewPanelContent =
 function(reset) {
+	var ac = this.getAccordionController();
 	if (reset) {
-		this.getAccordionController().reset();
+		ac.reset();
 	}
 
 	// only set overview panel content if not in full screen mode
 	var avm = appCtxt.getAppViewMgr();
 	if (!avm.isFullScreen()) {
-		var accordion = this.getAccordionController().getAccordion();
+		var accordion = ac.getAccordion();
 		var expandedItem = accordion.getExpandedItem();
 		if (expandedItem) {
 			if (appCtxt.multiAccounts && ZmApp.SUPPORTS_MULTI_MBOX[this._name]) {
-				if (this.accordionItem) {
-					if (this.accordionItem != expandedItem) {
-						this._activateAccordionItem(expandedItem);
-					}
+				if (this.accordionItem && this.accordionItem != expandedItem) {
+					this._activateAccordionItem(expandedItem);
 				}
 				this.accordionItem = expandedItem;
 			}
 
-			this.getAccordionController().showOverview(expandedItem);
+			if (appCtxt.getActiveAccount().loaded) {
+				ac.showOverview(expandedItem);
+			}
 		}
 		avm.setComponent(ZmAppViewMgr.C_TREE, accordion);
 	}
