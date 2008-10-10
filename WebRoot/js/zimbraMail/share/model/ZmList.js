@@ -504,10 +504,11 @@ function(items, folderId) {
 /**
  * Performs an action on items via a SOAP request.
  *
- * @param items		[Array]			list of items to act upon
- * @param action		[string]		SOAP operation
- * @param attrs		[Object]		hash of additional attrs for SOAP request
- * @param callback	[AjxCallback]	async callback
+ * @param items				[Array]			list of items to act upon
+ * @param action			[string]		SOAP operation
+ * @param attrs				[Object]		hash of additional attrs for SOAP request
+ * @param callback			[AjxCallback]	async callback
+ * @param errorCallback		[AjxCallback]	async error callback
  */
 ZmList.prototype._itemAction =
 function(params, batchCmd) {
@@ -550,7 +551,7 @@ function(params, batchCmd) {
     var respCallback = params.callback ? new AjxCallback(this, this._handleResponseItemAction, [type, idHash, params.callback]) : null;
 
 	if (batchCmd) {
-		batchCmd.addRequestParams(itemActionRequest, respCallback);
+		batchCmd.addRequestParams(itemActionRequest, respCallback, errorCallback);
 	} else {
         var params = { asyncMode: true, callback: respCallback };
         useJson ? params.jsonObj = itemActionRequest : params.soapDoc = itemActionRequest;
