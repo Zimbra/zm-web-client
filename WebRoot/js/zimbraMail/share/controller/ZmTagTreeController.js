@@ -135,7 +135,7 @@ function(tag) {
                 case ZmApp.CONTACTS:    searchFor = ZmItem.CONTACT; break;
                 case ZmApp.NOTEBOOK:    searchFor = ZmItem.PAGE; break;
                 case ZmApp.CALENDAR:    searchFor = ZmItem.APPT; break;
-                case ZmApp.BRIEFCASE:   searchFor = ZmItem.PAGE; break;
+                case ZmApp.BRIEFCASE:   searchFor = ZmItem.BRIEFCASE; break; //Search for generic briefcase items when we are in briefcase
                 case ZmApp.TASKS:       searchFor = ZmItem.TASK; break;
                 default:                searchFor = ZmId.SEARCH_MAIL; break;
         }

@@ -121,11 +121,15 @@ function(item, params) {
 		AjxDispatcher.require(["TasksCore", "Tasks"]);
 		listViewClass = ZmTaskListView;
 		this._emulateListView(listViewClass, funcs);
-	} else if (item.type == ZmItem.PAGE || item.type == ZmItem.DOCUMENT) {
+	} else if (item.type == ZmItem.PAGE /*|| item.type == ZmItem.DOCUMENT*/) {
 		AjxDispatcher.require(["NotebookCore", "Notebook"]);
 		listViewClass = ZmFileListView;
 		this._emulateListView(listViewClass, funcs);
-	}
+	}else if(item.type == ZmItem.BRIEFCASE){
+        AjxDispatcher.require(["BriefcaseCore", "Briefcase"]);
+		listViewClass = ZmDetailListView;
+		this._emulateListView(listViewClass, funcs);
+    }
 	return listViewClass.prototype._createItemHtml.call(this, item, params);
 };
 

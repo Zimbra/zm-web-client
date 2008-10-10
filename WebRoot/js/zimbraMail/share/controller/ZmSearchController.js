@@ -348,9 +348,13 @@ function(params) {
 		}
 		if (appCtxt.get(ZmSetting.NOTEBOOK_ENABLED)) {
 			types.add(ZmItem.PAGE);
-			types.add(ZmItem.DOCUMENT);
+			//types.add(ZmItem.DOCUMENT);
 		}
-	} else {
+        if (appCtxt.get(ZmSetting.BRIEFCASE_ENABLED)) {
+			types.add(ZmItem.BRIEFCASE);
+			//types.add(ZmItem.DOCUMENT);
+		}
+    } else {
 		types.add(searchFor);
 		if (searchFor == ZmItem.PAGE) {
 			types.add(ZmItem.DOCUMENT);

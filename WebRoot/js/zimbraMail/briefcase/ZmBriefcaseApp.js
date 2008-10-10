@@ -117,11 +117,14 @@ function() {
 ZmBriefcaseApp.prototype._setupSearchToolbar =
 function() {
 	//TODO:search for page alone
-/*	ZmSearchToolBar.addMenuItem(ZmItem.PAGE,
-								{msgKey:		"searchNotebooks",
-								 tooltipKey:	"searchForPages",
-								 icon:			"SearchNotes"
-								});*/
+	ZmSearchToolBar.addMenuItem(ZmItem.BRIEFCASE,
+								{msgKey:		"searchBriefcase",
+								 tooltipKey:	"searchForFiles",
+								 icon:			"Folder",
+                                 shareIcon:		"SharedBriefcase",
+								 setting:		ZmSetting.BRIEFCASE_ENABLED,
+								 id:			ZmId.getMenuItemId(ZmId.SEARCH, ZmId.ITEM_BRIEFCASE)
+								});
 };
 
 ZmBriefcaseApp.prototype._registerApp =
@@ -141,15 +144,15 @@ function() {
 					  nameKey:				"briefcase",
 					  icon:					"Folder",
 					  chooserTooltipKey:	"gotoBriefcase",
-					  defaultSearch:		ZmItem.PAGE,
+					  defaultSearch:		ZmItem.BRIEFCASE,
 					  organizer:			ZmOrganizer.BRIEFCASE,
 					  overviewTrees:		[ZmOrganizer.BRIEFCASE, ZmOrganizer.ROSTER_TREE_ITEM, ZmOrganizer.TAG],
 					  showZimlets:			true,
-					  searchTypes:			[ZmItem.PAGE, ZmItem.DOCUMENT],
+					  searchTypes:			[ZmItem.BRIEFCASE/*, ZmItem.DOCUMENT*/],
 					  newItemOps:			newItemOps,
 					  newOrgOps:			newOrgOps,
 					  actionCodes:			actionCodes,
-					  gotoActionCode:		ZmKeyMap.GOTO_NOTEBOOK,
+					  gotoActionCode:		ZmKeyMap.GOTO_BRIEFCASE,
 					  newActionCode:		ZmKeyMap.NEW_FILE,
 					  chooserSort:			70,
 					  defaultSort:			60,
@@ -355,13 +358,15 @@ function(callback) {
 ZmBriefcaseApp.prototype.showSearchResults =
 function(results, callback) {
 	var loadCallback = new AjxCallback(this, this._handleLoadShowSearchResults, [results, callback]);
-	AjxDispatcher.require(["NotebookCore", "Notebook"], false, loadCallback, null, true);
+	AjxDispatcher.require(["BriefcaseCore", "Briefcase"], false, loadCallback, null, true);
 };
 
 ZmBriefcaseApp.prototype._handleLoadShowSearchResults =
 function(results, callback) {
 //	this.getFileController().show(results, true);
 // 	if (callback) { callback.run(); }
+    this.getBriefcaseController().showFolderContents(results.getResults(ZmItem.MIXED));
+    if (callback) { callback.run(); }
 };
 
 ZmBriefcaseApp.prototype.setActive =
