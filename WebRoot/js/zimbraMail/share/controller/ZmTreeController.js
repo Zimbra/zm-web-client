@@ -595,13 +595,16 @@ function(ev) {
 	} else if ((ev.detail == DwtTree.ITEM_SELECTED) && item) {
 		// left click or selection via shortcut
 		overview.itemSelected(treeItem);
+		if (ev.kbNavEvent) {
+			ev.item._tree._scrollIntoView(ev.item._itemDiv, overview.getHtmlElement());
+		}
 		if (overview.selectionSupported || item._showFoldersCallback) {
 			if (ev.kbNavEvent && ZmTreeController.TREE_SELECTION_SHORTCUT_DELAY) {
-				if (this._treeSelectionShortcutDelayActionId) {
-					AjxTimedAction.cancelAction(this._treeSelectionShortcutDelayActionId);
+				if (overview._treeSelectionShortcutDelayActionId) {
+					AjxTimedAction.cancelAction(overview._treeSelectionShortcutDelayActionId);
 				}
-				var action = new AjxTimedAction(this, this._treeSelectionTimedAction, [item]);
-				this._treeSelectionShortcutDelayActionId =
+				var action = new AjxTimedAction(this, ZmTreeController.prototype._treeSelectionTimedAction, [item, overview]);
+				overview._treeSelectionShortcutDelayActionId =
 					AjxTimedAction.scheduleAction(action, ZmTreeController.TREE_SELECTION_SHORTCUT_DELAY);
 			} else {
 				this._itemClicked(item);
@@ -613,9 +616,9 @@ function(ev) {
 };
 
 ZmTreeController.prototype._treeSelectionTimedAction =
-function(item) {
-	if (this._treeSelectionShortcutDelayActionId) {
-		AjxTimedAction.cancelAction(this._treeSelectionShortcutDelayActionId);
+function(item, overview) {
+	if (overview._treeSelectionShortcutDelayActionId) {
+		AjxTimedAction.cancelAction(overview._treeSelectionShortcutDelayActionId);
 	}
 	this._itemClicked(item);
 };
