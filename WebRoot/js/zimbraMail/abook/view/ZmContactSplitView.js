@@ -638,7 +638,14 @@ function(contact, params) {
 	// file as
 	var fileAs = AjxStringUtil.htmlEncode(contact.getFileAs());
 	if (!fileAs) {
-		fileAs = [AjxStringUtil.htmlEncode(ZmMsg.noName), contact.getEmail()].join(" ");
+		var val = contact.getEmail();
+		if (!val || (val && val.length ==0)) {
+			var imAddr = ZmImAddress.parse(contact.getIMAddress());
+			if (imAddr) {
+				val = imAddr.screenName;
+			}
+		}
+		fileAs = [AjxStringUtil.htmlEncode(ZmMsg.noName), val].join(" ");
 	}
 	htmlArr[idx++] = "<td style='vertical-align:middle;'>&nbsp;";
 	htmlArr[idx++] = fileAs;
