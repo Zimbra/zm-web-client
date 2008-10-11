@@ -74,8 +74,10 @@ function() {
 		// tab group filled in here rather than in the constructor b/c we need
 		// all the content fields to have been created
 		var members = this._getTabGroupMembers();
-		for (var i = 0; i < members.length; i++) {
-			this._tabGroup.addMember(members[i], i);
+		if (members && members.length) {
+			for (var i = 0; i < members.length; i++) {
+				this._tabGroup.addMember(members[i], i);
+			}
 		}
 		this._tabGroupComplete = true;
 	}

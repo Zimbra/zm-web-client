@@ -85,19 +85,6 @@ function(item, callback, results) {
 	if (this._doublePaneView.isMsgViewVisible() != readingPaneOn) {
 		this._doublePaneView.toggleView();
 	}
-
-	// If there's only one item in the list, go ahead and set focus to it since
-	// there's no use in the one-item list having focus (arrow keys do nothing)
-	if (readingPaneOn && (this._list.size() == 1)) {
-		var msgView = this._doublePaneView._msgView;
-		if (msgView) {
-//			appCtxt.getKeyboardMgr().grabFocus(msgView);
-		}
-	} else {
-		if (this._mailListView) {
-//			appCtxt.getKeyboardMgr().grabFocus(this._mailListView);
-		}
-	}
 };
 
 /**

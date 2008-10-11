@@ -153,10 +153,9 @@ function(params) {
 		var treeView = this._getOverview().getTreeView(treeId);
 		var ti = treeView.getTreeItemById(folderTree.root.id);
 		ti.setExpanded(true);
-		if (this._data && (treeId == this._data.type)) {
-			treeView.setSelected(folderTree.root);
-		}
 	}
+	// set focus to overview, which will select first item if none selected
+	appCtxt.getKeyboardMgr().grabFocus(this._overview[this._curOverviewId]);
 };
 
 ZmChooseFolderDialog.prototype.popdown =
@@ -232,4 +231,9 @@ function(ev) {
 	} else {
 		DwtDialog.prototype._buttonListener.call(this, ev, [tgtFolder]);
 	}
+};
+
+ZmChooseFolderDialog.prototype._getTabGroupMembers =
+function() {
+	return [this._overview[this._curOverviewId]];
 };

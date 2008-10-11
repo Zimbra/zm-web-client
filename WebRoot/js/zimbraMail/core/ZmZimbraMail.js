@@ -453,25 +453,19 @@ function(params, result) {
 
 	// Set up post-render callbacks
 
-	// focus the content pane - we want this to happen soon, give it priority 1
-	var callback = new AjxCallback(this,
-		function() {
-			this.focusContentPane();
-		});
-	this.addPostRenderCallback(callback, 1, 100);
-
 	// run app-related startup functions
 	callback = new AjxCallback(this,
 		function() {
 			this.runAppFunction("startup", false, params.result);
 		});
-	this.addPostRenderCallback(callback, 3, 100, true);
+	this.addPostRenderCallback(callback, 2, 100, true);
 
 	callback = new AjxCallback(this,
 		function() {
 			this._setupTabGroups();
+			this.focusContentPane();
 		});
-	this.addPostRenderCallback(callback, 4, 100, true);
+	this.addPostRenderCallback(callback, 3, 100, true);
 
 	// miscellaneous post-startup housekeeping
 	callback = new AjxCallback(this,
@@ -485,7 +479,7 @@ function(params, result) {
 				appCtxt.getSearchController().resetSearchToolbar();
 			}
 		});
-	this.addPostRenderCallback(callback, 6, 100);
+	this.addPostRenderCallback(callback, 5, 100);
 
 	this.activateApp(params.startApp, false, respCallback, this._errorCallback, params);
 
@@ -1328,7 +1322,7 @@ function(appName, view) {
 						function() {
 							app.activate(true);
 						});
-					this.addPostRenderCallback(callback, 2, 100, true);
+					this.addPostRenderCallback(callback, 1, 100, true);
 				} else {
 					app.activate(true);
 				}
