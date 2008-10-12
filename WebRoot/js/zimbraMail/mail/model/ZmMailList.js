@@ -147,13 +147,17 @@ function(items, hardDelete, attrs) {
 	if (this.type == ZmItem.CONV || this._mixedType == ZmItem.CONV) {
 		var searchFolder = this.search ? appCtxt.getById(this.search.folderId) : null;
 		if (searchFolder && searchFolder.isHardDelete()) {
-			// bug fix #32005 - disable instant notify for ops that might take awhile
-			appCtxt.getAppController().setInstantNotify(false);
+			var instantOn = appCtxt.getAppController().getInstantNotify();
+			var errorCallback;
+			if (instantOn) {
+				// bug fix #32005 - disable instant notify for ops that might take awhile
+				appCtxt.getAppController().setInstantNotify(false);
+				errorCallback = new AjxCallback(this, this._handleErrorDeleteItems);
+			}
 
 			attrs = attrs || {};
 			attrs.tcon = ZmFolder.TCON_CODE[searchFolder.nId];
-			var respCallback = new AjxCallback(this, this._handleResponseDeleteItems);
-			var errorCallback = new AjxCallback(this, this._handleErrorDeleteItems);
+			var respCallback = new AjxCallback(this, this._handleResponseDeleteItems, instantOn);
 			this._itemAction({items:items, action:"delete", attrs:attrs, callback:respCallback, errorCallback:errorCallback});
 			return;
 		}
@@ -162,7 +166,7 @@ function(items, hardDelete, attrs) {
 };
 
 ZmMailList.prototype._handleResponseDeleteItems =
-function(result) {
+function(instantOn, result) {
 	var deletedItems = result.getResponse();
 	if (deletedItems && deletedItems.length) {
 		this.deleteLocal(deletedItems);
@@ -173,7 +177,9 @@ function(result) {
 		ZmModel.notifyEach(deletedItems, ZmEvent.E_DELETE);
 	}
 
-	appCtxt.getAppController().setInstantNotify(true);
+	if (instantOn) {
+		appCtxt.getAppController().setInstantNotify(true);
+	}
 };
 
 ZmMailList.prototype._handleErrorDeleteItems =
