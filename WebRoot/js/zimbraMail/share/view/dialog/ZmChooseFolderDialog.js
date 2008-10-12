@@ -52,7 +52,6 @@ function() {
  *        treeIds				[array]			list of trees to show
  *        overviewId			[string]*		ID to use as base for overview ID
  *        omit					[hash]*			IDs to not show
- *        noSelect				[hash]*			IDs to disable selection for
  *        title					[string]*		dialog title
  *        description			[string]*		description of what the user is selecting
  *        skipReadOnly			[boolean]* 		if true, read-only folders will not be displayed

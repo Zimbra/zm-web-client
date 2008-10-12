@@ -341,8 +341,7 @@ function(overviewId) {
 		dropTgt: (overview.dndSupported ? this._dropTgt : null),
 		treeStyle: (this.getTreeStyle() || overview.treeStyle),
 		allowedTypes: this._getAllowedTypes(),
-		allowedSubTypes: this._getAllowedSubTypes(),
-		headerSelect: overview.headerSelect
+		allowedSubTypes: this._getAllowedSubTypes()
 	};
 	params.id = ZmId.getTreeId(overviewId, params.type);
 	var treeView = this._createTreeView(params);
@@ -561,10 +560,10 @@ function(ev) {
 
 	var treeItem = this._actionedTreeItem = ev.item;
 
-	var type = ev.item.getData(ZmTreeView.KEY_TYPE);
+	var type = treeItem.getData(ZmTreeView.KEY_TYPE);
 	if (!type) { return; }
 
-	var item = ev.item.getData(Dwt.KEY_OBJECT);
+	var item = treeItem.getData(Dwt.KEY_OBJECT);
 	if (item) {
 		this._actionedOrganizer = item;
 		if (item.noSuchFolder) {
@@ -576,8 +575,8 @@ function(ev) {
 		}
 	}
 
-	var id = ev.item.getData(Dwt.KEY_ID);
-	var overviewId = this._actionedOverviewId = ev.item.getData(ZmTreeView.KEY_ID);
+	var id = treeItem.getData(Dwt.KEY_ID);
+	var overviewId = this._actionedOverviewId = treeItem.getData(ZmTreeView.KEY_ID);
 	var overview = this._opc.getOverview(overviewId);
 	if (!overview) { return; }
 
@@ -596,13 +595,13 @@ function(ev) {
 		// left click or selection via shortcut
 		overview.itemSelected(treeItem);
 		if (ev.kbNavEvent) {
-			ev.item._tree._scrollIntoView(ev.item._itemDiv, overview.getHtmlElement());
+			treeItem._tree._scrollIntoView(treeItem._itemDiv, overview.getHtmlElement());
 		}
-		if (overview.selectionSupported || item._showFoldersCallback) {
+		if (overview._treeSelectionShortcutDelayActionId) {
+			AjxTimedAction.cancelAction(overview._treeSelectionShortcutDelayActionId);
+		}
+		if ((overview.selectionSupported || item._showFoldersCallback) && !treeItem._isHeader) {
 			if (ev.kbNavEvent && ZmTreeController.TREE_SELECTION_SHORTCUT_DELAY) {
-				if (overview._treeSelectionShortcutDelayActionId) {
-					AjxTimedAction.cancelAction(overview._treeSelectionShortcutDelayActionId);
-				}
 				var action = new AjxTimedAction(this, ZmTreeController.prototype._treeSelectionTimedAction, [item, overview]);
 				overview._treeSelectionShortcutDelayActionId =
 					AjxTimedAction.scheduleAction(action, ZmTreeController.TREE_SELECTION_SHORTCUT_DELAY);

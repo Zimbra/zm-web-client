@@ -736,7 +736,7 @@ function(search) {
 		if (treeView) {
 			var ti = treeView.getTreeItemById(id);
 			if (overview._selectedTreeItem != ti) {
-				treeView.setSelected(id, true);
+				treeView.setSelected(id, true, true);
 				overview.itemSelected(ti);
 			}
 		}

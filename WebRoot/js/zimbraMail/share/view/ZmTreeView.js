@@ -35,7 +35,6 @@
  *        treeStyle			[constant]*			tree style (see DwtTree)
  *        allowedTypes		[hash]*				org types this tree may display
  *        allowedSubTypes	[hash]*				org types this tree may display below top level
- *        headerSelect	[boolean]*			if true, header tree items are selectable
  */
 ZmTreeView = function(params) {
 
@@ -51,7 +50,6 @@ ZmTreeView = function(params) {
 	this.type = params.type;
 	this.allowedTypes = params.allowedTypes;
 	this.allowedSubTypes = params.allowedSubTypes;
-	this._headerSelect = params.headerSelect;
 
 	this._overview = appCtxt.getOverviewController().getOverview(this.overviewId);
 	
@@ -138,10 +136,9 @@ function(params) {
 		parent:this,
 		className:this._headerClass,
 		id:treeItemId,
-		button: params.newButton,
-		selectable: this._headerSelect
+		button: params.newButton
 	});
-	ti.enableSelection(false); // by default, disallow selection
+//	ti.enableSelection(false); // by default, disallow selection
 	ti._isHeader = true;
 	var name = ZmMsg[ZmOrganizer.LABEL[this.type]];
 	if (name) {
@@ -198,13 +195,14 @@ function() {
  * Selects the tree item for the given organizer.
  *
  * @param organizer		[ZmOrganizer]	the organizer to select, or its ID
- * @param skipNotify		[boolean]*		whether to skip notifications
+ * @param skipNotify	[boolean]*		whether to skip notifications
+ * @param noFocus		[boolean]*		if true, select item but don't set focus to it
  */
 ZmTreeView.prototype.setSelected =
-function(organizer, skipNotify) {
+function(organizer, skipNotify, noFocus) {
 	var id = ZmOrganizer.getSystemId((organizer instanceof ZmOrganizer) ? organizer.id : organizer);
 	if (!id || !this._treeItemHash[id]) { return; }
-	this.setSelection(this._treeItemHash[id], skipNotify);
+	this.setSelection(this._treeItemHash[id], skipNotify, false, noFocus);
 };
 
 /**
