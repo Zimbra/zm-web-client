@@ -20,7 +20,7 @@
             <app:img altkey="ALT_ATTACHMENT" src="startup/ImgAttachment.gif"/>
             <c:set var="firstAttachment" value="${false}"/>
         </c:if>
-    </td>                                                                                                  ~
+    </td>
     <c:set var="pname" value="${displayName}"/>
     <c:if test="${empty displayName}">
         <fmt:message key="unknownContentType" var="displayName">
