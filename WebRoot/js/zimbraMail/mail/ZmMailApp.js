@@ -1006,7 +1006,7 @@ function(creates) {
 			if (msgCount.length > 5) {
 				balloonText.push(ZmMsg.andMore);
 			}
-			window.platform.icon().showBalloonTip(ZmMsg.newMail, balloonText.join("\n"), 5);
+			window.platform.icon().showNotification(ZmMsg.newMail, balloonText.join("\n"), 5);
 		}
 	}
 };

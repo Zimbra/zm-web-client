@@ -286,7 +286,7 @@ function() {
 			if (appts.length > 5) {
 				winText.push(ZmMsg.andMore);
 			}
-			window.platform.icon().showBalloonTip(ZmMsg.appointmentReminder, winText.join("\n"), 5);
+			window.platform.icon().showNotification(ZmMsg.appointmentReminder, winText.join("\n"), 5);
 		}
 	}
 
