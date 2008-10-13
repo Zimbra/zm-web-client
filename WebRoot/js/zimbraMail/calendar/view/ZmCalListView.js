@@ -162,8 +162,10 @@ function(listener) {
 ZmCalListView.prototype.set =
 function(list, skipMiniCalUpdate, skipSort) {
 	if (!skipSort) {
-		if (!this._bSortAsc && this._defaultSortField == ZmItem.F_DATE) {
-			list.reverse();
+		if ((this._defaultSortField != ZmItem.F_DATE) ||
+			(this._defaultSortField == ZmItem.F_DATE && !this._bSortAsc))
+		{
+			this._sortList(list, this._defaultSortField);
 		}
 	}
 	ZmListView.prototype.set.call(this, list, this._defaultSortField);
@@ -252,7 +254,7 @@ function(ev, div) {
 			var match = this._parseId(id);
 			if (match && match.field && match.field == ZmItem.F_SELECTION) {
 				this.setToolTipContent(this._getToolTip(match.field, item, ev, div, match));
-			} else {
+			} else if (item.getToolTip) {
 				this.setToolTipContent(item.getToolTip(this._controller));
 
 				// load attendee status if necessary
@@ -278,13 +280,25 @@ function(appt, callback, uid) {
 	}
 };
 
+ZmCalListView.prototype._sortList =
+function(list, column) {
+	ZmCalListView.sortByAsc = this._bSortAsc;
+
+	switch (column) {
+		case ZmItem.F_SUBJECT:	list.sort(ZmCalListView._sortSubject); break;
+		case ZmItem.F_STATUS:	list.sort(ZmCalListView._sortStatus); break;
+		case ZmItem.F_FOLDER:	list.sort(ZmCalListView._sortFolder); break;
+		case ZmItem.F_DATE:		list.sort(ZmCalListView._sortDate); break;
+	}
+};
+
 ZmCalListView.prototype._sortColumn =
 function(columnItem, bSortAsc) {
-	if (columnItem._sortable == ZmItem.F_DATE) {
-		var list = this.getList().clone();
-		list.reverse();
-		this.set(list, null, true);
-	}
+	this._defaultSortField = columnItem._field;
+
+	var list = this.getList().clone();
+	this._sortList(list, columnItem._field);
+	this.set(list, null, true);
 };
 
 ZmCalListView.prototype._getHeaderToolTip =
@@ -308,7 +322,7 @@ function(parent) {
 		hList.push(new DwtListHeaderItem({field:ZmItem.F_TAG, icon:"Tag", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.tag}));
 	}
 	hList.push(new DwtListHeaderItem({field:ZmItem.F_ATTACHMENT, icon:"Attachment", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.attachment}));
-	hList.push(new DwtListHeaderItem({field:ZmItem.F_SUBJECT, text:ZmMsg.subject, noRemove:true}));
+	hList.push(new DwtListHeaderItem({field:ZmItem.F_SUBJECT, text:ZmMsg.subject, noRemove:true, sortable:ZmItem.F_SUBJECT}));
 	hList.push(new DwtListHeaderItem({field:ZmItem.F_LOCATION, text:ZmMsg.location, width:ZmCalListView.COL_WIDTH_LOCATION, resizeable:true}));
 	hList.push(new DwtListHeaderItem({field:ZmItem.F_STATUS, text:ZmMsg.status, width:ZmCalListView.COL_WIDTH_STATUS, resizeable:true, sortable:ZmItem.F_STATUS}));
 	hList.push(new DwtListHeaderItem({field:ZmItem.F_FOLDER, text:ZmMsg.calendar, width:ZmCalListView.COL_WIDTH_STATUS, resizeable:true, sortable:ZmItem.F_FOLDER}));
@@ -316,4 +330,51 @@ function(parent) {
 	hList.push(new DwtListHeaderItem({field:ZmItem.F_DATE, text:ZmMsg.startDate, width:ZmCalListView.COL_WIDTH_DATE, sortable:ZmItem.F_DATE}));
 
 	return hList;
+};
+
+
+// private static methods
+
+ZmCalListView._sortSubject =
+function(a, b) {
+	var aVal = a.getName();
+	var bVal = b.getName();
+
+	if (aVal < bVal)		{ return ZmCalListView.sortByAsc ? -1 : 1; }
+	else if (aVal > bVal)	{ return ZmCalListView.sortByAsc ? 1 : -1; }
+	else 					{ return 0; }
+
+};
+
+ZmCalListView._sortStatus =
+function(a, b) {
+	if (!a.otherAttendees)	{ return ZmCalListView.sortByAsc ? -1 : 1; }
+	if (!b.otherAttendees)	{ return ZmCalListView.sortByAsc ? 1 : -1; }
+
+	var aVal = a.getParticipantStatusStr();
+	var bVal = b.getParticipantStatusStr();
+
+	if (aVal < bVal)		{ return ZmCalListView.sortByAsc ? -1 : 1; }
+	else if (aVal > bVal)	{ return ZmCalListView.sortByAsc ? 1 : -1; }
+	else 					{ return 0; }
+};
+
+ZmCalListView._sortFolder =
+function(a, b) {
+	var aVal = a.getFolder().getName();
+	var bVal = b.getFolder().getName();
+
+	if (aVal < bVal)		{ return ZmCalListView.sortByAsc ? -1 : 1; }
+	else if (aVal > bVal)	{ return ZmCalListView.sortByAsc ? 1 : -1; }
+	else 					{ return 0; }
+};
+
+ZmCalListView._sortDate =
+function(a, b) {
+	var aVal = a.startDate.getTime();
+	var bVal = b.startDate.getTime();
+
+	if (aVal < bVal)		{ return ZmCalListView.sortByAsc ? -1 : 1; }
+	else if (aVal > bVal)	{ return ZmCalListView.sortByAsc ? 1 : -1; }
+	else 					{ return 0; }
 };
