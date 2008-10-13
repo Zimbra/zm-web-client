@@ -539,6 +539,8 @@ DIV.vSpace {
 	@TreeHeaderContainer@
 	@TreeHeaderText@
 	@TreeItemSpacing@
+	padding-top: 1px;
+	padding-bottom: 1px;
 }
 
 .overviewHeader-Text, 
