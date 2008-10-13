@@ -236,14 +236,6 @@
     </c:if>
     <zm:bindKey message="mail.MoveToFolder" func="function() {zmove('OPFLDR{FOLDERID}')}" alias="folder"/>
 </app:keyboard>
-<div id="testdiv" style="position:absolute;height:200px;width:200px;top:0px;right:0;background-color:yellow;">
-    <div id="testing" style="height:90%;overflow-y:scroll;">
-
-    </div>
-    <div>
-        <span onclick="javascript:document.getElementById('testdiv').style.display='none'"><b>Close X</b></span>
-    </div>
-</div>
 <script type="text/javascript">
 (function() {
 
