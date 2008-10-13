@@ -1860,7 +1860,7 @@ function(actionCode, ev) {
 				var m = actionCode.match(ZmKeyMap.GOTO_ACCT_RE);
 				if (m && m.length) {
 					this._switchToAccount(m[1]-1);
-					return true;;
+					return true;
 				}
 			}
 			var ctlr = appCtxt.getCurrentController();
