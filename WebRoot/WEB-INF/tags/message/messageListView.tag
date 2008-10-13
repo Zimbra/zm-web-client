@@ -277,12 +277,9 @@
             /*get TR el. from event obj */
             var target = $E.getTarget(ev);
             var parentNode = target.parentNode;
-            $("testing").innerHTML += "<br/>|||"+parentNode;
             while (parentNode.nodeName != "TR"){
                 parentNode = parentNode.parentNode;
-                $("testing").innerHTML += "<br/>||M||"+parentNode;
             }
-            $("testing").innerHTML += "<br/>||L||"+parentNode;
             rowId = parentNode.id;
             rowObj = parentNode;
             rowNo = rowId.substring(1);
