@@ -100,7 +100,6 @@ AjxPackage.require("ajax.dwt.widgets.DwtSash");
 AjxPackage.require("ajax.dwt.widgets.DwtToolBar");
 AjxPackage.require("ajax.dwt.widgets.DwtToolTip");
 AjxPackage.require("ajax.dwt.widgets.DwtTreeItem");
-AjxPackage.require("ajax.dwt.widgets.DwtHeaderTreeItem");
 AjxPackage.require("ajax.dwt.widgets.DwtTree");
 AjxPackage.require("ajax.dwt.widgets.DwtText");
 AjxPackage.require("ajax.dwt.widgets.DwtIframe");

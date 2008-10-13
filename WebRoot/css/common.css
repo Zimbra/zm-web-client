@@ -547,15 +547,6 @@ DIV.vSpace {
 	@TreeHeaderText@
 }
 
-.overviewHeader-selected {
-	@TreeHeaderText@
-    @SelectedBg-blurred@
-}
-
-.overviewHeader-selected-focused {
-	@TreeHeaderText@
-    @SelectedBg@
-}
 
 .overviewHeader .imageCell {
 	@ImagePadding@

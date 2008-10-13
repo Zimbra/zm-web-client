@@ -53,11 +53,6 @@ function() {
 	return "ZmListView";
 }
 
-
-// Consts
-
-ZmListView.KEY_ID							= "_keyId";
-
 // column widths
 ZmListView.COL_WIDTH_ICON 					= 19;
 ZmListView.COL_WIDTH_NARROW_ICON			= 11;
@@ -71,8 +66,6 @@ ZmListView.FIELD_CLASS[ZmItem.F_ATTACHMENT]	= "Attach";
 
 ZmListView.ITEM_FLAG_CLICKED 				= DwtListView._LAST_REASON + 1;
 ZmListView.DEFAULT_REPLENISH_THRESHOLD		= 0;
-
-ZmListView.COL_JOIN = "|";
 
 ZmListView.prototype._getHeaderList = function() {};
 
@@ -305,18 +298,6 @@ function(item, field, imageInfo) {
 	}
 };
 
-ZmListView.prototype._getFragmentSpan =
-function(item) {
-	return ["<span class='ZmConvListFragment' id='",
-			this._getFieldId(item, ZmItem.F_FRAGMENT),
-			"'>", this._getFragmentHtml(item), "</span>"].join("");
-};
-
-ZmListView.prototype._getFragmentHtml =
-function(item) {
-	return [" - ", AjxStringUtil.htmlEncode(item.fragment, true)].join("");
-};
-
 /**
  * Parse the DOM ID to figure out what got clicked. IDs consist of three to five parts
  * joined by the "|" character.
@@ -511,7 +492,7 @@ function(obj, bContained) {
 	var selFieldId = item ? this._getFieldId(item, ZmItem.F_SELECTION) : null;
 	var selField = selFieldId ? document.getElementById(selFieldId) : null;
 	if (selField) {
-		selField.className = bContained ? "ImgTaskCheckbox" : "ImgTaskCheckboxCompleted";
+		selField.className = bContained	? "ImgTaskCheckbox"	: "ImgTaskCheckboxCompleted";
 		this._setItemData(obj, "origSelClassName", selField.className);
 	}
 };
@@ -560,45 +541,6 @@ ZmListView.prototype._setNoResultsHtml =
 function() {
 	DwtListView.prototype._setNoResultsHtml.call(this);
 	this.setSelectionHdrCbox(false);
-};
-
-ZmListView.prototype._getActionMenuForColHeader =
-function(force) {
-	if (!this._colHeaderActionMenu || force) {
-		// create a action menu for the header list
-		this._colHeaderActionMenu = new ZmPopupMenu(this);
-		var actionListener = new AjxListener(this, this._colHeaderActionListener);
-		for (var i = 0; i < this._headerList.length; i++) {
-			var hCol = this._headerList[i];
-			// lets not allow columns w/ relative width to be removed (for now) - it messes stuff up
-			if (hCol._width) {
-				var mi = this._colHeaderActionMenu.createMenuItem(hCol._id, {text:hCol._name, style:DwtMenuItem.CHECK_STYLE});
-				mi.setData(ZmListView.KEY_ID, hCol._id);
-				mi.setChecked(hCol._visible, true);
-                if (hCol._noRemove) {
-					mi.setEnabled(false);
-				}
-                this._colHeaderActionMenu.addSelectionListener(hCol._id, actionListener);
-			}
-		}
-	}
-	return this._colHeaderActionMenu;
-};
-
-ZmListView.prototype._colHeaderActionListener =
-function(ev) {
-
-	var menuItemId = ev.item.getData(ZmListView.KEY_ID);
-
-	for (var i = 0; i < this._headerList.length; i++) {
-		var col = this._headerList[i];
-		if (col._id == menuItemId) {
-			col._visible = !col._visible;
-			break;
-		}
-	}
-
-	this._relayout();
 };
 
 ZmListView.prototype._getHeaderToolTip =
@@ -805,9 +747,9 @@ function() {
 		var headerCol = this._headerList[i];
 		fields.push(headerCol._field + (headerCol._visible ? "" : "*"));
 	}
-	var value = fields.join(ZmListView.COL_JOIN);
+	var value = fields.join("|");
 	value = (value == this._defaultCols) ? "" : value;
 	appCtxt.set(ZmSetting.LIST_VIEW_COLUMNS, value, this.view);
-
+	
 	this._getActionMenuForColHeader(true); // re-create action menu so order is correct
 };
