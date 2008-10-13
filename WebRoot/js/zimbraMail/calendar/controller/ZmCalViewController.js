@@ -1069,6 +1069,12 @@ function(appt, mode) {
 	this._typeDialog.popup();
 };
 
+ZmCalViewController.prototype.showApptReadOnlyView =
+function(appt, mode) {
+    var clone = ZmAppt.quickClone(appt);
+    clone.getDetails(mode, new AjxCallback(this, this._showApptReadOnlyView, [clone]));
+};
+
 ZmCalViewController.prototype._showApptReadOnlyView =
 function(appt) {
 	var viewId = ZmId.VIEW_CAL_APPT;
@@ -1141,23 +1147,31 @@ function(appt) {
 	if (!appt.__creating) {
 		var calendar = appt.getFolder();
 		var isSynced = Boolean(calendar.url);
-		if (appt.isReadOnly() || calendar.isReadOnly() || isSynced) {
-			var mode = appt.isException ? ZmCalItem.MODE_EDIT_SINGLE_INSTANCE : ZmCalItem.MODE_EDIT_SERIES;
-	        var clone = ZmAppt.quickClone(appt);
-			clone.getDetails(mode, new AjxCallback(this, this._showApptReadOnlyView, [clone]));
-		} else {
-			if (appt.isRecurring()) {
-				// prompt user to edit instance vs. series if recurring but not exception
-				if (appt.isException) {
-					this.editAppointment(appt, ZmCalItem.MODE_EDIT_SINGLE_INSTANCE);
-				} else {
-					this._showTypeDialog(appt, ZmCalItem.MODE_EDIT);
-				}
-			} else {
-				// if simple appointment, no prompting necessary
-				this.editAppointment(appt, ZmCalItem.MODE_EDIT);
-			}
-		}
+        if (appt.isRecurring()) {
+            // prompt user to edit instance vs. series if recurring but not exception
+            if (appt.isException) {
+                var mode = ZmCalItem.MODE_EDIT_SINGLE_INSTANCE;
+                if (appt.isReadOnly() || calendar.isReadOnly() || isSynced) {
+                    this.showApptReadOnlyView(appt, mode);
+                }else{
+                    this.editAppointment(appt, mode);
+                }
+            } else {
+                if (appt.isReadOnly() || calendar.isReadOnly() || isSynced) {
+                    this.showApptReadOnlyView(appt, ZmCalItem.MODE_EDIT_SINGLE_INSTANCE);
+                }else{
+                    this._showTypeDialog(appt, ZmCalItem.MODE_EDIT);
+                }
+            }
+        } else {
+            // if simple appointment, no prompting necessary
+            if (appt.isReadOnly() || calendar.isReadOnly() || isSynced) {
+                var mode = appt.isException ? ZmCalItem.MODE_EDIT_SINGLE_INSTANCE : ZmCalItem.MODE_EDIT_SERIES;
+                this.showApptReadOnlyView(appt, mode);
+            }else {
+                this.editAppointment(appt, ZmCalItem.MODE_EDIT);
+            }
+        }
 	} else {
 		this.newAppointment(appt);
 	}
@@ -1184,9 +1198,15 @@ function(appt, mode, isInstance) {
 		appt.getDetails(viewMode, respCallback, state.errorCallback);
 	}
     else {
-		var editMode = isInstance ? ZmCalItem.MODE_EDIT_SINGLE_INSTANCE : ZmCalItem.MODE_EDIT_SERIES;
-		this.editAppointment(appt, editMode);
-	}
+        var editMode = isInstance ? ZmCalItem.MODE_EDIT_SINGLE_INSTANCE : ZmCalItem.MODE_EDIT_SERIES;
+        var calendar = appt.getFolder();
+        var isSynced = Boolean(calendar.url);        
+        if (appt.isReadOnly() || calendar.isReadOnly() || isSynced) {
+            this.showApptReadOnlyView(appt, editMode);
+        }else {
+            this.editAppointment(appt, editMode);
+        }
+    }
 };
 
 ZmCalViewController.prototype._typeCancelListener =
