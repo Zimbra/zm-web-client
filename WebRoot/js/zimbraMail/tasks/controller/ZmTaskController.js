@@ -88,6 +88,23 @@ function() {
 	return "ZmTaskController";
 };
 
+// returns true if moving given appt from local to remote folder or vice versa
+ZmTaskController.prototype.isMovingBetwAccounts =
+function(task, newFolderId) {
+	var isMovingBetw = false;
+	if (task._orig) {
+		var origFolder = task._orig.getFolder();
+		var newFolder = appCtxt.getById(newFolderId);
+		if (origFolder && newFolder) {
+			if ((origFolder.id != newFolderId) &&
+				((origFolder.link && !newFolder.link) || (!origFolder.link && newFolder.link)))
+			{
+				isMovingBetw = true;
+			}
+		}
+	}
+	return isMovingBetw;
+};
 
 // Private / Protected methods
 
