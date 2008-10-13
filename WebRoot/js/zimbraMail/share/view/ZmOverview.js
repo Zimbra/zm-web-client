@@ -133,10 +133,11 @@ function(treeId, visible, doc) {
  */
 ZmOverview.prototype.set =
 function(treeIds, omit, account, noNewButton) {
-	if (!(treeIds && treeIds.length)) { return; }
 	this.account = account;
-	for (var i = 0; i < treeIds.length; i++) {
-		this.setTreeView(treeIds[i], omit, account, noNewButton);
+	if (treeIds && treeIds.length) {
+		for (var i = 0; i < treeIds.length; i++) {
+			this.setTreeView(treeIds[i], omit, account, noNewButton);
+		}
 	}
 };
 
