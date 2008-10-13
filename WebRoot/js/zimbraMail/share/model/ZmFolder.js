@@ -384,6 +384,12 @@ function(obj) {
 	if (obj.l != null && (!this.parent || (obj.l != this.parent.id))) {
 		var newParent = this._getNewParent(obj.l);
 		if (newParent) {
+			if (newParent.nId == ZmOrganizer.ID_ARCHIVE) {
+				this.isOfflineSyncable = false;
+			} else if (this.parent.nId == ZmOrganizer.ID_ARCHIVE) {
+				this.isOfflineSyncable = true;
+				this.isOfflineSyncing = false;
+			}
 			this.reparent(newParent);
 			details.oldPath = this.getPath();
 			this._notify(ZmEvent.E_MOVE, details);
@@ -555,9 +561,9 @@ function(what, folderType) {
 				}
 			}
 		}
-        if (!invalid && this.link) {
+		if (!invalid && this.link) {
 			invalid = this.isReadOnly();										// cannot drop anything onto a read-only item
-        }
+		}
 	}
 	return !invalid;
 };
@@ -581,25 +587,22 @@ function() {
 
 ZmFolder.prototype.isInSpam =
 function(){
-    return this.isUnder(ZmFolder.ID_SPAM);
+	return this.isUnder(ZmFolder.ID_SPAM);
 };
 
 /**
- * Returns true if the given remote folder can be moved into this remote folder. The source and
- * the target folder must belong to the same account. The source must have delete permission and
- * the target must have insert permission.
+ * Returns true if the given remote folder can be moved into this remote folder.
+ * The source and the target folder must belong to the same account. The source
+ * must have delete permission and the target must have insert permission.
  *
  * @param folder  [ZmFolder]    source folder
  */
 ZmFolder.prototype._remoteMoveOk =
 function(folder) {
-    if (!this.link || !folder.link) { return false; }
-    if (this.zid != folder.zid) { return false; }
-    if (this.id.split(":")[0] != folder.id.split(":")[0]) { return false; }
-    var share = this.shares && this.shares[0];
-    if (!(share && share.isInsert())) { return false; }
-    share = folder.shares && folder.shares[0];
-    if (!(share && share.isDelete())) { return false; }
-
-    return true;
+	if (!this.link || !folder.link || this.zid != folder.zid) { return false; }
+	if (this.id.split(":")[0] != folder.id.split(":")[0]) { return false; }
+	var share = this.shares && this.shares[0];
+	if (!(share && share.isInsert())) { return false; }
+	share = folder.shares && folder.shares[0];
+	return (share && share.isDelete());
 };
