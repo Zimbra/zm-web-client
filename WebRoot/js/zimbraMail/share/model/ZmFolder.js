@@ -384,6 +384,12 @@ function(obj) {
 	if (obj.l != null && (!this.parent || (obj.l != this.parent.id)) && !obj._isRemote) {
 		var newParent = this._getNewParent(obj.l);
 		if (newParent) {
+			if (newParent.nId == ZmOrganizer.ID_ARCHIVE) {
+				this.isOfflineSyncable = false;
+			} else if (this.parent.nId == ZmOrganizer.ID_ARCHIVE) {
+				this.isOfflineSyncable = true;
+				this.isOfflineSyncing = false;
+			}
 			this.reparent(newParent);
 			details.oldPath = this.getPath();
 			this._notify(ZmEvent.E_MOVE, details);
@@ -580,5 +586,5 @@ function() {
 
 ZmFolder.prototype.isInSpam =
 function(){
-    return this.isUnder(ZmFolder.ID_SPAM);
+	return this.isUnder(ZmFolder.ID_SPAM);
 };
