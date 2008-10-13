@@ -214,6 +214,7 @@ function(parent, num) {
 		parent.enable(ZmOperation.EDIT, canEdit && num == 1);
 		parent.enable(ZmOperation.TAG_MENU, (!isShare && num > 0));
 	}
+	parent.enable(ZmOperation.PRINT, num > 0);
 };
 
 ZmTaskListController.prototype._doDelete =
@@ -364,6 +365,19 @@ ZmTaskListController.prototype._editListener =
 function(ev) {
 	var task = this._listView[this._currentView].getSelection()[0];
 	this._editTask(task);
+};
+
+ZmTaskListController.prototype._printListener =
+function(ev) {
+	var listView = this._listView[this._currentView];
+	var items = listView.getSelection();
+	var taskIds = [];
+	for (var i = 0; i < items.length; i++) {
+		taskIds.push(items[i].id);
+	}
+
+	var url = ("/h/printtasks?id=" + taskIds.join(","));
+	window.open(appContextPath+url, "_blank");
 };
 
 ZmTaskListController.prototype._setViewContents =

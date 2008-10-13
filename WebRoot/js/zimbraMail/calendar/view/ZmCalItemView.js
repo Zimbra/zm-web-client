@@ -406,7 +406,7 @@ function(calItem) {
 
 	var isAllDay = calItem.isAllDayEvent();
 	var isMultiDay = calItem.isMultiDay();
-	if(isAllDay && isMultiDay){
+	if (isAllDay && isMultiDay) {
 		var endDate = new Date(ed.getTime());
 		ed.setDate(endDate.getDate()-1);
 	}
@@ -502,24 +502,4 @@ function(calItem) {
 		folder: appCtxt.getTree(ZmOrganizer.TASKS).getById(calItem.folderId),
 		folderLabel: ZmMsg.folder
     };
-};
-
-ZmTaskView.getPrintHtml =
-function(task, preferHtml, callback) {
-	var ct = preferHtml ? ZmMimeTable.TEXT_HTML : ZmMimeTable.TEXT_PLAIN;
-
-	var subs = {
-		task: task,
-		attachments: task.hasAttachments() ? ZmCalItemView._getAttachString(task) : null,
-		isHtml: preferHtml,
-		content: task.getNotesPart(ct)
-	};
-
-	var html = AjxTemplate.expand("tasks.Tasks#PrintView", subs);
-
-	if (callback) {
-		callback.run(new ZmCsfeResult(html));
-	} else {
-		return html;
-	}
 };

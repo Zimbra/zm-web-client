@@ -102,11 +102,6 @@ function(controller) {
 	DBG.println("------------ TODO: getTooltip! --------------");
 };
 
-ZmTask.prototype.getPrintHtml =
-function(preferHtml, callback) {
-	this.getDetails(ZmCalItem.MODE_EDIT, new AjxCallback(null, ZmTaskView.getPrintHtml, [this, preferHtml, callback]));
-};
-
 ZmTask.prototype.notifyModify =
 function(obj) {
 	ZmItem.prototype.notifyModify.call(this, obj);
