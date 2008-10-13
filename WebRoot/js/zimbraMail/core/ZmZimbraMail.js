@@ -1860,15 +1860,13 @@ function(actionCode, ev) {
 				var m = actionCode.match(ZmKeyMap.GOTO_ACCT_RE);
 				if (m && m.length) {
 					this._switchToAccount(m[1]-1);
-					break;
+					return true;;
 				}
-				return false;
-			} else {
-				var ctlr = appCtxt.getCurrentController();
-				return (ctlr && ctlr.handleKeyAction)
-					? ctlr.handleKeyAction(actionCode, ev)
-					: false;
 			}
+			var ctlr = appCtxt.getCurrentController();
+			return (ctlr && ctlr.handleKeyAction)
+				? ctlr.handleKeyAction(actionCode, ev)
+				: false;
 		}
 	}
 	return true;
