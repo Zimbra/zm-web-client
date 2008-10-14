@@ -53,9 +53,6 @@
                                 <td class="zo_m_chk" width="1%">
                                     <c:set value=",${chit.id}," var="stringToCheck"/>
                                     <input type="checkbox" ${fn:contains(requestScope._selectedCids,stringToCheck)?'checked="checked"':'unchecked'} name="cid" value="${chit.id}">
-                                    <c:forEach items="${chit.matchedMessageIds}" var="mid">
-                                        <input type="hidden" name="id_${chit.id}" value="${mid}"/>
-                                    </c:forEach>
                                 </td>
                                 <td width="1%" class="zo_m_chk">
                                     <c:if test="${chit.messageCount ge 2}">

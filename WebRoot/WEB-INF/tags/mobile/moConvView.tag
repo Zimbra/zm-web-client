@@ -97,10 +97,6 @@
                                showconvlink="true" composeUrl="${composeUrl}" newWindowUrl="${newWindowUrl}"/>
         </td>
     </tr>
-    <tr>
-        <td class="Stripes">
-        </td>
-    </tr>
 </c:when>
 <c:otherwise>
     <tr>

@@ -16,28 +16,6 @@
     <zm:searchConv var="convSearchResult" id="${not empty param.cid ? param.cid : context.currentItem.id}" limit="100"
                    context="${context}" fetch="none" markread="false" sort="${param.css}"/>
 </c:if>
-<%--<c:if test="${!isTop}">
-    <div style="padding:5px;background:#efefef;font-size:small;">
-        <c:if test="${isConv!=null && isConv}">
-            <zm:currentResultUrl var="closeurl" value="${urlTarget}"
-                                 index="${context.currentItemIndex}"
-                                 context="${context}"/>
-        </c:if>
-        <zm:currentResultUrl var="closeurl" value="${urlTarget}"
-                             index="${context.currentItemIndex}"
-                             context="${context}"/>
-        <a href="${fn:escapeXml(closeurl)}#conv${cid}" class='zo_leftbutton'>
-                ${fn:escapeXml(zm:truncate(context.shortBackTo,15,true))}
-        </a>
-        <c:if test="${isConv==null || !isConv }">
-        <zm:currentResultUrl var="closeUrl" value="${urlTarget}" action='view' context="${context}"
-                             cso="${param.cso}" csi="${param.csi}" css="${param.css}"/>
-        &laquo; <a href="${fn:escapeXml(closeUrl)}" class='zo_leftbutton'>
-            <fmt:message key="backToConv"/>
-        </c:if>
-
-    </div>
-</c:if>--%>
 <table class="ToolbarBg" cellpadding="0" cellspacing="0" border="0" width="100%">
 <tr>
 <td align="left" class="Padding">
@@ -134,7 +112,8 @@
 <c:if test="${singleMessage}">
     <select name="anAction" onchange="document.getElementById('actions').submit();">
         <option value="" selected="selected"><fmt:message key="moreActions"/></option>
-        <c:set var="inTrash" value="${zm:getFolder(pageContext, message.folderId).isInTrash}"/>
+        <c:set var="myFolder" value="${zm:getFolder(pageContext, message.folderId)}"/>
+        <c:set var="inTrash" value="${myFolder.isInTrash}"/>
         <!--<optgroup label="Delete">-->
         <c:choose>
             <c:when test="${inTrash}">
@@ -152,6 +131,14 @@
             <c:if test="${not message.isUnread}">
                 <option value="actionMarkUnread">Unread</option>
             </c:if>
+             <c:choose>
+                <c:when test="${myFolder.isSpam}">
+                    <option value="actionMarkUnspam"><fmt:message key="actionNotSpam"/></option>
+                </c:when>
+                <c:otherwise>
+                    <option value="actionMarkSpam"><fmt:message key="actionSpam"/></option>
+                </c:otherwise>
+            </c:choose>
         </optgroup>
         <optgroup label="Flag">
             <c:if test="${not message.isFlagged}">
@@ -207,6 +194,14 @@
         <optgroup label="Mark">
             <option value="actionMarkRead">Read</option>
             <option value="actionMarkUnread">Unread</option>
+            <c:choose>
+                <c:when test="${context.folder.isSpam}">
+                    <option value="actionMarkUnspam"><fmt:message key="actionNotSpam"/></option>
+                </c:when>
+                <c:otherwise>
+                    <option value="actionMarkSpam"><fmt:message key="actionSpam"/></option>
+                </c:otherwise>
+            </c:choose>
         </optgroup>
         <optgroup label="Flag">
             <option value="actionFlag">Add</option>

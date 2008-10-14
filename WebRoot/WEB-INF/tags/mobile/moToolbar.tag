@@ -8,24 +8,6 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <zm:currentResultUrl var="closeUrl" value="${urlTarget}" context="${context}"/>
-
-<%--<c:if test="${!isTop && uiv == '1'}">
-    <div style="padding:5px;background:#efefef;font-size:small;">
-    <c:if test="${context.isContactSearch}">
-            <a id="ABOOKS" href="${fn:escapeXml(context_url)}?st=ab">
-                <img src="<app:imgurl value='contacts/ImgContactsFolder.gif'/>">
-                <fmt:message key="addressBooks"/>
-            </a>
-
-    </c:if>
-    <c:if test="${context.isConversationSearch || context.isMessageSearch}">
-        <a id="FLDRS" href="${fn:escapeXml(context_url)}?st=folders">
-                <img src="<app:imgurl value='startup/ImgFolder.gif'/>">
-                <fmt:message key="folders"/>
-            </a>
-    </c:if>
-     </div>
-</c:if>--%>
 <table class="ToolbarBg" cellpadding="0" cellspacing="0" border="0" width="100%">
 <tr>
 <td align="left" class="Padding">
@@ -38,12 +20,7 @@
                 <fmt:message key="MO_MAIN"/>
             </a>
         </c:if>
-            <%--<c:if test="${uiv == '1'}">
-            <a href="#action" class='zo_button'>
-                <fmt:message key="MO_actions"/>
-            </a>
-            </c:if>--%>
-    </td>
+     </td>
 </c:if>
 <c:choose>
     <c:when test="${context.searchResult.hasPrevPage}">
@@ -77,16 +54,6 @@
         </c:otherwise>
     </c:choose>
 </td>
-<%-- <c:if test="${uiv == '1' && !isTop}">
-<td class="Padding" id='select_container' style="display:none;">
-    <select onchange="changeListSize(this.value)">
-        <option value="5" ${sessionScope.limit=='5'?'selected':''}>List 5</option>
-        <option value="10" ${sessionScope.limit=='10'?'selected':''}>List 10</option>
-        <option value="20" ${sessionScope.limit=='20'?'selected':''}>List 20</option>
-    </select>
-</td>
-</c:if>--%>
-<%--<input name="actionDelete" type="submit" value="<fmt:message key="delete"/>"/>--%>
 <c:if test="${uiv == '1' && context.searchResult.size gt 0}">
     <td>
         <select name="anAction" onchange="document.getElementById('actions').submit();">
@@ -101,11 +68,18 @@
                     </c:otherwise>
                 </c:choose>
             <!--</optgroup>-->
-
             <c:if test="${!context.isContactSearch}">
                 <optgroup label="Mark">
                     <option value="actionMarkRead">Read</option>
                     <option value="actionMarkUnread">Unread</option>
+                    <c:choose>
+                        <c:when test="${context.folder.isSpam}">
+                            <option value="actionMarkUnspam"><fmt:message key="actionNotSpam"/></option>
+                        </c:when>
+                        <c:otherwise>
+                            <option value="actionMarkSpam"><fmt:message key="actionSpam"/></option>
+                        </c:otherwise>
+                    </c:choose>
                 </optgroup>
             </c:if>
 
@@ -132,10 +106,7 @@
                     </c:otherwise>
                 </c:choose>
             </optgroup>
-                <%-- <zm:forEachFolder var="folder">
-                    <input type="hidden" name="folderId" value="${folder.id}"/>
-                </zm:forEachFolder>--%>
-            <c:if test="${mailbox.features.tagging and mailbox.hasTags}">
+             <c:if test="${mailbox.features.tagging and mailbox.hasTags}">
                 <c:set var="allTags" value="${mailbox.mailbox.allTags}"/>
                 <optgroup label="<fmt:message key="MO_actionAddTag"/>">
                     <c:forEach var="atag" items="${allTags}">
@@ -151,20 +122,12 @@
         </select>
         <noscript><input name="moreActions" type="submit" value="<fmt:message key="actionGo"/>"/></noscript>
     </td>
-    <%--<script type="text/javascript">document.getElementById('select_container').style.display = '';</script>--%>
 </c:if>
 </tr>
 </table>
 </td>
-<%--</c:if>--%>
 <td class="Padding" align="right">
-    <%--<c:if test="${uiv != '1' && isTop != null && isTop}">
-        <a href="#action" class='zo_button'>
-            <fmt:message key="MO_actions"/>
-        </a>
-    </c:if>--%>
     <c:if test="${uiv == '1'}">
-
         <c:if test="${context.st=='message' || context.st=='conversation'}">
             <c:url var="composeUrl" value="${urlTarget}?st=newmail"/>
             <a href="${composeUrl}" class="zo_button">
@@ -195,4 +158,4 @@
             </c:otherwise>
         </c:choose>
     </div>
-</c:if>  
+</c:if>
