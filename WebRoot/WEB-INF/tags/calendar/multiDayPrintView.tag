@@ -53,32 +53,6 @@
     </c:set>
 
 </app:handleError>
-
-<html>
-<head>
-    <c:url var='cssurl' value='/css/common,login,images,skin.css'>
-        <c:param name="client"	value="standard" />
-    </c:url>
-    <link rel="stylesheet" type="text/css" href="${cssurl}">
-    <style type="text/css">
-        .smalltext{
-            font-size:10pt;
-            color:#666;
-        }
-        .ZhZimbraTitle {
-            font-size:18px;
-            font-weight:bold;
-        }
-    </style>
-</head>
-<body style='background-color:white;'>
-<table>
-    <tr>
-        <td class='ZhZimbraTitle'><fmt:message key="zimbraTitle"/></td>
-        <td nowrap width='1%'><b>${fn:escapeXml(mailbox.name)}</b></td>
-    </tr>
-</table>
-<hr/>
 <table width="100%" cellpadding="0" cellspacing="0" border="0">
     <tr>
         <td class='ZhAppContent'>
@@ -86,5 +60,3 @@
         </td>
     </tr>
 </table>
-</body>
-</html>

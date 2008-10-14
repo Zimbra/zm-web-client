@@ -19,13 +19,6 @@
     </c:choose>
     <fmt:setBundle basename="/messages/ZhMsg" scope='request' />
 
-    <c:if test="${not empty param.st and param.st ne 'appointment'}">
-        <c:redirect url="/h/search">
-            <c:param name="sq" value="${param.sq}"/>
-            <c:param name="st" value="${param.st}"/>
-        </c:redirect>
-    </c:if>
-
     <c:choose>
         <c:when test="${not empty param.tz}">
             <fmt:setTimeZone var="tz" value="${param.tz}" scope="request"/>
@@ -45,52 +38,45 @@
         </c:otherwise>
     </c:choose>
 
-    <c:choose>
-        <c:when test="${param.action eq 'compose'}">
-            <app:composeCheck/>
-            <c:set var="needViewAppt" value="${true}"/>
-        </c:when>
-        <c:otherwise>
-            <app:editapptCheck/>
-        </c:otherwise>
-    </c:choose>
-
-
-    <c:set scope="request" var="calendarQuery" value="${param.sq}"/>
-
-    <jsp:useBean id="expanded" scope="session" class="java.util.HashMap" />
-
-    <c:if test="${not empty param.expand}">
-        <c:set target="${sessionScope.expanded}" property="${param.expand}" value="expand"/>
-    </c:if>
-    <c:if test="${not empty param.collapse}">
-        <c:set target="${sessionScope.expanded}" property="${param.collapse}" value="collapse"/>
-    </c:if>
-
-
-    <c:if test="${not empty param.check}">
-        <zm:checkFolder checked="true" id="${param.check}"/>
-    </c:if>
-    <c:if test="${not empty param.uncheck}">
-        <zm:checkFolder checked="false" id="${param.uncheck}"/>
-    </c:if>
-
-    <c:if test="${not empty param.refresh}">
-        <zm:clearApptSummaryCache/>
-    </c:if>
-
-    <c:if test="${not empty param.sync}">
-        <zm:syncFolder id="${param.sync}"/>
-        <c:set var="folderName" value="${zm:getFolderName(pageContext, param.sync)}"/>
-        <app:status>
-            <fmt:message key="actionCalendarReloaded">
-                <fmt:param value="${folderName}"/>
-            </fmt:message>
-        </app:status>
-    </c:if>
-
+    <c:set var="checkedCalendars" value="${zm:getCheckedCalendarFolderIds(mailbox)}"/>
+    
 </app:handleError>
 
+<html>
+<head>
+
+    <c:url var='cssurl' value='/css/common,login,images,skin.css'>
+        <c:param name="client"	value="standard" />
+    </c:url>
+    <link rel="stylesheet" type="text/css" href="${cssurl}">
+    
+</head>
+<body style='background-color:white;'>
+<table width="90%" align="center">
+    <tr>
+        <td class='ZhZimbraTitle'><fmt:message key="zimbraTitle"/></td>
+        <td>
+            <table cellpadding="2" cellspacing="2" >
+                <tr>
+                <c:forEach items="${checkedCalendars}" var="checkedcal" >
+                        <td width="10px" height="10px" class="${zm:getFolder(pageContext,checkedcal).styleColor}">
+                            &nbsp;
+                        </td>
+                        <td>
+                          <b> ${zm:getFolder(pageContext,checkedcal).name}</b>
+                        </td>
+                        <td>
+                            &nbsp;&nbsp;
+                        </td>
+                </c:forEach>
+                </tr>
+            </table>
+
+        </td>
+        <td nowrap width='1%'><b>${fn:escapeXml(mailbox.name)}</b></td>
+    </tr>
+</table>
+<hr/>
 <app:handleError>
     <c:set var="view" value="${param.view}"  />
     <c:choose>
@@ -117,3 +103,6 @@
 
     // -->
 </script>
+
+</body>
+</html>
