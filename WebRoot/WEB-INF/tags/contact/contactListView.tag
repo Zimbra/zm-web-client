@@ -131,7 +131,7 @@
         }
         }catch(ex){
         }
-        window.open("/h/printcontacts?id="+c);
+        window.open("/h/printcontacts?sfi=${context.folder.id}&id="+c);
     }
     var zcheck = function() {var e = document.getElementById("CURRCHECK"); if (e) e.checked = !e.checked;}
     var zclick = function(id) { var e2 = document.getElementById(id); if (e2) e2.click(); }
