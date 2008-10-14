@@ -28,6 +28,7 @@
                                         var="appts"
                                         start="${currentDay.timeInMillis}"
                                         end="${rangeEnd}"
+                                        folderid="${requestScope.zimbra_target_item_id}"
                                         varexception="gasException"/>
         </c:when>
         <c:otherwise>
