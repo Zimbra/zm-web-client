@@ -410,7 +410,8 @@
           <url-pattern>/h/ac</url-pattern>
           <url-pattern>/h/addattendees</url-pattern>
           <url-pattern>/h/addcontacts</url-pattern>
-		  <url-pattern>/h/addgroupcontact</url-pattern>
+          <url-pattern>/h/addcontactconfirmation</url-pattern>
+          <url-pattern>/h/addgroupcontact</url-pattern>
           <url-pattern>/h/ads</url-pattern>
           <url-pattern>/h/attachments</url-pattern>
           <url-pattern>/h/calendar</url-pattern>
@@ -434,6 +435,7 @@
           <url-pattern>/h/mtasks</url-pattern>
           <url-pattern>/h/options</url-pattern>
           <url-pattern>/h/printcalls</url-pattern>
+          <url-pattern>/h/printcalendar</url-pattern>
           <url-pattern>/h/printvoicemails</url-pattern>
           <url-pattern>/h/repeat</url-pattern>
           <url-pattern>/h/rest</url-pattern>
