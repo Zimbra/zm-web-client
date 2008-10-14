@@ -566,40 +566,9 @@
     </table>
 </template>
 
-<template id='calendar.Appointment#ReadOnlyPrint'>
-	<div style='width: 100%; background-color: #EEEEEE'>
-		<table border=0 width=100%>
-			<tr>
-				<td><font size=+1><$= data.subject $></font></td>
-				<td align=right><font size=+1><$= data.dateStr $></font></td>
-			</tr>
-		</table>
-
-		<table border=0 width=100%>
-			<$ if (data.location) { $><$= AjxTemplate.expand("calendar.Appointment#AddPrintEntry", {lbl:ZmMsg.location, val:data.location}) $><$ } $>
-			<$ if (data.equipment) { $><$= AjxTemplate.expand("calendar.Appointment#AddPrintEntry", {lbl:ZmMsg.resources, val:data.equipment}) $><$ } $>
-			<$ if (data.organizer) { $><$= AjxTemplate.expand("calendar.Appointment#AddPrintEntry", {lbl:ZmMsg.organizer, val:data.organizer}) $><$ } $>
-			<$ if (data.attendees) { $><$= AjxTemplate.expand("calendar.Appointment#AddPrintEntry", {lbl:ZmMsg.attendees, val:data.attendees}) $><$ } $>
-			<$ if (data.recurStr) { $><$= AjxTemplate.expand("calendar.Appointment#AddPrintEntry", {lbl:ZmMsg.repeats, val:data.recurStr}) $><$ } $>
-			<$ if (data.attachStr) { $><$= AjxTemplate.expand("calendar.Appointment#AddPrintEntry", {lbl:ZmMsg.attachments, val:data.attachStr, noEncode:true }) $><$ } $>
-		</table>
-	</div>
-
-	<$ if (data.bodyPart) { $>
-		<div style='padding:10px; font-size:12px'><$= data.bodyPart $></div>
-	<$ } $>
-</template>
-
 <template id="calendar.Appointment#AddEntry">
 	<tr>
 		<td class='LabelColName'><$= AjxMessageFormat.format(ZmMsg.makeLabel, AjxStringUtil.htmlEncode(data.lbl)) $> </td>
 		<td class='LabelColValue' colspan=100><$= data.val $></td>
-	</tr>
-</template>
-
-<template id="calendar.Appointment#AddPrintEntry">
-	<tr>
-		<td valign=top style='text-align:right; font-size:14px'><$= AjxMessageFormat.format(ZmMsg.makeLabel, data.lbl) $> </td>
-		<td width=100% style='font-size:14px'><$= data.noEncode ? data.val : AjxStringUtil.htmlEncode(data.val) $></td>
 	</tr>
 </template>

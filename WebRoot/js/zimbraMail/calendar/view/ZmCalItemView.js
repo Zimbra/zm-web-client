@@ -103,31 +103,6 @@ function() {
 ZmCalItemView.prototype.move = function() {}; // override
 ZmCalItemView.prototype.changeReminder = function() {}; // override
 
-ZmCalItemView.prototype.getPrintHtml =
-function() {
-	var attendees = this._calItem.getAttendeesText(ZmCalBaseItem.PERSON);
-	var organizer = attendees ? this._calItem.getOrganizer() : null;
-
-	var hasHtmlPart = (this._calItem.notesTopPart && this._calItem.notesTopPart.getContentType() == ZmMimeTable.MULTI_ALT);
-	var mode = (hasHtmlPart && appCtxt.get(ZmSetting.VIEW_AS_HTML))
-			? ZmMimeTable.TEXT_HTML : ZmMimeTable.TEXT_PLAIN;
-	var bodyPart = this._calItem.getNotesPart(mode);
-
-	var subs = {
-		subject: this._calItem.getName(),
-		dateStr: this._getTimeString(this._calItem),
-		location: this._calItem.getAttendeesText(ZmCalBaseItem.LOCATION, true),
-		equipment: this._calItem.getAttendeesText(ZmCalBaseItem.EQUIPMENT, true),
-		attendees: attendees,
-		organizer: organizer,
-		recurStr: this._calItem.getRecurBlurb(),
-		attachStr: ZmCalItemView._getAttachString(this._calItem),
-		bodyPart: bodyPart
-	};
-
-	return AjxTemplate.expand("calendar.Appointment#ReadOnlyPrint", subs);
-};
-
 
 // Private / protected methods
 

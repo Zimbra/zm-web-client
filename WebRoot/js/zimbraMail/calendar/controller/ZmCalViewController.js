@@ -938,31 +938,45 @@ function(ev) {
 
 ZmCalViewController.prototype._printListener =
 function(ev) {
-	var date = this._viewMgr
-		? this._viewMgr.getDate()
-		: (new Date());
+	var url;
+	var viewId = this._viewMgr.getCurrentViewName();
 
-	var day = (date.getDate() < 10)
-		? ('0' + date.getDate())
-		: date.getDate();
+	if (viewId == ZmId.VIEW_CAL_APPT ||
+		viewId == ZmId.VIEW_CAL_LIST)
+	{
+		var ids = [];
+		var list = this._viewMgr.getCurrentView().getSelection();
+		for (var i = 0; i < list.length; i++) {
+			ids.push(list[i].id);
+		}
+		url = "/h/printappointments?id=" + ids.join(",");
 
-	var month = date.getMonth() + 1;
-	if (month < 10) {
-		month = '0' + month;
+	} else {
+		var date = this._viewMgr
+			? this._viewMgr.getDate()
+			: (new Date());
+
+		var day = (date.getDate() < 10)
+			? ('0' + date.getDate())
+			: date.getDate();
+
+		var month = date.getMonth() + 1;
+		if (month < 10) {
+			month = '0' + month;
+		}
+
+		var view;
+		switch (viewId) {
+			case ZmId.VIEW_CAL_DAY: 		view = "day"; break;
+			case ZmId.VIEW_CAL_WORK_WEEK:	view = "workWeek"; break;
+			case ZmId.VIEW_CAL_WEEK:		view = "week"; break;
+			default:						view = "month"; break;					// default is month
+		}
+		url = [
+			"/h/printcalendar?view=", view,
+			"&date=", date.getFullYear(), month, day
+		].join("");
 	}
-
-	var view;
-	switch (this._viewMgr.getCurrentViewName()) {
-		case ZmId.VIEW_CAL_DAY: 		view = "day"; break;
-		case ZmId.VIEW_CAL_WORK_WEEK:	view = "workWeek"; break;
-		case ZmId.VIEW_CAL_WEEK:		view = "week"; break;
-		case ZmId.VIEW_CAL_LIST:		view = "list"; break;					// todo
-		default:						view = "month"; break;					// default is month
-	}
-	var url = [
-		"/h/printcalendar?view=", view,
-		"&date=", date.getFullYear(), month, day
-	].join("");
 
 	window.open(appContextPath+url, "_blank");
 };
@@ -1490,6 +1504,11 @@ function(parent, num) {
 		parent.enable(ZmOperation.TAG_MENU, (!isShared && !isSynced && num > 0));
 		parent.enable(ZmOperation.VIEW_APPOINTMENT, !isPrivate);
 	}
+
+	if (currViewName == ZmId.VIEW_CAL_LIST) {
+		parent.enable(ZmOperation.PRINT, num > 0);
+	}
+
 	// disable button for current view
 	var op = ZmCalViewController.VIEW_TO_OP[currViewName];
 	if (op) {
