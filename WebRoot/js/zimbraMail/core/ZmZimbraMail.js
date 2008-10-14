@@ -462,7 +462,6 @@ function(params, result) {
 
 	callback = new AjxCallback(this,
 		function() {
-			this._setupTabGroups();
 			this.focusContentPane();
 		});
 	this.addPostRenderCallback(callback, 3, 100, true);
@@ -470,6 +469,7 @@ function(params, result) {
 	// miscellaneous post-startup housekeeping
 	callback = new AjxCallback(this,
 		function() {
+			this._setupTabGroups();
 			AjxDispatcher.enableLoadFunctions(true);
 			appCtxt.inStartup = false;
 			this._evtMgr.notifyListeners(ZmAppEvent.POST_STARTUP, this._evt);
@@ -1097,8 +1097,12 @@ function() {
 	appChooserTg.addMember(this._components[ZmAppViewMgr.C_APP_CHOOSER]);
 	rootTg.addMember(appChooserTg);
 
-	var overview = appCtxt.getOverviewController().getOverview(appCtxt.getCurrentApp().getOverviewId());
-	rootTg.addMember(overview);
+	var curApp = appCtxt.getCurrentApp();
+	var ovId = curApp && curApp.getOverviewId();
+	var overview = ovId && appCtxt.getOverviewController().getOverview(ovId);
+	if (overview) {
+		rootTg.addMember(overview);
+	}
 	
 	// Add dummy app view tab group. This will get replaced right away when the
 	// app view comes into play
