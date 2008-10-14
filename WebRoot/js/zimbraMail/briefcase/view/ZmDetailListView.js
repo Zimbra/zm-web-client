@@ -166,16 +166,27 @@ function() {
 };
 
 ZmDetailListView.prototype.set =
-function(folderId) {
-	var element = this.getHtmlElement();
-	var items = this._controller.getItemsInFolderFromCache(folderId);
+function(list) {
+    var element = this.getHtmlElement();
+	if(list instanceof ZmList){
+       var list1 = list.getVector();
+       DwtListView.prototype.set.call(this,list1.clone());
+       //this._list = list1; 
+       return; 
+    }
+    /*var items = this._controller.getItemsInFolderFromCache(folderId);
 
 	var list = new AjxVector();
 	for (var i in items) {
 		list.add(items[i]);
 	}
-	DwtListView.prototype.set.call(this,list);		
+	DwtListView.prototype.set.call(this,list);*/		
 };
+
+/*ZmDetailListView.prototype.removeAll =
+function(list) {
+	this._list.removeAll();
+};*/
 
 //for ZimbraDnD to do make even more generic
 ZmDetailListView.prototype.processUploadFiles =

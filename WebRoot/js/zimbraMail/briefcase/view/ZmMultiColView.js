@@ -198,7 +198,7 @@ function(folderId) {
 
 ZmMultiColView.prototype.showFolderContents =
 function(listView,folderId,items) {
-	listView.set(folderId);
+	listView.set(items/*folderId*/);
 	this._sizeChildren();
 	this.scrollToEnd();
 };
