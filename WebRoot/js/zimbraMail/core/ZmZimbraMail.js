@@ -462,14 +462,14 @@ function(params, result) {
 
 	callback = new AjxCallback(this,
 		function() {
+			this._setupTabGroups();
 			this.focusContentPane();
 		});
-	this.addPostRenderCallback(callback, 3, 100, true);
+	this.addPostRenderCallback(callback, 3, 100);
 
 	// miscellaneous post-startup housekeeping
 	callback = new AjxCallback(this,
 		function() {
-			this._setupTabGroups();
 			AjxDispatcher.enableLoadFunctions(true);
 			appCtxt.inStartup = false;
 			this._evtMgr.notifyListeners(ZmAppEvent.POST_STARTUP, this._evt);
