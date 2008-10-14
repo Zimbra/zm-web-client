@@ -145,6 +145,7 @@ ZmSharePropsDialog.prototype._populateUrls =
 function(object){
 
     var restUrl = AjxStringUtil.htmlEncode(this._object.getRestUrl());
+    restUrl = restUrl.replace(/&amp;/g,'%26');
     if(object.type == ZmOrganizer.CALENDAR){
         var htmlUrl = restUrl + ".html";
         this._urlEl.innerHTML = [
@@ -308,7 +309,8 @@ function(shares, result) {
 				}
 
 				var url = share.object.getRestUrl();
-				var username = email;
+                url = url.replace(/&/g,'%26');
+                var username = email;
 				var password = this._passwordInput.getValue();
 
 				var args = [ url, username, password ];
