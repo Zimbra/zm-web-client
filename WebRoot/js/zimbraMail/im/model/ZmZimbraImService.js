@@ -16,7 +16,13 @@
  */
 
 ZmZimbraImService = function() {
-	ZmImService.call(this);
+	ZmImService.call(this, true);
+
+	this._newRosterItemtoastFormatter = new AjxMessageFormat(ZmMsg.imNewRosterItemToast);
+	this._presenceToastFormatter = new AjxMessageFormat(ZmMsg.imStatusToast);
+	this._leftChatFormatter = new AjxMessageFormat(ZmMsg.imLeftChat);
+	this._enteredChatFormatter = new AjxMessageFormat(ZmMsg.imEnteredChat);
+	this._removeRosterItemToastFormatter = new AjxMessageFormat(ZmMsg.imRemoveRosterItemToast);
 }
 
 ZmZimbraImService.prototype = new ZmImService;
@@ -29,6 +35,13 @@ function() {
 	return "ZmZimbraImService";
 };
 
+ZmZimbraImService.prototype.getMyAddress =
+function() {
+    if (this._myAddress == null)
+		this._myAddress = appCtxt.get(ZmSetting.USERNAME);
+    return this._myAddress;
+};
+
 ZmZimbraImService.prototype.getGateways =
 function(callback, params) {
 	var soapDoc = AjxSoapDoc.create("IMGatewayListRequest", "urn:zimbraIM");
@@ -38,7 +51,7 @@ function(callback, params) {
 
 ZmZimbraImService.prototype._handleResponseGetGateways =
 function(callback, response) {
-	var responseJson = this._getResponseJson(response);
+	var responseJson = response.getResponse();
 	var gateways = responseJson.IMGatewayListResponse.service;
 	gateways = gateways || [];
 	gateways.unshift({ type   : "XMPP", domain : "XMPP" });
@@ -57,7 +70,7 @@ function(callback, params) {
 
 ZmZimbraImService.prototype._handleResponseGetRoster =
 function(callback, response) {
-	var responseJson = this._getResponseJson(response);
+	var responseJson = response.getResponse();
 	var roster = responseJson ? responseJson.IMGetRosterResponse : null;
 	if (callback) {
 		callback.run(roster);
@@ -121,23 +134,208 @@ function(chat, params) {
 	return this._send(params, soapDoc);
 };
 
-ZmZimbraImService.prototype._send =
-function(params, soapDoc, callback) {
-	params = params || { };
-	if (!params.hasOwnProperty("asyncMode")) {
-		params.asyncMode = true;
-	}
-	params.soapDoc = soapDoc;
-	params.callback = callback;
-	var response = appCtxt.getAppController().sendRequest(params);
-	if (!params.asyncMode && callback) {
-		return callback.run(response);
-	} else {
-		return null;
+ZmZimbraImService.prototype.handleNotification =
+function(im) {
+	if (im.n) {
+		var notifications = this.getShowNotify();
+		var cl = this._roster.getChatList();
+		for (var curNot=0; curNot < im.n.length; curNot++) {
+			var not = im.n[curNot];
+			if (not.type == "roster") {
+				this._roster.getRosterItemList().removeAllItems();
+				var list = this._roster.getRosterItemList();
+				if (not.n && not.n.length) {
+					var rosterItems = [];
+					for (var rosterNum=0; rosterNum < not.n.length; rosterNum++) {
+						var rosterItem = not.n[rosterNum];
+						if (rosterItem.type == "subscribed" && rosterItem.to.indexOf("@") >= 0) {
+							rosterItems.push(new ZmRosterItem(rosterItem.to, list, rosterItem.name, null, rosterItem.groups));
+						}
+					}
+					if (rosterItems.length) {
+						list.addItems(rosterItems);
+					}
+				}
+				// ignore unsubscribed entries for now (TODO FIXME)
+			} else if (not.type == "subscribe") {
+				appCtxt.getApp(ZmApp.IM).prepareVisuals();
+				var view = ZmChatMultiWindowView.getInstance();
+				// it should always be instantiated by this time, but whatever.
+				if (view) {
+					var item = this._roster.getRosterItem(not.from);
+					ZmImSubscribeAuth.show(view.getActiveWM(), not.from, item);
+				}
+			} else if (not.ask && /^(un)?subscribed$/.test(not.type)) {
+				if (not.ask == "subscribe" && not.to) {
+					var list = this._roster.getRosterItemList();
+					var item = list.getByAddr(not.to);
+					if (!item) {
+						// create him in offline state
+						item = new ZmRosterItem(not.to, list, ( not.name || not.to ), null, not.groups);
+                        list.addItem(item);
+						if (notifications) {
+							this._watingFormatter = this._watingFormatter || new AjxMessageFormat(ZmMsg.imSubscribeAuthRequest_waiting);
+							appCtxt.setStatusMsg(this._watingFormatter.format(not.to));
+						}
+					}
+				} else if (not.ask == "unsubscribe" && not.to) {
+					// should we do anything here?
+					// Do we need to ask buddy's
+					// permission for us to remove
+					// him from our list? :-)
+				}
+			} else if (not.type == "subscribed") {
+				var sub = not;
+				if (sub.to) {
+					var list = this._roster.getRosterItemList();
+					var item = list.getByAddr(sub.to);
+					if (item) {
+						if (sub.groups) item._notifySetGroups(sub.groups); // should optimize
+						if (sub.name && sub.name != item.getName()) item._notifySetName(sub.name);
+						// mod
+					} else if (sub.to.indexOf("@") >= 0) {
+						// create
+						var item = new ZmRosterItem(sub.to, list, sub.name, null, sub.groups);
+						list.addItem(item);
+						if (notifications) {
+							var toast = this._newRosterItemtoastFormatter.format([item.getDisplayName()]);
+							appCtxt.setStatusMsg(toast);
+						}
+					}
+				} else if (sub.from) {
+					// toast, should we user if they want to add user if they aren't in buddy list?
+				}
+			} else if (not.type == "unsubscribed") {
+				var unsub = not;
+				if (unsub.to) {
+					var list = this._roster.getRosterItemList();
+					var item = list.getByAddr(unsub.to);
+					if (item) {
+						var displayName = item.getDisplayName();
+						list.removeItem(item);
+						if (notifications) {
+							appCtxt.setStatusMsg(this._removeRosterItemToastFormatter.format([displayName]));
+						}
+					}
+				}
+			} else if (not.type == "presence") {
+				var p = not;
+				if (p.from == this.getMyAddress()) {
+					if (this._roster.getPresence().setFromJS(p))
+						this._roster.notifyPresence();
+				}
+				var ri = this._roster.getRosterItemList().getByAddr(p.from);
+				if (ri) {
+					var old_pres = ri.getPresence().getShow();
+					if (ri.getPresence().setFromJS(p)) {
+						ri._notifyPresence();
+						var toast = this._presenceToastFormatter.format([ri.getDisplayName(), AjxStringUtil.htmlEncode(ri.getPresence().getShowText())]);
+						var is_status = old_pres == ri.getPresence().getShow();
+						if (notifications && ( (!is_status && appCtxt.get(ZmSetting.IM_PREF_NOTIFY_PRESENCE)) ||
+											   (is_status && appCtxt.get(ZmSetting.IM_PREF_NOTIFY_STATUS)) ) ) {
+							appCtxt.setStatusMsg(toast);
+							var chat = cl.getChatByRosterAddr(p.from);
+							if (chat)
+								chat.addMessage(ZmChatMessage.system(toast));
+						}
+					}
+				}
+			} else if (not.type == "message") {
+				appCtxt.getApp(ZmApp.IM).prepareVisuals();
+				var msg = not;
+				var buddy = this._roster.getRosterItem(msg.from);
+				if (msg.body == null || msg.body.length == 0) {
+					// typing notification
+					if (buddy)
+						buddy._notifyTyping(msg.typing);
+				} else {
+					// clear any previous typing notification, since it looks
+					// like we don't receive this when a message gets in.
+					if (buddy)
+						buddy._notifyTyping(false);
+
+					var chatMessage = new ZmChatMessage(msg, msg.from == this.getMyAddress());
+					var chat = cl.getChatByThread(chatMessage.thread);
+					if (chat == null) {
+						if (!chatMessage.fromMe) {
+							chat = cl.getChatByRosterAddr(chatMessage.from, true);
+						} else {
+							chat = cl.getChatByRosterAddr(chatMessage.to, false);
+						}
+						if (chat) chat.setThread(chatMessage.thread);
+					}
+					if (chat) {
+						if (!chatMessage.fromMe) {
+							if (appCtxt.get(ZmSetting.IM_PREF_FLASH_BROWSER))  {
+								AjxDispatcher.require("Alert");
+								ZmBrowserAlert.getInstance().start(ZmMsg.newInstantMessage);
+							}
+						}
+						chat.addMessage(chatMessage);
+					}
+				}
+			} else if (not.type == "enteredchat") {
+				// console.log("JOIN: %o", not);
+				appCtxt.getApp(ZmApp.IM).prepareVisuals(); // not sure we want this here but whatever
+				var chat = this._roster.getChatList().getChatByThread(not.thread);
+				if (chat) {
+					chat.addMessage(ZmChatMessage.system(this._enteredChatFormatter.format([not.addr])));
+					chat.addRosterItem(this._roster.getRosterItem(not.addr));
+				}
+			} else if (not.type == "leftchat") {
+				// console.log("LEFT: %o", not);
+				appCtxt.getApp(ZmApp.IM).prepareVisuals(); // not sure we want this here but whatever
+				var chat = this._roster.getChatList().getChatByThread(not.thread);
+				if (chat) {
+					chat.addMessage(ZmChatMessage.system(this._leftChatFormatter.format([not.addr])));
+					chat.removeRosterItem(this._roster.getRosterItem(not.addr));
+					// chat.setThread(null); // ?
+				}
+			} else if (not.type == "otherLocation") {
+				var gw = this._roster.getGatewayByType(not.service);
+				gw.setState(not.username, ZmImGateway.STATE.BOOTED_BY_OTHER_LOGIN);
+			} else if (not.type == "gwStatus") {
+				var gw = this._roster.getGatewayByType(not.service);
+				gw.setState(not.name || null, not.state);
+				var message,
+					level = ZmStatusView.LEVEL_INFO;
+				switch (not.state) {
+				case ZmImGateway.STATE.BAD_AUTH:
+					message = ZmMsg.errorNotAuthenticated;
+					level = ZmStatusView.LEVEL_WARNING;
+					break;
+				case ZmImGateway.STATE.ONLINE:
+					this._gatewayOnlineFormat = this._gatewayOnlineFormat || new AjxMessageFormat(ZmMsg.imToastGwOnline);
+					message = this._gatewayOnlineFormat.format(ZmMsg["imGateway_" + not.service]);
+					break;
+				case ZmImGateway.STATE.SHUTDOWN:
+					this._gatewayOfflineFormat = this._gatewayOfflineFormat || new AjxMessageFormat(ZmMsg.imToastGwOffline);
+					message = this._gatewayOfflineFormat.format(ZmMsg["imGateway_" + not.service]);
+					break;
+				}
+				if (message) {
+					appCtxt.setStatusMsg(message, level);
+				}
+			} else if (not.type == "invited") {
+				appCtxt.getApp(ZmApp.IM).prepareVisuals();
+				var view = ZmChatMultiWindowView.getInstance();
+				// it should always be instantiated by this time, but whatever.
+				if (view) {
+					new ZmImInviteNotification(view.getActiveWM(), not).popup();
+				}
+			} else if (not.type == "privacy") {
+				// console.log("Received privacy list: %o", not);
+				this._roster.getPrivacyList().reset(not.list[0].item);
+			}
+		}
 	}
 };
 
-ZmZimbraImService.prototype._getResponseJson =
-function(response) {
-	return response.getResponse ? response.getResponse() : response;
+ZmZimbraImService.prototype._send =
+function(params, soapDoc, callback) {
+	params = params || { };
+	params.asyncMode = true;
+	params.soapDoc = soapDoc;
+	params.callback = callback;
+	appCtxt.getAppController().sendRequest(params);
 };

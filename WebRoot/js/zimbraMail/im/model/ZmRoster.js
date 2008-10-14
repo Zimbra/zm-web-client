@@ -19,13 +19,9 @@ ZmRoster = function(imApp) {
 	ZmModel.call(this, ZmEvent.S_ROSTER);
 
 	ZmRoster._createService();
+	ZmImService.INSTANCE._roster = this;
 
 	this._notificationBuffer = [];
-	this._newRosterItemtoastFormatter = new AjxMessageFormat(ZmMsg.imNewRosterItemToast);
-	this._presenceToastFormatter = new AjxMessageFormat(ZmMsg.imStatusToast);
-	this._leftChatFormatter = new AjxMessageFormat(ZmMsg.imLeftChat);
-	this._enteredChatFormatter = new AjxMessageFormat(ZmMsg.imEnteredChat);
-	this._removeRosterItemToastFormatter = new AjxMessageFormat(ZmMsg.imRemoveRosterItemToast);
 	this._imApp = imApp;
 	this._privacyList = new ZmImPrivacyList(this);
 
@@ -73,7 +69,7 @@ function(callback) {
 ZmRoster._backgroundGatewayCallback =
 function(callback, gateways) {
 	var roster = new ZmRoster(ZmImApp.INSTANCE);
-	roster._handleRequestGateways(gateways);
+	roster._handleRequestGateways(null, gateways);
 	if (callback) {
 		callback.run(roster);
 	}
@@ -92,9 +88,7 @@ function() {
 
 ZmRoster.prototype.getMyAddress =
 function() {
-    if (this._myAddress == null)
-		this._myAddress = appCtxt.get(ZmSetting.USERNAME);
-    return this._myAddress;
+	return ZmImService.INSTANCE.getMyAddress();
 };
 
 ZmRoster.prototype.getRosterItem =
@@ -139,7 +133,7 @@ function() {
 	return this._rosterPresence;
 };
 
-ZmRoster.prototype._notifyPresence =
+ZmRoster.prototype.notifyPresence =
 function() {
 	var fields = {};
 	fields[ZmRoster.F_PRESENCE] = this.getPresence();
@@ -187,9 +181,9 @@ function(roster) {
 		}
                 // </temporary>
 		this.getPresence().setFromJS(roster.presence);
-		this._notifyPresence();
+		this.notifyPresence();
 	}
-	this.__avoidNotifyTimeout = new Date().getTime();
+	ZmImService.INSTANCE.startIgnoreNotify();
 };
 
 /**
@@ -223,36 +217,8 @@ function(show, priority, customStatusMsg, requestParams, batchCommand) {
 		requestParams.asyncMode = true;
 		appCtxt.getAppController().sendRequest(requestParams);
 	}
-	this.__avoidNotifyTimeout = new Date().getTime();
+	ZmImService.INSTANCE.startIgnoreNotify();
 };
-
-// /**
-//  * Pass in an array of SUBSCRIBED items
-//  */
-//
-// FIXME: Remove this?
-//
-// ZmRoster.prototype.handleSubscribedRosterItems =
-// function(subscribed) {
-// 	for (var i=0; i < subscribed.length; i++) {
-// 		var sub = subscribed[i];
-// 		if (sub.to) {
-// 			var list = this.getRosterItemList();
-// 			var item = list.getByAddr(sub.to);
-// 			if (item) {
-// 				if (sub.groups) item._notifySetGroups(sub.groups); // should optimize
-// 				if (sub.name && sub.name != item.getName()) item._notifySetName(sub.name);
-// 				// mod
-// 			} else {
-// 				// create
-// 				var item = new ZmRosterItem(sub.to, list, sub.name, null, sub.groups);
-// 				list.addItem(item);
-// 				var toast = this._newRosterItemtoastFormatter.format([item.getDisplayName()]);
-// 				appCtxt.setStatusMsg(toast);
-// 			}
-// 		}
-// 	}
-// };
 
 ZmRoster.prototype.pushNotification = function(im) {
         if (!this._gateways) {
@@ -262,8 +228,7 @@ ZmRoster.prototype.pushNotification = function(im) {
 };
 
 ZmRoster.prototype.refresh = function() {
-        this._requestGateways();
-        this.reload();
+	this._requestGateways(new AjxCallback(this, this.reload));
 };
 
 /**
@@ -273,202 +238,7 @@ ZmRoster.prototype.refresh = function() {
  */
 ZmRoster.prototype.handleNotification =
 function(im) {
-	if (im.n) {
-		// console.log(im.n);
-		var notifications = !this.__avoidNotifyTimeout ||
-							(new Date().getTime() - this.__avoidNotifyTimeout > ZmRoster.NOTIFICATION_FOO_TIMEOUT);
-		var cl = this.getChatList();
-		for (var curNot=0; curNot < im.n.length; curNot++) {
-			var not = im.n[curNot];
-			if (not.type == "roster") {
-				this.getRosterItemList().removeAllItems();
-				var list = this.getRosterItemList();
-				if (not.n && not.n.length) {
-					var rosterItems = [];
-					for (var rosterNum=0; rosterNum < not.n.length; rosterNum++) {
-						var rosterItem = not.n[rosterNum];
-						if (rosterItem.type == "subscribed" && rosterItem.to.indexOf("@") >= 0) {
-							rosterItems.push(new ZmRosterItem(rosterItem.to, list, rosterItem.name, null, rosterItem.groups));
-						}
-					}
-					if (rosterItems.length) {
-						list.addItems(rosterItems);
-					}
-				}
-				// ignore unsubscribed entries for now (TODO FIXME)
-			} else if (not.type == "subscribe") {
-				appCtxt.getApp(ZmApp.IM).prepareVisuals();
-				var view = ZmChatMultiWindowView.getInstance();
-				// it should always be instantiated by this time, but whatever.
-				if (view) {
-					var item = this.getRosterItem(not.from);
-					ZmImSubscribeAuth.show(view.getActiveWM(), not.from, item);
-				}
-			} else if (not.ask && /^(un)?subscribed$/.test(not.type)) {
-				if (not.ask == "subscribe" && not.to) {
-					var list = this.getRosterItemList();
-					var item = list.getByAddr(not.to);
-					if (!item) {
-						// create him in offline state
-						item = new ZmRosterItem(not.to, list, ( not.name || not.to ), null, not.groups);
-                        list.addItem(item);
-						if (notifications) {
-							this._watingFormatter = this._watingFormatter || new AjxMessageFormat(ZmMsg.imSubscribeAuthRequest_waiting);
-							appCtxt.setStatusMsg(this._watingFormatter.format(not.to));
-						}
-					}
-				} else if (not.ask == "unsubscribe" && not.to) {
-					// should we do anything here?
-					// Do we need to ask buddy's
-					// permission for us to remove
-					// him from our list? :-)
-				}
-			} else if (not.type == "subscribed") {
-				var sub = not;
-				if (sub.to) {
-					var list = this.getRosterItemList();
-					var item = list.getByAddr(sub.to);
-					if (item) {
-						if (sub.groups) item._notifySetGroups(sub.groups); // should optimize
-						if (sub.name && sub.name != item.getName()) item._notifySetName(sub.name);
-						// mod
-					} else if (sub.to.indexOf("@") >= 0) {
-						// create
-						var item = new ZmRosterItem(sub.to, list, sub.name, null, sub.groups);
-						list.addItem(item);
-						if (notifications) {
-							var toast = this._newRosterItemtoastFormatter.format([item.getDisplayName()]);
-							appCtxt.setStatusMsg(toast);
-						}
-					}
-				} else if (sub.from) {
-					// toast, should we user if they want to add user if they aren't in buddy list?
-				}
-			} else if (not.type == "unsubscribed") {
-				var unsub = not;
-				if (unsub.to) {
-					var list = this.getRosterItemList();
-					var item = list.getByAddr(unsub.to);
-					if (item) {
-						var displayName = item.getDisplayName();
-						list.removeItem(item);
-						if (notifications) {
-							appCtxt.setStatusMsg(this._removeRosterItemToastFormatter.format([displayName]));
-						}
-					}
-				}
-			} else if (not.type == "presence") {
-				var p = not;
-				if (p.from == this.getMyAddress()) {
-					if (this.getPresence().setFromJS(p))
-						this._notifyPresence();
-				}
-				var ri = this.getRosterItemList().getByAddr(p.from);
-				if (ri) {
-					var old_pres = ri.getPresence().getShow();
-					if (ri.getPresence().setFromJS(p)) {
-						ri._notifyPresence();
-						var toast = this._presenceToastFormatter.format([ri.getDisplayName(), AjxStringUtil.htmlEncode(ri.getPresence().getShowText())]);
-						var is_status = old_pres == ri.getPresence().getShow();
-						if (notifications && ( (!is_status && appCtxt.get(ZmSetting.IM_PREF_NOTIFY_PRESENCE)) ||
-											   (is_status && appCtxt.get(ZmSetting.IM_PREF_NOTIFY_STATUS)) ) ) {
-							appCtxt.setStatusMsg(toast);
-							var chat = cl.getChatByRosterAddr(p.from);
-							if (chat)
-								chat.addMessage(ZmChatMessage.system(toast));
-						}
-					}
-				}
-			} else if (not.type == "message") {
-				appCtxt.getApp(ZmApp.IM).prepareVisuals();
-				var msg = not;
-				var buddy = this.getRosterItem(msg.from);
-				if (msg.body == null || msg.body.length == 0) {
-					// typing notification
-					if (buddy)
-						buddy._notifyTyping(msg.typing);
-				} else {
-					// clear any previous typing notification, since it looks
-					// like we don't receive this when a message gets in.
-					if (buddy)
-						buddy._notifyTyping(false);
-
-					var chatMessage = new ZmChatMessage(msg, msg.from == this.getMyAddress());
-					var chat = cl.getChatByThread(chatMessage.thread);
-					if (chat == null) {
-						if (!chatMessage.fromMe) {
-							chat = cl.getChatByRosterAddr(chatMessage.from, true);
-						} else {
-							chat = cl.getChatByRosterAddr(chatMessage.to, false);
-						}
-						if (chat) chat.setThread(chatMessage.thread);
-					}
-					if (chat) {
-						if (!chatMessage.fromMe) {
-							if (appCtxt.get(ZmSetting.IM_PREF_FLASH_BROWSER))  {
-								AjxDispatcher.require("Alert");
-								ZmBrowserAlert.getInstance().start(ZmMsg.newInstantMessage);
-							}
-						}
-						chat.addMessage(chatMessage);
-					}
-				}
-			} else if (not.type == "enteredchat") {
-				// console.log("JOIN: %o", not);
-				appCtxt.getApp(ZmApp.IM).prepareVisuals(); // not sure we want this here but whatever
-				var chat = this.getChatList().getChatByThread(not.thread);
-				if (chat) {
-					chat.addMessage(ZmChatMessage.system(this._enteredChatFormatter.format([not.addr])));
-					chat.addRosterItem(this.getRosterItem(not.addr));
-				}
-			} else if (not.type == "leftchat") {
-				// console.log("LEFT: %o", not);
-				appCtxt.getApp(ZmApp.IM).prepareVisuals(); // not sure we want this here but whatever
-				var chat = this.getChatList().getChatByThread(not.thread);
-				if (chat) {
-					chat.addMessage(ZmChatMessage.system(this._leftChatFormatter.format([not.addr])));
-					chat.removeRosterItem(this.getRosterItem(not.addr));
-					// chat.setThread(null); // ?
-				}
-			} else if (not.type == "otherLocation") {
-				var gw = this.getGatewayByType(not.service);
-				gw.setState(not.username, ZmImGateway.STATE.BOOTED_BY_OTHER_LOGIN);
-			} else if (not.type == "gwStatus") {
-				var gw = this.getGatewayByType(not.service);
-				gw.setState(not.name || null, not.state);
-				var message,
-					level = ZmStatusView.LEVEL_INFO;
-				switch (not.state) {
-				case ZmImGateway.STATE.BAD_AUTH:
-					message = ZmMsg.errorNotAuthenticated;
-					level = ZmStatusView.LEVEL_WARNING;
-					break;
-				case ZmImGateway.STATE.ONLINE:
-					this._gatewayOnlineFormat = this._gatewayOnlineFormat || new AjxMessageFormat(ZmMsg.imToastGwOnline);
-					message = this._gatewayOnlineFormat.format(ZmMsg["imGateway_" + not.service]);
-					break;
-				case ZmImGateway.STATE.SHUTDOWN:
-					this._gatewayOfflineFormat = this._gatewayOfflineFormat || new AjxMessageFormat(ZmMsg.imToastGwOffline);
-					message = this._gatewayOfflineFormat.format(ZmMsg["imGateway_" + not.service]);
-					break;
-				}
-				if (message) {
-					appCtxt.setStatusMsg(message, level);
-				}
-			} else if (not.type == "invited") {
-				appCtxt.getApp(ZmApp.IM).prepareVisuals();
-				var view = ZmChatMultiWindowView.getInstance();
-				// it should always be instantiated by this time, but whatever.
-				if (view) {
-					new ZmImInviteNotification(view.getActiveWM(), not).popup();
-				}
-			} else if (not.type == "privacy") {
-				// console.log("Received privacy list: %o", not);
-				this._privacyList.reset(not.list[0].item);
-			}
-		}
-	}
-
+	ZmImService.INSTANCE.handleNotification(im);
 };
 
 ZmRoster.prototype.joinChatRequest = function(thread, addr) {
@@ -522,7 +292,7 @@ ZmRoster.prototype.reconnectGateway = function(gw) {
 	method.setAttribute("op", "reconnect");
 	method.setAttribute("service", gw.type);
 	appCtxt.getAppController().sendRequest({ soapDoc: sd, asyncMode: true });
-	this.__avoidNotifyTimeout = new Date().getTime();
+	ZmImService.INSTANCE.startIgnoreNotify();
 };
 
 ZmRoster.prototype.unregisterGateway = function(service, batchCmd) {
@@ -538,7 +308,7 @@ ZmRoster.prototype.unregisterGateway = function(service, batchCmd) {
 			asyncMode: true
 		});
 	}
-	this.__avoidNotifyTimeout = new Date().getTime();
+	ZmImService.INSTANCE.startIgnoreNotify();
 };
 
 ZmRoster.prototype.registerGateway = function(service, screenName, password, batchCmd) {
@@ -556,20 +326,19 @@ ZmRoster.prototype.registerGateway = function(service, screenName, password, bat
 			asyncMode: true
 		});
 	}
-	this.__avoidNotifyTimeout = new Date().getTime();
+	ZmImService.INSTANCE.startIgnoreNotify();
+	
 	// since it's not returned by a gwStatus notification, let's
 	// set a nick here so the icon becomes "online" if a
 	// corresponding gwStatus notification gets in.
 	this.getGatewayByType(service).nick = screenName;
 };
 
-ZmRoster.prototype._requestGateways = function() {
-	var args = { asyncMode: false };
-	var gateways = ZmImService.INSTANCE.getGateways(null, args);
-	this._handleRequestGateways(gateways);
+ZmRoster.prototype._requestGateways = function(callback) {
+	ZmImService.INSTANCE.getGateways(new AjxCallback(this, this._handleRequestGateways, [callback]));
 };
 
-ZmRoster.prototype._handleRequestGateways = function(gateways) {
+ZmRoster.prototype._handleRequestGateways = function(callback, gateways) {
 	var byService = {};
 	var byDomain = {};
 	for (var i = 0; i < gateways.length; ++i) {
@@ -586,6 +355,9 @@ ZmRoster.prototype._handleRequestGateways = function(gateways) {
 	this._notificationBuffer = [];
 
 	this._evtMgr.notifyListeners(ZmRoster.GATEWAY_EVENT, { roster: this });
+	if (callback) {
+		callback.run();
+	}
 };
 
 ZmRoster.prototype.getGatewayByType = function(type) {

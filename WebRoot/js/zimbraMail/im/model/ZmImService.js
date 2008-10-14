@@ -16,8 +16,16 @@
  */
 
 ZmImService = function() {
+	if (arguments.length == 0) { return; }
+
 	ZmImService.INSTANCE = this;
+	this._roster = null; // Is initialized when the roster is created.
 }
+
+ZmImService.prototype.getMyAddress =
+function() {
+	alert('Not implemented');
+};
 
 ZmImService.prototype.getGateways =
 function(callback, params) {
@@ -48,4 +56,22 @@ ZmImService.prototype.closeChat =
 function(chat, params) {
 	alert('Not implemented');
 };
+
+ZmImService.prototype.handleNotification =
+function(im) {
+	alert('Not implemented');
+};
+
+ZmImService.prototype.startIgnoreNotify =
+function() {
+	this.__avoidNotifyTimeout = new Date().getTime();
+
+};
+
+ZmImService.prototype.getShowNotify =
+function() {
+	return !this.__avoidNotifyTimeout ||
+			(new Date().getTime() - this.__avoidNotifyTimeout > ZmRoster.NOTIFICATION_FOO_TIMEOUT);
+};
+
 
