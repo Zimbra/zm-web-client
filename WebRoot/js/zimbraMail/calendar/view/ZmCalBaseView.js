@@ -660,67 +660,6 @@ function() {
 	return this._title;
 };
 
-//
-// Print methods
-//
-
-/**
- * Called to generate line summaries for each appointment in the
- * view's range. 
- * Do not use this method if you want full details about a single appointment.
- */
-ZmCalBaseView.prototype.getPrintHtml = 
-function() {
-	var html = new Array();
-	var idx = 0;
-
-	// set up the mini calendar
-	var fdow = this.firstDayOfWeek(); 
-	var miniCal = new DwtCalendar({parent:this, firstDayOfWeek:fdow, hidePrevNextMo:true, readOnly:true});
-	miniCal.setVisible(false);
-	// set the working week as per user pref
-	var workingWeek = []; 
-	for (var i=0; i < 7; i++) { 
-		var d = (i+fdow)%7;
-		workingWeek[i] = (d > 0 && d < 6); 
-	} 
-	miniCal.setWorkingWeek(workingWeek); 
-
-	// set the date to current month
-	var startDate = this._getStartDate();
-	miniCal.setDate(startDate, true);
-
-	html[idx++] = "<div style='width:100%'>";
-	html[idx++] = "<table width=100% cellpadding=3 cellspacing=3 bgcolor='#EEEEEE' style='border: 2px solid black; margin-bottom: 2px'><tr>";
-	html[idx++] = "<td valign=top width=100% style='font-size:22px; font-weight:bold; white-space:nowrap'>";
-	html[idx++] = this._getDateHdrForPrintView();
-	html[idx++] = "</td>";
-	html[idx++] = "<td><div style='width: 140px;'>";
-	html[idx++] = miniCal.getHtmlElement().innerHTML;
-	html[idx++] = "</div></td>";
-	// spacer
-	html[idx++] = "<td width=25>&nbsp;</td>";
-	// set the date to the following month
-	startDate.setMonth(startDate.getMonth() + 1);
-	miniCal.setDate(startDate, true);
-	html[idx++] = "<td><div style='width: 140px'>";
-	html[idx++] = miniCal.getHtmlElement().innerHTML;
-	html[idx++] = "</div></td>";
-	html[idx++] = "</tr></table>";
-	html[idx++] = "</div>";
-	
-	// cleanup
-	this.getHtmlElement().removeChild(miniCal.getHtmlElement());
-	
-	return html.join("");
-};
-
-// override
-ZmCalBaseView.prototype._getDateHdrForPrintView = 
-function() {
-	return "";
-};
-
 ZmCalBaseView.prototype._getStartDate =
 function() {
 	var timeRange = this.getTimeRange();
@@ -744,9 +683,7 @@ function(ev) {
 	}
 };
 
-/**
-* override
-*/
+// override
 ZmCalBaseView.prototype._layout =
 function() {};
 

@@ -938,27 +938,39 @@ function(ev) {
 
 ZmCalViewController.prototype._printListener =
 function(ev) {
-    //appCtxt.getPrintView().render(this._viewMgr);
-    var date = this._viewMgr ? this._viewMgr.getDate() : new Date();
-    var _date = (date.getDate() < 10) ? '0'+date.getDate() : date.getDate();
-    var _month = date.getMonth()+1; _month = (_month < 10 ) ? '0'+_month : _month;
-    var _year = date.getFullYear();
+	var date = this._viewMgr
+		? this._viewMgr.getDate()
+		: (new Date());
 
-        switch (this._viewMgr.getCurrentViewName()) {
-			case ZmId.VIEW_CAL_DAY: 		view = "day" ; break;
-			case ZmId.VIEW_CAL_WORK_WEEK:	view = "workWeek"; break;
-			case ZmId.VIEW_CAL_WEEK:		view = "week"; break;
-			case ZmId.VIEW_CAL_MONTH:		view = "month"; break;
-		}
-    var win = window.open("/h/printcalendar?view="+view+"&date="+_year+_month+_date, "_blank");
+	var day = (date.getDate() < 10)
+		? ('0' + date.getDate())
+		: date.getDate();
+
+	var month = date.getMonth() + 1;
+	if (month < 10) {
+		month = '0' + month;
+	}
+
+	var view;
+	switch (this._viewMgr.getCurrentViewName()) {
+		case ZmId.VIEW_CAL_DAY: 		view = "day"; break;
+		case ZmId.VIEW_CAL_WORK_WEEK:	view = "workWeek"; break;
+		case ZmId.VIEW_CAL_WEEK:		view = "week"; break;
+		case ZmId.VIEW_CAL_LIST:		view = "list"; break;					// todo
+		default:						view = "month"; break;					// default is month
+	}
+	var url = [
+		"/h/printcalendar?view=", view,
+		"&date=", date.getFullYear(), month, day
+	].join("");
+
+	window.open(appContextPath+url, "_blank");
 };
 
 ZmCalViewController.prototype._deleteListener =
 function(ev) {
-	var op;
-	if (ev.item instanceof DwtMenuItem) {
-		op = ev.item.parent.getData(ZmOperation.KEY_ID);
-	}
+	var op = (ev.item instanceof DwtMenuItem)
+		? ev.item.parent.getData(ZmOperation.KEY_ID) : null;
 	this._doDelete(this._listView[this._currentView].getSelection(), null, null, op);
 };
 
