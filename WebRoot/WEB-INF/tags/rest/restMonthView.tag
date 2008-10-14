@@ -31,6 +31,7 @@
                                         var="appts"
                                         start="${currentDay.timeInMillis}"
                                         end="${zm:addDay(currentDay, 42).timeInMillis}"
+                                        folderid="${requestScope.zimbra_target_item_id}"
                                         varexception="gasException"/>
         </c:when>
         <c:otherwise>
