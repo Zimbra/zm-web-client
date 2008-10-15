@@ -11,7 +11,7 @@
     <c:set var="bt" value="${param.bt}"/>
     <c:url var="caction" value='${context_url}?${fn:replace(param.bt,"|","&")}'/>
 </c:if>
-<c:if test="${param.bt == null}">
+<c:if test="${param.bt == null && not empty header['referer']}">
     <c:set var="caction" value='${header["referer"]}'/>
     <c:set var="bt" value="${fn:replace(fn:replace(fn:substringAfter(header['referer'],'?'),'appmsg=messageSent',''),'&','|')}"/>
 </c:if>

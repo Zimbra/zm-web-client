@@ -7,12 +7,12 @@
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'mainx'}"/>
-<c:set var="caction" value="${context_url}"/>
+<c:set var="caction" value="${context_url}?st=cal"/>
 <c:if test="${param.bt != null}">
     <c:set var="bt" value="${param.bt}"/>
     <c:url var="caction" value='${context_url}?${fn:replace(param.bt,"|","&")}'/>
 </c:if>
-<c:if test="${param.bt == null}">
+<c:if test="${param.bt == null && not empty header['referer']}">
     <c:set var="caction" value='${header["referer"]}'/>
     <c:set var="bt" value="${fn:replace(fn:replace(fn:substringAfter(header['referer'],'?'),'appmsg=actionApptSaved',''),'&','|')}"/>
 </c:if>
