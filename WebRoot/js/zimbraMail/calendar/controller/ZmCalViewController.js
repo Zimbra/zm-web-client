@@ -947,7 +947,7 @@ function(ev) {
 		var ids = [];
 		var list = this._viewMgr.getCurrentView().getSelection();
 		for (var i = 0; i < list.length; i++) {
-			ids.push(list[i].id);
+			ids.push(list[i].invId);
 		}
 		url = "/h/printappointments?id=" + ids.join(",");
 
