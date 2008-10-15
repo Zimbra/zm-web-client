@@ -296,8 +296,8 @@ function(result) {
 	appCtxt.getDataSourceCollection(this).initialize(obj.dataSources);
 	appCtxt.getSignatureCollection(this).initialize(obj.signatures);
 
-	// data sources are disabled for Zimbra accounts
-	this.isZimbraAccount = !(appCtxt.getDataSourceCollection(this).getItems().length > 0);
+	// HACK: data sources are disabled for Zimbra accounts so check if we got any
+	this.isZimbraAccount = (!obj.dataSources.pop3 && !obj.dataSources.imap);
 };
 
 ZmZimbraAccount.prototype._handleLoadFolders =
