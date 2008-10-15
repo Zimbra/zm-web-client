@@ -21,7 +21,7 @@ ZmCalViewMgr = function(parent, controller, dropTgt) {
 	this.addControlListener(new AjxListener(this, this._controlListener));
 
 	this._controller = controller;
-	this._dropTgt = dropTgt;
+	this._dropTgt = dropTgt;	
 
 	// View hash. Holds the various views e.g. day, month, week, etc...
 	this._views = {};
@@ -31,7 +31,6 @@ ZmCalViewMgr = function(parent, controller, dropTgt) {
 	this._viewFactory[ZmId.VIEW_CAL_WORK_WEEK]	= ZmCalWorkWeekView;
 	this._viewFactory[ZmId.VIEW_CAL_WEEK]		= ZmCalWeekView;
 	this._viewFactory[ZmId.VIEW_CAL_MONTH]		= ZmCalMonthView;
-	this._viewFactory[ZmId.VIEW_CAL_LIST]		= ZmCalListView;
 	this._viewFactory[ZmId.VIEW_CAL_SCHEDULE]	= ZmCalScheduleView;
 	this._viewFactory[ZmId.VIEW_CAL_APPT]		= ZmApptView;
 };
@@ -44,12 +43,12 @@ ZmCalViewMgr._SEP = 5;
 ZmCalViewMgr.prototype.toString = 
 function() {
 	return "ZmCalViewMgr";
-};
+}
 
 ZmCalViewMgr.prototype.getController =
 function() {
 	return this._controller;
-};
+}
 
 // sets need refresh on all views
 ZmCalViewMgr.prototype.setNeedsRefresh = 
@@ -70,27 +69,27 @@ function(viewId) {
 ZmCalViewMgr.prototype.getCurrentView =
 function() {
 	return this._views[this._currentViewName];
-};
+}
 
 ZmCalViewMgr.prototype.getCurrentViewName =
 function() {
 	return this._currentViewName;
-};
+}
 
 ZmCalViewMgr.prototype.getView =
 function(viewName) {
 	return this._views[viewName];
-};
+}
 
 ZmCalViewMgr.prototype.getTitle =
 function() {
 	return this.getCurrentView().getTitle();
-};
+}
 
 ZmCalViewMgr.prototype.getDate =
 function() {
 	return this._date;
-};
+}
 
 ZmCalViewMgr.prototype.setDate =
 function(date, duration, roll) {
@@ -100,50 +99,50 @@ function(date, duration, roll) {
 		var view = this._views[this._currentViewName];
 		view.setDate(date, duration, roll);
 	}
-};
+}
 
 ZmCalViewMgr.prototype.createView =
 function(viewName) {
 	var view = new this._viewFactory[viewName](this, DwtControl.ABSOLUTE_STYLE, this._controller, this._dropTgt);
-
 	if (viewName != ZmId.VIEW_CAL_APPT) {
-		view.addTimeSelectionListener(new AjxListener(this, this._viewTimeSelectionListener));
+		view.setDragSource(this._dragSrc);
+		view.addTimeSelectionListener(new AjxListener(this, this._viewTimeSelectionListener));	
 		view.addDateRangeListener(new AjxListener(this, this._viewDateRangeListener));
-		view.addViewActionListener(new AjxListener(this, this._viewActionListener));
+		view.addViewActionListener(new AjxListener(this, this._viewActionListener));	
 	}
 	this._views[viewName] = view;
 	return view;
-};
+}
 
 ZmCalViewMgr.prototype.addViewActionListener = 
 function(listener) {
 	this.addListener(ZmCalBaseView.VIEW_ACTION, listener);
-};
+}
 
 ZmCalViewMgr.prototype.removeViewActionListener = 
 function(listener) {
 	this.removeListener(ZmCalBaseView.VIEW_ACTION, listener);
-};
+}
 
 ZmCalViewMgr.prototype.addTimeSelectionListener = 
 function(listener) {
 	this.addListener(ZmCalBaseView.TIME_SELECTION, listener);
-};
+}
 
 ZmCalViewMgr.prototype.removeTimeSelectionListener = 
 function(listener) {
 	this.removeListener(ZmCalBaseView.TIME_SELECTION, listener);
-};
+}
 
 ZmCalViewMgr.prototype.addDateRangeListener = 
 function(listener) {
 	this.addListener(DwtEvent.DATE_RANGE, listener);
-};
+}
 
 ZmCalViewMgr.prototype.removeDateRangeListener = 
 function(listener) {
-	this.removeListener(DwtEvent.DATE_RANGE, listener);
-};
+	this.removeListener(DwtEvent.DATE_RANGE, listener);	
+}
 
 ZmCalViewMgr.prototype.setView =
 function(viewName) {
@@ -162,13 +161,20 @@ function(viewName) {
 		}
 		this._layout();
 	}
+}
+
+ZmCalViewMgr.getPrintHtml =
+function(mgr) {
+	return mgr.getCurrentView().getPrintHtml();
 };
 
 ZmCalViewMgr.prototype._layout =
 function() {
 	var mySz = this.getSize();
-	if (mySz.x == 0 || mySz.y == 0) { return; }
-
+//DBG.println("_layout");
+//DBG.dumpObj(mySz);
+	if (mySz.x == 0 || mySz.y == 0)
+		return;
 	var view = this._views[this._currentViewName];
 	var width = mySz.x - ZmCalViewMgr._SEP;
 	var height = mySz.y;
@@ -178,32 +184,34 @@ function() {
 	} else {
 		view.setBounds(0, 0, width, height);
 	}
-};
+}
 
 ZmCalViewMgr.prototype._controlListener =
 function(ev) {
+//DBG.println("ZmCalViewMgr._controlListener!!! this._oldHeight="+this._oldHeight+" this._oldWidth="+this._oldWidth);
+//DBG.dumpObj(ev);
 	if (ev.oldHeight != ev.newHeight ||
 		ev.oldWidth != ev.newWidth)
 	{
 		this._layout();
-	}
-};
+	}	
+}
 
 ZmCalViewMgr.prototype._viewTimeSelectionListener =
 function(ev) {
 	this.notifyListeners(ZmCalBaseView.TIME_SELECTION, ev);
-};
+}
 
 
 ZmCalViewMgr.prototype._viewActionListener =
 function(ev) {
 	this.notifyListeners(ZmCalBaseView.VIEW_ACTION, ev);
-};
+}
 
 ZmCalViewMgr.prototype._viewSelectionListener =
 function(ev) {
 	//this.notifyListeners(ZmCalBaseView.TIME_SELECTION, ev);
-};
+}
 
 ZmCalViewMgr.prototype._viewDateRangeListener =
 function(ev) {
@@ -211,4 +219,9 @@ function(ev) {
 	if (this.isListenerRegistered(DwtEvent.DATE_RANGE)) {
 		this.notifyListeners(DwtEvent.DATE_RANGE, ev);
 	}
+}
+
+ZmCalViewMgr.prototype.getPrintHtml =
+function(preferHtml, callback) {
+	return ZmCalViewMgr.getPrintHtml(this);
 };
