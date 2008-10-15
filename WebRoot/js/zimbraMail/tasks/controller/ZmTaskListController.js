@@ -373,7 +373,7 @@ function(ev) {
 	var items = listView.getSelection();
 	var taskIds = [];
 	for (var i = 0; i < items.length; i++) {
-		taskIds.push(items[i].id);
+		taskIds.push(items[i].invId);
 	}
 
 	var url = ("/h/printtasks?id=" + taskIds.join(","));
