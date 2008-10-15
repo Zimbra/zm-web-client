@@ -103,16 +103,11 @@ function() {
 };
 
 ZmColListView.prototype.set =
-function(list) {                           //We set list now, not folder id
+function(folderId) {
+	this._folderId = folderId;
 	var element = this.getHtmlElement();
-	if(list instanceof ZmList){
-       var list1 = list.getVector();
-       DwtListView.prototype.set.call(this,list1.clone());
-       //this._list = list1;
-       return;
-    }
 	
-	/*var items = this._controller.getItemsInFolderFromCache(folderId);
+	var items = this._controller.getItemsInFolderFromCache(folderId);
 
 	var list = new AjxVector();
 	for(var i in items){
@@ -127,7 +122,6 @@ function(list) {                           //We set list now, not folder id
 		this._controller._object = folderId;
 	}
 	//this.parent.updateColumn(this,folderId);
-	*/
 };
 
 ZmColListView.prototype._itemClicked =

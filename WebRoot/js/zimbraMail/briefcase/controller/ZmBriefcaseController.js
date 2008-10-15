@@ -240,9 +240,9 @@ function(view) {
 ZmBriefcaseController.prototype._setViewContents =
 function(view) {
 	if(view == ZmId.VIEW_BRIEFCASE_COLUMN){
-		this._parentView[view].set(this._list);           //Set the list
+		this._parentView[view].set(this._object);
 	}else{
-		this._listView[view].set(this._list);
+		this._listView[view].set(this._object);
 	}
 	// Select the appropriate notebook in the tree view.
 	if (this._object) {
@@ -313,30 +313,27 @@ function(folderId, force, fromSearch) {
 ZmBriefcaseController.prototype.showFolderContents =
 function(items) {
 
-    //populate list
-    if(items){
-          this._list = items;
-        }else{
-            this._list = new ZmList(ZmItem.BRIEFCASE);
-
-            if (this._object) {
-                var item = new ZmBriefcaseItem();
-                item.id = this._object;
-                this._list.add(item);
-            }
-    }
-
-    // switch view
+	// switch view
 	var view = this._currentView;
 	if (!view) {
 		view = this._defaultView();
 		this._forceSwitch = true;
 	}
+	this.switchView(view, this._forceSwitch);
 
-    this.switchView(view, this._forceSwitch);
+	// REVISIT: Need to do proper list management! For now we fake
+	//          a list of a single item so that operations like
+	//          tagging and delete work.
+	this._list = new ZmList(ZmItem.BRIEFCASE);
+
+	if (this._object) {
+		var item = new ZmBriefcaseItem();
+		item.id = this._object;
+		this._list.add(item);
+	}
 
 	if(!this._forceSwitch){
-	    this._setViewContents(this._currentView);
+	this._setViewContents(this._currentView);
 	}
 
 };
@@ -415,7 +412,7 @@ function(folderId,callback) {
 
 ZmBriefcaseController.prototype.handleSearchResponse =
 function (folderId,response,callback) {
-	var items = null;    //it's zmlist now not an array
+	var items = [];
 	if (response && (response.SearchResponse || response._data.SearchResponse)) {
 		var searchResponse = response.SearchResponse || response._data.SearchResponse;
 		var docs = searchResponse.doc || [];
@@ -428,7 +425,7 @@ function (folderId,response,callback) {
 
 ZmBriefcaseController.prototype.processDocsResponse =
 function(docs,folderId) {
-	var items = new ZmList(ZmItem.MIXED,this._currentSearch);
+	var items = [];
 	for (var i = 0; i < docs.length; i++) {
 		var doc = docs[i];
 		var item = this.getItemById(doc.id);
@@ -437,13 +434,11 @@ function(docs,folderId) {
 			item.set(doc);
 			item.folderId = folderId;
 			//item.remoteFolderId = remoteFolderId; // REVISIT
-			items.add(item);
-            //items.push(item);    //!TODO may be we need to remove associated code too
+			items.push(item);
 		}
 		else {
 			item.set(doc);
-			items.add(item);
-            //items.push(item);
+			items.push(item);
 		}
 		this.putItem(item);        
     }
@@ -465,8 +460,7 @@ function(docs,folderId) {
 			item.folderId = folderId;
 			item.isFolder = true;
 			this.putItem(item);
-			items.add(item);
-            //items.push(item);
+			items.push(item);
 		}
 	}
 
@@ -533,12 +527,12 @@ function(itemId) {
 ZmBriefcaseController.prototype.getItemsInFolder =
 function(folderId,callback) {
 	folderId = folderId || ZmOrganizer.ID_BRIEFCASE;
-	/*if (!this._foldersMap[folderId]) {
-		this._foldersMap[folderId] = {};*/
+	if (!this._foldersMap[folderId]) {
+		this._foldersMap[folderId] = {};
 		this.searchFolder(folderId,callback);
-	/*} else if(callback) {
-		callback.run(this.getItemsInFolderFromCache(folderId));
-	}*/
+	} else if(callback) {
+		callback.run(this._foldersMap[folderId]);
+	}
 };
 
 ZmBriefcaseController.prototype._dragListener =

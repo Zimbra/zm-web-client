@@ -42,16 +42,14 @@ ZmTreeView = function(params) {
 
 	var className = params.className || "OverviewTree";
 	var treeStyle = params.treeStyle || DwtTree.SINGLE_STYLE;
-	DwtTree.call(this, {parent:params.parent, parentElement: params.parentElement, style:treeStyle, 
-						className:className, posStyle:params.posStyle, id:params.id});
+	DwtTree.call(this, {parent:params.parent, style:treeStyle, className:className,
+						posStyle:params.posStyle, id:params.id});
 
 	this._headerClass = params.headerClass ? params.headerClass : "overviewHeader";
 	this.overviewId = params.overviewId;
 	this.type = params.type;
 	this.allowedTypes = params.allowedTypes;
 	this.allowedSubTypes = params.allowedSubTypes;
-
-	this._overview = appCtxt.getOverviewController().getOverview(this.overviewId);
 	
 	this._dragSrc = params.dragSrc;
 	this._dropTgt = params.dropTgt;
@@ -132,13 +130,8 @@ function(params) {
 	// create header item
 	var root = this._dataTree.root;
 	var treeItemId = ZmId.getTreeItemId(this.overviewId, null, this.type);
-	var ti = this._headerItem = new DwtHeaderTreeItem({
-		parent:this,
-		className:this._headerClass,
-		id:treeItemId,
-		button: params.newButton
-	});
-//	ti.enableSelection(false); // by default, disallow selection
+	var ti = this._headerItem = new DwtTreeItem({parent:this, className:this._headerClass, id:treeItemId});
+	ti.enableSelection(false); // by default, disallow selection
 	ti._isHeader = true;
 	var name = ZmMsg[ZmOrganizer.LABEL[this.type]];
 	if (name) {
@@ -195,14 +188,13 @@ function() {
  * Selects the tree item for the given organizer.
  *
  * @param organizer		[ZmOrganizer]	the organizer to select, or its ID
- * @param skipNotify	[boolean]*		whether to skip notifications
- * @param noFocus		[boolean]*		if true, select item but don't set focus to it
+ * @param skipNotify		[boolean]*		whether to skip notifications
  */
 ZmTreeView.prototype.setSelected =
-function(organizer, skipNotify, noFocus) {
+function(organizer, skipNotify) {
 	var id = ZmOrganizer.getSystemId((organizer instanceof ZmOrganizer) ? organizer.id : organizer);
 	if (!id || !this._treeItemHash[id]) { return; }
-	this.setSelection(this._treeItemHash[id], skipNotify, false, noFocus);
+	this.setSelection(this._treeItemHash[id], skipNotify);
 };
 
 /**
@@ -272,6 +264,11 @@ function(params) {
 				proxy.organizer = child;
 				this._render(proxy);
 				continue; 
+			}
+			// if this is a tree view of saved searches, make sure to only show saved searches
+			// that are for one of the given types
+			if ((child.type == ZmOrganizer.SEARCH) && params.searchTypes && !child._typeMatch(params.searchTypes)) {
+				continue;
 			}
 			if (this._allowedTypes && !this._allowedTypes[child.type]) {
 				if (params.omitParents) continue;
@@ -483,10 +480,4 @@ function(params) {
 				params.len = 0;
 			}
 		}), 100);
-};
-
-ZmTreeView.prototype._getNextTreeItem =
-function(next) {
-	var nextItem = DwtTree.prototype._getNextTreeItem.apply(this, arguments);
-	return nextItem || this._overview._getNextTreeItem(next, this);
 };
