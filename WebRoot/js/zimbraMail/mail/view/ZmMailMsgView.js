@@ -1154,7 +1154,15 @@ function(msg, container, callback) {
 				if (bp.ct == ZmMimeTable.TEXT_PLAIN) {
 					html.push("<pre>", AjxStringUtil.htmlEncode(bp.content, true), "</pre>");
 				} else {
-					html.push(bp.content);
+					if (appCtxt.get(ZmSetting.VIEW_AS_HTML)) {
+						html.push(bp.content);
+					} else {
+						// bug fix #31840 - convert HTML to text
+						var div = document.createElement("div");
+						div.innerHTML = bp.content;
+						var convert = AjxStringUtil.convertHtml2Text(div);
+						html.push("<pre>", AjxStringUtil.htmlEncode(convert), "</pre>");
+					}
 				}
 			}
 		}
