@@ -71,7 +71,7 @@
                                                 <table cellspacing="0" width="100%">
                                                     <tr class='zo_m_list_<c:if test="${mhit.isUnread}">un</c:if>read'>
                                                         <td width="95%">
-                                                            <c:set var="sender" value="${mhit.displaySender}"/>
+                                                            <c:set var="sender" value="${mhit.displayAddresses}"/>    <%--!TODO displaySender did work for some reason, need to foind out--%>
                                                             <c:set var="_f"
                                                                    value="${empty sender ? unknownSender : sender}"/>
                                                             <c:if test="${fn:length(_f) > 25}"><c:set var="_f"
