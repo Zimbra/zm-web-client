@@ -26,6 +26,7 @@ ZmImOverview = function(parent, params) {
 	delete params.parentElement;
 	this._options = params;
 	this._sortBy = appCtxt.get("IM_PREF_BUDDY_SORT");
+	this._offline = false;
 
 	this._actionMenuOps = {
 
@@ -73,7 +74,7 @@ ZmImOverview = function(parent, params) {
 	this._im_dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
 	this._im_dragSrc.addDragListener(new AjxListener(this, this._dragListener));
 
-	this.__filters = [];
+	this.__filters = [ZmImOverview.FILTER_WHEN_OFFLINE];
 	this.__filterOffline = appCtxt.get(ZmSetting.IM_PREF_HIDE_OFFLINE);
 	if (this.__filterOffline) {
 		this.__filters.push(ZmImOverview.FILTER_OFFLINE_BUDDIES);
@@ -418,7 +419,7 @@ ZmImOverview.prototype._init = function() {
 
 	if (!this._options.noAssistant) {
 		// Zimbra Assistant buddy
-		var roster = this._roster = AjxDispatcher.run("GetRoster");
+		var roster = this._cacheRoster();
 		var buddyList = roster.getRosterItemList();
 		var assistant = new ZmAssistantBuddy(buddyList);
 		this._createTreeItems("assistant", assistant);
@@ -427,7 +428,7 @@ ZmImOverview.prototype._init = function() {
 	this._rosterItemListListenerObj = new AjxListener(this, this._rosterItemListListener);
 	ZmImApp.INSTANCE.addRosterItemListListener(this._rosterItemListListenerObj);
 	if (ZmImApp.INSTANCE.hasRoster()) {
-		roster = this._roster = AjxDispatcher.run("GetRoster");
+		roster = this._cacheRoster();
 		buddyList = roster.getRosterItemList();
 	}
 	if (roster && buddyList.size()) {
@@ -449,6 +450,33 @@ ZmImOverview.prototype._init = function() {
 		this._rootItem.setExpanded(true);
 	} else {
 		tree.addTreeListener(new AjxListener(this, this._treeListener));
+	}
+};
+
+ZmImOverview.prototype._cacheRoster =
+function() {
+	if (!this._roster) {
+		this._roster = AjxDispatcher.run("GetRoster");
+		var listener = new AjxListener(this, this._rosterChangeListener);
+		this._roster.addChangeListener(listener);
+		var presence = this._roster.getPresence();
+		this._offline = presence.getShow() == ZmRosterPresence.SHOW_OFFLINE;
+	}
+	return this._roster;
+};
+
+ZmImOverview.prototype._rosterChangeListener =
+function(ev) {
+	if (ev.event == ZmEvent.E_MODIFY) {
+		var fields = ev.getDetail("fields");
+		if (ZmRoster.F_PRESENCE in fields) {
+			var presence = this._roster.getPresence();
+			var offline = presence.getShow() == ZmRosterPresence.SHOW_OFFLINE;
+			if (offline != this._offline) {
+				this._offline = offline;
+				this.applyFilters();
+			}
+		}
 	}
 };
 
@@ -529,7 +557,7 @@ function(type) {
 ZmImOverview.prototype._rosterItemListListener =
 function(ev) {
 	if (!this._roster) {
-		this._roster = ZmImApp.INSTANCE.getRoster();
+		this._cacheRoster();
 	}
 	var fields = ev.getDetail("fields");
 	if (ev.event == ZmEvent.E_LOAD) {
@@ -807,6 +835,10 @@ ZmImOverview.prototype.applyFilters = function(items, doEmpty) {
 				group.setExpanded(true);
 		}
 	}
+};
+
+ZmImOverview.FILTER_WHEN_OFFLINE = function(item) {
+	return this._offline;
 };
 
 ZmImOverview.FILTER_OFFLINE_BUDDIES = function(item) {
