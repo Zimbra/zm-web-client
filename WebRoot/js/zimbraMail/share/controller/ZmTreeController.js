@@ -485,7 +485,8 @@ function(organizer) {
 
 ZmTreeController.prototype._doEmpty =
 function(organizer) {
-	organizer._empty();
+    var recursive = false;
+    organizer._empty(recursive);
 	var ctlr = appCtxt.getCurrentController();
 	if (ctlr && ctlr._getSearchFolderId) {
 		var folderId = ctlr._getSearchFolderId();

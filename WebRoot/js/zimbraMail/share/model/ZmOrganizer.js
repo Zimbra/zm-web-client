@@ -819,8 +819,9 @@ function() {
 };
 
 ZmOrganizer.prototype._empty = 
-function() {
-	DBG.println(AjxDebug.DBG1, "emptying: " + this.name + ", ID: " + this.id);
+function(doRecursive) {
+    doRecursive = doRecursive || false;
+    DBG.println(AjxDebug.DBG1, "emptying: " + this.name + ", ID: " + this.id);
 	var isEmptyOp = ((this.type == ZmOrganizer.FOLDER || this.type == ZmOrganizer.ADDRBOOK) &&
 					 (this.nId == ZmFolder.ID_SPAM || this.nId == ZmFolder.ID_TRASH || this.nId == ZmFolder.ID_CHATS || this.nId == ZmOrganizer.ID_SYNC_FAILURES));
 	// make sure we're not emptying a system object (unless it's SPAM/TRASH/SYNCFAILURES)
@@ -829,7 +830,9 @@ function() {
 	var params = {action:"empty"};
 	if (this.id == ZmFolder.ID_TRASH) {
 		params.attrs = {recursive:"true"};
-	}
+	}else{
+        params.attrs = {recursive:doRecursive};
+    }
 	if (this.isRemote()) {
 		params.id = this.getRemoteId();
 	}
