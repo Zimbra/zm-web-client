@@ -1,12 +1,13 @@
 <%@ tag body-content="empty" %>
 <%@ attribute name="date" rtexprvalue="true" required="true" type="java.util.Calendar" %>
 <%@ attribute name="openurl" rtexprvalue="true" required="false" %>
+<%@ attribute name="timezone" rtexprvalue="true" required="true" type="java.util.TimeZone"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="mo" uri="com.zimbra.mobileclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
-<fmt:formatDate var="dateDf" value="${date.time}" pattern="yyyyMMdd"/>
+<fmt:formatDate var="dateDf" value="${date.time}" pattern="yyyyMMdd" timeZone="${timezone}"/>
 <mo:calendarUrl var="dayViewUrl" view="day"/>
 <mo:calendarUrl var="listViewUrl" view="list"/>
 <mo:calendarUrl var="monthViewUrl" view="month"/>

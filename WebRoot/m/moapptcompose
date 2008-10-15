@@ -160,7 +160,7 @@
     <c:set var="h" value="${compose.startHour}"/>
     <c:forEach var="hi" begin="0" end="23">
         <option value="${hi}" <c:if test="${h eq hi}"> selected</c:if>>
-            <fmt:formatDate value="${zm:getTodayHour(hi, null).time}" pattern="${hourFmt}"/>
+            <fmt:formatDate value="${zm:getTodayHour(hi, null).time}" pattern="${hourFmt}" timeZone="${tz}"/>
         </option>
     </c:forEach>
 </select>
@@ -198,7 +198,7 @@
     <c:set var="h" value="${compose.endHour}"/>
     <c:forEach var="hi" begin="0" end="23">
         <option value="${hi}" <c:if test="${h eq hi}"> selected</c:if>>
-            <fmt:formatDate value="${zm:getTodayHour(hi, null).time}" pattern="${hourFmt}"/>
+            <fmt:formatDate value="${zm:getTodayHour(hi, null).time}" pattern="${hourFmt}" timeZone="${tz}"/>
         </option>
     </c:forEach>
 </select>

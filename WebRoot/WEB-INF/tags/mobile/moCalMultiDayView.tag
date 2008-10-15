@@ -19,21 +19,21 @@
     <c:choose>
         <c:when test="${scheduleView}">
             <fmt:message var="titleFormat" key="CAL_SCHEDULE_TITLE_FORMAT"/>
-            <fmt:formatDate var="pageTitle" value="${currentDay.time}" pattern="${titleFormat}"/>
+            <fmt:formatDate var="pageTitle" value="${currentDay.time}" pattern="${titleFormat}" timeZone="${timezone}"/>
             <fmt:message var="tbTitleFormat" key="CAL_SCHEDULE_TB_TITLE_FORMAT"/>
-            <fmt:formatDate var="tbTitle" value="${currentDay.time}" pattern="${tbTitleFormat}"/>
+            <fmt:formatDate var="tbTitle" value="${currentDay.time}" pattern="${tbTitleFormat}" timeZone="${timezone}"/>
         </c:when>
         <c:when test="${numdays eq 1}">
             <fmt:message var="titleFormat" key="CAL_DAY_TITLE_FORMAT"/>
-            <fmt:formatDate var="pageTitle" value="${currentDay.time}" pattern="${titleFormat}"/>
+            <fmt:formatDate var="pageTitle" value="${currentDay.time}" pattern="${titleFormat}" timeZone="${timezone}"/>
             <fmt:message var="tbTitleFormat" key="CAL_DAY_TB_TITLE_FORMAT"/>
-            <fmt:formatDate var="tbTitle" value="${currentDay.time}" pattern="${tbTitleFormat}"/>
+            <fmt:formatDate var="tbTitle" value="${currentDay.time}" pattern="${tbTitleFormat}" timeZone="${timezone}"/>
         </c:when>
         <c:otherwise>
             <fmt:message var="singleDayFormat" key="CAL_DAY_TB_TITLE_FORMAT"/>
             <fmt:message var="pageTitle" key="CAL_MDAY_TITLE_FORMAT">
-                <fmt:param><fmt:formatDate value="${currentDay.time}" pattern="${singleDayFormat}"/></fmt:param>
-                <fmt:param><fmt:formatDate value="${zm:addDay(currentDay, numdays-1).time}" pattern="${singleDayFormat}"/></fmt:param>
+                <fmt:param><fmt:formatDate value="${currentDay.time}" pattern="${singleDayFormat}" timeZone="${timezone}"/></fmt:param>
+                <fmt:param><fmt:formatDate value="${zm:addDay(currentDay, numdays-1).time}" pattern="${singleDayFormat}" timeZone="${timezone}"/></fmt:param>
             </fmt:message>
             <c:set var="tbTitle" value="${pageTitle}"/>
         </c:otherwise>
@@ -68,13 +68,13 @@
     <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
             <td>
-                <mo:calendarViewToolbar date="${date}"/>
+                <mo:calendarViewToolbar date="${date}" timezone="${timezone}"/>
             </td>
         </tr>
         <tr>
             <td>
-                <table width="100%" border="0" cellpadding="0" cellspacing="0">
-                    <tr  style="height:35px;">
+                <table align="center" width="99%" border="0" cellpadding="0" cellspacing="0">
+                    <tr style="height:35px;">
                         <mo:calendarUrl var="prevUrl" rawdate="${prevDate}" timezone="${timezone}"/>
                         <mo:calendarUrl var="nextUrl" rawdate="${nextDate}" timezone="${timezone}"/>
                         <td width="1%">
@@ -82,7 +82,7 @@
                         </td>
                         <td align="center" nowrap="nowrap" class='zo_unread Medium${(date.timeInMillis eq today.timeInMillis) ? '_today':''}'>
                             <fmt:message var="titleFormat" key="CAL_DAY_TITLE_FORMAT"/>
-                            <fmt:formatDate value="${date.time}" pattern="${titleFormat}"/>
+                            <fmt:formatDate value="${date.time}" pattern="${titleFormat}" timeZone="${timezone}"/>
                         </td>
                         <td width="1%">
                             <a href="${fn:escapeXml(nextUrl)}"><mo:img src="arrows/ImgNextPage.gif" alt="next"/></a>
@@ -98,7 +98,7 @@
         </tr>
          <tr>
             <td>
-                <mo:calendarViewToolbar date="${date}"/>
+                <mo:calendarViewToolbar date="${date}" timezone="${timezone}"/>
             </td>
         </tr>
     </table>

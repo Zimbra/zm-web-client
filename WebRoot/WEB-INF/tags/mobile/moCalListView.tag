@@ -13,7 +13,7 @@
     <c:set var="context" value="${null}"/>
     <fmt:message var="dayFormat" key="MO_CAL_LIST_DOW"/>
     <fmt:message var="titleFormat" key="CAL_MONTH_TITLE_FORMAT"/>
-    <fmt:formatDate var="title" value="${date.time}" pattern="${titleFormat}"/>
+    <fmt:formatDate var="title" value="${date.time}" pattern="${titleFormat}" timeZone="${timezone}"/>
     <jsp:useBean id="dateSymbols" scope="request" class="java.text.DateFormatSymbols"/>
     <c:set var="numDays" value="30"/>
 
@@ -42,7 +42,7 @@
 
 <mo:view mailbox="${mailbox}" title="${title}" context="${null}">
 
-    <mo:calendarViewToolbar date="${date}"/>
+    <mo:calendarViewToolbar date="${date}" timezone="${timezone}"/>
     <table width="100%" border="0" cellpadding="2" cellspacing="0">
         <tr  style="height:35px;">
             <mo:calendarUrl var="prevUrl" rawdate="${prevDate}" timezone="${timezone}"/>
@@ -54,10 +54,10 @@
                 <fmt:message var="titleFormat" key="MO_CAL_LIST_DATE_FORMAT"/>
                 <fmt:message key="MO_CAL_LIST_TITLE_FORMAT">
                     <fmt:param>
-                        <fmt:formatDate value="${date.time}" pattern="${titleFormat}"/>
+                        <fmt:formatDate value="${date.time}" pattern="${titleFormat}" timeZone="${timezone}"/>
                     </fmt:param>
                     <fmt:param>
-                        <fmt:formatDate value="${dateEnd.time}" pattern="${titleFormat}"/>
+                        <fmt:formatDate value="${dateEnd.time}" pattern="${titleFormat}" timeZone="${timezone}"/>
                     </fmt:param>
                 </fmt:message>
             </td>
@@ -76,10 +76,10 @@
                 <c:if test="${count eq 0}">
                     <tr class='zo_cal_listh'>
                         <td class='zo_cal_listh_dow'>
-                            <fmt:formatDate value="${currentDay.time}" pattern="${dayFormat}"/>
+                            <fmt:formatDate value="${currentDay.time}" pattern="${dayFormat}" timeZone="${timezone}"/>
                         </td>
                         <td class='zo_cal_listh_date'>
-                            <fmt:formatDate value="${currentDay.time}" type="date" dateStyle="medium"/>
+                            <fmt:formatDate value="${currentDay.time}" type="date" dateStyle="medium" timeZone="${timezone}"/>
                         </td>
                     </tr>
                 </c:if>
@@ -90,10 +90,10 @@
                                 <fmt:message key="apptAllDay"/>
                             </c:when>
                             <c:when test="${appt.startTime lt dayStart}">
-                                <fmt:formatDate value="${appt.startDate}" type="date" dateStyle="short"/>
+                                <fmt:formatDate value="${appt.startDate}" type="date" dateStyle="short" timeZone="${timezone}"/>
                             </c:when>
                             <c:otherwise>
-                                <fmt:formatDate value="${appt.startDate}" type="time" timeStyle="short"/>
+                                <fmt:formatDate value="${appt.startDate}" type="time" timeStyle="short" timeZone="${timezone}"/>
                             </c:otherwise>
                         </c:choose>
                     </td>
@@ -109,6 +109,6 @@
             ${zm:getNextDay(currentDay)}
         </c:forEach>
     </table>
-    <mo:calendarViewToolbar date="${date}"/>
+    <mo:calendarViewToolbar date="${date}" timezone="${timezone}"/>
 
 </mo:view>

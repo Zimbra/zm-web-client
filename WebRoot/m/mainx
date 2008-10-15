@@ -178,8 +178,16 @@
                         <c:import url="/m/mosearch"/>
                     </c:when>
                     <c:when test="${param.st != null && param.st == 'cal'}">
+                        <c:choose>
+                            <c:when test="${not empty param.tz}">
+                                <fmt:setTimeZone var="tz" value="${param.tz}" scope="request"/>
+                            </c:when>
+                            <c:otherwise>
+                                <c:set var="tz" value="${mailbox.prefs.timeZone}" scope="request"/>
+                            </c:otherwise>
+                        </c:choose>
                         <c:if test="${param.sq == null}">
-                            <fmt:formatDate var="today" pattern="yyyyMMdd" value="${zm:getToday(tz).time}"/>
+                            <fmt:formatDate var="today" timeZone="${tz}" pattern="yyyyMMdd" value="${zm:getToday(tz).time}"/>
                             <c:set var="arg"
                                    value="${param.view==null?'view=month':''}&${param.date==null?'date=':''}${today}">
                             </c:set>
