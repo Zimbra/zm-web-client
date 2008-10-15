@@ -105,7 +105,7 @@
 <td>             
  <div class="View">
 <c:if test="${fn:length(mailbox.accountInfo.identities) gt 1 }">
-    <table>
+    <table cellpadding="0" cellspacing="0" width="100%" border="0" class="zo_m_list_row" style="margin:2px;">
     <tr>
             <td class='label' valign='top' width="35" align=right nowrap="nowrap">
                 <fmt:message key="from"/>: </td>
@@ -119,9 +119,8 @@
             </td>
         </tr>
         </table>
-    <hr size="1" style="color:silver;"/>
 </c:if>
-<table cellpadding="0" cellspacing="0" width="100%" border="0">
+<table cellpadding="0" cellspacing="0" width="100%" border="0" class="zo_m_list_row" style="margin:2px;">
         <tr>
             <td class='label' valign='top' width="35" align=right nowrap="nowrap">
                 <label for="toField"><fmt:message key="to"/>: </label></td>
@@ -134,13 +133,12 @@
             </td>
         </tr>
     </table>
-     <hr size="1" style="color:silver;"/>
 <!--
 </div>
 
 <div class="View">
 -->
-    <table cellpadding="0" cellspacing="0" width="100%" border="0">
+    <table cellpadding="0" cellspacing="0" width="100%" border="0" class="zo_m_list_row" style="margin:2px;">
         <tr>
             <td align=right class="label" width="35" nowrap="nowrap"><label for="ccField"><fmt:message
                     key="cc"/>: </label></td>
@@ -153,6 +151,19 @@
             </td>
         </tr>
     </table>
+     <table cellpadding="0" cellspacing="0" width="100%" border="0" class="zo_m_list_row" style="margin:2px;">
+        <tr>
+            <td align=right class="label" width="35" nowrap="nowrap"><label for="bccField"><fmt:message
+                    key="bcc"/>: </label></td>
+            <td>
+                <div class="ZhAC ZhACCc">
+                    <input class="Textarea" id="bccField" type="text" value="${fn:escapeXml(compose.bcc)}" name="bcc">
+
+                    <div class='ZhACCont' id="bccContainer" style='width:99%;'></div>
+                </div>
+            </td>
+        </tr>
+    </table> 
 </div>
 <div class="View">
     <table cellpadding=0 cellspacing=0 width=100% border="0">
@@ -283,6 +294,7 @@
 <mo:autoComplete>
     initAuto("toField","toContainer");
     initAuto("ccField","ccContainer");
+    initAuto("bccField","bccContainer");
 </mo:autoComplete>
 <a href="${caction}" id="_back_to" style="display:none;visibility:hidden">back</a>
 </mo:view>
