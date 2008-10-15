@@ -241,8 +241,8 @@ function(params, callback) {
 
 ZmTasksApp.prototype._handleLoadLaunch =
 function(callback) {
-	if (callback) { callback.run(); }
 	this.search();
+	if (callback) { callback.run(); }
 };
 
 ZmTasksApp.prototype.showSearchResults =

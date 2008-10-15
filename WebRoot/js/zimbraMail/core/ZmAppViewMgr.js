@@ -1030,7 +1030,7 @@ function(ev) {
 ZmAppViewMgr.prototype.fitAppToolbar =
 function(resetToolbar) {
 	// Assuming every view has a toolbar.
-	var toolbar = this._views[this._currentView][ZmAppViewMgr.C_TOOLBAR_TOP];
+	var toolbar = this._views[this._currentView] && this._views[this._currentView][ZmAppViewMgr.C_TOOLBAR_TOP];
 
 	if (toolbar && toolbar.autoAdjustWidth) {
 		toolbar.autoAdjustWidth(this._containers[ZmAppViewMgr.C_TOOLBAR_TOP], resetToolbar);
