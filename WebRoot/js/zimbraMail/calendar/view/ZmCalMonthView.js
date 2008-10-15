@@ -411,8 +411,8 @@ function() {
 	 		var de = document.getElementById(id);			
 			de.className = 'calendar_month_cells_td';
 			this.associateItemWithElement(null, de, ZmCalBaseView.TYPE_MONTH_DAY, id, {loc:loc});
-			d.setDate(d.getDate() + 1);
-		}
+            d.setTime(d.getTime() + AjxDateUtil.MSEC_PER_DAY);
+        }
 	}
 	
 	var formatter = DwtCalendar.getMonthFormatter();
