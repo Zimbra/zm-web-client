@@ -730,19 +730,10 @@ function(search) {
 	}
 	var app = appCtxt.getCurrentApp();
 	var overview = app.getOverview();
-	if (!overview) { return; }
-	if (id) {
-		var treeView = overview.getTreeView(type);
-		if (treeView) {
-			var ti = treeView.getTreeItemById(id);
-			if (overview._selectedTreeItem != ti) {
-				treeView.setSelected(id, true, true);
-				overview.itemSelected(ti);
-			}
-		}
+	if (overview) {
+		overview.setSelected(id, type);
 	} else {
-		// clear overview of selection
-		overview.itemSelected();
+		app._selectedOverviewItem = id;
 	}
 };
 

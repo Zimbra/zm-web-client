@@ -225,7 +225,33 @@ function() {
 };
 
 /**
- * Given a tree view, deselects all items in the overview's
+ * Selects the item with the given ID within the given tree in this overview.
+ *
+ * @param id	[string]		item ID
+ * @param type	[constant]*		tree type
+ */
+ZmOverview.prototype.setSelected =
+function(id, type) {
+	var ti, treeView;
+	if (type) {
+		treeView = this._treeHash[type];
+		ti = treeView && treeView.getTreeItemById(id);
+	} else {
+		for (var type in this._treeHash) {
+			treeView = this._treeHash[type];
+			ti = treeView && treeView.getTreeItemById(id);
+			if (ti) { break; }
+		}
+	}
+
+	if (ti && (this._selectedTreeItem != ti)) {
+		treeView.setSelected(id, true, true);
+	}
+	this.itemSelected(ti);
+};
+
+/**
+ * Given a tree item, deselects all items in the overview's
  * other tree views, enforcing single selection within the overview.
  * Passing a null argument will clear selection in all tree views.
  *

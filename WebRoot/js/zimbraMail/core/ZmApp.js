@@ -469,6 +469,16 @@ function(byUser) {
 ZmApp.prototype._activateAccordionItem =
 function(item) {
 	this.accordionItem = item;
+
+	// handle an overview item being selected before overview has been created; this happens
+	// once, during startup, if the initial search maps to an organizer
+	if (this._selectedOverviewItem) {
+		var overview = this.getOverview();
+		if (overview) {
+			overview.setSelected(this._selectedOverviewItem);
+			this._selectedOverviewItem = null;
+		}
+	}
 };
 
 /**

@@ -66,6 +66,8 @@ ZmMailMsgView = function(params) {
 	if (!appCtxt.isOffline) {
 		this._setAllowSelection();
 	}
+
+	this.noTab = true;
 }
 
 ZmMailMsgView.prototype = new DwtComposite;
@@ -165,6 +167,7 @@ function(msg) {
 		htmlArr[idx++] = ZmMsg.viewMessage;
 		htmlArr[idx++] = "</td></tr></table>";
 		contentDiv.innerHTML = htmlArr.join("");
+		this.noTab = true;
 		return;
 	}
 
@@ -224,6 +227,7 @@ function(msg) {
 	}
 	var respCallback = new AjxCallback(this, this._handleResponseSet, [msg, oldMsg]);
 	this._renderMessage(msg, contentDiv, respCallback);
+	this.noTab = AjxEnv.isIE;
 };
 
 ZmMailMsgView.prototype.__hasMountpoint =
