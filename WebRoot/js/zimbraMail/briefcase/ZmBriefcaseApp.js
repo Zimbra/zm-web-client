@@ -58,14 +58,14 @@ function() {
 
 ZmBriefcaseApp.prototype._registerOperations =
 function() {
-	ZmOperation.registerOp(ZmId.OP_NEW_BRIEFCASEITEM, {textKey:"newBriefcase", image:"NewFolder", tooltipKey:"newBriefcaseTooltip", shortcut:ZmKeyMap.NEW_BRIEFCASEITEM});
+	ZmOperation.registerOp(ZmId.OP_NEW_BRIEFCASEITEM, {textKey:"newBriefcase", image:"NewFolder"});
 	ZmOperation.registerOp(ZmId.OP_NEW_FILE, {textKey:"uploadNewFile", tooltipKey:"uploadNewFile", image:"NewPage"});
 	ZmOperation.registerOp(ZmId.OP_SHARE_BRIEFCASE, {textKey:"shareFolder", image:"SharedMailFolder"}, ZmSetting.SHARING_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_MOUNT_BRIEFCASE, {textKey:"mountBriefcase", image:"Notebook"}, ZmSetting.SHARING_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_OPEN_FILE, {textKey:"openFile", tooltipKey:"openFileTooltip", image:"NewPage"});
-	ZmOperation.registerOp(ZmId.OP_SAVE_FILE, {textKey:"saveFile", tooltipKey:"saveFileTooltip", image:"Save"});
-	ZmOperation.registerOp(ZmId.OP_VIEW_FILE_AS_HTML, {textKey:"viewAsHtml", tooltipKey:"viewAsHtml", image:"HtmlDoc"});
-	ZmOperation.registerOp(ZmId.OP_SEND_FILE, {textKey:"send", tooltipKey:"sendPageTT", image:"Send"});
+	ZmOperation.registerOp(ZmId.OP_VIEW_FILE_AS_HTML, {textKey:"viewAsHtml", tooltipKey:"viewAsHtml", image:"HtmlDoc"});	
+	ZmOperation.registerOp(ZmId.OP_SEND_FILE, {textKey:"send", tooltipKey:"sendPageTT", image:"Send"});	
+	ZmOperation.registerOp("SAVE_FILE", {textKey:"saveFile", tooltipKey:"saveFileTooltip", image:"Save"});
 };
 
 ZmBriefcaseApp.prototype._registerItems =
@@ -108,8 +108,6 @@ function() {
 							  createFunc     : "ZmOrganizer.create",
 							  compareFunc    : "ZmBriefcase.sortCompare",
 							  deferrable     : true,
-							  newOp			 : ZmOperation.NEW_BRIEFCASEITEM,
-							  displayOrder	 : 100,
 							  hasColor       : true
 							});
 };
@@ -117,26 +115,28 @@ function() {
 ZmBriefcaseApp.prototype._setupSearchToolbar =
 function() {
 	//TODO:search for page alone
-	ZmSearchToolBar.addMenuItem(ZmItem.BRIEFCASE,
-								{msgKey:		"searchBriefcase",
-								 tooltipKey:	"searchForFiles",
-								 icon:			"Folder",
-                                 shareIcon:		"SharedBriefcase",
-								 setting:		ZmSetting.BRIEFCASE_ENABLED,
-								 id:			ZmId.getMenuItemId(ZmId.SEARCH, ZmId.ITEM_BRIEFCASE)
-								});
+/*	ZmSearchToolBar.addMenuItem(ZmItem.PAGE,
+								{msgKey:		"searchNotebooks",
+								 tooltipKey:	"searchForPages",
+								 icon:			"SearchNotes"
+								});*/
+};
+
+ZmBriefcaseApp.prototype._setupCurrentAppToolbar =
+function() {
+	ZmCurrentAppToolBar.registerApp(this.getName(), ZmOperation.NEW_BRIEFCASEITEM, ZmOrganizer.BRIEFCASE);
 };
 
 ZmBriefcaseApp.prototype._registerApp =
 function() {
 	var newItemOps = {};
-	newItemOps[ZmOperation.NEW_FILE] = "uploadNewFile";
+	newItemOps[ZmOperation.NEW_FILE] = "file";
 
 	var newOrgOps = {};
-	newOrgOps[ZmOperation.NEW_BRIEFCASEITEM] = "briefcase";
+	newOrgOps[ZmOperation.NEW_BRIEFCASEITEM] = "folder";
 
 	var actionCodes = {};
-	actionCodes[ZmKeyMap.NEW_FILE]			= ZmOperation.NEW_FILE;
+	actionCodes[ZmKeyMap.NEW_FILE]		= ZmOperation.NEW_FILE;
 	actionCodes[ZmKeyMap.NEW_BRIEFCASEITEM]	= ZmOperation.NEW_BRIEFCASEITEM;
 
 	ZmApp.registerApp(ZmApp.BRIEFCASE,
@@ -144,15 +144,15 @@ function() {
 					  nameKey:				"briefcase",
 					  icon:					"Folder",
 					  chooserTooltipKey:	"gotoBriefcase",
-					  defaultSearch:		ZmItem.BRIEFCASE,
+					  defaultSearch:		ZmItem.PAGE,
 					  organizer:			ZmOrganizer.BRIEFCASE,
 					  overviewTrees:		[ZmOrganizer.BRIEFCASE, ZmOrganizer.ROSTER_TREE_ITEM, ZmOrganizer.TAG],
 					  showZimlets:			true,
-					  searchTypes:			[ZmItem.BRIEFCASE/*, ZmItem.DOCUMENT*/],
+					  searchTypes:			[ZmItem.PAGE, ZmItem.DOCUMENT],
 					  newItemOps:			newItemOps,
 					  newOrgOps:			newOrgOps,
 					  actionCodes:			actionCodes,
-					  gotoActionCode:		ZmKeyMap.GOTO_BRIEFCASE,
+					  gotoActionCode:		ZmKeyMap.GOTO_NOTEBOOK,
 					  newActionCode:		ZmKeyMap.NEW_FILE,
 					  chooserSort:			70,
 					  defaultSort:			60,
@@ -358,15 +358,13 @@ function(callback) {
 ZmBriefcaseApp.prototype.showSearchResults =
 function(results, callback) {
 	var loadCallback = new AjxCallback(this, this._handleLoadShowSearchResults, [results, callback]);
-	AjxDispatcher.require(["BriefcaseCore", "Briefcase"], false, loadCallback, null, true);
+	AjxDispatcher.require(["NotebookCore", "Notebook"], false, loadCallback, null, true);
 };
 
 ZmBriefcaseApp.prototype._handleLoadShowSearchResults =
 function(results, callback) {
 //	this.getFileController().show(results, true);
 // 	if (callback) { callback.run(); }
-    this.getBriefcaseController().showFolderContents(results.getResults(ZmItem.MIXED));
-    if (callback) { callback.run(); }
 };
 
 ZmBriefcaseApp.prototype.setActive =

@@ -194,6 +194,7 @@ function() {
 
 	var tg = this._createTabGroup();
 	tg.addMember(this._searchToolBar.getSearchField());
+	tg.addMember(this._searchToolBar);
 
 	// Register keyboard callback for search field
 	this._searchToolBar.registerCallback(this._searchFieldCallback, this);
@@ -348,13 +349,9 @@ function(params) {
 		}
 		if (appCtxt.get(ZmSetting.NOTEBOOK_ENABLED)) {
 			types.add(ZmItem.PAGE);
-			//types.add(ZmItem.DOCUMENT);
+			types.add(ZmItem.DOCUMENT);
 		}
-        if (appCtxt.get(ZmSetting.BRIEFCASE_ENABLED)) {
-			types.add(ZmItem.BRIEFCASE);
-			//types.add(ZmItem.DOCUMENT);
-		}
-    } else {
+	} else {
 		types.add(searchFor);
 		if (searchFor == ZmItem.PAGE) {
 			types.add(ZmItem.DOCUMENT);
@@ -507,7 +504,7 @@ function(results, search, isMixed) {
 	app.currentSearch = search;
 	app.currentQuery = search.query;
 	app.showSearchResults(results, loadCallback, isInGal, search.folderId);
-//	appCtxt.getAppController().focusContentPane();
+	appCtxt.getAppController().focusContentPane();
 };
 
 ZmSearchController.prototype._handleLoadShowResults =
@@ -707,9 +704,7 @@ function(ev, id) {
 
 /**
  * Selects the appropriate item in the overview based on the search. Selection only happens
- * if the search was a simple search for a folder, tag, or saved search. A check is done to
- * make sure that item is not already selected, so selection should only occur for a query
- * manually run by the user.
+ * if the search was a simple search for a folder, tag, or saved search.
  *
  * @param search		[ZmSearch]		the current search
  */
@@ -730,10 +725,16 @@ function(search) {
 	}
 	var app = appCtxt.getCurrentApp();
 	var overview = app.getOverview();
-	if (overview) {
-		overview.setSelected(id, type);
+	if (!overview) { return; }
+	if (id) {
+		var treeView = overview.getTreeView(type);
+		if (treeView) {
+			treeView.setSelected(id, true);
+		}
+		overview.itemSelected(type);
 	} else {
-		app._selectedOverviewItem = id;
+		// clear overview of selection
+		overview.itemSelected();
 	}
 };
 
