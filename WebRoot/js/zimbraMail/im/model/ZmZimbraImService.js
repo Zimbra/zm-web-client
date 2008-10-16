@@ -61,6 +61,49 @@ function(callback, response) {
 	return gateways;
 };
 
+ZmZimbraImService.prototype.reconnectGateway =
+function(gw) {
+	var sd = AjxSoapDoc.create("IMGatewayRegisterRequest", "urn:zimbraIM");
+	var method = sd.getMethod();
+	method.setAttribute("op", "reconnect");
+	method.setAttribute("service", gw.type);
+	appCtxt.getAppController().sendRequest({ soapDoc: sd, asyncMode: true });
+};
+
+ZmZimbraImService.prototype.unregisterGateway =
+function(service, batchCmd) {
+	var sd = AjxSoapDoc.create("IMGatewayRegisterRequest", "urn:zimbraIM");
+	var method = sd.getMethod();
+	method.setAttribute("op", "unreg");
+	method.setAttribute("service", service);
+	if (batchCmd) {
+		batchCmd.addNewRequestParams(sd);
+	} else {
+		appCtxt.getAppController().sendRequest({
+			soapDoc: sd,
+			asyncMode: true
+		});
+	}
+};
+
+ZmZimbraImService.prototype.registerGateway =
+function(service, screenName, password, batchCmd) {
+	var sd = AjxSoapDoc.create("IMGatewayRegisterRequest", "urn:zimbraIM");
+	var method = sd.getMethod();
+	method.setAttribute("op", "reg");
+	method.setAttribute("service", service);
+	method.setAttribute("name", screenName);
+	method.setAttribute("password", password);
+	if (batchCmd) {
+		batchCmd.addNewRequestParams(sd);
+	} else {
+		appCtxt.getAppController().sendRequest({
+			soapDoc: sd,
+			asyncMode: true
+		});
+	}
+};
+
 ZmZimbraImService.prototype.getRoster =
 function(callback, params) {
 	var soapDoc = AjxSoapDoc.create("IMGetRosterRequest", "urn:zimbraIM");

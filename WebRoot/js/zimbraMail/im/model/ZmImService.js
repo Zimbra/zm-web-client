@@ -32,6 +32,21 @@ function(callback, params) {
 	alert('Not implemented');
 };
 
+ZmImService.prototype.reconnectGateway =
+function(gw) {
+	alert('Not implemented');
+};
+
+ZmImService.prototype.unregisterGateway =
+function(service, batchCmd) {
+	alert('Not implemented');
+};
+
+ZmImService.prototype.registerGateway =
+function(service, screenName, password, batchCmd) {
+	alert('Not implemented');
+};
+
 ZmImService.prototype.getRoster =
 function(callback, params) {
 	alert('Not implemented');

@@ -250,45 +250,17 @@ ZmRoster.prototype.addGatewayListListener = function(listener) {
 };
 
 ZmRoster.prototype.reconnectGateway = function(gw) {
-	var sd = AjxSoapDoc.create("IMGatewayRegisterRequest", "urn:zimbraIM");
-	var method = sd.getMethod();
-	method.setAttribute("op", "reconnect");
-	method.setAttribute("service", gw.type);
-	appCtxt.getAppController().sendRequest({ soapDoc: sd, asyncMode: true });
+	ZmImService.INSTANCE.reconnectGateway(gw);
 	ZmImService.INSTANCE.startIgnoreNotify();
 };
 
 ZmRoster.prototype.unregisterGateway = function(service, batchCmd) {
-	var sd = AjxSoapDoc.create("IMGatewayRegisterRequest", "urn:zimbraIM");
-	var method = sd.getMethod();
-	method.setAttribute("op", "unreg");
-	method.setAttribute("service", service);
-	if (batchCmd) {
-		batchCmd.addNewRequestParams(sd);
-	} else {
-		appCtxt.getAppController().sendRequest({
-			soapDoc: sd,
-			asyncMode: true
-		});
-	}
+	ZmImService.INSTANCE.unregisterGateway(service, batchCmd);
 	ZmImService.INSTANCE.startIgnoreNotify();
 };
 
 ZmRoster.prototype.registerGateway = function(service, screenName, password, batchCmd) {
-	var sd = AjxSoapDoc.create("IMGatewayRegisterRequest", "urn:zimbraIM");
-	var method = sd.getMethod();
-	method.setAttribute("op", "reg");
-	method.setAttribute("service", service);
-	method.setAttribute("name", screenName);
-	method.setAttribute("password", password);
-	if (batchCmd) {
-		batchCmd.addNewRequestParams(sd);
-	} else {
-		appCtxt.getAppController().sendRequest({
-			soapDoc: sd,
-			asyncMode: true
-		});
-	}
+	ZmImService.INSTANCE.registerGateway(service, screenName, password, batchCmd);
 	ZmImService.INSTANCE.startIgnoreNotify();
 	
 	// since it's not returned by a gwStatus notification, let's
