@@ -196,14 +196,23 @@
     var zjunk = function() { zclick("SOPSPAM"); }
     function zSelectRow(ev,id) {var t = ev.target || ev.srcElement;if (t&&t.nodeName != 'INPUT'){var a = document.getElementById(id); if (a) window.location = a.href;} }
     var zprint = function(){
-        var idex = 0;
-        while (idex <= zrc )
-        {
-            if(document.getElementById("C"+idex).checked) {cid = document.getElementById("C"+idex).value;break; }
-            idex++ ;
+        try{
+            var idex = 0;
+            var c ="";
+            while (idex <= zrc )
+            {
+                if(document.getElementById("C"+idex).checked) {
+                    cid = document.getElementById("C"+idex).value;
+                    c += cid + ",";
+                }
+                idex++ ;
+            }
+        }catch(ex){
         }
-        window.open("/h/printmessage?mid="+cid);
+        window.open("/h/printmessage?id="+c);
     }
+
+
         //-->
 </SCRIPT>
 
