@@ -34,7 +34,7 @@
 <c:if test="${not empty contactIds}">
     <c:forEach items="${contactIds}" var="contactId" varStatus="status">
         <zm:getContact id="${contactId}" var="contact"/>
-        <div  style="border: 1px solid rgb(204, 204, 204); padding:4px 4px 6px 4px;min-width:250px; float:left;height:150px;margin:10px;">
+        <div  style="border: 1px solid rgb(204, 204, 204); padding:4px 4px 6px 4px;min-width:250px; float:left;min-height:150px;margin:10px;">
             <table  cellpadding=2 cellspacing=0 width="100%" >
                 <tr>
                     <td nowrap colspan="2" style="font-family: Arial; white-space: nowrap; font-weight: bold; background-color: rgb(221, 221, 221);"><c:if test="${contact.isGroup}"><fmt:message key="AB_GROUP_NAME"/> : </c:if>${fn:escapeXml(contact.displayFileAs)}</td>
