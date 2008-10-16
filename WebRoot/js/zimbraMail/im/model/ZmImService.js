@@ -37,6 +37,11 @@ function(callback, params) {
 	alert('Not implemented');
 };
 
+ZmImService.prototype.setPresence =
+function(show, priority, customStatusMsg, batchCommand) {
+	alert('Not implemented');
+};
+
 ZmImService.prototype.createRosterItem =
 function(addr, name, groups, params) {
 	alert('Not implemented');
@@ -45,6 +50,10 @@ function(addr, name, groups, params) {
 ZmImService.prototype.deleteRosterItem =
 function(rosterItem, params) {
 	alert('Not implemented');
+};
+
+ZmImService.prototype.sendSubscribeAuthorization =
+function(accept, add, addr) {
 };
 
 ZmImService.prototype.sendMessage =

@@ -68,6 +68,27 @@ function(callback, params) {
 	return this._send(params, soapDoc, responseCallback);
 };
 
+ZmZimbraImService.prototype.setPresence =
+function(show, priority, customStatusMsg, batchCommand) {
+	var soapDoc = AjxSoapDoc.create("IMSetPresenceRequest", "urn:zimbraIM");
+	var presence = soapDoc.set("presence");
+	if (show) {
+		presence.setAttribute("show", show);
+	}
+	if (priority) {
+		presence.setAttribute("priority", priority);
+	}
+	if (customStatusMsg) {
+		presence.setAttribute("status",customStatusMsg);
+	}
+	if (batchCommand) {
+		batchCommand.addNewRequestParams(soapDoc);
+	} else {
+		appCtxt.getAppController().sendRequest({ soapDoc: soapDoc, asyncMode: true });
+	}
+};
+
+
 ZmZimbraImService.prototype._handleResponseGetRoster =
 function(callback, response) {
 	var responseJson = response.getResponse();
@@ -100,6 +121,16 @@ function(rosterItem, params) {
 	method.setAttribute("addr", rosterItem.id);
 	method.setAttribute("op", "remove");
 	return this._send(params, soapDoc);
+};
+
+ZmZimbraImService.prototype.sendSubscribeAuthorization =
+function(accept, add, addr) {
+	var sd = AjxSoapDoc.create("IMAuthorizeSubscribeRequest", "urn:zimbraIM");
+	var method = sd.getMethod();
+	method.setAttribute("addr", addr);
+	method.setAttribute("authorized", accept ? "true" : "false");
+	method.setAttribute("add", add ? "true" : "false");
+	appCtxt.getAppController().sendRequest({ soapDoc: sd, asyncMode: true });
 };
 
 ZmZimbraImService.prototype.sendMessage =

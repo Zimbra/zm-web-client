@@ -198,25 +198,8 @@ function(addr, name, groups) {
  * set presence on the server
  */
 ZmRoster.prototype.setPresence =
-function(show, priority, customStatusMsg, requestParams, batchCommand) {
-	var soapDoc = AjxSoapDoc.create("IMSetPresenceRequest", "urn:zimbraIM");
-	var presence = soapDoc.set("presence");
-	if(show) presence.setAttribute("show", show);
-	if (priority) presence.setAttribute("priority", priority);
-	if (customStatusMsg) presence.setAttribute("status",customStatusMsg);
-	if (batchCommand) {
-		var callback, errorCallback;
-		if (requestParams) {
-			callback = requestParams.callback;
-			errorCallback = requestParams.errorCallback;
-		}
-		batchCommand.addNewRequestParams(soapDoc, callback, errorCallback);
-	} else {
-		requestParams = requestParams || {};
-		requestParams.soapDoc = soapDoc;
-		requestParams.asyncMode = true;
-		appCtxt.getAppController().sendRequest(requestParams);
-	}
+function(show, priority, customStatusMsg, batchCommand) {
+	ZmImService.INSTANCE.setPresence(show, priority, customStatusMsg, batchCommand);
 	ZmImService.INSTANCE.startIgnoreNotify();
 };
 
@@ -258,28 +241,8 @@ ZmRoster.prototype.joinChatRequest = function(thread, addr) {
 // 	appCtxt.getAppController().sendRequest({ soapDoc: soapDoc, asyncMode: true });
 };
 
-ZmRoster.prototype.modifyChatRequest = function(thread, op, addr, message) {
-	var sd = AjxSoapDoc.create("IMModifyChatRequest", "urn:zimbraIM");
-	var method = sd.getMethod();
-	method.setAttribute("thread", thread);
-	method.setAttribute("op", op);
-	if (op = "adduser") {
-		method.setAttribute("addr", addr);
-		if (message) {
-			var txt = sd.getDoc().createTextNode(message);
-			method.appendChild(txt);
-		}
-	}
-	appCtxt.getAppController().sendRequest({ soapDoc: sd, asyncMode: true });
-};
-
 ZmRoster.prototype.sendSubscribeAuthorization = function(accept, add, addr) {
-	var sd = AjxSoapDoc.create("IMAuthorizeSubscribeRequest", "urn:zimbraIM");
-	var method = sd.getMethod();
-	method.setAttribute("addr", addr);
-	method.setAttribute("authorized", accept ? "true" : "false");
-	method.setAttribute("add", add ? "true" : "false");
-	appCtxt.getAppController().sendRequest({ soapDoc: sd, asyncMode: true });
+	ZmImService.INSTANCE.sendSubscribeAuthorization(accept, add, addr);
 };
 
 ZmRoster.prototype.addGatewayListListener = function(listener) {
