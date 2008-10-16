@@ -343,28 +343,7 @@ ZmRoster.prototype.getGroups = function() {
 };
 
 ZmRoster.prototype.setIdle = function(idle) {
-	this._idlePresenceErrorCallbackObj = this._idlePresenceErrorCallbackObj || new AjxCallback(this, this._idlePresenceErrorCallback);
-	var requestParams = { errorCallback: this._idlePresenceErrorCallbackObj };
-	var jsonObj = {
-		IMSetIdleRequest: {
-			_jsns: "urn:zimbraIM",
-			isIdle: idle ? "1" : "0",
-			idleTime: this._idleTimer.timeout / 1000
-		}
-	};
-	var args = {
-		jsonObj: jsonObj,
-		asyncMode: true,
-		noBusyOverlay: true,
-		errorCallback: this._idlePresenceErrorCallbackObj
-	};
-	appCtxt.getAppController().sendRequest(args);
-};
-
-ZmRoster.prototype._idlePresenceErrorCallback = function(ex) {
-	// Return true (meaning we handled the exception) if the response was empty because we don't want
-	// to display an error message if this idle request happens while the network connection is down.
-	return ex.code == ZmCsfeException.EMPTY_RESPONSE;
+	ZmImService.INSTANCE.setIdle(idle, this._idleTimer.timeout);
 };
 
 //------------------------------------------

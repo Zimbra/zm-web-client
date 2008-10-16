@@ -57,6 +57,11 @@ function(show, priority, customStatusMsg, batchCommand) {
 	alert('Not implemented');
 };
 
+ZmImService.prototype.setIdle =
+function(idle, idleTime) {
+	alert('Not implemented');
+};
+
 ZmImService.prototype.createRosterItem =
 function(addr, name, groups, params) {
 	alert('Not implemented');

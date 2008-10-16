@@ -131,7 +131,6 @@ function(show, priority, customStatusMsg, batchCommand) {
 	}
 };
 
-
 ZmZimbraImService.prototype._handleResponseGetRoster =
 function(callback, response) {
 	var responseJson = response.getResponse();
@@ -140,6 +139,33 @@ function(callback, response) {
 		callback.run(roster);
 	}
 	return roster;
+};
+
+ZmZimbraImService.prototype.setIdle =
+function(idle, idleTime) {
+	this._idlePresenceErrorCallbackObj = this._idlePresenceErrorCallbackObj || new AjxCallback(this, this._idlePresenceErrorCallback);
+	var requestParams = { errorCallback: this._idlePresenceErrorCallbackObj };
+	var jsonObj = {
+		IMSetIdleRequest: {
+			_jsns: "urn:zimbraIM",
+			isIdle: idle ? "1" : "0",
+			idleTime: idleTime / 1000
+		}
+	};
+	var args = {
+		jsonObj: jsonObj,
+		asyncMode: true,
+		noBusyOverlay: true,
+		errorCallback: this._idlePresenceErrorCallbackObj
+	};
+	appCtxt.getAppController().sendRequest(args);
+};
+
+ZmZimbraImService.prototype._idlePresenceErrorCallback =
+function(ex) {
+	// Return true (meaning we handled the exception) if the response was empty because we don't want
+	// to display an error message if this idle request happens while the network connection is down.
+	return ex.code == ZmCsfeException.EMPTY_RESPONSE;
 };
 
 ZmZimbraImService.prototype.createRosterItem =
