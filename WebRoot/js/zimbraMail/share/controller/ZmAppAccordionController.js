@@ -227,6 +227,10 @@ function(accordionItem, byUser, callback) {
 			}
 		}
 	}
+
+	if (callback) {
+		callback.run();
+	}
 };
 
 ZmAppAccordionController.prototype._loadOfflineAccount =

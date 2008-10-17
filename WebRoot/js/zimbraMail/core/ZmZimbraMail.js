@@ -1893,7 +1893,18 @@ function(index) {
 	var app = appCtxt.getCurrentApp();
 	var item = app.getOverviewPanelContent().getItemByIndex(index);;
 	if (item) {
-		app.expandAccordionForAccount(item.data.account, true);
+		var account = item.data.account;
+		var callback = new AjxCallback(this, this._handleSwitchToAccount, account);
+		app.expandAccordionForAccount(account, true, callback);
+	}
+};
+
+ZmZimbraMail.prototype._handleSwitchToAccount =
+function(account) {
+	var item = ZmAppAccordionController.getInstance().getAccordionItem(account);
+	var accordion = item ? item.accordion : null;
+	if (accordion) {
+		accordion.notifySelectionListeners(item);
 	}
 };
 
