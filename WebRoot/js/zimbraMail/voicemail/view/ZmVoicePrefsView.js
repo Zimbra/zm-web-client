@@ -323,7 +323,7 @@ function(feature) {
 	this.show(feature);
 	if (this._checkbox) {
 		this._checkbox.setSelected(feature.isActive);
-		this._checkbox.setEnabled(feature.isActive);
+		this._checkbox.setEnabled(feature.isActive); // TODO: shouldn't this be feature.isSubscribed?
 	}
 	this.setEnabled(feature.isActive);
 };
@@ -337,7 +337,7 @@ function() {
 
 ZmCallFeatureUI.prototype.isDirty =
 function() {
-	if (!this._feature) {
+	if (!this._feature || !this._feature.isSubscribed) {
 		return false;
 	}
 	if (this._checkbox && (this._feature.isActive != this._checkbox.isSelected())) {
