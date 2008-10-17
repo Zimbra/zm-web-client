@@ -1034,10 +1034,20 @@ ZmMailListController.prototype._printListener =
 function(ev) {
 	var listView = this._listView[this._currentView];
 	var items = listView.getSelection();
-	var item = (items instanceof Array) ? items[0] : items;
-	var url = (item.toString() == "ZmConv")
-		? ("/h/printconversations?xim=1&cid=" + item.id)
-		: ("/h/printmessage?mid=" + item.id);
+	var ids = [];
+
+	for (var i = 0; i < items.length; i++) {
+		var item = items[i];
+
+		// always extract out the msg ids from the conv
+		if (item.toString() == "ZmConv") {
+			ids = ids.concat(item.msgIds);
+		} else {
+			ids.push(item.id);
+		}
+	}
+
+	var url = ("/h/printmessage?id=" + ids.join(","));
 	window.open(appContextPath+url, "_blank");
 };
 
@@ -1143,10 +1153,12 @@ function(parent, num) {
 	var folderId = this._getSearchFolderId();
 	var folder = folderId ? appCtxt.getById(folderId) : null;
 
+	parent.enable(ZmOperation.PRINT, num > 0);
+
 	if (folder && folder.nId == ZmOrganizer.ID_SYNC_FAILURES) {
 		parent.enableAll(false);
 		parent.enable([ZmOperation.NEW_MENU, ZmOperation.CHECK_MAIL], true);
-		parent.enable([ZmOperation.DELETE, ZmOperation.PRINT, ZmOperation.FORWARD], num > 0);
+		parent.enable([ZmOperation.DELETE, ZmOperation.FORWARD], num > 0);
 		return;
 	}
 
