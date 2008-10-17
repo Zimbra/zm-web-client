@@ -190,7 +190,6 @@ function(id) {
 // abstract methods
 ZmItem.prototype.create = function(args) {};
 ZmItem.prototype.modify = function(mods) {};
-ZmItem.prototype.getPrintHtml = function(preferHtml, callback) {};
 
 /**
 * Returns this item if it has the given ID. Used by the app controller for

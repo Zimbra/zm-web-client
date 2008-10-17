@@ -557,13 +557,13 @@ function(item) {
 	}
 };
 
+// overload if you want to print in a different way
 ZmListController.prototype._printListener =
 function(ev) {
 	var listView = this._listView[this._currentView];
 	var items = listView.getSelection();
 	var item = (items instanceof Array) ? items[0] : items;
-	appCtxt.getPrintView().render(item);
-	this._restoreFocus(listView);
+	window.open(item.getRestUrl(), "_blank");
 };
 
 ZmListController.prototype._backListener =
