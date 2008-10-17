@@ -512,10 +512,10 @@ ZmPageEditor.prototype._createToolBar2 = function(parent) {
 	button.setToolTipContent(ZmMsg.insertAttachment);
 	button.addSelectionListener(new AjxListener(this, this._insertAttachmentsListener));
 
-	button = new DwtToolBarButton(params);
+	/*button = new DwtToolBarButton(params);
 	button.setImage("URL");
 	button.setToolTipContent(ZmMsg.insertLink);
-	button.addSelectionListener(new AjxListener(this, this._insertLinkListener));
+	button.addSelectionListener(new AjxListener(this, this._insertLinkListener)); */
 	
 	button = new DwtToolBarButton(params);
 	button.setImage("FindReplace");

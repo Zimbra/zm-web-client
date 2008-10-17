@@ -85,19 +85,6 @@ function(item, callback, results) {
 	if (this._doublePaneView.isMsgViewVisible() != readingPaneOn) {
 		this._doublePaneView.toggleView();
 	}
-
-	// If there's only one item in the list, go ahead and set focus to it since
-	// there's no use in the one-item list having focus (arrow keys do nothing)
-	if (readingPaneOn && (this._list.size() == 1)) {
-		var msgView = this._doublePaneView._msgView;
-		if (msgView) {
-			appCtxt.getKeyboardMgr().grabFocus(msgView);
-		}
-	} else {
-		if (this._mailListView) {
-			appCtxt.getKeyboardMgr().grabFocus(this._mailListView);
-		}
-	}
 };
 
 /**
@@ -334,7 +321,8 @@ function(view, menu, checked) {
 
 	var id = ZmMailListController.READING_PANE_MENU_ITEM_ID;
 	if (!menu._menuItems[id]) {
-		var mi = menu.createMenuItem(id, {image:"SplitPane", text:ZmMsg.readingPane, style:DwtMenuItem.CHECK_STYLE});
+		var mi = menu.createMenuItem(id, {image:"SplitPane", text:ZmMsg.readingPane, style:DwtMenuItem.CHECK_STYLE,
+										  shortcut:ZmKeyMap.READING_PANE});
 		mi.setData(ZmOperation.MENUITEM_ID, id);
 		mi.addSelectionListener(this._listeners[ZmOperation.VIEW]);
 		mi.setChecked(checked, true);
@@ -497,7 +485,7 @@ function(ev) {
 		if (this.isReadingPaneOn()) {
 			// Give the user a chance to zip around the list view via shortcuts without having to
 			// wait for each successively selected msg to load, by waiting briefly for more list
-			// selection shortcut actions. An event will have the 'ersatz' property set if it's
+			// selection shortcut actions. An event will have the 'kbNavEvent' property set if it's
 			// the result of a shortcut.
 			if (ev.kbNavEvent && ZmDoublePaneController.LIST_SELECTION_SHORTCUT_DELAY) {
 				if (this._listSelectionShortcutDelayActionId) {

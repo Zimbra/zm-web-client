@@ -15,8 +15,8 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmBriefcaseItem = function(id, list) {
-	ZmItem.call(this, ZmItem.BRIEFCASE, id, list);
+ZmBriefcaseItem = function(type, id, list) {
+	ZmItem.call(this, type || ZmItem.BRIEFCASE, id, list);
 	this.folderId = ZmOrganizer.ID_BRIEFCASE;
 	this.version = 0;
 }
@@ -33,7 +33,7 @@ function() {
 
 ZmBriefcaseItem.createFromDom =
 function(node, args) {
-	var item = new ZmBriefcaseItem(args.type || -1, node.id, args.list);
+	var item = new ZmBriefcaseItem(args.type || node._type || -1, node.id, args.list);
 	item.set(node);
 	return item;
 };

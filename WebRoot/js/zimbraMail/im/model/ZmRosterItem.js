@@ -44,21 +44,7 @@ function() {
  */
 ZmRosterItem.prototype._delete =
 function() {
-	this._modify(this.id, this.name, this.groupNames, true);
-};
-
-/**
- * modify item on server. notification will remove us from list
- */
-ZmRosterItem.prototype._modify =
-function(id, name, groupNames, doDelete) {
-	var soapDoc = AjxSoapDoc.create("IMSubscribeRequest", "urn:zimbraIM");
-	var method = soapDoc.getMethod();
-	method.setAttribute("addr", id);
-	if (name) method.setAttribute("name", name);
-	if (groupNames) method.setAttribute("groups", groupNames);
-	method.setAttribute("op", doDelete ? "remove" : "add");
-	appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true});
+	ZmImService.INSTANCE.deleteRosterItem(this);
 };
 
 ZmRosterItem.prototype.getPresence =
@@ -110,27 +96,6 @@ function(newName) {
 	fields[ZmRosterItem.F_NAME] = this.name;
 	this.list._notify(ZmEvent.E_MODIFY, { fields: fields, items: [this] });
 	delete this._toolTip;
-};
-
-/**
- * sends updated group list to server
- */
-ZmRosterItem.prototype.doRenameGroup =
-function(oldGroup, newGroup) {
-	var oldI = -1;
-	var newI = -1;
-	for (var i in this.groups) {
-		if (this.groups[i] == oldGroup) oldI = i;
-		if (this.groups[i] == newGroup) newI = i;
-	}
-	if (newI !=-1 || oldI == -1) return;
-	var newGroups = [];
-	for (var i in this.groups) {
-		if (i != oldI) newGroups.push(this.groups[i]);
-	}
-	newGroups.push(newGroup);
-	var newGroupNames = newGroups.join(",");
-	this._modify(this.id, this.name, newGroupNames, false);
 };
 
 ZmRosterItem.sortCompare =

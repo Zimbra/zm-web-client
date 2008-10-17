@@ -142,16 +142,22 @@ function(selectedArray) {
 };
 
 ZmBriefcaseView.prototype.set =
-function(folderId) {
+function(list) {              //We set list now, not folder id
 	var element = this.getHtmlElement();
-	var items = this._controller.getItemsInFolderFromCache(folderId);
+	if(list instanceof ZmList){
+       var list1 = list.getVector();
+       DwtListView.prototype.set.call(this,list1.clone());
+       //this._list = list1;
+       return;
+    }
+	/*var items = this._controller.getItemsInFolderFromCache(folderId);
 
 	var list = new AjxVector();
 	for(var i in items){
 		list.add(items[i]);
 	}
 	DwtListView.prototype.set.call(this,list);	
-	
+	*/
 };
 
 ZmBriefcaseView.prototype.getTitle =

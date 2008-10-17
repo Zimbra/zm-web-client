@@ -269,12 +269,13 @@ function(view) {
 
 	// we want to know when user switches accounts but can't do it until the
 	// overview panel content has been created. So, let's always check here.
-	if (appCtxt.multiAccounts &&
-		this._app._overviewPanelContent &&
-		!this._initMultiAccount)
-	{
-		this._initMultiAccount = true;
-		this._app._overviewPanelContent.addListener(DwtEvent.SELECTION, new AjxListener(this, this._accordionSelectionListener));
+	if (appCtxt.multiAccounts) {
+		var overviewContent = this._app.getOverviewPanelContent(true);
+		if (overviewContent && !this._initMultiAccount)
+		{
+			this._initMultiAccount = true;
+			overviewContent.addListener(DwtEvent.SELECTION, new AjxListener(this, this._accordionSelectionListener));
+		}
 	}
 
 	this._initializeToolBar(view);
@@ -324,7 +325,7 @@ function(view) {
 	var buttons = this._getToolBarOps();
 	if (!buttons) { return; }
 
-	var tb = this._toolbar[view] = new ZmButtonToolBar({parent:this._container, buttons:buttons, context:view});
+	var tb = this._toolbar[view] = new ZmButtonToolBar({parent:this._container, buttons:buttons, context:view, controller:this});
 
 	var button;
 	for (var i = 0; i < tb.opList.length; i++) {
@@ -380,7 +381,8 @@ function() {
 
 	var menuItems = this._getActionMenuOps();
 	if (!menuItems) return;
-	this._actionMenu = new ZmActionMenu({parent:this._shell, menuItems:menuItems, context:this._getMenuContext()});
+	this._actionMenu = new ZmActionMenu({parent:this._shell, menuItems:menuItems, context:this._getMenuContext(),
+										 controller:this});
 	this._addMenuListeners(this._actionMenu);
 	if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
 		this._setupTagMenu(this._actionMenu);
@@ -590,9 +592,13 @@ function(ev) {
 ZmListController.prototype._getMoveParams =
 function() {
 	var org = ZmApp.ORGANIZER[this._app._name] || ZmOrganizer.FOLDER;
-	var title = this._getMoveDialogTitle(this._pendingActionData.length);
-	return {data:this._pendingActionData, treeIds:[org], overviewId:"ZmListController",
-			title:title, description:ZmMsg.targetFolder};
+	return {
+		data:this._pendingActionData,
+		treeIds:[org],
+		overviewId:"ZmListController",
+		title:this._getMoveDialogTitle(this._pendingActionData.length),
+		description:ZmMsg.targetFolder
+	};
 };
 
 // Switch to selected view.
