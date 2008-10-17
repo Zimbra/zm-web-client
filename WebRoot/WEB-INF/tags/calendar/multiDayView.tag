@@ -41,8 +41,8 @@
 
     <c:set var="today" value="${zm:getToday(timezone)}"/>
     <c:set var="dayIncr" value="${(view eq 'workWeek') ? 7 : numdays}"/>
-    <c:set var="prevDate" value="${zm:addDay(date, -dayIncr+1)}"/>
-    <c:set var="nextDate" value="${zm:addDay(date,  dayIncr+1)}"/>
+    <c:set var="prevDate" value="${zm:addDay(date, -dayIncr)}"/>
+    <c:set var="nextDate" value="${zm:addDay(date,  dayIncr)}"/>
 
     <c:set var="rangeEnd" value="${zm:addDay(currentDay,numdays).timeInMillis}"/>
     <c:set var="checkedCalendars" value="${zm:getCheckedCalendarFolderIds(mailbox)}"/>

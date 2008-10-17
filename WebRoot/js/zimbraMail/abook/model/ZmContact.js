@@ -1107,6 +1107,13 @@ function(type, shortForm) {
 	return text;
 };
 
+ZmContact.prototype.getPrintHtml =
+function(preferHtml, callback) {
+	return this.isGroup()
+		? ZmGroupView.getPrintHtml(this, false)
+		: ZmContactView.getPrintHtml(this, false);
+};
+
 // these need to be kept in sync with ZmContact.F_*
 ZmContact._AB_FIELD = {
 	firstName:				ZmMsg.AB_FIELD_firstName,		// file as info
