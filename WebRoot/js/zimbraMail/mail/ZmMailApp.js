@@ -930,8 +930,6 @@ function(creates) {
 	var didAppAlert, didSoundAlert, didBrowserAlert = false;
 
 	// OFFLINE:
-	var msgCount = 0;
-	var offlineWinText = {};
 	var offlineToasterCount = 0;
 	var offlineToasterSupported = (appCtxt.isOffline && window.platform && (AjxEnv.isWindows || AjxEnv.isMac));
 
@@ -978,35 +976,23 @@ function(creates) {
 					? ([msg.subject, " - ", (msg.fragment || "")].join(""))
 					: (msg.fragment || "");
 
+				var title;
+				if (appCtxt.numVisibleAccounts > 1) {
+					var from = msg.getAddress(AjxEmailAddress.FROM)
+					var email = from.getName() || from.getAddress();
+					title = AjxMessageFormat.format(ZmMsg.newMail, [email, acct.getDisplayName()]);
+				} else {
+					title = ZmMsg.newMail;
+				}
+
 				if (AjxEnv.isMac) {
-					var title = (appCtxt.numVisibleAccounts > 1)
-						? ([ZmMsg.newMail, " (", acct.getDisplayName(), ")"].join(""))
-						: ZmMsg.newMail;
 					window.platform.showNotification(title, text, "resource://webapp/icons/default/launcher.icns");
-				} else if (AjxEnv.isWindows) {
-					var disp = acct.getDisplayName();
-					if (!offlineWinText[disp]) {
-						offlineWinText[disp] = [];
-					}
-					offlineWinText[disp].push(text);
+				}
+				else if (AjxEnv.isWindows) {
+					window.platform.icon().showNotification(title, text, 5);
 				}
 				offlineToasterCount++;
 			}
-			msgCount++;
-		}
-	}
-
-	// in windows, we aggregate the toaster messages into one message
-	if (offlineToasterSupported && AjxEnv.isWindows) {
-		var balloonText = [];
-		for (var j in offlineWinText) {
-			balloonText.push(j + "\n  " + offlineWinText[j].join("\n  "));
-		}
-		if (balloonText.length > 0) {
-			if (msgCount.length > 5) {
-				balloonText.push(ZmMsg.andMore);
-			}
-			window.platform.icon().showNotification(ZmMsg.newMail, balloonText.join("\n"), 5);
 		}
 	}
 };
