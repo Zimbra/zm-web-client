@@ -596,7 +596,7 @@ function(ev) {
 		// left click or selection via shortcut
 		overview.itemSelected(treeItem);
 		if (ev.kbNavEvent) {
-			treeItem._tree._scrollIntoView(treeItem._itemDiv, overview.getHtmlElement());
+			DwtControl._scrollIntoView(treeItem._itemDiv, overview.getHtmlElement());
 		}
 		if (overview._treeSelectionShortcutDelayActionId) {
 			AjxTimedAction.cancelAction(overview._treeSelectionShortcutDelayActionId);
