@@ -72,6 +72,11 @@ ZmOverview = function(params, controller) {
 		this._treeParents[treeId] = div.id = [this.id, treeId].join("-parent-");
 		element.appendChild(div);
 	}
+
+	if (this.dndSupported) {
+		var params = {container:this.getHtmlElement(), threshold:15, amount:5, interval:10, id:this.id}
+		this._dndScrollCallback = new AjxCallback(null, DwtControl._dndScrollCallback, [params]);
+	}
 }
 
 ZmOverview.prototype = new DwtComposite;

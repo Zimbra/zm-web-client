@@ -136,7 +136,9 @@ function(params) {
 		parent:this,
 		className:this._headerClass,
 		id:treeItemId,
-		button: params.newButton
+		button: params.newButton,
+		dndScrollCallback: this._overview._dndScrollCallback,
+		dndScrollId: this._overview.id
 	});
 //	ti.enableSelection(false); // by default, disallow selection
 	ti._isHeader = true;
@@ -356,6 +358,8 @@ function(parentNode, organizer, index, noTooltips, omit) {
 					text: parentOrganizer.getName(),
 					imageInfo: parentOrganizer.getIcon(),
 					forceNotifySelection: true,
+					dndScrollCallback: this._overview._dndScrollCallback,
+					dndScrollId: this._overview.id,
 					id: ZmId.getTreeItemId(this.overviewId, parentOrganizer.id)
 				});
 				parentNode.setData(Dwt.KEY_ID, parentOrganizer.id);
@@ -367,6 +371,7 @@ function(parentNode, organizer, index, noTooltips, omit) {
 		}
 		// now add item
 		ti = new DwtTreeItem({parent:parentNode, index:index, text:organizer.getName(this._showUnread),
+							  dndScrollCallback: this._overview._dndScrollCallback, dndScrollId: this._overview.id,
 							  imageInfo:organizer.getIcon(), id:ZmId.getTreeItemId(this.overviewId, organizer.id)});
 	}
 
