@@ -45,7 +45,7 @@ ZmListView = function(params) {
 	this._disallowSelection[ZmItem.F_FLAG] = true;
 
 	if (params.dropTgt) {
-		var params = {container:this._listDiv, threshold:15, amount:5, interval:100, id:params.id}
+		var params = {container:this._listDiv, threshold:15, amount:5, interval:10, id:params.id}
 		this._dndScrollCallback = new AjxCallback(null, DwtControl._dndScrollCallback, [params]);
 		this._dndScrollId = params.id;
 	}
