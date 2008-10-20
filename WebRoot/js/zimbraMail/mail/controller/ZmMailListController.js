@@ -1034,6 +1034,9 @@ ZmMailListController.prototype._printListener =
 function(ev) {
 	var listView = this._listView[this._currentView];
 	var items = listView.getSelection();
+	if (!(items instanceof Array)) {
+		items = [items];
+	}
 	var ids = [];
 
 	for (var i = 0; i < items.length; i++) {
