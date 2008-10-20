@@ -218,6 +218,13 @@ function(ev) {
 	ZmCalItemComposeController.prototype._cancelListener.call(this, ev);
 };
 
+ZmApptComposeController.prototype._printListener =
+function() {
+	var calItem = this._composeView._apptEditView._calItem;
+	var url = ("/h/printappointments?id=" + calItem.invId);
+	window.open(appContextPath+url, "_blank");
+};
+
 
 // Callbacks
 

@@ -113,3 +113,9 @@ ZmTaskController.prototype._getViewType =
 function() {
 	return ZmId.VIEW_TASKEDIT;
 };
+
+ZmTaskController.prototype._printListener =
+function() {
+	var url = ("/h/printtasks?id=" + this._composeView._calItem.invId);
+	window.open(appContextPath+url, "_blank");
+};
