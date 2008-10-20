@@ -82,6 +82,12 @@ ZmAutocompleteListView = function(params) {
 	this._addSelectionListener(new AjxListener(this, this._listSelectionListener));
 	this._outsideListener = new AjxListener(null, ZmAutocompleteListView._outsideMouseDownListener);
 
+	// bug fix #32455 - reset data when account changes
+	if (appCtxt.numVisibleAccounts > 1) {
+		var opc = this._dataClass.getOverviewPanelContent();
+		opc.addSelectionListener(new AjxListener(this, this._accountChangeListener));
+	}
+
 	// only trigger matching after a sufficient pause
 	this._acInterval = appCtxt.get(ZmSetting.AC_TIMER_INTERVAL);
 	this._acAction = new AjxTimedAction(null, this._autocompleteAction);
@@ -288,6 +294,11 @@ function(ev) {
 			ev._returnValue = true;
 		}
 	}
+};
+
+ZmAutocompleteListView.prototype._accountChangeListener =
+function(ev) {
+	this._dataLoaded = false;
 };
 
 // Public methods
