@@ -245,7 +245,7 @@ function(menu) {
  */
 ZmSearchController.prototype.search =
 function(params) {
-	if (this._searchFor != ZmItem.APPT && (!(params.query && params.query.length))) { return; }
+	if (params.searchFor != ZmItem.APPT && (!(params.query && params.query.length))) { return; }
 
 	// if the search string starts with "$set:" then it is a command to the client
 	if (params.query.indexOf("$set:") == 0 || params.query.indexOf("$cmd:") == 0) {
@@ -289,6 +289,7 @@ function(search, noRender, changes, callback, errorCallback) {
 	params.lastSortVal	= search.lastSortVal;
 	params.lastId		= search.lastId;
 	params.soapInfo		= search.soapInfo;
+	params.searchFor	= this._searchFor;
 
 	if (changes) {
 		for (var key in changes) {
@@ -399,7 +400,7 @@ function(types) {
 ZmSearchController.prototype._doSearch =
 function(params, noRender, callback, errorCallback) {
 
-	params.searchFor = this._searchFor = params.searchFor || this._searchFor;
+	this._searchFor = params.searchFor;
 	if (appCtxt.zimletsPresent()) {
 		appCtxt.getZimletMgr().notifyZimlets("onSearch", params.query);
 	}
@@ -477,13 +478,15 @@ function(search, noRender, isMixed, callback, result) {
 		this._showResults(results, search, isMixed);
 	}
 
-	if (callback) callback.run(result);
+	if (callback) {
+		callback.run(result);
+	}
 };
 
 ZmSearchController.prototype._showResults =
 function(results, search, isMixed) {
 	// allow old results to dtor itself
-	if (this._results && (this._results.type == results.type)) {
+	if (this._results && (this._results.type == results.type) && this._results.dtor) {
 		this._results.dtor();
 	}
 	this._results = results;
