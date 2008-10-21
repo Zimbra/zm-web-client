@@ -1759,6 +1759,8 @@ function() {
 ZmZimbraMail.prototype.handleKeyAction =
 function(actionCode, ev) {
 
+	DwtMenu.closeActiveMenu();
+
 	var app = ZmApp.GOTO_ACTION_CODE_R[actionCode];
 	if (app) {
 		if (app == this.getActiveApp()) { return false; }
