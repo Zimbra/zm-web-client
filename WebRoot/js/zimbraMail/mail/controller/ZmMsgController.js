@@ -131,10 +131,13 @@ function(actionCode) {
 
 ZmMsgController.prototype._getToolBarOps = 
 function() {
+	var list;
 	if (appCtxt.isChildWindow) {
-		return [ZmOperation.PRINT, ZmOperation.CLOSE];
+		list = [ZmOperation.CLOSE, ZmOperation.PRINT];
+		list.push(ZmOperation.SEP);
+		list = list.concat(this._msgOps());
 	} else {
-		var list = this._standardToolBarOps();
+		list = this._standardToolBarOps();
 		list.push(ZmOperation.SEP);
 		list = list.concat(this._msgOps());
 		list.push(ZmOperation.SEP,
@@ -142,9 +145,11 @@ function() {
 					ZmOperation.SEP,
 					ZmOperation.TAG_MENU,
 					ZmOperation.SEP);
-        if(appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED))  list.push(ZmOperation.DETACH);
-        return list;
+		if (appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED)) {
+			list.push(ZmOperation.DETACH);
+		}
 	}
+	return list;
 };
 
 ZmMsgController.prototype._initializeToolBar =

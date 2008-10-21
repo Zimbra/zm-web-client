@@ -139,7 +139,7 @@ function() {
 
 	if (!this._appViewMgr) {
 		this._appViewMgr = new ZmAppViewMgr(this._shell, this, true, false);
-                this._statusView = new ZmStatusView(this._shell, "ZmStatus", Dwt.ABSOLUTE_STYLE, ZmId.STATUS_VIEW);
+		this._statusView = new ZmStatusView(this._shell, "ZmStatus", Dwt.ABSOLUTE_STYLE, ZmId.STATUS_VIEW);
 	}
 
 	var rootTg = appCtxt.getRootTabGroup();
@@ -158,44 +158,44 @@ function() {
 	apps[ZmApp.MAIL] = true;
 	apps[ZmApp.CONTACTS] = true;
 	apps[ZmApp.PREFERENCES] = true;
-        this._createEnabledApps(apps);
+	this._createEnabledApps(apps);
 
 	// inherit parent's identity collection
 	var parentPrefsApp = parentAppCtxt.getApp(ZmApp.MAIL);
 	appCtxt.getApp(ZmApp.MAIL)._identityCollection = parentPrefsApp.getIdentityCollection();
 
-        //Find target first.
-        var target;
-        if (window.newWindowCommand == "compose" || window.newWindowCommand == "composeDetach") {
-                target = "compose-window";
-        }else if (window.newWindowCommand == "msgViewDetach") {
-                target = "view-window";
-        }
+	// Find target first.
+	var target;
+	if (window.newWindowCommand == "compose" || window.newWindowCommand == "composeDetach") {
+		target = "compose-window";
+	} else if (window.newWindowCommand == "msgViewDetach") {
+		target = "view-window";
+	}
 
-        // setup zimlets, Load it first becoz.. zimlets has to get processed first.
+	// setup zimlets, Load it first becoz.. zimlets has to get processed first.
 	if (target) {
 		var zimletArray = this.__hack_zimletArray() || [];
 		if (this.__hack_hasZimletsForTarget(zimletArray, target)) {
 			var zimletMgr = appCtxt.getZimletMgr();
 			var userProps = this.__hack_userProps();
-                        var createViewCallback =  new AjxCallback(this, this._createView);
-                        zimletMgr.loadZimlets(zimletArray, userProps, target, createViewCallback, true);
-                        return;
-                }
+			var createViewCallback =  new AjxCallback(this, this._createView);
+			zimletMgr.loadZimlets(zimletArray, userProps, target, createViewCallback, true);
+			return;
+		}
 	}
 
-        this._createView();
+	this._createView();
 
-        var kbMgr = appCtxt.getKeyboardMgr();
+	var kbMgr = appCtxt.getKeyboardMgr();
 	kbMgr.setTabGroup(rootTg);
 	kbMgr.grabFocus(startupFocusItem);
 };
 
-ZmNewWindow.prototype._createView = function(){
+ZmNewWindow.prototype._createView =
+function() {
+	var rootTg = appCtxt.getRootTabGroup();
 
-    var rootTg = appCtxt.getRootTabGroup();
-
-    // depending on the command, do the right thing
+	// depending on the command, do the right thing
 	if (window.newWindowCommand == "compose" || window.newWindowCommand == "composeDetach") {
 		var cc = AjxDispatcher.run("GetComposeController");
 		cc.isChildWindow = true;
@@ -228,7 +228,7 @@ ZmNewWindow.prototype._createView = function(){
 				parentCC._app.popView(true);
 			}
 		}
-                cc._setComposeTabGroup();
+		cc._setComposeTabGroup();
 		rootTg.addMember(cc.getTabGroup());
 		startupFocusItem = cc._composeView.getAddrFields()[0];
 
@@ -248,7 +248,8 @@ ZmNewWindow.prototype._createView = function(){
  * HACK: This should go away once we have a cleaner server solution that
  *       allows us to get just those zimlets for the specified target.
  */
-ZmNewWindow.prototype.__hack_hasZimletsForTarget = function(zimletArray, target) {
+ZmNewWindow.prototype.__hack_hasZimletsForTarget =
+function(zimletArray, target) {
 	var targetRe = new RegExp("\\b"+target+"\\b");
 	for (var i=0; i < zimletArray.length; i++) {
 		var zimletObj = zimletArray[i];
@@ -259,10 +260,13 @@ ZmNewWindow.prototype.__hack_hasZimletsForTarget = function(zimletArray, target)
 	}
 	return false;
 };
-ZmNewWindow.prototype.__hack_zimletArray = function() {
+ZmNewWindow.prototype.__hack_zimletArray =
+function() {
 	return parentAppCtxt.get(ZmSetting.ZIMLETS);
 };
-ZmNewWindow.prototype.__hack_userProps = function() {
+
+ZmNewWindow.prototype.__hack_userProps =
+function() {
 	var userPropsArray = parentAppCtxt.get(ZmSetting.USER_PROPS);
 
 	// default to original user props
@@ -291,38 +295,42 @@ ZmNewWindow.prototype.__hack_userProps = function() {
 */
 ZmNewWindow.prototype.sendRequest =
 function(params) {
-    //bypass error callback to get control over exceptions in the childwindow.
-    var errCallback = new AjxCallback(this, this._handleException, [( params.errorCallback || null )]);
-    params.errorCallback = errCallback;
+	// bypass error callback to get control over exceptions in the childwindow.
+	params.errorCallback = new AjxCallback(this, this._handleException, [( params.errorCallback || null )]);
 	return window.parentController ? window.parentController.sendRequest(params) : null;
 };
 
 ZmNewWindow.prototype._handleException =
-function(errCallback, ex){
-    var handled = false;
-    if(errCallback) {
-        handled = errCallback.run(ex);
-    }
-    if (!handled) {
-        ZmController.prototype._handleException.apply(this, [ex]);
-    }
-    return true;
+function(errCallback, ex) {
+	var handled = false;
+	if (errCallback) {
+		handled = errCallback.run(ex);
+	}
+	if (!handled) {
+		ZmController.prototype._handleException.apply(this, [ex]);
+	}
+	return true;
 };
 
 ZmNewWindow.prototype.popupErrorDialog =
 function(msg, ex, noExecReset, hideReportButton)  {
-    //Since ex is from parent window, all the types seems like objects, so need to filter the functions
-    var detailStr = null;
-    if (ex instanceof Object || typeof ex == "object") {
+	// Since ex is from parent window, all the types seems like objects, so need
+	// to filter the functions
+	var detailStr;
+	if (ex instanceof Object || typeof ex == "object") {
 		var details = [];
 		ex.msg = ex.msg || msg;
 		for (var prop in ex) {
-            if (typeof ex[prop] == "function" || ( typeof ex[prop] == "object" && ex[prop].apply && ex[prop].call)) { continue; }
+			if (typeof ex[prop] == "function" ||
+				(typeof ex[prop] == "object" && ex[prop].apply && ex[prop].call))
+			{
+				continue;
+			}
 			details.push([prop, ": ", ex[prop], "<br/>\n"].join(""));
 		}
 		detailStr = details.join("");
 	}
-    ZmController.prototype.popupErrorDialog.call(this, msg, ( detailStr || ex ), noExecReset, hideReportButton);
+	ZmController.prototype.popupErrorDialog.call(this, msg, ( detailStr || ex ), noExecReset, hideReportButton);
 };
 
 /**
@@ -330,15 +338,15 @@ function(msg, ex, noExecReset, hideReportButton)  {
 */
 ZmNewWindow.prototype.setStatusMsg =
 function(params) {
-    //bug: 26478. Changed status msg to be displayed within the child window.
-    params = Dwt.getParams(arguments, ZmStatusView.MSG_PARAMS);
-    if(AjxEnv.isIE){
-        if (typeof params == "string") {
-            params = { msg: params };
-        }
-        params.transitions = [ZmToast.SHOW, ZmToast.PAUSE ];
-    }
-    this._statusView.setStatusMsg(params);
+	// bug: 26478. Changed status msg to be displayed within the child window.
+	params = Dwt.getParams(arguments, ZmStatusView.MSG_PARAMS);
+	if (AjxEnv.isIE) {
+		if (typeof params == "string") {
+			params = {msg: params};
+		}
+		params.transitions = [ZmToast.SHOW, ZmToast.PAUSE];
+	}
+	this._statusView.setStatusMsg(params);
 };
 
 /**
@@ -365,8 +373,9 @@ function() {
 // App view mgr calls this, we don't need it to do anything.
 ZmNewWindow.prototype.setActiveApp = function() {};
 
-ZmNewWindow.prototype.getKeyMapMgr = function(){
-    return this._kbMgr;
+ZmNewWindow.prototype.getKeyMapMgr =
+function() {
+	return this._kbMgr;
 };
 
 ZmNewWindow.prototype.getKeyMapName =
@@ -380,18 +389,12 @@ function() {
 
 ZmNewWindow.prototype.handleKeyAction =
 function(actionCode, ev) {
-	switch (actionCode) {
-		default: {
-			var ctlr = appCtxt.getCurrentController();
-			if (ctlr && ctlr.handleKeyAction) {
-				return ctlr.handleKeyAction(actionCode, ev);
-			} else {
-				return false;
-			}
-			break;
-		}
+	var ctlr = appCtxt.getCurrentController();
+	if (ctlr && ctlr.handleKeyAction) {
+		return ctlr.handleKeyAction(actionCode, ev);
 	}
-	return true;
+
+	return false;
 };
 
 
@@ -510,7 +513,9 @@ function(msg) {
 
 ZmNewWindow._confirmExitMethod =
 function(ev) {
-	if (window.parentController && (window.newWindowCommand == "compose" || window.newWindowCommand == "composeDetach")) {
+	if (window.parentController &&
+		(window.newWindowCommand == "compose" || window.newWindowCommand == "composeDetach"))
+	{
 		var cc = AjxDispatcher.run("GetComposeController");
 		// only show native confirmation dialog if compose view is dirty
 		if (cc && cc._composeView.isDirty()) {
