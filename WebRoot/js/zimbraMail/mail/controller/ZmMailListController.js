@@ -684,22 +684,23 @@ function(items, on) {
 	list.markRead(items, on);
 };
 
-/*
+/**
 * Marks the given items as "spam" or "not spam". Items marked as spam are moved to
 * the Junk folder. If items are being moved out of the Junk folder, they will be
 * marked "not spam", and the destination folder may be provided. It defaults to Inbox
 * if not present.
 *
-* @param items		[Array]			a list of items to move
-* @param folder		[ZmFolder]		destination folder
-* @param attrs		[Object]		additional attrs for SOAP command
+* @param items			[Array]			a list of items to move
+* @param markAsSpam		[boolean]		spam or not spam
+* @param folder			[ZmFolder]		destination folder
 */
 ZmMailListController.prototype._doSpam =
 function(items, markAsSpam, folder) {
 	if (!(items instanceof Array)) items = [items];
 
 	var list = items[0].list || this._list;
-	list.spamItems(items, markAsSpam, folder);
+	var childWin = appCtxt.isChildWindow ? window : null;
+	list.spamItems(items, markAsSpam, folder, childWin);
 };
 
 ZmMailListController.prototype._inviteReplyHandler =

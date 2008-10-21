@@ -104,9 +104,10 @@ function(folder, callback, result) {
 * @param items			[Array]			a list of items to move
 * @param markAsSpam		[boolean]		if true, mark as "spam"
 * @param folder			[ZmFolder]*		destination folder
+* @param childWin		[window]*		child window this action is happening for
 */
 ZmMailList.prototype.spamItems = 
-function(items, markAsSpam, folder) {
+function(items, markAsSpam, folder, childWin) {
 	if (this.type == ZmItem.MIXED && !this._mixedType) {
 		this._mixedAction("spamItems", [items, markAsSpam, folder]);
 		return;
@@ -118,12 +119,12 @@ function(items, markAsSpam, folder) {
 	attrs.tcon = this._getTcon();
 	if (folder) attrs.l = folder.id;
 
-	var respCallback = new AjxCallback(this, this._handleResponseSpamItems, [markAsSpam, folder]);
+	var respCallback = new AjxCallback(this, this._handleResponseSpamItems, [markAsSpam, folder, childWin]);
 	this._itemAction({items: items, action: action, attrs: attrs, callback: respCallback});
 };
 
 ZmMailList.prototype._handleResponseSpamItems =
-function(markAsSpam, folder, result) {
+function(markAsSpam, folder, childWin, result) {
 	var movedItems = result.getResponse();
 	if (movedItems && movedItems.length) {
 		folderId = markAsSpam ? ZmFolder.ID_SPAM : (folder ? folder.id : ZmFolder.ID_INBOX);
@@ -135,6 +136,10 @@ function(markAsSpam, folder, result) {
 
 		var msg = markAsSpam ? ZmMsg.markedAsJunk : ZmMsg.markedAsNotJunk;
 		appCtxt.setStatusMsg(AjxMessageFormat.format(msg, movedItems.length));
+
+		if (childWin) {
+			childWin.close();
+		}
 	}
 };
 

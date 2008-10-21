@@ -419,14 +419,15 @@ function(msg, resp) {
 
 ZmConvListController.prototype._redrawDraftItemRows =
 function(msg) {
+	var lv = this._listView[this._currentView];
 	var conv = appCtxt.getById(msg.cid);
 	if (conv) {
 		conv._loadFromMsg(msg);	// update conv
-		this._listView[this._currentView].redrawItem(conv);
-		this._listView[this._currentView].setSelection(conv, true);
+		lv.redrawItem(conv);
+		lv.setSelection(conv, true);
 	}
 	// don't think a draft conv is ever expandable, but try anyway
-	this._listView[this._currentView].redrawItem(msg);
+	lv.redrawItem(msg);
 };
 
 /**

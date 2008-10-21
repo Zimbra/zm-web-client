@@ -136,6 +136,7 @@ function() {
 		list = [ZmOperation.CLOSE, ZmOperation.SEP, ZmOperation.PRINT, ZmOperation.DELETE];
 		list.push(ZmOperation.SEP);
 		list = list.concat(this._msgOps());
+		list.push(ZmOperation.SEP, ZmOperation.SPAM);
 	} else {
 		list = this._standardToolBarOps();
 		list.push(ZmOperation.SEP);
