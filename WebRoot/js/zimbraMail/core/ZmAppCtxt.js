@@ -903,8 +903,10 @@ function(keyMap, shortcut, orgId) {
 					break;
 				}
 			}
+			if (!sc) { return null; }
 			if (orgId) {
 				var customKeys = this._getCustomKeys();
+				if (!customKeys) { return null; }
 				var key = ["custom", orgId].join(".");
 				var alias = customKeys[key];
 				sc = sc.replace("NNN", alias);
