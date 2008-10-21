@@ -836,7 +836,7 @@ function(items) {
 	list.removeAllTags(items);
 };
 
-/*
+/**
 * Deletes one or more items from the list.
 *
 * @param items			[Array]			list of items to delete
@@ -848,7 +848,8 @@ function(items, hardDelete, attrs) {
 	if (!(items instanceof Array)) items = [items];
 	if (items.length) {
 		var list = items[0].list || this._list;
-		list.deleteItems(items, hardDelete, attrs);
+		var win = appCtxt.isChildWindow ? window : null;
+		list.deleteItems(items, hardDelete, attrs, win);
 	}
 };
 

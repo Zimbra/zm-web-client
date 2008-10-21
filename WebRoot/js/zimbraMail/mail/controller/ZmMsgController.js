@@ -133,7 +133,7 @@ ZmMsgController.prototype._getToolBarOps =
 function() {
 	var list;
 	if (appCtxt.isChildWindow) {
-		list = [ZmOperation.CLOSE, ZmOperation.PRINT];
+		list = [ZmOperation.CLOSE, ZmOperation.SEP, ZmOperation.PRINT, ZmOperation.DELETE];
 		list.push(ZmOperation.SEP);
 		list = list.concat(this._msgOps());
 	} else {
