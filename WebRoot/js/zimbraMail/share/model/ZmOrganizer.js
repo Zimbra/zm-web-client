@@ -613,12 +613,8 @@ ZmOrganizer.prototype.getToolTip =
 function(force) {
 	if (!this._tooltip || force) {
 		var itemText = this._getItemsText();
-		if (this.numTotal) {
-			var subs = {itemText:itemText, numTotal:this.numTotal, sizeTotal:this.sizeTotal};
-			this._tooltip = AjxTemplate.expand("share.App#FolderTooltip", subs);
-		} else {
-			this._tooltip = AjxMessageFormat.format(ZmMsg.noItems, itemText);
-		}
+		var subs = {itemText:itemText, numTotal:this.numTotal, sizeTotal:this.sizeTotal};
+		this._tooltip = AjxTemplate.expand("share.App#FolderTooltip", subs);
 	}
 	return this._tooltip;
 };
