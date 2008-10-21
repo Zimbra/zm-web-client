@@ -315,7 +315,11 @@ function(items, tagId, doTag) {
 		this._mixedAction("tagItems", [items, tagId, doTag]);
 		return;
 	}
-	if (!(items instanceof Array)) items = [items];
+
+	// child window loses type info so test for array in a different way
+	if ((!(items instanceof Array)) && items.length === undefined) {
+		items = [items];
+	}
 
 	// only tag items that don't have the tag, and untag ones that do
 	// always tag a conv, because we don't know if all items in the conv have the tag yet

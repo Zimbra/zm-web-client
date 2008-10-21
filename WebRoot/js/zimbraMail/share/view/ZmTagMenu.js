@@ -53,8 +53,10 @@ ZmTagMenu = function(parent, controller) {
 ZmTagMenu.prototype = new ZmPopupMenu;
 ZmTagMenu.prototype.constructor = ZmTagMenu;
 
-ZmTagMenu.KEY_TAG_EVENT = "_tagEvent_";
-ZmTagMenu.KEY_TAG_ADDED = "_tagAdded_";
+ZmTagMenu.KEY_TAG_EVENT		= "_tagEvent_";
+ZmTagMenu.KEY_TAG_ADDED		= "_tagAdded_";
+ZmTagMenu.MENU_ITEM_ADD_ID	= "tag_add";
+ZmTagMenu.MENU_ITEM_REM_ID	= "tag_remove";
 
 ZmTagMenu._HOVER_TIME = 200;
 
@@ -179,7 +181,7 @@ function(tagList, addRemove) {
 	}
 
 	// add static "New Tag" menu item
-	var miNew = new DwtMenuItem({parent:this});
+	var miNew = this._menuItems[ZmTagMenu.MENU_ITEM_ADD_ID] = new DwtMenuItem({parent:this});
 	miNew.setText(AjxStringUtil.htmlEncode(ZmMsg.newTag));
 	miNew.setImage("NewTag");
 	miNew.setShortcut(appCtxt._getShortcutHint(this._keyMap, ZmKeyMap.NEW_TAG));
@@ -187,7 +189,7 @@ function(tagList, addRemove) {
 	miNew.addSelectionListener(new AjxListener(this, this._menuItemSelectionListener), 0);
 
 	// add static "Remove Tag" menu item
-	var miRemove = new DwtMenuItem({parent:this});
+	var miRemove = this._menuItems[ZmTagMenu.MENU_ITEM_REM_ID] = new DwtMenuItem({parent:this});
 	miRemove.setEnabled(false);
 	miRemove.setText(AjxStringUtil.htmlEncode(ZmMsg.removeTag));
 	miRemove.setImage("DeleteTag");

@@ -390,7 +390,6 @@ function(view, arrowStyle) {
 	this._setupViewMenu(view, false);
 	this._setupDeleteButton(this._toolbar[view]);
 	this._setupSpamButton(this._toolbar[view]);
-	this._setupReplyForwardOps(this._toolbar[view]);
 	this._setupCheckMailButton(this._toolbar[view]);
 
 	// nuke the text for tag menu for 800x600 resolutions
@@ -438,7 +437,6 @@ function() {
 
 	if (this._actionMenu) {
 		this._setupSpamButton(this._actionMenu);
-		this._setupReplyForwardOps(this._actionMenu);
 		if (!isInitialized) {
 			this._setupEditButton(this._actionMenu);
 		}
@@ -854,22 +852,6 @@ function(parent) {
 		var checkMailMsg = appCtxt.isOffline ? ZmMsg.sendReceive : ZmMsg.checkMail;
 		checkMailBtn.setText(checkMailMsg);
 		checkMailBtn.setToolTipContent(ZmMsg.checkMailTooltip);
-	}
-};
-
-ZmMailListController.prototype._setupReplyForwardOps =
-function(parent) {
-	if (!parent) { return; }
-
-	var inDraftsFolder = (this._getSearchFolderId() == ZmFolder.ID_DRAFTS);
-	var ops = [];
-
-	if (appCtxt.get(ZmSetting.REPLY_MENU_ENABLED)) {
-		ops.push(ZmOperation.REPLY, ZmOperation.REPLY_ALL);
-	}
-
-	if (appCtxt.get(ZmSetting.FORWARD_MENU_ENABLED)) {
-		ops.push(ZmOperation.FORWARD);
 	}
 };
 

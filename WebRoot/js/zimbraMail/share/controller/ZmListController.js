@@ -948,14 +948,26 @@ function(parent) {
 		var tagMenu = parent.getTagMenu();
 		// dynamically build tag menu add/remove lists
 		var items = this._listView[this._currentView].getSelection();
-		if (items instanceof ZmItem)
+
+		// child window loses type info so test for array in a different way
+		if ((!(items instanceof Array)) && items.length === undefined) {
 			items = [items];
+		}
+
 		// fetch tag tree from appctxt (not cache) for multi-account case
 		tagMenu.set(items, appCtxt.getTagTree());
 		if (parent instanceof ZmActionMenu)
 			tagOp.setText(this._getTagMenuMsg(items.length));
 		else {
 			tagMenu.parent.popup();
+
+			// bug #17584 - we currently don't support creating new tags in new window
+			if (appCtxt.isChildWindow) {
+				var mi = tagMenu.getMenuItem(ZmTagMenu.MENU_ITEM_ADD_ID);
+				if (mi) {
+					mi.setVisible(false);
+				}
+			}
 		}
 	}
 };
