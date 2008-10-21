@@ -168,6 +168,11 @@ function(actionCode) {
 	}
 
 	switch (actionCode) {
+
+		case ZmKeyMap.GET_MAIL:
+			this._checkMailListener();
+			break;
+
 		case ZmKeyMap.REPLY:
 		case ZmKeyMap.REPLY_ALL:
 			if (!isDrafts && (num == 1) && !isSyncFailures) {
