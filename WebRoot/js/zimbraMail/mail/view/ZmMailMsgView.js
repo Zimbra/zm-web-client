@@ -374,10 +374,7 @@ function() {
 	for (var i = 0; i < operationButtonIds.length; i++) {
 		var id = operationButtonIds[i];
 
-		// HACK for IE, which doesn't support multiple classnames. If I
-		// just change the styles, the hovered class overrides the basic
-		// hovered class definition, thus I have to change what the
-		// hovered class name will be for the buttons in the toolbar.
+		// HACK: IE doesn't support multiple classnames.
 		var button = this._inviteToolbar.getButton(id);
 		button._hoverClassName = button._className + "-" + DwtCssStyle.HOVER;
 		button._activeClassName = button._className + "-" + DwtCssStyle.ACTIVE;
@@ -463,7 +460,6 @@ function(ofolder, nfolder, select, resp) {
 
 ZmMailMsgView.prototype._getShareToolbar =
 function() {
-
 	if (this._shareToolbar) { return this._shareToolbar; }
 
 	var buttonIds = [ZmOperation.SHARE_ACCEPT, ZmOperation.SHARE_DECLINE];
@@ -478,19 +474,16 @@ function() {
 	};
 	this._shareToolbar = new ZmButtonToolBar(params);
 
-	var shareToolBarListener = new AjxListener(this, this._shareToolBarListener);
+	var listener = new AjxListener(this, this._shareToolBarListener);
 	for (var i = 0; i < buttonIds.length; i++) {
 		var id = buttonIds[i];
 
-		// HACK for IE, which doesn't support multiple classnames. If I
-		// just change the styles, the hovered class overrides the basic
-		// hovered class definition, thus I have to change what the
-		// hovered class name will be for the buttons in the toolbar.
+		// HACK: IE doesn't support multiple class names.
 		var b = this._shareToolbar.getButton(id);
 		b._hoverClassName = b._className + "-" + DwtCssStyle.HOVER;
 		b._activeClassName = b._className + "-" + DwtCssStyle.ACTIVE;
 
-		this._shareToolbar.addSelectionListener(id, shareToolBarListener);
+		this._shareToolbar.addSelectionListener(id, listener);
 	}
 
 	return this._shareToolbar;

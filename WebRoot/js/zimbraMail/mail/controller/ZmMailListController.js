@@ -741,10 +741,17 @@ function(ev) {
 	var folder = appCtxt.getById(ZmFolder.ID_TRASH);
 
 	var list = msg.list || this.getList();
-	list.moveItems(msg, folder);
+	var callback = (appCtxt.isChildWindow)
+		? (new AjxCallback(this, this._handleAcceptShareInNewWindow)) : null;
+	list.moveItems(msg, folder, null, callback);
 };
 
 ZmMailListController.prototype._declineShareHandler = ZmMailListController.prototype._acceptShareHandler;
+
+ZmMailListController.prototype._handleAcceptShareInNewWindow =
+function() {
+	window.close();
+};
 
 ZmMailListController.prototype.getReferenceView =
 function() {
