@@ -22,11 +22,11 @@
  * Loaded: upon IM notifications
  */
 
-// AjxPackage.require("ajax.dwt.core.DwtDragTracker");
 AjxPackage.require("ajax.dwt.events.DwtIdleTimer");
 
 AjxPackage.require("zimbraMail.im.model.ZmImService");
 AjxPackage.require("zimbraMail.im.model.ZmZimbraImService");
+AjxPackage.require("zimbraMail.im.model.ZmYahooImService");
 AjxPackage.require("zimbraMail.im.model.ZmImGateway");
 AjxPackage.require("zimbraMail.im.model.ZmRoster");
 AjxPackage.require("zimbraMail.im.model.ZmRosterItem");

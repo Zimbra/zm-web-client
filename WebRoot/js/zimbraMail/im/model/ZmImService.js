@@ -15,6 +15,15 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * Creates an IM service.
+ * @constructor
+ * @class
+ * This class is a base class for IM services. The app should create only one instance
+ * of a service, and after it is created the single instance should be accessed via
+ * ZmImService.INSTANCE.
+ *
+ */
 ZmImService = function() {
 	if (arguments.length == 0) { return; }
 

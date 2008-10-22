@@ -52,6 +52,12 @@ function() {
 	return this.presence;
 };
 
+ZmRosterItem.prototype.addGroup =
+function(groupName) {
+	this.groups.push(groupName);
+	this.groupNames = this.groups.join(",");
+};
+
 ZmRosterItem.prototype._notifyTyping = function(typing) {
 	var fields = {};
 	fields[ZmRosterItem.F_TYPING] = !!typing;

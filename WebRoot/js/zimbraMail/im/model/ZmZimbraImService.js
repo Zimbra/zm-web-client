@@ -15,6 +15,13 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * Creates the Zimbra IM service.
+ * @constructor
+ * @class
+ * This service communicates with the Zimbra IM server. 
+ *
+ */
 ZmZimbraImService = function() {
 	ZmImService.call(this, true);
 
