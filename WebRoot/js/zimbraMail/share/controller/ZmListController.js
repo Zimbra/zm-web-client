@@ -269,7 +269,7 @@ function(view) {
 
 	// we want to know when user switches accounts but can't do it until the
 	// overview panel content has been created. So, let's always check here.
-	if (appCtxt.multiAccounts) {
+	if (!appCtxt.isChildWindow && appCtxt.multiAccounts) {
 		var overviewContent = this._app.getOverviewPanelContent(true);
 		if (overviewContent && !this._initMultiAccount)
 		{

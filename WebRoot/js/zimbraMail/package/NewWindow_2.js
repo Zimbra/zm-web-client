@@ -29,12 +29,14 @@ AjxPackage.require("ajax.dwt.keyboard.DwtTabGroupEvent");
 AjxPackage.require("ajax.dwt.keyboard.DwtKeyMapMgr");
 AjxPackage.require("ajax.dwt.keyboard.DwtKeyboardMgr");
 AjxPackage.require("ajax.dwt.keyboard.DwtTabGroup");
-
 AjxPackage.require("ajax.dwt.core.DwtId");
-
+AjxPackage.require("ajax.dwt.dnd.DwtDragEvent");
+AjxPackage.require("ajax.dwt.dnd.DwtDragSource");
 AjxPackage.require("ajax.dwt.dnd.DwtDropEvent");
 AjxPackage.require("ajax.dwt.dnd.DwtDropTarget");
 AjxPackage.require("ajax.dwt.events.DwtDisposeEvent");
+
+AjxPackage.require("ajax.util.AjxDateUtil");
 
 AjxPackage.require("zimbra.csfe.ZmBatchCommand");
 AjxPackage.require("zimbra.csfe.ZmCsfeCommand");
@@ -96,7 +98,10 @@ AjxPackage.require("zimbraMail.core.ZmNewWindow");
 
 AjxPackage.require("zimbraMail.prefs.ZmPreferencesApp");
 AjxPackage.require("zimbraMail.mail.ZmMailApp");
+AjxPackage.require("zimbraMail.calendar.ZmCalendarApp");
 AjxPackage.require("zimbraMail.abook.ZmContactsApp");
+
+AjxPackage.require("zimbraMail.calendar.model.ZmCalBaseItem");
 
 AjxPackage.require("zimbraMail.mail.model.ZmMailItem");
 AjxPackage.require("zimbraMail.mail.model.ZmMailMsg");

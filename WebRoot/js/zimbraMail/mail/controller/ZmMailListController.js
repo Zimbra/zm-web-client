@@ -714,7 +714,10 @@ function(ev) {
 	}
 	else
 	{
-		this._sendInviteReply(type, compId);
+		var resp = this._sendInviteReply(type, compId);
+		if (resp && appCtxt.isChildWindow) {
+			window.close();
+		}
 	}
 	return false;
 };
@@ -980,7 +983,7 @@ function(type, componentId, instanceDate, accountName) {
 		msg.setSubject(subject);
 	}
 	var errorCallback = new AjxCallback(this, this._handleErrorInviteReply);
-	msg.sendInviteReply(contactList, true, componentId, null, errorCallback, instanceDate, accountName);
+	return msg.sendInviteReply(contactList, true, componentId, null, errorCallback, instanceDate, accountName);
 };
 
 ZmMailListController.prototype._handleErrorInviteReply =

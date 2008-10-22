@@ -177,9 +177,8 @@ function(msg) {
 
 	var invite = msg.invite;
 
-	if ((appCtxt.get(ZmSetting.CALENDAR_ENABLED)) &&
-		invite && invite.type != "task" &&
-		!appCtxt.isChildWindow)
+	if (appCtxt.get(ZmSetting.CALENDAR_ENABLED) &&
+		(invite && invite.type != "task"))
 	{
 		if (!invite.isEmpty() && !invite.hasMultipleComponents() &&
 			invite.getStatus() != ZmCalendarApp.STATUS_CANC &&
@@ -347,11 +346,18 @@ function (listener) {
 
 ZmMailMsgView.prototype._getInviteToolbar =
 function() {
-
 	if (this._inviteToolbar) { return this._inviteToolbar; }
 
-	var operationButtonIds = [ZmOperation.REPLY_ACCEPT, ZmOperation.REPLY_TENTATIVE, ZmOperation.REPLY_DECLINE];
-	var replyButtonIds = [ZmOperation.INVITE_REPLY_ACCEPT,ZmOperation.INVITE_REPLY_TENTATIVE,ZmOperation.INVITE_REPLY_DECLINE];
+	var operationButtonIds = [
+		ZmOperation.REPLY_ACCEPT,
+		ZmOperation.REPLY_TENTATIVE,
+		ZmOperation.REPLY_DECLINE
+	];
+	var replyButtonIds = [
+		ZmOperation.INVITE_REPLY_ACCEPT,
+		ZmOperation.INVITE_REPLY_TENTATIVE,
+		ZmOperation.INVITE_REPLY_DECLINE
+	];
 	var params = {
 		parent: this,
 		buttons: operationButtonIds,
@@ -363,7 +369,7 @@ function() {
 	};
 	this._inviteToolbar = new ZmButtonToolBar(params);
 
-	var inviteToolBarListener = new AjxListener(this, this._inviteToolBarListener);
+	var listener = new AjxListener(this, this._inviteToolBarListener);
 	operationButtonIds = this._inviteToolbar.opList;
 	for (var i = 0; i < operationButtonIds.length; i++) {
 		var id = operationButtonIds[i];
@@ -376,23 +382,23 @@ function() {
 		button._hoverClassName = button._className + "-" + DwtCssStyle.HOVER;
 		button._activeClassName = button._className + "-" + DwtCssStyle.ACTIVE;
 
-		this._inviteToolbar.addSelectionListener(id, inviteToolBarListener);
+		this._inviteToolbar.addSelectionListener(id, listener);
 
 		var standardItems = [id, replyButtonIds[i]];
 		var menu = new ZmActionMenu({parent:button, menuItems:standardItems});
 		standardItems = menu.opList;
 		for (var j = 0; j < standardItems.length; j++) {
 			var menuItem = menu.getItem(j);
-			menuItem.addSelectionListener(inviteToolBarListener);
+			menuItem.addSelectionListener(listener);
 		}
 		button.setMenu(menu);
 	}
 
 	this._inviteToolbar.addFiller();
-	var label = new DwtText({ parent: this._inviteToolbar });
+	var label = new DwtText({parent: this._inviteToolbar});
 	label.setText(AjxMessageFormat.format(ZmMsg.makeLabel, [ZmMsg.calendar]));
 
-	var select = new DwtSelect({ parent: this._inviteToolbar });
+	var select = new DwtSelect({parent: this._inviteToolbar});
 	select.addChangeListener(new AjxListener(this, this._moveAppt));
 	this._inviteMoveSelect = select;
 
@@ -403,15 +409,22 @@ ZmMailMsgView.prototype.enableInviteReplyMenus =
 function(enable) {
 	if (!this._inviteToolbar) { return; }
 
-	var operationButtonIds = [ZmOperation.REPLY_ACCEPT, ZmOperation.REPLY_TENTATIVE, ZmOperation.REPLY_DECLINE];
-	var replyButtonIds = [ZmOperation.INVITE_REPLY_ACCEPT,ZmOperation.INVITE_REPLY_TENTATIVE,ZmOperation.INVITE_REPLY_DECLINE];
-
+	var operationButtonIds = [
+		ZmOperation.REPLY_ACCEPT,
+		ZmOperation.REPLY_TENTATIVE,
+		ZmOperation.REPLY_DECLINE
+	];
+	var replyButtonIds = [
+		ZmOperation.INVITE_REPLY_ACCEPT,
+		ZmOperation.INVITE_REPLY_TENTATIVE,
+		ZmOperation.INVITE_REPLY_DECLINE
+	];
 	for (var i = 0; i < operationButtonIds.length; i++) {
 		var button = this._inviteToolbar.getButton(operationButtonIds[i]);
-		if(button) {
+		if (button) {
 			var menu = button.getMenu();
 			var menuItem = menu.getMenuItem(replyButtonIds[i]);
-			if(menuItem) {
+			if (menuItem) {
 				menuItem.setEnabled(enable);
 			}
 		}

@@ -157,6 +157,12 @@ function() {
 	var apps = {};
 	apps[ZmApp.MAIL] = true;
 	apps[ZmApp.CONTACTS] = true;
+	// only load calendar app if we're dealing with an invite
+	var msg = (window.newWindowCommand == "msgViewDetach")
+		? window.newWindowParams.msg : null;
+	if (msg && msg.isInvite()) {
+		apps[ZmApp.CALENDAR] = true;
+	}
 	apps[ZmApp.PREFERENCES] = true;
 	this._createEnabledApps(apps);
 
