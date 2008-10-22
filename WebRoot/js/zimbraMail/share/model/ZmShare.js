@@ -674,7 +674,7 @@ function(formatter) {
 	var params = [
 		this.link.name, 
 		ZmShare._getFolderType(this.link.view),
-		this.grantor.name, 
+		(this.object.owner || this.grantor.name), 
 		this.grantee.name,
 		ZmShare.getRoleName(this.link.perm),
 		ZmShare.getRoleActions(this.link.perm)
