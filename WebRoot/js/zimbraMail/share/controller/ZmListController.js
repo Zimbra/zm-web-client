@@ -407,7 +407,7 @@ function(view) {
 
 	this._tabGroups[view] = this._createTabGroup();
 	this._tabGroups[view].newParent(appCtxt.getRootTabGroup());
-	this._tabGroups[view].addMember(this._toolbar[view]);
+//	this._tabGroups[view].addMember(this._toolbar[view]);
 	this._tabGroups[view].addMember(this._listView[view]);
 };
 

@@ -1093,9 +1093,9 @@ function() {
 	if (appCtxt.get(ZmSetting.SEARCH_ENABLED)) {
 		rootTg.addMember(appCtxt.getSearchController().getTabGroup());
 	}
-	var appChooserTg = new DwtTabGroup("ZmAppChooser");
-	appChooserTg.addMember(this._components[ZmAppViewMgr.C_APP_CHOOSER]);
-	rootTg.addMember(appChooserTg);
+//	var appChooserTg = new DwtTabGroup("ZmAppChooser");
+//	appChooserTg.addMember(this._components[ZmAppViewMgr.C_APP_CHOOSER]);
+//	rootTg.addMember(appChooserTg);
 
 	var curApp = appCtxt.getCurrentApp();
 	var ovId = curApp && curApp.getOverviewId();
@@ -1128,7 +1128,6 @@ function() {
 							 createFunc:		"ZmSearchFolder.create",
 							 compareFunc:		"ZmFolder.sortCompare",
 							 shortcutKey:		"S",
-							 newOp:				ZmOperation.BROWSE,
 							 openSetting:		ZmSetting.SEARCH_TREE_OPEN,
 							 displayOrder:		300
 							});
@@ -1167,7 +1166,8 @@ function() {
 							 treeController:	"ZmZimletTreeController",
 							 labelKey:			"zimlets",
 							 compareFunc:		"ZmZimlet.sortCompare",
-							 openSetting:		ZmSetting.ZIMLET_TREE_OPEN
+							 openSetting:		ZmSetting.ZIMLET_TREE_OPEN,
+							 hideEmpty:			true
 							});
 	
 	// Technically, we don't need to do this because the drop listeners for dragged organizers typically do their

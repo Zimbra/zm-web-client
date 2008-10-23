@@ -147,7 +147,10 @@ function(params) {
 		params.dataTree = dataTree;
 		var setting = ZmOrganizer.OPEN_SETTING[this.type];
 		params.collapsed = !(!setting || (appCtxt.get(setting) !== false));
-		this._setupNewOp(params);
+		var overview = this._opc.getOverview(id);
+		if (overview.showNewButtons) {
+			this._setupNewOp(params);
+		}
 		this._treeView[id].set(params);
 		this._checkTreeView(id, params.account);
 	}
@@ -213,18 +216,16 @@ function(account) {
  */
 ZmTreeController.prototype._setupNewOp =
 function(params) {
-	if (!params.noNewButton) {
-		var newOp = ZmOrganizer.NEW_OP[this.type];
-		if (newOp) {
-			var newSetting = ZmOperation.SETTING[newOp];
-			if (!newSetting || appCtxt.get(newSetting)) {
-				var tooltipKey = ZmOperation.getProp(newOp, "tooltipKey")
-				params.newButton = {
-					image: ZmOperation.getProp(newOp, "image"),
-					tooltip: tooltipKey ? ZmMsg[tooltipKey] : null,
-					callback: new AjxCallback(this, this._newListener)
-				};
-			}
+	var newOp = ZmOrganizer.NEW_OP[this.type];
+	if (newOp) {
+		var newSetting = ZmOperation.SETTING[newOp];
+		if (!newSetting || appCtxt.get(newSetting)) {
+			var tooltipKey = ZmOperation.getProp(newOp, "tooltipKey")
+			params.newButton = {
+				image: ZmOperation.getProp(newOp, "image"),
+				tooltip: tooltipKey ? ZmMsg[tooltipKey] : null,
+				callback: new AjxCallback(this, this._newListener)
+			};
 		}
 	}
 };
@@ -1082,7 +1083,6 @@ ZmTreeController.prototype._checkTreeView =
 function(overviewId, account) {
 	if (!overviewId || !this._treeView[overviewId]) { return; }
 	var dataTree = this.getDataTree(account);
-	var hideMe = (this._hideEmpty[overviewId] && this._hideEmpty[overviewId][this.type]);
-	var hide = (hideMe && dataTree && (dataTree.size() == 0));
+	var hide = (ZmOrganizer.HIDE_EMPTY[this.type] && dataTree && (dataTree.size() == 0));
 	this._treeView[overviewId].setVisible(!hide);
 };

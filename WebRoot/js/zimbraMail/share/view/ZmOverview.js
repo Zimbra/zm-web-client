@@ -35,8 +35,8 @@
  *        dndSupported			[boolean]*				true if drag-and-drop is supported
  *        headerClass			[string]*				class name for header item
  *        showUnread			[boolean]*				if true, unread counts will be shown
+ *        showNewButtons		[boolean]*				if true, tree headers may have buttons for creating new organizers
  *        treeStyle				[constant]*				default display style for tree views
- *        hideEmpty				[hash]*					IDs of trees to hide if they lack data
  *        noTooltips			[boolean]*				if true, don't show tooltips for tree items
  * @param controller			[ZmOverviewController]	the overview controller
  */
@@ -55,8 +55,8 @@ ZmOverview = function(params, controller) {
 	this.dndSupported		= params.dndSupported;
 	this.headerClass		= params.headerClass;
 	this.showUnread			= params.showUnread;
+	this.showNewButtons		= params.showNewButtons;
 	this.treeStyle			= params.treeStyle;
-	this.hideEmpty			= params.hideEmpty;
 	this.noTooltips			= params.noTooltips;
 	
 	this._treeIds	= [];
@@ -134,14 +134,13 @@ function(treeId, visible, doc) {
  * @param treeIds	[array]				list of organizer types
  * @param omit		[hash]*				hash of organizer IDs to ignore
  * @param account	[ZmZimbraAccount]*	account to set overview for
- * @param noNewButton	[boolean]*		true to *not* display new button
  */
 ZmOverview.prototype.set =
-function(treeIds, omit, account, noNewButton) {
+function(treeIds, omit, account) {
 	this.account = account;
 	if (treeIds && treeIds.length) {
 		for (var i = 0; i < treeIds.length; i++) {
-			this.setTreeView(treeIds[i], omit, account, noNewButton);
+			this.setTreeView(treeIds[i], omit, account);
 		}
 	}
 };
@@ -155,10 +154,9 @@ function(treeIds, omit, account, noNewButton) {
  * @param treeId	[constant]			organizer ID
  * @param omit		[hash]*				hash of organizer IDs to ignore
  * @param account	[ZmZimbraAccount]*	account to set overview for
- * @param noNewButton	[boolean]*		true to *not* display new button
  */
 ZmOverview.prototype.setTreeView =
-function(treeId, omit, account, noNewButton) {
+function(treeId, omit, account) {
 	// check for false since setting precondition is optional (can be null)
 	if (appCtxt.get(ZmOrganizer.PRECONDITION[treeId]) === false) { return; }
 
@@ -172,10 +170,8 @@ function(treeId, omit, account, noNewButton) {
 	var params = {
 		overviewId: this.id,
 		omit: omit,
-		hideEmpty: this.hideEmpty,
 		showUnread: this.showUnread,
-		account: account,
-		noNewButton: noNewButton
+		account: account
 	};
 	this._treeHash[treeId] = treeController.show(params);	// render tree view
 };

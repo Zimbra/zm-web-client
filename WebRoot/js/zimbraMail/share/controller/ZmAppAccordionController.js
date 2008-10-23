@@ -260,18 +260,9 @@ function() {
 		actionSupported:true,
 		dndSupported:true,
 		showUnread:true,
-		hideEmpty:this._getHideEmpty(),
+		showNewButtons:true,
 		treeIds: this._getAllOverviewTrees()
 	};
-};
-
-ZmAppAccordionController.prototype._getHideEmpty =
-function() {
-	var hideEmpty = {};
-	hideEmpty[ZmOrganizer.SEARCH] = true;
-	hideEmpty[ZmOrganizer.ZIMLET] = true;
-
-	return hideEmpty;
 };
 
 ZmAppAccordionController.prototype._getAllOverviewTrees =

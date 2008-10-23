@@ -50,13 +50,11 @@ function() {
 * @param showUnread		[boolean]*			if true, unread counts will be shown
 * @param omit			[Object]*			hash of organizer IDs to ignore
 * @param forceCreate	[boolean]*			if true, tree view will be created
-* @param hideEmpty		[boolean]*			if true, don't show header if there is no data
 * @param account		[ZmZimbraAccount]*	account we're showing tree for (if not currently active account)
 */
 ZmSearchTreeController.prototype.show =
 function(params) {
 	var id = params.overviewId;
-	this._hideEmpty[id] = params.hideEmpty;
 	if (!this._treeView[id] || params.forceCreate) {
 		this._treeView[id] = this._setup(id);
 	}
@@ -193,7 +191,6 @@ function(overviewId, account) {
 	var rootId = (account != null || appCtxt.multiAccounts)
 		? (ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT, account))
 		: ZmOrganizer.ID_ROOT;
-	var hideMe = (this._hideEmpty[overviewId] && this._hideEmpty[overviewId][this.type]);
-	var hide = hideMe && !treeView.getTreeItemById(rootId).getItemCount();
+	var hide = ZmOrganizer.HIDE_EMPTY[this.type] && !treeView.getTreeItemById(rootId).getItemCount();
 	this._treeView[overviewId].setVisible(!hide);
 };
