@@ -104,8 +104,9 @@
 <tr>
 <td>             
  <div class="View">
+ <table cellpadding="2" cellspacing="0" width="100%" border="0" style="margin:2px;">
 <c:if test="${fn:length(mailbox.accountInfo.identities) gt 1 }">
-    <table cellpadding="0" cellspacing="0" width="100%" border="0" class="zo_m_list_row" style="margin:2px;">
+    
     <tr>
             <td class='label' valign='top' width="35" align=right nowrap="nowrap">
                 <fmt:message key="from"/>: </td>
@@ -118,9 +119,9 @@
                 </select>
             </td>
         </tr>
-        </table>
+       
 </c:if>
-<table cellpadding="0" cellspacing="0" width="100%" border="0" class="zo_m_list_row" style="margin:2px;">
+
         <tr>
             <td class='label' valign='top' width="35" align=right nowrap="nowrap">
                 <label for="toField"><fmt:message key="to"/>: </label></td>
@@ -132,41 +133,30 @@
                 </div>
             </td>
         </tr>
-    </table>
-<!--
-</div>
-
-<div class="View">
--->
-    <table cellpadding="0" cellspacing="0" width="100%" border="0" class="zo_m_list_row" style="margin:2px;">
         <tr>
             <td align=right class="label" width="35" nowrap="nowrap"><label for="ccField"><fmt:message
                     key="cc"/>: </label></td>
             <td>
                 <div class="ZhAC ZhACCc">
                     <input class="Textarea" id="ccField" type="text" value="${fn:escapeXml(compose.cc)}" name="cc">
-
-                    <div class='ZhACCont' id="ccContainer" style='width:99%;'></div>
+                    <div class='ZhACCont' id="ccContainer" style='width:99%;top:1.5em;'></div>
                 </div>
             </td>
         </tr>
-    </table>
-     <table cellpadding="0" cellspacing="0" width="100%" border="0" class="zo_m_list_row" style="margin:2px;">
         <tr>
             <td align=right class="label" width="35" nowrap="nowrap"><label for="bccField"><fmt:message
-                    key="bcc"/>: </label></td>
+                    key="bcc"/>:</label></td>
             <td>
-                <div class="ZhAC ZhACCc">
+                <div class="ZhAC ZhACBCc">
                     <input class="Textarea" id="bccField" type="text" value="${fn:escapeXml(compose.bcc)}" name="bcc">
-
-                    <div class='ZhACCont' id="bccContainer" style='width:99%;'></div>
+                    <div class='ZhACCont' id="bccContainer" style='width:99%;top:1.5em;'></div>
                 </div>
             </td>
         </tr>
     </table> 
 </div>
 <div class="View">
-    <table cellpadding=0 cellspacing=0 width=100% border="0">
+    <table cellpadding=2 cellspacing=0 width=100% border="0">
         <tr>
             <td class='label' align=right nowrap="nowrap" width="35"><label for="subjectField"><fmt:message
                     key="subject"/>: </label></td>
