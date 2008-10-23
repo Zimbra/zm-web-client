@@ -20,13 +20,13 @@
 </c:choose>
 <c:if test="${width}"><c:set var="width" value="${width}"/></c:if>
 <c:if test="${not empty src}">
-    <td height="100%" nowrap="nowrap" valign="middle" style="padding: 0px 0px 0px 1px;">
+    <td height="100%" nowrap="nowrap" valign="middle">
         <input ${extra} <c:if test="${not empty id}">id="I${id}"</c:if> <c:if test="${disabled}">disabled </c:if> name="${name}" type="image" src="<app:imgurl value='${src}' />" <c:if test="${not empty tooltip}">alt="${fn:escapeXml(tooltip)}" title="${fn:escapeXml(tooltip)}" </c:if> <c:if test="${not empty clazz}">class='${clazz}'</c:if>>
-    </td>
+     </td>
 </c:if>
 <c:if test="${not empty text}">
-    <td height="100%" <c:if test="${not empty width}">width="${width}"</c:if>  valign="middle" style="padding: 0px 0px 0px 1px;">
-        <input align=left ${extra} <c:if test="${not empty id}">id="S${id}"</c:if> <c:if test="${disabled}">disabled class='ImgDisabled' </c:if> <c:if test="${not empty clazz}">class="${clazz}"</c:if>  name="${name}" type="submit" value="${fn:escapeXml(text)}"  <c:if test="${not empty tooltip}">title="${fn:escapeXml(tooltip)}"</c:if>>
+    <td height="100%" <c:if test="${not empty width}">width="${width}"</c:if>  valign="middle"> 
+        <input align=left ${extra} <c:if test="${not empty id}">id="S${id}"</c:if> <c:if test="${disabled}">disabled class='ImgDisabled' </c:if> <c:if test="${not empty clazz}">class="${clazz}"</c:if>  name="${name}" type="submit" value=" ${fn:escapeXml(text)}"  <c:if test="${not empty tooltip}">title="${fn:escapeXml(tooltip)}"</c:if>>
     </td>
 </c:if>
     
