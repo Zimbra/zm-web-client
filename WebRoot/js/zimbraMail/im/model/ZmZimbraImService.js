@@ -350,36 +350,14 @@ function(im) {
 			} else if (not.type == "message") {
 				appCtxt.getApp(ZmApp.IM).prepareVisuals();
 				var msg = not;
-				var buddy = this._roster.getRosterItem(msg.from);
 				if (msg.body == null || msg.body.length == 0) {
 					// typing notification
+					var buddy = this._roster.getRosterItem(msg.from);
 					if (buddy)
 						buddy._notifyTyping(msg.typing);
 				} else {
-					// clear any previous typing notification, since it looks
-					// like we don't receive this when a message gets in.
-					if (buddy)
-						buddy._notifyTyping(false);
-
 					var chatMessage = new ZmChatMessage(msg, msg.from == this.getMyAddress());
-					var chat = cl.getChatByThread(chatMessage.thread);
-					if (chat == null) {
-						if (!chatMessage.fromMe) {
-							chat = cl.getChatByRosterAddr(chatMessage.from, true);
-						} else {
-							chat = cl.getChatByRosterAddr(chatMessage.to, false);
-						}
-						if (chat) chat.setThread(chatMessage.thread);
-					}
-					if (chat) {
-						if (!chatMessage.fromMe) {
-							if (appCtxt.get(ZmSetting.IM_PREF_FLASH_BROWSER))  {
-								AjxDispatcher.require("Alert");
-								ZmBrowserAlert.getInstance().start(ZmMsg.newInstantMessage);
-							}
-						}
-						chat.addMessage(chatMessage);
-					}
+					this._roster.addChatMessage(chatMessage);
 				}
 			} else if (not.type == "enteredchat") {
 				// console.log("JOIN: %o", not);

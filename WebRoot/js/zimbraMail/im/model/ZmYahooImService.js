@@ -181,6 +181,69 @@ function(ev, params) {
 		break;
 	}
 	case YMSGR.CONST.YES_BUDDY_LIST: {
+		this._onBuddyList(params);
+		break;
+	}
+	case YMSGR.CONST.YES_LOGGED_IN: {
+		break;
+	}
+	case YMSGR.CONST.YES_PREFERENCE_DATA: {
+		break;
+	}
+	case YMSGR.CONST.YES_BUDDY_INFO: {
+		break;
+	}
+	case YMSGR.CONST.YES_USER_HAS_MAIL: {
+		break;
+	}
+	case YMSGR.CONST.YES_USER_SEND_MESG: {
+		this._onUserSendMessage(params);
+		break;
+	}
+	case YMSGR.CONST.YES_STATUS_SAVED_MESG: {
+		this._onStatusSavedMessage(params);
+		break;
+	}
+	}
+};
+
+ZmYahooImService.prototype._onUserSendMessage =
+function(params) {
+//appname: "TYPING",
+//flag: "1",
+//msg: " ",
+//sender: "nameofsender",
+//target_user: "myname"
+	if (params.appname == "TYPING") {
+		var buddy = this._roster.getRosterItem(params.sender);
+		if (buddy) {
+			buddy._notifyTyping(params.flag == "1");
+		}
+	}
+};
+
+ZmYahooImService.prototype._onStatusSavedMessage =
+function(params) {
+//Key_63: ";0",
+//hash: "BQvdkQRnoAw1TK//5AKdAVIG1ZkGnw==",
+//imv_flag: "0",
+//msg: "Grrrrrrrr",
+//sender: "nameofsender",
+//target_user: "myname",
+//utf8_flag: "1"
+	var jsonObj = {
+		thread	: params.hash,
+		from 	: params.sender,
+		to		: this.getMyAddress(),
+		ts		: new Date().getTime(),
+		body	: [{ _content: params.msg, html: true }]
+	};
+	var chatMessage = new ZmChatMessage(jsonObj, false);
+	this._roster.addChatMessage(chatMessage);
+};
+
+ZmYahooImService.prototype._onBuddyList =
+function(params) {
 //		params = {
 //			group_record_list {
 //		      records: [ { buddy_grp_name: xxx, buddy_record_list: [ { buddy, name, unauth } ] } ]
@@ -214,21 +277,6 @@ function(ev, params) {
 		}
 
 
-		break;
-	}
-	case YMSGR.CONST.YES_LOGGED_IN: {
-		break;
-	}
-	case YMSGR.CONST.YES_PREFERENCE_DATA: {
-		break;
-	}
-	case YMSGR.CONST.YES_BUDDY_INFO: {
-		break;
-	}
-	case YMSGR.CONST.YES_USER_HAS_MAIL: {
-		break;
-	}
-	}
 };
 
 /**

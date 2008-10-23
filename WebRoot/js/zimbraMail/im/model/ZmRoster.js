@@ -48,8 +48,8 @@ function() {
 
 ZmRoster._createService =
 function() {
-	if (!ZmImService.INSTANCE) {
-		new ZmZimbraImService();
+	if (!ZmImServiceController.INSTANCE) {
+		new ZmZimbraImServiceController();
 	}
 };
 
@@ -344,6 +344,38 @@ ZmRoster.prototype.getGroups = function() {
 
 ZmRoster.prototype.setIdle = function(idle) {
 	ZmImService.INSTANCE.setIdle(idle, this._idleTimer.timeout);
+};
+
+ZmRoster.prototype.addChatMessage =
+function(chatMessage) {
+	appCtxt.getApp(ZmApp.IM).prepareVisuals();
+
+	var buddy = this.getRosterItem(chatMessage.from);
+	// clear any previous typing notification, since it looks
+	// like we don't receive this when a message gets in.
+	if (buddy) {
+		buddy._notifyTyping(false);
+	}
+
+	var chatList = this.getChatList();
+	var chat = chatList.getChatByThread(chatMessage.thread);
+	if (chat == null) {
+		if (!chatMessage.fromMe) {
+			chat = chatList.getChatByRosterAddr(chatMessage.from, true);
+		} else {
+			chat = chatList.getChatByRosterAddr(chatMessage.to, false);
+		}
+		if (chat) chat.setThread(chatMessage.thread);
+	}
+	if (chat) {
+		if (!chatMessage.fromMe) {
+			if (appCtxt.get(ZmSetting.IM_PREF_FLASH_BROWSER))  {
+				AjxDispatcher.require("Alert");
+				ZmBrowserAlert.getInstance().start(ZmMsg.newInstantMessage);
+			}
+		}
+		chat.addMessage(chatMessage);
+	}
 };
 
 //------------------------------------------
