@@ -17,6 +17,9 @@
 
 ZmYahooImService = function() {
 	ZmImService.call(this, true);
+
+	this._visible = false;
+	
 	AjxDispatcher.require(["YmSdk"]);
 
 	//TODO: Will this resource always be available?
@@ -74,11 +77,26 @@ function(show, priority, customStatusMsg, batchCommand) {
 	} else {
 		var ymStatus;
 		switch (show) {
-		case ZmRosterPresence.SHOW_OFFLINE: ymStatus = YMSGR.CONST.YMSG_Busy; break;
+		case ZmRosterPresence.SHOW_UNKNOWN: ymStatus = YMSGR.CONST.YMSG_Unknown; break;
+		case ZmRosterPresence.SHOW_OFFLINE: ymStatus = YMSGR.CONST.YMSG_Offline; break;
+		case ZmRosterPresence.SHOW_ONLINE: ymStatus = YMSGR.CONST.YMSG_Available; break;
+
+		//TODO: review...
+		case ZmRosterPresence.SHOW_DND: ymStatus = YMSGR.CONST.YMSG_Busy; break;
 		default: ymStatus = YMSGR.CONST.YMSG_Available; break;
+		}
+		var visible = show != ZmRosterPresence.SHOW_OFFLINE;
+		if (visible != this._visible) {
+			YMSGR.sdk.setVisibility(visible);
+			this._visible = visible;
 		}
 		YMSGR.sdk.setStatus(ymStatus, false);
 	}
+
+	if (this._roster.getPresence().setFromJS({ show: show, status: customStatusMsg })) {
+		this._roster.notifyPresence();
+	}
+
 };
 
 ZmYahooImService.prototype.setIdle =

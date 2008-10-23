@@ -37,3 +37,6 @@ AjxPackage.require("zimbraMail.im.model.ZmChatList");
 AjxPackage.require("zimbraMail.im.model.ZmChatMessage");
 AjxPackage.require("zimbraMail.im.model.ZmImPrivacyList");
 
+AjxPackage.require("zimbraMail.im.controller.ZmImServiceController");
+AjxPackage.require("zimbraMail.im.controller.ZmZimbraImServiceController");
+AjxPackage.require("zimbraMail.im.controller.ZmYahooImServiceController");
