@@ -18,7 +18,6 @@
 ZmRoster = function(imApp) {
 	ZmModel.call(this, ZmEvent.S_ROSTER);
 
-	ZmRoster._createService();
 	ZmImService.INSTANCE._roster = this;
 
 	this._notificationBuffer = [];
@@ -46,18 +45,10 @@ function() {
 	return "ZmRoster";
 };
 
-ZmRoster._createService =
-function() {
-	if (!ZmImServiceController.INSTANCE) {
-		new ZmZimbraImServiceController();
-	}
-};
-
 // Creates a roster asyncronously without a busy overlay so that the user can get on with
 // reading his mail or whatever while logging into im.
 ZmRoster.createInBackground =
 function(callback) {
-	ZmRoster._createService();	
 	var args = {
 		asyncMode: true,
 		noBusyOverlay: true

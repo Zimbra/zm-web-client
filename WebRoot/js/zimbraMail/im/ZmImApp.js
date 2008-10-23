@@ -23,6 +23,9 @@ ZmImApp = function(container) {
 	delete ZmFolder.HIDE_ID[ZmOrganizer.ID_CHATS];
 	this._active = false;
 	ZmImApp.INSTANCE = this;
+
+	// Create the service controller & service.
+	new ZmZimbraImServiceController();
 };
 
 // Organizer and item-related constants
