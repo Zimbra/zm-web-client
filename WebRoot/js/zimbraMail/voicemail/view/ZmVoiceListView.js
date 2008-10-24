@@ -93,11 +93,14 @@ function(list, sortField) {
 
 ZmVoiceListView.prototype._contactsLoadedCallback =
 function() {
-	var list = this.getList().getArray();
-	for (var i = 0, count = list.length; i < count; i++) {
-		var item = list[i];
-		var element = this._getElement(item, ZmVoiceListView.F_CALLER);
-		element.innerHTML = this._getCallerNameHtml(item); 
+	var list = this.getList();
+	if (list) {
+		var array = list.getArray();
+		for (var i = 0, count = array.length; i < count; i++) {
+			var item = array[i];
+			var element = this._getElement(item, ZmVoiceListView.F_CALLER);
+			element.innerHTML = this._getCallerNameHtml(item);
+		}
 	}
 	delete this._contactsLoadedCallbackObj;
 };

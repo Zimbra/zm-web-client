@@ -406,7 +406,7 @@ function(folder, callback, sortBy) {
 	if ((viewType == ZmId.VIEW_VOICEMAIL) && !folder.phone.hasVoiceMail) {
 		AjxDispatcher.run("GetVoiceController").show(null, folder);
 		if (callback) {
-			callback.run(searchResult);
+			callback.run(null);
 		}
 	} else {
 		if (!sortBy) {
