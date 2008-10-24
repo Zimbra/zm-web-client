@@ -175,6 +175,15 @@ function(folderA, folderB) {
 	return 0;
 };
 
+ZmVoiceFolder.prototype.getToolTip =
+function (force) {
+	if (this.callType == ZmVoiceFolder.VOICEMAIL) {
+   		return ZmOrganizer.prototype.getToolTip.call(this, force);
+	} else {
+		return null;
+	}
+};
+
 ZmVoiceFolder.prototype._getItemsText =
 function() {
 	if (this.callType == ZmVoiceFolder.VOICEMAIL || this.callType == ZmVoiceFolder.TRASH) {
