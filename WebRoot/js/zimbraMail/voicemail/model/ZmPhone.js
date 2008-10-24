@@ -177,11 +177,11 @@ function() {
 	this._features = {};
 	for(var i = 0, count = ZmCallFeature.CALL_FEATURES.length; i < count; i++) {
 		var name = ZmCallFeature.CALL_FEATURES[i];
-		this._features[name] = new ZmCallFeature(name, false);
+		this._features[name] = new ZmCallFeature(name, false, false);
 	}
 	for(var i = 0, count = ZmCallFeature.VOICE_FEATURES.length; i < count; i++) {
 		var name = ZmCallFeature.VOICE_FEATURES[i];
-		this._features[name] = new ZmCallFeature(name, true);
+		this._features[name] = new ZmCallFeature(name, true, this.hasVoiceMail);
 	}
 };
 
