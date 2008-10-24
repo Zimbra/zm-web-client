@@ -171,36 +171,23 @@ ZmChat.prototype.incUnread = function() {
 	return this._unread;
 };
 
-ZmChat.prototype.sendClose = function(text) {
-	var thread = this.getThread();
-	if (!thread) return;
-        AjxDispatcher.run("GetRoster").modifyChatRequest(thread, "close");
+ZmChat.prototype.sendClose = function() {
+	if (this._thread) {
+		ZmImService.INSTANCE.closeChat(this);
+	}
 };
 
 ZmChat.prototype.sendMessage = function(text, html, typing) {
-	var soapDoc = AjxSoapDoc.create("IMSendMessageRequest", "urn:zimbraIM");
-	var method = soapDoc.getMethod();
-	var message = soapDoc.set("message");
-	if (typing)
-		soapDoc.set("typing", null, message);
-	var thread = this.getThread();
-	if (thread)
-		message.setAttribute("thread", thread);
-	message.setAttribute("addr", this.getRosterItem(0).getAddress());
-    if (text || html) {
-        var bodyNode = soapDoc.set("body", null, message);
-        if (text) {
-            soapDoc.set("text", text, bodyNode);
-        }
-        if (html) {
-            soapDoc.set("html", html, bodyNode);
-        }
-    }	// TODO: error handling
-	appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: this._sendMessageCallbackObj, noBusyOverlay: true});
+	var args = {
+		callback: this._sendMessageCallbackObj,
+		noBusyOverlay: true
+	};
+	ZmImService.INSTANCE.sendMessage(this, text, html, typing, args);
+	// TODO: error handling
 	if (text || html) {
 		var bodyJson = html ? { _content: html, html: true } : { _content: text, html: false } 
 		var jsonObj = {
-			thread	: thread,
+			thread	: this._thread,
 			from 	: AjxDispatcher.run("GetRoster").getMyAddress(),
 			to		: this.getRosterItem(0).getAddress(),
 			ts		: new Date().getTime(),

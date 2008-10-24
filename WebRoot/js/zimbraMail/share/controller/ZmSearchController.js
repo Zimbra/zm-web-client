@@ -194,7 +194,6 @@ function() {
 
 	var tg = this._createTabGroup();
 	tg.addMember(this._searchToolBar.getSearchField());
-	tg.addMember(this._searchToolBar);
 
 	// Register keyboard callback for search field
 	this._searchToolBar.registerCallback(this._searchFieldCallback, this);
@@ -246,7 +245,7 @@ function(menu) {
  */
 ZmSearchController.prototype.search =
 function(params) {
-	if (this._searchFor != ZmItem.APPT && (!(params.query && params.query.length))) { return; }
+	if (params.searchFor != ZmItem.APPT && (!(params.query && params.query.length))) { return; }
 
 	// if the search string starts with "$set:" then it is a command to the client
 	if (params.query.indexOf("$set:") == 0 || params.query.indexOf("$cmd:") == 0) {
@@ -290,6 +289,7 @@ function(search, noRender, changes, callback, errorCallback) {
 	params.lastSortVal	= search.lastSortVal;
 	params.lastId		= search.lastId;
 	params.soapInfo		= search.soapInfo;
+	params.searchFor	= this._searchFor;
 
 	if (changes) {
 		for (var key in changes) {
@@ -349,9 +349,13 @@ function(params) {
 		}
 		if (appCtxt.get(ZmSetting.NOTEBOOK_ENABLED)) {
 			types.add(ZmItem.PAGE);
-			types.add(ZmItem.DOCUMENT);
+			//types.add(ZmItem.DOCUMENT);
 		}
-	} else {
+        if (appCtxt.get(ZmSetting.BRIEFCASE_ENABLED)) {
+			types.add(ZmItem.BRIEFCASE);
+			//types.add(ZmItem.DOCUMENT);
+		}
+    } else {
 		types.add(searchFor);
 		if (searchFor == ZmItem.PAGE) {
 			types.add(ZmItem.DOCUMENT);
@@ -396,7 +400,7 @@ function(types) {
 ZmSearchController.prototype._doSearch =
 function(params, noRender, callback, errorCallback) {
 
-	params.searchFor = this._searchFor = params.searchFor || this._searchFor;
+	this._searchFor = params.searchFor || this._searchFor;
 	if (appCtxt.zimletsPresent()) {
 		appCtxt.getZimletMgr().notifyZimlets("onSearch", params.query);
 	}
@@ -474,13 +478,15 @@ function(search, noRender, isMixed, callback, result) {
 		this._showResults(results, search, isMixed);
 	}
 
-	if (callback) callback.run(result);
+	if (callback) {
+		callback.run(result);
+	}
 };
 
 ZmSearchController.prototype._showResults =
 function(results, search, isMixed) {
 	// allow old results to dtor itself
-	if (this._results && (this._results.type == results.type)) {
+	if (this._results && (this._results.type == results.type) && this._results.dtor) {
 		this._results.dtor();
 	}
 	this._results = results;
@@ -504,7 +510,7 @@ function(results, search, isMixed) {
 	app.currentSearch = search;
 	app.currentQuery = search.query;
 	app.showSearchResults(results, loadCallback, isInGal, search.folderId);
-	appCtxt.getAppController().focusContentPane();
+//	appCtxt.getAppController().focusContentPane();
 };
 
 ZmSearchController.prototype._handleLoadShowResults =
@@ -704,7 +710,9 @@ function(ev, id) {
 
 /**
  * Selects the appropriate item in the overview based on the search. Selection only happens
- * if the search was a simple search for a folder, tag, or saved search.
+ * if the search was a simple search for a folder, tag, or saved search. A check is done to
+ * make sure that item is not already selected, so selection should only occur for a query
+ * manually run by the user.
  *
  * @param search		[ZmSearch]		the current search
  */
@@ -725,16 +733,10 @@ function(search) {
 	}
 	var app = appCtxt.getCurrentApp();
 	var overview = app.getOverview();
-	if (!overview) { return; }
-	if (id) {
-		var treeView = overview.getTreeView(type);
-		if (treeView) {
-			treeView.setSelected(id, true);
-		}
-		overview.itemSelected(type);
+	if (overview) {
+		overview.setSelected(id, type);
 	} else {
-		// clear overview of selection
-		overview.itemSelected();
+		app._selectedOverviewItem = id;
 	}
 };
 

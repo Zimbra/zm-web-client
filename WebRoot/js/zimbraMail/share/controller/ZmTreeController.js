@@ -75,6 +75,9 @@ ZmTreeController.COLOR_CLASS[ZmOrganizer.C_YELLOW]	= "YellowBg";
 ZmTreeController.COLOR_CLASS[ZmOrganizer.C_PINK]	= "PinkBg";
 ZmTreeController.COLOR_CLASS[ZmOrganizer.C_GRAY]	= "Gray";	// not GrayBg so it doesn't blend in
 
+// time that selection via up/down arrow must remain on an item to trigger a search
+ZmTreeController.TREE_SELECTION_SHORTCUT_DELAY = 750;
+
 // valid sources for drop target for different tree controllers
 ZmTreeController.DROP_SOURCES = {};
 
@@ -144,6 +147,10 @@ function(params) {
 		params.dataTree = dataTree;
 		var setting = ZmOrganizer.OPEN_SETTING[this.type];
 		params.collapsed = !(!setting || (appCtxt.get(setting) !== false));
+		var overview = this._opc.getOverview(id);
+		if (overview.showNewButtons) {
+			this._setupNewOp(params);
+		}
 		this._treeView[id].set(params);
 		this._checkTreeView(id, params.account);
 	}
@@ -202,6 +209,26 @@ function(account) {
 
 // Private and protected methods
 
+/**
+ * Sets up the params for the new button in the header item
+ *
+ * @param overviewId		[constant]	overview ID
+ */
+ZmTreeController.prototype._setupNewOp =
+function(params) {
+	var newOp = ZmOrganizer.NEW_OP[this.type];
+	if (newOp) {
+		var newSetting = ZmOperation.SETTING[newOp];
+		if (!newSetting || appCtxt.get(newSetting)) {
+			var tooltipKey = ZmOperation.getProp(newOp, "tooltipKey")
+			params.newButton = {
+				image: ZmOperation.getProp(newOp, "image"),
+				tooltip: tooltipKey ? ZmMsg[tooltipKey] : null,
+				callback: new AjxCallback(this, this._newListener)
+			};
+		}
+	}
+};
 
 ZmTreeController.prototype._getTreeChangeListener =
 function() {
@@ -307,6 +334,7 @@ function(overviewId) {
 	var overview = this._opc.getOverview(overviewId);
 	var params = {
 		parent: overview,
+		parentElement: overview.getTreeParent(this.type),
 		overviewId: overviewId,
 		type: this.type,
 		headerClass: overview.headerClass,
@@ -458,7 +486,8 @@ function(organizer) {
 
 ZmTreeController.prototype._doEmpty =
 function(organizer) {
-	organizer._empty();
+    var recursive = false;
+    organizer._empty(recursive);
 	var ctlr = appCtxt.getCurrentController();
 	if (ctlr && ctlr._getSearchFolderId) {
 		var folderId = ctlr._getSearchFolderId();
@@ -531,12 +560,12 @@ function(ev) {
 		return;
 	}
 
-	this._actionedTreeItem = ev.item;
+	var treeItem = this._actionedTreeItem = ev.item;
 
-	var type = ev.item.getData(ZmTreeView.KEY_TYPE);
+	var type = treeItem.getData(ZmTreeView.KEY_TYPE);
 	if (!type) { return; }
 
-	var item = ev.item.getData(Dwt.KEY_OBJECT);
+	var item = treeItem.getData(Dwt.KEY_OBJECT);
 	if (item) {
 		this._actionedOrganizer = item;
 		if (item.noSuchFolder) {
@@ -548,8 +577,8 @@ function(ev) {
 		}
 	}
 
-	var id = ev.item.getData(Dwt.KEY_ID);
-	var overviewId = this._actionedOverviewId = ev.item.getData(ZmTreeView.KEY_ID);
+	var id = treeItem.getData(Dwt.KEY_ID);
+	var overviewId = this._actionedOverviewId = treeItem.getData(ZmTreeView.KEY_ID);
 	var overview = this._opc.getOverview(overviewId);
 	if (!overview) { return; }
 
@@ -565,14 +594,34 @@ function(ev) {
 			}
 		}
 	} else if ((ev.detail == DwtTree.ITEM_SELECTED) && item) {
-		// left click
-		overview.itemSelected(type);
-		if (overview.selectionSupported || item._showFoldersCallback) {
-			this._itemClicked(item);
+		// left click or selection via shortcut
+		overview.itemSelected(treeItem);
+		if (ev.kbNavEvent) {
+			DwtControl._scrollIntoView(treeItem._itemDiv, overview.getHtmlElement());
+		}
+		if (overview._treeSelectionShortcutDelayActionId) {
+			AjxTimedAction.cancelAction(overview._treeSelectionShortcutDelayActionId);
+		}
+		if ((overview.selectionSupported || item._showFoldersCallback) && !treeItem._isHeader) {
+			if (ev.kbNavEvent && ZmTreeController.TREE_SELECTION_SHORTCUT_DELAY) {
+				var action = new AjxTimedAction(this, ZmTreeController.prototype._treeSelectionTimedAction, [item, overview]);
+				overview._treeSelectionShortcutDelayActionId =
+					AjxTimedAction.scheduleAction(action, ZmTreeController.TREE_SELECTION_SHORTCUT_DELAY);
+			} else {
+				this._itemClicked(item);
+			}
 		}
 	} else if ((ev.detail == DwtTree.ITEM_DBL_CLICKED) && item) {
 		this._itemDblClicked(item);
 	}
+};
+
+ZmTreeController.prototype._treeSelectionTimedAction =
+function(item, overview) {
+	if (overview._treeSelectionShortcutDelayActionId) {
+		AjxTimedAction.cancelAction(overview._treeSelectionShortcutDelayActionId);
+	}
+	this._itemClicked(item);
 };
 
 /**
@@ -1034,7 +1083,6 @@ ZmTreeController.prototype._checkTreeView =
 function(overviewId, account) {
 	if (!overviewId || !this._treeView[overviewId]) { return; }
 	var dataTree = this.getDataTree(account);
-	var hideMe = (this._hideEmpty[overviewId] && this._hideEmpty[overviewId][this.type]);
-	var hide = (hideMe && dataTree && (dataTree.size() == 0));
+	var hide = (ZmOrganizer.HIDE_EMPTY[this.type] && dataTree && (dataTree.size() == 0));
 	this._treeView[overviewId].setVisible(!hide);
 };

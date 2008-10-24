@@ -27,19 +27,20 @@
             <c:set var="tz" value="${mailbox.prefs.timeZone}" scope="request"/>
         </c:otherwise>
     </c:choose>
-    
+
     <c:choose>
         <c:when test="${not empty param.date}">
-            <fmt:parseDate timeZone="${tz}" var="date" pattern="yyyyMMdd" value="${param.date}"/>
+            <fmt:parseDate var="date" pattern="yyyyMMdd" value="${param.date}"/>
+            <%-- !NOTE we should not to parse date with timezone, 
+                bcoz below getCalendarMidnight will then adjust it again resulting in two times adjusted date.
+                ref. timezone bug #30460
+            --%>
             <c:set scope="request" var="dateContext" value="${zm:getCalendarMidnight(date.time, tz)}"/>
         </c:when>
         <c:otherwise>
             <c:set scope="request" var="dateContext" value="${zm:getToday(tz)}"/>
         </c:otherwise>
     </c:choose>
-    <%--!TODO find out why this hack is needed?
-    Date to calendar object conversion has one day less in calendar than date--%> 
-    <c:set var="dateContext" value="${zm:addDay(dateContext, 1)}"/>
     <c:set scope="request" var="calendarQuery" value="${zm:cook(param.sq)}"/>
     
     <c:if test="${not empty param.refresh}">

@@ -23,6 +23,9 @@ ZmImApp = function(container) {
 	delete ZmFolder.HIDE_ID[ZmOrganizer.ID_CHATS];
 	this._active = false;
 	ZmImApp.INSTANCE = this;
+
+	// Create the service controller & service.
+	new ZmZimbraImServiceController();
 };
 
 // Organizer and item-related constants
@@ -78,7 +81,7 @@ function() {
 
 ZmImApp.prototype._registerOperations =
 function() {
-    ZmOperation.registerOp(ZmId.OP_IM_NEW_CHAT, { textKey: "imNewChat", image: "ImFree2Chat" });
+    ZmOperation.registerOp(ZmId.OP_IM_NEW_CHAT, { textKey: "imNewChat", image: "ImFree2Chat", shortcut:ZmKeyMap.NEW_CHAT });
     ZmOperation.registerOp(ZmId.OP_IM_NEW_GROUP_CHAT, { textKey: "imNewGroupChat", image: "ImFree2Chat" });
     ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_AWAY, { textKey: "imStatusAway", image: "ImAway" });
     ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_CHAT, { textKey: "imStatusChat", image: "ImFree2Chat" });
@@ -90,28 +93,25 @@ function() {
     ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_XA, { textKey: "imStatusExtAway", image: "ImExtendedAway" });
     ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_CUSTOM_MRU, { image: "ImAvailable" });
     ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_MENU, { }); // Keyboard only.
-    ZmOperation.registerOp(ZmId.OP_NEW_ROSTER_ITEM, { textKey: "newRosterItem", image: "ImBuddy" });
+    ZmOperation.registerOp(ZmId.OP_NEW_ROSTER_GROUP, { textKey: "imNewGroup", image: "ImGroup" });
+    ZmOperation.registerOp(ZmId.OP_NEW_ROSTER_ITEM, { textKey: "newRosterItem", image: "AddBuddy" });
     ZmOperation.registerOp(ZmId.OP_IM_CREATE_CONTACT, { textKey: "addToNewContact", image: "NewContact" });
     ZmOperation.registerOp(ZmId.OP_IM_ADD_TO_CONTACT, { textKey: "addToExistingContact", image: "Edit" });
     ZmOperation.registerOp(ZmId.OP_IM_EDIT_CONTACT, { textKey: "editContact", image: "Edit" });
     ZmOperation.registerOp(ZmId.OP_IM_GATEWAY_LOGIN, { textKey: "imGatewayLogin", image: "ExternalLink" });
     ZmOperation.registerOp(ZmId.OP_IM_TOGGLE_OFFLINE, { textKey: "imToggleOffline" });
     ZmOperation.registerOp(ZmId.OP_IM_TOGGLE_BLOCKED, { textKey: "imToggleBlocked" });
-
     ZmOperation.registerOp(ZmId.OP_IM_SORT_BY_PRESENCE, { textKey: "imSortListByPresence" });
     ZmOperation.registerOp(ZmId.OP_IM_SORT_BY_NAME, { textKey: "imSortListByName" });
-
     ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_CUSTOM_MSG, { textKey: "imCustomStatusMsg", image: "ImAvailable"});
-
     ZmOperation.registerOp(ZmId.OP_IM_BLOCK_BUDDY, { textKey: "imBlock", image: "BlockUser" });
     ZmOperation.registerOp(ZmId.OP_IM_UNBLOCK_BUDDY, { textKey: "imUnblock", image: "AllowUser" });
-
 	ZmOperation.registerOp(ZmId.OP_IM_HTML, { image: "HtmlDoc", tooltipKey: "changeEditorMode" });
 	ZmOperation.registerOp(ZmId.OP_IM_DELETE_GROUP, { image: "Delete", textKey: "del" });
-
 	ZmOperation.registerOp(ZmId.OP_IM_CLOSE_ALL_TABS, { textKey: "imCloseAllTabs" });
 	ZmOperation.registerOp(ZmId.OP_IM_CLOSE_OTHER_TABS, { textKey: "imCloseOtherTabs" });
 	ZmOperation.registerOp(ZmId.OP_IM_CLOSE_TAB, { textKey: "imCloseTab" });
+	ZmOperation.registerOp(ZmId.OP_IM_BUDDY_ARCHIVE, { textKey: "imBuddyArchive", image: "ChatFolder" });
 };
 
 ZmImApp.prototype._registerItems =
@@ -131,10 +131,10 @@ function() {
 ZmImApp.prototype._registerApp =
 function() {
 	var newItemOps = {};
-	newItemOps[ZmOperation.IM_NEW_CHAT] = "chat";
+	newItemOps[ZmOperation.IM_NEW_CHAT]		= "chat";
 
 	var newOrgOps = {};
-	newOrgOps[ZmOperation.NEW_ROSTER_ITEM] = "rosterItem";
+	newOrgOps[ZmOperation.NEW_ROSTER_ITEM] = "buddy";
 
 	var actionCodes = {};
 	actionCodes[ZmKeyMap.NEW_CHAT] = ZmOperation.IM_NEW_CHAT;
@@ -243,10 +243,26 @@ ZmImApp.prototype._registerSettings = function(settings) {
 								 });
 
 	settings.registerSetting("IM_PREF_BUDDY_SORT",
-								 {
+								 { name			: "zimbraPrefIMBuddyListSort",
 								   type			: ZmSetting.T_PREF,
 								   dataType		: ZmSetting.D_STRING,
 								   defaultValue : ZmImApp.BUDDY_SORT_NAME,
+								   isImplicit	: true
+								 });
+
+	settings.registerSetting("IM_PREF_HIDE_OFFLINE",
+								 { name			: "zimbraPrefIMHideOfflineBuddies",
+								   type			: ZmSetting.T_PREF,
+								   dataType		: ZmSetting.D_BOOLEAN,
+								   defaultValue : false,
+								   isImplicit	: true
+								 });
+
+	settings.registerSetting("IM_PREF_HIDE_BLOCKED",
+								 { name			: "zimbraPrefIMHideBlockedBuddies",
+								   type			: ZmSetting.T_PREF,
+								   dataType		: ZmSetting.D_BOOLEAN,
+								   defaultValue : false,
 								   isImplicit	: true
 								 });
 
@@ -262,6 +278,10 @@ ZmImApp.prototype._registerPrefs = function() {
 		IM: {
 			title: ZmMsg.im,
 			templateId: "prefs.Pages#IM",
+			manageDirty: true,
+			createView: function(parent, section, controller) {
+				return new ZmImPrefsPage(parent, section, controller);
+			},
 			priority: 90,
 			precondition: ZmSetting.IM_ENABLED,
 			prefs: [
@@ -349,14 +369,6 @@ ZmImApp.prototype._registerPrefs = function() {
                               precondition     : ZmSetting.IM_PREF_REPORT_IDLE
                             });
 
-};
-
-ZmImApp.prototype._setupCurrentAppToolbar =
-function() {
-	var callback = new AjxCallback(this,function(ev){
-		this.getImController()._newRosterItemListener(ev);
-	});
-	ZmCurrentAppToolBar.registerApp(this.getName(), ZmOperation.NEW_ROSTER_ITEM,null,callback);
 };
 
 ZmImApp.prototype._onSettingChange = function(ev) {
@@ -518,6 +530,21 @@ function() {
 };
 
 /**
+* Lazily adds a change listener to the gateway list. Allows ui elements
+* to create their listeners without loading the im package or logging
+* in to im.
+*/
+ZmImApp.prototype.addGatewayListListener =
+function(listener) {
+	if (this._roster) {
+		this._roster.addGatewayListListener(listener);
+	} else {
+		this._gatewayListListeners = this._gatewayListListeners || new AjxVector();
+		this._gatewayListListeners.add(listener);
+	}
+};
+
+/**
 * Lazily adds a change listener to the roster item list. Allows ui elements
 * to create their listeners without loading the im package.
 */
@@ -557,6 +584,11 @@ function(roster) {
 			var listener = this._rosterItemListListeners.get(i);
 			listener.handleEvent(event);
 			rosterItemList.addChangeListener(listener);
+		}
+	}
+	if (this._gatewayListListeners) {
+		for (var i = 0, count = this._gatewayListListeners.size(); i < count; i++) {
+			roster.addGatewayListListener(this._gatewayListListeners.get(i));
 		}
 	}
 
@@ -603,16 +635,6 @@ ZmImApp.prototype.prepareVisuals = function() {
 		        this.getChatListController().prepareVisuals();
                         this._haveVisuals = true;
                 }, null, true));
-	}
-};
-
-ZmImApp.INCOMING_MSG_NOTIFICATION = "incoming";
-ZmImApp.prototype.playAlert = function(type){
-	AjxDispatcher.require("Alert");
-	switch (type) {
-		case ZmImApp.INCOMING_MSG_NOTIFICATION:
-			ZmSoundAlert.getInstance().start();
-			break;
 	}
 };
 

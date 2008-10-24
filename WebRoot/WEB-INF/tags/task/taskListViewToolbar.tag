@@ -46,8 +46,15 @@
                     </td>
                     <app:button  id="${keys ? 'OPMOVE' :''}" name="actionMove" text="actionMove" tooltip="actionMoveTT"/>
                     <td><div class='vertSep'></div></td>
-
+                    <td height="100%" nowrap valign="middle" style="padding: 0 2px 0 2px">
+                        <td height="100%" nowrap valign="middle" style="padding: 0 2px 0 2px">
+                        <input onclick="zprint();return false;" id="${keys ? 'IOPPRINT' : ''}" name="actionPrint" type="image" src="${iconPath}/startup/ImgPrint.gif" alt='<fmt:message key="actionPrint" />' title='<fmt:message key="actionPrint" />' />
+                    </td>
+                    <td height="100%" nowrap valign="middle" style="padding: 0 2px 0 2px">
+                        <input onclick="zprint();return false;" id="${keys ? 'SOPPRINT' : ''}" name="actionPrint" type="submit" value='<fmt:message key="actionPrint" />' title='<fmt:message key="actionPrint" />' />
+                    </td>
                     <c:if test="${mailbox.features.tagging and mailbox.hasTags}">
+                    <td><div class='vertSep'></div></td>
                     <td nowrap>
                         <select name="actionOp" onchange="zclick('SOPGO')">
                             <option value="" selected/><fmt:message key="moreActions"/>

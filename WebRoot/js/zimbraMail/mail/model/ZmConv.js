@@ -278,11 +278,6 @@ function(obj) {
 	ZmMailItem.prototype.notifyModify.apply(this, arguments);
 };
 
-ZmConv.prototype.getPrintHtml =
-function(preferHtml, callback) {
-	ZmConvListView.getPrintHtml(this, preferHtml, callback);
-};
-
 ZmConv.prototype._checkFlags = 
 function(flags) {
 	var msgs = this.msgs.getArray();
