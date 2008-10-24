@@ -24,10 +24,10 @@
 * the JSON data. Whoever uses this class just has to know how to deal with the data.
 *
 */
-ZmCallFeature = function(name, isVoicemailPref) {
+ZmCallFeature = function(name, isVoicemailPref, isSubscribed) {
 	
 	this.name = name;
-	this.isSubscribed = isVoicemailPref;
+	this.isSubscribed = isSubscribed;
 	this.isActive = false;
 	this.data = {};
 	this.isVoicemailPref = isVoicemailPref;
