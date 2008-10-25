@@ -672,6 +672,8 @@ function(params) {
 	if (appCtxt.get(ZmSetting.SAVE_DRAFT_ENABLED) &&
 		(action != ZmOperation.REPLY_ACCEPT) &&
 		(action != ZmOperation.REPLY_DECLINE) &&
+		(action != ZmOperation.REPLY_CANCEL) &&
+		(action != ZmOperation.REPLY_MODIFY) &&
 		(action != ZmOperation.REPLY_TENTATIVE))
 	{
 		var autoSaveInterval = appCtxt.get(ZmSetting.AUTO_SAVE_DRAFT_INTERVAL);
