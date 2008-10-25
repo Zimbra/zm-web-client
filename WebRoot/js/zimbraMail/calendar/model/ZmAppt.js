@@ -648,7 +648,7 @@ function(soapDoc, inv, m, notifyList, attendee, type) {
 		// for now make attendees optional, until UI has a way of setting this
 		at.setAttribute("role", (type == ZmCalBaseItem.PERSON) ? ZmCalItem.ROLE_REQUIRED : ZmCalItem.ROLE_NON_PARTICIPANT);
 		
-		var ptst = ZmCalBaseItem.PSTATUS_NEEDS_ACTION;
+		var ptst = attendee.getAttr("participationStatus") || ZmCalBaseItem.PSTATUS_NEEDS_ACTION;
 		if (notifyList) {
 			var attendeeFound = false;
 			for (var i in notifyList) {
