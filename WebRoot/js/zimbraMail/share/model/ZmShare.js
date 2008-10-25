@@ -83,7 +83,6 @@ ZmShare.EDIT	= "edit";
 ZmShare.DELETE	= "delete";
 ZmShare.ACCEPT	= "accept";
 ZmShare.DECLINE	= "decline";
-ZmShare.NOTIFY  = "notify";
 
 // allowed permission bits
 ZmShare.PERM_READ		= "r";
@@ -159,7 +158,6 @@ ZmShare._SUBJECTS[ZmShare.EDIT] = ZmMsg.shareModifiedSubject;
 ZmShare._SUBJECTS[ZmShare.DELETE] = ZmMsg.shareRevokedSubject;
 ZmShare._SUBJECTS[ZmShare.ACCEPT] = ZmMsg.shareAcceptedSubject;
 ZmShare._SUBJECTS[ZmShare.DECLINE] = ZmMsg.shareDeclinedSubject;
-ZmShare._SUBJECTS[ZmShare.NOTIFY]  = ZmMsg.shareNotifySubject;
 	
 
 // formatters
@@ -462,8 +460,7 @@ function(mode) {
 		ZmShare._TEXT[ZmShare.DELETE] = new AjxMessageFormat(ZmMsg.shareRevokedText);
 		ZmShare._TEXT[ZmShare.ACCEPT] = new AjxMessageFormat(ZmMsg.shareAcceptedText);
 		ZmShare._TEXT[ZmShare.DECLINE] = new AjxMessageFormat(ZmMsg.shareDeclinedText);
-        ZmShare._TEXT[ZmShare.NOTIFY] = new AjxMessageFormat(ZmMsg.shareNotifyText);
-    }
+	}
 	return ZmShare._TEXT[mode];
 };
 	
@@ -477,8 +474,7 @@ function(mode) {
 		ZmShare._HTML[ZmShare.DELETE] = new AjxMessageFormat(ZmMsg.shareRevokedHtml);
 		ZmShare._HTML[ZmShare.ACCEPT] = new AjxMessageFormat(ZmMsg.shareAcceptedHtml);
 		ZmShare._HTML[ZmShare.DECLINE] = new AjxMessageFormat(ZmMsg.shareDeclinedHtml);
-        ZmShare._HTML[ZmShare.NOTIFY] = new AjxMessageFormat(ZmMsg.shareNotifyHtml);
-    }
+	}
 	return ZmShare._HTML[mode];
 }
 	
@@ -582,16 +578,13 @@ function(mode, isCompose, addrs) {
 	// generate message
 	var textPart = this._createTextPart(mode, isCompose);
 	var htmlPart = this._createHtmlPart(mode, isCompose);
+	var xmlPart = this._createXmlPart(mode);
 
 	var topPart = new ZmMimePart();
 	topPart.setContentType(ZmMimeTable.MULTI_ALT);
 	topPart.children.add(textPart);
 	topPart.children.add(htmlPart);
-
-    if(mode != ZmShare.NOTIFY) {
-        var xmlPart = this._createXmlPart(mode);
-	    topPart.children.add(xmlPart);
-    }
+	topPart.children.add(xmlPart);
 
 	var msg = new ZmMailMsg();
 	var toEmail, fromEmail;
@@ -674,7 +667,7 @@ function(formatter) {
 	var params = [
 		this.link.name, 
 		ZmShare._getFolderType(this.link.view),
-		(this.object.owner || this.grantor.name), 
+		this.grantor.name, 
 		this.grantee.name,
 		ZmShare.getRoleName(this.link.perm),
 		ZmShare.getRoleActions(this.link.perm)
