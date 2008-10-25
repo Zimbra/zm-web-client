@@ -678,10 +678,10 @@ ZmNotebookPageView.prototype.fetchInfo = function(path)
 {
 	if(!path || path=="blank")
 	return;
+
+    path = decodeURIComponent(path);
 	
-	path = unescape(path);
-	
-	if(path.charAt(0)=='/'){
+    if(path.charAt(0)=='/'){
 		path = path.substring(1);
 	}		
 	var accountName = null;
