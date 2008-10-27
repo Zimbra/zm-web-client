@@ -57,7 +57,6 @@ function() {
  *        skipReadOnly			[boolean]* 		if true, read-only folders will not be displayed
  *        skipSyncFailureSubs	[boolean]*		if true, don't show "Local Folders"
  *        hideNewButton 		[boolean]*		if true, New button will not be shown
- *        orgType				[constant]*		primary tree type
  *        noRootSelect			[boolean]*		if true, don't make root tree item(s) selectable
  */
 ZmChooseFolderDialog.prototype.popup =
@@ -68,7 +67,7 @@ function(params) {
 	omit[ZmFolder.ID_DRAFTS] = true;
 	omit[ZmFolder.ID_OUTBOX] = true;
 	omit[ZmFolder.ID_SYNC_FAILURES] = true;
-	var treeIds = (params.treeIds && params.treeIds.length) ? params.treeIds : [ZmOrganizer.FOLDER];
+	var treeIds = this._treeIds = (params.treeIds && params.treeIds.length) ? params.treeIds : [ZmOrganizer.FOLDER];
 	var folderTree = appCtxt.getFolderTree();
 
 	if (params.skipReadOnly) {
@@ -120,22 +119,26 @@ function(params) {
 	};
 	this._setOverview(params);
 
-	this._orgType = params.orgType || treeIds[0];
-	this._folderTreeView = this._getOverview().getTreeView(this._orgType);
+	for (var i = 0; i < treeIds.length; i++) {
+		var treeId = treeIds[i];
+		var treeView = this._getOverview().getTreeView(treeId);
 
-	if (this._folderTreeView) {
 		// bug #18533 - always make sure header item is visible in "MoveTo" dialog
-		this._folderTreeView.getHeaderItem().setVisible(true, true);
+		treeView.getHeaderItem().setVisible(true, true);
 
-		// remove checkboxes if treeview has them as re-enable selection
-		this._folderTreeView.showCheckboxes(false);
+		// remove checkboxes if treeview has them
+		treeView.showCheckboxes(false);
+
+		// expand root item
+		var ti = treeView.getTreeItemById(folderTree.root.id);
+		ti.setExpanded(true);
 
 		// bug fix #13159 (regression of #10676)
 		// - small hack to get selecting Trash folder working again
 		var trashId = ZmOrganizer.getSystemId(ZmOrganizer.ID_TRASH);
-		var ti = this._folderTreeView.getTreeItemById(trashId);
+		var ti = treeView.getTreeItemById(trashId);
 		if (ti) {
-			ti.setData(ZmTreeView.KEY_TYPE, this._orgType);
+			ti.setData(ZmTreeView.KEY_TYPE, treeId);
 		}
 	}
 
@@ -146,25 +149,8 @@ function(params) {
 
 	ZmDialog.prototype.popup.call(this);
 	
-	// expand tree views, select current organizer if any
-	for (var i = 0; i < treeIds.length; i++) {
-		var treeId = treeIds[i];
-		var treeView = this._getOverview().getTreeView(treeId);
-		var ti = treeView.getTreeItemById(folderTree.root.id);
-		ti.setExpanded(true);
-	}
 	// set focus to overview, which will select first item if none selected
 	appCtxt.getKeyboardMgr().grabFocus(this._overview[this._curOverviewId]);
-};
-
-ZmChooseFolderDialog.prototype.popdown =
-function() {
-	if (this._folderTreeView) {
-		// re-add checkboxes if treeview has them and re-enable selection
-		this._folderTreeView.showCheckboxes(true);
-	}
-
-	DwtDialog.prototype.popdown.call(this);
 };
 
 ZmChooseFolderDialog.prototype.reset =
@@ -172,7 +158,7 @@ function() {
 	var descCell = document.getElementById(this._folderDescCellId);
 	descCell.innerHTML = "";
 	ZmDialog.prototype.reset.call(this);
-	this._data = this._orgType = this._folderTreeView = null;
+	this._data = this._treeIds = null;
 	this._creatingFolder = false;
 };
 
@@ -186,7 +172,8 @@ function() {
 
 ZmChooseFolderDialog.prototype._showNewDialog =
 function() {
-	var ftc = this._opc.getTreeController(this._orgType);
+	var newType = this._getOverview().getSelected(true) || this._treeIds[0];
+	var ftc = this._opc.getTreeController(newType);
 	var dialog = ftc._getNewDialog();
 	dialog.reset();
 	dialog.registerCallback(DwtDialog.OK_BUTTON, this._newCallback, this, [ftc, dialog]);
@@ -203,12 +190,11 @@ function(ftc, dialog, params) {
 ZmChooseFolderDialog.prototype._folderTreeChangeListener =
 function(ev) {
 	if (ev.event == ZmEvent.E_CREATE && this._creatingFolder) {
-		var organizers = ev.getDetail("organizers");
-		if (!organizers && ev.source) {
-			organizers = [ev.source];
-		}
-		this._folderTreeView.setSelected(organizers[0], true);
-		this._folderTreeView.showCheckboxes(false);
+		var organizers = ev.getDetail("organizers") || (ev.source && [ev.source]);
+		var org = organizers[0];
+		var treeView = this._getOverview().getTreeView(org.type);
+		treeView.setSelected(organizers[0], true);
+		treeView.showCheckboxes(false);
 		this._creatingFolder = false;
 	}
 };

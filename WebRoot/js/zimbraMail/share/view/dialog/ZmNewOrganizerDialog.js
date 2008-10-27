@@ -84,7 +84,7 @@ function(folder) {
 
 	// dont allow "None" option in color picker
     // bug 22490 removed None option when not in use
-    if (folder.type != ZmOrganizer.FOLDER && this._colorSelect) {
+    if (folder && (folder.type != ZmOrganizer.FOLDER) && this._colorSelect) {
         var noneOption = this._colorSelect.getMenu().getItem(0);
         if (noneOption.getText() == ZmOrganizer.COLOR_TEXT[0]) {
             this._colorSelect.getMenu().removeChild(noneOption);
