@@ -696,34 +696,20 @@ function(msg, idoc) {
 		hasExternalImages = ZmMailMsgView.__unfangInternalImage(msg, images[i], "src") || hasExternalImages;
 	}
 	// fix all elems with "background" attribute
-	var place = idoc.body, root = place;
-	while (place) {
-		if (place.nodeType == AjxUtil.ELEMENT_NODE) {
-			hasExternalImages = ZmMailMsgView.__unfangInternalImage(msg, place, "background") || hasExternalImages;
-		}
-		if (place.firstChild) {
-			place = place.firstChild;
-			continue;
-		}
-		if (place.nextSibling) {
-			place = place.nextSibling;
-			continue;
-		}
-		while (true) {
-			place = place.parentNode;
-			if (place === root || !place) {
-				place = null;
-				break;
-			}
-			if (place.nextSibling) {
-				place = place.nextSibling;
-				break;
-			}
-		}
-	}
+	hasExternalImages = this._fixMultipartRelatedImagesRecurse(msg, idoc.body) || hasExternalImages;
 
 	// did we get them all?
 	return !hasExternalImages;
+};
+
+ZmMailMsgView.prototype._fixMultipartRelatedImagesRecurse = function(msg, node) {
+	var hasExternalImages = false;
+	var child = node.firstChild;
+	while (child) {
+		hasExternalImages = ZmMailMsgView.__unfangInternalImage(msg, child, "background") || hasExternalImages;
+		child = child.nextSibling;
+	}
+	return hasExternalImages;
 };
 
 ZmMailMsgView.__unfangInternalImage =
