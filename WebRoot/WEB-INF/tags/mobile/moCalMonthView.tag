@@ -14,7 +14,7 @@
     <fmt:message var="dayFormat" key="CAL_MONTH_DAY_FORMAT"/>
     <fmt:message var="dayMonthChangeFormat" key="CAL_MONTH_DAY_MONTH_CHANGE_FORMAT"/>
     <fmt:message var="titleFormat" key="CAL_MONTH_TITLE_FORMAT"/>
-    <fmt:formatDate var="title" value="${date.time}" pattern="${titleFormat}" timeZone="${timezone}"/>
+    <fmt:formatDate var="title" value="${date.time}" pattern="${titleFormat}"/>
     <jsp:useBean id="dateSymbols" scope="request" class="java.text.DateFormatSymbols"/>
     <c:set var="weekDays" value="${dateSymbols.shortWeekdays}"/>
     <c:set var="today" value="${zm:getToday(timezone)}"/>
@@ -38,7 +38,7 @@
 <table width="100%" cellspacing="0" cellpadding="0">
 <tr>
     <td>
-        <mo:calendarViewToolbar date="${date}" openurl="false" timezone="${timezone}"/>
+        <mo:calendarViewToolbar date="${date}" openurl="false"/>
     </td>
 </tr>
 <tr>
@@ -51,13 +51,13 @@
                             <mo:calendarUrl var="prevUrl" rawdate="${prevDate}" timezone="${timezone}"/>
                             <mo:calendarUrl var="nextUrl" rawdate="${nextDate}" timezone="${timezone}"/>
                             <td width="1%" class='zo_cal_mpage'>
-                                        <a href="${fn:escapeXml(prevUrl)}"><mo:img src="arrows/ImgPreviousPage.gif" alt="«"/></a>
+                                        <a href="${fn:escapeXml(prevUrl)}"><mo:img src="arrows/ImgPreviousPage.gif" alt="previous"/></a>
                             </td>
                                     <td nowrap="nowrap" class='zo_cal_mpage${(date.timeInMillis eq today.timeInMillis) ? '':''}'>
                                     ${fn:escapeXml(title)}
                             </td>
                             <td width="1%" class='zo_cal_mpage'>
-                                <a href="${fn:escapeXml(nextUrl)}"><mo:img src="arrows/ImgNextPage.gif" alt="»"/></a>
+                                <a href="${fn:escapeXml(nextUrl)}"><mo:img src="arrows/ImgNextPage.gif" alt="next"/></a>
                             </td>
                         </tr>
                     </table>
@@ -93,7 +93,7 @@
                         <mo:calendarUrl var="dayUrl" view="day" date="${datef}"/>
                         <td id="cell${datef}" class='zo_cal_mday${sel ? '_select' :''}' onclick="selectDay('${datef}')">
                             <c:if test="${hasappt}"><a href="${dayUrl}" onfocus="selectDay('${datef}')"></c:if>
-                            <fmt:formatDate var="dayTitle" value="${currentDay.time}" pattern="${dayFormat}" timeZone="${timezone}"/>
+                            <fmt:formatDate var="dayTitle" value="${currentDay.time}" pattern="${dayFormat}"/>
                             <span class='zo_cal_mday_text${O}${hasappt ? ' zo_cal_mday_appt':''}'>${fn:escapeXml(dayTitle)}</span>
                             <c:if test="${hasappt}"></a></c:if>
                         </td>
@@ -102,8 +102,6 @@
                 </tr>
             </c:forEach>
         </table>
-        <div  style="border-top:5px outset #cccccc;"/>
-        <div style="border-top:3px solid #eeeeee;"/>
     </td>
 </tr>
 
@@ -128,7 +126,7 @@
                                     <fmt:message key="apptAllDay"/>
                                 </c:when>
                                 <c:otherwise>
-                                    <fmt:formatDate value="${appt.startDate}" type="time" timeStyle="short" timeZone="${timezone}"/>
+                                    <fmt:formatDate value="${appt.startDate}" type="time" timeStyle="short"/>
                                 </c:otherwise>
                             </c:choose>
                         </td>
@@ -161,11 +159,7 @@
         </div>
     </td>
 </tr>
-<tr>
-    <td>
-        <mo:calendarViewToolbar date="${date}" openurl="false" timezone="${timezone}"/>
-    </td>
-</tr>
+
 </table>
 <script type="text/javascript">
     var currentDate = '${curId}';

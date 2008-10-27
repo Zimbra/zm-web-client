@@ -52,6 +52,7 @@ function() {
  *        treeIds				[array]			list of trees to show
  *        overviewId			[string]*		ID to use as base for overview ID
  *        omit					[hash]*			IDs to not show
+ *        noSelect				[hash]*			IDs to disable selection for
  *        title					[string]*		dialog title
  *        description			[string]*		description of what the user is selecting
  *        skipReadOnly			[boolean]* 		if true, read-only folders will not be displayed
@@ -152,9 +153,10 @@ function(params) {
 		var treeView = this._getOverview().getTreeView(treeId);
 		var ti = treeView.getTreeItemById(folderTree.root.id);
 		ti.setExpanded(true);
+		if (this._data && (treeId == this._data.type)) {
+			treeView.setSelected(folderTree.root);
+		}
 	}
-	// set focus to overview, which will select first item if none selected
-	appCtxt.getKeyboardMgr().grabFocus(this._overview[this._curOverviewId]);
 };
 
 ZmChooseFolderDialog.prototype.popdown =
@@ -230,9 +232,4 @@ function(ev) {
 	} else {
 		DwtDialog.prototype._buttonListener.call(this, ev, [tgtFolder]);
 	}
-};
-
-ZmChooseFolderDialog.prototype._getTabGroupMembers =
-function() {
-	return [this._overview[this._curOverviewId]];
 };

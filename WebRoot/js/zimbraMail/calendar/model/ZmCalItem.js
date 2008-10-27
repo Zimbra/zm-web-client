@@ -398,8 +398,13 @@ function() {
 	return this._uniqueEndDate;
 };
 
+ZmCalItem.prototype.setNoBusyOverlay  =
+function(val) {
+	this._noBusyOverlay = val;
+};
+
 ZmCalItem.prototype.getDetails =
-function(viewMode, callback, errorCallback, ignoreOutOfDate, noBusyOverlay) {
+function(viewMode, callback, errorCallback, ignoreOutOfDate) {
 	var mode = viewMode || this.viewMode;
 
 	var seriesMode = mode == ZmCalItem.MODE_EDIT_SERIES;
@@ -407,21 +412,14 @@ function(viewMode, callback, errorCallback, ignoreOutOfDate, noBusyOverlay) {
 		var id = seriesMode ? (this.seriesInvId || this.invId) : this.invId;
 		this.message = new ZmMailMsg(id);
 		var respCallback = new AjxCallback(this, this._handleResponseGetDetails, [mode, this.message, callback]);
-		var respErrorCallback = (!ignoreOutOfDate)
+		var respErrorCallback = !ignoreOutOfDate
 			? (new AjxCallback(this, this._handleErrorGetDetails, [mode, callback, errorCallback]))
 			: errorCallback;
-		var params = {
-			callback: respCallback,
-			errorCallback: respErrorCallback,
-			noBusyOverlay: noBusyOverlay,
-			ridZ: (seriesMode ? null : this.ridZ)
-		}
-		this.message.load(params);
+		this.message.load({callback:respCallback, errorCallback:respErrorCallback, noBusyOverlay:this._noBusyOverlay, ridZ : (seriesMode ? null : this.ridZ)});
 	} else {
 		this.setFromMessage(this.message, mode);
-		if (callback) {
+		if (callback)
 			callback.run();
-		}
 	}
 };
 
@@ -1335,9 +1333,6 @@ function(calItemNode, instNode) {
 
     if (calItemNode.t) {
 		this._parseTags(calItemNode.t);
-	}
-	if (calItemNode.f) {
-		this._parseFlags(calItemNode.f);
 	}
 };
 
