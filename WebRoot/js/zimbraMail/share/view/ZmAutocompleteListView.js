@@ -84,8 +84,11 @@ ZmAutocompleteListView = function(params) {
 
 	// bug fix #32455 - reset data when account changes
 	if (appCtxt.numVisibleAccounts > 1) {
-		var opc = this._dataClass.getOverviewPanelContent();
-		opc.addSelectionListener(new AjxListener(this, this._accountChangeListener));
+		var mailApp = appCtxt.getApp(ZmApp.MAIL);
+		if (mailApp) {
+			var listener = new AjxListener(this, this._accountChangeListener);
+			mailApp.getOverviewPanelContent().addSelectionListener(listener);
+		}
 	}
 
 	// only trigger matching after a sufficient pause
