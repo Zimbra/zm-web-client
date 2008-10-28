@@ -1096,6 +1096,7 @@ function() {
 //	var appChooserTg = new DwtTabGroup("ZmAppChooser");
 //	appChooserTg.addMember(this._components[ZmAppViewMgr.C_APP_CHOOSER]);
 //	rootTg.addMember(appChooserTg);
+	this._components[ZmAppViewMgr.C_APP_CHOOSER].noFocus = true;
 
 	var curApp = appCtxt.getCurrentApp();
 	var ovId = curApp && curApp.getOverviewId();
@@ -1719,7 +1720,7 @@ function(ev) {
 			window.open(appCtxt.get(ZmSetting.HELP_URI));
 		} else if (id == ZmAppChooser.B_LOGOUT) {
 			ZmZimbraMail.conditionalLogOff();
-		} else if (id) {
+		} else if (id && id != this._activeApp) {
 			this.activateApp(id);
 		}
 	} catch (ex) {
@@ -1832,6 +1833,11 @@ function(actionCode, ev) {
 			break;
 		}
 
+		case ZmKeyMap.FOCUS_TOOLBAR: {
+			this.focusToolbar();
+			break;
+		}
+
 		case ZmKeyMap.GOTO_PREV_ACCT:
 		case ZmKeyMap.GOTO_NEXT_ACCT: {
 			var active = (appCtxt.numVisibleAccounts > 1) ? appCtxt.getActiveAccount() : null;
@@ -1886,6 +1892,16 @@ function() {
 	var content = ctlr ? ctlr.getCurrentView() : null;
 	if (content) {
 		appCtxt.getKeyboardMgr().grabFocus(content);
+	}
+};
+
+ZmZimbraMail.prototype.focusToolbar =
+function() {
+	// Set focus to the toolbar that's in the content pane.
+	var ctlr = appCtxt.getCurrentController();
+	var toolbar = ctlr ? ctlr.getCurrentToolbar() : null;
+	if (toolbar) {
+		appCtxt.getKeyboardMgr().grabFocus(toolbar);
 	}
 };
 

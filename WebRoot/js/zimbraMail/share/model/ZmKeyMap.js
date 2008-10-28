@@ -111,6 +111,7 @@ ZmKeyMap.EXPAND_ALL			= "ExpandAll";
 ZmKeyMap.FLAG				= "Flag";
 ZmKeyMap.FOCUS_CONTENT_PANE	= "FocusContentPane";
 ZmKeyMap.FOCUS_SEARCH_BOX	= "FocusSearchBox";
+ZmKeyMap.FOCUS_TOOLBAR		= "FocusToolbar";
 ZmKeyMap.FORWARD			= "Forward";
 ZmKeyMap.GET_MAIL			= "GetMail";
 ZmKeyMap.GOTO_ACCT			= "GoToAccount";	// takes NNN

@@ -120,6 +120,11 @@ function() {
 	return this._listView[this._currentView];
 };
 
+ZmListController.prototype.getCurrentToolbar =
+function() {
+	return this._toolbar[this._currentView];
+};
+
 ZmListController.prototype.getList =
 function() {
 	return this._list;
@@ -408,6 +413,7 @@ function(view) {
 	this._tabGroups[view] = this._createTabGroup();
 	this._tabGroups[view].newParent(appCtxt.getRootTabGroup());
 //	this._tabGroups[view].addMember(this._toolbar[view]);
+	this._toolbar[view].noFocus = true;
 	this._tabGroups[view].addMember(this._listView[view]);
 };
 
