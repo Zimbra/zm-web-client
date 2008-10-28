@@ -80,15 +80,15 @@ function(keepFocus) {
 };
 ZmTaskListView.prototype.handleKeyAction =
 function(actionCode, ev) {
-    if(this._editing){
-        switch (actionCode) {
-            case DwtKeyMap.SELECT_NEXT:		this.discardNewTask(); break;
-            case DwtKeyMap.DBLCLICK:		break;
-            default: DwtListView.prototype.handleKeyAction.call(this,actionCode,ev);
-        }
-    }else{
-        DwtListView.prototype.handleKeyAction.call(this,actionCode,ev);
-    }
+	if (this._editing) {
+		switch (actionCode) {
+			case DwtKeyMap.SELECT_NEXT:		this.discardNewTask(); break;
+			case DwtKeyMap.DBLCLICK:		break;
+			default: DwtListView.prototype.handleKeyAction.call(this,actionCode,ev);
+		}
+	} else {
+		DwtListView.prototype.handleKeyAction.call(this,actionCode,ev);
+	}
 };
 ZmTaskListView.prototype.discardNewTask =
 function() {
@@ -96,8 +96,8 @@ function() {
 		this._newTaskInputEl.value = "";
 		Dwt.setVisibility(this._newTaskInputEl, false);
 		this.focus();
-        this._editing =  false;
-    }
+		this._editing =  false;
+	}
 };
 
 ZmTaskListView.prototype.getTitle =
@@ -125,9 +125,9 @@ function(list, noResultsOk) {
 		if (!hdr._visible) { continue; }
 
 		if (hdr._field == ZmItem.F_SUBJECT) {
-		    this.dId = Dwt.getNextId();
+			this.dId = Dwt.getNextId();
 			htmlArr[idx++] = "<td><div class='newTaskBanner' onclick='ZmTaskListView._handleOnClick(this)' id='";
-			htmlArr[idx++] = this.dId; 									// bug: 17653 - for QA
+			htmlArr[idx++] = this.dId;	// bug: 17653 - for QA
 			htmlArr[idx++] = "'>";
 			htmlArr[idx++] = ZmMsg.createNewTaskHint;
 			htmlArr[idx++] = "</div></td>";
@@ -255,7 +255,7 @@ function(el) {
 	}
 	Dwt.setVisibility(this._newTaskInputEl, true);
 	this._newTaskInputEl.focus();
-    this._editing =  true;
+	this._editing =  true;
 };
 
 
@@ -364,17 +364,16 @@ function(ev) {
 
 ZmTaskListView.prototype._selectItem =
 function(next, addSelect, kbNavEvent) {
-    if(!next){
-       var itemDiv = (this._kbAnchor)
+	if (!next) {
+		var itemDiv = (this._kbAnchor)
 		? this._getSiblingElement(this._kbAnchor, next)
 		: this._parentEl.firstChild;
-       if(itemDiv && itemDiv.id == "_newTaskBannerId"){
-           //this._emulateSingleClick({target:document.getElementById(this.dId), button:DwtMouseEvent.LEFT});
-           document.getElementById(this.dId).onclick();
-           return;
-       }
-    }
-    DwtListView.prototype._selectItem.call(this,next,addSelect,kbNavEvent);
+		if (itemDiv && itemDiv.id == "_newTaskBannerId") {
+			document.getElementById(this.dId).onclick();
+			return;
+		}
+	}
+	DwtListView.prototype._selectItem.call(this,next,addSelect,kbNavEvent);
 };
 
 ZmTaskListView._handleKeyPress =
@@ -386,9 +385,13 @@ function(ev) {
 
 	if (key == DwtKeyEvent.KEY_ENTER) {
 		tlv.saveNewTask(true);
-	}/* else if (key == DwtKeyEvent.KEY_ESCAPE) {
-		tlv.discardNewTask();
-	} */else if (key == DwtKeyEvent.KEY_ESCAPE || key == 0x28) {
-		tlv.discardNewTask();
+	}
+	else {
+		// bug fix #31778 - down arrow and left paren. have same key code!
+		var isDownArrow = (!AjxEnv.isIE)
+			? (ev.charCode == 0 && ev.keyCode == 40) : false;
+		if (key == DwtKeyEvent.KEY_ESCAPE || isDownArrow) {
+			tlv.discardNewTask();
+		}
 	}
 };
