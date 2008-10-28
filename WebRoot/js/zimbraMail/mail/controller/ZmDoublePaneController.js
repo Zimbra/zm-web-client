@@ -70,6 +70,9 @@ function(search, item, callback, markRead) {
 	this._item = item;
 	this._setup(this._currentView);
 
+	var listView = this._listView[this._currentView];
+	listView._itemToSelect = (listView.getSelectionCount() == 1) ? listView.getSelection()[0] : null;
+
 	// see if we have it cached? Check if conv loaded?
 	var respCallback = new AjxCallback(this, this._handleResponseShow, [item, callback]);
 	this._loadItem(item, this._currentView, respCallback, markRead);
@@ -387,6 +390,8 @@ function(view) {
 	// always allow derived classes to reset size after loading
 	var sz = this._doublePaneView.getSize();
 	this._doublePaneView._resetSize(sz.x, sz.y);
+
+	this._resetSelection();
 };
 
 /**
@@ -627,4 +632,13 @@ function(msg) {
 ZmDoublePaneController.prototype.selectFirstItem =
 function() {
 	this._doublePaneView._selectFirstItem();
+};
+
+ZmDoublePaneController.prototype._resetSelection =
+function() {
+	var listView = this._listView[this._currentView];
+	var item = listView && listView._itemToSelect;
+	if (item && (listView.getItemIndex(item) != null)) {
+		listView.setSelection(item);
+	}
 };
