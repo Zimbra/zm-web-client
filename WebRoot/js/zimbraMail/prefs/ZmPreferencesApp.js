@@ -112,6 +112,10 @@ function() {
 ZmPreferencesApp.prototype._registerSettings =
 function(settings) {
 	settings = settings || appCtxt.getSettings();
+	settings.registerSetting("IMPORT_FOLDER",			{type:ZmSetting.T_PSEUDO, dataType:ZmSetting.D_NONE});
+	settings.registerSetting("IMPORT_BUTTON",			{type:ZmSetting.T_PSEUDO, dataType:ZmSetting.D_NONE});
+	settings.registerSetting("EXPORT_FOLDER",			{type:ZmSetting.T_PSEUDO, dataType:ZmSetting.D_NONE});
+	settings.registerSetting("EXPORT_BUTTON",			{type:ZmSetting.T_PSEUDO, dataType:ZmSetting.D_NONE});
 	settings.registerSetting("SIGNATURE_MAX_LENGTH",	{name:"zimbraMailSignatureMaxLength", type:ZmSetting.T_COS, dataType:ZmSetting.D_INT, defaultValue:1024});
 };
 
@@ -170,6 +174,23 @@ function() {
 				ZmSetting.SAVE_TO_SENT,
                 ZmSetting.COMPOSE_SAME_FORMAT
             ]
+		},
+		IMPORT_EXPORT: {
+			title: ZmMsg.importExport,
+			templateId: "data.ImportExport#ImportExportPrefPage",
+			priority: 90,
+			precondition: ZmSetting.IMPORT_EXPORT_ENABLED,
+			prefs: [
+				ZmSetting.IMPORT_FOLDER,
+				ZmSetting.IMPORT_BUTTON,
+				ZmSetting.EXPORT_FOLDER,
+				ZmSetting.EXPORT_BUTTON
+			],
+			manageChanges: true,
+			createView: function(parent, section, controller) {
+				AjxDispatcher.require("ImportExport");
+				return new ZmImportExportPage(parent, section, controller);
+			}
 		},
 		SHORTCUTS: {
 			title: ZmMsg.shortcuts,
@@ -247,6 +268,22 @@ function() {
 		displayContainer:	ZmPref.TYPE_SELECT,
 		displayOptions:		AjxTimezone.getZonePreferences(),
 		options:			AjxTimezone.getZonePreferencesOptions()
+	});
+
+	ZmPref.registerPref("EXPORT_FOLDER", {
+		displayContainer:	ZmPref.TYPE_CUSTOM
+	});
+	ZmPref.registerPref("EXPORT_BUTTON", {
+		displayName:		ZmMsg._export,
+		displayContainer:	ZmPref.TYPE_CUSTOM
+	});
+	ZmPref.registerPref("IMPORT_FOLDER", {
+		loadFunction:       ZmPref.loadCsvFormats,
+		displayContainer:	ZmPref.TYPE_CUSTOM
+	});
+	ZmPref.registerPref("IMPORT_BUTTON", {
+		displayName:		ZmMsg._import,
+		displayContainer:	ZmPref.TYPE_CUSTOM
 	});
 
 	ZmPref.registerPref("LOCALE_NAME", {

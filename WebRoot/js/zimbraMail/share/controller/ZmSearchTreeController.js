@@ -88,6 +88,7 @@ function(parent, type, id) {
 	parent.enableAll(true);
 	var search = appCtxt.getById(id);
 	parent.enable(ZmOperation.EXPAND_ALL, (search.size() > 0));
+//	this._resetOperation(parent, ZmOperation.EXPORT_FOLDER, ZmMsg.exportSearch);
 };
 
 ZmSearchTreeController.prototype._newListener =
@@ -128,6 +129,9 @@ function() {
 			ZmOperation.RENAME_SEARCH,
 			ZmOperation.MOVE,
 			ZmOperation.EXPAND_ALL];
+//	if (appCtxt.get(ZmSetting.IMPORT_EXPORT_ENABLED)) {
+//		ops.push(ZmOperation.EXPORT_FOLDER);
+//	}
 };
 
 // override the ZmFolderTreeController override
@@ -194,3 +198,7 @@ function(overviewId, account) {
 	var hide = ZmOrganizer.HIDE_EMPTY[this.type] && !treeView.getTreeItemById(rootId).getItemCount();
 	this._treeView[overviewId].setVisible(!hide);
 };
+
+//ZmSearchTreeController.prototype._folderExportListener = function(ev) {
+//	alert("export search");
+//};

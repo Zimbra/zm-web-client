@@ -122,6 +122,8 @@ function(actionMenu, type, id) {
 			actionMenu.enable(ZmOperation.CHECK_ALL, foundUnchecked);
 			actionMenu.enable(ZmOperation.CLEAR_ALL, foundChecked);
 		}
+//		this._resetOperation(actionMenu, ZmOperation.EXPORT_FOLDER, ZmMsg.exportCalendar);
+//		this._resetOperation(actionMenu, ZmOperation.IMPORT_FOLDER, ZmMsg.importCalendar);
 	}
 };
 
@@ -192,6 +194,9 @@ function() {
 	ops.push(ZmOperation.EDIT_PROPS);
 	ops.push(ZmOperation.SYNC);
     ops.push(ZmOperation.DETACH_WIN);
+//	if (appCtxt.get(ZmSetting.IMPORT_EXPORT_ENABLED)) {
+//		ops.push(ZmOperation.EXPORT_FOLDER, ZmOperation.IMPORT_FOLDER);
+//	}
 
     return ops;
 };

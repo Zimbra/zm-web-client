@@ -887,6 +887,12 @@
                         <patternset id='jam.template.fileset' includes='voicemail/**'/>
                     </then>
                 </if>
+				<if>
+					<equals arg1='${arg}' arg2='ImportExport'/>
+					<then>
+						<patternset id='jam.template.fileset' includes='data/**'/>
+					</then>
+				</if>
 
                 <jammer jsDestFile='${jam.file}' htmlDestFile='${jsp.file}'
                         dependsFile='${depends.file}' output='all'

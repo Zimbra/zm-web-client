@@ -86,10 +86,8 @@ function(settings) {
 	settings.registerSetting("AUTO_ADD_ADDRESS",			{name: "zimbraPrefAutoAddAddressEnabled", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
 	settings.registerSetting("CONTACTS_PER_PAGE",			{name: "zimbraPrefContactsPerPage", type: ZmSetting.T_PREF, dataType: ZmSetting.D_INT, defaultValue: 25});
 	settings.registerSetting("CONTACTS_VIEW",				{name: "zimbraPrefContactsInitialView", type: ZmSetting.T_PREF, defaultValue: ZmSetting.CV_LIST});
-	settings.registerSetting("EXPORT",						{type: ZmSetting.T_PREF, dataType: ZmSetting.D_NONE});
 	settings.registerSetting("GAL_AUTOCOMPLETE",			{name: "zimbraPrefGalAutoCompleteEnabled", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
 	settings.registerSetting("GAL_AUTOCOMPLETE_SESSION",	{type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
-	settings.registerSetting("IMPORT",						{type: ZmSetting.T_PREF, dataType: ZmSetting.D_NONE});
 	settings.registerSetting("MAX_CONTACTS",				{name: "zimbraContactMaxNumEntries", type: ZmSetting.T_COS, dataType: ZmSetting.D_INT, defaultValue: 0});
 	settings.registerSetting("NEW_ADDR_BOOK_ENABLED",		{name: "zimbraFeatureNewAddrBookEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 };
@@ -136,11 +134,6 @@ function() {
 		options:			[ZmSetting.CV_CARDS, ZmSetting.CV_LIST]
 	});
 
-	ZmPref.registerPref("EXPORT", {
-        loadFunction:       ZmPref.loadCsvFormats,     
-        displayContainer:	ZmPref.TYPE_EXPORT
-	});
-
 	ZmPref.registerPref("GAL_AUTOCOMPLETE", {
 		displayName:		ZmMsg.galAutocomplete,
 		displayContainer:	ZmPref.TYPE_CHECKBOX,
@@ -161,11 +154,6 @@ function() {
 		displayName:		ZmMsg.initiallySearchGal,
 		displayContainer:	ZmPref.TYPE_CHECKBOX,
 		precondition:		ZmSetting.GAL_ENABLED
-	});
-
-	ZmPref.registerPref("IMPORT", {
-		displayName:		ZmMsg.importFromCSV,
-		displayContainer:	ZmPref.TYPE_IMPORT
 	});
 };
 

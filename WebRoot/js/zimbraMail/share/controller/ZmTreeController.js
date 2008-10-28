@@ -47,6 +47,8 @@ ZmTreeController = function(type) {
     this._listeners[ZmOperation.SYNC_ALL]		= new AjxListener(this, this._syncAllListener);
     this._listeners[ZmOperation.EDIT_PROPS]		= new AjxListener(this, this._editPropsListener);
 	this._listeners[ZmOperation.EMPTY_FOLDER]   = new AjxListener(this,this._emptyListener);
+//	this._listeners[ZmOperation.EXPORT_FOLDER] = new AjxListener(this, this._folderExportListener);
+//	this._listeners[ZmOperation.IMPORT_FOLDER] = new AjxListener(this, this._folderImportListener);
 
 	// drag-and-drop
 	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
@@ -109,6 +111,17 @@ ZmTreeController.prototype._dropListener = function() {};
 
 // Returns an appropriate title for the "Move To" dialog
 ZmTreeController.prototype._getMoveDialogTitle = function() {};
+
+ZmTreeController.prototype._resetOperation =
+function(parent, id, text, image, enabled, visible) {
+	var op = parent && parent.getOp(id);
+	if (!op) return;
+
+	if (text) op.setText(text);
+	if (image) op.setImage(image);
+	if (enabled != null) op.setEnabled(enabled);
+	if (visible != null) op.setVisible(visible);
+};
 
 // Public methods
 
@@ -857,6 +870,13 @@ function(ev) {
 	ZmController.showDialog(moveToDialog, this._moveCb, this._getMoveParams());
 	moveToDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._clearDialog, this, moveToDialog);
 };
+
+//ZmTreeController.prototype._folderExportListener = function(ev) {
+//	alert("export");
+//};
+//ZmTreeController.prototype._folderImportListener = function(ev) {
+//	alert("import");
+//};
 
 ZmTreeController.prototype._getMoveParams =
 function() {

@@ -207,7 +207,7 @@
 	String allPackages = "Startup1_1,Startup1_2";
     if (extraPackages != null) {
     	if (extraPackages.equals("dev")) {
-    		extraPackages = "Leaks,Startup2,CalendarCore,Calendar,CalendarAppt,ContactsCore,Contacts,IMCore,IM,MailCore,Mail,Mixed,NotebookCore,Notebook,BriefcaseCore,Briefcase,PreferencesCore,Preferences,TasksCore,Tasks,Voicemail,Assistant,Browse,Extras,Share,Zimlet,Portal,Alert,YmSdk";
+    		extraPackages = "Leaks,Startup2,CalendarCore,Calendar,CalendarAppt,ContactsCore,Contacts,IMCore,IM,MailCore,Mail,Mixed,NotebookCore,Notebook,BriefcaseCore,Briefcase,PreferencesCore,Preferences,TasksCore,Tasks,Voicemail,Assistant,Browse,Extras,Share,Zimlet,Portal,Alert,ImportExport,YmSdk";
     	}
     	allPackages += "," + extraPackages;
     }

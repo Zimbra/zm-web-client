@@ -75,6 +75,8 @@ function(actionMenu, type, id) {
 		var menuItem = actionMenu.getMenuItem(ZmOperation.REFRESH);
 		menuItem.setImage("Refresh");
 	}
+//	this._resetOperation(actionMenu, ZmOperation.EXPORT_FOLDER, ZmMsg.exportNotebook);
+//	this._resetOperation(actionMenu, ZmOperation.IMPORT_FOLDER, ZmMsg.importNotebook);
 };
 
 ZmNotebookTreeController.__isAllowed = function(organizer, perm) {
@@ -122,6 +124,9 @@ function() {
                 ZmOperation.BROWSE_FOLDER,
 		ZmOperation.DELETE, ZmOperation.EDIT_PROPS, ZmOperation.REFRESH
 	);
+//	if (appCtxt.get(ZmSetting.IMPORT_EXPORT_ENABLED)) {
+//		ops.push(ZmOperation.EXPORT_FOLDER, ZmOperation.IMPORT_FOLDER);
+//	}
 	return ops;
 };
 

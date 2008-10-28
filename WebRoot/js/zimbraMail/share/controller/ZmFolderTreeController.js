@@ -134,6 +134,8 @@ function(parent, type, id) {
 		if (appCtxt.isOffline && nId == ZmOrganizer.ID_SYNC_FAILURES && hasContent) {
 			parent.enable(ZmOperation.EMPTY_FOLDER, true);
 		}
+//		parent.enable(ZmOperation.EXPORT_FOLDER, true);
+//		parent.enable(ZmOperation.IMPORT_FOLDER, true);
 	}
 
 	parent.enable(ZmOperation.EXPAND_ALL, (folder.size() > 0));
@@ -205,6 +207,10 @@ function(parent, type, id) {
 		}
 	}
 	parent.enable(ZmOperation.BROWSE, true);
+
+	// NOTE: This is the default text for the op, anyway.
+	//this._resetOperation(parent, ZmOperation.EXPORT_FOLDER, ZmMsg.exportFolder);
+	//this._resetOperation(parent, ZmOperation.IMPORT_FOLDER, ZmMsg.importFolder);
 };
 
 // Private methods
@@ -246,6 +252,9 @@ function() {
 		ZmOperation.SYNC_ALL,
 		ZmOperation.EMPTY_FOLDER,
 		ZmOperation.SYNC_OFFLINE_FOLDER);
+//	if (appCtxt.get(ZmSetting.IMPORT_EXPORT_ENABLED)) {
+//		ops.push(ZmOperation.EXPORT_FOLDER, ZmOperation.IMPORT_FOLDER);
+//	}
 
 	return ops;
 };

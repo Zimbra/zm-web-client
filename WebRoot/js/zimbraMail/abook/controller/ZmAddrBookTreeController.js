@@ -117,6 +117,8 @@ function(parent, type, id) {
 	if (op) {
 		op.setText(deleteText);
 	}
+//	this._resetOperation(parent, ZmOperation.EXPORT_FOLDER, ZmMsg.exportAddrBook);
+//	this._resetOperation(parent, ZmOperation.IMPORT_FOLDER, ZmMsg.importAddrBook);
 };
 
 
@@ -159,6 +161,9 @@ function() {
 			ZmOperation.RENAME_FOLDER,
 			ZmOperation.EDIT_PROPS,
 			ZmOperation.EXPAND_ALL);
+//	if (appCtxt.get(ZmSetting.IMPORT_EXPORT_ENABLED)) {
+//		ops.push(ZmOperation.EXPORT_FOLDER, ZmOperation.IMPORT_FOLDER);
+//	}
 
 	return ops;
 };

@@ -107,10 +107,12 @@ function() {
     ZmOperation.registerOp(ZmId.OP_EDIT, {textKey:"edit", tooltipKey:"editTooltip", image:"Edit", shortcut:ZmKeyMap.EDIT});
 	ZmOperation.registerOp(ZmId.OP_EDIT_PROPS, {textKey:"editProperties", tooltipKey:"editPropertiesTooltip", image:"Properties"});
 	ZmOperation.registerOp(ZmId.OP_EXPAND_ALL, {textKey:"expandAll", image:"Plus"});
+//	ZmOperation.registerOp(ZmId.OP_EXPORT_FOLDER, {textKey:"exportFolder", image:"MailExport"});
 	ZmOperation.registerOp(ZmId.OP_EMPTY_FOLDER,{textKey:"emptyFolder",image:"EmptyFolder"});
 	ZmOperation.registerOp(ZmId.OP_FORMAT_HTML, {textKey:"formatAsHtml", image:"HtmlDoc"}, ZmSetting.HTML_COMPOSE_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_FORMAT_TEXT, {textKey:"formatAsText", image:"GenericDoc"}, ZmSetting.HTML_COMPOSE_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_GO_TO_URL, {image:"URL"});
+//	ZmOperation.registerOp(ZmId.OP_IMPORT_FOLDER, {textKey:"importFolder", image:"MailImport"});
 	ZmOperation.registerOp(ZmId.OP_MARK_ALL_READ, {textKey:"markAllRead", image:"ReadMessage"});
 	ZmOperation.registerOp(ZmId.OP_MOUNT_FOLDER, {textKey:"mountFolder", image:"Folder"}, ZmSetting.SHARING_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_MOVE, {textKey:"move", tooltipKey:"moveTooltip", image:"MoveToFolder", precedence:40});

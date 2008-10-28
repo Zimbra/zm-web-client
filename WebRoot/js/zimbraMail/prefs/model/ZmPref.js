@@ -67,7 +67,7 @@ function(setup){
     setup.displayOptions=[];
     for(var i=0; i<formats.length; i++){
         setup.options.push(formats[i]);
-        setup.displayOptions.push((ZmMsg['csvformat-'+formats[i]] || formats[i]));
+        setup.displayOptions.push((ZmMsg[formats[i]] || formats[i]));
     }
 };
 
