@@ -61,21 +61,23 @@
                 <zm:uploadVoiceMail var="uploadId" phone="${phone}" id="${ids}"/>
                 <c:choose>
                     <c:when test="${zm:actionSet(param, 'actionReplyByEmail')}">
-                        <c:set var="vmop" value="reply"/>
+                        <c:set var="subjectKey" value="voiceMailReplySubject"/>
                     </c:when>
                     <c:otherwise>
-                        <c:set var="vmop" value="forward"/>
+						<c:set var="subjectKey" value="voiceMailForwardSubject"/>
                     </c:otherwise>
                 </c:choose>
-                <fmt:message key="voiceMailBody" var="body">
+				<fmt:message key="${subjectKey}" var="subject"/>
+				<fmt:message key="voiceMailBody" var="body">
                     <fmt:param value="${hits[0].displayCaller}"/>
                     <fmt:param value="${zm:displayDuration(pageContext, hits[0].duration)}"/>
                     <fmt:param value="${zm:displayMsgDate(pageContext, hits[0].date)}"/>
                 </fmt:message>
-                <zm:currentResultUrl var="composeUrl" value="search" context="${context}"
+				<zm:saveDraft subject="${subject}" content="${body}" contenttype="text/html"
+							  var="draftMessage" attachmentuploadid="${uploadId}"/>
+				<zm:currentResultUrl var="composeUrl" value="search" context="${context}"
                                      action="compose" paction="view" css="${param.css}"
-                                     phone="${phone}" voiceid="${param.voiceId}" vmop="${vmop}"
-                                     attachId="${uploadId}" attachName="voicemail.wav" attachUrl="${hits[0].soundUrl}"/>
+                                     phone="${phone}" id="${draftMessage.id}"/>
                 <c:redirect url="${composeUrl}"/>
             </c:otherwise>
         </c:choose>
