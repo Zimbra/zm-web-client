@@ -621,6 +621,15 @@ ZmImportExportDataTypes.prototype.isAllSelected = function() {
 	return true;
 };
 
+ZmImportExportDataTypes.prototype.setEnabled = function(enabled) {
+	DwtComposite.prototype.setEnabled.apply(this, arguments);
+	var children = this.getChildren();
+	for (var i = 0; i < children.length; i++) {
+		var checkbox = children[i];
+		checkbox.setEnabled(enabled);
+	}
+};
+
 // Protected methods
 
 ZmImportExportDataTypes.prototype._createHtml = function(templateId) {
