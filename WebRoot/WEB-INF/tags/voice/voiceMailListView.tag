@@ -102,7 +102,7 @@
 
 		<SCRIPT TYPE="text/javascript">
 			<!--
-			var zrc = ${context.searchResult ? context.searchResult.size : 0};
+			var zrc = ${(not empty context.searchResult) ? context.searchResult.size : 0};
 			var zsr = ${zm:cookInt(selectedRow, 0)};
 			var zss = function(r,s) {
 				var e = document.getElementById("R"+r);
