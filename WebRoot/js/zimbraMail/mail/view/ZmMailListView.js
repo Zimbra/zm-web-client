@@ -445,3 +445,11 @@ function(clickedEl, ev) {
 		}
 	}
 };
+
+ZmMailListView.prototype._setNextSelection =
+function() {
+	var item = this._controller._itemToSelect || this._list.get(0);
+	if (item) {
+		this.setSelection(item, false);
+	}
+};

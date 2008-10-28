@@ -558,7 +558,19 @@ function(ev) {
 	}
 };
 
-ZmDoublePaneController.prototype._showOrigListener = 
+ZmDoublePaneController.prototype._deleteListener =
+function(ev) {
+	this._itemToSelect = this._getNextItemToSelect();
+	ZmMailListController.prototype._deleteListener.apply(this, arguments);                             
+};
+
+ZmDoublePaneController.prototype._moveListener =
+function(ev) {
+	this._itemToSelect = this._getNextItemToSelect();
+	ZmMailListController.prototype._moveListener.apply(this, arguments);
+};
+
+ZmDoublePaneController.prototype._showOrigListener =
 function(ev) {
 	var msg = this._getMsg();
 	if (!msg) { return; }
@@ -641,4 +653,30 @@ function() {
 	if (item && (listView.getItemIndex(item) != null)) {
 		listView.setSelection(item);
 	}
+};
+
+/**
+ * Returns the item that should be selected after a move/delete. Finds
+ * the first non-selected item after the first selected item.
+ */
+ZmDoublePaneController.prototype._getNextItemToSelect =
+function() {
+	var listView = this._listView[this._currentView];
+	if (listView.getSelectionCount()) {
+		var selection = listView.getSelection();
+		var selIds = {};
+		for (var i = 0; i < selection.length; i++) {
+			selIds[selection[i].id] = true;
+		}
+		var first = selection[0];
+		var idx = listView._getRowIndex(first);
+		var childNodes = listView._parentEl.childNodes;
+		for (var i = idx + 1; i < childNodes.length; i++) {
+			var item = listView.getItemFromElement(childNodes[i]);
+			if (item && !selIds[item.id]) {
+				return item;
+			}
+		}
+	}
+	return null;	
 };

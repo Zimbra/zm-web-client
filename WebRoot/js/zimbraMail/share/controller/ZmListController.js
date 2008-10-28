@@ -173,7 +173,7 @@ function(actionCode) {
 			return listView.handleKeyAction(actionCode);
 
 		case ZmKeyMap.DEL:
-			this._doDelete(listView.getSelection());
+			this._deleteListener();
 			break;
 
 		case ZmKeyMap.NEXT_PAGE:
