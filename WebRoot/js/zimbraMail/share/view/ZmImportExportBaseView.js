@@ -638,9 +638,20 @@ ZmImportExportDataTypes.prototype._createHtml = function(templateId) {
 
 ZmImportExportDataTypes.prototype._createHtmlFromTemplate =
 function(templateId, data) {
-	// TODO: There has *got* to be an easier way to do this type of thing
-	var dataTypeCount = 0;
-	var checkboxes = {};
+	// get number of checkboxes
+	data.count = 0;
+	for (var appName in ZmApp.ORGANIZER) {
+		var orgType = ZmApp.ORGANIZER[appName];
+		var views = ZmOrganizer.VIEWS[orgType];
+		if (!views || views.length == 0) continue;
+		data.count++;
+	}
+
+	// create cells
+	DwtComposite.prototype._createHtmlFromTemplate.call(this, templateId, data);
+
+	// create checkboxes and place in cells
+	var i = 0;
 	for (var appName in ZmApp.ORGANIZER) {
 		var orgType = ZmApp.ORGANIZER[appName];
 		var views = ZmOrganizer.VIEWS[orgType];
@@ -652,19 +663,10 @@ function(templateId, data) {
 		// NOTE: I know it's the default join string but I prefer
 		//       explicit behavior.
 		checkbox.setValue(views.join(","));
-
-		checkboxes[appName] = checkbox;
-		this._tabGroup.addMember(checkbox);
-		dataTypeCount++;
-	}
-
-	data.count = dataTypeCount;
-	DwtComposite.prototype._createHtmlFromTemplate.call(this, templateId, data);
-
-	var i = 0;
-	for (var appName in checkboxes) {
-		var checkbox = checkboxes[appName];
 		checkbox.replaceElement(data.id+"_cell_"+i);
+
+		this._tabGroup.addMember(checkbox);
+
 		i++;
 	}
 };
