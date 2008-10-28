@@ -51,13 +51,6 @@ function () {
 };
 
 //
-// Constants
-//
-
-ZmPreferencesPage.IMPORT_FIELD_NAME = "importUpload";
-ZmPreferencesPage.IMPORT_TIMEOUT = 300;
-
-//
 // Public methods
 //
 
@@ -253,14 +246,6 @@ function() {
 			}
 			else if (type == ZmPref.TYPE_PASSWORD) {
 				this._addButton(elem, setup.displayName, 50, new AjxListener(this, this._changePasswordListener));
-				continue;
-			}
-			else if (type == ZmPref.TYPE_IMPORT) {
-				this._addImportWidgets(elem, id, setup);
-				continue;
-			}
-			else if (type == ZmPref.TYPE_EXPORT) {
-				this._addExportWidgets(elem, id, setup);
 				continue;
 			}
 
@@ -749,77 +734,9 @@ function(id, setup, value) {
 	return input;
 };
 
-ZmPreferencesPage.prototype._addImportWidgets =
-function(containerDiv, settingId, setup) {
-	var uri = appCtxt.get(ZmSetting.CSFE_UPLOAD_URI);
-
-	var importDivId = this._htmlElId+"_import";
-	var isAddrBookImport = settingId == ZmSetting.IMPORT; 
-	var data = {
-		id: importDivId,
-		action: uri,
-		name: ZmPreferencesPage.IMPORT_FIELD_NAME,
-		label: isAddrBookImport ? ZmMsg.importFromCSVLabel : ZmMsg.importFromICSLabel
-	};
-	containerDiv.innerHTML = AjxTemplate.expand("prefs.Pages#Import", data);
-
-	this._uploadFormId = importDivId+"_form";
-	this._attInputId = importDivId+"_input";
-
-	// setup pseudo tab group
-	this._enterTabScope();
-	var tabGroup = new DwtTabGroup(importDivId+"_x-tabgroup");
-	try {
-		// set up import button
-		var buttonDiv = document.getElementById(importDivId+"_button");
-		var btnLabel = setup ? setup.displayName : ZmMsg._import;
-		this._importBtn = this._addButton(buttonDiv, btnLabel, 100, new AjxListener(this, this._importButtonListener));
-		if (settingId) {
-			this._importBtn.setData(Dwt.KEY_ID, settingId);
-		}
-
-		// add other controls
-		var inputEl = document.getElementById(this._attInputId);
-		if (inputEl) {
-			this._addControlTabIndex(inputEl, inputEl);
-		}
-		this._addTabLinks(containerDiv);
-
-		// add pseudo tab group
-		this._addControlsToTabGroup(tabGroup);
-	}
-	finally {
-		this._exitTabScope();
-		this._addControlTabIndex(containerDiv, new ZmPreferencesPage.__hack_TabGroupControl(tabGroup));
-	}
-};
-
 ZmPreferencesPage.__hack_TabGroupControl =
 function(tabGroup) {
 	this.getTabGroupMember = function() { return tabGroup; }
-};
-
-ZmPreferencesPage.prototype._addExportWidgets =
-function(containerDiv, settingId, setup) {
-	var exportDivId = this._htmlElId+"_export";
-	containerDiv.innerHTML = AjxTemplate.expand("prefs.Pages#Export", exportDivId);
-
-	//Export Options
-	var format = settingId == "CAL_EXPORT" ? "ics" : "csv"; 
-	var selFormat = null;
-	var optionsDiv = document.getElementById(exportDivId+"_options");
-	if(optionsDiv && (setup.options && setup.options.length > 0) ) {
-		var selFormat = this._setupSelect(settingId, setup);
-		this._replaceControlElement(optionsDiv, selFormat);
-	}
-
-	//Export Button
-	var buttonDiv = document.getElementById(exportDivId+"_button");
-	buttonDiv.setAttribute("tabindex", containerDiv.getAttribute("tabindex"));
-
-	var btnLabel = setup.displayName || ZmMsg._export;
-	var btn = this._addButton(buttonDiv, btnLabel, 110, new AjxListener(this, this._exportButtonListener, [format, selFormat]));
-	btn.setData(Dwt.KEY_ID, settingId);
 };
 
 ZmPreferencesPage.prototype._setupColor =

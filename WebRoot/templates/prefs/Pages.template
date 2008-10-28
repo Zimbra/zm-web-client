@@ -658,71 +658,6 @@ and the container element is replaced with that control.
 			</td>
 		</tr>
 	</table>
-	<table border=0 cellspacing=0 cellpadding=0 width=100%>
-		<tr class='ZOptionsHeaderRow'>
-			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
-			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.importExport$></td>
-			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
-		</tr>
-	</table>
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
-		<tr>
-			<td class='ZOptionsSectionMain'>
-				<table width=100%>
-					<tr>
-						<td class='ZOptionsLabelTop'><$=ZmMsg.importLabel$></td>
-						<td class='ZOptionsInfo'><$=ZmMsg.importFromCSVHint$></td>
-					</tr>
-					<tr>
-						<td class='ZOptionsLabel'>&nbsp;</td>
-						<td class='ZOptionsInfo'><div id='${id}_IMPORT' tabindex='60'></div></td>
-					</tr>
-
-					<tr><td colspan=2><hr></td></tr>
-
-					<tr>
-						<td class='ZOptionsLabelTop'><$=ZmMsg.exportLabel$></td>
-						<td class='ZOptionsInfo'><$=ZmMsg.exportToCSVHint$></td>
-					</tr>
-					<tr>
-						<td class='ZOptionsLabel'>&nbsp;</td>
-						<td class='ZOptionsInfo'><div id='${id}_EXPORT' tabindex='70'></div></td>
-					</tr>
-				</table>
-			</td>
-		</tr>
-	</table>
-</template>
-
-<template id='prefs.Pages#Import'>
-	<table border=0 cellpadding=3 cellspacing=3>
-		<tr>
-			<td class='ZOptionsLabel'>${label}</td>
-			<td class='ZOptionsInfo'>
-				<form id='${id}_form'
-					  action='${action}' method='POST' enctype='multipart/form-data'
-					  style='margin: 0px; padding: 0px;'>
-					<input id='${id}_input' tabindex='10'
-						   type='file' name='${name}'
-						   style='font-family:Tahoma; font-size:10px'>
-				</form>
-			</td>
-		</tr>
-		<tr>
-			<td class='ZOptionsLabel'>&nbsp;</td>
-			<td class='ZOptionsInfo'><div id='${id}_button' tabindex='20'></div></td>
-		</tr>
-	</table>
-</template>
-
-<template id='prefs.Pages#Export'>
-	<table border=0 cellpadding=3 cellspacing=3>
-		<tr>
-            <td class='ZOptionsLabel'>&nbsp;</td>
-            <td class='ZOptionsInfo'><div id='${id}_options'></div></td>
-			<td class='ZOptionsInfo'><div id='${id}_button'></div></td>
-		</tr>
-	</table>
 </template>
 
 <template id='prefs.Pages#Accounts'>
@@ -1300,40 +1235,6 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 					<tr>
 						<td>&nbsp;</td>
 						<td><textarea id='${id}_CAL_INVITE_ACL_USERS' tabindex='88' rows=3 cols=70></textarea></td>
-					</tr>
-				</table>
-			</td>
-		</tr>
-	</table>
-	<table border=0 cellspacing=0 cellpadding=0 width=100%>
-		<tr class='ZOptionsHeaderRow'>
-			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
-			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.importExport$></td>
-			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
-		</tr>
-	</table>
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
-		<tr>
-			<td class='ZOptionsSectionMain'>
-				<table width=100%>
-					<tr>
-						<td class='ZOptionsLabel'><$=ZmMsg.importLabel$></td>
-						<td class='ZOptionsInfo'><$=ZmMsg.importFromICSHint$></td>
-					</tr>
-					<tr>
-						<td class='ZOptionsLabel'>&nbsp;</td>
-						<td class='ZOptionsInfo'><div id='${id}_CAL_IMPORT' tabindex='90'></div></td>
-					</tr>
-
-					<tr><td colspan=2><hr></td></tr>
-
-					<tr>
-						<td class='ZOptionsLabel'><$=ZmMsg.exportLabel$></td>
-						<td class='ZOptionsInfo'><$=ZmMsg.exportToICSHint$></td>
-					</tr>
-					<tr>
-						<td class='ZOptionsLabel'>&nbsp;</td>
-						<td class='ZOptionsInfo'><div id='${id}_CAL_EXPORT' tabindex='100'></div></td>
 					</tr>
 				</table>
 			</td>

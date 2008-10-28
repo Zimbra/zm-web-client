@@ -95,11 +95,9 @@ ZmCalendarApp.prototype._registerSettings =
 function(settings) {
 	var settings = settings || appCtxt.getSettings();
 	settings.registerSetting("CAL_ALWAYS_SHOW_MINI_CAL",	{name: "zimbraPrefCalendarAlwaysShowMiniCal", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
-	settings.registerSetting("CAL_EXPORT",					{type: ZmSetting.T_PREF, dataType: ZmSetting.D_NONE});
 	settings.registerSetting("CAL_FIRST_DAY_OF_WEEK",		{name: "zimbraPrefCalendarFirstDayOfWeek", type: ZmSetting.T_PREF, dataType: ZmSetting.D_INT, defaultValue: 0});
 	settings.registerSetting("CAL_FREE_BUSY_ACL",			{type: ZmSetting.T_PREF, defaultValue:ZmSetting.ACL_ALL});
 	settings.registerSetting("CAL_FREE_BUSY_ACL_USERS",		{type: ZmSetting.T_PREF});
-	settings.registerSetting("CAL_IMPORT",					{type: ZmSetting.T_PREF, dataType: ZmSetting.D_NONE});
 	settings.registerSetting("CAL_INVITE_ACL",				{type: ZmSetting.T_PREF, defaultValue:ZmSetting.ACL_ALL});
 	settings.registerSetting("CAL_INVITE_ACL_USERS",		{type: ZmSetting.T_PREF});
 	settings.registerSetting("CAL_REMINDER_NOTIFY_SOUNDS",	{name: "zimbraPrefCalendarReminderSoundsEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
@@ -156,11 +154,6 @@ function() {
 	 	displayContainer:	ZmPref.TYPE_CHECKBOX
 	});
 	
-	ZmPref.registerPref("CAL_EXPORT", {
-		displayName:		ZmMsg.exportToICS,
-		displayContainer:	ZmPref.TYPE_EXPORT
-	});
-
 	ZmPref.registerPref("CAL_FIRST_DAY_OF_WEEK", {
 	 	displayName:		ZmMsg.calendarFirstDayOfWeek,
 	 	displayContainer:	ZmPref.TYPE_SELECT,
@@ -176,11 +169,6 @@ function() {
 
     ZmPref.registerPref("CAL_FREE_BUSY_ACL_USERS", {
 		displayContainer:	ZmPref.TYPE_TEXTAREA
-	});
-
-	ZmPref.registerPref("CAL_IMPORT", {
-		displayName:		ZmMsg.importFromICS,
-		displayContainer:	ZmPref.TYPE_IMPORT
 	});
 
 	ZmPref.registerPref("CAL_INVITE_ACL", {

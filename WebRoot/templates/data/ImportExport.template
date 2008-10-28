@@ -1,0 +1,174 @@
+<template id='data.ImportExport#ImportExportPrefPage'>
+	<!-- revert not used -- just to keep spacing consistent -->
+	<div align=right>
+	<table class='ZOptionsDefaultsTable'>
+		<tr><td class='ZOptionsDefaultsField'>
+			<div style='visibility:hidden'>
+				<div id='${id}_REVERT_PAGE' tabindex='10'></div>
+			</div>
+		</td></tr>
+	</table>
+	</div>
+
+	<table border=0 cellspacing=0 cellpadding=0 width=100%>
+		<tr class='ZOptionsHeaderRow'>
+			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg._import$></td>
+			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
+		</tr>
+	</table>
+	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+		<tr><td class='ZOptionsSectionMain'>
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr><td><div id='${id}_IMPORT_FOLDER'></div></td></tr>
+				<tr><td>
+					<table align="right">
+						<tr><td><button id="${id}_IMPORT_BUTTON" tabindex="1300"></button></td></tr>
+					</table>
+				</td></tr>
+			</table>
+			</td>
+		</tr>
+	</table>
+	<table border=0 cellspacing=0 cellpadding=0 width=100%>
+		<tr class='ZOptionsHeaderRow'>
+			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg._export$></td>
+			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
+		</tr>
+	</table>
+	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+		<tr><td class='ZOptionsSectionMain'>
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr><td><div id='${id}_EXPORT_FOLDER'></div></td></tr>
+				<tr><td>
+					<table align="right">
+						<tr><td><button id="${id}_EXPORT_BUTTON" tabindex="1300"></button></td></tr>
+					</table>
+				</td></tr>
+			</table>
+			</td>
+		</tr>
+	</table>
+</template>
+
+<template id="data.ImportExport#ImportView" class="ZmImportView">
+	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+		<$ if (appCtxt.get(ZmSetting.CALENDAR_ENABLED) || appCtxt.get(ZmSetting.CONTACTS_ENABLED)) { $>
+		<tr><td class="ZOptionsLabelTop"><$=ZmMsg.typeLabel$></td>
+			<td class="ZOptionsField">
+				<table border="0" cellpadding="0" cellspacing="4">
+					<tr><td><div id="${id}_TYPE" tabindex="100"></div></td>
+						<td><select id="${id}_SUBTYPE" tabindex="200"></select></td>
+					</tr>
+				</table>
+				<div id="${id}_TYPE_HINT" class="ZOptionsInfo"></div>
+			</td>
+		</tr>
+		<$ } $>
+		<tr><td class="ZOptionsLabelTop"><$=ZmMsg.fileLabel$></td>
+			<td class="ZOptionsField" style='padding-left:0.5em;'>
+				<form id="${id}_form" method="POST" enctype="multipart/form-data">
+					<input id="${id}_FILE" name="file" type="file" tabindex="300">
+				</form>
+			</td>
+		</tr>
+		<tr><td class="ZOptionsLabelTop"><$=ZmMsg.resolveDuplicatesLabel$></td>
+			<td class="ZOptionsField">
+				<div id="${id}_RESOLVE" tabindex="400"></div>
+			</td>
+		</tr>
+		<tr><td></td><td><hr></td></tr>
+		<tr><td class="ZOptionsLabelTop">&nbsp;</td>
+			<td class="ZOptionsField">
+				<span id="${id}_ADVANCED" tabindex="500"></span>
+			</td>
+		</tr>
+		<tr id="${id}_FOLDER_row">
+			<td class="ZOptionsLabelTop"><$=ZmMsg.destinationLabel$></td>
+			<td class="ZOptionsField">
+				<table border="0" cellpadding="0" cellspacing="0">
+					<tr><td><div rel="ADVANCED" id="${id}_FOLDER"></div></td>
+						<td valign="bottom">
+							<button id="${id}_FOLDER_BUTTON"></button>
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+		<tr id="${id}_DATA_TYPES_row">
+			<td class="ZOptionsLabelTop"><$=ZmMsg.dataTypesLabel$></td>
+			<td class="ZOptionsField">
+				<div><$=ZmMsg.dataTypesHint$></div>
+				<div rel='ADVANCED' id="${id}_DATA_TYPES"></div>
+			</td>
+		</tr>
+	</table>
+</template>
+
+<template id="data.ImportExport#ExportView" class="ZmExportView">
+	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+		<tr><td class="ZOptionsLabelTop"><$=ZmMsg.foldersLabel$></td>
+			<td class="ZOptionsField">
+				<table border="0" cellpadding="0" cellspacing="0">
+					<tr><td><div id="${id}_FOLDER"></div></td>
+						<td valign="bottom">
+							<button id="${id}_FOLDER_BUTTON"></button>
+						</td>
+					</tr>
+				</table>
+				<$ if (appCtxt.get(ZmSetting.OFFLINE_ENABLED)) { $>
+					<div rel='ADVANCED' id="${id}_IGNORE_ARCHIVE" tabindex="300"></div>
+				<$ } $>
+			</td>
+		</tr>
+		<tr><td class="ZOptionsLabelTop"><$=ZmMsg.typeLabel$></td>
+			<td class="ZOptionsField" style='padding-left:0.5em;'>
+				<select id="${id}_SUBTYPE" tabindex="600"></select>
+				<div id="${id}_TYPE_HINT" class="ZOptionsInfo"></div>
+			</td>
+		</tr>
+		<tr><td></td><td><hr></td></tr>
+		<tr><td class="ZOptionsLabelTop">&nbsp;</td>
+			<td class="ZOptionsField">
+				<span id="${id}_ADVANCED" tabindex="700"></span>
+			</td>
+		</tr>
+		<tr id="${id}_DATA_TYPES_row">
+			<td class="ZOptionsLabelTop"><$=ZmMsg.dataTypesLabel$></td>
+			<td class="ZOptionsField">
+				<div><$=ZmMsg.dataTypesHint$></div>
+				<div rel='ADVANCED' id="${id}_DATA_TYPES" tabindex="200"></div>
+			</td>
+		</tr>
+		<tr id="${id}_SEARCH_FILTER_row">
+			<td class="ZOptionsLabelTop" style="width:inherit;"><$=ZmMsg.searchFilterLabel$></td>
+			<td class="ZOptionsField">
+				<input rel='ADVANCED' id="${id}_SEARCH_FILTER" length="40" hint="<$=ZmMsg.searchFilterHint$>" tabindex="800">
+			</td>
+		</tr>
+	</table>
+</template>
+
+<template id="data.ImportExport#DataTypes">
+	<table border="0" cellpadding="0" cellspacing="4">
+		<$ var count = data.count; $>
+		<$ var rows = count / 3; $>
+		<$ for (var i = 0; i < count; i++) { $>
+			<$ if ((i % 3) == 0) { $>
+				<tr>
+			<$ } $>
+			<td><span id="${id}_cell_<$=i$>"></span></td>
+		<$ } $>
+	</table>
+</template>
+
+<template id="data.ImportExport#DataTypeCheckbox">
+	<table cellpadding='2' cellspacing='0' border='0'>
+	  <tr>
+		<td><input id='${id}_input' name='${name}' value='${value}' type='checkbox' ${checked}></td>
+		<td><div id='${id}_image'></div></td>
+		<td><label for='${id}_input' id='${id}_text_right' class='Text' style='text-align:left'></label></td>
+	  </tr>
+	</table>
+</template>

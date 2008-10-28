@@ -96,6 +96,7 @@ function(parent, type, id) {
 	parent.enableAll(true);
 	var search = appCtxt.getById(id);
 	parent.enable(ZmOperation.EXPAND_ALL, (search.size() > 0));
+//	this._resetOperation(parent, ZmOperation.EXPORT_FOLDER, ZmMsg.exportSearch);
 };
 
 ZmSearchTreeController.prototype._browseListener =
@@ -129,6 +130,9 @@ function() {
 			ZmOperation.RENAME_SEARCH,
 			ZmOperation.MOVE,
 			ZmOperation.EXPAND_ALL];
+//	if (appCtxt.get(ZmSetting.IMPORT_EXPORT_ENABLED)) {
+//		ops.push(ZmOperation.EXPORT_FOLDER);
+//	}
 };
 
 // override the ZmFolderTreeController override

@@ -185,6 +185,14 @@ function() {
 	return this._overviewController;
 };
 
+ZmAppCtxt.prototype.getImportExportController = function() {
+	if (!this._importExportController) {
+		AjxDispatcher.require("ImportExport");
+		this._importExportController = new ZmImportExportController();
+	}
+	return this._importExportController;
+};
+
 ZmAppCtxt.prototype.getLoginDialog =
 function() {
 	if (!this._loginDialog) {

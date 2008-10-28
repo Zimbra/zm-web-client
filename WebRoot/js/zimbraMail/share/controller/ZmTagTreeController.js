@@ -77,6 +77,7 @@ function(parent, type, id) {
 					   ZmOperation.TAG_COLOR_MENU, ZmOperation.DELETE], false);
 	}
 	parent.enable(ZmOperation.MARK_ALL_READ, (tag && (tag.numUnread > 0)));
+//	this._resetOperation(parent, ZmOperation.EXPORT_FOLDER, ZmMsg.exportTag);
 };
 
 // Private/protected methods
@@ -100,6 +101,9 @@ function() {
 			ZmOperation.RENAME_TAG,
 			ZmOperation.DELETE,
 			ZmOperation.TAG_COLOR_MENU];
+//	if (appCtxt.get(ZmSetting.IMPORT_EXPORT_ENABLED)) {
+//		ops.push(ZmOperation.EXPORT_FOLDER);
+//	}
 };
 
 /*
@@ -242,3 +246,7 @@ function(ev, treeView, overviewId) {
 ZmTagTreeController.prototype._setTreeItemColor =
 function(treeItem, organizer) {
 };
+
+//ZmTagTreeController.prototype._folderExportListener = function(ev) {
+//	alert("export tag");
+//};

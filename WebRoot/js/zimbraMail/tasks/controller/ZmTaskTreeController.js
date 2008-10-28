@@ -55,6 +55,8 @@ function(parent, type, id) {
 	if (op) {
 		op.setText(deleteText);
 	}
+//	this._resetOperation(parent, ZmOperation.EXPORT_FOLDER, ZmMsg.exportTaskList);
+//	this._resetOperation(parent, ZmOperation.IMPORT_FOLDER, ZmMsg.importTaskList);
 };
 
 ZmTaskTreeController.prototype._getAllowedSubTypes =
@@ -89,6 +91,9 @@ function() {
 		ops.push(ZmOperation.SHARE_TASKFOLDER);
 	}
 	ops.push(ZmOperation.DELETE, ZmOperation.RENAME_FOLDER, ZmOperation.EDIT_PROPS);
+//	if (appCtxt.get(ZmSetting.IMPORT_EXPORT_ENABLED)) {
+//		ops.push(ZmOperation.EXPORT_FOLDER, ZmOperation.IMPORT_FOLDER);
+//	}
 	return ops;
 };
 

@@ -76,6 +76,8 @@ function(actionMenu, type, id) {
     if (actionMenu) {
 		var menuItem = actionMenu.getMenuItem(ZmOperation.REFRESH);
 		menuItem.setImage("Refresh");
+//		this._resetOperation(actionMenu, ZmOperation.EXPORT_FOLDER, ZmMsg.exportBriefcase);
+//		this._resetOperation(actionMenu, ZmOperation.IMPORT_FOLDER, ZmMsg.importBriefcase);
 	}
 };
 
@@ -141,6 +143,9 @@ function() {
 		ZmOperation.EDIT_NOTEBOOK_CHROME, ZmOperation.EDIT_NOTEBOOK_STYLES
 		/***/
 	);
+//	if (appCtxt.get(ZmSetting.IMPORT_EXPORT_ENABLED)) {
+//		ops.push(ZmOperation.EXPORT_FOLDER, ZmOperation.IMPORT_FOLDER);
+//	}
 	return ops;
 };
 
