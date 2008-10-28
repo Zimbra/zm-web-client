@@ -706,7 +706,9 @@ ZmMailMsgView.prototype._fixMultipartRelatedImagesRecurse = function(msg, node) 
 	var hasExternalImages = false;
 	var child = node.firstChild;
 	while (child) {
-		hasExternalImages = ZmMailMsgView.__unfangInternalImage(msg, child, "background") || hasExternalImages;
+		if (child.nodeType == AjxUtil.ELEMENT_NODE) {
+			hasExternalImages = ZmMailMsgView.__unfangInternalImage(msg, child, "background") || hasExternalImages;
+		}
 		child = child.nextSibling;
 	}
 	return hasExternalImages;
