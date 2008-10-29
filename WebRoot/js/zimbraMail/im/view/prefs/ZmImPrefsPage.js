@@ -30,7 +30,7 @@ ZmImPrefsPage.prototype.toString = function() {
 
 ZmImPrefsPage.login =
 function() {
-	AjxDispatcher.run("GetRoster");
+	ZmImApp.INSTANCE.login();
 };
 
 ZmImPrefsPage.prototype.showMe =

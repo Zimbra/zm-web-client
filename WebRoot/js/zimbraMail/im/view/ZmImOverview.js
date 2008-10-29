@@ -512,7 +512,7 @@ ZmImOverview.prototype._controlListener = function(ev) {
 };
 
 ZmImOverview.login = function() {
-	AjxDispatcher.run("GetRoster");
+	ZmImApp.INSTANCE.login();
 };
 
 ZmImOverview.newBuddy = function() {

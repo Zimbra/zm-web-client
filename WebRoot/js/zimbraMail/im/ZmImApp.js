@@ -466,6 +466,7 @@ function() {
 
 ZmImApp.prototype.login =
 function(callback) {
+	callback = callback || new AjxCallback(this, this._initializePresence);
 	var loginCallback = new AjxCallback(this, this._handleResponseLogin, [callback]);
 	ZmImServiceController.INSTANCE.login(loginCallback);
 };
@@ -484,10 +485,10 @@ function() {
 
 ZmImApp.prototype._postLoadAutoLogin =
 function() {
-	this.login(new AjxCallback(this, this._autoLoginCallback));
+	this.login();
 };
 
-ZmImApp.prototype._autoLoginCallback =
+ZmImApp.prototype._initializePresence =
 function() {
 	ZmImService.INSTANCE.initializePresence();
 };
