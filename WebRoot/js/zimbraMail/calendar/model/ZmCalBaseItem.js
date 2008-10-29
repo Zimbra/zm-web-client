@@ -207,6 +207,10 @@ function(calItemNode, instNode) {
 	this.ptst 			= this._getAttr(calItemNode, instNode, "ptst");
 	this.isException 	= this._getAttr(calItemNode, instNode, "ex");
 	this.allDayEvent	= (instNode.allDay || calItemNode.allDay)  ? "1" : "0";
+	
+	if(instNode.allDay == false) {
+		this.allDayEvent = "0";
+	}
 
 	this.alarm 			= this._getAttr(calItemNode, instNode, "alarm");
 	this.alarmData 		= this._getAttr(calItemNode, instNode, "alarmData");	
