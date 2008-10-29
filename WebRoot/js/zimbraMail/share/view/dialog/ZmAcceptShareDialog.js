@@ -36,9 +36,10 @@ ZmAcceptShareDialog.prototype.constructor = ZmAcceptShareDialog;
 // Constants
 
 ZmAcceptShareDialog._ACTIONS = {};
-ZmAcceptShareDialog._ACTIONS[ZmShare.ROLE_NONE] = ZmMsg.acceptShareDetailsNone;
-ZmAcceptShareDialog._ACTIONS[ZmShare.ROLE_VIEWER] = ZmMsg.acceptShareDetailsViewer;
-ZmAcceptShareDialog._ACTIONS[ZmShare.ROLE_MANAGER] = ZmMsg.acceptShareDetailsManager;
+ZmAcceptShareDialog._ACTIONS[ZmShare.ROLE_NONE]		= ZmMsg.acceptShareDetailsNone;
+ZmAcceptShareDialog._ACTIONS[ZmShare.ROLE_VIEWER]	= ZmMsg.acceptShareDetailsViewer;
+ZmAcceptShareDialog._ACTIONS[ZmShare.ROLE_MANAGER]	= ZmMsg.acceptShareDetailsManager;
+ZmAcceptShareDialog._ACTIONS[ZmShare.ROLE_ADMIN]	= ZmMsg.acceptShareDetailsAdmin;
 
 // Public methods
 
@@ -53,7 +54,7 @@ function(share) {
 		ZmShare.getRoleName(share.link.perm),
 		ZmAcceptShareDialog._ACTIONS[share.link.perm]   // TODO: Be able to generate custom perms list
 	];
-	this._detailsEl.innerHTML = this._detailsFormatter.format(params);;
+	this._detailsEl.innerHTML = this._detailsFormatter.format(params);
 	this._questionEl.innerHTML = "<b>" + ZmMsg.acceptShareQuestion + "</b>";
 
 	params = [ share.grantor.name, share.link.name ];

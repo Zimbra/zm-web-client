@@ -31,7 +31,8 @@
 	<standard>
         <css>
             <file>../../css/zhtml.css</file>
-	        <file>skin.css</file>
+			<file>skin.css</file>
+			<file>zhtml.css</file>
         </css>
 	</standard>
 </skin>

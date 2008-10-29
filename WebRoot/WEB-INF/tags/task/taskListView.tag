@@ -140,6 +140,7 @@
         var zaction = function(a) { var e = document.getElementById(a); if (e) { e.selected = true; zclick("SOPGO"); }}
         var zmove = function(a) { var e = document.getElementById(a); if (e) { e.selected = true; zclick("SOPMOVE"); }}
         function zSelectRow(ev,id) {var t = ev.target || ev.srcElement;if (t&&t.nodeName != 'INPUT'){var a = document.getElementById(id); if (a) window.location = a.href;} }
+        var zprint = function(){ try{ var idex = 0; var c =""; while (idex <= zrc ) { if(document.getElementById("C"+idex).checked) { cid = document.getElementById("C"+idex).value; c += cid + ","; } idex++ ; } }catch(ex){ } window.open("/h/printtasks?id="+c); }
         //-->
     </SCRIPT>
 
