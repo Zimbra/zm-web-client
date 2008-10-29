@@ -33,6 +33,14 @@ function() {
 	return "ZmZimbraImServiceController";
 };
 
+ZmZimbraImServiceController.prototype.login =
+function(callback) {
+	// Login is a no-op since we're aloready connected to the zimbra server.
+	if (callback) {
+		callback.run();
+	}
+};
+
 ZmZimbraImServiceController.prototype.getPresenceOperations =
 function() {
 	return [
@@ -44,3 +52,7 @@ function() {
 		ZmOperation.IM_PRESENCE_XA
 	];
 };
+
+// Create the service controller & service.
+// TODO: This code belongs elsewhere
+new ZmZimbraImServiceController();

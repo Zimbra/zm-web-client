@@ -61,6 +61,11 @@ function(callback, params) {
 	alert('Not implemented');
 };
 
+ZmImService.prototype.initializePresence =
+function() {
+	alert('Not implemented');
+};
+
 ZmImService.prototype.setPresence =
 function(show, priority, customStatusMsg, batchCommand) {
 	alert('Not implemented');

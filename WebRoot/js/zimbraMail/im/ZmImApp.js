@@ -23,9 +23,6 @@ ZmImApp = function(container) {
 	delete ZmFolder.HIDE_ID[ZmOrganizer.ID_CHATS];
 	this._active = false;
 	ZmImApp.INSTANCE = this;
-
-	// Create the service controller & service.
-	new ZmZimbraImServiceController();
 };
 
 // Organizer and item-related constants
@@ -467,6 +464,18 @@ function() {
 	}
 };
 
+ZmImApp.prototype.login =
+function(callback) {
+	var loginCallback = new AjxCallback(this, this._handleResponseLogin, [callback]);
+	ZmImServiceController.INSTANCE.login(loginCallback);
+};
+
+ZmImApp.prototype._handleResponseLogin =
+function(callback) {
+	var rosterCreateCallback = new AjxCallback(this, this._backgroundCreateCallback, [callback]);
+	ZmRoster.createInBackground(rosterCreateCallback);
+};
+
 ZmImApp.prototype._autoLogin =
 function() {
 	var callback = new AjxCallback(this, this._postLoadAutoLogin);
@@ -475,15 +484,22 @@ function() {
 
 ZmImApp.prototype._postLoadAutoLogin =
 function() {
-	var callback = new AjxCallback(this, this._backgroundCreateCallback);
-	ZmRoster.createInBackground(callback);
+	this.login(new AjxCallback(this, this._autoLoginCallback));
+};
+
+ZmImApp.prototype._autoLoginCallback =
+function() {
+	ZmImService.INSTANCE.initializePresence();
 };
 
 ZmImApp.prototype._backgroundCreateCallback =
-function(roster) {
+function(callback, roster) {
 	if (!this._roster) { // Roster could have conceivably been set by getRoster...don't overwrite that one.
 		this._setRoster(roster);
 		this._roster.reload();		
+	}
+	if (callback) {
+		callback.run();
 	}
 };
 

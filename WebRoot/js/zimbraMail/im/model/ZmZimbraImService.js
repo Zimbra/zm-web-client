@@ -19,7 +19,7 @@
  * Creates the Zimbra IM service.
  * @constructor
  * @class
- * This service communicates with the Zimbra IM server. 
+ * This service communicates with the Zimbra IM server.
  *
  */
 ZmZimbraImService = function() {
@@ -116,6 +116,11 @@ function(callback, params) {
 	var soapDoc = AjxSoapDoc.create("IMGetRosterRequest", "urn:zimbraIM");
 	var responseCallback = new AjxCallback(this, this._handleResponseGetRoster, [callback]);
 	return this._send(params, soapDoc, responseCallback);
+};
+
+ZmZimbraImService.prototype.initializePresence =
+function() {
+	// No-op. Initial presence comes from notification.
 };
 
 ZmZimbraImService.prototype.setPresence =

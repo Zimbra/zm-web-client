@@ -19,12 +19,10 @@ ZmYahooImService = function() {
 	ZmImService.call(this, true);
 
 	this._visible = false;
-	
-	AjxDispatcher.require(["YmSdk"]);
-
-	//TODO: Will this resource always be available?
-	YMSGR.sdk.load(this, "http://l.yimg.com/us.yimg.com/i/us/pim/dclient/k/img/md5/19e66808f1e211b27c640773d37d9bf7_1.swf");
-}
+	this._userId = null;
+	this._loggedIn = false;
+	this._load();
+};
 
 ZmYahooImService.prototype = new ZmImService;
 ZmYahooImService.prototype.constructor = ZmYahooImService;
@@ -37,9 +35,29 @@ function() {
 	return "ZmYahooImService";
 };
 
+ZmYahooImService.prototype.login =
+function(cookie, callback) {
+	this._loginCallback = callback;
+
+// TODO: Clean up all these params....
+	var params = {
+//		servers: [{host: "webcs.msg.yahoo.com", port: 5050}, {host: "httpcs.msg.yahoo.com", port: 80}],
+		cookie: cookie,
+//		cookie: "Y=v=1&n=bja0geghk49rg&l=362j4ij/o&p=m272s2v012000000&r=jl&lg=en-US&intl=us; T=z=Mxh/IBMFJEJBS7w9UUk0DufNDU0BjQyMTIzMzQxTzQ-&a=QAE&sk=DAAyHwyz5.2/zi&ks=EAAAFaoIZvMCdMGPsBajCR3Cw--~C&d=c2wBTXpJekFUTTFOalUwTkRNMk9ETS0BYQFRQUUBZwFFT0lRNTdHUUg1WElaR1M1VldWSlZHQzZYWQF0aXABUlBvUHhCAXp6AU14aC9JQkE3RQ--",
+//		userId: null,
+		vendorId: 415
+//		countryCode: "us",
+//		weight: 6,
+//		visible: true
+	};
+
+	YMSGR.sdk.login(params);
+};
+
+
 ZmYahooImService.prototype.getMyAddress =
 function() {
-	return "dgctest";
+	return this._userId;
 };
 
 ZmYahooImService.prototype.getGateways =
@@ -67,6 +85,11 @@ ZmYahooImService.prototype.getRoster =
 function(callback, params) {
 };
 
+ZmYahooImService.prototype.initializePresence =
+function() {
+	this.setPresence(ZmRosterPresence.SHOW_ONLINE);
+};
+
 ZmYahooImService.prototype.setPresence =
 function(show, priority, customStatusMsg, batchCommand) {
 	if (!this._loaded) {
@@ -85,14 +108,14 @@ function(show, priority, customStatusMsg, batchCommand) {
 		case ZmRosterPresence.SHOW_DND: ymStatus = YMSGR.CONST.YMSG_Busy; break;
 		default: ymStatus = YMSGR.CONST.YMSG_Available; break;
 		}
-		var visible = show != ZmRosterPresence.SHOW_OFFLINE;
-		if (visible != this._visible) {
-			YMSGR.sdk.setVisibility(visible);
-			this._visible = visible;
-		}
 		YMSGR.sdk.setStatus(ymStatus, false);
 	}
 
+	var visible = show != ZmRosterPresence.SHOW_OFFLINE;
+	if (visible != this._visible) {
+		YMSGR.sdk.setVisibility(visible);
+		this._visible = visible;
+	}
 	if (this._roster.getPresence().setFromJS({ show: show, status: customStatusMsg })) {
 		this._roster.notifyPresence();
 	}
@@ -123,13 +146,8 @@ function(accept, add, addr) {
 
 ZmYahooImService.prototype.sendMessage =
 function(chat, text, html, typing, params) {
-	//TODO....
-	if (typing) {
-		return;
-	}
-
 	var args = {
-		current_id: "dgctest",
+		current_id: this._userId,
 		target_user: chat.getRosterItem(0).id,
 		msg: html || text
 	};
@@ -169,7 +187,7 @@ function(id) {
 /**
  * This callback is called when an event is sent to the sdk.
  */
-ZmYahooImService.prototype.onEvent =
+ZmYahooImService.prototype._onEvent =
 function(ev, params) {
 	DBG.println("ym", "ZmYahooImService.prototype.onEvent: " + this.mapEventToName(ev));
 	DBG.dumpObj("ym", params);
@@ -177,7 +195,7 @@ function(ev, params) {
 
 	switch (ev) {
 	case YMSGR.CONST.YES_PRELOGIN_DATA: {
-//		params = { firstname, lastname, user_id }
+		this._onPreloginData(params);
 		break;
 	}
 	case YMSGR.CONST.YES_BUDDY_LIST: {
@@ -204,6 +222,17 @@ function(ev, params) {
 		this._onStatusSavedMessage(params);
 		break;
 	}
+	}
+};
+
+ZmYahooImService.prototype._onPreloginData =
+function(params) {
+//	params = { firstname, lastname, user_id }
+	this._loggedIn = true;
+	this._userId = params.user_id;
+	if (this._loginCallback) {
+		this._loginCallback.run();
+		this._loginCallback = null;
 	}
 };
 
@@ -275,35 +304,34 @@ function(params) {
 		if (itemList.length) {
 			list.addItems(itemList);
 		}
+};
 
+ZmYahooImService.prototype._load =
+function() {
+	AjxDispatcher.require(["YmSdk"]);
 
+	var self = this;
+	var appObj = {
+		onLoaded: function() { self._onLoaded(); },
+		onEvent: function(ev, params) { self._onEvent(ev, params); },
+		getPrimaryId: function() { return self._getPrimaryId(); }
+	}
+	//TODO: Will this resource always be available?
+	YMSGR.sdk.load(appObj, "http://l.yimg.com/us.yimg.com/i/us/pim/dclient/k/img/md5/19e66808f1e211b27c640773d37d9bf7_1.swf");
 };
 
 /**
  * This callback is called when the sdk is loaded.
  */
-ZmYahooImService.prototype.onLoaded =
+ZmYahooImService.prototype._onLoaded =
 function() {
 	this._loaded = true;
-
-// TODO: Clean up all these params....	
-	var params = {
-//		servers: [{host: "webcs.msg.yahoo.com", port: 5050}, {host: "httpcs.msg.yahoo.com", port: 80}],
-		cookie: "Y=v=1&n=bja0geghk49rg&l=362j4ij/o&p=m272s2v012000000&r=jl&lg=en-US&intl=us; T=z=Mxh/IBMFJEJBS7w9UUk0DufNDU0BjQyMTIzMzQxTzQ-&a=QAE&sk=DAAyHwyz5.2/zi&ks=EAAAFaoIZvMCdMGPsBajCR3Cw--~C&d=c2wBTXpJekFUTTFOalUwTkRNMk9ETS0BYQFRQUUBZwFFT0lRNTdHUUg1WElaR1M1VldWSlZHQzZYWQF0aXABUlBvUHhCAXp6AU14aC9JQkE3RQ--",
-//		userId: null,
-		vendorId: 415
-//		countryCode: "us",
-//		weight: 6,
-//		visible: true
-	};
-
-	YMSGR.sdk.login(params);
 };
 
 /**
  * This callback returns the user's yahoo id.
  */
-ZmYahooImService.prototype.getPrimaryId =
+ZmYahooImService.prototype._getPrimaryId =
 function() {
 	return this.getMyAddress();
 

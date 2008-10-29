@@ -30,6 +30,11 @@ ZmImServiceController = function() {
 	ZmImServiceController.INSTANCE = this;
 }
 
+ZmImServiceController.prototype.login =
+function(callback) {
+	alert('Not implemented');
+};
+
 ZmImServiceController.prototype.getPresenceOperations =
 function() {
 	alert('Not implemented');
