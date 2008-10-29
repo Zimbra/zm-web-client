@@ -44,21 +44,20 @@ ZmAcceptShareDialog._ACTIONS[ZmShare.ROLE_ADMIN]	= ZmMsg.acceptShareDetailsAdmin
 // Public methods
 
 ZmAcceptShareDialog.prototype.popup =
-function(share) {
+function(share, fromAddr) {
 
 	this._share = share;
-	var params = [ share.grantor.name, share.link.name ];
-	this._headerEl.innerHTML = this._headerFormatter.format(params);;
+	this._fromAddr = fromAddr;
+	this._headerEl.innerHTML = this._headerFormatter.format([share.grantor.name, share.link.name]);
 
-	params = [
+	var params = [
 		ZmShare.getRoleName(share.link.perm),
 		ZmAcceptShareDialog._ACTIONS[share.link.perm]   // TODO: Be able to generate custom perms list
 	];
 	this._detailsEl.innerHTML = this._detailsFormatter.format(params);
 	this._questionEl.innerHTML = "<b>" + ZmMsg.acceptShareQuestion + "</b>";
 
-	params = [ share.grantor.name, share.link.name ];
-	this._nameEl.value = this._defaultNameFormatter.format(params);;
+	this._nameEl.value = this._defaultNameFormatter.format([share.grantor.name, share.link.name]);
 
 	this._reply.setReplyType(ZmShareReply.NONE);
 	this._reply.setReplyNote("");
@@ -78,31 +77,31 @@ function(share) {
 ZmAcceptShareDialog.prototype.setAcceptListener =
 function(listener) {
 	this.removeAllListeners(ZmAcceptShareDialog.ACCEPT);
-	if (listener)
+	if (listener) {
 		this.addListener(ZmAcceptShareDialog.ACCEPT, listener);
+	}
 };
 
 // Protected methods
 
 ZmAcceptShareDialog.prototype._handleYesButton =
-function(event) {
+function(ev) {
 	var replyType = this._reply.getReplyType();
 	var notes = (replyType == ZmShareReply.QUICK) ? this._reply.getReplyNote(): "";
-	var callback = new AjxCallback(this, this._yesButtonCallback, [event]);
-	this._share.accept(this._nameEl.value, this._color.getValue(), replyType, notes, callback);
+	var callback = new AjxCallback(this, this._yesButtonCallback, [ev]);
+	this._share.accept(this._nameEl.value, this._color.getValue(), replyType, notes, callback, this._fromAddr);
 };
 
 ZmAcceptShareDialog.prototype._yesButtonCallback =
-function(event) {
+function(ev) {
 	// notify accept listener and clear
-	this.notifyListeners(ZmAcceptShareDialog.ACCEPT, event);
+	this.notifyListeners(ZmAcceptShareDialog.ACCEPT, ev);
 	this.setAcceptListener(null);
-
 	this.popdown();
 };
 
 ZmAcceptShareDialog.prototype._handleNoButton =
-function(event) {
+function(ev) {
 	this.popdown();
 };
 
@@ -114,19 +113,18 @@ function() {
 ZmAcceptShareDialog.prototype._createView =
 function() {
 	var view = new DwtComposite(this);
-	
-	var doc = document;
-	this._headerEl = doc.createElement("DIV");
+
+	this._headerEl = document.createElement("DIV");
 	this._headerEl.style.marginBottom = "0.5em";
-	this._detailsEl = doc.createElement("DIV");
+	this._detailsEl = document.createElement("DIV");
 	this._detailsEl.style.marginBottom = "1em";
-	this._questionEl = doc.createElement("DIV");
+	this._questionEl = document.createElement("DIV");
 	this._questionEl.style.marginBottom = "0.5em";
-	this._nameEl = doc.createElement("INPUT");
+	this._nameEl = document.createElement("INPUT");
 	this._nameEl.style.width = "20em";
 	var nameElement = this._nameEl;
 	if (Dwt.CARET_HACK_ENABLED) {
-		nameElement = doc.createElement("DIV");
+		nameElement = document.createElement("DIV");
 		nameElement.style.overflow = "auto";
 		nameElement.appendChild(this._nameEl);
 	}
@@ -142,18 +140,18 @@ function() {
 	propsEl.style.marginBottom = "0.5em";
 	props.addProperty(ZmMsg.nameLabel, nameElement);
 	props.addProperty(ZmMsg.colorLabel, this._color);
-	
+
 	this._reply = new ZmShareReply(view);
 
-	var settings = doc.createElement("DIV");
+	var settings = document.createElement("DIV");
 	settings.style.marginLeft = "1.5em";
 	settings.appendChild(propsEl);
 	settings.appendChild(this._reply.getHtmlElement());	
-	
-	var element = view.getHtmlElement();
-	element.appendChild(this._headerEl);
-	element.appendChild(this._detailsEl);
-	element.appendChild(this._questionEl);
-	element.appendChild(settings);
+
+	var el = view.getHtmlElement();
+	el.appendChild(this._headerEl);
+	el.appendChild(this._detailsEl);
+	el.appendChild(this._questionEl);
+	el.appendChild(settings);
 	return view;
 };

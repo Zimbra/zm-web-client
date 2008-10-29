@@ -599,7 +599,7 @@ function(params) {
 	// if html compose is allowed and if opening draft always request html
 	//   otherwise check if user prefers html or
 	//   msg hasn't been loaded yet and user prefers format of orig msg
-    var htmlEnabled = appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED);
+	var htmlEnabled = appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED);
 	var prefersHtml = (appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT) == ZmSetting.COMPOSE_HTML);
 	var sameFormat = appCtxt.get(ZmSetting.COMPOSE_SAME_FORMAT);
 	params.getHtml = (htmlEnabled && (action == ZmOperation.DRAFT || (prefersHtml || (!msg._loaded && sameFormat))));
@@ -610,7 +610,7 @@ function(params) {
 	var respCallback = new AjxCallback(this, this._handleResponseDoAction, params);
 	this._getLoadedMsg(params, respCallback);
 };
-	
+
 ZmMailListController.prototype._handleResponseDoAction =
 function(params, msg) {
 
@@ -645,7 +645,7 @@ function(params, msg) {
 					batchCmd.add(cb);
 				}
 			}
-	
+
 			if (batchCmd._cmds.length > 0) {
 				batchCmd.run(callback);
 			} else {
@@ -725,14 +725,17 @@ function(ev) {
 
 ZmMailListController.prototype._shareHandler =
 function(ev) {
+	var msg = this._getMsg();
+	var fromAddr = msg ? msg.getAddress(AjxEmailAddress.FROM).address : null;
+
 	if (ev._buttonId == ZmOperation.SHARE_ACCEPT) {
 		var acceptDialog = appCtxt.getAcceptShareDialog();
 		acceptDialog.setAcceptListener(this._acceptShareListener);
-		acceptDialog.popup(ev._share);
+		acceptDialog.popup(ev._share, fromAddr);
 	} else if (ev._buttonId == ZmOperation.SHARE_DECLINE) {
 		var declineDialog = appCtxt.getDeclineShareDialog();
 		declineDialog.setDeclineListener(this._declineShareListener);
-		declineDialog.popup(ev._share);
+		declineDialog.popup(ev._share, fromAddr);
 	}
 };
 
@@ -928,9 +931,9 @@ function(type, instanceDate) {
 		case ZmOperation.REPLY_NEW_TIME: 	replyBody = ZmMsg.defaultInviteReplyNewTimeMessage;	break;
 	}
 
-    //format the escaped apostrophe in ZmMsg entry
-    if (replyBody) {
-			replyBody =  AjxMessageFormat.format(replyBody, []);
+	//format the escaped apostrophe in ZmMsg entry
+	if (replyBody) {
+		replyBody =  AjxMessageFormat.format(replyBody, []);
 	}
 	return replyBody;
 };

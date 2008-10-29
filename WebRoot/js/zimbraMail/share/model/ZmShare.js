@@ -187,7 +187,7 @@ function(perm) {
 			actions.push(ZmShare.PERMS[c]);
 		}
 	}
-        return actions.length > 0 ? actions.join(", ") : ZmMsg.shareActionNone;
+	return (actions.length > 0) ? actions.join(", ") : ZmMsg.shareActionNone;
 };
 
 // role action names
@@ -203,7 +203,7 @@ ZmShare.createFromDom =
 function(doc) {
 	// NOTE: This code initializes share info from the Zimbra share format, v0.1
 	var share = new ZmShare();
-	
+
 	var shareNode = doc.documentElement;
 	share.version = shareNode.getAttribute("version");
 	if (share.version != ZmShare.VERSION) {
@@ -365,27 +365,27 @@ function(callback) {
 };
 
 ZmShare.prototype.accept = 
-function(name, color, replyType, notes, callback) {
-	var respCallback = new AjxCallback(this, this._handleResponseAccept, [replyType, notes, callback]);
+function(name, color, replyType, notes, callback, owner) {
+	var respCallback = new AjxCallback(this, this._handleResponseAccept, [replyType, notes, callback, owner]);
 	var errorCallback = new AjxCallback(this, this._handleErrorAccept, name);
 	var params = {
-		"l": ZmOrganizer.ID_ROOT,
-		"name": name,
-		"zid": this.grantor.id,
-		"rid": this.link.id,
-		"color": color,
-		"view": this.link.view
+		l: ZmOrganizer.ID_ROOT,
+		name: name,
+		zid: this.grantor.id,
+		rid: this.link.id,
+		color: color,
+		view: this.link.view
 	};
-	if (appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
-		if (this.link.view == ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR][0]) {
-			params.f = ZmOrganizer.FLAG_CHECKED;
-		}
+	if (appCtxt.get(ZmSetting.CALENDAR_ENABLED) &&
+		this.link.view == ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR][0])
+	{
+		params.f = ZmOrganizer.FLAG_CHECKED;
 	}
 	ZmMountpoint.create(params, respCallback, errorCallback);
 };
 
 ZmShare.prototype._handleResponseAccept =
-function(replyType, notes, callback) {
+function(replyType, notes, callback, owner) {
 
 	this.notes = notes;
 
@@ -395,10 +395,11 @@ function(replyType, notes, callback) {
 
 	// check if we need to send message or bring up compose window
 	if (replyType != ZmShareReply.NONE) {
-		if (replyType == ZmShareReply.COMPOSE)
-			this.composeMessage(ZmShare.ACCEPT);
-		else
-			this.sendMessage(ZmShare.ACCEPT);
+		if (replyType == ZmShareReply.COMPOSE) {
+			this.composeMessage(ZmShare.ACCEPT, null, owner);
+		} else {
+			this.sendMessage(ZmShare.ACCEPT, null, owner);
+		}
 	}
 };
 
@@ -407,30 +408,29 @@ function(name, ex) {
 	var message = ZmMsg.unknownError;
 	if (ex instanceof ZmCsfeException && ex.code == "mail.ALREADY_EXISTS") {
 		message = AjxMessageFormat.format(ZmMsg.errorAlreadyExists, [name]);
-		// NOTE: This prevents details from being shown
-		ex = null;
+		ex = null; // NOTE: This prevents details from being shown
 	}
-		
+
 	appCtxt.getAppController().popupErrorDialog(message, ex, null, true);
 	return true;
 };
 
 ZmShare.prototype.sendMessage =
-function(mode, addrs) {
+function(mode, addrs, owner) {
 	// generate message
 	if (!addrs) {
 		var email = this.grantee.email;
 		addrs = new AjxVector();
 		addrs.add(new AjxEmailAddress(email, AjxEmailAddress.TO));
 	}
-	var msg = this._createMsg(mode, false, addrs);
+	var msg = this._createMsg(mode, false, addrs, owner);
 
 	// send message
 	msg.send(AjxDispatcher.run("GetContacts"));
 };
 
 ZmShare.prototype.composeMessage =
-function(mode, addrs) {
+function(mode, addrs, owner) {
 	// generate message
 	if (!addrs) {
 		var email = this.grantee.email;
@@ -438,7 +438,7 @@ function(mode, addrs) {
 		addrs.add(new AjxEmailAddress(email, AjxEmailAddress.TO));
 	}
 
-	var msg = this._createMsg(mode, true, addrs);
+	var msg = this._createMsg(mode, true, addrs, owner);
 
 	// NOTE: Assumes text, html, and xml parts are in the top part
 	var parts = msg._topPart.children;
@@ -462,8 +462,8 @@ function(mode) {
 		ZmShare._TEXT[ZmShare.DELETE] = new AjxMessageFormat(ZmMsg.shareRevokedText);
 		ZmShare._TEXT[ZmShare.ACCEPT] = new AjxMessageFormat(ZmMsg.shareAcceptedText);
 		ZmShare._TEXT[ZmShare.DECLINE] = new AjxMessageFormat(ZmMsg.shareDeclinedText);
-        ZmShare._TEXT[ZmShare.NOTIFY] = new AjxMessageFormat(ZmMsg.shareNotifyText);
-    }
+		ZmShare._TEXT[ZmShare.NOTIFY] = new AjxMessageFormat(ZmMsg.shareNotifyText);
+	}
 	return ZmShare._TEXT[mode];
 };
 	
@@ -477,11 +477,11 @@ function(mode) {
 		ZmShare._HTML[ZmShare.DELETE] = new AjxMessageFormat(ZmMsg.shareRevokedHtml);
 		ZmShare._HTML[ZmShare.ACCEPT] = new AjxMessageFormat(ZmMsg.shareAcceptedHtml);
 		ZmShare._HTML[ZmShare.DECLINE] = new AjxMessageFormat(ZmMsg.shareDeclinedHtml);
-        ZmShare._HTML[ZmShare.NOTIFY] = new AjxMessageFormat(ZmMsg.shareNotifyHtml);
-    }
+		ZmShare._HTML[ZmShare.NOTIFY] = new AjxMessageFormat(ZmMsg.shareNotifyHtml);
+	}
 	return ZmShare._HTML[mode];
 }
-	
+
 ZmShare._getHtmlNote =
 function() {
 	if (!ZmShare._HTML_NOTE) {
@@ -517,14 +517,14 @@ function() {
 ZmShare.prototype._shareAction =
 function(operation, actionAttrs, grantAttrs, callback, batchCmd) {
 	var soapDoc = AjxSoapDoc.create("FolderActionRequest", "urn:zimbraMail");
-	
+
 	var actionNode = soapDoc.set("action");
 	actionNode.setAttribute("op", operation);
-    if(this.object.rid && this.object.zid) {
-        actionNode.setAttribute("id", this.object.zid + ":" + this.object.rid);
-    }else {
-        actionNode.setAttribute("id", this.object.id);
-    }	
+	if (this.object.rid && this.object.zid) {
+		actionNode.setAttribute("id", this.object.zid + ":" + this.object.rid);
+	}else {
+		actionNode.setAttribute("id", this.object.id);
+	}
 	for (var attr in actionAttrs) {
 		actionNode.setAttribute(attr, actionAttrs[attr]);
 	}
@@ -578,7 +578,7 @@ function(ex) {
 };
 
 ZmShare.prototype._createMsg =
-function(mode, isCompose, addrs) {
+function(mode, isCompose, addrs, owner) {
 	// generate message
 	var textPart = this._createTextPart(mode, isCompose);
 	var htmlPart = this._createHtmlPart(mode, isCompose);
@@ -588,16 +588,20 @@ function(mode, isCompose, addrs) {
 	topPart.children.add(textPart);
 	topPart.children.add(htmlPart);
 
-    if(mode != ZmShare.NOTIFY) {
-        var xmlPart = this._createXmlPart(mode);
-	    topPart.children.add(xmlPart);
-    }
+	if (mode != ZmShare.NOTIFY) {
+		var xmlPart = this._createXmlPart(mode);
+		topPart.children.add(xmlPart);
+	}
 
 	var msg = new ZmMailMsg();
-	var toEmail, fromEmail;
 	if (mode == ZmShare.ACCEPT || mode == ZmShare.DECLINE) {
 		msg.setAddress(AjxEmailAddress.FROM, new AjxEmailAddress(this.grantee.email, AjxEmailAddress.FROM));
-		msg.setAddress(AjxEmailAddress.TO, new AjxEmailAddress(this.grantor.email), AjxEmailAddress.TO);
+		var fromAddrs = new AjxVector();
+		if (owner && owner != this.grantor.email) {
+			fromAddrs.add(new AjxEmailAddress(owner, AjxEmailAddress.TO));
+		}
+		fromAddrs.add(new AjxEmailAddress(this.grantor.email, AjxEmailAddress.TO));
+		msg.setAddresses(AjxEmailAddress.TO, fromAddrs);
 	} else {
 		msg.setAddress(AjxEmailAddress.FROM, new AjxEmailAddress(this.grantee.email, AjxEmailAddress.FROM));
 		var addrType = (addrs.size() > 1) ? AjxEmailAddress.BCC : AjxEmailAddress.TO;
@@ -674,7 +678,7 @@ function(formatter) {
 	var params = [
 		this.link.name, 
 		ZmShare._getFolderType(this.link.view),
-		(this.object.owner || this.grantor.name), 
+		(this.object ? (this.object.owner || this.grantor.name) : this.grantor.name),
 		this.grantee.name,
 		ZmShare.getRoleName(this.link.perm),
 		ZmShare.getRoleActions(this.link.perm)
