@@ -10,7 +10,7 @@
 			<td id='${id}_searchButton' hint='text' class='ZmSearchToolbarCell'></td>
 			<td>
 				<div id='${id}_saveButton' hint='text' class='ZmSearchToolbarCell'></div>
-				<div id='${id}_advancedButton' hint='text' class='ZmSearchToolbarCell'></idv>
+				<div id='${id}_advancedButton' hint='text' class='ZmSearchToolbarCell'></div>
 			</td>
 		</tr>
 	</table>
