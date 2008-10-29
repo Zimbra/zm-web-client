@@ -18,7 +18,7 @@ ZmBriefcaseController = function(container, app) {
 	if (arguments.length == 0) { return; }
 	ZmListController.call(this, container, app);
 
-	this._foldersMap = {};
+	//this._foldersMap = {};
 	this._idMap = {};
 
 	this._listChangeListener = new AjxListener(this,this._fileListChangeListener);
@@ -376,7 +376,7 @@ function(callback,folderId,results) {
 				items[i].remoteFolderId = items[i].folderId;
 				items[i].folderId = folderId;
 			}
-			this.putItem(items[i]);
+			//this.putItem(items[i]);
 		}
 	}
 
@@ -438,14 +438,11 @@ function(docs,folderId) {
 			item.folderId = folderId;
 			//item.remoteFolderId = remoteFolderId; // REVISIT
 			items.add(item);
-            //items.push(item);    //!TODO may be we need to remove associated code too
 		}
 		else {
 			item.set(doc);
 			items.add(item);
-            //items.push(item);
 		}
-		this.putItem(item);        
     }
 
 	//recursive search not done yet : workaround
@@ -464,7 +461,7 @@ function(docs,folderId) {
 //			item.folderId = this._currentFolder;
 			item.folderId = folderId;
 			item.isFolder = true;
-			this.putItem(item);
+			//this.putItem(item);
 			items.add(item);
             //items.push(item);
 		}
@@ -473,57 +470,6 @@ function(docs,folderId) {
 	return items;
 };
 
-ZmBriefcaseController.prototype.putItem =
-function(item) {
-	if (!item) {
-		// DBG.println("item not present:"+item);
-		return;
-	}
-
-	this._idMap[item.id] = {item:item,folderId:item.folderId};
-
-	if (!this._foldersMap[item.folderId]) {
-		this._foldersMap[item.folderId] = {};
-	}
-
-	var folder = this._foldersMap[item.folderId];
-	folder[item.id] = item;
-//	DBG.println("item:"+item.id+" in folder "+item.folderId+":"+this._foldersMap[item.folderId][item.id]);
-};
-
-ZmBriefcaseController.prototype.removeItem =
-function(item) {
-	if (!item) { return; }
-
-	var folderId = item.folderId;
-	if (item.id && this._idMap[item.id]) {
-		folderId = this._idMap[item.id].folderId;
-		delete this._idMap[item.id];
-	}
-
-	if (folderId && item.id) {
-		var items = this._foldersMap[folderId];
-		if (items) {
-			delete items[item.id];
-		}
-	}
-
-	/*** REVISIT ***/
-	/*var remoteFolderId = item.remoteFolderId;
-	if (remoteFolderId) {
-		var items = this.getItemsInFolder(remoteFolderId);
-		delete items.all[item.name];
-		if (item instanceof ZmPage) {
-			delete items.pages[item.name];
-		}
-		else if (item instanceof ZmDocument) {
-			delete items.docs[item.name];
-		}
-	}
-	*/
-
-	//item.removeChangeListener(this._changeListener);
-};
 
 ZmBriefcaseController.prototype.getItemById =
 function(itemId) {
@@ -533,12 +479,7 @@ function(itemId) {
 ZmBriefcaseController.prototype.getItemsInFolder =
 function(folderId,callback) {
 	folderId = folderId || ZmOrganizer.ID_BRIEFCASE;
-	/*if (!this._foldersMap[folderId]) {
-		this._foldersMap[folderId] = {};*/
-		this.searchFolder(folderId,callback);
-	/*} else if(callback) {
-		callback.run(this.getItemsInFolderFromCache(folderId));
-	}*/
+	this.searchFolder(folderId,callback);
 };
 
 ZmBriefcaseController.prototype._dragListener =
@@ -572,22 +513,6 @@ function() {
 	this.show(this._object);
 };
 
-ZmBriefcaseController.prototype.removeCachedFolderItems =
-function(folderId) {
-	if (!folderId) {
-		folderId = this._object;
-	}
-
-	var folder = this._foldersMap[folderId];
-	if (folder) {
-		for (var i in folder) {
-			if (this._idMap[i]) {
-				delete this._idMap[i];
-			}
-		}
-	}
-	delete this._foldersMap[folderId];
-};
 
 ZmBriefcaseController.prototype.reloadFolder =
 function(mode) {
@@ -676,11 +601,6 @@ function() {
 	list.push(ZmOperation.SEP);
 	list = list.concat(this._standardActionMenuOps());
 	return list;
-};
-
-ZmBriefcaseController.prototype.getItemsInFolderFromCache =
-function(folderId) {
-	return this._foldersMap[folderId];
 };
 
 ZmBriefcaseController.prototype._openFileListener =
@@ -1023,7 +943,7 @@ function(item, listView) {
 //offline related modules
 ZmBriefcaseController.prototype.handleMailboxChange =
 function() {
-    this._foldersMap = {};
+    //this._foldersMap = {};
     this._idMap = {};
     
     this.show(null, true);

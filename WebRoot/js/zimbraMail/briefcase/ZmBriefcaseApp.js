@@ -366,8 +366,6 @@ function(results, callback) {
 
 ZmBriefcaseApp.prototype._handleLoadShowSearchResults =
 function(results, callback) {
-//	this.getFileController().show(results, true);
-// 	if (callback) { callback.run(); }
     this.getBriefcaseController().showFolderContents(results.getResults(ZmItem.MIXED));
     if (callback) { callback.run(); }
 };
@@ -380,15 +378,6 @@ function(active) {
 		briefcaseController.show();
 	}
 */
-};
-
-ZmBriefcaseApp.prototype.getFileController =
-function() {
-	if (!this._fileController) {
-		// TODO:search controller for briefcase
-//		this._fileController = new ZmBriefcaseFileController(this._container, this);
-	}
-	return this._fileController;
 };
 
 ZmBriefcaseApp.prototype._newBriefcaseCallback =
