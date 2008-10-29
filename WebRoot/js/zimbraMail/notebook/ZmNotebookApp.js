@@ -101,24 +101,7 @@ function() {
 								return new ZmPageList(search);
 							}, this)
 						});
-    /* let the document handle only pages/notebook pages
-    other generic docs are in briefcase
-	ZmItem.registerItem(ZmItem.DOCUMENT,
-						{app:			ZmApp.NOTEBOOK,
-						 nameKey:		"document",
-						 icon:			"GenericDoc",
-						 soapCmd:		"ItemAction",
-						 itemClass:		"ZmDocument",
-						 node:			"doc",
-						 organizer:		ZmOrganizer.NOTEBOOK,
-						 dropTargets:	[ZmOrganizer.TAG],
-						 searchType:	"document",
-						 resultsList:
-							AjxCallback.simpleClosure(function(search) {
-								AjxDispatcher.require("NotebookCore");
-								return new ZmPageList(search, ZmItem.DOCUMENT);
-							}, this)
-						});*/
+    
 };
 
 ZmNotebookApp.prototype._registerOrganizers =
