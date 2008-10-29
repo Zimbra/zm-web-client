@@ -540,6 +540,7 @@ function(ev) {
 		this._participantActionMenu.popup(0, ev.docX, ev.docY);
 	} else {
 		var actionMenu = this.getActionMenu();
+		this._setupSpamButton(actionMenu);
 		this._enableFlags(actionMenu, bHasUnread, bHasRead);
 		actionMenu.popup(0, ev.docX, ev.docY);
 		if (ev.ersatz) {
