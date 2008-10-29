@@ -30,11 +30,7 @@
 
     <c:choose>
         <c:when test="${not empty param.date}">
-            <fmt:parseDate var="date" pattern="yyyyMMdd" value="${param.date}"/>
-            <%-- !NOTE we should not to parse date with timezone, 
-                bcoz below getCalendarMidnight will then adjust it again resulting in two times adjusted date.
-                ref. timezone bug #30460
-            --%>
+            <fmt:parseDate var="date" timeZone="${tz}" pattern="yyyyMMdd" value="${param.date}"/>
             <c:set scope="request" var="dateContext" value="${zm:getCalendarMidnight(date.time, tz)}"/>
         </c:when>
         <c:otherwise>
