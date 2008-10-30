@@ -152,13 +152,13 @@ function(id, type) {
 * Returns the first selected item within this overview.
 */
 ZmOverview.prototype.getSelected =
-function() {
+function(typeOnly) {
 	for (var i = 0; i < this._treeIds.length; i++) {
 		var treeView = this._treeHash[this._treeIds[i]];
 		if (treeView) {
 			var item = treeView.getSelected();
 			if (item) {
-				return item;
+				return typeOnly ? treeView.type : item;
 			}
 		}
 	}
