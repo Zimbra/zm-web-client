@@ -102,6 +102,12 @@ ZmExportView.prototype.getFormValue = function(id, defaultValue) {
 	return ZmImportExportBaseView.prototype.getFormValue.apply(this, arguments);
 };
 
+ZmExportView.prototype.isRelevant = function(id) {
+	if (id == "IGNORE_ARCHIVE") {
+		return appCtxt.get(ZmSetting.OFFLINE_ENABLED) && appCtxt.getById(ZmOrganizer.ID_ARCHIVE) != null;
+	}
+	return ZmImportExportBaseView.prototype.isRelevant.apply(this, arguments);
+};
 //
 // Protected methods
 //
@@ -150,6 +156,12 @@ ZmExportView.prototype._updateControls = function() {
 	}
 
 	ZmImportExportBaseView.prototype._updateControls.apply(this, arguments);
+
+	var ignoreArchive = this.getFormObject("IGNORE_ARCHIVE");
+	if (ignoreArchive) {
+		ignoreArchive.setVisible(this.isRelevant("IGNORE_ARCHIVE"));
+		ignoreArchive.setEnabled(this.getFormValue("FOLDER") == "all");
+	}
 };
 
 // handlers
@@ -158,6 +170,9 @@ ZmExportView.prototype._handleFolder = function() {
 	var type = isAll ? ZmImportExportController.TYPE_TGZ : null;
 	type = type || this._getTypeFromFolder(appCtxt.getById(this._folderId));
 	this.setFormValue("TYPE", type);
+	if (!isAll) {
+		this.setFormValue("IGNORE_ARCHIVE", false);
+	}
 	this._initSubType(type);
 	this._updateControls();
 };
