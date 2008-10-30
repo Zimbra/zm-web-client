@@ -222,6 +222,14 @@ function(ev, params) {
 		this._onStatusSavedMessage(params);
 		break;
 	}
+	case YMSGR.CONST.YES_SET_AWAY_STATUS: {
+		this._onSetAwayStatus(params);
+		break;
+	}
+	case YMSGR.CONST.YES_USER_LOGOFF_NOTIFY: {
+		this._onUserLogoffNotify(params);
+		break;
+	}
 	}
 };
 
@@ -269,6 +277,44 @@ function(params) {
 	};
 	var chatMessage = new ZmChatMessage(jsonObj, false);
 	this._roster.addChatMessage(chatMessage);
+};
+
+ZmYahooImService.prototype._onSetAwayStatus =
+function(params) {
+//away_msg: "Away",
+//away_status: "99",  (Seems to always be "0" or "99")
+//buddy: "buddyId",
+//custom_dnd_status: "1",
+//flag: "1",
+//name: "buddyName",
+//no_idle_time: "1",
+//utf8_flag: "1"
+	var ri = this._roster.getRosterItemList().getByAddr(params.buddy);
+	if (ri) {
+		var show;
+		if (params.away_status == "0" || params.custom_dnd_status == "0") {
+			show = ZmRosterPresence.SHOW_ONLINE;
+		} else if (params.away_status == "99") {
+			show = ZmRosterPresence.SHOW_OFFLINE;
+		} else {
+			show = ZmRosterPresence.SHOW_UNKNOWN;
+		}
+		this._roster.setRosterItemPresence(ri, { show: show, status: params.away_msg }, true);
+	}
+};
+
+ZmYahooImService.prototype._onUserLogoffNotify =
+function(params) {
+//away_status: "-1",
+//buddy: "buddyId",
+//custom_dnd_status: "2",
+//flag: "0",
+//name: "buddyName",
+//utf8_flag: "1"
+	var ri = this._roster.getRosterItemList().getByAddr(params.buddy);
+	if (ri) {
+		this._roster.setRosterItemPresence(ri, { show: ZmRosterPresence.SHOW_OFFLINE }, true);
+	}
 };
 
 ZmYahooImService.prototype._onBuddyList =

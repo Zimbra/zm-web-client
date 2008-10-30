@@ -26,7 +26,6 @@ ZmZimbraImService = function() {
 	ZmImService.call(this, true);
 
 	this._newRosterItemtoastFormatter = new AjxMessageFormat(ZmMsg.imNewRosterItemToast);
-	this._presenceToastFormatter = new AjxMessageFormat(ZmMsg.imStatusToast);
 	this._leftChatFormatter = new AjxMessageFormat(ZmMsg.imLeftChat);
 	this._enteredChatFormatter = new AjxMessageFormat(ZmMsg.imEnteredChat);
 	this._removeRosterItemToastFormatter = new AjxMessageFormat(ZmMsg.imRemoveRosterItemToast);
@@ -338,19 +337,7 @@ function(im) {
 				}
 				var ri = this._roster.getRosterItemList().getByAddr(p.from);
 				if (ri) {
-					var old_pres = ri.getPresence().getShow();
-					if (ri.getPresence().setFromJS(p)) {
-						ri._notifyPresence();
-						var toast = this._presenceToastFormatter.format([ri.getDisplayName(), AjxStringUtil.htmlEncode(ri.getPresence().getShowText())]);
-						var is_status = old_pres == ri.getPresence().getShow();
-						if (notifications && ( (!is_status && appCtxt.get(ZmSetting.IM_PREF_NOTIFY_PRESENCE)) ||
-											   (is_status && appCtxt.get(ZmSetting.IM_PREF_NOTIFY_STATUS)) ) ) {
-							appCtxt.setStatusMsg(toast);
-							var chat = cl.getChatByRosterAddr(p.from);
-							if (chat)
-								chat.addMessage(ZmChatMessage.system(toast));
-						}
-					}
+					this._roster.setRosterItemPresence(ri, p, notifications);
 				}
 			} else if (not.type == "message") {
 				appCtxt.getApp(ZmApp.IM).prepareVisuals();
