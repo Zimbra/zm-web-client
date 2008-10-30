@@ -341,8 +341,15 @@ function(callback, skipNotify, result) {
 		for (var i = 0; i < resp.length; i++) {
 			var link = resp[i].link ? resp[i].link[0] : null;
 			if (link) {
-				var share = appCtxt.getById(link.id);
-				if (share) share.setPermissions(link.perm);
+				var mtpt = appCtxt.getById(link.id);
+				if (mtpt) {
+					var acl = link.acl && link.acl.length && link.acl[0];
+					var grant = acl && acl.grant && acl.grant.length && acl.grant[0];
+					if (grant) {
+						mtpt.addShare(ZmShare.createFromJs(mtpt, grant));
+					}
+					mtpt.setPermissions(link.perm);
+				}
 
 				if (link.folder && link.folder.length > 0) {
 					var parent = appCtxt.getById(link.id);

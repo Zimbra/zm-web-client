@@ -297,7 +297,7 @@ function(event) {
 	var showPerm = organizer.link && organizer.shares && organizer.shares.length > 0;
 	if (showPerm) {
 		AjxDispatcher.require("Share");
-		this._permEl.innerHTML = ZmShare.getRoleActions(organizer.shares[0].link.perm);
+		this._permEl.innerHTML = ZmShare.getRoleActions(organizer.shares[0].link.role);
 	}
 
 	if (appCtxt.get(ZmSetting.SHARING_ENABLED) &&
@@ -339,7 +339,7 @@ function(organizer) {
 
 			var roleEl = row.insertCell(-1);
 			roleEl.style.paddingRight = "15px";
-			roleEl.innerHTML = ZmShare.getRoleName(share.link.perm);
+			roleEl.innerHTML = ZmShare.getRoleName(share.link.role);
 
 			this.__createCmdCells(row, share);
 		}
@@ -359,7 +359,7 @@ function(organizer) {
 ZmFolderPropsDialog.prototype.__createCmdCells =
 function(row, share) {
 	var type = share.grantee.type;
-	if (type == ZmShare.TYPE_ALL || type == ZmShare.TYPE_DOMAIN || !ZmShare.ROLES[share.link.perm]) {
+	if (type == ZmShare.TYPE_ALL || type == ZmShare.TYPE_DOMAIN || !share.link.role) {
 		var cell = row.insertCell(-1);
 		cell.colSpan = 3;
 		cell.innerHTML = ZmMsg.configureWithAdmin;
