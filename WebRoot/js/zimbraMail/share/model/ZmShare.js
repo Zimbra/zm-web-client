@@ -70,6 +70,7 @@ ZmShare = function(params) {
 	this.link.perm = params.perm;
 	this.link.inh = params.inherit;
 	this.link.pw = params.granteePwd;
+	this.link.role = ZmShare._getRoleFromPerm(params.perm);
 };
 
 // Constants
@@ -123,23 +124,23 @@ ZmShare.PERMS[ZmShare.PERM_NOADMIN]		= ZmMsg.shareActionNoAdmin;
 ZmShare.PERMS[ZmShare.PERM_NOWORKFLOW]	= ZmMsg.shareActionNoWorkflow;
 
 // role permissions
-ZmShare.ROLE_NONE		= "";
-ZmShare.ROLE_VIEWER		= ZmShare.PERM_READ;
-ZmShare.ROLE_MANAGER	= [ZmShare.PERM_READ, ZmShare.PERM_WRITE, ZmShare.PERM_INSERT,
-						   ZmShare.PERM_DELETE, ZmShare.PERM_WORKFLOW].join("");
-ZmShare.ROLE_ADMIN		= [ZmShare.PERM_READ, ZmShare.PERM_WRITE, ZmShare.PERM_INSERT,
-						   ZmShare.PERM_DELETE, ZmShare.PERM_WORKFLOW, ZmShare.PERM_ADMIN].join("");
+ZmShare.ROLE_NONE		= "NONE";
+ZmShare.ROLE_VIEWER		= "VIEWER";
+ZmShare.ROLE_MANAGER	= "MANAGER";
+ZmShare.ROLE_ADMIN		= "ADMIN";
 
 // role names
-ZmShare.ROLES = {};
-ZmShare.ROLES[ZmShare.ROLE_NONE]	= ZmMsg.shareRoleNone;
-ZmShare.ROLES[ZmShare.ROLE_VIEWER]	= ZmMsg.shareRoleViewer;
-ZmShare.ROLES[ZmShare.ROLE_MANAGER]	= ZmMsg.shareRoleManager;
-ZmShare.ROLES[ZmShare.ROLE_ADMIN]	= ZmMsg.shareRoleAdmin;
+ZmShare.ROLE_TEXT = {};
+ZmShare.ROLE_TEXT[ZmShare.ROLE_NONE]	= ZmMsg.shareRoleNone;
+ZmShare.ROLE_TEXT[ZmShare.ROLE_VIEWER]	= ZmMsg.shareRoleViewer;
+ZmShare.ROLE_TEXT[ZmShare.ROLE_MANAGER]	= ZmMsg.shareRoleManager;
+ZmShare.ROLE_TEXT[ZmShare.ROLE_ADMIN]	= ZmMsg.shareRoleAdmin;
 
-ZmShare.ROLES[ZmShare.ROLE_VIEWER + ZmShare.PERM_PRIVATE]	= ZmMsg.shareRoleViewer;
-ZmShare.ROLES[ZmShare.ROLE_MANAGER + ZmShare.PERM_PRIVATE]	= ZmMsg.shareRoleManager;
-ZmShare.ROLES[ZmShare.ROLE_ADMIN + ZmShare.PERM_PRIVATE]	= ZmMsg.shareRoleAdmin;
+ZmShare.ROLE_PERMS = {};
+ZmShare.ROLE_PERMS[ZmShare.ROLE_NONE]		= "";
+ZmShare.ROLE_PERMS[ZmShare.ROLE_VIEWER]		= "r";
+ZmShare.ROLE_PERMS[ZmShare.ROLE_MANAGER]	= "rwidx";
+ZmShare.ROLE_PERMS[ZmShare.ROLE_ADMIN]		= "rwidxa";
 
 ZmShare.TYPE_ALL	= "all";
 ZmShare.TYPE_USER	= "usr";
@@ -171,12 +172,13 @@ ZmShare._XML = null;
 // Utility methods
 
 ZmShare.getRoleName =
-function(perm) {
-	return ZmShare.ROLES[perm] || ZmMsg.shareRoleCustom;
+function(role) {
+	return ZmShare.ROLE_TEXT[role] || ZmMsg.shareRoleCustom;
 };
 
 ZmShare.getRoleActions =
-function(perm) {
+function(role) {
+	var perm = ZmShare.ROLE_PERMS[role];
 	var actions = [];
 	if (perm) {
 		for (var i = 0; i < perm.length; i++) {
@@ -195,7 +197,7 @@ ZmShare.ACTIONS = {};
 ZmShare.ACTIONS[ZmShare.ROLE_NONE]		= ZmShare.getRoleActions(ZmShare.ROLE_NONE);
 ZmShare.ACTIONS[ZmShare.ROLE_VIEWER]	= ZmShare.getRoleActions(ZmShare.ROLE_VIEWER);
 ZmShare.ACTIONS[ZmShare.ROLE_MANAGER]	= ZmShare.getRoleActions(ZmShare.ROLE_MANAGER);
-ZmShare.ACTIONS[ZmShare.ROLE_ADMIN]	= ZmShare.getRoleActions(ZmShare.ROLE_ADMIN);
+ZmShare.ACTIONS[ZmShare.ROLE_ADMIN]		= ZmShare.getRoleActions(ZmShare.ROLE_ADMIN);
 
 // Static methods
 
@@ -684,4 +686,18 @@ function(formatter) {
 		ZmShare.getRoleActions(this.link.perm)
 	];
 	return formatter.format(params);
+};
+
+ZmShare._getRoleFromPerm =
+function(perm) {
+	if (!perm) { return ZmShare.ROLE_NONE; }
+	if (perm.indexOf(ZmShare.PERM_ADMIN) != -1) {
+		return ZmShare.ROLE_ADMIN;
+	} else if (perm.indexOf(ZmShare.PERM_WORKFLOW) != -1) {
+		return ZmShare.ROLE_MANAGER;
+	} else if (perm.indexOf(ZmShare.PERM_READ) != -1) {
+		return ZmShare.ROLE_VIEWER;
+	} else {
+		return ZmShare.ROLE_NONE;
+	}
 };

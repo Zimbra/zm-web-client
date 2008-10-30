@@ -731,7 +731,7 @@ ZmOrganizer.prototype.setPermissions =
 function(permission) {
 	if (this.shares == null) {
 		AjxDispatcher.require("Share");
-		var share = new ZmShare({organizer:this, perm:permission});
+		var share = new ZmShare({parent:this, perm:permission});
 		this.addShare(share);
 	} else {
 		// lets just assume we're dealing w/ a link (which should only have one share)

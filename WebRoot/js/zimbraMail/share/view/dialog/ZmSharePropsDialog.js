@@ -239,7 +239,7 @@ function(event) {
 	
 	// Since we may be sharing with multiple users, use a batch command
 	var batchCmd = new ZmBatchCommand();
-	var perm = this._getSelectedRole();
+	var perm = this._getPermsFromRole();
 	var args = isGuestShare ? this._passwordInput.getValue() : null;
 	for (var i = 0; i < shares.length; i++) {
 		var share = shares[i];
@@ -445,9 +445,12 @@ ZmSharePropsDialog.prototype._handleShareWith = function(type) {
 	}
 };
 
-ZmSharePropsDialog.prototype._getSelectedRole =
+/**
+ * Returns a perms string based on the user's selection of a role and privacy.
+ */
+ZmSharePropsDialog.prototype._getPermsFromRole =
 function() {
-	var role = ZmShare.ROLE_NONE;
+	var role = "";
 	if (this._viewerRadioEl.checked) {
 		role = ZmShare.ROLE_VIEWER;
 	}
@@ -457,10 +460,11 @@ function() {
 	if (this._adminRadioEl.checked) {
 		role = ZmShare.ROLE_ADMIN;
 	}
-	if(this._privatePermissionEnabled && this._privateEl.checked && role != "") {
-		role += ZmShare.PERM_PRIVATE;
+	var perm = ZmShare.ROLE_PERMS[role];
+	if (perm && this._privatePermissionEnabled && this._privateEl.checked) {
+		perm += ZmShare.PERM_PRIVATE;
 	}
-	return role;
+	return perm;
 };
 
 ZmSharePropsDialog.prototype._handleCompletionData = 
@@ -575,16 +579,16 @@ function() {
 
 	var roles = [ ZmShare.ROLE_NONE, ZmShare.ROLE_VIEWER, ZmShare.ROLE_MANAGER, ZmShare.ROLE_ADMIN ];
 	for (var i=0; i<roles.length; i++) {
-		var perm = roles[i];
+		var role = roles[i];
 
 		html[idx++] = "<tr><td valign=top><input type='radio' name='";
 		html[idx++] = roleRadioName;
 		html[idx++] = "' value='";
-		html[idx++] = perm;
+		html[idx++] = role;
 		html[idx++] = "'></td><td style='font-weight:bold; padding-right:0.25em'>";
-		html[idx++] = ZmShare.getRoleName(perm);
+		html[idx++] = ZmShare.getRoleName(role);
 		html[idx++] = "</td><td style='white-space:nowrap'>";
-		html[idx++] = ZmShare.getRoleActions(perm);
+		html[idx++] = ZmShare.getRoleActions(role);
 		html[idx++] = "</td></tr>";
 	}
 
