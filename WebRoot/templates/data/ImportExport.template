@@ -118,7 +118,7 @@
 					</tr>
 				</table>
 				<$ if (appCtxt.get(ZmSetting.OFFLINE_ENABLED)) { $>
-					<div rel='ADVANCED' id="${id}_IGNORE_ARCHIVE" tabindex="300"></div>
+					<div id="${id}_IGNORE_ARCHIVE" tabindex="300"></div>
 				<$ } $>
 			</td>
 		</tr>
