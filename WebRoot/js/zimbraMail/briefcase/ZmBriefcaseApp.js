@@ -326,7 +326,6 @@ function() {
 ZmBriefcaseApp.prototype._handleUploadNewItem =
 function(folder,filenames) {
 	var bc = this.getBriefcaseController();
-	bc.removeCachedFolderItems();
 	bc.refreshFolder();
 };
 

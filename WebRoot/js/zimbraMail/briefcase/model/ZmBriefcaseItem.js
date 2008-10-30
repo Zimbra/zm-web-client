@@ -134,11 +134,6 @@ ZmBriefcaseItem.prototype._handleResponseCreateItem =
 function(folderId,response) {
 	appCtxt.getAppController().setStatusMsg(ZmMsg.fileCreated);
 	appCtxt.getChooseFolderDialog().popdown();
-
-	if (response && (response.SaveDocumentResponse || response._data.SaveDocumentResponse)) {
-		var bController = AjxDispatcher.run("GetBriefcaseController");
-		bController.removeCachedFolderItems(folderId);		
-	}
 };
 
 ZmBriefcaseItem.prototype._handleErrorCreateItem =

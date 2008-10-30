@@ -199,8 +199,6 @@ function(ev) {
 			var ctlr = ev.srcData.controller;
 			ctlr._doMove(briefcaseItems, dropFolder, null, true);
 			ctlr._pendingActionData = null;
-			ctlr.removeCachedFolderItems(briefcaseItems[0].getFolder().id);
-			ctlr.removeCachedFolderItems(dropFolder.id);
 			ctlr.reloadFolder();
 		}
 	}

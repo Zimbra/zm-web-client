@@ -517,7 +517,6 @@ function() {
 ZmBriefcaseController.prototype.reloadFolder =
 function(mode) {
 	DBG.println(AjxDebug.DBG2,"refresh folder:"+this._object);
-	this.removeCachedFolderItems();
 	if(mode == "delete" && this.isMultiColView()) {
 /*		var mView  = this._parentView[this._currentView];
 		var col = mView.getColumn(this._currentFolder);
@@ -731,7 +730,6 @@ function(folder) {
 	this._doMove(this._pendingActionData, folder, null, true);
 	this._clearDialog(appCtxt.getChooseFolderDialog());
 	this._pendingActionData = null;
-	this.removeCachedFolderItems(folder.id);
 	this.reloadFolder();
 };
 
