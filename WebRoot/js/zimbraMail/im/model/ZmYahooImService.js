@@ -51,7 +51,7 @@ function(cookie, callback) {
 //		visible: true
 	};
 
-	YMSGR.sdk.login(params);
+	this._callSdk("login", [params]);
 };
 
 
@@ -108,12 +108,12 @@ function(show, priority, customStatusMsg, batchCommand) {
 		case ZmRosterPresence.SHOW_DND: ymStatus = YMSGR.CONST.YMSG_Busy; break;
 		default: ymStatus = YMSGR.CONST.YMSG_Available; break;
 		}
-		YMSGR.sdk.setStatus(ymStatus, false);
+		this._callSdk("setStatus", [ymStatus, false]);
 	}
 
 	var visible = show != ZmRosterPresence.SHOW_OFFLINE;
 	if (visible != this._visible) {
-		YMSGR.sdk.setVisibility(visible);
+		this._callSdk("setVisibility", [visible]);
 		this._visible = visible;
 	}
 	if (this._roster.getPresence().setFromJS({ show: show, status: customStatusMsg })) {
@@ -132,12 +132,12 @@ function(callback, response) {
 
 ZmYahooImService.prototype.createRosterItem =
 function(addr, name, groups, params) {
-	YMSGR.sdk.sendSubscribe([addr], true);
+	this._callSdk("sendSubscribe", [[addr], true]);
 };
 
 ZmYahooImService.prototype.deleteRosterItem =
 function(rosterItem, params) {
-	YMSGR.sdk.sendSubscribe([rosterItem.id], false);
+	this._callSdk("sendSubscribe", [[rosterItem.id], false]);
 };
 
 ZmYahooImService.prototype.sendSubscribeAuthorization =
@@ -157,7 +157,7 @@ function(chat, text, html, typing, params) {
 	}
 	var payload = YMSGR.j2x(args);
 	var type = typing ? "typingIndicator" : "im";
-	YMSGR.sdk.send(type, payload);
+	this._callSdk("send", [type, payload]);
 };
 
 ZmYahooImService.prototype.closeChat =
@@ -306,6 +306,12 @@ function(params) {
 		}
 };
 
+ZmYahooImService.prototype._callSdk =
+function(functionName, params) {
+	DBG.println("ym", "YMSGR.sdk." + functionName + "(" + params.join(",") + ")");
+	YMSGR.sdk[functionName].apply(YMSGR.sdk, params);
+};
+
 ZmYahooImService.prototype._load =
 function() {
 	AjxDispatcher.require(["YmSdk"]);
@@ -318,7 +324,7 @@ function() {
 	};
 	
 	//TODO: Will this resource always be available?
-	YMSGR.sdk.load(appObj, "http://l.yimg.com/us.yimg.com/i/us/pim/dclient/k/img/md5/19e66808f1e211b27c640773d37d9bf7_1.swf");
+	this._callSdk("load", [appObj, "http://l.yimg.com/us.yimg.com/i/us/pim/dclient/k/img/md5/19e66808f1e211b27c640773d37d9bf7_1.swf"]);
 };
 
 /**
