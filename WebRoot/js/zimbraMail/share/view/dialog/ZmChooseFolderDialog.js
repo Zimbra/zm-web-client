@@ -205,7 +205,7 @@ function(ev) {
 	var msg = (!tgtFolder) ? ZmMsg.noTargetFolder : null;
 
 	// check for valid target
-	if (!msg && this._data && !tgtFolder.mayContain(this._data)) {
+	if (!msg && this._data && tgtFolder.mayContain && !tgtFolder.mayContain(this._data)) {
 	    msg = (this._data instanceof ZmFolder)
 			? ZmMsg.badTargetFolder
 			: ZmMsg.badTargetFolderItems;
