@@ -118,3 +118,9 @@ function() {
 		ZmOperation.IM_PRESENCE_DND
 	];
 };
+
+ZmYahooImServiceController.prototype.getSupportsAccounts =
+function() {
+	return false;
+};
+

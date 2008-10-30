@@ -457,6 +457,10 @@ function(components) {
 
 ZmImApp.prototype.startup =
 function() {
+	if (!ZmImServiceController.INSTANCE) {
+		// Create the service controller & service.
+		new ZmZimbraImServiceController();
+	}
 	if (appCtxt.get(ZmSetting.IM_PREF_AUTO_LOGIN)) {
 		// Do the auto login after a short delay. I chose 1000ms because that means
 		// im login will happen after zimlets are loaded.

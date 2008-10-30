@@ -53,6 +53,9 @@ function() {
 	];
 };
 
-// Create the service controller & service.
-// TODO: This code belongs elsewhere
-new ZmZimbraImServiceController();
+ZmZimbraImServiceController.prototype.getSupportsAccounts =
+function() {
+	return true;
+};
+
+

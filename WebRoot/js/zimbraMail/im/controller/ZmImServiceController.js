@@ -39,3 +39,8 @@ ZmImServiceController.prototype.getPresenceOperations =
 function() {
 	alert('Not implemented');
 };
+
+ZmImServiceController.prototype.getSupportsAccounts =
+function() {
+	alert('Not implemented');
+};

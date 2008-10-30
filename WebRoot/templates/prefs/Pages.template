@@ -1376,28 +1376,30 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 	</tr>
 </table>
 
-<table border=0 cellspacing=0 cellpadding=0 width=100%>
-	<tr class='ZOptionsHeaderRow'>
-		<td class='ZOptionsHeaderL'>
-			<div class='ImgPrefsHeader_L'></div>
-		</td>
-		<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.imAccounts$></td>
-		<td class='ZOptionsHeaderR'>
-			<div class='ImgPrefsHeader_R'></div>
-		</td>
-	</tr>
-</table>
-<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
-	<tr>
-		<td class='ZOptionsSectionMain'>
+<$ if (data.hasAccounts) { $>
+	<table border=0 cellspacing=0 cellpadding=0 width=100%>
+		<tr class='ZOptionsHeaderRow'>
+			<td class='ZOptionsHeaderL'>
+				<div class='ImgPrefsHeader_L'></div>
+			</td>
+			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.imAccounts$></td>
+			<td class='ZOptionsHeaderR'>
+				<div class='ImgPrefsHeader_R'></div>
+			</td>
+		</tr>
+	</table>
+	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+		<tr>
+			<td class='ZOptionsSectionMain'>
 
-			<div class="ImAccountLogin" id="${id}_imAccountsNotLoggedIn">
-				${loginMsg}
-			</div>
-			<div id="${id}_imAccounts" width="100%"/>
-		</td>
-	</tr>
-</table>
+				<div class="ImAccountLogin" id="${id}_imAccountsNotLoggedIn">
+					${loginMsg}
+				</div>
+				<div id="${id}_imAccounts" width="100%"/>
+			</td>
+		</tr>
+	</table>
+<$ } $>
 </template>
 
 <template id='prefs.Pages#ImAccountLabel'>

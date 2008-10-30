@@ -315,7 +315,8 @@ function() {
 		onLoaded: function() { self._onLoaded(); },
 		onEvent: function(ev, params) { self._onEvent(ev, params); },
 		getPrimaryId: function() { return self._getPrimaryId(); }
-	}
+	};
+	
 	//TODO: Will this resource always be available?
 	YMSGR.sdk.load(appObj, "http://l.yimg.com/us.yimg.com/i/us/pim/dclient/k/img/md5/19e66808f1e211b27c640773d37d9bf7_1.swf");
 };
