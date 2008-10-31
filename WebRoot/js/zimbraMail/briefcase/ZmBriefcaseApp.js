@@ -274,6 +274,7 @@ function(modifies, force) {
 	if (!force && !this._noDefer && this._deferNotifications("modify", modifies)) { return; }
 
 	var briefcaseController = this.getBriefcaseController();
+    var needsRefresh = false;	
 
 	for (var name in modifies) {
 		var list = modifies[name];
@@ -286,18 +287,23 @@ function(modifies, force) {
 				DBG.println(AjxDebug.DBG2, "ZmBriefcaseApp: handling modified notif for ID " + id + ", node type = " + name);
 				// REVISIT: Use app context item cache
 				var doc = briefcaseController.getItemById(id);
-				if (!doc) {
-					doc = new ZmBriefcaseItem();
-					doc.set(mod);
-				}
-				else {
+				if (doc) {
 					doc.notifyModify(mod);
 					doc.set(mod);
 				}
-				//briefcaseController.putItem(doc);
 				mod._handled = true;
-			}
+			}else if (name == "folder") {
+				var currentFolderId = briefcaseController.getCurrentFolderId();				
+                if(appCtxt.getById(id) &&  (appCtxt.getById(id).nId == currentFolderId || id == currentFolderId)) {
+                    needsRefresh = true;
+					mod._handled = true;
+                }
+             }
 		}
+	}
+	
+	if(needsRefresh) {
+		briefcaseController.reloadFolder();
 	}
 };
 
