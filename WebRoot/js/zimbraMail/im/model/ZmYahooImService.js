@@ -131,10 +131,6 @@ ZmYahooImService.prototype.setIdle =
 function(idle, idleTime) {
 };
 
-ZmYahooImService.prototype._handleResponseGetRoster =
-function(callback, response) {
-};
-
 ZmYahooImService.prototype.createRosterItem =
 function(addr, name, groups, params) {
 	this._callSdk("sendSubscribe", [[addr], true]);
@@ -380,7 +376,7 @@ function(params) {
 					var record = group.buddy_record_list.records[recordIndex];
 					var rosterItem = itemMap[record.buddy];
 					if (!rosterItem) {
-						rosterItem = new ZmRosterItem(record.buddy, list, record.name, null, group.buddy_grp_name);
+						rosterItem = new ZmRosterItem(record.buddy, list, record.name, new ZmRosterPresence(ZmRosterPresence.SHOW_UNKNOWN), group.buddy_grp_name);
 						itemMap[record.buddy] = rosterItem;
 						itemList.push(rosterItem);
 					} else {
