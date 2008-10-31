@@ -1331,6 +1331,13 @@ function(action, toOverride) {
 			used[aliases[i].toLowerCase()] = true;
 		}
 
+        //Check for Canonical Address's
+        var defaultIdentity = appCtxt.getIdentityCollection().defaultIdentity;
+        if(defaultIdentity && defaultIdentity.sendFromAddress){
+            //Note: sendFromAddress is same as appCtxt.get(ZmSetting.USERNAME) if the account does not have any Canonical Address assigned.
+            used[defaultIdentity.sendFromAddress.toLowerCase()] = true;
+        }
+
 		// When updating address lists, use this._addressesMsg instead of this._msg, because
 		// this._msg changes after a draft is saved.
 		if (!this._addressesMsg.isSent) {
