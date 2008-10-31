@@ -18,7 +18,7 @@ ZmRosterItem = function(id, list, name, presence, groupNames) {
 	if (arguments.length > 0) {
 		ZmItem.call(this, ZmOrganizer.ROSTER_ITEM, id, list);
 		this.name = name;
-		this.presence = presence || new ZmRosterPresence();
+		this.presence = presence || new ZmRosterPresence(ZmRosterPresence.SHOW_UNKNOWN);
 		this.groupNames = groupNames;
 		this.groups = groupNames ? groupNames.split(/,/) : [];
 		this.numUnreadIMs = 0; // num unread IMs from this buddy

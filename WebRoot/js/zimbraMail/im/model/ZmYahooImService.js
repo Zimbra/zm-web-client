@@ -214,6 +214,7 @@ function(ev, params) {
 		break;
 	}
 	case YMSGR.CONST.YES_BUDDY_INFO: {
+		this._onBuddyInfo(params);
 		break;
 	}
 	case YMSGR.CONST.YES_USER_HAS_MAIL: {
@@ -284,7 +285,44 @@ function(params) {
 	this._roster.addChatMessage(chatMessage);
 };
 
+ZmYahooImService.prototype._onBuddyInfo =
+function(params) {
+//buddy_info_list: {
+//	records: [
+//		0: {
+//		  Key_198: "0",
+//		  Key_213: "0",
+//		  away_status: "2",
+//		  buddy: "buddyId",
+//		  capability_matrix: "892703",
+//		  custom_dnd_status: "0",
+//		  flag: "1",
+//		  name: "buddyName"
+//		 }
+//	]
+//}
+	if (params.buddy_info_list) {
+		var records = params.buddy_info_list.records;
+		for (var i = 0, count = records.length; i < count; i++) {
+			 this._updateBuddy(records[i]);
+		}
+	}
+};
+
 ZmYahooImService.prototype._onSetAwayStatus =
+function(params) {
+//away_msg: "Away",
+//away_status: "99",  (Seems to always be "0" or "99")
+//buddy: "buddyId",
+//custom_dnd_status: "1",
+//flag: "1",
+//name: "buddyName",
+//no_idle_time: "1",
+//utf8_flag: "1"
+	this._updateBuddy(params);
+};
+
+ZmYahooImService.prototype._updateBuddy =
 function(params) {
 //away_msg: "Away",
 //away_status: "99",  (Seems to always be "0" or "99")
@@ -355,12 +393,6 @@ function(params) {
 	if (itemList.length) {
 		list.addItems(itemList);
 	}
-
-//	I don't understand this....this method seems to return the exact same status for everyone.
-//	var presence = this._callSdk("getPresenceList");
-//	for (var buddyId in presence) {
-//
-//	}
 };
 
 ZmYahooImService.prototype._callSdk =

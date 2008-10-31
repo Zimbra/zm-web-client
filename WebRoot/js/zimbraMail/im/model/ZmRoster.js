@@ -374,15 +374,17 @@ function(rosterItem, jsonObj, doNotifications) {
 	var old_pres = rosterItem.getPresence().getShow();
 	if (rosterItem.getPresence().setFromJS(jsonObj)) {
 		rosterItem._notifyPresence();
-		this._presenceToastFormatter = this._presenceToastFormatter || new AjxMessageFormat(ZmMsg.imStatusToast);
-		var toast = this._presenceToastFormatter.format([rosterItem.getDisplayName(), AjxStringUtil.htmlEncode(rosterItem.getPresence().getShowText())]);
-		var is_status = old_pres == rosterItem.getPresence().getShow();
-		if (doNotifications && ( (!is_status && appCtxt.get(ZmSetting.IM_PREF_NOTIFY_PRESENCE)) ||
-							   (is_status && appCtxt.get(ZmSetting.IM_PREF_NOTIFY_STATUS)) ) ) {
-			appCtxt.setStatusMsg(toast);
-			var chat = this.getChatList().getChatByRosterAddr(jsonObj.from);
-			if (chat)
-				chat.addMessage(ZmChatMessage.system(toast));
+		if (old_pres != ZmRosterPresence.SHOW_UNKNOWN) {
+			this._presenceToastFormatter = this._presenceToastFormatter || new AjxMessageFormat(ZmMsg.imStatusToast);
+			var toast = this._presenceToastFormatter.format([rosterItem.getDisplayName(), AjxStringUtil.htmlEncode(rosterItem.getPresence().getShowText())]);
+			var is_status = old_pres == rosterItem.getPresence().getShow();
+			if (doNotifications && ( (!is_status && appCtxt.get(ZmSetting.IM_PREF_NOTIFY_PRESENCE)) ||
+								   (is_status && appCtxt.get(ZmSetting.IM_PREF_NOTIFY_STATUS)) ) ) {
+				appCtxt.setStatusMsg(toast);
+				var chat = this.getChatList().getChatByRosterAddr(jsonObj.from);
+				if (chat)
+					chat.addMessage(ZmChatMessage.system(toast));
+			}
 		}
 	}
 };
