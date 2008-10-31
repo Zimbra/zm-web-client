@@ -23,6 +23,11 @@ ZmImApp = function(container) {
 	delete ZmFolder.HIDE_ID[ZmOrganizer.ID_CHATS];
 	this._active = false;
 	ZmImApp.INSTANCE = this;
+
+	if (!ZmImServiceController.INSTANCE) {
+		// Create the service controller & service.
+		new ZmZimbraImServiceController();
+	}
 };
 
 // Organizer and item-related constants
@@ -457,10 +462,6 @@ function(components) {
 
 ZmImApp.prototype.startup =
 function() {
-	if (!ZmImServiceController.INSTANCE) {
-		// Create the service controller & service.
-		new ZmZimbraImServiceController();
-	}
 	if (appCtxt.get(ZmSetting.IM_PREF_AUTO_LOGIN)) {
 		// Do the auto login after a short delay. I chose 1000ms because that means
 		// im login will happen after zimlets are loaded.
@@ -684,8 +685,7 @@ function(presence, button, doText, doTooltip) {
 	button.setImage(icon);
 	var showText = presence ? AjxStringUtil.htmlEncode(presence.getShowText()) : ZmMsg.imStatusOffline;
 	if (doTooltip) {
-		this._presenceTooltipFormat = this._presenceTooltipFormat || new AjxMessageFormat(ZmMsg.presenceTooltip);
-		var tooltip = this._presenceTooltipFormat.format(showText);
+		var tooltip = ZmImServiceController.INSTANCE.getMyPresenceTooltip(showText);
 		button.setToolTipContent(tooltip);
 	}
 	if (doText) {

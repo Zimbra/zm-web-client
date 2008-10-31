@@ -35,6 +35,11 @@ function() {
 	return "ZmYahooImService";
 };
 
+ZmYahooImService.prototype.isLoggedIn =
+function() {
+	return this._loggedIn;
+};
+
 ZmYahooImService.prototype.login =
 function(cookie, callback) {
 	this._loginCallback = callback;
@@ -190,7 +195,7 @@ function(id) {
 ZmYahooImService.prototype._onEvent =
 function(ev, params) {
 	DBG.println("ym", "ZmYahooImService.prototype.onEvent: " + this.mapEventToName(ev));
-	DBG.dumpObj("ym", params);
+	DBG.dumpObj("ym", params, this.mapEventToName(ev));
 	DBG.println("ym", "----------------");
 
 	switch (ev) {
@@ -325,37 +330,49 @@ function(params) {
 //		    }
 //		    ignored_buddy_record_list: [ { buddy, name } ]
 
-		var list = this._roster.getRosterItemList();
-		var itemMap = {};
-		var itemList = [];
-		if (params.group_record_list && params.group_record_list.records) {
-			var groups = params.group_record_list.records;
-			for (var groupIndex = 0, groupCount = groups.length; groupIndex < groupCount; groupIndex++) {
-				var group = groups[groupIndex];
-				if (group && group.buddy_record_list && group.buddy_record_list.records) {
-					for (var recordIndex = 0, recordCount = group.buddy_record_list.records.length; recordIndex < recordCount; recordIndex++) {
-						var record = group.buddy_record_list.records[recordIndex];
-						var rosterItem = itemMap[record.buddy];
-						if (!rosterItem) {
-							rosterItem = new ZmRosterItem(record.buddy, list, record.name, null, group.buddy_grp_name);
-							itemMap[record.buddy] = rosterItem;
-							itemList.push(rosterItem);
-						} else {
-							rosterItem.addGroup(record.buddy_grp_name);
-						}
+	var list = this._roster.getRosterItemList();
+	var itemMap = {};
+	var itemList = [];
+	if (params.group_record_list && params.group_record_list.records) {
+		var groups = params.group_record_list.records;
+		for (var groupIndex = 0, groupCount = groups.length; groupIndex < groupCount; groupIndex++) {
+			var group = groups[groupIndex];
+			if (group && group.buddy_record_list && group.buddy_record_list.records) {
+				for (var recordIndex = 0, recordCount = group.buddy_record_list.records.length; recordIndex < recordCount; recordIndex++) {
+					var record = group.buddy_record_list.records[recordIndex];
+					var rosterItem = itemMap[record.buddy];
+					if (!rosterItem) {
+						rosterItem = new ZmRosterItem(record.buddy, list, record.name, null, group.buddy_grp_name);
+						itemMap[record.buddy] = rosterItem;
+						itemList.push(rosterItem);
+					} else {
+						rosterItem.addGroup(record.buddy_grp_name);
 					}
 				}
 			}
 		}
-		if (itemList.length) {
-			list.addItems(itemList);
-		}
+	}
+	if (itemList.length) {
+		list.addItems(itemList);
+	}
+
+//	I don't understand this....this method seems to return the exact same status for everyone.
+//	var presence = this._callSdk("getPresenceList");
+//	for (var buddyId in presence) {
+//
+//	}
 };
 
 ZmYahooImService.prototype._callSdk =
 function(functionName, params) {
-	DBG.println("ym", "YMSGR.sdk." + functionName + "(" + params.join(",") + ")");
-	YMSGR.sdk[functionName].apply(YMSGR.sdk, params);
+	DBG.println("ym", "YMSGR.sdk." + functionName + "(" + (params ? params.join(",") : "") + ")");
+	var result = YMSGR.sdk[functionName].apply(YMSGR.sdk, params);
+	if (result) {
+		DBG.println("ym", "YMSGR.sdk." + functionName + ": Result");
+		DBG.dumpObj("ym", result, functionName + ": Result");
+	} else {
+		DBG.println("ym", functionName + ": null result");
+	}
 };
 
 ZmYahooImService.prototype._load =

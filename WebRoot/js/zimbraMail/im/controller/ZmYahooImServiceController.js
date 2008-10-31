@@ -33,6 +33,16 @@ function() {
 	return "ZmYahooImServiceController";
 };
 
+ZmYahooImServiceController.prototype.getMyPresenceTooltip =
+function(showText) {
+	if (ZmImService.INSTANCE.isLoggedIn()) {
+		this._presenceTooltipFormat = this._presenceTooltipFormat || new AjxMessageFormat(ZmMsg.presenceTooltipYahoo);
+		return this._presenceTooltipFormat.format([ZmImService.INSTANCE.getMyAddress(), showText]);
+	} else {
+		return ZmMsg.presenceTooltipYahooLoggedOut;
+	}
+};
+
 ZmYahooImServiceController.prototype.login =
 function(callback) {
 	//TODO: bad fake ui...

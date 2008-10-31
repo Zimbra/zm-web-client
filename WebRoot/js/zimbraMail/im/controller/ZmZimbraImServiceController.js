@@ -41,6 +41,12 @@ function(callback) {
 	}
 };
 
+ZmZimbraImServiceController.prototype.getMyPresenceTooltip =
+function(showText) {
+	this._presenceTooltipFormat = this._presenceTooltipFormat || new AjxMessageFormat(ZmMsg.presenceTooltip);
+	return this._presenceTooltipFormat.format(showText);
+};
+
 ZmZimbraImServiceController.prototype.getPresenceOperations =
 function() {
 	return [

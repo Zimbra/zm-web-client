@@ -35,6 +35,11 @@ function(callback) {
 	alert('Not implemented');
 };
 
+ZmImServiceController.prototype.getMyPresenceTooltip =
+function(showText) {
+	alert('Not implemented');
+};
+
 ZmImServiceController.prototype.getPresenceOperations =
 function() {
 	alert('Not implemented');
