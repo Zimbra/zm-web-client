@@ -24,6 +24,8 @@ ZmImApp = function(container) {
 	this._active = false;
 	ZmImApp.INSTANCE = this;
 
+	// TODO: This require sux....
+	AjxDispatcher.require([ "IMCore" ]);
 	if (!ZmImServiceController.INSTANCE) {
 		// Create the service controller & service.
 		new ZmZimbraImServiceController();
