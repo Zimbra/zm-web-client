@@ -344,9 +344,10 @@ function(callback, skipNotify, result) {
 				var mtpt = appCtxt.getById(link.id);
 				if (mtpt) {
 					var acl = link.acl && link.acl.length && link.acl[0];
-					var grant = acl && acl.grant && acl.grant.length && acl.grant[0];
-					if (grant) {
-						mtpt.addShare(ZmShare.createFromJs(mtpt, grant));
+					if (acl && acl.grant && acl.grant.length) {
+						for (var j = 0; j < acl.grant.length; j++) {
+							mtpt.addShare(ZmShare.createFromJs(mtpt, acl.grant[j]));
+						}
 					}
 					mtpt.setPermissions(link.perm);
 				}
