@@ -120,11 +120,6 @@ function() {
 	return this._listView[this._currentView];
 };
 
-ZmListController.prototype.getCurrentToolbar =
-function() {
-	return this._toolbar[this._currentView];
-};
-
 ZmListController.prototype.getList =
 function() {
 	return this._list;
@@ -173,7 +168,7 @@ function(actionCode) {
 			return listView.handleKeyAction(actionCode);
 
 		case ZmKeyMap.DEL:
-			this._deleteListener();
+			this._doDelete(listView.getSelection());
 			break;
 
 		case ZmKeyMap.NEXT_PAGE:
@@ -274,13 +269,12 @@ function(view) {
 
 	// we want to know when user switches accounts but can't do it until the
 	// overview panel content has been created. So, let's always check here.
-	if (!appCtxt.isChildWindow && appCtxt.multiAccounts) {
-		var overviewContent = this._app.getOverviewPanelContent(true);
-		if (overviewContent && !this._initMultiAccount)
-		{
-			this._initMultiAccount = true;
-			overviewContent.addListener(DwtEvent.SELECTION, new AjxListener(this, this._accordionSelectionListener));
-		}
+	if (appCtxt.multiAccounts &&
+		this._app._overviewPanelContent &&
+		!this._initMultiAccount)
+	{
+		this._initMultiAccount = true;
+		this._app._overviewPanelContent.addListener(DwtEvent.SELECTION, new AjxListener(this, this._accordionSelectionListener));
 	}
 
 	this._initializeToolBar(view);
@@ -330,7 +324,7 @@ function(view) {
 	var buttons = this._getToolBarOps();
 	if (!buttons) { return; }
 
-	var tb = this._toolbar[view] = new ZmButtonToolBar({parent:this._container, buttons:buttons, context:view, controller:this});
+	var tb = this._toolbar[view] = new ZmButtonToolBar({parent:this._container, buttons:buttons, context:view});
 
 	var button;
 	for (var i = 0; i < tb.opList.length; i++) {
@@ -386,8 +380,7 @@ function() {
 
 	var menuItems = this._getActionMenuOps();
 	if (!menuItems) return;
-	this._actionMenu = new ZmActionMenu({parent:this._shell, menuItems:menuItems, context:this._getMenuContext(),
-										 controller:this});
+	this._actionMenu = new ZmActionMenu({parent:this._shell, menuItems:menuItems, context:this._getMenuContext()});
 	this._addMenuListeners(this._actionMenu);
 	if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
 		this._setupTagMenu(this._actionMenu);
@@ -412,8 +405,7 @@ function(view) {
 
 	this._tabGroups[view] = this._createTabGroup();
 	this._tabGroups[view].newParent(appCtxt.getRootTabGroup());
-//	this._tabGroups[view].addMember(this._toolbar[view]);
-	this._toolbar[view].noFocus = true;
+	this._tabGroups[view].addMember(this._toolbar[view]);
 	this._tabGroups[view].addMember(this._listView[view]);
 };
 
@@ -563,13 +555,13 @@ function(item) {
 	}
 };
 
-// overload if you want to print in a different way
 ZmListController.prototype._printListener =
 function(ev) {
 	var listView = this._listView[this._currentView];
 	var items = listView.getSelection();
 	var item = (items instanceof Array) ? items[0] : items;
-	window.open(item.getRestUrl(), "_blank");
+	appCtxt.getPrintView().render(item);
+	this._restoreFocus(listView);
 };
 
 ZmListController.prototype._backListener =
@@ -598,13 +590,9 @@ function(ev) {
 ZmListController.prototype._getMoveParams =
 function() {
 	var org = ZmApp.ORGANIZER[this._app._name] || ZmOrganizer.FOLDER;
-	return {
-		data:this._pendingActionData,
-		treeIds:[org],
-		overviewId:"ZmListController",
-		title:this._getMoveDialogTitle(this._pendingActionData.length),
-		description:ZmMsg.targetFolder
-	};
+	var title = this._getMoveDialogTitle(this._pendingActionData.length);
+	return {data:this._pendingActionData, treeIds:[org], overviewId:"ZmListController",
+			title:title, description:ZmMsg.targetFolder};
 };
 
 // Switch to selected view.
@@ -842,7 +830,7 @@ function(items) {
 	list.removeAllTags(items);
 };
 
-/**
+/*
 * Deletes one or more items from the list.
 *
 * @param items			[Array]			list of items to delete
@@ -854,8 +842,7 @@ function(items, hardDelete, attrs) {
 	if (!(items instanceof Array)) items = [items];
 	if (items.length) {
 		var list = items[0].list || this._list;
-		var win = appCtxt.isChildWindow ? window : null;
-		list.deleteItems(items, hardDelete, attrs, win);
+		list.deleteItems(items, hardDelete, attrs);
 	}
 };
 
@@ -954,26 +941,14 @@ function(parent) {
 		var tagMenu = parent.getTagMenu();
 		// dynamically build tag menu add/remove lists
 		var items = this._listView[this._currentView].getSelection();
-
-		// child window loses type info so test for array in a different way
-		if ((!(items instanceof Array)) && items.length === undefined) {
+		if (items instanceof ZmItem)
 			items = [items];
-		}
-
 		// fetch tag tree from appctxt (not cache) for multi-account case
 		tagMenu.set(items, appCtxt.getTagTree());
 		if (parent instanceof ZmActionMenu)
 			tagOp.setText(this._getTagMenuMsg(items.length));
 		else {
 			tagMenu.parent.popup();
-
-			// bug #17584 - we currently don't support creating new tags in new window
-			if (appCtxt.isChildWindow) {
-				var mi = tagMenu.getMenuItem(ZmTagMenu.MENU_ITEM_ADD_ID);
-				if (mi) {
-					mi.setVisible(false);
-				}
-			}
 		}
 	}
 };

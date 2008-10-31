@@ -138,12 +138,10 @@ function() {
 	var subj = AjxStringUtil.trim(this._subjectField.getValue());
 
 	if (subj && subj.length) {
-		var endDate = this._endDateField.value;
-		if (endDate.length > 0 &&
-			(!ZmTimeSelect.validStartEnd(this._startDateField, this._endDateField)))
-		{
-			errorMsg = ZmMsg.errorInvalidDates;
+        if (!ZmTimeSelect.validStartEnd(this._startDateField, this._endDateField) ) {
+				errorMsg = ZmMsg.errorInvalidDates;
 		}
+
     } else {
 		errorMsg = ZmMsg.errorMissingSubject;
 	}

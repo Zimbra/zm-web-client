@@ -262,17 +262,10 @@ function() {
 
 ZmComposeController.prototype._postHideCallback =
 function() {
-	if (!appCtxt.isChildWindow && appCtxt.numVisibleAccounts > 1) {
-		appCtxt.getApp(ZmApp.MAIL).getOverviewPanelContent().setEnabled(true);
-	}
+	ZmController.prototype._postShowCallback.call(this);
 
-	// hack to kill the child window when replying to an invite
-	if (appCtxt.isChildWindow &&
-		this._action == ZmOperation.REPLY_ACCEPT ||
-		this._action == ZmOperation.REPLY_DECLINE ||
-		this._action == ZmOperation.REPLY_TENTATIVE)
-	{
-		window.close();
+	if (appCtxt.numVisibleAccounts > 1) {
+		appCtxt.getApp(ZmApp.MAIL).getOverviewPanelContent().setEnabled(true);
 	}
 };
 
