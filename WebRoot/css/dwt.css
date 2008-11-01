@@ -1332,6 +1332,10 @@
 	@TextPadding@
 }
 
+.oselect_display_empty {
+	@SelectText-empty@
+	@TextPadding@
+}
 
 /* Container of the menu of items for the oselect widget */
 .oselect_note {
