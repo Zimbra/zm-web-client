@@ -282,7 +282,7 @@ function() {
 	if (this._calTreeController) {
 		cc = this._calTreeController.getCheckedCalendars(this._app.getOverviewId());
 		// bug fix #25512 - avoid race condition
-		if (cc == "" && this._app.getOverviewPanelContent(true)) {
+		if (!cc.length && this._app._overviewPanelContent == null) {
 			this._app.setOverviewPanelContent(true);
 			cc = this._calTreeController.getCheckedCalendars(this._app.getOverviewId());
 		}
