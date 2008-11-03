@@ -58,7 +58,8 @@
 		}
 		//if (keydownH) doc.onkeydown = keydownH;
 		//if (keypressH) doc.onkeypress = keypressH;
-		setTimeout(resizeIframe, 10);
+        var _delay = isIE ? 300 : 10 ;
+        setTimeout(resizeIframe, _delay);
 		function onIframeLoad() { if (isKonqueror) setTimeout(resizeAndNullIframe, 100); else if (!isIE || iframe.readyState == "complete") resizeAndNullIframe();};
 		if (isIE) iframe.onreadystatechange = onIframeLoad; else iframe.onload = onIframeLoad;
 	})();
