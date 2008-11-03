@@ -37,11 +37,15 @@
 -->
 <%!
 	private static String protocolMode = null;
+	private static String httpPort = null;
+	private static String httpsPort = null;
 	static {
 		try {
 			Context initCtx = new InitialContext();
 			Context envCtx = (Context) initCtx.lookup("java:comp/env");
 			protocolMode = (String) envCtx.lookup("protocolMode");
+			httpPort = (String)envCtx.lookup("httpPort");
+			httpsPort = (String)envCtx.lookup("httpsPort");
 		} catch (NamingException ne) {
 			protocolMode = "http";
 		}
@@ -307,8 +311,13 @@
 			</c:if>
 		};
 
-		var params = {app:"${app}", offlineMode:${isOfflineMode}, devMode:${isDevMode}, settings:settings,
-					  protocolMode:protocolMode, noSplashScreen:noSplashScreen, batchInfoResponse:batchInfoResponse};
+		var params = {
+			app:"${app}",
+			settings:settings, batchInfoResponse:batchInfoResponse,
+			offlineMode:${isOfflineMode}, devMode:${isDevMode},
+			protocolMode:protocolMode, httpPort:"<%=httpPort%>", httpsPort:"<%=httpsPort%>",
+			noSplashScreen:noSplashScreen
+		};
 		ZmZimbraMail.run(params);
 	}
 

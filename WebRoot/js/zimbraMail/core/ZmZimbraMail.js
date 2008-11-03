@@ -196,6 +196,12 @@ function(params) {
 		var proto = (params.protocolMode.indexOf(":") == -1) ? params.protocolMode + ":" : params.protocolMode;
 		appCtxt.set(ZmSetting.PROTOCOL_MODE, proto);
 	}
+	if (params.httpPort) {
+		appCtxt.set(ZmSetting.HTTP_PORT, params.httpPort);
+	}
+	if (params.httpsPort) {
+		appCtxt.set(ZmSetting.HTTPS_PORT, params.httpsPort);
+	}
 
 	if (/dogfood/.test(location.hostname) || (params.devMode == "1")) {
 		AjxUtil.enableLogType("rpc", true);
