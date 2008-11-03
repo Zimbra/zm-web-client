@@ -29,7 +29,7 @@ var composevalidation = function(){
 
     var prepToSend = function(){
         window.onbeforeunload = null;
-        checkSubject();
+        return checkSubject();
         /*process HTML before sending*/
     <c:if test="${(isHtml)}" >
         saveToTextareaToSend();
@@ -52,7 +52,7 @@ var composevalidation = function(){
     for (y in sendElemts){
         var _elemA = document.getElementById(sendElemts[y]);
         _elemA.onclick = function () {
-            prepToSend();
+            return prepToSend();
         }
     }
 
