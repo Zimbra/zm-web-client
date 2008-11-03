@@ -282,8 +282,9 @@ saveToTextareaToSend = function(){
     var stripNBSP  = /&nbsp;/g
     document.getElementById("bodyText").value = _htmlval.replace(stripNBSP, ' ').replace(/<br>/gi, '\n').replace(stripHTML, '').replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
 
-    document.getElementById("body").value = "<html><head><style> body {height: 100%; color:${mailbox.prefs.htmlEditorDefaultFontColor}; font-size:${mailbox.prefs.htmlEditorDefaultFontSize}; font-family:${mailbox.prefs.htmlEditorDefaultFontFamily},helvetica,clean,sans-serif;}</style></head><body>"+_htmlval+"</body></html>";
+    document.getElementById("body").value = "<html><head><style> body {height: 100%; color:${mailbox.prefs.htmlEditorDefaultFontColor}; font-size:${mailbox.prefs.htmlEditorDefaultFontSize}; font-family:${mailbox.prefs.htmlEditorDefaultFontFamily};}</style></head><body>"+_htmlval+"</body></html>";
 }
+
 
 var myEditor = new YAHOO.widget.Editor('body', {
     height: '300px',
@@ -298,15 +299,16 @@ var myEditor = new YAHOO.widget.Editor('body', {
         <c:if test="${param.op eq 'reply' or param.op eq 'replyAll'}" >
     focusAtStart: true,
         </c:if>
-    css: 'html {height: 95%;}body {height: 100%;padding: 7px; background-color: #fff; color:<c:out value="${mailbox.prefs.htmlEditorDefaultFontColor}"/>; font-size:${mailbox.prefs.htmlEditorDefaultFontSize}; font-family: <c:out value="${mailbox.prefs.htmlEditorDefaultFontFamily}"/>,helvetica,clean,sans-serif;}a {color: blue;text-decoration: underline;cursor: pointer;}.warning-localfile {border-bottom: 1px dashed red !important;}.yui-busy {cursor: wait !important;}img.selected { border: 2px dotted #808080;}img {cursor: pointer !important;border: none;}',
+    css: 'html {height: 95%;}body {height: 100%;padding: 7px; background-color: #fff; color:<c:out value="${mailbox.prefs.htmlEditorDefaultFontColor}"/>; font-size:${mailbox.prefs.htmlEditorDefaultFontSize}; font-family: <c:out value="${mailbox.prefs.htmlEditorDefaultFontFamily}"/>;}a {color: blue;text-decoration: underline;cursor: pointer;}.warning-localfile {border-bottom: 1px dashed red !important;}.yui-busy {cursor: wait !important;}img.selected { border: 2px dotted #808080;}img {cursor: pointer !important;border: none;}',
     extracss: '.yui-spellcheck { background-color: yellow; }',
     collapse: true,
     draggable: false,
     buttonType: 'advanced'
 });
 enableSpellCheck(myEditor);
+
 myEditor.on('editorContentLoaded', function() {
-    var html = document.getElementById('body').innerHTML;;
+    var html = document.getElementById('body').innerHTML;
     if(html==""){
         myEditor.setEditorHTML("<br/>");
     }
@@ -361,19 +363,13 @@ myEditor.on('toolbarLoaded', function() {
 });
 /*enable buttons that are disabled by default */
 myEditor.on('afterNodeChange', function() {
-    this.toolbar.enableButton('fontname');
-    this.toolbar.enableButton('fontsize');
-    this.toolbar.enableButton('subscript');
-    this.toolbar.enableButton('superscript');
-    this.toolbar.enableButton('forecolor');
-    this.toolbar.enableButton('backcolor');
-    this.toolbar.enableButton('indent');
-    this.toolbar.enableButton('outdent');
-    this.toolbar.enableButton('heading');
-    this.toolbar.enableButton('createlink');
+    this.toolbar.enableAllButtons();
 
 });
+
 myEditor.render();
+
+
 // -->
 </script>
 </c:when>
