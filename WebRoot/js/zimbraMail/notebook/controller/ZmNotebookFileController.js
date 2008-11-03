@@ -77,6 +77,15 @@ function(searchResults, fromUserSearch) {
 	}
 };
 
+ZmNotebookFileController.prototype._printListener =
+function(ev) {
+	var listView = this._listView[this._currentView];
+	var items = listView.getSelection();
+	var page = (items instanceof Array) ? items[0] : items;
+
+	window.open(page.getRestUrl(true), "_blank");
+};
+
 // Resets the available options on a toolbar or action menu.
 ZmNotebookFileController.prototype._resetOperations =
 function(parent, num) {

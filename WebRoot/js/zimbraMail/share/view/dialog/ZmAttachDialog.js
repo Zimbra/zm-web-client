@@ -174,7 +174,11 @@ ZmAttachDialog.prototype.getTabViewPage = function(id) {
 ZmAttachDialog.prototype.popup = function() {
     var tabKey = this.getTabKey("MY_COMPUTER");
     this._tabView.switchToTab(tabKey,true);
+
+    this.setButtonEnabled(DwtDialog.OK_BUTTON, true);
+    this.setButtonEnabled(DwtDialog.CANCEL_BUTTON, true);
     this.setFooter("");
+    
     DwtDialog.prototype.popup.call(this);
     this.setFooter("");
 };
@@ -230,12 +234,11 @@ ZmAttachDialog.prototype._processUpload = function(callback, uploadForm) {
 
 ZmAttachDialog.prototype._uploadDoneCallback = function(callback, status, attId) {
 
-    this.setButtonEnabled(DwtDialog.OK_BUTTON, true);
-    this.setButtonEnabled(DwtDialog.CANCEL_BUTTON, true);
-
     if (this._cancelUpload) {
         return;
     }
+
+    this.setButtonEnabled(DwtDialog.CANCEL_BUTTON, true);
 
     if (status == AjxPost.SC_OK) {
         this.setFooter(ZmMsg.attachingFilesDone);
@@ -265,6 +268,10 @@ ZmAttachDialog.prototype._uploadDoneCallback = function(callback, status, attId)
 
         this.setFooter(ZmMsg.attachingFilesError);
     }
+
+    this.setButtonEnabled(DwtDialog.OK_BUTTON, true);
+
+
 };
 
 //MyComputer: Add MyComputer Tab View

@@ -74,14 +74,7 @@ function(op, listener, style, index) {
 
 ZmPresenceMenu._getOperations =
 function() {
-	ZmPresenceMenu._LIST = ZmPresenceMenu._LIST || [
-		ZmOperation.IM_PRESENCE_OFFLINE,
-		ZmOperation.IM_PRESENCE_ONLINE,
-		ZmOperation.IM_PRESENCE_CHAT,
-		ZmOperation.IM_PRESENCE_DND,
-		ZmOperation.IM_PRESENCE_AWAY,
-		ZmOperation.IM_PRESENCE_XA
-	];
+	ZmPresenceMenu._LIST = ZmPresenceMenu._LIST || ZmImServiceController.INSTANCE.getPresenceOperations();
 	return ZmPresenceMenu._LIST;
 };
 
@@ -92,6 +85,15 @@ function(ev) {
 	}
 	var id = ev.item.getData(ZmOperation.KEY_ID);
 	var show = ZmRosterPresence.operationToShow(id);
+	if (ZmImApp.loggedIn()) {
+		this._doSetPresence(show);
+	} else {
+		ZmImApp.INSTANCE.login(new AjxCallback(this, this._doSetPresence, [show]));
+	}
+};
+
+ZmPresenceMenu.prototype._doSetPresence =
+function(show) {
 	ZmImApp.INSTANCE.getRoster().setPresence(show, 0, null);
 };
 
@@ -103,8 +105,17 @@ function(ev) {
 
 ZmPresenceMenu.prototype._setCustom =
 function(message) {
+	if (ZmImApp.loggedIn()) {
+		this._doSetCustom(message);
+	} else {
+		ZmImApp.INSTANCE.login(new AjxCallback(this, this._doSetCustom, [message]));
+	}
+};
+
+ZmPresenceMenu.prototype._doSetCustom =
+function(message) {
 	var batchCommand = new ZmBatchCommand();
-	ZmImApp.INSTANCE.getRoster().setPresence(null, 0, message, batchCommand);
+	ZmImApp.INSTANCE.getRoster().setPresence(ZmRosterPresence.SHOW_ONLINE, 0, message, batchCommand);
 	this._addToMRU(message, batchCommand);
 	batchCommand.run();
 };

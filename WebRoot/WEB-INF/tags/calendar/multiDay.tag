@@ -12,7 +12,7 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <app:handleError>
-    <zm:getMailbox var="mailbox"/>    
+    <zm:getMailbox var="mailbox"/>
     <fmt:setTimeZone value="${timezone}"/>
     <c:set var="context" value="${null}"/>
     <fmt:message var="yearTitleFormat" key="CAL_DAY_TITLE_YEAR_FORMAT"/>
@@ -33,9 +33,9 @@
         <!-- ${fn:escapeXml(error.stackStrace)} -->
     </c:if>
     <zm:apptMultiDayLayout timezone="${timezone}"
-            schedule="${scheduleView ? checkedCalendars : ''}"
-            var="layout" appointments="${appts}" start="${currentDay.timeInMillis}" days="${numdays}"
-            hourstart="${mailbox.prefs.calendarDayHourStart}" hourend="${mailbox.prefs.calendarDayHourEnd}"/>
+                           schedule="${scheduleView ? checkedCalendars : ''}"
+                           var="layout" appointments="${appts}" start="${currentDay.timeInMillis}" days="${numdays}"
+                           hourstart="${mailbox.prefs.calendarDayHourStart}" hourend="${mailbox.prefs.calendarDayHourEnd}"/>
 </app:handleError>
 
 
@@ -61,10 +61,14 @@
                 </c:when>
                 <c:otherwise>
                     <app:calendarUrl var="dayUrl" view="${view eq 'day' ? 'week' : 'day'}" timezone="${timezone}" rawdate="${zm:getCalendar(day.startTime, timezone)}" action=""/>
-                    <a href="${fn:escapeXml(dayUrl)}">
-                        <fmt:message var="titleFormat" key="CAL_${numdays > 1 ? 'MDAY_':''}DAY_TITLE_FORMAT"/>
-                        <fmt:formatDate value="${zm:getCalendar(day.startTime, timezone).time}" pattern="${titleFormat}"/>
-                    </a>
+                    <c:if test="${param.action ne 'print'}">
+                        <a href="${fn:escapeXml(dayUrl)}">
+                    </c:if>
+                    <fmt:message var="titleFormat" key="CAL_${numdays > 1 ? 'MDAY_':''}DAY_TITLE_FORMAT"/>
+                    <fmt:formatDate value="${zm:getCalendar(day.startTime, timezone).time}" pattern="${titleFormat}"/>
+                    <c:if test="${param.action ne 'print'}">
+                        </a>
+                    </c:if>
                 </c:otherwise>
             </c:choose>
         </td>
@@ -93,7 +97,7 @@
                 <c:choose>
                     <c:when test="${not empty cell.appt}">
                         <c:set var="testId" value="${cell.appt.id}-${selectedId}"/>
-                            <app:dayAppt appt="${cell.appt}" selected="${testId eq cell.appt.inviteId}" start="${currentDay.timeInMillis}" end="${rangeEnd}" timezone="${timezone}"/>
+                        <app:dayAppt appt="${cell.appt}" selected="${testId eq cell.appt.inviteId}" start="${currentDay.timeInMillis}" end="${rangeEnd}" timezone="${timezone}"/>
                     </c:when>
                     <c:otherwise>
                         &nbsp;
