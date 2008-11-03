@@ -33,6 +33,7 @@
 <c:if test="${not empty domainInfo}">
 	<c:set var="helpUrl" value="${domainInfo.attrs.zimbraHelpStandardURL}" scope='request' />
     <c:set var="adminReference" value="${domainInfo.attrs.zimbraWebClientAdminReference}" scope="request"/>
+    <c:set var="logoUrl" value="${domainInfo.attrs.zimbraSkinLogoURL}" scope="request"/>
 </c:if>
 <c:if test="${empty helpUrl}">
 	<%-- we use <c:url> below to add the locid param so don't need to do it here --%>
@@ -410,10 +411,14 @@
 	
 		<tr>
 			<td valign="top" align="center" class="Overview">
-				<a href="<fmt:message key="logoURL"/>" target="_new">
-					<span style='cursor:pointer; display: block;' class='ImgAppBanner'></span>
-	
-				</a>
+             <c:choose>
+                <c:when test="${not empty logoUrl}">
+                    <a href="${logoUrl}" target="_new"> <span style='cursor:pointer; display: block;' class='ImgAppBanner'></span> </a>
+                </c:when>
+                <c:otherwise>
+                    <span style='display: block;' class='ImgAppBanner'></span>
+                </c:otherwise>
+            </c:choose>
 			</td>
 			<td valign="top" class="TopContent" style='width:70%'>
                 <table cellpadding="0" cellspacing="0" width="100%">
