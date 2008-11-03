@@ -46,6 +46,7 @@
             </table>
         </td>
     </tr>
+    <c:if test="${mailbox.features.skinChange}">
     <tr>
         <td class='ZOptionsTableLabel'>
             <label for="skinPref"><fmt:message key="SKIN_uiTheme"/>
@@ -63,6 +64,7 @@
             </select>
         </td>
     </tr>
+    </c:if>
     <tr>
         <td class='ZOptionsTableLabel'>
             <label for="timeZone"><fmt:message key="timeZonePref"/>
