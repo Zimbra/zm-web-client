@@ -1196,6 +1196,14 @@ function(parent, num) {
 			parent.enable([ZmOperation.SPAM], (!isDrafts && num > 0));
 		}
 	}
+    
+    if(this._draftsActionMenu){
+       var editMenu = this._draftsActionMenu.getOp(ZmOperation.EDIT);
+       if(editMenu){
+           editMenu.setEnabled(num == 1);   //Enable/disable 'edit' context menu item based on selection count
+       }
+   }
+
 };
 
 // Enable mark read/unread as appropriate.
