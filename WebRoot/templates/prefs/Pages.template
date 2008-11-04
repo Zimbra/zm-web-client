@@ -1497,3 +1497,36 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 		</td>
 	</tr>
 </template>
+
+<!-- NOTE: This is just for backwards compatibility. -->
+<template id='prefs.Pages#Import'>
+	<table border=0 cellpadding=3 cellspacing=3>
+		<tr>
+		<td class='ZOptionsLabel'>${label}</td>
+			<td class='ZOptionsInfo'>
+			<form id='${id}_form'
+				  action='${action}' method='POST' enctype='multipart/form-data'
+				  style='margin: 0px; padding: 0px;'>
+					<input id='${id}_input' tabindex='10'
+					   type='file' name='${name}'
+					   style='font-family:Tahoma; font-size:10px'>
+			</form>
+		</td>
+		</tr>
+		<tr>
+			<td class='ZOptionsLabel'>&nbsp;</td>
+			<td class='ZOptionsInfo'><div id='${id}_button' tabindex='20'></div></td>
+		</tr>
+	</table>
+</template>
+
+<!-- NOTE: This is just for backwards compatibility. -->
+<template id='prefs.Pages#Export'>
+	<table border=0 cellpadding=3 cellspacing=3>
+		<tr>
+			<td class='ZOptionsLabel'>&nbsp;</td>
+            <td class='ZOptionsInfo'><div id='${id}_options' tabindex="10"></div></td>
+			<td class='ZOptionsInfo'><div id='${id}_button' tabindex="20"></div></td>
+		</tr>
+	</table>
+</template>

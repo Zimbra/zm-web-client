@@ -108,6 +108,15 @@ ZmImportView.prototype._setupCustom = function(id, setup, value) {
 	return ZmImportExportBaseView.prototype._setupCustom.apply(this, arguments);
 };
 
+ZmImportView.prototype._getSubTypeOptions = function(type) {
+	var setup = this.SETUP["SUBTYPE"];
+	if (!setup.options) {
+		setup.options = ZmPref.SETUP["IMPORT_FOLDER"].options || [];
+		setup.displayOptions = ZmPref.SETUP["IMPORT_FOLDER"].displayOptions || [];
+	}
+	return ZmImportExportBaseView.prototype._getSubTypeOptions.apply(this, arguments);
+};
+
 ZmImportView.prototype._updateControls = function() {
 	var type = this.getFormValue("TYPE", ZmImportExportController.TYPE_TGZ);
 	var isZimbra = type == ZmImportExportController.TYPE_TGZ;

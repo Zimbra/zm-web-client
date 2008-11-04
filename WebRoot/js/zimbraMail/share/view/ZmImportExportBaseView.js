@@ -26,7 +26,6 @@ ZmImportExportBaseView = function(params) {
 	this._tabGroup = new DwtTabGroup(this._htmlElId);
 	this._dwtObjects = {};
 
-	this._initInfo();
 	this._createHtml();
 	this._createControls();
 	this._initSubType(ZmImportExportController.TYPE_TGZ);
@@ -413,25 +412,6 @@ function(elemOrId, control) {
 
 // initializers
 
-ZmImportExportBaseView.prototype._initInfo = function() {
-	if (!ZmImportExportBaseView.prototype.TGZ_OPTIONS) {
-		ZmImportExportBaseView.prototype.TGZ_OPTIONS = [
-			{ displayValue: ZmMsg["zimbra-tgz"],			value: "zimbra-tgz" }
-		];
-		ZmImportExportBaseView.prototype.CSV_OPTIONS = [];
-		var options = appCtxt.get(ZmSetting.AVAILABLE_CSVFORMATS);
-		options.sort(ZmImportExportBaseView.__BY_CSVFORMAT);
-		for (var i = 0; i < options.length; i++) {
-			ZmImportExportBaseView.prototype.CSV_OPTIONS.push(
-				{ displayValue: ZmMsg[options[i]] || options[i], value: options[i] } 
-			);
-		}
-		ZmImportExportBaseView.prototype.ICS_OPTIONS = [
-			{ displayValue: ZmMsg["zimbra-ics"],			value: "zimbra-ics" }
-		];
-	}
-};
-
 ZmImportExportBaseView.prototype._initSubType = function(type) {
 	var select = this.getFormObject("SUBTYPE");
 	if (!select) return;
@@ -447,6 +427,22 @@ ZmImportExportBaseView.prototype._initSubType = function(type) {
 };
 
 ZmImportExportBaseView.prototype._getSubTypeOptions = function(type) {
+	if (!ZmImportExportBaseView.prototype.TGZ_OPTIONS) {
+		ZmImportExportBaseView.prototype.TGZ_OPTIONS = [
+			{ displayValue: ZmMsg["zimbra-tgz"],			value: "zimbra-tgz" }
+		];
+		ZmImportExportBaseView.prototype.CSV_OPTIONS = [];
+		var setup = this.SETUP["SUBTYPE"];
+		var options = setup.options;
+		for (var i = 0; i < options.length; i++) {
+			ZmImportExportBaseView.prototype.CSV_OPTIONS.push(
+				{ displayValue: ZmMsg[options[i]] || options[i], value: setup.displayOptions[i] }
+			);
+		}
+		ZmImportExportBaseView.prototype.ICS_OPTIONS = [
+			{ displayValue: ZmMsg["zimbra-ics"],			value: "zimbra-ics" }
+		];
+	}
 	var options;
 	switch (type) {
 		case ZmImportExportController.TYPE_TGZ: {
@@ -518,18 +514,6 @@ ZmImportExportBaseView.prototype._handleToggleAdvanced = function() {
 
 ZmImportExportBaseView.prototype.getTabGroupMember = function() {
 	return this._tabGroup;
-};
-
-//
-// Private methods
-//
-
-ZmImportExportBaseView.__BY_CSVFORMAT = function(a, b) {
-	if (a.match(/^zimbra/)) return -1;
-	if (b.match(/^zimbra/)) return  1;
-	if (a.match(/^yahoo/))  return -1;
-	if (b.match(/^yahoo/))  return  1;
-	return a.localeCompare(b);
 };
 
 //
