@@ -124,6 +124,11 @@ ZmExportView.prototype._registerControls = function() {
 };
 
 ZmExportView.prototype._getSubTypeOptions = function(type) {
+	var setup = this.SETUP["SUBTYPE"];
+	if (!setup.options) {
+		setup.options = ZmPref.SETUP["EXPORT_FOLDER"].options || [];
+		setup.displayOptions = ZmPref.SETUP["EXPORT_FOLDER"].displayOptions || [];
+	}
 	var options = ZmImportExportBaseView.prototype._getSubTypeOptions.apply(this, arguments);
 	if (type != ZmImportExportController.TYPE_TGZ) {
 		options = this.TGZ_OPTIONS.concat(options);

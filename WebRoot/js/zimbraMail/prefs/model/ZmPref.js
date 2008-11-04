@@ -63,12 +63,22 @@ function(setup) {
 ZmPref.loadCsvFormats =
 function(setup){
     var formats = appCtxt.get(ZmSetting.AVAILABLE_CSVFORMATS);
-    setup.options = [];
-    setup.displayOptions=[];
+	var options = setup.options = [];
+	var displayOptions = setup.displayOptions = [];
     for(var i=0; i<formats.length; i++){
-        setup.options.push(formats[i]);
-        setup.displayOptions.push((ZmMsg[formats[i]] || formats[i]));
+        options.push(formats[i]);
+	}
+	options.sort(ZmPref.__BY_CSVFORMAT);
+	for(var i=0; i < options.length; i++){
+        displayOptions.push((ZmMsg[options[i]] || options[i]));
     }
+};
+ZmPref.__BY_CSVFORMAT = function(a, b) {
+	if (a.match(/^zimbra/)) return -1;
+	if (b.match(/^zimbra/)) return  1;
+	if (a.match(/^yahoo/))  return -1;
+	if (b.match(/^yahoo/))  return  1;
+	return a.localeCompare(b);
 };
 
 ZmPref.validateEmail =
