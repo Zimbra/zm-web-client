@@ -235,7 +235,7 @@ function(doc) {
 		}
 		child = child.nextSibling;
 	}
-	
+
 	return share;
 };
 
@@ -507,7 +507,7 @@ function() {
 		ZmShare._XML = new AjxMessageFormat(pattern);
 	}
 	return ZmShare._XML;
-}
+};
 
 
 /**
@@ -524,7 +524,7 @@ function(operation, actionAttrs, grantAttrs, callback, batchCmd) {
 	actionNode.setAttribute("op", operation);
 	if (this.object.rid && this.object.zid) {
 		actionNode.setAttribute("id", this.object.zid + ":" + this.object.rid);
-	}else {
+	} else {
 		actionNode.setAttribute("id", this.object.id);
 	}
 	for (var attr in actionAttrs) {
@@ -541,8 +541,7 @@ function(operation, actionAttrs, grantAttrs, callback, batchCmd) {
 			shareNode.setAttribute("d", this.grantee.name);
 		}
 		for (var attr in grantAttrs) {
-			if (grantAttrs[attr] != null)
-				shareNode.setAttribute(attr, grantAttrs[attr]);
+			shareNode.setAttribute(attr, (grantAttrs[attr] || ""));
 		}
 	}
 	var respCallback = new AjxCallback(this, this._handleResponseShareAction, [callback]);
@@ -691,13 +690,16 @@ function(formatter) {
 ZmShare._getRoleFromPerm =
 function(perm) {
 	if (!perm) { return ZmShare.ROLE_NONE; }
+
 	if (perm.indexOf(ZmShare.PERM_ADMIN) != -1) {
 		return ZmShare.ROLE_ADMIN;
-	} else if (perm.indexOf(ZmShare.PERM_WORKFLOW) != -1) {
-		return ZmShare.ROLE_MANAGER;
-	} else if (perm.indexOf(ZmShare.PERM_READ) != -1) {
-		return ZmShare.ROLE_VIEWER;
-	} else {
-		return ZmShare.ROLE_NONE;
 	}
+	if (perm.indexOf(ZmShare.PERM_WORKFLOW) != -1) {
+		return ZmShare.ROLE_MANAGER;
+	}
+	if (perm.indexOf(ZmShare.PERM_READ) != -1) {
+		return ZmShare.ROLE_VIEWER;
+	}
+
+	return ZmShare.ROLE_NONE;
 };

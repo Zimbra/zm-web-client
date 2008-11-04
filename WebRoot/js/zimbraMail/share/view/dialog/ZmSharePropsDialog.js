@@ -84,9 +84,9 @@ function(mode, object, share) {
 	this._granteeInput.setValue(share ? (share.grantee.name || share.grantee.id) : "", true);
 	this._granteeInput.setEnabled(isNewShare);
 
-	// Make all the properties visible so that their elements
-	// are in the document. Otherwise, we won't be able to get
-	// a handle on them to perform operations.
+	// Make all the properties visible so that their elements are in the
+	// document. Otherwise, we won't be able to get a handle on them to perform
+	// operations.
 	this._props.setPropertyVisible(this._shareWithOptsId, true);
 	this._shareWithOptsProps.setPropertyVisible(this._passwordId, true);
 	this._props.setPropertyVisible(this._shareWithBreakId, true);
@@ -105,7 +105,7 @@ function(mode, object, share) {
         this._tabGroup.addMember(this._granteeInput, 0);
         this._tabGroupComplete = true;
     }
-    
+
 	var perm = share ? share.link.perm : null;
 
 	if (perm != null) {
@@ -390,10 +390,10 @@ function(event) {
 	if (dialog instanceof DwtInputField) {
 		dialog = dialog.getData(Dwt.KEY_OBJECT);
 	}
-    if(dialog != null) {
-	    ZmSharePropsDialog._enableFieldsOnEdit(dialog);
-    }
-    return true;
+	if (dialog != null) {
+		ZmSharePropsDialog._enableFieldsOnEdit(dialog);
+	}
+	return true;
 };
 
 ZmSharePropsDialog._enableFieldsOnEdit =
@@ -404,9 +404,9 @@ function(dialog) {
 	var isPublicShare = dialog._publicRadioEl.checked;
 	var isGuestShare = dialog._guestRadioEl.checked;
 
-    dialog._privatePermission.setVisible(dialog._privatePermissionEnabled && !dialog._noneRadioEl.checked && !isPublicShare);
+	dialog._privatePermission.setVisible(dialog._privatePermissionEnabled && !dialog._noneRadioEl.checked && !isPublicShare);
 
-    var hasEmail = AjxStringUtil.trim(dialog._granteeInput.getValue()) != "";
+	var hasEmail = AjxStringUtil.trim(dialog._granteeInput.getValue()) != "";
 	var hasPassword = AjxStringUtil.trim(dialog._passwordInput.getValue()) != "";
 
 	var enabled = isEdit ||
@@ -434,9 +434,9 @@ ZmSharePropsDialog.prototype._handleShareWith = function(type) {
 
 	this._rolesGroup.setVisible(isUserShare);
 	this._messageGroup.setVisible(!isPublicShare);
-    this._privatePermission.setVisible(this._privatePermissionEnabled && !isPublicShare);
+	this._privatePermission.setVisible(this._privatePermissionEnabled && !isPublicShare);
 
-    this._props.setPropertyVisible(this._shareWithOptsId, !isPublicShare);
+	this._props.setPropertyVisible(this._shareWithOptsId, !isPublicShare);
 	this._shareWithOptsProps.setPropertyVisible(this._passwordId, isGuestShare);
 	this._props.setPropertyVisible(this._shareWithBreakId, !isPublicShare);
 
@@ -486,12 +486,8 @@ function (control, text, element) {
 
 ZmSharePropsDialog.prototype._getNewAutocompleteLocation = 
 function(cv, ev) {
-	var element = ev.element;
-	var id = element.id;
-	
-	var viewEl = this.getHtmlElement();
-	var location = Dwt.toWindow(element, 0, 0, viewEl);
-	var size = Dwt.getSize(element);
+	var location = Dwt.toWindow(ev.element, 0, 0, this.getHtmlElement());
+	var size = Dwt.getSize(ev.element);
 	return new DwtPoint((location.x), (location.y + size.y) );
 };
 
@@ -532,9 +528,9 @@ function() {
 	Dwt.setSize(this._granteeInput.getInputElement(), "100%");
 	this._granteeInput.setData(Dwt.KEY_OBJECT, this);
 	this._granteeInput.setRequired(true);
-    Dwt.associateElementWithObject(this._granteeInput.getInputElement(), this);
+	Dwt.associateElementWithObject(this._granteeInput.getInputElement(), this);
 
-    var password = new DwtComposite(this);
+	var password = new DwtComposite(this);
 	this._passwordInput = new DwtInputField({parent: password});
 	Dwt.setSize(this._passwordInput.getInputElement(), "100%");
 	this._passwordInput.setData(Dwt.KEY_OBJECT, this);
@@ -542,9 +538,9 @@ function() {
 	this._passwordButton = new DwtButton({parent:password});
 	this._passwordButton.setText(ZmMsg.changePassword);
 	this._passwordButton.addSelectionListener(new AjxListener(this, this._handleChangeButton));
-    Dwt.associateElementWithObject(this._passwordInput.getInputElement(), this);
+	Dwt.associateElementWithObject(this._passwordInput.getInputElement(), this);
 
-    this._shareWithOptsProps = new DwtPropertySheet(this);
+	this._shareWithOptsProps = new DwtPropertySheet(this);
 	this._shareWithOptsProps.addProperty(ZmMsg.emailLabel, this._granteeInput);
 	this._passwordId = this._shareWithOptsProps.addProperty(ZmMsg.passwordLabel, password);
 
@@ -644,7 +640,7 @@ function() {
 		Dwt.associateElementWithObject(this._inheritEl, this);
 	}
 
-	var radios = [ "_userRadioEl", "_guestRadioEl", "_publicRadioEl" ];
+	var radios = ["_userRadioEl", "_guestRadioEl", "_publicRadioEl"];
 	var radioEls = document.getElementsByName(shareWithRadioName);
 	for (var i = 0; i < radioEls.length; i++) {
 		this[radios[i]] = radioEls[i];
@@ -655,7 +651,7 @@ function() {
 	var inputEl = this._passwordInput.getInputElement();
 	Dwt.setHandler(inputEl, DwtEvent.ONKEYUP, ZmSharePropsDialog._handleEdit);
 
-	var radios = [ "_noneRadioEl", "_viewerRadioEl", "_managerRadioEl", "_adminRadioEl" ];
+	var radios = ["_noneRadioEl", "_viewerRadioEl", "_managerRadioEl", "_adminRadioEl"];
 	var radioEls = document.getElementsByName(roleRadioName);
 	for (var i = 0; i < radioEls.length; i++) {
 		this[radios[i]] = radioEls[i];
