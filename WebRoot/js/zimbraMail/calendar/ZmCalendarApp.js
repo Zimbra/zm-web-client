@@ -108,52 +108,52 @@ function(settings) {
 	settings.registerSetting("CAL_SHOW_TIMEZONE",			{name: "zimbraPrefUseTimeZoneListInCalendar", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
 	settings.registerSetting("CAL_USE_QUICK_ADD",			{name: "zimbraPrefCalendarUseQuickAdd", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
 	settings.registerSetting("CALENDAR_INITIAL_VIEW",		{name: "zimbraPrefCalendarInitialView", type: ZmSetting.T_PREF, defaultValue: ZmSetting.CAL_DAY});
-	settings.registerSetting("DELETE_INVITE_ON_REPLY",      {name: "zimbraPrefDeleteInviteOnReply",type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
+	settings.registerSetting("DELETE_INVITE_ON_REPLY",		{name: "zimbraPrefDeleteInviteOnReply",type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
 };
 
 ZmCalendarApp.prototype._registerPrefs =
 function() {
-    var sections = {
-        CALENDAR: {
-            title: ZmMsg.calendar,
-            templateId: "prefs.Pages#Calendar",
-            priority: 80,
-            precondition: ZmSetting.CALENDAR_ENABLED,
-            prefs: [
-                ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL,
-                ZmSetting.CAL_EXPORT,
-                ZmSetting.CAL_FIRST_DAY_OF_WEEK,
-                ZmSetting.CAL_IMPORT,
-                ZmSetting.CAL_REMINDER_WARNING_TIME,
-                ZmSetting.CAL_REMINDER_NOTIFY_SOUNDS,
-                ZmSetting.CAL_REMINDER_NOTIFY_BROWSER,
-                ZmSetting.CAL_SHOW_TIMEZONE,
-                ZmSetting.CAL_USE_QUICK_ADD,
-                ZmSetting.CALENDAR_INITIAL_VIEW,
-                ZmSetting.DELETE_INVITE_ON_REPLY,
-                ZmSetting.CAL_FREE_BUSY_ACL,
-                ZmSetting.CAL_FREE_BUSY_ACL_USERS,
-                ZmSetting.CAL_INVITE_ACL,
-                ZmSetting.CAL_INVITE_ACL_USERS
-            ],
+	var sections = {
+		CALENDAR: {
+			title: ZmMsg.calendar,
+			templateId: "prefs.Pages#Calendar",
+			priority: 80,
+			precondition: ZmSetting.CALENDAR_ENABLED,
+			prefs: [
+				ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL,
+				ZmSetting.CAL_EXPORT,
+				ZmSetting.CAL_FIRST_DAY_OF_WEEK,
+				ZmSetting.CAL_IMPORT,
+				ZmSetting.CAL_REMINDER_WARNING_TIME,
+				ZmSetting.CAL_REMINDER_NOTIFY_SOUNDS,
+				ZmSetting.CAL_REMINDER_NOTIFY_BROWSER,
+				ZmSetting.CAL_SHOW_TIMEZONE,
+				ZmSetting.CAL_USE_QUICK_ADD,
+				ZmSetting.CALENDAR_INITIAL_VIEW,
+				ZmSetting.DELETE_INVITE_ON_REPLY,
+				ZmSetting.CAL_FREE_BUSY_ACL,
+				ZmSetting.CAL_FREE_BUSY_ACL_USERS,
+				ZmSetting.CAL_INVITE_ACL,
+				ZmSetting.CAL_INVITE_ACL_USERS
+			],
 			manageDirty: true,
 			createView: function(parent, section, controller) {
 				return new ZmCalendarPrefsPage(parent, section, controller);
 			}
-        }
-    };
+		}
+	};
 
 	if (appCtxt.isOffline) {
 		sections["CALENDAR"].prefs.push(ZmSetting.OFFLINE_CALENDAR_TOASTER_ENABELD);
 	}
 
 	for (var id in sections) {
-        ZmPref.registerPrefSection(id, sections[id]);
-    }
+		ZmPref.registerPrefSection(id, sections[id]);
+	}
 
-    ZmPref.registerPref("CAL_ALWAYS_SHOW_MINI_CAL", {
-	 	displayName:		ZmMsg.alwaysShowMiniCal,
-	 	displayContainer:	ZmPref.TYPE_CHECKBOX
+	ZmPref.registerPref("CAL_ALWAYS_SHOW_MINI_CAL", {
+		displayName:		ZmMsg.alwaysShowMiniCal,
+		displayContainer:	ZmPref.TYPE_CHECKBOX
 	});
 	
 	ZmPref.registerPref("CAL_EXPORT", {
@@ -162,8 +162,8 @@ function() {
 	});
 
 	ZmPref.registerPref("CAL_FIRST_DAY_OF_WEEK", {
-	 	displayName:		ZmMsg.calendarFirstDayOfWeek,
-	 	displayContainer:	ZmPref.TYPE_SELECT,
+		displayName:		ZmMsg.calendarFirstDayOfWeek,
+		displayContainer:	ZmPref.TYPE_SELECT,
 		displayOptions:		AjxDateUtil.WEEKDAY_LONG,
 		options:			[0,1,2,3,4,5,6]
 	});
@@ -174,7 +174,7 @@ function() {
 		options:			[ZmSetting.ACL_PUBLIC, ZmSetting.ACL_USER]
 	});
 
-    ZmPref.registerPref("CAL_FREE_BUSY_ACL_USERS", {
+	ZmPref.registerPref("CAL_FREE_BUSY_ACL_USERS", {
 		displayContainer:	ZmPref.TYPE_TEXTAREA
 	});
 
@@ -189,7 +189,7 @@ function() {
 		options:			[ZmSetting.ACL_PUBLIC, ZmSetting.ACL_USER]
 	});
 
-    ZmPref.registerPref("CAL_INVITE_ACL_USERS", {
+	ZmPref.registerPref("CAL_INVITE_ACL_USERS", {
 		displayContainer:	ZmPref.TYPE_TEXTAREA
 	});
 
@@ -201,9 +201,9 @@ function() {
 	});
 
 	ZmPref.registerPref("CAL_SHOW_TIMEZONE", {
-	 	displayName:		ZmMsg.shouldShowTimezone,
-	 	displayContainer:	ZmPref.TYPE_CHECKBOX
-	 });
+		displayName:		ZmMsg.shouldShowTimezone,
+		displayContainer:	ZmPref.TYPE_CHECKBOX
+	});
 
 	ZmPref.registerPref("CAL_USE_QUICK_ADD", {
 	 	displayName:		ZmMsg.useQuickAdd,
@@ -448,9 +448,9 @@ function(modifies, force) {
 
 ZmCalendarApp.prototype.postNotify =
 function(notify) {
-    if(this._calController != null) {
-        this._calController.notifyComplete();
-    }
+	if(this._calController != null) {
+		this._calController.notifyComplete();
+	}
 };
 
 ZmCalendarApp.prototype.handleOp =
@@ -689,29 +689,29 @@ function(ev) {
 */
 ZmCalendarApp.prototype.getCheckedCalendarFolderIds =
 function(localOnly) {
-    var folderIds = [];
-    if(AjxDispatcher.loaded("CalendarCore")) {
-        folderIds = this.getCalController().getCheckedCalendarFolderIds(localOnly);
-    }else {
-        //will be used in reminder dialog
-        this._folderNames = {};
-        for (var i = 0; i < this._deferredFolders.length; i++) {
-            var params = this._deferredFolders[i];
-            var str = (params && params.obj && params.obj.f) ? params.obj.f : "";
-            if(str && (str.indexOf(ZmOrganizer.FLAG_CHECKED) != -1)) {
-                if(localOnly &&  (params.obj.zid != null)) {
-                    continue;
-                }
-                folderIds.push(params.obj.id);
-                // _folderNames are used when deferred folders are not created and calendar name is required
-                // example: calendar name requirement in reminder module
-                this._folderNames[params.obj.id] = params.obj.name;
-            }
-        }
-    }
-    return folderIds;
+	var folderIds = [];
+	if (AjxDispatcher.loaded("CalendarCore")) {
+		folderIds = this.getCalController().getCheckedCalendarFolderIds(localOnly);
+	} else {
+		//will be used in reminder dialog
+		this._folderNames = {};
+		for (var i = 0; i < this._deferredFolders.length; i++) {
+			var params = this._deferredFolders[i];
+			var str = (params && params.obj && params.obj.f) ? params.obj.f : "";
+			if (str && (str.indexOf(ZmOrganizer.FLAG_CHECKED) != -1)) {
+				if (localOnly && (params.obj.zid != null)) {
+					continue;
+				}
+				folderIds.push(params.obj.id);
+				// _folderNames are used when deferred folders are not created
+				// and calendar name is required. example: calendar name
+				// requirement in reminder module
+				this._folderNames[params.obj.id] = params.obj.name;
+			}
+		}
+	}
+	return folderIds;
 };
-
 
 /**
  * returns the name of the calendar with specified id
@@ -720,11 +720,10 @@ function(localOnly) {
 */
 ZmCalendarApp.prototype.getCalendarName =
 function(id) {
-      // _folderNames are used when deferred folders are not created and calendar name is required
-      // example: calendar name requirement in reminder module
-      return appCtxt.getById(id) ? appCtxt.getById(id).name : this._folderNames[id];
-}
-
+	// _folderNames are used when deferred folders are not created and calendar
+	// name is required. example: calendar name requirement in reminder module
+	return appCtxt.getById(id) ? appCtxt.getById(id).name : this._folderNames[id];
+};
 
 /**
  * creates a new button with a DwtCalendar as its menu
@@ -764,7 +763,7 @@ function(parent, buttonId, dateButtonListener, dateCalSelectionListener) {
 		var listener = new AjxListener(null, ZmCalendarApp._settingChangeListener, cal);
 		fdowSetting.addChangeListener(listener);
 	}
-	
+
 	// reparent and cleanup
 	dateButton.reparentHtmlElement(buttonId);
 	delete buttonId;

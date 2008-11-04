@@ -31,8 +31,7 @@ function() {
 };
 
 ZmMiniCalCache.prototype.updateCache =
-function(params, data) 
-{
+function(params, data) {
 	var key = this._getCacheKey(params);
 	this._miniCalData[key] = data;	
 };
@@ -52,26 +51,25 @@ function(params) {
 
 ZmMiniCalCache.prototype._getMiniCalData =
 function(params) {
-	
 	var cacheKey = this._getCacheKey(params);
 	var cachedData = this._miniCalData[cacheKey];
 	if (cachedData) {
-		this.highlightMiniCal(params, cachedData);
+		this.highlightMiniCal(cachedData);
 		if (params.callback) {
 			params.callback.run(cachedData);
 			return;
 		}
 		return cachedData;
 	}	
-	
+
 	var jsonObj = {GetMiniCalRequest:{_jsns:"urn:zimbraMail"}};
 	var request = jsonObj.GetMiniCalRequest;
-	
+
 	this._setSoapParams(request, params);
 
 	if (params.callback) {
 		var respCallback = new AjxCallback(this, this._getMiniCalResponse, [params]);
-		var errorCallback = new AjxCallback(this, this._handleMiniCalResponseError, [params]);		
+		var errorCallback = new AjxCallback(this, this._handleMiniCalResponseError, [params]);
 		appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback, errorCallback: errorCallback, noBusyOverlay:params.noBusyOverlay});
 	} else {
 		var response = appCtxt.getAppController().sendRequest({jsonObj:jsonObj});
@@ -82,29 +80,30 @@ function(params) {
 
 ZmMiniCalCache.prototype._handleMiniCalResponseError =
 function(params, result) {
-	var code = result ? result.code : null;	
-	if (code == ZmCsfeException.ACCT_NO_SUCH_ACCOUNT || code == ZmCsfeException.MAIL_NO_SUCH_MOUNTPOINT) {
-		var data = (result && result.data) ? result.data : null;		
+	var code = result ? result.code : null;
+	if (code == ZmCsfeException.ACCT_NO_SUCH_ACCOUNT ||
+		code == ZmCsfeException.MAIL_NO_SUCH_MOUNTPOINT)
+	{
+		var data = (result && result.data) ? result.data : null;
 		var id = (data && data.itemId && (data.itemId.length>0)) ? data.itemId[0] : null;
-		if(id && appCtxt.getById(id) && this._faultHandler) {
+		if (id && appCtxt.getById(id) && this._faultHandler) {
 			var folder = appCtxt.getById(id);
 			folder.isInvalidFolder = true;
 			this._faultHandler.run(folder);
 			return true;
 		}
 	}
-	
-	//continue with callback operation	
+
+	//continue with callback operation
 	if(params.callback) {
 		params.callback.run([]);
 	}
-	
+
 	return true;
 };
 
 ZmMiniCalCache.prototype._setSoapParams = 
 function(request, params) {
-	
 	request.s = params.start;
 	request.e = params.end;
 
@@ -128,60 +127,61 @@ function(params, result) {
 	if (!result) { return data; }
 
 	var callback = params.callback;
-	var resp = result && result._data && result._data;	
+	var resp = result && result._data && result._data;
 	var miniCalResponse = resp.GetMiniCalResponse;
-	
-	if(miniCalResponse && miniCalResponse.date) {
+
+	if (miniCalResponse && miniCalResponse.date) {
 		var dates = miniCalResponse.date;
-		if(dates) {
-			for(var i=0; i< dates.length; i++){
-				if(dates[i]._content) {
+		if (dates) {
+			for (var i = 0; i < dates.length; i++) {
+				if (dates[i]._content) {
 					data.push(dates[i]._content);
 				}
 			}
 		}	
-		this.highlightMiniCal(params, data);
+		this.highlightMiniCal(data);
+	} else {
+		// always reset hiliting if empty response returned
+		this.highlightMiniCal([]);
 	}
-	
-	this.updateCache(params, data);	
-	
-	if(params.callback) {
+
+	this.updateCache(params, data);
+
+	if (params.callback) {
 		params.callback.run(data);
 		return;
 	}
-	
+
 	return data;
 };
 
 ZmMiniCalCache.prototype.processBatchResponse =
 function(miniCalResponse, data) {
-	
-	if(!miniCalResponse){ return; }
-	
+	if (!miniCalResponse) { return; }
+
 	for (var i = 0; i < miniCalResponse.length; i++) {
-		if(miniCalResponse[i] && miniCalResponse[i].date) {
+		if (miniCalResponse[i] && miniCalResponse[i].date) {
 			var dates = miniCalResponse[i].date;
-			if(dates) {
-				for(var i=0; i< dates.length; i++){
-					if(dates[i]._content) {
+			if (dates) {
+				for (var i = 0; i < dates.length; i++) {
+					if (dates[i]._content) {
 						data.push(dates[i]._content);
 					}
 				}
-			}				
+			}
 		}
-	}	
+	}
 };
 
 ZmMiniCalCache.prototype.highlightMiniCal =
-function(params, dateArr) {
+function(dateArr) {
 	var highlight = [];
-	for(var i=0; i< dateArr.length; i++){
-		if(dateArr[i]) {
+	for (var i = 0; i < dateArr.length; i++) {
+		if (dateArr[i]) {
 			highlight[dateArr[i]] = AjxDateFormat.parse("yyyyMMdd", dateArr[i]);
 		}
 	}
-	if(this._calViewController && this._calViewController._miniCalendar) {
-		this._calViewController._miniCalendar.setHilite(highlight, true, true);	
+	if (this._calViewController && this._calViewController._miniCalendar) {
+		this._calViewController._miniCalendar.setHilite(highlight, true, true);
 	}
-	return;
 };
