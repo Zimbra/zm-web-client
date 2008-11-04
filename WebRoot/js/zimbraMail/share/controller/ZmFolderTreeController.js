@@ -203,9 +203,24 @@ function(parent, type, id) {
 	}
 	parent.enable(ZmOperation.BROWSE, true);
 
-	// NOTE: This is the default text for the op, anyway.
-	//this._resetOperation(parent, ZmOperation.EXPORT_FOLDER, ZmMsg.exportFolder);
-	//this._resetOperation(parent, ZmOperation.IMPORT_FOLDER, ZmMsg.importFolder);
+	// we always enable sharing in case we're in multi-mbox mode
+	this._setupSharingButton(parent, ZmOperation.SHARE_FOLDER);
+	this._setupSharingButton(parent, ZmOperation.MOUNT_FOLDER);
+};
+
+ZmFolderTreeController.prototype._setupSharingButton =
+function(parent, op) {
+	button = parent.getOp(op);
+	if (button) {
+		if (appCtxt.get(ZmSetting.SHARING_ENABLED)) {
+			button.setVisible(true);
+			if (appCtxt.isOffline && !appCtxt.getActiveAccount().isZimbraAccount) {
+				button.setEnabled(false);
+			}
+		} else {
+			button.setVisible(false);
+		}
+	}
 };
 
 // Private methods
@@ -215,15 +230,13 @@ function(parent, type, id) {
 */
 ZmFolderTreeController.prototype._getHeaderActionMenuOps =
 function() {
-	var ops = [ZmOperation.NEW_FOLDER];
-	if (!appCtxt.isOffline) {
-		ops.push(ZmOperation.MOUNT_FOLDER);
-	}
-	ops.push(ZmOperation.EXPAND_ALL);
-	ops.push(ZmOperation.SYNC);
-	ops.push(ZmOperation.BROWSE);
-
-	return ops;
+	return [
+		ZmOperation.NEW_FOLDER,
+		ZmOperation.MOUNT_FOLDER,
+		ZmOperation.EXPAND_ALL,
+		ZmOperation.SYNC,
+		ZmOperation.BROWSE
+	];
 };
 
 /*
@@ -231,27 +244,20 @@ function() {
 */
 ZmFolderTreeController.prototype._getActionMenuOps =
 function() {
-	var ops = [
+	return [
 		ZmOperation.NEW_FOLDER,
 		ZmOperation.MARK_ALL_READ,
 		ZmOperation.DELETE,
 		ZmOperation.RENAME_FOLDER,
-		ZmOperation.MOVE
-	];
-	if (!appCtxt.isOffline) {
-		ops.push(ZmOperation.SHARE_FOLDER);
-	}
-	ops.push(ZmOperation.EDIT_PROPS,
+		ZmOperation.MOVE,
+		ZmOperation.SHARE_FOLDER,
+		ZmOperation.EDIT_PROPS,
 		ZmOperation.EXPAND_ALL,
 		ZmOperation.SYNC,
 		ZmOperation.SYNC_ALL,
 		ZmOperation.EMPTY_FOLDER,
-		ZmOperation.SYNC_OFFLINE_FOLDER);
-//	if (appCtxt.get(ZmSetting.IMPORT_EXPORT_ENABLED)) {
-//		ops.push(ZmOperation.EXPORT_FOLDER, ZmOperation.IMPORT_FOLDER);
-//	}
-
-	return ops;
+		ZmOperation.SYNC_OFFLINE_FOLDER
+	];
 };
 
 ZmFolderTreeController.prototype._getAllowedSubTypes =
