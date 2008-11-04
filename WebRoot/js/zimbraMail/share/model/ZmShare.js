@@ -203,7 +203,7 @@ ZmShare.createFromDom =
 function(doc) {
 	// NOTE: This code initializes share info from the Zimbra share format, v0.1
 	var share = new ZmShare();
-	
+
 	var shareNode = doc.documentElement;
 	share.version = shareNode.getAttribute("version");
 	if (share.version != ZmShare.VERSION) {
@@ -233,7 +233,7 @@ function(doc) {
 		}
 		child = child.nextSibling;
 	}
-	
+
 	return share;
 };
 
@@ -410,7 +410,7 @@ function(name, ex) {
 		// NOTE: This prevents details from being shown
 		ex = null;
 	}
-		
+
 	appCtxt.getAppController().popupErrorDialog(message, ex, null, true);
 	return true;
 };
@@ -503,7 +503,7 @@ function() {
 		ZmShare._XML = new AjxMessageFormat(pattern);
 	}
 	return ZmShare._XML;
-}
+};
 
 
 /**
@@ -518,11 +518,11 @@ function(operation, actionAttrs, grantAttrs, callback, batchCmd) {
 	
 	var actionNode = soapDoc.set("action");
 	actionNode.setAttribute("op", operation);
-    if(this.object.rid && this.object.zid) {
-        actionNode.setAttribute("id", this.object.zid + ":" + this.object.rid);
-    }else {
-        actionNode.setAttribute("id", this.object.id);
-    }	
+	if (this.object.rid && this.object.zid) {
+		actionNode.setAttribute("id", this.object.zid + ":" + this.object.rid);
+	} else {
+		actionNode.setAttribute("id", this.object.id);
+	}
 	for (var attr in actionAttrs) {
 		actionNode.setAttribute(attr, actionAttrs[attr]);
 	}
@@ -537,8 +537,7 @@ function(operation, actionAttrs, grantAttrs, callback, batchCmd) {
 			shareNode.setAttribute("d", this.grantee.name);
 		}
 		for (var attr in grantAttrs) {
-			if (grantAttrs[attr] != null)
-				shareNode.setAttribute(attr, grantAttrs[attr]);
+			shareNode.setAttribute(attr, (grantAttrs[attr] || ""));
 		}
 	}
 	var respCallback = new AjxCallback(this, this._handleResponseShareAction, [callback]);
@@ -680,13 +679,16 @@ function(formatter) {
 ZmShare._getRoleFromPerm =
 function(perm) {
 	if (!perm) { return ZmShare.ROLE_NONE; }
+
 	if (perm.indexOf(ZmShare.PERM_ADMIN) != -1) {
 		return ZmShare.ROLE_ADMIN;
-	} else if (perm.indexOf(ZmShare.PERM_WORKFLOW) != -1) {
-		return ZmShare.ROLE_MANAGER;
-	} else if (perm.indexOf(ZmShare.PERM_READ) != -1) {
-		return ZmShare.ROLE_VIEWER;
-	} else {
-		return ZmShare.ROLE_NONE;
 	}
+	if (perm.indexOf(ZmShare.PERM_WORKFLOW) != -1) {
+		return ZmShare.ROLE_MANAGER;
+	}
+	if (perm.indexOf(ZmShare.PERM_READ) != -1) {
+		return ZmShare.ROLE_VIEWER;
+	}
+
+	return ZmShare.ROLE_NONE;
 };
