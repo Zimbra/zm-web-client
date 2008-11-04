@@ -61,9 +61,9 @@ function(params) {
 	ZmDialog.prototype.popup.call(this);
 	this.setTitle(ZmMsg.imYahooLogin);
 	this._nameField.value = params.id || "";
-	var passwordField = Dwt.byId(this._passwordFieldId);
+	var passwordField = this._getPasswordField();
 	passwordField.value = "";
-	Dwt.byId(this._rememberIdCheckboxId).checked = params.remember;
+	this._getRememberMeCheckbox().checked = params.remember;
 	var focusField = params.id ? passwordField : this._nameField;
 	if (focusField.focus) {
 		focusField.focus();
@@ -73,8 +73,7 @@ function(params) {
 
 ZmYahooLoginDialog.prototype.setMessage =
 function(message) {
-	var messageBox = Dwt.byId(this._messageBoxId);
-	Dwt.setVisible(messageBox, message);
+	Dwt.setVisible(Dwt.byId(this._messageBoxId), message);
 	Dwt.byId(this._messageTextId).innerHTML = message || "";
 };
 
@@ -83,8 +82,14 @@ function() {
 	return AjxTemplate.expand("im.Chat#ZmYahooLoginDialog", { id: this._htmlElId});
 };
 
-ZmYahooLoginDialog.prototype._initLoginControls =
+ZmYahooLoginDialog.prototype._getPasswordField =
 function() {
+	return Dwt.byId(this._passwordFieldId);
+};
+
+ZmYahooLoginDialog.prototype._getRememberMeCheckbox =
+function() {
+	return Dwt.byId(this._rememberIdCheckboxId);
 };
 
 ZmYahooLoginDialog.prototype._okButtonListener =
@@ -98,8 +103,8 @@ ZmYahooLoginDialog.prototype._getLoginData =
 function() {
 	return {
 		id: AjxStringUtil.trim(this._nameField.value),
-		password: Dwt.byId(this._passwordFieldId).value,
-		remember: Dwt.byId(this._rememberIdCheckboxId).checked,
+		password: this._getPasswordField().value,
+		remember: this._getRememberMeCheckbox().checked,
 		dialog: this
 	};
 };
@@ -113,6 +118,6 @@ function(ev) {
 
 ZmYahooLoginDialog.prototype._getTabGroupMembers =
 function() {
-	return [this._nameField, this._passwordFieldId, this._rememberIdCheckboxId];
+	return [this._nameField, this._getPasswordField(), this._getRememberMeCheckbox()];
 };
 
