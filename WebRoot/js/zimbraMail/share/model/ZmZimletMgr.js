@@ -331,16 +331,19 @@ function(zimletArray, zimletNames, isJS) {
 ZmZimletMgr.prototype.renameZimletsLabel =
 function()
 {
-    var treeView = appCtxt.getOverviewController().getTreeController("ZIMLET").getTreeView("Mail");
-	if(treeView){
-        var root = treeView.getItems()[0];
-	    if (root) {
-            var items = root.getItems();
-            for (var i = 0; i < items.length; i++) {
-                this.changeZimletLabel(items[i]);
-            }
-	    }
-    }
+	var treeController = appCtxt.getOverviewController().getTreeController("ZIMLET");
+	if (treeController) {
+		var treeView = treeController.getTreeView("Mail");
+		if(treeView){
+			var root = treeView.getItems()[0];
+			if (root) {
+				var items = root.getItems();
+				for (var i = 0; i < items.length; i++) {
+					this.changeZimletLabel(items[i]);
+				}
+			}
+		}
+	}
 };
 
 ZmZimletMgr.prototype.changeZimletLabel =

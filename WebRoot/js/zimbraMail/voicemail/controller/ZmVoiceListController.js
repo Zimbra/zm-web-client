@@ -116,8 +116,17 @@ function(ev) {
 
 ZmVoiceListController.prototype._printListener =
 function(ev) {
-	var html = this._getView().getPrintHtml();
-	appCtxt.getPrintView().renderHtml(html);
+	var url;
+	var v = this._getView();
+	if (v.view == ZmId.VIEW_VOICEMAIL) {
+		url = ['/h/printvoicemails?st=voicemail&sq=phone:', v._folder.phone.name, ' in:"', v._folder.name, '"'].join('');
+	} else if (v.view == ZmId.VIEW_CALL_LIST) {
+		url = ['/h/printcalls?st=calllog&sq=phone:', v._folder.phone.name, ' in:"', v._folder.name, '"'].join('');
+	}
+
+	if (url) {
+		window.open(appContextPath+AjxStringUtil.urlEncode(url), "_blank");
+	}
 };
 
 ZmVoiceListController.prototype._callManagerListener =

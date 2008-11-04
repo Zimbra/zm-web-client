@@ -919,14 +919,3 @@ function(ev) {
 	}
 	return true;
 };
-
-ZmContactView.getPrintHtml =
-function(contact, abridged) {
-	// make sure it's a real ZmContact
-	var real = contact.list._realizeContact(contact);
-	var subs = {
-		contact: real,
-		abridged: abridged
-	};
-	return (AjxTemplate.expand("abook.Contacts#PrintContact", subs));
-};

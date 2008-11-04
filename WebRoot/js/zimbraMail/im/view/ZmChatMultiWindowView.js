@@ -49,13 +49,6 @@ ZmChatMultiWindowView.getInstance = function() {
 	return ZmChatMultiWindowView._INSTANCE;
 };
 
-ZmChatMultiWindowView.prototype.getWindowManager = function() {
-	if (!this._wm) {
-		this._wm = new ZmChatWindowManager(this, Dwt.Z_VIEW_WINDOW_MANAGER);
-	}
-	return this._wm;
-};
-
 ZmChatMultiWindowView.prototype.getShellWindowManager = function() {
 	if (!this._shellWm) {
 		this._shellWm = new ZmChatWindowManager(DwtShell.getShell(window), Dwt.Z_WINDOW_MANAGER);
@@ -68,20 +61,7 @@ ZmChatMultiWindowView.prototype.getShellWindowManager = function() {
 };
 
 ZmChatMultiWindowView.prototype.getActiveWM = function() {
-	return appCtxt.getCurrentAppName() != "IM"
-		? this.getShellWindowManager()
-		: this.getWindowManager();
-};
-
-ZmChatMultiWindowView.prototype.hideJiveOnTimer = function() {
-	if (this._jiveLogo && this._jiveLogo.getVisible()) {
-		var action = new AjxTimedAction(this, this._hideJive);
-		AjxTimedAction.scheduleAction(action, 6000);
-	}
-};
-
-ZmChatMultiWindowView.prototype._hideJive = function() {
-	this._jiveLogo.setVisible(false);
+	return this.getShellWindowManager();
 };
 
 ZmChatMultiWindowView.prototype.__createChatWidget = function(chat, win) {
@@ -125,7 +105,6 @@ function() {
 	// s.top = "100%";
 	s.right = s.bottom = "20px";
 	var toolbar = new DwtToolBar({parent:cont});
-	this._jiveLogo = new DwtLabel({parent:toolbar, className:"ZmChatJiveIcon ImgJiveBig"});
 	toolbar.addFiller();
 	for (var i = 1; i < gws.length; ++i) {
 		var gw = gws[i];

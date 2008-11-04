@@ -16,7 +16,7 @@
 	</c:otherwise>
 </c:choose>
 <fmt:setBundle basename="/messages/ZhMsg" scope="request"/>
-<c:set var="mid" value="${(not empty param.mid) ? param.mid : paramValues.id[0]}"/>
+<c:set var="messageIds" value="${fn:join(paramValues.id, ',')}"/>
 <zm:computeSearchContext var="context" usecache="true"/>
 
 </app:handleError>
@@ -31,6 +31,7 @@
 	</tr>
 </table>
 <hr/>
+<c:forEach items="${messageIds}" var="mid" varStatus="status">
 <zm:getMessage var="message" id="${mid}" markread="false" neuterimages="${empty param.xim}"/>
 <table cellpadding="0" cellspacing="5"  width="100%">
 	<tr>
@@ -44,9 +45,10 @@
 		</td>
 	</tr>
 </table>
+</c:forEach>    
 
 
-<c:if test="${empty mid}">
+<c:if test="${empty messageIds}">
 	<div class='NoResults'><fmt:message key="noResultsFound"/></div>
 </c:if>
 <script type="text/javascript">
