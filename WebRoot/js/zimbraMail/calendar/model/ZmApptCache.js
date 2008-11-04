@@ -315,7 +315,7 @@ function(batchResp, searchParams, miniCalParams) {
 	var data = [];
 	
 	miniCalCache.processBatchResponse(miniCalResp, data);	
-	miniCalCache.highlightMiniCal(miniCalParams, data);
+	miniCalCache.highlightMiniCal(data);
 	miniCalCache.updateCache(miniCalParams, data);	
 	
 	if(miniCalParams.callback) {
