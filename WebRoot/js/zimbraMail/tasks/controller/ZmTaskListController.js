@@ -316,7 +316,7 @@ function(task, mode) {
 		this._typeDialog = new ZmCalItemTypeDialog(this._shell);
 		this._typeDialog.addSelectionListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._typeOkListener, [task, mode]));
 	}
-	this._typeDialog.initialize(task, mode);
+	this._typeDialog.initialize(task, mode, ZmItem.TASK);
 	this._typeDialog.popup();
 };
 

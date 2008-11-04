@@ -1150,6 +1150,12 @@ line-height:normal;
 	@TextPadding@
 }
 
+.calendar_listview_folder {
+	width:16px;
+	height:16px;
+	@borderRadius@:4px;
+}
+
 
 /* set the width of each day column in the month view
 	-- extra space goes to the last column  			*/

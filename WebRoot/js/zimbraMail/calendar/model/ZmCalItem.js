@@ -394,7 +394,7 @@ function() {
 };
 
 ZmCalItem.prototype.getDetails =
-function(viewMode, callback, errorCallback, ignoreOutOfDate, noBusyOverlay) {
+function(viewMode, callback, errorCallback, ignoreOutOfDate, noBusyOverlay, batchCmd) {
 	var mode = viewMode || this.viewMode;
 
 	var seriesMode = mode == ZmCalItem.MODE_EDIT_SERIES;
@@ -409,7 +409,8 @@ function(viewMode, callback, errorCallback, ignoreOutOfDate, noBusyOverlay) {
 			callback: respCallback,
 			errorCallback: respErrorCallback,
 			noBusyOverlay: noBusyOverlay,
-			ridZ: (seriesMode ? null : this.ridZ)
+			ridZ: (seriesMode ? null : this.ridZ),
+			batchCmd: batchCmd
 		}
 		this.message.load(params);
 	} else {
@@ -418,6 +419,13 @@ function(viewMode, callback, errorCallback, ignoreOutOfDate, noBusyOverlay) {
 			callback.run();
 		}
 	}
+};
+
+ZmCalItem.prototype._handleResponseGetDetails =
+function(mode, message, callback, result) {
+	// msg content should be text, so no need to pass callback to setFromMessage()
+	this.setFromMessage(message, mode);
+	if (callback) callback.run(result);
 };
 
 ZmCalItem.prototype._handleErrorGetDetails =
@@ -726,14 +734,22 @@ function(minutes) {
 	this._reminderMinutes = minutes;
 };
 
+/**
+ * Deletes/cancels appointment/invite
+ *
+ * @param mode				[Integer]			what kind of delete op is this?
+ * @param msg				[ZmMailMsg]			message to be sent in lieu of delete
+ * @param callback			[AjxCallback]*		callback to trigger after delete
+ * @param errorCallback		[AjxCallback]*		error callback to trigger
+ * @param batchCmd			[ZmBatchCommand]*	set if part of a batch op.
+ */
 ZmCalItem.prototype.cancel =
-function(mode, msg, callback, errorCallback) {
+function(mode, msg, callback, errorCallback, batchCmd) {
 	this.setViewMode(mode);
 	if (msg) {
-		// REVISIT: I have to explicitly set the bodyParts of the message
-		//          because ZmComposeView#getMsg only sets the topPart on
-		//          the new message that's returned. And ZmCalItem#_setNotes
-		//          calls ZmMailMsg#getBodyPart.
+		// REVISIT: We explicitly set the bodyParts of the message b/c
+		// ZmComposeView#getMsg only sets topPart on new message that's returned.
+		// And ZmCalItem#_setNotes calls ZmMailMsg#getBodyPart.
 		var bodyParts = [];
 		var childParts = msg._topPart.node.ct == ZmMimeTable.MULTI_ALT
 			? msg._topPart.children.getArray()
@@ -743,10 +759,10 @@ function(mode, msg, callback, errorCallback) {
 		}
 		msg.setBodyParts(bodyParts);
 		this._setNotes(msg);
-		this._doCancel(mode, callback, msg);
+		this._doCancel(mode, callback, msg, batchCmd);
 	} else {
 		// To get the attendees for this appointment, we have to get the message.
-		var respCallback = new AjxCallback(this, this._doCancel, [mode, callback, null]);
+		var respCallback = new AjxCallback(this, this._doCancel, [mode, callback, null, batchCmd]);
 		var cancelErrorCallback = new AjxCallback(this, this._handleCancelError, [mode, callback, errorCallback]);
 		if (this._blobInfoMissing && mode != ZmCalItem.MODE_DELETE_SERIES) {
 			this.showBlobMissingDlg();		
@@ -786,7 +802,7 @@ function(mode, callback, errorCallback, ex) {
 };
 
 ZmCalItem.prototype._doCancel =
-function(mode, callback, msg, result) {
+function(mode, callback, msg, batchCmd, result) {
 	if (mode == ZmCalItem.MODE_DELETE ||
 		mode == ZmCalItem.MODE_DELETE_SERIES ||
 		mode == ZmCalItem.MODE_DELETE_INSTANCE)
@@ -844,7 +860,12 @@ function(mode, callback, msg, result) {
 		}
 		soapDoc.set("su", ([ZmMsg.cancelled, ": ", this.name].join("")), m);
 		this._addNotesToSoap(soapDoc, m, true);
-		this._sendRequest(soapDoc, accountName, callback);
+
+		if (batchCmd) {
+			batchCmd.addRequestParams(soapDoc, callback);
+		} else {
+			this._sendRequest(soapDoc, accountName, callback);
+		}
 	} else {
 		if (callback) callback.run();
 	}
@@ -1362,13 +1383,6 @@ function(respName, callback, result) {
 	if (callback) {
 		callback.run();
 	}
-};
-
-ZmCalItem.prototype._handleResponseGetDetails =
-function(mode, message, callback, result) {
-	// msg content should be text, so no need to pass callback to setFromMessage()
-	this.setFromMessage(message, mode);
-	if (callback) callback.run(result);
 };
 
 

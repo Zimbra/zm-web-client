@@ -220,7 +220,11 @@ function(htmlArr, idx, appt, field, colIdx, params) {
 		}
 
 	} else if (field == ZmItem.F_FOLDER) {
-		htmlArr[idx++] = appt.getFolder().getName();
+		var subs = {
+			folderColor: ZmTreeController.COLOR_CLASS[appt.getFolder().color],
+			folderName: appt.getFolder().getName()
+		};
+		htmlArr[idx++] = AjxTemplate.expand("calendar.Calendar#ListViewFolder", subs);
 
 	} else if (field == ZmItem.F_DATE) {
 		htmlArr[idx++] = (appt.isAllDayEvent())

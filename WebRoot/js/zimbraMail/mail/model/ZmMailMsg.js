@@ -80,17 +80,18 @@ ZmMailMsg.requestHeaders = {};
 /**
  * Fetches a message from the server.
  *
- * @param params		[hash]			hash of params:
- *        sender		[ZmZimbraMail]	provides access to sendRequest()
- *        msgId			[int]			ID of the msg to be fetched.
- *        partId 		[int]* 			msg part ID (if retrieving attachment part, i.e. rfc/822)
- *        ridZ   		[int]* 			RECURRENCE-ID in Z (UTC) timezone
- *        getHtml		[boolean]*		if true, try to fetch html from the server
- *        markRead		[boolean]*		if true, mark msg read
- *        callback		[AjxCallback]*	async callback
- *        errorCallback	[AjxCallback]*	async error callback
- *        noBusyOverlay	[boolean]*		don't put up busy overlay during request
- *        noTruncate	[boolean]*		don't truncate message body
+ * @param params		[hash]				hash of params:
+ *        sender		[ZmZimbraMail]		provides access to sendRequest()
+ *        msgId			[int]				ID of the msg to be fetched.
+ *        partId 		[int]* 				msg part ID (if retrieving attachment part, i.e. rfc/822)
+ *        ridZ   		[int]* 				RECURRENCE-ID in Z (UTC) timezone
+ *        getHtml		[boolean]*			if true, try to fetch html from the server
+ *        markRead		[boolean]*			if true, mark msg read
+ *        callback		[AjxCallback]*		async callback
+ *        errorCallback	[AjxCallback]*		async error callback
+ *        noBusyOverlay	[boolean]*			don't put up busy overlay during request
+ *        noTruncate	[boolean]*			don't truncate message body
+ *        batchCmd		[ZmBatchCommand]*	if set, request gets added to this batch command
  */
 ZmMailMsg.fetchMsg =
 function(params) {
@@ -121,14 +122,18 @@ function(params) {
 		m.max = appCtxt.get(ZmSetting.MAX_MESSAGE_SIZE) || ZmMailApp.DEFAULT_MAX_MESSAGE_SIZE;
 	}
 
-	var newParams = {
-		jsonObj: jsonObj,
-		asyncMode: true,
-		callback: (new AjxCallback(null, ZmMailMsg._handleResponseFetchMsg, [params.callback])),
-		errorCallback: params.errorCallback,
-		noBusyOverlay: params.noBusyOverlay
+	if (params.batchCmd) {
+		params.batchCmd.addRequestParams(jsonObj, params.callback);
+	} else {
+		var newParams = {
+			jsonObj: jsonObj,
+			asyncMode: true,
+			callback: (new AjxCallback(null, ZmMailMsg._handleResponseFetchMsg, [params.callback])),
+			errorCallback: params.errorCallback,
+			noBusyOverlay: params.noBusyOverlay
+		}
+		params.sender.sendRequest(newParams);
 	}
-	params.sender.sendRequest(newParams);
 };
 
 ZmMailMsg._handleResponseFetchMsg =
@@ -488,14 +493,15 @@ function(node, args) {
  * Gets the full message object from the back end based on the current message ID, and
  * fills in the message.
  *
- * @param params		[hash]			hash of params:
- *        getHtml		[boolean]*		if true, try to fetch html from the server
- *        markRead		[boolean]*		if true, mark msg read
- *        forceLoad		[boolean]*		if true, get msg from server
- *        callback		[AjxCallback]*	async callback
- *        errorCallback	[AjxCallback]*	async error callback
- *        noBusyOverlay	[boolean]*		don't put up busy overlay during request
- *        noTruncate	[boolean]*		don't set max limit on size of msg body
+ * @param params		[hash]				hash of params:
+ *        getHtml		[boolean]*			if true, try to fetch html from the server
+ *        markRead		[boolean]*			if true, mark msg read
+ *        forceLoad		[boolean]*			if true, get msg from server
+ *        callback		[AjxCallback]*		async callback
+ *        errorCallback	[AjxCallback]*		async error callback
+ *        noBusyOverlay	[boolean]*			don't put up busy overlay during request
+ *        noTruncate	[boolean]*			don't set max limit on size of msg body
+ *        batchCmd		[ZmBatchCommand]*	if set, request gets added to this batch command
  */
 ZmMailMsg.prototype.load =
 function(params) {

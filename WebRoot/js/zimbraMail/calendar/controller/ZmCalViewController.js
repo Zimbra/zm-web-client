@@ -993,25 +993,121 @@ function(ev) {
  */
 ZmCalViewController.prototype._doDelete =
 function(items, hardDelete, attrs, op) {
-	// since base view has multiple selection turned off, always select first item
-	var appt = items[0];
-	if (op == ZmOperation.VIEW_APPT_INSTANCE || op == ZmOperation.VIEW_APPT_SERIES) {
-		var mode = (op == ZmOperation.VIEW_APPT_INSTANCE)
-			? ZmCalItem.MODE_DELETE_INSTANCE
-			: ZmCalItem.MODE_DELETE_SERIES;
-		this._promptDeleteAppt(appt, mode);
-	} else {
-		this._deleteAppointment(appt);
+	// listview can handle deleting multiple items at once
+	if (this._viewMgr.getCurrentViewName() == ZmId.VIEW_CAL_LIST && items.length > 1) {
+		var divvied = this._divvyItems(items);
+
+		// data structure to keep track of which appts to delete and how
+		this._deleteList = {};
+		this._deleteList[ZmCalItem.MODE_DELETE] = divvied.normal;
+
+		// first attempt to deal with read-only appointments
+		if (divvied.readonly.length > 0) {
+			var dlg = appCtxt.getMsgDialog();
+			var callback = (divvied.recurring.length > 0)
+				? new AjxCallback(this, this._showTypeDialog, [divvied.recurring, ZmCalItem.MODE_DELETE])
+				: new AjxCallback(this, this._promptDeleteApptList);
+			var listener = new AjxListener(this, this._handleReadonlyOk, [callback, dlg]);
+			var msg = AjxMessageFormat.format(ZmMsg.deleteReadonly, divvied.readonly.length);
+			dlg.setButtonListener(DwtDialog.OK_BUTTON, listener);
+			dlg.setMessage(msg);
+			dlg.popup();
+		}
+		else if (divvied.recurring.length > 0) {
+			this._showTypeDialog(divvied.recurring, ZmCalItem.MODE_DELETE);
+		}
+		else {
+			this._promptDeleteApptList();
+		}
+	}
+	else {
+		// since base view has multiple selection turned off, always select first item
+		var appt = items[0];
+		if (op == ZmOperation.VIEW_APPT_INSTANCE || op == ZmOperation.VIEW_APPT_SERIES) {
+			var mode = (op == ZmOperation.VIEW_APPT_INSTANCE)
+				? ZmCalItem.MODE_DELETE_INSTANCE
+				: ZmCalItem.MODE_DELETE_SERIES;
+			this._promptDeleteAppt(appt, mode);
+		} else {
+			this._deleteAppointment(appt);
+		}
+	}
+};
+
+ZmCalViewController.prototype._handleReadonlyOk =
+function(callback, dlg) {
+	dlg.popdown();
+	callback.run();
+};
+
+ZmCalViewController.prototype._handleMultiDelete =
+function() {
+	var batchCmd = new ZmBatchCommand(true, null, true);
+
+	// first, get details for each appointment
+	for (var j in this._deleteList) {
+		var list = this._deleteList[j];
+		for (var i = 0; i < list.length; i++) {
+			var appt = list[i];
+			var args = [parseInt(j), null, null, null, null];
+			batchCmd.add(new AjxCallback(appt, appt.getDetails, args));
+		}
+	}
+	batchCmd.run(new AjxCallback(this, this._handleGetDetails));
+};
+
+ZmCalViewController.prototype._handleGetDetails =
+function() {
+	var batchCmd = new ZmBatchCommand(true);
+	for (var j in this._deleteList) {
+		var list = this._deleteList[j];
+		for (var i = 0; i < list.length; i++) {
+			var appt = list[i];
+			var args = [parseInt(j), null, null, null];
+			batchCmd.add(new AjxCallback(appt, appt.cancel, args));
+		}
+	}
+	batchCmd.run();
+};
+
+ZmCalViewController.prototype._divvyItems =
+function(items) {
+	var normal = [];
+	var readonly = [];
+	var recurring = [];
+	//	var orgChange = [];     <--- needed if moving appts across mboxes
+
+	for (var i = 0; i < items.length; i++) {
+		var appt = items[i];
+		if (appt.isReadOnly()) {
+			readonly.push(appt);
+		} else if (appt.isRecurring() && !appt.isException) { 
+			recurring.push(appt);
+		} else {
+			normal.push(appt);
+		}
+	}
+
+	return {normal:normal, readonly:readonly, recurring:recurring};
+};
+
+ZmCalViewController.prototype._promptDeleteApptList =
+function() {
+	if (this._deleteList[ZmCalItem.MODE_DELETE] &&
+		this._deleteList[ZmCalItem.MODE_DELETE].length > 0)
+	{
+		var callback = new AjxCallback(this, this._handleMultiDelete);
+		appCtxt.getConfirmationDialog().popup(ZmMsg.confirmCancelApptList, callback);
 	}
 };
 
 ZmCalViewController.prototype._promptDeleteAppt =
 function(appt, mode) {
-	var cancelReplyCallback = new AjxCallback(this, this._continueDeleteReply, [appt, mode]);
 	var cancelNoReplyCallback = new AjxCallback(this, this._continueDelete, [appt, mode]);
 
 	var confirmDialog = appCtxt.getConfirmationDialog();
 	if (appt.isOrganizer() && appt.otherAttendees) {
+		var cancelReplyCallback = new AjxCallback(this, this._continueDeleteReply, [appt, mode]);
 		confirmDialog.popup(ZmMsg.confirmCancelApptReply, cancelReplyCallback, cancelNoReplyCallback);
 	} else {
 		confirmDialog.popup(ZmMsg.confirmCancelAppt, cancelNoReplyCallback);
@@ -1048,8 +1144,27 @@ function(appt, action, mode) {
 
 ZmCalViewController.prototype._continueDelete =
 function(appt, mode) {
-	var respCallback = new AjxCallback(this, this._handleResponseContinueDelete);
-	appt.cancel(mode, null, respCallback, this._errorCallback);
+	if (appt instanceof Array) {
+		// if list of appointments, de-dupe the same series appointments
+		if (mode == ZmCalItem.MODE_DELETE_SERIES) {
+			this._deleteList[ZmCalItem.MODE_DELETE_SERIES] = [];
+			var deduped = {};
+			for (var i = 0; i < appt.length; i++) {
+				var item = appt[i];
+				if (!deduped[item.id]) {
+					deduped[item.id] = true;
+					this._deleteList[ZmCalItem.MODE_DELETE_SERIES].push(item);
+				}
+			}
+		} else {
+			this._deleteList[ZmCalItem.MODE_DELETE_INSTANCE] = appt;
+		}
+		this._handleMultiDelete();
+	}
+	else {
+		var respCallback = new AjxCallback(this, this._handleResponseContinueDelete);
+		appt.cancel(mode, null, respCallback, this._errorCallback);
+	}
 };
 
 ZmCalViewController.prototype._handleResponseContinueDelete =
@@ -1083,6 +1198,13 @@ function(num) {
 	return (num == 1) ? ZmMsg.moveAppt : ZmMsg.moveAppts;
 };
 
+/**
+ * Shows a dialog for handling recurring appointments. User must choose to
+ * perform the action on the instance of the series of a recurring appointment.
+ *
+ * @param appt		[ZmAppt]	This can be a single appt object or a *list* of appts
+ * @param mode		[Integer]	Constant describing what kind of appointments we're dealing with
+ */
 ZmCalViewController.prototype._showTypeDialog =
 function(appt, mode) {
 	if (this._typeDialog == null) {
@@ -1091,7 +1213,7 @@ function(appt, mode) {
 		this._typeDialog.addSelectionListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._typeOkListener));
 		this._typeDialog.addSelectionListener(DwtDialog.CANCEL_BUTTON, new AjxListener(this, this._typeCancelListener));
 	}
-	this._typeDialog.initialize(appt, mode);
+	this._typeDialog.initialize(appt, mode, ZmItem.APPT);
 	this._typeDialog.popup();
 };
 
@@ -1214,25 +1336,25 @@ function(appt, mode, isInstance) {
 		var delMode = isInstance ? ZmCalItem.MODE_DELETE_INSTANCE : ZmCalItem.MODE_DELETE_SERIES;
 		this._continueDelete(appt, delMode);
 	}
-    else if (mode == ZmAppt.MODE_DRAG_OR_SASH) {
-		// {appt:appt, startDate: startDate, endDate: endDate, callback: callback, errorCallback: errorCallback };
-		var viewMode =  isInstance ? ZmCalItem.MODE_EDIT_SINGLE_INSTANCE : ZmCalItem.MODE_EDIT_SERIES;
+	else if (mode == ZmAppt.MODE_DRAG_OR_SASH) {
+		var viewMode = isInstance ? ZmCalItem.MODE_EDIT_SINGLE_INSTANCE : ZmCalItem.MODE_EDIT_SERIES;
 		var state = this._updateApptDateState;
-		var respCallback = new AjxCallback(this, this._handleResponseUpdateApptDate,
-								[state.appt, viewMode, state.startDateOffset, state.endDateOffset, state.callback, state.errorCallback]);
+		var args = [state.appt, viewMode, state.startDateOffset, state.endDateOffset, state.callback, state.errorCallback];
+		var respCallback = new AjxCallback(this, this._handleResponseUpdateApptDate, args);
 		delete this._updateApptDateState;
 		appt.getDetails(viewMode, respCallback, state.errorCallback);
 	}
-    else {
-        var editMode = isInstance ? ZmCalItem.MODE_EDIT_SINGLE_INSTANCE : ZmCalItem.MODE_EDIT_SERIES;
-        var calendar = appt.getFolder();
-        var isSynced = Boolean(calendar.url);        
-        if (appt.isReadOnly() || calendar.isReadOnly() || isSynced) {
-            this.showApptReadOnlyView(appt, editMode);
-        }else {
-            this.editAppointment(appt, editMode);
-        }
-    }
+	else {
+		var editMode = isInstance ? ZmCalItem.MODE_EDIT_SINGLE_INSTANCE : ZmCalItem.MODE_EDIT_SERIES;
+		var calendar = appt.getFolder();
+		var isSynced = Boolean(calendar.url);
+
+		if (appt.isReadOnly() || calendar.isReadOnly() || isSynced) {
+			this.showApptReadOnlyView(appt, editMode);
+		} else {
+			this.editAppointment(appt, editMode);
+		}
+	}
 };
 
 ZmCalViewController.prototype._typeCancelListener =
@@ -1484,6 +1606,11 @@ ZmCalViewController.prototype._resetOperations =
 function(parent, num) {
 	parent.enableAll(true);
 	var currViewName = this._viewMgr.getCurrentViewName();
+
+	if (currViewName == ZmId.VIEW_CAL_LIST && num > 1) {
+		return;
+	}
+
 	if (currViewName == ZmId.VIEW_CAL_APPT)
 	{
 		// disable DELETE since CAL_APPT_VIEW is a read-only view
