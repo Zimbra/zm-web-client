@@ -183,6 +183,15 @@ function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
 	}
 };
 
+ZmClientCmdHandler.prototype.execute_ymid =
+function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
+	var settings = appCtxt.getSettings(),
+		setting = settings.getSetting(ZmSetting.IM_YAHOO_ID);
+	setting.setValue(cmdArg1 || "");
+	settings.save([setting]);
+	this._alert("Done");
+};
+
 ZmClientCmdHandler.prototype.execute_expando =
 function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
 	var known_a = AjxEnv.isIE ? ZmClientCmdHandler._PROPS_IE : ZmClientCmdHandler._PROPS_FF;

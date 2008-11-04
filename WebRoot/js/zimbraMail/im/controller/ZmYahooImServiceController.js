@@ -45,78 +45,12 @@ function(showText) {
 
 ZmYahooImServiceController.prototype.login =
 function(callback) {
-	//TODO: bad fake ui...
 	AjxDispatcher.require(["IM"]);
-	var dialogArgs = {
-		title: "[What's your Yahoo! ID?]",
-		label: "[ID]",
-		callback: new AjxCallback(this, this._yahooIdOkCallback, [callback])
-	};
-	ZmPromptDialog.getInstance().popup(dialogArgs);
-};
-
-ZmYahooImServiceController.prototype._yahooIdOkCallback =
-function(callback, data) {
-	if (data.value) {
-		data.dialog.popdown();
-		this._loginById(callback, data.value);
-	}
-};
-
-ZmYahooImServiceController.prototype._loginById =
-function(callback, id) {
-	var soapDoc = AjxSoapDoc.create("GetYahooCookieRequest", "urn:zimbraMail");
-	soapDoc.setMethodAttribute("user", id);
-	var params = {
-		asyncMode: true,
-		soapDoc: soapDoc,
-		callback: new AjxCallback(this, this._handleResponseGetYahooCookie, [callback, id])
-	};
-	appCtxt.getAppController().sendRequest(params);
-};
-
-ZmYahooImServiceController.prototype._handleResponseGetYahooCookie =
-function(callback, id, response) {
-	var responseData = response.getResponse().GetYahooCookieResponse;
-	if (responseData.error) {
-/////////////TODO: bad fake ui junk..........		
-		AjxDispatcher.require(["IM"]);
-		var dialogArgs = {
-			title: "[What's the password for " + id + "@yahoo.com?]",
-			label: "[Password]",
-			callback: new AjxCallback(this, this._passwordOkCallback, [callback, id])
-		};
-		ZmPromptDialog.getInstance().popup(dialogArgs);
+	var id = appCtxt.get(ZmSetting.IM_YAHOO_ID);
+	if (id) {
+		this._loginById(callback, id, true);
 	} else {
-		function trim(str) {
-			return str.substring(0, str.indexOf(';'));
-		}
-		var cookie = ["Y=", trim(responseData.Y), "; T=", trim(responseData.T)].join("");
-		ZmImService.INSTANCE.login(cookie, callback);
-	}
-};
-
-ZmYahooImServiceController.prototype._passwordOkCallback =
-function(callback, id, data) {
-	data.dialog.popdown();
-	var soapDoc = AjxSoapDoc.create("GetYahooAuthTokenRequest", "urn:zimbraMail");
-	soapDoc.setMethodAttribute("user", id);
-	soapDoc.setMethodAttribute("password", data.value);
-	var params = {
-		asyncMode: true,
-		soapDoc: soapDoc,
-		callback: new AjxCallback(this, this._handleResponseGetYahooAuthToken, [callback, id])
-	};
-	appCtxt.getAppController().sendRequest(params);
-};
-
-ZmYahooImServiceController.prototype._handleResponseGetYahooAuthToken =
-function(callback, id, response) {
-	var responseData = response.getResponse().GetYahooAuthTokenResponse;
-	if (responseData.failed) {
-		alert('bad password, dude.')
-	} else {
-		this._loginById(callback, id);
+		this._showLoginDialog(callback);
 	}
 };
 
@@ -132,5 +66,81 @@ function() {
 ZmYahooImServiceController.prototype.getSupportsAccounts =
 function() {
 	return false;
+};
+
+ZmYahooImServiceController.prototype._showLoginDialog =
+function(callback, id, remember, message) {
+	var args = {
+		callback: new AjxCallback(this, this._loginDialogCallback, [callback]),
+		id: id,
+		remember: remember,
+		message: message
+	};
+	ZmYahooLoginDialog.getInstance().popup(args);
+};
+
+ZmYahooImServiceController.prototype._loginDialogCallback =
+function(callback, data) {
+	this._loginByPassword(callback, data.id, data.password, data.remember, data.dialog);
+};
+
+ZmYahooImServiceController.prototype._loginById =
+function(callback, id, remember, dialog) {
+	var soapDoc = AjxSoapDoc.create("GetYahooCookieRequest", "urn:zimbraMail");
+	soapDoc.setMethodAttribute("user", id);
+	var params = {
+		asyncMode: true,
+		soapDoc: soapDoc,
+		callback: new AjxCallback(this, this._handleResponseGetYahooCookie, [callback, id, remember, dialog])
+	};
+	appCtxt.getAppController().sendRequest(params);
+};
+
+ZmYahooImServiceController.prototype._handleResponseGetYahooCookie =
+function(callback, id, remember, dialog, response) {
+	var responseData = response.getResponse().GetYahooCookieResponse;
+	if (responseData.error) {
+		this._showLoginDialog(callback, id, remember, ZmMsg.imPasswordExpired);
+	} else {
+		if (dialog) {
+			dialog.popdown();
+		}
+		function trim(str) {
+			return str.substring(0, str.indexOf(';'));
+		}
+		var cookie = ["Y=", trim(responseData.Y), "; T=", trim(responseData.T)].join("");
+		ZmImService.INSTANCE.login(cookie, callback);
+		if (remember) {
+			var settings = appCtxt.getSettings(),
+				setting = settings.getSetting(ZmSetting.IM_YAHOO_ID);
+			if (setting.getValue() != id) {
+				setting.setValue(id);
+				settings.save([setting]);
+			}
+		}
+	}
+};
+
+ZmYahooImServiceController.prototype._loginByPassword =
+function(callback, id, password, remember, dialog) {
+	var soapDoc = AjxSoapDoc.create("GetYahooAuthTokenRequest", "urn:zimbraMail");
+	soapDoc.setMethodAttribute("user", id);
+	soapDoc.setMethodAttribute("password", password);
+	var params = {
+		asyncMode: true,
+		soapDoc: soapDoc,
+		callback: new AjxCallback(this, this._handleResponseGetYahooAuthToken, [callback, id, remember, dialog])
+	};
+	appCtxt.getAppController().sendRequest(params);
+};
+
+ZmYahooImServiceController.prototype._handleResponseGetYahooAuthToken =
+function(callback, id, remember, dialog, response) {
+	var responseData = response.getResponse().GetYahooAuthTokenResponse;
+	if (responseData.failed) {
+		this._showLoginDialog(callback, id, remember, ZmMsg.imPasswordFailed);
+	} else {
+		this._loginById(callback, id, remember, dialog);
+	}
 };
 

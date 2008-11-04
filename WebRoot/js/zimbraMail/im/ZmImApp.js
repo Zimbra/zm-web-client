@@ -269,12 +269,18 @@ ZmImApp.prototype._registerSettings = function(settings) {
 								   defaultValue : false,
 								   isImplicit	: true
 								 });
+	settings.registerSetting("IM_YAHOO_ID",
+							 { name         : "zimbraPrefIMYahooId",
+							   type         : ZmSetting.T_PREF,
+							   dataType     : ZmSetting.D_STRING,
+							   defaultValue : ""
+							 });
 
 
-		var listener = new AjxListener(this, this._onSettingChange);
+	var listener = new AjxListener(this, this._onSettingChange);
 	settings.getSetting(ZmSetting.IM_PREF_INSTANT_NOTIFY).addChangeListener(listener);
-        settings.getSetting(ZmSetting.IM_PREF_REPORT_IDLE).addChangeListener(listener);
-        settings.getSetting(ZmSetting.IM_PREF_IDLE_TIMEOUT).addChangeListener(listener);
+	settings.getSetting(ZmSetting.IM_PREF_REPORT_IDLE).addChangeListener(listener);
+	settings.getSetting(ZmSetting.IM_PREF_IDLE_TIMEOUT).addChangeListener(listener);
 };
 
 ZmImApp.prototype._registerPrefs = function() {

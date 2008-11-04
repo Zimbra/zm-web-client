@@ -286,3 +286,39 @@
 	</tr></table>
 </template>
 
+<template id='im.Chat#ZmYahooLoginDialog'>
+	<table class="ZmImYahooLogin">
+		<tr>
+			<td colspan="2" style="text-align:center">
+				<div id="${id}_messageBox" class="ZmImYahooMessage">
+					<table width="100%">
+						<tr>
+							<td width="40" valign="top">
+								<$= AjxImg.getImageHtml("Critical_32") $>
+							</td>
+							<td class="errorText" id="${id}_messageText">
+								<$= AjxImg.getImageHtml("ImgCritical_32") $>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td class="ImYahooLoginLabel"><$=ZmMsg.imScreenNameYahoo $></td>
+			<td class="ImYahooLoginValue"><$= Dwt.CARET_HACK_BEGIN $><input type="text" id="${id}_nameField" size="25"/><$= Dwt.CARET_HACK_END $>
+		</tr>
+		<tr>
+			<td class="ImYahooLoginLabel"><$=ZmMsg.passwordLabel$></td>
+			<td class="ImYahooLoginValue"><$= Dwt.CARET_HACK_BEGIN $><input type="password" id="${id}_passwordField" size="25"/><$= Dwt.CARET_HACK_END $>
+		</tr>
+		<tr>
+			<td>&nbsp;</td>
+			<td class="ImYahooLoginValue">
+				<input type='checkbox' id='${id}_rememberIdCheckbox'/>&nbsp;&nbsp;
+				<label for='${id}_rememberIdCheckbox'><$=ZmMsg.imRememberYahoo $></label>
+			</td>
+		</tr>
+	</table>
+</template>
+
