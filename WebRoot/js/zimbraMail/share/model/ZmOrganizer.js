@@ -717,7 +717,7 @@ function() {
 
 ZmOrganizer.prototype.getMainShare =
 function() {
-	return this._mainShare || (this._shares && this._shares.length && this._shares[0]);
+	return this._mainShare || (this.shares && this.shares.length && this.shares[0]);
 };
 
 ZmOrganizer.prototype.supportsPublicAccess =
