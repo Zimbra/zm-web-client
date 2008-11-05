@@ -1373,4 +1373,9 @@ function() {
 		}
 		this._toolbar.enable(ops, false);
 	}
+    var op = this._toolbar.getOp(ZmOperation.COMPOSE_OPTIONS);
+    if(op){
+        op.setVisible(appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED));
+    }
+   
 };
