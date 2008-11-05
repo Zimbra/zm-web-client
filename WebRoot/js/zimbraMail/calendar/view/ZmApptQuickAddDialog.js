@@ -352,8 +352,10 @@ function(appt) {
         }
 
         // don't show calendar if remote or don't have write perms
-		if (cal.url) continue;
-		if (cal.link && cal.shares && cal.shares.length > 0 && !cal.shares[0].isWrite()) continue;
+		if (cal.url) { continue; }
+		var share = cal.getMainShare();
+		if (cal.link && share && !share.isWrite()) { continue; }
+
 		this._calendarSelect.addOption(cal.getName(), (appt.folderId==cal.id), id);
 	}
 

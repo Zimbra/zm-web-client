@@ -965,7 +965,8 @@ function(startDate, duration, folderId) {
             var cal = appCtxt.getById(calId);
             // don't use calendar if feed, or remote and don't have write perms
 		    if(cal) {
-                var skipCal = (cal.isFeed() || (cal.link && cal.shares && cal.shares.length > 0 && !cal.shares[0].isWrite()));
+				var share = cal.getMainShare();
+				var skipCal = (cal.isFeed() || (cal.link && share && !share.isWrite()));
                 if(cal && !skipCal) {
                     newAppt.setFolderId(calId);
                 }
@@ -1915,7 +1916,7 @@ ZmCalViewController.prototype._enableActionMenuReplyOptions =
 function(appt, actionMenu) {
 	var isOrganizer = appt.isOrganizer();
 	var calendar = this.getCheckedCalendar(appt.getLocalFolderId());
-	var share = calendar && calendar.link ? calendar.shares[0] : null;
+	var share = calendar && calendar.link ? calendar.getMainShare() : null;
 	var workflow = share ? share.isWorkflow() : true;
 	var isPrivate = appt.isPrivate() && calendar.isRemote() && !calendar.hasPrivateAccess();
 	var enabled = !isOrganizer && workflow && !isPrivate;
