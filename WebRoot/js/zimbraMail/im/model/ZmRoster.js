@@ -389,6 +389,14 @@ function(rosterItem, jsonObj, doNotifications) {
 	}
 };
 
+ZmRoster.prototype.setIsOffline =
+function() {
+	if (this.getPresence().setFromJS({ show: ZmRosterPresence.SHOW_OFFLINE })) {
+		this.notifyPresence();
+	}
+	this.getRosterItemList().removeAllItems();
+};
+
 //------------------------------------------
 // for autocomplete
 //------------------------------------------

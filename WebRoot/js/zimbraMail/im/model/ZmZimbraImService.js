@@ -41,6 +41,12 @@ function() {
 	return "ZmZimbraImService";
 };
 
+ZmImService.prototype.isLoggedIn =
+function() {
+	// Is always connected to zimbra server.
+	return true;
+};
+
 ZmZimbraImService.prototype.getMyAddress =
 function() {
     if (this._myAddress == null)

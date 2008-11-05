@@ -55,7 +55,9 @@ function(callback) {
 };
 
 ZmYahooImServiceController.prototype.logout =
-function(callback) {
+function() {
+	ZmImService.INSTANCE.logout();
+	this._saveYahooId("");
 };
 
 ZmYahooImServiceController.prototype.createPresenceMenu =
@@ -122,12 +124,7 @@ function(callback, id, remember, dialog, response) {
 		var cookie = ["Y=", trim(responseData.Y), "; T=", trim(responseData.T)].join("");
 		ZmImService.INSTANCE.login(cookie, callback);
 		if (remember) {
-			var settings = appCtxt.getSettings(),
-				setting = settings.getSetting(ZmSetting.IM_YAHOO_ID);
-			if (setting.getValue() != id) {
-				setting.setValue(id);
-				settings.save([setting]);
-			}
+			this._saveYahooId(id);
 		}
 	}
 };
@@ -155,7 +152,18 @@ function(callback, id, remember, dialog, response) {
 	}
 };
 
+ZmYahooImServiceController.prototype._saveYahooId =
+function(id) {
+	var settings = appCtxt.getSettings(),
+		setting = settings.getSetting(ZmSetting.IM_YAHOO_ID);
+	if (setting.getValue() != id) {
+		setting.setValue(id);
+		settings.save([setting]);
+	}
+};
+
 ZmYahooImServiceController.prototype._presencePopupListener =
 function(logoutItem) {
+	logoutItem.setEnabled(ZmImService.INSTANCE.isLoggedIn());
 };
 

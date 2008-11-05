@@ -31,6 +31,11 @@ ZmImService = function() {
 	this._roster = null; // Is initialized when the roster is created.
 }
 
+ZmImService.prototype.isLoggedIn =
+function() {
+	alert('Not implemented');
+};
+
 ZmImService.prototype.getMyAddress =
 function() {
 	alert('Not implemented');

@@ -59,6 +59,10 @@ function(cookie, callback) {
 	this._callSdk("login", [params]);
 };
 
+ZmYahooImService.prototype.logout =
+function() {
+	this._callSdk("logoff");
+};
 
 ZmYahooImService.prototype.getMyAddress =
 function() {
@@ -260,6 +264,10 @@ function(ev, params) {
 		this._onUserLogoffNotify(params);
 		break;
 	}
+	case YMSGR.CONST.YES_USER_LOGOFF_OK: {
+		this._onUserLogoffOk(params);
+		break;
+	}
 	}
 };
 
@@ -375,6 +383,16 @@ function(params) {
 	if (ri) {
 		this._roster.setRosterItemPresence(ri, { show: ZmRosterPresence.SHOW_OFFLINE }, true);
 	}
+};
+
+/**
+ * This user has logged out.
+ * @param params
+ */
+ZmYahooImService.prototype._onUserLogoffOk =
+function() {
+	this._loggedIn = false;
+	this._roster.setIsOffline();
 };
 
 ZmYahooImService.prototype._onBuddyList =
