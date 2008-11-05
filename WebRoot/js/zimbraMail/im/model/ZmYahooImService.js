@@ -97,38 +97,19 @@ function() {
 
 ZmYahooImService.prototype.setPresence =
 function(show, priority, customStatusMsg, batchCommand) {
-	if (!this._loaded) {
-		return;
-	}
-	if (customStatusMsg) {
-		YMSGR.sdk.setCustomStatus(0, 0, customStatusMsg);
-	} else {
-		var ymStatus;
-		switch (show) {
-		case ZmRosterPresence.SHOW_UNKNOWN: ymStatus = YMSGR.CONST.YMSG_Unknown; break;
-		case ZmRosterPresence.SHOW_OFFLINE: ymStatus = YMSGR.CONST.YMSG_Offline; break;
-		case ZmRosterPresence.SHOW_ONLINE: ymStatus = YMSGR.CONST.YMSG_Available; break;
-
-		//TODO: review...
-		case ZmRosterPresence.SHOW_DND: ymStatus = YMSGR.CONST.YMSG_Busy; break;
-		default: ymStatus = YMSGR.CONST.YMSG_Available; break;
-		}
-		this._callSdk("setStatus", [ymStatus, false]);
-	}
-
-	var visible = show != ZmRosterPresence.SHOW_OFFLINE;
-	if (visible != this._visible) {
-		this._callSdk("setVisibility", [visible]);
-		this._visible = visible;
-	}
-	if (this._roster.getPresence().setFromJS({ show: show, status: customStatusMsg })) {
-		this._roster.notifyPresence();
-	}
-
+	this._lastStatus = { show: show, customStatusMsg: customStatusMsg };
+	this._setPresence(show, customStatusMsg);
 };
 
 ZmYahooImService.prototype.setIdle =
 function(idle, idleTime) {
+	if (idle) {
+		this._callSdk("setStatus", [YMSGR.CONST.YMSG_Idle, true]);
+	} else if (this._lastStatus) {
+		this._setPresence(this._lastStatus.show, this._lastStatus.customStatusMsg);
+	} else {
+		DBG.println("ym", "Idle ended without a previous status to set.");
+	}
 };
 
 ZmYahooImService.prototype.createRosterItem =
@@ -183,6 +164,34 @@ function(id) {
 		}
 	}
 	return id;
+};
+
+ZmYahooImService.prototype._setPresence =
+function(show, customStatusMsg) {
+	if (customStatusMsg) {
+		YMSGR.sdk.setCustomStatus(0, 0, customStatusMsg);
+	} else {
+		var ymStatus;
+		switch (show) {
+		case ZmRosterPresence.SHOW_UNKNOWN: ymStatus = YMSGR.CONST.YMSG_Unknown; break;
+		case ZmRosterPresence.SHOW_OFFLINE: ymStatus = YMSGR.CONST.YMSG_Offline; break;
+		case ZmRosterPresence.SHOW_ONLINE: ymStatus = YMSGR.CONST.YMSG_Available; break;
+
+		//TODO: review...
+		case ZmRosterPresence.SHOW_DND: ymStatus = YMSGR.CONST.YMSG_Busy; break;
+		default: ymStatus = YMSGR.CONST.YMSG_Available; break;
+		}
+		this._callSdk("setStatus", [ymStatus, false]);
+	}
+
+	var visible = show != ZmRosterPresence.SHOW_OFFLINE;
+	if (visible != this._visible) {
+		this._callSdk("setVisibility", [visible]);
+		this._visible = visible;
+	}
+	if (this._roster.getPresence().setFromJS({ show: show, status: customStatusMsg })) {
+		this._roster.notifyPresence();
+	}
 };
 
 /**
@@ -365,6 +374,7 @@ function(params) {
 //		    ignored_buddy_record_list: [ { buddy, name } ]
 
 	var list = this._roster.getRosterItemList();
+	list.removeAllItems();
 	var itemMap = {};
 	var itemList = [];
 	if (params.group_record_list && params.group_record_list.records) {
