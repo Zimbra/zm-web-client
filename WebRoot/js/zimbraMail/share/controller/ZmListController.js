@@ -539,11 +539,11 @@ function(ev) {
 
 // Tag/untag items.
 ZmListController.prototype._tagListener =
-function(ev, list) {
+function(ev) {
 	if (appCtxt.getAppViewMgr().getCurrentViewId() == this._getViewType()) {
 		var tagEvent = ev.getData(ZmTagMenu.KEY_TAG_EVENT);
 		var tagAdded = ev.getData(ZmTagMenu.KEY_TAG_ADDED);
-		var items = list || (this._listView[this._currentView].getSelection());
+		var items = this._listView[this._currentView].getSelection();
 		if (tagEvent == ZmEvent.E_TAGS && tagAdded) {
 			this._doTag(items, ev.getData(Dwt.KEY_OBJECT), true);
 		} else if (tagEvent == ZmEvent.E_CREATE) {
@@ -585,8 +585,8 @@ function(ev) {
 
 // Move button has been pressed, show the dialog.
 ZmListController.prototype._moveListener =
-function(ev) {
-	this._pendingActionData = this._listView[this._currentView].getSelection();
+function(ev, list) {
+	this._pendingActionData = list || (this._listView[this._currentView].getSelection());
 	var moveToDialog = appCtxt.getChooseFolderDialog();
 	if (!this._moveCb) {
 		this._moveCb = new AjxCallback(this, this._moveCallback);

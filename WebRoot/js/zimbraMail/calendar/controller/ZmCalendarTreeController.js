@@ -270,7 +270,10 @@ function(ev) {
 			}
 
 			if (((action & ZmItem.DND_ACTION_COPY) != 0)) {
-				var plusDiv = ev.dndProxy.firstChild.nextSibling;
+				var plusDiv = (appts.length == 1)
+					? ev.dndProxy.firstChild.nextSibling
+					: ev.dndProxy.firstChild.nextSibling.nextSibling;
+
 				Dwt.setVisibility(plusDiv, true);
 			}
 		}
