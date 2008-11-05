@@ -29,11 +29,11 @@ var composevalidation = function(){
 
     var prepToSend = function(){
         window.onbeforeunload = null;
-        return checkSubject();
         /*process HTML before sending*/
     <c:if test="${(isHtml)}" >
         saveToTextareaToSend();
     </c:if>
+        return checkSubject();
     };
 
     /* List of IDs for which onbeforeunload has to be cancelled */
