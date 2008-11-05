@@ -16,12 +16,14 @@
 <c:choose>
     <c:when test="${zm:actionSet(param, 'actionDelete')}">
         <zm:trashVoiceMail var="result" phone="${phone}" id="${ids}"/>
-		<c:redirect url="/h/search">
+		<c:url var="url" value="/h/search">
 			<c:param name="st" value="voicemail"/>
 			<c:param name="sq" value="phone:${phone} in:\"Voicemail Inbox\""/>
 			<c:param name="action" value="actionMessageMovedTrash"/>
 			<c:param name="doVoiceMailListViewAction" value="1"/>
-		</c:redirect>
+		</c:url>
+		<zm:redirect url="${url}"/>
+
     </c:when>
     <c:when test="${zm:actionSet(param, 'actionUndelete')}">
         <zm:untrashVoiceMail var="result" phone="${phone}" id="${ids}"/>
