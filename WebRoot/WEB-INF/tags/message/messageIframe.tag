@@ -34,13 +34,16 @@
 		function resizeIframe() {
 			if (iframe !=null) {
 				var w = iframe.offsetWidth, b = iframe.contentWindow.document.body;
-				if (b.scrollWidth > w) {
+                if (b.scrollWidth > w) {
 					b.style.overflow = "auto";
 					b.style.width = w + "px";
 				} else {
 					iframe.style.width = b.scrollWidth -20 + "px";
 				}
-				iframe.style.height = b.scrollHeight + 30 + "px";
+                    var i_frame = iframe;
+                //alert(b.scrollHeight+"|"+iframe.offsetHeight);
+                var _delay = isIE ? 100 : 0 ;
+                setTimeout(function(){ i_frame.style.height = b.scrollHeight + 30 + "px";}, _delay);
             }
 		};
 		document.getElementById("${parentId}").appendChild(iframe);
@@ -58,8 +61,8 @@
 		}
 		//if (keydownH) doc.onkeydown = keydownH;
 		//if (keypressH) doc.onkeypress = keypressH;
-        var _delay = isIE ? 300 : 10 ;
-        setTimeout(resizeIframe, _delay);
+        var _delay = isIE ? 100 : 10 ;
+        setTimeout(resizeIframe, 10);
 		function onIframeLoad() { if (isKonqueror) setTimeout(resizeAndNullIframe, 100); else if (!isIE || iframe.readyState == "complete") resizeAndNullIframe();};
 		if (isIE) iframe.onreadystatechange = onIframeLoad; else iframe.onload = onIframeLoad;
 	})();
