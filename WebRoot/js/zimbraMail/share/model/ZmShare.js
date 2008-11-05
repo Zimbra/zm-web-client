@@ -189,13 +189,7 @@ function(role) {
 			actions.push(ZmShare.PERMS[c]);
 		}
 	}
->>>> ORIGINAL //depot/FRANKLIN/ZimbraWebClient/WebRoot/js/zimbraMail/share/model/ZmShare.js#7
-        return actions.length > 0 ? actions.join(", ") : ZmMsg.shareActionNone;
-==== THEIRS //depot/FRANKLIN/ZimbraWebClient/WebRoot/js/zimbraMail/share/model/ZmShare.js#8
-	return actions.length > 0 ? actions.join(", ") : ZmMsg.shareActionNone;
-==== YOURS //cdamonmac/ZimbraWebClient/WebRoot/js/zimbraMail/share/model/ZmShare.js
 	return (actions.length > 0) ? actions.join(", ") : ZmMsg.shareActionNone;
-<<<<
 };
 
 // role action names
