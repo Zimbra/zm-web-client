@@ -190,7 +190,7 @@ ZmAttachDialog.prototype.uploadFiles = function() {
     if (tabView && tabView.gotAttachments()) {
         this.upload(this._uploadCallback, tabView.getUploadForm());
     } else {
-        this.setFooter("Add atleast one file to attach");
+        this.setFooter(ZmMsg.attachSelectMessage);
     }
 };
 
