@@ -551,7 +551,7 @@ function(params, batchCmd) {
     var respCallback = params.callback ? new AjxCallback(this, this._handleResponseItemAction, [type, idHash, params.callback]) : null;
 
 	if (batchCmd) {
-		batchCmd.addRequestParams(itemActionRequest, respCallback, errorCallback);
+		batchCmd.addRequestParams(itemActionRequest, respCallback, params.errorCallback);
 	} else {
         var params = { asyncMode: true, callback: respCallback };
         useJson ? params.jsonObj = itemActionRequest : params.soapDoc = itemActionRequest;
