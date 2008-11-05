@@ -166,21 +166,40 @@ function(id) {
 	return id;
 };
 
+ZmYahooImService.prototype._showToYConst =
+function(show) {
+	switch(show) {
+	case ZmRosterPresence.SHOW_UNKNOWN: return YMSGR.CONST.YMSG_Unknown;
+	case ZmRosterPresence.SHOW_OFFLINE: return YMSGR.CONST.YMSG_Offline;
+	case ZmRosterPresence.SHOW_CHAT: return YMSGR.CONST.YMSG_Available;
+	case ZmRosterPresence.SHOW_AWAY: return YMSGR.CONST.YMSG_BeRightBack;
+	case ZmRosterPresence.SHOW_EXT_AWAY: return YMSGR.CONST.YMSG_SteppedOut;
+	case ZmRosterPresence.SHOW_DND: return YMSGR.CONST.YMSG_Busy;
+	default: return YMSGR.CONST.YMSG_Available;
+	}
+};
+
+ZmYahooImService.prototype._yConstToShow =
+function(yConst, customDndStatus) {
+	switch (parseInt(yConst)) {
+	case YMSGR.CONST.YMSG_Unknown: return ZmRosterPresence.SHOW_UNKNOWN;
+	case YMSGR.CONST.YMSG_Offline: return ZmRosterPresence.SHOW_OFFLINE;
+	case YMSGR.CONST.YMSG_Available: return ZmRosterPresence.SHOW_CHAT;
+	case YMSGR.CONST.YMSG_BeRightBack: return ZmRosterPresence.SHOW_AWAY;
+	case YMSGR.CONST.YMSG_SteppedOut: return ZmRosterPresence.SHOW_EXT_AWAY;
+	case YMSGR.CONST.YMSG_Busy: return ZmRosterPresence.SHOW_DND;
+	case YMSGR.CONST.YMSG_Custom:
+		return (customDndStatus == YMSGR.CONST.YMSG_Available) ? ZmRosterPresence.SHOW_CHAT : ZmRosterPresence.SHOW_AWAY;
+	default: return ZmRosterPresence.SHOW_CHAT;
+	}
+};
+
 ZmYahooImService.prototype._setPresence =
 function(show, customStatusMsg) {
 	if (customStatusMsg) {
-		YMSGR.sdk.setCustomStatus(0, 0, customStatusMsg);
+		this._callSdk("setCustomStatus", [0, 0, customStatusMsg]);
 	} else {
-		var ymStatus;
-		switch (show) {
-		case ZmRosterPresence.SHOW_UNKNOWN: ymStatus = YMSGR.CONST.YMSG_Unknown; break;
-		case ZmRosterPresence.SHOW_OFFLINE: ymStatus = YMSGR.CONST.YMSG_Offline; break;
-		case ZmRosterPresence.SHOW_ONLINE: ymStatus = YMSGR.CONST.YMSG_Available; break;
-
-		//TODO: review...
-		case ZmRosterPresence.SHOW_DND: ymStatus = YMSGR.CONST.YMSG_Busy; break;
-		default: ymStatus = YMSGR.CONST.YMSG_Available; break;
-		}
+		var ymStatus = this._showToYConst(show);
 		this._callSdk("setStatus", [ymStatus, false]);
 	}
 
@@ -339,14 +358,7 @@ function(params) {
 //utf8_flag: "1"
 	var ri = this._roster.getRosterItemList().getByAddr(params.buddy);
 	if (ri) {
-		var show;
-		if (params.away_status == "0" || params.custom_dnd_status == "0") {
-			show = ZmRosterPresence.SHOW_ONLINE;
-		} else if (params.away_status == "99") {
-			show = ZmRosterPresence.SHOW_OFFLINE;
-		} else {
-			show = ZmRosterPresence.SHOW_UNKNOWN;
-		}
+		var show = this._yConstToShow(params.away_status, params.custom_dnd_status);
 		this._roster.setRosterItemPresence(ri, { show: show, status: params.away_msg }, true);
 	}
 };

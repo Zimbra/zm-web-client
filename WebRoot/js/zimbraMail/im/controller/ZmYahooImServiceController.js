@@ -58,7 +58,9 @@ ZmYahooImServiceController.prototype.getPresenceOperations =
 function() {
 	return [
 		ZmOperation.IM_PRESENCE_OFFLINE,
-		ZmOperation.IM_PRESENCE_ONLINE,
+		ZmOperation.IM_PRESENCE_CHAT,
+		ZmOperation.IM_PRESENCE_AWAY,
+		ZmOperation.IM_PRESENCE_XA,
 		ZmOperation.IM_PRESENCE_DND
 	];
 };

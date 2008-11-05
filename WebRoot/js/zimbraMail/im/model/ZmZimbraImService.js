@@ -117,6 +117,16 @@ function(callback, params) {
 	return this._send(params, soapDoc, responseCallback);
 };
 
+ZmZimbraImService.prototype._handleResponseGetRoster =
+function(callback, response) {
+	var responseJson = response.getResponse();
+	var roster = responseJson ? responseJson.IMGetRosterResponse : null;
+	if (callback) {
+		callback.run(roster);
+	}
+	return roster;
+};
+
 ZmZimbraImService.prototype.initializePresence =
 function() {
 	// No-op. Initial presence comes from notification.
@@ -140,16 +150,6 @@ function(show, priority, customStatusMsg, batchCommand) {
 	} else {
 		appCtxt.getAppController().sendRequest({ soapDoc: soapDoc, asyncMode: true });
 	}
-};
-
-ZmZimbraImService.prototype._handleResponseGetRoster =
-function(callback, response) {
-	var responseJson = response.getResponse();
-	var roster = responseJson ? responseJson.IMGetRosterResponse : null;
-	if (callback) {
-		callback.run(roster);
-	}
-	return roster;
 };
 
 ZmZimbraImService.prototype.setIdle =
