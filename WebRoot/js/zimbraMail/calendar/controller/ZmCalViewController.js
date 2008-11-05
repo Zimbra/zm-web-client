@@ -61,6 +61,7 @@ ZmCalViewController = function(container, calApp) {
 	this._listeners[ZmOperation.NEW_ALLDAY_APPT] = new AjxListener(this, this._newAllDayApptAction);
 	this._listeners[ZmOperation.SEARCH_MAIL] = new AjxListener(this, this._searchMailAction);
 	this._listeners[ZmOperation.CAL_REFRESH] = new AjxListener(this, this._refreshButtonListener);
+	this._listeners[ZmOperation.TAG] = new AjxListener(this, this._calendarTagListener);
 
 	this._treeSelectionListener = new AjxListener(this, this._calTreeSelectionListener);
 	this._maintTimedAction = new AjxTimedAction(this, this._maintenanceAction);
@@ -428,6 +429,64 @@ function(ev) {
 	sc.getSearchToolbar().blur();
 	this._refreshMaintenance = true;
 	this._refreshAction(false);
+};
+
+ZmCalViewController.prototype._calendarTagListener =
+function(ev) {
+	if (appCtxt.getAppViewMgr().getCurrentViewId() != this._getViewType()) { return; }
+
+	var items = this._listView[this._currentView].getSelection();
+
+	var divvied = (items.length > 1) ? this._divvyItems(items) : null;
+
+	if (divvied && (divvied.readonly.length > 0 || divvied.shared.length > 0)) {
+		// get a list of items that are "taggable"
+		items = [];
+		for (var i in divvied) {
+			// we process read only appts b/c it can also mean any appt where
+			// i'm not the organizer but still resides in my local folder.
+			if (i == "shared") { continue; }
+
+			var list = divvied[i];
+			for (var j = 0; j < list.length; j++) {
+				var appt = list[j];
+				var calendar = appt.getFolder();
+				if (calendar && !calendar.isRemote()) {
+					items.push(appt);
+				}
+			}
+		}
+
+		// only show msg dialog if adding a tag
+		if (ev.getData(ZmTagMenu.KEY_TAG_ADDED)) {
+			var msg;
+			var dlg = appCtxt.getMsgDialog();
+			if (items.length > 0) {
+				var listener = new AjxListener(this, this._tagListener, [ev, dlg, items]);
+				dlg.setButtonListener(DwtDialog.OK_BUTTON, listener);
+				msg = ZmMsg.tagReadonly;
+			} else {
+				msg = ZmMsg.nothingToTag;
+			}
+
+			dlg.setMessage(msg);
+			dlg.popup();
+			return;
+		}
+	}
+
+	if (items.length > 0) {
+		this._tagListener(ev, null, items);
+	}
+};
+
+ZmCalViewController.prototype._tagListener =
+function(ev, dlg, items) {
+	if (dlg) {
+		dlg.popdown();
+	}
+
+	ZmListController.prototype._tagListener.call(this, ev, items);
 };
 
 ZmCalViewController.prototype._getToolBarOps =
@@ -1075,10 +1134,12 @@ function(items) {
 	var normal = [];
 	var readonly = [];
 	var recurring = [];
+	var shared = [];
 	//	var orgChange = [];     <--- needed if moving appts across mboxes
 
 	for (var i = 0; i < items.length; i++) {
 		var appt = items[i];
+
 		if (appt.isReadOnly()) {
 			readonly.push(appt);
 		} else if (appt.isRecurring() && !appt.isException) { 
@@ -1086,9 +1147,16 @@ function(items) {
 		} else {
 			normal.push(appt);
 		}
+
+		// keep a separate list of shared items. This means "recurring" and
+		// "normal" can contain shared items as well.
+		var calendar = appt.getFolder();
+		if (calendar && calendar.isRemote()) {
+			shared.push(appt);
+		}
 	}
 
-	return {normal:normal, readonly:readonly, recurring:recurring};
+	return {normal:normal, readonly:readonly, recurring:recurring, shared:shared};
 };
 
 ZmCalViewController.prototype._promptDeleteApptList =

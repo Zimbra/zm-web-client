@@ -539,15 +539,15 @@ function(ev) {
 
 // Tag/untag items.
 ZmListController.prototype._tagListener =
-function(item) {
+function(ev, list) {
 	if (appCtxt.getAppViewMgr().getCurrentViewId() == this._getViewType()) {
-		var tagEvent = item.getData(ZmTagMenu.KEY_TAG_EVENT);
-		var tagAdded = item.getData(ZmTagMenu.KEY_TAG_ADDED);
-		var items = this._listView[this._currentView].getSelection();
+		var tagEvent = ev.getData(ZmTagMenu.KEY_TAG_EVENT);
+		var tagAdded = ev.getData(ZmTagMenu.KEY_TAG_ADDED);
+		var items = list || (this._listView[this._currentView].getSelection());
 		if (tagEvent == ZmEvent.E_TAGS && tagAdded) {
-			this._doTag(items, item.getData(Dwt.KEY_OBJECT), true);
+			this._doTag(items, ev.getData(Dwt.KEY_OBJECT), true);
 		} else if (tagEvent == ZmEvent.E_CREATE) {
-			this._pendingActionData = this._listView[this._currentView].getSelection();
+			this._pendingActionData = items;
 			var newTagDialog = appCtxt.getNewTagDialog();
 			if (!this._newTagCb) {
 				this._newTagCb = new AjxCallback(this, this._newTagCallback);
@@ -555,7 +555,7 @@ function(item) {
 			ZmController.showDialog(newTagDialog, this._newTagCb);
 			newTagDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._clearDialog, this, newTagDialog);
 		} else if (tagEvent == ZmEvent.E_TAGS && !tagAdded) {
-			this._doTag(items, item.getData(Dwt.KEY_OBJECT), false);
+			this._doTag(items, ev.getData(Dwt.KEY_OBJECT), false);
 		} else if (tagEvent == ZmEvent.E_REMOVE_ALL) {
 			// bug fix #607
 			this._doRemoveAllTags(items);
