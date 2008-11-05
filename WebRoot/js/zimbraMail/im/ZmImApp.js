@@ -60,9 +60,9 @@ ZmImApp.prototype = new ZmApp;
 ZmImApp.prototype.constructor = ZmImApp;
 
 ZmImApp.loggedIn = function() {
-        return ZmImApp.INSTANCE
-                && ( appCtxt.get(ZmSetting.IM_PREF_AUTO_LOGIN) ||
-                     ZmImApp.INSTANCE._roster );
+	return ZmImApp.INSTANCE
+			&& ( appCtxt.get(ZmSetting.IM_PREF_AUTO_LOGIN) ||
+				 ZmImApp.INSTANCE._roster );
 };
 
 ZmImApp.prototype.toString =
@@ -95,6 +95,7 @@ function() {
     ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_OFFLINE, { textKey: "imStatusOffline", image: "Offline" });
     ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_ONLINE, { textKey: "imStatusOnline", image: "ImAvailable" });
     ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_XA, { textKey: "imStatusExtAway", image: "ImExtendedAway" });
+    ZmOperation.registerOp(ZmId.OP_IM_LOGOUT_YAHOO, { textKey: "imLogoutYahoo", image: "Logoff" });
     ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_CUSTOM_MRU, { image: "ImAvailable" });
     ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_MENU, { }); // Keyboard only.
     ZmOperation.registerOp(ZmId.OP_NEW_ROSTER_GROUP, { textKey: "imNewGroup", image: "ImGroup" });
@@ -671,7 +672,7 @@ ZmImApp.prototype.prepareVisuals = function() {
 ZmImApp.prototype._createImPresenceMenu =
 function(button) {
 	AjxDispatcher.require(["IMCore", "IM"]);
-	var menu = new ZmPresenceMenu(button);
+	var menu = ZmImServiceController.INSTANCE.createPresenceMenu(button);
 	button.setMenu(menu);
 	return menu;
 };

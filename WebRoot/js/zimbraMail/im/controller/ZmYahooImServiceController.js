@@ -54,15 +54,24 @@ function(callback) {
 	}
 };
 
-ZmYahooImServiceController.prototype.getPresenceOperations =
-function() {
-	return [
+ZmYahooImServiceController.prototype.logout =
+function(callback) {
+};
+
+ZmYahooImServiceController.prototype.createPresenceMenu =
+function(parent) {
+	var statuses = [
 		ZmOperation.IM_PRESENCE_OFFLINE,
 		ZmOperation.IM_PRESENCE_CHAT,
 		ZmOperation.IM_PRESENCE_AWAY,
 		ZmOperation.IM_PRESENCE_XA,
 		ZmOperation.IM_PRESENCE_DND
 	];
+	var result = new ZmPresenceMenu(parent, statuses);
+	result.addOperation(ZmOperation.SEP);
+	var logoutItem = result.addOperation(ZmOperation.IM_LOGOUT_YAHOO, new AjxListener(this, this.logout));
+	result.addPopupListener(new AjxListener(this, this._presencePopupListener, [logoutItem]));
+	return result;
 };
 
 ZmYahooImServiceController.prototype.getSupportsAccounts =
@@ -144,5 +153,9 @@ function(callback, id, remember, dialog, response) {
 	} else {
 		this._loginById(callback, id, remember, dialog);
 	}
+};
+
+ZmYahooImServiceController.prototype._presencePopupListener =
+function(logoutItem) {
 };
 

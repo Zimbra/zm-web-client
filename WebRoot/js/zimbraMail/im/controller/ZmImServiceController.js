@@ -40,8 +40,8 @@ function(showText) {
 	alert('Not implemented');
 };
 
-ZmImServiceController.prototype.getPresenceOperations =
-function() {
+ZmImServiceController.prototype.createPresenceMenu =
+function(parent) {
 	alert('Not implemented');
 };
 

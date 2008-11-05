@@ -15,22 +15,22 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmPresenceMenu = function(parent) {
+ZmPresenceMenu = function(parent, statuses) {
 	ZmPopupMenu.call(this, parent);
-	var list = ZmPresenceMenu._getOperations();
+	this._statuses = statuses;
 	var presenceListener = new AjxListener(this, this._presenceItemListener);
-	for (var i = 0; i < list.length; i++) {
-		this._addOperation(list[i], presenceListener, DwtMenuItem.RADIO_STYLE);
+	for (var i = 0; i < statuses.length; i++) {
+		this.addOperation(statuses[i], presenceListener, DwtMenuItem.RADIO_STYLE);
 	}
 
-	this._mruSeparator = this._addOperation(ZmOperation.SEP);
+	this._mruSeparator = this.addOperation(ZmOperation.SEP);
 	this._mruIndex = this.getNumChildren();
 
 	this._mruItems = [];
 
-	this._mruSeparator = this._addOperation(ZmOperation.SEP);
+	this._mruSeparator = this.addOperation(ZmOperation.SEP);
 	var customListener = new AjxListener(this, this._presenceCustomItemListener);
-	this._addOperation(ZmOperation.IM_PRESENCE_CUSTOM_MSG, customListener)
+	this.addOperation(ZmOperation.IM_PRESENCE_CUSTOM_MSG, customListener);
 };
 
 ZmPresenceMenu.prototype = new ZmPopupMenu;
@@ -51,9 +51,7 @@ function(delay, x, y, kbGenerated) {
 	ZmPopupMenu.prototype.popup.call(this, delay, x, y, kbGenerated);
 };
 
-// Protected methods
-
-ZmPresenceMenu.prototype._addOperation =
+ZmPresenceMenu.prototype.addOperation =
 function(op, listener, style, index) {
 	if (op == ZmOperation.SEP) {
 		return new DwtMenuItem({parent:this, style:DwtMenuItem.SEPARATOR_STYLE});
@@ -72,11 +70,7 @@ function(op, listener, style, index) {
 	}
 };
 
-ZmPresenceMenu._getOperations =
-function() {
-	ZmPresenceMenu._LIST = ZmPresenceMenu._LIST || ZmImServiceController.INSTANCE.getPresenceOperations();
-	return ZmPresenceMenu._LIST;
-};
+// Protected methods
 
 ZmPresenceMenu.prototype._presenceItemListener =
 function(ev) {
@@ -124,7 +118,7 @@ ZmPresenceMenu.prototype._getMRUItem =
 function(index) {
 	if (!this._mruItems[index]) {
 		this._presenceMRUListenerObj = this._presenceMRUListenerObj || new AjxListener(this, this._presenceMRUListener);
-		this._mruItems[index] = this._addOperation(
+		this._mruItems[index] = this.addOperation(
 				ZmOperation.IM_PRESENCE_CUSTOM_MRU, this._presenceMRUListenerObj,
 				DwtMenuItem.RADIO_STYLE, this._mruIndex++);
 	}
@@ -158,11 +152,10 @@ function() {
 
 	var statusImage = "Offline";
 	if (!status) {
-        var list = ZmPresenceMenu._getOperations();
-        for (var i = 0; i < list.length; i++) {
-            if (list[i] != ZmOperation.SEP) {
-                var mi = this.getItemById(ZmOperation.MENUITEM_ID, list[i]);
-                if (list[i] == currentShowOp) {
+        for (var i = 0; i < this._statuses.length; i++) {
+            if (this._statuses[i] != ZmOperation.SEP) {
+                var mi = this.getItemById(ZmOperation.MENUITEM_ID, this._statuses[i]);
+                if (this._statuses[i] == currentShowOp) {
                     mi.setChecked(true, true);
 					statusImage = mi.getImage();
 					break;
@@ -187,7 +180,7 @@ function(statusImage) {
 		if (gateways.length > 1) {
 			if (!this._gatewayItems) {
 				this._gatewayItems = [];
-				this._gatewayItems.push(this._addOperation(ZmOperation.SEP));
+				this._gatewayItems.push(this.addOperation(ZmOperation.SEP));
 			}
 			for (var i = 1, count = gateways.length; i < count; i++) {
 				var gateway = gateways[i];
