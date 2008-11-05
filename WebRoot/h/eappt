@@ -429,13 +429,19 @@
                         </tr>
                         <c:if test="${mailbox.features.groupcalendarEnabled}">
                             <tr>
-                                <td valign='top' width="1%" align="right" nowrap> <label for="attField"><fmt:message key="attendees"/>: </label></td>
-                                <td colspan="2" nowrap>
-                                    <div class="ZhAC ZhACTo">
-                                        <textarea id="attField" rows="3" style='width:99%' cols="80"
-                                                  name="attendees">${fn:escapeXml(compose.attendees)}</textarea>
-                                        <br><div class='ZhACCont' id="attContainer" style='width:99%;'></div>
-                                    </div>
+                                <td colspan="2">
+                                    <table>
+                                        <tr>
+                                            <td valign='top' width="1%" align="right" nowrap> <label for="attField"><fmt:message key="attendees"/>: </label></td>
+                                            <td colspan="2" nowrap>
+                                                <div class="ZhAC ZhACTo">
+                                                    <textarea id="attField" rows="3" style='width:99%' cols="80"
+                                                              name="attendees">${fn:escapeXml(compose.attendees)}</textarea>
+                                                    <br><div class='ZhACCont' id="attContainer" style='width:99%;'></div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
                                 </td>
                             </tr>
                         </c:if>
