@@ -297,7 +297,9 @@ function(event) {
 	var showPerm = organizer.link && organizer.shares && organizer.shares.length > 0;
 	if (showPerm) {
 		AjxDispatcher.require("Share");
-		this._permEl.innerHTML = ZmShare.getRoleActions(organizer.shares[0].link.role);
+		var share = organizer.getMainShare();
+		var role = share && share.link && share.link.role;
+		this._permEl.innerHTML = ZmShare.getRoleActions(role);
 	}
 
 	if (appCtxt.get(ZmSetting.SHARING_ENABLED) &&

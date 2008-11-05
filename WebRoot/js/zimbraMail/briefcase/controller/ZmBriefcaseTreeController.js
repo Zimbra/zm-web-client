@@ -87,7 +87,7 @@ ZmBriefcaseTreeController.__isAllowed = function(organizer, perm) {
 		// change assumption to not allowed
 		allowed = false;
 		// REVISIT: bug 10801
-		var share = organizer.shares && organizer.shares[0];
+		var share = organizer.getMainShare();
 		if (share && !share.isPermRestricted(perm)) {
 			allowed = share.isPermAllowed(perm);
 		}

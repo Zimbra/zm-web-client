@@ -612,11 +612,9 @@ function(calItem, mode) {
         }
 
         // don't show calendar if feed, or remote and don't have write perms
-		if (cal.isFeed() ||
-			(cal.link && cal.shares && cal.shares.length > 0 && !cal.shares[0].isWrite()))
-		{
-			continue;
-		}
+		var share = cal.getMainShare();
+		if (cal.isFeed() ||	(cal.link && share && !share.isWrite())) { continue; }
+		
 		this._folderSelect.addOption(cal.getName(), (calItem.folderId == cal.id) || (calItem.folderId == id ), id);
 	}
 	var num = this._folderSelect.size();

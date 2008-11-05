@@ -684,16 +684,17 @@ function() {
 	return this.shares;
 };
 
-ZmOrganizer.prototype.setShares = 
-function(shares) {
-	this.shares = shares;
-};
-
 ZmOrganizer.prototype.addShare =
 function(share) {
-	if (!this.shares)
-		this.shares = [];
+	this.shares = this.shares || [];
 	this.shares.push(share);
+
+	var curAcct = appCtxt.getActiveAccount();
+	var curZid = curAcct && curAcct.id;
+	var shareId = share.grantee && share.grantee.id;
+	if (shareId && (shareId == curZid)) {
+		this._mainShare = share;
+	}
 };
 
 ZmOrganizer.prototype.clearShares =
@@ -704,6 +705,12 @@ function() {
 		}
 	}
 	this.shares = null;
+	this._mainShare = null;
+};
+
+ZmOrganizer.prototype.getMainShare =
+function() {
+	return this._mainShare || (this._shares && this._shares.length && this._shares[0]);
 };
 
 ZmOrganizer.prototype.supportsPublicAccess =
@@ -724,11 +731,10 @@ ZmOrganizer.prototype.setPermissions =
 function(permission) {
 	if (this.shares == null) {
 		AjxDispatcher.require("Share");
-		var share = new ZmShare({parent:this, perm:permission});
-		this.addShare(share);
+		this.addShare(new ZmShare({parent:this, perm:permission}));
 	} else {
-		// lets just assume we're dealing w/ a link (which should only have one share)
-		this.shares[0].perm = permission;
+		var share = this.getMainShare();
+		share.perm = permission;
 	}
 };
 
@@ -1203,7 +1209,7 @@ function() {
 ZmOrganizer.prototype.isReadOnly =
 function() {
 	if (!this._isReadOnly) {
-		var share = this.shares ? this.shares[0] : null;
+		var share = this.getMainShare();
 		this._isReadOnly = (this.isRemote() && share && !share.isWrite());
 	}
 	return this._isReadOnly;
@@ -1212,7 +1218,7 @@ function() {
 ZmOrganizer.prototype.isAdmin =
 function() {
 	if (!this._isAdmin) {
-		var share = this.shares ? this.shares[0] : null;
+		var share = this.getMainShare();
 		this._isAdmin = (this.isRemote() && share && share.isAdmin());
 	}
 	return this._isAdmin;
@@ -1221,7 +1227,7 @@ function() {
 ZmOrganizer.prototype.hasPrivateAccess =
 function() {
 	if (!this._hasPrivateAccess) {
-		var share = this.shares ? this.shares[0] : null;
+		var share = this.getMainShare();
 		this._hasPrivateAccess = (this.isRemote() && share && share.hasPrivateAccess());
 	}
 	return this._hasPrivateAccess;
@@ -1404,12 +1410,10 @@ ZmOrganizer.prototype._setSharesFromJs =
 function(obj) {
 	if (obj.acl && obj.acl.grant && obj.acl.grant.length > 0) {
 		AjxDispatcher.require("Share");
-		var shares = [];
 		for (var i = 0; i < obj.acl.grant.length; i++) {
 			var grant = obj.acl.grant[i];
-			shares[i] = ZmShare.createFromJs(this, grant);
+			this.addShare(ZmShare.createFromJs(this, grant));
 		}
-		this.setShares(shares);
 	}
 };
 

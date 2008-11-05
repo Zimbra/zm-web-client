@@ -187,7 +187,7 @@ function(role) {
 			actions.push(ZmShare.PERMS[c]);
 		}
 	}
-        return actions.length > 0 ? actions.join(", ") : ZmMsg.shareActionNone;
+	return actions.length > 0 ? actions.join(", ") : ZmMsg.shareActionNone;
 };
 
 // role action names
