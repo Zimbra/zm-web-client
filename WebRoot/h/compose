@@ -532,11 +532,12 @@ cancelOnbeforeUnload = function(){
 
 prepToSend = function(){
     window.onbeforeunload = null;
-    return checkSubject();
     /*process HTML before sending*/
 <c:if test="${(isHtml)}" >
            saveToTextareaToSend();
 </c:if>
+    return checkSubject();
+    
 };
 
 // -->
