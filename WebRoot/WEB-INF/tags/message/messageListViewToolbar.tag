@@ -63,15 +63,15 @@
                             <input  type="hidden" value="" id="drag_target_folder" name="dragTargetFolder" />
                             <input  type="hidden" value="" id="drag_msg_id" name="dragMsgId" />
                             <select name="folderId" onchange="zclick('SOPMOVE')">
-                                <option value="" selected/><fmt:message key="moveAction"/>
-                                <option disabled /><fmt:message key="actionOptSep"/>
+                                <option value="" selected><fmt:message key="moveAction"/></option>
+                                <optgroup label=<fmt:message key="actionOptSep"/>>
                                 <zm:forEachFolder var="folder">
                                     <c:if test="${folder.isMessageMoveTarget and !folder.isTrash and !folder.isSpam}">
-                                        <option <c:if test="${keys}">id="OPFLDR${folder.id}"</c:if> value="m:${folder.id}" />${zm:truncate(fn:escapeXml(zm:getFolderPath(pageContext, folder.id)),10,true)}
+                                        <option <c:if test="${keys}">id="OPFLDR${folder.id}"</c:if> value="m:${folder.id}">${zm:truncate(fn:escapeXml(zm:getFolderPath(pageContext, folder.id)),10,true)}</option>
                                     </c:if>
                                 </zm:forEachFolder>
+                                </optgroup>
                             </select>
-
                         </td>
                         <app:button id="${keys ? 'OPMOVE' : ''}" name="actionMove" text="actionMove" tooltip="actionMoveTT"/>
                         <td><div class='vertSep'></div></td>
