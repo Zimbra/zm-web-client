@@ -316,7 +316,7 @@ function(calItem, mode, firstTime) {
 	// (i.e. html editor) may not have finished initializing yet.
     if (firstTime || this._notesHtmlModeFirstTime) {   // Also, handling HTML mode specially as it takes some time to initialize.
 		var ta = new AjxTimedAction(this, this._finishReset);
-		AjxTimedAction.scheduleAction(ta, 250);
+		AjxTimedAction.scheduleAction(ta, 500);
 	} else {
 		this._finishReset();
 	}
