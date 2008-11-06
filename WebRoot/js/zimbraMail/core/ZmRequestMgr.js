@@ -89,14 +89,20 @@ function() {
  *        response				[object]*		pre-determined response (no request will be made)
  *        skipAuthCheck			[boolean]*		don't check if auth token has changed
  *        resend				[constant]*		reason for resending request
+ *        sensitive				[boolean]*		attempt to use secure conn to protect data
  *        noSession				[boolean]*		if true, no session info is included
  */
 ZmRequestMgr.prototype.sendRequest =
 function(params) {
-	
-	if (params.response) {
+
+	var response = params.response;
+	if (response) {
+		if (params.reqId) {
+			params = this._pendingRequests[params.reqId] || params;
+			params.response = response;
+		}
 		params.asyncMode = true;	// canned response set up async style
-		return this._handleResponseSendRequest(params, new ZmCsfeResult(params.response));
+		return this._handleResponseSendRequest(params, new ZmCsfeResult(response));
 	}
 	
 	var reqId = params.reqId = ("Req_"+ZmRequestMgr._nextReqId++);
@@ -105,6 +111,66 @@ function(params) {
 		timeout = timeout * 1000; // convert seconds to ms
 	}
 	var asyncCallback = params.asyncMode ? new AjxCallback(this, this._handleResponseSendRequest, [params]) : null;
+
+	if (params.sensitive) {
+		DBG.println(AjxDebug.DBG2, "request contains sensitive data");
+		// NOTE: If only http mode is available, there's nothing we can
+		//       do. And if we're already using https mode, then there's
+		//       nothing we need to do. We only attempt to send the
+		//       request securely if mixed mode is enabled and the app
+		//       was loaded using http.
+		var isHttp = document.location.protocol == ZmSetting.PROTO_HTTP;
+		var isMixedMode = appCtxt.get(ZmSetting.PROTOCOL_MODE) == ZmSetting.PROTO_MIXED;
+		if (isHttp && isMixedMode) {
+			DBG.println(AjxDebug.DBG2, "sending request securely");
+			// adjust command parameters
+			// TODO: Because of timing issues, should we not use session info?
+			// TODO: But for batch commands, some updates would not be seen immediately.
+			// TODO: To avoid security warning, send response in URL; so limit length
+			params.noSession = true;
+
+			// information
+			var requestStr = ZmCsfeCommand.getRequestStr(params);
+			var loc = document.location;
+			var port = appCtxt.get(ZmSetting.HTTPS_PORT);
+			if (port && port != ZmSetting.DEFAULT_HTTPS_PORT) {
+				port = ":"+port;
+			}
+
+			// create iframe
+			var iframe = document.createElement("IFRAME");
+			iframe.style.display = "none";
+			iframe.id = Dwt.getNextId();
+			document.body.appendChild(iframe);
+
+			// set contents
+			var iframeDoc = Dwt.getIframeDoc(iframe);
+			iframeDoc.write(
+				"<form ",
+					"id=",iframe.id,"-form ",
+					"target=",iframe.id,"-iframe ",
+					"method=POST ",
+					"action='https://",loc.hostname,port,appContextPath,"/public/secureRequest.jsp'",
+				">",
+					"<input type=hidden name=reqId value='",reqId,"'>",
+					"<textarea name=data>",
+						AjxStringUtil.htmlEncode(requestStr),
+					"</textarea>",
+				"</form>",
+				"<iframe name=",iframe.id,"-iframe></iframe>"
+			);
+			iframeDoc.close();
+
+			// save the params for the response
+			this._pendingRequests[reqId] = params;
+
+			// submit form
+			var form = iframeDoc.getElementById(iframe.id+"-form");
+			form.submit();
+			return;
+		}
+	}
+
 	var command = new ZmCsfeCommand();
 	// bug fix #10652 - dont set change token if accountName is specified
 	// (since we're executing on someone else's mbox)
