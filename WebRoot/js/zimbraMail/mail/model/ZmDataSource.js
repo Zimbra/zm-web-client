@@ -158,11 +158,13 @@ function(callback, errorCallback, batchCommand) {
 	var respCallback = new AjxCallback(this, this._handleCreateResponse, [callback]);
 	if (batchCommand) {
 		batchCommand.addNewRequestParams(soapDoc, respCallback, errorCallback);
+		batchCommand.setSensitive(Boolean(this.password));
 		return;
 	}
 
 	var params = {
 		soapDoc: soapDoc,
+		sensitive: Boolean(this.password),
 		asyncMode: Boolean(callback),
 		callback: respCallback,
 		errorCallback: errorCallback
@@ -198,11 +200,13 @@ function(callback, errorCallback, batchCommand) {
 	var respCallback = new AjxCallback(this, this._handleSaveResponse, [callback]);
 	if (batchCommand) {
 		batchCommand.addNewRequestParams(soapDoc, respCallback, errorCallback);
+		batchCommand.setSensitive(Boolean(this.password));
 		return;
 	}
 
 	var params = {
 		soapDoc: soapDoc,
+		sensitive: Boolean(this.password),
 		asyncMode: Boolean(callback),
 		callback: respCallback,
 		errorCallback: errorCallback
@@ -245,11 +249,13 @@ function(callback, errorCallback, batchCommand, noBusyOverlay) {
 
 	if (batchCommand) {
 		batchCommand.addNewRequestParams(soapDoc, callback, errorCallback);
+		batchCommand.setSensitive(true);
 		return;
 	}
 
 	var params = {
 		soapDoc: soapDoc,
+		sensitive: true,
 		asyncMode: Boolean(callback),
 		noBusyOverlay: noBusyOverlay,
 		callback: callback,
