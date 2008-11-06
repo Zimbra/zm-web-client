@@ -946,3 +946,8 @@ function() {
     
     this.show(null, true);
 };
+
+ZmBriefcaseController.prototype.getCurrentFolderId =
+function() {
+	return this._currentFolder;
+};
