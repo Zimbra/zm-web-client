@@ -446,7 +446,12 @@ function(msgId, partId, name, folderId,items) {
 	}
 
 	var itemFound = false;
-	for (var i in items) {
+	
+	if(items instanceof ZmList) {
+        items = items.getArray();
+    }
+
+    for (var i in items) {
 		var item = items[i];
 		if (item.name == name) {
 			itemFound = true;
