@@ -216,7 +216,7 @@ function(im) {
 };
 
 ZmRoster.prototype.joinChatRequest = function(thread, addr) {
-        var sd = AjxSoapDoc.create("IMJoinChatRequest", "urn:zimbraIM");
+        var sd = AjxSoapDoc.create("IMJoinConferenceRoomRequest", "urn:zimbraIM");
         var method = sd.getMethod();
         method.setAttribute("thread", thread);
         method.setAttribute("addr", addr);
