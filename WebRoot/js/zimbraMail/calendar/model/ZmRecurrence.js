@@ -366,3 +366,22 @@ function(recurRules) {
 		}
 	}
 };
+
+ZmRecurrence.prototype.setRecurrenceStartTime =
+function(startTime) {
+	
+	this._startDate.setTime(startTime);
+	
+	if (this.repeatType == ZmRecurrence.NONE) return;
+
+	if (this.repeatCustom != "0")
+		return;
+
+ 	if (this.repeatType == ZmRecurrence.WEEKLY) {
+		this.repeatWeeklyDays = [ZmCalItem.SERVER_WEEK_DAYS[this._startDate.getDay()]];
+	} else if (this.repeatType == ZmRecurrence.MONTHLY) {
+		this.repeatMonthlyDayList = [this._startDate.getDate()];
+    } else if (this.repeatType == ZmRecurrence.YEARLY) {
+		this.repeatYearlyMonthsList = this._startDate.getMonth() + 1;	
+	}
+};
