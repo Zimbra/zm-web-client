@@ -172,6 +172,9 @@ function() {
 	if (!this.alarmData) { return false; }
 
 	var alarmData = this.alarmData[0];
+	
+	if (!this.alarmData) { return false; }
+	
 	this._nextAlarmTime = alarmData.nextAlarm;
 	this._alarmInstStart = alarmData.alarmInstStart;
 
