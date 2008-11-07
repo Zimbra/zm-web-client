@@ -63,11 +63,11 @@ function(overviewId, owner) {
 	var calendars = [];
 	var items = this._getItems(overviewId);
 	for (var i = 0; i < items.length; i++) {
-		var item = items[i];		
+		var item = items[i];
 		if (!item || item._isSeparator) continue;
 		var calendar = item.getData(Dwt.KEY_OBJECT);
 		if(calendar.getOwner() == owner){
-			calendars.push(calendar);				
+			calendars.push(calendar);
 		}
 	}
 
@@ -122,41 +122,42 @@ function(actionMenu, type, id) {
 			actionMenu.enable(ZmOperation.CHECK_ALL, foundUnchecked);
 			actionMenu.enable(ZmOperation.CLEAR_ALL, foundChecked);
 		}
-//		this._resetOperation(actionMenu, ZmOperation.EXPORT_FOLDER, ZmMsg.exportCalendar);
-//		this._resetOperation(actionMenu, ZmOperation.IMPORT_FOLDER, ZmMsg.importCalendar);
+
+		// we always enable sharing in case we're in multi-mbox mode
+		this._resetButtonPerSetting(actionMenu, ZmOperation.SHARE_CALENDAR, appCtxt.get(ZmSetting.SHARING_ENABLED));
+		this._resetButtonPerSetting(actionMenu, ZmOperation.MOUNT_CALENDAR, appCtxt.get(ZmSetting.SHARING_ENABLED));
+		this._resetButtonPerSetting(actionMenu, ZmOperation.FREE_BUSY_LINK, appCtxt.getActiveAccount().isZimbraAccount);
 	}
 };
 
 ZmCalendarTreeController.prototype._browseListener =
 function(ev){
-    var folder = this._getActionedOrganizer(ev);
-    if (folder) {
-        AjxDispatcher.require("Browse");
-        appCtxt.getSearchController().showBrowsePickers([ZmPicker.DATE,ZmPicker.TIME]);
-    }
+	var folder = this._getActionedOrganizer(ev);
+	if (folder) {
+		AjxDispatcher.require("Browse");
+		appCtxt.getSearchController().showBrowsePickers([ZmPicker.DATE,ZmPicker.TIME]);
+	}
 };
 ZmCalendarTreeController.prototype._detachListener =
 function(ev){
-    var folder = this._getActionedOrganizer(ev);
-    if (folder) {
-        var url = folder.getRestUrl();
-        if(url){
-            var newWin = window.open(url+".html", "_blank");
-        }
-    }
+	var folder = this._getActionedOrganizer(ev);
+	var url = (folder) ? folder.getRestUrl() : null;
+	if (url) {
+		window.open(url+".html", "_blank");
+	}
 };
 ZmCalendarTreeController.prototype._freeBusyLinkListener =
 function(ev){
-    var inNewWindow = false;
-    var app = appCtxt.getApp(ZmApp.CALENDAR);
-    if(app){
-        inNewWindow = app._inNewWindow(ev);
-    }
-    var restUrl = appCtxt.get(ZmSetting.REST_URL);
-    if(restUrl){
-       restUrl += "?fmt=freebusy";
-    }
-    var action = ZmOperation.NEW_MESSAGE;
+	var inNewWindow = false;
+	var app = appCtxt.getApp(ZmApp.CALENDAR);
+	if (app) {
+		inNewWindow = app._inNewWindow(ev);
+	}
+	var restUrl = appCtxt.get(ZmSetting.REST_URL);
+	if (restUrl) {
+	   restUrl += "?fmt=freebusy";
+	}
+	var action = ZmOperation.NEW_MESSAGE;
 	var msg = new ZmMailMsg();
 	var toOverride = null;
 	var subjOverride = null;
@@ -170,15 +171,14 @@ function(ev){
 ZmCalendarTreeController.prototype._getHeaderActionMenuOps =
 function() {
 	var ops = [ZmOperation.NEW_CALENDAR];
-	if (appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED) && !appCtxt.isOffline) {
+	if (appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED)) {
 		ops.push(ZmOperation.MOUNT_CALENDAR);
 	}
-	ops.push(ZmOperation.CHECK_ALL);
-	ops.push(ZmOperation.CLEAR_ALL);
-    ops.push(ZmOperation.BROWSE);
-	if (!appCtxt.isOffline) {
-		ops.push(ZmOperation.SEP, ZmOperation.FREE_BUSY_LINK);
-	}
+	ops.push(ZmOperation.CHECK_ALL,
+			ZmOperation.CLEAR_ALL,
+			ZmOperation.BROWSE,
+			ZmOperation.SEP,
+			ZmOperation.FREE_BUSY_LINK);
 
 	return ops;
 };
@@ -187,16 +187,13 @@ function() {
 ZmCalendarTreeController.prototype._getActionMenuOps =
 function() {
 	var ops = [];
-	if (appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED) && !appCtxt.isOffline) {
+	if (appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED)) {
 		ops.push(ZmOperation.SHARE_CALENDAR);
 	}
-	ops.push(ZmOperation.DELETE);
-	ops.push(ZmOperation.EDIT_PROPS);
-	ops.push(ZmOperation.SYNC);
-    ops.push(ZmOperation.DETACH_WIN);
-//	if (appCtxt.get(ZmSetting.IMPORT_EXPORT_ENABLED)) {
-//		ops.push(ZmOperation.EXPORT_FOLDER, ZmOperation.IMPORT_FOLDER);
-//	}
+	ops.push(ZmOperation.DELETE,
+			ZmOperation.EDIT_PROPS,
+			ZmOperation.SYNC,
+			ZmOperation.DETACH_WIN);
 
     return ops;
 };

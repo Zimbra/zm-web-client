@@ -47,8 +47,6 @@ ZmTreeController = function(type) {
     this._listeners[ZmOperation.SYNC_ALL]		= new AjxListener(this, this._syncAllListener);
     this._listeners[ZmOperation.EDIT_PROPS]		= new AjxListener(this, this._editPropsListener);
 	this._listeners[ZmOperation.EMPTY_FOLDER]   = new AjxListener(this,this._emptyListener);
-//	this._listeners[ZmOperation.EXPORT_FOLDER] = new AjxListener(this, this._folderExportListener);
-//	this._listeners[ZmOperation.IMPORT_FOLDER] = new AjxListener(this, this._folderImportListener);
 
 	// drag-and-drop
 	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
@@ -61,7 +59,7 @@ ZmTreeController = function(type) {
 	this._dataTree = {};	// data tree per account
 
 	this.isCheckedStyle = (this.getTreeStyle() & DwtTree.CHECKEDITEM_STYLE);
-}
+};
 
 ZmTreeController.prototype = new ZmController;
 ZmTreeController.prototype.constructor = ZmTreeController;
@@ -121,6 +119,21 @@ function(parent, id, text, image, enabled, visible) {
 	if (image) op.setImage(image);
 	if (enabled != null) op.setEnabled(enabled);
 	if (visible != null) op.setVisible(visible);
+};
+
+ZmTreeController.prototype._resetButtonPerSetting =
+function(parent, op, isSupported) {
+	var button = parent.getOp(op);
+	if (button) {
+		if (isSupported) {
+			button.setVisible(true);
+			if (appCtxt.isOffline && !appCtxt.getActiveAccount().isZimbraAccount) {
+				button.setEnabled(false);
+			}
+		} else {
+			button.setVisible(false);
+		}
+	}
 };
 
 // Public methods
@@ -218,7 +231,7 @@ function(account) {
 		}
 	}
 	return dataTree;
-}
+};
 
 // Private and protected methods
 

@@ -134,8 +134,6 @@ function(parent, type, id) {
 		if (appCtxt.isOffline && nId == ZmOrganizer.ID_SYNC_FAILURES && hasContent) {
 			parent.enable(ZmOperation.EMPTY_FOLDER, true);
 		}
-//		parent.enable(ZmOperation.EXPORT_FOLDER, true);
-//		parent.enable(ZmOperation.IMPORT_FOLDER, true);
 	}
 
 	parent.enable(ZmOperation.EXPAND_ALL, (folder.size() > 0));
@@ -209,23 +207,8 @@ function(parent, type, id) {
 	parent.enable(ZmOperation.BROWSE, true);
 
 	// we always enable sharing in case we're in multi-mbox mode
-	this._setupSharingButton(parent, ZmOperation.SHARE_FOLDER);
-	this._setupSharingButton(parent, ZmOperation.MOUNT_FOLDER);
-};
-
-ZmFolderTreeController.prototype._setupSharingButton =
-function(parent, op) {
-	button = parent.getOp(op);
-	if (button) {
-		if (appCtxt.get(ZmSetting.SHARING_ENABLED)) {
-			button.setVisible(true);
-			if (appCtxt.isOffline && !appCtxt.getActiveAccount().isZimbraAccount) {
-				button.setEnabled(false);
-			}
-		} else {
-			button.setVisible(false);
-		}
-	}
+	this._resetButtonPerSetting(parent, ZmOperation.SHARE_FOLDER, appCtxt.get(ZmSetting.SHARING_ENABLED));
+	this._resetButtonPerSetting(parent, ZmOperation.MOUNT_FOLDER, appCtxt.get(ZmSetting.SHARING_ENABLED));
 };
 
 // Private methods
@@ -444,15 +427,16 @@ function(ev) {
 		folder.toggleSyncOffline();
 	}
 };
+
 ZmFolderTreeController.prototype._browseListener =
 function(ev){
 	var folder = this._getActionedOrganizer(ev);
 	if (folder) {
 		AjxDispatcher.require("Browse");
 		appCtxt.getSearchController().showBrowsePickers([ZmPicker.FOLDER]);
-		//appCtxt.getSearchController()._browseViewController.addPicker(ZmPicker.FOLDER);
 	}
-}
+};
+
 /*
 * Don't allow dragging of system folders.
 *

@@ -25,7 +25,7 @@ ZmTaskTreeController = function() {
     this._listeners[ZmOperation.BROWSE] = new AjxListener(this, function(){ appCtxt.getSearchController().fromBrowse(""); });
 
     this._eventMgrs = {};
-}
+};
 
 ZmTaskTreeController.prototype = new ZmFolderTreeController;
 ZmTaskTreeController.prototype.constructor = ZmTaskTreeController;
@@ -55,8 +55,10 @@ function(parent, type, id) {
 	if (op) {
 		op.setText(deleteText);
 	}
-//	this._resetOperation(parent, ZmOperation.EXPORT_FOLDER, ZmMsg.exportTaskList);
-//	this._resetOperation(parent, ZmOperation.IMPORT_FOLDER, ZmMsg.importTaskList);
+
+	// we always enable sharing in case we're in multi-mbox mode
+	this._resetButtonPerSetting(parent, ZmOperation.SHARE_TASKFOLDER, appCtxt.get(ZmSetting.SHARING_ENABLED));
+	this._resetButtonPerSetting(parent, ZmOperation.MOUNT_TASK_FOLDER, appCtxt.get(ZmSetting.SHARING_ENABLED));
 };
 
 ZmTaskTreeController.prototype._getAllowedSubTypes =
@@ -75,26 +77,22 @@ function() {
 // Returns a list of desired header action menu operations
 ZmTaskTreeController.prototype._getHeaderActionMenuOps =
 function() {
-	var ops = [ZmOperation.NEW_TASK_FOLDER];
-	if (!appCtxt.isOffline) {
-		ops.push(ZmOperation.MOUNT_TASK_FOLDER);
-	}
-    ops.push(ZmOperation.BROWSE);
-    return ops;
+	return [
+		ZmOperation.NEW_TASK_FOLDER,
+		ZmOperation.MOUNT_TASK_FOLDER,
+		ZmOperation.BROWSE
+	];
 };
 
 // Returns a list of desired action menu operations
 ZmTaskTreeController.prototype._getActionMenuOps =
 function() {
-	var ops = [];
-	if (!appCtxt.isOffline) {
-		ops.push(ZmOperation.SHARE_TASKFOLDER);
-	}
-	ops.push(ZmOperation.DELETE, ZmOperation.RENAME_FOLDER, ZmOperation.EDIT_PROPS);
-//	if (appCtxt.get(ZmSetting.IMPORT_EXPORT_ENABLED)) {
-//		ops.push(ZmOperation.EXPORT_FOLDER, ZmOperation.IMPORT_FOLDER);
-//	}
-	return ops;
+	return [
+		ZmOperation.SHARE_TASKFOLDER,
+		ZmOperation.DELETE,
+		ZmOperation.RENAME_FOLDER,
+		ZmOperation.EDIT_PROPS
+	];
 };
 
 
