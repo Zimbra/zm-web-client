@@ -729,7 +729,7 @@ function(ev, treeView, overviewId) {
 			} else {
 				node.dispose();
 			}
-			this._checkTreeView(overviewId);
+            this._checkTreeView(overviewId);
 			this._evHandled[overviewId] = true;
 		} else if (ev.event == ZmEvent.E_CREATE || ev.event == ZmEvent.E_MOVE) {
 			// YUCK: for multi-account, make sure this organizer applies to the given overview
@@ -832,7 +832,10 @@ function(ev) {
 	if (!this._newCb) {
 		this._newCb = new AjxCallback(this, this._newCallback);
 	}
-	ZmController.showDialog(newDialog, this._newCb, this._pendingActionData);
+    if(this._pendingActionData && !appCtxt.getById(this._pendingActionData.id)) {
+        this._pendingActionData =  appCtxt.getFolderTree().root;         
+    }
+    ZmController.showDialog(newDialog, this._newCb, this._pendingActionData);
 	newDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._clearDialog, this, newDialog);
 };
 
