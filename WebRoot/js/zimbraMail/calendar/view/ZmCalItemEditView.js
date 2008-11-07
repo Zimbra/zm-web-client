@@ -491,6 +491,7 @@ function(calItem) {
 		this._recurDialog.setRepeatEndValues(calItem);
 	} else {
 		calItem.setRecurType(repeatType != "CUS" ? repeatType : "NON");
+		this._resetRecurrence(calItem);
 	}
 };
 
@@ -860,6 +861,14 @@ function(ev) {
 		this._calItem._recurrence._startDate.setTime(sd.getTime());
 		this._setRepeatDesc(this._calItem);
 	}
+};
+
+ZmCalItemEditView.prototype._resetRecurrence =
+function(calItem) {
+	var recur = calItem._recurrence;
+	if(!recur) { return; }
+	var startTime = calItem.getStartTime();
+	recur.setRecurrenceStartTime(startTime);
 };
 
 ZmCalItemEditView.prototype._repeatChangeListener =
