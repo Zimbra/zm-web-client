@@ -161,7 +161,6 @@ ZmShare._SUBJECTS[ZmShare.DELETE] = ZmMsg.shareRevokedSubject;
 ZmShare._SUBJECTS[ZmShare.ACCEPT] = ZmMsg.shareAcceptedSubject;
 ZmShare._SUBJECTS[ZmShare.DECLINE] = ZmMsg.shareDeclinedSubject;
 ZmShare._SUBJECTS[ZmShare.NOTIFY]  = ZmMsg.shareNotifySubject;
-	
 
 // formatters
 ZmShare._TEXT = null;
@@ -482,7 +481,7 @@ function(mode) {
 		ZmShare._HTML[ZmShare.NOTIFY] = new AjxMessageFormat(ZmMsg.shareNotifyHtml);
 	}
 	return ZmShare._HTML[mode];
-}
+};
 
 ZmShare._getHtmlNote =
 function() {
@@ -681,7 +680,7 @@ function(formatter) {
 		ZmShare._getFolderType(this.link.view),
 		(this.object ? (this.object.owner || this.grantor.name) : this.grantor.name),
 		this.grantee.name,
-		ZmShare.getRoleName(this.link.perm),
+		ZmShare.getRoleName(ZmShare._getRoleFromPerm(this.link.perm)),
 		ZmShare.getRoleActions(this.link.perm)
 	];
 	return formatter.format(params);

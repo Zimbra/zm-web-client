@@ -286,19 +286,19 @@ function(shares, result) {
 			tmpShare.grantee.name = share.grantee.name;
 
 			// REVISIT: What if you have delegated access???
-			if(tmpShare.object.isRemote()) {
+			if (tmpShare.object.isRemote()) {
 				tmpShare.grantor.id = tmpShare.object.zid;
 				tmpShare.grantor.email = tmpShare.object.owner;
 				tmpShare.grantor.name = tmpShare.grantor.email;
-                tmpShare.link.id = tmpShare.object.rid;
-			}else {
+				tmpShare.link.id = tmpShare.object.rid;
+			} else {
 				tmpShare.grantor.id = appCtxt.get(ZmSetting.USERID);
 				tmpShare.grantor.email = appCtxt.get(ZmSetting.USERNAME);
 				tmpShare.grantor.name = appCtxt.get(ZmSetting.DISPLAY_NAME) || tmpShare.grantor.email;
-                tmpShare.link.id = tmpShare.object.id;
-            }
-            
-            tmpShare.link.perm = share.link.perm;			
+				tmpShare.link.id = tmpShare.object.id;
+			}
+
+			tmpShare.link.perm = share.link.perm;
 			tmpShare.link.name = tmpShare.object.name;
 			tmpShare.link.view = ZmOrganizer.getViewName(tmpShare.object.type);
 			tmpShare.link.inh = this._inheritEl ? this._inheritEl.checked : true;
@@ -309,12 +309,11 @@ function(shares, result) {
 				}
 
 				var url = share.object.getRestUrl();
-                url = url.replace(/&/g,'%26');
-                var username = email;
+				url = url.replace(/&/g,'%26');
 				var password = this._passwordInput.getValue();
 
-				var args = [ url, username, password ];
-				notes = [ this._guestFormatter.format(args), notes ].join("\n\n");
+				var args = [url, email, password];
+				notes = [this._guestFormatter.format(args), notes ].join("\n\n");
 			}
 			tmpShare.notes = notes;
 
@@ -573,8 +572,8 @@ function() {
 	var html = [];
 	html[idx++] = "<table border=0 cellpadding=0 cellspacing=3>";
 
-	var roles = [ ZmShare.ROLE_NONE, ZmShare.ROLE_VIEWER, ZmShare.ROLE_MANAGER, ZmShare.ROLE_ADMIN ];
-	for (var i=0; i<roles.length; i++) {
+	var roles = [ZmShare.ROLE_NONE, ZmShare.ROLE_VIEWER, ZmShare.ROLE_MANAGER, ZmShare.ROLE_ADMIN];
+	for (var i = 0; i < roles.length; i++) {
 		var role = roles[i];
 
 		html[idx++] = "<tr><td valign=top><input type='radio' name='";
@@ -622,7 +621,7 @@ function() {
 	this._urlGroup._setAllowSelection();
 
 	// save information elements
-	this._nameEl = document.getElementById(nameId)
+	this._nameEl = document.getElementById(nameId);
 	this._typeEl = document.getElementById(typeId);
 	this._urlEl = document.getElementById(urlId);
 
