@@ -57,7 +57,8 @@ function() {
 ZmSearchController.prototype.dateSearch =
 function(d) {
 	d = d || new Date();
-	var date = (d.getMonth() + 1) + "/" + d.getDate() + "/" + d.getFullYear();
+    var formatter = AjxDateFormat.getDateInstance(AjxDateFormat.SHORT);
+    var date = formatter.format(d);
 	var groupBy = appCtxt.getApp(ZmApp.MAIL).getGroupMailBy();
 	var query = "date:" + date;
 	this.search({query:query, types:[groupBy]});
