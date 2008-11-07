@@ -108,10 +108,12 @@ function(service, screenName, password, batchCmd) {
 	method.setAttribute("password", password);
 	if (batchCmd) {
 		batchCmd.addNewRequestParams(sd);
+		batchCmd.setSensitive(true);
 	} else {
 		appCtxt.getAppController().sendRequest({
 			soapDoc: sd,
-			asyncMode: true
+			asyncMode: true,
+			sensitive: true
 		});
 	}
 };

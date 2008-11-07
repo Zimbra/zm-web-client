@@ -162,6 +162,7 @@ function(params) {
 			iframeDoc.close();
 
 			// save the params for the response
+			params.iframeId = iframe.id;
 			this._pendingRequests[reqId] = params;
 
 			// submit form
@@ -277,6 +278,7 @@ function(params, result) {
 		var hdr = result.getHeader();
 		this._handleHeader(hdr);
 		this._handleNotifications(hdr);
+		this._clearPendingRequest(params.reqId);
 		return;
 	}
 
@@ -288,7 +290,6 @@ function(params, result) {
     // poll timer is running (just in case it got an exception and stopped)
 	if (!appCtxt.isOffline && !isCannedResponse) {
 		this._controller._kickPolling(true);
-		this._clearPendingRequest(params.reqId);
 	}
 
 	var methodName = (DBG && DBG.getDebugLevel() > 0) ? ZmCsfeCommand.getMethodName(params.jsonObj || params.soapDoc) : "";
@@ -300,6 +301,7 @@ function(params, result) {
 	DBG.println(AjxDebug.DBG1, "------------------------- Processing notifications for " + methodName);
 	this._handleNotifications(response.Header);
 
+	this._clearPendingRequest(params.reqId);
 	if (!params.asyncMode) {
 		return response.Body;
 	}
@@ -325,7 +327,14 @@ function(reqId, errorCallback, noBusyOverlay) {
 
 ZmRequestMgr.prototype._clearPendingRequest =
 function(reqId) {
-	if (this._pendingRequests[reqId]) {
+	var request = this._pendingRequests[reqId];
+	if (request) {
+		if (request.iframeId) {
+			var iframe = document.getElementById(request.iframeId);
+			if (iframe) {
+				iframe.parentNode.removeChild(iframe);
+			}
+		}
 		delete this._pendingRequests[reqId];
 	}
 };
