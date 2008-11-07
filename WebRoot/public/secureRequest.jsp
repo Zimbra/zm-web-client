@@ -25,8 +25,8 @@
 %><%
 	// make sure we only get called securely!
 	if (!request.getScheme().equals("https")) {
-//		response.sendError(HttpServletResponse.SC_FORBIDDEN, "Must use https to connect.");
-//		return;
+		response.sendError(HttpServletResponse.SC_FORBIDDEN, "Must use https to connect.");
+		return;
 	}
 
 	// proxy request, capturing output

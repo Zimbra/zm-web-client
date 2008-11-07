@@ -532,7 +532,7 @@ ZmRoster.prototype.registerGateway = function(service, screenName, password) {
 	method.setAttribute("name", screenName);
 	method.setAttribute("password", password);
 	appCtxt.getAppController().sendRequest({ soapDoc	 : sd,
-						       asyncMode : true
+						       asyncMode : true, sensitive: true
 						     });
 	this.__avoidNotifyTimeout = new Date().getTime();
 	// since it's not returned by a gwStatus notification, let's
