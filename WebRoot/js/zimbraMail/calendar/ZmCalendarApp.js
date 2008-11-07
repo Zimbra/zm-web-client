@@ -272,7 +272,7 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_REPLY_TENTATIVE, {textKey:"replyTentative", image:"QuestionMark"});
 	ZmOperation.registerOp(ZmId.OP_SCHEDULE_VIEW, {textKey:"viewSchedule", tooltipKey:"viewScheduleTooltip", image:"GroupSchedule"});
 	ZmOperation.registerOp(ZmId.OP_SEARCH_MAIL, {textKey:"searchMail", image:"SearchMail"}, ZmSetting.MAIL_ENABLED);
-	ZmOperation.registerOp(ZmId.OP_SHARE_CALENDAR, {textKey:"shareCalendar", image:"CalendarFolder"}, ZmSetting.SHARING_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_SHARE_CALENDAR, {textKey:"shareCalendar", image:"CalendarFolder"});
 	ZmOperation.registerOp(ZmId.OP_TODAY, {textKey:"today", tooltipKey:"todayTooltip", image:"Date"});
 	ZmOperation.registerOp(ZmId.OP_VIEW_APPOINTMENT, {textKey:"viewAppointment", image:"Appointment"});
 	ZmOperation.registerOp(ZmId.OP_VIEW_APPT_INSTANCE, {textKey:"apptInstance", image:"Appointment"});
