@@ -159,7 +159,6 @@ ZmShare._SUBJECTS[ZmShare.EDIT] = ZmMsg.shareModifiedSubject;
 ZmShare._SUBJECTS[ZmShare.DELETE] = ZmMsg.shareRevokedSubject;
 ZmShare._SUBJECTS[ZmShare.ACCEPT] = ZmMsg.shareAcceptedSubject;
 ZmShare._SUBJECTS[ZmShare.DECLINE] = ZmMsg.shareDeclinedSubject;
-	
 
 // formatters
 ZmShare._TEXT = null;
@@ -478,8 +477,8 @@ function(mode) {
 		ZmShare._HTML[ZmShare.DECLINE] = new AjxMessageFormat(ZmMsg.shareDeclinedHtml);
 	}
 	return ZmShare._HTML[mode];
-}
-	
+};
+
 ZmShare._getHtmlNote =
 function() {
 	if (!ZmShare._HTML_NOTE) {
@@ -670,7 +669,7 @@ function(formatter) {
 		ZmShare._getFolderType(this.link.view),
 		this.grantor.name, 
 		this.grantee.name,
-		ZmShare.getRoleName(this.link.perm),
+		ZmShare.getRoleName(ZmShare._getRoleFromPerm(this.link.perm)),
 		ZmShare.getRoleActions(this.link.perm)
 	];
 	return formatter.format(params);
