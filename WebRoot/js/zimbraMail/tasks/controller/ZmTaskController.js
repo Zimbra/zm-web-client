@@ -41,6 +41,15 @@ function() {
 
 // Public methods
 
+ZmTaskController.prototype.show =
+function(calItem, mode, isDirty) {
+	ZmCalItemComposeController.prototype.show.call(this, calItem, mode, isDirty);
+
+	if (appCtxt.numVisibleAccounts > 1) {
+		appCtxt.getApp(ZmApp.TASKS).getOverviewPanelContent().setEnabled(false);
+	}
+};
+
 ZmTaskController.prototype.saveCalItem =
 function(attId) {
 	var calItem = this._composeView.getCalItem(attId);
@@ -112,6 +121,15 @@ function(task, newFolderId) {
 ZmTaskController.prototype._getViewType =
 function() {
 	return ZmId.VIEW_TASKEDIT;
+};
+
+// Callbacks
+
+ZmTaskController.prototype._postHideCallback =
+function() {
+	if (appCtxt.numVisibleAccounts > 1) {
+		appCtxt.getApp(ZmApp.TASKS).getOverviewPanelContent().setEnabled(true);
+	}
 };
 
 ZmTaskController.prototype._printListener =

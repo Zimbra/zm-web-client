@@ -37,7 +37,7 @@ ZmApptComposeController = function(container, app) {
 	this._kbMgr = appCtxt.getKeyboardMgr();
 
 	// preload compose view for faster loading
-	this.initComposeView(true)
+	this.initComposeView(true);
 };
 
 ZmApptComposeController.prototype = new ZmCalItemComposeController;
@@ -55,7 +55,11 @@ function(calItem, mode, isDirty) {
 	ZmCalItemComposeController.prototype.show.call(this, calItem, mode, isDirty);
 
 	this._addedAttendees.length = this._removedAttendees.length = 0;
-	this._setComposeTabGroup()
+	this._setComposeTabGroup();
+
+	if (appCtxt.numVisibleAccounts > 1) {
+		appCtxt.getApp(ZmApp.CALENDAR).getOverviewPanelContent().setEnabled(false);
+	}
 };
 
 ZmApptComposeController.prototype.saveCalItem =
@@ -227,6 +231,13 @@ function() {
 
 
 // Callbacks
+
+ZmApptComposeController.prototype._postHideCallback =
+function() {
+	if (appCtxt.numVisibleAccounts > 1) {
+		appCtxt.getApp(ZmApp.CALENDAR).getOverviewPanelContent().setEnabled(true);
+	}
+};
 
 ZmApptComposeController.prototype._notifyDlgOkListener =
 function(ev) {

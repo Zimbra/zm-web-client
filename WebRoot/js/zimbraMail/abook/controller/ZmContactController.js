@@ -35,6 +35,10 @@ function() {
 
 ZmContactController.prototype.show =
 function(contact, isDirty) {
+	if (appCtxt.numVisibleAccounts > 1) {
+		appCtxt.getApp(ZmApp.CONTACTS).getOverviewPanelContent().setEnabled(false);
+	}
+
 	this._contact = contact;
 	this._currentView = this._getViewType();
 	if (isDirty) this._contactDirty = true;
@@ -349,6 +353,13 @@ function(view, force) {
 	ps.popup(view._getDialogXY());
 	
 	return false;
+};
+
+ZmContactController.prototype._postHideCallback =
+function() {
+	if (appCtxt.numVisibleAccounts > 1) {
+		appCtxt.getApp(ZmApp.CONTACTS).getOverviewPanelContent().setEnabled(true);
+	}
 };
 
 ZmContactController.prototype._preUnloadCallback =
