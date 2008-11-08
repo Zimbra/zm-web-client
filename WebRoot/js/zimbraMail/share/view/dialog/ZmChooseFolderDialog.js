@@ -117,11 +117,32 @@ function(params) {
 		noRootSelect: params.noRootSelect,
 		account: acct
 	};
+
+	// make sure the requisite packages are loaded
+	var treeIdMap = {};
+	for (var i = 0; i < treeIds.length; i++) {
+		treeIdMap[treeIds[i]] = true;
+	}
+
+	// TODO: Refactor packages so that we don't have to bring in so much
+	// TODO: code just do make sure this dialog works.
+	var pkg = [];
+	if (treeIdMap[ZmOrganizer.BRIEFCASE]) pkg.push("BriefcaseCore","Briefcase");
+	if (treeIdMap[ZmOrganizer.CALENDAR]) pkg.push("CalendarCore","Calendar");
+	if (treeIdMap[ZmOrganizer.CALENDAR]) pkg.push("ContactsCore","Contacts");
+	if (treeIdMap[ZmOrganizer.FOLDER]) pkg.push("MailCore","Mail");
+	if (treeIdMap[ZmOrganizer.NOTEBOOK]) pkg.push("NotebookCore","Notebook");
+	if (treeIdMap[ZmOrganizer.TASKS]) pkg.push("TasksCore","Tasks");
+	
+	AjxDispatcher.require(pkg, true, new AjxCallback(this, this._doPopup, [params, treeIds, folderTree]));
+};
+
+ZmChooseFolderDialog.prototype._doPopup = function(params, treeIds, folderTree) {
 	this._setOverview(params);
 
 	for (var i = 0; i < treeIds.length; i++) {
 		var treeId = treeIds[i];
-		var treeView = this._getOverview().getTreeView(treeId);
+		var treeView = this._getOverview().getTreeView(treeId, true);
 
 		// bug #18533 - always make sure header item is visible in "MoveTo" dialog
 		treeView.getHeaderItem().setVisible(true, true);
