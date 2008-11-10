@@ -149,18 +149,10 @@ function() {
 
 	ZmApp.registerApp(ZmApp.IM,
 			  { mainPkg	      : "IM",
-			    nameKey	      : "imAppTitle",
-			    icon	      : "ImStartChat",
-			    chooserTooltipKey : "goToIm",
-			    defaultSearch     : ZmId.SEARCH_MAIL,
-			    gotoActionCode    : ZmKeyMap.GOTO_IM,
-				overviewTrees	  : [ZmOrganizer.ROSTER_TREE_ITEM],
-			    chooserSort	      : 40,
 			    defaultSort	      : 50,
 			    newOrgOps		  : newOrgOps,
 			    newItemOps        : newItemOps,
-				actionCodes		  : actionCodes,
-				newActionCode	  :	ZmKeyMap.NEW_CHAT
+				actionCodes		  : actionCodes
 			  });
 };
 

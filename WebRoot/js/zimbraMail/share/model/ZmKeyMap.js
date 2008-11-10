@@ -121,7 +121,6 @@ ZmKeyMap.GOTO_CONTACTS		= "GoToContacts";
 ZmKeyMap.GOTO_DRAFTS		= "GoToDrafts";
 ZmKeyMap.GOTO_JUNK			= "GoToJunk";
 ZmKeyMap.GOTO_FOLDER		= "GoToFolder";		// takes NNN
-ZmKeyMap.GOTO_IM			= "GoToIm";
 ZmKeyMap.GOTO_INBOX			= "GoToInbox";
 ZmKeyMap.GOTO_MAIL			= "GoToMail";
 ZmKeyMap.GOTO_NEXT_ACCT		= "GoToNextAccount";
@@ -238,7 +237,6 @@ function() {
 	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.GOTO_BRIEFCASE]		= ZmSetting.BRIEFCASE_ENABLED;
 	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.GOTO_CALENDAR]		= ZmSetting.CALENDAR_ENABLED;
 	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.GOTO_CONTACTS]		= ZmSetting.CONTACTS_ENABLED;
-	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.GOTO_IM]			= ZmSetting.IM_ENABLED;
 	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.GOTO_MAIL]			= ZmSetting.MAIL_ENABLED;
 	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.GOTO_NOTEBOOK]		= ZmSetting.NOTEBOOK_ENABLED;
 	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.GOTO_OPTIONS]		= ZmSetting.OPTIONS_ENABLED;
