@@ -427,7 +427,7 @@ ZmImOverview.prototype._init = function() {
 
 	this._rosterItemListListenerObj = new AjxListener(this, this._rosterItemListListener);
 	ZmImApp.INSTANCE.addRosterItemListListener(this._rosterItemListListenerObj);
-	if (ZmImApp.INSTANCE.hasRoster()) {
+	if (ZmImApp.loggedIn()) {
 		roster = this._cacheRoster();
 		buddyList = roster.getRosterItemList();
 	}

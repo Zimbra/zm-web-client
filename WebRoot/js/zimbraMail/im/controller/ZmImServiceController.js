@@ -31,7 +31,7 @@ ZmImServiceController = function() {
 }
 
 ZmImServiceController.prototype.login =
-function(callback) {
+function(params) {
 	alert('Not implemented');
 };
 

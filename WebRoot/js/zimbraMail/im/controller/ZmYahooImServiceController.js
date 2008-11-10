@@ -44,13 +44,13 @@ function(showText) {
 };
 
 ZmYahooImServiceController.prototype.login =
-function(callback) {
+function(loginParams) {
 	AjxDispatcher.require(["IM"]);
 	var id = appCtxt.get(ZmSetting.IM_YAHOO_ID);
 	if (id) {
 		this._loginById(callback, id, true);
 	} else {
-		this._showLoginDialog(callback);
+		this._showLoginDialog(loginParams);
 	}
 };
 
@@ -82,9 +82,9 @@ function() {
 };
 
 ZmYahooImServiceController.prototype._showLoginDialog =
-function(callback, id, remember, message) {
+function(loginParams, id, remember, message) {
 	var args = {
-		callback: new AjxCallback(this, this._loginDialogCallback, [callback]),
+		callback: new AjxCallback(this, this._loginDialogCallback, [loginParams]),
 		id: id,
 		remember: remember,
 		message: message
@@ -93,27 +93,27 @@ function(callback, id, remember, message) {
 };
 
 ZmYahooImServiceController.prototype._loginDialogCallback =
-function(callback, data) {
-	this._loginByPassword(callback, data.id, data.password, data.remember, data.dialog);
+function(loginParams, data) {
+	this._loginByPassword(loginParams, data.id, data.password, data.remember, data.dialog);
 };
 
 ZmYahooImServiceController.prototype._loginById =
-function(callback, id, remember, dialog) {
+function(loginParams, id, remember, dialog) {
 	var soapDoc = AjxSoapDoc.create("GetYahooCookieRequest", "urn:zimbraMail");
 	soapDoc.setMethodAttribute("user", id);
 	var params = {
 		asyncMode: true,
 		soapDoc: soapDoc,
-		callback: new AjxCallback(this, this._handleResponseGetYahooCookie, [callback, id, remember, dialog])
+		callback: new AjxCallback(this, this._handleResponseGetYahooCookie, [loginParams, id, remember, dialog])
 	};
 	appCtxt.getAppController().sendRequest(params);
 };
 
 ZmYahooImServiceController.prototype._handleResponseGetYahooCookie =
-function(callback, id, remember, dialog, response) {
+function(loginParams, id, remember, dialog, response) {
 	var responseData = response.getResponse().GetYahooCookieResponse;
 	if (responseData.error) {
-		this._showLoginDialog(callback, id, remember, ZmMsg.imPasswordExpired);
+		this._showLoginDialog(loginParams, id, remember, ZmMsg.imPasswordExpired);
 	} else {
 		if (dialog) {
 			dialog.popdown();
@@ -122,7 +122,7 @@ function(callback, id, remember, dialog, response) {
 			return str.substring(0, str.indexOf(';'));
 		}
 		var cookie = ["Y=", trim(responseData.Y), "; T=", trim(responseData.T)].join("");
-		ZmImService.INSTANCE.login(cookie, callback);
+		ZmImService.INSTANCE.login(cookie, loginParams);
 		if (remember) {
 			this._saveYahooId(id);
 		}
@@ -130,25 +130,25 @@ function(callback, id, remember, dialog, response) {
 };
 
 ZmYahooImServiceController.prototype._loginByPassword =
-function(callback, id, password, remember, dialog) {
+function(loginParams, id, password, remember, dialog) {
 	var soapDoc = AjxSoapDoc.create("GetYahooAuthTokenRequest", "urn:zimbraMail");
 	soapDoc.setMethodAttribute("user", id);
 	soapDoc.setMethodAttribute("password", password);
 	var params = {
 		asyncMode: true,
 		soapDoc: soapDoc,
-		callback: new AjxCallback(this, this._handleResponseGetYahooAuthToken, [callback, id, remember, dialog])
+		callback: new AjxCallback(this, this._handleResponseGetYahooAuthToken, [loginParams, id, remember, dialog])
 	};
 	appCtxt.getAppController().sendRequest(params);
 };
 
 ZmYahooImServiceController.prototype._handleResponseGetYahooAuthToken =
-function(callback, id, remember, dialog, response) {
+function(loginParams, id, remember, dialog, response) {
 	var responseData = response.getResponse().GetYahooAuthTokenResponse;
 	if (responseData.failed) {
-		this._showLoginDialog(callback, id, remember, ZmMsg.imPasswordFailed);
+		this._showLoginDialog(loginParams, id, remember, ZmMsg.imPasswordFailed);
 	} else {
-		this._loginById(callback, id, remember, dialog);
+		this._loginById(loginParams, id, remember, dialog);
 	}
 };
 

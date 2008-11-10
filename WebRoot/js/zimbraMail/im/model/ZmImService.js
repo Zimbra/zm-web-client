@@ -67,7 +67,7 @@ function(callback, params) {
 };
 
 ZmImService.prototype.initializePresence =
-function() {
+function(presence) {
 	alert('Not implemented');
 };
 

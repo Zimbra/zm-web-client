@@ -34,11 +34,8 @@ function() {
 };
 
 ZmZimbraImServiceController.prototype.login =
-function(callback) {
-	// Login is a no-op since we're aloready connected to the zimbra server.
-	if (callback) {
-		callback.run();
-	}
+function(params) {
+	ZmImService.INSTANCE.login(params);
 };
 
 ZmZimbraImServiceController.prototype.getMyPresenceTooltip =

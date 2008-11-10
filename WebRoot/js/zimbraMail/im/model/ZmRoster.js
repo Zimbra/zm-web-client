@@ -20,6 +20,12 @@ ZmRoster = function(imApp) {
 
 	ZmImService.INSTANCE._roster = this;
 
+	this._gateways = {
+		byService : {},
+		byDomain  : {},
+		array	 : []
+	};
+	
 	this._notificationBuffer = [];
 	this._imApp = imApp;
 	this._privacyList = new ZmImPrivacyList(this);
@@ -47,22 +53,26 @@ function() {
 
 // Creates a roster asyncronously without a busy overlay so that the user can get on with
 // reading his mail or whatever while logging into im.
-ZmRoster.createInBackground =
-function(callback) {
+ZmRoster.prototype.setIsLoggedIn =
+function(params) {
 	var args = {
 		asyncMode: true,
 		noBusyOverlay: true
 	};
-	var serviceCallback = new AjxCallback(null, ZmRoster._backgroundGatewayCallback, [callback]);
+
+	// TODO: Ewwww...
+	ZmImApp.INSTANCE._setRoster(this);
+
+	var serviceCallback = new AjxCallback(this, this._loggedInGatewayCallback, [params]);
 	ZmImService.INSTANCE.getGateways(serviceCallback, args)
 };
 
-ZmRoster._backgroundGatewayCallback =
-function(callback, gateways) {
-	var roster = new ZmRoster(ZmImApp.INSTANCE);
-	roster._handleRequestGateways(null, gateways);
-	if (callback) {
-		callback.run(roster);
+ZmRoster.prototype._loggedInGatewayCallback =
+function(params, gateways) {
+	this._handleRequestGateways(null, gateways);
+    ZmImService.INSTANCE.initializePresence(params ? params.presence : null)
+    if (params && params.callback) {
+        params.callback.run(this);
 	}
 };
 
@@ -276,6 +286,7 @@ ZmRoster.prototype._handleRequestGateways = function(callback, gateways) {
 		byDomain  : byDomain,
 		array	 : gateways
 	};
+	
 	for (var i = 0; i < this._notificationBuffer.length; ++i)
 		this.handleNotification(this._notificationBuffer[i]);
 	this._notificationBuffer = [];

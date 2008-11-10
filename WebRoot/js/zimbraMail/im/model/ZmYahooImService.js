@@ -95,8 +95,12 @@ function(callback, params) {
 };
 
 ZmYahooImService.prototype.initializePresence =
-function() {
-	this.setPresence(ZmRosterPresence.SHOW_ONLINE);
+function(presence) {
+	if (presence) {
+		this.setPresence(presence.show, null, presence.customStatusMsg);
+	} else {
+		this.setPresence(ZmRosterPresence.SHOW_ONLINE);
+	}
 };
 
 ZmYahooImService.prototype.setPresence =
@@ -276,10 +280,8 @@ function(params) {
 //	params = { firstname, lastname, user_id }
 	this._loggedIn = true;
 	this._userId = params.user_id;
-	if (this._loginCallback) {
-		this._loginCallback.run();
-		this._loginCallback = null;
-	}
+	this._roster.setIsLoggedIn(this._loginCallback);
+	this._loginCallback = null;
 };
 
 ZmYahooImService.prototype._onUserSendMessage =

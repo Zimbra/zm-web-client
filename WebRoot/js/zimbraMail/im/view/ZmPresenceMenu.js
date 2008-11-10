@@ -82,7 +82,7 @@ function(ev) {
 	if (ZmImApp.loggedIn()) {
 		this._doSetPresence(show);
 	} else {
-		ZmImApp.INSTANCE.login(new AjxCallback(this, this._doSetPresence, [show]));
+		ZmImApp.INSTANCE.login({ presence: { show: show } });
 	}
 };
 
@@ -102,7 +102,7 @@ function(message) {
 	if (ZmImApp.loggedIn()) {
 		this._doSetCustom(message);
 	} else {
-		ZmImApp.INSTANCE.login(new AjxCallback(this, this._doSetCustom, [message]));
+		ZmImApp.INSTANCE.login({ presence: { show: ZmRosterPresence.SHOW_ONLINE, customStatusMsg: message } });
 	}
 };
 

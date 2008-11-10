@@ -25,6 +25,8 @@
 ZmZimbraImService = function() {
 	ZmImService.call(this, true);
 
+	this._loggedIn = false;
+
 	this._newRosterItemtoastFormatter = new AjxMessageFormat(ZmMsg.imNewRosterItemToast);
 	this._leftChatFormatter = new AjxMessageFormat(ZmMsg.imLeftChat);
 	this._enteredChatFormatter = new AjxMessageFormat(ZmMsg.imEnteredChat);
@@ -41,10 +43,15 @@ function() {
 	return "ZmZimbraImService";
 };
 
-ZmImService.prototype.isLoggedIn =
+ZmZimbraImService.prototype.isLoggedIn =
 function() {
-	// Is always connected to zimbra server.
-	return true;
+	return this._loggedIn;
+};
+
+ZmZimbraImService.prototype.login =
+function(params) {
+	this._loggedIn = true;
+	this._roster.setIsLoggedIn(params);
 };
 
 ZmZimbraImService.prototype.getMyAddress =
@@ -136,8 +143,11 @@ function(callback, response) {
 };
 
 ZmZimbraImService.prototype.initializePresence =
-function() {
-	// No-op. Initial presence comes from notification.
+function(presence) {
+	if (presence) {
+		this.setPresence(presence.show, null, presence.customStatusMsg);
+	}
+	// else initial presence comes back from a notification.
 };
 
 ZmZimbraImService.prototype.setPresence =

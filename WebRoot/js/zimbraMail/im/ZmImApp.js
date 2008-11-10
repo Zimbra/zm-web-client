@@ -26,10 +26,11 @@ ZmImApp = function(container) {
 
 	// TODO: This require sux....
 	AjxDispatcher.require([ "IMCore" ]);
-	if (!ZmImServiceController.INSTANCE) {
-		// Create the service controller & service.
-		new ZmZimbraImServiceController();
-	}
+
+	// Create the service controller & service.
+	new ZmZimbraImServiceController();
+
+	this._roster = new ZmRoster(this);
 };
 
 // Organizer and item-related constants
@@ -409,9 +410,7 @@ ZmImApp.prototype._onSettingChange = function(ev) {
 ZmImApp.prototype.refresh =
 function() {
 	delete this._lastSeq;
-	if (this._roster) {
-		// better not call getRoster() here since we don't
-		// want to reinit. IM if it wasn't already.
+	if (ZmImService.INSTANCE.isLoggedIn()) {
 		this._roster.refresh();
 	}
 };
@@ -456,6 +455,7 @@ function(components) {
 			posStyle: Dwt.ABSOLUTE_STYLE
 		};
 		this._presenceButton = new ZmPresenceButton(buttonArgs);
+		this.syncImPresenceButton(this._presenceButton, false, true);
 		this._updatePresenceButton(null, this._presenceButton, false, true);
 		ZmImApp.addImPresenceMenu(this._presenceButton);
 		components[ZmAppViewMgr.C_PRESENCE] = this._presenceButton;
@@ -478,17 +478,13 @@ function() {
 	}
 };
 
+/**
+ *
+ * @param params
+ */
 ZmImApp.prototype.login =
-function(callback) {
-	callback = callback || new AjxCallback(this, this._initializePresence);
-	var loginCallback = new AjxCallback(this, this._handleResponseLogin, [callback]);
-	ZmImServiceController.INSTANCE.login(loginCallback);
-};
-
-ZmImApp.prototype._handleResponseLogin =
-function(callback) {
-	var rosterCreateCallback = new AjxCallback(this, this._backgroundCreateCallback, [callback]);
-	ZmRoster.createInBackground(rosterCreateCallback);
+function(params) {
+	ZmImServiceController.INSTANCE.login(params);
 };
 
 ZmImApp.prototype._autoLogin =
@@ -500,22 +496,6 @@ function() {
 ZmImApp.prototype._postLoadAutoLogin =
 function() {
 	this.login();
-};
-
-ZmImApp.prototype._initializePresence =
-function() {
-	ZmImService.INSTANCE.initializePresence();
-};
-
-ZmImApp.prototype._backgroundCreateCallback =
-function(callback, roster) {
-	if (!this._roster) { // Roster could have conceivably been set by getRoster...don't overwrite that one.
-		this._setRoster(roster);
-		this._roster.reload();		
-	}
-	if (callback) {
-		callback.run();
-	}
 };
 
 ZmImApp.prototype.launch = function(params, callback) {
@@ -553,10 +533,6 @@ function() {
 
 ZmImApp.prototype.getRoster =
 function() {
-	if (!this._roster) {
-		this._setRoster(new ZmRoster(this));
-		this._roster.refresh();
-	}
 	return this._roster;
 };
 
@@ -581,7 +557,7 @@ function(listener) {
 */
 ZmImApp.prototype.addRosterItemListListener =
 function(listener) {
-	if (this._roster) {
+	if (ZmImApp.loggedIn()) {
 		this._roster.getRosterItemList().addChangeListener(listener);
 	} else {
 		this._rosterItemListListeners = this._rosterItemListListeners || new AjxVector();
@@ -606,7 +582,9 @@ function(){
 
 ZmImApp.prototype._setRoster =
 function(roster) {
-	this._roster = roster;
+//TODO: eliminate this and all the methods it calls and the listener utils.	
+
+//	this._roster = roster;
 	if (this._rosterItemListListeners) {
 		var event = new ZmEvent(ZmItem.ROSTER_ITEM);
 		event.event = ZmEvent.E_LOAD;
@@ -621,10 +599,6 @@ function(roster) {
 		for (var i = 0, count = this._gatewayListListeners.size(); i < count; i++) {
 			roster.addGatewayListListener(this._gatewayListListeners.get(i));
 		}
-	}
-
-	if (this._presenceButton) {
-		this.syncImPresenceButton(this._presenceButton, false, true);
 	}
 
 	// Turn on instant notifications after a short delay, to prevent
