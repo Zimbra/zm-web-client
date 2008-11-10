@@ -249,7 +249,7 @@ function(item) {
 	}
 
 	var restUrl = item.getRestUrl();
-	restUrl = this._controller.getApp().fixCrossDomainReference(restUrl);
+	// commented for bug 32457 :: restUrl = this._controller.getApp().fixCrossDomainReference(restUrl);
 	var fileLink = [ '<a href="', restUrl, '" target="_blank">', name, '</a>' ].join("");
 
 	var dateFormatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.FULL, AjxDateFormat.MEDIUM);
