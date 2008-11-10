@@ -38,7 +38,7 @@ ZmConvController = function(container, mailApp) {
 	this._convDeleteListener = new AjxListener(this, this._deleteListener);
 	this._listeners[ZmOperation.DELETE_MENU] = this._convDeleteListener;
 	this._msgControllerMode = ZmId.VIEW_CONV;
-}
+};
 
 ZmConvController.prototype = new ZmDoublePaneController;
 ZmConvController.prototype.constructor = ZmConvController;
@@ -48,7 +48,7 @@ ZmConvController.prototype.constructor = ZmConvController;
 ZmConvController.prototype.toString = 
 function() {
 	return "ZmConvController";
-}
+};
 
 /**
  * Displays the given conversation in a two-pane view. The view is actually
@@ -92,7 +92,7 @@ function() {
 ZmConvController.prototype._createDoublePaneView = 
 function() {
 	return (new ZmConvView({parent:this._container, controller:this, dropTgt:this._dropTgt}));
-}
+};
 
 // Creates the conv view, which is not a standard list view (it's a two-pane sort of thing).
 ZmConvController.prototype._initialize =
@@ -102,7 +102,7 @@ function(view) {
 	// set up custom listeners for this view 
 	if (this._doublePaneView)
 		this._doublePaneView.addTagClickListener(new AjxListener(this, ZmConvController.prototype._convTagClicked));
-}
+};
 
 ZmConvController.prototype._initializeToolBar = 
 function(view) {
@@ -120,7 +120,7 @@ function(view) {
 ZmConvController.prototype._setupViewMenu =
 function(view) {
 	this._setupReadingPaneMenuItem(view, null, true);
-}
+};
 
 ZmConvController.prototype._setupDeleteMenu =
 function(view) {
@@ -159,6 +159,14 @@ function(checked) {
 	this._mailListView._resetColWidth();
 };
 
+ZmConvController.prototype._postHideCallback =
+function() {
+	// bug fix #31601 - Prism only hack to restore keypress
+	if (AjxEnv.isPrism) {
+		appCtxt.getShell().getKeyboardMgr().__killKeySequenceAction();
+	}
+};
+
 /*
 * Override to replace DELETE with DELETE_MENU
 */
@@ -169,22 +177,22 @@ function() {
 			ZmOperation.CHECK_MAIL,
 			ZmOperation.SEP,
 			ZmOperation.DELETE_MENU, ZmOperation.MOVE, ZmOperation.PRINT];
-}
+};
 
 ZmConvController.prototype._getViewType =
 function() {
 	return ZmId.VIEW_CONV;
-}
+};
 
 ZmConvController.prototype._getItemType =
 function() {
 	return ZmItem.MSG;
-}
+};
 
 ZmConvController.prototype._setActiveSearch =
 function(view) {
 	// bug fix #7389 - do nothing!
-}
+};
 
 // Operation listeners
 
@@ -233,7 +241,7 @@ function() {
 			clc._checkReplenish(respCallback);
 		}
 	}
-}
+};
 
 // Tag in the summary area clicked, do a tag search.
 ZmConvController.prototype._convTagClicked =
@@ -242,7 +250,7 @@ function(tagId) {
 	var query = 'tag:"' + tag.name + '"';
 	var searchController = appCtxt.getSearchController();
 	searchController.search({query: query});
-}
+};
 
 // Handle DnD tagging (can only add a tag to a single item) - if a tag got dropped onto
 // a msg, we need to update its conv
@@ -259,7 +267,7 @@ function(ev) {
 			}
 		}
 	}
-}
+};
 
 // same as for ZmTradController
 ZmConvController.prototype._listSelectionListener =
@@ -331,7 +339,7 @@ function() {
 	}
 
 	return popView;
-}
+};
 
 ZmConvController.prototype.getKeyMapName =
 function() {
@@ -422,7 +430,7 @@ ZmConvController.prototype._search =
 function(view, offset, limit, callback) {
 	var sortby = appCtxt.get(ZmSetting.SORTING_PREF, view);
 	this._conv.load({sortBy:sortby, offset:offset, limit:limit, getFirstMsg:this._readingPaneOn}, callback);
-}
+};
 
 ZmConvController.prototype._paginateDouble = 
 function(bDoubleForward) {
@@ -435,11 +443,11 @@ function(bDoubleForward) {
 ZmConvController.prototype._getSearchFolderId = 
 function() {
 	return this._conv.list.search.folderId;
-}
+};
 
 // top level view means this view is allowed to get shown when user clicks on 
 // app icon in app toolbar - we dont want conv view to be top level (always show CLV)
 ZmConvController.prototype._isTopLevelView = 
 function() {
 	return false;
-}
+};
