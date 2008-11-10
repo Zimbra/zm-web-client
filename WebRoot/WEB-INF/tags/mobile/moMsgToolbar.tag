@@ -1,4 +1,5 @@
 <%@ tag body-content="empty" dynamic-attributes="dynattrs" %>
+<%@ attribute name="mailbox" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZMailboxBean"%>
 <%@ attribute name="urlTarget" rtexprvalue="true" required="true" %>
 <%@ attribute name="context" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.tag.SearchContext" %>
 <%@ attribute name="mid" rtexprvalue="true" required="true" %>
@@ -12,71 +13,65 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <zm:currentResultUrl var="closeUrl" value="${urlTarget}" context="${context}"/>
 <zm:computeNextPrevItem var="cursor" searchResult="${context.searchResult}" index="${context.currentItemIndex}"/>
-
-<%--
-<c:if test="${!isTop}">
-<div style="padding:5px;background:#efefef;font-size:small;">
-
-    <a href="${fn:escapeXml(closeUrl)}#msg${mid}" class='zo_leftbutton'>
-            ${fn:escapeXml(zm:truncate(context.shortBackTo,15,true))}
-    </a>
-</div>
+<c:if test="${isTop}">
+    <div class="SubToolbar table">
+        <div class="table-row">
+            <div class="table-cell">
+                <a href="${urlTarget}?st=folders"><fmt:message key="folders"/></a> &#171; <a
+                    href="${fn:escapeXml(closeUrl)}#msg${mid}" class='zo_leftbutton'>
+                    ${fn:escapeXml(zm:truncate(context.shortBackTo,15,true))}
+            </a>
+                &#171; ${fn:escapeXml(fn:substring(msg.subject,0,8))}...
+            </div>
+        </div>
+    </div>
 </c:if>
---%>
+<div class="Toolbar table">
+<div class="table-row">
+<div class="table-cell">
 
-<table class="ToolbarBg" cellpadding="0" cellspacing="0" border="0" width="100%">
-<tr>
-<td align="left" class="Padding">
-    <table>
-        <tr>
-            <td class="Padding">
-                <c:choose>
-                    <c:when test="${cursor.hasPrev}">
-                        <zm:prevItemUrl var="prevMsgUrl" value="${urlTarget}" action='view'
-                                        cursor="${cursor}" context="${context}"/>
-                        <a class='zo_button' href="${fn:escapeXml(prevMsgUrl)}">
-                            <fmt:message key="MO_PREV"/>
-                        </a>
-                    </c:when>
-                    <c:otherwise>
-                        <a class='zo_button_disabled'>
-                            <fmt:message key="MO_PREV"/>
-                        </a>
-                    </c:otherwise>
-                </c:choose>
-            </td>
-            <td class="Padding">
-                <c:choose>
-                    <c:when test="${cursor.hasNext}">
-                        <zm:nextItemUrl var="nextMsgUrl" value="${urlTarget}" action='view'
-                                        cursor="${cursor}" context="${context}"/>
-                        <a class='zo_button' href="${fn:escapeXml(nextMsgUrl)}">
-                            <fmt:message key="MO_NEXT"/>
-                        </a>
-                    </c:when>
-                    <c:otherwise>
-                        <a class='zo_button_disabled'>
-                            <fmt:message key="MO_NEXT"/>
-                        </a>
-                    </c:otherwise>
-                </c:choose>
-            </td>
-        </tr>
-    </table>
-</td>
+<span class="zo_button_group">
+<c:choose>
+        <c:when test="${cursor.hasPrev}">
+            <zm:prevItemUrl var="prevMsgUrl" value="${urlTarget}" action='view'
+                            cursor="${cursor}" context="${context}"/>
+            <a class='zo_button prev_button' href="${fn:escapeXml(prevMsgUrl)}">
+                <fmt:message key="MO_PREV"/>
+            </a>
+        </c:when>
+        <c:otherwise>
+            <a class='zo_button_disabled prev_button'>
+                <fmt:message key="MO_PREV"/>
+            </a>
+        </c:otherwise>
+    </c:choose>
+<c:choose>
+    <c:when test="${cursor.hasNext}">
+        <zm:nextItemUrl var="nextMsgUrl" value="${urlTarget}" action='view'
+                        cursor="${cursor}" context="${context}"/>
+        <a class='zo_button next_button' href="${fn:escapeXml(nextMsgUrl)}">
+            <fmt:message key="MO_NEXT"/>
+        </a>
+    </c:when>
+    <c:otherwise>
+        <a class='zo_button_disabled next_button'>
+            <fmt:message key="MO_NEXT"/>
+        </a>
+    </c:otherwise>
+</c:choose>
+</span>
 
-<td>
-
+<span>
     <c:set var="myFolder" value="${zm:getFolder(pageContext, msg.folderId)}"/>
     <c:set var="inTrash" value="${myFolder.isInTrash}"/>
-    <select name="anAction" onchange="document.getElementById('actions').submit();">
+    <select class="zo_select_button" name="anAction" onchange="document.getElementById('actions').submit();">
         <option value="" selected="selected"><fmt:message key="moreActions"/></option>
         <c:choose>
             <c:when test="${inTrash}">
-                <option name="actionHardDelete"><fmt:message key="delete"/></option>
+                <option value="actionHardDelete"><fmt:message key="delete"/></option>
             </c:when>
             <c:otherwise>
-                <option name="actionDelete"><fmt:message key="delete"/></option>
+                <option value="actionDelete"><fmt:message key="delete"/></option>
             </c:otherwise>
         </c:choose>
         <optgroup label="Mark">
@@ -126,33 +121,13 @@
         </c:if>
     </select>
     <noscript><input name="moreActions" type="submit" value="<fmt:message key="actionGo"/>"/></noscript>
-</td>
-
-<td class="Padding" align="right">
-    <c:if test="${uiv == '1'}">
-        <c:if test="${context.st=='message' || context.st=='conversation'}">
-            <c:url var="composeUrl" value="${urlTarget}?st=newmail"/>
-            <a href="${composeUrl}" class="zo_button">
-                <fmt:message key="compose"/>
-            </a>
-        </c:if>
-        <c:if test="${context.st=='contact'}">
-            <c:url var="composeUrl" value="${urlTarget}?action=add"/>
-            <a href="${composeUrl}" class="zo_button">
-                <fmt:message key="add"/>
-            </a>
-        </c:if>
-    </c:if>
-</td>
-</tr>
-</table>
-
-<c:if test="${isTop}">
-    <div class="SubToolbar">
-        <a href="${context_url}?st=folders"><fmt:message key="folders"/></a> &#171; <a
-            href="${fn:escapeXml(closeUrl)}#msg${cid}" class='zo_leftbutton'>
-            ${fn:escapeXml(zm:truncate(context.shortBackTo,15,true))}
+</span>
+<span class="">
+    <c:url var="composeUrl" value="${urlTarget}?st=newmail"/>
+    <a href="${composeUrl}" class="zo_button">
+        <fmt:message key="compose"/>
     </a>
-        &#171; ${fn:escapeXml(fn:substring(msg.subject,0,8))}...
-    </div>
-</c:if>
+</span>
+</div>
+</div>
+</div>

@@ -21,80 +21,6 @@
     <c:set var="needEditView" value="${param.action eq 'editappt' or param.action eq 'newappt'}"/>
     <c:if test="${uploader.isUpload}">
         <c:choose>
-            <%--<c:when test="${not empty uploader.paramValues.actionGo}">
-                <c:set var="actionOp" value="${uploader.paramValues.actionOp[0]}"/>
-                <c:set var="id" value="${uploader.compose.inviteId}"/>
-                <c:choose>
-                    <c:when test="${actionOp eq 'flag' or actionOp eq 'unflag'}">
-                        <zm:checkCrumb crumb="${uploader.paramValues.crumb[0]}"/>
-                        <zm:flagItem var="result" id="${id}" flag="${actionOp eq 'flag'}"/>
-                        <app:status>
-                            <fmt:message key="${actionOp eq 'flag' ? 'actionApptFlag' : 'actionApptUnflag'}">
-                                <fmt:param value="${result.idCount}"/>
-                            </fmt:message>
-                        </app:status>
-                        ${zm:clearMessageCache(mailbox)}
-                    </c:when>
-                    <c:when test="${fn:startsWith(actionOp, 't:') or fn:startsWith(actionOp, 'u:')}">
-                        <zm:checkCrumb crumb="${uploader.paramValues.crumb[0]}"/>
-                        <c:set var="untagall" value="${fn:startsWith(actionOp, 'u:all')}"/>
-                        <c:choose>
-                        <c:when test="${untagall}" >
-                            <zm:forEachTag var="eachtag">
-                                <zm:tagItem tagid="${eachtag.id}" var="result" id="${id}" tag="false"/>
-                            </zm:forEachTag>
-                            <app:status>
-                                <fmt:message key="${'actionApptUntagAll'}" >
-                                  <fmt:param value="${result.idCount}"/>
-                            </fmt:message>
-                            </app:status>
-                        </c:when>
-                        <c:otherwise>
-                        <c:set var="tag" value="${fn:startsWith(actionOp, 't')}"/>
-                        <c:set var="tagid" value="${fn:substring(actionOp, 2, -1)}"/>
-                        <zm:tagItem tagid="${tagid}"var="result" id="${id}" tag="${tag}"/>
-                        <app:status>
-                            <fmt:message key="${tag ? 'actionApptTag' : 'actionApptUntag'}">
-                                <fmt:param value="${result.idCount}"/>
-                                <fmt:param value="${zm:getTagName(pageContext, tagid)}"/>
-                            </fmt:message>
-                        </app:status>
-                        ${zm:clearMessageCache(mailbox)}
-                       </c:otherwise>
-                    </c:choose>
-                    </c:when>
-                    <c:otherwise>
-                        <app:status style="Warning"><fmt:message key="actionNoActionSelected"/></app:status>
-                    </c:otherwise>
-                </c:choose>
-            </c:when>--%>
-            <%--<c:when test="${uploader.isRepeatEdit}">
-                <jsp:forward page="/h/repeat"/>
-            </c:when>--%>
-            <%--<c:when test="${uploader.isContactAdd or uploader.isContactSearch}">
-                --%><%--
-            <zm:saveDraft var="draftResult" compose="${upload,er.compose}" draftid="${uploader.compose.draftId}"/>
-            <c:set scope="request" var="draftid" value="${draftResult.id}"/>
-            --%><%--
-                --%><%--<jsp:forward page="/h/addattendees"/>--%><%--
-            </c:when>
-            <c:when test="${uploader.isAttachAdd}">
-                --%><%--
-            <zm:saveDraft var="draftResult" compose="${uploader.compose}" draftid="${uploader.compose.draftId}"/>
-            <c:set scope="request" var="draftid" value="${draftResult.id}"/>
-            --%><%--
-              --%><%--  <jsp:forward page="/h/attachments"/>--%><%--
-            </c:when>--%>
-            <%--<c:when test="${uploader.isAttachCancel}">
-                <c:set var="needEditView" value="${true}"/>
-            </c:when>
-            <c:when test="${uploader.isAttachDone}">
-                <c:set var="needEditView" value="${true}"/>
-                <c:if test="${uploader.compose.hasFileItems}">
-                    <zm:saveDraft var="draftResult" compose="${uploader.compose}" draftid="${uploader.compose.draftId}"/>
-                    <c:set scope="request" var="draftid" value="${draftResult.id}"/>
-                </c:if>
-            </c:when>--%>
             <c:when test="${uploader.isCancel}">
                 <c:set var="needEditView" value="${false}"/>
             </c:when>
@@ -165,6 +91,6 @@
         </c:choose>
     </c:if>
 </mo:handleError>
- <c:if test="${needEditView && uiv != '1'}">
+ <c:if test="${needEditView}">
         <jsp:forward page="/m/moapptcompose"/>
 </c:if>

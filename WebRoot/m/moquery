@@ -36,48 +36,48 @@
 <form action="<c:url value="${action_url}"/>" method="post">
 <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
 <input type="hidden" name="bt" value="${bt}"/>
-<table width="100%" cellspacing="0" cellpadding="0">
-<tr>
-    <td class="searchbar">
-                <table width="100%" cellspacing="0" cellpadding="0">
-                    <tr class='ToolbarBg'>
-                        <td>
-                            <table cellspacing="0" cellpadding="0">
-                                <tr>
-                                    <td>
+<div width="100%" cellspacing="0" cellpadding="0">
+<div>
+    <span class="searchbar">
+                <div width="100%" cellspacing="0" cellpadding="0">
+                    <div class='ToolbarBg'>
+                        <span>
+                            <div cellspacing="0" cellpadding="0">
+                                <div>
+                                    <span>
                                         <a href="${caction}" class='button'>
                                             <fmt:message key="back"/>
                                         </a>
-                                    </td>
-                                    <td style='padding-left:5px' class='zo_tb_submit'>
+                                    </span>
+                                    <span style='padding-left:5px' class='zo_tb_submit'>
                                         <input name="actionSearch" type="submit" value="<fmt:message key="search"/>"/>
-                                    </td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                </table>
+                                    </span>
+                                </div>
+                            </div>
+                        </span>
+                    </div>
+                </div>
         
-    </td>
-</tr>
-<tr>
-<td class="data">
+    </span>
+</div>
+<div>
+<span class="data">
 
-<table width="100%" cellspacing="2" cellpadding="5" class='zo_query'>
-<tr>
-    <td class='zo_query_fname'><label>
+<div width="100%" cellspacing="2" cellpadding="5" class='zo_query'>
+<div>
+    <span class='zo_query_fname'><label>
         <fmt:message key="find"/>:
     </label>
-    </td>
-    <td class='zo_query_fvalue'>
+    </span>
+    <span class='zo_query_fvalue'>
         <input type="text" name="sq" style='width:100%'/>
-    </td>
-</tr>
-<tr>
-    <td class='zo_query_fname'><label>
+    </span>
+</div>
+<div>
+    <span class='zo_query_fname'><label>
         <fmt:message key="MO_in"/>:</label>
-    </td>
-    <td class='zo_query_fvalue'>
+    </span>
+    <span class='zo_query_fvalue'>
         <select name="st" style='width:100%'>
             <option value="${mailbox.features.conversations ? mailbox.prefs.groupMailBy : 'message'}">
                 <fmt:message key="searchMail"/>
@@ -88,14 +88,14 @@
                 </option>
             </c:if>
         </select>
-    </td>
-</tr>
-<tr>
-    <td class='zo_query_fname'><label>
+    </span>
+</div>
+<div>
+    <span class='zo_query_fname'><label>
         <fmt:message key="folder"/>:
     </label>
-    </td>
-    <td class='zo_query_fvalue'>
+    </span>
+    <span class='zo_query_fvalue'>
         <select name="sq_folder" style='width:100%'>
             <option value="">
                 <fmt:message key="MO_selectFolder"/>
@@ -108,15 +108,15 @@
                 </c:if>
             </zm:forEachFolder>
         </select>
-    </td>
-</tr>
+    </span>
+</div>
 <c:if test="${mailbox.features.tagging}">
-    <tr>
-        <td class='zo_query_fname'><label>
+    <div>
+        <span class='zo_query_fname'><label>
             <fmt:message key="MO_tag"/>:
         </label>
-        </td>
-        <td class='zo_query_fvalue'>
+        </span>
+        <span class='zo_query_fvalue'>
             <select name="sq_tag" style='width:100%'>
                 <option value=""><fmt:message key="MO_selectTag"/></option>
                 <zm:forEachTag var="tag">
@@ -125,126 +125,126 @@
                     </option>
                 </zm:forEachTag>
             </select>
-        </td>
-    </tr>
+        </span>
+    </div>
 </c:if>
-<tr>
-    <td class='zo_query_fname'><label>
+<div>
+    <span class='zo_query_fname'><label>
         <fmt:message key="MO_size"/>:
     </label>
-    </td>
-    <td class='zo_query_fvalue'>
-        <table>
-            <tr>
-                <td>
+    </span>
+    <span class='zo_query_fvalue'>
+        <div>
+            <div>
+                <span>
                     <select name="sq_size_comp">
                         <option value="larger"><fmt:message key="MO_larger"/></option>
                         <option value="smaller"><fmt:message key="MO_smaller"/></option>
                     </select>
-                </td>
-                <td>
+                </span>
+                <span>
                     <input type="text" name="sq_size" size="5"/>
-                </td>
-                <td>
+                </span>
+                <span>
                     <select name="sq_size_units">
                         <option value="kb">KB</option>
                         <option value="mb">MB</option>
                     </select>
-                </td>
-            </tr>
-        </table>
-    </td>
-</tr>
+                </span>
+            </div>
+        </div>
+    </span>
+</div>
 
 
-<tr>
-    <td class='zo_query_fname'><label>
+<div>
+    <span class='zo_query_fname'><label>
         <fmt:message key="status"/>:
     </label>
-    </td>
-    <td class='zo_query_fvalue'>
-        <table>
-            <tr>
-                <td>
-                    <table>
-                        <tr valign="middle">
-                            <td class='zo_query_fvalue'><input id="unread" type="checkbox" name="sq_unread" value=" is:unread"/></td>
-                            <td class='zo_query_fname'><label for="unread"><fmt:message key="MO_unread"/></label></td>
+    </span>
+    <span class='zo_query_fvalue'>
+        <div>
+            <div>
+                <span>
+                    <div>
+                        <div valign="middle">
+                            <span class='zo_query_fvalue'><input id="unread" type="checkbox" name="sq_unread" value=" is:unread"/></span>
+                            <span class='zo_query_fname'><label for="unread"><fmt:message key="MO_unread"/></label></span>
 
-                        </tr>
-                    </table>
-                </td>
-                <td>
-                    <table>
-                        <tr>
-                            <td class='zo_query_fvalue'><input id="flagged" type="checkbox" name="sq_flagged" value=" is:flagged"/></td>
-                            <td class='zo_query_fname'><label for="flagged"><fmt:message key="MO_flagged"/></label></td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-        </table>
-    </td>
-</tr>
+                        </div>
+                    </div>
+                </span>
+                <span>
+                    <div>
+                        <div>
+                            <span class='zo_query_fvalue'><input id="flagged" type="checkbox" name="sq_flagged" value=" is:flagged"/></span>
+                            <span class='zo_query_fname'><label for="flagged"><fmt:message key="MO_flagged"/></label></span>
+                        </div>
+                    </div>
+                </span>
+            </div>
+        </div>
+    </span>
+</div>
 
 
-<tr>
-    <td class='zo_query_fname'><label>
+<div>
+    <span class='zo_query_fname'><label>
         <fmt:message key="from"/>:
     </label>
-    </td>
-    <td class='zo_query_fvalue'>
+    </span>
+    <span class='zo_query_fvalue'>
         <input type="text" name="sq_from" style='width:100%'/>
-    </td>
-</tr>
+    </span>
+</div>
 
 
-<tr>
-    <td class='zo_query_fname'><label>
+<div>
+    <span class='zo_query_fname'><label>
         <fmt:message key="MO_tocc"/>:
     </label>
-    </td>
-    <td class='zo_query_fvalue'>
+    </span>
+    <span class='zo_query_fvalue'>
         <input type="text" name="sq_tocc" style='width:100%'/>
-    </td>
-</tr>
+    </span>
+</div>
 
-<tr>
-    <td class='zo_query_fname'><label>
+<div>
+    <span class='zo_query_fname'><label>
         <fmt:message key="subject"/>:
     </label>
-    </td>
-    <td class='zo_query_fvalue'>
+    </span>
+    <span class='zo_query_fvalue'>
         <input type="text" name="sq_subject" style='width:100%'/>
-    </td>
-</tr>
+    </span>
+</div>
 
-</table>
+</div>
 
-</td>
-</tr>
-<tr>
-    <td class="searchbar">
-                <table width="100%" cellspacing="0" cellpadding="0">
-                    <tr class='ToolbarBg'>
-                        <td>
-                            <table cellspacing="0" cellpadding="0">
-                                <tr>
-                                    <td>
+</span>
+</div>
+<div>
+    <span class="searchbar">
+                <div width="100%" cellspacing="0" cellpadding="0">
+                    <div class='ToolbarBg'>
+                        <span>
+                            <div cellspacing="0" cellpadding="0">
+                                <div>
+                                    <span>
                                         <a href="${caction}" class='button'>
                                             <fmt:message key="back"/>
                                         </a>
-                                    </td>
-                                    <td style='padding-left:5px' class='zo_tb_submit'>
+                                    </span>
+                                    <span style='padding-left:5px' class='zo_tb_submit'>
                                         <input name="actionSearch" type="submit" value="<fmt:message key="search"/>"/>
-                                    </td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                </table>
-    </td>
-</tr>
-</table>
+                                    </span>
+                                </div>
+                            </div>
+                        </span>
+                    </div>
+                </div>
+    </span>
+</div>
+</div>
 </form>
 </mo:view>

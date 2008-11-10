@@ -1,0 +1,553 @@
+body {
+    font-family: Myriad, "Lucida Grande", Helvetica, Arial, Verdana, Sans-serif;
+    font-size: medium;
+    -webkit-text-size-adjust: none;
+    padding: 0px;
+    margin: 0px;
+}
+body[orient="portrait"] {
+    max-width: 320px;
+}
+body[orient="landscape"] {
+    max-width: 480px;
+}
+body[orient="portrait"] div.row span.m, div.row span.m {
+    max-width: 188px;
+    min-width: 188px;
+    width: 188px;
+}
+body[orient="landscape"] div.row span.m {
+    max-width: 347px;
+    min-width: 347px;
+    width: 347px;
+}
+a {
+    color: #4D8DC3;
+    text-decoration: none;
+}
+.container {
+    background: white;
+}
+#appbar {
+    background: #464646 url( "/img/mobile/iphone/NavbarBg.gif" );
+    height: 48px;
+    padding: 0px;
+    margin: 0px;
+    white-space: nowrap;
+    min-width: 275px;
+    color: white;
+}
+.label {
+    color: #4d8dc3;
+}
+.list-row, .list-row-unread {
+    border-bottom: 1px solid #DDDDDD;
+    padding: 2px;
+    background: white;
+}
+.list-row-unread {
+    font-weight: bold;
+    background: #efefef; /*#f9fcff;*/
+}
+.small-gray-text {
+    color: #999999;
+    font-size: small;
+}
+.list-row-unread .small-gray-text,.Email a {
+    color: #777777;
+}
+.from-span a {
+    color: black;
+}
+/*.frag-span{
+    overflow-y: hidden;
+    text-overflow: ellipsis;
+    height: 30px;
+}*/
+.zo_m_cv_sub {
+    padding: 7px;
+    padding-left: 22px;
+    background: #e8ebef url( "/img/startup/ImgConversationView.gif" ) 3px 50% no-repeat;
+    color: darkblue;
+}
+.Stripes {
+    background: #c5ccd4 url( "/img/mobile/iphone/pinstripes.png" );
+    margin: 0px;
+    padding: 2px;
+}
+.left {
+    float: left;
+    padding-left: 4px;
+}
+.right {
+    float: right;
+    padding-right:4px;
+}
+#appbar a span {
+    padding: 0px;
+    margin: 0px;
+    display: none;
+}
+#appbar a {
+    width: 55px;
+    height: 48px;
+    margin: 0px;
+    padding: 0px;
+    text-align: center;
+    font-size: small;
+    color: white;
+    vertical-align: bottom;
+    display: inline-block;
+}
+a#mail {
+    background: url( "/img/mobile/iphone/Mail.gif" ) 50% 50% no-repeat; /*content: url( "/img/mobile/iphone/Mail.gif" );*/
+}
+a#mail-active {
+    background: url( "/img/mobile/iphone/Mail-sel.gif" ) 50% 50% no-repeat; /*content: url( "/img/mobile/iphone/Mail-sel.gif" );*/
+}
+a#contact {
+    background: url( "/img/mobile/iphone/Contacts.gif" ) 50% 50% no-repeat; /*    content: url( "/img/mobile/iphone/Contacts.gif" );*/
+}
+a#contact-active {
+    background: url( "/img/mobile/iphone/Contacts-sel.gif" ) 50% 50% no-repeat; /*content: url( "/img/mobile/iphone/Contacts-sel.gif" );*/
+}
+a#cal {
+    background: url( "/img/mobile/iphone/Calendar.gif" ) 50% 50% no-repeat; /*content: url( "/img/mobile/iphone/Calendar.gif" );*/
+}
+a#cal-active {
+    background: url( "/img/mobile/iphone/Calendar-sel.gif" ) 50% 50% no-repeat; /*content: url( "/img/mobile/iphone/Calendar-sel.gif" );*/
+}
+a#folders {
+    background: url( "/img/mobile/iphone/Folders.gif" ) 50% 50% no-repeat; /*content: url( "/img/mobile/iphone/Folders.gif" );*/
+}
+a#folders-active {
+    background: url( "/img/mobile/iphone/Folders-sel.gif" ) 50% 50% no-repeat; /*content: url( "/img/mobile/iphone/Folders-sel.gif" );*/
+}
+a#search {
+    background: url( "/img/mobile/iphone/Search.gif" ) 50% 50% no-repeat; /*content: url( "/img/mobile/iphone/Search.gif" );*/
+}
+a#search-active {
+    background: url( "/img/mobile/iphone/Search-sel.gif" ) 50% 50% no-repeat; /* content: url( "/img/mobile/iphone/Search-sel.gif" );*/
+}
+#searchbar {
+    text-align: center;
+    vertical-align: middle;
+    padding:0px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    margin: 0px;
+    background: #e7e7e7;
+    border-bottom: 1px solid silver;
+}
+form {
+    padding: 0px;
+    margin: 0px;
+}
+.View {
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    background-color: white;
+    margin: 2px;
+    border: 1px solid #a7b2bc;
+    padding: 4px; /* font-size:medium;*/
+}
+.Toolbar, .SubToolbar {
+    background: #e8ebef;
+    height: 23px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    text-align: center;
+    white-space:nowrap;
+}
+.Toolbar {
+    background: #efefef url( "/img/mobile/iphone/iPhoneToolbar1.png" ) bottom repeat-x;
+}
+.StatusInfo, .StatusWarning, .StatusCritical, .zo_noresults {
+    padding: 3px;
+    margin: 0px;
+    font-weight: bold;
+    text-align: center;
+    font-size: small;
+}
+.zo_noresults {
+    height: 200px;
+    text-align: center;
+}
+.StatusInfo {
+    background-color: lightgreen;
+}
+.StatusWarning {
+    background-color: yellow;
+}
+.StatusCritical {
+    background-color: red;
+}
+.searchInput {
+    height:20px;
+    margin:4px;
+    vertical-align:middle;
+    width:200px;
+    -webkit-appearance: searchfield;
+}
+.cmp_container .table-cell, .cmp_appt_container .table-cell {
+    text-align: left;
+}
+.zo_button, .zo_button_disabled {
+    background: #58759d url( "/img/mobile/iphone/iPhoneButton2.png" ) 100% repeat-x;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    padding: 4px;
+    margin: 0px;
+    -webkit-margin: 0px;
+    -webkit-padding: 4px;
+    color: #ffffff;
+    border: 1px groove #58759d;
+    boder-collapse: collapse;
+    text-shadow: rgba( 0, 0, 0, 0.6 ) 0px -1px 0;
+    font-size: medium;
+}
+.zo_button_group {
+    background: #58759d url( "/img/mobile/iphone/iPhoneButton2.png" ) 100% repeat-x;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    border: 1px groove #58759d;
+    boder-collapse: collapse;
+    padding: 4px;
+    margin:2px;
+    font-size: medium;
+}
+input[type="button"], input[type="reset"] {
+    -webkit-border-radius: 5px;
+    -webkit-appearance: button;
+    background: #58759d url( "/img/mobile/iphone/iPhoneButton2.png" )100% repeat-x;
+}
+.searchButton, input[type="submit"], input.submit {
+    background: #2e69e0 url( "/img/mobile/iphone/iPhoneGoButton1.png" ) 100% repeat-x;
+    -webkit-border-radius: 5px;
+    -webkit-appearance: button;
+}
+.Reply {
+    background: url( "/img/startup/ImgReply.gif") 50% 50% no-repeat;
+}
+.ReplyAll{
+    background: url( "/img/startup/ImgReplyAll.gif") 50% 50% no-repeat;
+}
+.Forward{
+    background: url( "/img/startup/ImgForward.gif") 50% 50% no-repeat;
+}
+.Check{
+    background: url( "/img/common/ImgCheck.gif") 50% 50% no-repeat;
+}
+.Question{
+    background: url( "/img/common/ImgQuestionMark.gif") 50% 50% no-repeat;
+}
+.Cancel{
+    background: url( "/img/common/ImgCancel.gif") 50% 50% no-repeat;
+}
+.Msg {
+    background: url( "/img/mail/ImgEnvelope.gif" ) 90% 49% no-repeat;
+}
+.MsgGray {
+    background: url( "/img/mail/ImgEnvelopeGray.gif" ) 90% 49% no-repeat;
+}
+.Conv {
+    background: url( "/img/startup/ImgConversationView.gif" ) 90% 50% no-repeat;
+}
+.Contact {
+    background: url( "/img/contacts/ImgContact.gif" ) 90% 50% no-repeat;
+}
+.Person48 {
+    background: url( "/img/large/ImgPerson_48.gif" ) 90% 50% no-repeat;
+    height: 50px;
+    width: 50px;
+    padding: 2px;
+}
+.ContactGroup {
+    background: url( "/img/contacts/ImgGroup.gif" ) 90% 50% no-repeat;
+}
+.Attachment {
+    background: url( "/img/startup/ImgAttachment.gif" ) 10% 50% no-repeat;
+    padding-left: 12px;
+}
+.cmp_container .table-cell, .cmp_appt_container .table-cell {
+    border-bottom: 1px solid #DDDDDD;
+    padding: 2px;
+}
+.Textarea#bodyField {
+    width: 98%;
+    height: 150px;
+}
+.cmp_appt_container .Textarea, .cmp_container .table-cell .Textarea {
+    height: 17px;
+    width: 90%;
+}
+.cmp_appt_container .table-cell .Textarea#start, .cmp_appt_container .table-cell .Textarea#end {
+    width: 30%;
+}
+.cmp_appt_container .label, .cmp_container .label {
+    width: 50px;
+}
+/*Auto Complete*/
+.ZhAC {
+    position: relative;
+}
+.ZhACB {
+    font-weight: bold;
+}
+.ZhACCont {
+    position: absolute;
+    bottom: 0;
+}
+.ZhACCont .yui-ac-content {
+    position: absolute;
+    border: 1px solid #404040;
+    background: #fff;
+    overflow: hidden;
+    z-index: 9050;
+}
+.ZhACCont .yui-ac-shadow {
+    position: absolute;
+    margin: .3em;
+    background: #a0a0a0;
+    z-index: 9010;
+}
+.ZhACCont ul {
+    margin: 0;
+    padding: 1px 0;
+    list-style: none
+}
+.ZhACCont li {
+    margin: 0;
+    padding: 0 1px;
+    cursor: default;
+    white-space: nowrap;
+}
+.ZhACCont li.yui-ac-highlight {
+@SelectedBg @
+}
+.ZhACCont li.yui-ac-prehighlight {
+    background: #FFFFCC;
+}
+.ZhACCont table {
+    font-size: small;
+}
+.ZhACTo {
+    z-index: 9050;
+}
+.ZhACCc {
+    z-index: 9040;
+}
+.ZhACBCc {
+    z-index: 9030;
+}
+.prev_button, .mid_button, .next_button {
+    border: 0px;
+    margin: 0px;
+    -moz-border-radius: 0px;
+    -webkit-border-radius: 0px;
+    text-align: center;
+    padding-left: 6px;
+    padding-right: 6px;
+}
+.next_button {
+    border-left: 1px solid #335787;
+}
+select {
+    height: 27px;
+    vertical-align: 2px;
+}
+.zo_select_button {
+    max-width: 90px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: 1px;
+    height: 27px;
+    background: #58759d url( "/img/mobile/iphone/iPhoneButton2.png" ) 100% repeat-x;
+    color: white;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    border: 1px groove #58759d;
+    text-shadow: rgba( 0, 0, 0, 0.6 ) 0px -1px 0;
+    font-size: medium;
+    -webkit-appearance: button;
+}
+.zo_button_disabled {
+    color: silver;
+}
+.cont_sum_table {
+    border-bottom: 1px solid #DDDDDD;
+}
+.cont_view .table-cell {
+    text-align: left;
+}
+#userinfo {
+    color: #999999;
+    padding: 4px;
+    font-size: small;
+    height: 30px;
+    border-bottom: 1px solid #DDDDDD;
+}
+#userinfo .logout-span {
+    float: left;
+}
+#copyright_notice {
+    text-align: center;
+    padding: 5px;
+}
+.table {
+    display: table;
+    width: 100%;
+    height: 30px;
+}
+.table-row {
+    display: table-row;
+}
+.table-cell {
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+}
+.Folders {
+    padding: 5px;
+}
+.row {
+    display: block;
+    min-height: 50px;
+}
+.chk {
+    vertical-align: middle;
+    height: 15px;
+    width: 15px;
+    padding: 0px;
+    margin: 0px;
+}
+div.row span.cell {
+    display: table-cell;
+    vertical-align: middle;
+    padding: 2px;
+    border-collapse: collapse;
+    text-align: left;
+}
+div.row span.l, div.row span.m {
+    vertical-align: top;
+}
+.from-span, .sub-span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: pointer;
+    cursor: hand;
+}
+h1, h2, h3, h4, h5, h6 {
+    font-size: 100%;
+    font-weight: normal;
+}
+div.row span.f {
+    max-width: 50px;
+    width: 40px;
+    white-space: nowrap;
+    padding-left: 10px;
+    min-width:40px;
+}
+div.row span.l {
+    min-width: 60px;
+    text-align: right;
+}
+.msg-list-in-conv {
+    padding: 2%;
+}
+.msg-list-in-conv .cell {
+    padding: 2px !important;
+}
+.SmlIcnHldr {
+    width: 18px;
+    display: inline-block;
+}
+.FldrSearchFolder {
+    background: url( "/img/startup/ImgSearchFolder.gif" ) 50% 50% no-repeat;
+}
+.FldrFolder {
+    background: url( "/img/startup/ImgFolder.gif" ) 50% 50% no-repeat;
+}
+.FldrSharedCalendarFolder {
+    background: url( "/img/calendar/ImgSharedCalendarFolder.gif" ) 50% 50% no-repeat;
+}
+.FldrCalendarFolder {
+    background: url( "/img/calendar/ImgCalendarFolder.gif" ) 50% 50% no-repeat;
+}
+.FldrSharedContactsFolder {
+    background: url( "/img/startup/ImgSearchFolder.gif" ) 50% 50% no-repeat;
+}
+.FldrEmailedContacts {
+    background: url( "/img/contacts/ImgSharedContactsFolder.gif" ) 50% 50% no-repeat;
+}
+.FldrContactsFolder {
+    background: url( "/img/contacts/ImgContactsFolder.gif" ) 50% 50% no-repeat;
+}
+.FldrSharedTaskList {
+    background: url( "/img/tasks/ImgSharedTaskList.gif" ) 50% 50% no-repeat;
+}
+.FldrTaskList {
+    background: url( "/img/startup/ImgTaskList.gif" ) 50% 50% no-repeat;
+}
+.FldrInbox {
+    background: url( "/img/startup/ImgSearchFolder.gif" ) 50% 50% no-repeat;
+}
+.FldrTrash {
+    background: url( "/img/startup/ImgTrash.gif" ) 50% 50% no-repeat;
+}
+.FldrSpamFolder {
+    background: url( "/img/startup/ImgSpamFolder.gif" ) 50% 50% no-repeat;
+}
+.FldrSentFolder {
+    background: url( "/img/startup/ImgSentFolder.gif" ) 50% 50% no-repeat;
+}
+.FldrDraftFolder {
+    background: url( "/img/startup/ImgDraftFolder.gif" ) 50% 50% no-repeat;
+}
+.FldrRSS {
+    background: url( "/img/startup/ImgRSS.gif" ) 50% 50% no-repeat;
+}
+.FldrSharedMailFolder {
+    background: url( "/img/startup/ImgSharedMailFolder.gif" ) 50% 50% no-repeat;
+}
+.FldrPlacedCalls {
+    background: url( "/img/voicemail/ImgPlacedCalls.gif" ) 50% 50% no-repeat;
+}
+.FldrAnsweredCalls {
+    background: url( "/img/voicemail/ImgAnsweredCalls.gif" ) 50% 50% no-repeat;
+}
+.FldrMissedCalls {
+    background: url( "/img/voicemail/ImgMissedCalls.gif" ) 50% 50% no-repeat;
+}
+.FldrVoicemail {
+    background: url( "/img/voicemail/ImgVoicemail.gif" ) 50% 50% no-repeat;
+}
+.Flag {
+    background: url( "/img/startup/ImgFlagRed.gif" ) 50% 50% no-repeat;
+}
+.Tagblue {
+    background: url( "/img/startup/ImgTagBlue.gif" ) 50% 50% no-repeat;
+}
+.Tagcyan {
+    background: url( "/img/startup/ImgTagCyan.gif" ) 50% 50% no-repeat;
+}
+.Tagorange {
+    background: url( "/img/startup/ImgTagOrange.gif" ) 50% 50% no-repeat;
+}
+.Taggreen {
+    background: url( "/img/startup/ImgTagGreen.gif" ) 50% 50% no-repeat;
+}
+.Tagpurple {
+    background: url( "/img/startup/ImgTagPurple.gif" ) 50% 50% no-repeat;
+}
+.Tagred {
+    background: url( "/img/startup/ImgTagRed.gif" ) 50% 50% no-repeat;
+}
+.Tagyellow {
+    background: url( "/img/startup/ImgTagYellow.gif" ) 50% 50% no-repeat;
+}
+.TagStack {
+    background: url( "/img/startup/ImgTagStack.gif" ) 50% 50% no-repeat;
+}

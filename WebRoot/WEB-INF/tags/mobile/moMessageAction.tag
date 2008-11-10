@@ -20,6 +20,12 @@
 <c:set var="anAction"
        value="${not empty paramValues.anAction[0] ? paramValues.anAction[0] :  paramValues.anAction[1]}"/>
 <c:choose>
+<c:when test="${zm:actionSet(param,'moreActions') && anAction eq 'selectAll'}">
+    <c:set var="select" value="all" scope="request"/>
+</c:when>
+<c:when test="${zm:actionSet(param,'moreActions') && anAction eq 'selectNone'}">
+    <c:set var="select" value="none" scope="request"/>
+</c:when>
 <c:when test="${zm:actionSet(param, 'actionCompose')}">
     <jsp:forward page="/m/mainx?st=newmail"/>
 </c:when>

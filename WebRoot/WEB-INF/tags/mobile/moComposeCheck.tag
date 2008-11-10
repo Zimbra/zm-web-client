@@ -90,6 +90,6 @@
     </c:if>
 </mo:handleError>
 
-<c:if test="${needComposeView && uiv !='1'}">
+<c:if test="${needComposeView}">
     <jsp:forward page="/m/mocompose"/>
 </c:if>

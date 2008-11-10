@@ -14,28 +14,17 @@
     <c:set var="useTo" value="${context.folder.isSent or context.folder.isDrafts}"/>
     <c:set var="selectedRow" value="${param.selectedRow}"/>
 </mo:handleError>
-<c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'mosearch'}"/>
-<mo:view mailbox="${mailbox}" title="${title}" context="${context}">
+<c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/>
 <zm:currentResultUrl var="actionUrl" value="${context_url}" context="${context}"/>
 <form id="actions" action="${fn:escapeXml(actionUrl)}" method="post">
 <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
 <input type="hidden" name="doMessageAction" value="1"/>
-<script>document.write('<input name="moreActions" type="hidden" value="<fmt:message key="actionGo"/>"/>');</script>
-<table cellspacing="0" cellpadding="0" border="0" width="100%">
-<%--<c:if test="${context.searchResult.size gt 0}">--%>
-     <tr>
-        <td>
-            <mo:toolbar context="${context}" urlTarget="${context_url}" isTop="true"/>
-        </td>
-    </tr>
-<%--</c:if>--%>
-<tr>
-    <td>
-        <table cellspacing="0" width="100%" cellspaing="0" border="0">
+<script type="text/javascript">document.write('<input name="moreActions" type="hidden" value="<fmt:message key="actionGo"/>"/>');</script>
+<c:set var="title" value="${zm:truncate(context.shortBackTo,20,true)}" scope="request"/>    
+<mo:toolbar context="${context}" urlTarget="${context_url}" isTop="true" mailbox="${mailbox}"/>
             <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
                 <c:set var="chit" value="${hit.conversationHit}"/>
-
-                <c:choose>
+                  <c:choose>
                     <c:when test="${chit.isDraft}">
                         <zm:currentResultUrl var="convUrl" value="${context_url}" index="${status.index}"
                                              context="${context}" usecache="true" id="${fn:substringAfter(chit.id,'-')}"
@@ -46,81 +35,61 @@
                                              index="${status.index}" context="${context}" usecache="true"/>
                     </c:otherwise>
                 </c:choose>
-                <tr id="conv${chit.id}" class="highlight">
-                    <td class='zo_m_list_row'>
-                        <table cellspacing="0" cellpadding="4" width="100%">
-                            <tr>
-                                <td class="zo_m_chk" width="1%">
-                                    <c:set value=",${chit.id}," var="stringToCheck"/>
-                                    <input type="checkbox" ${fn:contains(requestScope._selectedCids,stringToCheck)?'checked="checked"':'unchecked'} name="cid" value="${chit.id}">
-                                </td>
-                                <td width="1%" class="zo_m_chk">
-                                    <c:if test="${chit.messageCount ge 2}">
-                                        <mo:img src="startup/ImgConversationView.gif"/>
-                                    </c:if>
-                                    <c:if test="${chit.messageCount lt 2}">
-                                        <mo:img src="mail/ImgEnvelope${chit.isUnread?'':'Gray'}.gif"/>
-                                    </c:if>
-                                </td>
-                                <td onclick='zClickLink("a${chit.id}")'>
-                                    <table cellspacing="0" width="100%">
-                                     <tr class='zo_m_list_<c:if test="${chit.isUnread}">un</c:if>read'>
-                                          <td width="95%">
-                                                <c:set var="dispRec" value="${chit.displayRecipients}"/>
-                                                <c:set var="_f" value="${empty dispRec ? unknownRecipient : dispRec}"/>
-                                                <c:if test="${fn:length(_f) > 25}"><c:set var="_f" value="${fn:substring(_f, 0, 25)}..."/></c:if>
-                                                <a class="zo_m_list_from" id="a${chit.id}" href="${fn:escapeXml(convUrl)}">${fn:escapeXml(_f)}</a>
-                                                <div class="zo_m_list_sub">
-                                                    <c:set var="_f" value="${empty chit.subject ? unknownSubject : chit.subject}"/>
-                                                    <c:if test="${fn:length(_f) > 25}"><c:set var="_f" value="${fn:substring(_f, 0, 25)}..."/></c:if>
-                                                    ${fn:escapeXml(_f)}
-                                                </div>
-                                                <div class='zo_m_list_frag'>
-                                                    <c:set var="_f" value="${chit.fragment}"/>
-                                                    <c:if test="${fn:length(_f) > 50}"><c:set var="_f" value="${fn:substring(_f, 0, 50)}..."/></c:if>
-                                                    ${fn:escapeXml(_f)}
-                                                </div>
-                                            </td>
-                                            <td align="center" width="2%" valign="middle" style="padding-top: 5px;padding-left: 4px;">
-                                                <c:if test="${chit.isFlagged}">
-                                                    <mo:img src="startup/ImgFlagRed.gif" alt="flag"/>
-                                                </c:if>
-                                                <c:if test="${chit.hasTags}">
-                                                    <mo:miniTagImage
-                                                            ids="${hit.conversationHit.tagIds}"/>
-                                                </c:if>
-                                            </td>
-                                            <td nowrap="nowrap" class='zo_m_list_size' align="right" valign="top">
-                                                <fmt:formatDate timeZone="${mailbox.prefs.timeZone}" var="on_dt" pattern="yyyyMMdd" value="${chit.date}"/>
-                                                <a <c:if test="${sessionScope.uiv == '1' && mailbox.features.calendar}">href='${context_url}?st=cal&view=month&date=${on_dt}'</c:if>>
-                                                    ${fn:escapeXml(zm:displayMsgDate(pageContext, chit.date))}
-                                                </a><br/>
-                                                 <c:choose>
-                                                            <c:when test="${chit.messageCount gt 1}">(${chit.messageCount})</c:when>
-                                                            <c:otherwise>&nbsp;</c:otherwise>
-                                                </c:choose>
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </td>
-                            </tr>
-                        </table>
-                    </td>
-                </tr>
+                <div id="conv${chit.id}" class="row conv_lv_list_row list-row${chit.isUnread ? '-unread' : ''}">
+                    <c:if test="${chit.messageCount ge 2}">
+                        <c:set value="Conv" var="class"/>
+                        <%--<mo:img src="startup/ImgConversationView.gif" class="left-icon"/>--%>
+                    </c:if>
+                    <c:if test="${chit.messageCount lt 2}">
+                        <c:set value="Msg${chit.isUnread ? '' : 'Gray'}" var="class"/> 
+                        <%--<mo:img src="mail/ImgEnvelope${chit.isUnread?'':'Gray'}.gif" class="left-icon"/>--%>
+                    </c:if>
+                    <span class="cell f ${class}">
+                        <c:set value=",${chit.id}," var="stringToCheck"/>
+                        <input class="chk" type="checkbox" ${requestScope.select ne 'none' && (fn:contains(requestScope._selectedCids,stringToCheck) || requestScope.select eq 'all') ? 'checked="checked"' : ''} name="cid" value="${chit.id}"/>
+                    </span>
+                    <span class="cell m" onclick='zClickLink("a${chit.id}")'>
+                        <div class="from-span">
+                            <c:set var="dispRec" value="${chit.displayRecipients}"/>
+                            <c:set var="_f" value="${empty dispRec ? unknownRecipient : dispRec}"/>
+                            <c:if test="${fn:length(_f) > 20}"><c:set var="_f" value="${fn:substring(_f, 0, 20)}..."/></c:if>
+                            <a class="zo_m_list_from" id="a${chit.id}" href="${fn:escapeXml(convUrl)}">${fn:escapeXml(_f)}</a></div>
+                        <div class="sub-span">
+                            <c:set var="_f" value="${empty chit.subject ? unknownSubject : chit.subject}"/>
+                            <c:if test="${fn:length(_f) > 25}"><c:set var="_f" value="${fn:substring(_f, 0, 25)}..."/></c:if>
+                            ${fn:escapeXml(_f)}
+                        </div>
+                        <div class="frag-span small-gray-text">
+                            <c:set var="_f" value="${chit.fragment}"/>
+                            <c:if test="${fn:length(_f) > 47}"><c:set var="_f" value="${fn:substring(_f, 0, 47)}..."/></c:if>
+                            ${fn:escapeXml(_f)}
+                        </div>
+                    </span>
+                    <span class="cell l">
+                        <fmt:formatDate timeZone="${mailbox.prefs.timeZone}" var="on_dt" pattern="yyyyMMdd" value="${chit.date}"/>
+                        <a <c:if test="${mailbox.features.calendar}">href='${context_url}?st=cal&amp;view=month&amp;date=${on_dt}'</c:if>>
+                            ${fn:escapeXml(zm:displayMsgDate(pageContext, chit.date))}
+                        </a><br/>
+                        <c:if test="${chit.isFlagged}">
+                            <span class="SmlIcnHldr Flag">&nbsp;</span>
+                            <%--<mo:img src="startup/ImgFlagRed.gif" alt="flag"/>--%>
+                        </c:if>
+                        <c:if test="${chit.hasTags}">
+                        <mo:miniTagImage
+                                ids="${hit.conversationHit.tagIds}"/>
+                        </c:if>
+                        <c:if test="${chit.messageCount gt 1}"><span class="small-gray-text">(${chit.messageCount})</span></c:if> 
+                    </span>
+                </div>
             </c:forEach>
-        </table>
-        <c:if test="${context.searchResult.size == 0}">
-            <div class='zo_noresults'><fmt:message key="noResultsFound"/></div>
+        <c:if test="${empty context || empty context.searchResult || context.searchResult.size == 0}">
+            <div class='table'>
+                <div class="table-row">
+                    <div class="table-cell zo_noresults">
+                        <fmt:message key="noResultsFound"/>
+                     </div>
+                </div>
+            </div>
         </c:if>
-    </td>
-</tr>
-<%--<c:if test="${context.searchResult.size gt 0}">--%>
-     <tr>
-        <td>
-            <mo:toolbar context="${context}" urlTarget="${context_url}" isTop="false"/>
-        </td>
-    </tr>
-<%--</c:if>--%>
-</table>
+    <mo:toolbar context="${context}" urlTarget="${context_url}" isTop="false" mailbox="${mailbox}"/>
 </form>
-</mo:view>

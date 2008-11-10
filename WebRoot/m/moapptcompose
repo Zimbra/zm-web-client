@@ -14,10 +14,11 @@
 </c:if>
 <c:if test="${param.bt == null && not empty header['referer']}">
     <c:set var="caction" value='${header["referer"]}'/>
-    <c:set var="bt" value="${fn:replace(fn:replace(fn:substringAfter(header['referer'],'?'),'appmsg=actionApptSaved',''),'&','|')}"/>
+    <c:set var="bt"
+           value="${fn:replace(fn:replace(fn:substringAfter(header['referer'],'?'),'appmsg=actionApptSaved',''),'&','|')}"/>
 </c:if>
 <mo:handleError>
-    <c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:(uiv =='1'?'mainx':'mosearch')}"/>
+    <c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/>
     <zm:getMailbox var="mailbox"/>
     <c:choose>
         <c:when test="${not empty mailbox.prefs.locale}">
@@ -29,7 +30,7 @@
     </c:choose>
     <fmt:setBundle basename="/messages/ZhMsg" scope="request"/>
 
-    <fmt:message var="title" key="newAppointment"/>
+    <%--<fmt:message var="title" key="newAppointment"/>--%>
     <fmt:message var="hourFmt" key="CAL_APPT_EDIT_HOUR_FORMAT"/>
     <zm:clearApptSummaryCache/>
     <zm:composeUploader var="uploader"/>
@@ -51,11 +52,9 @@
     </c:choose>
 
     <c:set var="appt" value="${empty message ? null : message.invite.component}"/>
-
     <c:set var="canEditRecurrence" value="${(empty appt or not appt.exception) and not compose.useInstance}"/>
     <c:set var="canDelete" value="${not empty appt}"/>
     <c:set var="hasAttendees" value="${not empty appt and not empty appt.attendees}"/>
-
 
     <c:choose>
         <c:when test="${empty compose}">
@@ -93,77 +92,75 @@
            value="${not empty appt and (appt.exception or not empty appt.recurrence) and compose.useInstance}"/>
 
 </mo:handleError>
-<mo:view mailbox="${mailbox}" title="${not empty compose.subject ? compose.subject : title}" context="${null}"
-         onload="var e=document.getElementById('subject'); if (e) e.focus();">
-
+<fmt:message var="title" key="ALT_MSG_STATUS_APPT"/>
+<fmt:message var="addedit" key="${empty message ? 'add' : 'edit'}"/>
+<c:set var="title" value="${title} : ${addedit}" scope="request"/>
 <form action="?st=newappt&bt=${bt}" method="post" enctype="multipart/form-data" accept-charset="utf-8">
 <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
-<table width=100% cellspacing="0" cellpadding="0" class="ToolbarBg">
-    <tr>
-        <td>
-            <table cellspacing="0" cellpadding="0">
-                <tr>
 
-                    <td
-                            <c:if test="${uiv=='1'}">align="right"</c:if> style='padding-left:5px'
-                            class='zo_tb_submit'>
-                        <input name="actionSave" type="submit" value="<fmt:message key="save"/>">
-                    </td>
-                    <td style='padding-left:5px' class='zo_tb_submit'>
-                        <input id='actionCancel' name="actionCancel"
-                               style="display:none;" ${uiv=='1'?'onclick=zClickLink("_back_to")':''}
-                               type="${uiv=='1'?'button':'submit'}" value="<fmt:message key="cancel"/>">
-                        <noscript><a href="${caction}" class="button"><fmt:message key="cancel"/></a></noscript>
-                    </td>
-                    <script type="text/javascript">document.getElementById('actionCancel').style.display = '';</script>
-                </tr>
-            </table>
-        </td>
+<div class="table Toolbar">
+    <div class="table-row">
+        <div class="table-cell">
+                    <span class="zo_tb_submit">
+                        <input class="zo_button" id='actionCancel' name="actionCancel"
+                               style="display:none;" onclick="zClickLink('_back_to')"
+                               type="button" value="<fmt:message key="cancel"/>">
+                        <noscript><a href="${caction}" class="zo_button"><fmt:message key="cancel"/></a></noscript>
+                    </span>
+                    <span class='zo_tb_submit'>
+                        <input class="zo_button" name="actionSave" type="submit" value="<fmt:message key="save"/>">
+                    </span>
+            <script type="text/javascript">document.getElementById('actionCancel').style.display = '';</script>
+        </div>
+    </div>
+</div>
 
-    </tr>
-</table>
-
-<div class="Stripes">
-<div style="padding:5px;"><b>${fn:escapeXml(apptSubject)}</b></div>
-    <%--<hr size="1px" style="color:#eeeeee;">--%>
-    <%--<c:if test="${!isInstance && message != null}">
-       <div class="View"> This is a recurring appointment</div>
-    </c:if>--%>
+<div class="Stripes cmp_appt_container">
+<div class="View"><b>${fn:escapeXml(apptSubject)}</b></div>
 <c:if test="${isInstance}">
     <div class="View">
-        <table width="100%" cellpadding="0" cellspacing="0">
-            <tr>
-                <td class='ZhApptRecurrInfo' style='padding-left:5px' width=24><app:img
-                        src="dwt/ImgInformation.gif"/></td>
-                <td style="font-size:small;">
+        <div class="table">
+            <div class="table-row">
+                <span class="table-cell ZhApptRecurrInfo"><app:img
+                        src="dwt/ImgInformation.gif"/></span>
+                <span class="table-cell">
                     <c:url value="${context_url}?st=newappt&bt=${bt}&useInstance=0&invId=${id}" var="apptUrl"/>
                     <fmt:message key="apptInstNote"/>
                     <hr size="1">
                     <a href="${apptUrl}"><fmt:message key="apptInstEditSeries"/></a>
-                </td>
-            </tr>
-        </table>
+                </span>
+            </div>
+        </div>
     </div>
 </c:if>
 <div class="View">
-    <div style="width:60px;float:left;" class="label"><fmt:message key="subject"/>:</div>
-    <input type="text" class="Textarea" value="${fn:escapeXml(compose.subject)}" name="subject" style="width:80%">
-    <hr size="1" style="color:#eeeeee;">
-    <div style="width:60px;float:left;" class="label"><fmt:message key="location"/>:</div>
-    <input class="Textarea" type="text" value="${fn:escapeXml(compose.location)}" name="location" style="width:80%">
+    <div class="table">
+        <div class="table-row cmp_to_row">
+            <span class="label table-cell"><fmt:message key="subject"/>:</span>
+            <span class="table-cell"><input type="text" class="Textarea" value="${fn:escapeXml(compose.subject)}"
+                                            name="subject"></span>
+        </div>
+        <div class="table-row cmp_to_row">
+            <span class="label table-cell"><fmt:message key="location"/>:</span>
+            <span class="table-cell"><input class="Textarea" type="text" value="${fn:escapeXml(compose.location)}"
+                                            name="location"></span>
+        </div>
+    </div>
 </div>
 
 <div class="View">
-    <div style="width:60px;float:left;" class="label"><fmt:message key="start"/>:</div>
-    <input class="Textarea" style="width:90px;" id="start" type=text size="12" maxlength="20" name="startDate"
-           value="${fn:escapeXml(compose.startDate)}"> @ <select name="startHour">
-    <c:set var="h" value="${compose.startHour}"/>
-    <c:forEach var="hi" begin="0" end="23">
-        <option value="${hi}" <c:if test="${h eq hi}"> selected</c:if>>
-            <fmt:formatDate value="${zm:getTodayHour(hi, null).time}" pattern="${hourFmt}" timeZone="${tz}"/>
-        </option>
-    </c:forEach>
-</select>
+<div class="table">
+    <div class="table-row cmp_to_row">
+        <span class="label table-cell"><fmt:message key="start"/>:</span>
+    <span class="table-cell"><input class="Textarea" id="start" type=text size="12" maxlength="20" name="startDate"
+                                    value="${fn:escapeXml(compose.startDate)}"> @ <select name="startHour">
+        <c:set var="h" value="${compose.startHour}"/>
+        <c:forEach var="hi" begin="0" end="23">
+            <option value="${hi}" <c:if test="${h eq hi}"> selected</c:if>>
+                <fmt:formatDate value="${zm:getTodayHour(hi, null).time}" pattern="${hourFmt}" timeZone="${tz}"/>
+            </option>
+        </c:forEach>
+    </select>
     <select name="startMinute">
         <c:set var="m" value="${compose.startMinute}"/>
         <option
@@ -191,17 +188,19 @@
         <option
                 <c:if test="${m eq 55}">selected </c:if> value="55">:55
     </select>
-    <hr size="1" style="color:#eeeeee;">
-    <div style="width:60px;float:left;" class="label"><fmt:message key="end"/>:</div>
-    <input class="Textarea" style="width:90px;" id="end" type=text size="12" maxlength="20" name="endDate"
-           value="${fn:escapeXml(compose.endDate)}"> @ <select name="endHour">
-    <c:set var="h" value="${compose.endHour}"/>
-    <c:forEach var="hi" begin="0" end="23">
-        <option value="${hi}" <c:if test="${h eq hi}"> selected</c:if>>
-            <fmt:formatDate value="${zm:getTodayHour(hi, null).time}" pattern="${hourFmt}" timeZone="${tz}"/>
-        </option>
-    </c:forEach>
-</select>
+    </span>
+    </div>
+    <div class="table-row cmp_to_row">
+        <span class="label table-cell"><fmt:message key="end"/>:</span>
+    <span class="table-cell"><input class="Textarea" id="end" type=text size="12" maxlength="20" name="endDate"
+                                    value="${fn:escapeXml(compose.endDate)}"> @ <select name="endHour">
+        <c:set var="h" value="${compose.endHour}"/>
+        <c:forEach var="hi" begin="0" end="23">
+            <option value="${hi}" <c:if test="${h eq hi}"> selected</c:if>>
+                <fmt:formatDate value="${zm:getTodayHour(hi, null).time}" pattern="${hourFmt}" timeZone="${tz}"/>
+            </option>
+        </c:forEach>
+    </select>
     <select name="endMinute">
         <c:set var="m" value="${compose.endMinute}"/>
         <option
@@ -229,91 +228,11 @@
         <option
                 <c:if test="${m eq 55}">selected </c:if> value="55">:55
     </select>
-</div>
-
-<div class="View">
-    <table width="100%">
-        <tr>
-            <td class="SmallText"><input id="allday" type=checkbox name="allDay"
-                                         <c:if test="${compose.allDay}">checked</c:if>
-                                         value="1"> <fmt:message key="allDayEvent"/></td>
-            <td align="right"><span style="display:none;" id="showHide"><a id="showHideLink" href="javascript:void(0);"
-                                                                           onclick="showHidemore()"><fmt:message
-                    key="details"/> </a></span></td>
-        </tr>
-    </table>
-    <c:set var="repeat" value="${compose.simpleRecurrence}"/>
-    <c:if test="${repeat != null && repeat.type != null && !repeat.type.none}">
-        <hr size="1" style="color:#eeeeee;">
-            <span class="label"><fmt:message
-                    key="repeats"/> :</span> ${fn:escapeXml(zm:getRepeatBlurb(repeat,pageContext,mailbox.prefs.timeZone, compose.apptStartCalendar.time))}
-    </c:if>
-</div>
-<div id="apt_dtls_div" style="display:block;">
-    <%-- <div class="View">
-        <a id="repeatLink" href="javascript:void(0);" onclick="showHideRepeat()"><fmt:message key="repeat"/></a>
+     </span>
     </div>
-    <div style="display:none;" id="apt_rpt_div">
-        <div class="View">
-
-        </div>
-    </div>--%>
-<div class="view">
-    <span class="label"><fmt:message key="repeat"/>:</span>
-    <input type=radio name='repeatType'
-           <c:if test="${compose.repeatType eq 'NONE'}">checked </c:if> value="NONE">
-    <fmt:message key="recurNone"/>
-    <input type=radio id="rpttypeid" name='repeatType' value="BASIC" <c:if test="${compose.repeatType eq 'BASIC'}">checked </c:if>>
-    <select name="repeatBasicType" onchange="document.getElementById('rpttypeid').checked='checked';">
-        <option value="DAILY" <c:if test="${compose.repeatBasicType eq 'DAILY'}">selected </c:if>><fmt:message
-                key="recurBasicSelectDaily"/></option>
-        <option value="WEEKLY" <c:if test="${compose.repeatBasicType eq 'WEEKLY'}">selected </c:if>><fmt:message
-                key="recurBasicSelectWeekly"/></option>
-        <option value="MONTHLY" <c:if test="${compose.repeatBasicType eq 'MONTHLY'}">selected </c:if>>
-            <fmt:message key="recurBasicSelectMonthly"/></option>
-        <option value="YEARLY" <c:if test="${compose.repeatBasicType eq 'YEARLY'}">selected </c:if>><fmt:message
-                key="recurBasicSelectYearly"/></option>
-    </select>
-
 </div>
-<c:if test="${mailbox.prefs.useTimeZoneListInCalendar or not zm:isSameTimeZone(compose.timeZone, mailbox.prefs.timeZoneWindowsId)}">
-    <c:set var="addedTimeZone" value="true"/>
-    <div class="View">
-        <span class="Label"><fmt:message key="timeZonePref"/></span> : <select name="timeZone" id="timeZone">
-        <zm:forEachTimeZone var="tz">
-            <option
-                    <c:if test="${compose.timeZone eq tz.id}">selected</c:if>
-                    value="${fn:escapeXml(tz.id)}">${fn:escapeXml(tz.display)}</option>
-        </zm:forEachTimeZone>
-    </select>
-    </div>
-</c:if>
-
-<div class="View">
-    <div style="width:60px;float:left;" class="label"><fmt:message key="showAs"/>:</div>
-    <select name="freeBusyStatus" id="showAs">
-        <option <c:if test="${compose.freeBusyStatus eq 'F'}">selected </c:if>value="F"><fmt:message key="free"/>
-        <option
-                <c:if test="${compose.freeBusyStatus eq 'T'}">selected </c:if> value="T"><fmt:message
-                key="tentative"/>
-        <option
-                <c:if test="${compose.freeBusyStatus eq 'B'}">selected </c:if> value="B"><fmt:message key="busy"/>
-        <option
-                <c:if test="${compose.freeBusyStatus eq 'O'}">selected </c:if> value="O"><fmt:message
-                key="outOfOffice"/>
-    </select>
-    <hr size="1" style="color:#eeeeee;">
-    <div style="width:60px;float:left;" class="label"><fmt:message key="markAs"/>:</div>
-    <select name="classProp" id="markAs">
-        <option
-                <c:if test="${compose.classProp eq 'PUB'}">selected </c:if> value="PUB"><fmt:message key="public"/>
-        <option
-                <c:if test="${compose.classProp eq 'PRI'}">selected </c:if> value="PRI">
-                <fmt:message key="private"/>
-                <%--<option <c:if test="${compose.classProp eq 'CON'}">selected </c:if> value="CON"><fmt:message key="confidential"/>--%>
-    </select>
-
-    <c:set var="numCalendars" value="0"/>
+</div>
+<c:set var="numCalendars" value="0"/>
     <zm:forEachFolder var="folder">
         <c:if test="${folder.isAppointmentView and folder.isAppointmentMoveTarget}">
             <c:set var="numCalendars" value="${numCalendars+1}"/>
@@ -321,91 +240,166 @@
     </zm:forEachFolder>
     <c:choose>
         <c:when test="${numCalendars gt 1}">
-            <span class="label"><fmt:message key="calendar"/>:</span> <select name='apptFolderId' id="apptFolderId">
-            <zm:forEachFolder var="folder">
-                <c:if test="${folder.isAppointmentView and folder.isAppointmentMoveTarget and folder.isCheckedInUI}">
-                    <option value="${folder.id}"
-                            <c:if test="${compose.apptFolderId eq folder.id}">selected </c:if>/>
-                    ${fn:escapeXml(zm:getFolderName(pageContext, folder.id))}
-                </c:if>
-            </zm:forEachFolder>
-        </select>
+            <div class="View">
+            <div class="list-row">
+                <span class="label"><fmt:message key="calendar"/>:</span>
+                     <span class=""><select name='apptFolderId' id="apptFolderId">
+                         <zm:forEachFolder var="folder">
+                             <c:if test="${folder.isAppointmentView and folder.isAppointmentMoveTarget }">
+                                 <option value="${folder.id}"
+                                         <c:if test="${(param.invId ne '' && compose.apptFolderId eq folder.id) || (not empty sessionScope.calendar && sessionScope.calendar.id eq folder.id) || (empty sessionScope.calendar && folder.isCheckedInUI) }">selected='selected'</c:if>/>
+                                 ${fn:escapeXml(zm:getFolderName(pageContext, folder.id))}
+                             </c:if>
+                         </zm:forEachFolder>
+                     </select></span></div>
+            </div>
         </c:when>
-        <c:otherwise>
+        <%--<c:otherwise>
             &nbsp;
-        </c:otherwise>
+        </c:otherwise>--%>
     </c:choose>
-</div>
+<div class="View">
+    <!--<div class="table">-->
+    <div class="list-row">
+        <span class="label"><fmt:message key="repeat"/>:</span>
+        <span class="">
+                <input type=radio name='repeatType'
+                       <c:if test="${compose.repeatType eq 'NONE'}">checked="checked"</c:if> value="NONE">
+                <fmt:message key="recurNone"/>
+                <input type=radio id="rpttypeid" name='repeatType' value="BASIC"
+                       <c:if test="${compose.repeatType eq 'BASIC'}">checked="checked"</c:if>>
+                <select name="repeatBasicType" onchange="document.getElementById('rpttypeid').checked='checked';">
+                    <option value="DAILY" <c:if test="${compose.repeatBasicType eq 'DAILY'}">selected </c:if>>
+                        <fmt:message
+                                key="recurBasicSelectDaily"/></option>
+                    <option value="WEEKLY" <c:if test="${compose.repeatBasicType eq 'WEEKLY'}">selected </c:if>>
+                        <fmt:message
+                                key="recurBasicSelectWeekly"/></option>
+                    <option value="MONTHLY" <c:if test="${compose.repeatBasicType eq 'MONTHLY'}">selected </c:if>>
+                        <fmt:message key="recurBasicSelectMonthly"/></option>
+                    <option value="YEARLY" <c:if test="${compose.repeatBasicType eq 'YEARLY'}">selected </c:if>>
+                        <fmt:message
+                                key="recurBasicSelectYearly"/></option>
+                </select>
+        </span>
+    </div>
+    <div class="">
+            <span class="label">
+                <input id="allday" type=checkbox name="allDay" <c:if test="${compose.allDay}">checked="checked"</c:if> value="1"> <fmt:message key="allDayEvent"/>
+            </span>
+            <span class="right">
+            <span style="display:none;" id="showHide">
+                <a id="showHideLink" href="?&more=1&${pageContext.request.queryString}" onclick="showHidemore()"><fmt:message
+                key="more"/> </a></span></span>
+        
+    </div>
+    </div>    
+    
+<%--<c:set var="repeat" value="${compose.simpleRecurrence}"/>
+<c:if test="${repeat != null && repeat.type != null && !repeat.type.none}">
+    <div class="View">
+    <div class="table">
+    <div class="table-row">
+    <span class="label table-cell"><fmt:message
+            key="repeats"/> :</span>
+        <span class="table-cell">${fn:escapeXml(zm:getRepeatBlurb(repeat,pageContext,mailbox.prefs.timeZone, compose.apptStartCalendar.time))}</span>
+    </div>
+    </div>
+    </div>
+</c:if>--%>
 
+
+<div id="apt_dtls_div">
+<div class="View">
+    <div class="list-row">
+    <span class="label"><fmt:message key="showAs"/>:</span>
+        <span>
+        <select name="freeBusyStatus" id="showAs">
+            <option <c:if test="${compose.freeBusyStatus eq 'F'}">selected </c:if>value="F"><fmt:message key="free"/>
+            <option
+                    <c:if test="${compose.freeBusyStatus eq 'T'}">selected </c:if> value="T"><fmt:message
+                    key="tentative"/>
+            <option
+                    <c:if test="${compose.freeBusyStatus eq 'B'}">selected </c:if> value="B"><fmt:message key="busy"/>
+            <option
+                    <c:if test="${compose.freeBusyStatus eq 'O'}">selected </c:if> value="O"><fmt:message
+                    key="outOfOffice"/>
+        </select>
+        </span>
+    </div>
+    <div>
+    <span class="label"><fmt:message key="markAs"/>:</span>
+        <span class=""><select name="classProp" id="markAs">
+            <option
+                    <c:if test="${compose.classProp eq 'PUB'}">selected </c:if> value="PUB"><fmt:message key="public"/>
+            <option
+                    <c:if test="${compose.classProp eq 'PRI'}">selected </c:if> value="PRI">
+                <fmt:message key="private"/>
+                <%--<option <c:if test="${compose.classProp eq 'CON'}">selected </c:if> value="CON"><fmt:message key="confidential"/>--%>
+        </select></span>
+        </div>
+</div>
+<c:if test="${mailbox.prefs.useTimeZoneListInCalendar or not zm:isSameTimeZone(compose.timeZone, mailbox.prefs.timeZoneWindowsId)}">
+    <c:set var="addedTimeZone" value="true"/>
+    <div class="View">
+    <div class="list-row">
+        <span class="Label"><fmt:message key="timeZonePref"/></span> :
+            <span class=""><select name="timeZone" id="timeZone">
+                <zm:forEachTimeZone var="tz">
+                    <option
+                            <c:if test="${compose.timeZone eq tz.id}">selected</c:if>
+                            value="${fn:escapeXml(tz.id)}">${fn:escapeXml(tz.display)}</option>
+                </zm:forEachTimeZone>
+            </select>
+            </span>
+    </div>
+        </div>
+</c:if>    
 <c:if test="${mailbox.features.groupcalendarEnabled}">
     <div class="View">
-        <span class="label"><fmt:message key="attendees"/>:</span>
+    <div class="table">
+        <div class="table-row">
+        <span class="table-cell label"><fmt:message key="attendees"/>:</span>
+            <span class="table-cell">
+            <div class="ZhAC ZhACTo">
+                <input class="Textarea" id="attField" rows="1"
+                          name="attendees" value="${fn:escapeXml(compose.attendees)}"/>
+                <div class='ZhACCont' id="attContainer" style='width:99%;top:1.5em;'></div>
+            </div></span>
+    </div>
+    </div>
+    </div>    
+</c:if>
 
-        <div class="ZhAC ZhACTo">
-            <textarea class="Textarea" id="attField" rows="2"
-                      name="attendees">${fn:escapeXml(compose.attendees)}</textarea>
-
-            <div class='ZhACCont' id="attContainer" style='width:99%;top:1.5em;'></div>
+    <div class="View">
+        <div class="table">
+            <div class="table-row">
+                <div class="table-cell">
+                    <textarea name="body" id="bodyField" cols="39"
+                              class="Textarea">${fn:escapeXml(compose.content)}</textarea>
+                </div>
+            </div>
         </div>
     </div>
-</c:if>
-<div class="View">
-    <textarea name="body" class="Textarea" rows="4">${fn:escapeXml(compose.content)}</textarea>
+</div>
 </div>
 
+<div class="table Toolbar">
+    <div class="table-row">
+        <div class="table-cell">
+                    <span class="zo_tb_submit">
+                        <input class="zo_button" id='actionCancel1' name="actionCancel1"
+                               style="display:none;" onclick="zClickLink('_back_to')"
+                               type="button" value="<fmt:message key="cancel"/>">
+                        <noscript><a href="${caction}" class="zo_button"><fmt:message key="cancel"/></a></noscript>
+                    </span>
+                    <span class='zo_tb_submit'>
+                        <input class="zo_button" name="actionSave" type="submit" value="<fmt:message key="save"/>">
+                    </span>
+            <script type="text/javascript">document.getElementById('actionCancel1').style.display = '';</script>
+        </div>
+    </div>
 </div>
-<table width=100% cellspacing="0" cellpadding="0" class="ToolbarBg">
-    <tr>
-        <td>
-
-            <table cellspacing="0" cellpadding="0">
-                <tr>
-
-                    <td
-                            <c:if test="${uiv=='1'}">align="right"</c:if> style='padding-left:5px'
-                            class='zo_tb_submit'>
-                        <input name="actionSave" type="submit" value="<fmt:message key="save"/>">
-                    </td>
-                    <td style='padding-left:5px' class='zo_tb_submit'>
-                        <input id="actionCancel1" style="display:none"
-                               name="actionCancel" ${uiv=='1'?'onclick=zClickLink("_back_to")':''}
-                               type="${uiv=='1'?'button':'submit'}" value="<fmt:message key="cancel"/>">
-                        <noscript><a href="${caction}" class="button"><fmt:message key="cancel"/></a></noscript>
-                    </td>
-                    <script type="text/javascript">document.getElementById('actionCancel1').style.display = '';</script>
-
-                </tr>
-            </table>
-        </td>
-    </tr>
-</table>
-</div>
-<script>
-    var showHidemore = function() {
-        var e = document.getElementById('apt_dtls_div');
-        if (e.style.display == 'none') {
-            e.style.display = 'block';
-            //document.getElementById('showHideLink').innerHTML="Less...";
-        } else {
-            e.style.display = 'none';
-            //document.getElementById('showHideLink').innerHTML='More...';
-        }
-        return false;
-
-    }
-    var showHideRepeat = function() {
-        var e = document.getElementById('apt_rpt_div');
-        if (e.style.display == 'none') {
-            e.style.display = 'block';
-            //document.getElementById('showHideLink').innerHTML="Less...";
-        } else {
-            e.style.display = 'none';
-            //document.getElementById('showHideLink').innerHTML='More...';
-        }
-        return false;
-
-    }
-</script>
 <input type="hidden" name="apptFolderId" value="${fn:escapeXml(compose.apptFolderId)}"/>
 <input type="hidden" name="invId" value="${fn:escapeXml(compose.inviteId)}"/>
 <input type="hidden" name="exInvId" value="${fn:escapeXml(compose.exceptionInviteId)}"/>
@@ -415,7 +409,7 @@
 <c:if test="${not addedTimeZone}">
     <input type="hidden" name="timeZone" value="${fn:escapeXml(compose.timeZone)}"/>
 </c:if>
-    <%--<input type="hidden" name="repeatBasicType" value="${fn:escapeXml(compose.repeatBasicType)}"/>--%>
+<%--<input type="hidden" name="repeatBasicType" value="${fn:escapeXml(compose.repeatBasicType)}"/>--%>
 <input type="hidden" name="repeatType" value="${fn:escapeXml(compose.repeatType)}"/>
 <input type="hidden" name="repeatDailyInterval" value="${fn:escapeXml(compose.repeatDailyInterval)}"/>
 <input type="hidden" name="repeatWeeklyByDay" value="${fn:escapeXml(compose.repeatWeeklyByDay)}"/>
@@ -447,10 +441,32 @@
 </mo:autoComplete>
 <a href="${caction}" id="_back_to" style="display:none;visibility:hidden">back</a>
 <script type="text/javascript">
+    var showHidemore = function() {
+        var e = document.getElementById('apt_dtls_div');
+        if (e.style.display == 'none') {
+            e.style.display = 'block';
+                //document.getElementById('showHideLink').innerHTML="Less...";
+        } else {
+            e.style.display = 'none';
+                //document.getElementById('showHideLink').innerHTML='More...';
+        }
+        return false;
+
+    };
+    var showHideRepeat = function() {
+        var e = document.getElementById('apt_rpt_div');
+        if (e.style.display == 'none') {
+            e.style.display = 'block';
+                //document.getElementById('showHideLink').innerHTML="Less...";
+        } else {
+            e.style.display = 'none';
+                //document.getElementById('showHideLink').innerHTML='More...';
+        }
+        return false;
+
+    };
     <c:if test="${empty param.more}">
     document.getElementById('apt_dtls_div').style.display = 'none';
     </c:if>
     document.getElementById('showHide').style.display = '';
 </script>
-</mo:view>
-

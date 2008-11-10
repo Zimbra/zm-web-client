@@ -5,7 +5,7 @@
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="mo" uri="com.zimbra.mobileclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
-<c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'mosearch'}"/>
+<c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/>
 <mo:handleError>
     <zm:getMailbox var="mailbox"/>
     <zm:getMessage var="msg" id="${not empty param.id ? param.id : context.currentItem.id}" markread="true"
@@ -26,43 +26,26 @@
     <zm:currentResultUrl var="closeUrl" value="${context_url}" context="${context}"/>
 </mo:handleError>
 
-<mo:view mailbox="${mailbox}" title="${msg.subject}" context="${null}" scale="true">
-
 <zm:currentResultUrl var="actionUrl" value="${context_url}" context="${context}" mview="1"
                      action="view" id="${msg.id}"/>
+<c:set var="title" value="${zm:truncate(msg.subject,20,true)}" scope="request"/>
 <form id="actions" action="${fn:escapeXml(actionUrl)}" method="post">
 <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
 <input type="hidden" name="doMessageAction" value="1"/>
 <script>document.write('<input name="moreActions" type="hidden" value="<fmt:message key="actionGo"/>"/>');</script>
-
-<table width="100%" cellpadding="0" cellspacing="0" border="0">
-<tr>
-    <td>
-        <mo:msgToolbar mid="${msg.id}" urlTarget="${context_url}" context="${context}" keys="false" isTop="${true}" msg="${msg}"/>
-    </td>
-</tr>
-<tr class="Stripes">
-    <td class='zo_appt_view'>
-        <c:set var="extImageUrl" value=""/>
-        <c:if test="${empty param.xim}">
-            <zm:currentResultUrl var="extImageUrl" id="${msg.id}" value="${context_url}" action="view"
-                                 context="${context}" xim="1"/>
-        </c:if>
-        <zm:currentResultUrl var="composeUrl" value="${context_url}" context="${context}"
-                             action="compose" paction="view" id="${msg.id}"/>
-        <zm:currentResultUrl var="newWindowUrl" value="message" context="${context}" id="${msg.id}"/>
-        <mo:displayMessage mailbox="${mailbox}" message="${msg}" externalImageUrl="${extImageUrl}"
-                           showconvlink="true" composeUrl="${composeUrl}" newWindowUrl="${newWindowUrl}"/>
-    </td>
-</tr>
-<tr>
-</tr>
-<tr>
-    <td>
-        <mo:msgToolbar mid="${msg.id}" urlTarget="${context_url}" context="${context}" keys="false" isTop="${false}" msg="${msg}"/>
-    </td>
-</tr>
-
-</table>
+<mo:msgToolbar mid="${msg.id}" urlTarget="${context_url}" context="${context}" keys="false" isTop="${true}" msg="${msg}" mailbox="${mailbox}"/>
+            <div class="Stripes">
+                <c:set var="extImageUrl" value=""/>
+                <c:if test="${empty param.xim}">
+                    <zm:currentResultUrl var="extImageUrl" id="${msg.id}" value="${context_url}" action="view"
+                                         context="${context}" xim="1"/>
+                </c:if>
+                <zm:currentResultUrl var="composeUrl" value="${context_url}" context="${context}"
+                                     action="compose" paction="view" id="${msg.id}"/>
+                <zm:currentResultUrl var="newWindowUrl" value="message" context="${context}" id="${msg.id}"/>
+                <mo:displayMessage mailbox="${mailbox}" message="${msg}" externalImageUrl="${extImageUrl}"
+                                   showconvlink="true" composeUrl="${composeUrl}" newWindowUrl="${newWindowUrl}"/>
+            </div>
+        
+    <mo:msgToolbar mid="${msg.id}" urlTarget="${context_url}" context="${context}" keys="false" isTop="${false}" msg="${msg}" mailbox="${mailbox}"/>
 </form>
-</mo:view>

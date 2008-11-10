@@ -1,5 +1,6 @@
 <%@ tag body-content="empty" dynamic-attributes="dynattrs" %>
 <%@ attribute name="urlTarget" rtexprvalue="true" required="true" %>
+<%@ attribute name="mailbox" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZMailboxBean"%>
 <%@ attribute name="context" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.tag.SearchContext" %>
 <%@ attribute name="isConv" rtexprvalue="true" required="false" %>
 <%@ attribute name="cid" rtexprvalue="true" required="false" %>
@@ -16,101 +17,124 @@
     <zm:searchConv var="convSearchResult" id="${not empty param.cid ? param.cid : context.currentItem.id}" limit="100"
                    context="${context}" fetch="none" markread="false" sort="${param.css}"/>
 </c:if>
-<table class="ToolbarBg" cellpadding="0" cellspacing="0" border="0" width="100%">
-<tr>
-<td align="left" class="Padding">
-    <table cellpadding="0" cellspacing="0" border="0">
-        <tr>
-            <c:if test="${isConv !=null && isConv}">
-                <td class="Padding">
-                    <zm:computeNextPrevItem var="convCursor" searchResult="${context.searchResult}"
-                                            index="${context.currentItemIndex}"/>
-                    <c:choose>
-                        <c:when test="${context.hasPrevItem}">
-                            <zm:prevItemUrl var="prevItemUrl" value="${urlTarget}" action="view"
-                                            cursor="${convCursor}" context="${context}"
-                                            css="${param.css}"/>
-                            <a class='zo_button' href="${fn:escapeXml(prevItemUrl)}">
-                                <fmt:message key="MO_PREV"/>
-                            </a>
-                        </c:when>
-                        <c:otherwise>
-                            <a class='zo_button_disabled'>
-                                <fmt:message key="MO_PREV"/>
-                            </a>
-                        </c:otherwise>
-                    </c:choose>
-                </td>
-            </c:if>
-            <c:if test="${isConv == null || !isConv}">
-                <td class="Padding">
-                    <zm:computeNextPrevItem var="messCursor" searchResult="${convSearchResult}"
-                                            index="${param.csi}"/>
-                    <c:choose>
-                        <c:when test="${messCursor.hasPrev}">
-                            <zm:currentResultUrl var="prevMsgUrl" value="${urlTarget}" action='view'
-                                                 context="${context}" mview="1"
-                                                 cso="${messCursor.prevOffset}"
-                                                 csi="${messCursor.prevIndex}" css="${param.css}"/>
-                            <a class='zo_button' href="${fn:escapeXml(prevMsgUrl)}">
-                                <fmt:message key="MO_PREV"/>
-                            </a>
-                        </c:when>
-                        <c:otherwise>
-                            <a class='zo_button_disabled'>
-                                <fmt:message key="MO_PREV"/>
-                            </a>
-                        </c:otherwise>
-                    </c:choose>
-                </td>
-            </c:if>
-            <c:if test="${isConv !=null && isConv}">
-                <td class="Padding">
-                    <zm:computeNextPrevItem var="convCursor" searchResult="${context.searchResult}"
-                                            index="${context.currentItemIndex}"/>
-                    <c:choose>
-                        <c:when test="${context.hasNextItem}">
-                            <zm:nextItemUrl var="nextItemUrl" value="${urlTarget}" action="view"
-                                            cursor="${convCursor}" context="${context}"
-                                            css="${param.css}"/>
-                            <a class='zo_button' href="${fn:escapeXml(nextItemUrl)}">
-                                <fmt:message key="MO_NEXT"/>
-                            </a>
-                        </c:when>
-                        <c:otherwise>
-                            <a class='zo_button_disabled'>
-                                <fmt:message key="MO_NEXT"/>
-                            </a>
-                        </c:otherwise>
-                    </c:choose>
-                </td>
-            </c:if>
-            <c:if test="${isConv == null || !isConv}">
-                <td class="Padding">
-                    <c:choose>
-                        <c:when test="${messCursor.hasNext}">
-                            <zm:currentResultUrl var="nextMsgUrl" value="${urlTarget}" action="view"
-                                                 context="${context}" mview="1"
-                                                 cso="${messCursor.nextOffset}"
-                                                 csi="${messCursor.nextIndex}" css="${param.css}"/>
-                            <a class='zo_button' href="${fn:escapeXml(nextMsgUrl)}">
-                                <fmt:message key="MO_NEXT"/>
-                            </a>
-                        </c:when>
-                        <c:otherwise>
-                            <a class='zo_button_disabled'>
-                                <fmt:message key="MO_NEXT"/>
-                            </a>
-                        </c:otherwise>
-                    </c:choose>
-                </td>
-            </c:if>
-        </tr>
-    </table>
-</td>
-<td>
+<c:if test="${isTop}">
+    <div class="SubToolbar table top_conv_v_subtoolbar">
+        <div class="table-row">
+            <div class="table-cell">
+                <c:if test="${isConv!=null && isConv}">
+                    <zm:currentResultUrl var="closeurl" value="${urlTarget}"
+                                         index="${context.currentItemIndex}"
+                                         context="${context}"/>
+                </c:if>
+                <zm:currentResultUrl var="closeurl" value="${urlTarget}"
+                                     index="${context.currentItemIndex}"
+                                     context="${context}"/>
+
+
+                <a href="${urlTarget}?st=folders"><fmt:message key="folders"/></a> &#171; <a
+                    href="${fn:escapeXml(closeurl)}#conv${cid}" class='zo_leftbutton'>
+                    ${fn:escapeXml(zm:truncate(context.shortBackTo,15,true))}
+            </a>
+                <c:if test="${isConv!=null && isConv}">
+                    &#171; <fmt:message key="backToConv"/>
+                </c:if>
+                <c:if test="${isConv==null || !isConv }">
+                    <zm:currentResultUrl var="closeUrl" value="${urlTarget}" action='view' context="${context}"
+                                         cso="${param.cso}" csi="${param.csi}" css="${param.css}"/>
+                    &#171; <a href="${fn:escapeXml(closeUrl)}" class='zo_leftbutton'> <fmt:message
+                        key="backToConv"/> </a> &#171; ${fn:escapeXml(fn:substring(message.subject,0,8))}...
+                </c:if>
+
+            </div>
+        </div>
+    </div>
+</c:if>
+
+<div class="Toolbar table">
+<div class="table-row">
+<div class="table-cell">
+<span class="zo_button_group">
+    <c:if test="${isConv !=null && isConv}">
+        <zm:computeNextPrevItem var="convCursor" searchResult="${context.searchResult}"
+                                index="${context.currentItemIndex}"/>
+        <c:choose>
+            <c:when test="${context.hasPrevItem}">
+                <zm:prevItemUrl var="prevItemUrl" value="${urlTarget}" action="view"
+                                cursor="${convCursor}" context="${context}"
+                                css="${param.css}"/>
+                <a class='zo_button prev_button' href="${fn:escapeXml(prevItemUrl)}">
+                    <fmt:message key="MO_PREV"/>
+                </a>
+            </c:when>
+            <c:otherwise>
+                <a class='zo_button_disabled prev_button'>
+                    <fmt:message key="MO_PREV"/>
+                </a>
+            </c:otherwise>
+        </c:choose>
+    </c:if>
+    <c:if test="${isConv == null || !isConv}">
+        <zm:computeNextPrevItem var="messCursor" searchResult="${convSearchResult}"
+                                index="${param.csi}"/>
+        <c:choose>
+            <c:when test="${messCursor.hasPrev}">
+                <zm:currentResultUrl var="prevMsgUrl" value="${urlTarget}" action='view'
+                                     context="${context}" mview="1"
+                                     cso="${messCursor.prevOffset}"
+                                     csi="${messCursor.prevIndex}" css="${param.css}"/>
+                <a class='zo_button prev_button' href="${fn:escapeXml(prevMsgUrl)}">
+                    <fmt:message key="MO_PREV"/>
+                </a>
+            </c:when>
+            <c:otherwise>
+                <a class='zo_button_disabled prev_button'>
+                    <fmt:message key="MO_PREV"/>
+                </a>
+            </c:otherwise>
+        </c:choose>
+    </c:if>
+    <c:if test="${isConv !=null && isConv}">
+        <zm:computeNextPrevItem var="convCursor" searchResult="${context.searchResult}"
+                                index="${context.currentItemIndex}"/>
+        <c:choose>
+            <c:when test="${context.hasNextItem}">
+                <zm:nextItemUrl var="nextItemUrl" value="${urlTarget}" action="view"
+                                cursor="${convCursor}" context="${context}"
+                                css="${param.css}"/>
+                <a class='zo_button next_button' href="${fn:escapeXml(nextItemUrl)}">
+                    <fmt:message key="MO_NEXT"/>
+                </a>
+            </c:when>
+            <c:otherwise>
+                <a class='zo_button_disabled next_button'>
+                    <fmt:message key="MO_NEXT"/>
+                </a>
+            </c:otherwise>
+        </c:choose>
+
+    </c:if>
+    <c:if test="${isConv == null || !isConv}">
+        <c:choose>
+            <c:when test="${messCursor.hasNext}">
+                <zm:currentResultUrl var="nextMsgUrl" value="${urlTarget}" action="view"
+                                     context="${context}" mview="1"
+                                     cso="${messCursor.nextOffset}"
+                                     csi="${messCursor.nextIndex}" css="${param.css}"/>
+                <a class='zo_button next_button' href="${fn:escapeXml(nextMsgUrl)}">
+                    <fmt:message key="MO_NEXT"/>
+                </a>
+            </c:when>
+            <c:otherwise>
+                <a class='zo_button_disabled next_button'>
+                    <fmt:message key="MO_NEXT"/>
+                </a>
+            </c:otherwise>
+        </c:choose>
+    </c:if>
+</span>
+<span>
 <c:if test="${singleMessage}">
-    <select name="anAction" onchange="document.getElementById('actions').submit();">
+    <select class="zo_select_button" name="anAction" onchange="document.getElementById('actions').submit();">
         <option value="" selected="selected"><fmt:message key="moreActions"/></option>
         <c:set var="myFolder" value="${zm:getFolder(pageContext, message.folderId)}"/>
         <c:set var="inTrash" value="${myFolder.isInTrash}"/>
@@ -131,7 +155,7 @@
             <c:if test="${not message.isUnread}">
                 <option value="actionMarkUnread">Unread</option>
             </c:if>
-             <c:choose>
+            <c:choose>
                 <c:when test="${myFolder.isSpam}">
                     <option value="actionMarkUnspam"><fmt:message key="actionNotSpam"/></option>
                 </c:when>
@@ -176,9 +200,7 @@
     <noscript><input name="moreActions" type="submit" value="<fmt:message key="actionGo"/>"/></noscript>
 </c:if>
 <c:if test="${!singleMessage && convSearchResult.size gt 0}">
-
-
-    <select name="anAction" onchange="document.getElementById('actions').submit();">
+    <select class="zo_select_button" name="anAction" onchange="document.getElementById('actions').submit();">
         <option value="" selected="selected"><fmt:message key="moreActions"/></option>
         <optgroup label="Delete">
             <c:choose>
@@ -232,50 +254,14 @@
         </c:if>
     </select>
     <noscript><input name="moreActions" type="submit" value="<fmt:message key="actionGo"/>"/></noscript>
-
 </c:if>
-</td>
-<td class="Padding" align="right">
-    <c:if test="${uiv == '1'}">
-        <c:if test="${context.st=='message' || context.st=='conversation'}">
-            <c:url var="composeUrl" value="${urlTarget}?st=newmail"/>
-            <a href="${composeUrl}">
-                <fmt:message key="compose"/>
-            </a>
-        </c:if>
-        <c:if test="${context.st=='contact'}">
-            <c:url var="composeUrl" value="${urlTarget}?action=add"/>
-            <a href="${composeUrl}">
-                <fmt:message key="add"/>
-            </a>
-        </c:if>
-    </c:if>
-</td>
-</tr>
-</table>
-<c:if test="${isTop}">
-    <div class="SubToolbar">
-        <c:if test="${isConv!=null && isConv}">
-            <zm:currentResultUrl var="closeurl" value="${urlTarget}"
-                                 index="${context.currentItemIndex}"
-                                 context="${context}"/>
-        </c:if>
-        <zm:currentResultUrl var="closeurl" value="${urlTarget}"
-                             index="${context.currentItemIndex}"
-                             context="${context}"/>
-        
-
-         <a href="${context_url}?st=folders"><fmt:message key="folders"/></a> &#171; <a href="${fn:escapeXml(closeurl)}#conv${cid}" class='zo_leftbutton'>
-                ${fn:escapeXml(zm:truncate(context.shortBackTo,15,true))}
-        </a>
-        <c:if test="${isConv!=null && isConv}">
-            &#171; <fmt:message key="backToConv"/>
-        </c:if>    
-        <c:if test="${isConv==null || !isConv }">
-            <zm:currentResultUrl var="closeUrl" value="${urlTarget}" action='view' context="${context}"
-                             cso="${param.cso}" csi="${param.csi}" css="${param.css}"/>
-            &#171; <a href="${fn:escapeXml(closeUrl)}" class='zo_leftbutton'> <fmt:message key="backToConv"/> </a> &#171; ${fn:escapeXml(fn:substring(message.subject,0,8))}...
-        </c:if>
-
-    </div>
-</c:if>    
+</span>
+<span class="">
+    <c:url var="composeUrl" value="${urlTarget}?st=newmail"/>
+    <a href="${composeUrl}" class="zo_button">
+        <fmt:message key="compose"/>
+    </a>
+</span>
+</div>
+</div>
+</div>

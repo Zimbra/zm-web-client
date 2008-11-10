@@ -13,16 +13,81 @@
 <c:set var="_selectedIds" scope="request" value=",${ids},"/>
 <c:set var="anAction" value="${not empty paramValues.anAction[0] ? paramValues.anAction[0] :  paramValues.anAction[1]}"/>
 <c:choose>
-    <c:when test="${zm:actionSet(param, 'actionAdd')}">
-        <zm:createContact var="result" folderid="${param.folderid}">
+    <c:when test="${zm:actionSet(param,'moreActions') && anAction eq 'selectAll'}">
+        <c:set var="select" value="all" scope="request"/>
+    </c:when>
+    <c:when test="${zm:actionSet(param,'moreActions') && anAction eq 'selectNone'}">
+        <c:set var="select" value="none" scope="request"/>
+    </c:when>
+    <c:when test="${zm:actionSet(param, 'actionSave')}">
+        <zm:modifyContact var="result" id="${param.id}" replace="true" folderid="${param.folderid}">
             <zm:field name="firstName" value="${param.firstName}"/>
             <zm:field name="lastName" value="${param.lastName}"/>
+            <%--<zm:field name="middleName" value="${param.middleName}"/>
+            <zm:field name="fileAs" value="${param.fileAs}"/>--%>
+            <zm:field name="jobTitle" value="${param.jobTitle}"/>
+            <zm:field name="company" value="${param.company}"/>
+
             <zm:field name="email" value="${param.email}"/>
+            <zm:field name="email2" value="${param.email2}"/>
+            <zm:field name="email3" value="${param.email3}"/>
+
+            <zm:field name="workStreet" value="${param.workStreet}"/>
+            <zm:field name="workCity" value="${param.workCity}"/>
+            <zm:field name="workState" value="${param.workState}"/>
+            <zm:field name="workPostalCode" value="${param.workPostalCode}"/>
+            <zm:field name="workCountry" value="${param.workCountry}"/>
+            <zm:field name="workURL" value="${param.workURL}"/>
+
+            <zm:field name="workPhone" value="${param.workPhone}"/>
+            <zm:field name="workPhone2" value="${param.workPhone2}"/>
+            <%--<zm:field name="workFax" value="${param.workFax}"/>
+            <zm:field name="assistantPhone" value="${param.assistantPhone}"/>
+            <zm:field name="companyPhone" value="${param.companyPhone}"/>
+            <zm:field name="callbackPhone" value="${param.callbackPhone}"/>
+--%>
+            <zm:field name="homeStreet" value="${param.homeStreet}"/>
+            <zm:field name="homeCity" value="${param.homeCity}"/>
+            <zm:field name="homeState" value="${param.homeState}"/>
+            <zm:field name="homePostalCode" value="${param.homePostalCode}"/>
+            <zm:field name="homeCountry" value="${param.homeCountry}"/>
+            <zm:field name="homeURL" value="${param.homeURL}"/>
+
+            <zm:field name="homePhone" value="${param.homePhone}"/>
+            <zm:field name="homePhone2" value="${param.homePhone2}"/>
             <zm:field name="mobilePhone" value="${param.mobilePhone}"/>
-        </zm:createContact>
+
+            <%--<zm:field name="homeFax" value="${param.homeFax}"/>
+            
+            <zm:field name="pager" value="${param.pager}"/>
+            <zm:field name="carPhone" value="${param.carPhone}"/>
+            <zm:field name="tollFree" value="${param.tollFree}"/>
+
+            <zm:field name="otherStreet" value="${param.otherStreet}"/>
+            <zm:field name="otherCity" value="${param.otherCity}"/>
+            <zm:field name="otherState" value="${param.otherState}"/>
+            <zm:field name="otherPostalCode" value="${param.otherPostalCode}"/>
+            <zm:field name="otherCountry" value="${param.otherCountry}"/>
+            <zm:field name="otherURL" value="${param.otherURL}"/>
+
+            <zm:field name="otherPhone" value="${param.otherPhone}"/>
+            <zm:field name="otherFax" value="${param.otherFax}"/>--%>
+            <%--<zm:field name="notes" value="${param.notes}"/>
+
+            <c:if test="${not empty param.dlist and param.isgroup}">
+                <zm:field name="fileAs" value="8:${param.nickname}"/>
+                <zm:field name="nickname" value="${param.nickname}"/>
+                <zm:field name="dlist" value="${fn:join(paramValues.dlist,', ')}"/>
+                <zm:field name="type" value="group"/>
+            </c:if>--%>
+        </zm:modifyContact>
+        <c:if test="${(!empty param.id) and (param.folderid ne param.origFolderId)}">
+                <zm:moveContact var="moveresult" id="${param.id}" folderid="${param.folderid}"/>
+        </c:if>
+
         <c:if test="${result!=null}">
             <app:status>
-                <fmt:message key="contactCreated"/>
+                <fmt:message key="${not empty param.id ? 'contactModified': 'contactSaved'}"/>
             </app:status>
             <c:set var="currentContactId" value="${result}" scope="request"/>
         </c:if>
@@ -33,7 +98,7 @@
     <c:when test="${empty ids}">
         <mo:status style="Warning"><fmt:message key="actionNoContactSelected"/></mo:status>
     </c:when>
-    <c:when test="${zm:actionSet(param, 'actionSave')}">
+    <%--<c:when test="${zm:actionSet(param, 'actionSave')}">
         <zm:modifyContact var="result" id="${param.id}">
             <zm:field name="firstName" value="${param.firstName}"/>
             <zm:field name="lastName" value="${param.lastName}"/>
@@ -49,7 +114,7 @@
         <c:if test="${result==null}">
              <c:set var="currentContactId" value="${result}" scope="request"/>
         </c:if>
-    </c:when>
+    </c:when>--%>
     <c:when test="${(zm:actionSet(param,'moreActions') && empty anAction) }">
         <mo:status style="Warning"><fmt:message key="actionNoActionSelected"/></mo:status>
     </c:when>

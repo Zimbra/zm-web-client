@@ -11,76 +11,68 @@
 <mo:handleError>
     <zm:getMailbox var="mailbox"/>
     <zm:getContact id="${id}" var="contact"/>
-    <c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'mosearch'}"/>
+    <c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/>
     <zm:currentResultUrl var="closeUrl" value="${context_url}" context="${context}"/>
     <zm:computeNextPrevItem var="cursor" searchResult="${context.searchResult}" index="${context.currentItemIndex}"/>
+    <zm:currentResultUrl var="actionUrl" value="${context_url}" context="${context}" action="view"
+                                     id="${contact.id}"/>
+                       
 </mo:handleError>
-
-<mo:view mailbox="${mailbox}" title="${contact.displayFileAs}" context="${null}" clazz="zo_obj_body" scale="true">
+<c:set var="title" value="${zm:truncate(contact.displayFileAs,20,true)}" scope="request"/>
 <form id="actions" action="${fn:escapeXml(actionUrl)}" method="post">
-               <input type="hidden" name="doContactAction" value="1"/>
-               <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
-               <script>document.write('<input name="moreActions" type="hidden" value="<fmt:message key="actionGo"/>"/>');</script>
-           
-<table width="100%" cellpadding="0" cellspacing="0" border="0" class="Stripes">
-<tr>
-    <td>
-        <mo:contactToolbar contact="${contact}" urlTarget="${context_url}" context="${context}" keys="false"
-                           isTop="true"/>
-    </td>
-</tr>
-<tr>
-    <td><br>
-        <table cellpadding="2" cellspacing="0" border="0" width="100%">
-            <tr>
-                <td width="1%" class="Padding"><img src="<app:imgurl value='large/ImgPerson_48.gif' />" border="0"
-                                                    width="48" height="48" class="Padding"/></td>
-                <td>
-                    <b>${fn:escapeXml(contact.displayFileAs)}
-                        <c:if test="${contact.isFlagged}">
-                        <mo:img src="startup/ImgFlagRed.gif" alt="flag"/></c:if></b>
-                    <br>
-                    <c:if test="${not empty contact.jobTitle}">
-                        <span class="SmallText">${fn:escapeXml(contact.jobTitle)}</span>
-                        <br>
+    <input type="hidden" name="doContactAction" value="1"/>
+    <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
+    
+    <script>document.write('<input name="moreActions" type="hidden" value="<fmt:message key="actionGo"/>"/>');</script>
+    <mo:contactToolbar contact="${contact}" urlTarget="${context_url}" context="${context}" keys="false"
+                               isTop="true" mailbox="${mailbox}"/>
+    <div class="Stripes cont_view">
+        <div class="View">
+            <div class="table cont_sum_table">
+            <div class="table-row">
+                <span class="table-cell Person48">&nbsp;
+                     <%--<img id="cont-img" src="<app:imgurl value='large/ImgPerson_48.gif' />" border="0"
+                                       class=""/>--%>
+                 </span>
+                <span class="table-cell">
+                   <div>
+                       <b>${fn:escapeXml(contact.displayFileAs)}</b>
+                   </div>
+                   <c:if test="${not empty contact.jobTitle}">
+                        <div>${fn:escapeXml(contact.jobTitle)}</div>
+                   </c:if>
+                   <c:if test="${not empty contact.company}">
+                        <div>${fn:escapeXml(contact.company)}</div>
                     </c:if>
-                    <c:if test="${not empty contact.company}">
-                        <span class="SmallText">${fn:escapeXml(contact.company)}</span>
-                    </c:if>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2">
-                    <c:if test="${contact.hasTags and mailbox.features.tagging}">
-                        <hr size="1"/>
+             </span>
+            </div>
+            </div>    
+            <c:if test="${contact.isFlagged || (contact.hasTags && mailbox.features.tagging)}">
+            <div class="table">
+            <div class="table-row">
+                <span class="table-cell">
+                <c:if test="${contact.isFlagged}">
+                                <span class="SmlIcnHldr Flag">&nbsp;</span></c:if>
+                <c:if test="${contact.hasTags and mailbox.features.tagging}">
                         <c:set var="tags" value="${zm:getTags(pageContext, contact.tagIds)}"/>
                         <c:forEach items="${tags}" var="tag">
-                        <span><mo:img src="${tag.miniImage}" alt='${fn:escapeXml(tag.name)}'/>
-                                ${fn:escapeXml(tag.name)}</span>
+                        <span class="SmlIcnHldr Tag${tag.color}">&nbsp;</span><span>${fn:escapeXml(tag.name)}</span>
                         </c:forEach>
-                    </c:if>
-                </td>
-            </tr>
-        </table>
-        <mo:displayContact contact="${contact}"/>
-    </td>
-</tr>
-<tr>
-    <td>
-        <zm:currentResultUrl var="actionUrl" value="${context_url}" context="${context}" action="view"
-                             id="${contact.id}"/>
-        <div class="View">
-                       <input type="button" onclick="zClickLink('_edit_link')"
-                                   value="<fmt:message key="edit"/>"/>
+                </c:if>
+                </span>
+            </div>    
+          </div>
+          </c:if>
         </div>
-    </td>
-</tr>
-<tr>
-    <td>
-        <mo:contactToolbar contact="${contact}" urlTarget="${context_url}" context="${context}" keys="false"
-                           isTop="false"/>
-    </td>
-</tr>
-</table>
-  </form>
-</mo:view>
+                    
+        <div class="table">
+        <div class="table-row">
+            <div class="table-cell">
+                    <mo:displayContact contact="${contact}"/>
+            </div>
+        </div>
+        </div>    
+    </div>
+     <mo:contactToolbar contact="${contact}" urlTarget="${context_url}" context="${context}" keys="false"
+                       isTop="false" mailbox="${mailbox}"/>
+</form>

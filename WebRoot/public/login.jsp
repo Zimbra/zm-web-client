@@ -128,7 +128,7 @@
                     </c:redirect>
         		</c:when>
                 <c:when test="${client eq 'mobile'}">
-		            <c:redirect url="/m/mainx">
+		            <c:redirect url="/m">
                             <c:forEach var="p" items="${paramValues}">
                                 <c:forEach var='value' items='${p.value}'>
                                     <c:if test="${not fn:contains(ignoredQueryParams, p.key)}">
@@ -311,8 +311,7 @@ if (application.getInitParameter("offlineMode") != null)  {
                                             </tr>
                                         </c:if>
                                         <tr>
-                                            <td class="zLoginLabelContainer"></td>
-                                            <td>
+                                            <td class="zLoginLabelContainer" ${smallScreen ? 'colspan=2' : ''}>${!smallScreen ? '</td><td>' : ''}
                                                 <table>
                                                     <tr>
                                                         <td><input id="remember" value="1" type="checkbox" name="zrememberme" /></td>
@@ -327,7 +326,7 @@ if (application.getInitParameter("offlineMode") != null)  {
                                     </table>
                                     <table width="100%">
                                         <tr>
-                                        	<td nowrap align="center">
+                                        	<td align="center">
                                                 <div class="ZLoginSeparator" style="margin-top:0px"></div>
 												<c:choose>
                                                     <c:when test="${!smallScreen}">

@@ -5,12 +5,13 @@
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="mo" uri="com.zimbra.mobileclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
-<c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'mosearch'}"/>
+<c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/>
 <mo:handleError>
     <zm:getMailbox var="mailbox"/>
     <mo:searchTitle var="title" context="${context}"/>
-    <fmt:message key="noSubject" var="noSubject"/>
-    <fmt:message var="unknownSender" key="unknownSender"/>
+    <fmt:message var="unknownRecipient" key="unknownRecipient"/>
+    <fmt:message var="unknownSubject" key="noSubject"/>
+    <c:set var="useTo" value="${context.folder.isSent or context.folder.isDrafts}"/>
     <zm:currentResultUrl var="currentUrl" value="${context_url}" context="${context}"/>
     <c:set var="useTo" value="${context.folder.isSent or context.folder.isDrafts}"/>
     <c:if test="${false and mailbox.prefs.readingPaneEnabled}">
@@ -22,120 +23,76 @@
     </c:if>
     <fmt:message var="emptySubject" key="noSubject"/>
 </mo:handleError>
-
-<mo:view mailbox="${mailbox}" title="${title}" context="${context}" scale="${true}">
-    <zm:currentResultUrl var="actionUrl" value="${context_url}" context="${context}"/>
-    <form id="actions" action="${fn:escapeXml(actionUrl)}" method="post">
-        <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
-        <input type="hidden" name="doMessageAction" value="1"/>
-        <script>document.write('<input name="moreActions" type="hidden" value="<fmt:message key="actionGo"/>"/>');</script>
-        <table cellspacing="0" cellpadding="0" width="100%">
-            <%--<c:if test="${context.searchResult.size gt 0}">--%>
-                <tr>
-                    <td>
-                        <mo:toolbar urlTarget="${context_url}" context="${context}" isTop="true"/>
-                    </td>
-                </tr>
-          <%--  </c:if>--%>
-            <tr>
-                <td>
-                    <table width="100%" cellpadding="0" cellspacing="0" class='zo_m_list'>
-
-                        <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
-                            <c:set var="mhit" value="${hit.messageHit}"/>
-                            <c:choose>
-                                <c:when test="${mhit.isDraft}">
-                                    <zm:currentResultUrl index="${status.index}" var="msgUrl" value="${context_url}"
-                                                         action="compose"
-                                                         context="${context}" id="${mhit.id}"/>
-                                </c:when>
-                                <c:otherwise>
-                                    <zm:currentResultUrl index="${status.index}" var="msgUrl" value="${context_url}"
-                                                         action="view"
-                                                         context="${context}" id="${mhit.id}"/>
-                                </c:otherwise>
-                            </c:choose>
-                            <tr id="msg${mhit.id}">
-                                <td class='zo_m_list_row'>
-                                    <table width="100%" cellpadding="4">
-                                        <tr>
-                                            <td width="1%" class="zo_m_chk">
-                                                <c:set value=",${mhit.id}," var="stringToCheck"/>
-                                                <input type="checkbox" ${fn:contains(requestScope._selectedIds,stringToCheck)?'checked="checked"':'unchecked'}
-                                                       name="id" value="${mhit.id}">
-                                            </td>
-                                            <td class="zo_m_chk" valign="middle" align="center" width="1%">
-                                                <mo:img src="mail/ImgEnvelope${mhit.isUnread?'':'Gray'}.gif"/>
-                                            </td>
-                                            <td onclick='zClickLink("a${mhit.id}")'>
-                                                <table cellspacing="0" width="100%">
-                                                    <tr class='zo_m_list_<c:if test="${mhit.isUnread}">un</c:if>read'>
-                                                        <td width="95%">
-                                                            <c:set var="sender" value="${mhit.displayAddresses}"/>    <%--!TODO displaySender did work for some reason, need to foind out--%>
-                                                            <c:set var="_f"
-                                                                   value="${empty sender ? unknownSender : sender}"/>
-                                                            <c:if test="${fn:length(_f) > 25}"><c:set var="_f"
-                                                                                                      value="${fn:substring(_f, 0, 25)}..."/></c:if>
-                                                            <a class="zo_m_list_from" id="a${mhit.id}"
-                                                               href="${fn:escapeXml(msgUrl)}">${fn:escapeXml(_f)}</a>
-
-                                                            <div class="zo_m_list_sub">
-                                                                <c:set var="_f" value="${mhit.subject}"/>
-                                                                <c:if test="${fn:length(_f) > 25}"><c:set var="_f"
-                                                                                                          value="${fn:substring(_f, 0, 25)}..."/></c:if>
-                                                                    ${fn:escapeXml(_f)}
-                                                            </div>
-                                                            <div class='zo_m_list_frag'>
-                                                                <c:set var="_f" value="${mhit.fragment}"/>
-                                                                <c:if test="${fn:length(_f) > 50}"><c:set var="_f"
-                                                                                                          value="${fn:substring(_f, 0, 50)}..."/></c:if>
-                                                                    ${fn:escapeXml(_f)}
-                                                            </div>
-                                                        </td>
-                                                        <td align="center" width="2%" valign="middle"
-                                                            style="padding-top: 5px;padding-left: 4px;">
-                                                            <c:if test="${mhit.isFlagged}">
-                                                                <mo:img src="startup/ImgFlagRed.gif" alt="flag"/>
-                                                            </c:if>
-                                                            <c:if test="${mhit.hasTags}">
-                                                                <mo:miniTagImage
-                                                                        ids="${mhit.tagIds}"/>
-                                                            </c:if>
-                                                        </td>
-                                                        <td nowrap="nowrap" class='zo_m_list_size' align="right"
-                                                            valign="top">
-                                                            <fmt:formatDate timeZone="${mailbox.prefs.timeZone}"
-                                                                            var="on_dt" pattern="yyyyMMdd"
-                                                                            value="${mhit.date}"/>
-                                                            <a
-                                                                    <c:if test="${sessionScope.uiv == '1' && mailbox.features.calendar}">href='${context_url}?st=cal&view=month&date=${on_dt}'</c:if>>
-                                                                    ${fn:escapeXml(zm:displayMsgDate(pageContext, mhit.date))}
-                                                            </a><br/>
-                                                            (${fn:escapeXml(zm:displaySize(mhit.size))})
-                                                        </td>
-                                                        <!--<td class="zo_ab_list_arrow">&nbsp;</td>-->
-                                                    </tr>
-                                                </table>
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </td>
-                            </tr>
-                        </c:forEach>
-                    </table>
-                    <c:if test="${context.searchResult.size == 0}">
-                        <div class='zo_noresults'><fmt:message key="noResultsFound"/></div>
-                    </c:if>
-                </td>
-            </tr>
-            <%--<c:if test="${context.searchResult.size gt 0}">--%>
-                <tr>
-                    <td>
-                        <mo:toolbar urlTarget="${context_url}" context="${context}" isTop="false"/>
-                    </td>
-                </tr>
-           <%-- </c:if>--%>
-        </table>
-    </form>
-</mo:view>
+<zm:currentResultUrl var="actionUrl" value="${context_url}" context="${context}"/>
+<c:set var="title" value="${zm:truncate(context.shortBackTo,20,true)}" scope="request"/>
+<form id="actions" action="${fn:escapeXml(actionUrl)}" method="post">
+    <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
+    <input type="hidden" name="doMessageAction" value="1"/>
+    <script type="text/javascript">document.write('<input name="moreActions" type="hidden" value="<fmt:message key="actionGo"/>"/>');</script>
+    <mo:toolbar urlTarget="${context_url}" context="${context}" isTop="true" mailbox="${mailbox}"/>
+    <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
+        <c:set var="mhit" value="${hit.messageHit}"/>
+        <c:choose>
+            <c:when test="${mhit.isDraft}">
+                <zm:currentResultUrl index="${status.index}" var="msgUrl" value="${context_url}"
+                                     action="compose"
+                                     context="${context}" id="${mhit.id}"/>
+            </c:when>
+            <c:otherwise>
+                <zm:currentResultUrl index="${status.index}" var="msgUrl" value="${context_url}"
+                                     action="view"
+                                     context="${context}" id="${mhit.id}"/>
+            </c:otherwise>
+        </c:choose>
+        <div id="conv${mhit.id}" class="row msg_lv_list_row list-row${mhit.isUnread ? '-unread' : ''}">
+               <%--<mo:img src="mail/ImgEnvelope${mhit.isUnread?'':'Gray'}.gif" class="left-icon"/>--%>
+               <c:set value="Msg${mhit.isUnread ? '' : 'Gray'}" var="class"/> 
+               <span class="cell f ${class}">
+                   <c:set value=",${mhit.id}," var="stringToCheck"/>
+                   <input class="chk" type="checkbox" ${requestScope.select ne 'none' && (fn:contains(requestScope._selectedIds,stringToCheck) || requestScope.select eq 'all') ? 'checked="checked"':''} name="id" value="${mhit.id}"/>
+               </span>
+               <span class="cell m" onclick='zClickLink("a${mhit.id}")'>
+                   <div class="from-span">
+                       <c:set var="dispRec" value="${mhit.displayAddresses}"/>
+                       <c:set var="_f" value="${empty dispRec ? unknownRecipient : dispRec}"/>
+                       <c:if test="${fn:length(_f) > 20}"><c:set var="_f" value="${fn:substring(_f, 0, 20)}..."/></c:if>
+                       <a class="zo_m_list_from" id="a${mhit.id}" href="${fn:escapeXml(msgUrl)}">${fn:escapeXml(_f)}</a></div>
+                   <div class="sub-span">
+                       <c:set var="_f" value="${empty mhit.subject ? unknownSubject : mhit.subject}"/>
+                       <c:if test="${fn:length(_f) > 25}"><c:set var="_f" value="${fn:substring(_f, 0, 25)}..."/></c:if>
+                       ${fn:escapeXml(_f)}
+                   </div>
+                   <div class="frag-span small-gray-text">
+                       <c:set var="_f" value="${mhit.fragment}"/>
+                       <c:if test="${fn:length(_f) > 45}"><c:set var="_f" value="${fn:substring(_f, 0, 45)}..."/></c:if>
+                       ${fn:escapeXml(_f)}
+                   </div>
+               </span>
+               <span class="cell l">
+                   <fmt:formatDate timeZone="${mailbox.prefs.timeZone}" var="on_dt" pattern="yyyyMMdd" value="${mhit.date}"/>
+                   <a <c:if test="${mailbox.features.calendar}">href='${context_url}?st=cal&view=month&date=${on_dt}'</c:if>>
+                       ${fn:escapeXml(zm:displayMsgDate(pageContext, mhit.date))}
+                   </a><br/>
+                   <c:if test="${mhit.isFlagged}">
+                       <span class="SmlIcnHldr Flag">&nbsp;</span>
+                   </c:if>
+                   <c:if test="${mhit.hasTags}">
+                   <mo:miniTagImage
+                           ids="${mhit.tagIds}"/>
+                   </c:if>
+                   <span class="small-gray-text">(${fn:escapeXml(zm:displaySize(mhit.size))})</span>
+               </span>
+           </div>
+    </c:forEach>
+    <c:if test="${empty context || empty context.searchResult || context.searchResult.size == 0}">
+        <div class='table'>
+                <div class="table-row">
+                    <div class="table-cell zo_noresults">
+                        <fmt:message key="noResultsFound"/>
+                     </div>
+                </div>
+            </div>
+    </c:if>
+    <mo:toolbar urlTarget="${context_url}" context="${context}" isTop="false" mailbox="${mailbox}"/>
+</form>
 

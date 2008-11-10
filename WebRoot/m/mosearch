@@ -16,10 +16,6 @@
         </c:otherwise>
     </c:choose>
     <fmt:setBundle basename="/messages/ZhMsg" scope="request"/>
-    <c:if test="${uiv!='1'}">
-    <mo:composeCheck/>
-    <mo:apptComposeCheck/>    
-    </c:if>
     <c:set var="action" value="${zm:cook(empty param.paction ? param.action : param.paction)}" scope="request"/>
     <c:choose>
         <c:when test="${not empty param.actionSearch}">
@@ -39,41 +35,20 @@
 
     <%-- switch based on context search types --%>
 
-    <c:choose>
-        <%--
-        <c:when test="${not empty param.doConvListViewAction}">
-            <app:convListViewAction/>
-        </c:when>
-        --%>
-        <c:when test="${not empty param.doMessageAction}">
-            <mo:messageAction/>
-        </c:when>
-        <c:when test="${not empty param.doContactAction}">
-            <mo:contactAction/>
-        </c:when>
-        <%--
-        <c:when test="${not empty param.doContactListViewAction or param.action eq 'newcontact' or param.action eq 'newcontactgroup'}">
-            <app:contactListViewAction/>
-        </c:when>
-        --%>
-    </c:choose>
-    <c:if test="${uiv=='1'}">
         <c:choose>
             <c:when test="${not empty param.actionSearch && empty param.sq}">
                  <c:set var="context" value="${pcontext}"/>
-                 <div style="padding:5px;"><div class="StatusWarning"><fmt:message key="actionNoSearchQuerySpecified"/></div></div>
+                 <%--<div class="StatusWarning"><fmt:message key="actionNoSearchQuerySpecified"/></div>--%>
+                <mo:status style="Warning">
+                     <fmt:message key="actionNoSearchQuerySpecified"/>
+                </mo:status>
             </c:when>
-            <c:otherwise>
-                <zm:computeSearchContext var="context" usecache="true" query="${sq}" limit="${sessionScope.limit}"/>
+            <c:otherwise><zm:computeSearchContext  var="context" usecache="true" query="${sq}" limit="${sessionScope.limit}"/>
+                                
             </c:otherwise>
         </c:choose>
-    </c:if>
-    <c:if test="${uiv != '1'}">
-        <zm:computeSearchContext var="context" usecache="true" query="${sq}"/>
-    </c:if>
     <c:set var="pcontext" value="${context}" scope="session"/>
 </mo:handleError>
-
 <%-- switch based on context search types --%>
 <c:choose>
 
