@@ -95,6 +95,7 @@ function() {
 	AjxDispatcher.registerMethod("GetIdentityCollection", "MailCore", new AjxCallback(this, this.getIdentityCollection));
 	AjxDispatcher.registerMethod("GetSignatureCollection", "MailCore", new AjxCallback(this, this.getSignatureCollection));
 	AjxDispatcher.registerMethod("GetDataSourceCollection", "MailCore", new AjxCallback(this, this.getDataSourceCollection));
+    AjxDispatcher.registerMethod("GetAttachmentsController", ["MailCore","Mail"], new AjxCallback(this, this.getAttachmentsController));
 };
 
 ZmMailApp.prototype._registerSettings =
@@ -119,6 +120,7 @@ function(settings) {
 	settings.registerSetting("INITIAL_SEARCH",					{name:"zimbraPrefMailInitialSearch", type:ZmSetting.T_PREF, defaultValue:"in:inbox"});
 	settings.registerSetting("INITIAL_SEARCH_ENABLED",			{name:"zimbraFeatureInitialSearchPreferenceEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("MAIL_ALIASES",					{name:"zimbraMailAlias", type:ZmSetting.T_COS, dataType:ZmSetting.D_LIST});
+    settings.registerSetting("MAIL_ATTACH_VIEW_ENABLED",        {type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	settings.registerSetting("MAIL_FORWARDING_ADDRESS",			{name:"zimbraPrefMailForwardingAddress", type:ZmSetting.T_PREF});
 	settings.registerSetting("MAIL_FORWARDING_ENABLED",			{name:"zimbraFeatureMailForwardingEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
     settings.registerSetting("MAIL_MANDATORY_SPELLCHECK",		{name:"zimbraPrefMandatorySpellCheckEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
@@ -645,6 +647,7 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_SHOW_ONLY_MAIL, {textKey:"showOnlyMail", image:"Conversation"}, ZmSetting.MIXED_VIEW_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_SHOW_ORIG, {textKey:"showOrig", image:"Message"});
 	ZmOperation.registerOp(ZmId.OP_SPAM, {textKey:"junk", tooltipKey:"junkTooltip", image:"JunkMail", shortcut:ZmKeyMap.SPAM, precedence:70}, ZmSetting.SPAM_ENABLED);
+    ZmOperation.registerOp(ZmId.OP_RESET, {textKey:"reset", image:"Refresh", tooltipKey: "refreshFilters"});
 };
 
 ZmMailApp.prototype._registerItems =
@@ -1152,6 +1155,25 @@ function(refresh) {
 			}
 		}
 	}
+
+
+    //Create an virtual ATTACHMENT's FOLDER 
+    if(appCtxt.get(ZmSetting.MAIL_ATTACH_VIEW_ENABLED)){
+        var folderTree = appCtxt.getFolderTree();
+        if(!folderTree.getById(ZmFolder.ID_ATTACHMENTS)){
+            var root = appCtxt.getById(ZmOrganizer.ID_ROOT);
+            var params = {
+                id: ZmFolder.ID_ATTACHMENTS,
+                parent: root,
+                tree: root.tree,
+                type: ZmOrganizer.FOLDER,
+                numTotal: 1
+            };
+            var attachFolder = new ZmFolder(params);
+            root.children.add(attachFolder);
+            attachFolder._notify(ZmEvent.E_CREATE);
+        }
+    }
 };
 
 ZmMailApp.prototype.handleOp =
@@ -1381,6 +1403,14 @@ function() {
 	var groupMailBy = appCtxt.get(ZmSetting.GROUP_MAIL_BY);
 	return (groupMailBy == ZmSetting.GROUP_BY_CONV) ? AjxDispatcher.run("GetConvListController") :
 													  AjxDispatcher.run("GetTradController");
+};
+
+ZmMailApp.prototype.getAttachmentsController =
+function(){
+    if (!this._attachmentsController) {
+		this._attachmentsController = new ZmAttachmentsController(this._container, this);
+	}
+	return this._attachmentsController;
 };
 
 /**

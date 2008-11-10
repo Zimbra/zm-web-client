@@ -64,6 +64,7 @@
 
 
 
+
 /* Dwt-created elements that have their ID set so we can tweak them specifically here */
 
 /* MOVE TO SKIN ??? */
@@ -3359,6 +3360,10 @@ HTML>BODY .appt-selected .appt_allday_body
 	margin:26px 24px;
 }
 
+/*Attachments View*/
+.ZmFilterTree {
+   broder-width: 0px;
+}
 
 /*IE hack - To stop the button shake in the MSg Header*/
 

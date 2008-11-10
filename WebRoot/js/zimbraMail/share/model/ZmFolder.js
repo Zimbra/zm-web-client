@@ -69,6 +69,7 @@ ZmFolder.ID_SYNC_FAILURES						= ZmOrganizer.ID_SYNC_FAILURES;
 ZmFolder.ID_ARCHIVE	 							= ZmOrganizer.ID_ARCHIVE;
 ZmFolder.ID_OUTBOX	 							= ZmOrganizer.ID_OUTBOX;
 ZmFolder.ID_CHATS	 							= ZmOrganizer.ID_CHATS;
+ZmFolder.ID_ATTACHMENTS                         = ZmOrganizer.ID_ATTACHMENTS;
 
 // system folder names
 ZmFolder.MSG_KEY = {};
@@ -88,6 +89,7 @@ ZmFolder.MSG_KEY[ZmOrganizer.ID_CHATS]			= "chats";
 ZmFolder.MSG_KEY[ZmFolder.ID_OUTBOX]			= "outbox";
 ZmFolder.MSG_KEY[ZmFolder.ID_ARCHIVE]			= "localFolders";
 ZmFolder.MSG_KEY[ZmFolder.ID_SYNC_FAILURES]		= "errorReports";
+ZmFolder.MSG_KEY[ZmFolder.ID_ATTACHMENTS]       = "attachments";
 
 // system folder icons
 ZmFolder.ICON = {};
@@ -101,6 +103,7 @@ ZmFolder.ICON[ZmFolder.ID_OUTBOX]				= "Outbox";
 ZmFolder.ICON[ZmFolder.ID_DRAFTS]				= "DraftFolder";
 ZmFolder.ICON[ZmFolder.ID_CHATS]				= "ChatFolder";
 ZmFolder.ICON[ZmFolder.ID_LOAD_FOLDERS]			= "Plus";
+ZmFolder.ICON[ZmFolder.ID_ATTACHMENTS]          = "Attachment"
 
 // name to use within the query language
 ZmFolder.QUERY_NAME = {};
@@ -130,6 +133,7 @@ ZmFolder.SORT_ORDER[ZmFolder.ID_ARCHIVE]		= 7;
 ZmFolder.SORT_ORDER[ZmFolder.ID_OUTBOX]			= 8;
 ZmFolder.SORT_ORDER[ZmFolder.ID_SYNC_FAILURES]	= 9;
 ZmFolder.SORT_ORDER[ZmFolder.ID_SEP]			= 10;
+ZmFolder.SORT_ORDER[ZmFolder.ID_ATTACHMENTS]    = 99;      //Last on the list
 
 // character codes for "tcon" attribute in conv action request, which controls
 // which folders are affected

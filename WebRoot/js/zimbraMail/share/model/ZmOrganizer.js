@@ -108,6 +108,7 @@ ZmOrganizer.ID_ZIMLET			= -1000;	// zimlets need a range.  start from -1000 incr
 ZmOrganizer.ID_ROSTER_LIST		= -11;
 ZmOrganizer.ID_ROSTER_TREE_ITEM	= -13;
 ZmOrganizer.ID_MY_CARD			= -15;
+ZmOrganizer.ID_ATTACHMENTS      = -17;      // Attachments View
 
 // fields that can be part of a displayed organizer
 ZmOrganizer.F_NAME				= "name";

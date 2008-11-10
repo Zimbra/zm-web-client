@@ -286,6 +286,9 @@ function(folder) {
 		// it off to the search tree controller
 		var stc = this._opc.getTreeController(ZmOrganizer.SEARCH);
 		stc._itemClicked(folder);
+	}else if (folder.id == ZmFolder.ID_ATTACHMENTS){
+        var attController = AjxDispatcher.run("GetAttachmentsController");
+        attController.show();
 	} else {
 		if (folder._showFoldersCallback) {
 			folder._showFoldersCallback.run();
