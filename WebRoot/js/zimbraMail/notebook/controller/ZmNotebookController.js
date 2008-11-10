@@ -486,7 +486,7 @@ ZmNotebookController.prototype._detachListener = function(event) {
 ZmNotebookController.prototype._browseFolderListener = function() {
         var folderId = this._object ? this._object.getFolderId() : ZmNotebookItem.DEFAULT_FOLDER;
         var folder = appCtxt.getById(folderId);
-        appCtxt.getSearchController().search({ query: "in:" + folder.name }); // FIXME: is there a better way to browse a folder?
+        appCtxt.getSearchController().search({ query: folder.createQuery(), types: [ZmItem.PAGE, ZmItem.DOCUMENT] }); // FIXME: is there a better way to browse a folder?
 };
 
 ZmNotebookController.prototype._getDefaultFocusItem =
