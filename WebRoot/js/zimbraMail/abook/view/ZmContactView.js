@@ -456,7 +456,9 @@ function() {
 	if (this._contact.id == null) {
 		var clc = AjxDispatcher.run("GetContactListController");
 		match = clc._folderId;
-	} else {
+	}
+
+    if(this._contact.id != null || !match) {
 		match = this._contact.addrbook ? this._contact.addrbook.id : ZmFolder.ID_CONTACTS;
 	}
 
