@@ -170,8 +170,9 @@ ZmChooseFolderDialog.prototype._doPopup = function(params, treeIds, folderTree) 
 
 	ZmDialog.prototype.popup.call(this);
 	
-	// set focus to overview, which will select first item if none selected
-	appCtxt.getKeyboardMgr().grabFocus(this._overview[this._curOverviewId]);
+	if (this._data && (treeId == this._data.type)) {
+		treeView.setSelected(folderTree.root);
+	}
 };
 
 ZmChooseFolderDialog.prototype.reset =
@@ -237,9 +238,4 @@ function(ev) {
 	} else {
 		DwtDialog.prototype._buttonListener.call(this, ev, [tgtFolder]);
 	}
-};
-
-ZmChooseFolderDialog.prototype._getTabGroupMembers =
-function() {
-	return [this._overview[this._curOverviewId]];
 };

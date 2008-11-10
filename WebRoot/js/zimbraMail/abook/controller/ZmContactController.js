@@ -155,11 +155,6 @@ function(view) {
 		cancelButton.setText(ZmMsg.close);
 		cancelButton.setImage("Close");
 	}
-
-	var printButton = this._toolbar[view].getButton(ZmOperation.PRINT);
-	if (printButton) {
-		printButton.setText(ZmMsg.print);
-	}
 };
 
 ZmContactController.prototype._getTagMenuMsg =
@@ -316,12 +311,6 @@ function(ev, bIsPopCallback) {
 ZmContactController.prototype._cancelListener = 
 function(ev) {
 	this._app.popView();
-};
-
-ZmContactController.prototype._printListener =
-function(ev) {
-	var url = "/h/printcontacts?id=" + this._contact.id;
-	window.open(appContextPath+url, "_blank");
 };
 
 ZmContactController.prototype._doDelete = 

@@ -95,7 +95,6 @@ function() {
 	AjxDispatcher.registerMethod("GetIdentityCollection", "MailCore", new AjxCallback(this, this.getIdentityCollection));
 	AjxDispatcher.registerMethod("GetSignatureCollection", "MailCore", new AjxCallback(this, this.getSignatureCollection));
 	AjxDispatcher.registerMethod("GetDataSourceCollection", "MailCore", new AjxCallback(this, this.getDataSourceCollection));
-    AjxDispatcher.registerMethod("GetAttachmentsController", ["MailCore","Mail"], new AjxCallback(this, this.getAttachmentsController));
 };
 
 ZmMailApp.prototype._registerSettings =
@@ -120,10 +119,8 @@ function(settings) {
 	settings.registerSetting("INITIAL_SEARCH",					{name:"zimbraPrefMailInitialSearch", type:ZmSetting.T_PREF, defaultValue:"in:inbox"});
 	settings.registerSetting("INITIAL_SEARCH_ENABLED",			{name:"zimbraFeatureInitialSearchPreferenceEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("MAIL_ALIASES",					{name:"zimbraMailAlias", type:ZmSetting.T_COS, dataType:ZmSetting.D_LIST});
-    settings.registerSetting("MAIL_ATTACH_VIEW_ENABLED",        {type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("MAIL_FORWARDING_ADDRESS",			{name:"zimbraPrefMailForwardingAddress", type:ZmSetting.T_PREF});
 	settings.registerSetting("MAIL_FORWARDING_ENABLED",			{name:"zimbraFeatureMailForwardingEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
-    settings.registerSetting("MAIL_MANDATORY_SPELLCHECK",		{name:"zimbraPrefMandatorySpellCheckEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
     settings.registerSetting("FILTERS_MAIL_FORWARDING_ENABLED",	{name:"zimbraFeatureMailForwardingInFiltersEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	settings.registerSetting("MAIL_FROM_ADDRESS",				{name:"zimbraPrefFromAddress", type:ZmSetting.T_PREF, dataType:ZmSetting.D_LIST });
 	settings.registerSetting("MAIL_LIFETIME_GLOBAL",			{name:"zimbraMailMessageLifetime", type:ZmSetting.T_COS, defaultValue:"0"}); // dataType: DURATION
@@ -588,8 +585,6 @@ ZmMailApp.prototype._registerOrganizers =  function() {
 							 createFunc:		"ZmOrganizer.create",
 							 compareFunc:		"ZmFolder.sortCompare",
 							 shortcutKey:		"F",
-							 newOp:				ZmOperation.NEW_FOLDER,
-							 displayOrder:		100,
 							 openSetting:		ZmSetting.FOLDER_TREE_OPEN
 							});
 
@@ -607,7 +602,7 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_DETACH_COMPOSE, {tooltipKey:"detachTooltip", image:"OpenInNewWindow"});
 	ZmOperation.registerOp(ZmId.OP_DRAFT, null, ZmSetting.SAVE_DRAFT_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_EDIT_FILTER_RULE, {textKey:"filterEdit", image:"Edit"}, ZmSetting.FILTERS_ENABLED);
-	ZmOperation.registerOp(ZmId.OP_FORWARD, {textKey:"forward", tooltipKey:"forwardTooltip", image:"Forward", shortcut:ZmKeyMap.FORWARD, precedence:46});
+	ZmOperation.registerOp(ZmId.OP_FORWARD, {textKey:"forward", tooltipKey:"forwardTooltip", image:"Forward", precedence:46});
 	ZmOperation.registerOp(ZmId.OP_FORWARD_ATT, {textKey:"forwardAtt", tooltipKey:"forwardAtt", image:"Forward"});
 	ZmOperation.registerOp(ZmId.OP_FORWARD_INLINE, {textKey:"forwardInline", tooltipKey:"forwardTooltip", image:"Forward"});
 	//fixed bug:15460 removed reply and forward menu.
@@ -622,16 +617,16 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_INC_PREFIX, {textKey:"includeMenuPrefix"});
 	ZmOperation.registerOp(ZmId.OP_INC_PREFIX_FULL, {textKey:"includeMenuPrefixFull"});
 	ZmOperation.registerOp(ZmId.OP_INC_SMART, {textKey:"includeMenuSmart"});
-	ZmOperation.registerOp(ZmId.OP_MARK_READ, {textKey:"markAsRead", image:"ReadMessage", shortcut:ZmKeyMap.MARK_READ});
-	ZmOperation.registerOp(ZmId.OP_MARK_UNREAD, {textKey:"markAsUnread", image:"UnreadMessage", shortcut:ZmKeyMap.MARK_UNREAD});
+	ZmOperation.registerOp(ZmId.OP_MARK_READ, {textKey:"markAsRead", image:"ReadMessage"});
+	ZmOperation.registerOp(ZmId.OP_MARK_UNREAD, {textKey:"markAsUnread", image:"UnreadMessage"});
 	ZmOperation.registerOp(ZmId.OP_MOVE_DOWN_FILTER_RULE, {textKey:"filterMoveDown", image:"DownArrow"}, ZmSetting.FILTERS_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_MOVE_UP_FILTER_RULE, {textKey:"filterMoveUp", image:"UpArrow"}, ZmSetting.FILTERS_ENABLED);
-	ZmOperation.registerOp(ZmId.OP_NEW_MESSAGE, {textKey:"newEmail", tooltipKey:"newMessageTooltip", image:"NewMessage", shortcut:ZmKeyMap.NEW_MESSAGE});
-	ZmOperation.registerOp(ZmId.OP_NEW_MESSAGE_WIN, {textKey:"newEmail", tooltipKey:"newMessageTooltip", image:"NewMessage", shortcut:ZmKeyMap.NEW_MESSAGE_WIN});
+	ZmOperation.registerOp(ZmId.OP_NEW_MESSAGE, {textKey:"newEmail", tooltipKey:"newMessageTooltip", image:"NewMessage"});
+	ZmOperation.registerOp(ZmId.OP_NEW_MESSAGE_WIN, {textKey:"newEmail", tooltipKey:"newMessageTooltip", image:"NewMessage"});
 	ZmOperation.registerOp(ZmId.OP_REMOVE_FILTER_RULE, {textKey:"filterRemove", image:"Delete"}, ZmSetting.FILTERS_ENABLED);
-	ZmOperation.registerOp(ZmId.OP_REPLY, {textKey:"reply", tooltipKey:"replyTooltip", image:"Reply", shortcut:ZmKeyMap.REPLY, precedence:50});
+	ZmOperation.registerOp(ZmId.OP_REPLY, {textKey:"reply", tooltipKey:"replyTooltip", image:"Reply", precedence:50});
 	ZmOperation.registerOp(ZmId.OP_REPLY_ACCEPT, {textKey:"replyAccept", image:"Check"});
-	ZmOperation.registerOp(ZmId.OP_REPLY_ALL, {textKey:"replyAll", tooltipKey:"replyAllTooltip", image:"ReplyAll", shortcut:ZmKeyMap.REPLY_ALL, precedence:48});
+	ZmOperation.registerOp(ZmId.OP_REPLY_ALL, {textKey:"replyAll", tooltipKey:"replyAllTooltip", image:"ReplyAll", precedence:48});
 	ZmOperation.registerOp(ZmId.OP_REPLY_CANCEL);
 	ZmOperation.registerOp(ZmId.OP_REPLY_DECLINE, {textKey:"replyDecline", image:"Cancel"});
 	//fixed bug:15460 removed reply and forward menu.
@@ -642,12 +637,11 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_REPLY_MODIFY);
 	ZmOperation.registerOp(ZmId.OP_REPLY_NEW_TIME, {textKey:"replyNewTime", image:"NewTime"});
 	ZmOperation.registerOp(ZmId.OP_REPLY_TENTATIVE, {textKey:"replyTentative", image:"QuestionMark"});
-	ZmOperation.registerOp(ZmId.OP_SAVE_DRAFT, {textKey:"saveDraft", tooltipKey:"saveDraftTooltip", image:"DraftFolder", shortcut:ZmKeyMap.SAVE}, ZmSetting.SAVE_DRAFT_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_SAVE_DRAFT, {textKey:"saveDraft", tooltipKey:"saveDraftTooltip", image:"DraftFolder"}, ZmSetting.SAVE_DRAFT_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_SHOW_BCC, {textKey:"showBcc"});
 	ZmOperation.registerOp(ZmId.OP_SHOW_ONLY_MAIL, {textKey:"showOnlyMail", image:"Conversation"}, ZmSetting.MIXED_VIEW_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_SHOW_ORIG, {textKey:"showOrig", image:"Message"});
-	ZmOperation.registerOp(ZmId.OP_SPAM, {textKey:"junk", tooltipKey:"junkTooltip", image:"JunkMail", shortcut:ZmKeyMap.SPAM, precedence:70}, ZmSetting.SPAM_ENABLED);
-    ZmOperation.registerOp(ZmId.OP_RESET, {textKey:"reset", image:"Refresh", tooltipKey: "refreshFilters"});
+	ZmOperation.registerOp(ZmId.OP_SPAM, {textKey:"junk", tooltipKey:"junkTooltip", image:"JunkMail", precedence:70}, ZmSetting.SPAM_ENABLED);
 };
 
 ZmMailApp.prototype._registerItems =
@@ -710,6 +704,11 @@ function() {
 									 id:			ZmId.getMenuItemId(ZmId.SEARCH, ZmId.SEARCH_MAIL)
 									});
 	}
+};
+
+ZmMailApp.prototype._setupCurrentAppToolbar =
+function() {
+	ZmCurrentAppToolBar.registerApp(this.getName(), ZmOperation.NEW_FOLDER, ZmOrganizer.FOLDER);
 };
 
 ZmMailApp.prototype._registerApp =
@@ -1146,7 +1145,9 @@ function(refresh) {
 	}
 
 	if (!appCtxt.inStartup) {
-		this.resetOverview(this.getOverviewId());
+		var account = (appCtxt.multiAccounts && !appCtxt.isOffline)
+			? appCtxt.getMainAccount(true) : null;
+		this.resetOverview(this.getOverviewId(account));
 		var req = appCtxt.currentRequestParams;
 		if (appCtxt.getCurrentAppName() == this._name && req.resend && req.methodName == "NoOpRequest") {
 			var curView = appCtxt.getCurrentViewId();
@@ -1155,25 +1156,6 @@ function(refresh) {
 			}
 		}
 	}
-
-
-    //Create an virtual ATTACHMENT's FOLDER 
-    if(appCtxt.get(ZmSetting.MAIL_ATTACH_VIEW_ENABLED)){
-        var folderTree = appCtxt.getFolderTree();
-        if(!folderTree.getById(ZmFolder.ID_ATTACHMENTS)){
-            var root = appCtxt.getById(ZmOrganizer.ID_ROOT);
-            var params = {
-                id: ZmFolder.ID_ATTACHMENTS,
-                parent: root,
-                tree: root.tree,
-                type: ZmOrganizer.FOLDER,
-                numTotal: 1
-            };
-            var attachFolder = new ZmFolder(params);
-            root.children.add(attachFolder);
-            attachFolder._notify(ZmEvent.E_CREATE);
-        }
-    }
 };
 
 ZmMailApp.prototype.handleOp =
@@ -1403,14 +1385,6 @@ function() {
 	var groupMailBy = appCtxt.get(ZmSetting.GROUP_MAIL_BY);
 	return (groupMailBy == ZmSetting.GROUP_BY_CONV) ? AjxDispatcher.run("GetConvListController") :
 													  AjxDispatcher.run("GetTradController");
-};
-
-ZmMailApp.prototype.getAttachmentsController =
-function(){
-    if (!this._attachmentsController) {
-		this._attachmentsController = new ZmAttachmentsController(this._container, this);
-	}
-	return this._attachmentsController;
 };
 
 /**

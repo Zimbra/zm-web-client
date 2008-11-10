@@ -36,13 +36,12 @@ ZmConvListController = function(container, mailApp) {
 ZmConvListController.prototype = new ZmDoublePaneController;
 ZmConvListController.prototype.constructor = ZmConvListController;
 
-ZmMailListController.GROUP_BY_ITEM[ZmId.VIEW_CONVLIST]		= ZmItem.CONV;
+ZmMailListController.GROUP_BY_ITEM[ZmId.VIEW_CONVLIST]	= ZmItem.CONV;
 ZmMailListController.GROUP_BY_SETTING[ZmId.VIEW_CONVLIST]	= ZmSetting.GROUP_BY_CONV;
 
 // view menu
 ZmMailListController.GROUP_BY_ICON[ZmId.VIEW_CONVLIST]			= "ConversationView";
 ZmMailListController.GROUP_BY_MSG_KEY[ZmId.VIEW_CONVLIST]		= "byConversation";
-ZmMailListController.GROUP_BY_SHORTCUT[ZmId.VIEW_CONVLIST]		= ZmKeyMap.VIEW_BY_CONV;
 ZmMailListController.GROUP_BY_VIEWS.push(ZmId.VIEW_CONVLIST);
 
 // Public methods
@@ -419,15 +418,14 @@ function(msg, resp) {
 
 ZmConvListController.prototype._redrawDraftItemRows =
 function(msg) {
-	var lv = this._listView[this._currentView];
 	var conv = appCtxt.getById(msg.cid);
 	if (conv) {
 		conv._loadFromMsg(msg);	// update conv
-		lv.redrawItem(conv);
-		lv.setSelection(conv, true);
+		this._listView[this._currentView].redrawItem(conv);
+		this._listView[this._currentView].setSelection(conv, true);
 	}
 	// don't think a draft conv is ever expandable, but try anyway
-	lv.redrawItem(msg);
+	this._listView[this._currentView].redrawItem(msg);
 };
 
 /**
