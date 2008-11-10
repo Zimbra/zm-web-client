@@ -1211,21 +1211,8 @@ function(el, bodyPart, callback, result, isTruncated) {
 	// text, otherwise, get the html part if one exists
 	if (content == null) {
 		if (bodyPart.ct == ZmMimeTable.TEXT_CAL) {
-			// NOTE: If there's only a text/calendar part, then fall
-			//       back to the description line(s) in the vcal content.
-			/***
-			var regex = /DESCRIPTION:(.*(?:\r\n\s+.*)*)/;
-			var results = regex.exec(bodyPart.content);
-			if (results && results.length > 1) {
-				content = results[1];
-				content = content.replace(/\r\n\s+/g," ");
-				content = content.replace(/\\t/g, "\t");
-				content = content.replace(/\\n/g, "\n");
-				content = content.replace(/\\(.)/g, "$1");
-			}
-			/***/
-			// NOTE: IE doesn't match my multi-line regex, even when
-			//       explicitly specifying the "m" attribute.
+			// NOTE: IE doesn't match multi-line regex, even when explicitly
+			// specifying the "m" attribute.
 			var lines = bodyPart.content.split(/\r\n/);
 			var desc = [];
 			for (var i = 0; i < lines.length; i++) {
@@ -1249,8 +1236,8 @@ function(el, bodyPart, callback, result, isTruncated) {
 				content = content.replace(/\\n/g, "\n");
 				content = content.replace(/\\(.)/g, "$1");
 			}
-			/***/
-		} else if (bodyPart.ct == ZmMimeTable.TEXT_HTML) {
+		}
+		else if (bodyPart.ct == ZmMimeTable.TEXT_HTML) {
 			// bug fix #8960 - convert the html content to text using the DOM
 			var div = document.createElement("div");
 			div.innerHTML = bodyPart.content;
@@ -1259,7 +1246,10 @@ function(el, bodyPart, callback, result, isTruncated) {
 	}
 
 	this._makeIframeProxy(el, (content || ""), true, isTruncated);
-}
+
+	this._setAttachmentLinks();
+	this._expandRows(this._expandHeader);
+};
 
 ZmMailMsgView.prototype._setTags =
 function(msg) {
