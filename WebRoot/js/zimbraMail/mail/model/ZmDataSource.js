@@ -142,7 +142,7 @@ function(callback, errorCallback, batchCommand) {
 		var pvalue = pname == "folderId"
 			? ZmOrganizer.normalizeId(this[pname])
 			: this[pname];
-		if (pname == "id" || !pvalue) continue;
+		if (pname == "id" || (!pvalue && pname != "enabled")) continue;
 
 		dsrc.setAttribute(aname, String(pvalue));
 	}
