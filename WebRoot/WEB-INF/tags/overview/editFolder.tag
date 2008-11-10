@@ -9,7 +9,7 @@
 <zm:getMailbox var="mailbox"/>
 <c:set var="label" value="${zm:getFolderName(pageContext, folder.id)}"/>
 <c:choose>
-    <c:when test="${folder.isAppointmentView or folder.isContactView or folder.isTaskView}">
+    <c:when test="${folder.isAppointmentView or folder.isContactView or folder.isTaskView or folder.isDocumentView}">
         <c:set var="colorStyle" value="${folder.styleColor}${folder.styleColor ne 'Gray' ? 'Bg' :''}"/>
     </c:when>
     <c:otherwise>
@@ -77,6 +77,19 @@
                                 </c:when>
                                 <c:otherwise>
                                     <fmt:message key="taskListUser"/>
+                                </c:otherwise>
+                            </c:choose>
+                        </c:when>
+                        <c:when test="${folder.isDocumentView}">
+                            <c:choose>
+                                <c:when test="${folder.isSystemFolder}">
+                                    <fmt:message key="briefcaseSystem"/>
+                                </c:when>
+                                <c:when test="${folder.isMountPoint}">
+                                    <fmt:message key="briefcaseShared"/>
+                                </c:when>
+                                <c:otherwise>
+                                    <fmt:message key="briefcaseUser"/>
                                 </c:otherwise>
                             </c:choose>
                         </c:when>
@@ -188,7 +201,7 @@
 </c:if>
 
 <%---------- color----------%>
-<c:if test="${folder.isAppointmentView or folder.isContactView or folder.isTaskView}">
+<c:if test="${folder.isAppointmentView or folder.isContactView or folder.isTaskView or folder.isDocumentView}">
     <tr>
         <td nowrap align='right'>
             <label for="folderColor"><fmt:message key="color"/>
@@ -344,7 +357,7 @@
 </c:if>
 
 <%---------- save ----------%>
-<c:if test="${not folder.isSystemFolder or (folder.isAppointmentView or folder.isContactView or folder.isTaskView)}">
+<c:if test="${not folder.isSystemFolder or (folder.isAppointmentView or folder.isContactView or folder.isTaskView or folder.isDocumentView)}">
     <tr>
         <td>&nbsp;</td>
         <td>
@@ -519,6 +532,10 @@
         <c:when test="${folder.isContactView}">
             <fmt:message var="deleteButton" key="addressBookDelete"/>
             <fmt:message var="deleteConfirm" key="addressBook${inTrash ? 'Perm':''}DeleteConfirmation"/>
+        </c:when>
+        <c:when test="${folder.isDocumentView}">
+            <fmt:message var="deleteButton" key="briefcaseDelete"/>
+            <fmt:message var="deleteConfirm" key="briefcaseDeleteConfirmation"/>
         </c:when>
         <c:otherwise>
             <fmt:message var="deleteButton" key="folderDelete"/>

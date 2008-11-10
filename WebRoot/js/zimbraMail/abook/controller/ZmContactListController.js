@@ -596,40 +596,34 @@ function(ev) {
 
 ZmContactListController.prototype._printContactListener =
 function(ev) {
-	var printView = appCtxt.getPrintView();
 	var contacts = this._listView[this._currentView].getSelection();
-	if (contacts.length == 1) {
-		var contact = contacts[0];
-		if (contact) {
-			if (contact.isLoaded) {
-				printView.render(contact);
-			} else {
-				var callback = new AjxCallback(this, this._handleResponsePrintLoad);
-				contact.load(callback);
-			}
-		}
-	} else {
-		var html = ZmContactCardsView.getPrintHtml(AjxVector.fromArray(contacts));
-		printView.renderHtml(html);
+	var ids = [];
+	for (var i = 0; i < contacts.length; i++) {
+		ids.push(contacts[i].id);
 	}
+	var url = "/h/printcontacts?id=" + ids.join(",");
+	window.open(appContextPath+url, "_blank");
 };
 
 ZmContactListController.prototype._printAddrBookListener =
 function(ev) {
-	var printView = appCtxt.getPrintView();
-	if (this._folderId && !this._list._isShared) {
-		var subList = this._list.getSubList(0, this._list.size(), this._folderId);
-		printView.renderHtml(ZmContactCardsView.getPrintHtml(subList));
-	} else if ((this._searchType & ZmContactListController.SEARCH_TYPE_ANYWHERE) != 0) {
-		printView.render(AjxDispatcher.run("GetContacts"));
-	} else {
-		printView.render(this._list);
-	}
-};
+	var url;
 
-ZmContactListController.prototype._handleResponsePrintLoad =
-function(result, contact) {
-	appCtxt.getPrintView().render(contact);
+	if (this._folderId && !this._list._isShared) {
+		url = "/h/printcontacts?folderid=" + this._folderId;
+	} else {
+		var contacts = ((this._searchType & ZmContactListController.SEARCH_TYPE_ANYWHERE) != 0)
+			? AjxDispatcher.run("GetContacts")
+			: this._list;
+
+		var ids = [];
+		var list = contacts.getArray();
+		for (var i = 0; i < list.length; i++) {
+			ids.push(list[i].id);
+		}
+		url = "/h/printcontacts?id=" + ids.join(",");
+	}
+	window.open(appContextPath+url, "_blank");
 };
 
 // Returns the type of item in the underlying list

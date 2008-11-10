@@ -63,6 +63,9 @@ ZmShortcutsPage = function(parent, view, controller) {
 	var parent = document.getElementById(this._scTabViewId);
 	parent.appendChild(element);
 
+	var listener = new AjxListener(this, this._changeListener);
+	appCtxt.getSettings().getSetting(ZmSetting.SHORTCUTS).addChangeListener(listener);
+
 	this._rendered = false;
 	this._hasRendered = false;
 };
@@ -151,7 +154,7 @@ function() {
 	var i = 0;
 	this._headerId = Dwt.getNextId();
 	this._scTabViewId = Dwt.getNextId();
-	
+
 	html[i++] = "<div class='BigHead' id='";
 	html[i++] = this._headerId;
 	html[i++] = "'>";
@@ -170,10 +173,18 @@ function() {
 	return header ? Dwt.getSize(header).y : 0;
 };
 
-ZmShortcutsPage.prototype._controlListener = 
+ZmShortcutsPage.prototype._controlListener =
 function(ev) {
 	if (ev.oldHeight != ev.newHeight) {
 		this._scTabView._resetSize(ev.oldHeight - ev.newHeight);
+	}
+};
+
+ZmShortcutsPage.prototype._changeListener =
+function() {
+	var listView = this._scTabView && this._scTabView._scTabView && this._scTabView._scTabView[ZmShortcutsPageTabView.SHORTCUTS_LIST];
+	if (listView) {
+		listView._dirty = true;
 	}
 };
 
@@ -184,7 +195,7 @@ function(ev) {
  * This tab view contains up to four tab pages: a list of the current shortcuts,
  * and one page each for creating custom shortcuts for folders, tags, and saved
  * searches.
- * 
+ *
  * @param parent			[DwtControl]		the containing widget
  * @param controller		[ZmPrefController]	prefs controller
  * @param organizers		[array]				list of organizer types to handle
@@ -307,7 +318,7 @@ function(delta) {
  * Creates an empty tab page.
  * @constructor
  * @class
- * This class displays all the keyboard shortcuts that are currently 
+ * This class displays all the keyboard shortcuts that are currently
  * available.
  *
  * @param parent			[DwtControl]				the containing widget
@@ -316,7 +327,7 @@ function(delta) {
 ZmShortcutsPageTabViewList = function(parent, controller) {
 
 	DwtTabViewPage.call(this, parent, "ZmShortcutsPageTabViewList");
-	
+
 	this._controller = controller;
 	this._hasRendered = false;
 };
@@ -328,7 +339,7 @@ ZmShortcutsPageTabViewList.prototype.showMe =
 function() {
 	if (this._hasRendered && !this._dirty) return;
 	if (this._dirty) {
-		this._getHtmlElement().innerHTML = "";
+		this.getHtmlElement().innerHTML = "";
 	}
 
 	this._renderShortcuts();
@@ -350,15 +361,19 @@ function() {
 	var html = [];
 	var i = 0;
 	html[i++] = "<div style='padding:10px'>";
+	var customKeys = appCtxt._getCustomKeys();
+    if (customKeys) {
+        i = this._getKeysHtml(customKeys, ZmKeyMap.MAP_NAME, html, i, true);
+    }
 	i = this._getKeysHtml(ZmKeys, ZmKeyMap.MAP_NAME, html, i);
 	i = this._getKeysHtml(AjxKeys, DwtKeyMap.MAP_NAME, html, i);
 	html[i++] = "</div>";
-	
+
 	this.getHtmlElement().innerHTML = html.join("");
 };
 
 ZmShortcutsPageTabViewList.prototype._getKeysHtml =
-function(keys, mapNames, html, i) {
+function(keys, mapNames, html, i, skipCheck) {
 	var kmm = appCtxt.getKeyboardMgr().__keyMapMgr;
 	var mapDesc = {};
 	var maps = [];
@@ -372,7 +387,15 @@ function(keys, mapNames, html, i) {
 		var action = isMap ? null : parts[1];
 		var field = parts[parts.length - 1];
 
-		if (action) {
+		// HACK: multi-account setting gets set too late for precondition to be applied
+		if (map == "global" &&
+			(action == "GoToNextAccount" || action == "GoToPrevAccount" || action == "GoToAccount") &&
+			appCtxt.numVisibleAccounts <= 1)
+		{
+			continue;
+		}
+
+		if (action && !skipCheck) {
 			// make sure shortcut is defined && available
 			var ks = kmm.getKeySequences(mapNames[map], action);
 			if (!(ks && ks.length)) { continue; }
@@ -387,7 +410,7 @@ function(keys, mapNames, html, i) {
 			}
 		}
 	}
-	
+
 	var sortFunc = function(keyA, keyB) {
 		var sortPropNameA = [keyA, "sort"].join(".");
 		var sortPropNameB = [keyB, "sort"].join(".");
@@ -428,7 +451,7 @@ function(keys, mapNames, html, i) {
 		}
 		html[i++] = "</table>";
 	}
-	
+
 	return i;
 };
 
@@ -704,7 +727,8 @@ function(html, i, closeLinkId) {
 		html[i++] = "<li>";
 		var propName = [shortcuts[j], "display"].join(".");
 		var value = ZmKeys[propName];
-		if (value) {			var keySeqs = ZmKeys[propName].split(/\s*;\s*/);
+		if (value) {
+			var keySeqs = ZmKeys[propName].split(/\s*;\s*/);
 			var ks = keySeqs[0];
 			var parts = ks.split(",");
 			var scText = AjxMessageFormat.format(ZmMsg.shortcutExample, [ZmShortcutsPageTabViewList._formatKeySequence(parts[0]),

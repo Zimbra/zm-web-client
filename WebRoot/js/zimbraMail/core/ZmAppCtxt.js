@@ -311,15 +311,6 @@ function() {
 	return this._pageConflictDialog;
 };
 
-ZmAppCtxt.prototype.getNewImDialog =
-function() {
-	if (!this._newImDialog) {
-		AjxDispatcher.require("IM");
-		this._newImDialog = new ZmNewImDialog(this._shell);
-	}
-	return this._newImDialog;
-};
-
 ZmAppCtxt.prototype.getNewRosterItemDialog =
 function() {
 	if (!this._newRosterItemDialog) {
@@ -379,6 +370,14 @@ function() {
 		this._pickTagDialog = new ZmPickTagDialog(this._shell);
 	}
 	return this._pickTagDialog;
+};
+
+ZmAppCtxt.prototype.getFolderNotifyDialog =
+function() {
+	if (!this._folderNotifyDialog) {
+		this._folderNotifyDialog = new ZmFolderNotifyDialog(this._shell);
+	}
+	return this._folderNotifyDialog;
 };
 
 ZmAppCtxt.prototype.getFolderPropsDialog =
@@ -723,16 +722,6 @@ function() {
 	return this._uploadManager;
 };
 
-ZmAppCtxt.prototype.getCurrentAppToolbar =
-function() { 
-	return this._currentAppToolbar;
-};
-
-ZmAppCtxt.prototype.setCurrentAppToolbar =
-function(toolbar) {
-	this._currentAppToolbar = toolbar;
-};
-
 ZmAppCtxt.prototype.getCurrentSearch =
 function() { 
 	return this.getCurrentApp().currentSearch;
@@ -894,4 +883,99 @@ ZmAppCtxt.prototype.getACL =
 function(account, callback) {
 	var id = account ? account.id : this._activeAccount ? this._activeAccount.id : ZmZimbraAccount.DEFAULT_ID;
 	return this._accounts[id] && this._accounts[id].acl;
+};
+
+/**
+ * Returns brief display version of the given shortcut
+ *
+ * @param keyMap	[string]	key map
+ * @param shortcut	[string]	shortcut action
+ * @param orgId		[int]*		ID or organizer that may have a shortcut alias
+ */
+ZmAppCtxt.prototype._getShortcutHint =
+function(keyMap, shortcut, orgId) {
+	
+	var text = null;
+	keyMap = keyMap || "global";
+	while (!text && keyMap) {
+		var scKey = [keyMap, shortcut, "display"].join(".");
+		var text = ZmKeys[scKey];
+		if (text) {
+			// try to pick first single-character shortcut
+			var list = text.split(/;\s*/);
+			var sc = list[0];
+			for (var i = 0; i < list.length; i++) {
+				var s = list[i];
+				if (s.indexOf(",") == -1) {
+					sc = list[i];
+					break;
+				}
+			}
+			if (!sc) { return null; }
+			if (orgId) {
+				var customKeys = this._getCustomKeys();
+				if (!customKeys) { return null; }
+				var key = ["custom", orgId].join(".");
+				var alias = customKeys[key];
+				sc = sc.replace("NNN", alias);
+			}
+			sc = sc.replace(/\b[A-Z]\b/g, function(let) { return let.toLowerCase(); });
+			text = [" [", sc.replace(",", ""), "]"].join("");
+		} else {
+			var key = [keyMap, "INHERIT"].join(".");
+			keyMap = ZmKeys[key];
+		}
+	}
+
+	return text;
+};
+
+/**
+ * Returns an object that looks like a keys properties map, which contains the
+ * properties needed to display the user's aliased shortcuts.
+ */
+ZmAppCtxt.prototype._getCustomKeys =
+function() {
+
+	if (!this._customKeys) {
+		var kmm = this.getAppController().getKeyMapMgr();
+		var setting = this.get(ZmSetting.SHORTCUTS);
+		var shortcuts = kmm ? ZmShortcut.parse(setting, kmm) : null;
+		if (!(shortcuts && shortcuts.length)) { return null; }
+
+		var c = ZmKeyMap.MAP_CUSTOM;
+		var customKeys = {};
+		var key, key1;
+		key = key1 = [c, "description"].join(".");
+		customKeys[key] = ZmKeys[key1];
+		key = key1 = [c, "sort"].join(".");
+		customKeys[key] = ZmKeys[key1];
+		var regex = new RegExp(ZmShortcut.ALIAS, "g");
+
+		for (var i = 0, count = shortcuts.length; i < count; i++) {
+			var sc = shortcuts[i];
+			var org = this.getById(sc.arg);
+			if (!org) {
+				continue;
+			}
+			key = [c, org.id].join(".");
+			customKeys[key] = sc.num;
+			var map = ZmKeyMap.MAP_NAME_R[sc.mapName];
+			key = [map, sc.baseAction, "display"].join(".");
+			var keySeq = ZmKeys[key];
+			keySeq = keySeq.replace(regex, sc.num);
+			key = [c, sc.action, "display"].join(".");
+			customKeys[key] = keySeq;
+			key = [c, sc.action, "description"].join(".");
+			key1 = [map, sc.baseAction, "summary"].join(".");
+			customKeys[key] = AjxMessageFormat.format(ZmKeys[key1], org.getName());
+			key = [c, sc.action, "sort"].join(".");
+			key1 = [map, sc.baseAction, "sort"].join(".");
+			customKeys[key] = Number(sc.num) + Number(ZmKeys[key1]);
+		}
+		
+		this._customKeys = customKeys;
+	}
+
+	return this._customKeys;
 };

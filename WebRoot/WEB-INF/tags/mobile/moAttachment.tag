@@ -13,31 +13,19 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <fmt:setBundle basename="/msgs/ZhMsg" scope='request' />
-
-<tr class="CompOrigAtt" valign="middle">
-    <td>
+<div class="CompOrigAtt table">
+    <div class="table-row">
         <c:set var="pname" value="${displayName}"/>
         <c:if test="${empty displayName}">
             <fmt:message key="unknownContentType" var="displayName">
                 <fmt:param value="${contentType}"/>
             </fmt:message>
         </c:if>
-        <table cellpadding="2" cellspacing="0" border="0">
-            <tr valign="middle">
-                <td align='right'>
-                <%--<c:if test="${firstAttachment}">--%>
-                    <mo:img altkey="ALT_ATTACHMENT" src="startup/ImgAttachment.gif"/>
-                    <%--<c:set var="firstAttachment" value="${true}"/>
-                </c:if>--%>
-                </td>
-                <td>
-                    <input <c:if test="${checked}">checked </c:if>type=checkbox name="${name}" value="${value}">
-                </td>
-                <td>&nbsp;</td>
-                <td>
-                    <a target="_blank" href="${fn:escapeXml(url)}&amp;disp=i">${fn:escapeXml(displayName)}</a>&nbsp;<c:if test="${displaySize}">(${displaySize})</c:if>
-                </td>
-            </tr>
-        </table>
-    </td>
-</tr>
+        <span class="table-cell">
+            <%--<mo:img altkey="ALT_ATTACHMENT" src="startup/ImgAttachment.gif"/>--%>
+            <span class="Attachment">&nbsp;</span>
+            <input <c:if test="${checked}">checked </c:if>type=checkbox name="${name}" value="${value}">
+            <a target="_blank" href="${fn:escapeXml(url)}&amp;disp=i">${fn:escapeXml(displayName)}</a>&nbsp;<c:if test="${displaySize}">(${displaySize})</c:if>
+        </span>
+        </div>
+</div>

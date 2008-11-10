@@ -262,10 +262,17 @@ function() {
 
 ZmComposeController.prototype._postHideCallback =
 function() {
-	ZmController.prototype._postShowCallback.call(this);
-
-	if (appCtxt.numVisibleAccounts > 1) {
+	if (!appCtxt.isChildWindow && appCtxt.numVisibleAccounts > 1) {
 		appCtxt.getApp(ZmApp.MAIL).getOverviewPanelContent().setEnabled(true);
+	}
+
+	// hack to kill the child window when replying to an invite
+	if (appCtxt.isChildWindow &&
+		this._action == ZmOperation.REPLY_ACCEPT ||
+		this._action == ZmOperation.REPLY_DECLINE ||
+		this._action == ZmOperation.REPLY_TENTATIVE)
+	{
+		window.close();
 	}
 };
 
@@ -1366,4 +1373,9 @@ function() {
 		}
 		this._toolbar.enable(ops, false);
 	}
+    var op = this._toolbar.getOp(ZmOperation.COMPOSE_OPTIONS);
+    if(op){
+        op.setVisible(appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED));
+    }
+   
 };

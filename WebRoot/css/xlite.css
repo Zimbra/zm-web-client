@@ -1,0 +1,117 @@
+body {
+    font-family: Myriad, "Lucida Grande", Helvetica, Arial, Verdana, Sans-serif;
+    width: 99%;
+    font-size: small;
+    padding:0px;
+    margin:0px;
+}
+a{
+    color: royalblue;
+}
+.container {
+    margin: 0px;
+    padding: 0px;
+    border: 0px;
+    background: white;
+}
+
+.Toolbar, .SubToolbar, #appbar,#msgbar {
+    background:#EFEFEF;
+    border:1px solid gray;
+    margin:1px;
+    padding:2px;
+    height:22px;
+	text-align:left;
+	vertical-align: middle;
+}
+.Toolbar,.SubToolbar, #appbar{
+    font-size: medium;
+    white-space:nowrap;
+}
+.appTab{
+    vertical-align:middle;
+}
+.appTab-active{
+    text-decoration:none;
+}
+.View{
+    border:1px solid gray;
+    margin:1px;
+    padding:2px;
+}
+.right{
+    float:right;
+}
+.next_button {
+    border-left: 1px solid gray;
+    padding-left:2px;
+}
+.l{
+    float:right;
+    position:relative;
+    left:-5px;
+    top:-48px;
+}
+.list-row,.list-row-unread{
+	border-bottom:1px solid #efefef;
+    padding:2px;
+}
+.list-row-unread{
+	font-weight:bold;
+}
+.f{
+    float:left;
+    clear:left;
+    width:20px;
+}
+.quota_span{
+   font-size:smaller;
+}
+.sub-span, .from-span{
+    width:56%;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+}
+.frag-span,.sub-span,.Email{
+    width:90%;
+	padding-left:18px;
+	overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+
+}
+.table{
+    display: table;
+}
+.table-row{
+    display: table-row;
+}
+.table-cell{
+	vertical-align: middle;
+    display:table-cell;
+}
+.small-gray-text, .quota_span {
+    color: #999999;
+}
+#copyright_notice{
+    text-align:left;
+    font-size:smaller;
+}
+.Textarea#bodyField {
+    width: 98%;
+    height: 150px;
+}
+select{
+	max-width:70px;
+	width:70px;
+	overflow:hidden;
+	text-overflow:ellipsis;
+	white-space:nowrap;
+}
+.zo_button, zo_button_group{
+    margin: 2px;
+}
+.zo_button_disabled{
+	color: gray;
+}
