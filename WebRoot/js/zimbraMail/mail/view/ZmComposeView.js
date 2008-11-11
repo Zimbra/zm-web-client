@@ -389,6 +389,15 @@ function(attId, isDraft) {
 		this._badAddrsOkay = false;
 	}
 
+    //Mandatory Spell Check
+    if(!isDraft && appCtxt.get(ZmSetting.MAIL_MANDATORY_SPELLCHECK) && !this._spellCheckOkay){
+        if(this._htmlEditor.checkMisspelledWords(new AjxCallback(this, this._spellCheckShield))){
+            return;
+        }
+    } else {
+        this._spellCheckOkay = false;
+    }
+
 	// Create Msg Object
 	var msg = new ZmMailMsg();
 	msg.setSubject(subject);
@@ -474,6 +483,22 @@ function(attId, isDraft) {
 		}
 
 		var defangedContent = this._htmlEditor.getContent(true);
+
+        // Bug 27422 - Firefox and Safari implementation of execCommand("bold") etc use styles, and some
+        // email clients (Entourage) don't process the styles and the text remains plain. So we post-process
+        // and convert those to the tags (which are what the IE version of execCommand() does).
+        if (AjxEnv.isFirefox) {
+            defangedContent = defangedContent.replace(/<span style="font-weight: bold;">(.+?)<\/span>/, "<strong>$1</strong>");
+            defangedContent = defangedContent.replace(/<span style="font-style: italic;">(.+?)<\/span>/, "<em>$1</em>");
+            defangedContent = defangedContent.replace(/<span style="text-decoration: underline;">(.+?)<\/span>/, "<u>$1</u>");
+            defangedContent = defangedContent.replace(/<span style="text-decoration: line-through;">(.+?)<\/span>/, "<strike>$1</strike>");
+        } else if (AjxEnv.isSafari) {
+            defangedContent = defangedContent.replace(/<span class="Apple-style-span" style="font-weight: bold;">(.+?)<\/span>/, "<strong>$1</strong>");
+            defangedContent = defangedContent.replace(/<span class="Apple-style-span" style="font-style: italic;">(.+?)<\/span>/, "<em>$1</em>");
+            defangedContent = defangedContent.replace(/<span class="Apple-style-span" style="text-decoration: underline;">(.+?)<\/span>/, "<u>$1</u>");
+            defangedContent = defangedContent.replace(/<span class="Apple-style-span" style="text-decoration: line-through;">(.+?)<\/span>/, "<strike>$1</strike>");
+        }
+
 		htmlPart.setContent(defangedContent);
 
 		if (inline) {
@@ -870,7 +895,7 @@ function(bEnableInputs) {
 	this._origFormValue = "";
 
 	// reset dirty shields
-	this._noSubjectOkay = this._badAddrsOkay = false;
+	this._noSubjectOkay = this._badAddrsOkay = this._spellCheckOkay = false;
 
 	// remove extra mime parts
 	this._extraParts = null;
@@ -975,6 +1000,7 @@ function(content, replaceSignatureId){
     //Caching previous Signature state.
     this._previousSignature = signature;
     this._previousSignatureMode = this._htmlEditor.getMode();
+
 };
 
 ZmComposeView.prototype.getSignatureContent = function(signatureId) {
@@ -1003,7 +1029,6 @@ function(content) {
 	// since HTML composing in new window doesnt guarantee the html editor
 	// widget will be initialized when this code is running.
 	content = content || "";
-	var identity = this.getIdentity();
 	content = this._insertSignature(content, appCtxt.get(ZmSetting.SIGNATURE_STYLE),
                                         this.getSignatureContent(),
                                         this._getSignatureNewLine());
@@ -1305,6 +1330,13 @@ function(action, toOverride) {
 		for (var i = 0, count = aliases.length; i < count; i++) {
 			used[aliases[i].toLowerCase()] = true;
 		}
+
+        //Check for Canonical Address's
+        var defaultIdentity = appCtxt.getIdentityCollection().defaultIdentity;
+        if(defaultIdentity && defaultIdentity.sendFromAddress){
+            //Note: sendFromAddress is same as appCtxt.get(ZmSetting.USERNAME) if the account does not have any Canonical Address assigned.
+            used[defaultIdentity.sendFromAddress.toLowerCase()] = true;
+        }
 
 		// When updating address lists, use this._addressesMsg instead of this._msg, because
 		// this._msg changes after a draft is saved.
@@ -2256,6 +2288,50 @@ function(isDraft, status, attId) {
 		this._controller.popupErrorDialog(msg + ZmMsg.errorTryAgain, null, null, true);
 		this._controller.resetToolbarOperations()
 	}
+};
+
+
+//Mandatory Spellcheck Callback
+ZmComposeView.prototype._spellCheckShield =
+function(words){
+    if (words && words.available) {
+        if(words.misspelled != null && words.misspelled.length != 0){
+            var msgDialog = appCtxt.getYesNoMsgDialog();
+            msgDialog.setMessage(AjxMessageFormat.format(ZmMsg.misspellingsMessage, [words.misspelled.length]));
+            msgDialog.registerCallback(DwtDialog.YES_BUTTON, this._spellCheckShieldOkListener, this, [ msgDialog, words ] );
+            msgDialog.registerCallback(DwtDialog.NO_BUTTON, this._spellCheckShieldCancelListener, this, msgDialog);
+            msgDialog.associateEnterWithButton(DwtDialog.NO_BUTTON);
+            msgDialog.popup(null, DwtDialog.NO_BUTTON);
+        }
+    }else{
+        this._spellCheckOkay = true;
+        this._controller.sendMsg();
+    }
+};
+
+ZmComposeView.prototype._spellCheckShieldOkListener =
+function(msgDialog, words, ev){
+
+    this._controller._toolbar.enableAll(true);
+
+    this._controller.toggleSpellCheckButton(true);
+    this._htmlEditor.discardMisspelledWords();
+
+    this._spellCheckOkay = false;
+    msgDialog.popdown();
+
+    this._htmlEditor.onExitSpellChecker = new AjxCallback(this._controller, this._controller.toggleSpellCheckButton, true)
+    this._htmlEditor._spellCheckCallback(words);
+};
+
+ZmComposeView.prototype._spellCheckShieldCancelListener =
+function(msgDialog, ev){
+
+    this._spellCheckOkay = true;
+    msgDialog.popdown();
+
+    this._controller.sendMsg();
+
 };
 
 ZmComposeView.prototype._setFormValue =

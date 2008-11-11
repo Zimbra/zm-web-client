@@ -9,9 +9,9 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="mo" uri="com.zimbra.mobileclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
-<c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'/m/mosearch'}"/>
+<c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/>
 <c:set var="types" value="${not empty types ? types : not empty param.st ? param.st : ''}"/>
-<tr onclick='zClickLink("TAG${tag.id}")'>
+<div onclick='zClickLink("TAG${tag.id}")' class='Folders list-row${tag.hasUnread ? '-unread' : ''}'>
     <c:choose>
         <c:when test="${calendars}">
             <mo:calendarUrl var="url" sq='tag:"${tag.name}"'/>
@@ -23,12 +23,13 @@
             </c:url>
         </c:otherwise>
     </c:choose>
-    <td class='Folders${tag.hasUnread ? ' zo_unread' : ''} zo_m_list_row' style='height:28px;padding: 5px;'>
+    <span>
         <a id="TAG${tag.id}" href="${fn:escapeXml(url)}">
-            <mo:img src="${tag.image}" alt='${fn:escapeXml(tag.name)}'/>
+            <%--<mo:img src="${tag.image}" alt='${fn:escapeXml(tag.name)}'/>--%>
+            <span class="SmlIcnHldr Tag${tag.color}">&nbsp;</span>
             ${fn:escapeXml(tag.name)}
             <c:if test="${tag.hasUnread}"> (${tag.unreadCount}) </c:if>
         </a>
-    </td>
-</tr>
+    </span>
+</div>
  
