@@ -227,8 +227,7 @@ function(params) {
 					}
 					// if we're prefetching the first hit message, also mark it as read
 					if (this.fetch) {
-
-						method.setAttribute("fetch", ( this.fetch == "all" ) ? "all" : "1");
+						method.setAttribute("fetch", "1");
 						// and set the html flag if we want the html version
 						if (this.getHtml) {
 							method.setAttribute("html", "1");
@@ -339,7 +338,7 @@ function(params) {
 					}
 					// if we're prefetching the first hit message, also mark it as read
 					if (this.fetch) {
-                        request.fetch = ( this.fetch == "all" ) ? "all" : 1;
+						request.fetch = 1;
 						// and set the html flag if we want the html version
 						if (this.getHtml) {
 							request.html = 1;
