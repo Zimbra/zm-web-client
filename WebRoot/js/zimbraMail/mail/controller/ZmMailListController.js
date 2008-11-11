@@ -1092,10 +1092,14 @@ function() {
 			}
 		}
 
-		var normalizedFolderId = ZmOrganizer.normalizeId(folderId);
-		if ((normalizedFolderId == ZmFolder.ID_INBOX) || !hasExternalAccounts) {
-			// call explicitly from mail app (this may be mixed ctlr) - bug 23268
-			appCtxt.getApp(ZmApp.MAIL)._mailSearch();
+		// bug fix #32316 - no need call mail search in offline since we rely on
+		// notifications from hanging noop's
+		if (!appCtxt.isOffline) {
+			var normalizedFolderId = ZmOrganizer.normalizeId(folderId);
+			if ((normalizedFolderId == ZmFolder.ID_INBOX) || !hasExternalAccounts) {
+				// call explicitly from mail app (this may be mixed ctlr) - bug 23268
+				appCtxt.getApp(ZmApp.MAIL)._mailSearch();
+			}
 		}
 	}
 };
