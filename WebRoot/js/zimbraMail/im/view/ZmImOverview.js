@@ -169,7 +169,7 @@ function(data) {
 		dialog.setMessage(message, DwtMessageDialog.CRITICAL_STYLE);
 		dialog.popup();
 	} else {
-		this._showInfoItem(ZmImOverview.NO_MESSAGE);
+		this._updateSpecialItems(ZmImOverview.NO_MESSAGE);
 		this.getGroupItem(data.value).setExpanded(true);
 		data.dialog.popdown();
 	}
@@ -436,13 +436,11 @@ ZmImOverview.prototype._init = function() {
 		buddyList = roster.getRosterItemList();
 	}
 	if (loggedIn && buddyList.size()) {
-		this._createFilterItem();
+		this._updateSpecialItems(ZmImOverview.NO_MESSAGE);
 		buddyList.getVector().foreach(this._createBuddy, this);
 		this.sort();
 	} else {
-		this._infoItem = new ZmInfoTreeItem({parent:this._rootItem});
-		this._infoItem.setData("ZmImOverview.data", { type: "infoItem" });
-		this._showInfoItem(loggedIn ? ZmImOverview.NO_BUDDIES : ZmImOverview.NOT_LOGGED_IN);
+		this._updateSpecialItems(loggedIn ? ZmImOverview.NO_BUDDIES : ZmImOverview.NOT_LOGGED_IN);
 	}
 	tree.addSeparator();
 
@@ -497,37 +495,57 @@ ZmImOverview.newBuddy = function() {
 	ZmImApp.INSTANCE.getImController()._newRosterItemListener();
 };
 
-ZmImOverview.prototype._createFilterItem =
-function(expand) {
-	if (ZmImOverview.FILTER_SEARCH && !this._filterItem) {
-		// enable the search filter
-		this._filterItem = new ZmBuddyFilterItem({parent:this._rootItem, overview: this});
-		this._filterItem.setData("ZmImOverview.data", { type: "filter" });
-		if (expand) {
-			this._rootItem.setExpanded(true);
-		}
-	}
-};
-
-ZmImOverview.prototype._showInfoItem =
+/**
+ * Updates the display of the info item & filter item.
+ * @param	type						enum:
+ * 			ZmImOverview.NO_MESSAGE     Logged in with buddies. Show filter instead of buddy item.
+ * 			ZmImOverview.NOT_LOGGED_IN  Show message that user is not logged in.
+ * 			ZmImOverview.LOADING     	Show message that buddy list is loading.
+ * 			ZmImOverview.NO_BUDDIES     Show message that buddy list is empty. 
+ */
+ZmImOverview.prototype._updateSpecialItems =
 function(type) {
-	if (this._infoItem) {
-		switch(type) {
-		case ZmImOverview.NO_MESSAGE:
-			// Once we have buddies we can just delete the info item.
+	if (this._loadingAction) {
+		AjxTimedAction.cancelAction(this._loadingAction);
+		this._loadingAction = null;
+	}
+	var expand = this._rootItem.getExpanded();
+	if (type == ZmImOverview.NO_MESSAGE) {
+		if (this._infoItem) {
 			this._infoItem.dispose();
 			this._infoItem = null;
-			break;
-		case ZmImOverview.NOT_LOGGED_IN:
-			this._infoItem.setText(AjxMessageFormat.format(ZmMsg.imNotLoggedIn, "ZmImOverview.login()"));
-			break;
-		case ZmImOverview.LOADING:
-			this._infoItem.setText(ZmMsg.loading);
-			break;
-		case ZmImOverview.NO_BUDDIES:
-			this._infoItem.setText(AjxMessageFormat.format(ZmMsg.imNoBuddies, "ZmImOverview.newBuddy()"));
-			break;
 		}
+		if (ZmImOverview.FILTER_SEARCH && !this._filterItem) {
+			// enable the search filter
+			this._filterItem = new ZmBuddyFilterItem({parent:this._rootItem, overview: this});
+			this._filterItem.setData("ZmImOverview.data", { type: "filter" });
+		}
+	} else {
+		if (!this._infoItem) {
+			this._rootItem.removeChildren();
+			this._filterItem = null;
+			this._groupItems = {};
+			this._infoItem = new ZmInfoTreeItem({parent:this._rootItem});
+			this._infoItem.setData("ZmImOverview.data", { type: "infoItem" });
+		}
+		var message;
+		switch (type) {
+			case ZmImOverview.NOT_LOGGED_IN:
+				message = AjxMessageFormat.format(ZmMsg.imNotLoggedIn, "ZmImOverview.login()");
+				break;
+			case ZmImOverview.LOADING:
+				message = ZmMsg.loading;
+				this._loadingAction = new AjxTimedAction(this, this._loadingTimedOut);
+				AjxTimedAction.scheduleAction(this._loadingAction, 5000);
+				break;
+			case ZmImOverview.NO_BUDDIES:
+				message = AjxMessageFormat.format(ZmMsg.imNoBuddies, "ZmImOverview.newBuddy()");
+				break;
+		}
+		this._infoItem.setText(message);
+	}
+	if (expand) {
+		this._rootItem.setExpanded(true);
 	}
 };
 
@@ -540,11 +558,7 @@ function(modelObject, listener) {
 ZmImOverview.prototype._rosterListener =
 function(ev) {
 	if (ev.event == ZmEvent.E_LOAD) {
-		if (this._infoItem) {
-			this._showInfoItem(ZmImOverview.LOADING);
-			this._loadingAction = new AjxTimedAction(this, this._loadingTimedOut);
-			AjxTimedAction.scheduleAction(this._loadingAction, 5000);
-		}
+		this._updateSpecialItems(ev.getDetails().loggedIn ? ZmImOverview.LOADING : ZmImOverview.NOT_LOGGED_IN);
 	}
 };
 
@@ -554,9 +568,7 @@ function(ev) {
 	var fields = ev.getDetail("fields");
 	if (ev.event == ZmEvent.E_CREATE) {
 		if (this._infoItem) {
-			var expand = this._rootItem.getExpanded();
-			this._showInfoItem(ZmImOverview.NO_MESSAGE);
-			this._createFilterItem(expand);
+			this._updateSpecialItems(ZmImOverview.NO_MESSAGE);
 		}
 		if (this._loadingAction) {
 			AjxTimedAction.cancelAction(this._loadingAction);
@@ -578,7 +590,7 @@ function(ev) {
 ZmImOverview.prototype._loadingTimedOut = function() {
 	delete this._loadingAction;
 	if (this._infoItem) {
-		this._showInfoItem(ZmImOverview.NO_BUDDIES);
+		this._updateSpecialItems(ZmImOverview.NO_BUDDIES);
 	}
 };
 
