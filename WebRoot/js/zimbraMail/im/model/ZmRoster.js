@@ -379,22 +379,20 @@ function(rosterItem, jsonObj, doNotifications) {
 // reading his mail or whatever while logging into im.
 ZmRoster.prototype.onServiceLoggedIn =
 function(params) {
+	this._notify(ZmEvent.E_LOAD, { loggedIn: true });
+	var serviceCallback = new AjxCallback(this, this._loggedInGatewayCallback, [params]);
 	var args = {
 		asyncMode: true,
 		noBusyOverlay: true
 	};
-
-	// TODO: Ewwww...
-	ZmImApp.INSTANCE._setRoster(this);
-
-	var serviceCallback = new AjxCallback(this, this._loggedInGatewayCallback, [params]);
 	ZmImService.INSTANCE.getGateways(serviceCallback, args)
 };
 
 ZmRoster.prototype._loggedInGatewayCallback =
 function(params, gateways) {
 	this._handleRequestGateways(null, gateways);
-    ZmImService.INSTANCE.initializePresence(params ? params.presence : null)
+    ZmImService.INSTANCE.initializePresence(params ? params.presence : null);
+	this.reload();
     if (params && params.callback) {
         params.callback.run(this);
 	}
@@ -406,6 +404,8 @@ function() {
 		this.notifyPresence();
 	}
 	this.getRosterItemList().removeAllItems();
+
+	this._notify(ZmEvent.E_LOAD, { loggedIn: false });
 };
 
 //------------------------------------------

@@ -528,70 +528,9 @@ function() {
 	return this._roster;
 };
 
-/**
-* Lazily adds a change listener to the gateway list. Allows ui elements
-* to create their listeners without loading the im package or logging
-* in to im.
-*/
-ZmImApp.prototype.addGatewayListListener =
-function(listener) {
-	if (this._roster) {
-		this._roster.addGatewayListListener(listener);
-	} else {
-		this._gatewayListListeners = this._gatewayListListeners || new AjxVector();
-		this._gatewayListListeners.add(listener);
-	}
-};
-
-/**
-* Lazily adds a change listener to the roster item list. Allows ui elements
-* to create their listeners without loading the im package.
-*/
-ZmImApp.prototype.addRosterItemListListener =
-function(listener) {
-	if (ZmImApp.loggedIn()) {
-		this._roster.getRosterItemList().addChangeListener(listener);
-	} else {
-		this._rosterItemListListeners = this._rosterItemListListeners || new AjxVector();
-		this._rosterItemListListeners.add(listener);
-	}
-};
-
-ZmImApp.prototype.removeRosterItemListListener =
-function(listener) {
-	if (this._rosterItemListListeners) {
-		this._rosterItemListListeners.remove(listener);
-	}
-	if (this._roster) {
-		this._roster.getRosterItemList().removeChangeListener(listener);
-	}
-};
-
 ZmImApp.prototype.hasRoster =
 function(){
         return !!this._roster;  
-};
-
-ZmImApp.prototype._setRoster =
-function(roster) {
-//TODO: eliminate this and all the methods it calls and the listener utils.	
-
-//	this._roster = roster;
-	if (this._rosterItemListListeners) {
-		var event = new ZmEvent(ZmItem.ROSTER_ITEM);
-		event.event = ZmEvent.E_LOAD;
-		var rosterItemList = roster.getRosterItemList();
-		for (var i = 0, count = this._rosterItemListListeners.size(); i < count; i++) {
-			var listener = this._rosterItemListListeners.get(i);
-			listener.handleEvent(event);
-			rosterItemList.addChangeListener(listener);
-		}
-	}
-	if (this._gatewayListListeners) {
-		for (var i = 0, count = this._gatewayListListeners.size(); i < count; i++) {
-			roster.addGatewayListListener(this._gatewayListListeners.get(i));
-		}
-	}
 };
 
 ZmImApp.prototype.getAutoCompleteGroups =

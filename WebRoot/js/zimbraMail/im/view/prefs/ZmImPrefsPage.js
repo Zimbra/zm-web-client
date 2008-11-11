@@ -144,7 +144,7 @@ function() {
 
 ZmImPrefsPage.prototype._createControls =
 function() {
-	ZmImApp.INSTANCE.addGatewayListListener(new AjxListener(this, this._gatewayListListener));
+	ZmImApp.INSTANCE.getRoster().addGatewayListListener(new AjxListener(this, this._gatewayListListener));
 	ZmPreferencesPage.prototype._createControls.apply(this, arguments);
 	this._notLoggedInEl = document.getElementById(this._htmlElId + "_imAccountsNotLoggedIn");
 	this._accountsEl = document.getElementById(this._htmlElId + "_imAccounts");
