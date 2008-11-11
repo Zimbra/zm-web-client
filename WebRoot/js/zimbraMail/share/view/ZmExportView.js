@@ -104,7 +104,8 @@ ZmExportView.prototype.getFormValue = function(id, defaultValue) {
 
 ZmExportView.prototype.isRelevant = function(id) {
 	if (id == "IGNORE_ARCHIVE") {
-		return appCtxt.get(ZmSetting.OFFLINE_ENABLED) && appCtxt.getById(ZmOrganizer.ID_ARCHIVE) != null;
+		return appCtxt.get(ZmSetting.OFFLINE_ENABLED) &&
+		       appCtxt.getById([appCtxt.get(ZmSetting.USERID),ZmOrganizer.ID_ARCHIVE].join(":")) != null;
 	}
 	return ZmImportExportBaseView.prototype.isRelevant.apply(this, arguments);
 };
