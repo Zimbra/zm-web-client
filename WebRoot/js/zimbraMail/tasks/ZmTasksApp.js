@@ -52,7 +52,7 @@ function() {
 ZmTasksApp.prototype._registerOperations =
 function() {
 	ZmOperation.registerOp(ZmId.OP_MOUNT_TASK_FOLDER, {textKey:"mountTaskFolder", image:"TaskList"});
-	ZmOperation.registerOp(ZmId.OP_NEW_TASK, {textKey:"newTask", tooltipKey:"newTaskTooltip", image:"NewTask", shortcut:ZmKeyMap.NEW_TASK});
+	ZmOperation.registerOp(ZmId.OP_NEW_TASK, {textKey:"newTask", tooltipKey:"newTaskTooltip", image:"NewTask"});
 	ZmOperation.registerOp(ZmId.OP_NEW_TASK_FOLDER, {textKey:"newTaskFolder", tooltipKey:"newTaskFolderTooltip", image:"NewTaskList"});
 	ZmOperation.registerOp(ZmId.OP_SHARE_TASKFOLDER, {textKey:"shareTaskFolder", image:"TaskList"});
 };
@@ -98,8 +98,6 @@ function() {
 							 createFunc:		"ZmOrganizer.create",
 							 compareFunc:		"ZmTaskFolder.sortCompare",
 							 deferrable:		true,
-							 newOp:				ZmOperation.NEW_TASK_FOLDER,
-							 displayOrder:		100,
 							 pathInName:		true
 							});
 };
@@ -116,13 +114,18 @@ function() {
 								});
 };
 
+ZmTasksApp.prototype._setupCurrentAppToolbar =
+function() {
+	ZmCurrentAppToolBar.registerApp(this.getName(), ZmOperation.NEW_TASK_FOLDER, ZmOrganizer.TASKS);
+};
+
 ZmTasksApp.prototype._registerApp =
 function() {
 	var newItemOps = {};
 	newItemOps[ZmOperation.NEW_TASK] = "task";
 
 	var newOrgOps = {};
-	newOrgOps[ZmOperation.NEW_TASK_FOLDER] = "tasksFolder";
+	newOrgOps[ZmOperation.NEW_TASK_FOLDER] = "taskFolder";
 
 	var actionCodes = {};
 	actionCodes[ZmKeyMap.NEW_TASK] = ZmOperation.NEW_TASK;
@@ -308,7 +311,7 @@ ZmTasksApp.prototype.search =
 function(folder, startDate, endDate, callback) {
 	var query = folder ? folder.createQuery() : "in:tasks";
 	var sc = appCtxt.getSearchController();
-	sc.search({query:query, types:[ZmItem.TASK], searchFor:ZmItem.TASK, callback:callback});
+	sc.search({query:query, types:[ZmItem.TASK], callback:callback});
 };
 
 
