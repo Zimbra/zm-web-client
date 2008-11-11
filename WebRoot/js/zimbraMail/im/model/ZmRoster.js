@@ -51,31 +51,6 @@ function() {
 	return "ZmRoster";
 };
 
-// Creates a roster asyncronously without a busy overlay so that the user can get on with
-// reading his mail or whatever while logging into im.
-ZmRoster.prototype.setIsLoggedIn =
-function(params) {
-	var args = {
-		asyncMode: true,
-		noBusyOverlay: true
-	};
-
-	// TODO: Ewwww...
-	ZmImApp.INSTANCE._setRoster(this);
-
-	var serviceCallback = new AjxCallback(this, this._loggedInGatewayCallback, [params]);
-	ZmImService.INSTANCE.getGateways(serviceCallback, args)
-};
-
-ZmRoster.prototype._loggedInGatewayCallback =
-function(params, gateways) {
-	this._handleRequestGateways(null, gateways);
-    ZmImService.INSTANCE.initializePresence(params ? params.presence : null)
-    if (params && params.callback) {
-        params.callback.run(this);
-	}
-};
-
 ZmRoster.prototype.getPrivacyList = function() {
         return this._privacyList;
 };
@@ -348,7 +323,7 @@ ZmRoster.prototype.setIdle = function(idle) {
 	ZmImService.INSTANCE.setIdle(idle, this._idleTimer.timeout);
 };
 
-ZmRoster.prototype.addChatMessage =
+ZmRoster.prototype.onServiceAddChatMessage =
 function(chatMessage) {
 	appCtxt.getApp(ZmApp.IM).prepareVisuals();
 
@@ -380,7 +355,7 @@ function(chatMessage) {
 	}
 };
 
-ZmRoster.prototype.setRosterItemPresence =
+ZmRoster.prototype.onServiceSetBuddyPresence =
 function(rosterItem, jsonObj, doNotifications) {
 	var old_pres = rosterItem.getPresence().getShow();
 	if (rosterItem.getPresence().setFromJS(jsonObj)) {
@@ -400,7 +375,32 @@ function(rosterItem, jsonObj, doNotifications) {
 	}
 };
 
-ZmRoster.prototype.setIsOffline =
+// Creates a roster asyncronously without a busy overlay so that the user can get on with
+// reading his mail or whatever while logging into im.
+ZmRoster.prototype.onServiceLoggedIn =
+function(params) {
+	var args = {
+		asyncMode: true,
+		noBusyOverlay: true
+	};
+
+	// TODO: Ewwww...
+	ZmImApp.INSTANCE._setRoster(this);
+
+	var serviceCallback = new AjxCallback(this, this._loggedInGatewayCallback, [params]);
+	ZmImService.INSTANCE.getGateways(serviceCallback, args)
+};
+
+ZmRoster.prototype._loggedInGatewayCallback =
+function(params, gateways) {
+	this._handleRequestGateways(null, gateways);
+    ZmImService.INSTANCE.initializePresence(params ? params.presence : null)
+    if (params && params.callback) {
+        params.callback.run(this);
+	}
+};
+
+ZmRoster.prototype.onServiceLoggedOut =
 function() {
 	if (this.getPresence().setFromJS({ show: ZmRosterPresence.SHOW_OFFLINE })) {
 		this.notifyPresence();

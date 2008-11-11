@@ -51,7 +51,7 @@ function() {
 ZmZimbraImService.prototype.login =
 function(params) {
 	this._loggedIn = true;
-	this._roster.setIsLoggedIn(params);
+	this._roster.onServiceLoggedIn(params);
 
 	// Turn on instant notifications after a short delay, to prevent
 	// a flurry of no-op requests on startup.
@@ -360,7 +360,7 @@ function(im) {
 				}
 				var ri = this._roster.getRosterItemList().getByAddr(p.from);
 				if (ri) {
-					this._roster.setRosterItemPresence(ri, p, notifications);
+					this._roster.onServiceSetBuddyPresence(ri, p, notifications);
 				}
 			} else if (not.type == "message") {
 				appCtxt.getApp(ZmApp.IM).prepareVisuals();
@@ -372,7 +372,7 @@ function(im) {
 						buddy._notifyTyping(msg.typing);
 				} else {
 					var chatMessage = new ZmChatMessage(msg, msg.from == this.getMyAddress());
-					this._roster.addChatMessage(chatMessage);
+					this._roster.onServiceAddChatMessage(chatMessage);
 				}
 			} else if (not.type == "enteredchat") {
 				// console.log("JOIN: %o", not);

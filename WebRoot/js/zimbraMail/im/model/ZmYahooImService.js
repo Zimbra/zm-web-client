@@ -284,7 +284,7 @@ function(params) {
 //	params = { firstname, lastname, user_id }
 	this._loggedIn = true;
 	this._userId = params.user_id;
-	this._roster.setIsLoggedIn(this._loginCallback);
+	this._roster.onServiceLoggedIn(this._loginCallback);
 	this._loginCallback = null;
 };
 
@@ -320,7 +320,7 @@ function(params) {
 		body	: [{ _content: params.msg, html: true }]
 	};
 	var chatMessage = new ZmChatMessage(jsonObj, false);
-	this._roster.addChatMessage(chatMessage);
+	this._roster.onServiceAddChatMessage(chatMessage);
 };
 
 ZmYahooImService.prototype._onBuddyInfo =
@@ -373,7 +373,7 @@ function(params) {
 	var ri = this._roster.getRosterItemList().getByAddr(params.buddy);
 	if (ri) {
 		var show = this._yConstToShow(params.away_status, params.custom_dnd_status);
-		this._roster.setRosterItemPresence(ri, { show: show, status: params.away_msg }, true);
+		this._roster.onServiceSetBuddyPresence(ri, { show: show, status: params.away_msg }, true);
 	}
 };
 
@@ -387,14 +387,14 @@ function(params) {
 //utf8_flag: "1"
 	var ri = this._roster.getRosterItemList().getByAddr(params.buddy);
 	if (ri) {
-		this._roster.setRosterItemPresence(ri, { show: ZmRosterPresence.SHOW_OFFLINE }, true);
+		this._roster.onServiceSetBuddyPresence(ri, { show: ZmRosterPresence.SHOW_OFFLINE }, true);
 	}
 };
 
 ZmYahooImService.prototype._setLoggedOff =
 function() {
 	this._loggedIn = false;
-	this._roster.setIsOffline();
+	this._roster.onServiceLoggedOut();
 };
 
 /**
