@@ -191,7 +191,7 @@ function() {
 
 ZmObjectManager.prototype.setView =
 function(view) {
-	if (view != null) {
+	if (view != null && appCtxt.getZimletMgr().isLoaded()) {
 	    view.addListener(DwtEvent.ONMOUSEOVER, new AjxListener(this, this._mouseOverListener));
 	    view.addListener(DwtEvent.ONMOUSEOUT, new AjxListener(this, this._mouseOutListener));
 	    view.addListener(DwtEvent.ONMOUSEDOWN, new AjxListener(this, this._mouseDownListener));
