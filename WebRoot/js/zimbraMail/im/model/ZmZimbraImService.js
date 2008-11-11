@@ -52,6 +52,10 @@ ZmZimbraImService.prototype.login =
 function(params) {
 	this._loggedIn = true;
 	this._roster.setIsLoggedIn(params);
+
+	// Turn on instant notifications after a short delay, to prevent
+	// a flurry of no-op requests on startup.
+	this._delayedInstantNotify();
 };
 
 ZmZimbraImService.prototype.getMyAddress =
@@ -251,6 +255,7 @@ function(chat, text, html, typing, params) {
             soapDoc.set("html", html, bodyNode);
         }
     }
+	this._delayedInstantNotify();
 	return this._send(params, soapDoc);
 };
 
@@ -423,6 +428,18 @@ function(im) {
 				this._roster.getPrivacyList().reset(not.list[0].item);
 			}
 		}
+	}
+};
+
+ZmZimbraImService.prototype._delayedInstantNotify =
+function() {
+	if (appCtxt.get(ZmSetting.INSTANT_NOTIFY) &&
+		appCtxt.get(ZmSetting.IM_PREF_INSTANT_NOTIFY) &&
+		!appCtxt.getAppController().getInstantNotify())
+	{
+		var zimbraMail = appCtxt.getAppController();
+		var action = new AjxTimedAction(zimbraMail, zimbraMail.setInstantNotify, [true]);
+		AjxTimedAction.scheduleAction(action, 4000);
 	}
 };
 

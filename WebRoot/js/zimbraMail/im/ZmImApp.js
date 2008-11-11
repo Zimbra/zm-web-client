@@ -592,20 +592,6 @@ function(roster) {
 			roster.addGatewayListListener(this._gatewayListListeners.get(i));
 		}
 	}
-
-	// Turn on instant notifications after a short delay, to prevent
-	// a flurry of no-op requests on startup.
-	if (appCtxt.get(ZmSetting.INSTANT_NOTIFY) && appCtxt.get(ZmSetting.IM_PREF_INSTANT_NOTIFY)) {
-		var action = new AjxTimedAction(this, this.requestInstantNotify);
-		AjxTimedAction.scheduleAction(action, 4000);
-	}
-};
-
-ZmImApp.prototype.requestInstantNotify =
-function(roster) {
-	if (appCtxt.get(ZmSetting.INSTANT_NOTIFY) && appCtxt.get(ZmSetting.IM_PREF_INSTANT_NOTIFY)) {
-		appCtxt.getAppController().setInstantNotify(true);
-	}
 };
 
 ZmImApp.prototype.getAutoCompleteGroups =

@@ -236,7 +236,6 @@ ZmChat.prototype._sendMessageCallback = function(result) {
 	try {
 		var response = result.getResponse();
 		this.setThread(response.IMSendMessageResponse.thread);
-		ZmImApp.INSTANCE.requestInstantNotify();
 	} catch (ex) {
 		// TODO: better handling
 		appCtxt.setStatusMsg(ex, ZmStatusView.LEVEL_CRITICAL);
