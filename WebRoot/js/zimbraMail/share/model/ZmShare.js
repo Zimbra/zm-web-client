@@ -373,7 +373,7 @@ function(name, color, replyType, notes, callback, owner) {
 		l: ZmOrganizer.ID_ROOT,
 		name: name,
 		zid: this.grantor.id,
-		rid: this.link.id,
+		rid: ZmOrganizer.normalizeId(this.link.id),
 		color: color,
 		view: this.link.view
 	};
