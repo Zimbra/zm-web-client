@@ -436,7 +436,7 @@ ZmImportExportBaseView.prototype._getSubTypeOptions = function(type) {
 		var options = setup.options;
 		for (var i = 0; i < options.length; i++) {
 			ZmImportExportBaseView.prototype.CSV_OPTIONS.push(
-				{ displayValue: ZmMsg[options[i]] || options[i], value: setup.displayOptions[i] }
+				{ displayValue: ZmMsg[options[i]] || options[i], value: setup.options[i] }
 			);
 		}
 		ZmImportExportBaseView.prototype.ICS_OPTIONS = [
