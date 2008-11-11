@@ -1385,7 +1385,7 @@ function() {
 			helpIcon: (appCtxt.get(ZmSetting.SKIN_HINTS, "helpButton.hideIcon") ? null : "Help"),
 			logoutIcon: (appCtxt.get(ZmSetting.SKIN_HINTS, "logoutButton.hideIcon") ? null : "Logoff"),
 			logoutText: (appCtxt.isOffline ? ZmMsg.setup : ZmMsg.logOff)
-		}
+		};
 		el.innerHTML = AjxTemplate.expand("share.App#UserInfo", data);
 	}
 };
@@ -1427,7 +1427,7 @@ function() {
 			: AjxMessageFormat.format(ZmMsg.quotaDescUnlimited, [data.size]);
 		quotaTemplateId = 'UsedUnlimited';
 	}
-	this._usedQuotaField.getHtmlElement().innerHTML = AjxTemplate.expand('share.Quota#'+quotaTemplateId, data)
+	this._usedQuotaField.getHtmlElement().innerHTML = AjxTemplate.expand('share.Quota#'+quotaTemplateId, data);
 
 	// tooltip for username/quota fields
 	var html = AjxTemplate.expand('share.Quota#Tooltip', data);
@@ -1959,7 +1959,7 @@ function(appName) {
 ZmZimbraMail._createDummyDBG =
 function() {
 	window.AjxDebug = function() {};
-	window.AjxDebug.prototype.toString		= function() { return "dummy DBG class"};
+	window.AjxDebug.prototype.toString		= function() { return "dummy DBG class";};
 	window.AjxDebug.prototype.display		= function() {};
 	window.AjxDebug.prototype.dumpObj		= function() {};
 	window.AjxDebug.prototype.getDebugLevel	= function() {};
