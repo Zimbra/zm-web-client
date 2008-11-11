@@ -272,6 +272,10 @@ function(ev, params) {
 		this._onUserLogoffOk(params);
 		break;
 	}
+	case YMSGR.CONST.YES_CONNECTION_FAILED: {
+		this._onConnectionFailed(params);
+		break;
+	}
 	}
 };
 
@@ -387,14 +391,27 @@ function(params) {
 	}
 };
 
-/**
- * This user has logged out.
- * @param params
- */
-ZmYahooImService.prototype._onUserLogoffOk =
+ZmYahooImService.prototype._setLoggedOff =
 function() {
 	this._loggedIn = false;
 	this._roster.setIsOffline();
+};
+
+/**
+ * This user has logged out.
+ */
+ZmYahooImService.prototype._onUserLogoffOk =
+function() {
+	this._setLoggedOff();
+};
+
+/**
+ * This user has been disconnected.
+ * Sometimes we get this event instead of _onUserLogoffOk.
+ */
+ZmYahooImService.prototype._onConnectionFailed =
+function() {
+	this._setLoggedOff();
 };
 
 ZmYahooImService.prototype._onBuddyList =
