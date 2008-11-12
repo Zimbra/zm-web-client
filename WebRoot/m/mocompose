@@ -161,7 +161,7 @@
             <span class="table-cell">
                     <c:if test="${firstAttachment}">
                         <%--<mo:img altkey="ALT_ATTACHMENT" src="startup/ImgAttachment.gif"/>--%>
-                        <span class="Attachment">&nbsp;</span>
+                        <span class="SmlIcnHldr Attachment">&nbsp;</span>
                         <c:set var="firstAttachment" value="${false}"/>
                     </c:if>
                     <c:choose>

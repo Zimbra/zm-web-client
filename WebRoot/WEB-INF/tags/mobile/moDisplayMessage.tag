@@ -94,18 +94,18 @@
             <span class="SmlIcnHldr Reply">&nbsp;</span>
             <a
                     <c:if test="${not isPart}">id="OPREPLY"</c:if>
-                    href="${fn:escapeXml(composeUrl)}&amp;op=reply" class="Action reply">
+                    href="?st=newmail&id=${message.id}&amp;op=reply" class="Action reply">
                 <fmt:message key="reply"/>
             </a>
             <span class="SmlIcnHldr ReplyAll">&nbsp;</span>
             <a
                     <c:if test="${not isPart}">id="OPREPLYALL"</c:if>
-                    href="${fn:escapeXml(composeUrl)}&amp;op=replyAll" class="Action replyAll">
+                    href="?st=newmail&id=${message.id}&amp;op=replyAll" class="Action replyAll">
                 <fmt:message key="replyAll"/>
             </a>
             <span class="SmlIcnHldr Forward">&nbsp;</span>
             <a <c:if test="${not isPart}">id="OPFORW"</c:if>
-                href="${fn:escapeXml(composeUrl)}&amp;op=forward" class="Action forward">
+                href="?st=newmail&id=${message.id}&amp;op=forward" class="Action forward">
             <fmt:message key="forward"/></a>
         </div>
     </div>
@@ -138,19 +138,19 @@
                     <span class="SmlIcnHldr Check">&nbsp;</span>
                     <a
                             <c:if test="${not isPart}">id="OPACCEPT"</c:if>
-                            href="${fn:escapeXml(composeUrl)}&amp;op=accept" class="Action accept">
+                            href="?st=newmail&id=${message.id}&amp;op=accept" class="Action accept">
                         <fmt:message key="replyAccept"/>
                     </a> &nbsp;
                     <span class="SmlIcnHldr Question">&nbsp;</span>
                     <a
                             <c:if test="${not isPart}">id="OPTENT"</c:if>
-                            href="${fn:escapeXml(composeUrl)}&amp;op=tentative" class="Action tentative">
+                            href="?st=newmail&id=${message.id}&amp;op=tentative" class="Action tentative">
                         <fmt:message key="replyTentative"/>
                     </a>
                     <span class="SmlIcnHldr Cancel">&nbsp;</span>
                     <a
                             <c:if test="${not isPart}">id="OPDECLINE"</c:if>
-                            href="${fn:escapeXml(composeUrl)}&amp;op=decline" class="Action decline">
+                            href="?st=newmail&id=${message.id}&amp;op=decline" class="Action decline">
                         <fmt:message key="replyDecline"/>
                     </a>
                 </div>

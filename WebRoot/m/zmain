@@ -42,6 +42,17 @@
         }
     </script>
 </head>
+<%-- Access keys --%>
+<c:set var="mailapp_accesskey" value="1" scope="request"/>
+<c:set var="contactapp_accesskey" value="2" scope="request"/>
+<c:set var="calapp_accesskey" value="3" scope="request"/>
+<c:set var="fldrapp_accesskey" value="4" scope="request"/>
+<c:set var="search_accesskey" value="5" scope="request"/>
+<c:set var="navlink_accesskey" value="6" scope="request"/>
+<c:set var="prev_accesskey" value="7" scope="request"/>
+<c:set var="next_accesskey" value="8" scope="request"/>
+<c:set var="mainaction_accesskey" value="0" scope="request"/> <%-- compose/add edit contact/ add edit appt --%>
+
 <body onorientationchange="updateOrientation()">
 <c:if test="${sessionScope.limit == null}"> <c:set var="limit"
                                                    value="${sessionScope.zms eq 'xlite' ? '5' : '10'}"
@@ -52,18 +63,25 @@
     <div class="table-row">
         <%-- <div class="table-cell">--%> <c:set var="active"
                                                  value="${empty param.st || param.st eq 'message' || param.st eq 'conversation' ? '-active' : ''}"/>
-        <a id="mail${active}" class="appTab${active} table-cell" href="${aurl}"><span><fmt:message
+        <a accesskey="${requestScope.mailapp_accesskey}" id="mail${active}" class="appTab${active} table-cell" href="${aurl}"><span><fmt:message
                 key="mail"/></span><span style="display:none;" class="apunread">${mailbox.inbox.unreadCount}</span> </a> <c:if test="${mailbox.features.contacts}"> <c:set var="active"
                                                                                           value="${param.st eq 'contact' || param.st eq 'ab' ? '-active' : ''}"/>
-        <a id="contact${active}" class="appTab${active} table-cell" href="${aurl}?st=contact"><span><fmt:message
+        <a accesskey="${requestScope.contactapp_accesskey}" id="contact${active}" class="appTab${active} table-cell" href="${aurl}?st=contact"><span><fmt:message
                 key="contacts"/></span></a> </c:if> <c:if test="${mailbox.features.calendar}"> <c:set var="active"
                                                                                                       value="${param.st eq 'cal' || param.st eq 'cals' ? '-active' : ''}"/>
-        <a id="cal${active}" class="appTab${active} table-cell" href="${aurl}?st=cal"><span><fmt:message
-                key="calendar"/></span><span style="display:none;" class="aptoday"><fmt:formatDate value="${zm:getToday(mailbox.prefs.timeZone).time}" pattern="d MMM EEEEEEE"/></span></a> </c:if> <c:set var="active"
+        <a accesskey="${requestScope.calapp_accesskey}" id="cal${active}" class="appTab${active} table-cell" href="${aurl}?st=cal"><span><fmt:message
+                key="calendar"/></span>
+            <span style="display:none;" class="aptoday">
+            <fmt:formatDate value="${zm:getToday(mailbox.prefs.timeZone).time}" pattern="EEE|d|MMM" var="today"/>
+            <c:set var="darr" value="${fn:split(today,'|')}"/>    
+            <div class="_day">${darr[0]}</div>
+            <div class="_date">${darr[1]}</div>
+            <div class="_month">${darr[2]}</div>    
+            </span></a> </c:if> <c:set var="active"
                                                            value="${param.st eq 'folders' ? '-active' : ''}"/>
-        <a id="folders${active}" class="appTab${active} table-cell" href="${aurl}?st=folders"><span><fmt:message
+        <a accesskey="${requestScope.fldrapp_accesskey}" id="folders${active}" class="appTab${active} table-cell" href="${aurl}?st=folders"><span><fmt:message
                 key="folders"/></span></a> <c:set var="active" value="${param.search eq '1' ? '-active' : ''}"/>
-        <a id="search${active}" class="appTab${active} table-cell"
+        <a accesskey="${requestScope.search_accesskey}" id="search${active}" class="appTab${active} table-cell"
            href="${aurl}?search=${param.search eq '1' ? '0' : '1'}&amp;${fn:replace(pageContext.request.queryString,'search=1&amp;','')}"
            ${!ua.isIE ? 'onclick="return toggleSearch();"' : ''}><span><fmt:message key="search"/></span></a> <%--<span class="appTab last ${param.st eq 'more' ? 'activeTab' : ''}">
       <a href="${aurl}?st=more"><fmt:message key="more"/>...</a></span>--%> <%-- </div>--%>

@@ -49,7 +49,6 @@
                 <c:when test="${isemail}">
                     <c:url value="${context_url}" var="url">
                         <c:param name="st" value="newmail"/>
-                        <c:param name="action" value="compose"/>
                         <c:param name="to" value="${value}"/>
                     </c:url>
                     <a href="${fn:escapeXml(url)}">${fn:escapeXml(value)}</a>

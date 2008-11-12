@@ -137,7 +137,27 @@
         </fmt:message>
     </mo:status>
     </c:when>
-
+    <c:when test="${zm:actionSet(param, 'composeTo') || (zm:actionSet(param,'moreActions') && anAction == 'composeTo')}">
+        <c:forEach var="id" items="${ids}">
+            <zm:getContact var="c" id="${id}"/>
+            <c:set var="toaddrs" value="${c.email},${toaddrs}"/>
+        </c:forEach>
+        <c:redirect url="/m/zmain?st=newmail&to=${toaddrs}"/>
+    </c:when>
+    <c:when test="${zm:actionSet(param, 'composeCC') || (zm:actionSet(param,'moreActions') && anAction == 'composeCC')}">
+        <c:forEach var="id" items="${ids}">
+            <zm:getContact var="c" id="${id}"/>
+            <c:set var="toaddrs" value="${c.email},${toaddrs}"/>
+        </c:forEach>
+        <c:redirect url="/m/zmain?st=newmail&cc=${toaddrs}"/>
+    </c:when>
+    <c:when test="${zm:actionSet(param, 'composeBCC') || (zm:actionSet(param,'moreActions') && anAction == 'composeBCC')}">
+        <c:forEach var="id" items="${ids}">
+            <zm:getContact var="c" id="${id}"/>
+            <c:set var="toaddrs" value="${c.email},${toaddrs}"/>
+        </c:forEach>
+        <c:redirect url="/m/zmain?st=newmail&bcc=${toaddrs}"/>
+    </c:when>
     <c:when test="${zm:actionSet(param, 'actionFlag') || (zm:actionSet(param,'moreActions') && anAction == 'actionFlag')}">
         <zm:flagContact var="result" id="${ids}" flag="${true}"/>
         <mo:status>

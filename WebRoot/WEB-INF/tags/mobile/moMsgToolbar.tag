@@ -17,7 +17,7 @@
     <div class="SubToolbar table">
         <div class="table-row">
             <div class="table-cell">
-                <a href="${urlTarget}?st=folders"><fmt:message key="folders"/></a> &#171; <a
+                <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=folders"><fmt:message key="folders"/></a> &#171; <a
                     href="${fn:escapeXml(closeUrl)}#msg${mid}" class='zo_leftbutton'>
                     ${fn:escapeXml(zm:truncate(context.shortBackTo,15,true))}
             </a>
@@ -35,7 +35,7 @@
         <c:when test="${cursor.hasPrev}">
             <zm:prevItemUrl var="prevMsgUrl" value="${urlTarget}" action='view'
                             cursor="${cursor}" context="${context}"/>
-            <a class='zo_button prev_button' href="${fn:escapeXml(prevMsgUrl)}">
+            <a accesskey="${requestScope.prev_accesskey}" class='zo_button prev_button' href="${fn:escapeXml(prevMsgUrl)}">
                 <fmt:message key="MO_PREV"/>
             </a>
         </c:when>
@@ -49,7 +49,7 @@
     <c:when test="${cursor.hasNext}">
         <zm:nextItemUrl var="nextMsgUrl" value="${urlTarget}" action='view'
                         cursor="${cursor}" context="${context}"/>
-        <a class='zo_button next_button' href="${fn:escapeXml(nextMsgUrl)}">
+        <a accesskey="${requestScope.next_accesskey}" class='zo_button next_button' href="${fn:escapeXml(nextMsgUrl)}">
             <fmt:message key="MO_NEXT"/>
         </a>
     </c:when>
@@ -74,12 +74,12 @@
                 <option value="actionDelete"><fmt:message key="delete"/></option>
             </c:otherwise>
         </c:choose>
-        <optgroup label="Mark">
+        <optgroup label="<fmt:message key="markAs"/>">
             <c:if test="${msg.isUnread}">
-                <option value="actionMarkRead">Read</option>
+                <option value="actionMarkRead"><fmt:message key="MO_read"/></option>
             </c:if>
             <c:if test="${not msg.isUnread}">
-                <option value="actionMarkUnread">Unread</option>
+                <option value="actionMarkUnread"><fmt:message key="MO_unread"/></option>
             </c:if>
             <c:choose>
                 <c:when test="${myFolder.isSpam}">
@@ -90,12 +90,12 @@
                 </c:otherwise>
             </c:choose>
         </optgroup>
-        <optgroup label="Flag">
+        <optgroup label="<fmt:message key="MO_flag"/>">
             <c:if test="${not msg.isFlagged}">
-                <option value="actionFlag">Add</option>
+                <option value="actionFlag"><fmt:message key="add"/></option>
             </c:if>
             <c:if test="${msg.isFlagged}">
-                <option value="actionUnflag">Remove</option>
+                <option value="actionUnflag"><fmt:message key="remove"/></option>
             </c:if>
         </optgroup>
         <optgroup label="<fmt:message key="moveAction"/>">
@@ -124,7 +124,7 @@
 </span>
 <span class="">
     <c:url var="composeUrl" value="${urlTarget}?st=newmail"/>
-    <a href="${composeUrl}" class="zo_button">
+    <a accesskey="${requestScope.mainaction_accesskey}" href="${composeUrl}" class="zo_button">
         <fmt:message key="compose"/>
     </a>
 </span>

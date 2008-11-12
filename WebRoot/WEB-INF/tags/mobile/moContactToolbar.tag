@@ -15,7 +15,7 @@
     <div class="SubToolbar table">
         <div class="table-row">
             <div class="table-cell">
-                <a href="${urlTarget}?st=ab"><fmt:message key="addressBooks"/></a> &#171;
+                <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=ab"><fmt:message key="addressBooks"/></a> &#171;
                 <a href="${fn:escapeXml(closeUrl)}<c:if test="${empty context.sfi}">&sfi=${contact.folderId}</c:if>#cn${contact.id}" class='zo_leftbutton'>
                         ${fn:escapeXml(zm:truncate(context.shortBackTo,15,true))}
                 </a> &#171; ${fn:escapeXml(fn:substring(contact.firstName,0,8))}...
@@ -41,7 +41,7 @@
                     <c:when test="${cursor.hasPrev}">
                         <zm:prevItemUrl var="prevMsgUrl" value="${urlTarget}" action='view'
                                         cursor="${cursor}" context="${context}"/>
-                        <a href="${fn:escapeXml(prevMsgUrl)}" class='zo_button prev_button'>
+                        <a accesskey="${requestScope.prev_accesskey}" href="${fn:escapeXml(prevMsgUrl)}" class='zo_button prev_button'>
                             <fmt:message key="MO_PREV"/>
                         </a>
                     </c:when>
@@ -55,7 +55,7 @@
                     <c:when test="${cursor.hasNext}">
                         <zm:nextItemUrl var="nextMsgUrl" value="${urlTarget}" action='view'
                                         cursor="${cursor}" context="${context}"/>
-                        <a href="${fn:escapeXml(nextMsgUrl)}" class='zo_button next_button'>
+                        <a accesskey="${requestScope.next_accesskey}" href="${fn:escapeXml(nextMsgUrl)}" class='zo_button next_button'>
                             <fmt:message key="MO_NEXT"/>
                         </a>
                     </c:when>
@@ -77,7 +77,7 @@
                 <option value="actionHardDelete"><fmt:message key="delete"/></option>
             </c:otherwise>
         </c:choose>
-        <optgroup label="Flag">
+        <optgroup label="<fmt:message key="MO_flag"/>">
             <c:if test="${not contact.isFlagged}">
                 <option value="actionFlag"><fmt:message key="add"/></option>
             </c:if>
@@ -123,10 +123,10 @@
            <c:param name="folderid" value="${context.folder.id}"/>
        </c:url>
       <c:if test="${contact != null}">
-          <input class="zo_button" type="button" onclick="zClickLink('_edit_link')" value="<fmt:message key="edit"/>"/>
+          <input accesskey="${requestScope.mainaction_accesskey}" class="zo_button" type="button" onclick="zClickLink('_edit_link')" value="<fmt:message key="edit"/>"/>
       </c:if>
       <c:if test="${contact == null}">
-        <a href="${addUrl}" class='zo_button'>
+        <a accesskey="${requestScope.mainaction_accesskey}" href="${addUrl}" class='zo_button'>
             <fmt:message key="add"/>
         </a>
       </c:if>    

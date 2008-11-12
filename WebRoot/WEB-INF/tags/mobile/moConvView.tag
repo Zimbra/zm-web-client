@@ -82,7 +82,7 @@
 </c:when>
 <c:otherwise>
     <div class='zo_m_cv_sub'>
-        ${fn:escapeXml(empty subject ? emptySubject : subject)}
+        <span class="SmlIcnHldr ConvOpen">&nbsp;</span>${fn:escapeXml(empty subject ? emptySubject : subject)}
     </div>
     <div class="msg-list-in-conv">
         <c:forEach items="${convSearchResult.hits}" var="hit" varStatus="status">
@@ -96,9 +96,10 @@
      <div id="conv${mhit.id}" class="row conv_v_list_row list-row${mhit.isUnread ? '-unread' : ''}">
                <%--<mo:img src="mail/ImgEnvelope${mhit.isUnread?'':'Gray'}.gif" class="left-icon"/>--%>
                <c:set value="Msg${mhit.isUnread ? '' : 'Gray'}" var="class"/> 
-               <span class="cell f ${class}">
+               <span class="cell f">
                    <c:set value=",${mhit.id}," var="stringToCheck"/>
                    <input class="chk" type="checkbox" ${fn:contains(requestScope._selectedIds,stringToCheck)?'checked="checked"':''} name="id" value="${mhit.id}"/>
+                   <span class="SmlIcnHldr ${class}">&nbsp;</span>
                </span>
                <span class="cell m" onclick='zClickLink("a${mhit.id}")'>
                    <div class="from-span">

@@ -25,7 +25,7 @@
             <div class="table-cell">
                 <c:choose>
                     <c:when test="${context.isContactSearch}">
-                        <a href="${urlTarget}?st=ab"><fmt:message
+                        <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=ab"><fmt:message
                                 key="addressBooks"/></a> &#171;
                         <c:if test="${top_fldr_select ne '1'}">
                                 ${fn:escapeXml(zm:truncate(context.shortBackTo,15,true))}
@@ -44,7 +44,7 @@
                         </c:if>
                     </c:when>
                     <c:otherwise>
-                        <a href="${urlTarget}?st=folders"><fmt:message
+                        <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=folders"><fmt:message
                                 key="folders"/></a> &#171;
                         <c:if test="${top_fldr_select ne '1'}">
                             ${fn:escapeXml(zm:truncate(context.shortBackTo,15,true))}
@@ -74,7 +74,7 @@
 <c:choose>
     <c:when test="${context.searchResult.hasPrevPage}">
         <zm:prevResultUrl var="url" value="${urlTarget}" index="0" context="${context}"/>
-        <a href="${fn:escapeXml(url)}" class='zo_button prev_button'>
+        <a accesskey="${requestScope.prev_accesskey}" href="${fn:escapeXml(url)}" class='zo_button prev_button'>
             <!--&#9668;--><fmt:message key="MO_PREV"/>
         </a>
     </c:when>
@@ -87,7 +87,7 @@
 <c:choose>
     <c:when test="${context.searchResult.hasNextPage}">
         <zm:nextResultUrl var="url" value="${urlTarget}" index="0" context="${context}"/>
-        <a class='zo_button next_button' href="${fn:escapeXml(url)}">
+        <a accesskey="${requestScope.next_accesskey}" class='zo_button next_button' href="${fn:escapeXml(url)}">
            <!-- &nbsp;&#9658;--><fmt:message key="MO_NEXT"/>
         </a>
     </c:when>
@@ -120,9 +120,9 @@
             </optgroup>
             
             <c:if test="${!context.isContactSearch}">
-                <optgroup label="Mark">
-                    <option value="actionMarkRead">Read</option>
-                    <option value="actionMarkUnread">Unread</option>
+                <optgroup label="<fmt:message key="markAs"/>">
+                    <option value="actionMarkRead"><fmt:message key="MO_read"/></option>
+                    <option value="actionMarkUnread"><fmt:message key="MO_unread"/></option>
                     <c:choose>
                         <c:when test="${context.folder.isSpam}">
                             <option value="actionMarkUnspam"><fmt:message key="actionNotSpam"/></option>
@@ -133,8 +133,14 @@
                     </c:choose>
                 </optgroup>
             </c:if>
-
-            <optgroup label="Flag">
+            <c:if test="${context.isContactSearch}">
+                <optgroup label="<fmt:message key="compose"/>">
+                    <option value="composeTo"><fmt:message key="to"/></option>
+                    <option value="composeCC"><fmt:message key="cc"/></option>
+                    <option value="composeBCC"><fmt:message key="bcc"/></option>
+                </optgroup>
+            </c:if>
+            <optgroup label="<fmt:message key="MO_flag"/>">
                 <option value="actionFlag"><fmt:message key="add"/></option>
                 <option value="actionUnflag"><fmt:message key="remove"/></option>
             </optgroup>
@@ -179,7 +185,7 @@
 <span class=" f-right">
         <c:if test="${!context.isContactSearch}">
             <c:url var="composeUrl" value="${urlTarget}?st=newmail"/>
-            <a href="${composeUrl}" class="zo_button">
+            <a accesskey="${requestScope.mainaction_accesskey}" href="${composeUrl}" class="zo_button">
                 <fmt:message key="compose"/>
             </a>
         </c:if>
@@ -189,7 +195,7 @@
                 <c:param name="st" value="${context.st}"/>
                 <c:param name="folderid" value="${context.folder.id}"/>
             </c:url>
-            <a href="${composeUrl}" class="zo_button">
+            <a accesskey="${requestScope.mainaction_accesskey}" href="${composeUrl}" class="zo_button">
                 <fmt:message key="add"/>
             </a>
         </c:if>
@@ -205,7 +211,7 @@
             <div class="table-cell">
                  <c:choose>
                     <c:when test="${context.isContactSearch}">
-                        <a href="${urlTarget}?st=ab"><fmt:message
+                        <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=ab"><fmt:message
                                 key="addressBooks"/></a> :
                         <c:if test="${btm_fldr_select eq '0'}">
                             ${fn:escapeXml(zm:truncate(context.shortBackTo,15,true))}
@@ -220,11 +226,11 @@
                                     </option>
                                 </c:if>
                             </zm:forEachFolder>
-                        </select>
+                        </select>       
                         </c:if>
                     </c:when>
-                    <c:otherwise>
-                        <a href="${urlTarget}?st=folders"><fmt:message
+                    <c:otherwise>                           
+                        <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=folders"><fmt:message
                                 key="folders"/></a> :
                         <c:if test="${btm_fldr_select eq '0'}">
                             ${fn:escapeXml(zm:truncate(context.shortBackTo,15,true))}

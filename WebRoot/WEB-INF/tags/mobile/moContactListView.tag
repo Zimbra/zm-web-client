@@ -28,10 +28,10 @@
         <div class="list-row row" id="cn${chit.id}">
             <c:set value=",${hit.id}," var="stringToCheck"/>
             <c:set var="class" value="Contact${chit.isGroup ? 'Group' : ''}"/>
-            <span class="cell f ${class}">
+            <span class="cell f">
                     <input class="chk" type="checkbox" ${requestScope.select ne 'none' && (fn:contains(requestScope._selectedIds,stringToCheck) || requestScope.select eq 'all') ? 'checked="checked"' : ''}
                            name="id" value="${chit.id}"/>
-            <%--        <mo:img src="${chit.image}" valign="top" clazz="left-icon"/>--%>
+            <span class="SmlIcnHldr ${class}">&nbsp;</span>
             </span>
             <span class="cell m" onclick='zClickLink("a${chit.id}")'>
                 <div>

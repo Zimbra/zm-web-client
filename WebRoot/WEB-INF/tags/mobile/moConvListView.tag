@@ -44,9 +44,10 @@
                         <c:set value="Msg${chit.isUnread ? '' : 'Gray'}" var="class"/> 
                         <%--<mo:img src="mail/ImgEnvelope${chit.isUnread?'':'Gray'}.gif" class="left-icon"/>--%>
                     </c:if>
-                    <span class="cell f ${class}">
+                    <span class="cell f">
                         <c:set value=",${chit.id}," var="stringToCheck"/>
                         <input class="chk" type="checkbox" ${requestScope.select ne 'none' && (fn:contains(requestScope._selectedCids,stringToCheck) || requestScope.select eq 'all') ? 'checked="checked"' : ''} name="cid" value="${chit.id}"/>
+                        <span class="SmlIcnHldr ${class}">&nbsp;</span>
                     </span>
                     <span class="cell m" onclick='zClickLink("a${chit.id}")'>
                         <div class="from-span">

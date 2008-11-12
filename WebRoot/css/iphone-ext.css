@@ -7,7 +7,7 @@ body {
 }
 body *{
     font-family: Helvetica, Arial, Verdana, Sans-serif;
-}    
+}
 
 body[orient="portrait"] {
     max-width: 320px;
@@ -47,11 +47,11 @@ a {
 .list-row, .list-row-unread {
     border-bottom: 1px solid #DDDDDD;
     padding: 2px;
-    background: white;
+    background: #fafafa;
 }
 .list-row-unread {
     font-weight: bold;
-    background: #efefef; /*#f9fcff;*/
+    background: white; /*#f9fcff;*/
 }
 .small-gray-text {
     color: #888888;
@@ -68,10 +68,13 @@ a {
     text-overflow: ellipsis;
     height: 30px;
 }*/
+.ConvOpen{
+    background-position: 0 -326px !important;
+}
 .zo_m_cv_sub {
     padding: 7px;
     padding-left: 22px;
-    background: #e8ebef url( "/img/startup/ImgConversationView.gif" ) 3px 50% no-repeat;
+    background: #e8ebef;
     color: darkblue;
 }
 .Stripes {
@@ -109,16 +112,30 @@ a {
     display:inline !important;
     font-size:smaller;
     font-weight:bold;
-    position:relative;
-    top:18px;
-    white-space:normal;
-    width:55px;
-    text-overflow: ellipsis;
-    overflow: hidden;
+}
+#appbar a span.aptoday div {
+    margin:0px;
+    padding:2px;
+    text-align:center;
+    overflow:hidden;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+}
+#appbar a span.aptoday div._day {
+    color: white;
+    font-weight:normal;
+    padding-top:4px;
+}
+#appbar a span.aptoday div._date {
+    font-size:medium;
+}
+#appbar a span.aptoday div._month {
+    display:none;
 }
 #appbar a span.apunread {
+    text-align:center;
     color:white;
-    display:inline-block !important;
+    display:inline !important;
     font-size:smaller;
     font-weight:bold;
     left:0;
@@ -129,35 +146,38 @@ a {
     text-overflow: ellipsis;
     overflow: hidden;
 }
+#appbar a.appTab,#appbar a.appTab-active{
+    background: url( "/img/mobile/iphone-ext/AppsNav.png" ) top left no-repeat;
+}
 a#mail {
-    background: url( "/img/mobile/iphone-ext/Mail.png" ) 50% 50% no-repeat; /*content: url( "/img/mobile/iphone/Mail.gif" );*/
+    background-position: 3px 0 !important;
 }
 a#mail-active {
-    background: url( "/img/mobile/iphone-ext/Mail.png" ) 50% 50% no-repeat; /*content: url( "/img/mobile/iphone/Mail.gif" );*/
+    background-position: 3px 0 !important;
 }
 a#contact {
-    background: url( "/img/mobile/iphone-ext/Contacts.png" ) 50% 50% no-repeat; /*    content: url( "/img/mobile/iphone/Contacts.gif" );*/
+    background-position: 3px -53px !important;
 }
 a#contact-active {
-    background: url( "/img/mobile/iphone-ext/Contacts.png" ) 50% 50% no-repeat; /*content: url( "/img/mobile/iphone/Contacts-sel.gif" );*/
+    background-position: 3px -53px !important;
 }
 a#cal {
-    background: url( "/img/mobile/iphone-ext/Calendar.png" ) 50% 50% no-repeat; /*content: url( "/img/mobile/iphone/Calendar.gif" );*/
+    background-position: 3px -107px !important;
 }
 a#cal-active {
-    background: url( "/img/mobile/iphone-ext/Calendar.png" ) 50% 50% no-repeat; /*content: url( "/img/mobile/iphone/Calendar.gif" );*/
+    background-position: 3px -107px !important;
 }
 a#folders {
-    background: url( "/img/mobile/iphone-ext/Folders.png" ) 50% 50% no-repeat; /*content: url( "/img/mobile/iphone/Folders.gif" );*/
+    background-position: 3px -160px !important;
 }
 a#folders-active {
-    background: url( "/img/mobile/iphone-ext/Folders.png" ) 50% 50% no-repeat; /*content: url( "/img/mobile/iphone/Folders.gif" );*/
+    background-position: 3px -160px !important;
 }
 a#search {
-    background: url( "/img/mobile/iphone-ext/Find.png" ) 50% 50% no-repeat; /*content: url( "/img/mobile/iphone/Search.gif" );*/
+    background-position: 3px -216px !important;
 }
 a#search-active {
-    background: url( "/img/mobile/iphone-ext/Find.png" ) 50% 50% no-repeat; /*content: url( "/img/mobile/iphone/Search.gif" );*/
+    background-position: 3px -216px !important;
 }
 #searchbar {
     text-align: center;
@@ -190,7 +210,7 @@ form {
     white-space:nowrap;
 }
 .Toolbar {
-    background: #d3d2d7 url("/img/mobile/iphone/iPhoneToolbar1.png");
+    background: #d3d2d7;
 }
 .StatusInfo, .StatusWarning, .StatusCritical, .zo_noresults {
     padding: 3px;
@@ -223,7 +243,6 @@ form {
     text-align: left;
 }
 .zo_button, .zo_button_disabled {
-    background: #58759d url( "/img/mobile/iphone-ext/Button.png" ) 100% 60% repeat-x;
     -moz-border-radius: 4px;
     -webkit-border-radius: 4px;
     padding: 4px;
@@ -237,7 +256,6 @@ form {
     font-size: medium;
 }
 .zo_button_group {
-    background: #58759d url( "/img/mobile/iphone-ext/Button.png" ) 100% 60% repeat-x;
     -moz-border-radius: 4px;
     -webkit-border-radius: 4px;
     border: 1px groove #58759d;
@@ -249,42 +267,40 @@ form {
 input[type="button"], input[type="reset"] {
     -webkit-border-radius: 5px;
     -webkit-appearance: button;
-    background: #58759d url( "/img/mobile/iphone-ext/Button.png" ) repeat-x;
 }
 .searchButton, input[type="submit"], input.submit {
-    background: #2e69e0 url( "/img/mobile/iphone/iPhoneGoButton1.png" ) 100% repeat-x;
     -webkit-border-radius: 5px;
     -webkit-appearance: button;
 }
 .Reply {
-    background: url( "/img/startup/ImgReply.gif") 50% 50% no-repeat;
+    background-position: 0 -20px !important;
 }
 .ReplyAll{
-    background: url( "/img/startup/ImgReplyAll.gif") 50% 50% no-repeat;
+    background-position: 0 -236px !important;
 }
 .Forward{
-    background: url( "/img/startup/ImgForward.gif") 50% 50% no-repeat;
+    background-position: 0 -254px !important;
 }
 .Check{
-    background: url( "/img/common/ImgCheck.gif") 50% 50% no-repeat;
+    background-position: 0 -272px !important;
 }
 .Question{
-    background: url( "/img/common/ImgQuestionMark.gif") 50% 50% no-repeat;
+    background-position: 0 -2px !important;
 }
 .Cancel{
-    background: url( "/img/common/ImgCancel.gif") 50% 50% no-repeat;
+    background-position: 0 -56px !important;
 }
 .Msg {
-    background: url( "/img/mail/ImgEnvelope.gif" ) 90% 49% no-repeat;
+    background-position: 0 -308px !important;
 }
 .MsgGray {
-    background: url( "/img/mail/ImgEnvelopeGray.gif" ) 90% 49% no-repeat;
+    background-position: 0 -200px !important;
 }
 .Conv {
-    background: url( "/img/startup/ImgConversationView.gif" ) 90% 50% no-repeat;
+    background-position: 0 -326px !important;
 }
 .Contact {
-    background: url( "/img/contacts/ImgContact.gif" ) 90% 50% no-repeat;
+    background-position: 0 -218px !important;
 }
 .Person48 {
     background: url( "/img/large/ImgPerson_48.gif" ) 90% 50% no-repeat;
@@ -293,10 +309,10 @@ input[type="button"], input[type="reset"] {
     padding: 2px;
 }
 .ContactGroup {
-    background: url( "/img/contacts/ImgGroup.gif" ) 90% 50% no-repeat;
+    background-position: 0 -380px !important;
 }
 .Attachment {
-    background: url( "/img/startup/ImgAttachment.gif" ) 10% 50% no-repeat;
+    background-position: 0 -362px !important;
     padding-left: 12px;
 }
 .cmp_container .table-cell, .cmp_appt_container .table-cell {
@@ -386,6 +402,9 @@ select {
     height: 27px;
     vertical-align: 2px;
 }
+.zo_select_button,.zo_button,.zo_button_disabled, .zo_button_group, input[type="button"], input[type="reset"],.searchButton, input[type="submit"], input.submit  {
+    background: #58759d url( "/img/mobile/iphone-ext/Button.gif" ) 100% 60% repeat-x;
+}
 .zo_select_button {
     max-width: 90px;
     white-space: nowrap;
@@ -393,7 +412,6 @@ select {
     text-overflow: ellipsis;
     vertical-align: 1px;
     height: 27px;
-    background: #58759d url( "/img/mobile/iphone-ext/Button.png" ) 100% 60% repeat-x;
     color: white;
     -moz-border-radius: 4px;
     -webkit-border-radius: 4px;
@@ -493,7 +511,10 @@ div.row span.l {
 }
 .SmlIcnHldr {
     width: 18px;
+    height: 18px;
+    max-height: 18px;
     display: inline-block;
+    background: url("/img/mobile/iphone-ext/common.gif") no-repeat top left;
 }
 .FldrSearchFolder {
     background: url( "/img/startup/ImgSearchFolder.gif" ) 50% 50% no-repeat;
@@ -556,29 +577,32 @@ div.row span.l {
     background: url( "/img/voicemail/ImgVoicemail.gif" ) 50% 50% no-repeat;
 }
 .Flag {
-    background: url( "/img/startup/ImgFlagRed.gif" ) 50% 50% no-repeat;
+    background-position: 0 -164px !important !important;
 }
 .Tagblue {
-    background: url( "/img/startup/ImgTagBlue.gif" ) 50% 50% no-repeat;
+    background-position: 0 -110px !important;
 }
 .Tagcyan {
-    background: url( "/img/startup/ImgTagCyan.gif" ) 50% 50% no-repeat;
+    background-position: 0 -92px !important; }
 }
 .Tagorange {
-    background: url( "/img/startup/ImgTagOrange.gif" ) 50% 50% no-repeat;
+    background-position: 0 -128px !important;
 }
 .Taggreen {
-    background: url( "/img/startup/ImgTagGreen.gif" ) 50% 50% no-repeat;
+    background-position: 0 -182px !important;
 }
 .Tagpurple {
-    background: url( "/img/startup/ImgTagPurple.gif" ) 50% 50% no-repeat;
+    background-position: 0 -290px !important;
 }
 .Tagred {
-    background: url( "/img/startup/ImgTagRed.gif" ) 50% 50% no-repeat;
+    background-position: 0 -344px !important;
 }
 .Tagyellow {
-    background: url( "/img/startup/ImgTagYellow.gif" ) 50% 50% no-repeat;
+    background-position: 0 -38px !important;
 }
 .TagStack {
-    background: url( "/img/startup/ImgTagStack.gif" ) 50% 50% no-repeat;
+    background-position: 0 -74px !important;  
+}
+.TagdefaultColor,.Tag {
+    background-position: 0 -146px !important;
 }

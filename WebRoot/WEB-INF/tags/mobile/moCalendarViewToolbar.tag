@@ -40,7 +40,7 @@
 <c:if test="${isTop && '1' eq top_stb}">
     <div class="SubToolbar">
         <fmt:message key="calendarCheckedInUI" var="checkedInUI"/>
-        <a href="${urlTarget}?st=cals"><fmt:message key="calendars"/></a> &#171;
+        <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=cals"><fmt:message key="calendars"/></a> &#171;
         <c:if test="${top_fldr_select ne '1'}">
             ${not empty sessionScope.calendar ? sessionScope.calendar.name : checkedInUI}
         </c:if>
@@ -62,7 +62,7 @@
 	<div class="table-cell">
         <span class=" zo_button_group"><c:if test="${view ne 'appt'}"><a ${list} class='prev_button ${view!=null && view=='list'?'zo_button_disabled':'zo_button'}'><fmt:message key="calViewListShort"/></a><a ${day} class='next_button ${view!=null && view=='day'?'zo_button_disabled':'zo_button'}'><fmt:message key="calViewDayShort"/></a><a ${month} class='next_button ${view!=null && view=='month'?'zo_button_disabled':'zo_button'}'><fmt:message key="calViewMonthShort"/></a></c:if>
 	<c:if test="${view eq 'appt'}"><mo:calendarUrl var="backurl" action="${null}"/><a href="${backurl}" class="zo_button prev_button"><fmt:message key="back"/></a></c:if></span>
-        <span><a href="?st=newappt&date=${dateDf}<c:if test="${'' ne invId}">&useInstance=0&invId=${invId}</c:if>" class='zo_button'><fmt:message key="${empty invId ? 'add' : 'edit'}"/></a></span>
+        <span><a accesskey="${requestScope.mainaction_accesskey}" href="?st=newappt&date=${dateDf}<c:if test="${'' ne invId}">&useInstance=0&invId=${invId}</c:if>" class='zo_button'><fmt:message key="${empty invId ? 'add' : 'edit'}"/></a></span>
 	</div>
 	</div>
 </div>
