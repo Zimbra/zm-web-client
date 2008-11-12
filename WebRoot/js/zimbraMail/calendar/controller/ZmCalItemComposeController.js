@@ -481,8 +481,15 @@ function() {
 ZmCalItemComposeController.prototype._popShieldNoCallback =
 function() {
 	this._popShield.popdown();
-	appCtxt.getAppViewMgr().showPendingView(true);
-	this._composeView.cleanup();
+	try {
+		// bug fix #33001 - prism throws exception with this method:
+		appCtxt.getAppViewMgr().showPendingView(true);
+	} catch(ex) {
+		// so do nothing
+	} finally {
+		// but make sure cleanup is *always* called
+		this._composeView.cleanup();
+	}
 };
 
 ZmCalItemComposeController.prototype._closeView =
