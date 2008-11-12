@@ -49,9 +49,25 @@ function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
 		this._alert("Turning timing info " + newState);
 		this._dbg.showTiming(!on);
 	} else {
-		var level = cmdArg1;
-		this._dbg.setDebugLevel(level);
-		this._alert("Setting debug level to: " + level);
+		this._dbg.setDebugLevel(cmdArg1);
+		this._alert("Setting debug level to: " + cmdArg1);
+	}
+};
+
+ZmClientCmdHandler.prototype.execute_debugtrace =
+function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
+	if (!cmdArg1) return;
+
+	var val;
+	if (cmdArg1 == "on") {
+		val = true;
+	} else if (cmdArg1 == "off") {
+		val = false;
+	}
+
+	if (val != undefined) {
+		appCtxt.set(ZmSetting.OFFLINE_DEBUG_TRACE, val, null, null, true);
+		this._alert("Debug trace is " + cmdArg1);
 	}
 };
 
@@ -59,7 +75,7 @@ ZmClientCmdHandler.prototype.execute_support =
 function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
 	if (!cmdArg1) return;
 	var feature = cmdArg1.toUpperCase();
-	var setting = "ZmSetting." + feature + "_ENABLED"
+	var setting = "ZmSetting." + feature + "_ENABLED";
 	var id = eval(setting);
 	var on = appCtxt.get(id);
 	if (on == undefined) {
