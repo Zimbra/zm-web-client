@@ -48,7 +48,7 @@ function(loginParams) {
 	AjxDispatcher.require(["IM"]);
 	var id = appCtxt.get(ZmSetting.IM_YAHOO_ID);
 	if (id) {
-		this._loginById(callback, id, true);
+		this._loginById(loginParams, id, true);
 	} else {
 		this._showLoginDialog(loginParams);
 	}

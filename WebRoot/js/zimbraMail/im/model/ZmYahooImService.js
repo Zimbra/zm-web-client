@@ -41,15 +41,15 @@ function() {
 };
 
 ZmYahooImService.prototype.login =
-function(cookie, callback) {
-	this._loginCallback = callback;
+function(cookie, loginParams) {
+	this._loginParams = loginParams;
 
 // TODO: Clean up all these params....
 	var params = {
 //		servers: [{host: "webcs.msg.yahoo.com", port: 5050}, {host: "httpcs.msg.yahoo.com", port: 80}],
 		cookie: cookie,
 //		cookie: "Y=v=1&n=bja0geghk49rg&l=362j4ij/o&p=m272s2v012000000&r=jl&lg=en-US&intl=us; T=z=Mxh/IBMFJEJBS7w9UUk0DufNDU0BjQyMTIzMzQxTzQ-&a=QAE&sk=DAAyHwyz5.2/zi&ks=EAAAFaoIZvMCdMGPsBajCR3Cw--~C&d=c2wBTXpJekFUTTFOalUwTkRNMk9ETS0BYQFRQUUBZwFFT0lRNTdHUUg1WElaR1M1VldWSlZHQzZYWQF0aXABUlBvUHhCAXp6AU14aC9JQkE3RQ--",
-//		userId: null,
+//		userId: null,                             	
 		vendorId: 415
 //		countryCode: "us",
 //		weight: 6,
@@ -240,6 +240,7 @@ function(ev, params) {
 		break;
 	}
 	case YMSGR.CONST.YES_LOGGED_IN: {
+		this._onLoggedIn(params);
 		break;
 	}
 	case YMSGR.CONST.YES_PREFERENCE_DATA: {
@@ -286,10 +287,14 @@ function(ev, params) {
 ZmYahooImService.prototype._onPreloginData =
 function(params) {
 //	params = { firstname, lastname, user_id }
-	this._loggedIn = true;
 	this._userId = params.user_id;
-	this._roster.onServiceLoggedIn(this._loginCallback);
-	this._loginCallback = null;
+};
+
+ZmYahooImService.prototype._onLoggedIn =
+function(params) {
+	this._loggedIn = true;
+	this._roster.onServiceLoggedIn(this._loginParams);
+	this._loginParams = null;
 };
 
 ZmYahooImService.prototype._onUserSendMessage =
