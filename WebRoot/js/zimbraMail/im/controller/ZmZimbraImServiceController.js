@@ -35,6 +35,10 @@ function() {
 
 ZmZimbraImServiceController.prototype.login =
 function(params) {
+	if (!this._showedJive) {
+		this._chatListChangeListenerObj = new AjxListener(this, this._chatListChangeListener);
+		ZmImApp.INSTANCE.getRoster().getChatList().addChangeListener(this._chatListChangeListenerObj);
+	}
 	ZmImService.INSTANCE.login(params);
 };
 
@@ -60,6 +64,20 @@ function(parent) {
 ZmZimbraImServiceController.prototype.getSupportsAccounts =
 function() {
 	return true;
+};
+
+ZmZimbraImServiceController.prototype._chatListChangeListener =
+function(ev) {
+	if (!this._showedJive && (ev.event == ZmEvent.E_CREATE)) {
+		this._showedJive = true;
+		ZmImApp.INSTANCE.getRoster().getChatList().removeChangeListener(this._chatListChangeListenerObj);
+		delete this._chatListChangeListenerObj;
+		var statusArgs = {
+			msg: AjxTemplate.expand("im.Chat#JiveNotification"),
+			transitions: [ { type: "fade-in", duration: 500 }, { type: "pause", duration: 5000 }, { type: "fade-out", duration: 500 } ]
+		};
+		appCtxt.setStatusMsg(statusArgs);
+	}
 };
 
 
