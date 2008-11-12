@@ -21,7 +21,6 @@ ZmYahooImService = function() {
 	this._visible = false;
 	this._userId = null;
 	this._loggedIn = false;
-	this._load();
 };
 
 ZmYahooImService.prototype = new ZmImService;
@@ -288,13 +287,13 @@ ZmYahooImService.prototype._onPreloginData =
 function(params) {
 //	params = { firstname, lastname, user_id }
 	this._userId = params.user_id;
+	this._loggedIn = true;
+	this._roster.onServiceLoggedIn(this._loginParams);
+	this._loginParams = null;
 };
 
 ZmYahooImService.prototype._onLoggedIn =
 function(params) {
-	this._loggedIn = true;
-	this._roster.onServiceLoggedIn(this._loginParams);
-	this._loginParams = null;
 };
 
 ZmYahooImService.prototype._onUserSendMessage =
@@ -474,18 +473,28 @@ function(params) {
 
 ZmYahooImService.prototype._callSdk =
 function(functionName, params) {
-	DBG.println("ym", "YMSGR.sdk." + functionName + "(" + (params ? params.join(",") : "") + ")");
-	var result = YMSGR.sdk[functionName].apply(YMSGR.sdk, params);
-	if (result) {
-		DBG.println("ym", "YMSGR.sdk." + functionName + ": Result");
-		DBG.dumpObj("ym", result, functionName + ": Result");
+	// If sdk not loaded, load it, then make this call afterwards.
+	if (!this._loaded) {
+		this._postLoadCalls = this._postLoadCalls  || [];
+		this._postLoadCalls.push({ functionName: functionName, params: params });
+		this._load();
 	} else {
-		DBG.println("ym", functionName + ": null result");
+		DBG.println("ym", "YMSGR.sdk." + functionName + "(" + (params ? params.join(",") : "") + ")");
+		var result = YMSGR.sdk[functionName].apply(YMSGR.sdk, params);
+		if (result) {
+			DBG.println("ym", "YMSGR.sdk." + functionName + ": Result");
+			DBG.dumpObj("ym", result, functionName + ": Result");
+		} else {
+			DBG.println("ym", functionName + ": null result");
+		}
 	}
 };
 
 ZmYahooImService.prototype._load =
 function() {
+	if (this._loading) {
+		return;
+	}
 	AjxDispatcher.require(["YmSdk"]);
 
 	var self = this;
@@ -495,8 +504,9 @@ function() {
 		getPrimaryId: function() { return self._getPrimaryId(); }
 	};
 	
+	DBG.println("ym", "YMSGR.sdk.load({appObj, swfUrl})");
 	//TODO: Will this resource always be available?
-	this._callSdk("load", [appObj, "http://l.yimg.com/us.yimg.com/i/us/pim/dclient/k/img/md5/19e66808f1e211b27c640773d37d9bf7_1.swf"]);
+	YMSGR.sdk.load(appObj, "http://l.yimg.com/us.yimg.com/i/us/pim/dclient/k/img/md5/19e66808f1e211b27c640773d37d9bf7_1.swf");
 };
 
 /**
@@ -505,6 +515,14 @@ function() {
 ZmYahooImService.prototype._onLoaded =
 function() {
 	this._loaded = true;
+	this._loading = false;
+	if (this._postLoadCalls) {
+		for (var i = 0, count = this._postLoadCalls.length; i < count; i++) {
+			var postLoadObj = this._postLoadCalls[i];
+			this._callSdk(postLoadObj.functionName,  postLoadObj.params);
+		}
+		delete this._postLoadCalls;
+	}
 };
 
 /**
