@@ -1300,13 +1300,18 @@
 	@ActiveCursor@
 }
 
+.dynselect {
+	@SelectBorder@
+	@ActiveCursor@
+}
 /* table that acts as the button -- ??? put "select" style on "oselect" container */
 .oselect_table,
 .oselect_check_table {
 	@CompactTable@
 
 }
-
+.dynselect TD,
+.dynselect_table,
 .oselect TD,
 .oselect_table TD,
 .oselect_check_table TD {
@@ -1321,23 +1326,26 @@
 
 
 /* text displaying what's actually selected */
+.dynselect_dysplay,
 .oselect_display {
 	@SelectText@
 	@TextPadding@
 	border-style:none;
 }
-
+.dynselect_display_disabled,
 .oselect_display_disabled {
 	@SelectText-disabled@
 	@TextPadding@
 }
 
+.dynselect_display_empty,
 .oselect_display_empty {
 	@SelectText-empty@
 	@TextPadding@
 }
 
 /* Container of the menu of items for the oselect widget */
+.dynselect_note,
 .oselect_note {
 	@MenuContainer@
 	@NoticeText@
@@ -1347,7 +1355,7 @@
 	border-bottom-width:1px;
 	border-right-width:1px;
 }
-
+.dynselect_menu,
 .oselect_menu {
 	@MenuContainer@
 	position:absolute;
@@ -1355,6 +1363,7 @@
 	border-bottom-width:1px;
 	border-right-width:1px;
 }
+.dynselect_choice_table,
 .oselect_choice_table,
 .oselect_check_choice_table {
 	@CompactTable@
@@ -1367,6 +1376,7 @@
 
 
 /* ??? USE */
+.dynselect_choice_table_scrolled,
 .oselect_choice_table_scrolled {
 	@CompactTable@
 
@@ -1379,12 +1389,14 @@
 }
 
 /* single menu item */
+.dynselect_choice,
 .oselect_choice {
 	@MenuItem@
 	@MenuItemText@
 	@MenuItemText-normal@
 	@MenuItemBorder-normal@
 }
+.dynselect_choice_selected,
 .oselect_choice_selected {
 	@MenuItem@
 	@MenuItemBorder-hover@
