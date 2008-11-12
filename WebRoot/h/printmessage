@@ -36,7 +36,7 @@
 <table cellpadding="0" cellspacing="5"  width="100%">
 	<tr>
 		<td>
-			<div style="padding: 10px; font-size: 20px; font-weight: bold;">${message.subject}</div><hr/>
+			<div style="padding: 10px; font-size: 20px; font-weight: bold;">${zm:cook(message.subject)}</div><hr/>
 		</td>
 	</tr>
 	<tr>
