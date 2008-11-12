@@ -120,6 +120,7 @@ ZmFolder.QUERY_NAME[ZmFolder.ID_AUTO_ADDED]		= '"Emailed Contacts"';
 ZmFolder.QUERY_NAME[ZmOrganizer.ID_NOTEBOOK]	= "notebook";
 ZmFolder.QUERY_NAME[ZmOrganizer.ID_BRIEFCASE]	= "briefcase";
 ZmFolder.QUERY_NAME[ZmFolder.ID_CHATS]			= "chats";
+ZmFolder.QUERY_NAME[ZmFolder.ID_SYNC_FAILURES]	= '"Error Reports"';
 
 // order within the overview panel
 ZmFolder.SORT_ORDER = {};
