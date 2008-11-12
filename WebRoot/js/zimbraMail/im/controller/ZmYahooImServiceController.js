@@ -57,7 +57,7 @@ function(loginParams) {
 ZmYahooImServiceController.prototype.logout =
 function() {
 	ZmImService.INSTANCE.logout();
-	this._saveYahooId("");
+//	this._saveYahooId("");
 };
 
 ZmYahooImServiceController.prototype.createPresenceMenu =

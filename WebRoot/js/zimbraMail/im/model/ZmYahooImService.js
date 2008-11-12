@@ -276,6 +276,10 @@ function(ev, params) {
 		this._onConnectionFailed(params);
 		break;
 	}
+	case YMSGR.CONST.YES_USER_LOGOFF_ERR: {
+		this._onUserLogoffError(params);
+		break;
+	}
 	}
 };
 
@@ -411,6 +415,19 @@ function() {
  */
 ZmYahooImService.prototype._onConnectionFailed =
 function() {
+	this._setLoggedOff();
+};
+
+ZmYahooImService.prototype._onUserLogoffError =
+function(params) {
+	if (params.error_code == "42") {
+		var statusArgs = {
+			msg: ZmMsg.imBootedYahoo,
+			level: ZmStatusView.LEVEL_CRITICAL,
+			transitions: [ ZmToast.FADE_IN, { type: "pause", duration: 4000 }, ZmToast.FADE_OUT ]
+		};
+		appCtxt.setStatusMsg(statusArgs);
+	}
 	this._setLoggedOff();
 };
 
