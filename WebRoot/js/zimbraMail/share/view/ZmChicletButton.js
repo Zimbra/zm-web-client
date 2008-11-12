@@ -105,3 +105,10 @@ function(alert) {
 	this._alert = alert;
 };
 
+/**
+ * App toolbar buttons user ZHover instead of ZFocused
+ */
+ZmChicletButton.prototype._focus =
+function() {
+    this.setDisplayState(DwtControl.HOVER);
+};

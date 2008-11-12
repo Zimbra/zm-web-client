@@ -14,6 +14,12 @@
 <c:set var="folderId" value="${not empty paramValues.folderId[0] ? paramValues.folderId[0] : paramValues.folderId[1]}"/>
 <c:set var="actionOp" value="${not empty paramValues.actionOp[0] ? paramValues.actionOp[0] :  paramValues.actionOp[1]}"/>
 
+<c:set var="dragMsgId" value="${not empty paramValues.dragMsgId[0] ? paramValues.dragMsgId[0] : paramValues.dragMsgId[1]}"/>
+<c:set var="dragTargetFolder" value="${not empty paramValues.dragTargetFolder[0] ? paramValues.dragTargetFolder[0] : paramValues.dragTargetFolder[1]}"/>
+<c:if test="${not empty dragMsgId}">
+    <c:set var="ids" value="${dragMsgId}"/>
+</c:if>
+
 <c:choose>
 <c:when test="${zm:actionSet(param, 'actionCompose')}">
     <jsp:forward page="/h/compose"/>
@@ -167,6 +173,18 @@
             <app:status style="Warning"><fmt:message key="actionNoActionSelected"/></app:status>
         </c:otherwise>
     </c:choose>
+</c:when>
+<c:when test="${fn:startsWith(dragTargetFolder, 'm:')}">
+    <c:set var="dragFolderid" value="${fn:substring(dragTargetFolder, 2, -1)}"/>
+    <c:set var="movedFolderName" value="${zm:getFolderName(pageContext, dragFolderid)}"/>
+    <zm:checkCrumb crumb="${param.crumb}"/>
+    <zm:moveConversation folderid="${dragFolderid}"var="result" id="${ids}"/>
+    <app:status>
+        <fmt:message key="actionConvMoved">
+            <fmt:param value="${result.idCount}"/>
+            <fmt:param value="${movedFolderName}"/>
+        </fmt:message>
+    </app:status>
 </c:when>
 <c:when test="${zm:actionSet(param, 'actionMove')}">
     <c:choose>

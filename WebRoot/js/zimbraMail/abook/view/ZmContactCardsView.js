@@ -306,46 +306,6 @@ function(ev, treeView) {
 
 // Static methods
 
-ZmContactCardsView.getPrintHtml =
-function(list) {
-
-	var html = [];
-	var idx = 0;
-	var list = list.getArray();
-
-	html[idx++] = "<table border=0 style='width:6.5in'>";
-
-	for (var i = 0; i < list.length; i++) {
-		var contact = list[i];
-
-		// dont include contacts in trash folder
-		if (contact.addrbook && contact.addrbook.isInTrash())
-			continue;
-
-		// add a new row every 3 columns
-		if ((i % 3) == 0)
-			html[idx++] = "<tr>";
-		html[idx++] = "<td valign=top height=100%>";
-
-		html[idx++] = "<div style='width:2.2in; border:1px solid #CCCCCC;overflow-x:hidden;'>";
-		html[idx++] = contact.isGroup()
-			? ZmGroupView.getPrintHtml(contact, true)
-			: ZmContactView.getPrintHtml(contact, true);
-		html[idx++] = "</div>";
-
-		html[idx++] = "</td>";
-		if (((i+1) % 3) == 0)
-			html[idx++] = "</tr>";
-	}
-
-	if ((i % 3) != 0)
-		html[idx++] = "</tr>";
-
-	html[idx++] = "</table>";
-
-	return html.join("");
-};
-
 ZmContactCardsView._loadContact =
 function(cell, contactId) {
 	var contact = appCtxt.cacheGet(contactId);

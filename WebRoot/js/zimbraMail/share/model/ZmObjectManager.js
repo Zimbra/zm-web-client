@@ -132,6 +132,20 @@ function(h, type, priority) {
 	oh[type].push(h);
 };
 
+ZmObjectManager.prototype.removeHandler =
+function(h, type) {
+	type = type || (h.getTypeName() ? h.getTypeName() : "none");
+	var oh = this.getHandlers();
+	if (oh[type]) {
+		for (var i = 0, count = oh[type].length; i < count; i++) {
+			if (oh[type][i] == h) {
+				oh[type].splice(i, 1);
+				break;
+			}
+		}
+	}
+};
+
 ZmObjectManager.prototype.sortHandlers =
 function() {
 	this._allObjectHandlers = [];
@@ -177,7 +191,7 @@ function() {
 
 ZmObjectManager.prototype.setView =
 function(view) {
-	if (view != null) {
+	if (view != null && appCtxt.getZimletMgr().isLoaded()) {
 	    view.addListener(DwtEvent.ONMOUSEOVER, new AjxListener(this, this._mouseOverListener));
 	    view.addListener(DwtEvent.ONMOUSEOUT, new AjxListener(this, this._mouseOutListener));
 	    view.addListener(DwtEvent.ONMOUSEDOWN, new AjxListener(this, this._mouseDownListener));
