@@ -3421,3 +3421,20 @@ HTML>BODY .appt-selected .appt_allday_body
 	border-left: 1px solid #FFFFFF;
 	font-weight: normal;
 }
+
+.docsToolbar {
+    background-color: #EEEEEE;
+}
+
+.ZmBriefcaseTabView_Table {
+    padding-top: 10px;    
+}
+
+.BriefcaseTabBox {
+    @TreeContainer@
+    @NormalInsetBorder@    
+}
+.BriefcaseList {
+    margin-left: 5px;
+}
+

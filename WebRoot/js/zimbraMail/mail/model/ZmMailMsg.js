@@ -417,6 +417,19 @@ function (cid,aid,part) {
 	}
 };
 
+ZmMailMsg.prototype.addInlineDocAttachmentId =
+function (cid,docId,part) {
+	if (!this._inlineDocAtts) {
+		this._inlineDocAtts = [];
+	}
+	this._onChange("inlineAttachments",docId);
+	if (docId) {
+		this._inlineDocAtts.push({"cid":cid,"docid":docId});
+	} else if (part) {
+		this._inlineDocAtts.push({"cid":cid,"part":part});
+	}
+};
+
 ZmMailMsg.prototype.setInlineAttachments =
 function(inlineAtts){
 	if (inlineAtts) {
@@ -427,6 +440,11 @@ function(inlineAtts){
 ZmMailMsg.prototype.getInlineAttachments =
 function() {
 	return this._inlineAtts;
+};
+
+ZmMailMsg.prototype.getInlineDocAttachments =
+function() {
+	return this._inlineDocAtts;
 };
 
 /**
@@ -453,6 +471,26 @@ ZmMailMsg.prototype.setMessageAttachmentId =
 function(ids) {
 	this._onChange("messageAttachmentId", ids);
 	this._msgAttIds = ids;
+};
+
+/**
+* Sets the IDs of docs to attach 
+*
+* @param ids	[Array]		list of document IDs
+*/
+
+ZmMailMsg.prototype.setDocumentAttachmentId =
+function(ids) {
+	this._onChange("documentAttachmentId", ids);
+	this._docAttIds = ids;
+};
+
+ZmMailMsg.prototype.addDocumentAttachmentId =
+function(id) {
+    if(!this._docAttIds) {
+        this._docAttIds = [];
+    }
+	this._docAttIds.push(id);
 };
 
 /**
@@ -861,6 +899,18 @@ function(request, contactList, isDraft, accountName) {
 							subPartNodes.push(inlineAttNode);
 						}
 					}
+					// Handle Inline Attachments
+					var inlineDocAtts = this.getInlineDocAttachments() || [];
+					if (inlineDocAtts.length) {
+						for (j = 0; j < inlineDocAtts.length; j++) {
+							var inlineDocAttNode = {ci:inlineDocAtts[j].cid};
+							var attachNode = inlineDocAttNode.attach = {};
+							if (inlineDocAtts[j].docid) {
+								attachNode.doc = [{id: inlineDocAtts[j].docid}];
+							} 
+							subPartNodes.push(inlineDocAttNode);
+						}
+					}
 				}
 			} else {
 				partNode.content = {_content:content};
@@ -877,7 +927,8 @@ function(request, contactList, isDraft, accountName) {
 
 	if (this.attId ||
 		(this._msgAttIds && this._msgAttIds.length) ||
-		(this._forAttIds && this._forAttIds.length))
+		(this._docAttIds && this._docAttIds.length) ||
+        (this._forAttIds && this._forAttIds.length))
 	{
 		var attachNode = msgNode.attach = {};
 		if (this.attId) {
@@ -892,7 +943,16 @@ function(request, contactList, isDraft, accountName) {
 			}
 		}
 
-		// attach msg attachments
+
+        // attach docs
+        if (this._docAttIds) {
+            var docs = attachNode.doc = [];
+            for (var i = 0; i < this._docAttIds.length; i++) {
+                docs.push({id:this._docAttIds[i]});
+            }
+        }
+
+        // attach msg attachments
 		if (this._forAttIds && this._forAttIds.length) {
 			var attIds = this._filteredFwdAttIds ||  this._forAttIds;
 			if (attIds && attIds.length) {

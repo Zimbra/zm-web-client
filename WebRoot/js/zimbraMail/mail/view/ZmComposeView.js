@@ -635,6 +635,38 @@ function(attId, isDraft) {
     return msg;
 };
 
+ZmComposeView.prototype.setDocAttachments =
+function(msg, docIds) {
+    if(!docIds) {
+        return;
+    }
+    var zeroSizedAttachments = false;
+    var inline = this._isInline();
+    for (var i = 0; i < docIds.length; i++) {
+        var docAtt = docIds[i];
+        var contentType = docAtt.ct;
+        if (docAtt.s == 0) {
+            zeroSizedAttachments = true;
+            continue;
+        }
+        if (this._attachDialog && inline) {
+            if (contentType && contentType.indexOf("image") != -1) {
+                var cid = Dwt.getNextId();
+                this._htmlEditor.insertImage("cid:" + cid, AjxEnv.isIE);
+                msg.addInlineDocAttachmentId(cid, docAtt.id);
+            } else {
+                msg.addDocumentAttachmentId(docAtt.id);
+            }
+        }else {
+            msg.addDocumentAttachmentId(docAtt.id);
+        }
+    }
+    if (zeroSizedAttachments){
+        appCtxt.setStatusMsg(ZmMsg.zeroSizedAtts);
+    }    
+};
+
+
 /**
 * Sets an address field.
 *

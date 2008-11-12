@@ -46,6 +46,9 @@ ZmAttachDialog = function(shell, className) {
 	
 	//Add Default MyComputer tab
     this._addMyComputerTab();
+    if(appCtxt.get(ZmSetting.BRIEFCASE_ENABLED)) {
+        this._addBriefcaseViewTab();
+    }
 }
 
 
@@ -283,6 +286,16 @@ ZmAttachDialog.prototype._addMyComputerTab = function() {
     this.addOkListener(tabKey, okCallback);
     var cancelCallback = new AjxCallback(this, this.cancelUploadFiles);
     this.addCancelListener(tabKey, cancelCallback);
+};
+
+ZmAttachDialog.prototype._addBriefcaseViewTab = function(){
+	AjxDispatcher.require(["BriefcaseCore", "Briefcase"]);
+	this._briefcaseTabView = new ZmBriefcaseTabView(this._tabView);
+	var tabKey = this.addTab("BRIEFCASE",ZmMsg.briefcase,this._briefcaseTabView);
+	var okCallback = new AjxCallback(this._briefcaseTabView,this._briefcaseTabView.uploadFiles);
+	this.addOkListener(tabKey,okCallback);
+	var cancelCallback = new AjxCallback(this,this.cancelUploadFiles);
+	this.addCancelListener(tabKey,cancelCallback);
 };
 
 //Inline Option for attachment Dialog.
