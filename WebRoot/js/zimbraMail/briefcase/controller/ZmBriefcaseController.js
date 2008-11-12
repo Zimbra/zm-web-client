@@ -315,8 +315,21 @@ function(items) {
 
     //populate list
     if(items){
-          this._list = items;
-        }else{
+
+          //filter Notebook documents
+            var temp_list = items;
+            this._list = new ZmMailList(ZmItem.MIXED, this._currentSearch);
+            if(temp_list){
+                var temp_arr = temp_list.getArray();
+                for (var i=0; i < temp_arr.length ; i++) {
+                    var r = temp_arr[i];
+                    var org = appCtxt.getById(r.folderId);
+                    if(org && org instanceof ZmBriefcase){
+                       this._list.add(r);
+                    }
+                }
+            }
+    }else{
             this._list = new ZmList(ZmItem.BRIEFCASE);
 
             if (this._object) {

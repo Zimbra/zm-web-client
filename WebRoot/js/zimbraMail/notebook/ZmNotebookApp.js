@@ -101,7 +101,22 @@ function() {
 								return new ZmPageList(search);
 							}, this)
 						});
-    
+    ZmItem.registerItem(ZmItem.DOCUMENT,
+						{app:			ZmApp.NOTEBOOK,
+						 nameKey:		"document",
+						 icon:			"GenericDoc",
+						 soapCmd:		"ItemAction",
+						 itemClass:		"ZmDocument",
+						 node:			"doc",
+						 organizer:		ZmOrganizer.NOTEBOOK,
+						 dropTargets:	[ZmOrganizer.TAG],
+						 searchType:	"document",
+						 resultsList:
+							AjxCallback.simpleClosure(function(search) {
+								AjxDispatcher.require("NotebookCore");
+								return new ZmPageList(search, ZmItem.DOCUMENT);
+							}, this)
+						});
 };
 
 ZmNotebookApp.prototype._registerOrganizers =
@@ -164,7 +179,7 @@ function() {
 							  organizer:			ZmOrganizer.NOTEBOOK,
 							  overviewTrees:		[ZmOrganizer.NOTEBOOK, ZmOrganizer.ROSTER_TREE_ITEM, ZmOrganizer.TAG],
 							  showZimlets:			true,
-							  searchTypes:			[ZmItem.PAGE/*, ZmItem.DOCUMENT*/],
+							  searchTypes:			[ZmItem.PAGE, ZmItem.DOCUMENT],
 							  newItemOps:			newItemOps,
 							  newOrgOps:			newOrgOps,
 							  actionCodes:			actionCodes,
