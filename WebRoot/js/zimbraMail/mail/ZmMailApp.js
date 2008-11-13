@@ -1326,16 +1326,22 @@ function(callback, queryStr) {
 	var qs = queryStr || location.search;
 
 	AjxDispatcher.require("Startup2");
-	var cc = AjxDispatcher.run("GetComposeController");
+	var composeController = AjxDispatcher.run("GetComposeController");
 	var match = qs.match(/\bsubject=([^&]+)/);
 	var subject = match ? (decodeURIComponent(match[1]).replace(/\+/g, " ")) : null;
 	match = qs.match(/\bto=([^&]+)/);
 	var to = match ? decodeURIComponent(match[1]) : null;
+    match = qs.match(/\bcc=([^&]+)/);
+	var cc = match ? decodeURIComponent(match[1]) : null;
+    match = qs.match(/\bbcc=([^&]+)/);
+	var bcc = match ? decodeURIComponent(match[1]) : null;
 	match = qs.match(/\bbody=([^&]+)/);
 	var body = match ? (decodeURIComponent(match[1]).replace(/\+/g, " ")) : null;
 	var params = {
 		action: ZmOperation.NEW_MESSAGE,
 		toOverride: to,
+        ccOverride: cc,
+        bccOverride: bcc,
 		subjOverride: subject,
 		extraBodyText: body,
 		callback: callback
@@ -1347,9 +1353,9 @@ function(callback, queryStr) {
 		appCtxt.get(ZmSetting.OFFLINE_SUPPORTS_MAILTO) &&
 		appCtxt.getCurrentViewId() == ZmId.VIEW_COMPOSE)
 	{
-		cc.resetComposeForMailto(params);
+		composeController.resetComposeForMailto(params);
 	} else {
-		cc.doAction(params);
+		composeController.doAction(params);
 	}
 
 	if (!this._hasRendered) {

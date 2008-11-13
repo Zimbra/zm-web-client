@@ -144,7 +144,10 @@ function(params) {
     this._toggleBccField(null, appCtxt.get(ZmSetting.SHOW_BCC));
 
 	// populate fields based on the action and user prefs
-	this._setAddresses(action, params.toOverride);
+    this._setAddresses(action, AjxEmailAddress.TO, params.toOverride);
+    if(params.ccOverride)   this._setAddresses(action, AjxEmailAddress.CC , params.ccOverride);
+    if(params.bccOverride)  this._setAddresses(action, AjxEmailAddress.BCC , params.bccOverride);
+
 	this._setSubject(action, msg, params.subjOverride);
 	this._setBody(action, msg, params.extraBodyText);
 
@@ -1340,13 +1343,13 @@ function(textarea, skipResetBodySize) {
 * Make sure not to duplicate any addresses, even across fields.
 */
 ZmComposeView.prototype._setAddresses =
-function(action, toOverride) {
+function(action, type, override) {
 	this._action = action;
 
 	if (action == ZmOperation.NEW_MESSAGE &&
-		toOverride)
+		override)
 	{
-		this.setAddress(AjxEmailAddress.TO, toOverride);
+		this.setAddress(type, override);
 	}
 	else if (action == ZmOperation.REPLY ||
 			 action == ZmOperation.REPLY_ALL ||

@@ -1093,7 +1093,7 @@ function(ev) {
 	if (ev.detail != DwtMenuItem.CHECKED) { return; }
 
 	if (op == ZmOperation.REPLY || op == ZmOperation.REPLY_ALL) {
-		this._composeView._setAddresses(op, this._toOverride);
+		this._composeView._setAddresses(op, AjxEmailAddress.TO, this._toOverride);
 	} else if (op == ZmOperation.FORMAT_HTML || op == ZmOperation.FORMAT_TEXT) {
 		this._setFormat(ev.item.getData(ZmHtmlEditor._VALUE));
 	} else {
