@@ -440,13 +440,22 @@ and the container element is replaced with that control.
 				</tr>
 
 			<$ } $>
-			<tr><td>&nbsp;</td>
-				<td class='ZOptionsField'>
-					<div id='${id}_AUTO_SAVE_DRAFT_INTERVAL' tabindex='60'>
-						<input type=checkbox> <$=ZmMsg.autoSaveDrafts$>
-					</div>
-				</td>
-			</tr>
+
+                <tr><td>&nbsp;</td>
+                    <td class='ZOptionsField'>
+                        <div id='${id}_MAIL_MANDATORY_SPELLCHECK' tabindex='62'>
+                            <input type=checkbox> <$=ZmMsg.mandatorySpellcheck$>
+                        </div>
+                    </td>
+                </tr>
+                
+                <tr><td>&nbsp;</td>
+                    <td class='ZOptionsField'>
+                        <div id='${id}_AUTO_SAVE_DRAFT_INTERVAL' tabindex='65'>
+                            <input type=checkbox> <$=ZmMsg.autoSaveDrafts$>
+                        </div>
+                    </td>
+                </tr>
 
 			<$ if (data.isEnabled(ZmSetting.MAIL_ENABLED)) { $>
 				<$ if (isHtmlCompose || isNewWindow ) { $>
