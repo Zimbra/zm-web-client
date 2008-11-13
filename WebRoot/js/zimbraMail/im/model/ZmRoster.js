@@ -355,6 +355,32 @@ function(chatMessage) {
 	}
 };
 
+ZmRoster.prototype.onServiceAddBuddy =
+function(addr, name, presence, groups, notifications) {
+	var list = this.getRosterItemList();
+	var item = new ZmRosterItem(addr, list, name, presence, groups);
+	list.addItem(item);
+	if (notifications) {
+		this._newRosterItemtoastFormatter = this._newRosterItemtoastFormatter || new AjxMessageFormat(ZmMsg.imNewRosterItemToast);
+		var toast = this._newRosterItemtoastFormatter.format([item.getDisplayName()]);
+		appCtxt.setStatusMsg(toast);
+	}
+};
+
+ZmRoster.prototype.onServiceRemoveBuddy =
+function(addr, notifications) {
+	var list = this.getRosterItemList();
+	var item = list.getByAddr(addr);
+	if (item) {
+		var displayName = item.getDisplayName();
+		list.removeItem(item);
+		if (notifications) {
+			this._removeRosterItemToastFormatter = this._removeRosterItemToastFormatter || new AjxMessageFormat(ZmMsg.imRemoveRosterItemToast);
+			appCtxt.setStatusMsg(this._removeRosterItemToastFormatter.format([displayName]));
+		}
+	}
+};
+
 ZmRoster.prototype.onServiceSetBuddyPresence =
 function(rosterItem, jsonObj, doNotifications) {
 	var old_pres = rosterItem.getPresence().getShow();

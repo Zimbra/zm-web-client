@@ -27,10 +27,8 @@ ZmZimbraImService = function() {
 
 	this._loggedIn = false;
 
-	this._newRosterItemtoastFormatter = new AjxMessageFormat(ZmMsg.imNewRosterItemToast);
 	this._leftChatFormatter = new AjxMessageFormat(ZmMsg.imLeftChat);
 	this._enteredChatFormatter = new AjxMessageFormat(ZmMsg.imEnteredChat);
-	this._removeRosterItemToastFormatter = new AjxMessageFormat(ZmMsg.imRemoveRosterItemToast);
 }
 
 ZmZimbraImService.prototype = new ZmImService;
@@ -329,12 +327,7 @@ function(im) {
 						// mod
 					} else if (sub.to.indexOf("@") >= 0) {
 						// create
-						var item = new ZmRosterItem(sub.to, list, sub.name, null, sub.groups);
-						list.addItem(item);
-						if (notifications) {
-							var toast = this._newRosterItemtoastFormatter.format([item.getDisplayName()]);
-							appCtxt.setStatusMsg(toast);
-						}
+						this._roster.onServiceAddBuddy(sub.to, sub.name, null, sub.groups, notifications);
 					}
 				} else if (sub.from) {
 					// toast, should we user if they want to add user if they aren't in buddy list?
@@ -342,15 +335,7 @@ function(im) {
 			} else if (not.type == "unsubscribed") {
 				var unsub = not;
 				if (unsub.to) {
-					var list = this._roster.getRosterItemList();
-					var item = list.getByAddr(unsub.to);
-					if (item) {
-						var displayName = item.getDisplayName();
-						list.removeItem(item);
-						if (notifications) {
-							appCtxt.setStatusMsg(this._removeRosterItemToastFormatter.format([displayName]));
-						}
-					}
+					this._roster.onServiceRemoveBuddy(unsub.to, notifications);
 				}
 			} else if (not.type == "presence") {
 				var p = not;

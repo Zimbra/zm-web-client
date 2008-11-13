@@ -26,6 +26,7 @@ ZmYahooImService = function() {
 ZmYahooImService.prototype = new ZmImService;
 ZmYahooImService.prototype.constructor = ZmYahooImService;
 
+ZmYahooImService.YAHOO_CLOUD = 0;
 
 // Public methods
 
@@ -121,12 +122,12 @@ function(idle, idleTime) {
 
 ZmYahooImService.prototype.createRosterItem =
 function(addr, name, groups, params) {
-	this._callSdk("sendSubscribe", [[addr], true]);
+	this._callSdk("addBuddyToGroup", [ this.getMyAddress(), [addr], ZmYahooImService.YAHOO_CLOUD, groups[0]]);
 };
 
 ZmYahooImService.prototype.deleteRosterItem =
 function(rosterItem, params) {
-	this._callSdk("sendSubscribe", [[rosterItem.id], false]);
+	this._callSdk("removeBuddy", [ this.getMyAddress(), [rosterItem.id], ZmYahooImService.YAHOO_CLOUD]);
 };
 
 ZmYahooImService.prototype.sendSubscribeAuthorization =
@@ -286,6 +287,14 @@ function(ev, params) {
 	}
 	case YMSGR.CONST.YES_USER_LOGOFF_ERR: {
 		this._onUserLogoffError(params);
+		break;
+	}
+	case YMSGR.CONST.YES_ADD_BUDDY: {
+		this._onAddBuddy(params);
+		break;
+	}
+	case YMSGR.CONST.YES_REMOVE_BUDDY: {
+		this._onRemoveBuddy(params);
 		break;
 	}
 	}
@@ -477,6 +486,29 @@ function(params) {
 	if (itemList.length) {
 		list.addItems(itemList);
 	}
+};
+
+ZmYahooImService.prototype._onAddBuddy =
+function(params) {
+//	buddy: "buddy_name",
+//	buddy_grp_name: "Friends",
+//	cloud_id: "0",
+//	current_id: "my_id",
+//	error_code: "0",
+//	name: "Friends",
+//	unauth: "1"
+	this._roster.onServiceAddBuddy(params.buddy, null, null, params.buddy_grp_name, true);
+};
+
+ZmYahooImService.prototype._onRemoveBuddy =
+function(params) {
+//	buddy: "buddy_name",
+//	buddy_grp_name: "Friends",
+//	cloud_id: "0",
+//	current_id: "my_id",
+//	error_code: "0",
+//	name: "Friends"
+	this._roster.onServiceRemoveBuddy(params.buddy, true);
 };
 
 ZmYahooImService.prototype._callSdk =
