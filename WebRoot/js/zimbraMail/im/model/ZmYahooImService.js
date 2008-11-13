@@ -135,10 +135,18 @@ function(accept, add, addr) {
 
 ZmYahooImService.prototype.sendMessage =
 function(chat, text, html, typing, params) {
+	var msg;
+	if (html) {
+		this._htmlDiv = this._htmlDiv || document.createElement("DIV");
+		this._htmlDiv.innerHTML = html;
+		msg = YMSGR.YMLUtil.domToYmlRaw(this._htmlDiv);
+	} else {
+		msg = text;
+	}
 	var args = {
 		current_id: this._userId,
 		target_user: chat.getRosterItem(0).id,
-		msg: html || text
+		msg: msg
 	};
 	if (typing) {
 		args.appname = "TYPING";
@@ -325,7 +333,7 @@ function(params) {
 		from 	: params.sender,
 		to		: this.getMyAddress(),
 		ts		: new Date().getTime(),
-		body	: [{ _content: params.msg, html: true }]
+		body	: [{ _content: YMSGR.YMLUtil.ymlToHtml(params.msg), html: true }]
 	};
 	var chatMessage = new ZmChatMessage(jsonObj, false);
 	this._roster.onServiceAddChatMessage(chatMessage);
@@ -479,7 +487,7 @@ function(functionName, params) {
 		this._postLoadCalls.push({ functionName: functionName, params: params });
 		this._load();
 	} else {
-		DBG.println("ym", "YMSGR.sdk." + functionName + "(" + (params ? params.join(",") : "") + ")");
+		DBG.println("ym", "YMSGR.sdk." + functionName + "(" + (params ? AjxStringUtil.htmlEncode(params.join(",")) : "") + ")");
 		var result = YMSGR.sdk[functionName].apply(YMSGR.sdk, params);
 		if (result) {
 			DBG.println("ym", "YMSGR.sdk." + functionName + ": Result");
