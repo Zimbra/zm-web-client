@@ -307,21 +307,23 @@ function(zimletArray, zimletNames, isJS) {
 	// add link to aggregated files
 	if (!appDevMode) {
         var languageId = null;
+        var countryId = null;
         if(appCtxt.get(ZmSetting.LOCALE_NAME)) {
             var locale = appCtxt.get(ZmSetting.LOCALE_NAME);
             var index = locale.indexOf("_");
-            var languageId;
             if (index == -1) {
                 languageId = locale;
                 } else {
                 languageId = locale.substr(0, index);
+                countryId =  locale.substr(index+1, locale.length - index - 1);
             }
-        }        
+        }
         var extension = (!AjxEnv.isIE || (!AjxEnv.isIE6 && AjxEnv.isIE6up)) ? appExtension : "";
 		includes.unshift([
 			"/service/zimlet/res/Zimlets-nodev_all",
 			(isJS ? (".js" + extension) : ".css"),
-            (languageId ? "?language=" + languageId : "")
+            (languageId ? "?language=" + languageId : ""),
+            (countryId ? "&country=" + countryId : "")
         ].join(""));
 	}
 
