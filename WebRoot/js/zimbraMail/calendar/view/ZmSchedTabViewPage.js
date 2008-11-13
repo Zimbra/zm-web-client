@@ -113,6 +113,7 @@ function() {
 
 	this.set(this._dateInfo, this._editView.getOrganizer(), this._attendees);
 	this._controller._setComposeTabGroup();
+    this.enablePartcipantStatusColumn(this._editView.getRsvp());
 };
 
 ZmSchedTabViewPage.prototype.tabBlur =
@@ -417,6 +418,8 @@ function(isAllAttendees, organizer, drawBorder, index, updateTabGroup, setFocus)
 		}
 		
 		sched.ptstObj = document.getElementById(sched.dwtNameId+"_ptst");
+
+        Dwt.setVisible(sched.ptstObj, this._editView.getRsvp());
 		
 		// set handlers
 		var attendeeInput = document.getElementById(sched.dwtInputId);
@@ -754,8 +757,8 @@ function(index, attendee, type, isOrganizer) {
 				imgDiv._schedViewPageId = this._svpId;
 				imgDiv._schedTableIdx = index;
 			}
-		}
-	}
+        }
+    }
 
 	var email = attendee.getEmail();
 	if (email instanceof Array) {
@@ -1414,4 +1417,18 @@ function(idx, status) {
 ZmSchedTabViewPage.prototype.getAllAttendeeStatus =
 function(idx) {
 	return this._allAttendeesStatus[idx] ? this._allAttendeesStatus[idx] : ZmSchedTabViewPage.STATUS_FREE;
+};
+
+
+ZmSchedTabViewPage.prototype.enablePartcipantStatusColumn =
+function(show) {
+  for(var i in this._schedTable) {
+      var sched = this._schedTable[i];
+      if(sched && sched.ptstObj) {
+            Dwt.setVisible(sched.ptstObj, show);
+      }else if(i == this._organizerIndex) {
+            var ptstObj = document.getElementById(sched.dwtNameId+"_ptst");
+            Dwt.setVisible(ptstObj, show);
+      }
+  }
 };

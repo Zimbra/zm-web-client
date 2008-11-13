@@ -506,6 +506,14 @@
 				</td>
 			</tr>
 		<$
+            } else if(data.attendeesText) {
+        $>
+            <tr valign='top'>
+                <td colspan=2 align='left' style='padding-right:5px;'>
+                <$= AjxStringUtil.htmlEncode(data.attendeesText) $>
+                </td>
+            </tr>
+        <$
 			} else {
 				var ptstStatus = data.ptstStatus;
 				for (var i in ptstStatus) {

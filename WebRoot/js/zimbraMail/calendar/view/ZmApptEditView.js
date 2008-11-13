@@ -276,6 +276,12 @@ function(calItem) {
     return calItem;
 };
 
+
+ZmApptEditView.prototype.getRsvp =
+function() {
+  return this._requestResponsesCheckbox.checked;  
+};
+
 ZmApptEditView.prototype._populateForEdit =
 function(calItem, mode) {
 	ZmCalItemEditView.prototype._populateForEdit.call(this, calItem, mode);

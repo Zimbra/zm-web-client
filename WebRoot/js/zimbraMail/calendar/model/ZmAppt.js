@@ -102,6 +102,7 @@ function(appt) {
 		newAppt._orig = appt;
 	}
 	newAppt.type = ZmItem.APPT;
+	newAppt.rsvp = appt.rsvp;
 
 	return newAppt;
 };
@@ -186,6 +187,18 @@ function(controller, force) {
 			ptstStatus[ZmMsg.ptstTentative] = this.getAttendeeToolTipString(this.ptstHashMap[ZmCalBaseItem.PSTATUS_TENTATIVE]);
 			ptstStatus[ZmMsg.ptstNeedsAction] = this.getAttendeeToolTipString(this.ptstHashMap[ZmCalBaseItem.PSTATUS_NEEDS_ACTION]);
 			params.ptstStatus = ptstStatus;
+
+            var attendees = [];
+            if(!this.rsvp) {
+                var personAttendees = (this._attendees && this._attendees[ZmCalBaseItem.PERSON])
+                        ? this._attendees[ZmCalBaseItem.PERSON] : [];
+
+                for (var i = 0; i < personAttendees.length; i++) {
+                    var attendee = personAttendees[i];
+                    attendees.push(attendee.getAttendeeText(null, true));
+                }
+                params.attendeesText = this.getAttendeeToolTipString(attendees);
+            }
 		}
 
 		this._toolTip = AjxTemplate.expand("calendar.Appointment#Tooltip", params);
@@ -200,8 +213,9 @@ function(val) {
 	var str;
 	var maxLimit = 10;
 	if (val && val.length > maxLimit) {
+        var origLength = val.length;
 		var newParts = val.splice(0, maxLimit);
-		str = newParts.join(",") + " ("+ (val.length - maxLimit) +" more)" ;
+		str = newParts.join(",") + " ("+ (origLength - maxLimit) +" " +  ZmMsg.more + ")" ;
 	} else if (val) {
 		str = val.join(",");
 	}
@@ -470,6 +484,9 @@ function(message) {
             }
         }
         this.rsvp = rsvp;
+        if(this._orig) {
+            this._orig.setRsvp(rsvp);
+        }
     }
 };
 
