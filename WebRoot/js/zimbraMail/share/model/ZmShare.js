@@ -675,13 +675,14 @@ function(mode) {
 
 ZmShare.prototype._createContent =
 function(formatter) {
+	var role = ZmShare._getRoleFromPerm(this.link.perm);
 	var params = [
 		this.link.name, 
 		ZmShare._getFolderType(this.link.view),
 		(this.object ? (this.object.owner || this.grantor.name) : this.grantor.name),
 		this.grantee.name,
-		ZmShare.getRoleName(ZmShare._getRoleFromPerm(this.link.perm)),
-		ZmShare.getRoleActions(this.link.perm)
+		ZmShare.getRoleName(role),
+		ZmShare.getRoleActions(role)
 	];
 	return formatter.format(params);
 };
