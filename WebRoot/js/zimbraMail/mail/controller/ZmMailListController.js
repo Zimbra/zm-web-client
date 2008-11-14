@@ -1064,15 +1064,9 @@ function(ev) {
 ZmMailListController.prototype._checkMailListener =
 function() {
 	if (appCtxt.isOffline) {
-		var callback = new AjxCallback(this, this._checkMailListenerCallback);
-		appCtxt.getAppController().sendSync(callback);
-	} else {
-		this._checkMailListenerCallback();
+		appCtxt.getAppController().sendSync();
 	}
-};
 
-ZmMailListController.prototype._checkMailListenerCallback =
-function() {
 	var folderId = this._getSearchFolderId();
 	var folder = appCtxt.getById(folderId);
 	var isFeed = (folder && folder.isFeed());
@@ -1092,14 +1086,10 @@ function() {
 			}
 		}
 
-		// bug fix #32316 - no need call mail search in offline since we rely on
-		// notifications from hanging noop's
-		if (!appCtxt.isOffline) {
-			var normalizedFolderId = ZmOrganizer.normalizeId(folderId);
-			if ((normalizedFolderId == ZmFolder.ID_INBOX) || !hasExternalAccounts) {
-				// call explicitly from mail app (this may be mixed ctlr) - bug 23268
-				appCtxt.getApp(ZmApp.MAIL)._mailSearch();
-			}
+		var normalizedFolderId = ZmOrganizer.normalizeId(folderId);
+		if ((normalizedFolderId == ZmFolder.ID_INBOX) || !hasExternalAccounts) {
+			// call explicitly from mail app (this may be mixed ctlr) - bug 23268
+			appCtxt.getApp(ZmApp.MAIL)._mailSearch();
 		}
 	}
 };
