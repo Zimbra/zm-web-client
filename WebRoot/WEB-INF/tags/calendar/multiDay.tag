@@ -6,6 +6,7 @@
 <%@ attribute name="timezone" rtexprvalue="true" required="true" type="java.util.TimeZone"%>
 <%@ attribute name="selectedId" rtexprvalue="true" required="false" %>
 <%@ attribute name="checkedCalendars" rtexprvalue="true" required="false" %>
+<%@ attribute name="print" rtexprvalue="true" required="false" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
@@ -38,8 +39,9 @@
                            hourstart="${mailbox.prefs.calendarDayHourStart}" hourend="${mailbox.prefs.calendarDayHourEnd}"/>
 </app:handleError>
 
+<table class='ZhCalDayGrid' width="100%" border="0" cellpadding="0" cellspacing="0" style='border-collapse:collapse; height:100%;border:1px solid #A7A194;'>
 
-<table class='ZhCalDayGrid' width="100%" border="0" cellpadding="0" cellspacing="0" style='border-collapse:collapse; height:100%;'>
+<c:if test="${param.view ne 'month'}">
 <tr class='ZhCalMonthHeaderRow'>
     <td class='ZhCalDayHeader' nowrap align="center" width="1%" style='border-left:none'>
         <fmt:formatDate value="${date.time}" pattern="${yearTitleFormat}"/>
@@ -61,12 +63,12 @@
                 </c:when>
                 <c:otherwise>
                     <app:calendarUrl var="dayUrl" view="${view eq 'day' ? 'week' : 'day'}" timezone="${timezone}" rawdate="${zm:getCalendar(day.startTime, timezone)}" action=""/>
-                    <c:if test="${param.action ne 'print'}">
+                    <c:if test="${print}">
                         <a href="${fn:escapeXml(dayUrl)}">
                     </c:if>
                     <fmt:message var="titleFormat" key="CAL_${numdays > 1 ? 'MDAY_':''}DAY_TITLE_FORMAT"/>
                     <fmt:formatDate value="${zm:getCalendar(day.startTime, timezone).time}" pattern="${titleFormat}"/>
-                    <c:if test="${param.action ne 'print'}">
+                    <c:if test="${print}">
                         </a>
                     </c:if>
                 </c:otherwise>
@@ -74,6 +76,7 @@
         </td>
     </c:forEach>
 </tr>
+
 <c:forEach var="row" items="${layout.allDayRows}">
     <tr>
         <td nowrap width="1%" style='border-left:none'>
@@ -107,6 +110,7 @@
         </c:forEach>
     </tr>
 </c:forEach>
+
 <tr>
     <td class='ZhCalDayADB' nowrap width="1%" style='border-left:none'>
         &nbsp;
@@ -131,11 +135,13 @@
         </td>
     </c:forEach>
 </tr>
+</c:if>
 <c:forEach var="row" items="${layout.rows}">
     <tr style="height:100%">
         <c:if test="${row.rowNum % 4 eq 0}">
-            <td valign=top class='ZhCalDayHour' nowrap width="1%" rowspan="4" style='border-left:none'>
-                <fmt:formatDate value="${row.date}" type="time" timeStyle="short"/>
+            <td valign=top class='ZhCalDayHour' nowrap width="1%" rowspan="4" style='border-left:none;color:blue;'>
+                <c:if test="${print}"><a href=""></c:if><fmt:formatDate value="${row.date}" type="time" timeStyle="short"/>
+                <c:if test="${print}"></a></c:if>
             </td>
         </c:if>
         <c:choose>

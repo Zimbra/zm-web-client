@@ -43,19 +43,38 @@
     <c:set var="dayIncr" value="${(view eq 'workWeek') ? 7 : numdays}"/>
     <c:set var="prevDate" value="${zm:addDay(date, -dayIncr)}"/>
     <c:set var="nextDate" value="${zm:addDay(date,  dayIncr)}"/>
+    <c:set var="nextMonthDate" value="${zm:addMonth(date,  1)}"/>
+
 
     <c:set var="rangeEnd" value="${zm:addDay(currentDay,numdays).timeInMillis}"/>
     <c:set var="checkedCalendars" value="${zm:getCheckedCalendarFolderIds(mailbox)}"/>
 
     <app:skin mailbox="${mailbox}" />
     <c:set var="multiDay">
-        <app:multiDay date="${date}" numdays="${numdays}" view="${view}" timezone="${timezone}" checkedCalendars="${checkedCalendars}" query="${requestScope.calendarQuery}"/>
+        <app:multiDay date="${date}" print="${true}" numdays="${numdays}" view="${view}" timezone="${timezone}" checkedCalendars="${checkedCalendars}" query="${requestScope.calendarQuery}"/>
     </c:set>
 
 </app:handleError>
-<table width="100%" cellpadding="0" cellspacing="0" border="0">
+<table width="98%" align="center" cellpadding="0" cellspacing="0" border="0">
     <tr>
-        <td class='ZhAppContent'>
+        <td width="180">
+            <app:miniCal print="${true}" date="${not empty date ? date : zm:getToday(mailbox.prefs.timeZone)}"/>
+        </td>
+        <td width="10">
+            &nbsp;
+        </td>
+        <td width="180">
+            <app:miniCal print="${true}" date="${not empty nextMonthDate ? nextMonthDate : zm:getToday(mailbox.prefs.timeZone)}"/>            
+        </td>
+        <td>
+           &nbsp;
+        </td>
+    </tr>
+    <tr>
+        <td colspan="4"><br/></td>
+    </tr>
+    <tr>
+        <td colspan="4" class='ZhAppContent'>
             ${multiDay}
         </td>
     </tr>
