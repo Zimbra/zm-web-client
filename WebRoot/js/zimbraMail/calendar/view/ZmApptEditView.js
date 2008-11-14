@@ -271,7 +271,9 @@ function(calItem) {
 	// set any recurrence rules LAST
 	this._getRecurrence(calItem);
 
-    calItem.setRsvp(this._requestResponsesCheckbox.checked);
+    if(this.GROUP_CALENDAR_ENABLED) {
+        calItem.setRsvp(this._requestResponsesCheckbox.checked);
+    }
 
     return calItem;
 };
@@ -279,7 +281,7 @@ function(calItem) {
 
 ZmApptEditView.prototype.getRsvp =
 function() {
-  return this._requestResponsesCheckbox.checked;  
+  return this.GROUP_CALENDAR_ENABLED ? this._requestResponsesCheckbox.checked : false;  
 };
 
 ZmApptEditView.prototype._populateForEdit =
@@ -366,8 +368,10 @@ function(calItem, mode) {
 
 	this._addResourcesDiv();
 
-    
-    this._requestResponsesCheckbox.checked = calItem.shouldRsvp();
+
+    if(this.GROUP_CALENDAR_ENABLED) {
+        this._requestResponsesCheckbox.checked = calItem.shouldRsvp();
+    }
 };
 
 ZmApptEditView.prototype._addResourcesDiv =
@@ -474,7 +478,9 @@ function(width) {
 	this._endTimeSelect.addChangeListener(timeSelectListener);
 
 
-    this._requestResponsesCheckbox = document.getElementById(this._htmlElId + "_requestResponses");
+    if(this.GROUP_CALENDAR_ENABLED) {
+        this._requestResponsesCheckbox = document.getElementById(this._htmlElId + "_requestResponses");
+    }
 
 
     // timezone DwtSelect
