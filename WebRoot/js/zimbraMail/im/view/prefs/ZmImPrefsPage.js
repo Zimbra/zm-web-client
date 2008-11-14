@@ -102,7 +102,7 @@ ZmImPrefsPage.prototype._getTemplateData =
 function() {
 	var data = ZmPreferencesPage.prototype._getTemplateData.call(this);
 	data.loginMsg = AjxMessageFormat.format(ZmMsg.imNotLoggedInPrefs, "ZmImPrefsPage.login()");
-	data.hasAccounts = ZmImServiceController.INSTANCE.getSupportsAccounts();
+	data.hasAccounts = ZmImApp.INSTANCE.getServiceController().getSupportsAccounts();
 	return data;
 };
 
@@ -153,7 +153,7 @@ function() {
 
 ZmImPrefsPage.prototype._updateAccountsSection =
 function() {
-	if (!ZmImServiceController.INSTANCE.getSupportsAccounts()) {
+	if (!ZmImApp.INSTANCE.getServiceController().getSupportsAccounts()) {
 		return;
 	}
 	var loggedIn = ZmImApp.loggedIn();

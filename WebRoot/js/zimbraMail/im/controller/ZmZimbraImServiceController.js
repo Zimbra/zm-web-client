@@ -15,11 +15,11 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmZimbraImServiceController = function() {
-	ZmImServiceController.call(this, true);
+ZmZimbraImServiceController = function(roster) {
+	ZmImServiceController.call(this, roster);
 
 	// Create the service model object.
-	new ZmZimbraImService();
+	new ZmZimbraImService(roster);
 }
 
 ZmZimbraImServiceController.prototype = new ZmImServiceController;

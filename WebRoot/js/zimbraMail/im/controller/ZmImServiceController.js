@@ -18,16 +18,14 @@
 /**
  * Creates an IM service controller.
  * @constructor
- * @class
- * This class is a base class for IM service controllers. The app should create only one instance
- * of a service controller, and after it is created the single instance should be accessed via
- * ZmImServiceController.INSTANCE.
+ * @class ZmImServiceController
+ * This class is a base class for IM service controllers.
  *
  */
-ZmImServiceController = function() {
+ZmImServiceController = function(roster) {
 	if (arguments.length == 0) { return; }
 
-	ZmImServiceController.INSTANCE = this;
+	this._roster = roster;
 }
 
 ZmImServiceController.prototype.login =

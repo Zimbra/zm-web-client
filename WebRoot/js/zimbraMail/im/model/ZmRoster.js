@@ -18,8 +18,6 @@
 ZmRoster = function(imApp) {
 	ZmModel.call(this, ZmEvent.S_ROSTER);
 
-	ZmImService.INSTANCE._roster = this;
-
 	this._gateways = {
 		byService : {},
 		byDomain  : {},
@@ -28,13 +26,6 @@ ZmRoster = function(imApp) {
 	
 	this._notificationBuffer = [];
 	this._imApp = imApp;
-	this._privacyList = new ZmImPrivacyList(this);
-
-	this._idleTimer = new DwtIdleTimer(appCtxt.get(ZmSetting.IM_PREF_IDLE_TIMEOUT) * 60 * 1000 /* minutes */,
-									   new AjxCallback(this, this.setIdle));
-	if (!appCtxt.get(ZmSetting.IM_PREF_REPORT_IDLE)) {
-		this._idleTimer.kill();
-	}
 };
 
 ZmRoster.prototype = new ZmModel;
@@ -52,7 +43,7 @@ function() {
 };
 
 ZmRoster.prototype.getPrivacyList = function() {
-        return this._privacyList;
+	return this._privacyList = this._privacyList || new ZmImPrivacyList(this);
 };
 
 ZmRoster.prototype.getChatList =
@@ -320,7 +311,9 @@ ZmRoster.prototype.getGroups = function() {
 };
 
 ZmRoster.prototype.setIdle = function(idle) {
-	ZmImService.INSTANCE.setIdle(idle, this._idleTimer.timeout);
+	if (ZmImService.INSTANCE.isLoggedIn()) {
+		ZmImService.INSTANCE.setIdle(idle, this._idleTimer.timeout);
+	}
 };
 
 ZmRoster.prototype.onServiceAddChatMessage =
@@ -381,6 +374,16 @@ function(addr, notifications) {
 	}
 };
 
+ZmRoster.prototype.onServiceRequestBuddyAuth =
+function(addr) {
+	ZmImApp.INSTANCE.prepareVisuals();
+	var view = ZmChatMultiWindowView.getInstance();
+	if (view) {
+		var item = this.getRosterItem(addr);
+		ZmImSubscribeAuth.show(view.getActiveWM(), addr, item);
+	}
+};
+
 ZmRoster.prototype.onServiceSetBuddyPresence =
 function(rosterItem, jsonObj, doNotifications) {
 	var old_pres = rosterItem.getPresence().getShow();
@@ -405,6 +408,15 @@ function(rosterItem, jsonObj, doNotifications) {
 // reading his mail or whatever while logging into im.
 ZmRoster.prototype.onServiceLoggedIn =
 function(params) {
+	if (!this._idleTimer) {
+		this._idleTimer = new DwtIdleTimer(appCtxt.get(ZmSetting.IM_PREF_IDLE_TIMEOUT) * 60 * 1000 /* minutes */,
+										   new AjxCallback(this, this.setIdle));
+		if (!appCtxt.get(ZmSetting.IM_PREF_REPORT_IDLE)) {
+			this._idleTimer.kill();
+		}
+	}
+
+
 	this._notify(ZmEvent.E_LOAD, { loggedIn: true });
 	var serviceCallback = new AjxCallback(this, this._loggedInGatewayCallback, [params]);
 	var args = {

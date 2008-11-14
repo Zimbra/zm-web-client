@@ -15,8 +15,8 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmYahooImService = function() {
-	ZmImService.call(this, true);
+ZmYahooImService = function(roster) {
+	ZmImService.call(this, roster);
 
 	this._visible = false;
 	this._userId = null;
@@ -122,7 +122,7 @@ function(idle, idleTime) {
 
 ZmYahooImService.prototype.createRosterItem =
 function(addr, name, groups, params) {
-	this._callSdk("addBuddyToGroup", [ this.getMyAddress(), [addr], ZmYahooImService.YAHOO_CLOUD, groups[0]]);
+	this._callSdk("addBuddyToGroup", [ this.getMyAddress(), [addr]]);
 };
 
 ZmYahooImService.prototype.deleteRosterItem =
@@ -132,6 +132,10 @@ function(rosterItem, params) {
 
 ZmYahooImService.prototype.sendSubscribeAuthorization =
 function(accept, add, addr) {
+	this._callSdk("sendSubscribe", [ [addr], accept]);
+	if (add) {
+		this.createRosterItem(addr);
+	}
 };
 
 ZmYahooImService.prototype.sendMessage =
@@ -239,64 +243,20 @@ function(ev, params) {
 	DBG.println("ym", "----------------");
 
 	switch (ev) {
-	case YMSGR.CONST.YES_PRELOGIN_DATA: {
-		this._onPreloginData(params);
-		break;
-	}
-	case YMSGR.CONST.YES_BUDDY_LIST: {
-		this._onBuddyList(params);
-		break;
-	}
-	case YMSGR.CONST.YES_LOGGED_IN: {
-		this._onLoggedIn(params);
-		break;
-	}
-	case YMSGR.CONST.YES_PREFERENCE_DATA: {
-		break;
-	}
-	case YMSGR.CONST.YES_BUDDY_INFO: {
-		this._onBuddyInfo(params);
-		break;
-	}
-	case YMSGR.CONST.YES_USER_HAS_MAIL: {
-		break;
-	}
-	case YMSGR.CONST.YES_USER_SEND_MESG: {
-		this._onUserSendMessage(params);
-		break;
-	}
-	case YMSGR.CONST.YES_STATUS_SAVED_MESG: {
-		this._onStatusSavedMessage(params);
-		break;
-	}
-	case YMSGR.CONST.YES_SET_AWAY_STATUS: {
-		this._onSetAwayStatus(params);
-		break;
-	}
-	case YMSGR.CONST.YES_USER_LOGOFF_NOTIFY: {
-		this._onUserLogoffNotify(params);
-		break;
-	}
-	case YMSGR.CONST.YES_USER_LOGOFF_OK: {
-		this._onUserLogoffOk(params);
-		break;
-	}
-	case YMSGR.CONST.YES_CONNECTION_FAILED: {
-		this._onConnectionFailed(params);
-		break;
-	}
-	case YMSGR.CONST.YES_USER_LOGOFF_ERR: {
-		this._onUserLogoffError(params);
-		break;
-	}
-	case YMSGR.CONST.YES_ADD_BUDDY: {
-		this._onAddBuddy(params);
-		break;
-	}
-	case YMSGR.CONST.YES_REMOVE_BUDDY: {
-		this._onRemoveBuddy(params);
-		break;
-	}
+		case YMSGR.CONST.YES_PRELOGIN_DATA: this._onPreloginData(params); break;
+		case YMSGR.CONST.YES_BUDDY_LIST: this._onBuddyList(params); break;
+		case YMSGR.CONST.YES_LOGGED_IN: this._onLoggedIn(params); break;
+		case YMSGR.CONST.YES_BUDDY_INFO: this._onBuddyInfo(params); break;
+		case YMSGR.CONST.YES_USER_SEND_MESG: this._onUserSendMessage(params); break;
+		case YMSGR.CONST.YES_STATUS_SAVED_MESG: this._onStatusSavedMessage(params); break;
+		case YMSGR.CONST.YES_SET_AWAY_STATUS: this._onSetAwayStatus(params); break;
+		case YMSGR.CONST.YES_USER_LOGOFF_NOTIFY: this._onUserLogoffNotify(params); break;
+		case YMSGR.CONST.YES_USER_LOGOFF_OK: this._onUserLogoffOk(params); break;
+		case YMSGR.CONST.YES_CONNECTION_FAILED: this._onConnectionFailed(params); break;
+		case YMSGR.CONST.YES_USER_LOGOFF_ERR: this._onUserLogoffError(params); break;
+		case YMSGR.CONST.YES_ADD_BUDDY: this._onAddBuddy(params); break;
+		case YMSGR.CONST.YES_REMOVE_BUDDY: this._onRemoveBuddy(params); break;
+		case YMSGR.CONST.YES_BUDDY_AUTHORIZE_NEW_BUDDYOF: this._onBuddyAuthorizeNewBuddyof(params); break;
 	}
 };
 
@@ -509,6 +469,13 @@ function(params) {
 //	error_code: "0",
 //	name: "Friends"
 	this._roster.onServiceRemoveBuddy(params.buddy, true);
+};
+
+ZmYahooImService.prototype._onBuddyAuthorizeNewBuddyof =
+function(params) {
+//	sender: "buddy_name",
+//	target_user: "my_id"
+	this._roster.onServiceRequestBuddyAuth (params.sender);
 };
 
 ZmYahooImService.prototype._callSdk =

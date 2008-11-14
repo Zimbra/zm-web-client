@@ -24,11 +24,11 @@
  * ZmImService.INSTANCE.
  *
  */
-ZmImService = function() {
+ZmImService = function(roster) {
 	if (arguments.length == 0) { return; }
 
 	ZmImService.INSTANCE = this;
-	this._roster = null; // Is initialized when the roster is created.
+	this._roster = roster;
 }
 
 ZmImService.prototype.isLoggedIn =

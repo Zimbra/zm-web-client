@@ -15,11 +15,11 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmYahooImServiceController = function() {
-	ZmImServiceController.call(this, true);
+ZmYahooImServiceController = function(roster) {
+	ZmImServiceController.call(this, roster);
 
 	// Create the service model object.
-	new ZmYahooImService();
+	new ZmYahooImService(roster);
 }
 
 ZmYahooImServiceController.prototype = new ZmImServiceController;

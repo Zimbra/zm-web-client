@@ -22,8 +22,8 @@
  * This service communicates with the Zimbra IM server.
  *
  */
-ZmZimbraImService = function() {
-	ZmImService.call(this, true);
+ZmZimbraImService = function(roster) {
+	ZmImService.call(this, roster);
 
 	this._loggedIn = false;
 
@@ -290,13 +290,7 @@ function(im) {
 				}
 				// ignore unsubscribed entries for now (TODO FIXME)
 			} else if (not.type == "subscribe") {
-				appCtxt.getApp(ZmApp.IM).prepareVisuals();
-				var view = ZmChatMultiWindowView.getInstance();
-				// it should always be instantiated by this time, but whatever.
-				if (view) {
-					var item = this._roster.getRosterItem(not.from);
-					ZmImSubscribeAuth.show(view.getActiveWM(), not.from, item);
-				}
+				this._roster.onServiceRequestBuddyAuth(not.from);
 			} else if (not.ask && /^(un)?subscribed$/.test(not.type)) {
 				if (not.ask == "subscribe" && not.to) {
 					var list = this._roster.getRosterItemList();

@@ -24,12 +24,6 @@ ZmImApp = function(container) {
 	this._active = false;
 	ZmImApp.INSTANCE = this;
 
-	// TODO: This require sux....
-	AjxDispatcher.require([ "IMCore" ]);
-
-	// Create the service controller & service.
-	new ZmZimbraImServiceController();
-
 	this._roster = new ZmRoster(this);
 };
 
@@ -62,6 +56,7 @@ ZmImApp.prototype.constructor = ZmImApp;
 
 ZmImApp.loggedIn = function() {
 	return ZmImApp.INSTANCE &&
+		   window.ZmImService && 
 		   ZmImService.INSTANCE.isLoggedIn() &&
 		   ( appCtxt.get(ZmSetting.IM_PREF_AUTO_LOGIN) || ZmImApp.INSTANCE._roster );
 };
@@ -402,7 +397,7 @@ ZmImApp.prototype._onSettingChange = function(ev) {
 ZmImApp.prototype.refresh =
 function() {
 	delete this._lastSeq;
-	if (ZmImService.INSTANCE.isLoggedIn()) {
+	if (window.ZmImService && ZmImService.INSTANCE && ZmImService.INSTANCE.isLoggedIn()) {
 		this._roster.refresh();
 	}
 };
@@ -448,7 +443,6 @@ function(components) {
 		};
 		this._presenceButton = new ZmPresenceButton(buttonArgs);
 		this.syncImPresenceButton(this._presenceButton, false, true);
-		this._updatePresenceButton(null, this._presenceButton, false, true);
 		ZmImApp.addImPresenceMenu(this._presenceButton);
 		components[ZmAppViewMgr.C_PRESENCE] = this._presenceButton;
 
@@ -476,7 +470,7 @@ function() {
  */
 ZmImApp.prototype.login =
 function(params) {
-	ZmImServiceController.INSTANCE.login(params);
+	this.getServiceController().login(params);
 };
 
 ZmImApp.prototype._autoLogin =
@@ -533,6 +527,15 @@ function(){
         return !!this._roster;  
 };
 
+ZmImApp.prototype.getServiceController =
+function(){
+	if (!window.ZmImServiceController || !this._serviceController) {
+		AjxDispatcher.require([ "IMCore" ]);
+		this._serviceController = new ZmYahooImServiceController(this.getRoster());
+	}
+	return this._serviceController;
+};
+
 ZmImApp.prototype.getAutoCompleteGroups =
 function() {
 	return new ZmRosterTreeGroups(this.getRoster());
@@ -546,7 +549,7 @@ function(button) {
 ZmImApp.prototype.syncImPresenceButton =
 function(button, doText, doTooltip) {
 	var roster = this.getRoster();
-	this._updatePresenceButton(roster.getPresence(), button, doText, doTooltip);
+	this._updatePresenceButton(ZmImApp.loggedIn() ? roster.getPresence() : null, button, doText, doTooltip);
 	var listener = new AjxListener(this, this._rosterChangeListener, [button, doText, doTooltip]);
 	roster.addChangeListener(listener);
 };
@@ -563,7 +566,7 @@ ZmImApp.prototype.prepareVisuals = function() {
 ZmImApp.prototype._createImPresenceMenu =
 function(button) {
 	AjxDispatcher.require(["IMCore", "IM"]);
-	var menu = ZmImServiceController.INSTANCE.createPresenceMenu(button);
+	var menu = this.getServiceController().createPresenceMenu(button);
 	button.setMenu(menu);
 	return menu;
 };
@@ -585,7 +588,7 @@ function(presence, button, doText, doTooltip) {
 	button.setImage(icon);
 	var showText = presence ? AjxStringUtil.htmlEncode(presence.getShowText()) : ZmMsg.imStatusOffline;
 	if (doTooltip) {
-		var tooltip = ZmImServiceController.INSTANCE.getMyPresenceTooltip(showText);
+		var tooltip = this.getServiceController().getMyPresenceTooltip(showText);
 		button.setToolTipContent(tooltip);
 	}
 	if (doText) {
