@@ -2,6 +2,7 @@
 <%@ attribute name="message" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZMessageBean" %>
 <%@ attribute name="mailbox" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZMailboxBean" %>
 <%@ attribute name="composeUrl" rtexprvalue="true" required="true" type="java.lang.String" %>
+<%@ attribute name="print" rtexprvalue="true" required="false" type="java.lang.Boolean" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
@@ -46,19 +47,21 @@
                 <c:set value="${fn:replace(dsize,' GB',_gb)}" var="dsize"/>
                 <td><b>${fn:escapeXml(pname)}</b><br />
                         ${dsize}&nbsp;
+                    <c:if test="${not print}">
                     <a target="_blank" href="${url}&amp;disp=i"><fmt:message key="view"/></a>&nbsp;
                     <c:if test="${mailbox.features.viewInHtml and part.isViewAsHtmlTarget}">
                         <a target="_blank" href="${url}&amp;view=html"><fmt:message key="viewAsHtml"/></a>
                         &nbsp;
                     </c:if>
                     <a href="${url}&amp;disp=a"><fmt:message key="download"/></a>
+                    </c:if>    
                 </td>
             </tr>
         </table>
     </c:if>
 </c:forEach>
 
-<c:if test="${message.numberOfAttachments gt 1}">
+<c:if test="${message.numberOfAttachments gt 1 and not print}">
     <c:set var="url" value="/service/home/~/?id=${message.id}&part=${message.attachmentIds}&amp;auth=co&amp;disp=a&amp;fmt=zip"/>
     <table cellspacing="8">
         <tr>

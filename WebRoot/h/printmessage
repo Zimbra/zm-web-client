@@ -39,7 +39,8 @@
 	</tr>
 	<tr>
 		<td colspan="2">
-			<app:messagePrintView mailbox="${mailbox}" message="${message}" />
+            <zm:currentResultUrl var="extImageUrl" value="search" action="view" context="${context}" xim="1"/>
+			<app:messagePrintView mailbox="${mailbox}" externalImageUrl="${extImageUrl}" message="${message}" />
 		</td>
 	</tr>
 
