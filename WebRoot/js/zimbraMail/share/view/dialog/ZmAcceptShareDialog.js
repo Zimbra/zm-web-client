@@ -49,9 +49,10 @@ function(share) {
 	var params = [ share.grantor.name, share.link.name ];
 	this._headerEl.innerHTML = this._headerFormatter.format(params);;
 
+	var role = ZmShare._getRoleFromPerm(share.link.perm);
 	params = [
-		ZmShare.getRoleName(share.link.role),
-		ZmAcceptShareDialog._ACTIONS[share.link.role]   // TODO: Be able to generate custom perms list
+		ZmShare.getRoleName(role),
+		ZmAcceptShareDialog._ACTIONS[role]   // TODO: Be able to generate custom perms list
 	];
 	this._detailsEl.innerHTML = this._detailsFormatter.format(params);;
 	this._questionEl.innerHTML = "<b>" + ZmMsg.acceptShareQuestion + "</b>";
