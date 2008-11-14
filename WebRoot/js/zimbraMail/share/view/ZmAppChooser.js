@@ -88,7 +88,6 @@ function(id) {
 	if (this._selectedId && oldBtn) {
         this.__markPrevNext(this._selectedId, false);
 		oldBtn.setSelected(false);
-		oldBtn._noFocus = false;
     }
 
 	var newBtn = this._buttons[id];
@@ -107,8 +106,6 @@ function(id) {
 			newBtn.setText(newBtn._toggleText);
 			newBtn._toggleText = null;
 		}
-
-		newBtn._noFocus = true;
 	}
 
 	this._selectedId = id;
@@ -142,9 +139,7 @@ function(id, isLast) {
     var outerClass = null;
     var buttonId = ZmId.getButtonId(ZmId.APP, id);
     var b = new ZmChicletButton(this, outerClass, ZmApp.ICON[id], text, isLast, buttonId);
-	var tooltip = ZmMsg[ZmApp.CHOOSER_TOOLTIP[id]];
-	var sc = appCtxt._getShortcutHint(null, ZmApp.GOTO_ACTION_CODE[id]);
-	b.setToolTipContent(sc ?  [tooltip, sc].join("") : tooltip);
+	b.setToolTipContent(ZmMsg[ZmApp.CHOOSER_TOOLTIP[id]]);
 	b.setData(Dwt.KEY_ID, id);
 	this._buttons[id] = b;
 };

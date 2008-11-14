@@ -127,10 +127,6 @@
 	cursor:default;
 }
 
-.ZmHtmlEditor .ZToolbar {
-	background-color: #e5e5e5;
-}
-
 .ZMenuItemSeparator {
 	height:3px;
 	border-bottom: 1px solid #e8eef7;
@@ -161,10 +157,6 @@
 
 .ZToolbar .ZWidgetTitle {
 	color:#FFFFFF;
-}
-
-.ZmHtmlEditor .ZToolbar .ZWidgetTitle {
-	@Text@
 }
 
 .ZmPicker {

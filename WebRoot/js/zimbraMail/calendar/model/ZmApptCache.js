@@ -459,9 +459,8 @@ function(params, result) {
 	try {
 		resp = result.getResponse();
 	} catch (ex) {
-		if (callback) {
-			callback.run(result);
-		}
+		if (callback)
+			callback.run(resp);
 		return;
 	}
 
@@ -470,7 +469,7 @@ function(params, result) {
 	if(newList == null) { return; }
 
 	if (callback) {
-		callback.run(newList, params.query, result);
+		callback.run(newList, params.query);
 	} else {
 		return newList;
 	}
