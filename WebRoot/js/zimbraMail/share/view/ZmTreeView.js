@@ -369,10 +369,18 @@ function(parentNode, organizer, index, noTooltips, omit) {
 				this._treeItemHash[parentOrganizer.id] = parentNode;
 			}
 		}
+		var params = {
+			parent:parentNode,
+			index:index,
+			text:organizer.getName(this._showUnread),
+			dndScrollCallback: this._overview._dndScrollCallback,
+			dndScrollId: this._overview.id,
+			imageInfo:organizer.getIcon(),
+			nodeParam: ((appCtxt.isOffline && organizer.isOfflineSyncable && organizer.isOfflineSyncing) ? "SyncStatusOn" : null),
+			id:ZmId.getTreeItemId(this.overviewId, organizer.id)
+		};
 		// now add item
-		ti = new DwtTreeItem({parent:parentNode, index:index, text:organizer.getName(this._showUnread),
-							  dndScrollCallback: this._overview._dndScrollCallback, dndScrollId: this._overview.id,
-							  imageInfo:organizer.getIcon(), id:ZmId.getTreeItemId(this.overviewId, organizer.id)});
+		ti = new DwtTreeItem(params);
 	}
 
 	ti.setDndText(organizer.getName());
