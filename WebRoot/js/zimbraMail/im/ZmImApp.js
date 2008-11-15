@@ -465,8 +465,11 @@ function() {
 };
 
 /**
+ * Logs in to the im service.
  *
- * @param params
+ * @param params		[hash]					hash of params:
+ *        callback		[AjxCallback] 			Callback to run after login. Optional
+ *        presence		[hash]					{ show, customStatusMsg }
  */
 ZmImApp.prototype.login =
 function(params) {
@@ -527,11 +530,14 @@ function(){
         return !!this._roster;  
 };
 
+/**
+ * Returns the service controller.
+ */
 ZmImApp.prototype.getServiceController =
 function(){
 	if (!window.ZmImServiceController || !this._serviceController) {
 		AjxDispatcher.require([ "IMCore" ]);
-		this._serviceController = new ZmYahooImServiceController(this.getRoster());
+		this._serviceController = new ZmZimbraImServiceController(this.getRoster());
 	}
 	return this._serviceController;
 };

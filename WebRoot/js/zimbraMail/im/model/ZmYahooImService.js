@@ -171,11 +171,6 @@ function(im) {
 	// No-op.
 };
 
-ZmYahooImService.prototype._send =
-function(params, soapDoc, callback) {
-};
-
-
 ZmYahooImService.prototype.mapEventToName =
 function(id) {
 	for (var name in YMSGR.CONST) {
@@ -260,26 +255,30 @@ function(ev, params) {
 	}
 };
 
+/**
+ * Called to give us some data about the logged in user. The user is not yet logged
+ * in when this is called.
+ */
 ZmYahooImService.prototype._onPreloginData =
 function(params) {
-//	params = { firstname, lastname, user_id }
 	this._userId = params.user_id;
 	this._loggedIn = true;
 	this._roster.onServiceLoggedIn(this._loginParams);
 	this._loginParams = null;
 };
 
+/**
+ * This is called when the user is fully logged in.
+ */
 ZmYahooImService.prototype._onLoggedIn =
 function(params) {
 };
 
+/**
+ * Called when we get a typing notification.
+ */
 ZmYahooImService.prototype._onUserSendMessage =
 function(params) {
-//appname: "TYPING",
-//flag: "1",
-//msg: " ",
-//sender: "nameofsender",
-//target_user: "myname"
 	if (params.appname == "TYPING") {
 		var buddy = this._roster.getRosterItem(params.sender);
 		if (buddy) {
@@ -288,15 +287,11 @@ function(params) {
 	}
 };
 
+/**
+ * Called when a message is received.
+ */
 ZmYahooImService.prototype._onStatusSavedMessage =
 function(params) {
-//Key_63: ";0",
-//hash: "BQvdkQRnoAw1TK//5AKdAVIG1ZkGnw==",
-//imv_flag: "0",
-//msg: "Grrrrrrrr",
-//sender: "nameofsender",
-//target_user: "myname",
-//utf8_flag: "1"
 	var jsonObj = {
 		thread	: params.hash,
 		from 	: params.sender,
@@ -308,22 +303,11 @@ function(params) {
 	this._roster.onServiceAddChatMessage(chatMessage);
 };
 
+/**
+ * Called when updated info for a buddy is available.
+ */
 ZmYahooImService.prototype._onBuddyInfo =
 function(params) {
-//buddy_info_list: {
-//	records: [
-//		0: {
-//		  Key_198: "0",
-//		  Key_213: "0",
-//		  away_status: "2",
-//		  buddy: "buddyId",
-//		  capability_matrix: "892703",
-//		  custom_dnd_status: "0",
-//		  flag: "1",
-//		  name: "buddyName"
-//		 }
-//	]
-//}
 	if (params.buddy_info_list) {
 		var records = params.buddy_info_list.records;
 		for (var i = 0, count = records.length; i < count; i++) {
@@ -332,29 +316,16 @@ function(params) {
 	}
 };
 
+/**
+ * Called when a buddy's status changes.
+ */
 ZmYahooImService.prototype._onSetAwayStatus =
 function(params) {
-//away_msg: "Away",
-//away_status: "99",  (Seems to always be "0" or "99")
-//buddy: "buddyId",
-//custom_dnd_status: "1",
-//flag: "1",
-//name: "buddyName",
-//no_idle_time: "1",
-//utf8_flag: "1"
 	this._updateBuddy(params);
 };
 
 ZmYahooImService.prototype._updateBuddy =
 function(params) {
-//away_msg: "Away",
-//away_status: "99",  (Seems to always be "0" or "99")
-//buddy: "buddyId",
-//custom_dnd_status: "1",
-//flag: "1",
-//name: "buddyName",
-//no_idle_time: "1",
-//utf8_flag: "1"
 	var ri = this._roster.getRosterItemList().getByAddr(params.buddy);
 	if (ri) {
 		var show = this._yConstToShow(params.away_status, params.custom_dnd_status);
@@ -362,14 +333,11 @@ function(params) {
 	}
 };
 
+/**
+ * Called when a buddy logs off.
+ */
 ZmYahooImService.prototype._onUserLogoffNotify =
 function(params) {
-//away_status: "-1",
-//buddy: "buddyId",
-//custom_dnd_status: "2",
-//flag: "0",
-//name: "buddyName",
-//utf8_flag: "1"
 	var ri = this._roster.getRosterItemList().getByAddr(params.buddy);
 	if (ri) {
 		this._roster.onServiceSetBuddyPresence(ri, { show: ZmRosterPresence.SHOW_OFFLINE }, true);
@@ -383,7 +351,7 @@ function() {
 };
 
 /**
- * This user has logged out.
+ * Called after the user logs off.
  */
 ZmYahooImService.prototype._onUserLogoffOk =
 function() {
@@ -399,6 +367,9 @@ function() {
 	this._setLoggedOff();
 };
 
+/**
+ * Called when the user logs in from another location.
+ */
 ZmYahooImService.prototype._onUserLogoffError =
 function(params) {
 	if (params.error_code == "42") {
@@ -412,14 +383,11 @@ function(params) {
 	this._setLoggedOff();
 };
 
+/**
+ * Called to give us the list of the user's buddies.
+ */
 ZmYahooImService.prototype._onBuddyList =
 function(params) {
-//		params = {
-//			group_record_list {
-//		      records: [ { buddy_grp_name: xxx, buddy_record_list: [ { buddy, name, unauth } ] } ]
-//		    }
-//		    ignored_buddy_record_list: [ { buddy, name } ]
-
 	var list = this._roster.getRosterItemList();
 	list.removeAllItems();
 	var itemMap = {};
@@ -448,36 +416,36 @@ function(params) {
 	}
 };
 
+/**
+ * Called after a buddy is added.
+ */
 ZmYahooImService.prototype._onAddBuddy =
 function(params) {
-//	buddy: "buddy_name",
-//	buddy_grp_name: "Friends",
-//	cloud_id: "0",
-//	current_id: "my_id",
-//	error_code: "0",
-//	name: "Friends",
-//	unauth: "1"
 	this._roster.onServiceAddBuddy(params.buddy, null, null, params.buddy_grp_name, true);
 };
 
+/**
+ * Called after a buddy is removed.
+ */
 ZmYahooImService.prototype._onRemoveBuddy =
 function(params) {
-//	buddy: "buddy_name",
-//	buddy_grp_name: "Friends",
-//	cloud_id: "0",
-//	current_id: "my_id",
-//	error_code: "0",
-//	name: "Friends"
 	this._roster.onServiceRemoveBuddy(params.buddy, true);
 };
 
+/**
+ * Called when someone wants to add our user to a buddy list.
+ */
 ZmYahooImService.prototype._onBuddyAuthorizeNewBuddyof =
 function(params) {
-//	sender: "buddy_name",
-//	target_user: "my_id"
 	this._roster.onServiceRequestBuddyAuth (params.sender);
 };
 
+/**
+ * Makes a call to the ym sdk, ensuring the sdk is loaded and logging the call.
+ *
+ * @param functionName	[String]		Name of function on YMSGR.sdk to call
+ * @param params		[Array]			Aray of arguments to the function
+ */
 ZmYahooImService.prototype._callSdk =
 function(functionName, params) {
 	// If sdk not loaded, load it, then make this call afterwards.

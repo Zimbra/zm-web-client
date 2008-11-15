@@ -26,23 +26,43 @@ ZmImServiceController = function(roster) {
 	if (arguments.length == 0) { return; }
 
 	this._roster = roster;
-}
+};
 
+/**
+ * Logs in to the im service.
+ *
+ * @param params		[hash]					hash of params:
+ *        callback		[AjxCallback] 			Callback to run after login. Optional
+ *        presence		[hash]					{ show, customStatusMsg }
+ */
 ZmImServiceController.prototype.login =
 function(params) {
 	alert('Not implemented');
 };
 
+/**
+ * Returns the tooltip to show over the app's presence button.
+ *
+ * @param showText		[String]				Text for the current presence
+ */
 ZmImServiceController.prototype.getMyPresenceTooltip =
 function(showText) {
 	alert('Not implemented');
 };
 
+/**
+ * Create the presnece menu
+ *
+ * @param parent		[DwtControl]			Parent control
+ */
 ZmImServiceController.prototype.createPresenceMenu =
 function(parent) {
 	alert('Not implemented');
 };
 
+/**
+ * Returns true if the service supports multiple accounts (aka gsateways)
+ */
 ZmImServiceController.prototype.getSupportsAccounts =
 function() {
 	alert('Not implemented');
