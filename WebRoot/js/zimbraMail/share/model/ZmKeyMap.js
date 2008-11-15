@@ -112,6 +112,7 @@ ZmKeyMap.FLAG				= "Flag";
 ZmKeyMap.FOCUS_CONTENT_PANE	= "FocusContentPane";
 ZmKeyMap.FOCUS_SEARCH_BOX	= "FocusSearchBox";
 ZmKeyMap.FOCUS_TOOLBAR		= "FocusToolbar";
+ZmKeyMap.FOCUS_WEB_SEARCH_BOX	= "FocusWebSearchBox";
 ZmKeyMap.FORWARD			= "Forward";
 ZmKeyMap.GET_MAIL			= "GetMail";
 ZmKeyMap.GOTO_ACCT			= "GoToAccount";	// takes NNN

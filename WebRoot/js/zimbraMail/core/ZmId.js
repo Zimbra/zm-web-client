@@ -104,6 +104,7 @@ ZmId.SKIN_TREE_FOOTER				= "skin_container_tree_footer";
 ZmId.SKIN_TREE						= "skin_container_tree";
 ZmId.SKIN_USER_INFO					= "skin_container_username";
 ZmId.SKIN_WEB_SEARCH				= "skin_container_web_search";
+ZmId.SKIN_WEB_SEARCH_INPUT			= "skin_search_web_input";
 
 //
 // Literal IDs
