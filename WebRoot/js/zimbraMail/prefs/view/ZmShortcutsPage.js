@@ -337,12 +337,14 @@ ZmShortcutsPageTabViewList.prototype.constructor = ZmShortcutsPageTabViewList;
 
 ZmShortcutsPageTabViewList.prototype.showMe =
 function() {
-	if (this._hasRendered && !this._dirty) return;
+	if (this._hasRendered && !this._dirty) { return; }
 	if (this._dirty) {
 		this.getHtmlElement().innerHTML = "";
 	}
 
-	this._renderShortcuts();
+	var list = new ZmShortcutsList({style:ZmShortcutsList.PREFS_STYLE});
+	this.getHtmlElement().innerHTML = list.getContent();
+//	this._renderShortcuts();
 
 	if (!this._hasRendered){
 		this._hasRendered = true;
@@ -356,11 +358,29 @@ function() {
 	}
 };
 
-ZmShortcutsPageTabViewList.prototype._renderShortcuts =
+ZmShortcutsList = function(params) {
+
+	this._style = params.style;
+	this._content = this._renderShortcuts();
+};
+
+ZmShortcutsList.prototype = new DwtControl;
+ZmShortcutsList.prototype.constructor = ZmShortcutsList;
+
+ZmShortcutsList.PREFS_STYLE = "prefs";
+ZmShortcutsList.PRINT_STYLE = "print";
+ZmShortcutsList.PANEL_STYLE = "panel";
+
+ZmShortcutsList.prototype.getContent =
+function() {
+	return this._content;
+};
+
+ZmShortcutsList.prototype._renderShortcuts =
 function() {
 	var html = [];
 	var i = 0;
-	html[i++] = "<div style='padding:10px'>";
+	html[i++] = "<div class='" + ["ZmShortcutsList", this._style].join("-") + "'>";
 	var customKeys = appCtxt._getCustomKeys();
     if (customKeys) {
         i = this._getKeysHtml(customKeys, ZmKeyMap.MAP_NAME, html, i, true);
@@ -369,10 +389,10 @@ function() {
 	i = this._getKeysHtml(AjxKeys, DwtKeyMap.MAP_NAME, html, i);
 	html[i++] = "</div>";
 
-	this.getHtmlElement().innerHTML = html.join("");
+	return html.join("");
 };
 
-ZmShortcutsPageTabViewList.prototype._getKeysHtml =
+ZmShortcutsList.prototype._getKeysHtml =
 function(keys, mapNames, html, i, skipCheck) {
 	var kmm = appCtxt.getKeyboardMgr().__keyMapMgr;
 	var mapDesc = {};
@@ -424,9 +444,10 @@ function(keys, mapNames, html, i, skipCheck) {
 	for (var j = 0; j < maps.length; j++) {
 		var map = maps[j];
 		if (!keySequences[map]) { continue; }
-		html[i++] = "<table class='shortcutList' cellspacing=0 cellpadding=0>";
-		html[i++] = "<tr><td class='shortcutListHeader' colspan=2><div class='PanelHead'>";
-		html[i++] = keys[[map, "description"].join(".")];
+		html[i++] = "<table class='shortcutListTable' cellspacing=0 cellpadding=0>";
+		html[i++] = "<tr><td class='shortcutListHeaderTd' colspan=2><div class='shortcutListHeader'>";
+		var mapDesc = (this._style == ZmShortcutsList.PANEL_STYLE) ? ZmShortcutsList.getSummary(keys, map) : keys[[map, "description"].join(".")];
+		html[i++] = mapDesc;
 		html[i++] = "</div></td></tr>";
 
 		var actions = keySequences[map];
@@ -434,13 +455,14 @@ function(keys, mapNames, html, i, skipCheck) {
 		for (var k = 0; k < actions.length; k++) {
 			var action = actions[k];
 			var ks = keys[[action, "display"].join(".")];
-			var desc = keys[[action, "description"].join(".")];
+			var desc = (this._style == ZmShortcutsList.PANEL_STYLE) ? ZmShortcutsList.getSummary(keys, action) : keys[[action, "description"].join(".")]; 
+			//var desc = keys[[action, "description"].join(".")];
 
 			html[i++] = "<tr><td class='shortcutKeys'>";
 			var keySeq = ks.split(/\s*;\s*/);
 			var keySeq1 = [];
 			for (var m = 0; m < keySeq.length; m++) {
-				 keySeq1.push(ZmShortcutsPageTabViewList._formatKeySequence(keySeq[m]));
+				 keySeq1.push(ZmShortcutsList._formatKeySequence(keySeq[m]));
 			}
 			html[i++] = keySeq1.join(or);
 			html[i++] = "</span></td>";
@@ -456,7 +478,7 @@ function(keys, mapNames, html, i, skipCheck) {
 };
 
 // Translates a key sequence into a friendlier, more readable version
-ZmShortcutsPageTabViewList._formatKeySequence =
+ZmShortcutsList._formatKeySequence =
 function(ks) {
 
 	var html = [];
@@ -479,7 +501,7 @@ function(ks) {
 		parts[baseIdx] = base;
 		var newParts = [];
 		for (var k = 0; k < parts.length; k++) {
-			newParts.push(ZmShortcutsPageTabViewList._formatKey(parts[k]));
+			newParts.push(ZmShortcutsList._formatKey(parts[k]));
 		}
 		html[i++] = newParts.join("+");
 	}
@@ -488,9 +510,17 @@ function(ks) {
 	return html.join("");
 };
 
-ZmShortcutsPageTabViewList._formatKey =
+ZmShortcutsList._formatKey =
 function(key) {
 	return ["<span class='shortcutKey'>", key, "</span>"].join("");
+};
+
+ZmShortcutsList.getSummary =
+function(keys, map, action) {
+	var base = action ? [map, action].join(".") : map;
+	var key1 = [base, "summary"].join(".");
+	var key2 = [base, "description"].join(".");
+	return keys[key1] || keys[key2] || "";
 };
 
 /**
@@ -717,7 +747,7 @@ function(html, i, closeLinkId) {
 	html[i++] = "</div>";
 	html[i++] = AjxMessageFormat.format(ZmMsg.assignShortcuts, [ZmShortcutsPageTabViewCustom.ORG_TEXT_PLURAL[this._organizer]]);
 	html[i++] = "<div>";
-	var key = ZmShortcutsPageTabViewList._formatKey(ZmShortcutsPageTabViewCustom.SAMPLE_KEY);
+	var key = ZmShortcutsList._formatKey(ZmShortcutsPageTabViewCustom.SAMPLE_KEY);
 	var org = ZmMsg[ZmOrganizer.MSG_KEY[this._organizer]];
 	var exampleOrg = ["<i>", ZmShortcutsPageTabViewCustom.SAMPLE_ORG[this._organizer], "</i>"].join("");
 	html[i++] = AjxMessageFormat.format(ZmMsg.exampleShortcutIntro, [key, org, exampleOrg]);
@@ -731,8 +761,8 @@ function(html, i, closeLinkId) {
 			var keySeqs = ZmKeys[propName].split(/\s*;\s*/);
 			var ks = keySeqs[0];
 			var parts = ks.split(",");
-			var scText = AjxMessageFormat.format(ZmMsg.shortcutExample, [ZmShortcutsPageTabViewList._formatKeySequence(parts[0]),
-												 ZmShortcutsPageTabViewList._formatKey(ZmShortcutsPageTabViewCustom.SAMPLE_KEY)]);
+			var scText = AjxMessageFormat.format(ZmMsg.shortcutExample, [ZmShortcutsList._formatKeySequence(parts[0]),
+												 ZmShortcutsList._formatKey(ZmShortcutsPageTabViewCustom.SAMPLE_KEY)]);
 			var examplePropName = [shortcuts[j], "example"].join(".");
 			var exampleText = ZmKeys[examplePropName];
 			if (exampleText) {
@@ -978,4 +1008,72 @@ function(ev) {
 	}
 
 	return true;
+};
+
+ZmShortcutsPanel = function() {
+
+	ZmShortcutsPanel.INSTANCE = this;
+	DwtControl.call(this, {parent:appCtxt.getShell(), className:"ZmShortcutsPanel", posStyle:Dwt.ABSOLUTE_STYLE});
+	if (!this._rendered) {
+		this._createHtml();
+	}
+};
+
+ZmShortcutsPanel.prototype = new DwtControl;
+ZmShortcutsPanel.prototype.constructor = ZmShortcutsPanel;
+
+ZmShortcutsPanel.prototype.toString =
+function() {
+	return "ZmShortcutsPanel";
+}
+
+ZmShortcutsPanel.prototype.popup =
+function(maps) {
+	var list = new ZmShortcutsList({style:ZmShortcutsList.PANEL_STYLE});
+	this._contentDiv.innerHTML = list.getContent();
+	this._position();
+	this.setZIndex(Dwt.Z_DIALOG);
+};
+
+ZmShortcutsPanel.prototype.popdown =
+function(maps) {
+	this.setZIndex(Dwt.Z_HIDDEN);
+};
+
+ZmShortcutsPanel.prototype._createHtml =
+function() {
+	var headerId = [this._htmlElId, "header"].join("_");
+	var contentId = [this._htmlElId, "content"].join("_");
+	var html = [];
+	var i = 0;
+	html[i++] = "<div id='" + headerId + "'>";
+	html[i++] = "<div class='ShortcutsPanelHeader'>Keyboard Shortcuts</div>";
+	html[i++] = "<table border=0 cellpadding=0 cellspacing=0>";
+	html[i++] = "<tr><td class='ShortcutsPanelDescription ShortcutsPanelText' width='70%'>blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah</td>";
+	html[i++] = "<td class='ShortcutsPanelLinks ShortcutsPanelText' width='30%'>" +
+				"<span onclick='ZmShortcutsPanel.closeCallback();'>Close</span>" +
+				"<br />" +
+				"<span onclick='ZmShortcutsPanel.newWindowCallback();'>New Window</span></td></tr>";
+	html[i++] = "</table>";
+	html[i++] = "<hr />";
+	html[i++] = "</div>";
+	html[i++] = "<div id='" + contentId + "' style='overflow:auto'></div>";
+
+	this.getHtmlElement().innerHTML = html.join("");
+	this._headerDiv = document.getElementById(headerId);
+	this._contentDiv = document.getElementById(contentId);
+	var headerHeight = Dwt.getSize(this._headerDiv).y;
+	var h = this.getSize().y - headerHeight;
+	Dwt.setSize(this._contentDiv, Dwt.DEFAULT, h - 10);
+	this._rendered = true;
+};
+
+ZmShortcutsPanel.closeCallback =
+function() {
+	ZmShortcutsPanel.INSTANCE.popdown();
+};
+
+ZmShortcutsPanel.newWindowCallback =
+function() {
+	
 };
