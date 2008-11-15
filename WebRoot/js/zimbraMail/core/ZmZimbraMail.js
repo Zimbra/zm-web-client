@@ -1823,6 +1823,14 @@ function(actionCode, ev) {
 			break;
 		}
 
+        case ZmKeyMap.FOCUS_WEB_SEARCH_BOX: {
+            var input = document.getElementById(ZmId.SKIN_WEB_SEARCH_INPUT);
+            if (input) {
+                appCtxt.getKeyboardMgr().grabFocus(input);
+            }
+            break;
+        }
+    
 		case ZmKeyMap.FOCUS_CONTENT_PANE: {
 			this.focusContentPane();
 			break;
