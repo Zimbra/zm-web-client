@@ -40,80 +40,165 @@
 </tr></table>
 <hr/>
 <c:set var="taskIds" value="${fn:join(paramValues.id, ',')}"/>
-<c:forEach items="${taskIds}" var="id" varStatus="status">
-    <app:handleError>
-        <zm:composeUploader var="uploader"/>
-        <c:set var="compose" value="${uploader.compose}"/>
+<c:choose>
+    <c:when test="${not empty taskIds}">
+        <c:forEach items="${taskIds}" var="id" varStatus="status">
+            <app:handleError>
+                <zm:composeUploader var="uploader"/>
+                <c:set var="compose" value="${uploader.compose}"/>
 
-        <zm:getMessage var="message" id="${id}" markread="true" neuterimages="${empty param.xim}" wanthtml="false"/>
-        <c:choose>
-            <c:when test="${empty compose}">
-                <zm:messageCompose var="compose" message="${message}" action="${empty message ? 'apptnew' : 'apptedit'}"
-                                   date="${requestScope.dateContext}"
-                                   inviteId="${param.id}"
-                                   exceptionInviteId="${empty param.exInvId? null : param.exInvId}"
-                                   useInstance="${param.useInstance eq '1'}"
-                                   istask="${true}"
-                                   instanceStartTime="${param.instStartTime}"
-                                   instanceDuration="${param.instDuration}"/>
-            </c:when>
-            <c:when test="${uploader.isUpload and not empty message}">
-                <zm:fixupMessageCompose message="${message}" compose="${compose}" newattachments="${uploader.compose.hasFileItems}"/>
-            </c:when>
-        </c:choose>
-    </app:handleError>
+                <zm:getMessage var="message" id="${id}" markread="true" neuterimages="${empty param.xim}" wanthtml="false"/>
+                <c:choose>
+                    <c:when test="${empty compose}">
+                        <zm:messageCompose var="compose" message="${message}" action="${empty message ? 'apptnew' : 'apptedit'}"
+                                           date="${requestScope.dateContext}"
+                                           inviteId="${param.id}"
+                                           exceptionInviteId="${empty param.exInvId? null : param.exInvId}"
+                                           useInstance="${param.useInstance eq '1'}"
+                                           istask="${true}"
+                                           instanceStartTime="${param.instStartTime}"
+                                           instanceDuration="${param.instDuration}"/>
+                    </c:when>
+                    <c:when test="${uploader.isUpload and not empty message}">
+                        <zm:fixupMessageCompose message="${message}" compose="${compose}" newattachments="${uploader.compose.hasFileItems}"/>
+                    </c:when>
+                </c:choose>
+            </app:handleError>
 
 
-    <div style="width: 100%; background-color: rgb(238, 238, 238);">
-        <table cellpadding="2" cellspacing="0" width="100%">
-            <tr>
-                <td colspan="2" ><b>${fn:escapeXml(compose.subject)}</b></td>
-            </tr>
-            <tr>
-                <td width="1%" align="right"><label for="location"><fmt:message key="location"/>:</label></td>
-                <td>${fn:escapeXml(compose.location)}</td>
-            </tr>
-            <tr>
-                <td width="1%" align="right"><label for="priority"><fmt:message key="priority"/>:</label></td>
-                <td>
-                    <c:if test="${compose.taskPriority eq '9'}"><fmt:message key="taskPrioLow"/></c:if>
-                    <c:if test="${compose.taskPriority eq '5'}"><fmt:message key="taskPrioNormal"/></c:if>
-                    <c:if test="${compose.taskPriority eq '1'}"><fmt:message key="taskPrioHigh"/></c:if>
-                </td>
-            </tr>
-            <tr>
-                <td align="right"><fmt:message key="status" /> : </td>
-                <td nowrap>
-                    <c:if test="${compose.taskStatus eq 'NEED'}"><fmt:message key="TASK_NEED"/></c:if>
-                    <c:if test="${compose.taskStatus eq 'COMP'}"><fmt:message key="TASK_COMP"/></c:if>
-                    <c:if test="${compose.taskStatus eq 'INPR'}"><fmt:message key="TASK_INPR"/></c:if>
-                    <c:if test="${compose.taskStatus eq 'WAITING'}"><fmt:message key="TASK_WAITING"/></c:if>
-                    <c:if test="${compose.taskStatus eq 'DEFERRED'}"><fmt:message key="TASK_DEFERRED"/></c:if>
-                    &nbsp; ${compose.taskPercentComplete}%
-                </td>
-            </tr>
-            <tr>
-                <td width="1%" align="right" nowrap><label for="start"><fmt:message key="startDate"/>:</label></td>
-                <td>
-                        ${fn:escapeXml(compose.startDate)}<span class="smalltext" >&nbsp;&nbsp;&nbsp;<fmt:message key="CAL_APPT_EDIT_DATE_FORMAT_HINT"/> </span>
-                </td>
+            <div style="width: 100%; background-color: rgb(238, 238, 238);">
+                <table cellpadding="2" cellspacing="0" width="100%">
+                    <tr>
+                        <td colspan="2" ><b>${fn:escapeXml(compose.subject)}</b></td>
+                    </tr>
+                    <tr>
+                        <td width="1%" align="right"><label for="location"><fmt:message key="location"/>:</label></td>
+                        <td>${fn:escapeXml(compose.location)}</td>
+                    </tr>
+                    <tr>
+                        <td width="1%" align="right"><label for="priority"><fmt:message key="priority"/>:</label></td>
+                        <td>
+                            <c:if test="${compose.taskPriority eq '9'}"><fmt:message key="taskPrioLow"/></c:if>
+                            <c:if test="${compose.taskPriority eq '5'}"><fmt:message key="taskPrioNormal"/></c:if>
+                            <c:if test="${compose.taskPriority eq '1'}"><fmt:message key="taskPrioHigh"/></c:if>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right"><fmt:message key="status" /> : </td>
+                        <td nowrap>
+                            <c:if test="${compose.taskStatus eq 'NEED'}"><fmt:message key="TASK_NEED"/></c:if>
+                            <c:if test="${compose.taskStatus eq 'COMP'}"><fmt:message key="TASK_COMP"/></c:if>
+                            <c:if test="${compose.taskStatus eq 'INPR'}"><fmt:message key="TASK_INPR"/></c:if>
+                            <c:if test="${compose.taskStatus eq 'WAITING'}"><fmt:message key="TASK_WAITING"/></c:if>
+                            <c:if test="${compose.taskStatus eq 'DEFERRED'}"><fmt:message key="TASK_DEFERRED"/></c:if>
+                            &nbsp; ${compose.taskPercentComplete}%
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="1%" align="right" nowrap><label for="start"><fmt:message key="startDate"/>:</label></td>
+                        <td>
+                                ${fn:escapeXml(compose.startDate)}<span class="smalltext" >&nbsp;&nbsp;&nbsp;<fmt:message key="CAL_APPT_EDIT_DATE_FORMAT_HINT"/> </span>
+                        </td>
 
-            </tr>
-            <tr>
-                <td width="1%" align="right" nowrap><label for="end"><fmt:message key="taskDueDate"/>:</label></td>
-                <td>
-                        ${fn:escapeXml(compose.endDate)} <span class="smalltext" >&nbsp;&nbsp;&nbsp;<fmt:message key="CAL_APPT_EDIT_DATE_FORMAT_HINT"/></span>
-                </td>
+                    </tr>
+                    <tr>
+                        <td width="1%" align="right" nowrap><label for="end"><fmt:message key="taskDueDate"/>:</label></td>
+                        <td>
+                                ${fn:escapeXml(compose.endDate)} <span class="smalltext" >&nbsp;&nbsp;&nbsp;<fmt:message key="CAL_APPT_EDIT_DATE_FORMAT_HINT"/></span>
+                        </td>
 
-            </tr>
-        </table>
-    </div>
-    <br/>
-    <div>
-            ${fn:escapeXml(compose.content)}
-        <hr/>
-    </div>
-</c:forEach>
+                    </tr>
+                </table>
+            </div>
+            <br/>
+            <div>
+                    ${fn:escapeXml(compose.content)}
+                <hr/>
+            </div>
+        </c:forEach>
+    </c:when>
+    <c:otherwise>
+        <app:handleError>
+            <zm:computeSearchContext var="context" usecache="true"/>
+        </app:handleError>
+        <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
+            <c:set var="taskHit" value="${hit.taskHit}"/>
+            <c:set var="id" value="${taskHit.inviteId}" />
+            <app:handleError>
+                <zm:composeUploader var="uploader"/>
+                <c:set var="compose" value="${uploader.compose}"/>
+
+                <zm:getMessage var="message" id="${id}" markread="true" neuterimages="${empty param.xim}" wanthtml="false"/>
+                <c:choose>
+                    <c:when test="${empty compose}">
+                        <zm:messageCompose var="compose" message="${message}" action="${empty message ? 'apptnew' : 'apptedit'}"
+                                           date="${requestScope.dateContext}"
+                                           inviteId="${param.id}"
+                                           exceptionInviteId="${empty param.exInvId? null : param.exInvId}"
+                                           useInstance="${param.useInstance eq '1'}"
+                                           istask="${true}"
+                                           instanceStartTime="${param.instStartTime}"
+                                           instanceDuration="${param.instDuration}"/>
+                    </c:when>
+                    <c:when test="${uploader.isUpload and not empty message}">
+                        <zm:fixupMessageCompose message="${message}" compose="${compose}" newattachments="${uploader.compose.hasFileItems}"/>
+                    </c:when>
+                </c:choose>
+            </app:handleError>
+
+            <div style="width: 100%; background-color: rgb(238, 238, 238);">
+                <table cellpadding="2" cellspacing="0" width="100%">
+                    <tr>
+                        <td colspan="2" ><b>${fn:escapeXml(compose.subject)}</b></td>
+                    </tr>
+                    <tr>
+                        <td width="1%" align="right"><label for="location"><fmt:message key="location"/>:</label></td>
+                        <td>${fn:escapeXml(compose.location)}</td>
+                    </tr>
+                    <tr>
+                        <td width="1%" align="right"><label for="priority"><fmt:message key="priority"/>:</label></td>
+                        <td>
+                            <c:if test="${compose.taskPriority eq '9'}"><fmt:message key="taskPrioLow"/></c:if>
+                            <c:if test="${compose.taskPriority eq '5'}"><fmt:message key="taskPrioNormal"/></c:if>
+                            <c:if test="${compose.taskPriority eq '1'}"><fmt:message key="taskPrioHigh"/></c:if>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right"><fmt:message key="status" /> : </td>
+                        <td nowrap>
+                            <c:if test="${compose.taskStatus eq 'NEED'}"><fmt:message key="TASK_NEED"/></c:if>
+                            <c:if test="${compose.taskStatus eq 'COMP'}"><fmt:message key="TASK_COMP"/></c:if>
+                            <c:if test="${compose.taskStatus eq 'INPR'}"><fmt:message key="TASK_INPR"/></c:if>
+                            <c:if test="${compose.taskStatus eq 'WAITING'}"><fmt:message key="TASK_WAITING"/></c:if>
+                            <c:if test="${compose.taskStatus eq 'DEFERRED'}"><fmt:message key="TASK_DEFERRED"/></c:if>
+                            &nbsp; ${compose.taskPercentComplete}%
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="1%" align="right" nowrap><label for="start"><fmt:message key="startDate"/>:</label></td>
+                        <td>
+                                ${fn:escapeXml(compose.startDate)}<span class="smalltext" >&nbsp;&nbsp;&nbsp;<fmt:message key="CAL_APPT_EDIT_DATE_FORMAT_HINT"/> </span>
+                        </td>
+
+                    </tr>
+                    <tr>
+                        <td width="1%" align="right" nowrap><label for="end"><fmt:message key="taskDueDate"/>:</label></td>
+                        <td>
+                                ${fn:escapeXml(compose.endDate)} <span class="smalltext" >&nbsp;&nbsp;&nbsp;<fmt:message key="CAL_APPT_EDIT_DATE_FORMAT_HINT"/></span>
+                        </td>
+
+                    </tr>
+                </table>
+            </div>
+            <br/>
+            <div>
+                    ${fn:escapeXml(compose.content)}
+            </div>
+            <br/><br/>
+            <hr/>
+        </c:forEach>
+    </c:otherwise>
+</c:choose>
 </body>
 </html>
 <%--
