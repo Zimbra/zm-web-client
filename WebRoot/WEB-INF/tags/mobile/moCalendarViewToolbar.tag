@@ -36,16 +36,15 @@
 
 <c:set var="top_fldr_select" value="${param.top_fldr_select eq '1' ? '1' : (empty sessionScope.top_fldr_select ? '0' : sessionScope.top_fldr_select)}"/> <%-- Default disabled--%>
 <c:set var="btm_fldr_select" value="${param.btm_fldr_select eq '0' ? '0' : (empty sessionScope.btm_fldr_select ? '1' : sessionScope.btm_fldr_select)}"/> <%-- Default enabled--%>
-
+<fmt:message key="checkedCalendars" var="checkedInUI"/>
 <c:if test="${isTop && '1' eq top_stb}">
     <div class="SubToolbar">
-        <fmt:message key="calendarCheckedInUI" var="checkedInUI"/>
         <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=cals"><fmt:message key="calendars"/></a> &#171;
         <c:if test="${top_fldr_select ne '1'}">
             ${not empty sessionScope.calendar ? sessionScope.calendar.name : checkedInUI}
         </c:if>
         <c:if test="${top_fldr_select eq '1'}">
-        <select name="sfi" onchange="document.location.href='?sfi='+this.value+'&${pageContext.request.queryString}';">
+        <select name="sfi" onchange="document.location.href='?sfi='+this.value+'&st=cal';">
         <option value="null">${checkedInUI}</option>
         <zm:forEachFolder var="fldr" skiproot="true">
             <c:if test="${fldr.isCalendar || fldr.isAppointmentView}">
@@ -69,14 +68,13 @@
 </c:if>    
 <c:if test="${!isTop && '1' eq btm_stb}">
     <div class="SubToolbar">
-        <fmt:message key="calendarCheckedInUI" var="checkecInUI"/>
         <a href="${urlTarget}?st=cals"><fmt:message key="calendars"/></a> :
         <c:if test="${btm_fldr_select ne '1'}">
-            ${not empty sessionScope.calendar ? sessionScope.calendar.name : checkecInUI}
+            ${not empty sessionScope.calendar ? sessionScope.calendar.name : checkedInUI}
         </c:if>
         <c:if test="${btm_fldr_select eq '1'}">
-        <select name="sfi" onchange="document.location.href='?sfi='+this.value+'&${pageContext.request.queryString}';">
-        <option value="null"><fmt:message key="calendarCheckedInUI"/></option>
+        <select name="sfi" onchange="document.location.href='?sfi='+this.value+'&st=cal';">
+        <option value="null">${checkedInUI}</option>
         <zm:forEachFolder var="fldr" skiproot="true">
             <c:if test="${fldr.isCalendar || fldr.isAppointmentView}">
                 <option ${param.sfi eq fldr.id || sessionScope.calendar.id eq fldr.id ? 'selected=selected' : ''} value="${fldr.id}">${fn:escapeXml(fn:substring(fldr.name,0,12))}...</option>
