@@ -819,6 +819,12 @@ function(items, on) {
 			items1.push(items[i]);
 		}
 	}
+	if(on) {//notify zimlets(if any) upon flagging
+		if (appCtxt.zimletsPresent()) {
+			appCtxt.getZimletMgr().notifyZimlets("onMailFlagClick", items);
+		}
+	}
+
 //	this._list.flagItems(items1, "flag", on);
 	var list = items[0].list || this._list;
 	list.flagItems(items1, "flag", on);
