@@ -172,8 +172,7 @@ function() {
 				ZmSetting.REPLY_INCLUDE_ORIG,
 				ZmSetting.REPLY_PREFIX,
 				ZmSetting.SAVE_TO_SENT,
-                ZmSetting.COMPOSE_SAME_FORMAT,
-                ZmSetting.MAIL_MANDATORY_SPELLCHECK
+                ZmSetting.COMPOSE_SAME_FORMAT
             ]
 		},
 		IMPORT_EXPORT: {
@@ -308,11 +307,6 @@ function() {
 		displayName:		ZmMsg.composeInNewWin,
 		displayContainer:	ZmPref.TYPE_CHECKBOX,
 		precondition:		AjxCallback.simpleClosure(ZmPref.requireAllPreConditions, null, ZmSetting.MAIL_ENABLED, ZmSetting.DETACH_COMPOSE_ENABLED)
-	});
-
-    ZmPref.registerPref("MAIL_MANDATORY_SPELLCHECK", {
-		displayName:		ZmMsg.mandatorySpellcheck,
-		displayContainer:	ZmPref.TYPE_CHECKBOX		
 	});
 
 	ZmPref.registerPref("PAGE_SIZE", {

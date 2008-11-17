@@ -15,22 +15,22 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmPresenceMenu = function(parent, statuses) {
+ZmPresenceMenu = function(parent) {
 	ZmPopupMenu.call(this, parent);
-	this._statuses = statuses;
+	var list = ZmPresenceMenu._getOperations();
 	var presenceListener = new AjxListener(this, this._presenceItemListener);
-	for (var i = 0; i < statuses.length; i++) {
-		this.addOperation(statuses[i], presenceListener, DwtMenuItem.RADIO_STYLE);
+	for (var i = 0; i < list.length; i++) {
+		this._addOperation(list[i], presenceListener, DwtMenuItem.RADIO_STYLE);
 	}
 
-	this._mruSeparator = this.addOperation(ZmOperation.SEP);
+	this._mruSeparator = this._addOperation(ZmOperation.SEP);
 	this._mruIndex = this.getNumChildren();
 
 	this._mruItems = [];
 
-	this._mruSeparator = this.addOperation(ZmOperation.SEP);
+	this._mruSeparator = this._addOperation(ZmOperation.SEP);
 	var customListener = new AjxListener(this, this._presenceCustomItemListener);
-	this.addOperation(ZmOperation.IM_PRESENCE_CUSTOM_MSG, customListener);
+	this._addOperation(ZmOperation.IM_PRESENCE_CUSTOM_MSG, customListener)
 };
 
 ZmPresenceMenu.prototype = new ZmPopupMenu;
@@ -51,7 +51,9 @@ function(delay, x, y, kbGenerated) {
 	ZmPopupMenu.prototype.popup.call(this, delay, x, y, kbGenerated);
 };
 
-ZmPresenceMenu.prototype.addOperation =
+// Protected methods
+
+ZmPresenceMenu.prototype._addOperation =
 function(op, listener, style, index) {
 	if (op == ZmOperation.SEP) {
 		return new DwtMenuItem({parent:this, style:DwtMenuItem.SEPARATOR_STYLE});
@@ -70,7 +72,18 @@ function(op, listener, style, index) {
 	}
 };
 
-// Protected methods
+ZmPresenceMenu._getOperations =
+function() {
+	ZmPresenceMenu._LIST = ZmPresenceMenu._LIST || [
+		ZmOperation.IM_PRESENCE_OFFLINE,
+		ZmOperation.IM_PRESENCE_ONLINE,
+		ZmOperation.IM_PRESENCE_CHAT,
+		ZmOperation.IM_PRESENCE_DND,
+		ZmOperation.IM_PRESENCE_AWAY,
+		ZmOperation.IM_PRESENCE_XA
+	];
+	return ZmPresenceMenu._LIST;
+};
 
 ZmPresenceMenu.prototype._presenceItemListener =
 function(ev) {
@@ -79,15 +92,6 @@ function(ev) {
 	}
 	var id = ev.item.getData(ZmOperation.KEY_ID);
 	var show = ZmRosterPresence.operationToShow(id);
-	if (ZmImApp.loggedIn()) {
-		this._doSetPresence(show);
-	} else {
-		ZmImApp.INSTANCE.login({ presence: { show: show } });
-	}
-};
-
-ZmPresenceMenu.prototype._doSetPresence =
-function(show) {
 	ZmImApp.INSTANCE.getRoster().setPresence(show, 0, null);
 };
 
@@ -99,17 +103,8 @@ function(ev) {
 
 ZmPresenceMenu.prototype._setCustom =
 function(message) {
-	if (ZmImApp.loggedIn()) {
-		this._doSetCustom(message);
-	} else {
-		ZmImApp.INSTANCE.login({ presence: { show: ZmRosterPresence.SHOW_ONLINE, customStatusMsg: message } });
-	}
-};
-
-ZmPresenceMenu.prototype._doSetCustom =
-function(message) {
 	var batchCommand = new ZmBatchCommand();
-	ZmImApp.INSTANCE.getRoster().setPresence(ZmRosterPresence.SHOW_ONLINE, 0, message, batchCommand);
+	ZmImApp.INSTANCE.getRoster().setPresence(null, 0, message, batchCommand);
 	this._addToMRU(message, batchCommand);
 	batchCommand.run();
 };
@@ -118,7 +113,7 @@ ZmPresenceMenu.prototype._getMRUItem =
 function(index) {
 	if (!this._mruItems[index]) {
 		this._presenceMRUListenerObj = this._presenceMRUListenerObj || new AjxListener(this, this._presenceMRUListener);
-		this._mruItems[index] = this.addOperation(
+		this._mruItems[index] = this._addOperation(
 				ZmOperation.IM_PRESENCE_CUSTOM_MRU, this._presenceMRUListenerObj,
 				DwtMenuItem.RADIO_STYLE, this._mruIndex++);
 	}
@@ -152,10 +147,11 @@ function() {
 
 	var statusImage = "Offline";
 	if (!status) {
-        for (var i = 0; i < this._statuses.length; i++) {
-            if (this._statuses[i] != ZmOperation.SEP) {
-                var mi = this.getItemById(ZmOperation.MENUITEM_ID, this._statuses[i]);
-                if (this._statuses[i] == currentShowOp) {
+        var list = ZmPresenceMenu._getOperations();
+        for (var i = 0; i < list.length; i++) {
+            if (list[i] != ZmOperation.SEP) {
+                var mi = this.getItemById(ZmOperation.MENUITEM_ID, list[i]);
+                if (list[i] == currentShowOp) {
                     mi.setChecked(true, true);
 					statusImage = mi.getImage();
 					break;
@@ -180,7 +176,7 @@ function(statusImage) {
 		if (gateways.length > 1) {
 			if (!this._gatewayItems) {
 				this._gatewayItems = [];
-				this._gatewayItems.push(this.addOperation(ZmOperation.SEP));
+				this._gatewayItems.push(this._addOperation(ZmOperation.SEP));
 			}
 			for (var i = 1, count = gateways.length; i < count; i++) {
 				var gateway = gateways[i];
