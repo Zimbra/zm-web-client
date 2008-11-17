@@ -125,12 +125,14 @@ function(calItem) {
 	this._closeButton.addSelectionListener(new AjxListener(this, this.close));
 	this._closeButton.reparentHtmlElement(closeBtnCellId);
 
-    // add the save button for reminders and  move select
-    this._editButton = new DwtButton({parent:this, className:"DwtToolbarButton"});
-    this._editButton.setImage("Edit");
-    this._editButton.setText(ZmMsg.edit);
-    this._editButton.addSelectionListener(new AjxListener(this, this.edit));
-    this._editButton.reparentHtmlElement(editBtnCellId);
+    if(document.getElementById(editBtnCellId)) {
+        // add the save button for reminders and  move select
+        this._editButton = new DwtButton({parent:this, className:"DwtToolbarButton"});
+        this._editButton.setImage("Edit");
+        this._editButton.setText(ZmMsg.edit);
+        this._editButton.addSelectionListener(new AjxListener(this, this.edit));
+        this._editButton.reparentHtmlElement(editBtnCellId);
+    }
 
     // content/body
 	var hasHtmlPart = (calItem.notesTopPart && calItem.notesTopPart.getContentType() == ZmMimeTable.MULTI_ALT);
@@ -370,7 +372,8 @@ function(calItem) {
 		folders: String(calItem.id).match(/:/) ? [] : this._controller.getCalendars(),
 		folderLabel: ZmMsg.calendar,
         reminderLabel: ZmMsg.reminder,
-        alarm: calItem.alarm
+        alarm: calItem.alarm,
+        isAppt: true
     };
 };
 
