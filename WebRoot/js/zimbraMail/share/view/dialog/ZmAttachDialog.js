@@ -289,13 +289,20 @@ ZmAttachDialog.prototype._addMyComputerTab = function() {
 };
 
 ZmAttachDialog.prototype._addBriefcaseViewTab = function(){
-	AjxDispatcher.require(["BriefcaseCore", "Briefcase"]);
-	this._briefcaseTabView = new ZmBriefcaseTabView(this._tabView);
-	var tabKey = this.addTab("BRIEFCASE",ZmMsg.briefcase,this._briefcaseTabView);
-	var okCallback = new AjxCallback(this._briefcaseTabView,this._briefcaseTabView.uploadFiles);
-	this.addOkListener(tabKey,okCallback);
-	var cancelCallback = new AjxCallback(this,this.cancelUploadFiles);
-	this.addCancelListener(tabKey,cancelCallback);
+    var briefcaseTabViewCallback =  new AjxCallback(this, this.getBriefcaseTabView);
+	var tabKey = this.addTab("BRIEFCASE", ZmMsg.briefcase, briefcaseTabViewCallback);
+};
+
+ZmAttachDialog.prototype.getBriefcaseTabView = function(tabKey){
+    if(!this._briefcaseTabView) {
+        AjxDispatcher.require(["BriefcaseCore", "Briefcase"]);
+        this._briefcaseTabView = new ZmBriefcaseTabView(this._tabView);
+        var okCallback = new AjxCallback(this._briefcaseTabView,this._briefcaseTabView.uploadFiles);
+        this.addOkListener(tabKey,okCallback);
+        var cancelCallback = new AjxCallback(this,this.cancelUploadFiles);
+        this.addCancelListener(tabKey,cancelCallback);
+    }
+    return this._briefcaseTabView;
 };
 
 //Inline Option for attachment Dialog.
