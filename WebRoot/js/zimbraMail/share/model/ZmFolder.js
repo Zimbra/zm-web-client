@@ -98,7 +98,6 @@ ZmFolder.ICON[ZmFolder.ID_TRASH]				= "Trash";
 ZmFolder.ICON[ZmFolder.ID_SPAM]					= "SpamFolder";
 ZmFolder.ICON[ZmFolder.ID_SENT]					= "SentFolder";
 ZmFolder.ICON[ZmFolder.ID_SYNC_FAILURES]		= "SendReceive"; // XXX: need a new icon
-ZmFolder.ICON[ZmFolder.ID_ARCHIVE]				= "ArchiveFolder";
 ZmFolder.ICON[ZmFolder.ID_OUTBOX]				= "Outbox";
 ZmFolder.ICON[ZmFolder.ID_DRAFTS]				= "DraftFolder";
 ZmFolder.ICON[ZmFolder.ID_CHATS]				= "ChatFolder";
@@ -396,6 +395,7 @@ function(obj) {
 				this.isOfflineSyncing = false;
 			}
 			this.reparent(newParent);
+			this.isOfflineArchive = this.isUnder(ZmOrganizer.ID_ARCHIVE);
 			details.oldPath = this.getPath();
 			this._notify(ZmEvent.E_MOVE, details);
 			obj.l = null;
@@ -449,6 +449,7 @@ function(showUnread, maxLength, noMarkup, useSystemName) {
 ZmFolder.prototype.getIcon =
 function() {
 	if (this.nId == ZmOrganizer.ID_ROOT)	{ return null; }
+	if (this.isOfflineArchive)				{ return "ArchiveFolder"; }
 	if (ZmFolder.ICON[this.nId])			{ return ZmFolder.ICON[this.nId]; }
 	if (this.isFeed())						{ return "RSS"; }
 	if (this.isRemote())					{ return "SharedMailFolder"; }
