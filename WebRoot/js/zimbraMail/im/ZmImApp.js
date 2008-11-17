@@ -56,7 +56,8 @@ ZmImApp.prototype.constructor = ZmImApp;
 
 ZmImApp.loggedIn = function() {
 	return ZmImApp.INSTANCE &&
-		   window.ZmImService && 
+		   window.ZmImService &&
+		   ZmImService.INSTANCE &&
 		   ZmImService.INSTANCE.isLoggedIn() &&
 		   ( appCtxt.get(ZmSetting.IM_PREF_AUTO_LOGIN) || ZmImApp.INSTANCE._roster );
 };
