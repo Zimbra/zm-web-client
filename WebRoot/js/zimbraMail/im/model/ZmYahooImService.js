@@ -21,12 +21,31 @@ ZmYahooImService = function(roster) {
 	this._visible = false;
 	this._userId = null;
 	this._loggedIn = false;
+
+	// Setup maps of cloud ids and domain names.
+	this._cloudToDomains = {};
+	this._domainToCloud = {};
+	var data = [
+		{ cloud: ZmYahooImService.YAHOO_CLOUD, domains: ["yahoo.com", "ymail.com", "rocketmail.com"] },
+		{ cloud: ZmYahooImService.GOOGLE_CLOUD, domains: ["gmail.com"] },
+		{ cloud: ZmYahooImService.MSN_CLOUD, domains: ["msn.com"] },
+	];
+	for (var i = 0, dataCount = data.length; i < dataCount; i++) {
+		var cloud = data[i].cloud;
+		var domains = data[i].domains;
+		this._cloudToDomains[cloud] = domains;
+		for (var j = 0, domainCount = domains.length; j < domainCount; j++) {
+			this._domainToCloud[domains[j]] = cloud;
+		}
+	}
 };
 
 ZmYahooImService.prototype = new ZmImService;
 ZmYahooImService.prototype.constructor = ZmYahooImService;
 
 ZmYahooImService.YAHOO_CLOUD = 0;
+ZmYahooImService.MSN_CLOUD = 2;
+ZmYahooImService.GOOGLE_CLOUD = 4;
 
 // Public methods
 
@@ -122,12 +141,14 @@ function(idle, idleTime) {
 
 ZmYahooImService.prototype.createRosterItem =
 function(addr, name, groups, params) {
-	this._callSdk("addBuddyToGroup", [ this.getMyAddress(), [addr]]);
+	var data = this._addressToYahooServiceId(addr);
+	this._callSdk("addBuddyToGroup", [ this.getMyAddress(), [data.buddy], data.cloud]);
 };
 
 ZmYahooImService.prototype.deleteRosterItem =
 function(rosterItem, params) {
-	this._callSdk("removeBuddy", [ this.getMyAddress(), [rosterItem.id], ZmYahooImService.YAHOO_CLOUD]);
+	var data = this._rosterItemToYahooServiceId(rosterItem);
+	this._callSdk("removeBuddy", [ this.getMyAddress(), [data.buddy], data.cloud]);
 };
 
 ZmYahooImService.prototype.sendSubscribeAuthorization =
@@ -150,7 +171,7 @@ function(chat, text, html, typing, params) {
 	}
 	var args = {
 		current_id: this._userId,
-		target_user: chat.getRosterItem(0).id,
+		target_user: this._rosterItemToYahooServiceId(chat.getRosterItem(0)).buddy,
 		msg: msg
 	};
 	if (typing) {
@@ -171,7 +192,7 @@ function(im) {
 	// No-op.
 };
 
-ZmYahooImService.prototype.mapEventToName =
+ZmYahooImService.prototype._mapEventToName =
 function(id) {
 	for (var name in YMSGR.CONST) {
 		if ( (YMSGR.CONST[name]==id) && (name.indexOf("YES_")==0) ) {
@@ -209,6 +230,80 @@ function(yConst, customDndStatus) {
 	}
 };
 
+/**
+ * Converts a buddy & cloud id to an id that we can use as the buddy id.
+ * This is done so buddy ids for this service look like the ones in the
+ * Zimbra service, and enables us to look up buddies by email address.
+ *
+ * @param buddy			[String]	The buddy id given to us by the ym sdk.
+ * @param cloud         [Number]	The cloud ID.
+ */
+ZmYahooImService.prototype._getBuddyId =
+function(buddy, cloud) {
+	var buddyLower = buddy.toLowerCase();
+	if (buddyLower.indexOf('@') != -1) {
+		return buddyLower;
+	}
+	var domains = this._cloudToDomains[cloud || 0];
+	return domains ? [buddyLower, domains[0]].join('@') : buddyLower;
+};
+
+/**
+ * Takes the given roster item and returns a { buddy, cloud_id } pair
+ * that can be passed to the yahoo service.
+ *
+ * @param rosterItem	[ZmRosterItem]	The roster item.
+ */
+ZmYahooImService.prototype._rosterItemToYahooServiceId =
+function(rosterItem) {
+	if (rosterItem._yahooServiceId) {
+		return {
+			buddy: rosterItem._yahooServiceId.buddy,
+			cloud: rosterItem._yahooServiceId.cloud || 0
+		};
+	} else {
+		return this._addressToYahooServiceId(rosterItem.id);
+	}
+};
+
+/**
+ * Takes the given email address and returns a { buddy, cloud_id } pair
+ * that can be passed to the yahoo service. If the address contains a
+ * domain name we don't recognize, then we default to the yahoo cloud.
+ *
+ * @param addr	[String]	The email address.
+ */
+ZmYahooImService.prototype._addressToYahooServiceId =
+function(addr) {
+	if (!this._cloudRegExp) {
+		// Create a Regexp that is something like: /([\w\d_\.]+)@(gmail.com|google.com|msn.com)/i
+		var buffer = ["([\\w\\d_\.]+)@("];
+		var gotOne = false;
+		for (var domain in this._domainToCloud) {
+			if (gotOne) {
+				buffer.push("|");
+			}
+			buffer.push(domain);
+			gotOne = true;
+		}
+		buffer.push(")");
+		this._cloudRegExp = new RegExp(buffer.join(""), "i");
+	}
+
+	var match = this._cloudRegExp.exec(addr);
+	if (match) {
+		return {
+			buddy: match[1],
+			cloud: this._domainToCloud[match[2]] || ZmYahooImService.YAHOO_CLOUD
+		};
+	} else {
+		return {
+			buddy: addr,
+			cloud: ZmYahooImService.YAHOO_CLOUD
+		};
+	}
+};
+
 ZmYahooImService.prototype._setPresence =
 function(show, customStatusMsg) {
 	if (customStatusMsg) {
@@ -233,8 +328,8 @@ function(show, customStatusMsg) {
  */
 ZmYahooImService.prototype._onEvent =
 function(ev, params) {
-	DBG.println("ym", "ZmYahooImService.prototype.onEvent: " + this.mapEventToName(ev));
-	DBG.dumpObj("ym", params, this.mapEventToName(ev));
+	DBG.println("ym", "ZmYahooImService.prototype.onEvent: " + this._mapEventToName(ev));
+	DBG.dumpObj("ym", params, this._mapEventToName(ev));
 	DBG.println("ym", "----------------");
 
 	switch (ev) {
@@ -294,7 +389,7 @@ ZmYahooImService.prototype._onStatusSavedMessage =
 function(params) {
 	var jsonObj = {
 		thread	: params.hash,
-		from 	: params.sender,
+		from 	: this._getBuddyId(params.sender, params.cloud_id),
 		to		: this.getMyAddress(),
 		ts		: new Date().getTime(),
 		body	: [{ _content: YMSGR.YMLUtil.ymlToHtml(params.msg), html: true }]
@@ -326,10 +421,12 @@ function(params) {
 
 ZmYahooImService.prototype._updateBuddy =
 function(params) {
-	var ri = this._roster.getRosterItemList().getByAddr(params.buddy);
-	if (ri) {
+	var id = this._getBuddyId(params.buddy, params.cloud_id);
+	var rosterItem = this._roster.getRosterItemList().getByAddr(id);
+	if (rosterItem) {
+		rosterItem._yahooServiceId = { buddy: params.buddy, cloud: params.cloud_id };
 		var show = this._yConstToShow(params.away_status, params.custom_dnd_status);
-		this._roster.onServiceSetBuddyPresence(ri, { show: show, status: params.away_msg }, true);
+		this._roster.onServiceSetBuddyPresence(rosterItem, { show: show, status: params.away_msg }, true);
 	}
 };
 
@@ -401,7 +498,9 @@ function(params) {
 					var record = group.buddy_record_list.records[recordIndex];
 					var rosterItem = itemMap[record.buddy];
 					if (!rosterItem) {
-						rosterItem = new ZmRosterItem(record.buddy, list, record.name, new ZmRosterPresence(ZmRosterPresence.SHOW_UNKNOWN), group.buddy_grp_name);
+						var id = this._getBuddyId(record.buddy, params.cloud_id);
+						rosterItem = new ZmRosterItem(id, list, record.name, new ZmRosterPresence(ZmRosterPresence.SHOW_UNKNOWN), group.buddy_grp_name);
+						rosterItem._yahooServiceId = { buddy: record.buddy, cloud: undefined };
 						itemMap[record.buddy] = rosterItem;
 						itemList.push(rosterItem);
 					} else {
@@ -421,7 +520,8 @@ function(params) {
  */
 ZmYahooImService.prototype._onAddBuddy =
 function(params) {
-	this._roster.onServiceAddBuddy(params.buddy, null, null, params.buddy_grp_name, true);
+	var id = this._getBuddyId(params.buddy, params.cloud_id);
+	this._roster.onServiceAddBuddy(id, null, null, params.buddy_grp_name, true);
 };
 
 /**
@@ -429,7 +529,8 @@ function(params) {
  */
 ZmYahooImService.prototype._onRemoveBuddy =
 function(params) {
-	this._roster.onServiceRemoveBuddy(params.buddy, true);
+	var id = this._getBuddyId(params.buddy, params.cloud_id);
+	this._roster.onServiceRemoveBuddy(id, true);
 };
 
 /**
@@ -462,6 +563,7 @@ function(functionName, params) {
 		} else {
 			DBG.println("ym", functionName + ": null result");
 		}
+		return result;
 	}
 };
 

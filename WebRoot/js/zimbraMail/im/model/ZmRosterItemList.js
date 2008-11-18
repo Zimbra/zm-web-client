@@ -52,7 +52,7 @@ ZmRosterItemList.prototype.removeItem = function(item, skipNotify) {
 
 ZmRosterItemList.prototype.getByAddr =
 function(addr) {
-    return this.getById(addr);
+    return this.getById(addr.toLowerCase());
 };
 
 /**
