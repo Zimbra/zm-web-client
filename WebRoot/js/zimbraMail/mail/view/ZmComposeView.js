@@ -407,8 +407,8 @@ function(attId, isDraft) {
 
     var zeroSizedAttachments = false;
 	// handle Inline Attachments
-	var inline = this._isInline(); // XXX: not necessarily accurate for fwd/reply
-	if (this._attachDialog && inline && attId) {
+	//var inline = this._isInline(); // XXX: not necessarily accurate for fwd/reply
+	if (this._attachDialog && this._attachDialog.isInline() && attId) {
 		for (var i = 0; i < attId.length; i++) {
 			var att = attId[i];
 			if (att.s == 0) {
@@ -480,10 +480,10 @@ function(attId, isDraft) {
 		var htmlPart = new ZmMimePart();
 		htmlPart.setContentType(ZmMimeTable.TEXT_HTML);
 
-		if (!(isDraft && attId)) {
+		//if (!(isDraft && attId)) {
 			var idoc = this._htmlEditor._getIframeDoc();
 			this._restoreMultipartRelatedImages(idoc);
-		}
+		//}
 
 		var defangedContent = this._htmlEditor.getContent(true);
 
@@ -503,15 +503,6 @@ function(attId, isDraft) {
         }
 
 		htmlPart.setContent(defangedContent);
-
-		if (inline) {
-			var relatedPart = new ZmMimePart();
-			relatedPart.setContentType(ZmMimeTable.MULTI_RELATED);
-			relatedPart.children.add(htmlPart);
-			top.children.add(relatedPart);
-		} else {
-			top.children.add(htmlPart);
-		}
 
 		// Bug 31535 - inline img atts not preserved on reply/forward
 		// Try to find inline imgs in the composer that were brought into it from the orig msg,
@@ -536,7 +527,23 @@ function(attId, isDraft) {
 				}
 			}
 		}
+
+        var inlineAtts = msg.getInlineAttachments();
+		if ( inlineAtts &&  inlineAtts.length > 0 ) {
+			var relatedPart = new ZmMimePart();
+			relatedPart.setContentType(ZmMimeTable.MULTI_RELATED);
+			relatedPart.children.add(htmlPart);
+			top.children.add(relatedPart);
+		} else {
+			top.children.add(htmlPart);
+		}
+
+        
 	} else {
+
+
+        var inline = this._isInline();
+        
 		var textPart = (this._extraParts || inline) ? new ZmMimePart() : top;
 		textPart.setContentType(ZmMimeTable.TEXT_PLAIN);
 		textPart.setContent(this._htmlEditor.getContent());
