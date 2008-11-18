@@ -1630,26 +1630,8 @@ function(tagId) {
 
 ZmMailMsgView.prototype._handleMsgTruncated =
 function() {
-	var params = {
-		sender: appCtxt.getAppController(),
-		msgId: this._msg.id,
-		getHtml: appCtxt.get(ZmSetting.VIEW_AS_HTML),
-		callback: (new AjxCallback(this, this._handleResponseMsgTruncated)),
-		noBusyOverlay: true,
-		noTruncate: true
-	};
-	ZmMailMsg.fetchMsg(params);
-};
-
-ZmMailMsgView.prototype._handleResponseMsgTruncated =
-function(result) {
-	// parse temp message (we dont want to cache a huge msg)
-	var node = result.getResponse().GetMsgResponse.m[0];
-	var msg = new ZmMailMsg(node.id, null, true);
-	msg._loadFromDom(node);
-	msg.showImages = this._msg.showImages;
-
-	appCtxt.getPrintView().render(msg, true);
+	var url = ("/h/printmessage?id=" + this._msg.id);
+	window.open(appContextPath+url, "_blank");
 };
 
 // Focus management - just pass through to native element's focus()
