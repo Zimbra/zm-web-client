@@ -933,9 +933,11 @@ function(keyMap, shortcut, orgId) {
 /**
  * Returns an object that looks like a keys properties map, which contains the
  * properties needed to display the user's aliased shortcuts.
+ *
+ * @param keys		[hash]*		if provided, custom keys will be added to these keys
  */
 ZmAppCtxt.prototype._getCustomKeys =
-function() {
+function(keys) {
 
 	if (!this._customKeys) {
 		var kmm = this.getAppController().getKeyMapMgr();
@@ -944,7 +946,7 @@ function() {
 		if (!(shortcuts && shortcuts.length)) { return null; }
 
 		var c = ZmKeyMap.MAP_CUSTOM;
-		var customKeys = {};
+		var customKeys = keys || {};
 		var key, key1;
 		key = key1 = [c, "description"].join(".");
 		customKeys[key] = ZmKeys[key1];
@@ -967,7 +969,7 @@ function() {
 			key = [c, sc.action, "display"].join(".");
 			customKeys[key] = keySeq;
 			key = [c, sc.action, "description"].join(".");
-			key1 = [map, sc.baseAction, "summary"].join(".");
+			key1 = [map, sc.baseAction, "custom"].join(".");
 			customKeys[key] = AjxMessageFormat.format(ZmKeys[key1], org.getName());
 			key = [c, sc.action, "sort"].join(".");
 			key1 = [map, sc.baseAction, "sort"].join(".");
@@ -978,4 +980,13 @@ function() {
 	}
 
 	return this._customKeys;
+};
+
+ZmAppCtxt.prototype.getShortcutsPanel =
+function() {
+	if (!this._shortcutsPanel) {
+		AjxDispatcher.require("Preferences");
+		this._shortcutsPanel = new ZmShortcutsPanel();
+	}
+	return this._shortcutsPanel;
 };

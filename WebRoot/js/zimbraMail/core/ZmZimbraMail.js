@@ -1869,6 +1869,13 @@ function(actionCode, ev) {
 			break;
 		}
 
+		case ZmKeyMap.SHORTCUTS: {
+			var panel = appCtxt.getShortcutsPanel();
+			panel.popup();
+			break;
+		}
+
+		// this action needs to be last
 		case ZmKeyMap.CANCEL: {
 			// see if there's a current drag operation we can cancel
 			var handled = false;
