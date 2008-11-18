@@ -344,7 +344,6 @@ function() {
 
 	var list = new ZmShortcutsList({style:ZmShortcutsList.PREFS_STYLE});
 	this.getHtmlElement().innerHTML = list.getContent();
-//	this._renderShortcuts();
 
 	if (!this._hasRendered){
 		this._hasRendered = true;
@@ -361,6 +360,21 @@ function() {
 ZmShortcutsList = function(params) {
 
 	this._style = params.style;
+    if (params.maps && params.maps.length) {
+        this._maps = {};
+        var km = appCtxt.getAppController().getKeyMapMgr()
+        for (var i = 0; i < params.maps.length; i++) {
+            var map = params.maps[i];
+            var mapName = DwtKeyMap.MAP_NAME_R[map] || ZmKeyMap.MAP_NAME_R[map];
+            this._maps[mapName] = true;
+            var parents = km.getAncestors(map);
+            for (var j = 0; j < parents.length; j++) {
+                mapName = DwtKeyMap.MAP_NAME_R[parents[j]] || ZmKeyMap.MAP_NAME_R[parents[j]];
+                this._maps[mapName] = true;
+            }
+        }
+    }
+
 	this._content = this._renderShortcuts();
 };
 
@@ -370,6 +384,9 @@ ZmShortcutsList.prototype.constructor = ZmShortcutsList;
 ZmShortcutsList.PREFS_STYLE = "prefs";
 ZmShortcutsList.PRINT_STYLE = "print";
 ZmShortcutsList.PANEL_STYLE = "panel";
+
+ZmShortcutsList.STANDARD_MAPS = ["Global", "DwtMenu", "DwtListView", "DwtTreeItem", "DwtButton", "DwtDialog", "DwtToolBar", "DwtToolBar-horiz",
+								 "DwtToolBar-vert", "DwtHtmlEditor", "DwtTabView"];
 
 ZmShortcutsList.prototype.getContent =
 function() {
@@ -383,13 +400,10 @@ function() {
 	html[i++] = "<div class='" + ["ZmShortcutsList", this._style].join("-") + "'>";
     html[i++] = "<table cellspacing=10 cellpadding=0 border=0>";
     html[i++] = "<tr>";
-    html[i++] = "<td><div class='shortcutListType'>Application Shortcuts</div></td>";
-    html[i++] = "<td><div class='shortcutListType'>System Shortcuts</div></td></tr>";
+    html[i++] = "<td><div class='shortcutListType'>" + ZmMsg.shortcutsApp + "</div></td>";
+    html[i++] = "<td><div class='shortcutListType'>" + ZmMsg.shortcutsSys + "</div></td></tr>";
     html[i++] = "<tr>";
-	var customKeys = appCtxt._getCustomKeys(ZmKeys);
-//    if (customKeys) {
-//        i = this._getKeysHtml(customKeys, ZmKeyMap.MAP_NAME, html, i);
-//    }
+	appCtxt._getCustomKeys(ZmKeys);
 	i = this._getKeysHtml(ZmKeys, ZmKeyMap.MAP_NAME, html, i);
 	i = this._getKeysHtml(AjxKeys, DwtKeyMap.MAP_NAME, html, i);
     html[i++] = "</tr></table>";
@@ -409,6 +423,7 @@ function(keys, mapNames, html, i) {
 		if (!propValue || (typeof propValue != "string")) { continue; }
 		var parts = propName.split(".");
 		var map = parts[0];
+        if (this._maps && !this._maps[map]) { continue; }
 		var isMap = (parts.length == 2);
 		var action = isMap ? null : parts[1];
 		var field = parts[parts.length - 1];
@@ -1018,10 +1033,11 @@ function(ev) {
 	return true;
 };
 
-ZmShortcutsPanel = function() {
+ZmShortcutsPanel = function(params) {
 
 	ZmShortcutsPanel.INSTANCE = this;
 	DwtControl.call(this, {parent:appCtxt.getShell(), className:"ZmShortcutsPanel", posStyle:Dwt.ABSOLUTE_STYLE});
+
 	if (!this._rendered) {
 		this._createHtml();
 	}
@@ -1037,7 +1053,7 @@ function() {
 
 ZmShortcutsPanel.prototype.popup =
 function(maps) {
-	var list = new ZmShortcutsList({style:ZmShortcutsList.PANEL_STYLE});
+	var list = new ZmShortcutsList({style:ZmShortcutsList.PANEL_STYLE, maps:maps});
 	this._contentDiv.innerHTML = list.getContent();
 	this._position();
 	this.setZIndex(Dwt.Z_DIALOG);
@@ -1055,13 +1071,13 @@ function() {
 	var html = [];
 	var i = 0;
 	html[i++] = "<div id='" + headerId + "'>";
-	html[i++] = "<div class='ShortcutsPanelHeader'>Keyboard Shortcuts</div>";
+	html[i++] = "<div class='ShortcutsPanelHeader'>" + ZmMsg.keyboardShortcuts + "</div>";
 	html[i++] = "<table border=0 cellpadding=0 cellspacing=0>";
-	html[i++] = "<tr><td class='ShortcutsPanelDescription ShortcutsPanelText' width='70%'>blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah</td>";
+	html[i++] = "<tr><td class='ShortcutsPanelDescription ShortcutsPanelText' width='70%'>" + ZmMsg.shortcutsCurrent + "</td>";
 	html[i++] = "<td class='ShortcutsPanelLinks ShortcutsPanelText' width='30%'>" +
-				"<span onclick='ZmShortcutsPanel.closeCallback();'>Close</span>" +
+				"<span onclick='ZmShortcutsPanel.closeCallback();'>" + ZmMsg.close + "</span>" +
 				"<br />" +
-				"<span onclick='ZmShortcutsPanel.newWindowCallback();'>New Window</span></td></tr>";
+				"<span onclick='ZmShortcutsPanel.newWindowCallback();'>" + ZmMsg.newWindow + "</span></td></tr>";
 	html[i++] = "</table>";
 	html[i++] = "<hr />";
 	html[i++] = "</div>";

@@ -1871,7 +1871,8 @@ function(actionCode, ev) {
 
 		case ZmKeyMap.SHORTCUTS: {
 			var panel = appCtxt.getShortcutsPanel();
-			panel.popup();
+            var maps = ZmShortcutsList.STANDARD_MAPS.concat(this.getKeyMapName());
+			panel.popup(maps);
 			break;
 		}
 
