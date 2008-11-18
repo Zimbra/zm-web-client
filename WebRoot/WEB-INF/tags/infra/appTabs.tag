@@ -68,6 +68,15 @@
             </td>
             <td class='TabSpacerR'/>
         </c:if>
+        <c:if test="${mailbox.features.notebook}">
+            <td class='TabSpacer'/>
+            <td class='Tab ${selected=='notebook' ? 'TabSelected' :'TabNormal'}'>
+                <a id='TAB_NOTEBOOK' href="<c:url value="/h/search?st=wiki"/>">
+                    <span id='tab_ikon_notebook'><app:img src="startup/ImgTaskList.gif" altkey='ALT_APP_NOTEBOOK'/></span><span><fmt:message
+                        key="notebook"/></span></a>
+            </td>
+            <td class='TabSpacerR'/>
+        </c:if>
         <!--
         <c:if test="${mailbox.features.briefcases}">
             <td class='TabSpacer'/>

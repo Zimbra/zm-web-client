@@ -7,6 +7,7 @@
 <%@ attribute name="calendars" rtexprvalue="true" required="false" %>
 <%@ attribute name="tasks" rtexprvalue="true" required="false" %>
 <%@ attribute name="briefcases" rtexprvalue="true" required="false" %>
+<%@ attribute name="notebook" rtexprvalue="true" required="false" %>
 <%@ attribute name="minical" rtexprvalue="true" required="false" %>
 <%@ attribute name="date" rtexprvalue="true" required="false" type="java.util.Calendar" %>
 <%@ attribute name="editmode" rtexprvalue="true" required="false" %>
@@ -85,7 +86,7 @@
 						</td>
 					</tr>
 					<tr><td style="background-color: white;" valign="top">
-						<app:overviewTree mailbox="${mailbox}" keys="${keys}" minical="${minical}" calendars="${calendars}" contacts="${contacts}" voice="${voice}" tasks="${tasks}" briefcases="${briefcases}" tags="${tags}" searches="${searches}" folders="${folders}" editmode="${editmode}" date="${date}"/>
+						<app:overviewTree mailbox="${mailbox}" keys="${keys}" minical="${minical}" calendars="${calendars}" contacts="${contacts}" notebook="${notebook}" voice="${voice}" tasks="${tasks}" briefcases="${briefcases}" tags="${tags}" searches="${searches}" folders="${folders}" editmode="${editmode}" date="${date}"/>
 						</td>
 					</tr>
 					</table>
@@ -308,7 +309,7 @@
 							<td height='100%' id='skin_td_tree' colspan=3 valign='top'>
 								<div id='skin_container_tree' class='skin_container'>
 								<c:if test="${empty editmode}">
-								<app:overviewTree mailbox="${mailbox}" keys="${keys}" minical="${minical}" calendars="${calendars}" contacts="${contacts}" tasks="${tasks}" voice = "${voice}" briefcases="${briefcases}" tags="${tags}" searches="${searches}" folders="${folders}" editmode="${editmode}" date="${date}"/>
+								<app:overviewTree mailbox="${mailbox}" keys="${keys}" minical="${minical}" calendars="${calendars}" contacts="${contacts}" tasks="${tasks}" voice = "${voice}" notebook="${notebook}" briefcases="${briefcases}" tags="${tags}" searches="${searches}" folders="${folders}" editmode="${editmode}" date="${date}"/>
 								</c:if>
 								</div>
 							</td>
@@ -501,7 +502,7 @@
 		<tr>
 			<c:if test="${empty editmode}">
 				<td valign="top" class="Overview">
-					<app:overviewTree mailbox="${mailbox}" keys="${keys}" minical="${minical}" calendars="${calendars}" contacts="${contacts}" voice="${voice}" tasks="${tasks}" briefcases="${briefcases}" tags="${tags}" searches="${searches}" folders="${folders}" editmode="${editmode}" date="${date}"/>
+					<app:overviewTree mailbox="${mailbox}" keys="${keys}" minical="${minical}" calendars="${calendars}" contacts="${contacts}" voice="${voice}" tasks="${tasks}" notebook="${notebook}" briefcases="${briefcases}" tags="${tags}" searches="${searches}" folders="${folders}" editmode="${editmode}" date="${date}"/>
 				</td>
 			</c:if>
 			<c:set var="adsOn" value="${!empty ads}"/>
