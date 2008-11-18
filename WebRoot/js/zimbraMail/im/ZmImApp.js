@@ -266,6 +266,13 @@ ZmImApp.prototype._registerSettings = function(settings) {
 							   defaultValue : ""
 							 });
 
+	settings.registerSetting("IM_SERVICE",
+							 { name         : "zimbraIMService",
+							   type         : ZmSetting.T_PREF,
+							   dataType     : ZmSetting.D_STRING,
+							   defaultValue : "zimbra"
+							 });
+
 
 	var listener = new AjxListener(this, this._onSettingChange);
 	settings.getSetting(ZmSetting.IM_PREF_INSTANT_NOTIFY).addChangeListener(listener);
@@ -538,7 +545,10 @@ ZmImApp.prototype.getServiceController =
 function(){
 	if (!window.ZmImServiceController || !this._serviceController) {
 		AjxDispatcher.require([ "IMCore" ]);
-		this._serviceController = new ZmZimbraImServiceController(this.getRoster());
+		var roster = this.getRoster();
+		this._serviceController = appCtxt.get(ZmSetting.IM_SERVICE) == "yahoo" ?
+			new ZmYahooImServiceController(roster) :
+			new ZmZimbraImServiceController(roster);
 	}
 	return this._serviceController;
 };
