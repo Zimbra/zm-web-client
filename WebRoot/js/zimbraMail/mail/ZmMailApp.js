@@ -979,14 +979,11 @@ function(creates) {
 					? ([msg.subject, " - ", (msg.fragment || "")].join(""))
 					: (msg.fragment || "");
 
-				var title;
-				if (appCtxt.numVisibleAccounts > 1) {
-					var from = msg.getAddress(AjxEmailAddress.FROM)
-					var email = from.getName() || from.getAddress();
-					title = AjxMessageFormat.format(ZmMsg.newMail, [email, acct.getDisplayName()]);
-				} else {
-					title = ZmMsg.newMail;
-				}
+				var from = msg.getAddress(AjxEmailAddress.FROM);
+				var email = from.getName() || from.getAddress();
+				var title = (appCtxt.numVisibleAccounts > 1)
+					? AjxMessageFormat.format(ZmMsg.newMailWithAccount, [email, acct.getDisplayName()])
+					: AjxMessageFormat.format(ZmMsg.newMail, email);
 
 				if (AjxEnv.isMac) {
 					window.platform.showNotification(title, text, "resource://webapp/icons/default/launcher.icns");
