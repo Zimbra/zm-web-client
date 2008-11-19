@@ -44,7 +44,7 @@ function() {
  */
 ZmRosterItem.prototype._delete =
 function() {
-	ZmImService.INSTANCE.deleteRosterItem(this);
+	ZmImApp.INSTANCE.getService().deleteRosterItem(this);
 };
 
 ZmRosterItem.prototype.getPresence =

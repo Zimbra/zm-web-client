@@ -18,9 +18,8 @@
 ZmYahooImServiceController = function(roster) {
 	ZmImServiceController.call(this, roster);
 
-	// Create the service model object.
-	new ZmYahooImService(roster);
-}
+	this.service = new ZmYahooImService(roster);
+};
 
 ZmYahooImServiceController.prototype = new ZmImServiceController;
 ZmYahooImServiceController.prototype.constructor = ZmYahooImServiceController;
@@ -35,9 +34,9 @@ function() {
 
 ZmYahooImServiceController.prototype.getMyPresenceTooltip =
 function(showText) {
-	if (ZmImService.INSTANCE.isLoggedIn()) {
+	if (this.service.isLoggedIn()) {
 		this._presenceTooltipFormat = this._presenceTooltipFormat || new AjxMessageFormat(ZmMsg.presenceTooltipYahoo);
-		return this._presenceTooltipFormat.format([ZmImService.INSTANCE.getMyAddress(), showText]);
+		return this._presenceTooltipFormat.format([this.service.getMyAddress(), showText]);
 	} else {
 		return ZmMsg.presenceTooltipYahooLoggedOut;
 	}
@@ -56,7 +55,7 @@ function(loginParams) {
 
 ZmYahooImServiceController.prototype.logout =
 function() {
-	ZmImService.INSTANCE.logout();
+	this.service.logout();
 	this._saveYahooId("");
 };
 
@@ -122,7 +121,7 @@ function(loginParams, id, remember, dialog, response) {
 			return str.substring(0, str.indexOf(';'));
 		}
 		var cookie = ["Y=", trim(responseData.Y), "; T=", trim(responseData.T)].join("");
-		ZmImService.INSTANCE.login(cookie, loginParams);
+		this.service.login(cookie, loginParams);
 		if (remember) {
 			this._saveYahooId(id);
 		}
@@ -164,6 +163,6 @@ function(id) {
 
 ZmYahooImServiceController.prototype._presencePopupListener =
 function(logoutItem) {
-	logoutItem.setEnabled(ZmImService.INSTANCE.isLoggedIn());
+	logoutItem.setEnabled(this.service.isLoggedIn());
 };
 

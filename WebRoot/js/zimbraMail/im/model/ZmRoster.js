@@ -55,7 +55,7 @@ function() {
 
 ZmRoster.prototype.getMyAddress =
 function() {
-	return ZmImService.INSTANCE.getMyAddress();
+	return ZmImApp.INSTANCE.getService().getMyAddress();
 };
 
 ZmRoster.prototype.getRosterItem =
@@ -115,7 +115,7 @@ function(noBusyOverlay) {
 		asyncMode: true,
 		noBusyOverlay: noBusyOverlay
 	};
-	ZmImService.INSTANCE.getRoster(callback, args);
+	ZmImApp.INSTANCE.getService().getRoster(callback, args);
 };
 
 ZmRoster.prototype._handleResponseReload =
@@ -150,7 +150,7 @@ function(roster) {
 		this.getPresence().setFromJS(roster.presence);
 		this.notifyPresence();
 	}
-	ZmImService.INSTANCE.startIgnoreNotify();
+	ZmImApp.INSTANCE.getService().startIgnoreNotify();
 };
 
 /**
@@ -158,7 +158,7 @@ function(roster) {
  */
 ZmRoster.prototype.createRosterItem =
 function(addr, name, groups) {
-	ZmImService.INSTANCE.createRosterItem(addr, name, groups);
+	ZmImApp.INSTANCE.getService().createRosterItem(addr, name, groups);
 };
 
 /**
@@ -166,8 +166,8 @@ function(addr, name, groups) {
  */
 ZmRoster.prototype.setPresence =
 function(show, priority, customStatusMsg, batchCommand) {
-	ZmImService.INSTANCE.setPresence(show, priority, customStatusMsg, batchCommand);
-	ZmImService.INSTANCE.startIgnoreNotify();
+	ZmImApp.INSTANCE.getService().setPresence(show, priority, customStatusMsg, batchCommand);
+	ZmImApp.INSTANCE.getService().startIgnoreNotify();
 };
 
 ZmRoster.prototype.pushNotification = function(im) {
@@ -188,7 +188,7 @@ ZmRoster.prototype.refresh = function() {
  */
 ZmRoster.prototype.handleNotification =
 function(im) {
-	ZmImService.INSTANCE.handleNotification(im);
+	ZmImApp.INSTANCE.getService().handleNotification(im);
 };
 
 ZmRoster.prototype.joinChatRequest = function(thread, addr) {
@@ -209,7 +209,7 @@ ZmRoster.prototype.joinChatRequest = function(thread, addr) {
 };
 
 ZmRoster.prototype.sendSubscribeAuthorization = function(accept, add, addr) {
-	ZmImService.INSTANCE.sendSubscribeAuthorization(accept, add, addr);
+	ZmImApp.INSTANCE.getService().sendSubscribeAuthorization(accept, add, addr);
 };
 
 ZmRoster.prototype.addGatewayListListener = function(listener) {
@@ -217,18 +217,18 @@ ZmRoster.prototype.addGatewayListListener = function(listener) {
 };
 
 ZmRoster.prototype.reconnectGateway = function(gw) {
-	ZmImService.INSTANCE.reconnectGateway(gw);
-	ZmImService.INSTANCE.startIgnoreNotify();
+	ZmImApp.INSTANCE.getService().reconnectGateway(gw);
+	ZmImApp.INSTANCE.getService().startIgnoreNotify();
 };
 
 ZmRoster.prototype.unregisterGateway = function(service, batchCmd) {
-	ZmImService.INSTANCE.unregisterGateway(service, batchCmd);
-	ZmImService.INSTANCE.startIgnoreNotify();
+	ZmImApp.INSTANCE.getService().unregisterGateway(service, batchCmd);
+	ZmImApp.INSTANCE.getService().startIgnoreNotify();
 };
 
 ZmRoster.prototype.registerGateway = function(service, screenName, password, batchCmd) {
-	ZmImService.INSTANCE.registerGateway(service, screenName, password, batchCmd);
-	ZmImService.INSTANCE.startIgnoreNotify();
+	ZmImApp.INSTANCE.getService().registerGateway(service, screenName, password, batchCmd);
+	ZmImApp.INSTANCE.getService().startIgnoreNotify();
 	
 	// since it's not returned by a gwStatus notification, let's
 	// set a nick here so the icon becomes "online" if a
@@ -237,7 +237,7 @@ ZmRoster.prototype.registerGateway = function(service, screenName, password, bat
 };
 
 ZmRoster.prototype._requestGateways = function(callback) {
-	ZmImService.INSTANCE.getGateways(new AjxCallback(this, this._handleRequestGateways, [callback]));
+	ZmImApp.INSTANCE.getService().getGateways(new AjxCallback(this, this._handleRequestGateways, [callback]));
 };
 
 ZmRoster.prototype._handleRequestGateways = function(callback, gateways) {
@@ -311,8 +311,8 @@ ZmRoster.prototype.getGroups = function() {
 };
 
 ZmRoster.prototype.setIdle = function(idle) {
-	if (ZmImService.INSTANCE.isLoggedIn()) {
-		ZmImService.INSTANCE.setIdle(idle, this._idleTimer.timeout);
+	if (ZmImApp.INSTANCE.getService().isLoggedIn()) {
+		ZmImApp.INSTANCE.getService().setIdle(idle, this._idleTimer.timeout);
 	}
 };
 
@@ -423,13 +423,13 @@ function(params) {
 		asyncMode: true,
 		noBusyOverlay: true
 	};
-	ZmImService.INSTANCE.getGateways(serviceCallback, args)
+	ZmImApp.INSTANCE.getService().getGateways(serviceCallback, args)
 };
 
 ZmRoster.prototype._loggedInGatewayCallback =
 function(params, gateways) {
 	this._handleRequestGateways(null, gateways);
-    ZmImService.INSTANCE.initializePresence(params ? params.presence : null);
+    ZmImApp.INSTANCE.getService().initializePresence(params ? params.presence : null);
 	this.reload();
     if (params && params.callback) {
         params.callback.run(this);

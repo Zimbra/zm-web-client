@@ -56,9 +56,8 @@ ZmImApp.prototype.constructor = ZmImApp;
 
 ZmImApp.loggedIn = function() {
 	return ZmImApp.INSTANCE &&
-		   window.ZmImService &&
-		   ZmImService.INSTANCE &&
-		   ZmImService.INSTANCE.isLoggedIn() &&
+		   ZmImApp.INSTANCE._serviceController &&
+		   ZmImApp.INSTANCE._serviceController.service.isLoggedIn() &&
 		   ( appCtxt.get(ZmSetting.IM_PREF_AUTO_LOGIN) || ZmImApp.INSTANCE._roster );
 };
 
@@ -405,7 +404,7 @@ ZmImApp.prototype._onSettingChange = function(ev) {
 ZmImApp.prototype.refresh =
 function() {
 	delete this._lastSeq;
-	if (window.ZmImService && ZmImService.INSTANCE && ZmImService.INSTANCE.isLoggedIn()) {
+	if (this._serviceController && this._serviceController.service.isLoggedIn()) {
 		this._roster.refresh();
 	}
 };
@@ -542,7 +541,7 @@ function(){
  * Returns the service controller.
  */
 ZmImApp.prototype.getServiceController =
-function(){
+function() {
 	if (!window.ZmImServiceController || !this._serviceController) {
 		AjxDispatcher.require([ "IMCore" ]);
 		var roster = this.getRoster();
@@ -551,6 +550,14 @@ function(){
 			new ZmZimbraImServiceController(roster);
 	}
 	return this._serviceController;
+};
+
+/**
+ * Returns the im service.
+ */
+ZmImApp.prototype.getService =
+function() {
+	return this.getServiceController().service;
 };
 
 ZmImApp.prototype.getAutoCompleteGroups =

@@ -173,7 +173,7 @@ ZmChat.prototype.incUnread = function() {
 
 ZmChat.prototype.sendClose = function() {
 	if (this._thread) {
-		ZmImService.INSTANCE.closeChat(this);
+		ZmImApp.INSTANCE.getService().closeChat(this);
 	}
 };
 
@@ -182,7 +182,7 @@ ZmChat.prototype.sendMessage = function(text, html, typing) {
 		callback: this._sendMessageCallbackObj,
 		noBusyOverlay: true
 	};
-	ZmImService.INSTANCE.sendMessage(this, text, html, typing, args);
+	ZmImApp.INSTANCE.getService().sendMessage(this, text, html, typing, args);
 	// TODO: error handling
 	if (text || html) {
 		var bodyJson = html ? { _content: html, html: true } : { _content: text, html: false } 

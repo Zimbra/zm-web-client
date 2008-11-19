@@ -26,6 +26,11 @@ ZmImServiceController = function(roster) {
 	if (arguments.length == 0) { return; }
 
 	this._roster = roster;
+
+	/** Service model object.
+	 * @type ZmImService 
+	 */
+	this.service = null;
 };
 
 /**

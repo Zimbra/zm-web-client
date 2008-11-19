@@ -21,13 +21,12 @@
  * @class  ZmImService
  * This class is a base class for IM services. The app should create only one instance
  * of a service, and after it is created the single instance should be accessed via
- * ZmImService.INSTANCE.
+ * ZmImApp.INSTANCE.getService().
  *
  */
 ZmImService = function(roster) {
 	if (arguments.length == 0) { return; }
 
-	ZmImService.INSTANCE = this;
 	this._roster = roster;
 };
 

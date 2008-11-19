@@ -18,9 +18,8 @@
 ZmZimbraImServiceController = function(roster) {
 	ZmImServiceController.call(this, roster);
 
-	// Create the service model object.
-	new ZmZimbraImService(roster);
-}
+	this.service = new ZmZimbraImService(roster);
+};
 
 ZmZimbraImServiceController.prototype = new ZmImServiceController;
 ZmZimbraImServiceController.prototype.constructor = ZmZimbraImServiceController;
@@ -39,7 +38,7 @@ function(params) {
 		this._chatListChangeListenerObj = new AjxListener(this, this._chatListChangeListener);
 		ZmImApp.INSTANCE.getRoster().getChatList().addChangeListener(this._chatListChangeListenerObj);
 	}
-	ZmImService.INSTANCE.login(params);
+	this.service.login(params);
 };
 
 ZmZimbraImServiceController.prototype.getMyPresenceTooltip =
