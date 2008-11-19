@@ -90,7 +90,11 @@ function() {
 
 ZmYahooImService.prototype.getGateways =
 function(callback, params) {
-	var gateways = [{ type: "YAHOO", domain: "YAHOO" }];
+	var gateways = [{
+		type: "YAHOO",
+		domain: "YAHOO",
+		registration: [ { state: ZmImGateway.STATE.ONLINE, name: this._userId } ]
+	}];
 	if (callback) {
 		callback.run(gateways);
 	}
