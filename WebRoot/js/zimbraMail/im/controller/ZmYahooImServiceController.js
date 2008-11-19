@@ -18,7 +18,9 @@
 ZmYahooImServiceController = function(roster) {
 	ZmImServiceController.call(this, roster);
 
-	this.service = new ZmYahooImService(roster);
+	var loadCallback = new AjxCallback(this, this._loadCallback);
+	var loadErrorCallback = new AjxCallback(this, this._loadErrorCallback);
+	this.service = new ZmYahooImService(roster, loadCallback, loadErrorCallback);
 };
 
 ZmYahooImServiceController.prototype = new ZmImServiceController;
@@ -44,6 +46,9 @@ function(showText) {
 
 ZmYahooImServiceController.prototype.login =
 function(loginParams) {
+	if (!this._checkFlash()) {
+		return;
+	}
 	AjxDispatcher.require(["IM"]);
 	var id = appCtxt.get(ZmSetting.IM_YAHOO_ID);
 	if (id) {
@@ -166,3 +171,39 @@ function(logoutItem) {
 	logoutItem.setEnabled(this.service.isLoggedIn());
 };
 
+ZmYahooImServiceController.prototype._checkFlash =
+function() {
+	if (!this._detectedFlash) {
+		this._flashOk = AjxPluginDetector.detectFlash();
+		this._detectedFlash = true;
+	}
+	if (!this._flashOk) {
+		var dialog = appCtxt.getMsgDialog();
+		dialog.setMessage(ZmMsg.imYahooMissingFlash, DwtMessageDialog.CRITICAL_STYLE);
+		dialog.popup();
+	}
+	return this._flashOk;
+};
+
+ZmYahooImServiceController.prototype._loadCallback =
+function() {
+	if (this._loadMessageDialog) {
+		this._loadMessageDialog.popdown();
+	}
+};
+
+ZmYahooImServiceController.prototype._loadErrorCallback =
+function() {
+	this._loadMessageDialog = appCtxt.getMsgDialog();
+	this._loadMessagePopdownListenerObj = new AjxListener(this, this._loadMessagePopdownListener);
+	this._loadMessageDialog.addPopdownListener(this._loadMessagePopdownListenerObj);
+	this._loadMessageDialog.setMessage(ZmMsg.imYahooLoadError, DwtMessageDialog.CRITICAL_STYLE);
+	this._loadMessageDialog.popup();
+};
+
+ZmYahooImServiceController.prototype._loadMessagePopdownListener =
+function() {
+	this._loadMessageDialog.removePopdownListener(this._loadMessagePopdownListenerObj);
+	delete this._loadMessagePopdownListenerObj;
+	delete this._loadMessageDialog;
+};

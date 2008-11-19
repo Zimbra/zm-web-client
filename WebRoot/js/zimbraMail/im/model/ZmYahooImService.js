@@ -15,12 +15,14 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmYahooImService = function(roster) {
+ZmYahooImService = function(roster, loadCallback, loadErrorCallback) {
 	ZmImService.call(this, roster);
 
 	this._visible = false;
 	this._userId = null;
 	this._loggedIn = false;
+	this._loadCallback = loadCallback;
+	this._loadErrorCallback = loadErrorCallback;
 
 	// Setup maps of cloud ids and domain names.
 	this._cloudToDomains = {};
@@ -573,10 +575,13 @@ function(functionName, params) {
 
 ZmYahooImService.prototype._load =
 function() {
-	if (this._loading) {
+	if (this._loadTimeoutAction) {
 		return;
 	}
 	AjxDispatcher.require(["YmSdk"]);
+
+	this._loadTimeoutAction = new AjxTimedAction(this, this._loadTimeout);
+	AjxTimedAction.scheduleAction(this._loadTimeoutAction, 5000);
 
 	var self = this;
 	var appObj = {
@@ -595,14 +600,29 @@ function() {
  */
 ZmYahooImService.prototype._onLoaded =
 function() {
+	DBG.println("ym", "called ZmYahooImService.prototype._onLoaded");
+	AjxTimedAction.cancelAction(this._loadTimeoutAction);
+	if (this._loadCallback) {
+		this._loadCallback.run();
+	}
 	this._loaded = true;
-	this._loading = false;
+	this._loadTimeoutAction = null;
 	if (this._postLoadCalls) {
 		for (var i = 0, count = this._postLoadCalls.length; i < count; i++) {
 			var postLoadObj = this._postLoadCalls[i];
 			this._callSdk(postLoadObj.functionName,  postLoadObj.params);
 		}
 		delete this._postLoadCalls;
+	}
+};
+
+/**
+ * This callback is called if the sdk takes a long time to load.
+ */
+ZmYahooImService.prototype._loadTimeout =
+function() {
+	if (this._loadErrorCallback) {
+		this._loadErrorCallback.run();
 	}
 };
 
