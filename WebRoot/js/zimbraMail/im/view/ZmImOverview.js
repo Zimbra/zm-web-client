@@ -471,7 +471,8 @@ function(ev) {
 	}
 };
 
-ZmImOverview.prototype._controlListener = function(ev) {
+ZmImOverview.prototype._controlListener =
+function(ev) {
         var s1 = { x: ev.oldWidth, y: ev.oldHeight };
         var s2 = { x: ev.newWidth, y: ev.newHeight };
         //DBG.println(AjxDebug.DBG1, "x1: " + s1.x + ", y1: " + s1.y);
@@ -486,11 +487,13 @@ ZmImOverview.prototype._controlListener = function(ev) {
         }
 };
 
-ZmImOverview.login = function() {
+ZmImOverview.login =
+function() {
 	ZmImApp.INSTANCE.login();
 };
 
-ZmImOverview.newBuddy = function() {
+ZmImOverview.newBuddy =
+function() {
 	ZmImApp.INSTANCE.prepareVisuals();
 	ZmImApp.INSTANCE.getImController()._newRosterItemListener();
 };
