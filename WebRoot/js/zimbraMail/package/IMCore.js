@@ -23,7 +23,8 @@
  */
 
 AjxPackage.require("ajax.dwt.events.DwtIdleTimer");
-
+AjxPackage.require("ajax.util.AjxPluginDetector");
+ 
 AjxPackage.require("zimbraMail.im.model.ZmImService");
 AjxPackage.require("zimbraMail.im.model.ZmZimbraImService");
 AjxPackage.require("zimbraMail.im.model.ZmYahooImService");

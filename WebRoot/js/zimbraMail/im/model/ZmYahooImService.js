@@ -580,8 +580,7 @@ function() {
 	}
 	AjxDispatcher.require(["YmSdk"]);
 
-	this._loadTimeoutAction = new AjxTimedAction(this, this._loadTimeout);
-	AjxTimedAction.scheduleAction(this._loadTimeoutAction, 5000);
+	this._loadTimeoutAction = AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._loadTimeout), 5000);
 
 	var self = this;
 	var appObj = {
@@ -601,12 +600,12 @@ function() {
 ZmYahooImService.prototype._onLoaded =
 function() {
 	DBG.println("ym", "called ZmYahooImService.prototype._onLoaded");
+	this._loaded = true;
 	AjxTimedAction.cancelAction(this._loadTimeoutAction);
+	this._loadTimeoutAction = null;
 	if (this._loadCallback) {
 		this._loadCallback.run();
 	}
-	this._loaded = true;
-	this._loadTimeoutAction = null;
 	if (this._postLoadCalls) {
 		for (var i = 0, count = this._postLoadCalls.length; i < count; i++) {
 			var postLoadObj = this._postLoadCalls[i];
