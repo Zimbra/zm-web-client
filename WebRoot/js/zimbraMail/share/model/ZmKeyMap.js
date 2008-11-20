@@ -73,7 +73,7 @@ ZmKeyMap.MAP_NAME["tasks"]				= "ZmTaskListController";
 ZmKeyMap.MAP_NAME["editTask"]			= "ZmTaskController";
 ZmKeyMap.MAP_NAME["voicemail"]			= "ZmVoicemailListController";
 ZmKeyMap.MAP_NAME["call"]				= "ZmCallListController";
-ZmKeyMap.MAP_NAME["custom"]             = "";
+ZmKeyMap.MAP_NAME["custom"]             = ZmKeyMap.MAP_CUSTOM;
 
 // reverse map of above
 ZmKeyMap.MAP_NAME_R = {};

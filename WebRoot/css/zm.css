@@ -2753,112 +2753,109 @@ HTML>BODY .appt-selected .appt_allday_body
  * Styles for showing a list of shortcuts in a prefs page, a popup info panel,
  * or to be printed.
  */
-.ZmShortcutsList-prefs, .ZmShortcutsList-panel {
-	padding: 10px;
+.ZmShortcutsList {
+	padding: 10 10 10 20;
 }
 
-.ZmShortcutsList-prefs .shortcutListTable,
-.ZmShortcutsList-panel .shortcutListTable {
-	width: 100%;
-	border-collapse: collapse;
-	margin-bottom: 10px;
-}
-
-.ZmShortcutsList-prefs .shortcutListType {
+.shortcutListType {
 	text-align: center;
 	font-size: 14px;
 	font-weight: bold;
 }
 
-.ZmShortcutsList-prefs .shortcutListHeaderTd {
+.shortcutListType-panel {
+	color: white;
+}
+
+.shortcutListTable {
+	width: 100%;
+	border-collapse: collapse;
+	margin-bottom: 10px;
+}
+
+.shortcutListHeaderTd {
 	border: 1px solid #999999;
 }
 
-.ZmShortcutsList-prefs .shortcutListHeader {
+.shortcutListHeader {
 	font-size: 12px;
 	font-weight: bold;
+	text-align: center;
+}
+
+.shortcutListHeader-prefs {
 	padding: 3 10 5 7;
 	background-color: #bab09a;
-	text-align: center;
 }
 
-.ZmShortcutsList-panel .shortcutListHeader {
-	font-size: 12px;
-	font-weight: bold;
+.shortcutListHeader-panel {
 	color: #DDDD00;
-	text-align: center;
 }
 
-.ZmShortcutsList-prefs .shortcutKeys {
+.shortcutKeys {
 	text-align: right;
 	padding: 6px;
 	vertical-align: top;
 	@SeparatorBorder@
-	width: 250px;
 	font-weight: bold;
 	@Text-disabled@;
 }
 
-.ZmShortcutsList-panel .shortcutKeys {
-	text-align: right;
-	color: white;
-	padding: 6px;
-	vertical-align: top;
-	@SeparatorBorder@
-	font-weight: bold;
-	@Text-disabled@
+.shortcutKeys-prefs {
+	width: 250px;
 }
 
-.ZmShortcutsList-prefs .shortcutDescription {
+.shortcutKeys-panel {
+	color: white;
+}
+
+.shortcutDescription {
+	@SeparatorBorder@
+	padding: 5px;
+	width: auto;
+}
+
+.shortcutDescription-prefs {
 	color: black;
-	@SeparatorBorder@
-	padding: 5px;
-	width: auto;
 }
 
-.ZmShortcutsList-panel .shortcutDescription {
+.shortcutDescription-panel {
 	color: white;
-	@SeparatorBorder@
-	padding: 5px;
-	width: auto;
 }
 
-.ZmShortcutsList-prefs .shortcutKeyCombo,
-.ZmShortcutsList-panel .shortcutKeyCombo {
+.shortcutKeyCombo {
 	white-space: nowrap;
 	margin-right: 5px;
 	margin-left: 5px;
 }
 
-.ZmShortcutsList-prefs .shortcutKey {
+.shortcutKey {
 	@SeparatorBorder@
-	@Text@
 	font-weight: bold;
 	padding: 2px 4px 2px 4px;
 	margin: 1px 1px 1px 1px;
 	line-height: 22px;
 }
 
-.ZmShortcutsList-panel .shortcutKey {
-	@SeparatorBorder@
+.shortcutKey-prefs {
+	@Text@
+}
+
+.shortcutKey-panel {
 	color: #DDDD00;
-	font-weight: bold;
-	padding: 2px 4px 2px 4px;
-	margin: 1px 1px 1px 1px;
-	line-height: 22px;
 }
 
 /*
  * Styles for showing current aliases on custom shortcuts tab
  */
-.ZmShortcutsList-prefs .shortcutTable {
+.shortcutTable {
 	table-layout: fixed;
 	border-collapse: collapse;
 	margin-bottom: 10px;
 	border: 1px solid #999999;
 }
 
-.ZmShortcutsList-prefs .shortcutTable TH {
+.shortcutTable TH {
 	font-size: 11px;
 	text-align: left;
 	font-weight: bold;

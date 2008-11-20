@@ -1871,8 +1871,19 @@ function(actionCode, ev) {
 
 		case ZmKeyMap.SHORTCUTS: {
 			var panel = appCtxt.getShortcutsPanel();
-            var maps = ZmShortcutsList.STANDARD_MAPS.concat(this.getKeyMapName());
-			panel.popup(maps);
+			var curMap = this.getKeyMapName();
+			var km = appCtxt.getAppController().getKeyMapMgr();
+			var maps = km.getAncestors(curMap);
+			maps.unshift(curMap);
+			var maps1 = [];
+			for (var i = 0; i < maps.length; i++) {
+				maps1.push(ZmKeyMap.MAP_NAME_R[maps[i]] || DwtKeyMap.MAP_NAME_R[maps[i]]);
+			}
+			maps1.push(ZmKeyMap.MAP_CUSTOM);
+			var col1 = {};
+			col1.type = ZmShortcutList.TYPE_APP;
+			col1.maps = maps1;
+			panel.popup([col1, ZmShortcutList.COL_SYS]);
 			break;
 		}
 
