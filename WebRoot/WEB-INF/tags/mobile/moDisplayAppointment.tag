@@ -51,7 +51,7 @@
         </c:choose>
         <fmt:formatDate var="date" pattern="yyyyMMdd" value="${appt.start.date}"/>
         <a <c:if test="${mailbox.features.calendar}">href="?st=cal&amp;view=day&amp;date=${date}"</c:if>>${fn:escapeXml(zm:getApptDateBlurb(pageContext, mailbox.prefs.timeZone, startDate.time, endDate.time, appt.allDay))}</a>
-        <%--&nbsp;<span class='ZhCalTimeZone'>${mailbox.prefs.timeZoneWindowsId}</span> --%>
+        <%--&nbsp;<span class='ZhCalTimeZone'>${mailbox.prefs.timeZoneCanonicalId}</span> --%>
     </p>
     <p id="iframeBody">
         <mo:body message="${message}" body="${body}" theBody="${theBody}" mailbox="${mailbox}"/>

@@ -339,16 +339,17 @@
         </select></span>
         </div>
 </div>
-<c:if test="${mailbox.prefs.useTimeZoneListInCalendar or not zm:isSameTimeZone(compose.timeZone, mailbox.prefs.timeZoneWindowsId)}">
+<c:if test="${mailbox.prefs.useTimeZoneListInCalendar or not zm:isSameTimeZone(compose.timeZone, mailbox.prefs.timeZoneCanonicalId)}">
     <c:set var="addedTimeZone" value="true"/>
     <div class="View">
     <div class="list-row">
         <span class="Label"><fmt:message key="timeZonePref"/></span> :
             <span class=""><select name="timeZone" id="timeZone">
                 <zm:forEachTimeZone var="tz">
+                    <fmt:message var="displayName" bundle='${AjxMsg}' key="${tz.id}"/>
                     <option
                             <c:if test="${compose.timeZone eq tz.id}">selected</c:if>
-                            value="${fn:escapeXml(tz.id)}">${fn:escapeXml(tz.display)}</option>
+                            value="${fn:escapeXml(tz.id)}">${fn:escapeXml(displayName)}</option>
                 </zm:forEachTimeZone>
             </select>
             </span>
