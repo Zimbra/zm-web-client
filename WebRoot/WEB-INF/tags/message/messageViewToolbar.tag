@@ -30,7 +30,7 @@
                             <optgroup label=<fmt:message key="actionOptSep"/>>
                             <zm:forEachFolder var="folder">
                                 <c:if test="${folder.isMessageMoveTarget and !folder.isTrash and !folder.isSpam}">
-                                    <option <c:if test="${keys}">id="OPFLDR${folder.id}"</c:if> value="m:${folder.id}">${fn:escapeXml(zm:getFolderPath(pageContext, folder.id))}</option>
+                                    <option <c:if test="${keys}">id="OPFLDR${folder.id}"</c:if> value="m:${folder.id}">${zm:truncate(fn:escapeXml(zm:getFolderPath(pageContext, folder.id)),10,true)}</option>
                                 </c:if>
                             </zm:forEachFolder>
                         </select>
