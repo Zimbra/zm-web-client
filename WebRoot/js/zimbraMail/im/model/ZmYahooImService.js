@@ -90,6 +90,11 @@ function() {
 	return this._userId;
 };
 
+ZmYahooImService.prototype.makeServerAddress =
+function(addr, type) {
+	return addr;
+};
+
 ZmYahooImService.prototype.getGateways =
 function(callback, params) {
 	var gateways = [{
@@ -551,7 +556,7 @@ function(params) {
  * Makes a call to the ym sdk, ensuring the sdk is loaded and logging the call.
  *
  * @param functionName	[String]		Name of function on YMSGR.sdk to call
- * @param params		[Array]			Aray of arguments to the function
+ * @param params		[Array]			Array of arguments to the function
  */
 ZmYahooImService.prototype._callSdk =
 function(functionName, params) {

@@ -63,6 +63,15 @@ function() {
     return this._myAddress;
 };
 
+ZmZimbraImService.prototype.makeServerAddress =
+function(addr, type) {
+	if (type == null || /^(xmpp|local)$/i.test(type))
+		return addr;
+	var gw = this.getGatewayByType(type);
+	if (gw)
+		return addr + "@" + gw.domain;
+};
+
 ZmZimbraImService.prototype.getGateways =
 function(callback, params) {
 	var soapDoc = AjxSoapDoc.create("IMGatewayListRequest", "urn:zimbraIM");

@@ -276,11 +276,7 @@ ZmRoster.prototype.getGateways = function() {
 };
 
 ZmRoster.prototype.makeServerAddress = function(addr, type) {
-	if (type == null || /^(xmpp|local)$/i.test(type))
-		return addr;
-	var gw = this.getGatewayByType(type);
-	if (gw)
-		return addr + "@" + gw.domain;
+	return ZmImApp.INSTANCE.getService().makeServerAddress(addr, type);
 };
 
 ZmRoster.prototype.makeGenericAddress = function(addr) {

@@ -47,6 +47,15 @@ function() {
 };
 
 /**
+ * Converts the user-supplied address and a gateway type into an
+ * address the server understands. 
+ */
+ZmImService.prototype.makeServerAddress =
+function(addr, type) {
+	alert('Not implemented');
+};
+
+/**
  * Asyncronously fetches the list of gateways.
  *
  * @param callback		[AjxCallback]		Callback to run when list of gateways is known
