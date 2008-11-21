@@ -129,7 +129,7 @@ function(startDate, keepCache) {
 
 	// recurrence should reflect start date
 	if (this.recurring && this._recurrence) {
-		this._recurrence._startDate = this.startDate;
+		this._recurrence.setRecurrenceStartTime(this.startDate.getTime());
 	}
 };
 

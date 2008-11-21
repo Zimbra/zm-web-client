@@ -858,7 +858,7 @@ function(ev) {
 	else
 	{
 		var sd = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
-		this._calItem._recurrence._startDate.setTime(sd.getTime());
+		this._calItem._recurrence.setRecurrenceStartTime(sd.getTime());
 		this._setRepeatDesc(this._calItem);
 	}
 };
@@ -1055,7 +1055,7 @@ function(sd) {
 	}
 	else
 	{
-		calItem._recurrence._startDate.setTime(sd.getTime());
+		calItem._recurrence.setRecurrenceStartTime(sd.getTime());
 		this._setRepeatDesc(calItem);
 	}
 };
