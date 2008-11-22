@@ -127,7 +127,7 @@ function(id, params) {
 		b.setText(params.text);
 	}
 	if (params.tooltip) {
-		b.setToolTipContent(ZmOperation.getToolTip(id, this._keyMap));
+		b.setToolTipContent(ZmOperation.getToolTip(id, this._keyMap) || params.tooltip);
 	}
 	b.setEnabled(params.enabled !== false);
 	b.setData("_buttonId", id);

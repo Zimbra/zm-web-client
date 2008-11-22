@@ -222,7 +222,7 @@ function(item) {
  * Returns the first matching msg in the conv, if available. No request will
  * be made to the server if the conv has not been loaded.
  */
-ZmConvListController.prototype._getMsg =
+ZmConvListController.prototype.getMsg =
 function(params) {
 	var sel = this._listView[this._currentView].getSelection();
 	var item = (sel && sel.length) ? sel[0] : null;
@@ -230,7 +230,7 @@ function(params) {
 		if (item.type == ZmItem.CONV) {
 			return item.getFirstHotMsg(params);
 		} else if (item.type == ZmItem.MSG) {
-			return ZmDoublePaneController.prototype._getMsg.apply(this, arguments);
+			return ZmDoublePaneController.prototype.getMsg.apply(this, arguments);
 		}
 	}
 	return null;

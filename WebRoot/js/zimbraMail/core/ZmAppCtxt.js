@@ -40,7 +40,11 @@ ZmAppCtxt = function() {
 	this.numAccounts = 1;				// init to 1 b/c there is always a main account
 	this.numVisibleAccounts = 0;
 	this.userDomain = "";
+
+	this._evtMgr = new AjxEventMgr();
 };
+
+ZmAppCtxt._ZIMLETS_EVENT = 'ZIMLETS'
 
 ZmAppCtxt.prototype.toString =
 function() {
@@ -611,11 +615,10 @@ ZmAppCtxt.prototype.setActiveAccount =
 function(account, callback) {
 	this._activeAccount = account;
 	this._activeAccount.load(callback);
-	if (this._evtMgr) {
-		this._evt = this._evt || new ZmEvent();
-		this._evt.account = account;
-		this._evtMgr.notifyListeners("ACCOUNT", this._evt);
-	}
+
+	this._evt = this._evt || new ZmEvent();
+	this._evt.account = account;
+	this._evtMgr.notifyListeners("ACCOUNT", this._evt);
 };
 
 ZmAppCtxt.prototype.getActiveAccount =
@@ -625,7 +628,6 @@ function() {
 
 ZmAppCtxt.prototype.addActiveAcountListener =
 function(listener, index) {
-	this._evtMgr = this._evtMgr || new AjxEventMgr();
 	return this._evtMgr.addListener("ACCOUNT", listener, index);
 };
 
@@ -848,8 +850,21 @@ function() {
 	return this._zimletMgr;
 };
 
+ZmAppCtxt.prototype.areZimletsLoaded =
+function() {
+	return this._zimletsLoaded;
+};
+
+ZmAppCtxt.prototype.addZimletsLoadedListener =
+function(listener, index) {
+	if (!this._zimletsLoaded) {
+		return this._evtMgr.addListener(ZmAppCtxt._ZIMLETS_EVENT, listener, index);
+	}
+};
+
 ZmAppCtxt.prototype.allZimletsLoaded =
 function() {
+	this._zimletsLoaded = true;
 	if (this._zimletMgr && !this.isChildWindow && appCtxt.get(ZmSetting.PORTAL_ENABLED)) {
 		var portletMgr = this.getApp(ZmApp.PORTAL).getPortletMgr();
 		if (portletMgr) {
@@ -859,6 +874,11 @@ function() {
 
 	if (this.isOffline && !this.multiAccounts) {
 		this.getAppController().setInstantNotify(true);
+	}
+	
+	if (this._evtMgr.isListenerRegistered(ZmAppCtxt._ZIMLETS_EVENT)) {
+		this._evtMgr.notifyListeners(ZmAppCtxt._ZIMLETS_EVENT, new ZmEvent());
+		this._evtMgr.removeAll(ZmAppCtxt._ZIMLETS_EVENT);
 	}
 };
 

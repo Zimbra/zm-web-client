@@ -583,7 +583,7 @@ ZmMailListController.prototype._doAction =
 function(params) {
 
 	// get msg w/ addrs to select identity from - don't load it yet (no callback)
-	var msg = this._getMsg(params);
+	var msg = this.getMsg(params);
 	if (!msg) { return; }
 	
 	// use resolved msg to figure out identity/persona to use for compose
@@ -725,7 +725,7 @@ function(ev) {
 
 ZmMailListController.prototype._shareHandler =
 function(ev) {
-	var msg = this._getMsg();
+	var msg = this.getMsg();
 	var fromAddr = msg ? msg.getAddress(AjxEmailAddress.FROM).address : null;
 
 	if (ev._buttonId == ZmOperation.SHARE_ACCEPT) {
@@ -872,7 +872,7 @@ function(parent) {
 /**
  * Returns the selected msg.
  */
-ZmMailListController.prototype._getMsg =
+ZmMailListController.prototype.getMsg =
 function(params) {
 	var sel = this._listView[this._currentView].getSelection();
 	return (sel && sel.length) ? sel[0] : null;
@@ -884,7 +884,7 @@ function(params) {
 ZmMailListController.prototype._getLoadedMsg =
 function(params, callback) {
 	params = params || {};
-	var msg = this._getMsg(params);
+	var msg = this.getMsg(params);
 	if (!msg) {
 		callback.run();
 	}
@@ -962,7 +962,7 @@ function(type, componentId, instanceDate, accountName) {
 	var contactList = AjxDispatcher.run("GetContacts");
 	AjxDispatcher.require("CalendarCore");
 
-	msg._origMsg = this._getMsg();
+	msg._origMsg = this.getMsg();
 	msg.inviteMode = type;
 	msg.isReplied = true;
 	msg.isForwarded = false;
@@ -1017,7 +1017,7 @@ function(ev) {
 
 ZmMailListController.prototype._detachListener =
 function(ev, callback) {
-	var msg = this._getMsg();
+	var msg = this.getMsg();
 	if (msg) {
 		if (msg._loaded) {
 			ZmMailMsgView.detachMsgInNewWindow(msg);

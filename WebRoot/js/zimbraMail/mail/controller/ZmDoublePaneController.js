@@ -572,7 +572,7 @@ function(ev) {
 
 ZmDoublePaneController.prototype._showOrigListener =
 function(ev) {
-	var msg = this._getMsg();
+	var msg = this.getMsg();
 	if (!msg) { return; }
 
 	var msgFetchUrl = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI) + "&id=" + msg.id;

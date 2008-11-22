@@ -283,7 +283,7 @@ function(ev) {
 
 // Miscellaneous
 
-ZmMsgController.prototype._getMsg =
+ZmMsgController.prototype.getMsg =
 function(params) {
 	return this._msg;
 };

@@ -364,9 +364,16 @@ function(view) {
 		this._setupTagMenu(tb);
 	}
 
-	if (appCtxt.zimletsPresent()) {
-		appCtxt.getZimletMgr().notifyZimlets("initializeToolbar", this._app, tb);
+	if (appCtxt.areZimletsLoaded()) {
+		this._notifyZimletsToolbar(this._app, tb, view);
+	} else {
+		appCtxt.addZimletsLoadedListener(new AjxListener(this, this._notifyZimletsToolbar, [this._app, tb, view]));
 	}
+};
+
+ZmListController.prototype._notifyZimletsToolbar =
+function(app, tb, view) {
+	appCtxt.getZimletMgr().notifyZimlets("initializeToolbar", app, tb, this, view);
 };
 
 // list view and its listeners
