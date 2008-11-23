@@ -24,6 +24,7 @@ ZmCalItem = function(type, list, id, folderId) {
 	this.viewMode = ZmCalItem.MODE_NEW;
 	this._recurrence = new ZmRecurrence(this);
 	this._noBusyOverlay = null;
+    this._sendNotificationMail = true;
 };
 
 ZmCalItem.prototype = new ZmCalBaseItem;
@@ -89,7 +90,6 @@ ZmCalItem.prototype.setName 			= function(newName) 	{ this.name = newName; };
 ZmCalItem.prototype.setOrganizer 		= function(organizer) 	{ this.organizer = organizer != "" ? organizer : null; };
 ZmCalItem.prototype.setRecurType		= function(repeatType)	{ this._recurrence.repeatType = repeatType; };
 ZmCalItem.prototype.setType 			= function(newType) 	{ this.type = newType; };
-
 
 ZmCalItem.prototype.setFolderId =
 function(folderId) {
@@ -622,6 +622,16 @@ function(message) {
 		this.notesTopPart.setContentType(ZmMimeTable.TEXT_PLAIN);
 		this.notesTopPart.setContent(textContent);
 	}
+};
+
+ZmCalItem.prototype.getMailNotificationOption =
+function() {
+    return this._sendNotificationMail;
+};
+
+ZmCalItem.prototype.setMailNotificationOption =
+function(sendNotificationMail) {
+    this._sendNotificationMail = sendNotificationMail;    
 };
 
 /**

@@ -119,6 +119,8 @@
                                     <table border=0 cellpadding=0 cellspacing=0><tr>
                                         <td><input type='checkbox' id='${id}_requestResponses'></td>
                                         <td class='ZmFieldLabelLeft'><nobr>&nbsp;<$= ZmMsg.requestResponses $></nobr></td>
+                                        <td><input type='checkbox' id='${id}_sendNotificationMail'></td>
+                                        <td class='ZmFieldLabelLeft'><nobr>&nbsp;<$= ZmMsg.sendNotificationMail $></nobr></td>
                                     </tr></table>
                                 </td>
                             </tr>

@@ -203,6 +203,7 @@ function(appt, attId, attendees, origAttendees) {
 			this._notifyDialog.addSelectionListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._notifyDlgOkListener));
 			this._notifyDialog.addSelectionListener(DwtDialog.CANCEL_BUTTON, new AjxListener(this, this._notifyDlgCancelListener));
 		}
+        appt.setMailNotificationOption(true);
 		this._notifyDialog.initialize(appt, attId, this._addedAttendees, this._removedAttendees);
 		this._notifyDialog.popup();
 		return true;

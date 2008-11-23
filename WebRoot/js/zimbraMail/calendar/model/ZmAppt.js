@@ -634,7 +634,7 @@ function(soapDoc, inv, m, notifyList, onBehalfOf) {
 	}
 
 	// if we have a separate list of email addresses to notify, do it here
-	if (this.isOrganizer() && m && notifyList) {
+	if (this._sendNotificationMail && this.isOrganizer() && m && notifyList) {
 		for (var i = 0; i < notifyList.length; i++) {
 			e = soapDoc.set("e", null, m);
 			e.setAttribute("a", notifyList[i]);
@@ -696,7 +696,7 @@ function(soapDoc, inv, m, notifyList, attendee, type) {
 	}
 
 	// set email to notify if notifyList not provided
-	if (this.isOrganizer() && m && !notifyList && !this.__newFolderId) {
+	if (this._sendNotificationMail && this.isOrganizer() && m && !notifyList && !this.__newFolderId) {
 		e = soapDoc.set("e", null, m);
 		e.setAttribute("a", address);
 		if (dispName) {
