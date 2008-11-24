@@ -1457,7 +1457,7 @@ function(status) {
 		case ZmCalBaseItem.PSTATUS_DECLINED:	return "Cancel";
 		case ZmCalBaseItem.PSTATUS_DEFERRED:	return "QuestionMark";
 		case ZmCalBaseItem.PSTATUS_DELEGATED:	return "Plus";
-		case ZmCalBaseItem.PSTATUS_NEEDS_ACTION:return "QuestionMark";
+		case ZmCalBaseItem.PSTATUS_NEEDS_ACTION:return "NeedsAction";
 		case ZmCalBaseItem.PSTATUS_COMPLETED:	return "Completed";
 		case ZmCalBaseItem.PSTATUS_TENTATIVE:	return "QuestionMark";
 		case ZmCalBaseItem.PSTATUS_WAITING:		return "Minus";
