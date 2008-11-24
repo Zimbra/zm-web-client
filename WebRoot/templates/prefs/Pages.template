@@ -1341,6 +1341,16 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 				</tr>
 
 				<tr>
+					<td class='ZOptionsLabel'>&nbsp;</td>
+					<td class='ZOptionsField'>
+						<table cellspacing=0 cellpadding=0><tr>
+							<td><div id='${id}_IM_PREF_DESKTOP_ALERT' tabindex='40'></div></td>
+							<td><$=ZmMsg.desktopAlertLink $></td>
+						</tr></table>
+					</td>
+				</tr>
+
+				<tr>
 					<td colspan=2>
 						<hr>
 					</td>

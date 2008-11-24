@@ -339,6 +339,10 @@ function(chatMessage) {
 				AjxDispatcher.require("Alert");
 				ZmBrowserAlert.getInstance().start(ZmMsg.newInstantMessage);
 			}
+			if (appCtxt.get(ZmSetting.IM_PREF_DESKTOP_ALERT))  {
+				AjxDispatcher.require("Alert");
+				ZmDesktopAlert.getInstance().start(ZmMsg.newInstantMessage, chatMessage.getTextBody());
+			}
 		}
 		chat.addMessage(chatMessage);
 	}
