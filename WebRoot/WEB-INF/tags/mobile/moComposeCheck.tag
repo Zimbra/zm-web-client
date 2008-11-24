@@ -17,7 +17,7 @@
 </c:if>
 <mo:handleError>
     <zm:composeUploader var="uploader"/>
-    <c:set var="needComposeView" value="${param.action eq 'compose'}"/>
+    <%--<c:set var="needComposeView" value="${param.action eq 'compose'}"/>--%>
     <c:if test="${uploader.isUpload}">
         <c:choose>
             <c:when test="${uploader.isContactAdd or uploader.isContactSearch}">
@@ -90,6 +90,6 @@
     </c:if>
 </mo:handleError>
 
-<c:if test="${needComposeView}">
+<%--<c:if test="${needComposeView}">
     <jsp:forward page="/m/mocompose"/>
-</c:if>
+</c:if>--%>

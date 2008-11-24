@@ -18,7 +18,7 @@
 <mo:handleError>
     <%--<zm:getMailbox var="mailbox"/>--%>
     <zm:composeUploader var="uploader"/>
-    <c:set var="needEditView" value="${param.action eq 'editappt' or param.action eq 'newappt'}"/>
+    <%--<c:set var="needEditView" value="${param.action eq 'editappt' or param.action eq 'newappt'}"/>--%>
     <c:if test="${uploader.isUpload}">
         <c:choose>
             <c:when test="${uploader.isCancel}">
@@ -91,6 +91,6 @@
         </c:choose>
     </c:if>
 </mo:handleError>
- <c:if test="${needEditView}">
+<%-- <c:if test="${needEditView}">
         <jsp:forward page="/m/moapptcompose"/>
-</c:if>
+</c:if>--%>
