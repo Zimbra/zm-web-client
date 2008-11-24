@@ -518,15 +518,28 @@ ZmSignaturesPage.prototype._handleEditButton = function(id, evt){
     //Hide Signature display div
     comps.value.setDisplay(Dwt.DISPLAY_NONE);
     var htmlEditor = this._getSignatureEditor();
-    htmlEditor.setMode((signature.getContentType() == ZmMimeTable.TEXT_PLAIN) ? DwtHtmlEditor.TEXT : DwtHtmlEditor.HTML);
+
     var size = Dwt.getSize(comps.value.getHtmlElement().parentNode);
     htmlEditor.setSize(size.x, size.y);
-    htmlEditor.setVisibility(true);
-    htmlEditor.setContent(signature.value);
     htmlEditor.reparentHtmlElement(comps.value.getHtmlElement().parentNode);
-    if(htmlEditor.getContent() != signature.value){
-        AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._setSignatureContent, [htmlEditor, signature]), 100);
+
+    var editorMode = (signature.getContentType() == ZmMimeTable.TEXT_PLAIN) ? DwtHtmlEditor.TEXT : DwtHtmlEditor.HTML;
+
+    var modeChanged = false;
+    if(htmlEditor.getMode() != editorMode){
+        modeChanged = true;
     }
+
+    htmlEditor.setMode(editorMode);
+
+    htmlEditor.setVisibility(true);
+
+    if( editorMode == DwtHtmlEditor.HTML ){
+        AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._setSignatureContent, [htmlEditor, signature]), modeChanged ? 200 : 500);
+    }else{
+        this._setSignatureContent(htmlEditor, signature);
+    }
+
 };
 
 ZmSignaturesPage.prototype._setSignatureContent = function(editor, signature){
