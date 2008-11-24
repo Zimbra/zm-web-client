@@ -422,7 +422,7 @@ ZmZimletContext.prototype.makeURL = function(actionUrl, obj, props) {
 * pass it to 'div' parameter.  otherwise a canvas (window, popup, dialog) will be created
 * to display the contents from the url.
 */
-ZmZimletContext.prototype.handleActionUrl = function(actionUrl, canvas, obj, div) {
+ZmZimletContext.prototype.handleActionUrl = function(actionUrl, canvas, obj, div, x, y) {
 	var url = this.makeURL(actionUrl, obj);
 	var xslt = null;
 
@@ -433,13 +433,13 @@ ZmZimletContext.prototype.handleActionUrl = function(actionUrl, canvas, obj, div
 	// need to use callback if the paintable canvas already exists, or if it needs xslt transformation.
 	if (div || xslt) {
 		if (!div) {
-			canvas = this.handlerObject.makeCanvas(canvas[0], null);
+			canvas = this.handlerObject.makeCanvas(canvas, null, x, y);
 			div = document.getElementById("zimletCanvasDiv");
 		}
 		url = ZmZimletBase.PROXY + AjxStringUtil.urlComponentEncode(url);
 		AjxRpc.invoke(null, url, null, new AjxCallback(this, this._rpcCallback, [xslt, div]), true);
 	} else {
-		this.handlerObject.makeCanvas(canvas[0], url);
+		this.handlerObject.makeCanvas(canvas, url, x, y);
 	}
 };
 
