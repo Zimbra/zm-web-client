@@ -58,6 +58,7 @@ ZmTreeView = function(params) {
 
 	this._dataTree = null;
 	this._treeItemHash = {};	// map organizer to its corresponding tree item by ID
+	this._showCheckboxes = false;
 };
 
 ZmTreeView.KEY_TYPE	= "_type_";
@@ -185,12 +186,25 @@ function() {
 };
 
 /**
- * Returns the currently selected organizer. There can only be one.
+ * Returns the currently selected organizer(s) - if tree view is checkbox style,
+ * return value is an Array otherwise, a single DwtTreeItem object is returned.
  */
 ZmTreeView.prototype.getSelected =
 function() {
-	if (this.getSelectionCount() != 1) { return null; }
-	return this.getSelection()[0].getData(Dwt.KEY_OBJECT);
+	if (this._isCheckedStyle() && this._showCheckboxes) {
+		var selected = [];
+		var items = this.getHeaderItem().getItems();
+		for (var i = 0; i < items.length; i++) {
+			var item = items[i];
+			if (item && (item instanceof DwtTreeItem) && item.getChecked()) {
+				selected.push(item.getData(Dwt.KEY_OBJECT));
+			}
+		}
+		return selected;
+	} else {
+		return (this.getSelectionCount() != 1)
+			? null : this.getSelection()[0].getData(Dwt.KEY_OBJECT);
+	}
 };
 
 /**
@@ -211,11 +225,13 @@ function(organizer, skipNotify, noFocus) {
  * Shows/hides checkboxes if treeview is checkbox style
  * 
  * @param show	[boolean]	if true, show checkboxes
+ * @param reset	[boolean]	if true, unchecks the checkboxes
  */
 ZmTreeView.prototype.showCheckboxes =
-function(show) {
+function(show, reset) {
 	if (!this._isCheckedStyle()) { return; }
 
+	this._showCheckboxes = show;
 	var treeItems = this.getHeaderItem().getItems();
 	if (treeItems && treeItems.length) {
 		for (var i = 0; i < treeItems.length; i++) {
@@ -223,6 +239,9 @@ function(show) {
 			if (ti._isSeparator) continue;
 			ti.showCheckBox(show);
 			ti.enableSelection(!show);
+			if (reset) {
+				ti.setChecked(false);
+			}
 		}
 	}
 };

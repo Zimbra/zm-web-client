@@ -59,7 +59,6 @@ function(params) {
 		this._treeView[id] = this._setup(id);
 	}
 	// mixed app should be filtered based on the previous app!
-	var appController = appCtxt.getAppController();
     var dataTree = this.getDataTree(params.account);
     if (dataTree) {
 		params.dataTree = dataTree;
@@ -77,18 +76,22 @@ function(params) {
 	return this._treeView[id];
 };
 
+ZmSearchTreeController.prototype.getTreeStyle =
+function() {
+	return null;
+};
+
 /**
 * Enables/disables operations based on context.
 *
 * @param parent		the widget that contains the operations
 * @param id			the currently selected/activated organizer
 */
-ZmSearchTreeController.prototype.resetOperations = 
+ZmSearchTreeController.prototype.resetOperations =
 function(parent, type, id) {
 	parent.enableAll(true);
 	var search = appCtxt.getById(id);
 	parent.enable(ZmOperation.EXPAND_ALL, (search.size() > 0));
-//	this._resetOperation(parent, ZmOperation.EXPORT_FOLDER, ZmMsg.exportSearch);
 };
 
 ZmSearchTreeController.prototype._newListener =
@@ -104,9 +107,8 @@ function(ev){
     if (search) {
         AjxDispatcher.require("Browse");
         appCtxt.getSearchController().showBrowsePickers([ZmPicker.SEARCH]);
-        //appCtxt.getSearchController()._browseViewController.addPicker(ZmPicker.FOLDER);
     }
-}
+};
 
 
 // Private methods
@@ -129,9 +131,6 @@ function() {
 			ZmOperation.RENAME_SEARCH,
 			ZmOperation.MOVE,
 			ZmOperation.EXPAND_ALL];
-//	if (appCtxt.get(ZmSetting.IMPORT_EXPORT_ENABLED)) {
-//		ops.push(ZmOperation.EXPORT_FOLDER);
-//	}
 };
 
 // override the ZmFolderTreeController override
@@ -198,7 +197,3 @@ function(overviewId, account) {
 	var hide = ZmOrganizer.HIDE_EMPTY[this.type] && !treeView.getTreeItemById(rootId).getItemCount();
 	this._treeView[overviewId].setVisible(!hide);
 };
-
-//ZmSearchTreeController.prototype._folderExportListener = function(ev) {
-//	alert("export search");
-//};

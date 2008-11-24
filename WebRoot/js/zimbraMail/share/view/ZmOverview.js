@@ -216,10 +216,7 @@ function(typeOnly) {
 	for (var i = 0; i < this._treeIds.length; i++) {
 		var treeView = this._treeHash[this._treeIds[i]];
 		if (treeView) {
-			var item = treeView.getSelected();
-			if (item) {
-				return typeOnly ? treeView.type : item;
-			}
+			return (typeOnly) ? treeView.type : treeView.getSelected();
 		}
 	}
 	return null;

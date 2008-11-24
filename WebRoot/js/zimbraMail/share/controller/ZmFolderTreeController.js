@@ -211,6 +211,12 @@ function(parent, type, id) {
 	this._resetButtonPerSetting(parent, ZmOperation.MOUNT_FOLDER, appCtxt.get(ZmSetting.SHARING_ENABLED));
 };
 
+ZmFolderTreeController.prototype.getTreeStyle =
+function() {
+	return DwtTree.CHECKEDITEM_STYLE;
+};
+
+
 // Private methods
 
 /*
@@ -225,6 +231,13 @@ function() {
 		ZmOperation.SYNC,
 		ZmOperation.BROWSE
 	];
+};
+
+ZmFolderTreeController.prototype._postSetup =
+function(overviewId, account) {
+	ZmTreeController.prototype._postSetup.call(this, overviewId, account);
+	var treeView = this.getTreeView(overviewId);
+	treeView.showCheckboxes(false);
 };
 
 /*

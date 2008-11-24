@@ -588,7 +588,7 @@ function(accountType, connectionType, accountPort) {
 	}
 
 	var portTypeLabel = AjxMessageFormat.format(ZmAccountsPage.PREFS["CHANGE_PORT"].displayName, accountType);
-	this._setControlLabel("CHANGE_PORT", section, portTypeLabel)
+	this._setControlLabel("CHANGE_PORT", section, portTypeLabel);
 
 	var defaultPort = isPop ? ZmPopAccount.PORT_CLEAR : ZmImapAccount.PORT_CLEAR;
 	if (isSsl) {
@@ -1450,7 +1450,7 @@ function(continueCallback) {
 ZmAccountsPage.prototype._preSaveTest =
 function(continueCallback) {
 	// get dirty external accounts
-	var dirtyAccounts = []
+	var dirtyAccounts = [];
 	var accounts = this._accounts.getArray();
 	for (var i = 0; i < accounts.length; i++) {
 		var account = accounts[i];
@@ -1759,7 +1759,7 @@ function(buffer, i, item, field, col, params) {
 		return i;
 	}
 	return DwtListView.prototype._getCellContents.apply(this, arguments);
-}
+};
 
 ZmAccountsListView.prototype._getCellId =
 function(item, field, params) {

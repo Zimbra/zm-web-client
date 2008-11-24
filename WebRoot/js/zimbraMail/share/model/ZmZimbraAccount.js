@@ -80,10 +80,10 @@ function() {
 		name = this.getDisplayName();
 	}
 	return identity.isDefault && name == ZmIdentity.DEFAULT_NAME ? ZmMsg.accountDefault : name;
-}
+};
 
 ZmZimbraAccount.prototype.setEmail =
-function(email) {} // IGNORE
+function(email) {}; // IGNORE
 
 ZmZimbraAccount.prototype.getEmail =
 function() {
@@ -318,7 +318,6 @@ function(result) {
 ZmZimbraAccount.prototype._handleLoadTags =
 function(result) {
 	var resp = result.getResponse().GetTagResponse;
-	var tags = (resp && resp.tag) ? resp.tag[0] : null;
 	appCtxt.getRequestMgr()._loadTree(ZmOrganizer.TAG, null, resp, null, this);
 };
 
