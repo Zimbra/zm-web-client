@@ -1782,12 +1782,12 @@
 /*	@ZFieldBg-normal@
 	@FieldBorder@
 	height:24px;
-	padding-right:2px;	*/d
+	padding-right:2px;	*/
 }
 
 .DwtComboBox .DwtInputField input[type='text'],
 .DwtComboBox .DwtInputField input[type='password'] {
-	Xborder:none;
+	
 }
 
 .DwtComboBox .ZButton {
