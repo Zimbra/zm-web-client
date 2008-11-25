@@ -584,6 +584,11 @@ function(actionCode) {
 	return true;
 };
 
+ZmComposeController.prototype.mapSupported =
+function(map) {
+	return (map == "editor");
+};
+
 ZmComposeController.prototype.getSelectedSignature =
 function() {
 	var button = this._toolbar.getButton(ZmOperation.ADD_SIGNATURE);

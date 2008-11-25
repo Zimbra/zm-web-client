@@ -757,7 +757,7 @@ function() {
 };
 
 ZmAppCtxt.prototype.getNewWindow = 
-function(fullVersion) {
+function(fullVersion, width, height) {
 	// build url
 	var url = [];
 	var i = 0;
@@ -770,13 +770,16 @@ function(fullVersion) {
 	url[i++] = appCurrentSkin;
 	url[i++] = "&localeId=";
 	url[i++] = AjxEnv.DEFAULT_LOCALE || "";
-	if (fullVersion)
+	if (fullVersion) {
 		url[i++] = "&full=1";
+	}
 	if (appDevMode) {
 		url[i++] = "&dev=1";
 	}
 
-	var args = "height=465,width=705,location=no,menubar=no,resizable=yes,scrollbars=no,status=yes,toolbar=no";
+	width = width || 705;
+	height = height || 465;
+	var args = ["height=", height, ",width=", width, ",location=no,menubar=no,resizable=yes,scrollbars=no,status=yes,toolbar=no"].join("");
 	var newWin = window.open(url.join(""), "_blank", args);
 
 	if (!newWin) {
@@ -997,7 +1000,8 @@ ZmAppCtxt.prototype.getShortcutsPanel =
 function() {
 	if (!this._shortcutsPanel) {
 		AjxDispatcher.require("Preferences");
-		this._shortcutsPanel = new ZmShortcutsPanel();
+		var style = this.isChildWindow ? ZmShortcutList.WINDOW_STYLE : ZmShortcutList.PANEL_STYLE;
+		this._shortcutsPanel = new ZmShortcutsPanel(style);
 	}
 	return this._shortcutsPanel;
 };

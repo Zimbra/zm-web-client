@@ -54,26 +54,27 @@ ZmKeyMap.MAP_CUSTOM = "custom";
 
 // translations for map names used in properties file
 ZmKeyMap.MAP_NAME = {};
-ZmKeyMap.MAP_NAME["global"]				= "Global";
-ZmKeyMap.MAP_NAME["compose"]			= "ZmComposeController";
-ZmKeyMap.MAP_NAME["mail"]				= "ZmMailListController";
-ZmKeyMap.MAP_NAME["conversationList"]	= "ZmConvListController";
-ZmKeyMap.MAP_NAME["conversation"]		= "ZmConvController";
-ZmKeyMap.MAP_NAME["message"]			= "ZmMsgController";
-ZmKeyMap.MAP_NAME["contacts"]			= "ZmContactListController";
-ZmKeyMap.MAP_NAME["editContact"]		= "ZmContactController";
+
+ZmKeyMap.MAP_NAME["briefcase"]			= "ZmBriefcaseController";
 ZmKeyMap.MAP_NAME["calendar"]			= "ZmCalViewController";
+ZmKeyMap.MAP_NAME["call"]				= "ZmCallListController";
+ZmKeyMap.MAP_NAME["compose"]			= "ZmComposeController";
+ZmKeyMap.MAP_NAME["contacts"]			= "ZmContactListController";
+ZmKeyMap.MAP_NAME["conversation"]		= "ZmConvController";
+ZmKeyMap.MAP_NAME["conversationList"]	= "ZmConvListController";
+ZmKeyMap.MAP_NAME["custom"]             = ZmKeyMap.MAP_CUSTOM;
 ZmKeyMap.MAP_NAME["editAppointment"]	= "ZmApptComposeController";
-ZmKeyMap.MAP_NAME["options"]			= "ZmPrefController";
+ZmKeyMap.MAP_NAME["editContact"]		= "ZmContactController";
+ZmKeyMap.MAP_NAME["editPage"]			= "ZmPageEditController";
+ZmKeyMap.MAP_NAME["editTask"]			= "ZmTaskController";
+ZmKeyMap.MAP_NAME["global"]				= "Global";
+ZmKeyMap.MAP_NAME["mail"]				= "ZmMailListController";
+ZmKeyMap.MAP_NAME["message"]			= "ZmMsgController";
 ZmKeyMap.MAP_NAME["mixed"]				= "ZmMixedController";
 ZmKeyMap.MAP_NAME["notebook"]			= "ZmNotebookPageController";
-ZmKeyMap.MAP_NAME["editPage"]			= "ZmPageEditController";
-ZmKeyMap.MAP_NAME["briefcase"]			= "ZmBriefcaseController";
+ZmKeyMap.MAP_NAME["options"]			= "ZmPrefController";
 ZmKeyMap.MAP_NAME["tasks"]				= "ZmTaskListController";
-ZmKeyMap.MAP_NAME["editTask"]			= "ZmTaskController";
 ZmKeyMap.MAP_NAME["voicemail"]			= "ZmVoicemailListController";
-ZmKeyMap.MAP_NAME["call"]				= "ZmCallListController";
-ZmKeyMap.MAP_NAME["custom"]             = ZmKeyMap.MAP_CUSTOM;
 
 // reverse map of above
 ZmKeyMap.MAP_NAME_R = {};

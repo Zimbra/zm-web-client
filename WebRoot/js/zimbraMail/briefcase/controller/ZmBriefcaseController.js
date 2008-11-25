@@ -963,6 +963,11 @@ function() {
 	return (this._currentView == ZmId.VIEW_BRIEFCASE_COLUMN);
 };
 
+ZmBriefcaseController.prototype.mapSupported =
+function(map) {
+	return (map == "list" && (this._currentView != ZmId.VIEW_BRIEFCASE));
+};
+
 ZmBriefcaseController.prototype.deleteCallback =
 function(ids){
 	if(this.isMultiColView()){

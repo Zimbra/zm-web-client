@@ -101,6 +101,11 @@ function(actionCode) {
 	}
 };
 
+ZmTaskListController.prototype.mapSupported =
+function(map) {
+	return (map == "list");
+};
+
 ZmTaskListController.prototype.quickSave =
 function(name, callback) {
 	var folderId = (this._activeSearch && this._activeSearch.search) ? this._activeSearch.search.folderId : null;

@@ -191,6 +191,11 @@ function(actionCode) {
 	return true;
 };
 
+ZmCalItemComposeController.prototype.mapSupported =
+function(map) {
+	return (map == "editor");
+};
+
 ZmCalItemComposeController.prototype.getTabView =
 function() {
 	return this._composeView;

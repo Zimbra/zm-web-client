@@ -137,14 +137,6 @@ function(ev) {
 ZmNewWindow.prototype.startup =
 function() {
 
-	if (!this._appViewMgr) {
-		this._appViewMgr = new ZmAppViewMgr(this._shell, this, true, false);
-		this._statusView = new ZmStatusView(this._shell, "ZmStatus", Dwt.ABSOLUTE_STYLE, ZmId.STATUS_VIEW);
-	}
-
-	var rootTg = appCtxt.getRootTabGroup();
-	var startupFocusItem;
-
 	// get params from parent window b/c of Safari bug #7162
 	if (window.parentController) {
 		var childWinObj = window.parentController.getChildWindow(window);
@@ -154,12 +146,30 @@ function() {
 		}
 	}
 
+	var cmd = window.newWindowCommand;
+	var params = window.newWindowParams;
+	if (cmd == "shortcuts") {
+		var apps = {};
+		apps[ZmApp.PREFERENCES] = true;
+		this._createEnabledApps(apps);
+		this._createView();
+		return;
+	}
+
+	if (!this._appViewMgr) {
+		this._appViewMgr = new ZmAppViewMgr(this._shell, this, true, false);
+		this._statusView = new ZmStatusView(this._shell, "ZmStatus", Dwt.ABSOLUTE_STYLE, ZmId.STATUS_VIEW);
+	}
+
+	var rootTg = appCtxt.getRootTabGroup();
+	var startupFocusItem;
+
+
 	var apps = {};
 	apps[ZmApp.MAIL] = true;
 	apps[ZmApp.CONTACTS] = true;
 	// only load calendar app if we're dealing with an invite
-	var msg = (window.newWindowCommand == "msgViewDetach")
-		? window.newWindowParams.msg : null;
+	var msg = (cmd == "msgViewDetach") ? params.msg : null;
 	if (msg && msg.isInvite()) {
 		apps[ZmApp.CALENDAR] = true;
 	}
@@ -172,9 +182,9 @@ function() {
 
 	// Find target first.
 	var target;
-	if (window.newWindowCommand == "compose" || window.newWindowCommand == "composeDetach") {
+	if (cmd == "compose" || cmd == "composeDetach") {
 		target = "compose-window";
-	} else if (window.newWindowCommand == "msgViewDetach") {
+	} else if (cmd == "msgViewDetach") {
 		target = "view-window";
 	}
 
@@ -199,21 +209,25 @@ function() {
 
 ZmNewWindow.prototype._createView =
 function() {
+
+	var cmd = window.newWindowCommand;
+	var params = window.newWindowParams;
+
 	var rootTg = appCtxt.getRootTabGroup();
 
 	// depending on the command, do the right thing
-	if (window.newWindowCommand == "compose" || window.newWindowCommand == "composeDetach") {
+	if (cmd == "compose" || cmd == "composeDetach") {
 		var cc = AjxDispatcher.run("GetComposeController");
 		cc.isChildWindow = true;
-		if (window.newWindowParams.action == ZmOperation.REPLY_ALL) {
-			window.newWindowParams.msg = this._deepCopyMsg(window.newWindowParams.msg);
+		if (params.action == ZmOperation.REPLY_ALL) {
+			params.msg = this._deepCopyMsg(params.msg);
 		}
-		if (window.newWindowCommand == "compose") {
-			cc._setView(window.newWindowParams);
+		if (cmd == "compose") {
+			cc._setView(params);
 		} else {
-			var op = window.newWindowParams.action || ZmOperation.NEW_MESSAGE;
-			if (window.newWindowParams.msg && window.newWindowParams.msg._mode) {
-				switch (window.newWindowParams.msg._mode) {
+			var op = params.action || ZmOperation.NEW_MESSAGE;
+			if (params.msg && params.msg._mode) {
+				switch (params.msg._mode) {
 					case ZmAppt.MODE_DELETE:
 					case ZmAppt.MODE_DELETE_INSTANCE:
 					case ZmAppt.MODE_DELETE_SERIES: {
@@ -222,9 +236,9 @@ function() {
 					}
 				}
 			}
-			window.newWindowParams.action = op;
-			cc._setView(window.newWindowParams);
-			cc._composeView.setDetach(window.newWindowParams);
+			params.action = op;
+			cc._setView(params);
+			cc._composeView.setDetach(params);
 
 			// bug fix #5887 - get the parent window's compose controller
 			var parentCC = window.parentController.getApp(ZmApp.MAIL).getComposeController();
@@ -239,14 +253,16 @@ function() {
 		startupFocusItem = cc._composeView.getAddrFields()[0];
 
 		target = "compose-window";
-	}
-	else if (window.newWindowCommand == "msgViewDetach") {
+	} else if (cmd == "msgViewDetach") {
 		var msgController = AjxDispatcher.run("GetMsgController");
-		msgController.show(window.newWindowParams.msg);
+		msgController.show(params.msg);
 		rootTg.addMember(msgController.getTabGroup());
 		startupFocusItem = msgController.getCurrentView();
 
 		target = "view-window";
+	} else if (cmd == "shortcuts") {
+		var panel = appCtxt.getShortcutsPanel();
+		panel.popup(params.cols);
 	}
 };
 

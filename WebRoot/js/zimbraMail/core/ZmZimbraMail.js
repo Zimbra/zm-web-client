@@ -1870,20 +1870,47 @@ function(actionCode, ev) {
 		}
 
 		case ZmKeyMap.SHORTCUTS: {
+
 			var panel = appCtxt.getShortcutsPanel();
 			var curMap = this.getKeyMapName();
 			var km = appCtxt.getAppController().getKeyMapMgr();
 			var maps = km.getAncestors(curMap);
+			var inherits = (maps && maps.length > 0);
 			maps.unshift(curMap);
-			var maps1 = [];
+			var maps1 = [], maps2 = [];
+			if (inherits) {
+				if (maps.length > 1 && maps[maps.length - 1] == "Global") {
+					maps.pop();
+					maps2.push("global");
+				}
+			}
 			for (var i = 0; i < maps.length; i++) {
 				maps1.push(ZmKeyMap.MAP_NAME_R[maps[i]] || DwtKeyMap.MAP_NAME_R[maps[i]]);
 			}
+
 			maps1.push(ZmKeyMap.MAP_CUSTOM);
-			var col1 = {};
+			var col1 = {}, col2 = {};
 			col1.type = ZmShortcutList.TYPE_APP;
 			col1.maps = maps1;
-			panel.popup([col1, ZmShortcutList.COL_SYS]);
+			var colList = [col1];
+			if (maps2.length) {
+				col2.type = ZmShortcutList.TYPE_APP;
+				col2.maps = maps2;
+				colList.push(col2);
+			}
+			var col3 = {};
+			col3.type = ZmShortcutList.TYPE_SYS;
+			col3.maps = [];
+			var ctlr = appCtxt.getCurrentController();
+			var testMaps = ["list", "editor", "tabView"];
+			for (var i = 0; i < testMaps.length; i++) {
+				if (ctlr.mapSupported(testMaps[i])) {
+					col3.maps.push(testMaps[i]);
+				}
+			}
+			col3.maps.push("button", "menu", "tree", "dialog", "toolbarHorizontal");
+			colList.push(col3);
+			panel.popup(colList);
 			break;
 		}
 

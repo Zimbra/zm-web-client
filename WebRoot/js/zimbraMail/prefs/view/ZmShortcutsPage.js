@@ -495,8 +495,11 @@ function(params, html, i) {
 	for (var j = 0; j < maps.length; j++) {
 		var map = maps[j];
 		if (!keySequences[map]) { continue; }
-        html[i++] = "<table class='shortcutListTable' cellspacing=0 cellpadding=0>";
-		html[i++] = "<tr><td class='shortcutListHeaderTd' colspan=2>";
+        html[i++] = "<table class='" + ZmShortcutList._getClass("shortcutListTable", this._style) + "' cellspacing=0 cellpadding=0>";
+		if (this._style == ZmShortcutList.PANEL_STYLE) {
+			html[i++] = "<colgroup><col width=100></col><col width=140></col></colgroup>";
+		}
+		html[i++] = "<tr><td class='" + ZmShortcutList._getClass("shortcutListHeaderTd", this._style) + "' colspan=2>";
         html[i++] = "<div class='" + ZmShortcutList._getClass("shortcutListHeader", this._style) + "'>";
 		var mapDesc = keys[[map, "description"].join(".")];
 		html[i++] = mapDesc;
@@ -537,7 +540,7 @@ function(ks, style) {
 
 	var html = [];
 	var i = 0;
-	html[i++] = "<span class='shortcutKeyCombo'>";
+	html[i++] = "<span class='" + ZmShortcutList._getClass("shortcutKeyCombo", style) + "'>";
 
 	var keys = (ks[ks.length - 1] != DwtKeyMap.SEP) ? ks.split(DwtKeyMap.SEP) : [ks];
 	for (var j = 0; j < keys.length; j++) {
@@ -1068,14 +1071,14 @@ function(ev) {
 	return true;
 };
 
-ZmShortcutsPanel = function(params) {
+ZmShortcutsPanel = function() {
 
 	ZmShortcutsPanel.INSTANCE = this;
-	DwtControl.call(this, {parent:appCtxt.getShell(), className:"ZmShortcutsPanel", posStyle:Dwt.ABSOLUTE_STYLE});
+	var className = appCtxt.isChildWindow ? "ZmShortcutsWindow" : "ZmShortcutsPanel";
+	DwtControl.call(this, {parent:appCtxt.getShell(), className:className, posStyle:Dwt.ABSOLUTE_STYLE});
 
-	if (!this._rendered) {
-		this._createHtml();
-	}
+	this._createHtml();
+	this.setHandler(DwtEvent.ONKEYDOWN, ZmShortcutsPanel.closeCallback);
 };
 
 ZmShortcutsPanel.prototype = new DwtControl;
@@ -1088,15 +1091,27 @@ function() {
 
 ZmShortcutsPanel.prototype.popup =
 function(cols) {
+	appCtxt.getKeyboardMgr().pushDefaultHandler(this);
+	this._cols = cols;
+	Dwt.setZIndex(appCtxt.getShell()._veilOverlay, Dwt.Z_VEIL);
 	var list = new ZmShortcutList({style:ZmShortcutList.PANEL_STYLE, cols:cols});
 	this._contentDiv.innerHTML = list.getContent();
-	this._position();
+	if (!appCtxt.isChildWindow) {
+		this._position();
+	}
 	this.setZIndex(Dwt.Z_DIALOG);
 };
 
 ZmShortcutsPanel.prototype.popdown =
 function(maps) {
 	this.setZIndex(Dwt.Z_HIDDEN);
+	Dwt.setZIndex(appCtxt.getShell()._veilOverlay, Dwt.Z_HIDDEN);
+	appCtxt.getKeyboardMgr().popDefaultHandler();
+};
+
+ZmShortcutsPanel.prototype.handleKeyEvent =
+function() {
+	ZmShortcutsPanel.closeCallback();
 };
 
 ZmShortcutsPanel.prototype._createHtml =
@@ -1110,9 +1125,10 @@ function() {
 	html[i++] = "<table border=0 cellpadding=0 cellspacing=0>";
 	html[i++] = "<tr><td class='ShortcutsPanelDescription ShortcutsPanelText' width='70%'>" + ZmMsg.shortcutsCurrent + "</td>";
 	html[i++] = "<td class='ShortcutsPanelLinks ShortcutsPanelText' width='30%'>" +
-				"<span onclick='ZmShortcutsPanel.closeCallback();'>" + ZmMsg.close + "</span>" +
-				"<br />" +
-				"<span onclick='ZmShortcutsPanel.newWindowCallback();'>" + ZmMsg.newWindow + "</span></td></tr>";
+				"<span onclick='ZmShortcutsPanel.closeCallback();'>" + ZmMsg.close + "</span>";
+	if (!appCtxt.isChildWindow) {
+		html[i++] = "<br /><span onclick='ZmShortcutsPanel.newWindowCallback();'>" + ZmMsg.newWindow + "</span></td></tr>";
+	}
 	html[i++] = "</table>";
 	html[i++] = "<hr />";
 	html[i++] = "</div>";
@@ -1124,15 +1140,21 @@ function() {
 	var headerHeight = Dwt.getSize(this._headerDiv).y;
 	var h = this.getSize().y - headerHeight;
 	Dwt.setSize(this._contentDiv, Dwt.DEFAULT, h - 10);
-	this._rendered = true;
 };
 
 ZmShortcutsPanel.closeCallback =
 function() {
-	ZmShortcutsPanel.INSTANCE.popdown();
+	if (appCtxt.isChildWindow) {
+		window.close();
+	} else {
+		ZmShortcutsPanel.INSTANCE.popdown();
+	}
 };
 
 ZmShortcutsPanel.newWindowCallback =
 function() {
-
+	var newWinObj = appCtxt.getNewWindow(false, 820, 650);
+	newWinObj.command = "shortcuts";
+	newWinObj.params = {cols:ZmShortcutsPanel.INSTANCE._cols};
+	ZmShortcutsPanel.closeCallback();
 };

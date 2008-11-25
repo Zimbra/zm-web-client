@@ -239,6 +239,11 @@ function(actionCode) {
 	return true;
 };
 
+ZmContactListController.prototype.mapSupported =
+function(map) {
+	return (map == "list");
+};
+
 
 // Private and protected methods
 

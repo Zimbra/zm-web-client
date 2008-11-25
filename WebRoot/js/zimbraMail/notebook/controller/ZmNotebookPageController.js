@@ -67,6 +67,11 @@ function(actionCode) {
 	return true;
 };
 
+ZmNotebookPageController.prototype.mapSupported =
+function(map) {
+	return (map == "editor");
+};
+
 // page
 
 ZmNotebookPageController.prototype.gotoPage = function(pageRef) {
