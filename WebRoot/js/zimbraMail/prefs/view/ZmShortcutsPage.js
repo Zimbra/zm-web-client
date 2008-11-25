@@ -57,6 +57,12 @@ ZmShortcutsPage = function(parent, view, controller) {
 		this._organizers.push(ZmOrganizer.TAG);
 	}
 
+	var button = new DwtButton({parent:this});
+	button.setText(ZmMsg.print);
+	var buttonDiv = document.getElementById(this._printButtonId);
+	buttonDiv.appendChild(button.getHtmlElement());
+	button.addSelectionListener(new AjxListener(this, this._printListener));
+
 	this._scTabView = new ZmShortcutsPageTabView(this, controller, this._organizers, this._prefId );
 	var element = this._scTabView.getHtmlElement();
 	element.parentNode.removeChild(element);
@@ -154,12 +160,15 @@ function() {
 	var i = 0;
 	this._headerId = Dwt.getNextId();
 	this._scTabViewId = Dwt.getNextId();
+	this._printButtonId = Dwt.getNextId();
 
-	html[i++] = "<div class='BigHead' id='";
+	html[i++] = "<table width='100%'><tr><td><div class='BigHead' id='";
 	html[i++] = this._headerId;
 	html[i++] = "'>";
 	html[i++] = ZmMsg.keyboardShortcuts;
-	html[i++] = "</div>";
+	html[i++] = "</div></td><td><div id='";
+	html[i++] = this._printButtonId;
+	html[i++] = "' align='right'></div></td></tr></table>";
 	html[i++] = "<div id='";
 	html[i++] = this._scTabViewId;
 	html[i++] = "'></div>";
@@ -186,6 +195,36 @@ function() {
 	if (listView) {
 		listView._dirty = true;
 	}
+};
+
+ZmShortcutsPage.prototype._printListener =
+function() {
+	var args = "height=650,width=820,location=no,menubar=yes,resizable=yes,scrollbars=yes,toolbar=no";
+	var newWin = window.open("", "_blank", args);
+
+	var col1 = {}, col2 = {};
+//	col1.title = ZmMsg.shortcutsApp;
+	col1.type = col2.type = ZmShortcutList.TYPE_APP;
+	col1.maps = ["global", "mail"];
+	col2.omit = ["global", "mail"];
+	col2.sort = true;
+
+	var list = new ZmShortcutList({style:ZmShortcutList.PRINT_STYLE, cols:[col1, col2, ZmShortcutList.COL_SYS]});
+
+	var html = [], i = 0;
+	html[i++] = "<html><head>";
+	html[i++] = "<link href='/zimbra/css/zm.css' rel='stylesheet' type='text/css' />";
+	html[i++] = "</head><body>";
+	html[i++] = "<div class='ShortcutsPrintHeader'>" + ZmMsg.keyboardShortcuts + "</div>";
+
+	var doc = newWin.document;
+	doc.write(html.join(""));
+
+	var content = list.getContent();
+	doc.write(content);
+	doc.write("</body></html>");
+
+	doc.close();
 };
 
 /**
@@ -395,6 +434,7 @@ function() {
  *
  * @param cols		[array]		list of columns; each column may have:
  *        maps		[array]*	list of maps to show in this column; if absent, show all maps
+ *        omit		[array]*	list of maps not to show; all others are shown
  *        title		[string]*	text for column header
  *        type		[constant]	app or sys
  *        sort		[boolean]*	if true, sort list of maps based on .sort values in props file
@@ -428,10 +468,15 @@ ZmShortcutList.prototype._getKeysHtml =
 function(params, html, i) {
 	var keys = (params.type == ZmShortcutList.TYPE_APP) ? ZmKeys : AjxKeys;
 	var kmm = appCtxt.getKeyboardMgr().__keyMapMgr;
-	var mapDesc = {}, mapsFound = [], mapsHash = {}, keySequences = {}, mapsToShow = {};
+	var mapDesc = {}, mapsFound = [], mapsHash = {}, keySequences = {}, mapsToShow = {}, mapsToOmit = {};
 	if (params.maps) {
 		for (var k = 0; k < params.maps.length; k++) {
 			mapsToShow[params.maps[k]] = true;
+		}
+	}
+	if (params.omit) {
+		for (var k = 0; k < params.omit.length; k++) {
+			mapsToOmit[params.omit[k]] = true;
 		}
 	}
 	for (var propName in keys) {
@@ -439,7 +484,7 @@ function(params, html, i) {
 		if (!propValue || (typeof propValue != "string")) { continue; }
 		var parts = propName.split(".");
 		var map = parts[0];
-        if (params.maps && !mapsToShow[map]) { continue; }
+        if ((params.maps && !mapsToShow[map]) || (params.omit && mapsToOmit[map])) { continue; }
 		var isMap = (parts.length == 2);
 		var action = isMap ? null : parts[1];
 		var field = parts[parts.length - 1];
@@ -496,7 +541,7 @@ function(params, html, i) {
 		var map = maps[j];
 		if (!keySequences[map]) { continue; }
         html[i++] = "<table class='" + ZmShortcutList._getClass("shortcutListTable", this._style) + "' cellspacing=0 cellpadding=0>";
-		if (this._style == ZmShortcutList.PANEL_STYLE) {
+		if (this._style == ZmShortcutList.PANEL_STYLE || this._style == ZmShortcutList.PRINT_STYLE) {
 			html[i++] = "<colgroup><col width=100></col><col width=140></col></colgroup>";
 		}
 		html[i++] = "<tr><td class='" + ZmShortcutList._getClass("shortcutListHeaderTd", this._style) + "' colspan=2>";

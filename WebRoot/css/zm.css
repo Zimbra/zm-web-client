@@ -2750,9 +2750,17 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 /*
- * Styles for showing a list of shortcuts in a prefs page, a popup info panel,
+ * Styles for showing a list of shortcuts in a prefs page, a popup info panel, a separate window,
  * or to be printed.
  */
+
+.ShortcutsPrintHeader {
+	font-size: 12px;
+	font-weight: bold;
+	text-align: center;
+	color: black;
+}
+
 .ZmShortcutList {
 	padding: 10 10 10 20;
 }
@@ -2767,13 +2775,17 @@ HTML>BODY .appt-selected .appt_allday_body
 	color: white;
 }
 
+.shortcutListType-print {
+	color: black;
+}
+
 .shortcutListTable {
 	width: 100%;
 	border-collapse: collapse;
 	margin-bottom: 10px;
 }
 
-.shortcutListTable-panel {
+.shortcutListTable-panel, .shortcutListTable-print {
 	table-layout: fixed;
 }
 
@@ -2782,37 +2794,53 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .shortcutListHeader {
-	font-size: 12px;
 	font-weight: bold;
 	text-align: center;
 }
 
 .shortcutListHeader-prefs {
+	font-size: 12px;
 	padding: 3 10 5 7;
 	background-color: #bab09a;
 }
 
-.shortcutListHeader-panel {
-	color: #DDDD00;
+.shortcutListHeader-panel, .shortcutListHeader-print {
 	text-decoration: underline;
+}
+
+.shortcutListHeader-panel {
+	font-size: 12px;
+	color: #DDDD00;
+}
+
+.shortcutListHeader-print {
+	font-size: 12px;
+	color: black;
+	padding-bottom: 2px;
 }
 
 .shortcutKeys {
 	text-align: right;
 	vertical-align: top;
 	font-weight: bold;
-	@Text-disabled@;
 }
 
 .shortcutKeys-prefs {
 	@SeparatorBorder@
+	@Text-disabled@;
 	padding: 6px;
 	width: 250px;
 }
 
 .shortcutKeys-panel {
+	@Text-disabled@;
 	color: white;
 	white-space: nowrap;
+}
+
+.shortcutKeys-print {
+	font-size: 12px;
+	color: black;
 }
 
 .shortcutDescription {
@@ -2825,10 +2853,18 @@ HTML>BODY .appt-selected .appt_allday_body
 	color: black;
 }
 
-.shortcutDescription-panel {
+.shortcutDescription-panel, .shortcutDescription-print {
 	padding-left: 5px;
+}
+
+.shortcutDescription-panel {
 	color: white;
 	white-space: nowrap;
+}
+
+.shortcutDescription-print {
+	font-size: 12px;
+	color: black;
 }
 
 .shortcutKeyCombo {
@@ -2843,18 +2879,26 @@ HTML>BODY .appt-selected .appt_allday_body
 .shortcutKey {
 	font-weight: bold;
 	padding: 2px 4px;
-	line-height: 22px;
 }
 
 .shortcutKey-prefs {
 	margin: 1px;
 	@SeparatorBorder@
 	@Text@
+	line-height: 22px;
+}
+
+.shortcutKey-panel, .shortcutKey-print {
+	padding: 1px 2px;
 }
 
 .shortcutKey-panel {
-	padding: 1px 2px;
 	color: #DDDD00;
+	line-height: 22px;
+}
+
+.shortcutKey-print {
+	color: black;
 }
 
 /*
