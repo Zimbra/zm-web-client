@@ -65,6 +65,11 @@ function() {
 	return true;
 };
 
+ZmZimbraImServiceController.prototype.getSupportsConferences =
+function() {
+	return true;
+};
+
 ZmZimbraImServiceController.prototype._chatListChangeListener =
 function(ev) {
 	if (!this._showedJive && (ev.event == ZmEvent.E_CREATE)) {

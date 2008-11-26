@@ -191,6 +191,42 @@ function(im) {
 	ZmImApp.INSTANCE.getService().handleNotification(im);
 };
 
+ZmRoster.prototype.getConferenceTree =
+function() {
+	if (!this._conferenceTree) {
+		this._conferenceTree = new ZmTree(ZmOrganizer.CONFERENCE_ITEM);
+		this._conferenceTree.root = new ZmOrganizer({ tree: this._conferenceTree });
+	}
+	return this._conferenceTree;
+};
+
+ZmRoster.prototype.getConferenceServices =
+function(callback, force) {
+	if (!this._conferenceServices || force) {
+		var responseCallback = new AjxCallback(this, this._handleResponceGetConferenceServices, [callback]);
+		ZmImApp.INSTANCE.getService().getConferenceServices(responseCallback);
+	} else {
+		callback.run(this._conferenceServices);
+	}
+};
+
+ZmRoster.prototype._handleResponceGetConferenceServices =
+function(callback, services) {
+	var tree = this.getConferenceTree();
+	var root = tree.root;
+	for (var i = 0, count = services.length; i < count; i++) {
+		var args = {
+			id: services[i].addr,
+			tree: tree, 
+			name: services[i].name,
+			parent: root
+		};
+		var service = new ZmConferenceService(args);
+		root.children.add(service);
+	}
+	callback.run(root.children.getArray());
+};
+
 ZmRoster.prototype.joinChatRequest = function(thread, addr) {
         var sd = AjxSoapDoc.create("IMJoinConferenceRoomRequest", "urn:zimbraIM");
         var method = sd.getMethod();

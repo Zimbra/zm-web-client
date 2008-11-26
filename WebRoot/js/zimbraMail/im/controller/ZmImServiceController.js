@@ -72,3 +72,11 @@ ZmImServiceController.prototype.getSupportsAccounts =
 function() {
 	alert('Not implemented');
 };
+
+/**
+ * Returns true if the service supports conferences
+ */
+ZmImServiceController.prototype.getSupportsConferences =
+function() {
+	alert('Not implemented');
+};

@@ -275,6 +275,33 @@ function(chat, params) {
 	return this._send(params, soapDoc);
 };
 
+ZmZimbraImService.prototype.getConferenceServices =
+function(callback, params) {
+	var soapDoc = AjxSoapDoc.create("IMListConferenceServicesRequest", "urn:zimbraIM");
+	var respCallback = new AjxCallback(this, this._handleResponseListConferenceServices, [callback]);
+	return this._send(params, soapDoc, respCallback);
+};
+
+ZmZimbraImService.prototype._handleResponseListConferenceServices =
+function(callback, response) {
+	callback.run(response.getResponse().IMListConferenceServicesResponse.svc);
+};
+
+ZmZimbraImService.prototype.getConferenceRooms =
+function(service, callback, params) {
+	var soapDoc = AjxSoapDoc.create("IMListConferenceRoomsRequest", "urn:zimbraIM");
+	var method = soapDoc.getMethod();
+	method.setAttribute("svc", service.getAddress());
+	var respCallback = new AjxCallback(this, this._handleResponseListConferenceRooms, [callback]);
+	return this._send(params, soapDoc, respCallback);
+};
+
+ZmZimbraImService.prototype._handleResponseListConferenceRooms =
+function(callback, response) {
+//	callback.run(response.getResponse().IMListConferenceRoomsResponse.room);
+	callback.run([ { addr: "room1", name: "Support" }, { addr: "room2", name: "Random" }, { addr: "room3", name: "Grrrrrrrr" }]);
+};
+
 ZmZimbraImService.prototype.handleNotification =
 function(im) {
 	if (im.n) {

@@ -205,6 +205,29 @@ function(chat, params) {
 };
 
 /**
+ * Gets the list of conference services.
+ *
+ * @param callback	[AjxCallback]			Callback
+ * @param params	[hash]			ZmRequestMgr#sendRequest params
+ */
+ZmImService.prototype.getConferenceServices =
+function(callback, params) {
+	alert('Not implemented');
+};
+
+/**
+ * Gets the list of conference services.
+ *
+ * @param service	[ZmConferenceService]	ZmRequestMgr#sendRequest params
+ * @param callback	[AjxCallback]			Callback
+ * @param params	[hash]					ZmRequestMgr#sendRequest params
+ */
+ZmImService.prototype.getConferenceRooms =
+function(service, callback, params) {
+	alert('Not implemented');
+};
+
+/**
  * Handles a notification from the request manager
  *
  * @param chat		[ZmChat]	 	The chat

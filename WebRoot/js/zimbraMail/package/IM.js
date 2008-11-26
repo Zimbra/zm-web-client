@@ -36,6 +36,8 @@ AjxPackage.require("ajax.dwt.widgets.DwtSoundPlugin");
 AjxPackage.require("zimbraMail.share.view.dialog.ZmPromptDialog");
 
 AjxPackage.require("zimbraMail.im.model.ZmAssistantBuddy");
+AjxPackage.require("zimbraMail.im.model.ZmConferenceRoom");
+AjxPackage.require("zimbraMail.im.model.ZmConferenceService");
 
 AjxPackage.require("zimbraMail.im.view.ZmChatWindowManager");
 AjxPackage.require("zimbraMail.im.view.ZmChatWindow");
@@ -52,6 +54,8 @@ AjxPackage.require("zimbraMail.im.view.ZmImNewChatDlg");
 AjxPackage.require("zimbraMail.im.view.ZmPresenceMenu");
 AjxPackage.require("zimbraMail.im.view.ZmCustomStatusDlg");
 AjxPackage.require("zimbraMail.im.view.ZmYahooLoginDialog");
+AjxPackage.require("zimbraMail.im.view.ZmConferenceDialog");
 
 AjxPackage.require("zimbraMail.im.controller.ZmChatListController");
 AjxPackage.require("zimbraMail.im.controller.ZmImController");
+AjxPackage.require("zimbraMail.im.controller.ZmConferenceTreeController");

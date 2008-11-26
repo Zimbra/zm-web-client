@@ -37,6 +37,7 @@ ZmItem.CHAT						= ZmEvent.S_CHAT;
 ZmItem.ROSTER_ITEM				= ZmEvent.S_ROSTER_ITEM;
 ZmOrganizer.ROSTER_TREE_ITEM	= ZmEvent.S_ROSTER_TREE_ITEM;
 ZmOrganizer.ROSTER_TREE_GROUP	= ZmEvent.S_ROSTER_TREE_GROUP;
+ZmOrganizer.CONFERENCE_ITEM		= "CONFERENCE_ITEM";
 
 ZmItem.F_PRESENCE = "PRESENCE";
 ZmItem.F_PRESENCE_CELL = "PRESENCE_cell";
@@ -77,6 +78,23 @@ function() {
 	AjxDispatcher.registerMethod("GetChatListController",
                                      [ "IMCore", "IM" ],
                                      new AjxCallback(this, this.getChatListController));
+};
+
+ZmImApp.prototype._registerOrganizers =  function() {
+	ZmOrganizer.registerOrg(ZmOrganizer.CONFERENCE_ITEM,
+							{app:				ZmApp.IM,
+							 nameKey:			"imConference",
+							 defaultFolder:		ZmOrganizer.ID_INBOX,
+							 orgPackage:		"IM",
+							 treeController:	"ZmConferenceTreeController",
+							 labelKey:			"imConferences",
+							 itemsKey:			"messages",
+							 hasColor:			false,
+							 treeType:			ZmOrganizer.CONFERENCE_ITEM,
+							 compareFunc:		"ZmConferenceService.sortCompare",
+							 displayOrder:		900
+							});
+
 };
 
 ZmImApp.prototype._registerOperations =
