@@ -266,14 +266,14 @@ ZmZimletContext.prototype.getProp = function(name) {
 };
 
 ZmZimletContext.prototype._translateConfig = function() {
-	if (this.config.global && this.config.global[0]) {
+	if (this.config && this.config.global && this.config.global[0]) {
 		var prop = this.config.global[0].property;
 		this.config.global = {};
 		for (var i in prop) {
 			this.config.global[prop[i].name] = prop[i]._content;
 		}
 	}
-	if (this.config.local && this.config.local[0]) {
+	if (this.config && this.config.local && this.config.local[0]) {
 		var propLocal = this.config.local[0].property;
 		this.config.local = {};
 		for (var j in propLocal) {
@@ -283,10 +283,10 @@ ZmZimletContext.prototype._translateConfig = function() {
 };
 
 ZmZimletContext.prototype.getConfig = function(name) {
-	if (this.config.local && this.config.local[name]) {
+	if (this.config && this.config.local && this.config.local[name]) {
 		return this.config.local[name];
 	}
-	if (this.config.global && this.config.global[name]) {
+	if (this.config && this.config.global && this.config.global[name]) {
 		return this.config.global[name];
 	}
 	return null;
@@ -422,7 +422,7 @@ ZmZimletContext.prototype.makeURL = function(actionUrl, obj, props) {
 * pass it to 'div' parameter.  otherwise a canvas (window, popup, dialog) will be created
 * to display the contents from the url.
 */
-ZmZimletContext.prototype.handleActionUrl = function(actionUrl, canvas, obj, div, x, y) {
+ZmZimletContext.prototype.handleActionUrl = function(actionUrl, canvas, obj, div) {
 	var url = this.makeURL(actionUrl, obj);
 	var xslt = null;
 
@@ -433,13 +433,13 @@ ZmZimletContext.prototype.handleActionUrl = function(actionUrl, canvas, obj, div
 	// need to use callback if the paintable canvas already exists, or if it needs xslt transformation.
 	if (div || xslt) {
 		if (!div) {
-			canvas = this.handlerObject.makeCanvas(canvas, null, x, y);
+			canvas = this.handlerObject.makeCanvas(canvas[0], null);
 			div = document.getElementById("zimletCanvasDiv");
 		}
 		url = ZmZimletBase.PROXY + AjxStringUtil.urlComponentEncode(url);
 		AjxRpc.invoke(null, url, null, new AjxCallback(this, this._rpcCallback, [xslt, div]), true);
 	} else {
-		this.handlerObject.makeCanvas(canvas, url, x, y);
+		this.handlerObject.makeCanvas(canvas[0], url);
 	}
 };
 

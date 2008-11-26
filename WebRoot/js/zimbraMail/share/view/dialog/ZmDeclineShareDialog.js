@@ -27,7 +27,7 @@ ZmDeclineShareDialog = function(parent, className) {
 	this._confirmMsgEl.style.fontWeight = "bold";
 	this._confirmMsgEl.style.marginBottom = "0.25em";
 	this._reply = new ZmShareReply(this);
-
+	
 	// create view
 	var view = new DwtComposite(this);
 	var element = view.getHtmlElement();
@@ -45,24 +45,22 @@ ZmDeclineShareDialog.prototype.constructor = ZmDeclineShareDialog;
 // Public methods
 
 ZmDeclineShareDialog.prototype.popup =
-function(share, fromAddr) {
+function(share) {
 	this._share = share;
-	this._fromAddr = fromAddr;
-	var message = this._formatter.format([share.grantee.name, share.link.name]);
+	var params = [ share.grantee.name, share.link.name ];
+	var message = this._formatter.format(params);
 	this._confirmMsgEl.innerHTML = AjxStringUtil.htmlEncode(message);
-
+	
 	this._reply.setReplyType(ZmShareReply.STANDARD);
 	this._reply.setReplyNote("");
-
+	
 	DwtDialog.prototype.popup.call(this);
 };
 
 ZmDeclineShareDialog.prototype.setDeclineListener =
 function(listener) {
 	this.removeAllListeners(ZmShare.DECLINE);
-	if (listener) {
-		this.addListener(ZmShare.DECLINE, listener);
-	}
+	if (listener) this.addListener(ZmShare.DECLINE, listener);
 };
 
 // Protected methods
@@ -76,9 +74,9 @@ function(event) {
 		this._share.notes = (replyType == ZmShareReply.QUICK) ? this._reply.getReplyNote(): "";
 
 		if (replyType == ZmShareReply.COMPOSE) {
-			this._share.composeMessage(ZmShare.DECLINE, null, this._fromAddr);
+			this._share.composeMessage(ZmShare.DECLINE);
 		} else {
-			this._share.sendMessage(ZmShare.DECLINE, null, this._fromAddr);
+			this._share.sendMessage(ZmShare.DECLINE);
 		}
 	}
 	
