@@ -524,6 +524,7 @@ function(params) {
 	if (itemList.length) {
 		list.addItems(itemList);
 	}
+	list.setLoaded();
 };
 
 /**

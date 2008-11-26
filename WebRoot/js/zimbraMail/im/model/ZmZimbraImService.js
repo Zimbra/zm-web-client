@@ -310,8 +310,8 @@ function(im) {
 		for (var curNot=0; curNot < im.n.length; curNot++) {
 			var not = im.n[curNot];
 			if (not.type == "roster") {
-				this._roster.getRosterItemList().removeAllItems();
 				var list = this._roster.getRosterItemList();
+				list.removeAllItems();
 				if (not.n && not.n.length) {
 					var rosterItems = [];
 					for (var rosterNum=0; rosterNum < not.n.length; rosterNum++) {
@@ -324,6 +324,8 @@ function(im) {
 						list.addItems(rosterItems);
 					}
 				}
+				list.setLoaded(true);
+				
 				// ignore unsubscribed entries for now (TODO FIXME)
 			} else if (not.type == "subscribe") {
 				this._roster.onServiceRequestBuddyAuth(not.from);

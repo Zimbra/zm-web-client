@@ -27,6 +27,11 @@ function() {
 	return "ZmRosterItemList";
 };
 
+ZmRosterItemList.prototype.setLoaded =
+function() {
+	this._notify(ZmEvent.E_LOAD);
+};
+
 ZmRosterItemList.prototype.addItem = function(item, skipNotify, index) {
 	this.add(item, index);
 	if (!skipNotify) {

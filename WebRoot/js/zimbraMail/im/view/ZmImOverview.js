@@ -508,10 +508,6 @@ function() {
  */
 ZmImOverview.prototype._updateSpecialItems =
 function(type) {
-	if (this._loadingAction) {
-		AjxTimedAction.cancelAction(this._loadingAction);
-		this._loadingAction = null;
-	}
 	var expand = this._rootItem.getExpanded();
 	if (type == ZmImOverview.NO_MESSAGE) {
 		if (this._infoItem) {
@@ -538,8 +534,6 @@ function(type) {
 				break;
 			case ZmImOverview.LOADING:
 				message = ZmMsg.loading;
-				this._loadingAction = new AjxTimedAction(this, this._loadingTimedOut);
-				AjxTimedAction.scheduleAction(this._loadingAction, 5000);
 				break;
 			case ZmImOverview.NO_BUDDIES:
 				message = AjxMessageFormat.format(ZmMsg.imNoBuddies, "ZmImOverview.newBuddy()");
@@ -569,12 +563,13 @@ ZmImOverview.prototype._rosterItemListListener =
 function(ev) {
 
 	var fields = ev.getDetail("fields");
-	if (ev.event == ZmEvent.E_CREATE) {
+	if (ev.event == ZmEvent.E_LOAD) {
+		if (!ev.source.size()) {
+			this._updateSpecialItems(ZmImOverview.NO_BUDDIES);
+		}
+	} else if (ev.event == ZmEvent.E_CREATE) {
 		if (this._infoItem) {
 			this._updateSpecialItems(ZmImOverview.NO_MESSAGE);
-		}
-		if (this._loadingAction) {
-			AjxTimedAction.cancelAction(this._loadingAction);
 		}
 		var buddies = AjxVector.fromArray(ev.getItems());
 		buddies.foreach(this._createBuddy, this);
@@ -587,13 +582,6 @@ function(ev) {
 			   ev.event == ZmEvent.E_DELETE) {
 		var buddies = AjxVector.fromArray(ev.getItems());
 		buddies.foreach(this._removeBuddy, this);
-	}
-};
-
-ZmImOverview.prototype._loadingTimedOut = function() {
-	delete this._loadingAction;
-	if (this._infoItem) {
-		this._updateSpecialItems(ZmImOverview.NO_BUDDIES);
 	}
 };
 
