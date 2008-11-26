@@ -52,7 +52,9 @@ ZmZimletContext = function(id, zimlet) {
 			this.type = this.contentObject.type;
 		}
 		if (this.contentObject.contextMenu) {
-			this.contentObject.contextMenu = this.contentObject.contextMenu[0];
+            if(this.contentObject.contextMenu instanceof Array){
+			    this.contentObject.contextMenu = this.contentObject.contextMenu[0];
+            }
 			this._contentActionMenu = new AjxCallback(this, this._makeMenu,[this.contentObject.contextMenu.menuItem]);
 		}
 	}
@@ -70,15 +72,17 @@ ZmZimletContext = function(id, zimlet) {
 			this.icon = this.zimletPanelItem.icon;
 		}
 		if (this.zimletPanelItem.contextMenu) {
-			this.zimletPanelItem.contextMenu = this.zimletPanelItem.contextMenu[0];
+            if(this.zimletPanelItem.contextMenu instanceof Array){
+			    this.zimletPanelItem.contextMenu = this.zimletPanelItem.contextMenu[0];
+            }
 			this._panelActionMenu = new AjxCallback(
 				this, this._makeMenu,
 				[ this.zimletPanelItem.contextMenu.menuItem ]);
 		}
-		if (this.zimletPanelItem.onClick) {
+		if (this.zimletPanelItem.onClick instanceof Array) {
 			this.zimletPanelItem.onClick = this.zimletPanelItem.onClick[0];
 		}
-		if (this.zimletPanelItem.onDoubleClick) {
+		if (this.zimletPanelItem.onDoubleClick instanceof Array) {
 			this.zimletPanelItem.onDoubleClick = this.zimletPanelItem.onDoubleClick[0];
 		}
 	}
@@ -101,7 +105,9 @@ ZmZimletContext = function(id, zimlet) {
 	}
 
 	if(this.config) {
-		this.config = this.config[0];
+        if(this.config instanceof Array) {
+			this.config = this.config[0];
+        }
 		this._translateConfig();
 	}
 
@@ -130,7 +136,9 @@ ZmZimletContext.sanitize =
 function(obj, tag, wantarray_re) {
 	function doit(obj, tag) {
 		var cool_json, val, i;
-		if (obj instanceof Array) {
+        if(obj instanceof DwtControl){ //Don't recurse into DwtControls, causes too much recursion
+           return obj;
+        }else if (obj instanceof Array) {
 			if (obj.length == 1 && !(wantarray_re && wantarray_re.test(tag))) {
 				cool_json = doit(obj[0], tag);
 			} else {
@@ -362,6 +370,7 @@ ZmZimletContext.prototype.processMessage = function(str) {
 };
 
 ZmZimletContext.prototype.replaceObj = function(re, str, obj) {
+    if(!str) return "";
 	return str.replace(re,
 		function(str, p1, prop) {
 			var txt = p1;

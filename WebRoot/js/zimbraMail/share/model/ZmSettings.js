@@ -328,9 +328,19 @@ function(callback, accountName, result) {
 };
 
 ZmSettings.prototype._loadZimlets =
-function(zimlets, props) {
-	this.registerSetting("ZIMLETS",		{type:ZmSetting.T_CONFIG, defaultValue:zimlets, isGlobal:true});
+function(allzimlets, props) {
+	this.registerSetting("ZIMLETS",		{type:ZmSetting.T_CONFIG, defaultValue:allzimlets, isGlobal:true});
 	this.registerSetting("USER_PROPS",	{type:ZmSetting.T_CONFIG, defaultValue:props});
+
+    var zimlets = []; //Filter zimlets from getinforesponse and load only user checked
+    var checkedZimlets = appCtxt.get(ZmSetting.CHECKED_ZIMLETS);
+    for (var i=0; i < allzimlets.length; i++) {
+        var zimletObj = allzimlets[i];
+        var zimlet0 = zimletObj.zimlet[0];
+        if(checkedZimlets.indexOf(zimlet0.name) >= 0 ){
+           zimlets.push(zimletObj);
+        }
+    }
 
 	appCtxt.getZimletMgr().loadZimlets(zimlets, props);
 
@@ -704,9 +714,17 @@ function() {
 
 	this._registerOfflineSettings();
 	this._registerSkinHints();
+    this._registerZimletsSettings();
 
 	// need to do this before loadUserSettings(), and zimlet settings are not tied to an app where it would normally be done
 	this.registerSetting("ZIMLET_TREE_OPEN",				{name:"zimbraPrefZimletTreeOpen", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, isImplicit:true});
+};
+
+ZmSettings.prototype._registerZimletsSettings =
+function() {
+	// zimlet-specific
+	this.registerSetting("CHECKED_ZIMLETS",			{name:"zimbraPrefZimlets", type:ZmSetting.T_PREF, dataType:ZmSetting.D_LIST});
+
 };
 
 ZmSettings.prototype._registerOfflineSettings =

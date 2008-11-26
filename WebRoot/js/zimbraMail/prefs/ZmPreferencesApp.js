@@ -29,6 +29,7 @@ ZmPreferencesApp = function(container) {
 
 // Organizer and item-related constants
 ZmEvent.S_FILTER			= "FILTER";
+ZmEvent.S_PREF_ZIMLET			= "PREF_ZIMLET";
 
 // App-related constants
 ZmApp.PREFERENCES					= ZmId.APP_PREFERENCES;
@@ -204,6 +205,18 @@ function() {
 			createView: function(parent, section, controller) {
 				return new ZmShortcutsPage(parent, section.id, controller);
 			}
+		},
+        PREF_ZIMLETS: {
+			title: ZmMsg.zimlets,
+			templateId: "prefs.Pages#Zimlets",
+			manageDirty: true,
+            priority: 120,
+			prefs: [
+				ZmSetting.CHECKED_ZIMLETS    
+			],
+            createView: function(parent, section, controller) {
+				return new ZmZimletsPage(parent, section, controller);
+			}
 		}
 	};
 	for (var id in sections) {
@@ -255,6 +268,11 @@ function() {
 	ZmPref.registerPref("COMPOSE_SAME_FORMAT", {
 		displayName:		ZmMsg.replyForwardInSameFormat,
 		displayContainer:	ZmPref.TYPE_CHECKBOX
+	});
+
+    ZmPref.registerPref("CHECKED_ZIMLETS", {
+		displayName:		ZmMsg.zimlets,
+		displayContainer:	ZmPref.TYPE_CUSTOM
 	});
 
 	ZmPref.registerPref("FORWARD_INCLUDE_ORIG", {
