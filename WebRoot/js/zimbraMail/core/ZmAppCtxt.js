@@ -913,7 +913,7 @@ function(keyMap, shortcut, orgId) {
 	keyMap = keyMap || "global";
 	while (!text && keyMap) {
 		var scKey = [keyMap, shortcut, "display"].join(".");
-		var text = ZmKeys[scKey];
+		var text = AjxKeys[scKey] || ZmKeys[scKey];
 		if (text) {
 			// try to pick first single-character shortcut
 			var list = text.split(/;\s*/);
@@ -937,7 +937,7 @@ function(keyMap, shortcut, orgId) {
 			text = [" [", sc.replace(",", ""), "]"].join("");
 		} else {
 			var key = [keyMap, "INHERIT"].join(".");
-			keyMap = ZmKeys[key];
+			keyMap = AjxKeys[key] || ZmKeys[key];
 		}
 	}
 
