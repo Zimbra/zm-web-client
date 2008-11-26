@@ -90,12 +90,14 @@ ZmConvListView.HEADERS = [ZmItem.F_SELECTION, ZmItem.F_EXPAND, ZmItem.F_FLAG, Zm
 ZmConvListView.HEADER = {};
 ZmConvListView.HEADER[ZmItem.F_SELECTION]	= {icon:"TaskCheckbox", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.selection, resizeable:true, precondition:ZmSetting.SHOW_SELECTION_CHECKBOX};
 ZmConvListView.HEADER[ZmItem.F_EXPAND]		= {icon:"NodeCollapsed", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.expand, resizeable:true};
-ZmConvListView.HEADER[ZmItem.F_FLAG]		= {icon:"FlagRed", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.flag, resizeable:true, precondition:ZmSetting.FLAGGING_ENABLED};
+ZmConvListView.HEADER[ZmItem.F_FLAG]		= {icon:"FlagRed", width:ZmListView.COL_WIDTH_ICON, sortable:ZmItem.F_FLAG, name:ZmMsg.flag,
+											   noSortArrow:true, resizeable:true, precondition:ZmSetting.FLAGGING_ENABLED};
 ZmConvListView.HEADER[ZmItem.F_PRIORITY]	= {icon:"PriorityHigh_list", width:ZmListView.COL_WIDTH_NARROW_ICON, name:ZmMsg.priority, resizeable:true, precondition:ZmSetting.MAIL_PRIORITY_ENABLED};
 ZmConvListView.HEADER[ZmItem.F_TAG]			= {icon:"Tag", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.tag, resizeable:true, precondition:ZmSetting.TAGGING_ENABLED};
 ZmConvListView.HEADER[ZmItem.F_STATUS]		= {icon:"MsgStatus", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.status, resizeable:true};
 ZmConvListView.HEADER[ZmItem.F_FROM]		= {text:ZmMsg.from, width:ZmConvListView.COL_WIDTH_FROM, resizeable:true};
-ZmConvListView.HEADER[ZmItem.F_ATTACHMENT]	= {icon:"Attachment", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.attachment, resizeable:true};
+ZmConvListView.HEADER[ZmItem.F_ATTACHMENT]	= {icon:"Attachment", width:ZmListView.COL_WIDTH_ICON, sortable:ZmItem.F_ATTACHMENT,
+											   noSortArrow:true, name:ZmMsg.attachment, resizeable:true};
 ZmConvListView.HEADER[ZmItem.F_SUBJECT]		= {text:ZmMsg.subject, sortable:ZmItem.F_SUBJECT, noRemove:true, resizeable:true};
 ZmConvListView.HEADER[ZmItem.F_FOLDER]		= {text:ZmMsg.folder, width:ZmMsg.COLUMN_WIDTH_FOLDER, resizeable:true};
 ZmConvListView.HEADER[ZmItem.F_SIZE]		= {text:ZmMsg.size, width:ZmMsg.COLUMN_WIDTH_SIZE, resizeable:true};
@@ -488,9 +490,15 @@ function(columnItem, bSortAsc) {
 	// call base class to save the new sorting pref
 	ZmMailListView.prototype._sortColumn.call(this, columnItem, bSortAsc);
 
-	if (this.getList().size() > 1 && this._sortByString) {
-		var searchString = this._controller.getSearchString();
-		var params = {query:searchString, types:[ZmItem.CONV], sortBy:this._sortByString, limit:this.getLimit()};
+	var query;
+	if (columnItem._sortable == ZmItem.F_FLAG || columnItem._sortable == ZmItem.F_ATTACHMENT) {
+		query = this._getSearchForSort(columnItem._sortable);
+	} else if (this.getList().size() > 1 && this._sortByString) {
+		query = this._controller.getSearchString();
+	}
+
+	if (query) {
+		var params = {query:query, types:[ZmItem.CONV], sortBy:this._sortByString, limit:this.getLimit()};
 		appCtxt.getSearchController().search(params);
 	}
 };
