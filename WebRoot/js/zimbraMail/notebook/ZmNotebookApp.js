@@ -229,8 +229,10 @@ function(ids, force) {
 			page.notifyDelete();
 		} else {
 			var folder = appCtxt.getById(ids[i]);
-			cache.removeItem(folder);
-			folder.notifyDelete();
+            if(folder){
+                cache.removeItem(folder);
+                folder.notifyDelete();
+            }
 		}
 		appCtxt.cacheRemove(ids[i]);
 	}
