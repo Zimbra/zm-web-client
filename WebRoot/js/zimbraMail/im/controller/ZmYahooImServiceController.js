@@ -145,6 +145,7 @@ function(loginParams, id, password, remember, dialog) {
 	soapDoc.setMethodAttribute("password", password);
 	var params = {
 		asyncMode: true,
+		sensitive: true,
 		soapDoc: soapDoc,
 		callback: new AjxCallback(this, this._handleResponseGetYahooAuthToken, [loginParams, id, remember, dialog])
 	};
