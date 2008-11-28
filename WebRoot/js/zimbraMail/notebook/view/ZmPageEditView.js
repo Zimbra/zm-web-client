@@ -56,8 +56,16 @@ function() {
 	return this._controller;
 };
 
+ZmPageEditView.prototype.clearContents =
+function() {
+	this._pageNameInput.setValue("");
+    this.setContent("");
+};
+
 ZmPageEditView.prototype.set =
 function(page) {
+    this.clearContents();
+    this._showPageLoading(true);
 	var callback = new AjxCallback(this, this._setResponse, [page]);
 	page.getContent(callback);
 };
@@ -69,7 +77,6 @@ ZmPageEditView.prototype._setResponse = function(page) {
 	var name = page.name || "";
 	this._pageNameInput.setValue(name);
 	this._isNewPage =  (page.version == 0);
-	this._showRenameWarning(false);
 
 	// set content
 	var content = page.getContent() || "<br>";
@@ -77,6 +84,7 @@ ZmPageEditView.prototype._setResponse = function(page) {
 	this._page = page;
 
 	// set focus
+    this._showRenameWarning(false);
 	this.focus();
 };
 
@@ -253,6 +261,18 @@ function(show) {
 ZmPageEditView.prototype._showRenameWarning =
 function(show) {
 	var element = document.getElementById(this._renameWarningId);
+    if(element){
+        element.innerHTML = "<table><tr><td>" + AjxImg.getImageHtml("Warning") + "</td><td>" + ZmMsg.wikiChangeNameWarning + "</td></tr></table>";
+    }
+	Dwt.setVisible(element, show);
+};
+
+ZmPageEditView.prototype._showPageLoading =
+function(show) {
+	var element = document.getElementById(this._renameWarningId);
+    if(element){
+        element.innerHTML = "<table><tr><td>" + AjxImg.getImageHtml("Information") + "</td><td>" + ZmMsg.loading + "</td></tr></table>";
+    }
 	Dwt.setVisible(element, show);
 };
 
