@@ -238,9 +238,6 @@ function(callback, accountName, result) {
 	if (accounts) {
 		// init visible account count - for offline, main account is always invisible
 		var count = appCtxt.isOffline ? 0 : 1;
-		var kmm = appCtxt.getAppController().getKeyMapMgr();
-		var seqs = kmm.getKeySequences("Global", "GoToAccount");
-		var ks = seqs[0];
 
 		// create a ZmZimbraAccount for each child account
 		for (var i = 0; i < accounts.length; i++) {
@@ -249,22 +246,9 @@ function(callback, accountName, result) {
 			if (acct.visible) {
 				count++;
 				appCtxt.multiAccounts = true;
-
-				// dynamically add keyboard mapping for switching accounts by index
-				var newKs = ks.replace(/NNN/, (48+count));
-				kmm.setMapping("Global", newKs, "GoToAccount"+count);
 			}
 		}
 		appCtxt.numVisibleAccounts = count;
-
-		if (count > 1) {
-			// be sure to add keyboard shortcut for the visible main account for non-offline
-			if (!appCtxt.isOffline) {
-				var newKs = ks.replace(/NNN/, "49"); // main account is always "1"
-				kmm.setMapping("Global", newKs, "GoToAccount1");
-			}
-			kmm.reloadMap("Global");
-		}
 	}
 
 	// handle settings whose values may depend on other settings
@@ -328,19 +312,9 @@ function(callback, accountName, result) {
 };
 
 ZmSettings.prototype._loadZimlets =
-function(allzimlets, props) {
-	this.registerSetting("ZIMLETS",		{type:ZmSetting.T_CONFIG, defaultValue:allzimlets, isGlobal:true});
+function(zimlets, props) {
+	this.registerSetting("ZIMLETS",		{type:ZmSetting.T_CONFIG, defaultValue:zimlets, isGlobal:true});
 	this.registerSetting("USER_PROPS",	{type:ZmSetting.T_CONFIG, defaultValue:props});
-
-    var zimlets = []; //Filter zimlets from getinforesponse and load only user checked
-    var checkedZimlets = appCtxt.get(ZmSetting.CHECKED_ZIMLETS);
-    for (var i=0; i < allzimlets.length; i++) {
-        var zimletObj = allzimlets[i];
-        var zimlet0 = zimletObj.zimlet[0];
-        if(checkedZimlets.indexOf(zimlet0.name) >= 0 ){
-           zimlets.push(zimletObj);
-        }
-    }
 
 	appCtxt.getZimletMgr().loadZimlets(zimlets, props);
 
@@ -564,7 +538,7 @@ function() {
 	// CONFIG SETTINGS
 	this.registerSetting("AC_TIMER_INTERVAL",				{type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_INT, defaultValue:300});
 	this.registerSetting("ASYNC_MODE",						{type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
-	this.registerSetting("BRANCH",							{type:ZmSetting.T_CONFIG, defaultValue:"main"});
+	this.registerSetting("BRANCH",							{type:ZmSetting.T_CONFIG, defaultValue:"FRANKLIN"});
 	// next 3 are replaced during deployment
 	this.registerSetting("CLIENT_DATETIME",					{type:ZmSetting.T_CONFIG, defaultValue:"@buildDateTime@"});
 	this.registerSetting("CLIENT_RELEASE",					{type:ZmSetting.T_CONFIG, defaultValue:"@buildRelease@"});
@@ -714,17 +688,9 @@ function() {
 
 	this._registerOfflineSettings();
 	this._registerSkinHints();
-    this._registerZimletsSettings();
 
 	// need to do this before loadUserSettings(), and zimlet settings are not tied to an app where it would normally be done
 	this.registerSetting("ZIMLET_TREE_OPEN",				{name:"zimbraPrefZimletTreeOpen", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, isImplicit:true});
-};
-
-ZmSettings.prototype._registerZimletsSettings =
-function() {
-	// zimlet-specific
-	this.registerSetting("CHECKED_ZIMLETS",			{name:"zimbraPrefZimlets", type:ZmSetting.T_PREF, dataType:ZmSetting.D_LIST});
-
 };
 
 ZmSettings.prototype._registerOfflineSettings =

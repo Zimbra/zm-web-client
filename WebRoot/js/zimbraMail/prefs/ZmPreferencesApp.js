@@ -29,7 +29,6 @@ ZmPreferencesApp = function(container) {
 
 // Organizer and item-related constants
 ZmEvent.S_FILTER			= "FILTER";
-ZmEvent.S_PREF_ZIMLET			= "PREF_ZIMLET";
 
 // App-related constants
 ZmApp.PREFERENCES					= ZmId.APP_PREFERENCES;
@@ -173,8 +172,7 @@ function() {
 				ZmSetting.REPLY_INCLUDE_ORIG,
 				ZmSetting.REPLY_PREFIX,
 				ZmSetting.SAVE_TO_SENT,
-                ZmSetting.COMPOSE_SAME_FORMAT,
-                ZmSetting.MAIL_MANDATORY_SPELLCHECK
+                ZmSetting.COMPOSE_SAME_FORMAT
             ]
 		},
 		IMPORT_EXPORT: {
@@ -204,18 +202,6 @@ function() {
 			],
 			createView: function(parent, section, controller) {
 				return new ZmShortcutsPage(parent, section.id, controller);
-			}
-		},
-        PREF_ZIMLETS: {
-			title: ZmMsg.zimlets,
-			templateId: "prefs.Pages#Zimlets",
-			manageDirty: true,
-            priority: 120,
-			prefs: [
-				ZmSetting.CHECKED_ZIMLETS    
-			],
-            createView: function(parent, section, controller) {
-				return new ZmZimletsPage(parent, section, controller);
 			}
 		}
 	};
@@ -270,11 +256,6 @@ function() {
 		displayContainer:	ZmPref.TYPE_CHECKBOX
 	});
 
-    ZmPref.registerPref("CHECKED_ZIMLETS", {
-		displayName:		ZmMsg.zimlets,
-		displayContainer:	ZmPref.TYPE_CUSTOM
-	});
-
 	ZmPref.registerPref("FORWARD_INCLUDE_ORIG", {
 		displayName:		ZmMsg.forwardInclude,
 		displayContainer:	ZmPref.TYPE_SELECT,
@@ -326,11 +307,6 @@ function() {
 		displayName:		ZmMsg.composeInNewWin,
 		displayContainer:	ZmPref.TYPE_CHECKBOX,
 		precondition:		AjxCallback.simpleClosure(ZmPref.requireAllPreConditions, null, ZmSetting.MAIL_ENABLED, ZmSetting.DETACH_COMPOSE_ENABLED)
-	});
-
-    ZmPref.registerPref("MAIL_MANDATORY_SPELLCHECK", {
-		displayName:		ZmMsg.mandatorySpellcheck,
-		displayContainer:	ZmPref.TYPE_CHECKBOX		
 	});
 
 	ZmPref.registerPref("PAGE_SIZE", {
