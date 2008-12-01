@@ -508,18 +508,6 @@ function(isGal) {
 	this.isGal = isGal;
 };
 
-/**
-* Overridden to prevent the adding of the same contact more than once by a single
-* notification. Of course, once the user reloads, they'll see duplicates if the
-* server in fact created them.
-*/
-ZmContactList.prototype.notifyCreate =
-function(node) {
-	// we comment this out to allow duplicate copies now that we have shared contacts
-//	if (this.getContactByEmail(node._attrs.email)) return;
-	ZmList.prototype.notifyCreate.call(this, node);
-};
-
 ZmContactList.prototype.moveLocal =
 function(items, folderId) {
 	// don't remove any contacts from the canonical list
@@ -540,7 +528,7 @@ function(items) {
 		this._updateHashes(items[i], false);
 		this._updateAcList(items[i], false);
 	}
-}
+};
 
 // Handle modified contact.
 ZmContactList.prototype.modifyLocal =
@@ -652,7 +640,7 @@ function(contact, doAdd) {
 			};
 			var addrBook = new ZmAddrBook(params);
 			root.children.add(addrBook);
-			addrBook._notify(ZmEvent.E_CREATE)
+			addrBook._notify(ZmEvent.E_CREATE);
 		}
 		if (!this._myCard || (contact.id <= this._myCard.id)) {
 			this._myCard = contact;
@@ -1297,7 +1285,7 @@ function(str, aclv, callback, ex) {
 
 ZmContactList.prototype._settingChangeListener =
 function(ev) {
-	if (ev.type != ZmEvent.S_SETTING) {return};
+	if (ev.type != ZmEvent.S_SETTING) {return;}
 	var setting = ev.source;
 	if (setting.id == ZmSetting.GAL_AUTOCOMPLETE ||
 		setting.id == ZmSetting.GAL_AUTOCOMPLETE_SESSION) {

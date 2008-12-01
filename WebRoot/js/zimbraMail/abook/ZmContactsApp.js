@@ -335,7 +335,9 @@ function(creates, force) {
 				if (folder && folder.isRemote()) {
 					var clc = AjxDispatcher.run("GetContactListController");
 
-					if (folder.nId == clc._folderId) {
+					var newPid = ZmOrganizer.parseId(folder.id);
+					var curPid = ZmOrganizer.parseId(clc._folderId);
+					if (newPid.id == curPid.id && newPid.account == curPid.account) {
 						clc.getList().notifyCreate(create);
 					}
 				} else {
