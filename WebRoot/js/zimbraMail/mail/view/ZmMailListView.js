@@ -27,6 +27,9 @@ ZmMailListView = function(params) {
 ZmMailListView.prototype = new ZmListView;
 ZmMailListView.prototype.constructor = ZmMailListView;
 
+// Consts
+
+ZmMailListView.KEY_ID = "_keyId";
 
 // Public methods
 
@@ -92,9 +95,9 @@ ZmMailListView.prototype._getHeaders =
 function(viewId, headerList, headerHash) {
 	var hList = [];
 
-	this._defaultCols = headerList.join(ZmListView.COL_JOIN);
+	this._defaultCols = headerList.join("|");
 	var userHeaders = appCtxt.get(ZmSetting.LIST_VIEW_COLUMNS, viewId);
-	var headers = userHeaders ? userHeaders.split(ZmListView.COL_JOIN) : headerList;
+	var headers = userHeaders ? userHeaders.split("|") : headerList;
 	for (var i = 0, len = headers.length; i < len; i++) {
 		var header = headers[i];
 		var field = header.substr(0, 2);
@@ -116,17 +119,14 @@ function() {
 	var isFolder = this._isSentOrDraftsFolder();
 
 	// set the from column name based on query string
+	var colLabel = (isFolder.sent || isFolder.drafts) ? ZmMsg.to : ZmMsg.from;
 	var headerCol = this._headerHash[ZmItem.F_FROM];
-	if (headerCol) {
-		var colLabel = (isFolder.sent || isFolder.drafts) ? ZmMsg.to : ZmMsg.from;
-
-		var fromColSpan = document.getElementById(DwtId.getListViewHdrId(DwtId.WIDGET_HDR_LABEL, this._view, headerCol._field));
-		if (fromColSpan) {
-			fromColSpan.innerHTML = "&nbsp;" + colLabel;
-		}
-		if (this._colHeaderActionMenu) {
-			this._colHeaderActionMenu.getItem(headerCol._index).setText(colLabel);
-		}
+	var fromColSpan = document.getElementById(DwtId.getListViewHdrId(DwtId.WIDGET_HDR_LABEL, this._view, headerCol._field));
+	if (fromColSpan) {
+		fromColSpan.innerHTML = "&nbsp;" + colLabel;
+	}
+	if (this._colHeaderActionMenu) {
+		this._colHeaderActionMenu.getItem(headerCol._index).setText(colLabel);
 	}
 
 	return isFolder;
@@ -170,6 +170,18 @@ function(item, field) {
 	return (field == ZmItem.F_SIZE || field == ZmItem.F_SUBJECT)
 		? this._getFieldId(item, field)
 		: ZmListView.prototype._getCellId.apply(this, arguments);
+};
+
+ZmMailListView.prototype._getFragmentSpan =
+function(item) {
+	return ["<span class='ZmConvListFragment' id='",
+			this._getFieldId(item, ZmItem.F_FRAGMENT),
+			"'>", this._getFragmentHtml(item), "</span>"].join("");
+};
+
+ZmMailListView.prototype._getFragmentHtml =
+function(item) {
+	return [" - ", AjxStringUtil.htmlEncode(item.fragment, true)].join("");
 };
 
 ZmMailListView.prototype._getHeaderToolTip =
@@ -357,17 +369,28 @@ function(participants, participantsElided, width) {
 	return [originator];
 };
 
-ZmMailListView.prototype._getActionMenuForColHeader =
+ZmMailListView.prototype._getActionMenuForColHeader = 
 function(force) {
-	var doReset = (!this._colHeaderActionMenu || force);
-
-	var menu = ZmListView.prototype._getActionMenuForColHeader.call(this, force);
-
-	if (doReset) {
+	if (!this._colHeaderActionMenu || force) {
+		// create a action menu for the header list
+		this._colHeaderActionMenu = new ZmPopupMenu(this);
+		var actionListener = new AjxListener(this, this._colHeaderActionListener);
+		for (var i = 0; i < this._headerList.length; i++) {
+			var hCol = this._headerList[i];
+			// lets not allow columns w/ relative width to be removed (for now) - it messes stuff up
+			if (hCol._width) {
+				var mi = this._colHeaderActionMenu.createMenuItem(hCol._id, {text:hCol._name, style:DwtMenuItem.CHECK_STYLE});
+				mi.setData(ZmMailListView.KEY_ID, hCol._id);
+				mi.setChecked(hCol._visible, true);
+                if (hCol._noRemove) {
+					mi.setEnabled(false);
+				}
+                this._colHeaderActionMenu.addSelectionListener(hCol._id, actionListener);
+			}
+		}
 		this._resetFromColumnLabel();
 	}
-
-	return menu;
+	return this._colHeaderActionMenu;
 };
 
 ZmMailListView.prototype._getNoResultsMessage =
@@ -466,6 +489,22 @@ function(ev) {
 	}
 };
 
+ZmMailListView.prototype._colHeaderActionListener =
+function(ev) {
+
+	var menuItemId = ev.item.getData(ZmMailListView.KEY_ID);
+
+	for (var i = 0; i < this._headerList.length; i++) {
+		var col = this._headerList[i];
+		if (col._id == menuItemId) {
+			col._visible = !col._visible;
+			break;
+		}
+	}
+	
+	this._relayout();
+};
+
 /**
  * If we're showing content in the reading pane and there is exactly one item selected,
  * make sure the content is for that selected item. Otherwise, clear the content.
@@ -496,24 +535,44 @@ function(clickedEl, ev) {
 	}
 };
 
-ZmMailListView.prototype._setNextSelection =
-function() {
-	var item = this._controller._itemToSelect || this._list.get(0);
-	if (item) {
-		this.setSelection(item, false);
-	}
-};
+ZmMailListView.MAIL_VIEWS = [ZmId.VIEW_TRAD, ZmId.VIEW_CONVLIST, ZmId.VIEW_CONV];
+ZmMailListView.MAIL_CTLR = {};
+ZmMailListView.MAIL_CTLR[ZmId.VIEW_TRAD]		= "_tradController";
+ZmMailListView.MAIL_CTLR[ZmId.VIEW_CONVLIST]	= "_convListController";
+ZmMailListView.MAIL_CTLR[ZmId.VIEW_CONV]		= "_convController";
 
-ZmMailListView.prototype._getSearchForSort =
-function(sortField, controller) {
-	controller = controller || this._controller;
-	var query = controller.getSearchString();
-	if (!query) { return ""; }
-	var str = (sortField == ZmItem.F_FLAG) ? " is:flagged" : " has:attachment";
-	if (query.indexOf(str) != -1) {
-		query = query.replace(str, "");
-	} else {
-		query = query + str;
+/**
+ * Propagate changes to the columns in the mail list view to other mail list views,
+ * since from the user's point of view it's all the same view. It's done by editing
+ * the setting for the other views. If another view has already been created, destroy
+ * its controller so that it's recreated with the newly changed setting the next time
+ * it displays results.
+ */
+ZmMailListView.prototype._checkColumns =
+function() {
+	// change the setting for this view
+	ZmListView.prototype._checkColumns.call(this);
+
+	for (var i = 0; i < ZmMailListView.MAIL_VIEWS.length; i++) {
+		var viewId = ZmMailListView.MAIL_VIEWS[i];
+		if (this.view == viewId) { continue; }
+		var app = this._controller._app;
+		// wipe out controller, so that view gets re-created
+		app[ZmMailListView.MAIL_CTLR[viewId]] = null;
+
+		var userColumns = appCtxt.get(ZmSetting.LIST_VIEW_COLUMNS, this.view);
+		if (userColumns) {
+			var newColumns;
+			// code below depends on knowing that the only difference between the mail views
+			// is that CLV is the only one with the F_EXPAND column
+			if (viewId == ZmId.VIEW_CONVLIST) {
+				newColumns = userColumns.replace(/\|/, "|" + ZmItem.F_EXPAND + "|");
+			} else if (this.view == ZmId.VIEW_CONVLIST){
+				newColumns = userColumns.replace(ZmItem.F_EXPAND, "").replace(/\|{2,}/, "|");
+			} else {
+				newColumns = userColumns;
+			}
+			appCtxt.set(ZmSetting.LIST_VIEW_COLUMNS, newColumns, viewId);
+		}
 	}
-	return query;
 };
