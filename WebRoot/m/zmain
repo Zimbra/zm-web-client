@@ -72,7 +72,7 @@
         <a accesskey="${requestScope.calapp_accesskey}" id="cal${active}" class="appTab${active} table-cell" href="${aurl}?st=cal"><span><fmt:message
                 key="calendar"/></span>
             <span style="display:none;" class="aptoday">
-            <fmt:formatDate value="${zm:getToday(mailbox.prefs.timeZone).time}" pattern="EEE|d|MMM" var="today"/>
+            <fmt:formatDate value="${zm:getToday(mailbox.prefs.timeZone).time}" timeZone="${mailbox.prefs.timeZone}" pattern="EEE|d|MMM" var="today"/>
             <c:set var="darr" value="${fn:split(today,'|')}"/>    
             <div class="_day">${darr[0]}</div>
             <div class="_date">${darr[1]}</div>
