@@ -446,7 +446,7 @@
             </c:choose>
 			</td>
 			<td valign="middle" class="TopContent" width="90%">
-                <table cellpadding="0" cellspacing="0" width="100%">
+                <table cellpadding="0" cellspacing="0" width="50%">
                     <tr>
                         <td>
                             <app:appTop mailbox="${mailbox}" keys="${keys}" query="${empty context.query ? param.sq : context.query}" calendars="${calendars}" voice="${voice}" tasks="${tasks}" briefcases="${briefcases}"/>
