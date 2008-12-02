@@ -490,6 +490,9 @@ function() {
 ZmCallForwardingUI.prototype.validate =
 function(errors) {
 	this._validateComboBox(this._comboBox, errors, ZmMsg.callForwardingError);
+	if (this._getSelectedValue() == this._view._phone.name) {
+		errors.push(ZmMsg.callForwardingSameNumberError);
+	}
 };
 
 ZmCallForwardingUI.prototype._getSelectedValue =
