@@ -332,6 +332,12 @@ function(actionCode) {
 	return true;
 };
 
+ZmMailListController.prototype.mapSupported =
+function(map) {
+	return (map == "list");
+};
+
+
 // Private and protected methods
 
 ZmMailListController.prototype._initialize =

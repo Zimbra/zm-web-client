@@ -2962,6 +2962,10 @@ HTML>BODY .appt-selected .appt_allday_body
 	text-align: right;
 }
 
+.ShortcutsPanelLink {
+	cursor: pointer;
+}
+
 /*
  * Colors, for use in calendar and elsewhere.
  *

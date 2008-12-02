@@ -127,6 +127,11 @@ function(actionCode) {
 	return true;
 };
 
+ZmMsgController.prototype.mapSupported =
+function(map) {
+	return false;
+};
+
 // Private methods (mostly overrides of ZmListController protected methods)
 
 ZmMsgController.prototype._getToolBarOps = 

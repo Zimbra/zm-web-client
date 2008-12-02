@@ -1123,7 +1123,9 @@ ZmShortcutsPanel = function() {
 	DwtControl.call(this, {parent:appCtxt.getShell(), className:className, posStyle:Dwt.ABSOLUTE_STYLE});
 
 	this._createHtml();
-	this.setHandler(DwtEvent.ONKEYDOWN, ZmShortcutsPanel.closeCallback);
+
+	this._tabGroup = new DwtTabGroup(this.toString(), true);
+	this._tabGroup.addMember(this);
 };
 
 ZmShortcutsPanel.prototype = new DwtControl;
@@ -1144,11 +1146,14 @@ function(cols) {
 	if (!appCtxt.isChildWindow) {
 		this._position();
 	}
+	this._contentDiv.scrollTop = 0;
 	this.setZIndex(Dwt.Z_DIALOG);
+	DwtShell.getShell(window).getKeyboardMgr().pushTabGroup(this._tabGroup);
 };
 
 ZmShortcutsPanel.prototype.popdown =
 function(maps) {
+	DwtShell.getShell(window).getKeyboardMgr().popTabGroup(this._tabGroup);
 	this.setZIndex(Dwt.Z_HIDDEN);
 	Dwt.setZIndex(appCtxt.getShell()._veilOverlay, Dwt.Z_HIDDEN);
 	appCtxt.getKeyboardMgr().popDefaultHandler();
@@ -1170,9 +1175,9 @@ function() {
 	html[i++] = "<table border=0 cellpadding=0 cellspacing=0>";
 	html[i++] = "<tr><td class='ShortcutsPanelDescription ShortcutsPanelText' width='70%'>" + ZmMsg.shortcutsCurrent + "</td>";
 	html[i++] = "<td class='ShortcutsPanelLinks ShortcutsPanelText' width='30%'>" +
-				"<span onclick='ZmShortcutsPanel.closeCallback();'>" + ZmMsg.close + "</span>";
+				"<span class='ShortcutsPanelLink' onclick='ZmShortcutsPanel.closeCallback();'>" + ZmMsg.close + "</span>";
 	if (!appCtxt.isChildWindow) {
-		html[i++] = "<br /><span onclick='ZmShortcutsPanel.newWindowCallback();'>" + ZmMsg.newWindow + "</span></td></tr>";
+		html[i++] = "<br /><span class='ShortcutsPanelLink' onclick='ZmShortcutsPanel.newWindowCallback();'>" + ZmMsg.newWindow + "</span></td></tr>";
 	}
 	html[i++] = "</table>";
 	html[i++] = "<hr />";
