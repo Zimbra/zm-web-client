@@ -6,7 +6,7 @@
 <%@ attribute name="timezone" rtexprvalue="true" required="true" type="java.util.TimeZone"%>
 <%@ attribute name="selectedId" rtexprvalue="true" required="false" %>
 <%@ attribute name="checkedCalendars" rtexprvalue="true" required="false" %>
-<%@ attribute name="print" rtexprvalue="true" required="false" %>
+<%@ attribute name="print" rtexprvalue="true" required="false" type="java.lang.Boolean" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
@@ -63,12 +63,12 @@
                 </c:when>
                 <c:otherwise>
                     <app:calendarUrl var="dayUrl" view="${view eq 'day' ? 'week' : 'day'}" timezone="${timezone}" rawdate="${zm:getCalendar(day.startTime, timezone)}" action=""/>
-                    <c:if test="${print}">
+                    <c:if test="${not print}">
                         <a href="${fn:escapeXml(dayUrl)}">
                     </c:if>
                     <fmt:message var="titleFormat" key="CAL_${numdays > 1 ? 'MDAY_':''}DAY_TITLE_FORMAT"/>
                     <fmt:formatDate value="${zm:getCalendar(day.startTime, timezone).time}" pattern="${titleFormat}"/>
-                    <c:if test="${print}">
+                    <c:if test="${not print}">
                         </a>
                     </c:if>
                 </c:otherwise>
@@ -76,7 +76,7 @@
         </td>
     </c:forEach>
 </tr>
-
+</c:if>
 <c:forEach var="row" items="${layout.allDayRows}">
     <tr>
         <td nowrap width="1%" style='border-left:none'>
@@ -135,13 +135,16 @@
         </td>
     </c:forEach>
 </tr>
-</c:if>
+
 <c:forEach var="row" items="${layout.rows}">
     <tr style="height:100%">
         <c:if test="${row.rowNum % 4 eq 0}">
             <td valign=top class='ZhCalDayHour' nowrap width="1%" rowspan="4" style='border-left:none;color:blue;'>
-                <c:if test="${print}"><a href=""></c:if><fmt:formatDate value="${row.date}" type="time" timeStyle="short"/>
-                <c:if test="${print}"></a></c:if>
+                <app:calendarUrl var="newAppt" timezone="${timezone}" rawdate="${date}" action="edit"/>
+                <c:if test="${not print}"><a href="${newAppt}"></c:if><fmt:formatDate value="${row.date}" type="time" timeStyle="short"/>
+                <c:if test="${not print}"></a></c:if>
+                    <fmt:formatDate var="timetitle" value="${row.date}" type="time" timeStyle="long"/>
+                <%--<fmt:formatDate value="${timetitle}" pattern="${titleFormat}"/>--%>
             </td>
         </c:if>
         <c:choose>

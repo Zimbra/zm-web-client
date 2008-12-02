@@ -64,17 +64,17 @@
         <name>newBriefCheck</name>
         <path>/WEB-INF/tags/briefcase/newBriefCheck.tag</path>
     </tag-file>
-    
+
     <tag-file>
         <name>briefcaseAction</name>
         <path>/WEB-INF/tags/overview/briefcaseAction.tag</path>
     </tag-file>
-    
+
     <tag-file>
         <name>briefcaseListViewAction</name>
         <path>/WEB-INF/tags/briefcase/briefcaseListViewAction.tag</path>
     </tag-file>
-    
+
     <tag-file>
         <name>briefcaseListView</name>
         <path>/WEB-INF/tags/briefcase/briefcaseListView.tag</path>
@@ -91,6 +91,21 @@
     </tag-file>
 
     <tag-file>
+        <name>notebookRestView</name>
+        <path>/WEB-INF/tags/notebook/notebookRestView.tag</path>
+    </tag-file>
+
+    <tag-file>
+            <name>notebookFolderTree</name>
+            <path>/WEB-INF/tags/notebook/notebookFolderTree.tag</path>
+    </tag-file>
+
+    <tag-file>
+        <name>notebookFolder</name>
+        <path>/WEB-INF/tags/notebook/notebookFolder.tag</path>
+    </tag-file>
+
+    <tag-file>
         <name>briefcaseFolderTree</name>
         <path>/WEB-INF/tags/briefcase/briefcaseFolderTree.tag</path>
     </tag-file>
@@ -99,21 +114,6 @@
         <name>briefcaseFolder</name>
         <path>/WEB-INF/tags/briefcase/briefcaseFolder.tag</path>
     </tag-file>
-
-    <tag-file>
-           <name>notebookRestView</name>
-           <path>/WEB-INF/tags/notebook/notebookRestView.tag</path>
-       </tag-file>
-
-       <tag-file>
-               <name>notebookFolderTree</name>
-               <path>/WEB-INF/tags/notebook/notebookFolderTree.tag</path>
-       </tag-file>
-
-       <tag-file>
-           <name>notebookFolder</name>
-           <path>/WEB-INF/tags/notebook/notebookFolder.tag</path>
-   </tag-file>
 
    <tag-file>
        <name>convListView</name>
@@ -212,16 +212,6 @@
     </tag-file>
 
     <tag-file>
-        <name>attachment</name>
-        <path>/WEB-INF/tags/compose/attachment.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>composeCheck</name>
-        <path>/WEB-INF/tags/compose/composeCheck.tag</path>
-    </tag-file>
-
-    <tag-file>
         <name>htmlCompose</name>
         <path>/WEB-INF/tags/compose/htmlCompose.tag</path>
     </tag-file>
@@ -229,6 +219,16 @@
     <tag-file>
         <name>composeValidation</name>
         <path>/WEB-INF/tags/compose/composeValidation.tag</path>
+    </tag-file>
+
+    <tag-file>
+        <name>attachment</name>
+        <path>/WEB-INF/tags/compose/attachment.tag</path>
+    </tag-file>
+
+    <tag-file>
+        <name>composeCheck</name>
+        <path>/WEB-INF/tags/compose/composeCheck.tag</path>
     </tag-file>
 
     <tag-file>
@@ -586,7 +586,7 @@
         <name>optCheckbox</name>
         <path>/WEB-INF/tags/options/optCheckbox.tag</path>
     </tag-file>
- 
+
     <tag-file>
         <name>optSeparator</name>
         <path>/WEB-INF/tags/options/optSeparator.tag</path>
@@ -620,6 +620,11 @@
     <tag-file>
         <name>displayAppointment</name>
         <path>/WEB-INF/tags/calendar/displayAppointment.tag</path>
+    </tag-file>
+
+    <tag-file>
+        <name>apptPrintView</name>
+        <path>/WEB-INF/tags/calendar/apptPrintView.tag</path>
     </tag-file>
 
     <tag-file>
@@ -660,6 +665,11 @@
     <tag-file>
         <name>multiDayView</name>
         <path>/WEB-INF/tags/calendar/multiDayView.tag</path>
+    </tag-file>
+
+    <tag-file>
+            <name>zoomView</name>
+            <path>/WEB-INF/tags/calendar/zoomView.tag</path>
     </tag-file>
 
     <tag-file>
@@ -706,7 +716,7 @@
         <name>autoComplete</name>
         <path>/WEB-INF/tags/autoComplete.tag</path>
     </tag-file>
-    
+
     <tag-file>
         <name>keyboard</name>
         <path>/WEB-INF/tags/keyboard.tag</path>
