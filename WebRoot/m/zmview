@@ -1,0 +1,46 @@
+<%@ page buffer="8kb" autoFlush="true" %>
+<%@ page buffer="8kb" autoFlush="true" %>
+<%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
+<%@ taglib prefix="zm" uri="com.zimbra.zm" %>
+<%@ taglib prefix="mo" uri="com.zimbra.mobileclient" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
+<c:choose>
+
+     <c:when test="${param.st eq 'versions'}">
+             <c:import url="/m/moversions"/>
+    </c:when>
+
+    <c:when test="${param.st eq 'newmail' || param.action eq 'compose'}">
+             <c:import url="/m/mocompose"/>
+    </c:when>
+
+    <c:when test="${param.st eq 'newappt'}">
+         <c:import url="/m/moapptcompose"/>
+    </c:when>
+
+    <c:when test="${empty param.st || param.st eq 'message' || param.st eq 'conversation' || param.st eq 'contact' }">
+         <c:import url="/m/mosearch"/>
+    </c:when>
+
+    <c:when test="${param.st eq 'cal'}">
+         <c:import url="/m/mocalendar"/>
+    </c:when>
+
+    <c:when test="${param.st eq 'cals'}">
+         <c:import url="/m/mocals"/>
+    </c:when>
+
+    <c:when test="${param.st eq 'query'}">
+         <c:import url="/m/moquery"/>
+    </c:when>
+
+    <c:when test="${param.st eq 'folders'}">
+         <c:import url="/m/mofolders"/>
+    </c:when>
+
+    <c:when test="${param.st eq 'ab'}">
+         <c:import url="/m/moaddrbooks"/>
+    </c:when>
+</c:choose>

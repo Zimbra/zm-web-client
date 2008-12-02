@@ -114,11 +114,16 @@ function(parent, type, id) {
 		{
 			parent.enable(ZmOperation.NEW_FOLDER, true);
 		}
-		// "Empty" for Junk and Trash
+		// "Empty" for Chats, Junk and Trash
 		if (nId == ZmFolder.ID_SPAM ||
-			nId == ZmFolder.ID_TRASH)
+			nId == ZmFolder.ID_TRASH ||
+			nId == ZmFolder.ID_CHATS)
 		{
-			emptyText = (nId == ZmFolder.ID_SPAM) ? ZmMsg.emptyJunk : ZmMsg.emptyTrash;
+			if (nId == ZmFolder.ID_SPAM) {
+				emptyText = ZmMsg.emptyJunk;
+			} else if (nId == ZmFolder.ID_TRASH) {
+				 emptyText = ZmMsg.emptyTrash;
+			}
 			parent.enable(ZmOperation.EMPTY_FOLDER, hasContent);
 		}
 		// only allow Inbox and Sent system folders to be share-able for now
@@ -206,6 +211,12 @@ function(parent, type, id) {
 	this._resetButtonPerSetting(parent, ZmOperation.MOUNT_FOLDER, appCtxt.get(ZmSetting.SHARING_ENABLED));
 };
 
+ZmFolderTreeController.prototype.getTreeStyle =
+function() {
+	return DwtTree.CHECKEDITEM_STYLE;
+};
+
+
 // Private methods
 
 /*
@@ -220,6 +231,13 @@ function() {
 		ZmOperation.SYNC,
 		ZmOperation.BROWSE
 	];
+};
+
+ZmFolderTreeController.prototype._postSetup =
+function(overviewId, account) {
+	ZmTreeController.prototype._postSetup.call(this, overviewId, account);
+	var treeView = this.getTreeView(overviewId);
+	treeView.showCheckboxes(false);
 };
 
 /*
@@ -281,6 +299,9 @@ function(folder) {
 		// it off to the search tree controller
 		var stc = this._opc.getTreeController(ZmOrganizer.SEARCH);
 		stc._itemClicked(folder);
+	}else if (folder.id == ZmFolder.ID_ATTACHMENTS){
+        var attController = AjxDispatcher.run("GetAttachmentsController");
+        attController.show();
 	} else {
 		if (folder._showFoldersCallback) {
 			folder._showFoldersCallback.run();
@@ -396,7 +417,11 @@ function(ev) {
 		? (AjxMessageFormat.format(ZmMsg.confirmEmptyFolder, organizer.getName()))
 		: ZmMsg.confirmEmptyTrashFolder;
 	ds.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
-	ds.popup();
+
+    var focusButtonId = (organizer.nId == ZmFolder.ID_TRASH || organizer.nId == ZmFolder.ID_SPAM) ?  DwtDialog.OK_BUTTON : DwtDialog.CANCEL_BUTTON;
+    ds.associateEnterWithButton(focusButtonId);
+    ds.popup(null, focusButtonId);
+
 
 	if (!(organizer.nId == ZmFolder.ID_SPAM || organizer.isInTrash())) {
 		var cancelButton = ds.getButton(DwtDialog.CANCEL_BUTTON);

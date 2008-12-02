@@ -46,7 +46,7 @@ function(dontIncludeThisName) {
 	var name = !dontIncludeThisName ? this.name : "";
 	return [notebook.getPath(), "/", name].join("");
 };
-
+                                                                               
 ZmBriefcaseItem.prototype.getRestUrl =
 function(dontIncludeThisName) {
 	var url = ZmItem.prototype.getRestUrl.call(this);
@@ -70,6 +70,11 @@ function(data) {
 	if (data.ver) this.version = Number(data.ver);
 	if (data.ct) this.contentType = data.ct.split(";")[0];
 	this._parseTags(data.t);
+};
+
+ZmBriefcaseItem.prototype.getContentType =
+function() {
+    return this.contentType;
 };
 
 ZmBriefcaseItem.prototype.isReadOnly =

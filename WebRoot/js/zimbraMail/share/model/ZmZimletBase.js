@@ -251,7 +251,9 @@ function(spanElement, contentObjText, matchContext, event) {
 				obj["$"+i] = matchContext[i];
 			}
 		}
-		this.xmlObj().handleActionUrl(c.actionUrl, c.canvas, obj);
+        var x = event.docX;
+        var y = event.docY;
+        this.xmlObj().handleActionUrl(c.actionUrl, c.canvas, obj, null, x, y);
 	}
 };
 
@@ -614,8 +616,10 @@ function(object, context, span) {
 };
 
 ZmZimletBase.prototype.makeCanvas =
-function(canvasData, url) {
-	var canvas = null;
+function(canvasData, url, x, y) {
+	if(canvasData && canvasData.length)
+        canvasData = canvasData[0];    
+    var canvas = null;
 	var div;
 
 	div = document.createElement("div");
@@ -685,7 +689,20 @@ function(canvasData, url) {
 		}
 		canvas.popup();
 		break;
-	}
+
+        case "tooltip":
+        var shell = DwtShell.getShell(window);
+	    var canvas = shell.getToolTip();
+	    canvas.setContent('<div id="zimletTooltipDiv" />', true);
+        var el = document.createElement("iframe");
+        el.setAttribute("width",canvasData.width);
+        el.setAttribute("height",canvasData.height);
+        el.setAttribute("style","border:0px");        
+        el.src = url;
+        document.getElementById("zimletTooltipDiv").appendChild(el);
+        canvas.popup(x, y, true);
+        break;
+    }
 	return canvas;
 };
 

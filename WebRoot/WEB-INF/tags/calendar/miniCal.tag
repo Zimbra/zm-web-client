@@ -1,5 +1,6 @@
 <%@ tag body-content="empty" %>
 <%@ attribute name="date" rtexprvalue="true" required="true" type="java.util.Calendar" %>
+<%@ attribute name="print" rtexprvalue="true" required="false" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
@@ -38,26 +39,32 @@
 <table width="100%" style='height:100%;' border="0" cellspacing='0' cellpadding='0'>
     <tr class='ZhCalMiniTitlebar'>
         <td align=center>
+            <c:if test="${not print}">
             <app:calendarUrl var="prevYear" timezone="${timezone}" rawdate="${zm:addYear(date,-1)}"/>
             <a href="${fn:escapeXml(prevYear)}"><app:img altkey="ALT_CAL_MINI_PREV_YEAR" src="dwt/ImgFastRevArrowSmall.gif" border="0"/></a>
+            </c:if>
         </td>
         <td align=center>
+            <c:if test="${not print}">
             <app:calendarUrl var="prevMonth" timezone="${timezone}" rawdate="${zm:addMonth(date,-1)}"/>
             <a href="${fn:escapeXml(prevMonth)}"><app:img altkey="ALT_CAL_MINI_PREV_MONTH" src="dwt/ImgRevArrowSmall.gif" border="0"/></a>
+             </c:if>
         </td>
         <app:calendarUrl var="todayUrl" nodate="true"/>
         <td align=center nowrap colspan=3 class='ZhCalMiniTitleCell'>
-            <a href="${fn:escapeXml(todayUrl)}">${fn:replace(fn:escapeXml(title),' ','&nbsp;')}</a>
+            <c:if test="${not print}"><a href="${fn:escapeXml(todayUrl)}"></c:if>${fn:replace(fn:escapeXml(title),' ','&nbsp;')} <c:if test="${not print}"></a></c:if>
         </td>
         <td align=center>
+            <c:if test="${not print}">
             <app:calendarUrl var="nextMonth" timezone="${timezone}" rawdate="${zm:addMonth(date,1)}"/>
              <a href="${fn:escapeXml(nextMonth)}"><app:img altkey="ALT_CAL_MINI_NEXT_MONTH" src="dwt/ImgFwdArrowSmall.gif" border="0"/></a>
-
+            </c:if>
         </td>
         <td align=center>
+            <c:if test="${not print}">
             <app:calendarUrl var="nextYear" timezone="${timezone}" rawdate="${zm:addYear(date,1)}"/>
              <a href="${fn:escapeXml(nextYear)}"><app:img altkey="ALT_CAL_MINI_NEXT_YEAR" src="dwt/ImgFastFwdArrowSmall.gif" border="0"/></a>
-
+            </c:if>
         </td>
     </tr>
     <tr>
@@ -92,9 +99,9 @@
             <c:set var="hasappt" value="${appts.days[dayKey]}"/>
             <td align=center class='${clazz}${hasappt ? " ZhCalMDHA" : ""}${(currentDay.timeInMillis ge rangeStart.timeInMillis and currentDay.timeInMillis lt rangeEnd.timeInMillis) ? ' ZhCalMDS':''}'>
                 <app:calendarUrl var="dayUrl" timezone="${timezone}" rawdate="${currentDay}"/>
-                <a href="${fn:escapeXml(dayUrl)}">
+                <c:if test="${not print}"><a href="${fn:escapeXml(dayUrl)}"></c:if>
                 <fmt:formatDate value="${currentDay.time}" pattern="${dayFormat}"/>
-                </a>
+                <c:if test="${not print}"></a></c:if>
             </td>
             ${zm:getNextDay(currentDay)}
         </c:forEach>
