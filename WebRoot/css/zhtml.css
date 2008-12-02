@@ -707,6 +707,7 @@ A:visited { color: blue; }
 	@SeparatorBorder@
 	@NoWrap@
 	vertical-align:top;
+    cursor: pointer;
 }
 
 .ZhCalMonthDaySelected { @SelectedBg@ }
