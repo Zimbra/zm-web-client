@@ -39,11 +39,17 @@ function(title, message) {
 	AjxDispatcher.require([ "BrowserPlus" ]);
 	var serviceObj = { service: "Notify", version: "2", minversion: "2.0.9" };
 	var callback = new AjxCallback(this, this._notityServiceCallback, [title, message]);
-	ZmBrowserPlus.getInstance().require(serviceObj, callback);
+	var errorCallback = new AjxCallback(this, this._notityServiceErrorCallback);
+	ZmBrowserPlus.getInstance().require(serviceObj, callback, errorCallback);
 };
 
 ZmDesktopAlert.prototype._notityServiceCallback =
 function(title, message, service) {
 	service.show({ title: title, message: message }, function(){});
+};
+
+ZmDesktopAlert.prototype._notityServiceErrorCallback =
+function(result) {
+	DBG.println(AjxDebug.DBG1, "BrowserPlus error: " + (result ? (result.error + " - " + result.verboseError) : result));
 };
 

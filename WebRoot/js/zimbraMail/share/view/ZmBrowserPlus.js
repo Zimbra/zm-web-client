@@ -39,25 +39,26 @@ function() {
  */
 ZmBrowserPlus.prototype.require =
 function(serviceObj, callback, errorCallback) {
-	var self = this;
-	function onInit(result) {
-		self._onInit(result, serviceObj, callback, errorCallback);
+	if (!errorCallback) {
+		this._defaultErrorCallbackObj = this._defaultErrorCallbackObj || new AjxCallback(this, this._defaultErrorCallback);
+		errorCallback = this._defaultErrorCallbackObj; 
 	}
-	YAHOO.bp.init({ locale: appCtxt.get(ZmSetting.LOCALE_NAME) }, onInit);
-};
 
-/**
- * Returns a generic error callback to be passed to ZmBrowserPlus#require
- */
-ZmBrowserPlus.prototype.getDefaultErrorCallback =
-function() {
-	this._defaultErrorCallbackObj = this._defaultErrorCallbackObj || new AjxCallback(this, this._defaultErrorCallback);
-	return this._defaultErrorCallbackObj;
+	if (YAHOO.bp.isInitialized()) {
+		this._require(serviceObj, callback, errorCallback);
+	} else {
+		var self = this;
+		function onInit(result) {
+			self._onInit(result, serviceObj, callback, errorCallback);
+		}
+		YAHOO.bp.init({ locale: appCtxt.get(ZmSetting.LOCALE_NAME) }, onInit);
+	}
 };
 
 ZmBrowserPlus.prototype._onInit =
 function(result, serviceObj, callback, errorCallback) {
 	if (result.success) {
+		this._require(serviceObj, callback, errorCallback);
 		var requireArgs = {
 			services: [serviceObj],
 			progressCallback: function() {}
@@ -72,6 +73,19 @@ function(result, serviceObj, callback, errorCallback) {
 	}
 };
 
+ZmBrowserPlus.prototype._require =
+function(serviceObj, callback, errorCallback) {
+	var requireArgs = {
+		services: [serviceObj],
+		progressCallback: function() {}
+	};
+	var self = this;
+	function requireCallback(result) {
+		self._onRequire(result, serviceObj, callback, errorCallback);
+	}
+	YAHOO.bp.require(requireArgs, requireCallback);
+};
+
 ZmBrowserPlus.prototype._onRequire =
 function(result, serviceObj, callback, errorCallback) {
 	if (result.success) {
@@ -83,6 +97,7 @@ function(result, serviceObj, callback, errorCallback) {
 
 ZmBrowserPlus.prototype._defaultErrorCallback =
 function(result) {
+	DBG.println(AjxDebug.DBG1, "BrowserPlus error: " + (result ? (result.error + " - " + result.verboseError) : result));
 	switch (result.error) {
 		case "bpPlugin.platformDisabled": // BrowserPlus is disabled.
 			appCtxt.setStatusMsg({ msg: ZmMsg.browserPlusDisabled, level: ZmStatusView.LEVEL_WARNING });
