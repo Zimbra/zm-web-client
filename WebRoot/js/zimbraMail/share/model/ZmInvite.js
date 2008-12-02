@@ -45,6 +45,7 @@ ZmInvite.createFromDom =
 function(node) {
 	var invite = new ZmInvite();
 	invite.components = node[0].comp;
+	invite.replies = node[0].replies;
 	// not sure why components are null .. but.
 	if (invite.components == null) {
 		invite.components = [{}];
@@ -211,6 +212,12 @@ function(compNum) {
 		}
 	}
 	return list;
+};
+
+ZmInvite.prototype.getReplies =
+function(compNum) {
+	var cn = compNum || 0;
+	return (this.replies && this.replies[cn]) ? this.replies[cn].reply : null;
 };
 
 ZmInvite.prototype.getResources =
