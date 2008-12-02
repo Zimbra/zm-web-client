@@ -1119,19 +1119,44 @@ function() {
 
 ZmComposeView.prototype._getSignature =
 function(signatureId) {
+	var extraSignature = this._getExtraSignature();
 	signatureId = signatureId || this._controller.getSelectedSignature();
-	if (!signatureId) {
-                return;
-        }
+	if (!signatureId && extraSignature == "") {
+		return;
+	}
 
 	var signature = appCtxt.getSignatureCollection().getById(signatureId);
-        if (!signature) {
-                return;
-        }
+	if (!signature && extraSignature == "") {
+		return;
+	}
+	var sigString = "";
+	if (signature) {
+		var newLine = this._getSignatureNewLine();
+		sigString = signature.getValue((this._composeMode == DwtHtmlEditor.HTML) ? ZmMimeTable.TEXT_HTML : ZmMimeTable.TEXT_PLAIN);
+		sigString = sigString + newLine;
+	}
+	return sigString + extraSignature;
 
-	var newLine = this._getSignatureNewLine();
-        var sig = signature.getValue( (this._composeMode == DwtHtmlEditor.HTML) ? ZmMimeTable.TEXT_HTML : ZmMimeTable.TEXT_PLAIN );
-	return sig + newLine;
+};
+
+/**
+ * Returns "" or extra signature(like a quote or legal disclaimer) via zimlet
+ */
+ZmComposeView.prototype._getExtraSignature =
+function() {
+	var extraSignature = "";
+	if (appCtxt.zimletsPresent()) {
+		if (!this._zimletMgr) {
+			this._zimletMgr = appCtxt.getZimletMgr();//cache zimletMgr
+		}
+		var buffer = [];
+		this._zimletMgr.notifyZimlets("appendExtraSignature", buffer);
+		extraSignature = buffer.join(this._getSignatureNewLine());
+		if (extraSignature != "") {
+			extraSignature = this._getSignatureNewLine() + extraSignature;
+		}
+	}
+	return extraSignature;
 };
 
 ZmComposeView.prototype._getSignatureSeparator =
