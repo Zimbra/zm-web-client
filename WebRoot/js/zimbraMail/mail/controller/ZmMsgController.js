@@ -204,7 +204,9 @@ ZmMsgController.prototype._postHideCallback =
 function() {
 	// bug fix #31601 - Prism only hack to restore keypress
 	if (AjxEnv.isPrism) {
-		appCtxt.getShell().getKeyboardMgr().__killKeySequenceAction();
+		var km = appCtxt.getShell().getKeyboardMgr();
+		km.__killKeySeqTimedActionId = -1;
+		km.__keySequence.length = 0;
 	}
 };
 
