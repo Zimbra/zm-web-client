@@ -104,6 +104,7 @@ AjxPackage.require("ajax.dwt.widgets.DwtHeaderTreeItem");
 AjxPackage.require("ajax.dwt.widgets.DwtTree");
 AjxPackage.require("ajax.dwt.widgets.DwtText");
 AjxPackage.require("ajax.dwt.widgets.DwtIframe");
+AjxPackage.require("ajax.dwt.widgets.DwtForm");
 
 AjxPackage.require("zimbra.csfe.ZmBatchCommand");
 AjxPackage.require("zimbra.csfe.ZmCsfeCommand");
