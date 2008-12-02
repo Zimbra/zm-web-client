@@ -504,7 +504,7 @@
 				<table width="100%" cellpadding="0" cellspacing="0">
 					<tr>
 	</c:if>
-			<td valign="top" colspan="${empty editmode ? 3 : 4}" style="padding-left:${editmode ? 10 : 0}px">
+			<td valign="top" colspan="${empty editmode ? 3 : 4}" style="padding-left:${editmode ? 10 : 0}px;border: 7px solid #C3D9FF;">
 			<jsp:doBody/>
 		</td>
 		<c:if test="${adsOn}" >
