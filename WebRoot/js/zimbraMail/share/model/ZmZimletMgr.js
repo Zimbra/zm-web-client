@@ -19,6 +19,8 @@ ZmZimletMgr = function() {
 	this._ZIMLETS = [];
 	this._ZIMLETS_BY_ID = {};
 	this._CONTENT_ZIMLETS = [];
+	this._serviceZimlets = [];
+	this._requestNotHandledByAnyZimlet = [];
 }
 
 ZmZimletMgr.prototype.constructor = ZmZimletMgr;
@@ -213,6 +215,45 @@ function(event) {
 			z[event].apply(z, args);
 		}
 	}
+};
+
+/*
+* Processes a request (from core-zcs to zimlets) and returns value of the
+* first zimlet that serves the request.
+* PS: 
+* - Requestor must handle 'null' value
+* - stores/caches the zimlet for a given request to improve performance.
+* - also stores _requestNotHandledByAnyZimlet if no zimlet handles this
+*	request(in the current session), again to improve performance.
+* e.g: appCtxt.getZimletMgr().processARequest("getMailCellStyle", item, field)
+*/
+ZmZimletMgr.prototype.processARequest =
+function(request) {
+
+	if(this._requestNotHandledByAnyZimlet[request])
+		return null;
+
+	var args = new Array(arguments.length - 1);
+	for (var i = 0; i < args.length;) {
+		args[i] = arguments[++i];
+	}
+	var sz = this._serviceZimlets[request];
+	if(sz){//if we already know a zimlet that serves this request, use it.
+		return sz[request].apply(sz, args);
+	}
+
+	var a = this._ZIMLETS;
+	for (var i = 0; i < a.length; ++i) {
+		var z = a[i].handlerObject;
+		if (z && (z instanceof ZmZimletBase) &&	z.getEnabled() &&	(typeof z[request] == "function")){
+			 this._serviceZimlets[request] = z;//store 
+			 return z[request].apply(z, args);
+		}
+	}
+	if(this.isLoaded()) {//add to an array to indicate that no zimlet implements this request
+		this._requestNotHandledByAnyZimlet[request]=request;
+	}
+	return null;
 };
 
 //

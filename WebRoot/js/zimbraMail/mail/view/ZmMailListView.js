@@ -243,6 +243,56 @@ function(address) {
 	return toolTip;
 };
 
+
+/**
+ * (override of ZmListView to add hooks to zimletMgr)
+ * Creates a TD and its content for a single field of the given item. Subclasses
+ * may override several dependent functions to customize the TD and its content.
+ *
+ * @param htmlArr	[array]		array that holds lines of HTML
+ * @param idx		[int]		current line of array
+ * @param item		[object]	item to render
+ * @param field		[constant]	column identifier
+ * @param colIdx	[int]		index of column (starts at 0)
+ * @param params	[hash]*		hash of optional params
+ */
+ZmMailListView.prototype._getCell =
+function(htmlArr, idx, item, field, colIdx, params) {
+    var cellId = this._getCellId(item, field, params);
+    var idText = cellId ? [" id=", "'", cellId, "'"].join("") : "";
+    var width = this._getCellWidth(colIdx, params);
+    var widthText = width ? ([" width=", width].join("")) : (" width='100%'");
+    var className = this._getCellClass(item, field, params);
+    var classText = className ? [" class=", className].join("") : "";
+    var alignValue = this._getCellAlign(colIdx, params);
+    var alignText = alignValue ? [" align=", alignValue].join("") : "";
+    var otherText = (this._getCellAttrText(item, field, params)) || "";
+    var attrText = [idText, widthText, classText, alignText, otherText].join(" ");
+    htmlArr[idx++] = "<td";
+    if(field == "fr" || field == "su") {//apply colors to from and subject cells via zimlet
+        if (appCtxt.zimletsPresent() && this._ignoreProcessingGetMailCellStyle == undefined) {
+            if(!this._zimletMgr){
+                this._zimletMgr = appCtxt.getZimletMgr();//cache zimletMgr
+            }
+            var style = this._zimletMgr.processARequest("getMailCellStyle", item, field);
+            if(style != undefined && style != null) {
+                htmlArr[idx++] =style;//set style
+            } else if(style == null && this._zimletMgr.isLoaded()) {
+                //zimlet not available or disabled, set _ignoreProcessingGetMailCellStyle to true
+                //to ignore this entire section for this session
+                this._ignoreProcessingGetMailCellStyle = true;
+            }
+        }
+    }
+
+    htmlArr[idx++] = attrText ? (" " + attrText) : "";
+    htmlArr[idx++] = ">";
+    idx = this._getCellContents(htmlArr, idx, item, field, colIdx, params);
+    htmlArr[idx++] = "</td>";
+
+    return idx;
+};
+
 // Figure out how many of the participants will fit into a given pixel width.
 // We always include the originator, and then as many of the most recent participants
 // as possible. If any have been elided (either by the server or because they don't

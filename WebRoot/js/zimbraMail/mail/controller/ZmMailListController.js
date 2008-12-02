@@ -1283,3 +1283,23 @@ ZmMailListController.prototype._getMenuContext =
 function() {
 	return this._getViewType();
 };
+
+// Flag mail items(override ZmListController to add hook to zimletMgr
+ZmMailListController.prototype._doFlag =
+function(items, on) {
+	ZmListController.prototype._doFlag.call(this, items, on);
+	if(on) {//notify zimletMgr
+		if (appCtxt.zimletsPresent()) {
+			appCtxt.getZimletMgr().notifyZimlets("onMailFlagClick", items);
+		}
+	}
+};
+
+// Tag/untag items(override ZmListController to add hook to zimletMgr
+ZmMailListController.prototype._doTag =
+function(items, tag, doTag) {
+	ZmListController.prototype._doTag.call(this, items, tag, doTag);
+	if (appCtxt.zimletsPresent()) {
+		appCtxt.getZimletMgr().notifyZimlets("onTagAction", items, tag, doTag);
+	}
+};
