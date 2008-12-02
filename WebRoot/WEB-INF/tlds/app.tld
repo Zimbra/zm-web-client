@@ -623,11 +623,6 @@
     </tag-file>
 
     <tag-file>
-        <name>apptPrintView</name>
-        <path>/WEB-INF/tags/calendar/apptPrintView.tag</path>
-    </tag-file>
-
-    <tag-file>
         <name>apptView</name>
         <path>/WEB-INF/tags/calendar/apptView.tag</path>
     </tag-file>
