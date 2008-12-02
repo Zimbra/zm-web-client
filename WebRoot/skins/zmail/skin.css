@@ -247,3 +247,7 @@
 .ImgEggBanner {
 	background-image: url("@LogoImgDir@/EggBanner.png") !important;
 }
+
+/** combined username/quota **/
+#skin_spacing_tree_top					{	text-align:center;	}
+#skin_container_tree_top				{		background: none;border: none;}

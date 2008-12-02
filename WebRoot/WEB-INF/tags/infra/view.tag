@@ -404,6 +404,128 @@
     }
     </script>
     </c:when>
+    
+    
+<c:when test="${skin eq 'zmail'}">
+	<table width="100%" cellpadding="0" cellspacing="0">
+		<tr>
+		<td colspan="3" style="border-bottom: 1px solid #C9D7F1;">
+		<table>
+		<tr>
+		<td id='skin_container_app_chooser_lite'>
+				<app:appTabs context="${context}" mailbox="${mailbox}" keys="${keys}" selected='${selected}'/>
+			</td>
+			<td width="90%"></td>
+			<td nowrap="nowrap" class="Tab">
+			<b>${fn:escapeXml(empty mailbox.defaultIdentity.fromDisplay ? mailbox.name : mailbox.defaultIdentity.fromDisplay)}</b> |
+			</td>
+			<td nowrap="nowrap" class="Tab">	<a href='<c:url value="/?client=advanced"/>'><fmt:message key="switchToAdvancedClient" /></a>  |
+			</td>
+			<c:if test="${mailbox.attrs.zimbraIsDomainAdminAccount[0] eq 'TRUE' and not empty adminReference }">
+							<td align="left" nowrap="nowrap" class="Tab">
+								<a target="_new" href="${adminReference}"><fmt:message key="adminLinkLabel"/></a> |
+							</td>
+						</c:if>
+						<td align="right" nowrap="nowrap" class="Tab">
+							<a target="_new" href="<c:url value="${helpUrl}"><c:param name='locid'><fmt:getLocale /></c:param></c:url>"><fmt:message key="help"/></a> |
+						</td>
+						
+						<td align="right" nowrap="nowrap" class="Tab">
+							<a href="<c:url value="/?loginOp=logout"/>"><fmt:message key="logOut"/></a>
+						</td>
+			</tr>
+			</table>
+			</td>
+		</tr>
+		<tr>
+			<td class='TopContent' colspan="3"  align="right" valign="top"><div style='height:6px'></div></td>
+		</tr>
+	
+		<tr>
+			<td valign="top" align="center" class="Overview">
+             <c:choose>
+                <c:when test="${not empty logoUrl}">
+                    <a href="${logoUrl}" target="_new"> <span style='cursor:pointer; display: block;' class='ImgAppBanner'></span> </a>
+                </c:when>
+                <c:otherwise>
+                    <span style='display: block;' class='ImgAppBanner'></span>
+                </c:otherwise>
+            </c:choose>
+			</td>
+			<td valign="top" class="TopContent" style='width:70%'>
+                <table cellpadding="0" cellspacing="0" width="100%">
+                    <tr>
+                        <td width="66%">
+                            <app:appTop mailbox="${mailbox}" keys="${keys}" query="${empty context.query ? param.sq : context.query}" calendars="${calendars}" voice="${voice}" tasks="${tasks}" briefcases="${briefcases}"/>
+                        </td>
+						
+                    </tr>
+                </table>
+			</td>
+			<td align="center" style="padding-right:5px;">
+				
+			</td>
+		</tr>
+		<tr>
+			<td class="Overview">
+				&nbsp;
+			</td>
+			<td align="center" colspan="3">
+				<app:appStatus/>
+			</td>
+		</tr>
+		<tr>
+			
+			<%--  compose button
+				<c:choose>
+					<c:when test="${not empty context}">
+						<zm:currentResultUrl var="composeUrl" value="/h/search" context="${context}" paction="${param.action}" action="compose"/>
+					</c:when>
+					<c:otherwise>
+						<c:url var="composeUrl" value="/h/search?action=compose"/>
+					</c:otherwise>
+				</c:choose>
+				<div class="SearchButton" style="padding:2px;" >
+					<a  href="${fn:escapeXml(composeUrl)}" style="text-decoration:none;color:black;"><span id='tab_ikon_compose'><app:img src="startup/ImgNewMessage.gif" altkey='ALT_APP_COMPOSE'/></span> &nbsp; <span id='tab_ikon_compose'></span><span><fmt:message key="compose"/></span></a>
+				</div
+
+			</td>--%>
+			
+		</tr>
+		<tr>
+			<c:if test="${empty editmode}">
+				<td valign="top" class="Overview">
+					<app:overviewTree mailbox="${mailbox}" keys="${keys}" minical="${minical}" calendars="${calendars}" contacts="${contacts}" voice="${voice}" tasks="${tasks}" notebook="${notebook}" briefcases="${briefcases}" tags="${tags}" searches="${searches}" folders="${folders}" editmode="${editmode}" date="${date}"/>
+				</td>
+			</c:if>
+			<c:set var="adsOn" value="${!empty ads}"/>
+	<c:if test="${adsOn}" >
+			<td valign="top" colspan="3">
+				<table width="100%" cellpadding="0" cellspacing="0">
+					<tr>
+	</c:if>
+			<td valign="top" colspan="${empty editmode ? 3 : 4}" style="padding-left:${editmode ? 10 : 0}px">
+			<jsp:doBody/>
+		</td>
+		<c:if test="${adsOn}" >
+							<td valign="top" style="border-top: 1px solid #98adbe; width: 180px;">
+							   <app:ads content="${ads}"/>
+							</td>
+	
+						</tr>
+					</table>
+				</td>
+		</c:if>
+		<td style="width:6px;">
+			&nbsp; <%-- for IE's scrollbar, this should be CSS browser-specific --%>
+		</td>
+	</tr>
+	<tr>
+	 <td colspan="4">&nbsp;</td>
+	</tr>
+	</table>
+	
+ </c:when>
 <c:otherwise>
 	<table width="100%" cellpadding="0" cellspacing="0">
 		<tr>
