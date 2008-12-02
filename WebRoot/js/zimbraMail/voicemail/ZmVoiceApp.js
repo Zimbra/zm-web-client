@@ -353,14 +353,18 @@ function(phone, foldersObj) {
 
 ZmVoiceApp.prototype._createAccordionItems =
 function() {
+	var startItem;
 	for (var i = 0; i < this.phones.length; i++) {
 		var data = {lastFolder:null, appName:this._name};
 		var phone = this.phones[i];
 		data.phone = phone;
 		var item = this._overviewPanelContent.addAccordionItem({title:phone.getDisplay(), data:data});
-		if (i == 0) {
-			this._activateAccordionItem(item);
+		if ((phone.name == this._startPhone) || (i == 0)) {
+			startItem = item;
 		}
+	}
+	if (startItem) {
+		this._activateAccordionItem(startItem);
 	}
 };
 
@@ -507,18 +511,25 @@ function(callback, response) {
 	}
 };
 
-ZmVoiceApp.prototype.getStartFolder =
+ZmVoiceApp.prototype.setStartPhone =
 function(name) {
-	var which = 0;
-	if (name) {
+	this._startPhone = name;
+};
+
+ZmVoiceApp.prototype.getStartFolder =
+function(phone) {
+	var index = 0;
+	var startPhone = phone || this._startPhone;
+	if (startPhone) {
 		for (var i = 0; i < this.phones.length; i++) {
 			var phone = this.phones[i];
-			if (phone.name == name) {
-				which = i;
+			if (phone.name == startPhone) {
+				index = i;
+				break;
 			}
 		}
 	}
-	return this.phones[which].folderTree.getByName(ZmVoiceFolder.VOICEMAIL);
+	return this.phones[index].folderTree.getByName(ZmVoiceFolder.VOICEMAIL);
 };
 
 ZmVoiceApp.prototype.getVoiceController =

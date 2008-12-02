@@ -660,7 +660,8 @@ ZmApp.prototype._activateAccordionItem =
 function(item) {
 	this.accordionItem = item;
 	var accordion = item.accordion;
-	accordion.expandItem(item.id);
+	var expanded = accordion.getExpandedItem() != item;
+	accordion.expandItem(item.id, !expanded);
 	var overviewId = this.getOverviewId();
 	if (!this._opc.getOverview(overviewId)) {
 		var params = this._getOverviewParams();
@@ -676,7 +677,7 @@ function(item) {
  * 
  * @param params	[hash]*		a hash of arguments for the search (see ZmSearchController::search)
  */
-ZmApp.prototype.getSearchParams =
+	ZmApp.prototype.getSearchParams =
 function(params) {
 	return (params || {});
 };
