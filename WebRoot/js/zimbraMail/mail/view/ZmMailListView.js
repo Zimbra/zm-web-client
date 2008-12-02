@@ -258,39 +258,40 @@ function(address) {
  */
 ZmMailListView.prototype._getCell =
 function(htmlArr, idx, item, field, colIdx, params) {
-    var cellId = this._getCellId(item, field, params);
-    var idText = cellId ? [" id=", "'", cellId, "'"].join("") : "";
-    var width = this._getCellWidth(colIdx, params);
-    var widthText = width ? ([" width=", width].join("")) : (" width='100%'");
-    var className = this._getCellClass(item, field, params);
-    var classText = className ? [" class=", className].join("") : "";
-    var alignValue = this._getCellAlign(colIdx, params);
-    var alignText = alignValue ? [" align=", alignValue].join("") : "";
-    var otherText = (this._getCellAttrText(item, field, params)) || "";
-    var attrText = [idText, widthText, classText, alignText, otherText].join(" ");
-    htmlArr[idx++] = "<td";
-    if(field == "fr" || field == "su") {//apply colors to from and subject cells via zimlet
-        if (appCtxt.zimletsPresent() && this._ignoreProcessingGetMailCellStyle == undefined) {
-            if(!this._zimletMgr){
-                this._zimletMgr = appCtxt.getZimletMgr();//cache zimletMgr
-            }
-            var style = this._zimletMgr.processARequest("getMailCellStyle", item, field);
-            if(style != undefined && style != null) {
-                htmlArr[idx++] =style;//set style
-            } else if(style == null && this._zimletMgr.isLoaded()) {
-                //zimlet not available or disabled, set _ignoreProcessingGetMailCellStyle to true
-                //to ignore this entire section for this session
-                this._ignoreProcessingGetMailCellStyle = true;
-            }
-        }
-    }
+	var cellId = this._getCellId(item, field, params);
+	var idText = cellId ? [" id=", "'", cellId, "'"].join("") : "";
+	var width = this._getCellWidth(colIdx, params);
+	var widthText = width ? ([" width=", width].join("")) : (" width='100%'");
+	var className = this._getCellClass(item, field, params);
+	var classText = className ? [" class=", className].join("") : "";
+	var alignValue = this._getCellAlign(colIdx, params);
+	var alignText = alignValue ? [" align=", alignValue].join("") : "";
+	var otherText = (this._getCellAttrText(item, field, params)) || "";
+	var attrText = [idText, widthText, classText, alignText, otherText].join(" ");
 
-    htmlArr[idx++] = attrText ? (" " + attrText) : "";
-    htmlArr[idx++] = ">";
-    idx = this._getCellContents(htmlArr, idx, item, field, colIdx, params);
-    htmlArr[idx++] = "</td>";
+	htmlArr[idx++] = "<td";
+	if (field == "fr" || field == "su") {//apply colors to from and subject cells via zimlet
+		if (appCtxt.zimletsPresent() && this._ignoreProcessingGetMailCellStyle == undefined) {
+			if (!this._zimletMgr) {
+				this._zimletMgr = appCtxt.getZimletMgr();//cache zimletMgr
+			}
+			var style = this._zimletMgr.processARequest("getMailCellStyle", item, field);
+			if (style != undefined && style != null) {
+				htmlArr[idx++] = style;//set style
+			} else if (style == null && this._zimletMgr.isLoaded()) {
+				//zimlet not available or disabled, set _ignoreProcessingGetMailCellStyle to true
+				//to ignore this entire section for this session
+				this._ignoreProcessingGetMailCellStyle = true;
+			}
+		}
+	}
+	htmlArr[idx++] = attrText ? (" " + attrText) : "";
+	htmlArr[idx++] = ">";
+	
+	idx = this._getCellContents(htmlArr, idx, item, field, colIdx, params);
+	htmlArr[idx++] = "</td>";
 
-    return idx;
+	return idx;
 };
 
 // Figure out how many of the participants will fit into a given pixel width.
