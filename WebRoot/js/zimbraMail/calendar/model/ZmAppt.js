@@ -418,7 +418,19 @@ function(message) {
 	this.freeBusy = message.invite.getFreeBusy();
 	this.privacy = message.invite.getPrivacy();
 
-	// parse out attendees for this invite
+    var ptstReplies = {};
+    this._replies = message.invite.getReplies();
+    if(this._replies) {
+        for (var i in this._replies) {
+            var name = this._replies[i].at;
+			var ptst = this._replies[i].ptst;
+			if (name && ptst) {
+				ptstReplies[name] = ptst;
+			}
+        }
+    }
+
+    // parse out attendees for this invite
 	this._attendees[ZmCalBaseItem.PERSON] = [];
 	this.origAttendees = [];
 	var attendees = message.invite.getAttendees();
@@ -429,7 +441,7 @@ function(message) {
 			var email = new AjxEmailAddress(addr, null, name);
 			var attendee = ZmApptViewHelper.getAttendeeFromItem(email, ZmCalBaseItem.PERSON);
 			if (attendee) {
-				attendee.setAttr("participationStatus", attendees[i].ptst);
+				attendee.setAttr("participationStatus", ptstReplies[addr] || attendees[i].ptst);
 				this._attendees[ZmCalBaseItem.PERSON].push(attendee);
 				this.origAttendees.push(attendee);
 			}
@@ -608,7 +620,7 @@ function() {
 		return this._orig.updateParticipantStatus();
 	}
 
-	var ptstHashMap = {};
+    var ptstHashMap = {};
 	var personAttendees = (this._attendees && this._attendees[ZmCalBaseItem.PERSON])
 		? this._attendees[ZmCalBaseItem.PERSON] : [];
 
