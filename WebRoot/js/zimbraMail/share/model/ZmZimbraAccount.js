@@ -228,6 +228,8 @@ function(callback) {
 		var folderDoc = AjxSoapDoc.create("GetFolderRequest", "urn:zimbraMail");
 		var method = folderDoc.getMethod();
 		method.setAttribute("visible", "1");
+		method.setAttribute("tr", "1"); // traverse mountpoints
+
 		var folderCallback = new AjxCallback(this, this._handleLoadFolders);
 		command.addNewRequestParams(folderDoc, folderCallback);
 
