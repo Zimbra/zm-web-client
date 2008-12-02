@@ -2442,7 +2442,10 @@ function(appt,div) {
 	var layout = this._layoutMap[this._getItemId(appt)];
 	if (layout){
 		layout.bounds = this._getBoundsForAppt(layout.appt);
-		apptWidthPercent = ZmCalColView._getApptWidthPercent(layout.maxcol+1);
+        if(!layout.bounds) {
+            return;
+        }        
+        apptWidthPercent = ZmCalColView._getApptWidthPercent(layout.maxcol+1);
 		var w = Math.floor(layout.bounds.width*apptWidthPercent);
 		var xinc = layout.maxcol ? ((layout.bounds.width - w) / layout.maxcol) : 0; // n-1
 		var x = xinc * layout.col + (layout.bounds.x);

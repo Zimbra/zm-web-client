@@ -34,6 +34,11 @@ ZmCalMonthView._DaySpacer = 1; 			// space between days
 ZmCalMonthView.FIRST_WORKWEEK_DAY = 1; 	// hard code to monday until we get real prefs
 ZmCalMonthView.NUM_DAYS_IN_WORKWEEK = 5;// hard code to 5 days until we get real prefs
 
+ZmCalMonthView.EXPANDED_HEIGHT_PERCENT = 70;
+ZmCalMonthView.EXPANDED_WIDTH_PERCENT = 50;
+ZmCalMonthView.ANIMATE_NO_OF_FRAMES = 5;
+ZmCalMonthView.ANIMATE_DURATION = 300;
+
 ZmCalMonthView.prototype.toString = 
 function() {
 	return "ZmCalMonthView";
@@ -173,8 +178,26 @@ function(appt) {
 ZmCalMonthView.prototype._postSet = 
 function() {
 	// now go through each day and create appts in correct order to line things up
-	var allDayParent = document.getElementById( this._daysId); 
 	var day;
+	if(this._expandedDayInfo) {
+		var row = this._expandedDayInfo.week;
+		var col = this._expandedDayInfo.dow;
+		var day = this._days[row*7+col];
+		var d = new Date(this._date.getTime());
+		d.setHours(0,0,0);
+		if(d.getTime() == day.date.getTime()) {
+			this.setDayView(day);
+		}else {
+			this.createApptItems();
+		}
+	}else {
+		this.createApptItems();
+	}
+};
+
+ZmCalMonthView.prototype.createApptItems =
+function() {
+	var allDayParent = document.getElementById( this._daysId); 	
 	for (var i=0; i < 6; i++)	 {
 		var week = this._weeks[i];
 		for (var key in week.appts) {
@@ -196,8 +219,14 @@ function() {
 			}
 		}
 	}
+	
 	if (!this._needFirstLayout)
 		this._layout();
+		
+	if(this._dayView) {
+		this._dayView.setVisible(false);
+		this.clearExpandedDay();
+	}
 };
 
 ZmCalMonthView.prototype._preSet = 
@@ -313,6 +342,7 @@ function(html, loc, week, dow) {
 ZmCalMonthView.prototype._createHtml =
 function() {
 	this._days = new Object();	
+	this._rowIds = new Object();		
 	this._weeks = new Array();
 	this._dayInfo = new Object();
 	this._fillers = [];
@@ -363,11 +393,13 @@ function() {
 								
 	for (var i=0; i < 6; i++)	 {
 		this._weeks[i] = { appts: {} };
-		html.append("<tr>");
+		var weekId = Dwt.getNextId();
+		html.append("<tr id='" +  weekId + "'>");
 		for (var j=0; j < 7; j++)	 {
 			this._createDay(html, i*7+j, i, j);
 		}
 		html.append("</tr>");	
+		this._rowIds[i] = weekId;
 	}
 	
 	html.append("</table>");
@@ -505,7 +537,15 @@ function() {
 		dayName.innerHTML = AjxDateUtil.WEEKDAY_LONG[(i+fdow)%7];
 	}
 
+	for (var i=0; i < 6; i++) {
+		var row = document.getElementById(this._rowIds[i]);
+		Dwt.setSize(row, Dwt.DEFAULT, Math.floor(100/6) + '%');
+	}
+
 	this._layoutAllDay(h);
+	if(this._expandedDayInfo) {
+		this.resizeCalendarGrid();
+	}
 };
 
 ZmCalMonthView.getDayToolTipText =
@@ -591,19 +631,432 @@ function(ev, div) {
 
 ZmCalMonthView.prototype._timeSelectionAction =
 function(ev, div, dblclick) {
-	
-	var date;
-	
-	var type = this._getItemData(div, "type");
-	switch (type) {
-		case ZmCalBaseView.TYPE_MONTH_DAY:
-			var loc = this._getItemData(div, "loc");
-			date = new Date(this._days[loc].date.getTime());
-			var now = new Date();
-			date.setHours(now.getHours(), now.getMinutes());
-			break;
-		default:
-			return;
-	}
-	this._timeSelectionEvent(date, AjxDateUtil.MSEC_PER_HOUR, dblclick);
+
+    var date;
+
+    var type = this._getItemData(div, "type");
+    switch (type) {
+        case ZmCalBaseView.TYPE_MONTH_DAY:
+            var loc = this._getItemData(div, "loc");
+            date = new Date(this._days[loc].date.getTime());
+            var now = new Date();
+            date.setHours(now.getHours(), now.getMinutes());
+            if (appCtxt.isOffline) {
+                AjxTimedAction.scheduleAction(new AjxTimedAction(this, this.expandDay, [this._days[loc]]), 200);
+            }
+            break;
+        default:
+            return;
+    }
+    this._timeSelectionEvent(date, AjxDateUtil.MSEC_PER_HOUR, dblclick);
+};
+
+ZmCalMonthView.prototype.setDayView =
+function(dayInfo) {
+    var date = new Date(dayInfo.date.getTime());
+    var tdCell = document.getElementById(dayInfo.tdId);
+    var size = Dwt.getSize(tdCell);
+    var view = this._dayView ;
+    if(!view) {
+        view = this._dayView = new ZmCalDayView(this, DwtControl.ABSOLUTE_STYLE, this._controller, this._dropTgt);
+        view.setCompactMode(true);
+        view.setCloseDayViewCallback(new AjxCallback(this, this._closeDayView));
+        //listener changes
+        view.addViewActionListener(new AjxListener(this, this._viewActionListener));
+        view.addSelectionListener(new AjxListener(this._controller, this._controller_listSelectionListener));
+        view.addActionListener(new AjxListener(this._controller, this._controller._listActionListener));
+
+    }else {
+        view.setVisible(true);
+    }
+
+    view.setDate(date, 0, true);
+    view.setSize(size.x-10, size.y-12);
+
+    var loc = Dwt.toWindow(tdCell, 0, 0, this.getHtmlElement(), true);
+    view.setLocation(loc.x+5, loc.y+5);
+
+    view._preSet();
+    view._layout(true);
+
+    var subList = new AjxVector();
+    var appts = dayInfo.appts;
+
+    if(appts) {
+        for(var i in appts) {
+            subList.add(appts[i]);
+        }
+    }
+
+    var allDayAppts = dayInfo.allDayAppts;
+
+    if(allDayAppts) {
+        for(var i in allDayAppts) {
+            subList.add(allDayAppts[i])
+        }
+    }
+
+    view.set(subList, true);
+};
+
+ZmCalMonthView.prototype.expandDay =
+function(dayInfo) {
+    this.clearCalendarGrid();
+    this.startExpand(dayInfo);
+};
+
+
+ZmCalMonthView.prototype.clearCalendarGrid =
+function() {
+    for (var i=0; i < 6; i++) {
+
+        //clear all day appts
+        var week = this._weeks[i];
+        for (var key in week.appts) {
+            var data = week.appts[key];
+            var appt = data.first;
+            var ae = document.getElementById( this._getItemId(appt));
+            if(ae) {
+                ae.parentNode.removeChild(ae);
+            }
+        }
+
+        for (var j=0; j < 7; j++) {
+            var loc = i*7+j;
+            var day = this._days[loc];
+            if(day && day.dayId) {
+                var node = document.getElementById(day.dayId);
+                while(node && node.firstChild) {
+                    node.firstChild.parentNode.removeChild(node.firstChild);
+                }
+            }
+        }
+    }
+
+    //clear all day fillers
+    if (this._fillers.length > 0) {
+        for (var i=0; i < this._fillers.length; i++) {
+            var f = 	this._fillers[i];
+            this._fillers[i] = null;
+            if(f.parentNode) {
+                f.parentNode.removeChild(f);
+            }
+        }
+        this._fillers = [];
+    }
+};
+
+ZmCalMonthView.prototype.resizeCalendarGrid =
+function() {
+    var grid = document.getElementById(this._daysId)
+    var size = Dwt.getSize(grid);
+
+    var avgHeight = size.y/6;
+    var avgWidth = size.x/7;
+
+    for (var i=0; i < 6; i++) {
+        var row = document.getElementById(this._rowIds[i]);
+        if(i==5) {
+            avgHeight = avgHeight-1;
+        }
+        Dwt.setSize(row, Dwt.DEFAULT, avgHeight);
+    }
+
+    for (var j=0; j < 7; j++) {
+        var hdrCol = document.getElementById(this._headerColId[j]);
+        var bdyCol = document.getElementById(this._bodyColId[j]);
+        if(j==6) {
+            avgWidth = avgWidth-1;
+        }
+        Dwt.setSize(hdrCol, avgWidth, Dwt.DEFAULT);
+        Dwt.setSize(bdyCol, avgWidth, Dwt.DEFAULT);
+    }
+};
+
+ZmCalMonthView.prototype._closeDayView =
+function() {
+    if(this._dayView) {
+        this._dayView.setVisible(false);
+        this._needFirstLayout = false;
+        this.clearExpandedDay();
+        this.clearCalendarGrid();
+        var newList = new AjxVector();
+        newList.addList(this._list || [])
+        this.set(newList, true);
+    }
+};
+
+ZmCalMonthView.prototype.resizeCol =
+function(colIdx, params) {
+    var dayInfo = params.dayInfo;
+    var hdrCol = document.getElementById(this._headerColId[colIdx]);
+    var bdyCol = document.getElementById(this._bodyColId[colIdx]);
+    var newWidth = params.avgWidth;
+
+    if(dayInfo.dow == colIdx) {
+        newWidth = params.expandedWidth;
+    }else if( params.collapseColId == colIdx) {
+        newWidth = params.collapsedWidth;
+    }
+
+    if(bdyCol && hdrCol) {
+        newWidth = (colIdx==6) ? newWidth-1 : newWidth;
+        Dwt.setSize(bdyCol, newWidth, Dwt.DEFAULT);
+        Dwt.setSize(hdrCol, newWidth, Dwt.DEFAULT);
+
+        if(AjxEnv.isSafari || AjxEnv.isChrome) {
+            //change first column cell
+            Dwt.setSize(this.getCell(0, colIdx), newWidth, Dwt.DEFAULT);
+        }
+
+    }
+};
+
+ZmCalMonthView.prototype.resizeRow =
+function(rowIdx, params) {
+
+    if(rowIdx==null) return;
+
+    var dayInfo = params.dayInfo;
+    var height = params.avgHeight;
+
+    var colId = null;
+
+    if(dayInfo.week == rowIdx) {
+        height = params.expandedHeight;
+        colId = dayInfo.dow;
+    }else if( params.collapseRowId == rowIdx) {
+        height = params.collapsedHeight;
+    }
+
+    height = (rowIdx==5) ? height-1 : height;
+
+    var row = document.getElementById(this._rowIds[rowIdx]);
+    Dwt.setSize(row, Dwt.DEFAULT, height);
+
+    //change first row cell
+    if(AjxEnv.isSafari || AjxEnv.isChrome) {
+        Dwt.setSize(this.getCell(rowIdx,0), Dwt.DEFAULT, height);
+    }
+
+    //IE needs direct cell expansion
+    if(AjxEnv.isIE && colId!=null && rowIdx!=null) {
+        var day = this.getCell(rowIdx, colId);
+        Dwt.setSize(day, Dwt.DEFAULT, height);
+    }
+
+};
+
+ZmCalMonthView.prototype.resizeCell =
+function(dayInfo, height) {
+    var day = this.getCell(dayInfo.week, dayInfo.dow);
+    Dwt.setSize(day, Dwt.DEFAULT, height);
+};
+
+ZmCalMonthView.prototype.clearCellHeight =
+function(dayInfo) {
+    if(!dayInfo) return;
+    var day = this.getCell(dayInfo.week, dayInfo.dow);
+    Dwt.setSize(day, Dwt.DEFAULT, Dwt.CLEAR);
+};
+
+ZmCalMonthView.prototype.getCell =
+function(row, col) {
+    var loc = row*7+col;
+    var cellId = this._days[loc].tdId
+    return document.getElementById(cellId);
+};
+
+ZmCalMonthView.prototype.startExpand =
+function(dayInfo) {
+
+    var grid = document.getElementById(this._daysId)
+    var size = Dwt.getSize(grid);
+
+    var expandedHeight = size.y*ZmCalMonthView.EXPANDED_HEIGHT_PERCENT/100;
+    var expandedWidth = size.x*ZmCalMonthView.EXPANDED_WIDTH_PERCENT/100;
+    var avgHeight = (size.y-expandedHeight)/5;
+    var avgWidth = (size.x-expandedWidth)/6;
+    var diffWidth = expandedWidth - avgWidth;
+    var diffHeight = expandedHeight - avgHeight;
+    var deltaWidth = diffWidth/ZmCalMonthView.ANIMATE_NO_OF_FRAMES;
+    var deltaHeight = diffHeight/ZmCalMonthView.ANIMATE_NO_OF_FRAMES;
+
+    var param = {
+        dayInfo: dayInfo,
+        avgWidth: avgWidth,
+        avgHeight: avgHeight,
+        expandedWidth: avgWidth,
+        expandedHeight: avgHeight,
+        maxWidth: expandedWidth,
+        maxHeight: expandedHeight,
+        deltaHeight: deltaHeight,
+        deltaWidth: deltaWidth,
+        changeCol: true,
+        changeRow: true,
+        frameNo: ZmCalMonthView.ANIMATE_NO_OF_FRAMES
+    };
+
+    //old expanded day needs to be collapsed
+    if(this._expandedDayInfo) {
+        var oldDayInfo = this._expandedDayInfo;
+
+        param.collapseRowId = oldDayInfo.week;
+        param.collapseColId = oldDayInfo.dow;
+        param.collapsedWidth = expandedWidth;
+        param.collapsedHeight = expandedHeight;
+
+        if(oldDayInfo.week == dayInfo.week) {
+            param.changeRow = false;
+            param.expandedHeight = expandedHeight;
+        }
+        if(oldDayInfo.dow == dayInfo.dow) {
+            param.changeCol = false;
+            param.expandedWidth = expandedWidth;
+        }
+    }
+
+    if(this._dayView) {
+        this._dayView.setVisible(false);
+    }
+
+    this.animateExpansion(param);
+};
+
+
+ZmCalMonthView.prototype.animateExpansion =
+function(param) {
+
+    if(param.frameNo <= 0) {
+        this._expandDayGrid(param);
+        this.setDayView(param.dayInfo);
+        var dayInfo = param.dayInfo;
+        this._expandedDayInfo = {week: dayInfo.week, dow: dayInfo.dow, date: dayInfo.date};
+        return;
+    }
+
+    this._expandDayGrid(param);
+
+    var interval = ZmCalMonthView.ANIMATE_DURATION/ZmCalMonthView.ANIMATE_NO_OF_FRAMES;
+
+    if(param.changeCol) {
+        param.expandedWidth = (param.expandedWidth!=null)? param.expandedWidth + param.deltaWidth : null;
+        param.collapsedWidth = (param.collapsedWidth)? param.collapsedWidth - param.deltaWidth : null;
+    }else {
+        param.expandedWidth = param.collapsedWidth = param.maxWidth;
+    }
+
+    if(param.changeRow) {
+        param.expandedHeight = (param.expandedHeight!=null)? param.expandedHeight + param.deltaHeight : null;
+        param.collapsedHeight = (param.collapsedHeight!=null)? param.collapsedHeight - param.deltaHeight : null;
+    }else {
+        param.expandedHeight = param.collapsedHeight = param.maxHeight;
+    }
+
+    param.frameNo = param.frameNo - 1;
+    AjxTimedAction.scheduleAction(new AjxTimedAction(this, this.animateExpansion, [param]), interval);
+};
+
+ZmCalMonthView.prototype._expandDayGrid =
+function(params) {
+
+    var dayInfo = params.dayInfo;
+
+    if(!this._expandedDayInfo) {
+        for (var i=0; i < 6; i++) {
+            this.resizeRow(i, params);
+        }
+        for (var j=0; j < 7; j++) {
+            this.resizeCol(j, params);
+        }
+    }else {
+        if(params.changeRow) {
+            this.resizeRow(params.collapseRowId, params);
+            this.resizeRow(dayInfo.week, params);
+        }
+
+        if(params.changeCol) {
+            this.resizeCol(params.collapseColId, params);
+            this.resizeCol(dayInfo.dow, params);
+        }
+
+        if(AjxEnv.isIE){
+            if(!params.changeRow) {
+                this.resizeCell(dayInfo, params.maxHeight);
+            }
+            this.clearCellHeight(this._expandedDayInfo);
+        }
+
+    }
+};
+
+ZmCalMonthView.prototype.clearExpandedDay =
+function() {
+    if(!this._expandedDayInfo) return;
+    this.clearCellHeight(this._expandedDayInfo);
+    this.resizeCalendarGrid();
+    this._expandedDayInfo = null;
+};
+
+ZmCalMonthView.prototype._controlListener =
+function(ev) {
+    if(!this._expandedDayInfo) {
+        ZmCalBaseView.prototype._controlListener.call(this, ev);
+    }else {
+        this._closeDayView();
+    }
+};
+
+ZmCalMonthView.prototype._viewActionListener =
+function(ev) {
+    this.notifyListeners(ZmCalBaseView.VIEW_ACTION, ev);
+};
+
+
+ZmCalMonthView.prototype.getSelection =
+function() {
+    if(this._expandedDayInfo) {
+        return this._dayView.getSelection();
+    }else {
+        return ZmCalBaseView.prototype.getSelection.call(this);
+    }
+};
+
+ZmCalMonthView.prototype.resizeDayCell =
+function(rowId, colId) {
+    var sz = this.getSize();
+    var width = sz.x;
+    var height = sz.y;
+
+    var he = document.getElementById(this._headerId);
+    var headingHeight = Dwt.getSize(he).y;
+
+    var w = width - 5;
+    var h = height - headingHeight - 10;
+
+    var de = document.getElementById(this._daysId);
+    Dwt.setSize(de, w, h);
+
+    var be = document.getElementById(this._bodyId);
+    Dwt.setSize(be, w, h);
+
+    var grid = document.getElementById(this._daysId)
+    var size = Dwt.getSize(grid);
+    var height = size.y*ZmCalMonthView.EXPANDED_HEIGHT_PERCENT/100;
+    var width = size.x*ZmCalMonthView.EXPANDED_WIDTH_PERCENT/100;
+
+
+    var row = document.getElementById(this._rowIds[rowId]);
+    var bodyCol = document.getElementById(this._bodyColId[colId]);
+    var headerCol = document.getElementById(this._headerColId[colId]);
+    if(row) {
+        Dwt.setSize(row, Dwt.DEFAULT, height);
+        Dwt.setSize(row.firstChild, Dwt.DEFAULT, height);
+        Dwt.setSize(document.getElementById(this._days[rowId*7+colId].tdId), Dwt.DEFAULT, height);
+    }
+    if(bodyCol && headerCol) {
+        Dwt.setSize(bodyCol, width, Dwt.DEFAULT);
+        Dwt.setSize(headerCol, width, Dwt.DEFAULT);
+    }
+
 };

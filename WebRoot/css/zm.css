@@ -1213,7 +1213,6 @@ line-height:normal;
 .calendar_month_cells_td {
 	@SeparatorBorder@
 	@NoWrap@
-	height:16%;
 	vertical-align:top;
 }
 
@@ -1223,7 +1222,6 @@ line-height:normal;
 	@SeparatorBorder@
 	@NoWrap@
 	vertical-align:top;
-	height:16%;
 }
 .calendar_month_day_item_continues {
 	@AppBg@
@@ -3652,3 +3650,6 @@ HTML>BODY .appt-selected .appt_allday_body
     margin-left: 5px;
 }
 
+.cal_day_expand table {
+	border: 0px;
+}
