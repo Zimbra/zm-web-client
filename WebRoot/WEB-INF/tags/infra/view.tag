@@ -407,10 +407,7 @@
     
     
 <c:when test="${skin eq 'zmail'}">
-	<table width="100%" cellpadding="0" cellspacing="0">
-		<tr>
-		<td colspan="3" style="border-bottom: 1px solid #C9D7F1;">
-		<table>
+	<table cellpadding="0" cellspacing="0" border="0" style="border-bottom: 1px solid #C9D7F1;">
 		<tr>
 		<td id='skin_container_app_chooser_lite'>
 				<app:appTabs context="${context}" mailbox="${mailbox}" keys="${keys}" selected='${selected}'/>
@@ -435,11 +432,7 @@
 						</td>
 			</tr>
 			</table>
-			</td>
-		</tr>
-		<tr>
-			<td class='TopContent' colspan="3"  align="right" valign="top"><div style='height:6px'></div></td>
-		</tr>
+	<table cellpadding="0" cellspacing="0" border="0">
 	
 		<tr>
 			<td valign="top" align="center" class="Overview">
@@ -452,46 +445,33 @@
                 </c:otherwise>
             </c:choose>
 			</td>
-			<td valign="top" class="TopContent" style='width:70%'>
+			<td valign="middle" class="TopContent" width="90%">
                 <table cellpadding="0" cellspacing="0" width="100%">
                     <tr>
-                        <td width="66%">
+                        <td>
                             <app:appTop mailbox="${mailbox}" keys="${keys}" query="${empty context.query ? param.sq : context.query}" calendars="${calendars}" voice="${voice}" tasks="${tasks}" briefcases="${briefcases}"/>
                         </td>
 						
                     </tr>
                 </table>
 			</td>
-			<td align="center" style="padding-right:5px;">
-				
+			<td align="center" style="padding-right:5px;">	
 			</td>
 		</tr>
+		</table>
+	    <table width="100%" cellpadding="0" cellspacing="0" height="27">
+		
 		<tr>
 			<td class="Overview">
-				&nbsp;
+			
 			</td>
 			<td align="center" colspan="3">
 				<app:appStatus/>
 			</td>
 		</tr>
-		<tr>
-			
-			<%--  compose button
-				<c:choose>
-					<c:when test="${not empty context}">
-						<zm:currentResultUrl var="composeUrl" value="/h/search" context="${context}" paction="${param.action}" action="compose"/>
-					</c:when>
-					<c:otherwise>
-						<c:url var="composeUrl" value="/h/search?action=compose"/>
-					</c:otherwise>
-				</c:choose>
-				<div class="SearchButton" style="padding:2px;" >
-					<a  href="${fn:escapeXml(composeUrl)}" style="text-decoration:none;color:black;"><span id='tab_ikon_compose'><app:img src="startup/ImgNewMessage.gif" altkey='ALT_APP_COMPOSE'/></span> &nbsp; <span id='tab_ikon_compose'></span><span><fmt:message key="compose"/></span></a>
-				</div
-
-			</td>--%>
-			
-		</tr>
+		</table>
+		<table cellpadding="0" cellspacing="0" border="0" width="100%">
+		
 		<tr>
 			<c:if test="${empty editmode}">
 				<td valign="top" class="Overview">
@@ -504,7 +484,7 @@
 				<table width="100%" cellpadding="0" cellspacing="0">
 					<tr>
 	</c:if>
-			<td valign="top" colspan="${empty editmode ? 3 : 4}" style="padding-left:${editmode ? 10 : 0}px;border: 7px solid #C3D9FF;">
+			<td valign="top" colspan="${empty editmode ? 3 : 4}" style="padding-left:${editmode ? 10 : 0}px;border: 7px solid #C3D9FF;-moz-border-radius: 4px;">
 			<jsp:doBody/>
 		</td>
 		<c:if test="${adsOn}" >
