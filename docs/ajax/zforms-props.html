@@ -1,0 +1,456 @@
+<html>
+<head>
+	<title>Properties</title>
+	<style type="text/css">
+		TR { vertical-align: top; }
+		TH,TD { padding: 0.25em; }
+		THEAD TH { background-color: silver; }
+		TBODY TH { text-align: left; font-weight: normal; font-style: italic; }
+		.todo { background-color: pink; }
+		.done { background-color: lightgreen; }
+		.part { background-color: lightyellow; }
+	</style>
+</head>
+<body>
+
+<h1>Properties</h1>
+<a name="toc"></a>
+<h2>Contents</h2>
+<ul><li><a href="#form.props">Form Properties</a></li>
+	<li><a href="#formitem.props">FormItem Properties</a></li>
+	<!--
+	<li><a href="#model.props">Model Properties</a></li>
+	<li><a href="#modelitem.props">ModelItem Properties</a></li>
+	-->
+</ul>
+<p>
+	<strong>Note:</strong>
+	Any property whose type is "function" can also be a string. If
+	specified as a string, it must be a single JavaScript statement
+	and is converted to a function that returns the value of the
+	statement, executed within a context.
+</p>
+<p>
+	<strong>Note:</strong>
+	The "R" column in the tables denotes which properties are
+	<em>required</em>. If a property is required, it will be marked
+	"Y". If marked "*", the requirement is conditional -- see the
+	Notes for details.
+</p>
+
+<a name="form.props"></a>
+<h2>Form Properties</h2>
+<table border="1" cellspacing="0">
+	<thead>
+	<tr><th>Name</th><th>Value</th><th>R</th><th>Notes</th></tr>
+	</thead>
+	<tbody>
+	<tr><td>template</td><td>string</td><td>Y</td>
+		<td>The template id of the <code>DwtForm</code> control.
+		</td>
+	</tr>
+	<tr><td>items</td><td>array</td><td></td>
+		<td>Each item is a <i>FormItem</i>.
+		</td>
+	</tr>
+	<tr><td>onupdate</td><td>function</td><td></td>
+		<td>Handle form update.</td>
+	</tr>
+	<tr><td>onreset</td><td>function</td><td></td>
+		<td>Handle form reset.</td>
+	</tr>
+	</tbody>
+</table>
+
+<a name="formitem.props"></a>
+<h2>FormItem Properties</h2>
+<table border="1" cellspacing="0">
+	<thead>
+	<tr><th>Type</th><th>Name</th><th>Value</th><th>R</th><th>Notes</th></tr>
+	</thead>
+	<tbody>
+	<tr><th rowspan="6">FormItem</th><td>id</td><td>string</td><td>Y</td>
+		<td>Can be accessed in the form by this id. Optionally, maps to
+			an element in the template with id "{formId}_{itemId}". For
+			example, if the <code>DwtForm</code> control has id "DWT42" and
+			the item has id "BUTTON", the container element in the template
+			would have the id "DWT42_BUTTON".
+		</td>
+	</tr>
+	<tr><td>type</td><td>string</td><td></td>
+		<td>Name of any JavaScript object type. Most of the time, this is
+			the name of a <code>DwtControl</code>, for example
+			"DwtButton", but it can be any type that is
+			defined on the <code>window</code> object. A common example
+			is <code>DwtRadioButtonGroup</code> which does not extend
+			<code>DwtControl</code>.
+		</td>
+	</tr>
+	<tr><td>ref</td><td>string</td><td></td>
+		<td>Binding path to a property in the model. This binding is used
+			to generate a function to read and write the value for this
+			form item in the model. Each part of the path can represent
+			a call to a function on the model object or a direct property
+			on the model.
+		</td>
+	</tr>
+	<tr><td>value</td><td>any</td><td></td>
+		<td>The default value for the form item.</td>
+	</tr>
+	<tr><td>getter</td><td>function</td><td>*</td>
+		<td>A function that returns the value for this form item.
+			If specified, you should also specify the <i>setter</i>
+			property. Ignored if <i>ref</i> is specified.
+		</td>
+	</tr>
+	<tr><td>setter</td><td>function</td><td>*</td>
+		<td>A function that sets the value for this form item.
+			If specified, you should also specify the <i>getter</i>
+			property. Ignored if <i>ref</i> is specified.
+		</td>
+	</tr>
+	<tr><th rowspan="3">SelectOption</th><td>value</td><td>string</td><td>Y</td>
+		<td>Option value.</td>
+	</tr>
+	<tr><td>label</td><td>string</td><td></td>
+		<td>Label text. If not specified, the option value will be used.</td>
+	</tr>
+	<tr><td>image</td><td>string</td><td></td>
+		<td>Image that appears next to the label.</td>
+	</tr>
+	</tbody>
+</table>
+<p>
+	The form item object types in the following table are sub-types of
+	<i>FormItem</i> and inherit all of the <i>FormItem</i> properties 
+	by default.
+</p>
+<table border="1" cellspacing="0">
+	<thead>
+	<tr><th>Type</th><th>Name</th><th>Value</th><th>R</th><th>Notes</th></tr>
+	</thead>
+	<tbody>
+	<tr><th>Object</th><td>type</td><td><i>null</i></td><td>Y</td>
+		<td>Generic hidden object within the form. This can be used to
+			bind to a property in the model and expose that value directly
+			to other form controls without using a <code>DwtControl</code>
+			to store the value.
+		</td>
+	</tr>
+	<tr><th>HtmlElement</th><td>type</td><td><i>null</i></td><td>Y</td>
+		<td>The <i>HtmlElement</i> form item is primarily used to control
+			the visibility of elements within the form's template. Most
+			of the time, no value needs to be set. However, one case where
+			the <i>value</i> property could be used is when this form item
+			represents a file input element in the template.
+		</td>
+	</tr>
+	<tr><th rowspan="5">Control</th><td>type</td><td>string</td><td>Y</td>
+		<td>A generic DWT control. For example, "DwtButton" or "DwtSelect".</td>
+	</tr>
+	<tr><td>template</td><td>string</td><td></td>
+		<td>Template id for this control. This allows you to use a base
+			DWT control class but change its appearance without requiring
+			a new sub-class.
+		</td>
+	</tr>
+	<tr><td>className</td><td>string</td><td></td>
+		<td>CSS class name for this control. This allows you to use a base
+			DWT control class but change its appearance without requiring
+			a new sub-class.
+		</td>
+	</tr>
+	<tr><td>enabled</td><td>boolean, function</td><td></td>
+		<td>Specifies if control is enabled or disabled.</td>
+	</tr>
+	<tr><td>visible</td><td>boolean, function</td><td></td>
+		<td>Specifies if control is visible or not.</td>
+	</tr>
+	<tr><th rowspan="3">RadioButtonGroup</th><td>type</td>
+		<td>"DwtRadioButtonGroup"</td><td>Y</td>
+		<td>Radio button group. All <i>RadioButton</i> form items that
+			are members of the same radio group should
+			be specified using the <i>items</i> property.
+		</td>
+	</tr>
+	<tr><td>items</td><td>array</td><td></td>
+		<td>Each item is a <i>RadioButton</i>. If not specified, the
+			default <i>type</i> for each item is "DwtRadioButton".
+		</td>
+	</tr>
+	<tr><td>onclick</td><td>function</td><td></td>
+		<td>Handle child radio button clicks.</td>
+	</tr>
+	</tbody>
+</table>
+<p>
+	The form item object types in the following table are sub-types of
+	<i>Control</i> and inherit all of the <i>Control</i> properties
+	by default.
+</p>
+<table border="1" cellspacing="0">
+	<thead>
+	<tr><th>Type</th><th>Name</th><th>Value</th><th>R</th><th>Notes</th></tr>
+	</thead>
+	<tbody>
+	<tr><th rowspan="5">Button</th><td>type</td><td>"DwtButton"</td><td>Y</td>
+		<td>Button object.
+			<br>
+			<strong>Note:</strong>
+			The <i>type</i> property must have the value
+			of "DwtButton" or another JavaScript type name that is a
+			sub-class of <code>DwtButton</code>.
+		</td>
+	</tr>
+	<tr><td>label</td><td>string</td><td>*</td>
+		<td>The text that appears on the button. Either <i>label</i> or
+			<i>image</i> should be specified.
+		</td>
+	</tr>
+	<tr><td>image</td><td>string</td><td>*</td>
+		<td>The image that appears on the button. Either <i>label</i> or
+			<i>image</i> should be specified.
+		</td>
+	</tr>
+	<tr><td>menu</td><td><i>Menu</i></td><td></td>
+		<td>Drop-down menu of button. The default type for
+			the item is "DwtMenu". For convenience, the menu can be specified
+			as a picker menu instead of a standard menu with items of type
+			"DwtMenuItem". In this case, the <i>menu</i> property is just
+			the picker (e.g. "DwtCalendar").
+		</td>
+	</tr>
+	<tr><td>onclick</td><td>function</td><td></td><td>Handle button click.</td></tr>
+	<tr><th rowspan="4">CheckBox</th><td>type</td><td>"DwtCheckbox"</td><td>Y</td>
+		<td>Checkbox object.
+			<br>
+			<strong>Note:</strong>
+			The <i>type</i> property must have the value
+			of "DwtCheckbox" or another JavaScript type name that is a
+			sub-class of <code>DwtCheckbox</code>.
+		</td>
+	</tr>
+	<tr><td>label</td><td>string</td><td></td>
+		<td>The text that appears next to the checkbox.</td>
+	</tr>
+	<tr><td>checked</td><td>boolean</td><td></td>
+		<td>Initial state of checkbox.</td>
+	</tr>
+	<tr><td>onclick</td><td>function</td><td></td>
+		<td>Handle checkbox click.</td>
+	</tr>
+	<tr><th rowspan="4">InputField</th><td>type</td><td>"DwtInputField"</td><td>Y</td>
+		<td>Input field. This form item can be used for either single-line input
+			fields or multi-line textareas.
+			<br>
+			<strong>Note:</strong>
+			The <i>type</i> property must have the value
+			of "DwtInputField" or another JavaScript type name that is a
+			sub-class of <code>DwtInputField</code>.
+		</td>
+	</tr>
+	<tr><td>cols</td><td>number</td><td></td><td>Number of columns.</td></tr>
+	<tr><td>rows</td><td>number</td><td></td>
+		<td>Number of rows. Default is 1 which creates a single-line input.</td>
+	</tr>
+	<tr><td>hint</td><td>string</td><td></td>
+		<td>Hint text to appear in the input field.</td>
+	</tr>
+	<tr class="todo"><th>List</th><td>type</td><td>"DwtListView"</td><td>Y</td>
+		<td>A list object.
+			<br>
+			<strong>Note:</strong>
+			The <i>type</i> property must have the value
+			of "DwtListView" or another JavaScript type name that is a
+			sub-class of <code>DwtListView</code>.
+		</td>
+	</tr>
+	<tr><th rowspan="3">Menu</th><td>type</td><td>"DwtMenu"</td><td>Y</td>
+		<td>A menu object.
+			<br>
+			<strong>Note:</strong>
+			The <i>type</i> property must have the value
+			of "DwtMenu" or another JavaScript type name that is a
+			sub-class of <code>DwtMenu</code>.
+		</td>
+	</tr>
+	<tr><td>items</td><td>array</td><td></td>
+		<td>Each item is a <i>MenuItem</i>. The default
+			<i>type</i> for each item is "DwtMenuItem".
+			<br>
+			<strong>Note:</strong>
+			In addition to <i>MenuItem</i> controls, a special separator placeholder
+			can be inserted as well. To insert a separator, the item type should be
+			set to <code>DwtMenuItem.SEPARATOR_STYLE</code>.
+		</td>
+	</tr>
+	<tr><td>onclick</td><td>function</td><td></td>
+		<td>Handle a menu item click. This is a convenience so that <i>onclick</i>
+			handlers do not have to be set on each menu item.
+		</td>
+	</tr>
+	<tr><th rowspan="3">MenuItem</th><td>type</td><td>"DwtMenuItem"</td><td>Y</td>
+		<td>A menu item object. This should only be used within a <i>Menu</i>.
+			<br>
+			<strong>Note:</strong>
+			The <i>type</i> property must have the value
+			of "DwtMenuItem" or another JavaScript type name that is a
+			sub-class of <code>DwtMenuItem</code>.
+		</td>
+	</tr>
+	<tr><td>menu</td><td><i>Menu</i></td><td>Y</td><td>Sub-menu of this menu item.</td></tr>
+	<tr><td>onclick</td><td>function</td><td></td><td>Handle menu item click.</td></tr>
+	<tr><th rowspan="3">Select</th><td>type</td><td>"DwtSelect"</td><td>Y</td>
+		<td>Select object.
+			<br>
+			<strong>Note:</strong>
+			The <i>type</i> property must have the value
+			of "DwtSelect" or another JavaScript type name that is a
+			sub-class of <code>DwtSelect</code>.
+		</td>
+	</tr>
+	<tr><td>items</td><td>array</td><td></td>
+		<td>Each item is a <i>SelectOption</i>.</td>
+	</tr>
+	<tr><td>onchange</td><td>function</td><td></td><td>Handle selection change.</td></tr>
+	<tr><th rowspan="4">RadioButton</th><td>type</td><td>"DwtRadioButton"</td><td>Y</td>
+		<td>Radio button object.
+			<br>
+			<strong>Note:</strong>
+			The <i>type</i> property must have the value
+			of "DwtRadioButton" or another JavaScript type name that is a
+			sub-class of <code>DwtRadioButton</code>.
+		</td>
+	</tr>
+	<tr><td>label</td><td>string</td><td></td>
+		<td>The text that appears next to the radio button.</td>
+	</tr>
+	<tr><td>checked</td><td>boolean</td><td></td>
+		<td>Initial state of radio button.</td>
+	</tr>
+	<tr><td>onclick</td><td>function</td><td></td>
+		<td>Handle radio button click.</td>
+	</tr>
+	<tr><th rowspan="3">Tabs</th><td>type</td><td>"DwtTabView"</td><td>Y</td>
+		<td>Tab object comprised of a tab bar and tab pages.
+			<br>
+			<strong>Note:</strong>
+			The <i>type</i> property must have the value
+			of "DwtTabView" or another JavaScript type name that is a
+			sub-class of <code>DwtTabView</code>.
+		</td>
+	</tr>
+	<tr><td>items</td><td>array</td><td></td>
+		<td>Each item is a <i>TabPage</i>. The default
+			<i>type</i> for each item is "DwtTabViewPage".
+		</td>
+	</tr>
+	<tr class="todo"><td>onclick</td><td>function</td><td></td>
+		<td>Handle tab-bar button click.</td>
+	</tr>
+	<tr><th rowspan="5">TabPage</th><td>type</td><td>"DwtTabViewPage"</td><td>Y</td>
+		<td>Tab page object.
+			<br>
+			<strong>Note:</strong>
+			The <i>type</i> property must have the value
+			of "DwtTabViewPage" or another JavaScript type name that is a
+			sub-class of <code>DwtTabViewPage</code>.
+		</td>
+	</tr>
+	<tr><td>label</td><td>string</td><td>*</td>
+		<td>The text that appears on the tab for this page.
+			Either <i>label</i> or <i>image</i> should be specified.
+		</td>
+	</tr>
+	<tr><td>image</td><td>string</td><td>*</td>
+		<td>The image that appears on the tab for this page.
+			Either <i>label</i> or <i>image</i> should be specified.
+		</td>
+	</tr>
+	<tr><td>template</td><td>string</td><td>*</td>
+		<td>The template for the tab page.
+			<br>
+			<strong>Note:</strong>
+			Unless a custom implementation of <code>DwtTabViewPage</code>
+			is used, this should be specified.
+		</td>
+	</tr>
+	<tr><td>items</td><td>array</td><td></td>
+		<td>Each item is a <i>Control</i>. Typically, the tab page will
+			be a standard <code>DwtTabViewPage</code> used with the <i>template</i>
+			property to configure the contents. Then the controls on the
+			page are created from this item list.
+		</td>
+	</tr>
+	<tr><th rowspan="2">Text</th><td>type</td><td>"DwtText"</td><td>Y</td>
+		<td>Static text object.
+			<br>
+			<strong>Note:</strong>
+			The <i>type</i> property must have the value
+			of "DwtText" or another JavaScript type name that is a
+			sub-class of <code>DwtText</code>.
+		</td>
+	</tr>
+	<tr><td>value</td><td>string</td><td></td>
+		<td>The text that appears in the text control.</td>
+	</tr>
+	<tr><th rowspan="3">ToolBar</th><td>type</td><td>"DwtToolBar"</td><td>Y</td>
+		<td>Toolbar object.
+			<br>
+			<strong>Note:</strong>
+			The <i>type</i> property must have the value
+			of "DwtToolBar" or another JavaScript type name that is a
+			sub-class of <code>DwtToolBar</code>.
+		</td>
+	</tr>
+	<tr><td>items</td><td>array</td><td></td>
+		<td>Each item is a <i>Control</i>. Typically, these are specified
+			as items of type "DwtToolBarButton" but can be any DWT control.
+			The default <i>type</i> for each item is "DwtToolBarButton".
+			<br>
+			<strong>Note:</strong>
+			In addition to DWT controls, special toolbar placeholders can
+			be inserted as well. To insert spacers, separators, and fillers,
+			the item <i>type</i> should be set to
+			<code>DwtToolBar.SPACER</code>, <code>DwtToolBar.SEPARATOR</code>,
+			and <code>DwtToolBar.FILLER</code>, respectively.
+		</td>
+	</tr>
+	<tr><td>onclick</td><td>function</td><td></td>
+		<td>Handle toolbar button click. This is a convenience so that <i>onclick</i>
+			handlers do not have to be set on each toolbar item.
+		</td>
+	</tr>
+	</tbody>
+</table>
+
+<!--
+<a name="model.props"></a>
+<h2>Model Object Properties</h2>
+<table border="1" cellspacing="0">
+	<thead>
+	<tr><th>Name</th><th>Value</th><th>Notes</th></tr>
+	</thead>
+	<tbody>
+	<tr><td>items</td><td>array</td>
+		<td>Each item is a object with <a href="#modelitem.props">model item
+			properties</a>.
+		</td>
+	</tr>
+	</tbody>
+</table>
+
+<a name="modelitem.props"></a>
+<h2>ModelItem Object Properties</h2>
+<table border="1" cellspacing="0">
+	<thead>
+	<tr><th>Name</th><th>Value</th><th>Notes</th></tr>
+	</thead>
+	<tbody>
+	<tr><td>type</td><td>string</td></tr>
+	</tbody>
+</table>
+-->
+
+</body>
+</html>
