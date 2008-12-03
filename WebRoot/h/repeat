@@ -20,7 +20,8 @@
     <fmt:message var="title" key="customRepeat"/>
     <zm:composeUploader var="uploader"/>
     <c:set var="compose" value="${uploader.compose}"/>
-    <jsp:useBean id="dateSymbols" scope="request" class="java.text.DateFormatSymbols" />
+    <fmt:getLocale var="userLocale"/>
+    <c:set var="dateSymbols" value="${zm:getDateFormatSymbols(userLocale)}"/>
     <c:set var="weekDays" value="${dateSymbols.weekdays}"/>
     <c:set var="shortWeekDays" value="${dateSymbols.shortWeekdays}"/>
     <c:set var="months" value="${dateSymbols.months}"/>

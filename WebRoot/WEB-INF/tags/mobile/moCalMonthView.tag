@@ -16,7 +16,8 @@
     <fmt:message var="dayMonthChangeFormat" key="CAL_MONTH_DAY_MONTH_CHANGE_FORMAT"/>
     <fmt:message var="titleFormat" key="CAL_MONTH_TITLE_FORMAT"/>
     <fmt:formatDate var="title" value="${date.time}" pattern="${titleFormat}" timeZone="${timezone}"/>
-    <jsp:useBean id="dateSymbols" scope="request" class="java.text.DateFormatSymbols"/>
+    <fmt:getLocale var="userLocale"/>
+    <c:set var="dateSymbols" value="${zm:getDateFormatSymbols(userLocale)}"/>
     <c:set var="weekDays" value="${dateSymbols.shortWeekdays}"/>
     <c:set var="today" value="${zm:getToday(timezone)}"/>
     <c:set var="prevDate" value="${zm:addMonth(date, -1)}"/>

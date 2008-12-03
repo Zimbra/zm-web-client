@@ -12,7 +12,8 @@
     <c:set var="timezone" value="${not empty requestScope.tz ? requestScope.tz : mailbox.prefs.timeZone}"/>
     <fmt:setTimeZone value="${timezone}"/>
     <c:set var="view" value="${not empty param.view ? param.view : mailbox.prefs.calendarInitialView}"/>
-    <jsp:useBean id="dateSymbols" scope="request" class="java.text.DateFormatSymbols" />
+    <fmt:getLocale var="userLocale"/>
+    <c:set var="dateSymbols" value="${zm:getDateFormatSymbols(userLocale)}"/>
     <c:set var="weekDays" value="${dateSymbols.weekdays}"/>
     <fmt:message var="titleFormat" key="CAL_MINICAL_TITLE_FORMAT"/>
 
