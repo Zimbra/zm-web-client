@@ -404,7 +404,8 @@ function(id, value, setup, control) {
 				appCtxt.set(id, false, null, null, true);
 			}
 			else {
-				object.setSelected(value);
+				var val = (id == ZmSetting.OFFLINE_IS_MAILTO_HANDLER) ? true : value;
+				object.setSelected(val);
 			}
 		} else if (type == ZmPref.TYPE_RADIO_GROUP) {
 			object.setSelectedValue(value);
