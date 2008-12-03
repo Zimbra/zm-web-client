@@ -1293,11 +1293,13 @@ function() {
 // Flag mail items(override ZmListController to add hook to zimletMgr
 ZmMailListController.prototype._doFlag =
 function(items, on) {
+	if (on !== true && on !== false) {
+		on = !items[0].isFlagged;
+	}
+
 	ZmListController.prototype._doFlag.call(this, items, on);
-	if(on) {//notify zimletMgr
-		if (appCtxt.zimletsPresent()) {
-			appCtxt.getZimletMgr().notifyZimlets("onMailFlagClick", items);
-		}
+	if (appCtxt.zimletsPresent()) {
+		appCtxt.getZimletMgr().notifyZimlets("onMailFlagClick", items, on);
 	}
 };
 
