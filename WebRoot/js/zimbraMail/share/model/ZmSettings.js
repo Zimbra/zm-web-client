@@ -329,11 +329,12 @@ function(callback, accountName, result) {
 
 ZmSettings.prototype._loadZimlets =
 function(allzimlets, props) {
+    allzimlets = allzimlets || [];
 	this.registerSetting("ZIMLETS",		{type:ZmSetting.T_CONFIG, defaultValue:allzimlets, isGlobal:true});
 	this.registerSetting("USER_PROPS",	{type:ZmSetting.T_CONFIG, defaultValue:props});
 
     var zimlets = []; //Filter zimlets from getinforesponse and load only user checked
-    var checkedZimlets = appCtxt.get(ZmSetting.CHECKED_ZIMLETS);
+    var checkedZimlets = appCtxt.get(ZmSetting.CHECKED_ZIMLETS) || [];
     for (var i=0; i < allzimlets.length; i++) {
         var zimletObj = allzimlets[i];
         var zimlet0 = zimletObj.zimlet[0];
