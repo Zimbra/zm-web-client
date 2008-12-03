@@ -1630,7 +1630,7 @@ function(tagId) {
 
 ZmMailMsgView.prototype._handleMsgTruncated =
 function() {
-	var url = ("/h/printmessage?id=" + this._msg.id);
+	var url = ("/h/message?id=" + this._msg.id);
 	window.open(appContextPath+url, "_blank");
 };
 
