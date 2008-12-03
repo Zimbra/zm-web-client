@@ -404,7 +404,7 @@ function(id, value, setup, control) {
 				appCtxt.set(id, false, null, null, true);
 			}
 			else {
-				object.setSelected(true);
+				object.setSelected(value);
 			}
 		} else if (type == ZmPref.TYPE_RADIO_GROUP) {
 			object.setSelectedValue(value);
