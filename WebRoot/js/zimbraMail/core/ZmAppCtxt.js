@@ -999,7 +999,7 @@ function(keys) {
 ZmAppCtxt.prototype.getShortcutsPanel =
 function() {
 	if (!this._shortcutsPanel) {
-		AjxDispatcher.require("Preferences");
+		AjxDispatcher.require(["PreferencesCore", "Preferences"]);
 		var style = this.isChildWindow ? ZmShortcutList.WINDOW_STYLE : ZmShortcutList.PANEL_STYLE;
 		this._shortcutsPanel = new ZmShortcutsPanel(style);
 	}
