@@ -208,7 +208,7 @@ function(chat, params) {
  * Gets the list of conference services.
  *
  * @param callback	[AjxCallback]			Callback
- * @param params	[hash]			ZmRequestMgr#sendRequest params
+ * @param params	[hash]					ZmRequestMgr#sendRequest params
  */
 ZmImService.prototype.getConferenceServices =
 function(callback, params) {
@@ -216,14 +216,57 @@ function(callback, params) {
 };
 
 /**
- * Gets the list of conference services.
+ * Gets the list of conference rooms.
  *
- * @param service	[ZmConferenceService]	ZmRequestMgr#sendRequest params
+ * @param service	[ZmConferenceService]	Service
  * @param callback	[AjxCallback]			Callback
  * @param params	[hash]					ZmRequestMgr#sendRequest params
  */
 ZmImService.prototype.getConferenceRooms =
 function(service, callback, params) {
+	alert('Not implemented');
+};
+
+/**
+ * Creates a conference room.
+ *
+ * @param service	[ZmConferenceService]	Service
+ * @param name		[String]				Name of the room
+ * @param callback	[AjxCallback]			Callback
+ * @param params	[hash]					ZmRequestMgr#sendRequest params
+ */
+ZmImService.prototype.createConferenceRoom =
+function(service, name, callback, params) {
+	alert('Not implemented');
+};
+
+/**
+ * Configure a conference room.
+ *
+ * @param room		[ZmConferenceRoom]		Room
+ * @param config	[Hash]					Config options. The following are supported
+ *					 hidden           boolean         room is hidden from RoomList
+ *					 nothidden        boolean         opposite of hidden
+ *					 membersonly      boolean         only members may join
+ *					 nonanonymous     boolean         if TRUE, then users are not anonymous
+ *					 semianonymous    boolean         no idea what this means
+ *					 passwordprotect  boolean         password required to join
+ *					 persistent       boolean         room not deleted if server restarts
+ *					 temporary        boolean         opposite of temporary
+ *					 moderated        boolean
+ *					 unmoderated      boolean
+ *					 numoccupants     integer         number of people currently in the room
+ *					 password         string          the password for the room
+ *					 maxusers         integer         max # users allowed
+ *					 name             string          the XMPP shortname of the room
+ *					 longname         string          natural language name of room
+ *					 owners           MULTI-string    list of room owners (can change config)
+ *
+ * @param callback	[AjxCallback]			Callback
+ * @param params	[hash]					ZmRequestMgr#sendRequest params
+ */
+ZmImService.prototype.configureConferenceRoom =
+function(room, config, callback, params) {
 	alert('Not implemented');
 };
 

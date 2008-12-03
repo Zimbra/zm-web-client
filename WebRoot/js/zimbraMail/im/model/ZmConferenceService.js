@@ -88,4 +88,25 @@ function(callback, rooms) {
 	}
 };
 
+ZmConferenceService.prototype.createRoom =
+function(name, callback) {
+	ZmImApp.INSTANCE.getService().createConferenceRoom(this, name, new AjxCallback(this, this._handleResponseCreateRoom, [callback]));
+};
+
+ZmConferenceService.prototype._handleResponseCreateRoom =
+function(callback, jsonObj) {
+	var args = {
+		id: jsonObj.addr,
+		tree: this.tree,
+		name: jsonObj.name,
+		parent: this,
+		status: jsonObj.status,
+		thread: jsonObj.thread
+	};
+	var room = new ZmConferenceRoom(args);
+	this.children.add(room);
+	if (callback) {
+		callback.run(room);
+	}
+};
 

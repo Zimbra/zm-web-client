@@ -298,8 +298,50 @@ function(service, callback, params) {
 
 ZmZimbraImService.prototype._handleResponseListConferenceRooms =
 function(callback, response) {
-//	callback.run(response.getResponse().IMListConferenceRoomsResponse.room);
-	callback.run([ { addr: "room1", name: "Support" }, { addr: "room2", name: "Random" }, { addr: "room3", name: "Grrrrrrrr" }]);
+	callback.run(response.getResponse().IMListConferenceRoomsResponse.room);
+};
+
+ZmZimbraImService.prototype.createConferenceRoom =
+function(service, name, callback, params) {
+	var addr = [name, service.getAddress()].join("@");
+	var soapDoc = AjxSoapDoc.create("IMJoinConferenceRoomRequest", "urn:zimbraIM");
+	var method = soapDoc.getMethod();
+	method.setAttribute("nickname", appCtxt.get(ZmSetting.USERNAME));
+	method.setAttribute("addr", addr);
+	var respCallback = new AjxCallback(this, this._handleResponseCreateConferenceRoom, [service, addr, name, callback]);
+	return this._send(params, soapDoc, respCallback);
+};
+
+ZmZimbraImService.prototype._handleResponseCreateConferenceRoom =
+function(service, addr, name, callback, response) {
+	var responseJson = response.getResponse().IMJoinConferenceRoomResponse;
+	var jsonObj = {
+		addr: addr,
+		name: name,
+		status: responseJson.status,
+		thread: responseJson.thread
+	};
+	callback.run(jsonObj);
+};
+
+ZmZimbraImService.prototype.configureConferenceRoom =
+function(room, config, callback, params) {
+	var soapDoc = AjxSoapDoc.create("IMModifyChatRequest", "urn:zimbraIM");
+	var method = soapDoc.getMethod();
+	method.setAttribute("thread", room.thread);
+	method.setAttribute("op", "configure");
+	for (var name in config) {
+		var node = soapDoc.set("var");
+		node.setAttribute("name", name);
+		node.setAttribute("value", config[name]);
+	}
+	var respCallback = callback ? new AjxCallback(this, this._handleResponseConfigureConferenceRoom, [callback]) : null;
+	return this._send(params, soapDoc, respCallback);
+};
+
+ZmZimbraImService.prototype._handleResponseConfigureConferenceRoom =
+function(callback) {
+	callback.run();
 };
 
 ZmZimbraImService.prototype.handleNotification =
@@ -397,7 +439,12 @@ function(im) {
 				var chat = this._roster.getChatList().getChatByThread(not.thread);
 				if (chat) {
 					chat.addMessage(ZmChatMessage.system(this._enteredChatFormatter.format([not.addr])));
-					chat.addRosterItem(this._roster.getRosterItem(not.addr));
+					var enteredItem = this._roster.getRosterItem(not.addr);
+					if (!enteredItem) {
+						var presence = new ZmRosterPresence(ZmRosterPresence.SHOW_UNKNOWN);
+						enteredItem = new ZmRosterItem(not.addr, this._roster.getChatList(), null, presence, null);
+					}
+					chat.addRosterItem(enteredItem);
 				}
 			} else if (not.type == "leftchat") {
 				// console.log("LEFT: %o", not);

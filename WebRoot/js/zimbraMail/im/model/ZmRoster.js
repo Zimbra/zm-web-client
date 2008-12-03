@@ -202,11 +202,12 @@ function() {
 
 ZmRoster.prototype.getConferenceServices =
 function(callback, force) {
-	if (!this._conferenceServices || force) {
+	var tree = this.getConferenceTree();
+	if (!tree.root.children.size() || force) {
 		var responseCallback = new AjxCallback(this, this._handleResponceGetConferenceServices, [callback]);
 		ZmImApp.INSTANCE.getService().getConferenceServices(responseCallback);
 	} else {
-		callback.run(this._conferenceServices);
+		callback.run(tree.root.children.getArray());
 	}
 };
 

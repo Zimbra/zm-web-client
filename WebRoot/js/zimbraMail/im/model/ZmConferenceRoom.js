@@ -19,6 +19,16 @@ ZmConferenceRoom = function(params) {
 
 	params.type = ZmOrganizer.CONFERENCE_ITEM;
 	ZmOrganizer.call(this, params);
+
+	this.status = params.status || ZmConferenceRoom.STATUS.READY;
+	this.thread = params.thread;
+	this.config = null;
+};
+
+// Status values. More statuses to be supported by server later.
+ZmConferenceRoom.STATUS = {
+	NEW: "NewRoomCreated",  // this is a NEW, LOCKED, ROOM. You must configure it.
+	READY: "- Ready -"
 };
 
 ZmConferenceRoom.prototype = new ZmOrganizer;
@@ -37,5 +47,20 @@ function() {
 ZmConferenceRoom.prototype.getIcon =
 function() {
 	return "ImGroup";
+};
+
+ZmConferenceRoom.prototype.configure =
+function(config, callback) {
+	var responseCallback = new AjxCallback(this, this._handleResponseConfigure, [config, callback]);
+	ZmImApp.INSTANCE.getService().configureConferenceRoom(this, config, responseCallback);
+};
+
+ZmConferenceRoom.prototype._handleResponseConfigure =
+function(config, callback) {
+	this.status = ZmConferenceRoom.STATUS.READY;
+	this._config = config;
+	if (callback) {
+		callback.run();
+	}
 };
 
