@@ -18,6 +18,8 @@
     </c:choose>
     <fmt:setBundle basename="/messages/ZhMsg" scope="request"/>
     <c:set var="title" value="Notebook"/>
+    <c:set var="folderName" value="${context.folder.name}" />           
+    <c:set var="iframeUrl" value="/home/user1/${folderName}" />
 </app:handleError>
 
 <c:set var="toolbar">
@@ -33,7 +35,7 @@
                         <td nowrap>&nbsp;</td>
                         <td nowrap>
                             <zm:currentResultUrl var="refreshUrl" value="/h/search" context="${context}" refresh="true" />
-                            <a href="${fn:escapeXml(refreshUrl)}" <c:if test="${keys}"></c:if>><app:img src="startup/ImgPrint.gif" altkey="refresh"/><span>&nbsp;<fmt:message key="print"/></span></a>
+                            <a href="${fn:escapeXml(iframeUrl)}" target="_blank" <c:if test="${keys}"></c:if>><app:img src="startup/ImgPrint.gif" altkey="refresh"/><span>&nbsp;<fmt:message key="print"/></span></a>
                         </td>
                     </tr>
                 </table>
@@ -42,7 +44,6 @@
 
 
 <app:view mailbox="${mailbox}" title="${title}" selected='notebook' notebook="${true}" tags="true" context="${context}" keys="true">
-    <c:set var="folderName" value="${context.folder.name}" />
     <table width="100%" cellpadding="0" cellspacing="0">
         <tr>
             <td class='TbTop'>
@@ -51,7 +52,6 @@
         </tr>
         <tr>
             <td class="list" style="padding:10px;">
-                <c:set var="iframeUrl" value="/home/user1/${folderName}" />
                 <iframe id="notebookIframe" style="width:100%; height:600px" scrolling="auto" marginWidth="0" marginHeight="0" frameBorder="0" src="${fn:escapeXml(iframeUrl)}"></iframe>
             </td>
         </tr>
