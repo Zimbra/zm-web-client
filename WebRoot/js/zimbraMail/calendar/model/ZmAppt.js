@@ -102,7 +102,6 @@ function(appt) {
 		newAppt._orig = appt;
 	}
 	newAppt.type = ZmItem.APPT;
-	newAppt.rsvp = appt.rsvp;
 
 	return newAppt;
 };
@@ -177,28 +176,16 @@ function(controller, force) {
 			when: this.getDurationText(false, false),
 			location: this.getLocation(),
 			width: "250",
-			showAttendeeStatus: (this.ptstHashMap != null)
+			showAttendeeStatus: (this._ptstHashMap != null)
 		};
 
-		if (this.ptstHashMap != null) {
+		if (this._ptstHashMap != null) {
 			var ptstStatus = {};
-			ptstStatus[ZmMsg.ptstAccept] = this.getAttendeeToolTipString(this.ptstHashMap[ZmCalBaseItem.PSTATUS_ACCEPT]);
-			ptstStatus[ZmMsg.ptstDeclined] = this.getAttendeeToolTipString(this.ptstHashMap[ZmCalBaseItem.PSTATUS_DECLINED]);
-			ptstStatus[ZmMsg.ptstTentative] = this.getAttendeeToolTipString(this.ptstHashMap[ZmCalBaseItem.PSTATUS_TENTATIVE]);
-			ptstStatus[ZmMsg.ptstNeedsAction] = this.getAttendeeToolTipString(this.ptstHashMap[ZmCalBaseItem.PSTATUS_NEEDS_ACTION]);
+			ptstStatus[ZmMsg.ptstAccept] = this.getAttendeeToolTipString(this._ptstHashMap[ZmCalBaseItem.PSTATUS_ACCEPT]);
+			ptstStatus[ZmMsg.ptstDeclined] = this.getAttendeeToolTipString(this._ptstHashMap[ZmCalBaseItem.PSTATUS_DECLINED]);
+			ptstStatus[ZmMsg.ptstTentative] = this.getAttendeeToolTipString(this._ptstHashMap[ZmCalBaseItem.PSTATUS_TENTATIVE]);
+			ptstStatus[ZmMsg.ptstNeedsAction] = this.getAttendeeToolTipString(this._ptstHashMap[ZmCalBaseItem.PSTATUS_NEEDS_ACTION]);
 			params.ptstStatus = ptstStatus;
-
-            var attendees = [];
-            if(!this.rsvp) {
-                var personAttendees = (this._attendees && this._attendees[ZmCalBaseItem.PERSON])
-                        ? this._attendees[ZmCalBaseItem.PERSON] : [];
-
-                for (var i = 0; i < personAttendees.length; i++) {
-                    var attendee = personAttendees[i];
-                    attendees.push(attendee.getAttendeeText(null, true));
-                }
-                params.attendeesText = this.getAttendeeToolTipString(attendees);
-            }
 		}
 
 		this._toolTip = AjxTemplate.expand("calendar.Appointment#Tooltip", params);
@@ -213,14 +200,23 @@ function(val) {
 	var str;
 	var maxLimit = 10;
 	if (val && val.length > maxLimit) {
-        var origLength = val.length;
 		var newParts = val.splice(0, maxLimit);
-		str = newParts.join(",") + " ("+ (origLength - maxLimit) +" " +  ZmMsg.more + ")" ;
+		str = newParts.join(",") + " ("+ (val.length - maxLimit) +" more)" ;
 	} else if (val) {
 		str = val.join(",");
 	}
 	return str;
 }
+
+ZmAppt.prototype.setAttendeeToolTipData =
+function(ptstHashMap) {
+	this._ptstHashMap = ptstHashMap;
+};
+
+ZmAppt.prototype.getAttendeeToolTipData =
+function () {
+	return this._ptstHashMap;
+};
 
 ZmAppt.prototype.getSummary =
 function(isHtml) {
@@ -496,9 +492,6 @@ function(message) {
             }
         }
         this.rsvp = rsvp;
-        if(this._orig) {
-            this._orig.setRsvp(rsvp);
-        }
     }
 };
 
@@ -612,28 +605,7 @@ function(rsvp) {
 ZmAppt.prototype.shouldRsvp =
 function() {
     return this.rsvp;
-};
-
-ZmAppt.prototype.updateParticipantStatus =
-function() {
-	if (this._orig) {
-		return this._orig.updateParticipantStatus();
-	}
-
-    var ptstHashMap = {};
-	var personAttendees = (this._attendees && this._attendees[ZmCalBaseItem.PERSON])
-		? this._attendees[ZmCalBaseItem.PERSON] : [];
-
-	for (var i = 0; i < personAttendees.length; i++) {
-		var attendee = personAttendees[i];
-		var ptst = attendee.getAttr("participationStatus") || "NE";
-		if (!ptstHashMap[ptst]) {
-			ptstHashMap[ptst] = [];
-		}
-		ptstHashMap[ptst].push(attendee.getAttendeeText(null, true));
-	}
-	this.ptstHashMap = ptstHashMap;
-};
+}
 
 ZmAppt.prototype._addAttendeesToSoap =
 function(soapDoc, inv, m, notifyList, onBehalfOf) {
@@ -646,7 +618,7 @@ function(soapDoc, inv, m, notifyList, onBehalfOf) {
 	}
 
 	// if we have a separate list of email addresses to notify, do it here
-	if (this._sendNotificationMail && this.isOrganizer() && m && notifyList) {
+	if (this.isOrganizer() && m && notifyList) {
 		for (var i = 0; i < notifyList.length; i++) {
 			e = soapDoc.set("e", null, m);
 			e.setAttribute("a", notifyList[i]);
@@ -708,7 +680,7 @@ function(soapDoc, inv, m, notifyList, attendee, type) {
 	}
 
 	// set email to notify if notifyList not provided
-	if (this._sendNotificationMail && this.isOrganizer() && m && !notifyList && !this.__newFolderId) {
+	if (this.isOrganizer() && m && !notifyList && !this.__newFolderId) {
 		e = soapDoc.set("e", null, m);
 		e.setAttribute("a", address);
 		if (dispName) {
@@ -731,4 +703,25 @@ function(soapDoc, inv, m, notifyList, attendee, type) {
 ZmAppt.prototype._getInviteFromError =
 function(result) {
 	return (result._data.GetAppointmentResponse.appt[0].inv[0]);
+};
+
+ZmAppt.prototype._updateParticipantStatus =
+function() {
+	if (this._orig) {
+		return this._orig._updateParticipantStatus();
+	}
+
+	var ptstHashMap = {};
+	var personAttendees = (this._attendees && this._attendees[ZmCalBaseItem.PERSON])
+		? this._attendees[ZmCalBaseItem.PERSON] : [];
+
+	for (var i = 0; i < personAttendees.length; i++) {
+		var attendee = personAttendees[i];
+		var ptst = attendee.getAttr("participationStatus") || "NE";
+		if (!ptstHashMap[ptst]) {
+			ptstHashMap[ptst] = [];
+		}
+		ptstHashMap[ptst].push(attendee.getAttendeeText(null, true));
+	}
+	this.setAttendeeToolTipData(ptstHashMap);
 };

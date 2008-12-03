@@ -28,19 +28,18 @@
                     <c:if test="${!context.folder.isDrafts}">
                     <td  nowrap valign="middle">
                         <select name="folderId" onchange="zclick('SOPMOVE')">
-                            <option value="" selected><fmt:message key="moveAction"/></option>
-                            <optgroup label=<fmt:message key="actionOptSep"/>>
+                            <option value="" selected/><fmt:message key="moveAction"/>
+                            <option disabled /><fmt:message key="actionOptSep"/>
                             <zm:forEachFolder var="folder">
                                 <c:if test="${folder.isMessageMoveTarget and !folder.isTrash and !folder.isSpam}">
-                                    <option <c:if test="${keys}">id="OPFLDR${folder.id}"</c:if> value="m:${folder.id}">${zm:truncate(fn:escapeXml(zm:getFolderPath(pageContext, folder.id)),10,true)}</option>
+                                    <option <c:if test="${keys}">id="OPFLDR${folder.id}"</c:if> value="m:${folder.id}" />${zm:truncate(fn:escapeXml(zm:getFolderPath(pageContext, folder.id)),10,true)}
                                 </c:if>
                             </zm:forEachFolder>
-                            </optgroup>    
                         </select>
                     </td>
                     <app:button id="${keys ? 'OPMOVE' : ''}" name="actionMove" text="actionMove" tooltip="actionMoveTT"/>
                     <td><div class='vertSep'></div></td>
-                     </c:if>
+                     </c:if>    
                     <td  nowrap valign="middle">
                         <select name="actionOp" onchange="zclick('SOPGO')">
                             <option value="" selected/><fmt:message key="moreActions"/>

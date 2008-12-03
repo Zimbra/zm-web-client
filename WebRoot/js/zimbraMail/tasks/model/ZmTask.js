@@ -102,6 +102,11 @@ function(controller) {
 	DBG.println("------------ TODO: getTooltip! --------------");
 };
 
+ZmTask.prototype.getPrintHtml =
+function(preferHtml, callback) {
+	this.getDetails(ZmCalItem.MODE_EDIT, new AjxCallback(null, ZmTaskView.getPrintHtml, [this, preferHtml, callback]));
+};
+
 ZmTask.prototype.notifyModify =
 function(obj) {
 	ZmItem.prototype.notifyModify.call(this, obj);
@@ -142,17 +147,6 @@ function(mode, batchCmd) {
 	batchCmd.addRequestParams(soapDoc);
 };
 
-// returns "owner" of remote/shared calItem folder this calItem belongs to
-ZmTask.prototype.getRemoteFolderOwner =
-function() {
-	// bug fix #18855 - dont return the folder owner if moving betw. accounts
-	var controller = AjxDispatcher.run("GetTaskController");
-	if (controller.isMovingBetwAccounts(this, this.folderId)) {
-		return null;
-	}
-	var folder = this.getFolder();
-	return (folder && folder.link) ? folder.owner : null;
-};
 
 // Private/protected methods
 

@@ -1313,3 +1313,8 @@ function(ev) {
 		}
 	}
 };
+
+ZmContactList.prototype.getPrintHtml =
+function(preferHtml, callback) {
+	return ZmContactCardsView.getPrintHtml(this);
+};

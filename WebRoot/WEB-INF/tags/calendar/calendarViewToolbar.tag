@@ -27,7 +27,7 @@
                     <td>
                         <div class='vertSep'></div>
                     </td>
-                    <fmt:formatDate var="dateDf" value="${date.time}" pattern="yyyyMMdd" timeZone="${timezone}"/>
+                    <fmt:formatDate var="dateDf" value="${date.time}" pattern="yyyyMMdd"/>
                     <app:calendarUrl var="newApptUrl" date="${dateDf}" action="edit"/>
                     <app:calendarUrl var="dayViewUrl" date="${dateDf}" view="day"/>
                     <app:calendarUrl var="weekViewUrl" date="${dateDf}" view="week"/>
@@ -57,14 +57,6 @@
                     <app:calendarUrl var="todayUrl" nodate="true"/>
                     <td height="100%">
                         <a id="CAL_TODAY" href="${fn:escapeXml(todayUrl)}"><app:img altkey="ALT_CAL_TODAY" src="calendar/ImgDate.gif"/><span style='padding-left:5px'><fmt:message key="today"/></span></a>
-                    </td>
-                    <td height="100%"><div class='vertSep'></div></td>
-                    <td height="100%" nowrap valign="middle" style="padding: 0 2px 0 2px">
-                        <td height="100%" nowrap valign="middle" style="padding: 0 2px 0 2px">
-                        <input onclick="zprint();return false;" id="${keys ? 'IOPPRINT' : ''}" name="actionPrint" type="image" src="${iconPath}/startup/ImgPrint.gif" alt='<fmt:message key="actionPrint" />' title='<fmt:message key="actionPrint" />' />
-                    </td>
-                    <td height="100%" nowrap valign="middle" style="padding: 0 2px 0 2px">
-                        <input onclick="zprint();return false;" id="${keys ? 'SOPPRINT' : ''}" name="actionPrint" type="submit" value='<fmt:message key="actionPrint" />' title='<fmt:message key="actionPrint" />' />
                     </td>
                 </tr>
             </table>

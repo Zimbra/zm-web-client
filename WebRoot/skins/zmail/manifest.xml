@@ -28,7 +28,7 @@
   </advanced>
   <standard>
 		<css>
-			<file>zhtml.css</file>
+			<file>../../css/zhtml.css</file>
 		</css>
   </standard>
 </skin>
