@@ -128,7 +128,7 @@ function(list) {
 			}
 			setting.setValue(val);
 			if (ZmSetting.IS_IMPLICIT[setting.id]) {
-				setting.origValue = setting.getValue(null, true);
+				setting.origValue = setting.getValue(null, false);
 			}
 		} else {
 			DBG.println(AjxDebug.DBG3, "*** Unrecognized setting: " + i);
@@ -479,7 +479,7 @@ function(list, callback, result) {
 		// notify each changed setting's listeners
 		for (var i = 0; i < list.length; i++) {
 			var setting = list[i];
-			setting.origValue = setting.getValue(null, true);
+			setting.origValue = setting.getValue(null, false);
 			setting._notify(ZmEvent.E_MODIFY);
 		}
 		// notify any listeners on the settings as a whole
