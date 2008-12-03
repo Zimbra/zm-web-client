@@ -154,13 +154,13 @@ function(){
 
 ZmZimletsPage._getZimlets =
 function(){
-    var allz = appCtxt.get(ZmSetting.ZIMLETS/*AVAILABLE_ZIMLETS*/);
-    var checked = appCtxt.get(ZmSetting.CHECKED_ZIMLETS);
+    var allz = appCtxt.get(ZmSetting.ZIMLETS) || [];
+    var checked = appCtxt.get(ZmSetting.CHECKED_ZIMLETS) || [];
     var zimlets = new ZmPrefZimlets();
     for(var i = 0; i <  allz.length; i++){
-        var name = allz[i].zimlet[0].name;
-        var z = new ZmPrefZimlet(name,(checked.indexOf(name) >=0 ), allz[i].zimlet[0].description);
-        zimlets.addPrefZimlet(z);
+            var name = allz[i].zimlet[0].name;
+            var z = new ZmPrefZimlet(name,(checked.indexOf(name) >=0 ), allz[i].zimlet[0].description);
+            zimlets.addPrefZimlet(z);
     }
     return zimlets;
 };
