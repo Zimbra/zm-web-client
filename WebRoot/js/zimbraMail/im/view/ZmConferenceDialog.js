@@ -24,8 +24,8 @@ ZmConferenceDialog = function(params) {
 		fieldId: this._overviewId
 	};
 	var overview = this._setOverview(overviewArgs);
-	var treeView = overview.getTreeView(ZmOrganizer.CONFERENCE_ITEM);
-	treeView.addSelectionListener(new AjxListener(this, this._treeViewListener));
+	this._treeView = overview.getTreeView(ZmOrganizer.CONFERENCE_ITEM);
+	this._treeView.addSelectionListener(new AjxListener(this, this._treeViewListener));
 };
 
 ZmConferenceDialog.prototype = new ZmDialog;
@@ -68,17 +68,24 @@ function() {
 
 ZmConferenceDialog.prototype._okButtonListener =
 function(ev) {
-	ZmDialog.prototype._buttonListener.call(this, ev);
+	var selection = this._treeView.getSelection();
+	if (selection.length) {
+		this._join(selection[0]);
+	}
 };
 
 ZmConferenceDialog.prototype._treeViewListener =
 function(ev) {
 	if (ev.detail == DwtTree.ITEM_DBL_CLICKED) {
-		var treeItem = ev.item;
-		var organizer = treeItem.getData(Dwt.KEY_OBJECT);
-		if (organizer instanceof ZmConferenceRoom) {
-			organizer.join(null, new AjxCallback(this, this._handleResponseJoin));
-		}
+		this._join(ev.item);
+	}
+};
+
+ZmConferenceDialog.prototype._join =
+function(treeItem) {
+	var organizer = treeItem.getData(Dwt.KEY_OBJECT);
+	if (organizer instanceof ZmConferenceRoom) {
+		organizer.join(null, new AjxCallback(this, this._handleResponseJoin));
 	}
 };
 
