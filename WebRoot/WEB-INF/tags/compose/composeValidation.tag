@@ -37,7 +37,7 @@ var composevalidation = function(){
     };
 
     /* List of IDs for which onbeforeunload has to be cancelled */
-    var expElemts = new Array("SOPADDRECIP","SOPCANCEL","Stobutton","Sccbutton","Sbccbutton","SOPDRAFT","IOPDRAFT","SOPATTACH","SDOPCANCEL","SDOPADDRECIP","SDOPDRAFT","SDOPATTACH");
+    var expElemts = new Array("SOPADDRECIP","SOPCANCEL","Stobutton","Sccbutton","Sbccbutton","SOPDRAFT","IOPDRAFT","SOPATTACH","SDOPCANCEL","SDOPADDRECIP","SDOPDRAFT","SDOPATTACH","a_shbcc","a_hdbcc");
     var x;
     for (x in expElemts){
         var _elem = document.getElementById(expElemts[x]);

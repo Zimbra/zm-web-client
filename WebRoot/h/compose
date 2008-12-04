@@ -125,8 +125,8 @@
         </div>
     </td>
     <td>
-        <div id="show_bcc" style="display:block;"><a href="javascript:showHideBcc();"><fmt:message key="showBcc"/></a></div>
-        <div id="hide_bcc" style="display:none;"><a href="javascript:showHideBcc();"><fmt:message key="hideBcc"/></a></div>
+        <div id="show_bcc" style="display:block;"><a id="a_shbcc" href="javascript:showHideBcc();"><fmt:message key="showBcc"/></a></div>
+        <div id="hide_bcc" style="display:none;"><a id="a_hdbcc" href="javascript:showHideBcc();"><fmt:message key="hideBcc"/></a></div>
     </td>
 </tr>
 <tr id="bcc_tr" style="display:none">
