@@ -173,13 +173,13 @@ function(accept, add, addr) {
 ZmYahooImService.prototype.sendMessage =
 function(chat, text, html, typing, params) {
 	var msg;
-	if (html) {
-		this._htmlDiv = this._htmlDiv || document.createElement("DIV");
-		this._htmlDiv.innerHTML = html;
-		msg = YMSGR.YMLUtil.domToYmlRaw(this._htmlDiv);
-	} else {
+//	if (html) {
+//		this._htmlDiv = this._htmlDiv || document.createElement("DIV");
+//		this._htmlDiv.innerHTML = html;
+//		msg = YMSGR.YMLUtil.domToYmlRaw(this._htmlDiv);
+//	} else {
 		msg = text;
-	}
+//	}
 	var args = {
 		current_id: this._userId,
 		target_user: this._rosterItemToYahooServiceId(chat.getRosterItem(0)).buddy,
