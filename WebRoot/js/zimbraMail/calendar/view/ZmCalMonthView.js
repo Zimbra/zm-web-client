@@ -439,6 +439,7 @@ function() {
 			//te.innerHTML = d.getTime() == today.getTime() ? ("<div class=calendar_month_day_today>" + this._dayTitle(d) + "</div>") : this._dayTitle(d);
 			te.innerHTML = this._dayTitle(d);			
 			te.className = (thisMonth ? 'calendar_month_day_label' : 'calendar_month_day_label_off_month') + (isToday ? "_today" : "");
+            day.dayClassName = te.className;
 			var id = day.tdId;
 	 		var de = document.getElementById(id);			
 			de.className = 'calendar_month_cells_td';
@@ -661,7 +662,7 @@ function(dayInfo) {
         view.setCloseDayViewCallback(new AjxCallback(this, this._closeDayView));
         //listener changes
         view.addViewActionListener(new AjxListener(this, this._viewActionListener));
-        view.addSelectionListener(new AjxListener(this._controller, this._controller_listSelectionListener));
+        view.addSelectionListener(new AjxListener(this, this._dayListSelectionListener));
         view.addActionListener(new AjxListener(this._controller, this._controller._listActionListener));
 
     }else {
@@ -699,13 +700,13 @@ function(dayInfo) {
 
 ZmCalMonthView.prototype.expandDay =
 function(dayInfo) {
-    this.clearCalendarGrid();
+    this.clearCalendarGrid(true);
     this.startExpand(dayInfo);
 };
 
 
 ZmCalMonthView.prototype.clearCalendarGrid =
-function() {
+function(markApptDays) {
     for (var i=0; i < 6; i++) {
 
         //clear all day appts
@@ -728,6 +729,14 @@ function() {
                     node.firstChild.parentNode.removeChild(node.firstChild);
                 }
             }
+            if(day && day.titleId) {
+                var te = document.getElementById(day.titleId);
+                te.className = day.dayClassName?day.dayClassName : '';
+                if(markApptDays) {
+                    var apptAvailable = (day.appts && day.appts.length > 0) || (day.allDayAppts && day.allDayAppts.length > 0);
+                    te.className = te.className + (apptAvailable ? ' calendar_month_day_label_bold' : '');
+                }
+            }            
         }
     }
 
@@ -1010,6 +1019,10 @@ function(ev) {
     this.notifyListeners(ZmCalBaseView.VIEW_ACTION, ev);
 };
 
+ZmCalMonthView.prototype._dayListSelectionListener =
+function(ev) {
+    this._evtMgr.notifyListeners(DwtEvent.SELECTION, ev);
+};
 
 ZmCalMonthView.prototype.getSelection =
 function() {

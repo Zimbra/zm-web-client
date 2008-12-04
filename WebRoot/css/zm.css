@@ -1242,6 +1242,7 @@ line-height:normal;
 /* label of a particular day in various states */
 .calendar_month_day_label,
 .calendar_month_day_label_today,
+.calendar_month_day_label_bold,    
 .calendar_month_day_label_off_month,
 .calendar_month_day_label_off_month_today
 {
@@ -1253,6 +1254,10 @@ line-height:normal;
 
 .calendar_month_day_label_today {
 	@Text-today@
+}
+
+.calendar_month_day_label_bold {
+	font-weight: bold;
 }
 
 .calendar_month_day_label_off_month {
