@@ -963,6 +963,14 @@ function(request, contactList, isDraft, accountName) {
 					if (!id && this._origMsg) {
 						id = this._origMsg.id;
 					}
+
+					// bug fix #33312 - should be reverted(?) once bug #33691 is fixed. 
+					if (appCtxt.multiAccounts && !appCtxt.getActiveAccount().isMain &&
+						(isDraft || this.isDraft))
+					{
+						id = ZmOrganizer.getSystemId(id, appCtxt.getMainAccount(), true);
+					}
+
 					parts.push({mid:id, part:attIds[i]});
 				}
 			}

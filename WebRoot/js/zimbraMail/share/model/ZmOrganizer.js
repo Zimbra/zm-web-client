@@ -101,7 +101,7 @@ ZmOrganizer.ID_AUTO_ADDED 		= 13;
 ZmOrganizer.ID_CHATS			= 14;
 ZmOrganizer.ID_TASKS			= 15;
 ZmOrganizer.ID_BRIEFCASE		= 16;
-ZmOrganizer.ID_SYNC_FAILURES	= 252		// offline only
+ZmOrganizer.ID_SYNC_FAILURES	= 252;		// offline only
 ZmOrganizer.ID_ARCHIVE    		= 253;		// offline only
 ZmOrganizer.ID_OUTBOX    		= 254;		// offline only
 ZmOrganizer.ID_ZIMLET			= -1000;	// zimlets need a range.  start from -1000 incrementing up.
@@ -510,13 +510,14 @@ function(color) {
  * is a child account, the system ID is returned unchanged. For child
  * accounts, the ID consists of the account ID and the local ID.
  * 
- * @param id		[int]			ID of a system organizer
+ * @param id		[int]				ID of a system organizer
  * @param account	[ZmZimbraAccount]*	an account
+ * @param force		[Boolean]*			generate the fully qualified ID even if this is the main account
  */
 ZmOrganizer.getSystemId =
-function(id, account) {
+function(id, account, force) {
 	account = account || appCtxt.getActiveAccount();
-	if (account && !account.isMain) {
+	if ((account && !account.isMain) || force) {
 		return ((typeof(id) == "string") && (id.indexOf(":") != -1) || !id)
 			? id : ([account.id, id].join(":"));
 	}
@@ -755,7 +756,7 @@ ZmOrganizer.prototype.getIcon = function() {};
 */
 ZmOrganizer.prototype.rename =
 function(name, callback, errorCallback, batchCmd) {
-	if (name == this.name) { return };
+	if (name == this.name) { return; }
 	var params = {
 		action: "rename",
 		attrs: {name: name},
@@ -1000,7 +1001,7 @@ function() {
 */
 ZmOrganizer.prototype.hasChild =
 function(name) {
-	return this.getChild(name) ? true : false;
+	return (this.getChild(name) != null);
 };
 
 /**
@@ -1325,7 +1326,7 @@ function() {
 
 ZmOrganizer.getSortIndex =
 function(child, sortFunction) {
-	if (!(child && child.parent && sortFunction)) { return null };
+	if (!(child && child.parent && sortFunction)) { return null; }
 	var children = child.parent.children.getArray();
 	for (var i = 0; i < children.length; i++) {
 		var test = sortFunction(child, children[i]);
