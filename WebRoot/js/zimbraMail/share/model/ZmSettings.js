@@ -848,5 +848,5 @@ function(dialog) {
 	dialog.popdown();
 	window.onbeforeunload = null;
 	var url = AjxUtil.formatUrl({});
-	ZmZimbraMail.sendRedirect(url); // redirect to self to force reload
+	window.location.replace(url);
 };
