@@ -271,6 +271,19 @@ function(room, config, callback, params) {
 };
 
 /**
+ * Join a conference room.
+ *
+ * @param room		[ZmConferenceRoom]		Room
+ * @param password 	[String]				Optional password for entering room
+ * @param callback	[AjxCallback]			Callback
+ * @param params	[hash]					ZmRequestMgr#sendRequest params
+ */
+ZmImService.prototype.joinConferenceRoom =
+function(room, password, callback, params) {
+	alert('Not implemented');
+};
+
+/**
  * Handles a notification from the request manager
  *
  * @param chat		[ZmChat]	 	The chat

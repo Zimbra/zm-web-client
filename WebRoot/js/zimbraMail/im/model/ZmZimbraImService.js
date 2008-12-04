@@ -298,7 +298,7 @@ function(service, callback, params) {
 
 ZmZimbraImService.prototype._handleResponseListConferenceRooms =
 function(callback, response) {
-	callback.run(response.getResponse().IMListConferenceRoomsResponse.room);
+	callback.run(response.getResponse().IMListConferenceRoomsResponse.room || []);
 };
 
 ZmZimbraImService.prototype.createConferenceRoom =
@@ -334,6 +334,10 @@ function(room, config, callback, params) {
 		var node = soapDoc.set("var");
 		node.setAttribute("name", name);
 		node.setAttribute("value", config[name]);
+		if (name == "password") {
+			params = params || { };
+			params.sensitive = true;
+		}
 	}
 	var respCallback = callback ? new AjxCallback(this, this._handleResponseConfigureConferenceRoom, [callback]) : null;
 	return this._send(params, soapDoc, respCallback);
@@ -342,6 +346,29 @@ function(room, config, callback, params) {
 ZmZimbraImService.prototype._handleResponseConfigureConferenceRoom =
 function(callback) {
 	callback.run();
+};
+
+ZmZimbraImService.prototype.joinConferenceRoom =
+function(room, password, callback, params) {
+	var soapDoc = AjxSoapDoc.create("IMJoinConferenceRoomRequest", "urn:zimbraIM");
+	var method = soapDoc.getMethod();
+	method.setAttribute("nickname", appCtxt.get(ZmSetting.USERNAME));
+	method.setAttribute("addr", room.getAddress());
+	if (password) {
+		method.setAttribute("password", password);
+		params = params || { };
+		params.sensitive = true;
+	}
+	var respCallback = callback ? new AjxCallback(this, this._handleResponseJoinConferenceRoom, [room, callback]) : null;
+	return this._send(params, soapDoc, respCallback);
+};
+
+ZmZimbraImService.prototype._handleResponseJoinConferenceRoom =
+function(room, callback, response) {
+	var jsonObj = {
+		thread: response.getResponse().IMJoinConferenceRoomResponse.thread
+	};
+	callback.run(jsonObj);
 };
 
 ZmZimbraImService.prototype.handleNotification =

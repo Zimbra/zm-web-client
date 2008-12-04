@@ -155,6 +155,7 @@ function(params) {
 		}
 		this._curOverviewId = overviewId;
 	}
+	return overview;
 };
 
 /**

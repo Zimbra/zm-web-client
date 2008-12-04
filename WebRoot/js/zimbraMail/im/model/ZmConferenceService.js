@@ -105,6 +105,7 @@ function(callback, jsonObj) {
 	};
 	var room = new ZmConferenceRoom(args);
 	this.children.add(room);
+	room._notify(ZmEvent.E_CREATE);
 	if (callback) {
 		callback.run(room);
 	}

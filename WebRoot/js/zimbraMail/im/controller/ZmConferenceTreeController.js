@@ -67,11 +67,3 @@ ZmConferenceTreeController.prototype._getActionMenu =
 function(ev) {
 	return null;
 };
-
-ZmConferenceTreeController.prototype._itemDblClicked =
-function(ev) {
-	var organizer = ev && ev.item && ev.item.getData(Dwt.KEY_OBJECT);
-	if (organizer instanceof ZmConferenceRoom) {
-		alert('Come on in...');
-	}
-};

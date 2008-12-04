@@ -23,7 +23,9 @@ ZmConferenceDialog = function(params) {
 		treeIds: [ZmOrganizer.CONFERENCE_ITEM],
 		fieldId: this._overviewId
 	};
-	this._setOverview(overviewArgs)
+	var overview = this._setOverview(overviewArgs);
+	var treeView = overview.getTreeView(ZmOrganizer.CONFERENCE_ITEM);
+	treeView.addSelectionListener(new AjxListener(this, this._treeViewListener));
 };
 
 ZmConferenceDialog.prototype = new ZmDialog;
@@ -68,3 +70,20 @@ ZmConferenceDialog.prototype._okButtonListener =
 function(ev) {
 	ZmDialog.prototype._buttonListener.call(this, ev);
 };
+
+ZmConferenceDialog.prototype._treeViewListener =
+function(ev) {
+	if (ev.detail == DwtTree.ITEM_DBL_CLICKED) {
+		var treeItem = ev.item;
+		var organizer = treeItem.getData(Dwt.KEY_OBJECT);
+		if (organizer instanceof ZmConferenceRoom) {
+			organizer.join(null, new AjxCallback(this, this._handleResponseJoin));
+		}
+	}
+};
+
+ZmConferenceDialog.prototype._handleResponseJoin =
+function() {
+	this.popdown();
+};
+

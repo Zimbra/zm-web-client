@@ -60,7 +60,21 @@ function(config, callback) {
 	this.status = ZmConferenceRoom.STATUS.READY;
 	this._config = config;
 	if (callback) {
-		callback.run();
+		callback.run(this);
+	}
+};
+
+ZmConferenceRoom.prototype.join =
+function(password, callback) {
+	var responseCallback = new AjxCallback(this, this._handleResponseJoin, [callback]);
+	ZmImApp.INSTANCE.getService().joinConferenceRoom(this, password, responseCallback);
+};
+
+ZmConferenceRoom.prototype._handleResponseJoin =
+function(callback, jsonObj) {
+	this.thread = jsonObj.thread;
+	if (callback) {
+		callback.run(this);
 	}
 };
 
