@@ -155,7 +155,7 @@
 </head>
 <body>
 <jsp:include page="Resources.jsp">
-	<jsp:param name="res" value="I18nMsg,AjxMsg,ZMsg,ZmMsg,AjxKeys,ZmKeys" />
+	<jsp:param name="res" value="I18nMsg,AjxMsg,ZMsg,ZmMsg,AjxKeys,ZmKeys,ZdMsg" />
 	<jsp:param name="skin" value="${skin}" />
 </jsp:include>
 
