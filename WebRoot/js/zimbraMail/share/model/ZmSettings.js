@@ -338,7 +338,7 @@ function(allzimlets, props) {
     for (var i=0; i < allzimlets.length; i++) {
         var zimletObj = allzimlets[i];
         var zimlet0 = zimletObj.zimlet[0];
-        if(checkedZimlets.indexOf(zimlet0.name) >= 0 ){
+        if(!checkedZimlets || checkedZimlets.length <= 0 || checkedZimlets.indexOf(zimlet0.name) >= 0 ){
            zimlets.push(zimletObj);
         }
     }

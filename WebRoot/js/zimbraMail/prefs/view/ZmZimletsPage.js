@@ -90,7 +90,7 @@ function(batchCommand){
     }
     setting.setValue(checked);
     if(checked.length <= 0 ){ //If nothing selected add empty pref to override old values
-        var node = soapDoc.set("pref", null);
+        var node = soapDoc.set("pref", "__ZNULL__");
         node.setAttribute("name", setting.name);        
     }
     batchCommand.addNewRequestParams(soapDoc, null/*callback*/, null);  
@@ -116,6 +116,9 @@ function() {
 };
 ZmZimletsPage.prototype._postSave =
 function() {
+    if(!this.isDirty()){
+        return;
+    }
     this._reloadZimlets();
     
     var cd = appCtxt.getYesNoMsgDialog();
@@ -159,7 +162,17 @@ function(){
     var zimlets = new ZmPrefZimlets();
     for(var i = 0; i <  allz.length; i++){
             var name = allz[i].zimlet[0].name;
-            var z = new ZmPrefZimlet(name,(checked.indexOf(name) >=0 ), allz[i].zimlet[0].description);
+            var label = name;
+            if(allz[i].zimlet[0].zimletPanelItem){
+                if(allz[i].zimlet[0].zimletPanelItem instanceof Array){
+                    label = allz[i].zimlet[0].zimletPanelItem[0].label;
+                }else{
+                    label = allz[i].zimlet[0].zimletPanelItem.label;
+                }
+            }else{
+                label = allz[i].zimlet[0].description;
+            }
+            var z = new ZmPrefZimlet(label,(!checked || checked.length <= 0 || checked.indexOf(name) >=0 ), allz[i].zimlet[0].description);
             zimlets.addPrefZimlet(z);
     }
     return zimlets;
