@@ -303,7 +303,7 @@ function(overviewId, account) {
 	}
 	var treeItems = rootTreeItem.getItems();
 	for (var i = 0; i < treeItems.length; i++) {
-		this._fixupTreeNode(treeItems[i]);
+		this._fixupTreeNode(treeItems[i], null, treeView);
 	}
 };
 
@@ -312,9 +312,10 @@ function(overviewId, account) {
  *
  * @param treeItem	[DwtTreeItem]		tree item
  * @param organizer	[ZmOrganizer]		organizer it represents
+ * @param treeView	[ZmTreeView]		tree view this organizer belongs to
  */
 ZmTreeController.prototype._fixupTreeNode =
-function(treeItem, organizer) {
+function(treeItem, organizer, treeView) {
 	if (treeItem._isSeparator) { return; }
 	organizer = organizer || treeItem.getData(Dwt.KEY_OBJECT);
 	if (organizer) {
@@ -322,7 +323,7 @@ function(treeItem, organizer) {
 			this._setTreeItemColor(treeItem, organizer);
 		}
 		if (this.isCheckedStyle) {
-			if (organizer.type == this.type) {
+			if (organizer.type == this.type && treeView._showCheckboxes) {
 				treeItem.setChecked(organizer.isChecked);
 			}
 			else {
@@ -332,7 +333,7 @@ function(treeItem, organizer) {
 	}
     var treeItems = treeItem.getItems();
     for (var i = 0; i < treeItems.length; i++) {
-        this._fixupTreeNode(treeItems[i]);
+        this._fixupTreeNode(treeItems[i], null, treeView);
     }
 };
 
@@ -762,7 +763,7 @@ function(ev, treeView, overviewId) {
 			}
 			if (parentNode) {
 				parentNode.setExpanded(true); // so that new node is visible
-				this._fixupTreeNode(node, organizer);
+				this._fixupTreeNode(node, organizer, treeView);
 			}
 			this._checkTreeView(overviewId);
 			this._evHandled[overviewId] = true;
@@ -794,7 +795,7 @@ function(ev, treeView, overviewId) {
 					if (parentNode) {
 						parentNode.setExpanded(true);
 					}
-					this._fixupTreeNode(node, organizer);
+					this._fixupTreeNode(node, organizer, treeView);
 
 					if (appCtxt.isOffline && fields[ZmOrganizer.F_FLAGS] && node._nodeCell) {
 						var nodeImg = (organizer.isOfflineSyncing) ? "SyncStatusOn" : "Blank_16";

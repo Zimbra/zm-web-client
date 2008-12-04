@@ -58,7 +58,7 @@ ZmTreeView = function(params) {
 
 	this._dataTree = null;
 	this._treeItemHash = {};	// map organizer to its corresponding tree item by ID
-	this._showCheckboxes = false;
+	this._showCheckboxes = this._isCheckedStyle();
 };
 
 ZmTreeView.KEY_TYPE	= "_type_";
@@ -369,7 +369,6 @@ function(parentNode, organizer, index, noTooltips, omit) {
 				stack.push(parentOrganizer);
 				parentOrganizer = parentOrganizer.parent;
 			}
-			var parentId;
 			while (parentOrganizer = stack.pop()) {
 				parentNode = this.getTreeItemById(parentOrganizer.parent.id);
 				parentNode = new DwtTreeItem({
