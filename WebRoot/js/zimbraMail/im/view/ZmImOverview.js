@@ -413,7 +413,7 @@ ZmImOverview.prototype._init = function() {
 		className:"overviewHeader",
 		button: {
 			image: "AddBuddy",
-			tooltip: ZmMsg.createNewRosterItem,
+			tooltip: ZmMsg.imNewBuddyTooltip,
 			callback: new AjxCallback(null, ZmImOverview.newBuddy)
 		}
 	});
