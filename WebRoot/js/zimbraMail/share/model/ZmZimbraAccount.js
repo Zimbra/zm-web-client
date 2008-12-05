@@ -148,11 +148,7 @@ function(acctInfo) {
 		}
 	}
 
-	if (acctInfo.code) {
-		this.code = acctInfo.code;
-	} else {
-		this.code = null;
-	}
+	this.code = acctInfo.code;
 
 	// update accordion title per unread count if changed
 	if (this.visible && acctInfo.unread != this.unread) {
@@ -184,12 +180,8 @@ function() {
 };
 
 ZmZimbraAccount.prototype.getZdMsg =
-function (code) {
-	zdMsg = ZdMsg["client." + code];
-	if (!zdMsg) {
-		zdMsg = ZdMsg["exception." + code];
-	}
-	return zdMsg;
+function(code) {
+	return ((ZdMsg["client." + code]) || (ZdMsg["exception." + code]));
 };
 
 ZmZimbraAccount.prototype.getStatusMessage =
