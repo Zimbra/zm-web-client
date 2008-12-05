@@ -55,6 +55,7 @@ AjxPackage.require("zimbraMail.im.view.ZmPresenceMenu");
 AjxPackage.require("zimbraMail.im.view.ZmCustomStatusDlg");
 AjxPackage.require("zimbraMail.im.view.ZmYahooLoginDialog");
 AjxPackage.require("zimbraMail.im.view.ZmConferenceDialog");
+AjxPackage.require("zimbraMail.im.view.ZmNewConferenceRoomDialog");
 
 AjxPackage.require("zimbraMail.im.controller.ZmChatListController");
 AjxPackage.require("zimbraMail.im.controller.ZmImController");

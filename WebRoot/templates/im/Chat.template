@@ -270,8 +270,44 @@
 	<div width='320px'>
 		<$= Dwt.CARET_HACK_BEGIN $><input type='text' id='${id}_input' size='30'/><$= Dwt.CARET_HACK_END $>
 	</div>
-	<div width='320px' id='${id}_overview'>
+	<div width='320px' id='${id}_overview'/>
+</template>
 
+<template id='im.Chat#ZmNewConferenceRoomDialog'>
+	<table width='360px' cellpadding=2 cellspacing=2>
+		<tr>
+			<td class="ZmChatDialogField"><$= ZmMsg.imRoomNameLabel $></td>
+			<td class="ZmChatDialogInputCell"><div id="${id}_NAME" tabindex='10'/></td>
+		</tr>
+		<tr>
+			<td colspan=2>
+				<hr>
+				<div class="ZOptionsInfo"><$= ZmMsg.imRoomSettings $></div>
+			</td>
+		</tr>
+		<tr>
+			<td class="ZmChatDialogField"><$= ZmMsg.imPermanentLabel $></td>
+			<td><div id="${id}_PERMANENT" tabindex='20'/></td>
+		</tr>
+		<tr>
+			<td class="ZmChatDialogField"><$= ZmMsg.imAnonymousLabel $></td>
+			<td><div id="${id}_ANONYMOUS" tabindex='30'/></td>
+		</tr>
+		<tr>
+			<td colspan=2>
+				<hr>
+				<div class="ZOptionsInfo"><$= ZmMsg.imPasswordInfo $></div>
+			</td>
+		</tr>
+		<tr>
+			<td class="ZmChatDialogField"><$= ZmMsg.passwordLabel $></td>
+			<td class="ZmChatDialogInputCell"><div id="${id}_PASSWORD" tabindex='40'/></td>
+		</tr>
+		<tr>
+			<td class="ZmChatDialogField"><$= ZmMsg.passwordConfirmLabel $></td>
+			<td class="ZmChatDialogInputCell"><div id="${id}_CONFIRM_PASSWORD" tabindex='50'/></td>
+		</tr>
+	</table>
 	</div>
 </template>
 
