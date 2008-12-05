@@ -163,6 +163,9 @@
 
  <%-- switch based on context search types --%>
 <c:choose>
+    <c:when test="${context.isConversationSearch and mailbox.prefs.readingPaneEnabled}">
+        <app:convColumnView context="${context}"/>
+    </c:when>
     <c:when test="${context.isConversationSearch and action eq 'view'}">
         <app:convView context="${context}"/>
     </c:when>
@@ -172,6 +175,12 @@
     <c:when test="${context.isConversationSearch}">
         <app:convListView context="${context}"/>
     </c:when>
+    <c:when test="${context.isMessageSearch and mailbox.prefs.readingPaneEnabled and action eq 'view'}">
+        <app:messageColumnView context="${context}"/>
+    </c:when>
+    <c:when test="${context.isMessageSearch and mailbox.prefs.readingPaneEnabled}">
+        <app:messageColumnView context="${context}"/>
+    </c:when>    
     <c:when test="${context.isMessageSearch and action eq 'view'}">
         <app:messageView context="${context}"/>
     </c:when>

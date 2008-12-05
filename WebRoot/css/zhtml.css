@@ -274,6 +274,11 @@ A:visited { color: blue; }
 	@SkinBorderApp@
 }
 
+.ZhAppColContent {
+	@SkinBorderApp@
+    border-width: 4px !important;
+}
+
 .ZhAppViewContent {
 	@AppBg@
 	@NormalOutsetBorder@
