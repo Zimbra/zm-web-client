@@ -269,8 +269,7 @@ function() {
 	// autocomplete for attendees
 	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
 		var contactsClass = appCtxt.getApp(ZmApp.CONTACTS);
-		var contactsLoader = contactsClass.getContactList;
-		var params = {parent: shell, dataClass: contactsClass, dataLoader: contactsLoader, separator: "",
+		var params = {parent: shell, dataClass: contactsClass, separator: "", options: {needItem: true},
 					  matchValue: ZmContactsApp.AC_VALUE_NAME, keyUpCallback: keyUpCallback, compCallback: acCallback, smartPos: true};
 		this._acContactsList = new ZmAutocompleteListView(params);
 		this._acList[ZmCalBaseItem.PERSON] = this._acContactsList;
@@ -278,11 +277,13 @@ function() {
 	// autocomplete for locations/equipment
 	if (appCtxt.get(ZmSetting.GAL_ENABLED)) {
 		var resourcesClass = appCtxt.getApp(ZmApp.CALENDAR);
-		var params = {parent: shell, dataClass: resourcesClass, dataLoader: resourcesClass.getLocations, separator: "",
-					  matchValue: ZmContactsApp.AC_VALUE_NAME, compCallback: acCallback, smartPos: true};
+		var params = {parent: shell, dataClass: contactsClass, separator: "", smartPos: true,
+					  matchValue: ZmContactsApp.AC_VALUE_NAME, compCallback: acCallback,
+					  options: {folders:[ZmContactsApp.AC_LOCATION]}};
 		this._acLocationsList = new ZmAutocompleteListView(params);
 		this._acList[ZmCalBaseItem.LOCATION] = this._acLocationsList;
-		params.dataLoader = resourcesClass.getEquipment;
+		//params.dataLoader = resourcesClass.getEquipment;
+		params.options = {folders:[ZmContactsApp.AC_EQUIPMENT]};
 		this._acEquipmentList = new ZmAutocompleteListView(params);
 		this._acList[ZmCalBaseItem.EQUIPMENT] = this._acEquipmentList;
 	}
@@ -292,7 +293,7 @@ function() {
 ZmSchedTabViewPage.prototype._autocompleteCallback =
 function(text, el, match) {
 	if (match && match.item) {
-		if (match.item.isGroup()) {
+		if (match.item.isGroup && match.item.isGroup()) {
 			var members = match.item.getGroupMembers().good.getArray();
 			for (var i = 0; i < members.length; i++) {
 				el.value = members[i].address;
@@ -424,7 +425,6 @@ function(isAllAttendees, organizer, drawBorder, index, updateTabGroup, setFocus)
 		// set handlers
 		var attendeeInput = document.getElementById(sched.dwtInputId);
 		if (attendeeInput) {
-			this._activeInputIdx = null;
 			this._activeInputIdx = index;
 			// handle focus moving to/from an enabled input
 			Dwt.setHandler(attendeeInput, DwtEvent.ONFOCUS, ZmSchedTabViewPage._onFocus);

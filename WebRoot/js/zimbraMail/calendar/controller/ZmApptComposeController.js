@@ -32,8 +32,6 @@ ZmApptComposeController = function(container, app) {
 
 	this._addedAttendees = [];
 	this._removedAttendees = [];
-	
-	app.loadResources();	// make sure resources are available for autocomplete
 	this._kbMgr = appCtxt.getKeyboardMgr();
 
 	// preload compose view for faster loading

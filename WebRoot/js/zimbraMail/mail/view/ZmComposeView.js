@@ -1836,7 +1836,6 @@ function(templateId, data) {
 		var params = {
 			parent: this,
 			dataClass: contactsClass,
-			dataLoader: contactsClass.getContactList,
 			matchValue: ZmContactsApp.AC_VALUE_FULL,
 			locCallback: (new AjxCallback(this, this._getAcListLoc, [this])),
 			compCallback: (new AjxCallback(this, this._acCompHandler)),

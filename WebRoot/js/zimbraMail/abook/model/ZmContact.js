@@ -412,7 +412,7 @@ function() {
 
 ZmContact.prototype.isGroup =
 function() {
-	return (this.getAttr(ZmContact.F_dlist) != null || this.type == ZmItem.GROUP);
+	return Boolean(this.getAttr(ZmContact.F_dlist) || this.type == ZmItem.GROUP);
 };
 
 // parses "dlist" attr into AjxEmailAddress objects stored in 3 vectors (all, good, and bad)

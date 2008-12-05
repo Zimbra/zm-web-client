@@ -34,6 +34,7 @@ ZmContactsApp = function(container, parentController) {
 	this.contactsLoaded = {};
 	this._contactList = {};
 	this._initialized = false;
+	this._acRequests = {};
 };
 
 // Organizer and item-related constants
@@ -51,11 +52,27 @@ ZmApp.UPSELL_SETTING[ZmApp.CONTACTS]	= ZmSetting.CONTACTS_UPSELL_ENABLED;
 ZmApp.LOAD_SORT[ZmApp.CONTACTS]			= 30;
 ZmApp.QS_ARG[ZmApp.CONTACTS]			= "contacts";
 
-// fields used for autocomplete matching
+// autocomplete: choices for text in the returned match object
 ZmContactsApp.AC_VALUE_FULL 	= "fullAddress";
 ZmContactsApp.AC_VALUE_EMAIL	= "email";
 ZmContactsApp.AC_VALUE_NAME		= "name";
 
+// autocomplete: request control
+ZmContactsApp.AC_MAX 			= 20;	// max # of autocomplete matches to return
+ZmContactsApp.AC_TIMEOUT		= 15;	// autocomplete timeout (in seconds)
+
+// autocomplete: icons
+ZmContactsApp.AC_ICON = {};
+ZmContactsApp.AC_ICON["contact"]	= "Contact";
+ZmContactsApp.AC_ICON["gal"]		= "GALContact";
+ZmContactsApp.AC_ICON["group"]		= "Group";
+
+// autocomplete: things to match against
+ZmContactsApp.AC_GAL		= "GAL";
+ZmContactsApp.AC_LOCATION	= "Location";
+ZmContactsApp.AC_EQUIPMENT	= "Equipment";
+
+// search menu
 ZmContactsApp.SEARCHFOR_CONTACTS 	= 1;
 ZmContactsApp.SEARCHFOR_GAL 		= 2;
 ZmContactsApp.SEARCHFOR_PAS			= 3; // PAS = personal and shared
@@ -630,4 +647,204 @@ function(ev) {
 	}
 
 	clc.switchView(view, force, this._initialized, true);
+};
+
+/**
+ * Returns a list of matching contacts for a given string. The first name, last
+ * name, full name, first/last name, and email addresses are matched against.
+ *
+ * @param str		[string]					string to match against
+ * @param callback	[AjxCallback]				callback to run with results
+ * @param aclv		[ZmAutocompleteListView]*	needed to show wait msg
+ * @param options	[hash]*						additional options:
+ *        folders	[list]*						list of folders to search in
+ */
+ZmContactsApp.prototype.autocompleteMatch =
+function(str, callback, aclv, options) {
+
+	str = str.toLowerCase();
+	this._curAcStr = str;
+	DBG.println("ac", "begin autocomplete for " + str);
+
+	if (options && options.folders) {
+		options.folderHash = {};
+		for (var i = 0; i < options.folders.length; i++) {
+			options.folderHash[options.folders[i]] = true;
+		}
+	}
+
+	aclv.setWaiting(true);
+	var respCallback = new AjxCallback(this, this._handleResponseAutocompleteMatch, [str, callback]);
+	this._doAutocomplete(str, aclv, options, respCallback);
+};
+
+ZmContactsApp.prototype._handleResponseAutocompleteMatch =
+function(str, callback, list) {
+	// return results - we check str against curAcStr because we want to make sure
+	// that we're returning results for the most recent (current) query
+	if (str == this._curAcStr) {
+		callback.run(list);
+	}
+};
+
+/*
+ * Fetches autocomplete matches for the given string from the server.
+ *
+ * @param str		[string]					string to match against
+ * @param aclv		[ZmAutocompleteListView]	autocomplete popup
+ * @param options
+ * @param callback	[AjxCallback]				callback to run with results
+ */
+ZmContactsApp.prototype._doAutocomplete =
+function(str, aclv, options, callback) {
+	// cancel any outstanding requests for strings that are substrings of this one
+	for (var substr in this._acRequests) {
+		if (str != substr && str.indexOf(substr) === 0) {
+			DBG.println("ac", "canceling autocomplete request for '" + substr + "' due to request for '" + str + "'");
+			appCtxt.getAppController().cancelRequest(this._acRequests[substr], null, true);
+			delete this._acRequests[str];
+		}
+	}
+
+	var params = {query:str, limit:ZmContactsApp.AC_MAX, isAutocompleteSearch:true};
+	var folders = options && options.folderHash;
+	if (folders && (folders[ZmContactsApp.AC_GAL] || folders[ZmContactsApp.AC_LOCATION] || folders[ZmContactsApp.AC_EQUIPMENT])) {
+		params.isGalAutocompleteSearch = true;
+		params.isAutocompleteSearch = false;
+		if (folders[ZmContactsApp.AC_LOCATION] || folders[ZmContactsApp.AC_EQUIPMENT]) {
+			params.limit = params.limit * 2;
+			params.types = AjxVector.fromArray([ZmItem.CONTACT]);
+			params.galType = ZmSearch.GAL_RESOURCE;
+		}
+	}
+	var search = new ZmSearch(params);
+	var respCallback = new AjxCallback(this, this._handleResponseDoAutocomplete, [str, aclv, options, callback]);
+	var errorCallback = new AjxCallback(this, this._handleErrorDoAutocomplete, [str, aclv]);
+	this._acRequests[str] = search.execute({callback:respCallback, errorCallback:errorCallback,
+											timeout:ZmContactsApp.AC_TIMEOUT, noBusyOverlay:true});
+};
+
+ZmContactsApp.prototype._handleResponseDoAutocomplete =
+function(str, aclv, options, callback, result) {
+
+	DBG.println("ac", "got response for " + str);
+
+	// if we get back results for other than the current string, ignore them
+	if (str != this._curAcStr) { return; }
+
+	aclv.setWaiting(false);
+
+	delete this._acRequests[str];
+
+	var resultList, gotContacts = false;
+	var resp = result.getResponse();
+	if (resp && resp.search && resp.search.isGalAutocompleteSearch) {
+		var cl = resp.getResults(ZmItem.CONTACT);
+		resultList = (cl && cl.getArray()) || [];
+		gotContacts = true;
+	} else {
+		resultList = resp._respEl.match || [];
+	}
+
+	DBG.println("ac", resultList.length + " matches");
+
+	var list = [];
+	for (var i = 0; i < resultList.length; i++) {
+		var m = resultList[i];
+		var match = {};
+		if (gotContacts) {
+			// if we got back a resource, check the type (we always get back both types)
+			var resType = ZmContact.getAttr(m, ZmResource.F_type);
+			var folders = (options && options.folderHash) || {};
+			if (resType && !folders[resType]) { continue; }
+			
+			match.text = match.name = m.getFullName();
+			match.email = m.getEmail();
+			match.item = m;
+		} else {
+			var email = AjxEmailAddress.parse(m.email);
+			match.fullAddress = email.toString();
+			match.name = email.getName();
+			match.email = email.getAddress();
+			match.text = AjxStringUtil.htmlEncode(m.email);
+			match.icon = ZmContactsApp.AC_ICON[m.type];
+			match.score = m.ranking;
+			if (options && options.needItem) {
+				match.item = new ZmContact(null);
+				match.item.initFromEmail(email);
+			}
+		}
+		list.push(match);
+	}
+
+	callback.run(list);
+};
+
+/**
+ * Handle timeout.
+ */
+ZmContactsApp.prototype._handleErrorDoAutocomplete =
+function(str, aclv, ex) {
+	DBG.println("ac", "error on request for " + str + ", canceling");
+	aclv.setWaiting(false);
+	appCtxt.getAppController().cancelRequest(this._acRequests[str], null, true);
+	appCtxt.setStatusMsg(ZmMsg.autocompleteFailed);
+	delete this._acRequests[str];
+
+	return true;
+};
+
+/**
+ * Sort autocomplete list by ranking scores (based on frequency as a recipient).
+ */
+ZmContactsApp.acSortCompare =
+function(a, b) {
+	var aScore = (a && a.score) || 0;
+	var bScore = (b && b.score) || 0;
+	return (aScore > bScore) ? 1 : (aScore < bScore) ? -1 : 0;
+};
+
+
+/**
+ * Returns true if the given string is a valid email.
+ *
+ * @param str	[string]	a string
+ */
+ZmContactsApp.prototype.isComplete =
+function(str) {
+	return AjxEmailAddress.isValid(str);
+};
+
+/**
+ * Quick completion of a string when there are no matches. Appends the
+ * user's domain to the given string.
+ *
+ * @param str	[string]	text that was typed in
+ */
+ZmContactsApp.prototype.quickComplete =
+function(str) {
+	if (str.indexOf("@") != -1) {
+		return null;
+	} else if (this.type == ZmItem.RESOURCE) {
+		return null;
+	}
+	var result = {};
+	if (!this._userDomain) {
+		var uname = appCtxt.get(ZmSetting.USERNAME);
+		if (uname) {
+			var a = uname.split("@");
+			if (a && a.length) {
+				this._userDomain = a[a.length - 1];
+			}
+		}
+	}
+	if (this._userDomain) {
+		var text = [str, this._userDomain].join("@");
+		result[ZmContactsApp.AC_VALUE_FULL] = text;
+		result[ZmContactsApp.AC_VALUE_EMAIL] = text;
+		result[ZmContactsApp.AC_VALUE_NAME] = text;
+		return result;
+	} else {
+		return null;
+	}
 };

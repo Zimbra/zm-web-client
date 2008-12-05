@@ -524,11 +524,9 @@ function() {
 	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) &&
 		this.GROUP_CALENDAR_ENABLED)
 	{
-		var app = appCtxt.getApp(ZmApp.CONTACTS);
 		var params = {
 			parent: appCtxt.getShell(),
-			dataClass: app,
-			dataLoader: app.getContactList,
+			dataClass: appCtxt.getApp(ZmApp.CONTACTS),
 			matchValue: ZmContactsApp.AC_VALUE_FULL,
 			compCallback: acCallback
 		};
@@ -542,10 +540,10 @@ function() {
 		var app = appCtxt.getApp(ZmApp.CALENDAR);
 		var params = {
 			parent: appCtxt.getShell(),
-			dataClass: app,
-			dataLoader: app.getLocations,
+			dataClass: appCtxt.getApp(ZmApp.CONTACTS),
 			matchValue: ZmContactsApp.AC_VALUE_NAME,
-			compCallback: acCallback
+			compCallback: acCallback,
+			options: {folders:[ZmContactsApp.AC_LOCATION]}
 		};
 		this._acLocationsList = new ZmAutocompleteListView(params);
 		this._acLocationsList.handle(this._attInputField[ZmCalBaseItem.LOCATION].getInputElement());
