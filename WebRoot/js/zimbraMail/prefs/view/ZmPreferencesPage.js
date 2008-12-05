@@ -480,10 +480,9 @@ function() {
 		appCtxt.get(ZmSetting.OFFLINE_SUPPORTS_MAILTO) &&
 		appCtxt.get(ZmSetting.OFFLINE_IS_MAILTO_HANDLER))
 	{
-		var prefView = {"GENERAL": this.parent.prefView["GENERAL"]};
-		var list = this.parent.getChangedPrefs(false, false, null, prefView);
-
-		return (list && list.length) ? (new AjxCallback(this, this._postSave, [list])) : null;
+		if (this._origDirtyList && this._origDirtyList.length) {
+			return (new AjxCallback(this, this._postSave, [this._origDirtyList]));
+		}
 	}
     return null;
 };
@@ -503,6 +502,7 @@ function(list) {
 			break;
 		}
 	}
+	this._origDirtyList = null;
 };
 
 ZmPreferencesPage.prototype.getPreSaveCallback =
@@ -511,9 +511,11 @@ function() {
 	if (appCtxt.isOffline && appCtxt.multiAccounts && this._section.id == "GENERAL") {
 		// just get changed prefs for general/global tab only
 		var prefView = {"GENERAL": this.parent.prefView["GENERAL"]};
-		var list = this.parent.getChangedPrefs(false, false, null, prefView);
+		this._origDirtyList = this.parent.getChangedPrefs(false, false, null, prefView);
 
-		return (list && list.length) ? (new AjxCallback(this, this._preSave, [list])) : null;
+		if (this._origDirtyList && this._origDirtyList.length) {
+			return (new AjxCallback(this, this._preSave, [this._origDirtyList]));
+		}
 	}
 	return null;
 };
