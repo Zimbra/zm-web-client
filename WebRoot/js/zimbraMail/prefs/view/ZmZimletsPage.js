@@ -162,17 +162,17 @@ function(){
     var zimlets = new ZmPrefZimlets();
     for(var i = 0; i <  allz.length; i++){
             var name = allz[i].zimlet[0].name;
-            var label = name;
+            var desc = allz[i].zimlet[0].description;
             if(allz[i].zimlet[0].zimletPanelItem){
                 if(allz[i].zimlet[0].zimletPanelItem instanceof Array){
-                    label = allz[i].zimlet[0].zimletPanelItem[0].label;
+                    desc = allz[i].zimlet[0].zimletPanelItem[0].label + " - " + desc;
                 }else{
-                    label = allz[i].zimlet[0].zimletPanelItem.label;
+                    desc = allz[i].zimlet[0].zimletPanelItem.label + " - " + desc;
                 }
             }else{
-                label = allz[i].zimlet[0].description;
+                desc = allz[i].zimlet[0].description;
             }
-            var z = new ZmPrefZimlet(label,(!checked || checked.length <= 0 || checked.indexOf(name) >=0 ), allz[i].zimlet[0].description);
+            var z = new ZmPrefZimlet(name,(!checked || checked.length <= 0 || checked.indexOf(name) >=0 ), desc);
             zimlets.addPrefZimlet(z);
     }
     return zimlets;
@@ -218,7 +218,7 @@ ZmPrefZimletListView.prototype._getHeaderList =
 function() {
 	return [
 		(new DwtListHeaderItem({field:ZmPrefZimletListView.COL_ACTIVE, text:ZmMsg.active, width:ZmMsg.COLUMN_WIDTH_ACTIVE})),
-		(new DwtListHeaderItem({field:ZmPrefZimletListView.COL_NAME, text:ZmMsg.name})),
+		/*(new DwtListHeaderItem({field:ZmPrefZimletListView.COL_NAME, text:ZmMsg.name})),*/
         (new DwtListHeaderItem({field:ZmPrefZimletListView.COL_DESC, text:ZmMsg.description}))
 	];
 };
@@ -226,16 +226,16 @@ function() {
 ZmPrefZimletListView.prototype._getCellContents =
 function(html, idx, item, field, colIdx, params) {
 	if (field == ZmPrefZimletListView.COL_ACTIVE) {
-		html[idx++] = "<input type='checkbox' ";
+		html[idx++] = "<input name='checked_zimlets' type='checkbox' ";
 		html[idx++] = item.isActive() ? "checked " : "";
 		html[idx++] = "id='"+item.getName()+"_zimletCheckbox'";
         html[idx++] = " _name='"+item.getName()+"'";
 		html[idx++] = " _flvId='";
 		html[idx++] = this._internalId;
 		html[idx++] = "' onchange='ZmPrefZimletListView._activeStateChange'>";
-	} else if (field == ZmPrefZimletListView.COL_NAME) {
+	} /*else if (field == ZmPrefZimletListView.COL_NAME) {
 		html[idx++] = AjxStringUtil.stripTags(item.getName(), true);
-	} else if (field == ZmPrefZimletListView.COL_DESC) {
+	} */else if (field == ZmPrefZimletListView.COL_DESC) {
 		html[idx++] = AjxStringUtil.stripTags(item.getDescription(), true);
 	}
 
