@@ -117,7 +117,7 @@
 
         		</c:when>
         		<c:when test="${client eq 'standard'}">
-		            <c:redirect url="/h/search?mesg=welcome&initial=true">
+		            <c:redirect url="/h/search?mesg=welcome&initial=true&app=${param.app}">
                         <c:forEach var="p" items="${paramValues}">
                             <c:forEach var='value' items='${p.value}'>
                                 <c:if test="${not fn:contains(ignoredQueryParams, p.key)}">
