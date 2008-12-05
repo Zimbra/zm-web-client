@@ -460,9 +460,11 @@ ZmSearch.prototype.getTitle =
 function() {
 	var where;
 	if (this.folderId) {
-		var folder = appCtxt.getById(this.folderId);
-		if (folder)
+		var fid = ZmOrganizer.getSystemId(this.folderId);
+		var folder = appCtxt.getById(fid);
+		if (folder) {
 			where = folder.getName(true, ZmOrganizer.MAX_DISPLAY_NAME_LENGTH, true);
+		}
 	} else if (this.tagId) {
 		where = appCtxt.getById(this.tagId).getName(true, ZmOrganizer.MAX_DISPLAY_NAME_LENGTH, true);
 	}

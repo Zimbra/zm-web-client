@@ -678,10 +678,10 @@ ZmRequestMgr.prototype._unreadChangeListener =
 function(ev) {
 	if (ev.event == ZmEvent.E_MODIFY) {
 		var fields = ev.getDetail("fields");
-		var organizers = ev.getDetail("organizers");
-		var organizer = organizers ? organizers[0] : null;
-		var id = organizer ? organizer.id : null;
 		if (fields && fields[ZmOrganizer.F_UNREAD]) {
+			var organizers = ev.getDetail("organizers");
+			var organizer = organizers ? organizers[0] : null;
+			var id = organizer ? organizer.nId : null;
 			var search = appCtxt.getCurrentSearch();
 			if (search && id && (id == search.folderId || id == search.tagId)) {
 				Dwt.setTitle(search.getTitle());
