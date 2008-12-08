@@ -1236,9 +1236,45 @@ function(appt, mode) {
 		var cancelReplyCallback = new AjxCallback(this, this._continueDeleteReply, [appt, mode]);
 		confirmDialog.popup(ZmMsg.confirmCancelApptReply, cancelReplyCallback, cancelNoReplyCallback);
 	} else {
-		confirmDialog.popup(ZmMsg.confirmCancelAppt, cancelNoReplyCallback);
+        this._promptDeleteNotify(appt, mode);
 	}
 };
+
+ZmCalViewController.prototype._promptDeleteNotify =
+function(appt, mode) {
+    if(!this._deleteNotifyDialog) {
+        this._deleteNotifyDialog = new ZmApptDeleteNotifyDialog(this._shell);
+    }
+    this._deleteNotifyDialog.popup(new AjxCallback(this, this._deleteNotifyYesCallback, [appt,mode]));
+};
+
+ZmCalViewController.prototype._deleteNotifyYesCallback =
+function(appt, mode) {
+    var notifyOrg = this._deleteNotifyDialog.notifyOrg();
+    if(notifyOrg) {
+        this._cancelBeforeDelete(appt, mode);
+    }else {
+        this._continueDelete(appt, mode);
+    }
+};
+
+ZmCalViewController.prototype._cancelBeforeDelete =
+function(appt, mode) {
+	var type = ZmOperation.REPLY_DECLINE;
+	var respCallback = new AjxCallback(this, this._cancelBeforeDeleteContinue, [appt, type, mode]);
+	appt.getDetails(null, respCallback, this._errorCallback);
+};
+
+ZmCalViewController.prototype._cancelBeforeDeleteContinue =
+function(appt, type, mode) {
+	var msgController = this._getMsgController();
+	msgController.setMsg(appt.message);
+	// poke the msgController
+    var instanceDate = mode == ZmCalItem.MODE_DELETE_INSTANCE ? new Date(appt.uniqStartTime) : null;
+	msgController._sendInviteReply(type, appt.compNum || 0, instanceDate, appt.getRemoteFolderOwner());
+    this._continueDelete(appt, mode);
+};
+
 
 ZmCalViewController.prototype._deleteAppointment =
 function(appt) {
@@ -1472,7 +1508,11 @@ ZmCalViewController.prototype._performApptAction =
 function(appt, mode, isInstance) {
 	if (mode == ZmCalItem.MODE_DELETE) {
 		var delMode = isInstance ? ZmCalItem.MODE_DELETE_INSTANCE : ZmCalItem.MODE_DELETE_SERIES;
-		this._continueDelete(appt, delMode);
+        if (appt.isOrganizer() && appt.otherAttendees) {
+            this._continueDelete(appt, delMode);
+        }else {
+            this._promptDeleteNotify(appt, delMode);
+        }
 	}
 	else if (mode == ZmAppt.MODE_DRAG_OR_SASH) {
 		var viewMode = isInstance ? ZmCalItem.MODE_EDIT_SINGLE_INSTANCE : ZmCalItem.MODE_EDIT_SERIES;
