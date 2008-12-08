@@ -46,8 +46,20 @@ function(searchResults, fromUserSearch) {
 	this._currentView = ZmId.VIEW_NOTEBOOK_FILE;
 	this._setup(this._currentView);
 
-	this._list = searchResults.getResults(ZmItem.MIXED);
-	var lv = this._listView[this._currentView];
+	var temp_list = searchResults.getResults(ZmItem.MIXED);
+    this._list = new ZmMailList(ZmItem.MIXED, searchResults.search);
+    //Filter briefcase documents
+    if(temp_list){
+        var temp_arr = temp_list.getArray();
+        for (var i=0; i < temp_arr.length ; i++) {
+            var r = temp_arr[i];
+            var org = appCtxt.getById(r.folderId);
+            if(org && org instanceof ZmNotebook){
+               this._list.add(r);
+            }
+        }
+    }
+    var lv = this._listView[this._currentView];
 	if (this._activeSearch) {
 		if (this._list) {
 			var items = this._list.getArray();
