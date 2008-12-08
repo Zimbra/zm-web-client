@@ -385,8 +385,9 @@ function(msgId, partId, name, folderId,items) {
 	}
 
 	if (bController.isShared(folderId)) {
-		ZmOrganizer._showErrorMsg(ZmMsg.sharedFolderNotSupported);
-		return;
+		if(msgId.indexOf(":") < 0){ //for shared folder, use fully qualified msg id if it is not already
+           msgId = appCtxt.getActiveAccount().id + ":" + msgId; 
+        }
 	}
 
 	var itemFound = false;
