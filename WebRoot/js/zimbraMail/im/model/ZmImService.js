@@ -248,7 +248,7 @@ function(service, name, callback, params) {
  *					 hidden           boolean         room is hidden from RoomList
  *					 nothidden        boolean         opposite of hidden
  *					 membersonly      boolean         only members may join
- *					 nonanonymous     boolean         if TRUE, then users are not anonymous
+ *					 noanonymous      boolean         if TRUE, then users are not anonymous
  *					 semianonymous    boolean         no idea what this means
  *					 passwordprotect  boolean         password required to join
  *					 persistent       boolean         room not deleted if server restarts
@@ -277,6 +277,19 @@ function(room, config, callback, params) {
  * @param password 	[String]				Optional password for entering room
  * @param callback	[AjxCallback]			Callback
  * @param params	[hash]					ZmRequestMgr#sendRequest params
+ *
+ * The response object may contain any of these error codes:
+ *				 PasswordRequired - couldn't enter room password required
+ *				 Banned - room owner has banned you from the room
+ *				 NoSuchRoom -
+ *				 NotAllowed - Room doesn't exist, and you're not allowed to create a new one
+ *				 MustUseReservedRoomnick -
+ *				 NotAMember - Room is invite-only, and you aren't a member
+ *				 NicknameConflict - Someone else is already using your nickname
+ *				 MaxUsers - Room has reached capacity
+ *				 Unknown
+ *
+ *
  */
 ZmImService.prototype.joinConferenceRoom =
 function(room, password, callback, params) {

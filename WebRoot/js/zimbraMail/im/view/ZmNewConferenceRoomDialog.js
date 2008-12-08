@@ -52,7 +52,7 @@ function (params) {
 	this._form.setValue("PASSWORD", "");
 	this._form.setValue("CONFIRM_PASSWORD", "");
 	this._form.setValue("PERMANENT", params.config.persistent);
-	this._form.setValue("ANONYMOUS", params.config.anonyhmous);
+	this._form.setValue("ANONYMOUS", !params.config.noanonymous);
 	this.registerCallback(DwtDialog.OK_BUTTON, params.callback);
 	ZmDialog.prototype.popup.call(this);
 };
@@ -92,9 +92,10 @@ function() {
 		dialog: this,
 		name: name,
 		config: {
+			passwordprotect: password ? true : false,
 			password: this._form.getValue("PASSWORD"),
-			persistent: this._form.getValue("PERMANENT"),
-			anonymous: this._form.getValue("ANONYMOUS")
+			persistent: !!this._form.getValue("PERMANENT"),
+			noanonymous: !this._form.getValue("ANONYMOUS")
 		}
 	};
 };

@@ -46,8 +46,13 @@ ZmConferenceDialog.prototype.popup =
 function () {
 	ZmDialog.prototype.popup.call(this);
 
-	ZmImApp.INSTANCE.getRoster().getConferenceServices(new AjxCallback());
+	ZmImApp.INSTANCE.getRoster().getConferenceServices(new AjxCallback(this, this._handleResponseGetServices));
 //	Dwt.byId(this._messageFieldId).focus();
+};
+
+ZmConferenceDialog.prototype._handleResponseGetServices =
+function(services) {
+	services[0].getRooms(null, true); // Force children to reload.
 };
 
 ZmConferenceDialog.prototype.getValue =
@@ -63,7 +68,7 @@ function() {
 
 ZmConferenceDialog.prototype._enterListener =
 function() {
-	this._runEnterCallback();
+	this._runEnterCallback();                                                                      
 };
 
 ZmConferenceDialog.prototype._okButtonListener =
@@ -85,12 +90,33 @@ ZmConferenceDialog.prototype._join =
 function(treeItem) {
 	var organizer = treeItem.getData(Dwt.KEY_OBJECT);
 	if (organizer instanceof ZmConferenceRoom) {
-		organizer.join(null, new AjxCallback(this, this._handleResponseJoin));
+		organizer.join(null, new AjxCallback(this, this._handleResponseJoin, [false]));
 	}
 };
 
 ZmConferenceDialog.prototype._handleResponseJoin =
-function() {
+function(isRetry, room, jsonObj) {
 	this.popdown();
+	if (jsonObj.error) {
+		if (jsonObj.error == "PasswordRequired") {
+			var passwordParams = {
+				title: ZmMsg.imRoomPasswordRequired,
+				label: ZmMsg.passwordLabel,
+				callback: new AjxCallback(this, this._handlePasswordOk, [room])
+			};
+			var dialog = ZmPromptDialog.getPasswordInstance();
+			dialog.popup(passwordParams);
+		} else {
+			var message = ZMsg["im." + jsonObj.error] || ZMsg["im.unknown_error"];
+			var dialog = appCtxt.getMsgDialog();
+			dialog.reset();
+			dialog.setMessage(message, DwtMessageDialog.CRITICAL_STYLE, ZmMsg.zimbraTitle);
+			dialog.popup();
+		}
+	}
 };
 
+ZmConferenceDialog.prototype._handlePasswordOk =
+function(room, data) {
+	room.join(data.value, new AjxCallback(this, this._handleResponseJoin, [true]));
+};

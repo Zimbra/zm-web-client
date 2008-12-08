@@ -74,7 +74,7 @@ ZmConferenceRoom.prototype._handleResponseJoin =
 function(callback, jsonObj) {
 	this.thread = jsonObj.thread;
 	if (callback) {
-		callback.run(this);
+		callback.run(this, jsonObj);
 	}
 };
 

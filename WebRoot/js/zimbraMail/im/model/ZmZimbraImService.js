@@ -331,12 +331,14 @@ function(room, config, callback, params) {
 	method.setAttribute("thread", room.thread);
 	method.setAttribute("op", "configure");
 	for (var name in config) {
-		var node = soapDoc.set("var");
-		node.setAttribute("name", name);
-		node.setAttribute("value", config[name]);
-		if (name == "password") {
-			params = params || { };
-			params.sensitive = true;
+		var value = config[name];
+		if (typeof value != "undefined") {
+			var node = soapDoc.set("var", value);
+			node.setAttribute("name", name);
+			if (name == "password") {
+				params = params || { };
+				params.sensitive = true;
+			}
 		}
 	}
 	var respCallback = callback ? new AjxCallback(this, this._handleResponseConfigureConferenceRoom, [callback]) : null;
@@ -365,8 +367,10 @@ function(room, password, callback, params) {
 
 ZmZimbraImService.prototype._handleResponseJoinConferenceRoom =
 function(room, callback, response) {
+	var responseJson = response.getResponse().IMJoinConferenceRoomResponse;
 	var jsonObj = {
-		thread: response.getResponse().IMJoinConferenceRoomResponse.thread
+		thread: responseJson.thread,
+		error: responseJson.error
 	};
 	callback.run(jsonObj);
 };
