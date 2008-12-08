@@ -17,6 +17,7 @@
 
 ZmPromptDialog = function(args) {
 	args.buttons = args.buttons || [DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON];
+	this._password = args.password;
 	ZmDialog.call(this, args);
 
 	this._labelFieldId = this._htmlElId + "_label";
@@ -35,9 +36,17 @@ function() {
 ZmPromptDialog.getInstance =
 function() {
 	if (!ZmPromptDialog._INSTANCE) {
-		ZmPromptDialog._INSTANCE = new ZmPromptDialog({parent:appCtxt.getShell()});
+		ZmPromptDialog._INSTANCE = new ZmPromptDialog({ parent:appCtxt.getShell() });
 	}
 	return ZmPromptDialog._INSTANCE;
+};
+
+ZmPromptDialog.getPasswordInstance =
+function() {
+	if (!ZmPromptDialog._PASSWORD_INSTANCE) {
+		ZmPromptDialog._PASSWORD_INSTANCE = new ZmPromptDialog({ parent:appCtxt.getShell(), password: true });
+	}
+	return ZmPromptDialog._PASSWORD_INSTANCE;
 };
 
 /**
@@ -65,7 +74,7 @@ function(params) {
 
 ZmPromptDialog.prototype._contentHtml =
 function() {
-	return AjxTemplate.expand("share.Dialogs#ZmPromptDialog", { id: this._htmlElId});
+	return AjxTemplate.expand("share.Dialogs#ZmPromptDialog", { id: this._htmlElId, type: this._password ? "password" : "text" });
 };
 
 ZmPromptDialog.prototype._okButtonListener =

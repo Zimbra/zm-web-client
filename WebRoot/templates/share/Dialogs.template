@@ -374,9 +374,10 @@
 		<tr>
 			<td>
 				<$= Dwt.CARET_HACK_BEGIN $>
-				<input type=text autocomplete=OFF class='Field' id='${id}_name' />
+				<input type=${type} autocomplete=OFF class='Field' id='${id}_name' />
 				<$= Dwt.CARET_HACK_END $>
 			</td>
 		</tr>
 	</table>
 </template>
+
