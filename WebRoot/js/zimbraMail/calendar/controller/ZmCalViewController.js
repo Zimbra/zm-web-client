@@ -1232,9 +1232,13 @@ function(appt, mode) {
 	var cancelNoReplyCallback = new AjxCallback(this, this._continueDelete, [appt, mode]);
 
 	var confirmDialog = appCtxt.getConfirmationDialog();
-	if (appt.isOrganizer() && appt.otherAttendees) {
-		var cancelReplyCallback = new AjxCallback(this, this._continueDeleteReply, [appt, mode]);
-		confirmDialog.popup(ZmMsg.confirmCancelApptReply, cancelReplyCallback, cancelNoReplyCallback);
+	if (appt.isOrganizer()) {
+        if(appt.otherAttendees) {
+		    var cancelReplyCallback = new AjxCallback(this, this._continueDeleteReply, [appt, mode]);
+		    confirmDialog.popup(ZmMsg.confirmCancelApptReply, cancelReplyCallback, cancelNoReplyCallback);
+        }else {
+            confirmDialog.popup(ZmMsg.confirmCancelAppt, cancelNoReplyCallback);
+        }
 	} else {
         this._promptDeleteNotify(appt, mode);
 	}
@@ -1508,7 +1512,7 @@ ZmCalViewController.prototype._performApptAction =
 function(appt, mode, isInstance) {
 	if (mode == ZmCalItem.MODE_DELETE) {
 		var delMode = isInstance ? ZmCalItem.MODE_DELETE_INSTANCE : ZmCalItem.MODE_DELETE_SERIES;
-        if (appt.isOrganizer() && appt.otherAttendees) {
+        if (appt.isOrganizer()) {
             this._continueDelete(appt, delMode);
         }else {
             this._promptDeleteNotify(appt, delMode);
