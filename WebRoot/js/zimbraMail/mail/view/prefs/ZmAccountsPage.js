@@ -452,7 +452,7 @@ ZmAccountsPage.prototype.__getIdentityValue = function(account, id) {
 
 ZmAccountsPage.prototype.__validateEmail = function(s) {
 	if (!ZmPref.validateEmail(s)) {
-		this._errorMsg = AjxMessageFormat.format(ZmMsg.invalidEmail, [s]);
+		this._errorMsg = AjxStringUtil.htmlEncode(AjxMessageFormat.format(ZmMsg.invalidEmail, [s]));
 		return false;
 	}
 	return true;
