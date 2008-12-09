@@ -90,12 +90,12 @@ ZmConferenceDialog.prototype._join =
 function(treeItem) {
 	var organizer = treeItem.getData(Dwt.KEY_OBJECT);
 	if (organizer instanceof ZmConferenceRoom) {
-		organizer.join(null, new AjxCallback(this, this._handleResponseJoin, [false]));
+		organizer.join(null, new AjxCallback(this, this._handleResponseJoin));
 	}
 };
 
 ZmConferenceDialog.prototype._handleResponseJoin =
-function(isRetry, room, jsonObj) {
+function(room, jsonObj) {
 	this.popdown();
 	if (jsonObj.error) {
 		if (jsonObj.error == "PasswordRequired") {
@@ -107,16 +107,33 @@ function(isRetry, room, jsonObj) {
 			var dialog = ZmPromptDialog.getPasswordInstance();
 			dialog.popup(passwordParams);
 		} else {
-			var message = ZMsg["im." + jsonObj.error] || ZMsg["im.unknown_error"];
-			var dialog = appCtxt.getMsgDialog();
-			dialog.reset();
-			dialog.setMessage(message, DwtMessageDialog.CRITICAL_STYLE, ZmMsg.zimbraTitle);
-			dialog.popup();
+			this._reportJoinError(jsonObj.error);
 		}
 	}
 };
 
 ZmConferenceDialog.prototype._handlePasswordOk =
 function(room, data) {
-	room.join(data.value, new AjxCallback(this, this._handleResponseJoin, [true]));
+	room.join(data.value, new AjxCallback(this, this._handleResponseJoinRetry, [data.dialog]));
+};
+
+ZmConferenceDialog.prototype._handleResponseJoinRetry =
+function(dialog, room, jsonObj) {
+	if (!jsonObj.error) {
+		dialog.popdown();
+	} else if (jsonObj.error == "PasswordRequired") {
+		appCtxt.setStatusMsg(ZmMsg.imRoomPasswordFailed, ZmStatusView.LEVEL_CRITICAL);
+	} else {
+		dialog.popdown();
+		this._reportJoinError(jsonObj.error);
+	}
+};
+
+ZmConferenceDialog.prototype._reportJoinError =
+function(error) {
+	var message = ZMsg["im." + error] || ZMsg["im.unknown_error"];
+	var dialog = appCtxt.getMsgDialog();
+	dialog.reset();
+	dialog.setMessage(message, DwtMessageDialog.CRITICAL_STYLE, ZmMsg.zimbraTitle);
+	dialog.popup();
 };
