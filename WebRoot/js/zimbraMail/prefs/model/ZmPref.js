@@ -88,8 +88,8 @@ ZmPref.__BY_CSVFORMAT = function(a, b) {
 ZmPref.validateEmail =
 function(emailStr) {
 	if (emailStr) {
-		var match = AjxEmailAddress.parse(emailStr);
-		return (match != null);
+		// NOTE: Handle localhost for development purposes
+		return emailStr.match(/\@localhost$/i) || AjxEmailAddress.parse(emailStr) != null;
 	}
 	return true;
 };
