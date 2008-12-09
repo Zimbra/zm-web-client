@@ -1892,6 +1892,11 @@ HTML>BODY .appt-selected .appt_allday_body
 	@NoWrap@
 	text-align: right;
 	width: 1%;
+	font-weight: bold;
+}
+
+.ZmChatDialogInputCell {
+	padding-left: 10px;
 }
 
 .ZmImNotification {

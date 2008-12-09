@@ -286,6 +286,15 @@ function(cmdStr, searchController, cmdName, cmdArg1, cmdArg2 /* ..., cmdArgN */)
 	AjxTimedAction.scheduleAction(new AjxTimedAction(null, doIt), (cmdArg1 || 0) * 1000);
 };
 
+ZmClientCmdHandler.prototype.execute_conference =
+function(cmdStr, searchController, cmdName, cmdArg1, cmdArg2 /* ..., cmdArgN */) {
+	if (cmdArg1 == "new") {
+		ZmImApp.INSTANCE.getImController()._createConferenceListener();
+	} else {
+		ZmImApp.INSTANCE.getImController()._browseConferencesListener();
+	}
+};
+
 ZmClientCmdHandler.prototype._dumpEl =
 function dumpEl(el, known, expandos) {
 	var props = [];

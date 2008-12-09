@@ -38,7 +38,7 @@ function() {
 
 ZmConferenceDialog.getInstance =
 function() {
-	ZmConferenceDialog.INSTANCE = ZmConferenceDialog.INSTANCE || new ZmConferenceDialog({ parent: appCtxt.getShell() });
+	ZmConferenceDialog.INSTANCE = ZmConferenceDialog.INSTANCE || new ZmConferenceDialog({ parent: appCtxt.getShell(), title: ZmMsg.imConferenceRooms });
 	return ZmConferenceDialog.INSTANCE;
 };
 

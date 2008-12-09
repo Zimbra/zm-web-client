@@ -336,3 +336,48 @@ ZmImController.prototype._buddyArchiveListener = function(ev) {
 	appCtxt.getSearchController().search(args);
 };
 
+ZmImController.prototype._createConferenceListener =
+function(ev) {
+	AjxDispatcher.require([ "IMConference" ]);
+	var params = {
+		title: ZmMsg.imNewConferenceRoomTitle,
+		callback: new AjxCallback(this, this._newConferenceOkCallback)
+	};
+	ZmNewConferenceRoomDialog.getInstance().popup(params);
+};
+
+ZmImController.prototype._newConferenceOkCallback =
+function(data) {
+	ZmImApp.INSTANCE.getRoster().getConferenceServices(new AjxCallback(this, this._handleResponseGetServices, [data]));
+};
+
+ZmImController.prototype._handleResponseGetServices =
+function(data, services) {
+	services[0].createRoom(data.name, new AjxCallback(this, this._handleResponseCreateRoom, [data]));
+};
+
+ZmImController.prototype._handleResponseCreateRoom =
+function(data, room) {
+	if (room.status == ZmConferenceRoom.STATUS.NEW) {
+		room.configure(data.config, new AjxCallback(this, this._handleResponseConfigureRoom, [data]));
+	} else {
+//TODO
+//		this._alert("Room already created: " + room.id);
+	}
+};
+
+ZmImController.prototype._handleResponseConfigureRoom =
+function(data, room) {
+	data.dialog.popdown();
+};
+
+ZmImController.prototype._browseConferencesListener =
+function(ev) {
+	var callback = new AjxCallback(this, this._getConferenceServicesCallback);
+	AjxDispatcher.run("GetRoster").getConferenceServices(callback);
+};
+
+ZmImController.prototype._getConferenceServicesCallback =
+function(conferenceServices) {
+	ZmConferenceDialog.getInstance().popup();
+};

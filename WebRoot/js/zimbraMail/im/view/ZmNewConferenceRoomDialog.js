@@ -121,8 +121,3 @@ function() {
 	this.popdown();
 };
 
-ZmNewConferenceRoomDialog.prototype._getTabGroupMembers =
-function() {
-	return [ this._form.tabGroup ];
-};
-

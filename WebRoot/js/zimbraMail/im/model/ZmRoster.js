@@ -193,6 +193,7 @@ function(im) {
 
 ZmRoster.prototype.getConferenceTree =
 function() {
+	AjxDispatcher.require([ "IMConference" ]);
 	if (!this._conferenceTree) {
 		this._conferenceTree = new ZmTree(ZmOrganizer.CONFERENCE_ITEM);
 		this._conferenceTree.root = new ZmOrganizer({ tree: this._conferenceTree });
