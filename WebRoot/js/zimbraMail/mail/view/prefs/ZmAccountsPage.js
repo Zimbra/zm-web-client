@@ -399,22 +399,69 @@ function() {
 };
 
 /**
- * Does minimal checking - only that related to bug 21104: persona name
- * and the associated display value for the From address.
+ * Does minimal checking:
+ * <li>bug 21104: persona name and the associated display value for the From address
+ * <li>bug 950: email addresses
  */
 ZmAccountsPage.prototype.validate =
 function() {
 	var accounts = this._accounts.getArray();
 	for (var i = 0; i < accounts.length; i++) {
 		var account = accounts[i];
-		if (account.type == ZmAccount.PERSONA) {
-			if (account._new || account._dirty) {
-				if (!(account.identity && account.identity.name)) {
-					this._errorMsg = ZmMsg.invalidPersonaName;
-					return false;
-				}
-			}
+		var type = account.type;
+		var isPrimary = type == ZmAccount.ZIMBRA;
+		var isExternal = type == ZmAccount.POP || type == ZmAccount.IMAP;
+		var isPersona = type == ZmAccount.PERSONA;
+
+		// bug 21104
+		if (isPersona && (account._new || account._dirty) && 
+		    !(account.identity && account.identity.name)) {
+			this._errorMsg = ZmMsg.invalidPersonaName;
+			return false;
 		}
+		// bug 950
+		if (isExternal && !this.__validateEmail(this.__getAccountValue(account, "EMAIL"))) {
+			return false;
+		}
+		if (this.__getIdentityValue(account, "REPLY_TO") &&
+		    !this.__validateEmail(this.__getIdentityValue(account, "REPLY_TO_EMAIL"))) {
+			return false;
+		}
+		if (isExternal && !this.__validateEmail(this.__getIdentityValue(account, "FROM_EMAIL"))) {
+			return false;
+		}
+		if (isPersona && this.__getIdentityValue(account, "WHEN_SENT_TO") &&
+		    !this.__validateEmailList(this.__getIdentityValue(account, "WHEN_SENT_TO_LIST"))) {
+			return false;
+		}
+	}
+	return true;
+};
+
+ZmAccountsPage.prototype.__getAccountValue = function(account, id) {
+	var prop = ZmAccountsPage.ACCOUNT_PROPS[id];
+	if (!prop) return;
+	return typeof prop == "string" ? account[prop] : account[prop]();
+};
+ZmAccountsPage.prototype.__getIdentityValue = function(account, id) {
+	var prop = ZmAccountsPage.IDENTITY_PROPS[id];
+	if (!prop) return;
+	var identity = account.getIdentity();
+	return identity && (typeof prop == "string" ? identity[prop] : identity[prop]());
+};
+
+ZmAccountsPage.prototype.__validateEmail = function(s) {
+	if (!ZmPref.validateEmail(s)) {
+		this._errorMsg = AjxMessageFormat.format(ZmMsg.invalidEmail, [s]);
+		return false;
+	}
+	return true;
+};
+ZmAccountsPage.prototype.__validateEmailList = function(l) {
+	var ss = String(l).split(/[,;]/);
+	for (var i = 0; i < ss.length; i++) {
+		var valid = this.__validateEmail(ss[i]);
+		if (!valid) return false;
 	}
 	return true;
 };
