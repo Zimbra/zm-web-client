@@ -52,6 +52,10 @@
             <div class='NoResults'><fmt:message key="noResultsFound"/></div>
         </c:if>
     </div>
-
+    <script type="text/javascript">
+        <!--
+        window.print();
+        // -->
+    </script>
 </body>
 </html>
