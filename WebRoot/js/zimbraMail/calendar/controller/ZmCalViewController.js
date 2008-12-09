@@ -1398,18 +1398,18 @@ function(appt, mode) {
 ZmCalViewController.prototype.showApptReadOnlyView =
 function(appt, mode) {
     var clone = ZmAppt.quickClone(appt);
-    clone.getDetails(mode, new AjxCallback(this, this._showApptReadOnlyView, [clone]));
+    clone.getDetails(mode, new AjxCallback(this, this._showApptReadOnlyView, [clone, mode]));
 };
 
 ZmCalViewController.prototype._showApptReadOnlyView =
-function(appt) {
+function(appt, mode) {
 	var viewId = ZmId.VIEW_CAL_APPT;
 	var apptView = this._viewMgr.getView(viewId);
 	if (!apptView) {
 		this._setup(viewId);
 		apptView = this._viewMgr.getView(viewId);
 	}
-	apptView.set(appt);
+	apptView.set(appt, null, mode);
 	this.show(viewId);
 	this._resetToolbarOperations();
 };
@@ -1483,11 +1483,7 @@ function(appt) {
                     this.editAppointment(appt, mode);
                 }
             } else {
-                if (appt.isReadOnly() || calendar.isReadOnly() || isSynced) {
-                    this.showApptReadOnlyView(appt, ZmCalItem.MODE_EDIT_SINGLE_INSTANCE);
-                }else{
-                    this._showTypeDialog(appt, ZmCalItem.MODE_EDIT);
-                }
+                this._showTypeDialog(appt, ZmCalItem.MODE_EDIT);
             }
         } else {
             // if simple appointment, no prompting necessary

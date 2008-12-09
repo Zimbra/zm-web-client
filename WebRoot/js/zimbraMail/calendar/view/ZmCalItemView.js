@@ -79,7 +79,7 @@ function() {
 };
 
 ZmCalItemView.prototype.set =
-function(calItem, prevView) {
+function(calItem, prevView, mode) {
 	if (this._calItem == calItem) return;
 
 	// so that Close button knows which view to go to
@@ -87,6 +87,7 @@ function(calItem, prevView) {
 
 	this.reset();
 	this._calItem = calItem;
+    this._mode = mode;
 	this._renderCalItem(calItem);
 };
 
@@ -381,6 +382,13 @@ ZmApptView.prototype._getTimeString =
 function(calItem) {
 	var sd = calItem._orig.startDate;
 	var ed = calItem._orig.endDate;
+
+    if(calItem.isRecurring()) {
+        if(this._mode == ZmCalItem.MODE_EDIT_SERIES) {
+            sd = calItem.startDate;
+            ed = calItem.endDate;
+        }
+    }
 
 	var isAllDay = calItem.isAllDayEvent();
 	var isMultiDay = calItem.isMultiDay();
