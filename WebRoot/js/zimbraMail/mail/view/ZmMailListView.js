@@ -48,6 +48,22 @@ ZmMailListView.prototype.set =
 function(list, sortField) {
 	this._folderId = (list && list.search) ? list.search.folderId : null;
 	ZmListView.prototype.set.call(this, list, sortField);
+
+	var sortBy = list && list.search && list.search.sortBy;
+	if (sortBy) {
+		var column;
+		if (sortBy == ZmSearch.SUBJ_DESC || sortBy == ZmSearch.SUBJ_ASC) {
+			column = ZmItem.F_SUBJECT;
+		} else if (sortBy == ZmSearch.DATE_DESC || sortBy == ZmSearch.DATE_ASC) {
+			column = ZmItem.F_DATE;
+		} else if (sortBy == ZmSearch.NAME_DESC || sortBy == ZmSearch.NAME_ASC) {
+			column = ZmItem.F_FROM;
+		}
+		if (column) {
+			var sortByAsc = (sortBy == ZmSearch.SUBJ_ASC || sortBy == ZmSearch.DATE_ASC || sortBy == ZmSearch.NAME_ASC);
+			this.setSortByAsc(column, sortByAsc);
+		}
+	}
     this.markDefaultSelection(list);
 };
 
@@ -225,7 +241,6 @@ function(address) {
 	var toolTip;
 	var addr = address.getAddress();
 	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) && addr) {
-		var contactApp = appCtxt.getApp(ZmApp.CONTACTS);
 		var contacts = AjxDispatcher.run("GetContacts");
 		var contact = contacts ? contacts.getContactByEmail(addr) : null;
 		if (contact) {
@@ -332,7 +347,7 @@ function(participants, participantsElided, width) {
 		var test = [originator];
 		test = test.concat(list);
 		var text;
-		var tmp = new Array();
+		var tmp = [];
 		var w = 0;
 		for (var i = 0; i < test.length; i++)
 			w = w + (test[i].name.length * DwtUnits.WIDTH_EM); // total width of names
