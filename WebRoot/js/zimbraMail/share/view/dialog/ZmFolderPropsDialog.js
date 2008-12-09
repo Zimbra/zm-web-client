@@ -37,7 +37,7 @@ ZmFolderPropsDialog = function(parent, className) {
 	this.setButtonListener(DwtDialog.CANCEL_BUTTON, new AjxListener(this, this._handleCancelButton));
 
 	this._folderChangeListener = new AjxListener(this, this._handleFolderChange);
-	
+
 	var view = this._createView();
 	this.setView(view);
 };
@@ -62,31 +62,31 @@ ZmFolderPropsDialog.prototype.popup =
 function(organizer) {
 	this._organizer = organizer;
 	organizer.addChangeListener(this._folderChangeListener);
-	
+
 	// dont allow "None" option in color picker
-    // bug 22490 removed None option when not in use
-    if (organizer.type != ZmOrganizer.FOLDER && this._color) {
-        this._color.clearOptions();
+	// bug 22490 removed None option when not in use
+	if (organizer.type != ZmOrganizer.FOLDER && this._color) {
+		this._color.clearOptions();
 		for (var i = 1; i < ZmOrganizer.COLOR_CHOICES.length; i++) {
 			var color = ZmOrganizer.COLOR_CHOICES[i];
 			this._color.addOption(color.label, false, color.value);
 		}
-    } else {
-    	this._color.clearOptions();
+	} else {
+		this._color.clearOptions();
 		for (var i = 0; i < ZmOrganizer.COLOR_CHOICES.length; i++) {
 			var color = ZmOrganizer.COLOR_CHOICES[i];
 			this._color.addOption(color.label, false, color.value);
 		}
-        this._color.getMenu().getItem(0).setEnabled(organizer.type == ZmOrganizer.FOLDER);
-    }
-    
+		this._color.getMenu().getItem(0).setEnabled(organizer.type == ZmOrganizer.FOLDER);
+	}
+
 	this._handleFolderChange();
 	if (appCtxt.get(ZmSetting.SHARING_ENABLED) &&
 		appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED))
 	{
 		this.setButtonVisible(ZmFolderPropsDialog.ADD_SHARE_BUTTON, (!organizer.link || organizer.isAdmin()));
 	}
-   
+
 	DwtDialog.prototype.popup.call(this);
 
 	if (organizer.id != ZmOrganizer.ID_CALENDAR &&
@@ -154,36 +154,34 @@ function(event) {
 		tmpShare.grantor.id = tmpShare.object.zid;
 		tmpShare.grantor.email = tmpShare.object.owner;
 		tmpShare.grantor.name = tmpShare.grantor.email;
-        tmpShare.link.id = tmpShare.object.rid;
-    }else {
-	    tmpShare.grantor.id = appCtxt.get(ZmSetting.USERID);
+		tmpShare.link.id = tmpShare.object.rid;
+	} else {
+		tmpShare.grantor.id = appCtxt.get(ZmSetting.USERID);
 		tmpShare.grantor.email = appCtxt.get(ZmSetting.USERNAME);
 		tmpShare.grantor.name = appCtxt.get(ZmSetting.DISPLAY_NAME) || tmpShare.grantor.email;
-        tmpShare.link.id = tmpShare.object.id;
-    }
+		tmpShare.link.id = tmpShare.object.id;
+	}
 
 	tmpShare.link.name = share.object.name;
 	tmpShare.link.view = ZmOrganizer.getViewName(share.object.type);
 	tmpShare.link.perm = share.link.perm;
 
-	if(share.grantee.type == "guest") {	
+	if(share.grantee.type == "guest") {
 		if (!this._guestFormatter) {
 			this._guestFormatter = new AjxMessageFormat(ZmMsg.shareWithGuestNotes);
 		}
 		var url = share.object.getRestUrl();
 		var username = tmpShare.grantee.email;
 		var password = share.link.pw;
-		
-		if(password && username) {
-			var args = [ url, username, password ];
-			var notes = this._guestFormatter.format(args);
-			tmpShare.notes = notes;
+
+		if (password && username) {
+			tmpShare.notes = this._guestFormatter.format([url, username, password]);
 		}
 	}
 
-	tmpShare.sendMessage(ZmShare.NEW);	
+	tmpShare.sendMessage(ZmShare.NEW);
 	appCtxt.setStatusMsg(ZmMsg.resentShareMessage);
-	
+
 	return false;
 };
 
@@ -261,8 +259,7 @@ function(response) {
 	} else if (response.code == ZmCsfeException.MAIL_IMMUTABLE) {
 		msg = AjxMessageFormat.format(ZmMsg.errorCannotRename, [value]);
 	} else if (response.code == ZmCsfeException.SVC_INVALID_REQUEST) { 
-		// triggered on an empty name
-		msg = response.msg;
+		msg = response.msg; // triggered on an empty name
 	}
 	appCtxt.getAppController().popupErrorDialog(msg, response.msg, null, true);
 	return true;
@@ -275,7 +272,6 @@ function(event) {
 
 ZmFolderPropsDialog.prototype._handleFolderChange =
 function(event) {
-	
 	var organizer = this._organizer;
 	
 	if (organizer.isSystem()) {
@@ -326,22 +322,27 @@ function(organizer) {
 
 	var link = organizer.link;
 	var shares = organizer.shares;
-	var visible = ((!link || organizer.isAdmin()) && shares && shares.length > 0);
-	if (visible) {
+	var table;
+	if ((!link || organizer.isAdmin()) && shares && shares.length > 0) {
 		AjxDispatcher.require("Share");
-		var table = document.createElement("TABLE");
+		table = document.createElement("TABLE");
 		table.border = 0;
 		table.cellSpacing = 0;
 		table.cellPadding = 3;
 		for (var i = 0; i < shares.length; i++) {
 			var share = shares[i];
+			if (!share.grantee.id) { continue; }
+
 			var row = table.insertRow(-1);
 
 			var nameEl = row.insertCell(-1);
 			nameEl.style.paddingRight = "15px";
 			var nameText = share.grantee.name || share.grantee.id;
-			if (share.isAll()) nameText = ZmMsg.shareWithAll;
-			else if (share.isPublic()) nameText = ZmMsg.shareWithPublic;
+			if (share.isAll()) {
+				nameText = ZmMsg.shareWithAll;
+			} else if (share.isPublic()) {
+				nameText = ZmMsg.shareWithPublic;
+			}
 			nameEl.innerHTML = AjxStringUtil.htmlEncode(nameText);
 
 			var roleEl = row.insertCell(-1);
@@ -360,7 +361,7 @@ function(organizer) {
 		Dwt.setSize(insetElement, width, height);
 	}
 
-	this._sharesGroup.setVisible(visible);
+	this._sharesGroup.setVisible(!!(table && table.rows && table.rows.length > 0));
 };
 
 ZmFolderPropsDialog.prototype.__createCmdCells =
@@ -373,20 +374,19 @@ function(row, share) {
 		return;
 	}
 
-	var labels = [ ZmMsg.edit, ZmMsg.revoke, ZmMsg.resend ];
-	var actions = [
-		this._handleEditShare, this._handleRevokeShare, this._handleResendShare
-	];
+	var labels = [ZmMsg.edit, ZmMsg.revoke, ZmMsg.resend];
+	var actions = [this._handleEditShare, this._handleRevokeShare, this._handleResendShare];
+
 	for (var i = 0; i < labels.length; i++) {
 		var cell = row.insertCell(-1);
 
 		var action = actions[i];
 		// public shares have no editable fields, and sent no mail
-		if (share.isPublic() && (action == this._handleEditShare ||
-								 action == this._handleResendShare)) continue;
-
-		// Guest share need to have an "resend" options, thus commented.						 
-		//if (share.isGuest() && (action == this._handleResendShare)) continue;
+		if (share.isPublic() &&
+			(action == this._handleEditShare || action == this._handleResendShare))
+		{
+			continue;
+		}
 
 		var link = document.createElement("A");
 		link.href = "#";
@@ -404,35 +404,34 @@ function() {
 	var view = new DwtComposite(this);
 
 	// create html elements
-	var doc = document;
-	this._nameOutputEl = doc.createElement("SPAN");
-	this._nameInputEl = doc.createElement("INPUT");
+	this._nameOutputEl = document.createElement("SPAN");
+	this._nameInputEl = document.createElement("INPUT");
 	this._nameInputEl.style.width = "20em";
 	this._nameInputEl._dialog = this;
 	var nameElement = this._nameInputEl;
 	if (Dwt.CARET_HACK_ENABLED) {
-		nameElement = doc.createElement("DIV");
+		nameElement = document.createElement("DIV");
 		nameElement.style.overflow = "auto";
 		nameElement.appendChild(this._nameInputEl);
 	}
-	
-	this._ownerEl = doc.createElement("DIV");
-	this._typeEl = doc.createElement("DIV");
-	this._urlEl = doc.createElement("DIV");
-	this._permEl = doc.createElement("DIV");
 
-	var nameEl = doc.createElement("DIV");
+	this._ownerEl = document.createElement("DIV");
+	this._typeEl = document.createElement("DIV");
+	this._urlEl = document.createElement("DIV");
+	this._permEl = document.createElement("DIV");
+
+	var nameEl = document.createElement("DIV");
 	nameEl.appendChild(this._nameOutputEl);
 	nameEl.appendChild(nameElement);
 
-	this._excludeFbCheckbox = doc.createElement("INPUT");
+	this._excludeFbCheckbox = document.createElement("INPUT");
 	this._excludeFbCheckbox.type = "checkbox";
 	this._excludeFbCheckbox._dialog = this;
-	
-	this._excludeFbEl = doc.createElement("DIV");
+
+	this._excludeFbEl = document.createElement("DIV");
 	this._excludeFbEl.style.display = "none";
 	this._excludeFbEl.appendChild(this._excludeFbCheckbox);
-	this._excludeFbEl.appendChild(doc.createTextNode(ZmMsg.excludeFromFreeBusy));
+	this._excludeFbEl.appendChild(document.createTextNode(ZmMsg.excludeFromFreeBusy));
 
 	// setup properties group
 	var propsGroup = new DwtGrouper(view);
@@ -452,7 +451,7 @@ function() {
 	this._permId = this._props.addProperty(ZmMsg.permissions, this._permEl);
 	this._colorId = this._props.addProperty(ZmMsg.colorLabel, this._color);
 
-	var propsContainer = doc.createElement("DIV");
+	var propsContainer = document.createElement("DIV");
 	propsContainer.appendChild(this._props.getHtmlElement());
 	propsContainer.appendChild(this._excludeFbEl);
 	
