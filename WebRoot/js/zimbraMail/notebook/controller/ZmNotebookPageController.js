@@ -31,11 +31,7 @@ ZmNotebookPageController.prototype.toString = function() {
 
 // Data
 
-ZmNotebookPageController.prototype._object;
-ZmNotebookPageController.prototype._folderId;
-
 ZmNotebookPageController.prototype._place = -1;
-ZmNotebookPageController.prototype._history;
 
 //
 // Public methods
@@ -71,6 +67,11 @@ function(actionCode) {
 	return true;
 };
 
+ZmNotebookPageController.prototype.mapSupported =
+function(map) {
+	return (map == "editor");
+};
+
 // page
 
 ZmNotebookPageController.prototype.gotoPage = function(pageRef) {
@@ -84,8 +85,7 @@ ZmNotebookPageController.prototype.gotoPage = function(pageRef) {
 	} else if(pageRef.name) {
         params={folderId:pageRef.folderId,name:pageRef.name};
     }
-    var page = cache.getItemInfo(params);
-	this._object = page;
+	this._object = cache.getItemInfo(params);
 	this._setViewContents(this._currentView);
 	this._resetOperations(this._toolbar[this._currentView]);
 };
@@ -173,6 +173,15 @@ ZmNotebookPageController.prototype.show = function(pageOrFolderId, force, fromSe
 //
 
 // initialization
+
+ZmNotebookPageController.prototype._printListener =
+function(ev) {
+	var listView = this._listView[this._currentView];
+	var items = listView.getSelection();
+	var page = (items instanceof Array) ? items[0] : items;
+
+	window.open(page.getRestUrl(true), "_blank");
+};
 
 ZmNotebookPageController.prototype._getNaviToolBarOps = function() {
 	var list = ZmNotebookController.prototype._getNaviToolBarOps.call(this);

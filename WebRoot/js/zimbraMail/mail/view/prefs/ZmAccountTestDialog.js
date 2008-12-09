@@ -110,7 +110,7 @@ function(testCallback, index, result) {
 			Dwt.setVisible(detailsEl, true);
 		}
 
-		this._positionDialog();
+		this._position();
 	}
 
 	// finish

@@ -1,0 +1,57 @@
+
+.slide_object_title{
+    font-size: 200%;
+    font-weight: bold;
+	padding: 0px;
+	margin: 0px;
+	color: purple;
+}
+
+.slide_object_notes{
+    font-size: 135%;
+    font-weight: bold;
+	padding: 0px;
+	margin: 0px;
+	color: black;
+}
+
+body {
+    padding:0px;
+    margin:0px;
+    background:none transparent;
+    font-size: 16px;
+    @FontFamily-default@
+}
+
+h2 {
+    font-size: 200%;
+    font-weight: bold;
+    padding:0px;
+    margin:0px;
+}
+
+h1 {
+    font-size: 300%;
+    font-weight: bold;
+    padding:0px;
+    margin:0px;
+}
+
+
+
+.slide {
+    font-size: 16px;
+	overflow: hidden;
+}
+
+.endslide {
+    font-size: 16px;
+	background-color: #000000;
+	color: #ffffff;
+}
+
+
+.slide ul, .slide ol, body ul, body ol {
+margin:0pt 0pt 0pt 1.8em;
+padding:0px;
+}

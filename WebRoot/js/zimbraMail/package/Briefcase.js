@@ -24,9 +24,11 @@
  * 	- When the user creates a new notebook or page
  */
 AjxPackage.require("zimbraMail.briefcase.view.ZmBriefcaseView");
+AjxPackage.require("zimbraMail.briefcase.view.ZmBriefcaseIconView");
 AjxPackage.require("zimbraMail.briefcase.view.ZmDetailListView");
 AjxPackage.require("zimbraMail.briefcase.view.ZmColListView");
 AjxPackage.require("zimbraMail.briefcase.view.ZmMultiColView");
 AjxPackage.require("zimbraMail.briefcase.view.ZmNewBriefcaseDialog");
+AjxPackage.require("zimbraMail.briefcase.view.dialog.ZmBriefcaseTabView");
 AjxPackage.require("zimbraMail.briefcase.controller.ZmBriefcaseController");
 AjxPackage.require("zimbraMail.briefcase.controller.ZmBriefcaseTreeController");

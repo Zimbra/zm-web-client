@@ -273,6 +273,7 @@ function(calItem) {
 
     if(this.GROUP_CALENDAR_ENABLED) {
         calItem.setRsvp(this._requestResponsesCheckbox.checked);
+        calItem.setMailNotificationOption(this._sendNotificationMailCheckbox.checked);
     }
 
     return calItem;
@@ -371,6 +372,8 @@ function(calItem, mode) {
 
     if(this.GROUP_CALENDAR_ENABLED) {
         this._requestResponsesCheckbox.checked = calItem.shouldRsvp();
+        //by default the changes made to the appt should be visible to others
+        this._sendNotificationMailCheckbox.checked = true;
     }
 };
 
@@ -480,6 +483,8 @@ function(width) {
 
     if(this.GROUP_CALENDAR_ENABLED) {
         this._requestResponsesCheckbox = document.getElementById(this._htmlElId + "_requestResponses");
+        this._sendNotificationMailCheckbox = document.getElementById(this._htmlElId + "_sendNotificationMail");
+        Dwt.setHandler(this._sendNotificationMailCheckbox, DwtEvent.ONCLICK, ZmApptEditView._showNotificationWarning);        
     }
 
 
@@ -519,11 +524,9 @@ function() {
 	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) &&
 		this.GROUP_CALENDAR_ENABLED)
 	{
-		var app = appCtxt.getApp(ZmApp.CONTACTS);
 		var params = {
 			parent: appCtxt.getShell(),
-			dataClass: app,
-			dataLoader: app.getContactList,
+			dataClass: appCtxt.getApp(ZmApp.CONTACTS),
 			matchValue: ZmContactsApp.AC_VALUE_FULL,
 			compCallback: acCallback
 		};
@@ -537,10 +540,10 @@ function() {
 		var app = appCtxt.getApp(ZmApp.CALENDAR);
 		var params = {
 			parent: appCtxt.getShell(),
-			dataClass: app,
-			dataLoader: app.getLocations,
+			dataClass: appCtxt.getApp(ZmApp.CONTACTS),
 			matchValue: ZmContactsApp.AC_VALUE_NAME,
-			compCallback: acCallback
+			compCallback: acCallback,
+			options: {folders:[ZmContactsApp.AC_LOCATION]}
 		};
 		this._acLocationsList = new ZmAutocompleteListView(params);
 		this._acLocationsList.handle(this._attInputField[ZmCalBaseItem.LOCATION].getInputElement());
@@ -807,4 +810,15 @@ function(type) {
 		? tabView._tabKeys[ZmApptComposeView.TAB_LOCATIONS]
 		: tabView._tabKeys[ZmApptComposeView.TAB_EQUIPMENT];
 	tabView.switchToTab(key);
+};
+
+ZmApptEditView._showNotificationWarning =
+function(ev) {
+    ev = ev || window.event;
+    var el = DwtUiEvent.getTarget(ev);
+    if(el && !el.checked) {
+        var dialog = appCtxt.getMsgDialog();
+        dialog.setMessage(ZmMsg.sendNotificationMailWarning, DwtMessageDialog.WARNING_STYLE);
+        dialog.popup();
+    }
 };
