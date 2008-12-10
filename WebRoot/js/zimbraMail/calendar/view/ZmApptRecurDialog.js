@@ -88,7 +88,7 @@ function(startDate, endDate, repeatType, appt) {
 
 	// reset time based fields
 	this._endByField.setValue(AjxDateUtil.simpleComputeDateStr(this._startDate));
-	this._weeklySelectButton.setSelected(startDay);
+	this._weeklySelectButton._selected = startDay;
 	this._weeklyCheckboxes[startDay].checked = true;
 	this._monthlyDayField.setValue(startDate);
 	this._monthlyWeekdaySelect.setSelected(startDay);
@@ -151,7 +151,7 @@ function(appt) {
     var currentDay = recur._startDate.getDay();
 	if (value == "1") {
 		recur.repeatCustomCount = 1;
-        var startDay = this._weeklySelectButton._selected;//getValue();
+        var startDay = this._weeklySelectButton._selected;
         switch(startDay){
             case 7: //Separator
                     break;
@@ -177,7 +177,8 @@ function(appt) {
                     recur.repeatWeeklyDays.push(ZmCalItem.SERVER_WEEK_DAYS[AjxDateUtil.SUNDAY]);
                     startDay = currentDay == AjxDateUtil.SUNDAY? currentDay:AjxDateUtil.SATURDAY;
                     break;
-            default:recur.repeatWeeklyDays.push(ZmCalItem.SERVER_WEEK_DAYS[this._weeklySelectButton._selected/*getValue()*/]);
+            default:
+                    recur.repeatWeeklyDays.push(ZmCalItem.SERVER_WEEK_DAYS[this._weeklySelectButton._selected/*getValue()*/]);
                     break;
         }
         recur._startDate = AjxDateUtil.getDateForNextDay(new Date(this._origRefDate),startDay);
@@ -1395,7 +1396,8 @@ function(appt) {
 			weeklyRadioOptions[0].checked = true;
 			for (var j = 0; j < ZmCalItem.SERVER_WEEK_DAYS.length; j++) {
 				if (recur.repeatWeeklyDays[0] == ZmCalItem.SERVER_WEEK_DAYS[j]) {
-					this._weeklySelectButton.setSelected/*Value*/(j);
+					this._weeklySelectButton._selected = j;
+                    this._weeklySelectButton.setDisplayState(DwtControl.SELECTED);
 					break;
 				}
 			}
@@ -1562,8 +1564,9 @@ function(ev) {
     if(ev.item && ev.item instanceof DwtMenuItem){
        this._weeklyDefaultRadio.checked = true;
        this._weeklySelectButton.setText(ev.item.getText());
-       this._weeklySelectButton.setSelected(ev.item.getData("index"));
-        return;
+       this._weeklySelectButton._selected = ev.item.getData("index");
+       this._weeklySelectButton.setDisplayState(DwtControl.SELECTED);
+       return;
     }
     switch (ev._args.selectObj) {
 		case this._weeklySelectButton:			this._weeklyDefaultRadio.checked = true; break;
