@@ -1,5 +1,5 @@
 <template id='dwt.Widgets#DwtAlert'>
-	<table width=90% border=0 cellpadding=0 cellspacing=0>
+	<table width=100% border=0 cellpadding=0 cellspacing=0>
 		<tr><td width=1%>
 				<div id='${id}_icon' style='margin-right:5px;'></div>
 			</td>
@@ -8,6 +8,9 @@
 					<tr><td id='${id}_title' class='DwtAlertTitle'></td></tr>
 					<tr><td id='${id}_content' class='DwtAlertContent'></td></tr>
 				</table>
+			</td>
+			<td width=1%>
+			    <div id='${id}_dismiss' style='margin-left:5px;'></div>
 			</td>
 		</tr>
 	</table>
