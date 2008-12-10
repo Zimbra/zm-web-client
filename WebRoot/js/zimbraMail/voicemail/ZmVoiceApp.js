@@ -26,9 +26,9 @@ ZmVoiceApp = function(container, parentController) {
 		additional: null
 	};
 
-	this._storePrinciple = null;
+	this._storeprincipal = null;
 	ZmApp.call(this, ZmApp.VOICE, container, parentController);
-}
+};
 
 // Organizer and item-related constants
 ZmEvent.S_VOICEMAIL				= ZmId.APP_VOICE;
@@ -51,7 +51,7 @@ ZmVoiceApp.prototype.constructor = ZmVoiceApp;
 ZmVoiceApp.prototype.toString = 
 function() {
 	return "ZmVoiceApp";
-}
+};
 
 // Construction
 
@@ -250,9 +250,8 @@ function(response) {
 ZmVoiceApp.prototype._handleResponseVoiceInfo2 =
 function(response) {
 	var voiceInfo = response._data.GetVoiceInfoResponse;
-	var storePrinciple = voiceInfo.storeprincipal[0];
-	this._storePrinciple = { name: storePrinciple.name, id: storePrinciple.id };
-	this.soapInfo.additional = { storeprinciple: this._storePrinciple };
+	this._storeprincipal = voiceInfo.storeprincipal[0];
+	this.soapInfo.additional = { storeprincipal: this._storeprincipal };
 	var phones = voiceInfo.phone;
 	for (var i = 0, count = phones.length; i < count; i++) {
 		var obj = phones[i];
@@ -485,8 +484,9 @@ function() {
 ZmVoiceApp.prototype.setStorePrincipal =
 function(soapDoc) {
 	var node = soapDoc.set("storeprincipal");
-	node.setAttribute("id", this._storePrinciple.id);
-	node.setAttribute("name", this._storePrinciple.name);
+	for (var i in this._storeprincipal) {
+		node.setAttribute(i, this._storeprincipal[i]);
+	}
 };
 
 ZmVoiceApp.prototype.redoSearch =
