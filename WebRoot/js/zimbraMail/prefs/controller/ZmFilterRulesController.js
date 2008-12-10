@@ -72,7 +72,9 @@ function(toolbar, listView) {
 	}
 
 	if (listView) {
+		this._listView = listView;
 		listView.addSelectionListener(new AjxListener(this, this._listSelectionListener));
+		listView.addActionListener(new AjxListener(this, this._listActionListener));
 		this.resetListView();
 	}
 };
@@ -95,20 +97,19 @@ function() {
 
 ZmFilterRulesController.prototype.resetListView =
 function(callback, selectedIndex) {
-	var listView = this._filterRulesView.getListView();
-	if (!listView) { return; }
+	if (!this._listView) { return; }
 
-	var respCallback = new AjxCallback(this, this._handleResponseSetListView, [listView, callback, selectedIndex]);
+	var respCallback = new AjxCallback(this, this._handleResponseSetListView, [callback, selectedIndex]);
 	this._rules.loadRules(appCtxt.isOffline, respCallback);		// bug #15044 - force loading rules in offline mode
 };
 
 ZmFilterRulesController.prototype._handleResponseSetListView =
-function(listView, callback, selectedIndex, result) {
-	listView.set(result.getResponse().clone());
+function(callback, selectedIndex, result) {
+	this._listView.set(result.getResponse().clone());
 
 	var rule = this._rules.getRuleByIndex(selectedIndex || 0);
 	if (rule) {
-		listView.setSelection(rule);
+		this._listView.setSelection(rule);
 	}
 
 	if (callback) {
@@ -126,10 +127,76 @@ function(ev) {
 	if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
 		this._editListener(ev);
 	} else {
-		var toolbar = this._filterRulesView.getToolbar();
-		var listView = this._filterRulesView.getListView();
-		this._resetOperations(toolbar, listView.getSelectionCount(), listView.getSelection());
+		var tb = this._filterRulesView.getToolbar();
+		this._resetOperations(tb, this._listView.getSelectionCount(), this._listView.getSelection());
 	}
+};
+
+ZmFilterRulesController.prototype._listActionListener =
+function(ev) {
+	var actionMenu = this.getActionMenu();
+	this._resetOperations(actionMenu, this._listView.getSelectionCount(), this._listView.getSelection());
+	actionMenu.popup(0, ev.docX, ev.docY);
+};
+
+ZmFilterRulesController.prototype.getActionMenu =
+function() {
+	if (!this._actionMenu) {
+		this._initializeActionMenu();
+		this._resetOperations(this._actionMenu, 0, this._listView.getSelection());
+	}
+	return this._actionMenu;
+};
+
+// action menu: menu items and listeners
+ZmFilterRulesController.prototype._initializeActionMenu =
+function() {
+	if (this._actionMenu) { return; }
+
+	var menuItems = this._getActionMenuOps();
+	if (menuItems) {
+		var params = {
+			parent:this._shell,
+			menuItems:menuItems,
+			context:this._getMenuContext(),
+			controller:this
+		};
+		this._actionMenu = new ZmActionMenu(params);
+		this._addMenuListeners(this._actionMenu);
+	}
+};
+
+ZmFilterRulesController.prototype._getActionMenuOps =
+function() {
+	return [
+		ZmOperation.EDIT_FILTER_RULE,
+		ZmOperation.REMOVE_FILTER_RULE,
+		ZmOperation.RUN_FILTER_RULE,
+		ZmOperation.SEP,
+		ZmOperation.MOVE_UP_FILTER_RULE,
+		ZmOperation.MOVE_DOWN_FILTER_RULE
+	];
+};
+
+/**
+ * Returns the context for the action menu created by this controller (used to create
+ * an ID for the menu).
+ */
+ZmFilterRulesController.prototype._getMenuContext =
+function() {
+	return this._app && this._app._name;
+};
+
+ZmFilterRulesController.prototype._addMenuListeners =
+function(menu) {
+	var menuItems = menu.opList;
+	for (var i = 0; i < menuItems.length; i++) {
+		var menuItem = menuItems[i];
+		if (this._buttonListeners[menuItem]) {
+			menu.addSelectionListener(menuItem, this._buttonListeners[menuItem], 0);
+		}
+	}
+	menu.addPopdownListener(this._menuPopdownListener);
 };
 
 /**
@@ -139,10 +206,9 @@ function(ev) {
 */
 ZmFilterRulesController.prototype._addListener =
 function(ev) {
-	var listView = this._filterRulesView.getListView();
-	if (!listView) return;
+	if (!this._listView) return;
 
-	var sel = listView.getSelection();
+	var sel = this._listView.getSelection();
 	var refRule = sel.length ? sel[sel.length - 1] : null;
 	appCtxt.getFilterRuleDialog().popup(null, false, refRule);
 };
@@ -154,10 +220,9 @@ function(ev) {
 */
 ZmFilterRulesController.prototype._editListener =
 function(ev) {
-	var listView = this._filterRulesView.getListView();
-	if (!listView) return;
+	if (!this._listView) return;
 
-	var sel = listView.getSelection();
+	var sel = this._listView.getSelection();
 	appCtxt.getFilterRuleDialog().popup(sel[0], true);
 };
 
@@ -168,11 +233,10 @@ function(ev) {
 */
 ZmFilterRulesController.prototype._removeListener =
 function(ev) {
-	var listView = this._filterRulesView.getListView();
-	if (!listView) return;
+	if (!this._listView) return;
 
-	var sel = listView.getSelection();
-	
+	var sel = this._listView.getSelection();
+
 	var filter = sel[0];
 	//bug:16053 changed getYesNoCancelMsgDialog to getYesNoMsgDialog
 	var ds = this._deleteShield = appCtxt.getYesNoMsgDialog();
@@ -205,8 +269,7 @@ ZmFilterRulesController.prototype._runFilterOkCallback =
 function(dialog, folderList) {
 	dialog.popdown();
 
-	var listView = this._filterRulesView.getListView();
-	var sel = (listView) ? listView.getSelection() : null;
+	var sel = (this._listView) ? this._listView.getSelection() : null;
 	if (sel && sel.length) {
 		var soapDoc = AjxSoapDoc.create("ApplyFilterRulesRequest", "urn:zimbraMail");
 		var filterRules = soapDoc.set("filterRules", null);
@@ -251,10 +314,9 @@ function(result) {
 */
 ZmFilterRulesController.prototype._deleteShieldYesCallback =
 function(rule) {
-	var toolbar = this._filterRulesView.getToolbar();
 	this._rules.removeRule(rule);
 	this._clearDialog(this._deleteShield);
-	this._resetOperations(toolbar, 0);
+	this._resetOperations(this._filterRulesView.getToolbar(), 0);
 };
 
 /**
@@ -264,10 +326,9 @@ function(rule) {
 */
 ZmFilterRulesController.prototype._moveUpListener =
 function(ev) {
-	var listView = this._filterRulesView.getListView();
-	if (!listView) return;
+	if (!this._listView) return;
 
-	var sel = listView.getSelection();
+	var sel = this._listView.getSelection();
 	this._rules.moveUp(sel[0]);
 };
 
@@ -278,10 +339,9 @@ function(ev) {
 */
 ZmFilterRulesController.prototype._moveDownListener =
 function(ev) {
-	var listView = this._filterRulesView.getListView();
-	if (!listView) return;
+	if (!this._listView) return;
 
-	var sel = listView.getSelection();
+	var sel = this._listView.getSelection();
 	this._rules.moveDown(sel[0]);
 };
 
