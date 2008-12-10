@@ -235,7 +235,6 @@ function(callback) {
 		var folderDoc = AjxSoapDoc.create("GetFolderRequest", "urn:zimbraMail");
 		var method = folderDoc.getMethod();
 		method.setAttribute("visible", "1");
-		method.setAttribute("tr", "1"); // traverse mountpoints
 
 		var folderCallback = new AjxCallback(this, this._handleLoadFolders);
 		command.addNewRequestParams(folderDoc, folderCallback);
@@ -316,12 +315,6 @@ function(result) {
 	if (folders) {
 		appCtxt.getRequestMgr()._loadTree(ZmOrganizer.FOLDER, null, resp.folder[0], "folder", this);
 	}
-
-	// in dev mode, 
-	if (AjxDispatcher.loaded("Contacts")) {
-		var capp = appCtxt.getApp(ZmApp.CONTACTS);
-		capp._createDeferredFolders(ZmOrganizer.ADDRBOOK);
-	}
 };
 
 ZmZimbraAccount.prototype._handleLoadTags =
@@ -333,6 +326,18 @@ function(result) {
 ZmZimbraAccount.prototype._handleLoadUserInfo =
 function(callback) {
 	this.loaded = true;
+
+	// bug fix #33168 - get perms for all mountpoints in account
+	var folderTree = appCtxt.getFolderTree();
+	if (folderTree) {
+		folderTree.getPermissions();
+	}
+
+	// in dev mode, force create deferred folders due to timing issue
+	if (AjxDispatcher.loaded("Contacts")) {
+		var capp = appCtxt.getApp(ZmApp.CONTACTS);
+		capp._createDeferredFolders(ZmOrganizer.ADDRBOOK);
+	}
 
 	var ac = appCtxt.getCurrentApp().getAccordionController();
 	var expandedItem = ac.getAccordion().getExpandedItem();
