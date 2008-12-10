@@ -25,7 +25,7 @@ ZmZimletBase = function() {
 	// For Zimlets, the ZmObjectHandler constructor is a no-op.  Zimlets
 	// don't receive any arguments in constructor.  In the init() function
 	// below we call ZmObjectHandler.init() in order to set some arguments.
-}
+};
 
 ZmZimletBase.PANEL_MENU = 1;
 ZmZimletBase.CONTENTOBJECT_MENU = 2;
@@ -717,6 +717,21 @@ function(xsltUrl, doc) {
 	}
 	var ret = xslt.transformToDom(doc);
 	return AjxXmlDoc.createFromDom(ret);
+};
+
+ZmZimletBase.prototype.createApp = function(label, image, tooltip) {
+	AjxDispatcher.require("ZimletApp");
+
+	var appName = [this.name, Dwt.getNextId()].join("_");
+	var controller = appCtxt.getAppController();
+	controller.getAppChooser().addButton(appName, label, image, tooltip);
+
+	// TODO: Do we have to call ZmApp.registerApp?
+
+	var app = new ZmZimletApp(appName, this, DwtShell.getShell(window));
+	controller.addApp(app);
+
+	return appName;
 };
 
 /* Internal functions -- overriding is not recommended */

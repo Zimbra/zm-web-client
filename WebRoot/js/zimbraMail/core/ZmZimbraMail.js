@@ -1369,6 +1369,12 @@ function(appName) {
 	}
 };
 
+ZmZimbraMail.prototype.addApp = function(app) {
+	var appName = app.getName();
+	this._apps[appName] = app;
+	ZmApp.ENABLED_APPS[appName] = true;
+};
+
 // Private methods
 
 // Creates an app object, which doesn't necessarily do anything just yet.
@@ -1377,7 +1383,7 @@ function(appName) {
 	if (!appName || this._apps[appName]) return;
 	DBG.println(AjxDebug.DBG1, "Creating app " + appName);
 	var appClass = eval(ZmApp.CLASS[appName]);
-	this._apps[appName] = new appClass(this._shell);
+	this.addApp(new appClass(this._shell));
 };
 
 ZmZimbraMail.prototype._setExternalLinks =
@@ -1712,12 +1718,7 @@ function() {
 	var appChooser = new ZmAppChooser(this._shell, null, buttons, ZmId.APP_CHOOSER);
 
 	var buttonListener = new AjxListener(this, this._appButtonListener);
-	for (var i = 0; i < buttons.length; i++) {
-		var id = buttons[i];
-		if (id == ZmAppChooser.SPACER) continue;
-		var b = appChooser.getButton(id);
-		b.addSelectionListener(buttonListener);
-	}
+	appChooser.addSelectionListener(buttonListener);
 
 	return appChooser;
 };

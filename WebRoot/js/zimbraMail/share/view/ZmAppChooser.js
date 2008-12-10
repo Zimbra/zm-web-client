@@ -26,6 +26,8 @@ ZmAppChooser = function(parent, className, buttons, id) {
 
 	this.setScrollStyle(Dwt.CLIP);
 
+	this._buttonListener = new AjxListener(this, this._handleButton);
+
 	this._buttons = {};
 	for (var i = 0; i < buttons.length; i++) {
 		var id = buttons[i];
@@ -35,7 +37,7 @@ ZmAppChooser = function(parent, className, buttons, id) {
 			this._createButton(id, i == buttons.length - 1);
 		}
 	}
-}
+};
 
 ZmAppChooser.prototype = new DwtToolBar;
 ZmAppChooser.prototype.constructor = ZmAppChooser;
@@ -76,6 +78,24 @@ ZmAppChooser.prototype.SPACER_TEMPLATE = "dwt.Widgets#ZmAppChooserSpacer";
 //
 // Public methods
 //
+
+ZmAppChooser.prototype.addSelectionListener = function(listener) {
+	this.addListener(DwtEvent.SELECTION, listener);
+};
+
+ZmAppChooser.prototype.addButton = function(id, label, image, tooltip, isLast) {
+	// TODO: When buttons are added programmatically, what meaning does
+	// TODO: isLast have anymore?
+	isLast = false;
+    var outerClass = null;
+    var buttonId = ZmId.getButtonId(ZmId.APP, id);
+    var button = new ZmChicletButton(this, outerClass, image, label, isLast, buttonId);
+	button.setToolTipContent(tooltip);
+	button.setData(Dwt.KEY_ID, id);
+	button.addSelectionListener(this._buttonListener);
+	this._buttons[id] = button;
+	return button;
+};
 
 ZmAppChooser.prototype.getButton =
 function(id) {
@@ -138,13 +158,9 @@ function(refElement) {
 
 ZmAppChooser.prototype._createButton =
 function(id, isLast) {
-	var text = ZmMsg[ZmApp.NAME[id]];
-    var outerClass = null;
-    var buttonId = ZmId.getButtonId(ZmId.APP, id);
-    var b = new ZmChicletButton(this, outerClass, ZmApp.ICON[id], text, isLast, buttonId);
-	var tooltip = ZmMsg[ZmApp.CHOOSER_TOOLTIP[id]];
-	var sc = appCtxt._getShortcutHint(null, ZmApp.GOTO_ACTION_CODE[id]);
-	b.setToolTipContent(sc ?  [tooltip, sc].join("") : tooltip);
-	b.setData(Dwt.KEY_ID, id);
-	this._buttons[id] = b;
+	this.addButton(id, ZmMsg[ZmApp.NAME[id]], ZmApp.ICON[id], ZmMsg[ZmApp.CHOOSER_TOOLTIP[id]], isLast);
+};
+
+ZmAppChooser.prototype._handleButton = function(evt) {
+	this.notifyListeners(DwtEvent.SELECTION, evt);
 };
