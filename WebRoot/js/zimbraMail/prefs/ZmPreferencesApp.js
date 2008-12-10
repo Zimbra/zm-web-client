@@ -113,11 +113,12 @@ function() {
 ZmPreferencesApp.prototype._registerSettings =
 function(settings) {
 	settings = settings || appCtxt.getSettings();
-	settings.registerSetting("IMPORT_FOLDER",			{type:ZmSetting.T_PSEUDO, dataType:ZmSetting.D_NONE});
-	settings.registerSetting("IMPORT_BUTTON",			{type:ZmSetting.T_PSEUDO, dataType:ZmSetting.D_NONE});
-	settings.registerSetting("EXPORT_FOLDER",			{type:ZmSetting.T_PSEUDO, dataType:ZmSetting.D_NONE});
-	settings.registerSetting("EXPORT_BUTTON",			{type:ZmSetting.T_PSEUDO, dataType:ZmSetting.D_NONE});
-	settings.registerSetting("SIGNATURE_MAX_LENGTH",	{name:"zimbraMailSignatureMaxLength", type:ZmSetting.T_COS, dataType:ZmSetting.D_INT, defaultValue:1024});
+	settings.registerSetting("IMPORT_FOLDER",				{type:ZmSetting.T_PSEUDO, dataType:ZmSetting.D_NONE});
+	settings.registerSetting("IMPORT_BUTTON",				{type:ZmSetting.T_PSEUDO, dataType:ZmSetting.D_NONE});
+	settings.registerSetting("EXPORT_FOLDER",				{type:ZmSetting.T_PSEUDO, dataType:ZmSetting.D_NONE});
+	settings.registerSetting("EXPORT_BUTTON",				{type:ZmSetting.T_PSEUDO, dataType:ZmSetting.D_NONE});
+	settings.registerSetting("SIGNATURE_MAX_LENGTH",		{name:"zimbraMailSignatureMaxLength", type:ZmSetting.T_COS, dataType:ZmSetting.D_INT, defaultValue:1024});
+	settings.registerSetting("DISCARD_IN_FILTER_ENABLED",	{name:"zimbraFeatureDiscardInFiltersEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 };
 
 ZmPreferencesApp.prototype._registerApp =
