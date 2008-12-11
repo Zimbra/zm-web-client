@@ -2,9 +2,7 @@
 	<$ if (appCtxt.get(ZmSetting.IS_DOMAIN_ADMIN) && appCtxt.get(ZmSetting.ADMIN_REFERENCE)) { $>
 		<a target="_new" href="<$=appCtxt.get(ZmSetting.ADMIN_REFERENCE)$>"><$= ZmMsg.adminLinkLabel $></a>&nbsp;<font color="gray">|</font>&nbsp;
 	<$ } $>
-    <$ if (!appCtxt.isOffline) { $>
-		<a href='<$= ZmMsg.yahooYahooMailURL $>'><$= ZmMsg.yahooYahooMail $></a>&nbsp;<font color="gray">|</font>&nbsp;
-	<$ } else { $>
+    <$ if (appCtxt.isOffline) { $>
 		<a href='http://www.yahoo.com' target='_blank'><$= ZmMsg.yahooYahoo $></a>&nbsp;<font color="gray">|</font>&nbsp;
 		<a href='http://my.yahoo.com' target='_blank'><$= ZmMsg.yahooMyYahoo $></a>&nbsp;<font color='gray'>|</font>&nbsp;
 		<a href='#logoff' onclick='ZmZimbraMail._onClickLogOff();return false'><$= ZmMsg.setup $></a>&nbsp;<font color="gray">|</font>&nbsp;
