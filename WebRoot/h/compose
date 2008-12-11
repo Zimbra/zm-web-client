@@ -120,7 +120,7 @@
     <app:button id="ccbutton"  name="actionContactAdd" width="1%" clazz="tobutton" tooltip="addFromContacts" text="cc"/>
     <td  nowrap>
         <div class="ZhAC ZhACCc">
-            <textarea id="ccField" rows="2" style='width:99%;height:40px;position:relative;' cols='80' name="cc" >${fn:escapeXml(compose.cc)}</textarea>
+            <textarea id="ccField" rows="2" style='width:99%;height:40px;position:relative;' cols='80' name="cc">${fn:escapeXml(compose.cc)}</textarea>
             <br><div class='ZhACCont' id="ccContainer" style='width:99%;'></div>
         </div>
     </td>
@@ -272,10 +272,24 @@ var showHideBcc = function(){
     var bcc = document.getElementById("bcc_tr");
     var showBcc = document.getElementById("show_bcc");
     var hideBcc = document.getElementById("hide_bcc");
+    var bccField = document.getElementById('bccField');
 
     bcc.style.display=(bcc.style.display=="none"?"":"none");
     showBcc.style.display=(showBcc.style.display=="block"?"none":"block") ;
     hideBcc.style.display=(hideBcc.style.display=="block"?"none":"block") ;
+}
+
+var showBccWhenNotNull = function() {
+    var bcc = document.getElementById("bcc_tr");
+    var showBcc = document.getElementById("show_bcc");
+    var hideBcc = document.getElementById("hide_bcc");
+    var bccField = document.getElementById('bccField');
+    if(trim(bccField.value) != "") {
+        bcc.style.display=(bcc.style.display=="none"?"":"none");
+        showBcc.style.display=(showBcc.style.display=="block"?"none":"block") ;
+        hideBcc.style.display=(hideBcc.style.display=="block"?"none":"block") ; 
+    }
+
 }
 
 var trim = function(strVal){
@@ -296,6 +310,7 @@ var handleEnter= function(ev, _field) {
 var zclick = function(id) { var e = document.getElementById(id); if (e) e.click(); }
 var zselect = function(id) { var e = document.getElementById(id); if (e) { e.selected = true; }}
 
+showBccWhenNotNull();        
 // -->
 </script>
 <app:composeValidation isHtml="${isHtml}" />
