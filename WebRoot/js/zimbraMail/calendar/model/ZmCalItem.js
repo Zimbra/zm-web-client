@@ -880,6 +880,14 @@ function(mode, callback, msg, batchCmd, result) {
 	}
 };
 
+ZmCalItem.prototype.getMailFromAddress =
+function() {
+    var mailFromAddress = appCtxt.get(ZmSetting.MAIL_FROM_ADDRESS);
+    if(mailFromAddress) {
+        return (mailFromAddress instanceof Array) ? mailFromAddress[0] : mailFromAddress;
+    }
+};
+
 // Returns canned text for meeting invites.
 // - Instances of recurring meetings should send out information that looks very
 //   much like a simple appointment.
@@ -1136,6 +1144,15 @@ function(soapDoc, attachmentId, notifyList, onBehalfOf) {
 		this._addAttendeesToSoap(soapDoc, comp, m, notifyList, onBehalfOf);
 	//}
 
+    if(this.isOrganizer() && !onBehalfOf) {
+        var mailFromAddress = this.getMailFromAddress();
+        if(mailFromAddress) {
+            var e = soapDoc.set("e", null, m);
+            e.setAttribute("a", mailFromAddress);
+            e.setAttribute("t", AjxEmailAddress.toSoapType[AjxEmailAddress.FROM]);
+        }        
+    }
+
 	this._addExtrasToSoap(soapDoc, inv, comp);
 
 	// date/time
@@ -1154,6 +1171,10 @@ function(soapDoc, attachmentId, notifyList, onBehalfOf) {
 
 	// set organizer
 	var user = appCtxt.get(ZmSetting.USERNAME);
+    var mailFromAddress = this.getMailFromAddress();
+    if(mailFromAddress) {
+        user = mailFromAddress;   
+    }
 	var organizer = this.organizer || user;
 	var org = soapDoc.set("or", null, comp);
 	org.setAttribute("a", organizer);
@@ -1296,11 +1317,11 @@ function(soapDoc, inv, comp) {
 ZmCalItem.prototype._addAttendeesToSoap =
 function(soapDoc, inv, m, notifyList, onBehalfOf) {
 	// if this appt is on-behalf-of, set the from address to that person
-	if (this.isOrganizer() && onBehalfOf) {
-		e = soapDoc.set("e", null, m);
-		e.setAttribute("a", onBehalfOf);
-		e.setAttribute("t", AjxEmailAddress.toSoapType[AjxEmailAddress.FROM]);
-	}
+    if (this.isOrganizer() && onBehalfOf) {
+        e = soapDoc.set("e", null, m);
+        e.setAttribute("a", onBehalfOf);
+        e.setAttribute("t", AjxEmailAddress.toSoapType[AjxEmailAddress.FROM]);
+    }
 };
 
 ZmCalItem.prototype._addNotesToSoap =

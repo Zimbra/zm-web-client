@@ -246,9 +246,14 @@ function(isHtml) {
 	var params = [ ZmMsg.subjectLabel, this.name, modified ? ZmMsg.apptModifiedStamp : "" ];
 	buf[i++] = formatter.format(params);
 	buf[i++] = "\n";
-	
-	var organizer = this.organizer ? this.organizer : appCtxt.get(ZmSetting.USERNAME);
-	var orgEmail = ZmApptViewHelper.getOrganizerEmail(this.organizer).toString();
+
+    var userName = appCtxt.get(ZmSetting.USERNAME);
+    var mailFromAddress = this.getMailFromAddress();
+    if(mailFromAddress) {
+        userName = mailFromAddress;
+    }
+	var organizer = this.organizer ? this.organizer : userName;
+	var orgEmail = ZmApptViewHelper.getOrganizerEmail(organizer).toString();
 	var orgText = isHtml ? AjxStringUtil.htmlEncode(orgEmail) : orgEmail;
 	var params = [ ZmMsg.organizer + ":", orgText, "" ];
 	buf[i++] = formatter.format(params);
