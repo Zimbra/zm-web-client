@@ -204,21 +204,6 @@ function(list) {
 	}
 };
 
-ZmContactList.prototype.addFromDom =
-function(node, args) {
-	// first make sure this contact isnt already in the canonical list
-	var canonicalList = AjxDispatcher.run("GetContacts");
-	var contact = canonicalList.getById(node.id);
-	if (contact) {
-		// NOTE: we dont realize contact b/c getById already does that for us
-		// Also, set sf property if not set (we get it on search results, not GetContactResponse)
-		contact.sf = contact.sf || node.sf;
-		this.add(contact);
-	} else {
-		ZmList.prototype.addFromDom.call(this, node, args);
-	}
-};
-
 /*
 * Converts an anonymous contact object (contained by the JS returned by load request)
 * into a ZmContact, and updates the containing list if it is the canonical one.

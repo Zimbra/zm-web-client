@@ -62,7 +62,7 @@ ZmContactsApp.AC_VALUE_NAME		= "name";
 
 // autocomplete: request control
 ZmContactsApp.AC_MAX 			= 20;	// max # of autocomplete matches to return
-ZmContactsApp.AC_TIMEOUT		= 15;	// autocomplete timeout (in seconds)
+ZmContactsApp.AC_TIMEOUT		= 20;	// autocomplete timeout (in seconds)
 
 // autocomplete: result types
 ZmContactsApp.AC_TYPE_CONTACT	= "contact";
@@ -775,6 +775,7 @@ function(str, aclv, options, callback, result) {
 		list.push(match);
 	}
 
+	// we assume the results from the server are sorted by ranking
 	callback.run(list);
 
 	this._acCache[str] = this._acCache[str] || {};
@@ -801,7 +802,7 @@ function(str, aclv, ex) {
 };
 
 /**
- * Sort autocomplete list by ranking scores (based on frequency as a recipient).
+ * Sort autocomplete list by ranking scores.
  */
 ZmContactsApp.acSortCompare =
 function(a, b) {

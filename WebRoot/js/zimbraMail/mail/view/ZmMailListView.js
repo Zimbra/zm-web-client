@@ -22,6 +22,7 @@ ZmMailListView = function(params) {
 	ZmListView.call(this, params);
 
 	this._folderId = null;
+	this._emailToContact = {};
 };
 
 ZmMailListView.prototype = new ZmListView;
@@ -197,19 +198,19 @@ function(field, itemIdx) {
 };
 
 ZmMailListView.prototype._getToolTip =
-function(field, item, ev, div, match) {
+function(params) {
+	var tooltip, field = params.field, item = params.item;
 	if (!item) { return; }
-	var tooltip = null;
 	if (field == ZmItem.F_STATUS) {
 		if (item.isDraft)			{ tooltip = ZmMsg.draft; }
 		else if (item.isUnread)		{ tooltip = ZmMsg.unread; }
 		else if (item.isReplied)	{ tooltip = ZmMsg.replied; }
 		else if (item.isForwarded)	{ tooltip = ZmMsg.forwarded; }
 		else if (item.isSent)		{ tooltip = ZmMsg.sentAt; }
-		else if (item.isInvite())		{ tooltip = ZmMsg.appointment; }
+		else if (item.isInvite())	{ tooltip = ZmMsg.appointment; }
 		else						{ tooltip = ZmMsg.read; }
 	} else if (field == ZmItem.F_FROM || field == ZmItem.F_PARTICIPANT) {
-		tooltip = this._getParticipantToolTip(item.getAddress(AjxEmailAddress.FROM));
+		tooltip = new AjxCallback(this, this._getParticipantToolTip, [item.getAddress(AjxEmailAddress.FROM)]);
 	} else if (field == ZmItem.F_SUBJECT) {
 		if ((item.type == ZmItem.MSG) && item.isInvite() && item.needsRsvp()) {
 			tooltip = item.invite.getToolTip();
@@ -236,28 +237,43 @@ function(field, item, ev, div, match) {
 };
 
 ZmMailListView.prototype._getParticipantToolTip =
-function(address) {
+function(address, callback) {
 	if (!address) { return; }
-	var toolTip;
+	var tooltip;
 	var addr = address.getAddress();
 	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) && addr) {
-		var contacts = AjxDispatcher.run("GetContacts");
-		var contact = contacts ? contacts.getContactByEmail(addr) : null;
+		var contact = this._emailToContact[addr];
 		if (contact) {
-			toolTip = contact.getToolTip(addr);
+			callback.run(contact.getToolTip(address.getAddress()));
+			return;
 		}
+		var params = {query:addr, limit:1, types:AjxVector.fromArray([ZmItem.CONTACT])};
+		var search = new ZmSearch(params);
+		var respCallback = new AjxCallback(this, this._handleResponseSearch, [address, callback]);
+		var errorCallback = new AjxCallback(this, this._showDefaultParticipantToolTip, [address, callback]);
+		search.execute({callback:respCallback, noBusyOverlay:true});
 	}
-		
-	if (!toolTip) {
-		var addrstr = address.toString();
-		if (addrstr) {
-			toolTip = AjxTemplate.expand("abook.Contacts#TooltipNotInAddrBook", {addrstr:addrstr});
-		}
-    }
-
-	return toolTip;
 };
 
+ZmMailListView.prototype._handleResponseSearch =
+function(address, callback, result) {
+	var resp = result.getResponse();
+	var cl = resp && resp.getResults(ZmItem.CONTACT);
+	var list = (cl && cl.getArray()) || [];
+	var tooltip = list[0] && list[0].getToolTip(address.getAddress());
+	if (tooltip) {
+		callback.run(tooltip);
+	} else {
+		this._showDefaultParticipantToolTip(address, callback);
+	}
+};
+
+ZmMailListView.prototype._showDefaultParticipantToolTip =
+function(address, callback) {
+	var addrstr = address.toString();
+	var tooltip = addrstr ? AjxTemplate.expand("abook.Contacts#TooltipNotInAddrBook", {addrstr:addrstr}) : null;
+	callback.run(tooltip);
+};
 
 /**
  * (override of ZmListView to add hooks to zimletMgr)

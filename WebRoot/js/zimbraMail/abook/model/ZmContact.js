@@ -37,10 +37,6 @@ if (!window.ZmContact) {
 ZmContact = function(id, list, type) {
 	if (arguments.length == 0) { return; }
 
-	// handle to canonical list (for contacts that are part of search results)
-	this.canonicalList = AjxDispatcher.run("GetContacts");
-
-	list = list || this.canonicalList;
 	type = type || ZmItem.CONTACT;
 	ZmItem.call(this, type, id, list);
 
@@ -441,68 +437,29 @@ function() {
 
 ZmContact.prototype.getAttr =
 function(name) {
-	if (!this.list) { return null; }
-
-	if (this.list.isCanonical || this.list.isGal || this.isShared()) {
-		var val = this.attr[name];
-		return val ? ((val instanceof Array) ? val[0] : val) : "";
-	} else {
-		var contact = this.canonicalList.getById(this.id);
-		return contact ? contact.attr[name] : null;
-	}
+	var val = this.attr[name];
+	return val ? ((val instanceof Array) ? val[0] : val) : "";
 };
 
 ZmContact.prototype.setAttr =
 function(name, value) {
-	if (!this.list) { return; }
-
-	if (this.list.isCanonical || this.list.isGal || this.isShared()) {
-		this.attr[name] = value;
-	} else {
-		var contact = this.canonicalList.getById(this.id);
-		if (contact) {
-			contact.attr[name] = value;
-		}
-	}
+	this.attr[name] = value;
 };
 
 ZmContact.prototype.removeAttr =
 function(name) {
-	if (!this.list) { return; }
-
-	if (this.list.isCanonical || this.list.isGal || this.isShared()) {
-		delete this.attr[name];
-	} else {
-		var contact = this.canonicalList.getById(this.id);
-		if (contact) {
-			delete contact.attr[name];
-		}
-	}
+	delete this.attr[name];
 };
 
 ZmContact.prototype.getAttrs =
 function() {
-	if (this.canonicalList && !this.isShared() && !this.list.isGal) {
-		var contact = this.canonicalList.getById(this.id);
-		return contact ? contact.attr : this.attr;
-	} else {
-		return this.attr;
-	}
-};
-
-ZmContact.prototype.clear =
-function() {
-	// if this contact is in the canonical list, dont clear it!
-	var contact = this.canonicalList.getById(this.id);
-	if (contact) { return; }
-
-	ZmItem.prototype.clear.call(this);
+	return this.attr;
 };
 
 /**
 * Creates a contact from the given set of attributes. Used to create contacts on
 * the fly (rather than by loading them). This method is called by a list's create()
-* method; in our case that list is the canonical list of contacts.
+* method.
 * <p>
 * If this is a GAL contact, we assume it is being added to the contact list.</p>
 *
@@ -1047,7 +1004,7 @@ function() {
 	this._fileAs = this._fileAsLC = this._fullName = null;
 };
 
-// Parse contact node. A contact will only have attr values if its in canonical list.
+// Parse contact node.
 ZmContact.prototype._loadFromDom =
 function(node) {
 	this.isLoaded = true;

@@ -298,10 +298,11 @@ function(field, itemIdx) {
 };
 
 ZmConvListView.prototype._getToolTip =
-function(field, item, ev, div, match) {
-	if (!item) { return; }
-	if (field == ZmItem.F_PARTICIPANT || field == ZmItem.F_FROM) {
-		return item.participants ? this._getParticipantToolTip(item.participants.get(match.participant || 0)) : null;
+function(params) {
+	if (!params.item) { return; }
+	if (params.field == ZmItem.F_PARTICIPANT || params.field == ZmItem.F_FROM) {
+		var addr = params.item.participants && params.item.participants.get(params.match.participant || 0);
+		return addr && new AjxCallback(this, this._getParticipantToolTip, [addr]);
 	} else {
 		return ZmMailListView.prototype._getToolTip.apply(this, arguments);
 	}

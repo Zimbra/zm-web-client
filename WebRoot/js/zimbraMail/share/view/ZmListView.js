@@ -343,29 +343,6 @@ function(id) {
 	}
 };
 
-ZmListView.prototype._mouseOverAction =
-function(ev, div) {
-	DwtListView.prototype._mouseOverAction.call(this, ev, div);
-	var id = ev.target.id || div.id;
-	if (!id) { return true; }
-
-	// check if we're hovering over a column header
-	var data = this._data[div.id];
-	var type = data.type;
-	if (type && type == DwtListView.TYPE_HEADER_ITEM) {
-		var itemIdx = data.index;
-		var field = this._headerList[itemIdx]._field;
-		this.setToolTipContent(this._getHeaderToolTip(field, itemIdx));
-	} else {
-		var match = this._parseId(id);
-		if (match && match.field) {
-			var item = this.getItemFromElement(div);
-			this.setToolTipContent(this._getToolTip(match.field, item, ev, div, match));
-		}
-	}
-	return true;
-};
-
 ZmListView.prototype._mouseOutAction =
 function(ev, div) {
 	DwtListView.prototype._mouseOutAction.call(this, ev, div);
@@ -607,6 +584,31 @@ function(ev) {
 	this._relayout();
 };
 
+ZmListView.prototype.getToolTipContent =
+function(ev) {
+	var div = this.getTargetItemDiv(ev);
+	var id = ev.target.id || div.id;
+	if (!id) { return true; }
+
+	// check if we're hovering over a column header
+	var data = this._data[div.id];
+	var type = data.type;
+	var tooltip;
+	if (type && type == DwtListView.TYPE_HEADER_ITEM) {
+		var itemIdx = data.index;
+		var field = this._headerList[itemIdx]._field;
+		tooltip = this._getHeaderToolTip(field, itemIdx);
+	} else {
+		var match = this._parseId(id);
+		if (match && match.field) {
+			var item = this.getItemFromElement(div);
+			var params = {field:match.field, item:item, ev:ev, div:div, match:match};
+			tooltip = this._getToolTip(params);
+		}
+	}
+	return tooltip;
+};
+
 ZmListView.prototype._getHeaderToolTip =
 function(field, itemIdx, isFolder) {
     var tooltip = null;
@@ -634,17 +636,26 @@ function(field, itemIdx, isFolder) {
     return tooltip;
 };
 
+/**
+ * @param params		[hash]			hash of params:
+ *        field			[constant]		column ID
+ *        item			[ZmItem]*		underlying item
+ *        ev			[DwtEvent]*		mouseover event
+ *        div			[Element]*		row div
+ *        match			[hash]*			fields from div ID
+ *        callback		[AjxCallback]*	callback (in case tooltip content retrieval is async)
+ */
 ZmListView.prototype._getToolTip =
-function(field, item, ev, div, match) {
-    var tooltip;
+function(params) {
+    var tooltip, field = params.field, target = params.ev.target, item = params.item;
     if (field == ZmItem.F_SELECTION) {
-		this._setItemData(div, "origSelClassName", ev.target.className);
-        if (ev.target.className != "ImgTaskCheckboxCompleted") {
-            ev.target.className = "ImgTaskCheckboxCompleted";
+		this._setItemData(params.div, "origSelClassName", target.className);
+        if (target.className != "ImgTaskCheckboxCompleted") {
+            target.className = "ImgTaskCheckboxCompleted";
         }
     } else if (field == ZmItem.F_FLAG) {
         if (!item.isFlagged) {
-            AjxImg.setDisabledImage(ev.target, "FlagRed", true);
+            AjxImg.setDisabledImage(target, "FlagRed", true);
         }
     } else if (field == ZmItem.F_PRIORITY) {
         if (item.isHighPriority) {
@@ -658,7 +669,7 @@ function(field, item, ev, div, match) {
         // disable att tooltip for now, we only get att info once msg is loaded
         // tooltip = this._getAttachmentToolTip(item);
     } else if (field == ZmItem.F_DATE) {
-        tooltip = this._getDateToolTip(item, div);
+        tooltip = this._getDateToolTip(item, params.div);
     }
     return tooltip;
 };

@@ -258,7 +258,7 @@ function(ev, div) {
 
 			var match = this._parseId(id);
 			if (match && match.field && (match.field == ZmItem.F_SELECTION || match.field == ZmItem.F_TAG)) {
-				this.setToolTipContent(this._getToolTip(match.field, item, ev, div, match));
+				this.setToolTipContent(this._getToolTip({field:match.field, item:item, ev:ev, div:div, match:match}));
 			} else if (item.getToolTip) {
 				this.setToolTipContent(item.getToolTip(this._controller));
 

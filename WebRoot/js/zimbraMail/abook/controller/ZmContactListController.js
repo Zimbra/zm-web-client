@@ -82,7 +82,6 @@ function(searchResult, bIsGalSearch, folderId) {
 
     this._folderId = folderId;
 
-	// use toString() here due to flakiness of 'instanceof' for ZmContactList
 	if (searchResult instanceof ZmContactList) {
 		this._list = searchResult;			// set as canonical list of contacts
 		this._list._isShared = false;		// this list is not a search of shared items
