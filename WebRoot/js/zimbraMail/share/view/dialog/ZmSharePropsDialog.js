@@ -133,6 +133,10 @@ function(mode, object, share) {
 
     this._populateUrls(object);
 
+    var size = this.getSize();
+    Dwt.setSize(this._granteeInput.getInputElement(), 0.6*size.x);
+    Dwt.setSize(this._passwordInput.getInputElement(), 0.6*size.x);
+
 	DwtDialog.prototype.popup.call(this);
 	this.setButtonEnabled(DwtDialog.OK_BUTTON, false);
 	if (isNewShare) {
@@ -524,14 +528,12 @@ function() {
 	}
 
 	this._granteeInput = new DwtInputField({parent: this});
-	Dwt.setSize(this._granteeInput.getInputElement(), "100%");
 	this._granteeInput.setData(Dwt.KEY_OBJECT, this);
 	this._granteeInput.setRequired(true);
 	Dwt.associateElementWithObject(this._granteeInput.getInputElement(), this);
 
 	var password = new DwtComposite(this);
 	this._passwordInput = new DwtInputField({parent: password});
-	Dwt.setSize(this._passwordInput.getInputElement(), "100%");
 	this._passwordInput.setData(Dwt.KEY_OBJECT, this);
 	this._passwordInput.setRequired(true);
 	this._passwordButton = new DwtButton({parent:password});
