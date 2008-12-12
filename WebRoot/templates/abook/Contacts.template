@@ -583,7 +583,7 @@
 						<$ if (i > 0) { $>
 							, "<$= i == 1 ? '0' : data.alphabet[i] $>"
 							<$ if (i+1 < data.numLetters) { $>
-								, "<$= i == 1 ? '9' : data.alphabet[i+1] $>"
+								, "<$= i == 1 ? 'A' : data.alphabet[i+1] $>"
 							<$ } $>
 						<$ } $>
 						); return false;'
