@@ -29,8 +29,6 @@ ZmSearchTreeController = function() {
 
 	this._listeners[ZmOperation.RENAME_SEARCH] = new AjxListener(this, this._renameListener);
     this._listeners[ZmOperation.BROWSE] = new AjxListener(this, this._browseListener);
-
-    this._searchTypes = {};	// search types for each overview ID
 };
 
 ZmSearchTreeController.prototype = new ZmFolderTreeController;
@@ -52,37 +50,35 @@ function() {
 * @param showUnread		[boolean]*			if true, unread counts will be shown
 * @param omit			[Object]*			hash of organizer IDs to ignore
 * @param forceCreate	[boolean]*			if true, tree view will be created
-* @param hideEmpty		[boolean]*			if true, don't show header if there is no data
 * @param account		[ZmZimbraAccount]*	account we're showing tree for (if not currently active account)
 */
 ZmSearchTreeController.prototype.show =
 function(params) {
 	var id = params.overviewId;
-	this._hideEmpty[id] = params.hideEmpty;
 	if (!this._treeView[id] || params.forceCreate) {
 		this._treeView[id] = this._setup(id);
 	}
 	// mixed app should be filtered based on the previous app!
-	var appController = appCtxt.getAppController();
-	var activeApp = appController.getActiveApp();
-	var prevApp = appController.getPreviousApp();
-	var searchTypes = this._searchTypes[id] =
-		(activeApp == ZmApp.MIXED && prevApp == ZmApp.CONTACTS) ?
-			ZmApp.SEARCH_TYPES_R[ZmApp.CONTACTS] : ZmApp.SEARCH_TYPES_R[activeApp];
     var dataTree = this.getDataTree(params.account);
     if (dataTree) {
 		params.dataTree = dataTree;
-		params.searchTypes = searchTypes;
+		params.searchTypes = {};
 		params.omit = params.omit || {};
 		params.omit[ZmFolder.ID_TRASH] = true;
 		params.omitParents = true;
         var setting = ZmOrganizer.OPEN_SETTING[this.type];
         params.collapsed = !(!setting || (appCtxt.get(setting) !== false));
+		this._setupNewOp(params);
 		this._treeView[id].set(params);
 		this._checkTreeView(id, params.account);
 	}
 	
 	return this._treeView[id];
+};
+
+ZmSearchTreeController.prototype.getTreeStyle =
+function() {
+	return null;
 };
 
 /**
@@ -91,13 +87,19 @@ function(params) {
 * @param parent		the widget that contains the operations
 * @param id			the currently selected/activated organizer
 */
-ZmSearchTreeController.prototype.resetOperations = 
+ZmSearchTreeController.prototype.resetOperations =
 function(parent, type, id) {
 	parent.enableAll(true);
 	var search = appCtxt.getById(id);
 	parent.enable(ZmOperation.EXPAND_ALL, (search.size() > 0));
-//	this._resetOperation(parent, ZmOperation.EXPORT_FOLDER, ZmMsg.exportSearch);
 };
+
+ZmSearchTreeController.prototype._newListener =
+function(ev){
+	AjxDispatcher.require("Browse");
+	appCtxt.getSearchController().showBrowseView();
+};
+
 
 ZmSearchTreeController.prototype._browseListener =
 function(ev){
@@ -105,9 +107,8 @@ function(ev){
     if (search) {
         AjxDispatcher.require("Browse");
         appCtxt.getSearchController().showBrowsePickers([ZmPicker.SEARCH]);
-        //appCtxt.getSearchController()._browseViewController.addPicker(ZmPicker.FOLDER);
     }
-}
+};
 
 
 // Private methods
@@ -130,9 +131,6 @@ function() {
 			ZmOperation.RENAME_SEARCH,
 			ZmOperation.MOVE,
 			ZmOperation.EXPAND_ALL];
-//	if (appCtxt.get(ZmSetting.IMPORT_EXPORT_ENABLED)) {
-//		ops.push(ZmOperation.EXPORT_FOLDER);
-//	}
 };
 
 // override the ZmFolderTreeController override
@@ -196,27 +194,6 @@ function(overviewId, account) {
 	var rootId = (account != null || appCtxt.multiAccounts)
 		? (ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT, account))
 		: ZmOrganizer.ID_ROOT;
-	var hideMe = (this._hideEmpty[overviewId] && this._hideEmpty[overviewId][this.type]);
-	var hide = (hideMe && !this._treeItemTypeMatch(treeView.getTreeItemById(rootId), this._searchTypes[overviewId]));
+	var hide = ZmOrganizer.HIDE_EMPTY[this.type] && !treeView.getTreeItemById(rootId).getItemCount();
 	this._treeView[overviewId].setVisible(!hide);
-};
-
-ZmSearchTreeController.prototype._treeItemTypeMatch =
-function(treeItem, types) {
-	if (!types) {
-		// assume that no types specified means "allow all"
-		return true;
-	}
-	var search = treeItem.getData(Dwt.KEY_OBJECT);
-	if (search._typeMatch && search._typeMatch(types)) {
-		return true;
-	}
-	
-	var items = treeItem.getItems();
-	for (var i = 0; i < items.length; i++) {
-		if (this._treeItemTypeMatch(items[i], types)) {
-			return true;
-		}
-	}
-	return false;
 };

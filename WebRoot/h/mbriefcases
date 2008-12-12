@@ -1,0 +1,148 @@
+<%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
+<%@ taglib prefix="zm" uri="com.zimbra.zm" %>
+<%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
+
+<app:handleError>
+    <zm:getMailbox var="mailbox"/>
+    <c:choose>
+    <c:when test="${not empty mailbox.prefs.locale}">
+        <fmt:setLocale value='${mailbox.prefs.locale}' scope='request' />
+    </c:when>
+    <c:otherwise>
+        <fmt:setLocale value='${pageContext.request.locale}' scope='request' />
+    </c:otherwise>
+    </c:choose>
+    <fmt:setBundle basename="/messages/ZhMsg" scope="request"/>
+
+    <zm:fileUploader var="uploader"/>
+
+    <c:if test="${uploader.isUpload}">
+        <zm:checkCrumb crumb="${uploader.paramValues.crumb[0]}"/>
+        <app:briefcaseAction/>
+    </c:if>
+
+
+    <c:choose>
+        <c:when test="${not empty requestScope.newlyCreatedBriefcaseId}">
+            <c:set var="selectedFolder" value="${zm:getFolder(pageContext, requestScope.newlyCreatedBriefcaseId)}"/>
+        </c:when>
+        <c:when test="${not empty param.id}">
+            <c:set var="selectedFolder" value="${zm:getFolder(pageContext, param.id)}"/>
+        </c:when>
+    </c:choose>
+
+    <c:if test="${empty selectedFolder or not selectedFolder.isDocumentView}"><c:set var="selectedFolder" value="${mailbox.briefcase}"/></c:if>
+    <c:set var="newShared" value="${not empty uploader.params.actionNewSharedBriefcase or param.action eq 'newShared'}"/>
+    <c:set var="newBriefcaseList" value="${not empty uploader.params.actionNewBriefcaseFolder or newShared}"/>
+
+    <fmt:message var="title" key="manageBriefcase"/>
+
+    <c:set var="selectedRow" value="${-1}"/>
+
+</app:handleError>
+
+<app:view mailbox="${mailbox}" title="${title}" context="${null}" selected='briefcases'  briefcases="true" editmode="true" keys="true"
+     onload="var e=document.getElementById('newName'); if (e) e.focus();">
+
+    <form action="" method="post" enctype="multipart/form-data" accept-charset="utf-8">
+        <table width="100%" cellspacing="0" cellpadding="0">
+            <tr>
+                <td class='TbTop'>
+                    <table width="100%" cellspacing="0">
+                        <tr>
+                            <td class='TbBt'>
+                                <table cellspacing="0" cellpadding="0" class='Tb'>
+                                    <tr>
+                                        <td>
+                                            <a id="OPCLOSE" href="<c:url value="/h/search?st=briefcase"/>">
+                                                <app:img src="common/ImgClose.gif" alt="close"/><span style='padding-left:5px'><fmt:message key="close"/></span>
+                                            </a>
+                                        </td>
+                                        <td><div class='vertSep'></div></td>
+                                        <app:button id="OPNEWCAL" name="actionNewBriefcaseFolder" src="startup/ImgFolder.gif" tooltip="briefcaseNew" text="briefcaseNew"/>
+                                        <td><div class='vertSep'></div></td>
+                                        <app:button id="OPNEWLINK" name="actionNewSharedBriefcase" src="tasks/ImgNewTaskList.gif" tooltip="briefcaseNewShared" text="briefcaseNewShared"/>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+
+            <tr>
+                <td class='ZhAppContent'>
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                        <tr>
+                            <td width="200" class='List' valign='top'>
+                                <table width="100%" cellpadding="2" cellspacing="0">
+                                    <c:set var="index" value="${0}"/>
+                                    <zm:forEachFolder var="folder">
+                                        <c:if test="${folder.isDocumentView}">
+                                            <c:if test="${selectedFolder.id eq folder.id and not newBriefcaseList}"><c:set var="selectedRow" value="${index}"/></c:if>
+                                            <tr <c:if test="${index eq selectedRow}">class='RowSelected'</c:if>>
+                                                <td width="1%">
+                                                    &nbsp;
+                                                </td>
+                                                <td nowrap class='Folder<c:if test="${folder.hasUnread}"> Unread</c:if>' style='padding-left: ${folder.depth*8}px'>
+                                                    <c:set var="label" value="${zm:getFolderName(pageContext, folder.id)}"/>
+                                                    <c:url var="selectUrl" value="/h/mbriefcases">
+                                                        <c:param name="id" value="${folder.id}"/>
+                                                    </c:url>
+                                                    <a id="A${index}" href="${fn:escapeXml(selectUrl)}">
+                                                        <app:img src="${folder.image}" alt="folder"/>
+                                                            <span style='vertical-align:middle'>${fn:escapeXml(label)}
+                                                            <c:if test="${folder.hasUnread}">(${folder.unreadCount}) </c:if>
+                                                            </span>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                            <c:set var="index" value="${index+1}"/>
+                                        </c:if>
+                                    </zm:forEachFolder>
+                                </table>
+                            </td>
+                            <td class='ZhEditCalendarContent' valign='top'>
+                                <c:choose>
+                                    <c:when test="${not empty uploader.params.actionNewBriefcaseFolder}">
+                                        <app:newFolder briefcase="true"/>
+                                    </c:when>
+                                    <c:when test="${newShared}">
+                                        <app:newFolder briefcase="true"  link="true"/>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <app:editFolder folder="${selectedFolder}"/>
+                                    </c:otherwise>
+                                </c:choose>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+        <input type="hidden" name="doAction" value="1"/>
+        <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
+    </form>
+        <SCRIPT TYPE="text/javascript">
+    <!--
+    var zrc = ${index};
+    var zindex = ${selectedRow};
+    var zclick = function(id) { var e2 = document.getElementById(id); if (e2) e2.click(); }
+    var zget = function(i) { var e = document.getElementById("A"+i); if (e && e.href) window.location = e.href; }
+    var zprev = function() { if (zindex > 0) zget(zindex-1);}
+    var znext = function() { if (zindex+1 < zrc) zget(zindex+1);}
+    //-->
+    </SCRIPT>
+    <app:keyboard cache="cal.mcalendars" mailbox="${mailbox}" globals="true" passspecial="true">
+        <zm:bindKey message="global.Cancel" id="OPCLOSE"/>
+        <zm:bindKey message="mcalendars.NewCalendar" func="function() {zclick('SOPNEWCAL');}"/>
+        <zm:bindKey message="mcalendars.NewSubscription" func="function() {zclick('SOPNEWSUB');}"/>
+        <zm:bindKey message="mcalendars.NewLink" func="function() {zclick('SOPNEWLINK');}"/>
+        <zm:bindKey message="mfolders.Save" func="function() {zclick('OPSAVE');}"/>
+        <zm:bindKey message="global.PreviousItem" func="zprev"/>
+        <zm:bindKey message="global.NextItem" func="znext"/>
+    </app:keyboard>
+</app:view>

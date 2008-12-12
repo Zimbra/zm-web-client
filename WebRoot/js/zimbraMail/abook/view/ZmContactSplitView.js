@@ -700,9 +700,10 @@ function(htmlArr, idx, contact, field, colIdx, params) {
 };
 
 ZmContactSimpleView.prototype._getToolTip =
-function(field, item, ev) {
-	return (item && (field == ZmItem.F_FROM)) ? item.getToolTip(item.getAttr(ZmContact.F_email)) :
-												ZmContactsBaseView.prototype._getToolTip.apply(this, arguments);
+function(params) {
+	return (params.item && (params.field == ZmItem.F_FROM)) ?
+			params.item.getToolTip(params.item.getAttr(ZmContact.F_email)) :
+			ZmContactsBaseView.prototype._getToolTip.apply(this, arguments);
 };
 
 ZmContactSimpleView.prototype._getDateToolTip =

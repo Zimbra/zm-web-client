@@ -61,28 +61,6 @@ function() {
 	return headerList;
 };
 
-ZmCallListView.prototype.getPrintHtml =
-function() {
-	var buffer = [];
-	var rowArgs = {};
-	for(var i = 0, count = this._list.size(); i < count; i++) {
-		var item = this._list.get(i);
-		rowArgs.caller = this._getCallerHtml(item);
-		rowArgs.duration = AjxDateUtil.computeDuration(item.duration);
-		rowArgs.date = AjxDateUtil.simpleComputeDateStr(item.date);
-		AjxTemplate.expand("voicemail.Voicemail#ZmCallListPrintViewRow", rowArgs, buffer);
-	}
-	
-	var isPlaced = this._getCallType() == ZmVoiceFolder.PLACED_CALL;
-	var args = {
-		name: this._folder.getName(false, 0, true),
-		callerHeader: isPlaced ? ZmMsg.to : ZmMsg.from,
-		dateHeader: isPlaced ? ZmMsg.placed : ZmMsg.received,
-		rows: buffer.join("")
-	}
-	return  AjxTemplate.expand("voicemail.Voicemail#ZmCallListPrintView", args);
-};
-
 ZmCallListView.prototype._getCellContents =
 function(htmlArr, idx, voicemail, field, colIdx, params) {
 	if (field == ZmVoiceListView.F_DURATION) {
