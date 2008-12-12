@@ -105,9 +105,7 @@ ZmExportView.prototype.getParams = function() {
 	params.filename = [
 		params.folderId ? appCtxt.getById(params.folderId).name : ZmMsg.exportFilenamePrefixAllFolders,
 		"-",
-		AjxDateFormat.format("yyyy-MM-dd-HHmmss", new Date()),
-		".",
-		params.type
+		AjxDateFormat.format("yyyy-MM-dd-HHmmss", new Date())
 	].join("");
 
 	// modify search filter
