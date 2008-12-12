@@ -47,9 +47,14 @@
     <tr><td colspan="${empty editmode ? 4 : 3}" style="padding-bottom:6px;">
 	    <table width=100% border=0 cellspacing="0" cellpadding="0"><tr>
         <td valign="middle" align="center" width="1%" style="padding: 4px 8px;">
-            <a href="http://www.yahoo.com/" target="_new">
-                <span style='cursor:pointer; display: block;' class='ImgAppBanner'></span>
-            </a>
+            <c:choose>
+                <c:when test="${not empty logoUrl}">
+                    <a href="${logoUrl}" target="_new"> <span style='cursor:pointer; display: block;' class='ImgAppBanner'></span> </a>
+                </c:when>
+                <c:otherwise>
+                    <span style='display: block;' class='ImgAppBanner'></span>
+                </c:otherwise>
+            </c:choose>
         </td>
         <td style="padding: 4px 8px 4px 0px; white-space:nowrap;">
 			<%--<b>${fn:escapeXml(empty mailbox.defaultIdentity.fromDisplay ? mailbox.name : mailbox.defaultIdentity.fromDisplay)}</b>--%>
