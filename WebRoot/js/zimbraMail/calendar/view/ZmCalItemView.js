@@ -79,7 +79,7 @@ function() {
 };
 
 ZmCalItemView.prototype.set =
-function(calItem, prevView) {
+function(calItem, prevView, mode) {
 	if (this._calItem == calItem) return;
 
 	// so that Close button knows which view to go to
@@ -87,6 +87,7 @@ function(calItem, prevView) {
 
 	this.reset();
 	this._calItem = calItem;
+    this._mode = mode;
 	this._renderCalItem(calItem);
 };
 
@@ -103,31 +104,6 @@ function() {
 ZmCalItemView.prototype.move = function() {}; // override
 ZmCalItemView.prototype.changeReminder = function() {}; // override
 
-ZmCalItemView.prototype.getPrintHtml =
-function() {
-	var attendees = this._calItem.getAttendeesText(ZmCalBaseItem.PERSON);
-	var organizer = attendees ? this._calItem.getOrganizer() : null;
-
-	var hasHtmlPart = (this._calItem.notesTopPart && this._calItem.notesTopPart.getContentType() == ZmMimeTable.MULTI_ALT);
-	var mode = (hasHtmlPart && appCtxt.get(ZmSetting.VIEW_AS_HTML))
-			? ZmMimeTable.TEXT_HTML : ZmMimeTable.TEXT_PLAIN;
-	var bodyPart = this._calItem.getNotesPart(mode);
-
-	var subs = {
-		subject: this._calItem.getName(),
-		dateStr: this._getTimeString(this._calItem),
-		location: this._calItem.getAttendeesText(ZmCalBaseItem.LOCATION, true),
-		equipment: this._calItem.getAttendeesText(ZmCalBaseItem.EQUIPMENT, true),
-		attendees: attendees,
-		organizer: organizer,
-		recurStr: this._calItem.getRecurBlurb(),
-		attachStr: ZmCalItemView._getAttachString(this._calItem),
-		bodyPart: bodyPart
-	};
-
-	return AjxTemplate.expand("calendar.Appointment#ReadOnlyPrint", subs);
-};
-
 
 // Private / protected methods
 
@@ -136,51 +112,28 @@ function(calItem) {
 	this._lazyCreateObjectManager();
 
 	var subs = this._getSubs(calItem);
+	var closeBtnCellId = this._htmlElId + "_closeBtnCell";
+    var editBtnCellId = this._htmlElId + "_editBtnCell";
+    this._hdrTableId = this._htmlElId + "_hdrTable";
+
 	var el = this.getHtmlElement();
 	el.innerHTML = AjxTemplate.expand("calendar.Appointment#ReadOnlyView", subs);
 
-	this._hdrTableId = this._htmlElId + "_hdrTable";
-
 	// add the close button
-	var closeBtnCellId = this._htmlElId + "_closeBtnCell";
-	var closeButton = new DwtButton({parent:this, className:"DwtToolbarButton", parentElement:closeBtnCellId});
-	closeButton.setImage("Close");
-	closeButton.setText(ZmMsg.close);
-	closeButton.addSelectionListener(new AjxListener(this, this.close));
+	this._closeButton = new DwtButton({parent:this, className:"DwtToolbarButton"});
+	this._closeButton.setImage("Close");
+	this._closeButton.setText(ZmMsg.close);
+	this._closeButton.addSelectionListener(new AjxListener(this, this.close));
+	this._closeButton.reparentHtmlElement(closeBtnCellId);
 
-	// add the save button for reminders and  move select
-	var saveBtnCellId = this._htmlElId + "_saveBtnCell";
-	var saveButton = new DwtButton({parent:this, className:"DwtToolbarButton", parentElement:saveBtnCellId});
-	saveButton.setImage("Save");
-	saveButton.setText(ZmMsg.save);
-	saveButton.addSelectionListener(new AjxListener(this, this.save));
-
-    // add the move select
-	var moveSelectId = this._htmlElId + "_folderCell";
-	if (document.getElementById(moveSelectId) && subs.folders.length > 0) {
-		this._moveSelect = new DwtSelect({parent: this});
-		this._moveSelect.clearOptions();
-		for (var i = 0; i < subs.folders.length; i++) {
-			var folder = subs.folders[i];
-			this._moveSelect.addOption(folder.name, folder.id == calItem.folderId, folder.id);
-		}
-		this._moveSelect.replaceElement(moveSelectId);
-	}
-
-    // add the reminder select
-	var reminderSelectId = this._htmlElId + "_reminderCell";
-	if (document.getElementById(reminderSelectId)) {
-		var	displayOptions = [ZmMsg.apptRemindNever, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNHoursBefore, ZmMsg.apptRemindNHoursBefore, ZmMsg.apptRemindNHoursBefore, ZmMsg.apptRemindNHoursBefore, ZmMsg.apptRemindNHoursBefore ];
-	    var	options = this._reminderOptions = [0, 1, 5, 10, 15, 30, 45, 60, 120, 180, 240, 300, 1080];
-	    var	labels = [0, 1, 5, 10, 15, 30, 45, 60, 2, 3, 4, 5, 18];
-        this._reminderSelect = new DwtSelect({parent: this});
-		this._reminderSelect.clearOptions();
-        for (var j = 0; j < options.length; j++) {
-            var optLabel = ZmCalendarApp.__formatLabel(displayOptions[j], labels[j]);
-            this._reminderSelect.addOption(optLabel, (calItem._reminderMinutes == options[j]), options[j]);
-        }
-		this._reminderSelect.replaceElement(reminderSelectId);
-	}
+    if(document.getElementById(editBtnCellId)) {
+        // add the save button for reminders and  move select
+        this._editButton = new DwtButton({parent:this, className:"DwtToolbarButton"});
+        this._editButton.setImage("Edit");
+        this._editButton.setText(ZmMsg.edit);
+        this._editButton.addSelectionListener(new AjxListener(this, this.edit));
+        this._editButton.reparentHtmlElement(editBtnCellId);
+    }
 
     // content/body
 	var hasHtmlPart = (calItem.notesTopPart && calItem.notesTopPart.getContentType() == ZmMimeTable.MULTI_ALT);
@@ -308,35 +261,37 @@ function(ev) {
 
 ZmApptView.prototype.save =
 function(ev) {
-	var item = this._calItem
-	var isDirty = false;
+    var item = this._calItem
+    var folderId = item.folderId;
 
-	if (this._reminderSelect && this._reminderSelect.getValue() != item._reminderMinutes) {
-		item.setReminderMinutes(this._reminderSelect.getValue());
-		isDirty = true;
-	}
-	if (this._moveSelect && this._moveSelect.getValue() != item.folderId) {
-		item.folderId = this._moveSelect.getValue();
-		isDirty = true;
-	}
+    var viewMode = ZmCalItem.MODE_EDIT;
+    if (item.isRecurring()) {
+          viewMode = item.isException ?  ZmCalItem.MODE_EDIT_SINGLE_INSTANCE : ZmCalItem.MODE_EDIT_SERIES;
+    }
+    item.setViewMode(viewMode);
+    var callback = new AjxCallback(this, this._saveCallback);
+    var errorCallback = new AjxCallback(this, this._handleErrorSave);
+    item.save(null, callback, errorCallback);
+};
 
-	if (!isDirty) {
-		return;
-	}
-
-	var viewMode = ZmCalItem.MODE_EDIT;
-	if (item.isRecurring()) {
-		viewMode = item.isException ? ZmCalItem.MODE_EDIT_SINGLE_INSTANCE : ZmCalItem.MODE_EDIT_SERIES;
-	}
-	item.setViewMode(viewMode);
-	var callback = new AjxCallback(this, this._saveCallback);
-	var errorCallback = new AjxCallback(this, this._handleErrorSave);
-	item.save(null, callback, errorCallback);
+ZmApptView.prototype.edit =
+function(ev) {
+    var item = this._calItem
+    var mode = ZmCalItem.MODE_EDIT;
+    if (item.isRecurring()) {
+          mode = ZmCalItem.MODE_EDIT_SINGLE_INSTANCE;
+    }
+    item.setViewMode(mode);
+    this._controller._viewMgr.setView(this._prevView);
+    this._controller._currentView = this._prevView;
+    this._controller._resetToolbarOperations();
+    var app = this._controller._app;
+    app.getApptComposeController().show(item, mode);
 };
 
 ZmApptView.prototype._saveCallback =
 function() {
-	appCtxt.setStatusMsg(ZmMsg.savedAppointment);
+  appCtxt.setStatusMsg(ZmMsg.savedAppointment);
 };
 
 ZmApptView.prototype._handleErrorSave =
@@ -352,7 +307,6 @@ ZmApptView.prototype._handleMoveResponse = function(ofolder, nfolder, resp) {
 	// TODO: Should we display some confirmation?
 };
 ZmApptView.prototype._handleMoveError = function(ofolder, nfolder, resp) {
-	this._moveSelect.setSelectedValue(ofolder);
 	var params = {
 		msg:	ZmMsg.errorMoveAppt,
 		level:	ZmStatusView.LEVEL_CRITICAL
@@ -419,7 +373,8 @@ function(calItem) {
 		folders: String(calItem.id).match(/:/) ? [] : this._controller.getCalendars(),
 		folderLabel: ZmMsg.calendar,
         reminderLabel: ZmMsg.reminder,
-        alarm: calItem.alarm
+        alarm: calItem.alarm,
+        isAppt: true
     };
 };
 
@@ -428,9 +383,16 @@ function(calItem) {
 	var sd = calItem._orig.startDate;
 	var ed = calItem._orig.endDate;
 
+    if(calItem.isRecurring()) {
+        if(this._mode == ZmCalItem.MODE_EDIT_SERIES) {
+            sd = calItem.startDate;
+            ed = calItem.endDate;
+        }
+    }
+
 	var isAllDay = calItem.isAllDayEvent();
 	var isMultiDay = calItem.isMultiDay();
-	if(isAllDay && isMultiDay){
+	if (isAllDay && isMultiDay) {
 		var endDate = new Date(ed.getTime());
 		ed.setDate(endDate.getDate()-1);
 	}
@@ -526,24 +488,4 @@ function(calItem) {
 		folder: appCtxt.getTree(ZmOrganizer.TASKS).getById(calItem.folderId),
 		folderLabel: ZmMsg.folder
     };
-};
-
-ZmTaskView.getPrintHtml =
-function(task, preferHtml, callback) {
-	var ct = preferHtml ? ZmMimeTable.TEXT_HTML : ZmMimeTable.TEXT_PLAIN;
-
-	var subs = {
-		task: task,
-		attachments: task.hasAttachments() ? ZmCalItemView._getAttachString(task) : null,
-		isHtml: preferHtml,
-		content: task.getNotesPart(ct)
-	};
-
-	var html = AjxTemplate.expand("tasks.Tasks#PrintView", subs);
-
-	if (callback) {
-		callback.run(new ZmCsfeResult(html));
-	} else {
-		return html;
-	}
 };

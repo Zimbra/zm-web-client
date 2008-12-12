@@ -18,9 +18,9 @@
     <zm:field name="jobTitle" value="${param.jobTitle}"/>
     <zm:field name="company" value="${param.company}"/>
 
-    <zm:field name="email" value="${param.email}"/>
-    <zm:field name="email2" value="${param.email2}"/>
-    <zm:field name="email3" value="${param.email3}"/>
+    <zm:field name="email" value="${fn:replace(param.email,'\"','')}"/>
+    <zm:field name="email2" value="${fn:replace(param.email2,'\"','')}"/>
+    <zm:field name="email3" value="${fn:replace(param.email3,'\"','')}"/>
 
     <zm:field name="workStreet" value="${param.workStreet}"/>
     <zm:field name="workCity" value="${param.workCity}"/>

@@ -1,0 +1,551 @@
+/*For Calendar*/
+.zo_cal_lpage {
+    border-bottom: 1px solid #E0E0E0;
+    padding: 5px;
+}
+
+.zo_cal_lpage_row {
+    background-color: #A6A6A6;
+    color: black;
+}
+
+.zo_cal_listheader, .zo_cal_dayheader {
+    text-align: center;
+    border-bottom: 1px solid #E0E0E0;
+    line-height: 2.0em;
+    font-weight: bold;
+}
+
+.zo_cal_listh_dow, .zo_cal_listi_time {
+    padding-left: 5px;
+}
+
+.zo_cal_listi {
+    padding: 6px;
+
+}
+.zo_cal_listi_subject{
+    white-space:nowrap;
+    text-overflow:ellipsis;
+    max-width:470px;
+}
+.zo_cal_listi_subject a {
+    color: black;
+    font-weight: bold;
+}
+
+.zo_cal_listh_date {
+    float: right;
+}
+
+.zo_cal_listh {
+    background: #9ca9b2;
+    color: white;
+    font-weight: bold;
+    border-top: 2px double #9ca9b2;
+    border-bottom: 1px double #9ca9b2;
+}
+
+.zo_cal_dpage {
+    border-bottom: 1px solid #E0E0E0;
+    padding: 5px;
+}
+
+.zo_cal_dpage_row {
+    background-color: #A6A6A6;
+    color: black;
+}
+
+/* column between hours and appts */
+.zo_cal_hs, .zo_cal_hsb, .zo_cal_adhs {
+    border-right: 1px solid #E0E0E0;
+}
+
+.zo_cal_adds, .zo_cal_dsep {
+    border-left: 1px solid #E0E0E0;
+}
+
+.zo_cal_hsb {
+    border-bottom: 1px solid #E0E0E0;
+}
+
+/* allday bottom */
+.zo_cal_adb, .zo_cal_adhs {
+    border-bottom: 4px solid #e5e5e5; /*    @BottomSeparator-light@ */
+}
+
+/* hour bottom */
+.zo_cal_dhb, .zo_cal_dhhb {
+    border-bottom: 1px solid #C0C0C0; /*    @BottomSeparator-light@ */
+}
+
+/* half hour bottom */
+.zo_cal_dhhb {
+    border-bottom-style: dashed;
+}
+
+.zo_allday_appt A, .zo_day_appt A {
+    text-decoration: none;
+    color: black;
+}
+
+.zo_allday_appt {
+    border: 2px solid #333333;
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+}
+
+.zo_allday_appt_noright {
+    border-right: none;
+    -moz-border-radius-topright: 0px;
+    -moz-border-radius-bottomright: 0px;
+    -webkit-border-top-right-radius: 0px;
+    -webkit-border-bottom-right-radius: 0px;
+}
+
+.zo_allday_appt_noleft {
+    border-left: none;
+    -moz-border-radius-topleft: 0px;
+    -moz-border-radius-bottomleft: 0px;
+    -webkit-border-top-left-radius: 0px;
+    -webkit-border-bottom-left-radius: 0px;
+}
+
+.zo_day_appt {
+    width: 100%;
+    height: 100%;
+    border: 1px outset #DDDDDD;
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+}
+
+.zo_allday_appt .zo_appt_text {
+    padding: 1px 5px; /*font-weight: bold;*/
+    color: black;
+}
+
+.zo_day_appt .zo_appt_text {
+    padding: 5px; /*font-weight: bold;*/
+    color: black;
+}
+
+.zo_obj_body {
+/*background: lightgray;*/
+    box-sizing: border-box;
+    background: #c8c8c8 url( /img/mobile/iphone/pinstripes.png );
+}
+
+.zo_appt_view {
+    width: 100%;
+    padding: 5px;
+}
+.zo_appt_view_cont {
+    border: 1px solid #333333;
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    background: white;
+    padding: 10px 5px;
+}
+
+/*
+* Colors, for use in calendar and elsewhere.
+*
+* Use the base color (eg: "Red") to show a list of colors.
+* Use the "Bg" version ("RedBg" as background in a list, etc)
+* Dark and Light are primarily for use in borders
+*
+*/
+
+.Selection {
+    background-color: #ADD6D6;
+}
+
+.SelectionDark {
+    background-color: #91C8C8;
+}
+
+.SelectionLight {
+    background-color: #C8E4E4;
+}
+
+.SelectionBg {
+    background-color: #E3F1F1;
+}
+
+.Red {
+    background-color: #E34040;
+}
+
+.RedDark {
+    background-color: #D90000;
+}
+
+.RedLight {
+    background-color: #EC8080;
+}
+
+.RedBg {
+    background-color: #F5BFBF;
+}
+
+.RedC {
+    color: #E34040;
+}
+
+.RedDarkC {
+    color: #D90000;
+}
+
+.RedLightC {
+    color: #EC8080;
+}
+
+.RedBgC {
+    color: #F5BFBF;
+}
+
+.Pink {
+    background-color: #F492BF;
+}
+
+.PinkDark {
+    background-color: #F06EA9;
+}
+
+.PinkLight {
+    background-color: #F8B7D4;
+}
+
+.PinkBg {
+    background-color: #FBDBE9;
+}
+
+.PinkC {
+    color: #F492BF;
+}
+
+.PinkDarkC {
+    color: #F06EA9;
+}
+
+.PinkLightC {
+    color: #F8B7D4;
+}
+
+.PinkBgC {
+    color: #FBDBE9;
+}
+
+.Orange {
+    background-color: #FF9940;
+}
+
+.OrangeDark {
+    background-color: #FF7700;
+}
+
+.OrangeLight {
+    background-color: #FFBB80;
+}
+
+.OrangeBg {
+    background-color: #FFDDBF;
+}
+
+.OrangeC {
+    color: #FF9940;
+}
+
+.OrangeDarkC {
+    color: #FF7700;
+}
+
+.OrangeLightC {
+    color: #FFBB80;
+}
+
+.OrangeBgC {
+    color: #FFDDBF;
+}
+
+.Yellow {
+    background-color: #FFE640;
+}
+
+.YellowDark {
+    background-color: #FFDD00;
+}
+
+.YellowLight {
+    background-color: #FFEE80;
+}
+
+.YellowBg {
+    background-color: #FFF6BF;
+}
+
+.YellowC {
+    color: #FFE640;
+}
+
+.YellowDarkC {
+    color: #FFDD00;
+}
+
+.YellowLightC {
+    color: #FFEE80;
+}
+
+.YellowBgC {
+    color: #FFF6BF;
+}
+
+.Green {
+    background-color: #40A05F;
+}
+
+.GreenDark {
+    background-color: #00802A;
+}
+
+.GreenLight {
+    background-color: #80C095;
+}
+
+.GreenBg {
+    background-color: #BFDFCA;
+}
+
+.GreenC {
+    color: #40A05F;
+}
+
+.GreenDarkC {
+    color: #00802A;
+}
+
+.GreenLightC {
+    color: #80C095;
+}
+
+.GreenBgC {
+    color: #BFDFCA;
+}
+
+.Cyan {
+    background-color: #40D9D9;
+}
+
+.CyanDark {
+    background-color: #00CCCC;
+}
+
+.CyanLight {
+    background-color: #80E6E6;
+}
+
+.CyanBg {
+    background-color: #BFF2F2;
+}
+
+.CyanC {
+    color: #40D9D9;
+}
+
+.CyanDarkC {
+    color: #00CCCC;
+}
+
+.CyanLightC {
+    color: #80E6E6;
+}
+
+.CyanBgC {
+    color: #BFF2F2;
+}
+
+.Blue {
+    background-color: #4073D9;
+}
+
+.BlueDark {
+    background-color: #0044CC;
+}
+
+.BlueLight {
+    background-color: #80A2E6;
+}
+
+.BlueBg {
+    background-color: #BFD0F2;
+}
+
+.BlueC {
+    color: #4073D9;
+}
+
+.BlueDarkC {
+    color: #0044CC;
+}
+
+.BlueLightC {
+    color: #80A2E6;
+}
+
+.BlueBgC {
+    color: #BFD0F2;
+}
+
+.Purple {
+    background-color: #7940A0;
+}
+
+.PurpleDark {
+    background-color: #4C0080;
+}
+
+.PurpleLight {
+    background-color: #A680C0;
+}
+
+.PurpleBg {
+    background-color: #D2BFDF;
+}
+
+.PurpleC {
+    color: #7940A0;
+}
+
+.PurpleDarkC {
+    color: #4C0080;
+}
+
+.PurpleLightC {
+    color: #A680C0;
+}
+
+.PurpleBgC {
+    color: #D2BFDF;
+}
+
+.Gray {
+    background-color: #BFBFBF;
+}
+
+.GrayDark {
+    background-color: #A9A9A9;
+}
+
+.GrayLight {
+    background-color: #D4D4D4;
+}
+
+.GrayBg {
+    background-color: #E9E9E9;
+}
+
+.GrayC {
+    color: #BFBFBF;
+}
+
+.GrayDarkC {
+    color: #A9A9A9;
+}
+
+.GrayLightC {
+    color: #D4D4D4;
+}
+
+.GrayBgC {
+    color: #E9E9E9;
+}
+
+.zo_cal_mlist {
+    display: none;
+}
+.cal_prev{
+    width:25px;
+    background:url("/img/arrows/ImgPreviousPage.gif") 50% 50% no-repeat;
+    display:inline-block;
+}
+.cal_next{
+    width:25px;
+    background:url("/img/arrows/ImgNextPage.gif") 50% 50% no-repeat;
+    display:inline-block;
+}
+.zo_cal_mpage {
+    background: #D6D6D6; /*#D0D0F0;*/
+    padding: 5px;
+    color: black;
+    font-size: x-large;
+    font-weight: bold;
+    text-align: center;
+}
+
+.zo_cal_mdow {
+    background: #D6D6D6; /*#D0D0F0;*/
+    font-weight: bold;
+    font-size: smaller;
+    text-align: center;
+    color: #555555;
+    border-bottom: 1px solid #E0E0E0;
+}
+
+.zo_cal_mday, .zo_cal_mday_select{
+    background: #E6E6E6; /*#D0D0F0;*/
+    border: 1px outset white;
+    vertical-align: middle;
+    text-align: center;
+    padding: 5px;
+}
+
+.zo_cal_mday_today {
+    background: #2e69e0;
+    color: white;
+    vertical-align: middle;
+    text-align: center;
+    padding: 5px;
+}
+
+.zo_cal_mday_text, .zo_cal_mday_textO {
+    font-size: larger;
+    font-weight: bold;
+    color: #3a3e47; /*#474d59;*/
+
+}
+.zo_cal_mday_textO {
+    color: #8e9198;
+}
+
+.zo_cal_mday_today .zo_cal_mday_text, .zo_cal_mday_select .zo_cal_mday_textO, .zo_cal_mday_today .zo_cal_mday_text0 {
+    color: white !important;
+}
+
+.zo_cal_mday_appt {
+    text-decoration: underline;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+.zo_cal_mday_select {
+    background: #58759d;
+}
+
+.zo_cal_mday_select .zo_cal_mday_text {
+    color: white;
+}
+.zo_cal_list TD, .zo_ab_list TD {
+    border-bottom: 1px solid #E0E0E0;
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+.zo_cal_listi_empty {
+    text-align: center;
+}
+.cal_bottom_shadow {
+    border-top: 3px outset #cccccc;
+}

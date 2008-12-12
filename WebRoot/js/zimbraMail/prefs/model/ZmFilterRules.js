@@ -152,7 +152,7 @@ ZmFilterRules.prototype.getRuleByIndex =
 function(index) {
     return this._vector.get(index);
 };
-				       
+
 /**
 * Fetches a rule based on its ID.
 *
@@ -160,9 +160,9 @@ function(index) {
 */
 ZmFilterRules.prototype.getRuleById = 
 function(id) {
-    return this._ruleIdHash[id];
+	return this._ruleIdHash[id];
 };
-				       
+
 /**
 * Fetches a rule based on its name.
 *
@@ -170,7 +170,7 @@ function(id) {
 */
 ZmFilterRules.prototype.getRuleByName = 
 function(name) {
-    return this._ruleNameHash[name];
+	return this._ruleNameHash[name];
 };
 
 /**
@@ -195,10 +195,9 @@ function(force, callback) {
 	var respCallback = new AjxCallback(this, this._handleResponseLoadRules, [callback]);
 	appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
 };
-	
-ZmFilterRules.prototype._handleResponseLoadRules = 
+
+ZmFilterRules.prototype._handleResponseLoadRules =
 function(callback, result) {
-	
 	this._vector.removeAll();
 	this._ruleIdHash = {};
 	this._ruleNameHash = {};
@@ -223,7 +222,7 @@ function(callback, result) {
 						this._createConditionFromNode(condNodes[k], rule);
 				}
 			}
-				
+
 			if (ruleNode.action) {
 				for (var j = 0; j < ruleNode.action.length; j++) {
 					var name = ZmFilterRule.A_VALUE_MAP[ruleNode.action[j].name.toLowerCase()];
@@ -358,8 +357,8 @@ function(ex) {
 		var msgDialog = appCtxt.getMsgDialog();
 		msgDialog.setMessage([ZmMsg.filterError, " ", ex.msg].join(""), DwtMessageDialog.CRITICAL_STYLE);
 		msgDialog.popup();
-	    var respCallback = new AjxCallback(this, this._handleResponseHandleErrorSaveRules);
-	    this.loadRules(true, respCallback);
+		var respCallback = new AjxCallback(this, this._handleResponseHandleErrorSaveRules);
+		this.loadRules(true, respCallback);
 		return true;
 	} else {
 		return false;
@@ -371,10 +370,10 @@ ZmFilterRules.prototype._handleResponseHandleErrorSaveRules =
 function() {
 	var prefController = AjxDispatcher.run("GetPrefController");
 	var prefsView = prefController.getPrefsView();
-    var section = ZmPref.getPrefSectionWithPref(ZmSetting.FILTERS);
-    if (section && prefsView && prefsView.getView(section.id)) {
+	var section = ZmPref.getPrefSectionWithPref(ZmSetting.FILTERS);
+	if (section && prefsView && prefsView.getView(section.id)) {
 		prefController.getFilterRulesController().resetListView();
-    }
+	}
 };
 
 /*
