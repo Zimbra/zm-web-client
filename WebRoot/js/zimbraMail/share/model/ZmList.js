@@ -72,6 +72,9 @@ function() {
 	return "ZmList";
 };
 
+// abstract methods
+ZmList.prototype.getPrintHtml = function(preferHtml, callback) {};
+
 ZmList.prototype.get =
 function(index) {
 	return this._vector.get(index);
@@ -315,11 +318,7 @@ function(items, tagId, doTag) {
 		this._mixedAction("tagItems", [items, tagId, doTag]);
 		return;
 	}
-
-	// child window loses type info so test for array in a different way
-	if ((!(items instanceof Array)) && items.length === undefined) {
-		items = [items];
-	}
+	if (!(items instanceof Array)) items = [items];
 
 	// only tag items that don't have the tag, and untag ones that do
 	// always tag a conv, because we don't know if all items in the conv have the tag yet
@@ -355,12 +354,11 @@ function(items) {
  * </p>
  *
  * @param items		[Array]			a list of items to move
- * @param folder	[ZmFolder]		destination folder
+ * @param folder		[ZmFolder]		destination folder
  * @param attrs		[Object]		additional attrs for SOAP command
- * @param callback	[AjxCallback]*	callback to trigger once operation completes
  */
 ZmList.prototype.moveItems =
-function(items, folder, attrs, callback) {
+function(items, folder, attrs) {
 	if (this.type == ZmItem.MIXED && !this._mixedType) {
 		this._mixedAction("moveItems", [items, folder, attrs]);
 		return;
@@ -370,24 +368,20 @@ function(items, folder, attrs, callback) {
 	attrs = attrs || (new Object());
 	attrs.l = folder.id;
 	
-	var respCallback = (this.type == ZmItem.MIXED)
-		? (new AjxCallback(this, this._handleResponseMoveItems, [folder, callback]))
-		: callback;
+	var respCallback = null;
+	if (this.type == ZmItem.MIXED)
+		respCallback = new AjxCallback(this, this._handleResponseMoveItems, folder);
 	this._itemAction({items: items, action: "move", attrs: attrs, callback: respCallback});
 };
 
 ZmList.prototype._handleResponseMoveItems =
-function(folder, callback, result) {
+function(folder, result) {
 	var movedItems = result.getResponse();	
 	if (movedItems && movedItems.length) {
 		this.moveLocal(movedItems, folder.id);
 		for (var i = 0; i < movedItems.length; i++)
 			movedItems[i].moveLocal(folder.id);
 		this._notify(ZmEvent.E_MOVE, {items: movedItems});
-	}
-
-	if (callback) {
-		callback.run();
 	}
 };
 
@@ -424,53 +418,36 @@ function(result) {
  * it will be removed from the data store (hard delete).
  *
  * @param items			[Array]			list of items to delete
- * @param hardDelete	[boolean]		whether to force physical removal of items
+ * @param hardDelete		[boolean]		whether to force physical removal of items
  * @param attrs			[Object]		additional attrs for SOAP command
- * @param childWin		[window]*		the child window this action is happening in
  */
 ZmList.prototype.deleteItems =
-function(items, hardDelete, attrs, childWin) {
+function(items, hardDelete, attrs) {
 	if (this.type == ZmItem.MIXED && !this._mixedType) {
 		this._mixedAction("deleteItems", [items, hardDelete, attrs]);
 		return;
 	}
-
-	// child window loses type info so test for array in a different way
-	if ((!(items instanceof Array)) && items.length === undefined) {
-		items = [items];
-	}
+	if (!(items instanceof Array)) items = [items];
 
 	// figure out which items should be moved to Trash, and which should actually be deleted
-	var toMove = [];
-	var toDelete = [];
+	var toMove = new Array();
+	var toDelete = new Array();	
 	for (var i = 0; i < items.length; i++) {
 		var folderId = items[i].getFolderId();
 		var folder = appCtxt.getById(folderId);
-		if (hardDelete || (folder && folder.isHardDelete())) {
+		if (hardDelete || (folder && folder.isHardDelete()))
 			toDelete.push(items[i]);
-		} else {
+		else
 			toMove.push(items[i]);
-		}
 	}
-
-	var callback = (childWin != null) ? (new AjxCallback(this._handleDeleteNewWindowResponse, childWin)) : null;
 
 	// soft delete - items moved to Trash
-	if (toMove.length) {
-		this.moveItems(toMove, appCtxt.getById(ZmFolder.ID_TRASH), attrs, callback);
-	}
+	if (toMove.length)
+		this.moveItems(toMove, appCtxt.getById(ZmFolder.ID_TRASH), attrs);
 
 	// hard delete - items actually deleted from data store
-	if (toDelete.length) {
-		this._itemAction({items: toDelete, action: "delete", attrs: attrs, callback: callback});
-	}
-};
-
-ZmList.prototype._handleDeleteNewWindowResponse =
-function(childWin, result) {
-	if (childWin) {
-		childWin.close();
-	}
+	if (toDelete.length)
+		this._itemAction({items: toDelete, action: "delete", attrs: attrs});
 };
 
 /**
@@ -535,7 +512,7 @@ function(items, folderId) {
  */
 ZmList.prototype._itemAction =
 function(params, batchCmd) {
-	var actionedItems = [];
+	var actionedItems = new Array();
 	var idHash = this._getIds(params.items);
 	var idStr = idHash.list.join(",");
 	if (!(idStr && idStr.length)) {
@@ -571,8 +548,7 @@ function(params, batchCmd) {
         }
     }
 
-    var respCallback = params.callback
-		? (new AjxCallback(this, this._handleResponseItemAction, [type, idHash, params.callback])) : null;
+    var respCallback = params.callback ? new AjxCallback(this, this._handleResponseItemAction, [type, idHash, params.callback]) : null;
 
 	if (batchCmd) {
 		batchCmd.addRequestParams(itemActionRequest, respCallback, params.errorCallback);

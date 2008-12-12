@@ -13,7 +13,7 @@
 <c:set var="label" value="${zm:getFolderName(pageContext, folder.id)}"/>
 <c:set var="padFudge" value="${folder.hasChildren ? 0 : 20}"/>
 <tr>
-    <td nowrap colspan="3" id="folder_${folder.id}" class='Folder<c:if test="${folder.hasUnread and types ne 'contact'}"> Unread</c:if>'
+    <td nowrap colspan="3" class='Folder<c:if test="${folder.hasUnread and types ne 'contact'}"> Unread</c:if>'
         style="padding-left: ${padFudge+folder.depth*8}px">
         <c:url var="url" value="/h/${empty base ? 'search' : base}">
             <c:param name="sfi" value="${folder.id}"/>

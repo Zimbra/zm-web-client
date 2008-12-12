@@ -49,7 +49,6 @@ ZmZimletMgr.prototype.loadZimlets =
 function(zimletArray, userProps, target, callback, sync) {
 	if(!zimletArray || !zimletArray.length) {
 		this.loaded = true;
-        this._resetOverviewTree();
 		return;
 	}
 	var packageCallback = callback ? new AjxCallback(this, this._loadZimlets, [zimletArray, userProps, target, callback, sync]) : null;
@@ -91,8 +90,6 @@ ZmZimletMgr.prototype._loadZimlets = function(zimletArray, userProps, target, ca
 	 	}
 	 	zimletTree.reset();
 	 	zimletTree.loadFromJs(panelZimlets, "zimlet");
- 	}else{ //reset overview tree accordinly
-        this._resetOverviewTree();
  	}
 
 	// load zimlet code/CSS
@@ -103,22 +100,6 @@ ZmZimletMgr.prototype._loadZimlets = function(zimletArray, userProps, target, ca
 	if (callback && !sync) {
 		callback.run();
 	}
-};
-
-ZmZimletMgr.prototype._resetOverviewTree =
-function(){
-    var zimletTree = appCtxt.getZimletTree();
-    if (zimletTree) {
-        var panelZimlets = this.getPanelZimlets();
-        zimletTree.loadFromJs(panelZimlets, "zimlet");
-        var overview = appCtxt.getCurrentApp().getOverview();
-        if(overview){
-            var treeView =  overview.getTreeView(ZmOrganizer.ZIMLET);
-            if(treeView && (!panelZimlets || !panelZimlets.length)){
-                treeView.clear(); //Clear the tree if thr are no panel zimlets
-            }
-        }
-    }
 };
 
 ZmZimletMgr.prototype.getPanelZimlets =
@@ -367,23 +348,21 @@ function(zimletArray, zimletNames, isJS) {
 	// add link to aggregated files
 	if (!appDevMode) {
         var languageId = null;
-        var countryId = null;
         if(appCtxt.get(ZmSetting.LOCALE_NAME)) {
             var locale = appCtxt.get(ZmSetting.LOCALE_NAME);
             var index = locale.indexOf("_");
+            var languageId;
             if (index == -1) {
                 languageId = locale;
                 } else {
                 languageId = locale.substr(0, index);
-                countryId =  locale.substr(index+1, locale.length - index - 1);
             }
-        }
+        }        
         var extension = (!AjxEnv.isIE || (!AjxEnv.isIE6 && AjxEnv.isIE6up)) ? appExtension : "";
 		includes.unshift([
 			"/service/zimlet/res/Zimlets-nodev_all",
 			(isJS ? (".js" + extension) : ".css"),
-            (languageId ? "?language=" + languageId : ""),
-            (countryId ? "&country=" + countryId : "")
+            (languageId ? "?language=" + languageId : "")
         ].join(""));
 	}
 
@@ -393,19 +372,16 @@ function(zimletArray, zimletNames, isJS) {
 ZmZimletMgr.prototype.renameZimletsLabel =
 function()
 {
-	var treeController = appCtxt.getOverviewController().getTreeController("ZIMLET");
-	if (treeController) {
-		var treeView = treeController.getTreeView("Mail");
-		if(treeView){
-			var root = treeView.getItems()[0];
-			if (root) {
-				var items = root.getItems();
-				for (var i = 0; i < items.length; i++) {
-					this.changeZimletLabel(items[i]);
-				}
-			}
-		}
-	}
+    var treeView = appCtxt.getOverviewController().getTreeController("ZIMLET").getTreeView("Mail");
+	if(treeView){
+        var root = treeView.getItems()[0];
+	    if (root) {
+            var items = root.getItems();
+            for (var i = 0; i < items.length; i++) {
+                this.changeZimletLabel(items[i]);
+            }
+	    }
+    }
 };
 
 ZmZimletMgr.prototype.changeZimletLabel =

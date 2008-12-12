@@ -29,8 +29,8 @@ ZmResource.F_mail				= "mail";
 ZmResource.F_name				= "displayName";
 ZmResource.F_type				= "zimbraCalResType";
 
-ZmResource.ATTR_LOCATION	= ZmContactsApp.AC_LOCATION;
-ZmResource.ATTR_EQUIPMENT	= ZmContactsApp.AC_EQUIPMENT;
+ZmResource.ATTR_LOCATION	= "Location";
+ZmResource.ATTR_EQUIPMENT	= "Equipment";
 
 /**
 * Creates a resource from an XML node.
