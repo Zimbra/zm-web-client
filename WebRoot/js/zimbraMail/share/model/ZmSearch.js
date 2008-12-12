@@ -249,8 +249,7 @@ function(params) {
 		}
 	}
 		
-	var respCallback = new AjxCallback(this, this._handleResponseExecute,
-						[this.isGalSearch, this.isGalAutocompleteSearch, this.isCalResSearch, params.callback]);
+	var respCallback = new AjxCallback(this, this._handleResponseExecute, [params.callback]);
 	
 	if (params.batchCmd) {
 		params.batchCmd.addRequestParams(soapDoc, respCallback);
