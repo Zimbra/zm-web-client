@@ -49,9 +49,11 @@ ZmContactList = function(search, isGal, type) {
 	this.isCanonical = false;
 	this.isLoaded = false;
 
-	this._emailToContact = {};
-	this._imAddressToContact = {};
-	this._phoneToContact = {};
+	this._app = appCtxt.getApp(ZmApp.CONTACTS);
+	this._emailToContact = this._app._byEmail;
+	this._imAddressToContact = this._app._byIM;
+	this._phoneToContact = this._app._byPhone;
+	
 	this._acAddrList = {};
 	this._galResults = {};
 	this._galRequests = {};

@@ -35,6 +35,11 @@ ZmContactsApp = function(container, parentController) {
 	this._contactList = {};		// canonical list by acct ID
 	this._initialized = false;
 
+	// contact lookup caches
+	this._byEmail	= {};
+	this._byIM		= {};
+	this._byPhone	= {};
+
 	// autocomplete
 	this._acRequests = {};		// request mgmt (timeout, cancel)
 	this._acCache = {};			// results cache
@@ -547,6 +552,81 @@ function(acctId) {
 	return (this._contactList[aid] && this._contactList[aid].isLoaded);
 };
 
+/**
+ * Returns the contact with the given address, if any. If it's not in our cache
+ * and we are given a callback, we do a search.
+ *
+ * @param address	[string]		an email address
+ * @param callback	[AjxCallback]*	callback to run
+ */
+ZmContactsApp.prototype.getContactByEmail =
+function(address, callback) {
+	if (!address) { return null; }
+	var contact = this._byEmail[address.toLowerCase()];
+
+	// handle case where we searched for a contact and didn't find one (don't repeat search)
+	if (contact === null) {
+		if (callback) { callback.run(null); }
+		return null;
+	}
+
+	if (contact) {
+		contact = this._contactList ? this._contactList._realizeContact(contact) : contact;
+		contact._lookupEmail = address;	// so caller knows which address matched
+		if (callback) { callback.run(contact); }
+		return contact;
+	}
+
+	if (callback) {
+		var params = {query:address, limit:1, types:AjxVector.fromArray([ZmItem.CONTACT])};
+		var search = new ZmSearch(params);
+		var respCallback = new AjxCallback(this, this._handleResponseSearch, [address, callback]);
+		var errorCallback = new AjxCallback(this, this._showDefaultParticipantToolTip, [address, callback]);
+		search.execute({callback:respCallback, noBusyOverlay:true});
+	}
+};
+
+ZmContactsApp.prototype._handleResponseSearch =
+function(address, callback, result) {
+	var resp = result.getResponse();
+	var contactList = resp && resp.getResults(ZmItem.CONTACT);
+	var contact = contactList ? contactList.get(0) : null;
+	this._byEmail[address] = contact;
+	callback.run(contact);
+};
+
+ZmContactsApp.prototype.getContactByIMAddress =
+function(addr) {
+	if (!addr) { return null; }
+	var contact = this._byIM[addr.toLowerCase()];
+	return this._contactList ? this._contactList._realizeContact(contact) : contact;
+};
+
+/**
+* Returns information about the contact with the given phone number, if any.
+* Canonical list only.
+*
+* @param phone	[string]	a phone number
+* @return		[Object]	an object with contact = the contact & field = the field with the matching phone number
+*/
+ZmContactsApp.prototype.getContactByPhone =
+function(phone) {
+	if (!phone) { return null; }
+	var digits = phone.replace(/[^\d]/g, '');
+	var data = this._phoneToContact[digits];
+	if (data) {
+		data.contact = this._contactList ? this._contactList._realizeContact(data.contact) : data.contact;
+	}
+	return data;
+};
+
+/**
+ * Returns a ZmContactList with all of the user's local contacts. If that's a large
+ * number, performance may be slow.
+ * 
+ * @param callback
+ * @param errorCallback
+ */
 ZmContactsApp.prototype.getContactList =
 function(callback, errorCallback) {
 	var acctId = appCtxt.getActiveAccount().id;

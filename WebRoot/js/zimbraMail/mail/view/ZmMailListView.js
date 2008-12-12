@@ -22,7 +22,6 @@ ZmMailListView = function(params) {
 	ZmListView.call(this, params);
 
 	this._folderId = null;
-	this._emailToContact = {};
 };
 
 ZmMailListView.prototype = new ZmListView;
@@ -242,36 +241,20 @@ function(address, callback) {
 	var tooltip;
 	var addr = address.getAddress();
 	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) && addr) {
-		var contact = this._emailToContact[addr];
-		if (contact) {
-			callback.run(contact.getToolTip(address.getAddress()));
-			return;
-		}
-		var params = {query:addr, limit:1, types:AjxVector.fromArray([ZmItem.CONTACT])};
-		var search = new ZmSearch(params);
-		var respCallback = new AjxCallback(this, this._handleResponseSearch, [address, callback]);
-		var errorCallback = new AjxCallback(this, this._showDefaultParticipantToolTip, [address, callback]);
-		search.execute({callback:respCallback, noBusyOverlay:true});
+		var contactsApp = appCtxt.getApp(ZmApp.CONTACTS);
+		var respCallback = new AjxCallback(this, this._handleResponseGetContact, [address, callback]);
+		contactsApp.getContactByEmail(addr, respCallback);
 	}
 };
 
-ZmMailListView.prototype._handleResponseSearch =
-function(address, callback, result) {
-	var resp = result.getResponse();
-	var cl = resp && resp.getResults(ZmItem.CONTACT);
-	var list = (cl && cl.getArray()) || [];
-	var tooltip = list[0] && list[0].getToolTip(address.getAddress());
-	if (tooltip) {
-		callback.run(tooltip);
+ZmMailListView.prototype._handleResponseGetContact =
+function(address, callback, contact) {
+	var tooltip;
+	if (contact) {
+		tooltip = contact.getToolTip(address.getAddress());
 	} else {
-		this._showDefaultParticipantToolTip(address, callback);
+		tooltip = address && AjxTemplate.expand("abook.Contacts#TooltipNotInAddrBook", {addrstr:address.toString()});
 	}
-};
-
-ZmMailListView.prototype._showDefaultParticipantToolTip =
-function(address, callback) {
-	var addrstr = address.toString();
-	var tooltip = addrstr ? AjxTemplate.expand("abook.Contacts#TooltipNotInAddrBook", {addrstr:addrstr}) : null;
 	callback.run(tooltip);
 };
 
