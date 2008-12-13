@@ -41,6 +41,7 @@ ZmSlideComponentEditor = function(params) {
 	// init content
     this._pendingContent = params.content || "";
     this._htmlModeInited = false;
+    this._controller = params.controller;
 
     this._iframe = params.iframe;
     this._iFrameId = this._iframe.id;
@@ -197,7 +198,7 @@ function(tb) {
     this._fontFamilyButton.dontStealFocus();
     this._fontFamilyButton.setSize(Dwt.DEFAULT);
     this._fontFamilyButton.setAlign(DwtLabel.ALIGN_LEFT);
-    var menu = new ZmPopupMenu(this._fontFamilyButton);
+    var menu = new ZmPopupMenu(this._fontFamilyButton,"ActionMenu", null, this._controller);
     var listener = new AjxListener(this, this._fontFamilyListener);
 
 	var defaultText = "";
@@ -220,7 +221,7 @@ ZmSlideComponentEditor.prototype._createFontSizeMenu =
 function(tb) {
     this._fontSizeButton = new DwtToolBarButton({parent:tb});
     this._fontSizeButton.dontStealFocus();
-    var menu = new ZmPopupMenu(this._fontSizeButton);
+    var menu = new ZmPopupMenu(this._fontSizeButton, null, null, this._controller);
     var listener = new AjxListener(this, this._fontSizeListener);
 
 	var defaultText = "";
@@ -262,7 +263,7 @@ function(tb) {
     s._textEl.innerHTML = "<span style='font-size:13px'>&sect;</span>";
     s.setToolTipContent(ZmMsg.sections);
     s.dontStealFocus();
-    var menu = this._styleMenu = new ZmPopupMenu(s);
+    var menu = this._styleMenu = new ZmPopupMenu(s, null, null, this._controller);
     var listener = new AjxListener(this, this._styleListener);
     var menuItems = [
         { label:ZmMsg.normal,		id:DwtHtmlEditor.PARAGRAPH},
@@ -293,7 +294,7 @@ function(tb) {
     b.dontStealFocus();
     b.setImage("LeftJustify");
     b.setToolTipContent(ZmMsg.alignment);
-    var menu = this._justifyMenu = new ZmPopupMenu(b);
+    var menu = this._justifyMenu = new ZmPopupMenu(b, null, null, this._controller);
     var listener = new AjxListener(this, this._justificationListener);
     var menuItems = [
         { image:"LeftJustify",		id:DwtHtmlEditor.JUSTIFY_LEFT},

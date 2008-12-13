@@ -105,33 +105,6 @@ ZmSlideEditController.prototype._initToolBar = function () {
 
     new DwtControl({parent:tb, className:"vertSep"});
 
-    this._insertChart = new DwtToolBarButton({parent:tb});
-    this._insertChart.dontStealFocus();
-    this._insertChart.setSize(Dwt.DEFAULT);
-    this._insertChart.setAlign(DwtLabel.ALIGN_LEFT);
-    this._insertChart.setText(ZmMsg.slide_insertChart);
-    var menu = new ZmPopupMenu(this._insertChart);
-    var chartListener = new AjxListener(this, this._insertChartListener);
-
-    var graphMenuItems = [
-        {name: ZmMsg.slide_insertColumnChart, value: "Column2D"},
-        {name: ZmMsg.slide_insertPieChart, value: "Pie2D"},
-        {name: ZmMsg.slide_insertFunnelChart, value: "Funnel"},
-        {name: ZmMsg.slide_insertDoughnutChart, value: "Doughnut2D"},
-        {name: ZmMsg.slide_insertAreaChart, value: "Area2D"}
-    ];
-
-
-    for (var i=0;  i< graphMenuItems.length; i++) {
-        var mi = menu.createMenuItem(graphMenuItems[i].name, {text:graphMenuItems[i].name});
-        mi.addSelectionListener(chartListener);
-        mi.setData(ZmSlideEditController._VALUE, graphMenuItems[i].value);
-    }
-
-    this._insertChart.setMenu(menu);
-
-    new DwtControl({parent:tb, className:"vertSep"});
-
     this._runSlideShow = new DwtToolBarButton({parent:tb});
     this._runSlideShow.setToolTipContent(ZmMsg.slides_runSlideShow);
     //this._runSlideShow.setImage("");
@@ -178,5 +151,10 @@ function(ev) {
     this._currentView.insertGraph(chartURL, dataURL);
 };
 
+
+ZmSlideEditController.prototype.getKeyMapName =
+function() {
+	return "Global";
+};
 
 

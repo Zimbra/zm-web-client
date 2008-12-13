@@ -96,7 +96,7 @@ function() {
 
     this._initIframe();
 
-    var editor = this._editor = new ZmSlideComponentEditor({parent:shell, iframe: this._iframe});
+    var editor = this._editor = new ZmSlideComponentEditor({parent:shell, iframe: this._iframe, controller: this._controller});
     editor._enableDesignMode(editor._getIframeDoc());
     this._toolbar = editor._createToolBar(this);
 
