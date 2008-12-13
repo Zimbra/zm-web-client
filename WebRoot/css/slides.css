@@ -50,6 +50,9 @@ h1 {
 	color: #ffffff;
 }
 
+.masterslide {
+    background-color: white;
+}
 
 .slide ul, .slide ol, body ul, body ol {
 margin:0pt 0pt 0pt 1.8em;

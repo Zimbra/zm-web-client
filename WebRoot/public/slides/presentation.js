@@ -11,8 +11,6 @@ function addSlideEvent (el, evname, func) {
     }
 };
 
-
-
 function initSlides() {
     if(!document.body) { return; }
     currentSlide = document.body.firstChild;
@@ -28,12 +26,14 @@ function initSlides() {
     //todo: change this
     document.body.style.fontSize = "32px";
 
+    //change slide on click
     addSlideEvent(document, "click", slidesHandler);
 
     if(!currentSlide) { return; }
 
     var n = currentSlide;
 
+    //resize all the slides and master slides
     while(n) {
         if(n.className == "slide" || n.className == "masterslide") {
             resizeSlide(n);
@@ -53,12 +53,10 @@ function resizeSlide(currentSlide) {
         return;
     }
 
-    var size = getSlideWindowSize();
-    currentSlide.style.width = size.y * 4/3;
-    currentSlide.style.height = size.y;
-
-    var diff = size.y/3;
-    currentSlide.style.left = (diff/2) + 'px';
+    //resize slide in 4:3 aspect ratio
+    currentSlide.style.width = "75%";
+    currentSlide.style.height = '100%';
+    currentSlide.style.left = '12.5%';
 }
 
 function slidesHandler(ev) {
