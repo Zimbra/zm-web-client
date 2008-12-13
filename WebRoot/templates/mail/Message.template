@@ -85,6 +85,15 @@
 	</div>
 </template>
 
+<template id='mail.Message#AttachmentsView'>
+    <table border='0' width='100%' height='100%'>
+        <tr>
+            <td width='20%'><div id='${id}_filters'></div></td>
+            <td><div id='${id}_results'>Loading...</div></td>
+        </tr>
+    </table>
+</template>
+
 <template id='mail.Message#MessageListHeader'>
 	<table border=0 class='SubjectBar' width=100%>
 		<tr>

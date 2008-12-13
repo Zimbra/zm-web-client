@@ -169,14 +169,14 @@ function(ev, div) {
 	if (div) {
 		var item = this.getItemFromElement(div);
 		if(item && !item.isFolder){
-		this.setToolTipContent(this._getToolTip(item, ev, div));
+		this.setToolTipContent(this._getToolTip({item:item, ev:ev, div:div}));
 		}
 	}		
 	return true;
 };
 
 ZmColListView.prototype._getToolTip =
-function(item, ev, div) {
-	if (!item) { return; }
-	return this._controller.getItemTooltip(item, this);
+function(params) {
+	if (!params.item) { return; }
+	return this._controller.getItemTooltip(params.item, this);
 };

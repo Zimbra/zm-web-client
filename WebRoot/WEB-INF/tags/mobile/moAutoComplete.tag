@@ -46,8 +46,8 @@
 
             if(sResult) {
 				var imgsrc = t == 'g' ? "<app:imgurl value='contacts/ImgGALContact.gif' />" : t == 'dl' ? "<app:imgurl value='contacts/ImgGroup.gif' />" : "<app:imgurl value='contacts/ImgContact.gif' />" ;
-				return ["<table class='zo_m_list_row' style='margin-bottom: 5px;'><tr><td><img src='",imgsrc,
-                        "'><"+"/td><td style='padding:3px 5px;'>",
+				return ["<div class='list-row' style='margin-bottom: 5px;'><div><span><img src='",imgsrc,
+                        "'><"+"/span><span style='padding:3px 5px;'>",
                         zhFmt(f, fls ? fq : query, fs),
                         " ",
                         zhFmt(l, fls ? lq : query, ls),
@@ -55,7 +55,7 @@
                         //t == "dl" ? "" :  " &lt;",
                         zhFmt(e,query,es),
                         //t == "dl" ? "" : "&gt;",
-                        "</span><"+"/td><"+"/tr><"+"/table>"].join("");
+                        "</span><"+"/span><"+"/div><"+"/div>"].join("");
             }
             else {
                 return "";

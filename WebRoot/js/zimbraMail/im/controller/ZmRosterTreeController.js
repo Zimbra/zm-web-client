@@ -60,6 +60,7 @@ ZmRosterTreeController.prototype._createTreeView =
 function(overviewId) {
 	var overview = this._opc.getOverview(overviewId);
 	var treeArgs = {
+		parentElement: overview.getTreeParent(ZmOrganizer.ROSTER_TREE_ITEM),
 		posStyle: Dwt.STATIC_STYLE,
 		noAssistant: true,
 		overviewId: overviewId,
