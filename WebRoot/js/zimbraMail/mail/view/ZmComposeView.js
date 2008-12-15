@@ -1688,12 +1688,14 @@ function(action, msg, extraBodyText, incOption, nosig) {
 				cancelledParts.push(crlf);
 				cancelledParts.push(ZmMsg.subjectLabel+" "+msg.subject+crlf);
 				var inv = (msg) ? msg.invite : null;
-				if (inv) {
-					var organizer = "";
-					if (inv)
-						cancelledParts.push(ZmMsg.organizer + ": " + inv.getOrganizerName() + crlf);
-						cancelledParts.push(ZmMsg.time + ": " + inv.getServerStartDate() + crlf);
-					}
+                if (inv) {
+                    cancelledParts.push(ZmMsg.organizer + ": " + inv.getOrganizerName() + crlf);
+                    var sd = inv.getServerStartDate();
+                    if(msg._instanceDate) {
+                        sd = msg._instanceDate;
+                    }
+                    cancelledParts.push(ZmMsg.time + ": " + sd + crlf);
+                }
 				cancelledParts.push(ZmItem.NOTES_SEPARATOR);
 				value = cancelledParts.join("");
 			}

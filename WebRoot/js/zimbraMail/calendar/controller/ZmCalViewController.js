@@ -1310,6 +1310,7 @@ function(appt, action, mode) {
 	msg._mode = mode;
 	msgController.setMsg(msg);
 	var instanceDate = mode == ZmCalItem.MODE_DELETE_INSTANCE ? new Date(appt.uniqStartTime) : null;
+    msg._instanceDate = instanceDate;
 	msgController._editInviteReply(action, 0, instanceDate);
 };
 
