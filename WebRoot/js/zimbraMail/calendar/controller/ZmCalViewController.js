@@ -1238,7 +1238,7 @@ function(appt, mode) {
 
 	var confirmDialog = appCtxt.getConfirmationDialog();
 	if (appt.isOrganizer()) {
-        if(appt.otherAttendees) {
+        if(appt.otherAttendees && appCtxt.get(ZmSetting.MAIL_ENABLED)) {
 		    var cancelReplyCallback = new AjxCallback(this, this._continueDeleteReply, [appt, mode]);
 		    confirmDialog.popup(ZmMsg.confirmCancelApptReply, cancelReplyCallback, cancelNoReplyCallback);
         }else {
