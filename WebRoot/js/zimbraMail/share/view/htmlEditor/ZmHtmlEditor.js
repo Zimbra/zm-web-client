@@ -165,24 +165,6 @@ function(insertFontStyle, onlyInnerContent ) {
 	return content;
 };
 
-ZmHtmlEditor.prototype.checkMisspelledWords =
-function(callback, onExitCallback){
-    var text = this.getTextVersion();
-    if (/\S/.test(text)) {
-		AjxDispatcher.require("Extras");
-		this._spellChecker = new ZmSpellChecker(this);
-		this._spellCheck = null;
-        this._spellCheckSuggestionListenerObj = new AjxListener(this, this._spellCheckSuggestionListener);
-        if (!this.onExitSpellChecker) {
-            this.onExitSpellChecker = onExitCallback;
-		}
-        this._spellChecker.check(text, callback);
-		return true;
-	}
-
-	return false;
-};
-
 ZmHtmlEditor.prototype.spellCheck =
 function(callback) {
 	var text = this.getTextVersion();
@@ -712,19 +694,19 @@ function(tb) {
 	var listener = new AjxListener(this, this._fontStyleListener);
 	this._boldButton = new DwtToolBarButton(params);
 	this._boldButton.setImage("Bold");
-	this._boldButton.setToolTipContent(appCtxt._getShortcutHint("editor", DwtKeyMap.TEXT_BOLD));
+	this._boldButton.setToolTipContent(AjxKeys["editor.Bold.summary"]);
 	this._boldButton.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.BOLD_STYLE);
 	this._boldButton.addSelectionListener(listener);
 
 	this._italicButton = new DwtToolBarButton(params);
 	this._italicButton.setImage("Italics");
-	this._italicButton.setToolTipContent(appCtxt._getShortcutHint("editor", DwtKeyMap.TEXT_ITALIC));
+	this._italicButton.setToolTipContent(AjxKeys["editor.Italic.summary"]);
 	this._italicButton.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.ITALIC_STYLE);
 	this._italicButton.addSelectionListener(listener);
 
 	this._underlineButton = new DwtToolBarButton(params);
 	this._underlineButton.setImage("Underline");
-	this._underlineButton.setToolTipContent(appCtxt._getShortcutHint("editor", DwtKeyMap.TEXT_UNDERLINE));
+	this._underlineButton.setToolTipContent(AjxKeys["editor.Underline.summary"]);
 	this._underlineButton.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.UNDERLINE_STYLE);
 	this._underlineButton.addSelectionListener(listener);
 

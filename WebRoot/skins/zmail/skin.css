@@ -127,10 +127,6 @@
 	cursor:default;
 }
 
-.ZmHtmlEditor .ZToolbar {
-	background-color: #e5e5e5;
-}
-
 .ZMenuItemSeparator {
 	height:3px;
 	border-bottom: 1px solid #e8eef7;
@@ -160,11 +156,7 @@
 }
 
 .ZToolbar .ZWidgetTitle {
-	color:#000000;
-}
-
-.ZmHtmlEditor .ZToolbar .ZWidgetTitle {
-	@Text@
+	color:#FFFFFF;
 }
 
 .ZmPicker {
@@ -247,7 +239,3 @@
 .ImgEggBanner {
 	background-image: url("@LogoImgDir@/EggBanner.png") !important;
 }
-
-/** combined username/quota **/
-#skin_spacing_tree_top					{	text-align:center;	}
-#skin_container_tree_top				{		background: none;border: none;}

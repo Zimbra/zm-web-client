@@ -1332,13 +1332,13 @@
 	@TextPadding@
 	border-style:none;
 }
-.dynselect_display_disabled,
+.dynselect_display_disabled,  
 .oselect_display_disabled {
 	@SelectText-disabled@
 	@TextPadding@
 }
 
-.dynselect_display_empty,
+.dynselect_display_empty, 
 .oselect_display_empty {
 	@SelectText-empty@
 	@TextPadding@
@@ -1376,7 +1376,7 @@
 
 
 /* ??? USE */
-.dynselect_choice_table_scrolled,
+.dynselect_choice_table_scrolled, 
 .oselect_choice_table_scrolled {
 	@CompactTable@
 
@@ -1782,12 +1782,12 @@
 /*	@ZFieldBg-normal@
 	@FieldBorder@
 	height:24px;
-	padding-right:2px;	*/
+	padding-right:2px;	*/d
 }
 
 .DwtComboBox .DwtInputField input[type='text'],
 .DwtComboBox .DwtInputField input[type='password'] {
-	
+	Xborder:none;
 }
 
 .DwtComboBox .ZButton {

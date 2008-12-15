@@ -103,14 +103,6 @@
 		</table>
 	</td>
 </tr>
-<tr valign="middle">
-    <td class='ZOptionsTableLabel'>
-        <fmt:message key="optionsReadingPane"/>:
-    </td>
-    <td>
-        <app:optCheckbox boxfirst="true" label="alwaysShowReadingPane" pref="zimbraPrefReadingPaneEnabled" checked="${mailbox.prefs.readingPaneEnabled}"/>
-    </td>
-</tr>
 <app:optSeparator/>
 <tr>
 	<td class='ZOptionsTableLabel'>

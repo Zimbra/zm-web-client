@@ -49,11 +49,9 @@ ZmContactList = function(search, isGal, type) {
 	this.isCanonical = false;
 	this.isLoaded = false;
 
-	this._app = appCtxt.getApp(ZmApp.CONTACTS);
-	this._emailToContact = this._app._byEmail;
-	this._imAddressToContact = this._app._byIM;
-	this._phoneToContact = this._app._byPhone;
-	
+	this._emailToContact = {};
+	this._imAddressToContact = {};
+	this._phoneToContact = {};
 	this._acAddrList = {};
 	this._galResults = {};
 	this._galRequests = {};
@@ -203,6 +201,21 @@ function(list) {
 	} else {
 		DBG.timePt("done loading contacts");
 		this._finishLoading();
+	}
+};
+
+ZmContactList.prototype.addFromDom =
+function(node, args) {
+	// first make sure this contact isnt already in the canonical list
+	var canonicalList = AjxDispatcher.run("GetContacts");
+	var contact = canonicalList.getById(node.id);
+	if (contact) {
+		// NOTE: we dont realize contact b/c getById already does that for us
+		// Also, set sf property if not set (we get it on search results, not GetContactResponse)
+		contact.sf = contact.sf || node.sf;
+		this.add(contact);
+	} else {
+		ZmList.prototype.addFromDom.call(this, node, args);
 	}
 };
 
@@ -1299,4 +1312,9 @@ function(ev) {
 			}
 		}
 	}
+};
+
+ZmContactList.prototype.getPrintHtml =
+function(preferHtml, callback) {
+	return ZmContactCardsView.getPrintHtml(this);
 };

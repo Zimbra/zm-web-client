@@ -20,6 +20,7 @@
  * Supports: Miscellaneous rarely-used functionality
  * 	- DwtSpinner: used by ZmTableEditor
  *  - ZmClientCmdHandler: handles special search cmds
+ * 	- ZmPrintView: print an item or a list of items
  * 	- ZmChooseFolderDialog: export contacts, tie identity to folder,
  *							pop mail to folder, move mail or folder,
  *							create a filter, create a folder shortcut
@@ -34,6 +35,8 @@ AjxPackage.require("ajax.dwt.widgets.DwtSpinner");
 AjxPackage.require("ajax.util.AjxDlgUtil");
 
 AjxPackage.require("zimbraMail.core.ZmClientCmdHandler");
+
+AjxPackage.require("zimbraMail.share.view.ZmPrintView");
 
 AjxPackage.require("zimbraMail.share.view.dialog.ZmDialog");
 AjxPackage.require("zimbraMail.share.view.dialog.ZmChooseFolderDialog");
