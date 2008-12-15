@@ -424,7 +424,7 @@ function() {
 	if (this.isGal)			{ return "GALContact"; }
 	if (this.isShared())	{ return "SharedContact"; }
 	if (this.isGroup())		{ return "Group"; }
-	if (this.isMyCard())	{ return "MyCard"; }
+	if (this.isMyCard)		{ return "MyCard"; }
 	return "Contact";
 };
 
@@ -899,11 +899,6 @@ function() {
 	return this.addrbook;
 };
 
-ZmContact.prototype.isMyCard =
-function() {
-	return this.list && (this.list.getMyCard() == this);
-};
-
 ZmContact.prototype._getAddressField =
 function(street, city, state, zipcode, country) {
 	if (street == null && city == null && state == null && zipcode == null && country == null) return null;
@@ -1021,8 +1016,8 @@ function(node) {
 	if (node.email2) this.attr[ZmContact.F_email2] = node.email2;
 	if (node.email3) this.attr[ZmContact.F_email3] = node.email3;
 
-	this.type = this.attr[ZmContact.F_dlist] != null
-		? ZmItem.GROUP : ZmItem.CONTACT;
+	this.type = (this.attr[ZmContact.F_dlist] != null) ? ZmItem.GROUP : ZmItem.CONTACT;
+	this.isMyCard = Boolean(this.attr[ZmContact.MC_cardOwner] == "isMyCard");
 
 	// check if the folderId is found in our address book (otherwise, we assume
 	// this contact to be a shared contact)

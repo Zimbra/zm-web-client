@@ -530,7 +530,7 @@ function(what, folderType) {
 						// can only move contacts into Trash
 						invalid = true;
 						break;
-					} else if (items[i].isMyCard()) {
+					} else if (items[i].isMyCard) {
 						// can't trash my card
 						invalid = true;
 						break;

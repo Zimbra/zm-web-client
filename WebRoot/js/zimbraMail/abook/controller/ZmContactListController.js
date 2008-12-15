@@ -716,7 +716,7 @@ ZmContactListController.prototype._doDelete =
 function(items, hardDelete, attrs) {
 	// Disallow my card delete.
 	for (var i = 0, count = items.length; i < count; i++) {
-		if (items[i].isMyCard()) {
+		if (items[i].isMyCard) {
 			appCtxt.setStatusMsg(ZmMsg.errorMyCardDelete, ZmStatusView.LEVEL_WARNING);
 			return;
 		}
@@ -740,7 +740,7 @@ function(ev) {
 	// Disallow my card move.
 	var items = this._listView[this._currentView].getSelection();
 	for (var i = 0, count = items.length; i < count; i++) {
-		if (items[i].isMyCard()) {
+		if (items[i].isMyCard) {
 			appCtxt.setStatusMsg(ZmMsg.errorMyCardMove, ZmStatusView.LEVEL_WARNING);
 			return;
 		}

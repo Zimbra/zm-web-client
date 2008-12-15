@@ -571,7 +571,7 @@ function(address, callback) {
 	}
 
 	if (contact) {
-		contact = this._contactList ? this._contactList._realizeContact(contact) : contact;
+		contact = this._realizeContact(contact);
 		contact._lookupEmail = address;	// so caller knows which address matched
 		if (callback) { callback.run(contact); }
 		return contact;
@@ -599,7 +599,7 @@ ZmContactsApp.prototype.getContactByIMAddress =
 function(addr) {
 	if (!addr) { return null; }
 	var contact = this._byIM[addr.toLowerCase()];
-	return this._contactList ? this._contactList._realizeContact(contact) : contact;
+	return this._realizeContact(contact);
 };
 
 /**
@@ -615,11 +615,17 @@ function(phone) {
 	var digits = phone.replace(/[^\d]/g, '');
 	var data = this._phoneToContact[digits];
 	if (data) {
-		data.contact = this._contactList ? this._contactList._realizeContact(data.contact) : data.contact;
+		data.contact = this._realizeContact(data.contact);
 	}
 	return data;
 };
 
+ZmContactsApp.prototype._realizeContact =
+function(contact) {
+	var acctId = appCtxt.getActiveAccount().id;
+	var cl = this._contactList[acctId];
+	return cl ? cl._realizeContact(contact) : contact;
+}
 /**
  * Returns a ZmContactList with all of the user's local contacts. If that's a large
  * number, performance may be slow.
@@ -682,6 +688,26 @@ ZmContactsApp.prototype.createFromVCard =
 function(msgId, vcardPartId) {
 	var contact = new ZmContact(null);
 	contact.createFromVCard(msgId, vcardPartId);
+};
+
+ZmContactsApp.prototype.getMyCard =
+function(callback) {
+    if (this._myCard) {
+		this._myCard = this._realizeContact(this._myCard);
+		callback.run(this._myCard);
+    } else {
+		var sc = appCtxt.getSearchController();
+		var respCallback = new AjxCallback(this, this._handleResponseGetMyCard, [callback]);
+		sc.search({query:"#cardOwner:isMyCard", types:[ZmItem.CONTACT], noRender:true, callback:respCallback});
+	}
+};
+
+ZmContactsApp.prototype._handleResponseGetMyCard =
+function(callback, result) {
+	var resp = result.getResponse();
+	var cl = resp && resp.getResults(ZmItem.CONTACT);
+	this._myCard = cl ? cl.get(0) : null;
+	callback.run(this._myCard);
 };
 
 ZmContactsApp.prototype.getContactListController =
