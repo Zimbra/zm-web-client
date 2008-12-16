@@ -315,7 +315,7 @@ function(params) {
 		var respCallback = new AjxCallback(this, this._handleResponseGetShares, [params.callback, params.skipNotify]);
 		appCtxt.getRequestMgr().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback, noBusyOverlay:params.noBusyOverlay});
 	} else {
-		if (callback) { callback.run(); }
+		if (params.callback) { params.callback.run(); }
 	}
 };
 
