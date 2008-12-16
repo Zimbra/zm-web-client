@@ -19,7 +19,13 @@ ZmImOverview = function(parent, params) {
 	if (!params)
 		params = {};
 
-	DwtComposite.call(this, {parent:parent, parentElement: params.parentElement, posStyle:params.posStyle || Dwt.ABSOLUTE_STYLE});
+	var superArgs = {
+		parent:parent,
+		parentElement: params.parentElement,
+		className: "ZmImOverview",
+		posStyle:params.posStyle || Dwt.ABSOLUTE_STYLE
+	};
+	DwtComposite.call(this, superArgs);
 
 	this._groupItems = {};
 	this._itemsById = {};
@@ -377,13 +383,20 @@ ZmImOverview.prototype._treeSelectionListener = function(ev) {
 			menu.popup(0, ev.docX, ev.docY);
 		}
 	} else if (ev.detail == DwtTree.ITEM_SELECTED && buddy) {
-		var ctrl = AjxDispatcher.run("GetChatListController");
-		ctrl.selectChatForRosterItem(buddy);
-	} else if (ev.detail == DwtTree.ITEM_DBL_CLICKED) {
-		if (buddy) {
+		if (this._options.singleClick) {
+			DwtMenu.closeActiveMenu();
 			this.chatWithBuddy(buddy);
-		} else if (group) {
-			ev.item.setExpanded(!ev.item.getExpanded());
+		} else {
+			var ctrl = AjxDispatcher.run("GetChatListController");
+			ctrl.selectChatForRosterItem(buddy);
+		}
+	} else if (ev.detail == DwtTree.ITEM_DBL_CLICKED) {
+		if (!this._options.singleClick) {
+			if (buddy) {
+				this.chatWithBuddy(buddy);
+			} else if (group) {
+				ev.item.setExpanded(!ev.item.getExpanded());
+			}
 		}
 	}
 };
@@ -631,7 +644,8 @@ ZmImOverview.prototype._createTreeItems = function(type, buddy) {
 		var item = new DwtTreeItem({parent:parent,
 			index:this.getSortIndex(buddy, parent),
 			text:AjxStringUtil.htmlEncode(label),
-			imageInfo:icon});
+			imageInfo:icon,
+			singleClickAction: this._options.singleClick});
 		item.addClassName("ZmImPresence-" + buddy.getPresence().getShow());
 		item.setToolTipContent("-"); // force it to have a tooltip
 		item.getToolTipContent = AjxCallback.simpleClosure(buddy.getToolTip, buddy);

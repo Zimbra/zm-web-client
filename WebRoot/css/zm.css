@@ -1831,34 +1831,8 @@ HTML>BODY .appt-selected .appt_allday_body
  *	Chat application
  */
 
-/** Presence section **/
-#z_presence {
-	padding-top: 2px;
-#IFNDEF MSIE
-	padding-left: 2px;
-#ENDIF	
-}
-
-#z_presence_left_icon {
-#IFDEF MSIE
-	margin-top:2px;
-#endif
-	margin-left: 1px;
-	margin-right: 1px;
-	padding-left: 1px;
-	padding-right: 1px;
-	float: left;
-	width: 16px;
-}
-
-#z_presence_dropdown {
-#IFDEF MSIE
-	margin-top:2px;
-#endif
-	margin-left: 1px;
-	margin-right: 1px;
-	padding-left: 1px;
-	padding-right: 1px;
+.ZmTaskbar {
+	@ToolbarBg@
 }
 
 /* temporary lite widgets */
@@ -2133,6 +2107,11 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmImToastText-hover {
 	@Text-anchor-hover@
 	@ActiveCursor@
+}
+
+.DwtMenu .ZmImOverview {
+	max-height:400px;
+	max-width:200px;
 }
 
 .ZmBuddyFilterItem {

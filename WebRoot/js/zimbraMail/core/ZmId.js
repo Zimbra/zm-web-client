@@ -89,7 +89,6 @@ ZmId.SKIN_LINKS						= "skin_container_links";
 ZmId.SKIN_LOGO						= "skin_container_logo";
 ZmId.SKIN_OFFLINE_STATUS			= "skin_container_offline_status";
 ZmId.SKIN_QUOTA_INFO				= "skin_container_quota";
-ZmId.SKIN_PRESENCE					= "skin_container_presence";
 ZmId.SKIN_SASH						= "skin_container_tree_app_sash";
 ZmId.SKIN_SEARCH_BUILDER			= "skin_container_search_builder";
 ZmId.SKIN_SEARCH_BUILDER_TOOLBAR	= "skin_container_search_builder_toolbar";
@@ -105,6 +104,7 @@ ZmId.SKIN_TREE						= "skin_container_tree";
 ZmId.SKIN_USER_INFO					= "skin_container_username";
 ZmId.SKIN_WEB_SEARCH				= "skin_container_web_search";
 ZmId.SKIN_WEB_SEARCH_INPUT			= "skin_search_web_input";
+ZmId.SKIN_TASKBAR					= "skin_container_taskbar";
 
 //
 // Literal IDs
@@ -121,6 +121,7 @@ ZmId.SEARCH_TOOLBAR			= "ztb_search";			// search toolbar
 ZmId.USER_NAME				= "z_userName";			// account name
 ZmId.USER_QUOTA				= "z_userQuota";		// quota
 ZmId.PRESENCE				= "z_presence";			// presence
+ZmId.TASKBAR				= "z_taskbar";			// taskbar
 ZmId.NEW_FOLDER_BUTTON		= "zb_newFolder";		// New Folder button on current app toolbar
 ZmId.STATUS_VIEW			= "z_status";			// status view (shows toast)
 ZmId.TOAST					= "z_toast";			// toast
@@ -771,6 +772,7 @@ ZmId.OP_IMPORT_FILE				= "IMPORT_FILE";
 ZmId.OP_IM_ADD_TO_CONTACT		= "IM_ADD_TO_CONTACT";
 ZmId.OP_IM_BLOCK_BUDDY			= "IM_BLOCK_BUDDY";
 ZmId.OP_IM_BUDDY_ARCHIVE		= "IM_BUDDY_ARCHIVE";
+ZmId.OP_IM_BUDDY_LIST			= "IM_BUDDY_LIST";
 ZmId.OP_IM_CLOSE_ALL_TABS		= "IM_CLOSE_ALL_TABS";
 ZmId.OP_IM_CLOSE_OTHER_TABS		= "IM_CLOSE_OTHER_TABS";
 ZmId.OP_IM_CLOSE_TAB			= "IM_CLOSE_TAB";

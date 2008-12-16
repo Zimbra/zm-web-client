@@ -105,13 +105,13 @@ function() {
     ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_CHAT, { textKey: "imStatusChat", image: "ImFree2Chat" });
     ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_DND, { textKey: "imStatusDND", image: "ImDnd" });
     ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_INVISIBLE, { textKey: "imStatusInvisible", image: "ImInvisible" });
-    ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_MENU, { textKey: "imPresence" }, null, ZmImApp.addImPresenceMenu);
+    ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_MENU, { textKey: "imPresence" });
     ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_OFFLINE, { textKey: "imStatusOffline", image: "Offline" });
     ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_ONLINE, { textKey: "imStatusOnline", image: "ImAvailable" });
     ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_XA, { textKey: "imStatusExtAway", image: "ImExtendedAway" });
     ZmOperation.registerOp(ZmId.OP_IM_LOGOUT_YAHOO, { textKey: "imLogoutYahoo", image: "Logoff" });
     ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_CUSTOM_MRU, { image: "ImAvailable" });
-    ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_MENU, { }); // Keyboard only.
+    ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_MENU, { image: "ImAvailable" });
     ZmOperation.registerOp(ZmId.OP_NEW_ROSTER_GROUP, { textKey: "imNewGroup", image: "ImGroup" });
     ZmOperation.registerOp(ZmId.OP_NEW_ROSTER_ITEM, { textKey: "newRosterItem", image: "AddBuddy" });
     ZmOperation.registerOp(ZmId.OP_IM_CREATE_CONTACT, { textKey: "addToNewContact", image: "NewContact" });
@@ -131,6 +131,7 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_IM_CLOSE_OTHER_TABS, { textKey: "imCloseOtherTabs" });
 	ZmOperation.registerOp(ZmId.OP_IM_CLOSE_TAB, { textKey: "imCloseTab" });
 	ZmOperation.registerOp(ZmId.OP_IM_BUDDY_ARCHIVE, { textKey: "imBuddyArchive", image: "ChatFolder" });
+	ZmOperation.registerOp(ZmId.OP_IM_BUDDY_LIST, { textKey: "buddyList", image: "ImGroup", grrrr:"junk" });
 };
 
 ZmImApp.prototype._registerItems =
@@ -470,26 +471,7 @@ function(notify) {
 
 ZmImApp.prototype.addComponents =
 function(components) {
-	// Set up the presence indicator next to the user info & quota.
-	var container = Dwt.byId(ZmId.SKIN_PRESENCE);
-	if (container) {
-		var buttonArgs = {
-			parent: appCtxt.getShell(),
-			id: ZmId.PRESENCE,
-			posStyle: Dwt.ABSOLUTE_STYLE
-		};
-		this._presenceButton = new ZmPresenceButton(buttonArgs);
-		this.syncImPresenceButton(this._presenceButton, false, true);
-		ZmImApp.addImPresenceMenu(this._presenceButton);
-		components[ZmAppViewMgr.C_PRESENCE] = this._presenceButton;
-
-		// Fix the size of the skin container.
-		// (We do this here rather than in the skin because the skin
-		// has no way of knowing whether IM is enabled.)
-		var width = appCtxt.get(ZmSetting.SKIN_HINTS, "presence.width") || 46;
-		var height = appCtxt.get(ZmSetting.SKIN_HINTS, "presence.height") || 24;
-		Dwt.setSize(container, width, height);
-	}
+	this._taskbarController = new ZmTaskbarController(components);
 };
 
 ZmImApp.prototype.startup =
@@ -595,19 +577,6 @@ function() {
 	return new ZmRosterTreeGroups(this.getRoster());
 };
 
-ZmImApp.addImPresenceMenu =
-function(button) {
-	button.setMenu(new AjxCallback(ZmImApp.INSTANCE, ZmImApp.INSTANCE._createImPresenceMenu, [button]));
-};
-
-ZmImApp.prototype.syncImPresenceButton =
-function(button, doText, doTooltip) {
-	var roster = this.getRoster();
-	this._updatePresenceButton(ZmImApp.loggedIn() ? roster.getPresence() : null, button, doText, doTooltip);
-	var listener = new AjxListener(this, this._rosterChangeListener, [button, doText, doTooltip]);
-	roster.addChangeListener(listener);
-};
-
 ZmImApp.prototype.prepareVisuals = function() {
 	if (!this._haveVisuals) {
                 AjxDispatcher.require([ "IMCore", "IM" ], false, new AjxCallback(this, function(){
@@ -617,38 +586,6 @@ ZmImApp.prototype.prepareVisuals = function() {
 	}
 };
 
-ZmImApp.prototype._createImPresenceMenu =
-function(button) {
-	AjxDispatcher.require(["IMCore", "IM"]);
-	var menu = this.getServiceController().createPresenceMenu(button);
-	button.setMenu(menu);
-	return menu;
-};
-
-ZmImApp.prototype._rosterChangeListener =
-function(button, doText, doTooltip, ev) {
-	if (ev.event == ZmEvent.E_MODIFY) {
-		var fields = ev.getDetail("fields");
-		if (ZmRoster.F_PRESENCE in fields) {
-			var presence = this._roster.getPresence();
-			this._updatePresenceButton(presence, button, doText, doTooltip)
-		}
-	}
-};
-
-ZmImApp.prototype._updatePresenceButton =
-function(presence, button, doText, doTooltip) {
-	var icon = presence ? presence.getIcon() : "Offline";
-	button.setImage(icon);
-	var showText = presence ? AjxStringUtil.htmlEncode(presence.getShowText()) : ZmMsg.imStatusOffline;
-	if (doTooltip) {
-		var tooltip = this.getServiceController().getMyPresenceTooltip(showText);
-		button.setToolTipContent(tooltip);
-	}
-	if (doText) {
-		button.setText(showText);
-	}
-};
 
 // Constants used when handling the im context menu items.
 ZmImApp._NEW_IM = "NEW_IM";
@@ -790,14 +727,3 @@ function(ev) {
 			break;
 	}
 };
-
-ZmPresenceButton = function(params) {
-	params.className = params.className || "ZToolbarButton";
-	DwtButton.call(this, params);
-};
-
-ZmPresenceButton.prototype = new DwtButton;
-ZmPresenceButton.prototype.constructor = ZmPresenceButton;
-
-// Data
-ZmPresenceButton.prototype.TEMPLATE = "share.App#presenceButton";

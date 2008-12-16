@@ -107,6 +107,7 @@ function(enabled) {
  *
  * @param params		[hash]			hash of params:
  *        id			[string]		button ID
+ *        template		[string]*		button template
  *        text			[string]*		button text
  *        tooltip		[string]*		button tooltip text
  *        image			[string]*		icon class for the button
@@ -116,6 +117,8 @@ function(enabled) {
  *        style			[constant]*		button style
  *        index			[int]*			position at which to add the button
  *        shortcut		[constant]*		shortcut ID (from ZmKeyMap) for showing hint
+ *        menu			[AjxCallback or DwtMenu]*	Menu creation callback (recommended) or menu
+ *        menuAbove		[boolean]*		true to popup menu above the button.
  */
 ZmToolBar.prototype.createButton =
 function(id, params) {
@@ -131,6 +134,9 @@ function(id, params) {
 	}
 	b.setEnabled(params.enabled !== false);
 	b.setData("_buttonId", id);
+	if (params.menu) {
+		b.setMenu(params.menu, false, null, params.menuAbove);
+	}
 
 	return b;
 };
@@ -147,7 +153,14 @@ ZmToolBar.prototype.SEPARATOR_TEMPLATE = "share.Widgets#ZmToolBarSeparator";
 
 ZmToolBar.prototype._createButton =
 function(params, className) {
-    return new DwtToolBarButton({parent:this, style:params.style, className:className, index:params.index, id:params.id});
+    return new DwtToolBarButton({
+		parent:this,
+		style:params.style,
+		className:className,
+		index:params.index,
+		id:params.id,
+		template: params.template
+	});
 };
 
 ZmToolBar.prototype._buttonId =

@@ -177,7 +177,6 @@ ZmChatListController.prototype._initializeToolBar = function(view) {
 
 	// init presence button
 	var presenceButton = this._toolbar[view].getButton(ZmOperation.IM_PRESENCE_MENU);
-	ZmImApp.INSTANCE.syncImPresenceButton(presenceButton, true, false);
 
 	this._propagateMenuListeners(this._toolbar[view], ZmOperation.NEW_MENU);
 	// this._setupViewMenu(view);

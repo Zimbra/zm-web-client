@@ -41,7 +41,7 @@ ZmPresenceMenu.prototype.constructor = ZmPresenceMenu;
 ZmPresenceMenu.prototype.toString =
 function() {
 	return "ZmPresenceMenu";
-}
+};
 
 ZmPresenceMenu.MRU_SIZE = 5;
 
