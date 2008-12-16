@@ -205,6 +205,13 @@
 	@TreeItemSpacing@
 }
 
+/* text style for tree item that performs action on single click */
+.DwtTreeItem-hover {
+	@Text@
+	@TreeItemSpacing@
+	text-decoration: underline;
+}
+
 .DwtTreeItem .imageCell {
 	@ImagePadding@
 	white-space: nowrap;	/* ??? */
