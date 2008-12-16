@@ -274,6 +274,11 @@ function(id) {
 
 ZmCalViewController.prototype.handleMailboxChange =
 function() {
+	var viewId = this._viewMgr.getCurrentViewName();
+	if (viewId == ZmId.VIEW_CAL_APPT) {
+		this._viewMgr.getCurrentView().close();
+	}
+
 	if (this._calTreeController) {
 		this._calTreeController.addSelectionListener(this._app.getOverviewId(), this._treeSelectionListener);
 	}
