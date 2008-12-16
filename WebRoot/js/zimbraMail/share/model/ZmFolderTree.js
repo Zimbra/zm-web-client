@@ -285,9 +285,19 @@ function(organizer, dialog) {
 };
 
 // This method is used to retrieve permissions on folders that can be *shared*
+/**
+ * Issues a BatchRequest of GetFolderRequest's for mountpoints that dont have 
+ * permissions set.
+ *
+ * @param type				[Integer]		ZmItem type constant
+ * @param callback			[AjxCallback]*	callback to trigger after fetching permissions
+ * @param skipNotify		[Boolean]*		skip notify after fetching permissions
+ * @param folderIds			[Array]*		list of folder Id's to fetch permissions for
+ * @param noBusyOverlay		[Boolean]*		don't block the UI while fetching permissions
+ */
 ZmFolderTree.prototype.getPermissions =
-function(type, callback, skipNotify) {
-	var needPerms = this._getItemsWithoutPerms(type);
+function(params) {
+	var needPerms = params.folderIds || this._getItemsWithoutPerms(params.type);
 
 	// build batch request to get all permissions at once
 	if (needPerms.length > 0) {
@@ -302,8 +312,8 @@ function(type, callback, skipNotify) {
 			folderRequest.appendChild(folderNode);
 		}
 
-		var respCallback = new AjxCallback(this, this._handleResponseGetShares, [callback, skipNotify]);
-		appCtxt.getRequestMgr().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback});
+		var respCallback = new AjxCallback(this, this._handleResponseGetShares, [params.callback, params.skipNotify]);
+		appCtxt.getRequestMgr().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback, noBusyOverlay:params.noBusyOverlay});
 	} else {
 		if (callback) { callback.run(); }
 	}

@@ -330,7 +330,7 @@ function(callback) {
 	// bug fix #33168 - get perms for all mountpoints in account
 	var folderTree = appCtxt.getFolderTree();
 	if (folderTree) {
-		folderTree.getPermissions();
+		folderTree.getPermissions({noBusyOverlay:true});
 	}
 
 	// in dev mode, force create deferred folders due to timing issue

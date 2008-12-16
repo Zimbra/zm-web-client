@@ -59,7 +59,7 @@ ZmApp = function(name, container, parentController) {
 	if (!appCtxt.isChildWindow) {
 		this._opc = appCtxt.getOverviewController();
 	}
-}
+};
 
 // app information ("_R" means "reverse map")
 
@@ -217,7 +217,7 @@ function(app, params) {
 ZmApp.prototype.toString = 
 function() {
 	return "ZmApp";
-}
+};
 
 // Functions called during construction
 ZmApp.prototype._defineAPI				= function() {};
@@ -245,7 +245,7 @@ ZmApp.prototype.handleOp				= function(op, params) {};				// handle an operation
 ZmApp.prototype.getName =
 function() {
 	return this._name;
-}
+};
 
 ZmApp.prototype.getDisplayName =
 function() {
@@ -257,32 +257,32 @@ function() {
 ZmApp.prototype.setAppView =
 function(view) {
 	this._appViewMgr.setAppView(this._name, view);
-}
+};
 
 ZmApp.prototype.createView =
 function(viewName, elements, callbacks, isAppView, isTransient) {
 	return this._appViewMgr.createView(viewName, this._name, elements, callbacks, isAppView, isTransient);
-}
+};
 
 ZmApp.prototype.pushView =
 function(name, force) {
 	return this._appViewMgr.pushView(name, force);
-}
+};
 
 ZmApp.prototype.popView =
 function(force) {
 	return this._appViewMgr.popView(force);
-}
+};
 
 ZmApp.prototype.setView =
 function(name, force) {
 	return this._appViewMgr.setView(name, force);
-}
+};
 
 ZmApp.prototype.stageView =
 function(name) {
 	return this._appViewMgr.setView(name);
-}
+};
 
 ZmApp.prototype.addDeferredFolder =
 function(params) {
@@ -561,7 +561,7 @@ function(type) {
 	// XXX: this may no longer be necessary per fixes to bug 6082 and 4434
 	var folderTree = appCtxt.getFolderTree();
 	if (folderTree) {
-		folderTree.getPermissions(type);
+		folderTree.getPermissions({type:type, noBusyOverlay:true});
 	}
 };
 
@@ -632,7 +632,7 @@ function(create, org) {
 		// XXX: once bug #4434 is fixed, check if this call is still needed
 		var folderTree = appCtxt.getFolderTree();
 		if (folderTree) {
-			folderTree.getPermissions(org);
+			folderTree.getPermissions({type:org, noBusyOverlay:true});
 		}
 		create._handled = true;
 	}
@@ -653,7 +653,7 @@ function(params, callback) {
     if (callback) {
         callback.run();
     }
-}
+};
 
 /**
 * Run when the activation state of an app changes.
