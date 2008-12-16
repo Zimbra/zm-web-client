@@ -92,6 +92,22 @@ function(right) {
 	return list;
 };
 
+ZmAccessControlList.prototype.getGranteesInfo =
+function(right) {
+	var aces = this._aces[right];
+	var list = [];
+	if (aces && aces.length) {
+		for (var i = 0; i < aces.length; i++) {
+			var ace = aces[i];
+			if (ace.granteeType == ZmSetting.ACL_USER || ace.granteeType == ZmSetting.ACL_GROUP) {
+				list.push({grantee: ace.grantee, zid: ace.zid});
+			}
+		}
+	}
+	list.sort(ZmAccessControlList.sortByGrantee);
+	return list;
+};
+
 ZmAccessControlList.prototype.grant =
 function(aces, callback, batchCmd) {
 	this._setPerms(aces, false, callback, batchCmd);
@@ -174,6 +190,18 @@ function(ace) {
 	}
 	this._aces[ace.right] = newList;
 };
+
+ZmAccessControlList.sortByGrantee =
+function(a, b) {
+    var granteeA = a.grantee;
+    var granteeB = b.grantee;
+
+    if (granteeA.toLowerCase() > granteeB.toLowerCase()) return 1;
+    if (granteeA.toLowerCase() < granteeB.toLowerCase()) return -1;
+    
+	return 0;
+};
+
 
 /**
  * Creates an access control entry.
