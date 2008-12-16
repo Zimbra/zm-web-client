@@ -294,11 +294,31 @@ function(folder) {
 				searchFor = ZmItem.CONTACT;
 			}
 		}
-		var getHtml = appCtxt.get(ZmSetting.VIEW_AS_HTML);
-		// for Sync Failures folder, always show in traditional view
-		var types = (folder.nId == ZmOrganizer.ID_SYNC_FAILURES) ? [ZmItem.MSG] : null;
-		appCtxt.getSearchController().search({query:folder.createQuery(), searchFor:searchFor, getHtml:getHtml, types:types});
+		var params = {
+			query: folder.createQuery(),
+			searchFor: searchFor,
+			getHtml: appCtxt.get(ZmSetting.VIEW_AS_HTML),
+			types: ((folder.nId == ZmOrganizer.ID_SYNC_FAILURES) ? [ZmItem.MSG] : null)	// for Sync Failures folder, always show in traditional view
+
+		};
+
+		// make sure we have permissions for this folder (in case an "external"
+		// server was down during account load)
+		if (appCtxt.multiAccounts && folder.link && folder.shares == null) {
+			var folderTree = appCtxt.getFolderTree();
+			if (folderTree) {
+				var callback = new AjxCallback(this, this._getPermissionsResponse, [params]);
+				folderTree.getPermissions({callback:callback, folderIds:[folder.id]});
+			}
+		} else {
+			appCtxt.getSearchController().search(params);
+		}
 	}
+};
+
+ZmFolderTreeController.prototype._getPermissionsResponse =
+function(params) {
+	appCtxt.getSearchController().search(params);
 };
 
 
