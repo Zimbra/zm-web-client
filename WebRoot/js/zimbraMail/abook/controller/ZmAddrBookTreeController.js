@@ -212,21 +212,14 @@ function(folder) {
 	} else {
 		var sc = appCtxt.getSearchController();
 		sc.setDefaultSearchType(ZmItem.CONTACT);
-
-		// force a search if user clicked Trash folder or share
-		if (folder.nId == ZmFolder.ID_TRASH || folder.link) {
-			var params = {
-				query: folder.createQuery(),
-				searchFor: ZmItem.CONTACT,
-				fetch: true,
-				sortBy: ZmSearch.NAME_ASC,
-				callback: new AjxCallback(this, this._handleSearchResponse, [folder])
-			};
-			sc.search(params);
-		} else {
-			this._app.currentSearch = null;
-			this._app.showFolder(folder);
-		}
+		var params = {
+			query: folder.createQuery(),
+			searchFor: ZmItem.CONTACT,
+			fetch: true,
+			sortBy: ZmSearch.NAME_ASC,
+			callback: new AjxCallback(this, this._handleSearchResponse, [folder])
+		};
+		sc.search(params);
 
 		if (folder.id != ZmFolder.ID_TRASH) {
 			var clc = AjxDispatcher.run("GetContactListController");

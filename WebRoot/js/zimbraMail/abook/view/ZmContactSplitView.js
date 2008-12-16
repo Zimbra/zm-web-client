@@ -498,36 +498,25 @@ function(item, skipNotify) {
 
 ZmContactSimpleView.prototype._setNoResultsHtml =
 function() {
-	var contactList = AjxDispatcher.run("GetContacts");
-	if (contactList && !contactList.isLoaded) {
-		// Shows "Loading..."
-		ZmContactsBaseView.prototype._setNoResultsHtml.call(this);
-	} else {
-		var	div = document.createElement("div");
 
-        var isSearch = this._controller._contactSearchResults;
-        if(isSearch){
-            isSearch = !(this._controller._currentSearch && this._controller._currentSearch.folderId);
+	var	div = document.createElement("div");
 
-        }
-        //bug:28365  Show custom "No Results" for Search.
-        if((isSearch || this._folderId == ZmFolder.ID_TRASH) && AjxTemplate.getTemplate("abook.Contacts#SimpleView-NoResults-Search")){
-            div.innerHTML = AjxTemplate.expand("abook.Contacts#SimpleView-NoResults-Search");
-        }else{
-            // Shows "No Results", unless the skin has overridden to show links to plaxo.
-            div.innerHTML = AjxTemplate.expand("abook.Contacts#SimpleView-NoResults");
-        }
-		this._addRow(div);
+	var isSearch = this._controller._contactSearchResults;
+	if(isSearch){
+		isSearch = !(this._controller._currentSearch && this._controller._currentSearch.folderId);
+
 	}
+	//bug:28365  Show custom "No Results" for Search.
+	if ((isSearch || this._folderId == ZmFolder.ID_TRASH) && AjxTemplate.getTemplate("abook.Contacts#SimpleView-NoResults-Search")) {
+		div.innerHTML = AjxTemplate.expand("abook.Contacts#SimpleView-NoResults-Search");
+	} else {
+		// Shows "No Results", unless the skin has overridden to show links to plaxo.
+		div.innerHTML = AjxTemplate.expand("abook.Contacts#SimpleView-NoResults");
+	}
+	this._addRow(div);
+
 	this.parent.clear();
 };
-
-ZmContactSimpleView.prototype._getNoResultsMessage =
-function() {
-	var contactList = AjxDispatcher.run("GetContacts");
-	return contactList && !contactList.isLoaded ? ZmMsg.loading : AjxMsg.noResults;
-};
-
 
 ZmContactSimpleView.prototype._changeListener =
 function(ev) {
@@ -540,8 +529,7 @@ function(ev) {
 		var folder = appCtxt.getById(contact.folderId);
 		var row = this._getElement(contact, ZmItem.F_ITEM_ROW);
 		if (row) {
-			row.className = folder && folder.isInTrash()
-				? "Trash" : "";
+			row.className = (folder && folder.isInTrash()) ? "Trash" : "";
 		}
 	}
 };
