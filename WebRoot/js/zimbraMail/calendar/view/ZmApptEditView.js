@@ -211,6 +211,10 @@ function() {
 
 	// save the original form data in its initialized state
 	this._origFormValueMinusAttendees = this._formValue(true);
+    if(this._hasReminderSupport) {
+        this._origFormValueMinusReminder = this._formValue(false, true);
+        this._origReminderValue = this._reminderSelect.getValue();
+    }    
 };
 
 ZmApptEditView.prototype._getClone =
@@ -628,7 +632,7 @@ function(show) {
 
 // Returns a string representing the form content
 ZmApptEditView.prototype._formValue =
-function(excludeAttendees) {
+function(excludeAttendees, excludeReminder) {
 	var vals = [];
 
 	vals.push(this._subjectField.getValue());
@@ -638,7 +642,9 @@ function(excludeAttendees) {
 	vals.push(this._showAsSelect.getValue());
 	vals.push(this._privacySelect.getValue());
 	vals.push(this._folderSelect.getValue());
-    vals.push(this._reminderSelect.getValue());
+    if(!excludeReminder) {
+        vals.push(this._reminderSelect.getValue());
+    }    
     var startDate = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
 	var endDate = AjxDateUtil.simpleParseDateStr(this._endDateField.value);
 	startDate = this._startTimeSelect.getValue(startDate);

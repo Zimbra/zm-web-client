@@ -156,6 +156,22 @@ function(excludeAttendees) {
 		   (this._formValue(excludeAttendees) != formValue);
 };
 
+ZmCalItemEditView.prototype.isReminderOnlyChanged =
+function() {
+
+	if(!this._hasReminderSupport) { return false; }
+
+	var formValue = this._origFormValueMinusReminder;
+
+	var isDirty = (this._gotAttachments() || this._removedAttachments()) ||
+			this._isDirty ||
+		   (this._formValue(false, true) != formValue);
+
+	var isReminderChanged = (this._origReminderValue != this._reminderSelect.getValue());
+
+	return isReminderChanged && !isDirty;
+};
+
 ZmCalItemEditView.prototype.isValid =
 function() {
 	// override

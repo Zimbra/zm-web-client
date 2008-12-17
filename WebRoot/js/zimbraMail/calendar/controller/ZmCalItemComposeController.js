@@ -329,6 +329,9 @@ function(calItem, attId, notifyList) {
 		}
 		var callback = new AjxCallback(this, this._handleResponseSave, calItem);
 		var errorCallback = new AjxCallback(this, this._handleErrorSave);
+        if(this._composeView.isReminderOnlyChanged()) {
+            calItem.setMailNotificationOption(false);
+        }
 		calItem.save(attId, callback, errorCallback, notifyList);
 	} else {
 		// bug: 27600 clean up edit view to avoid stagnant attendees
