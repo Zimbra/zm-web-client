@@ -210,6 +210,11 @@ function() {
     return false;
 };
 
+ZmApptComposeView.prototype.isReminderOnlyChanged =
+function() {
+	return this._apptEditView ? this._apptEditView.isReminderOnlyChanged() : false;
+};
+
 ZmApptComposeView.prototype.isValid = 
 function() {
 	for (var i = 0; i < this._tabIds.length; i++) {
