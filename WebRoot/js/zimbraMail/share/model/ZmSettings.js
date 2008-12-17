@@ -720,7 +720,6 @@ function() {
 	this.registerSetting("WARN_ON_EXIT",					{name:"zimbraPrefWarnOnExit", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 
 	this._registerOfflineSettings();
-	this._registerSkinHints();
     this._registerZimletsSettings();
 
 	// need to do this before loadUserSettings(), and zimlet settings are not tied to an app where it would normally be done
@@ -749,60 +748,6 @@ function() {
 
 	// reset the help URI to zimbra.com for offline
 	this.registerSetting("HELP_URI",						{type:ZmSetting.T_CONFIG, defaultValue:"http://www.zimbra.com/desktop/"});
-};
-
-/**
- * Provide a settings interface to the global skin.hints.* values. The hints are
- * folded into a hash-type setting. The key is the part that comes after
- * "skin.hints.". For example, to get the value of
- * 
- *     skin.hints.appChooser.style
- * 
- * just ask for
- * 
- *     appCtxt.get(ZmSetting.SKIN_HINTS, "appChooser.style")
- * 
- * The main reason for doing this is to centralize the knowledge of the various
- * skin hints.
- */
-ZmSettings.prototype._registerSkinHints =
-function() {
-
-	if (!(window.skin && skin.hints)) { return; }
-	
-	var shSetting = this.registerSetting("SKIN_HINTS", {type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_HASH});
-	var hints = [["appChooser", "fullWidth"],
-				 ["helpButton", "hideIcon"],
-				 ["helpButton", "style"],
-				 ["banner", "url"],
-				 ["logoutButton", "hideIcon"],
-				 ["logoutButton", "style"],
-				 ["presence", "width"],
-				 ["presence", "height"],
-				 ["noOverviewHeaders"],
-				 ["toast", "location"],
-				 ["toast", "transitions"]];
-	for (var i = 0, count = hints.length; i < count; i++) {
-		var hint = hints[i];
-		var obj = skin.hints;
-		for (var propIndex = 0, propCount = hint.length; obj && (propIndex < propCount); propIndex++) {
-			var propName = hint[propIndex];
-			obj = obj[propName];
-		}
-		if (obj) {
-			shSetting.setValue(obj, hint.join("."), true, true);
-		}
-	}
-	
-	// skin.hints.[container ID].position
-	for (var i = 0, count = ZmAppViewMgr.ALL_COMPONENTS.length; i < count; i++) {
-		var cid = ZmAppViewMgr.ALL_COMPONENTS[i];
-		var test = skin.hints[cid];
-		if (test && test.position) {
-			var key = [cid, "position"].join(".");
-			shSetting.setValue(test.position, key, true, true);
-		}
-	}
 };
 
 ZmSettings.prototype._changeListener =

@@ -602,27 +602,6 @@ function(contact, doAdd) {
 			}
 		}
 	}
-
-	// Update my card.
-	if (ZmContact.getAttr(contact, ZmContact.MC_cardOwner) == "isMyCard") {
-		if (!this._myCard) {
-			var root = appCtxt.getById(ZmOrganizer.ID_ROOT);
-			var params = {
-				id: ZmOrganizer.ID_MY_CARD,
-				name: ZmMsg.myCard,
-				parent: root,
-				tree: root.tree,
-				type: ZmOrganizer.ADDRBOOK,
-				numTotal: 1
-			};
-			var addrBook = new ZmAddrBook(params);
-			root.children.add(addrBook);
-			addrBook._notify(ZmEvent.E_CREATE);
-		}
-		if (!this._myCard || (contact.id <= this._myCard.id)) {
-			this._myCard = contact;
-		}
-	}
 };
 
 // Strips all non-digit characters from a phone number.

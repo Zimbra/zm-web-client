@@ -1398,8 +1398,8 @@ function() {
 		var data = {
 			showStandardLink: (!appCtxt.multiAccounts && !appCtxt.isOffline),
 			showOfflineLink: (!appCtxt.isOffline),
-			helpIcon: (appCtxt.get(ZmSetting.SKIN_HINTS, "helpButton.hideIcon") ? null : "Help"),
-			logoutIcon: (appCtxt.get(ZmSetting.SKIN_HINTS, "logoutButton.hideIcon") ? null : "Logoff"),
+			helpIcon: (appCtxt.getSkinHint("helpButton", "hideIcon") ? null : "Help"),
+			logoutIcon: (appCtxt.getSkinHint("logoutButton", "hideIcon") ? null : "Logoff"),
 			logoutText: (appCtxt.isOffline ? ZmMsg.setup : ZmMsg.logOff)
 		};
 		el.innerHTML = AjxTemplate.expand("share.App#UserInfo", data);
@@ -1668,7 +1668,7 @@ function(ev) {
 ZmZimbraMail.prototype._createBanner =
 function() {
 	var banner = new DwtComposite({parent:this._shell, posStyle:Dwt.ABSOLUTE_STYLE, id:ZmId.BANNER});
-	var logoUrl = appCtxt.get(ZmSetting.SKIN_HINTS, "banner.url") || appCtxt.get(ZmSetting.LOGO_URI);
+	var logoUrl = appCtxt.getSkinHint("banner", "url") || appCtxt.get(ZmSetting.LOGO_URI);
 	var data = {url:logoUrl};
 	banner.getHtmlElement().innerHTML  = AjxTemplate.expand('share.App#Banner', data);
 	return banner;
@@ -1676,7 +1676,7 @@ function() {
 
 ZmZimbraMail.prototype._createUserInfo =
 function(className, cid, id) {
-	var position = appCtxt.get(ZmSetting.SKIN_HINTS, [cid, "position"].join("."));
+	var position = appCtxt.getSkinHint(cid, "position");
 	var posStyle = position || Dwt.ABSOLUTE_STYLE;
 	var ui = new DwtComposite({parent:this._shell, className:className, posStyle:posStyle, id:id});
 	if (AjxEnv.isIE) {

@@ -1005,3 +1005,22 @@ function() {
 	}
 	return this._shortcutsPanel;
 };
+
+/**
+ * Returns the skin hint for the given argument(s), which will be used to look
+ * successively down the properties chain. For example, getSkinHint("a", "b")
+ * will return the value of skin.hints.a.b
+ */
+ZmAppCtxt.prototype.getSkinHint =
+function() {
+	if (arguments.length == 0) return "";
+	
+	var cur = skin && skin.hints;
+	if (!cur) { return ""; }
+	for (var i = 0; i < arguments.length; i++) {
+		var arg = arguments[i];
+		if (!cur[arg]) { return ""; }
+		cur = cur[arg];
+	}
+	return cur;
+};

@@ -429,6 +429,33 @@ function() {
 
 // Public methods
 
+ZmContactsApp.prototype.activate =
+function(active) {
+	ZmApp.prototype.activate.apply(this, arguments);
+	if (!this._myCardChecked) {
+		var myCardSupport = appCtxt.getSkinHint("myCardSupport");
+		if (myCardSupport) {
+			var root = appCtxt.getById(ZmOrganizer.ID_ROOT);
+			var params = {
+				id: ZmOrganizer.ID_MY_CARD,
+				name: ZmMsg.myCard,
+				parent: root,
+				tree: root.tree,
+				type: ZmOrganizer.ADDRBOOK,
+				numTotal: 1
+			};
+			var addrBook = new ZmAddrBook(params);
+			root.children.add(addrBook);
+			addrBook._notify(ZmEvent.E_CREATE);
+
+			// enable selection (ZmFolderTreeController creates tree as CHECKED style by default :| )
+			var ti = appCtxt.getOverviewController().getOverview(this.getOverviewId()).getTreeItemById(addrBook.id, ZmOrganizer.ADDRBOOK);
+			ti.enableSelection(true);
+		}
+		this._myCardChecked = true;
+	}
+};
+
 ZmContactsApp.prototype.launch =
 function(params, callback) {
 	this._contactsSearch("in:contacts", callback);

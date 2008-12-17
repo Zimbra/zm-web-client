@@ -18,7 +18,7 @@
 ZmAppChooser = function(parent, className, buttons, id) {
 
 	className = className || "ZmAppChooser";
-	var width = appCtxt.get(ZmSetting.SKIN_HINTS, "appChooser.fullWidth") ? "100%" : null;
+	var width = appCtxt.getSkinHint("appChooser", "fullWidth") ? "100%" : null;
 
 	DwtToolBar.call(this, {parent:parent, className:className, posStyle:Dwt.ABSOLUTE_STYLE,
 						   width:width, style:DwtToolBar.HORIZ_STYLE, id:id});

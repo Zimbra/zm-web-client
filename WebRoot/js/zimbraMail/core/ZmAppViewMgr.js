@@ -813,7 +813,7 @@ function(components, resetToolbar) {
 
 ZmAppViewMgr.prototype._getComponentPosition =
 function(cid) {
-	return appCtxt.get(ZmSetting.SKIN_HINTS, [cid, "position"].join("."));
+	return appCtxt.getSkinHint(cid, "position");
 }
 
 ZmAppViewMgr.prototype._getContainerBounds =

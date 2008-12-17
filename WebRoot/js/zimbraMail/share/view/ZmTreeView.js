@@ -162,7 +162,7 @@ function(params) {
 	this._render(params);
 	ti.setExpanded(!params.collapsed, null, true);
 	this.addSeparator();
-	if (appCtxt.get(ZmSetting.SKIN_HINTS, "noOverviewHeaders")) {
+	if (appCtxt.getSkinHint("noOverviewHeaders")) {
 		ti.setVisible(false, true);
 	}
 };

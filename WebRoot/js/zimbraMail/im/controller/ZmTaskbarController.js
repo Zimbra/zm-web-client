@@ -62,7 +62,7 @@ ZmTaskbarController = function(components) {
 		for (var i = 0, count = buttons.length; i < count; i++) {
 			this._createTaskbarButton(buttons[i]);
 		}
-		var height = appCtxt.get(ZmSetting.SKIN_HINTS, "presence.height") || 24;
+		var height = appCtxt.getSkinHint("presence", "height") || 24;
 		Dwt.setSize(parentEl, Dwt.DEFAULT, height);
 		this._initPresenceButton();
 	}
