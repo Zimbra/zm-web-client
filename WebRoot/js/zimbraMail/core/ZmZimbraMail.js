@@ -894,13 +894,18 @@ function() {
 
 ZmZimbraMail.prototype.registerMailtoHandler =
 function() {
-	// register mailto: handler
 	if (appCtxt.get(ZmSetting.OFFLINE_SUPPORTS_MAILTO) &&
-		appCtxt.get(ZmSetting.OFFLINE_IS_MAILTO_HANDLER) &&
-		!window.platform.isRegisteredProtocolHandler("mailto"))
+		appCtxt.get(ZmSetting.OFFLINE_IS_MAILTO_HANDLER))
 	{
-		var callback = AjxCallback.simpleClosure(this.handleOfflineMailTo, this);
-		window.platform.registerProtocolHandler("mailto", "http://localhost:7633/desktop/login.jsp?mailto=%s", callback);
+		try { // add try/catch - see bug #33870
+			// register mailto: handler
+			if (!window.platform.isRegisteredProtocolHandler("mailto")) {
+				var callback = AjxCallback.simpleClosure(this.handleOfflineMailTo, this);
+				window.platform.registerProtocolHandler("mailto", "http://localhost:7633/desktop/login.jsp?mailto=%s", callback);
+			}
+		} catch(ex) {
+			// do nothing
+		}
 	}
 };
 

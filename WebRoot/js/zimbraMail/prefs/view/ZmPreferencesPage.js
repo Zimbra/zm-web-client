@@ -396,16 +396,22 @@ function(id, value, setup, control) {
 		if (type == ZmPref.TYPE_COLOR) {
 			object.setColor(value);
 		} else if (type == ZmPref.TYPE_CHECKBOX) {
-			if (id == ZmSetting.OFFLINE_IS_MAILTO_HANDLER &&
-				window.platform && !window.platform.isRegisteredProtocolHandler("mailto"))
-			{
-				object.setEnabled(true);
-				object.setSelected(false);
-				appCtxt.set(id, false, null, null, true);
-			}
-			else {
-				var val = (id == ZmSetting.OFFLINE_IS_MAILTO_HANDLER) ? true : value;
-				object.setSelected(val);
+			if (id == ZmSetting.OFFLINE_IS_MAILTO_HANDLER) {
+				try { // add try/catch - see bug #33870
+					if (window.platform && !window.platform.isRegisteredProtocolHandler("mailto")) {
+						object.setEnabled(true);
+						object.setSelected(false);
+						appCtxt.set(id, false, null, null, true);
+					} else {
+						object.setSelected(true);
+					}
+				} catch(ex) {
+					object.setEnabled(false);
+					object.setSelected(false);
+					appCtxt.set(id, false, null, null, true);
+				}
+			} else {
+				object.setSelected(value);
 			}
 		} else if (type == ZmPref.TYPE_RADIO_GROUP) {
 			object.setSelectedValue(value);
@@ -725,8 +731,12 @@ function(id, setup, value) {
 		this._handleNotifyChange();
 		checkbox.addSelectionListener(new AjxListener(this, this._handleNotifyChange));
 	}
-	else if (id == ZmSetting.OFFLINE_IS_MAILTO_HANDLER) {
-		if (window.platform && window.platform.isRegisteredProtocolHandler("mailto")) {
+	else if (id == ZmSetting.OFFLINE_IS_MAILTO_HANDLER && window.platform) {
+		try { // add try/catch - see bug #33870
+			if (window.platform.isRegisteredProtocolHandler("mailto")) {
+				checkbox.setEnabled(false);
+			}
+		} catch(ex) {
 			checkbox.setEnabled(false);
 		}
 	}
