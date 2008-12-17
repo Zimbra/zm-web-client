@@ -321,7 +321,7 @@ function(folder) {
 			searchFor: searchFor,
 			getHtml: appCtxt.get(ZmSetting.VIEW_AS_HTML),
 			types: ((folder.nId == ZmOrganizer.ID_SYNC_FAILURES) ? [ZmItem.MSG] : null), // for Sync Failures folder, always show in traditional view
-			sortBy: ((folder.nId == sc.currentSearch.folderId) ? null : ZmSearch.DATE_DESC)
+			sortBy: ((sc.currentSearch && folder.nId == sc.currentSearch.folderId) ? null : ZmSearch.DATE_DESC)
 		};
 
 		// make sure we have permissions for this folder (in case an "external"
