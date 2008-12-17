@@ -77,7 +77,7 @@ ZmImGatewayControl.prototype._setGateway =
 function(gateway) {
 	this._gateway = gateway;
 	gateway.addListener(ZmImGateway.EVENT_SET_STATE, new AjxListener(this, this._gatewayListener));
-}
+};
 
 ZmImGatewayControl.prototype._clearButtonListener =
 function() {

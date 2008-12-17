@@ -107,6 +107,7 @@ function(enabled) {
  *
  * @param params		[hash]			hash of params:
  *        id			[string]		button ID
+ *        constructor	[function]*		Constructor for button object (default is DwtToolBarButton)
  *        template		[string]*		button template
  *        text			[string]*		button text
  *        tooltip		[string]*		button tooltip text
@@ -153,7 +154,8 @@ ZmToolBar.prototype.SEPARATOR_TEMPLATE = "share.Widgets#ZmToolBarSeparator";
 
 ZmToolBar.prototype._createButton =
 function(params, className) {
-    return new DwtToolBarButton({
+	var ctor = params.ctor || DwtToolBarButton;
+    return new ctor({
 		parent:this,
 		style:params.style,
 		className:className,

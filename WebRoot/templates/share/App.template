@@ -180,3 +180,11 @@
 	</tr></table>
 </template>
 
+<template id='share.App#ZmStatusImageButton' class='ZWidget'>
+	<$ var buttonClass = data.buttonClass || "ToolbarButton"; $>
+	<table class='ZWidgetTable Z<$=buttonClass$>Table Z<$=buttonClass$>Border' cellspacing=0 cellpadding=0 style='table-layout:auto;'><tr>
+		<td id='${id}_left_icon'  	class='ZLeftIcon ZWidgetIcon'></td>
+		<td id='${id}_status_icon'	class='ZLeftIcon ZWidgetIcon'><div></div></td>
+	</tr></table>
+</template>
+

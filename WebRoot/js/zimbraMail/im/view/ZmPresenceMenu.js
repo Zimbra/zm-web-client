@@ -31,6 +31,7 @@ ZmPresenceMenu = function(parent, statuses) {
 	this._mruSeparator = this.addOperation(ZmOperation.SEP);
 	var customListener = new AjxListener(this, this._presenceCustomItemListener);
 	this.addOperation(ZmOperation.IM_PRESENCE_CUSTOM_MSG, customListener);
+	this._updatePresenceMenu();
 };
 
 ZmPresenceMenu.prototype = new ZmPopupMenu;
@@ -163,98 +164,6 @@ function() {
             }
         }
     }
-
-	var buddiesItem = this.getItemById(ZmOperation.MENUITEM_ID, ZmOperation.IM_FLOATING_LIST);
-	if (buddiesItem) {
-		var buddyWindow = window.ZmBuddyListWindow && ZmBuddyListWindow.instance;
-		var buddiesVisible = buddyWindow && buddyWindow.isPoppedUp();
-		buddiesItem.setChecked(buddiesVisible, true);
-	}
-	this._updateGatewayItems(statusImage);
-};
-
-ZmPresenceMenu.prototype._updateGatewayItems =
-function(statusImage) {
-	if (ZmImApp.INSTANCE.hasRoster()) {
-		var gateways = ZmImApp.INSTANCE.getRoster().getGateways();
-		if (gateways.length > 1) {
-			if (!this._gatewayItems) {
-				this._gatewayItems = [];
-				this._gatewayItems.push(this.addOperation(ZmOperation.SEP));
-			}
-			for (var i = 1, count = gateways.length; i < count; i++) {
-				var gateway = gateways[i];
-				var type = gateway.type;
-				if (!this._gatewayItems[type]) {
-					var mi = new ZmStatusImageItem({parent:this});
-					mi.setImage("WebSearch"); // TODO: need icons.)
-					mi.setMenu(new AjxCallback(this, this._createGatewaySubmenu, [mi, gateway]));
-					this._gatewayItems[type] = {item: mi};
-				} else {
-					this._updateGatewaySubitems(gateway);
-				}
-
-				var statusFormat;
-				if (gateway.isOnline()) {
-					statusFormat = this._gatewayOnlineFormat = this._gatewayOnlineFormat || new AjxMessageFormat(ZmMsg.imStatusGatewayOnline);
-				} else {
-					statusFormat = this._gatewayOfflineFormat = this._gatewayOfflineFormat || new AjxMessageFormat(ZmMsg.imStatusGatewayOffline);
-					statusImage = "Offline";
-				}
-				var text = statusFormat.format([ZmMsg["imGateway_" + type], gateway.nick]);
-				var gatewayItem = this._gatewayItems[type].item;
-				gatewayItem.setText(text);
-				gatewayItem.setStatusImage(statusImage);
-			}
-		}
-	}
-};
-
-ZmPresenceMenu.prototype._createGatewaySubmenu =
-function(parent, gateway) {
-	var menu = new ZmPopupMenu(parent);
-	var loginItem = new DwtMenuItem({parent: menu});
-	this._gatewayItems[gateway.type].loginItem = loginItem;
-	var listener = new AjxListener(this, this._gatewaySubitemListener, [gateway]);
-	loginItem.addSelectionListener(listener);
-
-	var reconnectItem = new DwtMenuItem({parent: menu});
-	reconnectItem._action = ZmPresenceMenu._SUBITEM_RECONNECT;
-	this._gatewayItems[gateway.type].reconnectItem = reconnectItem;
-	reconnectItem.addSelectionListener(listener);
-
-	this._updateGatewaySubitems(gateway);
-	return menu;
-};
-
-ZmPresenceMenu._SUBITEM_LOGOUT = "logout";
-ZmPresenceMenu._SUBITEM_LOGIN = "login";
-ZmPresenceMenu._SUBITEM_RECONNECT = "reconnect";
-
-ZmPresenceMenu.prototype._gatewaySubitemListener =
-function(gateway, ev) {
-	var item = ev.dwtObj;
-	if (item._action == ZmPresenceMenu._SUBITEM_LOGOUT) {
-		ZmImApp.INSTANCE.getRoster().unregisterGateway(gateway.type);
-	} else if (item._action == ZmPresenceMenu._SUBITEM_LOGIN) {
-		ZmImApp.INSTANCE.getImController()._imGatewayLoginListener({gwType: gateway.type});
-	} else if (item._action == ZmPresenceMenu._SUBITEM_RECONNECT) {
-		ZmRoster.prototype.reconnectGateway(gateway);
-	}
-};
-
-ZmPresenceMenu.prototype._updateGatewaySubitems =
-function(gateway) {
-	var data = this._gatewayItems[gateway.type];
-	if (data.reconnectItem) {
-		data.reconnectItem.setEnabled(gateway.getState() == ZmImGateway.STATE.BOOTED_BY_OTHER_LOGIN);
-		data.reconnectItem.setText(ZmMsg.imReconnectCaps);
-	}
-	if (data.loginItem) {
-		var online = gateway.isOnline();
-		data.loginItem._action = online ? ZmPresenceMenu._SUBITEM_LOGOUT : ZmPresenceMenu._SUBITEM_LOGIN;
-		data.loginItem.setText(online ? ZmMsg.logOff : ZmMsg.login);
-	}
 };
 
 ZmPresenceMenu.prototype._presenceCustomItemListener =
@@ -297,44 +206,4 @@ function(message, batchCommand) {
 	}
 	settings.save([setting], null, batchCommand);
 };
-
-///////////////////////////////////////////////////////////////////////////
-
-/**
- * ZmStatusImageItem is a menu item with a second icon for a service's online status.
- */
-ZmStatusImageItem = function(params) {
-	params.className = "ZmStatusImageItem";
-	DwtMenuItem.call(this, params);
-}
-
-ZmStatusImageItem.prototype = new DwtMenuItem;
-ZmStatusImageItem.prototype.constructor = ZmStatusImageItem;
-
-ZmStatusImageItem.prototype.TEMPLATE = "im.Chat#ZmStatusImageItem";
-
-ZmStatusImageItem.prototype.toString =
-function() {
-	return "ZmStatusImageItem";
-};
-
-ZmStatusImageItem.prototype.dispose =
-function() {
-	this._statusIconEl = null;
-	DwtMenuItem.prototype.dispose.call(this);
-};
-
-ZmStatusImageItem.prototype.setStatusImage =
-function(imageInfo) {
-	if (this._statusIconEl) {
-		AjxImg.setImage(this._statusIconEl, imageInfo);
-	}
-};
-
-ZmStatusImageItem.prototype._createHtmlFromTemplate =
-function(templateId, data) {
-    DwtMenuItem.prototype._createHtmlFromTemplate.call(this, templateId, data);
-    this._statusIconEl = document.getElementById(data.id + "_status_icon");
-};
-
 
