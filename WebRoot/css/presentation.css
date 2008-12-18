@@ -15,6 +15,7 @@
 	padding:0px;
 	margin: 10px;
     background-color: white;
+	position: relative;
 }
 
 .slide {
