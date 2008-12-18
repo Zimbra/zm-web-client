@@ -16,14 +16,7 @@
 ZmDataSource = function(type, id, list) {
 	if (arguments.length == 0) return;
 	ZmAccount.call(this, type, id, null, list);
-	this.port = this.getDefaultPort();
-	this.identity = new ZmIdentity();
-	this.identity.id = id;
-	this.identity.isFromDataSource = true;
-	// defensive programming
-	this.identity.create = null;
-	this.identity.save = null;
-	this.identity.doDelete = null;
+	this.reset();
 };
 
 ZmDataSource.prototype = new ZmAccount;
@@ -296,6 +289,121 @@ function(obj) {
 		identity[pname] = avalue;
 	}
 	this._setupIdentity();
+};
+
+ZmDataSource.prototype.reset = function() {
+	// reset data source properties
+	this.email = "";
+	this.port = this.getDefaultPort();
+	// NOTE: These have default values on the prototype object
+	delete this.mailServer;
+	delete this.userName;
+	delete this.password;
+	delete this.folderId;
+	delete this.leaveOnServer;
+	delete this.connectionType;
+	delete this.pollingInterval;
+
+	// reset identity
+	var identity = this.identity = new ZmIdentity();
+	identity.id = this.id;
+	identity.isFromDataSource = true;
+	// defensive programming
+	identity.create = null;
+	identity.save = null;
+	identity.doDelete = null;
+};
+
+ZmDataSource.prototype.getProvider = function() {
+	return ZmDataSource.getProviderForAccount(this);
+};
+
+//
+// Public functions
+//
+
+// data source providers - provides default values
+
+/**
+ * Adds a data source provider. The registered providers are objects that
+ * specify default values for data sources. This can be used to show the
+ * user a list of known email providers (e.g. Yahoo! Mail) to pre-fill the
+ * account information.
+ * <p>
+ * The <i>provider</i> parameter is an anonymous JavaScript object with
+ * the following properties:
+ * <ul>
+ * <li>Required:
+ *  <ul>
+ *  <li><i>id</i> - A unique identifier for this provider.
+ *  <li><i>name</i> - The name of this provider to display to the user.
+ *  </ul>
+ * <li>Optional:
+ *  <ul>
+ *  <li><i>type</i> - Type: "POP" or "IMAP".
+ *  <li><i>connectionType</i> - Connection type: "cleartext" or "ssl".
+ *  <li><i>host</i> - The server.
+ *  <li><i>port</i> - The port. Leave blank if provider uses default for
+ *                    specified <i>connectionType</i>.
+ *  <li><i>pollingInterval</i> - Polling interval.
+ *  <li><i>leaveOnServer</i> - Leave message on server (POP only).
+ *  </ul>
+ * </ul>
+ *
+ * @param provider  [object]    Provider information.
+ */
+ZmDataSource.addProvider = function(provider) {
+	var providers = ZmDataSource.getProviders();
+	providers[provider.id] = provider;
+	// normalize values -- defensive programming
+	if (provider.type) {
+		provider.type = provider.type.toLowerCase() == "pop" ? ZmAccount.POP : ZmAccount.IMAP;
+	}
+	else {
+		provider.type = ZmAccount.POP;
+	}
+	if (provider.connectionType) {
+		var isSsl = provider.connectionType.toLowerCase() == "ssl";
+		provider.connectionType =  isSsl ? ZmDataSource.CONNECT_SSL : ZmDataSource.CONNECT_CLEAR;
+	}
+	else {
+		provider.connectionType = ZmDataSource.CONNECT_CLEAR;
+	}
+	if (!provider.port) {
+		var isPop = provider.type == ZmAccount.POP;
+		if (isSsl) {
+			provider.port = isPop ? ZmPopAccount.PORT_SSL : ZmImapAccount.PORT_SSL;
+		}
+		else {
+			provider.port = isPop ? ZmPopAccount.PORT_CLEAR : ZmImapAccount.PORT_CLEAR;
+		}
+	}
+};
+
+ZmDataSource.getProviders = function() {
+	if (!ZmDataSource._providers) {
+		ZmDataSource._providers = {};
+	}
+	return ZmDataSource._providers;
+};
+
+ZmDataSource.getProviderForAccount = function(account) {
+	return ZmDataSource.getProviderForHost(account.mailServer);
+};
+ZmDataSource.getProviderForHost = function(host) {
+	var providers = ZmDataSource.getProviders();
+	for (var id in providers) {
+		hasProviders = true;
+		var provider = providers[id];
+		if (provider.host == host) {
+			return provider;
+		}
+	}
+	return null;
+};
+
+ZmDataSource.removeAllProviders = function() {
+	delete ZmDataSource._providers;
 };
 
 //
