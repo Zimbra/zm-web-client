@@ -724,21 +724,27 @@ and the container element is replaced with that control.
 		</tr>
 	</table>
 
-	<!-- TODO: How to handle tabbing when sections are not shown? -->
 	<div id="${id}_PRIMARY" class='ZAccountSettings'>
 		<$= AjxTemplate.expand("#PrimaryAccount", data) $>
 	</div>
 
 	<$ if (data.isEnabled(ZmSetting.POP_ACCOUNTS_ENABLED) || data.isEnabled(ZmSetting.IMAP_ACCOUNTS_ENABLED)) { $>
-	<div id="${id}_EXTERNAL" class='ZAccountSettings' style='display:none;'>
-		<$= AjxTemplate.expand("#ExternalAccount", data) $>
-	</div>
+		<div id="${id}_EXTERNAL" class='ZAccountSettings' style='display:none;'>
+			<$= AjxTemplate.expand("#ExternalAccount", data) $>
+		</div>
+		<$ var providers = ZmDataSource.getProviders();
+		   for (var pid in providers) { $>
+			<$ if (!AjxTemplate.getTemplate("prefs.Pages#ExternalAccount-"+pid)) { continue; } $> 
+			<div id="${id}_<$=pid$>" class='ZAccountSettings' style='display:none;'>
+				<$= AjxTemplate.expand("#ExternalAccount-"+pid, data) $>
+			</div>
+		<$ } $>
 	<$ } $>
 
 	<$ if (data.isEnabled(ZmSetting.IDENTITIES_ENABLED)) { $>
-	<div id="${id}_PERSONA" class='ZAccountSettings' style='display:none;'>
-		<$= AjxTemplate.expand("#Persona", data) $>
-	</div>
+		<div id="${id}_PERSONA" class='ZAccountSettings' style='display:none;'>
+			<$= AjxTemplate.expand("#Persona", data) $>
+		</div>
 	<$ } $>
 </template>
 
@@ -840,6 +846,15 @@ and the container element is replaced with that control.
 			<table width=100%>
 				<tr><td colspan=2><div id='${id}_EXTERNAL_ALERT'></div></td></tr>
 
+				<!--
+				<tr id="${id}_EXTERNAL_PROVIDER_row">
+					<td class='ZOptionsLabel'>[Provider:]</td>
+					<td class='ZOptionsField'>
+						<select id="${id}_EXTERNAL_PROVIDER"></select>
+					</td>
+				</tr>
+				-->
+
 				<tr><td class='ZOptionsLabel'><$=ZmMsg.emailAddrLabel$></td>
 					<td class='ZOptionsField'>
 						<input id='${id}_EXTERNAL_EMAIL' tabindex='2010' title='<$=ZmMsg.exampleEmailAddr$>' size=30>
@@ -856,9 +871,9 @@ and the container element is replaced with that control.
 					<$ if (data.isEnabled(ZmSetting.POP_ACCOUNTS_ENABLED) && data.isEnabled(ZmSetting.IMAP_ACCOUNTS_ENABLED)) { $>
 						<td class='ZOptionsField'><div id='${id}_EXTERNAL_ACCOUNT_TYPE' tabindex='2030'></div></td>
 					<$ } else if (data.isEnabled(ZmSetting.POP_ACCOUNTS_ENABLED)) { $>
-						<td class='ZOptionsField'>POP3</div></td>
+						<td class='ZOptionsField'>POP3</td>
 					<$ } else { $>
-						<td class='ZOptionsField'>IMAP</div></td>
+						<td class='ZOptionsField'>IMAP</td>
 					<$ } $>
 				</tr>
 

@@ -58,6 +58,9 @@ function() {
 		ALERT: {
 			displayContainer:	ZmPref.TYPE_CUSTOM
 		},
+		PROVIDER: {
+			displayContainer:   ZmPref.TYPE_SELECT
+		},
 		NAME: {
 			displayContainer:	ZmPref.TYPE_INPUT
 		},
@@ -167,6 +170,7 @@ function() {
  */
 ZmAccountsPage.SECTIONS = {
 	PRIMARY: {
+		id: "PRIMARY",
 		prefs: [
 			"NAME",				// A
 			"HEADER",
@@ -181,8 +185,10 @@ ZmAccountsPage.SECTIONS = {
 		]
 	},
 	EXTERNAL: {
+		id: "EXTERNAL",
 		prefs: [
 			"ALERT",
+			"PROVIDER",
 			"NAME",						// A
 			"HEADER",
 			"EMAIL",					// I - maps to from name in identity
@@ -206,6 +212,7 @@ ZmAccountsPage.SECTIONS = {
 		]
 	},
 	PERSONA: {
+		id: "PERSONA",
 		prefs: [
 			"NAME",						// I
 			"HEADER",
@@ -223,6 +230,27 @@ ZmAccountsPage.SECTIONS = {
 		]
 	}
 };
+
+/*** DEBUG ***
+var providers = [
+	{ id: "yahoo-pop", name: "Yahoo! Mail", type: "POP", host: "yahoo.com" },
+	{ id: "gmail-pop", name: "GMail (POP)", type: "POP", host: "pop.gmail.com", connectionType: "ssl" },
+	{ id: "gmail-imap", name: "GMail (IMAP)", type: "IMAP", host: "imap.gmail.com", connectionType: "ssl" }
+];
+for (var i = 0; i < providers.length; i++) {
+	ZmDataSource.addProvider(providers[i]);
+}
+/***/
+
+// create a section for each provider with a custom template
+var providers = ZmDataSource.getProviders();
+for (var id in providers) {
+	if (!AjxTemplate.getTemplate("prefs.Pages#ExternalAccount-"+id)) { continue; }
+	ZmAccountsPage.SECTIONS[id] = {
+		id:    id,
+		prefs: ZmAccountsPage.SECTIONS["EXTERNAL"].prefs
+	};
+}
 
 ZmAccountsPage.ACCOUNT_PROPS = {
 	"NAME":						{ setter: "setName",	getter: "getName" },
@@ -256,10 +284,12 @@ ZmAccountsPage.IDENTITY_PROPS = {
 //
 
 ZmAccountsPage.prototype.setAccount =
-function(account) {
+function(account, skipUpdate, ignoreProvider) {
 	// keep track of changes made to current account
 	if (this._currentAccount) {
-		this._setAccountFields(this._currentAccount, this._currentSection);
+		if (!skipUpdate) {
+			this._setAccountFields(this._currentAccount, this._currentSection);
+		}
 		this._tabGroup.removeMember(this._currentSection.tabGroup);
 		this._currentAccount = null;
 		this._currentSection = null;
@@ -279,7 +309,9 @@ function(account) {
 	//       specific section because some of the sections use
 	//       the same div. This avoids double inititalization
 	//       in that case.
-	var div = this._sectionDivs[account.type];
+	var isExternal = account instanceof ZmDataSource;
+	var provider = !ignoreProvider && isExternal && account.getProvider();
+	var div = (provider && this._sectionDivs[provider.id]) || this._sectionDivs[account.type];
 	if (div) {
 		this._currentAccount = account;
 		Dwt.setVisible(div, true);
@@ -291,8 +323,12 @@ function(account) {
 			}
 			case ZmAccount.POP:
 			case ZmAccount.IMAP: {
-				this._currentSection = ZmAccountsPage.SECTIONS["EXTERNAL"];
+				this._currentSection = provider && ZmAccountsPage.SECTIONS[provider.id];
+				this._currentSection = this._currentSection || ZmAccountsPage.SECTIONS["EXTERNAL"];
 				this._setExternalAccount(account, this._currentSection);
+				if (ignoreProvider) {
+					this._setControlValue("PROVIDER", this._currentSection, "");
+				}
 				break;
 			}
 			case ZmAccount.PERSONA: {
@@ -304,7 +340,6 @@ function(account) {
 		this._tabGroup.addMember(this._currentSection.tabGroup);
 	}
 
-	var isExternal = (account instanceof ZmDataSource);
 	var control = this._currentSection && this._currentSection.controls[isExternal ? "EMAIL" : "NAME"];
     //When a hidden field is applied focus(), IE throw's an exception. Thus checking for isActive()
     if (control && this.isActive()) {
@@ -594,6 +629,10 @@ function(account, section) {
 	this._setControlValue("CHANGE_PORT", section, isPortChanged);
 	this._setControlEnabled("PORT", section, isPortChanged);
 	this._setPortControls(account.type, account.connectionType, account.port);
+
+	var provider = account.getProvider();
+	this._setControlValue("PROVIDER", section, provider ? provider.id : "");
+	this._setControlVisible("PROVIDER", section, AjxUtil.keys(ZmDataSource.getProviders()).length > 0);
 };
 
 ZmAccountsPage.prototype._setDownloadToFolder =
@@ -880,10 +919,10 @@ ZmAccountsPage.prototype._setControlVisible =
 function(id, section, visible) {
 	var control = section.controls[id];
 	var setup = ZmAccountsPage.PREFS[id];
-	if (!control || !setup) return false;
-
-	control.setVisible(visible);
-	return visible;
+	if (control) control.setVisible(visible);
+	var el = document.getElementById([this._htmlElId, section.id, id, "row"].join("_"));
+	if (el) Dwt.setVisible(el, visible);
+	return control || el ? visible : false;
 };
 
 ZmAccountsPage.prototype._setControlEnabled =
@@ -1034,9 +1073,8 @@ function(id, setup, value) {
 
 ZmAccountsPage.prototype._setupSelect =
 function(id, setup, value) {
-	var isEmailSelect = id == "FROM_EMAIL";
 	var select;
-	if (isEmailSelect) {
+	if (id == "FROM_EMAIL") {
 		setup.displayOptions = this._getAllAddresses();
 		if (appCtxt.get(ZmSetting.ALLOW_ANY_FROM_ADDRESS)) {
 			select = this._setupComboBox(id, setup, value);
@@ -1047,7 +1085,23 @@ function(id, setup, value) {
 			select.getValue = select.getText;
 		}
 	}
-	if (!select && setup.displayOptions && setup.displayOptions.length < 2) {
+	else if (id == "PROVIDER") {
+		var providers = AjxUtil.values(ZmDataSource.getProviders());
+		providers.sort(ZmAccountsPage.__BY_PROVIDER_NAME);
+		providers.unshift( { id: "", name: "Custom" } ); // TODO: i18n
+
+		var options = new Array(providers.length);
+		var displayOptions = new Array(providers.length);
+		for (var i = 0; i < providers.length; i++) {
+			var provider = providers[i];
+			options[i] = provider.id;
+			displayOptions[i] = provider.name;
+		}
+
+		setup.options = options;
+		setup.displayOptions = displayOptions;
+	}
+	else if (setup.displayOptions && setup.displayOptions.length < 2) {
 		select = this._setupInput(id, setup, value);
 		select.setEnabled(false);
 		select.setSelectedValue = select.setValue;
@@ -1060,7 +1114,18 @@ function(id, setup, value) {
 		collection.addChangeListener(new AjxListener(this, this._resetSignatureSelect, [select]));
 		this._resetSignatureSelect(select);
 	}
+	if (id == "PROVIDER") {
+		select.addChangeListener(new AjxListener(this, this._handleProviderChange))
+	}
 	return select;
+};
+
+ZmAccountsPage.__BY_PROVIDER_NAME = function(a, b) {
+	if (a.name.match(/^zimbra/i)) return -1;
+	if (b.name.match(/^zimbra/i)) return  1;
+	if (a.name.match(/^yahoo/i)) return -1;
+	if (b.name.match(/^yahoo/i)) return  1;
+	return a.name.localeCompare(b.name);
 };
 
 ZmAccountsPage.prototype._setupComboBox =
@@ -1192,11 +1257,21 @@ function() {
 
 ZmAccountsPage.prototype._setupExternalDiv =
 function() {
+	// setup generic external account div
 	var div = document.getElementById(this._htmlElId+"_EXTERNAL");
 	if (div) {
 		this._sectionDivs[ZmAccount.POP] = div;
 		this._sectionDivs[ZmAccount.IMAP] = div;
 		this._createSection("EXTERNAL", div);
+	}
+
+	// setup divs for specific providers
+	var providers = ZmDataSource.getProviders();
+	for (var id in providers) {
+		var div = document.getElementById([this._htmlElId, id].join("_"));
+		if (!div) continue;
+		this._sectionDivs[id] = div;
+		this._createSection(id, div);
 	}
 };
 
@@ -1370,6 +1445,33 @@ function(evt) {
 	var type = ZmAccountsListView.TYPES[radio.getSelectedValue()] || "???";
 	this._accountListView.setCellContents(this._currentAccount, ZmItem.F_TYPE, type);
 	this._handleTypeOrSslChange(evt);
+};
+
+ZmAccountsPage.prototype._handleProviderChange = function() {
+	var id = this._getControlValue("PROVIDER", this._currentSection);
+	var dataSource = this._currentAccount;
+
+	// initialize data source
+	if (id) {
+		var provider = ZmDataSource.getProviders()[id];
+		if (!provider) return;
+
+		// init default values
+		dataSource.reset();
+		for (var p in provider) {
+			if (p == "id") continue;
+			if (p == "type") {
+				dataSource.setType(provider[p]);
+				continue;
+			}
+			dataSource[ZmDataSource.DATASOURCE_ATTRS[p]] = provider[p];
+		}
+	}
+
+	// reset interface
+	var skipUpdate = true;
+	var ignoreProvider = id == "";
+	this.setAccount(dataSource, skipUpdate, ignoreProvider);
 };
 
 ZmAccountsPage.prototype._handleTypeOrSslChange =
