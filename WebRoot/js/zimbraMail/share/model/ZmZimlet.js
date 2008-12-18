@@ -22,9 +22,6 @@ ZmZimlet = function(id, name, parent, tree, color) {
 ZmZimlet.prototype = new ZmOrganizer();
 ZmZimlet.prototype.constructor = ZmZimlet;
 
-ZmEvent.S_ZIMLET	= "ZIMLET";
-ZmOrganizer.ZIMLET	= ZmEvent.S_ZIMLET;
-
 // test hack 
 ZmZimlet.actionMenus = {};
 ZmZimlet.actionMenus["ZmCalViewController"] = [];

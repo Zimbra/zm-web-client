@@ -63,11 +63,12 @@ function() {
  * @param items		[Array]			a list of items to move
  * @param folder	[ZmFolder]		destination folder
  * @param attrs		[Object]		additional attrs for SOAP command
+ * @param callback	[AjxCallback]*	callback to trigger once operation completes
  */
 ZmMailList.prototype.moveItems =
-function(items, folder, attrs) {
+function(items, folder, attrs, callback) {
 	if (this.type != ZmItem.CONV) {
-		ZmList.prototype.moveItems.call(this, items, folder, attrs);
+		ZmList.prototype.moveItems.call(this, items, folder, attrs, callback);
 		return;
 	}
 	
@@ -75,12 +76,12 @@ function(items, folder, attrs) {
 	attrs.tcon = this._getTcon();
 	attrs.l = folder.id;
 	var action = (folder.id == ZmFolder.ID_TRASH) ? "trash" : "move";
-	var respCallback = new AjxCallback(this, this._handleResponseMoveItems, [folder]);
+	var respCallback = new AjxCallback(this, this._handleResponseMoveItems, [folder, callback]);
 	this._itemAction({items: items, action: action, attrs: attrs, callback: respCallback});
 };
 
 ZmMailList.prototype._handleResponseMoveItems =
-function(folder, result) {
+function(folder, callback, result) {
 	var movedItems = result.getResponse();	
 	if (movedItems && movedItems.length) {
 		this.moveLocal(movedItems, folder.id);
@@ -89,6 +90,10 @@ function(folder, result) {
 		}
 		// note: this happens before we process real notifications
 		ZmModel.notifyEach(movedItems, ZmEvent.E_MOVE);
+	}
+
+	if (callback) {
+		callback.run();
 	}
 };
 
@@ -99,9 +104,10 @@ function(folder, result) {
 * @param items			[Array]			a list of items to move
 * @param markAsSpam		[boolean]		if true, mark as "spam"
 * @param folder			[ZmFolder]*		destination folder
+* @param childWin		[window]*		child window this action is happening for
 */
 ZmMailList.prototype.spamItems = 
-function(items, markAsSpam, folder) {
+function(items, markAsSpam, folder, childWin) {
 	if (this.type == ZmItem.MIXED && !this._mixedType) {
 		this._mixedAction("spamItems", [items, markAsSpam, folder]);
 		return;
@@ -113,12 +119,12 @@ function(items, markAsSpam, folder) {
 	attrs.tcon = this._getTcon();
 	if (folder) attrs.l = folder.id;
 
-	var respCallback = new AjxCallback(this, this._handleResponseSpamItems, [markAsSpam, folder]);
+	var respCallback = new AjxCallback(this, this._handleResponseSpamItems, [markAsSpam, folder, childWin]);
 	this._itemAction({items: items, action: action, attrs: attrs, callback: respCallback});
 };
 
 ZmMailList.prototype._handleResponseSpamItems =
-function(markAsSpam, folder, result) {
+function(markAsSpam, folder, childWin, result) {
 	var movedItems = result.getResponse();
 	if (movedItems && movedItems.length) {
 		folderId = markAsSpam ? ZmFolder.ID_SPAM : (folder ? folder.id : ZmFolder.ID_INBOX);
@@ -130,6 +136,10 @@ function(markAsSpam, folder, result) {
 
 		var msg = markAsSpam ? ZmMsg.markedAsJunk : ZmMsg.markedAsNotJunk;
 		appCtxt.setStatusMsg(AjxMessageFormat.format(msg, movedItems.length));
+
+		if (childWin) {
+			childWin.close();
+		}
 	}
 };
 
@@ -141,9 +151,10 @@ function(markAsSpam, folder, result) {
  * @param items			[Array]			list of items to delete
  * @param hardDelete	[boolean]		whether to force physical removal of items
  * @param attrs			[Object]		additional attrs for SOAP command
+ * @param childWin		[window]*		the child window this action is happening in
  */
 ZmMailList.prototype.deleteItems =
-function(items, hardDelete, attrs) {
+function(items, hardDelete, attrs, childWin) {
 	if (this.type == ZmItem.CONV || this._mixedType == ZmItem.CONV) {
 		var searchFolder = this.search ? appCtxt.getById(this.search.folderId) : null;
 		if (searchFolder && searchFolder.isHardDelete()) {
@@ -162,7 +173,7 @@ function(items, hardDelete, attrs) {
 			return;
 		}
 	}
-	ZmList.prototype.deleteItems.call(this, items, hardDelete, attrs);
+	ZmList.prototype.deleteItems.call(this, items, hardDelete, attrs, childWin);
 };
 
 ZmMailList.prototype._handleResponseDeleteItems =

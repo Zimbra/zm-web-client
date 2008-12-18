@@ -153,6 +153,11 @@ function(setting, right) {
 
 	var curType = appCtxt.get(setting);
 	var curUsers = (curType == ZmSetting.ACL_USER) ? this._acl.getGrantees(right) : [];
+	var curUsersInfo = (curType == ZmSetting.ACL_USER) ? this._acl.getGranteesInfo(right) : [];
+    var zidHash = {};
+    for (var i = 0; i < curUsersInfo.length; i++) {
+          zidHash[curUsersInfo[i].grantee] = curUsersInfo[i].zid;
+    }
 	var curHash = AjxUtil.arrayAsHash(curUsers);
 	
 	var radioGroup = this.getFormObject(setting);
@@ -165,7 +170,9 @@ function(setting, right) {
 		for (var i = 0; i < users.length; i++) {
 			var user = users[i];
 			if (!user) { continue; }
-			user = (user.indexOf('@') == -1) ? [user, appCtxt.getUserDomain()].join('@') : user;
+            if(zidHash[user] != user) {
+			    user = (user.indexOf('@') == -1) ? [user, appCtxt.getUserDomain()].join('@') : user;
+            }
 			newUsers.push(user);
 		}
 		newUsers.sort();
@@ -189,10 +196,11 @@ function(setting, right) {
 	if (curUsers.length > 0) {
 		for (var i = 0; i < curUsers.length; i++) {
 			var user = curUsers[i];
+			var zid = (curUsersInfo[i]) ? curUsersInfo[i].zid : null;
 			if (!newHash[user]) {
 				var contact = contacts.getContactByEmail(user);
 				var gt = (contact && contact.isGroup()) ? ZmSetting.ACL_GROUP : ZmSetting.ACL_USER;
-				var ace = new ZmAccessControlEntry({grantee:user, granteeType:gt, right:right});
+				var ace = new ZmAccessControlEntry({grantee: (user!=zid) ? user : null, granteeType:gt, right:right, zid: zid});
 				revokes.push(ace);
 			}
 		}
