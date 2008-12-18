@@ -81,13 +81,11 @@ function(div) {
 ZmSlideEditView.prototype.getCurrentSlideElement =
 function() {
     return this._currentSlideDiv;
-	//return this.getHtmlElement();
 };
 
 ZmSlideEditView.prototype.getCurrentPreviewSlideElement =
 function() {
     return this._currentPreviewSlideDiv;
-	//return this.getHtmlElement();
 };
 
 ZmSlideEditView.prototype._createHTML =
@@ -136,7 +134,6 @@ function(ignorePreview) {
 
     if(cdiv) {
         this.convertToPercentage(cdiv);
-		//this._currentSlide.setContent(cdiv.innerHTML);
         this._syncPreview();
         Dwt.setVisible(cdiv, false);
         if(this._slideParent) {
@@ -151,20 +148,18 @@ function(ignorePreview) {
 
     var bounds = Dwt.getBounds(this._slideContainer);
 
-    var width = bounds.width * 0.72; //70% width
-    var x = (bounds.width - width)/2;
-    var height = bounds.height*0.72; //80% height
-    var y = (bounds.height - height)/2;
-
     var slideDiv = this._slideParent = document.createElement("div");
     slideDiv.className = "slideparent";
-    Dwt.setPosition(slideDiv, Dwt.ABSOLUTE_STYLE);
-    Dwt.setBounds(slideDiv, x, y, width, height);
+
+	Dwt.setPosition(slideDiv, Dwt.ABSOLUTE_STYLE);
+	var wdPercent = 80;
+	var htPercent = (100/bounds.height)*((3/4)*0.8*bounds.width);
+   	Dwt.setBounds(slideDiv, "10%", (100-htPercent)/2+"%", wdPercent+"%", htPercent+"%");
+
     this._slideContainer.appendChild(slideDiv);
     slideDiv.style.opacity = 0;
 
     slideDiv.appendChild(div);
-	//this._slideContainer.appendChild(div);
 
     var bgDiv = this._currentSlideThemeDiv = document.createElement("div");
     bgDiv.className = "slidemaster";
@@ -172,13 +167,12 @@ function(ignorePreview) {
     Dwt.setPosition(bgDiv, Dwt.ABSOLUTE_STYLE);
 
     slideDiv.appendChild(bgDiv);
-	//this._slideContainer.appendChild(bgDiv);
 
     div.style.zIndex = Dwt.Z_VIEW;
     bgDiv.style.zIndex = Dwt.Z_VIEW-10;
 
-    Dwt.setBounds(div, 0, 0, width, height);
-    Dwt.setBounds(bgDiv, 0, 0, width, height);
+    Dwt.setBounds(div, 0, 0, "100%", "100%");
+    Dwt.setBounds(bgDiv, 0, 0, "100%", "100%");
 
     this._currentSlideDiv = div;
 
@@ -259,17 +253,15 @@ function() {
     var bounds = Dwt.getBounds(this._previewContainer);
     var slideBounds = Dwt.getBounds(this._slideParent);
 
-    var width =  slideBounds.width* 0.29; //40% width
-
-    var height = slideBounds.height*0.3; //40% height
-
-    var x = (bounds.width - width)/2;
-    var y = (bounds.height - height)/2;
-
     var slideDiv = this._previewSlideParent = document.createElement("div");
     slideDiv.className = "previewslideparent";
-    Dwt.setSize(slideDiv, width, height);
-    this._previewContainer.appendChild(slideDiv);
+    
+	var wdPercent = 90;
+	var htPercent = (100/bounds.height)*((3/4)*0.9*bounds.width);
+
+	Dwt.setSize(slideDiv, wdPercent+"%", htPercent+"%");
+    
+	this._previewContainer.appendChild(slideDiv);
 
     this.associateItemWithElement(null, div, ZmSlideEditView.TYPE_PREVIEW);
 
@@ -281,11 +273,10 @@ function() {
 
     slideDiv.appendChild(bgDiv);
 
-    Dwt.setSize(div, width, height);
-    Dwt.setSize(bgDiv, width, height);
+	Dwt.setSize(div, "100%","100%");
+	Dwt.setSize(bgDiv, "100%","100%");
 
     div.innerHTML = this._currentSlideDiv.innerHTML;
-
     bgDiv.innerHTML = this._currentSlideThemeDiv.innerHTML;
 
     div.style.zIndex = Dwt.Z_VIEW;
