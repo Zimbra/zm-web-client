@@ -2386,11 +2386,43 @@ function(work, view, list, skipMiniCalUpdate) {
         if (work & ZmCalViewController.MAINT_REMINDER) {
 			this._app.getReminderController().refresh();
 		}
+		//open any appointment if need be after loading the calendar(this appt must be in the view
+		this._openApptOnCalLoad();
     }
 	else if (work & ZmCalViewController.MAINT_REMINDER) {
 		this._app.getReminderController().refresh();
 	}
 
+};
+
+ZmCalViewController.prototype._openApptOnCalLoad =
+function() {
+	if(!this._apptToOpenOnCalLoad) 
+		return;
+
+	var reqUID = this._apptToOpenOnCalLoad.uid;
+	this._apptToOpenOnCalLoad = null// !!make sure set this to null
+
+	var vec = this._apptCache._cachedApptVectors;
+	var _cachedApptsArry = new Array();
+	for (var el in vec) {
+		var vec2 = vec[el];
+		for (var el2 in vec2) {
+			_cachedApptsArry = _cachedApptsArry.concat(vec2[el2].getArray());
+		}
+	}
+	var len = _cachedApptsArry.length;
+	for (var i = 0; i < len; i++) {
+		if (_cachedApptsArry[i].uid == reqUID) {
+			this._showAppointmentDetails(_cachedApptsArry[i]);
+			return;
+		}
+	}
+};
+
+ZmCalViewController.prototype.setApptToOpenOnCalLoad =
+function(appt) {
+	this._apptToOpenOnCalLoad = appt;
 };
 
 ZmCalViewController.prototype._scheduleMaintenance =

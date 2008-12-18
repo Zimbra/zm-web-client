@@ -128,7 +128,7 @@ function(html, appt, data, needSep) {
 	html.append("<td colspan=2>");
 	html.append("<table cellpadding=0 cellspacing=0 border=0><tr>");
 	html.append("<td width=25px>", AjxImg.getImageHtml(appt.otherAttendees ? "ApptMeeting" : "Appointment"), "</td>");
-	html.append("<td><b>",  AjxStringUtil.htmlEncode(appt.getReminderName()), "</b> (", this.getDurationText(appt),")</td>");
+	html.append("<td><b>", AjxStringUtil.htmlEncode(appt.getReminderName()), "</b> (", this.getDurationText(appt), ") ",  "</td>");
 	html.append("</tr></table>");
 	html.append("</td>");
 	html.append("<td id='", data.deltaId, "'></td>");
@@ -138,6 +138,7 @@ function(html, appt, data, needSep) {
     //if (appt.otherAttendees) this._addAttr(html, ZmMsg.status, appt.getParticipantStatusStr(), data);
 	if (calName) this._addAttr(html, ZmMsg.calendar, calName, data);	
 	this._addAttr(html, ZmMsg.location, appt.getReminderLocation(), data);
+	this._appendOpenApptLnk(html, appt);
 };
 
 ZmReminderDialog.prototype.getDurationText =
@@ -200,8 +201,57 @@ function(list) {
 		document.getElementById(data.buttonId).appendChild(button.getHtmlElement());
 		this._updateDelta(data);
 	}
+
+	var lnks = div.getElementsByTagName("a");
+	for (var i = 0; i < lnks.length; i++) {
+		var lnk = lnks[i];
+		if (lnk.className == "zmRemOpenApptLnkCls") {
+			var uid = lnk.id.replace("zmRemDlgOpenApptId_", "");
+			var appt = this._getApptFromUid(uid);
+			if (appt != null) {
+				lnk.onclick = AjxCallback.simpleClosure(this._addOpenApptListener, this, appt);
+			}
+		}
+	}
 };
 
+ZmReminderDialog.prototype._appendOpenApptLnk =
+function(html, appt) {
+	var str = new Array();
+	var i =0;
+	str[i++] ="<tr width=100% >";
+	str[i++] ="<td>";
+	str[i++] = "<a href=\"#\" class='zmRemOpenApptLnkCls' id='zmRemDlgOpenApptId_";
+	str[i++] = appt.uid;
+	str[i++] = "'>";
+	str[i++] = ZmMsg.openAppointment;
+	str[i++] = "</a>";
+	str[i++] ="</td>";
+	str[i++] ="</tr>";
+
+	html.append(str.join(""));
+};
+
+ZmReminderDialog.prototype._addOpenApptListener =
+function(base_appt) {
+	appCtxt.getAppController().setStatusMsg(ZmMsg.allRemindersAreSnoozed, ZmStatusView.LEVEL_INFO);
+	this._handleSnoozeButton();
+	var calController = AjxDispatcher.run("GetCalController");
+	var miniCalendar = calController.getMiniCalendar();
+	calController.setDate(base_appt.startDate, 0, miniCalendar.getForceRollOver());
+	calController.setApptToOpenOnCalLoad(base_appt);//set appt to open after load
+	calController.show(ZmId.VIEW_CAL_DAY);	
+};
+
+ZmReminderDialog.prototype._getApptFromUid =
+function(uid) {
+	for (var el in this._apptData) {
+		var _appt = this._apptData[el].appt;
+		if (_appt.uid == uid)
+			return _appt;
+	}
+	return null;
+};
 
 // Button listener that checks for callbacks
 ZmReminderDialog.prototype._closeButtonListener =
