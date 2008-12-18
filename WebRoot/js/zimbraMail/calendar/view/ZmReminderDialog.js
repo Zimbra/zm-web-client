@@ -128,7 +128,7 @@ function(html, appt, data, needSep) {
 	html.append("<td colspan=2>");
 	html.append("<table cellpadding=0 cellspacing=0 border=0><tr>");
 	html.append("<td width=25px>", AjxImg.getImageHtml(appt.otherAttendees ? "ApptMeeting" : "Appointment"), "</td>");
-	html.append("<td><b>",  AjxStringUtil.htmlEncode(appt.getReminderName()), "</b> (", this.getDurationText(appt),")</td>");
+	html.append("<td><b>", AjxStringUtil.htmlEncode(appt.getReminderName()), "</b> (", this.getDurationText(appt), ") ", this._getOpenApptHtml(appt), "</td>");
 	html.append("</tr></table>");
 	html.append("</td>");
 	html.append("<td id='", data.deltaId, "'></td>");
@@ -200,8 +200,52 @@ function(list) {
 		document.getElementById(data.buttonId).appendChild(button.getHtmlElement());
 		this._updateDelta(data);
 	}
+
+	var lnks = div.getElementsByTagName("a");
+	for (var i = 0; i < lnks.length; i++) {
+		var lnk = lnks[i];
+		if (lnk.className == "zmRemOpenApptLnkCls") {
+			var uid = lnk.id.replace("zmRemDlgOpenApptId_", "");
+			var appt = this._getApptFromUid(uid);
+			if (appt != null) {
+				lnk.onclick = AjxCallback.simpleClosure(this._addOpenApptListener, this, appt);
+			}
+		}
+	}
 };
 
+ZmReminderDialog.prototype._getOpenApptHtml =
+function(appt) {
+	var html = new Array();
+	var i =0;
+	html[i++] = "<BR><a href=\"#\" class='zmRemOpenApptLnkCls' id='zmRemDlgOpenApptId_";
+	html[i++] = appt.uid;
+	html[i++] = "'>";
+	html[i++] = ZmMsg.openAppointment;
+	html[i++] = "</a>";
+	return html.join("");
+};
+
+ZmReminderDialog.prototype._addOpenApptListener =
+function(base_appt) {
+	appCtxt.getAppController().setStatusMsg(ZmMsg.allRemindersAreSnoozed, ZmStatusView.LEVEL_INFO);
+	this._handleSnoozeButton();
+	var calController = AjxDispatcher.run("GetCalController");
+	var miniCalendar = calController.getMiniCalendar();
+	calController.setDate(base_appt.startDate, 0, miniCalendar.getForceRollOver());
+	calController.setApptToOpenOnCalLoad(base_appt);//set appt to open after load
+	calController.show(ZmId.VIEW_CAL_DAY);	
+};
+
+ZmReminderDialog.prototype._getApptFromUid =
+function(uid) {
+	for (var el in this._apptData) {
+		var _appt = this._apptData[el].appt;
+		if (_appt.uid == uid)
+			return _appt;
+	}
+	return null;
+};
 
 // Button listener that checks for callbacks
 ZmReminderDialog.prototype._closeButtonListener =
