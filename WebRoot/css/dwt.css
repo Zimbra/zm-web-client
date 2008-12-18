@@ -751,7 +751,7 @@
 }
 
 
-.DwtColorPicker .NoFill {
+.DwtColorPicker .NoFill, .DwtColorPicker .SetInputColor {
 	@SeparatorBorder@
 	@ActiveCursor@
 	text-align: center;
