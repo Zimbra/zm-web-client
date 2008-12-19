@@ -476,7 +476,7 @@ function() {
 ZmAccountsPage.prototype.__getAccountValue = function(account, id) {
 	var prop = ZmAccountsPage.ACCOUNT_PROPS[id];
 	if (!prop) return;
-	return typeof prop == "string" ? account[prop] : account[prop]();
+	return typeof prop == "string" ? account[prop] : account[prop.getter]();
 };
 ZmAccountsPage.prototype.__getIdentityValue = function(account, id) {
 	var prop = ZmAccountsPage.IDENTITY_PROPS[id];
