@@ -25,4 +25,5 @@ AjxPackage.require("zimbraMail.share.view.ZmAlert");
 AjxPackage.require("zimbraMail.share.view.ZmAccountAlert");
 AjxPackage.require("zimbraMail.share.view.ZmAppAlert");
 AjxPackage.require("zimbraMail.share.view.ZmBrowserAlert");
+AjxPackage.require("zimbraMail.share.view.ZmDesktopAlert");
 AjxPackage.require("zimbraMail.share.view.ZmSoundAlert");

@@ -295,7 +295,7 @@ function(ev) {
 	var items = this._listView[this._currentView].getSelection();
 	for (var i = 0, count = items.length; i < count; i++) {
 		var item = items[i];
-		if ((item instanceof ZmContact) && item.isMyCard()) {
+		if ((item instanceof ZmContact) && item.isMyCard) {
 			appCtxt.setStatusMsg(ZmMsg.errorMyCardDelete, ZmStatusView.LEVEL_WARNING);
 			return;
 		}
@@ -310,7 +310,7 @@ function(ev) {
 	var items = this._listView[this._currentView].getSelection();
 	for (var i = 0, count = items.length; i < count; i++) {
 		var item = items[i];
-		if ((item instanceof ZmContact) && item.isMyCard()) {
+		if ((item instanceof ZmContact) && item.isMyCard) {
 			appCtxt.setStatusMsg(ZmMsg.errorMyCardMove, ZmStatusView.LEVEL_WARNING);
 			return;
 		}

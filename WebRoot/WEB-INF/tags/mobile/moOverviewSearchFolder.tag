@@ -6,13 +6,14 @@
 <%@ taglib prefix="mo" uri="com.zimbra.mobileclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <c:set var="label" value="${zm:getFolderName(pageContext, folder.id)}"/>
-<c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'/m/mosearch'}"/>
-<tr onclick='zClickLink("FLDR${folder.id}")'>
+<c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/>
+<div onclick='zClickLink("FLDR${folder.id}")' class='Folders list-row${folder.hasUnread ? "-unread" : ""}'>
     <c:set var="url" value="${context_url}?sfi=${folder.id}"/>
-    <td class='Folders zo_m_list_row' style='padding:5px;'>
+    <span>
         <a id="FLDR${folder.id}" href="${fn:escapeXml(url)}">
-            <mo:img alt='${fn:escapeXml(label)}' src="${folder.image}"/>
+            <%--<mo:img alt='${fn:escapeXml(label)}' src="${folder.image}"/>--%>
+            <span class="SmlIcnHldr Fldr${folder.type}">&nbsp;</span>
             ${fn:escapeXml(label)}
         </a>
-    </td>
-</tr>
+    </span>
+</div>

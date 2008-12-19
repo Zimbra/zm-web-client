@@ -24,8 +24,8 @@ ZmFilterRulesView = function(parent, controller) {
 
 	this._rules = AjxDispatcher.run("GetFilterRules");
 
-    var section = ZmPref.getPrefSectionWithPref(ZmSetting.FILTERS);
-    this._title = [ZmMsg.zimbraTitle, controller.getApp().getDisplayName(), section && section.title].join(": ");
+	var section = ZmPref.getPrefSectionWithPref(ZmSetting.FILTERS);
+	this._title = [ZmMsg.zimbraTitle, controller.getApp().getDisplayName(), section && section.title].join(": ");
 
 	this._rendered = false;
 
@@ -43,8 +43,8 @@ function() {
 ZmFilterRulesView.prototype.showMe =
 function() {
 	Dwt.setTitle(this._title);
-    var section = ZmPref.getPrefSectionWithPref(ZmSetting.FILTERS);
-    this._prefsController._resetOperations(this._prefsController._toolbar, section && section.id);
+	var section = ZmPref.getPrefSectionWithPref(ZmSetting.FILTERS);
+	this._prefsController._resetOperations(this._prefsController._toolbar, section && section.id);
 	var activeAcct = appCtxt.getActiveAccount().name;
 	if (this._hasRendered == activeAcct) { return; }
 
@@ -117,7 +117,6 @@ ZmFilterListView = function(parent, controller) {
 
 	this._controller = controller;
 	this._rules.addChangeListener(new AjxListener(this, this._changeListener));
-	this.multiSelectEnabled = false; // single selection only
 	this._internalId = AjxCore.assignId(this);
 };
 
