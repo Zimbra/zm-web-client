@@ -937,10 +937,13 @@ function(ev) {
 // Popup the change password dialog.
 ZmPreferencesPage.prototype._changePasswordListener =
 function(ev) {
-	var isHttp = appCtxt.get(ZmSetting.PROTOCOL_MODE) == ZmSetting.PROTO_HTTP;
-	var proto = isHttp ? ZmSetting.PROTO_HTTP : ZmSetting.PROTO_HTTPS;
-	var port  = appCtxt.get(isHttp ? ZmSetting.HTTP_PORT : ZmSetting.HTTPS_PORT);
-	var url   = AjxUtil.formatUrl({protocol:proto, port:port, path:"/zimbra/h/changepass", qsReset:true});
+	var url = appCtxt.get(ZmSetting.CHANGE_PASSWORD_URL);
+	if (!url) {
+		var isHttp	= appCtxt.get(ZmSetting.PROTOCOL_MODE) == ZmSetting.PROTO_HTTP;
+		var proto	= isHttp ? ZmSetting.PROTO_HTTP : ZmSetting.PROTO_HTTPS;
+		var port	= appCtxt.get(isHttp ? ZmSetting.HTTP_PORT : ZmSetting.HTTPS_PORT);
+		url			= AjxUtil.formatUrl({protocol:proto, port:port, path:"/zimbra/h/changepass", qsReset:true});
+	}
 	var args  = "height=465,width=705,location=no,menubar=no,resizable=yes,scrollbars=no,status=yes,toolbar=no";
 	window.open(url, "_blank", args);
 };

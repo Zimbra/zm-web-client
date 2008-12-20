@@ -257,6 +257,11 @@ function(callback, accountName, result) {
 		appCtxt.numVisibleAccounts = count;
 	}
 
+	if (obj.changePasswordURL) {
+		setting = this._settings[ZmSetting.CHANGE_PASSWORD_URL];
+		setting.setValue(obj.changePasswordURL);
+	}
+
 	// handle settings whose values may depend on other settings
 	var setting = this._settings[ZmSetting.REPLY_TO_ADDRESS];
 	if (setting) {
@@ -545,6 +550,7 @@ function() {
 	this.registerSetting("AC_TIMER_INTERVAL",				{type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_INT, defaultValue:300});
 	this.registerSetting("ASYNC_MODE",						{type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	this.registerSetting("BRANCH",							{type:ZmSetting.T_CONFIG, defaultValue:"FRANKLIN"});
+	this.registerSetting("CHANGE_PASSWORD_URL",				{type:ZmSetting.T_CONFIG});
 	// next 3 are replaced during deployment
 	this.registerSetting("CLIENT_DATETIME",					{type:ZmSetting.T_CONFIG, defaultValue:"@buildDateTime@"});
 	this.registerSetting("CLIENT_RELEASE",					{type:ZmSetting.T_CONFIG, defaultValue:"@buildRelease@"});
