@@ -74,6 +74,7 @@ function() {
 	var visible = !this.isMsgViewVisible();
 
 	this._msgView.setVisible(visible);
+	this._msgView.noTab = !visible || AjxEnv.isIE;
 	this._msgSash.setVisible(visible);
 
 	var sz = this.getSize();

@@ -49,9 +49,11 @@ ZmContactList = function(search, isGal, type) {
 	this.isCanonical = false;
 	this.isLoaded = false;
 
-	this._emailToContact = {};
-	this._imAddressToContact = {};
-	this._phoneToContact = {};
+	this._app = appCtxt.getApp(ZmApp.CONTACTS);
+	this._emailToContact = this._app._byEmail;
+	this._imAddressToContact = this._app._byIM;
+	this._phoneToContact = this._app._byPhone;
+	
 	this._acAddrList = {};
 	this._galResults = {};
 	this._galRequests = {};
@@ -201,21 +203,6 @@ function(list) {
 	} else {
 		DBG.timePt("done loading contacts");
 		this._finishLoading();
-	}
-};
-
-ZmContactList.prototype.addFromDom =
-function(node, args) {
-	// first make sure this contact isnt already in the canonical list
-	var canonicalList = AjxDispatcher.run("GetContacts");
-	var contact = canonicalList.getById(node.id);
-	if (contact) {
-		// NOTE: we dont realize contact b/c getById already does that for us
-		// Also, set sf property if not set (we get it on search results, not GetContactResponse)
-		contact.sf = contact.sf || node.sf;
-		this.add(contact);
-	} else {
-		ZmList.prototype.addFromDom.call(this, node, args);
 	}
 };
 
@@ -572,16 +559,6 @@ function(item) {
 	this._updateAcList(item, true);
 };
 
-ZmContactList.prototype.getMyCard =
-function() {
-    if (this._myCard) {
-        this._realizeContact(this._myCard);
-        return this._myCard;
-    } else {
-        return null;
-    }
-};
-
 ZmContactList.prototype._updateHashes =
 function(contact, doAdd) {
     // Update email hash.
@@ -623,27 +600,6 @@ function(contact, doAdd) {
 				else
 					delete this._imAddressToContact[imaddr];
 			}
-		}
-	}
-
-	// Update my card.
-	if (ZmContact.getAttr(contact, ZmContact.MC_cardOwner) == "isMyCard") {
-		if (!this._myCard) {
-			var root = appCtxt.getById(ZmOrganizer.ID_ROOT);
-			var params = {
-				id: ZmOrganizer.ID_MY_CARD,
-				name: ZmMsg.myCard,
-				parent: root,
-				tree: root.tree,
-				type: ZmOrganizer.ADDRBOOK,
-				numTotal: 1
-			};
-			var addrBook = new ZmAddrBook(params);
-			root.children.add(addrBook);
-			addrBook._notify(ZmEvent.E_CREATE);
-		}
-		if (!this._myCard || (contact.id <= this._myCard.id)) {
-			this._myCard = contact;
 		}
 	}
 };
@@ -1312,9 +1268,4 @@ function(ev) {
 			}
 		}
 	}
-};
-
-ZmContactList.prototype.getPrintHtml =
-function(preferHtml, callback) {
-	return ZmContactCardsView.getPrintHtml(this);
 };
