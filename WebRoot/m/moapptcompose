@@ -7,16 +7,22 @@
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'mainx'}"/>
-<c:set var="caction" value="${context_url}?st=cal"/>
-<c:if test="${param.bt != null}">
+<c:set var="caction" value="${prevUrl}"/>
+<c:choose>
+<c:when test="${not empty prevUrl}">
+    <c:set var="bt" value="${fn:replace(fn:substringAfter(prevUrl,'?'),'&','|')}"/>
+    <c:url var="caction" value='${prevUrl}'/>
+</c:when>
+<c:when test="${not empty param.bt}">
     <c:set var="bt" value="${param.bt}"/>
     <c:url var="caction" value='${context_url}?${fn:replace(param.bt,"|","&")}'/>
-</c:if>
-<c:if test="${param.bt == null && not empty header['referer']}">
+</c:when>
+<c:when test="${empty prevUrl  && empty param.bt && not empty header['referer']}">
     <c:set var="caction" value='${header["referer"]}'/>
     <c:set var="bt"
-           value="${fn:replace(fn:replace(fn:substringAfter(header['referer'],'?'),'appmsg=actionApptSaved',''),'&','|')}"/>
-</c:if>
+           value="${fn:replace(fn:replace(fn:substringAfter(header['referer'],'?'),'appmsg=messageSent',''),'&','|')}"/>
+</c:when>
+</c:choose>
 <mo:handleError>
     <c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/>
     <zm:getMailbox var="mailbox"/>
@@ -95,22 +101,20 @@
 <fmt:message var="title" key="ALT_MSG_STATUS_APPT"/>
 <fmt:message var="addedit" key="${empty message ? 'add' : 'edit'}"/>
 <c:set var="title" value="${title} : ${addedit}" scope="request"/>
-<form action="?st=newappt&bt=${bt}" method="post" enctype="multipart/form-data" accept-charset="utf-8">
+<c:if test="${empty param.noframe}"><iframe src='about:blank' style='display:none' name='aniframe' id='aniframe'></iframe></c:if>
+<form action="?st=newappt&more=true&bt=${bt}" method="post" enctype="multipart/form-data" accept-charset="utf-8" onsubmit="return submitForm(this,'aniframe');">
 <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
 
 <div class="table Toolbar">
     <div class="table-row">
         <div class="table-cell">
                     <span class="zo_tb_submit">
-                        <input class="zo_button" id='actionCancel' name="actionCancel"
-                               style="display:none;" onclick="zClickLink('_back_to')"
-                               type="button" value="<fmt:message key="cancel"/>">
-                        <noscript><a href="${caction}" class="zo_button"><fmt:message key="cancel"/></a></noscript>
+                        <a href="${caction}" class="zo_button"><fmt:message key="cancel"/></a>
                     </span>
                     <span class='zo_tb_submit'>
                         <input class="zo_button" name="actionSave" type="submit" value="<fmt:message key="save"/>">
                     </span>
-            <script type="text/javascript">document.getElementById('actionCancel').style.display = '';</script>
+
         </div>
     </div>
 </div>
@@ -389,15 +393,12 @@
     <div class="table-row">
         <div class="table-cell">
                     <span class="zo_tb_submit">
-                        <input class="zo_button" id='actionCancel1' name="actionCancel1"
-                               style="display:none;" onclick="zClickLink('_back_to')"
-                               type="button" value="<fmt:message key="cancel"/>">
-                        <noscript><a href="${caction}" class="zo_button"><fmt:message key="cancel"/></a></noscript>
+                        <a href="${caction}" class="zo_button"><fmt:message key="cancel"/></a>
                     </span>
                     <span class='zo_tb_submit'>
                         <input class="zo_button" name="actionSave" type="submit" value="<fmt:message key="save"/>">
                     </span>
-            <script type="text/javascript">document.getElementById('actionCancel1').style.display = '';</script>
+            
         </div>
     </div>
 </div>
@@ -437,10 +438,6 @@
 <input type="hidden" name="repeatEndCount" value="${fn:escapeXml(compose.repeatEndCount)}"/>
 <input type="hidden" name="repeatEndDate" value="${fn:escapeXml(compose.repeatEndDate)}"/>
 </form>
-<mo:autoComplete>
-    initAuto("attField","attContainer");
-</mo:autoComplete>
-<a href="${caction}" id="_back_to" style="display:none;visibility:hidden">back</a>
 <script type="text/javascript">
     var showHidemore = function() {
         var e = document.getElementById('apt_dtls_div');
@@ -466,8 +463,12 @@
         return false;
 
     };
+    
     <c:if test="${empty param.more}">
     document.getElementById('apt_dtls_div').style.display = 'none';
-    </c:if>
     document.getElementById('showHide').style.display = '';
+    </c:if>
 </script>
+<mo:autoComplete>
+    initAuto("attField","attContainer");
+</mo:autoComplete>

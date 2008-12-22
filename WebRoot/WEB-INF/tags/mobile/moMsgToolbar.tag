@@ -64,7 +64,7 @@
 <span>
     <c:set var="myFolder" value="${zm:getFolder(pageContext, msg.folderId)}"/>
     <c:set var="inTrash" value="${myFolder.isInTrash}"/>
-    <select class="zo_select_button" name="anAction" onchange="document.getElementById('actions').submit();">
+    <select class="zo_select_button" name="anAction" onchange="submitForm(document.getElementById('actions'));">
         <option value="" selected="selected"><fmt:message key="moreActions"/></option>
         <c:choose>
             <c:when test="${inTrash}">
@@ -120,7 +120,7 @@
             </optgroup>
         </c:if>
     </select>
-    <noscript><input name="moreActions" type="submit" value="<fmt:message key="actionGo"/>"/></noscript>
+    <noscript><input class="zo_button" name="moreActions" type="submit" value="<fmt:message key="actionGo"/>"/></noscript>
 </span>
 <span class="">
     <c:url var="composeUrl" value="${urlTarget}?st=newmail"/>

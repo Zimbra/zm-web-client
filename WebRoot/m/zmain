@@ -8,11 +8,14 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <c:set var="baseURL" scope="request" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/> <c:set
         var="context_url" value="${requestScope.baseURL}"/> <c:if test="${param.loginOp=='logout'}"> <c:redirect
-        url="/?loginOp=logout&amp;client=mobile"/>
-</c:if> <?xml version="1.0" encoding="UTF-8"?> <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-<c:set var="version" value="${initParam.zimbraCacheBusterVersion}"/> <c:set var="uiv" value="1" scope="session"/>
-<mo:handleError> <zm:getMailbox var="mailbox"/> <zm:getUserAgent var="ua" session="false"/> <c:choose> <c:when
+        url="/?loginOp=logout&client=mobile"/> </c:if><%-- Ajx History--%><c:if test="${not empty param.ajax}"> <c:set
+        var="prevUrl" scope="session" value="${currentUrl}"/> <c:set var="currentUrl" scope="session"
+                                                                     value="${pageContext.request.requestURL}?${pageContext.request.queryString}"/>
+</c:if> <c:if test="${empty param.ajax}"> <c:remove var="prevUrl" scope="session"/> <c:remove var="currentUrl"
+                                                                                              scope="session"/> <?xml version="1.0" encoding="UTF-8"?> <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+</c:if> <c:set var="version" value="${initParam.zimbraCacheBusterVersion}"/> <c:set var="uiv" value="1"
+                                                                                    scope="session"/> <mo:handleError>
+    <zm:getMailbox var="mailbox"/> <zm:getUserAgent var="ua" session="false"/> <c:choose> <c:when
         test="${not empty mailbox.prefs.locale}"> <fmt:setLocale value='${mailbox.prefs.locale}' scope='request'/>
 </c:when> <c:otherwise> <fmt:setLocale value='${pageContext.request.locale}' scope='request'/> </c:otherwise>
 </c:choose> <fmt:setBundle basename="/messages/ZhMsg" scope="request"/> <mo:apptComposeCheck/> <mo:composeCheck/>
@@ -24,112 +27,376 @@
 </mo:handleError> <c:if test="${empty sessionScope.zms}"> <c:set
         value="${ua.isiPhone || ua.isiPod ? 'iphone-ext' : ( ua.isIE ? 'wm6' : 'iphone-ext')}" var="zms"
         scope="session"/> </c:if> <c:if test="${not empty param.zms}"> <c:set value="${fn:escapeXml(param.zms)}"
-                                                                                 var="zms" scope="session"/></c:if>
-<!-- SKIN param:'${param.zms}' '${sessionScope.zms}' -->
-<head>
-    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
-    <title>
-        <fmt:message key="zimbraTitle"/>
-    </title>
-    <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0;"/>
-    <c:if test="${param.st eq 'cal'}"> <c:set var="calcss" value=",${sessionScope.zms}-cal"/> </c:if>
-    <link href="<c:url value='/css/${sessionScope.zms}${calcss}.css?v=${version}'/>" type="text/css"
-          rel="stylesheet"/>
-    <script type="text/javascript">
-        function zClickLink(id) {
-            var a = document.getElementById(id);
-            if (a) window.location = a.href;
-        }
-    </script>
-</head>
-<%-- Access keys --%>
-<c:set var="mailapp_accesskey" value="1" scope="request"/>
-<c:set var="contactapp_accesskey" value="2" scope="request"/>
-<c:set var="calapp_accesskey" value="3" scope="request"/>
-<c:set var="fldrapp_accesskey" value="4" scope="request"/>
-<c:set var="search_accesskey" value="5" scope="request"/>
-<c:set var="navlink_accesskey" value="6" scope="request"/>
-<c:set var="prev_accesskey" value="7" scope="request"/>
-<c:set var="next_accesskey" value="8" scope="request"/>
-<c:set var="mainaction_accesskey" value="0" scope="request"/> <%-- compose/add edit contact/ add edit appt --%>
-
-<body onorientationchange="updateOrientation()">
+                                                                              var="zms"
+                                                                              scope="session"/></c:if> <!-- SKIN param:'${param.zms}' '${sessionScope.zms}' -->
 <c:if test="${sessionScope.limit == null}"> <c:set var="limit"
                                                    value="${sessionScope.zms eq 'xlite' ? '5' : '10'}"
                                                    scope="session"/> </c:if> <c:if
         test="${(sessionScope.limit != param.limit && param.limit != null && param.limit != '')  }"> <c:set
-        var="limit" value="${zm:cook(param.limit)}" scope="session"/> </c:if> <c:set var="aurl" value="${context_url}"/>
+        var="limit" value="${zm:cook(param.limit)}" scope="session"/> </c:if> <c:set var="aurl"
+                                                                                     value="${context_url}"/><%-- Access keys --%>
+<c:set var="mailapp_accesskey" value="1" scope="request"/> <c:set var="contactapp_accesskey" value="2" scope="request"/>
+<c:set var="calapp_accesskey" value="3" scope="request"/> <c:set var="fldrapp_accesskey" value="4" scope="request"/>
+<c:set var="search_accesskey" value="5" scope="request"/> <c:set var="navlink_accesskey" value="6" scope="request"/>
+<c:set var="prev_accesskey" value="7" scope="request"/> <c:set var="next_accesskey" value="8" scope="request"/> <c:set
+        var="mainaction_accesskey" value="0" scope="request"/> <%-- compose/add edit contact/ add edit appt --%><c:if
+        test="${empty param.ajax}">
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+<title>
+    <fmt:message key="zimbraTitle"/>
+</title>
+<meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0;"/>
+    <%--<c:if test="${param.st eq 'cal'}"> --%> <c:set var="calcss" value=",${sessionScope.zms}-cal"/> <%--</c:if>--%>
+<link href="<c:url value='/css/${sessionScope.zms}${calcss}.css?v=${version}'/>" type="text/css"
+      rel="stylesheet"/>
+<script type="text/javascript">
+<!--
+var loading = false;
+var getContainer = function(id) {
+    id = id ? id : 'maincontainer';
+    return document.getElementById(id);
+};
+
+var getXHR = function() {
+    var xhr = false;
+    if (window.XMLHttpRequest) {
+        xhr = new XMLHttpRequest();
+    } else if (window.ActiveXObject) {
+        try {
+            xhr = new ActiveXObject("Msxml2.XMLHTTP");
+        } catch(e) {
+            try {
+                xhr = new ActiveXObject("Microsoft.XMLHTTP");
+            } catch(e) {
+                xhr = false;
+            }
+        }
+    }
+    return xhr;
+};
+
+//var xhr = getXHR();
+
+var zClickLink = function(id, t) {
+
+    var targ = id ? document.getElementById(id) : t ;
+    var href = targ.href;
+    if (!href || loading) return false;
+    if (targ.target) return true;
+    var xhr = getXHR();
+    if (targ.attributes['noajax'] || !xhr) {
+        if (targ) window.location = href;
+        return false;
+    }
+
+    if (targ.onclick) return false;
+    var containerId = targ.targetId ? targ.targetId : containerId;
+    var container = getContainer(containerId);
+    ajxReq(href, null, container);
+    return false;
+};
+
+var getFormValues = function(obj) {
+    var getstr = "ajax=true&";
+    for (var i = 0; i < obj.getElementsByTagName("input").length; i++) {
+        var control = obj.getElementsByTagName("input")[i];
+        var type = control.type ;
+        if (type == "text" || type == "button" || type == "submit" || type == "hidden" || type == "password") {
+            getstr += control.name + "=" + control.value + "&";
+        }
+        if (type == "checkbox" || type == "radio") {
+            if (control.checked) {
+                getstr += control.name + "=" + control.value + "&";
+            } else {
+                //getstr += obj.getElementsByTagName("input")[i].name + "=&";
+            }
+        }
+        if (control.tagName == "SELECT") {
+            getstr += control.name + "=" + control.options[control.selectedIndex].value + "&";
+        }
+
+    }
+    for (i = 0; i < obj.getElementsByTagName("SELECT").length; i++) {
+        var control = obj.getElementsByTagName("SELECT")[i];
+        getstr += control.name + "=" + control.options[control.selectedIndex].value + "&";
+    }
+    for (i = 0; i < obj.getElementsByTagName("TEXTAREA").length; i++) {
+        var control = obj.getElementsByTagName("TEXTAREA")[i];
+        getstr += control.name + "=" + control.value + "&";
+    }
+    return getstr;
+};
+
+var submitForm = function(fobj, target) {
+    if (!fobj) return false;
+    var xhr = getXHR();
+    if (!xhr) {
+        fobj.submit();
+        return false;
+    }
+    if (target) {
+        fobj.target = target;
+        fobj.action = fobj.action.replace('ajax=true', '');
+        showLoadingMsg('<fmt:message key="MO_sendingRequestMsg"/>', true);
+        fobj.submit();
+        return true;
+    }                                         
+    var url = fobj.action;
+    var method = fobj.method ? fobj.method : 'GET';
+    var params = getFormValues(fobj);
+    var container = getContainer();
+    ajxReq(url, params, container, method);
+    return false;
+};
+
+var customClick = function (e) {
+
+    if (!e) var e = event ? event : window.event;
+    var targ = e.target
+    if (!targ && e.srcElement) targ = e.srcElement;
+
+    if (targ.nodeType == 3) {// defeat Safari bug
+        targ = targ.parentNode;
+    }
+    if (!document.attachEvent)
+        if (targ.onclick) e.returnValue = targ.onclick();
+
+    if ((targ.tagName == "a" || targ.tagName == "A")) {
+        e.returnValue = zClickLink(targ.id, targ);
+        if (!e.returnValue) {
+            if (e.stopPropagation) {
+                e.stopPropagation();
+            }
+            if (e.preventDefault) {
+                e.preventDefault();
+            }
+
+            e.cancelBubble = true;
+            e.stopped = true;
+        }
+        return e.returnValue;
+
+    } else {
+        return true;
+    }
+};
+
+var fetchIt = function(url, container, method) {
+    var xhr = getXHR();
+    if (!xhr) {
+        window.location = url;
+        return;
+    }
+    ajxReq(url, null, container, method);
+};
+
+var ajxReq = function(url, query, container, method) {
+    //var parts = url.split("#");
+    url = addParam(url, 'ajax=true'); //parts[0] + (url.indexOf('?') < 0 ? '?ajax=true' : '&ajax=true') + (parts[1] ? "#" + parts[1] : '');
+    loading = true;
+    container = container ? container : document.getElementById('maincontainer');
+    method = method ? method : "GET";
+    //container.innerHTML = "<div class='StatusInfo'>Loading....</div>" + container.innerHTML;
+    showLoadingMsg('<fmt:message key="MO_loadingMsg"/>', true);
+    var xhr = getXHR();
+    if (xhr) {
+        xhr.onreadystatechange = function() {
+
+            parseResponse(xhr, container);
+        };
+        xhr.open(method, url, true);
+        if (method == "POST" || method == "post") {
+            xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            //xhr.setRequestHeader("Content-length", query.length);
+            //xhr.setRequestHeader("Connection", "close");
+        }
+        xhr.send(query);
+    } else {
+        return false;
+    }
+};
+
+var parseResponse = function (request, container) {
+    if (request.readyState == 4) {
+        if (request.status == 200) {
+            showLoadingMsg(null, false);
+            var data = request.responseText;
+            if (data) container.innerHTML = data;
+        } else {
+            showLoadingMsg('<fmt:message key="error"/> : ' + request.status, true, 'Critical');
+        }
+        loading = false;
+    }
+};
+
+var registerOnclickHook = function () {
+    if (document.attachEvent) {
+        document.attachEvent("onclick", customClick, false);
+    } else if (document.addEventListener) {
+        document.addEventListener("click", customClick, true);
+    }
+};
+
+var showLoadingMsg = function(msg, show, status) {
+    var msgDiv = document.getElementById('msgbar');
+    status = 'Status' + (status ? status : 'Info');
+    if (msgDiv) {
+        if (msg && show) {
+            msgDiv.style.display = 'block';
+            msgDiv.innerHTML = "<div class='" + status + "'>" + msg + "</div>";
+        } else {
+            msgDiv.style.display = 'none';
+        }
+    }
+};
+var currentDate = '${curId}';
+var selectDay = function(datestr) {
+    var cell = document.getElementById("cell" + datestr);
+    list = document.getElementById("listempty");
+    list.style.display = "none";
+
+    if (cell) {
+        if (currentDate) {
+            var list = document.getElementById("list" + currentDate);
+            if (list == null) list = document.getElementById("listempty");
+            list.style.display = "none";
+            document.getElementById("cell" + currentDate).className = "zo_cal_mday" + ((currentDate == '${_today}') ? ' zo_cal_mday_today' : '');
+        }
+        cell.className = 'zo_cal_mday_select';
+        var nlist = document.getElementById("list" + datestr);
+        if (nlist == null) nlist = document.getElementById("listempty");
+        nlist.style.display = "block";
+        currentDate = datestr;
+
+    }
+}
+        ;
+var openURL = function(url) {
+    window.location = url.replace(/date=......../, "date=" + currentDate);
+};
+
+var toggleElem = function(me, elem, minMsg, maxMsg) {
+    if (!elem) return false;
+    var s = document.getElementById(elem).style;
+    if (s && s.display && s.display == 'none') {
+        s.display = '';
+        if (me && minMsg)
+            me.innerHTML = minMsg;//'<fmt:message key="details"/>';
+    } else {
+        s.display = 'none';
+        if (me && maxMsg)
+            me.innerHTML = maxMsg;//'Hide';
+    }
+    return false;
+};
+var addParam = function(url, param) {
+    var parts = url.split("#");
+    var nurl = parts[0] + (url.indexOf('?') < 0 ? '?' : '&') + (url.indexOf(param) < 0 ? param : '') + (parts[1] ? "#" + parts[1] : '');
+    return nurl;
+};
+var updateOrientation = function() {
+    currentWidth = window.innerWidth;
+    var orient = (currentWidth == 480) ? "landscape" : "portrait";
+    document.body.setAttribute("orient", orient);
+};//-->
+</script>
+</head>
+<body onorientationchange="updateOrientation()">
 <div class="container table" id="appbar" align="center">
     <div class="table-row">
-        <%-- <div class="table-cell">--%> <c:set var="active"
-                                                 value="${empty param.st || param.st eq 'message' || param.st eq 'conversation' ? '-active' : ''}"/>
-        <a accesskey="${requestScope.mailapp_accesskey}" id="mail${active}" class="appTab${active} table-cell" href="${aurl}"><span><fmt:message
-                key="mail"/></span><span style="display:none;" class="apunread">${mailbox.inbox.unreadCount}</span> </a> <c:if test="${mailbox.features.contacts}"> <c:set var="active"
-                                                                                          value="${param.st eq 'contact' || param.st eq 'ab' ? '-active' : ''}"/>
-        <a accesskey="${requestScope.contactapp_accesskey}" id="contact${active}" class="appTab${active} table-cell" href="${aurl}?st=contact"><span><fmt:message
+            <%-- <div class="table-cell">--%> <c:set var="appcount" value="3"/> <c:if
+            test="${mailbox.features.contacts}"> <c:set var="appcount" value="${appcount+1}"/> </c:if> <c:if
+            test="${mailbox.features.calendar}"> <c:set var="appcount" value="${appcount+1}"/> </c:if> <c:set
+            var="active"
+            value="${empty param.st || param.st eq 'message' || param.st eq 'conversation' ? '-active' : ''}"/> <a
+            style='width: ${100/appcount}%;' targetid="maincontainer" accesskey="${requestScope.mailapp_accesskey}"
+            id="mail${active}" class="appTab${active} table-cell" href="${aurl}"><span
+            onclick="return zClickLink('mail${active}')"><fmt:message
+            key="mail"/></span><span onclick="return zClickLink('mail${active}')" style="display:none;"
+                                     class="apunread">${mailbox.inbox.unreadCount}</span> </a> <c:if
+            test="${mailbox.features.contacts}"> <c:set var="active"
+                                                        value="${param.st eq 'contact' || param.st eq 'ab' ? '-active' : ''}"/>
+        <a style='width: ${100/appcount}%;' targetid="maincontainer" accesskey="${requestScope.contactapp_accesskey}"
+           id="contact${active}" class="appTab${active} table-cell" href="${aurl}?st=contact"><span
+                onclick="return zClickLink('contact${active}')"><fmt:message
                 key="contacts"/></span></a> </c:if> <c:if test="${mailbox.features.calendar}"> <c:set var="active"
                                                                                                       value="${param.st eq 'cal' || param.st eq 'cals' ? '-active' : ''}"/>
-        <a accesskey="${requestScope.calapp_accesskey}" id="cal${active}" class="appTab${active} table-cell" href="${aurl}?st=cal"><span><fmt:message
+        <a style='width: ${100/appcount}%;' targetid="maincontainer" accesskey="${requestScope.calapp_accesskey}"
+           id="cal${active}" class="appTab${active} table-cell" href="${aurl}?st=cal"><span
+                onclick="return zClickLink('cal${active}')"><fmt:message
                 key="calendar"/></span>
-            <span style="display:none;" class="aptoday">
-            <fmt:formatDate value="${zm:getToday(mailbox.prefs.timeZone).time}" timeZone="${mailbox.prefs.timeZone}" pattern="EEE|d|MMM" var="today"/>
-            <c:set var="darr" value="${fn:split(today,'|')}"/>    
+            <span onclick="return zClickLink('cal${active}')" style="display:none;" class="aptoday">
+            <fmt:formatDate value="${zm:getToday(mailbox.prefs.timeZone).time}" timeZone="${mailbox.prefs.timeZone}"
+                            pattern="EEE|d|MMM" var="today"/>
+            <c:set var="darr" value="${fn:split(today,'|')}"/>
             <div class="_day">${darr[0]}</div>
             <div class="_date">${darr[1]}</div>
-            <div class="_month">${darr[2]}</div>    
+            <div class="_month">${darr[2]}</div>
             </span></a> </c:if> <c:set var="active"
-                                                           value="${param.st eq 'folders' ? '-active' : ''}"/>
-        <a accesskey="${requestScope.fldrapp_accesskey}" id="folders${active}" class="appTab${active} table-cell" href="${aurl}?st=folders"><span><fmt:message
+                                       value="${param.st eq 'folders' ? '-active' : ''}"/>
+        <a style='width: ${98/appcount}%;' targetid="maincontainer" accesskey="${requestScope.fldrapp_accesskey}"
+           id="folders${active}" class="appTab${active} table-cell" href="${aurl}?st=folders"><span
+                onclick="return zClickLink('folders${active}')"><fmt:message
                 key="folders"/></span></a> <c:set var="active" value="${param.search eq '1' ? '-active' : ''}"/>
-        <a accesskey="${requestScope.search_accesskey}" id="search${active}" class="appTab${active} table-cell"
+        <a style='width: ${100/appcount}%;' targetid="maincontainer" accesskey="${requestScope.search_accesskey}"
+           id="search${active}" class="appTab${active} table-cell"
            href="${aurl}?search=${param.search eq '1' ? '0' : '1'}&amp;${fn:replace(pageContext.request.queryString,'search=1&amp;','')}"
-           ${!ua.isIE ? 'onclick="return toggleSearch();"' : ''}><span><fmt:message key="search"/></span></a> <%--<span class="appTab last ${param.st eq 'more' ? 'activeTab' : ''}">
-      <a href="${aurl}?st=more"><fmt:message key="more"/>...</a></span>--%> <%-- </div>--%>
+           onclick='return toggleElem(this,"searchbar");'><span><fmt:message key="search"/></span></a>
     </div>
 </div>
-<div class="container table" id="searchbar" style="${param.search eq '1' ? '' : 'display:none;'}">
-    <div class="table-row">
-        <form method="post" action="${context_url}" class="table-cell"
-              onsubmit="if(!this.sq.value){var v = document.getElementById('d_msg');v.innerHTML='<div class=StatusWarning><fmt:message key="actionNoSearchQuerySpecified"/></div>';v.style.display='block';return false;}else{return true;}">
-            <c:if test="${not empty param.invId}"> <input type="hidden" name="invId"
-                                                          value="${zm:cook(param.invId)}"/> </c:if> <input type="hidden"
-                                                                                                           name="search"
-                                                                                                           value="1"/>
-            <c:if test="${not empty param.st}"> <input type="hidden" name="st" value="${param.st}"/> </c:if> <input
-                type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
-           <%-- <span class="table-cell" width="70%">--%>
-            <input type="text" class="searchInput" name="sq" value="${zm:cook(param.sq)}"/>
-            <!--</span>
-            <span class="table-cell" width="30%">-->
-            <input type="submit" class="searchButton zo_button" name="actionSearch"
-                   value="<fmt:message key="search"/>"/><!--</span>-->
-        </form>
+</c:if>
+<div class="container" id="maincontainer">
+    <div class="container table" id="searchbar" style="${param.search eq '1' ? '' : 'display:none;'}">
+        <div class="table-row">
+            <form method="post" action="${context_url}" class="table-cell"
+                  onsubmit="if(!this.sq.value){showLoadingMsg('<fmt:message key="actionNoSearchQuerySpecified"/>',true,'Warning');return false;}else{return submitForm(this);}">
+                <c:if test="${not empty param.invId}"> <input type="hidden" name="invId"
+                                                              value="${zm:cook(param.invId)}"/> </c:if> <input
+                    type="hidden"
+                    name="search"
+                    value="1"/> <c:if test="${not empty param.st}"> <input type="hidden" name="st"
+                                                                           value="${param.st}"/> </c:if> <input
+                    type="hidden" name="crumb"
+                    value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/> <%-- <span class="table-cell" width="70%">--%>
+                <input type="text" class="searchInput" name="sq" value="${zm:cook(param.sq)}"/>
+                <!--</span>
+              <span class="table-cell" width="30%">-->
+                <input type="submit" class="searchButton zo_button" name="actionSearch"
+                       value="<fmt:message key="search"/>"/><!--</span>-->
+            </form>
+        </div>
     </div>
+    <mo:handleError>
+        <div class="container" id="msgbar"
+             style="${not empty param.appmsg || not empty requestScope.statusMessage ? '' : 'display:none;'};">
+            <c:choose> <c:when test="${not empty param.appmsg}">
+                <div class='StatusInfo' id='statusdiv'><fmt:message key="${fn:escapeXml(param.appmsg)}"/></div>
+            </c:when> <c:when test="${not empty requestScope.statusMessage}">
+                <div class="${requestScope.statusClass}"
+                     id='statusdiv'>${fn:escapeXml(requestScope.statusMessage)}</div>
+                <c:remove var="statusMessage" scope="request"/> <%-- cleanup when rendered--%>
+            </c:when> </c:choose>
+        </div>
+        <div class="container" id="body">
+            <c:import url="/m/zmview"/>
+        </div>
+    </mo:handleError>
 </div>
-<mo:handleError> <c:choose> <c:when test="${not empty param.appmsg}">
-    <div class="container" id="msgbar">
-        <div class='StatusInfo'><fmt:message key="${fn:escapeXml(param.appmsg)}"/></div>
-    </div>
-</c:when> <c:when test="${not empty requestScope.statusMessage}">
-    <div class="container" id="msgbar">
-        <div class="${requestScope.statusClass}">${fn:escapeXml(requestScope.statusMessage)} </div>
-    </div>
-    <c:remove var="statusMessage" scope="request"/> <%-- cleanup when rendered--%>
-</c:when> <%--<c:when test="${not empty param.actionSearch && empty param.sq}">
-    <div class="container" id="msgbar">
-        <div class="StatusWarning"><fmt:message key="actionNoSearchQuerySpecified"/></div>
-    </div>
-</c:when>--%> </c:choose>
-    <div class="container" id="body">
-        <c:import url="/m/zmview"/>
-    </div>
-</mo:handleError>
-<div class="table">
-    <div class="table-row">
-        <div class="container table-cell" id="userinfo">
-            <c:url var="logoutUrl" value="${context_url}?loginOp=logout&amp;client=mobile"/>
+<script>
+    var d = document.getElementById('statusdiv');
+    var msg = (d) ? d.innerHTML : null;
+    if (self.parent && msg) {
+        self.parent.getContainer().innerHTML = self.getContainer().innerHTML;
+    }
+</script>
+<c:if test="${empty param.ajax}">
+    <div class="table">
+        <div class="table-row">
+            <div class="container table-cell" id="userinfo">
+                <c:url var="logoutUrl" value="${context_url}?loginOp=logout&client=mobile"/>
             <span class="logout-span">
-            <a href="${fn:escapeXml(logoutUrl)}" id="_logout"> <fmt:message key="logOut"/> </a>
+            <a href="${fn:escapeXml(logoutUrl)}" id="_logout" noajax='true'> <fmt:message key="logOut"/> </a>
             (${mailbox.accountInfo.attrs["uid"][0]})</span>
             <span class="quota-span">
             <fmt:message key="MO_quota"/>:
@@ -138,57 +405,46 @@
             <fmt:message key="MO_quotaUsage"> <fmt:param value="${zm:displaySizeFractions(mailbox.size,2)}"/> <fmt:param
                     value="${max==0 ? unlimited : zm:displaySizeFractions(max,2)}"/> </fmt:message>
             </span>
+            </div>
         </div>
     </div>
-</div>
-<div class="table container">
-    <div class="table-row">
-        <div class="table-cell small-gray-text list-row">
-            <c:set var="v" value="${ua.isiPhone || ua.isiPod ? 'iphone-ext' : ( ua.isIE ? 'wm6' : 'xlite')}"/>
-            <fmt:message key="lowBandwidth" var="lbw"/> <fmt:message key="default" var="def"/> 
-            <c:if test="${fn:endsWith(sessionScope.zms,'-lowbw')}">
-                <c:set var="def" value="<a href='?zms=${v}&amp;limit=10'>${def}</a>"/>
-            </c:if>
-            <c:if test="${!fn:endsWith(sessionScope.zms,'-lowbw')}">
-                <c:set var="lbw" value="<a href='?zms=${fn:split(sessionScope.zms,'-')[0]}-lowbw&amp;limit=5'>${lbw}</a>"/>
-            </c:if>
-            <fmt:message key="view"/>: ${def} | ${lbw} | <a href="?st=versions"><fmt:message key="more"/>...</a>
+    <div class="table container">
+        <div class="table-row">
+            <div class="table-cell small-gray-text list-row">
+                <c:set var="v" value="${ua.isiPhone || ua.isiPod ? 'iphone-ext' : ( ua.isIE ? 'wm6' : 'xlite')}"/>
+                <fmt:message key="lowBandwidth" var="lbw"/> <fmt:message key="default" var="def"/> <c:if
+                    test="${fn:endsWith(sessionScope.zms,'-lowbw')}"> <c:set var="def"
+                                                                             value="<a noajax='true' href='?zms=${v}&amp;limit=10'>${def}</a>"/>
+            </c:if> <c:if test="${!fn:endsWith(sessionScope.zms,'-lowbw')}"> <c:set var="lbw"
+                                                                                    value="<a noajax='true' href='?zms=${fn:split(sessionScope.zms,'-')[0]}-lowbw&amp;limit=5'>${lbw}</a>"/>
+            </c:if> <fmt:message key="view"/>: ${def} | ${lbw} | <a href="?st=versions"><fmt:message key="more"/>...</a>
+            </div>
         </div>
     </div>
-</div>
-<div class="table">
-    <div class="table-row">
-        <div class="container table-cell" id="copyright_notice">
-            <a target="_blank" href="<fmt:message key="logoURL"/>"><fmt:message key="footerCopyright"/></a>
+    <div class="table">
+        <div class="table-row">
+            <div class="container table-cell" id="copyright_notice">
+                <a noajax='true' target="_blank" href="<fmt:message key="logoURL"/>"><fmt:message
+                        key="footerCopyright"/></a>
+            </div>
         </div>
     </div>
-</div>
-<script type="text/javascript" xml:space="preserve">
-    <c:if test="${ua.isiPhone || ua.isiPod}">
-    var updateOrientation = function() {
-        currentWidth = window.innerWidth;
-        var orient = (currentWidth == 480) ? "landscape" : "portrait";
-        document.body.setAttribute("orient", orient);
-    };
-    window.addEventListener("load", function() {
-        setTimeout(function() {
-            updateOrientation();
-            window.scrollTo(0, 1);
-        }, 300);
-    }, false);
-    </c:if>
-    var toggleSearch = function() {
-        var elem = document.getElementById("searchbar");
-        if (elem && elem.style && (elem.style.display == 'none')) {
-            elem.style.display = 'table';
-        } else {
-            elem.style.display = 'none';
+    <script type="text/javascript" xml:space="preserve">
+        <!--
+        <c:if test="${ua.isiPhone || ua.isiPod}">
+        window.addEventListener("load", function() {
+            setTimeout(function() {
+                updateOrientation();
+                window.scrollTo(0, 1);
+            }, 300);
+        }, false);
+        </c:if>
+        <c:if test="${not empty requestScope.title}">
+        document.title = "<fmt:message key="zimbraTitle"/>: ${fn:escapeXml(requestScope.title)}";
+        </c:if>
+        if (getXHR()) {
+            registerOnclickHook();
         }
-        return false;
-    };
-    <c:if test="${not empty requestScope.title}">
-       document.title = "<fmt:message key="zimbraTitle"/>: ${fn:escapeXml(requestScope.title)}"; 
-    </c:if>
-</script>
-</body>
-</html>
+        //-->
+    </script>
+    </body> </html> </c:if>

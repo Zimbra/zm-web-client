@@ -227,34 +227,34 @@ input[type="button"], input[type="reset"] {
     -webkit-appearance: button;
 }
 .Reply {
-    background: url( "/img/startup/ImgReply.gif") 50% 50% no-repeat;
+    background-position: 0 -20px !important;
 }
 .ReplyAll{
-    background: url( "/img/startup/ImgReplyAll.gif") 50% 50% no-repeat;
+    background-position: 0 -236px !important;
 }
 .Forward{
-    background: url( "/img/startup/ImgForward.gif") 50% 50% no-repeat;
+    background-position: 0 -254px !important;
 }
 .Check{
-    background: url( "/img/common/ImgCheck.gif") 50% 50% no-repeat;
+    background-position: 0 -272px !important;
 }
 .Question{
-    background: url( "/img/common/ImgQuestionMark.gif") 50% 50% no-repeat;
+    background-position: 0 -2px !important;
 }
 .Cancel{
-    background: url( "/img/common/ImgCancel.gif") 50% 50% no-repeat;
+    background-position: 0 -56px !important;
 }
 .Msg {
-    background: url( "/img/mail/ImgEnvelope.gif" ) 90% 49% no-repeat;
+    background-position: 0 -308px !important;
 }
 .MsgGray {
-    background: url( "/img/mail/ImgEnvelopeGray.gif" ) 90% 49% no-repeat;
+    background-position: 0 -200px !important;
 }
 .Conv {
-    background: url( "/img/startup/ImgConversationView.gif" ) 90% 50% no-repeat;
+    background-position: 0 -326px !important;
 }
 .Contact {
-    background: url( "/img/contacts/ImgContact.gif" ) 90% 50% no-repeat;
+    background-position: 0 -218px !important;
 }
 .Person48 {
     background: url( "/img/large/ImgPerson_48.gif" ) 90% 50% no-repeat;
@@ -263,10 +263,10 @@ input[type="button"], input[type="reset"] {
     padding: 2px;
 }
 .ContactGroup {
-    background: url( "/img/contacts/ImgGroup.gif" ) 90% 50% no-repeat;
+    background-position: 0 -380px !important;
 }
 .Attachment {
-    background: url( "/img/startup/ImgAttachment.gif" ) 10% 50% no-repeat;
+    background-position: 0 -362px !important;
     padding-left: 12px;
 }
 .cmp_container .table-cell, .cmp_appt_container .table-cell {
@@ -437,7 +437,6 @@ div.row span.l, div.row span.m {
     text-overflow: ellipsis;
     white-space: nowrap;
     cursor: pointer;
-    cursor: hand;
 }
 h1, h2, h3, h4, h5, h6 {
     font-size: 100%;
@@ -462,7 +461,10 @@ div.row span.l {
 }
 .SmlIcnHldr {
     width: 18px;
+    height: 18px;
+    max-height: 18px;
     display: inline-block;
+    background: url("/img/mobile/iphone-ext/common.gif") no-repeat top left;
 }
 .FldrSearchFolder {
     background: url( "/img/startup/ImgSearchFolder.gif" ) 50% 50% no-repeat;
@@ -525,29 +527,32 @@ div.row span.l {
     background: url( "/img/voicemail/ImgVoicemail.gif" ) 50% 50% no-repeat;
 }
 .Flag {
-    background: url( "/img/startup/ImgFlagRed.gif" ) 50% 50% no-repeat;
+    background-position: 0 -164px !important !important;
 }
 .Tagblue {
-    background: url( "/img/startup/ImgTagBlue.gif" ) 50% 50% no-repeat;
+    background-position: 0 -110px !important;
 }
 .Tagcyan {
-    background: url( "/img/startup/ImgTagCyan.gif" ) 50% 50% no-repeat;
+    background-position: 0 -92px !important; }
 }
 .Tagorange {
-    background: url( "/img/startup/ImgTagOrange.gif" ) 50% 50% no-repeat;
+    background-position: 0 -128px !important;
 }
 .Taggreen {
-    background: url( "/img/startup/ImgTagGreen.gif" ) 50% 50% no-repeat;
+    background-position: 0 -182px !important;
 }
 .Tagpurple {
-    background: url( "/img/startup/ImgTagPurple.gif" ) 50% 50% no-repeat;
+    background-position: 0 -290px !important;
 }
 .Tagred {
-    background: url( "/img/startup/ImgTagRed.gif" ) 50% 50% no-repeat;
+    background-position: 0 -344px !important;
 }
 .Tagyellow {
-    background: url( "/img/startup/ImgTagYellow.gif" ) 50% 50% no-repeat;
+    background-position: 0 -38px !important;
 }
 .TagStack {
-    background: url( "/img/startup/ImgTagStack.gif" ) 50% 50% no-repeat;
+    background-position: 0 -74px !important;
+}
+.TagdefaultColor,.Tag {
+    background-position: 0 -146px !important;
 }

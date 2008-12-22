@@ -7,14 +7,20 @@
 <%@ taglib prefix="mo" uri="com.zimbra.mobileclient" %>
 <c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'mainx'}"/>
 <c:set var="caction" value="${context_url}"/>
-<c:if test="${param.bt != null}">
+<c:choose>
+<c:when test="${not empty param.bt}">
     <c:set var="bt" value="${param.bt}"/>
     <c:url var="caction" value='${context_url}?${fn:replace(param.bt,"|","&")}'/>
-</c:if>
-<c:if test="${param.bt == null}">
+</c:when>
+<c:when test="${empty prevUrl  && empty param.bt && not empty header['referer']}">
     <c:set var="caction" value='${header["referer"]}'/>
-    <c:set var="bt" value="${fn:replace(fn:substringAfter(header['referer'],'?'),'&','|')}"/>
-</c:if>
+    <c:set var="bt"
+           value="${fn:replace(fn:replace(fn:substringAfter(header['referer'],'?'),'appmsg=messageSent',''),'&','|')}"/>
+</c:when>
+</c:choose>
+<c:url var="caction" value="${caction}">
+	<c:param name="noframe" value="true"/>
+</c:url>
 <mo:handleError>
     <zm:composeUploader var="uploader"/>
     <%--<c:set var="needComposeView" value="${param.action eq 'compose'}"/>--%>

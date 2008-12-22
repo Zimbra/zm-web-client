@@ -134,7 +134,7 @@
 </span>
 <span>
 <c:if test="${singleMessage}">
-    <select class="zo_select_button" name="anAction" onchange="document.getElementById('actions').submit();">
+    <select class="zo_select_button" name="anAction" onchange="submitForm(document.getElementById('actions'));">
         <option value="" selected="selected"><fmt:message key="moreActions"/></option>
         <c:set var="myFolder" value="${zm:getFolder(pageContext, message.folderId)}"/>
         <c:set var="inTrash" value="${myFolder.isInTrash}"/>
@@ -197,10 +197,10 @@
                 <input type="hidden" name="folderId" value="${folder.id}"/>
             </zm:forEachFolder>--%>
     </select>
-    <noscript><input name="moreActions" type="submit" value="<fmt:message key="actionGo"/>"/></noscript>
+    <noscript><input class="zo_button" name="moreActions" type="submit" value="<fmt:message key="actionGo"/>"/></noscript>
 </c:if>
 <c:if test="${!singleMessage && convSearchResult.size gt 0}">
-    <select class="zo_select_button" name="anAction" onchange="document.getElementById('actions').submit();">
+    <select class="zo_select_button" name="anAction" onchange="submitForm(document.getElementById('actions'));">
         <option value="" selected="selected"><fmt:message key="moreActions"/></option>
         <optgroup label="Delete">
             <c:choose>
@@ -254,7 +254,7 @@
             </optgroup>
         </c:if>
     </select>
-    <noscript><input name="moreActions" type="submit" value="<fmt:message key="actionGo"/>"/></noscript>
+    <noscript><input class="zo_button" name="moreActions" type="submit" value="<fmt:message key="actionGo"/>"/></noscript>
 </c:if>
 </span>
 <span class="">

@@ -60,6 +60,11 @@ a {
 .list-row-unread .small-gray-text,.Email a {
     color: #777777;
 }
+.list-row-unread .l{
+	font-weight: normal;
+
+}
+
 .from-span a {
     color: black;
 }
@@ -150,34 +155,34 @@ a {
     background: url( "/img/mobile/iphone-ext/AppsNav.png" ) top left no-repeat;
 }
 a#mail {
-    background-position: 3px 0 !important;
+    background-position: 50% 0 !important;
 }
 a#mail-active {
-    background-position: 3px 0 !important;
+    background-position: 50% 0 !important;
 }
 a#contact {
-    background-position: 3px -53px !important;
+    background-position: 50% -53px !important;
 }
 a#contact-active {
-    background-position: 3px -53px !important;
+    background-position: 50% -53px !important;
 }
 a#cal {
-    background-position: 3px -107px !important;
+    background-position: 50% -107px !important;
 }
 a#cal-active {
-    background-position: 3px -107px !important;
+    background-position: 50% -107px !important;
 }
 a#folders {
-    background-position: 3px -160px !important;
+    background-position: 50% -160px !important;
 }
 a#folders-active {
-    background-position: 3px -160px !important;
+    background-position: 50% -160px !important;
 }
 a#search {
-    background-position: 3px -216px !important;
+    background-position: 50% -216px !important;
 }
 a#search-active {
-    background-position: 3px -216px !important;
+    background-position: 50% -216px !important;
 }
 #searchbar {
     text-align: center;
@@ -203,7 +208,7 @@ form {
 }
 .Toolbar, .SubToolbar {
     background: #eeeeee;
-    height: 23px;
+    height: 36px;
     padding-top: 4px;
     padding-bottom: 4px;
     text-align: center;
@@ -245,10 +250,10 @@ form {
 .zo_button, .zo_button_disabled {
     -moz-border-radius: 4px;
     -webkit-border-radius: 4px;
-    padding: 4px;
+    padding: 5px;
     margin: 0px;
     -webkit-margin: 0px;
-    -webkit-padding: 4px;
+    -webkit-padding: 5px;
     color: #ffffff;
     border: 1px groove #58759d;
     boder-collapse: collapse;
@@ -260,7 +265,7 @@ form {
     -webkit-border-radius: 4px;
     border: 1px groove #58759d;
     boder-collapse: collapse;
-    padding: 4px;
+    padding: 5px;
     margin:2px;
     font-size: medium;
 }
@@ -410,8 +415,8 @@ select {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    vertical-align: 1px;
-    height: 27px;
+    vertical-align: 0px;
+    height: 30px;
     color: white;
     -moz-border-radius: 4px;
     -webkit-border-radius: 4px;
@@ -460,6 +465,7 @@ select {
 }
 .Folders {
     padding: 5px;
+    height: 28px;
 }
 .row {
     display: block;
@@ -577,7 +583,7 @@ div.row span.l {
     background: url( "/img/voicemail/ImgVoicemail.gif" ) 50% 50% no-repeat;
 }
 .Flag {
-    background-position: 0 -164px !important !important;
+    background-position: 0 -164px !important;
 }
 .Tagblue {
     background-position: 0 -110px !important;
@@ -601,7 +607,7 @@ div.row span.l {
     background-position: 0 -38px !important;
 }
 .TagStack {
-    background-position: 0 -74px !important;  
+    background-position: 0 -74px !important;
 }
 .TagdefaultColor,.Tag {
     background-position: 0 -146px !important;

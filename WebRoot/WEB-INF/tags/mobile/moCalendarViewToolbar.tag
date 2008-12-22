@@ -44,7 +44,7 @@
             ${not empty sessionScope.calendar ? sessionScope.calendar.name : checkedInUI}
         </c:if>
         <c:if test="${top_fldr_select eq '1'}">
-        <select name="sfi" onchange="document.location.href='?sfi='+this.value+'&st=cal';">
+        <select name="sfi" onchange="fetchIt('?sfi='+this.value+'&st=cal');">
         <option value="null">${checkedInUI}</option>
         <zm:forEachFolder var="fldr" skiproot="true">
             <c:if test="${fldr.isCalendar || fldr.isAppointmentView}">
@@ -55,13 +55,24 @@
         </c:if>    
     </div>
 </c:if>
+<c:url var='eaction' value="?st=newappt&date=${dateDf}">
+<c:if test="${not empty invId}">
+	<c:param name="useInstance" value="0"/>
+	<c:param name="invId" value="${invId}"/>
+
+</c:if>
+<c:if test="${not empty param.bt}">
+	<c:param name="bt" value="${param.bt}"/>
+</c:if>
+</c:url>
+       
 <c:if test="${(isTop && '1' eq  top_tb ) || (!isTop && '1' eq btm_tb) }">
 <div class="Toolbar table">
 	<div class="table-row">
 	<div class="table-cell">
         <span class=" zo_button_group"><c:if test="${view ne 'appt'}"><a ${list} class='prev_button ${view!=null && view=='list'?'zo_button_disabled':'zo_button'}'><fmt:message key="calViewListShort"/></a><a ${day} class='next_button ${view!=null && view=='day'?'zo_button_disabled':'zo_button'}'><fmt:message key="calViewDayShort"/></a><a ${month} class='next_button ${view!=null && view=='month'?'zo_button_disabled':'zo_button'}'><fmt:message key="calViewMonthShort"/></a></c:if>
 	<c:if test="${view eq 'appt'}"><mo:calendarUrl var="backurl" action="${null}"/><a href="${backurl}" class="zo_button prev_button"><fmt:message key="back"/></a></c:if></span>
-        <span><a accesskey="${requestScope.mainaction_accesskey}" href="?st=newappt&date=${dateDf}<c:if test="${'' ne invId}">&useInstance=0&invId=${invId}</c:if>" class='zo_button'><fmt:message key="${empty invId ? 'add' : 'edit'}"/></a></span>
+	 <span><a accesskey="${requestScope.mainaction_accesskey}" href="${eaction}" class='zo_button'><fmt:message key="${empty invId ? 'add' : 'edit'}"/></a></span>
 	</div>
 	</div>
 </div>
@@ -73,7 +84,7 @@
             ${not empty sessionScope.calendar ? sessionScope.calendar.name : checkedInUI}
         </c:if>
         <c:if test="${btm_fldr_select eq '1'}">
-        <select name="sfi" onchange="document.location.href='?sfi='+this.value+'&st=cal';">
+        <select name="sfi" onchange="fetchIt('?sfi='+this.value+'&st=cal');">
         <option value="null">${checkedInUI}</option>
         <zm:forEachFolder var="fldr" skiproot="true">
             <c:if test="${fldr.isCalendar || fldr.isAppointmentView}">

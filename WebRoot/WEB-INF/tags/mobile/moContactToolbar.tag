@@ -31,9 +31,6 @@
     <c:param name="id" value="${contact.id}"/>
     <c:param name="pid" value="${contact.id}"/>
 </c:url>
-<a href="${editUrl}" id="_edit_link" style="display:none;visibility:hidden;">
-    <fmt:message key="edit"/>
-</a>
 <zm:computeNextPrevItem var="cursor" searchResult="${context.searchResult}"
                         index="${context.currentItemIndex}"/>
             <span class="zo_button_group">
@@ -67,7 +64,7 @@
                 </c:choose>
             </span>
     <span>
-    <select class="zo_select_button" name="anAction" onchange="document.getElementById('actions').submit();">
+    <select class="zo_select_button" name="anAction" onchange="submitForm(document.getElementById('actions'));">
         <option value="" selected="selected"><fmt:message key="moreActions"/></option>
         <c:choose>
             <c:when test="${not context.folder.isInTrash}">
@@ -113,7 +110,7 @@
             </optgroup>
         </c:if>
     </select>
-    <noscript><input name="moreActions" type="submit" value="<fmt:message key="actionGo"/>"/>
+    <noscript><input class="zo_button" name="moreActions" type="submit" value="<fmt:message key="actionGo"/>"/>
     </noscript>
 </span>
 <span>
@@ -123,7 +120,7 @@
            <c:param name="folderid" value="${context.folder.id}"/>
        </c:url>
       <c:if test="${contact != null}">
-          <input accesskey="${requestScope.mainaction_accesskey}" class="zo_button" type="button" onclick="zClickLink('_edit_link')" value="<fmt:message key="edit"/>"/>
+          <a accesskey="${requestScope.mainaction_accesskey}" class="zo_button" href="${editUrl}"><fmt:message key="edit"/></a>
       </c:if>
       <c:if test="${contact == null}">
         <a accesskey="${requestScope.mainaction_accesskey}" href="${addUrl}" class='zo_button'>

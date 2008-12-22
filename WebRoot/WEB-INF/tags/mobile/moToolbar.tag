@@ -102,7 +102,7 @@
 <span class="table-cell">-->
 <c:if test="${context.searchResult.size gt 0}">
     <span>
-        <select class="zo_select_button" name="anAction" onchange="document.getElementById('actions').submit();">
+        <select class="zo_select_button" name="anAction" onchange="submitForm(document.getElementById('actions'))">
             <option value="" selected="selected"><fmt:message key="moreActions"/></option>
                 <%--<optgroup label="<fmt:message key="delete"/>">--%>
             <c:choose>
@@ -217,8 +217,8 @@
                             ${fn:escapeXml(zm:truncate(context.shortBackTo,15,true))}
                         </c:if>
                         <c:if test="${btm_fldr_select ne '0'}">
-                        <select class="_zo_select_button" name="sfi"
-                                onchange="document.location.href='?sfi='+this.value+'&amp;st=${context.st}';">
+			<select class="_zo_select_button" name="sfi"
+                                onchange="fetchIt('?sfi='+this.value+'&amp;st=${context.st}');">
                             <zm:forEachFolder var="fldr" skiproot="true">
                                 <c:if test="${fldr.isContactView}">
                                     <option ${param.sfi eq fldr.id || context.folder.id eq fldr.id ? 'selected="selected"' : ''}
@@ -236,7 +236,7 @@
                             ${fn:escapeXml(zm:truncate(context.shortBackTo,15,true))}
                         </c:if>
                         <c:if test="${btm_fldr_select ne '0'}">
-                        <select class="_zo_select_button" name="sfi" onchange="document.location.href='?sfi='+this.value+'&amp;st=${context.st}';">
+                        <select class="_zo_select_button" name="sfi" onchange="fetchIt('?sfi='+this.value+'&amp;st=${context.st}');">
                             <zm:forEachFolder var="fldr" skiproot="true">
                                 <c:if test="${fldr.isConversationView || fldr.isMessageView}">
                                     <option ${param.sfi eq fldr.id || context.folder.id eq fldr.id ? 'selected="selected"' : ''}

@@ -18,7 +18,7 @@
 <form id="actions" action="${fn:escapeXml(actionUrl)}" method="post">
     <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
     <input type="hidden" name="doContactAction" value="1"/>
-    <script type="text/javascript">document.write('<input name="moreActions" type="hidden" value="<fmt:message key="actionGo"/>"/>');</script>
+    <input name="moreActions" type="hidden" value="<fmt:message key="actionGo"/>"/>
     <mo:toolbar context="${context}" urlTarget="${context_url}" isTop="true" mailbox="${mailbox}"/>
     <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
         <c:set var="chit" value="${hit.contactHit}"/>
@@ -33,18 +33,20 @@
                            name="id" value="${chit.id}"/>
             <span class="SmlIcnHldr ${class}">&nbsp;</span>
             </span>
-            <span class="cell m" onclick='zClickLink("a${chit.id}")'>
+            <span class="cell m" onclick='return zClickLink("a${chit.id}")'>
+            <a id="a${chit.id}"
+                                           href="${contactUrl}">
                 <div>
-                    <a id="a${chit.id}"
-                           href="${contactUrl}"><strong>${zm:truncate(fn:escapeXml(empty chit.fileAsStr ? '<None>' : chit.fileAsStr),50, true)}</strong></a>
+                    <strong>${zm:truncate(fn:escapeXml(empty chit.fileAsStr ? '<None>' : chit.fileAsStr),50, true)}</strong>
                 </div>
+            </a>
                 <div class="Email">
                     <c:set var="nmail" value="st=newmail"/>
                     <c:url var="murl" value="?${nmail}&to=${chit.email}"/>
                     <a href="${fn:escapeXml(murl)}">${fn:escapeXml(chit.email)}</a>
                 </div>
             </span>
-            <span class="cell l" onclick='zClickLink("a${chit.id}")'>
+            <span class="cell l" onclick='return zClickLink("a${chit.id}")'>
                 <c:if test="${chit.isFlagged}">
                     <span class="SmlIcnHldr Flag">&nbsp;</span>
                 </c:if>

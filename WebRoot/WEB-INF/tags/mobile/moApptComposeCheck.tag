@@ -7,14 +7,20 @@
 <%@ taglib prefix="mo" uri="com.zimbra.mobileclient" %>
 <c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'mainx'}"/>
 <c:set var="caction" value="${context_url}"/>
-<c:if test="${param.bt != null}">
+<c:choose>
+<c:when test="${not empty param.bt}">
     <c:set var="bt" value="${param.bt}"/>
-    <c:url var="caction" value='${context_url}?${fn:replace(param.bt,"|","&")}'/>
-</c:if>
-<c:if test="${param.bt == null}">
+    <c:url var="caction" value='${context_url}?${fn:replace(param.bt,"|","&")}&bt=${bt}'/>
+</c:when>
+<c:when test="${empty param.bt && not empty header['referer']}">
     <c:set var="caction" value='${header["referer"]}'/>
-    <c:set var="bt" value="${fn:replace(fn:substringAfter(header['referer'],'?'),'&','|')}"/>
-</c:if>
+    <c:set var="bt"
+           value="${fn:replace(fn:replace(fn:substringAfter(header['referer'],'?'),'appmsg=messageSent',''),'&','|')}"/>
+</c:when>
+</c:choose>
+<c:url var="caction" value="${caction}">
+	<c:param name="noframe" value="true"/>
+</c:url>
 <mo:handleError>
     <%--<zm:getMailbox var="mailbox"/>--%>
     <zm:composeUploader var="uploader"/>
@@ -82,10 +88,12 @@
                     </c:if>
                     <%-- TODO: check for errors, etc, set success message var and forward to prev page, or set error message and continue --%>
                     <app:status><fmt:message key="${empty message ? 'actionApptCreated' : 'actionApptSaved'}"/></app:status>
+		    
                     <c:redirect url="${caction}">
                         <c:param name="appmsg" value="${empty message ? 'actionApptCreated' : 'actionApptSaved'}"></c:param>
-                    </c:redirect>    
-                    <c:set var="needEditView" value="${false}"/>
+			<c:param name="bt" value="${bt}"/>
+                    </c:redirect>
+		    <c:set var="needEditView" value="${false}"/>
                 </mo:handleError>
             </c:when>
         </c:choose>

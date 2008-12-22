@@ -32,7 +32,7 @@
 <form id="actions" action="${fn:escapeXml(actionUrl)}" method="post">
 <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
 <input type="hidden" name="doMessageAction" value="1"/>
-<script>document.write('<input name="moreActions" type="hidden" value="<fmt:message key="actionGo"/>"/>');</script>
+<input name="moreActions" type="hidden" value="<fmt:message key="actionGo"/>"/>
 <mo:msgToolbar mid="${msg.id}" urlTarget="${context_url}" context="${context}" keys="false" isTop="${true}" msg="${msg}" mailbox="${mailbox}"/>
             <div class="Stripes">
                 <c:set var="extImageUrl" value=""/>

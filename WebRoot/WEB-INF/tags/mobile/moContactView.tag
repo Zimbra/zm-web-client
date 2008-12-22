@@ -23,7 +23,7 @@
     <input type="hidden" name="doContactAction" value="1"/>
     <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
     
-    <script>document.write('<input name="moreActions" type="hidden" value="<fmt:message key="actionGo"/>"/>');</script>
+    <input name="moreActions" type="hidden" value="<fmt:message key="actionGo"/>"/>
     <mo:contactToolbar contact="${contact}" urlTarget="${context_url}" context="${context}" keys="false"
                                isTop="true" mailbox="${mailbox}"/>
     <div class="Stripes cont_view">

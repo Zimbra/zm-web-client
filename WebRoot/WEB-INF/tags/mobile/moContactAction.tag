@@ -71,8 +71,8 @@
             <zm:field name="otherURL" value="${param.otherURL}"/>
 
             <zm:field name="otherPhone" value="${param.otherPhone}"/>
-            <zm:field name="otherFax" value="${param.otherFax}"/>--%>
-            <%--<zm:field name="notes" value="${param.notes}"/>
+            <zm:field name="otherFax" value="${param.otherFax}"/>
+            <zm:field name="notes" value="${param.notes}"/>
 
             <c:if test="${not empty param.dlist and param.isgroup}">
                 <zm:field name="fileAs" value="8:${param.nickname}"/>
@@ -87,7 +87,7 @@
 
         <c:if test="${result!=null}">
             <app:status>
-                <fmt:message key="${not empty param.id ? 'contactModified': 'contactSaved'}"/>
+                <fmt:message key="${not empty param.id ? 'contactModified': 'contactCreated'}"/>
             </app:status>
             <c:set var="currentContactId" value="${result}" scope="request"/>
         </c:if>

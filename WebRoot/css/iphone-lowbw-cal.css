@@ -465,7 +465,7 @@
 .zo_cal_mlist {
     display: none;
 }
-.cal_prev:after{
+.cal_prev:before{
     width:25px;
     content: "\25C0";
     font-size:x-large;

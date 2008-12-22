@@ -1,4 +1,4 @@
-mailbody {
+body {
     font-family: Myriad, "Lucida Grande", Helvetica, Arial, Verdana, Sans-serif;
     width: 99%;
     padding:0px;
@@ -291,63 +291,59 @@ form {
     width: 90px;
 }
 
+.SmlIcnHldr {
+    width: 18px;
+    height: 18px;
+    max-height: 18px;
+    display: inline-block;
+    background: url("/img/mobile/iphone-ext/common.gif") no-repeat top left;
+}
+
 .Action {
     font-size: medium;
 }
 
-.reply:before {
-    content: url( "/img/startup/ImgReply.gif" );
+.Reply {
+    background-position: 0 -20px !important;
 }
-
-.replyAll:before {
-    content: url( "/img/startup/ImgReplyAll.gif" );
+.ReplyAll{
+    background-position: 0 -236px !important;
 }
-
-.forward:before {
-    content: url( "/img/startup/ImgForward.gif" );
+.Forward{
+    background-position: 0 -254px !important;
 }
-
-.accept:before {
-    content: url( "/img/common/ImgCheck.gif" );
+.Check{
+    background-position: 0 -272px !important;
 }
-
-.tentative:before {
-    content: url( "/img/common/ImgQuestionMark.gif" );
+.Question{
+    background-position: 0 -2px !important;
 }
-
-.decline:before {
-    content: url( "/img/common/ImgCancel.gif" );
+.Cancel{
+    background-position: 0 -56px !important;
 }
-
 .Msg {
-    background: url( "/img/mail/ImgEnvelope.gif" ) 90% 49% no-repeat;
+    background-position: 0 -308px !important;
 }
-
 .MsgGray {
-    background: url( "/img/mail/ImgEnvelopeGray.gif" ) 90% 49% no-repeat;
+    background-position: 0 -200px !important;
 }
-
 .Conv {
-    background: url( "/img/startup/ImgConversationView.gif" ) 90% 50% no-repeat;
+    background-position: 0 -326px !important;
 }
-
 .Contact {
-    background: url( "/img/contacts/ImgContact.gif" ) 90% 50% no-repeat;
+    background-position: 0 -218px !important;
 }
-
 .Person48 {
     background: url( "/img/large/ImgPerson_48.gif" ) 90% 50% no-repeat;
     height: 50px;
     width: 50px;
     padding: 2px;
 }
-
 .ContactGroup {
-    background: url( "/img/contacts/ImgGroup.gif" ) 90% 50% no-repeat;
+    background-position: 0 -380px !important;
 }
-
 .Attachment {
-    background: url( "/img/startup/ImgAttachment.gif" ) 10% 50% no-repeat;
+    background-position: 0 -362px !important;
     padding-left: 12px;
 }
 
@@ -592,4 +588,93 @@ body div.row span.m {
     padding: 2px !important;
 }
 
-
+.FldrSearchFolder {
+    background: url( "/img/startup/ImgSearchFolder.gif" ) 50% 50% no-repeat;
+}
+.FldrFolder {
+    background: url( "/img/startup/ImgFolder.gif" ) 50% 50% no-repeat;
+}
+.FldrSharedCalendarFolder {
+    background: url( "/img/calendar/ImgSharedCalendarFolder.gif" ) 50% 50% no-repeat;
+}
+.FldrCalendarFolder {
+    background: url( "/img/calendar/ImgCalendarFolder.gif" ) 50% 50% no-repeat;
+}
+.FldrSharedContactsFolder {
+    background: url( "/img/startup/ImgSearchFolder.gif" ) 50% 50% no-repeat;
+}
+.FldrEmailedContacts {
+    background: url( "/img/contacts/ImgSharedContactsFolder.gif" ) 50% 50% no-repeat;
+}
+.FldrContactsFolder {
+    background: url( "/img/contacts/ImgContactsFolder.gif" ) 50% 50% no-repeat;
+}
+.FldrSharedTaskList {
+    background: url( "/img/tasks/ImgSharedTaskList.gif" ) 50% 50% no-repeat;
+}
+.FldrTaskList {
+    background: url( "/img/startup/ImgTaskList.gif" ) 50% 50% no-repeat;
+}
+.FldrInbox {
+    background: url( "/img/startup/ImgSearchFolder.gif" ) 50% 50% no-repeat;
+}
+.FldrTrash {
+    background: url( "/img/startup/ImgTrash.gif" ) 50% 50% no-repeat;
+}
+.FldrSpamFolder {
+    background: url( "/img/startup/ImgSpamFolder.gif" ) 50% 50% no-repeat;
+}
+.FldrSentFolder {
+    background: url( "/img/startup/ImgSentFolder.gif" ) 50% 50% no-repeat;
+}
+.FldrDraftFolder {
+    background: url( "/img/startup/ImgDraftFolder.gif" ) 50% 50% no-repeat;
+}
+.FldrRSS {
+    background: url( "/img/startup/ImgRSS.gif" ) 50% 50% no-repeat;
+}
+.FldrSharedMailFolder {
+    background: url( "/img/startup/ImgSharedMailFolder.gif" ) 50% 50% no-repeat;
+}
+.FldrPlacedCalls {
+    background: url( "/img/voicemail/ImgPlacedCalls.gif" ) 50% 50% no-repeat;
+}
+.FldrAnsweredCalls {
+    background: url( "/img/voicemail/ImgAnsweredCalls.gif" ) 50% 50% no-repeat;
+}
+.FldrMissedCalls {
+    background: url( "/img/voicemail/ImgMissedCalls.gif" ) 50% 50% no-repeat;
+}
+.FldrVoicemail {
+    background: url( "/img/voicemail/ImgVoicemail.gif" ) 50% 50% no-repeat;
+}
+.Flag {
+    background-position: 0 -164px !important !important;
+}
+.Tagblue {
+    background-position: 0 -110px !important;
+}
+.Tagcyan {
+    background-position: 0 -92px !important; }
+}
+.Tagorange {
+    background-position: 0 -128px !important;
+}
+.Taggreen {
+    background-position: 0 -182px !important;
+}
+.Tagpurple {
+    background-position: 0 -290px !important;
+}
+.Tagred {
+    background-position: 0 -344px !important;
+}
+.Tagyellow {
+    background-position: 0 -38px !important;
+}
+.TagStack {
+    background-position: 0 -74px !important;
+}
+.TagdefaultColor,.Tag {
+    background-position: 0 -146px !important;
+}

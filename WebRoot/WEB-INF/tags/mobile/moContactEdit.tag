@@ -43,7 +43,7 @@
 <c:if test="${contact!=null}">
     <c:set var="factionurl" value="${caction}"/>
 </c:if>--%>
-<form action="" method="post" accept-charset="utf-8">
+<form action="${currentUrl}" method="post" accept-charset="utf-8" onsubmit="return submitForm(this);">
 <%--<c:if test="${not empty param.folderid}">
 <input type="hidden" name="folderid" value="${fn:escapeXml(param.folderid)}"/>
 </c:if>--%>
@@ -52,10 +52,7 @@
 <div class="Toolbar table">
     <div class="table-row">
         <span class='zo_tb_submit table-cell'>
-            <input class="zo_button" id='actionCancel' name="actionCancel"
-                               style="display:none;" onclick="zClickLink('_back_to')"
-                               type="button" value="<fmt:message key="cancel"/>">
-            <noscript><a href="${caction}" class="zo_button"><fmt:message key="cancel"/></a></noscript>
+            <a href="${caction}" class="zo_button"><fmt:message key="cancel"/></a>
             <script type="text/javascript">document.getElementById('actionCancel').style.display = '';</script>
             <%--<c:if test="${contact!=null}">--%>
                 <input class="zo_button" name="actionSave" type="submit" value="<fmt:message key="save"/>">
@@ -192,10 +189,7 @@
 <div class="Toolbar table">
     <div class="table-row">
         <span class='zo_tb_submit table-cell'>
-            <input class="zo_button" id='actionCancel1' name="actionCancel1"
-                               style="display:none;" onclick="zClickLink('_back_to')"
-                               type="button" value="<fmt:message key="cancel"/>">
-            <noscript><a href="${caction}" class="zo_button"><fmt:message key="cancel"/></a></noscript>
+<a href="${caction}" class="zo_button"><fmt:message key="cancel"/></a>
             <script type="text/javascript">document.getElementById('actionCancel1').style.display = '';</script>
             <%--<c:if test="${contact!=null}">--%>
                 <input class="zo_button" name="actionSave" type="submit" value="<fmt:message key="save"/>">
@@ -208,8 +202,7 @@
 
     </div>
 </div>
-<input type="hidden" name="id" value="${fn:escapeXml(contact.id)}"/>
-<a href="${caction}" id="_back_to" style="display:none;visibility:hidden">back</a>
+<input type="hidden" name="id" value="${fn:escapeXml(contact.id)}"/> 
 </form>
 <script type="text/javascript">
     var showHidemore = function() {

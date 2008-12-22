@@ -24,19 +24,20 @@
 <c:choose>
 <c:when test="${zm:actionSet(param, 'actionSaveTag')}">
    <zm:createTag var="tag" name="${fn:escapeXml(param.tag_name)}" color="${fn:escapeXml(param.tag_color)}"/>
-   <mo:status style="info">
+   <mo:status style="Info">
         <fmt:message key="actionTagCreated"><fmt:param value="${fn:escapeXml(param.tag_name)}"/></fmt:message>
     </mo:status>
 </c:when>
 <c:when test="${zm:actionSet(param, 'actionSaveFolder')}">
+   
    <zm:createFolder var="folder" name="${fn:escapeXml(param.folder_name)}" parentid="${fn:escapeXml(param.parentid)}"/>
-   <mo:status style="info">
+   <mo:status style="Info">
         <fmt:message key="actionFolderCreated"><fmt:param value="${fn:escapeXml(param.folder_name)}"/></fmt:message>
     </mo:status>
 </c:when>
 <c:when test="${zm:actionSet(param, 'actionSaveAddrFolder')}">
    <zm:createFolder view="contact" var="folder" name="${fn:escapeXml(param.folder_name)}" parentid="${fn:escapeXml(param.parentid)}"/>
-   <mo:status style="info">
+   <mo:status style="Info">
         <fmt:message key="actionAddressBookCreated"><fmt:param value="${fn:escapeXml(param.folder_name)}"/></fmt:message>
     </mo:status>
 </c:when>

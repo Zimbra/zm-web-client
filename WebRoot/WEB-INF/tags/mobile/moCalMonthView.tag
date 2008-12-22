@@ -93,10 +93,10 @@
                             <c:set var="curId" value="${datef}"/>
                         </c:if>
                         <mo:calendarUrl var="dayUrl" view="day" date="${datef}"/>
-                        <td id="cell${datef}" class='zo_cal_mday${sel && !zm:isSameDate(today, currentDay) ? '_select' :''}${zm:isSameDate(today, currentDay) ? ' zo_cal_mday_today' : ''}' onclick="selectDay('${datef}')">
-                            <c:if test="${hasappt}"><a href="${dayUrl}" onfocus="selectDay('${datef}')"></c:if>
+                        <td id="cell${datef}" class='zo_cal_mday${sel && !zm:isSameDate(today, currentDay) ? '_select' :''}${zm:isSameDate(today, currentDay) ? ' zo_cal_mday_today' : ''}' onclick="return selectDay('${datef}')">
+                            <c:if test="${hasappt}"><a id='day${datef}' href="${dayUrl}" onfocus="return selectDay('${datef}')"></c:if>
                             <fmt:formatDate var="dayTitle" value="${currentDay.time}" pattern="${dayFormat}" timeZone="${timezone}"/>
-                            <span class='zo_cal_mday_text${O}${hasappt ? ' zo_cal_mday_appt':''}'>${fn:escapeXml(dayTitle)}</span>
+                            <span onclick="return zClickLink('day${datef}');" class='zo_cal_mday_text${O}${hasappt ? ' zo_cal_mday_appt':''}'>${fn:escapeXml(dayTitle)}</span>
                             <c:if test="${hasappt}"></a></c:if>
                         </td>
                         ${zm:getNextDay(currentDay)}
@@ -122,7 +122,7 @@
                         <table width="100%" cellpadding="0" cellspacing="0" class='zo_cal_list'>
                     </c:if>
                     <mo:calendarUrl appt="${appt}" var="apptUrl" view="month"/>
-                        <tr  onclick='openURL("${fn:escapeXml(zm:jsEncode(apptUrl))}")'>
+                        <tr  onclick='return zClickLink("appt${appt.id}")'>
                         <td class='zo_cal_listi_time'>
                             <c:choose>
                                 <c:when test="${appt.allDay}">
@@ -134,8 +134,8 @@
                             </c:choose>
                         </td>
                         <td class='zo_cal_listi_subject'>
-                            <c:set var="subject" value="${empty appt.name ? noSubject : appt.name}"/>
-                                ${fn:escapeXml(subject)}
+                            <a id="appt${appt.id}" href="${fn:escapeXml(zm:jsEncode(apptUrl))}"><c:set var="subject" value="${empty appt.name ? noSubject : appt.name}"/>
+                                ${fn:escapeXml(subject)}</a>
                         </td>
                     </tr>
                     <c:set var="count" value="${count+1}"/>
@@ -169,25 +169,4 @@
     </td>
 </tr>
 </table>
-<script type="text/javascript">
-    var currentDate = '${curId}';
-    function selectDay(datestr) {
-        var cell = document.getElementById("cell" + datestr);
-        if (cell) {
-            if (currentDate) {
-                var list = document.getElementById("list" + currentDate);
-                if (list == null) list = document.getElementById("listempty");
-                list.style.display = "none";
-                document.getElementById("cell" + currentDate).className = "zo_cal_mday" + ((currentDate == '${_today}') ? ' zo_cal_mday_today' : '');
-            }
-            cell.className = 'zo_cal_mday_select';
-            var nlist = document.getElementById("list" + datestr);
-            if (nlist == null) nlist = document.getElementById("listempty");
-            nlist.style.display = "block";
-            currentDate = datestr;
-        }
-    }
-    function openURL(url) {
-        window.location = url.replace(/date=......../, "date=" + currentDate);
-    }
-</script>
+

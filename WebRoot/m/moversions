@@ -55,7 +55,7 @@
 </div>
 <div onclick='zClickLink("FLDR_iph1")' class='Folders list-row'>
     <span>
-        <a id="FLDR_iph1" href="?zms=iphone-ext&amp;limit=10">
+        <a noajax="true" id="FLDR_iph1" href="?zms=iphone-ext&amp;limit=10">
             Default
         </a>
         <div class="small-gray-text">Default on iPhone/iPod</div>
@@ -63,7 +63,7 @@
 </div>
 <div onclick='zClickLink("FLDR_iph2")' class='Folders list-row'>
     <span>
-        <a id="FLDR_iph2" href="?zms=iphone&amp;limit=10">
+        <a noajax="true" id="FLDR_iph2" href="?zms=iphone&amp;limit=10">
             Classic
         </a>
         <div class="small-gray-text">Classic iPhone Look</div>
@@ -71,7 +71,7 @@
 </div>
 <div onclick='zClickLink("FLDR_iph3")' class='Folders list-row'>
     <span>
-        <a id="FLDR_iph3" href="?zms=iphone-lowbw&amp;limit=5">
+        <a noajax="true" id="FLDR_iph3" href="?zms=iphone-lowbw&amp;limit=5">
             Thin
         </a>
         <div class="small-gray-text">for slow networks (EDGE/GPRS)</div>
@@ -88,7 +88,7 @@
 </div>
 <div onclick='zClickLink("FLDR_wm1")' class='Folders list-row'>
     <span>
-        <a id="FLDR_wm1" href="?zms=wm6&amp;limit=10">
+        <a noajax="true" id="FLDR_wm1" href="?zms=wm6&amp;limit=10">
             Default
         </a>
         <div class="small-gray-text">
@@ -98,7 +98,7 @@
 </div>
 <%--<div onclick='zClickLink("FLDR_iph2")' class='Folders list-row'>
     <span>
-        <a id="FLDR_wm2" href="?zms=wm6-lowbw&amp;limit=5">
+        <a noajax="true" id="FLDR_wm2" href="?zms=wm6-lowbw&amp;limit=5">
             Thin
         </a>
         <div class="small-gray-text">for slow networks (EDGE/GPRS)</div>
@@ -115,7 +115,7 @@
 </div>
 <div onclick='zClickLink("FLDR_nok1")' class='Folders list-row'>
     <span>
-        <a id="FLDR_nok1" href="?zms=nok1&amp;limit=10">
+        <a noajax="true" id="FLDR_nok1" href="?zms=nok1&amp;limit=10">
             Default
         </a>
         <div class="small-gray-text">Default for Nokia based phones</div>
@@ -123,7 +123,7 @@
 </div>
 <div onclick='zClickLink("FLDR_nok2")' class='Folders list-row'>
     <span>
-        <a id="FLDR_nok2" href="?zms=nok1-lowbw&amp;limit=5">
+        <a noajax="true" id="FLDR_nok2" href="?zms=nok1-lowbw&amp;limit=5">
              Thin
         </a>
         <div class="small-gray-text">for slow networks (EDGE/GPRS)</div>
@@ -140,7 +140,7 @@
 </div>
 <div onclick='zClickLink("FLDR_xlite")' class='Folders list-row'>
     <span>
-        <a id="FLDR_xlite" href="?zms=xlite&amp;limit=10">
+        <a noajax="true" id="FLDR_xlite" href="?zms=xlite&amp;limit=10">
             Default
         </a>
         <div class="small-gray-text">Compact for small screen devices</div>    

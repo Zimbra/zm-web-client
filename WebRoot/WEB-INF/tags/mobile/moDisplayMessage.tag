@@ -39,30 +39,18 @@
 <c:set var="to" value="${message.displayTo}"/>
 <c:set var="cc" value="${message.displayCc}"/>
 <c:set var="sender" value="${message.displaySender}"/>
-<script type="text/javascript">
-    var toggleDetails = function() {
-        var s = document.getElementById("d_div").style;
-        if (s && s.display && s.display != 'none') {
-            s.display = 'none';
-            document.getElementById("d_btn").innerHTML = '<fmt:message key="details"/>';
-                //document.getElementById("d_from").innerHTML = frm.substr(0,20)+'...';
-        } else {
-            s.display = 'block';
-            document.getElementById("d_btn").innerHTML = 'Hide';
-                //document.getElementById("d_from").innerHTML = frm;
-        }
-    }
-</script>
 <div class="View">
     <c:if test="${not empty from}">
         <span class='label left'><fmt:message key="from"/>:</span>
-        <span class="right" id="d_btn_td" style="display:none;"><a id='d_btn'
-                                                                           onclick="toggleDetails()"><fmt:message
+        <span class="right" id="d_btn_td" <c:if test="${empty param.ajax}">style="display:none;"</c:if>><a id='d_btn'
+                                                                           onclick="return toggleElem(this,'d_div','<fmt:message
+                key="hide"/>','<fmt:message
+                key="details"/>')"><fmt:message
                 key="details"/></a></span>
         <span class=""><span id="d_from">${fn:escapeXml(from)}</span></span>
     </c:if>
 </div>
-<div id="d_div" style="display:block;">
+<div id="d_div" style="display:${empty param.ajax ? 'block' : 'none'};">
     <c:if test="${not empty sender}">
         <div class="View">
             <span valign='top' class='label' width="35" nowrap="nowrap" align="right"><fmt:message
@@ -94,7 +82,7 @@
             <span class="SmlIcnHldr Reply">&nbsp;</span>
             <a
                     <c:if test="${not isPart}">id="OPREPLY"</c:if>
-                    href="?st=newmail&id=${message.id}&amp;op=reply" class="Action reply">
+                    href="?st=newmail&amp;id=${message.id}&amp;op=reply" class="Action reply">
                 <fmt:message key="reply"/>
             </a>
             <span class="SmlIcnHldr ReplyAll">&nbsp;</span>

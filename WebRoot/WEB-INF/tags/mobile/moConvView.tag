@@ -52,7 +52,7 @@
 <form id="actions" action="${fn:escapeXml(actionUrl)}" method="post">
 <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
 <input type="hidden" name="doMessageAction" value="1"/>
-<script type="text/javascript">document.write('<input name="moreActions" type="hidden" value="<fmt:message key="actionGo"/>"/>');</script>
+<input name="moreActions" type="hidden" value="<fmt:message key="actionGo"/>"/>
 <%-- INCLUDE TOOLBAR TOP--%>
 <c:choose>
     <c:when test="${convSummary.messageCount gt 1 and param.mview eq 1}">

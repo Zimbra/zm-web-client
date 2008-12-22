@@ -21,34 +21,6 @@
 </mo:handleError>
 <c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/>
 <c:set value="${title}" var="title" scope="request"/>
-<%--
-<div class="Toolbar table">
-    <div class="table-row">
-        <div class="table-cell">
-            <span class="Title left">
-                    <fmt:message key="briefcases"/>
-                </span>
-                 --%>
-<%--<span class="right">
-                    <a class="zo_button" href="?st=folders${empty param.showFolderCreate?'&showFolderCreate=1':''}#folders" onclick="return showHideElemForm('nfldrfrm');"><fmt:message key="create"/></a>
-                </span>--%>
-<%--
-        </div>
-    </div>
-</div>
-<c:if test="${not empty param.sfi}">
-    <zm:computeSearchContext  types="document" query="sfi=${param.sfi}" var="context" limit="${sessionScope.limit}"/>
-    <!-- Hit Count: ${context.searchResult.size} -->
-    <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
-        doc: ${hit.briefcaseHit.document.name}
-    </c:forEach>
-</c:if>
-<zm:forEachFolder var="folder">
-    <c:if test="${folder.isDocumentView}">
-        <mo:overviewFolder folder="${folder}" base="${context_url}?st=folders"/>    
-    </c:if>
-</zm:forEachFolder>
---%>
 
 <div class="Toolbar table">
     <div class="table-row">
@@ -57,7 +29,7 @@
                     <fmt:message key="folders"/>
                 </span>
                  <span class="right">
-                    <a class="zo_button1" href="?st=folders${empty param.showFolderCreate?'&showFolderCreate=1':''}#folders" onclick="return showHideElemForm('nfldrfrm');"><fmt:message key="create"/></a>
+                    <a class="zo_button1" href="?st=folders${empty param.showFolderCreate?'&showFolderCreate=1':''}#folders" onclick="return toggleElem(null,'nfldrfrm');"><fmt:message key="create"/></a>
                 </span>
         </div>
     </div>
@@ -65,7 +37,7 @@
 <div class="table View" id="nfldrfrm" style="${empty param.showFolderCreate?'display:none':''};">
     <div class="table-row">
         <div class="table-cell">
-            <form action="" method="post" style="padding:0px;margin:0px;">
+            <form action="${currentUrl}" method="post" style="padding:0px;margin:0px;" onsubmit="return submitForm(this);">
                 <input type="hidden" name="doFolderAction" value="1">
                 <input name="crumb" type="hidden" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
                 <span class="label"><fmt:message key="name"/>:</span> <input type="text" name="folder_name"
@@ -144,7 +116,7 @@
                         <fmt:message key="tags"/>
             </span>
             <c:if test="${mailbox.features.tagging}"><span class="right">
-                <a class="zo_button1" href="?st=folders${empty param.showTagCreate?'&showTagCreate=1':''}#tags" onclick="return showHideElemForm('ntagfrm');"><fmt:message
+                <a class="zo_button1" href="?st=folders${empty param.showTagCreate?'&showTagCreate=1':''}#tags" onclick="return toggleElem(null,'ntagfrm');"><fmt:message
                                 key="create"/></a>
             </span></c:if>
     </div>
@@ -154,7 +126,7 @@
 <div class="table View" id="ntagfrm" style="${empty param.showTagCreate?'display:none':''};">
     <div class="table-row">
         <div class="table-cell">
-            <form action="" method="post" style="padding:0px;margin:0px;">
+            <form action="${currentUrl}" method="post" style="padding:0px;margin:0px;" onsubmit="return submitForm(this);">
                 <input type="hidden" name="doFolderAction" value="1">
                 <input name="crumb" type="hidden" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
                 <span class="label"><fmt:message key="name"/>:</span> <input type="text" style="width:100px;"  class="Textarea" name="tag_name">
@@ -182,16 +154,3 @@
         <mo:overviewTag calendars="${false}" tag="${tag}" skiptypes="${true}"/>
     </c:if>
 </zm:forEachTag>
-<script type="text/javascript">
-    var showHideElemForm = function(elemId) {
-        var elem = document.getElementById(elemId)
-        if (!elem) return;
-        if (elem.style.display == 'none') {
-            elem.style.display = '';
-        } else {
-            elem.style.display = 'none';
-        }
-        return false;
-    }
-</script>
- 
