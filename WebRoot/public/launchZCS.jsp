@@ -140,6 +140,9 @@
 	<c:param name="debug" value='${isDebug?"1":""}' />
 	<c:param name="skin" value="${skin}" />
 	<c:param name="locale" value="${locale}" />
+	<c:if test="${not empty param.customerDomain}">
+		<c:param name="customerDomain"	value="${param.customerDomain}" />
+	</c:if>		
 </c:url>" rel="stylesheet" type="text/css" />
 <fmt:message key="favIconUrl" var="favIconUrl"/>
 <link rel="SHORTCUT ICON" href="<c:url value='${favIconUrl}'/>">
@@ -177,6 +180,7 @@
 	<jsp:param name='skin' value='${skin}' />
 	<jsp:param name="locale" value="${locale}" />
 	<jsp:param name='debug' value='${isDebug}' />
+	<jsp:param name="customerDomain" value="${param.customerDomain}" />
 </jsp:include>
 
 <!--
@@ -241,6 +245,8 @@
 	<jsp:param name="locale" value="${locale}" />
 	<jsp:param name='debug' value='${isDebug}' />
 	<jsp:param name="templates" value="split" />
+	<jsp:param name="customerDomain"	value="${param.customerDomain}" />
+	
 </jsp:include>
 </script>
 <c:if test="${not requestScope['skin.templates.included']}">
@@ -252,6 +258,9 @@
 	<c:param name="compress" value="${not isDebug}" />
 	<c:param name="templates" value="only" />
 	<c:param name="v" value="${vers}" />
+	<c:if test="${not empty param.customerDomain}">
+		<c:param name="customerDomain"	value="${param.customerDomain}" />
+	</c:if>	
 </c:url>"></script>
 </c:if>
 
