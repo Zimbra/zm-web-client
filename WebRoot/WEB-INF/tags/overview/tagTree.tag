@@ -11,8 +11,8 @@
 <jsp:useBean id="expanded" scope="session" class="java.util.HashMap" />
 <c:set var="expanded" value="${sessionScope.expanded.tags ne 'collapse'}"/>
 
-<div class="Tree">
-    <table width="100%" cellpadding="0" cellspacing="0">
+<div class="TagTree Tree">
+    <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <c:url value="/h/mtags" var="mtagsUrl">
             <c:if test="${not empty param.sti}">
                 <c:param name="sti" value="${param.sti}"/>

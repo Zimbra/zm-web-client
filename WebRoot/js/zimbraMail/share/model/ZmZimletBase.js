@@ -25,7 +25,7 @@ ZmZimletBase = function() {
 	// For Zimlets, the ZmObjectHandler constructor is a no-op.  Zimlets
 	// don't receive any arguments in constructor.  In the init() function
 	// below we call ZmObjectHandler.init() in order to set some arguments.
-}
+};
 
 ZmZimletBase.PANEL_MENU = 1;
 ZmZimletBase.CONTENTOBJECT_MENU = 2;
@@ -251,7 +251,9 @@ function(spanElement, contentObjText, matchContext, event) {
 				obj["$"+i] = matchContext[i];
 			}
 		}
-		this.xmlObj().handleActionUrl(c.actionUrl, c.canvas, obj);
+        var x = event.docX;
+        var y = event.docY;
+        this.xmlObj().handleActionUrl(c.actionUrl, c.canvas, obj, null, x, y);
 	}
 };
 
@@ -614,8 +616,10 @@ function(object, context, span) {
 };
 
 ZmZimletBase.prototype.makeCanvas =
-function(canvasData, url) {
-	var canvas = null;
+function(canvasData, url, x, y) {
+	if(canvasData && canvasData.length)
+        canvasData = canvasData[0];    
+    var canvas = null;
 	var div;
 
 	div = document.createElement("div");
@@ -685,7 +689,20 @@ function(canvasData, url) {
 		}
 		canvas.popup();
 		break;
-	}
+
+        case "tooltip":
+        var shell = DwtShell.getShell(window);
+	    var canvas = shell.getToolTip();
+	    canvas.setContent('<div id="zimletTooltipDiv" />', true);
+        var el = document.createElement("iframe");
+        el.setAttribute("width",canvasData.width);
+        el.setAttribute("height",canvasData.height);
+        el.setAttribute("style","border:0px");        
+        el.src = url;
+        document.getElementById("zimletTooltipDiv").appendChild(el);
+        canvas.popup(x, y, true);
+        break;
+    }
 	return canvas;
 };
 
@@ -700,6 +717,21 @@ function(xsltUrl, doc) {
 	}
 	var ret = xslt.transformToDom(doc);
 	return AjxXmlDoc.createFromDom(ret);
+};
+
+ZmZimletBase.prototype.createApp = function(label, image, tooltip) {
+	AjxDispatcher.require("ZimletApp");
+
+	var appName = [this.name, Dwt.getNextId()].join("_");
+	var controller = appCtxt.getAppController();
+	controller.getAppChooser().addButton(appName, label, image, tooltip);
+
+	// TODO: Do we have to call ZmApp.registerApp?
+
+	var app = new ZmZimletApp(appName, this, DwtShell.getShell(window));
+	controller.addApp(app);
+
+	return appName;
 };
 
 /* Internal functions -- overriding is not recommended */

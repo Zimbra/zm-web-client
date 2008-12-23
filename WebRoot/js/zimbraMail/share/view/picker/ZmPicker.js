@@ -248,14 +248,16 @@ function(overviewId, parent, types) {
 		overviewId: overviewId,
 		parent: parent,
 		headerClass: "DwtTreeItem",
-		treeStyle: DwtTree.CHECKEDITEM_STYLE
+		treeStyle: DwtTree.CHECKEDITEM_STYLE,
+		treeIds: types
 	};
 	var overview = this._overview = appCtxt.getOverviewController().createOverview(params);
-	overview.set(types);
+	overview.set(types, null, null, true);
 	this._treeView = {};
 	for (var i = 0; i < types.length; i++) {
 		var treeView = this._treeView[types[i]] = overview.getTreeView(types[i]);
 		treeView.addSelectionListener(new AjxListener(this, this._treeListener));
+		treeView.showCheckboxes(true);
 	}
 	if (types.length == 1) {
 		this._hideRoot(types[0]);
@@ -269,7 +271,7 @@ function(type) {
 		var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT)
 		ti = this._treeView[type].getTreeItemById(rootId);
 	}
-	Dwt.setVisible(ti._checkBoxCell, false);
+	ti.showCheckBox(false);
 	ti.setExpanded(true);
 	ti.setVisible(false, true);
 };

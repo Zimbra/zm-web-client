@@ -296,7 +296,7 @@ function(organizer) {
 	return new AjxEmailAddress(orgAddress, null, orgName);
 };
 
-/*
+/**
 * Creates a string from a list of attendees/locations/resources. If an item
 * doesn't have a name, its address is used.
 *
