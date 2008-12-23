@@ -1042,8 +1042,8 @@ function() {
 
     var winname = "_new";
     var winfeatures = [
-        "width=",(window.outerWidth || 640),",",
-        "height=",(window.outerHeight || 480),",",
+        "width=",(screen.width || 640),",",
+        "height=",(screen.height || 480),",",
         "fullscreen=yes"
     ].join("");
     //"resizable,toolbar=no,menubar=no,fullscreen=yes,location=no,status=no"
