@@ -400,6 +400,9 @@ function(viewMode, callback, errorCallback, ignoreOutOfDate, noBusyOverlay, batc
 	if (this.message == null) {
 		var id = seriesMode ? (this.seriesInvId || this.invId) : this.invId;
 		this.message = new ZmMailMsg(id);
+		if (this._orig) {
+			this._orig.message = this.message;
+		}
 		var respCallback = new AjxCallback(this, this._handleResponseGetDetails, [mode, this.message, callback]);
 		var respErrorCallback = (!ignoreOutOfDate)
 			? (new AjxCallback(this, this._handleErrorGetDetails, [mode, callback, errorCallback]))

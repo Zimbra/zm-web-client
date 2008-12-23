@@ -1387,7 +1387,7 @@ ZmCalColView.prototype._getUnionToolTip =
 function(i) {
 	// cache it...
 	var tooltip = this._unionBusyDataToolTip[i];
-	if (tooltip) return tooltip;
+	if (tooltip) { return tooltip; }
 
 	var data = this._unionBusyData[i];
 	if (!data instanceof Object) return null;
@@ -1395,7 +1395,7 @@ function(i) {
 	var html = new AjxBuffer();
 	html.append("<table cellpadding=2 cellspacing=0 border=0>");
 	var checkedCals = this._controller.getCheckedCalendarFolderIds();
-	for (var i=0; i < checkedCals.length; i++) {
+	for (var i = 0; i < checkedCals.length; i++) {
 		var fid = checkedCals[i];
 		if (data[fid]) {
 			var cal = this._controller.getCalendar(fid);
@@ -1515,13 +1515,21 @@ function (ev){
 
 ZmCalColView.prototype._mouseOverAction =
 function(ev, div) {
-	ZmCalBaseView.prototype._mouseOverAction.call(this, ev, div);
 	var type = this._getItemData(div, "type");
 	if (type == ZmCalBaseView.TYPE_DAY_HEADER) {
 		div.style.textDecoration = "underline";
-	} else if (type == ZmCalBaseView.TYPE_SCHED_FREEBUSY) {
+	}
+};
+
+ZmCalColView.prototype.getToolTipContent =
+function(ev) {
+	var div = this.getTargetItemDiv(ev);
+	var type = this._getItemData(div, "type");
+	if (type == ZmCalBaseView.TYPE_SCHED_FREEBUSY) {
 		var index = this._getItemData(div, "index");
-		this.setToolTipContent(this._getUnionToolTip(index));
+		return this._getUnionToolTip(index);
+	} else {
+		return ZmCalBaseView.prototype.getToolTipContent.apply(this, arguments);
 	}
 };
 

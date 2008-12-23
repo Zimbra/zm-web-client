@@ -297,24 +297,6 @@ function(organizer) {
 };
 
 /**
- * Callback triggered when tooltip is finished loading participant status for
- * attendees of an appointment.
- *
- * @param appt			[ZmAppt]				the original ZmAppt object
- * @param view			[DwtComposite]			the view showing the tooltip (i.e. DwtListView or ZmCalBaseView)
- */
-ZmApptViewHelper.refreshApptTooltip =
-function(appt, view) {
-	if (!appt) { return; }
-
-	appt.updateParticipantStatus();
-	view.setToolTipContent(appt.getToolTip(view._controller, true));
-
-	// force obj's tooltip to refresh itself since the tooltip content has changed.
-	view.refreshTooltip();
-};
-
-/**
 * Creates a string from a list of attendees/locations/resources. If an item
 * doesn't have a name, its address is used.
 *

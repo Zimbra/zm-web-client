@@ -587,8 +587,9 @@ function(ev) {
 ZmListView.prototype.getToolTipContent =
 function(ev) {
 	var div = this.getTargetItemDiv(ev);
+	if (!div) { return; }
 	var id = ev.target.id || div.id;
-	if (!id || !div) { return ""; }
+	if (!id) { return ""; }
 
 	// check if we're hovering over a column header
 	var data = this._data[div.id];

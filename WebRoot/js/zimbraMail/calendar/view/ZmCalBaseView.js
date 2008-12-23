@@ -189,31 +189,14 @@ function(ev) {
 	this._mouseOverAction(ev, div);
 };
 
-ZmCalBaseView.prototype._mouseOverAction = 
-function(ev, div) {
-	if (this._getItemData(div, "type") != ZmCalBaseView.TYPE_APPT) { return true; }
+ZmCalBaseView.prototype.getToolTipContent =
+function(ev) {
+	var div = this.getTargetItemDiv(ev);
+	if (!div) { return null; }
+	if (this._getItemData(div, "type") != ZmCalBaseView.TYPE_APPT) { return null; }
 
 	var item = this.getItemFromElement(div);
-	
-	var obj = DwtControl.getTargetControl(ev);
-	var mouseEv = DwtShell.mouseEvent;
-	mouseEv.setFromDhtmlEvent(ev, obj);
-	
-	if (item instanceof ZmAppt) {
-		this.setToolTipContent(item.getToolTip(this._controller));
-
-		if (item.otherAttendees && (item.ptstHashMap == null)) {
-			// getDetails() of original appt will reset the start date/time and
-			// will break the ui layout
-			var clone = ZmAppt.quickClone(item);
-			var uid = this._currentMouseOverApptId = clone.getUniqueId();
-			var callback = new AjxCallback(null, ZmApptViewHelper.refreshApptTooltip, [clone, this]);
-			AjxTimedAction.scheduleAction(new AjxTimedAction(this, this.getApptDetails, [clone, callback, uid]), 2000);
-		}
-	} else {
-		this.setToolTipContent(null);
-	}
-	return true;
+	return item.getToolTip(this._controller);
 };
 
 ZmCalBaseView.prototype.getApptDetails =

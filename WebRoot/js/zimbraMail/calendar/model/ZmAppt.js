@@ -121,91 +121,90 @@ function() {
 };
 
 /**
-* Returns HTML for a tool tip for this appt.
-*/
+ * Returns a tooltip for this appt. If it needs to make a server call, returns a callback instead.
+ *
+ * @param controller	[ZmController]
+ */
 ZmAppt.prototype.getToolTip =
-function(controller, force) {
-	if (this._orig) {
-		return this._orig.getToolTip(controller, force);
+function(controller) {
+	var appt = this._orig || this;
+	var needDetails = (!appt._toolTip || (appt.otherAttendees && !appt.ptstHashMap));
+	if (needDetails) {
+		return {callback:new AjxCallback(appt, appt._getToolTip, [controller]), loading:true};
+	} else {
+		return appt._toolTip || appt._getToolTip(controller);
+	}
+};
+
+ZmAppt.prototype._getToolTip =
+function(controller, callback) {
+
+	if (this.otherAttendees && !this.ptstHashMap) {
+		// getDetails() of original appt will reset the start date/time and will break the ui layout
+		var clone = ZmAppt.quickClone(this);
+		var respCallback = new AjxCallback(this, this._handleResponseGetToolTip, [controller, callback]);
+		clone.getDetails(null, respCallback);
+	} else {
+		return this._handleResponseGetToolTip(controller);
+	}
+};
+
+ZmAppt.prototype._handleResponseGetToolTip =
+function(controller, callback) {
+
+	var organizer = this.getOrganizer();
+	var sentBy = this.getSentBy();
+	var userName = appCtxt.get(ZmSetting.USERNAME);
+	if (sentBy || (organizer && organizer != userName)) {
+		organizer = (this.message && this.message.invite && this.message.invite.getOrganizerName()) || organizer;
+		if (sentBy) {
+			var contactsApp = appCtxt.getApp(ZmApp.CONTACTS);
+			var contact = contactsApp && contactsApp.getContactByEmail(sentBy);
+			sentBy = (contact && contact.getFullName()) || sentBy;
+		}
+	} else {
+		organizer = null;
+		sentBy = null;
 	}
 
-	if (!this._toolTip || force) {
-		var organizer = this.getOrganizer();
-		var sentBy = this.getSentBy();
-		var userName = appCtxt.get(ZmSetting.USERNAME);
-		if (sentBy || (organizer && organizer != userName)) {
-			if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-				var contactsApp = appCtxt.getAppController().getApp(ZmApp.CONTACTS);
-				// NOTE: ZmContactsApp#getContactList expects to be called in an
-				//       asynchronous way but we need the data right away. Instead
-				//       of reworking this code or the getContactList method to be
-				//       able to work synchronously, I'm just going to use the
-				//       raw email address in the case where the contact list has
-				//       not been loaded, yet. By the next time a tooltip is
-				//       created, it will probably be available so it's not a big
-				//       deal.
-				var contactList = contactsApp.getContactList();
+	var params = {
+		appt: this,
+		cal: (this.folderId != ZmOrganizer.ID_CALENDAR && controller) ? controller.getCalendar() : null,
+		organizer: organizer,
+		sentBy: sentBy,
+		when: this.getDurationText(false, false),
+		location: this.getLocation(),
+		width: "250"
+	};
 
-				var addrs = [ organizer, sentBy ];
-				for (var i = 0; i < addrs.length; i++) {
-					var addr = addrs[i];
-					if (!addr) continue;
+	this.updateParticipantStatus();
+	if (this.ptstHashMap != null) {
+		var ptstStatus = {};
+		ptstStatus[ZmMsg.ptstAccept] = this.getAttendeeToolTipString(this.ptstHashMap[ZmCalBaseItem.PSTATUS_ACCEPT]);
+		ptstStatus[ZmMsg.ptstDeclined] = this.getAttendeeToolTipString(this.ptstHashMap[ZmCalBaseItem.PSTATUS_DECLINED]);
+		ptstStatus[ZmMsg.ptstTentative] = this.getAttendeeToolTipString(this.ptstHashMap[ZmCalBaseItem.PSTATUS_TENTATIVE]);
+		ptstStatus[ZmMsg.ptstNeedsAction] = this.getAttendeeToolTipString(this.ptstHashMap[ZmCalBaseItem.PSTATUS_NEEDS_ACTION]);
+		params.ptstStatus = ptstStatus;
 
-					if (addr == userName) {
-						addrs[i] = appCtxt.get(ZmSetting.DISPLAY_NAME);
-						continue;
-					}
-					var contact = contactList && contactList.getContactByEmail(addr);
-					if (contact) {
-						addrs[i] = contact.getFullName();
-					}
-				}
+		var attendees = [];
+		if (!this.rsvp) {
+			var personAttendees = (this._attendees && this._attendees[ZmCalBaseItem.PERSON])
+					? this._attendees[ZmCalBaseItem.PERSON] : [];
 
-				organizer = addrs[0];
-				sentBy = addrs[1];
+			for (var i = 0; i < personAttendees.length; i++) {
+				var attendee = personAttendees[i];
+				attendees.push(attendee.getAttendeeText(null, true));
 			}
+			params.attendeesText = this.getAttendeeToolTipString(attendees);
 		}
-		else {
-			organizer = null;
-			sentBy = null;
-		}
-		var params = {
-			appt: this,
-			cal: (this.folderId != ZmOrganizer.ID_CALENDAR && controller) ? controller.getCalendar() : null,
-			organizer: organizer,
-			sentBy: sentBy,
-			when: this.getDurationText(false, false),
-			location: this.getLocation(),
-			width: "250",
-			showAttendeeStatus: (this.ptstHashMap != null)
-		};
-
-		if (this.ptstHashMap != null) {
-			var ptstStatus = {};
-			ptstStatus[ZmMsg.ptstAccept] = this.getAttendeeToolTipString(this.ptstHashMap[ZmCalBaseItem.PSTATUS_ACCEPT]);
-			ptstStatus[ZmMsg.ptstDeclined] = this.getAttendeeToolTipString(this.ptstHashMap[ZmCalBaseItem.PSTATUS_DECLINED]);
-			ptstStatus[ZmMsg.ptstTentative] = this.getAttendeeToolTipString(this.ptstHashMap[ZmCalBaseItem.PSTATUS_TENTATIVE]);
-			ptstStatus[ZmMsg.ptstNeedsAction] = this.getAttendeeToolTipString(this.ptstHashMap[ZmCalBaseItem.PSTATUS_NEEDS_ACTION]);
-			params.ptstStatus = ptstStatus;
-
-            var attendees = [];
-            if(!this.rsvp) {
-                var personAttendees = (this._attendees && this._attendees[ZmCalBaseItem.PERSON])
-                        ? this._attendees[ZmCalBaseItem.PERSON] : [];
-
-                for (var i = 0; i < personAttendees.length; i++) {
-                    var attendee = personAttendees[i];
-                    attendees.push(attendee.getAttendeeText(null, true));
-                }
-                params.attendeesText = this.getAttendeeToolTipString(attendees);
-            }
-		}
-
-		this._toolTip = AjxTemplate.expand("calendar.Appointment#Tooltip", params);
-		
 	}
 
-	return this._toolTip;
+	var toolTip = this._toolTip = AjxTemplate.expand("calendar.Appointment#Tooltip", params);
+	if (callback) {
+		callback.run(toolTip);
+	} else {
+		return toolTip;
+	}
 };
 
 ZmAppt.prototype.getAttendeeToolTipString =

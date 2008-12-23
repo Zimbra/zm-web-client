@@ -302,7 +302,13 @@ function(params) {
 	if (!params.item) { return; }
 	if (params.field == ZmItem.F_PARTICIPANT || params.field == ZmItem.F_FROM) {
 		var addr = params.item.participants && params.item.participants.get(params.match.participant || 0);
-		return addr && new AjxCallback(this, this._getParticipantToolTip, [addr]);
+		if (!addr) { return ""; }
+		var contact = appCtxt.getApp(ZmApp.CONTACTS).getContactByEmail(addr.getAddress());
+		if (contact) {
+			return this._getParticipantToolTip(addr);
+		} else {
+			return {callback:new AjxCallback(this, this._getParticipantToolTip, [addr]), loading:true};
+		}
 	} else {
 		return ZmMailListView.prototype._getToolTip.apply(this, arguments);
 	}
