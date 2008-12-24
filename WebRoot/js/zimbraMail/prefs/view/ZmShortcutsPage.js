@@ -774,7 +774,7 @@ function() {
 																  tree.getByName(data);
 		if (!organizer) { continue; }
 
-		shortcuts.push([this._orgKey, organizer.id, num].join(","));
+		shortcuts.push([this._orgKey, organizer.nId, num].join(","));
 	}
 	DBG.println(AjxDebug.DBG1, "shortcuts for org type " + this._organizer + ": " + shortcuts.join("|"));
 

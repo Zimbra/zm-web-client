@@ -254,7 +254,7 @@ function(actionCode) {
 						frag = item.fragment ? item.fragment : ZmMsg.fragmentIsEmpty;
 						if (frag != "") { lv.setToolTipContent(AjxStringUtil.htmlEncode(frag)); }
 					}
-					var tooltip = this._shell.getToolTip()
+					var tooltip = this._shell.getToolTip();
 					tooltip.popdown();
 					if (frag != "") {
 						tooltip.setContent(AjxStringUtil.htmlEncode(frag));
@@ -306,7 +306,8 @@ function(actionCode) {
 			break;
 
 		case ZmKeyMap.GOTO_FOLDER:
-			folder = appCtxt.getById(shortcut.arg);
+			var fid = ZmOrganizer.getSystemId(shortcut.arg);
+			folder = appCtxt.getById(fid);
 			if (folder) {
 				appCtxt.getSearchController().search({query: folder.createQuery()});
 			}
