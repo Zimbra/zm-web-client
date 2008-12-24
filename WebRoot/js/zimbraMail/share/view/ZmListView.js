@@ -434,28 +434,32 @@ function(clickedEl, ev) {
 ZmListView.prototype._columnClicked =
 function(clickedCol, ev) {
 	DwtListView.prototype._columnClicked.call(this, clickedCol, ev);
+	this._checkSelectionColumnClicked(clickedCol);
+};
 
-	if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
-		var list = this.getList();
-		var size = list ? list.size() : null;
-		if (size > 0) {
-			var idx = this._data[clickedCol.id].index;
-			var item = this._headerList[idx];
-			if (item && item._id.indexOf(ZmItem.F_SELECTION) != -1) {
-				var hdrId = DwtId.getListViewHdrId(DwtId.WIDGET_HDR_ICON, this._view, item._field);
-				var hdrDiv = document.getElementById(hdrId);
-				if (hdrDiv) {
-					if (hdrDiv.className == "ImgTaskCheckboxCompleted") {
-						this.deselectAll();
-						hdrDiv.className = "ImgTaskCheckbox";
-					} else {
-						hdrDiv.className = "ImgTaskCheckboxCompleted";
-						this.setSelectedItems(this._list.getArray());
-					}
+ZmListView.prototype._checkSelectionColumnClicked =
+function(clickedCol) {
+	if (!appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) { return; }
+
+	var list = this.getList();
+	var size = list ? list.size() : null;
+	if (size > 0) {
+		var idx = this._data[clickedCol.id].index;
+		var item = this._headerList[idx];
+		if (item && item._id.indexOf(ZmItem.F_SELECTION) != -1) {
+			var hdrId = DwtId.getListViewHdrId(DwtId.WIDGET_HDR_ICON, this._view, item._field);
+			var hdrDiv = document.getElementById(hdrId);
+			if (hdrDiv) {
+				if (hdrDiv.className == "ImgTaskCheckboxCompleted") {
+					this.deselectAll();
+					hdrDiv.className = "ImgTaskCheckbox";
+				} else {
+					hdrDiv.className = "ImgTaskCheckboxCompleted";
+					this.setSelectedItems(this._list.getArray());
 				}
 			}
-			this._controller._resetToolbarOperations();
 		}
+		this._controller._resetToolbarOperations();
 	}
 };
 
