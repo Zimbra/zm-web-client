@@ -156,13 +156,13 @@ ZmAppViewMgr.ALL_COMPONENTS = [
 ];
 
 /**
- * These components are the ones that are part of the app display when NOT
+ * These components are the ones that are NOT part of the app display when
  * in full screen mode.
  */
 ZmAppViewMgr.APP_COMPONENTS = [
 	ZmAppViewMgr.C_TREE, ZmAppViewMgr.C_TREE_FOOTER,
 	ZmAppViewMgr.C_OFFLINE_STATUS, ZmAppViewMgr.C_STATUS,
-	ZmAppViewMgr.C_SASH, ZmAppViewMgr.C_TASKBAR
+	ZmAppViewMgr.C_SASH
 ];
 
 // keys for getting container IDs
