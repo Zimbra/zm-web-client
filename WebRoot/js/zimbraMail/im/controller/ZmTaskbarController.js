@@ -74,7 +74,7 @@ ZmTaskbarController = function(components) {
 		op: ZmId.OP_IM_BUDDY_LIST
 	};
 	var item = new ZmTaskbarItem(args);
-	item.button.addSelectionListener(new AjxListener(this, this._selectionListener, [item]));
+	item.button.addSelectionListener(new AjxListener(this, this._selectionListener, [item, null]));
 };
 
 ZmTaskbarController.prototype = new ZmController;
@@ -106,7 +106,10 @@ function(chat) {
 	var item = new ZmTaskbarItem(args);
 	this._chatData = this._chatData || {};
 	this._chatData[chat.id] = { item: item, separator: separator };
-	item.button.addSelectionListener(new AjxListener(this, this._selectionListener, [item]));
+	var hoverImage = "Close";
+	item.button.setHoverImage(hoverImage);
+	this._closeClass = this._closeClass || AjxImg.getClassForImage(hoverImage);
+	item.button.addSelectionListener(new AjxListener(this, this._selectionListener, [item, chat]));
 	this.expandItem(item, true);
 
 
@@ -124,8 +127,12 @@ function(chat) {
 };
 
 ZmTaskbarController.prototype._selectionListener =
-function(item) {
-	this.expandItem(item, !item.expanded);
+function(item, chat, ev) {
+	if (chat && ev.target && (ev.target.className == this._closeClass)) {
+		ZmChatMultiWindowView.getInstance().endChat(chat);
+	} else {
+		this.expandItem(item, !item.expanded);
+	}
 };
 
 ZmTaskbarController.prototype._createBuddyListCallback =
