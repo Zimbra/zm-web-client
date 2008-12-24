@@ -711,14 +711,24 @@ function(msg, idoc) {
 };
 
 ZmMailMsgView.prototype._fixMultipartRelatedImagesRecurse = function(msg, node) {
+
 	var hasExternalImages = false;
-	var child = node.firstChild;
-	while (child) {
-		if (child.nodeType == AjxUtil.ELEMENT_NODE) {
-			hasExternalImages = ZmMailMsgView.__unfangInternalImage(msg, child, "background") || hasExternalImages;
-		}
-		child = child.nextSibling;
-	}
+
+    function recurse(node){
+        var child = node.firstChild;
+        while (child) {
+            if (child.nodeType == AjxUtil.ELEMENT_NODE) {
+                hasExternalImages = ZmMailMsgView.__unfangInternalImage(msg, child, "background") || hasExternalImages;
+                recurse(child);
+            }
+            child = child.nextSibling;
+        }
+    };
+
+    if(node.innerHTML.indexOf("dfbackground") != -1){
+        recurse(node);
+    }
+    
 	return hasExternalImages;
 };
 
