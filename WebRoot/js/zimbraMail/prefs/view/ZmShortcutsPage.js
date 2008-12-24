@@ -615,7 +615,7 @@ function() {
 																  tree.getByName(data);
 		if (!organizer) { continue; }
 
-		shortcuts.push([this._orgKey, organizer.id, num].join(","));
+		shortcuts.push([this._orgKey, organizer.nId, num].join(","));
 	}
 	DBG.println(AjxDebug.DBG1, "shortcuts for org type " + this._organizer + ": " + shortcuts.join("|"));
 
@@ -704,7 +704,8 @@ function(html, i, closeLinkId) {
 		html[i++] = "<li>";
 		var propName = [shortcuts[j], "display"].join(".");
 		var value = ZmKeys[propName];
-		if (value) {			var keySeqs = ZmKeys[propName].split(/\s*;\s*/);
+		if (value) {
+			var keySeqs = ZmKeys[propName].split(/\s*;\s*/);
 			var ks = keySeqs[0];
 			var parts = ks.split(",");
 			var scText = AjxMessageFormat.format(ZmMsg.shortcutExample, [ZmShortcutsPageTabViewList._formatKeySequence(parts[0]),

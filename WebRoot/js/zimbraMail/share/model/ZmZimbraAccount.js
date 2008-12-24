@@ -260,8 +260,10 @@ function(callback) {
  */
 ZmZimbraAccount.prototype.unload =
 function() {
-	// unset account-specific shortcuts
-	this.settings.loadShortcuts(true);
+	if (!appCtxt.inStartup) {
+		// unset account-specific shortcuts
+		this.settings.loadShortcuts(true);
+	}
 };
 
 ZmZimbraAccount.prototype.save =
