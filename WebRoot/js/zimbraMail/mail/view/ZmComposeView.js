@@ -507,7 +507,7 @@ function(attId, isDraft) {
 		// Bug 31535 - inline img atts not preserved on reply/forward
 		// Try to find inline imgs in the composer that were brought into it from the orig msg,
 		// and add them to the new msg's inline atts so that the server sends them.
-		if (this._action == ZmOperation.REPLY || this._action == ZmOperation.FORWARD_INLINE) {
+		if (( !isDraft && this._action == ZmOperation.DRAFT /*Editing Draft and Sending*/) || this._action == ZmOperation.REPLY || this._action == ZmOperation.FORWARD_INLINE) {
 			var idoc = this._htmlEditor._getIframeDoc();
 			var images = idoc.getElementsByTagName("img");
 			for (var i = 0; i < images.length; i++) {
