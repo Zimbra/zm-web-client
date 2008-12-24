@@ -17,7 +17,7 @@
     <fmt:formatDate var="title" value="${date.time}" pattern="${titleFormat}"/>
     <%--<jsp:useBean id="dateSymbols" scope="request" class="java.text.DateFormatSymbols" />--%>
     <fmt:getLocale var="userLocale"/>
-    <c:set var="dateSymbols" value="${zm:getDateFormatSymbols(userLocale)}"/>
+    <c:set var="dateSymbols" value="${zm:getDateFormatSymbols(userLocale,pageContext)}"/>
 
     <c:set var="weekDays" value="${dateSymbols.weekdays}"/>
     <c:set var="today" value="${zm:getToday(timezone)}"/>

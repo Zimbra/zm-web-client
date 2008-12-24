@@ -16,7 +16,7 @@
     <fmt:message var="titleFormat" key="CAL_MONTH_TITLE_FORMAT"/>
     <fmt:formatDate var="title" value="${date.time}" pattern="${titleFormat}" timeZone="${timezone}"/>
     <fmt:getLocale var="userLocale"/>
-    <c:set var="dateSymbols" value="${zm:getDateFormatSymbols(userLocale)}"/>
+    <c:set var="dateSymbols" value="${zm:getDateFormatSymbols(userLocale,pageContext)}"/>
     <c:set var="numDays" value="30"/>
 
     <c:set var="prevDate" value="${zm:addDay(date, -numDays)}"/>
