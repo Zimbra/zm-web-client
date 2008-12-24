@@ -15,10 +15,12 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmChatWidget = function(parent, posStyle) {
+ZmChatWidget = function(params, button) {
         //console.time("ZmChatWidget");
-	DwtComposite.call(this, {parent:parent, className:"ZmChatWidget", posStyle:posStyle});
+	params.className = params.className || "ZmChatWidget";
+	DwtComposite.call(this, params);
 	this._chatChangeListenerListener = new AjxListener(this, this._chatChangeListener);
+	this._taskbarButton = button;
 	this._init();
 };
 
@@ -31,6 +33,16 @@ ZmChatWidget.prototype.toString = function(){
 
 ZmChatWidget.prototype.getObjectManager = function() {
 	return this._objectManager;
+};
+
+ZmChatWidget.prototype.addCloseListener =
+function(listener) {
+	this._close.addSelectionListener(listener);
+};
+
+ZmChatWidget.prototype.addMinimizeListener =
+function(listener) {
+	this._minimize.addSelectionListener(listener);
 };
 
 ZmChatWidget.prototype._setChat = function(chat) {
@@ -204,7 +216,7 @@ ZmChatWidget.prototype.restoreScrollPos = function() {
 };
 
 ZmChatWidget.prototype.scrollTo = function(el) {
-	if (this.getChatWindow().isMinimized() || !this._isTabVisible) {
+	if (this.isMinimized() || !this._isTabVisible) {
 		if (!this._scrollToEl) {
 			this._scrollToEl = el;
 		}
@@ -237,15 +249,16 @@ ZmChatWidget.prototype._scrollTo = function(el) {
 };
 
 ZmChatWidget.prototype.setImage = function(imageInfo) {
+	this._taskbarButton.setImage(imageInfo);
 	if (this._isMultiTabMinimized()) {
 		return; // Don't show presence icon for multi-tab minimized window.
 	}
-	var tab = this.parent.getTabLabelWidget(this);
-	if (tab) {
-		// tabs might not be initialized yet
-		tab.closeBtn.setImage(imageInfo);
-		tab.closeBtn.setEnabledImage(imageInfo);
-	}
+//	var tab = this.parent.getTabLabelWidget(this);
+//	if (tab) {
+//		// tabs might not be initialized yet
+//		tab.closeBtn.setImage(imageInfo);
+//		tab.closeBtn.setEnabledImage(imageInfo);
+//	}
 };
 
 ZmChatWidget.prototype.setTitle = function(text) {
@@ -253,6 +266,7 @@ ZmChatWidget.prototype.setTitle = function(text) {
 	if (!this._isMultiTabMinimized()) {
 		this._label.setText(text);
 	}
+	this._taskbarButton.setText(text);
 };
 
 ZmChatWidget.prototype.setStatusTitle = function(text) {
@@ -267,8 +281,10 @@ ZmChatWidget.prototype.getEditorContent = function(){
 	return this._liteEditor.getContent();
 };
 
+
 ZmChatWidget.prototype._isMultiTabMinimized = function() {
-	return this.getChatWindow().isMinimized() && (this.parent.size() > 1)
+	//////TODO
+	return false;
 };
 
 ZmChatWidget.prototype._keypressNotifyItems = function(last_key, enter) {
@@ -388,12 +404,9 @@ ZmChatWidget.prototype._init = function() {
 
 	this._close = new DwtLtIconButton(this._toolbar, null, "Close");
 	this._close.setToolTipContent(ZmMsg.imCloseWindow);
-	this._closeListener = new AjxListener(this, this._closeListener);
-	this._close.addSelectionListener(this._closeListener);
 
 	this._minimize = new DwtLtIconButton(this._toolbar, null, "RoundMinus");
 	this._minimize.setToolTipContent(ZmMsg.imMinimize);
-	this._minimize.addSelectionListener(new AjxListener(this, this._minimizeListener));
 
 	this._label = new DwtLabel(this._toolbar, DwtLabel.IMAGE_LEFT | DwtLabel.ALIGN_LEFT, "ZmChatWindowLabel");
 	this._label.setScrollStyle(Dwt.CLIP);
@@ -421,8 +434,6 @@ ZmChatWidget.prototype._init = function() {
 	this._toolbar.setDropTarget(dropTgt);
 	dropTgt.addDropListener(new AjxListener(this, this._dropOnTitleListener));
 
-	this.addDisposeListener(new AjxListener(this, this._disposeListener));
-
 	this._setupSash();
 
 	// Calculate the size of the toolbar excluding the label size.
@@ -444,6 +455,7 @@ ZmChatWidget.prototype._init = function() {
 	if (appCtxt.zimletsPresent()) {
 		appCtxt.getZimletMgr().notifyZimlets("onNewChatWidget", this);
 	}
+	this._doResize();
 };
 
 ZmChatWidget.prototype._getAddToBuddyListTooltip = function() {
@@ -599,8 +611,13 @@ function(width, height) {
 	this._doResize();
 };
 
+ZmChatWidget.prototype.isMinimized =
+function() {
+	return false;
+};
+
 ZmChatWidget.prototype.focus = function() {
-	if (!this.getChatWindow().isMinimized()) {
+	if (!this.isMinimized()) {
 		this._removeUnreadStatus();
 		this._liteEditor.focus();
 	}
@@ -608,25 +625,26 @@ ZmChatWidget.prototype.focus = function() {
 
 ZmChatWidget.prototype._removeUnreadStatus = function() {
 	if (!this.chat.isZimbraAssistant()) {
-		var tab = this.getTabLabel();
-		Dwt.delClass(tab.getHtmlElement(), "ZmChatTab-Unread");
-		this.getChatWindow().showAlert(false);
-		if (tab.label)
-			tab.label.setText(AjxStringUtil.htmlEncode(this._titleStr));
+//		var tab = this.getTabLabel();
+//		Dwt.delClass(tab.getHtmlElement(), "ZmChatTab-Unread");
+//		this.getChatWindow().showAlert(false);
+//		if (tab.label)
+//			tab.label.setText(AjxStringUtil.htmlEncode(this._titleStr));
 		this.chat.resetUnread();
 	}
 };
 
 ZmChatWidget.prototype._setUnreadStatus = function() {
 	if (!this.chat.isZimbraAssistant()) {
+		var chatWindow = this.getChatWindow();
+		if (chatWindow && chatWindow.isMinimized()) {
+			chatWindow.showAlert(true);
+		}
+
 		var tab = this.getTabLabel();
 		if (tab) {
 			var tab_el = tab.getHtmlElement();
 
-			var chatWindow = this.getChatWindow();
-			if (chatWindow.isMinimized()) {
-				chatWindow.showAlert(true);
-			}
 
 			// Only if it's not already active -- the easiest way is to
 			// check the className.  Hopefully no one will change it.
@@ -655,12 +673,14 @@ ZmChatWidget.prototype.popup = function(pos) {
 	this.focus();
 };
 
+////////////
 ZmChatWidget.prototype.getTabLabel = function() {
-	return this.parent.getTabLabelWidget(this);
+	return null;
 };
 
+/////////
 ZmChatWidget.prototype.getChatWindow = function() {
-	return this.parent.parent;
+	return null;
 };
 
 ZmChatWidget.prototype.select = function() {
@@ -694,17 +714,13 @@ ZmChatWidget.prototype.detach = function(pos) {
 
 ZmChatWidget.prototype.dispose = function() {
 	this._getElement("sash").onmousedown = null;
+	delete this._scrollToEl;
 	//this._getElement("input")[ AjxEnv.isIE ? "onkeydown" : "onkeypress" ] = null;
 	DwtComposite.prototype.dispose.call(this);
 };
 
 ZmChatWidget.prototype.closeAll = function() {
-	var size;
-	var chatTabs = this.parent;
-	while (size = chatTabs.size()) {
-		var chatWidget = chatTabs.getTabWidget(size - 1);
-		ZmChatMultiWindowView.getInstance().endChat(chatWidget.chat);
-	}
+	ZmChatMultiWindowView.getInstance().endChat(this.chat);
 };
 
 ZmChatWidget.prototype.closeOthers = function() {
@@ -724,10 +740,6 @@ ZmChatWidget.prototype.closeOthers = function() {
 
 ZmChatWidget.prototype.close = function() {
 	ZmChatMultiWindowView.getInstance().endChat(this.chat);
-};
-
-ZmChatWidget.prototype._closeListener = function() {
-	this.closeAll();
 };
 
 ZmChatWidget.prototype._minimizeListener =
@@ -889,11 +901,6 @@ ZmChatWidget.prototype._sendByEmailListener = function() {
         var mode = this._liteEditor.getMode() == ZmLiteHtmlEditor.HTML
                 ? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
 	this.chat.sendByEmail(mode);
-};
-
-ZmChatWidget.prototype._disposeListener = function() {
-	this.parent.detachChatWidget(this);
-	delete this._scrollToEl;
 };
 
 ZmChatWidget.prototype._setupSash = function() {

@@ -180,6 +180,11 @@
 	</tr></table>
 </template>
 
+<template id='share.App#ZmTaskbarItem' class='ZWidget'>
+	<div id='${id}_button' class='ZmTaskbarButtonParent'></div>
+	<div id='${id}_content' class='ZmTaskbarContentParent' style='display:none;'></div>
+</template>
+
 <template id='share.App#ZmStatusImageButton' class='ZWidget'>
 	<$ var buttonClass = data.buttonClass || "ToolbarButton"; $>
 	<table class='ZWidgetTable Z<$=buttonClass$>Table Z<$=buttonClass$>Border' cellspacing=0 cellpadding=0 style='table-layout:auto;'><tr>

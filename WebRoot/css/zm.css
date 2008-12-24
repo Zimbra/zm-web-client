@@ -1832,8 +1832,48 @@ HTML>BODY .appt-selected .appt_allday_body
  */
 
 .ZmTaskbar {
-	@ToolbarBg@
+	@ToolbarContainer@
+	@FullWidth@
 }
+
+.ZmTaskbar .ZToolbarButton {
+	height: 20px;
+}
+
+.ZmTaskbar .ZSelected	.ZToolbarButtonBorder,
+.ZmTaskbar .ZHover		.ZToolbarButtonBorder,
+.ZmTaskbar .ZActive		.ZToolbarButtonBorder {
+	background-color:@TaskbarItem-selected@ !important;
+}
+
+.ZmTaskbar .ZToolbarTable .ZToolbarButtonBorder {
+	border:none;
+}
+
+.ZmTaskbarItemBorder {
+	border:none;
+	background-color:@TaskbarItem-selected@;
+	z-index: 10;
+}
+
+.ZmTaskbarContentParent {
+	background-color:@TaskbarItem-selected@;
+	position:absolute;
+	bottom: 20px;
+	padding: 4px;
+}
+
+.ZmTaskbarContentParent .ZmImOverview {
+	max-height:400px;
+	max-width:200px;
+}
+
+.ZmTaskbarContentParent .ZmChatWidget {
+	height:250px;
+	max-height:400px;
+	max-width:300px;
+}
+
 
 /* temporary lite widgets */
 
@@ -2107,11 +2147,6 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmImToastText-hover {
 	@Text-anchor-hover@
 	@ActiveCursor@
-}
-
-.DwtMenu .ZmImOverview {
-	max-height:400px;
-	max-width:200px;
 }
 
 .ZmBuddyFilterItem {

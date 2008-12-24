@@ -18,6 +18,8 @@
 ZmTaskbarController = function(components) {
 	ZmController.call(this, null);
 
+	ZmTaskbarController.INSTANCE = this;
+
 	var parentEl = Dwt.byId(ZmId.SKIN_TASKBAR);
 	if (!parentEl) {
 		return;
@@ -25,9 +27,15 @@ ZmTaskbarController = function(components) {
 	var toolbarArgs = {
 		parent: appCtxt.getShell(),
 		id: ZmId.TASKBAR,
+		className: "ZmTaskbar",
 		posStyle: Dwt.ABSOLUTE_STYLE
 	};
 	this._toolbar = components[ZmAppViewMgr.C_TASKBAR] = new ZmToolBar(toolbarArgs);
+
+//TODO: This makes the popup visible after I switch tabs. Find a better trick or at least subclass toolbar.
+	this._toolbar.zShow = function(show) { this.setZIndex(show ? Dwt.Z_VIEW + 10: Dwt.Z_HIDDEN); };
+
+
 	var buttons = [
 		{
 			op: ZmId.OP_IM_PRESENCE_MENU,
@@ -41,23 +49,14 @@ ZmTaskbarController = function(components) {
 			op: ZmOperation.SEP
 		},
 		{
-			op: ZmId.OP_IM_BUDDY_LIST,
-			button: {
-				template: "share.App#presenceButton",
-				menu: new AjxCallback(this, this._buddyListMenuCallback),
-				menuAbove: true
-			}
-		},
-		{
-			op: ZmOperation.SEP
-		},
-		{
 			op: ZmOperation.FILLER
 		}
 	];
 	for (var i = 0, count = buttons.length; i < count; i++) {
 		this._createTaskbarButton(buttons[i]);
 	}
+	this._chatButtonIndex = 2;
+
 	var height = appCtxt.getSkinHint("presence", "height") || 24;
 	Dwt.setSize(parentEl, Dwt.DEFAULT, height);
 
@@ -66,6 +65,16 @@ ZmTaskbarController = function(components) {
 	roster.addChangeListener(new AjxListener(this, this._rosterChangeListener));
 
 	roster.addGatewayListListener(new AjxListener(this, this._gatewayListListener));
+	ZmImApp.INSTANCE.getRoster().getChatList().addChangeListener(new AjxListener(this, this._chatListListener));
+
+	var args = {
+		parent: this._toolbar,
+		index: this._chatButtonIndex++,
+		contentCalback: new AjxCallback(this, this._createBuddyListCallback),
+		op: ZmId.OP_IM_BUDDY_LIST
+	};
+	var item = new ZmTaskbarItem(args);
+	item.button.addSelectionListener(new AjxListener(this, this._selectionListener, [item]));
 };
 
 ZmTaskbarController.prototype = new ZmController;
@@ -74,6 +83,86 @@ ZmTaskbarController.prototype.constructor = ZmTaskbarController;
 ZmTaskbarController.prototype.toString =
 function() {
 	return "ZmTaskbarController";
+};
+
+ZmTaskbarController.prototype.expandItem =
+function(item, expand) {
+	if (expand && this._expandedItem) {
+		this._expandedItem.expand(false);
+	}
+	item.expand(expand);
+	this._expandedItem = expand ? item : null;
+};
+
+ZmTaskbarController.prototype.createChatItem =
+function(chat) {
+	var separator = this._toolbar.addSeparator(null, this._chatButtonIndex++);
+
+	var args = {
+		parent: this._toolbar,
+		index: this._chatButtonIndex++,
+		contentCalback: new AjxCallback(this, this._createChatItemCallback, [chat])
+	};
+	var item = new ZmTaskbarItem(args);
+	this._chatData = this._chatData || {};
+	this._chatData[chat.id] = { item: item, separator: separator };
+	item.button.addSelectionListener(new AjxListener(this, this._selectionListener, [item]));
+	this.expandItem(item, true);
+
+
+	return item;
+};
+
+ZmTaskbarController.prototype.deleteChatItem =
+function(chat) {
+	var data = this._chatData[chat.id];
+	if (data) {
+		this._toolbar.removeSeparator(data.separator);
+		data.item.dispose();
+		this._chatButtonIndex -= 2;
+	}
+};
+
+ZmTaskbarController.prototype._selectionListener =
+function(item) {
+	this.expandItem(item, !item.expanded);
+};
+
+ZmTaskbarController.prototype._createBuddyListCallback =
+function(parent, parentElement) {
+	var overviewArgs = {
+		parentElement: parentElement,
+		posStyle: Dwt.STATIC_STYLE,
+		isFloating: true,
+		noAssistant: true,
+		expanded: true,
+		singleClick: true
+	};
+	new ZmImOverview(parent, overviewArgs);
+};
+
+ZmTaskbarController.prototype._createChatItemCallback =
+function(chat, parent, parentElement) {
+	var args = {
+		parent: parent,
+		parentElement: parentElement,
+		posStyle: Dwt.STATIC_STYLE
+	};
+	var widget = new ZmChatWidget(args, parent.button);
+	this._chatData[chat.id].chatWidget = widget;
+	widget.addCloseListener(new AjxListener(this, this._closeChatListener, [parent, widget]));
+	widget.addMinimizeListener(new AjxListener(this, this._minimizeChatListener, [parent, widget]));
+	widget._setChat(chat);
+};
+
+ZmTaskbarController.prototype._closeChatListener =
+function(taskbarItem, widget) {
+	ZmChatMultiWindowView.getInstance().endChat(widget.chat);
+};
+
+ZmTaskbarController.prototype._minimizeChatListener =
+function(taskbarItem, widget) {
+	this.expandItem(taskbarItem, false);
 };
 
 ZmTaskbarController.prototype._createTaskbarButton =
@@ -94,20 +183,6 @@ ZmTaskbarController.prototype._presenceMenuCallback =
 function(button) {
 	AjxDispatcher.require(["IMCore", "IM"]);
 	return ZmImApp.INSTANCE.getServiceController().createPresenceMenu(button);
-};
-
-ZmTaskbarController.prototype._buddyListMenuCallback =
-function(button) {
-	var menu = new DwtMenu({ parent: button, style: DwtMenu.GENERIC_WIDGET_STYLE });
-	var overviewArgs = {
-		posStyle: Dwt.STATIC_STYLE,
-		isFloating: true,
-		noAssistant: true,
-		expanded: true,
-		singleClick: true
-	};
-	new ZmImOverview(menu, overviewArgs);
-	return menu;
 };
 
 ZmTaskbarController.prototype._rosterChangeListener =
@@ -213,6 +288,59 @@ function(gateway) {
 		data.loginItem._action = online ? ZmPresenceMenu._SUBITEM_LOGOUT : ZmPresenceMenu._SUBITEM_LOGIN;
 		data.loginItem.setText(online ? ZmMsg.logOff : ZmMsg.login);
 	}
+};
+
+ZmTaskbarItem = function(params) {
+	DwtComposite.call(this, params);
+	this._createHtml();
+	this._contentCallback = params.contentCalback;
+
+	var buttonArgs = {
+		style: DwtButton.TOGGLE_STYLE,
+		parent: this,
+		parentElement: this._buttonEl
+	};
+	this.button = new DwtToolBarButton(buttonArgs);
+	if (params.op) {
+		this.button.setText(ZmMsg[ZmOperation.getProp(params.op, "textKey")]);
+		this.button.setImage(ZmOperation.getProp(params.op, "image"));
+	}
+};
+
+ZmTaskbarItem.prototype = new DwtComposite;
+ZmTaskbarItem.prototype.constructor = ZmTaskbarItem;
+
+ZmTaskbarItem.prototype.TEMPLATE = "share.App#ZmTaskbarItem";
+
+ZmTaskbarItem.prototype.toString =
+function() {
+	return "ZmTaskbarItem";
+};
+
+ZmTaskbarItem.prototype.expand =
+function(expand) {
+	this.expanded = expand;
+	Dwt.setVisible(this._contentEl, expand);
+	this.button.setSelected(expand);
+	if (expand) {
+		if (!this._hasContent) {
+			this._contentCallback.run(this, this._contentEl);
+			this._hasContent = true;
+		}
+	}
+};
+
+ZmTaskbarItem.prototype.collapse =
+function() {
+	this.expanded = false;
+	Dwt.setVisible(this._contentEl, false);
+};
+
+ZmTaskbarItem.prototype._createHtml = function() {
+    var data = { id: this._htmlElId };
+    this._createHtmlFromTemplate(this.TEMPLATE, data);
+	this._contentEl = document.getElementById(data.id + "_content");
+	this._buttonEl = document.getElementById(data.id + "_button");
 };
 
 
