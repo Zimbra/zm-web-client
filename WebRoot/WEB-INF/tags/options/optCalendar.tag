@@ -7,7 +7,7 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 
 <fmt:getLocale var="userLocale"/>
-<c:set var="dateSymbols" value="${zm:getDateFormatSymbols(userLocale)}"/>
+<c:set var="dateSymbols" value="${zm:getDateFormatSymbols(userLocale,pageContext)}"/>
 <c:set var="weekDays" value="${dateSymbols.weekdays}"/>
                                                    
 <table border="0" cellpadding="0" cellspacing="10" width="100%">
