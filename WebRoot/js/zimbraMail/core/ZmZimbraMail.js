@@ -1169,15 +1169,6 @@ function() {
 							 displayOrder:		400
 							});
 
-	ZmOrganizer.registerOrg(ZmOrganizer.ROSTER_TREE_ITEM,
-							{app:				ZmApp.IM,
-							 precondition:		ZmSetting.IM_ENABLED,
-							 defaultFolder:		ZmOrganizer.ID_ROSTER_LIST,
-							 orgPackage:		"IMCore",
-							 treeController:	"ZmRosterTreeController",
-							 deferrable:		false,
-							 displayOrder:		200
-							});
 	ZmOrganizer.registerOrg(ZmOrganizer.ZIMLET,
 							{orgClass:			"ZmZimlet",
 							 treeController:	"ZmZimletTreeController",
