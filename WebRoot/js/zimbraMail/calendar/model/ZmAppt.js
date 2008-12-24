@@ -67,7 +67,7 @@ function(type, inclDispName) {
 
 ZmAppt.prototype.hasAttendeeForType =
 function(type) {
-	return ((this._attendees[type] && this._attendees[type].length));
+	return (this._attendees[type].length > 0);
 };
 
 ZmAppt.prototype.hasAttendees =
@@ -188,9 +188,7 @@ function(controller, callback) {
 
 		var attendees = [];
 		if (!this.rsvp) {
-			var personAttendees = (this._attendees && this._attendees[ZmCalBaseItem.PERSON])
-					? this._attendees[ZmCalBaseItem.PERSON] : [];
-
+			var personAttendees = this._attendees[ZmCalBaseItem.PERSON];
 			for (var i = 0; i < personAttendees.length; i++) {
 				var attendee = personAttendees[i];
 				attendees.push(attendee.getAttendeeText(null, true));
@@ -354,7 +352,7 @@ function(isHtml) {
 		buf[i++] = "\n";
 	}
 
-	if (this._attendees[ZmCalBaseItem.PERSON] && this._attendees[ZmCalBaseItem.PERSON].length) {
+	if (this._attendees[ZmCalBaseItem.PERSON].length) {
 		if (isHtml) {
 			buf[i++] = "</table>\n<p>\n<table border='0'>";
 		}
@@ -625,9 +623,7 @@ function() {
 	}
 
     var ptstHashMap = {};
-	var personAttendees = (this._attendees && this._attendees[ZmCalBaseItem.PERSON])
-		? this._attendees[ZmCalBaseItem.PERSON] : [];
-
+	var personAttendees = this._attendees[ZmCalBaseItem.PERSON];
 	for (var i = 0; i < personAttendees.length; i++) {
 		var attendee = personAttendees[i];
 		var ptst = attendee.getAttr("participationStatus") || "NE";
@@ -641,10 +637,10 @@ function() {
 
 ZmAppt.prototype._addAttendeesToSoap =
 function(soapDoc, inv, m, notifyList, onBehalfOf) {
-	for (var x in this._attendees) {
-		if (this._attendees[x] && this._attendees[x].length) {
-			for (var i = 0; i < this._attendees[x].length; i++) {
-				this._addAttendeeToSoap(soapDoc, inv, m, notifyList, this._attendees[x][i], x);
+	for (var type in this._attendees) {
+		if (this._attendees[type] && this._attendees[type].length) {
+			for (var i = 0; i < this._attendees[type].length; i++) {
+				this._addAttendeeToSoap(soapDoc, inv, m, notifyList, this._attendees[type][i], type);
 			}
 		}
 	}
