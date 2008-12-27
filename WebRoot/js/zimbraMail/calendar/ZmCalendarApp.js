@@ -23,6 +23,10 @@ ZmCalendarApp = function(container) {
 	var listener = new AjxListener(this, this._settingChangeListener);
 	settings.getSetting(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL).addChangeListener(listener);
 	settings.getSetting(ZmSetting.CAL_FIRST_DAY_OF_WEEK).addChangeListener(listener);
+
+	// resource cache
+	this._resByName = {};
+	this._resByEmail = {};
 };
 
 // Organizer and item-related constants
@@ -829,4 +833,16 @@ ZmCalendarApp.__formatLabel =
 function(prefLabel, prefValue) {
 	prefLabel = prefLabel || "";
 	return prefLabel.match(/\{/) ? AjxMessageFormat.format(prefLabel, prefValue) : prefLabel;
+};
+
+ZmCalendarApp.prototype.updateResourceCache =
+function(resource) {
+	var name = resource.getFullName();
+	if (name) {
+		this._resByName[name.toLowerCase()] = resource;
+	}
+	var email = resource.getEmail();
+	if (email) {
+		this._resByEmail[email.toLowerCase()] = resource;
+	}
 };

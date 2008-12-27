@@ -35,6 +35,7 @@ ZmResourceList = function(resType, search) {
 	this._nameToResource = {};
 	this._emailToResource = {};
 	this._acMatchFields = ZmResourceList.AC_FIELDS;
+	this._app = appCtxt.getApp(ZmApp.CALENDAR);
 };
 
 ZmResourceList.ATTRS =
@@ -69,7 +70,7 @@ function(result) {
 	var a = this._vector.getArray();
 	for (var i = 0; i < a.length; i++) {
 		var resource = a[i];
-		this.updateHashes(resource);
+		this._updateHashes(resource);
 		this._preMatch(resource);
 		this._idHash[resource.id] = resource;
 	}
@@ -78,8 +79,9 @@ function(result) {
 	this._galAutocompleteEnabled = false;
 };
 
-ZmResourceList.prototype.updateHashes = 
+ZmResourceList.prototype._updateHashes =
 function(resource) {
+	this._app.updateResourceCache(resource);
 	var name = resource.getFullName();
 	if (name) {
 		this._nameToResource[name.toLowerCase()] = resource;

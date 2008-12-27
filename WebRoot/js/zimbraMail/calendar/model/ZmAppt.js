@@ -717,13 +717,8 @@ function(soapDoc, inv, m, notifyList, attendee, type) {
 		e.setAttribute("t", AjxEmailAddress.toSoapType[AjxEmailAddress.TO]);
 
 		// bug fix #9768 - auto add attendee if not in addrbook
-		if (type == ZmCalBaseItem.PERSON &&
-			appCtxt.get(ZmSetting.CONTACTS_ENABLED) &&
-			appCtxt.get(ZmSetting.AUTO_ADD_ADDRESS))
-		{
-			var clc = appCtxt.getApp(ZmApp.CONTACTS).getContactList();
-			if (!clc.getContactByEmail(address))
-				e.setAttribute("add", "1");
+		if (type == ZmCalBaseItem.PERSON &&	appCtxt.get(ZmSetting.CONTACTS_ENABLED) && appCtxt.get(ZmSetting.AUTO_ADD_ADDRESS))	{
+			e.setAttribute("add", "1");
 		}
 	}
 };

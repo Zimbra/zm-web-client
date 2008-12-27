@@ -561,6 +561,9 @@ function(item) {
 
 ZmContactList.prototype._updateHashes =
 function(contact, doAdd) {
+
+	this._app.updateCache(contact, doAdd);
+
     // Update email hash.
 	for (var i = 0; i < ZmContact.F_EMAIL_FIELDS.length; i++) {
 		var email = ZmContact.getAttr(contact, ZmContact.F_EMAIL_FIELDS[i]);

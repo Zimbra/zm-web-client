@@ -602,6 +602,36 @@ function(contact) {
 	var cl = this._contactList[acctId];
 	return cl ? cl._realizeContact(contact) : contact;
 }
+
+ZmContactsApp.prototype.updateCache =
+function(contact, doAdd) {
+
+	this._updateHash(contact, doAdd, ZmContact.F_EMAIL_FIELDS, this._byEmail);
+	if (appCtxt.get(ZmSetting.VOICE_ENABLED)) {
+		this._updateHash(contact, doAdd, ZmContact.F_PHONE_FIELDS, this._byPhone, true, true);
+	}
+	if (appCtxt.get(ZmSetting.IM_ENABLED)) {
+		this._updateHash(contact, doAdd, ZmContact.F_IM_FIELDS, this._byIM);
+	}
+};
+
+ZmContactsApp.prototype._updateHash =
+function(contact, doAdd, fields, hash, includeField, isNumeric) {
+
+	for (var i = 0; i < fields.length; i++) {
+		var field = fields[i];
+		var value = ZmContact.getAttr(contact, fields[i]);
+		if (value) {
+			value = isNumeric ? value.replace(/[^\d]/g, '') : value.toLowerCase();
+			if (doAdd) {
+				hash[value] = includeField ? contact : {contact:contact, field:field};
+			} else {
+				delete hash[value];
+			}
+		}
+	}
+};
+
 /**
  * Returns a ZmContactList with all of the user's local contacts. If that's a large
  * number, performance may be slow.
