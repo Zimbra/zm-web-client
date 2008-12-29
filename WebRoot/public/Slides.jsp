@@ -203,7 +203,6 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
             //if (!prodMode || debugLevel) {
                 AjxDispatcher.require("Debug");
                 DBG = new AjxDebug(AjxDebug.NONE, null, false);
-                AjxWindowOpener.HELPER_URL = "${contextPath}/public/frameOpenerHelper.jsp";
 			// figure out the debug level
                 if (debugLevel == 't') {
                     DBG.showTiming(true);
