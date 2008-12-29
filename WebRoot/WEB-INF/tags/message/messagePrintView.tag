@@ -18,7 +18,6 @@
         </c:catch>
     </c:if>
 </c:set>
-
 <fmt:message var="unknownSender" key="unknownSender"/>
 
 <c:set var="isPart" value="${!empty message.partName}"/>
@@ -177,6 +176,11 @@
                     <app:body message="${message}" body="${addbody}" mailbox="${mailbox}"
                               theBody="${zm:getPartHtmlContent(addbody, message)}" counter="${counter}X${bstatus.count}"/>
                 </c:forEach>
+            </c:if>
+            <c:if test="${not empty message.attachments}">
+                <hr/>
+                <a name="attachments${message.partName}"></a>
+                <app:attachments mailbox="${mailbox}" message="${message}" print="${true}" composeUrl="${composeUrl}"/>
             </c:if>
             <hr>
         </td>
