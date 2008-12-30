@@ -54,8 +54,8 @@ function(files, status, guids, name, content, ct) {
         }
 
         if(name!=null && content!=null) {
-            var wordNode = soapDoc.set("w", content, docNode);
-            wordNode.setAttribute("name", name);
+            var contentNode = soapDoc.set("content", content, docNode);
+            docNode.setAttribute("name", name);
         }
     }
 
