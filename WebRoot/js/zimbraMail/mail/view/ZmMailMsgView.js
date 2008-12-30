@@ -1199,6 +1199,9 @@ function(msg, container, callback) {
 					});
 				}
 				this._makeIframeProxy(el, c, false, bodyPart.truncated);
+			} else if(ZmMimeTable.isRenderableImage(bodyPart.ct)){
+                var html = ["<img zmforced='1' class='InlineImage' src='", appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI), "&id=", msg.id, "&part=", bodyPart.part, "'>"].join("");
+                this._makeIframeProxy(el, html, false);
 			} else {
 				// otherwise, get the text part if necessary
 				if (bodyPart.ct != ZmMimeTable.TEXT_PLAIN) {
