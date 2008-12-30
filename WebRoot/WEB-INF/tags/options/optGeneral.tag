@@ -82,7 +82,7 @@
             </select>
         </td>
     </tr>
-
+    
     <c:if test="${mailbox.features.changePassword}">
         <app:optSeparator/>
         <tr>
@@ -91,7 +91,14 @@
                 :
             </td>
             <td>
-                <c:url var="changePassUrl" value="${zm:getChangePasswordUrl(pageContext, '/h/changepass')}"/>
+                <c:choose>
+                    <c:when test="${mailbox.accountInfo.changePasswordURL ne null}">
+                        <c:set var="changePassUrl" value="${mailbox.accountInfo.changePasswordURL}" />
+                    </c:when>
+                    <c:otherwise>
+                        <c:set var="changePassUrl" value="${mailbox.accountInfo.publicURL}/h/changepass" />
+                    </c:otherwise>
+                </c:choose>
                 <a href="${changePassUrl}" target="_blank"><fmt:message key="changePassword"/></a>
             </td>
         </tr>
