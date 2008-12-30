@@ -716,13 +716,14 @@ ZmMailMsgView.__unfangInternalImage =
 function(msg, elem, aname) {
 	var df_aname = "df"+aname;
 	var avalue = elem.getAttribute(df_aname);
+	var ovalue = avalue;
 	if (avalue) {
 		if (avalue.substr(0,4) == "cid:") {
 			var cid = "<" + avalue.substr(4) + ">";
 			avalue = msg.getContentPartAttachUrl(ZmMailMsg.CONTENT_PART_ID, cid);
 			if (avalue) {
 				elem.setAttribute(aname, avalue);
-				elem.setAttribute(df_aname, avalue)
+				elem.setAttribute(df_aname, ovalue)
 				return false;
 			}
 		}
@@ -730,7 +731,7 @@ function(msg, elem, aname) {
 			avalue = msg.getContentPartAttachUrl(ZmMailMsg.CONTENT_PART_LOCATION, avalue);
 			if (avalue) {
 				elem.setAttribute(aname, avalue);
-				elem.setAttribute(df_aname, avalue)
+				elem.setAttribute(df_aname, ovalue)
 				return false;
 			}
 		}
