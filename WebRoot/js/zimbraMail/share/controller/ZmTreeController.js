@@ -793,6 +793,9 @@ function(ev) {
 	if (!this._newCb) {
 		this._newCb = new AjxCallback(this, this._newCallback);
 	}
+	if(this._pendingActionData && !appCtxt.getById(this._pendingActionData.id)) {
+		this._pendingActionData =  appCtxt.getFolderTree().root;         
+	}
 	ZmController.showDialog(newDialog, this._newCb, this._pendingActionData);
 	newDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._clearDialog, this, newDialog);
 };
