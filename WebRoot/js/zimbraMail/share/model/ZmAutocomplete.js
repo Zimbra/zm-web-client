@@ -19,13 +19,17 @@
  * Creates and initializes support for server-based autocomplete.
  * @constructor
  * @class
- * Manages autocompletion via AutoCompleteRequest calls to the server.
+ * Manages autocompletion via AutoCompleteRequest calls to the server. Currently limited
+ * to matching against only one type among people, locations, and equipment.
  *
  * @author Conrad Damon
  */
 ZmAutocomplete = function() {
 	this._acRequests = {};		// request mgmt (timeout, cancel)
-	this._acCache = {};			// results cache
+	this._acCache = {};			// results cache, grouped by type
+	this._acCache[ZmAutocomplete.AC_TYPE_CONTACT]	=	{};
+	this._acCache[ZmAutocomplete.AC_TYPE_LOCATION]	=	{};
+	this._acCache[ZmAutocomplete.AC_TYPE_EQUIPMENT]	=	{};
 };
 
 // choices for text in the returned match object
@@ -62,7 +66,10 @@ ZmAutocomplete.GAL_RESULTS_TTL	= 900000;	// time-to-live for cached GAL autocomp
  * @param callback	[AjxCallback]				callback to run with results
  * @param aclv		[ZmAutocompleteListView]*	needed to show wait msg
  * @param options	[hash]*						additional options:
- *        types		[list]*						list of acceptable results types
+ *        type		[constant]*					type of result to match; default is
+ * 												ZmAutocomplete.AC_TYPE_CONTACT; other valid values
+ * 												are for location or equipment
+ *        needItem	[boolean]*					if true, return a ZmItem as part of match result
  */
 ZmAutocomplete.prototype.autocompleteMatch =
 function(str, callback, aclv, options) {
@@ -71,23 +78,17 @@ function(str, callback, aclv, options) {
 	this._curAcStr = str;
 	DBG.println("ac", "begin autocomplete for " + str);
 
-	if (options && options.types) {
-		options.typeHash = {};
-		for (var i = 0; i < options.types.length; i++) {
-			options.typeHash[options.types[i]] = true;
-		}
-	}
+	var acType = (options && options.type) || ZmAutocomplete.AC_TYPE_CONTACT;
 
-	var list = this._checkCache(str);
+	var list = this._checkCache(str, acType);
 	if (list !== null) {
-		list = this._checkType(list, options && options.typeHash);
 		this._handleResponseAutocompleteMatch(str, callback, list);
 		return;
 	}
 
 	aclv.setWaiting(true);
 	var respCallback = new AjxCallback(this, this._handleResponseAutocompleteMatch, [str, callback]);
-	this._doAutocomplete(str, aclv, options, respCallback);
+	this._doAutocomplete(str, aclv, options, acType, respCallback);
 };
 
 ZmAutocomplete.prototype._handleResponseAutocompleteMatch =
@@ -104,11 +105,12 @@ function(str, callback, list) {
  *
  * @param str		[string]					string to match against
  * @param aclv		[ZmAutocompleteListView]	autocomplete popup
- * @param options
+ * @param options	[hash]						additional options
+ * @param acType	[constant]					type of result to match
  * @param callback	[AjxCallback]				callback to run with results
  */
 ZmAutocomplete.prototype._doAutocomplete =
-function(str, aclv, options, callback) {
+function(str, aclv, options, acType, callback) {
 	// cancel any outstanding requests for strings that are substrings of this one
 	for (var substr in this._acRequests) {
 		if (str != substr && str.indexOf(substr) === 0) {
@@ -119,25 +121,26 @@ function(str, aclv, options, callback) {
 	}
 
 	var params = {query:str, limit:ZmAutocomplete.AC_MAX, isAutocompleteSearch:true};
-	var types = options && options.typeHash;
-	if (types && (types[ZmAutocomplete.AC_TYPE_LOCATION] || types[ZmAutocomplete.AC_TYPE_EQUIPMENT])) {
+	if (acType != ZmAutocomplete.AC_TYPE_CONTACT) {
 		params.isGalAutocompleteSearch = true;
 		params.isAutocompleteSearch = false;
 		params.limit = params.limit * 2;
 		params.types = AjxVector.fromArray([ZmItem.CONTACT]);
 		params.galType = ZmSearch.GAL_RESOURCE;
+		DBG.println("ac", "AutoCompleteGalRequest: " + str);
+	} else {
+		DBG.println("ac", "AutoCompleteRequest: " + str);
 	}
 
-	DBG.println("ac", "AutoCompleteRequest: " + str);
 	var search = new ZmSearch(params);
-	var respCallback = new AjxCallback(this, this._handleResponseDoAutocomplete, [str, aclv, options, callback]);
+	var respCallback = new AjxCallback(this, this._handleResponseDoAutocomplete, [str, aclv, options, acType, callback]);
 	var errorCallback = new AjxCallback(this, this._handleErrorDoAutocomplete, [str, aclv]);
 	this._acRequests[str] = search.execute({callback:respCallback, errorCallback:errorCallback,
 											timeout:ZmAutocomplete.AC_TIMEOUT, noBusyOverlay:true});
 };
 
 ZmAutocomplete.prototype._handleResponseDoAutocomplete =
-function(str, aclv, options, callback, result) {
+function(str, aclv, options, acType, callback, result) {
 
 	DBG.println("ac", "got response for " + str);
 
@@ -153,7 +156,7 @@ function(str, aclv, options, callback, result) {
 	if (resp && resp.search && resp.search.isGalAutocompleteSearch) {
 		var cl = resp.getResults(ZmItem.CONTACT);
 		resultList = (cl && cl.getArray()) || [];
-		gotContacts = true;
+		gotContacts = hasGal = true;
 	} else {
 		resultList = resp._respEl.match || [];
 	}
@@ -162,20 +165,19 @@ function(str, aclv, options, callback, result) {
 
 	var list = [];
 	for (var i = 0; i < resultList.length; i++) {
-		list.push(new ZmAutocompleteMatch(resultList[i], options, gotContacts));
+		var match = new ZmAutocompleteMatch(resultList[i], options, gotContacts);
+		if (match.acType == acType) {
+			if (match.type == ZmAutocomplete.AC_TYPE_GAL) {
+				hasGal = true;
+			}
+			list.push(match);
+		}
 	}
-	var subList = this._checkType(list, options && options.typeHash);
 
 	// we assume the results from the server are sorted by ranking
-	callback.run(subList);
+	callback.run(list);
 
-	this._acCache[str] = this._acCache[str] || {};
-	this._acCache[str].list = list;
-	// we always cache; flag below indicates whether we can do forward matching
-	this._acCache[str].cacheable = resp._respEl.canBeCached;
-	if (hasGal) {
-		this._acCache[str].ts = (new Date()).getTime();
-	}
+	this._cacheResults(str, acType, list, hasGal, resp._respEl.canBeCached);
 };
 
 /**
@@ -190,25 +192,6 @@ function(str, aclv, ex) {
 	delete this._acRequests[str];
 
 	return true;
-};
-
-ZmAutocomplete.prototype._checkType =
-function(list, types) {
-
-	if (!types) {
-		types = {};
-		types[ZmAutocomplete.AC_TYPE_CONTACT] = true;
-		types[ZmAutocomplete.AC_TYPE_GAL] = true;
-	}
-
-	var list1 = [];
-	for (var i = 0; i < list.length; i++) {
-		var type = list[i] && list[i].type;
-		if (types[type]) {
-			list1.push(list[i]);
-		}
-	}
-	return list1;
 };
 
 /**
@@ -262,11 +245,32 @@ function(str) {
 	}
 };
 
+/**
+ * @param str			[string]		string to match against
+ * @param acType		[constant]		type of result to match
+ * @param list			[array]			list of matches
+ * @param hasGal		[boolean]*		if true, list includes GAL results
+ * @param cacheable		[boolean]*		server indication of cacheability
+ * @param baesCache		[hash]*			cache that is superset of this one
+ */
+ZmAutocomplete.prototype._cacheResults =
+function(str, acType, list, hasGal, cacheable, baseCache) {
+
+	var cache = this._acCache[acType][str] = this._acCache[acType][str] || {};
+	cache.list = list;
+	// we always cache; flag below indicates whether we can do forward matching
+	cache.cacheable = (baseCache && baseCache.cacheable) || cacheable;
+	if (hasGal) {
+		cache.ts = (baseCache && baseCache.ts) || (new Date()).getTime();
+	}
+};
+
 ZmAutocomplete.prototype._checkCache =
-function(str) {
+function(str, acType) {
 
 	// check cache for results for this exact string
-	var list = this._getCachedResults(str);
+	var cache = this._getCachedResults(str, acType);
+	var list = cache && cache.list;
 	if (list !== null) { return list; }
 	if (str.length <= 1) { return null; }
 
@@ -275,7 +279,9 @@ function(str) {
 	var tmp = str;
 	while (tmp && !list) {
 		tmp = tmp.slice(0, -1); // remove last character
-		list = this._getCachedResults(tmp, true);
+		DBG.println("ac", "checking cache for " + tmp);
+		cache = this._getCachedResults(tmp, acType, true);
+		list = cache && cache.list;
 		if (list && list.length == 0) {
 			// substring had no matches, so this string has none
 			DBG.println("ac", "Found empty results for substring " + tmp);
@@ -299,9 +305,7 @@ function(str) {
 		return null;
 	}
 
-	this._acCache[str] = this._acCache[str] || {};
-	this._acCache[str].list = list1;
-	this._acCache[str].ts = this._acCache[tmp] && this._acCache[tmp].ts;
+	this._cacheResults(str, acType, list1, false, false, cache);
 
 	return list1;
 };
@@ -311,26 +315,23 @@ function(str) {
  * timestamp, we make sure they haven't expired.
  *
  * @param str				[string]		string to match against
+ * @param acType			[constant]		type of result to match
  * @param checkCacheable	[boolean]		if true, make sure results are cacheable
- *
- * @return list								if we find valid matches in the cache
- * @return null								if there is no valid data from cache
- * @return ZmAutocomplete.AC_NO_RESULTS		if the string was autocompleted and had no hits
  */
 ZmAutocomplete.prototype._getCachedResults =
-function(str, checkCacheable) {
+function(str, acType, checkCacheable) {
 
-	var cache = this._acCache[str];
+	var cache = this._acCache[acType][str];
 	if (cache) {
 		if (checkCacheable && (cache.cacheable === false)) { return null; }
 		if (cache.ts) {
 			var now = (new Date()).getTime();
 			if (now > (cache.ts + ZmAutocomplete.GAL_RESULTS_TTL)) {
-				return null;
+				return null;	// expired GAL results
 			}
 		}
 		DBG.println("ac", "cache hit for " + str);
-		return cache.list;
+		return cache;
 	} else {
 		return null;
 	}
@@ -366,6 +367,8 @@ ZmAutocompleteMatch = function(match, options, isContact) {
 			this.item.initFromEmail(email);
 		}
 	}
+	this.acType = (this.type == ZmAutocomplete.AC_TYPE_LOCATION || this.type == ZmAutocomplete.AC_TYPE_EQUIPMENT) ?
+					this.type : ZmAutocomplete.AC_TYPE_CONTACT;
 };
 
 /**

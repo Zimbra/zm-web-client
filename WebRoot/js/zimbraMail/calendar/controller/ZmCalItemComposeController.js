@@ -160,7 +160,7 @@ function() {
 
 ZmCalItemComposeController.prototype.handleKeyAction =
 function(actionCode) {
-	DBG.println("ZmCalItemComposeController.handleKeyAction");
+	DBG.println(AjxDebug.DBG2, "ZmCalItemComposeController.handleKeyAction");
 	switch (actionCode) {
 		case ZmKeyMap.SAVE:
 			this._saveListener();

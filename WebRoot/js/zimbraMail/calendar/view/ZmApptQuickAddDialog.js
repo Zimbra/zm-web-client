@@ -304,7 +304,7 @@ function() {
 			dataClass: appCtxt.getApp(ZmApp.CONTACTS),
 			matchValue: ZmAutocomplete.AC_VALUE_NAME,
 			compCallback: acCallback,
-			options: {types:[ZmAutocomplete.AC_TYPE_LOCATION]}
+			options: {type:ZmAutocomplete.AC_TYPE_LOCATION}
 		};
 		this._acLocationsList = new ZmAutocompleteListView(params);
 		this._acLocationsList.handle(this._locationField.getInputElement());

@@ -283,11 +283,11 @@ function() {
 
 		// autocomplete for locations/equipment
 		if (appCtxt.get(ZmSetting.GAL_ENABLED)) {
-			params.options = {types:[ZmAutocomplete.AC_TYPE_LOCATION]};
+			params.options = {type:ZmAutocomplete.AC_TYPE_LOCATION};
 			this._acLocationsList = new ZmAutocompleteListView(params);
 			this._acList[ZmCalBaseItem.LOCATION] = this._acLocationsList;
 
-			params.options = {types:[ZmAutocomplete.AC_TYPE_EQUIPMENT]};
+			params.options = {type:ZmAutocomplete.AC_TYPE_EQUIPMENT};
 			this._acEquipmentList = new ZmAutocompleteListView(params);
 			this._acList[ZmCalBaseItem.EQUIPMENT] = this._acEquipmentList;
 		}
