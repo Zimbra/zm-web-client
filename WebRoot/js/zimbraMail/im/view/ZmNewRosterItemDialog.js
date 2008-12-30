@@ -270,22 +270,21 @@ ZmNewRosterItemDialog.prototype.setAddress = function(newAddress, readonly) {
 
 
 ZmNewRosterItemDialog.prototype._initAddressAutocomplete = function() {
-	if (this._addressAutocomplete || !appCtxt.get(ZmSetting.CONTACTS_ENABLED))
-		return;
+	if (this._addressAutocomplete) { return; }
 
-	var contactsApp = appCtxt.getApp(ZmApp.CONTACTS);
-	var contactsList = contactsApp ? contactsApp.getContactList : null;
-	var params = { parent	  : appCtxt.getShell(),
-		       dataClass  : contactsApp,
-		       dataLoader : contactsList,
-		       matchValue : ZmContactsApp.AC_VALUE_EMAIL
-		     };
-	this._addressAutocomplete = new ZmAutocompleteListView(params);
-	this._addressAutocomplete.handle(this._addrEntry.getInputElement());
+	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) || appCtxt.get(ZmSetting.GAL_ENABLED)) {
+		var params = {
+			parent: appCtxt.getShell(),
+			dataClass: appCtxt.getAutocompleter(),
+			matchValue : ZmAutocomplete.AC_VALUE_EMAIL
+		};
+		this._addressAutocomplete = new ZmAutocompleteListView(params);
+		this._addressAutocomplete.handle(this._addrEntry.getInputElement());
+	}
 };
 
 ZmNewRosterItemDialog.prototype._initGroupAutocomplete = function() {
-	if (this._groupAutocomplete) return;
+	if (this._groupAutocomplete) { return; }
 
 	var imApp = appCtxt.getApp(ZmApp.IM);
 	var groupList = imApp ? imApp.getAutoCompleteGroups : null;

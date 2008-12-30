@@ -1833,12 +1833,11 @@ function(templateId, data) {
 	this._identityDivId = data.identityRowId;
 
 	// init autocomplete list
-	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-		var contactsClass = appCtxt.getApp(ZmApp.CONTACTS);
+	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) || appCtxt.get(ZmSetting.GAL_ENABLED)) {
 		var params = {
 			parent: this,
-			dataClass: contactsClass,
-			matchValue: ZmContactsApp.AC_VALUE_FULL,
+			dataClass: appCtxt.getAutocompleter(),
+			matchValue: ZmAutocomplete.AC_VALUE_FULL,
 			locCallback: (new AjxCallback(this, this._getAcListLoc, [this])),
 			compCallback: (new AjxCallback(this, this._acCompHandler)),
 			keyUpCallback: (new AjxCallback(this, this._acKeyupHandler))

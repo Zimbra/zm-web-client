@@ -23,13 +23,11 @@ ZmMountFolderDialog = function(shell, className) {
 	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._handleOkButton));
 
 	// create auto-complete
-	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-		var dataClass = appCtxt.getApp(ZmApp.CONTACTS);
+	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) || appCtxt.get(ZmSetting.GAL_ENABLED)) {
 		var params = {
 			parent: this,
-			dataClass: dataClass,
-			dataLoader: dataClass.getContactList,
-			matchValue: ZmContactsApp.AC_VALUE_EMAIL,
+			dataClass: appCtxt.getAutocompleter(),
+			matchValue: ZmAutocomplete.AC_VALUE_EMAIL,
 			locCallback: (new AjxCallback(this, this._getNewAutocompleteLocation)),
 			compCallback: (new AjxCallback(this, this._handleCompletionData)),
 			keyUpCallback: (new AjxCallback(this, this._acKeyUpListener))

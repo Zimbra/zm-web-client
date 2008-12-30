@@ -236,8 +236,14 @@ function() {
 	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) && appCtxt.get(ZmSetting.GAL_AUTOCOMPLETE_ENABLED)) {
 		var contactsClass = appCtxt.getApp(ZmApp.CONTACTS);
 		var contactsLoader = contactsClass.getContactList;
-		var params = {parent:appCtxt.getShell(), dataClass:contactsClass, dataLoader:contactsLoader, separator:"",
-					  matchValue:ZmContactsApp.AC_VALUE_EMAIL, smartPos:true, options:{galOnly:true}};
+		var params = {
+			parent:appCtxt.getShell(),
+			dataClass:appCtxt.getAutocompleter(),
+			separator:"",
+			matchValue:ZmAutocomplete.AC_VALUE_EMAIL,
+			smartPos:true,
+			options:{galOnly:true}
+		};
 		this._acList = new ZmAutocompleteListView(params);
 	}
 };

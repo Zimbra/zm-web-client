@@ -531,7 +531,7 @@ function() {
 		var params = {
 			parent: appCtxt.getShell(),
 			dataClass: appCtxt.getApp(ZmApp.CONTACTS),
-			matchValue: ZmContactsApp.AC_VALUE_FULL,
+			matchValue: ZmAutocomplete.AC_VALUE_FULL,
 			compCallback: acCallback
 		};
 		this._acContactsList = new ZmAutocompleteListView(params);
@@ -539,15 +539,15 @@ function() {
 		this._acList[ZmCalBaseItem.PERSON] = this._acContactsList;
 	}
 
-	if (appCtxt.get(ZmSetting.GAL_ENABLED)) {
+	if (appCtxt.get(ZmSetting.GAL_ENABLED) || appCtxt.get(ZmSetting.GAL_ENABLED)) {
 		// autocomplete for locations
 		var app = appCtxt.getApp(ZmApp.CALENDAR);
 		var params = {
 			parent: appCtxt.getShell(),
 			dataClass: appCtxt.getApp(ZmApp.CONTACTS),
-			matchValue: ZmContactsApp.AC_VALUE_NAME,
+			matchValue: ZmAutocomplete.AC_VALUE_NAME,
 			compCallback: acCallback,
-			options: {folders:[ZmContactsApp.AC_LOCATION]}
+			options: {types:[ZmAutocomplete.AC_TYPE_LOCATION]}
 		};
 		this._acLocationsList = new ZmAutocompleteListView(params);
 		this._acLocationsList.handle(this._attInputField[ZmCalBaseItem.LOCATION].getInputElement());

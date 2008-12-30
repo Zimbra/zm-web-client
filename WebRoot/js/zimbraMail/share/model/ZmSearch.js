@@ -173,12 +173,12 @@ function(params) {
 		} else if (this.isAutocompleteSearch) {
 			soapDoc = AjxSoapDoc.create("AutoCompleteRequest", "urn:zimbraMail");
 			var method = soapDoc.getMethod();
-			method.setAttribute("limit", ZmContactList.AC_MAX);
+			method.setAttribute("limit", this.limit);
 			soapDoc.set("name", this.query);
 		} else if (this.isGalAutocompleteSearch) {
 			soapDoc = AjxSoapDoc.create("AutoCompleteGalRequest", "urn:zimbraAccount");
 			var method = soapDoc.getMethod();
-			method.setAttribute("limit", ZmContactList.AC_MAX);
+			method.setAttribute("limit", this.limit);
 			method.setAttribute("type", this.galType);
 			soapDoc.set("name", this.query);
 		} else if (this.isCalResSearch) {

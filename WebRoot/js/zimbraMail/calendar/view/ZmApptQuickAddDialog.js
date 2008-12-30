@@ -211,32 +211,18 @@ function() {
 	Dwt.setSize(this._locationField.getInputElement(), "100%", "22px");
 
     if (appCtxt.get(ZmSetting.GAL_ENABLED)) {
-        var acCallback = new AjxCallback(this, this._autoCompCallback);
-        var resourcesClass = appCtxt.getApp(ZmApp.CALENDAR);
 		var params = {
             parent: appCtxt.getShell(),
-            dataClass: resourcesClass,
-            dataLoader: resourcesClass.getLocations,
+            dataClass: appCtxt.getAutocompleter(),
             separator: "",
-			matchValue: ZmResource.F_name,
-            compCallback: acCallback,
+			matchValue: ZmAutocomplete.AC_VALUE_NAME,
+            compCallback: new AjxCallback(this, this._autoCompCallback),
             smartPos: true
         };
         this._acLocationsList = new ZmAutocompleteListView(params);
         this._acLocationsList.handle(this._locationField.getInputElement());
     }
 
-    /*var calClass = appCtxt.getApp(ZmApp.CALENDAR);
-    var params = {
-        parent: this,
-        dataClass: calClass,
-        dataLoader: calClass.getLocations,
-        matchValue: ZmResource.F_name//,
-        *//*compCallback: (new AjxCallback(this, this._acCompHandler)),*//*
-       *//* keyUpCallback: (new AjxCallback(this, this._acKeyupHandler))*//*
-    };
-    this._acLocSelectList = new ZmAutocompleteListView(params);
-*/
     // create DwtSelects
 	this._showAsSelect = new DwtSelect({parent:this, parentElement:(this._htmlElId + "_showAs")});
 	for (var i = 0; i < ZmApptEditView.SHOWAS_OPTIONS.length; i++) {
@@ -310,15 +296,15 @@ function() {
 	var acCallback = new AjxCallback(this, this._autocompleteCallback);
 	this._acList = null;
 
-	if (appCtxt.get(ZmSetting.GAL_ENABLED)) {
+	if (appCtxt.get(ZmSetting.GAL_ENABLED) || appCtxt.get(ZmSetting.GAL_ENABLED)) {
 		// autocomplete for locations
 		var app = appCtxt.getApp(ZmApp.CALENDAR);
 		var params = {
 			parent: appCtxt.getShell(),
 			dataClass: appCtxt.getApp(ZmApp.CONTACTS),
-			matchValue: ZmContactsApp.AC_VALUE_NAME,
+			matchValue: ZmAutocomplete.AC_VALUE_NAME,
 			compCallback: acCallback,
-			options: {folders:[ZmContactsApp.AC_LOCATION]}
+			options: {types:[ZmAutocomplete.AC_TYPE_LOCATION]}
 		};
 		this._acLocationsList = new ZmAutocompleteListView(params);
 		this._acLocationsList.handle(this._locationField.getInputElement());
