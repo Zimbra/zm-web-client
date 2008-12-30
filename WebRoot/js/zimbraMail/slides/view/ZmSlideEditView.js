@@ -192,8 +192,8 @@ function(ignorePreview) {
 }
 
 ZmSlideEditView.prototype.getNextPreviewSlideParent =
-function() {
-    var nextPreviewSlideParent =  this._previewSlideParent.nextSibling;
+function(previewSlideParent) {
+    var nextPreviewSlideParent =  previewSlideParent.nextSibling;
 
     while(nextPreviewSlideParent && (nextPreviewSlideParent.className != "previewslideparent")) {
         nextPreviewSlideParent = nextPreviewSlideParent.nextSibling;
@@ -221,7 +221,7 @@ function() {
     this._syncPreview();
 
 
-    var nextPreviewSlideParent = this.getNextPreviewSlideParent();
+    var nextPreviewSlideParent = this.getNextPreviewSlideParent(this._previewSlideParent);
 
     if(this._previewSlideParent && this._previewSlideParent.parentNode) {
         this._previewSlideParent.parentNode.removeChild(this._previewSlideParent);
@@ -432,21 +432,34 @@ function() {
 	//Dwt.setBounds(this._iframe, -100, -100, 10, 10);
     Dwt.setBounds(this._iframe, 10, 10, 100, 100);
     el.appendChild(this._iframe);
+
     var iContentWindow = this._iframe.contentWindow;
-    var doc = this._doc = iContentWindow ? iContentWindow.document : null;
+    this._doc = iContentWindow ? iContentWindow.document : null;
+
+    this._pushIframeContent(this._iframe);
+    iFrame.style.zIndex = Dwt.Z_VIEW + 100;
+};
+
+ZmSlideEditView.prototype._pushIframeContent =
+function(iframeN) {
+    if(!iframeN) return;
+    var iContentWindow = iframeN.contentWindow;
+    var doc = iContentWindow ? iContentWindow.document : null;
     if(doc) {
         doc.open();
 
         var html = [];
         html.push('<html>');
         html.push('<link href="' + window.contextPath + '/css/skin,slides.css?locale=' + AjxEnv.DEFAULT_LOCALE + '" rel="stylesheet" type="text/css" />');
+        if(this._currentTheme) {
+            html.push('<link href="' + this.getThemeCSSPath(this._currentTheme) + '" rel="stylesheet" type="text/css" />');
+        }
 
         html.push('<body></body>');
         html.push('</html>');
         doc.write(html.join(""));
         doc.close();
     }
-    iFrame.style.zIndex = Dwt.Z_VIEW + 100;
 };
 
 ZmSlideEditView.prototype._doubleClickListener =
@@ -1053,6 +1066,9 @@ function() {
     var head = [];
 
     head.push('<link href="' +  window.contextPath + '/css/slides.css" rel="stylesheet" type="text/css" />');
+    if(this._currentTheme) {
+        head.push('<link href="' + this.getThemeCSSPath(this._currentTheme) + '" rel="stylesheet" type="text/css" />');
+    }
     head.push('<script language="javascript" src="' +  window.contextPath + '/public/slides/presentation.js"></script>');
     head.push('<style>');
     head.push('.slide {');
@@ -1145,11 +1161,29 @@ ZmSlideEditView.prototype.loadSlide =
 function(item) {
     var content = this._docMgr.fetchDocumentContent(item);
     if(content) {
+        var div = this.getSlideParserDiv();
+        div.innerHTML = content;
+        this.parseSlideContent();
+    }
+};
+
+ZmSlideEditView.prototype.getSlideParserDiv =
+function() {
+    if(!this._slideParserDiv) {
         this._slideParserDiv = document.createElement("div")
         this._slideParserDiv.style.display = "none";
-        this.getHtmlElement().appendChild(this._slideParserDiv);
-        this._slideParserDiv.innerHTML = content;
-        this.parseSlideContent();
+        this.getHtmlElement().appendChild(this._slideParserDiv);        
+    }
+    return this._slideParserDiv;
+};
+
+ZmSlideEditView.prototype.cleanupSlideParserDiv =
+function() {
+    var node = this._slideParserDiv.firstChild;
+    while(node) {
+        var nextNode = node.nextSibling;
+        node.parentNode.removeChild(node);
+        node = nextNode;
     }
 };
 
@@ -1176,12 +1210,7 @@ function() {
         node = node.nextSibling;
     }
 
-    node = this._slideParserDiv.firstChild;
-    while(node) {
-        var nextNode = node.nextSibling;
-        node.parentNode.removeChild(node);
-        node = nextNode;
-    }
+    this.cleanupSlideParserDiv();
 
     var firstSlideParent = this._previewContainer.firstChild;
     var firstPreviewSlide = firstSlideParent ? firstSlideParent.firstChild : null;
@@ -1231,3 +1260,49 @@ function(div) {
     return ((className.indexOf("slide") >= 0) || (className.indexOf("preview")>=0))
 };
 
+
+ZmSlideEditView.prototype.setTheme =
+function(themeName) {
+
+    this.clearCurrentSelection();
+    this._selectedDiv = null;
+    this._currentTheme = themeName;
+
+    var themeTemplatePath = this._themeManager.getThemeSlidePath(themeName);
+
+    var content = this._docMgr.getThemeContent(themeTemplatePath);
+
+    var div = this.getSlideParserDiv();
+    div.innerHTML = content;
+    this._themeManager.parseSlideTheme(div);
+
+    var node = this._previewContainer.firstChild;
+    var isFirstSlide = true;
+    while(node) {
+        if(node.className == "previewslideparent") {
+            var previewNode = node ? node.firstChild : null;
+            var previewThemeNode = previewNode ? previewNode.nextSibling : null;
+            if(previewThemeNode && previewThemeNode.className == "slidemaster") {
+                previewThemeNode.innerHTML = this._themeManager.getMasterSlideContent(isFirstSlide);
+                isFirstSlide = false;
+            }
+        }
+        node = this.getNextPreviewSlideParent(node);
+    }
+
+
+    this._themeManager.loadThemeCSS(themeName);
+    this._currentSlideThemeDiv.innerHTML = this._themeManager.getMasterSlideContent();
+    this._pushIframeContent(this._iframe);
+};
+
+ZmSlideEditView.prototype.getThemeCSSPath =
+function(themeName) {
+     return  "/public/slides/themes/" + themeName + "/css/slide.css";   
+};
+
+
+ZmSlideEditView.prototype.getThemeSlidePath =
+function(themeName) {
+    return "/public/slides/themes/" + themeName + "/slide.html";    
+};

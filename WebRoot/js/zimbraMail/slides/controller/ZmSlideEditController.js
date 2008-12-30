@@ -42,6 +42,7 @@ ZmSlideEditController.ACTION_INSERT_GRPH = "insertgrph";
 ZmSlideEditController.ACTION_NEW_SLIDE = "newslide";
 ZmSlideEditController.ACTION_DELETE_SLIDE = "deleteslide";
 ZmSlideEditController.ACTION_RUN = "run";
+ZmSlideEditController.ACTION_THEMES = "themes";
 ZmSlideEditController.ACTION_SAVE = "save";
 
 
@@ -53,7 +54,7 @@ ZmSlideEditController.prototype._initToolBar = function () {
 
     this._saveSlide = new DwtToolBarButton({parent:tb});
     this._saveSlide.setToolTipContent(ZmMsg.save);
-    //this._insertSlide.setImage("Page");
+    this._saveSlide.setImage("Save");
     this._saveSlide.setText(ZmMsg.save);
     this._saveSlide.setData(ZmSlideEditController._VALUE, ZmSlideEditController.ACTION_SAVE);
     this._saveSlide.addSelectionListener(listener);
@@ -105,6 +106,32 @@ ZmSlideEditController.prototype._initToolBar = function () {
 
     new DwtControl({parent:tb, className:"vertSep"});
 
+    this._themesButton = new DwtToolBarButton({parent:tb});
+    this._themesButton.setToolTipContent(ZmMsg.slides_runSlideShow);
+    //this._runSlideShow.setImage("");
+    this._themesButton.setText(ZmMsg.slides_themes);
+    this._themesButton.setData(ZmSlideEditController._VALUE, ZmSlideEditController.ACTION_THEMES);
+    this._themesButton.addSelectionListener(listener);
+    var menu = new ZmPopupMenu(this._themesButton, null, null, this);
+    var themeListener = new AjxListener(this, this._themeListener);
+
+    var graphMenuItems = [
+        {name: ZmMsg.slides_themeDefault, value: "default"},
+        {name: ZmMsg.slides_themeBlue, value: "blue"},
+        {name: ZmMsg.slides_themeGreen, value: "green"}
+    ];
+
+
+    for (var i=0;  i< graphMenuItems.length; i++) {
+        var mi = menu.createMenuItem(graphMenuItems[i].name, {text:graphMenuItems[i].name});
+        mi.addSelectionListener(themeListener);
+        mi.setData(ZmSlideEditController._VALUE, graphMenuItems[i].value);
+    }
+    this._themesButton.setMenu(menu);
+
+    
+    new DwtControl({parent:tb, className:"vertSep"});
+
     this._runSlideShow = new DwtToolBarButton({parent:tb});
     this._runSlideShow.setToolTipContent(ZmMsg.slides_runSlideShow);
     //this._runSlideShow.setImage("");
@@ -143,12 +170,10 @@ function(ev) {
 };
 
 
-ZmSlideEditController.prototype._insertChartListener =
+ZmSlideEditController.prototype._themeListener =
 function(ev) {
-    var chartName = ev.item.getData(ZmSlideEditController._VALUE);
-    var chartURL = "/public/slides/FusionCharts/Charts/FCF_" + chartName + ".swf";
-    var dataURL = "/public/slides/FusionCharts/Data/" + chartName + ".xml";
-    this._currentView.insertGraph(chartURL, dataURL);
+    var themeName = ev.item.getData(ZmSlideEditController._VALUE);
+    this._currentView.setTheme(themeName);
 };
 
 

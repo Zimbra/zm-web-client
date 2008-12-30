@@ -274,3 +274,17 @@ function(params,response)
 
     return item;
 };
+
+
+ZmDocletMgr.prototype.getThemeContent =
+function(themePath)
+{
+    if(!themePath)  return '';
+
+    var result = AjxRpc.invoke("", themePath, {}, null, true);
+    var docContent = "";
+    if(result && result.success) {
+        docContent = result.text;
+    }
+    return docContent;
+};

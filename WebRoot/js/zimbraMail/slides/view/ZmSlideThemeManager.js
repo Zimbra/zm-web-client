@@ -19,9 +19,63 @@ ZmSlideThemeManager = 	function() {
 };
 
 ZmSlideThemeManager.prototype.getMasterSlideContent =
-function(themeName){
-    //return '<img src="' + window.contextPath + '/img/slides/bg-feed.png" width="100%" height="100%" style="opacity: 1;">';
+function(isTitleSlide){
+
+    if(isTitleSlide && this._currentTitleSlideContent!=null) {
+        return this._currentTitleSlideContent;
+    }
+
+    if( this._currentNotesSlideContent != null) {
+        return this._currentNotesSlideContent;
+    }
     return '<div style="background-color:purple; position:absolute; left: 0%; top:15%; width:100%; height:1%;"></div>';
+};
+
+ZmSlideThemeManager.prototype.parseSlideTheme =
+function(div) {
+
+    this._currentNotesSlideContent = "";
+    this._currentTitleSlideContent = "";
+
+    var node = div.firstChild;
+    while(node) {
+        var isTitleSlide = (node.className == "titlemaster");
+        if(isTitleSlide) {
+            this._currentTitleSlideContent = node.innerHTML;
+        }
+        var isNotesSlide = (node.className == "slidemaster");
+        if(isNotesSlide) {
+            this._currentNotesSlideContent = node.innerHTML;
+        }
+        node = node.nextSibling;
+    }
+
+    if(!this._currentTitleSlideContent) {
+        this._currentTitleSlideContent = this._currentNotesSlideContent;
+    }
+};
+
+
+ZmSlideThemeManager.prototype.getThemeCSSPath =
+function(themeName) {
+     return  "/public/slides/themes/" + themeName + "/css/slide.css";
+};
+
+
+ZmSlideThemeManager.prototype.getThemeSlidePath =
+function(themeName) {
+    return "/public/slides/themes/" + themeName + "/slide.html";
+};
+
+ZmSlideThemeManager.prototype.loadThemeCSS =
+function(themeName) {
+    var cssNode = document.createElement('link');
+    cssNode.type = 'text/css';
+    cssNode.rel = 'stylesheet';
+    cssNode.href =  this.getThemeCSSPath(themeName);
+    cssNode.media = 'screen';
+    cssNode.title = 'dynamicLoadedSheet';
+    document.getElementsByTagName("head")[0].appendChild(cssNode);
 };
 
 ZmSlideLayoutManager = function(){

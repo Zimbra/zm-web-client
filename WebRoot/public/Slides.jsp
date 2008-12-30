@@ -271,7 +271,6 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 
     AjxCore.addOnloadListener(launch);
 </script>
-<script type="text/javascript" src="<%=contextPath%>/public/slides/graph/FusionCharts.js"></script>
 </body>
 </html>
 
