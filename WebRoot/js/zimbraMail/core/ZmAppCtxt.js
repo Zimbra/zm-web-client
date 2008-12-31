@@ -1024,3 +1024,11 @@ function() {
 	}
 	return cur;
 };
+
+ZmAppCtxt.prototype.getAutocompleter =
+function() {
+	if (!this._autocompleter) {
+		this._autocompleter = new ZmAutocomplete();
+	}
+	return this._autocompleter;
+};

@@ -706,7 +706,7 @@ function(list, sel) {
 		var div = this._getDiv(i);
 		div._pos = i;
 		var match = this._matches[i];
-		if (match) {
+		if (match && (match.text || match.icon)) {
 			this._addRow(div, match.text, match.icon);
 			thisHtmlElement.appendChild(div);
 		}
