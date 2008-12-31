@@ -160,9 +160,6 @@ function(list) {
 		if (contact._attrs[ZmContact.F_firstName])	{ fl.push(contact._attrs[ZmContact.F_firstName]); }
 		if (contact._attrs[ZmContact.F_lastName])	{ fl.push(contact._attrs[ZmContact.F_lastName]); }
 		contact._attrs[ZmContact.X_firstLast] = fl.join(" ");
-		if (!ZmContact.isInTrash(contact)) {
-			this._preMatch(contact);
-		}
 		this.add(contact);
 	}
 
@@ -462,7 +459,6 @@ function(items, folderId) {
 	if (folderId == ZmFolder.ID_TRASH) {
 		for (var i = 0; i < items.length; i++) {
 			this._updateHashes(items[i], false);
-			this._updateAcList(items[i], false);
 		}
 	}
 };
@@ -472,7 +468,6 @@ function(items) {
 	ZmList.prototype.deleteLocal.call(this, items);
 	for (var i = 0; i < items.length; i++) {
 		this._updateHashes(items[i], false);
-		this._updateAcList(items[i], false);
 	}
 };
 
@@ -493,11 +488,9 @@ function(item, details) {
 		oldContact.id = details.contact.id;
 		oldContact.attr = details.oldAttr;
 		this._updateHashes(oldContact, false);
-		this._updateAcList(oldContact, false);
 
 		// add new contact to hashes
 		this._updateHashes(contact, true);
-		this._updateAcList(contact, true);
 	}
 
 	// place in correct position in list
@@ -515,7 +508,6 @@ function(item, details) {
 ZmContactList.prototype.createLocal =
 function(item) {
 	this._updateHashes(item, true);
-	this._updateAcList(item, true);
 };
 
 ZmContactList.prototype._updateHashes =
