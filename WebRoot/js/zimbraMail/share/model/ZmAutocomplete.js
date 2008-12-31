@@ -58,6 +58,11 @@ ZmAutocomplete.AC_ICON[ZmAutocomplete.AC_TYPE_GROUP]	= "Group";
 // cache control
 ZmAutocomplete.GAL_RESULTS_TTL	= 900000;	// time-to-live for cached GAL autocomplete results
 
+ZmAutocomplete.prototype.toString =
+function() {
+	return "ZmAutocomplete";
+};
+
 /**
  * Returns a list of matching contacts for a given string. The first name, last
  * name, full name, first/last name, and email addresses are matched against.
@@ -369,6 +374,11 @@ ZmAutocompleteMatch = function(match, options, isContact) {
 	}
 	this.acType = (this.type == ZmAutocomplete.AC_TYPE_LOCATION || this.type == ZmAutocomplete.AC_TYPE_EQUIPMENT) ?
 					this.type : ZmAutocomplete.AC_TYPE_CONTACT;
+};
+
+ZmAutocompleteMatch.prototype.toString =
+function() {
+	return "ZmAutocompleteMatch";
 };
 
 /**
