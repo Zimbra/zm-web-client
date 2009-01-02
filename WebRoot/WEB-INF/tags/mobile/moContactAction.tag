@@ -142,21 +142,21 @@
             <zm:getContact var="c" id="${id}"/>
             <c:set var="toaddrs" value="${c.email},${toaddrs}"/>
         </c:forEach>
-        <c:redirect url="/m/zmain?st=newmail&to=${toaddrs}"/>
+        <c:redirect url="/m/zmain?st=newmail&to=${toaddrs}&ajax=${param.ajax}"/>
     </c:when>
     <c:when test="${zm:actionSet(param, 'composeCC') || (zm:actionSet(param,'moreActions') && anAction == 'composeCC')}">
         <c:forEach var="id" items="${ids}">
             <zm:getContact var="c" id="${id}"/>
             <c:set var="toaddrs" value="${c.email},${toaddrs}"/>
         </c:forEach>
-        <c:redirect url="/m/zmain?st=newmail&cc=${toaddrs}"/>
+        <c:redirect url="/m/zmain?st=newmail&cc=${toaddrs}&ajax=${param.ajax}"/>
     </c:when>
     <c:when test="${zm:actionSet(param, 'composeBCC') || (zm:actionSet(param,'moreActions') && anAction == 'composeBCC')}">
         <c:forEach var="id" items="${ids}">
             <zm:getContact var="c" id="${id}"/>
             <c:set var="toaddrs" value="${c.email},${toaddrs}"/>
         </c:forEach>
-        <c:redirect url="/m/zmain?st=newmail&bcc=${toaddrs}"/>
+        <c:redirect url="/m/zmain?st=newmail&bcc=${toaddrs}&ajax=${param.ajax}"/>
     </c:when>
     <c:when test="${zm:actionSet(param, 'actionFlag') || (zm:actionSet(param,'moreActions') && anAction == 'actionFlag')}">
         <zm:flagContact var="result" id="${ids}" flag="${true}"/>
