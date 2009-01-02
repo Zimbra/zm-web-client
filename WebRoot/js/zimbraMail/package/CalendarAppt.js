@@ -28,8 +28,6 @@
 
 // for creating and handling invites
 
-AjxPackage.require("zimbraMail.share.model.ZmAutocomplete");
-
 AjxPackage.require("zimbraMail.calendar.view.ZmApptRecurDialog");
 AjxPackage.require("zimbraMail.calendar.view.ZmCalItemEditView");
 

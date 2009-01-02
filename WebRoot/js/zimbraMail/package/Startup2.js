@@ -56,6 +56,7 @@ AjxPackage.require("zimbra.common.ZmBaseSplashScreen");
 AjxPackage.require("zimbra.common.ZmErrorDialog");
 
 AjxPackage.require("zimbraMail.share.model.ZmAuthenticate");
+AjxPackage.require("zimbraMail.share.model.ZmAutocomplete");
 AjxPackage.require("zimbraMail.share.model.ZmInvite");
 
 AjxPackage.require("zimbraMail.share.view.ZmAutocompleteListView");
