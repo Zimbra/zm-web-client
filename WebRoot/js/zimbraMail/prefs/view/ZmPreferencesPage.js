@@ -939,6 +939,9 @@ ZmPreferencesPage.prototype._changePasswordListener =
 function(ev) {
 	var url = appCtxt.get(ZmSetting.CHANGE_PASSWORD_URL);
 	if (!url) {
+		url = appCtxt.get(ZmSetting.PUBLIC_URL) + "/h/changepass";
+	}
+	if (!url) {
 		var isHttp	= appCtxt.get(ZmSetting.PROTOCOL_MODE) == ZmSetting.PROTO_HTTP;
 		var proto	= isHttp ? ZmSetting.PROTO_HTTP : ZmSetting.PROTO_HTTPS;
 		var port	= appCtxt.get(isHttp ? ZmSetting.HTTP_PORT : ZmSetting.HTTPS_PORT);
