@@ -30,11 +30,8 @@ ZmTaskbarController = function(components) {
 		className: "ZmTaskbar",
 		posStyle: Dwt.ABSOLUTE_STYLE
 	};
-	this._toolbar = components[ZmAppViewMgr.C_TASKBAR] = new ZmToolBar(toolbarArgs);
-
-//TODO: This makes the popup visible after I switch tabs. Find a better trick or at least subclass toolbar.
-	this._toolbar.zShow = function(show) { this.setZIndex(show ? Dwt.Z_VIEW + 10: Dwt.Z_HIDDEN); };
-
+	this._toolbar = components[ZmAppViewMgr.C_TASKBAR] = new ZmTaskbar(toolbarArgs);
+	this._toolbar.addListener(DwtEvent.ONMOUSEDOWN, new AjxListener(this, this._toolbarMouseDownListener));
 
 	var buttons = [
 		{
@@ -123,6 +120,13 @@ function(chat) {
 		this._toolbar.removeSeparator(data.separator);
 		data.item.dispose();
 		this._chatButtonIndex -= 2;
+	}
+};
+
+ZmTaskbarController.prototype._toolbarMouseDownListener =
+function(ev) {
+	if (ev.button == DwtMouseEvent.LEFT && this._expandedItem) {
+		this.expandItem(this._expandedItem, false);
 	}
 };
 
@@ -296,60 +300,6 @@ function(gateway) {
 		data.loginItem.setText(online ? ZmMsg.logOff : ZmMsg.login);
 	}
 };
-
-ZmTaskbarItem = function(params) {
-	DwtComposite.call(this, params);
-	this._createHtml();
-	this._contentCallback = params.contentCalback;
-
-	var buttonArgs = {
-		style: DwtButton.TOGGLE_STYLE,
-		parent: this,
-		parentElement: this._buttonEl
-	};
-	this.button = new DwtToolBarButton(buttonArgs);
-	if (params.op) {
-		this.button.setText(ZmMsg[ZmOperation.getProp(params.op, "textKey")]);
-		this.button.setImage(ZmOperation.getProp(params.op, "image"));
-	}
-};
-
-ZmTaskbarItem.prototype = new DwtComposite;
-ZmTaskbarItem.prototype.constructor = ZmTaskbarItem;
-
-ZmTaskbarItem.prototype.TEMPLATE = "share.App#ZmTaskbarItem";
-
-ZmTaskbarItem.prototype.toString =
-function() {
-	return "ZmTaskbarItem";
-};
-
-ZmTaskbarItem.prototype.expand =
-function(expand) {
-	this.expanded = expand;
-	Dwt.setVisible(this._contentEl, expand);
-	this.button.setSelected(expand);
-	if (expand) {
-		if (!this._hasContent) {
-			this._contentCallback.run(this, this._contentEl);
-			this._hasContent = true;
-		}
-	}
-};
-
-ZmTaskbarItem.prototype.collapse =
-function() {
-	this.expanded = false;
-	Dwt.setVisible(this._contentEl, false);
-};
-
-ZmTaskbarItem.prototype._createHtml = function() {
-    var data = { id: this._htmlElId };
-    this._createHtmlFromTemplate(this.TEMPLATE, data);
-	this._contentEl = document.getElementById(data.id + "_content");
-	this._buttonEl = document.getElementById(data.id + "_button");
-};
-
 
 /**
  * ZmStatusImageButton is a menu item with a second icon for a service's online status.
