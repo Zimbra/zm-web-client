@@ -115,6 +115,7 @@ function(chat) {
 
 ZmTaskbarController.prototype.deleteChatItem =
 function(chat) {
+	chat.removeChangeListener(this._chatChangeListenerListenerObj);
 	var data = this._chatData[chat.id];
 	if (data) {
 		this._toolbar.removeSeparator(data.separator);
@@ -164,6 +165,20 @@ function(chat, parent, parentElement) {
 	widget.addCloseListener(new AjxListener(this, this._closeChatListener, [parent, widget]));
 	widget.addMinimizeListener(new AjxListener(this, this._minimizeChatListener, [parent, widget]));
 	widget._setChat(chat);
+	this._chatChangeListenerListenerObj = this._chatChangeListenerListenerObj || new AjxListener(this, this._chatChangeListenerListener);
+	chat.addChangeListener(this._chatChangeListenerListenerObj);
+};
+
+ZmTaskbarController.prototype._chatChangeListenerListener =
+function(ev) {
+	var chat = ev.source;
+	var chatData = this._chatData[chat.id];
+	if (chatData && !chatData.item.expanded) {
+		var message = ev.getDetail("fields")[ZmChat.F_MESSAGE];
+		if (message && !message.fromMe) {
+			chatData.item.showAlert(true);
+		}
+	}
 };
 
 ZmTaskbarController.prototype._closeChatListener =

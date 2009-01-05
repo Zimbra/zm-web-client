@@ -176,9 +176,6 @@ ZmChatWidget.prototype.handleMessage = function(msg) {
     }
     var str = msg.displayHtml(this.chat, this.__lastFrom);
 	this.__lastFrom = (msg.isSystem && !msg.from) ? "@@system" : msg.from;
-	if (!msg.isSystem) {
-		this._setUnreadStatus();
-	}
 	return this.handleHtmlMessage(str, true);
 };
 
@@ -625,46 +622,7 @@ ZmChatWidget.prototype.focus = function() {
 
 ZmChatWidget.prototype._removeUnreadStatus = function() {
 	if (!this.chat.isZimbraAssistant()) {
-//		var tab = this.getTabLabel();
-//		Dwt.delClass(tab.getHtmlElement(), "ZmChatTab-Unread");
-//		this.getChatWindow().showAlert(false);
-//		if (tab.label)
-//			tab.label.setText(AjxStringUtil.htmlEncode(this._titleStr));
 		this.chat.resetUnread();
-	}
-};
-
-ZmChatWidget.prototype._setUnreadStatus = function() {
-	if (!this.chat.isZimbraAssistant()) {
-		var chatWindow = this.getChatWindow();
-		if (chatWindow && chatWindow.isMinimized()) {
-			chatWindow.showAlert(true);
-		}
-
-		var tab = this.getTabLabel();
-		if (tab) {
-			var tab_el = tab.getHtmlElement();
-
-
-			// Only if it's not already active -- the easiest way is to
-			// check the className.  Hopefully no one will change it.
-			if (!/active/i.test(tab_el.className)) {
-				Dwt.addClass(tab_el, "ZmChatTab-Unread");
-				var unread = this.chat.incUnread();
-				if (tab.label)
-					tab.label.setText(AjxStringUtil.htmlEncode(this._titleStr) + " (" + unread + ")");
-				var steps = 5;
-				var timer = setInterval(function() {
-					if (steps-- & 1) {
-						Dwt.addClass(tab_el, "ZmChatTab-Flash");
-					} else {
-						Dwt.delClass(tab_el, "ZmChatTab-Flash");
-						if (steps < 0)
-							clearInterval(timer);
-					}
-				}, 150);
-			}
-		}
 	}
 };
 

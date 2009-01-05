@@ -73,6 +73,7 @@ function(expand) {
 	Dwt.setVisible(this._contentEl, expand);
 	this.button.setSelected(expand);
 	if (expand) {
+		this.showAlert(false);
 		if (!this._hasContent) {
 			this._contentCallback.run(this, this._contentEl);
 			this._hasContent = true;

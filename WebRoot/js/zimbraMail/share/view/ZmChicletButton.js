@@ -93,19 +93,6 @@ function(actionCode, ev) {
 };
 
 /**
-* Adds an alert style to the button, for example to indicate that a new message has arrived.
-*/
-ZmChicletButton.prototype.showAlert =
-function(alert) {
-	if (alert && !this._alert) {
-		this.delClassName(null, "ZAlert");
-	} else if (!alert && this._alert) {
-		this.delClassName("ZAlert", null);
-	}
-	this._alert = alert;
-};
-
-/**
  * App toolbar buttons user ZHover instead of ZFocused
  */
 ZmChicletButton.prototype._focus =

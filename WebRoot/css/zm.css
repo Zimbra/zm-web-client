@@ -1841,6 +1841,10 @@ HTML>BODY .appt-selected .appt_allday_body
 	margin-top: -2px
 }
 
+.ZAlert .ZmTaskbarButtonParent .ZToolbarButton {
+	@AlertColor@
+}
+
 .ZmTaskbar .ZSelected	.ZToolbarButtonBorder,
 .ZmTaskbar .ZHover		.ZToolbarButtonBorder,
 .ZmTaskbar .ZActive		.ZToolbarButtonBorder {
