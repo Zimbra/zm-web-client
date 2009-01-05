@@ -149,8 +149,8 @@ function(field, itemIdx) {
 };
 
 ZmMixedView.prototype._getToolTip =
-function(field, item, ev, div, match) {
-	var tooltip = null;
+function(params) {
+	var tooltip, field = params.field, item = params.item;
 	var listViewClass;
 	if (field == ZmItem.F_FROM) {
 		if (item.type == ZmItem.CONTACT) {

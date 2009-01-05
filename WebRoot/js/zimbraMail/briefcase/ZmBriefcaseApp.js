@@ -58,14 +58,16 @@ function() {
 
 ZmBriefcaseApp.prototype._registerOperations =
 function() {
-	ZmOperation.registerOp(ZmId.OP_NEW_BRIEFCASEITEM, {textKey:"newBriefcase", image:"NewFolder"});
+	ZmOperation.registerOp(ZmId.OP_NEW_BRIEFCASEITEM, {textKey:"newBriefcase", image:"NewFolder", tooltipKey:"newBriefcaseTooltip", shortcut:ZmKeyMap.NEW_BRIEFCASEITEM});
 	ZmOperation.registerOp(ZmId.OP_NEW_FILE, {textKey:"uploadNewFile", tooltipKey:"uploadNewFile", image:"NewPage"});
 	ZmOperation.registerOp(ZmId.OP_SHARE_BRIEFCASE, {textKey:"shareFolder", image:"SharedMailFolder"}, ZmSetting.SHARING_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_MOUNT_BRIEFCASE, {textKey:"mountBriefcase", image:"Notebook"}, ZmSetting.SHARING_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_OPEN_FILE, {textKey:"openFile", tooltipKey:"openFileTooltip", image:"NewPage"});
-	ZmOperation.registerOp(ZmId.OP_VIEW_FILE_AS_HTML, {textKey:"viewAsHtml", tooltipKey:"viewAsHtml", image:"HtmlDoc"});	
-	ZmOperation.registerOp(ZmId.OP_SEND_FILE, {textKey:"send", tooltipKey:"sendPageTT", image:"Send"});	
-	ZmOperation.registerOp("SAVE_FILE", {textKey:"saveFile", tooltipKey:"saveFileTooltip", image:"Save"});
+	ZmOperation.registerOp(ZmId.OP_SAVE_FILE, {textKey:"saveFile", tooltipKey:"saveFileTooltip", image:"Save"});
+	ZmOperation.registerOp(ZmId.OP_VIEW_FILE_AS_HTML, {textKey:"viewAsHtml", tooltipKey:"viewAsHtml", image:"HtmlDoc"});
+	ZmOperation.registerOp(ZmId.OP_SEND_FILE, {textKey:"sendLink", tooltipKey:"sendLink", image:"Send"});
+	ZmOperation.registerOp(ZmId.OP_SEND_FILE_AS_ATT, {textKey:"sendAsAttachment", tooltipKey:"sendAsAttachment", image:"Attachment"});
+    ZmOperation.registerOp(ZmId.OP_SEND_FILE_MENU, {textKey:"send", image:"Send"});    
 };
 
 ZmBriefcaseApp.prototype._registerItems =
@@ -108,6 +110,8 @@ function() {
 							  createFunc     : "ZmOrganizer.create",
 							  compareFunc    : "ZmBriefcase.sortCompare",
 							  deferrable     : true,
+							  newOp			 : ZmOperation.NEW_BRIEFCASEITEM,
+							  displayOrder	 : 100,
 							  hasColor       : true
 							});
 };
@@ -125,21 +129,16 @@ function() {
 								});
 };
 
-ZmBriefcaseApp.prototype._setupCurrentAppToolbar =
-function() {
-	ZmCurrentAppToolBar.registerApp(this.getName(), ZmOperation.NEW_BRIEFCASEITEM, ZmOrganizer.BRIEFCASE);
-};
-
 ZmBriefcaseApp.prototype._registerApp =
 function() {
 	var newItemOps = {};
-	newItemOps[ZmOperation.NEW_FILE] = "file";
+	newItemOps[ZmOperation.NEW_FILE] = "uploadNewFile";
 
 	var newOrgOps = {};
-	newOrgOps[ZmOperation.NEW_BRIEFCASEITEM] = "folder";
+	newOrgOps[ZmOperation.NEW_BRIEFCASEITEM] = "briefcase";
 
 	var actionCodes = {};
-	actionCodes[ZmKeyMap.NEW_FILE]		= ZmOperation.NEW_FILE;
+	actionCodes[ZmKeyMap.NEW_FILE]			= ZmOperation.NEW_FILE;
 	actionCodes[ZmKeyMap.NEW_BRIEFCASEITEM]	= ZmOperation.NEW_BRIEFCASEITEM;
 
 	ZmApp.registerApp(ZmApp.BRIEFCASE,
@@ -149,7 +148,7 @@ function() {
 					  chooserTooltipKey:	"gotoBriefcase",
 					  defaultSearch:		ZmItem.BRIEFCASE,
 					  organizer:			ZmOrganizer.BRIEFCASE,
-					  overviewTrees:		[ZmOrganizer.BRIEFCASE, ZmOrganizer.ROSTER_TREE_ITEM, ZmOrganizer.TAG],
+					  overviewTrees:		[ZmOrganizer.BRIEFCASE, ZmOrganizer.TAG],
 					  showZimlets:			true,
 					  searchTypes:			[ZmItem.BRIEFCASE/*, ZmItem.DOCUMENT*/],
 					  newItemOps:			newItemOps,
@@ -180,53 +179,6 @@ function(ids, force) {
 			bc.removeItem(item);
 		}
 	}
-/****************************** WTF?! ************************************/
-/*
- 	var nextData = null;
- 	var idStr = ids.join(",")+",";
- 	var folderInUse = false;
- 	var briefcaseController = AjxDispatcher.run("GetBriefcaseController");
- 	var shownFolder = briefcaseController._object;
- 	var overviewController = appCtxt.getOverviewController();
- 	var treeController = overviewController.getTreeController(ZmOrganizer.BRIEFCASE);
- 	var treeView = treeController.getTreeView(this.getOverviewId());
-
- 	if(!treeView){
- 		return;
- 	}
-
- 	for (var i = 0; i < ids.length; i++) {
- 			var tmp = treeView.getNextData(ids[i]);
- 			//next node might also be in the delete list : parent deleted
- 			if(tmp && idStr.indexOf(tmp.id+",")<0){
- 				nextData = tmp;
- 			}
- 			if (shownFolder && shownFolder == ids[i]) {
- 				folderInUse = true;
- 			}
- 	}
-
- 	for (var i = 0; i < ids.length; i++) {
- 		briefcaseController.removeItem({id:ids[i]});
- 		appCtxt.cacheRemove(ids[i]);
- 	}
-
- 	if(nextData && folderInUse){
- 	briefcaseController.show(nextData.id);
- 	}else{
- 	//handled in delete callback : currently we dont get notification
- 	//for the op in remote folders, so handled differently
- 	//briefcaseController.show(shownFolder);
- 	}
-
- 	for (var i = 0; i < ids.length; i++) {
- 		var tmp1 = treeView.getTreeItemById(ids[i]);
- 		if(tmp1){
- 			tmp1.dispose();
- 		}
- 		ids[i] = null;
- 	}
-*/
 };
 
 /**
@@ -256,11 +208,6 @@ function(creates, force) {
                 if(create.l == bc._currentFolder) {
 					needsRefresh = true;
 				}
-                //DBG.println(AjxDebug.DBG1, "ZmBriefcaseApp: handling CREATE for node: " + name);
-				// REVISIT: use app context item cache
-				//var doc = new ZmBriefcaseItem();
-				//doc.set(create);
-				//bc.putItem(doc);
 			}
 		}
 	}
@@ -377,12 +324,6 @@ function(results, callback) {
 
 ZmBriefcaseApp.prototype.setActive =
 function(active) {
-/*
-	if (active) {
-		var briefcaseController = AjxDispatcher.run("GetBriefcaseController");
-		briefcaseController.show();
-	}
-*/
 };
 
 ZmBriefcaseApp.prototype._newBriefcaseCallback =
@@ -444,8 +385,9 @@ function(msgId, partId, name, folderId,items) {
 	}
 
 	if (bController.isShared(folderId)) {
-		ZmOrganizer._showErrorMsg(ZmMsg.sharedFolderNotSupported);
-		return;
+		if(msgId.indexOf(":") < 0){ //for shared folder, use fully qualified msg id if it is not already
+           msgId = appCtxt.getActiveAccount().id + ":" + msgId; 
+        }
 	}
 
 	var itemFound = false;
@@ -454,7 +396,7 @@ function(msgId, partId, name, folderId,items) {
         items = items.getArray();
     }
 
-	for (var i in items) {
+    for (var i in items) {
 		var item = items[i];
 		if (item.name == name) {
 			itemFound = true;

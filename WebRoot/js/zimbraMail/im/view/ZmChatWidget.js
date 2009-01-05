@@ -15,10 +15,12 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmChatWidget = function(parent, posStyle) {
+ZmChatWidget = function(params, button) {
         //console.time("ZmChatWidget");
-	DwtComposite.call(this, {parent:parent, className:"ZmChatWidget", posStyle:posStyle});
+	params.className = params.className || "ZmChatWidget";
+	DwtComposite.call(this, params);
 	this._chatChangeListenerListener = new AjxListener(this, this._chatChangeListener);
+	this._taskbarButton = button;
 	this._init();
 };
 
@@ -31,6 +33,16 @@ ZmChatWidget.prototype.toString = function(){
 
 ZmChatWidget.prototype.getObjectManager = function() {
 	return this._objectManager;
+};
+
+ZmChatWidget.prototype.addCloseListener =
+function(listener) {
+	this._close.addSelectionListener(listener);
+};
+
+ZmChatWidget.prototype.addMinimizeListener =
+function(listener) {
+	this._minimize.addSelectionListener(listener);
 };
 
 ZmChatWidget.prototype._setChat = function(chat) {
@@ -158,8 +170,9 @@ ZmChatWidget.prototype.handleMessage = function(msg) {
 		return;
 	}
 
-	if(appCtxt.get(ZmSetting.IM_PREF_NOTIFY_SOUNDS) && !msg.fromMe){
-        appCtxt.getApp("IM").playAlert(ZmImApp.INCOMING_MSG_NOTIFICATION);
+	if(appCtxt.get(ZmSetting.IM_PREF_NOTIFY_SOUNDS) && !msg.fromMe && !msg.isSystem){
+		AjxDispatcher.require("Alert");
+		ZmSoundAlert.getInstance().start();
     }
     var str = msg.displayHtml(this.chat, this.__lastFrom);
 	this.__lastFrom = (msg.isSystem && !msg.from) ? "@@system" : msg.from;
@@ -175,7 +188,9 @@ ZmChatWidget.prototype.handleHtmlMessage = function(str, useObjectManager) {
 	if (useObjectManager) {
 		this._objectManager.findObjectsInNode(div);
 	}
-	return this.scrollTo(div, true);
+	this._content.getHtmlElement().appendChild(div);
+	this.scrollTo(div);
+	return div;
 };
 
 ZmChatWidget.prototype.handleErrorMessage = function(msg) {
@@ -200,31 +215,50 @@ ZmChatWidget.prototype.restoreScrollPos = function() {
 	this._content.getHtmlElement().scrollTop = this._scrollPos;
 };
 
-ZmChatWidget.prototype.scrollTo = function(el, append) {
+ZmChatWidget.prototype.scrollTo = function(el) {
+	if (this.isMinimized() || !this._isTabVisible) {
+		if (!this._scrollToEl) {
+			this._scrollToEl = el;
+		}
+	} else {
+		this._scrollTo(el);
+	}
+};
+
+/** Positions the content scroll bar after restoring or setting active tab */ 
+ZmChatWidget.prototype._updateScroll = function() {
+	if (this._scrollToEl) {
+		this._scrollTo(this._scrollToEl);
+		delete this._scrollToEl;
+	} else {
+		var content = this._content.getHtmlElement();
+		content.scrollTop = 999999; // Scrolls to bottom.
+	}
+};
+
+ZmChatWidget.prototype._scrollTo = function(el) {
 	var content = this._content.getHtmlElement();
 	if (typeof el == "number") {
 		content.scrollTop = el;
 	} else {
-		if (typeof el == "string")
+		if (typeof el == "string") {
 			el = document.getElementById(el);
-		if (append)
-			content.appendChild(el);
+		}
 		content.scrollTop = el.offsetTop;
 	}
-	return el;
 };
 
 ZmChatWidget.prototype.setImage = function(imageInfo) {
+	this._taskbarButton.setImage(imageInfo);
 	if (this._isMultiTabMinimized()) {
 		return; // Don't show presence icon for multi-tab minimized window.
 	}
-	this._label.setImage(imageInfo);
-	var tab = this.parent.getTabLabelWidget(this);
-	if (tab) {
-		// tabs might not be initialized yet
-		tab.closeBtn.setImage(imageInfo);
-		tab.closeBtn.setEnabledImage(imageInfo);
-	}
+//	var tab = this.parent.getTabLabelWidget(this);
+//	if (tab) {
+//		// tabs might not be initialized yet
+//		tab.closeBtn.setImage(imageInfo);
+//		tab.closeBtn.setEnabledImage(imageInfo);
+//	}
 };
 
 ZmChatWidget.prototype.setTitle = function(text) {
@@ -232,6 +266,7 @@ ZmChatWidget.prototype.setTitle = function(text) {
 	if (!this._isMultiTabMinimized()) {
 		this._label.setText(text);
 	}
+	this._taskbarButton.setText(text);
 };
 
 ZmChatWidget.prototype.setStatusTitle = function(text) {
@@ -246,22 +281,10 @@ ZmChatWidget.prototype.getEditorContent = function(){
 	return this._liteEditor.getContent();
 };
 
-ZmChatWidget.prototype.addRosterItem = function(item) {
-// 	var forceTitle = false;
-// 	if (this.chat.getRosterSize() > 0 && this._memberListView == null) {
-// 		if (!this.chat.isGroupChat()) {
-// 			this.chat.setName(ZmMsg.imGroupChat);
-// 			forceTitle = true;
-// 		}
-// 		this._memberListView = new ZmChatMemberListView(this, this.chat._getRosterItemList());
-// 		this._controlListener();
-// 	}
-// 	this.chat.addRosterItem(item);
-// 	this._updateGroupChatTitle(forceTitle);
-};
 
 ZmChatWidget.prototype._isMultiTabMinimized = function() {
-	return this.getChatWindow().isMinimized() && (this.parent.size() > 1)
+	//////TODO
+	return false;
 };
 
 ZmChatWidget.prototype._keypressNotifyItems = function(last_key, enter) {
@@ -379,20 +402,16 @@ ZmChatWidget.prototype._init = function() {
 	
 	this._toolbar = new DwtToolBar({parent:this, posStyle:Dwt.ABSOLUTE_STYLE});
 
-        // XXX: does it work implementing a "light label" widget?
+	this._close = new DwtLtIconButton(this._toolbar, null, "Close");
+	this._close.setToolTipContent(ZmMsg.imCloseWindow);
+
+	this._minimize = new DwtLtIconButton(this._toolbar, null, "RoundMinus");
+	this._minimize.setToolTipContent(ZmMsg.imMinimize);
+
 	this._label = new DwtLabel(this._toolbar, DwtLabel.IMAGE_LEFT | DwtLabel.ALIGN_LEFT, "ZmChatWindowLabel");
 	this._label.setScrollStyle(Dwt.CLIP);
 
 	this._toolbar.addFiller();
-
-	this._minimize = new DwtLtIconButton(this._toolbar, null, "RoundMinus");
-	this._minimize.setToolTipContent(ZmMsg.imMinimize);
-	this._minimize.addSelectionListener(new AjxListener(this, this._minimizeListener));
-
-	this._close = new DwtLtIconButton(this._toolbar, null, "Close");
-	this._close.setToolTipContent(ZmMsg.imCloseWindow);
-	this._closeListener = new AjxListener(this, this._closeListener);
-	this._close.addSelectionListener(this._closeListener);
 
 	this._content = new DwtComposite(this, "ZmChatWindowChat", Dwt.ABSOLUTE_STYLE);
 	this._content._setAllowSelection();
@@ -415,8 +434,6 @@ ZmChatWidget.prototype._init = function() {
 	this._toolbar.setDropTarget(dropTgt);
 	dropTgt.addDropListener(new AjxListener(this, this._dropOnTitleListener));
 
-	this.addDisposeListener(new AjxListener(this, this._disposeListener));
-
 	this._setupSash();
 
 	// Calculate the size of the toolbar excluding the label size.
@@ -438,6 +455,7 @@ ZmChatWidget.prototype._init = function() {
 	if (appCtxt.zimletsPresent()) {
 		appCtxt.getZimletMgr().notifyZimlets("onNewChatWidget", this);
 	}
+	this._doResize();
 };
 
 ZmChatWidget.prototype._getAddToBuddyListTooltip = function() {
@@ -593,32 +611,40 @@ function(width, height) {
 	this._doResize();
 };
 
+ZmChatWidget.prototype.isMinimized =
+function() {
+	return false;
+};
+
 ZmChatWidget.prototype.focus = function() {
-	this._removeUnreadStatus();
-	this._liteEditor.focus();
+	if (!this.isMinimized()) {
+		this._removeUnreadStatus();
+		this._liteEditor.focus();
+	}
 };
 
 ZmChatWidget.prototype._removeUnreadStatus = function() {
 	if (!this.chat.isZimbraAssistant()) {
-		var tab = this.getTabLabel();
-		Dwt.delClass(tab.getHtmlElement(), "ZmChatTab-Unread");
-		this.getChatWindow().showAlert(false);
-		if (tab.label)
-			tab.label.setText(AjxStringUtil.htmlEncode(this._titleStr));
+//		var tab = this.getTabLabel();
+//		Dwt.delClass(tab.getHtmlElement(), "ZmChatTab-Unread");
+//		this.getChatWindow().showAlert(false);
+//		if (tab.label)
+//			tab.label.setText(AjxStringUtil.htmlEncode(this._titleStr));
 		this.chat.resetUnread();
 	}
 };
 
 ZmChatWidget.prototype._setUnreadStatus = function() {
 	if (!this.chat.isZimbraAssistant()) {
+		var chatWindow = this.getChatWindow();
+		if (chatWindow && chatWindow.isMinimized()) {
+			chatWindow.showAlert(true);
+		}
+
 		var tab = this.getTabLabel();
 		if (tab) {
 			var tab_el = tab.getHtmlElement();
 
-			var chatWindow = this.getChatWindow();
-			if (chatWindow.isMinimized()) {
-				chatWindow.showAlert(true);
-			}
 
 			// Only if it's not already active -- the easiest way is to
 			// check the className.  Hopefully no one will change it.
@@ -647,12 +673,14 @@ ZmChatWidget.prototype.popup = function(pos) {
 	this.focus();
 };
 
+////////////
 ZmChatWidget.prototype.getTabLabel = function() {
-	return this.parent.getTabLabelWidget(this);
+	return null;
 };
 
+/////////
 ZmChatWidget.prototype.getChatWindow = function() {
-	return this.parent.parent;
+	return null;
 };
 
 ZmChatWidget.prototype.select = function() {
@@ -686,17 +714,13 @@ ZmChatWidget.prototype.detach = function(pos) {
 
 ZmChatWidget.prototype.dispose = function() {
 	this._getElement("sash").onmousedown = null;
+	delete this._scrollToEl;
 	//this._getElement("input")[ AjxEnv.isIE ? "onkeydown" : "onkeypress" ] = null;
 	DwtComposite.prototype.dispose.call(this);
 };
 
 ZmChatWidget.prototype.closeAll = function() {
-	var size;
-	var chatTabs = this.parent;
-	while (size = chatTabs.size()) {
-		var chatWidget = chatTabs.getTabWidget(size - 1);
-		ZmChatMultiWindowView.getInstance().endChat(chatWidget.chat);
-	}
+	ZmChatMultiWindowView.getInstance().endChat(this.chat);
 };
 
 ZmChatWidget.prototype.closeOthers = function() {
@@ -718,10 +742,6 @@ ZmChatWidget.prototype.close = function() {
 	ZmChatMultiWindowView.getInstance().endChat(this.chat);
 };
 
-ZmChatWidget.prototype._closeListener = function() {
-	this.closeAll();
-};
-
 ZmChatWidget.prototype._minimizeListener =
 function() {
 	this.getChatWindow().toggleMinimized();
@@ -731,6 +751,15 @@ ZmChatWidget.prototype.getMinimizedSize =
 function() {
 	this._toolbarHeight = this._toolbarHeight || (Dwt.getSize(this._getElement("toolbarLayout")).y + 4);
 	return { x: 165, y: this._toolbarHeight }; 
+};
+
+// 'protected' but called by ZmChatTabs
+ZmChatWidget.prototype._onShowTab =
+function(visible) {
+	this._isTabVisible = visible;
+	if (visible) {
+		this._updateScroll();
+	}
 };
 
 // 'protected' but called by ZmChatWindow
@@ -752,17 +781,16 @@ function(minimize) {
 	if (minimize && this.parent.size() > 1) {
 		this._minimizedFormat = this._minimizedFormat || new AjxMessageFormat(ZmMsg.imMinimizedLabel);
 		this._label.setText(this._minimizedFormat.format(this.parent.size()));
-		this._label.setImage("Blank_16");
 	} else {
 		this._label.setText(this._titleStr);
 		this.chat.getRosterItem().getAddress()
-		this._label.setImage(this.chat.getRosterItem().getPresence().getIcon());
 	}
 	this._minimize.setImage(minimize ? "RoundPlus" : "RoundMinus");
 	this._minimize.setToolTipContent(minimize ? ZmMsg.imRestore : ZmMsg.imMinimize);
 
 	if (!minimize) {
 		this._removeUnreadStatus();
+		this._updateScroll();
 	}
 };
 
@@ -875,10 +903,6 @@ ZmChatWidget.prototype._sendByEmailListener = function() {
 	this.chat.sendByEmail(mode);
 };
 
-ZmChatWidget.prototype._disposeListener = function() {
-	this.parent.detachChatWidget(this);
-};
-
 ZmChatWidget.prototype._setupSash = function() {
 	this._sashCapture = new DwtMouseEventCapture({
 		targetObj:this,
@@ -886,6 +910,7 @@ ZmChatWidget.prototype._setupSash = function() {
 		mouseMoveHdlr:AjxCallback.simpleClosure(this._sashMouseMove, this),
 		mouseUpHdlr:AjxCallback.simpleClosure(this._sashMouseUp, this)
 	});
+		null, // no mouse wheel
 	this._getElement("sash").onmousedown = AjxCallback.simpleClosure(this._sashMouseDown, this);
 };
 
@@ -935,72 +960,76 @@ ZmChatWidget.prototype._handleOnclickErrorDetails = function(msg) {
 /// @class DwtLtIconButton
 
 DwtLtIconButton = function(parent, type, icon, className, index) {
-        DwtControl.call(this, {parent:parent, className:className || "DwtLtIconButton", index: index});
-        this._selected = null;
-        if (type != null && (type & DwtButton.TOGGLE_STYLE))
-                this._selected = false;
-//         this._setEventHdlrs([ DwtEvent.ONMOUSEOVER,
-//                               DwtEvent.ONMOUSEOUT,
-//                               DwtEvent.ONMOUSEDOWN,
-//                               DwtEvent.ONMOUSEUP ]);
-        this._setMouseEventHdlrs();
-        this.addListener(DwtEvent.ONMOUSEOVER, new AjxListener(this, this._on_mouseOver));
+	DwtControl.call(this, {parent:parent, className:className || "DwtLtIconButton", index: index});
+	this._selected = null;
+	if (type != null && (type & DwtButton.TOGGLE_STYLE))
+		this._selected = false;
+	this._setMouseEventHdlrs();
+	this.addListener(DwtEvent.ONMOUSEOVER, new AjxListener(this, this._on_mouseOver));
 	this.addListener(DwtEvent.ONMOUSEOUT, new AjxListener(this, this._on_mouseOut));
 	this.addListener(DwtEvent.ONMOUSEDOWN, new AjxListener(this, this._on_mouseDown));
 	this.addListener(DwtEvent.ONMOUSEUP, new AjxListener(this, this._on_mouseUp));
-        this.setImage(icon);
+	this.setImage(icon);
 };
 DwtLtIconButton.prototype = new DwtControl;
 DwtLtIconButton.prototype.constructor = DwtControl;
 
 DwtLtIconButton.prototype.setImage = function(icon) {
-        this._img = icon;
-        AjxImg.setImage(this.getHtmlElement(), icon);
+	this._img = icon;
+	AjxImg.setImage(this.getHtmlElement(), icon);
 };
 
 DwtLtIconButton.prototype.isToggled = function() {
-        return this._selected;
+	return this._selected;
 };
 
 DwtLtIconButton.prototype.setEnabledImage = DwtLtIconButton.prototype.setImage;
 
 DwtLtIconButton.prototype.setHoverImage = function(icon) {
-        this._img_hover = icon;
+	this._img_hover = icon;
 };
 
 DwtLtIconButton.prototype.setSelected = function(selected) {
-        if (this._selected != selected) {
-                this._selected = selected;
-                this.condClassName(this._selected, "DwtLtIconButton-selected");
-        }
+	if (this._selected != selected) {
+		this._selected = selected;
+		this.condClassName(this._selected, "DwtLtIconButton-selected");
+	}
 };
 
 DwtLtIconButton.prototype.addSelectionListener = function(handler) {
-        this.addListener(DwtEvent.SELECTION, handler);
+	this.addListener(DwtEvent.SELECTION, handler);
 };
 
 DwtLtIconButton.prototype._on_mouseOver = function() {
-        this.addClassName("DwtLtIconButton-hover");
-        if (this._img_hover)
-                AjxImg.setImage(this.getHtmlElement(), this._img_hover);
+	this.addClassName("DwtLtIconButton-hover");
+	if (this._img_hover)
+		AjxImg.setImage(this.getHtmlElement(), this._img_hover);
 };
 
 DwtLtIconButton.prototype._on_mouseOut = function() {
-        this.delClassName("DwtLtIconButton-hover");
-        this.delClassName("DwtLtIconButton-pressed");
-        if (this._img && this._img_hover)
-                AjxImg.setImage(this.getHtmlElement(), this._img);
+	this.delClassName("DwtLtIconButton-hover");
+	this.delClassName("DwtLtIconButton-pressed");
+	if (this._img && this._img_hover)
+		AjxImg.setImage(this.getHtmlElement(), this._img);
 };
 
-DwtLtIconButton.prototype._on_mouseDown = function() {
-        this.addClassName("DwtLtIconButton-pressed");
+DwtLtIconButton.prototype._on_mouseDown = function(ev) {
+	if (ev.button != DwtMouseEvent.LEFT) {
+		return;
+	}
+
+	this.addClassName("DwtLtIconButton-pressed");
 };
 
-DwtLtIconButton.prototype._on_mouseUp = function() {
-        this.delClassName("DwtLtIconButton-pressed");
-        if (this._selected != null)
-                this.setSelected(!this.isToggled());
-        this.notifyListeners(DwtEvent.SELECTION);
+DwtLtIconButton.prototype._on_mouseUp = function(ev) {
+	if (ev.button != DwtMouseEvent.LEFT) {
+		return;
+	}
+
+	this.delClassName("DwtLtIconButton-pressed");
+	if (this._selected != null)
+		this.setSelected(!this.isToggled());
+	this.notifyListeners(DwtEvent.SELECTION);
 };
 
 /// @class
