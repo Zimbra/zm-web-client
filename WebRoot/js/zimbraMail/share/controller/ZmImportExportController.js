@@ -253,7 +253,7 @@ ZmImportExportController.prototype._doImportCSV = function(params, aid) {
 	var soapDoc = AjxSoapDoc.create("ImportContactsRequest", "urn:zimbraMail");
 	var method = soapDoc.getMethod();
 	method.setAttribute("ct", params.type);
-	method.setAttribute(params.type+"format", params.subType)
+	method.setAttribute(params.type+"fmt", params.subType)
 	method.setAttribute("l", params.folderId);
 	var content = soapDoc.set("content", "");
 	content.setAttribute("aid", aid);
