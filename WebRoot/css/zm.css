@@ -1837,7 +1837,8 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .ZmTaskbar .ZToolbarButton {
-	height: 20px;
+	height: 23px;
+	margin-top: -2px
 }
 
 .ZmTaskbar .ZSelected	.ZToolbarButtonBorder,
@@ -1859,7 +1860,7 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmTaskbarContentParent {
 	background-color:@TaskbarItem-selected@;
 	position:absolute;
-	bottom: 20px;
+	bottom: 23px;
 	padding: 4px;
 }
 
