@@ -104,12 +104,3 @@ function(ev) {
 		this._runEnterCallback(results);
 	}
 };
-
-ZmNewSearchDialog.prototype._getTabGroupMembers =
-function() {
-	var list = [this._nameField];
-	if (this._overview[this._curOverviewId]) {
-		list.push(this._overview[this._curOverviewId]);
-	}
-	return list;
-};

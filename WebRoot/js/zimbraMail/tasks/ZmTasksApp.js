@@ -52,11 +52,9 @@ function() {
 ZmTasksApp.prototype._registerOperations =
 function() {
 	ZmOperation.registerOp(ZmId.OP_MOUNT_TASK_FOLDER, {textKey:"mountTaskFolder", image:"TaskList"});
-	ZmOperation.registerOp(ZmId.OP_NEW_TASK, {textKey:"newTask", tooltipKey:"newTaskTooltip", image:"NewTask", shortcut:ZmKeyMap.NEW_TASK});
+	ZmOperation.registerOp(ZmId.OP_NEW_TASK, {textKey:"newTask", tooltipKey:"newTaskTooltip", image:"NewTask"});
 	ZmOperation.registerOp(ZmId.OP_NEW_TASK_FOLDER, {textKey:"newTaskFolder", tooltipKey:"newTaskFolderTooltip", image:"NewTaskList"});
 	ZmOperation.registerOp(ZmId.OP_SHARE_TASKFOLDER, {textKey:"shareTaskFolder", image:"TaskList"});
-	ZmOperation.registerOp(ZmId.OP_PRINT_TASK, {textKey:"printTask", image:"Print", shortcut:ZmKeyMap.PRINT}, ZmSetting.PRINT_ENABLED);
-	ZmOperation.registerOp(ZmId.OP_PRINT_TASKFOLDER, {textKey:"printTaskFolder", image:"Print"}, ZmSetting.PRINT_ENABLED);
 };
 
 ZmTasksApp.prototype._registerItems =
@@ -100,8 +98,6 @@ function() {
 							 createFunc:		"ZmOrganizer.create",
 							 compareFunc:		"ZmTaskFolder.sortCompare",
 							 deferrable:		true,
-							 newOp:				ZmOperation.NEW_TASK_FOLDER,
-							 displayOrder:		100,
 							 pathInName:		true
 							});
 };
@@ -118,13 +114,18 @@ function() {
 								});
 };
 
+ZmTasksApp.prototype._setupCurrentAppToolbar =
+function() {
+	ZmCurrentAppToolBar.registerApp(this.getName(), ZmOperation.NEW_TASK_FOLDER, ZmOrganizer.TASKS);
+};
+
 ZmTasksApp.prototype._registerApp =
 function() {
 	var newItemOps = {};
 	newItemOps[ZmOperation.NEW_TASK] = "task";
 
 	var newOrgOps = {};
-	newOrgOps[ZmOperation.NEW_TASK_FOLDER] = "tasksFolder";
+	newOrgOps[ZmOperation.NEW_TASK_FOLDER] = "taskFolder";
 
 	var actionCodes = {};
 	actionCodes[ZmKeyMap.NEW_TASK] = ZmOperation.NEW_TASK;
@@ -136,7 +137,7 @@ function() {
 							  chooserTooltipKey:	"goToTasks",
 							  defaultSearch:		ZmItem.TASK,
 							  organizer:			ZmOrganizer.TASKS,
-							  overviewTrees:		[ZmOrganizer.TASKS, ZmOrganizer.SEARCH, ZmOrganizer.TAG],
+							  overviewTrees:		[ZmOrganizer.TASKS, ZmOrganizer.ROSTER_TREE_ITEM, ZmOrganizer.SEARCH, ZmOrganizer.TAG],
 							  showZimlets:			true,
 							  assistants:			{"ZmTaskAssistant": ["TasksCore", "Tasks"]},
 							  newItemOps:			newItemOps,

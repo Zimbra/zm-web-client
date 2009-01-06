@@ -109,6 +109,7 @@ ZmChatListController.prototype._setView =
 function(view, clear, pushOnly) {
 	this.prepareVisuals(view);
 	var result = (clear ? this._app.setView(view) : this._app.pushView(view));
+	this._getView().hideJiveOnTimer();
 	return result;
 };
 
@@ -177,6 +178,7 @@ ZmChatListController.prototype._initializeToolBar = function(view) {
 
 	// init presence button
 	var presenceButton = this._toolbar[view].getButton(ZmOperation.IM_PRESENCE_MENU);
+	ZmImApp.INSTANCE.syncImPresenceButton(presenceButton, true, false);
 
 	this._propagateMenuListeners(this._toolbar[view], ZmOperation.NEW_MENU);
 	// this._setupViewMenu(view);
@@ -249,6 +251,29 @@ ZmChatListController.prototype._resetOperations = function(parent, num) {
 ZmChatListController.prototype._viewButtonListener = function(ev) {
 	this.switchView(ev.item.getData(ZmOperation.MENUITEM_ID));
 };
+
+// // Create menu for View button and add listeners.
+// ZmChatListController.prototype._setupViewMenu = function(view) {
+//  XXX: MIHAI: VIEW MENU IS NO LONGER IN ZmCurrentAppToolbar. SEE ZmMailListController
+// 	var appToolbar = appCtxt.getCurrentAppToolbar();
+// 	var menu = appToolbar.getViewMenu(view);
+// 	if (!menu) {
+// 		var menu = new ZmPopupMenu(appToolbar.getViewButton());
+// 		for (var i = 0; i < ZmChatListController.VIEWS.length; i++) {
+// 			var id = ZmChatListController.VIEWS[i];
+// 			var mi = menu.createMenuItem(id, { image : ZmChatListController.ICON[id],
+// 							   text	 : ZmMsg[ZmChatListController.MSG_KEY[id]],
+// 							   style : DwtMenuItem.RADIO_STYLE
+// 							 });
+// 			mi.setData(ZmOperation.MENUITEM_ID, id);
+// 			mi.addSelectionListener(this._listeners[ZmOperation.VIEW]);
+// 			if (id == view)
+// 				mi.setChecked(true, true);
+// 		}
+// 		appToolbar.setViewMenu(view, menu);
+// 	}
+// 	return menu;
+// };
 
 ZmChatListController.prototype._refreshListener = function(ev) {
 	var soapDoc = AjxSoapDoc.create("NoOpRequest", "urn:zimbraMail");

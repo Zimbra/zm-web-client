@@ -365,19 +365,3 @@
 		</tr>
 	</table>
 </template>
-
-<template id="share.Dialogs#ZmPromptDialog">
-	<table cellpadding=2 cellspacing=2 border=0>
-		<tr>
-			<td class='Label' id='${id}_label'/>
-		</tr>
-		<tr>
-			<td>
-				<$= Dwt.CARET_HACK_BEGIN $>
-				<input type=${type} autocomplete=OFF class='Field' id='${id}_name' />
-				<$= Dwt.CARET_HACK_END $>
-			</td>
-		</tr>
-	</table>
-</template>
-

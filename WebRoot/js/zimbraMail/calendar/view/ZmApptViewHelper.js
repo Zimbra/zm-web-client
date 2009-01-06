@@ -193,6 +193,16 @@ function(item, type, strictText, strictEmail) {
 
 	if (!item || !type) return null;
 
+	if (!ZmApptViewHelper._contacts) {
+		ZmApptViewHelper._contacts = AjxDispatcher.run("GetContacts");
+	}
+	if (!ZmApptViewHelper._locations) {
+		ZmApptViewHelper._locations = appCtxt.getApp(ZmApp.CALENDAR).getLocations();
+	}
+	if (!ZmApptViewHelper._equipment) {
+		ZmApptViewHelper._equipment = appCtxt.getApp(ZmApp.CALENDAR).getEquipment();
+	}
+
 	var attendee = null;
 	if (item instanceof ZmContact) {
 		// it's already a contact or resource, return it as is
@@ -240,6 +250,22 @@ function(item, type, strictText, strictEmail) {
 				// remember actual address (in case it's email2 or email3)
 				attendee._inviteAddress = addr;
 			}
+		} else if (type != ZmCalBaseItem.PERSON) {
+			// check if it's a location or piece of equipment we know by name
+			if (ZmApptViewHelper._locations) {
+				attendee = ZmApptViewHelper._locations.getResourceByName(item);
+			}
+			if (!attendee && ZmApptViewHelper._equipment) {
+				attendee = ZmApptViewHelper._equipment.getResourceByName(item);
+			}
+		}
+		// non-email string: initialize as a resource if it's a location, since
+		// those can be free-text
+		if (!attendee && type == ZmCalBaseItem.LOCATION && !strictText && ZmApptViewHelper._locations) {
+			attendee = new ZmResource(null, ZmApptViewHelper._locations, ZmCalBaseItem.LOCATION);
+			attendee.setAttr(ZmResource.F_name, item);
+			attendee.setAttr(ZmResource.F_type, ZmResource.ATTR_LOCATION);
+			ZmApptViewHelper._locations.updateHashes(attendee);
 		}
 	}
 	return attendee;
@@ -247,15 +273,13 @@ function(item, type, strictText, strictEmail) {
 
 ZmApptViewHelper._getAttendeeFromAddr =
 function(addr, type) {
-
 	var attendee = null;
-	if (type == ZmCalBaseItem.PERSON) {
-		var contactsApp = appCtxt.getApp(ZmApp.CONTACTS);
-		attendee = contactsApp && contactsApp.getContactByEmail(addr);
-	} else if (type == ZmCalBaseItem.LOCATION) {
-
-	} else if (type == ZmCalBaseItem.EQUIPMENT) {
-
+	if ((type == ZmCalBaseItem.PERSON) && ZmApptViewHelper._contacts) {
+		attendee = ZmApptViewHelper._contacts.getContactByEmail(addr);
+	} else if ((type == ZmCalBaseItem.LOCATION) && ZmApptViewHelper._locations) {
+		attendee = ZmApptViewHelper._locations.getResourceByEmail(addr);
+	} else if ((type == ZmCalBaseItem.EQUIPMENT) && ZmApptViewHelper._equipment) {
+		attendee = ZmApptViewHelper._equipment.getResourceByEmail(addr);
 	}
 	return attendee;
 };
@@ -272,7 +296,7 @@ function(organizer) {
 	return new AjxEmailAddress(orgAddress, null, orgName);
 };
 
-/**
+/*
 * Creates a string from a list of attendees/locations/resources. If an item
 * doesn't have a name, its address is used.
 *

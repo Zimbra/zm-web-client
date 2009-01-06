@@ -29,19 +29,12 @@
  *        className		[string]*			CSS class
  *        posStyle		[constant]*			positioning style
  *        id			[string]*			an explicit ID to use for the control's HTML element
- *        controller	[ZmController]*		owning controller
  */
 ZmToolBar = function(params) {
 	if (arguments.length == 0) return;
 
 	params.posStyle = params.posStyle || DwtControl.ABSOLUTE_STYLE;
 	DwtToolBar.call(this, params);
-
-	var controller = params.controller || appCtxt.getCurrentController();
-	if (controller) {
-		this._controller = controller;
-		this._keyMap = ZmKeyMap.MAP_NAME_R[this._controller.getKeyMapName()];
-	}
 	this._buttons = {};
 };
 
@@ -104,22 +97,16 @@ function(enabled) {
 
 /**
  * Adds a button to this toolbar.
- *
- * @param params		[hash]			hash of params:
- *        id			[string]		button ID
- *        constructor	[function]*		Constructor for button object (default is DwtToolBarButton)
- *        template		[string]*		button template
- *        text			[string]*		button text
- *        tooltip		[string]*		button tooltip text
- *        image			[string]*		icon class for the button
- *        disImage		[string]*		disabled version of icon
- *        enabled		[boolean]*		if true, button is enabled
- *        className		[constant]*		CSS class name
- *        style			[constant]*		button style
- *        index			[int]*			position at which to add the button
- *        shortcut		[constant]*		shortcut ID (from ZmKeyMap) for showing hint
- *        menu			[AjxCallback or DwtMenu]*	Menu creation callback (recommended) or menu
- *        menuAbove		[boolean]*		true to popup menu above the button.
+ * 
+ * @param id			[string]		button ID
+ * @param text			[string]*		button text
+ * @param tooltip		[string]*		button tooltip text
+ * @param image			[string]*		icon class for the button
+ * @param disImage		[string]*		disabled version of icon
+ * @param enabled		[boolean]*		if true, button is enabled
+ * @param className		[constant]*		CSS class name
+ * @param style			[constant]*		button style
+ * @param index			[int]*			position at which to add the button
  */
 ZmToolBar.prototype.createButton =
 function(id, params) {
@@ -131,13 +118,10 @@ function(id, params) {
 		b.setText(params.text);
 	}
 	if (params.tooltip) {
-		b.setToolTipContent(ZmOperation.getToolTip(id, this._keyMap) || params.tooltip);
+		b.setToolTipContent(params.tooltip);
 	}
 	b.setEnabled(params.enabled !== false);
 	b.setData("_buttonId", id);
-	if (params.menu) {
-		b.setMenu(params.menu, false, null, params.menuAbove);
-	}
 
 	return b;
 };
@@ -154,15 +138,7 @@ ZmToolBar.prototype.SEPARATOR_TEMPLATE = "share.Widgets#ZmToolBarSeparator";
 
 ZmToolBar.prototype._createButton =
 function(params, className) {
-	var ctor = params.ctor || DwtToolBarButton;
-    return new ctor({
-		parent:this,
-		style:params.style,
-		className:className,
-		index:params.index,
-		id:params.id,
-		template: params.template
-	});
+    return new DwtToolBarButton({parent:this, style:params.style, className:className, index:params.index, id:params.id});
 };
 
 ZmToolBar.prototype._buttonId =

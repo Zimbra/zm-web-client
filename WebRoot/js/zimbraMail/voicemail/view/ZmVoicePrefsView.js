@@ -96,33 +96,31 @@ function() {
 	var prefsController = AjxDispatcher.run("GetPrefController");
 	prefsController._resetOperations(prefsController._toolbar, this._section && this._section.id);
 	Dwt.setTitle(this._title);
-	if (this._hasRendered) { return; }
+	if (this._hasRendered) return;
 
 	this._handleResponseGetFeaturesObj = new AjxCallback(this, this._handleResponseGetFeatures);
 	this._handleErrorGetFeaturesObj = new AjxCallback(this, this._handleErrorGetFeatures);
 
-	var contactsApp = appCtxt.getApp(ZmApp.CONTACTS);
-	if (contactsApp) {
-		var respCallback = new AjxCallback(this, this._handleResponseGetMyCard);
-		contactsApp.getMyCard(respCallback);
-	} else {
-		appCtxt.getApp(ZmApp.VOICE).getVoiceInfo(new AjxCallback(this, this._handleResponseGetVoiceInfo));
-	}
+	var params = {
+		method: "GetContacts",
+		callback: new AjxCallback(this, this._handleResponseContactsLoaded),
+		preLoadOk: false
+	};
+	AjxDispatcher.run(params);
+	appCtxt.getApp(ZmApp.VOICE).getVoiceInfo(new AjxCallback(this, this._handleResponseGetVoiceInfo));
 };
 
-ZmVoicePrefsView.prototype._handleResponseGetMyCard =
-function(contact) {
-	this._myCard = contact;
+ZmVoicePrefsView.prototype._handleResponseContactsLoaded =
+function(contacts) {
+	this._myCard = contacts.getMyCard();
 	if (this._myCard) {
-		contact.addChangeListener(new AjxListener(this, this._contactsChangeListener));
+		contacts.addChangeListener(new AjxListener(this, this._contactsChangeListener));
 		if (this._hasRendered) {
-			for (var i = 0, count = this._ui.length; i < count; i++) {
+			for(var i = 0, count = this._ui.length; i < count; i++) {
 				this._ui[i].updateMyCard();
 			}
 		}
 	}
-
-	appCtxt.getApp(ZmApp.VOICE).getVoiceInfo(new AjxCallback(this, this._handleResponseGetVoiceInfo));
 };
 
 ZmVoicePrefsView.prototype._handleResponseGetVoiceInfo =

@@ -34,12 +34,14 @@ ZmResourceList = function(resType, search) {
 	
 	this._nameToResource = {};
 	this._emailToResource = {};
-	this._app = appCtxt.getApp(ZmApp.CALENDAR);
+	this._acMatchFields = ZmResourceList.AC_FIELDS;
 };
 
 ZmResourceList.ATTRS =
 	[ZmResource.F_name, ZmResource.F_mail, ZmResource.F_type, ZmResource.F_locationName,
 	 ZmResource.F_capacity, ZmResource.F_contactMail, ZmContact.F_description];
+
+ZmResourceList.AC_FIELDS = [ZmResource.F_name];
 
 ZmResourceList.prototype = new ZmContactList;
 ZmResourceList.prototype.constructor = ZmResourceList;
@@ -67,7 +69,7 @@ function(result) {
 	var a = this._vector.getArray();
 	for (var i = 0; i < a.length; i++) {
 		var resource = a[i];
-		this._updateHashes(resource);
+		this.updateHashes(resource);
 		this._preMatch(resource);
 		this._idHash[resource.id] = resource;
 	}
@@ -76,9 +78,8 @@ function(result) {
 	this._galAutocompleteEnabled = false;
 };
 
-ZmResourceList.prototype._updateHashes =
+ZmResourceList.prototype.updateHashes = 
 function(resource) {
-	this._app.updateResourceCache(resource);
 	var name = resource.getFullName();
 	if (name) {
 		this._nameToResource[name.toLowerCase()] = resource;
@@ -119,4 +120,65 @@ function(address) {
 	if (!address || !this.isCanonical) return null;
 
 	return this._emailToResource[address.toLowerCase()];
+};
+
+/**
+* Returns true if the given string maps to a single resource. Used by autocomplete.
+* We match names, and names are not guaranteed unique, so return false.
+*
+* @param str		string to test for uniqueness
+*/
+ZmResourceList.prototype.isUniqueValue =
+function(str) {
+	return false;
+};
+
+/**
+ * Returns true if the given string is a valid resource name.
+ * 
+ * @param str	[string]	a string
+ */
+ZmResourceList.prototype.isComplete =
+function(str) {
+	return (this.getResourceByName(str) != null);
+};
+
+/*
+* Creates the matching object(s) for a particular matched contact. If a contact has multiple
+* email addresses and didn't match on one of them (it matched on a name), then a matching
+* object will be created for each email address.
+*
+* @param id		[int]		ID of matched contact
+* @param str	[string]	string that was matched
+*/
+ZmResourceList.prototype._getMatches =
+function(id, str) {
+	var match = this._testAcMatch(this.getById(id), str, true);
+	if (!match) {
+		DBG.println(AjxDebug.DBG1, "Matched resource with ID " + id + " no longer matches '" + str);
+		return null;
+	}
+
+	var resource = this.getById(id);
+	var matchObj = this._createMatch(match, resource);
+
+	return [matchObj];	
+};
+
+/*
+* Creates a match object from the given fields.
+*
+* @param match		[object]		info from the match
+* @param resource	[ZmResource]	the resource that was matched
+*/
+ZmResourceList.prototype._createMatch =
+function(match, resource) {
+	var result = {};
+	result.item = resource;
+	result.text = match.savedMatch;
+	result.plain = result.text ? result.text.replace(/<\/?b>/g, "") : "";	// for sorting results
+	result[ZmContactsApp.AC_VALUE_EMAIL] = resource.getEmail();
+	result[ZmContactsApp.AC_VALUE_NAME] = resource.getFullName();
+
+	return result;
 };
