@@ -1,0 +1,87 @@
+<%@ page buffer="8kb" autoFlush="true" %>
+<%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
+<%@ taglib prefix="zm" uri="com.zimbra.zm" %>
+<%@ taglib prefix="mo" uri="com.zimbra.mobileclient" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
+<mo:handleError>
+    <zm:getMailbox var="mailbox"/>
+    <c:choose>
+        <c:when test="${not empty mailbox.prefs.locale}">
+            <fmt:setLocale value='${mailbox.prefs.locale}' scope='request'/>
+        </c:when>
+        <c:otherwise>
+            <fmt:setLocale value='${pageContext.request.locale}' scope='request'/>
+        </c:otherwise>
+    </c:choose>
+    <fmt:setBundle basename="/messages/ZhMsg" scope="request"/>
+
+    <fmt:message var="title" key="calendars"/>
+    <c:if test="${not empty param.check}">
+        <zm:checkFolder checked="true" id="${fn:escapeXml(param.check)}"/>
+    </c:if>
+    <c:if test="${not empty param.uncheck}">
+        <zm:checkFolder checked="false" id="${fn:escapeXml(param.uncheck)}"/>
+    </c:if>
+   <%-- <c:if test="${zm:actionSet(param,'savechecks')}">
+        <c:forEach items="${paramValues.calid}" var="id">
+            <zm:checkFolder checked="true" id="${id}"/>
+        </c:forEach>
+    </c:if>--%>
+</mo:handleError>
+<c:set var="title" value="${title}" scope="request"/>
+<c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/>
+<%--<form action="" method="get">--%>
+<input type="hidden" name="st" value="cals"/>
+<div width="100%">
+    <div>
+        <span>
+            <div class="Toolbar">
+                <div>
+                    <span class="Title">
+                        <fmt:message key="calendars"/>
+                    </span>
+                </div>
+            </div>
+       </span>
+    </div>
+    <%--<c:if test="${not empty zm:getCheckedCalendarFolderIds(mailbox)}">--%>
+    <div onclick='zClickLink("FLDRCHECKED")' class='list-row-unread Folders list-row' style='padding: 5px;'>
+        <span>
+         <a id="FLDRCHECKED" href="${context_url}?st=cal&sfi=null">
+             &nbsp;&nbsp;<fmt:message key="checkedCalendars"/>
+         </a>
+         </span>   
+    </div>
+    <%--</c:if>--%>
+    <zm:forEachFolder var="calendar" skiproot="${false}" skipsystem="${false}"  skiptopsearch="${true}">
+        <c:if test="${calendar.isAppointmentView && calendar.isAppointmentMoveTarget}">
+            <c:if test="${sessionScope.calendar.id eq calendar.id}"><b></c:if>
+            <mo:overviewFolder base="${context_url}" folder="${calendar}" types="cal"/>
+            <c:if test="${sessionScope.calendar.id eq calendar.id}"></b></c:if>
+        </c:if>
+    </zm:forEachFolder>
+</div>
+<%--<noscript>
+<div class="Toolbar table">
+    <div class="table-row">
+            <div class="table-cell">
+                <input class="zo_button" type="submit" name="savechecks" value="<fmt:message key='save'/>">
+            </div>
+    </div>
+</div>
+</noscript>--%>
+<%--</form>--%>
+<script type="text/javascript">
+    var showHideElemForm = function(elemId) {
+        var elem = document.getElementById(elemId)
+        if (!elem) return;
+        if (elem.style.display == 'none') {
+            elem.style.display = '';
+        } else {
+            elem.style.display = 'none';
+        }
+        return false;
+    }
+</script> 

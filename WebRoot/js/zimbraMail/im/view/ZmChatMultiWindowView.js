@@ -49,13 +49,6 @@ ZmChatMultiWindowView.getInstance = function() {
 	return ZmChatMultiWindowView._INSTANCE;
 };
 
-ZmChatMultiWindowView.prototype.getWindowManager = function() {
-	if (!this._wm) {
-		this._wm = new ZmChatWindowManager(this, Dwt.Z_VIEW_WINDOW_MANAGER);
-	}
-	return this._wm;
-};
-
 ZmChatMultiWindowView.prototype.getShellWindowManager = function() {
 	if (!this._shellWm) {
 		this._shellWm = new ZmChatWindowManager(DwtShell.getShell(window), Dwt.Z_WINDOW_MANAGER);
@@ -68,42 +61,11 @@ ZmChatMultiWindowView.prototype.getShellWindowManager = function() {
 };
 
 ZmChatMultiWindowView.prototype.getActiveWM = function() {
-	return appCtxt.getCurrentAppName() != "IM"
-		? this.getShellWindowManager()
-		: this.getWindowManager();
-};
-
-ZmChatMultiWindowView.prototype.hideJiveOnTimer = function() {
-	if (this._jiveLogo && this._jiveLogo.getVisible()) {
-		var action = new AjxTimedAction(this, this._hideJive);
-		AjxTimedAction.scheduleAction(action, 6000);
-	}
-};
-
-ZmChatMultiWindowView.prototype._hideJive = function() {
-	this._jiveLogo.setVisible(false);
+	return this.getShellWindowManager();
 };
 
 ZmChatMultiWindowView.prototype.__createChatWidget = function(chat, win) {
-	var wm = this.getShellWindowManager();
-	win = win || wm.getWindowByType(ZmChatWindow) || this.__useTab;
-	this.__useTab = null;
-	if (!win) {
-		win = new ZmChatWindow(wm, chat);
-		var pos = this._initialWindowPlacement();
-		if (!pos) {
-			// put it in the bottom-right corner
-			var s = win.getSize();
-			var ws = wm.getSize();
-			pos = { x: ws.x - s.x - 16,
-				y: ws.y - s.y - 40 };
-		}
-		wm.manageWindow(win, pos, !this._controller.focusNewChat);
-		return win.getCurrentChatWidget();
-	} else {
-		win.minimize(false);
-		return win.addTab(chat, this._controller.focusNewChat);
-	}
+	ZmTaskbarController.INSTANCE.createChatItem(chat);
 };
 
 ZmChatMultiWindowView.prototype._postSet = function() {
@@ -125,7 +87,6 @@ function() {
 	// s.top = "100%";
 	s.right = s.bottom = "20px";
 	var toolbar = new DwtToolBar({parent:cont});
-	this._jiveLogo = new DwtLabel({parent:toolbar, className:"ZmChatJiveIcon ImgJiveBig"});
 	toolbar.addFiller();
 	for (var i = 1; i < gws.length; ++i) {
 		var gw = gws[i];
@@ -204,11 +165,7 @@ ZmChatMultiWindowView.prototype._changeListener = function(ev) {
 		this._addChatWidget(cw, chat);
 	} else if (ev.event == ZmEvent.E_DELETE) {
 		var chat = ev._details.items[0];
-		var cw = this._getChatWidgetForChat(chat);
-		if (cw) {
-			this._removeChatWidget(cw);
-			cw.dispose();
-		}
+		ZmTaskbarController.INSTANCE.deleteChatItem(chat);
 	}
 };
 
@@ -233,46 +190,6 @@ ZmChatMultiWindowView.prototype._getChatWidgetForChat = function(chat) {
 };
 
 ZmChatMultiWindowView.KEY_CHAT = "zcmwv_chat";
-
-ZmChatMultiWindowView.prototype._initialWindowPlacement = function() {
-	if (this._nextInitX || this._nextInitY) {
-		var pos = { x: this._nextInitX,
-			    y: this._nextInitY };
-		delete this._nextInitX;
-		delete this._nextInitY;
-		return pos;
-	}
-
-	// FIXME: for now it seems better to leave DwtResizableWindow
-	// handle this--otherwise all windows get positioned at (20, 20)
-	return null;
-
-// 	var windows = {};
-// 	for (var id in this._chatWindows) {
-// 		var cw = this._chatWindows[id];
-// 		if (cw === chatWindow)
-// 			continue;
-// 		var loc = cw.getLocation();
-// 		windows[loc.x+","+loc.y] = true;
-// 	}
-
-// 	var size = this.getSize();
-
-// 	var initX = 20, initY = 20;
-// 	var incr = 20;
-// 	var x = initX, y = initY;
-// 	while(windows[x+","+y]) {
-// 		x += incr;
-// 		y += incr;
-//         	if ((x > (size.x - 50)) || (y > (size.y - 50))) {
-//         		initX += incr;
-//         		x = initX;
-//         		y = initY;
-//     		}
-// 	}
-// 	// chatWindow.setBounds(x, y, Dwt.DEAFULT, Dwt.DEFAULT);
-// 	return { x: x, y: y };
-};
 
 ZmChatMultiWindowView.prototype._addChatWidget =
 function(chatWidget, chat) {

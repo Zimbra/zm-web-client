@@ -371,6 +371,7 @@ ZmRecurrence.prototype.setRecurrenceStartTime =
 function(startTime) {
 	
 	this._startDate.setTime(startTime);
+    this.repeatCustomMonthDay	= this._startDate.getDate();    
 	
 	if (this.repeatType == ZmRecurrence.NONE) return;
 

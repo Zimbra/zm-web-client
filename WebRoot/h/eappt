@@ -5,6 +5,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
+<fmt:setBundle basename='/messages/AjxMsg' var='AjxMsg' scope='request' />
 <app:handleError>
     <zm:getMailbox var="mailbox"/>
     <c:choose>
@@ -387,7 +388,7 @@
                                                     </table>
                                                 </td>
                                             </tr>
-                                            <c:if test="${mailbox.prefs.useTimeZoneListInCalendar or not zm:isSameTimeZone(compose.timeZone, mailbox.prefs.timeZoneWindowsId)}">
+                                            <c:if test="${mailbox.prefs.useTimeZoneListInCalendar or not zm:isSameTimeZone(compose.timeZone, mailbox.prefs.timeZoneCanonicalId)}">
                                                 <c:set var="addedTimeZone" value="true"/>
                                                 <tr>
                                                     <td nowrap align=right>
@@ -396,9 +397,10 @@
                                                     <td>
                                                         <select name="timeZone" id="timeZone">
                                                             <zm:forEachTimeZone var="tz">
+                                                                <fmt:message var="displayName" bundle='${AjxMsg}' key="${tz.id}"/>
                                                                 <option
                                                                         <c:if test="${compose.timeZone eq tz.id}">selected</c:if>
-                                                                        value="${fn:escapeXml(tz.id)}">${fn:escapeXml(tz.display)}</option>
+                                                                        value="${fn:escapeXml(tz.id)}">${fn:escapeXml(displayName)}</option>
                                                             </zm:forEachTimeZone>
                                                         </select>
                                                     </td>
