@@ -125,7 +125,7 @@ ZmAttachDialog.prototype.tabChangeListener = function(ev) {
     var tabKey = this._tabView.getCurrentTab();
     var tabView = this._tabView.getTabView(tabKey);
     if (tabView && tabView.gotAttachments()) {
-        this.setFooter("Please clear or upload attachments before changing tabs");
+        this.setFooter(ZmMsg.attachClearUploadMessage);
         return false;
     }
     return true;
@@ -186,7 +186,7 @@ ZmAttachDialog.prototype.uploadFiles = function() {
     if (tabView && tabView.gotAttachments()) {
         this.upload(this._uploadCallback, tabView.getUploadForm());
     } else {
-        this.setFooter("Add atleast one file to attach");
+        this.setFooter(ZmMsg.attachSelectMessage);
     }
 };
 
