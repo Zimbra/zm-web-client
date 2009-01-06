@@ -39,7 +39,7 @@ function(show) {
 
 ZmTaskbar.prototype.expandItem =
 function(item, expand) {
-	if (expand && this._expandedItem) {
+	if (expand && this.expandedItem) {
 		this.expandedItem.expand(false);
 	}
 	item.expand(expand);

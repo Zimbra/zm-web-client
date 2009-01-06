@@ -100,7 +100,6 @@ function(chat) {
 	item.button.addSelectionListener(new AjxListener(this, this._selectionListener, [item, chat]));
 	this._toolbar.expandItem(item, true);
 
-
 	return item;
 };
 
