@@ -7,6 +7,7 @@
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <fmt:setBundle basename='/messages/AjxMsg' var='AjxMsg' scope='request' />
 <app:handleError>
+    ${zm:clearMessageCache(mailbox)}
     <zm:getMailbox var="mailbox"/>
     <c:choose>
     <c:when test="${not empty mailbox.prefs.locale}">
