@@ -117,6 +117,11 @@ function(chat) {
 
 ZmTaskbarController.prototype.showSubscribeRequest =
 function(addr, buddy) {
+	this._subscribeData = this._subscribeData || {};
+	if (this._subscribeData[addr]) {
+		return;
+	}
+	var separator = this._toolbar.addSeparator(null, this._chatButtonIndex + 1);
 	var args = {
 		parent: this._toolbar,
 		index: this._chatButtonIndex + 1,
@@ -125,6 +130,7 @@ function(addr, buddy) {
 		contentCalback: new AjxCallback(this, this._createSubscribeRequestItemCallback, [addr, buddy])
 	};
 	var item = new ZmTaskbarItem(args);
+	this._subscribeData[addr] = { item: item, separator: separator };
 	this._subscribeRequestTooltip = this._subscribeRequestTooltip || new AjxMessageFormat(ZmMsg.imInvitationFrom);
 	var tooltip = this._subscribeRequestTooltip.format(buddy ? buddy.getDisplayName() : addr);
 	item.button.setToolTipContent(tooltip);
@@ -218,39 +224,42 @@ function(addr, buddy, item, contentEl) {
 	if (!buddy) {
 		var acceptAdd = new DwtButton({parent:item});
 		acceptAdd.setText(ZmMsg.imSubscribeAuthRequest_acceptAndAdd);
-		acceptAdd.addSelectionListener(new AjxListener(this, this._subscribeRequestAcceptAddListener, [addr, item]));
+		acceptAdd.addSelectionListener(new AjxListener(this, this._subscribeRequestAcceptAddListener, [addr]));
 		acceptAdd.reparentHtmlElement(id + "_acceptAndAdd");
 	}
 
 	var accept = new DwtButton({parent:item});
 	accept.setText(ZmMsg.imSubscribeAuthRequest_accept);
-	accept.addSelectionListener(new AjxListener(this, this._subscribeRequestAcceptListener, [addr, item]));
+	accept.addSelectionListener(new AjxListener(this, this._subscribeRequestAcceptListener, [addr]));
 	accept.reparentHtmlElement(id + "_accept");
 
 	var deny = new DwtButton({parent:item});
 	deny.setText(ZmMsg.imSubscribeAuthRequest_deny);
-	deny.addSelectionListener(new AjxListener(this, this._subscribeRequestDenyListener, [addr, item]));
+	deny.addSelectionListener(new AjxListener(this, this._subscribeRequestDenyListener, [addr]));
 	deny.reparentHtmlElement(id + "_deny");
 };
 
 ZmTaskbarController.prototype._subscribeRequestAcceptAddListener =
-function(addr, item) {
-	this._sendSubscribeAuthorization(true, true, addr, item);
+function(addr) {
+	this._sendSubscribeAuthorization(true, true, addr);
 };
 
 ZmTaskbarController.prototype._subscribeRequestAcceptListener =
-function(addr, item) {
-	this._sendSubscribeAuthorization(true, false, addr, item);
+function(addr) {
+	this._sendSubscribeAuthorization(true, false, addr);
 };
 
 ZmTaskbarController.prototype._subscribeRequestDenyListener =
-function(addr, item) {
-	this._sendSubscribeAuthorization(false, false, addr, item);
+function(addr) {
+	this._sendSubscribeAuthorization(false, false, addr);
 };
 
 ZmTaskbarController.prototype._sendSubscribeAuthorization =
-function(accept, add, addr, item) {
-	item.dispose();
+function(accept, add, addr) {
+	var data = this._subscribeData[addr];
+	data.item.dispose();
+	this._toolbar.removeSeparator(data.separator);
+	delete this._subscribeData[addr];
 	AjxDispatcher.run("GetRoster").sendSubscribeAuthorization(accept, add, addr);
 };
 
@@ -307,7 +316,11 @@ function(ev) {
 	for (var i = 1, count = gateways.length; i < count; i++) {
 		var gateway = gateways[i];
 		if (!this._gatewayData[gateway.type]) {
-			this._toolbar.addSeparator();
+			// If there's already a gateway item, add a separator.
+			for (var ignored in this._gatewayData) {
+				this._toolbar.addSeparator();
+				break;
+			}
 			var buttonArgs = {
 				ctor: ZmStatusImageButton,
 				image: "WebSearch",
