@@ -61,20 +61,33 @@ ZmController.prototype.getApp = function() {
 ZmController.prototype.popupErrorDialog = 
 function(msg, ex, noExecReset, hideReportButton)  {
 	// popup alert
+	var errorDialog = appCtxt.getErrorDialog();
 	var detailStr = "";
 	if (typeof ex == "string") {
 		// in case an Error makes it here
 		detailStr = ex;
 	} else if (ex instanceof Object) {
-		var details = [];
 		ex.msg = ex.msg || msg;
-		for (var prop in ex) {
-			if (typeof ex[prop] == "function") { continue; }
-			details.push([prop, ": ", ex[prop], "<br/>\n"].join(""));
+		var fields = ["method", "msg", "code", "detail", "trace", "request"];
+		var html = [], i = 0;
+		html[i++] = "<div style='height:300px; overflow:auto;'><table width='100%'>";
+		for (var j = 0; j < fields.length; j++) {
+			var fld = fields[j];
+			var value = ex[fld];
+			if (value) {
+				if (fld == "request") {
+					value = ["<pre>", value, "</pre>"].join("");
+					var msgDiv = document.getElementById(errorDialog._msgCellId);
+					if (msgDiv) {
+						msgDiv.className = "DwtMsgDialog-wide";
+					}
+				}
+				html[i++] = ["<tr><td valign='top'>", fields[j], ":</td><td valign='top'>", value, "</td></tr>"].join("");
+			}
 		}
-		detailStr = details.join("");
+		html[i++] = "</table></div>";
+		detailStr = html.join("");
 	}
-	var errorDialog = appCtxt.getErrorDialog();
 	errorDialog.registerCallback(DwtDialog.OK_BUTTON, this._errorDialogCallback, this);
 	errorDialog.setMessage(msg, detailStr, DwtMessageDialog.CRITICAL_STYLE, ZmMsg.zimbraTitle);
 	errorDialog.setButtonVisible(ZmErrorDialog.REPORT_BUTTON, !hideReportButton);

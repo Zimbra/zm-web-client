@@ -662,6 +662,11 @@
 	overflow: auto;
 }
 
+/* For the error dialog when displaying a request */
+.DwtMsgDialog-wide {
+	width: 600px;
+	overflow: auto;
+}
 
 /* Text area for the message dialog, including icon */
 .DwtMsgArea {
