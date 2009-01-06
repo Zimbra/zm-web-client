@@ -188,7 +188,7 @@
 </template>
 
 <template id="im.Chat#SubscribeAuthDlg">
-  <table width="100%">
+  <table width="250px">
     <tr>
       <td style="text-align: center; padding-bottom: 10px">
         <$= AjxMessageFormat.format(ZmMsg.imSubscribeAuthRequest, [ data.buddy ]) $>

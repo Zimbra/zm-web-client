@@ -414,12 +414,8 @@ function(addr, notifications) {
 
 ZmRoster.prototype.onServiceRequestBuddyAuth =
 function(addr) {
-	ZmImApp.INSTANCE.prepareVisuals();
-	var view = ZmChatMultiWindowView.getInstance();
-	if (view) {
-		var item = this.getRosterItem(addr);
-		ZmImSubscribeAuth.show(view.getActiveWM(), addr, item);
-	}
+	var buddy = this.getRosterItem(addr);
+	ZmTaskbarController.INSTANCE.showSubscribeRequest(addr, buddy);
 };
 
 ZmRoster.prototype.onServiceSetBuddyPresence =

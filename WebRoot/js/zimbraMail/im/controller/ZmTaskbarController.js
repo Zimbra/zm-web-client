@@ -82,15 +82,6 @@ function() {
 	return "ZmTaskbarController";
 };
 
-ZmTaskbarController.prototype.expandItem =
-function(item, expand) {
-	if (expand && this._expandedItem) {
-		this._expandedItem.expand(false);
-	}
-	item.expand(expand);
-	this._expandedItem = expand ? item : null;
-};
-
 ZmTaskbarController.prototype.createChatItem =
 function(chat) {
 	var separator = this._toolbar.addSeparator(null, this._chatButtonIndex++);
@@ -107,7 +98,7 @@ function(chat) {
 	item.button.setHoverImage(hoverImage);
 	this._closeClass = this._closeClass || AjxImg.getClassForImage(hoverImage);
 	item.button.addSelectionListener(new AjxListener(this, this._selectionListener, [item, chat]));
-	this.expandItem(item, true);
+	this._toolbar.expandItem(item, true);
 
 
 	return item;
@@ -124,19 +115,41 @@ function(chat) {
 	}
 };
 
-ZmTaskbarController.prototype._toolbarMouseDownListener =
-function(ev) {
-	if (ev.button == DwtMouseEvent.LEFT && this._expandedItem) {
-		this.expandItem(this._expandedItem, false);
+ZmTaskbarController.prototype.showSubscribeRequest =
+function(addr, buddy) {
+	var args = {
+		parent: this._toolbar,
+		index: this._chatButtonIndex + 1,
+		op: ZmId.OP_IM_INVITE,
+		rightAlign: true,
+		contentCalback: new AjxCallback(this, this._createSubscribeRequestItemCallback, [addr, buddy])
+	};
+	var item = new ZmTaskbarItem(args);
+	this._subscribeRequestTooltip = this._subscribeRequestTooltip || new AjxMessageFormat(ZmMsg.imInvitationFrom);
+	var tooltip = this._subscribeRequestTooltip.format(buddy ? buddy.getDisplayName() : addr);
+	item.button.setToolTipContent(tooltip);
+	item.button.addSelectionListener(new AjxListener(this, this._selectionListener, [item, null]));
+	if (this._toolbar.expandedItem) {
+		item.showAlert(true);
+	} else {
+		this._toolbar.expandItem(item, true);
 	}
 };
 
+ZmTaskbarController.prototype._toolbarMouseDownListener =
+function(ev) {
+	if (ev.button == DwtMouseEvent.LEFT && this._toolbar.expandedItem) {
+		this._toolbar.expandItem(this._toolbar.expandedItem, false);
+	}
+};
+
+// TODO: Make just one listener object for this method.
 ZmTaskbarController.prototype._selectionListener =
 function(item, chat, ev) {
 	if (chat && ev.target && (ev.target.className == this._closeClass)) {
 		ZmChatMultiWindowView.getInstance().endChat(chat);
 	} else {
-		this.expandItem(item, !item.expanded);
+		this._toolbar.expandItem(item, !item.expanded);
 	}
 };
 
@@ -175,7 +188,7 @@ function(ev) {
 	var chatData = this._chatData[chat.id];
 	if (chatData && !chatData.item.expanded) {
 		var message = ev.getDetail("fields")[ZmChat.F_MESSAGE];
-		if (message && !message.fromMe) {
+		if (message && !message.fromMe && !message.isSystem) {
 			chatData.item.showAlert(true);
 		}
 	}
@@ -188,7 +201,57 @@ function(taskbarItem, widget) {
 
 ZmTaskbarController.prototype._minimizeChatListener =
 function(taskbarItem, widget) {
-	this.expandItem(taskbarItem, false);
+	this._toolbar.expandItem(taskbarItem, false);
+};
+
+ZmTaskbarController.prototype._createSubscribeRequestItemCallback =
+function(addr, buddy, item, contentEl) {
+	var id = item.getHTMLElId();
+
+	var templateArgs = {
+		id : id,
+		buddy: buddy ? buddy.getDisplayName() : addr,
+		inList: !!buddy
+	};
+	contentEl.innerHTML = AjxTemplate.expand("im.Chat#SubscribeAuthDlg", templateArgs);
+
+	if (!buddy) {
+		var acceptAdd = new DwtButton({parent:item});
+		acceptAdd.setText(ZmMsg.imSubscribeAuthRequest_acceptAndAdd);
+		acceptAdd.addSelectionListener(new AjxListener(this, this._subscribeRequestAcceptAddListener, [addr, item]));
+		acceptAdd.reparentHtmlElement(id + "_acceptAndAdd");
+	}
+
+	var accept = new DwtButton({parent:item});
+	accept.setText(ZmMsg.imSubscribeAuthRequest_accept);
+	accept.addSelectionListener(new AjxListener(this, this._subscribeRequestAcceptListener, [addr, item]));
+	accept.reparentHtmlElement(id + "_accept");
+
+	var deny = new DwtButton({parent:item});
+	deny.setText(ZmMsg.imSubscribeAuthRequest_deny);
+	deny.addSelectionListener(new AjxListener(this, this._subscribeRequestDenyListener, [addr, item]));
+	deny.reparentHtmlElement(id + "_deny");
+};
+
+ZmTaskbarController.prototype._subscribeRequestAcceptAddListener =
+function(addr, item) {
+	this._sendSubscribeAuthorization(true, true, addr, item);
+};
+
+ZmTaskbarController.prototype._subscribeRequestAcceptListener =
+function(addr, item) {
+	this._sendSubscribeAuthorization(true, false, addr, item);
+};
+
+ZmTaskbarController.prototype._subscribeRequestDenyListener =
+function(addr, item) {
+	this._sendSubscribeAuthorization(false, false, addr, item);
+};
+
+ZmTaskbarController.prototype._sendSubscribeAuthorization =
+function(accept, add, addr, item) {
+	item.dispose();
+	AjxDispatcher.run("GetRoster").sendSubscribeAuthorization(accept, add, addr);
 };
 
 ZmTaskbarController.prototype._createTaskbarButton =

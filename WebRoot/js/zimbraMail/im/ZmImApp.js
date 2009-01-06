@@ -131,7 +131,8 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_IM_CLOSE_OTHER_TABS, { textKey: "imCloseOtherTabs" });
 	ZmOperation.registerOp(ZmId.OP_IM_CLOSE_TAB, { textKey: "imCloseTab" });
 	ZmOperation.registerOp(ZmId.OP_IM_BUDDY_ARCHIVE, { textKey: "imBuddyArchive", image: "ChatFolder" });
-	ZmOperation.registerOp(ZmId.OP_IM_BUDDY_LIST, { textKey: "buddyList", image: "ImGroup", grrrr:"junk" });
+	ZmOperation.registerOp(ZmId.OP_IM_BUDDY_LIST, { textKey: "buddyList", image: "ImGroup" });
+	ZmOperation.registerOp(ZmId.OP_IM_INVITE, { textKey: "imInvitation", image: "AllowUser"});
 };
 
 ZmImApp.prototype._registerItems =

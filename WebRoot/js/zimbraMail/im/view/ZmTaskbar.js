@@ -21,6 +21,7 @@ ZmTaskbar = function(params) {
 	ZmTaskbar.INSTANCE = this;
 
 	this._setMouseEvents();
+	this.shell.addControlListener(new AjxListener(this, this._shellControlListener));
 };
 
 ZmTaskbar.prototype = new ZmToolBar;
@@ -36,6 +37,21 @@ function(show) {
 	this.setZIndex(show ? Dwt.Z_VIEW + 10 : Dwt.Z_HIDDEN); 
 };
 
+ZmTaskbar.prototype.expandItem =
+function(item, expand) {
+	if (expand && this._expandedItem) {
+		this.expandedItem.expand(false);
+	}
+	item.expand(expand);
+	this.expandedItem = expand ? item : null;
+};
+
+ZmTaskbar.prototype._shellControlListener =
+function(ev) {
+	if ((ev.oldWidth != ev.newWidth) && this.expandedItem ) {
+		this.expandedItem.positionContent();
+	}
+};
 
 /**
  * ZmTaskbarItem represents an item on the taskbar with a button and a place for popup content.
@@ -55,6 +71,7 @@ ZmTaskbarItem = function(params) {
 		this.button.setText(ZmMsg[ZmOperation.getProp(params.op, "textKey")]);
 		this.button.setImage(ZmOperation.getProp(params.op, "image"));
 	}
+	this._rightAlign = params.rightAlign;
 };
 
 ZmTaskbarItem.prototype = new DwtComposite;
@@ -78,6 +95,7 @@ function(expand) {
 			this._contentCallback.run(this, this._contentEl);
 			this._hasContent = true;
 		}
+		this.positionContent();
 	}
 };
 
@@ -85,6 +103,17 @@ ZmTaskbarItem.prototype.collapse =
 function() {
 	this.expanded = false;
 	Dwt.setVisible(this._contentEl, false);
+};
+
+ZmTaskbarItem.prototype.positionContent =
+function() {
+	if (this._rightAlign) {
+		var x = Dwt.toWindow(this.button.getHtmlElement(), 0, 0).x;
+		var width = this.button.getW();
+		var windowWidth = this.shell.getSize().x;
+		var fudge = 6; // Couldn't figure out what makes this necessary.
+		this._contentEl.style.right = windowWidth - x - width - fudge;
+	}
 };
 
 ZmTaskbarItem.prototype._createHtml = function() {
