@@ -20,7 +20,7 @@ ZmChat = function(id, chatName, chatList) {
 	if (chatList == null) chatList = appCtxt.getApp(ZmApp.IM).getRoster().getChatList();
 	ZmItem.call(this, ZmItem.CHAT, id, chatList);
 	this._sendMessageCallbackObj = new AjxCallback(this, this._sendMessageCallback);
-	this._messages = [];
+	this.messages = [];
 	this._rosterItemList = new ZmRosterItemList();
 	this._isGroupChat = false;
 	this._chatName = chatName;
@@ -142,8 +142,8 @@ ZmChat.prototype.getStatusTitle = function() {
 
 // add message from notification...
 ZmChat.prototype.addMessage = function(msg) {
-	this._messages.push(msg);
-	this._historyIndex = this._messages.length;
+	this.messages.push(msg);
+	this._historyIndex = this.messages.length;
 	var fields = {};
 	fields[ZmChat.F_MESSAGE] = msg;
 	this._notify(ZmEvent.E_MODIFY, {fields: fields});
@@ -203,7 +203,7 @@ ZmChat.prototype.sendByEmail = function(mode) {
 		.map("getContact")
 		.map("getEmail")
 		.join(AjxEmailAddress.SEPARATOR);
-        var text, messages = AjxVector.fromArray(this._messages);
+        var text, messages = AjxVector.fromArray(this.messages);
         if (mode == DwtHtmlEditor.HTML) {
                 text = messages.map("toHtml").join("<br/>");
         } else {
@@ -222,9 +222,9 @@ ZmChat.prototype.getHistory = function(dir) {
 		this._historyIndex += dir;
 		if (this._historyIndex < 0)
 			this._historyIndex = -1;
-		if (this._historyIndex >= this._messages.length)
-			this._historyIndex = this._messages.length;
-		var msg = this._messages[this._historyIndex];
+		if (this._historyIndex >= this.messages.length)
+			this._historyIndex = this.messages.length;
+		var msg = this.messages[this._historyIndex];
 		if (!msg || msg.fromMe)
 			break;
 	}

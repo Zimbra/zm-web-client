@@ -53,9 +53,8 @@ ZmChatWidget.prototype._setChat = function(chat) {
 	item.chatStarted(chat, this);
 	this._label.setToolTipCallback(new AjxCallback(this, this._getLabelToolTip));
 
-	// TODO: clean up this interface!
-	for (var i = 0; i < chat._messages.length; i++) {
-		this.handleMessage(this.chat._messages[i]);
+	for (var i = 0; i < chat.messages.length; i++) {
+		this.handleMessage(this.chat.messages[i]);
 	}
 	var listItem = AjxDispatcher.run("GetRoster").getRosterItem(item.getAddress());
 	this._setAddBuddyVisible(!listItem);
@@ -103,9 +102,6 @@ ZmChatWidget.prototype._rosterItemChangeListener = function(item, fields, setAll
 	var doName = setAll || (ZmRosterItem.F_NAME in fields);
 	var doTyping = fields && ZmRosterItem.F_TYPING in fields;
 
-// 	if (this._memberListView && fields)
-// 		this._memberListView._rosterItemChangeListener(item, fields);
-
 	if (this.chat.getRosterSize() == 1) {
 		var listItem = AjxDispatcher.run("GetRoster").getRosterItem(this.chat.getRosterItem().getAddress());
 		this._setAddBuddyVisible(!listItem);
@@ -151,8 +147,6 @@ ZmChatWidget.prototype._chatChangeListener = function(ev) {
 };
 
 ZmChatWidget.prototype.setTyping = function(item, typing) {
-// 	console.log("ZmChatWidget: %s is %s", item.getAddress(),
-// 		    typing ? "typing" : "not typing");
 	if (this.chat.getRosterSize() == 1) {
 		var label = this.getTabLabel();
 		Dwt.condClass(label.getHtmlElement(), typing, "ZmRosterItem-typing");
@@ -247,22 +241,10 @@ ZmChatWidget.prototype._scrollTo = function(el) {
 
 ZmChatWidget.prototype.setImage = function(imageInfo) {
 	this._taskbarButton.setImage(imageInfo);
-	if (this._isMultiTabMinimized()) {
-		return; // Don't show presence icon for multi-tab minimized window.
-	}
-//	var tab = this.parent.getTabLabelWidget(this);
-//	if (tab) {
-//		// tabs might not be initialized yet
-//		tab.closeBtn.setImage(imageInfo);
-//		tab.closeBtn.setEnabledImage(imageInfo);
-//	}
 };
 
 ZmChatWidget.prototype.setTitle = function(text) {
 	this._titleStr = text;
-	if (!this._isMultiTabMinimized()) {
-		this._label.setText(text);
-	}
 	this._taskbarButton.setText(text);
 };
 
@@ -843,15 +825,6 @@ ZmChatWidget.prototype._dropOnTitleListener = function(ev) {
 			}, this);
 
 		}
-
-// 		if (isGroup()) {
-// 			var mouseEv = DwtShell.mouseEvent;
-//             		mouseEv.setFromDhtmlEvent(ev.uiEvent);
-//             		var pos = this.getLocation();
-//             		this._nextInitX = mouseEv.docX - pos.x;
-//             		this._nextInitY = mouseEv.docY - pos.y;
-// 			this._controller.chatWithRosterItems(srcData.getRosterItems(), srcData.getName()+" "+ZmMsg.imGroupChat);
-// 		}
 	}
 };
 
