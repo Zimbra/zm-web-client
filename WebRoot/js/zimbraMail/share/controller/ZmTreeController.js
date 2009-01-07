@@ -325,9 +325,9 @@ function(treeItem, organizer, treeView) {
 		if (this.isCheckedStyle) {
 			if (organizer.type == this.type && treeView._showCheckboxes) {
 				treeItem.setChecked(organizer.isChecked);
-			}
-			else {
+			} else {
 				treeItem.showCheckBox(false);
+				treeItem.enableSelection(true);
 			}
 		}
 	}
