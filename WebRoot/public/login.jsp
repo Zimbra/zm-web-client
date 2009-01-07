@@ -351,7 +351,7 @@ if (application.getInitParameter("offlineMode") != null)  {
 													// if they have JS, write out a "what's this?" link that shows the message below
 													function showWhatsThis() {
                                                         var div = document.getElementById("ZLoginWhatsThis");
-														div.style.display = (it.style.display == "block" ? "none" : "block");
+														div.style.display = (div.style.display == "block" ? "none" : "block");
 													}
 													
 													function onLoad() {
