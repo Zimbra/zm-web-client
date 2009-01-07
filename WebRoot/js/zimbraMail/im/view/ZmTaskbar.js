@@ -32,6 +32,10 @@ function() {
 	return "ZmTaskbar";
 };
 
+/**
+ * Overrides the DwtControl method by increasing the z-index for this control, making
+ * the popups appear on top of the app view.
+ */
 ZmTaskbar.prototype.zShow =
 function(show) {
 	this.setZIndex(show ? Dwt.Z_VIEW + 10 : Dwt.Z_HIDDEN); 
@@ -55,6 +59,12 @@ function(ev) {
 
 /**
  * ZmTaskbarItem represents an item on the taskbar with a button and a place for popup content.
+ *
+ * @param params				[hash]			hash of params:
+ *        op					[String]		Id of operation that sets the button text and image
+ *        selectionListener		[AjxListener]	Listener that handles button presses
+ *        contentCallback		[AjxCallback]	A callback that creates the popup content
+ *        rightAlign			[Boolean]		True to align the popup with the right of the button
  */
 ZmTaskbarItem = function(params) {
 	DwtComposite.call(this, params);
@@ -67,6 +77,7 @@ ZmTaskbarItem = function(params) {
 		parentElement: this._buttonEl
 	};
 	this.button = new DwtToolBarButton(buttonArgs);
+	this.button.addSelectionListener(params.selectionListener);
 	if (params.op) {
 		this.button.setText(ZmMsg[ZmOperation.getProp(params.op, "textKey")]);
 		this.button.setImage(ZmOperation.getProp(params.op, "image"));
@@ -97,12 +108,6 @@ function(expand) {
 		}
 		this.positionContent();
 	}
-};
-
-ZmTaskbarItem.prototype.collapse =
-function() {
-	this.expanded = false;
-	Dwt.setVisible(this._contentEl, false);
 };
 
 ZmTaskbarItem.prototype.positionContent =

@@ -24,6 +24,7 @@ ZmTaskbarController = function(components) {
 	if (!parentEl) {
 		return;
 	}
+
 	var toolbarArgs = {
 		parent: appCtxt.getShell(),
 		id: ZmId.TASKBAR,
@@ -65,13 +66,11 @@ ZmTaskbarController = function(components) {
 	ZmImApp.INSTANCE.getRoster().getChatList().addChangeListener(new AjxListener(this, this._chatListListener));
 
 	var args = {
-		parent: this._toolbar,
 		index: this._chatButtonIndex++,
 		contentCalback: new AjxCallback(this, this._createBuddyListCallback),
 		op: ZmId.OP_IM_BUDDY_LIST
 	};
-	var item = new ZmTaskbarItem(args);
-	item.button.addSelectionListener(new AjxListener(this, this._selectionListener, [item, null]));
+	this._createItem(args);
 };
 
 ZmTaskbarController.prototype = new ZmController;
@@ -87,17 +86,16 @@ function(chat) {
 	var separator = this._toolbar.addSeparator(null, this._chatButtonIndex++);
 
 	var args = {
-		parent: this._toolbar,
 		index: this._chatButtonIndex++,
-		contentCalback: new AjxCallback(this, this._createChatItemCallback, [chat])
+		contentCalback: new AjxCallback(this, this._createChatItemCallback, [chat]),
+		selectionListener: new AjxListener(this, this._chatSelectionListener, [chat])
 	};
-	var item = new ZmTaskbarItem(args);
+	var item = this._createItem(args);
 	this._chatData = this._chatData || {};
 	this._chatData[chat.id] = { item: item, separator: separator };
 	var hoverImage = "Close";
 	item.button.setHoverImage(hoverImage);
 	this._closeClass = this._closeClass || AjxImg.getClassForImage(hoverImage);
-	item.button.addSelectionListener(new AjxListener(this, this._selectionListener, [item, chat]));
 	this._toolbar.expandItem(item, true);
 
 	return item;
@@ -122,18 +120,16 @@ function(addr, buddy) {
 	}
 	var separator = this._toolbar.addSeparator(null, this._chatButtonIndex + 1);
 	var args = {
-		parent: this._toolbar,
 		index: this._chatButtonIndex + 1,
 		op: ZmId.OP_IM_INVITE,
 		rightAlign: true,
 		contentCalback: new AjxCallback(this, this._createSubscribeRequestItemCallback, [addr, buddy])
 	};
-	var item = new ZmTaskbarItem(args);
+	var item = this._createItem(args);
 	this._subscribeData[addr] = { item: item, separator: separator };
 	this._subscribeRequestTooltip = this._subscribeRequestTooltip || new AjxMessageFormat(ZmMsg.imInvitationFrom);
 	var tooltip = this._subscribeRequestTooltip.format(buddy ? buddy.getDisplayName() : addr);
 	item.button.setToolTipContent(tooltip);
-	item.button.addSelectionListener(new AjxListener(this, this._selectionListener, [item, null]));
 	if (this._toolbar.expandedItem) {
 		item.showAlert(true);
 	} else {
@@ -148,14 +144,20 @@ function(ev) {
 	}
 };
 
-// TODO: Make just one listener object for this method.
-ZmTaskbarController.prototype._selectionListener =
-function(item, chat, ev) {
+ZmTaskbarController.prototype._chatSelectionListener =
+function(chat, ev) {
 	if (chat && ev.target && (ev.target.className == this._closeClass)) {
 		ZmChatMultiWindowView.getInstance().endChat(chat);
 	} else {
-		this._toolbar.expandItem(item, !item.expanded);
+		var taskbarItem = ev.dwtObj.parent;
+		this._toolbar.expandItem(taskbarItem, !taskbarItem.expanded);
 	}
+};
+
+ZmTaskbarController.prototype._selectionListener =
+function(ev) {
+	var taskbarItem = ev.dwtObj.parent;
+	this._toolbar.expandItem(taskbarItem, !taskbarItem.expanded);
 };
 
 ZmTaskbarController.prototype._createBuddyListCallback =
@@ -262,6 +264,13 @@ function(accept, add, addr) {
 	AjxDispatcher.run("GetRoster").sendSubscribeAuthorization(accept, add, addr);
 };
 
+ZmTaskbarController.prototype._createItem =
+function(params) {
+	params.parent = this._toolbar;
+	params.selectionListener = params.selectionListener || new AjxListener(this, this._selectionListener);
+	return new ZmTaskbarItem(params);
+};
+
 ZmTaskbarController.prototype._createTaskbarButton =
 function(data) {
 	if (data.op == ZmOperation.SEP) {
@@ -329,7 +338,7 @@ function(ev) {
 			var button = this._toolbar.createButton(Dwt.getNextId(), buttonArgs);  // TODO appropriately sized icons.
 			this._gatewayData[gateway.type] = {button: button};
 		}
-		this._updateGatewayButton(gateway, button);
+		this._updateGatewayButton(gateway, this._gatewayData[gateway.type].button);
 	}
 };
 
