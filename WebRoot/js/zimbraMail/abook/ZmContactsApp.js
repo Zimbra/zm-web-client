@@ -316,26 +316,13 @@ function(creates, force) {
 		for (var i = 0; i < list.length; i++) {
 			var create = list[i];
 			if (appCtxt.cacheGet(create.id)) { continue; }
-	
+
 			if (name == "folder") {
 				this._handleCreateFolder(create, ZmOrganizer.ADDRBOOK);
 			} else if (name == "link") {
 				this._handleCreateLink(create, ZmOrganizer.ADDRBOOK);
 			} else if (name == "cn") {
-				DBG.println(AjxDebug.DBG1, "ZmContactsApp: handling CREATE for node: " + name);
-				// find out if we're dealing with shared contact
-				var folder = appCtxt.getById(create.l);
-				if (folder && folder.isRemote()) {
-					var clc = AjxDispatcher.run("GetContactListController");
-
-					var newPid = ZmOrganizer.parseId(folder.id);
-					var curPid = ZmOrganizer.parseId(clc._folderId);
-					if (newPid.id == curPid.id && newPid.account == curPid.account) {
-						clc.getList().notifyCreate(create);
-					}
-				} else {
-					AjxDispatcher.run("GetContacts").notifyCreate(create);
-				}
+				AjxDispatcher.run("GetContactListController").getList().notifyCreate(create);
 				create._handled = true;
 			}
 		}
