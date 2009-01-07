@@ -74,6 +74,11 @@ ZmMailMsgView.prototype = new DwtComposite;
 ZmMailMsgView.prototype.constructor = ZmMailMsgView;
 
 
+// displays any additional headers in messageView
+//pass ZmMailMsgView.displayAdditionalHdrsInMsgView[<actualHeaderName>] = <DisplayName>
+//pass ZmMailMsgView.displayAdditionalHdrsInMsgView["X-Mailer"] = "Sent Using:"
+ZmMailMsgView.displayAdditionalHdrsInMsgView = {};
+
 // Consts
 
 ZmMailMsgView.SCROLL_WITH_IFRAME	= false;
@@ -1015,7 +1020,14 @@ function(msg, container, callback) {
 	var sentByAddr = sentBy.address; // non-objectified version
 	var sentByIcon = cl	? (cl.getContactByEmail(sentByAddr) ? "Contact" : "NewContact")	: null;
 	var obo = sender ? addr : null;
-
+	var additionalHdrs = [];
+	if(msg.attrs){
+		for(var hdrName in ZmMailMsgView.displayAdditionalHdrsInMsgView) {
+			if(msg.attrs[hdrName]) {
+				additionalHdrs.push({hdrName:ZmMailMsgView.displayAdditionalHdrsInMsgView[hdrName], hdrVal: msg.attrs[hdrName]});
+			}
+		}
+	}
 	if (this._objectManager) {
 		this._lazyCreateObjectManager();
 
@@ -1104,7 +1116,8 @@ function(msg, container, callback) {
 		participants      : participants,
 		hasAttachments    : hasAttachments,
 		attachmentsCount  : attachmentsCount,
-		isSyncFailureMsg  : isSyncFailureMsg
+		isSyncFailureMsg  : isSyncFailureMsg,
+		additionalHdrs	  : additionalHdrs
 	};
 
 	var html = AjxTemplate.expand("mail.Message#MessageHeader", subs);
