@@ -79,7 +79,7 @@ function() {
 ZmAutocomplete.prototype.autocompleteMatch =
 function(str, callback, aclv, options) {
 
-	str = str.toLowerCase();
+	str = str.toLowerCase().replace(/"/g, '');
 	this._curAcStr = str;
 	DBG.println("ac", "begin autocomplete for " + str);
 

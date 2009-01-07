@@ -489,8 +489,16 @@ function(text, start) {
 	while (text.charAt(start) == ' ') {	// ignore leading space
 		start++;
 	}
+	var insideQuotes = false;
 	for (var i = start; i < text.length; i++) {
 		var c = text.charAt(i);
+		if (c == '"') {
+			// skip text and delimiters that are quoted
+			c = text.charAt(++i);
+			while (i < text.length && c != '"') {
+				c = text.charAt(++i);
+			}
+		}
 		if (ZmAutocompleteListView.IS_DELIM[c]) {
 			var chunk = text.substring(start, i);
 			if (this._dataAPI.isComplete && this._dataAPI.isComplete(chunk)) {
