@@ -635,7 +635,7 @@ function() {
 		// now check all folders by name
 		if (!this.folderId) {
 			var folders = appCtxt.getFolderTree();
-			var folder = folders ? folders.getByPath(path) : null;
+			var folder = folders ? folders.getByPath(path, true) : null;
 			if (folder) {
 				this.folderId = folder.id;
 			}
