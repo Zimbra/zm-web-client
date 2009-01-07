@@ -68,9 +68,9 @@
     <tr>
         <td width="5">&nbsp;</td>
         <td class="contactOutput">
-            <app:contactLine line="${contact.email}"/>
-            <app:contactLine line="${contact.email2}"/>
-            <app:contactLine line="${contact.email3}"/>
+            <app:contactEmail email="${contact.email}"/>
+            <app:contactEmail email="${contact.email2}"/>
+            <app:contactEmail email="${contact.email3}"/>
         </td>
     </tr>
     <tr><td><br></td></tr>
