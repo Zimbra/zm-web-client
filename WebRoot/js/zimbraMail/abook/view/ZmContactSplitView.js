@@ -600,9 +600,9 @@ function(contact, params) {
 	if (params.isDragProxy) {
 		div.style.width = "175px";
 		div.style.padding = "4px";
+	} else {
+		div.className = this._normalClass + " SimpleContact";
 	}
-	div.className = this._normalClass + " SimpleContact";
-	div.id = this._getItemId(contact);
 
 	var htmlArr = [];
 	var idx = 0;
