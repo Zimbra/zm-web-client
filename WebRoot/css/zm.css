@@ -1879,6 +1879,12 @@ HTML>BODY .appt-selected .appt_allday_body
 	max-width:300px;
 }
 
+.ZmTaskbarContentParent .ActionMenu {
+	border:none;
+	padding: 0;
+	padding-bottom: 3px;
+	@borderRadius@: 0;
+}
 
 /* temporary lite widgets */
 

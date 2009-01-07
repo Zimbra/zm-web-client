@@ -34,26 +34,14 @@ ZmTaskbarController = function(components) {
 	this._toolbar = components[ZmAppViewMgr.C_TASKBAR] = new ZmTaskbar(toolbarArgs);
 	this._toolbar.addListener(DwtEvent.ONMOUSEDOWN, new AjxListener(this, this._toolbarMouseDownListener));
 
-	var buttons = [
-		{
-			op: ZmId.OP_IM_PRESENCE_MENU,
-			button: {
-				template: "share.App#presenceButton",
-				menu: new AjxCallback(this, this._presenceMenuCallback),
-				menuAbove: true
-			}
-		},
-		{
-			op: ZmOperation.SEP
-		},
-		{
-			op: ZmOperation.FILLER
-		}
-	];
-	for (var i = 0, count = buttons.length; i < count; i++) {
-		this._createTaskbarButton(buttons[i]);
-	}
-	this._chatButtonIndex = 2;
+	var args = {
+		contentCalback: new AjxCallback(this, this._createPresenceMenuCallback),
+		op: ZmId.OP_IM_PRESENCE_MENU
+	};
+	this._presenceItem = this._createItem(args);
+	this._toolbar.addSeparator();
+	this._chatButtonIndex = this._toolbar.getNumChildren();
+	this._toolbar.addFiller(null);
 
 	var height = appCtxt.getSkinHint("presence", "height") || 24;
 	Dwt.setSize(parentEl, Dwt.DEFAULT, height);
@@ -158,6 +146,26 @@ ZmTaskbarController.prototype._selectionListener =
 function(ev) {
 	var taskbarItem = ev.dwtObj.parent;
 	this._toolbar.expandItem(taskbarItem, !taskbarItem.expanded);
+};
+
+ZmTaskbarController.prototype._createPresenceMenuCallback =
+function(parent, parentElement) {
+	AjxDispatcher.require(["IMCore", "IM"]);
+	var args = {
+		parent: parent.button,
+		parentElement: parentElement,
+		posStyle: DwtControl.STATIC_STYLE,
+		className: null
+	};
+	var menu = ZmImApp.INSTANCE.getServiceController().createPresenceMenu(args);
+	menu.addSelectionListener(new AjxListener(this, this._menuSelectionListener));
+};
+
+ZmTaskbarController.prototype._menuSelectionListener =
+function() {
+	if (this._toolbar.expandedItem) {
+		this._toolbar.expandItem(this._toolbar.expandedItem, false);
+	}
 };
 
 ZmTaskbarController.prototype._createBuddyListCallback =
@@ -271,26 +279,6 @@ function(params) {
 	return new ZmTaskbarItem(params);
 };
 
-ZmTaskbarController.prototype._createTaskbarButton =
-function(data) {
-	if (data.op == ZmOperation.SEP) {
-		this._toolbar.addSeparator(null, data.index);
-	} else  if (data.op == ZmOperation.FILLER) {
-		this._toolbar.addFiller(null, data.index);
-	} else {
-		data.button.text = ZmMsg[ZmOperation.getProp(data.op, "textKey")];
-		data.button.image = ZmOperation.getProp(data.op, "image");
-		data.button.tooltip = ZmMsg[ZmOperation.getProp(data.op, "tooltipKey")];
-		this._toolbar.createButton(data.op, data.button);
-	}
-};
-
-ZmTaskbarController.prototype._presenceMenuCallback =
-function(button) {
-	AjxDispatcher.require(["IMCore", "IM"]);
-	return ZmImApp.INSTANCE.getServiceController().createPresenceMenu(button);
-};
-
 ZmTaskbarController.prototype._rosterChangeListener =
 function(ev) {
 	if (ev.event == ZmEvent.E_MODIFY) {
@@ -304,9 +292,8 @@ function(ev) {
 
 ZmTaskbarController.prototype._updatePresenceButton =
 function(presence) {
-	var button = this._toolbar.getButton(ZmId.OP_IM_PRESENCE_MENU);
-	var icon = presence ? presence.getIcon() : "Offline";
-	button.setImage(icon);
+	var button = this._presenceItem.button;
+	button.setImage(presence ? presence.getIcon() : "Offline");
 	var showText = presence ? AjxStringUtil.htmlEncode(presence.getShowText()) : ZmMsg.imStatusOffline;
 	var tooltip = ZmImApp.INSTANCE.getServiceController().getMyPresenceTooltip(showText);
 	button.setToolTipContent(tooltip);
@@ -344,7 +331,7 @@ function(ev) {
 
 ZmTaskbarController.prototype._updateGatewayButton =
 function(gateway, button) {
-	var statusImage = this._toolbar.getButton(ZmId.OP_IM_PRESENCE_MENU).getImage();
+	var statusImage = this._presenceItem.button.getImage();
 	var statusFormat;
 	if (gateway.isOnline()) {
 		statusFormat = this._gatewayOnlineFormat = this._gatewayOnlineFormat || new AjxMessageFormat(ZmMsg.imStatusGatewayOnline);

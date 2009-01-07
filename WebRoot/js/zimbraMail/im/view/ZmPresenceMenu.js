@@ -15,8 +15,8 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmPresenceMenu = function(parent, statuses) {
-	ZmPopupMenu.call(this, parent);
+ZmPresenceMenu = function(params, statuses) {
+	ZmPopupMenu.call(this, params);
 	this._statuses = statuses;
 	var presenceListener = new AjxListener(this, this._presenceItemListener);
 	for (var i = 0; i < statuses.length; i++) {
@@ -71,10 +71,22 @@ function(op, listener, style, index) {
 	}
 };
 
+
+ZmPresenceMenu.prototype.addSelectionListener =
+function(listener) {
+	this.addListener(DwtEvent.SELECTION, listener);
+};
+
 // Protected methods
+
+ZmPresenceMenu.prototype._handleSelection =
+function() {
+	this.notifyListeners(DwtEvent.SELECTION);
+};
 
 ZmPresenceMenu.prototype._presenceItemListener =
 function(ev) {
+	this._handleSelection();
 	if (ev.detail != DwtMenuItem.CHECKED) {
 		return;
 	}
@@ -94,6 +106,7 @@ function(show) {
 
 ZmPresenceMenu.prototype._presenceMRUListener =
 function(ev) {
+	this._handleSelection();
 	var message = AjxStringUtil.htmlDecode(ev.dwtObj.getText());
 	this._setCustom(message);
 };
@@ -168,6 +181,7 @@ function() {
 
 ZmPresenceMenu.prototype._presenceCustomItemListener =
 function() {
+	this._handleSelection();
 	if (!this._customStatusDialog) {
 		AjxDispatcher.require([ "IM" ]);
 		this._customStatusDialog = new ZmCustomStatusDlg({ parent: appCtxt.getShell(), title: ZmMsg.newStatusMessage });

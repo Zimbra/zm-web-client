@@ -32,8 +32,10 @@
 ZmPopupMenu = function(parent, className, id, controller) {
 
 	if (arguments.length == 0) return;
-	className = className ? className : "ActionMenu";
-	DwtMenu.call(this, {parent:parent, style:DwtMenu.POPUP_STYLE, className:className, id:id});
+	params = Dwt.getParams(arguments, ZmPopupMenu.PARAMS);
+	params.className = params.className ? params.className : "ActionMenu";
+	params.style = params.style || DwtMenu.POPUP_STYLE;
+	DwtMenu.call(this, params);
 
 	controller = controller || appCtxt.getCurrentController();
 	if (controller) {
@@ -43,6 +45,8 @@ ZmPopupMenu = function(parent, className, id, controller) {
 
 	this._menuItems = {};
 };
+
+ZmPopupMenu.PARAMS = ["parent", "className", "id", "controller"];
 
 ZmPopupMenu.prototype = new DwtMenu;
 ZmPopupMenu.prototype.constructor = ZmPopupMenu;
