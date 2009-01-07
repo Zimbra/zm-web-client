@@ -109,6 +109,8 @@ function(buttonId, addrs, str) {
 	this._prevButton.setEnabled(false);
 	this._nextButton.setEnabled(false);
 
+	//bug: 33041 - preload canonical list to avoid race condition
+	AjxDispatcher.run("GetContacts");
 	this.search();
 
 	DwtDialog.prototype.popup.call(this);

@@ -59,7 +59,7 @@ ZmContactsApp.AC_VALUE_NAME		= "name";
 ZmContactsApp.SEARCHFOR_CONTACTS 	= 1;
 ZmContactsApp.SEARCHFOR_GAL 		= 2;
 ZmContactsApp.SEARCHFOR_PAS			= 3; // PAS = personal and shared
-ZmContactsApp.SEARCHFOR_MAX 		= 50;
+ZmContactsApp.SEARCHFOR_MAX 		= 100;
 
 ZmContactsApp.prototype = new ZmApp;
 ZmContactsApp.prototype.constructor = ZmContactsApp;
