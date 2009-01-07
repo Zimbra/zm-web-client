@@ -120,9 +120,13 @@ function(contact, params) {
 		tagIcon = AjxImg.getImageHtml(contact.getTagImageInfo(), null, ["id='", fieldId, "'"].join(""));
 	}
 	var groupMembers = contact.isGroup() ? contact.getGroupMembers().good.getArray() : null;
+	var id = this._getItemId(contact);;
+	if (params && params.isDragProxy) {
+		id = id + "_dnd";
+	}
 
 	var subs = {
-		id: this._getItemId(contact),
+		id: id,
 		name: ZmContactCardsView.CARD_NAME,
 		className: isDnd ? this._dndClass : this._normalClass,
 		width: this._cardWidth,
