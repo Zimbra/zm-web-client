@@ -1727,8 +1727,9 @@ ZmComposeView.prototype._setEventHandler =
 function(id, event, addrType) {
 	var field = document.getElementById(id);
 	field._composeView = this._internalId;
-	if (addrType)
+	if (addrType) {
 		field._addrType = addrType;
+	}
 	var lcEvent = event.toLowerCase();
 	field[lcEvent] = ZmComposeView["_" + event];
 };
@@ -1892,6 +1893,8 @@ function(templateId, data) {
 	this._headerEl = document.getElementById(data.headerId);
 	this._subjectField = document.getElementById(data.subjectInputId);
 	this._attcDiv = document.getElementById(data.attDivId);
+
+	this._setEventHandler(data.subjectInputId, "onKeyUp");
 
 	// initialize identity select
 	var identityOptions = this._getIdentityOptions();
@@ -2414,63 +2417,28 @@ function() {
 
 // Static methods
 
-ZmComposeView._onClick =
-function(ev) {
-	ev || (ev = window.event);
-
-	var element = DwtUiEvent.getTargetWithProp(ev, "id");
-	var id = element ? element.id : null;
-
-	// if clicked on remove attachment link
-	if (id && id.indexOf("_att_") == 0) {
-		var cv = AjxCore.objectWithId(element._composeView);
-		var attId = id.slice(0, -2);
-		var row = document.getElementById(attId);
-
-		cv._attachmentTable.deleteRow(row.rowIndex);
-		if (--cv._attachCount < ZmComposeView.SHOW_MAX_ATTACHMENTS) {
-			cv._attcDiv.style.overflow = "";
-			cv._attcDiv.style.height = "";
-			if (cv._attachCount == 0) {
-				cv._attachmentTable = null;
-				cv._attcDiv.innerHTML = "";
-			}
-		}
-		cv._resetBodySize();
-		return false; // disables following of link
-	}
-
-	return true;
-};
-
-ZmComposeView._onKeyDown =
-function(ev) {
-	ev || (ev = window.event);
-
-	var element = DwtUiEvent.getTargetWithProp(ev, "id");
-	if (!element) return true;
-
-	var id = element.id;
-	var key = DwtKeyEvent.getCharCode(ev);
-	// ignore return in attachment input field (bug 961)
-	if (id.indexOf("_att_") == 0)
-		return (key != DwtKeyEvent.KEY_ENTER && key != DwtKeyEvent.KEY_END_OF_TEXT);
-};
-
 // NOTE: this handler should only get triggered if/when contacts are DISABLED!
 ZmComposeView._onKeyUp =
 function(ev) {
 	ev || (ev = window.event);
 
 	var element = DwtUiEvent.getTargetWithProp(ev, "id");
-	if (!element) return true;
+	if (!element) { return true; }
 
 	var cv = AjxCore.objectWithId(element._composeView);
-	cv._adjustAddrHeight(element);
+	if (element == cv._subjectField) {
+		var key = DwtKeyEvent.getCharCode(ev);
+		if (key == 3 || key == 13) {
+			cv._focusHtmlEditor();
+		}
+	} else {
+		cv._adjustAddrHeight(element);
+	}
 };
 
-//for ZimbraDnD
-ZmComposeView.prototype.uploadFiles = function(){
+// for com.zimbra.dnd zimlet
+ZmComposeView.prototype.uploadFiles =
+function() {
     var attachDialog = appCtxt.getAttachDialog();
     this._controller = AjxDispatcher.run("GetComposeController");
     var callback = new AjxCallback(this, this._attsDoneCallback, [true]);
