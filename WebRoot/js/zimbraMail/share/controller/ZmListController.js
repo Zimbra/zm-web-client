@@ -665,34 +665,6 @@ function(ev) {
 								  toOverride: name});
 };
 
-/**  whack this  */
-
-// IM the participant (if enabled via config)
-ZmListController.prototype._participantImListener =
-function(ev) {
-	// get the first selected message
-	var msg = this._listView[this._currentView].getSelection()[0];
-
-	// FIXME: this code should be some place else; definitely not here.
-	var contacts;
-	if (msg instanceof ZmMailItem) {
-		var emails = msg.getEmails();
-		contacts = AjxDispatcher.run("GetContacts");
-		contacts = emails.map(contacts.getContactByEmail, contacts);
-	} else if (msg instanceof ZmContact) {
-		contacts = AjxVector.fromArray([ msg ]);
-	}
-	var buddies = contacts.map("getBuddy");
-	var seen = [];
-	buddies.foreach(function(b) {
-		if (b && !seen[b.getAddress()]) {
-			seen[b.getAddress()] = true;
-			AjxDispatcher.run("GetChatListController").chatWithRosterItem(b);
-		}
-	});
-};
-
-
 // If there's a contact for the participant, edit it, otherwise add it.
 ZmListController.prototype._participantContactListener =
 function(ev) {
