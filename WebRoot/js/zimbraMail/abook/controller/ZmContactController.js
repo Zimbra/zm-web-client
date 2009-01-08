@@ -288,7 +288,9 @@ function(ev, bIsPopCallback) {
                     }
                 }
 			} else {
-				this._doCreate(AjxDispatcher.run("GetContacts"), mods);
+				var clc = AjxDispatcher.run("GetContactListController");
+				var list = (clc && clc.getList()) || new ZmContactList(null);
+				this._doCreate(list, mods);
 			}
 		}
 	} else {
