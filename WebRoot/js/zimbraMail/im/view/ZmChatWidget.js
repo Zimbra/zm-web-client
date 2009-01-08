@@ -332,7 +332,7 @@ ZmChatWidget.IDS = [
 ];
 
 ZmChatWidget.prototype._initEditor = function(parent){
-	var liteEditor = this._liteEditor = new ZmLiteHtmlEditor(parent);
+	var liteEditor = this._liteEditor = new ZmLiteHtmlEditor( { parent: parent, template: "im.Chat#ZmChatWidgetEditor" });
 	liteEditor.reparentHtmlElement(this._getElement("inputLayout"));
 	var keyPressListener = new AjxListener(this,this._inputKeyPress);
 	liteEditor.addKeyPressListener(keyPressListener);
@@ -368,18 +368,14 @@ ZmChatWidget.prototype._init = function() {
 	btn.setVisible(false);
 
 
-	var sendParent = this._getElement("sendButton");
+	var sendParent = Dwt.byId(this._liteEditor.getHTMLElId() + "_send");
 	if (sendParent) {
-		var sendButton = this._sendButton = new DwtButton({parent:this, parentElement: sendParent, posStyle:Dwt.ABSOLUTE_STYLE});
+		var sendButton = this._sendButton = new DwtButton({parent:this, parentElement: sendParent});
 		sendButton.setText(ZmMsg.send);
 		sendButton.addSelectionListener(new AjxListener(this, this.sendInput));
-		var sendStyle = sendButton.getHtmlElement().style;
-		sendStyle.bottom = 1; // Antoher hacky padding value
-		sendStyle.right = 0;
-		sendStyle.width = sendParent.style.width;
 	}
 	
-	this._toolbar = new DwtToolBar({parent:this, posStyle:Dwt.ABSOLUTE_STYLE});
+	this._toolbar = new DwtToolBar({parent:this, parentElement: this._getElement("toolbarLayout")});
 
 	this._close = new DwtLtIconButton(this._toolbar, null, "Close");
 	this._close.setToolTipContent(ZmMsg.imCloseWindow);
@@ -392,7 +388,7 @@ ZmChatWidget.prototype._init = function() {
 
 	this._toolbar.addFiller();
 
-	this._content = new DwtComposite(this, "ZmChatWindowChat", Dwt.ABSOLUTE_STYLE);
+	this._content = new DwtComposite({ parent: this, parentElement: this._getElement("convLayout"), className: "ZmChatWindowChat" });
 	this._content._setAllowSelection();
 	this._content.setScrollStyle(Dwt.SCROLL);
 	var mouseEvents = [ // All the usual ones except ONSELECTSTART.
@@ -525,42 +521,24 @@ ZmChatWidget.prototype._getElement = function(id) {
 	return document.getElementById(this._ids[id]);
 };
 
-ZmChatWidget.prototype._doResize = function() {
-	// var self_pos = this.getLocation();
-	var self = this;
-
-	function placeElement(widget, name, fuzz) {
-		var cont = self._getElement(name);
-		var visible = Dwt.getVisible(cont);
-		widget.setVisible(visible);
-		if (visible) {
-
-					// var p1 = Dwt.getLocation(cont);
-			// var x = p1.x - self_pos.x;
-			// var y = p1.y - self_pos.y;
-
-			var x = cont.offsetLeft;
-			var y = AjxEnv.isSafari
-					? cont.parentNode.offsetTop
-					: cont.offsetTop; // Bug 22102: in Safari, offsetTop is totally wrong for these <td>-s
-
-			var left = x + "px";
-			var top = y + "px";
-			var w = cont.offsetWidth;
-			var h = cont.offsetHeight;
-			if (!AjxEnv.isIE && fuzz) {
-				w -= fuzz; // FIXME!! manually substracting padding/border!  Track CSS changes.
-				h -= fuzz;
-			}
-			var width = w + "px";
-			var height = h + "px";
-
-			widget.setBounds(left, top, width, height);
+ZmChatWidget.prototype._resizeElement = 
+function(widget, name, fuzz) {
+	var cont = this._getElement(name);
+	var visible = Dwt.getVisible(cont);
+	widget.setVisible(visible);
+	if (visible) {
+		var h = cont.offsetHeight;
+		if (!AjxEnv.isIE && fuzz) {
+			h -= fuzz;
 		}
-	};
+		widget.getHtmlElement().style.height = h + "px";
+	}
+};
 
-	placeElement(this._toolbar, "toolbarLayout");
-	placeElement(this._content, "convLayout", 4);
+ZmChatWidget.prototype._doResize =
+function() {
+	this._resizeElement(this._toolbar, "toolbarLayout");
+	this._resizeElement(this._content, "convLayout", 4);
 
 	if (this._sendButton) {
 		var editControl = this._liteEditor.getEditor();
