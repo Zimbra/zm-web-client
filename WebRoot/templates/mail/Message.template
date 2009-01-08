@@ -74,6 +74,16 @@
                                 </td>
                             </tr>
                         <$ } $>
+						<$ for (var i = 0; i < data.additionalHdrs.length; i++) {  $>
+							<tr>
+								<td width=110 valign='top' class='LabelColName'>
+									<$= data.additionalHdrs[i].hdrName $>
+								</td>
+								<td class='LabelColValue' colspan='10'>	
+									<$=  data.additionalHdrs[i].hdrVal $>
+								</td>
+							</tr>
+						<$ } $>
                     </table>
 				</td>
 				<td id='${id}_contactArea' class='ContactArea'>
