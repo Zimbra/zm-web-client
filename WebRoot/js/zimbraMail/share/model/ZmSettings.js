@@ -461,8 +461,13 @@ function(list, callback, batchCommand, acctName) {
 		if (setting.dataType == ZmSetting.D_LIST) {
 			// LDAP supports multi-valued attrs, so don't serialize list
 			var value = setting.getValue();
-			for (var j = 0; j < value.length; j++) {
-				var node = soapDoc.set("pref", value[j]);
+			if (value && value.length) {
+				for (var j = 0; j < value.length; j++) {
+					var node = soapDoc.set("pref", value[j]);
+					node.setAttribute("name", setting.name);
+				}
+			} else {
+				var node = soapDoc.set("pref", "");
 				node.setAttribute("name", setting.name);
 			}
 		} else {

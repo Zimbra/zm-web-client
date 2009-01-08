@@ -549,6 +549,7 @@ function(id, type) {
 ZmOrganizer.parseId =
 function(id, result) {
 	result = result || {};
+	if (!id) { return result; }
 	var idx = id.indexOf(":");
 	if (idx == -1) {
 		result.account = appCtxt.getMainAccount();

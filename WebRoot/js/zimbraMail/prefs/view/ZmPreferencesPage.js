@@ -210,9 +210,6 @@ function() {
 			pref.origValue = this._getPrefValue(id);
 			var value = this._getPrefValue(id, false);
 
-			// we only show this one if it's false
-			if ((id == ZmSetting.GAL_AUTOCOMPLETE_SESSION) && value) { continue; }
-
 			this._prefPresent[id] = true;
 			DBG.println(AjxDebug.DBG3, "adding pref " + pref.name + " / " + value);
 
@@ -317,7 +314,7 @@ function(id, object) {
 
 ZmPreferencesPage.prototype.getFormObject =
 function(id) {
-	return this._dwtObjects[id]; 
+	return this._dwtObjects[id];
 };
 
 /**
@@ -674,7 +671,7 @@ function(id, setup, value) {
 		var optValue = isChoices ? options[i].value : options[i];
 		var optLabel = isChoices ? options[i].label : (isDisplayString ? setup.displayOptions : setup.displayOptions[i]);
 		optLabel = ZmPreferencesPage.__formatLabel(optLabel, optValue);
-		var isSelected = value == optValue; 
+		var isSelected = value == optValue;
 
 		var radioBtn = new DwtRadioButton({parent:container, name:id, checked:isSelected});
 		radioBtn.setText(optLabel);
@@ -704,7 +701,7 @@ function(id, setup, value) {
 	// store radio button group
 	this.setFormObject(id, new DwtRadioButtonGroup(radioIds, selectedId));
 
-	var func = ZmPreferencesPage.__radioGroup_getTabGroupMember; 
+	var func = ZmPreferencesPage.__radioGroup_getTabGroupMember;
 	container.getTabGroupMember = AjxCallback.simpleClosure(func, container, radioIds);
 	return container;
 };

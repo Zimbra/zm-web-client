@@ -43,6 +43,7 @@
  *        soapInfo					[object]*		object with method, namespace, response, and additional attribute fields for creating soap doc
  *        response					[object]*		canned JSON response (no request will be made)
  *        galType					[constant]*		type of GAL autocomplete (account or resource)
+ *        folders					[array]*		list of folders for autocomplete
  */
 ZmSearch = function(params) {
 
