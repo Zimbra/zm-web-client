@@ -200,8 +200,8 @@ function(level, text, icon, loc, customTransitions) {
     }
 
     // get transitions
-    var location = appCtxt.get(ZmSetting.SKIN_HINTS, "toast.location") || loc;
-    var transitions = customTransitions || appCtxt.get(ZmSetting.SKIN_HINTS, "toast.transitions") || ZmToast.DEFAULT_TRANSITIONS;
+    var location = appCtxt.getSkinHint("toast", "location") || loc;
+    var transitions = customTransitions || appCtxt.getSkinHint("toast", "transitions") || ZmToast.DEFAULT_TRANSITIONS;
 
 	transitions = [].concat( {type:"position", location:location}, transitions, {type:"hide"} );
 

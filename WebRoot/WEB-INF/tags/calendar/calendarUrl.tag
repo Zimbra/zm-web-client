@@ -3,6 +3,7 @@
 <%@ attribute name="value" rtexprvalue="true" required="false" type="java.lang.String" %>
 <%@ attribute name="view" rtexprvalue="true" required="false" %>
 <%@ attribute name="sq" rtexprvalue="true" required="false" %>
+<%@ attribute name="zoom" rtexprvalue="true" required="false" %>
 <%@ attribute name="rawdate" rtexprvalue="true" required="false" type="java.util.Calendar"%>
 <%@ attribute name="timezone" rtexprvalue="true" required="false" type="java.util.TimeZone"%>
 <%@ attribute name="date" rtexprvalue="true" required="false" %>
@@ -21,6 +22,9 @@
 <c:url value="${not empty value ? value : '/h/calendar'}" var="urlVar">
     <c:if test="${not empty view}">
         <c:param name='view' value='${view}'/>
+    </c:if>
+    <c:if test="${not empty zoom}">
+        <c:param name='zoom' value='${true}'/>
     </c:if>
     <c:if test="${not empty param.numdays and view eq 'day'}"><c:param name='numdays' value='${param.numdays}'/></c:if>
     <c:if test="${not empty param.tz}"><c:param name='tz' value='${param.tz}'/></c:if>

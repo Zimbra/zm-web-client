@@ -675,24 +675,6 @@ function(ev) {
 	return true;
 };
 
-ZmGroupView.getPrintHtml =
-function(contact, abridged) {
-	// make sure it's a real ZmContact
-	var real = contact.list._realizeContact(contact);
-	var members = real.getGroupMembers().good.getArray();
-	var size = (members.length <= 5 || !abridged)
-		? members.length
-		: Math.min(members.length, 5);
-
-	var subs = {
-		fileAs: real.getFileAs(),
-		members: members,
-		size: size,
-		hasMore: (abridged && size < members.length)
-	};
-	return (AjxTemplate.expand("abook.Contacts#PrintGroup", subs));
-};
-
 
 /**
 * Creates a group list view for search results
