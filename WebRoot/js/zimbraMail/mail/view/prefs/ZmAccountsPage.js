@@ -160,97 +160,98 @@ function() {
 			displayContainer:	ZmPref.TYPE_CUSTOM
 		}
 	};
-}; // function ZmAccountsPage._definePrefs
 
-/**
- * Defines the various account sections. Each section has a list of "prefs"
- * that may appear in that section. In the code below, each pref is marked
- * as "A" if it's a field on the account object and "I" if it's a field on
- * the identity object.
- */
-ZmAccountsPage.SECTIONS = {
-	PRIMARY: {
-		id: "PRIMARY",
-		prefs: [
-			"NAME",				// A
-			"HEADER",
-			"EMAIL",			// A
-			"VISIBLE",			// 
-			"FROM_NAME",		// I
-			"FROM_EMAIL",		// I
-			"REPLY_TO",			// I
-			"REPLY_TO_NAME",	// I
-			"REPLY_TO_EMAIL",	// I
-			"SIGNATURE"			// I
-		]
-	},
-	EXTERNAL: {
-		id: "EXTERNAL",
-		prefs: [
-			"ALERT",
-			"PROVIDER",
-			"NAME",						// A
-			"HEADER",
-			"EMAIL",					// I - maps to from name in identity
-			"ACCOUNT_TYPE",				// A
-			"USERNAME",					// A
-			"HOST",						// A
-			"PASSWORD",					// A
-			"CHANGE_PORT",
-			"PORT",						// A
-			"PORT_DEFAULT",
-			"SSL",						// A
-			"TEST",
-			"DOWNLOAD_TO",				// A
-			"DELETE_AFTER_DOWNLOAD",	// A
-			"FROM_NAME",				// I
-			"FROM_EMAIL",				// I
-			"REPLY_TO",					// I
-			"REPLY_TO_NAME",			// I
-			"REPLY_TO_EMAIL",			// I
-			"SIGNATURE"					// I
-		]
-	},
-	PERSONA: {
-		id: "PERSONA",
-		prefs: [
-			"NAME",						// I
-			"HEADER",
-			"FROM_NAME",				// I
-			"FROM_EMAIL",				// I
-			"REPLY_TO",					// I
-			"REPLY_TO_NAME",			// I
-			"REPLY_TO_EMAIL",			// I
-			"SIGNATURE",				// I
-			"WHEN_SENT_TO",				// I
-			"WHEN_SENT_TO_LIST",		// I
-			"WHEN_IN_FOLDER",			// I
-			"WHEN_IN_FOLDER_LIST",		// I
-			"WHEN_IN_FOLDER_BUTTON"
-		]
-	}
-};
-
-/*** DEBUG ***
-var providers = [
-	{ id: "yahoo-pop", name: "Yahoo! Mail", type: "POP", host: "yahoo.com" },
-	{ id: "gmail-pop", name: "GMail (POP)", type: "POP", host: "pop.gmail.com", connectionType: "ssl" },
-	{ id: "gmail-imap", name: "GMail (IMAP)", type: "IMAP", host: "imap.gmail.com", connectionType: "ssl" }
-];
-for (var i = 0; i < providers.length; i++) {
-	ZmDataSource.addProvider(providers[i]);
-}
-/***/
-
-// create a section for each provider with a custom template
-var providers = ZmDataSource.getProviders();
-for (var id in providers) {
-	if (!AjxTemplate.getTemplate("prefs.Pages#ExternalAccount-"+id)) { continue; }
-	ZmAccountsPage.SECTIONS[id] = {
-		id:    id,
-		prefs: ZmAccountsPage.SECTIONS["EXTERNAL"].prefs
+	/**
+	 * Defines the various account sections. Each section has a list of "prefs"
+	 * that may appear in that section. In the code below, each pref is marked
+	 * as "A" if it's a field on the account object and "I" if it's a field on
+	 * the identity object.
+	 */
+	ZmAccountsPage.SECTIONS = {
+		PRIMARY: {
+			id: "PRIMARY",
+			prefs: [
+				"NAME",				// A
+				"HEADER",
+				"EMAIL",			// A
+				"VISIBLE",			//
+				"FROM_NAME",		// I
+				"FROM_EMAIL",		// I
+				"REPLY_TO",			// I
+				"REPLY_TO_NAME",	// I
+				"REPLY_TO_EMAIL",	// I
+				"SIGNATURE"			// I
+			]
+		},
+		EXTERNAL: {
+			id: "EXTERNAL",
+			prefs: [
+				"ALERT",
+				"PROVIDER",
+				"NAME",						// A
+				"HEADER",
+				"EMAIL",					// I - maps to from name in identity
+				"ACCOUNT_TYPE",				// A
+				"USERNAME",					// A
+				"HOST",						// A
+				"PASSWORD",					// A
+				"CHANGE_PORT",
+				"PORT",						// A
+				"PORT_DEFAULT",
+				"SSL",						// A
+				"TEST",
+				"DOWNLOAD_TO",				// A
+				"DELETE_AFTER_DOWNLOAD",	// A
+				"FROM_NAME",				// I
+				"FROM_EMAIL",				// I
+				"REPLY_TO",					// I
+				"REPLY_TO_NAME",			// I
+				"REPLY_TO_EMAIL",			// I
+				"SIGNATURE"					// I
+			]
+		},
+		PERSONA: {
+			id: "PERSONA",
+			prefs: [
+				"NAME",						// I
+				"HEADER",
+				"FROM_NAME",				// I
+				"FROM_EMAIL",				// I
+				"REPLY_TO",					// I
+				"REPLY_TO_NAME",			// I
+				"REPLY_TO_EMAIL",			// I
+				"SIGNATURE",				// I
+				"WHEN_SENT_TO",				// I
+				"WHEN_SENT_TO_LIST",		// I
+				"WHEN_IN_FOLDER",			// I
+				"WHEN_IN_FOLDER_LIST",		// I
+				"WHEN_IN_FOLDER_BUTTON"
+			]
+		}
 	};
-}
+
+	/*** DEBUG ***
+	var providers = [
+		{ id: "yahoo-pop", name: "Yahoo! Mail", type: "POP", host: "yahoo.com" },
+		{ id: "gmail-pop", name: "GMail (POP)", type: "POP", host: "pop.gmail.com", connectionType: "ssl" },
+		{ id: "gmail-imap", name: "GMail (IMAP)", type: "IMAP", host: "imap.gmail.com", connectionType: "ssl" }
+	];
+	for (var i = 0; i < providers.length; i++) {
+		ZmDataSource.addProvider(providers[i]);
+	}
+	/***/
+
+	// create a section for each provider with a custom template
+	var providers = ZmDataSource.getProviders();
+	for (var id in providers) {
+		if (!AjxTemplate.getTemplate("prefs.Pages#ExternalAccount-"+id)) { continue; }
+		ZmAccountsPage.SECTIONS[id] = {
+			id:    id,
+			prefs: ZmAccountsPage.SECTIONS["EXTERNAL"].prefs
+		};
+	}
+
+}; // function ZmAccountsPage._definePrefs
 
 ZmAccountsPage.ACCOUNT_PROPS = {
 	"NAME":						{ setter: "setName",	getter: "getName" },
@@ -339,6 +340,9 @@ function(account, skipUpdate, ignoreProvider) {
 		}
 		this._tabGroup.addMember(this._currentSection.tabGroup);
 	}
+
+	// update list cells
+	this._updateList(account);
 
 	var control = this._currentSection && this._currentSection.controls[isExternal ? "EMAIL" : "NAME"];
     //When a hidden field is applied focus(), IE throw's an exception. Thus checking for isActive()
@@ -803,7 +807,11 @@ ZmAccountsPage.prototype._setControlValue =
 function(id, section, value) {
 	var control = section.controls[id];
 	var setup = ZmAccountsPage.PREFS[id];
-	if (!control || !setup) return;
+	if (!setup) return;
+	if (!control) {
+		section.value = value;
+		return;
+	}
 
 	if (setup.displayFunction) {
 		value = setup.displayFunction(value);
@@ -854,7 +862,10 @@ ZmAccountsPage.prototype._getControlValue =
 function(id, section) {
 	var control = section.controls[id];
 	var setup = ZmAccountsPage.PREFS[id];
-	if (!control || !setup) return null;
+	if (!setup) return null;
+	if (!control) {
+		return section.value;
+	}
 
 	var value = null;
 	if (id == "WHEN_SENT_TO_LIST") {
@@ -1006,6 +1017,26 @@ function(ovalue, nvalue) {
 
 // init ui
 
+ZmAccountsPage.prototype._initControl = function(id, setup, value, section) {
+	ZmPreferencesPage.prototype._initControl.apply(this, arguments);
+	if (id == "PROVIDER" && !setup.options) {
+		var providers = AjxUtil.values(ZmDataSource.getProviders());
+		providers.sort(ZmAccountsPage.__BY_PROVIDER_NAME);
+		providers.unshift( { id: "", name: "Custom" } ); // TODO: i18n
+
+		var options = new Array(providers.length);
+		var displayOptions = new Array(providers.length);
+		for (var i = 0; i < providers.length; i++) {
+			var provider = providers[i];
+			options[i] = provider.id;
+			displayOptions[i] = provider.name;
+		}
+
+		setup.options = options;
+		setup.displayOptions = displayOptions;
+	}
+};
+
 ZmAccountsPage.prototype._setupInput =
 function(id, setup, value) {
 	if (id == "PASSWORD") {
@@ -1084,22 +1115,6 @@ function(id, setup, value) {
 			// NOTE: For this control, we always want the text value 
 			select.getValue = select.getText;
 		}
-	}
-	else if (id == "PROVIDER") {
-		var providers = AjxUtil.values(ZmDataSource.getProviders());
-		providers.sort(ZmAccountsPage.__BY_PROVIDER_NAME);
-		providers.unshift( { id: "", name: "Custom" } ); // TODO: i18n
-
-		var options = new Array(providers.length);
-		var displayOptions = new Array(providers.length);
-		for (var i = 0; i < providers.length; i++) {
-			var provider = providers[i];
-			options[i] = provider.id;
-			displayOptions[i] = provider.name;
-		}
-
-		setup.options = options;
-		setup.displayOptions = displayOptions;
 	}
 	else if (setup.displayOptions && setup.displayOptions.length < 2) {
 		select = this._setupInput(id, setup, value);
@@ -1306,6 +1321,8 @@ function(name, sectionDiv) {
 			var containerEl = document.getElementById(containerId);
 			if (!containerEl) continue;
 
+			this._initControl(id, setup, value, name);
+
 			var type = setup.displayContainer;
 			var value = null;
 			var control;
@@ -1397,6 +1414,13 @@ function(evt) {
 	this._resetAccountListView(persona);
 };
 
+ZmAccountsPage.prototype._updateList = function(account) {
+	var list = this._accountListView;
+	this._accountListView.setCellContents(account, ZmItem.F_NAME, AjxStringUtil.htmlEncode(account.getName()));
+	this._accountListView.setCellContents(account, ZmItem.F_EMAIL, AjxStringUtil.htmlEncode(account.getEmail()));
+	var provider = ZmDataSource.getProviderForAccount(account);
+	this._accountListView.setCellContents(account, ZmItem.F_TYPE, provider ? provider.name : account.type);
+};
 
 // generic listeners
 
@@ -1464,7 +1488,9 @@ ZmAccountsPage.prototype._handleProviderChange = function() {
 				dataSource.setType(provider[p]);
 				continue;
 			}
-			dataSource[ZmDataSource.DATASOURCE_ATTRS[p]] = provider[p];
+			if (ZmDataSource.DATASOURCE_ATTRS[p]) {
+				dataSource[ZmDataSource.DATASOURCE_ATTRS[p]] = provider[p];
+			}
 		}
 	}
 

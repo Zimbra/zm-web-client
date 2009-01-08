@@ -149,7 +149,7 @@ function() {
 	this._dwtObjects = {}; // always reset in case account has changed
 	this._createPageTemplate();
 	this._createControls();
-}
+};
 
 ZmPreferencesPage.prototype._createPageTemplate =
 function() {
@@ -217,6 +217,8 @@ function() {
 			DBG.println(AjxDebug.DBG3, "adding pref " + pref.name + " / " + value);
 
 			// create form controls
+			this._initControl(id, setup, value);
+
 			var control = null;
 			var type = setup ? setup.displayContainer : null;
 			if (type == ZmPref.TYPE_CUSTOM) {
@@ -581,6 +583,11 @@ function(id, setup, value) {
 	return value;
 };
 
+ZmPreferencesPage.prototype._initControl = function(id, setup, value) {
+	// sub-classes can override this to provide initialization
+	// code *before* the actual control is constructed.
+};
+
 ZmPreferencesPage.prototype._setupStatic =
 function(id, setup, value) {
 	var text = new DwtText(this);
@@ -638,7 +645,6 @@ ZmPreferencesPage.prototype._setupRadioGroup =
 function(id, setup, value) {
 	value = this._prepareValue(id, setup, value);
 
-	// TODO: Make DwtRadioButtonGroup an instance of DwtComposite
 	var container = new DwtComposite(this);
 
 	// build horizontally-oriented radio group, if needed
@@ -809,7 +815,7 @@ function(containerDiv, settingId, setup) {
 
 ZmPreferencesPage.__hack_TabGroupControl =
 function(tabGroup) {
-	this.getTabGroupMember = function() { return tabGroup; }
+	this.getTabGroupMember = function() { return tabGroup; };
 };
 
 ZmPreferencesPage.prototype._setupColor =
@@ -887,7 +893,7 @@ function(setup) {
 			this._createLocaleItem(result, array[0], listener);
 		} else if (array && array.length > 1) {
 			var menuItem = new DwtMenuItem({parent:result, style:DwtMenuItem.CASCADE_STYLE});
-			menuItem.setText(ZmLocale.languageMap[language].name)
+			menuItem.setText(ZmLocale.languageMap[language].name);
 			var subMenu = new DwtMenu({parent:result, style:DwtMenu.DROPDOWN_STYLE});
 			menuItem.setMenu(subMenu);
 			for (var i = 0, count = array.length; i < count; i++) {

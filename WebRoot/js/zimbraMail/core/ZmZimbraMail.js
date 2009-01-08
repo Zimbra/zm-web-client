@@ -1267,6 +1267,10 @@ function(callback, appName) {
 	if (ZmApp.DEFAULT_SEARCH[appName]) {
 		appCtxt.getSearchController().setDefaultSearchType(ZmApp.DEFAULT_SEARCH[appName]);
 	}
+
+	var eventType = [appName, ZmAppEvent.POST_LAUNCH].join("_");
+	this._evt.item = this._apps[appName];
+	this._evtMgr.notifyListeners(eventType, this._evt);
 };
 
 /**

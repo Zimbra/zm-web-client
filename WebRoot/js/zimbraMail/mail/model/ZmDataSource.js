@@ -293,8 +293,6 @@ function(obj) {
 
 ZmDataSource.prototype.reset = function() {
 	// reset data source properties
-	this.email = "";
-	this.port = this.getDefaultPort();
 	// NOTE: These have default values on the prototype object
 	delete this.mailServer;
 	delete this.userName;
@@ -303,6 +301,9 @@ ZmDataSource.prototype.reset = function() {
 	delete this.leaveOnServer;
 	delete this.connectionType;
 	delete this.pollingInterval;
+	// other
+	this.email = "";
+	this.port = this.getDefaultPort();
 
 	// reset identity
 	var identity = this.identity = new ZmIdentity();
