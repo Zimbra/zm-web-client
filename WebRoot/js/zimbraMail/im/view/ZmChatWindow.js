@@ -34,17 +34,13 @@ function() {
 };
 
 ZmChatWindow.prototype._init = function(chat, initialSize) {
-	var tabs = this._tabs = new ZmChatTabs(this);
-	tabs.addDisposeListener(new AjxListener(this, this._tabsDisposeListener));
-	this.setView(tabs);
-	tabs.addTab(chat);
+//TODO:	this.setView(tabs);
 	this.setSize(initialSize.x, initialSize.y);
 	this.setMinSize(300, 150);
 	this.setMinPos(0, 0);
-	tabs = null;
 	this.addSelectionListener(new AjxListener(this, this._selectionListener));
 	this.addFocusListener(new AjxListener(this, function() {
-		this._tabs.getCurrentChatWidget().focus();
+		this.getCurrentChatWidget().focus();
 	}));
 };
 
@@ -53,11 +49,7 @@ ZmChatWindow.prototype.select = function() {
 };
 
 ZmChatWindow.prototype.getCurrentChatWidget = function() {
-	return this._tabs.getCurrentChatWidget();
-};
-
-ZmChatWindow.prototype.addTab = function(chat, active) {
-	return this._tabs.addTab(chat, active);
+	return null;// TODO: needs to be implemented if we keep this class.
 };
 
 ZmChatWindow.prototype.minimize =
@@ -66,7 +58,6 @@ function(minimize) {
 		return;
 	}
 	DwtResizableWindow.prototype.minimize.call(this, minimize);
-	this._tabs.setTabsVisible(!minimize);
 	this.getCurrentChatWidget()._onMinimize(minimize);
 };
 
@@ -81,10 +72,6 @@ function() {
 
 ZmChatWindow.prototype._selectionListener = function(ev) {
 	if (ev.detail) {
-		this._tabs.getCurrentChatWidget().focus();
+		this.getCurrentChatWidget().focus();
 	}
-};
-
-ZmChatWindow.prototype._tabsDisposeListener = function() {
-	this.dispose();
 };

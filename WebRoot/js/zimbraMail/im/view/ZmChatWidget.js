@@ -461,13 +461,15 @@ ZmChatWidget.prototype._inputKeyPress = function(ev) {
 		keyEvent.setToDhtmlEvent(ev);
 	};
 	if (keyEvent.ctrlKey) {
+
 		if (keyEvent.charCode >= "0".charCodeAt(0) && keyEvent.charCode <= "9".charCodeAt(0)) {
 			// CTRL + 0..9 switch tabs
-			var tabIndex = keyEvent.charCode - "1".charCodeAt(0);
-			if (tabIndex < 0)
-				tabIndex += 11;
-			self.parent.setActiveTab(tabIndex);
-			stopEvent();
+//TODO:
+//			var tabIndex = keyEvent.charCode - "1".charCodeAt(0);
+//			if (tabIndex < 0)
+//				tabIndex += 11;
+//			self.parent.setActiveTab(tabIndex);
+//			stopEvent();
 		} else if (keyEvent.charCode == 38) { // UP
 			// history back
 			var line = self.chat.getHistory(-1);
@@ -482,13 +484,14 @@ ZmChatWidget.prototype._inputKeyPress = function(ev) {
 			stopEvent();
 		}
 	} else if (keyEvent.altKey) {
-		if (keyEvent.charCode == 37) { // LEFT
-			self.getChatWindow().getWindowManager().activatePrevWindow();
-			stopEvent();
-		} else if (keyEvent.charCode == 39) { // RIGHT
-			self.getChatWindow().getWindowManager().activateNextWindow();
-			stopEvent();
-		}
+//TODO:
+//		if (keyEvent.charCode == 37) { // LEFT
+//			self.getChatWindow().getWindowManager().activatePrevWindow();
+//			stopEvent();
+//		} else if (keyEvent.charCode == 39) { // RIGHT
+//			self.getChatWindow().getWindowManager().activateNextWindow();
+//			stopEvent();
+//		}
 	} else if (keyEvent.charCode == 27) { // ESC
 		stopEvent();
 		self.close();
@@ -602,32 +605,7 @@ ZmChatWidget.prototype.getChatWindow = function() {
 };
 
 ZmChatWidget.prototype.select = function() {
-	var tabs = this.parent;
-	// select window
-	tabs.parent.select();
-	// move to this chat
-	tabs.setActiveTabWidget(this);
 	this.focus();
-};
-
-ZmChatWidget.prototype.attach = function(tabs) {
-	if (tabs !== this.parent) {
-		this.parent.detachChatWidget(this);
-		tabs.addTab(this);
-	}
-};
-
-ZmChatWidget.prototype.detach = function(pos) {
-	var tabs = this.parent;
-	var win = this.getChatWindow();
-	if (tabs.size() > 1) {
-		var wm = win.getWindowManager();
-		tabs.detachChatWidget(this);
-		win = new ZmChatWindow(wm, this, win.getSize());
-		wm.manageWindow(win, pos);
-	} else {
-		win.setLocation(pos.x, pos.y);
-	}
 };
 
 ZmChatWidget.prototype.dispose = function() {
@@ -669,15 +647,6 @@ ZmChatWidget.prototype.getMinimizedSize =
 function() {
 	this._toolbarHeight = this._toolbarHeight || (Dwt.getSize(this._getElement("toolbarLayout")).y + 4);
 	return { x: 165, y: this._toolbarHeight }; 
-};
-
-// 'protected' but called by ZmChatTabs
-ZmChatWidget.prototype._onShowTab =
-function(visible) {
-	this._isTabVisible = visible;
-	if (visible) {
-		this._updateScroll();
-	}
 };
 
 // 'protected' but called by ZmChatWindow
