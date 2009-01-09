@@ -207,7 +207,7 @@ ZmChatWidget.prototype.restoreScrollPos = function() {
 };
 
 ZmChatWidget.prototype.scrollTo = function(el) {
-	if (this.isMinimized() || !this._isTabVisible) {
+	if (this.isMinimized()) {
 		if (!this._scrollToEl) {
 			this._scrollToEl = el;
 		}
@@ -573,7 +573,7 @@ function(width, height) {
 
 ZmChatWidget.prototype.isMinimized =
 function() {
-	return false;
+	return this._minimized;
 };
 
 ZmChatWidget.prototype.focus = function() {
@@ -638,20 +638,10 @@ ZmChatWidget.prototype.close = function() {
 	ZmChatMultiWindowView.getInstance().endChat(this.chat);
 };
 
-ZmChatWidget.prototype._minimizeListener =
-function() {
-	this.getChatWindow().toggleMinimized();
-};
-
-ZmChatWidget.prototype.getMinimizedSize =
-function() {
-	this._toolbarHeight = this._toolbarHeight || (Dwt.getSize(this._getElement("toolbarLayout")).y + 4);
-	return { x: 165, y: this._toolbarHeight }; 
-};
-
-// 'protected' but called by ZmChatWindow
+// 'protected' but called by ZmTaskbarController
 ZmChatWidget.prototype._onMinimize =
 function(minimize) {
+	this._minimized = minimize;
 	// Hide visible elements.
 	for (var i = 0, count = ZmChatWidget.IDS.length; i < count; i++) {
 		var name = ZmChatWidget.IDS[i];
@@ -663,18 +653,6 @@ function(minimize) {
 		}
 	}
 	this._doResize();
-
-	// Update label and minimize/restore button.
-	if (minimize && this.parent.size() > 1) {
-		this._minimizedFormat = this._minimizedFormat || new AjxMessageFormat(ZmMsg.imMinimizedLabel);
-		this._label.setText(this._minimizedFormat.format(this.parent.size()));
-	} else {
-		this._label.setText(this._titleStr);
-		this.chat.getRosterItem().getAddress()
-	}
-	this._minimize.setImage(minimize ? "RoundPlus" : "RoundMinus");
-	this._minimize.setToolTipContent(minimize ? ZmMsg.imRestore : ZmMsg.imMinimize);
-
 	if (!minimize) {
 		this._removeUnreadStatus();
 		this._updateScroll();

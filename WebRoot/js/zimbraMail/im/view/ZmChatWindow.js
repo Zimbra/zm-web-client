@@ -58,7 +58,6 @@ function(minimize) {
 		return;
 	}
 	DwtResizableWindow.prototype.minimize.call(this, minimize);
-	this.getCurrentChatWidget()._onMinimize(minimize);
 };
 
 ZmChatWindow.prototype.getPadding = function() {

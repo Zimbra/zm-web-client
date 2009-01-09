@@ -132,13 +132,23 @@ function(ev) {
 	}
 };
 
+ZmTaskbarController.prototype._expandChatItem =
+function(taskbarItem, chat, expand) {
+	this._toolbar.expandItem(taskbarItem, expand);
+	var chatWidget = this._chatData[chat.id].chatWidget;
+	chatWidget._onMinimize(!expand);
+	if (expand) {
+		chatWidget.focus();
+	}
+};
+
 ZmTaskbarController.prototype._chatSelectionListener =
 function(chat, ev) {
 	if (chat && ev.target && (ev.target.className == this._closeClass)) {
 		ZmChatMultiWindowView.getInstance().endChat(chat);
 	} else {
 		var taskbarItem = ev.dwtObj.parent;
-		this._toolbar.expandItem(taskbarItem, !taskbarItem.expanded);
+		this._expandChatItem(taskbarItem, chat, !taskbarItem.expanded);
 	}
 };
 
@@ -190,9 +200,10 @@ function(chat, parent, parentElement) {
 	};
 	var widget = new ZmChatWidget(args, parent.button);
 	this._chatData[chat.id].chatWidget = widget;
-	widget.addCloseListener(new AjxListener(this, this._closeChatListener, [parent, widget]));
-	widget.addMinimizeListener(new AjxListener(this, this._minimizeChatListener, [parent, widget]));
+	widget.addCloseListener(new AjxListener(this, this._closeChatListener, [chat]));
+	widget.addMinimizeListener(new AjxListener(this, this._minimizeChatListener, [chat, parent]));
 	widget._setChat(chat);
+	widget.focus();
 	this._chatChangeListenerListenerObj = this._chatChangeListenerListenerObj || new AjxListener(this, this._chatChangeListenerListener);
 	chat.addChangeListener(this._chatChangeListenerListenerObj);
 };
@@ -210,13 +221,13 @@ function(ev) {
 };
 
 ZmTaskbarController.prototype._closeChatListener =
-function(taskbarItem, widget) {
-	ZmChatMultiWindowView.getInstance().endChat(widget.chat);
+function(chat) {
+	ZmChatMultiWindowView.getInstance().endChat(chat);
 };
 
 ZmTaskbarController.prototype._minimizeChatListener =
-function(taskbarItem, widget) {
-	this._toolbar.expandItem(taskbarItem, false);
+function(chat, taskbarItem) {
+	this._expandChatItem(taskbarItem, chat, false);
 };
 
 ZmTaskbarController.prototype._createSubscribeRequestItemCallback =
