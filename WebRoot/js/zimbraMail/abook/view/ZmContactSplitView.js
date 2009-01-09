@@ -109,9 +109,10 @@ function(contact, isGal) {
 		this._tabViewHtml = {};
 		this._contactTabView.enable(true);
 		// prevent listview from scrolling back up :/
+		var doHack = Dwt.CARET_HACK_ENABLED;
 		Dwt.CARET_HACK_ENABLED = false;
 		this._contactTabView.switchToTab(1);
-		Dwt.CARET_HACK_ENABLED = AjxEnv.isFirefox;
+		Dwt.CARET_HACK_ENABLED = doHack;
 	}
 
 	if (this._contact.isLoaded) {
