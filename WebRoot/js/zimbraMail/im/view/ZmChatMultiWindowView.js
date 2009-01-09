@@ -180,7 +180,7 @@ ZmChatMultiWindowView.prototype.selectChat = function(chat, text) {
 };
 
 ZmChatMultiWindowView.prototype._rosterItemChangeListener = function(chat, item, fields) {
-	var cw = this._getChatWidgetForChat(chat);
+	var cw = ZmTaskbarController.INSTANCE.getChatWidgetForChat(chat);
 	if (cw)
 		cw._rosterItemChangeListener(item, fields);
 };

@@ -100,6 +100,12 @@ function(chat) {
 	}
 };
 
+ZmTaskbarController.prototype.getChatWidgetForChat =
+function(chat) {
+	var data = this._chatData[chat.id];
+	return data ? data.chatWidget : null;
+};
+
 ZmTaskbarController.prototype.showSubscribeRequest =
 function(addr, buddy) {
 	this._subscribeData = this._subscribeData || {};
@@ -198,10 +204,11 @@ function(chat, parent, parentElement) {
 		parentElement: parentElement,
 		posStyle: Dwt.STATIC_STYLE
 	};
-	var widget = new ZmChatWidget(args, parent.button);
+	var widget = new ZmChatWidget(args);
 	this._chatData[chat.id].chatWidget = widget;
 	widget.addCloseListener(new AjxListener(this, this._closeChatListener, [chat]));
 	widget.addMinimizeListener(new AjxListener(this, this._minimizeChatListener, [chat, parent]));
+	widget.addStatusListener(new AjxListener(this, this._chatStatusListener, [parent]));
 	widget._setChat(chat);
 	widget.focus();
 	this._chatChangeListenerListenerObj = this._chatChangeListenerListenerObj || new AjxListener(this, this._chatChangeListenerListener);
@@ -228,6 +235,12 @@ function(chat) {
 ZmTaskbarController.prototype._minimizeChatListener =
 function(chat, taskbarItem) {
 	this._expandChatItem(taskbarItem, chat, false);
+};
+
+ZmTaskbarController.prototype._chatStatusListener =
+function(taskbarItem, status) {
+	taskbarItem.button.setImage(status.statusImage);
+	taskbarItem.button.setText(status.title);
 };
 
 ZmTaskbarController.prototype._createSubscribeRequestItemCallback =

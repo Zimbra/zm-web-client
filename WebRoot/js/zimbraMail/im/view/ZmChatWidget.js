@@ -15,12 +15,11 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmChatWidget = function(params, button) {
+ZmChatWidget = function(params) {
         //console.time("ZmChatWidget");
 	params.className = params.className || "ZmChatWidget";
 	DwtComposite.call(this, params);
 	this._chatChangeListenerListener = new AjxListener(this, this._chatChangeListener);
-	this._taskbarButton = button;
 	this._init();
 };
 
@@ -43,6 +42,11 @@ function(listener) {
 ZmChatWidget.prototype.addMinimizeListener =
 function(listener) {
 	this._minimize.addSelectionListener(listener);
+};
+
+ZmChatWidget.prototype.addStatusListener =
+function(listener) {
+	this.addListener(DwtEvent.STATE_CHANGE, listener);
 };
 
 ZmChatWidget.prototype._setChat = function(chat) {
@@ -148,8 +152,6 @@ ZmChatWidget.prototype._chatChangeListener = function(ev) {
 
 ZmChatWidget.prototype.setTyping = function(item, typing) {
 	if (this.chat.getRosterSize() == 1) {
-		var label = this.getTabLabel();
-		Dwt.condClass(label.getHtmlElement(), typing, "ZmRosterItem-typing");
 		this.setImage(typing ? "Edit" : item.getPresence().getIcon());
 		var title = item.getDisplayName();
 		if (typing)
@@ -240,12 +242,22 @@ ZmChatWidget.prototype._scrollTo = function(el) {
 };
 
 ZmChatWidget.prototype.setImage = function(imageInfo) {
-	this._taskbarButton.setImage(imageInfo);
+	this._statusImage = imageInfo;
+	this._notifyStatus();
 };
 
 ZmChatWidget.prototype.setTitle = function(text) {
-	this._titleStr = text;
-	this._taskbarButton.setText(text);
+	this._title = text;
+	this._label.setText(text);
+	this._notifyStatus();
+};
+
+ZmChatWidget.prototype._notifyStatus =
+function() {
+	if (this.isListenerRegistered(DwtEvent.STATE_CHANGE)) {
+		var ev = { statusImage: this._statusImage, title: this._title };
+		this.notifyListeners(DwtEvent.STATE_CHANGE, ev);
+	}
 };
 
 ZmChatWidget.prototype.setStatusTitle = function(text) {
