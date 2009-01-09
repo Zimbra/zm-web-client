@@ -79,6 +79,8 @@ function(chat) {
 		selectionListener: new AjxListener(this, this._chatSelectionListener, [chat])
 	};
 	var item = this._createItem(args);
+	item.button.setToolTipContent(new AjxCallback(this, this._getChatToolTip, [chat]));
+
 	this._chatData = this._chatData || {};
 	this._chatData[chat.id] = { item: item, separator: separator };
 	var hoverImage = "Close";
@@ -136,6 +138,12 @@ function(ev) {
 	if (ev.button == DwtMouseEvent.LEFT && this._toolbar.expandedItem) {
 		this._toolbar.expandItem(this._toolbar.expandedItem, false);
 	}
+};
+
+ZmTaskbarController.prototype._getChatToolTip =
+function(chat, callback) {
+	var tooltip = chat.getRosterItem().getToolTip();
+	callback.run(tooltip);
 };
 
 ZmTaskbarController.prototype._expandChatItem =

@@ -55,7 +55,6 @@ ZmChatWidget.prototype._setChat = function(chat) {
 	chat.addChangeListener(this._chatChangeListenerListener);
 	this._rosterItemChangeListener(item, null, true);
 	item.chatStarted(chat, this);
-	this._label.setToolTipCallback(new AjxCallback(this, this._getLabelToolTip));
 
 	for (var i = 0; i < chat.messages.length; i++) {
 		this.handleMessage(this.chat.messages[i]);
@@ -70,20 +69,6 @@ ZmChatWidget.prototype._setChat = function(chat) {
 		// ZmLiteHtmlEditor for this (but we should have
 		// this.chat before _init()).
 		this._changEditorModeBtn.setVisible(false);
-	}
-};
-
-ZmChatWidget.prototype._getLabelToolTip = function() {
-	var chatTabs = this.parent;
-	if (this._isMultiTabMinimized()) {
-		var count = chatTabs.size();
-		var buddies = new Array(count);
-		for (var i = 0; i < count; i++) {
-			buddies[i] = chatTabs.getTabWidget(i).chat.getRosterItem();
-		}
-		return AjxTemplate.expand("im.Chat#RosterItemsTooltip", { buddies: buddies });
-	} else {
-		return this.chat.getRosterItem().getToolTip();
 	}
 };
 
