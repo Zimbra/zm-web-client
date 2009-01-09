@@ -130,6 +130,24 @@ ZmImportExportBaseView.prototype.isRelevant = function(id) {
 	return this.getFormValue(setup && setup.rel, true);
 };
 
+ZmImportExportBaseView.prototype.setControlEnabled = function(id, enabled) {
+	var control = this.getFormObject(id);
+	if (control && control.setEnabled) {
+		control.setEnabled(enabled);
+	}
+};
+
+ZmImportExportBaseView.prototype.setControlVisible = function(id, visible) {
+	var control = this.getFormObject(id);
+	if (control && control.setVisible) {
+		control.setVisible(visible);
+	}
+	var el = document.getElementById([this._htmlElId, id, "row"].join("_"));
+	if (el) {
+		Dwt.setVisible(el, visible);
+	}
+};
+
 //
 // Protected methods
 //
@@ -170,12 +188,6 @@ ZmImportExportBaseView.prototype._registerControls = function() {
 	});
 	this._registerControl("DATA_TYPES", {
 		displayContainer:	ZmPref.TYPE_CUSTOM
-	});
-	this._registerControl("FOLDER", {
-		displayContainer:	ZmPref.TYPE_RADIO_GROUP,
-		orientation:        ZmPref.ORIENT_VERTICAL,
-		displayOptions:		[ZmMsg.importExportFolderAll, ZmMsg.importExportFolderOne],
-		options:			["all", "one"]
 	});
 	this._registerControl("FOLDER_BUTTON", {
 		displayName:		ZmMsg.browse,
@@ -277,8 +289,8 @@ ZmImportExportBaseView.prototype._setupCheckbox = function(id, setup, value) {
 ZmImportExportBaseView.prototype._setupRadioGroup = function(id, setup, value) {
 	var group = new ZmImportExportRadioGroup({parent:this,setup:setup});
 	this.setFormObject(id, group);
-	if (id == "FOLDER") {
-		group.addSelectionListener(new AjxListener(this, this._handleFolder));
+	if (id == "TYPE") {
+		group.addSelectionListener(new AjxListener(this, this._handleTypeChange));
 	}
 	return group;
 };
@@ -339,6 +351,29 @@ ZmImportExportBaseView.prototype._setupCustom = function(id, setup, value) {
 // other
 
 ZmImportExportBaseView.prototype._updateControls = function() {
+	// update other controls
+	var type = this.getFormValue("TYPE", ZmImportExportController.TYPE_TGZ);
+	var isZimbra = type == ZmImportExportController.TYPE_TGZ;
+	var isContacts = type == ZmImportExportController.TYPE_CSV;
+
+	this.setFormValue("TYPE_HINT", this.TYPE_HINTS[type]);
+	this.setControlVisible("SUBTYPE", isContacts);
+
+	var advanced = this.getFormObject("ADVANCED");
+	if (advanced && !isZimbra) {
+		advanced.setSelected(false);
+	}
+	this.setControlVisible("ADVANCED", isZimbra);
+
+	// disable ignore archive if not a zimbra account
+	var ignore = this.getFormObject("IGNORE_ARCHIVE");
+	if (ignore) {
+		// NOTE: We can't just do this check in the template because
+		//       it's only expanded once and the user may have multiple
+		//       accounts.
+		ignore.setEnabled(appCtxt.getById(ZmOrganizer.ID_ARCHIVE) != null);
+	}
+
 	// show/hide relevent controls
 	for (var id in this.SETUP) {
 		var control = this.getFormObject(id);
@@ -351,26 +386,9 @@ ZmImportExportBaseView.prototype._updateControls = function() {
 				var relValue = this.getFormValue(setup.rel);
 				relValue = relValue != null ? Boolean(relValue) : true;
 				control.setEnabled(relValue);
-
-				var relRowEl = document.getElementById([this._htmlElId, id, "row"].join("_"));
-				if (relRowEl) {
-					Dwt.setVisible(relRowEl, relValue);
-				}
+				this.setControlVisible(id, relValue);
 			}
 		}
-	}
-
-	// update type hint
-	var type = this.getFormValue("TYPE", ZmImportExportController.TYPE_TGZ);
-	this.setFormValue("TYPE_HINT", this.TYPE_HINTS[type]);
-
-	// disable ignore archive if not a zimbra account
-	var ignore = this.getFormObject("IGNORE_ARCHIVE");
-	if (ignore) {
-		// NOTE: We can't just do this check in the template because
-		//       it's only expanded once and the user may have multiple
-		//       accounts.
-		ignore.setEnabled(appCtxt.getById(ZmOrganizer.ID_ARCHIVE) != null);
 	}
 };
 
@@ -467,23 +485,34 @@ ZmImportExportBaseView.prototype._createHtml = function(templateId) {
 
 // handlers
 
-ZmImportExportBaseView.prototype._handleFolder = function() {
-	if (this.getFormValue("FOLDER", "all") == "all") {
-//		this._folderId = -1;
-	}
+ZmImportExportBaseView.prototype._handleTypeChange = function() {
+	var type = this.getFormValue("TYPE", ZmImportExportController.TYPE_TGZ);
+	this._initSubType(type);
+	this._folderId = -1;
+	this.setFormValue("FOLDER_BUTTON", ZmMsg.browse);
+	this._updateControls();
 };
 
 ZmImportExportBaseView.prototype._handleFolderButton = function() {
-	this.setFormValue("FOLDER", "one");
-
+	// init state
 	if (!this._handleFolderDialogOkCallback) {
 		this._handleFolderDialogOkCallback = new AjxCallback(this, this._handleFolderDialogOk);
 	}
 
+	if (!this._TREES) {
+		this._TREES = {};
+		this._TREES[ZmImportExportController.TYPE_TGZ] = AjxUtil.keys(ZmOrganizer.VIEWS);
+		this._TREES[ZmImportExportController.TYPE_CSV] = [ZmOrganizer.ADDRBOOK];
+		this._TREES[ZmImportExportController.TYPE_ICS] = [ZmOrganizer.CALENDAR];
+	}
+
+	// pop-up dialog
 	var dialog = appCtxt.getChooseFolderDialog();
 	dialog.registerCallback(DwtDialog.OK_BUTTON, this._handleFolderDialogOkCallback);
+	var type = this.getFormValue("TYPE") || ZmImportExportController.TYPE_TGZ;
 	var params = {
-		treeIds:		AjxUtil.keys(ZmOrganizer.VIEWS),
+		treeIds:		this._TREES[type],
+		overviewId:		[this.toString(), type].join("-"),
 		skipReadOnly:	true,
 		omit:			{}
 	};
@@ -495,12 +524,9 @@ ZmImportExportBaseView.prototype._handleFolderButton = function() {
 ZmImportExportBaseView.prototype._handleFolderDialogOk = function(folder) {
 	appCtxt.getChooseFolderDialog().popdown();
 	// NOTE: Selecting a header is the same as "all folders"
-	if (folder.id == ZmOrganizer.ID_ROOT) {
-		this.setFormValue("FOLDER", "all");
-		return false;
-	}
 	this._folderId = folder.id;
-	this.setFormValue("FOLDER_BUTTON", folder.name);
+	var isRoot = folder.id == ZmOrganizer.ID_ROOT;
+	this.setFormValue("FOLDER_BUTTON", isRoot ? ZmMsg.allFolders : folder.name);
 	return true;
 };
 

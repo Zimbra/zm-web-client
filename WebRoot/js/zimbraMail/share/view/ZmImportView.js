@@ -67,7 +67,7 @@ ZmImportView.prototype.getParams = function() {
 		subType:	this.isRelevant("SUBTYPE") ? this.getFormValue("SUBTYPE") : null,
 		views:		this.isRelevant("DATA_TYPES") ? this.getFormValue("DATA_TYPES") : null,
 		resolve:	this.isRelevant("RESOLVE") && isTGZ ? this.getFormValue("RESOLVE", "ignore") : null,
-		folderId:	this.isRelevant("FOLDER") ? folderId : null,
+		folderId:	this._folderId,
 		dataTypes:	this.isRelevant("DATA_TYPES") ? this.getFormValue("DATA_TYPES") : null
 	};
 	return params;
@@ -89,14 +89,6 @@ ZmImportView.prototype._registerControls = function() {
 		// NOTE: Ignore value should not be sent to server, so we leave blank.
 		options:			["", "replace", "reset"]
 	});
-};
-
-ZmImportView.prototype._setupRadioGroup = function(id, setup, value) {
-	var group = ZmImportExportBaseView.prototype._setupRadioGroup.apply(this, arguments);
-	if (id == "TYPE") {
-		group.addSelectionListener(new AjxListener(this, this._handleTypeChange));
-	}
-	return group;
 };
 
 ZmImportView.prototype._setupCustom = function(id, setup, value) {
@@ -121,31 +113,6 @@ ZmImportView.prototype._updateControls = function() {
 	var type = this.getFormValue("TYPE", ZmImportExportController.TYPE_TGZ);
 	var isZimbra = type == ZmImportExportController.TYPE_TGZ;
 
-	var subType = this.getFormObject("SUBTYPE");
-	if (subType) {
-		subType.setEnabled(subType.getOptionCount() > 1);
-	}
-
-	var resolve = this.getFormObject("RESOLVE");
-	if (resolve) {
-		resolve.setEnabled(isZimbra);
-	}
-
-	var advanced = this.getFormObject("ADVANCED");
-	if (advanced) {
-		if (!isZimbra) {
-			advanced.setSelected(false);
-		}
-		advanced.setEnabled(isZimbra);
-	}
-
 	ZmImportExportBaseView.prototype._updateControls.apply(this, arguments);
-};
-
-// handlers
-
-ZmImportView.prototype._handleTypeChange = function() {
-	var type = this.getFormValue("TYPE", ZmImportExportController.TYPE_TGZ);
-	this._initSubType(type);
-	this._updateControls();
+	this.setControlVisible("RESOLVE", isZimbra);
 };
