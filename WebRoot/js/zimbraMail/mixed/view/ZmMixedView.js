@@ -184,22 +184,13 @@ function(params) {
 
 ZmMixedView.prototype._changeListener =
 function(ev) {
-	if (appCtxt.getAppViewMgr().getCurrentViewId() != this.view)
-		return;
+
+	if (appCtxt.getAppViewMgr().getCurrentViewId() != this.view) { return; }
 
 	if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE) {
 		var items = ev.getDetail("items");
-		var contactList = AjxDispatcher.run("GetContacts");
-
-		// walk the list of items and if any are contacts,
 		for (var i = 0; i < items.length; i++) {
-			if ((items[i].type == ZmItem.CONTACT || items[i].type == ZmItem.GROUP) &&
-				ev.event == ZmEvent.E_DELETE)
-			{
-				// and is hard delete, remove from canonical list
-				contactList.remove(items[i]);
-			}
-			// also remove from controller's list
+			// remove from controller's list
 			this._controller.getList().remove(items[i]);
 		}
 	}

@@ -326,6 +326,8 @@ function(cell, contactId) {
 
 ZmContactCardsView._moreDetailsCallback =
 function(contactId) {
-	var contact = AjxDispatcher.run("GetContacts").getById(contactId);
-	AjxDispatcher.run("GetContactController").show(contact);
+	var contact = appCtxt.getById(contactId);
+	if (contact) {
+		AjxDispatcher.run("GetContactController").show(contact);
+	}
 };

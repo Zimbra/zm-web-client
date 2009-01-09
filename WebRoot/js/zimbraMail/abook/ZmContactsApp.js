@@ -111,7 +111,7 @@ function() {
 				ZmSetting.INITIALLY_SEARCH_GAL,
 				ZmSetting.IMPORT
 			]
-		}
+			}
 	};
 	for (var id in sections) {
 		ZmPref.registerPrefSection(id, sections[id]);
@@ -293,13 +293,6 @@ function() {
 
 // App API
 
-/*
-ZmContactsApp.prototype.startup =
-function(result) {
-	AjxDispatcher.run("GetContacts");
-};
-*/
-
 /**
  * Checks for the creation of an address book or a mount point to one. Regular
  * contact creates are handed to the canonical list.
@@ -316,13 +309,17 @@ function(creates, force) {
 		for (var i = 0; i < list.length; i++) {
 			var create = list[i];
 			if (appCtxt.cacheGet(create.id)) { continue; }
-
+	
 			if (name == "folder") {
 				this._handleCreateFolder(create, ZmOrganizer.ADDRBOOK);
 			} else if (name == "link") {
 				this._handleCreateLink(create, ZmOrganizer.ADDRBOOK);
 			} else if (name == "cn") {
-				AjxDispatcher.run("GetContactListController").getList().notifyCreate(create);
+				var clc = AjxDispatcher.run("GetContactListController");
+				var list = clc && clc.getList();
+				if (list) {
+					list.notifyCreate(create);
+				}
 				create._handled = true;
 			}
 		}
