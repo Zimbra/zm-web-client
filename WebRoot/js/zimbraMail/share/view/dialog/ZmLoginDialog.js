@@ -48,7 +48,9 @@ ZmLoginDialog = function(parent, className) {
 	
 	// Login button is not a DwtButton, so set up reference to this dialog
 	var id = ZLoginFactory.LOGIN_BUTTON_ID;
-	DwtControl.ALL_BY_ID[id] = this;
+	if (id && DwtControl.ALL_BY_ID) {
+		DwtControl.ALL_BY_ID[id] = this;
+	}
 
     this.setReloginMode(false);
 };
