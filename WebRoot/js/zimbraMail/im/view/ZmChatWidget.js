@@ -16,7 +16,6 @@
  */
 
 ZmChatWidget = function(params) {
-        //console.time("ZmChatWidget");
 	params.className = params.className || "ZmChatWidget";
 	DwtComposite.call(this, params);
 	this._chatChangeListenerListener = new AjxListener(this, this._chatChangeListener);
@@ -87,22 +86,14 @@ ZmChatWidget.prototype.getIcon = function() {
 
 ZmChatWidget.prototype._rosterItemChangeListener = function(item, fields, setAll) {
 	var doShow = setAll || (ZmRosterItem.F_PRESENCE in fields);
-	var doUnread = setAll || (ZmRosterItem.F_UNREAD in fields);
 	var doName = setAll || (ZmRosterItem.F_NAME in fields);
 	var doTyping = fields && ZmRosterItem.F_TYPING in fields;
 
 	if (this.chat.getRosterSize() == 1) {
 		var listItem = AjxDispatcher.run("GetRoster").getRosterItem(this.chat.getRosterItem().getAddress());
 		this._setAddBuddyVisible(!listItem);
-		if (doShow) this.setImage(item.getPresence().getIcon());
-		if (doShow || doUnread) {
-			var title = new AjxBuffer();
-			title.append("(", item.getPresence().getShowText());
-			if (item.getUnread()) {
-				title.append(", ", item.getUnread(), " ", ZmMsg.unread.toLowerCase());
-			}
-			title.append(")");
-			this.setStatusTitle(title.toString());
+		if (doShow) {
+			this.setImage(item.getPresence().getIcon());
 		}
 		if (doName) {
 			this.setTitle(item.getDisplayName());
@@ -176,7 +167,7 @@ ZmChatWidget.prototype.handleErrorMessage = function(msg) {
 		message: msg.getErrorMessage(),
 		detailsId: Dwt.getNextId()
 	};
-	var str = AjxTemplate.expand("im.Chat#ChatMessageError", subs)
+	var str = AjxTemplate.expand("im.Chat#ChatMessageError", subs);
 	this.handleHtmlMessage(str);
 	var el = Dwt.byId(subs.detailsId);
 	if (el) {
@@ -203,7 +194,7 @@ ZmChatWidget.prototype.scrollTo = function(el) {
 	}
 };
 
-/** Positions the content scroll bar after restoring or setting active tab */ 
+/** Positions the content scroll bar after restoring from minimzed */ 
 ZmChatWidget.prototype._updateScroll = function() {
 	if (this._scrollToEl) {
 		this._scrollTo(this._scrollToEl);
@@ -245,22 +236,12 @@ function() {
 	}
 };
 
-ZmChatWidget.prototype.setStatusTitle = function(text) {
-	// this._statusLabel.setText(text);
-};
-
 ZmChatWidget.prototype.setEditorContent = function(text) {
 	this._liteEditor.setContent(text);
 };
 
 ZmChatWidget.prototype.getEditorContent = function(){
 	return this._liteEditor.getContent();
-};
-
-
-ZmChatWidget.prototype._isMultiTabMinimized = function() {
-	//////TODO
-	return false;
 };
 
 ZmChatWidget.prototype._keypressNotifyItems = function(last_key, enter) {
@@ -308,16 +289,6 @@ ZmChatWidget.prototype.sendInput = function() {
 	this.setEditorContent("");
 	editor.focus();
 };
-
-ZmChatWidget.prototype._updateGroupChatTitle = function(force) {
-	if (!this._groupStaticTitle || force) {
-		this.setTitle(this.chat.getName());
-		this.setImage("ImGroup");
-		this._groupStaticTitle = true;
-	}
-	this.setStatusTitle("("+this.chat.getRosterSize()+")");
-};
-
 
 ZmChatWidget.IDS = [
 	"toolbarLayout",
@@ -586,21 +557,6 @@ ZmChatWidget.prototype._removeUnreadStatus = function() {
 	}
 };
 
-ZmChatWidget.prototype.popup = function(pos) {
-        this.getChatWindow().popup(pos);
-	this.focus();
-};
-
-////////////
-ZmChatWidget.prototype.getTabLabel = function() {
-	return null;
-};
-
-/////////
-ZmChatWidget.prototype.getChatWindow = function() {
-	return null;
-};
-
 ZmChatWidget.prototype.select = function() {
 	this.focus();
 };
@@ -610,25 +566,6 @@ ZmChatWidget.prototype.dispose = function() {
 	delete this._scrollToEl;
 	//this._getElement("input")[ AjxEnv.isIE ? "onkeydown" : "onkeypress" ] = null;
 	DwtComposite.prototype.dispose.call(this);
-};
-
-ZmChatWidget.prototype.closeAll = function() {
-	ZmChatMultiWindowView.getInstance().endChat(this.chat);
-};
-
-ZmChatWidget.prototype.closeOthers = function() {
-	var size;
-	var skipped = false;
-	var chatTabs = this.parent;
-	while ((size = chatTabs.size()) > 1) {
-		var index = skipped ? size - 2 : size - 1;
-		var chatWidget = chatTabs.getTabWidget(index);
-		if (chatWidget == this) {
-			skipped = true;
-		} else {
-			ZmChatMultiWindowView.getInstance().endChat(chatWidget.chat);
-		}
-	}
 };
 
 ZmChatWidget.prototype.close = function() {
@@ -676,14 +613,14 @@ ZmChatWidget.prototype._dropOnEditorListener = function(ev) {
 ZmChatWidget.prototype._dropOnTitleListener = function(ev) {
 	var srcData = ev.srcData;
 
-	function isBuddy()  { return srcData instanceof ZmRosterItem };
-	function isTab()    { return srcData instanceof ZmChatWidget };
+	function isBuddy()  { return srcData instanceof ZmRosterItem; };
+	function isTab()    { return srcData instanceof ZmChatWidget; };
 	function isGenericItem(type)   {
 		if (!(srcData.data && srcData.controller))
 			return false;
 		if (!(srcData.data instanceof Array))
 			srcData.data = [ srcData.data ];
-		return srcData.data[0] instanceof type
+		return srcData.data[0] instanceof type;
 	};
 
 	var isMailItem = AjxCallback.simpleClosure(isGenericItem, null, ZmMailItem);
@@ -791,7 +728,7 @@ ZmChatWidget.prototype._sashMouseMove = function(ev) {
 	dwtEv.setToDhtmlEvent(ev);
 };
 
-ZmChatWidget.prototype._sashMouseUp = function(ev) {
+ZmChatWidget.prototype._sashMouseUp = function() {
 	this._sashCapture.release();
 	this._sashCapture.pos = null;
 };
