@@ -1147,14 +1147,13 @@ function(cols) {
 		this._position();
 	}
 	this._contentDiv.scrollTop = 0;
-	this.setZIndex(Dwt.Z_DIALOG);
 	DwtShell.getShell(window).getKeyboardMgr().pushTabGroup(this._tabGroup);
 };
 
 ZmShortcutsPanel.prototype.popdown =
 function(maps) {
 	DwtShell.getShell(window).getKeyboardMgr().popTabGroup(this._tabGroup);
-	this.setZIndex(Dwt.Z_HIDDEN);
+	this.setLocation(Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
 	Dwt.setZIndex(appCtxt.getShell()._veilOverlay, Dwt.Z_HIDDEN);
 	appCtxt.getKeyboardMgr().popDefaultHandler();
 };
@@ -1190,6 +1189,7 @@ function() {
 	var headerHeight = Dwt.getSize(this._headerDiv).y;
 	var h = this.getSize().y - headerHeight;
 	Dwt.setSize(this._contentDiv, Dwt.DEFAULT, h - 10);
+	this.setZIndex(Dwt.Z_DIALOG);	
 };
 
 ZmShortcutsPanel.closeCallback =
