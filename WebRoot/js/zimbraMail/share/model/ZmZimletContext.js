@@ -489,6 +489,7 @@ ZmZimletContext._zmObjectTransformers = {
 			ret.replied      = oi.isReplied;
 			ret.draft        = oi.isDraft;
 			ret.body		 = ZmZimletContext._getMsgBody(oi);
+			ret.srcObj		 = oi;
 			all[i] = ret;
 		}
 		if(all.length == 1) {
@@ -513,10 +514,11 @@ ZmZimletContext._zmObjectTransformers = {
 			ret.numMsgs      = oi.numMsgs;
 			ret.tags         = oi.tags;
 			ret.unread       = oi.isUnread;
+
 			
 			// Use first message
 			ret.body         = ZmZimletContext._getMsgBody(oi.getFirstHotMsg());
-			
+			ret.srcObj			= oi;
 			all[i] = ret;
 		}
 		if(all.length == 1) {
@@ -610,6 +612,7 @@ ZmZimletContext._zmObjectTransformers = {
 		ret.unread       = oi.numUnread;
 		ret.total        = oi.numTotal;
 		ret.url          = oi.getRestUrl();
+		ret.srcObj			= oi;
 		return ret;
 	},
 
@@ -632,6 +635,7 @@ ZmZimletContext._zmObjectTransformers = {
 		ret.notes          = oi.getNotesPart();
 		ret.isRecurring    = oi.isRecurring();
 		ret.timeZone       = oi.timezone;
+		ret.srcObj			= oi;
 		return ret;
 	}
 
