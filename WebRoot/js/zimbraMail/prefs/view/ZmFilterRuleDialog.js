@@ -60,10 +60,6 @@ ZmFilterRuleDialog.DO_ADD			= "_add_";
 ZmFilterRuleDialog.BROWSE_TYPE		= "_btype_";
 ZmFilterRuleDialog.DATA				= "_data_";
 
-// condition fields in order they appear in dialog
-ZmFilterRuleDialog.CONDITION_COLS	= ["subject", "subjectMod", "ops", "value", "valueMod", "Plus", "Minus"];
-ZmFilterRuleDialog.ACTION_COLS		= ["name", "param", "Plus", "Minus"];
-
 // character width of text inputs
 ZmFilterRuleDialog.INPUT_NUM_CHARS = 15;
 
@@ -84,16 +80,15 @@ function(rule, editMode, referenceRule) {
 	// always make sure we have the right rules container in case of multi-mbox
 	this._rules = AjxDispatcher.run("GetFilterRules");
 	this._rules.loadRules(); // make sure rules are loaded (for when we save)
-
 	this._inputs = {};
-	this._rule = rule;
+	this._rule = rule || ZmFilterRule.getDummyRule();
 	this._editMode = editMode;
 	this._referenceRule = referenceRule;
 	this.setTitle(rule ? ZmMsg.editFilter : ZmMsg.addFilter);
 
 	var nameField = document.getElementById(this._nameInputId);
 	var name = rule ? AjxStringUtil.stripTags(rule.getName(), true) : null;
-	nameField.value = name ? name : "";
+	nameField.value = name || "";
 
 	var activeField = document.getElementById(this._activeCheckboxId);
 	activeField.checked = (!rule || rule.isActive());
@@ -107,9 +102,8 @@ function(rule, editMode, referenceRule) {
 	this._conditionsTabGroup.removeAllMembers();
 	this._actionsTabGroup.removeAllMembers();
 
-	this._rule = rule ? rule : ZmFilterRule.DUMMY_RULE;
-	this._renderTable(this._rule, true);	// conditions
-	this._renderTable(this._rule, false);	// actions
+	this._renderTable(this._rule, true, this._conditionsTableId, this._rule.conditions, this._conditionsTabGroup);	// conditions
+	this._renderTable(this._rule, false, this._actionsTableId, this._rule.actions, this._actionsTabGroup);	// actions
 	this._addDwtObjects();
 
 	DwtDialog.prototype.popup.call(this);
@@ -127,11 +121,12 @@ function() {
 	DwtDialog.prototype.popdown.call(this);
 };
 
-ZmFilterRuleDialog.prototype.getTabGroupMember = function() {
+ZmFilterRuleDialog.prototype.getTabGroupMember =
+function() {
 	return this._tabGroup;
 };
 
-/*
+/**
 * Returns HTML that forms the basic framework of the dialog.
 */
 ZmFilterRuleDialog.prototype._contentHtml =
@@ -150,7 +145,8 @@ function() {
 	return AjxTemplate.expand("prefs.Pages#MailFilterRule", id);
 };
 
-ZmFilterRuleDialog.prototype._setConditionSelect = function() {
+ZmFilterRuleDialog.prototype._setConditionSelect =
+function() {
 	var message = new DwtMessageComposite(this);
 	var callback = new AjxCallback(this, this._createConditionControl);
 	message.setFormat(ZmMsg.filterCondition, callback);
@@ -159,7 +155,8 @@ ZmFilterRuleDialog.prototype._setConditionSelect = function() {
 	message.appendElement(conditionEl);
 };
 
-ZmFilterRuleDialog.prototype._createConditionControl = function(parent, segment, i) {
+ZmFilterRuleDialog.prototype._createConditionControl =
+function(parent, segment, i) {
 	if (segment.getIndex() == 0) {
 		var format = segment.getSegmentFormat();
 		var limits = format.getLimits();
@@ -175,7 +172,8 @@ ZmFilterRuleDialog.prototype._createConditionControl = function(parent, segment,
 	}
 };
 
-ZmFilterRuleDialog.prototype._createTabGroup = function() {
+ZmFilterRuleDialog.prototype._createTabGroup =
+function() {
 	// create tabgroups
 	var id = this._htmlElId;
 	this._tabGroup = new DwtTabGroup(id);
@@ -208,7 +206,7 @@ ZmFilterRuleDialog.prototype._createTabGroup = function() {
 
 	// add dialog buttons
 	tabIndexes[MAX_VALUE - 1] = this.getButton(DwtDialog.OK_BUTTON);
-	tabIndexes[MAX_VALUE - 0] = this.getButton(DwtDialog.CANCEL_BUTTON);
+	tabIndexes[MAX_VALUE] = this.getButton(DwtDialog.CANCEL_BUTTON);
 
 	// populate tabgroup
 	var keys = AjxUtil.keys(tabIndexes);
@@ -218,84 +216,97 @@ ZmFilterRuleDialog.prototype._createTabGroup = function() {
 	}
 };
 
-/*
+/**
 * Draws a table of conditions or actions. Returns the ID of the last row added.
 *
 * @param rule			[ZmFilterRule]		source rule
-* @param isCondition	[boolean]			true if we're drawing conditions
+* @param isCondition	[boolean]			true if we're drawing conditions (as opposed to actions)
+* @param tableId		[String]			Dwt Id representing the parent table
+* @param rowData		[Object]			meta data used to figure out which Dwt widget to create
+* @param tabGroup		[DwtTabGroup]		tab group for focus
 */
 ZmFilterRuleDialog.prototype._renderTable =
-function(rule, isCondition) {
-	var tabGroup = isCondition ? this._conditionsTabGroup : this._actionsTabGroup;
-	var table = document.getElementById(isCondition ? this._conditionsTableId : this._actionsTableId);
-	var rowData = isCondition ? rule.getConditions() : rule.getActions();
-	var row, len = rowData.length;
-	for (var i = 0; i < len; i++) {
-		var o = rowData[i];
-		if (isCondition) {
-			if (o.subject == ZmFilterRule.C_HEADER && o.subjectModifier && ZmFilterRule.C_VALUE_MAP[o.subjectModifier]) {
-				o.subject = ZmFilterRule.C_VALUE_MAP[o.subjectModifier];
-				o.subjectModifier = null;
-			}
-		} else {
-			// don't show action if it's disabled
-			var action = o.name;
-			var actionCfg = ZmFilterRule.ACTIONS[action];
+function(rule, isCondition, tableId, rowData, tabGroup) {
+	var table = document.getElementById(tableId);
+	var row;
+	for (var i in rowData) {
+		var data = rowData[i];
+		if (isCondition && i == "condition") { continue; }
+
+		// don't show action if it's disabled
+		if (!isCondition) {
+			var actionIndex = ZmFilterRule.A_VALUE_MAP[i];
+			var actionCfg = ZmFilterRule.ACTIONS[actionIndex];
 			if (actionCfg.precondition && !appCtxt.get(actionCfg.precondition)) {
 				continue;
 			}
 		}
-		var rowId = Dwt.getNextId();
-		this._enterTabScope(rowId);
-		try {
-			var html = this._getRowHtml(o, isCondition, rowId);
-			if (html) {
-				row = Dwt.parseHtmlFragment(html, true);
-				table.tBodies[0].appendChild(row);
-				tabGroup.addMember(this._getCurrentTabScope());
+
+		for (j = 0; j < data.length; j++) {
+			var rowId = Dwt.getNextId();
+			this._enterTabScope(rowId);
+			try {
+				var html = this._getRowHtml(data[j], i, isCondition, rowId);
+				if (html) {
+					row = Dwt.parseHtmlFragment(html, true);
+					table.tBodies[0].appendChild(row);
+					tabGroup.addMember(this._getCurrentTabScope());
+				}
+			}
+			finally {
+				this._exitTabScope();
 			}
 		}
-		finally {
-			this._exitTabScope();
-		}
 	}
+
 	this._resetOperations(isCondition);
-	return row ? row.id : null;
+
+	return (row ? row.id : null);
 };
 
-/*
+/**
 * Returns the HTML for a single condition or action row.
 *
-* @param data			[object]	a ZmCondition or ZmAction
+* @param data			[object]	an object containing meta info about the filter rule condition or action
+* @param test			[String]	type of test condition (headerTest, sizeTest, bodyTest, etc)
 * @param isCondition	[boolean]	true if we're rendering a condition row
+* @param rowId			[String]	Unique ID representing this row
 */
 ZmFilterRuleDialog.prototype._getRowHtml =
-function(data, isCondition, rowId) {
-	var conf = isCondition ? ZmFilterRule.CONDITIONS[data.subject] : ZmFilterRule.ACTIONS[data.name];
+function(data, test, isCondition, rowId) {
+	var conf;
+	if (isCondition) {
+		conf = this._getConditionFromTest(test, data);
+	} else {
+		var actionId = ZmFilterRule.A_VALUE_MAP[test];
+		conf = ZmFilterRule.ACTIONS[actionId];
+	}
 
 	var html = [];
 	var i = 0;
 
 	this._inputs[rowId] = {};
 
-	html[i++] = "<tr id='" + rowId + "'>";
+	html[i++] = "<tr id='";
+	html[i++] = rowId;
+	html[i++] = "'>";
 
 	if (isCondition) {
 		this._inputs[rowId].isCondition = true;
-		html[i++] = this._createRowComponent(true, "subject", ZmFilterRule.CONDITIONS_LIST, data.subject, rowId);
-		html[i++] = this._createRowComponent(conf, "subjectMod", conf.smOptions, data.subjectModifier, rowId);
-		html[i++] = this._createRowComponent(conf, "ops", conf.opsOptions, data.comparator, rowId, data);
-		html[i++] = this._createRowComponent(conf, "value", conf.vOptions, data.value, rowId, data);
-		html[i++] = this._createRowComponent(conf, "valueMod", conf.vmOptions, data.valueModifier, rowId);
+		html[i++] = this._createRowComponent(true, "subject", ZmFilterRule.CONDITIONS_LIST, data, test, rowId);
+		html[i++] = this._createRowComponent(conf, "subjectMod", conf.smOptions, data, test, rowId);
+		html[i++] = this._createRowComponent(conf, "ops", conf.opsOptions, data, test, rowId);
+		html[i++] = this._createRowComponent(conf, "value", conf.vOptions, data, test, rowId);
+		html[i++] = this._createRowComponent(conf, "valueMod", conf.vmOptions, data, test, rowId);
 	} else {
-		if (data.name == ZmFilterRule.A_STOP) {
+		if (test == ZmFilterRule.A_NAME_STOP) {
 			var stopField = document.getElementById(this._stopCheckboxId);
 			stopField.checked = true;
 			return;
 		}
 		html[i++] = "<td><table><tr>";
-		html[i++] = this._createRowComponent(false, "name", ZmFilterRule.ACTIONS_LIST, data.name, rowId);
-		html[i++] = this._createRowComponent(conf, "param", conf.pOptions, data.arg, rowId);
+		html[i++] = this._createRowComponent(false, "name", ZmFilterRule.ACTIONS_LIST, data, test, rowId);
+		html[i++] = this._createRowComponent(conf, "param", conf.pOptions, data, test, rowId);
 		html[i++] = "</tr></table></td>";
 	}
 	html[i++] = this._getPlusMinusHtml(rowId, isCondition);
@@ -304,7 +315,30 @@ function(data, isCondition, rowId) {
 	return html.join("");
 };
 
-ZmFilterRuleDialog.prototype._enterTabScope = function(id) {
+ZmFilterRuleDialog.prototype._getConditionFromTest =
+function(test, data) {
+	var condition;
+	switch (test) {
+		case ZmFilterRule.TEST_ADDRESS:			condition = null; break; // currently not supported.
+		case ZmFilterRule.TEST_HEADER:
+			condition = ZmFilterRule.C_HEADER_MAP[data.header];
+			if (!condition) { // means custom header
+				condition = ZmFilterRule.C_HEADER;
+			}
+			break;
+		case ZmFilterRule.TEST_HEADER_EXISTS:	condition = ZmFilterRule.C_HEADER; break;
+		case ZmFilterRule.TEST_SIZE:			condition = ZmFilterRule.C_SIZE; break;
+		case ZmFilterRule.TEST_DATE:			condition = ZmFilterRule.C_DATE; break;
+		case ZmFilterRule.TEST_BODY:			condition = ZmFilterRule.C_BODY; break;
+		case ZmFilterRule.TEST_ATTACHMENT:		condition = ZmFilterRule.C_ATT; break;
+		case ZmFilterRule.TEST_ADDRBOOK:		condition = ZmFilterRule.C_ADDRBOOK; break;
+	}
+
+	return (condition ? ZmFilterRule.CONDITIONS[condition] : null);
+};
+
+ZmFilterRuleDialog.prototype._enterTabScope =
+function(id) {
 	if (!this._tabScope) {
 		this._tabScope = [];
 	}
@@ -313,39 +347,41 @@ ZmFilterRuleDialog.prototype._enterTabScope = function(id) {
 	return tabGroup;
 };
 
-ZmFilterRuleDialog.prototype._getCurrentTabScope = function() {
+ZmFilterRuleDialog.prototype._getCurrentTabScope =
+function() {
 	if (this._tabScope) {
 		return this._tabScope[this._tabScope.length - 1];
 	}
 };
 
-ZmFilterRuleDialog.prototype._exitTabScope = function() {
+ZmFilterRuleDialog.prototype._exitTabScope =
+function() {
 	return this._tabScope ? this._tabScope.pop() : null;
 };
 
-/*
+/**
 * Adds a new condition or action row to its table.
 *
 * @param isCondition	[boolean]	true if we're adding a condition row
-* @param rowId			[int]*		ID of row to clone
 */
 ZmFilterRuleDialog.prototype._addRow =
-function(isCondition, rowId) {
-	var rule = ZmFilterRule.DUMMY_RULE;
-	if (rowId) {
-		if (isCondition) {
-			rule.clearConditions();
-			rule.addCondition(this._getConditionFromRow(rowId));
-		} else {
-			rule.clearActions();
-			rule.addAction(this._getActionFromRow(rowId));
-		}
+function(isCondition) {
+	var rule = ZmFilterRule.getDummyRule();
+	var tableId, data, tabGroup;
+	if (isCondition) {
+		tableId = this._conditionsTableId;
+		data = rule.conditions;
+		tabGroup = this._conditionsTabGroup;
+	} else {
+		tableId = this._actionsTableId;
+		data = rule.actions;
+		tabGroup = this._actionsTabGroup;
 	}
-	var newRowId = this._renderTable(rule, isCondition);
+	var newRowId = this._renderTable(rule, isCondition, tableId, data, tabGroup);
 	this._addDwtObjects(newRowId);
 };
 
-/*
+/**
 * Removes a condition or action row from its table. Also cleans up any DWT
 * objects the row was using.
 *
@@ -355,7 +391,7 @@ function(isCondition, rowId) {
 ZmFilterRuleDialog.prototype._removeRow =
 function(rowId, isCondition) {
 	var row = document.getElementById(rowId);
-	if (!row) return;
+	if (!row) { return; }
 	
 	var table = document.getElementById(isCondition ? this._conditionsTableId : this._actionsTableId);
 	var rows = table.rows;
@@ -369,7 +405,7 @@ function(rowId, isCondition) {
 	delete this._inputs[rowId];
 };
 
-/*
+/**
 * Creates an input widget and returns HTML for a table cell that will contain it.
 * The config for a condition or action is based on its main operator; for conditions
 * it's called subject ("from", "body", etc), and for actions it's just called the
@@ -380,36 +416,39 @@ function(rowId, isCondition) {
 *										the actual subject or action (means "isCondition")
 * @param field		[string]			name of the input field
 * @param options	[array]				if the field type is a select, its options
-* @param dataValue	[string]			current value of the field, if any
+* @param rowData	[Object]			current value of the field, if any
+* @param testType	[String]			type of test condition (i.e. headerTest, attachmentTest, bodyTest, etc)
 * @param rowId		[string]			ID of the containing row
-* @param data		[object]*			ZmCondition or ZmAction
 */
 ZmFilterRuleDialog.prototype._createRowComponent =
-function(conf, field, options, dataValue, rowId, data) {
+function(conf, field, options, rowData, testType, rowId) {
 	var tabGroup = this._getCurrentTabScope();
-	var isMainSelect = (typeof conf == "boolean");
+
 	var isCondition, type;
+	var isMainSelect = (typeof conf == "boolean");
 	if (isMainSelect) {
-		type = ZmFilterRule.TYPE_SELECT; // subject/name always a SELECT
+		type = ZmFilterRule.TYPE_SELECT;
 		isCondition = conf;
 	} else {
 		type = conf[field];
-		if (!type)
-			return "<td style='visibility:hidden'></td>";
+		if (!type) {
+			return "<td></td>";
+		}
 	}
-	
+
+	var dataValue = this._getDataValue(isMainSelect, testType, field, rowData);
+
 	var id = Dwt.getNextId();
 	if (type == ZmFilterRule.TYPE_INPUT) {
 		var input = new DwtInputField({parent: this, type: DwtInputField.STRING, initialValue: dataValue, size: 20});
 		input.setData(ZmFilterRuleDialog.ROW_ID, rowId);
 		this._inputs[rowId][field] = {id: id, dwtObj: input};
-		if (field == "value" && data.subject == ZmFilterRule.C_HEADER) {
-			input.setVisibility(!(data.comparator == ZmFilterRule.OP_EXISTS || data.comparator == ZmFilterRule.OP_NOT_EXISTS));
-		}
+//		if (field == "value" && testType == ZmFilterRule.TEST_HEADER) {
+//			input.setVisibility(!(data.comparator == ZmFilterRule.OP_EXISTS || data.comparator == ZmFilterRule.OP_NOT_EXISTS));
+//		}
 		tabGroup.addMember(input.getTabGroupMember());
-		return "<td id='" + id + "' valign='center' class='paddedTableCell'></td>";
-
-	} else if (type == ZmFilterRule.TYPE_SELECT) {
+	}
+	else if (type == ZmFilterRule.TYPE_SELECT) {
 		var select = new DwtSelect({parent:this});
 		select.setData(ZmFilterRuleDialog.ROW_ID, rowId);
 		this._inputs[rowId][field] = {id: id, dwtObj: select};
@@ -417,7 +456,7 @@ function(conf, field, options, dataValue, rowId, data) {
 			select.setData(ZmFilterRuleDialog.IS_CONDITION, isCondition);
 			select.addChangeListener(this._rowChangeLstnr);
 		} else if (field == "ops") {
-			if (data.subject == ZmFilterRule.C_HEADER) {
+			if (testType == ZmFilterRule.TEST_HEADER) {
 				select.setData(ZmFilterRuleDialog.IS_CONDITION, isCondition);
 				select.addChangeListener(this._opsChangeLstnr);
 			}
@@ -452,19 +491,14 @@ function(conf, field, options, dataValue, rowId, data) {
 			select.setSelected(0);
 		}
 		tabGroup.addMember(select.getTabGroupMember());
-		return "<td id='" + id + "' valign='center' class='paddedTableCell'></td>";
-
-	} else if (type == ZmFilterRule.TYPE_CALENDAR) {
+	}
+	else if (type == ZmFilterRule.TYPE_CALENDAR) {
 		// create button with calendar that hangs off menu
 		var dateButton = new DwtButton({parent:this});
 		dateButton.setSize(ZmFilterRuleDialog.CHOOSER_BUTTON_WIDTH, Dwt.DEFAULT);
 		var date, dateText;
 		if (dataValue) {
-			// convert from filter format (yyyymmdd) to display format (dd/mm/yyyy)
-			var yyyy = parseInt(dataValue.substr(0, 4), 10);
-			var mm = parseInt(dataValue.substr(4, 2), 10) - 1;
-			var dd = parseInt(dataValue.substr(6, 2), 10);
-			date = new Date(yyyy, mm, dd);
+			date = new Date(dataValue);
 			dateText = AjxDateUtil.simpleComputeDateStr(date);
 		} else {
 			date = new Date();
@@ -481,16 +515,15 @@ function(conf, field, options, dataValue, rowId, data) {
 		cal._dateButton = dateButton;
 		this._inputs[rowId][field] = {id: id, dwtObj: dateButton};
 		tabGroup.addMember(dateButton.getTabGroupMember());
-		return "<td id='" + id + "' valign='center' class='paddedTableCell'></td>";
-
-	} else if (type == ZmFilterRule.TYPE_FOLDER_PICKER || type == ZmFilterRule.TYPE_TAG_PICKER) {
+	}
+	else if (type == ZmFilterRule.TYPE_FOLDER_PICKER || type == ZmFilterRule.TYPE_TAG_PICKER) {
 		var button = new DwtButton({parent:this});
-		var organizer = null;
+		var organizer;
 		if (dataValue) {
 			if (type == ZmFilterRule.TYPE_FOLDER_PICKER) {
 				var folderTree = appCtxt.getFolderTree();
 				if (folderTree) {
-                    dataValue = ( dataValue.charAt(0) == '/' ) ? dataValue.substring(1) : dataValue;
+                    dataValue = (dataValue.charAt(0) == '/') ? dataValue.substring(1) : dataValue;
                     organizer = folderTree.getByPath(dataValue, true);
 				}
 			} else {
@@ -507,11 +540,116 @@ function(conf, field, options, dataValue, rowId, data) {
 		this._inputs[rowId][field] = {id: id, dwtObj: button};
 		button.addSelectionListener(this._browseLstnr);
 		tabGroup.addMember(button.getTabGroupMember());
-		return "<td id='" + id + "' valign='center' class='paddedTableCell'></td>";
 	}
+
+	return "<td id='" + id + "' valign='center' class='paddedTableCell'></td>";
 };
 
-/*
+ZmFilterRuleDialog.prototype._getDataValue =
+function(isMainSelect, testType, field, rowData) {
+	var dataValue;
+	if (isMainSelect) {
+		switch (testType) {
+			case ZmFilterRule.TEST_HEADER:
+				dataValue = ZmFilterRule.C_HEADER_MAP[rowData.header];
+				if (!dataValue) { // means custom header
+					dataValue = ZmFilterRule.C_HEADER;
+				}
+				break;
+			case ZmFilterRule.TEST_HEADER_EXISTS:	dataValue = ZmFilterRule.C_HEADER; break;
+			case ZmFilterRule.TEST_SIZE:			dataValue = ZmFilterRule.C_SIZE; break;
+			case ZmFilterRule.TEST_DATE:			dataValue = ZmFilterRule.C_DATE; break;
+			case ZmFilterRule.TEST_BODY:			dataValue = ZmFilterRule.C_BODY; break;
+			case ZmFilterRule.TEST_ATTACHMENT:		dataValue = ZmFilterRule.C_ATT; break;
+			case ZmFilterRule.TEST_ADDRBOOK:		dataValue = ZmFilterRule.C_ADDRBOOK; break;
+			// default returns action type
+			default:								return ZmFilterRule.A_VALUE_MAP[testType];
+		}
+	} else {
+		if (testType == ZmFilterRule.TEST_HEADER) {
+			if (field == "subjectMod") {
+				dataValue = rowData.header;
+			} else if (field == "ops") {
+				dataValue = ZmFilterRule.OP_VALUE_MAP[rowData.stringComparison];
+			} else if (field == "value") {
+				dataValue = rowData.value;
+			}
+		}
+		else if (testType == ZmFilterRule.TEST_HEADER_EXISTS) {
+			if (field == "subjectMod") {
+				dataValue = rowData.header;
+			} else if (field == "ops") {
+				dataValue = (rowData.negative == "1")
+					? ZmFilterRule.OP_NOT_EXISTS
+					: ZmFilterRule.OP_EXISTS;
+			} else if (field == "value") {
+				dataValue = rowData.value;
+			}
+		}
+		else if (testType == ZmFilterRule.TEST_SIZE) {
+			if (field == "ops") {
+				dataValue = ZmFilterRule.OP_VALUE_MAP[rowData.numberComparison];
+				if (dataValue && rowData.negative == "1") { dataValue++; }
+			} else if (field == "valueMod") {
+				var m = rowData.s ? rowData.s.match(/(\d+)([A-Z]*)/) : null;
+				dataValue = m ? ((!m[2]) ? "B" : m[2]) : null;
+			} else if (field == "value") {
+				dataValue = rowData.s ? rowData.s.match(/(\d+)/)[0] : null;
+			}
+		}
+		else if (testType == ZmFilterRule.TEST_DATE) {
+			if (field == "ops") {
+				dataValue = ZmFilterRule.OP_VALUE_MAP[rowData.dateComparison];
+				if (dataValue && rowData.negative == "1") { dataValue++; }
+			} else if (field == "value") {
+				dataValue = rowData.d * 1000;
+			}
+		}
+		else if (testType == ZmFilterRule.TEST_BODY) {
+			if (field == "ops") {
+				dataValue = (rowData.negative == "1")
+					? ZmFilterRule.OP_NOT_CONTAINS
+					: ZmFilterRule.OP_CONTAINS;
+			} else if (field == "value") {
+				dataValue = rowData.value;
+			}
+		}
+		else if (testType == ZmFilterRule.TEST_ATTACHMENT) {
+			if (field == "ops") {
+				dataValue = (rowData.negative == "1")
+					? ZmFilterRule.OP_NOT_EXISTS
+					: ZmFilterRule.OP_EXISTS;
+			}
+		}
+		else if (testType == ZmFilterRule.TEST_ADDRBOOK) {
+			if (field == "subjectMod") {
+				dataValue = rowData.header;
+			} else if (field == "ops") {
+				dataValue = (rowData.negative == "1")
+					? ZmFilterRule.OP_NOT_IN
+					: ZmFilterRule.OP_IN;
+			} else if (field == "value") {
+				dataValue = rowData.value;
+			}
+		}
+		else if (testType == ZmFilterRule.A_NAME_FOLDER) {
+			dataValue = rowData.folderPath;
+		}
+		else if (testType == ZmFilterRule.A_NAME_FLAG) {
+			dataValue = rowData.flagName;
+		}
+		else if (testType == ZmFilterRule.A_NAME_TAG) {
+			dataValue = rowData.tagName;
+		}
+		else if (testType == ZmFilterRule.A_NAME_FORWARD) {
+			dataValue = rowData.a;
+		}
+	}
+
+	return dataValue;
+};
+
+/**
 * Returns HTML for the + and - buttons at the end of each row.
 *
 * @param rowId			[string]	ID of the row that gets the buttons
@@ -521,14 +659,13 @@ ZmFilterRuleDialog.prototype._getPlusMinusHtml =
 function(rowId, isCondition) {
 	var tabGroup = this._getCurrentTabScope();
 	var html = [];
-	html.push("<td style='align:right;'><table border=0 cellpadding=0 cellspacing=0><tr>");
-	html.push("<td width='100%' style=''></td>"); // right-justify the plus/minus buttons
+	var j = 0;
+	html[j++] = "<td style='align:right;'><table border=0 cellpadding=0 cellspacing=0><tr>";
+	html[j++] = "<td width='100%' style=''></td>"; // right-justify the plus/minus buttons
 	var buttons = ["Plus", "Minus"];
 	for (var i = 0; i < buttons.length; i++) {
 		var b = buttons[i];
 		var button = new DwtButton({parent:this});
-// MOW: this was messing up velodrome skin
-//		button.setSize(ZmFilterRuleDialog.PLUS_MINUS_BUTTON_WIDTH, Dwt.DEFAULT);
 		button.setImage(b);
 		button.setData(ZmFilterRuleDialog.ROW_ID, rowId);
 		button.setData(ZmFilterRuleDialog.IS_CONDITION, isCondition);
@@ -536,14 +673,16 @@ function(rowId, isCondition) {
 		button.addSelectionListener(this._plusMinusLstnr);
 		var id = Dwt.getNextId();
 		this._inputs[rowId][b] = {id: id, dwtObj: button};
-		html.push("<td id='" + id + "' valign='center' class='paddedTableCell'></td>");
+		html[j++] = "<td id='";
+		html[j++] = id;
+		html[j++] = "' valign='center' class='paddedTableCell'></td>";
 		tabGroup.addMember(button);
 	}
-	html.push("</tr></table></td>");
+	html[j++] = "</tr></table></td>";
 	return html.join("");
 };
 
-/*
+/**
 * If there's only one row, disable its Minus button (since removing it would
 * leave the user with nothing).
 *
@@ -551,9 +690,11 @@ function(rowId, isCondition) {
 */
 ZmFilterRuleDialog.prototype._resetOperations =
 function(isCondition) {
-	var table = document.getElementById(isCondition ? this._conditionsTableId : this._actionsTableId);
+	var tableId = isCondition ? this._conditionsTableId : this._actionsTableId;
+	var table = document.getElementById(tableId);
 	var rows = table.rows;
 	if (!(rows && rows.length)) { return; }
+
 	var input = this._inputs[rows[0].id];
 	if (input) {
 		var minusButton = input["Minus"].dwtObj;
@@ -565,7 +706,7 @@ function(isCondition) {
 	}
 };
 
-/*
+/**
 * Update the inputs for a row based on the subject (condition), or action name. The old row is
 * removed, and a new row is created and inserted.
 *
@@ -580,7 +721,7 @@ function(ev) {
 	var tabGroup = isCondition ? this._conditionsTabGroup : this._actionsTabGroup;
 
 	// preserve op and value between header fields
-	var comparator = null, dataValue = null;
+	var comparator, dataValue;
 	if (isCondition && (ZmFilterRule.IS_HEADER[oldValue] && ZmFilterRule.IS_HEADER[newValue])) {
 		comparator = this._getInputValue(this._inputs[rowId], ZmFilterRule.CONDITIONS[oldValue], "ops");
 		dataValue = this._getInputValue(this._inputs[rowId], ZmFilterRule.CONDITIONS[oldValue], "value");
@@ -592,11 +733,20 @@ function(ev) {
 	this._removeDwtObjects(rowId);
 	table.deleteRow(index);
 	var newIndex = (index >= table.rows.length) ? null : index; // null means add to end
-	
-	var data = isCondition ? new ZmCondition(newValue, comparator, dataValue) : new ZmAction(newValue);
+
+	var test, data;
+	if (isCondition) {
+		test = ZmFilterRule.C_TEST_MAP[newValue];
+		var subjectMod = (test == ZmFilterRule.TEST_HEADER) ? ZmFilterRule.C_HEADER_VALUE[newValue] : null;
+		data = ZmFilterRule.getConditionData(test, comparator, dataValue, subjectMod);
+	} else {
+		test = ZmFilterRule.A_VALUE[newValue];
+		data = ZmFilterRule.getActionData(test);
+	}
+
 	this._enterTabScope(rowId);
 	try {
-		var html = this._getRowHtml(data, isCondition, rowId);
+		var html = this._getRowHtml(data, test, isCondition, rowId);
 		if (html) {
 			row = Dwt.parseHtmlFragment(html, true);
 			if (!row) {
@@ -615,7 +765,7 @@ function(ev) {
 	}
 };
 
-/*
+/**
 * For the "Header Named" input only - hide the last input field (value) if the selected op is "exists" or
 * "does not exist", since those are unary ops which don't take a value.
 *
@@ -630,7 +780,7 @@ function(ev) {
 	input["value"].dwtObj.setVisibility(!(newValue == ZmFilterRule.OP_EXISTS || newValue == ZmFilterRule.OP_NOT_EXISTS));
 };
 
-/*
+/**
 * Updates the calendar button text with a date that's just been selected.
 *
 * @param ev		[DwtEvent]		event (from DwtCalendar)
@@ -645,7 +795,7 @@ function(ev) {
 	button.setData(ZmFilterRuleDialog.DATA, date);
 };
 
-/*
+/**
 * Adds or removes a condition/action row.
 *
 * @param ev		[DwtEvent]		event
@@ -653,18 +803,18 @@ function(ev) {
 ZmFilterRuleDialog.prototype._plusMinusListener =
 function(ev) {
 	var button = ev.item;
-	var rowId = button.getData(ZmFilterRuleDialog.ROW_ID);
 	var isCondition = button.getData(ZmFilterRuleDialog.IS_CONDITION);
 	var doAdd = button.getData(ZmFilterRuleDialog.DO_ADD);
 	if (doAdd) {
-		this._addRow(isCondition, rowId);
+		this._addRow(isCondition);
 	} else {
+		var rowId = button.getData(ZmFilterRuleDialog.ROW_ID);
 		this._removeRow(rowId, isCondition);
 	}
 	this._resetOperations(isCondition);
 };
 
-/*
+/**
 * Pops up one of two dialogs, for choosing a folder or a tag.
 * 
 * @param ev		[DwtEvent]		event
@@ -674,19 +824,20 @@ function(ev) {
 	var dialog;
 	var button = ev.item;
 	var type = button.getData(ZmFilterRuleDialog.BROWSE_TYPE);
-	var dialog = (type == ZmFilterRule.TYPE_FOLDER_PICKER) ? appCtxt.getChooseFolderDialog() :
-															 appCtxt.getPickTagDialog();
+	var dialog = (type == ZmFilterRule.TYPE_FOLDER_PICKER)
+		? appCtxt.getChooseFolderDialog()
+		: appCtxt.getPickTagDialog();
 	dialog.reset();
 	dialog.setTitle((type == ZmFilterRule.TYPE_FOLDER_PICKER) ? ZmMsg.chooseFolder : ZmMsg.chooseTag);
 	dialog.registerCallback(DwtDialog.OK_BUTTON, this._browseSelectionCallback, this, ev.item);
-	dialog.popup({overviewId:this.toString(),skipSyncFailureSubs:appCtxt.isOffline});
+	dialog.popup({overviewId:this.toString(), skipSyncFailureSubs:appCtxt.isOffline});
 };
 
-/*
+/**
 * Changes the text of a button to the folder/tag that the user just chose.
 *
-* @param	[DwtButton]		the browse button
-* @param	[ZmOrganizer]	the folder or tag that was chosen
+* @param	button		[DwtButton]		the browse button
+* @param	organizer	[ZmOrganizer]	the folder or tag that was chosen
 */
 ZmFilterRuleDialog.prototype._browseSelectionCallback =
 function(button, organizer) {
@@ -695,44 +846,43 @@ function(button, organizer) {
 	var dialog = isFolder ? appCtxt.getChooseFolderDialog() : appCtxt.getPickTagDialog();
 	if (organizer) {
 		// Bug 24425, don't allow root folder selection
-		if (isFolder && organizer.nId == ZmFolder.ID_ROOT)
-			return;
+		if (isFolder && organizer.nId == ZmFolder.ID_ROOT) { return; }
+
 		button.setText(organizer.getName(false, null, true));
-		var value = isFolder ? organizer.getPath(false, false, null, true, true) :
-							   organizer.getName(false, null, true);
+		var value = isFolder
+			? organizer.getPath(false, false, null, true, true)
+			: organizer.getName(false, null, true);
 		button.setData(ZmFilterRuleDialog.DATA, value);
 	}
 	dialog.popdown();
 };
 
-/*
+/**
 * Attaches input widgets to the DOM tree based on placeholder IDs.
 *
-* @param	[string]*	rowId	ID of a single row to add inputs to
+* @param rowId	[String]*	ID of a single row to add inputs to
 */
 ZmFilterRuleDialog.prototype._addDwtObjects =
 function(rowId) {
 	for (var id in this._inputs) {
-		if (rowId && (id != rowId)) continue;
+		if (rowId && (id != rowId)) { continue; }
 		var row = this._inputs[id];
 		for (var f in row) {
 			var field = row[f];
-			if (field.id && field.dwtObj) {
-				var el = field.dwtObj.getHtmlElement();
-				if (el) {
-					el.parentNode.removeChild(el);
-					document.getElementById(field.id).appendChild(el);
-					el._rowId = id;
-				}
+			var el = (field.id && field.dwtObj) ? field.dwtObj.getHtmlElement() : null;
+			if (el) {
+				el.parentNode.removeChild(el);
+				document.getElementById(field.id).appendChild(el);
+				el._rowId = id;
 			}
 		}
 	}
 };
 
-/*
+/**
 * Destroys input widgets.
 *
-* @param	[string]*	rowId	ID of a single row to clean up
+* @param rowId	[String]*	ID of a single row to clean up
 */
 ZmFilterRuleDialog.prototype._removeDwtObjects =
 function(rowId) {
@@ -747,7 +897,7 @@ function(rowId) {
 	}
 };
 
-/*
+/**
 * Saves the newly created/edited rule.
 *
 * @param ev		[DwtEvent]		event
@@ -780,40 +930,41 @@ function(ev) {
 
 	// adding a rule always starts with dummy
 	if (this._editMode) {
-		rule.setName(name);
-		rule.setGroupOp(anyAll);
+		rule.name = name;
+		rule.active = active;
 		rule.clearConditions();
 		rule.clearActions();
 	} else {
-		rule = new ZmFilterRule(name);
-		rule.setGroupOp(anyAll);
+		rule = new ZmFilterRule(name, active);
 	}
-	rule.setActive(active);
-	
+	rule.setGroupOp(anyAll);
+
 	// get input from tables so order is preserved
 	var table = document.getElementById(this._conditionsTableId);
 	var rows = table.rows;
 	for (var i = 0; i < rows.length; i++) {
-		var condition = this._getConditionFromRow(rows[i].id);
-		if (msg = this._checkCondition(condition))
+		var c = this._getConditionFromRow(rows[i].id);
+		if (msg = this._checkCondition(c)) {
 			break;
-		else
-			rule.addCondition(condition);
+		} else {
+			rule.addCondition(c.testType, c.comparator, c.value, c.subjectMod);
+		}
 	}
 	if (!msg) {
 		table = document.getElementById(this._actionsTableId);
 		rows = table.rows;
 		for (var i = 0; i < rows.length; i++) {
 			var action = this._getActionFromRow(rows[i].id);
-			if (msg = this._checkAction(action))
+			if (msg = this._checkAction(action)) {
 				break;
-			else
-				rule.addAction(action);
+			}
+			rule.addAction(action.actionType, action.value);
 		}
 	}
 	var stopAction = document.getElementById(this._stopCheckboxId).checked;
-	if (stopAction)
-		rule.addAction(new ZmAction(ZmFilterRule.A_STOP));
+	if (stopAction) {
+		rule.addAction(ZmFilterRule.A_STOP);
+	}
 
 	if (msg) {
 		var msgDialog = appCtxt.getMsgDialog();
@@ -823,10 +974,11 @@ function(ev) {
 	}
 	
 	var respCallback = new AjxCallback(this, this._handleResponseOkButtonListener);
-	if (this._editMode)
+	if (this._editMode) {
 		this._rules._saveRules(this._rules.getIndexOfRule(rule), true, respCallback);
-	else
+	} else {
 		this._rules.addRule(rule, this._referenceRule, respCallback);
+	}
 };
 
 ZmFilterRuleDialog.prototype._handleResponseOkButtonListener =
@@ -834,26 +986,45 @@ function() {
 	this.popdown();
 };
 
-/*
-* Creates a ZmCondition based on the values of a condition row.
+/**
+* Creates an Object based on the values of a condition row.
 *
 * @param rowId	[string]	row ID
 */
 ZmFilterRuleDialog.prototype._getConditionFromRow =
 function(rowId) {
 	var inputs = this._inputs[rowId];
+
 	var subject = inputs.subject.dwtObj.getValue();
 	var conf = ZmFilterRule.CONDITIONS[subject];
 	var comparator = this._getInputValue(inputs, conf, "ops");
 	var value = AjxStringUtil.trim(this._getInputValue(inputs, conf, "value"));
 	var subjectMod = this._getInputValue(inputs, conf, "subjectMod");
 	var valueMod = this._getInputValue(inputs, conf, "valueMod");
+	var testType = ZmFilterRule.C_TEST_MAP[subject];
 
-	return new ZmCondition(subject, comparator, value, subjectMod, valueMod);
+	if (testType == ZmFilterRule.TEST_HEADER) {
+		if (subject == ZmFilterRule.C_HEADER &&
+			(comparator == ZmFilterRule.OP_EXISTS ||
+			 comparator == ZmFilterRule.OP_NOT_EXISTS))
+		{
+			testType = ZmFilterRule.TEST_HEADER_EXISTS;
+		}
+		else {
+			if (subject != ZmFilterRule.C_HEADER) {
+				subjectMod = ZmFilterRule.C_HEADER_VALUE[subject];
+			}
+		}
+	}
+	else if (testType == ZmFilterRule.TEST_SIZE && valueMod && valueMod != "B") {
+		value += valueMod;
+	}
+
+	return { testType:testType, comparator:comparator, value:value, subjectMod:subjectMod };
 };
 
-/*
-* Creates a ZmAction based on the values of an action row.
+/**
+* Returns an Object based on the values of an action row.
 *
 * @param rowId	[string]	row ID
 */
@@ -862,12 +1033,12 @@ function(rowId) {
 	var inputs = this._inputs[rowId];
 	var name = inputs.name.dwtObj.getValue();
 	var conf = ZmFilterRule.ACTIONS[name];
-	var arg = this._getInputValue(inputs, conf, "param");
+	var value = this._getInputValue(inputs, conf, "param");
 
-	return new ZmAction(name, arg);
+	return {actionType:name, value:value};
 };
 
-/*
+/**
 * Retrieves the value of an input based on what type it is. For all but text
 * inputs, we can get it from a DWT object.
 *
@@ -886,7 +1057,7 @@ function(inputs, conf, field) {
 		return inputs[field].dwtObj.getValue();
 	} else if (type == ZmFilterRule.TYPE_CALENDAR) {
 		var date = inputs[field].dwtObj.getData(ZmFilterRuleDialog.DATA);
-		return AjxDateFormat.format("yyyyMMdd", date);
+		return String(date.getTime() / 1000);
 	} else if (type == ZmFilterRule.TYPE_FOLDER_PICKER) {
 		return inputs[field].dwtObj.getData(ZmFilterRuleDialog.DATA);
 	} else if (type == ZmFilterRule.TYPE_TAG_PICKER) {
@@ -894,7 +1065,7 @@ function(inputs, conf, field) {
 	}
 };
 
-/*
+/**
 * Given a row, returns its index in its containing table.
 *
 * @param row			[element]	a table row (TR)
@@ -904,14 +1075,14 @@ ZmFilterRuleDialog.prototype._getIndexForRow =
 function(row, isCondition) {
 	var table = document.getElementById(isCondition ? this._conditionsTableId : this._actionsTableId);
 	var rows = table.rows;
-	for (var i = 0; i < rows.length; i++)
-		if (rows[i] == row)
-			return i;
+	for (var i = 0; i < rows.length; i++) {
+		if (rows[i] == row) { return i; }
+	}
 
 	return null;
 };
 
-/*
+/**
 * Buses tables, hopes to make it big in movies some day.
 */
 ZmFilterRuleDialog.prototype._clearTables =
@@ -927,10 +1098,10 @@ function() {
 	}
 };
 
-/*
+/**
 * Returns true if the condition has the necessary parts, an error message otherwise.
 *
-* @param condition	[ZmCondition]	condition
+* @param condition	[Object]	condition
 */
 ZmFilterRuleDialog.prototype._checkCondition =
 function(condition) {
@@ -945,25 +1116,26 @@ function(condition) {
 		if (conf[f] && !condition[key]) {
 			return this._conditionErrorFormatter.format([ZmFilterRule.C_LABEL[condition.subject]]);
 		}
-		if (condition.value && (condition.value.indexOf('"') != -1) ||
-							   (condition.value.indexOf("\\") != -1)) {
-			return ZmMsg.filterErrorIllegalCharacter
+		if (condition.value &&
+			(condition.value.indexOf('"') != -1) || (condition.value.indexOf("\\") != -1))
+		{
+			return ZmMsg.filterErrorIllegalCharacter;
 		}
 	}
 };
 
-/*
+/**
 * Returns true if the action has the necessary parts, an error message otherwise.
 *
-* @param action	[ZmAction]	action
+* @param action	[Object]	action
 */
 ZmFilterRuleDialog.prototype._checkAction =
 function(action) {
-	var conf = ZmFilterRule.ACTIONS[action.name];
-	if (conf.param && !action.arg) {
-		return this._actionErrorFormatter.format([ZmFilterRule.A_LABEL[action.name]]);
+	var conf = ZmFilterRule.ACTIONS[action.actionType];
+	if (conf.param && !action.value) {
+		return this._actionErrorFormatter.format([ZmFilterRule.A_LABEL[action.actionType]]);
 	}
-	if (conf.validationFunction && !conf.validationFunction(action.arg)) {
+	if (conf.validationFunction && !conf.validationFunction(action.value)) {
 		return conf.errorMessage;
 	}
 };

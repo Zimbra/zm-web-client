@@ -592,22 +592,25 @@ function(msg) {
 	
 	AjxDispatcher.require(["PreferencesCore", "Preferences"]);
 	var rule = new ZmFilterRule();
+
 	var from = msg.getAddress(AjxEmailAddress.FROM);
 	if (from) {
-		rule.addCondition(new ZmCondition(ZmFilterRule.C_FROM, ZmFilterRule.OP_CONTAINS, from.address));
+		var subjMod = ZmFilterRule.C_HEADER_VALUE[ZmFilterRule.C_FROM];
+		rule.addCondition(ZmFilterRule.TEST_HEADER, ZmFilterRule.OP_CONTAINS, from.address, subjMod);
 	}
 	var cc = msg.getAddress(AjxEmailAddress.CC);
 	if (cc)	{
-		rule.addCondition(new ZmCondition(ZmFilterRule.C_CC, ZmFilterRule.OP_CONTAINS, cc.address));
+		var subjMod = ZmFilterRule.C_HEADER_VALUE[ZmFilterRule.C_CC];
+		rule.addCondition(ZmFilterRule.TEST_HEADER, ZmFilterRule.OP_CONTAINS, cc.address, subjMod);
 	}
 	var subj = msg.subject;
 	if (subj) {
-		rule.addCondition(new ZmCondition(ZmFilterRule.C_SUBJECT, ZmFilterRule.OP_IS, subj));
+		var subjMod = ZmFilterRule.C_HEADER_VALUE[ZmFilterRule.C_SUBJECT];
+		rule.addCondition(ZmFilterRule.TEST_HEADER, ZmFilterRule.OP_IS, subj, subjMod);
 	}
 	rule.setGroupOp(ZmFilterRule.GROUP_ALL);
-	rule.addAction(new ZmAction(ZmFilterRule.A_KEEP));
-	var dialog = appCtxt.getFilterRuleDialog();
-	dialog.popup(rule);
+	rule.addAction(ZmFilterRule.A_KEEP);
+	appCtxt.getFilterRuleDialog().popup(rule);
 };
 
 ZmDoublePaneController.prototype._dragListener =

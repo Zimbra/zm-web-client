@@ -96,24 +96,20 @@ function() {
 };
 
 ZmFilterRulesController.prototype.resetListView =
-function(callback, selectedIndex) {
+function(selectedIndex) {
 	if (!this._listView) { return; }
 
-	var respCallback = new AjxCallback(this, this._handleResponseSetListView, [callback, selectedIndex]);
+	var respCallback = new AjxCallback(this, this._handleResponseSetListView, [selectedIndex]);
 	this._rules.loadRules(appCtxt.isOffline, respCallback);		// bug #15044 - force loading rules in offline mode
 };
 
 ZmFilterRulesController.prototype._handleResponseSetListView =
-function(callback, selectedIndex, result) {
+function(selectedIndex, result) {
 	this._listView.set(result.getResponse().clone());
 
 	var rule = this._rules.getRuleByIndex(selectedIndex || 0);
 	if (rule) {
 		this._listView.setSelection(rule);
-	}
-
-	if (callback) {
-		callback.run();
 	}
 };
 

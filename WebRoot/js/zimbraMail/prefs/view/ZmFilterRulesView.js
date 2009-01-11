@@ -53,7 +53,7 @@ function() {
 	this.getHtmlElement().innerHTML = AjxTemplate.expand("prefs.Pages#MailFilters", data);
 
 	// create toolbar
-	var toolbarEl = document.getElementById(data.id+"_toolbar");
+	var toolbarEl = document.getElementById(data.id + "_toolbar");
 	if (toolbarEl) {
 		var buttons = this._controller.getToolbarButtons();
 		this._toolbar = new ZmButtonToolBar({parent:this, buttons:buttons, posStyle:Dwt.STATIC_STYLE,
@@ -184,7 +184,7 @@ function(ev) {
 
 	DBG.println(AjxDebug.DBG3, "FILTER RULES: change listener");
 	if (ev.event == ZmEvent.E_MODIFY && !ev.handled) {
-		this._controller.resetListView(null, ev.getDetail("index"));
+		this._controller.resetListView(ev.getDetail("index"));
 		ev.handled = true;
 	}
 };

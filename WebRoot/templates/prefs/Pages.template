@@ -1095,12 +1095,14 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 -->
 <template id='prefs.Pages#MailFilterRule'>
 	<table width='100%'>
-		<tr><td width='1%' nowrap><$=ZmMsg.filterNameLabel$></td>
-			<td><$=Dwt.CARET_HACK_BEGIN$>
+		<tr>
+            <td width='1%' nowrap><$=ZmMsg.filterNameLabel$></td>
+			<td>
+                <$=Dwt.CARET_HACK_BEGIN$>
 				<input id='${id}_name' type='text' width=100 tabindex='10'>
 				<$=Dwt.CARET_HACK_END$>
 			</td>
-			<td width='1%' style='text-align:right;white-space:nowrap;'>
+			<td width='1%' style='text-align:right; white-space:nowrap;'>
 				<input id='${id}_active' type='checkbox' name='cbActive' checked tabindex='20'>
 				<$=ZmMsg.active$>
 			</td>
