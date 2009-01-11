@@ -68,6 +68,8 @@ create = function(data) {
         if(item != null) {
             window.fileInfo = item;
             spreadSheet.loadSheet(item);
+            spreadSheet._selectedCell = null;
+            spreadSheet.focus();            
         }
     }
 };
