@@ -15,6 +15,12 @@
     <c:when test="${(contentType eq 'application/x-zimbra-slides')}">
         <rest:slideView/>
     </c:when>
+    <c:when test="${(contentType eq 'application/x-zimbra-xls')}">
+        <rest:spreadsheetView/>
+    </c:when>
+    <c:when test="${(contentType eq 'application/x-zimbra-doc')}">
+        <rest:documentView/>
+    </c:when>
     <c:otherwise>
         <fmt:message key="unsupportedRestView"/>
     </c:otherwise>
