@@ -25,6 +25,9 @@
     <c:when test="${requestScope.zimbra_freebusy}">
         <rest:calendar mailbox="${mailbox}" timezone="${timezone}"/>
     </c:when>
+    <c:when test="${(type eq 'document')}">
+        <rest:document  mailbox="${mailbox}" timezone="${timezone}"/>
+    </c:when>    
     <c:otherwise>
         <rest:view title="">
             <fmt:message key="unsupportedRestView"/>

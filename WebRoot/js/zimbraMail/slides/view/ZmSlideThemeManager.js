@@ -31,6 +31,16 @@ function(isTitleSlide){
     return '<div style="background-color:purple; position:absolute; left: 0%; top:15%; width:100%; height:1%;"></div>';
 };
 
+ZmSlideThemeManager.prototype.setNotesSlideContent =
+function(content) {
+    this._currentNotesSlideContent = content;    
+};
+
+ZmSlideThemeManager.prototype.setTitleSlideContent =
+function(content) {
+    this._currentTitleSlideContent = content;    
+};
+
 ZmSlideThemeManager.prototype.parseSlideTheme =
 function(div) {
 

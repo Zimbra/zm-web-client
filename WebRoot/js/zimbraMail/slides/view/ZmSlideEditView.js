@@ -60,7 +60,7 @@ ZmSlideEditView.TYPE_DRAG_PROXY_DIV = 10;
 ZmSlideEditView.TYPE_PREVIEW = 11;
 ZmSlideEditView.DRAG_THRESHOLD = 4;
 
-ZmSlideEditView.APP_ZIMBRA_PPT = "application/x-zimbra-ppt";
+ZmSlideEditView.APP_ZIMBRA_PPT = "application/x-zimbra-slides";
 
 
 ZmSlideEditView.SLIDE_OBJECTS = ["slide_object_notes", "slide_object_title", "slide_object_img", "slide_object_graph"];
@@ -1125,8 +1125,9 @@ function(content, idx, generateEndSlide) {
         content[idx++] = '</div>';
     }
 
+    var themeStr = this._currentTheme ? ["theme='", this._currentTheme ,"'"].join("") : "";
     //master slide content
-    content[idx++] = ["<div class='masterslide' style='width:100%;height:100%;position:absolute;left:0%;top:0%;z-index:", (Dwt.Z_VIEW-10), "'>"].join("");
+    content[idx++] = ["<div class='slidemaster' ", themeStr," style='width:100%;height:100%;position:absolute;left:0%;top:0%;z-index:", (Dwt.Z_VIEW-10), "'>"].join("");
     content[idx++]  = this._currentSlideThemeDiv.innerHTML;
     content[idx++] = '</div>';
     return idx;
@@ -1189,13 +1190,19 @@ function() {
 
 ZmSlideEditView.prototype.parseSlideContent =
 function() {
-    var node = this._slideParserDiv.firstChild;
-
     this.createSlide(true);
 
+    var node = this._slideParserDiv.firstChild;
     while(node) {
-        if(node.className == "slidemaster") {
+        var className = node.className;
+        if(className == "slidemaster") {
+            var theme = node.getAttribute("theme");
+            if(theme) {
+                this._currentTheme = theme;
+                this.changeCSS(theme);
+            }
             this._currentSlideThemeDiv.innerHTML = node.innerHTML;
+            this._themeManager.setNotesSlideContent(node.innerHTML);
         }
         node = node.nextSibling;
     }
@@ -1291,9 +1298,15 @@ function(themeName) {
     }
 
 
-    this._themeManager.loadThemeCSS(themeName);
+
     this._currentSlideThemeDiv.innerHTML = this._themeManager.getMasterSlideContent();
-    this._pushIframeContent(this._iframe);
+    this.changeCSS(themeName);
+};
+
+ZmSlideEditView.prototype.changeCSS =
+function(themeName) {
+    this._themeManager.loadThemeCSS(themeName);
+    this._pushIframeContent(this._iframe);    
 };
 
 ZmSlideEditView.prototype.getThemeCSSPath =
