@@ -352,8 +352,7 @@ function(op) {
 		case ZmOperation.NEW_CONTACT:
 		case ZmOperation.NEW_GROUP: {
 			var type = (op == ZmOperation.NEW_GROUP) ? ZmItem.GROUP : null;
-			var contact = new ZmContact(null, null, type);
-			var loadCallback = new AjxCallback(this, this._handleLoadNewItem, [contact]);
+			var loadCallback = new AjxCallback(this, this._handleLoadNewItem, [type]);
 			AjxDispatcher.require(["ContactsCore", "Contacts"], false, loadCallback, null, true);
 			break;
 		}
@@ -366,7 +365,8 @@ function(op) {
 };
 
 ZmContactsApp.prototype._handleLoadNewItem =
-function(contact) {
+function(type) {
+	var contact = new ZmContact(null, null, type);
 	AjxDispatcher.run("GetContactController").show(contact);
 };
 
