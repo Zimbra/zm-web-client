@@ -177,7 +177,7 @@ function(node, args) {
 		contact = new ZmContact(node.id, args.list);
 		contact._loadFromDom(node);
 	} else {
-		contact.list = args.list || AjxDispatcher.run("GetContacts");
+		contact.list = args.list || new ZmContactList(null);
 	}
 
 	return contact;
