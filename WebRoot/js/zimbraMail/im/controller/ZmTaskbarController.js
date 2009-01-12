@@ -40,8 +40,8 @@ ZmTaskbarController = function(components) {
 	};
 	this._presenceItem = this._createItem(args);
 	this._toolbar.addSeparator();
-	this._chatButtonIndex = this._toolbar.getNumChildren();
 	this._toolbar.addFiller(null);
+	this._chatButtonIndex = this._toolbar.getNumChildren() + 1;
 
 	var height = appCtxt.getSkinHint("presence", "height") || 24;
 	Dwt.setSize(parentEl, Dwt.DEFAULT, height);
