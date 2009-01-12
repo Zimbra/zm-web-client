@@ -796,12 +796,15 @@ function() {
 
 	// reduce toolbar width if low-res display
 	if (AjxEnv.is800x600orLower) {
-		spellCheckButton.setText("");
+		if (spellCheckButton) {
+			spellCheckButton.setText("");
+		}
 		// if "add signature" button exists, remove label for attachment button
 		if (canAddSig) {
 			var attachmentButton = this._toolbar.getButton(ZmOperation.ATTACHMENT);
-			if(attachmentButton)
+			if (attachmentButton) {
 				attachmentButton.setText("");
+			}
 		}
 	}
 };
