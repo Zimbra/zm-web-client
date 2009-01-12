@@ -105,9 +105,13 @@ function() {
 // View is always in sync with rules
 ZmFilterRulesView.prototype.reset = function() {};
 
-/*
-* ZmFilterListView
-*/
+
+/**
+ * ZmFilterListView
+ *
+ * @param parent
+ * @param controller
+ */
 ZmFilterListView = function(parent, controller) {
 	var headerList = this._getHeaderList();
 	DwtListView.call(this, {parent:parent, className:"ZmFilterListView", headerList:headerList,
@@ -134,6 +138,8 @@ function() {
 /**
  * Only show rules that have at least one valid action (eg, if the only action
  * is "tag" and tagging is disabled, don't show the rule).
+ *
+ * @param list
  */
 ZmFilterListView.prototype.set =
 function(list) {
@@ -161,23 +167,25 @@ ZmFilterListView.prototype._getCellContents =
 function(html, idx, item, field, colIdx, params) {
 	if (field == ZmFilterListView.COL_ACTIVE) {
 		html[idx++] = "<input type='checkbox' ";
-		html[idx++] = item.isActive() ? "checked " : "";
+		html[idx++] = item.active ? "checked " : "";
 		html[idx++] = "id='_ruleCheckbox";
 		html[idx++] = item.id;
 		html[idx++] = "' _flvId='";
 		html[idx++] = this._internalId;
 		html[idx++] = "' onchange='ZmFilterListView._activeStateChange'>";
 	} else if (field == ZmFilterListView.COL_NAME) {
-		html[idx++] = AjxStringUtil.stripTags(item.getName(), true);
+		html[idx++] = AjxStringUtil.stripTags(item.name, true);
 	}
 
 	return idx;
 };
 
-/*
-* In general, we just re-display all the rules when anything changes, rather
-* than trying to update a particular row.
-*/
+/**
+ * In general, we just re-display all the rules when anything changes, rather
+ * than trying to update a particular row.
+ *
+ * @param ev		[DwtEvent]	event
+ */
 ZmFilterListView.prototype._changeListener =
 function(ev) {
 	if (ev.type != ZmEvent.S_FILTER) { return; }
@@ -189,7 +197,7 @@ function(ev) {
 	}
 };
 
-/*
+/**
 * Handles click of 'active' checkbox by toggling the rule's active state.
 *
 * @param ev			[DwtEvent]	click event
@@ -202,11 +210,11 @@ function(ev) {
 	var ruleId = target.id.substring(13);
 	var rule = flv._rules.getRuleById(ruleId);
 	if (rule) {
-		flv._rules.setActive(rule, !rule.isActive());
+		flv._rules.setActive(rule, !rule.active);
 	}
 };
 
-/*
+/**
 * Override so that we don't change selection when the 'active' checkbox is clicked.
 * Also contains a hack for IE for handling a click of the 'active' checkbox, because
 * the ONCHANGE handler was only getting invoked on every other checkbox click for IE.

@@ -51,7 +51,7 @@ function() {
 */
 ZmFilterRules.prototype.addRule = 
 function(rule, referenceRule, callback) {
-	DBG.println(AjxDebug.DBG3, "FILTER RULES: add rule '" + rule.getName() + "'");
+	DBG.println(AjxDebug.DBG3, "FILTER RULES: add rule '" + rule.name + "'");
 	var index = referenceRule ? this._vector.indexOf(referenceRule) : null;
 	this._insertRule(rule, index);
 	this._saveRules(index, true, callback);
@@ -64,8 +64,8 @@ function(rule, referenceRule, callback) {
 */
 ZmFilterRules.prototype.removeRule = 
 function(rule) {
-	if (rule == null) {return;}
-	DBG.println(AjxDebug.DBG3, "FILTER RULES: remove rule '" + rule.getName() + "'");
+	if (!rule) { return; }
+	DBG.println(AjxDebug.DBG3, "FILTER RULES: remove rule '" + rule.name + "'");
 	var index = this.getIndexOfRule(rule);
 	this._vector.removeAt(index);
 	delete this._ruleIdHash[rule.id];
@@ -80,14 +80,13 @@ function(rule) {
 */
 ZmFilterRules.prototype.moveUp = 
 function(rule) {
-	if (rule == null) {return;}
-	DBG.println(AjxDebug.DBG3, "FILTER RULES: move up rule '" + rule.getName() + "'");
+	if (!rule) { return; }
+	DBG.println(AjxDebug.DBG3, "FILTER RULES: move up rule '" + rule.name + "'");
 	var index = this.getIndexOfRule(rule);
-	if (index == 0) return;
+	if (index == 0) { return; }
 
 	var prevRule = this._vector.removeAt(index - 1);
 	this._insertRule(prevRule, index);
-
 	this._saveRules(index - 1, true);
 };
 
@@ -98,14 +97,13 @@ function(rule) {
 */
 ZmFilterRules.prototype.moveDown = 
 function(rule) {
-	if (rule == null) {return;}
-	DBG.println(AjxDebug.DBG3, "FILTER RULES: move down rule '" + rule.getName() + "'");
+	if (!rule) { return; }
+	DBG.println(AjxDebug.DBG3, "FILTER RULES: move down rule '" + rule.name + "'");
 	var index = this.getIndexOfRule(rule);
-	if (index >= (this._vector.size() - 1)) return;
+	if (index >= (this._vector.size() - 1)) { return; }
 	
 	var nextRule = this._vector.removeAt(index + 1);
 	this._insertRule(nextRule, index);
-
 	this._saveRules(index + 1, true);
 };
 
@@ -117,9 +115,9 @@ function(rule) {
 */
 ZmFilterRules.prototype.setActive =
 function(rule, active) {
-	if (rule == null) {return;}
-	DBG.println(AjxDebug.DBG3, "FILTER RULES: set active rule '" + rule.getName() + "', " + active);
-	rule.setActive(active);
+	if (!rule) { return; }
+	DBG.println(AjxDebug.DBG3, "FILTER RULES: set active rule '" + rule.name + "', " + active);
+	rule.active = active;
 	this._saveRules(null, false);
 };
 
@@ -181,15 +179,16 @@ function(name) {
 */
 ZmFilterRules.prototype.loadRules = 
 function(force, callback) {
+	// return cache?
 	if (this._initialized && !force) {
 		if (callback) {
 			callback.run(new ZmCsfeResult(this._vector));
 			return;
-		} else {
-			return this._vector;
 		}
+		return this._vector;
 	}
 
+	// fetch from server:
 	DBG.println(AjxDebug.DBG3, "FILTER RULES: load rules");
 	var soapDoc = AjxSoapDoc.create("GetFilterRulesRequest", "urn:zimbraMail");
 	var respCallback = new AjxCallback(this, this._handleResponseLoadRules, [callback]);
@@ -241,8 +240,8 @@ function(index, notify, callback) {
 	for (var i = 0; i < rules.length; i++) {
 		var r = rules[i];
 		var ruleObj = {
-			active: r.isActive(),
-			name: r.getName(),
+			active: r.active,
+			name: r.name,
 			filterActions: [],
 			filterTests: []
 		};
@@ -273,7 +272,7 @@ function(index, notify, callback, result) {
 	}
 };
 
-/*
+/**
 * The save failed. Show an error dialog, then reload the rules and display them afresh.
 * We do that because our internal version of the rules changed, but we couldn't save 
 * them, and we don't want the list view to be out of sync with the list.
@@ -306,7 +305,7 @@ function() {
 	}
 };
 
-/*
+/**
 * Inserts a rule into the internal vector. Adds to the end if no index is given.
 *
 * @param rule		[ZmFilterRule]		rule to insert

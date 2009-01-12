@@ -386,24 +386,6 @@ function() {
 };
 
 /**
-* Enables or disables the rule.
-*
-* @param active	[boolean]	true if the rule is to be enabled
-*/
-ZmFilterRule.prototype.setActive =
-function(active) {
-	this.active = active;
-};
-
-/**
-* Returns true if the rule is enabled.
-*/
-ZmFilterRule.prototype.isActive =
-function() {
-	return this.active;
-};
-
-/**
 * Returns the rule's condition grouping operator.
 */
 ZmFilterRule.prototype.getGroupOp =
@@ -419,14 +401,6 @@ function() {
 ZmFilterRule.prototype.setGroupOp =
 function(groupOp) {
 	this.conditions.condition = groupOp || ZmFilterRule.GROUP_ANY;
-};
-
-/**
-* Returns the rule's name.
-*/
-ZmFilterRule.prototype.getName =
-function() {
-	return this.name;
 };
 
 ZmFilterRule.prototype.addCondition =

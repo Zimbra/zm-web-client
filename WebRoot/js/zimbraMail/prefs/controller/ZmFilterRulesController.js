@@ -34,7 +34,7 @@ ZmFilterRulesController = function(container, prefsApp, prefsView) {
 
 	this._prefsView = prefsView;
 	this._filterRulesView = new ZmFilterRulesView(this._prefsView._parent, this);
-	
+
 	this._buttonListeners = {};
 	this._buttonListeners[ZmOperation.ADD_FILTER_RULE] = new AjxListener(this, this._addListener);
 	this._buttonListeners[ZmOperation.EDIT_FILTER_RULE] = new AjxListener(this, this._editListener);
@@ -202,7 +202,7 @@ function(menu) {
 */
 ZmFilterRulesController.prototype._addListener =
 function(ev) {
-	if (!this._listView) return;
+	if (!this._listView) { return; }
 
 	var sel = this._listView.getSelection();
 	var refRule = sel.length ? sel[sel.length - 1] : null;
@@ -216,7 +216,7 @@ function(ev) {
 */
 ZmFilterRulesController.prototype._editListener =
 function(ev) {
-	if (!this._listView) return;
+	if (!this._listView) { return; }
 
 	var sel = this._listView.getSelection();
 	appCtxt.getFilterRuleDialog().popup(sel[0], true);
@@ -229,17 +229,17 @@ function(ev) {
 */
 ZmFilterRulesController.prototype._removeListener =
 function(ev) {
-	if (!this._listView) return;
+	if (!this._listView) { return; }
 
 	var sel = this._listView.getSelection();
 
-	var filter = sel[0];
+	var rule = sel[0];
 	//bug:16053 changed getYesNoCancelMsgDialog to getYesNoMsgDialog
 	var ds = this._deleteShield = appCtxt.getYesNoMsgDialog();
 	ds.reset();
 	ds.registerCallback(DwtDialog.NO_BUTTON, this._clearDialog, this, this._deleteShield);
-	ds.registerCallback(DwtDialog.YES_BUTTON, this._deleteShieldYesCallback, this, filter);
-	var msg = AjxMessageFormat.format(ZmMsg.askDeleteFilter, filter.getName());
+	ds.registerCallback(DwtDialog.YES_BUTTON, this._deleteShieldYesCallback, this, rule);
+	var msg = AjxMessageFormat.format(ZmMsg.askDeleteFilter, rule.name);
 	ds.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
 	ds.popup();
 };
@@ -271,7 +271,7 @@ function(dialog, folderList) {
 		var filterRules = soapDoc.set("filterRules", null);
 		for (var i = 0; i < sel.length; i++) {
 			var rule = soapDoc.set("filterRule", null, filterRules);
-			rule.setAttribute("name", sel[i].getName());
+			rule.setAttribute("name", sel[i].name);
 		}
 
 		if (!(folderList instanceof Array)) {
@@ -296,7 +296,7 @@ ZmFilterRulesController.prototype._handleRunFilter =
 function(result) {
 	var resp = result.getResponse().ApplyFilterRulesResponse;
 	var num = (resp && resp.m && resp.m.length)
-		? resp.m[0].id.split(",").length : 0;
+		? (resp.m[0].id.split(",").length) : 0;
 	var msg = AjxMessageFormat.format(ZmMsg.filterRuleApplied, num);
 	var dlg = appCtxt.getMsgDialog();
 	dlg.setMessage(msg);
@@ -322,7 +322,7 @@ function(rule) {
 */
 ZmFilterRulesController.prototype._moveUpListener =
 function(ev) {
-	if (!this._listView) return;
+	if (!this._listView) { return; }
 
 	var sel = this._listView.getSelection();
 	this._rules.moveUp(sel[0]);
@@ -335,7 +335,7 @@ function(ev) {
 */
 ZmFilterRulesController.prototype._moveDownListener =
 function(ev) {
-	if (!this._listView) return;
+	if (!this._listView) { return; }
 
 	var sel = this._listView.getSelection();
 	this._rules.moveDown(sel[0]);

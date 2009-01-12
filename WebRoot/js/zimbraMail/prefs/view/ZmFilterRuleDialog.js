@@ -87,11 +87,11 @@ function(rule, editMode, referenceRule) {
 	this.setTitle(rule ? ZmMsg.editFilter : ZmMsg.addFilter);
 
 	var nameField = document.getElementById(this._nameInputId);
-	var name = rule ? AjxStringUtil.stripTags(rule.getName(), true) : null;
+	var name = rule ? AjxStringUtil.stripTags(rule.name, true) : null;
 	nameField.value = name || "";
 
 	var activeField = document.getElementById(this._activeCheckboxId);
-	activeField.checked = (!rule || rule.isActive());
+	activeField.checked = (!rule || rule.active);
 
 	var stopField = document.getElementById(this._stopCheckboxId);
 	stopField.checked = (!editMode);
@@ -443,9 +443,6 @@ function(conf, field, options, rowData, testType, rowId) {
 		var input = new DwtInputField({parent: this, type: DwtInputField.STRING, initialValue: dataValue, size: 20});
 		input.setData(ZmFilterRuleDialog.ROW_ID, rowId);
 		this._inputs[rowId][field] = {id: id, dwtObj: input};
-//		if (field == "value" && testType == ZmFilterRule.TEST_HEADER) {
-//			input.setVisibility(!(data.comparator == ZmFilterRule.OP_EXISTS || data.comparator == ZmFilterRule.OP_NOT_EXISTS));
-//		}
 		tabGroup.addMember(input.getTabGroupMember());
 	}
 	else if (type == ZmFilterRule.TYPE_SELECT) {
@@ -566,6 +563,7 @@ function(isMainSelect, testType, field, rowData) {
 			default:								return ZmFilterRule.A_VALUE_MAP[testType];
 		}
 	} else {
+		// conditions
 		if (testType == ZmFilterRule.TEST_HEADER) {
 			if (field == "subjectMod") {
 				dataValue = rowData.header;
@@ -632,6 +630,7 @@ function(isMainSelect, testType, field, rowData) {
 				dataValue = rowData.value;
 			}
 		}
+		// actions
 		else if (testType == ZmFilterRule.A_NAME_FOLDER) {
 			dataValue = rowData.folderPath;
 		}
@@ -707,8 +706,8 @@ function(isCondition) {
 };
 
 /**
-* Update the inputs for a row based on the subject (condition), or action name. The old row is
-* removed, and a new row is created and inserted.
+* Update the inputs for a row based on the subject (condition), or action name.
+* The old row is removed, and a new row is created and inserted.
 *
 * @param ev		[DwtEvent]		event (from DwtSelect)
 */
@@ -766,8 +765,9 @@ function(ev) {
 };
 
 /**
-* For the "Header Named" input only - hide the last input field (value) if the selected op is "exists" or
-* "does not exist", since those are unary ops which don't take a value.
+* For the "Header Named" input only - hide the last input field (value) if the
+* selected op is "exists" or "does not exist", since those are unary ops which
+* don't take a value.
 *
 * @param ev		[DwtEvent]		event (from DwtSelect)
 */
@@ -775,7 +775,7 @@ ZmFilterRuleDialog.prototype._opsChangeListener =
 function(ev) {
 	var rowId = ev._args.selectObj.getData(ZmFilterRuleDialog.ROW_ID);
 	var input = this._inputs[rowId];
-	if (!input) return;
+	if (!input) { return; }
 	var newValue = ev._args.newValue;
 	input["value"].dwtObj.setVisibility(!(newValue == ZmFilterRule.OP_EXISTS || newValue == ZmFilterRule.OP_NOT_EXISTS));
 };
@@ -788,7 +788,7 @@ function(ev) {
 ZmFilterRuleDialog.prototype._dateListener =
 function(ev) {
 	var cal = ev.item;
-	if (!cal._dateButton) return;
+	if (!cal._dateButton) { return; }
 	var date = ev.detail;
 	var button = cal._dateButton;
 	button.setText(AjxDateUtil.simpleComputeDateStr(date));
@@ -1049,18 +1049,23 @@ function(rowId) {
 ZmFilterRuleDialog.prototype._getInputValue =
 function(inputs, conf, field) {
 	var type = conf[field];
-	if (!type) return null;
-	
+	if (!type) {
+		return null;
+	}
 	if (type == ZmFilterRule.TYPE_INPUT) {
 		return inputs[field].dwtObj.getValue();
-	} else if (type == ZmFilterRule.TYPE_SELECT) {
+	}
+	if (type == ZmFilterRule.TYPE_SELECT) {
 		return inputs[field].dwtObj.getValue();
-	} else if (type == ZmFilterRule.TYPE_CALENDAR) {
+	}
+	if (type == ZmFilterRule.TYPE_CALENDAR) {
 		var date = inputs[field].dwtObj.getData(ZmFilterRuleDialog.DATA);
 		return String(date.getTime() / 1000);
-	} else if (type == ZmFilterRule.TYPE_FOLDER_PICKER) {
+	}
+	if (type == ZmFilterRule.TYPE_FOLDER_PICKER) {
 		return inputs[field].dwtObj.getData(ZmFilterRuleDialog.DATA);
-	} else if (type == ZmFilterRule.TYPE_TAG_PICKER) {
+	}
+	if (type == ZmFilterRule.TYPE_TAG_PICKER) {
 		return inputs[field].dwtObj.getData(ZmFilterRuleDialog.DATA);
 	}
 };
@@ -1108,7 +1113,7 @@ function(condition) {
 	var conf = ZmFilterRule.CONDITIONS[condition.subject];
 	for (var f in conf) {
 		var key = ZmFilterRule.CONDITIONS_KEY[f];
-		if (!key) continue;
+		if (!key) { continue; }
 		if ((key == "value") && (condition.subject == ZmFilterRule.C_HEADER) &&
 			(condition.comparator == ZmFilterRule.OP_EXISTS || condition.comparator == ZmFilterRule.OP_NOT_EXISTS)) {
 			continue; // "Header Named" with "exists" doesn't take a value
