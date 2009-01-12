@@ -625,6 +625,8 @@ function(ev) {
 		for (var i = 0; i < list.length; i++) {
 			ids.push(list[i].id);
 		}
+		// XXX: won't this run into GET limits for large addrbooks? would be better to have
+		// URL that prints all contacts (maybe "id=all")
 		url = "/h/printcontacts?id=" + ids.join(",");
 	}
 	window.open(appContextPath+url, "_blank");

@@ -1733,13 +1733,17 @@ function(self, iframe, attempt) {
 			attempt = 0;
 		try {
 			if ( !iframe.contentWindow || !iframe.contentWindow.document || ( AjxEnv.isFirefox3up && attempt == 0 ) ) {
-				if (attempt++ < ZmMailMsgView.SETHEIGHT_MAX_TRIES)
+				if (attempt < ZmMailMsgView.SETHEIGHT_MAX_TRIES) {
+					attempt++;
 					self._resetIframeHeightOnTimer(iframe, attempt);
+				}
 				return; // give up
 			}
 		} catch(ex) {
-			if (attempt++ < ZmMailMsgView.SETHEIGHT_MAX_TRIES)
+			if (attempt < ZmMailMsgView.SETHEIGHT_MAX_TRIES) {
+				attempt++;
 				self._resetIframeHeightOnTimer(iframe, attempt++); // for IE
+			}
 			return; // give up
 		}
 

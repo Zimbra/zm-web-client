@@ -155,10 +155,10 @@ function() {
 /**
 * Returns a vector of addresses of the given type
 *
-* @param type	[Integer]	an email address type
-* @param used	[Array]		array of addressed that have been used. If not null,
-*		then this method will omit those addresses from the returned vector and
-*		will populate used with the additional new addresses
+* @param type			[constant]	an email address type
+* @param used			[hash]		array of addresses that have been used. If not null,
+*									then this method will omit those addresses from the
+* 									returned vector and will populate used with the additional new addresses
 * @param addAsContact	[boolean]	true if emails should be converted to ZmContacts
 */
 ZmMailMsg.prototype.getAddresses =

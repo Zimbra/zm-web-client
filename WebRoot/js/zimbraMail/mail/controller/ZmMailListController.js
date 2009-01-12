@@ -540,7 +540,7 @@ function(ev) {
 		var contactsApp = appCtxt.getApp(ZmApp.CONTACTS);
 		if (contactsApp) {
 			// first check if contact is cached, and no server call is needed
-			var contact = contactsApp.getContactByEmail(this._actionEv.address.getAddress());
+			var contact = contactsApp.getContactByEmail(address.getAddress());
 			if (contact) {
 				this._handleResponseGetContact(imItem, address, ev, contact);
 			} else {
@@ -554,7 +554,7 @@ function(ev) {
 				}
 				this._participantActionMenu.popup(0, ev.docX, ev.docY);
 				var respCallback = new AjxCallback(this, this._handleResponseGetContact, [imItem, address, ev]);
-				contactsApp.getContactByEmail(this._actionEv.address.getAddress(), respCallback);
+				contactsApp.getContactByEmail(address.getAddress(), respCallback);
 			}
 		} else if (imItem) {
 			// since contacts app is disabled, we won't be making a server call
