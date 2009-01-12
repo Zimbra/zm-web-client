@@ -163,11 +163,6 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
     createDummyDBG();
     <% } %>
 
-    function launch() {
-        //   	        create();
-    }
-    AjxCore.addOnloadListener(launch);
-
     window.fileInfo = {name: '<%= fileName %>', folderId: ZmOrganizer.ID_BRIEFCASE, contentType: 'application/x-zimbra-xls'<% if(fileId != null) {%>, id: <%= fileId %> <% } %>};
 </script>
 </body>

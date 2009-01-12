@@ -15,14 +15,17 @@
  * ***** END LICENSE BLOCK *****
  */
 
-AjxPackage.require("zimbraMail.ale.spreadsheet.msgs");
+AjxPackage.require("zimbraMail.spreadsheets.ZmSpreadSheetApp");
 
-AjxPackage.require("zimbraMail.ale.spreadsheet.ZmSpreadSheet");
-AjxPackage.require("zimbraMail.ale.spreadsheet.ZmSpreadSheetModel");
-AjxPackage.require("zimbraMail.ale.spreadsheet.ZmSpreadSheetFormulae");
-AjxPackage.require("zimbraMail.ale.spreadsheet.ZmSpreadSheetToolbars");
-AjxPackage.require("zimbraMail.ale.spreadsheet.ZmSpreadSheetLoader");
+AjxPackage.require("zimbraMail.spreadsheets.controller.ZmSpreadSheetController");
+AjxPackage.require("zimbraMail.spreadsheets.controller.ZmSpreadSheetToolbars");
+
+AjxPackage.require("zimbraMail.spreadsheets.model.msgs");
+AjxPackage.require("zimbraMail.spreadsheets.model.ZmSpreadSheetModel");
+AjxPackage.require("zimbraMail.spreadsheets.model.ZmSpreadSheetFormulae");
+
+AjxPackage.require("zimbraMail.spreadsheets.view.ZmSpreadSheet");
 
 AjxPackage.require("zimbraMail.briefcase.model.ZmDocletMgr");
 
-AjxPackage.require("zimbraMail.ale.spreadsheet.ZmSpreadSheetEditController");
+//AjxPackage.require("zimbraMail.ale.spreadsheet.ZmSpreadSheetEditController");
