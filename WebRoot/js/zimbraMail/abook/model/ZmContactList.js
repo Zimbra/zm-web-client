@@ -71,7 +71,8 @@ ZmContactList.prototype.constructor = ZmContactList;
 
 // fields used for autocomplete matching
 ZmContactList.AC_FIELDS 		= [ZmContact.F_firstName, ZmContact.F_lastName, ZmContact.X_fullName, ZmContact.X_firstLast,
-								   ZmContact.F_fileAs, ZmContact.F_email, ZmContact.F_email2, ZmContact.F_email3];
+								   ZmContact.F_fileAs, ZmContact.F_email, ZmContact.F_email2, ZmContact.F_email3,
+								   ZmContact.F_workEmail1, ZmContact.F_workEmail2, ZmContact.F_workEmail3];
 ZmContactList.AC_NAME_FIELDS	= [ZmContact.F_firstName, ZmContact.F_lastName];
 ZmContactList.AC_MAX 			= 20;	// max # of autocomplete matches to return
 ZmContactList.AC_PREMATCH		= 2;	// # of characters to do pre-matching for
