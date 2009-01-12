@@ -313,21 +313,23 @@ function(creates, force) {
 
 	for (var name in creates) {
 		var list = creates[name];
-		for (var i = 0; i < list.length; i++) {
-			var create = list[i];
-			if (appCtxt.cacheGet(create.id)) { continue; }
-	
-			if (name == "folder") {
-				this._handleCreateFolder(create, ZmOrganizer.ADDRBOOK);
-			} else if (name == "link") {
-				this._handleCreateLink(create, ZmOrganizer.ADDRBOOK);
-			} else if (name == "cn") {
-				var clc = AjxDispatcher.run("GetContactListController");
-				var list = clc && clc.getList();
-				if (list) {
-					list.notifyCreate(create);
+		if (list && list.length) {
+			for (var i = 0; i < list.length; i++) {
+				var create = list[i];
+				if (appCtxt.cacheGet(create.id)) { continue; }
+
+				if (name == "folder") {
+					this._handleCreateFolder(create, ZmOrganizer.ADDRBOOK);
+				} else if (name == "link") {
+					this._handleCreateLink(create, ZmOrganizer.ADDRBOOK);
+				} else if (name == "cn") {
+					var clc = AjxDispatcher.run("GetContactListController");
+					var list = clc && clc.getList();
+					if (list) {
+						list.notifyCreate(create);
+					}
+					create._handled = true;
 				}
-				create._handled = true;
 			}
 		}
 	}
