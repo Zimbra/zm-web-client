@@ -396,10 +396,11 @@ function(page, files, response) {
    	this.deleteImportedDocs(files);
 };
 
-ZmNotebookController.prototype._sendPageListener = function(event) {
+ZmNotebookController.prototype._sendPageListener =
+function(event) {
 	var view = this._listView[this._currentView];
 	var items = view.getSelection();
-	items = items instanceof Array ? items : [ items ];
+	items = items instanceof Array ? items : [items];
 
 	var names = [];
 	var urls = [];
@@ -414,13 +415,18 @@ ZmNotebookController.prototype._sendPageListener = function(event) {
 		var item = items[i];
 		var url = item.getRestUrl();
 
-		if(item.remoteFolderId){
-			//fetching the remote URL
+		if (item.remoteFolderId) {
+			// fetching the remote URL
 			var cache = this._app.getNotebookCache();
 			var item1 = cache.getItemInfo({id:item.remoteFolderId,ignoreCaching:true});
-			if(item1){
-			url = item1.getRestUrl();
+			if (item1) {
+				url = item1.getRestUrl();
 			}
+		}
+
+		if (appCtxt.isOffline) {
+			var remoteUri = appCtxt.get(ZmSetting.OFFLINE_REMOTE_SERVER_URI);
+			url = remoteUri + url.substring((url.indexOf("/",7)));
 		}
 
 		urls.push(url);

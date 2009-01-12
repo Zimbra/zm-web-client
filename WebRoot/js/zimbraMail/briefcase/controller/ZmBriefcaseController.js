@@ -704,6 +704,10 @@ function(event) {
 	for (var i = 0; i < items.length; i++) {
 		var item = items[i];
 		var url = item.getRestUrl();
+		if (appCtxt.isOffline) {
+			var remoteUri = appCtxt.get(ZmSetting.OFFLINE_REMOTE_SERVER_URI);
+			url = remoteUri + url.substring((url.indexOf("/",7)));
+		}
 		urls.push(url);
 		names.push(item.name);
 

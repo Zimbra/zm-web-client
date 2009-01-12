@@ -129,11 +129,11 @@ function(mode, object, share) {
 	this._reply.setReplyType(ZmShareReply.STANDARD);
 	this._reply.setReplyNote("");
 
-    this._populateUrls(object);
+	this._populateUrls();
 
-    var size = this.getSize();
-    Dwt.setSize(this._granteeInput.getInputElement(), 0.6*size.x);
-    Dwt.setSize(this._passwordInput.getInputElement(), 0.6*size.x);
+	var size = this.getSize();
+	Dwt.setSize(this._granteeInput.getInputElement(), 0.6*size.x);
+	Dwt.setSize(this._passwordInput.getInputElement(), 0.6*size.x);
 
 	DwtDialog.prototype.popup.call(this);
 	this.setButtonEnabled(DwtDialog.OK_BUTTON, false);
@@ -144,19 +144,25 @@ function(mode, object, share) {
 };
 
 ZmSharePropsDialog.prototype._populateUrls =
-function(object){
+function() {
 
-    var restUrl = AjxStringUtil.htmlEncode(this._object.getRestUrl());
-    restUrl = restUrl.replace(/&amp;/g,'%26');
-    if(object.type == ZmOrganizer.CALENDAR){
-        var htmlUrl = restUrl + ".html";
-        this._urlEl.innerHTML = [
-            "<div>", ZmMsg.ics, ":&nbsp;&nbsp;&nbsp;&nbsp;", restUrl, "</div>",
-            "<div>", ZmMsg.view, ":&nbsp;&nbsp;", htmlUrl,"</div>"
-        ].join("");
-    }else{
-        this._urlEl.innerHTML = "<div style='padding-left:2em;'>" + restUrl + "</div>";
-    }
+	var restUrl = this._object.getRestUrl();
+	if (appCtxt.isOffline) {
+		var remoteUri = appCtxt.get(ZmSetting.OFFLINE_REMOTE_SERVER_URI);
+		restUrl = remoteUri + restUrl.substring((url.indexOf("/",7)));
+	}
+	var url = AjxStringUtil.htmlEncode(restUrl);
+	url = url.replace(/&amp;/g,'%26');
+
+	if (object.type == ZmOrganizer.CALENDAR) {
+		var htmlUrl = url + ".html";
+		this._urlEl.innerHTML = [
+			"<div>", ZmMsg.ics, ":&nbsp;&nbsp;&nbsp;&nbsp;", url, "</div>",
+			"<div>", ZmMsg.view, ":&nbsp;&nbsp;", htmlUrl,"</div>"
+		].join("");
+	} else {
+		this._urlEl.innerHTML = "<div style='padding-left:2em;'>" + url + "</div>";
+	}
 };
 
 ZmSharePropsDialog.prototype.popdown =
