@@ -500,6 +500,7 @@ function(view) {
 // Based on context, enable read/unread operation, add/edit contact.
 ZmMailListController.prototype._listActionListener =
 function(ev) {
+
 	ZmListController.prototype._listActionListener.call(this, ev);
 
 	var items = this._listView[this._currentView].getSelection();
@@ -533,18 +534,33 @@ function(ev) {
 		this._initializeParticipantActionMenu();
 		this._setTagMenu(this._participantActionMenu);
 		this._actionEv.address = address;
-		if (appCtxt.get(ZmSetting.IM_ENABLED)) {
-			var imItem = this._participantActionMenu.getOp(ZmOperation.IM);
-			ZmImApp.updateImMenuItemByAddress(imItem, address);
-		}
-		if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-			var contacts = AjxDispatcher.run("GetContacts");
-			var c = this._actionEv.contact = contacts.getContactByEmail(this._actionEv.address.getAddress());
-			this._setContactText(c != null);
-		}
 		this._setupSpamButton(this._participantActionMenu);
 		this._enableFlags(this._participantActionMenu, bHasUnread, bHasRead);
-		this._participantActionMenu.popup(0, ev.docX, ev.docY);
+		var imItem = this._participantActionMenu.getOp(ZmOperation.IM);
+		var contactsApp = appCtxt.getApp(ZmApp.CONTACTS);
+		if (contactsApp) {
+			// first check if contact is cached, and no server call is needed
+			var contact = contactsApp.getContactByEmail(this._actionEv.address.getAddress());
+			if (contact) {
+				this._handleResponseGetContact(imItem, address, ev, contact);
+			} else {
+				this._participantActionMenu.getOp(ZmOperation.CONTACT).setText(ZmMsg.loading);
+				if (imItem) {
+					if (ZmImApp.updateImMenuItemByAddress(imItem, address, false)) {
+						imItem.setText(ZmMsg.loading);						
+					} else {
+						imItem = null;	// done updating item, didn't need server call
+					}
+				}
+				this._participantActionMenu.popup(0, ev.docX, ev.docY);
+				var respCallback = new AjxCallback(this, this._handleResponseGetContact, [imItem, address, ev]);
+				contactsApp.getContactByEmail(this._actionEv.address.getAddress(), respCallback);
+			}
+		} else if (imItem) {
+			// since contacts app is disabled, we won't be making a server call
+			ZmImApp.updateImMenuItemByAddress(imItem, address, true);
+			this._participantActionMenu.popup(0, ev.docX, ev.docY);
+		}
 	} else {
 		var actionMenu = this.getActionMenu();
 		this._setupSpamButton(actionMenu);
@@ -555,6 +571,22 @@ function(ev) {
 			actionMenu.setSelectedItem(0);
 		}
 	}
+};
+
+ZmMailListController.prototype._handleResponseGetContact =
+function(imItem, address, ev, contact) {
+
+	this._actionEv.contact = contact;
+	this._setContactText(contact != null);
+
+	if (imItem) {
+		if (contact) {
+			ZmImApp.updateImMenuItemByContact(imItem, contact, address);
+		} else {
+			ZmImApp.updateImMenuItemByAddress(imItem, address, true);
+		}
+	}
+	this._participantActionMenu.popup(0, ev.docX, ev.docY);
 };
 
 // Operation listeners

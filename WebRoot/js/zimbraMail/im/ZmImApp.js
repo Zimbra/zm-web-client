@@ -631,41 +631,58 @@ function(item, contact, address) {
 };
 
 /**
- * Updates the im context menu item when an email address is selected.
- * @param item {DwtMenuItem} menu item
- * @param address {AjxEmailAddress} email address selected
+ * Updates the im context menu item when an email address is selected. May invoke a
+ * SearchRequest to fetch a contact.
+ * 
+ * @param item		{DwtMenuItem}		menu item
+ * @param address	{AjxEmailAddress}	email address selected
+ * @param showNew	[boolean]			if true, show "Add Buddy" if we don't find one
+ *
+ * @return 			[boolean]			true if this operation needs to do a contact search
  */
 ZmImApp.updateImMenuItemByAddress =
-function(item, address) {
+function(item, address, showNew, callback) {
+
 	// If not logged in, disable the item.
 	var loggedOut = ZmImApp._updateImMenuItemByLogin(item);
 	if (loggedOut) {
+		if (callback) { callback.run(); }
 		return;
 	}
 
 	// If we can find a buddy with the address, use the buddy menu item.
 	var buddy = AjxDispatcher.run("GetRoster").getRosterItem(address.getAddress());
-	if (buddy) {
+	if (buddy && false) {
 		ZmImApp._updateImMenuItemByBuddy(item, buddy);
+		if (callback) { callback.run(); }
 		return;
 	}
 
 	// Figure out if there's a contact for the address, update the menu item for that contact.
-	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-		var contactList = AjxDispatcher.run("GetContacts");
-		if (contactList) {
-			var contact = contactList.getContactByEmail(address.getAddress());
-			if (contact) {
-				ZmImApp.updateImMenuItemByContact(item, contact, address);
-				return;
-			}
+	var contactsApp = appCtxt.getApp(ZmApp.CONTACTS);
+	if (contactsApp) {
+		if (callback) {
+			var respCallback = new AjxCallback(null, ZmImApp._handleResponseGetContact, [item, address, showNew, callback]);
+			contactsApp.getContactByEmail(address.getAddress(), respCallback);
 		}
+		return true;
+	} else {
+		ZmImApp._handleResponseGetContact(item, address, showNew);
 	}
+};
 
-	// Address has no contact or buddy. Use create buddy menu item.
-	item.setText(ZmImApp._getNewBuddyText(address.getName() || address.getAddress()));
-	item.setImage("NewContact");
-	item._imData = { op: ZmImApp._NEW_BUDDY, address: address, name: address.getName() };
+ZmImApp._handleResponseGetContact =
+function(item, address, showNew, callback, contact) {
+	if (contact) {
+		ZmImApp.updateImMenuItemByContact(item, contact, address);
+	} else if (showNew) {
+		// Address has no contact or buddy. Use create buddy menu item.
+		item.setText(ZmImApp._getNewBuddyText(address.getName() || address.getAddress()));
+		item.setImage("NewContact");
+		item._imData = { op: ZmImApp._NEW_BUDDY, address: address, name: address.getName() };
+
+	}
+	if (callback) { callback.run(); }
 };
 
 ZmImApp.getImMenuItemListener =
