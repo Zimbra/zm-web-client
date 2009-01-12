@@ -31,8 +31,6 @@ ZmSpreadSheetApp.launch = function(){
 
     shell.getKeyboardMgr().registerKeyMap(new DwtKeyMap(true));
 
-    appCtxt.setItemCache(new AjxCache());
-
     new ZmSpreadSheetApp();
 
 };

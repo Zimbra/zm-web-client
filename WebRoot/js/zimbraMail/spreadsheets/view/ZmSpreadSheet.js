@@ -423,7 +423,8 @@ ZmSpreadSheet.prototype._getLeftHeaderCell = function(td) {
 	var table = this._getTable();
 	var rows = (table && table.rows)? table.rows : null;
 	var rowIndex = (td && td.parentNode)? td.parentNode.rowIndex : 0;
-	return (rows ? rows[rowIndex][0] : null);
+    var row = rows ? rows[rowIndex] : null;
+	return (row ? row.cells[0] : null);
 };
 
 ZmSpreadSheet.prototype._colsize_mouseMove = function(ev) {
