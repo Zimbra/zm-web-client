@@ -125,7 +125,12 @@ function(mode, object, share) {
 	this._reply.setReplyType(ZmShareReply.STANDARD);
 	this._reply.setReplyNote("");
 
-	this._urlEl.innerHTML = AjxStringUtil.htmlEncode(this._object.getRestUrl());
+	var url = this._object.getRestUrl();
+	if (appCtxt.isOffline) {
+		var remoteUri = appCtxt.get(ZmSetting.OFFLINE_REMOTE_SERVER_URI);
+		url = remoteUri + url.substring((url.indexOf("/",7)));
+	}
+	this._urlEl.innerHTML = AjxStringUtil.htmlEncode(url);
 
 	DwtDialog.prototype.popup.call(this);
 	this.setButtonEnabled(DwtDialog.OK_BUTTON, false);
