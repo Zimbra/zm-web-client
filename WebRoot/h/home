@@ -153,7 +153,7 @@
 		</c:if>
 		</c:forEach>
 		<c:if test="${comcast_msgcenterad}">
-		<td rowspan="2">
+		<td rowspan="2" align="center">
 			<iframe src="http://pn2.adserver.yahoo.com/a?f=2022363872&pn=comcast&p=com-mail&l=LREC&c=sh&bg=ffffff&no_expandable=1"
 	              marginwidth="0"
 	              marginheight="0"
@@ -163,6 +163,7 @@
 	              frameborder="0"
 	              style="border:none;"
 	              scrolling="no" align="center"></iframe>
+            <fmt:message key="advertisement" />
 			</td>
 		</c:if>
 </tr>

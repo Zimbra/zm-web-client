@@ -375,7 +375,7 @@
 		              frameborder="0"
 		              style="border:none;"
 		              scrolling="no" align="center"></iframe>
-				
+				     <fmt:message key="advertisement" />
 				</td>
 			</c:if>
 	
