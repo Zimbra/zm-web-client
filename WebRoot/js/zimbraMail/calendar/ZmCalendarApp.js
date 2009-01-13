@@ -19,10 +19,9 @@ ZmCalendarApp = function(container) {
 
 	ZmApp.call(this, ZmApp.CALENDAR, container);
 
-	var settings = appCtxt.getSettings();
-	var listener = new AjxListener(this, this._settingChangeListener);
-	settings.getSetting(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL).addChangeListener(listener);
-	settings.getSetting(ZmSetting.CAL_FIRST_DAY_OF_WEEK).addChangeListener(listener);
+	if (!appCtxt.isOffline) {
+		this._addSettingsChangeListeners();
+	}
 };
 
 // Organizer and item-related constants
@@ -654,29 +653,6 @@ function(accordionItem) {
 	ZmApp.prototype._activateAccordionItem.call(this, accordionItem);
 
 	this.getCalController().handleMailboxChange();
-};
-
-ZmCalendarApp.prototype._settingChangeListener =
-function(ev) {
-	if (ev.type != ZmEvent.S_SETTING) return;
-	
-	var setting = ev.source;
-	if (setting.id == ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL) {
-		if (setting.getValue()) {
-			AjxDispatcher.run("ShowMiniCalendar", true);
-		} else if (!this._active) {
-			AjxDispatcher.run("ShowMiniCalendar", false);
-		}
-	} else if (setting.id == ZmSetting.CAL_FIRST_DAY_OF_WEEK) {
-		var controller = AjxDispatcher.run("GetCalController");
-		var minical = controller.getMiniCalendar();
-
-		var firstDayOfWeek = setting.getValue();
-		minical.setFirstDayOfWeek(firstDayOfWeek);
-
-		var date = minical.getDate();
-		controller.setDate(date, 0, true);
-	}
 };
 
 /**
