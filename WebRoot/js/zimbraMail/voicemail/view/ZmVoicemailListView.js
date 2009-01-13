@@ -247,10 +247,7 @@ function(row, voicemail) {
 			player.addHelpListener(this._helpListenerObj);
 		}
 	}
-    if(player._soundPlugin) {
-      player._soundPlugin.dispose();
-    }
-    player.reparentHtmlElement(cell);
+	player.reparentHtmlElement(cell);
 	this._players[voicemail.id] = player;
 };
 
