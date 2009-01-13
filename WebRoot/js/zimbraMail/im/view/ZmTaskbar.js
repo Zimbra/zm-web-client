@@ -41,13 +41,29 @@ function(show) {
 	this.setZIndex(show ? Dwt.Z_VIEW + 10 : Dwt.Z_HIDDEN); 
 };
 
+/** Expands or collapses the item */
 ZmTaskbar.prototype.expandItem =
 function(item, expand) {
 	if (expand && this.expandedItem) {
-		this.expandedItem.expand(false);
+		this.expandedItem._expand(false);
 	}
-	item.expand(expand);
+	item._expand(expand);
 	this.expandedItem = expand ? item : null;
+};
+
+/**
+ * If there isn't already an expanded item, then the given item is expanded.
+ * Otherwise the item is not expanded, and is put in its alert state so the user
+ * knows to expand it.
+ */
+ZmTaskbar.prototype.conditionalExpand =
+function(item) {
+	if (!this.expandedItem) {
+		this.expandItem(item, true);
+		return true;
+	} else {
+		return false;
+	}
 };
 
 ZmTaskbar.prototype._shellControlListener =
@@ -95,7 +111,7 @@ function() {
 	return "ZmTaskbarItem";
 };
 
-ZmTaskbarItem.prototype.expand =
+ZmTaskbarItem.prototype._expand =
 function(expand) {
 	this.expanded = expand;
 	Dwt.setVisible(this._contentEl, expand);

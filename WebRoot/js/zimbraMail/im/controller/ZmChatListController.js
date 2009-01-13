@@ -300,7 +300,9 @@ ZmChatListController.prototype.selectChatForRosterItem = function(item) {
 	// TODO: change this to select most recently active chat?
 	if (chat == null && chats.length > 0) chat = chats[0];
 
-	if (chat != null) this._getView().selectChat(chat);
+	if (chat != null) {
+		ZmTaskbarController.INSTANCE.selectChat(chat);
+	}
 };
 
 ZmChatListController.prototype.chatWithContacts = function(contacts, mailMsg, text) {
@@ -317,8 +319,7 @@ ZmChatListController.prototype.chatWithRosterItem = function(item, text) {
 	this.focusNewChat = true;
 	appCtxt.getApp(ZmApp.IM).prepareVisuals();
 	var chat = this._list.getChatByRosterItem(item, true);
-	// currentview or all? probably all...
-	this._getView().selectChat(chat, text);
+	ZmTaskbarController.INSTANCE.selectChat(chat, text);
 	this.focusNewChat = false;
 };
 
@@ -330,8 +331,7 @@ ZmChatListController.prototype.chatWithRosterItems = function(items, chatName) {
 	}
 	// listeners take care of rest...
 	this._list.addChat(chat);
-	// currentview or all? probably all...
-	this._getView().selectChat(chat, text);
+	ZmTaskbarController.INSTANCE.selectChat(chat, text);
 };
 
 ZmChatListController.prototype.endChat = function(chat) {

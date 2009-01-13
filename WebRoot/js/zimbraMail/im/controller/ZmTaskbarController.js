@@ -24,6 +24,7 @@ ZmTaskbarController = function(components) {
 	if (!parentEl) {
 		return;
 	}
+	this._chatData = {};	
 
 	var toolbarArgs = {
 		parent: appCtxt.getShell(),
@@ -34,12 +35,19 @@ ZmTaskbarController = function(components) {
 	this._toolbar = components[ZmAppViewMgr.C_TASKBAR] = new ZmTaskbar(toolbarArgs);
 	this._toolbar.addListener(DwtEvent.ONMOUSEDOWN, new AjxListener(this, this._toolbarMouseDownListener));
 
-	var args = {
+	var presenceArgs = {
 		contentCalback: new AjxCallback(this, this._createPresenceMenuCallback),
 		op: ZmId.OP_IM_PRESENCE_MENU
 	};
-	this._presenceItem = this._createItem(args);
+	this._presenceItem = this._createItem(presenceArgs);
 	this._toolbar.addSeparator();
+
+	var buddyListArgs = {
+		contentCalback: new AjxCallback(this, this._createBuddyListCallback),
+		op: ZmId.OP_IM_BUDDY_LIST
+	};
+	this._createItem(buddyListArgs);
+	
 	this._toolbar.addFiller(null);
 	this._chatButtonIndex = this._toolbar.getNumChildren() + 1;
 
@@ -53,12 +61,8 @@ ZmTaskbarController = function(components) {
 	roster.addGatewayListListener(new AjxListener(this, this._gatewayListListener));
 	ZmImApp.INSTANCE.getRoster().getChatList().addChangeListener(new AjxListener(this, this._chatListListener));
 
-	var args = {
-		index: this._chatButtonIndex++,
-		contentCalback: new AjxCallback(this, this._createBuddyListCallback),
-		op: ZmId.OP_IM_BUDDY_LIST
-	};
-	this._createItem(args);
+	ZmImApp.INSTANCE.getRoster().getChatList().addChangeListener(new AjxListener(this, this._chatListListener));
+
 };
 
 ZmTaskbarController.prototype = new ZmController;
@@ -81,7 +85,6 @@ function(chat) {
 	var item = this._createItem(args);
 	item.button.setToolTipContent(new AjxCallback(this, this._getChatToolTip, [chat]));
 
-	this._chatData = this._chatData || {};
 	this._chatData[chat.id] = { item: item, separator: separator };
 	var hoverImage = "Close";
 	item.button.setHoverImage(hoverImage);
@@ -91,14 +94,18 @@ function(chat) {
 	return item;
 };
 
-ZmTaskbarController.prototype.deleteChatItem =
-function(chat) {
-	chat.removeChangeListener(this._chatChangeListenerListenerObj);
+ZmTaskbarController.prototype.endChat = function(chat) {
+	chat.sendClose();
+	ZmImApp.INSTANCE.getRoster().getChatList().removeChat(chat);
+};
+
+ZmTaskbarController.prototype.selectChat = function(chat, text) {
 	var data = this._chatData[chat.id];
 	if (data) {
-		this._toolbar.removeSeparator(data.separator);
-		data.item.dispose();
-		this._chatButtonIndex -= 2;
+		this._expandChatItem(data.item, chat, true);		
+		if (text) {
+			data.chatWidget.setEditorContent(AjxStringUtil.trim(text));
+		}
 	}
 };
 
@@ -126,10 +133,8 @@ function(addr, buddy) {
 	this._subscribeRequestTooltip = this._subscribeRequestTooltip || new AjxMessageFormat(ZmMsg.imInvitationFrom);
 	var tooltip = this._subscribeRequestTooltip.format(buddy ? buddy.getDisplayName() : addr);
 	item.button.setToolTipContent(tooltip);
-	if (this._toolbar.expandedItem) {
+	if (!this._toolbar.conditionalExpand(item)) {
 		item.showAlert(true);
-	} else {
-		this._toolbar.expandItem(item, true);
 	}
 };
 
@@ -137,6 +142,33 @@ ZmTaskbarController.prototype._toolbarMouseDownListener =
 function(ev) {
 	if (ev.button == DwtMouseEvent.LEFT && this._toolbar.expandedItem) {
 		this._toolbar.expandItem(this._toolbar.expandedItem, false);
+	}
+};
+
+ZmTaskbarController.prototype._chatListListener = function(ev) {
+	if (ev.event == ZmEvent.E_CREATE) {
+		var chat = ev._details.items[0];
+		var data = this._chatData[chat.id];
+		if (data) {
+			this._toolbar.conditionalExpand(data.item);
+		} else {
+			this.createChatItem(chat);
+		}
+	} else if (ev.event == ZmEvent.E_DELETE) {
+		var chat = ev._details.items[0];
+		this._deleteChatItem(chat);
+	}
+};
+
+ZmTaskbarController.prototype._deleteChatItem =
+function(chat) {
+	chat.removeChangeListener(this._chatChangeListenerListenerObj);
+	var data = this._chatData[chat.id];
+	if (data) {
+		this._toolbar.removeSeparator(data.separator);
+		data.item.dispose();
+		this._chatButtonIndex -= 2;
+		delete this._chatData[chat.id];
 	}
 };
 
@@ -159,7 +191,7 @@ function(taskbarItem, chat, expand) {
 ZmTaskbarController.prototype._chatSelectionListener =
 function(chat, ev) {
 	if (chat && ev.target && (ev.target.className == this._closeClass)) {
-		ZmChatMultiWindowView.getInstance().endChat(chat);
+		this.endChat(chat);
 	} else {
 		var taskbarItem = ev.dwtObj.parent;
 		this._expandChatItem(taskbarItem, chat, !taskbarItem.expanded);
@@ -237,7 +269,7 @@ function(ev) {
 
 ZmTaskbarController.prototype._closeChatListener =
 function(chat) {
-	ZmChatMultiWindowView.getInstance().endChat(chat);
+	this.endChat(chat);
 };
 
 ZmTaskbarController.prototype._minimizeChatListener =

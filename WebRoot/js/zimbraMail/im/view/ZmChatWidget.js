@@ -22,6 +22,8 @@ ZmChatWidget = function(params) {
 	this._init();
 };
 
+ZmChatWidget.CLOSE = "CLOSE";
+
 ZmChatWidget.prototype = new DwtComposite;
 ZmChatWidget.prototype.constructor = ZmChatWidget;
 
@@ -35,7 +37,11 @@ ZmChatWidget.prototype.getObjectManager = function() {
 
 ZmChatWidget.prototype.addCloseListener =
 function(listener) {
-	this._close.addSelectionListener(listener);
+	if (!this._closeButtonListener) {
+		this._closeButtonListener = new AjxListener(this, this.close);
+		this._close.addSelectionListener(this._closeButtonListener);
+	}
+	this.addListener(ZmChatWidget.CLOSE, listener);
 };
 
 ZmChatWidget.prototype.addMinimizeListener =
@@ -569,7 +575,13 @@ ZmChatWidget.prototype.dispose = function() {
 };
 
 ZmChatWidget.prototype.close = function() {
-	ZmChatMultiWindowView.getInstance().endChat(this.chat);
+	this._notifyClose();
+};
+
+ZmChatWidget.prototype._notifyClose = 
+function() {
+	var ev = { chatWidget: this };
+	this.notifyListeners(ZmChatWidget.CLOSE, ev);
 };
 
 // 'protected' but called by ZmTaskbarController
