@@ -164,7 +164,7 @@ function() {
 
 ZmVoicemailListView.prototype._clearPlayers =
 function() {
-	if (this._playing) {
+	if (this._playing && !DwtSoundPlugin.isScriptingBroken()) { // Can't reuse the quicktime noscript player.
 		// Save data to be able to reconnect to the player.
 		this._reconnect = {
 			id: this._playing.id,
