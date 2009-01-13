@@ -335,11 +335,15 @@ function(callback) {
 		folderTree.getPermissions({noBusyOverlay:true});
 	}
 
-	// in dev mode, force create deferred folders due to timing issue
+	// in dev mode, force create deferred folders b/c postLoad gets called w/
+	// invisible parent (deferred folders for child accounts are never loaded)
 	if (AjxDispatcher.loaded("Contacts")) {
 		var capp = appCtxt.getApp(ZmApp.CONTACTS);
 		capp._createDeferredFolders(ZmOrganizer.ADDRBOOK);
 	}
+	if (AjxDispatcher.loaded("Notebook")) {
+		var napp = appCtxt.getApp(ZmApp.NOTEBOOK);
+		napp._createDeferredFolders(ZmOrganizer.NOTEBOOK);
 
 	var ac = appCtxt.getCurrentApp().getAccordionController();
 	var expandedItem = ac.getAccordion().getExpandedItem();
