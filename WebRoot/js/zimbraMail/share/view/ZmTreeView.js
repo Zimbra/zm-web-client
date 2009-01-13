@@ -394,7 +394,7 @@ function(parentNode, organizer, index, noTooltips, omit) {
 			dndScrollCallback: this._overview._dndScrollCallback,
 			dndScrollId: this._overview.id,
 			imageInfo:organizer.getIcon(),
-			nodeParam: ((appCtxt.isOffline && organizer.isOfflineSyncable && organizer.isOfflineSyncing) ? "SyncStatusOn" : null),
+			extraInfo: ((appCtxt.isOffline && organizer.isOfflineSyncable && organizer.isOfflineSyncing) ? "SyncStatusOn" : null),
 			id:ZmId.getTreeItemId(this.overviewId, organizer.id)
 		};
 		// now add item
