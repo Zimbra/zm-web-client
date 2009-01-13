@@ -1042,7 +1042,7 @@ function(ev) {
 	var msg = this._composeView.getMsg();
 	if (msg) {
 		var contacts = msg.getAddresses(AjxEmailAddress.TO, {}, true);
-		AjxDispatcher.run("GetChatListController").chatWithContacts(contacts, msg, this._getBodyContent());
+		ZmTaskbarController.INSTANCE.chatWithContacts(contacts, msg, this._getBodyContent());
 	}
 };
 

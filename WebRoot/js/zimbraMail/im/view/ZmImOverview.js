@@ -66,8 +66,7 @@ ZmImOverview = function(parent, params) {
 
 		assistant : [ ZmOperation.IM_NEW_CHAT ],
 
-		group : [ // ZmOperation.IM_NEW_GROUP_CHAT,
-			// ZmOperation.SEP,
+		group : [
 			ZmOperation.NEW_ROSTER_ITEM,
 			ZmOperation.IM_DELETE_GROUP
 		]
@@ -293,16 +292,19 @@ ZmImOverview.prototype._doSort = function() {
 	}
 };
 
-ZmImOverview.prototype.chatWithBuddy = function(buddy) {
-        var ctrl = AjxDispatcher.run("GetChatListController");
-        ctrl.chatWithRosterItem(buddy);
-        if (ZmImNewChatDlg._INSTANCE)
-                ZmImNewChatDlg._INSTANCE.popdown();
+ZmImOverview.prototype.chatWithBuddy =
+function(buddy) {
+	ZmTaskbarController.INSTANCE.chatWithRosterItem(buddy);
+	if (ZmImNewChatDlg._INSTANCE) {
+		ZmImNewChatDlg._INSTANCE.popdown();
+	}
 };
 
-ZmImOverview.prototype._actionMenuPopdownListener = function() {
-        if (this._actionedItem)
-                this._actionedItem._setActioned(false);
+ZmImOverview.prototype._actionMenuPopdownListener =
+function() {
+	if (this._actionedItem) {
+		this._actionedItem._setActioned(false);
+	}
 };
 
 ZmImOverview.prototype._getActionMenu = function(nodeType, buddy, group) {
@@ -387,8 +389,7 @@ ZmImOverview.prototype._treeSelectionListener = function(ev) {
 			DwtMenu.closeActiveMenu();
 			this.chatWithBuddy(buddy);
 		} else {
-			var ctrl = AjxDispatcher.run("GetChatListController");
-			ctrl.selectChatForRosterItem(buddy);
+			ZmTaskbarController.INSTANCE.selectChatForRosterItem(buddy);
 		}
 	} else if (ev.detail == DwtTree.ITEM_DBL_CLICKED) {
 		if (!this._options.singleClick) {

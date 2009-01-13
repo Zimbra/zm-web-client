@@ -37,13 +37,6 @@ ZmChatListController = function(container, imApp) {
 
 	this._parentView = {};
 
-	// listen for roster list changes
-	this._rosterListListener = new AjxListener(this, this._rosterListChangeListener);
-
-	imApp.getRoster().addChangeListener(new AjxListener(this, this._rosterChangeListener));
-
-	var rosterList = imApp.getRoster().getRosterItemList();
-	rosterList.addChangeListener(this._rosterListListener);
 	this._imApp = imApp;
 };
 
@@ -286,79 +279,9 @@ ZmChatListController.prototype._setNewButtonProps = function(view, toolTip, enab
 	}
 };
 
-ZmChatListController.prototype.selectChatForRosterItem = function(item) {
-	var chats = this._list.getChatsByRosterAddr(item.getAddress());
-	var chat = null;
-	for (var c in chats) {
-		// TODO: !chat.groupChat()?
-		if (chats[c].getRosterSize() == 1) {
-			chat = chats[c];
-			break;
-		}
-	}
-	// select first chat if not found in solo chat...
-	// TODO: change this to select most recently active chat?
-	if (chat == null && chats.length > 0) chat = chats[0];
-
-	if (chat != null) {
-		ZmTaskbarController.INSTANCE.selectChat(chat);
-	}
-};
-
-ZmChatListController.prototype.chatWithContacts = function(contacts, mailMsg, text) {
-	this.focusNewChat = true;
-	var buddies = contacts.map("getBuddy").sub(AjxCallback.isNull);
-	// XXX: we can only use one buddy for now -- no support for group chat
-	if (buddies.size() > 0) {
-		this.chatWithRosterItem(buddies.get(0), text);
-	}
-	this.focusNewChat = false;
-};
-
-ZmChatListController.prototype.chatWithRosterItem = function(item, text) {
-	this.focusNewChat = true;
-	appCtxt.getApp(ZmApp.IM).prepareVisuals();
-	var chat = this._list.getChatByRosterItem(item, true);
-	ZmTaskbarController.INSTANCE.selectChat(chat, text);
-	this.focusNewChat = false;
-};
-
-ZmChatListController.prototype.chatWithRosterItems = function(items, chatName) {
-        appCtxt.getApp(ZmApp.IM).prepareVisuals();
-	chat = new ZmChat(Dwt.getNextId(), chatName, this);
-	for (var i=0; i < items.length; i++) {
-		chat.addRosterItem(items[i]);
-	}
-	// listeners take care of rest...
-	this._list.addChat(chat);
-	ZmTaskbarController.INSTANCE.selectChat(chat, text);
-};
-
-ZmChatListController.prototype.endChat = function(chat) {
-	chat.sendClose();
-	this._list.removeChat(chat);
-};
-
+		
 ZmChatListController.prototype._getView = function() {
 	return ZmChatMultiWindowView.getInstance();
-};
-
-ZmChatListController.prototype._rosterListChangeListener = function(ev) {
-	if (ev.event == ZmEvent.E_MODIFY) {
-                var fields = ev.getDetail("fields");
-		var items = ev.getItems();
-		for (var i=0; i < items.length; i++) {
-			var item = items[i];
-			if (item instanceof ZmRosterItem) {
-				var chats = this._list.getChatsByRosterAddr(item.getAddress());
-				// currentview or all? probably all...
-				for (var c in chats) {
-					var chat = chats[c];
-					this._getView()._rosterItemChangeListener(chat, item, fields);
-				}
-			}
-		}
-	}
 };
 
 ZmChatListController.prototype._mouseUpListener =

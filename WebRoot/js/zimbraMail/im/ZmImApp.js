@@ -100,7 +100,6 @@ ZmImApp.prototype._registerOrganizers =  function() {
 ZmImApp.prototype._registerOperations =
 function() {
     ZmOperation.registerOp(ZmId.OP_IM_NEW_CHAT, { textKey: "imNewChat", image: "ImFree2Chat", shortcut:ZmKeyMap.NEW_CHAT });
-    ZmOperation.registerOp(ZmId.OP_IM_NEW_GROUP_CHAT, { textKey: "imNewGroupChat", image: "ImFree2Chat" });
     ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_AWAY, { textKey: "imStatusAway", image: "ImAway" });
     ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_CHAT, { textKey: "imStatusChat", image: "ImFree2Chat" });
     ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_DND, { textKey: "imStatusDND", image: "ImDnd" });
@@ -730,7 +729,7 @@ function(ev) {
 	var imData = ev.dwtObj._imData;
 	switch (imData.op) {
 		case ZmImApp._NEW_IM:
-			ZmImApp.INSTANCE.getChatListController().chatWithRosterItem(imData.buddy);
+			ZmTaskbarController.INSTANCE.chatWithRosterItem(imData.buddy);
 			break;
 		case ZmImApp._NEW_BUDDY_FROM_IM_ADDRESS:
 			var imAddress = ZmImAddress.parse(imData.imAddress);

@@ -60,9 +60,7 @@ ZmTaskbarController = function(components) {
 
 	roster.addGatewayListListener(new AjxListener(this, this._gatewayListListener));
 	ZmImApp.INSTANCE.getRoster().getChatList().addChangeListener(new AjxListener(this, this._chatListListener));
-
-	ZmImApp.INSTANCE.getRoster().getChatList().addChangeListener(new AjxListener(this, this._chatListListener));
-
+	ZmImApp.INSTANCE.getRoster().getRosterItemList().addChangeListener(new AjxListener(this, this._rosterListChangeListener));
 };
 
 ZmTaskbarController.prototype = new ZmController;
@@ -94,12 +92,14 @@ function(chat) {
 	return item;
 };
 
-ZmTaskbarController.prototype.endChat = function(chat) {
+ZmTaskbarController.prototype.endChat =
+function(chat) {
 	chat.sendClose();
 	ZmImApp.INSTANCE.getRoster().getChatList().removeChat(chat);
 };
 
-ZmTaskbarController.prototype.selectChat = function(chat, text) {
+ZmTaskbarController.prototype.selectChat =
+function(chat, text) {
 	var data = this._chatData[chat.id];
 	if (data) {
 		this._expandChatItem(data.item, chat, true);		
@@ -107,6 +107,39 @@ ZmTaskbarController.prototype.selectChat = function(chat, text) {
 			data.chatWidget.setEditorContent(AjxStringUtil.trim(text));
 		}
 	}
+};
+
+ZmTaskbarController.prototype.selectChatForRosterItem =
+function(item) {
+	var chats = ZmImApp.INSTANCE.getRoster().getChatList().getChatsByRosterAddr(item.getAddress());
+	var chat = null;
+	for (var c in chats) {
+		if (chats[c].getRosterSize() == 1) {
+			chat = chats[c];
+			break;
+		}
+	}
+	if (chat == null && chats.length > 0) {
+		chat = chats[0];
+	}
+
+	if (chat != null) {
+		this.selectChat(chat);
+	}
+};
+
+ZmTaskbarController.prototype.chatWithContacts =
+function(contacts, mailMsg, text) {
+	var buddies = contacts.map("getBuddy").sub(AjxCallback.isNull);
+	if (buddies.size() > 0) {
+		this.chatWithRosterItem(buddies.get(0), text);
+	}
+};
+
+ZmTaskbarController.prototype.chatWithRosterItem =
+function(item, text) {
+	var chat = ZmImApp.INSTANCE.getRoster().getChatList().getChatByRosterItem(item, true);
+	this.selectChat(chat, text);
 };
 
 ZmTaskbarController.prototype.getChatWidgetForChat =
@@ -142,6 +175,30 @@ ZmTaskbarController.prototype._toolbarMouseDownListener =
 function(ev) {
 	if (ev.button == DwtMouseEvent.LEFT && this._toolbar.expandedItem) {
 		this._toolbar.expandItem(this._toolbar.expandedItem, false);
+	}
+};
+
+ZmTaskbarController.prototype._rosterListChangeListener =
+function(ev) {
+	if (ev.event == ZmEvent.E_MODIFY) {
+		var fields = ev.getDetail("fields");
+		var items = ev.getItems();
+		for (var i=0; i < items.length; i++) {
+			var item = items[i];
+			if (item instanceof ZmRosterItem) {
+				var list;
+				list = list || ZmImApp.INSTANCE.getRoster().getChatList();
+				var chats = list.getChatsByRosterAddr(item.getAddress());
+				for (var c in chats) {
+					var chat = chats[c];
+					var chatWidget = this.getChatWidgetForChat(chats[c]);
+					if (chatWidget) {
+						//TODO: does this just end up calling back to the taskbar?
+						chatWidget._rosterItemChangeListener(item, fields);
+					}
+				}
+			}
+		}
 	}
 };
 

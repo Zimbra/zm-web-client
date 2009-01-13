@@ -623,80 +623,81 @@ ZmChatWidget.prototype._dropOnEditorListener = function(ev) {
 };
 
 ZmChatWidget.prototype._dropOnTitleListener = function(ev) {
-	var srcData = ev.srcData;
-
-	function isBuddy()  { return srcData instanceof ZmRosterItem; };
-	function isTab()    { return srcData instanceof ZmChatWidget; };
-	function isGenericItem(type)   {
-		if (!(srcData.data && srcData.controller))
-			return false;
-		if (!(srcData.data instanceof Array))
-			srcData.data = [ srcData.data ];
-		return srcData.data[0] instanceof type;
-	};
-
-	var isMailItem = AjxCallback.simpleClosure(isGenericItem, null, ZmMailItem);
-	var isContact  = AjxCallback.simpleClosure(isGenericItem, null, ZmContact);
-
-	var dropOK = [ isBuddy, isTab, isMailItem, isContact ];
-
-	if (ev.action == DwtDropEvent.DRAG_ENTER) {
-		for (var i = dropOK.length; --i >= 0;)
-			if (dropOK[i]())
-				return;
-		ev.doIt = false;
-	} else if (ev.action == DwtDropEvent.DRAG_DROP) {
-
-		if (isBuddy()) {
-
-			// this._controller.chatWithRosterItem(srcData);
-			ZmChatMultiWindowView.getInstance().chatInNewTab(srcData, this.parent);
-
- 		} else if (isTab()) {
-
-			srcData.attach(this.parent);
-
-		} else if (isMailItem() || isContact()) {
-
-			var contacts;
-
-			if (isMailItem()) {
-
-				var contactList = AjxDispatcher.run("GetContacts");
-				var conversations = AjxVector.fromArray(srcData.data);
-
-				// retrieve list of participants to dropped conversations
-				var participants = new AjxVector();
-				conversations.foreach(function(conv) {
-					participants.merge(participants.size(), conv.participants);
-				});
-
-				// participants are AjxEmailAddress-es, we need emails...
-				var emails = participants.map("address");
-
-				// ... so we can lookup contacts.
-				contacts = emails.map(contactList.getContactByEmail, contactList);
-
-			} else if (isContact()) {
-				contacts = AjxVector.fromArray(srcData.data);
-			}
-
-			// retrieve their IM addresses
-			var imAddresses = contacts.map("getIMAddress");
-
-			var roster = AjxDispatcher.run("GetRoster");
-			var seen = [];
-			imAddresses.foreach(function(addr) {
-				if (addr && !seen[addr]) {
-					seen[addr] = true;
-					var item = roster.getRosterItem(addr);
-					if (item)
-						ZmChatMultiWindowView.getInstance().chatInNewTab(item, this.parent);
-				}
-			}, this);
-
-		}
-	}
+//TODO: see if we want to keep any of this....
+//	var srcData = ev.srcData;
+//
+//	function isBuddy()  { return srcData instanceof ZmRosterItem; };
+//	function isTab()    { return srcData instanceof ZmChatWidget; };
+//	function isGenericItem(type)   {
+//		if (!(srcData.data && srcData.controller))
+//			return false;
+//		if (!(srcData.data instanceof Array))
+//			srcData.data = [ srcData.data ];
+//		return srcData.data[0] instanceof type;
+//	};
+//
+//	var isMailItem = AjxCallback.simpleClosure(isGenericItem, null, ZmMailItem);
+//	var isContact  = AjxCallback.simpleClosure(isGenericItem, null, ZmContact);
+//
+//	var dropOK = [ isBuddy, isTab, isMailItem, isContact ];
+//
+//	if (ev.action == DwtDropEvent.DRAG_ENTER) {
+//		for (var i = dropOK.length; --i >= 0;)
+//			if (dropOK[i]())
+//				return;
+//		ev.doIt = false;
+//	} else if (ev.action == DwtDropEvent.DRAG_DROP) {
+//
+//		if (isBuddy()) {
+//
+//			// this._controller.chatWithRosterItem(srcData);
+//			ZmChatMultiWindowView.getInstance().chatInNewTab(srcData, this.parent);
+//
+// 		} else if (isTab()) {
+//
+//			srcData.attach(this.parent);
+//
+//		} else if (isMailItem() || isContact()) {
+//
+//			var contacts;
+//
+//			if (isMailItem()) {
+//
+//				var contactList = AjxDispatcher.run("GetContacts");
+//				var conversations = AjxVector.fromArray(srcData.data);
+//
+//				// retrieve list of participants to dropped conversations
+//				var participants = new AjxVector();
+//				conversations.foreach(function(conv) {
+//					participants.merge(participants.size(), conv.participants);
+//				});
+//
+//				// participants are AjxEmailAddress-es, we need emails...
+//				var emails = participants.map("address");
+//
+//				// ... so we can lookup contacts.
+//				contacts = emails.map(contactList.getContactByEmail, contactList);
+//
+//			} else if (isContact()) {
+//				contacts = AjxVector.fromArray(srcData.data);
+//			}
+//
+//			// retrieve their IM addresses
+//			var imAddresses = contacts.map("getIMAddress");
+//
+//			var roster = AjxDispatcher.run("GetRoster");
+//			var seen = [];
+//			imAddresses.foreach(function(addr) {
+//				if (addr && !seen[addr]) {
+//					seen[addr] = true;
+//					var item = roster.getRosterItem(addr);
+//					if (item)
+//						ZmChatMultiWindowView.getInstance().chatInNewTab(item, this.parent);
+//				}
+//			}, this);
+//
+//		}
+//	}
 };
 
 ZmChatWidget.prototype._sendByEmailListener = function() {

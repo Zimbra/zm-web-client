@@ -25,7 +25,6 @@ ZmImController = function() {
 	this._listeners = {};
 	this._listeners[ZmOperation.NEW_ROSTER_ITEM] = new AjxListener(this, this._newRosterItemListener);
 	this._listeners[ZmOperation.IM_NEW_CHAT] = new AjxListener(this, this._imNewChatListener);
-	this._listeners[ZmOperation.IM_NEW_GROUP_CHAT] = new AjxListener(this, this._imNewGroupChatListener);
 	this._listeners[ZmOperation.EDIT_PROPS] = new AjxListener(this, this._editRosterItemListener);
 	this._listeners[ZmOperation.IM_CREATE_CONTACT] = new AjxListener(this, this._imCreateContactListener);
 	this._listeners[ZmOperation.IM_ADD_TO_CONTACT] = new AjxListener(this, this._imAddToContactListener);
@@ -170,8 +169,7 @@ function(ev) {
 ZmImController.prototype._newChat =
 function(ev) {
 	if (ev && ev.buddy) {
-		var clc = AjxDispatcher.run("GetChatListController");
-		clc.chatWithRosterItem(ev.buddy);
+		ZmTaskbarController.INSTANCE.chatWithRosterItem(ev.buddy);
 	} else {
 		// select from GAL
 		ZmImNewChatDlg.show(
@@ -187,8 +185,7 @@ function(contact, dlg, text, el, match) {
 	var item = this._getRosterItemForChat(contact, match.fullAddress);
 	if (item) {
 		dlg.popdown();
-		var clc = AjxDispatcher.run("GetChatListController");
-		clc.chatWithRosterItem(item);
+		ZmTaskbarController.INSTANCE.chatWithRosterItem(item);
 	}
 };
 
@@ -196,8 +193,7 @@ ZmImController.prototype._newChatOkCallback =
 function(selectedContact, contactText) {
 	var item = this._getRosterItemForChat(selectedContact, contactText);
 	if (item) {
-		var clc = AjxDispatcher.run("GetChatListController");
-		clc.chatWithRosterItem(item);
+		ZmTaskbarController.INSTANCE.chatWithRosterItem(item);
 		return true;
 	}
 };

@@ -67,34 +67,5 @@ ZmChatMultiWindowView.prototype._getChatWidgetForChat = function(chat) {
 };
 
 ZmChatMultiWindowView.prototype._dropListener = function(dropTgt, ev) {
-	if (!ev.srcData)
-		return false;
-	if (ev.action == DwtDropEvent.DRAG_ENTER) {
-		ev.doIt = dropTgt.isValidTarget(ev.srcData);
-	} else if (ev.action == DwtDropEvent.DRAG_DROP) {
-        	var srcData = ev.srcData;
-		var mouseEv = DwtShell.mouseEvent;
-            	mouseEv.setFromDhtmlEvent(ev.uiEvent);
-		var pos = this.getLocation();
-		var newPos = { x: mouseEv.docX - pos.x,
-			       y: mouseEv.docY - pos.y };
-		this._nextInitX = newPos.x
-            	this._nextInitY = newPos.y;
-		if (srcData instanceof ZmRosterItem) {
-			this._controller.chatWithRosterItem(srcData);
-		}
-		// FIXME: not implemented
-		// 		if (srcData instanceof ZmRosterTreeGroup) {
-		// 			this._controller.chatWithRosterItems(srcData.getRosterItems(), srcData.getName()+" "+ZmMsg.imGroupChat);
-		// 		}
-	}
 };
 
-ZmChatMultiWindowView.prototype.chatInNewTab = function(item, tabs) {
-	this.__useTab = tabs;
-	this._controller.chatWithRosterItem(item);
-};
-
-ZmChatMultiWindowView.prototype.chatWithRosterItem = function(item) {
-	this._controller.chatWithRosterItem(item);
-};
