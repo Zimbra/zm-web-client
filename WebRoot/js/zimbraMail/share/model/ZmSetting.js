@@ -87,6 +87,7 @@ ZmSetting.ACL_GROUP				= "grp";
 ZmSetting.ACL_PUBLIC			= "pub";
 ZmSetting.ACL_USER				= "usr";
 ZmSetting.CAL_DAY				= "day";
+ZmSetting.CAL_LIST				= "list";
 ZmSetting.CAL_MONTH				= "month";
 ZmSetting.CAL_WEEK				= "week";
 ZmSetting.CAL_WORK_WEEK			= "workWeek";

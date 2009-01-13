@@ -104,6 +104,11 @@ function() {
 	return this._currentView;
 };
 
+ZmController.prototype.getKeyMapName =
+function() {
+	return "Global";
+};
+
 ZmController.prototype.handleKeyAction =
 function(actionCode) {
 	DBG.println(AjxDebug.DBG3, "ZmController.handleKeyAction");
@@ -180,6 +185,17 @@ function(actionCode) {
 			return false;
 	}
 	return true;
+};
+
+/**
+ * Returns true if shortcuts for the given map are supported for this view. For example, given the map
+ * "tabView", a controller that creates a tab view would return true.
+ *
+ * @param map	[string]	name of a map, presumably one from DwtKeyMap
+ */
+ZmController.prototype.mapSupported =
+function(map) {
+	return false;
 };
 
 ZmController.prototype._newListener =
@@ -261,8 +277,6 @@ ZmController.prototype._restoreFocus =
 function(focusItem, noFocus) {
 	var rootTg = appCtxt.getRootTabGroup();
 	var myTg = this.getTabGroup();
-	var kbMgr = appCtxt.getKeyboardMgr();
-
 	if (rootTg && myTg) {
 		focusItem = focusItem || this._savedFocusMember || this._getDefaultFocusItem() || rootTg.getFocusMember();
 		rootTg.replaceMember(ZmController._getCurrentAppViewTabGroup(), myTg, false, false, focusItem, noFocus);

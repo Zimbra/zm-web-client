@@ -275,13 +275,7 @@ function(section, viewPage, dirtyCheck, noValidation, list, errors, view) {
 			}
 		}
 		
-		var unchanged = (value == origValue);
-		// null and "" are the same string for our purposes
-		if (pref.dataType == ZmSetting.D_STRING) {
-			unchanged = unchanged || ((value == null || value == "") &&
-									  (origValue == null ||
-									   origValue == ""));
-		}
+		var unchanged = !this._prefChanged(pref.dataType, origValue, value);
 
 		// don't try to update on server if it's client-side pref
 		var addToList = (!unchanged && (pref.name != null));
@@ -308,6 +302,21 @@ function(section, viewPage, dirtyCheck, noValidation, list, errors, view) {
 			}
 			this._controller.setDirty(view, true);
 		}
+	}
+};
+
+ZmPrefView.prototype._prefChanged =
+function(type, origValue, value) {
+
+	var test1 = value || null;
+	var test2 = origValue || null;
+
+	if (type == ZmSetting.D_LIST) {
+		return !AjxUtil.arrayCompare(test1, test2);
+	} else if (type == ZmSetting.D_HASH) {
+		return !AjxUtil.hashCompare(test1, test2);
+	} else {
+		return Boolean(test1 != test2);
 	}
 };
 

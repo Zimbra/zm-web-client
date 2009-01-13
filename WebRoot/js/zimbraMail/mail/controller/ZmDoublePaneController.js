@@ -70,6 +70,9 @@ function(search, item, callback, markRead) {
 	this._item = item;
 	this._setup(this._currentView);
 
+	var listView = this._listView[this._currentView];
+	listView._itemToSelect = (listView.getSelectionCount() == 1) ? listView.getSelection()[0] : null;
+
 	// see if we have it cached? Check if conv loaded?
 	var respCallback = new AjxCallback(this, this._handleResponseShow, [item, callback]);
 	this._loadItem(item, this._currentView, respCallback, markRead);
@@ -84,19 +87,6 @@ function(item, callback, results) {
 	var readingPaneOn = this.isReadingPaneOn();
 	if (this._doublePaneView.isMsgViewVisible() != readingPaneOn) {
 		this._doublePaneView.toggleView();
-	}
-
-	// If there's only one item in the list, go ahead and set focus to it since
-	// there's no use in the one-item list having focus (arrow keys do nothing)
-	if (readingPaneOn && (this._list.size() == 1)) {
-		var msgView = this._doublePaneView._msgView;
-		if (msgView) {
-			appCtxt.getKeyboardMgr().grabFocus(msgView);
-		}
-	} else {
-		if (this._mailListView) {
-			appCtxt.getKeyboardMgr().grabFocus(this._mailListView);
-		}
 	}
 };
 
@@ -334,7 +324,8 @@ function(view, menu, checked) {
 
 	var id = ZmMailListController.READING_PANE_MENU_ITEM_ID;
 	if (!menu._menuItems[id]) {
-		var mi = menu.createMenuItem(id, {image:"SplitPane", text:ZmMsg.readingPane, style:DwtMenuItem.CHECK_STYLE});
+		var mi = menu.createMenuItem(id, {image:"SplitPane", text:ZmMsg.readingPane, style:DwtMenuItem.CHECK_STYLE,
+										  shortcut:ZmKeyMap.READING_PANE});
 		mi.setData(ZmOperation.MENUITEM_ID, id);
 		mi.addSelectionListener(this._listeners[ZmOperation.VIEW]);
 		mi.setChecked(checked, true);
@@ -399,6 +390,8 @@ function(view) {
 	// always allow derived classes to reset size after loading
 	var sz = this._doublePaneView.getSize();
 	this._doublePaneView._resetSize(sz.x, sz.y);
+
+	this._resetSelection();
 };
 
 /**
@@ -497,7 +490,7 @@ function(ev) {
 		if (this.isReadingPaneOn()) {
 			// Give the user a chance to zip around the list view via shortcuts without having to
 			// wait for each successively selected msg to load, by waiting briefly for more list
-			// selection shortcut actions. An event will have the 'ersatz' property set if it's
+			// selection shortcut actions. An event will have the 'kbNavEvent' property set if it's
 			// the result of a shortcut.
 			if (ev.kbNavEvent && ZmDoublePaneController.LIST_SELECTION_SHORTCUT_DELAY) {
 				if (this._listSelectionShortcutDelayActionId) {
@@ -565,9 +558,21 @@ function(ev) {
 	}
 };
 
-ZmDoublePaneController.prototype._showOrigListener = 
+ZmDoublePaneController.prototype._deleteListener =
 function(ev) {
-	var msg = this._getMsg();
+	this._itemToSelect = this._getNextItemToSelect();
+	ZmMailListController.prototype._deleteListener.apply(this, arguments);                             
+};
+
+ZmDoublePaneController.prototype._moveListener =
+function(ev) {
+	this._itemToSelect = this._getNextItemToSelect();
+	ZmMailListController.prototype._moveListener.apply(this, arguments);
+};
+
+ZmDoublePaneController.prototype._showOrigListener =
+function(ev) {
+	var msg = this.getMsg();
 	if (!msg) { return; }
 
 	var msgFetchUrl = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI) + "&id=" + msg.id;
@@ -587,22 +592,25 @@ function(msg) {
 	
 	AjxDispatcher.require(["PreferencesCore", "Preferences"]);
 	var rule = new ZmFilterRule();
+
 	var from = msg.getAddress(AjxEmailAddress.FROM);
 	if (from) {
-		rule.addCondition(new ZmCondition(ZmFilterRule.C_FROM, ZmFilterRule.OP_CONTAINS, from.address));
+		var subjMod = ZmFilterRule.C_HEADER_VALUE[ZmFilterRule.C_FROM];
+		rule.addCondition(ZmFilterRule.TEST_HEADER, ZmFilterRule.OP_CONTAINS, from.address, subjMod);
 	}
 	var cc = msg.getAddress(AjxEmailAddress.CC);
 	if (cc)	{
-		rule.addCondition(new ZmCondition(ZmFilterRule.C_CC, ZmFilterRule.OP_CONTAINS, cc.address));
+		var subjMod = ZmFilterRule.C_HEADER_VALUE[ZmFilterRule.C_CC];
+		rule.addCondition(ZmFilterRule.TEST_HEADER, ZmFilterRule.OP_CONTAINS, cc.address, subjMod);
 	}
 	var subj = msg.subject;
 	if (subj) {
-		rule.addCondition(new ZmCondition(ZmFilterRule.C_SUBJECT, ZmFilterRule.OP_IS, subj));
+		var subjMod = ZmFilterRule.C_HEADER_VALUE[ZmFilterRule.C_SUBJECT];
+		rule.addCondition(ZmFilterRule.TEST_HEADER, ZmFilterRule.OP_IS, subj, subjMod);
 	}
 	rule.setGroupOp(ZmFilterRule.GROUP_ALL);
-	rule.addAction(new ZmAction(ZmFilterRule.A_KEEP));
-	var dialog = appCtxt.getFilterRuleDialog();
-	dialog.popup(rule);
+	rule.addAction(ZmFilterRule.A_KEEP);
+	appCtxt.getFilterRuleDialog().popup(rule);
 };
 
 ZmDoublePaneController.prototype._dragListener =
@@ -639,4 +647,39 @@ function(msg) {
 ZmDoublePaneController.prototype.selectFirstItem =
 function() {
 	this._doublePaneView._selectFirstItem();
+};
+
+ZmDoublePaneController.prototype._resetSelection =
+function() {
+	var listView = this._listView[this._currentView];
+	var item = listView && listView._itemToSelect;
+	if (item && (listView.getItemIndex(item) != null)) {
+		listView.setSelection(item);
+	}
+};
+
+/**
+ * Returns the item that should be selected after a move/delete. Finds
+ * the first non-selected item after the first selected item.
+ */
+ZmDoublePaneController.prototype._getNextItemToSelect =
+function() {
+	var listView = this._listView[this._currentView];
+	if (listView.getSelectionCount()) {
+		var selection = listView.getSelection();
+		var selIds = {};
+		for (var i = 0; i < selection.length; i++) {
+			selIds[selection[i].id] = true;
+		}
+		var first = selection[0];
+		var idx = listView._getRowIndex(first);
+		var childNodes = listView._parentEl.childNodes;
+		for (var i = idx + 1; i < childNodes.length; i++) {
+			var item = listView.getItemFromElement(childNodes[i]);
+			if (item && !selIds[item.id]) {
+				return item;
+			}
+		}
+	}
+	return null;	
 };
