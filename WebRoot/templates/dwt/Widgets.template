@@ -349,6 +349,7 @@ NOTE: The outer table/tr is a necessary hack. It is NOT inserted in the
 				<$ } $>
 				<td nowrap class='imageCell' id='${id}_imageCell'></td>
 				<td nowrap class='${textClassName}' id='${id}_textCell'></td>
+                <td nowrap class='imageCell' id='${id}_extraCell'></td>
 			</tr>
 		</table>
 	</div>

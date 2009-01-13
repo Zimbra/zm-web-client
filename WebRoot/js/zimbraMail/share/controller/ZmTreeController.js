@@ -747,9 +747,9 @@ function(ev, treeView, overviewId) {
 					}
 					this._fixupTreeNode(node, organizer);
 
-					if (appCtxt.isOffline && fields[ZmOrganizer.F_FLAGS] && node._nodeCell) {
+					if (appCtxt.isOffline && fields[ZmOrganizer.F_FLAGS] && node._extraCell) {
 						var nodeImg = (organizer.isOfflineSyncing) ? "SyncStatusOn" : "Blank_16";
-						AjxImg.setImage(node._nodeCell, nodeImg);
+						AjxImg.setImage(node._extraCell, nodeImg);
 					}
 				}
 				this._evHandled[overviewId] = true;
