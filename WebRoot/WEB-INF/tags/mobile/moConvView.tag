@@ -130,6 +130,9 @@
                    <mo:miniTagImage
                            ids="${mhit.tagIds}"/>
                    </c:if>
+                   <c:if test="${mhit.hasAttachment}">
+                            <span class="SmlIcnHldr Attachment">&nbsp;</span>
+                        </c:if>
                    <span class="small-gray-text">(${fn:escapeXml(zm:displaySize(mhit.size))})</span>
                </span>
            </div>

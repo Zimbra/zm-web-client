@@ -79,6 +79,9 @@
                         <mo:miniTagImage
                                 ids="${hit.conversationHit.tagIds}"/>
                         </c:if>
+                        <c:if test="${chit.hasAttachment}">
+                            <span class="SmlIcnHldr Attachment">&nbsp;</span>
+                        </c:if>
                         <c:if test="${chit.messageCount gt 1}"><span class="small-gray-text">(${chit.messageCount})</span></c:if> 
                     </span>
                 </div>

@@ -66,8 +66,8 @@
 </div>
 
 <c:if test="${not empty message.attachments}">
-    <div><span><hr size="1"/><a name="attachments${message.partName}"></a></span></div>
-    <div>
+    <div class='View'>
+        <div><a name="attachments${message.partName}"></a></div>
         <mo:attachments mailbox="${mailbox}" message="${message}" composeUrl="${composeUrl}"/>
     </div>
 </c:if>
