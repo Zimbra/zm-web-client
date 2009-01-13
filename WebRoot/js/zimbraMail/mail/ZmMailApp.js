@@ -1562,9 +1562,8 @@ function(account) {
 
 ZmMailApp.prototype._addSettingsChangeListeners =
 function() {
-	if (!this._settingListener) {
-		this._settingListener = new AjxListener(this, this._settingChangeListener);
-	}
+	ZmApp.prototype._addSettingsChangeListeners.call(this);
+
 	if (!this._settingsListener) {
 		this._settingsListener = new AjxListener(this, this._settingsChangeListener);
 	}
@@ -1579,20 +1578,19 @@ function() {
  */
 ZmMailApp.prototype._settingChangeListener =
 function(ev) {
+	ZmApp.prototype._settingChangeListener.call(this, ev);
+
 	if (ev.type != ZmEvent.S_SETTING) { return; }
 
 	var setting = ev.source;
 	var mlc = this.getMailListController();
-	if (!mlc) { return; }
 
-	if (setting.id == ZmSetting.VIEW_AS_HTML) {
+	if (mlc && setting.id == ZmSetting.VIEW_AS_HTML) {
 		var dpv = mlc._doublePaneView;
-		if (dpv) {
-			var msg = dpv.getMsg();
-			if (msg) {
-				dpv.reset();
-				dpv.setMsg(msg);
-			}
+		var msg = dpv ? dpv.getMsg() : null;
+		if (msg) {
+			dpv.reset();
+			dpv.setMsg(msg);
 		}
 	}
 };

@@ -461,6 +461,46 @@ function(byUser) {
 	}
 };
 
+ZmApp.prototype._addSettingsChangeListeners =
+function() {
+	if (!this._settingListener) {
+		this._settingListener = new AjxListener(this, this._settingChangeListener);
+	}
+
+	var settings = appCtxt.getSettings();
+	setting = settings.getSetting(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL);
+	if (setting) {
+		setting.addChangeListener(this._settingListener);
+	}
+	setting = settings.getSetting(ZmSetting.CAL_FIRST_DAY_OF_WEEK);
+	if (setting) {
+		setting.addChangeListener(this._settingListener);
+	}
+};
+
+ZmApp.prototype._settingChangeListener =
+function(ev) {
+	if (ev.type != ZmEvent.S_SETTING) { return; }
+
+	var setting = ev.source;
+	if (setting.id == ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL) {
+		if (setting.getValue()) {
+			AjxDispatcher.run("ShowMiniCalendar", true);
+		} else if (!this._active) {
+			AjxDispatcher.run("ShowMiniCalendar", false);
+		}
+	} else if (setting.id == ZmSetting.CAL_FIRST_DAY_OF_WEEK) {
+		var controller = AjxDispatcher.run("GetCalController");
+		var minical = controller.getMiniCalendar();
+
+		var firstDayOfWeek = setting.getValue();
+		minical.setFirstDayOfWeek(firstDayOfWeek);
+
+		var date = minical.getDate();
+		controller.setDate(date, 0, true);
+	}
+};
+
 /**
  * Expands an accordion item by adding an overview to it and then populating the overview.
  * 

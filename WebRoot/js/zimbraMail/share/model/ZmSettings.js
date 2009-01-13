@@ -497,7 +497,7 @@ function(list, callback, batchCommand, acctName) {
 ZmSettings.prototype._handleResponseSave =
 function(list, callback, result) {
 	var resp = result.getResponse();
-	if (resp.ModifyPrefsResponse) {
+	if (resp.ModifyPrefsResponse != null) {
 		// notify each changed setting's listeners
 		for (var i = 0; i < list.length; i++) {
 			var setting = list[i];
