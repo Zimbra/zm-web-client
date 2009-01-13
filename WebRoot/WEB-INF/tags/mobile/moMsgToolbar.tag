@@ -19,9 +19,9 @@
             <div class="table-cell">
                 <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=folders"><fmt:message key="folders"/></a> &#171; <a
                     href="${fn:escapeXml(closeUrl)}#msg${mid}" class='zo_leftbutton'>
-                    ${fn:escapeXml(zm:truncate(context.shortBackTo,15,true))}
+                    ${fn:escapeXml(zm:truncateFixed(context.shortBackTo,15,true))}
             </a>
-                &#171; ${fn:escapeXml(fn:substring(msg.subject,0,8))}...
+                &#171; ${fn:escapeXml(zm:truncateFixed(msg.subject,12,true))}
             </div>
         </div>
     </div>

@@ -7,7 +7,6 @@
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
-
 <c:set var="top_stb" value="${param.top_stb eq '0' ? '0' : (empty sessionScope.top_stb ? '1' : sessionScope.top_stb)}"/>
 <c:set var="btm_stb" value="${param.btm_stb eq '0' ? '0' : (empty sessionScope.btm_stb ? '1' : sessionScope.btm_stb)}"/>
 
@@ -28,7 +27,7 @@
                         <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=ab"><fmt:message
                                 key="addressBooks"/></a> &#171;
                         <c:if test="${top_fldr_select ne '1'}">
-                                ${fn:escapeXml(zm:truncate(context.shortBackTo,15,true))}
+                                ${fn:escapeXml(zm:truncateFixed(context.shortBackTo,15,true))}
                         </c:if>
                         <c:if test="${top_fldr_select eq '1'}">
                         <select class="_zo_select_button" name="sfi"
@@ -36,7 +35,7 @@
                             <zm:forEachFolder var="fldr" skiproot="true">
                                 <c:if test="${fldr.isContactView}">
                                     <option ${param.sfi eq fldr.id || context.folder.id eq fldr.id ? 'selected="selected"' : ''}
-                                            value="${fldr.id}">${fn:escapeXml(fn:substring(fldr.name,0,12))}...
+                                            value="${fldr.id}">${fn:escapeXml(zm:truncateFixed(zm:getFolderName(pageContext,fldr.id),15,true))}
                                     </option>
                                 </c:if>
                             </zm:forEachFolder>
@@ -47,14 +46,14 @@
                         <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=folders"><fmt:message
                                 key="folders"/></a> &#171;
                         <c:if test="${top_fldr_select ne '1'}">
-                            ${fn:escapeXml(zm:truncate(context.shortBackTo,15,true))}
+                            ${fn:escapeXml(zm:truncateFixed(context.shortBackTo,15,true))}
                         </c:if>
                         <c:if test="${top_fldr_select eq '1'}">
                         <select class="_zo_select_button" name="sfi" onchange="document.location.href='?sfi='+this.value;">
                             <zm:forEachFolder var="fldr" skiproot="true">
                                 <c:if test="${fldr.isConversationView || fldr.isMessageView}">
                                     <option ${param.sfi eq fldr.id || context.folder.id eq fldr.id ? 'selected="selected"' : ''}
-                                            value="${fldr.id}">${fn:escapeXml(fn:substring(fldr.name,0,12))}...
+                                            value="${fldr.id}">${fn:escapeXml(zm:truncateFixed(zm:getFolderName(pageContext,fldr.id),15,true))}
                                     </option>
                                 </c:if>
                             </zm:forEachFolder>
@@ -214,7 +213,7 @@
                         <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=ab"><fmt:message
                                 key="addressBooks"/></a> :
                         <c:if test="${btm_fldr_select eq '0'}">
-                            ${fn:escapeXml(zm:truncate(context.shortBackTo,15,true))}
+                            ${fn:escapeXml(zm:truncateFixed(context.shortBackTo,15,true))}
                         </c:if>
                         <c:if test="${btm_fldr_select ne '0'}">
 			<select class="_zo_select_button" name="sfi"
@@ -222,7 +221,7 @@
                             <zm:forEachFolder var="fldr" skiproot="true">
                                 <c:if test="${fldr.isContactView}">
                                     <option ${param.sfi eq fldr.id || context.folder.id eq fldr.id ? 'selected="selected"' : ''}
-                                            value="${fldr.id}">${fn:escapeXml(fn:substring(fldr.name,0,12))}...
+                                            value="${fldr.id}">${fn:escapeXml(zm:truncateFixed(zm:getFolderName(pageContext,fldr.id),15,true))}
                                     </option>
                                 </c:if>
                             </zm:forEachFolder>
@@ -233,14 +232,14 @@
                         <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=folders"><fmt:message
                                 key="folders"/></a> :
                         <c:if test="${btm_fldr_select eq '0'}">
-                            ${fn:escapeXml(zm:truncate(context.shortBackTo,15,true))}
+                            ${fn:escapeXml(zm:truncateFixed(context.shortBackTo,15,true))}
                         </c:if>
                         <c:if test="${btm_fldr_select ne '0'}">
                         <select class="_zo_select_button" name="sfi" onchange="fetchIt('?sfi='+this.value+'&amp;st=${context.st}');">
                             <zm:forEachFolder var="fldr" skiproot="true">
                                 <c:if test="${fldr.isConversationView || fldr.isMessageView}">
                                     <option ${param.sfi eq fldr.id || context.folder.id eq fldr.id ? 'selected="selected"' : ''}
-                                            value="${fldr.id}">${fn:escapeXml(fn:substring(fldr.name,0,12))}...
+                                            value="${fldr.id}">${fn:escapeXml(zm:truncateFixed(zm:getFolderName(pageContext,fldr.id),15,true))}
                                     </option>
                                 </c:if>
                             </zm:forEachFolder>

@@ -33,7 +33,7 @@
 
                 <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=folders"><fmt:message key="folders"/></a> &#171; <a
                     href="${fn:escapeXml(closeurl)}#conv${cid}" class='zo_leftbutton'>
-                    ${fn:escapeXml(zm:truncate(context.shortBackTo,15,true))}
+                    ${fn:escapeXml(zm:truncateFixed(context.shortBackTo,15,true))}
             </a>
                 <c:if test="${isConv!=null && isConv}">
                     &#171; <fmt:message key="backToConv"/>
@@ -42,7 +42,7 @@
                     <zm:currentResultUrl var="closeUrl" value="${urlTarget}" action='view' context="${context}"
                                          cso="${param.cso}" csi="${param.csi}" css="${param.css}"/>
                     &#171; <a href="${fn:escapeXml(closeUrl)}" class='zo_leftbutton'> <fmt:message
-                        key="backToConv"/> </a> &#171; ${fn:escapeXml(fn:substring(message.subject,0,8))}...
+                        key="backToConv"/> </a> &#171; ${fn:escapeXml(zm:truncateFixed(message.subject,12,true))}
                 </c:if>
 
             </div>

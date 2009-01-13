@@ -41,14 +41,14 @@
     <div class="SubToolbar">
         <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=cals"><fmt:message key="calendars"/></a> &#171;
         <c:if test="${top_fldr_select ne '1'}">
-            ${not empty sessionScope.calendar ? sessionScope.calendar.name : checkedInUI}
+            ${not empty sessionScope.calendar ? zm:truncateFixed(sessionScope.calendar.name,12,true) : checkedInUI}
         </c:if>
         <c:if test="${top_fldr_select eq '1'}">
         <select name="sfi" onchange="fetchIt('?sfi='+this.value+'&st=cal');">
         <option value="null">${checkedInUI}</option>
         <zm:forEachFolder var="fldr" skiproot="true">
             <c:if test="${fldr.isCalendar || fldr.isAppointmentView}">
-                <option ${param.sfi eq fldr.id || sessionScope.calendar.id eq fldr.id ? 'selected=selected' : ''} value="${fldr.id}">${fn:escapeXml(fn:substring(fldr.name,0,12))}...</option>
+                <option ${param.sfi eq fldr.id || sessionScope.calendar.id eq fldr.id ? 'selected=selected' : ''} value="${fldr.id}">${fn:escapeXml(zm:truncateFixed(zm:getFolderName(pageContext,fldr.id),12,true))}</option>
             </c:if>
         </zm:forEachFolder>
         </select>
@@ -81,14 +81,14 @@
     <div class="SubToolbar">
         <a href="${urlTarget}?st=cals"><fmt:message key="calendars"/></a> :
         <c:if test="${btm_fldr_select ne '1'}">
-            ${not empty sessionScope.calendar ? sessionScope.calendar.name : checkedInUI}
+            ${not empty sessionScope.calendar ? zm:truncateFixed(sessionScope.calendar.name,12,true) : checkedInUI}
         </c:if>
         <c:if test="${btm_fldr_select eq '1'}">
         <select name="sfi" onchange="fetchIt('?sfi='+this.value+'&st=cal');">
         <option value="null">${checkedInUI}</option>
         <zm:forEachFolder var="fldr" skiproot="true">
             <c:if test="${fldr.isCalendar || fldr.isAppointmentView}">
-                <option ${param.sfi eq fldr.id || sessionScope.calendar.id eq fldr.id ? 'selected=selected' : ''} value="${fldr.id}">${fn:escapeXml(fn:substring(fldr.name,0,12))}...</option>
+                <option ${param.sfi eq fldr.id || sessionScope.calendar.id eq fldr.id ? 'selected=selected' : ''} value="${fldr.id}">${fn:escapeXml(zm:truncateFixed(zm:getFolderName(pageContext,fldr.id),12,true))}</option>
             </c:if>
         </zm:forEachFolder>
         </select>

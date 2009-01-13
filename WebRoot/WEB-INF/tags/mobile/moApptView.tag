@@ -41,7 +41,7 @@
                 <c:if test="${empty sessionScope.calendar}">
                 <div class="View">
                 <span class="label"><fmt:message
-                        key="calendar"/> :</span> ${fn:escapeXml(apptFolder.name)}
+                        key="calendar"/> :</span> ${fn:escapeXml(zm:getFolderName(pageContext,apptFolder.id))}
                 </div>
                 </c:if>    
                 <mo:displayAppointment mailbox="${mailbox}" message="${msg}" invite="${invite}"
