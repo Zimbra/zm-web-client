@@ -403,7 +403,7 @@ function() {
 		var folder = (fid != null) ? appCtxt.getById(fid) : null;
 		if (folder) {
 			if (folder.nId == ZmFolder.ID_ARCHIVE) {
-				var link = "ZmMailListView.createLocalFolder('" + folder.nId + "', '" + this._htmlElId + "');";
+				var link = "ZmMailListView.createLocalFolder('" + folder.id + "', '" + this._htmlElId + "');";
 				return AjxMessageFormat.format(ZmMsg.archiveHint, link);
 			}
 			else if (folder.isOfflineSyncable && !folder.isOfflineSyncing) {
