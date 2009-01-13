@@ -26,10 +26,16 @@ ZmPageEditController = function(container, app) {
 
 	this._listeners[ZmOperation.SAVE] = new AjxListener(this, this._saveListener);
 	this._listeners[ZmOperation.CLOSE] = new AjxListener(this, this._closeListener);
-	//this._listeners[ZmOperation.ATTACHMENT] = new AjxListener(this, this._addDocsListener);
 	this._listeners[ZmOperation.SPELL_CHECK] = new AjxListener(this, this._spellCheckListener);
 	this._listeners[ZmOperation.COMPOSE_FORMAT] = new AjxListener(this, this._formatListener);
-}
+
+	// data
+	this._page = null;
+	this._wikletParamDialog = null;
+	this._uploadCallback = null;
+	this._pageEditView = null;
+	this._popViewWhenSaved = null;
+};
 ZmPageEditController.prototype = new ZmListController;
 ZmPageEditController.prototype.constructor = ZmPageEditController;
 
@@ -38,14 +44,6 @@ function() {
 	return "ZmPageEditController";
 };
 
-// Data
-
-ZmPageEditController.prototype._page;
-ZmPageEditController.prototype._wikletParamDialog;
-ZmPageEditController.prototype._uploadCallback;
-
-ZmPageEditController.prototype._pageEditView;
-ZmPageEditController.prototype._popViewWhenSaved;
 
 // Public methods
 
@@ -54,6 +52,10 @@ function(page) {
 	// NOTE: Need to protect against changes happening behind our backs
 	this._page = AjxUtil.createProxy(page);
 	this._page.version = page.version;
+
+	if (appCtxt.numVisibleAccounts > 1) {
+		appCtxt.getApp(ZmApp.NOTEBOOK).getOverviewPanelContent().setEnabled(false);
+	}
 
 	var elements;
 	if (!this._currentView) {
@@ -95,16 +97,11 @@ function() {
 
 ZmPageEditController.prototype._initializeToolBar =
 function(view) {
-	if (this._toolbar[view]) return;
+	if (this._toolbar[view]) { return; }
 
 	ZmListController.prototype._initializeToolBar.call(this, view);
 
 	var toolbar = this._toolbar[view];
-	/***
-	var button = toolbar.getButton(ZmOperation.ATTACHMENT);
-	button.setText(AjxEnv.is800x600orLower ? "" : ZmMsg.addDocuments);
-	button.setToolTipContent(ZmMsg.addDocumentsTT);
-	/***/
 
 	var spellCheckButton = toolbar.getButton(ZmOperation.SPELL_CHECK);
 	if (spellCheckButton) {
@@ -121,10 +118,6 @@ function(view) {
 		var items = [
 			{ op: ZmOperation.FORMAT_RICH_TEXT, format: ZmPageEditor.RICH_TEXT },
 			{ op: ZmOperation.FORMAT_HTML_SOURCE, format: ZmPageEditor.HTML_SOURCE }
-			/*** REVISIT: These will be exposed later.
-			{ op: ZmOperation.FORMAT_MEDIA_WIKI, format: ZmPageEditor.MEDIA_WIKI },
-			{ op: ZmOperation.FORMAT_TWIKI, format: ZmPageEditor.TWIKI }
-			/***/
 		];
 
 		for (var i = 0; i < items.length; i++) {
@@ -230,7 +223,7 @@ function(popViewWhenSaved) {
 	var saveCallback = new AjxCallback(this, this._saveResponseHandler, [content]);
 	var saveErrorCallback = new AjxCallback(this, this._saveErrorResponseHandler, [content]);
 	this._page.save(saveCallback, saveErrorCallback);
-    return true;
+	return true;
 };
 
 ZmPageEditController.prototype._filterScripts =
@@ -248,10 +241,10 @@ function() {
 
 ZmPageEditController.prototype.removeComponent =
 function(doc, tagName) {
-	if (!tagName) return;
+	if (!tagName) { return; }
 
 	var elements = doc.getElementsByTagName(tagName);
-	if (!elements) return;
+	if (!elements) { return; }
 
 	for (var i = 0; i < elements.length; ++i) {
 		if (elements[i].parentNode) {
@@ -261,20 +254,23 @@ function(doc, tagName) {
 	}
 };
 
-ZmPageEditController.prototype._focusPageInput = function() {
-if(this.warngDlg){
-	this.warngDlg.popdown();
-}
-this._pageEditView._pageNameInput.focus();
+ZmPageEditController.prototype._focusPageInput =
+function() {
+	if (this.warngDlg) {
+		this.warngDlg.popdown();
+	}
+	this._pageEditView._pageNameInput.focus();
 };
 
-ZmPageEditController.prototype._showCurrentPage = function() {
+ZmPageEditController.prototype._showCurrentPage =
+function() {
 	if (this._page && this._page.id) {
 		this._showPage(this._page.id);
 	}
 };
 
-ZmPageEditController.prototype._showPage = function(id) {
+ZmPageEditController.prototype._showPage =
+function(id) {
 	var notebookController = this._app.getNotebookController();
 	if (notebookController.getCurrentView()) {
 		var cache = this._app.getNotebookCache();
@@ -283,7 +279,8 @@ ZmPageEditController.prototype._showPage = function(id) {
 	}
 };
 
-ZmPageEditController.prototype._saveResponseHandler = function(content, response) {
+ZmPageEditController.prototype._saveResponseHandler =
+function(content, response) {
 	var saveResp = response._data && response._data.SaveWikiResponse;
 	if (saveResp) {
 		var data = saveResp.w[0];
@@ -324,22 +321,21 @@ ZmPageEditController.prototype._saveResponseHandler = function(content, response
 
 	var nbController = this._app.getNotebookController();
 	var vPage = nbController.getPage();
-	if(vPage && (vPage.id == item.id) ){
+	if (vPage && (vPage.id == item.id)) {
 		nbController._object = item;
 	}
 
 	if (popViewWhenSaved) {
 		this._popViewWhenSaved = false;
 
-		// NOTE: Need to let this call stack return and
-		//       process the notifications.
+		// NOTE: Need to let this call stack return and process the notifications.
 		if (!isRemote) {
 			var args = [ wiki.id ];
 			var action = new AjxTimedAction(this, this._saveResponseHandlerShowNote, args);
 			AjxTimedAction.scheduleAction(action, 0);
 		}
-		// NOTE: We don't get create notifications for remote items,
-		//       so we force it to load and display.
+		// NOTE: We don't get create notifications for remote items, so we force
+		// it to load and display.
 		else {
 			var args = [ wiki.id ];
 			var callback = new AjxCallback(this, this._saveResponseHandlerShowNote, args);
@@ -377,6 +373,7 @@ function(content, response) {
 	// let app handle other kinds of errors
 	return false;
 };
+
 ZmPageEditController.prototype._saveConflictHandler =
 function(content, mineOrTheirs, conflict) {
 	if (mineOrTheirs == ZmPageConflictDialog.KEEP_MINE) {
@@ -386,10 +383,6 @@ function(content, mineOrTheirs, conflict) {
 		var saveCallback = new AjxCallback(this, this._saveResponseHandler, [content]);
 		var saveErrorCallback = new AjxCallback(this, this._saveErrorResponseHandler, [content]);
 		page.save(saveCallback, saveErrorCallback);
-		return;
-	}
-	if (mineOrTheirs == ZmPageConflictDialog.KEEP_THEIRS) {
-		return;
 	}
 };
 
@@ -398,17 +391,6 @@ function(ev) {
 	this._app.popView();
 };
 
-/***
-ZmPageEditController.prototype._addDocsListener =
-function(ev) {
-	var notebook = appCtxt.getById(this._page.folderId || ZmNotebookItem.DEFAULT_FOLDER);
-	var callback = null;
-
-	var dialog = appCtxt.getUploadDialog();
-	dialog.popup(notebook, callback);
-};
-/***/
-
 ZmPageEditController.prototype._spellCheckListener =
 function(ev) {
 	var toolbar = this._toolbar[this._currentView];
@@ -416,9 +398,10 @@ function(ev) {
 	var pageEditor = this._pageEditView.getPageEditor();
 
 	if (spellCheckButton.isToggled()) {
-		var callback = new AjxCallback(this, this.toggleSpellCheckButton)
-		if (!pageEditor.spellCheck(callback))
+		var callback = new AjxCallback(this, this.toggleSpellCheckButton);
+		if (!pageEditor.spellCheck(callback)) {
 			this.toggleSpellCheckButton(false);
+		}
 	} else {
 		pageEditor.discardMisspelledWords();
 	}
@@ -432,7 +415,8 @@ function(selected) {
 	}
 };
 
-ZmPageEditController.prototype._formatListener = function(ev) {
+ZmPageEditController.prototype._formatListener =
+function(ev) {
 	// popup menu
 	var op = ev.item.getData(ZmOperation.KEY_ID);
 	if (op == ZmOperation.COMPOSE_FORMAT) {
@@ -443,7 +427,7 @@ ZmPageEditController.prototype._formatListener = function(ev) {
 	}
 
 	// ignore de-selection
-	if (ev.item.getChecked() == false) {
+	if (!ev.item.getChecked()) {
 		return;
 	}
 
@@ -454,6 +438,13 @@ ZmPageEditController.prototype._formatListener = function(ev) {
 	this._pageEditView.setContent(content);
 };
 
+ZmPageEditController.prototype._postHideCallback =
+function() {
+	if (appCtxt.numVisibleAccounts > 1) {
+		appCtxt.getApp(ZmApp.NOTEBOOK).getOverviewPanelContent().setEnabled(true);
+	}
+};
+
 ZmPageEditController.prototype._preHideCallback =
 function(view, force) {
 	ZmController.prototype._preHideCallback.call(this);
@@ -462,7 +453,7 @@ function(view, force) {
 		var notebookController = this._app.getNotebookController();
 		if (notebookController.isIframeEnabled()) {
 			notebookController.refreshCurrentPage();
-		}else{
+		} else {
 			this._showCurrentPage();
 		}
 		return true;
@@ -488,7 +479,7 @@ function() {
 	this._popShield.popdown();
 	if (this._doSave()) {
 		appCtxt.getAppViewMgr().showPendingView(true);
-    }
+	}
 };
 
 ZmPageEditController.prototype._popShieldNoCallback =
@@ -505,6 +496,5 @@ function() {
 
 ZmPageEditController.prototype.updatePageInfo =
 function(page){
-	var pageEditor = this._pageEditView.getPageEditor();
-	pageEditor.setFooterInfo(page);
+	this._pageEditView.getPageEditor().setFooterInfo(page);
 };
