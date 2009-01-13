@@ -27,8 +27,6 @@
  *    - Show floating buddy list (in the New menu)
  */
 
-AjxPackage.require("ajax.util.AjxAnimation");
-AjxPackage.require("ajax.dwt.widgets.DwtResizableWindow");
 AjxPackage.require("ajax.dwt.widgets.DwtButtonColorPicker");
 AjxPackage.require("zimbraMail.share.view.htmlEditor.ZmLiteHtmlEditor");
 AjxPackage.require("ajax.dwt.widgets.DwtSoundPlugin");
@@ -37,8 +35,6 @@ AjxPackage.require("zimbraMail.share.view.dialog.ZmPromptDialog");
 
 AjxPackage.require("zimbraMail.im.model.ZmAssistantBuddy");
 
-AjxPackage.require("zimbraMail.im.view.ZmChatWindowManager");
-AjxPackage.require("zimbraMail.im.view.ZmChatWindow");
 AjxPackage.require("zimbraMail.im.view.ZmChatWidget");
 AjxPackage.require("zimbraMail.im.view.ZmNewRosterItemDialog");
 AjxPackage.require("zimbraMail.im.view.ZmExternalGatewayDlg");
