@@ -229,14 +229,6 @@ function(contact, fullAddress){
 	return item;
 };
 
-ZmImController.prototype._imNewGroupChatListener =
-function(ev) {
-	// NOT IMPLEMENTED
-// 	var org = this._getActionedOrganizer(ev);
-// 	var clc = AjxDispatcher.run("GetChatListController");
-// 	clc.chatWithRosterItems(org.getRosterItems(), org.getName()+" "+ZmMsg.imGroupChat);
-};
-
 // Create a roster item
 ZmImController.prototype._newRosterItemCallback =
 function(addr, rname, groups) {

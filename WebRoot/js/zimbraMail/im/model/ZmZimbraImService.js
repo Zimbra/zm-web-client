@@ -511,13 +511,6 @@ function(im) {
 				if (message) {
 					appCtxt.setStatusMsg(message, level);
 				}
-			} else if (not.type == "invited") {
-				appCtxt.getApp(ZmApp.IM).prepareVisuals();
-				var view = ZmChatMultiWindowView.getInstance();
-				// it should always be instantiated by this time, but whatever.
-				if (view) {
-					new ZmImInviteNotification(view.getActiveWM(), not).popup();
-				}
 			} else if (not.type == "privacy") {
 				// console.log("Received privacy list: %o", not);
 				this._roster.getPrivacyList().reset(not.list[0].item);

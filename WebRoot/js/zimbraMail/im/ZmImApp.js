@@ -74,10 +74,6 @@ function() {
 	AjxDispatcher.registerMethod("GetRoster",
                                      "IMCore",
                                      new AjxCallback(this, this.getRoster));
-
-	AjxDispatcher.registerMethod("GetChatListController",
-                                     [ "IMCore", "IM" ],
-                                     new AjxCallback(this, this.getChatListController));
 };
 
 ZmImApp.prototype._registerOrganizers =  function() {
@@ -506,19 +502,6 @@ function() {
 	this.login();
 };
 
-ZmImApp.prototype.launch = function(params, callback) {
-	var loadCallback = new AjxCallback(this, this._handleLoadLaunch, [callback]);
-	AjxDispatcher.require([ "IMCore", "IM" ], true, loadCallback, null, true);
-};
-
-ZmImApp.prototype._handleLoadLaunch = function(callback) {
-	var clc = this.getChatListController();
-	clc.show();
-	if (callback) {
-		callback.run();
-	}
-};
-
 ZmImApp.prototype.getImController = function() {
 	if (!this._imController) {
 		AjxDispatcher.require([ "IMCore", "IM" ]);
@@ -529,14 +512,6 @@ ZmImApp.prototype.getImController = function() {
 
 ZmImApp.prototype.isActive = function() {
 	return this._active;
-};
-
-ZmImApp.prototype.getChatListController =
-function() {
-	if (!this._chatListController) {
-		this._chatListController = new ZmChatListController(this._container, this);
-	}
-	return this._chatListController;
 };
 
 ZmImApp.prototype.getRoster =
@@ -577,13 +552,9 @@ function() {
 	return new ZmRosterTreeGroups(this.getRoster());
 };
 
-ZmImApp.prototype.prepareVisuals = function() {
-	if (!this._haveVisuals) {
-                AjxDispatcher.require([ "IMCore", "IM" ], false, new AjxCallback(this, function(){
-		        this.getChatListController().prepareVisuals();
-                        this._haveVisuals = true;
-                }, null, true));
-	}
+ZmImApp.prototype.prepareVisuals =
+function() {
+	AjxDispatcher.require([ "IMCore", "IM" ]);
 };
 
 

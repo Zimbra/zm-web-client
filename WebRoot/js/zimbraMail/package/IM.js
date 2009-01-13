@@ -40,8 +40,6 @@ AjxPackage.require("zimbraMail.im.model.ZmAssistantBuddy");
 AjxPackage.require("zimbraMail.im.view.ZmChatWindowManager");
 AjxPackage.require("zimbraMail.im.view.ZmChatWindow");
 AjxPackage.require("zimbraMail.im.view.ZmChatWidget");
-AjxPackage.require("zimbraMail.im.view.ZmChatBaseView");
-AjxPackage.require("zimbraMail.im.view.ZmChatMultiWindowView");
 AjxPackage.require("zimbraMail.im.view.ZmNewRosterItemDialog");
 AjxPackage.require("zimbraMail.im.view.ZmExternalGatewayDlg");
 AjxPackage.require("zimbraMail.im.view.ZmImNotification");
@@ -51,5 +49,4 @@ AjxPackage.require("zimbraMail.im.view.ZmPresenceMenu");
 AjxPackage.require("zimbraMail.im.view.ZmCustomStatusDlg");
 AjxPackage.require("zimbraMail.im.view.ZmYahooLoginDialog");
 
-AjxPackage.require("zimbraMail.im.controller.ZmChatListController");
 AjxPackage.require("zimbraMail.im.controller.ZmImController");
