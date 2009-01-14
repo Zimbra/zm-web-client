@@ -154,7 +154,7 @@ function() {
 	var url = AjxStringUtil.htmlEncode(restUrl);
 	url = url.replace(/&amp;/g,'%26');
 
-	if (object.type == ZmOrganizer.CALENDAR) {
+	if (this._object.type == ZmOrganizer.CALENDAR) {
 		var htmlUrl = url + ".html";
 		this._urlEl.innerHTML = [
 			"<div>", ZmMsg.ics, ":&nbsp;&nbsp;&nbsp;&nbsp;", url, "</div>",
