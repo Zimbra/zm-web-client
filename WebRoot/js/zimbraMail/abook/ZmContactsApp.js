@@ -509,7 +509,8 @@ function(address, callback) {
 	}
 
 	if (callback) {
-		var params = {query:address, limit:1, types:AjxVector.fromArray([ZmItem.CONTACT])};
+		var query = address + " not #type:group";
+		var params = {query:query, limit:1, types:AjxVector.fromArray([ZmItem.CONTACT])};
 		var search = new ZmSearch(params);
 		var respCallback = new AjxCallback(this, this._handleResponseSearch, [address, callback]);
 		var errorCallback = new AjxCallback(this, this._showDefaultParticipantToolTip, [address, callback]);
