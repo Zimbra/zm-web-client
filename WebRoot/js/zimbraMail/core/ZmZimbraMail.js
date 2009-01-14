@@ -286,6 +286,9 @@ function() {
  */
 ZmZimbraMail.prototype.startup =
 function(params) {
+	if (appCtxt.isOffline) {
+		this.sendClientEventNotify(true);
+	}
 
 	appCtxt.inStartup = true;
 	if (typeof(skin) == "undefined") {
@@ -591,6 +594,10 @@ function() {
 				prcb.callback.run();
 				this._runNextPostRenderCallback();
 			}), prcb.delay);
+	} else {
+		if (appCtxt.isOffline) {
+			this.sendClientEventNotify(false);
+		}
 	}
 };
 
@@ -868,6 +875,13 @@ function(callback) {
 	}
 
     this.sendRequest({soapDoc:soapDoc, asyncMode:true, noBusyOverlay:true, callback:callback});
+};
+
+ZmZimbraMail.prototype.sendClientEventNotify =
+function(loadBegin) {
+	var jsonObj = {ClientEventNotifyRequest:{_jsns:"urn:zimbraOffline"}};
+	jsonObj.ClientEventNotifyRequest.e = loadBegin ? "ui_load_begin" : "ui_load_end";
+	this.sendRequest({jsonObj:jsonObj, asyncMode:true, noBusyOverlay:true});
 };
 
 /**
