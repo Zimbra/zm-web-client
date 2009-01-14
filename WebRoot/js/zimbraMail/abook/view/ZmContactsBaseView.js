@@ -100,7 +100,7 @@ function(ev) {
 		} else if (ev.event == ZmEvent.E_CREATE) {
 			var newContact = ev._details.items[0];
 			var newFolder = appCtxt.getById(newContact.folderId);
-			var newFolderId = appCtxt.getActiveAccount().isMain ? newFolder.nId : newFolder.id;
+			var newFolderId = newFolder && (appCtxt.getActiveAccount().isMain ? newFolder.nId : newFolder.id);
 
 			// only add this new contact to the listview if this is a simple
 			// folder search and it belongs!

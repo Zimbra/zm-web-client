@@ -53,6 +53,7 @@
 				<$= AjxTemplate.expand("abook.Contacts#CardContact", {data:data}) $>
 			<$ } $>
 		</table>
+		${imgHtml}
 	</div>
 </template>
 
