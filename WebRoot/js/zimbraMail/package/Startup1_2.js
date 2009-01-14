@@ -74,7 +74,6 @@ AjxPackage.require("zimbraMail.share.controller.ZmAppAccordionController");
 AjxPackage.require("zimbraMail.im.model.ZmRoster");
 AjxPackage.require("zimbraMail.im.view.ZmImOverview");
 AjxPackage.require("zimbraMail.im.view.ZmTaskbar");
-AjxPackage.require("zimbraMail.im.controller.ZmRosterTreeController");
 AjxPackage.require("zimbraMail.im.controller.ZmTaskbarController");
 
 AjxPackage.require("zimbraMail.core.ZmAppViewMgr");
