@@ -46,7 +46,7 @@ function(dontIncludeThisName) {
 	var name = !dontIncludeThisName ? this.name : "";
 	return [notebook.getPath(), "/", name].join("");
 };
-                                                                               
+
 ZmBriefcaseItem.prototype.getRestUrl =
 function(dontIncludeThisName) {
 	var url = ZmItem.prototype.getRestUrl.call(this);
@@ -70,11 +70,6 @@ function(data) {
 	if (data.ver) this.version = Number(data.ver);
 	if (data.ct) this.contentType = data.ct.split(";")[0];
 	this._parseTags(data.t);
-};
-
-ZmBriefcaseItem.prototype.getContentType =
-function() {
-    return this.contentType;
 };
 
 ZmBriefcaseItem.prototype.isReadOnly =
@@ -115,8 +110,10 @@ function() {
 
 ZmBriefcaseItem.prototype.createFromAttachment =
 function(msgId, partId, name, folderId) {
+	// bug 30208: server only accepts local ids
 	var acctId = appCtxt.getActiveAccount().id;
-    
+	if (msgId.indexOf(acctId) == 0) msgId = msgId.substr(msgId.indexOf(":")+1);
+
 	var soapDoc = AjxSoapDoc.create("SaveDocumentRequest", "urn:zimbraMail");
 	var doc = soapDoc.set("doc");
 	doc.setAttribute("l", folderId);

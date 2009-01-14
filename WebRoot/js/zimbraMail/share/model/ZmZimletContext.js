@@ -52,9 +52,7 @@ ZmZimletContext = function(id, zimlet) {
 			this.type = this.contentObject.type;
 		}
 		if (this.contentObject.contextMenu) {
-            if(this.contentObject.contextMenu instanceof Array){
-			    this.contentObject.contextMenu = this.contentObject.contextMenu[0];
-            }
+			this.contentObject.contextMenu = this.contentObject.contextMenu[0];
 			this._contentActionMenu = new AjxCallback(this, this._makeMenu,[this.contentObject.contextMenu.menuItem]);
 		}
 	}
@@ -72,17 +70,15 @@ ZmZimletContext = function(id, zimlet) {
 			this.icon = this.zimletPanelItem.icon;
 		}
 		if (this.zimletPanelItem.contextMenu) {
-            if(this.zimletPanelItem.contextMenu instanceof Array){
-			    this.zimletPanelItem.contextMenu = this.zimletPanelItem.contextMenu[0];
-            }
+			this.zimletPanelItem.contextMenu = this.zimletPanelItem.contextMenu[0];
 			this._panelActionMenu = new AjxCallback(
 				this, this._makeMenu,
 				[ this.zimletPanelItem.contextMenu.menuItem ]);
 		}
-		if (this.zimletPanelItem.onClick instanceof Array) {
+		if (this.zimletPanelItem.onClick) {
 			this.zimletPanelItem.onClick = this.zimletPanelItem.onClick[0];
 		}
-		if (this.zimletPanelItem.onDoubleClick instanceof Array) {
+		if (this.zimletPanelItem.onDoubleClick) {
 			this.zimletPanelItem.onDoubleClick = this.zimletPanelItem.onDoubleClick[0];
 		}
 	}
@@ -105,9 +101,7 @@ ZmZimletContext = function(id, zimlet) {
 	}
 
 	if(this.config) {
-        if(this.config instanceof Array) {
-			this.config = this.config[0];
-        }
+		this.config = this.config[0];
 		this._translateConfig();
 	}
 
@@ -136,9 +130,7 @@ ZmZimletContext.sanitize =
 function(obj, tag, wantarray_re) {
 	function doit(obj, tag) {
 		var cool_json, val, i;
-        if(obj instanceof DwtControl){ //Don't recurse into DwtControls, causes too much recursion
-           return obj;
-        }else if (obj instanceof Array) {
+		if (obj instanceof Array) {
 			if (obj.length == 1 && !(wantarray_re && wantarray_re.test(tag))) {
 				cool_json = doit(obj[0], tag);
 			} else {
@@ -274,14 +266,14 @@ ZmZimletContext.prototype.getProp = function(name) {
 };
 
 ZmZimletContext.prototype._translateConfig = function() {
-	if (this.config.global && this.config.global[0]) {
+	if (this.config && this.config.global && this.config.global[0]) {
 		var prop = this.config.global[0].property;
 		this.config.global = {};
 		for (var i in prop) {
 			this.config.global[prop[i].name] = prop[i]._content;
 		}
 	}
-	if (this.config.local && this.config.local[0]) {
+	if (this.config && this.config.local && this.config.local[0]) {
 		var propLocal = this.config.local[0].property;
 		this.config.local = {};
 		for (var j in propLocal) {
@@ -291,10 +283,10 @@ ZmZimletContext.prototype._translateConfig = function() {
 };
 
 ZmZimletContext.prototype.getConfig = function(name) {
-	if (this.config.local && this.config.local[name]) {
+	if (this.config && this.config.local && this.config.local[name]) {
 		return this.config.local[name];
 	}
-	if (this.config.global && this.config.global[name]) {
+	if (this.config && this.config.global && this.config.global[name]) {
 		return this.config.global[name];
 	}
 	return null;
@@ -370,7 +362,6 @@ ZmZimletContext.prototype.processMessage = function(str) {
 };
 
 ZmZimletContext.prototype.replaceObj = function(re, str, obj) {
-    if(!str) return "";
 	return str.replace(re,
 		function(str, p1, prop) {
 			var txt = p1;
@@ -431,7 +422,7 @@ ZmZimletContext.prototype.makeURL = function(actionUrl, obj, props) {
 * pass it to 'div' parameter.  otherwise a canvas (window, popup, dialog) will be created
 * to display the contents from the url.
 */
-ZmZimletContext.prototype.handleActionUrl = function(actionUrl, canvas, obj, div, x, y) {
+ZmZimletContext.prototype.handleActionUrl = function(actionUrl, canvas, obj, div) {
 	var url = this.makeURL(actionUrl, obj);
 	var xslt = null;
 
@@ -442,13 +433,13 @@ ZmZimletContext.prototype.handleActionUrl = function(actionUrl, canvas, obj, div
 	// need to use callback if the paintable canvas already exists, or if it needs xslt transformation.
 	if (div || xslt) {
 		if (!div) {
-			canvas = this.handlerObject.makeCanvas(canvas, null, x, y);
+			canvas = this.handlerObject.makeCanvas(canvas[0], null);
 			div = document.getElementById("zimletCanvasDiv");
 		}
 		url = ZmZimletBase.PROXY + AjxStringUtil.urlComponentEncode(url);
 		AjxRpc.invoke(null, url, null, new AjxCallback(this, this._rpcCallback, [xslt, div]), true);
 	} else {
-		this.handlerObject.makeCanvas(canvas, url, x, y);
+		this.handlerObject.makeCanvas(canvas[0], url);
 	}
 };
 
@@ -489,7 +480,6 @@ ZmZimletContext._zmObjectTransformers = {
 			ret.replied      = oi.isReplied;
 			ret.draft        = oi.isDraft;
 			ret.body		 = ZmZimletContext._getMsgBody(oi);
-			ret.srcObj		 = oi;
 			all[i] = ret;
 		}
 		if(all.length == 1) {
@@ -514,11 +504,10 @@ ZmZimletContext._zmObjectTransformers = {
 			ret.numMsgs      = oi.numMsgs;
 			ret.tags         = oi.tags;
 			ret.unread       = oi.isUnread;
-
 			
 			// Use first message
 			ret.body         = ZmZimletContext._getMsgBody(oi.getFirstHotMsg());
-			ret.srcObj			= oi;
+			
 			all[i] = ret;
 		}
 		if(all.length == 1) {
@@ -612,7 +601,6 @@ ZmZimletContext._zmObjectTransformers = {
 		ret.unread       = oi.numUnread;
 		ret.total        = oi.numTotal;
 		ret.url          = oi.getRestUrl();
-		ret.srcObj			= oi;
 		return ret;
 	},
 
@@ -635,7 +623,6 @@ ZmZimletContext._zmObjectTransformers = {
 		ret.notes          = oi.getNotesPart();
 		ret.isRecurring    = oi.isRecurring();
 		ret.timeZone       = oi.timezone;
-		ret.srcObj			= oi;
 		return ret;
 	}
 

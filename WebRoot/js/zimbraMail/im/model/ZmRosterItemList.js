@@ -27,11 +27,6 @@ function() {
 	return "ZmRosterItemList";
 };
 
-ZmRosterItemList.prototype.setLoaded =
-function() {
-	this._notify(ZmEvent.E_LOAD);
-};
-
 ZmRosterItemList.prototype.addItem = function(item, skipNotify, index) {
 	this.add(item, index);
 	if (!skipNotify) {
@@ -57,7 +52,7 @@ ZmRosterItemList.prototype.removeItem = function(item, skipNotify) {
 
 ZmRosterItemList.prototype.getByAddr =
 function(addr) {
-    return this.getById(addr.toLowerCase());
+    return this.getById(addr);
 };
 
 /**

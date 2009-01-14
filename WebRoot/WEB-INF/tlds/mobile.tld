@@ -25,11 +25,6 @@
         <path>/WEB-INF/tags/mobile/moConvView.tag</path>
     </tag-file>
 
-    <tag-file>
-       <name>folderAction</name>
-        <path>/WEB-INF/tags/mobile/moFolderAction.tag</path>
-    </tag-file>
-    
    <tag-file>
        <name>handleError</name>
         <path>/WEB-INF/tags/mobile/moHandleError.tag</path>
@@ -197,11 +192,6 @@
      </tag-file>
 
     <tag-file>
-        <name>apptComposeCheck</name>
-        <path>/WEB-INF/tags/mobile/moApptComposeCheck.tag</path>
-     </tag-file>
-    
-    <tag-file>
         <name>attachment</name>
         <path>/WEB-INF/tags/mobile/moAttachment.tag</path>
      </tag-file>
@@ -235,10 +225,7 @@
             <name>contactEdit</name>
              <path>/WEB-INF/tags/mobile/moContactEdit.tag</path>
     </tag-file>
-    <tag-file>
-            <name>contactEditField</name>
-             <path>/WEB-INF/tags/mobile/moContactEditField.tag</path>
-    </tag-file>
+    
     <tag-file>
             <name>autoComplete</name>
              <path>/WEB-INF/tags/mobile/moAutoComplete.tag</path>

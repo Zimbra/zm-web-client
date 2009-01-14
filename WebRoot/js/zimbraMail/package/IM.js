@@ -27,20 +27,44 @@
  *    - Show floating buddy list (in the New menu)
  */
 
+AjxPackage.require("ajax.util.AjxAnimation");
+AjxPackage.require("ajax.dwt.widgets.DwtResizableWindow");
 AjxPackage.require("ajax.dwt.widgets.DwtButtonColorPicker");
 AjxPackage.require("zimbraMail.share.view.htmlEditor.ZmLiteHtmlEditor");
 AjxPackage.require("ajax.dwt.widgets.DwtSoundPlugin");
 
-AjxPackage.require("zimbraMail.share.view.dialog.ZmPromptDialog");
+// Moved in IMCore.js (please don't remove this comment)
+//
+// AjxPackage.require("ajax.dwt.events.DwtIdleTimer");
+//
+// AjxPackage.require("zimbraMail.im.model.ZmImGateway");
+// AjxPackage.require("zimbraMail.im.model.ZmRoster");
+// AjxPackage.require("zimbraMail.im.model.ZmRosterItem");
+// AjxPackage.require("zimbraMail.im.model.ZmRosterItemList");
+// AjxPackage.require("zimbraMail.im.model.ZmRosterPresence");
+// AjxPackage.require("zimbraMail.im.model.ZmChat");
+// AjxPackage.require("zimbraMail.im.model.ZmChatList");
+// AjxPackage.require("zimbraMail.im.model.ZmChatMessage");
+// AjxPackage.require("zimbraMail.im.model.ZmImPrivacyList");
 
 AjxPackage.require("zimbraMail.im.model.ZmAssistantBuddy");
 
+AjxPackage.require("zimbraMail.im.view.ZmChatWindowManager");
+AjxPackage.require("zimbraMail.im.view.ZmChatWindow");
+AjxPackage.require("zimbraMail.im.view.ZmChatTabs");
 AjxPackage.require("zimbraMail.im.view.ZmChatWidget");
+AjxPackage.require("zimbraMail.im.view.ZmChatMemberListView");
+AjxPackage.require("zimbraMail.im.view.ZmChatBaseView");
+AjxPackage.require("zimbraMail.im.view.ZmChatMultiWindowView");
+AjxPackage.require("zimbraMail.im.view.ZmNewImDialog");
 AjxPackage.require("zimbraMail.im.view.ZmNewRosterItemDialog");
 AjxPackage.require("zimbraMail.im.view.ZmExternalGatewayDlg");
+AjxPackage.require("zimbraMail.im.view.ZmImNotification");
+AjxPackage.require("zimbraMail.im.view.ZmImSubscribeAuth");
+AjxPackage.require("zimbraMail.im.view.ZmImInviteNotification");
 AjxPackage.require("zimbraMail.im.view.ZmImNewChatDlg");
 AjxPackage.require("zimbraMail.im.view.ZmPresenceMenu");
 AjxPackage.require("zimbraMail.im.view.ZmCustomStatusDlg");
-AjxPackage.require("zimbraMail.im.view.ZmYahooLoginDialog");
 
+AjxPackage.require("zimbraMail.im.controller.ZmChatListController");
 AjxPackage.require("zimbraMail.im.controller.ZmImController");
