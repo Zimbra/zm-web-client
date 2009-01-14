@@ -306,10 +306,6 @@ ZmImApp.prototype._registerPrefs = function() {
 		IM: {
 			title: ZmMsg.im,
 			templateId: "prefs.Pages#IM",
-			manageDirty: true,
-			createView: function(parent, section, controller) {
-				return new ZmImPrefsPage(parent, section, controller);
-			},
 			priority: 90,
 			precondition: ZmSetting.IM_ENABLED,
 			prefs: [
