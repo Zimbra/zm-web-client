@@ -43,6 +43,10 @@ ZmContactCardsView = function(params) {
 	this._dndClass = [base, DwtCssStyle.DRAG_PROXY].join("-");
 	this._cardTableId = Dwt.getNextId();
 	
+	if (AjxEnv.isIE6) {
+		this._noDndPlusImage = true;
+	}
+	
 	this._initialResized = false;
 };
 
@@ -120,9 +124,13 @@ function(contact, params) {
 		tagIcon = AjxImg.getImageHtml(contact.getTagImageInfo(), null, ["id='", fieldId, "'"].join(""));
 	}
 	var groupMembers = contact.isGroup() ? contact.getGroupMembers().good.getArray() : null;
-	var id = this._getItemId(contact);;
+	var id = this._getItemId(contact);
+	var imgHtml = "";
 	if (params && params.isDragProxy) {
 		id = id + "_dnd";
+		if (AjxEnv.isIE6) {
+			imgHtml = AjxImg.getImageHtml("RoundPlus", "position:absolute;top:18;left:-11;visibility:hidden");
+		}
 	}
 
 	var subs = {
@@ -136,11 +144,16 @@ function(contact, params) {
 		groupMembers: groupMembers,
 		isDnd: isDnd,
 		view: this,
-		contact: contact
+		contact: contact,
+		imgHtml: imgHtml
 	};
 	var html = AjxTemplate.expand("abook.Contacts#CardBase", subs);
 
-	return isDnd ? Dwt.parseHtmlFragment(html) : html;
+	var div = isDnd ? Dwt.parseHtmlFragment(html) : html;
+	if (AjxEnv.isIE6 && params && params.isDragProxy) {
+		Dwt.setSize(div, this._cardWidth || 340, 140);
+	}
+	return div;
 };
 
 ZmContactCardsView.prototype._layout =
