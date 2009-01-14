@@ -151,17 +151,29 @@ function() {
 		var remoteUri = appCtxt.get(ZmSetting.OFFLINE_REMOTE_SERVER_URI);
 		restUrl = remoteUri + restUrl.substring((url.indexOf("/",7)));
 	}
-	var url = AjxStringUtil.htmlEncode(restUrl);
-	url = url.replace(/&amp;/g,'%26');
+	var url = AjxStringUtil.htmlEncode(restUrl).replace(/&amp;/g,'%26');
+	var text = url;
+	if (text.length > 50) {
+		var length = text.length - 50;
+		var index = (text.length - length) / 2;
+		text = text.substr(0, index) + "..." + text.substr(index + length);
+	}
 
 	if (this._object.type == ZmOrganizer.CALENDAR) {
-		var htmlUrl = url + ".html";
 		this._urlEl.innerHTML = [
-			"<div>", ZmMsg.ics, ":&nbsp;&nbsp;&nbsp;&nbsp;", url, "</div>",
-			"<div>", ZmMsg.view, ":&nbsp;&nbsp;", htmlUrl,"</div>"
+			"<div>", ZmMsg.ics, ":&nbsp;&nbsp;&nbsp;&nbsp;",
+				"<a target=_new href='",url,"'>",text,"</a>",
+			"</div>",
+			"<div>", ZmMsg.view, ":&nbsp;&nbsp;",
+				"<a target=_new href='",url,".html'>",text,".html</a>",
+			"</div>"
 		].join("");
 	} else {
-		this._urlEl.innerHTML = "<div style='padding-left:2em;'>" + url + "</div>";
+		this._urlEl.innerHTML = [
+			"<div style='padding-left:2em;'>",
+				"<a target=_new href='",url,".html'>",text,".html</a>",
+			"</div>"
+		].join("");
 	}
 };
 
