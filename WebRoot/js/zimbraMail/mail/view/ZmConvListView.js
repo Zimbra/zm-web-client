@@ -90,14 +90,12 @@ ZmConvListView.HEADERS = [ZmItem.F_SELECTION, ZmItem.F_EXPAND, ZmItem.F_FLAG, Zm
 ZmConvListView.HEADER = {};
 ZmConvListView.HEADER[ZmItem.F_SELECTION]	= {icon:"TaskCheckbox", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.selection, resizeable:true, precondition:ZmSetting.SHOW_SELECTION_CHECKBOX};
 ZmConvListView.HEADER[ZmItem.F_EXPAND]		= {icon:"NodeCollapsed", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.expand, resizeable:true};
-ZmConvListView.HEADER[ZmItem.F_FLAG]		= {icon:"FlagRed", width:ZmListView.COL_WIDTH_ICON, sortable:ZmItem.F_FLAG, name:ZmMsg.flag,
-											   noSortArrow:true, resizeable:true, precondition:ZmSetting.FLAGGING_ENABLED};
+ZmConvListView.HEADER[ZmItem.F_FLAG]		= {icon:"FlagRed", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.flag, resizeable:true, precondition:ZmSetting.FLAGGING_ENABLED};
 ZmConvListView.HEADER[ZmItem.F_PRIORITY]	= {icon:"PriorityHigh_list", width:ZmListView.COL_WIDTH_NARROW_ICON, name:ZmMsg.priority, resizeable:true, precondition:ZmSetting.MAIL_PRIORITY_ENABLED};
 ZmConvListView.HEADER[ZmItem.F_TAG]			= {icon:"Tag", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.tag, resizeable:true, precondition:ZmSetting.TAGGING_ENABLED};
 ZmConvListView.HEADER[ZmItem.F_STATUS]		= {icon:"MsgStatus", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.status, resizeable:true};
 ZmConvListView.HEADER[ZmItem.F_FROM]		= {text:ZmMsg.from, width:ZmConvListView.COL_WIDTH_FROM, resizeable:true};
-ZmConvListView.HEADER[ZmItem.F_ATTACHMENT]	= {icon:"Attachment", width:ZmListView.COL_WIDTH_ICON, sortable:ZmItem.F_ATTACHMENT,
-											   noSortArrow:true, name:ZmMsg.attachment, resizeable:true};
+ZmConvListView.HEADER[ZmItem.F_ATTACHMENT]	= {icon:"Attachment", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.attachment, resizeable:true};
 ZmConvListView.HEADER[ZmItem.F_SUBJECT]		= {text:ZmMsg.subject, sortable:ZmItem.F_SUBJECT, noRemove:true, resizeable:true};
 ZmConvListView.HEADER[ZmItem.F_FOLDER]		= {text:ZmMsg.folder, width:ZmMsg.COLUMN_WIDTH_FOLDER, resizeable:true};
 ZmConvListView.HEADER[ZmItem.F_SIZE]		= {text:ZmMsg.size, width:ZmMsg.COLUMN_WIDTH_SIZE, resizeable:true};
@@ -298,17 +296,10 @@ function(field, itemIdx) {
 };
 
 ZmConvListView.prototype._getToolTip =
-function(params) {
-	if (!params.item) { return; }
-	if (params.field == ZmItem.F_PARTICIPANT || params.field == ZmItem.F_FROM) {
-		var addr = params.item.participants && params.item.participants.get(params.match.participant || 0);
-		if (!addr) { return ""; }
-		var contact = appCtxt.getApp(ZmApp.CONTACTS).getContactByEmail(addr.getAddress());
-		if (contact) {
-			return this._getParticipantToolTip(addr);
-		} else {
-			return {callback:new AjxCallback(this, this._getParticipantToolTip, [addr]), loading:true};
-		}
+function(field, item, ev, div, match) {
+	if (!item) { return; }
+	if (field == ZmItem.F_PARTICIPANT || field == ZmItem.F_FROM) {
+		return item.participants ? this._getParticipantToolTip(item.participants.get(match.participant || 0)) : null;
 	} else {
 		return ZmMailListView.prototype._getToolTip.apply(this, arguments);
 	}
@@ -345,10 +336,7 @@ function(conv, msg, offset) {
 			var msg = a[offset + i];
 			var div = this._createItemHtml(msg);
 			this._addRow(div, index + i + 1);
-			var list = this._msgRowIdList[item.id];
-			if (list) {
-				list.push(div.id);
-			}
+			this._msgRowIdList[item.id].push(div.id);
 		}
 	}
 
@@ -497,15 +485,9 @@ function(columnItem, bSortAsc) {
 	// call base class to save the new sorting pref
 	ZmMailListView.prototype._sortColumn.call(this, columnItem, bSortAsc);
 
-	var query;
-	if (columnItem._sortable == ZmItem.F_FLAG || columnItem._sortable == ZmItem.F_ATTACHMENT) {
-		query = this._getSearchForSort(columnItem._sortable);
-	} else if (this.getList().size() > 1 && this._sortByString) {
-		query = this._controller.getSearchString();
-	}
-
-	if (query) {
-		var params = {query:query, types:[ZmItem.CONV], sortBy:this._sortByString, limit:this.getLimit()};
+	if (this.getList().size() > 1 && this._sortByString) {
+		var searchString = this._controller.getSearchString();
+		var params = {query:searchString, types:[ZmItem.CONV], sortBy:this._sortByString, limit:this.getLimit()};
 		appCtxt.getSearchController().search(params);
 	}
 };
@@ -703,4 +685,82 @@ function(id, field) {
 	} else {
 		return ZmListView.prototype._allowFieldSelection.apply(this, arguments);
 	}
+};
+
+// Static methods
+
+// XXX: test, also handle msgs
+ZmConvListView.getPrintHtml =
+function(conv, preferHtml, callback) {
+
+	// first, get list of all msg id's for this conversation
+	if (conv.msgIds == null) {
+		var soapDoc = AjxSoapDoc.create("GetConvRequest", "urn:zimbraMail");
+		var msgNode = soapDoc.set("c");
+		msgNode.setAttribute("id", conv.id);
+
+		var respCallback = new AjxCallback(null, ZmConvListView._handleResponseGetPrintHtml, [conv, preferHtml, callback]);
+		window._zimbraMail.sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
+	} else {
+		ZmConvListView._printMessages(conv, preferHtml, callback);
+	}
+};
+
+ZmConvListView._handleResponseGetPrintHtml =
+function(conv, preferHtml, result) {
+	var resp = result.getResponse().GetConvResponse.c[0];
+	var msgIds = new Array();
+	var len = resp.m.length;
+	for (var i = 0; i < len; i++)
+		msgIds.push(resp.m[i].id);
+	conv.msgIds = msgIds;
+	ZmConvListView._printMessages(conv, preferHtml, callback);
+};
+
+ZmConvListView._printMessages =
+function(conv, preferHtml, callback) {
+	// XXX: optimize? Once these msgs are d/l'ed should they be cached?
+	var jsonObj = {BatchRequest:{_jsns:"urn:zimbra", onerror:"continue"}};
+	var request = jsonObj.BatchRequest;
+	if (conv && conv.msgIds && conv.msgIds.length) {
+		var msgRequests = request.GetMsgRequest = [];
+		for (var i = 0; i < conv.msgIds.length; i++) {
+			// make a request to get this mail message from the server
+			var msgRequest = {_jsns:"urn:zimbraMail"};
+			msgRequest.m = {id:conv.msgIds[i]};
+			if (preferHtml) {
+				msgRequest.m.html = 1;
+			}
+			msgRequests.push(msgRequest);
+		}
+	}
+	var respCallback = new AjxCallback(null, ZmConvListView._handleResponseGetMessages, [conv, preferHtml, callback]);
+	window._zimbraMail.sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback});
+};
+
+ZmConvListView._handleResponseGetMessages =
+function(conv, preferHtml, callback, result) {
+	var resp = result.getResponse().BatchResponse.GetMsgResponse;
+
+	var html = new Array();
+	var idx = 0;
+
+	html[idx++] = "<font size=+2>";
+	html[idx++] = conv.subject;
+	html[idx++] = "</font><br><font size=+1>";
+	html[idx++] = conv.numMsgs;
+	html[idx++] = (conv.numMsgs > 1) ? " "+ZmMsg.message : " "+ZmMsg.messages;
+	html[idx++] = "</font><hr>";
+
+	for (var i = 0; i < resp.length; i++) {
+		var msgNode = resp[i].m[0];
+		var msg = ZmMailMsg.createFromDom(msgNode, {list:null});
+		html[idx++] = ZmMailMsgView.getPrintHtml(msg, preferHtml);
+		if (i < resp.length - 1) {
+			html[idx++] = "<hr>";
+		}
+	}
+
+	result.set(html.join(""));
+	if (callback) callback.run(result);
 };

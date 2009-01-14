@@ -155,11 +155,6 @@ function(actionCode) {
 	return true;
 };
 
-ZmPrefController.prototype.mapSupported =
-function(map) {
-	return (map == "tabView");
-};
-
 ZmPrefController.prototype.getTabView =
 function() {
 	return this.getPrefsView();
