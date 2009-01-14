@@ -344,6 +344,7 @@ function(callback) {
 	if (AjxDispatcher.loaded("Notebook")) {
 		var napp = appCtxt.getApp(ZmApp.NOTEBOOK);
 		napp._createDeferredFolders(ZmOrganizer.NOTEBOOK);
+	}
 
 	var ac = appCtxt.getCurrentApp().getAccordionController();
 	var expandedItem = ac.getAccordion().getExpandedItem();
