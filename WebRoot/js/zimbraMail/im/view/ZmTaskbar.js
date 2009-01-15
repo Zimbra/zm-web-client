@@ -78,6 +78,7 @@ function(ev) {
  *
  * @param params				[hash]			hash of params:
  *        op					[String]		Id of operation that sets the button text and image
+ * 		  buttonConstructor		[function]		Constructor for the button
  *        selectionListener		[AjxListener]	Listener that handles button presses
  *        contentCallback		[AjxCallback]	A callback that creates the popup content
  *        rightAlign			[Boolean]		True to align the popup with the right of the button
@@ -92,7 +93,8 @@ ZmTaskbarItem = function(params) {
 		parent: this,
 		parentElement: this._buttonEl
 	};
-	this.button = new DwtToolBarButton(buttonArgs);
+	var ctor = params.buttonConstructor || DwtToolBarButton;
+	this.button = new ctor(buttonArgs);
 	this.button.addSelectionListener(params.selectionListener);
 	if (params.op) {
 		this.button.setText(ZmMsg[ZmOperation.getProp(params.op, "textKey")]);

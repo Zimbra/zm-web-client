@@ -1836,7 +1836,8 @@ HTML>BODY .appt-selected .appt_allday_body
 	@FullWidth@
 }
 
-.ZmTaskbar .ZToolbarButton {
+.ZmTaskbar .ZToolbarButton,
+.ZmTaskbar .ZmStatusImageButton {
 	height: 23px;
 	margin-top: -2px
 }
@@ -1886,6 +1887,10 @@ HTML>BODY .appt-selected .appt_allday_body
 	padding: 0;
 	padding-bottom: 3px;
 	@borderRadius@: 0;
+}
+
+.ZmTaskbarContentParent .ImYahooLoginLabel {
+	width: 90px;
 }
 
 /* temporary lite widgets */
