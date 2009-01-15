@@ -125,20 +125,11 @@ function(mode, object, share) {
 	this._reply.setReplyType(ZmShareReply.STANDARD);
 	this._reply.setReplyNote("");
 
-	var url = this._object.getRestUrl();
+	var restUrl = this._object.getRestUrl();
 	if (appCtxt.isOffline) {
 		var remoteUri = appCtxt.get(ZmSetting.OFFLINE_REMOTE_SERVER_URI);
-		url = remoteUri + url.substring((url.indexOf("/",7)));
+		restUrl = remoteUri + restUrl.substring((restUrl.indexOf("/",7)));
 	}
-	this._urlEl.innerHTML = AjxStringUtil.htmlEncode(url);
-
-	DwtDialog.prototype.popup.call(this);
-	this.setButtonEnabled(DwtDialog.OK_BUTTON, false);
-	if (isNewShare) {
-		this._userRadioEl.checked = true;
-		this._granteeInput.focus();
-	}
-};
 
 	var url = AjxStringUtil.htmlEncode(restUrl).replace(/&amp;/g,'%26');
 	var text = url;
@@ -163,6 +154,13 @@ function(mode, object, share) {
 				"<a target=_new href='",url,".html'>",text,".html</a>",
 			"</div>"
 		].join("");
+	}
+
+	DwtDialog.prototype.popup.call(this);
+	this.setButtonEnabled(DwtDialog.OK_BUTTON, false);
+	if (isNewShare) {
+		this._userRadioEl.checked = true;
+		this._granteeInput.focus();
 	}
 };
 
