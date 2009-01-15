@@ -499,10 +499,7 @@ function(ev) {
 					}
 				}
 
-				var plusDiv = (actionData.length == 1)
-					? ev.dndProxy.firstChild.nextSibling
-					: ev.dndProxy.firstChild.nextSibling.nextSibling;
-
+				var plusDiv = document.getElementById(DwtId.DND_PLUS_ID);
 				if (action && plusDiv) {
 					// TODO - what if action is ZmItem.DND_ACTION_BOTH ??
 					var isCopy = ((action & ZmItem.DND_ACTION_COPY) != 0);
