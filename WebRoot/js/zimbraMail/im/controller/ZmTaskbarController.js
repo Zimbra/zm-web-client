@@ -337,7 +337,8 @@ function(chat, taskbarItem) {
 ZmTaskbarController.prototype._chatStatusListener =
 function(taskbarItem, status) {
 	taskbarItem.button.setImage(status.statusImage);
-	taskbarItem.button.setText(status.title);
+	var title = status.title ? AjxStringUtil.clipByLength(status.title, 15) : "";
+	taskbarItem.button.setText(title);
 };
 
 ZmTaskbarController.prototype._createSubscribeRequestItemCallback =

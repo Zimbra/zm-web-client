@@ -136,9 +136,8 @@ ZmChatWidget.prototype.setTyping = function(item, typing) {
 	if (this.chat.getRosterSize() == 1) {
 		this.setImage(typing ? "Edit" : item.getPresence().getIcon());
 		var title = item.getDisplayName();
-		if (typing)
-			title += " (" + ZmMsg.typing + ")";
-		this.setTitle(title);
+		var details = typing ? ZmMsg.typing : null;
+		this.setTitle(title, details);
 	}
 };
 
@@ -228,16 +227,26 @@ ZmChatWidget.prototype.setImage = function(imageInfo) {
 	this._notifyStatus();
 };
 
-ZmChatWidget.prototype.setTitle = function(text) {
+ZmChatWidget.prototype.setTitle = function(text, titleDetails) {
 	this._title = text;
-	this._label.setText(text);
+	this._titleDetails = titleDetails;
+	if (titleDetails) {
+		this._titleFormat = this._titleFormat  || new AjxMessageFormat(ZmMsg.imChatTitle);
+		this._label.setText(this._titleFormat.format([text, titleDetails]));
+	} else {
+		this._label.setText(text);
+	}
 	this._notifyStatus();
 };
 
 ZmChatWidget.prototype._notifyStatus =
 function() {
 	if (this.isListenerRegistered(DwtEvent.STATE_CHANGE)) {
-		var ev = { statusImage: this._statusImage, title: this._title };
+		var ev = {
+			statusImage: this._statusImage,
+			title: this._title,
+			titleDetails: this._titleDetails
+		};
 		this.notifyListeners(DwtEvent.STATE_CHANGE, ev);
 	}
 };
