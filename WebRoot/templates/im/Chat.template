@@ -398,9 +398,17 @@
 			</table>
 		</div>
 		<div id='${id}_disconnected' style='display:block'>
-			You have been disconnected from Yahoo! Messenger because you signed in from another location.<br>
-			<input type="button" value="Reconnect"/>
-			<input type="button" value="Login as a different user"/>
+			<$=ZmMsg.imGatewayDisconnectedHeader $><br>
+			<table cellpadding=0 cellspacing=2>
+				<tr>
+					<td colspan=2 align="right" style="padding-top:3px">
+						<table><tr>
+							<td><div id="${id}_disconnectedLogoutButton"/></td>
+							<td><div id="${id}_reconnectButton"/></td>
+						</tr></table>
+					</td>
+				</tr>
+			</table>
 		</div>
 	</div>
 </template>
