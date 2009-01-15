@@ -29,7 +29,7 @@
 <fmt:message var="noSubject" key="noSubject"/>
 
 <fmt:setBundle basename='/messages/AjxMsg' var='AjxMsg' scope='request' />
-<fmt:message bundle='${AjxMsg}' key='${zm:getJavaId(timezone)}' var='timezoneStr' scope='request' />
+<fmt:message bundle='${AjxMsg}' key='${zm:getCanonicalId(timezone)}' var='timezoneStr' scope='request' />
 
 <c:set var="isPart" value="${!empty message.partName}"/>
 <table cellpadding=0 cellspacing=0 width=100% class='Compose'>
@@ -99,7 +99,7 @@
                                         </c:otherwise>
                                     </c:choose>
                                     ${fn:escapeXml(zm:getApptDateBlurb(pageContext, timezone, startDate.time, endDate.time, appt.allDay))}
-                                    &nbsp;<span class='ZhCalTimeZone'>${fn:escapeXml(fn:startsWith(timezoneStr,"???") ? (zm:getWindowsId(timezone)) : timezoneStr)}</span>
+                                    &nbsp;<span class='ZhCalTimeZone'>${fn:escapeXml(fn:startsWith(timezoneStr,"???") ? (zm:getCanonicalId(timezone)) : timezoneStr)}</span>
                                 </td>
                             </tr>
                             <c:if test="${appt.exception}">

@@ -41,6 +41,7 @@
 * @param zid		[string]*		Zimbra ID of owner, if remote folder
 * @param rid		[string]*		Remote ID of organizer, if remote folder
 * @param restUrl	[string]*		REST URL of this organizer.
+* @param newOp		[string]*		Name of operation run by button in overview header
 */
 ZmOrganizer = function(params) {
 
@@ -58,6 +59,7 @@ ZmOrganizer = function(params) {
 	this.url = params.url;
 	this.owner = params.owner;
 	this.link = params.link || (Boolean(params.zid)) || (this.parent && this.parent.link);
+	this.isMountpoint = params.link;
 	this.zid = params.zid;
 	this.rid = params.rid;
 	this.restUrl = params.restUrl;
@@ -85,6 +87,7 @@ ZmOrganizer = function(params) {
 ZmOrganizer.TAG					= ZmEvent.S_TAG;
 ZmOrganizer.SEARCH				= ZmEvent.S_SEARCH;
 ZmOrganizer.MOUNTPOINT			= ZmEvent.S_MOUNTPOINT;
+ZmOrganizer.ZIMLET				= ZmEvent.S_ZIMLET;
 
 // folder IDs defined in com.zimbra.cs.mailbox.Mailbox
 ZmOrganizer.ID_ROOT				= 1;
@@ -105,6 +108,7 @@ ZmOrganizer.ID_ZIMLET			= -1000;	// zimlets need a range.  start from -1000 incr
 ZmOrganizer.ID_ROSTER_LIST		= -11;
 ZmOrganizer.ID_ROSTER_TREE_ITEM	= -13;
 ZmOrganizer.ID_MY_CARD			= -15;
+ZmOrganizer.ID_ATTACHMENTS      = -17;      // Attachments View
 
 // fields that can be part of a displayed organizer
 ZmOrganizer.F_NAME				= "name";
@@ -216,6 +220,9 @@ ZmOrganizer.MOUNT_KEY 		= {};		// keys for label "mount [org]"
 ZmOrganizer.DEFERRABLE 		= {};		// creation can be deferred to app launch
 ZmOrganizer.PATH_IN_NAME	= {};		// if true, provide full path when asked for name
 ZmOrganizer.OPEN_SETTING	= {};		// setting that controls whether the tree view is open
+ZmOrganizer.NEW_OP			= {};		// name of operation for new button in tree header (optional)
+ZmOrganizer.DISPLAY_ORDER	= {};		// sort number to determine order of tree view (optional)
+ZmOrganizer.HIDE_EMPTY		= {};		// if true, hide tree header if tree is empty
 
 ZmOrganizer.APP2ORGANIZER	= {};		// organizer types, keyed by app name
 
@@ -250,6 +257,8 @@ ZmOrganizer.APP2ORGANIZER	= {};		// organizer types, keyed by app name
  *        shortcutKey		[string]	letter encoding of this org type for custom shortcuts
  *        pathInName		[boolean]	if true, provide full path when asked for name
  *        openSetting		[const]		setting that controls whether the tree view is open
+ *        displayOrder		[int]		A number that is used when sorting the display of trees. (Lower number means higher display.)
+ *        hideEmpty			[boolean]	if true, hide tree header if tree is empty
  */
 ZmOrganizer.registerOrg =
 function(org, params) {
@@ -276,6 +285,9 @@ function(org, params) {
 	if (params.deferrable)		{ ZmOrganizer.DEFERRABLE[org]			= params.deferrable; }
 	if (params.pathInName)		{ ZmOrganizer.PATH_IN_NAME[org]			= params.pathInName; }
 	if (params.openSetting)		{ ZmOrganizer.OPEN_SETTING[org]			= params.openSetting; }
+	if (params.newOp)			{ ZmOrganizer.NEW_OP[org]				= params.newOp; }
+	if (params.displayOrder)	{ ZmOrganizer.DISPLAY_ORDER[org]		= params.displayOrder; }
+	if (params.hideEmpty)		{ ZmOrganizer.HIDE_EMPTY[org]			= params.hideEmpty; }
 
 	if (!appCtxt.isChildWindow) {
 		if (params.compareFunc)		{ ZmTreeView.COMPARE_FUNC[org]			= params.compareFunc; }
@@ -537,6 +549,7 @@ function(id, type) {
 ZmOrganizer.parseId =
 function(id, result) {
 	result = result || {};
+	if (!id) { return result; }
 	var idx = id.indexOf(":");
 	if (idx == -1) {
 		result.account = appCtxt.getMainAccount();
@@ -606,12 +619,8 @@ ZmOrganizer.prototype.getToolTip =
 function(force) {
 	if (!this._tooltip || force) {
 		var itemText = this._getItemsText();
-		if (this.numTotal) {
-			var subs = {itemText:itemText, numTotal:this.numTotal, sizeTotal:this.sizeTotal};
-			this._tooltip = AjxTemplate.expand("share.App#FolderTooltip", subs);
-		} else {
-			this._tooltip = AjxMessageFormat.format(ZmMsg.noItems, itemText);
-		}
+		var subs = {itemText:itemText, numTotal:this.numTotal, sizeTotal:this.sizeTotal};
+		this._tooltip = AjxTemplate.expand("share.App#FolderTooltip", subs);
 	}
 	return this._tooltip;
 };
@@ -818,17 +827,20 @@ function() {
 };
 
 ZmOrganizer.prototype._empty = 
-function() {
-	DBG.println(AjxDebug.DBG1, "emptying: " + this.name + ", ID: " + this.id);
+function(doRecursive) {
+    doRecursive = doRecursive || false;
+    DBG.println(AjxDebug.DBG1, "emptying: " + this.name + ", ID: " + this.id);
 	var isEmptyOp = ((this.type == ZmOrganizer.FOLDER || this.type == ZmOrganizer.ADDRBOOK) &&
-					 (this.nId == ZmFolder.ID_SPAM || this.nId == ZmFolder.ID_TRASH || this.nId == ZmOrganizer.ID_SYNC_FAILURES));
+					 (this.nId == ZmFolder.ID_SPAM || this.nId == ZmFolder.ID_TRASH || this.nId == ZmFolder.ID_CHATS || this.nId == ZmOrganizer.ID_SYNC_FAILURES));
 	// make sure we're not emptying a system object (unless it's SPAM/TRASH/SYNCFAILURES)
 	if (this.isSystem() && !isEmptyOp) return;
 
 	var params = {action:"empty"};
 	if (this.id == ZmFolder.ID_TRASH) {
 		params.attrs = {recursive:"true"};
-	}
+	}else{
+        params.attrs = {recursive:doRecursive};
+    }
 	if (this.isRemote()) {
 		params.id = this.getRemoteId();
 	}
@@ -886,7 +898,7 @@ function(obj, details) {
 	var doNotify = false;
 	var details = details || {};
 	var fields = {};
-	if (obj.name != null && this.name != obj.name && !obj._isRemote) {
+	if (obj.name != null && this.name != obj.name) {
 		details.oldName = this.name;
 		this.name = obj.name;
 		fields[ZmOrganizer.F_NAME] = true;
@@ -950,13 +962,15 @@ function(obj, details) {
 		this._notify(ZmEvent.E_MODIFY, details);
 	}
 
-	if (this.parent && obj.l != null && obj.l != this.parent.id && !obj._isRemote) {
+	if (this.parent && obj.l != null && obj.l != this.parent.id) {
 		var newParent = this._getNewParent(obj.l);
-		this.reparent(newParent);
-		this._notify(ZmEvent.E_MOVE);
-		// could be moving search between Folders and Searches - make sure
-		// it has the correct tree
-		this.tree = newParent.tree;
+		if (newParent) {
+			this.reparent(newParent);
+			this._notify(ZmEvent.E_MOVE);
+			// could be moving search between Folders and Searches - make sure
+			// it has the correct tree
+			this.tree = newParent.tree;
+		}
 	}
 };
 
@@ -1234,6 +1248,10 @@ function() {
 	return this._hasPrivateAccess;
 };
 
+/**
+ * Returns true if this organizer is "remote". That applies to mountpoints (links),
+ * the folders they represent, and any subfolders we know about.
+ */
 ZmOrganizer.prototype.isRemote =
 function() {
 	if (this._isRemote == null) {

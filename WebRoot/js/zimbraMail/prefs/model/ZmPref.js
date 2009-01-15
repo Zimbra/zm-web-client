@@ -63,15 +63,19 @@ function(setup) {
 ZmPref.loadCsvFormats =
 function(setup){
     var formats = appCtxt.get(ZmSetting.AVAILABLE_CSVFORMATS);
-	var options = setup.options = [];
-	var displayOptions = setup.displayOptions = [];
-    for(var i=0; i<formats.length; i++){
-        options.push(formats[i]);
+	if (!formats._options) {
+		var options = formats._options = [];
+		var displayOptions = formats._displayOptions = [];
+		for(var i=0; i<formats.length; i++){
+			options.push(formats[i]);
+		}
+		options.sort(ZmPref.__BY_CSVFORMAT);
+		for(var i=0; i < options.length; i++){
+			displayOptions.push((ZmMsg[options[i]] || options[i]));
+		}
 	}
-	options.sort(ZmPref.__BY_CSVFORMAT);
-	for(var i=0; i < options.length; i++){
-        displayOptions.push((ZmMsg[options[i]] || options[i]));
-    }
+	setup.options = formats._options;
+	setup.displayOptions = formats._displayOptions;
 };
 ZmPref.__BY_CSVFORMAT = function(a, b) {
 	if (a.match(/^zimbra/)) return -1;

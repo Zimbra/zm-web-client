@@ -144,7 +144,10 @@ function(params) {
     this._toggleBccField(null, appCtxt.get(ZmSetting.SHOW_BCC));
 
 	// populate fields based on the action and user prefs
-	this._setAddresses(action, params.toOverride);
+    this._setAddresses(action, AjxEmailAddress.TO, params.toOverride);
+    if(params.ccOverride)   this._setAddresses(action, AjxEmailAddress.CC , params.ccOverride);
+    if(params.bccOverride)  this._setAddresses(action, AjxEmailAddress.BCC , params.bccOverride);
+
 	this._setSubject(action, msg, params.subjOverride);
 	this._setBody(action, msg, params.extraBodyText);
 
@@ -389,6 +392,15 @@ function(attId, isDraft) {
 		this._badAddrsOkay = false;
 	}
 
+    //Mandatory Spell Check
+    if(!isDraft && appCtxt.get(ZmSetting.MAIL_MANDATORY_SPELLCHECK) && !this._spellCheckOkay){
+        if(this._htmlEditor.checkMisspelledWords(new AjxCallback(this, this._spellCheckShield))){
+            return;
+        }
+    } else {
+        this._spellCheckOkay = false;
+    }
+
 	// Create Msg Object
 	var msg = new ZmMailMsg();
 	msg.setSubject(subject);
@@ -474,14 +486,28 @@ function(attId, isDraft) {
 		//}
 
 		var defangedContent = this._htmlEditor.getContent(true);
-		htmlPart.setContent(defangedContent);
 
-		
+        // Bug 27422 - Firefox and Safari implementation of execCommand("bold") etc use styles, and some
+        // email clients (Entourage) don't process the styles and the text remains plain. So we post-process
+        // and convert those to the tags (which are what the IE version of execCommand() does).
+        if (AjxEnv.isFirefox) {
+            defangedContent = defangedContent.replace(/<span style="font-weight: bold;">(.+?)<\/span>/, "<strong>$1</strong>");
+            defangedContent = defangedContent.replace(/<span style="font-style: italic;">(.+?)<\/span>/, "<em>$1</em>");
+            defangedContent = defangedContent.replace(/<span style="text-decoration: underline;">(.+?)<\/span>/, "<u>$1</u>");
+            defangedContent = defangedContent.replace(/<span style="text-decoration: line-through;">(.+?)<\/span>/, "<strike>$1</strike>");
+        } else if (AjxEnv.isSafari) {
+            defangedContent = defangedContent.replace(/<span class="Apple-style-span" style="font-weight: bold;">(.+?)<\/span>/, "<strong>$1</strong>");
+            defangedContent = defangedContent.replace(/<span class="Apple-style-span" style="font-style: italic;">(.+?)<\/span>/, "<em>$1</em>");
+            defangedContent = defangedContent.replace(/<span class="Apple-style-span" style="text-decoration: underline;">(.+?)<\/span>/, "<u>$1</u>");
+            defangedContent = defangedContent.replace(/<span class="Apple-style-span" style="text-decoration: line-through;">(.+?)<\/span>/, "<strike>$1</strike>");
+        }
+
+		htmlPart.setContent(defangedContent);
 
 		// Bug 31535 - inline img atts not preserved on reply/forward
 		// Try to find inline imgs in the composer that were brought into it from the orig msg,
 		// and add them to the new msg's inline atts so that the server sends them.
-		if (( !isDraft && this._action == ZmOperation.DRAFT /*Editing Draft and Sending*/) || this._action == ZmOperation.REPLY || this._action == ZmOperation.FORWARD_INLINE) {		
+		if (( !isDraft && this._action == ZmOperation.DRAFT /*Editing Draft and Sending*/) || this._action == ZmOperation.REPLY || this._action == ZmOperation.FORWARD_INLINE) {
 			var idoc = this._htmlEditor._getIframeDoc();
 			var images = idoc.getElementsByTagName("img");
 			for (var i = 0; i < images.length; i++) {
@@ -501,8 +527,8 @@ function(attId, isDraft) {
 				}
 			}
 		}
-		
-		var inlineAtts = msg.getInlineAttachments();
+
+        var inlineAtts = msg.getInlineAttachments();
 		if ( inlineAtts &&  inlineAtts.length > 0 ) {
 			var relatedPart = new ZmMimePart();
 			relatedPart.setContentType(ZmMimeTable.MULTI_RELATED);
@@ -511,11 +537,13 @@ function(attId, isDraft) {
 		} else {
 			top.children.add(htmlPart);
 		}
-		
+
+        
 	} else {
-		
-		var inline = this._isInline();
-		
+
+
+        var inline = this._isInline();
+        
 		var textPart = (this._extraParts || inline) ? new ZmMimePart() : top;
 		textPart.setContentType(ZmMimeTable.TEXT_PLAIN);
 		textPart.setContent(this._htmlEditor.getContent());
@@ -616,6 +644,38 @@ function(attId, isDraft) {
 
     return msg;
 };
+
+ZmComposeView.prototype.setDocAttachments =
+function(msg, docIds) {
+    if(!docIds) {
+        return;
+    }
+    var zeroSizedAttachments = false;
+    var inline = this._isInline();
+    for (var i = 0; i < docIds.length; i++) {
+        var docAtt = docIds[i];
+        var contentType = docAtt.ct;
+        if (docAtt.s == 0) {
+            zeroSizedAttachments = true;
+            continue;
+        }
+        if (this._attachDialog && inline) {
+            if (contentType && contentType.indexOf("image") != -1) {
+                var cid = Dwt.getNextId();
+                this._htmlEditor.insertImage("cid:" + cid, AjxEnv.isIE);
+                msg.addInlineDocAttachmentId(cid, docAtt.id);
+            } else {
+                msg.addDocumentAttachmentId(docAtt.id);
+            }
+        }else {
+            msg.addDocumentAttachmentId(docAtt.id);
+        }
+    }
+    if (zeroSizedAttachments){
+        appCtxt.setStatusMsg(ZmMsg.zeroSizedAtts);
+    }    
+};
+
 
 /**
 * Sets an address field.
@@ -877,7 +937,7 @@ function(bEnableInputs) {
 	this._origFormValue = "";
 
 	// reset dirty shields
-	this._noSubjectOkay = this._badAddrsOkay = false;
+	this._noSubjectOkay = this._badAddrsOkay = this._spellCheckOkay = false;
 
 	// remove extra mime parts
 	this._extraParts = null;
@@ -982,6 +1042,7 @@ function(content, replaceSignatureId){
     //Caching previous Signature state.
     this._previousSignature = signature;
     this._previousSignatureMode = this._htmlEditor.getMode();
+
 };
 
 ZmComposeView.prototype.getSignatureContent = function(signatureId) {
@@ -1010,7 +1071,6 @@ function(content) {
 	// since HTML composing in new window doesnt guarantee the html editor
 	// widget will be initialized when this code is running.
 	content = content || "";
-	var identity = this.getIdentity();
 	content = this._insertSignature(content, appCtxt.get(ZmSetting.SIGNATURE_STYLE),
                                         this.getSignatureContent(),
                                         this._getSignatureNewLine());
@@ -1315,13 +1375,13 @@ function(textarea, skipResetBodySize) {
 * Make sure not to duplicate any addresses, even across fields.
 */
 ZmComposeView.prototype._setAddresses =
-function(action, toOverride) {
+function(action, type, override) {
 	this._action = action;
 
 	if (action == ZmOperation.NEW_MESSAGE &&
-		toOverride)
+		override)
 	{
-		this.setAddress(AjxEmailAddress.TO, toOverride);
+		this.setAddress(type, override);
 	}
 	else if (action == ZmOperation.REPLY ||
 			 action == ZmOperation.REPLY_ALL ||
@@ -1337,6 +1397,13 @@ function(action, toOverride) {
 		for (var i = 0, count = aliases.length; i < count; i++) {
 			used[aliases[i].toLowerCase()] = true;
 		}
+
+        //Check for Canonical Address's
+        var defaultIdentity = appCtxt.getIdentityCollection().defaultIdentity;
+        if(defaultIdentity && defaultIdentity.sendFromAddress){
+            //Note: sendFromAddress is same as appCtxt.get(ZmSetting.USERNAME) if the account does not have any Canonical Address assigned.
+            used[defaultIdentity.sendFromAddress.toLowerCase()] = true;
+        }
 
 		// When updating address lists, use this._addressesMsg instead of this._msg, because
 		// this._msg changes after a draft is saved.
@@ -1621,12 +1688,14 @@ function(action, msg, extraBodyText, incOption, nosig) {
 				cancelledParts.push(crlf);
 				cancelledParts.push(ZmMsg.subjectLabel+" "+msg.subject+crlf);
 				var inv = (msg) ? msg.invite : null;
-				if (inv) {
-					var organizer = "";
-					if (inv)
-						cancelledParts.push(ZmMsg.organizer + ": " + inv.getOrganizerName() + crlf);
-						cancelledParts.push(ZmMsg.time + ": " + inv.getServerStartDate() + crlf);
-					}
+                if (inv) {
+                    cancelledParts.push(ZmMsg.organizer + ": " + inv.getOrganizerName() + crlf);
+                    var sd = inv.getServerStartDate();
+                    if(msg._instanceDate) {
+                        sd = msg._instanceDate;
+                    }
+                    cancelledParts.push(ZmMsg.time + ": " + sd + crlf);
+                }
 				cancelledParts.push(ZmItem.NOTES_SEPARATOR);
 				value = cancelledParts.join("");
 			}
@@ -1658,8 +1727,9 @@ ZmComposeView.prototype._setEventHandler =
 function(id, event, addrType) {
 	var field = document.getElementById(id);
 	field._composeView = this._internalId;
-	if (addrType)
+	if (addrType) {
 		field._addrType = addrType;
+	}
 	var lcEvent = event.toLowerCase();
 	field[lcEvent] = ZmComposeView["_" + event];
 };
@@ -1764,13 +1834,11 @@ function(templateId, data) {
 	this._identityDivId = data.identityRowId;
 
 	// init autocomplete list
-	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-		var contactsClass = appCtxt.getApp(ZmApp.CONTACTS);
+	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) || appCtxt.get(ZmSetting.GAL_ENABLED)) {
 		var params = {
 			parent: this,
-			dataClass: contactsClass,
-			dataLoader: contactsClass.getContactList,
-			matchValue: ZmContactsApp.AC_VALUE_FULL,
+			dataClass: appCtxt.getAutocompleter(),
+			matchValue: ZmAutocomplete.AC_VALUE_FULL,
 			locCallback: (new AjxCallback(this, this._getAcListLoc, [this])),
 			compCallback: (new AjxCallback(this, this._acCompHandler)),
 			keyUpCallback: (new AjxCallback(this, this._acKeyupHandler))
@@ -1825,6 +1893,8 @@ function(templateId, data) {
 	this._headerEl = document.getElementById(data.headerId);
 	this._subjectField = document.getElementById(data.subjectInputId);
 	this._attcDiv = document.getElementById(data.attDivId);
+
+	this._setEventHandler(data.subjectInputId, "onKeyUp");
 
 	// initialize identity select
 	var identityOptions = this._getIdentityOptions();
@@ -2290,6 +2360,50 @@ function(isDraft, status, attId) {
 	}
 };
 
+
+//Mandatory Spellcheck Callback
+ZmComposeView.prototype._spellCheckShield =
+function(words){
+    if (words && words.available) {
+        if(words.misspelled != null && words.misspelled.length != 0){
+            var msgDialog = appCtxt.getYesNoMsgDialog();
+            msgDialog.setMessage(AjxMessageFormat.format(ZmMsg.misspellingsMessage, [words.misspelled.length]));
+            msgDialog.registerCallback(DwtDialog.YES_BUTTON, this._spellCheckShieldOkListener, this, [ msgDialog, words ] );
+            msgDialog.registerCallback(DwtDialog.NO_BUTTON, this._spellCheckShieldCancelListener, this, msgDialog);
+            msgDialog.associateEnterWithButton(DwtDialog.NO_BUTTON);
+            msgDialog.popup(null, DwtDialog.NO_BUTTON);
+        }
+    }else{
+        this._spellCheckOkay = true;
+        this._controller.sendMsg();
+    }
+};
+
+ZmComposeView.prototype._spellCheckShieldOkListener =
+function(msgDialog, words, ev){
+
+    this._controller._toolbar.enableAll(true);
+
+    this._controller.toggleSpellCheckButton(true);
+    this._htmlEditor.discardMisspelledWords();
+
+    this._spellCheckOkay = false;
+    msgDialog.popdown();
+
+    this._htmlEditor.onExitSpellChecker = new AjxCallback(this._controller, this._controller.toggleSpellCheckButton, true)
+    this._htmlEditor._spellCheckCallback(words);
+};
+
+ZmComposeView.prototype._spellCheckShieldCancelListener =
+function(msgDialog, ev){
+
+    this._spellCheckOkay = true;
+    msgDialog.popdown();
+
+    this._controller.sendMsg();
+
+};
+
 ZmComposeView.prototype._setFormValue =
 function() {
 	this._origFormValue = this._formValue();
@@ -2303,63 +2417,28 @@ function() {
 
 // Static methods
 
-ZmComposeView._onClick =
-function(ev) {
-	ev || (ev = window.event);
-
-	var element = DwtUiEvent.getTargetWithProp(ev, "id");
-	var id = element ? element.id : null;
-
-	// if clicked on remove attachment link
-	if (id && id.indexOf("_att_") == 0) {
-		var cv = AjxCore.objectWithId(element._composeView);
-		var attId = id.slice(0, -2);
-		var row = document.getElementById(attId);
-
-		cv._attachmentTable.deleteRow(row.rowIndex);
-		if (--cv._attachCount < ZmComposeView.SHOW_MAX_ATTACHMENTS) {
-			cv._attcDiv.style.overflow = "";
-			cv._attcDiv.style.height = "";
-			if (cv._attachCount == 0) {
-				cv._attachmentTable = null;
-				cv._attcDiv.innerHTML = "";
-			}
-		}
-		cv._resetBodySize();
-		return false; // disables following of link
-	}
-
-	return true;
-};
-
-ZmComposeView._onKeyDown =
-function(ev) {
-	ev || (ev = window.event);
-
-	var element = DwtUiEvent.getTargetWithProp(ev, "id");
-	if (!element) return true;
-
-	var id = element.id;
-	var key = DwtKeyEvent.getCharCode(ev);
-	// ignore return in attachment input field (bug 961)
-	if (id.indexOf("_att_") == 0)
-		return (key != DwtKeyEvent.KEY_ENTER && key != DwtKeyEvent.KEY_END_OF_TEXT);
-};
-
 // NOTE: this handler should only get triggered if/when contacts are DISABLED!
 ZmComposeView._onKeyUp =
 function(ev) {
 	ev || (ev = window.event);
 
 	var element = DwtUiEvent.getTargetWithProp(ev, "id");
-	if (!element) return true;
+	if (!element) { return true; }
 
 	var cv = AjxCore.objectWithId(element._composeView);
-	cv._adjustAddrHeight(element);
+	if (element == cv._subjectField) {
+		var key = DwtKeyEvent.getCharCode(ev);
+		if (key == 3 || key == 13) {
+			cv._focusHtmlEditor();
+		}
+	} else {
+		cv._adjustAddrHeight(element);
+	}
 };
 
-//for ZimbraDnD
-ZmComposeView.prototype.uploadFiles = function(){
+// for com.zimbra.dnd zimlet
+ZmComposeView.prototype.uploadFiles =
+function() {
     var attachDialog = appCtxt.getAttachDialog();
     this._controller = AjxDispatcher.run("GetComposeController");
     var callback = new AjxCallback(this, this._attsDoneCallback, [true]);

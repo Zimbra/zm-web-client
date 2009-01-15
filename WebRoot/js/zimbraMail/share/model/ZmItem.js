@@ -83,6 +83,7 @@ ZmItem.F_NOTES			= ZmId.FLD_NOTES;
 ZmItem.F_PARTICIPANT	= ZmId.FLD_PARTICIPANT;
 ZmItem.F_PCOMPLETE		= ZmId.FLD_PCOMPLETE;
 ZmItem.F_PRIORITY		= ZmId.FLD_PRIORITY;
+ZmItem.F_RECURRENCE		= ZmId.FLD_RECURRENCE;
 ZmItem.F_SELECTION		= ZmId.FLD_SELECTION;
 ZmItem.F_SIZE			= ZmId.FLD_SIZE;
 ZmItem.F_STATUS			= ZmId.FLD_STATUS;
@@ -189,7 +190,6 @@ function(id) {
 // abstract methods
 ZmItem.prototype.create = function(args) {};
 ZmItem.prototype.modify = function(mods) {};
-ZmItem.prototype.getPrintHtml = function(preferHtml, callback) {};
 
 /**
 * Returns this item if it has the given ID. Used by the app controller for

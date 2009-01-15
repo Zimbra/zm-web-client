@@ -39,10 +39,13 @@ ZmApptQuickAddDialog = function(parent) {
 	ZmQuickAddDialog.call(this, parent, null, null, [moreDetailsButton]);
 	DBG.timePt("ZmQuickAddDialog constructor", true);
 
-	var html = AjxTemplate.expand("calendar.Appointment#ZmApptQuickAddDialog", {id: this._htmlElId});
+    AjxDispatcher.run("GetResources");
+
+    var html = AjxTemplate.expand("calendar.Appointment#ZmApptQuickAddDialog", {id: this._htmlElId});
 	this.setContent(html);
 	this.setTitle(ZmMsg.quickAddAppt);
 	DBG.timePt("create content");
+    this._locations = [];
 
 	this._createDwtObjects();
 	this._cacheFields();
@@ -88,6 +91,7 @@ function(appt) {
 	this._repeatSelect.setSelectedValue("NON");
 	this._repeatDescField.innerHTML = "";
 	this._origFormValue = this._formValue();
+    this._locations = [];
 };
 
 ZmApptQuickAddDialog.prototype.getAppt = 
@@ -118,6 +122,7 @@ function() {
 	appt.setEndDate(endDate);
 	appt.setRecurType(this._repeatSelect.getValue());
 	appt.location = this._locationField.getValue();
+    appt.setAttendees(this._locations, ZmCalBaseItem.LOCATION);
 
 	//set alarm for reminders
 	appt.setReminderMinutes(this._reminderSelect.getValue());
@@ -176,6 +181,12 @@ function(loc) {
 	DBG.timePt("ZmQuickAddDialog#popup", true);
 };
 
+ZmApptQuickAddDialog.prototype._autoCompCallback =
+function(text, el, match) {
+    if(match.item){
+        this._locationField.setValue(match.item.getFullName());
+    }
+};
 
 // Private / protected methods
 
@@ -191,14 +202,28 @@ function() {
 	this._subjectField.setRequired();
 	Dwt.setSize(this._subjectField.getInputElement(), "100%", "22px");
 
-	this._locationField = new DwtInputField({parent:this, type:DwtInputField.STRING,
+
+    this._locationField = new DwtInputField({parent:this, type:DwtInputField.STRING,
 											initialValue:null, size:null, maxLen:null,
 											errorIconStyle:DwtInputField.ERROR_ICON_NONE,
 											validationStyle:DwtInputField.ONEXIT_VALIDATION,
 											parentElement:(this._htmlElId + "_location")});
 	Dwt.setSize(this._locationField.getInputElement(), "100%", "22px");
 
-	// create DwtSelects
+    if (appCtxt.get(ZmSetting.GAL_ENABLED)) {
+		var params = {
+            parent: appCtxt.getShell(),
+            dataClass: appCtxt.getAutocompleter(),
+            separator: "",
+			matchValue: ZmAutocomplete.AC_VALUE_NAME,
+            compCallback: new AjxCallback(this, this._autoCompCallback),
+            smartPos: true
+        };
+        this._acLocationsList = new ZmAutocompleteListView(params);
+        this._acLocationsList.handle(this._locationField.getInputElement());
+    }
+
+    // create DwtSelects
 	this._showAsSelect = new DwtSelect({parent:this, parentElement:(this._htmlElId + "_showAs")});
 	for (var i = 0; i < ZmApptEditView.SHOWAS_OPTIONS.length; i++) {
 		var option = ZmApptEditView.SHOWAS_OPTIONS[i];
@@ -258,6 +283,51 @@ function() {
 		this._reminderSelect.addOption(optLabel, (defaultWarningTime == options[j]), options[j]);
 	}
 	this._reminderSelect.reparentHtmlElement(this._htmlElId + "_reminderSelect");
+
+    // init auto-complete widget if contacts app enabled
+    if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+        this._initAutocomplete();
+    }
+    
+};
+
+ZmApptQuickAddDialog.prototype._initAutocomplete =
+function() {
+	var acCallback = new AjxCallback(this, this._autocompleteCallback);
+	this._acList = null;
+
+	if (appCtxt.get(ZmSetting.GAL_ENABLED) || appCtxt.get(ZmSetting.GAL_ENABLED)) {
+		// autocomplete for locations
+		var app = appCtxt.getApp(ZmApp.CALENDAR);
+		var params = {
+			parent: appCtxt.getShell(),
+			dataClass: appCtxt.getApp(ZmApp.CONTACTS),
+			matchValue: ZmAutocomplete.AC_VALUE_NAME,
+			compCallback: acCallback,
+			options: {type:ZmAutocomplete.AC_TYPE_LOCATION}
+		};
+		this._acLocationsList = new ZmAutocompleteListView(params);
+		this._acLocationsList.handle(this._locationField.getInputElement());
+		this._acList = this._acLocationsList;
+	}
+};
+
+ZmApptQuickAddDialog.prototype._autocompleteCallback =
+function(text, el, match) {
+	if (!match) {
+		DBG.println(AjxDebug.DBG1, "ZmApptQuickAddDialog: match empty in autocomplete callback; text: " + text);
+		return;
+	}
+	var attendee = match.item;
+	if (attendee) {
+		var type = el._attType;
+		this._isKnownLocation = true;
+        attendee = (attendee instanceof AjxVector) ? attendee.getArray() :
+                   (attendee instanceof Array) ? attendee : [attendee];
+        for (var i = 0; i < attendee.length; i++) {
+            this._locations.push(attendee[i]);
+        }
+	}
 };
 
 ZmApptQuickAddDialog.prototype._privacyListener =
