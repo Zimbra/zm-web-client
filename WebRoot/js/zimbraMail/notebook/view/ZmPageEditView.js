@@ -587,7 +587,12 @@ ZmPageEditor.prototype.insertLinks = function(filenames) {
 			insertTarget = space;
 		}
 		var link = this._getIframeDoc().createElement("A");
-		link.href = filenames[i];
+        var page = this._controller.getPage();
+        var notebook = appCtxt.getById(page.folderId);
+        var url = [
+            notebook.getRestUrl(), "/", AjxStringUtil.urlComponentEncode(filenames[i])
+        ].join("");
+		link.href = url;
 		link.innerHTML = AjxStringUtil.htmlEncode(filenames[i]);
 		this._insertLink(link, insertTarget, true);
 		insertTarget = link;

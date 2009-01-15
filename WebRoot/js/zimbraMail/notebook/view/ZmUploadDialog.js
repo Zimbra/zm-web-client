@@ -211,7 +211,7 @@ function(files, status, guids, response) {
 		for (var i = 0; i < resp.SaveDocumentResponse.length; i++) {
 			var saveDocResp = resp.SaveDocumentResponse[i];
 			files[saveDocResp.requestId].done = true;
-			files[saveDocResp.requestId].rest = saveDocResp.doc[0].rest;
+			files[saveDocResp.requestId].name = saveDocResp.doc[0].name;
 		}
 	}
 
@@ -232,7 +232,7 @@ function(files, status, guids, response) {
 					switch (attr.n) {
 						case "id": { file.id = attr._content; break; }
 						case "ver": { file.version = attr._content; break; }
-						case "rest": { file.rest = attr._content; break; }
+						case "name": { file.name = attr._content; break; }
 					}
 				}
 				conflicts.push(file);
@@ -266,7 +266,7 @@ function(files, status, guids, response) {
 	else if (this._uploadCallback) {
 		var filenames = [];
 		for (var i = 0; i < files.length; i++) {
-			filenames.push(files[i].rest);
+			filenames.push(files[i].name);
 		}
 		this._uploadCallback.run(this._uploadFolder, filenames);
 	}
