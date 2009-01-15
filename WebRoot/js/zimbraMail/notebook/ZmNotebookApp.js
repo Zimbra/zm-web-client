@@ -227,12 +227,12 @@ function(ids, force) {
 			DBG.println(AjxDebug.DBG2, "ZmNotebookApp: handling delete notif for ID " + ids[i]);
 			cache.removePage(page);
 			page.notifyDelete();
-		} else {
-			var folder = appCtxt.getById(ids[i]);
-            if(folder){
-                cache.removeItem(folder);
-                folder.notifyDelete();
-            }
+		}
+
+		var folder = appCtxt.getById(ids[i]);
+		if(folder && (folder instanceof ZmNotebook)){
+			cache.removeItem(folder);
+			folder.notifyDelete();
 		}
 		appCtxt.cacheRemove(ids[i]);
 	}
