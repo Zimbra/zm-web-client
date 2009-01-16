@@ -774,7 +774,8 @@ function(msg, idoc, id, iframe) {
 			this.onload = null; // *this* is reference to <img> el.
 		};
 		for (var i = 0; i < images.length; i++) {
-			if (images[i].getAttribute("dfsrc")) {
+            var dfsrc = images[i].getAttribute("dfsrc");
+			if (dfsrc && dfsrc.match(/https?:\/\/([-\w\.]+)+(:\d+)?(\/([\w\_\.]*(\?\S+)?)?)?/)) {                
 				// If we just loop through the images, IE for some reason,
 				// doesn't fetch the image. By launching them off in the
 				// background we seem to kick IE's engine a bit.
@@ -975,23 +976,20 @@ function(container, html, isTextMsg, isTruncated) {
 		this._htmlBody = idoc.body.innerHTML;
 
 		// TODO: only call this if top-level is multipart/related?
-		var didAllImages = this._fixMultipartRelatedImages(this._msg, idoc);
+        // setup the click handler for the images
+        var didAllImages = this._fixMultipartRelatedImages(this._msg, idoc);
+        if(didAllImages){
+            if(displayImages) displayImages.style.display = "none";
+        }else{
+            var func = this._createDisplayImageClickClosure(this._msg, idoc, this._displayImagesId, ifw.getIframe());
+            if(displayImages){
+               Dwt.setHandler(displayImages, DwtEvent.ONCLICK, func);
+            }else if(appCtxt.get(ZmSetting.DISPLAY_EXTERNAL_IMAGES) || (this._msg && this._msg.showImages)){
+               func.call();
+            }
+        }
 
-		// setup the click handler for the images
-		if (displayImages) {
-			if (didAllImages) {
-				displayImages.style.display = "none";
-			} else {
-				var func = this._createDisplayImageClickClosure(this._msg, idoc, this._displayImagesId, ifw.getIframe());
-				Dwt.setHandler(displayImages, DwtEvent.ONCLICK, func);
-			}
-		}
-		else if (appCtxt.get(ZmSetting.DISPLAY_EXTERNAL_IMAGES) ||
-				 (this._msg && this._msg.showImages))
-		{
-			var func = this._createDisplayImageClickClosure(this._msg, idoc, this._displayImagesId, ifw.getIframe());
-			func.call();
-		}
+		
 	}
 
 	if (msgTruncated) {

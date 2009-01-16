@@ -886,6 +886,9 @@ function(idoc) {
 				img.removeAttribute("dfsrc");
 			} else if (img.src && img.src.indexOf("cid:") == 0) {
 				cid = img.src;
+			}else {
+                //If "Display External Images" is false then handle Reply/Forward
+                if(dfsrc) img.src = dfsrc;
 			}
 			if (cid) {
 				img.src = cid;
