@@ -332,6 +332,16 @@ function(chat) {
 ZmTaskbarController.prototype._minimizeChatListener =
 function(chat, taskbarItem) {
 	this._expandChatItem(taskbarItem, chat, false);
+
+	// Leave the toolbar button in a selected state for an instant to
+	// make it clear to the user where the chat went.
+	taskbarItem.button.setDisplayState(DwtControl.SELECTED);
+	AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._minimzeTimedAction, taskbarItem), 250);
+};
+
+ZmTaskbarController.prototype._minimzeTimedAction =
+function(taskbarItem) {
+	taskbarItem.button.setDisplayState(DwtControl.NORMAL);
 };
 
 ZmTaskbarController.prototype._chatStatusListener =
