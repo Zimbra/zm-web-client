@@ -555,18 +555,15 @@ ZmMailMsgView.prototype._lazyCreateObjectManager =
 function() {
 	// objectManager will be 'true' at create time, after that it will be the real object
 	//Replaced if(this._objectManager === true) as "===" does deep comparision of objects which might take a while.
-	//First time ZmMailMsgView._isZimletLoaded will be undefined and will be set true or false  based on zimlet loaded or not.
-    if(ZmMailMsgView._isZimletLoaded == undefined && (AjxUtil.isBoolean(this._objectManager) && this._objectManager)) {
-        ZmMailMsgView._isZimletLoaded = appCtxt.getZimletMgr().isLoaded() == undefined ? false : true;
-        // this manages all the detected objects within the view
-        this._objectManager = new ZmObjectManager(this);
-    }
-    else {
-         if((AjxUtil.isBoolean(this._objectManager) && this._objectManager) || (ZmMailMsgView._isZimletLoaded == false && appCtxt.getZimletMgr().isLoaded()!=undefined)){
-              ZmMailMsgView._isZimletLoaded = appCtxt.getZimletMgr().isLoaded() == undefined ? false : true;
-              this._objectManager = new ZmObjectManager(this);
-         }
-    }
+	
+	var createObjectMgr = (AjxUtil.isBoolean(this._objectManager) && this._objectManager);
+	var firstCallAfterZimletLoading = (!this.zimletLoadFlag && appCtxt.getZimletMgr().isLoaded());
+	
+	if(createObjectMgr ||  firstCallAfterZimletLoading) {
+		this.zimletLoadFlag = appCtxt.getZimletMgr().isLoaded();	
+		// this manages all the detected objects within the view
+	    this._objectManager = new ZmObjectManager(this);
+	}
 };
 
 // This is needed for Gecko only: for some reason, clicking on a local
