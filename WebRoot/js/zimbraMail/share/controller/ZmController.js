@@ -350,8 +350,10 @@ function(ex, continuation) {
 		}
 		loginDialog.setReloginMode(reloginMode);
 		this._handleLogin(reloginMode, continuation);
+		return;
 	}
-	else if (ex.code == ZmCsfeException.AUTH_TOKEN_CHANGED) {
+
+	if (ex.code == ZmCsfeException.AUTH_TOKEN_CHANGED) {
 		var soapDoc = AjxSoapDoc.create("GetInfoRequest", "urn:zimbraAccount");
 		var method = soapDoc.getMethod();
 		method.setAttribute("sections", "mbox");
@@ -359,28 +361,31 @@ function(ex, continuation) {
 		var params = {soapDoc:soapDoc, asyncMode:true, callback:respCallback, skipAuthCheck:true};
 		ZmCsfeCommand._oldSessionId = ZmCsfeCommand._sessionId;	// offline hack (research bug 24842)
 		appCtxt.getAppController().sendRequest(params);
+		return;
 	}
-	else if (ex.code == ZmCsfeException.MAIL_NO_SUCH_MSG) {
-		// if we get this error, user is probably looking at a stale list. Let's
-		// refetch user's search results. This is more likely to happen in
-		// zdesktop. See bug 33760.
+
+	// If we get this error, user is probably looking at a stale list. Let's
+	// refetch user's search results. This is more likely to happen in zdesktop.
+	// See bug 33760.
+	if (ex.code == ZmCsfeException.MAIL_NO_SUCH_MSG) {
 		var vid = appCtxt.getCurrentViewId();
+		// only process if we're in one of these views otherwise, do the default
 		if (vid == ZmId.VIEW_CONVLIST || vid == ZmId.VIEW_TRAD) {
 			appCtxt.getApp(ZmApp.MAIL)._mailSearch();
+			return;
 		}
 	}
-	else {
-		// bug fix #5603 - error msg for mail.SEND_FAILURE takes an argument
-		var args = null;
-		switch (ex.code) {
-			case ZmCsfeException.MAIL_NO_SUCH_ITEM: args = ex.data.itemId; break;
-			case ZmCsfeException.MAIL_SEND_FAILURE: args = ex.code; break;
+
+	// silently ignore polling exceptions
+	if (ex.method != "NoOpRequest") {
+		var args;
+		if (ex.code == ZmCsfeException.MAIL_NO_SUCH_ITEM) {
+			args = ex.data.itemId;
+		} else if (ex.code == ZmCsfeException.MAIL_SEND_FAILURE) {
+			args = ex.code; // bug fix #5603 - error msg for mail.SEND_FAILURE takes an argument
 		}
 		var msg = ex.getErrorMsg ? ex.getErrorMsg(args) : ex.msg ? ex.msg : ex.message;
-		// silently ignore polling exceptions
-		if (ex.method != "NoOpRequest") {
-			this.popupErrorDialog(msg, ex, true, this._hideSendReportBtn(ex));
-		}
+		this.popupErrorDialog(msg, ex, true, this._hideSendReportBtn(ex));
 	}
 };
 
