@@ -332,8 +332,8 @@ function(ex, continuation) {
 	
 	if (ex.code == ZmCsfeException.SVC_AUTH_EXPIRED || 
 		ex.code == ZmCsfeException.SVC_AUTH_REQUIRED || 
-		ex.code == ZmCsfeException.NO_AUTH_TOKEN) {
-
+		ex.code == ZmCsfeException.NO_AUTH_TOKEN)
+	{
 		ZmCsfeCommand.clearAuthToken();
 		var reloginMode = false;
 		var loginDialog = appCtxt.getLoginDialog();
@@ -350,7 +350,8 @@ function(ex, continuation) {
 		}
 		loginDialog.setReloginMode(reloginMode);
 		this._handleLogin(reloginMode, continuation);
-	} else if (ex.code == ZmCsfeException.AUTH_TOKEN_CHANGED) {
+	}
+	else if (ex.code == ZmCsfeException.AUTH_TOKEN_CHANGED) {
 		var soapDoc = AjxSoapDoc.create("GetInfoRequest", "urn:zimbraAccount");
 		var method = soapDoc.getMethod();
 		method.setAttribute("sections", "mbox");
@@ -358,7 +359,17 @@ function(ex, continuation) {
 		var params = {soapDoc:soapDoc, asyncMode:true, callback:respCallback, skipAuthCheck:true};
 		ZmCsfeCommand._oldSessionId = ZmCsfeCommand._sessionId;	// offline hack (research bug 24842)
 		appCtxt.getAppController().sendRequest(params);
-	} else {
+	}
+	else if (ex.code == ZmCsfeException.MAIL_NO_SUCH_MSG) {
+		// if we get this error, user is probably looking at a stale list. Let's
+		// refetch user's search results. This is more likely to happen in
+		// zdesktop. See bug 33760.
+		var vid = appCtxt.getCurrentViewId();
+		if (vid == ZmId.VIEW_CONVLIST || vid == ZmId.VIEW_TRAD) {
+			appCtxt.getApp(ZmApp.MAIL)._mailSearch();
+		}
+	}
+	else {
 		// bug fix #5603 - error msg for mail.SEND_FAILURE takes an argument
 		var args = null;
 		switch (ex.code) {
