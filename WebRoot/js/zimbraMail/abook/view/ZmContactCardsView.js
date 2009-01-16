@@ -43,7 +43,7 @@ ZmContactCardsView = function(params) {
 	this._dndClass = [base, DwtCssStyle.DRAG_PROXY].join("-");
 	this._cardTableId = Dwt.getNextId();
 	
-	if (AjxEnv.isIE6) {
+	if (AjxEnv.isIE) {
 		this._noDndPlusImage = true;
 	}
 	
@@ -128,7 +128,7 @@ function(contact, params) {
 	var imgHtml = "";
 	if (params && params.isDragProxy) {
 		id = id + "_dnd";
-		if (AjxEnv.isIE6) {
+		if (AjxEnv.isIE) {
 			imgHtml = AjxImg.getImageHtml("RoundPlus", "position:absolute;top:18;left:-11;visibility:hidden");
 		}
 	}
@@ -150,7 +150,7 @@ function(contact, params) {
 	var html = AjxTemplate.expand("abook.Contacts#CardBase", subs);
 
 	var div = isDnd ? Dwt.parseHtmlFragment(html) : html;
-	if (AjxEnv.isIE6 && params && params.isDragProxy) {
+	if (AjxEnv.isIE && params && params.isDragProxy) {
 		Dwt.setSize(div, this._cardWidth || 340, 140);
 	}
 	return div;
