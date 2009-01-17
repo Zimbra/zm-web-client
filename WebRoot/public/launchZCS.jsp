@@ -321,7 +321,7 @@
 		};
 
 		var params = {
-			app:"${app}",
+			app:"${zm:cook(app)}",
 			settings:settings, batchInfoResponse:batchInfoResponse,
 			offlineMode:${isOfflineMode}, devMode:${isDevMode},
 			protocolMode:protocolMode, httpPort:"<%=httpPort%>", httpsPort:"<%=httpsPort%>",
