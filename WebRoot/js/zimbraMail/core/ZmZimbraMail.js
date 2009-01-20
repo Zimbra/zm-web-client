@@ -918,7 +918,7 @@ function() {
 	{
 		try { // add try/catch - see bug #33870
 			// register mailto: handler
-			if (!window.platform.isRegisteredProtocolHandler("mailto")) {
+			if (AjxEnv.isMac || !window.platform.isRegisteredProtocolHandler("mailto")) {
 				var callback = AjxCallback.simpleClosure(this.handleOfflineMailTo, this);
 				var url = appCtxt.get(ZmSetting.OFFLINE_WEBAPP_URI);
 				window.platform.registerProtocolHandler("mailto", url+"&mailto=%s", callback);
