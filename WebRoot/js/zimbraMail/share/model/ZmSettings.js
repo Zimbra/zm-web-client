@@ -126,7 +126,7 @@ function(list) {
 				}
 				val = value;
 			}
-			setting.setValue(val);
+			setting.setValue(val, null, false, false, true);
 			if (ZmSetting.IS_IMPLICIT[setting.id]) {
 				setting.origValue = setting.getValue(null, false);
 			}

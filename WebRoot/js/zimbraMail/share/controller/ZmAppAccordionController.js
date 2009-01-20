@@ -256,14 +256,15 @@ function(item) {
 ZmAppAccordionController.prototype._getOverviewParams =
 function() {
 	return {
-		overviewId:this._accordionId,
-		posStyle:Dwt.ABSOLUTE_STYLE,
-		selectionSupported:true,
-		actionSupported:true,
-		dndSupported:true,
-		showUnread:true,
-		showNewButtons:true,
-		treeIds: this._getAllOverviewTrees()
+		overviewId:			this._accordionId,
+		posStyle:			Dwt.ABSOLUTE_STYLE,
+		selectionSupported:	true,
+		actionSupported:	true,
+		dndSupported:		true,
+		showUnread:			true,
+		showNewButtons:		true,
+		isAppOverview:		true,
+		treeIds:			this._getAllOverviewTrees()
 	};
 };
 

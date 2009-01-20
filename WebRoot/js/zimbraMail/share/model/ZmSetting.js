@@ -230,60 +230,67 @@ function(key) {
 };
 
 /**
-* Sets the current value of this setting, performing any necessary data type conversion.
-*
-* @param value			the new value for the setting
-* @param key 			optional key for use by hash table data type
-* @param setDefault		if true, also set the default value
-* @param skipNotify		if true, don't notify listeners
-*/
+ * Sets the current value of this setting, performing any necessary data type conversion.
+ *
+ * @param value			the new value for the setting
+ * @param key 			optional key for use by hash table data type
+ * @param setDefault		if true, also set the default value
+ * @param skipNotify		if true, don't notify listeners
+ * @param skipImplicit		if true, don't check for change to implicit pref
+ */
 ZmSetting.prototype.setValue =
-function(value, key, setDefault, skipNotify) {
-	if (ZmSetting.IS_IMPLICIT[this.id]) {
-		ZmSetting.CHANGED_IMPLICIT[this.id] = true;
-	}
+function(value, key, setDefault, skipNotify, skipImplicit) {
+
+	var newValue = value;
+	var changed = Boolean(newValue != this.value);
 	if (this.dataType == ZmSetting.D_STRING) {
-		this.value = value;
+		this.value = newValue;
 	} else if (this.dataType == ZmSetting.D_INT) {
-		this.value = parseInt(value);
-		if (isNaN(this.value)) { // revert to string if NaN
-			this.value = value;
+		newValue = parseInt(value);
+		if (isNaN(newValue)) { // revert to string if NaN
+			newValue = value;
 		}
+		changed = Boolean(newValue != this.value);
+		this.value = newValue;
 	} else if (this.dataType == ZmSetting.D_BOOLEAN) {
-		if (typeof(value) == "string") {
-			this.value = (value.toLowerCase() == "true");
-		} else {
-			this.value = value;
+		if (typeof(newValue) == "string") {
+			newValue = (newValue.toLowerCase() === "true");
 		}
+		changed = Boolean(newValue != this.value);
+		this.value = newValue;
 	} else if (this.dataType == ZmSetting.D_LDAP_TIME) {
-		var lastChar = (value.toLowerCase) ? lastChar = (value.toLowerCase()).charAt(value.length-1) : null;
-		var num = parseInt(value);
+		var lastChar = (newValue.toLowerCase) ? lastChar = (newValue.toLowerCase()).charAt(newValue.length-1) : null;
+		var num = parseInt(newValue);
 		// convert to seconds
 		if (lastChar == 'd') {
-			this.value = num * 24 * 60 * 60;
+			newValue = num * 24 * 60 * 60;
 		} else if (lastChar == 'h') {
-			this.value = num * 60 * 60;
+			newValue = num * 60 * 60;
 		} else if (lastChar == 'm') {
-			this.value = num * 60;
+			newValue = num * 60;
 		} else {
-			this.value = num;	// default
+			newValue = num;	// default
 		}
+		changed = Boolean(newValue != this.value);
+		this.value = newValue;
 	} else if (this.dataType == ZmSetting.D_HASH) {
 		if (key) {
-			if (value) {
-				this.value[key] = value;
+			if (newValue) {
+				this.value[key] = newValue;
 			} else {
 				delete this.value[key];
 			}
 		} else {
-			this.value = value;
+			this.value = newValue;
 		}
+		changed = true;
 	} else if (this.dataType == ZmSetting.D_LIST) {
-		if (value instanceof Array) {
-			this.value = value;
+		if (newValue instanceof Array) {
+			this.value = newValue;
 		} else {
-			this.value.push(value);
+			this.value.push(newValue);
 		}
+		changed = true;
 	}
 
 	if (setDefault) {
@@ -294,6 +301,10 @@ function(value, key, setDefault, skipNotify) {
 		}
 	}
 	
+	if (ZmSetting.IS_IMPLICIT[this.id] && changed && !skipImplicit) {
+		ZmSetting.CHANGED_IMPLICIT[this.id] = true;
+	}
+
 	// Setting an internal pref is equivalent to saving it, so we should notify
 	if (!this.name && !skipNotify) {
 		this._notify(ZmEvent.E_MODIFY);

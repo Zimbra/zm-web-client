@@ -119,19 +119,3 @@ function(overviewId, treeId) {
 	if (!overviewId || !treeId) { return null; }
 	return this.getOverview(overviewId).getTreeView(treeId);
 };
-
-ZmOverviewController.prototype.isAppOverviewId =
-function(overviewId) {
-	if (this._appOverviewId[overviewId] != null) {
-		return this._appOverviewId[overviewId]
-	}
-	this._appOverviewId[overviewId] = false;
-	for (var i = 0; i < ZmApp.APPS.length; i++) {
-		var app = appCtxt.getApp(ZmApp.APPS[i]);
-		if (app && (app.getOverviewPanelContentId() == overviewId)) {
-			this._appOverviewId[overviewId] = true;
-			return true;
-		}
-	}
-	return false;
-};

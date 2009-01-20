@@ -664,15 +664,17 @@ function(item, overview) {
 ZmTreeController.prototype._treeListener =
 function(ev) {
 	var treeItem = ev && ev.item;
-	var overviewId = treeItem ? treeItem._tree.overviewId : null;
+	var overviewId = treeItem && treeItem._tree && treeItem._tree.overviewId;
 	// only handle events that come from headers in app overviews
-	var isAppOverview = overviewId ? appCtxt.getOverviewController().isAppOverviewId(overviewId) : null;
-	if (!(ev && ev.detail && isAppOverview && treeItem._isHeader)) { return; }
+	var opc = appCtxt.getOverviewController();
+	var overview = opc.getOverview(overviewId);
+	if (!(ev && ev.detail && overview && overview.isAppOverview && treeItem._isHeader)) { return; }
 
 	var expanded = (ev.detail == DwtTree.ITEM_EXPANDED);
 	for (var ovId in this._treeView) {
 		if (ovId == overviewId) { continue; }
-		if (!appCtxt.getOverviewController().isAppOverviewId(ovId)) { continue; }
+		overview = opc.getOverview(ovId);
+		if (!overview.isAppOverview) { continue; }
 		var treeView = this._treeView[ovId];
 		treeView._headerItem.setExpanded(expanded, null, true);
 	}

@@ -58,6 +58,7 @@ ZmOverview = function(params, controller) {
 	this.showNewButtons		= params.showNewButtons;
 	this.treeStyle			= params.treeStyle;
 	this.noTooltips			= params.noTooltips;
+	this.isAppOverview		= params.isAppOverview;
 	
 	this._treeIds	= [];
 	this._treeHash	= {};
