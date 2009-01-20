@@ -920,7 +920,7 @@ function() {
 			// register mailto: handler
 			if (AjxEnv.isMac || !window.platform.isRegisteredProtocolHandler("mailto")) {
 				var callback = AjxCallback.simpleClosure(this.handleOfflineMailTo, this);
-				var url = appCtxt.get(ZmSetting.OFFLINE_WEBAPP_URI);
+				var url = appCtxt.get(ZmSetting.OFFLINE_WEBAPP_URI, null, appCtxt.getMainAccount());
 				window.platform.registerProtocolHandler("mailto", url+"&mailto=%s", callback);
 			}
 		} catch(ex) {
