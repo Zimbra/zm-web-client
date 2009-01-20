@@ -92,10 +92,11 @@ function(parent, type, id) {
 	var deleteText = ZmMsg.del;
 	var addrBook = appCtxt.getById(id);
 	var nId = addrBook ? addrBook.nId : ZmOrganizer.normalizeId(id);
+    var hasContent = ((addrBook.numTotal > 0) || (addrBook.children && (addrBook.children.size() > 0)));
 
 	if (nId == ZmFolder.ID_TRASH) {
 		parent.enableAll(false);
-		parent.enable(ZmOperation.DELETE, true);
+        parent.enable(ZmOperation.DELETE, hasContent);
 		deleteText = ZmMsg.emptyTrash;
 	} else if (nId == ZmOrganizer.ID_MY_CARD){
 		parent.enableAll(false);
