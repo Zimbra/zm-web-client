@@ -61,7 +61,7 @@
     <c:when test="${zm:actionSet(param, 'actionModify') and not contactError}">
         <zm:checkCrumb crumb="${param.crumb}"/>
         <app:editContactAction id="${param.id}"/>
-        <app:status><fmt:message key="contactModified"/></app:status>
+        <app:status><fmt:message key="${not empty param.dlist and param.isgroup ? 'contactGroupModified' :'contactModified'}"/>/></app:status>
     </c:when>
     <c:when test="${zm:actionSet(param, 'actionCancelCreate')}">
         <app:status style="Warning"><fmt:message key="contactCancelCreate"/></app:status>
