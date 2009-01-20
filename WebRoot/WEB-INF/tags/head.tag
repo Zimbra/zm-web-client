@@ -38,9 +38,10 @@
 
         <script src="../yui/2.5.1/menu/menu-min.js"></script>
 
-        <script src="../yui/2.5.1/button/button-beta-min.js"></script>
+        <script src="../yui/2.5.1/button/button-min.js"></script>
         <!-- Source file for Rich Text Editor-->
         <script src="../yui/2.5.1/editor/editor-beta-min.js"></script>
+
 
 		<script src="../yui/spellcheck/spellcheck.js"></script>
 		<style type="text/css" media="screen">
