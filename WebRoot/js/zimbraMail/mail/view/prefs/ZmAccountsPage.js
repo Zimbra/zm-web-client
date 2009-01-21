@@ -330,6 +330,12 @@ function(account, skipUpdate, ignoreProvider) {
 				if (ignoreProvider) {
 					this._setControlValue("PROVIDER", this._currentSection, "");
 				}
+				if (!skipUpdate) {
+					var password = this._getControlObject("PASSWORD", this._currentSection);
+					if (password) {
+						password.setShowPassword(false);
+					}
+				}
 				break;
 			}
 			case ZmAccount.PERSONA: {
@@ -394,7 +400,9 @@ function(useDefaults) {
 		var dataSourceCollection = appCtxt.getDataSourceCollection();
 		var dataSources = dataSourceCollection.getItems(); // TODO: rename getItems or rename getIdentities/getSignatures
 		for (var i = 0; i < dataSources.length; i++) {
-			this._accounts.add(ZmAccountsPage.__createProxy(dataSources[i]));
+			var datasource = dataSources[i];
+			delete datasource.password;
+			this._accounts.add(ZmAccountsPage.__createProxy(datasource));
 		}
 	}
 
@@ -801,6 +809,10 @@ function(id, section, value) {
 			break;
 		}
 	}
+};
+
+ZmAccountsPage.prototype._getControlObject = function(id, section) {
+	return section && section.controls[id];
 };
 
 ZmAccountsPage.prototype._setControlValue =
@@ -1810,6 +1822,9 @@ function() {
 		if (account._needsSync) {
 			needsSync.push(account);
 		}
+		if (account instanceof ZmDataSource) {
+			account.password = "";
+		}
 	}
 
 	if (needsSync.length) {
@@ -1836,6 +1851,7 @@ function(a, b) {
 
 ZmAccountsPage.__createProxy =
 function(account) {
+	delete account._object_;
 	var identityProxy = AjxUtil.createProxy(account.getIdentity());
 	var proxy = AjxUtil.createProxy(account);
 	proxy.getIdentity = AjxCallback.simpleClosure(ZmAccountsPage.__proxy_getIdentity, proxy, identityProxy);
