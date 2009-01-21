@@ -424,12 +424,7 @@ ZmImOverview.prototype._init = function() {
 	this._rootItem = new DwtHeaderTreeItem({
 		parent:tree,
 		overview: this,
-		className:"overviewHeader",
-		button: {
-			image: "AddBuddy",
-			tooltip: ZmMsg.imNewBuddyTooltip,
-			callback: new AjxCallback(null, ZmImOverview.newBuddy)
-		}
+		className:"overviewHeader"
 	});
 	this._rootItem.setData("ZmImOverview.data", { type: "root" });
 	this._rootItem.setText(ZmMsg.buddyList);

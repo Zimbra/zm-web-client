@@ -42,6 +42,15 @@ ZmTaskbarController = function(components) {
 	this._presenceItem = this._createItem(presenceArgs);
 	this._toolbar.addSeparator();
 
+	// Create the new buddy button as a plain toolbar button.
+	// (Need to find some time to make it a taskbar item, and move the dialog contents into the taskbar popup area.)
+	var newBuddyArgs = {
+		image: "AddBuddy",
+		tooltip: ZmMsg.imNewBuddyTooltip
+	};
+	var newBuddyButton = this._toolbar.createButton(ZmId.OP_NEW_ROSTER_ITEM, newBuddyArgs);
+	newBuddyButton.addSelectionListener(new AjxListener(this, this._newBuddyListener));
+
 	var buddyListArgs = {
 		contentCalback: new AjxCallback(this, this._createBuddyListCallback),
 		op: ZmId.OP_IM_BUDDY_LIST
@@ -169,6 +178,12 @@ function(addr, buddy) {
 	if (!this._toolbar.conditionalExpand(item)) {
 		item.showAlert(true);
 	}
+};
+
+ZmTaskbarController.prototype._newBuddyListener =
+function(ev) {
+	ZmImApp.INSTANCE.prepareVisuals();
+	ZmImApp.INSTANCE.getImController()._newRosterItemListener();
 };
 
 ZmTaskbarController.prototype._toolbarMouseDownListener =
