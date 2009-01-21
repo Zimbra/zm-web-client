@@ -374,7 +374,7 @@ input[type="button"], input[type="reset"] {
     white-space: nowrap;
 }
 .ZhACCont li.yui-ac-highlight {
-@SelectedBg @
+@SelectedBg@
 }
 .ZhACCont li.yui-ac-prehighlight {
     background: #FFFFCC;
