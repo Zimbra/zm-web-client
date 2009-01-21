@@ -1823,7 +1823,7 @@ function() {
 			needsSync.push(account);
 		}
 		if (account instanceof ZmDataSource) {
-			account.password = "";
+			delete account.password;
 		}
 	}
 
