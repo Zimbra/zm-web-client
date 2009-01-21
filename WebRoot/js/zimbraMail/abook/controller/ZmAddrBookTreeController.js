@@ -211,10 +211,14 @@ function(folder) {
 		var stc = this._opc.getTreeController(ZmOrganizer.SEARCH);
 		stc._itemClicked(folder);
 	} else {
+		var capp = appCtxt.getApp(ZmApp.CONTACTS);
+		capp.currentSearch = null;
+		var query = capp.currentQuery = folder.createQuery();
+
 		var sc = appCtxt.getSearchController();
 		sc.setDefaultSearchType(ZmItem.CONTACT);
 		var params = {
-			query: folder.createQuery(),
+			query: query,
 			searchFor: ZmItem.CONTACT,
 			fetch: true,
 			sortBy: ZmSearch.NAME_ASC,

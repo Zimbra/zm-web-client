@@ -451,7 +451,7 @@ function(accordionItem) {
 };
 
 ZmContactsApp.prototype._handleResponseActivateAccordion =
-function(contactList) {
+function() {
 	var fid = ZmOrganizer.getSystemId(ZmFolder.ID_CONTACTS);
 	var folder = appCtxt.getById(fid);
 
@@ -460,12 +460,27 @@ function(contactList) {
 	}
 
 	if (folder) {
-		var clc = AjxDispatcher.run("GetContactListController");
-		clc.getParentView().getAlphabetBar().reset();
+		if (this._firstTimeActivateAccordion || !this.currentSearch ||
+			(this.currentSearch && this.currentSearch.folderId))
+		{
+			this.currentQuery = folder.createQuery();
+			this.currentSearch = null;
+			var clc = AjxDispatcher.run("GetContactListController");
+			clc.getParentView().getAlphabetBar().reset();
+	
+			var oc = appCtxt.getOverviewController();
+			var tv = oc.getTreeController(ZmOrganizer.ADDRBOOK).getTreeView(this.getOverviewId());
+			tv.setSelected(folder, true);
+		}
+		else {
+			// first time, make sure current app toolbar has registered this app
+			if (appCtxt.get(ZmSetting.NEW_ADDR_BOOK_ENABLED)) {
+				ZmCurrentAppToolBar.registerApp(this.getName(), ZmOperation.NEW_ADDRBOOK, ZmOrganizer.ADDRBOOK);
+			}
 
-		var oc = appCtxt.getOverviewController();
-		var tv = oc.getTreeController(ZmOrganizer.ADDRBOOK).getTreeView(this.getOverviewId());
-		tv.setSelected(folder, true);
+			appCtxt.getSearchController().redoSearch(this.currentSearch);
+			this._firstTimeActivateAccordion = true;
+		}
 	}
 };
 
