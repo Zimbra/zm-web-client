@@ -131,6 +131,11 @@ function() {
 			if (appCtxt.getActiveAccount() == acct) {
 				this._activateAccordionItem(item);
 			}
+
+			var iconCell = (appCtxt.isOffline && appCtxt.numVisibleAccounts > 1) ? item.getIconCell() : null;
+			if (iconCell) {
+				iconCell.onclick = AjxCallback.simpleClosure(this._handleOnClickStatusIcon, this, acct);
+			}
 		}
 	}
 };
@@ -153,6 +158,11 @@ function(ev) {
 		ev.item.setToolTipContent(account.getToolTip());
 	}
 	return true;
+};
+
+ZmAppAccordionController.prototype._handleOnClickStatusIcon =
+function(account) {
+	account.showErrorMessage();
 };
 
 ZmAppAccordionController.prototype._expandAccordionItem =

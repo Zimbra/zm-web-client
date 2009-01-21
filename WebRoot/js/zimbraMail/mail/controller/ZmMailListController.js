@@ -1041,8 +1041,7 @@ function(result) {
 	if (result.code == ZmCsfeException.MAIL_NO_SUCH_ITEM) {
 		var dialog = appCtxt.getErrorDialog();
 		dialog.setMessage(ZmMsg.inviteOutOfDate);
-		dialog.setButtonVisible(ZmErrorDialog.REPORT_BUTTON, false);
-		dialog.popup();
+		dialog.popup(null, true);
 		return true;
 	}
 };

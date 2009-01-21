@@ -225,8 +225,7 @@ function(event) {
 		if (error) {
 			var dialog = appCtxt.getErrorDialog();
 			dialog.setMessage(error);
-			dialog.setButtonVisible(ZmErrorDialog.REPORT_BUTTON, false);
-			dialog.popup();
+			dialog.popup(null, true);
 			return;
 		}
 	}

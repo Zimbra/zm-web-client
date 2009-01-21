@@ -1713,7 +1713,16 @@ function() {
 	};
 	var ui = new DwtComposite(params);
 	ui._setMouseEventHdlrs();
+
+	var listener = new AjxListener(this, this._handleOfflineStatusOnclick);
+	ui.addListener(DwtEvent.ONMOUSEUP, listener);
+
 	return ui;
+};
+
+ZmZimbraMail.prototype._handleOfflineStatusOnclick =
+function(ev) {
+	appCtxt.getActiveAccount().showErrorMessage();
 };
 
 ZmZimbraMail.prototype._createAppChooser =

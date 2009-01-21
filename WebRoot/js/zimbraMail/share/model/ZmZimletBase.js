@@ -373,8 +373,7 @@ function(msg, data, title) {
 	var dlg = appCtxt.getErrorDialog();
 	dlg.reset();
 	dlg.setMessage(msg, data, DwtMessageDialog.WARNING_STYLE, title);
-	dlg.setButtonVisible(ZmErrorDialog.REPORT_BUTTON, false);
-	dlg.popup();
+	dlg.popup(null, true);
 };
 
 ZmZimletBase.prototype.displayStatusMessage =

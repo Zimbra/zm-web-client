@@ -90,8 +90,7 @@ function(msg, ex, noExecReset, hideReportButton)  {
 	}
 	errorDialog.registerCallback(DwtDialog.OK_BUTTON, this._errorDialogCallback, this);
 	errorDialog.setMessage(msg, detailStr, DwtMessageDialog.CRITICAL_STYLE, ZmMsg.zimbraTitle);
-	errorDialog.setButtonVisible(ZmErrorDialog.REPORT_BUTTON, !hideReportButton);
-	errorDialog.popup();
+	errorDialog.popup(null, hideReportButton);
 };
 
 ZmController.prototype.setCurrentView =

@@ -53,9 +53,14 @@ function() {
 // Constants
 //
 
-ZmAccount.ZIMBRA			= "Zimbra";
-ZmZimbraAccount.DEFAULT_ID	= "main";
-
+ZmAccount.ZIMBRA				= "Zimbra";
+ZmZimbraAccount.DEFAULT_ID		= "main";
+ZmZimbraAccount.STATUS_UNKNOWN	= "unknown";
+ZmZimbraAccount.STATUS_OFFLINE	= "offline";
+ZmZimbraAccount.STATUS_ONLINE	= "online";
+ZmZimbraAccount.STATUS_RUNNING	= "running";
+ZmZimbraAccount.STATUS_AUTHFAIL	= "authfail";
+ZmZimbraAccount.STATUS_ERROR	= "error";
 
 //
 // Public methods
@@ -149,6 +154,11 @@ function(acctInfo) {
 	}
 
 	this.code = acctInfo.code;
+	if (acctInfo.error) {
+		var error = acctInfo.error[0];
+		this.errorDetail = error.exception[0]._content;
+		this.errorMessage = error.message;
+	}
 
 	// update accordion title per unread count if changed
 	if (this.visible && acctInfo.unread != this.unread) {
@@ -169,32 +179,77 @@ function() {
 ZmZimbraAccount.prototype.getStatusIcon =
 function() {
 	switch (this.status) {
-		case "unknown":		return "ImgOffline";
-		case "offline":		return "ImgImAway";
-		case "online":		return "ImgImAvailable";
-		case "running":		return "DwtWait16Icon";
-		case "authfail":	return "ImgImDnd";
-		case "error":		return "ImgCritical";
+		case ZmZimbraAccount.STATUS_UNKNOWN:	return "ImgOffline";
+		case ZmZimbraAccount.STATUS_OFFLINE:	return "ImgImAway";
+		case ZmZimbraAccount.STATUS_ONLINE:		return "ImgImAvailable";
+		case ZmZimbraAccount.STATUS_RUNNING:	return "DwtWait16Icon";
+		case ZmZimbraAccount.STATUS_AUTHFAIL:	return "ImgImDnd";
+		case ZmZimbraAccount.STATUS_ERROR:		return "ImgCritical";
 	}
 	return "";
 };
 
 ZmZimbraAccount.prototype.getZdMsg =
 function(code) {
-	return ((ZdMsg["client." + code]) || (ZdMsg["exception." + code]));
+	var msg = ((ZdMsg["client." + code]) || (ZdMsg["exception." + code]));
+	if (!msg && code) {
+		msg = ZdMsg["exception.offline.UNEXPECTED"];
+	}
+	return msg;
 };
 
 ZmZimbraAccount.prototype.getStatusMessage =
 function() {
 	switch (this.status) {
-		case "unknown":		return ZmMsg.unknown;
-		case "offline":		return ZmMsg.imStatusOffline;
-		case "online":		return ZmMsg.imStatusOnline;
-		case "running":		return ZmMsg.running;
-		case "authfail":	return this.code ? this.getZdMsg(this.code) : AjxMessageFormat.format(ZmMsg.authFailure, this.getEmail());
-		case "error":		return this.code ? this.getZdMsg(this.code) : ZmMsg.error;
+		case ZmZimbraAccount.STATUS_UNKNOWN:	return ZmMsg.unknown;
+		case ZmZimbraAccount.STATUS_OFFLINE:	return ZmMsg.imStatusOffline;
+		case ZmZimbraAccount.STATUS_ONLINE:		return ZmMsg.imStatusOnline;
+		case ZmZimbraAccount.STATUS_RUNNING:	return ZmMsg.running;
+		case ZmZimbraAccount.STATUS_AUTHFAIL:	return this.code ? this.getZdMsg(this.code) : AjxMessageFormat.format(ZmMsg.authFailure, this.getEmail());
+		case ZmZimbraAccount.STATUS_ERROR:		return this.code ? this.getZdMsg(this.code) : ZmMsg.error;
 	}
 	return "";
+};
+
+// offline use only:
+ZmZimbraAccount.prototype.showErrorMessage =
+function() {
+	if (this.status != ZmZimbraAccount.STATUS_ERROR) { return; }
+
+	var dialog = appCtxt.getErrorDialog();
+
+	// short message
+	var msg = this.getZdMsg(this.code);
+	if (msg == "") {
+		msg = this.getStatusMessage();
+	}
+	dialog.setMessage(msg);
+
+	// detailed message
+	var html = [];
+	var i = 0;
+	if (this.errorMessage) {
+		html[i++] = "<p><b>";
+		html[i++] = ZdMsg.DebugMsg;
+		html[i++] = "</b>: ";
+		html[i++] = this.errorMessage;
+		html[i++] = "</p>";
+	}
+
+	if (this.errorDetail) {
+		html[i++] = "<p><b>";
+		html[i++] = ZdMsg.DebugStack;
+		html[i++] = "</b>:</p><p><pre>";
+		html[i++] = this.errorDetail;
+		html[i++] = "</pre></p>";
+	}
+
+	html[i++] = "<p><b>";
+	html[i++] = ZdMsg.DebugActionNote;
+	html[i++] = "</b></p>";
+
+	dialog.setDetailString(html.join(""));
+	dialog.popup(null, true);
 };
 
 ZmZimbraAccount.createFromDom =

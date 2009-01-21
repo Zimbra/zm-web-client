@@ -713,9 +713,8 @@ function() {
         if (!/\.(jpe?g|png|gif|bmp|tiff?)$/i.test(this._imageInput.value)) {
                 var dlg = appCtxt.getErrorDialog();
                 dlg.reset();
-                dlg.setButtonVisible(ZmErrorDialog.REPORT_BUTTON, false);
                 dlg.setMessage(ZmMsg.errorNotImageFile, null, DwtMessageDialog.WARNING_STYLE, ZmMsg.errorCap);
-                dlg.popup();
+                dlg.popup(null, true);
                 return;
         }
 
