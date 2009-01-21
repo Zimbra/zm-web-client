@@ -228,6 +228,7 @@ function(folder) {
 			sc.search(params);
 		} else {
 			capp.currentSearch = null;
+			capp.currentQuery = folder.createQuery();
 			capp.showFolder(folder);
 		}
 
