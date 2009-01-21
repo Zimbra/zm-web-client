@@ -101,7 +101,7 @@
 <span class="table-cell">-->
 <c:if test="${context.searchResult.size gt 0}">
     <span>
-        <select class="zo_select_button" name="anAction" onchange="submitForm(document.getElementById('actions'))">
+        <select class="zo_select_button" name="anAction" onchange="submitForm(document.getElementById('zForm'))">
             <option value="" selected="selected"><fmt:message key="moreActions"/></option>
                 <%--<optgroup label="<fmt:message key="delete"/>">--%>
             <c:choose>

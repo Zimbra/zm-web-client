@@ -141,7 +141,7 @@ var submitForm = function(fobj, target) {
         showLoadingMsg('<fmt:message key="MO_sendingRequestMsg"/>', true);
         fobj.submit();
         return true;
-    }                                         
+    }
     var url = fobj.action;
     var method = fobj.method ? fobj.method : 'GET';
     var params = getFormValues(fobj);
@@ -222,7 +222,33 @@ var parseResponse = function (request, container) {
         if (request.status == 200) {
             showLoadingMsg(null, false);
             var data = request.responseText;
-            if (data) container.innerHTML = data;
+            if (data) {
+                container.innerHTML = data;
+                var scripts = container.getElementsByTagName("script");
+                var jsscript = [];
+                var jstext = [];
+                for (i=0; i<scripts.length; i++){
+                   if(scripts[i].src){
+                        /*var script = document.createElement('script');
+                        script.setAttribute('type','text/javascript');
+                        script.setAttribute('src',scripts[i].src);
+                        jsscript.push(script);
+                        document.getElementsByTagName('head')[0].appendChild(script);   */
+                        
+                    }else{
+                        //jstext.push(scripts[i].innerHTML)
+                        eval(scripts[i].innerHTML);
+                    }
+                }
+                /*for(i=0;i<jsscript.length;i++){
+                     //alert(jsscript[i].src);
+                     document.getElementsByTagName('head')[0].appendChild(jsscript[i]);
+                }
+                for(i=0;i<jstext.length;i++){
+                     eval(jstext[i]);
+                } */
+            }
+            
         } else {
             showLoadingMsg('<fmt:message key="error"/> : ' + request.status, true, 'Critical');
         }
@@ -244,9 +270,11 @@ var showLoadingMsg = function(msg, show, status) {
     if (msgDiv) {
         if (msg && show) {
             msgDiv.style.display = 'block';
+            //msgDiv.className = "shown";
             msgDiv.innerHTML = "<div class='" + status + "'>" + msg + "</div>";
         } else {
             msgDiv.style.display = 'none';
+            //msgDiv.className = "hidden";
         }
     }
 };
@@ -270,8 +298,8 @@ var selectDay = function(datestr) {
         currentDate = datestr;
 
     }
-}
-        ;
+};
+
 var openURL = function(url) {
     window.location = url.replace(/date=......../, "date=" + currentDate);
 };
@@ -295,12 +323,22 @@ var addParam = function(url, param) {
     var nurl = parts[0] + (url.indexOf('?') < 0 ? '?' : '&') + (url.indexOf(param) < 0 ? param : '') + (parts[1] ? "#" + parts[1] : '');
     return nurl;
 };
+
+var checkAll = function(cb, checked) {
+    if (cb.length)
+        for (i = 0; i < cb.length; i++)
+            cb[i].checked = checked;
+    else
+        cb.checked = checked;
+};
+
 var updateOrientation = function() {
     currentWidth = window.innerWidth;
     var orient = (currentWidth == 480) ? "landscape" : "portrait";
     document.body.setAttribute("orient", orient);
 };//-->
 </script>
+<mo:autoComplete/>
 </head>
 <body onorientationchange="updateOrientation()">
 <div class="container table" id="appbar" align="center">

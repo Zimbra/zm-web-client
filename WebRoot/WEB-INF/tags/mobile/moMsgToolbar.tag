@@ -64,7 +64,7 @@
 <span>
     <c:set var="myFolder" value="${zm:getFolder(pageContext, msg.folderId)}"/>
     <c:set var="inTrash" value="${myFolder.isInTrash}"/>
-    <select class="zo_select_button" name="anAction" onchange="submitForm(document.getElementById('actions'));">
+    <select class="zo_select_button" name="anAction" onchange="submitForm(document.getElementById('zForm'));">
         <option value="" selected="selected"><fmt:message key="moreActions"/></option>
         <c:choose>
             <c:when test="${inTrash}">

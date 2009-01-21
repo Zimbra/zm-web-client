@@ -53,7 +53,6 @@
     <div class="table-row">
         <span class='zo_tb_submit table-cell'>
             <a href="${caction}" class="zo_button"><fmt:message key="cancel"/></a>
-            <script type="text/javascript">document.getElementById('actionCancel').style.display = '';</script>
             <%--<c:if test="${contact!=null}">--%>
                 <input class="zo_button" name="actionSave" type="submit" value="<fmt:message key="save"/>">
             <%--</c:if>
@@ -143,7 +142,7 @@
             <span class="table-cell">&nbsp;</span>
             <span class="table-cell">
                 <span class="right" style="display:none;" id="showHide">
-                <a id="showHideLink" href="javascript:void(0);" onclick="showHidemore()"><fmt:message
+                <a id="showHideLink" href="javascript:void(0);" onclick="return toggleElem(this,'dtls_div','<fmt:message key="hide"/>','<fmt:message key="more"/>');"><fmt:message
                 key="more"/> </a></span>
             </span>
         </div>
@@ -190,7 +189,6 @@
     <div class="table-row">
         <span class='zo_tb_submit table-cell'>
 <a href="${caction}" class="zo_button"><fmt:message key="cancel"/></a>
-            <script type="text/javascript">document.getElementById('actionCancel1').style.display = '';</script>
             <%--<c:if test="${contact!=null}">--%>
                 <input class="zo_button" name="actionSave" type="submit" value="<fmt:message key="save"/>">
             <%--</c:if>
@@ -205,18 +203,6 @@
 <input type="hidden" name="id" value="${fn:escapeXml(contact.id)}"/> 
 </form>
 <script type="text/javascript">
-    var showHidemore = function() {
-        var e = document.getElementById('dtls_div');
-        if (e.style.display == 'none') {
-            e.style.display = 'block';
-                //document.getElementById('showHideLink').innerHTML="Less...";
-        } else {
-            e.style.display = 'none';
-                //document.getElementById('showHideLink').innerHTML='More...';
-        }
-        return false;
-
-    };
     <c:if test="${empty param.more}">
     document.getElementById('dtls_div').style.display = 'none';
     </c:if>
