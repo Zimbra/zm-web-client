@@ -214,8 +214,8 @@ function() {
 ZmCalColView.prototype._loadDetailsForAppts =
 function(list, numAppts) {
 	var makeBatchReq = false;
-	var needToLoad = new Object();
-	var apptHash = new Object();
+	var needToLoad = {};
+	var apptHash = {};
 
 	// collect all appointments that dont have details loaded yet
 	for (var i = 0; i < numAppts; i++) {
@@ -235,7 +235,7 @@ function(list, numAppts) {
 		var msgRequests = request.GetMsgRequest = [];
 		for (var i in needToLoad) {
 			var msgRequest = {_jsns:"urn:zimbraMail"};
-			msgRequest.m = {requestId:i};
+			msgRequest.m = {id:i};
 			msgRequests.push(msgRequest);
 		}
 
