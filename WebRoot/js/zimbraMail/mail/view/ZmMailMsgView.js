@@ -1016,13 +1016,33 @@ function(msg, container, callback) {
 	var sentByIcon = cl	? (cl.getContactByEmail(sentByAddr) ? "Contact" : "NewContact")	: null;
 	var obo = sender ? addr : null;
 	var additionalHdrs = [];
-	if(msg.attrs){
-		for(var hdrName in ZmMailMsgView.displayAdditionalHdrsInMsgView) {
-			if(msg.attrs[hdrName]) {
+	if (msg.attrs) {
+		for (var hdrName in ZmMailMsgView.displayAdditionalHdrsInMsgView) {
+			if (msg.attrs[hdrName]) {
 				additionalHdrs.push({hdrName:ZmMailMsgView.displayAdditionalHdrsInMsgView[hdrName], hdrVal: msg.attrs[hdrName]});
 			}
 		}
 	}
+
+	// find addresses we may need to search for contacts for, so that we can aggregate them into a single search
+	var contactsApp = appCtxt.getApp(ZmApp.CONTACTS);
+	if (contactsApp) {
+		var lookupAddrs = [];
+		if (sentBy) { lookupAddrs.push(sentBy); }
+		if (obo) { lookupAddrs.push(obo); }
+		for (var i = 1; i < ZmMailMsg.ADDRS.length; i++) {
+			var type = ZmMailMsg.ADDRS[i];
+			if (type == AjxEmailAddress.SENDER) { continue; }
+			var addrs = msg.getAddresses(type).getArray();
+			for (var j = 0; j < addrs.length; j++) {
+				if (addrs[j]) { lookupAddrs.push(addrs[j].address); }
+			}
+		}
+		if (lookupAddrs.length > 1) {
+			contactsApp.setAddrLookupGroup(lookupAddrs);
+		}
+	}
+
 	if (this._objectManager) {
 		this._lazyCreateObjectManager();
 
