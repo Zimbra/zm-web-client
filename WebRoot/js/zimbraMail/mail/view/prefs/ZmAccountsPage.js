@@ -41,8 +41,8 @@ function() {
 
 // pref values
 
-ZmAccountsPage.DOWNLOAD_TO_INBOX = "inbox";
-ZmAccountsPage.DOWNLOAD_TO_FOLDER = "folder";
+ZmAccountsPage.DOWNLOAD_TO_INBOX  = ZmOrganizer.ID_INBOX;
+ZmAccountsPage.DOWNLOAD_TO_FOLDER = -1;
 
 // counters
 
@@ -635,7 +635,6 @@ function(account, section) {
 	this._setControlValue("PASSWORD", section, account.password);
 	this._setControlValue("SSL", section, isSsl);
 	this._setControlEnabled("TEST", section, true);
-	this._setControlValue("DOWNLOAD_TO", section, isInbox ? ZmAccountsPage.DOWNLOAD_TO_INBOX : ZmAccountsPage.DOWNLOAD_TO_FOLDER);
 	this._setDownloadToFolder(account);
 	this._setControlValue("DELETE_AFTER_DOWNLOAD", section, account.leaveOnServer);
 	this._setControlValue("CHANGE_PORT", section, isPortChanged);
@@ -664,7 +663,7 @@ function(account) {
 	radioButton.setText(text);
 
 	var isImap = account.type == ZmAccount.IMAP;
-	var isInbox = !isImap && name.match(/^\s*inbox\s*$/i);
+	var isInbox = !isImap && account.folderId == ZmOrganizer.ID_INBOX;
 	var value = isInbox ? ZmAccountsPage.DOWNLOAD_TO_INBOX : ZmAccountsPage.DOWNLOAD_TO_FOLDER;
 	this._setControlValue("DOWNLOAD_TO", section, value);
 	this._setControlEnabled("DOWNLOAD_TO", section, !isImap);
@@ -903,9 +902,6 @@ function(id, section) {
 	else if (id == "DELETE_AFTER_DOWNLOAD") {
 		value = !control.isSelected();
 	}
-	else if (id == "DOWNLOAD_TO") {
-		value = control.getSelectedValue() == ZmAccountsPage.DOWNLOAD_TO_INBOX ? ZmOrganizer.ID_INBOX : -1;
-	}
 	else {
 		switch (setup.displayContainer) {
 			case ZmPref.TYPE_STATIC: {
@@ -971,6 +967,12 @@ function(account, section) {
 		var ovalue = isField ? account[prop] : account[prop.getter]();
 		var nvalue = this._getControlValue(id, section);
 		if (this._valuesEqual(ovalue, nvalue)) continue;
+
+		// special case: download-to
+		if (id == "DOWNLOAD_TO" &&
+		    ovalue != ZmOrganizer.ID_INBOX && nvalue != ZmOrganizer.ID_INBOX) {
+			continue;
+		}
 
 		// handling visible is special
 		if (id == "VISIBLE") {
@@ -1142,7 +1144,7 @@ function(id, setup, value) {
 		this._resetSignatureSelect(select);
 	}
 	if (id == "PROVIDER") {
-		select.addChangeListener(new AjxListener(this, this._handleProviderChange))
+		select.addChangeListener(new AjxListener(this, this._handleProviderChange));
 	}
 	return select;
 };
@@ -1481,6 +1483,11 @@ function(evt) {
 	var type = ZmAccountsListView.TYPES[radio.getSelectedValue()] || "???";
 	this._accountListView.setCellContents(this._currentAccount, ZmItem.F_TYPE, type);
 	this._handleTypeOrSslChange(evt);
+};
+
+ZmAccountsPage.prototype._handleDownloadTo = function(evt) {
+	var isInbox = this._getControlValue("DOWNLOAD_TO", this._currentSection) == ZmAccountsPage.DOWNLOAD_TO_INBOX;
+	this._currentAccount.folderId = isInbox ? ZmOrganizer.ID_INBOX : -1; 
 };
 
 ZmAccountsPage.prototype._handleProviderChange = function() {
