@@ -22,13 +22,13 @@
  *
  * @author Rajesh Segu
  */
-ZmLiteHtmlEditor = function(parent, posStyle, className, mode, content) {
+ZmLiteHtmlEditor = function(params) {
 	if (arguments.length == 0) return;
 
-	className = className || "ZmLiteHtmlEditor";
-	DwtComposite.call(this, {parent:parent, className:className, posStyle:posStyle});
+	params.className = params.className || "ZmLiteHtmlEditor";
+	DwtComposite.call(this, params);
 
-	this._mode = mode || ZmLiteHtmlEditor.TEXT;
+	this._mode = params.mode || ZmLiteHtmlEditor.TEXT;
 	this._initialize();
 
 
@@ -240,27 +240,36 @@ ZmLiteHtmlEditor.prototype.getBasicToolBar = function() {
 
 //Private Methods
 
-ZmLiteHtmlEditor.prototype._initialize = function(){
-
+ZmLiteHtmlEditor.prototype._initialize = function() {
+	var id = this.getHTMLElId();
+	this._createHtmlFromTemplate(this.TEMPLATE, { id: id });
 	this._textArea = this._initEditor();
 
 	this._textArea[ AjxEnv.isIE ? "onkeydown" : "onkeypress" ] = AjxCallback.simpleClosure(this._keyPressHandler,this);
 
-	this._basicToolBar = new ZmButtonToolBar({parent:this, posStyle:Dwt.RELATIVE_STYLE, buttons: [ZmOperation.IM_HTML], index:0});
+	var toolBarArgs = {
+		parent:this,
+		parentElement: id + "_toolBar",
+		posStyle:Dwt.RELATIVE_STYLE,
+		buttons: [ZmOperation.IM_HTML],
+		index:0
+	};
+	this._basicToolBar = new ZmButtonToolBar(toolBarArgs);
 	this._basicToolBar.addSelectionListener(ZmOperation.IM_HTML, new AjxListener(this, this._changeEditorModeListener));
 	
 	this.setMode(this._mode, true);
 };
 
 ZmLiteHtmlEditor.prototype._initEditor = function(){
-	var htmlEl = this.getHtmlElement();
+	var htmlEl = Dwt.byId(this.getHTMLElId() + "_textarea");
 
 	this._textAreaId = "textarea_" + Dwt.getNextId();
 	var html = [
 			Dwt.CARET_HACK_BEGIN,
 			"<textarea id='",
 			this._textAreaId,
-			"' class='DwtHtmlEditorTextArea' style='width:100%;'/>"
+			"' class='DwtHtmlEditorTextArea' style='width:100%;'></textarea>",
+			Dwt.CARET_HACK_END
 	].join("");
 	htmlEl.innerHTML = html; 
 	return Dwt.byId(this._textAreaId);

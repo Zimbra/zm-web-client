@@ -64,7 +64,7 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 		<jsp:include page="/js/ajax/util/AjxTimezoneData.js" />
 	</script>
     <%
-      String packages = "Ajax,Spreadsheet";
+      String packages = "Ajax,SpreadsheetALE";
 
       String extraPackages = request.getParameter("packages");
       if (extraPackages != null) packages += ","+extraPackages;

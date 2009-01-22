@@ -176,7 +176,7 @@ ZmNewRosterItemDialog.prototype._popupListener = function() {
 	// only in Windows or Mac (because it's there where we display the
 	// semiopaque veil).  The bug prevents this dialog from being visible,
 	// because immediately after the veil is displayed, this.getSize()
-	// (used in DwtBaseDialog::_positionDialog) returns a huge width,
+	// (used in DwtControl::_position) returns a huge width,
 	// ~7000px, which positions the left side of the dialog much below 0px.
         var pos = this.getLocation();
 	if (pos.x < 0) {
@@ -191,7 +191,7 @@ ZmNewRosterItemDialog.prototype._popupListener = function() {
                 // 			el.style.left = "400px";
 
 		setTimeout(AjxCallback.simpleClosure(function() {
-			this._positionDialog();
+			this._position();
 		}, this), 1);
 	}
 	// find groups currently defined in the buddy list
@@ -270,22 +270,21 @@ ZmNewRosterItemDialog.prototype.setAddress = function(newAddress, readonly) {
 
 
 ZmNewRosterItemDialog.prototype._initAddressAutocomplete = function() {
-	if (this._addressAutocomplete || !appCtxt.get(ZmSetting.CONTACTS_ENABLED))
-		return;
+	if (this._addressAutocomplete) { return; }
 
-	var contactsApp = appCtxt.getApp(ZmApp.CONTACTS);
-	var contactsList = contactsApp ? contactsApp.getContactList : null;
-	var params = { parent	  : appCtxt.getShell(),
-		       dataClass  : contactsApp,
-		       dataLoader : contactsList,
-		       matchValue : ZmContactsApp.AC_VALUE_EMAIL
-		     };
-	this._addressAutocomplete = new ZmAutocompleteListView(params);
-	this._addressAutocomplete.handle(this._addrEntry.getInputElement());
+	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) || appCtxt.get(ZmSetting.GAL_ENABLED)) {
+		var params = {
+			parent: appCtxt.getShell(),
+			dataClass: appCtxt.getAutocompleter(),
+			matchValue : ZmAutocomplete.AC_VALUE_EMAIL
+		};
+		this._addressAutocomplete = new ZmAutocompleteListView(params);
+		this._addressAutocomplete.handle(this._addrEntry.getInputElement());
+	}
 };
 
 ZmNewRosterItemDialog.prototype._initGroupAutocomplete = function() {
-	if (this._groupAutocomplete) return;
+	if (this._groupAutocomplete) { return; }
 
 	var imApp = appCtxt.getApp(ZmApp.IM);
 	var groupList = imApp ? imApp.getAutoCompleteGroups : null;

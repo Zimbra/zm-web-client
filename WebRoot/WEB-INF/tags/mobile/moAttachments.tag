@@ -8,16 +8,16 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="mo" uri="com.zimbra.mobileclient" %>
 
-<table cellspacing="5" cellpadding="5">
+<div>
 <c:forEach var="part" items="${message.attachments}" varStatus="partStatus">
 <c:if test="${part.isMssage}">
 
-    <tr>
-        <td colspan="2">
+    <div>
+        <span>
             <zm:getMessage var="partMessage" id="${message.id}" part="${part.partName}"/>
             <mo:displayMessage mailbox="${mailbox}" message="${partMessage}" composeUrl="${composeUrl}&part=${part.partName}" counter="${partStatus.count}"/>
-        </td>
-    </tr>
+        </span>
+    </div>
 </c:if>
 </c:forEach>
 <c:forEach var="part" items="${message.attachments}">
@@ -25,25 +25,25 @@
         <c:set var="pname" value="${part.displayName}"/>
         <c:if test="${empty pname}"><fmt:message key="unknownContentType" var="pname"><fmt:param value="${part.contentType}"/></fmt:message></c:if>
         <c:set var="url" value="/service/home/~/?id=${message.id}&part=${part.partName}&auth=co"/>
-        <tr>
-            <td colspan="2">
-                <table cellspacing="4">
-                    <tr>
-                        <td>
+        <div>
+            <span>
+                <div>
+                    <div>
+                        <span>
                             <mo:img src="${part.image}" alt="${fn:escapeXml(part.displayName)}"/>
-                        </td>
-                        <td>
+                        </span>
+                        <span>
                             <a href="${fn:escapeXml(url)}&amp;disp=a"><b>${fn:escapeXml(pname)}</b></a> (${part.displaySize})
-                        </td>
+                        </span>
                         <c:if test="${mailbox.features.viewInHtml and part.isViewAsHtmlTarget}">
-                            <td>
+                            <span>
                                 <a target="_blank" href="${fn:escapeXml(url)}&amp;view=html"><fmt:message key="viewAsHtml"/></a>
-                            </td>
+                            </span>
                         </c:if>
-                    </tr>
-                </table>
-            </td>
-        </tr>
+                    </div>
+                </div>
+            </span>
+        </div>
     </c:if>
 </c:forEach>
-</table>
+</div>
