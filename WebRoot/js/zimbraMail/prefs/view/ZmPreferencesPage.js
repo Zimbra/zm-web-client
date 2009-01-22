@@ -1016,6 +1016,13 @@ function(ev) {
 			dialog.popup({treeIds:[ZmOrganizer.CALENDAR], title:ZmMsg.chooseCalendar, overviewId: overviewId, description:ZmMsg.chooseCalendarToImport, skipReadOnly:true});
 		}
 	}
+	else {
+		var params = {
+			msg:	ZmMsg.importErrorMissingFile,
+			level:	ZmStatusView.LEVEL_CRITICAL
+		};
+		appCtxt.setStatusMsg(params);
+	}
 };
 
 ZmPreferencesPage.prototype._importOkCallback =
