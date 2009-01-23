@@ -228,11 +228,11 @@ function(organizer, skipNotify, noFocus) {
  * @param reset	[boolean]	if true, unchecks the checkboxes
  */
 ZmTreeView.prototype.showCheckboxes =
-function(show, reset) {
+function(show, reset, treeItems) {
 	if (!this._isCheckedStyle()) { return; }
 
 	this._showCheckboxes = show;
-	var treeItems = this.getHeaderItem().getItems();
+	treeItems = treeItems || this.getHeaderItem().getItems();
 	if (treeItems && treeItems.length) {
 		for (var i = 0; i < treeItems.length; i++) {
 			var ti = treeItems[i];
@@ -241,6 +241,10 @@ function(show, reset) {
 			ti.enableSelection(!show);
 			if (reset) {
 				ti.setChecked(false);
+			}
+			var subItems = ti.getItems();
+			if (subItems.length > 0) {
+				this.showCheckboxes(show, reset, subItems);
 			}
 		}
 	}
