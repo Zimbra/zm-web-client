@@ -355,23 +355,26 @@ function(obj) {
 	if (obj.f != null) {
 		var flags = this._getFlags();
 		var origFlags = {};
-		for (var i = 0; i < flags.length; i++)
+		for (var i = 0; i < flags.length; i++) {
 			origFlags[flags[i]] = this[ZmItem.FLAG_PROP[flags[i]]];
+		}
 		this._parseFlags(obj.f);
 		var changedFlags = [];
 		for (var i = 0; i < flags.length; i++) {
 			var on = this[ZmItem.FLAG_PROP[flags[i]]];
-			if (origFlags[flags[i]] != on)
+			if (origFlags[flags[i]] != on) {
 				changedFlags.push(flags[i]);
+			}
 		}
 		this._notify(ZmEvent.E_FLAGS, {flags: changedFlags});
 	}
 	if (obj.l != null && obj.l != this.folderId) {
+		var details = {oldFolderId:this.folderId};
 		this.moveLocal(obj.l);
 		if (this.list) {
 			this.list.moveLocal([this], obj.l);
 		}
-		this._notify(ZmEvent.E_MOVE);
+		this._notify(ZmEvent.E_MOVE, details);
 	}
 };
 

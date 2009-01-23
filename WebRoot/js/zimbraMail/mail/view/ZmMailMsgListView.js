@@ -262,8 +262,7 @@ function(ev) {
 					this._controller._list.remove(msg, true);
 					ZmMailListView.prototype._changeListener.call(this, ev);
 				} else {
-					this._changeTrashStatus(msg);
-					this._changeFolderName(msg);
+					this._changeFolderName(msg, ev.getDetail("oldFolderId"));
 				}
 			}
 		}
@@ -293,13 +292,14 @@ function(ev) {
 };
 
 ZmMailMsgListView.prototype._changeFolderName = 
-function(msg) {
+function(msg, oldFolderId) {
 	var folderCell = this._getElement(msg, ZmItem.F_FOLDER);
-	var folder = folderCell ? appCtxt.getById(msg.folderId) : null;
+	var folder = folderCell && appCtxt.getById(msg.folderId);
 	if (folder) {
 		folderCell.innerHTML = folder.getName();
-		if (folder.nId == ZmFolder.ID_TRASH)
+		if (folder.nId == ZmFolder.ID_TRASH || oldFolderId == ZmFolder.ID_TRASH) {
 			this._changeTrashStatus(msg);
+		}
 	}
 };
 

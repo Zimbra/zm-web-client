@@ -563,7 +563,7 @@ function(ev) {
 					handled = false;
 				} else {
 					// normal case: just change folder name for msg
-					this._changeFolderName(item);
+					this._changeFolderName(item, ev.getDetail("oldFolderId"));
 				}
 			}
 		}
