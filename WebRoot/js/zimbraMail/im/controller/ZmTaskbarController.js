@@ -184,10 +184,18 @@ function(addr, buddy) {
 
 ZmTaskbarController.prototype._addChatToMru =
 function(chat) {
-	// Don't allow more than 4 chats open at once...there isn't room for them.
-	// If we're already at that number, then close the last used chat.
+	// Try to limit the number of chat items to 4.
+	// If we are at that number, we'll remove the least recently used one, as long as it is
+	// not expanded, and doesn't have an alert on it indicating it has unread messages.
 	if (this._chatMru.length >= 4) {
-		this.endChat(this._chatMru[this._chatMru.length - 1]);
+		for (var count = this._chatMru.length, i = count - 1; i >= 0; i--) {
+			var lruChat = this._chatMru[i];
+			var lruItem = this._chatData[lruChat.id].item;
+			if (!lruItem.expanded && !lruItem.isAlertShown()) {
+				this.endChat(lruChat);
+				break;
+			}
+		}
 	}
 	this._chatMru.unshift(chat);
 };
@@ -204,8 +212,8 @@ ZmTaskbarController.prototype._removeChatFromMru =
 function(chat) {
 	for (var i = 0, count = this._chatMru.length; i < count; i++) {
 		if (this._chatMru[i] == chat) {
-			this._chatMru.splice(i, i);
-			break;
+			this._chatMru.splice(i, 1);
+			return;
 		}
 	}
 };
@@ -367,6 +375,7 @@ function(ev) {
 		var message = ev.getDetail("fields")[ZmChat.F_MESSAGE];
 		if (message && !message.fromMe && !message.isSystem) {
 			chatData.item.showAlert(true);
+			this._updateChatMru(chat);
 		}
 	}
 };
