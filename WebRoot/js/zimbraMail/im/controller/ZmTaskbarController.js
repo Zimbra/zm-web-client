@@ -24,7 +24,8 @@ ZmTaskbarController = function(components) {
 	if (!parentEl) {
 		return;
 	}
-	this._chatData = {};	
+	this._chatData = {};
+	this._chatMru = [];
 
 	var toolbarArgs = {
 		parent: appCtxt.getShell(),
@@ -82,6 +83,7 @@ function() {
 
 ZmTaskbarController.prototype.createChatItem =
 function(chat) {
+	this._addChatToMru(chat);
 	var separator = this._toolbar.addSeparator(null, this._chatButtonIndex++);
 
 	var args = {
@@ -180,8 +182,36 @@ function(addr, buddy) {
 	}
 };
 
+ZmTaskbarController.prototype._addChatToMru =
+function(chat) {
+	// Don't allow more than 4 chats open at once...there isn't room for them.
+	// If we're already at that number, then close the last used chat.
+	if (this._chatMru.length >= 4) {
+		this.endChat(this._chatMru[this._chatMru.length - 1]);
+	}
+	this._chatMru.unshift(chat);
+};
+
+ZmTaskbarController.prototype._updateChatMru =
+function(chat) {
+	if (this._chatMru.length && (this._chatMru[0] != chat)) {
+		this._removeChatFromMru(chat);
+		this._chatMru.unshift(chat);
+	}
+};
+
+ZmTaskbarController.prototype._removeChatFromMru =
+function(chat) {
+	for (var i = 0, count = this._chatMru.length; i < count; i++) {
+		if (this._chatMru[i] == chat) {
+			this._chatMru.splice(i, i);
+			break;
+		}
+	}
+};
+
 ZmTaskbarController.prototype._newBuddyListener =
-function(ev) {
+function() {
 	ZmImApp.INSTANCE.prepareVisuals();
 	ZmImApp.INSTANCE.getImController()._newRosterItemListener();
 };
@@ -234,6 +264,7 @@ ZmTaskbarController.prototype._chatListListener = function(ev) {
 
 ZmTaskbarController.prototype._deleteChatItem =
 function(chat) {
+	this._removeChatFromMru(chat);
 	chat.removeChangeListener(this._chatChangeListenerListenerObj);
 	var data = this._chatData[chat.id];
 	if (data) {
@@ -252,6 +283,7 @@ function(chat, callback) {
 
 ZmTaskbarController.prototype._expandChatItem =
 function(taskbarItem, chat, expand) {
+	this._updateChatMru(chat);
 	this._toolbar.expandItem(taskbarItem, expand);
 	var chatWidget = this._chatData[chat.id].chatWidget;
 	chatWidget._onMinimize(!expand);
