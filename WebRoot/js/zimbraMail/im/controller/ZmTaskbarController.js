@@ -507,9 +507,15 @@ function(ev) {
 				item: item,
 				baseId: [ZmId.TASKBAR, gateway.type].join("|")
 			};
+			gateway.addListener(ZmImGateway.EVENT_SET_STATE, new AjxListener(this, this._gatewayEventListener, [gateway]));
 		}
-		this._updateGatewayButton(gateway, this._gatewayData[gateway.type].item.button);
+		this._updateGatewayButton(gateway);
 	}
+};
+
+ZmTaskbarController.prototype._gatewayEventListener =
+function(gateway) {
+	this._updateGatewayButton(gateway);
 };
 
 ZmTaskbarController.prototype._gatewaySelectionListener =
@@ -614,7 +620,7 @@ function(gateway) {
 };
 
 ZmTaskbarController.prototype._updateGatewayButton =
-function(gateway, button) {
+function(gateway) {
 	var statusImage = this._presenceItem.button.getImage();
 	var statusFormat;
 	if (gateway.isOnline()) {
@@ -624,6 +630,7 @@ function(gateway, button) {
 		statusImage = "Offline";
 	}
 	var text = statusFormat.format([ZmMsg["imGateway_" + gateway.type], gateway.nick]);
+	var button = this._gatewayData[gateway.type].item.button;
 	button.setToolTipContent(text);
 	button.setStatusImage(statusImage);
 };
