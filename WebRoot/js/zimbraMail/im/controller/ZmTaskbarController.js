@@ -270,7 +270,7 @@ function(chat) {
 	if (data) {
 		this._toolbar.removeSeparator(data.separator);
 		data.item.dispose();
-		this._chatButtonIndex -= 2;
+		this._chatButtonIndex -= 1;
 		delete this._chatData[chat.id];
 	}
 };
