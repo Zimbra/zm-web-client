@@ -7,7 +7,7 @@
 
     <tr><td style="height: 1px"></td></tr>
 
-    <tr>
+    <tr style="height:100%">
       <td id="${id}_convLayout"></td>
     </tr>
 
@@ -16,7 +16,7 @@
     </tr>
 
     <tr>
-      <td id="${id}_inputLayout" style="height: 3em"/>
+      <td id="${id}_inputLayout"/>
 	</tr>
   </table>
 

@@ -584,6 +584,7 @@ line-height:normal;
 /* Lite HTML Editor */
 .ZmLiteHtmlEditor {
 	width: 100%;
+	height: 57px;
 }
 
 .ZmLiteHtmlEditor .TextArea {
@@ -1880,6 +1881,7 @@ HTML>BODY .appt-selected .appt_allday_body
 	height:250px;
 	max-height:400px;
 	max-width:300px;
+	margin-bottom: 4px;
 }
 
 .ZmTaskbarContentParent .ActionMenu {
