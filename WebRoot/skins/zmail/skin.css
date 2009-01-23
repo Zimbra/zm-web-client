@@ -57,6 +57,14 @@
 	margin-bottom:10px;
 }
 
+.ZmTaskbar {
+	border-top: 1px solid @TaskbarItem-selected@;
+}
+
+.ZmTaskbarContentParent {
+	padding: 3px;
+	padding-bottom: 2px;
+}
 #skin_container_current_app .ZWidgetTitle {
 	font-weight:bold;
 	@Text-anchor@
