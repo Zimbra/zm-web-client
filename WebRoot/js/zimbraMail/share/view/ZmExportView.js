@@ -68,9 +68,10 @@ ZmExportView.prototype.getParams = function() {
 
 	// generate filename
 	if (this._folderId != -1) {
-		var isRoot = params.folderId == ZmOrganizer.ID_ROOT;
+		var folder = appCtxt.getById(params.folderId);
+		var isRoot = folder && folder.nId == ZmOrganizer.ID_ROOT;
 		params.filename = [
-			isRoot ? ZmMsg.exportFilenamePrefixAllFolders : appCtxt.getById(params.folderId).name,
+			isRoot ? ZmMsg.exportFilenamePrefixAllFolders : folder.name,
 			"-",
 			AjxDateFormat.format("yyyy-MM-dd-HHmmss", new Date())
 		].join("");
@@ -133,7 +134,8 @@ ZmExportView.prototype._updateControls = function() {
 
 ZmExportView.prototype._handleFolderDialogOk = function(folder) {
 	var retValue = ZmImportExportBaseView.prototype._handleFolderDialogOk.apply(this, arguments);
-	var isAll = this._folderId == ZmOrganizer.ID_ROOT;
+	var folder = appCtxt.getById(this._folderId);
+	var isAll = folder && folder.nId == ZmOrganizer.ID_ROOT;
 	this.setControlEnabled("IGNORE_ARCHIVE", isAll);
 	if (!isAll) {
 		this.setFormValue("IGNORE_ARCHIVE", false);

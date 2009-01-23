@@ -96,7 +96,8 @@ ZmImportExportController.prototype.importData = function(params) {
 
 	var type = params.type;
 	var isZimbra = type == ZmImportExportController.TYPE_TGZ;
-	if (!isZimbra && folderId == ZmOrganizer.ID_ROOT) {
+	var folder = appCtxt.getById(folderId);
+	if (!isZimbra && folder && folder.nId == ZmOrganizer.ID_ROOT) {
 		var params = {
 			msg:	ZmMsg.importErrorRootNotAllowed,
 			level:	ZmStatusView.LEVEL_CRITICAL
@@ -158,7 +159,8 @@ ZmImportExportController.prototype.exportData = function(params) {
 
 	var type = params.type;
 	var isZimbra = type == ZmImportExportController.TYPE_TGZ;
-	if (!isZimbra && folderId == ZmOrganizer.ID_ROOT) {
+	var folder = appCtxt.getById(folderId);
+	if (!isZimbra && folder && folder.nId == ZmOrganizer.ID_ROOT) {
 		var params = {
 			msg:	ZmMsg.exportErrorRootNotAllowed,
 			level:	ZmStatusView.LEVEL_CRITICAL
@@ -235,8 +237,7 @@ ZmImportExportController.prototype._doImportSelectFolder = function(params, type
 };
 
 ZmImportExportController.prototype._doImportUpload = function(params, type, folder) {
-	var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
-	if (folder && folder.id && folder.id != rootId) {
+	if (folder && folder.nId != ZmOrganizer.ID_ROOT) {
 		var dialog = appCtxt.getChooseFolderDialog();
 		dialog.popdown();
 
@@ -321,7 +322,8 @@ ZmImportExportController.prototype._doImportRequest = function(soapDoc, params, 
 };
 
 ZmImportExportController.prototype._doImportTGZ = function(params) {
-	var folder = params.folderId != ZmOrganizer.ID_ROOT && appCtxt.getById(params.folderId);
+	var folder = appCtxt.getById(params.folderId);
+	if (folder.nId == ZmOrganizer.ID_ROOT) folder = null;
 	var path = folder ? folder.getPath() : "";
 
 	var url = [
@@ -370,7 +372,8 @@ ZmImportExportController.prototype._doExportData = function(params) {
 	var isCSV = type == ZmImportExportController.TYPE_CSV;
 	var subType = params.subType || ZmImportExportController.SUBTYPE_DEFAULT[type];
 
-	var folder = params.folderId != ZmOrganizer.ID_ROOT && appCtxt.getById(params.folderId);
+	var folder = appCtxt.getById(params.folderId);
+	if (folder.nId == ZmOrganizer.ID_ROOT) folder = null;
 	var path = folder ? folder.getPath() : "";
 
 	// generate request URL

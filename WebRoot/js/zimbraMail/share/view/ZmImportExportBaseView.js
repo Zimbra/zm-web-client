@@ -525,7 +525,7 @@ ZmImportExportBaseView.prototype._handleFolderDialogOk = function(folder) {
 	appCtxt.getChooseFolderDialog().popdown();
 	// NOTE: Selecting a header is the same as "all folders"
 	this._folderId = folder.id;
-	var isRoot = folder.id == ZmOrganizer.ID_ROOT;
+	var isRoot = folder.nId == ZmOrganizer.ID_ROOT;
 	this.setFormValue("FOLDER_BUTTON", isRoot ? ZmMsg.allFolders : folder.name);
 	return true;
 };
