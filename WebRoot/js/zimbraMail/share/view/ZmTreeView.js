@@ -203,16 +203,20 @@ function(organizer, skipNotify) {
  * @param show	[boolean]	if true, show checkboxes
  */
 ZmTreeView.prototype.showCheckboxes =
-function(show) {
+function(show, treeItems) {
 	if (!this._isCheckedStyle()) { return; }
 
-	var treeItems = this.getHeaderItem().getItems();
+	treeItems = treeItems || this.getHeaderItem().getItems();
 	if (treeItems && treeItems.length) {
 		for (var i = 0; i < treeItems.length; i++) {
 			var ti = treeItems[i];
 			if (ti._isSeparator) continue;
 			ti.showCheckBox(show);
 			ti.enableSelection(!show);
+			var subItems = ti.getItems();
+			if (subItems.length > 0) {
+				this.showCheckboxes(show, subItems);
+			}
 		}
 	}
 };
