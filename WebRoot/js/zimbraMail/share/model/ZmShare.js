@@ -427,7 +427,7 @@ function(mode, addrs, owner) {
 	var msg = this._createMsg(mode, false, addrs, owner);
 
 	// send message
-	msg.send(AjxDispatcher.run("GetContacts"));
+	msg.send();
 };
 
 ZmShare.prototype.composeMessage =

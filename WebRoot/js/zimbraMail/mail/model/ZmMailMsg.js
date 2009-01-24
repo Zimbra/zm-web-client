@@ -667,14 +667,14 @@ function(content) {
 };
 
 ZmMailMsg.prototype.sendInviteReply =
-function(contactList, edited, componentId, callback, errorCallback, instanceDate, accountName) {
+function(edited, componentId, callback, errorCallback, instanceDate, accountName) {
 	this._origMsg = this._origMsg || this;
 
-	return this._sendInviteReply(contactList, edited, componentId || 0, callback, errorCallback, instanceDate, accountName);
+	return this._sendInviteReply(edited, componentId || 0, callback, errorCallback, instanceDate, accountName);
 };
 
 ZmMailMsg.prototype._sendInviteReply =
-function(contactList, edited, componentId, callback, errorCallback, instanceDate, accountName) {
+function(edited, componentId, callback, errorCallback, instanceDate, accountName) {
 	var jsonObj = {SendInviteReplyRequest:{_jsns:"urn:zimbraMail"}};
 	var request = jsonObj.SendInviteReplyRequest;
 
@@ -707,7 +707,7 @@ function(contactList, edited, componentId, callback, errorCallback, instanceDate
 	}
 
 	if (edited) {
-		this._createMessageNode(request, contactList, null, accountName);
+		this._createMessageNode(request, null, accountName);
 	}
 
 	var respCallback = new AjxCallback(this, this._handleResponseSendInviteReply, [callback]);
@@ -738,7 +738,7 @@ function(callback, result) {
 * Sends the message out into the world.
 */
 ZmMailMsg.prototype.send =
-function(contactList, isDraft, callback, errorCallback, accountName, noSave) {
+function(isDraft, callback, errorCallback, accountName, noSave) {
 	var aName = accountName;
 	if (!aName) {
 		// only set the account name if this *isnt* the main/parent account
@@ -750,7 +750,7 @@ function(contactList, isDraft, callback, errorCallback, accountName, noSave) {
 
 	// if we have an invite reply, we have to send a different message
 	if (this.isInviteReply && !isDraft) {
-		return this.sendInviteReply(contactList, true, 0, callback, errorCallback, this._instanceDate, aName);
+		return this.sendInviteReply(true, 0, callback, errorCallback, this._instanceDate, aName);
 	} else {
 		var jsonObj, request;
 		if (isDraft) {
@@ -766,7 +766,7 @@ function(contactList, isDraft, callback, errorCallback, accountName, noSave) {
 		if (noSave) {
 			request.noSave = 1;
 		}
-		this._createMessageNode(request, contactList, isDraft, aName);
+		this._createMessageNode(request, isDraft, aName);
 
 		var params = {
 			jsonObj: jsonObj,
@@ -799,7 +799,7 @@ function(isDraft, callback, result) {
 }
 
 ZmMailMsg.prototype._createMessageNode =
-function(request, contactList, isDraft, accountName) {
+function(request, isDraft, accountName) {
 
 	var msgNode = request.m = {};
 
@@ -851,7 +851,7 @@ function(request, contactList, isDraft, accountName) {
 	var addrNodes = msgNode.e = [];
 	for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
 		var type = ZmMailMsg.COMPOSE_ADDRS[i];
-		this._addAddressNodes(addrNodes, type, contactList, isDraft);
+		this._addAddressNodes(addrNodes, type, isDraft);
 	}
 	this._addFrom(addrNodes, msgNode, isDraft, accountName);
 	this._addReplyTo(addrNodes);
@@ -1335,20 +1335,18 @@ function () {
 
 // Adds child address nodes for the given address type.
 ZmMailMsg.prototype._addAddressNodes =
-function(addrNodes, type, contactList, isDraft) {
+function(addrNodes, type, isDraft) {
 	var addrs = this._addrs[type];
 	var num = addrs.size();
 	if (num) {
+		var contactsApp = appCtxt.getApp(ZmApp.CONTACTS);
 		for (var i = 0; i < num; i++) {
 			var addr = addrs.get(i);
 			var email = addr.getAddress();
 			var addrNode = {t:AjxEmailAddress.toSoapType[type], a:email};
 
-			// tell server to add this email to address book if not found
-			if (contactList && !isDraft && appCtxt.get(ZmSetting.AUTO_ADD_ADDRESS) &&
-				!contactList.getContactByEmail(email))
-			{
-				DBG.println(AjxDebug.DBG2, "adding contact: " + email);
+			// tell server to add this email to address book
+			if (!isDraft && appCtxt.get(ZmSetting.AUTO_ADD_ADDRESS) && !(contactsApp && contactsApp.getContactByEmail(email))) {
 				addrNode.add = 1;
 			}
 			var name = addr.getName();

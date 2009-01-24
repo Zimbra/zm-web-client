@@ -998,7 +998,6 @@ function(action, componentId, instanceDate, accountName) {
 ZmMailListController.prototype._sendInviteReply =
 function(type, componentId, instanceDate, accountName) {
 	var msg = new ZmMailMsg();
-	var contactList = AjxDispatcher.run("GetContacts");
 	AjxDispatcher.require("CalendarCore");
 
 	msg._origMsg = this.getMsg();
@@ -1033,7 +1032,7 @@ function(type, componentId, instanceDate, accountName) {
 		msg.setSubject(subject);
 	}
 	var errorCallback = new AjxCallback(this, this._handleErrorInviteReply);
-	return msg.sendInviteReply(contactList, true, componentId, null, errorCallback, instanceDate, accountName);
+	return msg.sendInviteReply(true, componentId, null, errorCallback, instanceDate, accountName);
 };
 
 ZmMailListController.prototype._handleErrorInviteReply =

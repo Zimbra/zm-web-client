@@ -360,10 +360,9 @@ function(attId, docIds, draftType, callback) {
             acctName =  origMsg._addrs[ZmMailMsg.HDR_FROM].get(0).address;
         }
 
-        var contactList = !isDraft ? AjxDispatcher.run("GetContacts") : null;
         var respCallback = new AjxCallback(this, this._handleResponseSendMsg, [draftType, msg, callback]);
         var errorCallback = new AjxCallback(this, this._handleErrorSendMsg);
-        var resp = msg.send(contactList, isDraft, respCallback, errorCallback, acctName);
+        var resp = msg.send(isDraft, respCallback, errorCallback, acctName);
 
         // XXX: temp bug fix #4325 - if resp returned, we're processing sync
         //      request REVERT this bug fix once mozilla fixes bug #295422!
