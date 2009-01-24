@@ -324,7 +324,7 @@ ZmImportExportController.prototype._doImportRequest = function(soapDoc, params, 
 ZmImportExportController.prototype._doImportTGZ = function(params) {
 	var folder = appCtxt.getById(params.folderId);
 	if (folder.nId == ZmOrganizer.ID_ROOT) folder = null;
-	var path = folder ? folder.getPath() : "";
+	var path = folder ? folder.getPath(null, null, null, null, true) : "";
 
 	var url = [
 		"/home/",
@@ -374,7 +374,7 @@ ZmImportExportController.prototype._doExportData = function(params) {
 
 	var folder = appCtxt.getById(params.folderId);
 	if (folder.nId == ZmOrganizer.ID_ROOT) folder = null;
-	var path = folder ? folder.getPath() : "";
+	var path = folder ? folder.getPath(null, null, null, null, true) : "";
 
 	// generate request URL
 	var url = [
