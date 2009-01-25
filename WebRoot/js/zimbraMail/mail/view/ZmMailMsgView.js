@@ -185,8 +185,7 @@ function(msg) {
 	if (appCtxt.get(ZmSetting.CALENDAR_ENABLED) &&
 		(invite && invite.type != "task"))
 	{
-		if (!invite.isEmpty() && !invite.hasMultipleComponents() &&
-			invite.getStatus() != ZmCalendarApp.STATUS_CANC &&
+		if (!invite.isEmpty() && invite.hasAcceptableComponents() &&
 			msg.folderId != ZmFolder.ID_TRASH &&
 			appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED))
 		{

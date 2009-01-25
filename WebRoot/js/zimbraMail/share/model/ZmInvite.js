@@ -548,3 +548,15 @@ function(field, data, html, idx, wrap, width, asIs) {
 	}
 	return idx;
 };
+
+ZmInvite.prototype.hasAcceptableComponents =
+function() {	
+	for(var i  in this.components) {
+		if(this.getStatus(i) != ZmCalendarApp.STATUS_CANC){
+			return true;
+		};
+	}
+	
+	return false;
+};
+
