@@ -642,6 +642,54 @@ function(attId, isDraft) {
         msg.flagLocal(priority, true);
     }
 
+	/**
+	* finally, check for any errors via zimlets..
+	* A Zimlet can listen to emailErrorCheck action to perform further check and alert user about the error just before sending email.
+	* We will be showing yes/no dialog.
+	* This zimlet must return an object {hasError:<true or false>, errorMsg:<Some Error msg>, zimletName:<zimletName>}
+	*  e.g: {hasError:true, errorMsg:"you might have forgotten attaching an attachment, do you want to continue?", zimletName:"com_zimbra_attachmentAlert"}
+	**/
+	if (!isDraft) {
+		if (appCtxt.zimletsPresent()) {
+			if (!this._zimletMgr) {
+				this._zimletMgr = appCtxt.getZimletMgr();//cache zimletMgr
+			}
+			var boolAndErrorMsgArray = [];
+			var showErrorDlg = false;
+			var errorMsg = "";
+			var zimletName = "";
+			this._zimletMgr.notifyZimlets("emailErrorCheck", msg, boolAndErrorMsgArray);
+			var blen =  boolAndErrorMsgArray.length;
+			for(var k =0; k < blen; k++){
+				var obj = boolAndErrorMsgArray[k];
+				if(obj == null || obj == undefined)
+					continue;
+				var hasError =obj.hasError;
+				zimletName = obj.zimletName;
+				if(hasError == true || hasError == "true"){
+					if(this._ignoredZimlets) {
+						if (this._ignoredZimlets[zimletName]) {//if we should ignore this zimlet
+							delete this._ignoredZimlets[zimletName];
+							continue;//skip
+						}
+					}
+					showErrorDlg = true;
+					errorMsg = obj.errorMsg;					
+					break;
+				}
+			}
+		}
+		if(showErrorDlg) {
+			this.enableInputs(false);
+    		cd.setMessage(errorMsg, DwtMessageDialog.WARNING_STYLE);
+			var params = {errDialog:cd, zimletName:zimletName};
+			cd.registerCallback(DwtDialog.OK_BUTTON, this._errViaZimletOkCallback, this, params);
+			cd.registerCallback(DwtDialog.CANCEL_BUTTON, this._errViaZimletCancelCallback, this, params);
+			cd.popup(this._getDialogXY());
+			return;
+		}
+	}
+
     return msg;
 };
 
@@ -2282,6 +2330,12 @@ function() {
 ZmComposeView.prototype._noSubjectOkCallback =
 function(dialog) {
 	this._noSubjectOkay = true;
+	this._popDownAlertAndSendMsg(dialog);
+};
+
+//this is used by several kinds of alert dialogs
+ZmComposeView.prototype._popDownAlertAndSendMsg =
+function(dialog) {
 	// not sure why: popdown (in FF) seems to create a race condition,
 	// we can't get the attachments from the document anymore.
 	// W/in debugger, it looks fine, but remove the debugger and any
@@ -2312,6 +2366,26 @@ function(dialog) {
 	this.enableInputs(true);
 	dialog.popdown();
 	appCtxt.getKeyboardMgr().grabFocus(this._subjectField);
+	this._controller.resetToolbarOperations();
+	this.reEnableDesignMode();
+};
+
+ZmComposeView.prototype._errViaZimletOkCallback =
+function(params) {
+	var dialog = params.errDialog; 
+	var zimletName = params.zimletName;
+	//add this zimlet to ignoreZimlet string
+	this._ignoredZimlets = this._ignoredZimlets || {};
+	this._ignoredZimlets[zimletName] = true;
+	this._popDownAlertAndSendMsg(dialog);
+};
+
+ZmComposeView.prototype._errViaZimletCancelCallback =
+function(params) {
+	var dialog = params.errDialog; 
+	var zimletName = params.zimletName;
+	this.enableInputs(true);
+	dialog.popdown();
 	this._controller.resetToolbarOperations();
 	this.reEnableDesignMode();
 };
