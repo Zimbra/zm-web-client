@@ -42,7 +42,7 @@
 				}
                     var i_frame = iframe;
                 //alert(b.scrollHeight+"|"+iframe.offsetHeight);
-                var _delay = isIE ? 100 : 0 ;
+                var _delay = isIE ? 300 : 0 ;
                 setTimeout(function(){ i_frame.style.height = b.scrollHeight + 30 + "px";}, _delay);
             }
 		};
