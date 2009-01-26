@@ -1343,13 +1343,8 @@ function(addrNodes, type, isDraft) {
 		for (var i = 0; i < num; i++) {
 			var addr = addrs.get(i);
 			var email = addr.getAddress();
-			var addrNode = {t:AjxEmailAddress.toSoapType[type], a:email};
-
-			// tell server to add this email to address book
-			if (!isDraft && appCtxt.get(ZmSetting.AUTO_ADD_ADDRESS) && !(contactsApp && contactsApp.getContactByEmail(email))) {
-				addrNode.add = 1;
-			}
 			var name = addr.getName();
+			var addrNode = {t:AjxEmailAddress.toSoapType[type], a:email};
 			if (name) {
 				addrNode.p = name;
 			}
