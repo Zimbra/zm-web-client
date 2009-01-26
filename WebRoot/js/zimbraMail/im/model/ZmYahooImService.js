@@ -164,7 +164,8 @@ function(rosterItem, params) {
 
 ZmYahooImService.prototype.sendSubscribeAuthorization =
 function(accept, add, addr) {
-	this._callSdk("sendSubscribe", [ [addr], accept]);
+	var authArgs = [this.getMyAddress(), addr, ZmYahooImService.YAHOO_CLOUD, accept];
+	this._callSdkObj(YMSGR.Send, "YMSGR.Send", "buddyAuthorize", authArgs);
 	if (add) {
 		this.createRosterItem(addr);
 	}
@@ -561,14 +562,27 @@ function(params) {
  */
 ZmYahooImService.prototype._callSdk =
 function(functionName, params) {
+	this._callSdkObj(YMSGR.sdk, "YMSGR.sdk", functionName, params);
+};
+
+/**
+ * Makes a call to one of the ym sdk global objects, ensuring the sdk is loaded and logging the call.
+ *
+ * @param obj			[Object]		The object on which to invoke the method (Usually YMSGR.sdk
+ * @param objString		[String]		String version of obj, used only for logging.
+ * @param functionName	[String]		Name of function on YMSGR.sdk to call
+ * @param params		[Array]			Array of arguments to the function
+ */
+ZmYahooImService.prototype._callSdkObj =
+function(obj, objString, functionName, params) {
 	// If sdk not loaded, load it, then make this call afterwards.
 	if (!this._loaded) {
 		this._postLoadCalls = this._postLoadCalls  || [];
-		this._postLoadCalls.push({ functionName: functionName, params: params });
+		this._postLoadCalls.push({ obj: obj, objString: objString, functionName: functionName, params: params });
 		this._load();
 	} else {
-		DBG.println("ym", "YMSGR.sdk." + functionName + "(" + (params ? AjxStringUtil.htmlEncode(params.join(",")) : "") + ")");
-		var result = YMSGR.sdk[functionName].apply(YMSGR.sdk, params);
+		DBG.println("ym", objString + "." + functionName + "(" + (params ? AjxStringUtil.htmlEncode(params.join(",")) : "") + ")");
+		var result = obj[functionName].apply(YMSGR.sdk, params);
 		if (result) {
 			DBG.println("ym", "YMSGR.sdk." + functionName + ": Result");
 			DBG.dumpObj("ym", result, functionName + ": Result");
@@ -615,7 +629,7 @@ function() {
 	if (this._postLoadCalls) {
 		for (var i = 0, count = this._postLoadCalls.length; i < count; i++) {
 			var postLoadObj = this._postLoadCalls[i];
-			this._callSdk(postLoadObj.functionName,  postLoadObj.params);
+			this._callSdkObj(postLoadObj.obj, postLoadObj.objString, postLoadObj.functionName,  postLoadObj.params);
 		}
 		delete this._postLoadCalls;
 	}
