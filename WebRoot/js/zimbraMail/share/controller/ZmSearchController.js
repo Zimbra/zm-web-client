@@ -29,7 +29,7 @@ ZmSearchController = function(container) {
 	if (appCtxt.get(ZmSetting.SEARCH_ENABLED)) {
 		this._setView();
 	}
-}
+};
 
 ZmSearchController.prototype = new ZmController;
 ZmSearchController.prototype.constructor = ZmSearchController;
@@ -42,17 +42,17 @@ ZmSearchController.QUERY_ISREMOTE = "is:remote OR is:local";
 ZmSearchController.prototype.toString =
 function() {
 	return "ZmSearchController";
-}
+};
 
 ZmSearchController.prototype.getSearchPanel =
 function() {
 	return this._searchPanel;
-}
+};
 
 ZmSearchController.prototype.getSearchToolbar =
 function() {
 	return this._searchToolBar;
-}
+};
 
 ZmSearchController.prototype.dateSearch =
 function(d) {
@@ -103,7 +103,8 @@ function(pickers,showBasic) {
 		   this._browseViewController.addPicker(pickers[i]);
 	   }
 	}
-}
+};
+
 ZmSearchController.prototype._handleLoadFromBrowse =
 function(name, bv) {
 	this.setDefaultSearchType(ZmId.SEARCH_MAIL);
@@ -150,7 +151,7 @@ ZmSearchController.prototype.getBrowseView =
 function() {
 	var bvc = this._browseViewController;
 	return (bvc == null) ? null : bvc.getBrowseView();
-}
+};
 
 ZmSearchController.prototype.setSearchField =
 function(searchString) {
@@ -158,19 +159,19 @@ function(searchString) {
 		this._searchToolBar.setSearchFieldValue(searchString);
 	else
 		this._currentQuery = searchString;
-}
+};
 
 ZmSearchController.prototype.getSearchFieldValue =
 function() {
 	return this._searchToolBar ? this._searchToolBar.getSearchFieldValue() : "";
-}
+};
 
 ZmSearchController.prototype.setEnabled =
 function(enabled) {
 	if (this._searchToolBar) {
 		this._searchToolBar.setEnabled(enabled);
 	}
-}
+};
 
 /**
  * Provides a programmatic way to set the search type.
@@ -257,7 +258,7 @@ function(params) {
 
 	var respCallback = new AjxCallback(this, this._handleResponseSearch, [params.callback]);
 	this._doSearch(params, params.noRender, respCallback, params.errorCallback);
-}
+};
 
 ZmSearchController.prototype._handleResponseSearch =
 function(callback, result) {
@@ -364,7 +365,7 @@ function(params) {
 	}
 
 	return types;
-}
+};
 
 ZmSearchController.prototype._getSuitableSortBy =
 function(types) {
@@ -388,7 +389,7 @@ function(types) {
 	}
 
 	return sortBy;
-}
+};
 
 /**
  * Performs the search.
@@ -475,7 +476,8 @@ function(search, noRender, isMixed, callback, result) {
 		results.type = search.types.get(0);
 	}
 
-	if (!noRender) {
+	// bug fix #34776 - don't show search results if user is in the composer
+	if (!noRender && appCtxt.getCurrentViewId() != ZmId.VIEW_COMPOSE) {
 		this._showResults(results, search, isMixed);
 	}
 
@@ -544,7 +546,7 @@ function(search, isMixed, ex) {
 	} else {
 		return false;
 	}
-}
+};
 
 /**
  * Provides a string to add to the query when the search includes
@@ -583,7 +585,7 @@ ZmSearchController.prototype._searchFieldCallback =
 function(queryString) {
 	var getHtml = appCtxt.get(ZmSetting.VIEW_AS_HTML);
 	this.search({query: queryString, userText: true, getHtml: getHtml});
-}
+};
 
 /*********** Search Bar Callbacks */
 
@@ -615,7 +617,7 @@ function(ev) {
 ZmSearchController.prototype._browseButtonListener =
 function(ev) {
 	this.showBrowseView();
-}
+};
 
 ZmSearchController.prototype._saveButtonListener =
 function(ev) {
@@ -629,7 +631,7 @@ function(ev) {
 		showOverview: (this._searchFor == ZmId.SEARCH_MAIL)
 	};
 	ZmController.showDialog(stc._getNewDialog(), stc._newCb, params);
-}
+};
 
 ZmSearchController.prototype._searchMenuListener =
 function(ev, id) {
