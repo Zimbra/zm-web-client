@@ -476,7 +476,8 @@ function(search, noRender, isMixed, callback, result) {
 		results.type = search.types.get(0);
 	}
 
-	if (!noRender) {
+	// bug fix #34776 - don't show search results if user is in the composer
+	if (!noRender && appCtxt.getCurrentViewId() != ZmId.VIEW_COMPOSE) {
 		this._showResults(results, search, isMixed);
 	}
 
