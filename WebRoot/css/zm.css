@@ -1847,9 +1847,9 @@ HTML>BODY .appt-selected .appt_allday_body
 	@AlertColor@
 }
 
-.ZmTaskbar .ZSelected	.ZToolbarButtonBorder,
-.ZmTaskbar .ZHover		.ZToolbarButtonBorder,
-.ZmTaskbar .ZActive		.ZToolbarButtonBorder {
+.ZmTaskbarButtonParent .ZSelected	.ZToolbarButtonBorder,
+.ZmTaskbarButtonParent .ZHover		.ZToolbarButtonBorder,
+.ZmTaskbarButtonParent .ZActive		.ZToolbarButtonBorder {
 	background-color:@TaskbarItem-selected@ !important;
 }
 
