@@ -530,7 +530,7 @@ function() {
 	{
 		var params = {
 			parent: appCtxt.getShell(),
-			dataClass: appCtxt.getApp(ZmApp.CONTACTS),
+			dataClass: appCtxt.getAutocompleter(),
 			matchValue: ZmAutocomplete.AC_VALUE_FULL,
 			compCallback: acCallback
 		};
@@ -544,7 +544,7 @@ function() {
 		var app = appCtxt.getApp(ZmApp.CALENDAR);
 		var params = {
 			parent: appCtxt.getShell(),
-			dataClass: appCtxt.getApp(ZmApp.CONTACTS),
+			dataClass: appCtxt.getAutocompleter(),
 			matchValue: ZmAutocomplete.AC_VALUE_NAME,
 			compCallback: acCallback,
 			options: {type:ZmAutocomplete.AC_TYPE_LOCATION}

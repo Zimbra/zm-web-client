@@ -210,19 +210,6 @@ function() {
 											parentElement:(this._htmlElId + "_location")});
 	Dwt.setSize(this._locationField.getInputElement(), "100%", "22px");
 
-    if (appCtxt.get(ZmSetting.GAL_ENABLED)) {
-		var params = {
-            parent: appCtxt.getShell(),
-            dataClass: appCtxt.getAutocompleter(),
-            separator: "",
-			matchValue: ZmAutocomplete.AC_VALUE_NAME,
-            compCallback: new AjxCallback(this, this._autoCompCallback),
-            smartPos: true
-        };
-        this._acLocationsList = new ZmAutocompleteListView(params);
-        this._acLocationsList.handle(this._locationField.getInputElement());
-    }
-
     // create DwtSelects
 	this._showAsSelect = new DwtSelect({parent:this, parentElement:(this._htmlElId + "_showAs")});
 	for (var i = 0; i < ZmApptEditView.SHOWAS_OPTIONS.length; i++) {
@@ -301,7 +288,7 @@ function() {
 		var app = appCtxt.getApp(ZmApp.CALENDAR);
 		var params = {
 			parent: appCtxt.getShell(),
-			dataClass: appCtxt.getApp(ZmApp.CONTACTS),
+			dataClass: appCtxt.getAutocompleter(),
 			matchValue: ZmAutocomplete.AC_VALUE_NAME,
 			compCallback: acCallback,
 			options: {type:ZmAutocomplete.AC_TYPE_LOCATION}
