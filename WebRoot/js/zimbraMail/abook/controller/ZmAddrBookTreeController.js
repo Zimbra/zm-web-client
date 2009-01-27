@@ -106,7 +106,7 @@ function(parent, type, id) {
 			if (addrBook.isSystem()) {
 				parent.enable([ZmOperation.DELETE, ZmOperation.RENAME_FOLDER], false);
 			} else if (addrBook.link) {
-				parent.enable([ZmOperation.SHARE_ADDRBOOK], false);
+				parent.enable([ZmOperation.SHARE_ADDRBOOK], !addrBook.link || addrBook.isAdmin());
 			}
 		}
 	}
