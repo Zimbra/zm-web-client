@@ -324,9 +324,9 @@ function(creates, force) {
 					this._handleCreateLink(create, ZmOrganizer.ADDRBOOK);
 				} else if (name == "cn") {
 					var clc = AjxDispatcher.run("GetContactListController");
-					var list = clc && clc.getList();
-					if (list) {
-						list.notifyCreate(create);
+					var clcList = clc && clc.getList();
+					if (clcList) {
+						clcList.notifyCreate(create);
 					}
 					create._handled = true;
 				}
