@@ -233,22 +233,26 @@ function(index, notify, callback) {
 	var jsonObj = {ModifyFilterRulesRequest:{_jsns:"urn:zimbraMail"}};
 	var request = request = jsonObj.ModifyFilterRulesRequest;
 
-	request.filterRules = [{filterRule:[]}];
-	var filterRuleObj = request.filterRules[0].filterRule;
+    var rules = this._vector.getArray();
+    if (rules.length > 0) {
+        request.filterRules = [{filterRule:[]}];
+        var filterRuleObj = request.filterRules[0].filterRule;
 
-	var rules = this._vector.getArray();
-	for (var i = 0; i < rules.length; i++) {
-		var r = rules[i];
-		var ruleObj = {
-			active: r.active,
-			name: r.name,
-			filterActions: [],
-			filterTests: []
-		};
-		ruleObj.filterActions.push(r.actions);
-		ruleObj.filterTests.push(r.conditions);
-		filterRuleObj.push(ruleObj);
-	}
+        for (var i = 0; i < rules.length; i++) {
+            var r = rules[i];
+            var ruleObj = {
+                active: r.active,
+                name: r.name,
+                filterActions: [],
+                filterTests: []
+            };
+            ruleObj.filterActions.push(r.actions);
+            ruleObj.filterTests.push(r.conditions);
+            filterRuleObj.push(ruleObj);
+        }
+    } else {
+		request.filterRules = {};
+    }
 
 	var params = {
 		jsonObj:jsonObj,
