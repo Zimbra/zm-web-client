@@ -29,7 +29,7 @@
     </mo:status>
 </c:when>
 <c:when test="${zm:actionSet(param, 'actionSaveFolder')}">
-   
+
    <zm:createFolder var="folder" name="${fn:escapeXml(param.folder_name)}" parentid="${fn:escapeXml(param.parentid)}"/>
    <mo:status style="Info">
         <fmt:message key="actionFolderCreated"><fmt:param value="${fn:escapeXml(param.folder_name)}"/></fmt:message>
@@ -39,6 +39,12 @@
    <zm:createFolder view="contact" var="folder" name="${fn:escapeXml(param.folder_name)}" parentid="${fn:escapeXml(param.parentid)}"/>
    <mo:status style="Info">
         <fmt:message key="actionAddressBookCreated"><fmt:param value="${fn:escapeXml(param.folder_name)}"/></fmt:message>
+    </mo:status>
+</c:when>
+<c:when test="${zm:actionSet(param, 'actionSaveBriefcaseFolder')}">
+   <zm:createFolder view="document" var="folder" name="${fn:escapeXml(param.folder_name)}" parentid="${fn:escapeXml(param.parentid)}"/>
+   <mo:status style="Info">
+        <fmt:message key="actionBriefcaseCreated"><fmt:param value="${fn:escapeXml(param.folder_name)}"/></fmt:message>
     </mo:status>
 </c:when>
 </c:choose>

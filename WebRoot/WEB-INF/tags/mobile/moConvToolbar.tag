@@ -197,7 +197,8 @@
                 <input type="hidden" name="folderId" value="${folder.id}"/>
             </zm:forEachFolder>--%>
     </select>
-    <noscript><input class="zo_button" name="moreActions" type="submit" value="<fmt:message key="actionGo"/>"/></noscript>
+    <noscript><input id="actGo${isTop}" class="zo_button" name="moreActions" type="submit" value="<fmt:message key="actionGo"/>"/></noscript>
+    <script type="text/javascript">var actGo = document.getElementById('actGo${isTop}');if(actGo){actGo.style.display='none';}</script>
 </c:if>
 <c:if test="${!singleMessage && convSearchResult.size gt 0}">
     <select class="zo_select_button" name="anAction" onchange="submitForm(document.getElementById('zForm'));">
@@ -254,7 +255,8 @@
             </optgroup>
         </c:if>
     </select>
-    <noscript><input class="zo_button" name="moreActions" type="submit" value="<fmt:message key="actionGo"/>"/></noscript>
+    <noscript><input id="actGo${isTop}" class="zo_button" name="moreActions" type="submit" value="<fmt:message key="actionGo"/>"/></noscript>
+    <script type="text/javascript">var actGo = document.getElementById('actGo${isTop}');if(actGo){actGo.style.display='none';}</script>
 </c:if>
 </span>
 <span class="">

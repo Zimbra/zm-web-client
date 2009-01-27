@@ -42,6 +42,25 @@
                         </select>
                         </c:if>
                     </c:when>
+                    <c:when test="${context.isBriefcaseSearch}">
+                        <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=briefcases"><fmt:message
+                                key="briefcases"/></a> :
+                        <c:if test="${top_fldr_select eq '0'}">
+                            ${fn:escapeXml(zm:truncateFixed(context.shortBackTo,15,true))}
+                        </c:if>
+                        <c:if test="${top_fldr_select ne '0'}">
+			<select class="_zo_select_button" name="sfi"
+                                onchange="fetchIt('?sfi='+this.value+'&amp;st=${context.st}');">
+                            <zm:forEachFolder var="fldr" skiproot="true">
+                                <c:if test="${fldr.isDocumentView}">
+                                    <option ${param.sfi eq fldr.id || context.folder.id eq fldr.id ? 'selected="selected"' : ''}
+                                            value="${fldr.id}">${fn:escapeXml(zm:truncateFixed(zm:getFolderName(pageContext,fldr.id),15,true))}
+                                    </option>
+                                </c:if>
+                            </zm:forEachFolder>
+                        </select>
+                        </c:if>
+                    </c:when>
                     <c:otherwise>
                         <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=folders"><fmt:message
                                 key="folders"/></a> &#171;
@@ -65,7 +84,7 @@
         </div>
     </div>
 </c:if>
-<c:if test="${(isTop && '1' eq  top_tb ) || (!isTop && '1' eq btm_tb) }">
+<c:if test="${((isTop && '1' eq  top_tb ) || (!isTop && '1' eq btm_tb))}">
 <div class="Toolbar table ${isTop ? 'top_' : 'btm_'}${context.isContactSearch ? 'cont' : (context.isMessageSearch ? 'mesg' : 'conv') }_lv_toolbar">
 <div class="table-row">
 <span class="table-cell">
@@ -117,9 +136,9 @@
                 <option value="selectAll"><fmt:message key="all"/></option>
                 <option value="selectNone"><fmt:message key="none"/></option>
             </optgroup>
-            
-            <c:if test="${!context.isContactSearch}">
-                <optgroup label="<fmt:message key="markAs"/>">
+            <c:choose>
+                <c:when test="${context.isConversationSearch || context.isMessageSearch}">
+                    <optgroup label="<fmt:message key="markAs"/>">
                     <option value="actionMarkRead"><fmt:message key="MO_read"/></option>
                     <option value="actionMarkUnread"><fmt:message key="MO_unread"/></option>
                     <c:choose>
@@ -130,25 +149,34 @@
                             <option value="actionMarkSpam"><fmt:message key="actionSpam"/></option>
                         </c:otherwise>
                     </c:choose>
-                </optgroup>
-            </c:if>
-            <c:if test="${context.isContactSearch}">
+                </optgroup>    
+                </c:when>
+                 <c:when test="${context.isContactSearch}">
                 <optgroup label="<fmt:message key="compose"/>">
                     <option value="composeTo"><fmt:message key="to"/></option>
                     <option value="composeCC"><fmt:message key="cc"/></option>
                     <option value="composeBCC"><fmt:message key="bcc"/></option>
                 </optgroup>
-            </c:if>
+                </c:when>
+            </c:choose>
+            <c:if test="${!context.isBriefcaseSearch}">
             <optgroup label="<fmt:message key="MO_flag"/>">
                 <option value="actionFlag"><fmt:message key="add"/></option>
                 <option value="actionUnflag"><fmt:message key="remove"/></option>
             </optgroup>
-
+            </c:if>
             <optgroup label="<fmt:message key="moveAction"/>">
                 <c:choose>
                     <c:when test="${context.isContactSearch}">
                         <zm:forEachFolder var="folder">
                             <c:if test="${folder.id != context.folder.id and folder.isContactMoveTarget and !folder.isTrash and !folder.isSpam}">
+                                <option value="moveTo_${folder.id}">${fn:escapeXml(folder.rootRelativePath)}</option>
+                            </c:if>
+                        </zm:forEachFolder>
+                    </c:when>
+                    <c:when test="${context.isBriefcaseSearch}">
+                        <zm:forEachFolder var="folder">
+                            <c:if test="${folder.id != context.folder.id and folder.isDocumentMoveTarget and !folder.isTrash and !folder.isSpam}">
                                 <option value="moveTo_${folder.id}">${fn:escapeXml(folder.rootRelativePath)}</option>
                             </c:if>
                         </zm:forEachFolder>
@@ -176,19 +204,21 @@
                 </optgroup>
             </c:if>
         </select>
-        <noscript><input class="zo_button" name="moreActions" type="submit" value="<fmt:message key="actionGo"/>"/></noscript>
+        <noscript><input id="actGo${isTop}" class="zo_button" name="moreActions" type="submit" value="<fmt:message key="actionGo"/>"/></noscript>
+    <script type="text/javascript">var actGo = document.getElementById('actGo${isTop}');if(actGo){actGo.style.display='none';}</script>
     </span>
 </c:if>
 <!--</span>
 <span class="table-cell">-->
 <span class=" f-right">
-        <c:if test="${!context.isContactSearch}">
+        <c:choose>
+        <c:when test="${context.isConversationSearch || context.isMessageSearch}">
             <c:url var="composeUrl" value="${urlTarget}?st=newmail"/>
             <a accesskey="${requestScope.mainaction_accesskey}" href="${composeUrl}" class="zo_button">
                 <fmt:message key="compose"/>
             </a>
-        </c:if>
-        <c:if test="${context.isContactSearch}">
+        </c:when>
+        <c:when test="${context.isContactSearch}">
             <c:url var="composeUrl" value="${urlTarget}">
                 <c:param name="action" value="edit"/>
                 <c:param name="st" value="${context.st}"/>
@@ -197,7 +227,8 @@
             <a accesskey="${requestScope.mainaction_accesskey}" href="${composeUrl}" class="zo_button">
                 <fmt:message key="add"/>
             </a>
-        </c:if>
+        </c:when>
+    </c:choose>
 
 </span>
 </span>
@@ -226,6 +257,25 @@
                                 </c:if>
                             </zm:forEachFolder>
                         </select>       
+                        </c:if>
+                    </c:when>
+                    <c:when test="${context.isBriefcaseSearch}">
+                        <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=briefcases"><fmt:message
+                                key="briefcases"/></a> :
+                        <c:if test="${btm_fldr_select eq '0'}">
+                            ${fn:escapeXml(zm:truncateFixed(context.shortBackTo,15,true))}
+                        </c:if>
+                        <c:if test="${btm_fldr_select ne '0'}">
+			<select class="_zo_select_button" name="sfi"
+                                onchange="fetchIt('?sfi='+this.value+'&amp;st=${context.st}');">
+                            <zm:forEachFolder var="fldr" skiproot="true">
+                                <c:if test="${fldr.isDocumentView}">
+                                    <option ${param.sfi eq fldr.id || context.folder.id eq fldr.id ? 'selected="selected"' : ''}
+                                            value="${fldr.id}">${fn:escapeXml(zm:truncateFixed(zm:getFolderName(pageContext,fldr.id),15,true))}
+                                    </option>
+                                </c:if>
+                            </zm:forEachFolder>
+                        </select>
                         </c:if>
                     </c:when>
                     <c:otherwise>                           

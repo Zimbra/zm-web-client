@@ -110,8 +110,8 @@
             </optgroup>
         </c:if>
     </select>
-    <noscript><input class="zo_button" name="moreActions" type="submit" value="<fmt:message key="actionGo"/>"/>
-    </noscript>
+    <noscript><input id="actGo${isTop}" class="zo_button" name="moreActions" type="submit" value="<fmt:message key="actionGo"/>"/></noscript>
+    <script type="text/javascript">var actGo = document.getElementById('actGo${isTop}');if(actGo){actGo.style.display='none';}</script>    
 </span>
 <span>
        <c:url var="addUrl" value="${closeUrl}">
