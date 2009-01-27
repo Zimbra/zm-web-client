@@ -2449,7 +2449,7 @@ function() {
 	{
 		var view = this.getCurrentView();
 		if (view && view.needsRefresh()) {
-			var rt = view.getTimeRange();
+			var rt = this.getOptimizedTimeRange(view);
 			var cb = new AjxCallback(this, this._maintGetApptCallback, [work, view]);
 			this.getApptSummaries({start:rt.start, end:rt.end, fanoutAllDay:view._fanoutAllDay(), callback:cb});
 			view.setNeedsRefresh(false);
@@ -2460,6 +2460,33 @@ function() {
 		this._app.getReminderController().refresh();
 	}
     
+};
+
+ZmCalViewController.prototype.getOptimizedTimeRange =
+function(view) {
+	var timeRange = view.getTimeRange();
+	
+	var endOfDay = new Date();
+    endOfDay.setHours(23,59,59,999);
+
+    //optimization step: grab a week's appt backwards
+    var reminderEnd = endOfDay.getTime();
+
+    endOfDay.setDate(endOfDay.getDate()-7);
+	endOfDay.setHours(0,0,0, 0);
+
+    var reminderStart = endOfDay.getTime();
+
+	var startInRange = (reminderStart >= timeRange.start) && (reminderStart <= timeRange.end);
+	var endInRange = (reminderEnd >= timeRange.start) && (reminderEnd <= timeRange.end);
+
+	//if reminder search overlaps widen the time range to include the reminder search
+    if(startInRange || endInRange) {
+		timeRange.start = (reminderStart < timeRange.start) ? reminderStart : timeRange.start;
+		timeRange.end = (reminderEnd > timeRange.end) ? reminderEnd : timeRange.end;
+	}
+	
+	return timeRange;
 };
 
 ZmCalViewController.prototype.getKeyMapName =
