@@ -1950,10 +1950,15 @@ function(buffer, i, item, field, col, params) {
 		return i;
 	}
 	if (field == ZmItem.F_TYPE) {
-		var isOfflineMulti = appCtxt.isOffline && appCtxt.multiAccounts;
-		buffer[i++] = (item.type == ZmAccount.ZIMBRA && !item.isMain && !isOfflineMulti)
-			? ZmMsg.accountTypeSecondary
-			: ZmAccountsListView.TYPES[item.type];
+		var provider = ZmDataSource.getProviderForAccount(item);
+		var type = provider && AjxStringUtil.htmlEncode(provider.name);
+		if (!type) {
+			var isOfflineMulti = appCtxt.isOffline && appCtxt.multiAccounts;
+			type = (item.type == ZmAccount.ZIMBRA && !item.isMain && !isOfflineMulti)
+				? ZmMsg.accountTypeSecondary
+				: ZmAccountsListView.TYPES[item.type];
+		}
+		buffer[i++] = type;
 		return i;
 	}
 	return DwtListView.prototype._getCellContents.apply(this, arguments);
