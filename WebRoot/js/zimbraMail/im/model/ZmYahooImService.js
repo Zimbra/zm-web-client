@@ -178,10 +178,11 @@ function(chat, text, html, typing, params) {
 		this._htmlDiv = this._htmlDiv || document.createElement("DIV");
 		this._htmlDiv.innerHTML = html;
 		msg = YMSGR.YMLUtil.domToYmlRaw(this._htmlDiv);
-		msg = msg.replace(/\"/g, "&quot;").replace(/\'/g, "&apos;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-		
 	} else {
 		msg = text;
+	}
+	if (msg) {
+		msg = msg.replace(/\"/g, "&quot;").replace(/\'/g, "&apos;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 	}
 	var args = {
 		current_id: this._userId,
