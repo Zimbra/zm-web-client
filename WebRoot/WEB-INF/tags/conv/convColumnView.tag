@@ -23,8 +23,7 @@
     <c:set var="selectedRow" value="${param.selectedRow}"/>
     <c:set var="context" value="${context}" />
     <c:set var="csi" value="${param.csi}"/>
-    <c:set var="idcheck" value="${not empty param.id ? param.id : context.currentItem.id}"/>
-    <c:if test="${mailbox.prefs.readingPaneEnabled and not empty idcheck}">
+    <c:if test="${context.searchResult.size ne '0' and mailbox.prefs.readingPaneEnabled and not empty cid}">
         <zm:searchConv var="convSearchResult" id="${not empty param.cid ? param.cid : context.currentItem.id}" context="${context}" fetch="${empty csi ? 'first': 'none'}" markread="true" sort="${param.css}" />
         <c:if test="${empty csi}">
             <c:set var="csi" value="${convSearchResult.fetchedMessageIndex}"/>
@@ -143,7 +142,7 @@
                                     <!-- <td class='CB' nowrap><input <c:if test="${hit.id eq msg.id}">checked</c:if> type=checkbox name="idcv" value="${hit.id}"/></td> -->
                                     <td class='MsgStatusImg' align="center"><app:img src="${hit.messageHit.statusImage}" altkey='${hit.messageHit.statusImageAltKey}'/></td>
 
-                                    <td><%-- allow wrap --%>
+                                    <td> allow wrap
                                         <a href="${msgUrl}">${fn:escapeXml(hit.messageHit.displaySender)}</a>
                                         <br>
                                         <a href="${fn:escapeXml(msgUrl)}" id="A${status.index}">
