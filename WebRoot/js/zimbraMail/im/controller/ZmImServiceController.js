@@ -22,7 +22,7 @@
  * This class is a base class for IM service controllers.
  *
  */
-ZmImServiceController = function(roster) {
+ZmImServiceController = function(roster, capabilities) {
 	if (arguments.length == 0) { return; }
 
 	this._roster = roster;
@@ -31,7 +31,22 @@ ZmImServiceController = function(roster) {
 	 * @type ZmImService 
 	 */
 	this.service = null;
+
+	/** Hash of supported capabilities. Capabilities are defined as constants on ZmImServiceController. */
+	this.capabilities = {};
+	for (var i = 0, count = capabilities ? capabilities.length : 0; i < count; i++) {
+		this.capabilities[capabilities[i]] = true;
+	}
 };
+
+/** true if the service supports multiple accounts (aka gateways) */
+ZmImServiceController.ACCOUNTS = "ACCOUNTS";
+
+/** true if the service supports conferences */
+ZmImServiceController.CONFERENCES = "INSTANT_NOTIFY";
+
+/** true if the service allows the users to change instant notify */
+ZmImServiceController.INSTANT_NOTIFY = "INSTANT_NOTIFY";
 
 /**
  * Logs in to the im service.
@@ -62,21 +77,5 @@ function(showText) {
  */
 ZmImServiceController.prototype.createPresenceMenu =
 function(parent) {
-	alert('Not implemented');
-};
-
-/**
- * Returns true if the service supports multiple accounts (aka gsateways)
- */
-ZmImServiceController.prototype.getSupportsAccounts =
-function() {
-	alert('Not implemented');
-};
-
-/**
- * Returns true if the service supports conferences
- */
-ZmImServiceController.prototype.getSupportsConferences =
-function() {
 	alert('Not implemented');
 };

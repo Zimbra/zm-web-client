@@ -16,7 +16,12 @@
  */
 
 ZmZimbraImServiceController = function(roster) {
-	ZmImServiceController.call(this, roster);
+	var capabilities = [
+		ZmImServiceController.ACCOUNTS,
+		ZmImServiceController.CONFERENCES,
+		ZmImServiceController.INSTANT_NOTIFY
+	];
+	ZmImServiceController.call(this, roster, capabilities);
 
 	this.service = new ZmZimbraImService(roster);
 };
@@ -58,16 +63,6 @@ function(parent) {
 		ZmOperation.IM_PRESENCE_XA
 	];
 	return new ZmPresenceMenu(parent, statuses);
-};
-
-ZmZimbraImServiceController.prototype.getSupportsAccounts =
-function() {
-	return true;
-};
-
-ZmZimbraImServiceController.prototype.getSupportsConferences =
-function() {
-	return true;
 };
 
 ZmZimbraImServiceController.prototype._chatListChangeListener =

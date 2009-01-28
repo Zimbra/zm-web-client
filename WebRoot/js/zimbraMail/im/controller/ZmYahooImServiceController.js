@@ -80,16 +80,6 @@ function(parent) {
 	return result;
 };
 
-ZmYahooImServiceController.prototype.getSupportsAccounts =
-function() {
-	return false;
-};
-
-ZmYahooImServiceController.prototype.getSupportsConferences =
-function() {
-	return false;
-};
-
 ZmYahooImServiceController.prototype._showLoginDialog =
 function(loginParams, id, remember, message) {
 	var args = {

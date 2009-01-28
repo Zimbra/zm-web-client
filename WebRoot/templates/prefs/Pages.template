@@ -1325,15 +1325,17 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 					</td>
 				</tr>
 
+				<$ if (data.isEnabled(ZmSetting.IM_PREF_INSTANT_NOTIFY)) { $>
 				<tr>
 					<td class='ZOptionsLabel'><$=ZmMsg.imNotificationsLabel$></td>
 					<td class='ZOptionsField'>
 						<div id='${id}_IM_PREF_INSTANT_NOTIFY' tabindex='30'></div>
 					</td>
 				</tr>
+				<$ } $>
 
 				<tr>
-					<td class='ZOptionsLabel'>&nbsp;</td>
+					<td class='ZOptionsLabel'><$= data.isEnabled(ZmSetting.IM_PREF_INSTANT_NOTIFY) ? "&nbsp;" : ZmMsg.imNotificationsLabel $></td>
 					<td class='ZOptionsField'>
 						<div id='${id}_IM_PREF_NOTIFY_PRESENCE' tabindex='50'></div>
 					</td>

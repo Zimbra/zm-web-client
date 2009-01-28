@@ -294,7 +294,6 @@ ZmImApp.prototype._registerSettings = function(settings) {
 							   defaultValue : "zimbra"
 							 });
 
-
 	var listener = new AjxListener(this, this._onSettingChange);
 	settings.getSetting(ZmSetting.IM_PREF_INSTANT_NOTIFY).addChangeListener(listener);
 	settings.getSetting(ZmSetting.IM_PREF_REPORT_IDLE).addChangeListener(listener);
@@ -337,7 +336,11 @@ ZmImApp.prototype._registerPrefs = function() {
     ZmPref.registerPref("IM_PREF_INSTANT_NOTIFY",
 			    { displayName      : ZmMsg.imPrefInstantNotify,
 			      displayContainer : ZmPref.TYPE_CHECKBOX,
-			      precondition     : ZmSetting.INSTANT_NOTIFY });
+			      precondition     : function() {
+					  return appCtxt.get(ZmSetting.INSTANT_NOTIFY) &&
+							 ZmImApp.INSTANCE.getServiceController().capabilities[ZmImServiceController.INSTANT_NOTIFY]; 
+				  }
+				} );
 
 	ZmPref.registerPref("IM_PREF_AUTO_LOGIN",
 			    { displayName      : ZmMsg.imPrefAutoLogin,

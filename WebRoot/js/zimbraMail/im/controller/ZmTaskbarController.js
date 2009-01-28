@@ -489,7 +489,7 @@ function(presence) {
 
 ZmTaskbarController.prototype._gatewayListListener =
 function(ev) {
-	if (!ZmImApp.INSTANCE.getServiceController().getSupportsAccounts()) {
+	if (!ZmImApp.INSTANCE.getServiceController().capabilities[ZmImServiceController.ACCOUNTS]) {
 		return;
 	}
 	ev.roster.getGateways();
