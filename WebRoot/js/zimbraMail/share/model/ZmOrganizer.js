@@ -1204,7 +1204,7 @@ function(parentId) {
 
 ZmOrganizer.prototype.isUnder =
 function(id) {
-	if (this.nId == id) { return true; }
+	if (this.nId == id || (this.isRemote() && this.rid == id)) { return true; }
 
 	var parent = this.parent;
 	while (parent && parent.nId != ZmOrganizer.ID_ROOT) {
