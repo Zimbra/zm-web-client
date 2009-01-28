@@ -145,7 +145,7 @@ ZmImPrivacyList.prototype.reset = function(items) {
 
 ZmImPrivacyList.prototype._notifyBuddyChanges = function(addrs) {
 	for (var i = 0; i < addrs.length; ++i) {
-		var buddy = this._roster.getRosterItem(addrs[i]);
+		var buddy = this._roster.getRosterItem(addrs[i].addr);
 		if (buddy)
 			buddy._notifyPresence();
 	}
