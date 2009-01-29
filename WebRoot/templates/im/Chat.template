@@ -165,7 +165,7 @@
 </template>
 
 <template id="im.Chat#NewRosterItemDlg">
-  <table>
+  <table style="width:295px">
     <tr>
       <td class="ZmChatDialogField"><$= ZmMsg.imGatewayLabel $></td>
       <td id="${id}_serviceType"></td>
@@ -182,6 +182,14 @@
       <td class="ZmChatDialogField"><$= ZmMsg.imGroupsLabel $></td>
       <td id="${id}_groups"></td>
       <td id="${id}_groupsDropDown"></td>
+    </tr>
+    <tr>
+		<td colspan=3 align=right>
+			<table><tr>
+				<td align="right" id="${id}_okButton"></td>
+				<td align="right" id="${id}_cancelButton"></td>
+			</tr></table>
+		</td>
     </tr>
   </table>
 </template>

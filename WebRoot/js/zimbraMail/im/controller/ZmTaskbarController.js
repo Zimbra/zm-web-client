@@ -43,15 +43,13 @@ ZmTaskbarController = function(components) {
 	this._presenceItem = this._createItem(presenceArgs);
 	this._toolbar.addSeparator();
 
-	// Create the new buddy button as a plain toolbar button.
-	// (Need to find some time to make it a taskbar item, and move the dialog contents into the taskbar popup area.)
 	var newBuddyArgs = {
-		image: "AddBuddy",
-		tooltip: ZmMsg.imNewBuddyTooltip
+		contentClassName: "ZmNewBuddyPopup",
+		op: ZmId.OP_NEW_ROSTER_ITEM
 	};
-	var newBuddyButton = this._toolbar.createButton(ZmId.OP_NEW_ROSTER_ITEM, newBuddyArgs);
-	newBuddyButton.addSelectionListener(new AjxListener(this, this._newBuddyListener));
-
+	var newBuddyItem = this._createItem(newBuddyArgs);
+	newBuddyItem.button.setText("");
+	
 	var buddyListArgs = {
 		contentCalback: new AjxCallback(this, this._createBuddyListCallback),
 		op: ZmId.OP_IM_BUDDY_LIST
@@ -320,7 +318,7 @@ ZmTaskbarController.prototype._createPresenceMenuCallback =
 function(parent, parentElement) {
 	AjxDispatcher.require(["IMCore", "IM"]);
 	var args = {
-		parent: parent.button,
+		parent: parent.taskbarItem.button,
 		parentElement: parentElement,
 		posStyle: DwtControl.STATIC_STYLE,
 		className: null
@@ -359,8 +357,8 @@ function(chat, parent, parentElement) {
 	var widget = new ZmChatWidget(args);
 	this._chatData[chat.id].chatWidget = widget;
 	widget.addCloseListener(new AjxListener(this, this._closeChatListener, [chat]));
-	widget.addMinimizeListener(new AjxListener(this, this._minimizeChatListener, [chat, parent]));
-	widget.addStatusListener(new AjxListener(this, this._chatStatusListener, [parent]));
+	widget.addMinimizeListener(new AjxListener(this, this._minimizeChatListener, [chat, parent.taskbarItem]));
+	widget.addStatusListener(new AjxListener(this, this._chatStatusListener, [parent.taskbarItem]));
 	widget._setChat(chat);
 	widget.focus();
 	this._chatChangeListenerListenerObj = this._chatChangeListenerListenerObj || new AjxListener(this, this._chatChangeListenerListener);

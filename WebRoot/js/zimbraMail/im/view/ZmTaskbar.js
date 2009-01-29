@@ -81,12 +81,14 @@ function(ev) {
  * 		  buttonConstructor		[function]		Constructor for the button
  *        selectionListener		[AjxListener]	Listener that handles button presses
  *        contentCallback		[AjxCallback]	A callback that creates the popup content
+ *        contentClassName		[String]		Name of the class that holds the content (Subclass of ZmTaskbarContent)
  *        rightAlign			[Boolean]		True to align the popup with the right of the button
  */
 ZmTaskbarItem = function(params) {
 	DwtComposite.call(this, params);
 	this._createHtml();
 	this._contentCallback = params.contentCalback;
+	this._contentClassName = params.contentClassName;
 
 	var buttonArgs = {
 		style: DwtButton.TOGGLE_STYLE,
@@ -99,6 +101,7 @@ ZmTaskbarItem = function(params) {
 	if (params.op) {
 		this.button.setText(ZmMsg[ZmOperation.getProp(params.op, "textKey")]);
 		this.button.setImage(ZmOperation.getProp(params.op, "image"));
+		this.button.setToolTipContent(ZmMsg[ZmOperation.getProp(params.op, "tooltipKey")]);
 	}
 	this._rightAlign = params.rightAlign;
 };
@@ -120,11 +123,26 @@ function(expand) {
 	this.button.setSelected(expand);
 	if (expand) {
 		this.showAlert(false);
-		if (!this._hasContent) {
-			this._contentCallback.run(this, this._contentEl);
-			this._hasContent = true;
+		if (!this._popup) {
+			AjxDispatcher.require([ "IMCore", "IM" ]);
+			var args = {
+				parent: this,
+				parentElement: this._contentEl,
+				taskbarItem: this,
+				taskbar: this.parent
+			};
+			if (this._contentClassName) {
+				var ctor = window.eval(this._contentClassName);
+				this._popup = new ctor(args);
+			} else {
+				args.callback = this._contentCallback;
+				this._popup = new ZmTaskbarPopup1(args);
+			}
 		}
+		this._popup.popup();
 		this.positionContent();
+	} else if (this._popup) {
+		this._popup.popdown();
 	}
 };
 
