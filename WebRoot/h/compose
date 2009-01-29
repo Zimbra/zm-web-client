@@ -124,7 +124,7 @@
             <br><div class='ZhACCont' id="ccContainer" style='width:99%;'></div>
         </div>
     </td>
-    <td>
+    <td nowrap="nowrap" width="1%">
         <div id="show_bcc" style="display:block;"><a id="a_shbcc" href="javascript:showHideBcc();"><fmt:message key="showBcc"/></a></div>
         <div id="hide_bcc" style="display:none;"><a id="a_hdbcc" href="javascript:showHideBcc();"><fmt:message key="hideBcc"/></a></div>
     </td>
