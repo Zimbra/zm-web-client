@@ -83,6 +83,7 @@ function(ev) {
  *        contentCallback		[AjxCallback]	A callback that creates the popup content
  *        contentClassName		[String]		Name of the class that holds the content (Subclass of ZmTaskbarContent)
  *        rightAlign			[Boolean]		True to align the popup with the right of the button
+ *        data					[Object]		Arbitrary data passed to popup object when it's created
  */
 ZmTaskbarItem = function(params) {
 	DwtComposite.call(this, params);
@@ -104,6 +105,7 @@ ZmTaskbarItem = function(params) {
 		this.button.setToolTipContent(ZmMsg[ZmOperation.getProp(params.op, "tooltipKey")]);
 	}
 	this._rightAlign = params.rightAlign;
+	this._data = params.data;
 };
 
 ZmTaskbarItem.prototype = new DwtComposite;
@@ -116,6 +118,28 @@ function() {
 	return "ZmTaskbarItem";
 };
 
+ZmTaskbarItem.prototype.getPopup =
+function() {
+	if (!this._popup) {
+		AjxDispatcher.require([ "IMCore", "IM" ]);
+		var args = {
+			parent: this,
+			parentElement: this._contentEl,
+			taskbarItem: this,
+			taskbar: this.parent,
+			data: this._data
+		};
+		if (this._contentClassName) {
+			var ctor = window.eval(this._contentClassName);
+			this._popup = new ctor(args);
+		} else {
+			args.callback = this._contentCallback;
+			this._popup = new ZmTaskbarPopup1(args);
+		}
+	}
+	return this._popup;
+};
+
 ZmTaskbarItem.prototype._expand =
 function(expand) {
 	this.expanded = expand;
@@ -123,23 +147,7 @@ function(expand) {
 	this.button.setSelected(expand);
 	if (expand) {
 		this.showAlert(false);
-		if (!this._popup) {
-			AjxDispatcher.require([ "IMCore", "IM" ]);
-			var args = {
-				parent: this,
-				parentElement: this._contentEl,
-				taskbarItem: this,
-				taskbar: this.parent
-			};
-			if (this._contentClassName) {
-				var ctor = window.eval(this._contentClassName);
-				this._popup = new ctor(args);
-			} else {
-				args.callback = this._contentCallback;
-				this._popup = new ZmTaskbarPopup1(args);
-			}
-		}
-		this._popup.popup();
+		this.getPopup().popup();
 		this.positionContent();
 	} else if (this._popup) {
 		this._popup.popdown();

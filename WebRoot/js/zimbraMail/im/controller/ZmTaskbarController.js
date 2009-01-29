@@ -86,17 +86,30 @@ function(chat) {
 
 	var args = {
 		index: this._chatButtonIndex++,
-		contentCalback: new AjxCallback(this, this._createChatItemCallback, [chat]),
-		selectionListener: new AjxListener(this, this._chatSelectionListener, [chat])
+		contentClassName: "ZmChatPopup",
+		selectionListener: new AjxListener(this, this._chatSelectionListener, [chat]),
+		data: {
+			chat: chat,
+			statusListener: new AjxListener(this, this._chatStatusListener, [chat]),
+			closeListener: new AjxListener(this, this._closeChatListener, [chat]),
+			minimizeListener: new AjxListener(this, this._minimizeChatListener, [chat])
+		}
 	};
 	var item = this._createItem(args);
 	item.button.setToolTipContent(new AjxCallback(this, this._getChatToolTip, [chat]));
 
-	this._chatData[chat.id] = { item: item, separator: separator };
+	this._chatData[chat.id] = {
+		item: item,
+		separator: separator,
+		chatWidget: item.getPopup().chatWidget
+	};
 	var hoverImage = "Close";
 	item.button.setHoverImage(hoverImage);
 	this._closeClass = this._closeClass || AjxImg.getClassForImage(hoverImage);
 	this._toolbar.expandItem(item, true);
+
+	this._chatChangeListenerListenerObj = this._chatChangeListenerListenerObj || new AjxListener(this, this._chatChangeListenerListener);
+	chat.addChangeListener(this._chatChangeListenerListenerObj);
 
 	return item;
 };
@@ -347,24 +360,6 @@ function(parent, parentElement) {
 	new ZmImOverview(parent, overviewArgs);
 };
 
-ZmTaskbarController.prototype._createChatItemCallback =
-function(chat, parent, parentElement) {
-	var args = {
-		parent: parent,
-		parentElement: parentElement,
-		posStyle: Dwt.STATIC_STYLE
-	};
-	var widget = new ZmChatWidget(args);
-	this._chatData[chat.id].chatWidget = widget;
-	widget.addCloseListener(new AjxListener(this, this._closeChatListener, [chat]));
-	widget.addMinimizeListener(new AjxListener(this, this._minimizeChatListener, [chat, parent.taskbarItem]));
-	widget.addStatusListener(new AjxListener(this, this._chatStatusListener, [parent.taskbarItem]));
-	widget._setChat(chat);
-	widget.focus();
-	this._chatChangeListenerListenerObj = this._chatChangeListenerListenerObj || new AjxListener(this, this._chatChangeListenerListener);
-	chat.addChangeListener(this._chatChangeListenerListenerObj);
-};
-
 ZmTaskbarController.prototype._chatChangeListenerListener =
 function(ev) {
 	var chat = ev.source;
@@ -384,7 +379,8 @@ function(chat) {
 };
 
 ZmTaskbarController.prototype._minimizeChatListener =
-function(chat, taskbarItem) {
+function(chat) {
+	var taskbarItem = this._chatData[chat.id].item;
 	this._expandChatItem(taskbarItem, chat, false);
 
 	// Leave the toolbar button in a selected state for an instant to
@@ -399,7 +395,8 @@ function(taskbarItem) {
 };
 
 ZmTaskbarController.prototype._chatStatusListener =
-function(taskbarItem, status) {
+function(chat, status) {
+	var taskbarItem = this._chatData[chat.id].item;
 	taskbarItem.button.setImage(status.statusImage);
 	var title = status.title ? AjxStringUtil.clipByLength(status.title, 15) : "";
 	taskbarItem.button.setText(title);

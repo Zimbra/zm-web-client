@@ -44,6 +44,7 @@ AjxPackage.require("zimbraMail.im.view.ZmCustomStatusDlg");
 AjxPackage.require("zimbraMail.im.view.ZmYahooLoginDialog");
 
 AjxPackage.require("zimbraMail.im.view.popup.ZmTaskbarPopup");
+AjxPackage.require("zimbraMail.im.view.popup.ZmChatPopup");
 AjxPackage.require("zimbraMail.im.view.popup.ZmNewBuddyPopup");
 
 AjxPackage.require("zimbraMail.im.controller.ZmImController");
