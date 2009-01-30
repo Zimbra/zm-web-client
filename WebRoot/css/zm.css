@@ -427,6 +427,10 @@ td.DDSepInvisible div {
 	white-space: nowrap;
 }
 
+.readingPaneVerticalSash {
+	@WidgetHeaderContainer-normal@
+}
+
 /* ??? MOVE ME */
 /* "Display Images" button in mail message view to show hidden images */
 /* ??? "Displayimages" CLASS REALLY SHOULD BE SHARED WITH "SpellCheckModeDiv"  */

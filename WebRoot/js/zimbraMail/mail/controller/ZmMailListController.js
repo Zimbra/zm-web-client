@@ -82,6 +82,11 @@ ZmMailListController.GROUP_BY_MSG_KEY = {};
 ZmMailListController.GROUP_BY_SHORTCUT = {};
 ZmMailListController.GROUP_BY_VIEWS = [];
 
+// reading pane options
+ZmMailListController.READING_PANE_OFF_ID		= "RPO";
+ZmMailListController.READING_PANE_AT_BOTTOM_ID	= "RPB";
+ZmMailListController.READING_PANE_ON_RIGHT_ID	= "RPR";
+
 // convert key mapping to folder to search
 ZmMailListController.ACTION_CODE_TO_FOLDER = {};
 ZmMailListController.ACTION_CODE_TO_FOLDER[ZmKeyMap.GOTO_INBOX]		= ZmFolder.ID_INBOX;
@@ -96,7 +101,21 @@ ZmMailListController.ACTION_CODE_TO_FOLDER_MOVE[ZmKeyMap.MOVE_TO_INBOX]	= ZmFold
 ZmMailListController.ACTION_CODE_TO_FOLDER_MOVE[ZmKeyMap.MOVE_TO_TRASH]	= ZmFolder.ID_TRASH;
 ZmMailListController.ACTION_CODE_TO_FOLDER_MOVE[ZmKeyMap.MOVE_TO_JUNK]	= ZmFolder.ID_SPAM;
 
-ZmMailListController.READING_PANE_MENU_ITEM_ID = "RP";
+// convert key mapping to view menu item
+ZmMailListController.ACTION_CODE_TO_MENU_ID = {};
+ZmMailListController.ACTION_CODE_TO_MENU_ID[ZmKeyMap.READING_PANE_OFF]		= ZmMailListController.READING_PANE_OFF_ID;
+ZmMailListController.ACTION_CODE_TO_MENU_ID[ZmKeyMap.READING_PANE_BOTTOM]	= ZmMailListController.READING_PANE_AT_BOTTOM_ID;
+ZmMailListController.ACTION_CODE_TO_MENU_ID[ZmKeyMap.READING_PANE_RIGHT]	= ZmMailListController.READING_PANE_ON_RIGHT_ID;
+
+ZmMailListController.READING_PANE_TEXT = {};
+ZmMailListController.READING_PANE_TEXT[ZmMailListController.READING_PANE_OFF_ID]		= ZmMsg.readingPaneOff;
+ZmMailListController.READING_PANE_TEXT[ZmMailListController.READING_PANE_AT_BOTTOM_ID]	= ZmMsg.readingPaneAtBottom;
+ZmMailListController.READING_PANE_TEXT[ZmMailListController.READING_PANE_ON_RIGHT_ID]	= ZmMsg.readingPaneOnRight;
+
+ZmMailListController.READING_PANE_ICON = {};
+ZmMailListController.READING_PANE_ICON[ZmMailListController.READING_PANE_OFF_ID]		= "SplitPane"; //"ReadingPaneOff";
+ZmMailListController.READING_PANE_ICON[ZmMailListController.READING_PANE_AT_BOTTOM_ID]	= "SplitPane"; //"ReadingPaneBottom";
+ZmMailListController.READING_PANE_ICON[ZmMailListController.READING_PANE_ON_RIGHT_ID]	= "SplitPane"; //"ReadingPaneRight";
 
 // Public methods
 
@@ -140,6 +159,11 @@ ZmMailListController.prototype._setupReadingPaneMenuItem = function() {};
 ZmMailListController.prototype.isReadingPaneOn =
 function() {
 	return appCtxt.get(ZmSetting.READING_PANE_ENABLED);
+};
+
+ZmMailListController.prototype.isReadingPaneOnRight =
+function() {
+	return (appCtxt.get(ZmSetting.READING_PANE_ORIENTATION) == ZmSetting.RP_RIGHT);
 };
 
 ZmMailListController.prototype.getKeyMapName =
@@ -236,8 +260,12 @@ function(actionCode) {
 			}
 			break;
 
-		case ZmKeyMap.READING_PANE:
-			this.switchView(ZmMailListController.READING_PANE_MENU_ITEM_ID, true);
+		case ZmKeyMap.READING_PANE_BOTTOM:
+		case ZmKeyMap.READING_PANE_RIGHT:
+		case ZmKeyMap.READING_PANE_OFF:
+			var menuId = ZmMailListController.ACTION_CODE_TO_MENU_ID[actionCode];
+			this._updateViewMenu(menuId);
+			this.switchView(menuId, true);
 			break;
 
 		case ZmKeyMap.SHOW_FRAGMENT:
@@ -338,6 +366,17 @@ function(map) {
 	return (map == "list");
 };
 
+ZmMailListController.prototype._updateViewMenu =
+function(id) {
+	var viewBtn = this._toolbar[this._currentView].getButton(ZmOperation.VIEW_MENU);
+	var menu = viewBtn && viewBtn.getMenu();
+	if (menu) {
+		var mi = menu.getItemById(ZmOperation.MENUITEM_ID, id);
+		if (mi) {
+			mi.setChecked(true, true);
+		}
+	}
+};
 
 // Private and protected methods
 

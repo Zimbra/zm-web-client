@@ -82,6 +82,7 @@ ZmSetting.D_LIST		= "list";
 ZmSetting.D_NONE		= "NONE";	// placeholder setting
 
 // constants used as setting values
+// TODO: these should be defined in their respective apps
 ZmSetting.ACL_AUTH				= "all";
 ZmSetting.ACL_GROUP				= "grp";
 ZmSetting.ACL_PUBLIC			= "pub";
@@ -126,6 +127,8 @@ ZmSetting.PROTO_HTTPS			= "https:";
 ZmSetting.PROTO_MIXED			= "mixed:";
 ZmSetting.RIGHT_VIEW_FREE_BUSY	= "viewFreeBusy";
 ZmSetting.RIGHT_INVITE			= "invite";
+ZmSetting.RP_BOTTOM				= "bottom";					// zimbraPrefReadingPaneLocation
+ZmSetting.RP_RIGHT				= "right";
 ZmSetting.SIG_INTERNET			= "internet";				// zimbraPrefMailSignatureStyle
 ZmSetting.SIG_OUTLOOK			= "outlook";
 

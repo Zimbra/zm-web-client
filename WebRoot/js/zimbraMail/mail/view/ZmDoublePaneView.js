@@ -28,19 +28,22 @@ ZmDoublePaneView = function(params) {
 	params.className = null;
 	params.id = DwtId.getListViewId(view);
 	this._mailListView = this._createMailListView(params);
-	this._msgSash = new DwtSash({parent:this, style:DwtSash.VERTICAL_STYLE, className:"AppSash-vert",
-								 threshold:ZmDoublePaneView.SASH_THRESHOLD, posStyle:Dwt.ABSOLUTE_STYLE});
+
+	this._vertMsgSash = new DwtSash({parent:this, style:DwtSash.HORIZONTAL_STYLE, className:"AppSash-horiz",
+									 threshold:ZmDoublePaneView.SASH_THRESHOLD, posStyle:Dwt.ABSOLUTE_STYLE});
+	Dwt.addClass(this._vertMsgSash.getHtmlElement(), "readingPaneVerticalSash");
+	this._vertMsgSash.registerCallback(this._sashCallback, this);
+
+	this._horizMsgSash = new DwtSash({parent:this, style:DwtSash.VERTICAL_STYLE, className:"AppSash-vert",
+									  threshold:ZmDoublePaneView.SASH_THRESHOLD, posStyle:Dwt.ABSOLUTE_STYLE});
+	this._horizMsgSash.registerCallback(this._sashCallback, this);
+
 	params.parent = this;
 	params.className = null;
 	params.id = ZmId.getViewId(ZmId.VIEW_MSG, null, view);
 	this._msgView = new ZmMailMsgView(params);
 
-	if (!this._controller.isReadingPaneOn()) {
-		this._msgView.setVisible(false);
-		this._msgSash.setVisible(false);
-	}
-
-	this._msgSash.registerCallback(this._sashCallback, this);
+	this.setReadingPane();
 };
 
 ZmDoublePaneView.prototype = new DwtComposite;
@@ -69,16 +72,28 @@ function() {
 	return this._mailListView.getTitle();
 };
 
-ZmDoublePaneView.prototype.toggleView = 
+/**
+ * Displays the reading pane, based on the current settings.
+ */
+ZmDoublePaneView.prototype.setReadingPane =
 function() {
-	var visible = !this.isMsgViewVisible();
+	var readingPaneEnabled = this._controller.isReadingPaneOn();
+	if (!readingPaneEnabled) {
+		this._msgView.setVisible(false);
+		this._vertMsgSash.setVisible(false);
+		this._horizMsgSash.setVisible(false);
+	} else {
+		this._msgView.setVisible(true);
+		var readingPaneOnRight = this._controller.isReadingPaneOnRight();
+		var newSash = readingPaneOnRight ? this._vertMsgSash : this._horizMsgSash;
+		var oldSash = readingPaneOnRight ? this._horizMsgSash : this._vertMsgSash;
+		oldSash.setVisible(false);
+		newSash.setVisible(true);
+	}
 
-	this._msgView.setVisible(visible);
-	this._msgView.noTab = !visible || AjxEnv.isIE;
-	this._msgSash.setVisible(visible);
-
+	this._msgView.noTab = !readingPaneEnabled || AjxEnv.isIE;
 	var sz = this.getSize();
-	this._resetSize(sz.x, sz.y);
+	this._resetSize(sz.x, sz.y, true);
 };
 
 ZmDoublePaneView.prototype._createMailListView =
@@ -172,79 +187,102 @@ function() {
 };
 
 ZmDoublePaneView.prototype._resetSize = 
-function(newWidth, newHeight) {
-	if (newHeight <= 0) { return; }
-	
+function(newWidth, newHeight, force) {
+
+
+	if (newWidth <= 0 || newHeight <= 0) { return; }
+	if (!force && newWidth == this._lastResetWidth && newHeight == this._lastResetHeight) { return; }
+
+	var readingPaneOnRight = this._controller.isReadingPaneOnRight();
+
 	if (this.isMsgViewVisible()) {
-		var sashHeight = this._msgSash.getSize().y;
-		if (!this._sashMoved) {
-			var listViewHeight = (newHeight / 2) - DwtListView.HEADERITEM_HEIGHT;
-			this._mailListView.resetHeight(listViewHeight);
-			this._msgView.setBounds(Dwt.DEFAULT, listViewHeight + sashHeight, Dwt.DEFAULT,
-									newHeight - (listViewHeight + sashHeight));
-			this._msgSash.setLocation(Dwt.DEFAULT, listViewHeight);
+		var sash = this.getSash();
+		var sashSize = sash.getSize();
+		var sashThickness = readingPaneOnRight ? sashSize.x : sashSize.y;
+		if (readingPaneOnRight) {
+			var listViewWidth = this._vertSashX || Math.floor(newWidth / 2);
+			this._mailListView.resetSize(listViewWidth, newHeight);
+			sash.setLocation(listViewWidth, 0);
+			this._msgView.setBounds(listViewWidth + sashThickness, 0,
+									newWidth - (listViewWidth + sashThickness), newHeight);
 		} else {
-			var mvHeight = newHeight - this._msgView.getLocation().y;
-			var minHeight = this._msgView.getMinHeight();
-			if (mvHeight < minHeight) {
-				this._mailListView.resetHeight(newHeight - minHeight);
-				this._msgView.setBounds(Dwt.DEFAULT, (newHeight - minHeight) + sashHeight,
-										Dwt.DEFAULT, minHeight - sashHeight);
-			} else {
-				this._msgView.setSize(Dwt.DEFAULT, mvHeight);
-			}
-			this._msgSash.setLocation(Dwt.DEFAULT, this._msgView.getLocation().y - sashHeight);
+			var listViewHeight = this._horizSashY || (Math.floor(newHeight / 2) - DwtListView.HEADERITEM_HEIGHT);
+			this._mailListView.resetSize(newWidth, listViewHeight);
+			sash.setLocation(0, listViewHeight);
+			this._msgView.setBounds(0, listViewHeight + sashThickness, newWidth,
+									newHeight - (listViewHeight + sashThickness));
 		}
 	} else {
-		this._mailListView.resetHeight(newHeight);
+		this._mailListView.resetSize(newWidth, newHeight);
 	}
 	this._mailListView._resetColWidth();
+
+	this._lastResetWidth = newWidth;
+	this._lastResetHeight = newHeight;
 }
 
 ZmDoublePaneView.prototype._sashCallback =
 function(delta) {
 
-	if (!this._sashMoved) {
-		this._sashMoved = true;
-	}
+	var readingPaneOnRight = this._controller.isReadingPaneOnRight();
 
 	if (delta > 0) {
-		var newMsgViewHeight = this._msgView.getSize().y - delta;
-		var minMsgViewHeight = this._msgView.getMinHeight();
-		if (newMsgViewHeight > minMsgViewHeight) {
-			// moving sash down
-			this._mailListView.resetHeight(this._mailListView.getSize().y + delta);
-			this._msgView.setSize(Dwt.DEFAULT, newMsgViewHeight);
-			this._msgView.setLocation(Dwt.DEFAULT, this._msgView.getLocation().y + delta);
+		if (readingPaneOnRight) {
+			// moving sash right
+			this._mailListView.resetSize(this._mailListView.getSize().x + delta, Dwt.DEFAULT);
+			this._msgView.setBounds(this._msgView.getLocation().x + delta, Dwt.DEFAULT,
+									this._msgView.getSize().x - delta, Dwt.DEFAULT);
 		} else {
-			delta = 0;
+			// moving sash down
+			var newMsgViewHeight = this._msgView.getSize().y - delta;
+			var minMsgViewHeight = this._msgView.getMinHeight();
+			if (newMsgViewHeight > minMsgViewHeight) {
+				this._mailListView.resetSize(Dwt.DEFAULT, this._mailListView.getSize().y + delta);
+				this._msgView.setBounds(Dwt.DEFAULT, this._msgView.getLocation().y + delta,
+										Dwt.DEFAULT, newMsgViewHeight);
+			} else {
+				delta = 0;
+			}
 		}
 	} else {
 		var absDelta = Math.abs(delta);
-		
-		if (!this._minMLVHeight) {
-			var list = this._mailListView.getList();
-			if (list && list.size()) {
-				var item = list.get(0);
-				var div = document.getElementById(this._mailListView._getItemId(item));
-				this._minMLVHeight = DwtListView.HEADERITEM_HEIGHT + (Dwt.getSize(div).y * 2);
-			} else {
-				this._minMLVHeight = DwtListView.HEADERITEM_HEIGHT;
-			}
-		}
-		
-		if (this._msgSash.getLocation().y - absDelta > this._minMLVHeight) {
-			// moving sash up
-			this._mailListView.resetHeight(this._mailListView.getSize().y - absDelta);
-			this._msgView.setSize(Dwt.DEFAULT, this._msgView.getSize().y + absDelta);
-			this._msgView.setLocation(Dwt.DEFAULT, this._msgView.getLocation().y - absDelta);
+
+		if (readingPaneOnRight) {
+			// moving sash left
+			this._mailListView.resetSize(this._mailListView.getSize().x - absDelta, Dwt.DEFAULT);
+			this._msgView.setBounds(this._msgView.getLocation().x - absDelta, Dwt.DEFAULT,
+									this._msgView.getSize().x + absDelta, Dwt.DEFAULT);
 		} else {
-			delta = 0;
+			// moving sash up
+			if (!this._minMLVHeight) {
+				var list = this._mailListView.getList();
+				if (list && list.size()) {
+					var item = list.get(0);
+					var div = document.getElementById(this._mailListView._getItemId(item));
+					this._minMLVHeight = DwtListView.HEADERITEM_HEIGHT + (Dwt.getSize(div).y * 2);
+				} else {
+					this._minMLVHeight = DwtListView.HEADERITEM_HEIGHT;
+				}
+			}
+
+			if (this.getSash().getLocation().y - absDelta > this._minMLVHeight) {
+				// moving sash up
+				this._mailListView.resetSize(Dwt.DEFAULT, this._mailListView.getSize().y - absDelta);
+				this._msgView.setBounds(Dwt.DEFAULT, this._msgView.getLocation().y - absDelta,
+										Dwt.DEFAULT, this._msgView.getSize().y + absDelta);
+			} else {
+				delta = 0;
+			}
 		}
 	}
 
 	if (delta) {
 		this._mailListView._resetColWidth();
+		if (readingPaneOnRight) {
+			this._vertSashX = this._vertMsgSash.getLocation().x;
+		} else {
+			this._horizSashY = this._horizMsgSash.getLocation().y;
+		}
 	}
 
 	return delta;
@@ -257,4 +295,10 @@ function() {
 	if (selectedItem) {
 		this._mailListView.setSelection(selectedItem, false);
 	}
+};
+
+ZmDoublePaneView.prototype.getSash =
+function() {
+	var readingPaneOnRight = this._controller.isReadingPaneOnRight();
+	return readingPaneOnRight ? this._vertMsgSash : this._horizMsgSash;
 };

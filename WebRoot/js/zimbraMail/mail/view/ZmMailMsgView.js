@@ -1721,7 +1721,7 @@ function(self, iframe, attempt) {
 	var h;
 	if (self._scrollWithIframe) {
 		h = self.getH() - 7;
-		function substract(el) {
+		function subtract(el) {
 			if (el) {
 				if (typeof el == "string")
 					el = document.getElementById(el);
@@ -1729,17 +1729,17 @@ function(self, iframe, attempt) {
 					h -= Dwt.getSize(el).y;
 			}
 		};
-		substract(self._hdrTableId);
-		substract(self._displayImagesId);
-		substract(self._highlightObjectsId);
+		subtract(self._hdrTableId);
+		subtract(self._displayImagesId);
+		subtract(self._highlightObjectsId);
 		if (self._isMsgTruncated) {
-			substract(self._msgTruncatedId);
+			subtract(self._msgTruncatedId);
 		}
 		if (self._hasInviteToolbar && self._inviteToolbar) {
-			substract(self._inviteToolbar.getHtmlElement());
+			subtract(self._inviteToolbar.getHtmlElement());
 		}
 		if (self._hasShareToolbar && self._shareToolbar) {
-			substract(self._shareToolbar.getHtmlElement());
+			subtract(self._shareToolbar.getHtmlElement());
 		}
 		iframe.style.height = h + "px";
 	} else {

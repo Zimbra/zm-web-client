@@ -86,7 +86,7 @@ function(item, callback, results) {
 
 	var readingPaneOn = this.isReadingPaneOn();
 	if (this._doublePaneView.isMsgViewVisible() != readingPaneOn) {
-		this._doublePaneView.toggleView();
+		this._doublePaneView.setReadingPane();
 	}
 };
 
@@ -98,8 +98,11 @@ function(item, callback, results) {
  */
 ZmDoublePaneController.prototype.switchView =
 function(view, force) {
-	if (view == ZmMailListController.READING_PANE_MENU_ITEM_ID) {
-		this._toggleReadingPane(force);
+	if (view == ZmMailListController.READING_PANE_OFF_ID ||
+		view == ZmMailListController.READING_PANE_AT_BOTTOM_ID ||
+		view == ZmMailListController.READING_PANE_ON_RIGHT_ID) {
+
+		this._setReadingPane(view);
 	} else {
 		ZmMailListController.prototype.switchView.apply(this, arguments);
 	}
@@ -116,33 +119,34 @@ function() {
 	}
 };
 
-/**
- * Shows or hides the reading pane based on the value of the corresponding menu item.
- *
- * @param force		[boolean]*		if true, flip state of reading pane
- */
-ZmDoublePaneController.prototype._toggleReadingPane = 
-function(force) {
-	var viewBtn = this._toolbar[this._currentView].getButton(ZmOperation.VIEW_MENU);
-	var menu = viewBtn.getMenu();
-	var mi = menu.getItemById(ZmOperation.MENUITEM_ID, ZmMailListController.READING_PANE_MENU_ITEM_ID);
-	var checked = mi.getChecked();
-	if (force) {
-		checked = !checked;
-		mi.setChecked(checked, true);
-	} else if (this.isReadingPaneOn() == checked) {
+ZmDoublePaneController.prototype._setReadingPane =
+function(view) {
+
+	// make sure something has changed
+	var readingPaneEnabled = this.isReadingPaneOn();
+	var readingPaneOnRight = this.isReadingPaneOnRight();
+	if (((view == ZmMailListController.READING_PANE_OFF_ID) && !readingPaneEnabled) ||
+		((view == ZmMailListController.READING_PANE_AT_BOTTOM_ID) && readingPaneEnabled && !readingPaneOnRight) ||
+		((view == ZmMailListController.READING_PANE_ON_RIGHT_ID) && readingPaneEnabled && readingPaneOnRight)) {
+
 		return;
 	}
-	appCtxt.set(ZmSetting.READING_PANE_ENABLED, checked);
 
-	this._doublePaneView.toggleView();
+	this._setReadingPanePref(view);
+	this._doublePaneView.setReadingPane();
+};
 
-	// set msg in msg view if reading pane is being shown
-	if (checked) {
-		this._setSelectedItem();
+ZmDoublePaneController.prototype._setReadingPanePref =
+function(view) {
+	if (view == ZmMailListController.READING_PANE_OFF_ID) {
+		appCtxt.set(ZmSetting.READING_PANE_ENABLED, false);
+	} else if (view == ZmMailListController.READING_PANE_AT_BOTTOM_ID) {
+		appCtxt.set(ZmSetting.READING_PANE_ENABLED, true);
+		appCtxt.set(ZmSetting.READING_PANE_ORIENTATION, ZmSetting.RP_BOTTOM);
+	} else if (view == ZmMailListController.READING_PANE_ON_RIGHT_ID) {
+		appCtxt.set(ZmSetting.READING_PANE_ENABLED, true);
+		appCtxt.set(ZmSetting.READING_PANE_ORIENTATION, ZmSetting.RP_RIGHT);
 	}
-
-	this._mailListView._resetColWidth();
 };
 
 ZmDoublePaneController.prototype._handleResponseSwitchView = 
@@ -322,14 +326,27 @@ function(view, menu, checked) {
 		new DwtMenuItem({parent:menu, style:DwtMenuItem.SEPARATOR_STYLE});
 	}
 
-	var id = ZmMailListController.READING_PANE_MENU_ITEM_ID;
-	if (!menu._menuItems[id]) {
-		var mi = menu.createMenuItem(id, {image:"SplitPane", text:ZmMsg.readingPane, style:DwtMenuItem.CHECK_STYLE,
-										  shortcut:ZmKeyMap.READING_PANE});
-		mi.setData(ZmOperation.MENUITEM_ID, id);
-		mi.addSelectionListener(this._listeners[ZmOperation.VIEW]);
-		mi.setChecked(checked, true);
+	var miParams = {text:ZmMsg.readingPaneAtBottom, style:DwtMenuItem.RADIO_STYLE, radioGroupId:"RP"};
+	var ids = [ZmMailListController.READING_PANE_AT_BOTTOM_ID, ZmMailListController.READING_PANE_ON_RIGHT_ID,
+			   ZmMailListController.READING_PANE_OFF_ID];
+	var readingPaneEnabled = this.isReadingPaneOn();
+	var readingPaneOnRight = this.isReadingPaneOnRight();
+	var checked = {};
+	checked[ZmMailListController.READING_PANE_AT_BOTTOM_ID]	= readingPaneEnabled && !readingPaneOnRight;
+	checked[ZmMailListController.READING_PANE_ON_RIGHT_ID]	= readingPaneEnabled && readingPaneOnRight;
+	checked[ZmMailListController.READING_PANE_OFF_ID]		= !readingPaneEnabled;
+	for (var i = 0; i < ids.length; i++) {
+		var id = ids[i];
+		if (!menu._menuItems[id]) {
+			miParams.text = ZmMailListController.READING_PANE_TEXT[id];
+			miParams.image = ZmMailListController.READING_PANE_ICON[id];
+			var mi = menu.createMenuItem(id, miParams);
+			mi.setData(ZmOperation.MENUITEM_ID, id);
+			mi.addSelectionListener(this._listeners[ZmOperation.VIEW]);
+			mi.setChecked(checked[id], true);
+		}
 	}
+
 	return menu;
 };
 

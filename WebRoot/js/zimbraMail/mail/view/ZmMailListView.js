@@ -96,10 +96,11 @@ function(list) {
 	this._resetColWidth();
 };
 
-ZmMailListView.prototype.resetHeight =
-function(newHeight) {
-	this.setSize(Dwt.DEFAULT, newHeight);
-	Dwt.setSize(this._parentEl, Dwt.DEFAULT, newHeight - DwtListView.HEADERITEM_HEIGHT);
+ZmMailListView.prototype.resetSize =
+function(newWidth, newHeight) {
+	this.setSize(newWidth, newHeight);
+	var height = (newHeight == Dwt.DEFAULT) ? newHeight : newHeight - DwtListView.HEADERITEM_HEIGHT;
+	Dwt.setSize(this._parentEl, newWidth, height);
 };
 
 // Private / protected methods
