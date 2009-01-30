@@ -100,14 +100,14 @@ function(chat) {
 
 	this._chatData[chat.id] = {
 		item: item,
-		separator: separator,
-		chatWidget: item.getPopup().chatWidget
+		separator: separator
 	};
 	var hoverImage = "Close";
 	item.button.setHoverImage(hoverImage);
 	this._closeClass = this._closeClass || AjxImg.getClassForImage(hoverImage);
 	this._toolbar.expandItem(item, true);
 
+	this._chatData[chat.id].chatWidget = item.getPopup().chatWidget;
 	this._chatChangeListenerListenerObj = this._chatChangeListenerListenerObj || new AjxListener(this, this._chatChangeListenerListener);
 	chat.addChangeListener(this._chatChangeListenerListenerObj);
 
