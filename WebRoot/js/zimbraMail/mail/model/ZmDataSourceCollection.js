@@ -102,6 +102,7 @@ ZmDataSourceCollection.prototype.importMail = function(accounts) {
         var params = {
             soapDoc: soapDoc,
             asyncMode: true,
+	        noBusyOverlay: true,
             callback: callback,
             errorCallback: null
         };

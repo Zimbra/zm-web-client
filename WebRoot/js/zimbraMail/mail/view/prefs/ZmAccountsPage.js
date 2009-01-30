@@ -429,7 +429,7 @@ function(useDefaults) {
 ZmAccountsPage.prototype.isDirty =
 function() {
 	// make sure that the current object proxy is up-to-date
-	this._setAccountFields(this._currentAccount, this._currentSection);
+	this._setAccountFields(this._currentAccount, this._currentSection, true);
 
 	var dirty = this._deletedAccounts.length > 0;
 	if (!dirty) {
@@ -531,7 +531,9 @@ function() {
 ZmAccountsPage.prototype.addCommand =
 function(batchCmd) {
 	// make sure that the current object proxy is up-to-date
-	this._setAccountFields(this._currentAccount, this._currentSection);
+	// NOTE: This is already done so don't do it again or else we'll
+	// NOTE: lose the folderId from the create/rename folder op.
+	//this._setAccountFields(this._currentAccount, this._currentSection);
 
 	// delete accounts
 	for (var i = 0; i < this._deletedAccounts.length; i++) {
@@ -875,7 +877,7 @@ function(id, section) {
 	var setup = ZmAccountsPage.PREFS[id];
 	if (!setup) return null;
 	if (!control) {
-		return section.value;
+		return section.value || (id == "DOWNLOAD_TO" && ZmAccountsPage.DOWNLOAD_TO_FOLDER);
 	}
 
 	var value = null;
@@ -954,12 +956,18 @@ function(id, section, enabled) {
 };
 
 ZmAccountsPage.prototype._setAccountFields =
-function(account, section) {
+function(account, section, dontClearFolder) {
 	if (!account || !section) return;
 
 	for (var id in ZmAccountsPage.ACCOUNT_PROPS) {
 		var control = section.controls[id];
-		if (!control) continue;
+		if (!control) {
+			// HACK: default to new folder if control not available
+			if (id == "DOWNLOAD_TO" && !dontClearFolder) {
+				account.folderId = ZmAccountsPage.DOWNLOAD_TO_FOLDER; 
+			}
+			continue;
+		}
 
 		var prop = ZmAccountsPage.ACCOUNT_PROPS[id];
 		var isField = AjxUtil.isString(prop);
@@ -1757,7 +1765,7 @@ function(continueCallback) {
 	}
 
 	// continue
-	if (batchCmd) {
+	if (batchCmd && batchCmd.size() > 0) {
 		// HACK: Don't know a better way to set an error condition
 		this.__hack_preSaveSuccess = true;
 		var callback = new AjxCallback(this, this._preSaveFinish, [continueCallback]);
