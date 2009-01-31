@@ -317,7 +317,11 @@ function(ev, treeView, overviewId) {
 		var app = appCtxt.getApp(ZmApp.CALENDAR);
 		var controller = app.getCalController();
 		controller._updateCheckedCalendars();
-		controller._refreshAction(true);
+
+		//if calendar is deleted and  notify complete will initiate the refresh action
+		if(ev.event != ZmEvent.E_DELETE) {
+			controller._refreshAction(true);
+		}
 	}
 };
 

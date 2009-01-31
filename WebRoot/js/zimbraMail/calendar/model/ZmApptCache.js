@@ -279,13 +279,35 @@ function(searchParams, miniCalParams) {
 	    }
 	    searchParams.query = this._calViewController._userQuery;
 	    var apptVec = this.setSearchParams(searchParams);
-	    var searchRequest = request.SearchRequest = {_jsns:"urn:zimbraMail"};
-	    this._setSoapParams(searchRequest, searchParams);
+	
+		//search data in cache
+		if(apptVec != null && (apptVec instanceof AjxVector)) {
+	        this._cachedVec = apptVec;
+		}else {	
+	    	var searchRequest = request.SearchRequest = {_jsns:"urn:zimbraMail"};
+	    	this._setSoapParams(searchRequest, searchParams);
+		}
     }
 
     var miniCalCache = this._calViewController.getMiniCalCache();
-	var miniCalRequest = request.GetMiniCalRequest = {_jsns:"urn:zimbraMail"};
-	miniCalCache._setSoapParams(miniCalRequest, miniCalParams);
+	cacheData = miniCalCache.getCacheData(miniCalParams);
+	
+	//mini cal data in cache
+	if(cacheData && cacheData.length > 0) {
+		miniCalCache.highlightMiniCal(cacheData);
+		if(miniCalParams.callback) {
+			miniCalParams.callback.run(cacheData);
+		}
+	}else {
+		var miniCalRequest = request.GetMiniCalRequest = {_jsns:"urn:zimbraMail"};
+		miniCalCache._setSoapParams(miniCalRequest, miniCalParams);
+	}
+
+	
+	//both mini cal and search data is in cache : no need to send request
+	if(searchParams && !request.SearchRequest && !request.GetMiniCalRequest) {
+		return this.handleSearchCallback(searchParams, this._cachedVec);
+	}
 
 	if ((searchParams && searchParams.callback) || miniCalParams.callback) {
 		var respCallback = new AjxCallback(this, this.handleBatchResponse,[searchParams, miniCalParams]);
@@ -312,14 +334,15 @@ function(batchResp, searchParams, miniCalParams) {
 		}
 	}
 
-	var data = [];
+	if(miniCalResp) {
+		var data = [];	
+		miniCalCache.processBatchResponse(miniCalResp, data);	
+		miniCalCache.highlightMiniCal(data);
+		miniCalCache.updateCache(miniCalParams, data);	
 	
-	miniCalCache.processBatchResponse(miniCalResp, data);	
-	miniCalCache.highlightMiniCal(data);
-	miniCalCache.updateCache(miniCalParams, data);	
-	
-	if(miniCalParams.callback) {
-		miniCalParams.callback.run(data)
+		if(miniCalParams.callback) {
+			miniCalParams.callback.run(data)
+		}
 	}
 
     if(!searchResp || !searchParams) { return; }
@@ -330,9 +353,13 @@ function(batchResp, searchParams, miniCalParams) {
 	}	
 
 	var newList = this.processSearchResponse(searchResp, searchParams);
+	return this.handleSearchCallback(searchParams, newList);
+};
 
+ZmApptCache.prototype.handleSearchCallback =
+function(searchParams, newList) {
 	if (searchParams.callback) {
-		searchParams.callback.run(newList, searchParams.query);
+		searchParams.callback.run(newList, null, searchParams.query);
 	} else {
 		return newList;
 	}
@@ -479,7 +506,15 @@ function(params, result) {
 ZmApptCache.prototype.processSearchResponse = 
 function(searchResp, params) {
 	
-	if(!searchResp) { return; }
+	if(!searchResp) {
+		if(this._cachedVec) {
+			var resultList = this._cachedVec.clone();
+			this._cachedVec = null;
+			return resultList;
+		}else {
+			return;
+		}
+	}	
 	
 	if (searchResp && searchResp.appt && searchResp.appt.length) {
 		this._rawAppts = this._rawAppts != null 

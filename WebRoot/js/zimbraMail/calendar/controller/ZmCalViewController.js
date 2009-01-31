@@ -326,7 +326,8 @@ function(ev) {
 	if (ev.detail != DwtTree.ITEM_CHECKED) { return; }
 
 	this._updateCheckedCalendars();
-	this._refreshAction(true);
+	//organizer change listener will trigger refresh action
+	//this._refreshAction(true);
 
 	if (!this._calItemStatus) {
 		this._calItemStatus = {};
@@ -391,7 +392,7 @@ function(ev) {
 	if (ev.event == ZmEvent.E_DELETE) {
 		this._updateCheckedCalendars();
 	}
-	this._refreshAction(true);
+	//this._refreshAction(true);
 };
 
 ZmCalViewController.prototype.getCalendar =
@@ -2347,30 +2348,20 @@ function(params) {
 };
 
 ZmCalViewController.prototype._maintGetApptCallback =
-function(work, view, list, skipMiniCalUpdate) {
+function(work, view, list, skipMiniCalUpdate, query) {
 	// TODO: turn off shell busy
     if (list instanceof ZmCsfeException) {
 		this._handleError(list, new AjxCallback(this, this._maintErrorHandler));
 		return;
 	}
-
-	if (work & ZmCalViewController.MAINT_MINICAL) {
-		var pendingWork = ZmCalViewController.MAINT_NONE;
-
-		if (work & ZmCalViewController.MAINT_VIEW) {
-			pendingWork |= ZmCalViewController.MAINT_VIEW;
-		}
-		
-		if (work & ZmCalViewController.MAINT_REMINDER) {
-			pendingWork |= ZmCalViewController.MAINT_REMINDER;
-		}
-
-		this._scheduleMaintenance(pendingWork);
-	}
-	else if (work & ZmCalViewController.MAINT_VIEW) {
+	
+	this._userQuery = query;
+	
+	if (work & ZmCalViewController.MAINT_VIEW) {
         this._list = list;
 		var sel = view.getSelection();
         view.set(list, skipMiniCalUpdate);
+
         //For bug 27221, reset toolbar after refresh
         view.deselectAll();
         if(sel && sel.length > 0){
@@ -2383,14 +2374,14 @@ function(work, view, list, skipMiniCalUpdate) {
             }
         }
         this._resetToolbarOperations();
-        if (work & ZmCalViewController.MAINT_REMINDER) {
-			this._app.getReminderController().refresh();
-		}
+
 		//open any appointment if need be after loading the calendar(this appt must be in the view
 		this._openApptOnCalLoad();
     }
-	else if (work & ZmCalViewController.MAINT_REMINDER) {
+
+	if (work & ZmCalViewController.MAINT_REMINDER) {
 		this._app.getReminderController().refresh();
+		this._pendingWork = ZmCalViewController.MAINT_NONE;
 	}
 
 };
@@ -2438,28 +2429,30 @@ ZmCalViewController.prototype._maintenanceAction =
 function() {
 	var work = this._pendingWork;
 	this._pendingWork = ZmCalViewController.MAINT_NONE;
-
-	// do minical first, since it might load in a whole month worth of appts
-	// the main view can use
-	if (work & ZmCalViewController.MAINT_MINICAL)
-	{
-		this.fetchMiniCalendarAppts(work);
+	
+	if(work & ZmCalViewController.MAINT_REMINDER) {
+		this._pendingWork = ZmCalViewController.MAINT_REMINDER;
 	}
-	else if (work & ZmCalViewController.MAINT_VIEW)
-	{
+	
+	var maintainMiniCal = (work & ZmCalViewController.MAINT_MINICAL);
+	var maintainView = (work & ZmCalViewController.MAINT_VIEW);
+	
+	if(maintainMiniCal || maintainView) {
 		var view = this.getCurrentView();
 		if (view && view.needsRefresh()) {
 			var rt = this.getOptimizedTimeRange(view);
 			var cb = new AjxCallback(this, this._maintGetApptCallback, [work, view]);
-			this.getApptSummaries({start:rt.start, end:rt.end, fanoutAllDay:view._fanoutAllDay(), callback:cb});
+			
+			var params = {start:rt.start, end:rt.end, fanoutAllDay:view._fanoutAllDay(), callback:cb};
+			params.folderIds = this.getCheckedCalendarFolderIds();
+			params.query = this._userQuery;
+			
+			var miniCalParams = this.getMiniCalendarParams(work);
+			this._apptCache.batchRequest(params, miniCalParams);
+		    
 			view.setNeedsRefresh(false);
         }
 	}
-	else if (work & ZmCalViewController.MAINT_REMINDER)
-	{
-		this._app.getReminderController().refresh();
-	}
-    
 };
 
 ZmCalViewController.prototype.getOptimizedTimeRange =
@@ -2594,7 +2587,6 @@ function(work) {
 		start: dr.start.getTime(),
 		end: dr.end.getTime(),
 		fanoutAllDay: true,
-		callback: (new AjxCallback(this, this._maintGetApptCallback, [work, null])),
 		noBusyOverlay: true,
 		folderIds: this.getCheckedCalendarFolderIds()
 	};
