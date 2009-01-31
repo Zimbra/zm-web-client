@@ -571,6 +571,13 @@ function(attId, isDraft) {
 		}
 	}
 
+	//store text-content of the current email
+	if(this._composeMode == DwtHtmlEditor.HTML){
+		msg.textBodyContent = this._htmlEditor.getTextVersion();
+	} else {
+		msg.textBodyContent = this._htmlEditor.getContent();
+    }
+
 	//var msg = new ZmMailMsg();
 	msg.setTopPart(top);
 	msg.setSubject(subject);
