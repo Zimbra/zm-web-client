@@ -78,6 +78,15 @@ function(params) {
 	}
 };
 
+ZmMiniCalCache.prototype.getCacheData =
+function(params) {
+	var cacheKey = this._getCacheKey(params);
+	var cachedData = this._miniCalData[cacheKey];
+	if (cachedData) {
+		return cachedData;
+	}	
+};
+
 ZmMiniCalCache.prototype._handleMiniCalResponseError =
 function(params, result) {
 	var code = result ? result.code : null;
