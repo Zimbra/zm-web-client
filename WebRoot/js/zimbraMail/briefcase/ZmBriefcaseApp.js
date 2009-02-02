@@ -60,6 +60,7 @@ ZmBriefcaseApp.prototype._registerOperations =
 function() {
 	ZmOperation.registerOp(ZmId.OP_NEW_BRIEFCASEITEM, {textKey:"newBriefcase", image:"NewFolder", tooltipKey:"newBriefcaseTooltip", shortcut:ZmKeyMap.NEW_BRIEFCASEITEM});
 	ZmOperation.registerOp(ZmId.OP_NEW_FILE, {textKey:"uploadNewFile", tooltipKey:"uploadNewFile", image:"NewPage"});
+    ZmOperation.registerOp(ZmId.OP_NEW_PRESENTATION, {textKey:"newPresentation", tooltipKey:"newPresentation", image:"MSPowerpointDoc"});
 	ZmOperation.registerOp(ZmId.OP_SHARE_BRIEFCASE, {textKey:"shareFolder", image:"SharedMailFolder"}, ZmSetting.SHARING_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_MOUNT_BRIEFCASE, {textKey:"mountBriefcase", image:"Notebook"}, ZmSetting.SHARING_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_OPEN_FILE, {textKey:"openFile", tooltipKey:"openFileTooltip", image:"NewPage"});
@@ -132,7 +133,8 @@ function() {
 ZmBriefcaseApp.prototype._registerApp =
 function() {
 	var newItemOps = {};
-	newItemOps[ZmOperation.NEW_FILE] = "uploadNewFile";
+	newItemOps[ZmOperation.NEW_FILE]         = "uploadNewFile";
+	//newItemOps[ZmOperation.NEW_PRESENTATION] = "newPresentation";
 
 	var newOrgOps = {};
 	newOrgOps[ZmOperation.NEW_BRIEFCASEITEM] = "briefcase";
@@ -140,6 +142,7 @@ function() {
 	var actionCodes = {};
 	actionCodes[ZmKeyMap.NEW_FILE]			= ZmOperation.NEW_FILE;
 	actionCodes[ZmKeyMap.NEW_BRIEFCASEITEM]	= ZmOperation.NEW_BRIEFCASEITEM;
+	//actionCodes[ZmKeyMap.NEW_PRESENTATION]	= ZmOperation.NEW_PRESENTATION;
 
 	ZmApp.registerApp(ZmApp.BRIEFCASE,
 					 {mainPkg:				"Briefcase",
@@ -270,8 +273,92 @@ function(op) {
 			AjxDispatcher.require(["BriefcaseCore", "Briefcase"], false, loadCallback, null, true);
 			break;
 		}
+        case ZmOperation.NEW_PRESENTATION: {
+			var loadCallback = new AjxCallback(this, this._handleNewDoc, [op]);
+			AjxDispatcher.require(["BriefcaseCore", "Briefcase"], true, loadCallback, null);
+			break;
+		}
 	}
 };
+
+ZmBriefcaseApp.prototype._handleNewDoc =
+function(op) {
+    AjxDispatcher.require("IM");
+    var promptDialog =  ZmPromptDialog.getInstance()
+    var newDocOkCallbackObj =  new AjxCallback(this, this._newDocOkCallback, [op, promptDialog]);
+
+    var title = ZmMsg.briefcaseCreateNewDocument;
+    var label = ZmMsg.documentName;
+
+    if(op == ZmOperation.NEW_PRESENTATION) {
+        title =  ZmMsg.briefcaseCreateNewPresentation;
+        label = ZmMsg.presentationName;
+    }
+
+    var dialogArgs = {
+        title: title,
+        label: label,
+        callback: newDocOkCallbackObj
+    };
+    promptDialog.popup(dialogArgs);
+};
+
+ZmBriefcaseApp.prototype._newDocOkCallback =
+function(op, promptDialog, data) {
+    var message;
+    if (!data.value) {
+        message = ZmMsg.nameEmpty;
+    }
+
+    promptDialog.popdown();
+
+    if (message) {
+        var dialog = appCtxt.getMsgDialog();
+        dialog.reset();
+        dialog.setMessage(message, DwtMessageDialog.CRITICAL_STYLE);
+        dialog.popup();
+    }else {
+        AjxDispatcher.require("Startup1_1");
+        var contentType = ZmMimeTable.APP_ZIMBRA_DOC;
+        switch(op) {
+            case ZmOperation.NEW_PRESENTATION: contentType = ZmMimeTable.APP_ZIMBRA_SLIDES; break;
+        }
+
+        var slideURL = this.getEditURLForContentType(contentType) + "?name=" + data.value;  // appContextPath + "/public/Slides.jsp?name=" + data.value;
+        var winname = "_newslide" +  data.value;
+        var winfeatures = [
+            "width=",(window.outerWidth || 640),",",
+            "height=",(window.outerHeight || 480),",",
+            "resizable,toolbar=no,menubar=no,fullscreen=yes,location=no,status=no",
+            "fullscreen=yes"
+        ].join("");
+        var win = open(slideURL, winname, winfeatures);
+    }
+};
+
+ZmBriefcaseApp.prototype.getEditURLForContentType =
+function(contentType) {
+    AjxDispatcher.require("Startup1_1");
+    var editPage = "Slides.jsp";
+    switch(contentType) {
+        case ZmMimeTable.APP_ZIMBRA_SLIDES: editPage = "Slides.jsp"; break;
+        default: return null;
+    };
+    var editURL = appContextPath + "/public/" +  editPage;
+    return editURL;
+};
+
+ZmBriefcaseApp.prototype.isDoclet =
+function(item) {
+    var contentType = item.getContentType();
+    switch(contentType) {
+        case ZmMimeTable.APP_ZIMBRA_SLIDES:
+                                            return true;
+        default: return false;
+    };
+    return false;
+};
+
 
 ZmBriefcaseApp.prototype._handleNewItem =
 function() {

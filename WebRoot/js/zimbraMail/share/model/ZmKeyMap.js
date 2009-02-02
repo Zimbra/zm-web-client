@@ -159,6 +159,7 @@ ZmKeyMap.NEW_MESSAGE			= "NewMessage";
 ZmKeyMap.NEW_MESSAGE_WIN		= "NewMessageWindow";
 ZmKeyMap.NEW_NOTEBOOK			= "NewNotebook";
 ZmKeyMap.NEW_PAGE				= "NewPage";
+ZmKeyMap.NEW_PRESENTATION		= "NewPresentation";
 ZmKeyMap.NEW_ROSTER_ITEM		= "NewRosterItem";
 ZmKeyMap.NEW_TAG				= "NewTag";
 ZmKeyMap.NEW_TASK				= "NewTask";

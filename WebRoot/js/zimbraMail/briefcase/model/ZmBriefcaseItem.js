@@ -53,6 +53,9 @@ function(dontIncludeThisName) {
 	if (dontIncludeThisName) {
 		url = url.replace(/[^\/]+$/,"");
 	}
+    if(this.contentType && (this.contentType.indexOf(ZmMimeTable.APP_ZIMBRA_SLIDES)>=0)) {
+        url += "?fmt=html";
+    }
 	return url;
 };
 
