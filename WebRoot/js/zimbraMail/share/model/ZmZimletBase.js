@@ -426,10 +426,10 @@ function(propertyName) {
 };
 
 ZmZimletBase.prototype.setUserProperty =
-function(propertyName, value, save) {
+function(propertyName, value, save, callback) {
 	this.xmlObj().setPropValue(propertyName, value);
 	if (save)
-		this.saveUserProperties();
+		this.saveUserProperties(callback);
 };
 
 /**
