@@ -2442,6 +2442,7 @@ function(list, skipMiniCalUpdate) {
 	this._selectedItems.removeAll();
 	this._resetList();
 	this._list = list;
+	var timeRange = this.getTimeRange();	
 	if (list) {
 		var size = list.size();
 		DBG.println(AjxDebug.DBG2,"list.size:"+size);
@@ -2449,7 +2450,9 @@ function(list, skipMiniCalUpdate) {
 			this._computeApptLayout();
 			for (var i=0; i < size; i++) {
 				var ao = list.get(i);
-				this.addAppt(ao);
+				if(ao && ao.isInRange(timeRange.start, timeRange.end)) {
+					this.addAppt(ao);
+				}
 			}
 			this._computeAllDayApptLayout();
 		}
