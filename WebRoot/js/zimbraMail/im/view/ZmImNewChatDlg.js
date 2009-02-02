@@ -70,20 +70,19 @@ ZmImNewChatDlg.prototype.reset = function() {
 	this._contactField.setValue("", true);
 };
 
-ZmImNewChatDlg.prototype._initAutocomplete = function() {
-        if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-                var acCallback = new AjxCallback(this, this._autocompleteCallback);
-                var contactsClass = appCtxt.getApp(ZmApp.CONTACTS);
-                var contactsLoader = contactsClass.getContactList;
-                var params = { parent	    : DwtShell.getShell(window),
-		               dataClass    : contactsClass,
-		               dataLoader   : contactsLoader,
-                               matchValue   : ZmContactsApp.AC_VALUE_FULL,
-		               compCallback : acCallback
-		             };
-                this._acContactsList = new ZmAutocompleteListView(params);
-                this._acContactsList.handle(this._contactField.getInputElement());
-        }
+ZmImNewChatDlg.prototype._initAutocomplete =
+function() {
+	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) || appCtxt.get(ZmSetting.GAL_ENABLED)) {
+		var acCallback = new AjxCallback(this, this._autocompleteCallback);
+		var params = {
+			parent: DwtShell.getShell(window),
+			dataClass: appCtxt.getAutocompleter(),
+			matchValue: ZmAutocomplete.AC_VALUE_FULL,
+			compCallback : acCallback
+		};
+		this._acContactsList = new ZmAutocompleteListView(params);
+		this._acContactsList.handle(this._contactField.getInputElement());
+	}
 };
 
 ZmImNewChatDlg.prototype._autocompleteCallback = function(text, el, match) {

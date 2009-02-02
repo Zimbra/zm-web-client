@@ -306,8 +306,7 @@ ZmPageEditor.HTML_SOURCE = "htmlsrc";
 ZmPageEditor.MEDIA_WIKI = "mediawiki";
 ZmPageEditor.RICH_TEXT = "richtext";
 ZmPageEditor.TWIKI = "twiki";
-
-ZmPageEditor.DEFAULT = AjxEnv.isSafari ? ZmPageEditor.HTML_SOURCE : ZmPageEditor.RICH_TEXT;
+ZmPageEditor.DEFAULT = ZmPageEditor.RICH_TEXT;
 
 ZmPageEditor._MODES = {};
 ZmPageEditor._MODES[ZmPageEditor.HTML_SOURCE] = DwtHtmlEditor.TEXT;
@@ -532,10 +531,10 @@ ZmPageEditor.prototype._createToolBar2 = function(parent) {
 	button.setToolTipContent(ZmMsg.insertAttachment);
 	button.addSelectionListener(new AjxListener(this, this._insertAttachmentsListener));
 
-	button = new DwtToolBarButton(params);
+	/*button = new DwtToolBarButton(params);
 	button.setImage("URL");
 	button.setToolTipContent(ZmMsg.insertLink);
-	button.addSelectionListener(new AjxListener(this, this._insertLinkListener));
+	button.addSelectionListener(new AjxListener(this, this._insertLinkListener)); */
 	
 	button = new DwtToolBarButton(params);
 	button.setImage("FindReplace");
@@ -588,7 +587,12 @@ ZmPageEditor.prototype.insertLinks = function(filenames) {
 			insertTarget = space;
 		}
 		var link = this._getIframeDoc().createElement("A");
-		link.href = filenames[i];
+        var page = this._controller.getPage();
+        var notebook = appCtxt.getById(page.folderId);
+        var url = [
+            notebook.getRestUrl(), "/", AjxStringUtil.urlComponentEncode(filenames[i])
+        ].join("");
+		link.href = url;
 		link.innerHTML = AjxStringUtil.htmlEncode(filenames[i]);
 		this._insertLink(link, insertTarget, true);
 		insertTarget = link;

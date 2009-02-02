@@ -84,28 +84,6 @@ ZmImportExportController.SUBTYPE_DEFAULT[ZmImportExportController.TYPE_ICS] = Zm
 ZmImportExportController.prototype.importData = function(params) {
 	// error checking
 	params = params || {};
-	var folderId = params.folderId || -1; 
-	if (folderId == -1) {
-		var params = {
-			msg:	ZmMsg.importErrorMissingFolder,
-			level:	ZmStatusView.LEVEL_CRITICAL
-		};
-		appCtxt.setStatusMsg(params);
-		return false;
-	}
-
-	var type = params.type;
-	var isZimbra = type == ZmImportExportController.TYPE_TGZ;
-	var folder = appCtxt.getById(folderId);
-	if (!isZimbra && folder && folder.nId == ZmOrganizer.ID_ROOT) {
-		var params = {
-			msg:	ZmMsg.importErrorRootNotAllowed,
-			level:	ZmStatusView.LEVEL_CRITICAL
-		};
-		appCtxt.setStatusMsg(params);
-		return false;
-	}
-
 	if (params.form && !params.form.elements["file"].value) {
 		var params = {
 			msg:	ZmMsg.importErrorMissingFile,
@@ -114,7 +92,14 @@ ZmImportExportController.prototype.importData = function(params) {
 		appCtxt.setStatusMsg(params);
 		return false;
 	}
-
+	if (params.folderId == -1) {
+		var params = {
+			msg:	ZmMsg.importErrorMissingFolder,
+			level:	ZmStatusView.LEVEL_CRITICAL
+		};
+		appCtxt.setStatusMsg(params);
+		return false;
+	}
 	if (params.resolve == "reset") {
 		var dialog = appCtxt.getOkCancelMsgDialog();
 		dialog.registerCallback(DwtDialog.OK_BUTTON, this._confirmImportReset, this, [params]);
@@ -147,22 +132,9 @@ ZmImportExportController.prototype.importData = function(params) {
 ZmImportExportController.prototype.exportData = function(params) {
 	// error checking
 	params = params || {};
-	var folderId = params.folderId || -1;
-	if (folderId == -1) {
+	if (params.folderId == -1) {
 		var params = {
 			msg:	ZmMsg.exportErrorMissingFolder,
-			level:	ZmStatusView.LEVEL_CRITICAL
-		};
-		appCtxt.setStatusMsg(params);
-		return false;
-	}
-
-	var type = params.type;
-	var isZimbra = type == ZmImportExportController.TYPE_TGZ;
-	var folder = appCtxt.getById(folderId);
-	if (!isZimbra && folder && folder.nId == ZmOrganizer.ID_ROOT) {
-		var params = {
-			msg:	ZmMsg.exportErrorRootNotAllowed,
 			level:	ZmStatusView.LEVEL_CRITICAL
 		};
 		appCtxt.setStatusMsg(params);
@@ -179,21 +151,11 @@ ZmImportExportController.prototype.exportData = function(params) {
 
 ZmImportExportController.prototype._doImportData = function(params) {
 	var type = params.type || ZmImportExportController.TYPE_DEFAULT;
-	var isContacts = type == ZmImportExportController.TYPE_CSV;
-	var isCalendar = type == ZmImportExportController.TYPE_ICS;
-	if (params.folderId != -1) {
-		if (isContacts || isCalendar) {
-			var folder = appCtxt.getById(params.folderId);
-			return this._doImportUpload(params, type, folder);
-		}
+	if (type == ZmImportExportController.TYPE_CSV) {
+		return this._doImportSelectFolder(params, ZmImportExportController.TYPE_CSV);
 	}
-	else {
-		if (type == ZmImportExportController.TYPE_CSV) {
-			return this._doImportSelectFolder(params, ZmImportExportController.TYPE_CSV);
-		}
-		if (type == ZmImportExportController.TYPE_ICS) {
-			return this._doImportSelectFolder(params, ZmImportExportController.TYPE_ICS);
-		}
+	if (type == ZmImportExportController.TYPE_ICS) {
+		return this._doImportSelectFolder(params, ZmImportExportController.TYPE_ICS);
 	}
 	return this._doImportTGZ(params);
 };
@@ -237,7 +199,8 @@ ZmImportExportController.prototype._doImportSelectFolder = function(params, type
 };
 
 ZmImportExportController.prototype._doImportUpload = function(params, type, folder) {
-	if (folder && folder.nId != ZmOrganizer.ID_ROOT) {
+	var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
+	if (folder && folder.id && folder.id != rootId) {
 		var dialog = appCtxt.getChooseFolderDialog();
 		dialog.popdown();
 
@@ -322,8 +285,7 @@ ZmImportExportController.prototype._doImportRequest = function(soapDoc, params, 
 };
 
 ZmImportExportController.prototype._doImportTGZ = function(params) {
-	var folder = appCtxt.getById(params.folderId);
-	if (folder.nId == ZmOrganizer.ID_ROOT) folder = null;
+	var folder = params.folderId && appCtxt.getById(params.folderId);
 	var path = folder ? folder.getPath(null, null, null, null, true) : "";
 
 	var url = [
@@ -372,8 +334,7 @@ ZmImportExportController.prototype._doExportData = function(params) {
 	var isCSV = type == ZmImportExportController.TYPE_CSV;
 	var subType = params.subType || ZmImportExportController.SUBTYPE_DEFAULT[type];
 
-	var folder = appCtxt.getById(params.folderId);
-	if (folder.nId == ZmOrganizer.ID_ROOT) folder = null;
+	var folder = params.folderId && appCtxt.getById(params.folderId);
 	var path = folder ? folder.getPath(null, null, null, null, true) : "";
 
 	// generate request URL

@@ -262,10 +262,17 @@ function() {
 
 ZmComposeController.prototype._postHideCallback =
 function() {
-	ZmController.prototype._postShowCallback.call(this);
-
-	if (appCtxt.numVisibleAccounts > 1) {
+	if (!appCtxt.isChildWindow && appCtxt.numVisibleAccounts > 1) {
 		appCtxt.getApp(ZmApp.MAIL).getOverviewPanelContent().setEnabled(true);
+	}
+
+	// hack to kill the child window when replying to an invite
+	if (appCtxt.isChildWindow &&
+		this._action == ZmOperation.REPLY_ACCEPT ||
+		this._action == ZmOperation.REPLY_DECLINE ||
+		this._action == ZmOperation.REPLY_TENTATIVE)
+	{
+		window.close();
 	}
 };
 
@@ -296,54 +303,74 @@ function(params) {
 */
 ZmComposeController.prototype.sendMsg =
 function(attId, draftType, callback) {
-	draftType = draftType || ZmComposeController.DRAFT_TYPE_NONE;
-	var isDraft = draftType != ZmComposeController.DRAFT_TYPE_NONE;
+    return this._sendMsg(attId,null,draftType, callback);
+};
 
-	var msg = this._composeView.getMsg(attId, isDraft);
-	if (!msg) return;
+/**
+* Sends the message represented by the content of the compose view with specified docIds as attachment.
+*/
+ZmComposeController.prototype.sendDocs =
+function(docIds, draftType, callback) {
+    return this._sendMsg(null, docIds, draftType, callback);
+};
 
-	var inviteMode = msg.inviteMode;
-	var isCancel = (inviteMode == ZmOperation.REPLY_CANCEL);
-	var isModify = (inviteMode == ZmOperation.REPLY_MODIFY);
+/**
+* Sends the message represented by the content of the compose view.
+*/
+ZmComposeController.prototype._sendMsg =
+function(attId, docIds, draftType, callback) {
 
-	var origMsg = msg._origMsg;
-	if (isCancel || isModify) {
-		var appt = origMsg._appt;
-		var respCallback = new AjxCallback(this, this._handleResponseCancelOrModifyAppt);
-		if (isCancel) {
-			appt.cancel(origMsg._mode, msg, respCallback);
-		} else {
-			appt.save();
-		}
-	} else {
-		var ac = window.parentAppCtxt || window.appCtxt;
-		// if shared folder, make sure we send the email on-behalf-of
-		var folder = msg.folderId ? ac.getById(msg.folderId) : null;
-		// always save draft on the main account *unless* in offline mode
-		var acctName = (isDraft && !ac.isOffline)
-			? (ac.getMainAccount().name)
-			: ((folder && folder.isRemote()) ? folder.getOwner() : this._accountName);
+    draftType = draftType || ZmComposeController.DRAFT_TYPE_NONE;
+    var isDraft = draftType != ZmComposeController.DRAFT_TYPE_NONE;
 
-		// If this message had been saved from draft and it has a sender (meaning it's a reply from someone
-		// else's account) then get the account name from the from field.
-		if (!acctName && !isDraft && origMsg && origMsg.isDraft && origMsg._addrs[ZmMailMsg.HDR_FROM] &&
-			origMsg._addrs[ZmMailMsg.HDR_SENDER] && origMsg._addrs[ZmMailMsg.HDR_SENDER].size())
-		{
-			acctName =  origMsg._addrs[ZmMailMsg.HDR_FROM].get(0).address;
-		}	
-		
-		var contactList = !isDraft ? AjxDispatcher.run("GetContacts") : null;
-		var respCallback = new AjxCallback(this, this._handleResponseSendMsg, [draftType, msg, callback]);
-		var errorCallback = new AjxCallback(this, this._handleErrorSendMsg);
-		var resp = msg.send(contactList, isDraft, respCallback, errorCallback, acctName);
+    var msg = this._composeView.getMsg(attId, isDraft);
+    if(docIds) {
+        this._composeView.setDocAttachments(msg, docIds);        
+    }
 
-		// XXX: temp bug fix #4325 - if resp returned, we're processing sync
-		//      request REVERT this bug fix once mozilla fixes bug #295422!
-		if (resp) {
-			this._processSendMsg(draftType, msg, resp);
-			if (callback) callback.run(resp);
-		}
-	}
+    if (!msg) return;
+
+    var inviteMode = msg.inviteMode;
+    var isCancel = (inviteMode == ZmOperation.REPLY_CANCEL);
+    var isModify = (inviteMode == ZmOperation.REPLY_MODIFY);
+
+    var origMsg = msg._origMsg;
+    if (isCancel || isModify) {
+        var appt = origMsg._appt;
+        var respCallback = new AjxCallback(this, this._handleResponseCancelOrModifyAppt);
+        if (isCancel) {
+            appt.cancel(origMsg._mode, msg, respCallback);
+        } else {
+            appt.save();
+        }
+    } else {
+        var ac = window.parentAppCtxt || window.appCtxt;
+        // if shared folder, make sure we send the email on-behalf-of
+        var folder = msg.folderId ? ac.getById(msg.folderId) : null;
+        // always save draft on the main account *unless* in offline mode
+        var acctName = (isDraft && !ac.isOffline)
+            ? (ac.getMainAccount().name)
+            : ((folder && folder.isRemote()) ? folder.getOwner() : this._accountName);
+
+        // If this message had been saved from draft and it has a sender (meaning it's a reply from someone
+        // else's account) then get the account name from the from field.
+        if (!acctName && !isDraft && origMsg && origMsg.isDraft && origMsg._addrs[ZmMailMsg.HDR_FROM] &&
+            origMsg._addrs[ZmMailMsg.HDR_SENDER] && origMsg._addrs[ZmMailMsg.HDR_SENDER].size())
+        {
+            acctName =  origMsg._addrs[ZmMailMsg.HDR_FROM].get(0).address;
+        }
+
+        var respCallback = new AjxCallback(this, this._handleResponseSendMsg, [draftType, msg, callback]);
+        var errorCallback = new AjxCallback(this, this._handleErrorSendMsg);
+        var resp = msg.send(isDraft, respCallback, errorCallback, acctName);
+
+        // XXX: temp bug fix #4325 - if resp returned, we're processing sync
+        //      request REVERT this bug fix once mozilla fixes bug #295422!
+        if (resp) {
+            this._processSendMsg(draftType, msg, resp);
+            if (callback) callback.run(resp);
+        }
+    }
 };
 
 ZmComposeController.prototype._handleResponseSendMsg =
@@ -554,6 +581,11 @@ function(actionCode) {
 			break;
 	}
 	return true;
+};
+
+ZmComposeController.prototype.mapSupported =
+function(map) {
+	return (map == "editor");
 };
 
 ZmComposeController.prototype.getSelectedSignature =
@@ -1009,7 +1041,7 @@ function(ev) {
 	var msg = this._composeView.getMsg();
 	if (msg) {
 		var contacts = msg.getAddresses(AjxEmailAddress.TO, {}, true);
-		AjxDispatcher.run("GetChatListController").chatWithContacts(contacts, msg, this._getBodyContent());
+		ZmTaskbarController.INSTANCE.chatWithContacts(contacts, msg, this._getBodyContent());
 	}
 };
 
@@ -1068,7 +1100,7 @@ function(ev) {
 	if (ev.detail != DwtMenuItem.CHECKED) { return; }
 
 	if (op == ZmOperation.REPLY || op == ZmOperation.REPLY_ALL) {
-		this._composeView._setAddresses(op, this._toOverride);
+		this._composeView._setAddresses(op, AjxEmailAddress.TO, this._toOverride);
 	} else if (op == ZmOperation.FORMAT_HTML || op == ZmOperation.FORMAT_TEXT) {
 		this._setFormat(ev.item.getData(ZmHtmlEditor._VALUE));
 	} else {
@@ -1369,4 +1401,9 @@ function() {
 		}
 		this._toolbar.enable(ops, false);
 	}
+    var op = this._toolbar.getOp(ZmOperation.COMPOSE_OPTIONS);
+    if(op){
+        op.setVisible(appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED));
+    }
+   
 };

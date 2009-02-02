@@ -67,8 +67,8 @@ function() {
 };
 
 ZmPage.prototype.getRestUrl =
-function() {
-	var dontIncludeThisName = this.name == ZmNotebook.PAGE_INDEX;
+function(skipName) {
+	var dontIncludeThisName = skipName || (this.name == ZmNotebook.PAGE_INDEX);
 	return ZmNotebookItem.prototype.getRestUrl.call(this, dontIncludeThisName);
 };
 
@@ -242,17 +242,6 @@ function(version, callback, errorCallback, traverseUp) {
 	}
 };
 
-ZmPage.prototype.getPrintHtml =
-function(preferHtml, callback) {
-	return ZmNotebookPageView.getPrintHtml(this);
-};
-
-/***
-ZmPage.prototype.notifyModify = function(obj) {
-	// TODO
-	ZmItem.prototype.notifyModify.call(this, obj);
-};
-/***/
 
 // initialization
 
