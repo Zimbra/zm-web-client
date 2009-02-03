@@ -119,10 +119,10 @@ ZmImportExportController.prototype.importData = function(params) {
  * Exports user data as specified in the <code>params</code> object.
  *
  * @param params		[object]	Parameters:
+ *        folderId		[string]	Folder id for export. If not specified,
+ * 									assumes all folders want to be exported.
  *        type			[string]*	Type. Defaults to <code>TYPE_TGZ</code>.
  *        subType		[string]*	Sub-type. Defaults to <code>SUBTYPE_DEFAULT[type]</code>.
- *        folderId		[string]*	Folder id for export. If not specified,
- * 									assumes all folders want to be exported.
  *        views			[string]*	Comma-separated list of views.
  *        filename		[string]*	Filename for exported file.
  *        searchFilter	[string]*	Search filter.
@@ -307,10 +307,9 @@ ZmImportExportController.prototype._doImportTGZ = function(params) {
 	form.enctype = "multipart/form-data";
 
 	// destination iframe
-	var callback = new AjxCallback(this, this._importSuccess, [params.callback]);
-	var errorCallback = new AjxCallback(this, this._importError, [params.errorCallback]);
-	var onload = ZmImportExportController.__iframe_onload;
-	var iframe = ZmImportExportController.__createIframe(callback, errorCallback, form, onload);
+	var onload = AjxCallback.simpleClosure(this._importSuccess, this, params.callback);
+	var onerror = AjxCallback.simpleClosure(this._importError, this, params.errorCallback);
+	var iframe = ZmImportExportController.__createIframe(form, onload, onerror);
 
 	// import
 	form.submit();
@@ -352,32 +351,25 @@ ZmImportExportController.prototype._doExportData = function(params) {
 	var form = ZmImportExportController.__createForm(url, formParams);
 
 	// destination form
-	var callback = new AjxCallback(this, this._exportSuccess, [params.callback]);
-	var errorCallback = new AjxCallback(this, this._exportError, [params.errorCallback]);
-	var onload = ZmImportExportController.__iframe_onload2;
-	var iframe = ZmImportExportController.__createIframe(callback, errorCallback, form, onload);
+	var onload = AjxCallback.simpleClosure(this._exportSuccess, this, params.callback);
+	var onerror = AjxCallback.simpleClosure(this._exportError, this, params.errorCallback);
+	var iframe = ZmImportExportController.__createIframe(form, onload, onerror);
 
 	// export
 	form.submit();
 };
 
 ZmImportExportController__callback = function(message) {
-	var params = {
-		msg:	message ? ZmMsg.importFailed : ZmMsg.importSuccess,
-		level:	message ? ZmStatusView.LEVEL_CRITICAL : ZmStatusView.LEVEL_INFO
-	};
-	appCtxt.setStatusMsg(params);
+	var msg = message ? ZmMsg.importFailed : ZmMsg.importSuccess;
+	var level = message ? DwtMessageDialog.CRITICAL_STYLE : DwtMessageDialog.INFO_STYLE; 
+	ZmImportExportController.__showMessage(msg, level);
 };
 
 ZmImportExportController.prototype._importSuccess = function(callback) {
 	if (callback) {
 		callback.run(true);
 	}
-	var params = {
-		msg:	ZmMsg.importSuccess,
-		level:	ZmStatusView.LEVEL_INFO
-	};
-	appCtxt.setStatusMsg(params);
+	ZmImportExportController.__showMessage(ZmMsg.importSuccess, DwtMessageDialog.INFO_STYLE);
 	return true;
 };
 
@@ -385,11 +377,7 @@ ZmImportExportController.prototype._importError = function(errorCallback) {
 	if (errorCallback) {
 		errorCallback.run(false);
 	}
-	var params = {
-		msg:	ZmMsg.importFailed,
-		level:	ZmStatusView.LEVEL_CRITICAL
-	};
-	appCtxt.setStatusMsg(params);
+	ZmImportExportController.__showMessage(ZmMsg.importFailed, DwtMessageDialog.CRITICAL_STYLE);
 	return true;
 };
 
@@ -397,11 +385,7 @@ ZmImportExportController.prototype._exportSuccess = function(callback) {
 	if (callback) {
 		callback.run(true);
 	}
-	var params = {
-		msg:	ZmMsg.exportSuccess,
-		level:	ZmStatusView.LEVEL_INFO
-	};
-	appCtxt.setStatusMsg(params);
+	ZmImportExportController.__showMessage(ZmMsg.exportSuccess, DwtMessageDialog.INFO_STYLE);
 	return true;
 };
 
@@ -409,17 +393,19 @@ ZmImportExportController.prototype._exportError = function(errorCallback) {
 	if (errorCallback) {
 		errorCallback.run(false);
 	}
-	var params = {
-		msg:	ZmMsg.exportFailed,
-		level:	ZmStatusView.LEVEL_CRITICAL
-	};
-	appCtxt.setStatusMsg(params);
+	ZmImportExportController.__showMessage(ZmMsg.exportFailed, DwtMessageDialog.CRITICAL_STYLE);
 	return true;
 };
 
 //
 // Private methods
 //
+
+ZmImportExportController.__showMessage = function(msg, level) {
+	var dialog = appCtxt.getErrorDialog();
+	dialog.setMessage(msg, null, level);
+	dialog.popup(null, true);
+};
 
 ZmImportExportController.__createForm = function(action, params, method) {
 	var form = document.createElement("FORM");
@@ -439,7 +425,7 @@ ZmImportExportController.__createForm = function(action, params, method) {
 	return form;
 };
 
-ZmImportExportController.__createIframe = function(callback, errorCallback, form, onload, onerror) {
+ZmImportExportController.__createIframe = function(form, onload, onerror) {
 	var id = Dwt.getNextId() + "_iframe";
 	var iframe;
 	if (AjxEnv.isIE) {
@@ -463,6 +449,9 @@ ZmImportExportController.__createIframe = function(callback, errorCallback, form
 	iframe.style.left = -10;
 	document.body.appendChild(iframe);
 	form.target = iframe.name;
+
+	iframe.onload = onload;
+	iframe.onerror = onerror;
 
 	return iframe;
 };
