@@ -357,21 +357,16 @@ ZmSpreadSheet.prototype._topCellClicked = function(td, ev) {
 // called when a cell from the left header was clicked or mousedown
 ZmSpreadSheet.prototype._leftCellClicked = function(td, dwtEv) {
 
-    if (this._resizeRowIndex) {
+    var index = this._resizeRowIndex;
+    if (index) {
         this._hideRange();
-        var td = this._getTable().rows[this._resizeRowIndex].cells[0];
+        var td = this._getTable().rows[index].cells[0];
         this._rowsizeArgs = {
-            td1       : td,
-            h1        : td.firstChild.offsetHeight,
+            td       : td,
+            h        : td.firstChild.offsetHeight,
             docX      : dwtEv.docX,
             docY      : dwtEv.docY
-        };
-        
-        td = this._getTable().rows[this._resizeRowIndex + 1].cells[0];
-        if (td) {
-            this._rowsizeArgs.td2 = td;
-            this._rowsizeArgs.h2 = td.firstChild.offsetHeight;
-        }
+        };        
         this._rowsizeCapture.capture();
         dwtEv._stopPropagation = true;
         dwtEv._returnValue = false;
@@ -477,31 +472,23 @@ ZmSpreadSheet.prototype._setRowHeight = function(row, height){
      headerRowCell.firstChild.style.height = height + "px";
 };
 
+//TODO: Allow to shrink further
+ZmSpreadSheet.MIN_ROW_HEIGHT = 11; //Since Font Size is 11px;
+
 ZmSpreadSheet.prototype._rowsize_mouseMove = function(ev) {
 
    var dwtev = new DwtMouseEvent();
    dwtev.setFromDhtmlEvent(ev);
 
-
-    var OK = true;
     var fuzz = 0;
-
     var delta = dwtev.docY - this._rowsizeArgs.docY;
-    var h1 = this._rowsizeArgs.h1 + delta + fuzz;
-    
-    if(delta < 0){        
-        var h2 = this._rowsizeArgs.h2 - delta + fuzz;
-        if(h1 > 7 && h2 > 7) {
-            this._rowsizeArgs.td1.firstChild.style.height = h1 + "px";
-            this._rowsizeArgs.td2.firstChild.style.height = h2 + "px";
-        }else{
-            OK = false;
-        }
-    }else{
-        if(h1 > 7 ) this._rowsizeArgs.td1.firstChild.style.height = h1 + "px";
+    var h1 = this._rowsizeArgs.h + delta + fuzz;
+
+    if(h1 > ZmSpreadSheet.MIN_ROW_HEIGHT ){
+        this._rowsizeArgs.td.firstChild.style.height = h1 + "px";
+        this._rowsizeArgs.delta = delta;
     }
 
-    if(OK) this._rowsizeArgs.delta = delta;
     dwtev._stopPropagation = true;
 	dwtev._returnValue = false;
 	dwtev.setToDhtmlEvent(ev);
@@ -513,18 +500,14 @@ ZmSpreadSheet.prototype._rowsize_mouseUp = function(ev){
     var dwtev = new DwtMouseEvent();
 	dwtev.setFromDhtmlEvent(ev);
 
-    var index = this._resizeRowIndex;
     var delta = this._rowsizeArgs.delta;
-
-    var h = this._model.getRowHeight(index - 1);
-    this._setRowHeight(index-1, h + delta);
-    this._model.setRowHeight(index - 1, h + delta);
-
-    if(delta < 0){
-
-        var h = this._model.getRowHeight((index + 1) - 1);
-        this._setRowHeight((index + 1) - 1, h-delta);
-        this._model.setRowHeight((index + 1) - 1, h - delta);
+    if(delta){
+        var index = this._resizeRowIndex;
+        var h = this._model.getRowHeight(index - 1);
+        if( (h + delta) > ZmSpreadSheet.MIN_ROW_HEIGHT) {
+            this._setRowHeight(index-1, h + delta);
+            this._model.setRowHeight(index - 1, h + delta);
+        }
     }
 
     // null out some things to make sure we don't leak
@@ -1389,7 +1372,7 @@ ZmSpreadSheet.prototype._table_mouseMove = function(ev) {
             
         }else{
             if(this._resizeRowIndex){
-                this._resizeRowIndex = null;                
+                this._resizeRowIndex = null;
                 Dwt.delClass(table, "RowSSize");
                 Dwt.delClass(table, "RowNSize");
             }
