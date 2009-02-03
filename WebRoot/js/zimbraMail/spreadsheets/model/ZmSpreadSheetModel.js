@@ -44,6 +44,10 @@ ZmSpreadSheetModel = function(rows, cols) {
 	for (var i = 0; i < cols; ++i)
 		this.colProps[i] = ZmSpreadSheetModel.getDefaultColProp();
 
+    this.rowProps = new Array(rows);
+    for (var i = 0; i < rows; ++i)
+		this.rowProps[i] = ZmSpreadSheetModel.getDefaultRowProp();
+
 	this._expressionCells = [];
 	this.reset();
 };
@@ -56,6 +60,13 @@ ZmSpreadSheetModel.getDefaultColProp = function() {
 		width: 100
 	};
 	return prop;
+};
+
+ZmSpreadSheetModel.getDefaultRowProp = function(){
+    var prop = {
+        height: 15
+    };
+    return prop;
 };
 
 /* View events.  Views can hook upon events that happen in the data model.  The
@@ -220,6 +231,14 @@ ZmSpreadSheetModel.prototype.deleteCol = function(col) {
 		this.triggerEvent("onDeleteCol", col);
 		this.recompute();
 	}
+};
+
+ZmSpreadSheetModel.prototype.getRowHeight = function(row) {
+    return this.rowProps[row].height;  
+};
+
+ZmSpreadSheetModel.prototype.setRowHeight = function(row, height)  {
+    this.rowProps[row].height = height;
 };
 
 ZmSpreadSheetModel.prototype.getColWidth = function(col) {
@@ -741,6 +760,13 @@ ZmSpreadSheetCellModel.prototype.setWidth = function(width) {
 // 		this._td.style.width = width + fuzz + "px";
  		this._td.firstChild.style.width = width + fuzz + "px";
 	}
+};
+
+ZmSpreadSheetCellModel.prototype.setHeight = function(height) {
+    if(this._td){
+        var fuzz = 0; //Correction if any according to browser
+        this._td.firstChild.style.height = height + fuzz + "px";
+    }
 };
 
 ZmSpreadSheetCellModel.prototype.getHtml = function() {

@@ -53,10 +53,17 @@ ZmSpreadSheet = function(parent, className, posStyle, deferred) {
 
 	this._colsizeCapture = new DwtMouseEventCapture({
 		targetObj:this,
-		id:"ZmSpreadSheet",
+		id:"ZmSpreadSheet-Col",
 		mouseMoveHdlr:AjxCallback.simpleClosure(this._colsize_mouseMove, this),
 		mouseUpHdlr:AjxCallback.simpleClosure(this._colsize_mouseUp, this)
 	});
+
+    this._rowsizeCapture = new DwtMouseEventCapture({
+        targetObj:  this,
+        id:"ZmSpreadSheet-Row",
+        mouseMoveHdlr:AjxCallback.simpleClosure(this._rowsize_mouseMove, this),
+		mouseUpHdlr:AjxCallback.simpleClosure(this._rowsize_mouseUp, this)
+    });
 
 	this._onResize = new AjxListener(this, this._onResize);
 	this._hoverOverListener = new AjxListener(this, this._handleOverListener);
@@ -329,6 +336,8 @@ ZmSpreadSheet.prototype._init = function() {
 		}
 	}
 
+    this._table_setRowHeights();
+
 	this.getHtmlElement().style.display = "";
 	this._header_resetColWidths();
 };
@@ -346,14 +355,34 @@ ZmSpreadSheet.prototype._topCellClicked = function(td, ev) {
 };
 
 // called when a cell from the left header was clicked or mousedown
-ZmSpreadSheet.prototype._leftCellClicked = function(td, ev) {
-	if (/click/i.test(ev.type)) {
-		var row = td.parentNode.rowIndex;
-		this._selectCell(this._getTable().rows[row].cells[td.cellIndex + 1]);
-		var c1 = "A" + row;
-		var c2 = ZmSpreadSheetModel.getColName(this._model.COLS) + row;
-		this._selectRange(c1, c2);
-	}
+ZmSpreadSheet.prototype._leftCellClicked = function(td, dwtEv) {
+
+    if (this._resizeRowIndex) {
+        this._hideRange();
+        var td = this._getTable().rows[this._resizeRowIndex].cells[0];
+        this._rowsizeArgs = {
+            td1       : td,
+            h1        : td.firstChild.offsetHeight,
+            docX      : dwtEv.docX,
+            docY      : dwtEv.docY
+        };
+        
+        td = this._getTable().rows[this._resizeRowIndex + 1].cells[0];
+        if (td) {
+            this._rowsizeArgs.td2 = td;
+            this._rowsizeArgs.h2 = td.firstChild.offsetHeight;
+        }
+        this._rowsizeCapture.capture();
+        dwtEv._stopPropagation = true;
+        dwtEv._returnValue = false;
+    }else{
+        var row = td.parentNode.rowIndex;
+        this._selectCell(this._getTable().rows[row].cells[td.cellIndex + 1]);
+        var c1 = "A" + row;
+        var c2 = ZmSpreadSheetModel.getColName(this._model.COLS) + row;
+        this._selectRange(c1, c2);
+    }
+
 };
 
 // called when the top-left cell was clicked or mousedown (TODO: do we do anything here?)
@@ -425,6 +454,91 @@ ZmSpreadSheet.prototype._getLeftHeaderCell = function(td) {
 	var rowIndex = (td && td.parentNode)? td.parentNode.rowIndex : 0;
     var row = rows ? rows[rowIndex] : null;
 	return (row ? row.cells[0] : null);
+};
+
+
+ZmSpreadSheet.prototype._table_setRowHeights = function(){
+
+    var r = this._model.ROWS;
+    var table = this._getTable();
+
+    for (var i = 0; i < r; ++i) {
+		var row = table.rows[i + 1];
+        var headerRowCell = row.cells[0];
+        headerRowCell.firstChild.style.height = this._model.getRowHeight(i) + "px";
+    }
+};
+
+
+ZmSpreadSheet.prototype._setRowHeight = function(row, height){
+     var table = this._getTable();
+     var row = table.rows[row+1];
+     var headerRowCell = row.cells[0];
+     headerRowCell.firstChild.style.height = height + "px";
+};
+
+ZmSpreadSheet.prototype._rowsize_mouseMove = function(ev) {
+
+   var dwtev = new DwtMouseEvent();
+   dwtev.setFromDhtmlEvent(ev);
+
+
+    var OK = true;
+    var fuzz = 0;
+
+    var delta = dwtev.docY - this._rowsizeArgs.docY;
+    var h1 = this._rowsizeArgs.h1 + delta + fuzz;
+    
+    if(delta < 0){        
+        var h2 = this._rowsizeArgs.h2 - delta + fuzz;
+        if(h1 > 7 && h2 > 7) {
+            this._rowsizeArgs.td1.firstChild.style.height = h1 + "px";
+            this._rowsizeArgs.td2.firstChild.style.height = h2 + "px";
+        }else{
+            OK = false;
+        }
+    }else{
+        if(h1 > 7 ) this._rowsizeArgs.td1.firstChild.style.height = h1 + "px";
+    }
+
+    if(OK) this._rowsizeArgs.delta = delta;
+    dwtev._stopPropagation = true;
+	dwtev._returnValue = false;
+	dwtev.setToDhtmlEvent(ev);
+	return dwtev._returnValue;
+};
+
+ZmSpreadSheet.prototype._rowsize_mouseUp = function(ev){
+
+    var dwtev = new DwtMouseEvent();
+	dwtev.setFromDhtmlEvent(ev);
+
+    var index = this._resizeRowIndex;
+    var delta = this._rowsizeArgs.delta;
+
+    var h = this._model.getRowHeight(index - 1);
+    this._setRowHeight(index-1, h + delta);
+    this._model.setRowHeight(index - 1, h + delta);
+
+    if(delta < 0){
+
+        var h = this._model.getRowHeight((index + 1) - 1);
+        this._setRowHeight((index + 1) - 1, h-delta);
+        this._model.setRowHeight((index + 1) - 1, h - delta);
+    }
+
+    // null out some things to make sure we don't leak
+	this._rowsizeArgs.td1 = null;
+	this._rowsizeArgs.td2 = null;
+	this._rowsizeArgs = null;
+    this._resizeRowIndex = null;
+
+    this._rowsizeCapture.release();
+
+	dwtev._stopPropagation = true;
+	dwtev._returnValue = false;
+	dwtev.setToDhtmlEvent(ev);
+	return dwtev._returnValue;
 };
 
 ZmSpreadSheet.prototype._colsize_mouseMove = function(ev) {
@@ -1251,13 +1365,42 @@ ZmSpreadSheet.prototype._table_mouseMove = function(ev) {
 	while (td && td !== table && !/^td$/i.test(td.tagName))
 		td = td.parentNode;
 	if (td && /^td$/i.test(td.tagName)) {
-		try {
-			var cell = this.getCellModel(td);
-			this._setTooltip(cell, dwtev.docX, dwtev.docY);
-		} catch(ex) {
-			// ignoring exceptions (such as when we mouseover a
-			// top/left bar td)
-		}
+        var index = td.cellIndex;
+        if(index == 0){
+            var row = td.parentNode;
+            index = row.rowIndex;
+            var tmp = Dwt.getLocation(this._getRelDiv());
+			var tdY = dwtev.docY - tmp.y - td.offsetTop + this._getRelDiv().scrollTop;
+
+            if (Math.abs(tdY - td.offsetHeight) < 5) {                
+				this._resizeRowIndex = index;
+                console.log("Case 1");
+                Dwt.delClass(table, "RowNSize", "RowSSize");
+			} else if (tdY < 5 && index > 1) {
+				this._resizeRowIndex = index - 1;
+                console.log("Case 2");				
+                Dwt.delClass(table, "RowSSize", "RowNSize");
+			} else {
+                console.log("Case 3");
+				this._resizeRowIndex = null;				
+                Dwt.delClass(table, "RowSSize");
+                Dwt.delClass(table, "RowNSize");
+			}
+            
+        }else{
+            if(this._resizeRowIndex){
+                this._resizeRowIndex = null;                
+                Dwt.delClass(table, "RowSSize");
+                Dwt.delClass(table, "RowNSize");
+            }
+            try {
+                var cell = this.getCellModel(td);
+                this._setTooltip(cell, dwtev.docX, dwtev.docY);
+            } catch(ex) {
+                // ignoring exceptions (such as when we mouseover a
+                // top/left bar td)
+            }
+        }
 	}
 };
 
