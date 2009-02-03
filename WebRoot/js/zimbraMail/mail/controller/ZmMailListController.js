@@ -113,9 +113,9 @@ ZmMailListController.READING_PANE_TEXT[ZmMailListController.READING_PANE_AT_BOTT
 ZmMailListController.READING_PANE_TEXT[ZmMailListController.READING_PANE_ON_RIGHT_ID]	= ZmMsg.readingPaneOnRight;
 
 ZmMailListController.READING_PANE_ICON = {};
-ZmMailListController.READING_PANE_ICON[ZmMailListController.READING_PANE_OFF_ID]		= "SplitPane"; //"ReadingPaneOff";
-ZmMailListController.READING_PANE_ICON[ZmMailListController.READING_PANE_AT_BOTTOM_ID]	= "SplitPane"; //"ReadingPaneBottom";
-ZmMailListController.READING_PANE_ICON[ZmMailListController.READING_PANE_ON_RIGHT_ID]	= "SplitPane"; //"ReadingPaneRight";
+ZmMailListController.READING_PANE_ICON[ZmMailListController.READING_PANE_OFF_ID]		= "SplitPaneOff";
+ZmMailListController.READING_PANE_ICON[ZmMailListController.READING_PANE_AT_BOTTOM_ID]	= "SplitPane";
+ZmMailListController.READING_PANE_ICON[ZmMailListController.READING_PANE_ON_RIGHT_ID]	= "SplitPaneVertical";
 
 // Public methods
 
