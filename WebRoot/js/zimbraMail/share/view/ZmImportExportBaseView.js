@@ -343,6 +343,7 @@ ZmImportExportBaseView.prototype._setupCustom = function(id, setup, value) {
 		control.setText(setup.displayName || "");
 		control.addSelectionListener(new AjxListener(this, this._handleFolderButton));
 		this.setFormObject(id, control);
+		this._setFolderButton(appCtxt.getById(ZmOrganizer.ID_ROOT));
 		return control;
 	}
 	return null;
@@ -452,10 +453,10 @@ ZmImportExportBaseView.prototype._getSubTypeOptions = function(type) {
 		ZmImportExportBaseView.prototype.CSV_OPTIONS = [];
 		var setup = this.SETUP["SUBTYPE"];
 		var options = setup.options;
+		var displayOptions = setup.displayOptions;
 		for (var i = 0; i < options.length; i++) {
-			ZmImportExportBaseView.prototype.CSV_OPTIONS.push(
-				{ displayValue: ZmMsg[options[i]] || options[i], value: setup.options[i] }
-			);
+			var item = { displayValue: ZmMsg[options[i]] || displayOptions[i] || options[i], value: setup.options[i] };
+			ZmImportExportBaseView.prototype.CSV_OPTIONS.push(item);
 		}
 		ZmImportExportBaseView.prototype.ICS_OPTIONS = [
 			{ displayValue: ZmMsg["zimbra-ics"],			value: "zimbra-ics" }
@@ -488,8 +489,23 @@ ZmImportExportBaseView.prototype._createHtml = function(templateId) {
 ZmImportExportBaseView.prototype._handleTypeChange = function() {
 	var type = this.getFormValue("TYPE", ZmImportExportController.TYPE_TGZ);
 	this._initSubType(type);
-	this._folderId = -1;
-	this.setFormValue("FOLDER_BUTTON", ZmMsg.browse);
+	var folder;
+	switch (type) {
+		case ZmImportExportController.TYPE_CSV: {
+			// TODO: Does this work for child accounts w/ fully-qualified ids?
+			folder = appCtxt.getById(ZmOrganizer.ID_ADDRBOOK);
+			break;
+		}
+		case ZmImportExportController.TYPE_ICS: {
+			folder = appCtxt.getById(ZmOrganizer.ID_CALENDAR);
+			break;
+		}
+		case ZmImportExportController.TYPE_TGZ: {
+			folder = appCtxt.getById(ZmOrganizer.ID_ROOT);
+			break;
+		}
+	}
+	this._setFolderButton(folder);
 	this._updateControls();
 };
 
@@ -523,11 +539,20 @@ ZmImportExportBaseView.prototype._handleFolderButton = function() {
 
 ZmImportExportBaseView.prototype._handleFolderDialogOk = function(folder) {
 	appCtxt.getChooseFolderDialog().popdown();
-	// NOTE: Selecting a header is the same as "all folders"
-	this._folderId = folder.id;
-	var isRoot = folder.nId == ZmOrganizer.ID_ROOT;
-	this.setFormValue("FOLDER_BUTTON", isRoot ? ZmMsg.allFolders : folder.name);
+	this._setFolderButton(folder);
 	return true;
+};
+
+ZmImportExportBaseView.prototype._setFolderButton = function(folder) {
+	// NOTE: Selecting a header is the same as "all folders"
+	this._folderId = folder ? folder.id : -1;
+	if (folder) {
+		var isRoot = folder.nId == ZmOrganizer.ID_ROOT;
+		this.setFormValue("FOLDER_BUTTON", isRoot ? ZmMsg.allFolders : folder.name);
+	}
+	else {
+		this.setFormValue("FOLDER_BUTTON", ZmMsg.browse);
+	}
 };
 
 ZmImportExportBaseView.prototype._handleToggleAdvanced = function() {

@@ -148,6 +148,12 @@
 				<input rel='ADVANCED' id="${id}_SEARCH_FILTER" length="40" hint="<$=ZmMsg.searchFilterHint$>" tabindex="700">
 			</td>
 		</tr>
+		<tr id="${id}_SKIP_META_row">
+			<td class="ZOptionsLabelTop" style="width:inherit;"><$=ZmMsg.otherLabel$></td>
+			<td class="ZOptionsField">
+				<span rel='ADVANCED' id="${id}_SKIP_META"></span>
+			</td>
+		</tr>
 	</table>
 </template>
 

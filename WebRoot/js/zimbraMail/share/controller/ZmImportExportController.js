@@ -80,6 +80,15 @@ ZmImportExportController.SUBTYPE_DEFAULT[ZmImportExportController.TYPE_ICS] = Zm
  * Imports user data as specified in the <code>params</code> object.
  * @param params		[object]	Parameters:
  *        form			[Element]	Form containing file input field.
+ *        folderId		[string]	Folder id for import. If not specified,
+ * 									assumes import to root folder.
+ *        type			[string]*	Type. Defaults to <code>TYPE_TGZ</code>.
+ *        subType		[string]*	Sub-type. Defaults to <code>SUBTYPE_DEFAULT[type]</code>.
+ *        resolve		[string]*	Resolve duplicates: "ignore", "replace", "reset".
+ * 									Defaults to <code>"ignore"</code>.
+ *        views			[string]*	Comma-separated list of views.
+ *        callback		[AjxCallback]*	Callback for success.
+ *        errorCallback	[AjxCallback]*	Callback for errors.
  */
 ZmImportExportController.prototype.importData = function(params) {
 	// error checking
@@ -141,6 +150,7 @@ ZmImportExportController.prototype.importData = function(params) {
  *        views			[string]*	Comma-separated list of views.
  *        filename		[string]*	Filename for exported file.
  *        searchFilter	[string]*	Search filter.
+ *        skipMeta      [boolean]*  True to skip export of meta-data.
  *        callback		[AjxCallback]*	Callback for success.
  *        errorCallback	[AjxCallback]*	Callback for errors.
  */
@@ -290,7 +300,9 @@ ZmImportExportController.prototype._doImportCSV = function(params, aid) {
 	var soapDoc = AjxSoapDoc.create("ImportContactsRequest", "urn:zimbraMail");
 	var method = soapDoc.getMethod();
 	method.setAttribute("ct", params.type);
-	method.setAttribute(params.type+"fmt", params.subType)
+	if (params.subType) {
+		method.setAttribute(params.type+"fmt", params.subType);
+	}
 	method.setAttribute("l", params.folderId);
 	var content = soapDoc.set("content", "");
 	content.setAttribute("aid", aid);
@@ -384,6 +396,7 @@ ZmImportExportController.prototype._doExportData = function(params) {
 	if (isCSV) { formParams[type+"fmt"] = subType; }
 	if (isTGZ && params.views) { formParams["types"] = params.views; }
 	if (isTGZ && params.searchFilter) { formParams["query"] = params.searchFilter; }
+	if (params.skipMeta) { formParams["meta"] = "0"; }
 	if (params.filename) { formParams["filename"] = params.filename; }
 
 	// initialize form

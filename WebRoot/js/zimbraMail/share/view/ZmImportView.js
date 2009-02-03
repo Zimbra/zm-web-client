@@ -105,6 +105,10 @@ ZmImportView.prototype._getSubTypeOptions = function(type) {
 	if (!setup.options) {
 		setup.options = ZmPref.SETUP["IMPORT_FOLDER"].options || [];
 		setup.displayOptions = ZmPref.SETUP["IMPORT_FOLDER"].displayOptions || [];
+		if (setup.options.length > 0) {
+			setup.options.unshift("");
+			setup.displayOptions.unshift(ZmMsg.importAutoDetect);
+		}
 	}
 	return ZmImportExportBaseView.prototype._getSubTypeOptions.apply(this, arguments);
 };

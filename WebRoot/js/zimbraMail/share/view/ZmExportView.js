@@ -63,7 +63,8 @@ ZmExportView.prototype.getParams = function() {
 		// optional -- ignore if not relevant
 		views:			this.isRelevant("DATA_TYPES") ? this.getFormValue("DATA_TYPES") : null,
 		folderId:		this._folderId,
-		searchFilter:	this.isRelevant("SEARCH_FILTER") ? this.getFormValue("SEARCH_FILTER") : null
+		searchFilter:	this.isRelevant("SEARCH_FILTER") ? this.getFormValue("SEARCH_FILTER") : null,
+		skipMeta:       this.isRelevant("SKIP_META") ? this.getFormValue("SKIP_META") : null
 	};
 
 	// generate filename
@@ -105,6 +106,10 @@ ZmExportView.prototype._registerControls = function() {
 	this._registerControl("IGNORE_ARCHIVE", {
 		displayContainer:	ZmPref.TYPE_CHECKBOX,
 		displayName:		ZmMsg.exportIgnoreArchive
+	});
+	this._registerControl("SKIP_META", {
+		displayContainer:	ZmPref.TYPE_CHECKBOX,
+		displayName:		ZmMsg.exportSkipMeta
 	});
 };
 
