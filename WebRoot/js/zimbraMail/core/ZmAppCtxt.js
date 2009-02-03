@@ -551,7 +551,7 @@ function() {
 		}
 	}
 	return this.isChildWindow ? this._childWinTabGrp : this._rootTabGrp;
-}
+};
 
 ZmAppCtxt.prototype.getShell =
 function() {

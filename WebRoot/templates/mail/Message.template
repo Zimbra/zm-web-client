@@ -274,3 +274,29 @@
 	</table>
 </template>
 
+<template id='mail.Message#ZmMailConfirmView'>
+	<table cellspacing=0 cellpadding=0 border=0 width=100%>
+		<tr>
+			<td id='${id}_confirm' width="300px">
+				<div id='${id}_summary' class="Summary"></div>
+				<div>&nbsp;</div>
+				<div id='${id}_newContacts' class="NewContacts">
+					 <div><$= ZmMsg.confirmNewContacts $></div>
+					 <div id='${id}_newContactBox' class="NewContactBox"></div>
+				</div>
+				<div id='${id}_existingContacts' class="ExistingContacts"></div>
+				<div id='${id}_addButton'></div>
+			</td>
+			<td id='${id}_ad'>&nbsp;</td>
+		</tr>
+	</table>
+</template>
+
+<template id='mail.Message#ZmMailConfirmViewNewAddress'>
+	<div id="${id}_CHECKBOX"></div>
+	<table><tr>
+		<td><div id="${id}_FIRST"/></td>
+		<td><div id="${id}_LAST"/></td>
+	</tr></table>
+</template>
+
