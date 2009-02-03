@@ -28,6 +28,18 @@ function () {
 };
 
 //
+// ZmPreferencesPage methods
+//
+
+ZmImportExportPage.prototype.reset = function(useDefaults) {
+	ZmPreferencesPage.prototype.reset.apply(this, arguments);
+	var button = this.getFormObject("IMPORT_BUTTON");
+	if (button) {
+		button.setEnabled(true);
+	}
+};
+
+//
 // Protected methods
 //
 
@@ -62,19 +74,39 @@ ZmImportExportPage.prototype._setupCustom = function(id, setup, value) {
 // handlers
 
 ZmImportExportPage.prototype._handleImportButton = function() {
+	var button = this.getFormObject("IMPORT_BUTTON");
+	if (button) {
+		button.setEnabled(false);
+	}
+	var params = {
+		msg:	ZmMsg.importStarted,
+		level:	ZmStatusView.LEVEL_INFO
+	};
+	appCtxt.setStatusMsg(params);
+
+	// get import params
 	var importView = this.getFormObject("IMPORT_FOLDER");
+	var params = importView.getParams();
+	params.callback = params.errorCallback = new AjxCallback(this, this._handleImportComplete);
 
 	// import
 	var controller = appCtxt.getImportExportController();
-	var params = importView.getParams();
 	controller.importData(params);
 };
 
 ZmImportExportPage.prototype._handleExportButton = function() {
+	// get export params
 	var exportView = this.getFormObject("EXPORT_FOLDER");
+	var params = exportView.getParams();
 
 	// export
 	var controller = appCtxt.getImportExportController();
-	var params = exportView.getParams();
 	controller.exportData(params);
+};
+
+ZmImportExportPage.prototype._handleImportComplete = function() {
+	var button = this.getFormObject("IMPORT_BUTTON");
+	if (button) {
+		button.setEnabled(true);
+	}
 };
