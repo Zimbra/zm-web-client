@@ -32,7 +32,13 @@
 <div class='View'>
     <div><strong>${fn:escapeXml(empty appt.name ? noSubject : appt.name)}</strong></div>
     <c:if test="${not empty appt.location}">
-        <div class='small-gray-text'>${fn:escapeXml(appt.location)}</div>
+        <div class='small-gray-text'>location: ${fn:escapeXml(appt.location)}</div>
+    </c:if>                                                                          
+    <c:if test="${not empty appt.organizer}">
+           <div class='small-gray-text'>
+               <fmt:message key="organizer"/>: <a href="?st=newmail&to=${appt.organizer.emailAddress.fullAddress}">${fn:escapeXml(appt.organizer.emailAddress.address)}</a>
+               <br/>
+           </div>
     </c:if>
     <p class='label Medium'>
         <c:choose>
