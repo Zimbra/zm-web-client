@@ -56,7 +56,6 @@ function(listener) {
 	this.addListener(DwtEvent.ACTION, listener);
 };
 
-
 /**
  * Shows confimation that the message was sent.
  *
@@ -64,16 +63,21 @@ function(listener) {
  */
 ZmMailConfirmView.prototype.showConfirmation =
 function(msg) {
-	var newContacts = [],
+	var newAddresses = [],
 		existingContacts = [];
 	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-		this._processAddresses(msg.getAddresses(AjxEmailAddress.TO), newContacts, existingContacts);
-		this._processAddresses(msg.getAddresses(AjxEmailAddress.CC), newContacts, existingContacts);
+		this._processAddresses(msg.getAddresses(AjxEmailAddress.TO), newAddresses, existingContacts);
+		this._processAddresses(msg.getAddresses(AjxEmailAddress.CC), newAddresses, existingContacts);
 	}
 	Dwt.byId(this._htmlElId + "_summary").innerHTML = AjxStringUtil.htmlEncode(this._summaryFormat.format(msg.subject));
-	Dwt.setVisible(Dwt.byId(this._htmlElId + "_newContacts"), newContacts.length);
-	this._addContactsButton.setVisible(newContacts.length);
-	var newContactBox = Dwt.byId(this._htmlElId + "_newContactBox");
+	this._showNewAddresses(newAddresses);
+	this._showExistingContacts(existingContacts);
+};
+
+ZmMailConfirmView.prototype._showNewAddresses =
+function(newAddresses) {
+	Dwt.setVisible(Dwt.byId(this._htmlElId + "_newAddresses"), newAddresses.length);
+	this._addContactsButton.setVisible(newAddresses.length);
 	if (this._newAddressForms) {
 		for (var i = 0, count = this._newAddressForms.length; i < count; i++) {
 			this._newAddressForms[i].dispose();
@@ -81,10 +85,11 @@ function(msg) {
 		this._newAddressForms = [];
 	}
 	this._newAddressForms = [];
-	for (var i = 0, count = newContacts.length; i < count; i++) {
+	var newAddressBox = Dwt.byId(this._htmlElId + "_newAddressBox");
+	for (var i = 0, count = newAddresses.length; i < count; i++) {
 		var div = document.createElement("DIV");
-		newContactBox.appendChild(div);
-		var address = newContacts[i],
+		newAddressBox.appendChild(div);
+		var address = newAddresses[i],
 			first = "",
 			last = "";
 		var name = address.getName();
@@ -112,20 +117,43 @@ function(msg) {
 	}
 };
 
+ZmMailConfirmView.prototype._showExistingContacts =
+function(existingContacts) {
+	Dwt.setVisible(Dwt.byId(this._htmlElId + "_existingContacts"), existingContacts.length);
+	var existingContactBox = Dwt.byId(this._htmlElId + "_existingContactBox");
+	existingContactBox.innerHTML = "";
+	for (var i = 0, count = existingContacts.length; i < count; i++) {
+		var div = document.createElement("DIV");
+		existingContactBox.appendChild(div);
+		var data = existingContacts[i];
+		var display;
+		var fullName = data.contact.getFullName();
+		if (fullName) {
+			display = [fullName, " <", data.address.getAddress(), ">"].join("");
+		} else {
+			display = data.address.getAddress();
+		}
+		div.innerHTML = AjxTemplate.expand("mail.Message#ZmMailConfirmViewExistingContact", { text: AjxStringUtil.htmlEncode(display) });
+	}
+};
+
 ZmMailConfirmView.prototype._processAddresses =
-function(addresses, newContacts, existingContacts) {
+function(addresses, newAddresses, existingContacts) {
 	var contactsApp = appCtxt.getApp(ZmId.APP_CONTACTS);
 	for (var i = 0, count = addresses.size(); i < count; i++) {
-		if (contactsApp.getContactByEmail("fake grrrr junk")) {
+		var address = addresses.get(i);
+		var contact = contactsApp.getContactByEmail(address.getAddress());
+		if (contact) {
+			existingContacts.push({ contact: contact, address: address });
 		} else {
-			newContacts.push(addresses.get(i));
+			newAddresses.push(address);
 		}
 	}
 };
 
 ZmMailConfirmView.prototype._addContactsListener =
 function() {
-	var newContacts = [];
+	var newAddresses = [];
 	for (var i = 0, count = this._newAddressForms.length; i < count; i++) {
 		var form = this._newAddressForms[i];
 		if (form.getValue("CHECKBOX")) {
@@ -133,8 +161,8 @@ function() {
 			data[ZmContact.F_email] = form.getControl("CHECKBOX").getText();
 			data[ZmContact.F_firstName] = form.getValue("FIRST");
 			data[ZmContact.F_lastName] = form.getValue("LAST");
-			newContacts.push(data);
+			newAddresses.push(data);
 		}
 	}
-	this.notifyListeners(DwtEvent.ACTION, newContacts);
+	this.notifyListeners(DwtEvent.ACTION, newAddresses);
 };
