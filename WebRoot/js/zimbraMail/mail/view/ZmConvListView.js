@@ -608,10 +608,11 @@ function(ev) {
 	}
 	
 	if (isConv && (ev.event == ZmEvent.E_MODIFY) && (fields && fields[ZmItem.F_INDEX])) {
-		// a conv has gotten a new msg and may need to be moved within its list
+		// a conv has gotten a new msg and may need to be moved within the list of convs
 		// if an expanded conv gets a new msg, don't move it to top
+		// if we're not on first page, leave conv row alone - don't make conv row disappear or move to top
 		var sortIndex = ev.getDetail("sortIndex");
-		if ((sortIndex != null) && (this._list.indexOf(item) != sortIndex) && !this._expanded[item.id]) {
+		if ((sortIndex != null) && (this._list.indexOf(item) != sortIndex) && !this._expanded[item.id] && (this.offset == 0)) {
             this._removeMsgRows(item.id);
             this.removeItem(item);
 			this.addItem(item, sortIndex);
