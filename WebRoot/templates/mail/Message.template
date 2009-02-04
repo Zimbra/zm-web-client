@@ -284,17 +284,17 @@
 					<div>&nbsp;</div>
 					<div id='${id}_displayAddresses' class="displayAddresses">
 						<div><$= ZmMsg.confirmDisplayAddresss $></div>
-						<div id='${id}_displayAddressBox' class="DisplayAddressBox"></div>
+						<div id='${id}_displayAddressBox' class="Box DisplayAddressBox"></div>
 					</div>
 					<div id='${id}_newAddresses' class="NewAddresses">
 						 <div><$= ZmMsg.confirmNewAddresses $></div>
-						 <div id='${id}_newAddressBox' class="NewAddressBox"></div>
+						 <div id='${id}_newAddressBox' class="Box NewAddressBox"></div>
 					</div>
 					<div style="margin:3px" id='${id}_addButton'></div>
 					<br>
 					<div id='${id}_existingContacts' class="ExistingContacts">
 						<div><$= ZmMsg.confirmExistingContacts $></div>
-						<div id='${id}_existingContactBox' class="ExistingContactBox"></div>
+						<div id='${id}_existingContactBox' class="Box ExistingContactBox"></div>
 					</div>
 				</div>
 			</td>

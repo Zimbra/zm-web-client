@@ -672,9 +672,24 @@ line-height:normal;
 	background-color:black;
 }
 
+/*
+ * Message confirm view
+ */
+/* Outer container of message compose view */
+.ZmMailConfirmView {
+	@FullWidth@
+ 	padding: 15px;
+}
 
+.ZmMailConfirmView .Summary {
+	@FontSize-bigger@
+}
 
-
+.ZmMailConfirmView .Box {
+	border: 1px solid @DarkSeparatorColor@;
+	margin-top: 2px;
+	padding: 3px;
+}
 
 /*
  *  Contacts app
