@@ -111,8 +111,10 @@ AjxPackage.require("zimbraMail.mail.model.ZmMailList");
 AjxPackage.require("zimbraMail.mail.model.ZmIdentity");
 AjxPackage.require("zimbraMail.mail.view.ZmComposeView");
 AjxPackage.require("zimbraMail.mail.view.ZmMailMsgView");
+AjxPackage.require("zimbraMail.mail.view.ZmMailConfirmView");
 AjxPackage.require("zimbraMail.mail.controller.ZmComposeController");
 AjxPackage.require("zimbraMail.mail.controller.ZmMailListController");
 AjxPackage.require("zimbraMail.mail.controller.ZmMsgController");
+AjxPackage.require("zimbraMail.mail.controller.ZmMailConfirmController");
 
 AjxPackage.require("zimbra.common.ZmErrorDialog");

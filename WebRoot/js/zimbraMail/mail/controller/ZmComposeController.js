@@ -972,17 +972,23 @@ ZmComposeController.prototype._processSendMsg =
 function(draftType, msg, resp) {
 	var isDraft = (draftType != ZmComposeController.DRAFT_TYPE_NONE);
 	if (!isDraft) {
-		if (appCtxt.isChildWindow && window.parentController) {
-			window.onbeforeunload = null;
-			if (!appCtxt.isOffline) { // see bug #29372
-				window.parentController.setStatusMsg(ZmMsg.messageSent);
-			}
+		if (appCtxt.get(ZmSetting.SHOW_MAIL_CONFIRM)) {
+			var confirmController = AjxDispatcher.run("GetMailConfirmController");
+			confirmController.showConfirmation(msg);
 		} else {
-			if (!appCtxt.isOffline) { // see bug #29372
-				appCtxt.setStatusMsg(ZmMsg.messageSent);
+			if (appCtxt.isChildWindow && window.parentController) {
+				window.onbeforeunload = null;
+				if (!appCtxt.isOffline) { // see bug #29372
+					window.parentController.setStatusMsg(ZmMsg.messageSent);
+				}
+			} else {
+				if (!appCtxt.isOffline) { // see bug #29372
+					appCtxt.setStatusMsg(ZmMsg.messageSent);
+				}
 			}
+			this._app.popView(true);
 		}
-
+		
 		if (resp || !appCtxt.get(ZmSetting.SAVE_TO_SENT)) {
 			this._composeView.reset(false);
 
@@ -990,8 +996,6 @@ function(draftType, msg, resp) {
 			var origMsg = msg._origMsg;
 			if (origMsg && origMsg.isDraft)
 				this._deleteDraft(origMsg);
-
-			this._app.popView(true);
 		}
 	} else {
 		// TODO - disable save draft button indicating a draft was saved
