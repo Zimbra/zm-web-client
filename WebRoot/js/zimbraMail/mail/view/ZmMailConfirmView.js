@@ -73,6 +73,11 @@ function(msg) {
 	}
 };
 
+ZmMailConfirmView.prototype.getController =
+function() {
+	return this._controller;
+};
+
 ZmMailConfirmView.prototype._handleResponseGetContacts =
 function(msg, contacts) {
 	var newAddresses = [],

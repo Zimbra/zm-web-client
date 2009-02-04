@@ -59,9 +59,28 @@ function() {
 	this._toolbar.enableAll(true);
 };
 
+ZmMailConfirmController.prototype.getKeyMapName =
+function() {
+	return "Global";
+};
+
+ZmMailConfirmController.prototype.handleKeyAction =
+function(actionCode) {
+	switch (actionCode) {
+		case ZmKeyMap.CANCEL:
+			this._cancelListener();
+			break;
+
+		default:
+			return ZmController.prototype.handleKeyAction.call(this, actionCode);
+			break;
+	}
+	return true;
+};
+
 ZmMailConfirmController.prototype._initView =
 function() {
-	this._view = new ZmMailConfirmView(this._container);
+	this._view = new ZmMailConfirmView(this._container, this);
 	this._view.addNewContactsListener(new AjxListener(this, this._addNewContactsListener));
 	var elements = {};
 	this._initializeToolBar();
