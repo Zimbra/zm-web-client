@@ -436,9 +436,9 @@ ZmImportExportBaseView.prototype._initSubType = function(type) {
 	if (!select) return;
 
 	var options = this._getSubTypeOptions(type);
-	if (!options || options.length == 0) return;
-
 	select.clearOptions();
+
+	if (!options || options.length == 0) return;
 	for (var i = 0; i < options.length; i++) {
 		select.addOption(options[i]);
 	}
@@ -446,19 +446,19 @@ ZmImportExportBaseView.prototype._initSubType = function(type) {
 };
 
 ZmImportExportBaseView.prototype._getSubTypeOptions = function(type) {
-	if (!ZmImportExportBaseView.prototype.TGZ_OPTIONS) {
-		ZmImportExportBaseView.prototype.TGZ_OPTIONS = [
+	if (!this.TGZ_OPTIONS) {
+		this.TGZ_OPTIONS = [
 			{ displayValue: ZmMsg["zimbra-tgz"],			value: "zimbra-tgz" }
 		];
-		ZmImportExportBaseView.prototype.CSV_OPTIONS = [];
+		this.CSV_OPTIONS = [];
 		var setup = this.SETUP["SUBTYPE"];
 		var options = setup.options;
 		var displayOptions = setup.displayOptions;
 		for (var i = 0; i < options.length; i++) {
 			var item = { displayValue: ZmMsg[options[i]] || displayOptions[i] || options[i], value: setup.options[i] };
-			ZmImportExportBaseView.prototype.CSV_OPTIONS.push(item);
+			this.CSV_OPTIONS.push(item);
 		}
-		ZmImportExportBaseView.prototype.ICS_OPTIONS = [
+		this.ICS_OPTIONS = [
 			{ displayValue: ZmMsg["zimbra-ics"],			value: "zimbra-ics" }
 		];
 	}

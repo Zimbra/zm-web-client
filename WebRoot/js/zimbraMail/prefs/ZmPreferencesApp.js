@@ -271,6 +271,7 @@ function() {
 	});
 
 	ZmPref.registerPref("EXPORT_FOLDER", {
+		loadFunction:       ZmPref.loadCsvFormats,
 		displayContainer:	ZmPref.TYPE_CUSTOM
 	});
 	ZmPref.registerPref("EXPORT_BUTTON", {
