@@ -329,6 +329,11 @@ function(shares, result) {
 
 				var url = share.object.getRestUrl();
 				url = url.replace(/&/g,'%26');
+				if (appCtxt.isOffline) {
+					var remoteUri = appCtxt.get(ZmSetting.OFFLINE_REMOTE_SERVER_URI);
+					url = remoteUri + url.substring((url.indexOf("/",7)));
+				}
+
 				var password = this._passwordInput.getValue();
 
 				var args = [url, email, password];
