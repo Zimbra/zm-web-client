@@ -28,7 +28,7 @@
  */
 ZmComposeView = function(parent, controller, composeMode) {
 
-	this._view = ZmId.VIEW_COMPOSE;
+	this._view = ZmId.VIEW_COMPOSE + controller.sessionId;
 	DwtComposite.call(this, {parent:parent, className:"ZmComposeView", posStyle:Dwt.ABSOLUTE_STYLE,
 							 id:ZmId.getViewId(this._view)});
 
