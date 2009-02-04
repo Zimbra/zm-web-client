@@ -392,13 +392,15 @@ function(callback) {
 
 	// in dev mode, force create deferred folders b/c postLoad gets called w/
 	// invisible parent (deferred folders for child accounts are never loaded)
-	if (AjxDispatcher.loaded("Contacts")) {
-		var capp = appCtxt.getApp(ZmApp.CONTACTS);
-		capp._createDeferredFolders(ZmOrganizer.ADDRBOOK);
-	}
-	if (AjxDispatcher.loaded("Notebook")) {
-		var napp = appCtxt.getApp(ZmApp.NOTEBOOK);
-		napp._createDeferredFolders(ZmOrganizer.NOTEBOOK);
+	var apps = appCtxt.getAppController()._apps;
+	for (var i in apps) {
+		if (AjxDispatcher.loaded(i)) {
+			var app = appCtxt.getApp(i);
+			var org = ZmOrganizer.APP2ORGANIZER[i];
+			if (org && org.length) {
+				app._createDeferredFolders(org[0]);
+			}
+		}
 	}
 
 	var ac = appCtxt.getCurrentApp().getAccordionController();
