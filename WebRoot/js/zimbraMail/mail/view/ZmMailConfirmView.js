@@ -28,6 +28,7 @@ ZmMailConfirmView = function(parent, controller) {
 	DwtComposite.call(this, {parent:parent, className:"ZmMailConfirmView", posStyle:Dwt.ABSOLUTE_STYLE,
 							 id:ZmId.getViewId(this._view)});
 
+	this.setVisible(false);
 	this._controller = controller;
 	this._createHtmlFromTemplate("mail.Message#ZmMailConfirmView", { id: this._htmlElId } );
 	var buttonArgs = {
@@ -104,6 +105,7 @@ ZmMailConfirmView.prototype._showLoading =
 function(loading) {
 	Dwt.setVisible(Dwt.byId(this._htmlElId + "_loading"), loading);
 	Dwt.setVisible(Dwt.byId(this._htmlElId + "_notLoading"), !loading);
+	this.setVisible(true);	
 };
 
 ZmMailConfirmView.prototype._showNewAddresses =
