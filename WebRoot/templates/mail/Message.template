@@ -275,7 +275,7 @@
 </template>
 
 <template id='mail.Message#ZmMailConfirmView'>
-	<table cellspacing=0 cellpadding=0 border=0 width=100%>
+	<table cellspacing=3 cellpadding=0 border=0 width=100%>
 		<tr>
 			<td id='${id}_confirm' width="300px">
 				<div id='${id}_loading'><$= ZmMsg.loading $></div>

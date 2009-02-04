@@ -72,6 +72,10 @@ function(msg) {
 	} else {
 		this._setView(msg, addresses, []);
 	}
+
+	if (appCtxt.zimletsPresent()) {
+		appCtxt.getZimletMgr().notifyZimlets("onMailConfirm", this, msg, Dwt.byId(this._htmlElId + "_ad"));
+	}
 };
 
 ZmMailConfirmView.prototype.getController =
