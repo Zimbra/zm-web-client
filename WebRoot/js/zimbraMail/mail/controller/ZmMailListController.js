@@ -346,10 +346,10 @@ function(actionCode) {
 			if (isSyncFailures) { break; }
 			if (!folder || (folder && !folder.isReadOnly())) {
 				if (num && !isDrafts) {
-					folder = appCtxt.getById(shortcut.arg);
-					if (folder) {
-						var items = lv.getSelection();
-						this._doMove(items, folder);
+					var fid = ZmOrganizer.getSystemId(shortcut.arg);
+					var newFolder = appCtxt.getById(fid);
+					if (newFolder) {
+						this._doMove(lv.getSelection(), newFolder);
 					}
 				}
 			}
