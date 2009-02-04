@@ -278,17 +278,20 @@
 	<table cellspacing=0 cellpadding=0 border=0 width=100%>
 		<tr>
 			<td id='${id}_confirm' width="300px">
-				<div id='${id}_summary' class="Summary"></div>
-				<div>&nbsp;</div>
-				<div id='${id}_newAddresses' class="NewAddresses">
-					 <div><$= ZmMsg.confirmNewAddresses $></div>
-					 <div id='${id}_newAddressBox' class="NewAddressBox"></div>
-				</div>
-				<div style="margin:3px" id='${id}_addButton'></div>
-				<br>
-				<div id='${id}_existingContacts' class="ExistingContacts">
-					<div><$= ZmMsg.confirmExistingContacts $></div>
-					<div id='${id}_existingContactBox' class="ExistingContactBox"></div>
+				<div id='${id}_loading'><$= ZmMsg.loading $></div>
+				<div id='${id}_notLoading'>
+					<div id='${id}_summary' class="Summary"></div>
+					<div>&nbsp;</div>
+					<div id='${id}_newAddresses' class="NewAddresses">
+						 <div><$= ZmMsg.confirmNewAddresses $></div>
+						 <div id='${id}_newAddressBox' class="NewAddressBox"></div>
+					</div>
+					<div style="margin:3px" id='${id}_addButton'></div>
+					<br>
+					<div id='${id}_existingContacts' class="ExistingContacts">
+						<div><$= ZmMsg.confirmExistingContacts $></div>
+						<div id='${id}_existingContactBox' class="ExistingContactBox"></div>
+					</div>
 				</div>
 			</td>
 			<td id='${id}_ad'>&nbsp;</td>

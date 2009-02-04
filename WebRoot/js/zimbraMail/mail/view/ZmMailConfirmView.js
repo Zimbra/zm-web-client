@@ -63,6 +63,7 @@ function(listener) {
  */
 ZmMailConfirmView.prototype.showConfirmation =
 function(msg) {
+	this._showLoading(true);
 	var addresses = msg.getAddresses(AjxEmailAddress.TO).getArray().concat(msg.getAddresses(AjxEmailAddress.CC).getArray());
 	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
 		var callback = new AjxCallback(this, this._handleResponseGetContacts, [msg]);
@@ -88,9 +89,16 @@ function(msg, contacts) {
 
 ZmMailConfirmView.prototype._setView =
 function(msg, newAddresses, existingContacts) {
+	this._showLoading(false);
 	Dwt.byId(this._htmlElId + "_summary").innerHTML = AjxStringUtil.htmlEncode(this._summaryFormat.format(msg.subject));
 	this._showNewAddresses(newAddresses);
 	this._showExistingContacts(existingContacts);
+};
+
+ZmMailConfirmView.prototype._showLoading =
+function(loading) {
+	Dwt.setVisible(Dwt.byId(this._htmlElId + "_loading"), loading);
+	Dwt.setVisible(Dwt.byId(this._htmlElId + "_notLoading"), !loading);
 };
 
 ZmMailConfirmView.prototype._showNewAddresses =
