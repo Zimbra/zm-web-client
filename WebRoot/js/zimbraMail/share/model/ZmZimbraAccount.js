@@ -397,7 +397,7 @@ function(callback) {
 		if (AjxDispatcher.loaded(i)) {
 			var app = appCtxt.getApp(i);
 			var org = ZmOrganizer.APP2ORGANIZER[i];
-			if (org && org.length) {
+			if (app && org && org.length) {
 				app._createDeferredFolders(org[0]);
 			}
 		}
