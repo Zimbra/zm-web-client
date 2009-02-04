@@ -27,10 +27,12 @@
 ZmMailApp = function(container, parentController) {
 	ZmApp.call(this, ZmApp.MAIL, container, parentController);
 
-	this._dataSourceCollection = {};
-	this._identityCollection = {};
-	this._signatureCollection = {};
-	this._groupBy = {};
+	this._composeController		= {};
+	this._dataSourceCollection	= {};
+	this._identityCollection	= {};
+	this._signatureCollection	= {};
+	this._groupBy				= {};
+
 	this._addSettingsChangeListeners();
 };
 
@@ -55,6 +57,9 @@ ZmApp.SETTING[ZmApp.MAIL]			= ZmSetting.MAIL_ENABLED;
 ZmApp.UPSELL_SETTING[ZmApp.MAIL]	= ZmSetting.MAIL_UPSELL_ENABLED;
 ZmApp.LOAD_SORT[ZmApp.MAIL]			= 20;
 ZmApp.QS_ARG[ZmApp.MAIL]			= "mail";
+
+// compose session ID
+ZmMailApp.COMPOSE_SESSION = 1;
 
 ZmMailApp.DEFAULT_AUTO_SAVE_DRAFT_INTERVAL = 30;
 ZmMailApp.DEFAULT_MAX_MESSAGE_SIZE = 100000;
@@ -1399,11 +1404,13 @@ function() {
 };
 
 ZmMailApp.prototype.getComposeController =
-function() {
-	if (!this._composeController) {
-		this._composeController = new ZmComposeController(this._container, this);
+function(sessionId) {
+	if (sessionId) {
+		return this._composeController[sessionId];
 	}
-	return this._composeController;
+	var sessionId = ZmMailApp.COMPOSE_SESSION++;
+	var cc = this._composeController[sessionId] = new ZmComposeController(this._container, this, sessionId);
+	return cc;
 };
 
 ZmMailApp.prototype.getConfirmController =

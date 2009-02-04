@@ -530,7 +530,7 @@ function(ev, op, params) {
 		params.ev = ev;
 		appCtxt.getApp(app).handleOp(op, params);
 	} else {
-		ZmController.prototype._newListener.apply(this, arguments);
+		ZmController.prototype._newListener.call(this, ev, op);
 	}
 };
 
@@ -899,15 +899,16 @@ function(list, args) {
 */
 ZmListController.prototype._propagateMenuListeners =
 function(parent, op, listener) {
-	if (!parent) return;
-	listener = listener ? listener : this._listeners[op];
+	if (!parent) { return; }
+	listener = listener || this._listeners[op];
 	var opWidget = parent.getOp(op);
 	if (opWidget) {
 		var menu = opWidget.getMenu();
 	    var items = menu.getItems();
 		var cnt = menu.getItemCount();
-		for (var i = 0; i < cnt; i++)
+		for (var i = 0; i < cnt; i++) {
 			items[i].addSelectionListener(listener);
+		}
 	}
 };
 

@@ -1322,6 +1322,8 @@ function(appName, view) {
 	// app not actually enabled if this is result of upsell view push
 	var appEnabled = appCtxt.get(ZmApp.SETTING[appName]);
 
+	this._activeTabId = null;	// app is active; tab IDs are for non-apps
+
 	if (this._activeApp != appName) {
 		// deactivate previous app
 	    if (this._activeApp) {
@@ -1762,8 +1764,10 @@ function(ev) {
 			window.open(appCtxt.get(ZmSetting.HELP_URI));
 		} else if (id == ZmAppChooser.B_LOGOUT) {
 			ZmZimbraMail.conditionalLogOff();
-		} else if (id && id != this._activeApp) {
+		} else if (id && ZmApp.ENABLED_APPS[id] && (id != this._activeTabId)) {
 			this.activateApp(id);
+		} else if (id != this._activeTabId) {
+			this._appViewMgr.pushView(id, false, true);
 		}
 	} catch (ex) {
 		this._handleException(ex);
@@ -1773,6 +1777,12 @@ function(ev) {
 ZmZimbraMail.prototype.getAppChooser =
 function() {
 	return this._appChooser;
+};
+
+ZmZimbraMail.prototype.setActiveTabId =
+function(id) {
+	this._activeTabId = id;
+	this._appChooser.setSelected(id);
 };
 
 /**

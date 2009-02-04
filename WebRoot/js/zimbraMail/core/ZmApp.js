@@ -260,8 +260,8 @@ function(view) {
 };
 
 ZmApp.prototype.createView =
-function(viewName, elements, callbacks, isAppView, isTransient) {
-	return this._appViewMgr.createView(viewName, this._name, elements, callbacks, isAppView, isTransient);
+function(viewName, elements, callbacks, isAppView, isTransient, tabParams) {
+	return this._appViewMgr.createView(viewName, this._name, elements, callbacks, isAppView, isTransient, tabParams);
 };
 
 ZmApp.prototype.pushView =

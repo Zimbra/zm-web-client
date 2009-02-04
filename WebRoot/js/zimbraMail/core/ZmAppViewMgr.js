@@ -96,27 +96,30 @@ ZmAppViewMgr = function(shell, controller, isNewWindow, hasSkin) {
 		this._historyMgr = appCtxt.getHistoryMgr();
 		this._historyMgr.addListener(new AjxListener(this, this._historyChangeListener));
 	}
-	this._hashView = {};				// matches numeric hash to its view
-	this._nextHashIndex = 0;			// index for adding to browser history stack
-	this._curHashIndex = 0;				// index of current location in browser history stack
-	this._noHistory = false;			// flag to prevent history ops as result of programmatic push/pop view
-	this._ignoreHistoryChange = false;	// don't push/pop view as result of history.back() or history.forward()
+	this._hashView				= {};		// matches numeric hash to its view
+	this._nextHashIndex			= 0;		// index for adding to browser history stack
+	this._curHashIndex			= 0;		// index of current location in browser history stack
+	this._noHistory				= false;	// flag to prevent history ops as result of programmatic push/pop view
+	this._ignoreHistoryChange	= false;	// don't push/pop view as result of history.back() or history.forward()
 
-	this._lastView = null;		// ID of previously visible view
-	this._currentView = null;	// ID of currently visible view
-	this._views = {};			// hash that gives names to app views
-	this._hidden = [];			// stack of views that aren't visible
-	
-	this._appView = {};			// hash matching an app name to its current main view
-	this._callbacks = {};		// view callbacks for when its state changes between hidden and shown
-	this._viewApp = {};			// hash matching view names to their owning apps
-	this._isAppView = {};		// names of top-level app views
-	this._isTransient = {};		// views we don't put on hidden stack
-	this._toRemove = [];		// views to remove from hidden on next view push
+	this._lastView		= null;	// ID of previously visible view
+	this._currentView	= null;	// ID of currently visible view
 
-	this._components = {};		// component objects (widgets)
-	this._containers = {};		// containers within the skin
-	this._contBounds = {};		// bounds for the containers
+	this._views			= {};	// hash that gives names to app views
+	this._hidden		= [];	// stack of views that aren't visible
+
+	this._appView		= {};	// hash matching an app name to its current main view
+	this._callbacks		= {};	// view callbacks for when its state changes between hidden and shown
+	this._viewApp		= {};	// hash matching view names to their owning apps
+	this._isAppView		= {};	// names of top-level app views
+	this._isTransient	= {};	// views we don't put on hidden stack
+	this._isTabView		= {};	// views that open in tabs, rather than stacking
+	this._tabParams		= {};	// params for app tab button
+	this._toRemove		= [];	// views to remove from hidden on next view push
+
+	this._components	= {};	// component objects (widgets)
+	this._containers	= {};	// containers within the skin
+	this._contBounds	= {};	// bounds for the containers
 
 	// view pre-emption
 	this._pushCallback = new AjxCallback(this, this.pushView);
@@ -402,38 +405,42 @@ function(app, viewId) {
 };
 
 /**
-* Registers a set of elements comprising an app view.
-*
-* @param viewId			the ID of the view
-* @param appName		the name of the owning app
-* @param elements		a hash of elements
-* @param callbacks 		functions to call before/after this view is shown/hidden
-* @param isAppView 		if true, this view is an app-level view
-* @param isTransient	if true, this view does not go on the hidden stack
-*/
+ * Registers a set of elements comprising an app view.
+ *
+ * @param viewId		the ID of the view
+ * @param appName		the name of the owning app
+ * @param elements		a hash of elements
+ * @param callbacks 	functions to call before/after this view is shown/hidden
+ * @param isAppView 	if true, this view is an app-level view
+ * @param isTransient	if true, this view does not go on the hidden stack
+ * @param tabParams		button params; view is opened in app tab instead of being stacked
+ */
 ZmAppViewMgr.prototype.createView =
-function(viewId, appName, elements, callbacks, isAppView, isTransient) {
+function(viewId, appName, elements, callbacks, isAppView, isTransient, tabParams) {
 	DBG.println(AjxDebug.DBG1, "createView: " + viewId);
 
 	this._views[viewId] = elements;
-	this._callbacks[viewId] = callbacks ? callbacks : {};
+	this._callbacks[viewId] = callbacks || {};
 	this._viewApp[viewId] = appName;
 	this._isAppView[viewId] = isAppView;
 	this._isTransient[viewId] = isTransient;
+	this._isTabView[viewId] = Boolean(tabParams != null);
+	this._tabParams[viewId] = tabParams;
 };
 
 // XXX: should we have a destroyView() ?
 
 /**
-* Makes the given view visible, pushing the previously visible one to the top of the
-* hidden stack.
-*
-* @param viewId		the ID of the app view to push
-* @param force		don't run callbacks
-* @returns			true if the view was pushed (is now visible)
-*/
+ * Makes the given view visible, pushing the previously visible one to the top of the
+ * hidden stack.
+ *
+ * @param viewId		the ID of the app view to push
+ * @param force			don't run callbacks
+ * @param switchTab		if true, don't add tab button
+ * @returns			true if the view was pushed (is now visible)
+ */
 ZmAppViewMgr.prototype.pushView =
-function(viewId, force) {
+function(viewId, force, switchTab) {
 
 	var isPendingView = (viewId == ZmAppViewMgr.PENDING_VIEW);
 	if (!isPendingView && !this._views[viewId]) {
@@ -464,12 +471,19 @@ function(viewId, force) {
 
 	DBG.println(AjxDebug.DBG2, "hidden (before): " + this._hidden);
 
+	if (this._isTabView[viewId]) {
+		var tp = this._tabParams[viewId];
+		if (tp && !switchTab) {
+			appCtxt.getAppController().getAppChooser().addButton(tp.id, tp.label, tp.image, tp.tooltip);
+		}
+	}
+
 	if (isPendingView) {
 		DBG.println(AjxDebug.DBG1, "push of pending view: " + this._pendingView);
 		force = true;
 	}
 
-	if (!this._hideView(this._currentView, force)) {
+	if (!this._hideView(this._currentView, force || this._isTabView[this._currentView])) {
 		this._pendingAction = this._pushCallback;
 		this._pendingView = viewId;
 		return false;
@@ -570,6 +584,15 @@ function(force, viewId) {
 		return false;
 	}
 	this._deactivateView(this._views[this._currentView]);
+
+	if (this._isTabView[this._currentView]) {
+		var buttonId = this._tabParams[this._currentView].id;
+		var button = appCtxt.getAppController().getAppChooser().getButton(buttonId);
+		if (button) {
+			button.dispose();
+		}
+	}
+
 	this._lastView = this._currentView;
 	this._currentView = this._hidden.pop();
 
@@ -602,10 +625,6 @@ function(force, viewId) {
 
 	this.addComponents(this._views[this._currentView]);
 	this._layout(this._currentView);
-
-//	if (this._viewApp[this._currentView]) {
-//		this._controller.setActiveApp(this._viewApp[this._currentView], this._currentView);
-//	}
 
 	return true;
 };
@@ -937,7 +956,9 @@ function(view, show) {
 			this._fitToContainer(list);
 		}
 		this._setTitle(view);
-		if (this._viewApp[view]) {
+		if (this._isTabView[view]) {
+			this._controller.setActiveTabId(view);
+		} else if (this._viewApp[view]) {
 			this._controller.setActiveApp(this._viewApp[view], view);
 		}
 	} else {
