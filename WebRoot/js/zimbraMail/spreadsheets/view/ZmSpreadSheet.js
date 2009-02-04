@@ -164,7 +164,8 @@ ZmSpreadSheet.prototype._model_insertRow = function(cells, rowIndex) {
 	var selected = this._selectedCell;
 	this._selectCell();
 	var rows = this._getTable().rows;
-	var row = this._getTable().insertRow(rowIndex + 1); // add 1 to skip the header row
+    var newIndex = rowIndex + 1;  // add 1 to skip the header row
+	var row = this._getTable().insertRow(newIndex);
 	// (1) update numbering in the left-bar header
 	var is_last_row = true;
 	for (var i = row.rowIndex; i < rows.length - 1; ++i) {
@@ -180,7 +181,7 @@ ZmSpreadSheet.prototype._model_insertRow = function(cells, rowIndex) {
 	if (is_last_row) {
 		var td = row.insertCell(0);
 		td.className = "LeftBar";
-		td.innerHTML = "<div>" + (rowIndex + 1) + "</div>";
+		td.innerHTML = "<div>" + (newIndex) + "</div>";
 	}
 	// (2) create element cells and inform the model cells about them
 	for (var i = 0; i < cells.length; ++i) {
@@ -189,6 +190,9 @@ ZmSpreadSheet.prototype._model_insertRow = function(cells, rowIndex) {
 		cells[i]._td = td;
 		cells[i].setToElement(td);
 	}
+
+    this._setRowHeight(rowIndex);
+
 	this._selectCell(selected);
 };
 
@@ -466,10 +470,12 @@ ZmSpreadSheet.prototype._table_setRowHeights = function(){
 
 
 ZmSpreadSheet.prototype._setRowHeight = function(row, height){
-     var table = this._getTable();
-     var row = table.rows[row+1];
-     var headerRowCell = row.cells[0];
+
+     var headerRowCell = this._getTable().rows[ row + 1 ].cells[0];
+     height = height || this._model.getRowHeight(row);
+
      headerRowCell.firstChild.style.height = height + "px";
+     this._model.setRowHeight(row, height);
 };
 
 //TODO: Allow to shrink further
@@ -505,8 +511,7 @@ ZmSpreadSheet.prototype._rowsize_mouseUp = function(ev){
         var index = this._resizeRowIndex;
         var h = this._model.getRowHeight(index - 1);
         if( (h + delta) > ZmSpreadSheet.MIN_ROW_HEIGHT) {
-            this._setRowHeight(index-1, h + delta);
-            this._model.setRowHeight(index - 1, h + delta);
+            this._setRowHeight(index-1, h + delta);            
         }
     }
 
@@ -1354,22 +1359,17 @@ ZmSpreadSheet.prototype._table_mouseMove = function(ev) {
             index = row.rowIndex;
             var tmp = Dwt.getLocation(this._getRelDiv());
 			var tdY = dwtev.docY - tmp.y - td.offsetTop + this._getRelDiv().scrollTop;
-
             if (Math.abs(tdY - td.offsetHeight) < 5) {                
-				this._resizeRowIndex = index;
-                console.log("Case 1");
+				this._resizeRowIndex = index;                
                 Dwt.delClass(table, "RowNSize", "RowSSize");
 			} else if (tdY < 5 && index > 1) {
 				this._resizeRowIndex = index - 1;
-                console.log("Case 2");				
                 Dwt.delClass(table, "RowSSize", "RowNSize");
 			} else {
-                console.log("Case 3");
 				this._resizeRowIndex = null;				
                 Dwt.delClass(table, "RowSSize");
                 Dwt.delClass(table, "RowNSize");
-			}
-            
+			}            
         }else{
             if(this._resizeRowIndex){
                 this._resizeRowIndex = null;

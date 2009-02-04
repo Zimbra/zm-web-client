@@ -180,6 +180,7 @@ ZmSpreadSheetModel.prototype.insertRow = function(before) {
 	for (var i = this.COLS; --i >= 0;)
 		row[i] = new ZmSpreadSheetCellModel(this);
 	this.data.splice(before, 0, row);
+    this.rowProps.splice(before, 0, ZmSpreadSheetModel.getDefaultRowProp());
 	++this.ROWS;
 	this.triggerEvent("onInsertRow", row, before);
 	this.recompute();
@@ -210,6 +211,7 @@ ZmSpreadSheetModel.prototype.deleteRow = function(row) {
 			cells[i]._td = null;
 		}
 		this.data.splice(row, 1);
+        this.rowProps.splice(row, 1);
 		--this.ROWS;
 		this.triggerEvent("onDeleteRow", row);
 		this.recompute();
