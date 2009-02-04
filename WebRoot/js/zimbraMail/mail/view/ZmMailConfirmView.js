@@ -66,11 +66,12 @@ ZmMailConfirmView.prototype.showConfirmation =
 function(msg) {
 	this._showLoading(true);
 	var addresses = msg.getAddresses(AjxEmailAddress.TO).getArray().concat(msg.getAddresses(AjxEmailAddress.CC).getArray());
-	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+
+	if (!appCtxt.get(ZmSetting.CONTACTS_ENABLED) || appCtxt.get(ZmSetting.AUTO_ADD_ADDRESS)) {
+		this._setView(msg, [], [], addresses);
+	} else {
 		var callback = new AjxCallback(this, this._handleResponseGetContacts, [msg]);
 		appCtxt.getApp(ZmId.APP_CONTACTS).getContactsByEmails(addresses, callback);
-	} else {
-		this._setView(msg, addresses, []);
 	}
 
 	if (appCtxt.zimletsPresent()) {
@@ -94,15 +95,16 @@ function(msg, contacts) {
 			newAddresses.push(contacts[i].address);
 		}
 	}
-	this._setView(msg, newAddresses, existingContacts);
+	this._setView(msg, newAddresses, existingContacts, []);
 };
 
 ZmMailConfirmView.prototype._setView =
-function(msg, newAddresses, existingContacts) {
+function(msg, newAddresses, existingContacts, displayAddresses) {
 	this._showLoading(false);
 	Dwt.byId(this._htmlElId + "_summary").innerHTML = AjxStringUtil.htmlEncode(this._summaryFormat.format(msg.subject));
 	this._showNewAddresses(newAddresses);
 	this._showExistingContacts(existingContacts);
+	this._showDisplayAddresses(displayAddresses);
 };
 
 ZmMailConfirmView.prototype._showLoading =
@@ -172,6 +174,19 @@ function(existingContacts) {
 			display = data.address.getAddress();
 		}
 		div.innerHTML = AjxTemplate.expand("mail.Message#ZmMailConfirmViewExistingContact", { text: AjxStringUtil.htmlEncode(display) });
+	}
+};
+
+ZmMailConfirmView.prototype._showDisplayAddresses =
+function(displayAddresses) {
+	Dwt.setVisible(Dwt.byId(this._htmlElId + "_displayAddresses"), displayAddresses.length);
+	var displayAddressBox = Dwt.byId(this._htmlElId + "_displayAddressBox");
+	displayAddressBox.innerHTML = "";
+	for (var i = 0, count = displayAddresses.length; i < count; i++) {
+		var div = document.createElement("DIV");
+		displayAddressBox.appendChild(div);
+		var address = displayAddresses[i].toString();
+		div.innerHTML = AjxTemplate.expand("mail.Message#ZmMailConfirmViewExistingContact", { text: AjxStringUtil.htmlEncode(address) });
 	}
 };
 

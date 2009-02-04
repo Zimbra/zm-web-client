@@ -277,11 +277,15 @@
 <template id='mail.Message#ZmMailConfirmView'>
 	<table cellspacing=3 cellpadding=0 border=0 width=100%>
 		<tr>
-			<td id='${id}_confirm' width="300px">
+			<td id='${id}_confirm' style="vertical-align:top;width:300px">
 				<div id='${id}_loading'><$= ZmMsg.loading $></div>
 				<div id='${id}_notLoading'>
 					<div id='${id}_summary' class="Summary"></div>
 					<div>&nbsp;</div>
+					<div id='${id}_displayAddresses' class="displayAddresses">
+						<div><$= ZmMsg.confirmDisplayAddresss $></div>
+						<div id='${id}_displayAddressBox' class="DisplayAddressBox"></div>
+					</div>
 					<div id='${id}_newAddresses' class="NewAddresses">
 						 <div><$= ZmMsg.confirmNewAddresses $></div>
 						 <div id='${id}_newAddressBox' class="NewAddressBox"></div>
@@ -294,7 +298,7 @@
 					</div>
 				</div>
 			</td>
-			<td id='${id}_ad'>&nbsp;</td>
+			<td id='${id}_ad' style="vertical-align:top;">&nbsp;</td>
 		</tr>
 	</table>
 </template>
