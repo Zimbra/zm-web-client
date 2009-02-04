@@ -500,7 +500,9 @@ function(acctId) {
 
 /**
  * Returns the contact with the given address, if any. If it's not in our cache
- * and we are given a callback, we do a search.
+ * and we are given a callback, we do a search. If a search is performed then any
+ * addresses in the Address Lookup Group (See ZmContactsApp#setAddrLookupGroup)
+ * are also searched for.
  *
  * @param address	[string]		an email address
  * @param callback	[AjxCallback]*	callback to run
@@ -527,32 +529,25 @@ function(address, callback) {
 	}
 
 	if (callback) {
-		var query = ["to:", address, " not #type:group"].join("");
-		var limit = 1;
-		var isGroupSearch = false, doSearch = true;
-		var lookupAddrs = [];
+		var search = null,
+			isGroupSearch = false,
+			lookupAddrs = [];
 		if (this._addrLookupHash && this._addrLookupHash[addr]) {
 			if (this._addrLookupList) {
-				var addrs = [];
 				for (var i = 0; i < this._addrLookupList.length; i++) {
 					lookupAddrs.push(this._addrLookupList[i]);
-					addrs.push("to:" + this._addrLookupList[i]);
 				}
-				query = ["(", addrs.join(" OR "), ") not #type:group"].join("");
-				limit = addrs.length * 2;
+				search = this._getSearchForAddresses(this._addrLookupList);
 				isGroupSearch = true;
 				this._addrLookupList = null;
-			} else {
-				doSearch = false;
 			}
 			this._addrLookupHash[addr].push(callback);
+		} else {
+			search = this._getSearchForAddresses([address]);
 		}
 
-		if (doSearch) {
-			var params = {query:query, limit:limit, types:AjxVector.fromArray([ZmItem.CONTACT])};
-			var search = new ZmSearch(params);
+		if (search) {
 			var respCallback = new AjxCallback(this, this._handleResponseSearch, [isGroupSearch ? lookupAddrs : addr, isGroupSearch, callback]);
-			var errorCallback = new AjxCallback(this, this._showDefaultParticipantToolTip, [address, callback]);
 			search.execute({callback:respCallback, noBusyOverlay:true});
 		}
 	}
@@ -583,6 +578,99 @@ function(addr, isGroupSearch, callback, result) {
 		this._byEmail[addr] = contact;
 		callback.run(contact);
 	}
+};
+
+/**
+ * Returns the contacts with the given addresses, if any. If thre are addresses not in our cache
+ * and we are given a callback, we do a search. Unlike getContactByEmail, this method does not
+ * use or modify the Address Lookup Group (See ZmContactsApp#setAddrLookupGroup)
+ *
+ * @param addresses	[Array]			An array of AjxEmailAddress
+ * @param callback	[AjxCallback]*	callback to run
+ * @return			[Array]			An array of { address, contact } pairs.
+ */
+ZmContactsApp.prototype.getContactsByEmails =
+function(addresses, callback) {
+	// Go through the addresses, separating known ones from unknown.
+	var resultArray = [],
+		searchAddresses = null,
+		searchAddressStrings = null;
+	for (var i = 0, count = addresses.length; i < count; i++) {
+		var address = addresses[i];
+		var contact = this.getContactByEmail(address.getAddress());
+		if (contact || contact === null) {
+			resultArray.push({ address: address, contact: contact });
+		} else {
+			searchAddresses = searchAddresses || [];
+			searchAddressStrings = searchAddressStrings || [];
+			searchAddresses.push(address);
+			searchAddressStrings.push(address.getAddress());
+		}
+	}
+
+	// See if we can exit without performing a search.
+	if (!callback) {
+		return resultArray;
+	}
+	if (!searchAddresses) {
+		callback.run(resultArray);
+		return resultArray;
+	}
+
+	// Perform the search.
+	var search = this._getSearchForAddresses(searchAddressStrings);
+	var respCallback = new AjxCallback(this, this._handleResponseSearchByEmails, [searchAddresses, resultArray, callback]);
+	search.execute({callback:respCallback});
+};
+
+ZmContactsApp.prototype._handleResponseSearchByEmails =
+function(addresses, resultArray, callback, result) {
+	// Add the search results to our cache.
+	var resp = result.getResponse();
+	var contactList = resp && resp.getResults(ZmItem.CONTACT);
+	if (contactList) {
+		for (var contactIndex = 0, contactCount = contactList.size(); contactIndex < contactCount; contactIndex++) {
+			var contact = contactList.get(contactIndex);
+			for (var fieldIndex = 0, fieldCount = ZmContact.F_EMAIL_FIELDS.length; fieldIndex < fieldCount; fieldIndex++) {
+				var addr = contact.getAttr(ZmContact.F_EMAIL_FIELDS[fieldIndex]);
+				if (addr) {
+					this._byEmail[addr] = contact;
+				}
+			}
+		}
+	}
+
+	// Fill in the results.
+	for (var i = 0, count = addresses.length; i < count; i++) {
+		var address = addresses[i];
+		var contact = this.getContactByEmail(address.getAddress());
+		resultArray.push({ address: address, contact: contact });
+	}
+	callback.run(resultArray);
+};
+
+ZmContactsApp.prototype._getSearchForAddresses =
+function(addrs) {
+	var buffer;
+	if (addrs.length == 1) {
+		buffer = ["to:", addrs[0], " not #type:group"];
+	} else {
+		buffer = ["("];
+		for (var i = 0, count = addrs.length; i < count; i++) {
+			if (i > 0) {
+				buffer.push(" OR ");
+			}
+			buffer.push("to:");
+			buffer.push(addrs[i]);
+		}
+		buffer.push(") not #type:group");
+	}
+	var params = {
+		query: buffer.join(""),
+		limit: addrs.length * 2,
+		types: AjxVector.fromArray([ZmItem.CONTACT])
+	};
+	return new ZmSearch(params);
 };
 
 /**

@@ -57,18 +57,37 @@ function(listener) {
 };
 
 /**
- * Shows confimation that the message was sent.
+ * Shows confirmation that the message was sent.
  *
  * @param msg			[ZmMailMsg]*	the message that was sent
  */
 ZmMailConfirmView.prototype.showConfirmation =
 function(msg) {
+	var addresses = msg.getAddresses(AjxEmailAddress.TO).getArray().concat(msg.getAddresses(AjxEmailAddress.CC).getArray());
+	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+		var callback = new AjxCallback(this, this._handleResponseGetContacts, [msg]);
+		appCtxt.getApp(ZmId.APP_CONTACTS).getContactsByEmails(addresses, callback);
+	} else {
+		this._setView(msg, addresses, []);
+	}
+};
+
+ZmMailConfirmView.prototype._handleResponseGetContacts =
+function(msg, contacts) {
 	var newAddresses = [],
 		existingContacts = [];
-	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-		this._processAddresses(msg.getAddresses(AjxEmailAddress.TO), newAddresses, existingContacts);
-		this._processAddresses(msg.getAddresses(AjxEmailAddress.CC), newAddresses, existingContacts);
+	for (var i = 0, count = contacts.length; i < count; i++) {
+		if (contacts[i].contact) {
+			existingContacts.push(contacts[i]);
+		} else {
+			newAddresses.push(contacts[i].address);
+		}
 	}
+	this._setView(msg, newAddresses, existingContacts);
+};
+
+ZmMailConfirmView.prototype._setView =
+function(msg, newAddresses, existingContacts) {
 	Dwt.byId(this._htmlElId + "_summary").innerHTML = AjxStringUtil.htmlEncode(this._summaryFormat.format(msg.subject));
 	this._showNewAddresses(newAddresses);
 	this._showExistingContacts(existingContacts);
@@ -134,20 +153,6 @@ function(existingContacts) {
 			display = data.address.getAddress();
 		}
 		div.innerHTML = AjxTemplate.expand("mail.Message#ZmMailConfirmViewExistingContact", { text: AjxStringUtil.htmlEncode(display) });
-	}
-};
-
-ZmMailConfirmView.prototype._processAddresses =
-function(addresses, newAddresses, existingContacts) {
-	var contactsApp = appCtxt.getApp(ZmId.APP_CONTACTS);
-	for (var i = 0, count = addresses.size(); i < count; i++) {
-		var address = addresses.get(i);
-		var contact = contactsApp.getContactByEmail(address.getAddress());
-		if (contact) {
-			existingContacts.push({ contact: contact, address: address });
-		} else {
-			newAddresses.push(address);
-		}
 	}
 };
 
