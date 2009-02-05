@@ -1405,11 +1405,25 @@ function() {
 
 ZmMailApp.prototype.getComposeController =
 function(sessionId) {
+
 	if (sessionId) {
 		return this._composeController[sessionId];
 	}
-	var sessionId = ZmMailApp.COMPOSE_SESSION++;
-	var cc = this._composeController[sessionId] = new ZmComposeController(this._container, this, sessionId);
+
+	var cc;
+	for (var id in this._composeController) {
+		if (this._composeController[id].inactive) {
+			cc = this._composeController[id];
+			break;
+		}
+	}
+
+	if (!cc) {
+		var sessionId = ZmMailApp.COMPOSE_SESSION++;
+		cc = this._composeController[sessionId] = new ZmComposeController(this._container, this, sessionId);
+	}
+	cc.inactive = false;
+
 	return cc;
 };
 

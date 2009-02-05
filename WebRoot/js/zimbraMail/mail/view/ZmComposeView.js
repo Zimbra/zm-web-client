@@ -2529,3 +2529,8 @@ function() {
 	attachDialog.setUploadCallback(callback);
     attachDialog.upload(callback, document.getElementById("zdnd_form"));
 };
+
+ZmComposeView.prototype.deactivate =
+function() {
+	this._controller.inactive = true;
+};
