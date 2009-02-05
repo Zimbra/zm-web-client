@@ -127,24 +127,14 @@ function(actionCode) {
 	return true;
 };
 
-ZmMsgController.prototype.mapSupported =
-function(map) {
-	return false;
-};
-
 // Private methods (mostly overrides of ZmListController protected methods)
 
 ZmMsgController.prototype._getToolBarOps = 
 function() {
-	var list;
 	if (appCtxt.isChildWindow) {
-		list = [ZmOperation.CLOSE, ZmOperation.SEP, ZmOperation.PRINT, ZmOperation.DELETE];
-		list.push(ZmOperation.SEP);
-		list = list.concat(this._msgOps());
-		list.push(ZmOperation.SEP, ZmOperation.SPAM, ZmOperation.SEP, ZmOperation.TAG_MENU);
-	}
-	else {
-		list = this._standardToolBarOps();
+		return [ZmOperation.PRINT, ZmOperation.CLOSE];
+	} else {
+		var list = this._standardToolBarOps();
 		list.push(ZmOperation.SEP);
 		list = list.concat(this._msgOps());
 		list.push(ZmOperation.SEP,
@@ -152,11 +142,9 @@ function() {
 					ZmOperation.SEP,
 					ZmOperation.TAG_MENU,
 					ZmOperation.SEP);
-		if (appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED)) {
-			list.push(ZmOperation.DETACH);
-		}
+        if(appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED))  list.push(ZmOperation.DETACH);
+        return list;
 	}
-	return list;
 };
 
 ZmMsgController.prototype._initializeToolBar =
@@ -166,28 +154,15 @@ function(view, arrowStyle) {
 	} else {
 		var buttons = this._getToolBarOps();
 		if (!buttons) return;
-		var params = {
-			parent:this._container,
-			buttons:buttons,
-			className:"ZmMsgViewToolBar_cw",
-			context:this._getViewType(),
-			controller:this
-		};
-		var tb = this._toolbar[view] = new ZmButtonToolBar(params);
+		this._toolbar[view] = new ZmButtonToolBar({parent:this._container, buttons:buttons, className:"ZmMsgViewToolBar_cw",
+												   context:this._getViewType()});
 
-		buttons = tb.opList;
+		buttons = this._toolbar[view].opList;
 		for (var i = 0; i < buttons.length; i++) {
 			var button = buttons[i];
 			if (this._listeners[button]) {
-				tb.addSelectionListener(button, this._listeners[button]);
+				this._toolbar[view].addSelectionListener(button, this._listeners[button]);
 			}
-		}
-
-		this._setupSpamButton(tb);
-		button = tb.getButton(ZmOperation.TAG_MENU);
-		if (button) {
-			button.noMenuBar = true;
-			this._setupTagMenu(tb);
 		}
 	}
 };
@@ -290,7 +265,7 @@ function(ev) {
 
 // Miscellaneous
 
-ZmMsgController.prototype.getMsg =
+ZmMsgController.prototype._getMsg =
 function(params) {
 	return this._msg;
 };

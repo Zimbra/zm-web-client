@@ -22,10 +22,6 @@ ZmCalendarApp = function(container) {
 	if (!appCtxt.isOffline) {
 		this._addSettingsChangeListeners();
 	}
-
-	// resource cache
-	this._resByName = {};
-	this._resByEmail = {};
 };
 
 // Organizer and item-related constants
@@ -202,12 +198,12 @@ function() {
 		displayOptions:		[ZmMsg.apptRemindNever, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore],
 		options:			[0, 1, 5, 10, 15, 30, 45, 60]
 	});
-
+	
 	ZmPref.registerPref("CAL_SHOW_TIMEZONE", {
 		displayName:		ZmMsg.shouldShowTimezone,
 		displayContainer:	ZmPref.TYPE_CHECKBOX
 	});
-
+	
 	ZmPref.registerPref("CAL_USE_QUICK_ADD", {
 	 	displayName:		ZmMsg.useQuickAdd,
 	 	displayContainer:	ZmPref.TYPE_CHECKBOX
@@ -216,8 +212,8 @@ function() {
 	ZmPref.registerPref("CALENDAR_INITIAL_VIEW", {
 	 	displayName:		ZmMsg.calendarInitialView,
 	 	displayContainer:	ZmPref.TYPE_SELECT,
-		displayOptions:		[ZmMsg.calViewDay, ZmMsg.calViewWorkWeek, ZmMsg.calViewWeek, ZmMsg.calViewMonth, ZmMsg.calViewList, ZmMsg.calViewSchedule],
-		options:			[ZmSetting.CAL_DAY, ZmSetting.CAL_WORK_WEEK, ZmSetting.CAL_WEEK, ZmSetting.CAL_MONTH, ZmSetting.CAL_LIST, ZmSetting.CAL_SCHEDULE]
+		displayOptions:		[ZmMsg.calViewDay, ZmMsg.calViewWorkWeek, ZmMsg.calViewWeek, ZmMsg.calViewMonth, ZmMsg.calViewSchedule],
+		options:			[ZmSetting.CAL_DAY, ZmSetting.CAL_WORK_WEEK, ZmSetting.CAL_WEEK, ZmSetting.CAL_MONTH, ZmSetting.CAL_SCHEDULE]
 	});
 	
 	ZmPref.registerPref("CAL_REMINDER_NOTIFY_SOUNDS", {
@@ -245,13 +241,12 @@ function() {
 
 ZmCalendarApp.prototype._registerOperations =
 function() {
-	ZmOperation.registerOp(ZmId.OP_CAL_LIST_VIEW, {textKey:"list", tooltipKey:"viewCalListTooltip", image:"CalListView", shortcut:ZmKeyMap.CAL_LIST_VIEW});
-	ZmOperation.registerOp(ZmId.OP_CAL_REFRESH, {textKey:"refresh", tooltipKey:"calRefreshTooltip", image:"Refresh", shortcut:ZmKeyMap.REFRESH});
+	ZmOperation.registerOp(ZmId.OP_CAL_REFRESH, {textKey:"refresh", tooltipKey:"calRefreshTooltip", image:"Refresh"});
 	ZmOperation.registerOp(ZmId.OP_CAL_VIEW_MENU, {textKey:"view", image:"Appointment"}, null,
 		AjxCallback.simpleClosure(function(parent) {
 			ZmOperation.addDeferredMenu(ZmCalendarApp.addCalViewMenu, parent);
 	}));
-	ZmOperation.registerOp(ZmId.OP_DAY_VIEW, {textKey:"viewDay", tooltipKey:"viewDayTooltip", image:"DayView", shortcut:ZmKeyMap.CAL_DAY_VIEW});
+	ZmOperation.registerOp(ZmId.OP_DAY_VIEW, {textKey:"viewDay", tooltipKey:"viewDayTooltip", image:"DayView"});
 	ZmOperation.registerOp(ZmId.OP_EDIT_REPLY_ACCEPT, {textKey:"replyAccept", image:"Check"});
 	ZmOperation.registerOp(ZmId.OP_EDIT_REPLY_CANCEL);
 	ZmOperation.registerOp(ZmId.OP_EDIT_REPLY_TENTATIVE, {textKey:"replyTentative", image:"QuestionMark"});
@@ -263,30 +258,26 @@ function() {
 			ZmOperation.addDeferredMenu(ZmCalendarApp.addInviteReplyMenu, parent);
 	}));
 	ZmOperation.registerOp(ZmId.OP_INVITE_REPLY_TENTATIVE, {textKey:"editReply", image:"QuestionMark"});
-	ZmOperation.registerOp(ZmId.OP_MONTH_VIEW, {textKey:"viewMonth", tooltipKey:"viewMonthTooltip", image:"MonthView", shortcut:ZmKeyMap.MONTH_VIEW});
+	ZmOperation.registerOp(ZmId.OP_MONTH_VIEW, {textKey:"viewMonth", tooltipKey:"viewMonthTooltip", image:"MonthView"});
 	ZmOperation.registerOp(ZmId.OP_MOUNT_CALENDAR, {textKey:"mountCalendar", image:"GroupSchedule"});
 	ZmOperation.registerOp(ZmId.OP_NEW_ALLDAY_APPT, {textKey:"newAllDayAppt", tooltipKey:"newAllDayApptTooltip", image:"NewAppointment"});
-	ZmOperation.registerOp(ZmId.OP_NEW_APPT, {textKey:"newAppt", tooltipKey:"newApptTooltip", image:"NewAppointment", shortcut:ZmKeyMap.NEW_APPT});
-	ZmOperation.registerOp(ZmId.OP_NEW_CALENDAR, {textKey:"newCalendar", image:"NewAppointment", tooltipKey: "newCalendarTooltip", shortcut:ZmKeyMap.NEW_CALENDAR});
+	ZmOperation.registerOp(ZmId.OP_NEW_APPT, {textKey:"newAppt", tooltipKey:"newApptTooltip", image:"NewAppointment"});
+	ZmOperation.registerOp(ZmId.OP_NEW_CALENDAR, {textKey:"newCalendar", image:"NewAppointment"});
 	ZmOperation.registerOp(ZmId.OP_REPLY_ACCEPT, {textKey:"replyAccept", image:"Check"});
 	ZmOperation.registerOp(ZmId.OP_REPLY_CANCEL);
 	ZmOperation.registerOp(ZmId.OP_REPLY_DECLINE, {textKey:"replyDecline", image:"Cancel"});
 	ZmOperation.registerOp(ZmId.OP_REPLY_MODIFY);
 	ZmOperation.registerOp(ZmId.OP_REPLY_NEW_TIME, {textKey:"replyNewTime", image:"NewTime"});
 	ZmOperation.registerOp(ZmId.OP_REPLY_TENTATIVE, {textKey:"replyTentative", image:"QuestionMark"});
-	ZmOperation.registerOp(ZmId.OP_SCHEDULE_VIEW, {textKey:"viewSchedule", tooltipKey:"viewScheduleTooltip", image:"GroupSchedule", shortcut:ZmKeyMap.CAL_SCHEDULE_VIEW});
+	ZmOperation.registerOp(ZmId.OP_SCHEDULE_VIEW, {textKey:"viewSchedule", tooltipKey:"viewScheduleTooltip", image:"GroupSchedule"});
 	ZmOperation.registerOp(ZmId.OP_SEARCH_MAIL, {textKey:"searchMail", image:"SearchMail"}, ZmSetting.MAIL_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_SHARE_CALENDAR, {textKey:"shareCalendar", image:"CalendarFolder"});
-	ZmOperation.registerOp(ZmId.OP_TODAY, {textKey:"today", tooltipKey:"todayTooltip", image:"Date", shortcut:ZmKeyMap.TODAY});
+	ZmOperation.registerOp(ZmId.OP_TODAY, {textKey:"today", tooltipKey:"todayTooltip", image:"Date"});
 	ZmOperation.registerOp(ZmId.OP_VIEW_APPOINTMENT, {textKey:"viewAppointment", image:"Appointment"});
-	ZmOperation.registerOp(ZmId.OP_OPEN_APPT_INSTANCE, {textKey:"openApptInstance", image:"Appointment"});
-	ZmOperation.registerOp(ZmId.OP_OPEN_APPT_SERIES, {textKey:"openApptSeries", image:"Appointment"});
-	ZmOperation.registerOp(ZmId.OP_DELETE_APPT_INSTANCE, {textKey:"deleteApptInstance", image:"Delete"});
-	ZmOperation.registerOp(ZmId.OP_DELETE_APPT_SERIES, {textKey:"deleteApptSeries", image:"Delete"});
 	ZmOperation.registerOp(ZmId.OP_VIEW_APPT_INSTANCE, {textKey:"apptInstance", image:"Appointment"});
 	ZmOperation.registerOp(ZmId.OP_VIEW_APPT_SERIES, {textKey:"apptSeries", image:"Appointment"});
-	ZmOperation.registerOp(ZmId.OP_WEEK_VIEW, {textKey:"viewWeek", tooltipKey:"viewWeekTooltip", image:"WeekView", shortcut:ZmKeyMap.CAL_WEEK_VIEW});
-	ZmOperation.registerOp(ZmId.OP_WORK_WEEK_VIEW, {textKey:"viewWorkWeek", tooltipKey:"viewWorkWeekTooltip", image:"WorkWeekView", shortcut:ZmKeyMap.CAL_WORK_WEEK_VIEW});
+	ZmOperation.registerOp(ZmId.OP_WEEK_VIEW, {textKey:"viewWeek", tooltipKey:"viewWeekTooltip", image:"WeekView"});
+	ZmOperation.registerOp(ZmId.OP_WORK_WEEK_VIEW, {textKey:"viewWorkWeek", tooltipKey:"viewWorkWeekTooltip", image:"WorkWeekView"});
 };
 
 ZmCalendarApp.prototype._registerItems =
@@ -340,8 +331,6 @@ function() {
 							 mountKey:			"mountCalendar",
 							 createFunc:		"ZmCalendar.create",
 							 compareFunc:		"ZmCalendar.sortCompare",
-							 newOp:				ZmOperation.NEW_CALENDAR,
-							 displayOrder:		100,
 							 deferrable:		true
 							});
 };
@@ -356,6 +345,11 @@ function() {
 								 setting:		ZmSetting.CALENDAR_ENABLED,
 								 id:			ZmId.getMenuItemId(ZmId.SEARCH, ZmId.ITEM_APPOINTMENT)
 								});
+};
+
+ZmCalendarApp.prototype._setupCurrentAppToolbar =
+function() {
+	ZmCurrentAppToolBar.registerApp(this.getName(), ZmOperation.NEW_CALENDAR, ZmOrganizer.CALENDAR);
 };
 
 ZmCalendarApp.prototype._registerApp =
@@ -378,7 +372,7 @@ function() {
 							  viewTooltipKey:		"displayCalendar",
 							  defaultSearch:		ZmItem.APPT,
 							  organizer:			ZmOrganizer.CALENDAR,
-							  overviewTrees:		[ZmOrganizer.CALENDAR, ZmOrganizer.SEARCH, ZmOrganizer.TAG],
+							  overviewTrees:		[ZmOrganizer.CALENDAR, ZmOrganizer.ROSTER_TREE_ITEM, ZmOrganizer.SEARCH, ZmOrganizer.TAG],
 							  showZimlets:			true,
 							  assistants:			{"ZmAppointmentAssistant":	["CalendarCore", "Calendar", "CalendarAppt"],
 							  						 "ZmCalendarAssistant":		["CalendarCore", "Calendar", "CalendarAppt"]},
@@ -521,15 +515,11 @@ function(params, callback) {
 		} else if (search.match(/\bview=month\b/)) {
 			found = true;
 			view = ZmId.VIEW_CAL_MONTH;
-		} else if (search.match(/\bview=list\b/)) {
-			found = true;
-			view = ZmId.VIEW_CAL_LIST;
 		}
 
 		if (found) {
-			var match = search.match(/\bdate=([^&]+)/);
-			var pDate = (match && match.length > 1) ? match[1] : null;
-			var parsed = pDate ? AjxDateUtil.parseServerDateTime(pDate) : null;
+			var match = search.match(/\bdate=([^&]+)/)[1];
+			var parsed = match ? AjxDateUtil.parseServerDateTime(match) : null;
 			if (parsed && !isNaN(parsed))
 				sd = new Date((parsed).setHours(0,0,0,0));
 		}
@@ -796,10 +786,7 @@ function(parent) {
  */
 ZmCalendarApp.addCalViewMenu =
 function(parent) {
-	var list = [
-		ZmOperation.DAY_VIEW, ZmOperation.WORK_WEEK_VIEW, ZmOperation.WEEK_VIEW,
-		ZmOperation.MONTH_VIEW, ZmOperation.CAL_LIST_VIEW, ZmOperation.SCHEDULE_VIEW
-	];
+	var list = [ZmOperation.DAY_VIEW, ZmOperation.WORK_WEEK_VIEW, ZmOperation.WEEK_VIEW, ZmOperation.MONTH_VIEW, ZmOperation.SCHEDULE_VIEW];
 	var menu = new ZmActionMenu({parent:parent, menuItems:list});
 	parent.setMenu(menu);
 	return menu;
@@ -809,16 +796,4 @@ ZmCalendarApp.__formatLabel =
 function(prefLabel, prefValue) {
 	prefLabel = prefLabel || "";
 	return prefLabel.match(/\{/) ? AjxMessageFormat.format(prefLabel, prefValue) : prefLabel;
-};
-
-ZmCalendarApp.prototype.updateResourceCache =
-function(resource) {
-	var name = resource.getFullName();
-	if (name) {
-		this._resByName[name.toLowerCase()] = resource;
-	}
-	var email = resource.getEmail();
-	if (email) {
-		this._resByEmail[email.toLowerCase()] = resource;
-	}
 };

@@ -24,8 +24,8 @@ ZmFilterRulesView = function(parent, controller) {
 
 	this._rules = AjxDispatcher.run("GetFilterRules");
 
-	var section = ZmPref.getPrefSectionWithPref(ZmSetting.FILTERS);
-	this._title = [ZmMsg.zimbraTitle, controller.getApp().getDisplayName(), section && section.title].join(": ");
+    var section = ZmPref.getPrefSectionWithPref(ZmSetting.FILTERS);
+    this._title = [ZmMsg.zimbraTitle, controller.getApp().getDisplayName(), section && section.title].join(": ");
 
 	this._rendered = false;
 
@@ -43,8 +43,8 @@ function() {
 ZmFilterRulesView.prototype.showMe =
 function() {
 	Dwt.setTitle(this._title);
-	var section = ZmPref.getPrefSectionWithPref(ZmSetting.FILTERS);
-	this._prefsController._resetOperations(this._prefsController._toolbar, section && section.id);
+    var section = ZmPref.getPrefSectionWithPref(ZmSetting.FILTERS);
+    this._prefsController._resetOperations(this._prefsController._toolbar, section && section.id);
 	var activeAcct = appCtxt.getActiveAccount().name;
 	if (this._hasRendered == activeAcct) { return; }
 
@@ -53,7 +53,7 @@ function() {
 	this.getHtmlElement().innerHTML = AjxTemplate.expand("prefs.Pages#MailFilters", data);
 
 	// create toolbar
-	var toolbarEl = document.getElementById(data.id + "_toolbar");
+	var toolbarEl = document.getElementById(data.id+"_toolbar");
 	if (toolbarEl) {
 		var buttons = this._controller.getToolbarButtons();
 		this._toolbar = new ZmButtonToolBar({parent:this, buttons:buttons, posStyle:Dwt.STATIC_STYLE,
@@ -105,13 +105,9 @@ function() {
 // View is always in sync with rules
 ZmFilterRulesView.prototype.reset = function() {};
 
-
-/**
- * ZmFilterListView
- *
- * @param parent
- * @param controller
- */
+/*
+* ZmFilterListView
+*/
 ZmFilterListView = function(parent, controller) {
 	var headerList = this._getHeaderList();
 	DwtListView.call(this, {parent:parent, className:"ZmFilterListView", headerList:headerList,
@@ -121,6 +117,7 @@ ZmFilterListView = function(parent, controller) {
 
 	this._controller = controller;
 	this._rules.addChangeListener(new AjxListener(this, this._changeListener));
+	this.multiSelectEnabled = false; // single selection only
 	this._internalId = AjxCore.assignId(this);
 };
 
@@ -138,8 +135,6 @@ function() {
 /**
  * Only show rules that have at least one valid action (eg, if the only action
  * is "tag" and tagging is disabled, don't show the rule).
- *
- * @param list
  */
 ZmFilterListView.prototype.set =
 function(list) {
@@ -167,37 +162,35 @@ ZmFilterListView.prototype._getCellContents =
 function(html, idx, item, field, colIdx, params) {
 	if (field == ZmFilterListView.COL_ACTIVE) {
 		html[idx++] = "<input type='checkbox' ";
-		html[idx++] = item.active ? "checked " : "";
+		html[idx++] = item.isActive() ? "checked " : "";
 		html[idx++] = "id='_ruleCheckbox";
 		html[idx++] = item.id;
 		html[idx++] = "' _flvId='";
 		html[idx++] = this._internalId;
 		html[idx++] = "' onchange='ZmFilterListView._activeStateChange'>";
 	} else if (field == ZmFilterListView.COL_NAME) {
-		html[idx++] = AjxStringUtil.stripTags(item.name, true);
+		html[idx++] = AjxStringUtil.stripTags(item.getName(), true);
 	}
 
 	return idx;
 };
 
-/**
- * In general, we just re-display all the rules when anything changes, rather
- * than trying to update a particular row.
- *
- * @param ev		[DwtEvent]	event
- */
+/*
+* In general, we just re-display all the rules when anything changes, rather
+* than trying to update a particular row.
+*/
 ZmFilterListView.prototype._changeListener =
 function(ev) {
 	if (ev.type != ZmEvent.S_FILTER) { return; }
 
 	DBG.println(AjxDebug.DBG3, "FILTER RULES: change listener");
 	if (ev.event == ZmEvent.E_MODIFY && !ev.handled) {
-		this._controller.resetListView(ev.getDetail("index"));
+		this._controller.resetListView(null, ev.getDetail("index"));
 		ev.handled = true;
 	}
 };
 
-/**
+/*
 * Handles click of 'active' checkbox by toggling the rule's active state.
 *
 * @param ev			[DwtEvent]	click event
@@ -210,11 +203,11 @@ function(ev) {
 	var ruleId = target.id.substring(13);
 	var rule = flv._rules.getRuleById(ruleId);
 	if (rule) {
-		flv._rules.setActive(rule, !rule.active);
+		flv._rules.setActive(rule, !rule.isActive());
 	}
 };
 
-/**
+/*
 * Override so that we don't change selection when the 'active' checkbox is clicked.
 * Also contains a hack for IE for handling a click of the 'active' checkbox, because
 * the ONCHANGE handler was only getting invoked on every other checkbox click for IE.

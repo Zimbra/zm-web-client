@@ -35,7 +35,6 @@
  *        overrides			[hash]*				hash of overrides by op ID
  *        context			[const]*			vcontextID (used to generate button IDs)
  *        toolbarType		[const]*			toolbar type (used to generate button IDs)
- *        controller		[ZmController]*		owning controller
  */
 ZmButtonToolBar = function(params) {
 	if (arguments.length == 0) return;

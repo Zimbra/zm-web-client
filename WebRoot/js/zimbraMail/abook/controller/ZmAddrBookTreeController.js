@@ -33,7 +33,6 @@ ZmAddrBookTreeController = function() {
 	this._listeners[ZmOperation.MOUNT_ADDRBOOK] = new AjxListener(this, this._mountAddrBookListener);
     this._listeners[ZmOperation.BROWSE] = new AjxListener(this, function(){ appCtxt.getSearchController().fromBrowse(""); });
 
-	this._app = appCtxt.getApp(ZmApp.CONTACTS);
 };
 
 ZmAddrBookTreeController.prototype = new ZmFolderTreeController;
@@ -106,7 +105,7 @@ function(parent, type, id) {
 			if (addrBook.isSystem()) {
 				parent.enable([ZmOperation.DELETE, ZmOperation.RENAME_FOLDER], false);
 			} else if (addrBook.link) {
-				parent.enable([ZmOperation.SHARE_ADDRBOOK], !addrBook.link || addrBook.isAdmin());
+				parent.enable([ZmOperation.SHARE_ADDRBOOK], false);
 			}
 		}
 	}
@@ -203,28 +202,35 @@ function(ev) {
 ZmAddrBookTreeController.prototype._itemClicked =
 function(folder) {
 	if (folder.id == ZmOrganizer.ID_MY_CARD) {
-		var respCallback = new AjxCallback(this, this._handleResponseGetMyCard);
-		this._app.getMyCard(respCallback);
+		var controller = AjxDispatcher.run("GetContactController");
+		var contacts = AjxDispatcher.run("GetContacts");
+		controller.show(contacts.getMyCard());
 	} else if (folder.type == ZmOrganizer.SEARCH) {
 		// if the clicked item is a search (within the folder tree), hand
 		// it off to the search tree controller
 		var stc = this._opc.getTreeController(ZmOrganizer.SEARCH);
 		stc._itemClicked(folder);
 	} else {
-		var capp = appCtxt.getApp(ZmApp.CONTACTS);
-		capp.currentSearch = null;
-		var query = capp.currentQuery = folder.createQuery();
-
 		var sc = appCtxt.getSearchController();
 		sc.setDefaultSearchType(ZmItem.CONTACT);
-		var params = {
-			query: query,
-			searchFor: ZmItem.CONTACT,
-			fetch: true,
-			sortBy: ZmSearch.NAME_ASC,
-			callback: new AjxCallback(this, this._handleSearchResponse, [folder])
-		};
-		sc.search(params);
+
+		var capp = appCtxt.getApp(ZmApp.CONTACTS);
+
+		// force a search if user clicked Trash folder or share
+		if (folder.nId == ZmFolder.ID_TRASH || folder.link) {
+			var params = {
+				query: folder.createQuery(),
+				searchFor: ZmItem.CONTACT,
+				fetch: true,
+				sortBy: ZmSearch.NAME_ASC,
+				callback: new AjxCallback(this, this._handleSearchResponse, [folder, capp])
+			};
+			sc.search(params);
+		} else {
+			capp.currentSearch = null;
+			capp.currentQuery = folder.createQuery();
+			capp.showFolder(folder);
+		}
 
 		if (folder.id != ZmFolder.ID_TRASH) {
 			var clc = AjxDispatcher.run("GetContactListController");
@@ -233,16 +239,11 @@ function(folder) {
 	}
 };
 
-ZmAddrBookTreeController.prototype._handleResponseGetMyCard =
-function(contact) {
-	AjxDispatcher.run("GetContactController").show(contact);
-};
-
 ZmAddrBookTreeController.prototype._handleSearchResponse =
-function(folder, result) {
+function(folder, capp, result) {
 	// bug fix #19307 - Trash is special when in Contacts app since it
 	// is a FOLDER type in ADDRBOOK tree. So reset selection if clicked
 	if (folder.nId == ZmFolder.ID_TRASH) {
-		this._treeView[this._app.getOverviewId()].setSelected(ZmFolder.ID_TRASH, true);
+		this._treeView[capp.getOverviewId()].setSelected(ZmFolder.ID_TRASH, true);
 	}
 };

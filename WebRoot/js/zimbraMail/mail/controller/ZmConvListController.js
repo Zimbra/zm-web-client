@@ -36,13 +36,12 @@ ZmConvListController = function(container, mailApp) {
 ZmConvListController.prototype = new ZmDoublePaneController;
 ZmConvListController.prototype.constructor = ZmConvListController;
 
-ZmMailListController.GROUP_BY_ITEM[ZmId.VIEW_CONVLIST]		= ZmItem.CONV;
+ZmMailListController.GROUP_BY_ITEM[ZmId.VIEW_CONVLIST]	= ZmItem.CONV;
 ZmMailListController.GROUP_BY_SETTING[ZmId.VIEW_CONVLIST]	= ZmSetting.GROUP_BY_CONV;
 
 // view menu
 ZmMailListController.GROUP_BY_ICON[ZmId.VIEW_CONVLIST]			= "ConversationView";
 ZmMailListController.GROUP_BY_MSG_KEY[ZmId.VIEW_CONVLIST]		= "byConversation";
-ZmMailListController.GROUP_BY_SHORTCUT[ZmId.VIEW_CONVLIST]		= ZmKeyMap.VIEW_BY_CONV;
 ZmMailListController.GROUP_BY_VIEWS.push(ZmId.VIEW_CONVLIST);
 
 // Public methods
@@ -222,7 +221,7 @@ function(item) {
  * Returns the first matching msg in the conv, if available. No request will
  * be made to the server if the conv has not been loaded.
  */
-ZmConvListController.prototype.getMsg =
+ZmConvListController.prototype._getMsg =
 function(params) {
 	var sel = this._listView[this._currentView].getSelection();
 	var item = (sel && sel.length) ? sel[0] : null;
@@ -230,7 +229,7 @@ function(params) {
 		if (item.type == ZmItem.CONV) {
 			return item.getFirstHotMsg(params);
 		} else if (item.type == ZmItem.MSG) {
-			return ZmDoublePaneController.prototype.getMsg.apply(this, arguments);
+			return ZmDoublePaneController.prototype._getMsg.apply(this, arguments);
 		}
 	}
 	return null;
@@ -419,15 +418,14 @@ function(msg, resp) {
 
 ZmConvListController.prototype._redrawDraftItemRows =
 function(msg) {
-	var lv = this._listView[this._currentView];
 	var conv = appCtxt.getById(msg.cid);
 	if (conv) {
 		conv._loadFromMsg(msg);	// update conv
-		lv.redrawItem(conv);
-		lv.setSelection(conv, true);
+		this._listView[this._currentView].redrawItem(conv);
+		this._listView[this._currentView].setSelection(conv, true);
 	}
 	// don't think a draft conv is ever expandable, but try anyway
-	lv.redrawItem(msg);
+	this._listView[this._currentView].redrawItem(msg);
 };
 
 /**

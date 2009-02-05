@@ -38,7 +38,7 @@ function(uname, pword, callback) {
 		var el = soapDoc.set("account", uname);
 		el.setAttribute("by", "name");
 	} else {
-		soapDoc = AjxSoapDoc.create("AuthRequest", "urn:zimbraAdmin", null);
+		soapDoc = AjxSoapDoc.create("AuthRequest", ZaZimbraAdmin.URN, null);
 		soapDoc.set("name", uname);
 	}
 	soapDoc.set("virtualHost", location.hostname);	

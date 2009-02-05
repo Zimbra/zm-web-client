@@ -1,0 +1,5 @@
+/* [bug 227140] #comment 1 and 2: screenshot 7590  and 7663*/
+.ZmHEDialog td.col2 { width: 9em; }
+.ZmHEDialog td.Label {
+	width: 10em;
+}
