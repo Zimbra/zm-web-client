@@ -52,7 +52,10 @@
             </c:if>
         </zm:forEachFolder>
         </select>
-        </c:if>    
+        </c:if>
+        <%--<c:if test="${not empty param.sq}">
+                | <a href="?saveSearch=1&sq=${param.sq}&search=0"  onclick='toggleElem(this,"searchbar"); return toggleElem(this,"savesearchbar");'><fmt:message key="saveSearch"/></a>
+        </c:if>  --%>
     </div>
 </c:if>
 <c:url var='eaction' value="?st=newappt&date=${dateDf}">

@@ -47,5 +47,11 @@
         <fmt:message key="actionBriefcaseCreated"><fmt:param value="${fn:escapeXml(param.folder_name)}"/></fmt:message>
     </mo:status>
 </c:when>
+<c:when test="${zm:actionSet(param, 'actionSaveSearch')}">
+   <zm:createSearchFolder types="${fn:escapeXml(param.st)}" query="${fn:escapeXml(param.sq)}" var="folder" name="${fn:escapeXml(param.sname)}" parentid="${fn:escapeXml(param.parentid)}"/>
+   <mo:status style="Info">
+        <fmt:message key="actionSearchCreated"><fmt:param value="${fn:escapeXml(folder.name)}"/></fmt:message>
+    </mo:status>
+</c:when>
 </c:choose>
 </mo:handleError>    

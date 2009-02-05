@@ -59,9 +59,22 @@
 <c:if test="${empty sessionScope.zms}">
     <c:set value="${ua.isiPhone || ua.isiPod ? 'iphone-ext' : ( ua.isIE ? 'wm6' : 'iphone-ext')}" var="zms"
            scope="session"/>
+    <%--<%
+        Cookie[] cookies = request.getCookies();
+        for(int i=0; cookies != null && i < cookies.length; i++){
+            if(cookies[i].getName().equals("_zms")){
+                session.setAttribute("zms",cookies[i].getValue());
+            }
+        }
+    %>--%>
 </c:if>
 <c:if test="${not empty param.zms}">
     <c:set value="${fn:escapeXml(param.zms)}" var="zms" scope="session"/>
+    <%--<%
+        Cookie c = new Cookie("_zms",request.getParameter("zms"));
+        c.setMaxAge(365*24*60*60);
+        response.addCookie(c);
+    %>--%>
 </c:if>
 <!-- SKIN param:'${param.zms}' '${sessionScope.zms}' -->
 <c:if test="${sessionScope.limit == null}">
@@ -480,6 +493,26 @@ var updateOrientation = function() {
               <span class="table-cell" width="30%">-->
                 <input type="submit" class="searchButton zo_button" name="actionSearch"
                        value="<fmt:message key="search"/>"/><!--</span>-->
+            </form>
+        </div>
+    </div>
+    <div class="container table" id="savesearchbar" style="${param.saveSearch eq '1' ? '' : 'display:none;'}">
+        <div class="table-row">
+            <form method="post" action="${context_url}" class="table-cell"
+                  onsubmit="if(!this.sname.value){showLoadingMsg('<fmt:message key="actionNoNameSpecified"/>',true,'Warning',1000,'msgbar');return false;}else{return submitForm(this);}">
+                <input type="hidden" name="sq" value="${zm:cook(param.sq)}"/>
+                <input type="hidden" name="st" value="${empty param.st? mailbox.prefs.groupMailBy : (param.st eq 'cal' ? 'appointment' : zm:cook(param.st))}"/>
+                <input type="hidden" name="doFolderAction" value="1"/>
+                <input type="hidden" name="parentid" value="${mailbox.inbox.parentId}"/>
+                <input
+                        type="hidden" name="crumb"
+                        value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/> <%-- <span class="table-cell" width="70%">--%>
+                <span class="label"><fmt:message key="searchName"/>:</span>
+                <input type="text" class="searchInput" style="width:30%;" name="sname" value="${zm:cook(param.sname)}"/>
+                <!--</span>
+              <span class="table-cell" width="30%">-->
+                <input type="submit" class="searchButton zo_button" name="actionSaveSearch"
+                       value="<fmt:message key="save"/>"/><!--</span>-->
             </form>
         </div>
     </div>

@@ -1,3 +1,4 @@
+<%@ page import="com.zimbra.cs.zclient.ZSearchFolder" %>
 <%@ page buffer="8kb" autoFlush="true" %>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
@@ -108,7 +109,9 @@
 
 <zm:forEachFolder var="folder" skipsystem="${true}" skiptopsearch="${false}">
     <c:if test="${(folder.isSearchFolder && (empty param.sq || fn:containsIgnoreCase(folder.name,param.sq)))}">
-        <mo:overviewSearchFolder folder="${folder}"/>
+        <c:if test="${folder.types eq 'conversation' || folder.types eq 'message' || empty folder.types}">
+        <mo:overviewSearchFolder folder="${folder}" types="${folder.types}"/>
+        </c:if>
     </c:if>
 </zm:forEachFolder>
 <div class="Toolbar table">

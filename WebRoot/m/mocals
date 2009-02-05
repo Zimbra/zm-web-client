@@ -63,25 +63,69 @@
         </c:if>
     </zm:forEachFolder>
 </div>
-<%--<noscript>
+
+<%--
 <div class="Toolbar table">
     <div class="table-row">
-            <div class="table-cell">
-                <input class="zo_button" type="submit" name="savechecks" value="<fmt:message key='save'/>">
-            </div>
+        <div class="table-cell">
+            <span class="Title left">
+                <fmt:message key="searches"/></span>
+        </div>
     </div>
 </div>
-</noscript>--%>
-<%--</form>--%>
-<script type="text/javascript">
-    var showHideElemForm = function(elemId) {
-        var elem = document.getElementById(elemId)
-        if (!elem) return;
-        if (elem.style.display == 'none') {
-            elem.style.display = '';
-        } else {
-            elem.style.display = 'none';
-        }
-        return false;
-    }
-</script> 
+
+<zm:forEachFolder var="folder" skipsystem="${true}" skiptopsearch="${false}">
+    <c:if test="${(folder.isSearchFolder && (empty param.sq || fn:containsIgnoreCase(folder.name,param.sq)))}">
+        <li>${folder.types}</li>
+
+        <c:if test="${folder.types eq 'appointment'}">
+        <mo:overviewSearchFolder folder="${folder}" types="${folder.types}"/>
+        </c:if>
+    </c:if>
+</zm:forEachFolder>
+<div class="Toolbar table">
+<div class="table-row">
+    <div class="table-cell">
+            <span class="Title left">
+                        <fmt:message key="tags"/>
+            </span>
+            <c:if test="${mailbox.features.tagging}"><span class="right">
+                <a class="zo_button1" href="?st=folders${empty param.showTagCreate?'&showTagCreate=1':''}#tags" onclick="return toggleElem(null,'ntagfrm');"><fmt:message
+                                key="create"/></a>
+            </span></c:if>
+    </div>
+</div>
+</div>
+<c:if test="${mailbox.features.tagging}">
+<div class="table View" id="ntagfrm" style="${empty param.showTagCreate?'display:none':''};">
+    <div class="table-row">
+        <div class="table-cell">
+            <form action="${currentUrl}" method="post" style="padding:0px;margin:0px;" onsubmit="return submitForm(this);">
+                <input type="hidden" name="doFolderAction" value="1">
+                <input name="crumb" type="hidden" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
+                <span class="label"><fmt:message key="name"/>:</span> <input type="text" style="width:100px;"  class="Textarea" name="tag_name">
+                <input type="submit" class="zo_button" name="actionSaveTag" value="<fmt:message key='save'/>">
+                <br/>
+                <select name="tag_color">
+                    <optgroup label="<fmt:message key='color'/>">
+                        <option value="cyan"><fmt:message key="cyan"/></option>
+                        <option value="blue"><fmt:message key="blue"/></option>
+                        <option value="purple"><fmt:message key="purple"/></option>
+                        <option value="red"><fmt:message key="red"/></option>
+                        <option value="orange"><fmt:message key="orange"/></option>
+                        <option value="yellow"><fmt:message key="yellow"/></option>
+                        <option value="green"><fmt:message key="green"/></option>
+                    </optgroup>
+                </select>
+            </form>
+        </div>
+        <a name="tags" style="padding:0px;margin:0px;"></a>
+    </div>
+</div>
+</c:if>
+<zm:forEachTag var="tag">
+    <c:if test="${empty param.sq || fn:containsIgnoreCase(tag.name, param.sq)}">
+        <mo:overviewTag calendars="${false}" tag="${tag}" skiptypes="${true}"/>
+    </c:if>
+</zm:forEachTag>
+--%> 

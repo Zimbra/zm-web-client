@@ -80,6 +80,9 @@
                         </c:if>
                     </c:otherwise>
                 </c:choose>
+                <c:if test="${not empty param.sq && context.searchResult.size > 0}">
+                | <a href="?saveSearch=1&sq=${param.sq}&search=0"  onclick='toggleElem(this,"searchbar"); return toggleElem(this,"savesearchbar");'><fmt:message key="saveSearch"/></a>
+                </c:if>    
             </div>
         </div>
     </div>

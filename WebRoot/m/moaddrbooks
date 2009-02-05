@@ -63,6 +63,23 @@
 <mo:doContactFolderTree skiproot="${false}" skipsystem="false" skiptrash="true"/>
 <mo:overviewFolder types="contact" folder="${mailbox.trash}" base="${context_url}"/>
 <mo:doContactFolderTree skiproot="${true}" parentid="${mailbox.trash.id}" skipsystem="false"/>
+
+<div class="Toolbar table">
+    <div class="table-row">
+        <div class="table-cell">
+            <span class="Title left">
+                <fmt:message key="searches"/></span>
+        </div>
+    </div>
+</div>
+
+<zm:forEachFolder var="folder" skipsystem="${true}" skiptopsearch="${false}">
+    <c:if test="${(folder.isSearchFolder && (empty param.sq || fn:containsIgnoreCase(folder.name,param.sq)))}">
+        <c:if test="${folder.types eq 'contact'}">
+        <mo:overviewSearchFolder folder="${folder}" types="${folder.types}"/>
+        </c:if>
+    </c:if>
+</zm:forEachFolder>
 <div class="Toolbar table">
 <div class="table-row">
     <div class="table-cell">

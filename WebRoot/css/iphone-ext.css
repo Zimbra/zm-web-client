@@ -184,7 +184,7 @@ a#search {
 a#search-active {
     background-position: 50% -216px !important;
 }
-#searchbar {
+#searchbar,#savesearchbar {
     text-align: center;
     vertical-align: middle;
     padding:0px;
@@ -243,6 +243,7 @@ form {
     vertical-align:middle;
     width:200px;
     -webkit-appearance: searchfield;
+    font-size:medium;
 }
 .cmp_container .table-cell, .cmp_appt_container .table-cell {
     text-align: left;
@@ -397,18 +398,21 @@ input[type="button"], input[type="reset"] {
     -moz-border-radius: 0px;
     -webkit-border-radius: 0px;
     text-align: center;
-    padding-left: 6px;
-    padding-right: 6px;
+    padding: 2px 6px 2px 6px;
+    vertical-align:top !important;
+    
 }
 .next_button {
     border-left: 1px solid #335787;
 }
 select {
-    height: 27px;
-    vertical-align: 2px;
+    height: 28px;
+    vertical-align: middle !important;
+    padding: 0 5px;
 }
 .zo_select_button,.zo_button,.zo_button_disabled, .zo_button_group, input[type="button"], input[type="reset"],.searchButton, input[type="submit"], input.submit  {
     background: #58759d url( "/img/mobile/iphone-ext/Button.gif" ) 100% 60% repeat-x;
+    vertical-align:middle !important;
 }
 .zo_select_button {
     max-width: 90px;

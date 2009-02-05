@@ -1,5 +1,6 @@
 <%@ tag body-content="empty" %>
 <%@ attribute name="folder" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZFolderBean" %>
+<%@ attribute name="types" rtexprvalue="true" required="false"%>       
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
@@ -9,6 +10,9 @@
 <c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/>
 <div onclick='zClickLink("FLDR${folder.id}")' class='Folders list-row${folder.hasUnread ? "-unread" : ""}'>
     <c:set var="url" value="${context_url}?sfi=${folder.id}"/>
+    <c:if test="${not empty types}">
+        <c:set var="url" value="${url}&st=${types}"/>
+    </c:if>
     <span>
         <a id="FLDR${folder.id}" href="${fn:escapeXml(url)}">
             <%--<mo:img alt='${fn:escapeXml(label)}' src="${folder.image}"/>--%>
