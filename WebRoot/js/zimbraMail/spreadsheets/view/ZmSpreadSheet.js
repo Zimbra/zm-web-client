@@ -340,6 +340,7 @@ ZmSpreadSheet.prototype._init = function() {
 		}
 	}
 
+    this._table_setColWidths();
     this._table_setRowHeights();
 
 	this.getHtmlElement().style.display = "";
@@ -370,7 +371,7 @@ ZmSpreadSheet.prototype._leftCellClicked = function(td, dwtEv) {
             h        : td.firstChild.offsetHeight,
             docX      : dwtEv.docX,
             docY      : dwtEv.docY
-        };        
+        };
         this._rowsizeCapture.capture();
         dwtEv._stopPropagation = true;
         dwtEv._returnValue = false;
@@ -511,15 +512,13 @@ ZmSpreadSheet.prototype._rowsize_mouseUp = function(ev){
         var index = this._resizeRowIndex;
         var h = this._model.getRowHeight(index - 1);
         if( (h + delta) > ZmSpreadSheet.MIN_ROW_HEIGHT) {
-            this._setRowHeight(index-1, h + delta);            
+            this._setRowHeight(index-1, h + delta);
         }
     }
 
     // null out some things to make sure we don't leak
-	this._rowsizeArgs.td1 = null;
-	this._rowsizeArgs.td2 = null;
+	this._rowsizeArgs.td = null;
 	this._rowsizeArgs = null;
-    this._resizeRowIndex = null;
 
     this._rowsizeCapture.release();
 
@@ -529,29 +528,41 @@ ZmSpreadSheet.prototype._rowsize_mouseUp = function(ev){
 	return dwtev._returnValue;
 };
 
+
+ZmSpreadSheet.prototype._table_setColWidths = function(){
+
+    var c = this._model.COLS;
+    var row = this._getTable().rows[0];
+    var headerColCell;
+    for(i = 0; i < c; i++ ){
+       headerColCell = row.cells[i+1];
+       headerColCell.firstChild.style.width = this._model.getColWidth(i) + "px";
+    }
+};
+
+ZmSpreadSheet.prototype._setColWidth = function(col, width){
+    var headerColCell = this._getTable().rows[0].cells[col + 1];
+    width = width || this._model.getColWidth(col);
+
+    headerColCell.firstChild.style.width = width + "px";
+    this._model.setColWidth(col, width);
+};
+
+//TODO: Allow to shrink further
+ZmSpreadSheet.MIN_COL_WIDTH = 7;
+
 ZmSpreadSheet.prototype._colsize_mouseMove = function(ev) {
 	var dwtev = new DwtMouseEvent();
 	dwtev.setFromDhtmlEvent(ev);
 	var delta = dwtev.docX - this._colsizeArgs.docX;
 	var fuzz = AjxEnv.isIE ? 0 : -2;
-	var OK = true;
-	if (this._resizeColStart) {
-		var w1 = this._colsizeArgs.w1 - delta + fuzz;
-		var w2 = this._colsizeArgs.w2 + delta + fuzz;
-		if (w1 > 7 && w2 > 7) {
-			this._colsizeArgs.td1.firstChild.style.width = w1 + "px";
-			this._colsizeArgs.td2.firstChild.style.width = w2 + "px";
-		} else
-			OK = false;
-	} else {
-		var w1 = this._colsizeArgs.w1 + delta + fuzz;
-		if (w1 > 7)
-			this._colsizeArgs.td1.firstChild.style.width = w1 + "px";
-		else
-			OK = false;
-	}
-	if (OK)
-		this._colsizeArgs.delta = delta;
+
+    var w = this._colsizeArgs.w + delta + fuzz;
+    if(w > ZmSpreadSheet.MIN_COL_WIDTH){
+        this._colsizeArgs.td.firstChild.style.width  = w + "px";
+        this._colsizeArgs.col.firstChild.style.width = w + "px";
+        this._colsizeArgs.delta = delta;
+    }
 	dwtev._stopPropagation = true;
 	dwtev._returnValue = false;
 	dwtev.setToDhtmlEvent(ev);
@@ -562,24 +573,18 @@ ZmSpreadSheet.prototype._colsize_mouseUp = function(ev) {
 	var dwtev = new DwtMouseEvent();
 	dwtev.setFromDhtmlEvent(ev);
 	this._colsizeCapture.release();
-	var w;
 	var delta = this._colsizeArgs.delta;
 	if (delta) {
 		var index = this._resizeColIndex;
-		if (this._resizeColStart) {
-			w = this._model.getColWidth(index - 1);
-			this._model.setColWidth(index - 1, w - delta);
-			w = this._model.getColWidth(index - 2);
-			this._model.setColWidth(index - 2, w + delta);
-		} else {
-			w = this._model.getColWidth(index - 1);
-			this._model.setColWidth(index - 1, w + delta);
-		}
+        var w = this._model.getColWidth(index - 1);
+        if( ( w + delta ) > ZmSpreadSheet.MIN_COL_WIDTH){
+            this._setColWidth(index - 1, w + delta);
+        }
 	}
 	// null out some things to make sure we don't leak
-	this._colsizeArgs.td1 = null;
-	this._colsizeArgs.td2 = null;
+	this._colsizeArgs.td = null;
 	this._colsizeArgs = null;
+
 	dwtev._stopPropagation = true;
 	dwtev._returnValue = false;
 	dwtev.setToDhtmlEvent(ev);
@@ -592,18 +597,14 @@ ZmSpreadSheet.prototype._header_onMouseDown = function(ev) {
 	if (this._resizeColIndex) {
 		this._hideRange();
 		var td = this._getHeaderTable().rows[0].cells[this._resizeColIndex];
+        var col = this._getTable().rows[0].cells[this._resizeColIndex];
 		this._colsizeArgs = {
-			td1       : td,
-			w1        : td.firstChild.offsetWidth,
+			td       : td,
+            col      : col,
+			w        : td.firstChild.offsetWidth,
 			docX      : dwtev.docX,
 			docY      : dwtev.docY
 		};
-		var dir = this._resizeColStart ? -1 : +1;
-		td = this._getHeaderTable().rows[0].cells[this._resizeColIndex + dir];
-		if (td) {
-			this._colsizeArgs.td2 = td;
-			this._colsizeArgs.w2 = td.firstChild.offsetWidth;
-		}
 		this._colsizeCapture.capture();
 		dwtev._stopPropagation = true;
 		dwtev._returnValue = false;
@@ -625,14 +626,12 @@ ZmSpreadSheet.prototype._header_onMouseMove = function(ev) {
 			var row = td.parentNode;
 			var cells = row.cells;
 			var tmp = Dwt.getLocation(this._getRelDiv());
-			var tdX = dwtev.docX - tmp.x - td.offsetLeft + this._getRelDiv().scrollLeft;
+			var tdX = dwtev.docX - tmp.x - td.offsetLeft; //+ this._getRelDiv().scrollLeft;
 			if (Math.abs(tdX - td.offsetWidth) < 5) {
 				this._resizeColIndex = index;
-				this._resizeColStart = false;
 				Dwt.delClass(table, "Header-ColWSize", "Header-ColESize");
 			} else if (tdX < 5 && index > 1) {
-				this._resizeColIndex = index;
-				this._resizeColStart = true;
+				this._resizeColIndex = index - 1;
 				Dwt.delClass(table, "Header-ColESize", "Header-ColWSize");
 			} else {
 				this._resizeColIndex = null;
@@ -640,9 +639,6 @@ ZmSpreadSheet.prototype._header_onMouseMove = function(ev) {
 				Dwt.delClass(table, "Header-ColESize");
 			}
 		}
-	} else {
-// 		Dwt.delClass(table, "Header-ColWSize");
-// 		Dwt.delClass(table, "Header-ColESize");
 	}
 	dwtev.setToDhtmlEvent(ev);
 	return dwtev._returnValue;
@@ -1357,19 +1353,19 @@ ZmSpreadSheet.prototype._table_mouseMove = function(ev) {
         if(index == 0){
             var row = td.parentNode;
             index = row.rowIndex;
-            var tmp = Dwt.getLocation(this._getRelDiv());
-			var tdY = dwtev.docY - tmp.y - td.offsetTop + this._getRelDiv().scrollTop;
-            if (Math.abs(tdY - td.offsetHeight) < 5) {                
-				this._resizeRowIndex = index;                
+            var tmp = Dwt.getLocation(this._getRelDiv());            
+			var tdY = dwtev.docY - tmp.y - td.offsetTop; //+ this._getRelDiv().scrollTop;
+            if (Math.abs(tdY - td.offsetHeight) < 5) {
+				this._resizeRowIndex = index;
                 Dwt.delClass(table, "RowNSize", "RowSSize");
 			} else if (tdY < 5 && index > 1) {
 				this._resizeRowIndex = index - 1;
                 Dwt.delClass(table, "RowSSize", "RowNSize");
 			} else {
-				this._resizeRowIndex = null;				
+				this._resizeRowIndex = null;
                 Dwt.delClass(table, "RowSSize");
                 Dwt.delClass(table, "RowNSize");
-			}            
+			}
         }else{
             if(this._resizeRowIndex){
                 this._resizeRowIndex = null;

@@ -249,10 +249,6 @@ ZmSpreadSheetModel.prototype.getColWidth = function(col) {
 
 ZmSpreadSheetModel.prototype.setColWidth = function(col, width) {
 	this.colProps[col].width = width;
-	for (var i = 0; i < this.data.length; ++i) {
-		var cell = this.data[i][col];
-		cell.setWidth(width);
-	}
 };
 
 ZmSpreadSheetModel.prototype.checkBounds = function(row, col) {
@@ -856,7 +852,6 @@ ZmSpreadSheetCellModel.prototype.setToElement = function(el) {
 		el.className = el.className.replace(/(^|\s)SpreadSheet-Type-.*?(\s|$)/g, " ");
 		Dwt.addClass(el, "SpreadSheet-Type-" + type);
 	}
-	div.style.width = this._model.getColWidth(this.getCol() - 1) - 2 + "px";
 };
 
 ZmSpreadSheetCellModel.prototype.setStyleToElement = function(el, special) {
