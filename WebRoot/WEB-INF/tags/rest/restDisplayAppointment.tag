@@ -155,6 +155,35 @@
                                     </td>
                                 </tr>
                             </c:if>
+                            <c:if test="${not empty message.attachments}">
+                                <tr>
+                                    <td class='MsgHdrName'>
+                                       <fmt:message key="attachments"/>
+                                        :
+                                    </td>
+                                    <td class='MsgHdrValue'valign="top">
+                                        <c:forEach var="part" items="${message.attachments}">
+                                            <c:if test="${!part.isMssage}">
+                                                <c:set var="pname" value="${part.displayName}"/>
+                                                <c:if test="${empty pname}"><fmt:message key="unknownContentType" var="pname"><fmt:param value="${part.contentType}"/></fmt:message></c:if>
+                                                <c:set var="url" value="/service/home/~/?id=${message.id}&amp;part=${part.partName}&amp;auth=co"/>
+                                                <fmt:message var="_b" key="b"/>
+                                                <fmt:message var="_kb" key="kb"/>
+                                                <fmt:message var="_mb" key="mb"/>
+                                                <fmt:message var="_gb" key="gb"/>
+                                                <c:set value="${fn:replace(part.displaySize,' B',_b)}" var="dsize"/>
+                                                <c:set value="${fn:replace(dsize,' KB',_kb)}" var="dsize"/>
+                                                <c:set value="${fn:replace(dsize,' MB',_mb)}" var="dsize"/>
+                                                <c:set value="${fn:replace(dsize,' GB',_gb)}" var="dsize"/>
+                                                ${fn:escapeXml(pname)}&nbsp;
+                                                (${dsize})&nbsp;
+                                                <a href="${url}&amp;disp=a"><fmt:message key="download"/></a>
+                                                <br><p style="margin: 3px"></p>
+                                            </c:if>
+                                        </c:forEach>
+                                    </td>
+                               </tr>
+                           </c:if>
                         </table>
                     </td>
                     <td valign='top'>
@@ -187,6 +216,11 @@
                             </tr>
                         </table>
                     </td>
+                </tr>
+                <tr>
+                    <td>
+
+                        </td>
                 </tr>
             </table>
         </td>
