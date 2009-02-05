@@ -28,7 +28,6 @@
 AjxPackage.require("ajax.core.AjxCore");
 AjxPackage.require("ajax.debug.AjxDebug");
 AjxPackage.require("ajax.util.AjxUtil");
-AjxPackage.require("ajax.util.AjxWindowOpener");
 AjxPackage.require("ajax.core.AjxException");
 AjxPackage.require("ajax.util.AjxCookie");
 AjxPackage.require("ajax.soap.AjxSoapException");

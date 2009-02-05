@@ -172,3 +172,8 @@
     </c:otherwise>
 </c:choose>
 </app:handleError>
+<script type="text/javascript">
+    <!--
+    var zprint = function(){ try{ var idex = 0; var c =""; while (idex <= zrc ) { if(document.getElementById("C"+idex).checked) { cid = document.getElementById("C"+idex).value; c += cid + ","; } idex++ ; } }catch(ex){ } window.open("/h/printcalendar?view=${view}&date=${param.date}&action=print"); }
+        //-->
+</script>

@@ -84,27 +84,6 @@ function(compact) {
 	}
 };
 
-ZmVoicemailListView.prototype.getPrintHtml =
-function() {
-	var buffer = [];
-	var rowArgs = { appContextPath: appContextPath };
-	for(var i = 0, count = this._list.size(); i < count; i++) {
-		var item = this._list.get(i);
-		rowArgs.flagImage = item.isHighPriority ? "tasks/ImgTaskHigh.gif" : "startup/ImgBlank_16.gif";
-		rowArgs.caller = this._getCallerHtml(item);
-		rowArgs.duration = AjxDateUtil.computeDuration(item.duration);
-		rowArgs.date = AjxDateUtil.simpleComputeDateStr(item.date);
-		AjxTemplate.expand("voicemail.Voicemail#ZmVoicemailListPrintViewRow", rowArgs, buffer);
-	}
-
-	var args = {
-		name: this._folder.getName(false, 0, true),
-        appContextPath: appContextPath,
-        rows: buffer.join("")
-	}
-	return  AjxTemplate.expand("voicemail.Voicemail#ZmVoicemailListPrintView", args);
-};
-
 ZmVoicemailListView.prototype._getHeaderList =
 function(parent) {
 
