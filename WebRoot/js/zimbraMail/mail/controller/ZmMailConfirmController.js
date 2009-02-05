@@ -82,11 +82,20 @@ ZmMailConfirmController.prototype._initView =
 function() {
 	this._view = new ZmMailConfirmView(this._container, this);
 	this._view.addNewContactsListener(new AjxListener(this, this._addNewContactsListener));
+
+	var tg = this._createTabGroup();
+	var rootTg = appCtxt.getRootTabGroup();
+	tg.newParent(rootTg);
+	tg.addMember(this._view.getTabGroupMember());
+	
 	var elements = {};
 	this._initializeToolBar();
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
 	elements[ZmAppViewMgr.C_APP_CONTENT] = this._view;
-    this._app.createView(ZmId.VIEW_MAIL_CONFIRM, elements, null, false, true);
+	var callbacks = {};
+	callbacks[ZmAppViewMgr.CB_PRE_HIDE] = new AjxCallback(this, this._preHideCallback);
+	callbacks[ZmAppViewMgr.CB_POST_SHOW] = new AjxCallback(this, this._postShowCallback);
+    this._app.createView(ZmId.VIEW_MAIL_CONFIRM, elements, callbacks, false, true);
 };
 
 ZmMailConfirmController.prototype._initializeToolBar =
@@ -99,6 +108,11 @@ function() {
 	this._toolbar = new ZmButtonToolBar({parent:this._container, buttons:buttons, className:className+" ImgSkin_Toolbar",
 										 context:ZmId.VIEW_MAIL_CONFIRM});
 	this._toolbar.addSelectionListener(ZmOperation.CANCEL, new AjxListener(this, this._cancelListener));
+};
+
+ZmMailConfirmController.prototype._getDefaultFocusItem =
+function() {
+	return this._view.getDefaultFocusItem();
 };
 
 ZmMailConfirmController.prototype._cancelListener =

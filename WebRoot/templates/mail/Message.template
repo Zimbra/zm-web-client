@@ -304,10 +304,10 @@
 </template>
 
 <template id='mail.Message#ZmMailConfirmViewNewAddress'>
-	<div id="${id}_CHECKBOX"></div>
+	<div id="${id}_CHECKBOX" tabindex='10'></div>
 	<table style="margin-bottom:3px"><tr>
-		<td><div id="${id}_FIRST"/></td>
-		<td><div id="${id}_LAST"/></td>
+		<td><div id="${id}_FIRST" tabindex='20'/></td>
+		<td><div id="${id}_LAST" tabindex='30'/></td>
 	</tr></table>
 </template>
 

@@ -30,6 +30,7 @@ ZmMailConfirmView = function(parent, controller) {
 
 	this.setVisible(false);
 	this._controller = controller;
+	this._tabGroup = new DwtTabGroup(this._htmlElId);
 	this._createHtmlFromTemplate("mail.Message#ZmMailConfirmView", { id: this._htmlElId } );
 	var buttonArgs = {
 		parent: this,
@@ -64,6 +65,8 @@ function(listener) {
  */
 ZmMailConfirmView.prototype.showConfirmation =
 function(msg) {
+	this._tabGroup.removeAllMembers();
+	
 	this._showLoading(true);
 	var addresses = msg.getAddresses(AjxEmailAddress.TO).getArray().concat(msg.getAddresses(AjxEmailAddress.CC).getArray());
 
@@ -82,6 +85,20 @@ function(msg) {
 ZmMailConfirmView.prototype.getController =
 function() {
 	return this._controller;
+};
+
+ZmMailConfirmView.prototype.getTitle =
+function() {
+	return [ZmMsg.zimbraTitle, ZmMsg.messageSent].join(": ");
+};
+
+ZmMailConfirmView.prototype.getTabGroupMember = function() {
+	return this._tabGroup;
+};
+
+ZmMailConfirmView.prototype.getDefaultFocusItem =
+function() {
+	return this._addContactsButton;
 };
 
 ZmMailConfirmView.prototype._handleResponseGetContacts =
@@ -116,8 +133,9 @@ function(loading) {
 
 ZmMailConfirmView.prototype._showNewAddresses =
 function(newAddresses) {
-	Dwt.setVisible(Dwt.byId(this._htmlElId + "_newAddresses"), newAddresses.length);
-	this._addContactsButton.setVisible(newAddresses.length);
+	var visible = newAddresses.length;
+	Dwt.setVisible(Dwt.byId(this._htmlElId + "_newAddresses"), visible);
+	this._addContactsButton.setVisible(visible);
 	if (this._newAddressForms) {
 		for (var i = 0, count = this._newAddressForms.length; i < count; i++) {
 			this._newAddressForms[i].dispose();
@@ -154,6 +172,10 @@ function(newAddresses) {
 		};
 		var form = new DwtForm(args);
 		this._newAddressForms.push(form);
+		this._tabGroup.addMember(form.getTabGroupMember());
+	}
+	if (visible) {
+		this._tabGroup.addMember(this._addContactsButton);
 	}
 };
 
