@@ -181,14 +181,6 @@ function(type, selected, disabled, item) {
 		: (disabled ? this._disabledSelectedClass : this._selectedClass);
 };
 
-ZmCalBaseView.prototype._mouseOverListener = 
-function(ev) {
-	var div = this.getTargetItemDiv(ev);
-	if (!div) { return; }
-	
-	this._mouseOverAction(ev, div);
-};
-
 ZmCalBaseView.prototype.getToolTipContent =
 function(ev) {
 	var div = this.getTargetItemDiv(ev);
