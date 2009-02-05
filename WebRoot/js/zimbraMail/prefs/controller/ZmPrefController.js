@@ -205,7 +205,7 @@ function() {
 		var elements = {};
 		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
 		elements[ZmAppViewMgr.C_APP_CONTENT_FULL] = this._prefsView;
-		this._app.createView(this._currentView, elements, callbacks, true);
+		this._app.createView({viewId:this._currentView, elements:elements, callbacks:callbacks, isAppView:true});
 		this._initializeTabGroup();
 	}
 };

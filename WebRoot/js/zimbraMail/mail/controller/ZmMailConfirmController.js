@@ -87,7 +87,7 @@ function() {
 	var rootTg = appCtxt.getRootTabGroup();
 	tg.newParent(rootTg);
 	tg.addMember(this._view.getTabGroupMember());
-	
+
 	var elements = {};
 	this._initializeToolBar();
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
@@ -95,7 +95,7 @@ function() {
 	var callbacks = {};
 	callbacks[ZmAppViewMgr.CB_PRE_HIDE] = new AjxCallback(this, this._preHideCallback);
 	callbacks[ZmAppViewMgr.CB_POST_SHOW] = new AjxCallback(this, this._postShowCallback);
-    this._app.createView(ZmId.VIEW_MAIL_CONFIRM, elements, callbacks, false, true);
+    this._app.createView({viewId:ZmId.VIEW_MAIL_CONFIRM, elements:elements, callbacks:callbacks, isTransient:true});
 };
 
 ZmMailConfirmController.prototype._initializeToolBar =

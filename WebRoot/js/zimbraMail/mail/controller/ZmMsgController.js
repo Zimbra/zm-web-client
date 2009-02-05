@@ -28,9 +28,12 @@
  * @param container	containing shell
  * @param mailApp	containing app 
  */
-ZmMsgController = function(container, mailApp) {
+ZmMsgController = function(container, mailApp, sessionId) {
 
 	ZmMailListController.call(this, container, mailApp);
+
+	this.sessionId = sessionId;
+	this.viewId = [ZmId.VIEW_MSG, this.sessionId].join("");
 };
 
 ZmMsgController.MODE_TO_CONTROLLER = {};
@@ -103,7 +106,8 @@ function() {
 	var elements = {};
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
 	elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[this._currentView];
-	this._setView(this._currentView, elements, false, appCtxt.isChildWindow);
+	this._setView({view:this._currentView, elements:elements, clear:appCtxt.isChildWindow,
+				   tabParams:{id:this.viewId, label:ZmMsg.message, image:"MessageView", tooltip:ZmMsg.message}});
 };
 
 ZmMsgController.prototype.getKeyMapName =
@@ -202,7 +206,7 @@ function() {
 
 ZmMsgController.prototype._getViewType =
 function() {
-	return ZmId.VIEW_MSG;
+	return this.viewId;
 };
 
 ZmMsgController.prototype._postHideCallback =

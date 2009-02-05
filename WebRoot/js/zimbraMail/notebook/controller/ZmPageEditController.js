@@ -70,7 +70,7 @@ function(page) {
 	}
 
 	this._resetOperations(this._toolbar[this._currentView], 1); // enable all buttons
-	this._setView(this._currentView, elements, false, false, false, true);
+	this._setView({view:this._currentView, elements:elements, isTransient:true});
 };
 
 ZmPageEditController.prototype.getPage =

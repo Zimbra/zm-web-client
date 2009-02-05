@@ -128,7 +128,7 @@ function(initHide) {
 			this._createToolBar();
 		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
 		elements[ZmAppViewMgr.C_APP_CONTENT] = this._composeView;
-		this._app.createView(this._getViewType(), elements, callbacks, false, true);
+		this._app.createView({viewId:this._getViewType(), elements:elements, callbacks:callbacks, isTransient:true});
 		if (initHide) {
 			this._composeView.preload();
 		}

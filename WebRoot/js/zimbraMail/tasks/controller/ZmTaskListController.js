@@ -69,7 +69,7 @@ function(list, folderId) {
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
 	elements[ZmAppViewMgr.C_APP_CONTENT] = lv;
 
-	this._setView(this._currentView, elements, true);
+	this._setView({view:this._currentView, elements:elements, isAppView:true});
 
 	this._setTabGroup(this._tabGroups[this._currentView]);
 	this._restoreFocus();
@@ -332,7 +332,7 @@ function(task) {
 	var elements = {};
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[viewId];
 	elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[viewId];
-	this._setView(viewId, elements, null, null, true);
+	this._setView({view:viewId, elements:elements, pushOnly:true});
 };
 
 ZmTaskListController.prototype._showTaskEditView =

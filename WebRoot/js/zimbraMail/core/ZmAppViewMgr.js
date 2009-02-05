@@ -407,25 +407,28 @@ function(app, viewId) {
 /**
  * Registers a set of elements comprising an app view.
  *
- * @param viewId		the ID of the view
- * @param appName		the name of the owning app
- * @param elements		a hash of elements
- * @param callbacks 	functions to call before/after this view is shown/hidden
- * @param isAppView 	if true, this view is an app-level view
- * @param isTransient	if true, this view does not go on the hidden stack
- * @param tabParams		button params; view is opened in app tab instead of being stacked
+ * @param params		[hash]			hash of params:
+ *        viewId		the ID of the view
+ *        appName		the name of the owning app
+ *        elements		a hash of elements
+ *        callbacks 	functions to call before/after this view is shown/hidden
+ *        isAppView 	if true, this view is an app-level view
+ *        isTransient	if true, this view does not go on the hidden stack
+ *        tabParams		button params; view is opened in app tab instead of being stacked
  */
 ZmAppViewMgr.prototype.createView =
-function(viewId, appName, elements, callbacks, isAppView, isTransient, tabParams) {
+function(params) {
+
+	var viewId = params.viewId;
 	DBG.println(AjxDebug.DBG1, "createView: " + viewId);
 
-	this._views[viewId] = elements;
-	this._callbacks[viewId] = callbacks || {};
-	this._viewApp[viewId] = appName;
-	this._isAppView[viewId] = isAppView;
-	this._isTransient[viewId] = isTransient;
-	this._isTabView[viewId] = Boolean(tabParams != null);
-	this._tabParams[viewId] = tabParams;
+	this._views[viewId]			= params.elements;
+	this._callbacks[viewId]		= params.callbacks || {};
+	this._viewApp[viewId]		= params.appName;
+	this._isAppView[viewId]		= params.isAppView;
+	this._isTransient[viewId]	= params.isTransient;
+	this._tabParams[viewId]		= params.tabParams;
+	this._isTabView[viewId]		= Boolean(params.tabParams != null);
 };
 
 // XXX: should we have a destroyView() ?
@@ -778,7 +781,7 @@ function() {
 	el.innerHTML = AjxTemplate.expand("share.App#Loading", this._htmlElId);
 	var elements = {};
 	elements[ZmAppViewMgr.C_APP_CONTENT] = loadingView;
-	this.createView(ZmId.VIEW_LOADING, null, elements);
+	this.createView({viewId:ZmId.VIEW_LOADING, elements:elements});
 };
 
 // Locates and sizes the given list of components to fit within their containers.

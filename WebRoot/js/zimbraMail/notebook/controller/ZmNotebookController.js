@@ -65,7 +65,7 @@ ZmNotebookController.prototype.switchView = function(view, force) {
 		elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[this._currentView];
 
         //bug: 30036 if the search result notebookpage view should not be set as app view
-        this._setView(view, elements, !(this._fromSearch  && (view == ZmId.VIEW_NOTEBOOK_PAGE)));
+        this._setView({view:view, elements:elements, isAppView:!(this._fromSearch  && (view == ZmId.VIEW_NOTEBOOK_PAGE))});
 	}
 	Dwt.setTitle(this.getCurrentView().getTitle());
 };

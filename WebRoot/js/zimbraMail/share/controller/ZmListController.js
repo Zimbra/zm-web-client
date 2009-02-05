@@ -427,41 +427,46 @@ function(view) {
 /**
  * Creates the desired application view.
  *
- * @param view			view ID
- * @param elements		array of view components
- * @param isAppView		this view is a top-level app view
- * @param clear			if true, clear the hidden stack of views
- * @param pushOnly		don't reset the view's data, just swap the view in
- * @param isTransient	this view doesn't go on the hidden stack
- * @param stageView		stage the view rather than push it
+ * @param params		[hash]			hash of params:
+ *        view			[constant]		view ID
+ *        elements		[array]			array of view components
+ *        isAppView		[boolean]*		this view is a top-level app view
+ *        clear			[boolean]*		if true, clear the hidden stack of views
+ *        pushOnly		[boolean]*		don't reset the view's data, just swap the view in
+ *        isTransient	[boolean]*		this view doesn't go on the hidden stack
+ *        stageView		[boolean]*		stage the view rather than push it
+ *        tabParams		[hash]*			button params; view is opened in app tab instead of being stacked
  */
 ZmListController.prototype._setView =
-function(view, elements, isAppView, clear, pushOnly, isTransient, stageView) {
+function(params) {
+
+	var view = params.view;
 
 	// create the view (if we haven't yet)
 	if (!this._appViews[view]) {
 		// view management callbacks
 		var callbacks = {};
-		callbacks[ZmAppViewMgr.CB_PRE_HIDE] = this._preHideCallback ? new AjxCallback(this, this._preHideCallback) : null;
-		callbacks[ZmAppViewMgr.CB_PRE_UNLOAD] = this._preUnloadCallback ? new AjxCallback(this, this._preUnloadCallback) : null;
-		callbacks[ZmAppViewMgr.CB_POST_HIDE]= this._postHideCallback ? new AjxCallback(this, this._postHideCallback) : null;
-		callbacks[ZmAppViewMgr.CB_PRE_SHOW]	= this._preShowCallback ? new AjxCallback(this, this._preShowCallback) : null;
-		callbacks[ZmAppViewMgr.CB_POST_SHOW]= this._postShowCallback ? new AjxCallback(this, this._postShowCallback) : null;
+		callbacks[ZmAppViewMgr.CB_PRE_HIDE]		= this._preHideCallback ? new AjxCallback(this, this._preHideCallback) : null;
+		callbacks[ZmAppViewMgr.CB_PRE_UNLOAD]	= this._preUnloadCallback ? new AjxCallback(this, this._preUnloadCallback) : null;
+		callbacks[ZmAppViewMgr.CB_POST_HIDE]	= this._postHideCallback ? new AjxCallback(this, this._postHideCallback) : null;
+		callbacks[ZmAppViewMgr.CB_PRE_SHOW]		= this._preShowCallback ? new AjxCallback(this, this._preShowCallback) : null;
+		callbacks[ZmAppViewMgr.CB_POST_SHOW]	= this._postShowCallback ? new AjxCallback(this, this._postShowCallback) : null;
 
-		this._app.createView(view, elements, callbacks, isAppView, isTransient);
+		params.viewId = view;
+		this._app.createView(params);
 		this._appViews[view] = 1;
 	}
 
 	// populate the view
-	if (!pushOnly) {
+	if (!params.pushOnly) {
 		this._setViewContents(view);
 	}
 
 	// push the view
-	if (stageView) {
+	if (params.stageView) {
 		this._app.stageView(view);
 	} else {
-		return (clear ? this._app.setView(view) : this._app.pushView(view));
+		return (params.clear ? this._app.setView(view) : this._app.pushView(view));
 	}
 };
 

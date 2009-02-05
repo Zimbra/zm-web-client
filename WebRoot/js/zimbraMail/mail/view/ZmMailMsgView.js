@@ -24,17 +24,18 @@ ZmMailMsgView = function(params) {
 
 	this._mode = params.mode;
 	this._controller = params.controller;
+	this._viewId = (this._controller && this._controller.sessionId) ? ZmId.VIEW_MSG + this._controller.sessionId: ZmId.VIEW_MSG;
 
-	this._displayImagesId	= ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_DISPLAY_IMAGES, this._mode);
-	this._msgTruncatedId	= ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_MSG_TRUNC, this._mode);
-	this._infoBarId			= ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_INFO_BAR, this._mode);
-	this._tagRowId			= ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_TAG_ROW, this._mode);
-	this._tagCellId			= ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_TAG_CELL, this._mode);
-	this._attLinksId		= ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_ATT_LINKS, this._mode);
+	this._displayImagesId	= ZmId.getViewId(this._viewId, ZmId.MV_DISPLAY_IMAGES, this._mode);
+	this._msgTruncatedId	= ZmId.getViewId(this._viewId, ZmId.MV_MSG_TRUNC, this._mode);
+	this._infoBarId			= ZmId.getViewId(this._viewId, ZmId.MV_INFO_BAR, this._mode);
+	this._tagRowId			= ZmId.getViewId(this._viewId, ZmId.MV_TAG_ROW, this._mode);
+	this._tagCellId			= ZmId.getViewId(this._viewId, ZmId.MV_TAG_CELL, this._mode);
+	this._attLinksId		= ZmId.getViewId(this._viewId, ZmId.MV_ATT_LINKS, this._mode);
 
 	// expand/collapse vars
 	this._expandHeader = true;
-	this._expandDivId = ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_EXPAND_DIV, this._mode);
+	this._expandDivId = ZmId.getViewId(this._viewId, ZmId.MV_EXPAND_DIV, this._mode);
 
 	//this.SCROLL_WITH_IFRAME = ZmMailMsgView.SCROLL_WITH_IFRAME;
 	this._scrollWithIframe = ZmMailMsgView.SCROLL_WITH_IFRAME; // Making it local var
@@ -823,7 +824,7 @@ function(origText) {
 	(function() {
 		var infoBarDiv = document.getElementById(self._infoBarId);
 		if (infoBarDiv) {
-			self._highlightObjectsId = ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_HIGHLIGHT_OBJ, self._mode);
+			self._highlightObjectsId = ZmId.getViewId(this._viewId, ZmId.MV_HIGHLIGHT_OBJ, self._mode);
 			var subs = {
 				id: self._highlightObjectsId,
 				text: ZmMsg.objectsNotDisplayed,
@@ -922,7 +923,7 @@ function(container, html, isTextMsg, isTruncated) {
 	var params = {
 		parent: this,
 		className: "MsgBody",
-		id: ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_MSG_BODY, this._mode),
+		id: ZmId.getViewId(this._viewId, ZmId.MV_MSG_BODY, this._mode),
 		hidden: true,
 		html: html,
 		styles: inner_styles,
@@ -1105,16 +1106,16 @@ function(msg, container, callback) {
 	var folder = appCtxt.getById(msg.folderId);
 	var isSyncFailureMsg = (folder && folder.nId == ZmOrganizer.ID_SYNC_FAILURES);
 
-	this._hdrTableId		= ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_HDR_TABLE, this._mode);
-	var closeBtnCellId		= hasHeaderCloseBtn ? ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_CLOSE_BTN_CELL, this._mode) : null;
-	var reportBtnCellId		= ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_REPORT_BTN_CELL, this._mode);
-	this._expandRowId		= ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_EXPAND_ROW, this._mode);
-	var expandHeaderId		= ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_EXPAND_HDR, this._mode);
+	this._hdrTableId		= ZmId.getViewId(this._viewId, ZmId.MV_HDR_TABLE, this._mode);
+	var closeBtnCellId		= hasHeaderCloseBtn ? ZmId.getViewId(this._viewId, ZmId.MV_CLOSE_BTN_CELL, this._mode) : null;
+	var reportBtnCellId		= ZmId.getViewId(this._viewId, ZmId.MV_REPORT_BTN_CELL, this._mode);
+	this._expandRowId		= ZmId.getViewId(this._viewId, ZmId.MV_EXPAND_ROW, this._mode);
+	var expandHeaderId		= ZmId.getViewId(this._viewId, ZmId.MV_EXPAND_HDR, this._mode);
 
 	var subs = {
 		id                : this._htmlElId,
 		hdrTableId        : this._hdrTableId,
-		hdrTableTopRowId  : ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_HDR_TABLE_TOP_ROW, this._mode),
+		hdrTableTopRowId  : ZmId.getViewId(this._viewId, ZmId.MV_HDR_TABLE_TOP_ROW, this._mode),
 		closeBtnCellId    : closeBtnCellId,
 		reportBtnCellId   : reportBtnCellId,
 		expandRowId       : this._expandRowId,
@@ -1551,7 +1552,7 @@ ZmMailMsgView.prototype._msgChangeListener =
 function(ev) {
 	if (ev.type != ZmEvent.S_MSG) { return; }
 	if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE) {
-		if (ev.source == this._msg && (appCtxt.getCurrentViewId() == ZmId.VIEW_MSG)) {
+		if (ev.source == this._msg && (appCtxt.getCurrentViewId() == this._viewId)) {
 			this._controller._app.popView();
 		}
 	} else if (ev.event == ZmEvent.E_TAGS || ev.event == ZmEvent.E_REMOVE_ALL) {
@@ -1894,4 +1895,9 @@ function(msgId, partId, name) {
 
 	var appCtxt = window.parentAppCtxt || window.appCtxt;
 	appCtxt.getApp(ZmApp.BRIEFCASE).createFromAttachment(msgId, partId, name);
+};
+
+ZmMailMsgView.prototype.deactivate =
+function() {
+	this._controller.inactive = true;
 };

@@ -59,7 +59,7 @@ ZmZimletAppController.prototype.getView = function() {
 //		callbacks[ZmAppViewMgr.CB_POST_HIDE] = new AjxCallback(this, this._postHideCallback);
 
 		// create app view
-	    this._app.createView(this._getViewType(), elements, callbacks, true, true);
+	    this._app.createView({viewId:this._getViewType(), elements:elements, callbacks:callbacks, isAppView:true, isTransient:true});
 	}
 	return this._view;
 };

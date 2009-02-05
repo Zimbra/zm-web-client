@@ -210,7 +210,7 @@ ZmAttachmentsController.prototype.initAttachmentsView = function(){
     elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
 	elements[ZmAppViewMgr.C_APP_CONTENT] = this._attachmentsView;
 
-    this._app.createView(ZmId.VIEW_ATTACHMENTS, elements, null, false, true);
+    this._app.createView({viewId:ZmId.VIEW_ATTACHMENTS, elements:elements, isTransient:true});
 
 };
 

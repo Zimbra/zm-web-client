@@ -375,7 +375,7 @@ function(view, force) {
 		}else{
 			elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[this._currentView];
 		}
-		this._setView(view, elements, true);
+		this._setView({view:view, elements:elements, isAppView:true});
 	}
 	Dwt.setTitle(this.getCurrentView().getTitle());
 };

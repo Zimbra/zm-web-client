@@ -187,7 +187,7 @@ function(viewId, startDate, skipMaintenance) {
 	var elements = {};
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[ZmId.VIEW_CAL];
 	elements[ZmAppViewMgr.C_APP_CONTENT] = this._viewMgr;
-	this._setView(ZmId.VIEW_CAL, elements, true);
+	this._setView({view:ZmId.VIEW_CAL, elements:elements, isAppView:true});
 	this._currentView = this._viewMgr.getCurrentViewName();
 	this._listView[this._currentView] = this._viewMgr.getCurrentView();
 	this._resetToolbarOperations();

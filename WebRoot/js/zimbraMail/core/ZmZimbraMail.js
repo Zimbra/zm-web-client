@@ -2052,7 +2052,7 @@ function(appName) {
 	var elements = {};
 	elements[ZmAppViewMgr.C_APP_CONTENT_FULL] = upsellView;
 	var viewName = [appName, "upsell"].join("_");
-	this._appViewMgr.createView(viewName, appName, elements, null, true);
+	this._appViewMgr.createView({viewId:viewName, appName:appName, elements:elements, isTransient:true});
 	this._appViewMgr.pushView(viewName);
 };
 

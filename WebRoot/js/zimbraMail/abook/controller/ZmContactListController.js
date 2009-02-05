@@ -150,7 +150,7 @@ function(view, force, initialized, stageView) {
 			this._initializeAlphabetBar(view);
 		}
 
-		this._setView(view, elements, true, false, false, false, stageView);
+		this._setView({view:view, elements:elements, isAppView:true, stageView:stageView});
 		this._resetNavToolBarButtons(view);
 
 		// HACK: reset search toolbar icon (its a hack we're willing to live with)

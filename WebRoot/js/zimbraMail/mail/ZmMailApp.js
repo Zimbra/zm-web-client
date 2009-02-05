@@ -27,7 +27,9 @@
 ZmMailApp = function(container, parentController) {
 	ZmApp.call(this, ZmApp.MAIL, container, parentController);
 
-	this._composeController		= {};
+	this._sessionController		= {};
+	this._sessionId				= {};
+
 	this._dataSourceCollection	= {};
 	this._identityCollection	= {};
 	this._signatureCollection	= {};
@@ -57,9 +59,6 @@ ZmApp.SETTING[ZmApp.MAIL]			= ZmSetting.MAIL_ENABLED;
 ZmApp.UPSELL_SETTING[ZmApp.MAIL]	= ZmSetting.MAIL_UPSELL_ENABLED;
 ZmApp.LOAD_SORT[ZmApp.MAIL]			= 20;
 ZmApp.QS_ARG[ZmApp.MAIL]			= "mail";
-
-// compose session ID
-ZmMailApp.COMPOSE_SESSION = 1;
 
 ZmMailApp.DEFAULT_AUTO_SAVE_DRAFT_INTERVAL = 30;
 ZmMailApp.DEFAULT_MAX_MESSAGE_SIZE = 100000;
@@ -1396,35 +1395,43 @@ function() {
 };
 
 ZmMailApp.prototype.getMsgController =
-function() {
-	if (!this._msgController) {
-		this._msgController = new ZmMsgController(this._container, this);
-	}
-	return this._msgController;
+function(sessionId) {
+	return this.getSessionController(ZmId.VIEW_MSG, ZmMsgController, sessionId);
 };
 
 ZmMailApp.prototype.getComposeController =
 function(sessionId) {
+	return this.getSessionController(ZmId.VIEW_COMPOSE, ZmComposeController, sessionId);
+};
 
-	if (sessionId) {
-		return this._composeController[sessionId];
+ZmMailApp.prototype.getSessionController =
+function(type, controllerClass, sessionId) {
+
+	if (!this._sessionController[type]) {
+		this._sessionController[type] = {};
+		this._sessionId[type] = 1;
 	}
 
-	var cc;
-	for (var id in this._composeController) {
-		if (this._composeController[id].inactive) {
-			cc = this._composeController[id];
+	if (sessionId) {
+		return this._sessionController[type][sessionId];
+	}
+
+	var controllers = this._sessionController[type];
+	var controller;
+	for (var id in controllers) {
+		if (controllers[id].inactive) {
+			controller = controllers[id];
 			break;
 		}
 	}
 
-	if (!cc) {
-		var sessionId = ZmMailApp.COMPOSE_SESSION++;
-		cc = this._composeController[sessionId] = new ZmComposeController(this._container, this, sessionId);
+	if (!controller) {
+		var sessionId = this._sessionId[type]++;
+		controller = this._sessionController[type][sessionId] = new controllerClass(this._container, this, sessionId);
 	}
-	cc.inactive = false;
+	controller.inactive = false;
 
-	return cc;
+	return controller;
 };
 
 ZmMailApp.prototype.getConfirmController =
