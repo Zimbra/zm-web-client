@@ -2227,7 +2227,7 @@ function(callback, list, userQuery, result) {
 	this.show(null, null, true);	// always make sure a calendar view is being shown
 	this._userQuery = userQuery;	// cache the user-entered search query
 
-	this._maintGetApptCallback(ZmCalViewController.MAINT_VIEW, this.getCurrentView(), list, true);
+	this._maintGetApptCallback(ZmCalViewController.MAINT_VIEW, this.getCurrentView(), list, true, userQuery);
 
 	if (callback) {
 		callback.run(result);
