@@ -1017,14 +1017,14 @@ function(ev) {
 				var list = [ZmAppViewMgr.C_APP_CHOOSER, ZmAppViewMgr.C_TREE, ZmAppViewMgr.C_TREE_FOOTER,
 							ZmAppViewMgr.C_SASH, ZmAppViewMgr.C_APP_CONTENT, ZmAppViewMgr.C_APP_CONTENT_FULL, 
                             ZmAppViewMgr.C_STATUS];
-				this._fitToContainer(list);
+				this._fitToContainer(list, true);
 			} else if (deltaWidth) {
 				var list = [ZmAppViewMgr.C_BANNER, ZmAppViewMgr.C_SEARCH, ZmAppViewMgr.C_USER_INFO, ZmAppViewMgr.C_QUOTA_INFO,
 							ZmAppViewMgr.C_OFFLINE_STATUS, ZmAppViewMgr.C_PRESENCE, 
 							ZmAppViewMgr.C_SEARCH_BUILDER, ZmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR,
 							ZmAppViewMgr.C_TOOLBAR_TOP, ZmAppViewMgr.C_APP_CONTENT, ZmAppViewMgr.C_APP_CONTENT_FULL, 
                             ZmAppViewMgr.C_TOOLBAR_BOTTOM];
-				this._fitToContainer(list);
+				this._fitToContainer(list, true);
 			}
 		}
 	}
