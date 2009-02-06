@@ -998,7 +998,7 @@ function(draftType, msg, resp) {
 	if (!isDraft) {
 		if (appCtxt.get(ZmSetting.SHOW_MAIL_CONFIRM)) {
 			var confirmController = AjxDispatcher.run("GetMailConfirmController");
-			confirmController.showConfirmation(msg);
+			confirmController.showConfirmation(msg, this.viewId);
 		} else {
 			if (appCtxt.isChildWindow && window.parentController) {
 				window.onbeforeunload = null;

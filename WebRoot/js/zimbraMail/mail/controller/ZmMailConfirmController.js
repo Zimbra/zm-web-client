@@ -23,10 +23,11 @@
  * @param container		the containing element
  * @param mailApp		a handle to the mail application
  */
-ZmMailConfirmController = function(container, mailApp) {
+ZmMailConfirmController = function(container, mailApp, sessionId) {
 
 	ZmController.call(this, container, mailApp);
-
+	this.sessionId = sessionId;
+	this.viewId = [ZmId.VIEW_MAIL_CONFIRM, this.sessionId].join("");
 };
 
 ZmMailConfirmController.prototype = new ZmController();
@@ -43,7 +44,9 @@ function() {
  * @param msg			[ZmMailMsg]*	the message that was sent
  */
 ZmMailConfirmController.prototype.showConfirmation =
-function(msg) {
+function(msg, tabId) {
+	this._tabId = tabId;
+
 	if (!this._view) {
 		this._initView();
 	}
@@ -51,7 +54,7 @@ function(msg) {
     this._initializeToolBar();
 	this.resetToolbarOperations(this._toolbar);
 	this._view.showConfirmation(msg);
-	appCtxt.getAppViewMgr().pushView(ZmId.VIEW_MAIL_CONFIRM);
+	appCtxt.getAppViewMgr().pushView(this.viewId, false, true);
 };
 
 ZmMailConfirmController.prototype.resetToolbarOperations =
@@ -95,7 +98,7 @@ function() {
 	var callbacks = {};
 	callbacks[ZmAppViewMgr.CB_PRE_HIDE] = new AjxCallback(this, this._preHideCallback);
 	callbacks[ZmAppViewMgr.CB_POST_SHOW] = new AjxCallback(this, this._postShowCallback);
-    this._app.createView({viewId:ZmId.VIEW_MAIL_CONFIRM, elements:elements, callbacks:callbacks, isTransient:true});
+    this._app.createView({viewId:this.viewId, elements:elements, callbacks:callbacks, isTransient:true, tabParams: { id: this._tabId }});
 };
 
 ZmMailConfirmController.prototype._initializeToolBar =
@@ -117,7 +120,7 @@ function() {
 
 ZmMailConfirmController.prototype._cancelListener =
 function() {
-	appCtxt.getAppViewMgr().popView(true);	
+	this._doClose();
 };
 
 ZmMailConfirmController.prototype._addNewContactsListener =
@@ -137,5 +140,11 @@ function(attrs) {
 
 ZmMailConfirmController.prototype._handleResponseCreateContacts =
 function() {
-	appCtxt.getAppViewMgr().popView(true);
+	this._doClose();
+};
+
+ZmMailConfirmController.prototype._doClose =
+function() {
+	appCtxt.getAppViewMgr().popView(true); // Pop mail confirm.
+	appCtxt.getAppViewMgr().popView(true); // Pop compose.
 };

@@ -1435,11 +1435,8 @@ function(type, controllerClass, sessionId) {
 };
 
 ZmMailApp.prototype.getConfirmController =
-function() {
-	if (!this._confirmController) {
-		this._confirmController = new ZmMailConfirmController(this._container, this);
-	}
-	return this._confirmController;
+function(sessionId) {
+	return this.getSessionController(ZmId.VIEW_MAIL_CONFIRM, ZmMailConfirmController, sessionId);
 };
 
 ZmMailApp.prototype.getMailListController =

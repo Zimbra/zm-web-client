@@ -962,7 +962,8 @@ function(view, show) {
 		}
 		this._setTitle(view);
 		if (this._isTabView[view]) {
-			this._controller.setActiveTabId(view);
+			var tabId = this._tabParams[view].id;
+			this._controller.setActiveTabId(tabId);
 		} else if (this._viewApp[view]) {
 			this._controller.setActiveApp(this._viewApp[view], view);
 		}
