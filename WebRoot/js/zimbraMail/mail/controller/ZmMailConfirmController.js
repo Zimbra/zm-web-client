@@ -71,7 +71,7 @@ ZmMailConfirmController.prototype.handleKeyAction =
 function(actionCode) {
 	switch (actionCode) {
 		case ZmKeyMap.CANCEL:
-			this._cancelListener();
+			this._closeListener();
 			break;
 
 		default:
@@ -105,12 +105,12 @@ ZmMailConfirmController.prototype._initializeToolBar =
 function() {
 	if (this._toolbar) return;
 
-	var buttons = [ZmOperation.CANCEL];
+	var buttons = [ZmOperation.CLOSE];
 
 	var className = appCtxt.isChildWindow ? "ZmAppToolBar_cw" : "ZmAppToolBar";
 	this._toolbar = new ZmButtonToolBar({parent:this._container, buttons:buttons, className:className+" ImgSkin_Toolbar",
 										 context:ZmId.VIEW_MAIL_CONFIRM});
-	this._toolbar.addSelectionListener(ZmOperation.CANCEL, new AjxListener(this, this._cancelListener));
+	this._toolbar.addSelectionListener(ZmOperation.CLOSE, new AjxListener(this, this._closeListener));
 };
 
 ZmMailConfirmController.prototype._getDefaultFocusItem =
@@ -118,7 +118,7 @@ function() {
 	return this._view.getDefaultFocusItem();
 };
 
-ZmMailConfirmController.prototype._cancelListener =
+ZmMailConfirmController.prototype._closeListener =
 function() {
 	this._doClose();
 };
