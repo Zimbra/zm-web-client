@@ -118,43 +118,46 @@ function(view) {
 ZmVoicemailListController.prototype._resetOperations = 
 function(parent, num) {
 	ZmVoiceListController.prototype._resetOperations.call(this, parent, num);
-	parent.enable(ZmOperation.CHECK_VOICEMAIL, true);
-	var list = this.getList();
-	parent.enable(ZmOperation.PRINT, list && list.size());
-	parent.enable(ZmOperation.CALL_MANAGER, true);
 
 	var isTrash = this._folder && (this._folder.callType == ZmVoiceFolder.TRASH);
-	var enableHeard = false,
-		enableUnheard = false;
+	if (isTrash) {
+		parent.enableAll(false);
+		if (parent instanceof DwtMenu) {
+			ZmOperation.setOperation(parent, ZmOperation.DELETE, ZmOperation.DELETE, ZmMsg.moveToVoiceMail, "UnDelete");
+			parent.enable(ZmOperation.DELETE, true);
+		} else {
+			parent.enable(ZmOperation.DELETE, false);
+		}
+	}
+
+	parent.enable(ZmOperation.CHECK_VOICEMAIL, true);
+	parent.enable(ZmOperation.CALL_MANAGER, true);
+
 	if (!isTrash) {
+		var list = this.getList();
+		parent.enable(ZmOperation.PRINT, list && list.size());
+
 		var hasHeard = false,
 			hasUnheard = false;
 		var items = this._listView[this._currentView].getSelection();
 		for (var i = 0; i < items.length; i++) {
 			(items[i].isUnheard) ? hasUnheard = true : hasHeard = true;
-			if (hasUnheard && hasHeard)
+			if (hasUnheard && hasHeard) {
 				break;
+			}
 		}
-		enableHeard = hasUnheard;
-		enableUnheard = hasHeard;
-	}
-	parent.enable(ZmOperation.MARK_HEARD, enableHeard);
-	parent.enable(ZmOperation.MARK_UNHEARD, enableUnheard);
+		parent.enable(ZmOperation.MARK_HEARD, hasUnheard);
+		parent.enable(ZmOperation.MARK_UNHEARD, hasHeard);
 
-	if (!appCtxt.get(ZmSetting.MAIL_ENABLED)) {
-		parent.enable(ZmOperation.REPLY_BY_EMAIL, false);
-		parent.enable(ZmOperation.FORWARD_BY_EMAIL, false);
-	}
+		parent.enable(ZmOperation.DOWNLOAD_VOICEMAIL, (num == 1));
 
-	if (parent instanceof DwtMenu) {
-		if (isTrash) {
-			ZmOperation.setOperation(parent, ZmOperation.DELETE, ZmOperation.DELETE, ZmMsg.moveToVoiceMail, "UnDelete");
-		} else {
+		if (!appCtxt.get(ZmSetting.MAIL_ENABLED)) {
+			parent.enable(ZmOperation.REPLY_BY_EMAIL, false);
+			parent.enable(ZmOperation.FORWARD_BY_EMAIL, false);
+		}
+
+		if (parent instanceof DwtMenu) {
 			ZmOperation.setOperation(parent, ZmOperation.DELETE, ZmOperation.DELETE, ZmMsg.del, "Delete");
-		}
-	} else {
-		if (isTrash) {
-			parent.enable(ZmOperation.DELETE, false);
 		}
 	}
 };
