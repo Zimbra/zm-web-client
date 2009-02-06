@@ -84,33 +84,19 @@
                                     <c:if test="${mailbox.features.tagging}">
                                         <td class='Img'><app:miniTagImage ids="${briefHit.document.tagIds}"/></td>
                                     </c:if>
+                                    <c:set var="ctype" value="${fn:split(briefHit.document.contentType,';')}" />
                                     <td class='Img'>
-                                        <c:choose>
-                                            <c:when test="${zm:contains(briefHit.document.contentType,'image')}">
-                                                <app:img src="doctypes/ImgImageDoc.gif"/>
-                                            </c:when>
-                                            <c:when test="${zm:contains(briefHit.document.contentType,'video')}">
-                                                <app:img src="doctypes/ImgVideoDoc.gif"/>
-                                            </c:when>
-                                            <c:when test="${zm:contains(briefHit.document.contentType,'pdf')}">
-                                                <app:img src="doctypes/ImgPDFDoc.gif"/>
-                                            </c:when>
-                                            <c:when test="${zm:contains(briefHit.document.contentType,'zip')}">
-                                                <app:img src="doctypes/ImgZipDoc.gif"/>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <app:img src="doctypes/ImgUnknownDoc.gif"/>
-                                            </c:otherwise>
-                                        </c:choose>
+                                        <app:contentType contenttype="${ctype[0]}"/>
+                                        <app:img src="${mimeImg}"/>
                                     </td>
                                     <td><%-- allow this column to wrap --%>
-                                        <a href="${fn:escapeXml(briefHit.document.restUrl)}" id="${aid}">
+                                        <c:set var="briefUrl" value="/service/home/~/?id=${briefHit.id}&auth=co"/>
+                                        <a href="${fn:escapeXml(briefUrl)}" id="${aid}">
                                             <c:set var='docName' value="${empty briefHit.document.name ? unknownSubject : zm:truncate(briefHit.document.name,100,true)}"/>
                                             <c:out value="${docName}"/>
                                         </a>
                                     </td>
-                                    <c:set var="ctype" value="${fn:split(briefHit.document.contentType,';')}" />
-                                    <td width="15%" nowrap>${ctype[0]}</td>
+                                    <td width="15%" nowrap><fmt:message key="${mimeDesc}"/></td>
                                     <td width="10%">${fn:escapeXml(zm:displaySize(pageContext, briefHit.document.size))}</td>
                                     <td width="10%" nowrap>
                                         <fmt:formatDate value="${briefHit.modifiedDate}" pattern="M/d/yyyy" timeZone="${mailbox.prefs.timeZone}"/>
@@ -126,6 +112,7 @@
                                     <c:url var="url" value="/h/search">
                                         <c:param name="sfi" value="${subFolder.id}"/>
                                         <c:param name="st" value="briefcase"/>
+                                        <c:param name="expand" value="${subFolder.parentId}"/>
                                     </c:url>
                                     <tr id="R${status.index}" class='${status.index mod 2 eq 1 ? 'ZhRowOdd' :'ZhRow'}'>
                                         <td class='CB' nowrap><input  id="C${status.index}" type=checkbox name="id" value="${subFolder.id}"></td>

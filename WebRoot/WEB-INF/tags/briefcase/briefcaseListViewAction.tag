@@ -45,7 +45,7 @@
                     <c:set var="count" value="${count+1}"/>
                 </c:forEach>
                 <app:status>
-                    <fmt:message key="actionBriefDeleted">
+                    <fmt:message key="actionBriefcaseDeleted">
                         <fmt:param value="${count}"/>
                     </fmt:message>
                 </app:status>
@@ -59,7 +59,7 @@
                             <zm:tagItem tagid="${eachtag.id}" var="result" id="${ids}" tag="false"/>
                         </zm:forEachTag>
                         <app:status>
-                            <fmt:message key="${'actionBriefUntagAll'}" >
+                            <fmt:message key="${'actionBriefcaseUntagAll'}" >
                                 <fmt:param value="${result.idCount}"/>
                             </fmt:message>
                         </app:status>
@@ -69,7 +69,7 @@
                         <c:set var="tagid" value="${fn:substring(actionOp, 2, -1)}"/>
                         <zm:tagItem tagid="${tagid}"var="result" id="${ids}" tag="${tag}"/>
                         <app:status>
-                            <fmt:message key="${tag ? 'actionBriefTag' : 'actionBriefUntag'}">
+                            <fmt:message key="${tag ? 'actionBriefcaseTag' : 'actionBriefcaseUntag'}">
                                 <fmt:param value="${result.idCount}"/>
                                 <fmt:param value="${zm:getTagName(pageContext, tagid)}"/>
                             </fmt:message>
@@ -83,7 +83,7 @@
                 <zm:moveItem folderid="${folderid}"var="result" id="${ids}"/>
                 <zm:clearSearchCache/>
                 <app:status>
-                    <fmt:message key="actionBriefMoved">
+                    <fmt:message key="actionBriefcaseMoved">
                         <fmt:param value="${result.idCount}"/>
                         <fmt:param value="${zm:getFolderName(pageContext, folderid)}"/>
                     </fmt:message>

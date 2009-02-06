@@ -60,7 +60,8 @@
                             </div>
                             <div class="ZhThumbnailName">
                             <span>
-                                <a href="${fn:escapeXml(briefHit.document.restUrl)}" id="${aid}">
+                                <c:set var="briefUrl" value="/service/home/~/?id=${briefHit.id}&auth=co"/>                                
+                                <a href="${fn:escapeXml(briefUrl)}" id="${aid}">
                                     <c:set var='docName' value="${empty briefHit.document.name ? unknownSubject : zm:truncate(briefHit.document.name,16,true)}"/>
                                     <c:out value="${docName}"/>
                                 </a>

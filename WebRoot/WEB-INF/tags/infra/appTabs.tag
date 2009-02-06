@@ -77,16 +77,15 @@
             </td>
             <td class='TabSpacerR'/>
         </c:if>
-        <!--
         <c:if test="${mailbox.features.briefcases}">
             <td class='TabSpacer'/>
             <td class='Tab ${selected=='briefcases' ? 'TabSelected' :'TabNormal'}'>
                 <a id='TAB_BRIEFCASES' href="<c:url value="/h/search?st=briefcase"/>">
-                    <span id='tab_ikon_briefcases'><app:img src="startup/ImgFolder.gif" altkey='ALT_APP_TASK'/></span><span>Briefcase</span></a>
+                    <span id='tab_ikon_briefcases'><app:img src="startup/ImgFolder.gif" altkey='ALT_APP_TASK'/></span><span><fmt:message
+                        key="briefcase"/></span></a>
             </td>
             <td class='TabSpacerR'/>
         </c:if>
-        -->
         <c:if test="${mailbox.features.options}">
 	        <td class='TabSpacer'/>
 	        <td class='Tab ${selected=='options' ? 'TabSelected' :'TabNormal'}'>
