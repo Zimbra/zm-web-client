@@ -110,42 +110,42 @@
 					<td valign=top>
 						<table border=0>
 							<$ if (value = contact.getWorkAddrField()) { $>
-								<$= AjxTemplate.expand("abook.Contacts#CardContactField", {data:data, fname:"W", value:value, type:ZmObjectManager.ADDRESS}) $>
+								<$= AjxTemplate.expand("abook.Contacts#CardContactField", {data:data, fname:ZmMsg.cardViewW, value:value, type:ZmObjectManager.ADDRESS}) $>
 							<$ } else if (value = contact.getHomeAddrField()) { $>
-								<$= AjxTemplate.expand("abook.Contacts#CardContactField", {data:data, fname:"H", value:value, type:ZmObjectManager.ADDRESS}) $>
+								<$= AjxTemplate.expand("abook.Contacts#CardContactField", {data:data, fname:ZmMsg.cardViewH, value:value, type:ZmObjectManager.ADDRESS}) $>
 							<$ } $>
 
 							<$ if (value = contact.getAttr("email")) { $>
-								<$= AjxTemplate.expand("abook.Contacts#CardContactField", {data:data, fname:"E", value:value, type:ZmObjectManager.EMAIL}) $>
+								<$= AjxTemplate.expand("abook.Contacts#CardContactField", {data:data, fname:ZmMsg.cardViewE, value:value, type:ZmObjectManager.EMAIL}) $>
 							<$ } $>
 
 							<$ if (value = contact.getAttr("email2")) { $>
-								<$= AjxTemplate.expand("abook.Contacts#CardContactField", {data:data, fname:"E2", value:value, type:ZmObjectManager.EMAIL}) $>
+								<$= AjxTemplate.expand("abook.Contacts#CardContactField", {data:data, fname:ZmMsg.cardViewE2, value:value, type:ZmObjectManager.EMAIL}) $>
 							<$ } else if (value = contact.getAttr("email3")) { $>
-								<$= AjxTemplate.expand("abook.Contacts#CardContactField", {data:data, fname:"E3", value:value, type:ZmObjectManager.EMAIL}) $>
+								<$= AjxTemplate.expand("abook.Contacts#CardContactField", {data:data, fname:ZmMsg.cardViewE3, value:value, type:ZmObjectManager.EMAIL}) $>
 							<$ } $>
 						</table>
 					</td>
 					<td valign=top>
 						<table border=0>
 							<$ if (value = contact.getAttr("workPhone")) { $>
-								<$= AjxTemplate.expand("abook.Contacts#CardContactField", {data:data, fname:"W", value:value, type:ZmObjectManager.PHONE}) $>
+								<$= AjxTemplate.expand("abook.Contacts#CardContactField", {data:data, fname:ZmMsg.cardViewW, value:value, type:ZmObjectManager.PHONE}) $>
 							<$ } $>
 
 							<$ if (value = contact.getAttr("workPhone2")) { $>
-								<$= AjxTemplate.expand("abook.Contacts#CardContactField", {data:data, fname:"W2", value:value, type:ZmObjectManager.PHONE}) $>
+								<$= AjxTemplate.expand("abook.Contacts#CardContactField", {data:data, fname:ZmMsg.cardViewW2, value:value, type:ZmObjectManager.PHONE}) $>
 							<$ } $>
 
 							<$ if (value = contact.getAttr("workFax")) { $>
-								<$= AjxTemplate.expand("abook.Contacts#CardContactField", {data:data, fname:"F", value:value, type:ZmObjectManager.PHONE}) $>
+								<$= AjxTemplate.expand("abook.Contacts#CardContactField", {data:data, fname:ZmMsg.cardViewF, value:value, type:ZmObjectManager.PHONE}) $>
 							<$ } $>
 
 							<$ if (value = contact.getAttr("mobilePhone")) { $>
-								<$= AjxTemplate.expand("abook.Contacts#CardContactField", {data:data, fname:"M", value:value, type:ZmObjectManager.PHONE}) $>
+								<$= AjxTemplate.expand("abook.Contacts#CardContactField", {data:data, fname:ZmMsg.cardViewM, value:value, type:ZmObjectManager.PHONE}) $>
 							<$ } $>
 
 							<$ if (value = contact.getAttr("homePhone")) { $>
-								<$= AjxTemplate.expand("abook.Contacts#CardContactField", {data:data, fname:"H", value:value, type:ZmObjectManager.PHONE}) $>
+								<$= AjxTemplate.expand("abook.Contacts#CardContactField", {data:data, fname:ZmMsg.cardViewH, value:value, type:ZmObjectManager.PHONE}) $>
 							<$ } $>
 						</table>
 					</td>
