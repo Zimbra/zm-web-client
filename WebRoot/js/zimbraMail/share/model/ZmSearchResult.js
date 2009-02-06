@@ -70,8 +70,12 @@ ZmSearchResult.prototype.set =
 function(respEl) {
 
 	if (!this.search) { return; }
+
 	this._respEl = respEl;
-	
+
+	// <match> objects are returned for autocomplete search, not items; let caller handle them
+	if (this.search.isAutocompleteSearch) { return; }
+
 	var foundType = {};
 	var numTypes = 0;
 	var currentType, defaultType;

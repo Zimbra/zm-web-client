@@ -42,6 +42,8 @@
  *        field						[string]*		field to search within (instead of default)
  *        soapInfo					[object]*		object with method, namespace, response, and additional attribute fields for creating soap doc
  *        response					[object]*		canned JSON response (no request will be made)
+ *        galType					[constant]*		type of GAL autocomplete (account or resource)
+ *        folders					[array]*		list of folders for autocomplete
  */
 ZmSearch = function(params) {
 
@@ -169,10 +171,16 @@ function(params) {
 				method.setAttribute("type", this.galType);
 			}
 			soapDoc.set("name", this.query);
+		} else if (this.isAutocompleteSearch) {
+			soapDoc = AjxSoapDoc.create("AutoCompleteRequest", "urn:zimbraMail");
+			var method = soapDoc.getMethod();
+			method.setAttribute("limit", this.limit);
+			soapDoc.set("name", this.query);
 		} else if (this.isGalAutocompleteSearch) {
 			soapDoc = AjxSoapDoc.create("AutoCompleteGalRequest", "urn:zimbraAccount");
 			var method = soapDoc.getMethod();
-			method.setAttribute("limit", ZmContactList.AC_MAX);
+			method.setAttribute("limit", this.limit);
+			method.setAttribute("type", this.galType);
 			soapDoc.set("name", this.query);
 		} else if (this.isCalResSearch) {
 			soapDoc = AjxSoapDoc.create("SearchCalendarResourcesRequest", "urn:zimbraAccount");
@@ -227,7 +235,8 @@ function(params) {
 					}
 					// if we're prefetching the first hit message, also mark it as read
 					if (this.fetch) {
-						method.setAttribute("fetch", "1");
+
+						method.setAttribute("fetch", ( this.fetch == "all" ) ? "all" : "1");
 						// and set the html flag if we want the html version
 						if (this.getHtml) {
 							method.setAttribute("html", "1");
@@ -241,16 +250,15 @@ function(params) {
 		}
 	}
 		
-	var respCallback = new AjxCallback(this, this._handleResponseExecute,
-						[this.isGalSearch, this.isGalAutocompleteSearch, this.isCalResSearch, params.callback]);
+	var respCallback = new AjxCallback(this, this._handleResponseExecute, [params.callback]);
 	
 	if (params.batchCmd) {
 		params.batchCmd.addRequestParams(soapDoc, respCallback);
 	} else {
-		appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback,
-												errorCallback:params.errorCallback,
-												timeout:params.timeout, noBusyOverlay:params.noBusyOverlay,
-												response:this.response});
+		return appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback,
+													   errorCallback:params.errorCallback,
+													   timeout:params.timeout, noBusyOverlay:params.noBusyOverlay,
+													   response:this.response});
 	}
 };
 
@@ -280,11 +288,17 @@ function(params) {
 				request.type = this.galType;
 			}
 			request.name = this.query;
+		} else if (this.isAutocompleteSearch) {
+			jsonObj = {AutoCompleteRequest:{_jsns:"urn:zimbraMail"}};
+			request = jsonObj.AutoCompleteRequest;
+			request.limit = this.limit;
+			request.name = {_content:this.query};
 		} else if (this.isGalAutocompleteSearch) {
 			jsonObj = {AutoCompleteGalRequest:{_jsns:"urn:zimbraAccount"}};
 			request = jsonObj.AutoCompleteGalRequest;
-			request.limit = ZmContactList.AC_MAX;
+			request.limit = this.limit;
 			request.name = this.query;
+			request.type = this.galType;
 		} else if (this.isCalResSearch) {
 			jsonObj = {SearchCalendarResourcesRequest:{_jsns:"urn:zimbraAccount"}};
 			request = jsonObj.SearchCalendarResourcesRequest;
@@ -338,7 +352,7 @@ function(params) {
 					}
 					// if we're prefetching the first hit message, also mark it as read
 					if (this.fetch) {
-						request.fetch = 1;
+                        request.fetch = ( this.fetch == "all" ) ? "all" : 1;
 						// and set the html flag if we want the html version
 						if (this.getHtml) {
 							request.html = 1;
@@ -358,16 +372,15 @@ function(params) {
         }
     }
 		
-	var respCallback = new AjxCallback(this, this._handleResponseExecute,
-						[this.isGalSearch, this.isGalAutocompleteSearch, this.isCalResSearch, params.callback]);
+	var respCallback = new AjxCallback(this, this._handleResponseExecute, [params.callback]);
 	
 	if (params.batchCmd) {
 		params.batchCmd.addRequestParams(soapDoc, respCallback);
 	} else {
-		appCtxt.getAppController().sendRequest({jsonObj:jsonObj, soapDoc:soapDoc, asyncMode:true, callback:respCallback,
-												errorCallback:params.errorCallback,
-												timeout:params.timeout, noBusyOverlay:params.noBusyOverlay,
-												response:this.response});
+		return appCtxt.getAppController().sendRequest({jsonObj:jsonObj, soapDoc:soapDoc, asyncMode:true, callback:respCallback,
+													   errorCallback:params.errorCallback,
+													   timeout:params.timeout, noBusyOverlay:params.noBusyOverlay,
+													   response:this.response});
 	}
 };
 
@@ -375,13 +388,15 @@ function(params) {
  * Converts the response into a ZmSearchResult and passes it along.
  */
 ZmSearch.prototype._handleResponseExecute = 
-function(isGalSearch, isGalAutocompleteSearch, isCalResSearch, callback, result) {
+function(callback, result) {
 	var response = result.getResponse();
-	if (isGalSearch) {
+	if (this.isGalSearch) {
 		response = response.SearchGalResponse;
-	} else if (isCalResSearch) {
+	} else if (this.isCalResSearch) {
 		response = response.SearchCalendarResourcesResponse;
-	} else if (isGalAutocompleteSearch) {
+	} else if (this.isAutocompleteSearch) {
+		response = response.AutoCompleteResponse;
+	} else if (this.isGalAutocompleteSearch) {
 		response = response.AutoCompleteGalResponse;
 	} else if (this.soapInfo) {
 		response = response[this.soapInfo.response];
@@ -621,7 +636,7 @@ function() {
 		// now check all folders by name
 		if (!this.folderId) {
 			var folders = appCtxt.getFolderTree();
-			var folder = folders ? folders.getByPath(path) : null;
+			var folder = folders ? folders.getByPath(path, true) : null;
 			if (folder) {
 				this.folderId = folder.id;
 			}

@@ -7,18 +7,20 @@
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="mo" uri="com.zimbra.mobileclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
-<c:set var="label" value="${zm:getFolderName(pageContext, folder.id)}"/>
-<c:url var="url" value="${empty base ? 'mosearch' : base}">
+<c:set var="label" value="${zm:getFolderPath(pageContext, folder.id)}"/>
+<c:url var="url" value="${empty base ? 'zmain' : base}">
     <c:param name="sfi" value="${folder.id}"/>
     <c:if test="${!empty types}"><c:param name="st" value="${types}"/></c:if>
 </c:url>
-
-<tr onclick='zClickLink("FLDR${folder.id}")'>
-    <td class='Folders${folder.hasUnread ? ' zo_unread':''} zo_m_list_row' style='padding: 5px;'>
+<div class='Folders list-row${folder.hasUnread ? '-unread' : ''}' <c:if test="${types ne 'cal'}">onclick='zClickLink("FLDR${folder.id}")'</c:if>>
+    <c:if test="${types eq 'cal'}">
+    <input type="checkbox" onchange="fetchIt('?${folder.isCheckedInUI ? 'un' : ''}check=${folder.id}&st=cals');" value="${folder.id}" name="calid" ${folder.isCheckedInUI ? 'checked=checked':''}>
+    </c:if>
+    <span onclick='zClickLink("FLDR${folder.id}")'>
         <a id="FLDR${folder.id}" href="${fn:escapeXml(url)}">
-            <mo:img src="${folder.image}" alt="${fn:escapeXml(folder.name)}"/>
+            <span class="SmlIcnHldr Fldr${folder.type}">&nbsp;</span>
             ${fn:escapeXml(label)}
             <c:if test="${folder.hasUnread}">&nbsp;(${folder.unreadCount})</c:if>
         </a>
-    </td>
-</tr>
+    </span>
+</div>

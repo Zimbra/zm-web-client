@@ -148,7 +148,7 @@ function(acctInfo) {
 	if (this.status != acctInfo.status) {
 		this.status = acctInfo.status;
 		if (this.isMain || this.visible) {
-			appCtxt.getOverviewController().updateAccountIcon(this, this.getStatusIcon());
+			ZmAppAccordionController.getInstance().updateAccountIcon(this, this.getStatusIcon());
 			appCtxt.getAppController().setOfflineStatus();
 		}
 	}
@@ -164,7 +164,7 @@ function(acctInfo) {
 	if (this.visible && acctInfo.unread != this.unread) {
 		this.unread = acctInfo.unread;
 		if (appCtxt.multiAccounts && appCtxt.getActiveAccount() != this) {
-			appCtxt.getOverviewController().updateAccountTitle(this.itemId, this.getTitle());
+			ZmAppAccordionController.getInstance().updateAccountTitle(this.itemId, this.getTitle());
 		}
 	}
 };
@@ -377,7 +377,6 @@ function(result) {
 ZmZimbraAccount.prototype._handleLoadTags =
 function(result) {
 	var resp = result.getResponse().GetTagResponse;
-	var tags = (resp && resp.tag) ? resp.tag[0] : null;
 	appCtxt.getRequestMgr()._loadTree(ZmOrganizer.TAG, null, resp, null, this);
 };
 
@@ -402,6 +401,12 @@ function(callback) {
 				app._createDeferredFolders(org[0]);
 			}
 		}
+	}
+
+	var ac = appCtxt.getCurrentApp().getAccordionController();
+	var expandedItem = ac.getAccordion().getExpandedItem();
+	if (expandedItem) {
+		ac.showOverview(expandedItem);
 	}
 
 	if (callback) {

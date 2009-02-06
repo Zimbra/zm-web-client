@@ -120,6 +120,28 @@
 					</c:otherwise>
 				</c:choose>
 			</c:when>
+            <c:when test="${zm:actionSet(param, 'actionCompose')}">
+                <c:set var="contactIds" value="" />
+                <c:forEach items="${ids}" var="id">
+                    <c:if test="${not empty contactIds}"><c:set var="sep" value=", " /></c:if>
+                    <zm:getContact var="contact" id="${id}" />
+                    <c:choose>
+                        <c:when test="${contact.isGroup}">
+                            <c:set var="emailIds" value="" />
+                            <c:forEach var="member" items="${contact.groupMembers}">
+                                <c:if test="${not empty emailIds}"><c:set var="grpsep" value=", " /></c:if>
+                                <c:set var="emailIds" value="${emailIds}${grpsep}${member}" /> 
+                                </tr>
+                            </c:forEach>
+                        </c:when>
+                        <c:otherwise>
+                            <c:set var="emailIds" value="${contact.email}" />
+                        </c:otherwise>
+                    </c:choose>
+                    <c:set var="contactIds" value="${contactIds}${sep}${emailIds}" />
+                </c:forEach>
+                <c:redirect url="/h/search?action=compose&to=${contactIds}" />
+            </c:when>
             <c:when test="${fn:startsWith(actionOp, 't:') or fn:startsWith(actionOp, 'u:')}">
                 <c:set var="untagall" value="${fn:startsWith(actionOp, 'u:all')}"/>
                 <c:choose>

@@ -74,7 +74,16 @@
                                 </td>
                             </tr>
                         <$ } $>
-
+						<$ for (var i = 0; i < data.additionalHdrs.length; i++) {  $>
+							<tr>
+								<td width=110 valign='top' class='LabelColName'>
+									<$= data.additionalHdrs[i].hdrName $>
+								</td>
+								<td class='LabelColValue' colspan='10'>	
+									<$=  data.additionalHdrs[i].hdrVal $>
+								</td>
+							</tr>
+						<$ } $>
                     </table>
 				</td>
 				<td id='${id}_contactArea' class='ContactArea'>
@@ -84,6 +93,15 @@
 		</table>
 		<div id='${infoBarId}'></div>
 	</div>
+</template>
+
+<template id='mail.Message#AttachmentsView'>
+    <table border='0' width='100%' height='100%'>
+        <tr>
+            <td width='20%'><div id='${id}_filters'></div></td>
+            <td><div id='${id}_results'>Loading...</div></td>
+        </tr>
+    </table>
 </template>
 
 <template id='mail.Message#MessageListHeader'>
@@ -254,5 +272,46 @@
 		</tr>
 	<$ } $>
 	</table>
+</template>
+
+<template id='mail.Message#ZmMailConfirmView'>
+	<table cellspacing=3 cellpadding=0 border=0 width=100%>
+		<tr>
+			<td id='${id}_confirm' style="vertical-align:top;width:300px">
+				<div id='${id}_loading'><$= ZmMsg.loading $></div>
+				<div id='${id}_notLoading'>
+					<div id='${id}_summary' class="Summary"></div>
+					<div>&nbsp;</div>
+					<div id='${id}_displayAddresses' class="displayAddresses">
+						<div><$= ZmMsg.confirmDisplayAddresss $></div>
+						<div id='${id}_displayAddressBox' class="Box DisplayAddressBox"></div>
+					</div>
+					<div id='${id}_newAddresses' class="NewAddresses">
+						 <div><$= ZmMsg.confirmNewAddresses $></div>
+						 <div id='${id}_newAddressBox' class="Box NewAddressBox"></div>
+					</div>
+					<div style="margin:3px" id='${id}_addButton'></div>
+					<br>
+					<div id='${id}_existingContacts' class="ExistingContacts">
+						<div><$= ZmMsg.confirmExistingContacts $></div>
+						<div id='${id}_existingContactBox' class="Box ExistingContactBox"></div>
+					</div>
+				</div>
+			</td>
+			<td id='${id}_ad' style="vertical-align:top;">&nbsp;</td>
+		</tr>
+	</table>
+</template>
+
+<template id='mail.Message#ZmMailConfirmViewNewAddress'>
+	<div id="${id}_CHECKBOX" tabindex='10'></div>
+	<table style="margin-bottom:3px"><tr>
+		<td><div id="${id}_FIRST" tabindex='20'/></td>
+		<td><div id="${id}_LAST" tabindex='30'/></td>
+	</tr></table>
+</template>
+
+<template id='mail.Message#ZmMailConfirmViewExistingContact'>
+	<div style="padding:3px">${text}</div>
 </template>
 

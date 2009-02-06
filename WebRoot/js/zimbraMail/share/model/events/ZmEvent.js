@@ -45,6 +45,7 @@ ZmEvent.S_SEARCH		= "SEARCH";
 ZmEvent.S_SETTING		= "SETTING";
 ZmEvent.S_SETTINGS		= "SETTINGS";
 ZmEvent.S_MOUNTPOINT	= "MOUNTPOINT";
+ZmEvent.S_ZIMLET		= "ZIMLET";
 
 // Event types
 ZmEvent.E_CREATE		= "CREATE";

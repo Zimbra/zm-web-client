@@ -381,14 +381,14 @@ function(searchResp, params) {
 	if (this._rawAppts && this._rawAppts.length) {
 		this._list = new ZmList(ZmItem.APPT);
 		for (var i = 0; i < this._rawAppts.length; i++) {
-			DBG.println("appt[j]:" + this._rawAppts[i].name);
+			DBG.println(AjxDebug.DBG2, "appt[j]:" + this._rawAppts[i].name);
 			var apptNode = this._rawAppts[i];
 			var instances = apptNode ? apptNode.inst : null;
 			if (instances) {
 				var args = {list:this._list};
 				for (var j = 0; j < instances.length; j++) {
 					var appt = ZmCalBaseItem.createFromDom(apptNode, args, instances[j]);
-					DBG.println("lite appt :" + appt);
+					DBG.println(AjxDebug.DBG2, "lite appt :" + appt);
 					if (appt) newList.add(appt);
 				}
 			}			

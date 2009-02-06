@@ -72,9 +72,9 @@
         </td>
         <td>
             <select name="zimbraPrefTimeZoneId" id="timeZone">
-                <c:set var="tzpref" value="${mailbox.prefs.timeZoneWindowsId}"/>
+                <c:set var="tzpref" value="${mailbox.prefs.timeZoneCanonicalId}"/>
                 <zm:forEachTimeZone var="tz">
-                    <fmt:message var="displayName" bundle='${AjxMsg}' key="${tz.javaId}"/>
+                    <fmt:message var="displayName" bundle='${AjxMsg}' key="${tz.id}"/>
                     <option
                             <c:if test="${tzpref eq tz.id}">selected</c:if>
                             value="${fn:escapeXml(tz.id)}">${fn:escapeXml(displayName)}</option>

@@ -29,6 +29,7 @@ ZmPreferencesApp = function(container) {
 
 // Organizer and item-related constants
 ZmEvent.S_FILTER			= "FILTER";
+ZmEvent.S_PREF_ZIMLET			= "PREF_ZIMLET";
 
 // App-related constants
 ZmApp.PREFERENCES					= ZmId.APP_PREFERENCES;
@@ -112,11 +113,12 @@ function() {
 ZmPreferencesApp.prototype._registerSettings =
 function(settings) {
 	settings = settings || appCtxt.getSettings();
-	settings.registerSetting("IMPORT_FOLDER",			{type:ZmSetting.T_PSEUDO, dataType:ZmSetting.D_NONE});
-	settings.registerSetting("IMPORT_BUTTON",			{type:ZmSetting.T_PSEUDO, dataType:ZmSetting.D_NONE});
-	settings.registerSetting("EXPORT_FOLDER",			{type:ZmSetting.T_PSEUDO, dataType:ZmSetting.D_NONE});
-	settings.registerSetting("EXPORT_BUTTON",			{type:ZmSetting.T_PSEUDO, dataType:ZmSetting.D_NONE});
-	settings.registerSetting("SIGNATURE_MAX_LENGTH",	{name:"zimbraMailSignatureMaxLength", type:ZmSetting.T_COS, dataType:ZmSetting.D_INT, defaultValue:1024});
+	settings.registerSetting("IMPORT_FOLDER",				{type:ZmSetting.T_PSEUDO, dataType:ZmSetting.D_NONE});
+	settings.registerSetting("IMPORT_BUTTON",				{type:ZmSetting.T_PSEUDO, dataType:ZmSetting.D_NONE});
+	settings.registerSetting("EXPORT_FOLDER",				{type:ZmSetting.T_PSEUDO, dataType:ZmSetting.D_NONE});
+	settings.registerSetting("EXPORT_BUTTON",				{type:ZmSetting.T_PSEUDO, dataType:ZmSetting.D_NONE});
+	settings.registerSetting("SIGNATURE_MAX_LENGTH",		{name:"zimbraMailSignatureMaxLength", type:ZmSetting.T_COS, dataType:ZmSetting.D_INT, defaultValue:1024});
+	settings.registerSetting("DISCARD_IN_FILTER_ENABLED",	{name:"zimbraFeatureDiscardInFiltersEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 };
 
 ZmPreferencesApp.prototype._registerApp =
@@ -127,7 +129,7 @@ function() {
 							  icon:					"Preferences",
 							  chooserTooltipKey:	"goToOptions",
 							  button:				appCtxt.isChildWindow ? null : ZmAppChooser.B_OPTIONS,
-							  overviewTrees:		[ZmOrganizer.FOLDER, ZmOrganizer.ROSTER_TREE_ITEM, ZmOrganizer.SEARCH, ZmOrganizer.TAG],
+							  overviewTrees:		[ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG],
 							  showZimlets:			true,
 							  searchTypes:			[ZmItem.MSG, ZmItem.CONV],
 							  gotoActionCode:		ZmKeyMap.GOTO_OPTIONS,
@@ -172,7 +174,8 @@ function() {
 				ZmSetting.REPLY_INCLUDE_ORIG,
 				ZmSetting.REPLY_PREFIX,
 				ZmSetting.SAVE_TO_SENT,
-                ZmSetting.COMPOSE_SAME_FORMAT
+                ZmSetting.COMPOSE_SAME_FORMAT,
+                ZmSetting.MAIL_MANDATORY_SPELLCHECK
             ]
 		},
 		IMPORT_EXPORT: {
@@ -202,6 +205,18 @@ function() {
 			],
 			createView: function(parent, section, controller) {
 				return new ZmShortcutsPage(parent, section.id, controller);
+			}
+		},
+        PREF_ZIMLETS: {
+			title: ZmMsg.zimlets,
+			templateId: "prefs.Pages#Zimlets",
+			manageDirty: true,
+            priority: 120,
+			prefs: [
+				ZmSetting.CHECKED_ZIMLETS    
+			],
+            createView: function(parent, section, controller) {
+				return new ZmZimletsPage(parent, section, controller);
 			}
 		}
 	};
@@ -256,6 +271,11 @@ function() {
 		displayContainer:	ZmPref.TYPE_CHECKBOX
 	});
 
+    ZmPref.registerPref("CHECKED_ZIMLETS", {
+		displayName:		ZmMsg.zimlets,
+		displayContainer:	ZmPref.TYPE_CUSTOM
+	});
+
 	ZmPref.registerPref("FORWARD_INCLUDE_ORIG", {
 		displayName:		ZmMsg.forwardInclude,
 		displayContainer:	ZmPref.TYPE_SELECT,
@@ -271,7 +291,6 @@ function() {
 	});
 
 	ZmPref.registerPref("EXPORT_FOLDER", {
-		loadFunction:       ZmPref.loadCsvFormats,
 		displayContainer:	ZmPref.TYPE_CUSTOM
 	});
 	ZmPref.registerPref("EXPORT_BUTTON", {
@@ -308,6 +327,11 @@ function() {
 		displayName:		ZmMsg.composeInNewWin,
 		displayContainer:	ZmPref.TYPE_CHECKBOX,
 		precondition:		AjxCallback.simpleClosure(ZmPref.requireAllPreConditions, null, ZmSetting.MAIL_ENABLED, ZmSetting.DETACH_COMPOSE_ENABLED)
+	});
+
+    ZmPref.registerPref("MAIL_MANDATORY_SPELLCHECK", {
+		displayName:		ZmMsg.mandatorySpellcheck,
+		displayContainer:	ZmPref.TYPE_CHECKBOX		
 	});
 
 	ZmPref.registerPref("PAGE_SIZE", {

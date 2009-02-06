@@ -25,6 +25,7 @@ ZmBriefcaseController = function(container, app) {
         this._listeners[ZmOperation.OPEN_FILE] = new AjxListener(this, this._openFileListener);
         this._listeners[ZmOperation.SAVE_FILE] = new AjxListener(this, this._saveFileListener);
    	this._listeners[ZmOperation.SEND_FILE] = new AjxListener(this, this._sendFileListener);
+   	this._listeners[ZmOperation.SEND_FILE_AS_ATT] = new AjxListener(this, this._sendFileAsAttachmentListener);
   	this._listeners[ZmOperation.NEW_FILE] = new AjxListener(this, this._uploadFileListener);
    	this._listeners[ZmOperation.VIEW_FILE_AS_HTML] = new AjxListener(this, this._viewAsHtmlListener);
 	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
@@ -81,7 +82,7 @@ function() {
 			ZmOperation.SEP,
 			ZmOperation.VIEW_MENU,
 			ZmOperation.FILLER,
-			ZmOperation.SEND_FILE];
+			ZmOperation.SEND_FILE_MENU];
 };
 
 ZmBriefcaseController.prototype._initializeToolBar =
@@ -99,10 +100,12 @@ function(view) {
 
 		button = toolbar.getButton(ZmOperation.DELETE);
 		button.setToolTipContent(ZmMsg.deletePermanentTooltip);
+
+        this._initSendMenu(view);        
 	}
 
 	this._setupViewMenu(view, false);
-
+    
 };
 
 ZmBriefcaseController.prototype._resetOperations =
@@ -144,11 +147,11 @@ function(parent, num) {
 		}
 		parent.enable([ZmOperation.VIEW_FILE_AS_HTML], isItemSelected && isViewHtmlEnabled );
 	}
-	parent.enable([ ZmOperation.OPEN_FILE, ZmOperation.SEND_FILE], isItemSelected && !multiFolderSelect );
+	parent.enable([ ZmOperation.OPEN_FILE, ZmOperation.SEND_FILE, ZmOperation.SEND_FILE_MENU], isItemSelected && !multiFolderSelect );
 	parent.enable([ ZmOperation.DELETE ], !isReadOnly && isItemSelected );
 	parent.enable([ ZmOperation.TAG_MENU ], !isShared && isItemSelected && !isFolderSelected);
 	parent.enable([ ZmOperation.NEW_FILE, ZmOperation.VIEW_MENU ], true);
-	parent.enable([ ZmOperation.SEND_FILE ], isItemSelected && !isFolderSelected );
+	parent.enable([ ZmOperation.SEND_FILE_MENU, ZmOperation.SEND_FILE, ZmOperation.SEND_FILE_AS_ATT ], isItemSelected && !isFolderSelected );
 };
 
 ZmBriefcaseController.prototype._getTagMenuMsg =
@@ -372,7 +375,7 @@ function(view, force) {
 		}else{
 			elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[this._currentView];
 		}
-		this._setView(view, elements, true);
+		this._setView({view:view, elements:elements, isAppView:true});
 	}
 	Dwt.setTitle(this.getCurrentView().getTitle());
 };
@@ -606,7 +609,7 @@ function(ev) {
 
 ZmBriefcaseController.prototype._getActionMenuOps =
 function() {
-	var list = [ ZmOperation.OPEN_FILE, ZmOperation.SAVE_FILE, ZmOperation.SEND_FILE ];
+	var list = [ ZmOperation.OPEN_FILE, ZmOperation.SAVE_FILE, ZmOperation.SEND_FILE, ZmOperation.SEND_FILE_AS_ATT ];
 	if (appCtxt.get(ZmSetting.VIEW_ATTACHMENT_AS_HTML)) {
 		list.push(ZmOperation.VIEW_FILE_AS_HTML);
 	}
@@ -740,6 +743,42 @@ function(names, urls, inNewWindow) {
 	AjxDispatcher.run("Compose", {action: action, inNewWindow: inNewWindow, msg: msg,
 								  toOverride: toOverride, subjOverride: subjOverride,
 								  extraBodyText: extraBodyText});
+    var cc = AjxDispatcher.run("GetComposeController");
+
+};
+
+ZmBriefcaseController.prototype._sendFileAsAttachmentListener =
+function(event) {
+	var view = this._listView[this._currentView];
+	var items = view.getSelection();
+	items = items instanceof Array ? items : [ items ];
+
+    var docInfo = [];
+    
+	for (var i = 0; i < items.length; i++) {
+		var item = items[i];
+		var url = item.getRestUrl();
+
+		var briefcase = appCtxt.getById(item.folderId);
+        if(briefcase.isRemote() || briefcase.isReadOnly()) {
+            continue;
+        }
+
+        docInfo.push({id: item.id, ct: item.contentType, s: item.size});
+	}
+
+    if(docInfo.length == 0) {
+        return;
+    }
+
+    var action = ZmOperation.NEW_MESSAGE;
+    var msg = new ZmMailMsg();
+    var toOverride = null;
+    AjxDispatcher.run("Compose", {action: action, inNewWindow: false, msg: msg,
+                                  toOverride: toOverride});
+    var cc = AjxDispatcher.run("GetComposeController");
+    var callback = new AjxCallback(this, cc._handleResponseSaveDraftListener);
+    cc.sendDocs(docInfo,true,callback);
 };
 
 ZmBriefcaseController.prototype._moveCallback =
@@ -753,6 +792,27 @@ function(folder) {
 ZmBriefcaseController.prototype._resetOpForCurrentView =
 function(num) {
 	this._resetOperations(this._toolbar[this._currentView], num || 0);
+};
+
+
+ZmBriefcaseController.prototype._initSendMenu =
+function(view) {
+    var sendBtn = this._toolbar[view].getButton(ZmOperation.SEND_FILE_MENU);
+    var menu = new ZmPopupMenu(sendBtn);
+    sendBtn.setMenu(menu);
+
+    var sendOps = [ZmOperation.SEND_FILE, ZmOperation.SEND_FILE_AS_ATT];
+    for (var i = 0; i < sendOps.length; i++) {
+        var id = sendOps[i];
+        var params = {
+            image:ZmOperation.getProp(id, "image"),
+            text:ZmMsg[ZmOperation.getProp(id, "textKey")]
+        };
+        var mi = menu.createMenuItem(id, params);
+        mi.setData(ZmOperation.MENUITEM_ID, id);
+        mi.addSelectionListener(this._listeners[id]);
+    }
+    return menu;
 };
 
 ZmBriefcaseController.prototype._setupViewMenu =
@@ -907,6 +967,11 @@ function() {
 	return (this._currentView == ZmId.VIEW_BRIEFCASE_COLUMN);
 };
 
+ZmBriefcaseController.prototype.mapSupported =
+function(map) {
+	return (map == "list" && (this._currentView != ZmId.VIEW_BRIEFCASE));
+};
+
 ZmBriefcaseController.prototype.deleteCallback =
 function(ids){
 	if(this.isMultiColView()){
@@ -941,10 +1006,11 @@ function(ids){
 
 ZmBriefcaseController.prototype.getItemTooltip =
 function(item, listView) {
-	var prop = [
+    var dateStr = this._getDateInLocaleFormat(item.modifyDate);
+    var prop = [
 		{name:ZmMsg.briefcasePropName, value:item.name},
 		{name:ZmMsg.briefcasePropSize, value:AjxUtil.formatSize(item.size)},
-		{name:ZmMsg.briefcasePropModified, value:(item.modifyDate ? item.modifyDate+"" : "")}
+		{name:ZmMsg.briefcasePropModified, value:(item.modifyDate ? dateStr+"" : "")}
 	];
 
 	var subs = {
@@ -953,6 +1019,12 @@ function(item, listView) {
 	};
     return AjxTemplate.expand("briefcase.Briefcase#Tooltip", subs);
 };
+
+ZmBriefcaseController.prototype._getDateInLocaleFormat =
+function(date) {
+    var dateFormatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.FULL, AjxDateFormat.MEDIUM);
+    return dateFormatter.format(date);
+}
 
 
 //offline related modules

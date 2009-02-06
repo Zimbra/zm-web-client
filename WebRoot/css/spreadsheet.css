@@ -7,6 +7,9 @@
 .ZmSpreadSheet table.SpreadSheet td { background-color: #fff; color: #000; padding: 1px; overflow: hidden; cursor: default; }
 .ZmSpreadSheet table.SpreadSheet .TopBar td { padding: 0; }
 
+.ZmSpreadSheet table.RowNSize, .ZmSpreadSheet table.RowNSize * { cursor:n-resize !important;}
+.ZmSpreadSheet table.RowSSize, .ZmSpreadSheet table.RowSSize * { cursor:s-resize !important;}
+
 .ZmSpreadSheet table.Header-ColESize, .ZmSpreadSheet table.Header-ColESize * { cursor: e-resize !important; }
 .ZmSpreadSheet table.Header-ColWSize, .ZmSpreadSheet table.Header-ColWSize * { cursor: w-resize !important; }
 .ZmSpreadSheet table.SpreadSheet .TopBar .TopLeft { background-color: #ddd; padding: 0; text-align: center; }

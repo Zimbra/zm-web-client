@@ -82,7 +82,6 @@ function(searchResult, bIsGalSearch, folderId) {
 
     this._folderId = folderId;
 
-	// use toString() here due to flakiness of 'instanceof' for ZmContactList
 	if (searchResult instanceof ZmContactList) {
 		this._list = searchResult;			// set as canonical list of contacts
 		this._list._isShared = false;		// this list is not a search of shared items
@@ -151,7 +150,7 @@ function(view, force, initialized, stageView) {
 			this._initializeAlphabetBar(view);
 		}
 
-		this._setView(view, elements, true, false, false, false, stageView);
+		this._setView({view:view, elements:elements, isAppView:true, stageView:stageView});
 		this._resetNavToolBarButtons(view);
 
 		// HACK: reset search toolbar icon (its a hack we're willing to live with)
@@ -237,6 +236,11 @@ function(actionCode) {
 			return ZmListController.prototype.handleKeyAction.call(this, actionCode);
 	}
 	return true;
+};
+
+ZmContactListController.prototype.mapSupported =
+function(map) {
+	return (map == "list");
 };
 
 
@@ -596,40 +600,36 @@ function(ev) {
 
 ZmContactListController.prototype._printContactListener =
 function(ev) {
-	var printView = appCtxt.getPrintView();
 	var contacts = this._listView[this._currentView].getSelection();
-	if (contacts.length == 1) {
-		var contact = contacts[0];
-		if (contact) {
-			if (contact.isLoaded) {
-				printView.render(contact);
-			} else {
-				var callback = new AjxCallback(this, this._handleResponsePrintLoad);
-				contact.load(callback);
-			}
-		}
-	} else {
-		var html = ZmContactCardsView.getPrintHtml(AjxVector.fromArray(contacts));
-		printView.renderHtml(html);
+	var ids = [];
+	for (var i = 0; i < contacts.length; i++) {
+		ids.push(contacts[i].id);
 	}
+	var url = "/h/printcontacts?id=" + ids.join(",");
+	window.open(appContextPath+url, "_blank");
 };
 
 ZmContactListController.prototype._printAddrBookListener =
 function(ev) {
-	var printView = appCtxt.getPrintView();
-	if (this._folderId && !this._list._isShared) {
-		var subList = this._list.getSubList(0, this._list.size(), this._folderId);
-		printView.renderHtml(ZmContactCardsView.getPrintHtml(subList));
-	} else if ((this._searchType & ZmContactListController.SEARCH_TYPE_ANYWHERE) != 0) {
-		printView.render(AjxDispatcher.run("GetContacts"));
-	} else {
-		printView.render(this._list);
-	}
-};
+	var url;
 
-ZmContactListController.prototype._handleResponsePrintLoad =
-function(result, contact) {
-	appCtxt.getPrintView().render(contact);
+	if (this._folderId && !this._list._isShared) {
+		url = "/h/printcontacts?folderid=" + this._folderId;
+	} else {
+		var contacts = ((this._searchType & ZmContactListController.SEARCH_TYPE_ANYWHERE) != 0)
+			? AjxDispatcher.run("GetContacts")
+			: this._list;
+
+		var ids = [];
+		var list = contacts.getArray();
+		for (var i = 0; i < list.length; i++) {
+			ids.push(list[i].id);
+		}
+		// XXX: won't this run into GET limits for large addrbooks? would be better to have
+		// URL that prints all contacts (maybe "id=all")
+		url = "/h/printcontacts?id=" + ids.join(",");
+	}
+	window.open(appContextPath+url, "_blank");
 };
 
 // Returns the type of item in the underlying list
@@ -718,7 +718,7 @@ ZmContactListController.prototype._doDelete =
 function(items, hardDelete, attrs) {
 	// Disallow my card delete.
 	for (var i = 0, count = items.length; i < count; i++) {
-		if (items[i].isMyCard()) {
+		if (items[i].isMyCard) {
 			appCtxt.setStatusMsg(ZmMsg.errorMyCardDelete, ZmStatusView.LEVEL_WARNING);
 			return;
 		}
@@ -742,7 +742,7 @@ function(ev) {
 	// Disallow my card move.
 	var items = this._listView[this._currentView].getSelection();
 	for (var i = 0, count = items.length; i < count; i++) {
-		if (items[i].isMyCard()) {
+		if (items[i].isMyCard) {
 			appCtxt.setStatusMsg(ZmMsg.errorMyCardMove, ZmStatusView.LEVEL_WARNING);
 			return;
 		}
