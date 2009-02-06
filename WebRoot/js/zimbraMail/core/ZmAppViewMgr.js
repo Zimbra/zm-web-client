@@ -427,8 +427,10 @@ function(params) {
 	this._viewApp[viewId]		= params.appName;
 	this._isAppView[viewId]		= params.isAppView;
 	this._isTransient[viewId]	= params.isTransient;
-	this._tabParams[viewId]		= params.tabParams;
-	this._isTabView[viewId]		= Boolean(params.tabParams != null);
+	if (!this._isNewWindow) {
+		this._tabParams[viewId]		= params.tabParams;
+		this._isTabView[viewId]		= Boolean(params.tabParams != null);
+	}
 };
 
 // XXX: should we have a destroyView() ?
