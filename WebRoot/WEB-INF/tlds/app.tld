@@ -90,6 +90,11 @@
         <path>/WEB-INF/tags/briefcase/briefcaseExplorerView.tag</path>
     </tag-file>
 
+     <tag-file>
+        <name>mimeTable</name>
+        <path>/WEB-INF/tags/briefcase/mimeTable.tag</path>
+    </tag-file>
+
     <tag-file>
         <name>notebookRestView</name>
         <path>/WEB-INF/tags/notebook/notebookRestView.tag</path>

@@ -86,7 +86,7 @@
                                     </c:if>
                                     <c:set var="ctype" value="${fn:split(briefHit.document.contentType,';')}" />
                                     <td class='Img'>
-                                        <app:contentType contenttype="${ctype[0]}"/>
+                                        <app:mimeTable contenttype="${ctype[0]}"/>
                                         <app:img src="${mimeImg}"/>
                                     </td>
                                     <td><%-- allow this column to wrap --%>
