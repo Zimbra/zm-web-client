@@ -59,68 +59,8 @@
         <name>taskFolderTree</name>
         <path>/WEB-INF/tags/task/taskFolderTree.tag</path>
     </tag-file>
-
-    <tag-file>
-        <name>newBriefCheck</name>
-        <path>/WEB-INF/tags/briefcase/newBriefCheck.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>briefcaseAction</name>
-        <path>/WEB-INF/tags/overview/briefcaseAction.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>briefcaseListViewAction</name>
-        <path>/WEB-INF/tags/briefcase/briefcaseListViewAction.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>briefcaseListView</name>
-        <path>/WEB-INF/tags/briefcase/briefcaseListView.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>briefcaseListViewToolbar</name>
-        <path>/WEB-INF/tags/briefcase/briefcaseListViewToolbar.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>briefcaseExplorerView</name>
-        <path>/WEB-INF/tags/briefcase/briefcaseExplorerView.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>notebookRestView</name>
-        <path>/WEB-INF/tags/notebook/notebookRestView.tag</path>
-    </tag-file>
-
-    <tag-file>
-            <name>notebookFolderTree</name>
-            <path>/WEB-INF/tags/notebook/notebookFolderTree.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>notebookFolder</name>
-        <path>/WEB-INF/tags/notebook/notebookFolder.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>briefcaseFolderTree</name>
-        <path>/WEB-INF/tags/briefcase/briefcaseFolderTree.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>briefcaseFolder</name>
-        <path>/WEB-INF/tags/briefcase/briefcaseFolder.tag</path>
-    </tag-file>
-
-    ﻿<tag-file>
-        <name>convColumnView</name>
-        <path>/WEB-INF/tags/conv/convColumnView.tag</path>
-    </tag-file>
-
-    <tag-file>
+    
+   <tag-file>
        <name>convListView</name>
         <path>/WEB-INF/tags/conv/convListView.tag</path>
     </tag-file>
@@ -217,16 +157,6 @@
     </tag-file>
 
     <tag-file>
-        <name>htmlCompose</name>
-        <path>/WEB-INF/tags/compose/htmlCompose.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>composeValidation</name>
-        <path>/WEB-INF/tags/compose/composeValidation.tag</path>
-    </tag-file>
-
-    <tag-file>
         <name>attachment</name>
         <path>/WEB-INF/tags/compose/attachment.tag</path>
     </tag-file>
@@ -249,11 +179,6 @@
     <tag-file>
         <name>messageIframe</name>
         <path>/WEB-INF/tags/message/messageIframe.tag</path>
-    </tag-file>
-
-    ﻿<tag-file>
-        <name>messageColumnView</name>
-            <path>/WEB-INF/tags/message/messageColumnView.tag</path>
     </tag-file>
 
     <tag-file>
@@ -601,7 +526,7 @@
         <name>optCheckbox</name>
         <path>/WEB-INF/tags/options/optCheckbox.tag</path>
     </tag-file>
-
+ 
     <tag-file>
         <name>optSeparator</name>
         <path>/WEB-INF/tags/options/optSeparator.tag</path>
@@ -678,16 +603,6 @@
     </tag-file>
 
     <tag-file>
-            <name>zoomView</name>
-            <path>/WEB-INF/tags/calendar/zoomView.tag</path>
-    </tag-file>
-
-    <tag-file>
-            <name>multiDayPrintView</name>
-            <path>/WEB-INF/tags/calendar/multiDayPrintView.tag</path>
-    </tag-file>
-
-    <tag-file>
         <name>multiDay</name>
         <path>/WEB-INF/tags/calendar/multiDay.tag</path>
     </tag-file>
@@ -695,11 +610,6 @@
     <tag-file>
         <name>monthView</name>
         <path>/WEB-INF/tags/calendar/monthView.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>monthPrintView</name>
-        <path>/WEB-INF/tags/calendar/monthPrintView.tag</path>
     </tag-file>
 
     <tag-file>

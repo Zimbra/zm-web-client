@@ -369,8 +369,8 @@
 /* Tab button grid */
 .ZaTabBar {
 	@InsetBg@
-	overflow-x:hidden;
-	overflow-y:hidden;
+	overflow-x:auto;
+	overflow-y:visible;
 }
 
 .AdminTitle {

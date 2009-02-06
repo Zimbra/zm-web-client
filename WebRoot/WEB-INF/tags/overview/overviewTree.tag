@@ -4,8 +4,6 @@
 <%@ attribute name="contacts" rtexprvalue="true" required="false" %>
 <%@ attribute name="voice" rtexprvalue="true" required="false" %>
 <%@ attribute name="calendars" rtexprvalue="true" required="false" %>
-<%@ attribute name="notebook" rtexprvalue="true" required="false" %>
-<%@ attribute name="briefcases" rtexprvalue="true" required="false" %>
 <%@ attribute name="tasks" rtexprvalue="true" required="false" %>
 <%@ attribute name="minical" rtexprvalue="true" required="false" %>
 <%@ attribute name="date" rtexprvalue="true" required="false" type="java.util.Calendar" %>
@@ -24,8 +22,6 @@
 </c:if>    
 <c:if test="${calendars}"><app:calendarFolderTree keys="${keys}" editmode="${editmode}"/></c:if>
 <c:if test="${tasks}"><app:taskFolderTree keys="${keys}" editmode="${editmode}"/></c:if>
-<c:if test="${notebook}"><app:notebookFolderTree keys="${keys}" editmode="${editmode}"/></c:if>
-<c:if test="${briefcases}"><app:briefcaseFolderTree keys="${keys}" editmode="${editmode}"/></c:if>
 <c:if test="${contacts}"><app:contactFolderTree keys="${keys}" editmode="${editmode}"/></c:if>
 <c:if test="${voice}"><app:voiceFolderTree keys="${keys}" editmode="${editmode}"/></c:if>
 <c:if test="${mailbox.features.savedSearches}">

@@ -60,7 +60,7 @@ function(calItem, mode, isDirty) {
 ZmCalItemComposeController.prototype._preHideCallback =
 function(view, force) {
 	ZmController.prototype._preHideCallback.call(this);
-	return force ? true : this.popShield();
+    return force ? true : this.popShield();
 };
 
 ZmCalItemComposeController.prototype._preUnloadCallback =
@@ -128,10 +128,10 @@ function(initHide) {
 			this._createToolBar();
 		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
 		elements[ZmAppViewMgr.C_APP_CONTENT] = this._composeView;
-		this._app.createView({viewId:this._getViewType(), elements:elements, callbacks:callbacks, isTransient:true});
-		if (initHide) {
-			this._composeView.preload();
-		}
+	    this._app.createView(this._getViewType(), elements, callbacks, false, true);
+	    if (initHide) {
+	    	this._composeView.preload();
+	    }
 		return true;
 	}
 	return false;
@@ -160,7 +160,7 @@ function() {
 
 ZmCalItemComposeController.prototype.handleKeyAction =
 function(actionCode) {
-	DBG.println(AjxDebug.DBG2, "ZmCalItemComposeController.handleKeyAction");
+	DBG.println("ZmCalItemComposeController.handleKeyAction");
 	switch (actionCode) {
 		case ZmKeyMap.SAVE:
 			this._saveListener();
@@ -189,11 +189,6 @@ function(actionCode) {
 			break;
 	}
 	return true;
-};
-
-ZmCalItemComposeController.prototype.mapSupported =
-function(map) {
-	return (map == "editor");
 };
 
 ZmCalItemComposeController.prototype.getTabView =
@@ -230,24 +225,16 @@ function() {
 
 ZmCalItemComposeController.prototype._initToolbar =
 function(mode) {
-	if (!this._toolbar) {
+	if (!this._toolbar)
 		this._createToolBar();
-	}
-
-	var isNew = (mode == null || mode == ZmCalItem.MODE_NEW || mode == ZmCalItem.MODE_NEW_FROM_QUICKADD);
 
 	var cancelButton = this._toolbar.getButton(ZmOperation.CANCEL);
-	if (isNew) {
+	if (mode == null || mode == ZmCalItem.MODE_NEW || mode == ZmCalItem.MODE_NEW_FROM_QUICKADD) {
 		cancelButton.setText(ZmMsg.cancel);
 		cancelButton.setImage("Cancel");
 	} else {
 		cancelButton.setText(ZmMsg.close);
 		cancelButton.setImage("Close");
-	}
-
-	var printButton = this._toolbar.getButton(ZmOperation.PRINT);
-	if (printButton) {
-		printButton.setEnabled(!isNew);
 	}
 };
 
@@ -255,29 +242,20 @@ ZmCalItemComposeController.prototype._createToolBar =
 function() {
 	
 	var buttons = [ZmOperation.SAVE, ZmOperation.CANCEL, ZmOperation.SEP];
-
-	if (appCtxt.get(ZmSetting.PRINT_ENABLED)) {
-		buttons.push(ZmOperation.PRINT);
-	}
+	
 	if (appCtxt.get(ZmSetting.ATTACHMENT_ENABLED)) {
 		buttons.push(ZmOperation.ATTACHMENT);
 	}
 	if (!appCtxt.isOffline) {
-		buttons.push(ZmOperation.SPELL_CHECK);
+		buttons.push(ZmOperation.SEP, ZmOperation.SPELL_CHECK);
 	}
 	buttons.push(ZmOperation.SEP, ZmOperation.COMPOSE_FORMAT);
 
-	this._toolbar = new ZmButtonToolBar({parent:this._container, buttons:buttons, context:this._getViewType(), controller:this});
+	this._toolbar = new ZmButtonToolBar({parent:this._container, buttons:buttons, context:this._getViewType()});
 	this._toolbar.addSelectionListener(ZmOperation.SAVE, new AjxListener(this, this._saveListener));
 	this._toolbar.addSelectionListener(ZmOperation.CANCEL, new AjxListener(this, this._cancelListener));
-
-	if (appCtxt.get(ZmSetting.PRINT_ENABLED)) {
-		this._toolbar.addSelectionListener(ZmOperation.PRINT, new AjxListener(this, this._printListener));
-	}
-
-	if (appCtxt.get(ZmSetting.ATTACHMENT_ENABLED)) {
+	if(appCtxt.get(ZmSetting.ATTACHMENT_ENABLED))
 		this._toolbar.addSelectionListener(ZmOperation.ATTACHMENT, new AjxListener(this, this._attachmentListener));
-	}
 
 	// change default button style to toggle for spell check button
 	var spellCheckButton = this._toolbar.getButton(ZmOperation.SPELL_CHECK);
@@ -321,22 +299,22 @@ function(errorMsg) {
 ZmCalItemComposeController.prototype._saveCalItemFoRealz =
 function(calItem, attId, notifyList) {
 	if (this._composeView.isDirty()) {
-		// bug: 16112 - check for folder existance
-		if (calItem.getFolder() && calItem.getFolder().noSuchFolder) {
-			var msg = AjxMessageFormat.format(ZmMsg.errorInvalidFolder, calItem.getFolder().name);
-			this._showErrorMessage(msg);
+        // bug: 16112 - check for folder existance
+        if (calItem.getFolder() && calItem.getFolder().noSuchFolder) {
+            var msg = AjxMessageFormat.format(ZmMsg.errorInvalidFolder, calItem.getFolder().name);
+            this._showErrorMessage(msg);
 			return false;
-		}
-		var callback = new AjxCallback(this, this._handleResponseSave, calItem);
-		var errorCallback = new AjxCallback(this, this._handleErrorSave);
-        if(this._composeView.isReminderOnlyChanged()) {
-            calItem.setMailNotificationOption(false);
         }
+        var callback = new AjxCallback(this, this._handleResponseSave, calItem);
+		var errorCallback = new AjxCallback(this, this._handleErrorSave);
+		if(this._composeView.isReminderOnlyChanged()) {
+			calItem.setMailNotificationOption(false);
+		}
 		calItem.save(attId, callback, errorCallback, notifyList);
-	} else {
-		// bug: 27600 clean up edit view to avoid stagnant attendees
-		this._composeView.cleanup();
-	}
+	}else {
+        //bug: 27600 clean up edit view to avoid stagnant attendees
+        this._composeView.cleanup();
+    }
 };
 
 ZmCalItemComposeController.prototype._handleResponseSave =
@@ -356,14 +334,13 @@ function(ex) {
 	var msg = null;
 	if (ex.code == ZmCsfeException.MAIL_SEND_ABORTED_ADDRESS_FAILURE) {
 		var invalid = ex.getData(ZmCsfeException.MAIL_SEND_ADDRESS_FAILURE_INVALID);
-		var invalidMsg = (invalid && invalid.length)
-			? AjxMessageFormat.format(ZmMsg.apptSendErrorInvalidAddresses, AjxStringUtil.htmlEncode(invalid.join(", "))) : null;
+		var invalidMsg = (invalid && invalid.length) ? AjxMessageFormat.format(ZmMsg.apptSendErrorInvalidAddresses,
+														AjxStringUtil.htmlEncode(invalid.join(", "))) : null;
 		msg = ZmMsg.apptSendErrorAbort + "<br/>" + invalidMsg;
 	} else if (ex.code == ZmCsfeException.MAIL_SEND_PARTIAL_ADDRESS_FAILURE) {
 		var invalid = ex.getData(ZmCsfeException.MAIL_SEND_ADDRESS_FAILURE_INVALID);
-		msg = (invalid && invalid.length)
-			? AjxMessageFormat.format(ZmMsg.apptSendErrorPartial, AjxStringUtil.htmlEncode(invalid.join(", ")))
-			: ZmMsg.apptSendErrorAbort;
+		msg = (invalid && invalid.length) ? AjxMessageFormat.format(ZmMsg.apptSendErrorPartial,
+											AjxStringUtil.htmlEncode(invalid.join(", "))) : ZmMsg.apptSendErrorAbort;
 	}
 	if (msg) {
 		var msgDialog = appCtxt.getMsgDialog();
@@ -399,11 +376,6 @@ function(ev) {
 ZmCalItemComposeController.prototype._cancelListener =
 function(ev) {
 	this._app.popView();
-};
-
-ZmCalItemComposeController.prototype._printListener =
-function() {
-	// overload me.
 };
 
 // Attachment button was pressed

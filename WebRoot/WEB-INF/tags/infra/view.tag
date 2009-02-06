@@ -6,8 +6,6 @@
 <%@ attribute name="voice" rtexprvalue="true" required="false" %>
 <%@ attribute name="calendars" rtexprvalue="true" required="false" %>
 <%@ attribute name="tasks" rtexprvalue="true" required="false" %>
-<%@ attribute name="briefcases" rtexprvalue="true" required="false" %>
-<%@ attribute name="notebook" rtexprvalue="true" required="false" %>
 <%@ attribute name="minical" rtexprvalue="true" required="false" %>
 <%@ attribute name="date" rtexprvalue="true" required="false" type="java.util.Calendar" %>
 <%@ attribute name="editmode" rtexprvalue="true" required="false" %>
@@ -65,7 +63,7 @@
         </td>
 
         <td valign="top" class="TopContent" align="center">
-            <app:appTop mailbox="${mailbox}" keys="${keys}" query="${empty context.query ? param.sq : context.query}" calendars="${calendars}" voice="${voice}" tasks="${tasks}" briefcases="${briefcases}"/>
+            <app:appTop mailbox="${mailbox}" keys="${keys}" query="${empty context.query ? param.sq : context.query}" calendars="${calendars}" voice="${voice}" tasks="${tasks}"/>
         </td>
         <td align="right" style="white-space:nowrap;padding-right:0.5em;">
 	        <form action="<fmt:message key='yahooWebSearchURL'/>" method="GET" target="_new">
@@ -91,7 +89,7 @@
 						</td>
 					</tr>
 					<tr><td style="background-color: white;" valign="top">
-						<app:overviewTree mailbox="${mailbox}" keys="${keys}" minical="${minical}" calendars="${calendars}" contacts="${contacts}" notebook="${notebook}" voice="${voice}" tasks="${tasks}" briefcases="${briefcases}" tags="${tags}" searches="${searches}" folders="${folders}" editmode="${editmode}" date="${date}"/>
+						<app:overviewTree mailbox="${mailbox}" keys="${keys}" minical="${minical}" calendars="${calendars}" contacts="${contacts}" voice="${voice}" tasks="${tasks}"  tags="${tags}" searches="${searches}" folders="${folders}" editmode="${editmode}" date="${date}"/>
 						</td>
 					</tr>
 					</table>
@@ -147,7 +145,7 @@
 			<table width=99% cellspacing=0 cellpadding=0 align="center">
 				<tr>
 					<td class='R1Text'>hi,</td>
-					<td><div id='skin_container_username' class='R1Text'><nobr><b>${fn:escapeXml(mailbox.name)}</b></nobr></div></td>
+					<td><div id='skin_container_username' class='R1Text'><nobr><b>${fn:escapeXml(empty mailbox.accountInfo.name ? mailbox.name : mailbox.accountInfo.name)}</b></nobr></div></td>
 					<td id='#skin_container_logoff_lite' class='R1Link'><nobr><a href="<c:url value="/?loginOp=logout"/>"><fmt:message key="logOut" /></a></nobr></td>
 					<td class='R1Sep'>|</td>
 					<td class='R1Link'><nobr><a href="https://acctmgt.bbt1.cistest.att.net:9003/Comcast/AcctMgt/acctmgt.cmd?CM.src=top" target=_new >My Account</a></nobr></td>
@@ -188,8 +186,8 @@
 						<td id='skin_container_app_name'></td>
 						<td width='100%'>&nbsp;</td>
                         <td id='skin_td_search' align='right'>
-                            <!-- search box -->
-                            <app:appTop mailbox="${mailbox}" keys="${keys}" query="${empty context.query ? param.sq : context.query}" web="${mailbox.features.webSearchEnabled}" calendars="${calendars}" tasks="${tasks}" voice="${voice}" briefcases="${briefcases}"/>
+                            <!-- search box -->				
+                            <app:appTop mailbox="${mailbox}" keys="${keys}" query="${empty context.query ? param.sq : context.query}" web="${mailbox.features.webSearchEnabled}" calendars="${calendars}" tasks="${tasks}" voice="${voice}" />					
 						</td>
                     </tr>
 					</table>
@@ -314,7 +312,7 @@
 							<td height='100%' id='skin_td_tree' colspan=3 valign='top'>
 								<div id='skin_container_tree' class='skin_container'>
 								<c:if test="${empty editmode}">
-								<app:overviewTree mailbox="${mailbox}" keys="${keys}" minical="${minical}" calendars="${calendars}" contacts="${contacts}" tasks="${tasks}" voice = "${voice}" notebook="${notebook}" briefcases="${briefcases}" tags="${tags}" searches="${searches}" folders="${folders}" editmode="${editmode}" date="${date}"/>
+								<app:overviewTree mailbox="${mailbox}" keys="${keys}" minical="${minical}" calendars="${calendars}" contacts="${contacts}" tasks="${tasks}" voice = "${voice}" tags="${tags}" searches="${searches}" folders="${folders}" editmode="${editmode}" date="${date}"/>
 								</c:if>
 								</div>
 							</td>
@@ -377,7 +375,7 @@
 		              frameborder="0"
 		              style="border:none;"
 		              scrolling="no" align="center"></iframe>
-                    <fmt:message key="advertisement" />
+				     <fmt:message key="advertisement" />
 				</td>
 			</c:if>
 	
@@ -395,7 +393,7 @@
 							<td><a href="http://www.comcast.net/terms/" target="_new">Terms of Service</a></td>
 							<td><a href="http://www.comcast.net/help/contact" target="_new">Contact Us</a></td>
 							<td><a href="http://www.comcast.com/shop/buyflow/default.ashx" target="_new">Add Comcast Services</a></td>
-							<td><a href="http://www.comcastsupport.com/sdcxuser/lachat/user/webmailfeedback.asp" target="_new">Tell Us What You Think</a></td>
+							<td><a href="http://www.comcastsupport.com/forms/net/sccfeedback.asp" target="_new">Tell Us What You Think</a></td>
 							<td width=1 align=right><a href="http://www.comcast.net/"><div class='ImgSkin_Customer_Logo_Bottom'></div></a></td>
 						</tr>
 					</table>
@@ -409,108 +407,6 @@
     }
     </script>
     </c:when>
-    
-    
-<c:when test="${skin eq 'zmail'}">
-	<table cellpadding="0" cellspacing="0" border="0" style="border-bottom: 1px solid #C9D7F1;">
-		<tr>
-		<td id='skin_container_app_chooser_lite'>
-				<app:appTabs context="${context}" mailbox="${mailbox}" keys="${keys}" selected='${selected}'/>
-			</td>
-			<td width="90%"></td>
-			<td nowrap="nowrap" class="Tab">
-			<b>${fn:escapeXml(empty mailbox.defaultIdentity.fromDisplay ? mailbox.name : mailbox.defaultIdentity.fromDisplay)}</b> |
-			</td>
-			<td nowrap="nowrap" class="Tab">	<a href='<c:url value="/?client=advanced"/>'><fmt:message key="switchToAdvancedClient" /></a>  |
-			</td>
-			<c:if test="${mailbox.attrs.zimbraIsDomainAdminAccount[0] eq 'TRUE' and not empty adminReference }">
-							<td align="left" nowrap="nowrap" class="Tab">
-								<a target="_new" href="${adminReference}"><fmt:message key="adminLinkLabel"/></a> |
-							</td>
-						</c:if>
-						<td align="right" nowrap="nowrap" class="Tab">
-							<a target="_new" href="<c:url value="${helpUrl}"><c:param name='locid'><fmt:getLocale /></c:param></c:url>"><fmt:message key="help"/></a> |
-						</td>
-						
-						<td align="right" nowrap="nowrap" class="Tab">
-							<a href="<c:url value="/?loginOp=logout"/>"><fmt:message key="logOut"/></a>
-						</td>
-			</tr>
-			</table>
-	<table cellpadding="0" cellspacing="0" border="0">
-	
-		<tr>
-			<td valign="top" align="center" class="Overview">
-             <c:choose>
-                <c:when test="${not empty logoUrl}">
-                    <a href="${logoUrl}" target="_new"> <span style='cursor:pointer; display: block;' class='ImgAppBanner'></span> </a>
-                </c:when>
-                <c:otherwise>
-                    <span style='display: block;' class='ImgAppBanner'></span>
-                </c:otherwise>
-            </c:choose>
-			</td>
-			<td valign="middle" class="TopContent" width="90%">
-                <table cellpadding="0" cellspacing="0" width="50%">
-                    <tr>
-                        <td>
-                            <app:appTop mailbox="${mailbox}" keys="${keys}" query="${empty context.query ? param.sq : context.query}" calendars="${calendars}" voice="${voice}" tasks="${tasks}" briefcases="${briefcases}"/>
-                        </td>
-						
-                    </tr>
-                </table>
-			</td>
-			<td align="center" style="padding-right:5px;">	
-			</td>
-		</tr>
-		</table>
-	    <table width="100%" cellpadding="0" cellspacing="0" height="27">
-		
-		<tr>
-			<td class="Overview">
-			
-			</td>
-			<td align="center" colspan="3">
-				<app:appStatus/>
-			</td>
-		</tr>
-		</table>
-		<table cellpadding="0" cellspacing="0" border="0" width="100%">
-		
-		<tr>
-			<c:if test="${empty editmode}">
-				<td valign="top" class="Overview">
-					<app:overviewTree mailbox="${mailbox}" keys="${keys}" minical="${minical}" calendars="${calendars}" contacts="${contacts}" voice="${voice}" tasks="${tasks}" notebook="${notebook}" briefcases="${briefcases}" tags="${tags}" searches="${searches}" folders="${folders}" editmode="${editmode}" date="${date}"/>
-				</td>
-			</c:if>
-			<c:set var="adsOn" value="${!empty ads}"/>
-	<c:if test="${adsOn}" >
-			<td valign="top" colspan="3">
-				<table width="100%" cellpadding="0" cellspacing="0">
-					<tr>
-	</c:if>
-			<td valign="top" colspan="${empty editmode ? 3 : 4}" style="padding-left:${editmode ? 10 : 0}px;border: 7px solid #C3D9FF;-moz-border-radius: 4px;">
-			<jsp:doBody/>
-		</td>
-		<c:if test="${adsOn}" >
-							<td valign="top" style="border-top: 1px solid #98adbe; width: 180px;">
-							   <app:ads content="${ads}"/>
-							</td>
-	
-						</tr>
-					</table>
-				</td>
-		</c:if>
-		<td style="width:6px;">
-			&nbsp; <%-- for IE's scrollbar, this should be CSS browser-specific --%>
-		</td>
-	</tr>
-	<tr>
-	 <td colspan="4">&nbsp;</td>
-	</tr>
-	</table>
-	
- </c:when>
 <c:otherwise>
 	<table width="100%" cellpadding="0" cellspacing="0">
 		<tr>
@@ -519,7 +415,7 @@
 	
 		<tr>
 			<td valign="top" align="center" class="Overview">
-             <c:choose>
+            <c:choose>
                 <c:when test="${not empty logoUrl}">
                     <a href="${logoUrl}" target="_new"> <span style='cursor:pointer; display: block;' class='ImgAppBanner'></span> </a>
                 </c:when>
@@ -532,7 +428,7 @@
                 <table cellpadding="0" cellspacing="0" width="100%">
                     <tr>
                         <td width="66%">
-                            <app:appTop mailbox="${mailbox}" keys="${keys}" query="${empty context.query ? param.sq : context.query}" calendars="${calendars}" voice="${voice}" tasks="${tasks}" briefcases="${briefcases}"/>
+                            <app:appTop mailbox="${mailbox}" keys="${keys}" query="${empty context.query ? param.sq : context.query}" calendars="${calendars}" voice="${voice}" tasks="${tasks}" />
                         </td>
 						<c:if test="${mailbox.features.webSearchEnabled}">
                             <td>
@@ -609,7 +505,7 @@
 		<tr>
 			<c:if test="${empty editmode}">
 				<td valign="top" class="Overview">
-					<app:overviewTree mailbox="${mailbox}" keys="${keys}" minical="${minical}" calendars="${calendars}" contacts="${contacts}" voice="${voice}" tasks="${tasks}" notebook="${notebook}" briefcases="${briefcases}" tags="${tags}" searches="${searches}" folders="${folders}" editmode="${editmode}" date="${date}"/>
+					<app:overviewTree mailbox="${mailbox}" keys="${keys}" minical="${minical}" calendars="${calendars}" contacts="${contacts}" voice="${voice}" tasks="${tasks}" tags="${tags}" searches="${searches}" folders="${folders}" editmode="${editmode}" date="${date}"/>
 				</td>
 			</c:if>
 			<c:set var="adsOn" value="${!empty ads}"/>

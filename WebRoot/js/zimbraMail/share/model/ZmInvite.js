@@ -559,4 +559,3 @@ function() {
 	
 	return false;
 };
-

@@ -51,7 +51,7 @@ function(contact, isDirty) {
 	var elements = new Object();
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
 	elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[this._currentView];
-	this._setView({view:this._currentView, elements:elements, isTransient:true});
+	this._setView(this._currentView, elements, false, false, false, true);
 };
 
 ZmContactController.prototype.getKeyMapName =
@@ -118,7 +118,7 @@ ZmContactController.prototype._getViewType =
 function() {
 	if (this._contact.isGroup()) {
 		return ZmId.VIEW_GROUP; 
-	} else if (this._contact.isMyCard) {
+	} else if (this._contact.isMyCard && this._contact.isMyCard()) {
 		return ZmId.VIEW_MY_CARD;
 	} else {
 		return ZmId.VIEW_CONTACT;
@@ -154,11 +154,6 @@ function(view) {
 	} else {
 		cancelButton.setText(ZmMsg.close);
 		cancelButton.setImage("Close");
-	}
-
-	var printButton = this._toolbar[view].getButton(ZmOperation.PRINT);
-	if (printButton) {
-		printButton.setText(ZmMsg.print);
 	}
 };
 
@@ -226,7 +221,7 @@ function(parent, num) {
 		ZmListController.prototype._resetOperations.call(this, parent, num);
 	}
 
-	if (this._contact.isMyCard) {
+	if (this._contact.isMyCard()) {
 		parent.enable([ZmOperation.DELETE], false);
 	}
 };
@@ -275,7 +270,7 @@ function(ev, bIsPopCallback) {
 		else
 		{
 			if (contact.id && !contact.isGal) {
-				if (view.isEmpty() && !contact.isMyCard) { //If contact empty, alert the user
+				if (view.isEmpty() && !contact.isMyCard()) { //If contact empty, alert the user
                     var ed = appCtxt.getMsgDialog();
                     ed.setMessage(ZmMsg.emptyContactSave, DwtMessageDialog.CRITICAL_STYLE);
                     ed.popup();
@@ -288,9 +283,7 @@ function(ev, bIsPopCallback) {
                     }
                 }
 			} else {
-				var clc = AjxDispatcher.run("GetContactListController");
-				var list = (clc && clc.getList()) || new ZmContactList(null);
-				this._doCreate(list, mods);
+				this._doCreate(AjxDispatcher.run("GetContacts"), mods);
 			}
 		}
 	} else {
@@ -318,12 +311,6 @@ function(ev, bIsPopCallback) {
 ZmContactController.prototype._cancelListener = 
 function(ev) {
 	this._app.popView();
-};
-
-ZmContactController.prototype._printListener =
-function(ev) {
-	var url = "/h/printcontacts?id=" + this._contact.id;
-	window.open(appContextPath+url, "_blank");
 };
 
 ZmContactController.prototype._doDelete = 

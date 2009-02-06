@@ -239,7 +239,7 @@ function() {
 			childWin.win.close();
 		}
 	}
-	window._zimbraMail = window.onload = window.onunload = window.onresize = window.document.onkeypress = null;
+	window._zimbraMail = window.onload = window.onresize = window.document.onkeypress = null;
 };
 
 /**
@@ -312,6 +312,9 @@ function(params) {
 		if (appCtxt.isOffline) {
 			this._components[ZmAppViewMgr.C_OFFLINE_STATUS] = this.offlineStatusField = this._createOfflineStatus();
 		}
+		var currentAppToolbar = new ZmCurrentAppToolBar(this._shell, ZmId.CURRENT_APP_TOOLBAR);
+		appCtxt.setCurrentAppToolbar(currentAppToolbar);
+		this._components[ZmAppViewMgr.C_CURRENT_APP] = currentAppToolbar;
 		this._components[ZmAppViewMgr.C_STATUS] = this.statusView =
 			new ZmStatusView(this._shell, "ZmStatus", Dwt.ABSOLUTE_STYLE, ZmId.STATUS_VIEW);
 	}
@@ -341,8 +344,8 @@ function(params) {
 			girJSON.Body = {};
 			girJSON.Body.GetInfoResponse = br.GetInfoResponse[0];
 			girJSON.Header = params.batchInfoResponse.Header;
-			if (girJSON.Header && girJSON.Header.context && girJSON.Header.context.session) {
-				ZmCsfeCommand.setSessionId(girJSON.Header.context.session);
+			if (girJSON.Header && girJSON.Header.context && girJSON.Header.context.sessionId) {
+				ZmCsfeCommand.setSessionId(girJSON.Header.context.sessionId);
 			}
 			DBG.println(AjxDebug.DBG1, ["<H4> RESPONSE (from JSP tag)</H4>"].join(""), "GetInfoResponse");
 			DBG.dumpObj(AjxDebug.DBG1, girJSON, -1);
@@ -467,19 +470,19 @@ function(params, result) {
 
 	// Set up post-render callbacks
 
+	// focus the content pane - we want this to happen soon, give it priority 1
+	var callback = new AjxCallback(this,
+		function() {
+			this.focusContentPane();
+		});
+	this.addPostRenderCallback(callback, 1, 100);
+
 	// run app-related startup functions
 	callback = new AjxCallback(this,
 		function() {
 			this.runAppFunction("startup", false, params.result);
 		});
-	this.addPostRenderCallback(callback, 2, 100, true);
-
-	callback = new AjxCallback(this,
-		function() {
-			this._setupTabGroups();
-			this.focusContentPane();
-		});
-	this.addPostRenderCallback(callback, 3, 100);
+	this.addPostRenderCallback(callback, 3, 100, true);
 
 	// miscellaneous post-startup housekeeping
 	callback = new AjxCallback(this,
@@ -493,7 +496,7 @@ function(params, result) {
 				appCtxt.getSearchController().resetSearchToolbar();
 			}
 		});
-	this.addPostRenderCallback(callback, 5, 100);
+	this.addPostRenderCallback(callback, 6, 100);
 
 	this.activateApp(params.startApp, false, respCallback, this._errorCallback, params);
 
@@ -1117,36 +1120,25 @@ function() {
 		kbMgr.enable(true);
 		kbMgr.registerKeyMap(new ZmKeyMap());
 		kbMgr.pushDefaultHandler(this);
+
+		DBG.println(AjxDebug.DBG2, "SETTING SEARCH CONTROLLER TAB GROUP");
+		var rootTg = appCtxt.getRootTabGroup();
+		if (appCtxt.get(ZmSetting.SEARCH_ENABLED)) {
+			rootTg.addMember(appCtxt.getSearchController().getTabGroup());
+		}
+		var appChooserTg = new DwtTabGroup("ZmAppChooser");
+		appChooserTg.addMember(this._components[ZmAppViewMgr.C_APP_CHOOSER]);
+		rootTg.addMember(appChooserTg);
+
+		// Add dummy app view tab group. This will get replaced right away when the
+		// app view comes into play
+		var dummyTg = new DwtTabGroup("DUMMY APPVIEW");
+		ZmController._setCurrentAppViewTabGroup(dummyTg);
+		rootTg.addMember(dummyTg);
+		kbMgr.setTabGroup(rootTg);
 	} else {
 		kbMgr.enable(false);
 	}
-};
-
-ZmZimbraMail.prototype._setupTabGroups =
-function() {
-	DBG.println(AjxDebug.DBG2, "SETTING SEARCH CONTROLLER TAB GROUP");
-	var rootTg = appCtxt.getRootTabGroup();
-	if (appCtxt.get(ZmSetting.SEARCH_ENABLED)) {
-		rootTg.addMember(appCtxt.getSearchController().getTabGroup());
-	}
-//	var appChooserTg = new DwtTabGroup("ZmAppChooser");
-//	appChooserTg.addMember(this._components[ZmAppViewMgr.C_APP_CHOOSER]);
-//	rootTg.addMember(appChooserTg);
-	this._components[ZmAppViewMgr.C_APP_CHOOSER].noFocus = true;
-
-	var curApp = appCtxt.getCurrentApp();
-	var ovId = curApp && curApp.getOverviewId();
-	var overview = ovId && appCtxt.getOverviewController().getOverview(ovId);
-	if (overview) {
-		rootTg.addMember(overview);
-	}
-	
-	// Add dummy app view tab group. This will get replaced right away when the
-	// app view comes into play
-	var dummyTg = new DwtTabGroup("DUMMY APPVIEW");
-	ZmController._setCurrentAppViewTabGroup(dummyTg);
-	rootTg.addMember(dummyTg);
-	appCtxt.getKeyboardMgr().setTabGroup(rootTg);
 };
 
 ZmZimbraMail.prototype._registerOrganizers =
@@ -1165,8 +1157,7 @@ function() {
 							 createFunc:		"ZmSearchFolder.create",
 							 compareFunc:		"ZmFolder.sortCompare",
 							 shortcutKey:		"S",
-							 openSetting:		ZmSetting.SEARCH_TREE_OPEN,
-							 displayOrder:		300
+							 openSetting:		ZmSetting.SEARCH_TREE_OPEN
 							});
 
 	ZmOrganizer.registerOrg(ZmOrganizer.TAG,
@@ -1184,20 +1175,17 @@ function() {
 							 createFunc:		"ZmTag.create",
 							 compareFunc:		"ZmTag.sortCompare",
 							 shortcutKey:		"T",
-							 newOp:				ZmOperation.NEW_TAG,
-							 openSetting:		ZmSetting.TAG_TREE_OPEN,
-							 displayOrder:		400
+							 openSetting:		ZmSetting.TAG_TREE_OPEN
 							});
 
-	ZmOrganizer.registerOrg(ZmOrganizer.ZIMLET,
-							{orgClass:			"ZmZimlet",
-							 treeController:	"ZmZimletTreeController",
-							 labelKey:			"zimlets",
-							 compareFunc:		"ZmZimlet.sortCompare",
-							 openSetting:		ZmSetting.ZIMLET_TREE_OPEN,
-							 hideEmpty:			true
+	ZmOrganizer.registerOrg(ZmOrganizer.ROSTER_TREE_ITEM,
+							{app:				ZmApp.IM,
+							 precondition:		ZmSetting.IM_ENABLED,
+							 defaultFolder:		ZmOrganizer.ID_ROSTER_LIST,
+							 orgPackage:		"IMCore",
+							 treeController:	"ZmRosterTreeController",
+							 deferrable:		false
 							});
-	
 	// Technically, we don't need to do this because the drop listeners for dragged organizers typically do their
 	// own checks on the class of the dragged object. But it's better to do it anyway, in case it ever gets
 	// validated within the drop target against the valid types.
@@ -1322,7 +1310,11 @@ function(appName, view) {
 	// app not actually enabled if this is result of upsell view push
 	var appEnabled = appCtxt.get(ZmApp.SETTING[appName]);
 
-	this._activeTabId = null;	// app is active; tab IDs are for non-apps
+	// update current app toolbar
+	var toolbar = appEnabled ? appCtxt.getCurrentAppToolbar() : null;
+	if (toolbar) {
+		toolbar.setupView(appName);
+	}
 
 	if (this._activeApp != appName) {
 		// deactivate previous app
@@ -1360,7 +1352,7 @@ function(appName, view) {
 						function() {
 							app.activate(true);
 						});
-					this.addPostRenderCallback(callback, 1, 100, true);
+					this.addPostRenderCallback(callback, 2, 100, true);
 				} else {
 					app.activate(true);
 				}
@@ -1391,12 +1383,6 @@ function(appName) {
 	}
 };
 
-ZmZimbraMail.prototype.addApp = function(app) {
-	var appName = app.getName();
-	this._apps[appName] = app;
-	ZmApp.ENABLED_APPS[appName] = true;
-};
-
 // Private methods
 
 // Creates an app object, which doesn't necessarily do anything just yet.
@@ -1405,7 +1391,7 @@ function(appName) {
 	if (!appName || this._apps[appName]) return;
 	DBG.println(AjxDebug.DBG1, "Creating app " + appName);
 	var appClass = eval(ZmApp.CLASS[appName]);
-	this.addApp(new appClass(this._shell));
+	this._apps[appName] = new appClass(this._shell);
 };
 
 ZmZimbraMail.prototype._setExternalLinks =
@@ -1415,8 +1401,8 @@ function() {
 		var data = {
 			showStandardLink: (!appCtxt.multiAccounts && !appCtxt.isOffline),
 			showOfflineLink: (!appCtxt.isOffline),
-			helpIcon: (appCtxt.getSkinHint("helpButton", "hideIcon") ? null : "Help"),
-			logoutIcon: (appCtxt.getSkinHint("logoutButton", "hideIcon") ? null : "Logoff"),
+			helpIcon: (appCtxt.get(ZmSetting.SKIN_HINTS, "helpButton.hideIcon") ? null : "Help"),
+			logoutIcon: (appCtxt.get(ZmSetting.SKIN_HINTS, "logoutButton.hideIcon") ? null : "Logoff"),
 			logoutText: (appCtxt.isOffline ? ZmMsg.setup : ZmMsg.logOff)
 		};
 		el.innerHTML = AjxTemplate.expand("share.App#UserInfo", data);
@@ -1587,13 +1573,14 @@ function(bStartTimer) {
 
 ZmZimbraMail.prototype.addChildWindow =
 function(childWin) {
-	if (this._childWinList == null) {
+	if (this._childWinList == null)
 		this._childWinList = new AjxVector();
-	}
 
 	// NOTE: we now save childWin w/in Object so other params can be added to it.
 	// Otherwise, Safari breaks (see http://bugs.webkit.org/show_bug.cgi?id=7162)
-	var newWinObj = {win:childWin};
+	var newWinObj = new Object();
+	newWinObj.win = childWin;
+
 	this._childWinList.add(newWinObj);
 
 	return newWinObj;
@@ -1686,7 +1673,7 @@ function(ev) {
 ZmZimbraMail.prototype._createBanner =
 function() {
 	var banner = new DwtComposite({parent:this._shell, posStyle:Dwt.ABSOLUTE_STYLE, id:ZmId.BANNER});
-	var logoUrl = appCtxt.getSkinHint("banner", "url") || appCtxt.get(ZmSetting.LOGO_URI);
+	var logoUrl = appCtxt.get(ZmSetting.SKIN_HINTS, "banner.url") || appCtxt.get(ZmSetting.LOGO_URI);
 	var data = {url:logoUrl};
 	banner.getHtmlElement().innerHTML  = AjxTemplate.expand('share.App#Banner', data);
 	return banner;
@@ -1694,7 +1681,7 @@ function() {
 
 ZmZimbraMail.prototype._createUserInfo =
 function(className, cid, id) {
-	var position = appCtxt.getSkinHint(cid, "position");
+	var position = appCtxt.get(ZmSetting.SKIN_HINTS, [cid, "position"].join("."));
 	var posStyle = position || Dwt.ABSOLUTE_STYLE;
 	var ui = new DwtComposite({parent:this._shell, className:className, posStyle:posStyle, id:id});
 	if (AjxEnv.isIE) {
@@ -1750,7 +1737,12 @@ function() {
 	var appChooser = new ZmAppChooser(this._shell, null, buttons, ZmId.APP_CHOOSER);
 
 	var buttonListener = new AjxListener(this, this._appButtonListener);
-	appChooser.addSelectionListener(buttonListener);
+	for (var i = 0; i < buttons.length; i++) {
+		var id = buttons[i];
+		if (id == ZmAppChooser.SPACER) continue;
+		var b = appChooser.getButton(id);
+		b.addSelectionListener(buttonListener);
+	}
 
 	return appChooser;
 };
@@ -1764,10 +1756,8 @@ function(ev) {
 			window.open(appCtxt.get(ZmSetting.HELP_URI));
 		} else if (id == ZmAppChooser.B_LOGOUT) {
 			ZmZimbraMail.conditionalLogOff();
-		} else if (id && ZmApp.ENABLED_APPS[id] && (id != this._activeTabId)) {
+		} else if (id) {
 			this.activateApp(id);
-		} else if (id != this._activeTabId) {
-			this._appViewMgr.pushView(id, false, true);
 		}
 	} catch (ex) {
 		this._handleException(ex);
@@ -1777,12 +1767,6 @@ function(ev) {
 ZmZimbraMail.prototype.getAppChooser =
 function() {
 	return this._appChooser;
-};
-
-ZmZimbraMail.prototype.setActiveTabId =
-function(id) {
-	this._activeTabId = id;
-	this._appChooser.setSelected(id);
 };
 
 /**
@@ -1810,8 +1794,6 @@ function() {
 
 ZmZimbraMail.prototype.handleKeyAction =
 function(actionCode, ev) {
-
-	DwtMenu.closeActiveMenu();
 
 	var app = ZmApp.GOTO_ACTION_CODE_R[actionCode];
 	if (app) {
@@ -1893,93 +1875,7 @@ function(actionCode, ev) {
 			break;
 		}
 
-		case ZmKeyMap.FOCUS_TOOLBAR: {
-			this.focusToolbar();
-			break;
-		}
-
-		case ZmKeyMap.GOTO_PREV_ACCT:
-		case ZmKeyMap.GOTO_NEXT_ACCT: {
-			var active = (appCtxt.numVisibleAccounts > 1) ? appCtxt.getActiveAccount() : null;
-			if (active) {
-				var index = (actionCode == ZmKeyMap.GOTO_PREV_ACCT)
-					? ((active.itemId > 0) ? (active.itemId-1) : null)
-					: ((active.itemId < (appCtxt.numVisibleAccounts-1)) ? (active.itemId+1) : null);
-				this._switchToAccount(index);
-			}
-			break;
-		}
-
-		case ZmKeyMap.SHORTCUTS: {
-
-			var panel = appCtxt.getShortcutsPanel();
-			var curMap = this.getKeyMapName();
-			var km = appCtxt.getAppController().getKeyMapMgr();
-			var maps = km.getAncestors(curMap);
-			var inherits = (maps && maps.length > 0);
-			maps.unshift(curMap);
-			var maps1 = [], maps2 = [];
-			if (inherits) {
-				if (maps.length > 1 && maps[maps.length - 1] == "Global") {
-					maps.pop();
-					maps2.push("global");
-				}
-			}
-			for (var i = 0; i < maps.length; i++) {
-				maps1.push(ZmKeyMap.MAP_NAME_R[maps[i]] || DwtKeyMap.MAP_NAME_R[maps[i]]);
-			}
-
-			maps1.push(ZmKeyMap.MAP_CUSTOM);
-			var col1 = {}, col2 = {};
-			col1.type = ZmShortcutList.TYPE_APP;
-			col1.maps = maps1;
-			var colList = [col1];
-			if (maps2.length) {
-				col2.type = ZmShortcutList.TYPE_APP;
-				col2.maps = maps2;
-				colList.push(col2);
-			}
-			var col3 = {};
-			col3.type = ZmShortcutList.TYPE_SYS;
-			col3.maps = [];
-			var ctlr = appCtxt.getCurrentController();
-			var testMaps = ["list", "editor", "tabView"];
-			for (var i = 0; i < testMaps.length; i++) {
-				if (ctlr.mapSupported(testMaps[i])) {
-					col3.maps.push(testMaps[i]);
-				}
-			}
-			col3.maps.push("button", "menu", "tree", "dialog", "toolbarHorizontal");
-			colList.push(col3);
-			panel.popup(colList);
-			break;
-		}
-
-		// this action needs to be last
-		case ZmKeyMap.CANCEL: {
-			// see if there's a current drag operation we can cancel
-			var handled = false;
-			var captureObj = (DwtMouseEventCapture.getId() == "DwtControl") ? DwtMouseEventCapture.getCaptureObj() : null;
-			var obj = captureObj && captureObj.targetObj;
-			if (obj && (obj._dragging == DwtControl._DRAGGING)) {
-				captureObj.release();
-				obj.__lastDestDwtObj = null;
-				obj._setDragProxyState(false);					// turn dnd icon red so user knows no drop is happening
-				DwtControl.__badDrop(obj, DwtShell.mouseEvent);	// shell's mouse ev should have latest info
-				handled = true;
-			}
-			if (handled) { break; }
-		}
-
 		default: {
-			if (appCtxt.numVisibleAccounts > 1) {
-				// Handle action code like "GoToAcct3"
-				var m = actionCode.match(ZmKeyMap.GOTO_ACCT_RE);
-				if (m && m.length) {
-					this._switchToAccount(m[1]-1);
-					return true;
-				}
-			}
 			var ctlr = appCtxt.getCurrentController();
 			return (ctlr && ctlr.handleKeyAction)
 				? ctlr.handleKeyAction(actionCode, ev)
@@ -1998,36 +1894,6 @@ function() {
 	var content = ctlr ? ctlr.getCurrentView() : null;
 	if (content) {
 		appCtxt.getKeyboardMgr().grabFocus(content);
-	}
-};
-
-ZmZimbraMail.prototype.focusToolbar =
-function() {
-	// Set focus to the toolbar that's in the content pane.
-	var ctlr = appCtxt.getCurrentController();
-	var toolbar = ctlr ? ctlr.getCurrentToolbar() : null;
-	if (toolbar) {
-		appCtxt.getKeyboardMgr().grabFocus(toolbar);
-	}
-};
-
-ZmZimbraMail.prototype._switchToAccount =
-function(index) {
-	var app = appCtxt.getCurrentApp();
-	var item = app.getOverviewPanelContent().getItemByIndex(index);;
-	if (item) {
-		var account = item.data.account;
-		var callback = new AjxCallback(this, this._handleSwitchToAccount, account);
-		app.expandAccordionForAccount(account, true, callback);
-	}
-};
-
-ZmZimbraMail.prototype._handleSwitchToAccount =
-function(account) {
-	var item = ZmAppAccordionController.getInstance().getAccordionItem(account);
-	var accordion = item ? item.accordion : null;
-	if (accordion) {
-		accordion.notifySelectionListeners(item);
 	}
 };
 
@@ -2052,7 +1918,7 @@ function(appName) {
 	var elements = {};
 	elements[ZmAppViewMgr.C_APP_CONTENT_FULL] = upsellView;
 	var viewName = [appName, "upsell"].join("_");
-	this._appViewMgr.createView({viewId:viewName, appName:appName, elements:elements, isTransient:true});
+	this._appViewMgr.createView(viewName, appName, elements, null, true);
 	this._appViewMgr.pushView(viewName);
 };
 
@@ -2070,7 +1936,6 @@ function() {
 	window.AjxDebug.prototype.setDebugLevel	= function() {};
 	window.AjxDebug.prototype.setTitle		= function() {};
 	window.AjxDebug.prototype.showTiming	= function() {};
-	window.AjxDebug.prototype._getTimeStamp	= function() {};
 	window.AjxDebug.prototype.timePt		= function() {};
 	window.DBG = new window.AjxDebug();
 };
@@ -2083,12 +1948,16 @@ function() {
 ZmZimbraMail.prototype._postLoadZimlet =
 function() {
 	appCtxt.setZimletsPresent(true);
-
-	// If the app overview has been created, show the zimlets tree.
-	var accordionController = ZmAppAccordionController.getInstance();
-	var accordion = accordionController.getAccordion(true);
-	if (accordion) {
-		accordionController.getCurrentOverview().setTreeVisible(ZmOrganizer.ZIMLET, true);
+	ZmOrganizer.registerOrg(ZmOrganizer.ZIMLET,
+							{orgClass:			"ZmZimlet",
+							 treeController:	"ZmZimletTreeController",
+							 labelKey:			"zimlets",
+							 compareFunc:		"ZmZimlet.sortCompare",
+							 openSetting:		ZmSetting.ZIMLET_TREE_OPEN
+							});
+	for (var app in ZmApp.SHOW_ZIMLETS) {
+		var trees = ZmApp.OVERVIEW_TREES[app] || [];
+		trees.push(ZmOrganizer.ZIMLET);
 	}
 };
 
@@ -2114,4 +1983,4 @@ function() {
 };
 
 // YUCK:
-ZmOrganizer.ZIMLET = "ZIMLET";
+ZmOrganizer.ZIMLET = "Zimlet";
