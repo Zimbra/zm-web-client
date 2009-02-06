@@ -1167,7 +1167,7 @@
 		<$ for (var i = 0; i < data.size; i++) { $>
 			<tr>
 				<td valign=top style='font-family:Arial; font-size:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;'>
-					<$= data.members[i].toString() $>
+					<$= AjxStringUtil.htmlEncode(data.members[i].toString()) $>
 				</td>
 			</tr>
 		<$ } $>
