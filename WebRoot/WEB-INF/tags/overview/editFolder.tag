@@ -139,7 +139,7 @@
                                 </c:if>
                                 <c:if test="${folder.size gt 0 and not folder.isContactView}">
                                 &nbsp;
-                                ${fn:escapeXml(zm:displaySizeFractions(folder.size, 2))}
+                                ${fn:escapeXml(zm:displaySizeFractions(pageContext, folder.size, 2))}
                                 </c:if>
                             </span>
                         </c:when>

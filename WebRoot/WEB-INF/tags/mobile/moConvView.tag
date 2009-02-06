@@ -133,7 +133,7 @@
                    <c:if test="${mhit.hasAttachment}">
                             <span class="SmlIcnHldr Attachment">&nbsp;</span>
                         </c:if>
-                   <span class="small-gray-text">(${fn:escapeXml(zm:displaySize(mhit.size))})</span>
+                   <span class="small-gray-text">(${fn:escapeXml(zm:displaySize(pageContext, mhit.size))})</span>
                </span>
            </div>
 </c:forEach>

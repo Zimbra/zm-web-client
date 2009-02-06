@@ -65,7 +65,7 @@
                     <fmt:parseDate var="mdate" value="${on_dt}" pattern="yyyyMMdd" timeZone="${mailbox.prefs.timeZone}"/>
                     ${fn:escapeXml(zm:displayMsgDate(pageContext, mdate))}
                 </a><br/>
-                <span class='small-gray-text'>(${fn:escapeXml(zm:displaySize(bchit.document.size))})</span>
+                <span class='small-gray-text'>(${fn:escapeXml(zm:displaySize(pageContext, bchit.document.size))})</span>
             </span>
         </div>
     </c:forEach>

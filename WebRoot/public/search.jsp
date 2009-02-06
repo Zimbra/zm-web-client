@@ -263,7 +263,7 @@
                                         </c:if>
                                     </c:if>
                                 </td>
-                                <td nowrap>${fn:escapeXml(zm:displaySize(hit.messageHit.size))}</td>
+                                <td nowrap>${fn:escapeXml(zm:displaySize(pageContext, hit.messageHit.size))}</td>
                                 <td>${zm:displayMsgDate(pageContext, hit.messageHit.date)}</td>
                             </tr>
                         </c:forEach>

@@ -111,7 +111,7 @@
                                     </td>
                                     <c:set var="ctype" value="${fn:split(briefHit.document.contentType,';')}" />
                                     <td width="15%" nowrap>${ctype[0]}</td>
-                                    <td width="10%">${fn:escapeXml(zm:displaySize(briefHit.document.size))}</td>
+                                    <td width="10%">${fn:escapeXml(zm:displaySize(pageContext, briefHit.document.size))}</td>
                                     <td width="10%" nowrap>
                                         <fmt:formatDate value="${briefHit.modifiedDate}" pattern="M/d/yyyy" timeZone="${mailbox.prefs.timeZone}"/>
                                     </td>

@@ -42,7 +42,7 @@
 </c:if>
 <c:choose>
 <c:when test="${skin eq 'yahoo'}">
-<table width="100%" cellpadding="6" cellspacing='0' border="0"><td>
+<table width="100%" cellpadding="6" cellspacing='0' border="0"><tr><td>
 <table width="100%" cellpadding="0" cellspacing="0" border="0">
     <tr><td colspan="${empty editmode ? 4 : 3}" style="padding-bottom:6px;">
 	    <table width=100% border=0 cellspacing="0" cellpadding="0"><tr>
@@ -63,7 +63,7 @@
 			<a class='skin_yahoo_link' href='<c:url value="/"/>'><fmt:message key="switchToAdvancedClient" /></a>
 			<!--<a class='skin_yahoo_link' target="_new" href="http://www.zimbra.com/products/desktop.html">Offline version</a>-->
         </td>
-        
+
         <td valign="top" class="TopContent" align="center">
             <app:appTop mailbox="${mailbox}" keys="${keys}" query="${empty context.query ? param.sq : context.query}" calendars="${calendars}" voice="${voice}" tasks="${tasks}" briefcases="${briefcases}"/>
         </td>
@@ -178,25 +178,25 @@
 						<td align="left">
 							<c:choose>
 								<c:when test="${mailbox.features.portalEnabled}">
-									 <a href="/h/home" ><div class='ImgAppLogoLite'></div></a>
+									 <a href="/h/home" ><div class='ImgSkin_Chrome_Logo'></div></a>
 								</c:when>
 								<c:otherwise>
-									 <a href="/h/search" ><div class='ImgAppLogoLite'></div></a>
+									 <a href="/h/search" ><div class='ImgSkin_Chrome_Logo'></div></a>
 								</c:otherwise>
 							</c:choose>
 						</td>
 						<td id='skin_container_app_name'></td>
 						<td width='100%'>&nbsp;</td>
                         <td id='skin_td_search' align='right'>
-                            <!-- search box -->				
-                            <app:appTop mailbox="${mailbox}" keys="${keys}" query="${empty context.query ? param.sq : context.query}" web="${mailbox.features.webSearchEnabled}" calendars="${calendars}" tasks="${tasks}" voice="${voice}" briefcases="${briefcases}"/>					
+                            <!-- search box -->
+                            <app:appTop mailbox="${mailbox}" keys="${keys}" query="${empty context.query ? param.sq : context.query}" web="${mailbox.features.webSearchEnabled}" calendars="${calendars}" tasks="${tasks}" voice="${voice}" briefcases="${briefcases}"/>
 						</td>
                     </tr>
 					</table>
 				</td>
 				<td><div class='ImgSkin_Chrome_R2_R'></div></td>
 			</tr>
-	
+
 			<tr id='skin_R3'>
 				<td style="width:8px;"><div class='ImgSkin_Chrome_R3_L'></div></td>
 				<td class='ImgSkin_Chrome_R3'>
@@ -239,14 +239,14 @@
 												</td>
 											</c:when>
 											<c:otherwise>
-												<c:set var="usage" value="${zm:displaySizeFractions(mailbox.size,1)}" />
+												<c:set var="usage" value="${zm:displaySizeFractions(pageContext, mailbox.size,1)}" />
 											</c:otherwise>
 										</c:choose>
 										<td class="BannerTextQuota" style="white-space: nowrap;">
 											<fmt:message var="unlimited" key="unlimited"/>
 											<fmt:message  key="quotaUsage">
 												<fmt:param value="${usage}"/>
-												<fmt:param value="${max == null || max == '' || max==0 ? unlimited : zm:displaySizeFractions(max,1)}"/>
+												<fmt:param value="${max == null || max == '' || max==0 ? unlimited : zm:displaySizeFractions(pageContext, max,1)}"/>
 											</fmt:message>
 										</td>
 									</tr>

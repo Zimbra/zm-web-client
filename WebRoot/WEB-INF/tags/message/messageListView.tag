@@ -130,7 +130,7 @@
                     <c:if test="${!context.isFolderSearch}">
                         <td nowrap>${fn:escapeXml(zm:getFolderName(pageContext, hit.messageHit.folderId))}</td>
                     </c:if>
-                    <td nowrap>${fn:escapeXml(zm:displaySize(hit.messageHit.size))}
+                    <td nowrap>${fn:escapeXml(zm:displaySize(pageContext, hit.messageHit.size))}
                     <td nowrap>${fn:escapeXml(zm:displayMsgDate(pageContext, hit.messageHit.date))}
                 </tr>
             </c:forEach>
