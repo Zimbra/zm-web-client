@@ -102,7 +102,7 @@ ZmApptChooserTabViewPage.SF_LABEL[ZmApptChooserTabViewPage.SF_DESCRIPTION]	= "de
 ZmApptChooserTabViewPage.SF_LABEL[ZmApptChooserTabViewPage.SF_CONTACT]	= "contact";
 ZmApptChooserTabViewPage.SF_LABEL[ZmApptChooserTabViewPage.SF_SITE]		= "site";
 ZmApptChooserTabViewPage.SF_LABEL[ZmApptChooserTabViewPage.SF_BUILDING]	= "building";
-ZmApptChooserTabViewPage.SF_LABEL[ZmApptChooserTabViewPage.SF_FLOOR]	= "floor"
+ZmApptChooserTabViewPage.SF_LABEL[ZmApptChooserTabViewPage.SF_FLOOR]	= "floor";
 
 // corresponding attributes for search command
 ZmApptChooserTabViewPage.SF_ATTR = {};
@@ -200,6 +200,7 @@ function(appt, mode, isDirty) {
 		this._addDwtObjects();
 		this._rendered = true;
 	}
+	this._resetSelectDiv();
 };
 
 ZmApptChooserTabViewPage.prototype.resize =
@@ -407,7 +408,6 @@ function(id, html, i, addButton, addMultLocsCheckbox) {
 
 ZmApptChooserTabViewPage.prototype._addDwtObjects =
 function() {
-
 	// add search button
 	if (this._searchBtnTdId) {
 		var element = document.getElementById(this._searchBtnTdId);
@@ -425,14 +425,7 @@ function() {
 	if (this._listSelectId) {
 		var listSelect = document.getElementById(this._listSelectId);
 		this._selectDiv = new DwtSelect({parent:this});
-		this._selectDiv.addOption(ZmMsg.contacts, false, ZmContactsApp.SEARCHFOR_CONTACTS);
-		if (appCtxt.get(ZmSetting.SHARING_ENABLED))
-			this._selectDiv.addOption(ZmMsg.searchPersonalSharedContacts, false, ZmContactsApp.SEARCHFOR_PAS);
-		if (appCtxt.get(ZmSetting.GAL_ENABLED))
-			this._selectDiv.addOption(ZmMsg.GAL, true, ZmContactsApp.SEARCHFOR_GAL);
-		if (!appCtxt.get(ZmSetting.INITIALLY_SEARCH_GAL) || !appCtxt.get(ZmSetting.GAL_ENABLED)) {
-			this._selectDiv.setSelectedValue(ZmContactsApp.SEARCHFOR_CONTACTS);
-		}
+		this._resetSelectDiv();
 		listSelect.appendChild(this._selectDiv.getHtmlElement());
 		this._selectDiv.addChangeListener(new AjxListener(this, this._searchTypeListener));
 	}
@@ -542,6 +535,19 @@ function() {
 	}
 };
 
+ZmApptChooserTabViewPage.prototype._resetSelectDiv =
+function() {
+	this._selectDiv.clearOptions();
+	this._selectDiv.addOption(ZmMsg.contacts, false, ZmContactsApp.SEARCHFOR_CONTACTS);
+	if (appCtxt.get(ZmSetting.SHARING_ENABLED))
+		this._selectDiv.addOption(ZmMsg.searchPersonalSharedContacts, false, ZmContactsApp.SEARCHFOR_PAS);
+	if (appCtxt.get(ZmSetting.GAL_ENABLED) && appCtxt.getActiveAccount().isZimbraAccount)
+		this._selectDiv.addOption(ZmMsg.GAL, true, ZmContactsApp.SEARCHFOR_GAL);
+	if (!appCtxt.get(ZmSetting.INITIALLY_SEARCH_GAL) || !appCtxt.get(ZmSetting.GAL_ENABLED)) {
+		this._selectDiv.setSelectedValue(ZmContactsApp.SEARCHFOR_CONTACTS);
+	}
+};
+
 /**
 * Performs a contact search (in either personal contacts or in the GAL) and populates
 * the source list view with the results.
@@ -622,7 +628,7 @@ function(result) {
 				list1.push(clone);
 			}
 		} else {
-			list1.push(contact)
+			list1.push(contact);
 		}
 	}
 

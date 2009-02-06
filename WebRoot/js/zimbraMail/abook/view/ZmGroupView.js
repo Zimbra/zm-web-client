@@ -216,6 +216,12 @@ function() {
 
 ZmGroupView.prototype._setFields =
 function() {
+	// bug fix #35059 - always reset search-in select since non-zimbra accounts don't support GAL
+	if (appCtxt.isOffline && appCtxt.numVisibleAccounts > 1 && this._searchInSelect) {
+		this._searchInSelect.clearOptions();
+		this._resetSearchInSelect();
+	}
+
 	this._setGroupName();
 	this._setFolder();
 	this._setGroupMembers();
@@ -277,16 +283,7 @@ function() {
 	var selectCell = document.getElementById(selectId);
 	if (selectCell) {
 		this._searchInSelect = new DwtSelect({parent:this});
-		this._searchInSelect.addOption(ZmMsg.contacts, true, ZmContactsApp.SEARCHFOR_CONTACTS);
-		if (appCtxt.get(ZmSetting.SHARING_ENABLED)) {
-			this._searchInSelect.addOption(ZmMsg.searchPersonalSharedContacts, false, ZmContactsApp.SEARCHFOR_PAS);
-		}
-		if (appCtxt.get(ZmSetting.GAL_ENABLED)) {
-			this._searchInSelect.addOption(ZmMsg.GAL, true, ZmContactsApp.SEARCHFOR_GAL);
-		}
-		if (!appCtxt.get(ZmSetting.INITIALLY_SEARCH_GAL) || !appCtxt.get(ZmSetting.GAL_ENABLED)) {
-			this._searchInSelect.setSelectedValue(ZmContactsApp.SEARCHFOR_CONTACTS);
-		}
+		this._resetSearchInSelect();
 		this._searchInSelect.reparentHtmlElement(selectId);
 		this._searchInSelect.addChangeListener(new AjxListener(this, this._searchTypeListener));
 	}
@@ -438,6 +435,20 @@ ZmGroupView.prototype._setGroupName =
 function() {
 	var groupName = document.getElementById(this._groupNameId);
 	if (groupName) groupName.value = this._contact.getFileAs() || "";
+};
+
+ZmGroupView.prototype._resetSearchInSelect =
+function() {
+	this._searchInSelect.addOption(ZmMsg.contacts, true, ZmContactsApp.SEARCHFOR_CONTACTS);
+	if (appCtxt.get(ZmSetting.SHARING_ENABLED)) {
+		this._searchInSelect.addOption(ZmMsg.searchPersonalSharedContacts, false, ZmContactsApp.SEARCHFOR_PAS);
+	}
+	if (appCtxt.get(ZmSetting.GAL_ENABLED) && appCtxt.getActiveAccount().isZimbraAccount) {
+		this._searchInSelect.addOption(ZmMsg.GAL, true, ZmContactsApp.SEARCHFOR_GAL);
+	}
+	if (!appCtxt.get(ZmSetting.INITIALLY_SEARCH_GAL) || !appCtxt.get(ZmSetting.GAL_ENABLED)) {
+		this._searchInSelect.setSelectedValue(ZmContactsApp.SEARCHFOR_CONTACTS);
+	}
 };
 
 
