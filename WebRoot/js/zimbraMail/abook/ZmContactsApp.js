@@ -153,7 +153,8 @@ function() {
 		precondition:
 			function() {
 				return appCtxt.get(ZmSetting.GAL_AUTOCOMPLETE_ENABLED) &&
-					   appCtxt.get(ZmSetting.GAL_ENABLED);
+					   appCtxt.get(ZmSetting.GAL_ENABLED) &&
+					   appCtxt.getActiveAccount().isZimbraAccount;
 			}
 	});
 
@@ -165,7 +166,11 @@ function() {
 	ZmPref.registerPref("INITIALLY_SEARCH_GAL", {
 		displayName:		ZmMsg.initiallySearchGal,
 		displayContainer:	ZmPref.TYPE_CHECKBOX,
-		precondition:		ZmSetting.GAL_ENABLED
+		precondition:
+			function() {
+				return appCtxt.get(ZmSetting.GAL_ENABLED) &&
+					   appCtxt.getActiveAccount().isZimbraAccount;
+			}
 	});
 };
 
