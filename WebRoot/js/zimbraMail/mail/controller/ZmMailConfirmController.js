@@ -126,7 +126,7 @@ function() {
 ZmMailConfirmController.prototype._addNewContactsListener =
 function(attrs) {
 	if (!attrs.length) {
-		appCtxt.getAppViewMgr().popView(true);
+		this._doClose();
 		return;
 	}
 	
