@@ -306,7 +306,8 @@ function(searchParams, miniCalParams) {
 	
 	//both mini cal and search data is in cache : no need to send request
 	if(searchParams && !request.SearchRequest && !request.GetMiniCalRequest) {
-		return this.handleSearchCallback(searchParams, this._cachedVec);
+		//setSoapParams would have invoked search callback when this condition occurs
+		return;
 	}
 
 	if ((searchParams && searchParams.callback) || miniCalParams.callback) {
