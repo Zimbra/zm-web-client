@@ -438,7 +438,7 @@ function(message) {
 	var attendees = message.invite.getAttendees();
 	if (attendees) {
 		for (var i = 0; i < attendees.length; i++) {
-			var addr = attendees[i].url;
+			var addr = attendees[i].a;
 			var name = attendees[i].d;
 			var email = new AjxEmailAddress(addr, null, name);
 			var attendee = ZmApptViewHelper.getAttendeeFromItem(email, ZmCalBaseItem.PERSON);
@@ -461,24 +461,25 @@ function(message) {
 	var resources = message.invite.getResources();	// returns all the invite's resources
 	if (resources) {
 		for (var i = 0; i < resources.length; i++) {
+			var addr = resources[i].a;
 			var resourceName = resources[i].d;
 			var ptst = resources[i].ptst;
 			if (resourceName && ptst && (this._ptstLocationMap[resourceName] != null)) {
-				this._ptstLocationMap[resourceName].setAttr("participationStatus", ptst);
+				this._ptstLocationMap[resourceName].setAttr("participationStatus", ptstReplies[addr] || ptst);
 			}
 
 			// if multiple resources are present (i.e. aliases) select first one
-			var resourceURL = AjxEmailAddress.split(resources[i].url)[0];
+			var resourceEmail = AjxEmailAddress.split(resources[i].a)[0];
 
-			var location = ZmApptViewHelper.getAttendeeFromItem(resourceURL, ZmCalBaseItem.LOCATION);
+			var location = ZmApptViewHelper.getAttendeeFromItem(resourceEmail, ZmCalBaseItem.LOCATION);
 			if (location) {
-				location.setAttr("participationStatus", ptst);
+				location.setAttr("participationStatus", ptstReplies[resourceEmail] || ptst);
 				this._attendees[ZmCalBaseItem.LOCATION].push(location);
 				this.origLocations.push(location);
 			} else {
-				var equipment = ZmApptViewHelper.getAttendeeFromItem(resourceURL, ZmCalBaseItem.EQUIPMENT);
+				var equipment = ZmApptViewHelper.getAttendeeFromItem(resourceEmail, ZmCalBaseItem.EQUIPMENT);
 				if (equipment) {
-					equipment.setAttr("participationStatus", ptst);
+					equipment.setAttr("participationStatus", ptstReplies[resourceEmail] || ptst);
 					this._attendees[ZmCalBaseItem.EQUIPMENT].push(equipment);
 					this.origEquipment.push(equipment);
 				}
