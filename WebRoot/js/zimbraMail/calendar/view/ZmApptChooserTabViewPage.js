@@ -537,14 +537,16 @@ function() {
 
 ZmApptChooserTabViewPage.prototype._resetSelectDiv =
 function() {
-	this._selectDiv.clearOptions();
-	this._selectDiv.addOption(ZmMsg.contacts, false, ZmContactsApp.SEARCHFOR_CONTACTS);
-	if (appCtxt.get(ZmSetting.SHARING_ENABLED))
-		this._selectDiv.addOption(ZmMsg.searchPersonalSharedContacts, false, ZmContactsApp.SEARCHFOR_PAS);
-	if (appCtxt.get(ZmSetting.GAL_ENABLED) && appCtxt.getActiveAccount().isZimbraAccount)
-		this._selectDiv.addOption(ZmMsg.GAL, true, ZmContactsApp.SEARCHFOR_GAL);
-	if (!appCtxt.get(ZmSetting.INITIALLY_SEARCH_GAL) || !appCtxt.get(ZmSetting.GAL_ENABLED)) {
-		this._selectDiv.setSelectedValue(ZmContactsApp.SEARCHFOR_CONTACTS);
+	if (this._selectDiv) {
+		this._selectDiv.clearOptions();
+		this._selectDiv.addOption(ZmMsg.contacts, false, ZmContactsApp.SEARCHFOR_CONTACTS);
+		if (appCtxt.get(ZmSetting.SHARING_ENABLED))
+			this._selectDiv.addOption(ZmMsg.searchPersonalSharedContacts, false, ZmContactsApp.SEARCHFOR_PAS);
+		if (appCtxt.get(ZmSetting.GAL_ENABLED) && appCtxt.getActiveAccount().isZimbraAccount)
+			this._selectDiv.addOption(ZmMsg.GAL, true, ZmContactsApp.SEARCHFOR_GAL);
+		if (!appCtxt.get(ZmSetting.INITIALLY_SEARCH_GAL) || !appCtxt.get(ZmSetting.GAL_ENABLED)) {
+			this._selectDiv.setSelectedValue(ZmContactsApp.SEARCHFOR_CONTACTS);
+		}
 	}
 };
 
