@@ -26,11 +26,32 @@ function() {
 };
 
 ZmApptCache.prototype.clearCache =
-function() {
-	this._cachedApptSummaries = {};
-	this._cachedApptVectors = {};
+function(folderId) {
+	if(!folderId) {
+		this._cachedApptSummaries = {};
+		this._cachedApptVectors = {};
+		this._cachedIds = {};
+	}else {
+		var cacheEntries = this._cachedApptVectors[folderId];
+		if(cacheEntries) {
+			for(var j in cacheEntries) {
+				var cachedVec = cacheEntries[j];
+				var len = cachedVec.size();
+				for(var i=0; i<len; i++) {
+					var appt = cachedVec.get(i);
+					if(appt.folderId == folderId) {
+						delete this._cachedIds[appt.id];
+					}
+				}
+			}
+			
+		}
+		delete this._cachedApptSummaries[folderId];
+		delete this._cachedApptVectors[folderId];
+		
+	}
+	
 	this._cachedMergedApptVectors = {};
-	this._cachedIds = {};
 	var miniCalCache = this._calViewController.getMiniCalCache();
 	miniCalCache.clearCache();
 };
@@ -269,7 +290,7 @@ function(params) {
 };
 
 ZmApptCache.prototype.batchRequest =
-function(searchParams, miniCalParams) {
+function(searchParams, miniCalParams, reminderSearchParams) {
 	var jsonObj = {BatchRequest:{_jsns:"urn:zimbra", onerror:"continue"}};
 	var request = jsonObj.BatchRequest;
 
@@ -289,6 +310,22 @@ function(searchParams, miniCalParams) {
 		}
     }
 
+    if (reminderSearchParams) {
+        if (!reminderSearchParams.folderIds) {
+		    reminderSearchParams.folderIds = this._calViewController.getCheckedCalendarFolderIds();
+	    }
+
+		//reminder search params is only for grouping reminder related srch
+	    var apptVec = this.setSearchParams(reminderSearchParams);
+	
+		if(!apptVec) {
+	    	var searchRequest ={_jsns:"urn:zimbraMail"};
+	 		request.SearchRequest = request.SearchRequest ? [request.SearchRequest, searchRequest] : searchRequest; 
+	    	this._setSoapParams(searchRequest, reminderSearchParams);
+		}
+    }
+
+
     var miniCalCache = this._calViewController.getMiniCalCache();
 	cacheData = miniCalCache.getCacheData(miniCalParams);
 	
@@ -306,13 +343,13 @@ function(searchParams, miniCalParams) {
 	
 	//both mini cal and search data is in cache : no need to send request
 	if(searchParams && !request.SearchRequest && !request.GetMiniCalRequest) {
-		//setSoapParams would have invoked search callback when this condition occurs
+		//setSoapParams would have invoked callback when this condition occurs
 		return;
 	}
 
 	if ((searchParams && searchParams.callback) || miniCalParams.callback) {
-		var respCallback = new AjxCallback(this, this.handleBatchResponse,[searchParams, miniCalParams]);
-		var errorCallback = new AjxCallback(this, this.handleBatchResponseError,[searchParams, miniCalParams]);		
+		var respCallback = new AjxCallback(this, this.handleBatchResponse,[searchParams, miniCalParams, reminderSearchParams]);
+		var errorCallback = new AjxCallback(this, this.handleBatchResponseError,[searchParams, miniCalParams, reminderSearchParams]);		
 		appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback, errorCallback: errorCallback, noBusyOverlay:true});
 	} else {		
 		var response = appCtxt.getAppController().sendRequest({jsonObj:jsonObj});	
@@ -322,7 +359,7 @@ function(searchParams, miniCalParams) {
 };
 
 ZmApptCache.prototype.processBatchResponse =
-function(batchResp, searchParams, miniCalParams) {
+function(batchResp, searchParams, miniCalParams, reminderSearchParams) {
 	
 	var miniCalCache = this._calViewController.getMiniCalCache();
 	
@@ -348,12 +385,18 @@ function(batchResp, searchParams, miniCalParams) {
 
     if(!searchResp || !searchParams) { return; }
     
+	var remResp = null;
     //currently we send only one search request in batch
-	if(searchResp && (searchResp instanceof Array)){
-		searchResp = searchResp[0];
-	}	
+	if(!(searchResp instanceof Array)){
+		searchResp = [searchResp];
+	};
+	
+	if(searchResp.length > 1) {
+		//process reminder list
+		this.processSearchResponse(searchResp[1], reminderSearchParams);
+	}
 
-	var newList = this.processSearchResponse(searchResp, searchParams);
+	var newList = this.processSearchResponse(searchResp[0], searchParams);
 	return this.handleSearchCallback(searchParams, newList);
 };
 
@@ -367,7 +410,7 @@ function(searchParams, newList) {
 };
 
 ZmApptCache.prototype.handleBatchResponseError =
-function(searchParams, miniCalParams, response) {
+function(searchParams, miniCalParams, reminderSearchParams, response) {
 	var resp = response && response._data && response._data.BatchResponse;	
 	this._processErrorCode(resp);
 };
@@ -451,9 +494,9 @@ function() {
 };
 
 ZmApptCache.prototype.handleBatchResponse =
-function(searchParams, miniCalParams, response) {
+function(searchParams, miniCalParams, reminderSearchParams, response) {
 	var batchResp = response && response._data && response._data.BatchResponse;	
-	return this.processBatchResponse(batchResp, searchParams, miniCalParams);
+	return this.processBatchResponse(batchResp, searchParams, miniCalParams, reminderSearchParams);
 };
 
 ZmApptCache.prototype._setSoapParams =

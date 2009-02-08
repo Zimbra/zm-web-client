@@ -82,6 +82,7 @@ ZmCalViewController = function(container, calApp) {
 	// needed by ZmCalListView:
 	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
 	this._dragSrc.addDragListener(new AjxListener(this, this._dragListener));
+	this._clearCacheFolderMap = {};	
 };
 
 ZmCalViewController.prototype = new ZmListController();
@@ -2237,8 +2238,12 @@ function(callback, list, userQuery, result) {
 // TODO: appt is null for now. we are just clearing our caches...
 ZmCalViewController.prototype.notifyCreate =
 function(create) {
-	if (!this._clearCache) {
-		this._clearCache = true;
+	//mark folders which needs to be cleared
+	if(create && create.l) {
+		var cal = appCtxt.getById(create.l);
+		if(cal && cal.id) {
+			this._clearCacheFolderMap[cal.id] = true;
+		}
 	}
 };
 
@@ -2279,10 +2284,23 @@ function(modifies) {
 ZmCalViewController.prototype.notifyComplete =
 function() {
 	DBG.println(AjxDebug.DBG2, "ZmCalViewController: notifyComplete: " + this._clearCache);
+	
+	var clearCacheByFolder = false;
+	
+	for(var i in this._clearCacheFolderMap) {
+		DBG.println("clear cache :" + i);
+		this._apptCache.clearCache(i);
+		clearCacheByFolder = true;
+	}
+	this._clearCacheFolderMap = {};
+	
 	if (this._clearCache) {
 		var act = new AjxTimedAction(this, this._refreshAction);
 		AjxTimedAction.scheduleAction(act, 0);
 		this._clearCache = false;
+	}else if(clearCacheByFolder) {
+		var act = new AjxTimedAction(this, this._refreshAction, [true]);
+		AjxTimedAction.scheduleAction(act, 0);		
 	}
 };
 
@@ -2326,6 +2344,7 @@ function() {
 
 ZmCalViewController.prototype._refreshAction =
 function(dontClearCache) {
+	DBG.println(AjxDebug.DBG1, "ZmCalViewController: _refreshAction: " + dontClearCache);	
 	// reset cache
 	if (!dontClearCache) {
 		this._apptCache.clearCache();
@@ -2354,7 +2373,7 @@ function(work, view, list, skipMiniCalUpdate, query) {
 		this._handleError(list, new AjxCallback(this, this._maintErrorHandler));
 		return;
 	}
-	
+	DBG.println(AjxDebug.DBG2, "ZmCalViewController: _maintGetApptCallback: " + work);	
 	this._userQuery = query;
 	
 	if (work & ZmCalViewController.MAINT_VIEW) {
@@ -2436,11 +2455,16 @@ function() {
 	
 	var maintainMiniCal = (work & ZmCalViewController.MAINT_MINICAL);
 	var maintainView = (work & ZmCalViewController.MAINT_VIEW);
+	var maintainRemainder = (work & ZmCalViewController.MAINT_REMINDER);
 	
-	if(maintainMiniCal || maintainView) {
+	if(work == ZmCalViewController.MAINT_REMINDER) {
+		this._app.getReminderController().refresh();
+	}
+	else if(maintainMiniCal || maintainView || maintainRemainder) {
 		var view = this.getCurrentView();
+		DBG.println(AjxDebug.DBG2, "ZmCalViewController: _maintenanceAction : View:" + view);
 		if (view && view.needsRefresh()) {
-			var rt = this.getOptimizedTimeRange(view);
+			var rt = view.getTimeRange();
 			var cb = new AjxCallback(this, this._maintGetApptCallback, [work, view]);
 			
 			var params = {start:rt.start, end:rt.end, fanoutAllDay:view._fanoutAllDay(), callback:cb};
@@ -2448,38 +2472,18 @@ function() {
 			params.query = this._userQuery;
 			
 			var miniCalParams = this.getMiniCalendarParams(work);
-			this._apptCache.batchRequest(params, miniCalParams);
+			var reminderParams = null;
+			
+			if(maintainRemainder) {
+				reminderParams = this._app.getReminderController().getRefreshParams();
+				reminderParams.callback = null;
+			}
+						
+			this._apptCache.batchRequest(params, miniCalParams, reminderParams);
 		    
 			view.setNeedsRefresh(false);
         }
 	}
-};
-
-ZmCalViewController.prototype.getOptimizedTimeRange =
-function(view) {
-	var timeRange = view.getTimeRange();
-	
-	var endOfDay = new Date();
-    endOfDay.setHours(23,59,59,999);
-
-    //optimization step: grab a week's appt backwards
-    var reminderEnd = endOfDay.getTime();
-
-    endOfDay.setDate(endOfDay.getDate()-7);
-	endOfDay.setHours(0,0,0, 0);
-
-    var reminderStart = endOfDay.getTime();
-
-	var startInRange = (reminderStart >= timeRange.start) && (reminderStart <= timeRange.end);
-	var endInRange = (reminderEnd >= timeRange.start) && (reminderEnd <= timeRange.end);
-
-	//if reminder search overlaps widen the time range to include the reminder search
-    if(startInRange || endInRange) {
-		timeRange.start = (reminderStart < timeRange.start) ? reminderStart : timeRange.start;
-		timeRange.end = (reminderEnd > timeRange.end) ? reminderEnd : timeRange.end;
-	}
-	
-	return timeRange;
 };
 
 ZmCalViewController.prototype.getKeyMapName =
