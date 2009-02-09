@@ -416,6 +416,8 @@ function(ex) {
 			? AjxMessageFormat.format(ZmMsg.sendErrorInvalidAddresses, AjxStringUtil.htmlEncode(invalid.join(", ")))
 			: null;
 		msg = ZmMsg.sendErrorAbort + "<br/>" + invalidMsg;
+		this.popupErrorDialog(msg, ex, true, true);
+		return true;
 	} else if (ex.code == ZmCsfeException.MAIL_SEND_PARTIAL_ADDRESS_FAILURE) {
 		var invalid = ex.getData ? ex.getData(ZmCsfeException.MAIL_SEND_ADDRESS_FAILURE_INVALID) : null;
 		msg = (invalid && invalid.length)
@@ -425,8 +427,8 @@ function(ex) {
 		msg = ZmMsg.cancelSendMsgWarning;
 		this._composeView.setBackupForm();
 		return true;
-	} else if (ex.code == ZmCsfeException.MAIL_QUOTA_EXCEEDED){
-		if(this._composeView._attachDialog){
+	} else if (ex.code == ZmCsfeException.MAIL_QUOTA_EXCEEDED) {
+		if (this._composeView._attachDialog) {
 			msg = ZmMsg.errorQuotaExceeded;
 			this._composeView._attachDialog.setFooter('You have exceeded your mail quota. Please remove some attachments and try again.' );
 		}

@@ -70,7 +70,7 @@ function(msg, ex, noExecReset, hideReportButton)  {
 		ex.msg = ex.msg || msg;
 		var fields = ["method", "msg", "code", "detail", "trace", "request"];
 		var html = [], i = 0;
-		html[i++] = "<div style='height:300px; overflow:auto;'><table width='100%'>";
+		html[i++] = "<table>";
 		for (var j = 0; j < fields.length; j++) {
 			var fld = fields[j];
 			var value = ex[fld];
@@ -85,7 +85,7 @@ function(msg, ex, noExecReset, hideReportButton)  {
 				html[i++] = ["<tr><td valign='top'>", fields[j], ":</td><td valign='top'>", value, "</td></tr>"].join("");
 			}
 		}
-		html[i++] = "</table></div>";
+		html[i++] = "</table>";
 		detailStr = html.join("");
 	}
 	errorDialog.registerCallback(DwtDialog.OK_BUTTON, this._errorDialogCallback, this);
