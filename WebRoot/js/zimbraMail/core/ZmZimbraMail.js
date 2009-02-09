@@ -1531,8 +1531,8 @@ function() {
 	} else {
 		url = ac.get(ZmSetting.HELP_URI).replace(/\/$/,"");
 		// bug fix #35098 - offline help is only available in en_US for now
-		url = [url, "help", "en_US", "Zimbra_User_Help.htm"].join("/");
-//		url = [url, "help", AjxEnv.DEFAULT_LOCALE, "Zimbra_User_Help.htm"].join("/");
+		url = [url, "help", "en_US", "Zimbra_Mail_Help.htm"].join("/");
+//		url = [url, "help", AjxEnv.DEFAULT_LOCALE, "Zimbra_Mail_Help.htm"].join("/");
 	}
 	window.open(url);
 };
