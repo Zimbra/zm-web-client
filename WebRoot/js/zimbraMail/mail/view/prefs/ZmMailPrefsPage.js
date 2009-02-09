@@ -17,6 +17,8 @@
 
 ZmMailPrefsPage = function(parent, section, controller) {
 	ZmPreferencesPage.apply(this, arguments);
+
+	this._initialized = false;
 };
 
 ZmMailPrefsPage.prototype = new ZmPreferencesPage;
@@ -31,6 +33,18 @@ function() {
 // ZmPreferencesPage methods
 //
 
+ZmMailPrefsPage.prototype.showMe =
+function() {
+	ZmPreferencesPage.prototype.showMe.call(this);
+
+	if (!this._initialized) {
+		this._initialized = true;
+		var soapDoc = AjxSoapDoc.create("GetWhiteBlackListRequest", "urn:zimbraAccount");
+		var callback = new AjxCallback(this, this._handleResponseLoadWhiteBlackList);
+		appCtxt.getRequestMgr().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:callback});
+	}
+};
+
 ZmMailPrefsPage.prototype.reset =
 function(useDefaults) {
 	ZmPreferencesPage.prototype.reset.apply(this, arguments);
@@ -40,6 +54,33 @@ function(useDefaults) {
 		this._handleEnableVacationMsg(cbox);
 	}
 	this._setPopDownloadSinceControls();
+
+	this._blackListControl.reset();
+	this._whiteListControl.reset();
+};
+
+ZmMailPrefsPage.prototype.isDirty =
+function() {
+	var isDirty = ZmPreferencesPage.prototype.isDirty.call(this);
+	return (!isDirty) 
+		? (this._blackListControl.isDirty() || this._whiteListControl.isDirty())
+		: isDirty;
+};
+
+ZmMailPrefsPage.prototype.addCommand =
+function(batchCmd) {
+	var soapDoc = AjxSoapDoc.create("ModifyWhiteBlackListRequest", "urn:zimbraAccount");
+	this._blackListControl.setSoapContent(soapDoc, "blackList");
+	this._whiteListControl.setSoapContent(soapDoc, "whiteList");
+
+	var respCallback = new AjxCallback(this, this._handleResponseModifyWhiteBlackList);
+	batchCmd.addNewRequestParams(soapDoc, respCallback);
+};
+
+ZmMailPrefsPage.prototype._handleResponseModifyWhiteBlackList =
+function(result) {
+	this._blackListControl.saveLocal();
+	this._whiteListControl.saveLocal();
 };
 
 ZmMailPrefsPage.prototype._setPopDownloadSinceControls =
@@ -212,6 +253,29 @@ function(id, setup, value) {
 	return control;
 };
 
+ZmMailPrefsPage.prototype._setupCustom =
+function(id, setup, value) {
+	var el = document.getElementById([this._htmlElId, id].join("_"));
+
+	if (id == ZmSetting.MAIL_BLACKLIST) {
+		this._blackListControl = new ZmWhiteBlackList(this, id, "BlackList");
+		this._replaceControlElement(el, this._blackListControl);
+	}
+
+	if (id == ZmSetting.MAIL_WHITELIST) {
+		this._whiteListControl = new ZmWhiteBlackList(this, id, "WhiteList");
+		this._replaceControlElement(el, this._whiteListControl);
+	}
+};
+
+ZmMailPrefsPage.prototype._handleResponseLoadWhiteBlackList =
+function(result) {
+	var resp = result.getResponse().GetWhiteBlackListResponse;
+	this._blackListControl.loadFromJson(resp.blackList[0].addr);
+	this._whiteListControl.loadFromJson(resp.whiteList[0].addr);
+};
+
+
 //
 // Protected methods
 //
@@ -252,4 +316,218 @@ function(val) {
 	this._endDateButton.setEnabled(condition);
 	this._endDateVal.value = (!condition)
 		? "" : (this._formatter.format(AjxDateUtil.simpleParseDateStr(this._endDateField.value)));
+};
+
+
+
+// ??? SHOULD THIS BE IN A NEW FILE?       ???
+// ??? IT IS ONLY USED BY ZmMailPrefsPage. ???
+/**
+ * Custom control used to handle adding/removing addresses for white/black list
+ *
+ * @param parent
+ * @param id
+ */
+ZmWhiteBlackList = function(parent, id, templateId) {
+	DwtComposite.call(this, {parent:parent});
+
+	this._settingId = id;
+	this._tabGroup = new DwtTabGroup(this._htmlElId);
+	this._max = (this._settingId == ZmSetting.MAIL_BLACKLIST)
+		? appCtxt.get(ZmSetting.MAIL_BLACKLIST_MAX_NUM_ENTRIES)
+		: appCtxt.get(ZmSetting.MAIL_WHITELIST_MAX_NUM_ENTRIES);
+
+	this._setContent(templateId);
+
+	this._list = [];
+	this._add = {};
+	this._remove = {};
+};
+
+ZmWhiteBlackList.prototype = new DwtComposite;
+ZmWhiteBlackList.prototype.constructor = ZmWhiteBlackList;
+
+ZmWhiteBlackList.prototype.toString =
+function() {
+	return "ZmWhiteBlackList";
+};
+
+ZmWhiteBlackList.prototype.getTabGroupMember =
+function() {
+	return this._tabGroup;
+};
+
+ZmWhiteBlackList.prototype.getTabGroup = ZmWhiteBlackList.prototype.getTabGroupMember;
+
+ZmWhiteBlackList.prototype.reset =
+function() {
+	this._inputEl.setValue("");
+	this._listView.set(AjxVector.fromArray(this._list).clone(), null, true);
+	this._add = {};
+	this._remove = {};
+
+	this.updateNumUsed();
+};
+
+ZmWhiteBlackList.prototype.loadFromJson =
+function(data) {
+	if (data) {
+		for (var i = 0; i < data.length; i++) {
+			var item = this._addEmail(data[i]._content);
+			this._list.push(item);
+		}
+	}
+	this.updateNumUsed();
+};
+
+ZmWhiteBlackList.prototype.setSoapContent =
+function(soapDoc, method) {
+	if (!this.isDirty()) { return; }
+
+	var methodEl = soapDoc.set(method);
+
+	for (var i in this._add) {
+		var addrEl = soapDoc.set("addr", i, methodEl);
+		addrEl.setAttribute("op", "+");
+	}
+
+	for (var i in this._remove) {
+		var addrEl = soapDoc.set("addr", i, methodEl);
+		addrEl.setAttribute("op", "-");
+	}
+};
+
+ZmWhiteBlackList.prototype.isDirty =
+function() {
+	var isDirty = false;
+
+	for (var i in this._add) {
+		isDirty = true;
+		break;
+	}
+
+	if (!isDirty) {
+		for (var i in this._remove) {
+			isDirty = true;
+			break;
+		}
+	}
+
+	return isDirty;
+};
+
+ZmWhiteBlackList.prototype.saveLocal =
+function() {
+	if (this.isDirty()) {
+		this._list = this._listView.getList().clone().getArray();
+		this._add = {};
+		this._remove = {};
+	}
+};
+
+ZmWhiteBlackList.prototype.updateNumUsed =
+function() {
+	this._numUsedText.innerHTML = AjxMessageFormat.format(ZmMsg.whiteBlackNumUsed, [this._listView.size(), this._max]);
+};
+
+ZmWhiteBlackList.prototype._setContent =
+function(templateId) {
+	this.getHtmlElement().innerHTML = AjxTemplate.expand("prefs.Pages#"+templateId, {id:this._htmlElId});
+
+	var id = this._htmlElId + "_EMAIL_ADDRESS";
+	var el = document.getElementById(id);
+	this._inputEl = new DwtInputField({parent:this, parentElement:id, size:35, hint:ZmMsg.enterEmailAddressOrDomain});
+	this._inputEl.getInputElement().style.width = "210px";
+	this._inputEl._showHint();
+	this._inputEl.addListener(DwtEvent.ONKEYUP, new AjxListener(this, this._handleKeyUp));
+	this.parent._addControlTabIndex(el, this._inputEl);
+
+	id = this._htmlElId + "_LISTVIEW";
+	el = document.getElementById(id);
+	this._listView = new DwtListView({parent:this, parentElement:id});
+	this._listView.addClassName("ZmWhiteBlackList");
+	this.parent._addControlTabIndex(el, this._listView);
+
+	id = this._htmlElId + "_ADD_BUTTON";
+	el = document.getElementById(id);
+	var addButton = new DwtButton({parent:this, parentElement:id});
+	addButton.setText(ZmMsg.add);
+	addButton.addSelectionListener(new AjxListener(this, this._addListener));
+	this.parent._addControlTabIndex(el, addButton);
+
+	id = this._htmlElId + "_REMOVE_BUTTON";
+	el = document.getElementById(id);
+	var removeButton = new DwtButton({parent:this, parentElement:id});
+	removeButton.setText(ZmMsg.remove);
+	removeButton.addSelectionListener(new AjxListener(this, this._removeListener));
+	this.parent._addControlTabIndex(el, removeButton);
+
+	id = this._htmlElId + "_NUM_USED";
+	this._numUsedText = document.getElementById(id);
+};
+
+ZmWhiteBlackList.prototype._addEmail =
+function(addr) {
+	var item = new ZmWhiteBlackListItem(addr);
+	this._listView.addItem(item, null, true);
+	return item;
+};
+
+ZmWhiteBlackList.prototype._addListener =
+function() {
+	if (this._listView.size() >= this._max) {
+		var dialog = appCtxt.getMsgDialog();
+		dialog.setMessage(ZmMsg.errorWhiteBlackListExceeded);
+		dialog.popup();
+		return;
+	}
+
+	var val = AjxStringUtil.trim(this._inputEl.getValue());
+	if (val.length) {
+		this._addEmail(val);
+		if (!this._add[val]) {
+			this._add[val] = true;
+		}
+		this._inputEl.setValue("", true);
+		this._inputEl.blur();
+		this._inputEl.focus();
+
+		this.updateNumUsed();
+	}
+};
+
+ZmWhiteBlackList.prototype._removeListener =
+function() {
+	var items = this._listView.getSelection();
+	for (var i = 0; i < items.length; i++) {
+		var item = items[i];
+		this._listView.removeItem(item, true);
+		var addr = item.toString();
+		if (this._add[addr]) {
+			delete this._add[addr];
+		} else {
+			this._remove[addr] = true;
+		}
+	}
+
+	this.updateNumUsed();
+};
+
+ZmWhiteBlackList.prototype._handleKeyUp =
+function(ev) {
+	var charCode = DwtKeyEvent.getCharCode(ev);
+	if (charCode == 13 || charCode == 3) {
+		this._addListener();
+	}
+};
+
+// Helper
+ZmWhiteBlackListItem = function(addr) {
+	this.addr = addr;
+	this.id = Dwt.getNextId();
+};
+
+ZmWhiteBlackListItem.prototype.toString =
+function() {
+	return this.addr;
 };

@@ -492,7 +492,7 @@ function() {
 ZmPreferencesApp.prototype._handleLoadLaunch =
 function(callback) {
 	var respCallback = new AjxCallback(this, this._handleResponseLaunch, [callback]);
-	appCtxt.getSettings().loadSkinsAndLocales(respCallback);
+	appCtxt.getSettings().loadPreferenceData(respCallback);
 };
 
 ZmPreferencesApp.prototype._handleResponseLaunch =

@@ -2490,7 +2490,7 @@ HTML>BODY .appt-selected .appt_allday_body
 .prefLabel {
 	@Label@
 	width: 300px;		/* ??? SIZE */
-	text-align:right;
+	text-align: right;
 	vertical-align: top;
 	padding-top: 2px;
 }
@@ -2504,6 +2504,16 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmPreferencesPage .changePasswordButton { }
 .ZmPreferencesPage .exportButton { }
 .ZmPreferencesPage .resetButton {	width: 100px;	}
+
+.ZmWhiteBlackList {
+	@InputBorder@
+	width: 210px;
+	height: 150px;
+}
+
+.ZmWhiteBlackList .Row {
+	padding-left: 3px;
+}
 
 /* ??? USE? */
 .ZmShortcutsPage .paddedTableCell {

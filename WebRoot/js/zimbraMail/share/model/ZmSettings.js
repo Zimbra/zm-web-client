@@ -377,7 +377,7 @@ function(allzimlets, props) {
 	}
 };
 
-ZmSettings.prototype.loadSkinsAndLocales =
+ZmSettings.prototype.loadPreferenceData =
 function(callback) {
 	// force main account (in case multi-account) since locale/skins are global
 	var command = new ZmBatchCommand(null, appCtxt.getMainAccount().name);
@@ -395,18 +395,6 @@ function(callback) {
 	command.addNewRequestParams(csvFormatsDoc, csvFormatsCallback);
 
 	command.run(callback);
-};
-
-ZmSettings.prototype._handleResponseGetAvailableCsvFormats =
-function(result){
-	var formats = result.getResponse().GetAvailableCsvFormatsResponse.csv;
-	var setting = appCtxt.getMainAccount().settings.getSetting(ZmSetting.AVAILABLE_CSVFORMATS);
-	if(formats && formats.length){
-		var csvformat;
-		for(var i=0; i<formats.length; i++){
-			setting.setValue(formats[i].name);
-		}
-	};
 };
 
 ZmSettings.prototype._handleResponseLoadAvailableSkins =
@@ -432,6 +420,18 @@ function(response) {
 		}		
 		this.getSetting(ZmSetting.LOCALE_CHANGE_ENABLED).setValue(ZmLocale.hasChoices());
 	}
+};
+
+ZmSettings.prototype._handleResponseGetAvailableCsvFormats =
+function(result){
+	var formats = result.getResponse().GetAvailableCsvFormatsResponse.csv;
+	var setting = appCtxt.getMainAccount().settings.getSetting(ZmSetting.AVAILABLE_CSVFORMATS);
+	if (formats && formats.length) {
+		var csvformat;
+		for (var i=0; i<formats.length; i++) {
+			setting.setValue(formats[i].name);
+		}
+	};
 };
 
 /**

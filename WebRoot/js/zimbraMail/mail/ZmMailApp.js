@@ -112,11 +112,12 @@ function(settings) {
 	settings.registerSetting("COMPOSE_SAME_FORMAT",				{name:"zimbraPrefForwardReplyInOriginalFormat", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("CONVERSATIONS_ENABLED",			{name:"zimbraFeatureConversationsEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("DEDUPE_MSG_TO_SELF",				{name:"zimbraPrefDedupeMessagesSentToSelf", type:ZmSetting.T_PREF, defaultValue:ZmSetting.DEDUPE_NONE});
-    settings.registerSetting("DETACH_COMPOSE_ENABLED",          {name:"zimbraFeatureComposeInNewWindowEnabled",type:ZmSetting.T_PREF,dataType:ZmSetting.D_BOOLEAN,defaultValue:true});
-    settings.registerSetting("DETACH_MAILVIEW_ENABLED",         {name:"zimbraFeatureOpenMailInNewWindowEnabled",type:ZmSetting.T_PREF,dataType:ZmSetting.D_BOOLEAN,defaultValue:true});
+    settings.registerSetting("DETACH_COMPOSE_ENABLED",          {name:"zimbraFeatureComposeInNewWindowEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
+    settings.registerSetting("DETACH_MAILVIEW_ENABLED",         {name:"zimbraFeatureOpenMailInNewWindowEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
     settings.registerSetting("DISPLAY_EXTERNAL_IMAGES",			{name:"zimbraPrefDisplayExternalImages", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("END_DATE_ENABLED",				{type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
-	settings.registerSetting("FILTERS_ENABLED",					{name:"zimbraFeatureFiltersEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN,	defaultValue:false});
+	settings.registerSetting("FILTERS_ENABLED",					{name:"zimbraFeatureFiltersEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
+	settings.registerSetting("FILTERS_MAIL_FORWARDING_ENABLED",	{name:"zimbraFeatureMailForwardingInFiltersEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	settings.registerSetting("FORWARD_INCLUDE_ORIG",			{name:"zimbraPrefForwardIncludeOriginalText", type:ZmSetting.T_PREF, defaultValue:ZmSetting.INCLUDE});
 	settings.registerSetting("FORWARD_MENU_ENABLED",			{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	settings.registerSetting("GROUP_MAIL_BY",					{name:"zimbraPrefGroupMailBy", type:ZmSetting.T_PREF, defaultValue:ZmSetting.GROUP_BY_MESSAGE, isImplicit:true});
@@ -126,11 +127,12 @@ function(settings) {
 	settings.registerSetting("INITIAL_SEARCH_ENABLED",			{name:"zimbraFeatureInitialSearchPreferenceEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("MAIL_ALIASES",					{name:"zimbraMailAlias", type:ZmSetting.T_COS, dataType:ZmSetting.D_LIST});
     settings.registerSetting("MAIL_ATTACH_VIEW_ENABLED",        {type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
+	settings.registerSetting("MAIL_BLACKLIST",					{type: ZmSetting.T_PREF, dataType: ZmSetting.D_LIST});
+	settings.registerSetting("MAIL_BLACKLIST_MAX_NUM_ENTRIES",	{name:"zimbraMailBlacklistMaxNumEntries", type: ZmSetting.T_COS, dataType: ZmSetting.D_INT, defaultValue:100});
 	settings.registerSetting("MAIL_FOLDER_COLORS_ENABLED",		{name:"zimbraPrefFolderColorEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	settings.registerSetting("MAIL_FORWARDING_ADDRESS",			{name:"zimbraPrefMailForwardingAddress", type:ZmSetting.T_PREF});
 	settings.registerSetting("MAIL_FORWARDING_ENABLED",			{name:"zimbraFeatureMailForwardingEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
     settings.registerSetting("MAIL_MANDATORY_SPELLCHECK",		{name:"zimbraPrefMandatorySpellCheckEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
-    settings.registerSetting("FILTERS_MAIL_FORWARDING_ENABLED",	{name:"zimbraFeatureMailForwardingInFiltersEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	settings.registerSetting("MAIL_FROM_ADDRESS",				{name:"zimbraPrefFromAddress", type:ZmSetting.T_PREF, dataType:ZmSetting.D_LIST });
 	settings.registerSetting("MAIL_LIFETIME_GLOBAL",			{name:"zimbraMailMessageLifetime", type:ZmSetting.T_COS, defaultValue:"0"}); // dataType: DURATION
 	settings.registerSetting("MAIL_LIFETIME_INBOX_READ",		{name:"zimbraPrefInboxReadLifetime", type:ZmSetting.T_PREF, defaultValue:"0"}); // dataType: DURATION
@@ -145,6 +147,8 @@ function(settings) {
 	settings.registerSetting("MAIL_NOTIFY_APP",					{name:"zimbraPrefMailFlashIcon", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("MAIL_NOTIFY_BROWSER",				{name:"zimbraPrefMailFlashTitle", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("MAIL_PRIORITY_ENABLED",	        {name:"zimbraFeatureMailPriorityEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
+	settings.registerSetting("MAIL_WHITELIST",					{type: ZmSetting.T_PREF, dataType: ZmSetting.D_LIST});
+	settings.registerSetting("MAIL_WHITELIST_MAX_NUM_ENTRIES",	{name:"zimbraMailWhitelistMaxNumEntries", type: ZmSetting.T_COS, dataType: ZmSetting.D_INT, defaultValue:100});
 	settings.registerSetting("MARK_MSG_READ",	      			{name:"zimbraPrefMarkMsgRead", type:ZmSetting.T_PREF, dataType:ZmSetting.D_INT, defaultValue:0});
 	settings.registerSetting("MAX_MESSAGE_SIZE",				{type:ZmSetting.T_PREF, defaultValue:ZmMailApp.DEFAULT_MAX_MESSAGE_SIZE});
 	settings.registerSetting("NEW_WINDOW_COMPOSE",				{name:"zimbraPrefComposeInNewWindow", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
@@ -196,6 +200,7 @@ function() {
 				ZmSetting.DEDUPE_MSG_TO_SELF,
 				ZmSetting.DISPLAY_EXTERNAL_IMAGES,
 				ZmSetting.INITIAL_SEARCH,
+				ZmSetting.MAIL_BLACKLIST,
 				ZmSetting.MAIL_FORWARDING_ADDRESS,
 				ZmSetting.MAIL_LIFETIME_INBOX_READ,
 				ZmSetting.MAIL_LIFETIME_INBOX_UNREAD,
@@ -209,6 +214,7 @@ function() {
 				ZmSetting.MAIL_NOTIFY_SOUNDS,
 				ZmSetting.MAIL_NOTIFY_APP,
 				ZmSetting.MAIL_NOTIFY_BROWSER,
+				ZmSetting.MAIL_WHITELIST,
 				ZmSetting.OPEN_MAIL_IN_NEW_WIN,
 				ZmSetting.PAGE_SIZE,
 				ZmSetting.POP_DOWNLOAD_SINCE_VALUE,
@@ -223,6 +229,7 @@ function() {
 				ZmSetting.VACATION_UNTIL,
 				ZmSetting.VIEW_AS_HTML
 			],
+			manageDirty: true,
 			createView: function(parent, section, controller) {
 				return new ZmMailPrefsPage(parent, section, controller);
 			}
@@ -315,6 +322,10 @@ function() {
 		precondition:		ZmSetting.INITIAL_SEARCH_ENABLED
 	});
 
+	ZmPref.registerPref("MAIL_BLACKLIST", {
+		displayContainer:	ZmPref.TYPE_CUSTOM
+	});
+
 	ZmPref.registerPref("MAIL_FORWARDING_ADDRESS", {
 		displayName:		ZmMsg.mailForwardingAddress,
 		displayContainer:	ZmPref.TYPE_INPUT,
@@ -405,6 +416,10 @@ function() {
 	ZmPref.registerPref("MAIL_NOTIFY_BROWSER", {
 		displayName:		ZmMsg.flashBrowser,
 		displayContainer:	ZmPref.TYPE_CHECKBOX
+	});
+
+	ZmPref.registerPref("MAIL_WHITELIST", {
+		displayContainer:	ZmPref.TYPE_CUSTOM
 	});
 
 	ZmPref.registerPref("NOTIF_ADDRESS", {
