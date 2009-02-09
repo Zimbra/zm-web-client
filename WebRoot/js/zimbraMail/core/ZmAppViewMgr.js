@@ -16,68 +16,74 @@
  */
 
 /**
-* Creates a layout manager from the given components.
-* @constructor
-* @class
-* <p>This class performs view and layout management. It expects there to be an HTML "skin" with
-* containers for various components. A container is an empty DIV with a known ID, so that we
-* can use it to place the corresponding component's content. A component is a widget; it is
-* the widget's HTML element that is positioned and sized based on the container's location and
-* size. The containers are part of the flow (they are positioned relatively), so their location
-* and size should be adjusted when necessary by the browser. The components are not children of
-* their containers within the DOM tree; they are children of the shell, and are positioned 
-* absolutely. There appears to be a performance gain in keeping our HTML elements closer to the
-* top of the DOM tree, possibly because events do not propagate as far.
-</p>
-* 
-* <p>The following containers/components are supported:</p>
-*
-* <p><ul>
-*  <li>banner: displays logo</li>
-*  <li>user info: shows user name and quota info</li>
-*  <li>search bar: a text input and a few buttons</li>
-*  <li>search builder: a tool that helps the user construct a search query (initially hidden)</li>
-*  <li>search builder toolbar: toolbar for the search builder (initially hidden)</li>
-*  <li>current app: displays the name of the current app and its custom View menu (if any)</li>
-*  <li>app chooser: a vertical toolbar with buttons for changing apps, as well as Help etc.</li>
-*  <li>tree: displays folders, saved searches, and tags</li>
-*  <li>tree footer: displays mini-calendar (initially hidden)</li>
-*  <li>status: displays status messages</li>
-*  <li>sash: a thin moveable vertical bar for resizing the surrounding elements; it sits
-*            between the tree and the app content</li>
-*  <li>top toolbar: a view-specific toolbar</li>
-*  <li>app content: used to present data to the user</li>
-*  <li>bottom toolbar: not currently used</li>
-* </ul></p>
-*
-* <p>In general, the app view manager responds to changes in the skin by having each of the
-* affected components adapt to its container's new location and/or size. That means that
-* we are dependent on the browser to relocate and resize the containers within the skin
-* appropriately.</p>
-*
-* <p>The top and bottom toolbars and the app content are treated somewhat differently: they
-* come under the purview of "app view management". In general, an application represents a
-* view with a toolbar and a content area (which is often a list view). App view management
-* allows these views to be pushed and popped as if they were in a stack. That way, the views
-* only need be constructed once each.</p>
-*
-* <p>The app view components are hidden and shown using two methods: z-index and 
-* relocation. Since every component hangs off the shell, it must have a z-index of at least Z_VIEW
-* (300) to be visible. It can be hidden by setting its z-index to Z_HIDDEN (100). Since
-* both IE and Firefox have display bugs related to the use of z-index, we use relocation as
-* well: a hidden component is positioned way off the screen. (In IE, SELECT fields don't 
-* obey z-index, and in Firefox, the cursor bleeds through.)</p>
-*
-* <p>In the current model of view management, each type of view (see ZmController) has only one
-* instance at a given time. For example, we only ever track a single conv view. If we decide to do
-* view caching, the model would have to change so that we can have multiple instances of views.</p>
-*
-* @author Conrad Damon
-* @param shell			the outermost containing element
-* @param controller		the app controller
-* @param isNewWindow	true if we are a child window of the main app
-* @param hasSkin		true if the app has provided containing HTML
-*/
+ * Creates a layout manager from the given components.
+ * @constructor
+ * @class
+ * <p>This class performs view and layout management. It expects there to be an HTML "skin" with
+ * containers for various components. A container is an empty DIV with a known ID, so that we
+ * can use it to place the corresponding component's content. A component is a widget; it is
+ * the widget's HTML element that is positioned and sized based on the container's location and
+ * size. The containers are part of the flow (they are positioned relatively), so their location
+ * and size should be adjusted when necessary by the browser. The components are not children of
+ * their containers within the DOM tree; they are children of the shell, and are positioned
+ * absolutely. There appears to be a performance gain in keeping our HTML elements closer to the
+ * top of the DOM tree, possibly because events do not propagate as far.
+ *</p>
+ *
+ * <p>The following containers/components are supported:</p>
+ *
+ * <p><ul>
+ *  <li>banner: displays logo</li>
+ *  <li>user info: shows user name and quota info</li>
+ *  <li>search bar: a text input and a few buttons</li>
+ *  <li>search builder: a tool that helps the user construct a search query (initially hidden)</li>
+ *  <li>search builder toolbar: toolbar for the search builder (initially hidden)</li>
+ *  <li>current app: displays the name of the current app and its custom View menu (if any)</li>
+ *  <li>app chooser: a vertical toolbar with buttons for changing apps, as well as Help etc.</li>
+ *  <li>tree: displays folders, saved searches, and tags</li>
+ *  <li>tree footer: displays mini-calendar (initially hidden)</li>
+ *  <li>status: displays status messages</li>
+ *  <li>sash: a thin moveable vertical bar for resizing the surrounding elements; it sits
+ *            between the tree and the app content</li>
+ *  <li>top toolbar: a view-specific toolbar</li>
+ *  <li>app content: used to present data to the user</li>
+ *  <li>bottom toolbar: not currently used</li>
+ * </ul></p>
+ *
+ * <p>In general, the app view manager responds to changes in the skin by having each of the
+ * affected components adapt to its container's new location and/or size. That means that
+ * we are dependent on the browser to relocate and resize the containers within the skin
+ * appropriately.</p>
+ *
+ * <p>The top and bottom toolbars and the app content are treated somewhat differently: they
+ * come under the purview of "app view management". In general, an application represents a
+ * view with a toolbar and a content area (which is often a list view). App view management
+ * allows these views to be pushed and popped as if they were in a stack. That way, the views
+ * only need be constructed once each.</p>
+ *
+ * <p>The app view components are hidden and shown using two methods: z-index and
+ * relocation. Since every component hangs off the shell, it must have a z-index of at least Z_VIEW
+ * (300) to be visible. It can be hidden by setting its z-index to Z_HIDDEN (100). Since
+ * both IE and Firefox have display bugs related to the use of z-index, we use relocation as
+ * well: a hidden component is positioned way off the screen. (In IE, SELECT fields don't
+ * obey z-index, and in Firefox, the cursor bleeds through.)</p>
+ *
+ * <p>In the current model of view management, each type of view (see ZmController) has only one
+ * instance at a given time. For example, we only ever track a single conv view. If we decide to do
+ * view caching, the model would have to change so that we can have multiple instances of views.</p>
+ *
+ * <p>Views can open in a tab (in the row of app buttons) rather than replacing the current view. Those
+ * are handled in essentially the same way (view push and pop), but they also manage the app button.
+ * We currently manage only a single view in a tab. Stacking views within tabs is possible, but adds a
+ * lot of complexity.
+ *
+ * @author Conrad Damon
+ * 
+ * @param shell			the outermost containing element
+ * @param controller		the app controller
+ * @param isNewWindow	true if we are a child window of the main app
+ * @param hasSkin		true if the app has provided containing HTML
+ */
 ZmAppViewMgr = function(shell, controller, isNewWindow, hasSkin) {
 
 	ZmAppViewMgr._setContainerIds();
@@ -113,9 +119,11 @@ ZmAppViewMgr = function(shell, controller, isNewWindow, hasSkin) {
 	this._viewApp		= {};	// hash matching view names to their owning apps
 	this._isAppView		= {};	// names of top-level app views
 	this._isTransient	= {};	// views we don't put on hidden stack
+	this._toRemove		= [];	// views to remove from hidden on next view push
+
 	this._isTabView		= {};	// views that open in tabs, rather than stacking
 	this._tabParams		= {};	// params for app tab button
-	this._toRemove		= [];	// views to remove from hidden on next view push
+	this._viewByTabId	= {};	// view for the given tab
 
 	this._components	= {};	// component objects (widgets)
 	this._containers	= {};	// containers within the skin
@@ -427,9 +435,10 @@ function(params) {
 	this._viewApp[viewId]		= params.appName;
 	this._isAppView[viewId]		= params.isAppView;
 	this._isTransient[viewId]	= params.isTransient;
-	if (!this._isNewWindow) {
-		this._tabParams[viewId]		= params.tabParams;
-		this._isTabView[viewId]		= Boolean(params.tabParams != null);
+	if (!this._isNewWindow && params.tabParams) {
+		this._tabParams[viewId]	= params.tabParams;
+		this._isTabView[viewId]	= Boolean(params.tabParams != null);
+		this._viewByTabId[params.tabParams.id] = viewId;
 	}
 };
 
@@ -447,6 +456,10 @@ function(params) {
 ZmAppViewMgr.prototype.pushView =
 function(viewId, force, switchTab) {
 
+	if (switchTab) {
+		viewId = this._viewByTabId[viewId];
+	}
+	
 	var isPendingView = (viewId == ZmAppViewMgr.PENDING_VIEW);
 	if (!isPendingView && !this._views[viewId]) {
 		// view has not been created, bail
@@ -666,6 +679,29 @@ function(viewId) {
 	DBG.println(AjxDebug.DBG1, "stageView: " + viewId);
 	this._removeFromHidden(viewId);
 	this._hidden.push(viewId);
+};
+
+/**
+ * Swaps in one view's components for another. Intended for use by a tab that shows more
+ * than one view (eg going from compose to mail confirm view), so that we don't have to
+ * manage stacking within a tab.
+ * 
+ * @param oldViewId
+ * @param newViewId
+ */
+ZmAppViewMgr.prototype.replaceView =
+function(oldViewId, newViewId) {
+	var oldView = this._views[oldViewId];
+	var newView = this._views[newViewId];
+	this._hideView(oldViewId, true);
+	for (var cid in newView) {
+		oldView[cid] = newView[cid]
+	}
+	if (this._currentView == oldViewId) {
+		this._currentView = newViewId;
+		this._showView(newViewId);
+		this._layout(this._currentView);
+	}
 };
 
 ZmAppViewMgr.prototype.isAppView = 
@@ -990,9 +1026,10 @@ function(view) {
 
 // Tells a view that it has been hidden.
 ZmAppViewMgr.prototype._deactivateView =
-function(view) {
+function(viewId) {
+	var view = this._views[viewId];
 	for (var cid in view) {
-		var comp = this._components[cid];
+		var comp = view[cid];
 		if (comp.deactivate) {
 			comp.deactivate();
 		}

@@ -33,6 +33,7 @@ ZmComposeController = function(container, mailApp, sessionId) {
 
 	this.sessionId = sessionId;
 	this.viewId = [ZmId.VIEW_COMPOSE, this.sessionId].join("");
+	this.tabId = ["tab", this.viewId].join("_");
 	this._action = null;
 
 	ZmComposeController._setStatics();
@@ -461,7 +462,7 @@ function(initHide, composeMode) {
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
 	elements[ZmAppViewMgr.C_APP_CONTENT] = this._composeView;
 	this._app.createView({viewId:this.viewId, elements:elements, callbacks:callbacks,
-						 tabParams:{id:this.viewId, label:ZmMsg.compose, image:"NewMessage", tooltip:ZmMsg.compose}});
+						 tabParams:{id:this.tabId, label:ZmMsg.compose, image:"NewMessage", tooltip:ZmMsg.compose}});
     if (initHide) {
 	    this._composeView.setLocation(Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
 	    this._composeView.enableInputs(false);
@@ -998,7 +999,7 @@ function(draftType, msg, resp) {
 	if (!isDraft) {
 		if (appCtxt.get(ZmSetting.SHOW_MAIL_CONFIRM)) {
 			var confirmController = AjxDispatcher.run("GetMailConfirmController");
-			confirmController.showConfirmation(msg, this.viewId);
+			confirmController.showConfirmation(msg, this.viewId, this.tabId);
 		} else {
 			if (appCtxt.isChildWindow && window.parentController) {
 				window.onbeforeunload = null;

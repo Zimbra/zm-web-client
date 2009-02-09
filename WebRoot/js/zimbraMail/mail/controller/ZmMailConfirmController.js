@@ -44,8 +44,9 @@ function() {
  * @param msg			[ZmMailMsg]*	the message that was sent
  */
 ZmMailConfirmController.prototype.showConfirmation =
-function(msg, tabId) {
-	this._tabId = tabId;
+function(msg, composeViewId, composeTabId) {
+	this._composeViewId = composeViewId;
+	this._composeTabId = composeTabId;
 
 	if (!this._view) {
 		this._initView();
@@ -54,7 +55,7 @@ function(msg, tabId) {
     this._initializeToolBar();
 	this.resetToolbarOperations(this._toolbar);
 	this._view.showConfirmation(msg);
-	appCtxt.getAppViewMgr().pushView(this.viewId, false, true);
+	appCtxt.getAppViewMgr().replaceView(this._composeViewId, this.viewId);
 };
 
 ZmMailConfirmController.prototype.resetToolbarOperations =
@@ -98,7 +99,8 @@ function() {
 	var callbacks = {};
 	callbacks[ZmAppViewMgr.CB_PRE_HIDE] = new AjxCallback(this, this._preHideCallback);
 	callbacks[ZmAppViewMgr.CB_POST_SHOW] = new AjxCallback(this, this._postShowCallback);
-    this._app.createView({viewId:this.viewId, elements:elements, callbacks:callbacks, isTransient:true, tabParams: { id: this._tabId }});
+    this._app.createView({viewId:this.viewId, elements:elements, callbacks:callbacks,
+						  tabParams: { id:this._composeTabId }});
 };
 
 ZmMailConfirmController.prototype._initializeToolBar =
@@ -145,6 +147,5 @@ function() {
 
 ZmMailConfirmController.prototype._doClose =
 function() {
-	appCtxt.getAppViewMgr().popView(true); // Pop mail confirm.
-	appCtxt.getAppViewMgr().popView(true); // Pop compose.
+	appCtxt.getAppViewMgr().popView(true);
 };
