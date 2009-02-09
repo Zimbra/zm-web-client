@@ -593,7 +593,7 @@ ZmPageEditor.prototype.insertLinks = function(filenames) {
             notebook.getRestUrl(), "/", AjxStringUtil.urlComponentEncode(filenames[i])
         ].join("");
 		link.href = url;
-		link.innerHTML = AjxStringUtil.htmlEncode(filenames[i]);
+		link.innerHTML = unescape(AjxStringUtil.htmlEncode(filenames[i]));
 		this._insertLink(link, insertTarget, true);
 		insertTarget = link;
 	}
