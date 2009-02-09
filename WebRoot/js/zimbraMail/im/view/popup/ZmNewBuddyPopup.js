@@ -17,6 +17,7 @@
 
 ZmNewBuddyPopup = function(params) {
 	ZmTaskbarPopup.call(this, params);
+	this._createTabGroupMember();
 	this._init();
 };
 
@@ -32,7 +33,7 @@ ZmNewBuddyPopup.prototype.popup =
 function() {
 	this.reset();
 	this._addrEntry.focus();
-	this.tabGroup.setFocusMember(this._addrEntry);
+	this._setFocusMember(this._addrEntry);
 
 	// find groups currently defined in the buddy list
 	this._groups = AjxDispatcher.run("GetRoster").getGroups();
@@ -92,10 +93,12 @@ function() {
 	this._initAddressAutocomplete();
 	this._initGroupAutocomplete();
 
-	this.tabGroup.addMember(this._serviceTypeSelect);
-	this.tabGroup.addMember(this._addrEntry);
-	this.tabGroup.addMember(this._nameEntry);
-	this.tabGroup.addMember(this._groupsEntry);
+	this._tabGroup.addMember(this._serviceTypeSelect);
+	this._tabGroup.addMember(this._addrEntry);
+	this._tabGroup.addMember(this._nameEntry);
+	this._tabGroup.addMember(this._groupsEntry);
+	this._tabGroup.addMember(okButton);
+	this._tabGroup.addMember(cancelButton);
 };
 
 ZmNewBuddyPopup.prototype._getSelGroupsArray = function() {
@@ -188,7 +191,7 @@ function(menu) {
 
 ZmNewBuddyPopup.prototype._popupListener = function() {
 	this._addrEntry.focus();
-	this.tabGroup.setFocusMember(this._addrEntry);
+	this._setFocusMember(this._addrEntry);
 
 	// find groups currently defined in the buddy list
 	this._groups = AjxDispatcher.run("GetRoster").getGroups();
@@ -198,7 +201,7 @@ ZmNewBuddyPopup.prototype._popupListener = function() {
 };
 
 ZmNewBuddyPopup.prototype._contentHtml = function() {
-	var id = this._baseId = Dwt.getNextId();                                                                                         i
+	var id = this._baseId = Dwt.getNextId();                                                                                         
 	return AjxTemplate.expand("im.Chat#NewRosterItemDlg",
 				  { id : id });
 };

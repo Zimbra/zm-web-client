@@ -20,6 +20,7 @@ ZmTaskbar = function(params) {
 
 	ZmTaskbar.INSTANCE = this;
 
+	this._tabGroup = new DwtTabGroup(this._htmlElId);
 	this._setMouseEvents();
 	this.shell.addControlListener(new AjxListener(this, this._shellControlListener));
 };
@@ -66,6 +67,11 @@ function(item) {
 	}
 };
 
+ZmTaskbar.prototype.getTabGroupMember =
+function() {
+	return this._tabGroup;
+};
+
 ZmTaskbar.prototype._shellControlListener =
 function(ev) {
 	if ((ev.oldWidth != ev.newWidth) && this.expandedItem ) {
@@ -90,6 +96,8 @@ ZmTaskbarItem = function(params) {
 	this._createHtml();
 	this._contentCallback = params.contentCalback;
 	this._contentClassName = params.contentClassName;
+	this._tabGroup = new DwtTabGroup(this._htmlElId);
+	this.parent.getTabGroupMember().addMember(this._tabGroup);
 
 	var buttonArgs = {
 		style: DwtButton.TOGGLE_STYLE,
@@ -140,17 +148,30 @@ function() {
 	return this._popup;
 };
 
+ZmTaskbarItem.prototype.getTabGroupMember =
+function() {
+	return this._tabGroup;
+};
+
 ZmTaskbarItem.prototype._expand =
 function(expand) {
 	this.expanded = expand;
 	Dwt.setVisible(this._contentEl, expand);
 	this.button.setSelected(expand);
+	var popup = this.getPopup();
+	var member = popup.getTabGroupMember();
 	if (expand) {
 		this.showAlert(false);
-		this.getPopup().popup();
+		popup.popup();
 		this.positionContent();
+		if (member) {
+			this._tabGroup.addMember(member);
+		}
 	} else if (this._popup) {
-		this._popup.popdown();
+		if (member) {
+			this._tabGroup.removeMember(member);
+		}
+		popup.popdown();
 	}
 };
 

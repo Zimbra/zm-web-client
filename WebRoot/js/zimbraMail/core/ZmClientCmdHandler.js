@@ -199,6 +199,11 @@ function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
 	}
 };
 
+ZmClientCmdHandler.prototype.execute_tabs =
+function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
+	appCtxt.getRootTabGroup().dump(AjxDebug.DBG1);
+};
+
 ZmClientCmdHandler.prototype.execute_ymid =
 function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
 	var settings = appCtxt.getSettings(),

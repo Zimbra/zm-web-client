@@ -19,7 +19,6 @@ ZmTaskbarPopup = function(params) {
 	if (arguments.length == 0) return;
 
 	DwtComposite.call(this, params);
-	this.tabGroup = new DwtTabGroup();
 	this.taskbar = params.taskbar;
 	this.taskbarItem = params.taskbarItem;
 };
@@ -38,6 +37,21 @@ function() {
 
 ZmTaskbarPopup.prototype.popdown =
 function() {
+};
+
+ZmTaskbarPopup.prototype.getTabGroupMember =
+function() {
+	return this._tabGroup;
+};
+
+ZmTaskbarPopup.prototype._createTabGroupMember =
+function() {
+	return this._tabGroup = new DwtTabGroup(this.toString());
+};
+
+ZmTaskbarPopup.prototype._setFocusMember =
+function(member) {
+	appCtxt.getRootTabGroup().setFocusMember(member);
 };
 
 ZmTaskbarPopup.prototype._doPopdown =
