@@ -589,7 +589,7 @@ ZmPageEditor.prototype.insertLinks = function(filenames) {
 		}
 		var link = this._getIframeDoc().createElement("A");
 		link.href = filenames[i];
-		link.innerHTML = unescape(AjxStringUtil.htmlEncode(filenames[i]));
+		link.innerHTML = decodeURI(filenames[i]);
 		this._insertLink(link, insertTarget, true);
 		insertTarget = link;
 	}
