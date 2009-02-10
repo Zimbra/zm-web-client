@@ -296,7 +296,7 @@ function(ev, bIsPopCallback) {
 	} else {
 		// bug fix #5829 - differentiate betw. an empty contact and saving
 		//                 an existing contact w/o editing
-		if (this._contact.isEmpty()) {
+		if (view.isEmpty()) {
 			var msg = this._currentView == ZmId.VIEW_GROUP
 				? ZmMsg.emptyGroup
 				: ZmMsg.emptyContact;
