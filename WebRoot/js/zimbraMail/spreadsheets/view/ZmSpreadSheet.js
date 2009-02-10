@@ -25,31 +25,19 @@ ZmSpreadSheet = function(parent, className, posStyle, deferred) {
 	className = className || "ZmSpreadSheet";
 	DwtComposite.call(this, {parent:parent, className:className, posStyle:posStyle, deferred:deferred});
 
-	// WARNING: the mousemove handler is a crazy workaround to the fact
-	// that the range DIV blocks events from reaching the table element.
-	// So upon mouseover, we hide it for about 10 milliseconds; during this
-	// timeout the table will catch on mouseover-s.  Produces a short
-	// flicker :-(  I donno how to work around this...
-	var footimeout = null;
 	this._selectRangeCapture = new DwtMouseEventCapture({
 		targetObj:this,
 		id:"ZmSpreadSheet",
-		mouseOverHdlr:AjxCallback.simpleClosure(this._table_selrange_MouseOver, this),
-		mouseMoveHdlr:
-			// mousemove handler (see warning above)
-			AjxCallback.simpleClosure(function(ev) {
-				var self = this;
-				if (footimeout)
-					clearTimeout(footimeout);
-				footimeout = setTimeout(function() {
-					self._getRangeDiv().style.display = "none";
-					setTimeout(function() {
-						self._getRangeDiv().style.display = "";
-					}, 1);
-				}, 50);
-			}, this),
+        mouseMoveHdlr: AjxCallback.simpleClosure(this._table_selrange_MouseMove, this),		
 		mouseUpHdlr:AjxCallback.simpleClosure(this._clear_selectRangeCapture, this)
 	});
+
+    this._autofillRangeCapture = new DwtMouseEventCapture({
+        targetObj: this,
+        id: "ZmSpreadSheet-AutoFill",
+        mouseMoveHdlr:AjxCallback.simpleClosure(this._table_autofill_mouseMove, this),
+        mouseUpHdlr:AjxCallback.simpleClosure(this._table_autofill_mouseUp, this)
+    });
 
 	this._colsizeCapture = new DwtMouseEventCapture({
 		targetObj:this,
@@ -234,6 +222,7 @@ ZmSpreadSheet.prototype._init = function() {
 	}
 	this._focusLinkID = Dwt.getNextId();
 	this._tableID = Dwt.getNextId();
+    this._autoFillID = Dwt.getNextId();
 
 	// the "focus link" is our clever way to receive key events when the
 	// "spreadsheet" is focused.  As usual, it requires some special bits
@@ -246,6 +235,9 @@ ZmSpreadSheet.prototype._init = function() {
 	if (AjxEnv.isIE)
 		html.push("&nbsp;");
 	html.push("</a>");
+
+    //AutoFill Div
+    html.push("<div class='AutoFill' id='"+this._autoFillID+"'></div>");
 
 	html.push("<table class='SpreadSheet' id='", this._tableID, "' cellspacing='1' cellpadding='0' border='0'>");
 	var row = [ "<tr><td class='LeftBar'></td>" ];
@@ -297,6 +289,10 @@ ZmSpreadSheet.prototype._init = function() {
 	if (AjxEnv.isIE || AjxEnv.isOpera)
 		link.onkeydown = link.onkeypress;
 
+    var autoFill = this._getAutoFill();
+    autoFill.onmousedown = AjxCallback.simpleClosure(this._table_autoFill_mouseDown, this);
+    autoFill.style.display = "none";
+    
 	var header = document.createElement("table");
 	header.cellSpacing = 1;
 	header.cellPadding = 0;
@@ -345,6 +341,209 @@ ZmSpreadSheet.prototype._init = function() {
 
 	this.getHtmlElement().style.display = "";
 	this._header_resetColWidths();
+};
+
+ZmSpreadSheet.prototype._getAutoFillRangeDiv = function(){
+    if (!this._autoFillRangeDiv){
+		this._autoFillRangeDivID = Dwt.getNextId();
+		var div = this._autoFillRangeDiv = document.createElement("div");
+		div.id = this._autoFillRangeDivID;
+		div.className = "ShowAutoFillRange";
+		div.style.display = "none";
+		this._getRelDiv().appendChild(div);		
+	}
+	return this._autoFillRangeDiv;
+};
+
+ZmSpreadSheet.prototype._table_autofill_mouseMove = function(ev){
+
+    var dwtev = new DwtMouseEvent();
+    dwtev.setFromDhtmlEvent(ev);
+
+
+    var el = DwtUiEvent.getTarget(dwtev);
+    var td;
+
+    if(el.id == this._autoFillRangeDivID){
+
+        var startRow = this._aRangeStartRow;
+        var startCol = this._aRangeStartCol;
+        var endRow   = this._aRangeEndRow;
+        var endCol   = this._aRangeEndCol;
+
+        var posX = dwtev.docX + this._getRelDiv().scrollLeft;
+        var posY = dwtev.docY + this._getRelDiv().scrollTop;
+        posY = posY - this._getRelDiv().offsetTop; // Relative height according to reldiv.
+
+        //if the fill series cursor is within the range
+        if(this.isRange() && this._checkBoundriesForRange(posX, posY, this._getCell(this._startRangeRow, this._startRangeCol), this._getCell(this._endRangeRow, this._endRangeCol))){
+            td = null;
+            if(!(this._startRangeRow == this._aRangeStartRow && this._endRangeRow == this._aRangeEndRow && this._startRangeCol == this._aRangeStartCol && this._endRangeCol == this._aRangeEndCol)){
+                this._showAutoFillRange(this._startRangeRow, this._startRangeCol, this._endRangeRow, this._endRangeCol);
+            }
+        //Improved performance after tracking near by cell navigation    
+        }else if(this._checkBoundries(posX, posY, this._getCell(endRow, endCol))){  //Chk self, EndCell already selected, so neglect it
+            td = null;
+        }else if(this._checkBoundries(posX, posY, this._getCell(endRow, endCol - 1))){ //Chk Left Cell
+            td = this._getCell(endRow, endCol - 1);
+        }else if(this._checkBoundries(posX, posY, this._getCell(endRow, endCol - 1))) { //Chk  Up Cell
+            td = this._getCell(endRow, endCol - 1);
+        }else if(this._checkBoundries(posX, posY, this._getCell(endRow - 1, endCol - 1 ))){   //Chk Diagnol Cell
+            td = this._getCell(endRow - 1, endCol - 1 );
+        }else if(this._checkBoundriesForRange(posX, posY, this._getCell(startRow, startCol), this._getCell(endRow, endCol))){ //Chk for Random Cell
+            td = this._findCell( posX, posY, startRow, startCol, endRow, endCol);
+        }
+
+    }else{
+
+        td = el;
+        var table = this._getTable();
+        while (td && td !== table && !/^td$/i.test(td.tagName))
+            td = td.parentNode;
+    }
+
+    if (td && /^td$/i.test(td.tagName) && td.cellIndex > 0 && td.parentNode.rowIndex > 0) {
+
+        var destCell = td;
+        if(this.isRange()){
+
+            var dRow =  destCell.parentNode.rowIndex - 1;
+            var dCol =  destCell.cellIndex - 1;
+
+            var sStartRow = this._startRangeRow;
+            var sStartCol = this._startRangeCol;
+            var sEndRow   = this._endRangeRow;
+            var sEndCol   = this._endRangeCol;
+
+            if(dRow >= sStartRow && dRow <= sEndRow){
+                 if(dCol > sEndCol)         sEndCol   = dCol;
+                 else if(dCol < sStartCol)  sStartCol = dCol;
+            }else {
+                if(dRow > sEndRow)        sEndRow   = dRow;
+                else if(dRow < sEndRow)   sStartRow = dRow;
+            }
+
+            var sRow =  Math.min(sStartRow, sEndRow);
+            var sCol =  Math.min(sStartCol, sEndCol);
+            var eRow =  Math.max(sStartRow, sEndRow);
+            var eCol =  Math.max(sStartCol, sEndCol);
+
+            if(!(sRow == this._aRangeStartRow && eRow == this._aRangeEndRow && sCol == this._aRangeStartCol && eCol == this._aRangeEndCol)){
+                this._showAutoFillRange(sRow, sCol, eRow, eCol);
+            }
+
+        }else{
+
+            var srcCell = this._selectedCell;            
+            var startRow = srcCell.parentNode.rowIndex - 1;
+            var startCol = srcCell.cellIndex - 1;
+
+            var endRow =  destCell.parentNode.rowIndex - 1;
+            var endCol =  destCell.cellIndex - 1;
+
+            if(startRow != endRow && startCol != endCol ){
+                endCol = startCol;
+            }
+
+            this._showAutoFillRange(Math.min(startRow, endRow), Math.min(startCol, endCol), Math.max(startRow, endRow), Math.max(startCol, endCol));
+
+        }
+    }
+
+    dwtev._stopPropagation = true;
+    dwtev._returnValue = false;
+    dwtev.setToDhtmlEvent(ev);
+    
+};
+
+ZmSpreadSheet.prototype._hideAutoFillRange = function(){
+
+    this._isAutoFillRange = false;
+
+	var div = this._getAutoFillRangeDiv();
+	div.style.display = "none";
+
+	//Tnks Mihai, amazing performance improvement:
+	div.style.top = "0px";
+	div.style.left = "0px";
+	div.style.width = "5px";
+	div.style.height = "5px";
+
+};
+
+ZmSpreadSheet.prototype._showAutoFillRange = function(startRow, startCol, endRow, endCol){
+
+    this._isAutoFillRange = true;
+
+    this._aRangeStartRow  = startRow;
+    this._aRangeStartCol  = startCol;
+    this._aRangeEndRow    = endRow;
+    this._aRangeEndCol    = endCol;
+
+	this._model.checkBounds(startRow, startCol);
+	this._model.checkBounds(endRow, endCol);
+
+	var r1 = this._getTable().rows[startRow + 1];
+	var r2 = this._getTable().rows[endRow + 1];
+	if (!r1 || !r2)
+		this._hideRange();
+	var c1 = r1.cells[startCol + 1];
+	var c2 = r2.cells[endCol + 1];
+
+
+	// and we have the top-left cell in c1 and bottom-right cell in c2
+	var div = this._getAutoFillRangeDiv();
+	var w = c2.offsetTop + c2.offsetHeight - c1.offsetTop;
+	var h = c2.offsetLeft + c2.offsetWidth - c1.offsetLeft;
+	if (AjxEnv.isIE) {
+		w += 2;
+		h += 2;
+	}
+	div.style.display = "none";
+	div.style.height = w + "px";
+	div.style.width = h + "px";
+	div.style.left = c1.offsetLeft - 1 + "px";
+	div.style.top = c1.offsetTop - 1 + "px";
+	div.style.display = "";
+
+};
+
+ZmSpreadSheet.prototype._table_autofill_mouseUp = function(ev) {
+
+    var dwtev = new DwtMouseEvent();
+    dwtev.setFromDhtmlEvent(ev);
+
+    this._autofillRangeCapture.release();
+
+    this._hideAutoFillRange();
+
+    //Now Select the whole range after fill series
+    this._showRange(this._aRangeStartRow, this._aRangeStartCol, this._aRangeEndRow, this._aRangeEndCol);
+    
+    dwtev._stopPropagation = true;
+    dwtev._returnValue = false;
+    dwtev.setToDhtmlEvent(ev);
+};
+
+ZmSpreadSheet.prototype._table_autoFill_mouseDown = function(ev) {
+    
+    var dwtev = new DwtMouseEvent();
+    dwtev.setFromDhtmlEvent(ev);
+
+    this._getAutoFillRangeDiv();
+
+    this._autofillRangeCapture.capture();
+
+    dwtev._stopPropagation = true;
+    dwtev._returnValue = false;
+    dwtev.setToDhtmlEvent(ev);
+};
+
+ZmSpreadSheet.prototype._getAutoFill = function(){
+    if(!this._autoFillDiv){
+        this._autoFillDiv = document.getElementById(this._autoFillID);
+    }
+    return this._autoFillDiv;
 };
 
 // called when a cell from the top header was clicked or mousedown
@@ -675,10 +874,17 @@ ZmSpreadSheet.prototype._selectCell = function(td) {
 		Dwt.addClass(this._getLeftHeaderCell(td), "LeftSelected");
 		this._getTopLeftCell().innerHTML = "<div>" + ZmSpreadSheet.getCellName(td) + "</div>";
 		var link = this._getFocusLink();
-		link.style.top = td.offsetTop + "px";
-		link.style.left = td.offsetLeft + "px";
+		link.style.top = td.offsetTop + 1 + "px";
+		link.style.left = td.offsetLeft + 1 + "px";
 		if (!this._editingCell)
 			this.focus();
+
+        var autoFill = this._getAutoFill();
+        autoFill.className = "AutoFill";
+        autoFill.style.top = td.offsetTop + td.offsetHeight - 4 + "px";
+        autoFill.style.left = td.offsetLeft + td.offsetWidth - 4 + "px";
+        autoFill.style.display = "block";
+        
 		link.style.top = td.offsetTop + td.offsetHeight - 1 + "px";
 		link.style.left = td.offsetLeft + td.offsetWidth - 1 + "px";
 		if (!this._editingCell) {
@@ -772,8 +978,13 @@ ZmSpreadSheet.prototype._editCell = function(td) {
 		this._editingCell = td;
 		mc.setStyleToElement(input, true);
 		this._displayRangeIfAny();
+
+        //Hide AutoFill Div
+        var autoFill = this._getAutoFill();        
+        autoFill.style.display = "none";
+
 		// quick hack to set the field size from the start
-		this._input_keyPress();
+		this._input_keyPress();        
 	}
 };
 
@@ -1154,6 +1365,13 @@ ZmSpreadSheet.prototype._displayRangeIfAny = function() {
 };
 
 ZmSpreadSheet.prototype._showRange = function(startRow, startCol, endRow, endCol) {
+
+    this._isRange = true;
+    this._startRangeRow = startRow;
+    this._startRangeCol = startCol;
+    this._endRangeRow   = endRow;
+    this._endRangeCol   = endCol;
+
 	this._model.checkBounds(startRow, startCol);
 	this._model.checkBounds(endRow, endCol);
 	var r1 = this._getTable().rows[startRow + 1];
@@ -1180,6 +1398,16 @@ ZmSpreadSheet.prototype._showRange = function(startRow, startCol, endRow, endCol
 	div.style.left = c1.offsetLeft - 1 + "px";
 	div.style.top = c1.offsetTop - 1 + "px";
 	div.style.display = "";
+
+    //Display AutoFill
+    var autoFill = this._getAutoFill();
+    autoFill.className = "AutoFill AutoFillRange";
+    autoFill.style.top = c2.offsetTop + c2.offsetHeight - 4 + "px";
+    autoFill.style.left = c2.offsetLeft + c2.offsetWidth - 4 + "px";
+    autoFill.style.display = "block";
+
+    this._startRangeCell = c1;
+    this._endRangeCell   = c2;
 };
 
 ZmSpreadSheet.prototype._getRangeDiv = function() {
@@ -1226,13 +1454,83 @@ ZmSpreadSheet.prototype._rangediv_mousedown = function(ev) {
 	this._clearTooltip();
 	var dwtev = new DwtUiEvent(ev);
 	dwtev.setFromDhtmlEvent(ev);
+    this._rangediv_findCell(dwtev);
 	this._hideRange();
 	dwtev._stopPropagation = true;
 	dwtev._returnValue = false;
 	dwtev.setToDhtmlEvent(ev);
 };
 
+ZmSpreadSheet.prototype._rangediv_findCell = function(ev){
+
+    var startRow = this._startRangeRow;
+    var startCol = this._startRangeCol;
+    var endRow   = this._endRangeRow;
+    var endCol   = this._endRangeCol;    
+
+    var posX = ev.docX + this._getRelDiv().scrollLeft;
+    var posY = ev.docY + this._getRelDiv().scrollTop;
+
+    posY = posY - this._getRelDiv().offsetTop; // Relative height according to reldiv.
+
+    var cell = this._findCell( posX, posY, startRow, startCol, endRow, endCol);
+    if(cell) this._selectCell( cell );
+
+};
+
+ZmSpreadSheet.prototype._getCell = function(row, col){
+    return this._model.data[row][col]._td;
+};
+
+ZmSpreadSheet.prototype._findCell = function( x, y, sRow, sCol, eRow, eCol){
+
+    var startRow = Math.min(sRow, eRow);
+    var startCol = Math.min(sCol, eCol);
+    var endRow   = Math.max(sRow, eRow);
+    var endCol   = Math.max(sCol, eCol);
+
+    var centerRow = startRow + Math.ceil( ( endRow - startRow)/2 );
+    var centerCol = startCol + Math.ceil( ( endCol - startCol)/2 );
+    var c = this._getCell(centerRow, centerCol);
+
+    var cTop = c.offsetTop, cLeft = c.offsetLeft;
+
+    if( y >= cTop){
+        startRow = centerRow;
+        if( y <= cTop + c.offsetHeight ){
+            endRow = centerRow;
+        } else {
+            startRow = centerRow + 1;
+        }
+    } else {
+        endRow = centerRow - 1;
+    }
+
+
+    if( x >= cLeft ){
+        startCol = centerCol;
+        if( x <= cLeft + c.offsetWidth ){
+            endCol = centerCol;
+        }else {
+            startCol = centerCol + 1;
+        }
+    }else {
+        endCol = centerCol - 1;
+    }
+
+    if(startCol == endCol && startRow == endRow){
+        return this._getCell( startRow, startCol);
+    }
+
+    return this._findCell(x, y, startRow, startCol, endRow, endCol);
+};
+
 ZmSpreadSheet.prototype._hideRange = function() {
+
+    this._isRange = false;
+    this._startRangeCell = null;
+    this._endRangeCell = null;
+
 	this._shiftRangeStart = null;
 	this._selectedRangeName = null;
 	var div = this._getRangeDiv();
@@ -1242,25 +1540,79 @@ ZmSpreadSheet.prototype._hideRange = function() {
 	div.style.left = "0px";
 	div.style.width = "5px";
 	div.style.height = "5px";
+
+    this._selectCell(this._selectedCell);
 };
 
-ZmSpreadSheet.prototype._table_selrange_MouseOver = function(ev) {
-	var dwtev = new DwtMouseEvent();
-	dwtev.setFromDhtmlEvent(ev);
-	var table = this._getTable();
-	var td = DwtUiEvent.getTarget(dwtev);
-	while (td && td !== table && !/^td$/i.test(td.tagName))
-		td = td.parentNode;
-	if (td && /^td$/i.test(td.tagName)
-	    && td.cellIndex > 0 && td.parentNode.rowIndex > 0) {
-		this._selectRange(ZmSpreadSheet.getCellName(this._selectedCell),
-				  ZmSpreadSheet.getCellName(td), false);
-		this._updateCellRangeToken();
-	}
+ZmSpreadSheet.prototype.isRange = function(){
+    return this._isRange;
+}
+
+ZmSpreadSheet.prototype._table_selrange_MouseMove = function(ev) {
+    var dwtev = new DwtMouseEvent();
+    dwtev.setFromDhtmlEvent(ev);
+    var table = this._getTable();
+
+    var el = DwtUiEvent.getTarget(dwtev);
+    var td;
+
+    if(el.id == this._rangeDivID){
+        
+        var startRow = this._startRangeRow;
+        var startCol = this._startRangeCol;
+        var endRow   = this._endRangeRow;
+        var endCol   = this._endRangeCol;
+
+        var posX = dwtev.docX + this._getRelDiv().scrollLeft;
+        var posY = dwtev.docY + this._getRelDiv().scrollTop;
+
+        posY = posY - this._getRelDiv().offsetTop; // Relative height according to reldiv.
+
+        //Improved performance after tracking near by cell navigation
+        if(this._checkBoundries(posX, posY, this._getCell(endRow, endCol))){  //Chk self, EndCell already selected, so neglect it
+            td = null;
+        }else if(this._checkBoundries(posX, posY, this._getCell(endRow, endCol - 1))){ //Chk Left Cell
+            td = this._getCell(endRow, endCol - 1);
+        }else if(this._checkBoundries(posX, posY, this._getCell(endRow, endCol - 1))) { //Chk  Up Cell
+            td = this._getCell(endRow, endCol - 1);
+        }else if(this._checkBoundries(posX, posY, this._getCell(endRow - 1, endCol - 1 ))){   //Chk Diagnol Cell
+            td = this._getCell(endRow - 1, endCol - 1 );
+        }else if(this._checkBoundriesForRange(posX, posY, this._getCell(startRow, startCol), this._getCell(endRow, endCol))){ //Chk for Random Cell
+            td = this._findCell( posX, posY, startRow, startCol, endRow, endCol);
+        }
+
+    }else{
+        
+        td = el;
+        while (td && td !== table && !/^td$/i.test(td.tagName))
+            td = td.parentNode;
+    }
+
+    if (td && /^td$/i.test(td.tagName)
+            && td.cellIndex > 0 && td.parentNode.rowIndex > 0) {
+        this._selectRange(ZmSpreadSheet.getCellName(this._selectedCell),
+                ZmSpreadSheet.getCellName(td), false);
+        this._updateCellRangeToken();
+    }
+
 	dwtev._stopPropagation = true;
 	dwtev._returnValue = false;
 	dwtev.setToDhtmlEvent(ev);
 	return dwtev._returnValue;
+};
+
+ZmSpreadSheet.prototype._checkBoundries = function(x, y, cell) {
+    if(cell && ( x >= cell.offsetLeft && x <= (cell.offsetLeft + cell.offsetWidth) ) && ( y >= cell.offsetTop && y <= ( cell.offsetTop+cell.offsetHeight) ) ){
+        return true;
+    }
+    return false;
+};
+
+ZmSpreadSheet.prototype._checkBoundriesForRange = function(x, y, startCell, endCell){
+    if( startCell && endCell && ( x >= startCell.offsetLeft && x <= (endCell.offsetLeft + endCell.offsetWidth) ) && ( y >= startCell.offsetTop && y <= ( endCell.offsetTop+ endCell.offsetHeight) ) ){
+        return true;
+    }
+    return false;
 };
 
 ZmSpreadSheet.prototype._updateCellRangeToken = function() {

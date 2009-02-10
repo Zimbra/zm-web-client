@@ -37,7 +37,9 @@
   text-align: center;
 }
 
-.ZmSpreadSheet table.SpreadSheet td.SSelected { border: 1px dotted #000; padding: 0; }
+
+
+.ZmSpreadSheet table.SpreadSheet td.SSelected { border: 1px solid #000; padding: 0; }
 .ZmSpreadSheet table.SpreadSheet td.TopSelected div { background-color: #ccc; border-color: #fff; }
 .ZmSpreadSheet table.SpreadSheet td.LeftSelected div { background-color: #ccc; border-color: #fff; }
 
@@ -68,3 +70,30 @@
 .ZmSpreadSheet-Tooltip .CellExprError { padding: 0 0 0 20px; color: #f00; }
 .ZmSpreadSheet-Tooltip .CellValue { padding: 0 0 0 20px; }
 .ZmSpreadSheet-Tooltip .CellDesc { font-style: italic; text-align: center; }
+
+.ZmSpreadSheet .AutoFill {
+    background-color: #000;
+    border: 2px solid white;
+    height: 5px;
+    width: 5px;
+    position: absolute;
+    left:0px;
+    top:0px;    
+    cursor: crosshair;
+    z-index: 7;    
+}
+
+.ZmSpreadSheet .AutoFillRange {
+    background-color: #0000CC;
+}
+
+.ZmSpreadSheet .ShowAutoFillRange {
+  z-index: 7;
+  position: absolute; left: 0; top: 0;
+  font-size: 1px;
+  line-height: 1px;
+  opacity: 0.4;
+  filter: alpha(opacity=40);
+  background-color: white;
+  border: 2px dotted #000;
+}
