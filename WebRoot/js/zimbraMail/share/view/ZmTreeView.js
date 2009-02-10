@@ -296,7 +296,11 @@ function(params) {
 				var orgs = ZmMsg[ZmOrganizer.LABEL[this.type]].toLowerCase();
 				child = new ZmFolder({id:ZmFolder.ID_LOAD_FOLDERS, name:AjxMessageFormat.format(ZmMsg.showRemainingFolders, orgs)});
 				child._tooltip = AjxMessageFormat.format(ZmMsg.showRemainingFoldersTooltip, [(children.length - i), orgs]);
-				this._addNew(params.treeNode, child);
+				var ti = this._addNew(params.treeNode, child);
+				ti.enableSelection(true);
+				if (this.isCheckedStyle) {
+					ti.showCheckBox(false);
+				}
 				params.startPos = i;
 				child._showFoldersCallback = new AjxCallback(this, this._showRemainingFolders, [params]);
 				return;
