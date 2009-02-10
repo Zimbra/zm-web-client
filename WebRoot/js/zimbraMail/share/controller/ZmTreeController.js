@@ -57,8 +57,6 @@ ZmTreeController = function(type) {
 	this._treeView = {};	// hash of tree views of this type, by overview ID
 	this._hideEmpty = {};	// which tree views to hide if they have no data
 	this._dataTree = {};	// data tree per account
-
-	this.isCheckedStyle = (this.getTreeStyle() & DwtTree.CHECKEDITEM_STYLE);
 };
 
 ZmTreeController.prototype = new ZmController;
@@ -292,13 +290,14 @@ function(overviewId) {
  */
 ZmTreeController.prototype._postSetup =
 function(overviewId, account) {
-	if (!this.isCheckedStyle && !ZmOrganizer.HAS_COLOR[this.type]) { return; }
 
 	var treeView = this.getTreeView(overviewId);
+	if (!treeView.isCheckedStyle && !ZmOrganizer.HAS_COLOR[this.type]) { return; }
+
 	var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT, account);
 	var rootTreeItem = treeView.getTreeItemById(rootId);
 	if (!rootTreeItem) { return; }
-	if (this.isCheckedStyle) {
+	if (treeView.isCheckedStyle) {
 		rootTreeItem.showCheckBox(false);
 	}
 	var treeItems = rootTreeItem.getItems();
@@ -322,8 +321,8 @@ function(treeItem, organizer, treeView) {
 		if (ZmOrganizer.HAS_COLOR[this.type]) {
 			this._setTreeItemColor(treeItem, organizer);
 		}
-		if (this.isCheckedStyle) {
-			if (organizer.type == this.type && treeView._showCheckboxes) {
+		if (treeView.isCheckedStyle) {
+			if (organizer.type == this.type && treeView.isCheckedStyle) {
 				treeItem.setChecked(organizer.isChecked);
 			} else {
 				treeItem.showCheckBox(false);
@@ -372,7 +371,7 @@ function(overviewId) {
 		headerClass: overview.headerClass,
 		dragSrc: (overview.dndSupported ? this._dragSrc : null),
 		dropTgt: (overview.dndSupported ? this._dropTgt : null),
-		treeStyle: (this.getTreeStyle() || overview.treeStyle),
+		treeStyle: overview.treeStyle,
 		allowedTypes: this._getAllowedTypes(),
 		allowedSubTypes: this._getAllowedSubTypes()
 	};
@@ -388,12 +387,6 @@ ZmTreeController.prototype._createTreeView =
 function(params) {
 	return new ZmTreeView(params);
 };
-
-/**
- * This allows a tree controller to override the default tree style
- * specified by the overview controller.
- */
-ZmTreeController.prototype.getTreeStyle = function() {};
 
 /**
  * Creates up to two action menus, one for the tree view's header item, and

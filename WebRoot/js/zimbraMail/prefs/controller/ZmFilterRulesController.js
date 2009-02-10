@@ -47,6 +47,11 @@ ZmFilterRulesController = function(container, prefsApp, prefsView) {
 ZmFilterRulesController.prototype = new ZmController();
 ZmFilterRulesController.prototype.constructor = ZmFilterRulesController;
 
+ZmFilterRulesController.prototype.toString =
+function() {
+	return "ZmFilterRulesController";
+};
+
 /**
 * Returns the filter rules view, which comprises a toolbar and a list view.
 */
@@ -252,11 +257,11 @@ function(ev) {
 	var params = {
 		treeIds: [ZmOrganizer.FOLDER],
 		title: ZmMsg.chooseFolder,
-		overviewId: ([this.toString(), "overviewid"].join("-")),
+		overviewId: this.toString(),
 		description: ZmMsg.chooseFolderToFilter,
 		skipReadOnly: true,
 		hideNewButton: true,
-		showCheckboxes: true
+		treeStyle: DwtTree.CHECKEDITEM_STYLE
 	};
 	dialog.popup(params);
 };

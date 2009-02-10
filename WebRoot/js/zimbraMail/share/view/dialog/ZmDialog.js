@@ -140,6 +140,7 @@ function(params) {
 			overviewClass: "dialogOverview",
 			headerClass: "DwtTreeItem",
 			noTooltips: true,
+			treeStyle: params.treeStyle,
 			treeIds: params.treeIds
 		};
 		overview = this._overview[overviewId] = this._opc.createOverview(ovParams);

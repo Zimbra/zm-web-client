@@ -257,7 +257,6 @@ function(overviewId, parent, types) {
 	for (var i = 0; i < types.length; i++) {
 		var treeView = this._treeView[types[i]] = overview.getTreeView(types[i]);
 		treeView.addSelectionListener(new AjxListener(this, this._treeListener));
-		treeView.showCheckboxes(true);
 	}
 	if (types.length == 1) {
 		this._hideRoot(types[0]);

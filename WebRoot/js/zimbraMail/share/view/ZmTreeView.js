@@ -41,8 +41,7 @@ ZmTreeView = function(params) {
 	if (arguments.length == 0) { return; }
 
 	var className = params.className || "OverviewTree";
-	var treeStyle = params.treeStyle || DwtTree.SINGLE_STYLE;
-	DwtTree.call(this, {parent:params.parent, parentElement: params.parentElement, style:treeStyle, 
+	DwtTree.call(this, {parent:params.parent, parentElement: params.parentElement, style:params.treeStyle, 
 						className:className, posStyle:params.posStyle, id:params.id});
 
 	this._headerClass = params.headerClass ? params.headerClass : "overviewHeader";
@@ -58,7 +57,6 @@ ZmTreeView = function(params) {
 
 	this._dataTree = null;
 	this._treeItemHash = {};	// map organizer to its corresponding tree item by ID
-	this._showCheckboxes = this._isCheckedStyle();
 };
 
 ZmTreeView.KEY_TYPE	= "_type_";
@@ -191,7 +189,7 @@ function() {
  */
 ZmTreeView.prototype.getSelected =
 function() {
-	if (this._isCheckedStyle() && this._showCheckboxes) {
+	if (this.isCheckedStyle) {
 		var selected = [];
 		var items = this.getHeaderItem().getItems();
 		for (var i = 0; i < items.length; i++) {
@@ -219,35 +217,6 @@ function(organizer, skipNotify, noFocus) {
 	var id = ZmOrganizer.getSystemId((organizer instanceof ZmOrganizer) ? organizer.id : organizer);
 	if (!id || !this._treeItemHash[id]) { return; }
 	this.setSelection(this._treeItemHash[id], skipNotify, false, noFocus);
-};
-
-/**
- * Shows/hides checkboxes if treeview is checkbox style
- * 
- * @param show	[boolean]	if true, show checkboxes
- * @param reset	[boolean]	if true, unchecks the checkboxes
- */
-ZmTreeView.prototype.showCheckboxes =
-function(show, reset, treeItems) {
-	if (!this._isCheckedStyle()) { return; }
-
-	this._showCheckboxes = show;
-	treeItems = treeItems || this.getHeaderItem().getItems();
-	if (treeItems && treeItems.length) {
-		for (var i = 0; i < treeItems.length; i++) {
-			var ti = treeItems[i];
-			if (ti._isSeparator) continue;
-			ti.showCheckBox(show);
-			ti.enableSelection(!show);
-			if (reset) {
-				ti.setChecked(false);
-			}
-			var subItems = ti.getItems();
-			if (subItems.length > 0) {
-				this.showCheckboxes(show, reset, subItems);
-			}
-		}
-	}
 };
 
 

@@ -58,7 +58,6 @@ function() {
  *        skipSyncFailureSubs	[boolean]*		if true, don't show "Local Folders"
  *        hideNewButton 		[boolean]*		if true, New button will not be shown
  *        noRootSelect			[boolean]*		if true, don't make root tree item(s) selectable
- *        showCheckboxes		[boolean]*		if true, show checkboxes next to each folder
  */
 ZmChooseFolderDialog.prototype.popup =
 function(params) {
@@ -117,7 +116,7 @@ function(params) {
 		overviewId: (appCtxt.multiAccounts) ? ([base, acct.name].join(":")) : base,
 		noRootSelect: params.noRootSelect,
 		account: acct,
-		showCheckboxes: params.showCheckboxes
+		treeStyle: params.treeStyle
 	};
 
 	// make sure the requisite packages are loaded
@@ -150,9 +149,6 @@ function(params, treeIds, folderTree) {
 
 		// bug #18533 - always make sure header item is visible in "MoveTo" dialog
 		treeView.getHeaderItem().setVisible(true, true);
-
-		// remove checkboxes if treeview has them
-		treeView.showCheckboxes(params.showCheckboxes, true);
 
 		// expand root item
 		var ti = treeView.getTreeItemById(folderTree.root.id);
@@ -219,7 +215,6 @@ function(ev) {
 		var org = organizers[0];
 		var treeView = this._getOverview().getTreeView(org.type);
 		treeView.setSelected(organizers[0], true);
-		treeView.showCheckboxes(false);
 		this._creatingFolder = false;
 	}
 };
