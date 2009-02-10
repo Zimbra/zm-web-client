@@ -178,10 +178,10 @@
 						<td align="left">
 							<c:choose>
 								<c:when test="${mailbox.features.portalEnabled}">
-									 <a href="/h/home" ><div class='ImgSkin_Chrome_Logo'></div></a>
+									 <a href="/h/home" ><div class='ImgAppLogoLite'></div></a>
 								</c:when>
 								<c:otherwise>
-									 <a href="/h/search" ><div class='ImgSkin_Chrome_Logo'></div></a>
+									 <a href="/h/search" ><div class='ImgAppLogoLite'></div></a>
 								</c:otherwise>
 							</c:choose>
 						</td>
