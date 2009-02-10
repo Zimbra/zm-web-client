@@ -365,7 +365,7 @@
 			    </c:if>
 			</c:forEach>
 
-			<c:if test="${(selected eq 'mail' or selected eq 'compose') and mailbox.features.portalEnabled and comcast_adsrvc}">
+			<c:if test="${(selected eq 'mail') and mailbox.features.portalEnabled and comcast_adsrvc}">
 			
 				<td id="_sidebarAd" colspan="1" width="160" valign="top" bgcolor="#f5f5f5" align="center">
 		  			  <iframe src="http://pn2.adserver.yahoo.com/a?f=2022363871&pn=comcast&p=com-mail&l=SKY&c=sh&bg=f5f5f5&no_expandable=1"
@@ -377,7 +377,7 @@
 		              frameborder="0"
 		              style="border:none;"
 		              scrolling="no" align="center"></iframe>
-                    <fmt:message key="advertisement" />
+		           <a style="color:black;text-decoration:none;" href="<fmt:message key="adSlugLink" />" ><fmt:message key="advertisement" /></a>
 				</td>
 			</c:if>
 	
