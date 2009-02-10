@@ -180,6 +180,7 @@ function() {
 
 ZmContactView.prototype.isEmpty =
 function() {
+	this._getFields();
 	for (var i = 0; i < this._fields.length; i++) {
 		var fields = this._fields[i];
 		// Make sure at least one form field has a value
@@ -193,6 +194,7 @@ function() {
 
 ZmContactView.prototype.isValid =
 function() {
+	this._getFields();
 	for (var i = 0; i < this._dateCells.length; i++) {
 		var buttonId = this._dateCells[i].id;
 		var dateFieldId = buttonId.substring(0, buttonId.indexOf("_button"));
