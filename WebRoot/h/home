@@ -163,7 +163,7 @@
 	              frameborder="0"
 	              style="border:none;"
 	              scrolling="no" align="center"></iframe>
-            <fmt:message key="advertisement" />
+           <a style="color:black;text-decoration:none;" href="<fmt:message key="adSlugLink" />" ><fmt:message key="advertisement" /></a>
 			</td>
 		</c:if>
 </tr>
