@@ -33,15 +33,48 @@ function() {
 
 ZmTaskbarPopup.prototype.popup =
 function() {
+	this._pushKeyHandlers();
 };
 
 ZmTaskbarPopup.prototype.popdown =
 function() {
+	this._popKeyHandlers();
 };
 
 ZmTaskbarPopup.prototype.getTabGroupMember =
 function() {
 	return this._tabGroup;
+};
+
+ZmTaskbarPopup.prototype.handleKeyEvent =
+function(ev) {
+	if (ev.charCode == 27) { // ESC
+	   this._doPopdown();
+	}
+};
+
+ZmTaskbarPopup.prototype._pushKeyHandlers =
+function() {
+	if (!this._handlingKeyboard) {
+		var kbMgr = this.shell.getKeyboardMgr();
+		kbMgr.pushDefaultHandler(this);
+		if (this._tabGroup) {
+			kbMgr.pushTabGroup(this._tabGroup);
+		}
+		this._handlingKeyboard = true;
+	}
+};
+
+ZmTaskbarPopup.prototype._popKeyHandlers =
+function() {
+	if (this._handlingKeyboard) {
+		var kbMgr = this.shell.getKeyboardMgr();
+		kbMgr.popDefaultHandler();
+		if (this._tabGroup) {
+			kbMgr.popTabGroup(this._tabGroup);
+		}
+		this._handlingKeyboard = false;
+	}
 };
 
 ZmTaskbarPopup.prototype._createTabGroupMember =
@@ -51,7 +84,7 @@ function() {
 
 ZmTaskbarPopup.prototype._setFocusMember =
 function(member) {
-	appCtxt.getRootTabGroup().setFocusMember(member);
+	this._tabGroup.setFocusMember(member);
 };
 
 ZmTaskbarPopup.prototype._doPopdown =
@@ -59,7 +92,8 @@ function() {
 	this.taskbar.expandItem(this.parent, false);
 };
 
-ZmTaskbarPopup.prototype._showError = function(msg, loc) {
+ZmTaskbarPopup.prototype._showError =
+function(msg, loc) {
 	var msgDialog = appCtxt.getMsgDialog();
 	msgDialog.reset();
 	loc = loc ? loc : new DwtPoint(this.getLocation().x + 50, this.getLocation().y + 100);

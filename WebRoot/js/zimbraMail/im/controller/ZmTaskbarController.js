@@ -69,10 +69,6 @@ ZmTaskbarController = function(components) {
 	roster.addGatewayListListener(new AjxListener(this, this._gatewayListListener));
 	ZmImApp.INSTANCE.getRoster().getChatList().addChangeListener(new AjxListener(this, this._chatListListener));
 	ZmImApp.INSTANCE.getRoster().getRosterItemList().addChangeListener(new AjxListener(this, this._rosterListChangeListener));
-
-	var rootTg = appCtxt.getRootTabGroup();
-	rootTg.addMember(this._toolbar.getTabGroupMember());
-	this._toolbar.noFocus = true;
 };
 
 ZmTaskbarController.prototype = new ZmController;
