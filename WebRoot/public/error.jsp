@@ -1,0 +1,64 @@
+<%@ page buffer="8kb" autoFlush="true" %>
+<%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
+<%@ page session="false" %>
+<%@ taglib prefix="zm" uri="com.zimbra.zm" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
+<%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<fmt:setLocale value='${pageContext.request.locale}' scope='request' />
+<fmt:setBundle basename="/messages/ZmMsg" scope="request"/>
+<fmt:setBundle basename="/messages/ZMsg" var="zmsg" scope="request"/>
+
+<html>
+<head>
+<!--
+ * ***** BEGIN LICENSE BLOCK *****
+ * Zimbra Collaboration Suite Web Client
+ * Copyright (C) 2007 Zimbra, Inc.
+ * 
+ * The contents of this file are subject to the Yahoo! Public License
+ * Version 1.0 ("License"); you may not use this file except in
+ * compliance with the License.  You may obtain a copy of the License at
+ * http://www.zimbra.com/license.
+ * 
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * ***** END LICENSE BLOCK *****
+-->
+  
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+    <title><fmt:message key="Error"/></title>
+  
+   
+    <meta name="viewport" content="width=320; initial-scale=1.0; maximum-scale=8.0; user-scalable=1;">
+    <meta name="description" content="<fmt:message key="zimbraLoginMetaDesc"/>">
+    <link  rel="stylesheet" type="text/css" href="<c:url value='/css/common,login,zhtml,skin.css'>
+		<c:param name="skin"	value="${skin}" />
+		<c:param name="v"		value="${version}" />
+	</c:url>">
+    <fmt:message key="favIconUrl" var="favIconUrl"/>
+    <link rel="SHORTCUT ICON" href="<c:url value='${favIconUrl}'/>">
+</head>
+<c:set value="/img" var="iconPath" scope="request"/>
+<body>
+<p><br><br></p><p><br><br></p>
+<table width="100%"><tr><td align="center">
+<div id="ZloginPanel">
+<table cellpadding="5" cellspacing="5" border="0" align="center" id="ZloginBodyContainer">
+ <tr>
+	<td><img src="/zimbra/img/dwt/ImgWarning_32.gif" width="32" height="32" border="0"></td>
+    <td vlaign="middle"><h2 style="margin: 0px;">Page Not Found</h2></td>
+ </tr>
+ <tr>
+ 	<td></td>
+ 	<td><hr style="margin: 0px;"><p>The page you are looking for might have been removed, has its name changed, or is temporarily unavailable.</p><p>Please try again later.</p><br>
+ 	<a href="#"><b>&laquo; Go back to mail app</b></a><br><br>
+ 	<p>ERROR: 404</p></td>
+ </tr>
+</table>
+</div>
+</td></tr></table>
+</body>
+</html>

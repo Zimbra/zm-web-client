@@ -70,7 +70,7 @@ ZmNewTagDialog.prototype._contentHtml =
 function() {
 	this._nameFieldId = Dwt.getNextId();
 	this._tagColorButtonCellId = Dwt.getNextId();
-	return ["<table cellpadding=2 cellspacing=2 border=0>",
+	return ["<table cellpadding=2 cellspacing=2 border=0 style='padding:8px;margin:8px;'>",
 			"<tr><td class='Label' colspan=2>", ZmMsg.tagName, ": </td></tr>",
 			"<tr><td>", Dwt.CARET_HACK_BEGIN, "<input type=text autocomplete=OFF class='Field' id='", this._nameFieldId, "' />", Dwt.CARET_HACK_END, "</td>",
 		    "<td id='", this._tagColorButtonCellId, "' /></tr>",
