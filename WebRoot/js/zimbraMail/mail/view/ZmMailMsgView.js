@@ -512,7 +512,7 @@ function(msg, oldMsg) {
 
 	// notify zimlets that a new message has been opened
 	if (appCtxt.zimletsPresent()) {
-		appCtxt.getZimletMgr().notifyZimlets("onMsgView", msg, oldMsg, this);
+		appCtxt.getZimletMgr().notifyZimlets("onMsgView", [msg, oldMsg, this]);
 	}
 };
 
@@ -1048,7 +1048,7 @@ function(msg, container, callback) {
 
 		// notify zimlets that we're finding objects in the message
 		if (appCtxt.zimletsPresent()) {
-			appCtxt.getZimletMgr().notifyZimlets("onFindMsgObjects", msg, this._objectManager, this);
+			appCtxt.getZimletMgr().notifyZimlets("onFindMsgObjects", [msg, this._objectManager, this]);
 		}
 
 		this._objectManager.setHandlerAttr(ZmObjectManager.DATE,

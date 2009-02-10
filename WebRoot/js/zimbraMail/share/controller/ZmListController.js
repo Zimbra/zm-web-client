@@ -373,7 +373,7 @@ function(view) {
 
 ZmListController.prototype._notifyZimletsToolbar =
 function(app, tb, view) {
-	appCtxt.getZimletMgr().notifyZimlets("initializeToolbar", app, tb, this, view);
+	appCtxt.getZimletMgr().notifyZimlets("initializeToolbar", [app, tb, this, view]);
 };
 
 // list view and its listeners

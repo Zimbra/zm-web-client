@@ -405,7 +405,7 @@ function(app) {
 * changes the top-level view of the app.
 *
 * @param app		the name of an app
-* @param viewID		the ID of a view
+* @param viewId		the ID of a view
 */
 ZmAppViewMgr.prototype.setAppView =
 function(app, viewId) {
@@ -545,6 +545,7 @@ function(viewId, force, switchTab) {
 
 	this._layout(this._currentView);
 
+
 	if (viewController && viewController.setCurrentView) {
 		viewController.setCurrentView(viewId);
 	}
@@ -565,15 +566,15 @@ function(viewId, force, switchTab) {
 /**
 * Hides the currently visible view, and makes the view on top of the hidden stack visible.
 *
-* @param force		don't run callbacks (which check if popping is OK)
-* @param viewId		only pop if this is current view
-* @returns			true if the view was popped
+* @param	force	[Boolean]		don't run callbacks (which check if popping is OK)
+* @param	viewId	[Integer]		only pop if this is current view
+* @returns			[Boolean]		true if the view was popped
 */
 ZmAppViewMgr.prototype.popView =
 function(force, viewId) {
 	if (!this._currentView) {
 		DBG.println(AjxDebug.DBG1, "ERROR: no view to pop");
-		return;
+		return false;
 	}
 
 	var isPendingView = (force == ZmAppViewMgr.PENDING_VIEW);
@@ -583,7 +584,7 @@ function(force, viewId) {
 	}
 
 	// check if trying to pop non-current view
-	if (viewId && !isPendingView && (this.getCurrentViewId() != viewId)) { return; }
+	if (viewId && !isPendingView && (this.getCurrentViewId() != viewId)) { return false; }
 
 	if (!this._hidden.length && !this._isNewWindow) {
 		DBG.println(AjxDebug.DBG1, "ERROR: no view to replace popped view");
@@ -591,7 +592,7 @@ function(force, viewId) {
 		if (location && (location.search.match(/\bview=compose\b/))) {
 			this._controller.activateApp(ZmApp.MAIL);
 		}
-		return;
+		return false;
 	}
 
 	DBG.println(AjxDebug.DBG1, "popView: " + this._currentView);
@@ -617,13 +618,13 @@ function(force, viewId) {
 	// close this window if no more views exist and it's a child window
 	if (!this._currentView && this._isNewWindow) {
 		window.close();
-		return;
+		return false;
 	}
 
 	DBG.println(AjxDebug.DBG2, "app view mgr: current view is now " + this._currentView);
 	if (!this._showView(this._currentView, this._popCallback, null, force, true)) {
 		DBG.println(AjxDebug.DBG1, "ERROR: pop with no view to show");
-		return;
+		return false;
 	}
 	this._removeFromHidden(this._currentView);
 	DBG.println(AjxDebug.DBG2, "hidden (after): " + this._hidden);
@@ -695,7 +696,7 @@ function(oldViewId, newViewId) {
 	var newView = this._views[newViewId];
 	this._hideView(oldViewId, true);
 	for (var cid in newView) {
-		oldView[cid] = newView[cid]
+		oldView[cid] = newView[cid];
 	}
 	if (this._currentView == oldViewId) {
 		this._currentView = newViewId;
@@ -874,7 +875,7 @@ function(components, resetToolbar) {
 ZmAppViewMgr.prototype._getComponentPosition =
 function(cid) {
 	return appCtxt.getSkinHint(cid, "position");
-}
+};
 
 ZmAppViewMgr.prototype._getContainerBounds =
 function(cid) {
@@ -891,7 +892,7 @@ function(cid) {
 		return bounds;
 	}
 	return null;
-}
+};
 
 // Performs manual layout of the components, absent a containing skin. Currently assumes
 // that there will be a top toolbar and app content.
@@ -950,7 +951,7 @@ function(view, force, isNewView) {
 	}
 
 	if (!this._isNewWindow && appCtxt.zimletsPresent()) {
-		appCtxt.getZimletMgr().notifyZimlets("onShowView", view, isNewView);
+		appCtxt.getZimletMgr().notifyZimlets("onShowView", [view, isNewView]);
 	}
 
 	return okToContinue;
@@ -1055,9 +1056,8 @@ function(view) {
 // Handles shell resizing event.
 ZmAppViewMgr.prototype._shellControlListener =
 function(ev) {
-	
 	if (ev.oldWidth != ev.newWidth || ev.oldHeight != ev.newHeight) {
-		
+
 		this._shellSz.x = ev.newWidth;
 		this._shellSz.y = ev.newHeight;
 		var deltaWidth = ev.newWidth - ev.oldWidth;
@@ -1172,7 +1172,7 @@ function(ev) {
 ZmAppViewMgr.prototype._appTreeSashCallback =
 function(delta) {
 	if (!window.skin) { return; }
-	
+
 	// ask skin for width of tree, rather than hard-coding name of tree div here
 	var currentWidth = skin.getTreeWidth();
 	if (!currentWidth) { return 0; }

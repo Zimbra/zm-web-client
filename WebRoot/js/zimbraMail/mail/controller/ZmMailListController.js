@@ -1369,7 +1369,7 @@ function(items, on) {
 
 	ZmListController.prototype._doFlag.call(this, items, on);
 	if (appCtxt.zimletsPresent()) {
-		appCtxt.getZimletMgr().notifyZimlets("onMailFlagClick", items, on);
+		appCtxt.getZimletMgr().notifyZimlets("onMailFlagClick", [items, on]);
 	}
 };
 
@@ -1378,6 +1378,6 @@ ZmMailListController.prototype._doTag =
 function(items, tag, doTag) {
 	ZmListController.prototype._doTag.call(this, items, tag, doTag);
 	if (appCtxt.zimletsPresent()) {
-		appCtxt.getZimletMgr().notifyZimlets("onTagAction", items, tag, doTag);
+		appCtxt.getZimletMgr().notifyZimlets("onTagAction", [items, tag, doTag]);
 	}
 };

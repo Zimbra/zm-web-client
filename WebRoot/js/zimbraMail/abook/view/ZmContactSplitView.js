@@ -368,7 +368,7 @@ function(contact, isGal, oldContact) {
 
 		// notify zimlets that a new contact is being shown.
 		if (appCtxt.zimletsPresent()) {
-			appCtxt.getZimletMgr().notifyZimlets("onContactView", contact, this._htmlElId, tabIdx);
+			appCtxt.getZimletMgr().notifyZimlets("onContactView", [contact, this._htmlElId, tabIdx]);
 		}
 	}
 

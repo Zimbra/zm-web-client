@@ -665,7 +665,7 @@ function(attId, isDraft) {
 			var showErrorDlg = false;
 			var errorMsg = "";
 			var zimletName = "";
-			this._zimletMgr.notifyZimlets("emailErrorCheck", msg, boolAndErrorMsgArray);
+			this._zimletMgr.notifyZimlets("emailErrorCheck", [msg, boolAndErrorMsgArray]);
 			var blen =  boolAndErrorMsgArray.length;
 			for(var k =0; k < blen; k++){
 				var obj = boolAndErrorMsgArray[k];
@@ -1208,7 +1208,7 @@ function() {
 			this._zimletMgr = appCtxt.getZimletMgr();//cache zimletMgr
 		}
 		var buffer = [];
-		this._zimletMgr.notifyZimlets("appendExtraSignature", buffer);
+		this._zimletMgr.notifyZimlets("appendExtraSignature", [buffer]);
 		extraSignature = buffer.join(this._getSignatureNewLine());
 		if (extraSignature != "") {
 			extraSignature = this._getSignatureNewLine() + extraSignature;

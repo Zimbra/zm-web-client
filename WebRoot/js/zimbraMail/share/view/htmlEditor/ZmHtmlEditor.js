@@ -735,7 +735,7 @@ function(tb) {
 	this._underlineButton.addSelectionListener(listener);
 
 	if (!appCtxt.isChildWindow) {
-		appCtxt.getZimletMgr().notifyZimlets("on_htmlEditor_createToolbar1", this, tb);
+		appCtxt.getZimletMgr().notifyZimlets("on_htmlEditor_createToolbar1", [this, tb]);
 	}
 };
 
@@ -800,7 +800,7 @@ function(tb) {
 	}
 
 	if (!appCtxt.isChildWindow) {
-		appCtxt.getZimletMgr().notifyZimlets("on_htmlEditor_createToolbar2", this, tb);
+		appCtxt.getZimletMgr().notifyZimlets("on_htmlEditor_createToolbar2", [this, tb]);
 	}
 };
 

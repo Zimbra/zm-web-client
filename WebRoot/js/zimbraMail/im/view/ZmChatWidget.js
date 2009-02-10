@@ -411,7 +411,7 @@ ZmChatWidget.prototype._init = function() {
 
 	// notify zimlets that a chat widget is being shown.
 	if (appCtxt.zimletsPresent()) {
-		appCtxt.getZimletMgr().notifyZimlets("onNewChatWidget", this);
+		appCtxt.getZimletMgr().notifyZimlets("onNewChatWidget", [this]);
 	}
 	this._doResize();
 };

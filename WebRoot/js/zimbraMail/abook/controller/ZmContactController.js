@@ -283,9 +283,6 @@ function(ev, bIsPopCallback) {
                     bIsPopCallback = true;
                 } else {
 					this._doModify(contact, mods);
-                    if (appCtxt.zimletsPresent()) {
-                        appCtxt.getZimletMgr().notifyZimlets("onContactModified", ZmZimletContext._translateZMObject(contact), mods);
-                    }
                 }
 			} else {
 				var clc = AjxDispatcher.run("GetContactListController");
