@@ -404,50 +404,48 @@ ZmSpreadSheet.prototype._table_autofill_mouseMove = function(ev){
 
     if (td && /^td$/i.test(td.tagName) && td.cellIndex > 0 && td.parentNode.rowIndex > 0) {
 
-        var destCell = td;
+        var destCell = td;        
+        var startRow, startCol, endRow, endCol;
         if(this.isRange()){
 
             var dRow =  destCell.parentNode.rowIndex - 1;
             var dCol =  destCell.cellIndex - 1;
 
-            var sStartRow = this._startRangeRow;
-            var sStartCol = this._startRangeCol;
-            var sEndRow   = this._endRangeRow;
-            var sEndCol   = this._endRangeCol;
+            startRow = this._startRangeRow;
+            startCol = this._startRangeCol;
+            endRow   = this._endRangeRow;
+            endCol   = this._endRangeCol;
 
-            if(dRow >= sStartRow && dRow <= sEndRow){
-                 if(dCol > sEndCol)         sEndCol   = dCol;
-                 else if(dCol < sStartCol)  sStartCol = dCol;
+            if(dRow >= startRow && dRow <= endRow){
+                 if(dCol > endCol)          endCol   = dCol;
+                 else if(dCol < startCol)   startCol = dCol;
             }else {
-                if(dRow > sEndRow)        sEndRow   = dRow;
-                else if(dRow < sEndRow)   sStartRow = dRow;
+                if(dRow > endRow)           endRow   = dRow;
+                else if(dRow < startRow)    startRow = dRow;
             }
-
-            var sRow =  Math.min(sStartRow, sEndRow);
-            var sCol =  Math.min(sStartCol, sEndCol);
-            var eRow =  Math.max(sStartRow, sEndRow);
-            var eCol =  Math.max(sStartCol, sEndCol);
-
-            if(!(sRow == this._aRangeStartRow && eRow == this._aRangeEndRow && sCol == this._aRangeStartCol && eCol == this._aRangeEndCol)){
-                this._showAutoFillRange(sRow, sCol, eRow, eCol);
-            }
-
         }else{
 
             var srcCell = this._selectedCell;            
-            var startRow = srcCell.parentNode.rowIndex - 1;
-            var startCol = srcCell.cellIndex - 1;
+            startRow = srcCell.parentNode.rowIndex - 1;
+            startCol = srcCell.cellIndex - 1;
 
-            var endRow =  destCell.parentNode.rowIndex - 1;
-            var endCol =  destCell.cellIndex - 1;
+            endRow =  destCell.parentNode.rowIndex - 1;
+            endCol =  destCell.cellIndex - 1;
 
             if(startRow != endRow && startCol != endCol ){
                 endCol = startCol;
-            }
-
-            this._showAutoFillRange(Math.min(startRow, endRow), Math.min(startCol, endCol), Math.max(startRow, endRow), Math.max(startCol, endCol));
-
+            }           
         }
+
+        var sRow =  Math.min(startRow, endRow);
+        var sCol =  Math.min(startCol, endCol);
+        var eRow =  Math.max(startRow, endRow);
+        var eCol =  Math.max(startCol, endCol);
+
+        if(!(sRow == this._aRangeStartRow && eRow == this._aRangeEndRow && sCol == this._aRangeStartCol && eCol == this._aRangeEndCol)){
+            this._showAutoFillRange(sRow, sCol, eRow, eCol);
+        }
+
     }
 
     dwtev._stopPropagation = true;
