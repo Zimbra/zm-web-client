@@ -48,8 +48,18 @@ function() {
 
 ZmTaskbarPopup.prototype.handleKeyEvent =
 function(ev) {
-	if (ev.charCode == 27) { // ESC
-	   this._doPopdown();
+	switch (ev.charCode) {
+		case 27: { // ESC
+			this._doPopdown();
+			break;
+		}
+		case 13: { // ENTER
+			this._onEnter();
+			break;
+		}
+		default: {
+			break;
+		}
 	}
 };
 
@@ -96,6 +106,10 @@ ZmTaskbarPopup.prototype._doDispose =
 function() {
 	this._doPopdown();
 	this.parent.dispose();
+};
+
+ZmTaskbarPopup.prototype._onEnter =
+function() {
 };
 
 ZmTaskbarPopup.prototype._showError =

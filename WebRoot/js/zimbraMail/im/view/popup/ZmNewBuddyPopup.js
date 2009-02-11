@@ -216,6 +216,11 @@ function() {
 	}
 };
 
+ZmNewBuddyPopup.prototype._onEnter =
+function() {
+	this._okButtonListener();
+};
+
 ZmNewBuddyPopup.prototype._cancelButtonListener =
 function() {
 	this._doPopdown();
