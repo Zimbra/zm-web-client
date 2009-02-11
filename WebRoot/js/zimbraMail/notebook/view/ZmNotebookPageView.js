@@ -358,6 +358,8 @@ ZmNotebookPageView.prototype.mutateLink = function(linkNode,doc,linkPrefix){
 		target = this._iframe1.id;
 	}
 	linkNode.target = target;
+    //bug 24205. Required for some browsers
+    linkNode.innerHTML = decodeURI(linkNode.innerHTML);
 };
 
 ZmNotebookPageView.prototype.fetchPageInfo = function(iSrc){
