@@ -320,10 +320,24 @@ function(zimletArray, zimletNames, isJS) {
 		var baseUrl = zimletArray[i].zimletContext[0].baseUrl;
 		var isDevZimlet = baseUrl.match("/_dev/");
 
+        var languageId = null;
+        var countryId = null;
+        if(appCtxt.get(ZmSetting.LOCALE_NAME)) {
+            var locale = appCtxt.get(ZmSetting.LOCALE_NAME);
+            var index = locale.indexOf("_");
+            if (index == -1) {
+                languageId = locale;
+                } else {
+                languageId = locale.substr(0, index);
+                countryId = locale.substr(index+1);
+            }
+        }        
 		// add cache killer to each url
 		var query = isDevZimlet
 			? ("?debug=1&v="+new Date().getTime())
-			: ("?v="+cacheKillerVersion);
+			: ("?v="+cacheKillerVersion+"&");
+        query += ((languageId ? "language=" + languageId : "")+"&");
+        query += ((countryId ? "country=" + countryId : ""));
 
 		// include messages
 		if (appDevMode && isJS) {
@@ -347,22 +361,12 @@ function(zimletArray, zimletNames, isJS) {
 
 	// add link to aggregated files
 	if (!appDevMode) {
-        var languageId = null;
-        if(appCtxt.get(ZmSetting.LOCALE_NAME)) {
-            var locale = appCtxt.get(ZmSetting.LOCALE_NAME);
-            var index = locale.indexOf("_");
-            var languageId;
-            if (index == -1) {
-                languageId = locale;
-                } else {
-                languageId = locale.substr(0, index);
-            }
-        }        
         var extension = (!AjxEnv.isIE || (!AjxEnv.isIE6 && AjxEnv.isIE6up)) ? appExtension : "";
 		includes.unshift([
 			"/service/zimlet/res/Zimlets-nodev_all",
-			(isJS ? (".js" + extension) : ".css"),
-            (languageId ? "?language=" + languageId : "")
+			(isJS ? (".js" + extension) : ".css")+"?",
+            (languageId ? "language=" + languageId : "")+"&",
+            (countryId ? "country=" + countryId : "")    
         ].join(""));
 	}
 
