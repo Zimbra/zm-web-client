@@ -92,6 +92,12 @@ function() {
 	this.taskbar.expandItem(this.parent, false);
 };
 
+ZmTaskbarPopup.prototype._doDispose =
+function() {
+	this._doPopdown();
+	this.parent.dispose();
+};
+
 ZmTaskbarPopup.prototype._showError =
 function(msg, loc) {
 	var msgDialog = appCtxt.getMsgDialog();
