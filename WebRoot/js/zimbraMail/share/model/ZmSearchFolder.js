@@ -44,7 +44,7 @@ function(params) {
 		}
 	}
 	if (params.search.sortBy) {
-		searchNode.setAttribute("sortBy", ZmSearch.SORT_BY[params.search.sortBy]);
+		searchNode.setAttribute("sortBy", params.search.sortBy);
 	}
 	searchNode.setAttribute("l", params.parent.id);
 	var errorCallback = new AjxCallback(null, ZmOrganizer._handleErrorCreate, params);

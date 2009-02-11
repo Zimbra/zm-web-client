@@ -85,46 +85,21 @@ ZmSearch.TYPE_MAP = {};
 ZmSearch.DEFAULT_LIMIT = 25;
 
 // Sort By
-var i = 1;
-ZmSearch.DATE_DESC 		= i++;
-ZmSearch.DATE_ASC 		= i++;
-ZmSearch.SUBJ_DESC 		= i++;
-ZmSearch.SUBJ_ASC 		= i++;
-ZmSearch.NAME_DESC 		= i++;
-ZmSearch.NAME_ASC 		= i++;
-ZmSearch.SCORE_DESC 	= i++;
-ZmSearch.DURATION_DESC	= i++; 
-ZmSearch.DURATION_ASC	= i++;
-ZmSearch.STATUS_DESC	= i++;
-ZmSearch.STATUS_ASC		= i++;
-ZmSearch.PCOMPLETE_DESC	= i++;
-ZmSearch.PCOMPLETE_ASC	= i++;
-ZmSearch.DUE_DATE_DESC	= i++;
-ZmSearch.DUE_DATE_ASC	= i++;
-
-ZmSearch.SORT_BY = {};
-ZmSearch.SORT_BY[ZmSearch.DATE_DESC] 		= "dateDesc";
-ZmSearch.SORT_BY[ZmSearch.DATE_ASC] 		= "dateAsc";
-ZmSearch.SORT_BY[ZmSearch.SUBJ_DESC] 		= "subjDesc";
-ZmSearch.SORT_BY[ZmSearch.SUBJ_ASC] 		= "subjAsc";
-ZmSearch.SORT_BY[ZmSearch.NAME_DESC] 		= "nameDesc";
-ZmSearch.SORT_BY[ZmSearch.NAME_ASC] 		= "nameAsc";
-ZmSearch.SORT_BY[ZmSearch.SCORE_DESC]		= "scoreDesc";
-ZmSearch.SORT_BY[ZmSearch.DURATION_DESC]	= "durDesc";
-ZmSearch.SORT_BY[ZmSearch.DURATION_ASC]		= "durAsc";
-ZmSearch.SORT_BY[ZmSearch.STATUS_DESC]		= "taskStatusDesc";
-ZmSearch.SORT_BY[ZmSearch.STATUS_ASC]		= "taskStatusAsc";
-ZmSearch.SORT_BY[ZmSearch.PCOMPLETE_DESC]	= "taskPercCompletedDesc";
-ZmSearch.SORT_BY[ZmSearch.PCOMPLETE_ASC]	= "taskPercCompletedAsc";
-ZmSearch.SORT_BY[ZmSearch.DUE_DATE_DESC]	= "taskDueDesc";
-ZmSearch.SORT_BY[ZmSearch.DUE_DATE_ASC]		= "taskDueAsc";
-
-ZmSearch.SORT_BY_MAP = {};
-(function() {
-	for (var i in ZmSearch.SORT_BY) {
-		ZmSearch.SORT_BY_MAP[ZmSearch.SORT_BY[i]] = i;
-	}
-})();
+ZmSearch.DATE_DESC 		= "dateDesc";
+ZmSearch.DATE_ASC 		= "dateAsc";
+ZmSearch.SUBJ_DESC 		= "subjDesc";
+ZmSearch.SUBJ_ASC 		= "subjAsc";
+ZmSearch.NAME_DESC 		= "nameDesc";
+ZmSearch.NAME_ASC 		= "nameAsc";
+ZmSearch.SCORE_DESC 	= "scoreDesc";
+ZmSearch.DURATION_DESC	= "durDesc";
+ZmSearch.DURATION_ASC	= "durAsc";
+ZmSearch.STATUS_DESC	= "taskStatusDesc";
+ZmSearch.STATUS_ASC		= "taskStatusAsc";
+ZmSearch.PCOMPLETE_DESC	= "taskPercCompletedDesc";
+ZmSearch.PCOMPLETE_ASC	= "taskPercCompletedAsc";
+ZmSearch.DUE_DATE_DESC	= "taskDueDesc";
+ZmSearch.DUE_DATE_ASC	= "taskDueAsc";
 
 ZmSearch.FOLDER_QUERY_RE = new RegExp('^in:\\s*"?(' + ZmOrganizer.VALID_PATH_CHARS + '+)"?\\s*$', "i");
 ZmSearch.TAG_QUERY_RE = new RegExp('^tag:\\s*"?(' + ZmOrganizer.VALID_NAME_CHARS + '+)"?\\s*$', "i");
@@ -493,7 +468,7 @@ function(soapDoc) {
 	var method = soapDoc.getMethod();
 
 	if (this.sortBy) {
-		method.setAttribute("sortBy", ZmSearch.SORT_BY[this.sortBy]);
+		method.setAttribute("sortBy", this.sortBy);
 	}
 
 	if (ZmSearch._mailEnabled) {
@@ -553,7 +528,7 @@ ZmSearch.prototype._getStandardMethodJson =
 function(req) {
 
 	if (this.sortBy) {
-		req.sortBy = ZmSearch.SORT_BY[this.sortBy];
+		req.sortBy = this.sortBy;
 	}
 
 	if (ZmSearch._mailEnabled) {
