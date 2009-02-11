@@ -438,31 +438,6 @@ function(view, arrowStyle) {
 	this._setupSpamButton(this._toolbar[view]);
 	this._setupCheckMailButton(this._toolbar[view]);
 
-	// nuke the text for tag menu for 800x600 resolutions
-	if (AjxEnv.is800x600orLower) {
-		var buttons = [];
-		if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
-			buttons.push(ZmOperation.TAG_MENU);
-		}
-
-		if (appCtxt.get(ZmSetting.REPLY_MENU_ENABLED)) {
-			buttons.push(ZmOperation.REPLY, ZmOperation.REPLY_ALL);
-		}
-		if (appCtxt.get(ZmSetting.FORWARD_MENU_ENABLED)) {
-			buttons.push(ZmOperation.FORWARD);
-		}
-
-		buttons.push(ZmOperation.DELETE);
-		buttons.push(ZmOperation.SPAM);
-
-		for (var i = 0; i < buttons.length; i++) {
-			var button = this._toolbar[view].getButton(buttons[i]);
-			if (button) {
-				button.setText("");
-			}
-		}
-	}
-
 	// reset new button properties
 	this._setNewButtonProps(view, ZmMsg.compose, "NewMessage", "NewMessageDis", ZmOperation.NEW_MESSAGE);
 };

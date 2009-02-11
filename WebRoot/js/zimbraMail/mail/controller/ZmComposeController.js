@@ -811,20 +811,6 @@ function() {
 		spellCheckButton.setAlign(DwtLabel.IMAGE_LEFT | DwtButton.TOGGLE_STYLE);
 	}
 
-	// reduce toolbar width if low-res display
-	if (AjxEnv.is800x600orLower) {
-		if (spellCheckButton) {
-			spellCheckButton.setText("");
-		}
-		// if "add signature" button exists, remove label for attachment button
-		if (canAddSig) {
-			var attachmentButton = tb.getButton(ZmOperation.ATTACHMENT);
-			if (attachmentButton) {
-				attachmentButton.setText("");
-			}
-		}
-	}
-	
 	var button = tb.getButton(ZmOperation.NEW_MENU);
 	if (button) {
 		var listener = new AjxListener(tb, ZmListController._newDropDownListener);

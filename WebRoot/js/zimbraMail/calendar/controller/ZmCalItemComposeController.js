@@ -283,9 +283,6 @@ function() {
 	var spellCheckButton = this._toolbar.getButton(ZmOperation.SPELL_CHECK);
 	if (spellCheckButton) {
 		spellCheckButton.setAlign(DwtLabel.IMAGE_LEFT | DwtButton.TOGGLE_STYLE);
-		if (AjxEnv.is800x600orLower) {
-			spellCheckButton.setText("");
-		}
 	}
 
 	if (appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {

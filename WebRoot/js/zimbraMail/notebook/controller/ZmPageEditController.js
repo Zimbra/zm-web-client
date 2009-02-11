@@ -132,9 +132,6 @@ function(view) {
 	var spellCheckButton = toolbar.getButton(ZmOperation.SPELL_CHECK);
 	if (spellCheckButton) {
 		spellCheckButton.setAlign(DwtLabel.IMAGE_LEFT | DwtButton.TOGGLE_STYLE);
-		if (AjxEnv.is800x600orLower) {
-			spellCheckButton.setText("");
-		}
 	}
 
 	// NOTE: probably cleaner to use ZmActionMenu, which knows about operations
