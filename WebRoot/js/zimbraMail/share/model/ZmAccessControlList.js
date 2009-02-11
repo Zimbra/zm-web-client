@@ -72,8 +72,35 @@ function(right) {
 ZmAccessControlList.prototype.getGranteeType =
 function(right) {
 	var aces = this._aces[right];
-	return (aces && aces.length && (aces[0].granteeType == ZmSetting.ACL_USER || ace.granteeType == ZmSetting.ACL_GROUP)) ?
-		ZmSetting.ACL_USER : ZmSetting.ACL_PUBLIC;
+	var gt = ZmSetting.ACL_PUBLIC;
+	if(aces && aces.length) {
+		for (var i = 0; i < aces.length; i++) {
+			var ace = aces[i];
+			if(ace.granteeType == ZmSetting.ACL_AUTH) {
+				return ace.negative ? ZmSetting.ACL_USER :  ZmSetting.ACL_PUBLIC;
+			}
+			if (ace.granteeType == ZmSetting.ACL_USER || ace.granteeType == ZmSetting.ACL_GROUP) {
+				gt = ZmSetting.ACL_USER;
+			}
+		}
+	}
+	return gt;
+};
+
+ZmAccessControlList.prototype.getACLByGranteeType =
+function(right, gt) {
+	var aces = this._aces[right];
+	var list = [];
+	if (aces && aces.length) {
+		for (var i = 0; i < aces.length; i++) {
+			var ace = aces[i];
+			if (ace.granteeType == gt) {
+				list.push(ace);
+			}
+		}
+	}
+	list.sort();
+	return list;
 };
 
 ZmAccessControlList.prototype.getGrantees =
@@ -127,7 +154,9 @@ function(aces, revoke, callback, batchCmd) {
 		var aceNode = soapDoc.set("ace");
 		aceNode.setAttribute("right", ace.right);
 		aceNode.setAttribute("gt", ace.granteeType);
-		aceNode.setAttribute("d", ace.grantee);
+		if(ace.grantee) {
+			aceNode.setAttribute("d", ace.grantee);
+		}
 		if (ace.zid) {
 			aceNode.setAttribute("zid", ace.zid);
 		}
@@ -156,7 +185,7 @@ function(revoke, callback, result) {
 			if (revoke) {
 				this.remove(ace);
 			} else {
-				this.add(ace);
+				this.update(ace);
 			}
 		}
 	}
@@ -189,6 +218,38 @@ function(ace) {
 		}
 	}
 	this._aces[ace.right] = newList;
+};
+
+ZmAccessControlList.prototype.update =
+function(ace, removeEntry) {
+	if (!ace) { return; }
+	var list = this._aces[ace.right];
+	var found = false;
+	
+	if(!list) {
+		list = [];
+	}
+	
+	if (list.length) {
+		//search for ace to update
+		for (var i = 0; i < list.length; i++) {
+			if ((list[i].grantee == ace.grantee) && (list[i].granteeType == ace.granteeType)) {
+				list[i] = ace;
+				found = true;
+			}
+		}
+	}
+	if(!found) {
+		//adding new entry to ace list
+		list.push(ace);
+	}
+};
+
+
+
+ZmAccessControlList.prototype.cleanup =
+function() {
+	this._aces = {};
 };
 
 ZmAccessControlList.sortByGrantee =

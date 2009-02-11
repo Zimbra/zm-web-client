@@ -151,6 +151,7 @@ function() {
 ZmCalendarPrefsPage.prototype._getACLChanges =
 function(setting, right) {
 
+	var pref = appCtxt.getSettings().getSetting(setting);
 	var curType = appCtxt.get(setting);
 	var curUsers = (curType == ZmSetting.ACL_USER) ? this._acl.getGrantees(right) : [];
 	var curUsersInfo = (curType == ZmSetting.ACL_USER) ? this._acl.getGranteesInfo(right) : [];
@@ -162,6 +163,8 @@ function(setting, right) {
 	
 	var radioGroup = this.getFormObject(setting);
 	var newType = radioGroup.getValue();
+	var radioGroupChanged = (newType != pref.origValue);
+		
 	var newUsers = [];
 	if (newType == ZmSetting.ACL_USER) {
 		var textarea = this.getFormObject(ZmCalendarPrefsPage.TEXTAREA[setting]);
@@ -206,6 +209,41 @@ function(setting, right) {
 		}
 	}
 	
+	var userAdded = (grants.length > 0);
+	var userRemoved = (revokes.length > 0);
+	
+	if((userAdded || userRemoved || radioGroupChanged) && (newType == ZmSetting.ACL_USER)) {
+		revokes = revokes.concat(this._acl.getACLByGranteeType(right, ZmSetting.ACL_AUTH));
+	}
+	
+	//deny all users
+	if ((newType == ZmSetting.ACL_USER) && (newUsers.length == 0)) {
+		revokes = [];
+		grants = [];
+
+		//deny all
+		var ace = new ZmAccessControlEntry({granteeType: ZmSetting.ACL_AUTH, right:right, negative: true});
+		grants.push(ace);
+		
+		//revoke all other aces
+ 		revokes = this._acl.getACLByGranteeType(right, ZmSetting.ACL_USER);
+		revokes = revokes.concat(this._acl.getACLByGranteeType(right, ZmSetting.ACL_GROUP));
+	}
+	
+	//allow all users
+	if (radioGroupChanged && (newType == ZmSetting.ACL_PUBLIC)) {
+		grants = [];
+		revokes = [];
+		
+		//grant all
+		var ace = new ZmAccessControlEntry({granteeType: ZmSetting.ACL_AUTH, right:right});
+		grants.push(ace);
+		
+		//revoke all other aces
+ 		revokes = this._acl.getACLByGranteeType(right, ZmSetting.ACL_USER);
+		revokes = revokes.concat(this._acl.getACLByGranteeType(right, ZmSetting.ACL_GROUP));
+	}
+		
 	return {grants:grants, revokes:revokes};
 };
 
@@ -222,6 +260,11 @@ function(batchCmd) {
 
 ZmCalendarPrefsPage.prototype._handleResponseACLChange =
 function(aces) {
+
+	if(aces && !(aces instanceof Array)) {
+		aces = [aces];
+	}
+	
 	if (aces && aces.length) {
 		for (var i = 0; i < aces.length; i++) {
 			var ace = aces[i];
