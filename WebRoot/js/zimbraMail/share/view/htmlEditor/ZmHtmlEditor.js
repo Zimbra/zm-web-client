@@ -635,9 +635,10 @@ ZmHtmlEditor.prototype._insertLinkListener = function() {
                 dlg._tabGroup.addMember(btn, 2);
 
                 dlg.registerCallback(DwtDialog.OK_BUTTON, new AjxListener(this, function(){
-                        this.insertLink({ text : dlg.linkText.getValue(),
-                                          url  : getURL() });
-                        dlg.popdown();
+                    var text = dlg.linkText.getValue();
+                    var url = getURL();
+                    dlg.popdown();    
+                    this.insertLink({ text : text, url  : url });
                 }));
         }
         var link = this.getLinkProps();
