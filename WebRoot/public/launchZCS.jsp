@@ -300,6 +300,11 @@
         <zm:getInfoJSON var="getInfoJSON" authtoken="${requestScope.authResult.authToken}" dosearch="${not empty app and app ne 'mail' ? false : true}" itemsperpage="${requestScope.authResult.prefs.zimbraPrefMailItemsPerPage[0]}" types="${types}"/>
         var batchInfoResponse = ${getInfoJSON};
 
+        <c:if test="${not empty app and app eq 'calendar'}">
+        <zm:calSearchJSON var="calSearchJSON" authtoken="${requestScope.authResult.authToken}" timezone="${requestScope.tz}" itemsperpage="500" types="appointment"/>
+        window.inlineCalSearchResponse = ${calSearchJSON};
+        </c:if>
+
 		<c:if test="${isLeakDetectorOn}">
 		AjxLeakDetector.begin();
 		</c:if>

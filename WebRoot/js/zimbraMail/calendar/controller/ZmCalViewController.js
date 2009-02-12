@@ -1775,7 +1775,40 @@ function(ev) {
 ZmCalViewController.prototype._dateRangeListener =
 function(ev) {
 	ev.item.setNeedsRefresh(true);
-	this._scheduleMaintenance(ZmCalViewController.MAINT_VIEW);
+	var work = ZmCalViewController.MAINT_VIEW;
+	if(window.inlineCalSearchResponse) {
+		this.processInlineCalSearch();
+		window.inlineCalSearchResponse = null;
+		work = ZmCalViewController.MAINT_MINICAL|ZmCalViewController.MAINT_VIEW|ZmCalViewController.MAINT_REMINDER;
+	}	
+	this._scheduleMaintenance(work);
+};
+
+ZmCalViewController.prototype.processInlineCalSearch =
+function() {
+	var srchResponse = window.inlineCalSearchResponse;
+	if(!srchResponse) return;
+	
+	var params = srchResponse.search;;
+	var response = srchResponse.Body;
+	
+	if(params instanceof Array) {
+		params = params[0];
+	}
+	
+	var viewId = this._currentView ? this._currentView : this._defaultView();
+	var fanoutAllDay = (viewId == ZmId.VIEW_CAL_MONTH);
+	var searchParams = {start: params.s, end: params.e, fanoutAllDay: fanoutAllDay, callback: null};
+	searchParams.folderIds = params.l ? params.l.split(",") : []; 
+	searchParams.query = "";
+	
+	var miniCalParams = this.getMiniCalendarParams();
+	miniCalParams.folderIds = searchParams.folderIds;
+	
+	this._apptCache.setSearchParams(searchParams);
+	
+	this._apptCache.processBatchResponse(response.BatchResponse, searchParams, miniCalParams);
+	
 };
 
 ZmCalViewController.prototype._getViewType =
