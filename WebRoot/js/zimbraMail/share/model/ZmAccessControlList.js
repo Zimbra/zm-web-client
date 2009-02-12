@@ -222,26 +222,26 @@ function(ace) {
 
 ZmAccessControlList.prototype.update =
 function(ace, removeEntry) {
-	if (!ace) { return; }
-	var list = this._aces[ace.right];
+	if (!ace || !ace.right) { return; }
 	var found = false;
 	
-	if(!list) {
-		list = [];
+	if(!this._aces[ace.right]) {
+		this._aces[ace.right] = [];
 	}
-	
+
+	var list = this._aces[ace.right];	
 	if (list.length) {
 		//search for ace to update
 		for (var i = 0; i < list.length; i++) {
 			if ((list[i].grantee == ace.grantee) && (list[i].granteeType == ace.granteeType)) {
-				list[i] = ace;
+				this._aces[ace.right][i] = ace;
 				found = true;
 			}
 		}
 	}
 	if(!found) {
 		//adding new entry to ace list
-		list.push(ace);
+		this._aces[ace.right].push(ace);
 	}
 };
 

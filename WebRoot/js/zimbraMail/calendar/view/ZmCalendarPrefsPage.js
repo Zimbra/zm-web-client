@@ -24,6 +24,7 @@ ZmCalendarPrefsPage = function(parent, section, controller) {
 	ZmCalendarPrefsPage.SETTINGS	= [ZmSetting.CAL_FREE_BUSY_ACL, ZmSetting.CAL_INVITE_ACL];
 	ZmCalendarPrefsPage.RIGHTS		= [ZmSetting.RIGHT_VIEW_FREE_BUSY, ZmSetting.RIGHT_INVITE];
 
+	this._currentSelection = {};
 	this._initAutocomplete();
 };
 
@@ -82,9 +83,14 @@ function() {
  */
 ZmCalendarPrefsPage.prototype._setACLValues =
 function(setting, right) {
-	appCtxt.set(setting, this._acl.getGranteeType(right));
+	var gt = this._acl.getGranteeType(right);
+	this._currentSelection[setting] = gt;
+
+	appCtxt.set(setting, gt);
 	var list = this._acl.getGrantees(right);
 	appCtxt.set(ZmCalendarPrefsPage.TEXTAREA[setting], list.join("\n"));
+
+	this._acl.getGranteeType(right)
 };
 
 /**
@@ -151,7 +157,6 @@ function() {
 ZmCalendarPrefsPage.prototype._getACLChanges =
 function(setting, right) {
 
-	var pref = appCtxt.getSettings().getSetting(setting);
 	var curType = appCtxt.get(setting);
 	var curUsers = (curType == ZmSetting.ACL_USER) ? this._acl.getGrantees(right) : [];
 	var curUsersInfo = (curType == ZmSetting.ACL_USER) ? this._acl.getGranteesInfo(right) : [];
@@ -163,7 +168,7 @@ function(setting, right) {
 	
 	var radioGroup = this.getFormObject(setting);
 	var newType = radioGroup.getValue();
-	var radioGroupChanged = (newType != pref.origValue);
+	var radioGroupChanged = (newType != this._currentSelection[setting]);
 		
 	var newUsers = [];
 	if (newType == ZmSetting.ACL_USER) {
