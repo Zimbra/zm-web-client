@@ -19,6 +19,8 @@
  * Singleton alert class that alerts the user by popping up a message on the desktop.
  */
 ZmDesktopAlert = function() {
+	this.usePrism = appCtxt.isOffline && window.platform && (AjxEnv.isWindows || AjxEnv.isMac);
+	this.useBrowserPlus = !this.usePrism;
 };
 
 ZmDesktopAlert.prototype = new ZmAlert;
@@ -36,11 +38,20 @@ function() {
 
 ZmDesktopAlert.prototype.start =
 function(title, message) {
-	AjxDispatcher.require([ "BrowserPlus" ]);
-	var serviceObj = { service: "Notify", version: "2", minversion: "2.0.9" };
-	var callback = new AjxCallback(this, this._notityServiceCallback, [title, message]);
-	var errorCallback = new AjxCallback(this, this._notityServiceErrorCallback);
-	ZmBrowserPlus.getInstance().require(serviceObj, callback, errorCallback);
+	if (this.usePrism) {
+		if (AjxEnv.isMac) {
+			window.platform.showNotification(title, text, "resource://webapp/icons/default/launcher.icns");
+		}
+		else if (AjxEnv.isWindows) {
+			window.platform.icon().showNotification(title, text, 5);
+		}
+	} else {
+		AjxDispatcher.require([ "BrowserPlus" ]);
+		var serviceObj = { service: "Notify", version: "2", minversion: "2.0.9" };
+		var callback = new AjxCallback(this, this._notityServiceCallback, [title, message]);
+		var errorCallback = new AjxCallback(this, this._notityServiceErrorCallback);
+		ZmBrowserPlus.getInstance().require(serviceObj, callback, errorCallback);
+	}
 };
 
 ZmDesktopAlert.prototype._notityServiceCallback =

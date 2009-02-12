@@ -146,6 +146,7 @@ function(settings) {
 	settings.registerSetting("MAIL_NOTIFY_SOUNDS",				{name:"zimbraPrefMailSoundsEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("MAIL_NOTIFY_APP",					{name:"zimbraPrefMailFlashIcon", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("MAIL_NOTIFY_BROWSER",				{name:"zimbraPrefMailFlashTitle", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
+	settings.registerSetting("MAIL_NOTIFY_TOASTER",				{name:"zimbraPrefMailToasterEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	settings.registerSetting("MAIL_PRIORITY_ENABLED",	        {name:"zimbraFeatureMailPriorityEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("MAIL_WHITELIST",					{type: ZmSetting.T_PREF, dataType: ZmSetting.D_LIST});
 	settings.registerSetting("MAIL_WHITELIST_MAX_NUM_ENTRIES",	{name:"zimbraMailWhitelistMaxNumEntries", type: ZmSetting.T_COS, dataType: ZmSetting.D_INT, defaultValue:100});
@@ -227,7 +228,8 @@ function() {
 				ZmSetting.END_DATE_ENABLED,
 				ZmSetting.VACATION_FROM,
 				ZmSetting.VACATION_UNTIL,
-				ZmSetting.VIEW_AS_HTML
+				ZmSetting.VIEW_AS_HTML,
+				ZmSetting.MAIL_NOTIFY_TOASTER
 			],
 			manageDirty: true,
 			createView: function(parent, section, controller) {
@@ -276,10 +278,6 @@ function() {
 			}
 		}
 	};
-
-	if (appCtxt.isOffline) {
-		sections["MAIL"].prefs.push(ZmSetting.OFFLINE_MAIL_TOASTER_ENABLED);
-	}
 
 	for (var id in sections) {
 		ZmPref.registerPrefSection(id, sections[id]);
@@ -533,12 +531,10 @@ function() {
 		errorMessage:		ZmMsg.missingAwayMessage
 	});
 
-	if (appCtxt.isOffline) {
-		ZmPref.registerPref("OFFLINE_MAIL_TOASTER_ENABLED", {
-			displayName:		(AjxEnv.isMac ? ZmMsg.showPopupMac : ZmMsg.showPopup),
-			displayContainer:	ZmPref.TYPE_CHECKBOX
-		});
-	}
+	ZmPref.registerPref("MAIL_NOTIFY_TOASTER", {
+		displayName:		(AjxEnv.isMac ? ZmMsg.showPopupMac : ZmMsg.showPopup),
+		displayContainer:	ZmPref.TYPE_CHECKBOX
+	});
 };
 
 ZmMailApp.validateMailLocalDeliveryDisabled =
@@ -956,9 +952,7 @@ function(creates) {
 	var activeAcct = appCtxt.getActiveAccount();
 	var didAppAlert, didSoundAlert, didBrowserAlert = false;
 
-	// OFFLINE:
-	var offlineToasterCount = 0;
-	var offlineToasterSupported = (appCtxt.isOffline && window.platform && (AjxEnv.isWindows || AjxEnv.isMac));
+	var toasterCount = 0;
 
 	for (var i = 0; i < mailCreates.length; i++) {
 		var mc = mailCreates[i];
@@ -994,9 +988,9 @@ function(creates) {
 				didBrowserAlert = true;
 			}
 
-			// OFFLINE: generate toaster message if applicable
-			if (appCtxt.get(ZmSetting.OFFLINE_MAIL_TOASTER_ENABLED, null, acct) &&
-				offlineToasterSupported && offlineToasterCount < 5)
+			// generate toaster message if applicable
+			if (appCtxt.get(ZmSetting.MAIL_NOTIFY_TOASTER, null, acct) &&
+				toasterCount < 5)
 			{
 				var msg = appCtxt.getById(mc.id);
 				var text = (msg.subject)
@@ -1008,14 +1002,8 @@ function(creates) {
 				var title = (appCtxt.numVisibleAccounts > 1)
 					? AjxMessageFormat.format(ZmMsg.newMailWithAccount, [email, acct.getDisplayName()])
 					: AjxMessageFormat.format(ZmMsg.newMail, email);
-
-				if (AjxEnv.isMac) {
-					window.platform.showNotification(title, text, "resource://webapp/icons/default/launcher.icns");
-				}
-				else if (AjxEnv.isWindows) {
-					window.platform.icon().showNotification(title, text, 5);
-				}
-				offlineToasterCount++;
+				ZmDesktopAlert.getInstance().start(title, text);
+				toasterCount++;
 			}
 		}
 	}

@@ -107,6 +107,7 @@ function(settings) {
 	settings.registerSetting("CAL_INVITE_ACL_USERS",		{type: ZmSetting.T_PREF});
 	settings.registerSetting("CAL_REMINDER_NOTIFY_SOUNDS",	{name: "zimbraPrefCalendarReminderSoundsEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	settings.registerSetting("CAL_REMINDER_NOTIFY_BROWSER",	{name: "zimbraPrefCalendarReminderFlashTitle", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
+	settings.registerSetting("CAL_REMINDER_NOTIFY_TOASTER",	{name:"zimbraPrefCalendarToasterEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	settings.registerSetting("CAL_REMINDER_WARNING_TIME",	{name: "zimbraPrefCalendarApptReminderWarningTime", type: ZmSetting.T_PREF, dataType: ZmSetting.D_INT, defaultValue: 0});
 	settings.registerSetting("CAL_SHOW_TIMEZONE",			{name: "zimbraPrefUseTimeZoneListInCalendar", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
 	settings.registerSetting("CAL_USE_QUICK_ADD",			{name: "zimbraPrefCalendarUseQuickAdd", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
@@ -137,7 +138,8 @@ function() {
 				ZmSetting.CAL_FREE_BUSY_ACL,
 				ZmSetting.CAL_FREE_BUSY_ACL_USERS,
 				ZmSetting.CAL_INVITE_ACL,
-				ZmSetting.CAL_INVITE_ACL_USERS
+				ZmSetting.CAL_INVITE_ACL_USERS,
+				ZmSetting.CAL_REMINDER_NOTIFY_TOASTER
 			],
 			manageDirty: true,
 			createView: function(parent, section, controller) {
@@ -145,10 +147,6 @@ function() {
 			}
 		}
 	};
-
-	if (appCtxt.isOffline) {
-		sections["CALENDAR"].prefs.push(ZmSetting.OFFLINE_CALENDAR_TOASTER_ENABELD);
-	}
 
 	for (var id in sections) {
 		ZmPref.registerPrefSection(id, sections[id]);
@@ -235,12 +233,10 @@ function() {
 		displayContainer:	ZmPref.TYPE_CHECKBOX
 	});
 
-	if (appCtxt.isOffline) {
-		ZmPref.registerPref("OFFLINE_CALENDAR_TOASTER_ENABELD", {
-			displayName:		(AjxEnv.isMac ? ZmMsg.showPopupMac : ZmMsg.showPopup),
-			displayContainer:	ZmPref.TYPE_CHECKBOX
-		});
-	}
+	ZmPref.registerPref("CAL_REMINDER_NOTIFY_TOASTER", {
+		displayName:		(AjxEnv.isMac ? ZmMsg.showPopupMac : ZmMsg.showPopup),
+		displayContainer:	ZmPref.TYPE_CHECKBOX
+	});
 };
 
 ZmCalendarApp.prototype._registerOperations =
