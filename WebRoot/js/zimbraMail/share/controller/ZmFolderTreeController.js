@@ -69,7 +69,7 @@ function(params) {
 				omit[folder.id] = true;
 			}
 		}
-    }
+	}
 	params.omit = omit;
 	return ZmTreeController.prototype.show.call(this, params);
 };
@@ -114,11 +114,16 @@ function(parent, type, id) {
 		{
 			parent.enable(ZmOperation.NEW_FOLDER, true);
 		}
-		// "Empty" for Junk and Trash
+		// "Empty" for Chats, Junk and Trash
 		if (nId == ZmFolder.ID_SPAM ||
-			nId == ZmFolder.ID_TRASH)
+			nId == ZmFolder.ID_TRASH ||
+			nId == ZmFolder.ID_CHATS)
 		{
-			emptyText = (nId == ZmFolder.ID_SPAM) ? ZmMsg.emptyJunk : ZmMsg.emptyTrash;
+			if (nId == ZmFolder.ID_SPAM) {
+				emptyText = ZmMsg.emptyJunk;
+			} else if (nId == ZmFolder.ID_TRASH) {
+				 emptyText = ZmMsg.emptyTrash;
+			}
 			parent.enable(ZmOperation.EMPTY_FOLDER, hasContent);
 		}
 		// only allow Inbox and Sent system folders to be share-able for now
@@ -206,6 +211,7 @@ function(parent, type, id) {
 	this._resetButtonPerSetting(parent, ZmOperation.MOUNT_FOLDER, appCtxt.get(ZmSetting.SHARING_ENABLED));
 };
 
+
 // Private methods
 
 /*
@@ -281,6 +287,9 @@ function(folder) {
 		// it off to the search tree controller
 		var stc = this._opc.getTreeController(ZmOrganizer.SEARCH);
 		stc._itemClicked(folder);
+	} else if (folder.id == ZmFolder.ID_ATTACHMENTS) {
+		var attController = AjxDispatcher.run("GetAttachmentsController");
+		attController.show();
 	} else {
 		if (folder._showFoldersCallback) {
 			folder._showFoldersCallback.run();
@@ -294,12 +303,13 @@ function(folder) {
 				searchFor = ZmItem.CONTACT;
 			}
 		}
+		var sc = appCtxt.getSearchController();
 		var params = {
 			query: folder.createQuery(),
 			searchFor: searchFor,
 			getHtml: appCtxt.get(ZmSetting.VIEW_AS_HTML),
-			types: ((folder.nId == ZmOrganizer.ID_SYNC_FAILURES) ? [ZmItem.MSG] : null)	// for Sync Failures folder, always show in traditional view
-
+			types: ((folder.nId == ZmOrganizer.ID_SYNC_FAILURES) ? [ZmItem.MSG] : null), // for Sync Failures folder, always show in traditional view
+			sortBy: ((sc.currentSearch && folder.nId == sc.currentSearch.folderId) ? null : ZmSearch.DATE_DESC)
 		};
 
 		// make sure we have permissions for this folder (in case an "external"
@@ -311,7 +321,7 @@ function(folder) {
 				folderTree.getPermissions({callback:callback, folderIds:[folder.id]});
 			}
 		} else {
-			appCtxt.getSearchController().search(params);
+			sc.search(params);
 		}
 	}
 };
@@ -416,7 +426,10 @@ function(ev) {
 		? (AjxMessageFormat.format(ZmMsg.confirmEmptyFolder, organizer.getName()))
 		: ZmMsg.confirmEmptyTrashFolder;
 	ds.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
-	ds.popup();
+
+	var focusButtonId = (organizer.nId == ZmFolder.ID_TRASH || organizer.nId == ZmFolder.ID_SPAM) ?  DwtDialog.OK_BUTTON : DwtDialog.CANCEL_BUTTON;
+	ds.associateEnterWithButton(focusButtonId);
+	ds.popup(null, focusButtonId);
 
 	if (!(organizer.nId == ZmFolder.ID_SPAM || organizer.isInTrash())) {
 		var cancelButton = ds.getButton(DwtDialog.CANCEL_BUTTON);

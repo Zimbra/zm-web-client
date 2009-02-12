@@ -21,10 +21,10 @@
  * note, if wanted. This control can be used from within the various
  * share dialogs to add reply capabilities.
  */
-ZmShareReply = function(parent, className) {
+ZmShareReply = function(parent, className, options) {
 	className = className || "ZmShareReply";
 	DwtComposite.call(this, {parent:parent, className:className});
-	this._initControl();
+	this._initControl(options);
 };
 
 ZmShareReply.prototype = new DwtComposite;
@@ -98,9 +98,10 @@ function(event) {
 };
 
 ZmShareReply.prototype._initControl =
-function() {
+function(options) {
 	this._replyType = new DwtSelect({parent:this});
-	this.setReplyOptions(ZmShareReply.DEFAULT_OPTIONS);
+    options = options || ZmShareReply.DEFAULT_OPTIONS;
+    this.setReplyOptions(options);
 	this._replyType.addChangeListener(new AjxListener(this, this._handleReplyType));
 	
 	var doc = document;

@@ -516,7 +516,7 @@ ZmSignaturesPage.prototype._handleEditButton = function(id, evt){
     comps.name.setEnabled(true);
 
     //Hide Signature display div
-    comps.value.setDisplay(Dwt.DISPLAY_NONE);    
+    comps.value.setDisplay(Dwt.DISPLAY_NONE);
     var htmlEditor = this._getSignatureEditor();
 
     var size = Dwt.getSize(comps.value.getHtmlElement().parentNode);
@@ -532,10 +532,9 @@ ZmSignaturesPage.prototype._handleEditButton = function(id, evt){
 
     htmlEditor.setMode(editorMode);
 
-
     htmlEditor.setVisibility(true);
 
-    if( editorMode == DwtHtmlEditor.HTML ){        
+    if( editorMode == DwtHtmlEditor.HTML ){
         AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._setSignatureContent, [htmlEditor, signature]), modeChanged ? 200 : 500);
     }else{
         this._setSignatureContent(htmlEditor, signature);
@@ -697,6 +696,7 @@ ZmSignatureEditor = function(parent){
 
 ZmSignatureEditor.prototype = new ZmHtmlEditor;
 ZmSignatureEditor.prototype.constructor = ZmSignatureEditor;
+ZmSignatureEditor.prototype.TEXTAREA_CLASSNAME = "ZmSignatureEditorTextArea";
 
 ZmSignatureEditor.prototype._createToolbars = function(){
     if (!this._toolbar1) {

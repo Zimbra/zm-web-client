@@ -42,6 +42,8 @@
  *        field						[string]*		field to search within (instead of default)
  *        soapInfo					[object]*		object with method, namespace, response, and additional attribute fields for creating soap doc
  *        response					[object]*		canned JSON response (no request will be made)
+ *        galType					[constant]*		type of GAL autocomplete (account or resource)
+ *        folders					[array]*		list of folders for autocomplete
  */
 ZmSearch = function(params) {
 
@@ -83,46 +85,21 @@ ZmSearch.TYPE_MAP = {};
 ZmSearch.DEFAULT_LIMIT = 25;
 
 // Sort By
-var i = 1;
-ZmSearch.DATE_DESC 		= i++;
-ZmSearch.DATE_ASC 		= i++;
-ZmSearch.SUBJ_DESC 		= i++;
-ZmSearch.SUBJ_ASC 		= i++;
-ZmSearch.NAME_DESC 		= i++;
-ZmSearch.NAME_ASC 		= i++;
-ZmSearch.SCORE_DESC 	= i++;
-ZmSearch.DURATION_DESC	= i++; 
-ZmSearch.DURATION_ASC	= i++;
-ZmSearch.STATUS_DESC	= i++;
-ZmSearch.STATUS_ASC		= i++;
-ZmSearch.PCOMPLETE_DESC	= i++;
-ZmSearch.PCOMPLETE_ASC	= i++;
-ZmSearch.DUE_DATE_DESC	= i++;
-ZmSearch.DUE_DATE_ASC	= i++;
-
-ZmSearch.SORT_BY = {};
-ZmSearch.SORT_BY[ZmSearch.DATE_DESC] 		= "dateDesc";
-ZmSearch.SORT_BY[ZmSearch.DATE_ASC] 		= "dateAsc";
-ZmSearch.SORT_BY[ZmSearch.SUBJ_DESC] 		= "subjDesc";
-ZmSearch.SORT_BY[ZmSearch.SUBJ_ASC] 		= "subjAsc";
-ZmSearch.SORT_BY[ZmSearch.NAME_DESC] 		= "nameDesc";
-ZmSearch.SORT_BY[ZmSearch.NAME_ASC] 		= "nameAsc";
-ZmSearch.SORT_BY[ZmSearch.SCORE_DESC]		= "scoreDesc";
-ZmSearch.SORT_BY[ZmSearch.DURATION_DESC]	= "durDesc";
-ZmSearch.SORT_BY[ZmSearch.DURATION_ASC]		= "durAsc";
-ZmSearch.SORT_BY[ZmSearch.STATUS_DESC]		= "taskStatusDesc";
-ZmSearch.SORT_BY[ZmSearch.STATUS_ASC]		= "taskStatusAsc";
-ZmSearch.SORT_BY[ZmSearch.PCOMPLETE_DESC]	= "taskPercCompletedDesc";
-ZmSearch.SORT_BY[ZmSearch.PCOMPLETE_ASC]	= "taskPercCompletedAsc";
-ZmSearch.SORT_BY[ZmSearch.DUE_DATE_DESC]	= "taskDueDesc";
-ZmSearch.SORT_BY[ZmSearch.DUE_DATE_ASC]		= "taskDueAsc";
-
-ZmSearch.SORT_BY_MAP = {};
-(function() {
-	for (var i in ZmSearch.SORT_BY) {
-		ZmSearch.SORT_BY_MAP[ZmSearch.SORT_BY[i]] = i;
-	}
-})();
+ZmSearch.DATE_DESC 		= "dateDesc";
+ZmSearch.DATE_ASC 		= "dateAsc";
+ZmSearch.SUBJ_DESC 		= "subjDesc";
+ZmSearch.SUBJ_ASC 		= "subjAsc";
+ZmSearch.NAME_DESC 		= "nameDesc";
+ZmSearch.NAME_ASC 		= "nameAsc";
+ZmSearch.SCORE_DESC 	= "scoreDesc";
+ZmSearch.DURATION_DESC	= "durDesc";
+ZmSearch.DURATION_ASC	= "durAsc";
+ZmSearch.STATUS_DESC	= "taskStatusDesc";
+ZmSearch.STATUS_ASC		= "taskStatusAsc";
+ZmSearch.PCOMPLETE_DESC	= "taskPercCompletedDesc";
+ZmSearch.PCOMPLETE_ASC	= "taskPercCompletedAsc";
+ZmSearch.DUE_DATE_DESC	= "taskDueDesc";
+ZmSearch.DUE_DATE_ASC	= "taskDueAsc";
 
 ZmSearch.FOLDER_QUERY_RE = new RegExp('^in:\\s*"?(' + ZmOrganizer.VALID_PATH_CHARS + '+)"?\\s*$', "i");
 ZmSearch.TAG_QUERY_RE = new RegExp('^tag:\\s*"?(' + ZmOrganizer.VALID_NAME_CHARS + '+)"?\\s*$', "i");
@@ -169,10 +146,16 @@ function(params) {
 				method.setAttribute("type", this.galType);
 			}
 			soapDoc.set("name", this.query);
+		} else if (this.isAutocompleteSearch) {
+			soapDoc = AjxSoapDoc.create("AutoCompleteRequest", "urn:zimbraMail");
+			var method = soapDoc.getMethod();
+			method.setAttribute("limit", this.limit);
+			soapDoc.set("name", this.query);
 		} else if (this.isGalAutocompleteSearch) {
 			soapDoc = AjxSoapDoc.create("AutoCompleteGalRequest", "urn:zimbraAccount");
 			var method = soapDoc.getMethod();
-			method.setAttribute("limit", ZmContactList.AC_MAX);
+			method.setAttribute("limit", this.limit);
+			method.setAttribute("type", this.galType);
 			soapDoc.set("name", this.query);
 		} else if (this.isCalResSearch) {
 			soapDoc = AjxSoapDoc.create("SearchCalendarResourcesRequest", "urn:zimbraAccount");
@@ -227,7 +210,8 @@ function(params) {
 					}
 					// if we're prefetching the first hit message, also mark it as read
 					if (this.fetch) {
-						method.setAttribute("fetch", "1");
+
+						method.setAttribute("fetch", ( this.fetch == "all" ) ? "all" : "1");
 						// and set the html flag if we want the html version
 						if (this.getHtml) {
 							method.setAttribute("html", "1");
@@ -241,16 +225,15 @@ function(params) {
 		}
 	}
 		
-	var respCallback = new AjxCallback(this, this._handleResponseExecute,
-						[this.isGalSearch, this.isGalAutocompleteSearch, this.isCalResSearch, params.callback]);
+	var respCallback = new AjxCallback(this, this._handleResponseExecute, [params.callback]);
 	
 	if (params.batchCmd) {
 		params.batchCmd.addRequestParams(soapDoc, respCallback);
 	} else {
-		appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback,
-												errorCallback:params.errorCallback,
-												timeout:params.timeout, noBusyOverlay:params.noBusyOverlay,
-												response:this.response});
+		return appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback,
+													   errorCallback:params.errorCallback,
+													   timeout:params.timeout, noBusyOverlay:params.noBusyOverlay,
+													   response:this.response});
 	}
 };
 
@@ -280,11 +263,17 @@ function(params) {
 				request.type = this.galType;
 			}
 			request.name = this.query;
+		} else if (this.isAutocompleteSearch) {
+			jsonObj = {AutoCompleteRequest:{_jsns:"urn:zimbraMail"}};
+			request = jsonObj.AutoCompleteRequest;
+			request.limit = this.limit;
+			request.name = {_content:this.query};
 		} else if (this.isGalAutocompleteSearch) {
 			jsonObj = {AutoCompleteGalRequest:{_jsns:"urn:zimbraAccount"}};
 			request = jsonObj.AutoCompleteGalRequest;
-			request.limit = ZmContactList.AC_MAX;
+			request.limit = this.limit;
 			request.name = this.query;
+			request.type = this.galType;
 		} else if (this.isCalResSearch) {
 			jsonObj = {SearchCalendarResourcesRequest:{_jsns:"urn:zimbraAccount"}};
 			request = jsonObj.SearchCalendarResourcesRequest;
@@ -338,7 +327,7 @@ function(params) {
 					}
 					// if we're prefetching the first hit message, also mark it as read
 					if (this.fetch) {
-						request.fetch = 1;
+                        request.fetch = ( this.fetch == "all" ) ? "all" : 1;
 						// and set the html flag if we want the html version
 						if (this.getHtml) {
 							request.html = 1;
@@ -358,16 +347,15 @@ function(params) {
         }
     }
 		
-	var respCallback = new AjxCallback(this, this._handleResponseExecute,
-						[this.isGalSearch, this.isGalAutocompleteSearch, this.isCalResSearch, params.callback]);
+	var respCallback = new AjxCallback(this, this._handleResponseExecute, [params.callback]);
 	
 	if (params.batchCmd) {
 		params.batchCmd.addRequestParams(soapDoc, respCallback);
 	} else {
-		appCtxt.getAppController().sendRequest({jsonObj:jsonObj, soapDoc:soapDoc, asyncMode:true, callback:respCallback,
-												errorCallback:params.errorCallback,
-												timeout:params.timeout, noBusyOverlay:params.noBusyOverlay,
-												response:this.response});
+		return appCtxt.getAppController().sendRequest({jsonObj:jsonObj, soapDoc:soapDoc, asyncMode:true, callback:respCallback,
+													   errorCallback:params.errorCallback,
+													   timeout:params.timeout, noBusyOverlay:params.noBusyOverlay,
+													   response:this.response});
 	}
 };
 
@@ -375,13 +363,15 @@ function(params) {
  * Converts the response into a ZmSearchResult and passes it along.
  */
 ZmSearch.prototype._handleResponseExecute = 
-function(isGalSearch, isGalAutocompleteSearch, isCalResSearch, callback, result) {
+function(callback, result) {
 	var response = result.getResponse();
-	if (isGalSearch) {
+	if (this.isGalSearch) {
 		response = response.SearchGalResponse;
-	} else if (isCalResSearch) {
+	} else if (this.isCalResSearch) {
 		response = response.SearchCalendarResourcesResponse;
-	} else if (isGalAutocompleteSearch) {
+	} else if (this.isAutocompleteSearch) {
+		response = response.AutoCompleteResponse;
+	} else if (this.isGalAutocompleteSearch) {
 		response = response.AutoCompleteGalResponse;
 	} else if (this.soapInfo) {
 		response = response[this.soapInfo.response];
@@ -478,7 +468,7 @@ function(soapDoc) {
 	var method = soapDoc.getMethod();
 
 	if (this.sortBy) {
-		method.setAttribute("sortBy", ZmSearch.SORT_BY[this.sortBy]);
+		method.setAttribute("sortBy", this.sortBy);
 	}
 
 	if (ZmSearch._mailEnabled) {
@@ -538,7 +528,7 @@ ZmSearch.prototype._getStandardMethodJson =
 function(req) {
 
 	if (this.sortBy) {
-		req.sortBy = ZmSearch.SORT_BY[this.sortBy];
+		req.sortBy = this.sortBy;
 	}
 
 	if (ZmSearch._mailEnabled) {
@@ -621,7 +611,7 @@ function() {
 		// now check all folders by name
 		if (!this.folderId) {
 			var folders = appCtxt.getFolderTree();
-			var folder = folders ? folders.getByPath(path) : null;
+			var folder = folders ? folders.getByPath(path, true) : null;
 			if (folder) {
 				this.folderId = folder.id;
 			}

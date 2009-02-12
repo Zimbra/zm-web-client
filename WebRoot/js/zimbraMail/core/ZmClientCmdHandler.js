@@ -90,7 +90,7 @@ function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
 
 ZmClientCmdHandler.prototype.execute_instant_notify =
 function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
-	if (argv.length <= 1) {
+	if (typeof cmdArg1 == "undefined") {
 		this._alert("Instant notify is "+ (appCtxt.getAppController().getInstantNotify() ? "ON" : "OFF"));
 	} else {
 		var on = false;
@@ -166,6 +166,12 @@ function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
 	appCtxt.getAppController().sendNoOp();
 };
 
+ZmClientCmdHandler.prototype.execute_relogin =
+function(cmdStr, searchController, cmdName, cmdArg1, cmdArg2 /* ..., cmdArgN */) {
+	ZmCsfeCommand.clearAuthToken();
+	appCtxt.getAppController().sendNoOp();
+};
+
 ZmClientCmdHandler.prototype.execute_alert =
 function(cmdStr, searchController, cmdName, cmdArg1, cmdArg2 /* ..., cmdArgN */) {
 	//  $set:alert [sound/browser/app] [delay in seconds]
@@ -191,6 +197,20 @@ function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
 		var leakResult = AjxLeakDetector.execute(cmdArg1);
 		this._alert(leakResult.message, leakResult.success ? ZmStatusView.LEVEL_INFO : ZmStatusView.LEVEL_WARNING);
 	}
+};
+
+ZmClientCmdHandler.prototype.execute_tabs =
+function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
+	appCtxt.getRootTabGroup().dump(AjxDebug.DBG1);
+};
+
+ZmClientCmdHandler.prototype.execute_ymid =
+function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
+	var settings = appCtxt.getSettings(),
+		setting = settings.getSetting(ZmSetting.IM_YAHOO_ID);
+	setting.setValue(cmdArg1 || "");
+	settings.save([setting]);
+	this._alert("Done");
 };
 
 ZmClientCmdHandler.prototype.execute_expando =
@@ -241,12 +261,46 @@ function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
 	}
 };
 
-ZmClientCmdHandler.prototype._alert = 
+ZmClientCmdHandler.prototype._alert =
 function(msg, level) {
 	appCtxt.setStatusMsg(msg, level);
 };
 
-ZmClientCmdHandler.prototype._dumpEl = 
+ZmClientCmdHandler.prototype.execute_chat =
+function(cmdStr, searchController, cmdName, cmdArg1, cmdArg2 /* ..., cmdArgN */) {
+	function doIt() {
+		var jsonObj = {
+			n: [
+				{
+				  body: [
+					{
+					  _content: cmdArg2 || "<span style=''>:) Whatever </span>",
+					  html: true
+					}
+				   ],
+				  from: "user2@secondchair-lm-corp-yahoo-com.local",
+				  seq: 0,
+				  thread: "user2@secondchair-lm-corp-yahoo-com.local-5",
+				  ts: 1215626211402,
+				  type: "message"
+				 }
+			   ]
+		};
+		AjxDispatcher.run("GetRoster").pushNotification(jsonObj);
+	}
+	AjxTimedAction.scheduleAction(new AjxTimedAction(null, doIt), (cmdArg1 || 0) * 1000);
+};
+
+ZmClientCmdHandler.prototype.execute_conference =
+function(cmdStr, searchController, cmdName, cmdArg1, cmdArg2 /* ..., cmdArgN */) {
+	if (cmdArg1 == "new") {
+		ZmImApp.INSTANCE.getImController()._createConferenceListener();
+	} else {
+		ZmImApp.INSTANCE.getImController()._browseConferencesListener();
+	}
+};
+
+ZmClientCmdHandler.prototype._dumpEl =
 function dumpEl(el, known, expandos) {
 	var props = [];
 	for (var p in el) {

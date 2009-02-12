@@ -37,7 +37,6 @@ ZmContactPicker = function(buttonInfo) {
 	this._offset = 0;
 	this._defaultQuery = ".";
 
-	this._searchRespCallback = new AjxCallback(this, this._handleResponseSearch);
 	this._searchErrorCallback = new AjxCallback(this, this._handleErrorSearch);
 };
 
@@ -109,9 +108,7 @@ function(buttonId, addrs, str) {
 	this._prevButton.setEnabled(false);
 	this._nextButton.setEnabled(false);
 
-	//bug: 33041 - preload canonical list to avoid race condition
-	AjxDispatcher.run("GetContacts");
-	this.search();
+	this.search(null, null, true);
 
 	DwtDialog.prototype.popup.call(this);
 };
@@ -129,7 +126,7 @@ function() {
 };
 
 ZmContactPicker.prototype.search =
-function(colItem, ascending) {
+function(colItem, ascending, firstTime) {
 	if (typeof ascending == "undefined") {
 		ascending = true;
 	}
@@ -173,7 +170,7 @@ function(colItem, ascending) {
 		query: query,
 		queryHint: queryHint,
 		offset: this._offset,
-		respCallback: this._searchRespCallback,
+		respCallback: (new AjxCallback(this, this._handleResponseSearch, [firstTime])),
 		errorCallback: this._searchErrorCallback
 	}
 	ZmContactsHelper.search(params);
@@ -275,7 +272,7 @@ function(ev) {
 };
 
 ZmContactPicker.prototype._handleResponseSearch =
-function(result) {
+function(firstTime, result) {
 	var resp = result.getResponse();
 	var isGal = (this._contactSource == ZmId.SEARCH_GAL);
 	var more = resp.getAttribute("more");
@@ -292,7 +289,7 @@ function(result) {
 	var info = resp.getAttribute("info");
 	var expanded = info && info[0].wildcard[0].expanded == "0";
 
-	if (expanded || (isGal && more)) {
+	if (!firstTime && (expanded || (isGal && more))) {
 		var d = appCtxt.getMsgDialog();
 		d.setMessage(ZmMsg.errorSearchNotExpanded);
 		d.popup();

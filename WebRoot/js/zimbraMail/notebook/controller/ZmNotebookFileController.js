@@ -79,7 +79,7 @@ function(searchResults, fromUserSearch) {
 	var elements = new Object();
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
 	elements[ZmAppViewMgr.C_APP_CONTENT] = lv;
-	this._setView(this._currentView, elements, true);
+	this._setView({view:this._currentView, elements:elements, isAppView:true});
 	this._resetNavToolBarButtons(this._currentView);
 
 	// always set the selection to the first item in the list
@@ -87,6 +87,15 @@ function(searchResults, fromUserSearch) {
 	if (list && list.size() > 0) {
 		lv.setSelection(list.get(0));
 	}
+};
+
+ZmNotebookFileController.prototype._printListener =
+function(ev) {
+	var listView = this._listView[this._currentView];
+	var items = listView.getSelection();
+	var page = (items instanceof Array) ? items[0] : items;
+
+	window.open(page.getRestUrl(true), "_blank");
 };
 
 // Resets the available options on a toolbar or action menu.

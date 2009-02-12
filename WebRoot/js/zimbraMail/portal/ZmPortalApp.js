@@ -35,8 +35,9 @@ ZmPortalApp.prototype._registerApp = function() {
         chooserTooltipKey:	"goToPortal",
         button: ZmAppChooser.B_PORTAL,
         chooserSort: 1,
-        defaultSort: 1
-    });
+        defaultSort: 1,
+		supportsMultiMbox:	true		
+	});
 };
 
 //
@@ -168,27 +169,41 @@ ZmPortalApp.prototype.getPortletMgr = function() {
     return this._portletMgr;
 };
 
-ZmPortalApp.prototype.getOverviewPanelContent =
+//
+// Protected functions
+//
+
+ZmPortalApp.prototype._getOverviewTrees =
 function() {
-	var apps = [];
-	for (var name in ZmApp.CHOOSER_SORT) {
-		apps.push({ name: name, sort: ZmApp.CHOOSER_SORT[name] });
-	}
-	apps.sort(ZmPortalApp.__BY_SORT);
+	return this._getOverviewApp()._getOverviewTrees();
+};
 
-	var appName = null;
-	for (var i = 0; i < apps.length; i++) {
-		var app = apps[i];
-		if (app.name == this._name) { continue; }
-		if (appCtxt.getApp(app.name).isUpsell) { continue; }
+ZmPortalApp.prototype.getAccordionController =
+function() {
+	return this._getOverviewApp().getAccordionController();
+};
 
-		appName = app.name;
-		break;
+ZmPortalApp.prototype._getOverviewApp =
+function() {
+	if (!this._overviewApp) {
+		var apps = [];
+		for (var name in ZmApp.CHOOSER_SORT) {
+			apps.push({ name: name, sort: ZmApp.CHOOSER_SORT[name] });
+		}
+		apps.sort(ZmPortalApp.__BY_SORT);
+
+		var appName = null;
+		for (var i = 0; i < apps.length; i++) {
+			var app = apps[i];
+			if (app.name == this._name) { continue; }
+			if (appCtxt.getApp(app.name).isUpsell) { continue; }
+
+			appName = app.name;
+			break;
+		}
+		this._overviewApp = appCtxt.getApp(appName);
 	}
-	if (appName) {
-		return appCtxt.getApp(appName).getOverviewPanelContent();
-	}
-	return null;
+	return this._overviewApp;
 };
 
 //

@@ -42,6 +42,7 @@ ZmMailListController.GROUP_BY_SETTING[ZmId.VIEW_TRAD]	= ZmSetting.GROUP_BY_MESSA
 // view menu
 ZmMailListController.GROUP_BY_ICON[ZmId.VIEW_TRAD]		= "MessageView";
 ZmMailListController.GROUP_BY_MSG_KEY[ZmId.VIEW_TRAD]	= "byMessage";
+ZmMailListController.GROUP_BY_SHORTCUT[ZmId.VIEW_TRAD]	= ZmKeyMap.VIEW_BY_MSG;
 ZmMailListController.GROUP_BY_VIEWS.push(ZmId.VIEW_TRAD);
 
 // Public methods

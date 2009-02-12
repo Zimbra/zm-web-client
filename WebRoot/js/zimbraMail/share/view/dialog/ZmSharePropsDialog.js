@@ -21,13 +21,11 @@ ZmSharePropsDialog = function(shell, className) {
 	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._handleOkButton));
 	
 	// create auto-completer	
-	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-		var dataClass = appCtxt.getApp(ZmApp.CONTACTS);
+	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) || appCtxt.get(ZmSetting.GAL_ENABLED)) {
 		var params = {
 			parent: this,
-			dataClass: dataClass,
-			dataLoader: dataClass.getContactList,
-			matchValue: ZmContactsApp.AC_VALUE_EMAIL,
+			dataClass: appCtxt.getAutocompleter(),
+			matchValue: ZmAutocomplete.AC_VALUE_EMAIL,
 			locCallback: (new AjxCallback(this, this._getNewAutocompleteLocation, [this])),
 			compCallback: (new AjxCallback(this, this._handleCompletionData, [this])),
 			keyUpCallback: (new AjxCallback(this, this._acKeyUpListener))
@@ -37,6 +35,7 @@ ZmSharePropsDialog = function(shell, className) {
 
 	// set view
 	this.setView(this._createView());
+    this._tabGroupComplete = false;
 };
 
 ZmSharePropsDialog.prototype = new DwtDialog;
@@ -100,6 +99,11 @@ function(mode, object, share) {
 		this._inheritEl.checked = share ? share.link.inh : isNewShare;
 	}
 
+    if (!this._tabGroupComplete) {
+        this._tabGroup.addMember(this._granteeInput, 0);
+        this._tabGroupComplete = true;
+    }
+
 	var perm = share ? share.link.perm : null;
 
 	if (perm != null) {
@@ -125,12 +129,28 @@ function(mode, object, share) {
 	this._reply.setReplyType(ZmShareReply.STANDARD);
 	this._reply.setReplyNote("");
 
+	this._populateUrls();
+
+	var size = this.getSize();
+	Dwt.setSize(this._granteeInput.getInputElement(), 0.6*size.x);
+	Dwt.setSize(this._passwordInput.getInputElement(), 0.6*size.x);
+
+	DwtDialog.prototype.popup.call(this);
+	this.setButtonEnabled(DwtDialog.OK_BUTTON, false);
+	if (isNewShare) {
+		this._userRadioEl.checked = true;
+		this._granteeInput.focus();
+	}
+};
+
+ZmSharePropsDialog.prototype._populateUrls =
+function() {
+
 	var restUrl = this._object.getRestUrl();
 	if (appCtxt.isOffline) {
 		var remoteUri = appCtxt.get(ZmSetting.OFFLINE_REMOTE_SERVER_URI);
-		restUrl = remoteUri + restUrl.substring((restUrl.indexOf("/",7)));
+		restUrl = remoteUri + restUrl.substring((url.indexOf("/",7)));
 	}
-
 	var url = AjxStringUtil.htmlEncode(restUrl).replace(/&amp;/g,'%26');
 	var text = url;
 	if (text.length > 50) {
@@ -154,13 +174,6 @@ function(mode, object, share) {
 				"<a target=_new href='",url,".html'>",text,".html</a>",
 			"</div>"
 		].join("");
-	}
-
-	DwtDialog.prototype.popup.call(this);
-	this.setButtonEnabled(DwtDialog.OK_BUTTON, false);
-	if (isNewShare) {
-		this._userRadioEl.checked = true;
-		this._granteeInput.focus();
 	}
 };
 
@@ -315,6 +328,7 @@ function(shares, result) {
 				}
 
 				var url = share.object.getRestUrl();
+				url = url.replace(/&/g,'%26');
 				if (appCtxt.isOffline) {
 					var remoteUri = appCtxt.get(ZmSetting.OFFLINE_REMOTE_SERVER_URI);
 					url = remoteUri + url.substring((url.indexOf("/",7)));
@@ -534,14 +548,12 @@ function() {
 	}
 
 	this._granteeInput = new DwtInputField({parent: this});
-	Dwt.setSize(this._granteeInput.getInputElement(), "100%");
 	this._granteeInput.setData(Dwt.KEY_OBJECT, this);
 	this._granteeInput.setRequired(true);
 	Dwt.associateElementWithObject(this._granteeInput.getInputElement(), this);
 
 	var password = new DwtComposite(this);
 	this._passwordInput = new DwtInputField({parent: password});
-	Dwt.setSize(this._passwordInput.getInputElement(), "100%");
 	this._passwordInput.setData(Dwt.KEY_OBJECT, this);
 	this._passwordInput.setRequired(true);
 	this._passwordButton = new DwtButton({parent:password});
@@ -621,7 +633,7 @@ function() {
 	var urlHtml = [
 		"<div>",
 			"<div style='margin-bottom:.25em'>",ZmMsg.shareUrlInfo,"</div>",
-			"<div style='padding-left:2em;cursor:text' id='",urlId,"'></div>",
+			"<div style='cursor:text' id='",urlId,"'></div>",
 		"</div>"
 	].join("");
 

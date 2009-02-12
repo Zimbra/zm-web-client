@@ -184,3 +184,16 @@ function(callback, name, response) {
 	}
 	callback.run(response);
 };
+
+ZmNotebook.prototype.createQuery =
+function(pathOnly) {
+	var path = this.name;
+	var f = this.parent;
+	while (f && (f.nId != ZmFolder.ID_ROOT) && f.name.length) {
+		var name =  f.name;
+		path = name + "/" + path;
+		f = f.parent;
+	}
+	path = '"' + path + '"';
+	return pathOnly ? path : ("in:" + path);    
+};

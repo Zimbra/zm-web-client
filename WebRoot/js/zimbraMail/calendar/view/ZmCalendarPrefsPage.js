@@ -154,11 +154,17 @@ function(setting, right) {
 	var pref = appCtxt.getSettings().getSetting(setting);
 	var curType = appCtxt.get(setting);
 	var curUsers = (curType == ZmSetting.ACL_USER) ? this._acl.getGrantees(right) : [];
-	var curHash = AjxUtil.arrayAsHash(curUsers);	
+	var curUsersInfo = (curType == ZmSetting.ACL_USER) ? this._acl.getGranteesInfo(right) : [];
+    var zidHash = {};
+    for (var i = 0; i < curUsersInfo.length; i++) {
+          zidHash[curUsersInfo[i].grantee] = curUsersInfo[i].zid;
+    }
+	var curHash = AjxUtil.arrayAsHash(curUsers);
+	
 	var radioGroup = this.getFormObject(setting);
 	var newType = radioGroup.getValue();
 	var radioGroupChanged = (newType != pref.origValue);
-	
+		
 	var newUsers = [];
 	if (newType == ZmSetting.ACL_USER) {
 		var textarea = this.getFormObject(ZmCalendarPrefsPage.TEXTAREA[setting]);
@@ -167,7 +173,9 @@ function(setting, right) {
 		for (var i = 0; i < users.length; i++) {
 			var user = users[i];
 			if (!user) { continue; }
-			user = (user.indexOf('@') == -1) ? [user, appCtxt.getUserDomain()].join('@') : user;
+            if(zidHash[user] != user) {
+			    user = (user.indexOf('@') == -1) ? [user, appCtxt.getUserDomain()].join('@') : user;
+            }
 			newUsers.push(user);
 		}
 		newUsers.sort();
@@ -191,10 +199,11 @@ function(setting, right) {
 	if (curUsers.length > 0) {
 		for (var i = 0; i < curUsers.length; i++) {
 			var user = curUsers[i];
+			var zid = (curUsersInfo[i]) ? curUsersInfo[i].zid : null;
 			if (!newHash[user]) {
 				var contact = contacts.getContactByEmail(user);
 				var gt = (contact && contact.isGroup()) ? ZmSetting.ACL_GROUP : ZmSetting.ACL_USER;
-				var ace = new ZmAccessControlEntry({grantee:user, granteeType:gt, right:right});
+				var ace = new ZmAccessControlEntry({grantee: (user!=zid) ? user : null, granteeType:gt, right:right, zid: zid});
 				revokes.push(ace);
 			}
 		}
@@ -234,7 +243,7 @@ function(setting, right) {
  		revokes = this._acl.getACLByGranteeType(right, ZmSetting.ACL_USER);
 		revokes = revokes.concat(this._acl.getACLByGranteeType(right, ZmSetting.ACL_GROUP));
 	}
-	
+		
 	return {grants:grants, revokes:revokes};
 };
 
@@ -256,7 +265,7 @@ function(aces) {
 		aces = [aces];
 	}
 	
-	if (aces && aces.length) {		
+	if (aces && aces.length) {
 		for (var i = 0; i < aces.length; i++) {
 			var ace = aces[i];
 			var setting = (ace.right == ZmSetting.RIGHT_INVITE) ? ZmSetting.CAL_INVITE_ACL : ZmSetting.CAL_FREE_BUSY_ACL;
@@ -270,8 +279,14 @@ function() {
 	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) && appCtxt.get(ZmSetting.GAL_AUTOCOMPLETE_ENABLED)) {
 		var contactsClass = appCtxt.getApp(ZmApp.CONTACTS);
 		var contactsLoader = contactsClass.getContactList;
-		var params = {parent:appCtxt.getShell(), dataClass:contactsClass, dataLoader:contactsLoader, separator:"",
-					  matchValue:ZmContactsApp.AC_VALUE_EMAIL, smartPos:true, options:{galOnly:true}};
+		var params = {
+			parent:appCtxt.getShell(),
+			dataClass:appCtxt.getAutocompleter(),
+			separator:"",
+			matchValue:ZmAutocomplete.AC_VALUE_EMAIL,
+			smartPos:true,
+			options:{galOnly:true}
+		};
 		this._acList = new ZmAutocompleteListView(params);
 	}
 };
