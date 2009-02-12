@@ -565,6 +565,7 @@ function(params) {
  */
 ZmYahooImService.prototype._callSdk =
 function(functionName, params) {
+	AjxDispatcher.require(["YmSdk"]);
 	this._callSdkObj(YMSGR.sdk, "YMSGR.sdk", functionName, params);
 };
 
