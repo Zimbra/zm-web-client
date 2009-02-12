@@ -2345,19 +2345,21 @@ function() {
 ZmCalViewController.prototype._refreshAction =
 function(dontClearCache) {
 	DBG.println(AjxDebug.DBG1, "ZmCalViewController: _refreshAction: " + dontClearCache);	
+	var forceMaintenance = false;	
 	// reset cache
 	if (!dontClearCache) {
 		this._apptCache.clearCache();
+		forceMaintenance = true;		
 	}
 
 	if (this._viewMgr != null) {
 		// mark all views as dirty
 		this._viewMgr.setNeedsRefresh(true);
-		this._scheduleMaintenance(ZmCalViewController.MAINT_MINICAL|ZmCalViewController.MAINT_VIEW|ZmCalViewController.MAINT_REMINDER);
+		this._scheduleMaintenance(ZmCalViewController.MAINT_MINICAL|ZmCalViewController.MAINT_VIEW|ZmCalViewController.MAINT_REMINDER, forceMaintenance);
 	} else if (this._miniCalendar != null) {
-		this._scheduleMaintenance(ZmCalViewController.MAINT_MINICAL|ZmCalViewController.MAINT_REMINDER);
+		this._scheduleMaintenance(ZmCalViewController.MAINT_MINICAL|ZmCalViewController.MAINT_REMINDER, forceMaintenance);
 	} else {
-		this._scheduleMaintenance(ZmCalViewController.MAINT_REMINDER);
+		this._scheduleMaintenance(ZmCalViewController.MAINT_REMINDER, forceMaintenance);
 	}
 };
 
@@ -2436,9 +2438,9 @@ function(appt) {
 };
 
 ZmCalViewController.prototype._scheduleMaintenance =
-function(work) {
+function(work, forceMaintenance) {
 	// schedule timed action
-	if (this._pendingWork == ZmCalViewController.MAINT_NONE) {
+	if ((this._pendingWork == ZmCalViewController.MAINT_NONE) || forceMaintenance) {
 		AjxTimedAction.scheduleAction(this._maintTimedAction, 0);
 	}
 	this._pendingWork |= work;

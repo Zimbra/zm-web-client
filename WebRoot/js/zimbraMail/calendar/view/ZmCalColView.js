@@ -2228,8 +2228,12 @@ ZmCalColView.prototype.set =
 function(list, skipMiniCalUpdate) {
 	this._preSet();
 	this._selectedItems.removeAll();
+	var newList = list;
+	if(list && (list == this._list)) {
+		newList = list.clone();
+	}
 	this._resetList();
-	this._list = list;
+	this._list = newList;
 	var timeRange = this.getTimeRange();
 	if (list) {
 		var size = list.size();
