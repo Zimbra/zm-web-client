@@ -249,7 +249,7 @@ function() {
 
 ZmCalBaseItem.prototype._getAttr =
 function(calItem, inst, name) {
-	return inst[name] || calItem[name];
+	return inst[name] != null ? inst[name] : calItem[name];
 };
 
 ZmCalBaseItem.prototype._addLocationToSoap =
