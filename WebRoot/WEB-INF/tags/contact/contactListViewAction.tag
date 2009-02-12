@@ -28,7 +28,9 @@
         </app:status>
     </c:when>
     <c:when test="${zm:actionSet(param, 'actionSearch')}">
-        <c:redirect url="/h/search?sq=${searchQuery}&st=contact&search=Search"/>
+        <c:redirect url="/h/search?st=contact&search=Search">
+            <c:param name="sq" value="${fn:escapeXml(searchQuery)}"/>
+        </c:redirect>
     </c:when>
 </c:choose>
 
