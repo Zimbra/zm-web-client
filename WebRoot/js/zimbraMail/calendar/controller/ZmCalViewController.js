@@ -2405,6 +2405,7 @@ ZmCalViewController.prototype._maintGetApptCallback =
 function(work, view, list, skipMiniCalUpdate, query) {
 	// TODO: turn off shell busy
     if (list instanceof ZmCsfeException) {
+		this._searchInProgress = false;		
 		this._handleError(list, new AjxCallback(this, this._maintErrorHandler));
 		return;
 	}
@@ -2435,7 +2436,15 @@ function(work, view, list, skipMiniCalUpdate, query) {
 
 	if (work & ZmCalViewController.MAINT_REMINDER) {
 		this._app.getReminderController().refresh();
+	}
+
+	this._searchInProgress = false;
+
+	//initiate schedule action for pending work (process queued actions)
+	if(this._pendingWork != ZmCalViewController.MAINT_NONE) {
+		var newWork = this._pendingWork;
 		this._pendingWork = ZmCalViewController.MAINT_NONE;
+		this._scheduleMaintenance(newWork);
 	}
 
 };
@@ -2473,20 +2482,19 @@ function(appt) {
 ZmCalViewController.prototype._scheduleMaintenance =
 function(work, forceMaintenance) {
 	// schedule timed action
-	if ((this._pendingWork == ZmCalViewController.MAINT_NONE) || forceMaintenance) {
+	if (  (!this._searchInProgress || forceMaintenance) && (this._pendingWork == ZmCalViewController.MAINT_NONE) ) {
+		this._pendingWork |= work;
 		AjxTimedAction.scheduleAction(this._maintTimedAction, 0);
+	}else {
+		this._pendingWork |= work;
 	}
-	this._pendingWork |= work;
 };
 
 ZmCalViewController.prototype._maintenanceAction =
 function() {
 	var work = this._pendingWork;
+	this._searchInProgress = true;		
 	this._pendingWork = ZmCalViewController.MAINT_NONE;
-	
-	if(work & ZmCalViewController.MAINT_REMINDER) {
-		this._pendingWork = ZmCalViewController.MAINT_REMINDER;
-	}
 	
 	var maintainMiniCal = (work & ZmCalViewController.MAINT_MINICAL);
 	var maintainView = (work & ZmCalViewController.MAINT_VIEW);
@@ -2494,6 +2502,7 @@ function() {
 	
 	if(work == ZmCalViewController.MAINT_REMINDER) {
 		this._app.getReminderController().refresh();
+		this._searchInProgress = false;		
 	}
 	else if(maintainMiniCal || maintainView || maintainRemainder) {
 		var view = this.getCurrentView();
