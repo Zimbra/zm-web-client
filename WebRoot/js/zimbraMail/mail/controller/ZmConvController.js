@@ -130,9 +130,15 @@ function(view) {
 	this._setupCheckMailButton(this._toolbar[view]);
 };
 
-ZmConvController.prototype._setupViewMenu =
-function(view) {
-	this._setupReadingPaneMenuItem(view, null, true);
+ZmConvController.prototype._setupViewMenuItems =
+function(view, btn) {
+
+	var menu = new ZmPopupMenu(btn);
+	btn.setMenu(menu);
+
+	this._setupReadingPaneMenuItems(view, menu, this.isReadingPaneOn());
+
+	return menu;
 };
 
 ZmConvController.prototype._setupDeleteMenu =
