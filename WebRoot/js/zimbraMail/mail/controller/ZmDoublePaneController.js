@@ -312,17 +312,10 @@ function() {
 };
 
 // Adds a "Reading Pane" checked menu item to a view menu
-ZmDoublePaneController.prototype._setupReadingPaneMenuItem =
+ZmDoublePaneController.prototype._setupReadingPaneMenuItems =
 function(view, menu, checked) {
-	var viewBtn = this._toolbar[view].getButton(ZmOperation.VIEW_MENU);
-	if (!menu) {
-		menu = viewBtn.getMenu();
-		// this means conversations not enabled
-		if (!menu) {
-			menu = new ZmPopupMenu(viewBtn);
-		}
-		viewBtn.setMenu(menu);
-	} else if (menu.getItemCount() > 0) {
+
+	if (menu.getItemCount() > 0) {
 		new DwtMenuItem({parent:menu, style:DwtMenuItem.SEPARATOR_STYLE});
 	}
 
@@ -346,8 +339,6 @@ function(view, menu, checked) {
 			mi.setChecked(checked[id], true);
 		}
 	}
-
-	return menu;
 };
 
 /*

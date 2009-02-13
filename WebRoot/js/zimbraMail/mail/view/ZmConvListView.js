@@ -317,10 +317,9 @@ function(params) {
 /**
  * @param conv		[ZmConv]		conv that owns the messages we will display
  * @param msg		[ZmMailMsg]*	msg that is the anchor for paging in more msgs
- * @param offset	[int]*			start of current page of msgs within conv
  */
 ZmConvListView.prototype._expand =
-function(conv, msg, offset) {
+function(conv, msg) {
 	var item = msg || conv;
 	var isConv = (item.type == ZmItem.CONV);
 	var rowIds = this._msgRowIdList[item.id];
@@ -334,15 +333,16 @@ function(conv, msg, offset) {
 			// should be here only when the conv is first expanded
 			msgList.addChangeListener(this._listChangeListener);
 		}
-		var index = this._getRowIndex(item);	// row after which to add rows
 
-		// work with entire list of conv's msgs, using offset
-		var a = msgList.getArray();
-		var limit = appCtxt.get(ZmSetting.PAGE_SIZE);
-		offset = this._msgOffset[item.id] || 0;
-		var num = Math.min(limit, msgList.size() - offset);
-		for (var i = 0; i < num; i++) {
-			var msg = a[offset + i];
+		var ascending = (appCtxt.get(ZmSetting.CONVERSATION_ORDER) == ZmSearch.DATE_ASC);
+		var index = this._getRowIndex(item);	// row after which to add rows
+		if (ascending && msg) {
+			index--;	// for ascending, we want to expand upward (add above expandable msg row)
+		}
+		var offset = this._msgOffset[item.id] || 0;
+		var a = conv.getMsgList(offset, ascending);
+		for (var i = 0; i < a.length; i++) {
+			var msg = a[i];
 			var div = this._createItemHtml(msg);
 			this._addRow(div, index + i + 1);
 			var list = this._msgRowIdList[item.id];
@@ -377,8 +377,6 @@ function(item) {
 			this._doCollapse(nextItem);
 			done = ((nextItem.id == item.id) || (expItems.length == 0));
 		}
-	} else {
-		this._doCollapse(item);
 	}
 
 	this._resetColWidth();
@@ -703,5 +701,25 @@ function(id, field) {
 		return (item && !this._isExpandable(item));
 	} else {
 		return ZmListView.prototype._allowFieldSelection.apply(this, arguments);
+	}
+};
+
+ZmConvListView.prototype.redoExpansion =
+function() {
+	var list = [];
+	var offsets = {};
+	for (var cid in this._expandedItems) {
+		var items = this._expandedItems[cid];
+		for (var i = 0; i < items.length; i++) {
+			var id = items[i];
+			list.push(id);
+			offsets[id] = this._msgOffset[id];
+		}
+	}
+	this._expandAll(false);
+	this._resetExpansion();
+	for (var i = 0; i < list.length; i++) {
+		var id = list[i];
+		this._expand(id, offsets[id]);
 	}
 };

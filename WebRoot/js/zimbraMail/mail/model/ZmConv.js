@@ -380,6 +380,15 @@ function(folderId) {
 	this.folders[folderId] = true;
 };
 
+ZmConv.prototype.getMsgList =
+function(offset, ascending) {
+	var a = this.msgs.getArray().slice(offset || 0);
+	if (ascending) {
+		a.reverse();
+	}
+	return a;
+};
+
 /**
  * Returns the first matching msg of this conv, loading the conv msg list if necessary. If the
  * msg itself hasn't been loaded we also load the conv. The conv load is a SearchConvRequest
