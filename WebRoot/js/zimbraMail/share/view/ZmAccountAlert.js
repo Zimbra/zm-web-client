@@ -82,7 +82,7 @@ function(evt) {
 
 ZmAccountAlert.prototype._doIt =
 function(status) {
-	var item = appCtxt.getOverviewController().getAccordionItem(this.account);
+	var item = ZmAppAccordionController.getInstance().getAccordionItem(this.account);
 	if (item) {
 		item.accordion.showAlert(item.id, status);
 	}

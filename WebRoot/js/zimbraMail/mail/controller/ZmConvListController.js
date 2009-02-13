@@ -36,12 +36,13 @@ ZmConvListController = function(container, mailApp) {
 ZmConvListController.prototype = new ZmDoublePaneController;
 ZmConvListController.prototype.constructor = ZmConvListController;
 
-ZmMailListController.GROUP_BY_ITEM[ZmId.VIEW_CONVLIST]	= ZmItem.CONV;
+ZmMailListController.GROUP_BY_ITEM[ZmId.VIEW_CONVLIST]		= ZmItem.CONV;
 ZmMailListController.GROUP_BY_SETTING[ZmId.VIEW_CONVLIST]	= ZmSetting.GROUP_BY_CONV;
 
 // view menu
 ZmMailListController.GROUP_BY_ICON[ZmId.VIEW_CONVLIST]			= "ConversationView";
 ZmMailListController.GROUP_BY_MSG_KEY[ZmId.VIEW_CONVLIST]		= "byConversation";
+ZmMailListController.GROUP_BY_SHORTCUT[ZmId.VIEW_CONVLIST]		= ZmKeyMap.VIEW_BY_CONV;
 ZmMailListController.GROUP_BY_VIEWS.push(ZmId.VIEW_CONVLIST);
 
 // Public methods
@@ -65,8 +66,27 @@ function(search) {
 	// call base class
 	ZmDoublePaneController.prototype.show.call(this, search, this._list);
 	appCtxt.set(ZmSetting.GROUP_MAIL_BY, ZmSetting.GROUP_BY_CONV);
-//	this._resetNavToolBarButtons(ZmId.VIEW_CONVLIST);
 };
+
+/**
+ * Handles switching the order of messages within expanded convs.
+ *
+ * @param view		[constant]*		the id of the new order
+ * @param force		[boolean]		if true, always redraw view
+ */
+ZmConvListController.prototype.switchView =
+function(view, force) {
+
+	if (view == ZmSearch.DATE_DESC || view == ZmSearch.DATE_ASC) {
+		if ((appCtxt.get(ZmSetting.CONVERSATION_ORDER) != view) || force) {
+			appCtxt.set(ZmSetting.CONVERSATION_ORDER, view);
+			this._mailListView.redoExpansion();
+		}
+	} else {
+		ZmMailListController.prototype.switchView.apply(this, arguments);
+	}
+};
+
 
 ZmConvListController.prototype.getKeyMapName =
 function() {
@@ -178,6 +198,28 @@ function(view) {
 	this._navToolBar[view].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.nextPage);
 };
 
+ZmConvListController.prototype._setupConvOrderMenuItems =
+function(view, menu) {
+
+	if (menu.getItemCount() > 0) {
+		new DwtMenuItem({parent:menu, style:DwtMenuItem.SEPARATOR_STYLE});
+	}
+
+	var ids = [ZmMailListController.CONV_ORDER_DESC, ZmMailListController.CONV_ORDER_ASC];
+	var setting = appCtxt.get(ZmSetting.CONVERSATION_ORDER);
+	var miParams = {style:DwtMenuItem.RADIO_STYLE, radioGroupId:"CO"};
+	for (var i = 0; i < ids.length; i++) {
+		var id = ids[i];
+		if (!menu._menuItems[id]) {
+			miParams.text = ZmMailListController.CONV_ORDER_TEXT[id];
+			var mi = menu.createMenuItem(id, miParams);
+			mi.setData(ZmOperation.MENUITEM_ID, id);
+			mi.addSelectionListener(this._listeners[ZmOperation.VIEW]);
+			mi.setChecked((setting == id), true);
+		}
+	}
+};
+
 // no support for showing total items, which are msgs
 ZmConvListController.prototype._getNumTotal = function() { return null; }
 
@@ -221,7 +263,7 @@ function(item) {
  * Returns the first matching msg in the conv, if available. No request will
  * be made to the server if the conv has not been loaded.
  */
-ZmConvListController.prototype._getMsg =
+ZmConvListController.prototype.getMsg =
 function(params) {
 	var sel = this._listView[this._currentView].getSelection();
 	var item = (sel && sel.length) ? sel[0] : null;
@@ -229,7 +271,7 @@ function(params) {
 		if (item.type == ZmItem.CONV) {
 			return item.getFirstHotMsg(params);
 		} else if (item.type == ZmItem.MSG) {
-			return ZmDoublePaneController.prototype._getMsg.apply(this, arguments);
+			return ZmDoublePaneController.prototype.getMsg.apply(this, arguments);
 		}
 	}
 	return null;
@@ -288,12 +330,12 @@ function(item, getFirstMsg) {
 ZmConvListController.prototype._expand =
 function(conv, msg, offset, getFirstMsg) {
 	offset = offset || 0;
-	var respCallback = new AjxCallback(this, this._handleResponseLoadItem, [conv, msg, offset]);
+	var respCallback = new AjxCallback(this, this._handleResponseLoadItem, [conv, msg]);
 	var pageWasCached = false;
 	if (offset) {
 		if (this._paginateConv(conv, offset, respCallback)) {
 			// page was cached, callback won't be run
-			this._handleResponseLoadItem(conv, msg, offset, new ZmCsfeResult(conv.msgs));
+			this._handleResponseLoadItem(conv, msg, new ZmCsfeResult(conv.msgs));
 		}
 	} else if (!conv._loaded) {
 		// no msgs have been loaded yet
@@ -301,14 +343,14 @@ function(conv, msg, offset, getFirstMsg) {
 		conv.load({getFirstMsg:getFirstMsg}, respCallback);
 	} else {
 		// re-expanding first page of msgs
-		this._handleResponseLoadItem(conv, msg, offset, new ZmCsfeResult(conv.msgs));
+		this._handleResponseLoadItem(conv, msg, new ZmCsfeResult(conv.msgs));
 	}
 };
 
 ZmConvListController.prototype._handleResponseLoadItem =
-function(conv, msg, offset, result) {
+function(conv, msg, result) {
 	if (!result) { return; }
-	this._mailListView._expand(conv, msg, offset);
+	this._mailListView._expand(conv, msg);
 };
 
 /**
@@ -418,14 +460,15 @@ function(msg, resp) {
 
 ZmConvListController.prototype._redrawDraftItemRows =
 function(msg) {
+	var lv = this._listView[this._currentView];
 	var conv = appCtxt.getById(msg.cid);
 	if (conv) {
 		conv._loadFromMsg(msg);	// update conv
-		this._listView[this._currentView].redrawItem(conv);
-		this._listView[this._currentView].setSelection(conv, true);
+		lv.redrawItem(conv);
+		lv.setSelection(conv, true);
 	}
 	// don't think a draft conv is ever expandable, but try anyway
-	this._listView[this._currentView].redrawItem(msg);
+	lv.redrawItem(msg);
 };
 
 /**

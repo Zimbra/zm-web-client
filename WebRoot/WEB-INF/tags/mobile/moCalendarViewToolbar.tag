@@ -1,12 +1,17 @@
 <%@ tag body-content="empty" %>
 <%@ attribute name="date" rtexprvalue="true" required="true" type="java.util.Calendar" %>
 <%@ attribute name="openurl" rtexprvalue="true" required="false" %>
+<%@ attribute name="urlTarget" rtexprvalue="true" required="true" %>
+<%@ attribute name="view" rtexprvalue="true" required="false" %>
+<%@ attribute name="invId" rtexprvalue="true" required="false" %>
+<%@ attribute name="timezone" rtexprvalue="true" required="true" type="java.util.TimeZone"%>
+<%@ attribute name="isTop" rtexprvalue="true" required="false" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="mo" uri="com.zimbra.mobileclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
-<fmt:formatDate var="dateDf" value="${date.time}" pattern="yyyyMMdd"/>
+<fmt:formatDate var="dateDf" value="${date.time}" pattern="yyyyMMdd" timeZone="${timezone}"/>
 <mo:calendarUrl var="dayViewUrl" view="day"/>
 <mo:calendarUrl var="listViewUrl" view="list"/>
 <mo:calendarUrl var="monthViewUrl" view="month"/>
@@ -22,20 +27,74 @@
         <c:set var="month">href="${fn:escapeXml(monthViewUrl)}"</c:set>
     </c:otherwise>
 </c:choose>
-<table width="100%" cellspacing="0" cellpadding="0" border="0" class="ToolbarBg">
-    <tr>
-        <td>
-            <table cellpadding="0" cellspacing="0" border="0">
-                <tr>
-                    <c:if test="${uiv != '1'}">
-                    <td class="Padding"><a href="main" class='zo_leftbutton'><fmt:message key="MO_MAIN"/></a></td>    
-                    </c:if>
-                    <td class="Padding"><a ${list} class='zo_button ${param.view!=null && param.view=='list'?'zo_button_active':''}'><fmt:message key="calViewListShort"/></a></td>
-                    <td class="Padding"><a ${day} class='zo_button ${param.view!=null && param.view=='day'?'zo_button_active':''}'><fmt:message key="calViewDayShort"/></a></td>
-                    <td class="Padding"><a ${month} class='zo_button ${param.view!=null && param.view=='month'?'zo_button_active':''}'><fmt:message key="calViewMonthShort"/></a></td>
-                    <%--<td><a zhref="?t=3" class='zo_button'>+</a></td> --%>
-                </tr>
-            </table>
-        </td>
-    </tr>
-</table>
+
+<c:set var="top_stb" value="${param.top_stb eq '0' ? '0' : (empty sessionScope.top_stb ? '1' : sessionScope.top_stb)}"/>
+<c:set var="btm_stb" value="${param.btm_stb eq '0' ? '0' : (empty sessionScope.btm_stb ? '1' : sessionScope.btm_stb)}"/>
+
+<c:set var="top_tb" value="${param.top_tb eq '0' ? '0' : (empty sessionScope.top_tb ? '1' : sessionScope.top_tb)}"/>
+<c:set var="btm_tb" value="${param.btm_tb eq '0' ? '0' : (empty sessionScope.btm_tb ? '1' : sessionScope.btm_tb)}"/>
+
+<c:set var="top_fldr_select" value="${param.top_fldr_select eq '1' ? '1' : (empty sessionScope.top_fldr_select ? '0' : sessionScope.top_fldr_select)}"/> <%-- Default disabled--%>
+<c:set var="btm_fldr_select" value="${param.btm_fldr_select eq '0' ? '0' : (empty sessionScope.btm_fldr_select ? '1' : sessionScope.btm_fldr_select)}"/> <%-- Default enabled--%>
+<fmt:message key="checkedCalendars" var="checkedInUI"/>
+<c:if test="${isTop && '1' eq top_stb}">
+    <div class="SubToolbar">
+        <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=cals"><fmt:message key="calendars"/></a> &#171;
+        <c:if test="${top_fldr_select ne '1'}">
+            ${not empty sessionScope.calendar ? zm:truncateFixed(sessionScope.calendar.name,12,true) : checkedInUI}
+        </c:if>
+        <c:if test="${top_fldr_select eq '1'}">
+        <select name="sfi" onchange="fetchIt('?sfi='+this.value+'&st=cal');">
+        <option value="null">${checkedInUI}</option>
+        <zm:forEachFolder var="fldr" skiproot="true">
+            <c:if test="${fldr.isCalendar || fldr.isAppointmentView}">
+                <option ${param.sfi eq fldr.id || sessionScope.calendar.id eq fldr.id ? 'selected=selected' : ''} value="${fldr.id}">${fn:escapeXml(zm:truncateFixed(zm:getFolderName(pageContext,fldr.id),12,true))}</option>
+            </c:if>
+        </zm:forEachFolder>
+        </select>
+        </c:if>
+        <%--<c:if test="${not empty param.sq}">
+                | <a href="?saveSearch=1&sq=${param.sq}&search=0"  onclick='toggleElem(this,"searchbar"); return toggleElem(this,"savesearchbar");'><fmt:message key="saveSearch"/></a>
+        </c:if>  --%>
+    </div>
+</c:if>
+<c:url var='eaction' value="?st=newappt&date=${dateDf}">
+<c:if test="${not empty invId}">
+	<c:param name="useInstance" value="0"/>
+	<c:param name="invId" value="${invId}"/>
+
+</c:if>
+<c:if test="${not empty param.bt}">
+	<c:param name="bt" value="${param.bt}"/>
+</c:if>
+</c:url>
+       
+<c:if test="${(isTop && '1' eq  top_tb ) || (!isTop && '1' eq btm_tb) }">
+<div class="Toolbar table">
+	<div class="table-row">
+	<div class="table-cell">
+        <span class=" zo_button_group"><c:if test="${view ne 'appt'}"><a ${list} class='prev_button ${view!=null && view=='list'?'zo_button_disabled':'zo_button'}'><fmt:message key="calViewListShort"/></a><a ${day} class='next_button ${view!=null && view=='day'?'zo_button_disabled':'zo_button'}'><fmt:message key="calViewDayShort"/></a><a ${month} class='next_button ${view!=null && view=='month'?'zo_button_disabled':'zo_button'}'><fmt:message key="calViewMonthShort"/></a></c:if>
+	<c:if test="${view eq 'appt'}"><mo:calendarUrl var="backurl" action="${null}"/><a href="${backurl}" class="zo_button prev_button"><fmt:message key="back"/></a></c:if></span>
+	 <span><a accesskey="${requestScope.mainaction_accesskey}" href="${eaction}" class='zo_button'><fmt:message key="${empty invId ? 'add' : 'edit'}"/></a></span>
+	</div>
+	</div>
+</div>
+</c:if>    
+<c:if test="${!isTop && '1' eq btm_stb}">
+    <div class="SubToolbar">
+        <a href="${urlTarget}?st=cals"><fmt:message key="calendars"/></a> :
+        <c:if test="${btm_fldr_select ne '1'}">
+            ${not empty sessionScope.calendar ? zm:truncateFixed(sessionScope.calendar.name,12,true) : checkedInUI}
+        </c:if>
+        <c:if test="${btm_fldr_select eq '1'}">
+        <select name="sfi" onchange="fetchIt('?sfi='+this.value+'&st=cal');">
+        <option value="null">${checkedInUI}</option>
+        <zm:forEachFolder var="fldr" skiproot="true">
+            <c:if test="${fldr.isCalendar || fldr.isAppointmentView}">
+                <option ${param.sfi eq fldr.id || sessionScope.calendar.id eq fldr.id ? 'selected=selected' : ''} value="${fldr.id}">${fn:escapeXml(zm:truncateFixed(zm:getFolderName(pageContext,fldr.id),12,true))}</option>
+            </c:if>
+        </zm:forEachFolder>
+        </select>
+        </c:if>    
+    </div>
+</c:if>

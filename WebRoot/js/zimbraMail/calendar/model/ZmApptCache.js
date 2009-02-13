@@ -530,8 +530,9 @@ function(params, result) {
 	try {
 		resp = result.getResponse();
 	} catch (ex) {
-		if (callback)
-			callback.run(resp);
+		if (callback) {
+			callback.run(result);
+		}
 		return;
 	}
 
@@ -540,7 +541,7 @@ function(params, result) {
 	if(newList == null) { return; }
 
 	if (callback) {
-		callback.run(newList, params.query);
+		callback.run(newList, params.query, result);
 	} else {
 		return newList;
 	}
