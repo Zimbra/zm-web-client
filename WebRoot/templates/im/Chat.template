@@ -165,8 +165,8 @@
 </template>
 
 <template id="im.Chat#NewRosterItemDlg">
-  <table style="width:295px">
-    <tr>
+  <table style="width:305px">
+    <tr id="${id}_serviceParent">
       <td class="ZmChatDialogField"><$= ZmMsg.imGatewayLabel $></td>
       <td id="${id}_serviceType"></td>
     </tr>

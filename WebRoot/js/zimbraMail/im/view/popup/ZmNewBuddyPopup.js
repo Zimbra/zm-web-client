@@ -40,6 +40,24 @@ function() {
 	this._groups = AjxDispatcher.run("GetRoster").getGroups();
 	this._groups.sort();
 	this._groupsDropDown.setVisible(this._groups.size() > 0);
+
+	// Set state of service options.
+	var roster = AjxDispatcher.run("GetRoster");
+	var gws = roster.getGateways();
+	var firstOnline;
+	for (var i = 0; i < gws.length; i++) {
+		var gw = gws[i];
+		var online = (gw.type == "xmpp") || gw.isOnline();
+		this._serviceTypeSelect.enableOption(gw.type, online);
+		if (!firstOnline && online) {
+			firstOnline = gw.type;
+		}
+	}
+	var selectedValue = this._serviceTypeSelect.getValue(),
+		selectedOption = this._serviceTypeSelect.getOptionWithValue(selectedValue);
+	if (!selectedOption.enabled && firstOnline) {
+		this._serviceTypeSelect.setSelectedValue(firstOnline);
+	}
 };
 
 
@@ -74,13 +92,14 @@ function() {
 	var gws = roster.getGateways();
 	for (var i = 0; i < gws.length; i++) {
 		var gw = gws[i];
-		if (gw.type == "xmpp" || gw.isOnline()) {
-			var label = ZmMsg["imGateway_" + gw.type] || gw.type;
-			options.push(new DwtSelectOption(gw.type, i == 0, label));
-		}
+		var label = ZmMsg["imGateway_" + gw.type] || gw.type;
+		options.push(new DwtSelectOption(gw.type, i == 0, label));
 	}
 	this._serviceTypeSelect = new DwtSelect({parent:this, options:options});
 	this._serviceTypeSelect.reparentHtmlElement(id + "_serviceType");
+	if (options.length <= 1) {
+		Dwt.setVisible(Dwt.byId(this._htmlElId + "_serviceParent"), false);
+	}
 
 	var okButton = new DwtButton({ parent: this, parentElement: id + "_okButton" });
 	okButton.setText(ZmMsg.ok);
