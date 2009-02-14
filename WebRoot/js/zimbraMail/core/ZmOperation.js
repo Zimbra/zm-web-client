@@ -101,7 +101,7 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_CLEAR_ALL, {textKey:"clearAll", image:"Cancel"});
 	ZmOperation.registerOp(ZmId.OP_CLOSE, {textKey:"close", tooltipKey:"closeTooltip", image:"Close", shortcut:ZmKeyMap.CANCEL});
 	ZmOperation.registerOp(ZmId.OP_COMPOSE_FORMAT, {textKey:"format", tooltipKey:"formatTooltip", image:"SwitchFormat", shortcut:ZmKeyMap.HTML_FORMAT}, ZmSetting.HTML_COMPOSE_ENABLED);
-	ZmOperation.registerOp(ZmId.OP_DELETE, {textKey:"del", tooltipKey:"deleteTooltip", image:"Delete", shortcut:ZmKeyMap.DEL, precedence:60});
+	ZmOperation.registerOp(ZmId.OP_DELETE, {textKey:"del", tooltipKey:"deleteTooltip", image:"Delete", shortcut:ZmKeyMap.DEL, textPrecedence:60});
 	ZmOperation.registerOp(ZmId.OP_DETACH, {tooltipKey:"detachTT", image:"OpenInNewWindow"});
     ZmOperation.registerOp(ZmId.OP_DETACH_WIN, {textKey:"detachTT", tooltipKey:"detachTT", image:"OpenInNewWindow"});
     ZmOperation.registerOp(ZmId.OP_EDIT, {textKey:"edit", tooltipKey:"editTooltip", image:"Edit", shortcut:ZmKeyMap.EDIT});
@@ -115,9 +115,9 @@ function() {
 //	ZmOperation.registerOp(ZmId.OP_IMPORT_FOLDER, {textKey:"importFolder", image:"MailImport"});
 	ZmOperation.registerOp(ZmId.OP_MARK_ALL_READ, {textKey:"markAllRead", image:"ReadMessage"});
 	ZmOperation.registerOp(ZmId.OP_MOUNT_FOLDER, {textKey:"mountFolder", image:"Folder"});
-	ZmOperation.registerOp(ZmId.OP_MOVE, {textKey:"move", tooltipKey:"moveTooltip", image:"MoveToFolder", precedence:40});
+	ZmOperation.registerOp(ZmId.OP_MOVE, {textKey:"move", tooltipKey:"moveTooltip", image:"MoveToFolder", textPrecedence:40});
 	ZmOperation.registerOp(ZmId.OP_NEW_FOLDER, {textKey:"newFolder", tooltipKey:"newFolderTooltip", image:"NewFolder", shortcut:ZmKeyMap.NEW_FOLDER}, ZmSetting.USER_FOLDERS_ENABLED);
-	ZmOperation.registerOp(ZmId.OP_NEW_MENU, {textKey:"_new", shortcut:ZmKeyMap.NEW, precedence:100}, null,
+	ZmOperation.registerOp(ZmId.OP_NEW_MENU, {textKey:"_new", shortcut:ZmKeyMap.NEW, textPrecedence:100}, null,
 		AjxCallback.simpleClosure(function(parent) {
 			ZmOperation.addDeferredMenu(ZmOperation.addNewMenu, parent);
 		}));
@@ -127,7 +127,7 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_PAGE_DBL_BACK, {image:"LeftDoubleArrow"});
 	ZmOperation.registerOp(ZmId.OP_PAGE_DBL_FORW, {image:"RightDoubleArrow"});
 	ZmOperation.registerOp(ZmId.OP_PAGE_FORWARD, {image:"RightArrow", shortcut:ZmKeyMap.NEXT_PAGE});
-	ZmOperation.registerOp(ZmId.OP_PRINT, {textKey:"print", tooltipKey:"printTooltip", image:"Print", shortcut:ZmKeyMap.PRINT, precedence:30}, ZmSetting.PRINT_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_PRINT, {textKey:"print", tooltipKey:"printTooltip", image:"Print", shortcut:ZmKeyMap.PRINT, textPrecedence:30}, ZmSetting.PRINT_ENABLED);
     ZmOperation.registerOp(ZmId.OP_REFRESH, {textKey:"refresh", tooltipKey:"refreshTooltip"});
 	ZmOperation.registerOp(ZmId.OP_RENAME_FOLDER, {textKey:"renameFolder", image:"Rename"});
 	ZmOperation.registerOp(ZmId.OP_RENAME_SEARCH, {textKey:"renameSearch", image:"Rename"});
@@ -160,7 +160,7 @@ function() {
 	//      Undelete is stupid. We should either add it for all items types (not just contacts) or just kill it
 	ZmOperation.registerOp(ZmId.OP_UNDELETE, {textKey:"undelete", tooltipKey:"undelete", image:"MoveToFolder"});
 	ZmOperation.registerOp(ZmId.OP_VIEW, {textKey:"view", image:"SplitView"});
-	ZmOperation.registerOp(ZmId.OP_VIEW_MENU, {tooltipKey:"viewTooltip", textKey:"view", image:"SplitPane", precedence:80});
+	ZmOperation.registerOp(ZmId.OP_VIEW_MENU, {tooltipKey:"viewTooltip", textKey:"view", image:"SplitPane", textPrecedence:80});
 	ZmOperation.registerOp(ZmId.OP_ZIMLET, {image:"ZimbraIcon"});
 
 	ZmOperation.NEW_ORG_OPS.push(ZmOperation.NEW_FOLDER, ZmOperation.NEW_TAG);
@@ -373,23 +373,6 @@ function(list) {
 	}
 	
 	return newList1;
-};
-
-ZmOperation.sortByPrecedence =
-function(a, b) {
-	if (a == ZmOperation.SEP) return -1;
-	if (b == ZmOperation.SEP) return 1;
-
-	var precA = ZmOperation.getProp(a, "precedence");
-	var precB = ZmOperation.getProp(b, "precedence");
-
-	if (!precA && precB) return -1;
-	if (!precB && precA) return 1;
-
-	if (precA > precB) return 1;
-	if (precA < precB) return -1;
-
-	return 0;
 };
 
 /**

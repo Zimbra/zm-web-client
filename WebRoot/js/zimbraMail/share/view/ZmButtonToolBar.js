@@ -57,12 +57,8 @@ ZmButtonToolBar = function(params) {
 	}
 	// weed out disabled ops, save list of ones that make it
 	this.opList = ZmOperation.filterOperations(buttons);
-
-	// make a copy of opList and sort the copy by precedence value
-	this.precedenceList = [].concat(this.opList);
-	this.precedenceList.sort(ZmOperation.sortByPrecedence);
-
 	this._buttons = ZmOperation.createOperations(this, this.opList, params.overrides);
+	this._createPrecedenceList();
 };
 
 ZmButtonToolBar.prototype = new ZmToolBar;
@@ -149,28 +145,51 @@ function(refElement, reset) {
 	var offset1 = refElement.offsetWidth;
 	var offset2 = el.firstChild ? el.firstChild.offsetWidth : offset1;
 
+	DBG.println("tb", "tb width: " + offset2 + ", container width: " + offset1);
 	if ((offset1 > 0 && offset2 > offset1) || reset) {
-		// restore all button labels first
-		for (var i = 0; i < this.precedenceList.length; i++) {
-			var b = this._buttons[this.precedenceList[i]];
-			if (!b || !b._toggleText) { continue; }
+		DBG.println("tb", "adjusting width");
 
-			b.setText(b._toggleText);
-			b._toggleText = null;
+		// restore all button text and icons first
+		for (var i = 0; i < this._precedenceList.length; i++) {
+			var p = this._precedenceList[i];
+			var b = this._buttons[p.op];
+			if (!b) { continue; }
+			if (p.type == "text" && b._toggleText) {
+				b.setText(b._toggleText);
+				b._toggleText = null;
+			} else if (p.type == "icon" && b._toggleIcon) {
+				b.setImage(b._toggleIcon);
+				b._toggleIcon = null;
+			}
 		}
-		// now remove button labels as needed
-		for (var i = 0; i < this.precedenceList.length; i++) {
-			var b = this._buttons[this.precedenceList[i]];
-			if (!b || !b.getImage() || !b.getVisible()) { continue; }
+
+		// now remove button text and/or icons as needed
+		for (var i = 0; i < this._precedenceList.length; i++) {
+			var p = this._precedenceList[i];
+			var b = this._buttons[p.op];
+			if (!b || !b.getVisible()) { continue; }
 
 			if (offset2 > offset1) {
-				b._toggleText = b.getText();
-				b.setText("");
+				var text = b.getText();
+				var icon = b.getImage();
+				if (!text || !icon) { continue; }
+				if (p.type == "text") {
+					b._toggleText = text;
+					b.setText("");
+					DBG.println("tb", "removed text: " + text);
+				} else if (p.type == "icon") {
+					b._toggleIcon = icon;
+					b.setImage(null);
+					DBG.println("tb", "removed icon: " + icon);
+				}
+				offset2 = el.firstChild ? el.firstChild.offsetWidth : offset1;
+				DBG.println("tb", "new tb width: " + offset2 + ", container width: " + offset1);
+			} else {
+				break;
 			}
-
-			// re-calc firstChild offset since we may have removed its label
-			offset2 = el.firstChild ? el.firstChild.offsetWidth : offset1;
 		}
+
+		// group buttons on the right side into dropdown
 	}
 };
 
@@ -182,4 +201,23 @@ function(refElement, reset) {
 ZmButtonToolBar.prototype._buttonId =
 function(button) {
 	return button.getData(ZmOperation.KEY_ID);
+};
+
+ZmButtonToolBar.prototype._createPrecedenceList =
+function() {
+	this._precedenceList = [];
+	for (var op in this._buttons) {
+		if (op == ZmOperation.SEP) { continue; }
+		var tp = ZmOperation.getProp(op, "textPrecedence");
+		if (tp) {
+			this._precedenceList.push({op:op, type:"text", precedence:tp});
+		}
+		var ip = ZmOperation.getProp(op, "iconPrecedence");
+		if (ip) {
+			this._precedenceList.push({op:op, type:"icon", precedence:ip});
+		}
+	}
+	this._precedenceList.sort(function(a, b) {
+		return (a.precedence > b.precedence) ? 1 : (a.precedence < b.precedence) ? -1 : 0;
+	});
 };

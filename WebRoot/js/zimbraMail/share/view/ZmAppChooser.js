@@ -83,13 +83,10 @@ ZmAppChooser.prototype.addSelectionListener = function(listener) {
 	this.addListener(DwtEvent.SELECTION, listener);
 };
 
-ZmAppChooser.prototype.addButton = function(id, label, image, tooltip, isLast) {
-	// TODO: When buttons are added programmatically, what meaning does
-	// TODO: isLast have anymore?
-	isLast = false;
+ZmAppChooser.prototype.addButton = function(id, label, image, tooltip) {
     var outerClass = null;
     var buttonId = ZmId.getButtonId(ZmId.APP, id);
-    var button = new ZmChicletButton(this, outerClass, image, label, isLast, buttonId);
+    var button = new ZmAppButton(this, outerClass, image, label, buttonId);
 	button.setToolTipContent(tooltip);
 	button.setData(Dwt.KEY_ID, id);
 	button.addSelectionListener(this._buttonListener);
@@ -157,8 +154,8 @@ function(refElement) {
 };
 
 ZmAppChooser.prototype._createButton =
-function(id, isLast) {
-	this.addButton(id, ZmMsg[ZmApp.NAME[id]], ZmApp.ICON[id], ZmMsg[ZmApp.CHOOSER_TOOLTIP[id]], isLast);
+function(id) {
+	this.addButton(id, ZmMsg[ZmApp.NAME[id]], ZmApp.ICON[id], ZmMsg[ZmApp.CHOOSER_TOOLTIP[id]]);
 };
 
 ZmAppChooser.prototype._handleButton = function(evt) {

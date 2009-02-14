@@ -16,18 +16,15 @@
  */
 
 /**
-* Quickly hacked up class to represent a round button that has a background image and a foreground image.
-* Should probably be a subclass of DwtButton, since it copied a bunch of the mouse event handling code from
-* there. But it doesn't quite fit into being a DwtLabel, with the stacked images and all.
-*
-* The button has an inner image positioned relative to an outer image, so that it's roughly centered.
-*
-* - cannot have a menu
-* - does not support enabled/disabled
-*
-* @author Conrad Damon
-*/
-ZmChicletButton = function(parent, className, icon, text, isLast, id) {
+ * Button that behaves like a tab button, designed specifically for the row of
+ * app buttons below the search bar.
+ * 
+ * - cannot have a menu
+ * - does not support enabled/disabled
+ *
+ * @author Conrad Damon
+ */
+ZmAppButton = function(parent, className, icon, text, id) {
 	if (arguments.length == 0) return;
 
     var style = DwtLabel.IMAGE_LEFT;
@@ -38,44 +35,44 @@ ZmChicletButton = function(parent, className, icon, text, isLast, id) {
     this.setText(text);
 };
 
-ZmChicletButton.prototype = new DwtButton;
-ZmChicletButton.prototype.constructor = ZmChicletButton;
+ZmAppButton.prototype = new DwtButton;
+ZmAppButton.prototype.constructor = ZmAppButton;
 
-ZmChicletButton.prototype.toString =
+ZmAppButton.prototype.toString =
 function() {
-	return "ZmChicletButton";
+	return "ZmAppButton";
 };
 
 //
 // Data
 //
 
-ZmChicletButton.prototype.TEMPLATE = "share.Widgets#ZmAppChooserButton";
+ZmAppButton.prototype.TEMPLATE = "share.Widgets#ZmAppChooserButton";
 
 //
 // Public methods
 //
 
-ZmChicletButton.prototype.setSelected = function(selected) {
+ZmAppButton.prototype.setSelected = function(selected) {
     this.isSelected = selected;
     this.setDisplayState(selected ? DwtControl.SELECTED : DwtControl.NORMAL);
 };
 
-ZmChicletButton.prototype.setDisplayState = function(state) {
+ZmAppButton.prototype.setDisplayState = function(state) {
     if (this.isSelected && state != DwtControl.SELECTED) {
         state = [DwtControl.SELECTED, state].join(" ");
     }
     DwtButton.prototype.setDisplayState.call(this, state);
 };
 
-ZmChicletButton.prototype.getKeyMapName =
+ZmAppButton.prototype.getKeyMapName =
 function() {
-	return "ZmChicletButton";
+	return "ZmAppButton";
 };
 
-ZmChicletButton.prototype.handleKeyAction =
+ZmAppButton.prototype.handleKeyAction =
 function(actionCode, ev) {
-    DBG.println("ZmChicletButton.prototype.handleKeyAction");
+    DBG.println("ZmAppButton.prototype.handleKeyAction");
 	switch (actionCode) {
 
 		case DwtKeyMap.SELECT:
@@ -95,7 +92,7 @@ function(actionCode, ev) {
 /**
  * App toolbar buttons user ZHover instead of ZFocused
  */
-ZmChicletButton.prototype._focus =
+ZmAppButton.prototype._focus =
 function() {
     this.setDisplayState(DwtControl.HOVER);
 };
