@@ -83,7 +83,7 @@ function(view, force) {
 			this._mailListView.redoExpansion();
 		}
 	} else {
-		ZmMailListController.prototype.switchView.apply(this, arguments);
+		ZmDoublePaneController.prototype.switchView.apply(this, arguments);
 	}
 };
 
