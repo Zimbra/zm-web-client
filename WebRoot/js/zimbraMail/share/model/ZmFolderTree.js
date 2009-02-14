@@ -204,10 +204,6 @@ function(folder, obj, path) {
 		folder._parseFlags(obj.f);
 	}
 
-	if (ZmFolder.MSG_KEY[obj.id]) {
-		folder._systemName = obj.name;
-	}
-
 	folder._setSharesFromJs(obj);
 };
 
