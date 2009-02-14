@@ -398,6 +398,7 @@ ZmImportExportController.prototype._doExportData = function(params) {
 	if (isTGZ && params.searchFilter) { formParams["query"] = params.searchFilter; }
 	if (params.skipMeta) { formParams["meta"] = "0"; }
 	if (params.filename) { formParams["filename"] = params.filename; }
+	formParams.emptyname = ZmMsg.exportEmptyName;
 
 	// initialize form
 	var form = ZmImportExportController.__createForm(url, formParams);
