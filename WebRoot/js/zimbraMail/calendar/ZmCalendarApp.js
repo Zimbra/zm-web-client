@@ -171,8 +171,8 @@ function() {
 
 	ZmPref.registerPref("CAL_FREE_BUSY_ACL", {
 		displayContainer:	ZmPref.TYPE_RADIO_GROUP,
-		displayOptions:		[ZmMsg.freeBusyAllowAll, ZmMsg.freeBusyAllowSome],
-		options:			[ZmSetting.ACL_PUBLIC, ZmSetting.ACL_USER]
+		displayOptions:		[ZmMsg.freeBusyAllowAll, ZmMsg.freeBusyAllowLocal, ZmMsg.freeBusyAllowNone, ZmMsg.freeBusyAllowSome],
+		options:			[ZmSetting.ACL_PUBLIC, ZmSetting.ACL_AUTH, ZmSetting.ACL_NONE, ZmSetting.ACL_USER]
 	});
 
 	ZmPref.registerPref("CAL_FREE_BUSY_ACL_USERS", {
@@ -186,8 +186,8 @@ function() {
 
 	ZmPref.registerPref("CAL_INVITE_ACL", {
 		displayContainer:	ZmPref.TYPE_RADIO_GROUP,
-		displayOptions:		[ZmMsg.invitesAllowAll, ZmMsg.invitesAllowSome],
-		options:			[ZmSetting.ACL_PUBLIC, ZmSetting.ACL_USER]
+		displayOptions:		[ZmMsg.invitesAllowAll, ZmMsg.invitesAllowLocal, ZmMsg.invitesAllowNone, ZmMsg.invitesAllowSome],
+		options:			[ZmSetting.ACL_PUBLIC, ZmSetting.ACL_AUTH, ZmSetting.ACL_NONE, ZmSetting.ACL_USER]
 	});
 
 	ZmPref.registerPref("CAL_INVITE_ACL_USERS", {

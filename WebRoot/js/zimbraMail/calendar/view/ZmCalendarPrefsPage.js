@@ -217,26 +217,47 @@ function(setting, right) {
 	var userAdded = (grants.length > 0);
 	var userRemoved = (revokes.length > 0);
 	
-	if((userAdded || userRemoved || radioGroupChanged) && (newType == ZmSetting.ACL_USER)) {
+	var denyAll = (radioGroupChanged && (newType == ZmSetting.ACL_NONE));
+	
+	if((newType == ZmSetting.ACL_USER) && (userAdded || userRemoved || radioGroupChanged)) {
 		revokes = revokes.concat(this._acl.getACLByGranteeType(right, ZmSetting.ACL_AUTH));
+		revokes = revokes.concat(this._acl.getACLByGranteeType(right, ZmSetting.ACL_PUBLIC));
+		
+		if(newUsers.length == 0) {
+			denyAll = true;
+		}
 	}
 	
-	//deny all users
-	if ((newType == ZmSetting.ACL_USER) && (newUsers.length == 0)) {
+	//deny all
+	if(denyAll) {
 		revokes = [];
 		grants = [];
-
+		
+		revokes = revokes.concat(this._acl.getACLByGranteeType(right, ZmSetting.ACL_USER));
+		revokes = revokes.concat(this._acl.getACLByGranteeType(right, ZmSetting.ACL_GROUP));		
+		revokes = revokes.concat(this._acl.getACLByGranteeType(right, ZmSetting.ACL_PUBLIC));		
+		
 		//deny all
 		var ace = new ZmAccessControlEntry({granteeType: ZmSetting.ACL_AUTH, right:right, negative: true});
+		grants.push(ace);		
+	}
+		
+	//allow all users
+	if (radioGroupChanged && (newType == ZmSetting.ACL_PUBLIC)) {
+		grants = [];
+		revokes = [];
+		
+		//grant all
+		var ace = new ZmAccessControlEntry({granteeType: ZmSetting.ACL_PUBLIC, right:right});
 		grants.push(ace);
 		
 		//revoke all other aces
  		revokes = this._acl.getACLByGranteeType(right, ZmSetting.ACL_USER);
 		revokes = revokes.concat(this._acl.getACLByGranteeType(right, ZmSetting.ACL_GROUP));
+		revokes = revokes.concat(this._acl.getACLByGranteeType(right, ZmSetting.ACL_AUTH));		
 	}
-	
-	//allow all users
-	if (radioGroupChanged && (newType == ZmSetting.ACL_PUBLIC)) {
+
+	if (radioGroupChanged && (newType == ZmSetting.ACL_AUTH)) {
 		grants = [];
 		revokes = [];
 		
@@ -247,8 +268,9 @@ function(setting, right) {
 		//revoke all other aces
  		revokes = this._acl.getACLByGranteeType(right, ZmSetting.ACL_USER);
 		revokes = revokes.concat(this._acl.getACLByGranteeType(right, ZmSetting.ACL_GROUP));
+		revokes = revokes.concat(this._acl.getACLByGranteeType(right, ZmSetting.ACL_PUBLIC));		
 	}
-		
+	
 	return {grants:grants, revokes:revokes};
 };
 

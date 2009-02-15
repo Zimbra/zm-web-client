@@ -85,6 +85,7 @@ ZmSetting.D_NONE		= "NONE";	// placeholder setting
 // TODO: these should be defined in their respective apps
 ZmSetting.ACL_AUTH				= "all";
 ZmSetting.ACL_GROUP				= "grp";
+ZmSetting.ACL_NONE				= "none";
 ZmSetting.ACL_PUBLIC			= "pub";
 ZmSetting.ACL_USER				= "usr";
 ZmSetting.CAL_DAY				= "day";
