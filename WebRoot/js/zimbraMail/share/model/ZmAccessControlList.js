@@ -73,16 +73,45 @@ ZmAccessControlList.prototype.getGranteeType =
 function(right) {
 	var aces = this._aces[right];
 	var gt = ZmSetting.ACL_PUBLIC;
+	
+	var gtMap = {};
 	if(aces && aces.length) {
 		for (var i = 0; i < aces.length; i++) {
 			var ace = aces[i];
-			if(ace.granteeType == ZmSetting.ACL_AUTH) {
-				return ace.negative ? ZmSetting.ACL_USER :  ZmSetting.ACL_PUBLIC;
-			}
-			if (ace.granteeType == ZmSetting.ACL_USER || ace.granteeType == ZmSetting.ACL_GROUP) {
-				gt = ZmSetting.ACL_USER;
-			}
+			DBG.println("<font color=red>ace:</font>" + (ace.negative?"-":"") + ace.granteeType +"," +  ace.grantee );
+			var aceGranteeType =  (ace.granteeType == ZmSetting.ACL_USER || ace.granteeType == ZmSetting.ACL_GROUP)  ? ZmSetting.ACL_USER : ace.granteeType;
+			gtMap[aceGranteeType] = ace.negative ? -1 : 1;
 		}
+	}
+	
+	var allowPublic = (gtMap[ZmSetting.ACL_PUBLIC] == 1);
+	var denyPublic  = (gtMap[ZmSetting.ACL_PUBLIC] == -1);
+	var allowLocal  = (gtMap[ZmSetting.ACL_AUTH] == 1);
+	var denyLocal   = (gtMap[ZmSetting.ACL_AUTH] == -1);
+	
+	var allowUser = (gtMap[ZmSetting.ACL_USER] == 1);
+	var allowNone = (denyPublic || denyLocal) && (gtMap[ZmSetting.ACL_USER] == null);
+				
+	if(allowPublic) {
+		return ZmSetting.ACL_PUBLIC;
+	}
+	
+	if(allowLocal) {
+		return ZmSetting.ACL_AUTH;
+	}
+	
+	if(denyPublic) {
+		if(allowLocal) {
+			return ZmSetting.ACL_AUTH;
+		}
+	}
+	
+	if(allowUser) {
+		return ZmSetting.ACL_USER;
+	}
+	
+	if(allowNone) {
+		return ZmSetting.ACL_NONE;
 	}
 	return gt;
 };

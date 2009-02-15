@@ -84,6 +84,7 @@ ZmSetting.D_NONE		= "NONE";	// placeholder setting
 // constants used as setting values
 ZmSetting.ACL_AUTH				= "all";
 ZmSetting.ACL_GROUP				= "grp";
+ZmSetting.ACL_NONE				= "none";
 ZmSetting.ACL_PUBLIC			= "pub";
 ZmSetting.ACL_USER				= "usr";
 ZmSetting.CAL_DAY				= "day";
