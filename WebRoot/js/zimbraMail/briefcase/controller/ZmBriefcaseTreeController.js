@@ -252,7 +252,7 @@ function(ev) {
 ZmBriefcaseTreeController.prototype._deleteListener = function(ev) {
 	var organizer = this._getActionedOrganizer(ev);
 	var callback = new AjxCallback(this, this._deleteListener2, [ organizer ]);
-	var message = AjxMessageFormat.format(ZmMsg.confirmDeleteBriefcaseItem, organizer.name);
+	var message = AjxMessageFormat.format(ZmMsg.confirmDeleteFolder, organizer.name);
 
 	var dialog = appCtxt.getConfirmationDialog();
 	dialog.popup(message, callback);
