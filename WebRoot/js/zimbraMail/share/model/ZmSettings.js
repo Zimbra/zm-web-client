@@ -322,6 +322,21 @@ function(callback, accountName, result) {
 
 	// load Zimlets..  NOTE: only load zimlets if main account
 	if (!accountName && obj.zimlets && obj.zimlets.zimlet) {
+		// bug #28897 -
+		// look for usage tracker zimlet before waiting for it to get parsed
+		var found = false;
+		var zimlets = obj.zimlets.zimlet;
+		for (var i = 0; i < zimlets.length && !found; i++) {
+			var z = zimlets[i];
+			if (z.zimlet[0].name == "com_zimbra_usagetracker") {
+				found = true;
+			}
+		}
+		// if found, set the global selection listener (for DwtButtons)
+		if (found) {
+			DwtControl.globalSelectionListener = new AjxListener(null, ZmZimbraMail.globalButtonListener);
+		}
+
 		DBG.println(AjxDebug.DBG1, "Zimlets - Loading " + obj.zimlets.zimlet.length + " Zimlets");
 		var prCallback = new AjxCallback(this,
 			function() {

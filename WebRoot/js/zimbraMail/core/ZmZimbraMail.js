@@ -2094,6 +2094,40 @@ function() {
 	}
 };
 
+ZmZimbraMail.globalButtonListener =
+function(ev) {
+	if (!appCtxt.areZimletsLoaded()) { return; }
+
+	var item = ev.item;
+
+	// normalize action
+	var text = (item && item.getText) ? (item.getText() || item._toggleText) : null;
+	if (!text) {
+		text = item.getData(ZmOperation.KEY_ID) || item.getData(Dwt.KEY_ID);
+	}
+	if (text) {
+		var type;
+		if (item instanceof ZmAppButton) {
+			type = "app";
+		} else if (item instanceof DwtMenuItem) {
+			type = "menuitem";
+		} else if (item instanceof DwtButton) {
+			type = "button";
+		} else if (item instanceof DwtTreeItem) {
+			if (!item.getSelected()) { return; }
+			type = "treeitem";
+		} else {
+			type = item.toString();
+		}
+
+		var avm = appCtxt.getAppViewMgr();
+		var currentViewId = avm.getCurrentViewId();
+		var lastViewId = avm.getLastViewId();
+		var action = (AjxStringUtil.split(text, " ")).join("");
+		appCtxt.getZimletMgr().notifyZimlets("onAction", [type, action, currentViewId, lastViewId]);
+	}
+};
+
 ZmZimbraMail._endSession =
 function() {
 	// save implicit prefs for all accounts
