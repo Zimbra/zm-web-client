@@ -355,7 +355,7 @@ ZmImApp.prototype._registerPrefs = function() {
 			      displayContainer : ZmPref.TYPE_CHECKBOX });
 
 	ZmPref.registerPref("IM_PREF_DESKTOP_ALERT",
-			    { displayName      : ZmMsg.desktopAlert,
+			    { displayName      : ZmMsg.showPopupBrowserPlus,
 			      displayContainer : ZmPref.TYPE_CHECKBOX });
 
 	ZmPref.registerPref("IM_PREF_NOTIFY_PRESENCE",

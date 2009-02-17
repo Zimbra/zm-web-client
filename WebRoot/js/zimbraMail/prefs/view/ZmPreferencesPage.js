@@ -721,7 +721,8 @@ ZmPreferencesPage.prototype._setupCheckbox =
 function(id, setup, value) {
 	var checkbox = new DwtCheckbox({parent:this, checked:value});
 	this.setFormObject(id, checkbox);
-	var cboxLabel = ZmPreferencesPage.__formatLabel(setup.displayName, value);
+	var text = setup.displayFunc ? setup.displayFunc() : setup.displayName;
+	var cboxLabel = ZmPreferencesPage.__formatLabel(text, value);
 	checkbox.setText(cboxLabel);
 	checkbox.setSelected(value);
 

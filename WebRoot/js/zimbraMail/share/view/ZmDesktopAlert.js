@@ -36,6 +36,26 @@ function() {
 	return ZmDesktopAlert.INSTANCE = ZmDesktopAlert.INSTANCE || new ZmDesktopAlert();
 };
 
+/**
+ * Returns text to show in a prefs page next to the checkbox to enable this type of alert.
+ */
+ZmDesktopAlert.prototype.getDisplayText =
+function() {
+	if (this.usePrism) {
+		return AjxEnv.isMac ? ZmMsg.showPopupMac : ZmMsg.showPopup;
+	} else {
+		return ZmMsg.showPopupBrowserPlus;
+	}
+};
+
+/**
+ * Returns any link text to show in a prefs page, for example a link to install browser plus if necessary.
+ */
+ZmDesktopAlert.prototype.getLinkText =
+function() {
+	return this.useBrowserPlus ? ZmMsg.showPopupBrowserPlusLink : "";
+};
+
 ZmDesktopAlert.prototype.start =
 function(title, message) {
 	if (this.usePrism) {

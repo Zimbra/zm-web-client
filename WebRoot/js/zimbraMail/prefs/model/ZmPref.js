@@ -395,6 +395,7 @@ function(prefsId, list) {
  * Available properties are:
  *
  * displayName			descriptive text
+ * displayFunc			A function that returns the descriptive text. Only implemented for checkboxes.
  * displayContainer		type of form input: checkbox, select, input, or textarea
  * options				values for a select input
  * displayOptions		text for the select input's values
