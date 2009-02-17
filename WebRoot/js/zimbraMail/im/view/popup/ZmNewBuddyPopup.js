@@ -55,7 +55,7 @@ function() {
 	}
 	var selectedValue = this._serviceTypeSelect.getValue(),
 		selectedOption = this._serviceTypeSelect.getOptionWithValue(selectedValue);
-	if (!selectedOption.enabled && firstOnline) {
+	if (selectedOption && !selectedOption.enabled && firstOnline) {
 		this._serviceTypeSelect.setSelectedValue(firstOnline);
 	}
 };
