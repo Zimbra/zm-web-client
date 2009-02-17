@@ -191,7 +191,7 @@ ZmImApp.prototype._registerSettings = function(settings) {
 			});
 
 	settings.registerSetting("IM_PREF_DESKTOP_ALERT",
-			{	//name         : "zimbraPrefIMDesktopAlert",
+			{	name         : "zimbraPrefIMToasterEnabled",
 				type         : ZmSetting.T_PREF,
 				dataType     : ZmSetting.D_BOOLEAN,
 				defaultValue : true
