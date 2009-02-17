@@ -392,13 +392,32 @@ function(treeView, parentNode, organizer, idx) {
 ZmFolderTreeController.prototype._deleteListener =
 function(ev) {
 	var organizer = this._getActionedOrganizer(ev);
-	if (organizer.nId == ZmFolder.ID_SPAM || organizer.isInTrash()) {
+
+	// bug fix #35405 - accounts with disallowSubFolder flag set cannot be moved to Trash
+	var trashFolder = appCtxt.isOffline ? this.getDataTree().getById(ZmFolder.ID_TRASH) : null;
+	if (trashFolder && trashFolder.disallowSubFolder && organizer.numTotal > 0) {
+		var d = appCtxt.getMsgDialog();
+		d.setMessage(ZmMsg.errorCannotDeleteFolder);
+		d.popup();
+		return;
+	}
+
+	if (organizer.nId == ZmFolder.ID_SPAM || organizer.isInTrash() || (trashFolder && trashFolder.disallowSubFolder)) {
 		this._pendingActionData = organizer;
 		var ds = this._deleteShield = appCtxt.getOkCancelMsgDialog();
 		ds.reset();
 		ds.registerCallback(DwtDialog.OK_BUTTON, this._deleteShieldYesCallback, this, organizer);
 		ds.registerCallback(DwtDialog.CANCEL_BUTTON, this._clearDialog, this, this._deleteShield);
-		var confirm = (organizer.type == ZmOrganizer.SEARCH) ? ZmMsg.confirmDeleteSavedSearch : (organizer.nId==ZmFolder.ID_TRASH)?ZmMsg.confirmEmptyTrashFolder:ZmMsg.confirmEmptyFolder;
+		var confirm;
+		if (organizer.type == ZmOrganizer.SEARCH) {
+			confirm = ZmMsg.confirmDeleteSavedSearch;
+		} else if (organizer.disallowSubFolder) {
+			confirm = ZmMsg.confirmDeleteFolder;
+		} else if (organizer.nId == ZmFolder.ID_TRASH) {
+			confirm = ZmMsg.confirmEmptyTrashFolder;
+		} else {
+			confirm = ZmMsg.confirmEmptyFolder;
+		}
 		var msg = AjxMessageFormat.format(confirm, organizer.getName());
 		ds.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
 		ds.popup();
