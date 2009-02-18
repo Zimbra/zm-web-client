@@ -90,12 +90,10 @@ function(dialog) {
 		this._badAddrsOkay = false;
 	}
 
-	var contactList = AjxDispatcher.run("GetContacts");
-	
 	var respCallback = new AjxCallback(this, this._handleResponseSendMsg, [dialog]);
 	var errorCallback = new AjxCallback(this, this._handleErrorSendMsg, [dialog]);
 	
-	msg.send(contactList, false, respCallback, errorCallback);
+	msg.send(false, respCallback, errorCallback);
 	// need to popdown in handle response instead of returning true..
 	return false;
 };

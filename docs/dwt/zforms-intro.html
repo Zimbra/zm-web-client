@@ -1,0 +1,205 @@
+<html>
+<head>
+	<title>An Introduction to ZForms</title>
+</head>
+<body>
+<h1>An Introduction to ZForms</h1>
+<p>
+	ZForms is a small, lightweight DWT widget that allows you to
+	quickly create a bunch of controls and lay them out based on
+	a template.
+	ZForms can perform other tasks as well such as
+	<a href='zforms-handlers.html'>attaching simple event handlers</a>
+	or
+	<a href='zforms-binding.html'>binding controls to a data model</a>.
+	But this tutorial will just describe the simplest use of ZForms
+	and how you can start taking advantage of its functionality
+	immediately.
+</p>
+
+<h2>A Simple Example</h2>
+<p>
+	Let's dive right in and construct a form!
+</p>
+
+<h3>The Form Descriptor</h3>
+<p>
+	The heart of ZForms is the <code>DwtForm</code> widget.
+	You instantiate the form like any other DWT widget but with
+	one key difference:
+	you need to supply a form descriptor.
+	The form descriptor is just an anonymous JavaScript object with
+	specific properties.
+	The descriptor, at minimum, specifies two properties:
+	<i>template</i> and <i>items</i>.
+	The <i>template</i> property is the name of the template to use
+	for the layout of the form.
+	The <i>items</i> property is an array of form item descriptors
+	(which we'll describe in more detail shortly).
+</p>
+<p>
+	The following code defines a form descriptor that contains two
+	controls, a <code>DwtInputField</code> and a <code>DwtButton</code>,
+	and uses it to instantiate a <code>DwtForm</code>:
+</p>
+<pre>
+	var descriptor = {
+		template: "example.Simple",
+		items: [
+			{ id: "<b>INPUT</b>",  type: "DwtInputField", value: "some text" },
+			{ id: "<b>BUTTON</b>", type: "DwtButton",     label: "Click Me"  }
+		]
+	};
+	var form = new DwtForm( { parent: shell, form: descriptor } );
+</pre>
+<p>
+	Each item in the <i>items</i> properties is a form item descriptor.
+	The form item descriptor, like the form descriptor, is just an
+	anonymous JavaScript object with specific properties.
+	Each item typically has at least two properties, <i>id</i> and
+	<i>type</i>.
+	The <i>id</i> property assigns a name to the item that is unique
+	in the form.
+	This name can be anything you want and will be automatically
+	assigned a value if not specified.
+	The <i>type</i> property is the name of the DWT widget used for
+	this item specified <em>as a string</em>.
+	<strong>Note:</strong> Do <em>not</em> use the actual widget
+	constructor for the value!
+</p>
+
+<h3>The Form Template</h3>
+<p>
+	The form uses the <i>template</i> property to set the
+	<code>innerHTML</code> of the form element.
+	For our example to work, a template with the id "example.Simple"
+	must already exist.
+	So let's assume that the template has already been compiled from
+	the following source:
+</p>
+<pre>
+	&lt;template id="example.Simple">
+		&lt;table>
+			&lt;tr>&lt;td>&lt;div id="<b>${id}_INPUT</b>">&lt;/div>
+			&lt;tr>&lt;td>&lt;div id="<b>${id}_BUTTON</b>">&lt;/div>
+		&lt;/table>
+	&lt;/template>
+</pre>
+<p>
+	When the form is initialized, the <code>DwtForm</code> looks for
+	elements in the form's template for each form item. These container
+	elements must have an <i>id</i> attribute with the value like
+	"${id}_XYZ", where "${id}" is the form's element id and "XYZ"
+	is the form item's id.
+	For example, "${id}_INPUT" is the id for the container element of
+	the "INPUT" form item.
+</p>
+
+<h3>Form Items</h3>
+<p>
+	As we mentioned before, form items are just JavaScript objects
+	with the specific properties.
+	The most commonly used properties are listed below.
+	Please refer to the <a href='zforms-props.html'>Properties</a>
+	page for the complete list of form descriptor and form item
+	descriptor properties.
+</p>
+<dl>
+	<dt><i>id</i></dt>
+	<dd>The form item id.
+		This is unique in the form and is used to map the form item
+		to its container element within the template.
+		If not specified, an id will automatically be generated for
+		the item.
+	</dd>
+	<dt><i>type</i></dt>
+	<dd>The form item type.
+		This is the name of the DWT control to be used for this form
+		item.
+		If not specified, the form item represents an element in the
+		template.
+	</dd>
+	<dt><i>value</i></dt>
+	<dd>The form item value.
+		Every form item has a value that can be set and queried.
+		This property is used to set the default value of the form
+		item.
+	</dd>
+	<dt><i>label</i></dt>
+	<dd>The form item label.
+		Controls like <code>DwtButton</code>, <code>DwtCheckbox</code>,
+		<code>DwtRadioButton</code>, etc. use the label value as the
+		text displayed to the user on the control;
+		whereas the value is the control's current <em>state</em>.
+		For example, the value of a checkbox or radio button will be
+		a <code>boolean</code> indicating whether the control is
+		checked.
+	</dd>
+	<dt><i>items</i></dt>
+	<dd>The form item children.
+		This property is an array of form items, if this form item
+		has children. For example, a <code>DwtSelect</code> has child
+		items that specify the values and labels of the items in the
+		select.
+	</dd>
+</dl>
+
+<h3>DwtForm API</h3>
+<p>
+	While ZForms has support for simple data-binding and attaching
+	event handlers, you can still do everything programmatically.
+	In this way, you are just using ZForms to populate the display
+	with controls.
+	When using it in this way, there are a number of methods on the
+	<code>DwtForm</code> object you can use.
+</p>
+<dl>
+	<dt><code>getControl(id)</code></dt>
+	<dd>Returns the control for the specified id.
+		This is typically a <code>DwtControl</code> object but
+		could also be a <code>DwtRadioButtonGroup</code>, an HTML
+		element, or even <code>null</code>.
+	</dd>
+	<dt><code>setValue(id,value)</code></dt>
+	<dd>Sets the value for the specified id.
+		This updates the model and control value but does <em>not</em>
+		force the other other controls to update their display if they
+		are tied to this value. For this to happen, call the
+		<code>update()</code> method.
+	</dd>
+	<dt><code>getValue(id)</code></dt>
+	<dd>Returns the value for the specified id.</dd>
+	<dt><code>setVisible(id,visible)</code></dt>
+	<dd>Shows or hides the specified control.</dd>
+	<dt><code>isVisible(id)</code></dt>
+	<dd>Returns true if the specified control is visible.</dd>
+	<dt><code>setEnabled(id,visible)</code></dt>
+	<dd>Enabled or disables the specified control.</dd>
+	<dt><code>isEnabled(id)</code></dt>
+	<dd>Returns true if the specified control is enabled.</dd>
+	<dt><code>update()</code></dt>
+	<dd>Forces the form to update all of its controls based on the
+		current state of the model. This includes updating values that
+		are dynamic and setting the visibility or enabled state of
+		controls.
+		<strong>Note:</strong> Calling <code>setValue</code> does
+		not force an update of the form; you must do that by calling
+		this method. It is done this way to allow you to update
+		multiple form items and update the form once instead of
+		each time a form item changes.
+	</dd>
+</dl>
+<p>
+	The following code shows how to programmatically attach a
+	listener to the button in our example to display the value
+	of the input field.
+</p>
+<pre>
+	var button = form.getControl("BUTTON");
+	var input = form.getControl("INPUT");
+	button.addSelectionListener(new AjxListener(null, function() {
+		alert(input.getValue());
+	}));
+</pre>
+</body>
+</html>

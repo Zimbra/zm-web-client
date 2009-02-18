@@ -22,7 +22,7 @@
         <c:set var="leftclass" value="${appt.startTime lt start ? ' zo_allday_appt_noleft ' : ''}"/>
         <c:set var="rightclass" value="${appt.endTime gt end ? ' zo_allday_appt_noright ' : ''}"/>
 
-        <div class='${leftclass}${rightclass} ${color}${needsAction ? 'Dark' : 'Light'} zo_allday_appt' onclick='zClickLink("${id}")'>
+        <div class='zo_day_appt ${leftclass}${rightclass} ${color}${needsAction ? 'Dark' : 'Light'}' onclick='zClickLink("${id}")'>
             <div class='zo_appt_text'>
                 <a id="${id}" href="${fn:escapeXml(apptUrl)}">${fn:escapeXml(subject)}</a>
             </div>

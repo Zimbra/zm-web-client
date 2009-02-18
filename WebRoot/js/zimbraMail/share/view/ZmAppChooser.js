@@ -18,13 +18,15 @@
 ZmAppChooser = function(parent, className, buttons, id) {
 
 	className = className || "ZmAppChooser";
-	var width = appCtxt.get(ZmSetting.SKIN_HINTS, "appChooser.fullWidth") ? "100%" : null;
+	var width = appCtxt.getSkinHint("appChooser", "fullWidth") ? "100%" : null;
 
 	DwtToolBar.call(this, {parent:parent, className:className, posStyle:Dwt.ABSOLUTE_STYLE,
 						   width:width, style:DwtToolBar.HORIZ_STYLE, id:id});
     Dwt.setLocation(this.getHtmlElement(), Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
 
 	this.setScrollStyle(Dwt.CLIP);
+
+	this._buttonListener = new AjxListener(this, this._handleButton);
 
 	this._buttons = {};
 	for (var i = 0; i < buttons.length; i++) {
@@ -35,7 +37,7 @@ ZmAppChooser = function(parent, className, buttons, id) {
 			this._createButton(id, i == buttons.length - 1);
 		}
 	}
-}
+};
 
 ZmAppChooser.prototype = new DwtToolBar;
 ZmAppChooser.prototype.constructor = ZmAppChooser;
@@ -77,6 +79,21 @@ ZmAppChooser.prototype.SPACER_TEMPLATE = "dwt.Widgets#ZmAppChooserSpacer";
 // Public methods
 //
 
+ZmAppChooser.prototype.addSelectionListener = function(listener) {
+	this.addListener(DwtEvent.SELECTION, listener);
+};
+
+ZmAppChooser.prototype.addButton = function(id, label, image, tooltip) {
+    var outerClass = null;
+    var buttonId = ZmId.getButtonId(ZmId.APP, id);
+    var button = new ZmAppButton(this, outerClass, image, label, buttonId);
+	button.setToolTipContent(tooltip);
+	button.setData(Dwt.KEY_ID, id);
+	button.addSelectionListener(this._buttonListener);
+	this._buttons[id] = button;
+	return button;
+};
+
 ZmAppChooser.prototype.getButton =
 function(id) {
 	return this._buttons[id];
@@ -88,6 +105,7 @@ function(id) {
 	if (this._selectedId && oldBtn) {
         this.__markPrevNext(this._selectedId, false);
 		oldBtn.setSelected(false);
+		oldBtn._noFocus = false;
     }
 
 	var newBtn = this._buttons[id];
@@ -106,6 +124,8 @@ function(id) {
 			newBtn.setText(newBtn._toggleText);
 			newBtn._toggleText = null;
 		}
+
+		newBtn._noFocus = true;
 	}
 
 	this._selectedId = id;
@@ -134,12 +154,10 @@ function(refElement) {
 };
 
 ZmAppChooser.prototype._createButton =
-function(id, isLast) {
-	var text = ZmMsg[ZmApp.NAME[id]];
-    var outerClass = null;
-    var buttonId = ZmId.getButtonId(ZmId.APP, id);
-    var b = new ZmChicletButton(this, outerClass, ZmApp.ICON[id], text, isLast, buttonId);
-	b.setToolTipContent(ZmMsg[ZmApp.CHOOSER_TOOLTIP[id]]);
-	b.setData(Dwt.KEY_ID, id);
-	this._buttons[id] = b;
+function(id) {
+	this.addButton(id, ZmMsg[ZmApp.NAME[id]], ZmApp.ICON[id], ZmMsg[ZmApp.CHOOSER_TOOLTIP[id]]);
+};
+
+ZmAppChooser.prototype._handleButton = function(evt) {
+	this.notifyListeners(DwtEvent.SELECTION, evt);
 };

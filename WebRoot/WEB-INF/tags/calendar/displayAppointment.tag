@@ -108,7 +108,7 @@
                                         </c:otherwise>
                                     </c:choose>
                                     ${fn:escapeXml(zm:getApptDateBlurb(pageContext, mailbox.prefs.timeZone, startDate.time, endDate.time, appt.allDay))}
-                                    &nbsp;<span class='ZhCalTimeZone'>${mailbox.prefs.timeZoneWindowsId}</span>
+                                    &nbsp;<span class='ZhCalTimeZone'>${mailbox.prefs.timeZoneCanonicalId}</span>
                                 </td>
                             </tr>
                             <c:if test="${appt.exception}">

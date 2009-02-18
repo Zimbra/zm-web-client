@@ -83,6 +83,7 @@ ZmItem.F_NOTES			= ZmId.FLD_NOTES;
 ZmItem.F_PARTICIPANT	= ZmId.FLD_PARTICIPANT;
 ZmItem.F_PCOMPLETE		= ZmId.FLD_PCOMPLETE;
 ZmItem.F_PRIORITY		= ZmId.FLD_PRIORITY;
+ZmItem.F_RECURRENCE		= ZmId.FLD_RECURRENCE;
 ZmItem.F_SELECTION		= ZmId.FLD_SELECTION;
 ZmItem.F_SIZE			= ZmId.FLD_SIZE;
 ZmItem.F_STATUS			= ZmId.FLD_STATUS;
@@ -189,7 +190,6 @@ function(id) {
 // abstract methods
 ZmItem.prototype.create = function(args) {};
 ZmItem.prototype.modify = function(mods) {};
-ZmItem.prototype.getPrintHtml = function(preferHtml, callback) {};
 
 /**
 * Returns this item if it has the given ID. Used by the app controller for
@@ -355,23 +355,26 @@ function(obj) {
 	if (obj.f != null) {
 		var flags = this._getFlags();
 		var origFlags = {};
-		for (var i = 0; i < flags.length; i++)
+		for (var i = 0; i < flags.length; i++) {
 			origFlags[flags[i]] = this[ZmItem.FLAG_PROP[flags[i]]];
+		}
 		this._parseFlags(obj.f);
 		var changedFlags = [];
 		for (var i = 0; i < flags.length; i++) {
 			var on = this[ZmItem.FLAG_PROP[flags[i]]];
-			if (origFlags[flags[i]] != on)
+			if (origFlags[flags[i]] != on) {
 				changedFlags.push(flags[i]);
+			}
 		}
 		this._notify(ZmEvent.E_FLAGS, {flags: changedFlags});
 	}
 	if (obj.l != null && obj.l != this.folderId) {
+		var details = {oldFolderId:this.folderId};
 		this.moveLocal(obj.l);
 		if (this.list) {
 			this.list.moveLocal([this], obj.l);
 		}
-		this._notify(ZmEvent.E_MOVE);
+		this._notify(ZmEvent.E_MOVE, details);
 	}
 };
 

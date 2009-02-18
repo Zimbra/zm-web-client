@@ -88,7 +88,7 @@ function(parent, obj, tree, elementType, path) {
 			numUnread: obj.u,
 			query: obj.query,
 			types: types,
-			sortBy: (obj.sortBy ? ZmSearch.SORT_BY_MAP[obj.sortBy] : null)
+			sortBy: obj.sortBy
 		};
 		folder = new ZmSearchFolder(params);
 		ZmFolderTree._fillInFolder(folder, obj, path);
