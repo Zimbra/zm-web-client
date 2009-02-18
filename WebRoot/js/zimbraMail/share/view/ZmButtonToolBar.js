@@ -145,9 +145,9 @@ function(refElement, reset) {
 	var offset1 = refElement.offsetWidth;
 	var offset2 = el.firstChild ? el.firstChild.offsetWidth : offset1;
 
+	DBG.println("tb", "-------------- checking width ------------- (" + reset + ")");
 	DBG.println("tb", "tb width: " + offset2 + ", container width: " + offset1);
 	if ((offset1 > 0 && offset2 > offset1) || reset) {
-		DBG.println("tb", "adjusting width");
 
 		// restore all button text and icons first
 		for (var i = 0; i < this._precedenceList.length; i++) {
@@ -157,39 +157,75 @@ function(refElement, reset) {
 			if (p.type == "text" && b._toggleText) {
 				b.setText(b._toggleText);
 				b._toggleText = null;
+				DBG.println("tb", "added text: " + b._toggleText);
 			} else if (p.type == "icon" && b._toggleIcon) {
 				b.setImage(b._toggleIcon);
 				b._toggleIcon = null;
 			}
 		}
 
-		// now remove button text and/or icons as needed
+		 // now remove button labels as needed
 		for (var i = 0; i < this._precedenceList.length; i++) {
+
 			var p = this._precedenceList[i];
 			var b = this._buttons[p.op];
 			if (!b || !b.getVisible()) { continue; }
 
-			if (offset2 > offset1) {
-				var text = b.getText();
-				var icon = b.getImage();
-				if (!text || !icon) { continue; }
+			var text = b.getText();
+			var icon = b.getImage();
+			var hasText = Boolean(text || b._toggleText);
+			var hasIcon = Boolean(icon || b._toggleIcon);
+			if (hasText && hasIcon && (offset2 > offset1)) {
 				if (p.type == "text") {
 					b._toggleText = text;
-					b.setText("");
 					DBG.println("tb", "removed text: " + text);
+					b.setText("");
 				} else if (p.type == "icon") {
 					b._toggleIcon = icon;
-					b.setImage(null);
+					b.setImage("Blank_16");
 					DBG.println("tb", "removed icon: " + icon);
 				}
-				offset2 = el.firstChild ? el.firstChild.offsetWidth : offset1;
-				DBG.println("tb", "new tb width: " + offset2 + ", container width: " + offset1);
-			} else {
-				break;
 			}
+			// re-calc firstChild offset since we may have removed its label
+			offset2 = el.firstChild ? el.firstChild.offsetWidth : offset1;
 		}
 
-		// group buttons on the right side into dropdown
+		// group buttons from the right side into dropdown
+/*
+		if (offset2 > offset1) {
+			var menu;
+			var moreButton = this._moreButton;
+			if (!moreButton) {
+				DBG.println("tb", "adding MORE button");
+				moreButton = this._moreButton = this.createButton("MORE", {text:ZmMsg.more, image:"Plus"});
+				menu = new ZmActionMenu({parent:moreButton, menuItems:ZmOperation.NONE});
+				moreButton.setMenu(menu);
+			} else {
+				menu = moreButton.getMenu();
+			}
+
+			for (var i = this.opList.length - 1; i >= 0; i--) {
+				if (offset2 < offset1) { break; }
+				var op = this.opList[i];
+				if (op == ZmOperation.SEP) { continue; }
+				var b = this.getOp(op);
+				DBG.println("tb", "moving " + op);
+				var text = b.getText();
+				var image = b.getImage();
+				var subMenu = b.getMenu();
+				var menuItem = menu.createMenuItem(op, {text:text, image:image, index:0});
+				if (subMenu) {
+					subMenu.parent = menuItem;
+					menuItem.setMenu(subMenu);
+				}
+				b.setVisible(false);
+
+				//menu.addOp(op);
+				offset2 = el.firstChild ? el.firstChild.offsetWidth : offset1;
+				DBG.println("tb", "new tb width: " + offset2 + ", container width: " + offset1);
+			}
+		}
+*/
 	}
 };
 
