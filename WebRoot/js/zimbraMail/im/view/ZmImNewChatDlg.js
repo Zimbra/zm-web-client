@@ -40,7 +40,6 @@ ZmImNewChatDlg.prototype._init = function() {
 	this.setButtonListener(DwtDialog.CANCEL_BUTTON, new AjxListener(this, this._cancelButtonListener));
 
 	var list = new ZmImOverview(this, { posStyle	: Dwt.STATIC_STYLE,
-		isFloating  : true,
 		noAssistant : true,
 		expanded	: true
 	});

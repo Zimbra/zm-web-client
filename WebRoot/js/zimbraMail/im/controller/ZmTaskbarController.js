@@ -341,7 +341,6 @@ function(parent, parentElement) {
 	var overviewArgs = {
 		parentElement: parentElement,
 		posStyle: Dwt.STATIC_STYLE,
-		isFloating: true,
 		noAssistant: true,
 		expanded: true,
 		singleClick: true
