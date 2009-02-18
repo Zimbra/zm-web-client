@@ -1065,7 +1065,7 @@ function(attachment) {
 		return false;
 
 	// bug fix #8751 - dont ignore text/calendar type if msg is not an invite
-	if (type == ZmMimeTable.TEXT_CAL && this.isInvite())
+	if (type == ZmMimeTable.TEXT_CAL && appCtxt.get(ZmSetting.CALENDAR_ENABLED) && this.isInvite())
 		return false;
 
 	return true;
@@ -1316,6 +1316,9 @@ function(msgNode) {
 				var textPart = { ct:ZmMimeTable.TEXT_PLAIN, s:desc.length, content:desc };
 				this._bodyParts.push(textPart);
 			}
+            if( !appCtxt.get(ZmSetting.CALENDAR_ENABLED) && this.invite.type == "appt"){
+                this.flagLocal(ZmItem.FLAG_ATTACH, true);                
+            }
 		} catch (ex) {
 			// do nothing - this means we're trying to load an ZmInvite in new
 			// window, which we dont currently load (re: support).
@@ -1449,7 +1452,7 @@ function(what, a, b, c) {
 ZmMailMsg.prototype.getStatusIcon =
 function() {
 	var imageInfo;
-	if (this.isInvite())		{ imageInfo = "Appointment"; }
+	if (this.isInvite() && appCtxt.get(ZmSetting.CALENDAR_ENABLED))		{ imageInfo = "Appointment"; }
 	else if (this.isDraft)		{ imageInfo = "MsgStatusDraft"; }
 	else if (this.isReplied)	{ imageInfo = "MsgStatusReply"; }
 	else if (this.isForwarded)	{ imageInfo = "MsgStatusForward"; }
