@@ -38,12 +38,3 @@ ZmChatPopup.prototype.toString =
 function() {
 	return "ZmChatPopup";
 };
-
-ZmChatPopup.prototype.popup =
-function() {
-};
-
-ZmChatPopup.prototype._init =
-function() {
-};
-

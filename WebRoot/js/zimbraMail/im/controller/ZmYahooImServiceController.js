@@ -64,20 +64,18 @@ function() {
 	this._saveYahooId("");
 };
 
-ZmYahooImServiceController.prototype.createPresenceMenu =
-function(parent) {
-	var statuses = [
-		ZmOperation.IM_PRESENCE_OFFLINE,
-		ZmOperation.IM_PRESENCE_CHAT,
-		ZmOperation.IM_PRESENCE_AWAY,
-		ZmOperation.IM_PRESENCE_XA,
-		ZmOperation.IM_PRESENCE_DND
-	];
-	var result = new ZmPresenceMenu(parent, statuses);
-	result.addOperation(ZmOperation.SEP);
-	var logoutItem = result.addOperation(ZmOperation.IM_LOGOUT_YAHOO, new AjxListener(this, this.logout));
-	result.addPopupListener(new AjxListener(this, this._presencePopupListener, [logoutItem]));
-	return result;
+ZmYahooImServiceController.prototype.defineStatusMenu =
+function() {
+	return {
+		statuses: [
+			ZmOperation.IM_PRESENCE_OFFLINE,
+			ZmOperation.IM_PRESENCE_CHAT,
+			ZmOperation.IM_PRESENCE_AWAY,
+			ZmOperation.IM_PRESENCE_XA,
+			ZmOperation.IM_PRESENCE_DND
+		],
+		logout: true
+	};
 };
 
 ZmYahooImServiceController.prototype._showLoginDialog =
@@ -160,11 +158,6 @@ function(id) {
 		setting.setValue(id);
 		settings.save([setting]);
 	}
-};
-
-ZmYahooImServiceController.prototype._presencePopupListener =
-function(logoutItem) {
-	logoutItem.setEnabled(this.service.isLoggedIn());
 };
 
 ZmYahooImServiceController.prototype._checkFlash =

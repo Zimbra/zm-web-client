@@ -37,7 +37,7 @@ ZmTaskbarController = function(components) {
 	this._toolbar.addListener(DwtEvent.ONMOUSEDOWN, new AjxListener(this, this._toolbarMouseDownListener));
 
 	var presenceArgs = {
-		contentCalback: new AjxCallback(this, this._createPresenceMenuCallback),
+		contentClassName: "ZmPresencePopup",
 		op: ZmId.OP_IM_PRESENCE_MENU
 	};
 	this._presenceItem = this._createItem(presenceArgs);
@@ -334,26 +334,6 @@ ZmTaskbarController.prototype._selectionListener =
 function(ev) {
 	var taskbarItem = ev.dwtObj.parent;
 	this._toolbar.expandItem(taskbarItem, !taskbarItem.expanded);
-};
-
-ZmTaskbarController.prototype._createPresenceMenuCallback =
-function(parent, parentElement) {
-	AjxDispatcher.require(["IMCore", "IM"]);
-	var args = {
-		parent: parent.taskbarItem.button,
-		parentElement: parentElement,
-		posStyle: DwtControl.STATIC_STYLE,
-		className: null
-	};
-	var menu = ZmImApp.INSTANCE.getServiceController().createPresenceMenu(args);
-	menu.addSelectionListener(new AjxListener(this, this._menuSelectionListener));
-};
-
-ZmTaskbarController.prototype._menuSelectionListener =
-function() {
-	if (this._toolbar.expandedItem) {
-		this._toolbar.expandItem(this._toolbar.expandedItem, false);
-	}
 };
 
 ZmTaskbarController.prototype._createBuddyListCallback =

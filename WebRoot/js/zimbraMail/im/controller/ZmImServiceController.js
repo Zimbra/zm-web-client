@@ -71,11 +71,9 @@ function(showText) {
 };
 
 /**
- * Create the presnece menu
- *
- * @param parent		[DwtControl]			Parent control
+ * Defines the contents of the presence menu.
  */
-ZmImServiceController.prototype.createPresenceMenu =
-function(parent) {
+ZmImServiceController.prototype.defineStatusMenu =
+function() {
 	alert('Not implemented');
 };

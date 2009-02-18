@@ -52,17 +52,18 @@ function(showText) {
 	return this._presenceTooltipFormat.format(showText);
 };
 
-ZmZimbraImServiceController.prototype.createPresenceMenu =
-function(parent) {
-	var statuses = [
-		ZmOperation.IM_PRESENCE_OFFLINE,
-		ZmOperation.IM_PRESENCE_ONLINE,
-		ZmOperation.IM_PRESENCE_CHAT,
-		ZmOperation.IM_PRESENCE_DND,
-		ZmOperation.IM_PRESENCE_AWAY,
-		ZmOperation.IM_PRESENCE_XA
-	];
-	return new ZmPresenceMenu(parent, statuses);
+ZmZimbraImServiceController.prototype.defineStatusMenu =
+function() {
+	return {
+		statuses: [
+			ZmOperation.IM_PRESENCE_OFFLINE,
+			ZmOperation.IM_PRESENCE_ONLINE,
+			ZmOperation.IM_PRESENCE_CHAT,
+			ZmOperation.IM_PRESENCE_DND,
+			ZmOperation.IM_PRESENCE_AWAY,
+			ZmOperation.IM_PRESENCE_XA
+		]
+	};
 };
 
 ZmZimbraImServiceController.prototype._chatListChangeListener =
