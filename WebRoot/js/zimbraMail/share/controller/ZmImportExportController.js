@@ -80,6 +80,15 @@ ZmImportExportController.SUBTYPE_DEFAULT[ZmImportExportController.TYPE_ICS] = Zm
  * Imports user data as specified in the <code>params</code> object.
  * @param params		[object]	Parameters:
  *        form			[Element]	Form containing file input field.
+ *        folderId		[string]	Folder id for import. If not specified,
+ * 									assumes import to root folder.
+ *        type			[string]*	Type. Defaults to <code>TYPE_TGZ</code>.
+ *        subType		[string]*	Sub-type. Defaults to <code>SUBTYPE_DEFAULT[type]</code>.
+ *        resolve		[string]*	Resolve duplicates: "ignore", "replace", "reset".
+ * 									Defaults to <code>"ignore"</code>.
+ *        views			[string]*	Comma-separated list of views.
+ *        callback		[AjxCallback]*	Callback for success.
+ *        errorCallback	[AjxCallback]*	Callback for errors.
  */
 ZmImportExportController.prototype.importData = function(params) {
 	// error checking
@@ -326,7 +335,7 @@ ZmImportExportController.prototype._doImportRequest = function(soapDoc, params, 
 
 ZmImportExportController.prototype._doImportTGZ = function(params) {
 	var folder = params.folderId && appCtxt.getById(params.folderId);
-	if (folder.nId == ZmOrganizer.ID_ROOT) folder = null;
+	if (folder && folder.nId == ZmOrganizer.ID_ROOT) folder = null;
 	var path = folder ? folder.getPath(null, null, null, null, true) : "";
 
 	var url = [
@@ -375,7 +384,7 @@ ZmImportExportController.prototype._doExportData = function(params) {
 	var subType = params.subType || ZmImportExportController.SUBTYPE_DEFAULT[type];
 
 	var folder = params.folderId && appCtxt.getById(params.folderId);
-	if (folder.nId == ZmOrganizer.ID_ROOT) folder = null;
+	if (folder && folder.nId == ZmOrganizer.ID_ROOT) folder = null;
 	var path = folder ? folder.getPath(null, null, null, null, true) : "";
 
 	// generate request URL
