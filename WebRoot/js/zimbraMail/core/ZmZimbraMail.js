@@ -444,8 +444,12 @@ function(params, result) {
 		this.setPollInterval(true);
 	} else {
 		// bug fix #34342 - always register mailto handler for mac
-		if (AjxEnv.isMac && window.platform && window.platform.isRegisteredProtocolHandler("mailto")) {
-			this.registerMailtoHandler();
+		try {
+			if (AjxEnv.isMac && window.platform && window.platform.isRegisteredProtocolHandler("mailto")) {
+				this.registerMailtoHandler();
+			}
+		} catch(ex) {
+			// do nothing.
 		}
 	}
 
