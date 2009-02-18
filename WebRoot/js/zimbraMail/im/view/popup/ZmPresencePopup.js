@@ -18,15 +18,15 @@
 ZmPresencePopup = function(params) {
 	ZmTaskbarPopup.call(this, params);
 
-	var args = {
+	var contentEl = this._createPopupHtml(ZmMsg.setStatus);
+	var menuArgs = {
 		parent: this.taskbarItem.button,
-		parentElement: this.getHtmlElement(),
+		parentElement: contentEl,
 		posStyle: DwtControl.STATIC_STYLE,
 		className: null
 	};
-	this._menu = new ZmPopupMenu(args);
+	this._menu = new ZmPopupMenu(menuArgs);
 
-	var serviceController = ZmImApp.INSTANCE.getServiceController();
 	var data = ZmImApp.INSTANCE.getServiceController().defineStatusMenu();
 	this._populateMenu(data);
 };

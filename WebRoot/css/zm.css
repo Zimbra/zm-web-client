@@ -1891,9 +1891,24 @@ HTML>BODY .appt-selected .appt_allday_body
 	padding: 4px;
 }
 
+.ZmTaskbarPopupTitle {
+	background-color:@TaskbarItem-selected@;
+	padding: 0 3px 3px 6px;
+	font-weight: bold;
+}
+
+.ZmTaskbarPopupContent {
+	@PopupWindowBorder@
+	background-color: white;
+}
+
 .ZmTaskbarContentParent .ZmImOverview {
 	max-height:400px;
 	max-width:200px;
+}
+
+.ZmTaskbarContentParent .overviewHeader {
+	background-color:@TaskbarItem-selected@;
 }
 
 .ZmTaskbarContentParent .ZmChatWidget {
@@ -1908,6 +1923,7 @@ HTML>BODY .appt-selected .appt_allday_body
 	padding: 0;
 	padding-bottom: 3px;
 	@borderRadius@: 0;
+	background-color: white;
 }
 
 .ZmTaskbarContentParent .ImYahooLoginLabel {

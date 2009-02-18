@@ -63,8 +63,9 @@ function() {
 
 ZmNewBuddyPopup.prototype._init =
 function() {
+	var contentEl = this._createPopupHtml(ZmMsg.createNewRosterItem);
 	var id = this._htmlElId;
-	this._createHtmlFromTemplate("im.Chat#NewRosterItemDlg", { id : id });
+	contentEl.innerHTML = AjxTemplate.expand("im.Chat#NewRosterItemDlg", { id : id });
 
 
 	this._addrEntry = new DwtInputField({ parent		 : this,

@@ -420,3 +420,8 @@
 		</div>
 	</div>
 </template>
+
+<template id='im.Chat#ZmTaskbarPopup'>
+	<div id="${id}_title" class="ZmTaskbarPopupTitle">${title}</div>
+	<div id="${id}_content" class="ZmTaskbarPopupContent"></div>
+</template>

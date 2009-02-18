@@ -63,6 +63,17 @@ function(ev) {
 	}
 };
 
+/** Creates a basic html for the popup with a title and conent area. Returns the content element. */
+ZmTaskbarPopup.prototype._createPopupHtml =
+function(title) {
+	var templateArgs = {
+		id: this._htmlElId,
+		title: title
+	};
+	this._createHtmlFromTemplate("im.Chat#ZmTaskbarPopup", templateArgs);
+	return Dwt.byId(this._htmlElId + "_content");
+};
+
 ZmTaskbarPopup.prototype._pushKeyHandlers =
 function() {
 	if (!this._handlingKeyboard) {
