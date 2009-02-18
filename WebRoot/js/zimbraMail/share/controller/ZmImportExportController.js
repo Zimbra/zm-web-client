@@ -84,6 +84,28 @@ ZmImportExportController.SUBTYPE_DEFAULT[ZmImportExportController.TYPE_ICS] = Zm
 ZmImportExportController.prototype.importData = function(params) {
 	// error checking
 	params = params || {};
+	var folderId = params.folderId || -1;
+	if (folderId == -1) {
+		var params = {
+			msg:	ZmMsg.importErrorMissingFolder,
+			level:	ZmStatusView.LEVEL_CRITICAL
+		};
+		appCtxt.setStatusMsg(params);
+		return false;
+	}
+
+	var type = params.type;
+	var isZimbra = type == ZmImportExportController.TYPE_TGZ;
+	var folder = appCtxt.getById(folderId);
+	if (!isZimbra && folder && folder.nId == ZmOrganizer.ID_ROOT) {
+		var params = {
+			msg:	ZmMsg.importErrorRootNotAllowed,
+			level:	ZmStatusView.LEVEL_CRITICAL
+		};
+		appCtxt.setStatusMsg(params);
+		return false;
+	}
+
 	if (params.form && !params.form.elements["file"].value) {
 		var params = {
 			msg:	ZmMsg.importErrorMissingFile,
@@ -92,14 +114,7 @@ ZmImportExportController.prototype.importData = function(params) {
 		appCtxt.setStatusMsg(params);
 		return false;
 	}
-	if (params.folderId == -1) {
-		var params = {
-			msg:	ZmMsg.importErrorMissingFolder,
-			level:	ZmStatusView.LEVEL_CRITICAL
-		};
-		appCtxt.setStatusMsg(params);
-		return false;
-	}
+
 	if (params.resolve == "reset") {
 		var dialog = appCtxt.getOkCancelMsgDialog();
 		dialog.registerCallback(DwtDialog.OK_BUTTON, this._confirmImportReset, this, [params]);
@@ -126,15 +141,29 @@ ZmImportExportController.prototype.importData = function(params) {
  *        views			[string]*	Comma-separated list of views.
  *        filename		[string]*	Filename for exported file.
  *        searchFilter	[string]*	Search filter.
+ *        skipMeta      [boolean]*  True to skip export of meta-data.
  *        callback		[AjxCallback]*	Callback for success.
  *        errorCallback	[AjxCallback]*	Callback for errors.
  */
 ZmImportExportController.prototype.exportData = function(params) {
 	// error checking
 	params = params || {};
-	if (params.folderId == -1) {
+	var folderId = params.folderId || -1;
+	if (folderId == -1) {
 		var params = {
 			msg:	ZmMsg.exportErrorMissingFolder,
+			level:	ZmStatusView.LEVEL_CRITICAL
+		};
+		appCtxt.setStatusMsg(params);
+		return false;
+	}
+
+	var type = params.type;
+	var isZimbra = type == ZmImportExportController.TYPE_TGZ;
+	var folder = appCtxt.getById(folderId);
+	if (!isZimbra && folder && folder.nId == ZmOrganizer.ID_ROOT) {
+		var params = {
+			msg:	ZmMsg.exportErrorRootNotAllowed,
 			level:	ZmStatusView.LEVEL_CRITICAL
 		};
 		appCtxt.setStatusMsg(params);
@@ -151,11 +180,21 @@ ZmImportExportController.prototype.exportData = function(params) {
 
 ZmImportExportController.prototype._doImportData = function(params) {
 	var type = params.type || ZmImportExportController.TYPE_DEFAULT;
-	if (type == ZmImportExportController.TYPE_CSV) {
-		return this._doImportSelectFolder(params, ZmImportExportController.TYPE_CSV);
+	var isContacts = type == ZmImportExportController.TYPE_CSV;
+	var isCalendar = type == ZmImportExportController.TYPE_ICS;
+	if (params.folderId != -1) {
+		if (isContacts || isCalendar) {
+			var folder = appCtxt.getById(params.folderId);
+			return this._doImportUpload(params, type, folder);
+		}
 	}
-	if (type == ZmImportExportController.TYPE_ICS) {
-		return this._doImportSelectFolder(params, ZmImportExportController.TYPE_ICS);
+	else {
+		if (type == ZmImportExportController.TYPE_CSV) {
+			return this._doImportSelectFolder(params, ZmImportExportController.TYPE_CSV);
+		}
+		if (type == ZmImportExportController.TYPE_ICS) {
+			return this._doImportSelectFolder(params, ZmImportExportController.TYPE_ICS);
+		}
 	}
 	return this._doImportTGZ(params);
 };
@@ -199,8 +238,7 @@ ZmImportExportController.prototype._doImportSelectFolder = function(params, type
 };
 
 ZmImportExportController.prototype._doImportUpload = function(params, type, folder) {
-	var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
-	if (folder && folder.id && folder.id != rootId) {
+	if (folder && folder.nId != ZmOrganizer.ID_ROOT) {
 		var dialog = appCtxt.getChooseFolderDialog();
 		dialog.popdown();
 
@@ -253,7 +291,9 @@ ZmImportExportController.prototype._doImportCSV = function(params, aid) {
 	var soapDoc = AjxSoapDoc.create("ImportContactsRequest", "urn:zimbraMail");
 	var method = soapDoc.getMethod();
 	method.setAttribute("ct", params.type);
-	method.setAttribute(params.type+"fmt", params.subType)
+	if (params.subType) {
+		method.setAttribute(params.type+"fmt", params.subType);
+	}
 	method.setAttribute("l", params.folderId);
 	var content = soapDoc.set("content", "");
 	content.setAttribute("aid", aid);
@@ -286,6 +326,7 @@ ZmImportExportController.prototype._doImportRequest = function(soapDoc, params, 
 
 ZmImportExportController.prototype._doImportTGZ = function(params) {
 	var folder = params.folderId && appCtxt.getById(params.folderId);
+	if (folder.nId == ZmOrganizer.ID_ROOT) folder = null;
 	var path = folder ? folder.getPath(null, null, null, null, true) : "";
 
 	var url = [
@@ -334,6 +375,7 @@ ZmImportExportController.prototype._doExportData = function(params) {
 	var subType = params.subType || ZmImportExportController.SUBTYPE_DEFAULT[type];
 
 	var folder = params.folderId && appCtxt.getById(params.folderId);
+	if (folder.nId == ZmOrganizer.ID_ROOT) folder = null;
 	var path = folder ? folder.getPath(null, null, null, null, true) : "";
 
 	// generate request URL
@@ -345,6 +387,7 @@ ZmImportExportController.prototype._doExportData = function(params) {
 	if (isCSV) { formParams[type+"fmt"] = subType; }
 	if (isTGZ && params.views) { formParams["types"] = params.views; }
 	if (isTGZ && params.searchFilter) { formParams["query"] = params.searchFilter; }
+	if (params.skipMeta) { formParams["meta"] = "0"; }
 	if (params.filename) { formParams["filename"] = params.filename; }
 	formParams.emptyname = ZmMsg.exportEmptyName;
 

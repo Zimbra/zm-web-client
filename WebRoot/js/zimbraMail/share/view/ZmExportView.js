@@ -21,24 +21,26 @@ ZmExportView = function(params) {
 	params.form = {
 		items: [
 			// default items
-			{ id: "TYPE", value: ZmImportExportController.TYPE_TGZ },
-			{ id: "TYPE_HINT", type: "DwtText" },
-			{ id: "SUBTYPE", type: "DwtSelect", value: ZmImportExportController.SUBTYPE_ZIMBRA_TGZ,
-				enabled: "get('TYPE') != ZmImportExportController.TYPE_TGZ"
-			},
-			{ id: "FOLDER", type: "DwtRadioButtonGroup", value: "all",
+			{ id: "TYPE", type: "DwtRadioButtonGroup", value: ZmImportExportController.TYPE_TGZ,
 				items: [
-					{ id: "FOLDER_ALL", label: ZmMsg.importExportFolderAll, value: "all" },
-					{ id: "FOLDER_ONE", label: ZmMsg.importExportFolderOne, value: "one" }
+					{ id: "TYPE_TGZ", label: ZmMsg.importExportTypeTGZ, value: ZmImportExportController.TYPE_TGZ },
+					{ id: "TYPE_ICS", label: ZmMsg.importExportTypeICS, value: ZmImportExportController.TYPE_ICS },
+					{ id: "TYPE_CSV", label: ZmMsg.importExportTypeCSV, value: ZmImportExportController.TYPE_CSV }
 				],
-				onclick: this._folder_onclick
+				onclick: this._type_onclick
 			},
-			{ id: "FOLDER_BUTTON", type: "DwtButton", label: ZmMsg.browse },
+			{ id: "TYPE_HINT", type: "DwtText" },
+			{ id: "SUBTYPE", type: "DwtSelect",
+				visible: "get('TYPE') == ZmImportExportController.TYPE_CSV"
+			},
+			{ id: "FOLDER_BUTTON", type: "DwtButton", label: ZmMsg.browse,
+				onclick: this._folderButton_onclick
+			},
 			{ id: "IGNORE_ARCHIVE", type: "DwtCheckbox", label: ZmMsg.exportIgnoreArchive,
 				enabled: "get('TYPE') == ZmImportExportController.TYPE_TGZ"
 			},
 			{ id: "ADVANCED", type: "DwtCheckbox", label: ZmMsg.advancedSettings,
-				enabled: "get('SUBTYPE') == ZmImportExportController.SUBTYPE_ZIMBRA_TGZ"
+				visible: "get('TYPE') == ZmImportExportController.TYPE_TGZ"
 			},
 			// advanced
 			{ id: "DATA_TYPES", type: "ZmImportExportDataTypes",
@@ -46,16 +48,13 @@ ZmExportView = function(params) {
 			},
 			{ id: "SEARCH_FILTER", type: "DwtInputField", hint: ZmMsg.searchFilterHint,
 				visible: "get('ADVANCED')"
+			},
+			{ id: "SKIP_META", type: "DwtCheckbox", label: ZmMsg.exportSkipMeta,
+				visible: "get('ADVANCED')"
 			}
 		]
 	};
 	ZmImportExportBaseView.call(this, params);
-
-	// connect handlers
-	var subtype = this.getControl("SUBTYPE");
-	if (subtype) {
-		subtype.addChangeListener(new AjxListener(this, this._handleSubTypeSelect));
-	}
 };
 ZmExportView.prototype = new ZmImportExportBaseView;
 ZmExportView.prototype.constructor = ZmExportView;
@@ -97,16 +96,21 @@ ZmExportView.prototype.getParams = function() {
 		subType:		this.getValue("SUBTYPE"),
 		// optional -- ignore if not relevant
 		views:			this.isRelevant("DATA_TYPES") ? this.getValue("DATA_TYPES") : null,
-		folderId:		this.isRelevant("FOLDER") ? (this.getValue("FOLDER","all") != "all" ? this._folderId : null) : null,
-		searchFilter:	this.isRelevant("SEARCH_FILTER") ? this.getValue("SEARCH_FILTER") : null
+		folderId:		this._folderId,
+		searchFilter:	this.isRelevant("SEARCH_FILTER") ? this.getValue("SEARCH_FILTER") : null,
+		skipMeta:       this.isRelevant("SKIP_META") ? this.getValue("SKIP_META") : null
 	};
 
 	// generate filename
-	params.filename = [
-		params.folderId ? appCtxt.getById(params.folderId).name : ZmMsg.exportFilenamePrefixAllFolders,
-		"-",
-		AjxDateFormat.format("yyyy-MM-dd-HHmmss", new Date())
-	].join("");
+	if (this._folderId != -1) {
+		var folder = appCtxt.getById(params.folderId);
+		var isRoot = folder && folder.nId == ZmOrganizer.ID_ROOT;
+		params.filename = [
+			isRoot ? ZmMsg.exportFilenamePrefixAllFolders : folder.name,
+			"-",
+			AjxDateFormat.format("yyyy-MM-dd-HHmmss", new Date())
+		].join("");
+	}
 
 	// modify search filter
 	var ignoreArchive = this.isRelevant("IGNORE_ARCHIVE") ? this.getValue("IGNORE_ARCHIVE") : false;
@@ -115,16 +119,6 @@ ZmExportView.prototype.getParams = function() {
 		params.searchFilter = params.searchFilter ? [params.searchFilter, ignoreFilter].join(" and ") : ignoreFilter;
 	}
 	return params;
-};
-
-ZmExportView.prototype.getValue = function(id, defaultValue) {
-	if (id == "TYPE") {
-		var defaultValue = ZmImportExportController.TYPE_TGZ;
-		var parts = this.getValue("SUBTYPE", defaultValue).split("-");
-		var type = parts[parts.length-1];
-		return type;
-	}
-	return ZmImportExportBaseView.prototype.getValue.apply(this, arguments);
 };
 
 ZmExportView.prototype.isRelevant = function(id) {
@@ -138,22 +132,6 @@ ZmExportView.prototype.isRelevant = function(id) {
 // Protected methods
 //
 
-ZmExportView.prototype._getSubTypeOptions = function(type) {
-	var options = ZmImportExportBaseView.prototype._getSubTypeOptions.apply(this, arguments);
-	if (type != ZmImportExportController.TYPE_TGZ) {
-		options = this.TGZ_OPTIONS.concat(options);
-	}
-	return options;
-};
-
-ZmExportView.prototype._setupSelect = function(id, setup, value) {
-	var select = ZmImportExportBaseView.prototype._setupSelect.apply(this, arguments);
-	if (id == "SUBTYPE") {
-		select.addChangeListener(new AjxListener(this, this._handleSubTypeSelect));
-	}
-	return select;
-};
-
 ZmExportView.prototype.update = function() {
 	var type = this.getValue("TYPE", ZmImportExportController.TYPE_TGZ);
 	var isTGZ = type == ZmImportExportController.TYPE_TGZ;
@@ -164,18 +142,10 @@ ZmExportView.prototype.update = function() {
 			this.setValue("ADVANCED", false);
 		}
 	}
-
-	var subType = this.getControl("SUBTYPE");
-	if (subType) {
-		subType.setEnabled(subType.getOptionCount() > 1);
-	}
-
 	ZmImportExportBaseView.prototype.update.apply(this, arguments);
-
 	var ignoreArchive = this.getControl("IGNORE_ARCHIVE");
 	if (ignoreArchive) {
 		ignoreArchive.setVisible(this.isRelevant("IGNORE_ARCHIVE"));
-		ignoreArchive.setEnabled(this.getValue("FOLDER") == "all");
 	}
 };
 
@@ -190,27 +160,4 @@ ZmExportView.prototype._folder_onclick = function() {
 	}
 	this._initSubType(type);
 	this.update();
-};
-
-ZmExportView.prototype._handleFolderDialogOk = function(folder) {
-	if (ZmImportExportBaseView.prototype._handleFolderDialogOk.apply(this, arguments)) {
-		var type = this._getTypeFromFolder(folder);
-		this.setValue("TYPE", type);
-		this._initSubType(type);
-		this.update();
-	}
-};
-
-ZmExportView.prototype._handleSubTypeSelect = function() {
-//	var select = this.getControl("SUBTYPE");
-//	var isZimbra = select.getSelectedValue() == ZmImportExportController;
-	this.update();
-};
-
-ZmExportView.prototype._getTypeFromFolder = function(folder) {
-	switch (folder && folder.type) {
-		case ZmOrganizer.ADDRBOOK: return ZmImportExportController.TYPE_CSV;
-		case ZmOrganizer.CALENDAR: return ZmImportExportController.TYPE_ICS;
-	}
-	return ZmImportExportController.TYPE_TGZ;
 };

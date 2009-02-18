@@ -19,12 +19,7 @@ ZmImportExportBaseView = function(params) {
 	if (arguments.length == 0) return;
 	DwtForm.call(this, params);
 	this._initSubType(ZmImportExportController.TYPE_TGZ);
-
-	// connect handlers
-	var button = this.getControl("FOLDER_BUTTON");
-	if (button) {
-		button.addSelectionListener(new AjxListener(this, this._folderButton_onclick));
-	}
+	this._setFolderButton(appCtxt.getById(ZmOrganizer.ID_ROOT));
 };
 ZmImportExportBaseView.prototype = new DwtForm;
 ZmImportExportBaseView.prototype.constructor = ZmImportExportBaseView;
@@ -118,25 +113,52 @@ ZmImportExportBaseView.prototype._getSubTypeOptions = function(type) {
 ZmImportExportBaseView.prototype._type_onclick = function(radioId, groupId) {
 	// enable advanced options
 	var type = this.getValue("TYPE");
+	this._initSubType(type);
 	var isTgz = type == ZmImportExportController.TYPE_TGZ;
 	this.setEnabled("ADVANCED", isTgz);
 	if (this.getValue("ADVANCED") && !isTgz) {
 		this.setValue("ADVANCED", false);
 		this.update();
 	}
+	var folder;
+	switch (type) {
+		case ZmImportExportController.TYPE_CSV: {
+			// TODO: Does this work for child accounts w/ fully-qualified ids?
+			folder = appCtxt.getById(ZmOrganizer.ID_ADDRBOOK);
+			break;
+		}
+		case ZmImportExportController.TYPE_ICS: {
+			folder = appCtxt.getById(ZmOrganizer.ID_CALENDAR);
+			break;
+		}
+		case ZmImportExportController.TYPE_TGZ: {
+			folder = appCtxt.getById(ZmOrganizer.ID_ROOT);
+			break;
+		}
+	}
+	this._setFolderButton(folder);
 };
 
 ZmImportExportBaseView.prototype._folderButton_onclick = function() {
-	this.setValue("FOLDER", "one");
-
+	// init state
 	if (!this._handleFolderDialogOkCallback) {
 		this._handleFolderDialogOkCallback = new AjxCallback(this, this._handleFolderDialogOk);
 	}
 
+	if (!this._TREES) {
+		this._TREES = {};
+		this._TREES[ZmImportExportController.TYPE_TGZ] = AjxUtil.keys(ZmOrganizer.VIEWS);
+		this._TREES[ZmImportExportController.TYPE_CSV] = [ZmOrganizer.ADDRBOOK];
+		this._TREES[ZmImportExportController.TYPE_ICS] = [ZmOrganizer.CALENDAR];
+	}
+
+	// pop-up dialog
 	var dialog = appCtxt.getChooseFolderDialog();
 	dialog.registerCallback(DwtDialog.OK_BUTTON, this._handleFolderDialogOkCallback);
+	var type = this.getValue("TYPE") || ZmImportExportController.TYPE_TGZ;
 	var params = {
-		treeIds:		AjxUtil.keys(ZmOrganizer.VIEWS),
+		treeIds:		this._TREES[type],
+		overviewId:		[this.toString(), type].join("-"),
 		skipReadOnly:	true,
 		omit:			{}
 	};
@@ -147,14 +169,20 @@ ZmImportExportBaseView.prototype._folderButton_onclick = function() {
 
 ZmImportExportBaseView.prototype._handleFolderDialogOk = function(folder) {
 	appCtxt.getChooseFolderDialog().popdown();
-	// NOTE: Selecting a header is the same as "all folders"
-	if (folder.id == ZmOrganizer.ID_ROOT) {
-		this.setValue("FOLDER", "all");
-		return false;
-	}
-	this._folderId = folder.id;
-	this.setLabel("FOLDER_BUTTON", folder.name);
+	this._setFolderButton(folder);
 	return true;
+};
+
+ZmImportExportBaseView.prototype._setFolderButton = function(folder) {
+	// NOTE: Selecting a header is the same as "all folders"
+	this._folderId = folder ? folder.id : -1;
+	if (folder) {
+		var isRoot = folder.nId == ZmOrganizer.ID_ROOT;
+		this.setLabel("FOLDER_BUTTON", isRoot ? ZmMsg.allFolders : folder.name);
+	}
+	else {
+		this.setLabel("FOLDER_BUTTON", ZmMsg.browse);
+	}
 };
 
 //

@@ -78,11 +78,6 @@ ZmImportExportPage.prototype._handleImportButton = function() {
 	if (button) {
 		button.setEnabled(false);
 	}
-	var params = {
-		msg:	ZmMsg.importStarted,
-		level:	ZmStatusView.LEVEL_INFO
-	};
-	appCtxt.setStatusMsg(params);
 
 	// get import params
 	var importView = this.getFormObject("IMPORT_FOLDER");
@@ -91,7 +86,16 @@ ZmImportExportPage.prototype._handleImportButton = function() {
 
 	// import
 	var controller = appCtxt.getImportExportController();
-	controller.importData(params);
+	if (controller.importData(params)) {
+		var params = {
+			msg:	ZmMsg.importStarted,
+			level:	ZmStatusView.LEVEL_INFO
+		};
+		appCtxt.setStatusMsg(params);
+	}
+	else if (button) {
+		button.setEnabled(true);
+	}
 };
 
 ZmImportExportPage.prototype._handleExportButton = function() {
