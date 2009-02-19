@@ -97,8 +97,10 @@ function(chat) {
 	};
 	var item = this._createItem(args);
 	item.button.setToolTipContent(new AjxCallback(this, this._getChatToolTip, [chat]));
+	item.button.addListener(DwtEvent.ONMOUSEDOWN, new AjxListener(this, this._chatMouseDownListener, [chat]));
 
 	this._chatData[chat.id] = {
+		chat: chat,
 		item: item,
 		separator: separator
 	};
@@ -236,6 +238,62 @@ function(chat) {
 			return;
 		}
 	}
+};
+
+ZmTaskbarController.prototype._chatMouseDownListener =
+function(chat, ev) {
+	if (ev.button != DwtMouseEvent.RIGHT) {
+		return;
+	}
+
+	this._actionedChat = chat;
+	if (!this._chatActionMenu) {
+		var args = {
+			parent: appCtxt.getShell(),
+			controller: this,
+			context: ZmId.TASKBAR,
+			menuType: "Chat",
+			menuItems: [ZmId.OP_IM_CLOSE_CHAT, ZmId.OP_IM_CLOSE_ALL_CHATS, ZmId.OP_IM_CLOSE_OTHER_CHATS]
+		};
+		this._chatActionMenu = new ZmActionMenu(args);
+		this._chatActionMenu.getOp(ZmId.OP_IM_CLOSE_CHAT).addSelectionListener(new AjxListener(this, this._closeChatMenuListener));
+		this._chatActionMenu.getOp(ZmId.OP_IM_CLOSE_ALL_CHATS).addSelectionListener(new AjxListener(this, this._closeAllChatsListener));
+		this._chatActionMenu.getOp(ZmId.OP_IM_CLOSE_OTHER_CHATS).addSelectionListener(new AjxListener(this, this._closeOtherChatsListener));
+	}
+	this._chatActionMenu.popup(0, ev.docX, ev.docY);
+};
+
+ZmTaskbarController.prototype._closeChatMenuListener =
+function() {
+	this.endChat(this._actionedChat);
+	this._actionedChat = null;
+};
+
+ZmTaskbarController.prototype._closeAllChatsListener =
+function() {
+	var allChats = [];
+	for (var id in this._chatData) {
+		allChats.push(this._chatData[id].chat);
+	}
+	for (var i = 0, count = allChats.length; i < count; i++) {
+		this.endChat(allChats[i]);
+	}
+	this._actionedChat = null;
+};
+
+ZmTaskbarController.prototype._closeOtherChatsListener =
+function() {
+	var otherChats = [];
+	for (var id in this._chatData) {
+		var chat = this._chatData[id].chat;
+		if (chat != this._actionedChat) {
+			otherChats.push(chat);
+		}
+	}
+	for (var i = 0, count = otherChats.length; i < count; i++) {
+		this.endChat(otherChats[i]);
+	}
+	this._actionedChat = null;
 };
 
 ZmTaskbarController.prototype._newBuddyListener =

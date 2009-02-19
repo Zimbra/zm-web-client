@@ -744,7 +744,7 @@ function() {
 };
 
 /**
-* Sttops an alert on the app tab.
+* Stops an alert on the app tab.
 */
 ZmApp.prototype.stopAlert =
 function() {
