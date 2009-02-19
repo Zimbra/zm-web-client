@@ -424,7 +424,8 @@ ZmImOverview.prototype._init = function() {
 	this._rootItem = new DwtHeaderTreeItem({
 		parent:tree,
 		overview: this,
-		className:"overviewHeader"
+		className:"overviewHeader",
+		noNodeCell: this._options.noHeaderNodeCell
 	});
 	this._rootItem.setData("ZmImOverview.data", { type: "root" });
 	this._rootItem.setText(ZmMsg.buddyList);

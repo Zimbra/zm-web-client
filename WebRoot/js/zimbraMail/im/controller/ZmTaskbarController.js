@@ -343,7 +343,8 @@ function(parent, parentElement) {
 		posStyle: Dwt.STATIC_STYLE,
 		noAssistant: true,
 		expanded: true,
-		singleClick: true
+		singleClick: true,
+		noHeaderNodeCell: true
 	};
 	new ZmImOverview(parent, overviewArgs);
 };

@@ -1911,6 +1911,10 @@ HTML>BODY .appt-selected .appt_allday_body
 	background-color:@TaskbarItem-selected@;
 }
 
+.ZmTaskbarContentParent .DwtTree {
+	border-style: none;
+}
+
 .ZmTaskbarContentParent .ZmChatWidget {
 	height:250px;
 	max-height:400px;
