@@ -1324,7 +1324,7 @@ function(appName, view) {
 	this._components[ZmAppViewMgr.C_APP_CHOOSER].setSelected(appName);
 
 	// app not actually enabled if this is result of upsell view push
-	var appEnabled = appCtxt.get(ZmApp.SETTING[appName]);
+	var appEnabled = !ZmApp.SETTING[appName] || appCtxt.get(ZmApp.SETTING[appName]);
 
 	this._activeTabId = null;	// app is active; tab IDs are for non-apps
 

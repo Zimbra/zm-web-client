@@ -37,6 +37,10 @@ ZmZimletApp.prototype.getController = function() {
 	return this._controller;
 };
 
+ZmZimletApp.prototype.getToolbar = function() {
+	return this.getController().getToolbar();
+};
+
 // convenience methods
 
 ZmZimletApp.prototype.setContent = function(html) {
@@ -51,13 +55,16 @@ ZmZimletApp.prototype.setView = function(view) {
 
 ZmZimletApp.prototype.launch = function(params, callback) {
 	this.getController().show();
-	ZmApp.prototype.launch.apply(this, arguments);
+	ZmApp.prototype.launch.call(this, params);
 	if (this._zimlet.appLaunch) {
 		this._zimlet.appLaunch(this.getName(), params);
 	}
+	if (callback) {
+		callback.run();
+	}
 };
 
-ZmZimletApp.prototype.activate = function(active) {
+ZmZimletApp.prototype.activate = function(active, viewId) {
 	ZmApp.prototype.activate.apply(this, arguments);
 	if (this._zimlet.appActive) {
 		this._zimlet.appActive(this.getName(), active);

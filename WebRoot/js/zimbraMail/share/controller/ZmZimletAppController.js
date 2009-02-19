@@ -32,23 +32,17 @@ ZmZimletAppController.prototype.toString = function() {
 // Public methods
 //
 
-ZmZimletAppController.prototype.show = function() {
-	this.getView();
-	this._app.pushView(this._getViewType());
-};
+// convenience methods
 
 ZmZimletAppController.prototype.getView = function() {
 	if (!this._view) {
 		// create components
 		this._view = new ZmZimletAppView(this._container, this);
-		// TODO: expose ability for zimlets to specify a toolbar
-//		if (!this._toolbar) {
-//			this._createToolBar();
-//		}
+		this._toolbar = new ZmToolBar({parent:DwtShell.getShell(window)});
 
 		// setup app elements
 		var elements = {};
-//		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
+		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
 		elements[ZmAppViewMgr.C_APP_CONTENT] = this._view;
 
 		// create callbacks
@@ -62,6 +56,18 @@ ZmZimletAppController.prototype.getView = function() {
 	    this._app.createView({viewId:this._getViewType(), elements:elements, callbacks:callbacks, isAppView:true, isTransient:true});
 	}
 	return this._view;
+};
+
+ZmZimletAppController.prototype.getToolbar = function() {
+	this.getView();
+	return this._toolbar;
+};
+
+// ZmAppController methods
+
+ZmZimletAppController.prototype.show = function() {
+	this.getView();
+	this._app.pushView(this._getViewType());
 };
 
 //
