@@ -1344,8 +1344,12 @@ function(soapDoc, m, cancel) {
 			var pct = part.getContentType();
 			partNode.setAttribute("ct", pct);
 
-			var pprefix = pct == ZmMimeTable.TEXT_HTML ? hprefix : tprefix;
-			var content = AjxBuffer.concat(pprefix, part.getContent());
+			var content;
+			if (pct == ZmMimeTable.TEXT_HTML) {
+				content = "<html><body>" + AjxBuffer.concat(hprefix, part.getContent()) + "</body></html>";
+			} else {
+				content = AjxBuffer.concat(tprefix, part.getContent());
+			}
 			soapDoc.set("content", content, partNode);
 		}
 	} else {
