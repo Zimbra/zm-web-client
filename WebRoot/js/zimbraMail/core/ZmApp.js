@@ -430,7 +430,7 @@ function(account, unloadCurrent, callback) {
  */
 ZmApp.prototype._getOverviewTrees =
 function() {
-	var list = ZmApp.OVERVIEW_TREES[this._name] || []c;
+	var list = ZmApp.OVERVIEW_TREES[this._name] || [];
 	var newList = [];
 	for (var i = 0, count = list.length; i < count; i++) {
 		if ((list[i] == ZmOrganizer.FOLDER && !appCtxt.get(ZmSetting.MAIL_ENABLED))) {
