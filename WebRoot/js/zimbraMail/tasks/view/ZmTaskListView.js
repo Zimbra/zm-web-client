@@ -43,12 +43,6 @@ function(width, height) {
 	this._resetColWidth();
 };
 
-ZmTaskListView.prototype.setBounds =
-function(x, y, width, height) {
-	ZmListView.prototype.setBounds.call(this, x, y, width, height);
-	this._resetColWidth();
-};
-
 ZmTaskListView.prototype.getLimit =
 function() {
 	// dont rely on page size being set (in case mail app is disabled)

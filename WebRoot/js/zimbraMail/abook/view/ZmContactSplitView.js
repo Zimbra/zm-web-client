@@ -78,12 +78,6 @@ function(width, height) {
 	this._sizeChildren(width, height);
 };
 
-ZmContactSplitView.prototype.setBounds =
-function(x, y, width, height) {
-	DwtComposite.prototype.setBounds.call(this, x, y, width, height);
-	this._sizeChildren(width, height);
-};
-
 ZmContactSplitView.prototype.getTitle =
 function() {
 	return [ZmMsg.zimbraTitle, this._controller.getApp().getDisplayName()].join(": ");

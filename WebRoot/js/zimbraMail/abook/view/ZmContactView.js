@@ -245,12 +245,6 @@ function(width, height) {
 	this._sizeChildren(width, height);
 };
 
-ZmContactView.prototype.setBounds =
-function(x, y, width, height) {
-	DwtComposite.prototype.setBounds.call(this, x, y, width, height);
-	this._sizeChildren(width, height);
-};
-
 ZmContactView.prototype.getTitle =
 function() {
 	return [ZmMsg.zimbraTitle, ZmMsg.contact].join(": ");
