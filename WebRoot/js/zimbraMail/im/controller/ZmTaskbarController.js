@@ -47,8 +47,8 @@ ZmTaskbarController = function(components) {
 		contentClassName: "ZmNewBuddyPopup",
 		op: ZmId.OP_NEW_ROSTER_ITEM
 	};
-	var newBuddyItem = this._createItem(newBuddyArgs);
-	newBuddyItem.button.setText("");
+	this._newBuddyItem = this._createItem(newBuddyArgs);
+	this._newBuddyItem.button.setText("");
 	
 	var buddyListArgs = {
 		contentCalback: new AjxCallback(this, this._createBuddyListCallback),
@@ -195,6 +195,12 @@ function(addr, buddy) {
 		item.showAlert(true);
 	}
 	item.addDisposeListener(new AjxListener(this, this._subscribeDisposeListener, [addr]));
+};
+
+ZmTaskbarController.prototype.showNewBuddyPopup =
+function() {
+	this._toolbar.expandItem(this._newBuddyItem, true);
+	return this._newBuddyItem.getPopup();
 };
 
 ZmTaskbarController.prototype._subscribeDisposeListener =

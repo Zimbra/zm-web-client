@@ -31,6 +31,14 @@ function() {
 	return "ZmTaskbarPopup";
 };
 
+ZmTaskbarPopup.prototype.setTitle =
+function(title) {
+	var titleEl = Dwt.byId(this._htmlElId + "_title");
+	if (titleEl) {
+		titleEl.innerHTML = title;
+	}
+};
+
 ZmTaskbarPopup.prototype.popup =
 function() {
 	this._pushKeyHandlers();

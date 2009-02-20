@@ -268,6 +268,7 @@ ZmNewBuddyPopup.prototype._getRosterItemData = function() {
 };
 
 ZmNewBuddyPopup.prototype.reset = function() {
+	this.setTitle(ZmMsg.createNewRosterItem);
 	this._addrEntry.setValue("");
 	this._addrEntry.setEnabled(true);
 	this._serviceTypeSelect.setEnabled(true);
@@ -299,7 +300,6 @@ ZmNewBuddyPopup.prototype.setAddress = function(newAddress, readonly) {
 		this._serviceTypeSelect.setEnabled(false);
 	}
 };
-
 
 ZmNewBuddyPopup.prototype._initAddressAutocomplete = function() {
 	if (this._addressAutocomplete) { return; }

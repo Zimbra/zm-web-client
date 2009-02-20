@@ -315,15 +315,6 @@ function() {
 	return this._pageConflictDialog;
 };
 
-ZmAppCtxt.prototype.getNewRosterItemDialog =
-function() {
-	if (!this._newRosterItemDialog) {
-		AjxDispatcher.require("IM");
-		this._newRosterItemDialog = new ZmNewRosterItemDialog(this._shell);
-	}
-	return this._newRosterItemDialog;
-};
-
 ZmAppCtxt.prototype.getDialog =
 function(){
 	if(!this._dialog){

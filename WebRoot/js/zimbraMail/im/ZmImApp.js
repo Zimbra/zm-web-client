@@ -443,7 +443,7 @@ ZmImApp.prototype.handleOp = function(op) {
 			break;
 		case ZmOperation.NEW_ROSTER_ITEM:
 			this.prepareVisuals(); // ... and create views, if not yet done
-			this.getImController()._newRosterItemListener()
+			this.getImController()._newRosterItemListener();
 			break;
 		case ZmOperation.IM_PRESENCE_MENU:
 			if (this._presenceButton) {

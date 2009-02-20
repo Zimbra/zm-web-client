@@ -113,21 +113,20 @@ function(ev) {
 		}
 	}
 
-	var newDialog = appCtxt.getNewRosterItemDialog();
-	newDialog.setTitle(ZmMsg.createNewRosterItem);
-	if (!this._newRosterItemCb) {
-		this._newRosterItemCb = new AjxCallback(this, this._newRosterItemCallback);
-	}
-	ZmController.showDialog(newDialog, this._newRosterItemCb);
+	var popup = ZmTaskbarController.INSTANCE.showNewBuddyPopup();
 	if (ev) {
-		if (ev.group)
-			newDialog.setGroups(ev.group);
-		if (ev.name)
-			newDialog.setName(ev.name);
-		if (ev.address)
-			newDialog.setAddress(ev.address);
-		if (ev.service)
-			newDialog.setService(ev.service);
+		if (ev.group) {
+			popup.setGroups(ev.group);
+		}
+		if (ev.name) {
+			popup.setName(ev.name);
+		}
+		if (ev.address) {
+			popup.setAddress(ev.address);
+		}
+		if (ev.service) {
+			popup.setService(ev.service);
+		}
 	}
 };
 
@@ -144,16 +143,12 @@ function(dialog, ev) {
 
 ZmImController.prototype._editRosterItemListener =
 function(ev) {
-	var newDialog = appCtxt.getNewRosterItemDialog();
-	newDialog.setTitle(ZmMsg.editRosterItem);
-	if (!this._newRosterItemCb) {
-		this._newRosterItemCb = new AjxCallback(this, this._newRosterItemCallback);
-	}
-	ZmController.showDialog(newDialog, this._newRosterItemCb);
+	var popup = ZmTaskbarController.INSTANCE.showNewBuddyPopup();
+	popup.setTitle(ZmMsg.editRosterItem);
 	var ri = ev.buddy;
-	newDialog.setAddress(ri.getAddress(), true);
-	newDialog.setName(ri.getName());
-	newDialog.setGroups(ri.getGroups());
+	popup.setAddress(ri.getAddress(), true);
+	popup.setName(ri.getName());
+	popup.setGroups(ri.getGroups());
 };
 
 
@@ -227,13 +222,6 @@ function(contact, fullAddress){
 		item = new ZmRosterItem(addr, list, name, presence);
 	}
 	return item;
-};
-
-// Create a roster item
-ZmImController.prototype._newRosterItemCallback =
-function(addr, rname, groups) {
-	appCtxt.getNewRosterItemDialog().popdown();
-	this._imApp.getRoster().createRosterItem(addr, rname, groups);
 };
 
 ZmImController.prototype._imCreateContactListener = function(ev) {
