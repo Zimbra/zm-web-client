@@ -113,6 +113,7 @@ function() {
 
 	this.set(this._dateInfo, this._editView.getOrganizer(), this._attendees);
 	this._controller._setComposeTabGroup();
+    this.enablePartcipantStatusColumn(this._editView.getRsvp());
 };
 
 ZmSchedTabViewPage.prototype.tabBlur =
@@ -266,24 +267,30 @@ function() {
 	this._acList = {};
 
 	// autocomplete for attendees
-	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-		var contactsClass = appCtxt.getApp(ZmApp.CONTACTS);
-		var contactsLoader = contactsClass.getContactList;
-		var params = {parent: shell, dataClass: contactsClass, dataLoader: contactsLoader, separator: "",
-					  matchValue: ZmContactsApp.AC_VALUE_NAME, keyUpCallback: keyUpCallback, compCallback: acCallback, smartPos: true};
+	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) || appCtxt.get(ZmSetting.GAL_ENABLED)) {
+		var params = {
+			parent: shell,
+			dataClass: appCtxt.getAutocompleter(),
+			separator: "",
+			options: {needItem: true},
+			matchValue: ZmAutocomplete.AC_VALUE_NAME,
+			keyUpCallback: keyUpCallback,
+			compCallback: acCallback,
+			smartPos: true
+		};
 		this._acContactsList = new ZmAutocompleteListView(params);
 		this._acList[ZmCalBaseItem.PERSON] = this._acContactsList;
-	}
-	// autocomplete for locations/equipment
-	if (appCtxt.get(ZmSetting.GAL_ENABLED)) {
-		var resourcesClass = appCtxt.getApp(ZmApp.CALENDAR);
-		var params = {parent: shell, dataClass: resourcesClass, dataLoader: resourcesClass.getLocations, separator: "",
-					  matchValue: ZmContactsApp.AC_VALUE_NAME, compCallback: acCallback, smartPos: true};
-		this._acLocationsList = new ZmAutocompleteListView(params);
-		this._acList[ZmCalBaseItem.LOCATION] = this._acLocationsList;
-		params.dataLoader = resourcesClass.getEquipment;
-		this._acEquipmentList = new ZmAutocompleteListView(params);
-		this._acList[ZmCalBaseItem.EQUIPMENT] = this._acEquipmentList;
+
+		// autocomplete for locations/equipment
+		if (appCtxt.get(ZmSetting.GAL_ENABLED)) {
+			params.options = {type:ZmAutocomplete.AC_TYPE_LOCATION};
+			this._acLocationsList = new ZmAutocompleteListView(params);
+			this._acList[ZmCalBaseItem.LOCATION] = this._acLocationsList;
+
+			params.options = {type:ZmAutocomplete.AC_TYPE_EQUIPMENT};
+			this._acEquipmentList = new ZmAutocompleteListView(params);
+			this._acList[ZmCalBaseItem.EQUIPMENT] = this._acEquipmentList;
+		}
 	}
 };
 
@@ -291,7 +298,7 @@ function() {
 ZmSchedTabViewPage.prototype._autocompleteCallback =
 function(text, el, match) {
 	if (match && match.item) {
-		if (match.item.isGroup()) {
+		if (match.item.isGroup && match.item.isGroup()) {
 			var members = match.item.getGroupMembers().good.getArray();
 			for (var i = 0; i < members.length; i++) {
 				el.value = members[i].address;
@@ -417,11 +424,12 @@ function(isAllAttendees, organizer, drawBorder, index, updateTabGroup, setFocus)
 		}
 		
 		sched.ptstObj = document.getElementById(sched.dwtNameId+"_ptst");
+
+        Dwt.setVisible(sched.ptstObj, this._editView.getRsvp());
 		
 		// set handlers
 		var attendeeInput = document.getElementById(sched.dwtInputId);
 		if (attendeeInput) {
-			this._activeInputIdx = null;
 			this._activeInputIdx = index;
 			// handle focus moving to/from an enabled input
 			Dwt.setHandler(attendeeInput, DwtEvent.ONFOCUS, ZmSchedTabViewPage._onFocus);
@@ -754,8 +762,8 @@ function(index, attendee, type, isOrganizer) {
 				imgDiv._schedViewPageId = this._svpId;
 				imgDiv._schedTableIdx = index;
 			}
-		}
-	}
+        }
+    }
 
 	var email = attendee.getEmail();
 	if (email instanceof Array) {
@@ -1414,4 +1422,18 @@ function(idx, status) {
 ZmSchedTabViewPage.prototype.getAllAttendeeStatus =
 function(idx) {
 	return this._allAttendeesStatus[idx] ? this._allAttendeesStatus[idx] : ZmSchedTabViewPage.STATUS_FREE;
+};
+
+
+ZmSchedTabViewPage.prototype.enablePartcipantStatusColumn =
+function(show) {
+  for(var i in this._schedTable) {
+      var sched = this._schedTable[i];
+      if(sched && sched.ptstObj) {
+            Dwt.setVisible(sched.ptstObj, show);
+      }else if(i == this._organizerIndex) {
+            var ptstObj = document.getElementById(sched.dwtNameId+"_ptst");
+            Dwt.setVisible(ptstObj, show);
+      }
+  }
 };

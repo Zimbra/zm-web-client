@@ -37,11 +37,11 @@ ZmBrowseToolBar = function(parent, pickers) {
 	this.addFiller();
 
 	var id = ZmPicker.CLOSE;
-	var text = AjxEnv.is800x600orLower ? null : ZmMsg[ZmPicker.MSG_KEY[id]];
+	var text = ZmMsg[ZmPicker.MSG_KEY[id]];
 	var b = this.createButton(id, {image:ZmPicker.IMAGE[id], text:text,
 								   tooltip:ZmMsg[ZmPicker.TT_MSG_KEY[id]]});
 	b.setData(ZmPicker.KEY_ID, id);
-}
+};
 
 ZmBrowseToolBar.prototype = new ZmToolBar;
 ZmBrowseToolBar.prototype.constructor = ZmBrowseToolBar;
@@ -49,4 +49,4 @@ ZmBrowseToolBar.prototype.constructor = ZmBrowseToolBar;
 ZmBrowseToolBar.prototype.toString = 
 function() {
 	return "ZmBrowseToolBar";
-}
+};

@@ -20,3 +20,6 @@
  #IFDEF MSIE
   #skin_container_search{padding-top: 3px;}
  #ENDIF 
+ 
+ #skin_spacing_tree_footer{ height: 135px; }
+ 

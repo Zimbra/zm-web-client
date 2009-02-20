@@ -66,7 +66,7 @@ function(searchResults) {
 	var elements = {};
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
 	elements[ZmAppViewMgr.C_APP_CONTENT] = lv;
-	this._setView(this._currentView, elements, true);
+	this._setView({view:this._currentView, elements:elements, isAppView:true});
 	this._resetNavToolBarButtons(this._currentView);
 
 	// always set the selection to the first item in the list
@@ -295,7 +295,7 @@ function(ev) {
 	var items = this._listView[this._currentView].getSelection();
 	for (var i = 0, count = items.length; i < count; i++) {
 		var item = items[i];
-		if ((item instanceof ZmContact) && item.isMyCard()) {
+		if ((item instanceof ZmContact) && item.isMyCard) {
 			appCtxt.setStatusMsg(ZmMsg.errorMyCardDelete, ZmStatusView.LEVEL_WARNING);
 			return;
 		}
@@ -310,7 +310,7 @@ function(ev) {
 	var items = this._listView[this._currentView].getSelection();
 	for (var i = 0, count = items.length; i < count; i++) {
 		var item = items[i];
-		if ((item instanceof ZmContact) && item.isMyCard()) {
+		if ((item instanceof ZmContact) && item.isMyCard) {
 			appCtxt.setStatusMsg(ZmMsg.errorMyCardMove, ZmStatusView.LEVEL_WARNING);
 			return;
 		}

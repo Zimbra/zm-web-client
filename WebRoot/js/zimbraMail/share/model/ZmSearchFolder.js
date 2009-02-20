@@ -44,7 +44,7 @@ function(params) {
 		}
 	}
 	if (params.search.sortBy) {
-		searchNode.setAttribute("sortBy", ZmSearch.SORT_BY[params.search.sortBy]);
+		searchNode.setAttribute("sortBy", params.search.sortBy);
 	}
 	searchNode.setAttribute("l", params.parent.id);
 	var errorCallback = new AjxCallback(null, ZmOrganizer._handleErrorCreate, params);
@@ -85,25 +85,3 @@ function(parentId) {
 	return appCtxt.getById(parentId); 
 };
 
-/**
- * Returns true if this saved search contains one of the types in the given hash.
- * 
- * @param types		[hash]		a hash of search types (item type IDs)
- */
-ZmSearchFolder.prototype._typeMatch =
-function(types) {
-	if (!this.search) {
-		return false;
-	}
-	if (!this.search.types) {
-		// if types are missing, default to mail
-		return (types[ZmItem.CONV] || types[ZmItem.MSG]);
-	}
-	var childSearchTypes = this.search.types;
-	for (var j = 0; j < childSearchTypes.length; j++) {
-		if (types && types[childSearchTypes[j]]) {
-			return true;
-		}
-	}
-	return false;
-};

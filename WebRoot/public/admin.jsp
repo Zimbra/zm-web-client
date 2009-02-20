@@ -162,7 +162,6 @@ if(!AjxEnv.isFirefox1up && !AjxEnv.isFirefox3up && !AjxEnv.isFirefox2_0up && !Aj
 </script>
     <script type="text/javascript" language="JavaScript">
 	   function launch() {
-		AjxWindowOpener.HELPER_URL = "<%= contextPath %>/public/frameOpenerHelper.jsp"
 		DBG = new AjxDebug(AjxDebug.NONE, null, false);
 		ACCESS_RIGHTS = new Object();
 		// figure out the debug level

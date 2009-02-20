@@ -86,6 +86,18 @@ function() {
 	return this._readingPaneOn;
 };
 
+ZmConvController.prototype._setReadingPanePref =
+function(view) {
+	if (view == ZmMailListController.READING_PANE_OFF_ID) {
+		this._readingPaneOn = false;
+	} else if (view == ZmMailListController.READING_PANE_AT_BOTTOM_ID) {
+		this._readingPaneOn = true;
+		appCtxt.set(ZmSetting.READING_PANE_ORIENTATION, ZmSetting.RP_BOTTOM);
+	} else if (view == ZmMailListController.READING_PANE_ON_RIGHT_ID) {
+		this._readingPaneOn = true;
+		appCtxt.set(ZmSetting.READING_PANE_ORIENTATION, ZmSetting.RP_RIGHT);
+	}
+};
 
 // Private and protected methods
 
@@ -100,8 +112,9 @@ function(view) {
 	ZmDoublePaneController.prototype._initialize.call(this, view);
 	
 	// set up custom listeners for this view 
-	if (this._doublePaneView)
+	if (this._doublePaneView) {
 		this._doublePaneView.addTagClickListener(new AjxListener(this, ZmConvController.prototype._convTagClicked));
+	}
 };
 
 ZmConvController.prototype._initializeToolBar = 
@@ -117,9 +130,15 @@ function(view) {
 	this._setupCheckMailButton(this._toolbar[view]);
 };
 
-ZmConvController.prototype._setupViewMenu =
-function(view) {
-	this._setupReadingPaneMenuItem(view, null, true);
+ZmConvController.prototype._setupViewMenuItems =
+function(view, btn) {
+
+	var menu = new ZmPopupMenu(btn);
+	btn.setMenu(menu);
+
+	this._setupReadingPaneMenuItems(view, menu, this.isReadingPaneOn());
+
+	return menu;
 };
 
 ZmConvController.prototype._setupDeleteMenu =
@@ -143,20 +162,6 @@ function(view) {
 	else if (delButton.getMenu()) {
 		delButton.setMenu(null);
 	}
-};
-
-// NOTE: reading pane pref in CV is *not* persisted so we dont save to server
-ZmConvController.prototype._saveReadingPanePref =
-function(checked) {
-	this._readingPaneOn = checked;
-	this._doublePaneView.toggleView();
-
-	// set msg in msg view if reading pane is being shown
-	if (checked) {
-		this._setSelectedItem();
-	}
-
-	this._mailListView._resetColWidth();
 };
 
 ZmConvController.prototype._postHideCallback =

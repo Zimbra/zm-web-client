@@ -158,20 +158,19 @@ function(excludeAttendees) {
 
 ZmCalItemEditView.prototype.isReminderOnlyChanged =
 function() {
-	
+
 	if(!this._hasReminderSupport) { return false; }
-	
+
 	var formValue = this._origFormValueMinusReminder;
 
 	var isDirty = (this._gotAttachments() || this._removedAttachments()) ||
 			this._isDirty ||
 		   (this._formValue(false, true) != formValue);
-		
+
 	var isReminderChanged = (this._origReminderValue != this._reminderSelect.getValue());
-	
+
 	return isReminderChanged && !isDirty;
 };
-
 
 ZmCalItemEditView.prototype.isValid =
 function() {
@@ -333,7 +332,7 @@ function(calItem, mode, firstTime) {
 	// (i.e. html editor) may not have finished initializing yet.
     if (firstTime || this._notesHtmlModeFirstTime) {   // Also, handling HTML mode specially as it takes some time to initialize.
 		var ta = new AjxTimedAction(this, this._finishReset);
-		AjxTimedAction.scheduleAction(ta, 250);
+		AjxTimedAction.scheduleAction(ta, 500);
 	} else {
 		this._finishReset();
 	}
@@ -875,7 +874,7 @@ function(ev) {
 	else
 	{
 		var sd = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
-		this._calItem._recurrence._startDate.setTime(sd.getTime());
+		this._calItem._recurrence.setRecurrenceStartTime(sd.getTime());
 		this._setRepeatDesc(this._calItem);
 	}
 };
@@ -1072,7 +1071,7 @@ function(sd) {
 	}
 	else
 	{
-		calItem._recurrence._startDate.setTime(sd.getTime());
+		calItem._recurrence.setRecurrenceStartTime(sd.getTime());
 		this._setRepeatDesc(calItem);
 	}
 };

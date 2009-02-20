@@ -108,7 +108,7 @@ function(content, startIndex) {
 
 // OVERRIDE IF NEED BE. Generates content inside the <span>
 ZmObjectHandler.prototype._getHtmlContent =
-function(html, idx, obj, context) {
+function(html, idx, obj, context, spanId) {
 	html[idx++] = AjxStringUtil.htmlEncode(obj, true);
 	return idx;
 };
@@ -121,7 +121,7 @@ function(html, idx, obj, spanId, context) {
 	html[idx++] = "' id='";
 	html[idx++] = spanId;
 	html[idx++] = "'>";
-	idx = this._getHtmlContent(html, idx, obj, context);
+	idx = this._getHtmlContent(html, idx, obj, context, spanId);
 	html[idx++] = "</span>";
 	return idx;
 };

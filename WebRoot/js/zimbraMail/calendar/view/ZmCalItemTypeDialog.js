@@ -48,13 +48,19 @@ function() {
 };
 
 ZmCalItemTypeDialog.prototype.initialize =
-function(calItem, mode) {
+function(calItem, mode, type) {
 	this.calItem = calItem;
 	this.mode = mode;
 	this._defaultRadio.checked = true;
 
-	var type = calItem.type == ZmItem.APPT ? ZmMsg.isRecurringAppt : ZmMsg.isRecurringTask;
-	var m = AjxMessageFormat.format(type, [calItem.getName()]);
+	var m;
+	if (type == ZmItem.APPT) {
+		m = (calItem instanceof Array)
+			? ZmMsg.isRecurringApptList
+			: AjxMessageFormat.format(ZmMsg.isRecurringAppt, [calItem.getName()]);
+	} else {
+		m = AjxMessageFormat.format(ZmMsg.isRecurringTask, [calItem.getName()]);
+	}
 	if (mode == ZmCalItem.MODE_EDIT) {
 		this.setTitle(ZmMsg.openRecurringItem);
 		this._questionCell.innerHTML = m + " " + ZmMsg.editApptQuestion;
@@ -67,8 +73,13 @@ function(calItem, mode) {
 		this._seriesMsg.innerHTML = ZmMsg.modifySeries;
 	} else {
 		this.setTitle(ZmMsg.deleteRecurringItem);
-		this._questionCell.innerHTML = m + " " + ZmMsg.deleteApptQuestion;
-		this._instanceMsg.innerHTML = ZmMsg.deleteInstance;
+		if (calItem instanceof Array) {
+			this._questionCell.innerHTML = m + " " + ZmMsg.deleteApptListQuestion;
+			this._instanceMsg.innerHTML = ZmMsg.deleteInstances;
+		} else {
+			this._questionCell.innerHTML = m + " " + ZmMsg.deleteApptQuestion;
+			this._instanceMsg.innerHTML = ZmMsg.deleteInstance;
+		}
 		this._seriesMsg.innerHTML = ZmMsg.deleteSeries;
 	}
 };

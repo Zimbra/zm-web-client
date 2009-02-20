@@ -17,13 +17,13 @@
     </c:choose>
     <fmt:setBundle basename="/messages/ZhMsg" scope='request' />
     
-    <c:set var="selected" value="${empty param.selected ? 'general' : param.selected}"/>
+    <c:set var="selected" value="${empty param.selected ? 'general' : zm:cook(param.selected)}"/>
 
     <c:set var="voiceStatus" value="false"/>
 	<c:if test="${selected eq 'voice' and mailbox.features.voice}">
 		<zm:checkVoiceStatus var="voiceStatus"/>
 	</c:if>
-   <c:set var="prevApp" value="${param.prev}" />
+   <c:set var="prevApp" value="${zm:cook(param.prev)}" />
     <c:choose>
         <c:when test="${zm:actionSet(param, 'actionSave')}">
             <zm:checkCrumb crumb="${param.crumb}"/>
@@ -81,11 +81,11 @@
         </c:when>
         <c:when test="${zm:actionSet(param, 'actionMoveFilterUp') and not empty param.ruleName}">
             <zm:checkCrumb crumb="${param.crumb}"/>
-            <zm:moveFilterRule direction="up" name="${param.ruleName}"/>
+            <zm:moveFilterRule direction="up" name="${zm:cook(param.ruleName)}"/>
         </c:when>
         <c:when test="${zm:actionSet(param, 'actionMoveFilterDown') and not empty param.ruleName}">
             <zm:checkCrumb crumb="${param.crumb}"/>
-            <zm:moveFilterRule direction="down" name="${param.ruleName}"/>
+            <zm:moveFilterRule direction="down" name="${zm:cook(param.ruleName)}"/>
         </c:when>
         <c:when test="${zm:actionSet(param, 'actionFilterSave') and not empty param.frompost}">
             <c:set var="filterSave" value="fail" scope="request"/>
@@ -113,7 +113,7 @@
                 </c:when>
                 <c:when test="${zm:actionSet(param, 'actionEditFilter')}">
                     <zm:checkCrumb crumb="${param.crumb}"/>
-                    <zm:modifyFilterRule originalname="${param.origname}"  rule="${postRule}"/>
+                    <zm:modifyFilterRule originalname="${zm:cook(param.origname)}"  rule="${postRule}"/>
                     <c:set var="filterSave" value="success" scope="request"/>
                 </c:when>
             </c:choose>
