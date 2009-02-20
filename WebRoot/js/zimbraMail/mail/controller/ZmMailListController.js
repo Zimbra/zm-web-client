@@ -437,7 +437,7 @@ function(view, arrowStyle) {
 		ZmListController.prototype._initializeToolBar.call(this, view);
 		this._createViewMenu(view);
 		this._setReplyText(this._toolbar[view]);
-		this._toolbar[view].addFiller();
+		this._toolbar[view].addOp(ZmOperation.FILLER);
 		var tb = new ZmNavToolBar({parent:this._toolbar[view], arrowStyle:arrowStyle, context:view});
 		this._setNavToolBar(tb, view);
 	}
