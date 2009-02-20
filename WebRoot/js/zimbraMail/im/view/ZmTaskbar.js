@@ -51,6 +51,12 @@ function(item, expand) {
 	this.expandedItem = expand ? item : null;
 };
 
+/** Expands or collapses the item */
+ZmTaskbar.prototype.toggleExpanded =
+function(item) {
+	this.expandItem(item, !item.expanded);
+};
+
 /**
  * If there isn't already an expanded item, then the given item is expanded.
  * Otherwise the item is not expanded, and is put in its alert state so the user

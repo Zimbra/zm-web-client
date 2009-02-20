@@ -457,7 +457,7 @@ function(params) {
 		asyncMode: true,
 		noBusyOverlay: true
 	};
-	ZmImApp.INSTANCE.getService().getGateways(serviceCallback, args)
+	ZmImApp.INSTANCE.getService().getGateways(serviceCallback, args);
 };
 
 ZmRoster.prototype._loggedInGatewayCallback =

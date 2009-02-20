@@ -149,9 +149,6 @@ function() {
 	var newItemOps = {};
 	newItemOps[ZmOperation.IM_NEW_CHAT]		= "chat";
 
-	var newOrgOps = {};
-	newOrgOps[ZmOperation.NEW_ROSTER_ITEM] = "buddy";
-
 	var actionCodes = {};
 	actionCodes[ZmKeyMap.NEW_CHAT] = ZmOperation.IM_NEW_CHAT;
 	actionCodes[ZmKeyMap.NEW_ROSTER_ITEM] = ZmOperation.NEW_ROSTER_ITEM;
@@ -160,7 +157,6 @@ function() {
 	ZmApp.registerApp(ZmApp.IM,
 			  { mainPkg	      : "IM",
 			    defaultSort	      : 50,
-			    newOrgOps		  : newOrgOps,
 			    newItemOps        : newItemOps,
 				actionCodes		  : actionCodes
 			  });

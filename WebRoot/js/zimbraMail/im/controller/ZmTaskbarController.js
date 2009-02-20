@@ -43,8 +43,10 @@ ZmTaskbarController = function(components) {
 	this._presenceItem = this._createItem(presenceArgs);
 	this._toolbar.addSeparator();
 
+	this._newBuddySelectionListenerObj = new AjxListener(this, this._newBuddySelectionListener);
 	var newBuddyArgs = {
 		contentClassName: "ZmNewBuddyPopup",
+		selectionListener: this._newBuddySelectionListenerObj,
 		op: ZmId.OP_NEW_ROSTER_ITEM
 	};
 	this._newBuddyItem = this._createItem(newBuddyArgs);
@@ -396,8 +398,16 @@ function(chat, ev) {
 
 ZmTaskbarController.prototype._selectionListener =
 function(ev) {
-	var taskbarItem = ev.dwtObj.parent;
-	this._toolbar.expandItem(taskbarItem, !taskbarItem.expanded);
+	this._toolbar.toggleExpanded(ev.dwtObj.parent);
+};
+
+ZmTaskbarController.prototype._newBuddySelectionListener =
+function(ev) {
+	if (ZmImApp.loggedIn()) {
+		this._toolbar.toggleExpanded(this._newBuddyItem);
+	} else {
+		ZmImApp.INSTANCE.login({ callback: this._newBuddySelectionListenerObj });
+	}
 };
 
 ZmTaskbarController.prototype._createBuddyListCallback =
