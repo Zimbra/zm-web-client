@@ -76,8 +76,10 @@ function(actionMenu, type, id) {
     if (actionMenu) {
 		var menuItem = actionMenu.getMenuItem(ZmOperation.REFRESH);
 		menuItem.setImage("Refresh");
-//		this._resetOperation(actionMenu, ZmOperation.EXPORT_FOLDER, ZmMsg.exportBriefcase);
-//		this._resetOperation(actionMenu, ZmOperation.IMPORT_FOLDER, ZmMsg.importBriefcase);
+
+		// we always enable sharing in case we're in multi-mbox mode
+		this._resetButtonPerSetting(actionMenu, ZmOperation.SHARE_BRIEFCASE, appCtxt.get(ZmSetting.SHARING_ENABLED));
+		this._resetButtonPerSetting(actionMenu, ZmOperation.MOUNT_BRIEFCASE, appCtxt.get(ZmSetting.SHARING_ENABLED));
 	}
 };
 
