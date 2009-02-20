@@ -928,6 +928,7 @@ function(contact, str, doMarkup) {
 
 	if (!contact || ZmContact.isInTrash(contact)) return false;
 
+	var savedMatch;
 	for (var i = 0; i < this._acMatchFields.length; i++) {
 		var value = null;
 		var field = this._acMatchFields[i];
@@ -938,9 +939,12 @@ function(contact, str, doMarkup) {
 			value = fileAs.substring(2);
 		} else {
 			value = ZmContact.getAttr(contact, field);
+			if (value instanceof Array) {
+				value = value[0];
+			}
 		}
 
-		if (value && (value.toLowerCase().indexOf(str) == 0)) {
+		if (value && (typeof value == "string") && (value.toLowerCase().indexOf(str) == 0)) {
 			if (doMarkup) {
 				try {
 					var regex = new RegExp("^(" + str + ")", "i");
@@ -1047,6 +1051,9 @@ function(contact, str, galOnly) {
 			var field = ZmContactList.AC_NAME_FIELDS[i];
 			var val = ZmContact.getAttr(contact, field);
 			if (val) {
+				if (val instanceof Array) {
+					val = val[0];
+				}
 				names.push((match.matchedField == field) ? match.savedMatch : val);
 			}
 		}
