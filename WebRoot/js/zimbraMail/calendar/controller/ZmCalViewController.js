@@ -272,6 +272,8 @@ function(id) {
 
 ZmCalViewController.prototype.handleMailboxChange =
 function() {
+	if (!this._viewMgr) { return; }
+
 	var viewId = this._viewMgr.getCurrentViewName();
 	if (viewId == ZmId.VIEW_CAL_APPT) {
 		this._viewMgr.getCurrentView().close();
