@@ -798,7 +798,7 @@
 
         <property name='jam.file' value='${build.js.dir}/${arg}_all.js'/>
         <property name='jsp.file' value='${build.web.dir}/public/jsp/${arg}.jsp'/>
-        <property name='depends.file' value='${build.js.dir}/${arg}${depends.ext}'/>
+        <property name='depends.file' value='${jam.file}${depends.ext}'/>
 
         <packagedependset>
             <srcdependslist dir='.' files='${depends.file}'/>
@@ -927,7 +927,13 @@ if (ext == null) ext = "";
     </target>
 
     <target name='compress' depends='jam-files' if='build.prod'>
-        <fileset id="js-includes" dir="${build.js.dir}" includes="*_all.js"/>
+	    <property name="compress.includes" value="*_all.js" />
+        <fileset id="js-includes" dir="${build.js.dir}" includes="${compress.includes}" />
+
+	    <taskdef name="try"
+	             classname="com.zimbra.webClient.build.TryTask"
+	             classpath="${build.classes.dir}"
+	    />
 
         <!-- minimize js, prepend copyright, compress -->
         <for param="var">
@@ -952,16 +958,28 @@ if (ext == null) ext = "";
                             <fileset file="@{var}${nodebug.ext}"/>
                         </replaceregexp>
                         <echo>Minimizing to @{var}${jsmin.ext}</echo>
-                        <java jar="${common.lib.dir}/yuicompressor-2.3.4.jar" fork="true" failonerror="true"
-                              output="${build.dir}/yui-compress.out">
-                            <arg value="--line-break"/>
-                            <arg value="0"/>
-                            <arg value="--type"/>
-                            <arg value="js"/>
-                            <arg value="-o"/>
-                            <arg value="@{var}${jsmin.ext}"/>
-                            <arg value="@{var}${nodebug.ext}"/>
-                        </java>
+	                    <try>
+	                        <block>
+		                        <java jar="${common.lib.dir}/yuicompressor-2.3.4.jar" fork="true" failonerror="true"
+		                              output="${build.dir}/yui-compress.out">
+		                            <arg value="--line-break"/>
+		                            <arg value="0"/>
+		                            <arg value="--type"/>
+		                            <arg value="js"/>
+		                            <arg value="-o"/>
+		                            <arg value="@{var}${jsmin.ext}"/>
+		                            <arg value="@{var}${nodebug.ext}"/>
+		                        </java>
+	                        </block>
+		                    <catch>
+			                    <antcall target='compress-test-files'>
+				                    <param name='filename' value='@{var}${depends.ext}' />
+			                    </antcall>
+		                    </catch>
+		                    <finally>
+			                    <!-- do nothing -->
+		                    </finally>
+	                    </try>
                         <echo>Prepending Copyright to @{var}${license.ext}</echo>
                         <concat destfile="@{var}${license.ext}" fixlastline="true">
                             <header filtering="no" trimleading="yes">
@@ -975,6 +993,32 @@ if (ext == null) ext = "";
             </sequential>
         </for>
     </target>
+
+	<target name='compress-test-files'>
+		<fail message='This target cannot be called directly.' unless='filename'/>
+
+		<taskdef name="filelist"
+		         classname="com.zimbra.webClient.build.FilelistTask"
+		         classpath="${build.classes.dir}"
+		/>
+
+		<filelist property="files" file="${filename}" />
+
+		<for list="${files}" param="filename">
+			<sequential>
+				<echo>Testing file: @{filename}</echo>
+				<java jar="${common.lib.dir}/yuicompressor-2.3.4.jar" fork="true" failonerror="true">
+				    <arg value="--line-break"/>
+				    <arg value="0"/>
+				    <arg value="--type"/>
+				    <arg value="js"/>
+				    <arg value="-o"/>
+				    <arg value="${build.dir}/yui-compress.test" />
+				    <arg value="@{filename}"/>
+				</java>
+			</sequential>
+		</for>
+	</target>
 
     <target name='help' depends='init' if='build.prod' unless='help.ignore'>
 		<if><isset property='build.network' />
