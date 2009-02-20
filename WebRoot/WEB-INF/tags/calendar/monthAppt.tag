@@ -22,28 +22,26 @@
         <c:if test="${appt.startTime lt start}"><c:set var="bleft" value='border-left:none;'/></c:if>
         <c:if test="${appt.endTime gt end}"><c:set var="bright" value='border-right:none;'/></c:if>
         <div <c:if test="${not empty bleft or not empty bright}">style="${bleft}${bright}"</c:if>
-             class='ZhCalMonthAllDayAppt${needsAction ? 'New ':' '} ${color}${needsAction ? 'Dark' : 'Light'}'>
-            <c:if test="${param.action ne 'print'}"> <a href="${fn:escapeXml(apptUrl)}"></c:if>${fn:escapeXml(subject)}<c:if test="${param.action ne 'print'}"></a></c:if>
+                class='ZhCalMonthAllDayAppt${needsAction ? 'New ':' '} ${color}${needsAction ? 'Dark' : 'Light'}'>
+                <a href="${fn:escapeXml(apptUrl)}">${fn:escapeXml(subject)}</a>
         </div>
     </c:when>
     <c:otherwise>
         <div class='ZhCalMonthAppt ${color}${needsAction ? 'DarkC' : 'C'}'>
-            <c:if test="${param.action ne 'print'}">    <a href="${fn:escapeXml(apptUrl)}">
-            <c:choose>
-                <c:when test="${appt.startTime lt start}">
-                    &laquo;
-                </c:when>
-                <c:otherwise>
-                    &bull;&nbsp;<fmt:formatDate value="${appt.startDate}" type="time" timeStyle="short"/>
-                </c:otherwise>
-            </c:choose>
-            </c:if>&nbsp;${fn:escapeXml(subject)}
-            <c:if test="${param.action ne 'print'}">
-                <c:if test="${end lt appt.endTime}">
-                    &nbsp;&raquo;
-                </c:if>
-            </c:if>
-        </a>
+            <a href="${fn:escapeXml(apptUrl)}">
+                <c:choose>
+                    <c:when test="${appt.startTime lt start}">
+                        &laquo;
+                    </c:when>
+                    <c:otherwise>
+						&bull;&nbsp;<fmt:formatDate value="${appt.startDate}" type="time" timeStyle="short"/>
+                    </c:otherwise>
+                </c:choose>
+                &nbsp;${fn:escapeXml(subject)}
+				<c:if test="${end lt appt.endTime}">
+					&nbsp;&raquo;
+				</c:if>
+			</a>
         </div>
     </c:otherwise>
 </c:choose>

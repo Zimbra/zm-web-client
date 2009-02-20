@@ -2,21 +2,22 @@
 
   <table style="width: 100%; height: 100%;" cellspacing="0" cellpadding="0">
     <tr>
-      <td style="height: 22px" id="${id}_toolbarLayout"></td>
+      <td colspan=2 style="height: 22px" id="${id}_toolbarLayout"></td>
     </tr>
 
-    <tr><td style="height: 1px"></td></tr>
+    <tr><td colspan=2 style="height: 1px"></td></tr>
 
-    <tr style="height:100%">
-      <td id="${id}_convLayout"></td>
+    <tr>
+      <td colspan=2 id="${id}_convLayout"></td>
     </tr>
 
     <tr>
-      <td style="height: 3px; cursor: s-resize" id="${id}_sash"></td>
+      <td colspan=2 style="height: 3px; cursor: s-resize" id="${id}_sash"></td>
     </tr>
 
     <tr>
-      <td id="${id}_inputLayout"/>
+      <td id="${id}_inputLayout" style="height: 3em"/>
+      <td id="${id}_sendButton" class="ZmSendButton"/>
 	</tr>
   </table>
 
@@ -76,7 +77,7 @@
                 <td valign="middle" align="center">
                   <b>
                     <$= AjxStringUtil.htmlEncode(data.buddy.getDisplayName()) $>
-                    (<$= AjxStringUtil.htmlEncode(data.buddy.getPresence().getShowText()) $>)
+                    (<$= data.buddy.getPresence().getShowText() $>)
                   </b>
                 </td>
                 <td align="right" valign="middle">
@@ -165,8 +166,8 @@
 </template>
 
 <template id="im.Chat#NewRosterItemDlg">
-  <table style="width:305px">
-    <tr id="${id}_serviceParent">
+  <table>
+    <tr>
       <td class="ZmChatDialogField"><$= ZmMsg.imGatewayLabel $></td>
       <td id="${id}_serviceType"></td>
     </tr>
@@ -183,19 +184,11 @@
       <td id="${id}_groups"></td>
       <td id="${id}_groupsDropDown"></td>
     </tr>
-    <tr>
-		<td colspan=3 align=right>
-			<table><tr>
-				<td align="right" id="${id}_okButton"></td>
-				<td align="right" id="${id}_cancelButton"></td>
-			</tr></table>
-		</td>
-    </tr>
   </table>
 </template>
 
 <template id="im.Chat#SubscribeAuthDlg">
-  <table width="250px">
+  <table width="100%">
     <tr>
       <td style="text-align: center; padding-bottom: 10px">
         <$= AjxMessageFormat.format(ZmMsg.imSubscribeAuthRequest, [ data.buddy ]) $>
@@ -238,19 +231,6 @@
   </table>
 </template>
 
-<template id="im.Chat#JiveNotification">
-  <table>
-    <tr>
-      <td nowrap style="text-align: center"><span class="ImgImStartChat inlineIcon">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><$= ZmMsg.imPoweredBy $></td>
-    </tr>
-    <tr>
-      <td class="ZmChatJiveIcon ImgJiveBig" style="text-align: center; padding-top: 10px;">
-          &nbsp;
-      </td>
-    </tr>
-  </table>
-</template>
-
 <template id="im.Chat#NewChatDlg">
   <fieldset>
     <legend><$= ZmMsg.buddies $></legend>
@@ -273,48 +253,16 @@
 	</div>
 </template>
 
-<template id='im.Chat#ZmConferenceDialog'>
-	<div width='320px'>
-		<$= Dwt.CARET_HACK_BEGIN $><input type='text' id='${id}_input' size='30'/><$= Dwt.CARET_HACK_END $>
-	</div>
-	<div width='320px' id='${id}_overview'/>
-</template>
-
-<template id='im.Chat#ZmNewConferenceRoomDialog'>
-	<table width='360px' cellpadding=2 cellspacing=2>
-		<tr>
-			<td class="ZmChatDialogField"><$= ZmMsg.imRoomNameLabel $></td>
-			<td class="ZmChatDialogInputCell"><div id="${id}_NAME" tabindex='10'/></td>
-		</tr>
-		<tr>
-			<td colspan=2>
-				<hr>
-				<div class="ZOptionsInfo"><$= ZmMsg.imRoomSettings $></div>
-			</td>
-		</tr>
-		<tr>
-			<td class="ZmChatDialogField"><$= ZmMsg.imPermanentLabel $></td>
-			<td><div id="${id}_PERMANENT" tabindex='20'/></td>
-		</tr>
-		<tr>
-			<td class="ZmChatDialogField"><$= ZmMsg.imAnonymousLabel $></td>
-			<td><div id="${id}_ANONYMOUS" tabindex='30'/></td>
-		</tr>
-		<tr>
-			<td colspan=2>
-				<hr>
-				<div class="ZOptionsInfo"><$= ZmMsg.imPasswordInfo $></div>
-			</td>
-		</tr>
-		<tr>
-			<td class="ZmChatDialogField"><$= ZmMsg.passwordLabel $></td>
-			<td class="ZmChatDialogInputCell"><div id="${id}_PASSWORD" tabindex='40'/></td>
-		</tr>
-		<tr>
-			<td class="ZmChatDialogField"><$= ZmMsg.passwordConfirmLabel $></td>
-			<td class="ZmChatDialogInputCell"><div id="${id}_CONFIRM_PASSWORD" tabindex='50'/></td>
-		</tr>
-	</table>
+<template id='im.Chat#ZmRootBuddyItem'>
+	<div class='${divClassName}' id='${id}_div'>
+		<table id='${id}_table' border=0 cellpadding=0 cellspacing=0>
+			<tr>
+				<td align=center nowrap id='${id}_nodeCell'></td>
+				<td nowrap class='imageCell' id='${id}_imageCell'></td>
+				<td nowrap class='${textClassName}' id='${id}_textCell' width="100%"></td>
+				<td class='${textClassName} FakeAnchor' style="padding-right:4px"><div id='${id}_newBuddyButton' class="ImgNewContact"/></td>
+			</tr>
+		</table>
 	</div>
 </template>
 
@@ -328,100 +276,13 @@
 	</div>
 </template>
 
-<template id='im.Chat#ZmYahooLoginDialog'>
-	<table class="ZmImYahooLogin">
-		<tr>
-			<td colspan="2" style="text-align:center">
-				<div id="${id}_messageBox" class="ZmImYahooMessage">
-					<table width="100%">
-						<tr>
-							<td width="40" valign="top">
-								<$= AjxImg.getImageHtml("Critical_32") $>
-							</td>
-							<td class="errorText" id="${id}_messageText">
-								<$= AjxImg.getImageHtml("ImgCritical_32") $>
-							</td>
-						</tr>
-					</table>
-				</div>
-			</td>
-		</tr>
-		<tr>
-			<td class="ImYahooLoginLabel"><$=ZmMsg.imScreenNameYahoo $></td>
-			<td class="ImYahooLoginValue"><$= Dwt.CARET_HACK_BEGIN $><input type="text" id="${id}_nameField" size="25"/><$= Dwt.CARET_HACK_END $>
-		</tr>
-		<tr>
-			<td class="ImYahooLoginLabel"><$=ZmMsg.passwordLabel$></td>
-			<td class="ImYahooLoginValue"><$= Dwt.CARET_HACK_BEGIN $><input type="password" id="${id}_passwordField" size="25"/><$= Dwt.CARET_HACK_END $>
-		</tr>
-		<tr>
-			<td>&nbsp;</td>
-			<td class="ImYahooLoginValue">
-				<input type='checkbox' id='${id}_rememberIdCheckbox'/>&nbsp;&nbsp;
-				<label for='${id}_rememberIdCheckbox'><$=ZmMsg.imRememberYahoo $></label>
-			</td>
-		</tr>
-	</table>
+<template id='im.Chat#ZmStatusImageItem'>
+	<table class='ZWidgetTable ZMenuItemTable ZMenuItemBorder' cellspacing=0 cellpadding=0><tr>
+		<td id='${id}_check'	 	class='ZCheckIcon'><div></div></td>
+		<td id='${id}_left_icon'	class='ZLeftIcon ZWidgetIcon'><div></div></td>
+		<td id='${id}_status_icon'	class='ZLeftIcon ZWidgetIcon'><div></div></td>
+		<td id='${id}_title'		class='ZWidgetTitle'></td>
+		<td id='${id}_dropdown'		class='ZDropDown'><div></div></td>
+	</tr></table>
 </template>
 
-<template id='im.Chat#ZmChatWidgetEditor'>
-	<table cellspcing=0 cellpadding=0>
-		<tr><td id='${id}_toolBar' colspan=2 /></tr>
-		<tr><td style='width:100%' id='${id}_textarea' /> <td style='width:60px' id='${id}_send'/></tr>
-	</table>
-</template>
-
-<template id='im.Chat#ZmGatewayItem'>
-	<div style="width:260px;padding:5px">
-		<div id='${id}_notLoggedIn' style='display:block'>
-			<$=ZmMsg.imGatewayNotLoggedInHeader $><br>
-			<br>
-			<table cellpadding=0 cellspacing=2>
-				<tr>
-					<td class="ImYahooLoginLabel"><$=ZmMsg.imScreenNameYahoo $></td>
-					<td class="ImYahooLoginValue"><$= Dwt.CARET_HACK_BEGIN $><input type="text" id="${id}_nameField" size="25"/><$= Dwt.CARET_HACK_END $>
-				</tr>
-				<tr>
-					<td class="ImYahooLoginLabel"><$=ZmMsg.passwordLabel$></td>
-					<td class="ImYahooLoginValue"><$= Dwt.CARET_HACK_BEGIN $><input type="password" id="${id}_passwordField" size="25"/><$= Dwt.CARET_HACK_END $>
-				</tr>
-				<tr>
-					<td colspan=2 align="right" style="padding-top:3px"><div id="${id}_loginButton" value="Login"/></td>
-				</tr>
-			</table>
-
-
-		</div>
-		<div id='${id}_loggedIn' style='display:block'>
-			<span id="${id}_loggedInHeader"></span><br>
-			<table cellpadding=0 cellspacing=2>
-				<tr>
-					<td colspan=2 align="right" style="padding-top:3px">
-						<table><tr>
-							<td><div id="${id}_logoutButton"/></td>
-							<td><div id="${id}_loginDifferent"/></td>
-						</tr></table>
-					</td>
-				</tr>
-			</table>
-		</div>
-		<div id='${id}_disconnected' style='display:block'>
-			<$=ZmMsg.imGatewayDisconnectedHeader $><br>
-			<table cellpadding=0 cellspacing=2>
-				<tr>
-					<td colspan=2 align="right" style="padding-top:3px">
-						<table><tr>
-							<td><div id="${id}_disconnectedLogoutButton"/></td>
-							<td><div id="${id}_reconnectButton"/></td>
-						</tr></table>
-					</td>
-				</tr>
-			</table>
-		</div>
-	</div>
-</template>
-
-<template id='im.Chat#ZmTaskbarPopup'>
-	<div id="${id}_title" class="ZmTaskbarPopupTitle">${title}</div>
-	<div id="${id}_content" class="ZmTaskbarPopupContent"></div>
-</template>

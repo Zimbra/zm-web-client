@@ -63,19 +63,15 @@ function(setup) {
 ZmPref.loadCsvFormats =
 function(setup){
     var formats = appCtxt.get(ZmSetting.AVAILABLE_CSVFORMATS);
-	if (!formats._options) {
-		var options = formats._options = [];
-		var displayOptions = formats._displayOptions = [];
-		for(var i=0; i<formats.length; i++){
-			options.push(formats[i]);
-		}
-		options.sort(ZmPref.__BY_CSVFORMAT);
-		for(var i=0; i < options.length; i++){
-			displayOptions.push((ZmMsg[options[i]] || options[i]));
-		}
+	var options = setup.options = [];
+	var displayOptions = setup.displayOptions = [];
+    for(var i=0; i<formats.length; i++){
+        options.push(formats[i]);
 	}
-	setup.options = formats._options;
-	setup.displayOptions = formats._displayOptions;
+	options.sort(ZmPref.__BY_CSVFORMAT);
+	for(var i=0; i < options.length; i++){
+        displayOptions.push((ZmMsg[options[i]] || options[i]));
+    }
 };
 ZmPref.__BY_CSVFORMAT = function(a, b) {
 	if (a.match(/^zimbra/)) return -1;
@@ -395,7 +391,6 @@ function(prefsId, list) {
  * Available properties are:
  *
  * displayName			descriptive text
- * displayFunc			A function that returns the descriptive text. Only implemented for checkboxes.
  * displayContainer		type of form input: checkbox, select, input, or textarea
  * options				values for a select input
  * displayOptions		text for the select input's values

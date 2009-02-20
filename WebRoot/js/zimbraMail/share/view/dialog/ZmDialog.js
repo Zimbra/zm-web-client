@@ -74,10 +74,8 @@ function() {
 		// tab group filled in here rather than in the constructor b/c we need
 		// all the content fields to have been created
 		var members = this._getTabGroupMembers();
-		if (members && members.length) {
-			for (var i = 0; i < members.length; i++) {
-				this._tabGroup.addMember(members[i], i);
-			}
+		for (var i = 0; i < members.length; i++) {
+			this._tabGroup.addMember(members[i], i);
 		}
 		this._tabGroupComplete = true;
 	}
@@ -139,9 +137,7 @@ function(params) {
 			overviewId: overviewId,
 			overviewClass: "dialogOverview",
 			headerClass: "DwtTreeItem",
-			noTooltips: true,
-			treeStyle: params.treeStyle,
-			treeIds: params.treeIds
+			noTooltips: true
 		};
 		overview = this._overview[overviewId] = this._opc.createOverview(ovParams);
 		this._renderOverview(overview, params.treeIds, params.omit, params.noRootSelect, params.account);
@@ -156,7 +152,6 @@ function(params) {
 		}
 		this._curOverviewId = overviewId;
 	}
-	return overview;
 };
 
 /**
@@ -172,7 +167,7 @@ function(params) {
  */
 ZmDialog.prototype._renderOverview =
 function(overview, treeIds, omit, noRootSelect, account) {
-	overview.set(treeIds, omit, account, true);
+	overview.set(treeIds, omit, account);
 	if (!noRootSelect) {
 		for (var i = 0; i < treeIds.length; i++) {
 			var treeView = overview.getTreeView(treeIds[i]);

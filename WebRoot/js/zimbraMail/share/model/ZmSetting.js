@@ -82,14 +82,12 @@ ZmSetting.D_LIST		= "list";
 ZmSetting.D_NONE		= "NONE";	// placeholder setting
 
 // constants used as setting values
-// TODO: these should be defined in their respective apps
 ZmSetting.ACL_AUTH				= "all";
 ZmSetting.ACL_GROUP				= "grp";
 ZmSetting.ACL_NONE				= "none";
 ZmSetting.ACL_PUBLIC			= "pub";
 ZmSetting.ACL_USER				= "usr";
 ZmSetting.CAL_DAY				= "day";
-ZmSetting.CAL_LIST				= "list";
 ZmSetting.CAL_MONTH				= "month";
 ZmSetting.CAL_WEEK				= "week";
 ZmSetting.CAL_WORK_WEEK			= "workWeek";
@@ -128,8 +126,6 @@ ZmSetting.PROTO_HTTPS			= "https:";
 ZmSetting.PROTO_MIXED			= "mixed:";
 ZmSetting.RIGHT_VIEW_FREE_BUSY	= "viewFreeBusy";
 ZmSetting.RIGHT_INVITE			= "invite";
-ZmSetting.RP_BOTTOM				= "bottom";					// zimbraPrefReadingPaneLocation
-ZmSetting.RP_RIGHT				= "right";
 ZmSetting.SIG_INTERNET			= "internet";				// zimbraPrefMailSignatureStyle
 ZmSetting.SIG_OUTLOOK			= "outlook";
 
@@ -234,67 +230,60 @@ function(key) {
 };
 
 /**
- * Sets the current value of this setting, performing any necessary data type conversion.
- *
- * @param value			the new value for the setting
- * @param key 			optional key for use by hash table data type
- * @param setDefault		if true, also set the default value
- * @param skipNotify		if true, don't notify listeners
- * @param skipImplicit		if true, don't check for change to implicit pref
- */
+* Sets the current value of this setting, performing any necessary data type conversion.
+*
+* @param value			the new value for the setting
+* @param key 			optional key for use by hash table data type
+* @param setDefault		if true, also set the default value
+* @param skipNotify		if true, don't notify listeners
+*/
 ZmSetting.prototype.setValue =
-function(value, key, setDefault, skipNotify, skipImplicit) {
-
-	var newValue = value;
-	var changed = Boolean(newValue != this.value);
+function(value, key, setDefault, skipNotify) {
+	if (ZmSetting.IS_IMPLICIT[this.id]) {
+		ZmSetting.CHANGED_IMPLICIT[this.id] = true;
+	}
 	if (this.dataType == ZmSetting.D_STRING) {
-		this.value = newValue;
+		this.value = value;
 	} else if (this.dataType == ZmSetting.D_INT) {
-		newValue = parseInt(value);
-		if (isNaN(newValue)) { // revert to string if NaN
-			newValue = value;
+		this.value = parseInt(value);
+		if (isNaN(this.value)) { // revert to string if NaN
+			this.value = value;
 		}
-		changed = Boolean(newValue != this.value);
-		this.value = newValue;
 	} else if (this.dataType == ZmSetting.D_BOOLEAN) {
-		if (typeof(newValue) == "string") {
-			newValue = (newValue.toLowerCase() === "true");
+		if (typeof(value) == "string") {
+			this.value = (value.toLowerCase() == "true");
+		} else {
+			this.value = value;
 		}
-		changed = Boolean(newValue != this.value);
-		this.value = newValue;
 	} else if (this.dataType == ZmSetting.D_LDAP_TIME) {
-		var lastChar = (newValue.toLowerCase) ? lastChar = (newValue.toLowerCase()).charAt(newValue.length-1) : null;
-		var num = parseInt(newValue);
+		var lastChar = (value.toLowerCase) ? lastChar = (value.toLowerCase()).charAt(value.length-1) : null;
+		var num = parseInt(value);
 		// convert to seconds
 		if (lastChar == 'd') {
-			newValue = num * 24 * 60 * 60;
+			this.value = num * 24 * 60 * 60;
 		} else if (lastChar == 'h') {
-			newValue = num * 60 * 60;
+			this.value = num * 60 * 60;
 		} else if (lastChar == 'm') {
-			newValue = num * 60;
+			this.value = num * 60;
 		} else {
-			newValue = num;	// default
+			this.value = num;	// default
 		}
-		changed = Boolean(newValue != this.value);
-		this.value = newValue;
 	} else if (this.dataType == ZmSetting.D_HASH) {
 		if (key) {
-			if (newValue) {
-				this.value[key] = newValue;
+			if (value) {
+				this.value[key] = value;
 			} else {
 				delete this.value[key];
 			}
 		} else {
-			this.value = newValue;
+			this.value = value;
 		}
-		changed = true;
 	} else if (this.dataType == ZmSetting.D_LIST) {
-		if (newValue instanceof Array) {
-			this.value = newValue;
+		if (value instanceof Array) {
+			this.value = value;
 		} else {
-			this.value.push(newValue);
+			this.value.push(value);
 		}
-		changed = true;
 	}
 
 	if (setDefault) {
@@ -305,10 +294,6 @@ function(value, key, setDefault, skipNotify, skipImplicit) {
 		}
 	}
 	
-	if (ZmSetting.IS_IMPLICIT[this.id] && changed && !skipImplicit) {
-		ZmSetting.CHANGED_IMPLICIT[this.id] = true;
-	}
-
 	// Setting an internal pref is equivalent to saving it, so we should notify
 	if (!this.name && !skipNotify) {
 		this._notify(ZmEvent.E_MODIFY);

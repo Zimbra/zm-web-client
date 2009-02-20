@@ -278,6 +278,11 @@ function(obj) {
 	ZmMailItem.prototype.notifyModify.apply(this, arguments);
 };
 
+ZmConv.prototype.getPrintHtml =
+function(preferHtml, callback) {
+	ZmConvListView.getPrintHtml(this, preferHtml, callback);
+};
+
 ZmConv.prototype._checkFlags = 
 function(flags) {
 	var msgs = this.msgs.getArray();
@@ -378,15 +383,6 @@ function(folderId) {
 	}
 	this.folders = {};
 	this.folders[folderId] = true;
-};
-
-ZmConv.prototype.getMsgList =
-function(offset, ascending) {
-	var a = this.msgs.getArray().slice(offset || 0);
-	if (ascending) {
-		a.reverse();
-	}
-	return a;
 };
 
 /**

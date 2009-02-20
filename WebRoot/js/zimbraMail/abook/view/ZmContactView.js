@@ -458,9 +458,7 @@ function() {
 	if (this._contact.id == null) {
 		var clc = AjxDispatcher.run("GetContactListController");
 		match = clc._folderId;
-	}
-
-    if(this._contact.id != null || !match) {
+	} else {
 		match = this._contact.addrbook ? this._contact.addrbook.id : ZmFolder.ID_CONTACTS;
 	}
 
@@ -536,7 +534,7 @@ function() {
 
 	// notify zimlets that a new contact is being shown.
 	if (appCtxt.zimletsPresent()) {
-		appCtxt.getZimletMgr().notifyZimlets("onContactEdit", [this, this._contact, this._htmlElId]);
+		appCtxt.getZimletMgr().notifyZimlets("onContactEdit", this, this._contact, this._htmlElId);
 	}
 };
 
@@ -921,4 +919,15 @@ function(ev) {
 		}
 	}
 	return true;
+};
+
+ZmContactView.getPrintHtml =
+function(contact, abridged) {
+	// make sure it's a real ZmContact
+	var real = contact.list._realizeContact(contact);
+	var subs = {
+		contact: real,
+		abridged: abridged
+	};
+	return (AjxTemplate.expand("abook.Contacts#PrintContact", subs));
 };
