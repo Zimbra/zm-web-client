@@ -511,16 +511,13 @@ function(ev) {
 			}
 			var args = {
 				buttonConstructor: ZmStatusImageButton,
-				contentCalback: new AjxCallback(this, this._createGatewayContentCallback, [gateway]),
-				selectionListener: new AjxListener(this, this._gatewaySelectionListener, [gateway]),
+				contentClassName: "ZmGatewayPopup",
+				data: gateway,
 				rightAlign: true
 			};
 			var item = this._createItem(args);
 			item.button.setImage("WebSearch");  // TODO appropriately sized interop icons.
-			this._gatewayData[gateway.type] = {
-				item: item,
-				baseId: [ZmId.TASKBAR, gateway.type].join("|")
-			};
+			this._gatewayData[gateway.type] = { item: item };
 			gateway.addListener(ZmImGateway.EVENT_SET_STATE, new AjxListener(this, this._gatewayEventListener, [gateway]));
 		}
 		this._updateGatewayButton(gateway);
@@ -530,107 +527,6 @@ function(ev) {
 ZmTaskbarController.prototype._gatewayEventListener =
 function(gateway) {
 	this._updateGatewayButton(gateway);
-};
-
-ZmTaskbarController.prototype._gatewaySelectionListener =
-function(gateway, ev) {
-	var taskbarItem = ev.dwtObj.parent;
-	this._toolbar.expandItem(taskbarItem, !taskbarItem.expanded);
-	if (taskbarItem.expanded) {
-		this._initializeGatewayContent(gateway);
-	}
-};
-
-ZmTaskbarController.prototype._initializeGatewayContent =
-function(gateway) {
-	var data = this._gatewayData[gateway.type];
-	var showId;
-	if (gateway.getState() == ZmImGateway.STATE.BOOTED_BY_OTHER_LOGIN) {
-		showId = "_disconnected";
-	} else if (!gateway.isOnline()) {
-		showId = "_notLoggedIn";
-		Dwt.byId(data.baseId + "_nameField").value = "";
-		Dwt.byId(data.baseId + "_passwordField").value = "";
-	} else {
-		showId = "_loggedIn";
-		this._loggedInHeader = this._loggedInHeader || new AjxMessageFormat(ZmMsg.imGatewayLoggedInHeader);
-		Dwt.byId(data.baseId + "_loggedInHeader").innerHTML = this._loggedInHeader.format([gateway.nick]);
-	}
-	var ids = ["_disconnected", "_notLoggedIn", "_loggedIn"];
-	for (var i = 0, count = ids.length; i < count; i++) {
-		Dwt.byId(data.baseId + ids[i]).style.display = ids[i] == showId ? "block" : "none";
-	}
-};
-
-ZmTaskbarController.prototype._createGatewayContentCallback =
-function(gateway, item, contentEl) {
-	contentEl.innerHTML = AjxTemplate.expand("im.Chat#ZmGatewayItem", { id: this._gatewayData[gateway.type].baseId });
-	var data = this._gatewayData[gateway.type];
-	var button = new DwtButton({ parent: item, parentElement: data.baseId + "_loginButton" });
-	button.setText(ZmMsg.login);
-	button.addSelectionListener(new AjxListener(this, this._gatewayLoginListener, [gateway]));
-
-	button = new DwtButton({ parent: item, parentElement: data.baseId + "_logoutButton" });
-	button.setText(ZmMsg.logOff);
-	var logoutListener = new AjxListener(this, this._gatewayLogoutListener, [gateway]);
-	button.addSelectionListener(logoutListener);
-
-	button = new DwtButton({ parent: item, parentElement: data.baseId + "_loginDifferent" });
-	button.setText(ZmMsg.imLoginDifferent);
-	button.addSelectionListener(new AjxListener(this, this._gatewayLoginDifferentListener, [gateway]));
-
-	button = new DwtButton({ parent: item, parentElement: data.baseId + "_disconnectedLogoutButton" });
-	button.setText(ZmMsg.logOff);
-	button.addSelectionListener(logoutListener);
-
-	button = new DwtButton({ parent: item, parentElement: data.baseId + "_reconnectButton" });
-	button.setText(ZmMsg.imReconnectCaps);
-	button.addSelectionListener(new AjxListener(this, this._gatewayReconnectListener, [gateway]));
-};
-
-ZmTaskbarController.prototype._gatewayLoginListener =
-function(gateway) {
-	var data = this._gatewayData[gateway.type];
-	var id = Dwt.byId(data.baseId + "_nameField").value;
-	var password = Dwt.byId(data.baseId + "_passwordField").value;
-	ZmImApp.INSTANCE.getRoster().registerGateway(gateway.type, id, password);
-	this._toolbar.expandItem(data.item, false);
-};
-
-ZmTaskbarController.prototype._gatewayLogoutListener =
-function(gateway) {
-	ZmImApp.INSTANCE.getRoster().unregisterGateway(gateway.type);
-	var data = this._gatewayData[gateway.type];
-	this._toolbar.expandItem(data.item, false);
-};
-
-ZmTaskbarController.prototype._gatewayLoginDifferentListener =
-function(gateway) {
-	var data = this._gatewayData[gateway.type];
-	if (data.unregisterListener) {
-		return;
-	}
-	ZmImApp.INSTANCE.getRoster().unregisterGateway(gateway.type);
-	data.unregisterListener = new AjxListener(this, this._loginDifferentUnregisterListener, [gateway]);
-	gateway.addListener(ZmImGateway.EVENT_SET_STATE, data.unregisterListener);
-};
-
-ZmTaskbarController.prototype._loginDifferentUnregisterListener =
-function(gateway) {
-	var data = this._gatewayData[gateway.type];
-	gateway.removeListener(ZmImGateway.EVENT_SET_STATE, data.unregisterListener);
-	delete data.unregisterListener;
-	if (data.item && data.item.expanded) {
-		this._initializeGatewayContent(gateway);
-	}
-};
-
-ZmTaskbarController.prototype._gatewayReconnectListener =
-function(gateway) {
-	// This doesn't seem to work. I'm quitting thought to work on more urgent stuff.
-	var data = this._gatewayData[gateway.type];
-	ZmImApp.INSTANCE.getRoster().reconnectGateway(gateway);
-	this._toolbar.expandItem(data.item, false);
 };
 
 ZmTaskbarController.prototype._updateGatewayButton =
