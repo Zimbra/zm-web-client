@@ -127,6 +127,7 @@ function() {
 							 {mainPkg:				"Preferences",
 							  nameKey:				"preferences",
 							  icon:					"Preferences",
+							  textPrecedence:		50,
 							  chooserTooltipKey:	"goToOptions",
 							  button:				appCtxt.isChildWindow ? null : ZmAppChooser.B_OPTIONS,
 							  overviewTrees:		[ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG],

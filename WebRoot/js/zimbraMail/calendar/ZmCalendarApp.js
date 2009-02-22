@@ -370,6 +370,7 @@ function() {
 							 {mainPkg:				"Calendar",
 							  nameKey:				"calendar",
 							  icon:					"CalendarApp",
+							  textPrecedence:		60,
 							  chooserTooltipKey:	"goToCalendar",
 							  viewTooltipKey:		"displayCalendar",
 							  defaultSearch:		ZmItem.APPT,

@@ -281,6 +281,7 @@ function() {
 							 {mainPkg:				"Contacts",
 							  nameKey:				"addressBook",
 							  icon:					"ContactsApp",
+							  textPrecedence:		40,
 							  chooserTooltipKey:	"goToContacts",
 							  viewTooltipKey:		"displayContacts",
 							  defaultSearch:		ZmItem.CONTACT,

@@ -718,12 +718,14 @@ function(xsltUrl, doc) {
 	return AjxXmlDoc.createFromDom(ret);
 };
 
-ZmZimletBase.prototype.createApp = function(label, image, tooltip) {
+ZmZimletBase.prototype.createApp =
+function(label, image, tooltip) {
+
 	AjxDispatcher.require("ZimletApp");
 
 	var appName = [this.name, Dwt.getNextId()].join("_");
 	var controller = appCtxt.getAppController();
-	controller.getAppChooser().addButton(appName, label, image, tooltip);
+	controller.getAppChooser().addButton(appName, {text:label, image:image, tooltip:tooltip});
 
 	// TODO: Do we have to call ZmApp.registerApp?
 

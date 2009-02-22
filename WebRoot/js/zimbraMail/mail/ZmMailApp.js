@@ -746,6 +746,7 @@ function() {
 							 {mainPkg:				"MailCore",
 							  nameKey:				"mail",
 							  icon:					"MailApp",
+							  textPrecedence:		70,
 							  chooserTooltipKey:	"goToMail",
 							  viewTooltipKey:		"displayMailToolTip",
 							  defaultSearch:		appCtxt.isChildWindow ? null : ZmId.SEARCH_MAIL,

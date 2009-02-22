@@ -133,6 +133,7 @@ function() {
 							 {mainPkg:				"Tasks",
 							  nameKey:				"tasks",
 							  icon:					"TaskList",
+							  textPrecedence:		20,
 							  chooserTooltipKey:	"goToTasks",
 							  defaultSearch:		ZmItem.TASK,
 							  organizer:			ZmOrganizer.TASKS,

@@ -206,9 +206,9 @@ ZmSkin.prototype = {
 		}
 	},
 	
-	_reflowApp : function (resetToolbar) {
+	_reflowApp : function () {
 		if (window._zimbraMail) {
-			window._zimbraMail.getAppViewMgr().fitAll(resetToolbar);
+			window._zimbraMail.getAppViewMgr().fitAll();
 		}
 	},
 	

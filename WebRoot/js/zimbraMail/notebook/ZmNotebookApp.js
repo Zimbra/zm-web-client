@@ -174,6 +174,7 @@ function() {
 							 {mainPkg:				"Notebook",
 							  nameKey:				"documents",
 							  icon:					"NoteApp",
+							  textPrecedence:		10,
 							  chooserTooltipKey:	"goToDocuments",
 							  defaultSearch:		ZmItem.PAGE,
 							  organizer:			ZmOrganizer.NOTEBOOK,

@@ -74,6 +74,8 @@ ZmApp.BUTTON_ID				= {};	// ID for app button on app chooser toolbar
 ZmApp.MAIN_PKG				= {};	// main package that composes the app
 ZmApp.NAME					= {};	// msg key for app name
 ZmApp.ICON					= {};	// name of app icon class
+ZmApp.TEXT_PRECEDENCE		= {};	// order for removing button text
+ZmApp.IMAGE_PRECEDENCE		= {};	// order for removing button image
 ZmApp.QS_ARG				= {};	// arg for 'app' var in QS to jump to app
 ZmApp.QS_ARG_R				= {};
 ZmApp.CHOOSER_TOOLTIP		= {};	// msg key for app view menu tooltip
@@ -124,27 +126,30 @@ function() {
  * false (such as 0 or an empty string) will not do anything.
  * 
  * @param app				[constant]	app ID
- * @param mainPkg			[string]	main package that contains the app
- * @param nameKey			[string]	msg key for app name
- * @param icon				[string]	name of app icon class
- * @param chooserTooltipKey	[string]	msg key for app tooltip
- * @param viewTooltipKey	[string]	msg key for app view menu tooltip
- * @param defaultSearch		[constant]	type of item to search for in the app
- * @param organizer			[constant]	main organizer for this app
- * @param overviewTrees		[array]		list of tree IDs to show in overview
- * @param showZimlets		[boolean]	if true, show Zimlet tree in overview
- * @param assistants		[hash]		hash of assistant class names and required packages
- * @param searchTypes		[array]		list of types of saved searches to show in overview
- * @param gotoActionCode	[constant]	key action for jumping to this app
- * @param newActionCode		[constant]	default "new" action code
- * @param actionCodes		[hash]		keyboard actions mapped to operations
- * @param newItemOps		[hash]		IDs of operations that create a new item, and their text keys
- * @param newOrgOps			[hash]		IDs of operations that create a new organizer, and their text keys
- * @param qsViews			[array]		list of views to handle in query string
- * @param chooserSort		[int]		controls order of apps in app chooser toolbar
- * @param defaultSort		[int]		controls order in which app is chosen as default start app
- * @param trashViewOp		[constant]	menu choice for "Show Only ..." in Trash view
- * @param upsellUrl			[string]	URL for content of upsell
+ * @param params			[hash]		hash of params:
+ *        mainPkg			[string]	main package that contains the app
+ *        nameKey			[string]	msg key for app name
+ *        icon				[string]	name of app icon class
+ *        textPrecedence	[int]		order for removing button text
+ *        imagePrecedence	[int]		order for removing button image
+ *        chooserTooltipKey	[string]	msg key for app tooltip
+ *        viewTooltipKey	[string]	msg key for app view menu tooltip
+ *        defaultSearch		[constant]	type of item to search for in the app
+ *        organizer			[constant]	main organizer for this app
+ *        overviewTrees		[array]		list of tree IDs to show in overview
+ *        showZimlets		[boolean]	if true, show Zimlet tree in overview
+ *        assistants		[hash]		hash of assistant class names and required packages
+ *        searchTypes		[array]		list of types of saved searches to show in overview
+ *        gotoActionCode	[constant]	key action for jumping to this app
+ *        newActionCode		[constant]	default "new" action code
+ *        actionCodes		[hash]		keyboard actions mapped to operations
+ *        newItemOps		[hash]		IDs of operations that create a new item, and their text keys
+ *        newOrgOps			[hash]		IDs of operations that create a new organizer, and their text keys
+ *        qsViews			[array]		list of views to handle in query string
+ *        chooserSort		[int]		controls order of apps in app chooser toolbar
+ *        defaultSort		[int]		controls order in which app is chosen as default start app
+ *        trashViewOp		[constant]	menu choice for "Show Only ..." in Trash view
+ *        upsellUrl			[string]	URL for content of upsell
  */
 ZmApp.registerApp =
 function(app, params) {
@@ -152,6 +157,8 @@ function(app, params) {
 	if (params.mainPkg)				{ ZmApp.MAIN_PKG[app]			= params.mainPkg; }
 	if (params.nameKey)				{ ZmApp.NAME[app]				= params.nameKey; }
 	if (params.icon)				{ ZmApp.ICON[app]				= params.icon; }
+	if (params.textPrecedence)		{ ZmApp.TEXT_PRECEDENCE[app]	= params.textPrecedence; }
+	if (params.imagePrecedence)		{ ZmApp.IMAGE_PRECEDENCE[app]	= params.imagePrecedence; }
 	if (params.chooserTooltipKey)	{ ZmApp.CHOOSER_TOOLTIP[app]	= params.chooserTooltipKey; }
 	if (params.viewTooltipKey)		{ ZmApp.VIEW_TOOLTIP[app]		= params.viewTooltipKey; }
 	if (params.defaultSearch)		{ ZmApp.DEFAULT_SEARCH[app]		= params.defaultSearch; }

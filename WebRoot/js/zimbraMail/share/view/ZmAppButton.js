@@ -24,15 +24,16 @@
  *
  * @author Conrad Damon
  */
-ZmAppButton = function(parent, className, icon, text, id) {
-	if (arguments.length == 0) return;
+ZmAppButton = function(params) {
 
-    var style = DwtLabel.IMAGE_LEFT;
-    DwtButton.call(this, {parent:parent, style:style, className:className,
-    					  posStyle:DwtControl.RELATIVE_STYLE, id:id});
+	if (arguments.length == 0) { return; }
 
-    this.setImage(icon);
-    this.setText(text);
+    params.style = DwtLabel.IMAGE_LEFT;
+	params.posStyle = DwtControl.RELATIVE_STYLE;
+    DwtButton.call(this, params);
+
+    this.setImage(params.image);
+    this.setText(params.text);
 };
 
 ZmAppButton.prototype = new DwtButton;
@@ -53,12 +54,14 @@ ZmAppButton.prototype.TEMPLATE = "share.Widgets#ZmAppChooserButton";
 // Public methods
 //
 
-ZmAppButton.prototype.setSelected = function(selected) {
+ZmAppButton.prototype.setSelected =
+function(selected) {
     this.isSelected = selected;
     this.setDisplayState(selected ? DwtControl.SELECTED : DwtControl.NORMAL);
 };
 
-ZmAppButton.prototype.setDisplayState = function(state) {
+ZmAppButton.prototype.setDisplayState =
+function(state) {
     if (this.isSelected && state != DwtControl.SELECTED) {
         state = [DwtControl.SELECTED, state].join(" ");
     }
@@ -72,7 +75,7 @@ function() {
 
 ZmAppButton.prototype.handleKeyAction =
 function(actionCode, ev) {
-    DBG.println("ZmAppButton.prototype.handleKeyAction");
+
 	switch (actionCode) {
 
 		case DwtKeyMap.SELECT:

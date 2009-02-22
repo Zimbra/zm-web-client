@@ -107,7 +107,8 @@ function() {
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
 	elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[this._currentView];
 	this._setView({view:this._currentView, elements:elements, clear:appCtxt.isChildWindow,
-				   tabParams:{id:this.viewId, label:ZmMsg.message, image:"MessageView", tooltip:ZmMsg.message}});
+				   tabParams:{id:this.viewId, text:ZmMsg.message, image:"MessageView",
+							  textPrecedence:85, tooltip:ZmMsg.message}});
 };
 
 ZmMsgController.prototype.getKeyMapName =

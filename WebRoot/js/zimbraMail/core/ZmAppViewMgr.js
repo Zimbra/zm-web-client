@@ -492,7 +492,7 @@ function(viewId, force, switchTab) {
 	if (this._isTabView[viewId]) {
 		var tp = this._tabParams[viewId];
 		if (tp && !switchTab) {
-			appCtxt.getAppController().getAppChooser().addButton(tp.id, tp.label, tp.image, tp.tooltip);
+			appCtxt.getAppController().getAppChooser().addButton(tp.id, tp);
 		}
 	}
 
@@ -740,8 +740,8 @@ function(show) {
 };
 
 ZmAppViewMgr.prototype.fitAll =
-function(resetToolbar) {
-	this._fitToContainer(ZmAppViewMgr.ALL_COMPONENTS, resetToolbar);
+function() {
+	this._fitToContainer(ZmAppViewMgr.ALL_COMPONENTS);
 };
 
 /**
@@ -825,7 +825,7 @@ function() {
 
 // Locates and sizes the given list of components to fit within their containers.
 ZmAppViewMgr.prototype._fitToContainer =
-function(components, resetToolbar) {
+function(components) {
 	for (var i = 0; i < components.length; i++) {
 		var cid = components[i];
 		DBG.println(AjxDebug.DBG3, "fitting to container: " + cid);
@@ -846,6 +846,9 @@ function(components, resetToolbar) {
 					if (compEl.parentNode != cont) {
 						cont.appendChild(compEl);
 					}
+					if (comp._checkSize) {
+						comp._checkSize();
+					}
 				} else {
 					var contBds = Dwt.getBounds(cont);
 					// take insets (border + padding) into account
@@ -855,13 +858,6 @@ function(components, resetToolbar) {
 					// save bounds
 					this._contBounds[cid] = contBds;
 					comp.setBounds(contBds.x, contBds.y, contBds.width, contBds.height);
-				}
-
-				if (cid == ZmAppViewMgr.C_TOOLBAR_TOP ||
-					cid == ZmAppViewMgr.C_APP_CHOOSER)
-				{
-					// fit toolbars according to resolution
-					this.fitAppToolbar(resetToolbar);
 				}
 			}
 		}
@@ -1096,21 +1092,6 @@ function(ev) {
 				this._fitToContainer(list, true);
 			}
 		}
-	}
-};
-
-ZmAppViewMgr.prototype.fitAppToolbar =
-function(resetToolbar) {
-	// Assuming every view has a toolbar.
-	var toolbar = this._views[this._currentView] && this._views[this._currentView][ZmAppViewMgr.C_TOOLBAR_TOP];
-
-	if (toolbar && toolbar.autoAdjustWidth) {
-		toolbar.autoAdjustWidth(this._containers[ZmAppViewMgr.C_TOOLBAR_TOP], resetToolbar);
-	}
-
-	var appChooser = appCtxt.getAppController().getAppChooser();
-	if (appChooser && AjxEnv.is800x600orLower) {
-		appChooser.autoAdjustWidth(this._containers[ZmAppViewMgr.C_TOOLBAR_TOP]);
 	}
 };
 

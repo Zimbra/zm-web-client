@@ -264,6 +264,11 @@ function(id, prop) {
 	return value;
 };
 
+ZmOperation.isSep =
+function(id) {
+	return (id == ZmOperation.SEP || id == ZmOperation.SPACER || id == ZmOperation.FILLER);
+};
+
 ZmOperation.addOperation =
 function(parent, id, opHash, index) {
 

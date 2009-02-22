@@ -464,7 +464,8 @@ function(initHide, composeMode) {
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
 	elements[ZmAppViewMgr.C_APP_CONTENT] = this._composeView;
 	this._app.createView({viewId:this.viewId, elements:elements, callbacks:callbacks,
-						 tabParams:{id:this.tabId, label:ZmMsg.compose, image:"NewMessage", tooltip:ZmMsg.compose}});
+						 tabParams:{id:this.tabId, text:ZmMsg.compose, image:"NewMessage",
+						 textPrecedence:75, tooltip:ZmMsg.compose}});
     if (initHide) {
 	    this._composeView.setLocation(Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
 	    this._composeView.enableInputs(false);

@@ -1753,7 +1753,7 @@ function() {
 		return ZmZimbraMail.hashSortCompare(ZmApp.CHOOSER_SORT, a, b);
 	});
 
-	var appChooser = new ZmAppChooser(this._shell, null, buttons, ZmId.APP_CHOOSER);
+	var appChooser = new ZmAppChooser({parent:this._shell, buttons:buttons, id:ZmId.APP_CHOOSER, refElementId:ZmId.SKIN_APP_CHOOSER});
 
 	var buttonListener = new AjxListener(this, this._appButtonListener);
 	appChooser.addSelectionListener(buttonListener);

@@ -330,7 +330,8 @@ function(view) {
 	var buttons = this._getToolBarOps();
 	if (!buttons) { return; }
 
-	var tb = this._toolbar[view] = new ZmButtonToolBar({parent:this._container, buttons:buttons, context:view, controller:this});
+	var tb = this._toolbar[view] = new ZmButtonToolBar({parent:this._container, buttons:buttons, context:view, controller:this,
+														refElementId:ZmId.SKIN_APP_TOP_TOOLBAR});
 
 	var button;
 	for (var i = 0; i < tb.opList.length; i++) {

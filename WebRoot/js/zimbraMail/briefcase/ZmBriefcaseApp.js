@@ -148,6 +148,7 @@ function() {
 					 {mainPkg:				"Briefcase",
 					  nameKey:				"briefcase",
 					  icon:					"Folder",
+					  textPrecedence:		30,
 					  chooserTooltipKey:	"gotoBriefcase",
 					  defaultSearch:		ZmItem.BRIEFCASE,
 					  organizer:			ZmOrganizer.BRIEFCASE,
