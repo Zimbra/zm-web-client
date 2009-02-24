@@ -205,6 +205,16 @@ function() {
 	return this._newBuddyItem.getPopup();
 };
 
+ZmTaskbarController.prototype.showGatewayPopup =
+function(gateway) {
+	if (this._gatewayData) {
+		var data = this._gatewayData[gateway];
+		if (data) {
+			this._toolbar.expandItem(data.item, true);
+		}
+	}
+};
+
 ZmTaskbarController.prototype._subscribeDisposeListener =
 function(addr) {
 	var data = this._subscribeData[addr];

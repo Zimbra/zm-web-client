@@ -29,7 +29,6 @@ ZmImController = function() {
 	this._listeners[ZmOperation.IM_CREATE_CONTACT] = new AjxListener(this, this._imCreateContactListener);
 	this._listeners[ZmOperation.IM_ADD_TO_CONTACT] = new AjxListener(this, this._imAddToContactListener);
 	this._listeners[ZmOperation.IM_EDIT_CONTACT] = new AjxListener(this, this._imEditContactListener);
-	this._listeners[ZmOperation.IM_GATEWAY_LOGIN] = new AjxListener(this, this._imGatewayLoginListener);
 	this._listeners[ZmOperation.DELETE] = new AjxListener(this, this._deleteListener);
 	this._listeners[ZmOperation.IM_BLOCK_BUDDY] = new AjxListener(this, this._blockBuddyListener);
 	this._listeners[ZmOperation.IM_UNBLOCK_BUDDY] = new AjxListener(this, this._unblockBuddyListener);
@@ -62,21 +61,6 @@ ZmImController.prototype._clearDialog = function(dlg) {
 	dlg.popdown();
 };
 
-ZmImController.prototype._imGatewayLoginListener = function(ev) {
-	var dlg = appCtxt.getIMGatewayLoginDialog();
-	if (!this._registerGatewayCb) {
-		this._registerGatewayCb = new AjxCallback(this, this._registerGatewayCallback);
-	}
-	if (ev && ev.gwType)
-		dlg.selectGwType(ev.gwType);
-	ZmController.showDialog(dlg, this._registerGatewayCb);
-};
-
-ZmImController.prototype._registerGatewayCallback = function(service, screenName, password) {
-	appCtxt.getIMGatewayLoginDialog().popdown();
-	AjxDispatcher.run("GetRoster").registerGateway(service, screenName, password);
-};
-
 ZmImController.prototype._newRosterItemListener =
 function(ev) {
 	if (ZmImApp.loggedIn()) {
@@ -93,6 +77,10 @@ function(ev) {
 	if (ev && ev.address) {
 		var match = /(.*)@yahoo\.com/.exec(ev.address);
 		if (match) {
+			ev.address = match[1];
+			ev.service = "yahoo";
+		}
+		if (ev.service == "yahoo") {
 			var gateway = ZmImApp.INSTANCE.getRoster().getGatewayByType("yahoo");
 			if (!gateway) {
 				var msgDialog = appCtxt.getMsgDialog();
@@ -108,8 +96,6 @@ function(ev) {
 				yesNoDialog.popup();
 				return;
 			}
-			ev.address = match[1];
-			ev.service = "yahoo";
 		}
 	}
 
@@ -133,7 +119,7 @@ function(ev) {
 ZmImController.prototype._loginYesCallback =
 function(dialog, ev) {
 	dialog.popdown();
-	this._imGatewayLoginListener({ gwType: "yahoo" });
+	ZmTaskbarController.INSTANCE.showGatewayPopup("yahoo");
 };
 
 ZmImController.prototype._loginNoCallback =

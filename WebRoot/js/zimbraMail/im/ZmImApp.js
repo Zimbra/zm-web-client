@@ -112,7 +112,6 @@ function() {
     ZmOperation.registerOp(ZmId.OP_IM_CREATE_CONTACT, { textKey: "addToNewContact", image: "NewContact" });
     ZmOperation.registerOp(ZmId.OP_IM_ADD_TO_CONTACT, { textKey: "addToExistingContact", image: "Edit" });
     ZmOperation.registerOp(ZmId.OP_IM_EDIT_CONTACT, { textKey: "editContact", image: "Edit" });
-    ZmOperation.registerOp(ZmId.OP_IM_GATEWAY_LOGIN, { textKey: "imGatewayLogin", image: "ExternalLink" });
     ZmOperation.registerOp(ZmId.OP_IM_TOGGLE_OFFLINE, { textKey: "imToggleOffline" });
     ZmOperation.registerOp(ZmId.OP_IM_TOGGLE_BLOCKED, { textKey: "imToggleBlocked" });
     ZmOperation.registerOp(ZmId.OP_IM_SORT_BY_PRESENCE, { textKey: "imSortListByPresence" });

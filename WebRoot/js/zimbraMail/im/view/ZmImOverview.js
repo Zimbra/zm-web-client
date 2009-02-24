@@ -38,8 +38,6 @@ ZmImOverview = function(parent, params) {
 		root : [ ZmOperation.NEW_ROSTER_ITEM,
 			ZmOperation.NEW_ROSTER_GROUP,	
 			ZmOperation.SEP, //-----------
-			ZmOperation.IM_GATEWAY_LOGIN,
-			ZmOperation.SEP, //-----------
 			ZmOperation.IM_TOGGLE_OFFLINE,
 			ZmOperation.IM_TOGGLE_BLOCKED,
 			ZmOperation.SEP, //-----------

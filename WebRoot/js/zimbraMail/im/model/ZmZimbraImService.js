@@ -67,7 +67,7 @@ ZmZimbraImService.prototype.makeServerAddress =
 function(addr, type) {
 	if (type == null || /^(xmpp|local)$/i.test(type))
 		return addr;
-	var gw = this.getGatewayByType(type);
+	var gw = this._roster.getGatewayByType(type);
 	if (gw)
 		return addr + "@" + gw.domain;
 };

@@ -323,15 +323,6 @@ function(){
 	return this._dialog;
 };
 
-ZmAppCtxt.prototype.getIMGatewayLoginDialog =
-function() {
-	if (!this._imGatewayLoginDialog) {
-		AjxDispatcher.require("IM");
-		this._imGatewayLoginDialog = new ZmExternalGatewayDlg(this._shell);
-	}
-	return this._imGatewayLoginDialog;
-};
-
 ZmAppCtxt.prototype.getNewSearchDialog =
 function() {
 	if (!this._newSearchDialog) {
