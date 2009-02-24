@@ -1246,12 +1246,22 @@ function(msgNode) {
 			this.invite.setMessageId(this.id);
             //bug:18613
             var desc = this.invite.getComponentDescription();
-            if((this._bodyParts.length == 0) && desc){
-                var textPart = new Object();
-                textPart.ct = ZmMimeTable.TEXT_PLAIN;
-                textPart.s = desc.length;
-                textPart.content = desc;
-                this._bodyParts.push(textPart);
+            var descHtml = this.invite.getComponentDescriptionHtml();
+            if((this._bodyParts.length == 0) && (desc || descHtml)){
+				if(desc) {
+                	var textPart = new Object();
+                	textPart.ct = ZmMimeTable.TEXT_PLAIN;
+                	textPart.s = desc.length;
+                	textPart.content = desc;
+                	this._bodyParts.push(textPart);
+				}
+				if(descHtml) {
+                	var htmlPart = new Object();
+                	htmlPart.ct = ZmMimeTable.TEXT_HTML;
+                	htmlPart.s = desc.length;
+                	htmlPart.content = descHtml;
+                	this._bodyParts.push(htmlPart);					
+				}
             }
             this._loaded = this._bodyParts.length > 0  || this.attachments.length > 0;
 		} catch (ex) {
