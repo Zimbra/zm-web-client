@@ -273,6 +273,15 @@ function(compNum) {
 	return (sd.getDate() != ed.getDate()) || (sd.getMonth() != ed.getMonth()) || (sd.getFullYear() != ed.getFullYear());
 };
 
+ZmInvite.prototype.getComponentDescriptionHtml =
+function(compNum) {
+    var cn = compNum || 0;    
+    if (this.components[cn] == null) return;
+	var desc = this.components[cn].descHtml;
+	var content = desc && desc[0]._content || null;
+	return content;
+};
+
 ZmInvite.prototype.getComponentDescription =
 function(compNum) {
     var cn = compNum || 0;    
