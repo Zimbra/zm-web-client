@@ -1895,6 +1895,7 @@ HTML>BODY .appt-selected .appt_allday_body
 	background-color:@TaskbarItem-selected@;
 	padding: 0 3px 3px 6px;
 	font-weight: bold;
+	width: 100%;
 }
 
 .ZmTaskbarPopupContent {
