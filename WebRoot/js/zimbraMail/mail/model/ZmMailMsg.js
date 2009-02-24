@@ -1258,7 +1258,7 @@ function(msgNode) {
 				if(descHtml) {
                 	var htmlPart = new Object();
                 	htmlPart.ct = ZmMimeTable.TEXT_HTML;
-                	htmlPart.s = desc.length;
+                	htmlPart.s = descHtml.length;
                 	htmlPart.content = descHtml;
                 	this._bodyParts.push(htmlPart);					
 				}
