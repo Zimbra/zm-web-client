@@ -22,11 +22,18 @@ ZmMailListView = function(params) {
 	ZmListView.call(this, params);
 
 	this._folderId = null;
+
+	this._isMultiColumn = this.isMultiColumn();
+	if (!this._isMultiColumn) {
+		this._normalClass = ZmMailListView.ROW_DOUBLE_CLASS;
+	}
 };
 
 ZmMailListView.prototype = new ZmListView;
 ZmMailListView.prototype.constructor = ZmMailListView;
 
+// Consts
+ZmMailListView.ROW_DOUBLE_CLASS	= "RowDouble";
 
 // Public methods
 
@@ -38,7 +45,8 @@ function() {
 // Reset row style
 ZmMailListView.prototype.markUIAsRead = 
 function(item) {
-	var row = this._getElement(item, ZmItem.F_ITEM_ROW);
+	var rowId = (this._isMultiColumn) ? ZmItem.F_ITEM_ROW : ZmItem.F_ITEM_ROW_3PANE;
+	var row = this._getElement(item, rowId);
 	if (row) {
 		row.className = this._getRowClass(item);
 	}
@@ -103,6 +111,69 @@ function(newWidth, newHeight) {
 	Dwt.setSize(this._parentEl, newWidth, height);
 };
 
+/**
+ * Returns true if the reading pane is turned off or set to bottom. We use this
+ * call to tell the UI whether to re-render the listview with multiple columns
+ * or a single column (for right-pane).
+ */
+ZmMailListView.prototype.isMultiColumn =
+function() {
+	// NOTE: we dont use the controller's API b/c this method is called before the controller is set
+	return ((appCtxt.get(ZmSetting.READING_PANE_ENABLED) &&
+			 appCtxt.get(ZmSetting.READING_PANE_ORIENTATION) == ZmSetting.RP_BOTTOM) ||
+			!appCtxt.get(ZmSetting.READING_PANE_ENABLED));
+};
+
+ZmMailListView.prototype._getAbridgedContent =
+function(item, colIdx) {
+	// override me
+};
+
+ZmMailListView.prototype._getAbridgedCell =
+function(htmlArr, idx, item, field, colIdx, width, attr) {
+	var params = {};
+
+	htmlArr[idx++] = "<td";
+	if (width) {
+		htmlArr[idx++] = " width='";
+		htmlArr[idx++] = width;
+		htmlArr[idx++] = "'";
+	}
+	htmlArr[idx++] = " id='";
+	htmlArr[idx++] = this._getCellId(item, field, params);
+	htmlArr[idx++] = "'";
+	var className = this._getCellClass(item, field, params);
+	if (className) {
+		htmlArr[idx++] = " class='";
+		htmlArr[idx++] = className;
+		htmlArr[idx++] = "'";
+	}
+	if (attr) {
+		htmlArr[idx++] = " ";
+		htmlArr[idx++] = attr;
+	}
+	htmlArr[idx++] = ">";
+	idx = this._getCellContents(htmlArr, idx, item, field, colIdx, params);
+	htmlArr[idx++] = "</td>";
+
+	return idx;
+};
+
+/**
+ * Called by the controller whenever the reading pane preference changes
+ */
+ZmMailListView.prototype.reRenderListView =
+function() {
+	var isMultiColumn = this.isMultiColumn();
+	if (isMultiColumn != this._isMultiColumn) {
+		this._isMultiColumn = isMultiColumn;
+		this.headerColCreated = false;
+		this._headerList = this._getHeaderList();
+		this._normalClass = isMultiColumn ? DwtListView.ROW_CLASS : ZmMailListView.ROW_DOUBLE_CLASS;
+		this.set(this.getList().clone());
+	}
+};
+
 // Private / protected methods
 
 ZmMailListView.prototype._getHeaders =
@@ -111,7 +182,7 @@ function(viewId, headerList, headerHash) {
 
 	this._defaultCols = headerList.join(ZmListView.COL_JOIN);
 	var userHeaders = appCtxt.get(ZmSetting.LIST_VIEW_COLUMNS, viewId);
-	var headers = userHeaders ? userHeaders.split(ZmListView.COL_JOIN) : headerList;
+	var headers = (userHeaders && this._isMultiColumn) ? userHeaders.split(ZmListView.COL_JOIN) : headerList;
 	for (var i = 0, len = headers.length; i < len; i++) {
 		var header = headers[i];
 		var field = header.substr(0, 2);
@@ -141,8 +212,9 @@ function() {
 		if (fromColSpan) {
 			fromColSpan.innerHTML = "&nbsp;" + colLabel;
 		}
-		if (this._colHeaderActionMenu) {
-			this._colHeaderActionMenu.getItem(headerCol._index).setText(colLabel);
+		var item = (this._colHeaderActionMenu) ? this._colHeaderActionMenu.getItem(headerCol._index) : null;
+		if (item) {
+			item.setText(colLabel);
 		}
 	}
 
@@ -184,7 +256,7 @@ function(item) {
 
 ZmMailListView.prototype._getCellId =
 function(item, field) {
-	return (field == ZmItem.F_SIZE || field == ZmItem.F_SUBJECT)
+	return (field == ZmItem.F_SIZE || field == ZmItem.F_SUBJECT || field == ZmItem.F_SORTED_BY)
 		? this._getFieldId(item, field)
 		: ZmListView.prototype._getCellId.apply(this, arguments);
 };
@@ -320,6 +392,19 @@ function(htmlArr, idx, item, field, colIdx, params) {
 	htmlArr[idx++] = "</td>";
 
 	return idx;
+};
+
+ZmListView.prototype._getCellClass =
+function(item, field, params) {
+	if (!this._isMultiColumn) {
+		if (field == ZmItem.F_SUBJECT) {
+			return "ZmConvListFragment";
+		}
+		if (field == ZmItem.F_SELECTION) {
+			return "AbridgedSelection";
+		}
+	}
+	return null;
 };
 
 // Figure out how many of the participants will fit into a given pixel width.

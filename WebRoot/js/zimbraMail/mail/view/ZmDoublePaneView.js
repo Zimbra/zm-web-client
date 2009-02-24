@@ -91,6 +91,7 @@ function() {
 		newSash.setVisible(true);
 	}
 
+	this._mailListView.reRenderListView();
 	this._msgView.noTab = !readingPaneEnabled || AjxEnv.isIE;
 	var sz = this.getSize();
 	this._resetSize(sz.x, sz.y, true);
@@ -200,7 +201,7 @@ function(newWidth, newHeight, force) {
 		var sashSize = sash.getSize();
 		var sashThickness = readingPaneOnRight ? sashSize.x : sashSize.y;
 		if (readingPaneOnRight) {
-			var listViewWidth = this._vertSashX || Math.floor(newWidth / 2);
+			var listViewWidth = this._vertSashX || Math.floor(newWidth / 2.5);
 			this._mailListView.resetSize(listViewWidth, newHeight);
 			sash.setLocation(listViewWidth, 0);
 			this._msgView.setBounds(listViewWidth + sashThickness, 0,
@@ -219,7 +220,7 @@ function(newWidth, newHeight, force) {
 
 	this._lastResetWidth = newWidth;
 	this._lastResetHeight = newHeight;
-}
+};
 
 ZmDoublePaneView.prototype._sashCallback =
 function(delta) {
@@ -291,7 +292,7 @@ function(delta) {
 ZmDoublePaneView.prototype._selectFirstItem =
 function() {
 	var list = this._mailListView.getList();
-	var selectedItem = list ? list.get(0) : null
+	var selectedItem = list ? list.get(0) : null;
 	if (selectedItem) {
 		this._mailListView.setSelection(selectedItem, false);
 	}

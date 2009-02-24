@@ -306,7 +306,10 @@ td.DDSepInvisible div {
 }
 
 
-
+.AbridgedSelection {
+	padding-top: 3px;
+	vertical-align: top;
+}
 
 /*
  * Conversation view stuff
@@ -314,6 +317,7 @@ td.DDSepInvisible div {
 
 /* message fragment text */
 .ZmConvListFragment,
+.DwtListView-Rows .ZmConvListFragment,
 .Row-Selected .ZmConvListFragment {
 	@Text-disabled@
 	font-weight: normal;
@@ -428,7 +432,7 @@ td.DDSepInvisible div {
 }
 
 .readingPaneVerticalSash {
-	@WidgetHeaderContainer-normal@
+	background-color:@AppC@
 }
 
 /* ??? MOVE ME */

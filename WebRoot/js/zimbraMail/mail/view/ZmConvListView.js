@@ -36,7 +36,7 @@ ZmConvDoublePaneView = function(params) {
 	params.className = params.className || "ZmConvDoublePaneView";
 	params.mode = ZmId.VIEW_CONVLIST;
 	ZmDoublePaneView.call(this, params);
-}
+};
 
 ZmConvDoublePaneView.prototype = new ZmDoublePaneView;
 ZmConvDoublePaneView.prototype.constructor = ZmConvDoublePaneView;
@@ -44,7 +44,7 @@ ZmConvDoublePaneView.prototype.constructor = ZmConvDoublePaneView;
 ZmConvDoublePaneView.prototype.toString = 
 function() {
 	return "ZmConvDoublePaneView";
-}
+};
 
 ZmConvDoublePaneView.prototype._createMailListView =
 function(params) {
@@ -80,28 +80,42 @@ ZmConvListView.prototype.constructor = ZmConvListView;
 // Constants
 
 ZmConvListView.COL_WIDTH_FROM	= 145;
-ZmConvListView.INDENT			= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 
 ZmListView.FIELD_CLASS[ZmItem.F_EXPAND] = "Expand";
 
-ZmConvListView.HEADERS = [ZmItem.F_SELECTION, ZmItem.F_EXPAND, ZmItem.F_FLAG, ZmItem.F_PRIORITY, ZmItem.F_TAG, ZmItem.F_STATUS,
-						  ZmItem.F_FROM, ZmItem.F_ATTACHMENT, ZmItem.F_SUBJECT, ZmItem.F_FOLDER, ZmItem.F_SIZE, ZmItem.F_DATE];
+ZmConvListView.HEADERS_SHORT = [
+	ZmItem.F_SELECTION,
+	ZmItem.F_SORTED_BY
+];
+ZmConvListView.HEADERS_LONG = [
+	ZmItem.F_SELECTION,
+	ZmItem.F_EXPAND,
+	ZmItem.F_FLAG,
+	ZmItem.F_PRIORITY,
+	ZmItem.F_TAG,
+	ZmItem.F_STATUS,
+	ZmItem.F_FROM,
+	ZmItem.F_ATTACHMENT,
+	ZmItem.F_SUBJECT,
+	ZmItem.F_FOLDER,
+	ZmItem.F_SIZE,
+	ZmItem.F_DATE
+];
 
 ZmConvListView.HEADER = {};
 ZmConvListView.HEADER[ZmItem.F_SELECTION]	= {icon:"TaskCheckbox", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.selection, resizeable:true, precondition:ZmSetting.SHOW_SELECTION_CHECKBOX};
 ZmConvListView.HEADER[ZmItem.F_EXPAND]		= {icon:"NodeCollapsed", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.expand, resizeable:true};
-ZmConvListView.HEADER[ZmItem.F_FLAG]		= {icon:"FlagRed", width:ZmListView.COL_WIDTH_ICON, sortable:ZmItem.F_FLAG, name:ZmMsg.flag,
-											   noSortArrow:true, resizeable:true, precondition:ZmSetting.FLAGGING_ENABLED};
+ZmConvListView.HEADER[ZmItem.F_FLAG]		= {icon:"FlagRed", width:ZmListView.COL_WIDTH_ICON, sortable:ZmItem.F_FLAG, name:ZmMsg.flag, noSortArrow:true, resizeable:true, precondition:ZmSetting.FLAGGING_ENABLED};
 ZmConvListView.HEADER[ZmItem.F_PRIORITY]	= {icon:"PriorityHigh_list", width:ZmListView.COL_WIDTH_NARROW_ICON, name:ZmMsg.priority, resizeable:true, precondition:ZmSetting.MAIL_PRIORITY_ENABLED};
 ZmConvListView.HEADER[ZmItem.F_TAG]			= {icon:"Tag", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.tag, resizeable:true, precondition:ZmSetting.TAGGING_ENABLED};
 ZmConvListView.HEADER[ZmItem.F_STATUS]		= {icon:"MsgStatus", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.status, resizeable:true};
 ZmConvListView.HEADER[ZmItem.F_FROM]		= {text:ZmMsg.from, width:ZmConvListView.COL_WIDTH_FROM, resizeable:true};
-ZmConvListView.HEADER[ZmItem.F_ATTACHMENT]	= {icon:"Attachment", width:ZmListView.COL_WIDTH_ICON, sortable:ZmItem.F_ATTACHMENT,
-											   noSortArrow:true, name:ZmMsg.attachment, resizeable:true};
+ZmConvListView.HEADER[ZmItem.F_ATTACHMENT]	= {icon:"Attachment", width:ZmListView.COL_WIDTH_ICON, sortable:ZmItem.F_ATTACHMENT, noSortArrow:true, name:ZmMsg.attachment, resizeable:true};
 ZmConvListView.HEADER[ZmItem.F_SUBJECT]		= {text:ZmMsg.subject, sortable:ZmItem.F_SUBJECT, noRemove:true, resizeable:true};
 ZmConvListView.HEADER[ZmItem.F_FOLDER]		= {text:ZmMsg.folder, width:ZmMsg.COLUMN_WIDTH_FOLDER, resizeable:true};
 ZmConvListView.HEADER[ZmItem.F_SIZE]		= {text:ZmMsg.size, width:ZmMsg.COLUMN_WIDTH_SIZE, resizeable:true};
 ZmConvListView.HEADER[ZmItem.F_DATE]		= {text:ZmMsg.received, width:ZmMsg.COLUMN_WIDTH_DATE, sortable:ZmItem.F_DATE, resizeable:true};
+ZmConvListView.HEADER[ZmItem.F_SORTED_BY]	= {text:AjxMessageFormat.format(ZmMsg.arrangedBy, ZmMsg.date), sortable:ZmItem.F_SORTED_BY};
 
 // Copy some functions from ZmMailMsgListView, for handling message rows
 ZmConvListView.prototype._changeFolderName = ZmMailMsgListView.prototype._changeFolderName;
@@ -117,17 +131,19 @@ function(defaultColumnSort) {
 
 	ZmMailListView.prototype.createHeaderHtml.call(this, defaultColumnSort);
 
-	// Show "From" or "To" depending on which folder we're looking at
-	var isFolder = this._resetFromColumnLabel();
-	// set the received column name based on query string
-	var colLabel = isFolder.sent ? ZmMsg.sentAt : isFolder.drafts ? ZmMsg.lastSaved : ZmMsg.received;
 	var headerCol = this._headerHash[ZmItem.F_DATE];
-	var recdColSpan = document.getElementById(DwtId.getListViewHdrId(DwtId.WIDGET_HDR_LABEL, this._view, headerCol._field));
-	if (recdColSpan) {
-		recdColSpan.innerHTML = "&nbsp;" + colLabel;
-	}
-	if (this._colHeaderActionMenu) {
-		this._colHeaderActionMenu.getItem(headerCol._index).setText(colLabel);
+	if (headerCol) {
+		// Show "From" or "To" depending on which folder we're looking at
+		var isFolder = this._resetFromColumnLabel();
+		// set the received column name based on query string
+		var colLabel = isFolder.sent ? ZmMsg.sentAt : isFolder.drafts ? ZmMsg.lastSaved : ZmMsg.received;
+		var recdColSpan = document.getElementById(DwtId.getListViewHdrId(DwtId.WIDGET_HDR_LABEL, this._view, headerCol._field));
+		if (recdColSpan) {
+			recdColSpan.innerHTML = "&nbsp;" + colLabel;
+		}
+		if (this._colHeaderActionMenu) {
+			this._colHeaderActionMenu.getItem(headerCol._index).setText(colLabel);
+		}
 	}
 };
 
@@ -153,9 +169,22 @@ function(item) {
 	}
 };
 
+/**
+ * Called by the controller whenever the reading pane preference changes
+ */
+ZmConvListView.prototype.reRenderListView =
+function() {
+	var isMultiColumn = this.isMultiColumn();
+	if (isMultiColumn != this._isMultiColumn) {
+		this._resetExpansion();
+	}
+	ZmMailListView.prototype.reRenderListView.call(this);
+};
+
 ZmConvListView.prototype._getHeaderList =
 function(parent) {
-	return this._getHeaders(ZmId.VIEW_CONVLIST, ZmConvListView.HEADERS, ZmConvListView.HEADER);
+	var headers = this.isMultiColumn() ? ZmConvListView.HEADERS_LONG : ZmConvListView.HEADERS_SHORT;
+	return this._getHeaders(ZmId.VIEW_CONVLIST, headers, ZmConvListView.HEADER);
 };
 
 ZmConvListView.prototype._getDiv =
@@ -209,7 +238,7 @@ function(htmlArr, idx, item, field, colIdx, params) {
 			htmlArr[idx++] = this._getParticipantHtml(item, this._getFieldId(item, ZmItem.F_PARTICIPANT));
 		} else if (field == ZmItem.F_SUBJECT) {
 			htmlArr[idx++] = item.subject ? AjxStringUtil.htmlEncode(item.subject, true) : AjxStringUtil.htmlEncode(ZmMsg.noSubject);
-			if (appCtxt.get(ZmSetting.SHOW_FRAGMENTS) && item.fragment) {
+			if (this._isMultiColumn && appCtxt.get(ZmSetting.SHOW_FRAGMENTS) && item.fragment) {
 				htmlArr[idx++] = this._getFragmentSpan(item);
 			}
 		} else if (field == ZmItem.F_SIZE) {
@@ -225,12 +254,49 @@ function(htmlArr, idx, item, field, colIdx, params) {
 			} else {
 				idx = ZmMailListView.prototype._getCellContents.apply(this, arguments);
 			}
+		} else if (field == ZmItem.F_SORTED_BY) {
+			htmlArr[idx++] = this._getAbridgedContent(item, colIdx);
 		} else {
 			idx = ZmMailListView.prototype._getCellContents.apply(this, arguments);
 		}
 	}
 	
 	return idx;
+};
+
+ZmConvListView.prototype._getAbridgedContent =
+function(item, colIdx) {
+	var htmlArr = [];
+	var idx = 0;
+	htmlArr[idx++] = "<table border=0 cellspacing=0 cellpadding=0 width=100%>";
+	htmlArr[idx++] = (item.isUnread) ? "<tr class='Unread' " : "<tr ";
+	htmlArr[idx++] = "id='";
+	htmlArr[idx++] = DwtId.getListViewItemId(DwtId.WIDGET_ITEM_FIELD, this._view, item.id, ZmItem.F_ITEM_ROW_3PANE);
+	htmlArr[idx++] = "'>";
+
+	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_EXPAND, colIdx, "16", "style='padding:0px'");
+	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_FROM, colIdx);
+	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_SIZE, colIdx, ZmMsg.COLUMN_WIDTH_SIZE);
+	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_DATE, colIdx, ZmMsg.COLUMN_WIDTH_DATE, "align=right");
+	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_FLAG, colIdx, "16");
+
+	htmlArr[idx++] = "</tr><tr>";
+
+	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_PRIORITY, colIdx, "16", "style='padding:0px'");
+
+	htmlArr[idx++] = "<td colspan=3><table border=0 cellpadding=0 cellspacing=0 width=100%><tr>";
+	if (item.type == ZmItem.MSG) {
+		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_STATUS, colIdx, "16");
+	}
+	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_SUBJECT, colIdx);
+	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_ATTACHMENT, colIdx, "16", "valign=top");
+	htmlArr[idx++] = "</tr></table></td>";
+
+	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_TAG, colIdx, "16");
+
+	htmlArr[idx++] = "</tr></table>";
+
+	return htmlArr.join("");
 };
 
 ZmConvListView.prototype._getParticipantHtml =
@@ -260,7 +326,7 @@ function(conv, fieldId) {
 		}
 
 		var headerCol = this._headerHash[ZmItem.F_FROM];
-		var partColWidth = headerCol._width;
+		var partColWidth = headerCol ? headerCol._width : ZmConvListView.COL_WIDTH_FROM;
 		var part2 = this._fitParticipants(part1, conv.participantsElided, partColWidth);
 		for (var j = 0; j < part2.length; j++) {
 			if (j == 1 && (conv.participantsElided || part2.length < origLen)) {

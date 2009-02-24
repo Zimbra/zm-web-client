@@ -31,24 +31,38 @@ ZmMailMsgListView.prototype.constructor = ZmMailMsgListView;
 // Consts
 
 ZmMailMsgListView.COL_WIDTH_FROM = 105;
+ZmMailMsgListView.INDENT		= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 
-ZmMailMsgListView.HEADERS = [ZmItem.F_SELECTION, ZmItem.F_FLAG, ZmItem.F_PRIORITY, ZmItem.F_TAG, ZmItem.F_STATUS,
-							 ZmItem.F_FROM, ZmItem.F_ATTACHMENT, ZmItem.F_SUBJECT, ZmItem.F_FOLDER, ZmItem.F_SIZE, ZmItem.F_DATE];
-
+ZmMailMsgListView.HEADERS_SHORT = [
+	ZmItem.F_SELECTION,
+	ZmItem.F_SORTED_BY
+];
+ZmMailMsgListView.HEADERS_LONG = [
+	ZmItem.F_SELECTION,
+	ZmItem.F_FLAG,
+	ZmItem.F_PRIORITY,
+	ZmItem.F_TAG,
+	ZmItem.F_STATUS,
+	ZmItem.F_FROM,
+	ZmItem.F_ATTACHMENT,
+	ZmItem.F_SUBJECT,
+	ZmItem.F_FOLDER,
+	ZmItem.F_SIZE,
+	ZmItem.F_DATE
+];
 ZmMailMsgListView.HEADER = {};
 ZmMailMsgListView.HEADER[ZmItem.F_SELECTION]	= {icon:"TaskCheckbox", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.selection, resizeable:true, precondition:ZmSetting.SHOW_SELECTION_CHECKBOX};
-ZmMailMsgListView.HEADER[ZmItem.F_FLAG]			= {icon:"FlagRed", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.flag, resizeable:true,
-												   sortable:ZmItem.F_FLAG, noSortArrow:true, precondition:ZmSetting.FLAGGING_ENABLED};
+ZmMailMsgListView.HEADER[ZmItem.F_FLAG]			= {icon:"FlagRed", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.flag, resizeable:true,sortable:ZmItem.F_FLAG, noSortArrow:true, precondition:ZmSetting.FLAGGING_ENABLED};
 ZmMailMsgListView.HEADER[ZmItem.F_PRIORITY]		= {icon:"PriorityHigh_list", width:ZmListView.COL_WIDTH_NARROW_ICON, name:ZmMsg.priority, resizeable:true, precondition:ZmSetting.MAIL_PRIORITY_ENABLED};
 ZmMailMsgListView.HEADER[ZmItem.F_TAG]			= {icon:"Tag", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.tag, resizeable:true, precondition:ZmSetting.TAGGING_ENABLED};
 ZmMailMsgListView.HEADER[ZmItem.F_STATUS]		= {icon:"MsgStatus", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.status, resizeable:true};
 ZmMailMsgListView.HEADER[ZmItem.F_FROM]			= {text:ZmMsg.from, width:ZmMailMsgListView.COL_WIDTH_FROM, resizeable:true, sortable:ZmItem.F_FROM};
-ZmMailMsgListView.HEADER[ZmItem.F_ATTACHMENT]	= {icon:"Attachment", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.attachment, resizeable:true,
-												   sortable:ZmItem.F_ATTACHMENT, noSortArrow:true};
+ZmMailMsgListView.HEADER[ZmItem.F_ATTACHMENT]	= {icon:"Attachment", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.attachment, resizeable:true,sortable:ZmItem.F_ATTACHMENT, noSortArrow:true};
 ZmMailMsgListView.HEADER[ZmItem.F_SUBJECT]		= {text:ZmMsg.subject, sortable:ZmItem.F_SUBJECT, noRemove:true, resizeable:true};
 ZmMailMsgListView.HEADER[ZmItem.F_FOLDER]		= {text:ZmMsg.folder, width:ZmMsg.COLUMN_WIDTH_FOLDER, resizeable:true};
 ZmMailMsgListView.HEADER[ZmItem.F_SIZE]			= {text:ZmMsg.size, width:ZmMsg.COLUMN_WIDTH_SIZE, resizeable:true};
 ZmMailMsgListView.HEADER[ZmItem.F_DATE]			= {text:ZmMsg.received, width:ZmMsg.COLUMN_WIDTH_DATE, sortable:ZmItem.F_DATE, resizeable:true};
+ZmMailMsgListView.HEADER[ZmItem.F_SORTED_BY]	= {text:AjxMessageFormat.format(ZmMsg.arrangedBy, ZmMsg.date), sortable:ZmItem.F_SORTED_BY};
 
 // Public methods
 
@@ -63,12 +77,12 @@ function(defaultColumnSort) {
 	ZmMailListView.prototype.createHeaderHtml.call(this, defaultColumnSort);
 	
 	// Show "From" or "To" depending on which folder we're looking at
-	if (this._mode == ZmId.VIEW_TRAD) {
+	var headerCol = this._headerHash[ZmItem.F_DATE];
+	if (headerCol && this._mode == ZmId.VIEW_TRAD) {
 		var isFolder = this._resetFromColumnLabel();
 
 		// set the received column name based on query string
 		colLabel = isFolder.sent ? ZmMsg.sentAt : isFolder.drafts ? ZmMsg.lastSaved : ZmMsg.received;
-		var headerCol = this._headerHash[ZmItem.F_DATE];
 		var recdColSpan = document.getElementById(DwtId.getListViewHdrId(DwtId.WIDGET_HDR_LABEL, this._view, headerCol._field));
 		if (recdColSpan) {
 			recdColSpan.innerHTML = "&nbsp;" + colLabel;
@@ -189,8 +203,8 @@ function(htmlArr, idx, msg, field, colIdx, params) {
 		{
 			var fromAddr = msg.getAddress(AjxEmailAddress.FROM);
 			if (fromAddr) {
-				if (this._mode == ZmId.VIEW_CONVLIST) {
-					htmlArr[idx++] = ZmConvListView.INDENT;
+				if (this._mode == ZmId.VIEW_CONVLIST && this._isMultiColumn) {
+					htmlArr[idx++] = ZmMailMsgListView.INDENT;
 				}
 				htmlArr[idx++] = "<span style='white-space:nowrap' id='";
 				htmlArr[idx++] = this._getFieldId(msg, ZmItem.F_FROM);
@@ -204,15 +218,15 @@ function(htmlArr, idx, msg, field, colIdx, params) {
 	} else if (field == ZmItem.F_SUBJECT) {
 		if (this._mode == ZmId.VIEW_CONV || this._mode == ZmId.VIEW_CONVLIST) {
 			// msg within a conv shows just the fragment
-			if (this._mode == ZmId.VIEW_CONVLIST) {
-				htmlArr[idx++] = ZmConvListView.INDENT;
+			if (this._mode == ZmId.VIEW_CONVLIST && this._isMultiColumn) {
+				htmlArr[idx++] = ZmMailMsgListView.INDENT;
 			}
 			htmlArr[idx++] = AjxStringUtil.htmlEncode(msg.fragment, true);
 		} else {
 			// msg on its own (TV) shows subject and fragment
 			var subj = msg.subject || ZmMsg.noSubject;
 			htmlArr[idx++] = AjxStringUtil.htmlEncode(subj);
-			if (appCtxt.get(ZmSetting.SHOW_FRAGMENTS) && msg.fragment) {
+			if (this._isMultiColumn && appCtxt.get(ZmSetting.SHOW_FRAGMENTS) && msg.fragment) {
 				htmlArr[idx++] = this._getFragmentSpan(msg);
 			}
 		}
@@ -228,15 +242,50 @@ function(htmlArr, idx, msg, field, colIdx, params) {
 		htmlArr[idx++] = "</nobr>";
 
 	} else if (field == ZmItem.F_SIZE) {
-		htmlArr[idx++] = "<nobr>";
-		htmlArr[idx++] = AjxUtil.formatSize(msg.size);
-		htmlArr[idx++] = "</nobr>";
-
+		if (this._mode != ZmId.VIEW_CONV && this._mode != ZmId.VIEW_CONVLIST) {
+			htmlArr[idx++] = "<nobr>";
+			htmlArr[idx++] = AjxUtil.formatSize(msg.size);
+			htmlArr[idx++] = "</nobr>";
+		}
+	} else if (field == ZmItem.F_SORTED_BY) {
+		htmlArr[idx++] = this._getAbridgedContent(msg, colIdx);
 	} else {
 		idx = ZmMailListView.prototype._getCellContents.apply(this, arguments);
 	}
 	
 	return idx;
+};
+
+ZmMailMsgListView.prototype._getAbridgedContent =
+function(item, colIdx) {
+	var htmlArr = [];
+	var idx = 0;
+	htmlArr[idx++] = "<table border=0 cellspacing=0 cellpadding=0 width=100%>";
+	htmlArr[idx++] = (item.isUnread) ? "<tr class='Unread' " : "<tr ";
+	htmlArr[idx++] = "id='";
+	htmlArr[idx++] = DwtId.getListViewItemId(DwtId.WIDGET_ITEM_FIELD, this._view, item.id, ZmItem.F_ITEM_ROW_3PANE);
+	htmlArr[idx++] = "'><td width=10 style='padding:0px'></td>";
+
+	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_FROM, colIdx);
+	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_DATE, colIdx, ZmMsg.COLUMN_WIDTH_DATE, "align=right");
+	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_FLAG, colIdx, "16");
+
+	htmlArr[idx++] = "</tr><tr>";
+
+	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_PRIORITY, colIdx, "10", "style='padding:0px'");
+
+	htmlArr[idx++] = "<td colspan=2><table border=0 cellpadding=0 cellspacing=0 width=100%><tr>";
+	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_STATUS, colIdx, "16");
+	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_SUBJECT, colIdx);
+	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_ATTACHMENT, colIdx, "16");
+	htmlArr[idx++] = "</tr></table></td>";
+
+	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_TAG, colIdx, "16");
+
+	htmlArr[idx++] = "</tr></table>";
+
+	return htmlArr.join("");
+
 };
 
 // Listeners
@@ -326,7 +375,8 @@ function(msg) {
 
 ZmMailMsgListView.prototype._getHeaderList =
 function(parent) {
-	return this._getHeaders(this.view, ZmMailMsgListView.HEADERS, ZmMailMsgListView.HEADER);
+	var headers = this.isMultiColumn() ? ZmMailMsgListView.HEADERS_LONG : ZmMailMsgListView.HEADERS_SHORT;
+	return this._getHeaders(this.view, headers, ZmMailMsgListView.HEADER);
 };
 
 ZmMailMsgListView.prototype._sortColumn = 

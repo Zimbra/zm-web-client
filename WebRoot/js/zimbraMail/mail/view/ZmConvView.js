@@ -123,7 +123,7 @@ function(newWidth, newHeight, force) {
 		var sashSize = sash.getSize();
 		var sashThickness = readingPaneOnRight ? sashSize.x : sashSize.y;
 		if (readingPaneOnRight) {
-			var listViewWidth = this._vertSashX || Math.floor(newWidth / 2);
+			var listViewWidth = this._vertSashX || Math.floor(newWidth / 2.5);
 			this._mailListView.setLocation(0, summaryHeight);
 			this._mailListView.resetSize(listViewWidth, newHeight - summaryHeight);
 			sash.setLocation(listViewWidth, 0);

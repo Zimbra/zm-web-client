@@ -45,11 +45,11 @@ ZmListView = function(params) {
 	this._disallowSelection[ZmItem.F_FLAG] = true;
 
 	if (params.dropTgt) {
-		var params = {container:this._parentEl, threshold:15, amount:5, interval:10, id:params.id}
+		var params = {container:this._parentEl, threshold:15, amount:5, interval:10, id:params.id};
 		this._dndScrollCallback = new AjxCallback(null, DwtControl._dndScrollCallback, [params]);
 		this._dndScrollId = params.id;
 	}
-}
+};
 
 ZmListView.prototype = new DwtListView;
 ZmListView.prototype.constructor = ZmListView;
@@ -57,7 +57,7 @@ ZmListView.prototype.constructor = ZmListView;
 ZmListView.prototype.toString =
 function() {
 	return "ZmListView";
-}
+};
 
 
 // Consts
@@ -85,7 +85,7 @@ ZmListView.prototype._getHeaderList = function() {};
 ZmListView.prototype.getController =
 function() {
 	return this._controller;
-}
+};
 
 ZmListView.prototype.set =
 function(list, sortField) {
@@ -235,13 +235,13 @@ function(ev) {
 			}
 		}
 	}
-}
+};
 
 // returns all child divs for this list view
 ZmListView.prototype._getChildren =
 function() {
 	return this._parentEl.childNodes;
-}
+};
 
 // Common routines for createItemHtml()
 
@@ -681,9 +681,9 @@ function(params) {
 
 ZmListView.prototype._getTagToolTip =
 function(item) {
-	if (!item) { return };
+	if (!item) { return; }
 	var numTags = item.tags.length;
-	if (!numTags) { return };
+	if (!numTags) { return; }
 	var tagList = appCtxt.getTagTree();
 	var tags = item.tags;
 	var html = [];
@@ -698,7 +698,7 @@ function(item) {
 		html[idx++] = "</td></tr></table>";
 	}
 	return html.join("");
-}
+};
 
 ZmListView.prototype._getAttachmentToolTip =
 function(item) {
@@ -777,7 +777,7 @@ function(clickedEl, ev, button) {
 		}
 	}
 	return true;
-}
+};
 
 ZmListView.prototype._allowFieldSelection =
 function(id, field) {
@@ -825,7 +825,9 @@ function() {
 	var fields = [];
 	for (var i = 0; i < numCols; i++) {
 		var headerCol = this._headerList[i];
-		fields.push(headerCol._field + (headerCol._visible ? "" : "*"));
+		if (headerCol) {
+			fields.push(headerCol._field + (headerCol._visible ? "" : "*"));
+		}
 	}
 	var value = fields.join(ZmListView.COL_JOIN);
 	value = (value == this._defaultCols) ? "" : value;

@@ -420,12 +420,18 @@ DIV.vSpace {
 	@DisableSelection@
 }
 
-.Row TABLE {
+.RowDouble {
+	@ListItemContainer@
+	@DisableSelection@
+	@ListItemHeightDouble@
+}
+
+.Row TABLE, .RowDouble TABLE {
 	table-layout: fixed;
 	height:100%;
 }
 
-.Row TD {
+.Row TD, .RowDouble TD {
 	@ListItemText@
 }
 
@@ -487,6 +493,10 @@ DIV.vSpace {
 .Row-matched-dragProxy td.Flag, .Row-matched-dragProxy td.Attach, .Row-matched-dragProxy td.Tag, .Row-matched-dragProxy td.Icon, .Row-matched-dragProxy td.Count,
 .Row-dragProxy td.Flag, .Row-dragProxy td.Attach,.Row-dragProxy td.Tag, .Row-dragProxy td.Icon, .Row-dragProxy td.Count {
 	text-align: center;
+}
+
+.RowDouble td.Count, .Row-selected td.Count {
+	text-align: right;
 }
 
 
