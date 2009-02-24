@@ -55,6 +55,7 @@ ZmSchedTabViewPage = function(parent, attendees, controller, dateInfo) {
 
 	this._fbCallback = new AjxCallback(this, this._handleResponseFreeBusy);
 	this._kbMgr = appCtxt.getShell().getKeyboardMgr();
+    this._emailAliasMap = {};
 };
 
 ZmSchedTabViewPage.prototype = new DwtTabViewPage;
@@ -191,6 +192,8 @@ function() {
 		this._acEquipmentList.reset();
 		this._acEquipmentList.show(false);
 	}
+
+    this._emailAliasMap = {};
 };
 
 ZmSchedTabViewPage.prototype.isDirty =
@@ -1276,15 +1279,57 @@ function() {
 		var endTime = startTime + 30*60*1000;
 		var endDate = new Date(endTime);
 
-		var cc = AjxDispatcher.run("GetCalController");
-		var tooltipContent = cc.getUserStatusToolTipText(startDate, endDate, true, email);
-
-		var shell = DwtShell.getShell(window);
-		var tooltip = shell.getToolTip();
-		tooltip.setContent(tooltipContent, true);
-		tooltip.popup(x, y, true);		
+        this.getAccountEmail(startDate, endDate, x, y, email);
 	}
 	this._fbToolTipInfo = null;
+};
+
+ZmSchedTabViewPage.prototype.popupFreeBusyToolTop =
+function(startDate, endDate, x, y, email) {
+    var cc = AjxDispatcher.run("GetCalController");
+    var tooltipContent = cc.getUserStatusToolTipText(startDate, endDate, true, email);
+
+    var shell = DwtShell.getShell(window);
+    var tooltip = shell.getToolTip();
+    tooltip.setContent(tooltipContent, true);
+    tooltip.popup(x, y, true);
+};
+
+//bug: 30989 - getting proper email address from alias
+ZmSchedTabViewPage.prototype.getAccountEmail =
+function(startDate, endDate, x, y, email) {
+
+    if(this._emailAliasMap[email]) {
+        this.popupFreeBusyToolTop(startDate, endDate, x, y, this._emailAliasMap[email]);
+        return;
+    }
+
+    var soapDoc = AjxSoapDoc.create("GetAccountInfoRequest", "urn:zimbraAccount", null);
+    var elBy = soapDoc.set("account", email);
+    elBy.setAttribute("by", "name");
+
+    var callback = new AjxCallback(this, this._handleGetAccountInfo, [startDate, endDate, x, y, email]);
+    var errorCallback = new AjxCallback(this, this._handleGetAccountInfoError, [startDate, endDate, x, y, email]);
+    appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback: callback, errorCallback:errorCallback});
+};
+
+ZmSchedTabViewPage.prototype._handleGetAccountInfo =
+function(startDate, endDate, x, y, email, result) {
+    var response = result.getResponse();
+    var getAccInfoResponse = response.GetAccountInfoResponse;
+    var accountName = (getAccInfoResponse && getAccInfoResponse.name) ? getAccInfoResponse.name : null;
+    if(accountName) {
+        this._emailAliasMap[email] = accountName;
+    }
+    this.popupFreeBusyToolTop(startDate, endDate, x, y, accountName || email);
+};
+
+ZmSchedTabViewPage.prototype._handleGetAccountInfoError =
+function(startDate, endDate, x, y, email, result) {
+	//ignore the error : thrown for external email ids
+	this._emailAliasMap[email] = email;
+	this.popupFreeBusyToolTop(startDate, endDate, x, y, email);
+	return true;
 };
 
 // Static methods
