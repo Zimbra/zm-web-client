@@ -47,5 +47,6 @@ AjxPackage.require("zimbraMail.im.view.popup.ZmNewBuddyPopup");
 AjxPackage.require("zimbraMail.im.view.popup.ZmSubscribePopup");
 AjxPackage.require("zimbraMail.im.view.popup.ZmPresencePopup");
 AjxPackage.require("zimbraMail.im.view.popup.ZmGatewayPopup");
+AjxPackage.require("zimbraMail.im.view.popup.ZmBuddyListPopup");
 
 AjxPackage.require("zimbraMail.im.controller.ZmImController");

@@ -53,7 +53,7 @@ ZmTaskbarController = function(components) {
 	this._newBuddyItem.button.setText("");
 	
 	var buddyListArgs = {
-		contentCalback: new AjxCallback(this, this._createBuddyListCallback),
+		contentClassName: "ZmBuddyListPopup",
 		op: ZmId.OP_IM_BUDDY_LIST
 	};
 	this._createItem(buddyListArgs);
@@ -408,19 +408,6 @@ function(ev) {
 	} else {
 		ZmImApp.INSTANCE.login({ callback: this._newBuddySelectionListenerObj });
 	}
-};
-
-ZmTaskbarController.prototype._createBuddyListCallback =
-function(parent, parentElement) {
-	var overviewArgs = {
-		parentElement: parentElement,
-		posStyle: Dwt.STATIC_STYLE,
-		noAssistant: true,
-		expanded: true,
-		singleClick: true,
-		noHeaderNodeCell: true
-	};
-	new ZmImOverview(parent, overviewArgs);
 };
 
 ZmTaskbarController.prototype._chatChangeListenerListener =

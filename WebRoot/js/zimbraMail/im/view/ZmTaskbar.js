@@ -86,15 +86,13 @@ function(ev) {
  *        op					[String]		Id of operation that sets the button text and image
  * 		  buttonConstructor		[function]		Constructor for the button
  *        selectionListener		[AjxListener]	Listener that handles button presses
- *        contentCallback		[AjxCallback]	A callback that creates the popup content
- *        contentClassName		[String]		Name of the class that holds the content (Subclass of ZmTaskbarContent)
+ *        contentClassName		[String]		Name of the class that holds the content (Subclass of ZmTaskbarPopup)
  *        rightAlign			[Boolean]		True to align the popup with the right of the button
  *        data					[Object]		Arbitrary data passed to popup object when it's created
  */
 ZmTaskbarItem = function(params) {
 	DwtComposite.call(this, params);
 	this._createHtml();
-	this._contentCallback = params.contentCalback;
 	this._contentClassName = params.contentClassName;
 
 	var buttonArgs = {
@@ -135,13 +133,8 @@ function() {
 			taskbar: this.parent,
 			data: this._data
 		};
-		if (this._contentClassName) {
-			var ctor = window.eval(this._contentClassName);
-			this._popup = new ctor(args);
-		} else {
-			args.callback = this._contentCallback;
-			this._popup = new ZmTaskbarPopup1(args);
-		}
+		var ctor = window.eval(this._contentClassName);
+		this._popup = new ctor(args);
 	}
 	return this._popup;
 };
