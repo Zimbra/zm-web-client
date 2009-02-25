@@ -355,6 +355,24 @@ ZmSpreadSheet.prototype._getAutoFillRangeDiv = function(){
 	return this._autoFillRangeDiv;
 };
 
+ZmSpreadSheet.prototype._isRangeEqual = function(range1, range2){
+    var sR1 = Math.min(range1.sR, range1.eR);
+    var sC1 = Math.min(range1.sC, range1.eC);
+    var eR1 = Math.max(range1.sR, range1.eR);
+    var eC1 = Math.max(range1.sC, range1.eC);
+
+    var sR2 = Math.min(range2.sR, range2.eR);
+    var sC2 = Math.min(range2.sC, range2.eC);
+    var eR2 = Math.max(range2.sR, range2.eR);
+    var eC2 = Math.max(range2.sC, range2.eC);
+
+    if(sR1 == sR2 && sC1 == sC2 && eR1 == eR2 && eC1 == eC2){
+        return true;
+    }
+    
+    return false;
+}
+
 ZmSpreadSheet.prototype._table_autofill_mouseMove = function(ev){
 
     var dwtev = new DwtMouseEvent();
@@ -375,23 +393,37 @@ ZmSpreadSheet.prototype._table_autofill_mouseMove = function(ev){
         var posY = dwtev.docY + this._getRelDiv().scrollTop;
         posY = posY - this._getRelDiv().offsetTop; // Relative height according to reldiv.
 
-        //if the fill series cursor is within the range
-        if(this.isRange() && this._checkBoundriesForRange(posX, posY, this._getCell(this._startRangeRow, this._startRangeCol), this._getCell(this._endRangeRow, this._endRangeCol))){
-            td = null;
-            if(!(this._startRangeRow == this._aRangeStartRow && this._endRangeRow == this._aRangeEndRow && this._startRangeCol == this._aRangeStartCol && this._endRangeCol == this._aRangeEndCol)){
-                this._showAutoFillRange(this._startRangeRow, this._startRangeCol, this._endRangeRow, this._endRangeCol);
+        var colDiff = ( startCol <= endCol ) ? (endCol == 0 ? 0 : 1 ) : -1;
+        var rowDiff = ( startRow <= endRow ) ? (endRow == 0 ? 0 : 1 ) : -1
+        if(this.isRange()){
+
+            if((startCol == this._startRangeCol && endCol == this._endRangeCol) && this._checkBoundriesForRange(posX, posY, endRow, startCol, endRow, endCol)){
+                td = null;
+            }else if((startRow == this._startRangeRow && endRow == this._endRangeRow) && this._checkBoundriesForRange(posX, posY, startRow, endCol, endRow, endCol)){
+                td = null;                
+            }else if(this._checkBoundriesForRange(posX, posY, this._startRangeRow, this._startRangeCol, this._endRangeRow, this._endRangeCol)){
+                td = null;
+                if(!this._isRangeEqual({sR: startRow, sC: startCol, eR: endRow, eC: endCol}, {sR: this._startRangeRow, sC:this._startRangeCol, eR:this._endRangeRow, eC:this._endRangeCol})){
+                    this._showAutoFillRange(this._startRangeRow, this._startRangeCol, this._endRangeRow, this._endRangeCol);
+                }
+                //Improved performance after tracking near by cell navigation
+            }else if(this._checkBoundries(posX, posY, this._getCell(endRow - rowDiff, endCol ))) { //Chk  Up Cell
+                td = this._getCell(endRow - rowDiff, endCol);
+            }else if(this._checkBoundries(posX, posY, this._getCell(endRow, endCol - colDiff))){ //Chk Left Cell
+                td = this._getCell(endRow, endCol - colDiff);
+            }else if(this._checkBoundriesForRange(posX, posY, startRow, startCol, endRow, endCol)){ //Chk for Random Cell
+                td = this._findCell( posX, posY, startRow, startCol, endRow, endCol);
             }
-        //Improved performance after tracking near by cell navigation    
-        }else if(this._checkBoundries(posX, posY, this._getCell(endRow, endCol))){  //Chk self, EndCell already selected, so neglect it
-            td = null;
-        }else if(this._checkBoundries(posX, posY, this._getCell(endRow, endCol - 1))){ //Chk Left Cell
-            td = this._getCell(endRow, endCol - 1);
-        }else if(this._checkBoundries(posX, posY, this._getCell(endRow, endCol - 1))) { //Chk  Up Cell
-            td = this._getCell(endRow, endCol - 1);
-        }else if(this._checkBoundries(posX, posY, this._getCell(endRow - 1, endCol - 1 ))){   //Chk Diagnol Cell
-            td = this._getCell(endRow - 1, endCol - 1 );
-        }else if(this._checkBoundriesForRange(posX, posY, this._getCell(startRow, startCol), this._getCell(endRow, endCol))){ //Chk for Random Cell
-            td = this._findCell( posX, posY, startRow, startCol, endRow, endCol);
+        }else{
+            if(this._checkBoundries(posX, posY, this._getCell(endRow, endCol))){  //Chk self, EndCell already selected, so neglect it
+                td = null;
+            }else if(startCol == endCol && this._checkBoundries(posX, posY, this._getCell(endRow - rowDiff, endCol ))) { //Chk  Up Cell
+                td = this._getCell(endRow - rowDiff, endCol);
+            }else if(startRow == endRow && this._checkBoundries(posX, posY, this._getCell(endRow, endCol - colDiff))){ //Chk Left Cell
+                td = this._getCell(endRow, endCol - colDiff);
+            }else if(this._checkBoundriesForRange(posX, posY, startRow, startCol, endRow, endCol)){ //Chk for Random Cell
+                td = this._findCell( posX, posY, startRow, startCol, endRow, endCol);
+            }
         }
 
     }else{
@@ -411,10 +443,10 @@ ZmSpreadSheet.prototype._table_autofill_mouseMove = function(ev){
             var dRow =  destCell.parentNode.rowIndex - 1;
             var dCol =  destCell.cellIndex - 1;
 
-            startRow = this._startRangeRow;
-            startCol = this._startRangeCol;
-            endRow   = this._endRangeRow;
-            endCol   = this._endRangeCol;
+            startRow =  Math.min(this._startRangeRow, this._endRangeRow);
+            startCol =  Math.min(this._startRangeCol, this._endRangeCol);
+            endRow   =  Math.max(this._startRangeRow, this._endRangeRow);
+            endCol   =  Math.max(this._startRangeCol, this._endRangeCol);
 
             if(dRow >= startRow && dRow <= endRow){
                  if(dCol > endCol)          endCol   = dCol;
@@ -435,15 +467,10 @@ ZmSpreadSheet.prototype._table_autofill_mouseMove = function(ev){
             if(startRow != endRow && startCol != endCol ){
                 endCol = startCol;
             }           
-        }
-
-        var sRow =  Math.min(startRow, endRow);
-        var sCol =  Math.min(startCol, endCol);
-        var eRow =  Math.max(startRow, endRow);
-        var eCol =  Math.max(startCol, endCol);
-
-        if(!(sRow == this._aRangeStartRow && eRow == this._aRangeEndRow && sCol == this._aRangeStartCol && eCol == this._aRangeEndCol)){
-            this._showAutoFillRange(sRow, sCol, eRow, eCol);
+        }        
+        
+        if(!(this._isRangeEqual({sR: startRow, sC: startCol, eR: endRow, eC: endCol}, {sR: this._aRangeStartRow, sC:this._aRangeStartCol, eR:this._aRangeEndRow, eC:this._aRangeEndCol}))){
+            this._showAutoFillRange(startRow, startCol, endRow, endCol);
         }
 
     }
@@ -469,14 +496,19 @@ ZmSpreadSheet.prototype._hideAutoFillRange = function(){
 
 };
 
-ZmSpreadSheet.prototype._showAutoFillRange = function(startRow, startCol, endRow, endCol){
+ZmSpreadSheet.prototype._showAutoFillRange = function(sRow, sCol, eRow, eCol){
 
     this._isAutoFillRange = true;
 
-    this._aRangeStartRow  = startRow;
-    this._aRangeStartCol  = startCol;
-    this._aRangeEndRow    = endRow;
-    this._aRangeEndCol    = endCol;
+    this._aRangeStartRow  = sRow;
+    this._aRangeStartCol  = sCol;
+    this._aRangeEndRow    = eRow;
+    this._aRangeEndCol    = eCol;
+
+    var startRow = Math.min(sRow, eRow);
+    var startCol = Math.min(sCol, eCol);
+    var endRow   = Math.max(sRow, eRow);
+    var endCol   = Math.max(sCol, eCol);
 
 	this._model.checkBounds(startRow, startCol);
 	this._model.checkBounds(endRow, endCol);
@@ -511,6 +543,8 @@ ZmSpreadSheet.prototype._table_autofill_mouseUp = function(ev) {
     var dwtev = new DwtMouseEvent();
     dwtev.setFromDhtmlEvent(ev);
 
+    this._model.paste(this._autoFillClipboard, ZmSpreadSheetModel.getRangeName(this._aRangeStartRow+1, this._aRangeStartCol+1, this._aRangeEndRow+1, this._aRangeEndCol+1));
+
     this._autofillRangeCapture.release();
 
     this._hideAutoFillRange();
@@ -527,6 +561,9 @@ ZmSpreadSheet.prototype._table_autoFill_mouseDown = function(ev) {
     
     var dwtev = new DwtMouseEvent();
     dwtev.setFromDhtmlEvent(ev);
+
+    this._autoFillClipboard = new ZmSpreadSheetClipboard
+		(this._model, this.getSelectionRange(), false);
 
     this._getAutoFillRangeDiv();
 
@@ -1305,11 +1342,12 @@ ZmSpreadSheet.prototype._selectRange = function(c1, c2, showSingleCell) {
 	c1 = ZmSpreadSheetModel.identifyCell(c1);
 	c2 = ZmSpreadSheetModel.identifyCell(c2);
 	if (show && c1 && c2) {
-		var startRow = Math.min(c1.row, c2.row);
+		/*var startRow = Math.min(c1.row, c2.row);
 		var startCol = Math.min(c1.col, c2.col);
 		var endRow   = Math.max(c1.row, c2.row);
 		var endCol   = Math.max(c1.col, c2.col);
-		this._showRange(startRow, startCol, endRow, endCol);
+		this._showRange(startRow, startCol, endRow, endCol); */
+        this._showRange(c1.row, c1.col, c2.row, c2.col);
 	} else
 		this._hideRange();
 };
@@ -1362,13 +1400,19 @@ ZmSpreadSheet.prototype._displayRangeIfAny = function() {
 	}
 };
 
-ZmSpreadSheet.prototype._showRange = function(startRow, startCol, endRow, endCol) {
+ZmSpreadSheet.prototype._showRange = function(sRow, sCol, eRow, eCol) {
 
     this._isRange = true;
-    this._startRangeRow = startRow;
-    this._startRangeCol = startCol;
-    this._endRangeRow   = endRow;
-    this._endRangeCol   = endCol;
+
+    this._startRangeRow = sRow;
+    this._startRangeCol = sCol;
+    this._endRangeRow   = eRow;
+    this._endRangeCol   = eCol;
+
+    var startRow = Math.min(sRow, eRow);
+    var startCol = Math.min(sCol, eCol);
+    var endRow   = Math.max(sRow, eRow);
+    var endCol   = Math.max(sCol, eCol);
 
 	this._model.checkBounds(startRow, startCol);
 	this._model.checkBounds(endRow, endCol);
@@ -1566,21 +1610,24 @@ ZmSpreadSheet.prototype._table_selrange_MouseMove = function(ev) {
 
         posY = posY - this._getRelDiv().offsetTop; // Relative height according to reldiv.
 
+        var colDiff = ( startCol <= endCol ) ? (endCol == 0 ? 0 : 1 ) : -1;
+        var rowDiff = ( startRow <= endRow ) ? (endRow == 0 ? 0 : 1 ) : -1
+
         //Improved performance after tracking near by cell navigation
         if(this._checkBoundries(posX, posY, this._getCell(endRow, endCol))){  //Chk self, EndCell already selected, so neglect it
             td = null;
-        }else if(this._checkBoundries(posX, posY, this._getCell(endRow, endCol - 1))){ //Chk Left Cell
-            td = this._getCell(endRow, endCol - 1);
-        }else if(this._checkBoundries(posX, posY, this._getCell(endRow, endCol - 1))) { //Chk  Up Cell
-            td = this._getCell(endRow, endCol - 1);
-        }else if(this._checkBoundries(posX, posY, this._getCell(endRow - 1, endCol - 1 ))){   //Chk Diagnol Cell
-            td = this._getCell(endRow - 1, endCol - 1 );
-        }else if(this._checkBoundriesForRange(posX, posY, this._getCell(startRow, startCol), this._getCell(endRow, endCol))){ //Chk for Random Cell
+        }else if(this._checkBoundries(posX, posY, this._getCell(endRow, endCol - colDiff))){ //Chk Left Cell
+            td = this._getCell(endRow, endCol - colDiff);
+        }else if(this._checkBoundries(posX, posY, this._getCell(endRow - rowDiff, endCol  ))) { //Chk  Up Cell
+            td = this._getCell(endRow - rowDiff, endCol);
+         //TODO: Should we really include this dialognal check? Its very unlikely becoz most of the times its ( Left, Up ) combination.   
+        }else if(this._checkBoundries(posX, posY, this._getCell(endRow - rowDiff, endCol - colDiff ))){   //Chk Diagnol Cell
+            td = this._getCell(endRow - rowDiff, endCol - colDiff);
+        }else if(this._checkBoundriesForRange(posX, posY, startRow, startCol, endRow, endCol)){ //Chk for Random Cell
             td = this._findCell( posX, posY, startRow, startCol, endRow, endCol);
         }
 
-    }else{
-        
+    }else{       
         td = el;
         while (td && td !== table && !/^td$/i.test(td.tagName))
             td = td.parentNode;
@@ -1606,10 +1653,20 @@ ZmSpreadSheet.prototype._checkBoundries = function(x, y, cell) {
     return false;
 };
 
-ZmSpreadSheet.prototype._checkBoundriesForRange = function(x, y, startCell, endCell){
+ZmSpreadSheet.prototype._checkBoundriesForRange = function(x, y, sRow, sCol, eRow, eCol){
+
+    var startRow = Math.min(sRow, eRow);
+    var startCol = Math.min(sCol, eCol);
+    var endRow   = Math.max(sRow, eRow);
+    var endCol   = Math.max(sCol, eCol);
+
+    var startCell = this._getCell(startRow, startCol);
+    var endCell   = this._getCell(endRow, endCol);
+
     if( startCell && endCell && ( x >= startCell.offsetLeft && x <= (endCell.offsetLeft + endCell.offsetWidth) ) && ( y >= startCell.offsetTop && y <= ( endCell.offsetTop+ endCell.offsetHeight) ) ){
         return true;
     }
+
     return false;
 };
 
