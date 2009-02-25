@@ -100,6 +100,7 @@ function() {
 	var sections = {
 		CONTACTS: {
 			title: ZmMsg.addressBook,
+			icon: "ContactsApp",
 			templateId: "prefs.Pages#Contacts",
 			priority: 50,
 			precondition: ZmSetting.CONTACTS_ENABLED,

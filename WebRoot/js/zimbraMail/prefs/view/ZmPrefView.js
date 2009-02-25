@@ -39,10 +39,12 @@ ZmPrefView = function(params) {
 	this.setScrollStyle(DwtControl.SCROLL);
 	this.prefView = {};
     this._tabId = {};
+	this._sectionId = {};
     this._hasRendered = false;
 
 	this.setVisible(false);
-}
+	this.getTabBar().setVisible(false);
+};
 
 ZmPrefView.prototype = new DwtTabView;
 ZmPrefView.prototype.constructor = ZmPrefView;
@@ -58,6 +60,17 @@ function () {
 ZmPrefView.prototype.getController =
 function() {
 	return this._controller;
+};
+
+ZmPrefView.prototype.getSectionForTab = function(tabKey) {
+	var sectionId = this._sectionId[tabKey];
+	return ZmPref.getPrefSectionMap()[sectionId];
+};
+
+ZmPrefView.prototype.getTabForSection = function(sectionOrId) {
+	var section = typeof sectionOrId == "string" ? ZmPref.getPrefSectionMap()[sectionOrId] : sectionOrId;
+	var sectionId = section && section.id;
+	return this._tabId[sectionId];
 };
 
 /**
@@ -82,6 +95,7 @@ function() {
 		var tabButtonId = ZmId.getTabId(this._controller._currentView, section.title.replace(/[' ]/ig,"_"));
 		var tabId = this.addTab(section.title, view, tabButtonId);
         this._tabId[section.id] = tabId;
+		this._sectionId[tabId] = section.id;
     }
 
 	this.resetKeyBindings();
@@ -284,7 +298,7 @@ function(section, viewPage, dirtyCheck, noValidation, list, errors, view) {
 		}
 
 		if (!unchanged) {
-			var maxLength = setup ? setup.maxLength : null
+			var maxLength = setup ? setup.maxLength : null;
 			var validationFunc = setup ? setup.validationFunction : null;
 			var isValid = true;
 			if (!noValidation && maxLength && (value.length > maxLength)) {

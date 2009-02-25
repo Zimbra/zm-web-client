@@ -35,8 +35,6 @@ ZmOverviewController = function(container) {
 	
 	this._overview		= {};
 	this._controller	= {};
-	this._treeIds		= {};
-	this._treeIdHash	= {};
 	this._appOverviewId	= {};
 };
 

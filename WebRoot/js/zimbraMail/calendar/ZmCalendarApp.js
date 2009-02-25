@@ -120,6 +120,7 @@ function() {
 	var sections = {
 		CALENDAR: {
 			title: ZmMsg.calendar,
+			icon: "CalendarApp",
 			templateId: "prefs.Pages#Calendar",
 			priority: 80,
 			precondition: ZmSetting.CALENDAR_ENABLED,

@@ -204,7 +204,7 @@ function() {
 		this._prefsView = new ZmPrefView({parent:this._container, posStyle:Dwt.ABSOLUTE_STYLE, controller:this});
 		var elements = {};
 		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
-		elements[ZmAppViewMgr.C_APP_CONTENT_FULL] = this._prefsView;
+		elements[ZmAppViewMgr.C_APP_CONTENT] = this._prefsView;
 		this._app.createView({viewId:this._currentView, elements:elements, callbacks:callbacks, isAppView:true});
 		this._initializeTabGroup();
 	}

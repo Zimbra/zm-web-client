@@ -37,6 +37,7 @@ ZmApp.CLASS[ZmApp.PREFERENCES]		= "ZmPreferencesApp";
 ZmApp.SETTING[ZmApp.PREFERENCES]	= ZmSetting.OPTIONS_ENABLED;
 ZmApp.LOAD_SORT[ZmApp.PREFERENCES]	= 10;
 ZmApp.QS_ARG[ZmApp.PREFERENCES]		= "options";
+ZmOrganizer.PREF_PAGE				= "PREF_PAGE";
 
 ZmPreferencesApp.prototype = new ZmApp;
 ZmPreferencesApp.prototype.constructor = ZmPreferencesApp;
@@ -110,6 +111,36 @@ function() {
 	AjxDispatcher.registerMethod("GetFilterController", ["PreferencesCore", "Preferences"], new AjxCallback(this, this.getFilterController));
 };
 
+ZmPreferencesApp.prototype._registerOrganizers =  function() {
+	ZmOrganizer.registerOrg(ZmOrganizer.PREF_PAGE,
+							{app:				ZmApp.PREFERENCES,
+//							 nameKey:			"folder",
+//							 defaultFolder:		ZmOrganizer.ID_INBOX,
+//							 soapCmd:			"FolderAction",
+//							 firstUserId:		256,
+							 orgClass:			"ZmPrefPage",
+							 orgPackage:		"PreferencesCore",
+							 treeController:	"ZmPrefPageTreeController",
+							 labelKey:			"preferences",
+//							 itemsKey:			"messages",
+//							 hasColor:			true,
+//							 defaultColor:		ZmOrganizer.C_NONE,
+							 treeType:			ZmOrganizer.PREF_PAGE,
+//							 dropTargets:		[ZmOrganizer.FOLDER],
+//							 views:				["message", "conversation"],
+//							 folderKey:			"mailFolder",
+//							 mountKey:			"mountFolder",
+//							 createFunc:		"ZmOrganizer.create",
+//							 compareFunc:		"ZmFolder.sortCompare",
+//							 shortcutKey:		"F",
+//							 newOp:				ZmOperation.NEW_FOLDER,
+//							 openSetting:		ZmSetting.FOLDER_TREE_OPEN,
+							 displayOrder:		100,
+							 compareFunc:		function(a,b) { return 0; }
+							});
+
+};
+
 ZmPreferencesApp.prototype._registerSettings =
 function(settings) {
 	settings = settings || appCtxt.getSettings();
@@ -130,9 +161,8 @@ function() {
 							  textPrecedence:		50,
 							  chooserTooltipKey:	"goToOptions",
 							  button:				appCtxt.isChildWindow ? null : ZmAppChooser.B_OPTIONS,
-							  overviewTrees:		[ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG],
-							  showZimlets:			true,
-							  searchTypes:			[ZmItem.MSG, ZmItem.CONV],
+							  overviewTrees:		[ZmOrganizer.PREF_PAGE],
+							  showZimlets:			false,
 							  gotoActionCode:		ZmKeyMap.GOTO_OPTIONS,
 							  chooserSort:			180,
 							  supportsMultiMbox:	true
@@ -144,6 +174,7 @@ function() {
 	var sections = {
 		GENERAL: {
 			title: ((appCtxt.isOffline && appCtxt.multiAccounts) ? ZmMsg.global : ZmMsg.general),
+			description: "[General settings]",
 			templateId: "prefs.Pages#General",
 			priority: 0,
 			prefs: [
@@ -210,6 +241,7 @@ function() {
 		},
         PREF_ZIMLETS: {
 			title: ZmMsg.zimlets,
+	        icon: "Zimlet",
 			templateId: "prefs.Pages#Zimlets",
 			manageDirty: true,
             priority: 120,

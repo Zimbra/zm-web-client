@@ -195,6 +195,7 @@ function() {
 	var sections = {
 		MAIL: {
 			title: ZmMsg.mail,
+			icon: "MailApp",
 			templateId: "prefs.Pages#Mail",
 			priority: 10,
 			precondition: appCtxt.get(ZmSetting.MAIL_ENABLED),
@@ -238,6 +239,8 @@ function() {
 			}
 		},
 		ACCOUNTS: {
+			parentId: "MAIL",
+			icon: "POPAccount",
 			title: ZmMsg.accounts,
 			templateId: "prefs.Pages#Accounts",
 			priority: 60,
@@ -251,6 +254,7 @@ function() {
 			}
 		},
 		SIGNATURES: {
+			parentId: "MAIL",
 			title: ZmMsg.signatures,
 			templateId: "prefs.Pages#Signatures",
 			priority: 30,
@@ -266,6 +270,8 @@ function() {
 			}
 		},
 		FILTERS: {
+			parentId: "MAIL",
+			icon: "MailRule",
 			title: ZmMsg.filterRules,
 			templateId: "prefs.Pages#MailFilters",
 			priority: 70,

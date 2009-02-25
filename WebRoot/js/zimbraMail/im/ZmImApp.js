@@ -299,6 +299,7 @@ ZmImApp.prototype._registerPrefs = function() {
 	var sections = {
 		IM: {
 			title: ZmMsg.im,
+			icon: "ImStartChat",
 			templateId: "prefs.Pages#IM",
 			priority: 90,
 			precondition: ZmSetting.IM_ENABLED,

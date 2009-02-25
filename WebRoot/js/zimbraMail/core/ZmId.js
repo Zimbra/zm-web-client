@@ -302,6 +302,11 @@ function(context, tabName) {
 	return DwtId._makeId(ZmId.WIDGET_TAB, context, tabName);
 };
 
+/** Returns an ID for a pref page tab. */
+ZmId.getPrefPageId = function(tabKey) {
+	return "PREF_PAGE_"+tabKey;
+};
+
 /**************************************************************************
  * 
  * Gettings IDs for different areas of ZCS
@@ -670,6 +675,7 @@ ZmId.ORG_SEARCH				= "SEARCH";
 ZmId.ORG_TAG				= "TAG";
 ZmId.ORG_TASKS				= "TASKS";
 ZmId.ORG_ZIMLET				= "ZIMLET";
+ZmId.ORG_PREF_PAGE			= "PREF_PAGE";
 
 // fields of an item
 ZmId.FLD_ATTACHMENT		= "at";
