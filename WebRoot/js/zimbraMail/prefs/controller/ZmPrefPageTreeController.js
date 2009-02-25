@@ -32,12 +32,6 @@ ZmPrefPageTreeController.prototype.toString = function() {
 ZmPrefPageTreeController.prototype.show = function(params) {
 	var treeView = ZmTreeController.prototype.show.apply(this, arguments);
 
-	// turn off DND for this overview
-	// NOTE: This does NOT work. There's only ONE overview!
-	// NOTE: How do I have a custom overview for the Prefs app???
-//	var overview = appCtxt.getOverviewController().getOverview(ZmOrganizer.PREF_PAGE);
-//	overview.dndSupported = false;
-
 	// populate tree
 	var app = appCtxt.getApp(ZmApp.PREFERENCES);
 	var controller = app.getPrefController();
@@ -99,6 +93,10 @@ ZmPrefPageTreeController.prototype.show = function(params) {
 //
 
 // ZmTreeController methods
+
+ZmPrefPageTreeController.prototype._dragListener = function(ev) {
+	ev.operation = Dwt.DND_DROP_NONE;
+};
 
 ZmPrefPageTreeController.prototype._dropListener = function(ev) {
 	ev.doIt = false;
