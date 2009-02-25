@@ -90,9 +90,8 @@ function(listener) {
 ZmAppChooser.prototype.addButton =
 function(id, params) {
 
-	params.parent = this;
-    params.id = ZmId.getButtonId(ZmId.APP, id);
-    var button = new ZmAppButton(params);
+	var buttonParams = {parent:this, id:ZmId.getButtonId(ZmId.APP, id), text:params.text, image:params.image};
+    var button = new ZmAppButton(buttonParams);
 	button.setToolTipContent(params.tooltip);
 	button.textPrecedence = params.textPrecedence;
 	button.imagePrecedence = params.imagePrecedence;
