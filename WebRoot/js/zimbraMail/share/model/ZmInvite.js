@@ -568,4 +568,3 @@ function() {
 	
 	return false;
 };
-

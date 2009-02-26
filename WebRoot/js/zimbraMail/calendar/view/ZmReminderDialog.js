@@ -314,9 +314,10 @@ function() {
 		ZmSoundAlert.getInstance().start();
 	}
 
-	if (appCtxt.get(ZmSetting.CAL_REMINDER_NOTIFY_TOASTER))
+	if (appCtxt.isOffline && window.platform &&
+		(AjxEnv.isMac || AjxEnv.isWindows) &&
+		appCtxt.get(ZmSetting.OFFLINE_CALENDAR_TOASTER_ENABELD))
 	{
-		AjxPackage.require("Alert");
 		var winText = [];
 		var appts = this._list.getArray();
 		// only show, at most, five appointment reminders
@@ -325,7 +326,7 @@ function() {
 			var delta = this._formatDeltaString(this._computeDelta(appt));
 			var text = [appt.getName(), ", ", this.getDurationText(appt), "\n(", delta, ")"].join("");
 			if (AjxEnv.isMac) {
-				ZmDesktopAlert.getInstance().start(ZmMsg.appointmentReminder, text);
+				window.platform.showNotification(ZmMsg.appointmentReminder, text, "resource://webapp/icons/default/launcher.icns");
 			} else if (AjxEnv.isWindows) {
 				winText.push(text);
 			}
@@ -335,7 +336,7 @@ function() {
 			if (appts.length > 5) {
 				winText.push(ZmMsg.andMore);
 			}
-			ZmDesktopAlert.getInstance().start(ZmMsg.appointmentReminder, winText.join("\n"), 5);
+			window.platform.icon().showNotification(ZmMsg.appointmentReminder, winText.join("\n"), 5);
 		}
 	}
 

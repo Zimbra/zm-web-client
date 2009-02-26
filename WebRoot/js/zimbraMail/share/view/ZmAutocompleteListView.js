@@ -63,7 +63,7 @@ ZmAutocompleteListView = function(params) {
 	var className = params.className ? params.className : "ZmAutocompleteListView";
 	DwtComposite.call(this, params.parent, className, DwtControl.ABSOLUTE_STYLE);
 
-	this._dataClass = this._dataAPI = params.dataClass;
+	this._dataClass = params.dataClass;
 	this._dataLoader = params.dataLoader;
 	this._dataLoaded = false;
 	this._matchValue = params.matchValue;
@@ -350,7 +350,6 @@ function(info) {
 	if (!info || (info.text == "undefined")) { return; }
 	if (this._dataLoader && !this._dataLoaded) {
 		this._data = this._dataLoader.call(this._dataClass);
-		this._dataAPI = this._data;
 		this._dataLoaded = true;
 	}
 
@@ -427,7 +426,7 @@ function(on) {
 		}
 		var div = this._getDiv(ZmAutocompleteListView.WAIT_ID);
 		this._waitDivId = div.id;
-		this._addRow(div, ZmMsg.autocompleteWaiting, "DwtWait16Icon");
+		this._addRow(div, ZmMsg.galAutocompleteWaiting, "DwtWait16Icon");
 		this.getHtmlElement().appendChild(div);
 	} else {
 		var ta = new AjxTimedAction(this, this._clearWaiting);
@@ -501,7 +500,7 @@ function(text, start) {
 		}
 		if (ZmAutocompleteListView.IS_DELIM[c]) {
 			var chunk = text.substring(start, i);
-			if (this._dataAPI.isComplete && this._dataAPI.isComplete(chunk)) {
+			if (this._data.isComplete && this._data.isComplete(chunk)) {
 				DBG.println(AjxDebug.DBG3, "skipping completed chunk: " + chunk);
 				start = i + 1;
 				while (text.charAt(start) == ' ') {	// ignore leading space
@@ -527,7 +526,7 @@ ZmAutocompleteListView.prototype._autocomplete =
 function(chunk, callback) {
 	DBG.println(AjxDebug.DBG3, "ZmAutocompleteListView: _autocomplete");
 
-	if (!chunk || !(this._dataAPI && this._dataAPI.autocompleteMatch)) { return; }
+	if (!chunk) { return; }
 	var str = AjxStringUtil.trim(chunk.str);
 
 	// if string is empty or already a delimited address, no reason to look for matches
@@ -550,7 +549,7 @@ function(chunk, callback) {
 	this._removeAll();
 
 	var respCallback = new AjxCallback(this, this._handleResponseAutocomplete, [str, chunk, text, start, callback]);
-	this._dataAPI.autocompleteMatch(str, respCallback, this, this._options);
+	this._data.autocompleteMatch(str, respCallback, this, this._options);
 };
 
 ZmAutocompleteListView.prototype._handleResponseAutocomplete =
@@ -558,7 +557,7 @@ function(str, chunk, text, start, callback, list) {
 	var retValue;
 	var change = false;
 	// see if it's already a complete address
-	if (list && list.length == 1 && (this._dataAPI.isUniqueValue && this._dataAPI.isUniqueValue(str))) {
+	if (list && list.length == 1 && this._data.isUniqueValue(str)) {
 		DBG.println(AjxDebug.DBG2, "unique match, hiding autocomplete list");
 		retValue = {text: text, start: start};
 	}
@@ -613,8 +612,8 @@ ZmAutocompleteListView.prototype._complete =
 function(text, str, hasDelim) {
 	DBG.println(AjxDebug.DBG3, "ZmAutocompleteListView: _complete: selected is " + this._selected);
 	var match = this._getSelected();
-	if (!match && str && hasDelim && this._dataAPI.quickComplete) {
-		match = this._dataAPI.quickComplete(str);
+	if (!match && str && hasDelim && this._data.quickComplete) {
+		match = this._data.quickComplete(str);
 	}
 	if (!match)	{ return; }
 
@@ -714,7 +713,7 @@ function(list, sel) {
 		var div = this._getDiv(i);
 		div._pos = i;
 		var match = this._matches[i];
-		if (match && (match.text || match.icon)) {
+		if (match) {
 			this._addRow(div, match.text, match.icon);
 			thisHtmlElement.appendChild(div);
 		}

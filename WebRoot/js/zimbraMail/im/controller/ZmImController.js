@@ -25,15 +25,16 @@ ZmImController = function() {
 	this._listeners = {};
 	this._listeners[ZmOperation.NEW_ROSTER_ITEM] = new AjxListener(this, this._newRosterItemListener);
 	this._listeners[ZmOperation.IM_NEW_CHAT] = new AjxListener(this, this._imNewChatListener);
+	this._listeners[ZmOperation.IM_NEW_GROUP_CHAT] = new AjxListener(this, this._imNewGroupChatListener);
 	this._listeners[ZmOperation.EDIT_PROPS] = new AjxListener(this, this._editRosterItemListener);
 	this._listeners[ZmOperation.IM_CREATE_CONTACT] = new AjxListener(this, this._imCreateContactListener);
 	this._listeners[ZmOperation.IM_ADD_TO_CONTACT] = new AjxListener(this, this._imAddToContactListener);
 	this._listeners[ZmOperation.IM_EDIT_CONTACT] = new AjxListener(this, this._imEditContactListener);
+	this._listeners[ZmOperation.IM_GATEWAY_LOGIN] = new AjxListener(this, this._imGatewayLoginListener);
 	this._listeners[ZmOperation.DELETE] = new AjxListener(this, this._deleteListener);
 	this._listeners[ZmOperation.IM_BLOCK_BUDDY] = new AjxListener(this, this._blockBuddyListener);
 	this._listeners[ZmOperation.IM_UNBLOCK_BUDDY] = new AjxListener(this, this._unblockBuddyListener);
 	this._listeners[ZmOperation.IM_DELETE_GROUP] = new AjxListener(this, this._deleteGroupListener);
-	this._listeners[ZmOperation.IM_BUDDY_ARCHIVE] = new AjxListener(this, this._buddyArchiveListener);
 };
 
 ZmImController.prototype.toString = function() {
@@ -61,26 +62,28 @@ ZmImController.prototype._clearDialog = function(dlg) {
 	dlg.popdown();
 };
 
-ZmImController.prototype._newRosterItemListener =
-function(ev) {
-	if (ZmImApp.loggedIn()) {
-		this._newRosterItem(ev);
-	} else {
-		ZmImApp.INSTANCE.login({ callback: new AjxCallback(this, this._newRosterItem, [ev]) });
+ZmImController.prototype._imGatewayLoginListener = function(ev) {
+	var dlg = appCtxt.getIMGatewayLoginDialog();
+	if (!this._registerGatewayCb) {
+		this._registerGatewayCb = new AjxCallback(this, this._registerGatewayCallback);
 	}
+	if (ev && ev.gwType)
+		dlg.selectGwType(ev.gwType);
+	ZmController.showDialog(dlg, this._registerGatewayCb);
 };
 
-ZmImController.prototype._newRosterItem =
+ZmImController.prototype._registerGatewayCallback = function(service, screenName, password) {
+	appCtxt.getIMGatewayLoginDialog().popdown();
+	AjxDispatcher.run("GetRoster").registerGateway(service, screenName, password);
+};
+
+ZmImController.prototype._newRosterItemListener =
 function(ev) {
 	// Special handling for yahoo email addresses. Don't allow them unless signed in
 	// to y! interop, and make sure the service is correctly initialized.
 	if (ev && ev.address) {
 		var match = /(.*)@yahoo\.com/.exec(ev.address);
 		if (match) {
-			ev.address = match[1];
-			ev.service = "yahoo";
-		}
-		if (ev.service == "yahoo") {
 			var gateway = ZmImApp.INSTANCE.getRoster().getGatewayByType("yahoo");
 			if (!gateway) {
 				var msgDialog = appCtxt.getMsgDialog();
@@ -96,30 +99,33 @@ function(ev) {
 				yesNoDialog.popup();
 				return;
 			}
+			ev.address = match[1];
+			ev.service = "yahoo";
 		}
 	}
 
-	var popup = ZmTaskbarController.INSTANCE.showNewBuddyPopup();
+	var newDialog = appCtxt.getNewRosterItemDialog();
+	newDialog.setTitle(ZmMsg.createNewRosterItem);
+	if (!this._newRosterItemCb) {
+		this._newRosterItemCb = new AjxCallback(this, this._newRosterItemCallback);
+	}
+	ZmController.showDialog(newDialog, this._newRosterItemCb);
 	if (ev) {
-		if (ev.group) {
-			popup.setGroups(ev.group);
-		}
-		if (ev.name) {
-			popup.setName(ev.name);
-		}
-		if (ev.address) {
-			popup.setAddress(ev.address);
-		}
-		if (ev.service) {
-			popup.setService(ev.service);
-		}
+		if (ev.group)
+			newDialog.setGroups(ev.group);
+		if (ev.name)
+			newDialog.setName(ev.name);
+		if (ev.address)
+			newDialog.setAddress(ev.address);
+		if (ev.service)
+			newDialog.setService(ev.service);
 	}
 };
 
 ZmImController.prototype._loginYesCallback =
 function(dialog, ev) {
 	dialog.popdown();
-	ZmTaskbarController.INSTANCE.showGatewayPopup("yahoo");
+	this._imGatewayLoginListener({ gwType: "yahoo" });
 };
 
 ZmImController.prototype._loginNoCallback =
@@ -129,28 +135,24 @@ function(dialog, ev) {
 
 ZmImController.prototype._editRosterItemListener =
 function(ev) {
-	var popup = ZmTaskbarController.INSTANCE.showNewBuddyPopup();
-	popup.setTitle(ZmMsg.editRosterItem);
+	var newDialog = appCtxt.getNewRosterItemDialog();
+	newDialog.setTitle(ZmMsg.editRosterItem);
+	if (!this._newRosterItemCb) {
+		this._newRosterItemCb = new AjxCallback(this, this._newRosterItemCallback);
+	}
+	ZmController.showDialog(newDialog, this._newRosterItemCb);
 	var ri = ev.buddy;
-	popup.setAddress(ri.getAddress(), true);
-	popup.setName(ri.getName());
-	popup.setGroups(ri.getGroups());
+	newDialog.setAddress(ri.getAddress(), true);
+	newDialog.setName(ri.getName());
+	newDialog.setGroups(ri.getGroups());
 };
 
 
 ZmImController.prototype._imNewChatListener =
 function(ev) {
-	if (ZmImApp.loggedIn()) {
-		this._newChat(ev);
-	} else {
-		ZmImApp.INSTANCE.login({ callback: new AjxCallback(this, this._newChat, [ev]) });
-	}
-};
-
-ZmImController.prototype._newChat =
-function(ev) {
 	if (ev && ev.buddy) {
-		ZmTaskbarController.INSTANCE.chatWithRosterItem(ev.buddy);
+		var clc = AjxDispatcher.run("GetChatListController");
+		clc.chatWithRosterItem(ev.buddy);
 	} else {
 		// select from GAL
 		ZmImNewChatDlg.show(
@@ -166,7 +168,8 @@ function(contact, dlg, text, el, match) {
 	var item = this._getRosterItemForChat(contact, match.fullAddress);
 	if (item) {
 		dlg.popdown();
-		ZmTaskbarController.INSTANCE.chatWithRosterItem(item);
+		var clc = AjxDispatcher.run("GetChatListController");
+		clc.chatWithRosterItem(item);
 	}
 };
 
@@ -174,7 +177,8 @@ ZmImController.prototype._newChatOkCallback =
 function(selectedContact, contactText) {
 	var item = this._getRosterItemForChat(selectedContact, contactText);
 	if (item) {
-		ZmTaskbarController.INSTANCE.chatWithRosterItem(item);
+		var clc = AjxDispatcher.run("GetChatListController");
+		clc.chatWithRosterItem(item);
 		return true;
 	}
 };
@@ -208,6 +212,21 @@ function(contact, fullAddress){
 		item = new ZmRosterItem(addr, list, name, presence);
 	}
 	return item;
+};
+
+ZmImController.prototype._imNewGroupChatListener =
+function(ev) {
+	// NOT IMPLEMENTED
+// 	var org = this._getActionedOrganizer(ev);
+// 	var clc = AjxDispatcher.run("GetChatListController");
+// 	clc.chatWithRosterItems(org.getRosterItems(), org.getName()+" "+ZmMsg.imGroupChat);
+};
+
+// Create a roster item
+ZmImController.prototype._newRosterItemCallback =
+function(addr, rname, groups) {
+	appCtxt.getNewRosterItemDialog().popdown();
+	this._imApp.getRoster().createRosterItem(addr, rname, groups);
 };
 
 ZmImController.prototype._imCreateContactListener = function(ev) {
@@ -285,61 +304,4 @@ ZmImController.prototype._deleteGroupListener = function(ev) {
 	} else {
 		treeItem.dispose();
 	}
-};
-
-ZmImController.prototype._buddyArchiveListener = function(ev) {
-	var item = ev.buddy;
-	var args = {
-		query: "in:chats from:" + item.id,
-		types: [appCtxt.getApp(ZmApp.MAIL).getGroupMailBy()],
-		getHtml: appCtxt.get(ZmSetting.VIEW_AS_HTML),
-		searchFor: ZmId.SEARCH_MAIL
-	};
-	appCtxt.getSearchController().search(args);
-};
-
-ZmImController.prototype._createConferenceListener =
-function(ev) {
-	AjxDispatcher.require([ "IMConference" ]);
-	var params = {
-		title: ZmMsg.imNewConferenceRoomTitle,
-		callback: new AjxCallback(this, this._newConferenceOkCallback)
-	};
-	ZmNewConferenceRoomDialog.getInstance().popup(params);
-};
-
-ZmImController.prototype._newConferenceOkCallback =
-function(data) {
-	ZmImApp.INSTANCE.getRoster().getConferenceServices(new AjxCallback(this, this._handleResponseGetServices, [data]));
-};
-
-ZmImController.prototype._handleResponseGetServices =
-function(data, services) {
-	services[0].createRoom(data.name, new AjxCallback(this, this._handleResponseCreateRoom, [data]));
-};
-
-ZmImController.prototype._handleResponseCreateRoom =
-function(data, room) {
-	if (room.status == ZmConferenceRoom.STATUS.NEW) {
-		room.configure(data.config, new AjxCallback(this, this._handleResponseConfigureRoom, [data]));
-	} else {
-//TODO
-//		this._alert("Room already created: " + room.id);
-	}
-};
-
-ZmImController.prototype._handleResponseConfigureRoom =
-function(data, room) {
-	data.dialog.popdown();
-};
-
-ZmImController.prototype._browseConferencesListener =
-function(ev) {
-	var callback = new AjxCallback(this, this._getConferenceServicesCallback);
-	AjxDispatcher.run("GetRoster").getConferenceServices(callback);
-};
-
-ZmImController.prototype._getConferenceServicesCallback =
-function(conferenceServices) {
-	ZmConferenceDialog.getInstance().popup();
 };
