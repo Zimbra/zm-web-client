@@ -743,7 +743,7 @@ function(params) {
 
 ZmComposeController.prototype._initializeToolBar =
 function() {
-	if (this._toolbar) return;
+	if (this._toolbar) { return; }
 
 	var buttons = [ZmOperation.NEW_MENU, ZmOperation.SEP, ZmOperation.SEND];
 
@@ -819,6 +819,8 @@ function() {
 		tb._ZmListController_this = this;
 		tb._ZmListController_newDropDownListener = listener;
 	}
+
+	this._setNewButtonProps(ZmMsg.compose, "NewMessage", "NewMessageDis", ZmOperation.NEW_MESSAGE);
 };
 
 ZmComposeController.prototype._setAddSignatureVisibility =
@@ -832,6 +834,16 @@ function(identity) {
 		}
 	}
 	return visible;
+};
+
+ZmComposeController.prototype._setNewButtonProps =
+function(toolTip, enabledIconId, disabledIconId, defaultId) {
+	var newButton = this._toolbar.getButton(ZmOperation.NEW_MENU);
+	if (newButton) {
+		newButton.setToolTipContent(toolTip);
+		newButton.setImage(enabledIconId);
+		this._defaultNewId = defaultId;
+	}
 };
 
 ZmComposeController.prototype._createOptionsMenu =
