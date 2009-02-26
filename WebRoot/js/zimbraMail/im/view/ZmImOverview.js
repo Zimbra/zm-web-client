@@ -48,14 +48,6 @@ ZmImOverview = function(parent, params) {
 		buddy : [ ZmOperation.IM_NEW_CHAT,
 			ZmOperation.IM_BUDDY_ARCHIVE,
 
-			// privacy
-			ZmOperation.SEP, //-----------
-			ZmOperation.IM_BLOCK_BUDDY,
-			ZmOperation.IM_UNBLOCK_BUDDY,
-
-			//ZmOperation.IM_BLOCK_DOMAIN,
-			//ZmOperation.IM_UNBLOCK_DOMAIN,
-
 			ZmOperation.SEP, //-----------
 			ZmOperation.EDIT_PROPS, ZmOperation.DELETE,
 			ZmOperation.SEP, //-----------
