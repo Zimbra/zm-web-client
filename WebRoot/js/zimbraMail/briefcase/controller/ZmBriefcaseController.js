@@ -321,7 +321,7 @@ function(items) {
 
           //filter Notebook documents
             var temp_list = items;
-            this._list = new ZmMailList(ZmItem.MIXED, this._currentSearch);
+            this._list = new ZmList(ZmItem.MIXED, this._currentSearch);
             if(temp_list){
                 var temp_arr = temp_list.getArray();
                 for (var i=0; i < temp_arr.length ; i++) {
