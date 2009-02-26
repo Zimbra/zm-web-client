@@ -541,7 +541,10 @@ function(list, continueCallback) {
 
 ZmPreferencesPage.prototype._createPageHtml =
 function(templateId, data) {
-	this.getContentHtmlElement().innerHTML = AjxTemplate.expand(templateId, data);
+	var template = AjxTemplate.getTemplate(templateId);
+	if (template) {
+		this.getContentHtmlElement().innerHTML = AjxTemplate.expand(templateId, data);
+	}
 };
 
 /*
