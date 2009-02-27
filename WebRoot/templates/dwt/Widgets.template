@@ -244,6 +244,21 @@
   </table>
 </template>
 
+<template id='dwt.Widgets#ZTabBarFloat' class='ZWidget'>
+<div id='${id}_items'>
+      <$= AjxTemplate.expand("#ZTabBarPrefixFloat", data) $>
+      <$= AjxTemplate.expand("#ZTabBarSuffixFloat", data) $>
+</div>      
+</template>
+
+<template id='dwt.Widgets#ZTabBarPrefixFloat'>
+  <div id='${id}_prefix' class='ZTabBarPrefix'>&nbsp;</div>
+</template>
+
+<template id='dwt.Widgets#ZTabBarSuffixFloat'>
+  <div id='${id}_suffix' class='ZTabBarSuffix'>&nbsp;</div>
+</template>
+
 <template id='dwt.Widgets#ZTabBarPrefix'>
   <td id='${id}_prefix' class='ZTabBarPrefix'>&nbsp;</td>
 </template>
@@ -255,6 +270,15 @@
 <template id='dwt.Widgets#ZTab' class='ZWidget'>
   <$ var buttonClass = data.buttonClass || "Tab" $> 
   <table id='${id}_select' class='Z<$=buttonClass$>Table Z<$=buttonClass$>Border ZWidgetTable ZWidgetBorder' cellspacing=0 cellpadding=0><tr>
+    <td id='${id}_left_icon'  class='ZLeftIcon ZWidgetIcon'></td>
+    <td id='${id}_title'		 class='ZWidgetTitle'></td>
+    <td id='${id}_right_icon' class='ZRightIcon ZWidgetIcon'></td>
+  </tr></table>
+</template>
+
+<template id='dwt.Widgets#ZTabFloat' class='ZWidget'>
+  <$ var buttonClass = data.buttonClass || "Tab" $> 
+  <table id='${id}_select' class='Z<$=buttonClass$>Table Z<$=buttonClass$>Border ZWidgetBorder' cellspacing=0 cellpadding=0><tr>
     <td id='${id}_left_icon'  class='ZLeftIcon ZWidgetIcon'></td>
     <td id='${id}_title'		 class='ZWidgetTitle'></td>
     <td id='${id}_right_icon' class='ZRightIcon ZWidgetIcon'></td>
