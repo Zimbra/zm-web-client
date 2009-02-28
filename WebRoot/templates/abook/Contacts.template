@@ -907,7 +907,7 @@
 					<table align="center">
 						<tr>
 							<td><$= AjxImg.getImageHtml(data.buddy.getPresence().getIcon()) $></td>
-							<td><$= data.buddy.getPresence().getShowText() $></td>
+							<td><$= AjxStringUtil.htmlEncode(data.buddy.getPresence().getShowText()) $></td>
 						</tr>
 					</table>
 				</td>
