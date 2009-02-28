@@ -207,11 +207,6 @@ function(ev) {
 	return ZmTreeController.prototype._getActionMenu.apply(this, arguments);
 };
 
-ZmCalendarTreeController.prototype.getTreeStyle =
-function() {
-	return DwtTree.CHECKEDITEM_STYLE;
-};
-
 // Method that is run when a tree item is left-clicked
 ZmCalendarTreeController.prototype._itemClicked =
 function(organizer) {
@@ -448,4 +443,10 @@ function(ev, checked) {
 		this._notifyListeners(overviewId, DwtEvent.SELECTION, checkedItems, DwtTree.ITEM_CHECKED,
 							  ev, this._eventMgrs[overviewId]._selEv);
 	}
+};
+
+ZmCalendarTreeController.prototype._createTreeView =
+function(params) {
+    params.treeStyle = DwtTree.CHECKEDITEM_STYLE;
+	return new ZmTreeView(params);
 };
