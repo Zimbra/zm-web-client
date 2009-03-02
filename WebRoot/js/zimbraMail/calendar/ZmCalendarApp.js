@@ -144,6 +144,7 @@ function() {
 			],
 			manageDirty: true,
 			createView: function(parent, section, controller) {
+				AjxDispatcher.require("Alert");
 				return new ZmCalendarPrefsPage(parent, section, controller);
 			}
 		}

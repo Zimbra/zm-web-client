@@ -235,6 +235,7 @@ function() {
 			],
 			manageDirty: true,
 			createView: function(parent, section, controller) {
+				AjxDispatcher.require("Alert");
 				return new ZmMailPrefsPage(parent, section, controller);
 			}
 		},
