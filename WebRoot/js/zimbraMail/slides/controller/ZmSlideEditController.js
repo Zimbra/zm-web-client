@@ -63,7 +63,7 @@ ZmSlideEditController.prototype._initToolBar = function () {
 
     this._insertSlide = new DwtToolBarButton({parent:tb});
     this._insertSlide.setToolTipContent(ZmMsg.slides_insertSlide);
-    //this._insertSlide.setImage("Page");
+    this._insertSlide.setImage("AddSlide");
     this._insertSlide.setText(ZmMsg.slides_insertSlide);
     this._insertSlide.setData(ZmSlideEditController._VALUE, ZmSlideEditController.ACTION_NEW_SLIDE);
     this._insertSlide.addSelectionListener(listener);
@@ -72,7 +72,7 @@ ZmSlideEditController.prototype._initToolBar = function () {
 
     this._deleteSlideButton = new DwtToolBarButton({parent:tb});
     this._deleteSlideButton.setToolTipContent(ZmMsg.slides_deleteSlide);
-    //this._deleteSlideButton.setImage("Delete");
+    this._deleteSlideButton.setImage("DeleteSlide");
     this._deleteSlideButton.setText(ZmMsg.slides_deleteSlide);
     this._deleteSlideButton.setData(ZmSlideEditController._VALUE, ZmSlideEditController.ACTION_DELETE_SLIDE);
     this._deleteSlideButton.addSelectionListener(listener);
@@ -81,7 +81,7 @@ ZmSlideEditController.prototype._initToolBar = function () {
 
     this._insertButton = new DwtToolBarButton({parent:tb});
     this._insertButton.setToolTipContent(ZmMsg.slides_insertTextBox);
-    //this._insertButton.setImage("Page");
+    this._insertButton.setImage("AddTextBox");
     this._insertButton.setText(ZmMsg.slides_insertTextBox);
     this._insertButton.setData(ZmSlideEditController._VALUE, ZmSlideEditController.ACTION_INSERT_TEXTBOX);
     this._insertButton.addSelectionListener(listener);
@@ -90,7 +90,7 @@ ZmSlideEditController.prototype._initToolBar = function () {
 
     this._deleteButton = new DwtToolBarButton({parent:tb});
     this._deleteButton.setToolTipContent(ZmMsg.slides_deleteTextBox);
-    //this._deleteButton.setImage("Delete");
+    this._deleteButton.setImage("DeleteTextBox");
     this._deleteButton.setText(ZmMsg.slides_deleteTextBox);
     this._deleteButton.setData(ZmSlideEditController._VALUE, ZmSlideEditController.ACTION_DELETE_TEXTBOX);
     this._deleteButton.addSelectionListener(listener);
@@ -99,7 +99,7 @@ ZmSlideEditController.prototype._initToolBar = function () {
 
     this._insertImage = new DwtToolBarButton({parent:tb});
     this._insertImage.setToolTipContent(ZmMsg.insertImage);
-    //this._insertButton.setImage("Page");
+    this._insertImage.setImage("AddImage");
     this._insertImage.setText(ZmMsg.insertImage);
     this._insertImage.setData(ZmSlideEditController._VALUE, ZmSlideEditController.ACTION_INSERT_IMG);
     this._insertImage.addSelectionListener(listener);
@@ -108,7 +108,7 @@ ZmSlideEditController.prototype._initToolBar = function () {
 
     this._themesButton = new DwtToolBarButton({parent:tb});
     this._themesButton.setToolTipContent(ZmMsg.slides_runSlideShow);
-    //this._runSlideShow.setImage("");
+    //this._themesButton.setImage("RunSlides");
     this._themesButton.setText(ZmMsg.slides_themes);
     this._themesButton.setData(ZmSlideEditController._VALUE, ZmSlideEditController.ACTION_THEMES);
     this._themesButton.addSelectionListener(listener);
@@ -135,7 +135,7 @@ ZmSlideEditController.prototype._initToolBar = function () {
 
     this._runSlideShow = new DwtToolBarButton({parent:tb});
     this._runSlideShow.setToolTipContent(ZmMsg.slides_runSlideShow);
-    //this._runSlideShow.setImage("");
+    this._runSlideShow.setImage("RunSlides");
     this._runSlideShow.setText(ZmMsg.slides_runSlideShow);
     this._runSlideShow.setData(ZmSlideEditController._VALUE, ZmSlideEditController.ACTION_RUN);
     this._runSlideShow.addSelectionListener(listener);
