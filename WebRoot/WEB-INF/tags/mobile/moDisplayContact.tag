@@ -63,7 +63,7 @@
             </c:if>
 
             <c:if test="${zm:anySet(contact,'otherStreet otherCity otherState otherPostalCode otherCountry')}">
-                <mo:contactField noborder="true" isaddress="true" label="MO_AB_work"
+                <mo:contactField noborder="true" isaddress="true" label="MO_AB_other"
                                  street="${contact.otherStreet}"
                                  city="${contact.otherCity}"
                                  state="${contact.otherState}"

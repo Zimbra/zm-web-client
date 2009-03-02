@@ -20,7 +20,7 @@
         <c:set var="select" value="none" scope="request"/>
     </c:when>
     <c:when test="${zm:actionSet(param, 'actionSave')}">
-        <zm:modifyContact var="result" id="${param.id}" replace="true" folderid="${param.folderid}">
+        <zm:modifyContact var="result" id="${param.id}" folderid="${param.folderid}">
             <zm:field name="firstName" value="${param.firstName}"/>
             <zm:field name="lastName" value="${param.lastName}"/>
             <%--<zm:field name="middleName" value="${param.middleName}"/>
@@ -75,7 +75,7 @@
             <zm:field name="notes" value="${param.notes}"/>
 
             <c:if test="${not empty param.dlist and param.isgroup}">
-                <zm:field name="fileAs" value="8:${param.nickname}"/>
+                <zm:field name="fileAs" value="${param.nickname}"/>
                 <zm:field name="nickname" value="${param.nickname}"/>
                 <zm:field name="dlist" value="${fn:join(paramValues.dlist,', ')}"/>
                 <zm:field name="type" value="group"/>
