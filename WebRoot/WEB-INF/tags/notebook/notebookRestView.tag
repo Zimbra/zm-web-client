@@ -18,8 +18,8 @@
     </c:choose>
     <fmt:setBundle basename="/messages/ZhMsg" scope="request"/>
     <c:set var="title" value="Notebook"/>
-    <c:set var="folderName" value="${context.folder.name}" />           
-    <c:set var="iframeUrl" value="/home/user1/${folderName}" />
+    <c:set var="folderName" value="${context.folder.name}" />
+    <c:set var="iframeUrl" value="/home/${mailbox.name}/${folderName}" />
 </app:handleError>
 
 <c:set var="toolbar">
