@@ -325,8 +325,8 @@ function(organizer) {
 		table.cellSpacing = 0;
 		table.cellPadding = 3;
 		for (var i = 0; i < shares.length; i++) {
-			var share = shares[i];
-			if (!share.grantee.id) { continue; }
+			var share = shares[i];            
+			if (!share.grantee.id && !share.isPublic()) { continue; }
 
 			var row = table.insertRow(-1);
 
