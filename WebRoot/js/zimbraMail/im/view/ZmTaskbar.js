@@ -159,9 +159,9 @@ function() {
 	if (this._rightAlign) {
 		var x = Dwt.toWindow(this.button.getHtmlElement(), 0, 0).x;
 		var width = this.button.getW();
-		var windowWidth = this.shell.getSize().x;
-		var fudge = 6; // Couldn't figure out what makes this necessary.
-		this._contentEl.style.right = windowWidth - x - width - fudge;
+		var taskbarBounds = this.parent.getBounds();
+		var fudge = 1; // Couldn't figure out what makes this necessary.
+		this._contentEl.style.right = taskbarBounds.x + taskbarBounds.width - x - width - fudge;
 	}
 };
 
