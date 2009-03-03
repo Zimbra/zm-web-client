@@ -461,12 +461,16 @@ var updateOrientation = function() {
             <div class="_day">${darr[0]}</div>
             <div class="_date">${darr[1]}</div>
             <div class="_month">${darr[2]}</div>
-            </span></a> </c:if> <c:set var="active"
-                                       value="${param.st eq 'folders' ? '-active' : ''}"/>
+            </span></a> </c:if>
+         <c:if test="${mailbox.features.briefcases}">
+                <c:set var="active"
+                                       value="${param.st eq 'briefcase' ? '-active' : ''}"/>
         <a style='width: ${98/appcount}%;' targetid="maincontainer" accesskey="${requestScope.fldrapp_accesskey}"
-           id="folders${active}" class="appTab${active} table-cell" href="${aurl}?st=folders"><span
+           id="folders${active}" class="appTab${active} table-cell" href="${aurl}?st=briefcase"><span
                 onclick="return zClickLink('folders${active}')"><fmt:message
-                key="folders"/></span></a> <c:set var="active" value="${param.search eq '1' ? '-active' : ''}"/>
+                key="folders"/></span></a>
+        </c:if>             
+             <c:set var="active" value="${param.search eq '1' ? '-active' : ''}"/>
         <a style='width: ${100/appcount}%;' targetid="maincontainer" accesskey="${requestScope.search_accesskey}"
            id="search${active}" class="appTab${active} table-cell"
            href="${aurl}?search=${param.search eq '1' ? '0' : '1'}&amp;${fn:replace(pageContext.request.queryString,'search=1&amp;','')}"

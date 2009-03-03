@@ -44,7 +44,7 @@
                     </c:when>
                     <c:when test="${context.isBriefcaseSearch}">
                         <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=briefcases"><fmt:message
-                                key="briefcases"/></a> :
+                                key="briefcases"/></a> &#171;
                         <c:if test="${top_fldr_select eq '0'}">
                             ${fn:escapeXml(zm:truncateFixed(context.shortBackTo,15,true))}
                         </c:if>
@@ -264,7 +264,7 @@
                     </c:when>
                     <c:when test="${context.isBriefcaseSearch}">
                         <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=briefcases"><fmt:message
-                                key="briefcases"/></a> :
+                                key="briefcases"/></a> &#171;
                         <c:if test="${btm_fldr_select eq '0'}">
                             ${fn:escapeXml(zm:truncateFixed(context.shortBackTo,15,true))}
                         </c:if>

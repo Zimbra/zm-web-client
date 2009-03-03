@@ -620,3 +620,31 @@ div.row span.l {
 .TagdefaultColor,.Tag {
     background-position: 0 -146px !important;
 }
+
+.SmlDocIcnHldr {
+    width: 18px;
+    height: 18px;
+    max-height: 18px;
+    display: inline-block;
+    vertical-align: -22%;
+    background: url("/img/doctypes.gif?v=090227110051") no-repeat top left;
+}
+.ImgAudioDoc{background:url("/img/doctypes.gif?v=090227110051") 0px 0px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
+ .ImgDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -16px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
+ .ImgExeDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -32px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
+ .ImgGenericDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -48px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
+ .ImgHtmlDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -64px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
+ .ImgImageDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -80px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
+ .ImgMSExcelDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -96px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
+ .ImgMSPowerpointDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -112px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
+ .ImgMSProjectDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -128px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
+ .ImgMSVisioDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -144px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
+ .ImgMSWordDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -160px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
+ .ImgMessageDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -176px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
+ .ImgPDFDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -192px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
+ .ImgPresentation{background:url("/img/doctypes.gif?v=090227110051") 0px -208px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
+ .ImgUnknownDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -224px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
+ .ImgVideoDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -240px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
+ .ImgZSpreadSheet{background:url("/img/doctypes.gif?v=090227110051") 0px -256px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
+ .ImgZipDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -272px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
+ 
