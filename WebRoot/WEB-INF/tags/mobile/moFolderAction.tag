@@ -48,7 +48,15 @@
     </mo:status>
 </c:when>
 <c:when test="${zm:actionSet(param, 'actionSaveSearch')}">
-   <zm:createSearchFolder types="${fn:escapeXml(param.st)}" query="${fn:escapeXml(param.sq)}" var="folder" name="${fn:escapeXml(param.sname)}" parentid="${fn:escapeXml(param.parentid)}"/>
+    <c:choose>
+        <c:when test="${param.st eq 'briefcase'}">
+            <c:set var="types" value="document"/>
+        </c:when>
+        <c:otherwise>
+            <c:set var="types" value="${param.st}"/>
+        </c:otherwise>
+    </c:choose>
+   <zm:createSearchFolder types="${fn:escapeXml(types)}" query="${fn:escapeXml(param.sq)}" var="folder" name="${fn:escapeXml(param.sname)}" parentid="${fn:escapeXml(param.parentid)}"/>
    <mo:status style="Info">
         <fmt:message key="actionSearchCreated"><fmt:param value="${fn:escapeXml(folder.name)}"/></fmt:message>
     </mo:status>

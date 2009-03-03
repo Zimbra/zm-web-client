@@ -64,3 +64,19 @@
         <mo:doFolderTree skiproot="${true}" parentid="${folder.id}" skipsystem="false"/>
     </c:if>
 </zm:forEachFolder>
+<div class="Toolbar table">
+    <div class="table-row">
+        <div class="table-cell">
+            <span class="Title left">
+                <fmt:message key="searches"/></span>
+        </div>
+    </div>
+</div>
+
+<zm:forEachFolder var="folder" skipsystem="${true}" skiptopsearch="${false}">
+    <c:if test="${(folder.isSearchFolder && (empty param.sq || fn:containsIgnoreCase(folder.name,param.sq)))}">
+        <c:if test="${folder.types eq 'document' || folder.types eq 'briefcase'}">
+        <mo:overviewSearchFolder folder="${folder}" types="briefcase"/>
+        </c:if>
+    </c:if>
+</zm:forEachFolder>
