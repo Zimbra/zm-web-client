@@ -53,6 +53,7 @@
 .ZmSpreadSheet table.SpreadSheet td.SpreadSheet-Type-number { text-align: right; }
 .ZmSpreadSheet table.SpreadSheet td.SpreadSheet-Type-currency { text-align: right; }
 .ZmSpreadSheet table.SpreadSheet td.SpreadSheet-Type-percentage { text-align: right; }
+.ZmSpreadSheet table.SpreadSheet td.SpreadSheet-Type-date { text-align: right; }
 .ZmSpreadSheet table.SpreadSheet td.SpreadSheet-Type-error { text-align: center; color: #f00; }
 
 .ZmSpreadSheet .ShowRange {

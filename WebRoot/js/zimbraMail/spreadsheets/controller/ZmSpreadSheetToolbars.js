@@ -288,6 +288,7 @@ ZmSpreadSheetToolbars.prototype._createToolbar2 = function(toolbar) {
 	s.addOption(ZmMsg.currency, false, "currency");
 	s.addOption(ZmMsg.percent, false, "percentage");
 	s.addOption(ZmMsg.text, false, "string");
+    s.addOption(ZmMsg.date, false, "date");
 
 
 	var s = this._buttons.decimalsSelect = new ZmSpreadSheetEditorSelect(toolbar, null);

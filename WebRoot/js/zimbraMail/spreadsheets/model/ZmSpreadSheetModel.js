@@ -938,6 +938,11 @@ ZmSpreadSheetCellModel.prototype.getDisplayValue = function() {
 			val = val.toFixed(this._decimals);
 		val = val + "%";
 		break;
+
+        case "date":
+        this._formatter = new AjxDateFormat("MM/dd/yy");
+        val = this._formatter.format(new Date(val));        
+        break;
 	}
 	return val;
 };
@@ -1019,10 +1024,19 @@ ZmSpreadSheetCellModel.prototype._determineType = function(str) {
 		val = RegExp.$1;
 		if (this._decimals == null)
 			this._decimals = 2;
+
+    //  precentage
 	} else if (/^([0-9]*\.?[0-9]+)\s*%$/.test(str)) {
 		type = "percentage";
 		val = RegExp.$1;
-	}
+
+    // date
+	} else if (/^(\d{1,2})(\/|-|\.)(\d{1,2})(\/|-|\.)(\d{2}|\d{4})$/.test(str)){
+        if(AjxDateUtil.validDate(RegExp.$5, (RegExp.$1 - 1), RegExp.$3)){
+             type = "date";
+             val =   [RegExp.$1,"/",RegExp.$3,"/",RegExp.$5].join("");
+        }
+    }
 
 	// look, incidentally all values are retrieved with RegExp.$1 :-)
 	// *incidentally*, I say..

@@ -904,6 +904,11 @@ ZmSpreadSheet.prototype._selectCell = function(td) {
 	}
 	this._selectedCell = td;
 	if (td) {
+
+        if(this.isRange()){
+            this._hideRange();
+        }
+        
 		Dwt.addClass(td, "SSelected");
 		Dwt.addClass(this._getTopHeaderCell(td), "TopSelected");
 		Dwt.addClass(this._getLeftHeaderCell(td), "LeftSelected");
@@ -999,6 +1004,11 @@ ZmSpreadSheet.prototype._editCell = function(td) {
 	if (this._editingCell)
 		input.blur();
 	if (td) {
+
+        if(this.isRange()){
+            this._hideRange();
+        }
+
 		this._selectCell(td);
 		input.style.visibility = "";
 		input.style.top = td.offsetTop - 1 + "px";
