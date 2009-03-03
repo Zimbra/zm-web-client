@@ -73,9 +73,21 @@ function(page) {
 			return;
 		}
 
-		element.innerHTML = ZmNotebookPageView._generateContent(page);
+		var content = ZmNotebookPageView._generateContent(page);
+		element.innerHTML = content;
 		ZmNotebookPageView._fixLinks(element);
 		ZmNotebookPageView._findObjects(this._getObjectMgr(), element);
+	}
+};
+
+ZmNotebookPageView.getPrintHtml =
+function(page) {
+	var nbController = appCtxt.getApp(ZmApp.NOTEBOOK).getNotebookController();
+	if( nbController._getViewType()  == ZmId.VIEW_NOTEBOOK_PAGE ) {
+		var view = nbController._getViewType();
+		if(nbController._listView[view] && nbController._listView[view]._iframe){
+			return nbController._listView[view]._iframe.contentWindow.document.documentElement.innerHTML;
+		}
 	}
 };
 
@@ -680,10 +692,10 @@ ZmNotebookPageView.prototype.fetchInfo = function(path)
 {
 	if(!path || path=="blank")
 	return;
-
-    path = decodeURIComponent(path);
 	
-    if(path.charAt(0)=='/'){
+	path = unescape(path);
+	
+	if(path.charAt(0)=='/'){
 		path = path.substring(1);
 	}		
 	var accountName = null;

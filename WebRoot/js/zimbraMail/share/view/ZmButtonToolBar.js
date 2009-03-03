@@ -19,7 +19,7 @@
  * Creates a toolbar with the given buttons.
  * @constructor
  * @class
- * This class represents a toolbar that contains buttons.
+ * This class represents a toolbar that contains just buttons.
  * It can be easily created using a set of standard operations, and/or custom buttons
  * can be provided. This class is designed for use with items (ZmItem), so it can for
  * example contain a button with a tab submenu. See also ZmActionMenu.
@@ -35,7 +35,6 @@
  *        overrides			[hash]*				hash of overrides by op ID
  *        context			[const]*			vcontextID (used to generate button IDs)
  *        toolbarType		[const]*			toolbar type (used to generate button IDs)
- *        controller		[ZmController]*		owning controller
  */
 ZmButtonToolBar = function(params) {
 	if (arguments.length == 0) return;
@@ -57,11 +56,12 @@ ZmButtonToolBar = function(params) {
 	}
 	// weed out disabled ops, save list of ones that make it
 	this.opList = ZmOperation.filterOperations(buttons);
-	this._buttons = ZmOperation.createOperations(this, this.opList, params.overrides);
 
-	this._createPrecedenceList();
-	
-	this._inited = true;
+	// make a copy of opList and sort the copy by precedence value
+	this.precedenceList = [].concat(this.opList);
+	this.precedenceList.sort(ZmOperation.sortByPrecedence);
+
+	this._buttons = ZmOperation.createOperations(this, this.opList, params.overrides);
 };
 
 ZmButtonToolBar.prototype = new ZmToolBar;
@@ -102,8 +102,6 @@ function(id, params) {
 		b = new DwtText({parent:this, className:params.textClassName, id:id});
 	} else {
 		params.id = this._context ? ZmId.getButtonId(this._context, id, this._toolbarType) : null;
-		params.textPrecedence = ZmOperation.getProp(id, "textPrecedence");
-		params.iconPrecedence = ZmOperation.getProp(id, "iconPrecedence");
 		b = this.createButton(id, params);
 	}
 	b.setData(ZmOperation.KEY_ID, id);
@@ -114,13 +112,11 @@ function(id, params) {
 ZmButtonToolBar.prototype.addOp =
 function(id, index) {
 	ZmOperation.addOperation(this, id, this._buttons, index);
-	AjxUtil.arrayAdd(this.opList, id, index);
 };
 
 ZmButtonToolBar.prototype.removeOp =
 function(id) {
 	ZmOperation.removeOperation(this, id, this._buttons);
-	AjxUtil.arrayRemove(this.opList, id);
 };
 
 /**
@@ -141,6 +137,39 @@ function() {
 	var button = this.getButton(ZmOperation.TAG_MENU);
 	if (button) {
 		return button.getMenu();
+	}
+};
+
+ZmButtonToolBar.prototype.autoAdjustWidth =
+function(refElement, reset) {
+	var el = this.getHtmlElement();
+	if (!el || !refElement) { return; }
+
+	var offset1 = refElement.offsetWidth;
+	var offset2 = el.firstChild ? el.firstChild.offsetWidth : offset1;
+
+	if ((offset1 > 0 && offset2 > offset1) || reset) {
+		// restore all button labels first
+		for (var i = 0; i < this.precedenceList.length; i++) {
+			var b = this._buttons[this.precedenceList[i]];
+			if (!b || !b._toggleText) { continue; }
+
+			b.setText(b._toggleText);
+			b._toggleText = null;
+		}
+		// now remove button labels as needed
+		for (var i = 0; i < this.precedenceList.length; i++) {
+			var b = this._buttons[this.precedenceList[i]];
+			if (!b || !b.getImage() || !b.getVisible()) { continue; }
+
+			if (offset2 > offset1) {
+				b._toggleText = b.getText();
+				b.setText("");
+			}
+
+			// re-calc firstChild offset since we may have removed its label
+			offset2 = el.firstChild ? el.firstChild.offsetWidth : offset1;
+		}
 	}
 };
 

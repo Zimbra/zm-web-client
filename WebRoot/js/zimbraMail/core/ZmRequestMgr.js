@@ -90,7 +90,6 @@ function() {
  *        skipAuthCheck			[boolean]*		don't check if auth token has changed
  *        resend				[constant]*		reason for resending request
  *        sensitive				[boolean]*		attempt to use secure conn to protect data
- *        noSession				[boolean]*		if true, no session info is included
  */
 ZmRequestMgr.prototype.sendRequest =
 function(params) {
@@ -191,8 +190,7 @@ function(params) {
 		logRequest:this._logRequest,
 		highestNotifySeen:this._highestNotifySeen,
 		skipAuthCheck:params.skipAuthCheck,
-		resend:params.resend,
-		noSession:params.noSession
+		resend:params.resend
 	};
 	var methodName = params.methodName = ZmCsfeCommand.getMethodName(cmdParams.jsonObj || cmdParams.soapDoc);
 
@@ -465,15 +463,6 @@ function(refresh) {
 
 	// Run any app-requested refresh routines
 	this._controller.runAppFunction("refresh", false, refresh);
-
-	// Reset the overview that is shared by most apps.
-	ZmAppAccordionController.getInstance().reset();
-
-	// Redisplay the current app's overview.
-	var currentApp = appCtxt.getCurrentApp();
-	if (currentApp) {
-		currentApp.setOverviewPanelContent(true);
-	}
 };
 
 /**
@@ -637,7 +626,7 @@ function(modifies) {
 			}
 
 			if (item) {
-				mod._isRemote = (name == "folder" && item.link);	// remote subfolder
+				mod._isRemote = (name == "folder" && item.link);
 				item.notifyModify(mod);
 			}
 		}

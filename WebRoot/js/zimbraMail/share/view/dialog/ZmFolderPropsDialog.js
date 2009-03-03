@@ -288,12 +288,7 @@ function(event) {
 	this._ownerEl.innerHTML = AjxStringUtil.htmlEncode(organizer.owner);
 	this._typeEl.innerHTML = ZmMsg[ZmOrganizer.FOLDER_KEY[organizer.type]] || ZmMsg.folder;
 	this._urlEl.innerHTML = organizer.url || "";
-	if (this._color) {
-		this._color.setSelectedValue(organizer.color);
-		var isVisible = (organizer.type != ZmOrganizer.FOLDER ||
-						 (organizer.type == ZmOrganizer.FOLDER && false/*appCtxt.get(ZmSetting.MAIL_FOLDER_COLORS_ENABLED)*/));
-		this._props.setPropertyVisible(this._colorId, isVisible);
-	}
+	this._color.setSelectedValue(organizer.color);
 	this._excludeFbCheckbox.checked = organizer.excludeFreeBusy;
 
 	var showPerm = organizer.link && organizer.shares && organizer.shares.length > 0;
@@ -331,7 +326,7 @@ function(organizer) {
 		table.cellSpacing = 0;
 		table.cellPadding = 3;
 		for (var i = 0; i < shares.length; i++) {
-			var share = shares[i];
+			var share = shares[i];            
 			if (!share.grantee.id && !share.isPublic()) { continue; }
 
 			var row = table.insertRow(-1);
@@ -449,8 +444,8 @@ function() {
 	this._props.addProperty(ZmMsg.typeLabel, this._typeEl);
 	this._ownerId = this._props.addProperty(ZmMsg.ownerLabel, this._ownerEl);
 	this._urlId = this._props.addProperty(ZmMsg.urlLabel, this._urlEl);
-	this._permId = this._props.addProperty(ZmMsg.permissions, this._permEl);
-	this._colorId = this._props.addProperty(ZmMsg.colorLabel, this._color);
+	this._permId = this._props.addProperty(ZmMsg.permissions, this._permEl)
+	this._props.addProperty(ZmMsg.colorLabel, this._color);
 
 	var propsContainer = document.createElement("DIV");
 	propsContainer.appendChild(this._props.getHtmlElement());

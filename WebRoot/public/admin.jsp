@@ -112,10 +112,7 @@
 	<fmt:setLocale value='${pageContext.request.locale}' scope='request' />
 	<fmt:setBundle basename="/messages/ZaMsg" scope='request' />
     <title><fmt:message key="zimbraAdminTitle"/></title>
-	<zm:getFavIcon request="${pageContext.request}" var="favIconUrl" />
-	<c:if test="${empty favIconUrl}">
-	    <fmt:message key="favIconUrl" var="favIconUrl"/>
-	</c:if>
+    <fmt:message key="favIconUrl" var="favIconUrl"/>
     <link rel="SHORTCUT ICON" href="<c:url value='${favIconUrl}'/>">
     
 	<script>
@@ -165,6 +162,7 @@ if(!AjxEnv.isFirefox1up && !AjxEnv.isFirefox3up && !AjxEnv.isFirefox2_0up && !Aj
 </script>
     <script type="text/javascript" language="JavaScript">
 	   function launch() {
+		AjxWindowOpener.HELPER_URL = "<%= contextPath %>/public/frameOpenerHelper.jsp"
 		DBG = new AjxDebug(AjxDebug.NONE, null, false);
 		ACCESS_RIGHTS = new Object();
 		// figure out the debug level

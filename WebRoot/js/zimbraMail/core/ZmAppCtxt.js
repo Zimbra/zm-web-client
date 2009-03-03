@@ -40,11 +40,7 @@ ZmAppCtxt = function() {
 	this.numAccounts = 1;				// init to 1 b/c there is always a main account
 	this.numVisibleAccounts = 0;
 	this.userDomain = "";
-
-	this._evtMgr = new AjxEventMgr();
 };
-
-ZmAppCtxt._ZIMLETS_EVENT = 'ZIMLETS'
 
 ZmAppCtxt.prototype.toString =
 function() {
@@ -315,12 +311,39 @@ function() {
 	return this._pageConflictDialog;
 };
 
+ZmAppCtxt.prototype.getNewImDialog =
+function() {
+	if (!this._newImDialog) {
+		AjxDispatcher.require("IM");
+		this._newImDialog = new ZmNewImDialog(this._shell);
+	}
+	return this._newImDialog;
+};
+
+ZmAppCtxt.prototype.getNewRosterItemDialog =
+function() {
+	if (!this._newRosterItemDialog) {
+		AjxDispatcher.require("IM");
+		this._newRosterItemDialog = new ZmNewRosterItemDialog(this._shell);
+	}
+	return this._newRosterItemDialog;
+};
+
 ZmAppCtxt.prototype.getDialog =
 function(){
 	if(!this._dialog){
 		this._dialog = new DwtDialog({parent:this._shell});
 	}
 	return this._dialog;
+};
+
+ZmAppCtxt.prototype.getIMGatewayLoginDialog =
+function() {
+	if (!this._imGatewayLoginDialog) {
+		AjxDispatcher.require("IM");
+		this._imGatewayLoginDialog = new ZmExternalGatewayDlg(this._shell);
+	}
+	return this._imGatewayLoginDialog;
 };
 
 ZmAppCtxt.prototype.getNewSearchDialog =
@@ -356,14 +379,6 @@ function() {
 		this._pickTagDialog = new ZmPickTagDialog(this._shell);
 	}
 	return this._pickTagDialog;
-};
-
-ZmAppCtxt.prototype.getFolderNotifyDialog =
-function() {
-	if (!this._folderNotifyDialog) {
-		this._folderNotifyDialog = new ZmFolderNotifyDialog(this._shell);
-	}
-	return this._folderNotifyDialog;
 };
 
 ZmAppCtxt.prototype.getFolderPropsDialog =
@@ -533,7 +548,7 @@ function() {
 		}
 	}
 	return this.isChildWindow ? this._childWinTabGrp : this._rootTabGrp;
-};
+}
 
 ZmAppCtxt.prototype.getShell =
 function() {
@@ -597,10 +612,11 @@ ZmAppCtxt.prototype.setActiveAccount =
 function(account, callback) {
 	this._activeAccount = account;
 	this._activeAccount.load(callback);
-
-	this._evt = this._evt || new ZmEvent();
-	this._evt.account = account;
-	this._evtMgr.notifyListeners("ACCOUNT", this._evt);
+	if (this._evtMgr) {
+		this._evt = this._evt || new ZmEvent();
+		this._evt.account = account;
+		this._evtMgr.notifyListeners("ACCOUNT", this._evt);
+	}
 };
 
 ZmAppCtxt.prototype.getActiveAccount =
@@ -610,6 +626,7 @@ function() {
 
 ZmAppCtxt.prototype.addActiveAcountListener =
 function(listener, index) {
+	this._evtMgr = this._evtMgr || new AjxEventMgr();
 	return this._evtMgr.addListener("ACCOUNT", listener, index);
 };
 
@@ -706,6 +723,16 @@ function() {
 	return this._uploadManager;
 };
 
+ZmAppCtxt.prototype.getCurrentAppToolbar =
+function() { 
+	return this._currentAppToolbar;
+};
+
+ZmAppCtxt.prototype.setCurrentAppToolbar =
+function(toolbar) {
+	this._currentAppToolbar = toolbar;
+};
+
 ZmAppCtxt.prototype.getCurrentSearch =
 function() { 
 	return this.getCurrentApp().currentSearch;
@@ -739,7 +766,7 @@ function() {
 };
 
 ZmAppCtxt.prototype.getNewWindow = 
-function(fullVersion, width, height) {
+function(fullVersion) {
 	// build url
 	var url = [];
 	var i = 0;
@@ -752,16 +779,13 @@ function(fullVersion, width, height) {
 	url[i++] = appCurrentSkin;
 	url[i++] = "&localeId=";
 	url[i++] = AjxEnv.DEFAULT_LOCALE || "";
-	if (fullVersion) {
+	if (fullVersion)
 		url[i++] = "&full=1";
-	}
 	if (appDevMode) {
 		url[i++] = "&dev=1";
 	}
 
-	width = width || 705;
-	height = height || 465;
-	var args = ["height=", height, ",width=", width, ",location=no,menubar=no,resizable=yes,scrollbars=no,status=yes,toolbar=no"].join("");
+	var args = "height=465,width=705,location=no,menubar=no,resizable=yes,scrollbars=no,status=yes,toolbar=no";
 	var newWin = window.open(url.join(""), "_blank", args);
 
 	if (!newWin) {
@@ -835,21 +859,8 @@ function() {
 	return this._zimletMgr;
 };
 
-ZmAppCtxt.prototype.areZimletsLoaded =
-function() {
-	return this._zimletsLoaded;
-};
-
-ZmAppCtxt.prototype.addZimletsLoadedListener =
-function(listener, index) {
-	if (!this._zimletsLoaded) {
-		return this._evtMgr.addListener(ZmAppCtxt._ZIMLETS_EVENT, listener, index);
-	}
-};
-
 ZmAppCtxt.prototype.allZimletsLoaded =
 function() {
-	this._zimletsLoaded = true;
 	if (this._zimletMgr && !this.isChildWindow && appCtxt.get(ZmSetting.PORTAL_ENABLED)) {
 		var portletMgr = this.getApp(ZmApp.PORTAL).getPortletMgr();
 		if (portletMgr) {
@@ -860,11 +871,15 @@ function() {
 	if (this.isOffline && !this.multiAccounts) {
 		this.getAppController().setInstantNotify(true);
 	}
-	
-	if (this._evtMgr.isListenerRegistered(ZmAppCtxt._ZIMLETS_EVENT)) {
-		this._evtMgr.notifyListeners(ZmAppCtxt._ZIMLETS_EVENT, new ZmEvent());
-		this._evtMgr.removeAll(ZmAppCtxt._ZIMLETS_EVENT);
+};
+
+ZmAppCtxt.prototype.getPrintView =
+function() {
+	if (!this._printView) {
+		AjxDispatcher.require("Extras");
+		this._printView = new ZmPrintView();
 	}
+	return this._printView;
 };
 
 ZmAppCtxt.prototype.getCalManager =
@@ -879,138 +894,4 @@ ZmAppCtxt.prototype.getACL =
 function(account, callback) {
 	var id = account ? account.id : this._activeAccount ? this._activeAccount.id : ZmZimbraAccount.DEFAULT_ID;
 	return this._accounts[id] && this._accounts[id].acl;
-};
-
-/**
- * Returns brief display version of the given shortcut
- *
- * @param keyMap	[string]	key map
- * @param shortcut	[string]	shortcut action
- * @param orgId		[int]*		ID or organizer that may have a shortcut alias
- */
-ZmAppCtxt.prototype._getShortcutHint =
-function(keyMap, shortcut, orgId) {
-	
-	var text = null;
-	keyMap = keyMap || "global";
-	while (!text && keyMap) {
-		var scKey = [keyMap, shortcut, "display"].join(".");
-		var text = AjxKeys[scKey] || ZmKeys[scKey];
-		if (text) {
-			// try to pick first single-character shortcut
-			var list = text.split(/;\s*/);
-			var sc = list[0];
-			for (var i = 0; i < list.length; i++) {
-				var s = list[i];
-				if (s.indexOf(",") == -1) {
-					sc = list[i];
-					break;
-				}
-			}
-			if (!sc) { return null; }
-			if (orgId) {
-				var customKeys = this._getCustomKeys();
-				if (!customKeys) { return null; }
-				var key = ["custom", orgId].join(".");
-				var alias = customKeys[key];
-				sc = sc.replace("NNN", alias);
-			}
-			sc = sc.replace(/\b[A-Z]\b/g, function(let) { return let.toLowerCase(); });
-			text = [" [", sc.replace(",", ""), "]"].join("");
-		} else {
-			var key = [keyMap, "INHERIT"].join(".");
-			keyMap = AjxKeys[key] || ZmKeys[key];
-		}
-	}
-
-	return text;
-};
-
-/**
- * Returns an object that looks like a keys properties map, which contains the
- * properties needed to display the user's aliased shortcuts.
- *
- * @param keys		[hash]*		if provided, custom keys will be added to these keys
- */
-ZmAppCtxt.prototype._getCustomKeys =
-function(keys) {
-
-	if (!this._customKeys) {
-		var kmm = this.getAppController().getKeyMapMgr();
-		var setting = this.get(ZmSetting.SHORTCUTS);
-		var shortcuts = kmm ? ZmShortcut.parse(setting, kmm) : null;
-		if (!(shortcuts && shortcuts.length)) { return null; }
-
-		var c = ZmKeyMap.MAP_CUSTOM;
-		var customKeys = keys || {};
-		var key, key1;
-		key = key1 = [c, "description"].join(".");
-		customKeys[key] = ZmKeys[key1];
-		key = key1 = [c, "sort"].join(".");
-		customKeys[key] = ZmKeys[key1];
-		var regex = new RegExp(ZmShortcut.ALIAS, "g");
-
-		for (var i = 0, count = shortcuts.length; i < count; i++) {
-			var sc = shortcuts[i];
-			var org = this.getById(sc.arg);
-			if (!org) {
-				continue;
-			}
-			key = [c, org.id].join(".");
-			customKeys[key] = sc.num;
-			var map = ZmKeyMap.MAP_NAME_R[sc.mapName];
-			key = [map, sc.baseAction, "display"].join(".");
-			var keySeq = ZmKeys[key];
-			keySeq = keySeq.replace(regex, sc.num);
-			key = [c, sc.action, "display"].join(".");
-			customKeys[key] = keySeq;
-			key = [c, sc.action, "description"].join(".");
-			key1 = [map, sc.baseAction, "custom"].join(".");
-			customKeys[key] = AjxMessageFormat.format(ZmKeys[key1], org.getName());
-			key = [c, sc.action, "sort"].join(".");
-			key1 = [map, sc.baseAction, "sort"].join(".");
-			customKeys[key] = Number(sc.num) + Number(ZmKeys[key1]);
-		}
-		
-		this._customKeys = customKeys;
-	}
-
-	return this._customKeys;
-};
-
-ZmAppCtxt.prototype.getShortcutsPanel =
-function() {
-	if (!this._shortcutsPanel) {
-		AjxDispatcher.require(["PreferencesCore", "Preferences"]);
-		var style = this.isChildWindow ? ZmShortcutList.WINDOW_STYLE : ZmShortcutList.PANEL_STYLE;
-		this._shortcutsPanel = new ZmShortcutsPanel(style);
-	}
-	return this._shortcutsPanel;
-};
-
-/**
- * Returns the skin hint for the given argument(s), which will be used to look
- * successively down the properties chain. For example, getSkinHint("a", "b")
- * will return the value of skin.hints.a.b
- */
-ZmAppCtxt.prototype.getSkinHint =
-function() {
-	if (arguments.length == 0) return "";
-	
-	var cur = skin && skin.hints;
-	if (!cur) { return ""; }
-	for (var i = 0; i < arguments.length; i++) {
-		var arg = arguments[i];
-		if (!cur[arg]) { return ""; }
-		cur = cur[arg];
-	}
-	return cur;
-};
-
-ZmAppCtxt.prototype.getAutocompleter =
-function() {
-	if (!this._autocompleter) {
-		this._autocompleter = new ZmAutocomplete();
-	}
-	return this._autocompleter;
 };

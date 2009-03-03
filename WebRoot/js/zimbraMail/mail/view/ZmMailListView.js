@@ -22,18 +22,14 @@ ZmMailListView = function(params) {
 	ZmListView.call(this, params);
 
 	this._folderId = null;
-
-	this._isMultiColumn = this.isMultiColumn();
-	if (!this._isMultiColumn) {
-		this._normalClass = ZmMailListView.ROW_DOUBLE_CLASS;
-	}
 };
 
 ZmMailListView.prototype = new ZmListView;
 ZmMailListView.prototype.constructor = ZmMailListView;
 
 // Consts
-ZmMailListView.ROW_DOUBLE_CLASS	= "RowDouble";
+
+ZmMailListView.KEY_ID = "_keyId";
 
 // Public methods
 
@@ -45,8 +41,7 @@ function() {
 // Reset row style
 ZmMailListView.prototype.markUIAsRead = 
 function(item) {
-	var rowId = (this._isMultiColumn) ? ZmItem.F_ITEM_ROW : ZmItem.F_ITEM_ROW_3PANE;
-	var row = this._getElement(item, rowId);
+	var row = this._getElement(item, ZmItem.F_ITEM_ROW);
 	if (row) {
 		row.className = this._getRowClass(item);
 	}
@@ -56,22 +51,6 @@ ZmMailListView.prototype.set =
 function(list, sortField) {
 	this._folderId = (list && list.search) ? list.search.folderId : null;
 	ZmListView.prototype.set.call(this, list, sortField);
-
-	var sortBy = list && list.search && list.search.sortBy;
-	if (sortBy) {
-		var column;
-		if (sortBy == ZmSearch.SUBJ_DESC || sortBy == ZmSearch.SUBJ_ASC) {
-			column = ZmItem.F_SUBJECT;
-		} else if (sortBy == ZmSearch.DATE_DESC || sortBy == ZmSearch.DATE_ASC) {
-			column = ZmItem.F_DATE;
-		} else if (sortBy == ZmSearch.NAME_DESC || sortBy == ZmSearch.NAME_ASC) {
-			column = ZmItem.F_FROM;
-		}
-		if (column) {
-			var sortByAsc = (sortBy == ZmSearch.SUBJ_ASC || sortBy == ZmSearch.DATE_ASC || sortBy == ZmSearch.NAME_ASC);
-			this.setSortByAsc(column, sortByAsc);
-		}
-	}
     this.markDefaultSelection(list);
 };
 
@@ -104,74 +83,10 @@ function(list) {
 	this._resetColWidth();
 };
 
-ZmMailListView.prototype.resetSize =
-function(newWidth, newHeight) {
-	this.setSize(newWidth, newHeight);
-	var height = (newHeight == Dwt.DEFAULT) ? newHeight : newHeight - DwtListView.HEADERITEM_HEIGHT;
-	Dwt.setSize(this._parentEl, newWidth, height);
-};
-
-/**
- * Returns true if the reading pane is turned off or set to bottom. We use this
- * call to tell the UI whether to re-render the listview with multiple columns
- * or a single column (for right-pane).
- */
-ZmMailListView.prototype.isMultiColumn =
-function() {
-	// NOTE: we dont use the controller's API b/c this method is called before the controller is set
-	return ((appCtxt.get(ZmSetting.READING_PANE_ENABLED) &&
-			 appCtxt.get(ZmSetting.READING_PANE_ORIENTATION) == ZmSetting.RP_BOTTOM) ||
-			!appCtxt.get(ZmSetting.READING_PANE_ENABLED));
-};
-
-ZmMailListView.prototype._getAbridgedContent =
-function(item, colIdx) {
-	// override me
-};
-
-ZmMailListView.prototype._getAbridgedCell =
-function(htmlArr, idx, item, field, colIdx, width, attr) {
-	var params = {};
-
-	htmlArr[idx++] = "<td";
-	if (width) {
-		htmlArr[idx++] = " width='";
-		htmlArr[idx++] = width;
-		htmlArr[idx++] = "'";
-	}
-	htmlArr[idx++] = " id='";
-	htmlArr[idx++] = this._getCellId(item, field, params);
-	htmlArr[idx++] = "'";
-	var className = this._getCellClass(item, field, params);
-	if (className) {
-		htmlArr[idx++] = " class='";
-		htmlArr[idx++] = className;
-		htmlArr[idx++] = "'";
-	}
-	if (attr) {
-		htmlArr[idx++] = " ";
-		htmlArr[idx++] = attr;
-	}
-	htmlArr[idx++] = ">";
-	idx = this._getCellContents(htmlArr, idx, item, field, colIdx, params);
-	htmlArr[idx++] = "</td>";
-
-	return idx;
-};
-
-/**
- * Called by the controller whenever the reading pane preference changes
- */
-ZmMailListView.prototype.reRenderListView =
-function() {
-	var isMultiColumn = this.isMultiColumn();
-	if (isMultiColumn != this._isMultiColumn) {
-		this._isMultiColumn = isMultiColumn;
-		this.headerColCreated = false;
-		this._headerList = this._getHeaderList();
-		this._normalClass = isMultiColumn ? DwtListView.ROW_CLASS : ZmMailListView.ROW_DOUBLE_CLASS;
-		this.set(this.getList().clone());
-	}
+ZmMailListView.prototype.resetHeight =
+function(newHeight) {
+	this.setSize(Dwt.DEFAULT, newHeight);
+	Dwt.setSize(this._parentEl, Dwt.DEFAULT, newHeight - DwtListView.HEADERITEM_HEIGHT);
 };
 
 // Private / protected methods
@@ -180,9 +95,9 @@ ZmMailListView.prototype._getHeaders =
 function(viewId, headerList, headerHash) {
 	var hList = [];
 
-	this._defaultCols = headerList.join(ZmListView.COL_JOIN);
+	this._defaultCols = headerList.join("|");
 	var userHeaders = appCtxt.get(ZmSetting.LIST_VIEW_COLUMNS, viewId);
-	var headers = (userHeaders && this._isMultiColumn) ? userHeaders.split(ZmListView.COL_JOIN) : headerList;
+	var headers = userHeaders ? userHeaders.split("|") : headerList;
 	for (var i = 0, len = headers.length; i < len; i++) {
 		var header = headers[i];
 		var field = header.substr(0, 2);
@@ -204,18 +119,14 @@ function() {
 	var isFolder = this._isSentOrDraftsFolder();
 
 	// set the from column name based on query string
+	var colLabel = (isFolder.sent || isFolder.drafts) ? ZmMsg.to : ZmMsg.from;
 	var headerCol = this._headerHash[ZmItem.F_FROM];
-	if (headerCol) {
-		var colLabel = (isFolder.sent || isFolder.drafts) ? ZmMsg.to : ZmMsg.from;
-
-		var fromColSpan = document.getElementById(DwtId.getListViewHdrId(DwtId.WIDGET_HDR_LABEL, this._view, headerCol._field));
-		if (fromColSpan) {
-			fromColSpan.innerHTML = "&nbsp;" + colLabel;
-		}
-		var item = (this._colHeaderActionMenu) ? this._colHeaderActionMenu.getItem(headerCol._index) : null;
-		if (item) {
-			item.setText(colLabel);
-		}
+	var fromColSpan = document.getElementById(DwtId.getListViewHdrId(DwtId.WIDGET_HDR_LABEL, this._view, headerCol._field));
+	if (fromColSpan) {
+		fromColSpan.innerHTML = "&nbsp;" + colLabel;
+	}
+	if (this._colHeaderActionMenu) {
+		this._colHeaderActionMenu.getItem(headerCol._index).setText(colLabel);
 	}
 
 	return isFolder;
@@ -256,9 +167,21 @@ function(item) {
 
 ZmMailListView.prototype._getCellId =
 function(item, field) {
-	return (field == ZmItem.F_SIZE || field == ZmItem.F_SUBJECT || field == ZmItem.F_SORTED_BY)
+	return (field == ZmItem.F_SIZE || field == ZmItem.F_SUBJECT)
 		? this._getFieldId(item, field)
 		: ZmListView.prototype._getCellId.apply(this, arguments);
+};
+
+ZmMailListView.prototype._getFragmentSpan =
+function(item) {
+	return ["<span class='ZmConvListFragment' id='",
+			this._getFieldId(item, ZmItem.F_FRAGMENT),
+			"'>", this._getFragmentHtml(item), "</span>"].join("");
+};
+
+ZmMailListView.prototype._getFragmentHtml =
+function(item) {
+	return [" - ", AjxStringUtil.htmlEncode(item.fragment, true)].join("");
 };
 
 ZmMailListView.prototype._getHeaderToolTip =
@@ -270,19 +193,19 @@ function(field, itemIdx) {
 };
 
 ZmMailListView.prototype._getToolTip =
-function(params) {
-	var tooltip, field = params.field, item = params.item;
+function(field, item, ev, div, match) {
 	if (!item) { return; }
+	var tooltip = null;
 	if (field == ZmItem.F_STATUS) {
 		if (item.isDraft)			{ tooltip = ZmMsg.draft; }
 		else if (item.isUnread)		{ tooltip = ZmMsg.unread; }
 		else if (item.isReplied)	{ tooltip = ZmMsg.replied; }
 		else if (item.isForwarded)	{ tooltip = ZmMsg.forwarded; }
 		else if (item.isSent)		{ tooltip = ZmMsg.sentAt; }
-		else if (item.isInvite())	{ tooltip = ZmMsg.appointment; }
+		else if (item.isInvite())		{ tooltip = ZmMsg.appointment; }
 		else						{ tooltip = ZmMsg.read; }
 	} else if (field == ZmItem.F_FROM || field == ZmItem.F_PARTICIPANT) {
-		tooltip = {callback:new AjxCallback(this, this._getParticipantToolTip, [item.getAddress(AjxEmailAddress.FROM)]), loading:true};
+		tooltip = this._getParticipantToolTip(item.getAddress(AjxEmailAddress.FROM));
 	} else if (field == ZmItem.F_SUBJECT) {
 		if ((item.type == ZmItem.MSG) && item.isInvite() && item.needsRsvp()) {
 			tooltip = item.invite.getToolTip();
@@ -308,41 +231,30 @@ function(params) {
 	return tooltip;
 };
 
-/**
- * Get the tooltip for the given address. May invoke a server request. The caller will pass
- * a callback if there may be a server request. If it does not pass a callback, return a
- * tooltip based on cached data.
- *
- * @param address		[AjxEmailAddress]
- * @param callback		[AjxCallback]
- */
 ZmMailListView.prototype._getParticipantToolTip =
-function(address, callback) {
-	var addr = address && address.getAddress();
-	if (!addr || !appCtxt.get(ZmSetting.CONTACTS_ENABLED)) { return; }
-
-	if (callback) {
-		var respCallback = new AjxCallback(this, this._handleResponseGetContact, [address, callback]);
-		appCtxt.getApp(ZmApp.CONTACTS).getContactByEmail(addr, respCallback);
-	} else {
-		return this._handleResponseGetContact(address, null, appCtxt.getApp(ZmApp.CONTACTS).getContactByEmail(addr));
+function(address) {
+	if (!address) { return; }
+	var toolTip;
+	var addr = address.getAddress();
+	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) && addr) {
+		var contactApp = appCtxt.getApp(ZmApp.CONTACTS);
+		var contacts = AjxDispatcher.run("GetContacts");
+		var contact = contacts ? contacts.getContactByEmail(addr) : null;
+		if (contact) {
+			toolTip = contact.getToolTip(addr);
+		}
 	}
+		
+	if (!toolTip) {
+		var addrstr = address.toString();
+		if (addrstr) {
+			toolTip = AjxTemplate.expand("abook.Contacts#TooltipNotInAddrBook", {addrstr:addrstr});
+		}
+    }
+
+	return toolTip;
 };
 
-ZmMailListView.prototype._handleResponseGetContact =
-function(address, callback, contact) {
-	var tooltip;
-	if (contact) {
-		tooltip = contact.getToolTip(address.getAddress());
-	} else {
-		tooltip = address && AjxTemplate.expand("abook.Contacts#TooltipNotInAddrBook", {addrstr:address.toString()});
-	}
-	if (callback) {
-		callback.run(tooltip);
-	} else {
-		return tooltip;
-	}
-};
 
 /**
  * (override of ZmListView to add hooks to zimletMgr)
@@ -394,19 +306,6 @@ function(htmlArr, idx, item, field, colIdx, params) {
 	return idx;
 };
 
-ZmListView.prototype._getCellClass =
-function(item, field, params) {
-	if (!this._isMultiColumn) {
-		if (field == ZmItem.F_SUBJECT) {
-			return "ZmConvListFragment";
-		}
-		if (field == ZmItem.F_SELECTION) {
-			return "AbridgedSelection";
-		}
-	}
-	return null;
-};
-
 // Figure out how many of the participants will fit into a given pixel width.
 // We always include the originator, and then as many of the most recent participants
 // as possible. If any have been elided (either by the server or because they don't
@@ -445,7 +344,7 @@ function(participants, participantsElided, width) {
 		var test = [originator];
 		test = test.concat(list);
 		var text;
-		var tmp = [];
+		var tmp = new Array();
 		var w = 0;
 		for (var i = 0; i < test.length; i++)
 			w = w + (test[i].name.length * DwtUnits.WIDTH_EM); // total width of names
@@ -471,17 +370,28 @@ function(participants, participantsElided, width) {
 	return [originator];
 };
 
-ZmMailListView.prototype._getActionMenuForColHeader =
+ZmMailListView.prototype._getActionMenuForColHeader = 
 function(force) {
-	var doReset = (!this._colHeaderActionMenu || force);
-
-	var menu = ZmListView.prototype._getActionMenuForColHeader.call(this, force);
-
-	if (doReset) {
+	if (!this._colHeaderActionMenu || force) {
+		// create a action menu for the header list
+		this._colHeaderActionMenu = new ZmPopupMenu(this);
+		var actionListener = new AjxListener(this, this._colHeaderActionListener);
+		for (var i = 0; i < this._headerList.length; i++) {
+			var hCol = this._headerList[i];
+			// lets not allow columns w/ relative width to be removed (for now) - it messes stuff up
+			if (hCol._width) {
+				var mi = this._colHeaderActionMenu.createMenuItem(hCol._id, {text:hCol._name, style:DwtMenuItem.CHECK_STYLE});
+				mi.setData(ZmMailListView.KEY_ID, hCol._id);
+				mi.setChecked(hCol._visible, true);
+                if (hCol._noRemove) {
+					mi.setEnabled(false);
+				}
+                this._colHeaderActionMenu.addSelectionListener(hCol._id, actionListener);
+			}
+		}
 		this._resetFromColumnLabel();
 	}
-
-	return menu;
+	return this._colHeaderActionMenu;
 };
 
 ZmMailListView.prototype._getNoResultsMessage =
@@ -580,6 +490,22 @@ function(ev) {
 	}
 };
 
+ZmMailListView.prototype._colHeaderActionListener =
+function(ev) {
+
+	var menuItemId = ev.item.getData(ZmMailListView.KEY_ID);
+
+	for (var i = 0; i < this._headerList.length; i++) {
+		var col = this._headerList[i];
+		if (col._id == menuItemId) {
+			col._visible = !col._visible;
+			break;
+		}
+	}
+	
+	this._relayout();
+};
+
 /**
  * If we're showing content in the reading pane and there is exactly one item selected,
  * make sure the content is for that selected item. Otherwise, clear the content.
@@ -610,24 +536,44 @@ function(clickedEl, ev) {
 	}
 };
 
-ZmMailListView.prototype._setNextSelection =
-function() {
-	var item = this._controller._itemToSelect || this._list.get(0);
-	if (item) {
-		this.setSelection(item, false);
-	}
-};
+ZmMailListView.MAIL_VIEWS = [ZmId.VIEW_TRAD, ZmId.VIEW_CONVLIST, ZmId.VIEW_CONV];
+ZmMailListView.MAIL_CTLR = {};
+ZmMailListView.MAIL_CTLR[ZmId.VIEW_TRAD]		= "_tradController";
+ZmMailListView.MAIL_CTLR[ZmId.VIEW_CONVLIST]	= "_convListController";
+ZmMailListView.MAIL_CTLR[ZmId.VIEW_CONV]		= "_convController";
 
-ZmMailListView.prototype._getSearchForSort =
-function(sortField, controller) {
-	controller = controller || this._controller;
-	var query = controller.getSearchString();
-	if (!query) { return ""; }
-	var str = (sortField == ZmItem.F_FLAG) ? " is:flagged" : " has:attachment";
-	if (query.indexOf(str) != -1) {
-		query = query.replace(str, "");
-	} else {
-		query = query + str;
+/**
+ * Propagate changes to the columns in the mail list view to other mail list views,
+ * since from the user's point of view it's all the same view. It's done by editing
+ * the setting for the other views. If another view has already been created, destroy
+ * its controller so that it's recreated with the newly changed setting the next time
+ * it displays results.
+ */
+ZmMailListView.prototype._checkColumns =
+function() {
+	// change the setting for this view
+	ZmListView.prototype._checkColumns.call(this);
+
+	for (var i = 0; i < ZmMailListView.MAIL_VIEWS.length; i++) {
+		var viewId = ZmMailListView.MAIL_VIEWS[i];
+		if (this.view == viewId) { continue; }
+		var app = this._controller._app;
+		// wipe out controller, so that view gets re-created
+		app[ZmMailListView.MAIL_CTLR[viewId]] = null;
+
+		var userColumns = appCtxt.get(ZmSetting.LIST_VIEW_COLUMNS, this.view);
+		if (userColumns) {
+			var newColumns;
+			// code below depends on knowing that the only difference between the mail views
+			// is that CLV is the only one with the F_EXPAND column
+			if (viewId == ZmId.VIEW_CONVLIST) {
+				newColumns = userColumns.replace(/\|/, "|" + ZmItem.F_EXPAND + "|");
+			} else if (this.view == ZmId.VIEW_CONVLIST){
+				newColumns = userColumns.replace(ZmItem.F_EXPAND, "").replace(/\|{2,}/, "|");
+			} else {
+				newColumns = userColumns;
+			}
+			appCtxt.set(ZmSetting.LIST_VIEW_COLUMNS, newColumns, viewId);
+		}
 	}
-	return query;
 };

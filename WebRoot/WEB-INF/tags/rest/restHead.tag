@@ -18,10 +18,7 @@
 		<c:param name="v"		value="${initParam.zimbraCacheBusterVersion}" />
 	</c:url>
 	<link rel="stylesheet" type="text/css" href="${cssurl}" />
-	<zm:getFavIcon request="${pageContext.request}" var="favIconUrl" />
-	<c:if test="${empty favIconUrl}">
-        <fmt:message key="favIconUrl" var="favIconUrl"/>
-	</c:if>
+    <fmt:message key="favIconUrl" var="favIconUrl"/>
     <link rel="SHORTCUT ICON" href="<c:url value='${favIconUrl}'/>">
     <c:if test="${rssfeed}">
     <link rel="alternate" type="application/rss+xml"  title="RSS Feed" href="${requestScope.zimbra_target_item_name}.rss">

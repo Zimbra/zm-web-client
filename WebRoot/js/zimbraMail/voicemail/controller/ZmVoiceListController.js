@@ -52,7 +52,7 @@ function(searchResult, folder) {
     var elements = {};
     elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
     elements[ZmAppViewMgr.C_APP_CONTENT] = lv;
-    this._setView({view:this._currentView, elements:elements, isAppView:true});
+    this._setView(this._currentView, elements, true);
     this._resetNavToolBarButtons(this._currentView);
 };
 
@@ -116,17 +116,8 @@ function(ev) {
 
 ZmVoiceListController.prototype._printListener =
 function(ev) {
-	var url;
-	var v = this._getView();
-	if (v.view == ZmId.VIEW_VOICEMAIL) {
-		url = ['/h/printvoicemails?st=voicemail&sq=phone:', v._folder.phone.name, ' in:"', v._folder.name, '"'].join('');
-	} else if (v.view == ZmId.VIEW_CALL_LIST) {
-		url = ['/h/printcalls?st=calllog&sq=phone:', v._folder.phone.name, ' in:"', v._folder.name, '"'].join('');
-	}
-
-	if (url) {
-		window.open(appContextPath+AjxStringUtil.urlEncode(url), "_blank");
-	}
+	var html = this._getView().getPrintHtml();
+	appCtxt.getPrintView().renderHtml(html);
 };
 
 ZmVoiceListController.prototype._callManagerListener =

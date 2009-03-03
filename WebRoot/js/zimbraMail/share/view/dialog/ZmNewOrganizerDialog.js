@@ -62,31 +62,26 @@ function(folder) {
 			this._folderTreeView.getHeaderItem().setVisible(true, true);
 
 			if (folder) {
-				if (folder.nId == ZmOrganizer.ID_ROOT) {
+				if (folder.nId == ZmOrganizer.ID_ROOT)
 					folder = appCtxt.getFolderTree().root;
-				}
 			} else {
 				folder = appCtxt.getFolderTree().root;
 			}
-			var ti = this._folderTreeView.getTreeItemById(folder.id);
-			if (ti) {
-				this._folderTreeView.setSelection(ti);
-			}
+			this._folderTreeView.setSelected(folder);
 			if (folder.nId == ZmOrganizer.ID_ROOT) {
 				var sid = ZmOrganizer.getSystemId(folder.id);
 				var ti = this._folderTreeView.getTreeItemById(sid);
-				if (ti) {
-					ti.setExpanded(true);
-				}
+				if (ti) ti.setExpanded(true);
 			}
 		}
+		DBG.timePt("selected folder", true);
 	}
 
 	// dont allow "None" option in color picker
     // bug 22490 removed None option when not in use
     if (folder && (folder.type != ZmOrganizer.FOLDER) && this._colorSelect) {
         var noneOption = this._colorSelect.getMenu().getItem(0);
-        if (noneOption.getText() == ZmOrganizer.COLOR_TEXT[0]) {
+        if(noneOption.getText() == ZmOrganizer.COLOR_TEXT[0]) {
             this._colorSelect.getMenu().removeChild(noneOption);
         }
     } 
@@ -369,9 +364,6 @@ function() {
 	var list = [this._nameField];
 	if (this._colorSelect) {
 		list.push(this._colorSelect);
-	}
-	if (this._overview[this._curOverviewId]) {
-		list.push(this._overview[this._curOverviewId]);
 	}
 	return list;
 };

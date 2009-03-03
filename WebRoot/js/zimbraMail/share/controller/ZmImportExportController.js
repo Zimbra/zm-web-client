@@ -93,7 +93,7 @@ ZmImportExportController.SUBTYPE_DEFAULT[ZmImportExportController.TYPE_ICS] = Zm
 ZmImportExportController.prototype.importData = function(params) {
 	// error checking
 	params = params || {};
-	var folderId = params.folderId || -1;
+	var folderId = params.folderId || -1; 
 	if (folderId == -1) {
 		var params = {
 			msg:	ZmMsg.importErrorMissingFolder,

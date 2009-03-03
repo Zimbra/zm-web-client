@@ -46,9 +46,6 @@ ZmAttachDialog = function(shell, className) {
 	
 	//Add Default MyComputer tab
     this._addMyComputerTab();
-    if(appCtxt.get(ZmSetting.BRIEFCASE_ENABLED)) {
-        this._addBriefcaseViewTab();
-    }
 }
 
 
@@ -177,11 +174,7 @@ ZmAttachDialog.prototype.getTabViewPage = function(id) {
 ZmAttachDialog.prototype.popup = function() {
     var tabKey = this.getTabKey("MY_COMPUTER");
     this._tabView.switchToTab(tabKey,true);
-
-    this.setButtonEnabled(DwtDialog.OK_BUTTON, true);
-    this.setButtonEnabled(DwtDialog.CANCEL_BUTTON, true);
     this.setFooter("");
-
     DwtDialog.prototype.popup.call(this);
     this.setFooter("");
 };
@@ -237,11 +230,12 @@ ZmAttachDialog.prototype._processUpload = function(callback, uploadForm) {
 
 ZmAttachDialog.prototype._uploadDoneCallback = function(callback, status, attId) {
 
+    this.setButtonEnabled(DwtDialog.OK_BUTTON, true);
+    this.setButtonEnabled(DwtDialog.CANCEL_BUTTON, true);
+
     if (this._cancelUpload) {
         return;
     }
-
-    this.setButtonEnabled(DwtDialog.CANCEL_BUTTON, true);
 
     if (status == AjxPost.SC_OK) {
         this.setFooter(ZmMsg.attachingFilesDone);
@@ -271,10 +265,6 @@ ZmAttachDialog.prototype._uploadDoneCallback = function(callback, status, attId)
 
         this.setFooter(ZmMsg.attachingFilesError);
     }
-
-    this.setButtonEnabled(DwtDialog.OK_BUTTON, true);
-
-
 };
 
 //MyComputer: Add MyComputer Tab View
@@ -286,23 +276,6 @@ ZmAttachDialog.prototype._addMyComputerTab = function() {
     this.addOkListener(tabKey, okCallback);
     var cancelCallback = new AjxCallback(this, this.cancelUploadFiles);
     this.addCancelListener(tabKey, cancelCallback);
-};
-
-ZmAttachDialog.prototype._addBriefcaseViewTab = function(){
-    var briefcaseTabViewCallback =  new AjxCallback(this, this.getBriefcaseTabView);
-	var tabKey = this.addTab("BRIEFCASE", ZmMsg.briefcase, briefcaseTabViewCallback);
-};
-
-ZmAttachDialog.prototype.getBriefcaseTabView = function(tabKey){
-    if(!this._briefcaseTabView) {
-        AjxDispatcher.require(["BriefcaseCore", "Briefcase"]);
-        this._briefcaseTabView = new ZmBriefcaseTabView(this._tabView);
-        var okCallback = new AjxCallback(this._briefcaseTabView,this._briefcaseTabView.uploadFiles);
-        this.addOkListener(tabKey,okCallback);
-        var cancelCallback = new AjxCallback(this,this.cancelUploadFiles);
-        this.addCancelListener(tabKey,cancelCallback);
-    }
-    return this._briefcaseTabView;
 };
 
 //Inline Option for attachment Dialog.

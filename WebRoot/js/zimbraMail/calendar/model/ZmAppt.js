@@ -67,7 +67,7 @@ function(type, inclDispName) {
 
 ZmAppt.prototype.hasAttendeeForType =
 function(type) {
-	return (this._attendees[type].length > 0);
+	return ((this._attendees[type] && this._attendees[type].length));
 };
 
 ZmAppt.prototype.hasAttendees =
@@ -102,7 +102,6 @@ function(appt) {
 		newAppt._orig = appt;
 	}
 	newAppt.type = ZmItem.APPT;
-	newAppt.rsvp = appt.rsvp;
 
 	return newAppt;
 };
@@ -121,88 +120,79 @@ function() {
 };
 
 /**
- * Returns a tooltip for this appt. If it needs to make a server call, returns a callback instead.
- *
- * @param controller	[ZmController]
- */
+* Returns HTML for a tool tip for this appt.
+*/
 ZmAppt.prototype.getToolTip =
-function(controller) {
-	var appt = this._orig || this;
-	var needDetails = (!appt._toolTip || (appt.otherAttendees && !appt.ptstHashMap));
-	if (needDetails) {
-		return {callback:new AjxCallback(appt, appt._getToolTip, [controller]), loading:true};
-	} else {
-		return appt._toolTip || appt._getToolTip(controller);
-	}
-};
-
-ZmAppt.prototype._getToolTip =
-function(controller, callback) {
-
-	if (this.otherAttendees && !this.ptstHashMap) {
-		// getDetails() of original appt will reset the start date/time and will break the ui layout
-		var clone = ZmAppt.quickClone(this);
-		var respCallback = new AjxCallback(this, this._handleResponseGetToolTip, [controller, callback]);
-		clone.getDetails(null, respCallback);
-	} else {
-		return this._handleResponseGetToolTip(controller);
-	}
-};
-
-ZmAppt.prototype._handleResponseGetToolTip =
-function(controller, callback) {
-
-	var organizer = this.getOrganizer();
-	var sentBy = this.getSentBy();
-	var userName = appCtxt.get(ZmSetting.USERNAME);
-	if (sentBy || (organizer && organizer != userName)) {
-		organizer = (this.message && this.message.invite && this.message.invite.getOrganizerName()) || organizer;
-		if (sentBy) {
-			var contactsApp = appCtxt.getApp(ZmApp.CONTACTS);
-			var contact = contactsApp && contactsApp.getContactByEmail(sentBy);
-			sentBy = (contact && contact.getFullName()) || sentBy;
-		}
-	} else {
-		organizer = null;
-		sentBy = null;
+function(controller, force) {
+	if (this._orig) {
+		return this._orig.getToolTip(controller, force);
 	}
 
-	var params = {
-		appt: this,
-		cal: (this.folderId != ZmOrganizer.ID_CALENDAR && controller) ? controller.getCalendar() : null,
-		organizer: organizer,
-		sentBy: sentBy,
-		when: this.getDurationText(false, false),
-		location: this.getLocation(),
-		width: "250"
-	};
+	if (!this._toolTip || force) {
+		var organizer = this.getOrganizer();
+		var sentBy = this.getSentBy();
+		var userName = appCtxt.get(ZmSetting.USERNAME);
+		if (sentBy || (organizer && organizer != userName)) {
+			if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+				var contactsApp = appCtxt.getAppController().getApp(ZmApp.CONTACTS);
+				// NOTE: ZmContactsApp#getContactList expects to be called in an
+				//       asynchronous way but we need the data right away. Instead
+				//       of reworking this code or the getContactList method to be
+				//       able to work synchronously, I'm just going to use the
+				//       raw email address in the case where the contact list has
+				//       not been loaded, yet. By the next time a tooltip is
+				//       created, it will probably be available so it's not a big
+				//       deal.
+				var contactList = contactsApp.getContactList();
 
-	this.updateParticipantStatus();
-	if (this.ptstHashMap != null) {
-		var ptstStatus = {};
-		ptstStatus[ZmMsg.ptstAccept] = this.getAttendeeToolTipString(this.ptstHashMap[ZmCalBaseItem.PSTATUS_ACCEPT]);
-		ptstStatus[ZmMsg.ptstDeclined] = this.getAttendeeToolTipString(this.ptstHashMap[ZmCalBaseItem.PSTATUS_DECLINED]);
-		ptstStatus[ZmMsg.ptstTentative] = this.getAttendeeToolTipString(this.ptstHashMap[ZmCalBaseItem.PSTATUS_TENTATIVE]);
-		ptstStatus[ZmMsg.ptstNeedsAction] = this.getAttendeeToolTipString(this.ptstHashMap[ZmCalBaseItem.PSTATUS_NEEDS_ACTION]);
-		params.ptstStatus = ptstStatus;
+				var addrs = [ organizer, sentBy ];
+				for (var i = 0; i < addrs.length; i++) {
+					var addr = addrs[i];
+					if (!addr) continue;
 
-		var attendees = [];
-		if (!this.rsvp) {
-			var personAttendees = this._attendees[ZmCalBaseItem.PERSON];
-			for (var i = 0; i < personAttendees.length; i++) {
-				var attendee = personAttendees[i];
-				attendees.push(attendee.getAttendeeText(null, true));
+					if (addr == userName) {
+						addrs[i] = appCtxt.get(ZmSetting.DISPLAY_NAME);
+						continue;
+					}
+					var contact = contactList && contactList.getContactByEmail(addr);
+					if (contact) {
+						addrs[i] = contact.getFullName();
+					}
+				}
+
+				organizer = addrs[0];
+				sentBy = addrs[1];
 			}
-			params.attendeesText = this.getAttendeeToolTipString(attendees);
 		}
+		else {
+			organizer = null;
+			sentBy = null;
+		}
+		var params = {
+			appt: this,
+			cal: (this.folderId != ZmOrganizer.ID_CALENDAR && controller) ? controller.getCalendar() : null,
+			organizer: organizer,
+			sentBy: sentBy,
+			when: this.getDurationText(false, false),
+			location: this.getLocation(),
+			width: "250",
+			showAttendeeStatus: (this._ptstHashMap != null)
+		};
+
+		if (this._ptstHashMap != null) {
+			var ptstStatus = {};
+			ptstStatus[ZmMsg.ptstAccept] = this.getAttendeeToolTipString(this._ptstHashMap[ZmCalBaseItem.PSTATUS_ACCEPT]);
+			ptstStatus[ZmMsg.ptstDeclined] = this.getAttendeeToolTipString(this._ptstHashMap[ZmCalBaseItem.PSTATUS_DECLINED]);
+			ptstStatus[ZmMsg.ptstTentative] = this.getAttendeeToolTipString(this._ptstHashMap[ZmCalBaseItem.PSTATUS_TENTATIVE]);
+			ptstStatus[ZmMsg.ptstNeedsAction] = this.getAttendeeToolTipString(this._ptstHashMap[ZmCalBaseItem.PSTATUS_NEEDS_ACTION]);
+			params.ptstStatus = ptstStatus;
+		}
+
+		this._toolTip = AjxTemplate.expand("calendar.Appointment#Tooltip", params);
+		
 	}
 
-	var toolTip = this._toolTip = AjxTemplate.expand("calendar.Appointment#Tooltip", params);
-	if (callback) {
-		callback.run(toolTip);
-	} else {
-		return toolTip;
-	}
+	return this._toolTip;
 };
 
 ZmAppt.prototype.getAttendeeToolTipString =
@@ -210,14 +200,23 @@ function(val) {
 	var str;
 	var maxLimit = 10;
 	if (val && val.length > maxLimit) {
-        var origLength = val.length;
 		var newParts = val.splice(0, maxLimit);
-		str = newParts.join(",") + " ("+ (origLength - maxLimit) +" " +  ZmMsg.more + ")" ;
+		str = newParts.join(",") + " ("+ (val.length - maxLimit) +" more)" ;
 	} else if (val) {
 		str = val.join(",");
 	}
 	return str;
 }
+
+ZmAppt.prototype.setAttendeeToolTipData =
+function(ptstHashMap) {
+	this._ptstHashMap = ptstHashMap;
+};
+
+ZmAppt.prototype.getAttendeeToolTipData =
+function () {
+	return this._ptstHashMap;
+};
 
 ZmAppt.prototype.getSummary =
 function(isHtml) {
@@ -243,14 +242,9 @@ function(isHtml) {
 	var params = [ ZmMsg.subjectLabel, this.name, modified ? ZmMsg.apptModifiedStamp : "" ];
 	buf[i++] = formatter.format(params);
 	buf[i++] = "\n";
-
-    var userName = appCtxt.get(ZmSetting.USERNAME);
-    var mailFromAddress = this.getMailFromAddress();
-    if(mailFromAddress) {
-        userName = mailFromAddress;
-    }
-	var organizer = this.organizer ? this.organizer : userName;
-	var orgEmail = ZmApptViewHelper.getOrganizerEmail(organizer).toString();
+	
+	var organizer = this.organizer ? this.organizer : appCtxt.get(ZmSetting.USERNAME);
+	var orgEmail = ZmApptViewHelper.getOrganizerEmail(this.organizer).toString();
 	var orgText = isHtml ? AjxStringUtil.htmlEncode(orgEmail) : orgEmail;
 	var params = [ ZmMsg.organizer + ":", orgText, "" ];
 	buf[i++] = formatter.format(params);
@@ -352,7 +346,7 @@ function(isHtml) {
 		buf[i++] = "\n";
 	}
 
-	if (this._attendees[ZmCalBaseItem.PERSON].length) {
+	if (this._attendees[ZmCalBaseItem.PERSON] && this._attendees[ZmCalBaseItem.PERSON].length) {
 		if (isHtml) {
 			buf[i++] = "</table>\n<p>\n<table border='0'>";
 		}
@@ -499,9 +493,6 @@ function(message) {
             }
         }
         this.rsvp = rsvp;
-        if(this._orig) {
-            this._orig.setRsvp(rsvp);
-        }
     }
 };
 
@@ -615,33 +606,14 @@ function(rsvp) {
 ZmAppt.prototype.shouldRsvp =
 function() {
     return this.rsvp;
-};
-
-ZmAppt.prototype.updateParticipantStatus =
-function() {
-	if (this._orig) {
-		return this._orig.updateParticipantStatus();
-	}
-
-    var ptstHashMap = {};
-	var personAttendees = this._attendees[ZmCalBaseItem.PERSON];
-	for (var i = 0; i < personAttendees.length; i++) {
-		var attendee = personAttendees[i];
-		var ptst = attendee.getAttr("participationStatus") || "NE";
-		if (!ptstHashMap[ptst]) {
-			ptstHashMap[ptst] = [];
-		}
-		ptstHashMap[ptst].push(attendee.getAttendeeText(null, true));
-	}
-	this.ptstHashMap = ptstHashMap;
-};
+}
 
 ZmAppt.prototype._addAttendeesToSoap =
 function(soapDoc, inv, m, notifyList, onBehalfOf) {
-	for (var type in this._attendees) {
-		if (this._attendees[type] && this._attendees[type].length) {
-			for (var i = 0; i < this._attendees[type].length; i++) {
-				this._addAttendeeToSoap(soapDoc, inv, m, notifyList, this._attendees[type][i], type);
+	for (var x in this._attendees) {
+		if (this._attendees[x] && this._attendees[x].length) {
+			for (var i = 0; i < this._attendees[x].length; i++) {
+				this._addAttendeeToSoap(soapDoc, inv, m, notifyList, this._attendees[x][i], x);
 			}
 		}
 	}
@@ -716,10 +688,41 @@ function(soapDoc, inv, m, notifyList, attendee, type) {
 			e.setAttribute("p", dispName);
 		}
 		e.setAttribute("t", AjxEmailAddress.toSoapType[AjxEmailAddress.TO]);
+
+		// bug fix #9768 - auto add attendee if not in addrbook
+		if (type == ZmCalBaseItem.PERSON &&
+			appCtxt.get(ZmSetting.CONTACTS_ENABLED) &&
+			appCtxt.get(ZmSetting.AUTO_ADD_ADDRESS))
+		{
+			var clc = appCtxt.getApp(ZmApp.CONTACTS).getContactList();
+			if (!clc.getContactByEmail(address))
+				e.setAttribute("add", "1");
+		}
 	}
 };
 
 ZmAppt.prototype._getInviteFromError =
 function(result) {
 	return (result._data.GetAppointmentResponse.appt[0].inv[0]);
+};
+
+ZmAppt.prototype._updateParticipantStatus =
+function() {
+	if (this._orig) {
+		return this._orig._updateParticipantStatus();
+	}
+
+	var ptstHashMap = {};
+	var personAttendees = (this._attendees && this._attendees[ZmCalBaseItem.PERSON])
+		? this._attendees[ZmCalBaseItem.PERSON] : [];
+
+	for (var i = 0; i < personAttendees.length; i++) {
+		var attendee = personAttendees[i];
+		var ptst = attendee.getAttr("participationStatus") || "NE";
+		if (!ptstHashMap[ptst]) {
+			ptstHashMap[ptst] = [];
+		}
+		ptstHashMap[ptst].push(attendee.getAttendeeText(null, true));
+	}
+	this.setAttendeeToolTipData(ptstHashMap);
 };

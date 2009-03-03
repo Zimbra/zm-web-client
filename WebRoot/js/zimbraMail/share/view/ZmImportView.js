@@ -17,45 +17,13 @@
 
 ZmImportView = function(params) {
 	if (arguments.length == 0) { return; }
-
-	// setup form
-	params.form = {
-		items: [
-			// default items
-			{ id: "TYPE", type: "DwtRadioButtonGroup", value: ZmImportExportController.TYPE_TGZ,
-				items: [
-					{ id: "TYPE_TGZ", label: ZmMsg.importExportTypeTGZ, value: ZmImportExportController.TYPE_TGZ },
-					{ id: "TYPE_ICS", label: ZmMsg.importExportTypeICS, value: ZmImportExportController.TYPE_ICS },
-					{ id: "TYPE_CSV", label: ZmMsg.importExportTypeCSV, value: ZmImportExportController.TYPE_CSV }
-				],
-				onclick: this._type_onclick
-			},
-			{ id: "TYPE_HINT", type: "DwtText" },
-			{ id: "SUBTYPE", type: "DwtSelect",
-				visible: "get('TYPE') == ZmImportExportController.TYPE_CSV"
-			},
-			{ id: "FOLDER_BUTTON", type: "DwtButton", label: ZmMsg.browse,
-				onclick: this._folderButton_onclick
-			},
-			{ id: "FORM" },
-			{ id: "RESOLVE", type: "DwtRadioButtonGroup", value: "",
-				items: [
-					{ id: "RESOLVE_IGNORE", label: ZmMsg.resolveDuplicateIgnore, value: "" },
-					{ id: "RESOLVE_REPLACE", label: ZmMsg.resolveDuplicateReplace, value: "replace" },
-					{ id: "RESOLVE_RESET", label: ZmMsg.resolveDuplicateReset, value: "reset" }
-				],
-				visible: "get('TYPE') == ZmImportExportController.TYPE_TGZ"
-			},
-			{ id: "ADVANCED", type: "DwtCheckbox", label: ZmMsg.advancedSettings,
-				visible: "get('TYPE') == ZmImportExportController.TYPE_TGZ"
-			},
-			// advanced
-			{ id: "DATA_TYPES", type: "ZmImportExportDataTypes",
-				visible: "get('ADVANCED')"
-			}
-		]
-	};
 	ZmImportExportBaseView.call(this, params);
+
+	this._exportListener = new AjxListener(this, this._handleExport);
+	this._folderListener = new AjxListener(this, this._handleFolder);
+	this._resolveListener = new AjxListener(this, this._handleResolve);
+
+	// TODO
 };
 ZmImportView.prototype = new ZmImportExportBaseView;
 ZmImportView.prototype.constructor = ZmImportView;
@@ -88,18 +56,19 @@ ZmImportView.prototype.TEMPLATE = "data.ImportExport#ImportView";
  * ZmImportExportController#exportData.
  */
 ZmImportView.prototype.getParams = function() {
-	var type = this.getValue("TYPE") || ZmImportExportController.TYPE_TGZ;
+	var type = this.getFormValue("TYPE", ZmImportExportController.TYPE_TGZ);
 	var isTGZ = type == ZmImportExportController.TYPE_TGZ;
+	var folderId = this.getFormValue("FOLDER","all") != "all" ? this._folderId : null; 
 	var params = {
 		// required
-		form:		this.getControl("FORM"),
+		form:		this.getFormObject("FILE").form,
 		// optional -- ignore if not relevant
 		type:		this.isRelevant("TYPE") ? type : null,
-		subType:	this.isRelevant("SUBTYPE") ? this.getValue("SUBTYPE") : null,
-		views:		this.isRelevant("DATA_TYPES") ? this.getValue("DATA_TYPES") : null,
-		resolve:	this.isRelevant("RESOLVE") && isTGZ ? this.getValue("RESOLVE") : null,
+		subType:	this.isRelevant("SUBTYPE") ? this.getFormValue("SUBTYPE") : null,
+		views:		this.isRelevant("DATA_TYPES") ? this.getFormValue("DATA_TYPES") : null,
+		resolve:	this.isRelevant("RESOLVE") && isTGZ ? this.getFormValue("RESOLVE", "ignore") : null,
 		folderId:	this._folderId,
-		dataTypes:	this.isRelevant("DATA_TYPES") ? this.getValue("DATA_TYPES") : null
+		dataTypes:	this.isRelevant("DATA_TYPES") ? this.getFormValue("DATA_TYPES") : null
 	};
 	return params;
 };
@@ -108,10 +77,46 @@ ZmImportView.prototype.getParams = function() {
 // Protected methods
 //
 
-ZmImportView.prototype._getSubTypeOptions = function(type) {
-	var options = ZmImportExportBaseView.prototype._getSubTypeOptions.apply(this, arguments);
-	if (type == ZmImportExportController.TYPE_CSV) {
-		options = [].concat({ displayValue: ZmMsg.importAutoDetect, value: "" }, options);
+ZmImportView.prototype._registerControls = function() {
+	ZmImportExportBaseView.prototype._registerControls.apply(this, arguments);
+	this._registerControl("FILE", {
+		displayContainer:	ZmPref.TYPE_CUSTOM
+	});
+	this._registerControl("RESOLVE", {
+		displayContainer:	ZmPref.TYPE_RADIO_GROUP,
+		orientation:        ZmPref.ORIENT_HORIZONTAL,
+		displayOptions:		[ZmMsg.resolveDuplicateIgnore, ZmMsg.resolveDuplicateReplace, ZmMsg.resolveDuplicateReset],
+		// NOTE: Ignore value should not be sent to server, so we leave blank.
+		options:			["", "replace", "reset"]
+	});
+};
+
+ZmImportView.prototype._setupCustom = function(id, setup, value) {
+	if (id == "FILE") {
+		var fileEl = document.getElementById([this._htmlElId,id].join("_"));
+		fileEl.name = "file";
+		this.setFormObject(id, fileEl);
 	}
-	return options;
+	return ZmImportExportBaseView.prototype._setupCustom.apply(this, arguments);
+};
+
+ZmImportView.prototype._getSubTypeOptions = function(type) {
+	var setup = this.SETUP["SUBTYPE"];
+	if (!setup.options) {
+		setup.options = ZmPref.SETUP["IMPORT_FOLDER"].options || [];
+		setup.displayOptions = ZmPref.SETUP["IMPORT_FOLDER"].displayOptions || [];
+		if (setup.options.length > 0) {
+			setup.options.unshift("");
+			setup.displayOptions.unshift(ZmMsg.importAutoDetect);
+		}
+	}
+	return ZmImportExportBaseView.prototype._getSubTypeOptions.apply(this, arguments);
+};
+
+ZmImportView.prototype._updateControls = function() {
+	var type = this.getFormValue("TYPE", ZmImportExportController.TYPE_TGZ);
+	var isZimbra = type == ZmImportExportController.TYPE_TGZ;
+
+	ZmImportExportBaseView.prototype._updateControls.apply(this, arguments);
+	this.setControlVisible("RESOLVE", isZimbra);
 };

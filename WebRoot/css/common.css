@@ -420,18 +420,12 @@ DIV.vSpace {
 	@DisableSelection@
 }
 
-.RowDouble {
-	@ListItemContainer@
-	@DisableSelection@
-	@ListItemHeightDouble@
-}
-
-.Row TABLE, .RowDouble TABLE {
+.Row TABLE {
 	table-layout: fixed;
 	height:100%;
 }
 
-.Row TD, .RowDouble TD {
+.Row TD {
 	@ListItemText@
 }
 
@@ -495,10 +489,6 @@ DIV.vSpace {
 	text-align: center;
 }
 
-.RowDouble td.Count, .Row-selected td.Count {
-	text-align: right;
-}
-
 
 
 /* 
@@ -549,8 +539,6 @@ DIV.vSpace {
 	@TreeHeaderContainer@
 	@TreeHeaderText@
 	@TreeItemSpacing@
-	padding-top: 1px;
-	padding-bottom: 1px;
 }
 
 .overviewHeader-Text, 
@@ -559,15 +547,6 @@ DIV.vSpace {
 	@TreeHeaderText@
 }
 
-.overviewHeader-selected {
-	@TreeHeaderText@
-    @SelectedBg-blurred@
-}
-
-.overviewHeader-selected-focused {
-	@TreeHeaderText@
-    @SelectedBg@
-}
 
 .overviewHeader .imageCell {
 	@ImagePadding@

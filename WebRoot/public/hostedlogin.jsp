@@ -164,10 +164,7 @@ if (application.getInitParameter("offlineMode") != null)  {
 			<c:param name="customerDomain"	value="${param.customerDomain}" />
 		</c:if>	
 	</c:url>">
-	<zm:getFavIcon request="${pageContext.request}" var="favIconUrl" />
-	<c:if test="${empty favIconUrl}">
-	    <fmt:message key="favIconUrl" var="favIconUrl"/>
-	</c:if>
+    <fmt:message key="favIconUrl" var="favIconUrl"/>
     <link rel="SHORTCUT ICON" href="<c:url value='${favIconUrl}'/>">
 </head>
 <c:set value="/img" var="iconPath" scope="request"/>
