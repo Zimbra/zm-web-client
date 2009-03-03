@@ -84,7 +84,8 @@ function(organizer) {
 	if (appCtxt.get(ZmSetting.SHARING_ENABLED) &&
 		appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED))
 	{
-		this.setButtonVisible(ZmFolderPropsDialog.ADD_SHARE_BUTTON, (!organizer.link || organizer.isAdmin()));
+		var isVisible = (!organizer.link || organizer.isAdmin()) && !organizer.isUnder(ZmFolder.ID_ARCHIVE);
+		this.setButtonVisible(ZmFolderPropsDialog.ADD_SHARE_BUTTON, isVisible);
 	}
 
 	DwtDialog.prototype.popup.call(this);
