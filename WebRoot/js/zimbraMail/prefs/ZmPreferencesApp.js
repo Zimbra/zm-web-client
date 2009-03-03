@@ -114,29 +114,12 @@ function() {
 ZmPreferencesApp.prototype._registerOrganizers =  function() {
 	ZmOrganizer.registerOrg(ZmOrganizer.PREF_PAGE,
 							{app:				ZmApp.PREFERENCES,
-//							 nameKey:			"folder",
-//							 defaultFolder:		ZmOrganizer.ID_INBOX,
-//							 soapCmd:			"FolderAction",
-//							 firstUserId:		256,
 							 orgClass:			"ZmPrefPage",
 							 orgPackage:		"PreferencesCore",
 							 treeController:	"ZmPrefPageTreeController",
 							 labelKey:			"preferences",
-//							 itemsKey:			"messages",
-//							 hasColor:			true,
-//							 defaultColor:		ZmOrganizer.C_NONE,
 							 treeType:			ZmOrganizer.PREF_PAGE,
-//							 dropTargets:		[ZmOrganizer.FOLDER],
-//							 views:				["message", "conversation"],
-//							 folderKey:			"mailFolder",
-//							 mountKey:			"mountFolder",
-//							 createFunc:		"ZmOrganizer.create",
-//							 compareFunc:		"ZmFolder.sortCompare",
-//							 shortcutKey:		"F",
-//							 newOp:				ZmOperation.NEW_FOLDER,
-//							 openSetting:		ZmSetting.FOLDER_TREE_OPEN,
-							 displayOrder:		100,
-							 compareFunc:		function(a,b) { return 0; }
+							 displayOrder:		100
 							});
 
 };

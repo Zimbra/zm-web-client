@@ -246,7 +246,7 @@ function(params) {
 	var children = org.children.getArray();
 	if (org.isDataSource(ZmAccount.IMAP)) {
 		children.sort(ZmImapAccount.sortCompare);
-	} else {
+	} else if (ZmTreeView.COMPARE_FUNC[this.type]) {
 		children.sort(eval(ZmTreeView.COMPARE_FUNC[this.type]));
 	}
 	DBG.println(AjxDebug.DBG3, "Render: " + org.name + ": " + children.length);
