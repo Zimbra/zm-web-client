@@ -38,7 +38,10 @@
 		<c:param name="skin"	value="${skin}" />
 		<c:param name="v"		value="${version}" />
 	</c:url>">
-    <fmt:message key="favIconUrl" var="favIconUrl"/>
+	<zm:getFavIcon request="${pageContext.request}" var="favIconUrl" />
+	<c:if test="${empty favIconUrl}">
+	    <fmt:message key="favIconUrl" var="favIconUrl"/>
+	</c:if>
     <link rel="SHORTCUT ICON" href="<c:url value='${favIconUrl}'/>">
 </head>
 <c:set value="/img" var="iconPath" scope="request"/>

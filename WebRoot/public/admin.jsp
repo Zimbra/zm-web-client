@@ -112,7 +112,10 @@
 	<fmt:setLocale value='${pageContext.request.locale}' scope='request' />
 	<fmt:setBundle basename="/messages/ZaMsg" scope='request' />
     <title><fmt:message key="zimbraAdminTitle"/></title>
-    <fmt:message key="favIconUrl" var="favIconUrl"/>
+	<zm:getFavIcon request="${pageContext.request}" var="favIconUrl" />
+	<c:if test="${empty favIconUrl}">
+	    <fmt:message key="favIconUrl" var="favIconUrl"/>
+	</c:if>
     <link rel="SHORTCUT ICON" href="<c:url value='${favIconUrl}'/>">
     
 	<script>
