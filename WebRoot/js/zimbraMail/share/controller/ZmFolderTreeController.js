@@ -90,10 +90,11 @@ function(parent, type, id) {
 	// user folder or Folders header
 	var nId = ZmOrganizer.normalizeId(id, this.type);
 	if (nId == ZmOrganizer.ID_ROOT || ((!folder.isSystem()) && !folder.isSyncIssuesFolder())) {
+		var isShareVisible = (!folder.link || folder.isAdmin()) && !folder.isUnder(ZmFolder.ID_ARCHIVE);
 		parent.enableAll(true);
 		parent.enable(ZmOperation.SYNC, folder.isFeed()/* || folder.hasFeeds()*/);
 		parent.enable(ZmOperation.SYNC_ALL, folder.isFeed() || folder.hasFeeds());
-		parent.enable([ZmOperation.SHARE_FOLDER, ZmOperation.MOUNT_FOLDER], (!folder.link || folder.isAdmin()));
+		parent.enable([ZmOperation.SHARE_FOLDER, ZmOperation.MOUNT_FOLDER], isShareVisible);
 		parent.enable(ZmOperation.EMPTY_FOLDER, (hasContent || folder.link));	// numTotal is not set for shared folders
 		parent.enable(ZmOperation.RENAME_FOLDER, !folder.isDataSource());		// dont allow datasource'd folder to be renamed via overview
 		parent.enable(ZmOperation.NEW_FOLDER, !folder.disallowSubFolder);
