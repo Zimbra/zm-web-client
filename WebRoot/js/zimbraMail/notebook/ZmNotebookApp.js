@@ -136,7 +136,7 @@ function() {
 							 defaultColor:		ZmOrganizer.C_NONE,
 							 treeType:			ZmOrganizer.FOLDER,
 							 views:				["wiki"],
-							 folderKey:			"notebookFolder",
+							 folderKey:			"notebook",
 							 mountKey:			"mountNotebook",
 							 createFunc:		"ZmOrganizer.create",
 							 compareFunc:		"ZmNotebook.sortCompare",

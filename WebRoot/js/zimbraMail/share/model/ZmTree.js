@@ -63,7 +63,7 @@ function() {
 };
 
 ZmTree.prototype.asList =
-function() {
+function(options) {
 	var list = [];
 	return this.root ? this._addToList(this.root, list) : list;
 };
@@ -77,8 +77,11 @@ function(unread) {
 };
 
 ZmTree.prototype._addToList =
-function(organizer, list) {
-	if (!organizer.isRemote()) {
+function(organizer, list, options) {
+	var incRemote = options && options.includeRemote;
+	var remoteOnly = options && options.remoteOnly;
+	var isRemote = organizer.isRemote();
+	if ((!isRemote && !remoteOnly) || (isRemote && (remoteOnly ||incRemote))) {
 		list.push(organizer);
 	}
 	var children = organizer.children.getArray();

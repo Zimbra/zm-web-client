@@ -237,7 +237,7 @@ function() {
 							 treeType:			ZmOrganizer.FOLDER,
 							 dropTargets:		[ZmOrganizer.ADDRBOOK],
 							 views:				["contact"],
-							 folderKey:			"addressBookFolder",
+							 folderKey:			"addressBook",
 							 mountKey:			"mountAddrBook",
 							 createFunc:		"ZmOrganizer.create",
 							 compareFunc:		"ZmAddrBook.sortCompare",

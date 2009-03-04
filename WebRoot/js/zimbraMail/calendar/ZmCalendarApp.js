@@ -334,7 +334,7 @@ function() {
 							 hasColor:			true,
 							 treeType:			ZmOrganizer.FOLDER,
 							 views:				["appointment"],
-							 folderKey:			"calendarFolder",
+							 folderKey:			"calendar",
 							 mountKey:			"mountCalendar",
 							 createFunc:		"ZmCalendar.create",
 							 compareFunc:		"ZmCalendar.sortCompare",

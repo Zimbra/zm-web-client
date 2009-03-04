@@ -1014,3 +1014,12 @@ function() {
 	}
 	return this._autocompleter;
 };
+
+ZmAppCtxt.prototype.getSharingController =
+function() {
+	if (!this._sharingController) {
+		AjxDispatcher.require("Preferences");
+		this._sharingController = new ZmSharingController();
+	}
+	return this._sharingController;
+};

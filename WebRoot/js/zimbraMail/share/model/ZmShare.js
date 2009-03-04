@@ -66,7 +66,7 @@ ZmShare = function(params) {
 	this.object = params.object;
 	this.grantee.type = params.granteeType;
 	this.grantee.id = params.granteeId;
-	this.grantee.name = params.granteeName ? params.granteeName : "";
+	this.grantee.name = params.granteeName || "";
 	this.link.perm = params.perm;
 	this.link.inh = params.inherit;
 	this.link.pw = params.granteePwd;
@@ -286,12 +286,8 @@ ZmShare.prototype.hasPrivateAccess = function() { return this.isPermAllowed(ZmSh
 
 ZmShare._getFolderType =
 function(view) {
-	if (view) {
-		var type = ZmOrganizer.TYPE[view];
-		var folderKey = ZmOrganizer.FOLDER_KEY[type] || "folder";
-		return "(" + ZmMsg[folderKey] + ")";
-	}
-	return "";
+	var folderKey = (view && ZmOrganizer.FOLDER_KEY[ZmOrganizer.TYPE[view]]) || "folder";
+	return ZmMsg[folderKey];
 };
 
 
@@ -678,7 +674,7 @@ function(formatter) {
 	var role = ZmShare._getRoleFromPerm(this.link.perm);
 	var params = [
 		this.link.name, 
-		ZmShare._getFolderType(this.link.view),
+		"(" + ZmShare._getFolderType(this.link.view) + ")",
 		(this.object ? (this.object.owner || this.grantor.name) : this.grantor.name),
 		this.grantee.name,
 		ZmShare.getRoleName(role),

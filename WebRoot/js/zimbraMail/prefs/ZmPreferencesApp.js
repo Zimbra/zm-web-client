@@ -131,6 +131,7 @@ function(settings) {
 	settings.registerSetting("IMPORT_BUTTON",				{type:ZmSetting.T_PSEUDO, dataType:ZmSetting.D_NONE});
 	settings.registerSetting("EXPORT_FOLDER",				{type:ZmSetting.T_PSEUDO, dataType:ZmSetting.D_NONE});
 	settings.registerSetting("EXPORT_BUTTON",				{type:ZmSetting.T_PSEUDO, dataType:ZmSetting.D_NONE});
+	settings.registerSetting("SHARING",						{type:ZmSetting.T_PSEUDO, dataType:ZmSetting.D_NONE});
 	settings.registerSetting("SIGNATURE_MAX_LENGTH",		{name:"zimbraMailSignatureMaxLength", type:ZmSetting.T_COS, dataType:ZmSetting.D_INT, defaultValue:1024});
 	settings.registerSetting("DISCARD_IN_FILTER_ENABLED",	{name:"zimbraFeatureDiscardInFiltersEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 };
@@ -192,6 +193,20 @@ function() {
                 ZmSetting.COMPOSE_SAME_FORMAT,
                 ZmSetting.MAIL_MANDATORY_SPELLCHECK
             ]
+		},
+		SHARING: {
+			title: ZmMsg.sharing,
+			templateId: "prefs.Pages#SharingPrefPage",
+			priority: 85,
+			precondition: ZmSetting.SHARING_ENABLED,
+			prefs: [
+				ZmSetting.SHARING
+			],
+			manageChanges: true,
+			createView: function(parent, section, controller) {
+				AjxDispatcher.require("Share");
+				return new ZmSharingPage(parent, section, controller);
+			}
 		},
 		IMPORT_EXPORT: {
 			title: ZmMsg.importExport,
@@ -360,6 +375,10 @@ function() {
 		displayName:		ZmMsg.changePassword,
 		displayContainer:	ZmPref.TYPE_PASSWORD,
 		precondition:		ZmSetting.CHANGE_PASSWORD_ENABLED
+	});
+
+	ZmPref.registerPref("SHARING", {
+		displayContainer:	ZmPref.TYPE_CUSTOM
 	});
 
 	if (appCtxt.isOffline) {

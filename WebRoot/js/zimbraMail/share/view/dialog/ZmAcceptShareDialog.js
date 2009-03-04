@@ -48,7 +48,7 @@ function(share, fromAddr) {
 
 	this._share = share;
 	this._fromAddr = fromAddr;
-	this._headerEl.innerHTML = this._headerFormatter.format([share.grantor.name, share.link.name]);
+	this._headerEl.innerHTML = this._headerFormatter.format([share.grantor.name || share.grantor.email, share.link.name]);
 
 	var role = ZmShare._getRoleFromPerm(share.link.perm);
 	var params = [
@@ -58,7 +58,8 @@ function(share, fromAddr) {
 	this._detailsEl.innerHTML = this._detailsFormatter.format(params);
 	this._questionEl.innerHTML = "<b>" + ZmMsg.acceptShareQuestion + "</b>";
 
-	this._nameEl.value = this._defaultNameFormatter.format([share.grantor.name, share.link.name]);
+	var namePart = share.grantor.name || (share.grantor.email && share.grantor.email.substr(0, share.grantor.email.indexOf('@')));
+	this._nameEl.value = this._defaultNameFormatter.format([namePart, share.link.name]);
 
 	this._reply.setReplyType(ZmShareReply.NONE);
 	this._reply.setReplyNote("");
