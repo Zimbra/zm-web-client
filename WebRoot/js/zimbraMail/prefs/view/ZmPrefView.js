@@ -42,7 +42,7 @@ ZmPrefView = function(params) {
     this._hasRendered = false;
 
 	this.setVisible(false);
-}
+};
 
 ZmPrefView.prototype = new DwtTabView;
 ZmPrefView.prototype.constructor = ZmPrefView;
@@ -76,7 +76,7 @@ function() {
 
 		// add section as a tab
 		var view = (section.createView)
-			? (section.createView(this._parent, section, this._controller))
+			? (section.createView(this, section, this._controller))
 			: (new ZmPreferencesPage(this, section, this._controller));
 		this.prefView[section.id] = view;
 		var tabButtonId = ZmId.getTabId(this._controller._currentView, section.title.replace(/[' ]/ig,"_"));
@@ -290,7 +290,7 @@ function(section, viewPage, dirtyCheck, noValidation, list, errors, view) {
 		}
 
 		if (!unchanged) {
-			var maxLength = setup ? setup.maxLength : null
+			var maxLength = setup ? setup.maxLength : null;
 			var validationFunc = setup ? setup.validationFunction : null;
 			var isValid = true;
 			if (!noValidation && maxLength && (value.length > maxLength)) {
