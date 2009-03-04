@@ -35,6 +35,13 @@
         <fmt:message key="actionFolderCreated"><fmt:param value="${fn:escapeXml(param.folder_name)}"/></fmt:message>
     </mo:status>
 </c:when>
+<c:when test="${zm:actionSet(param, 'actionSaveCal')}">
+
+       <zm:createFolder var="folder" view="appointment" name="${fn:escapeXml(param.cal_name)}" parentid="${mailbox.inbox.parentId}"/>
+       <mo:status style="Info">
+            <fmt:message key="actionCalendarCreated"><fmt:param value="${fn:escapeXml(param.cal_name)}"/></fmt:message>
+        </mo:status>
+    </c:when>
 <c:when test="${zm:actionSet(param, 'actionSaveAddrFolder')}">
    <zm:createFolder view="contact" var="folder" name="${fn:escapeXml(param.folder_name)}" parentid="${fn:escapeXml(param.parentid)}"/>
    <mo:status style="Info">
@@ -49,8 +56,17 @@
 </c:when>
 <c:when test="${zm:actionSet(param, 'actionSaveSearch')}">
     <c:choose>
-        <c:when test="${param.st eq 'briefcase'}">
+        <c:when test="${param.st eq 'briefcase' || param.st eq 'briefcases'}">
             <c:set var="types" value="document"/>
+        </c:when>
+        <c:when test="${param.st eq 'folders'}">
+            <c:set var="types" value="${mailbox.prefs.groupByConversation ? 'conversation' : 'message'}"/>
+        </c:when>
+        <c:when test="${param.st eq 'ab'}">
+            <c:set var="types" value="contact"/>
+        </c:when>
+        <c:when test="${param.st eq 'cals'}">
+            <c:set var="types" value="appointment"/>
         </c:when>
         <c:otherwise>
             <c:set var="types" value="${param.st}"/>

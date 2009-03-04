@@ -144,6 +144,7 @@
                 </div>
             </div>
         </div>
+    <hr size="1"/>
     </c:if>
 </c:if>
 <c:if test="${not empty externalImageUrl and (message.externalImageCount gt 0)}">

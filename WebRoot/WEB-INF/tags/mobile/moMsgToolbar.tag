@@ -17,11 +17,11 @@
     <div class="SubToolbar table">
         <div class="table-row">
             <div class="table-cell">
-                <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=folders"><fmt:message key="folders"/></a> &#171; <a
+                <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=folders"><fmt:message key="folders"/></a> &laquo; <a
                     href="${fn:escapeXml(closeUrl)}#msg${mid}" class='zo_leftbutton'>
                     ${fn:escapeXml(zm:truncateFixed(context.shortBackTo,15,true))}
             </a>
-                &#171; ${fn:escapeXml(zm:truncateFixed(msg.subject,12,true))}
+                &laquo; ${fn:escapeXml(zm:truncateFixed(msg.subject,12,true))}
             </div>
         </div>
     </div>

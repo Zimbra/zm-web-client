@@ -215,9 +215,10 @@ form {
 }
 .Toolbar {
     background: #d3d2d7;
-    border: 1px solid silver;
+    
     border-left: 0px;
     border-right: 0px;
+    background: #efefef url( "/img/mobile/iphone/iPhoneToolbar1.png" ) bottom repeat-x;
 }
 .StatusInfo, .StatusWarning, .StatusCritical, .zo_noresults {
     padding: 3px;
@@ -647,4 +648,21 @@ div.row span.l {
  .ImgVideoDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -240px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
  .ImgZSpreadSheet{background:url("/img/doctypes.gif?v=090227110051") 0px -256px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
  .ImgZipDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -272px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- 
+ .ZmThumbnailItem{
+    float:left;
+     width:43%;
+     margin:2%;
+     padding:1%;
+     overflow:hidden;
+     text-overflow:ellipsis;
+     border:1px dotted #eeeeee;
+     -webkit-border-radius:5px;
+     -moz-border-radius: 5px;
+ }
+.ZmThumbnailIcon{
+    border-bottom:1px solid #eeeeee;
+    padding-bottom:8px;    
+}
+.ZmThumbnailName{
+    padding-top:8px; 
+}

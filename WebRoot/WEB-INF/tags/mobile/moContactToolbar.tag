@@ -15,10 +15,10 @@
     <div class="SubToolbar table">
         <div class="table-row">
             <div class="table-cell">
-                <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=ab"><fmt:message key="addressBooks"/></a> &#171;
+                <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=ab"><fmt:message key="addressBooks"/></a> &laquo;
                 <a href="${fn:escapeXml(closeUrl)}<c:if test="${empty context.sfi}">&sfi=${contact.folderId}</c:if>#cn${contact.id}" class='zo_leftbutton'>
                         ${fn:escapeXml(zm:truncate(context.shortBackTo,15,true))}
-                </a> &#171; ${fn:escapeXml(fn:substring(contact.firstName,0,8))}...
+                </a> &laquo; ${fn:escapeXml(fn:substring(contact.firstName,0,8))}...
             </div>
         </div>
     </div>

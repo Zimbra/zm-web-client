@@ -36,7 +36,7 @@
                  </span>
                 <span class="table-cell">
                    <div>
-                       <b>${fn:escapeXml(contact.displayFileAs)}</b>
+                       <strong>${fn:escapeXml(contact.displayFileAs)}</strong>
                    </div>
                    <c:if test="${not empty contact.jobTitle}">
                         <div>${fn:escapeXml(contact.jobTitle)}</div>

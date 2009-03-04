@@ -14,6 +14,12 @@
 <c:set var="anAction"
        value="${not empty paramValues.anAction[0] ? paramValues.anAction[0] :  paramValues.anAction[1]}"/>
 <c:choose>
+    <c:when test="${zm:actionSet(param,'moreActions') && anAction eq 'actionViewList'}">
+        <c:set var="l_view" value="list" scope="session"/>
+    </c:when>
+    <c:when test="${zm:actionSet(param,'moreActions') && anAction eq 'actionViewExplorer'}">
+        <c:set var="l_view" value="explorer" scope="session"/>
+    </c:when>
     <c:when test="${zm:actionSet(param,'moreActions') && anAction eq 'selectAll'}">
         <c:set var="select" value="all" scope="request"/>
     </c:when>
@@ -24,13 +30,13 @@
         <mo:status style="Warning"><fmt:message key="actionNoActionSelected"/></mo:status>
     </c:when>
     <c:when test="${empty ids}">
-        <mo:status style="Warning"><fmt:message key="actionNoMessageSelected"/></mo:status>
+        <mo:status style="Warning"><fmt:message key="actionNoItemSelected"/></mo:status>
     </c:when>
     <c:when test="${zm:actionSet(param, 'actionDelete') || (zm:actionSet(param,'moreActions') && anAction == 'actionDelete')}">
         <zm:moveItem folderid="${mailbox.trash}" var="result" id="${ids}"/>
         <c:set var="op" value="x" scope="request"/>
         <mo:status>
-            <fmt:message key="actionBriefMoved">
+            <fmt:message key="actionBriefcaseMoved">
                 <fmt:param value="${result.idCount}"/>
                 <fmt:param value="${zm:getFolderName(pageContext, mailbox.trash.id)}"/>
             </fmt:message>
@@ -42,7 +48,7 @@
         <zm:clearSearchCache/>
         <c:set var="op" value="x" scope="request"/>
         <mo:status>
-            <fmt:message key="deleteBriefcase">
+            <fmt:message key="actionBriefcaseDeleted">
                 <fmt:param value="${result.idCount}"/>
             </fmt:message>
         </mo:status>
@@ -53,8 +59,9 @@
             <c:set var="tag" value="${fn:replace(anAction,'addTag_','')}"/>
         </c:if>
         <zm:tagItem tagid="${tag}" var="result" id="${ids}" tag="${true}"/>
+        <zm:clearSearchCache/>
         <mo:status>
-            <fmt:message key="actionBriefTag">
+            <fmt:message key="actionBriefcaseTag">
                 <fmt:param value="${result.idCount}"/>
                 <fmt:param value="${zm:getTagName(pageContext, tag)}"/>
             </fmt:message>
@@ -66,8 +73,9 @@
             <c:set var="tag" value="${fn:replace(anAction,'remTag_','')}"/>
         </c:if>
         <zm:tagItem tagid="${tag}" var="result" id="${ids}" tag="${false}"/>
+        <zm:clearSearchCache/>
         <mo:status>
-            <fmt:message key="actionBriefUntag">
+            <fmt:message key="actionBriefcaseUntag">
                 <fmt:param value="${result.idCount}"/>
                 <fmt:param value="${zm:getTagName(pageContext, tag)}"/>
             </fmt:message>
@@ -80,7 +88,7 @@
                 <zm:moveItem folderid="${folderId}" var="result" id="${ids}"/>
                 <zm:clearSearchCache/>
                 <mo:status>
-                    <fmt:message key="actionBriefMoved">
+                    <fmt:message key="actionBriefcaseMoved">
                         <fmt:param value="${result.idCount}"/>
                         <fmt:param value="${zm:getFolderName(pageContext, folderId)}"/>
                     </fmt:message>

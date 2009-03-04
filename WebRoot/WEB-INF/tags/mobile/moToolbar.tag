@@ -25,9 +25,9 @@
                 <c:choose>
                     <c:when test="${context.isContactSearch}">
                         <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=ab"><fmt:message
-                                key="addressBooks"/></a> &#171;
+                                key="addressBooks"/></a> &laquo;
                         <c:if test="${top_fldr_select ne '1'}">
-                                ${fn:escapeXml(zm:truncateFixed(context.shortBackTo,15,true))}
+                                ${fn:escapeXml(zm:truncateFixed(context.shortBackTo,12,true))}
                         </c:if>
                         <c:if test="${top_fldr_select eq '1'}">
                         <select class="_zo_select_button" name="sfi"
@@ -44,9 +44,9 @@
                     </c:when>
                     <c:when test="${context.isBriefcaseSearch}">
                         <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=briefcases"><fmt:message
-                                key="briefcases"/></a> &#171;
+                                key="briefcases"/></a> &laquo;
                         <c:if test="${top_fldr_select eq '0'}">
-                            ${fn:escapeXml(zm:truncateFixed(context.shortBackTo,15,true))}
+                            ${fn:escapeXml(zm:truncateFixed(context.shortBackTo,12,true))}
                         </c:if>
                         <c:if test="${top_fldr_select ne '0'}">
 			<select class="_zo_select_button" name="sfi"
@@ -63,9 +63,9 @@
                     </c:when>
                     <c:otherwise>
                         <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=folders"><fmt:message
-                                key="folders"/></a> &#171;
+                                key="folders"/></a> &laquo;
                         <c:if test="${top_fldr_select ne '1'}">
-                            ${fn:escapeXml(zm:truncateFixed(context.shortBackTo,15,true))}
+                            ${fn:escapeXml(zm:truncateFixed(context.shortBackTo,12,true))}
                         </c:if>
                         <c:if test="${top_fldr_select eq '1'}">
                         <select class="_zo_select_button" name="sfi" onchange="document.location.href='?sfi='+this.value;">
@@ -81,7 +81,7 @@
                     </c:otherwise>
                 </c:choose>
                 <c:if test="${not empty param.sq && context.searchResult.size > 0}">
-                | <a href="?saveSearch=1&sq=${param.sq}&search=0"  onclick='toggleElem(this,"searchbar"); return toggleElem(this,"savesearchbar");'><fmt:message key="saveSearch"/></a>
+                &raquo; <a href="?saveSearch=1&sq=${param.sq}&search=0"  onclick='toggleElem(this,"searchbar"); return toggleElem(this,"savesearchbar");'><fmt:message key="saveSearch"/></a>
                 </c:if>    
             </div>
         </div>
@@ -134,6 +134,12 @@
                     <option value="actionHardDelete"><fmt:message key="delete"/></option>
                 </c:otherwise>
             </c:choose>
+             <c:if test="${context.isBriefcaseSearch}">
+            <optgroup label="<fmt:message key="view"/>">
+                <option value="actionViewList"><fmt:message key="MO_viewList"/></option>
+                <option value="actionViewExplorer"><fmt:message key="MO_viewExplorer"/></option>
+            </optgroup>
+            </c:if>
             <!--</optgroup>-->
             <optgroup label="<fmt:message key='select'/>">
                 <option value="selectAll"><fmt:message key="all"/></option>
@@ -247,7 +253,7 @@
                         <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=ab"><fmt:message
                                 key="addressBooks"/></a> :
                         <c:if test="${btm_fldr_select eq '0'}">
-                            ${fn:escapeXml(zm:truncateFixed(context.shortBackTo,15,true))}
+                            ${fn:escapeXml(zm:truncateFixed(context.shortBackTo,12,true))}
                         </c:if>
                         <c:if test="${btm_fldr_select ne '0'}">
 			<select class="_zo_select_button" name="sfi"
@@ -264,9 +270,9 @@
                     </c:when>
                     <c:when test="${context.isBriefcaseSearch}">
                         <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=briefcases"><fmt:message
-                                key="briefcases"/></a> &#171;
+                                key="briefcases"/></a> &laquo;
                         <c:if test="${btm_fldr_select eq '0'}">
-                            ${fn:escapeXml(zm:truncateFixed(context.shortBackTo,15,true))}
+                            ${fn:escapeXml(zm:truncateFixed(context.shortBackTo,12,true))}
                         </c:if>
                         <c:if test="${btm_fldr_select ne '0'}">
 			<select class="_zo_select_button" name="sfi"
@@ -285,7 +291,7 @@
                         <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=folders"><fmt:message
                                 key="folders"/></a> :
                         <c:if test="${btm_fldr_select eq '0'}">
-                            ${fn:escapeXml(zm:truncateFixed(context.shortBackTo,15,true))}
+                            ${fn:escapeXml(zm:truncateFixed(context.shortBackTo,12,true))}
                         </c:if>
                         <c:if test="${btm_fldr_select ne '0'}">
                         <select class="_zo_select_button" name="sfi" onchange="fetchIt('?sfi='+this.value+'&amp;st=${context.st}');">

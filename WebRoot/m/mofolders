@@ -20,6 +20,9 @@
 
     <fmt:message var="title" key="MO_mailFoldersTags"/>
 </mo:handleError>
+<c:if test="${not empty param.sq && empty param.actionSaveFolder && empty param.actionSaveSearch && empty param.actionSaveTag}">
+    <c:set var="query" value="${param.sq}"/>
+</c:if>
 <c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/>
 <c:set value="${title}" var="title" scope="request"/>
 
@@ -76,23 +79,23 @@
     </div>
 </div>
 
-<c:if test="${empty param.sq || fn:containsIgnoreCase(mailbox.inbox.name,param.sq)}">
+<c:if test="${empty query || fn:containsIgnoreCase(mailbox.inbox.name,query)}">
     <mo:overviewFolder base="${context_url}" folder="${mailbox.inbox}"/>
     <mo:doFolderTree skiproot="${true}" parentid="${mailbox.inbox.id}" skipsystem="false"/>
 </c:if>
-<c:if test="${empty param.sq ||fn:containsIgnoreCase(mailbox.sent.name,param.sq)}">
+<c:if test="${empty query ||fn:containsIgnoreCase(mailbox.sent.name,query)}">
     <mo:overviewFolder base="${context_url}" folder="${mailbox.sent}"/>
     <mo:doFolderTree skiproot="${true}" parentid="${mailbox.sent.id}" skipsystem="false"/>
 </c:if>
-<c:if test="${empty param.sq ||fn:containsIgnoreCase(mailbox.drafts.name,param.sq)}">
+<c:if test="${empty query ||fn:containsIgnoreCase(mailbox.drafts.name,query)}">
     <mo:overviewFolder base="${context_url}" folder="${mailbox.drafts}"/>
     <mo:doFolderTree skiproot="${true}" parentid="${mailbox.drafts.id}" skipsystem="false"/>
 </c:if>
-<c:if test="${empty param.sq ||fn:containsIgnoreCase(mailbox.spam.name,param.sq)}">
+<c:if test="${empty query ||fn:containsIgnoreCase(mailbox.spam.name,query)}">
     <mo:overviewFolder base="${context_url}" folder="${mailbox.spam}"/>
     <mo:doFolderTree skiproot="${true}" parentid="${mailbox.spam.id}" skipsystem="false"/>
 </c:if>
-<c:if test="${empty param.sq ||fn:containsIgnoreCase(mailbox.trash.name,param.sq)}">
+<c:if test="${empty query ||fn:containsIgnoreCase(mailbox.trash.name,query)}">
     <mo:overviewFolder base="${context_url}" folder="${mailbox.trash}"/>
     <mo:doFolderTree skiproot="${true}" parentid="${mailbox.trash.id}" skipsystem="false"/>
 </c:if>
@@ -102,13 +105,37 @@
     <div class="table-row">
         <div class="table-cell">
             <span class="Title left">
-                <fmt:message key="searches"/></span>
+                <fmt:message key="searches"/>
+            </span>
+            <span class="right">
+                <a class="zo_button1" href="?st=folders${empty param.showSearchCreate?'&showSearchCreate=1':''}#searches" onclick="return toggleElem(null,'nsrchfrm');"><fmt:message key="create"/></a>
+            </span>
         </div>
+    </div>
+</div>
+<div class="table View" id="nsrchfrm" style="${empty param.showSearchCreate?'display:none':''};">
+    <div class="table-row">
+        <div class="table-cell">
+            <form action="?st=folders" method="post" style="padding:0px;margin:0px;" onsubmit="return submitForm(this);">
+                <input type="hidden" name="doFolderAction" value="1">
+                <input type="hidden" name="parentid" value="${mailbox.inbox.parentId}">
+                <input name="crumb" type="hidden" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
+                <span class="label"><fmt:message key="searchQuery"/>:</span> <input type="text" name="sq"
+                                                                             style="width:100px;"  class="Textarea">
+                <br/>
+                <span class="label"><fmt:message key="name"/>:</span> <input type="text" name="sname"
+                                                                             style="width:100px;"  class="Textarea">
+                <input class="zo_button" type="submit" name="actionSaveSearch" value="<fmt:message key='save'/>">
+                
+
+            </form>
+        </div>
+        <a name="searches" style="padding:0px;margin:0px;"></a>
     </div>
 </div>
 
 <zm:forEachFolder var="folder" skipsystem="${true}" skiptopsearch="${false}">
-    <c:if test="${(folder.isSearchFolder && (empty param.sq || fn:containsIgnoreCase(folder.name,param.sq)))}">
+    <c:if test="${(folder.isSearchFolder && (empty query || fn:containsIgnoreCase(folder.name,query)))}">
         <c:if test="${folder.types eq 'conversation' || folder.types eq 'message' || empty folder.types}">
         <mo:overviewSearchFolder folder="${folder}" types="${folder.types}"/>
         </c:if>
@@ -155,7 +182,7 @@
 </div>
 </c:if>
 <zm:forEachTag var="tag">
-    <c:if test="${empty param.sq || fn:containsIgnoreCase(tag.name, param.sq)}">
+    <c:if test="${empty query || fn:containsIgnoreCase(tag.name, query)}">
         <mo:overviewTag calendars="${false}" tag="${tag}" skiptypes="${true}"/>
     </c:if>
 </zm:forEachTag>

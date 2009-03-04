@@ -18,10 +18,13 @@
     <input type="hidden" name="doBriefcaseAction" value="1"/>
     <input name="moreActions" type="hidden" value="<fmt:message key="actionGo"/>"/>
    <mo:toolbar context="${context}" urlTarget="${context_url}" isTop="true" mailbox="${mailbox}"/>
+    <div class="table">
+        <div class="table-row">
+            <div class="table-cell" align="center">
+                
     <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
         <c:set var="bchit" value="${hit.briefcaseHit}"/>
         
-        <div class="list-row row" id="cn${bchit.id}">
             <c:set value=",${hit.id}," var="stringToCheck"/>
             <c:set var="ctype" value="${fn:split(bchit.document.contentType,';')}" />
             <c:choose>
@@ -102,7 +105,55 @@
 
     </c:otherwise>
 </c:choose>
-            <span class="cell f">
+            <c:set var="aid" value="A${status.index}"/>
+        <c:set var="briefUrl" value="/service/home/~/?id=${bchit.id}&auth=co"/>
+                                <a href="${fn:escapeXml(briefUrl)}" id="${aid}" target="_blank">
+            <div class="ZmThumbnailItem" style="">
+                <div align="left">
+                <input class="chk" type="checkbox" ${requestScope.select ne 'none' && (fn:contains(requestScope._selectedIds,stringToCheck) || requestScope.select eq 'all') ? 'checked="checked"' : ''}
+                                           name="id" value="${bchit.id}"/>
+               <c:if test="${!empty bchit.document.tagIds}">
+                <mo:miniTagImage
+                                ids="${bchit.document.tagIds}"/>
+                </c:if>
+                &nbsp;
+                </div>
+                <div class="ZmThumbnailIcon" align="center">
+                    <c:choose>
+                        <c:when test="${zm:contains(bchit.document.contentType,'image')}">
+                            <app:img clazz="ZhThumbnailImg" src="large/ImgImageDoc_48.gif"/>
+                        </c:when>
+                        <c:when test="${zm:contains(bchit.document.contentType,'video')}">
+                            <app:img clazz="ZhThumbnailImg" src="large/ImgVideoDoc_48.gif"/>
+                        </c:when>
+                        <c:when test="${zm:contains(bchit.document.contentType,'pdf')}">
+                            <app:img clazz="ZhThumbnailImg" src="large/ImgPDFDoc_48.gif"/>
+                        </c:when>
+                        <c:when test="${zm:contains(bchit.document.contentType,'zip')}">
+                            <app:img clazz="ZhThumbnailImg" src="large/ImgZipDoc_48.gif"/>
+                        </c:when>
+                        <c:otherwise>
+                            <app:img clazz="ZhThumbnailImg" src="large/ImgUnknownDoc_48.gif"/>
+                        </c:otherwise>
+                    </c:choose>
+                    <div class='small-gray-text'>(${fn:escapeXml(zm:displaySize(pageContext, bchit.document.size))})</div>
+                </div>
+                <div class="ZmThumbnailName" align="center">
+                <span>
+
+                        <c:set var='docName' value="${empty bchit.document.name ? '' : zm:truncateFixed(bchit.document.name,12,true)}"/>
+                        <c:out value="${docName}"/>
+
+                </span>
+                </div>
+                <div align="center" class="small-gray-text frag-span">
+                <c:set var="cname" value="${fn:split(bchit.document.creator,'@')}" />
+                <fmt:message key="by"/>&nbsp;${fn:escapeXml(cname[0])}&nbsp;<fmt:message key="on"/>&nbsp;${fn:escapeXml(zm:displayDate(pageContext, bchit.createdDate))}
+                </div>
+            </div>
+             </a>
+
+            <%--<span class="cell f">
                     <input class="chk" type="checkbox" ${requestScope.select ne 'none' && (fn:contains(requestScope._selectedIds,stringToCheck) || requestScope.select eq 'all') ? 'checked="checked"' : ''}
                            name="id" value="${bchit.id}"/>
             <span class="SmlDocIcnHldr ${mimeImg}">&nbsp;</span>
@@ -115,7 +166,7 @@
                 </div>
                 </a>
                 <c:set var="cname" value="${fn:split(bchit.document.creator,'@')}" />
-               <div class="Email from-span">
+               <div class="from-span">
                     <a href="${briefUrl}" target="_blank">
                     ${fn:escapeXml(bchit.document.creator)}
                     </a>
@@ -124,7 +175,7 @@
                 <div class="frag-span small-gray-text">
                     <c:set var="cname" value="${fn:split(bchit.document.editor,'@')}" />
                     <fmt:message key="modified"/>&nbsp;<fmt:message key="by"/>&nbsp;${cname[0]}&nbsp;<fmt:message key="on"/>&nbsp;${fn:escapeXml(zm:displayDate(pageContext, bchit.modifiedDate))}&nbsp;
-                    <%--<fmt:message key="modified"/>&nbsp;<fmt:message key="by"/>&nbsp;${fn:split(bchit.document.editor,'@')[0]}&nbsp;<fmt:message key="on"/>&nbsp;${fn:escapeXml(zm:displayDate(pageContext, bchit.modifiedDate))}--%>
+                    --%><%--<fmt:message key="modified"/>&nbsp;<fmt:message key="by"/>&nbsp;${fn:split(bchit.document.editor,'@')[0]}&nbsp;<fmt:message key="on"/>&nbsp;${fn:escapeXml(zm:displayDate(pageContext, bchit.modifiedDate))}--%><%--
                 </div>
                 </a>
             </span>
@@ -141,9 +192,13 @@
                                 ids="${bchit.document.tagIds}"/>
                 </div>
                 </c:if>
-            </span>
-        </div>
+            </span>--%>
+
     </c:forEach>
+
+            </div>
+        </div>
+    </div>
     <c:if test="${empty context || empty context.searchResult or context.searchResult.size eq 0}">
         <div class='table'>
                 <div class="table-row">

@@ -119,11 +119,10 @@
                     <c:if test="${count eq 0}">
                             <fmt:formatDate var="datef" timeZone="${timezone}" value="${currentDay2.time}" pattern="yyyyMMdd"/>
                             <div class='zo_cal_mlist' id="list${datef}" <c:if test="${datef eq curId}"> style='display:block'</c:if>>
-                        <table width="100%" cellpadding="0" cellspacing="0" class='zo_cal_list'>
                     </c:if>
                     <mo:calendarUrl appt="${appt}" var="apptUrl" view="month"/>
-                        <tr  onclick='return zClickLink("appt${appt.id}")'>
-                        <td class='zo_cal_listi_time'>
+                            <div class="zo_cal_listi" onclick='return zClickLink("appt${appt.id}")'>
+                            <span class='zo_cal_listi_time'>
                             <c:choose>
                                 <c:when test="${appt.allDay}">
                                     <fmt:message key="apptAllDay"/>
@@ -132,16 +131,16 @@
                                     <fmt:formatDate value="${appt.startDate}" type="time" timeStyle="short" timeZone="${timezone}"/>
                                 </c:otherwise>
                             </c:choose>
-                        </td>
-                        <td class='zo_cal_listi_subject'>
-                            <a id="appt${appt.id}" href="${fn:escapeXml(zm:jsEncode(apptUrl))}"><c:set var="subject" value="${empty appt.name ? noSubject : appt.name}"/>
-                                ${fn:escapeXml(subject)}</a>
-                        </td>
-                    </tr>
+                            </span>
+                            <span class='zo_cal_listi_subject'>
+                                <a id="appt${appt.id}" href="${fn:escapeXml(zm:jsEncode(apptUrl))}"><c:set var="subject" value="${empty appt.name ? noSubject : appt.name}"/>
+                                    ${fn:escapeXml(fn:substring(subject,0,25))}...
+                                </a>
+                            </span>
+                            </div>
                     <c:set var="count" value="${count+1}"/>
                 </zm:forEachAppoinment>
                 <c:if test="${count gt 0}">
-                    </table>
                     </div>
                 </c:if>
                 ${zm:getNextDay(currentDay2)}

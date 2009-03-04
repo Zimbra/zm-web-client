@@ -34,18 +34,32 @@
 <c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/>
 <%--<form action="" method="get">--%>
 <input type="hidden" name="st" value="cals"/>
-<div width="100%">
-    <div>
-        <span>
-            <div class="Toolbar">
-                <div>
-                    <span class="Title">
-                        <fmt:message key="calendars"/>
-                    </span>
-                </div>
-            </div>
-       </span>
+<div class="Toolbar table">
+    <div class="table-row">
+        <div class="table-cell">
+            <span class="Title left">
+                    <fmt:message key="calendars"/>
+                </span>
+                 <span class="right">
+                    <a class="zo_button1" href="?st=cals${empty param.showCalCreate?'&showCalCreate=1':''}#cals" onclick="return toggleElem(null,'nfldrfrm');"><fmt:message key="create"/></a>
+                </span>
+        </div>
     </div>
+</div>
+<div class="table View" id="nfldrfrm" style="${empty param.showCalCreate?'display:none':''};">
+    <div class="table-row">
+        <div class="table-cell">
+            <form action="${currentUrl}" method="post" style="padding:0px;margin:0px;" onsubmit="return submitForm(this);">
+                <input type="hidden" name="doFolderAction" value="1">
+                <input name="crumb" type="hidden" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
+                <span class="label"><fmt:message key="name"/>:</span> <input type="text" name="cal_name"
+                                                                             style="width:100px;"  class="Textarea">
+                <input class="zo_button" type="submit" name="actionSaveCal" value="<fmt:message key='save'/>">
+            </form>
+        </div>
+        <a name="cals" style="padding:0px;margin:0px;"></a>
+    </div>
+</div>
     <%--<c:if test="${not empty zm:getCheckedCalendarFolderIds(mailbox)}">--%>
     <div onclick='zClickLink("FLDRCHECKED")' class='list-row-unread Folders list-row' style='padding: 5px;'>
         <span>

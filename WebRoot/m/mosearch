@@ -100,8 +100,11 @@
     <c:when test="${context.isContactSearch}">
         <mo:contactListView context="${context}"/>
     </c:when>
-    <c:when test="${context.isBriefcaseSearch}">
+    <c:when test="${context.isBriefcaseSearch && (sessionScope.l_view eq 'list' || param.view eq 'list')}">
         <mo:briefcaseListView context="${context}"/>
+    </c:when>
+    <c:when test="${context.isBriefcaseSearch && (sessionScope.l_view eq 'explorer' || param.view eq 'explorer')}">
+        <mo:briefcaseExplorerView context="${context}"/>
     </c:when>
     <c:otherwise>
         <fmt:message key="error" var="title"/>
