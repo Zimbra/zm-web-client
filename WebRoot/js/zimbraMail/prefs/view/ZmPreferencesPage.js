@@ -541,8 +541,7 @@ function(list, continueCallback) {
 
 ZmPreferencesPage.prototype._createPageHtml =
 function(templateId, data) {
-	var template = AjxTemplate.getTemplate(templateId);
-	if (template) {
+	if (AjxTemplate.require(templateId)) {
 		this.getContentHtmlElement().innerHTML = AjxTemplate.expand(templateId, data);
 	}
 };

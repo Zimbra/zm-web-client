@@ -89,7 +89,7 @@ function() {
 
 		// add section as a tab
 		var view = (section.createView)
-			? (section.createView(this._parent, section, this._controller))
+			? (section.createView(this, section, this._controller))
 			: (new ZmPreferencesPage(this, section, this._controller));
 		this.prefView[section.id] = view;
 		var tabButtonId = ZmId.getTabId(this._controller._currentView, section.title.replace(/[' ]/ig,"_"));
