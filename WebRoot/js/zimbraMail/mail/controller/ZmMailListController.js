@@ -606,7 +606,7 @@ function(imItem, address, ev, contact) {
 		if (contact) {
 			ZmImApp.updateImMenuItemByContact(imItem, contact, address);
 		} else {
-			ZmImApp.updateImMenuItemByAddress(imItem, address, true);
+			ZmImApp.handleResponseGetContact(imItem, address, true);
 		}
 	}
 	this._participantActionMenu.popup(0, ev.docX, ev.docY);

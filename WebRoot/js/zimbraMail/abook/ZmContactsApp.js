@@ -571,6 +571,9 @@ function(addr, isGroupSearch, callback, result) {
 		}
 		for (var i = 0; i < addr.length; i++) {
 			var a = addr[i];
+			if (!this._byEmail[a]) {
+				this._updateLookupCache(null, a); // Make sure there's a null entry in the map for the address.	
+			}
 			var callbacks = this._addrLookupHash[a];
 			if (callbacks && callbacks.length) {
 				for (var j = 0; j < callbacks.length; j++) {

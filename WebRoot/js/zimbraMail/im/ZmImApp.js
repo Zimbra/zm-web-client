@@ -617,7 +617,7 @@ function(item, address, showNew, callback) {
 
 	// If we can find a buddy with the address, use the buddy menu item.
 	var buddy = AjxDispatcher.run("GetRoster").getRosterItem(address.getAddress());
-	if (buddy && false) {
+	if (buddy) {
 		ZmImApp._updateImMenuItemByBuddy(item, buddy);
 		if (callback) { callback.run(); }
 		return;
@@ -627,16 +627,16 @@ function(item, address, showNew, callback) {
 	var contactsApp = appCtxt.getApp(ZmApp.CONTACTS);
 	if (contactsApp) {
 		if (callback) {
-			var respCallback = new AjxCallback(null, ZmImApp._handleResponseGetContact, [item, address, showNew, callback]);
+			var respCallback = new AjxCallback(null, ZmImApp.handleResponseGetContact, [item, address, showNew, callback]);
 			contactsApp.getContactByEmail(address.getAddress(), respCallback);
 		}
 		return true;
 	} else {
-		ZmImApp._handleResponseGetContact(item, address, showNew);
+		ZmImApp.handleResponseGetContact(item, address, showNew);
 	}
 };
 
-ZmImApp._handleResponseGetContact =
+ZmImApp.handleResponseGetContact =
 function(item, address, showNew, callback, contact) {
 	if (contact) {
 		ZmImApp.updateImMenuItemByContact(item, contact, address);
@@ -693,20 +693,22 @@ function(ev) {
 	ZmImApp.INSTANCE.prepareVisuals();
 
 	var imData = ev.dwtObj._imData;
-	switch (imData.op) {
-		case ZmImApp._NEW_IM:
-			ZmTaskbarController.INSTANCE.chatWithRosterItem(imData.buddy);
-			break;
-		case ZmImApp._NEW_BUDDY_FROM_IM_ADDRESS:
-			var imAddress = ZmImAddress.parse(imData.imAddress);
-			var data = imAddress
-				? { address: imAddress.screenName, name: imData.contact.getFullName(), service: imAddress.service }
-				: { };
-			ZmImApp.INSTANCE.getImController()._newRosterItemListener(data);
-			break;
-		case ZmImApp._NEW_BUDDY:
-			data = { address: imData.address ? imData.address.getAddress() : null,  name: imData.name };
-			ZmImApp.INSTANCE.getImController()._newRosterItemListener(data);
-			break;
+	if (imData) {
+		switch (imData.op) {
+			case ZmImApp._NEW_IM:
+				ZmTaskbarController.INSTANCE.chatWithRosterItem(imData.buddy);
+				break;
+			case ZmImApp._NEW_BUDDY_FROM_IM_ADDRESS:
+				var imAddress = ZmImAddress.parse(imData.imAddress);
+				var data = imAddress
+					? { address: imAddress.screenName, name: imData.contact.getFullName(), service: imAddress.service }
+					: { };
+				ZmImApp.INSTANCE.getImController()._newRosterItemListener(data);
+				break;
+			case ZmImApp._NEW_BUDDY:
+				data = { address: imData.address ? imData.address.getAddress() : null,  name: imData.name };
+				ZmImApp.INSTANCE.getImController()._newRosterItemListener(data);
+				break;
+		}
 	}
 };
