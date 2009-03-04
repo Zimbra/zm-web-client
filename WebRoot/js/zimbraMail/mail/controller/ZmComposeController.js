@@ -375,9 +375,17 @@ function(attId, docIds, draftType, callback) {
             acctName =  origMsg._addrs[ZmMailMsg.HDR_FROM].get(0).address;
         }
 
+		// check for read receipt
+		var requestReadReceipt = false;
+		if (appCtxt.get(ZmSetting.MAIL_READ_RECEIPT_ENABLED)) {
+			var menu = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS).getMenu();
+			var mi = menu.getItemById(ZmOperation.KEY_ID, ZmOperation.REQUEST_READ_RECEIPT);
+			requestReadReceipt = (!!(mi && mi.getChecked()));
+		}
+
         var respCallback = new AjxCallback(this, this._handleResponseSendMsg, [draftType, msg, callback]);
         var errorCallback = new AjxCallback(this, this._handleErrorSendMsg);
-        var resp = msg.send(isDraft, respCallback, errorCallback, acctName);
+        var resp = msg.send(isDraft, respCallback, errorCallback, acctName, null, requestReadReceipt);
 
         // XXX: temp bug fix #4325 - if resp returned, we're processing sync
         //      request REVERT this bug fix once mozilla fixes bug #295422!
@@ -865,6 +873,16 @@ function(action) {
 		list.push(ZmOperation.SEP, ZmOperation.INC_ATTACHMENT, ZmOperation.INC_NO_PREFIX, ZmOperation.INC_PREFIX, ZmOperation.INC_PREFIX_FULL);
 	}
 
+	// add read receipt
+	if (appCtxt.get(ZmSetting.MAIL_READ_RECEIPT_ENABLED)) {
+		var ac = window.parentAppCtxt || window.appCtxt;
+		var fid = this._msg && this._msg.folderId;
+		var folder = fid ? ac.getById(fid) : null;
+		if (!folder || (folder && !folder.isRemote())) {
+			list.push(ZmOperation.SEP, ZmOperation.REQUEST_READ_RECEIPT);
+		}
+	}
+
 	var button = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS);
 
 	var overrides = {};
@@ -872,12 +890,15 @@ function(action) {
 		var op = list[i];
 		if (op == ZmOperation.SEP) { continue; }
 		overrides[op] = {};
-		overrides[op].style = DwtMenuItem.RADIO_STYLE;
-		overrides[op].radioGroupId = ZmComposeController.RADIO_GROUP[op];
+		if (op == ZmOperation.REQUEST_READ_RECEIPT) {
+			overrides[op].style = DwtMenuItem.CHECK_STYLE;
+		} else {
+			overrides[op].style = DwtMenuItem.RADIO_STYLE;
+			overrides[op].radioGroupId = ZmComposeController.RADIO_GROUP[op];
+		}
 		if (op == ZmOperation.REPLY) {
 			overrides[op].text = ZmMsg.replySender;
 		}
-
 	}
 
 	var menu = new ZmActionMenu({parent:button, menuItems:list, overrides:overrides,
@@ -1117,6 +1138,8 @@ function(ev) {
 ZmComposeController.prototype._optionsListener =
 function(ev) {
 	var op = ev.item.getData(ZmOperation.KEY_ID);
+
+	if (op == ZmOperation.REQUEST_READ_RECEIPT) { return; }
 
 	// Click on "Options" button.
 	if (op == ZmOperation.COMPOSE_OPTIONS && this._optionsMenu[this._action]) {

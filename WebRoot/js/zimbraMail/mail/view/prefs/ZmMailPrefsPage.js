@@ -62,19 +62,25 @@ function(useDefaults) {
 ZmMailPrefsPage.prototype.isDirty =
 function() {
 	var isDirty = ZmPreferencesPage.prototype.isDirty.call(this);
-	return (!isDirty) 
-		? (this._blackListControl.isDirty() || this._whiteListControl.isDirty())
-		: isDirty;
+	return (!isDirty) ? this.isWhiteBlackListDirty() : isDirty;
+};
+
+ZmMailPrefsPage.prototype.isWhiteBlackListDirty =
+function() {
+	return this._blackListControl.isDirty() ||
+		   this._whiteListControl.isDirty();
 };
 
 ZmMailPrefsPage.prototype.addCommand =
 function(batchCmd) {
-	var soapDoc = AjxSoapDoc.create("ModifyWhiteBlackListRequest", "urn:zimbraAccount");
-	this._blackListControl.setSoapContent(soapDoc, "blackList");
-	this._whiteListControl.setSoapContent(soapDoc, "whiteList");
+	if (this.isWhiteBlackListDirty()) {
+		var soapDoc = AjxSoapDoc.create("ModifyWhiteBlackListRequest", "urn:zimbraAccount");
+		this._blackListControl.setSoapContent(soapDoc, "blackList");
+		this._whiteListControl.setSoapContent(soapDoc, "whiteList");
 
-	var respCallback = new AjxCallback(this, this._handleResponseModifyWhiteBlackList);
-	batchCmd.addNewRequestParams(soapDoc, respCallback);
+		var respCallback = new AjxCallback(this, this._handleResponseModifyWhiteBlackList);
+		batchCmd.addNewRequestParams(soapDoc, respCallback);
+	}
 };
 
 ZmMailPrefsPage.prototype._handleResponseModifyWhiteBlackList =

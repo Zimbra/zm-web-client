@@ -281,19 +281,20 @@ function(offset, newList) {
 /**
  * Sets/unsets a flag for each of a list of items.
  *
- * @param items		a list of items to set/unset a flag for
- * @param flagOp		the name of the flag operation ("flag" or "read")
- * @param on			whether to set the flag
+ * @param items		[Array]			a list of items to set/unset a flag for
+ * @param flagOp	[String]		the name of the flag operation ("flag" or "read")
+ * @param on		[Boolean]*		whether to set the flag
+ * @param callback	[AjxCallback]*	callback to run after action. Does not apply to mixed action.
  */
 ZmList.prototype.flagItems =
-function(items, flagOp, on) {
+function(items, flagOp, on, callback) {
 	if (this.type == ZmItem.MIXED && !this._mixedType) {
 		this._mixedAction("flagItems", [items, flagOp, on]);
 		return;
 	}
 
 	var action = on ? flagOp : "!" + flagOp;
-	this._itemAction({items: items, action: action});
+	this._itemAction({items: items, action: action, callback: callback});
 };
 
 /**

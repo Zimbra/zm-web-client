@@ -514,37 +514,15 @@ function(msg, oldMsg) {
 	if (appCtxt.zimletsPresent()) {
 		appCtxt.getZimletMgr().notifyZimlets("onMsgView", [msg, oldMsg, this]);
 	}
-};
 
-// Values in this hash MUST be null or RegExp.  If "null" is passed, then that
-// CSS rule will be dropped regardless the value.  If a RegExp is passed, then
-// the rule is removed only if its value matches the RegExp.  Useful for cases
-// like "position", where we can safely support most values except "fixed".
-ZmMailMsgView._dangerousCSS = {
-
-// It' doesn't make too much sense to cleanup the style if we're using an IFRAME
-
-// 	// clearly, we can't display background image-s :-(
-// 	// in the future we should provide a way for end-users to see them on demand,
-// 	// but at this time, ban.
-// 	backgroundImage       : null,
-// 	backgroundAttachment  : null,
-
-// 	// position: fixed can cause real trouble with browsers that support it
-// 	position              : /fixed/i,
-
-// 	// negative margins can get an element out of the containing DIV.
-// 	// let's ban them
-// 	marginLeft            : /^-/,
-// 	marginRight           : /^-/,
-// 	marginTop             : /^-/,
-// 	marginBottom          : /^-/,
-
-// 	// all of the above being banned, zIndex could as well stay... but better not.
-// 	zIndex                : null,
-
-// 	// not sure this is good
-// 	whiteSpace            : null
+	// for CV, the first hot message is automatically marked as read via SearchConvRequest
+	if (!msg.isDraft &&
+		((this._mode == ZmId.VIEW_CONV && this._controller._conv.getFirstHotMsg() == msg) ||
+		appCtxt.get(ZmSetting.MARK_MSG_READ) == ZmSetting.MARK_READ_NOW ||
+		this._mode == ZmId.VIEW_MSG))
+	{
+		this._controller.sendReadReceipt(msg);
+	}
 };
 
 ZmMailMsgView._URL_RE = /^((https?|ftps?):\x2f\x2f.+)$/;
@@ -569,7 +547,8 @@ function() {
 // This is needed for Gecko only: for some reason, clicking on a local
 // link will open the full Zimbra chrome in the iframe :-( so we fake
 // a scroll to the link target here. (bug 7927)
-ZmMailMsgView.__localLinkClicked = function(msgView, ev) {
+ZmMailMsgView.__localLinkClicked =
+function(msgView, ev) {
 	// note that this function is called in the context of the link
 	var id = this.getAttribute("href");
 	var el = null;

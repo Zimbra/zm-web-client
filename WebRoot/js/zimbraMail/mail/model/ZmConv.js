@@ -97,7 +97,6 @@ function(params, callback) {
 	var offset = params.offset || 0;
 	var limit = params.limit || appCtxt.get(ZmSetting.PAGE_SIZE);
 	var getHtml = params.getHtml || appCtxt.get(ZmSetting.VIEW_AS_HTML);
-	this._getFirstMsg = params.getFirstMsg;
 
 	var doSearch = true;
 	if (this._loaded && this.msgs && this.msgs.size()) {
@@ -307,8 +306,9 @@ function(flags) {
 		}
 	}
 
-	if (doNotify)
+	if (doNotify) {
 		this._notify(ZmEvent.E_FLAGS, {flags: flags});
+	}
 };
 
 /**

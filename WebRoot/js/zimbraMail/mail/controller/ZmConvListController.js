@@ -475,9 +475,9 @@ function(msg) {
  * Splits the given items into two lists, one of convs and one of msgs, and
  * applies the given method and args to each.
  *
- * @param items		[array]		list of convs and/or msgs
- * @param method	[string]	name of function to call in parent class
- * @param args		[array]		additional args to pass to function
+ * @param items		[array]			list of convs and/or msgs
+ * @param method	[string]		name of function to call in parent class
+ * @param args		[array]			additional args to pass to function
  */
 ZmConvListController.prototype._applyAction =
 function(items, method, args) {
@@ -522,8 +522,8 @@ function(items, folder, attrs, force) {
 };
 
 ZmConvListController.prototype._doMarkRead =
-function(items, on) {
-	this._applyAction(items, "_doMarkRead", [on]);
+function(items, on, callback) {
+	this._applyAction(items, "_doMarkRead", [on, callback]);
 };
 
 ZmConvListController.prototype._doSpam =

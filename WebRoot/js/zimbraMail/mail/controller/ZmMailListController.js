@@ -375,6 +375,61 @@ function(map) {
 	return (map == "list");
 };
 
+ZmMailListController.prototype.sendReadReceipt =
+function(msg) {
+	if (!appCtxt.get(ZmSetting.MAIL_READ_RECEIPT_ENABLED) || msg.readReceiptSent) { 
+		return;
+	}
+
+	var rrPref = appCtxt.get(ZmSetting.MAIL_SEND_READ_RECEIPTS);
+
+	// prompt
+	if (rrPref == ZmMailApp.SEND_RECEIPT_PROMPT) {
+		var callback = new AjxCallback(this, this._sendReadReceipt, msg);
+		var dlg = appCtxt.getYesNoMsgDialog();
+		dlg.registerCallback(DwtDialog.YES_BUTTON, this._sendReadReceipt, this, [msg, dlg]);
+		dlg.registerCallback(DwtDialog.NO_BUTTON, this._sendReadReceiptNotified, this, [msg, dlg]);
+		dlg.setMessage(ZmMsg.readReceiptSend, DwtMessageDialog.WARNING_STYLE);
+		dlg.popup();
+	}
+	// always
+	else if (rrPref == ZmMailApp.SEND_RECEIPT_ALWAYS) {
+		this._sendReadReceipt(msg);
+	}
+	// never
+	else {
+		this._sendReadReceiptNotified(msg);
+	}
+};
+
+ZmMailListController.prototype._sendReadReceipt =
+function(msg, dlg) {
+	if (dlg) {
+		dlg.popdown();
+	}
+	var jsonObj = {SendDeliveryReportRequest:{_jsns:"urn:zimbraMail"}};
+	request = jsonObj.SendDeliveryReportRequest;
+	request.mid = msg.id;
+	var callback = new AjxCallback(this, this._handleSendReadReceipt);
+	appCtxt.getRequestMgr().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:callback});
+};
+
+ZmMailListController.prototype._handleSendReadReceipt =
+function() {
+	appCtxt.setStatusMsg(ZmMsg.readReceiptSent);
+};
+
+ZmMailListController.prototype._sendReadReceiptNotified =
+function(msg, dlg) {
+	var callback = dlg ? (new AjxCallback(dlg, dlg.popdown)) : null;
+	var soapDoc = AjxSoapDoc.create("MsgActionRequest", "urn:zimbraMail");
+	var actionNode = soapDoc.set("action");
+	actionNode.setAttribute("id", msg.id);
+	actionNode.setAttribute("op", "update");
+	actionNode.setAttribute("f", (msg.flags ? (msg.flags+"n") : "n"));
+	appCtxt.getRequestMgr().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:callback});
+};
+
 ZmMailListController.prototype._updateViewMenu =
 function(id) {
 	var viewBtn = this._toolbar[this._currentView].getButton(ZmOperation.VIEW_MENU);
@@ -616,7 +671,40 @@ function(imItem, address, ev, contact) {
 
 ZmMailListController.prototype._markReadListener =
 function(ev) {
-	this._doMarkRead(this._listView[this._currentView].getSelection(), true);
+	var callback = this._getMarkReadCallback();
+	this._doMarkRead(this._listView[this._currentView].getSelection(), true, callback);
+};
+
+/**
+ * Per bug #7257, read receipt must be sent if user explicitly marks a message
+ * read under the following conditions:
+ *
+ * 1. reading pane is on
+ * 2. mark as read preference is set to "never"
+ * 3. the message currently being read in the reading pane is in the list of
+ *    convs/msgs selected for mark as read
+ *
+ * If all these conditions are met, a callback to run sendReadReceipt() is returned.
+ */
+ZmMailListController.prototype._getMarkReadCallback =
+function() {
+	var view = this._listView[this._currentView];
+	var items = view.getSelection();
+
+	if (this.isReadingPaneOn() && appCtxt.get(ZmSetting.MARK_MSG_READ) == -1) {
+		// check if current message being read is the message in the selection list
+		var msg = view.parent.getMsgView ? view.parent.getMsgView().getMsg() : null;
+		if (msg) {
+			for (var i = 0; i < items.length; i++) {
+				var item = items[i];
+				var itemId = (item.id < 0) ? (item.id*(-1)) : item.id;
+				if (itemId == msg.id) {
+					return (new AjxCallback(this, this.sendReadReceipt, msg));
+				}
+			}
+		}
+	}
+	return null;
 };
 
 ZmMailListController.prototype._markUnreadListener =
@@ -740,9 +828,9 @@ function(params, selection) {
 };
 
 ZmMailListController.prototype._doMarkRead =
-function(items, on) {
+function(items, on, callback) {
 	var list = items[0].list || this._list;
-	list.markRead(items, on);
+	list.markRead(items, on, callback);
 };
 
 /**

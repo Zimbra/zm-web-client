@@ -202,7 +202,7 @@ function() {
  * Only make the request for items whose state will be changed. 
  */
 ZmMailList.prototype.markRead =
-function(items, on) {
+function(items, on, callback) {
 	var items1 = [];
 	for (var i = 0; i < items.length; i++) {
 		if (items[i].isUnread == on) {
@@ -210,7 +210,7 @@ function(items, on) {
 		}
 	}
 	if (items1.length) {
-		this.flagItems(items1, "read", on);
+		this.flagItems(items1, "read", on, callback);
 	}
 };
 

@@ -131,7 +131,7 @@ function(params) {
 			callback: (new AjxCallback(null, ZmMailMsg._handleResponseFetchMsg, [params.callback])),
 			errorCallback: params.errorCallback,
 			noBusyOverlay: params.noBusyOverlay
-		}
+		};
 		params.sender.sendRequest(newParams);
 	}
 };
@@ -347,7 +347,6 @@ function(type, addrs) {
 /**
 * Adds the given address to the vector of addresses of the given type
 *
-* @param type	the address type
 * @param addr	an address
 */
 ZmMailMsg.prototype.addAddress =
@@ -359,7 +358,7 @@ function(addr) {
 /**
 * Sets the subject
 *
-* @param	a subject
+* @param	subject
 */
 ZmMailMsg.prototype.setSubject =
 function(subject) {
@@ -388,7 +387,7 @@ ZmMailMsg.prototype.setBodyParts =
 function(parts) {
 	this._onChange("bodyParts", parts);
 	this._bodyParts = parts;
-}
+};
 
 /**
 * Sets the ID of any attachments which have already been uploaded.
@@ -678,8 +677,7 @@ function(edited, componentId, callback, errorCallback, instanceDate, accountName
 	var jsonObj = {SendInviteReplyRequest:{_jsns:"urn:zimbraMail"}};
 	var request = jsonObj.SendInviteReplyRequest;
 
-	var id = this._origMsg.id;
-	request.id = id;
+	request.id = this._origMsg.id;
 	request.compNum = componentId;
 
 	var verb = "ACCEPT";
@@ -732,13 +730,20 @@ function(callback, result) {
 
 	if (callback)
 		callback.run(result);
-}
+};
 
 /**
-* Sends the message out into the world.
-*/
+ * Sends the message out into the world.
+ *
+ * @param isDraft				[Boolean]*		is this a draft we're saving?
+ * @param callback				[AjxCallback]*	callback to trigger after send
+ * @param errorCallback			[AjxCallback]*	error callback to trigger
+ * @param accountName			[String]*		account to send on behalf of
+ * @param noSave				[Boolean]*		if set, a copy will *not* be saved to sent regardless of account/identity settings
+ * @param requestReadReceipt	[Boolean]*		if set, a read receipt is sent to *all* recipients
+ */
 ZmMailMsg.prototype.send =
-function(isDraft, callback, errorCallback, accountName, noSave) {
+function(isDraft, callback, errorCallback, accountName, noSave, requestReadReceipt) {
 	var aName = accountName;
 	if (!aName) {
 		// only set the account name if this *isnt* the main/parent account
@@ -766,7 +771,7 @@ function(isDraft, callback, errorCallback, accountName, noSave) {
 		if (noSave) {
 			request.noSave = 1;
 		}
-		this._createMessageNode(request, isDraft, aName);
+		this._createMessageNode(request, isDraft, aName, requestReadReceipt);
 
 		var params = {
 			jsonObj: jsonObj,
@@ -796,10 +801,10 @@ function(isDraft, callback, result) {
 	if (callback) {
 		callback.run(result);
 	}
-}
+};
 
 ZmMailMsg.prototype._createMessageNode =
-function(request, isDraft, accountName) {
+function(request, isDraft, accountName, requestReadReceipt) {
 
 	var msgNode = request.m = {};
 
@@ -855,6 +860,9 @@ function(request, isDraft, accountName) {
 	}
 	this._addFrom(addrNodes, msgNode, isDraft, accountName);
 	this._addReplyTo(addrNodes);
+	if (requestReadReceipt) {
+		this._addReadReceipt(addrNodes, accountName);
+	}
 
 	msgNode.su = {_content:this.subject};
 
@@ -1438,6 +1446,18 @@ function(addrNodes) {
 			addrNodes.push(addrNode);
 		}
 	}
+};
+
+ZmMailMsg.prototype._addReadReceipt =
+function(addrNodes, accountName) {
+	var addrNode = {t:"n"};
+	if (this.identity) {
+		addrNode.a = this.identity.readReceiptAddr || this.identity.sendFromAddress;
+		addrNode.p = this.identity.sendFromDisplay;
+	} else {
+		addrNode.a = accountName || appCtxt.getActiveAccount().getEmail();
+	}
+	addrNodes.push(addrNode);
 };
 
 ZmMailMsg.prototype._isAttInHitList =

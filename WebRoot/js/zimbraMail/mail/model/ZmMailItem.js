@@ -34,7 +34,7 @@ ZmMailItem = function(type, id, list, noCache) {
 
 	this._loaded = false;
 	this._initializeParticipants();
-}
+};
 
 ZmMailItem.prototype = new ZmItem;
 ZmMailItem.prototype.constructor = ZmMailItem;
@@ -58,14 +58,14 @@ function(itemA, itemB) {
 ZmMailItem.prototype.toString =
 function() {
 	return "ZmMailItem";
-}
+};
 
 ZmMailItem.prototype.clear =
 function() {
 	this._clearParticipants();
 	this._loaded = false;
 	ZmItem.prototype.clear.call(this);
-}
+};
 
 ZmMailItem.prototype.getFolderId =
 function() {
@@ -74,7 +74,7 @@ function() {
 	} else {
 		return this.folderId;
 	}
-}
+};
 
 ZmMailItem.prototype.notifyModify =
 function(obj) {
@@ -90,13 +90,13 @@ function(obj) {
 	}
 
 	ZmItem.prototype.notifyModify.call(this, obj);
-}
+};
 
 ZmMailItem.prototype._initializeParticipants =
 function() {
 	this.participants = new AjxVector();
 	this.participantsElided = false;
-}
+};
 
 ZmMailItem.prototype._clearParticipants =
 function() {
@@ -105,26 +105,26 @@ function() {
 		this.participants = null;
 		this.participantsElided = false;
 	}
-}
+};
 
 ZmMailItem.prototype._getFlags =
 function() {
 	var list = ZmItem.prototype._getFlags.call(this);
-	list.push(ZmItem.FLAG_UNREAD, ZmItem.FLAG_REPLIED, ZmItem.FLAG_FORWARDED);
+	list.push(ZmItem.FLAG_UNREAD, ZmItem.FLAG_REPLIED, ZmItem.FLAG_FORWARDED, ZmItem.FLAG_READ_RECEIPT_SENT);
 	return list;
-}
+};
 
 ZmMailItem.prototype._markReadLocal =
 function(on) {
 	this.isUnread = !on;
 	this._notify(ZmEvent.E_FLAGS, {flags:[ZmItem.FLAG_UNREAD]});
-}
+};
 
 ZmMailItem.prototype._parseParticipantNode =
 function(node) {
 	var type = AjxEmailAddress.fromSoapType[node.t];
 	this.participants.add(new AjxEmailAddress(node.a, type, node.p, node.d));
-}
+};
 
 ZmMailItem.prototype.getEmails = function() {
 	return this.participants.map("address");

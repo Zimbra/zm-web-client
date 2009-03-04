@@ -485,26 +485,14 @@ function(node, re_discard, re_allow, callbacks) {
 				// consider processed
 				node = next;
 			}
-			// fix style
-			// node.nowrap = "";
-			// node.className = "";
 
-			if (AjxEnv.isIE)
+			if (AjxEnv.isIE) {
 				// strips expression()-s, bwuahahaha!
 				// granted, they get lost on the server-side anyway, but assuming some get through...
 				// the line below exterminates them.
 				node.style.cssText = node.style.cssText;
-
-			// Clear dangerous rules.  FIXME: implement proper way
-			// using removeAttribute (kind of difficult as it's
-			// (expectedly) quite different in IE from *other*
-			// browsers, so for now style.prop="" will do.)
-			tmp = ZmMailMsgView._dangerousCSS;
-			for (i in tmp) {
-				val = tmp[i];
-				if (!val || val.test(node.style[i]))
-					node.style[i] = "";
 			}
+
 			for (i = node.firstChild; i; i = recurse(i, handlers));
 			return node.nextSibling;
 
@@ -687,26 +675,14 @@ function(node, handlers, discard, ignore) {
 		else if (tmp == "style") {
 			return node.nextSibling;
 		}
-		// fix style
-		// node.nowrap = "";
-		// node.className = "";
 
-		if (AjxEnv.isIE)
+		if (AjxEnv.isIE) {
 			// strips expression()-s, bwuahahaha!
 			// granted, they get lost on the server-side anyway, but assuming some get through...
 			// the line below exterminates them.
 			node.style.cssText = node.style.cssText;
-
-		// Clear dangerous rules.  FIXME: implement proper way
-		// using removeAttribute (kind of difficult as it's
-		// (expectedly) quite different in IE from *other*
-		// browsers, so for now style.prop="" will do.)
-		tmp = ZmMailMsgView._dangerousCSS;
-		for (i in tmp) {
-			val = tmp[i];
-			if (!val || val.test(node.style[i]))
-				node.style[i] = "";
 		}
+
 		var child = node.firstChild;
 		while (child) {
 			child = this.processHtmlNode(child, handlers, discardRe, ignoreRe);

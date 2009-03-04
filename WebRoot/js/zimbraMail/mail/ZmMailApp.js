@@ -67,6 +67,10 @@ ZmMailApp.POP_DOWNLOAD_SINCE_ALL = 0;
 ZmMailApp.POP_DOWNLOAD_SINCE_NO_CHANGE = 1;
 ZmMailApp.POP_DOWNLOAD_SINCE_FROM_NOW = 2;
 
+ZmMailApp.SEND_RECEIPT_NEVER	= "never";
+ZmMailApp.SEND_RECEIPT_ALWAYS	= "always";
+ZmMailApp.SEND_RECEIPT_PROMPT	= "prompt";
+
 ZmMailApp.prototype = new ZmApp;
 ZmMailApp.prototype.constructor = ZmMailApp;
 
@@ -149,6 +153,8 @@ function(settings) {
 	settings.registerSetting("MAIL_NOTIFY_BROWSER",				{name:"zimbraPrefMailFlashTitle", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("MAIL_NOTIFY_TOASTER",				{name:"zimbraPrefMailToasterEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("MAIL_PRIORITY_ENABLED",	        {name:"zimbraFeatureMailPriorityEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
+	settings.registerSetting("MAIL_READ_RECEIPT_ENABLED",		{name:"zimbraFeatureReadReceiptsEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
+	settings.registerSetting("MAIL_SEND_READ_RECEIPTS",			{name:"zimbraPrefMailSendReadReceipts", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, defaultValue:"never"});
 	settings.registerSetting("MAIL_WHITELIST",					{type: ZmSetting.T_PREF, dataType: ZmSetting.D_LIST});
 	settings.registerSetting("MAIL_WHITELIST_MAX_NUM_ENTRIES",	{name:"zimbraMailWhitelistMaxNumEntries", type: ZmSetting.T_COS, dataType: ZmSetting.D_INT, defaultValue:100});
 	settings.registerSetting("MARK_MSG_READ",	      			{name:"zimbraPrefMarkMsgRead", type:ZmSetting.T_PREF, dataType:ZmSetting.D_INT, defaultValue:0});
@@ -211,6 +217,7 @@ function() {
 				ZmSetting.MAIL_LIFETIME_SENT,
 				ZmSetting.MAIL_LIFETIME_TRASH,
 				ZmSetting.MAIL_LOCAL_DELIVERY_DISABLED,
+				ZmSetting.MAIL_SEND_READ_RECEIPTS,
 				ZmSetting.MARK_MSG_READ,
 				ZmSetting.NOTIF_ADDRESS,
 				ZmSetting.NOTIF_ENABLED,
@@ -304,7 +311,6 @@ function() {
 	ZmPref.registerPref("DEDUPE_MSG_TO_SELF", {
 		displayName:		ZmMsg.removeDupesToSelf,
 		displayContainer:	ZmPref.TYPE_RADIO_GROUP,
-		orientation:		ZmPref.ORIENT_HORIZONTAL,
 		displayOptions:		[ZmMsg.dedupeNone, ZmMsg.dedupeSecondCopy, ZmMsg.dedupeAll],
 		options:			[ZmSetting.DEDUPE_NONE, ZmSetting.DEDUPE_SECOND, ZmSetting.DEDUPE_ALL]
 	});
@@ -315,7 +321,7 @@ function() {
 	});
 
 	ZmPref.registerPref("END_DATE_ENABLED", {
-		displayName:		ZmMsg.endDate,
+		displayName:		ZmMsg.endOn,
 		displayContainer:	ZmPref.TYPE_CHECKBOX,
 		precondition:		ZmSetting.VACATION_MSG_FEATURE_ENABLED
 	});
@@ -424,6 +430,19 @@ function() {
 		displayContainer:	ZmPref.TYPE_CHECKBOX
 	});
 
+	ZmPref.registerPref("MAIL_SEND_READ_RECEIPTS", {
+		displayContainer:	ZmPref.TYPE_RADIO_GROUP,
+		displayOptions:		[	ZmMsg.readReceiptNever,
+								ZmMsg.readReceiptAlways,
+								ZmMsg.readReceiptAsk
+							],
+		options:			[ 	ZmMailApp.SEND_RECEIPT_NEVER,
+								ZmMailApp.SEND_RECEIPT_ALWAYS,
+								ZmMailApp.SEND_RECEIPT_PROMPT
+							],
+		precondition:		ZmSetting.MAIL_READ_RECEIPT_ENABLED
+	});
+
 	ZmPref.registerPref("MAIL_WHITELIST", {
 		displayContainer:	ZmPref.TYPE_CUSTOM
 	});
@@ -502,7 +521,7 @@ function() {
 
 	ZmPref.registerPref("START_DATE_ENABLED", {
 		displayContainer:	ZmPref.TYPE_CHECKBOX,
-		displayName:		ZmMsg.startDate,
+		displayName:		ZmMsg.startOn,
 		precondition:		ZmSetting.VACATION_MSG_FEATURE_ENABLED
 	});
 
@@ -669,6 +688,7 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_REPLY_MODIFY);
 	ZmOperation.registerOp(ZmId.OP_REPLY_NEW_TIME, {textKey:"replyNewTime", image:"NewTime"});
 	ZmOperation.registerOp(ZmId.OP_REPLY_TENTATIVE, {textKey:"replyTentative", image:"QuestionMark"});
+	ZmOperation.registerOp(ZmId.OP_REQUEST_READ_RECEIPT, {textKey:"requestReadReceipt", image:"ReadMessage"});
 	ZmOperation.registerOp(ZmId.OP_RUN_FILTER_RULE, {textKey:"filterRun", image:"SwitchFormat"}, ZmSetting.FILTERS_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_SAVE_DRAFT, {textKey:"saveDraft", tooltipKey:"saveDraftTooltip", image:"DraftFolder", shortcut:ZmKeyMap.SAVE}, ZmSetting.SAVE_DRAFT_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_SHOW_BCC, {textKey:"showBcc"});
@@ -1026,7 +1046,6 @@ function(creates) {
  * @param creates		[hash]					JSON create objects
  * @param list			[ZmMailList]			mail list to notify
  * @param controller	[ZmMailListController]	controller that owns list
- * @return 				[boolean]	true if there's an alert-worthy new message
  */
 ZmMailApp.prototype._checkList =
 function(creates, list, controller) {
