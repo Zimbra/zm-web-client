@@ -446,6 +446,7 @@
           <url-pattern>/h/voicemail</url-pattern>
           <url-pattern>/m/login</url-pattern>
           <url-pattern>/m/main</url-pattern>
+          <url-pattern>/m/mobriefcases</url-pattern>
           <url-pattern>/m/mocals</url-pattern>
           <url-pattern>/m/moversions</url-pattern>
           <url-pattern>/m/mainx</url-pattern>
