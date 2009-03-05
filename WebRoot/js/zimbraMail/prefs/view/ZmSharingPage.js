@@ -56,8 +56,8 @@ ZmSharingView = function(params) {
 
 	params.form = {
 		items: [
-			{ id: "OWNER", type: "DwtInputField", cols: 40 },
-			{ id: "BUTTON", type: "DwtButton", label: "Find Shares", onclick: this._onClick }
+			{ id: ZmSharingView.ID_OWNER, type: "DwtInputField", cols: 40 },
+			{ id: ZmSharingView.ID_BUTTON, type: "DwtButton", label: "Find Shares", onclick: this._onClick }
 		]
 	};
 	DwtForm.call(this, params);
@@ -74,6 +74,9 @@ ZmSharingView.prototype = new DwtForm;
 ZmSharingView.prototype.constructor = ZmSharingView;
 
 ZmSharingView.prototype.TEMPLATE = "prefs.Pages#Sharing";
+
+ZmSharingView.ID_OWNER	= "owner";
+ZmSharingView.ID_BUTTON	= "button";
 
 ZmSharingView.SHARE = "SHARE";
 ZmSharingView.GRANT = "GRANT";
@@ -173,6 +176,19 @@ function() {
 	this._addListView(this._shareListView, this._pageId + "_SHARING_sharesWith");
 	this._grantListView = new ZmSharingListView({parent:this, type:ZmSharingView.GRANT, view:this});
 	this._addListView(this._grantListView, this._pageId + "_SHARING_sharesBy");
+
+	// create auto-completer
+	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) || appCtxt.get(ZmSetting.GAL_ENABLED)) {
+		var params = {
+			parent: this,
+			dataClass: appCtxt.getAutocompleter(),
+			matchValue: ZmAutocomplete.AC_VALUE_EMAIL,
+			locCallback: (new AjxCallback(this, this._getAcLocation, [this]))
+		};
+		this._acAddrSelectList = new ZmAutocompleteListView(params);
+		var inputCtrl = this.getControl(ZmSharingView.ID_OWNER);
+		this._acAddrSelectList.handle(inputCtrl.getInputElement());
+	}
 };
 
 ZmSharingView.prototype._addListView =
@@ -185,7 +201,15 @@ function(listView, listViewDivId) {
 
 ZmSharingView.prototype._onClick =
 function(ev) {
-	this.findShares(this.getValue("OWNER"));
+	this.findShares(this.getValue(ZmSharingView.ID_OWNER));
+};
+
+ZmSharingView.prototype._getAcLocation =
+function(cv, ev) {
+
+	var location = Dwt.toWindow(ev.element, 0, 0, document.getElementById(this._pageId));
+	var size = Dwt.getSize(ev.element);
+	return new DwtPoint((location.x), (location.y + size.y));
 };
 
 /**
@@ -213,7 +237,13 @@ function(a, b) {
 	var groupA = (a.granteeName && a.granteeName.toLowerCase()) || "";
 	var groupB = (b.granteeName && b.granteeName.toLowerCase()) || "";
 	if (groupA != groupB) {
-		return (groupA > groupB) ? 1 : -1;
+		if (!groupA && groupB) {
+			return 1;
+		} else if (groupA && !groupB) {
+			return -1;
+		} else {
+			return (groupA > groupB) ? 1 : -1;
+		}
 	}
 
 	var pathA = (a.folderPath && a.folderPath.toLowerCase()) || "";
