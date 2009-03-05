@@ -1366,7 +1366,7 @@ ZmComposeView.prototype._getAcListLoc =
 function(cv, ev) {
 	var element = ev.element;
 	var field = document.getElementById(cv._divId[element.addrType]);
-	var offset = Dwt.getLocation(field).y - this.getLocation().y
+	var offset = Dwt.getLocation(field).y - this.getLocation().y;
 
 	return (new DwtPoint(75, offset + Dwt.getSize(element).y + 6));
 };
