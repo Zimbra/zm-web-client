@@ -940,6 +940,15 @@ function(composeMode, identity) {
 			menu.checkItem(ZmOperation.KEY_ID, this._action, true);
 		}
 	}
+
+	// did this draft have "request read receipt" option set?
+	if (this._msg && this._msg.isDraft) {
+		var mi = menu.getItemById(ZmOperation.KEY_ID, ZmOperation.REQUEST_READ_RECEIPT);
+		if (mi) {
+			mi.setChecked(this._msg.readReceiptRequested);
+		}
+	}
+
 	button.setMenu(menu);
 };
 
