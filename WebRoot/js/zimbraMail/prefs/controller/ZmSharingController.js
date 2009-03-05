@@ -15,9 +15,18 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * Creates a controller for managing the sharing prefs page.
+ * @constructor
+ * @class
+ * This class manages the display of folder shared with and by the current user.
+ *
+ * @author Conrad Damon
+ */
 ZmSharingController = function() {
 	ZmController.call(this, null);
 };
+
 ZmSharingController.prototype = new ZmController;
 ZmSharingController.prototype.constructor = ZmSharingController;
 
@@ -43,9 +52,9 @@ function(type, owner, callback) {
 		request.owner = {by:"name", _content:owner};
 	}
 	var respCallback = new AjxCallback(this, this._handleGetSharesResponse, [callback]);
-	appCtxt.getAppController().sendRequest({jsonObj:jsonObj,
-											asyncMode:true,
-											callback:respCallback});
+	appCtxt.getAppController().sendRequest({jsonObj:	jsonObj,
+											asyncMode:	true,
+											callback:	respCallback});
 };
 
 ZmSharingController.prototype._handleGetSharesResponse =

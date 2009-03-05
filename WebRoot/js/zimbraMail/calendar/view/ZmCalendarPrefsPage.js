@@ -15,7 +15,21 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * Creates a preferences page for managing calendar prefs
+ * @constructor
+ * @class
+ * This class adds specialized handling for managing calendar ACLs that control whether
+ * events can be added to the user's calendar, and who can see the user's free/busy info.
+ *
+ * @author Conrad Damon
+ *
+ * @param parent			[DwtControl]				the containing widget
+ * @param section			[object]					which page we are
+ * @param controller		[ZmPrefController]			prefs controller
+ */
 ZmCalendarPrefsPage = function(parent, section, controller) {
+
 	ZmPreferencesPage.apply(this, arguments);
 
 	ZmCalendarPrefsPage.TEXTAREA = {};

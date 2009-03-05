@@ -15,6 +15,19 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * Creates a preferences page for displaying shares.
+ * @constructor
+ * @class
+ * This class is a ZmPreferencesPage that contains a ZmSharingView, which shows shares
+ * in two list views.
+ *
+ * @author Conrad Damon
+ *
+ * @param parent			[DwtControl]				the containing widget
+ * @param section			[object]					which page we are
+ * @param controller		[ZmPrefController]			prefs controller
+ */
 ZmSharingPage = function(parent, section, controller) {
 	ZmPreferencesPage.apply(this, arguments);
 };
@@ -51,7 +64,13 @@ function() {
 };
 
 
-
+/**
+ *
+ *
+ * @param params	[hash]				hash of params:
+ *        parent	[ZmSharingPage]		owning prefs page
+ *        pageId	[string]			ID of prefs page's HTML element
+ */
 ZmSharingView = function(params) {
 
 	params.form = {
@@ -62,6 +81,7 @@ ZmSharingView = function(params) {
 	};
 	DwtForm.call(this, params);
 
+	this.setScrollStyle(Dwt.VISIBLE);	// so autocomplete list doesn't get clipped
 	this._controller = appCtxt.getSharingController();
 	this._controller._sharingView = this;
 	this._pageId = params.pageId;
@@ -110,7 +130,7 @@ function(type, shares) {
 			sharesVec = newVec;
 		}
 	} else {
-		this._groupShares = sharesVec;
+		this._groupShares = sharesVec.clone();
 	}
 	sharesVec.sort(ZmSharingView.sortCompareShare);
 	this._shareListView.set(sharesVec);
@@ -181,9 +201,10 @@ function() {
 	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) || appCtxt.get(ZmSetting.GAL_ENABLED)) {
 		var params = {
 			parent: this,
-			dataClass: appCtxt.getAutocompleter(),
-			matchValue: ZmAutocomplete.AC_VALUE_EMAIL,
-			locCallback: (new AjxCallback(this, this._getAcLocation, [this]))
+			dataClass:		appCtxt.getAutocompleter(),
+			matchValue:		ZmAutocomplete.AC_VALUE_EMAIL,
+			separator:		"",
+			locCallback:	(new AjxCallback(this, this._getAcLocation, [this]))
 		};
 		this._acAddrSelectList = new ZmAutocompleteListView(params);
 		var inputCtrl = this.getControl(ZmSharingView.ID_OWNER);
@@ -279,6 +300,12 @@ function(a, b) {
 };
 
 
+/**
+ * A list view that displays some form of shares, either with or by the user.
+ *
+ * @param params	[hash]			hash of params:
+ *        type		[constant]		SHARE (shared with user) or GRANT (shared by user)
+ */
 ZmSharingListView = function(params) {
 
 	this.type = params.type;
@@ -286,6 +313,11 @@ ZmSharingListView = function(params) {
 	DwtListView.call(this, params);
 
 	this.view = params.view;
+	this._idMap = {};
+
+	if (this.type == ZmSharingView.SHARE) {
+		appCtxt.getFolderTree().addChangeListener(new AjxListener(this, this._folderTreeChangeListener));
+	}
 };
 
 ZmSharingListView.prototype = new DwtListView;
@@ -309,6 +341,32 @@ function() {
 	}
 
 	return headerList;
+};
+
+ZmSharingListView.prototype._getRowId =
+function(item, params) {
+
+	var acct = item.ownerId || (item.grantee && item.grantee.id) || item.zid;
+	var folderId = item.folderId || (item.object && item.object.id) || item.rid;
+	var key = [acct, folderId].join(":");
+	var id = this._idMap[key];
+	if (!id) {
+		id = Dwt.getNextId();
+		this._idMap[key] = id;
+	}
+
+	return id;
+};
+
+ZmSharingListView.prototype._getCellId =
+function(item, field, params) {
+
+	if (field == ZmSharingView.F_FOLDER) {
+		var rowId = this._getRowId(item, params);
+		return [rowId, field].join("_");
+	} else {
+		return null;
+	}
 };
 
 ZmSharingListView.prototype._getCellContents =
@@ -340,4 +398,24 @@ function(html, idx, item, field, colIdx, params) {
 	}
 
 	return idx;
+};
+
+ZmSharingListView.prototype._folderTreeChangeListener =
+function(ev) {
+
+	var organizers = ev.getDetail("organizers");
+	if (this.type == ZmSharingView.SHARE) {
+		if (ev.event == ZmEvent.E_CREATE) {
+			var link = organizers[0]
+			var key = [link.zid, link.rid].join(":");
+			var row = document.getElementById(this._idMap[key]);
+			if (row) {
+				var cellId = this._getCellId(link, ZmSharingView.F_FOLDER);
+				var cell = document.getElementById(cellId);
+				if (cell) {
+					cell.innerHTML = link.getPath();
+				}
+			}
+		}
+	}
 };
