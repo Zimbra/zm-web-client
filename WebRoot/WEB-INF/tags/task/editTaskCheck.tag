@@ -62,6 +62,23 @@
             <c:when test="${uploader.isCancel}">
                 <c:set var="needEditView" value="${false}"/>
             </c:when>
+            <c:when test="${uploader.isCancelConfirm}">
+            <c:set var="needEditView" value="${false}"/>
+            <c:if test="${! empty uploader && not empty uploader.compose && (not empty uploader.compose.subject || not empty uploader.compose.location || not empty uploader.compose.content)}">
+                <c:set var="needEditView" value="${true}"/>
+                <fmt:message key="yes" var="yes"/>
+                <c:url var="cancelUrl" value="/h/search?st=task">
+                    <c:if test="${not empty param.sfi}">
+                        <c:param name="sfi" value="${param.sfi}"/>
+                    </c:if>
+                </c:url>
+                <app:status html="true" style="Warning">
+                    <fmt:message key="confirmUnsavedChanges">
+                        <fmt:param value="<a style='margin:10px;font-weight:bold;' href='${cancelUrl}'>${yes}</a>"/>
+                    </fmt:message>
+                </app:status>
+            </c:if>
+        </c:when>
             <c:when test="${uploader.isSave and not empty uploader.compose.startDate and not uploader.compose.isValidStartTime}">
                 <app:status style="Critical">
                     <fmt:message key="errorInvalidApptStartDate"/>

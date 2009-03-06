@@ -48,6 +48,23 @@
         <c:when test="${uploader.isCancel}">
             <c:set var="needComposeView" value="${false}"/>
         </c:when>
+        <c:when test="${uploader.isCancelConfirm}">
+            <c:set var="needComposeView" value="${false}"/>
+            <c:if test="${! empty uploader && not empty uploader.compose && (not empty uploader.compose.to || not empty uploader.compose.cc || not empty uploader.compose.bcc || not empty uploader.compose.subject || not empty uploader.compose.content)}">
+                <c:set var="needComposeView" value="${true}"/>
+                <fmt:message key="yes" var="yes"/>
+                 <c:url var="cancelUrl" value="/h/search">
+                    <c:if test="${not empty param.sfi}">
+                        <c:param name="sfi" value="${param.sfi}"/>
+                    </c:if>
+                </c:url>
+                <app:status html="true" style="Warning">
+                    <fmt:message key="confirmUnsavedChanges">
+                        <fmt:param value="<a style='margin:10px;font-weight:bold;' href='${cancelUrl}'>${yes}</a>"/>
+                    </fmt:message>
+                </app:status>
+            </c:if>
+        </c:when>
         <c:when test="${uploader.isSend and empty fn:trim(uploader.compose.to) and empty fn:trim(uploader.compose.cc) and empty fn:trim(uploader.compose.bcc)}">
             <app:status>
                 <fmt:message key="noAddresses"/>

@@ -96,7 +96,7 @@ var composevalidation = function(){
     </c:if>
 
         if(_checkFail){
-            return "<fmt:message key="composeExitConfirmation"/>";
+            //return "<fmt:message key="composeExitConfirmation"/>"; disabling this for new way of save/cancel handling
         }
     }
 
