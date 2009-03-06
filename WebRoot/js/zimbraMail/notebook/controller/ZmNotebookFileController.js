@@ -242,7 +242,9 @@ function(item, fromSearch) {
 		controller.show(item, true, this._fromSearch || fromSearch);
 	} else if (item.type == ZmItem.DOCUMENT) {
 		var url = item.getRestUrl();
-		window.open(url, "_new", "");											// TODO: popup window w/ REST URL
+        var parts = url.split("#");
+        var nurl = parts[0] + (url.indexOf('?') < 0 ? '?' : '&') + ("disp=i") + (parts[1] ? "#" + parts[1] : '');
+		window.open(nurl, "_new", "");											// TODO: popup window w/ REST URL
 	}
 };
 
