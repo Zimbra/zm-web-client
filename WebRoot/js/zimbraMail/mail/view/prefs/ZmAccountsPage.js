@@ -389,6 +389,8 @@ function(useDefaults) {
 	// clear current list of accounts
 	this._accounts.removeAll();
 	this._deletedAccounts = [];
+	this._currentAccount = null;
+	this._currentSection = null;
 
 	// add zimbra accounts (i.e. family mboxes)
 	var mboxes = appCtxt.getZimbraAccounts();
