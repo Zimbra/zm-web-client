@@ -1758,8 +1758,8 @@ function(continueCallback) {
 				}
 
 				// this means user modified name of the folder, so let's rename it
-				folder = appCtxt.getById(account.folderId);
-				if (folder && Number(account.folderId) >= 256) {
+				folder = account._object_ && appCtxt.getById(account._object_.folderId);
+				if (folder && Number(folder.id) >= 256) {
 					if (folder.name != name) {
 						var soapDoc = AjxSoapDoc.create("FolderActionRequest", "urn:zimbraMail");
 						var actionNode = soapDoc.set("action");
@@ -1767,7 +1767,7 @@ function(continueCallback) {
 						actionNode.setAttribute("id", folder.id);
 						actionNode.setAttribute("name", name);
 
-						var callback = new AjxCallback(this, this._handleRenameFolderResponse, [account]);
+						var callback = new AjxCallback(this, this._handleRenameFolderResponse, [account, folder]);
 						batchCmd.addNewRequestParams(soapDoc, callback, callback);
 					}
 				} else {
@@ -1809,9 +1809,12 @@ function(dataSource, result) {
 };
 
 ZmAccountsPage.prototype._handleRenameFolderResponse =
-function(dataSource, result) {
+function(dataSource, folder, result) {
 	var resp = result && result._data && result._data.FolderActionResponse;
-	if (!resp) {
+	if (resp) {
+		dataSource.folderId = ZmOrganizer.normalizeId(folder.id);
+	}
+	else {
 		// HACK: Don't know a better way to set an error condition
 		this.__hack_preSaveSuccess = false;
 	}
