@@ -1459,6 +1459,7 @@ function(type, controllerClass, sessionId) {
 	if (!controller) {
 		var sessionId = this._sessionId[type]++;
 		controller = this._sessionController[type][sessionId] = new controllerClass(this._container, this, sessionId);
+		controller.sessionId = sessionId;
 	}
 	controller.inactive = false;
 

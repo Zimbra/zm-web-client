@@ -203,7 +203,7 @@ function() {
 	newWinObj.command = "composeDetach";
 	newWinObj.params = {action:action, msg:msg, addrs:addrs, subj:subj, forwardHtml:forAttHtml, body:body,
 					  composeMode:composeMode, identityId:identityId, accountName:this._accountName,
-					  backupForm:backupForm, sendUID:sendUID, msgIds:this._msgIds, forAttIds:this._forAttIds};
+					  backupForm:backupForm, sendUID:sendUID, msgIds:this._msgIds, forAttIds:this._forAttIds, sessionId:this.sessionId};
 };
 
 ZmComposeController.prototype.popShield =

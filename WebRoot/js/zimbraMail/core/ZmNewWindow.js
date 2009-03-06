@@ -110,13 +110,13 @@ function(ev) {
 	if (window.command == "compose" || window.command == "composeDetach") {
 		// compose controller adds listeners to parent window's list so we
 		// need to remove them before closing this window!
-		var cc = AjxDispatcher.run("GetComposeController");
+		var cc = AjxDispatcher.run("GetComposeController", appCtxt.composeCtlrSessionId);
 		if (cc) {
 			cc.dispose();
 		}
 	} else if (window.command == "msgViewDetach") {
 		// msg controller (as a ZmListController) adds listener to tag list
-		var mc = AjxDispatcher.run("GetMsgController");
+		var mc = AjxDispatcher.run("GetMsgController", appCtxt.msgCtlrSessionId);
 		if (mc) {
 			mc.dispose();
 		}
@@ -217,7 +217,8 @@ function() {
 
 	// depending on the command, do the right thing
 	if (cmd == "compose" || cmd == "composeDetach") {
-		var cc = AjxDispatcher.run("GetComposeController");
+		var cc = AjxDispatcher.run("GetComposeController");	// get a new compose ctlr
+		appCtxt.composeCtlrSessionId = cc.sessionId;
 		cc.isChildWindow = true;
 		if (params.action == ZmOperation.REPLY_ALL) {
 			params.msg = this._deepCopyMsg(params.msg);
@@ -240,9 +241,9 @@ function() {
 			cc._setView(params);
 			cc._composeView.setDetach(params);
 
-			// bug fix #5887 - get the parent window's compose controller
-			var parentCC = window.parentController.getApp(ZmApp.MAIL).getComposeController();
-			if (parentCC) {
+			// bug fix #5887 - get the parent window's compose controller based on its session ID
+			var parentCC = window.parentController.getApp(ZmApp.MAIL).getComposeController(params.sessionId);
+			if (parentCC && parentCC._composeView) {
 				// once everything is set in child window, pop parent window's compose view
 				parentCC._composeView.reset(true);
 				parentCC._app.popView(true);
@@ -255,6 +256,7 @@ function() {
 		target = "compose-window";
 	} else if (cmd == "msgViewDetach") {
 		var msgController = AjxDispatcher.run("GetMsgController");
+		appCtxt.msgCtlrSessionId = msgController.sessionId;
 		msgController.show(params.msg);
 		rootTg.addMember(msgController.getTabGroup());
 		startupFocusItem = msgController.getCurrentView();
@@ -538,7 +540,7 @@ function(ev) {
 	if (window.parentController &&
 		(window.newWindowCommand == "compose" || window.newWindowCommand == "composeDetach"))
 	{
-		var cc = AjxDispatcher.run("GetComposeController");
+		var cc = AjxDispatcher.run("GetComposeController", appCtxt.composeCtlrSessionId);
 		// only show native confirmation dialog if compose view is dirty
 		if (cc && cc._composeView && cc._composeView.isDirty()) {
 			return ZmMsg.newWinComposeExit;
