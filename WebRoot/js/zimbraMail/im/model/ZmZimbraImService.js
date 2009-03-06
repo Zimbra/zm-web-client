@@ -509,7 +509,7 @@ function(im) {
 					break;
 				}
 				if (message) {
-					appCtxt.setStatusMsg(AjxStrinUtil.htmlEncode(message), level);
+					appCtxt.setStatusMsg(AjxStringUtil.htmlEncode(message), level);
 				}
 			} else if (not.type == "privacy") {
 				// console.log("Received privacy list: %o", not);
