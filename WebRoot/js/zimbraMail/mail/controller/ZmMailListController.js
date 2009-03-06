@@ -377,7 +377,7 @@ function(map) {
 
 ZmMailListController.prototype.sendReadReceipt =
 function(msg) {
-	if (!appCtxt.get(ZmSetting.MAIL_READ_RECEIPT_ENABLED) || msg.readReceiptSent) { 
+	if (!appCtxt.get(ZmSetting.MAIL_READ_RECEIPT_ENABLED) || msg.readReceiptSent) {
 		return;
 	}
 
@@ -411,7 +411,8 @@ function(msg, dlg) {
 	request = jsonObj.SendDeliveryReportRequest;
 	request.mid = msg.id;
 	var callback = new AjxCallback(this, this._handleSendReadReceipt);
-	appCtxt.getRequestMgr().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:callback});
+	var ac = window.parentAppCtxt || window.appCtxt;
+	ac.getRequestMgr().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:callback});
 };
 
 ZmMailListController.prototype._handleSendReadReceipt =
@@ -421,13 +422,14 @@ function() {
 
 ZmMailListController.prototype._sendReadReceiptNotified =
 function(msg, dlg) {
+	var ac = window.parentAppCtxt || window.appCtxt;
 	var callback = dlg ? (new AjxCallback(dlg, dlg.popdown)) : null;
 	var soapDoc = AjxSoapDoc.create("MsgActionRequest", "urn:zimbraMail");
 	var actionNode = soapDoc.set("action");
 	actionNode.setAttribute("id", msg.id);
 	actionNode.setAttribute("op", "update");
 	actionNode.setAttribute("f", (msg.flags ? (msg.flags+"n") : "n"));
-	appCtxt.getRequestMgr().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:callback});
+	ac.getRequestMgr().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:callback});
 };
 
 ZmMailListController.prototype._updateViewMenu =
