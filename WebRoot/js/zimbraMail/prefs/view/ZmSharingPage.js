@@ -75,7 +75,7 @@ ZmSharingView = function(params) {
 
 	params.form = {
 		items: [
-			{ id: ZmSharingView.ID_OWNER, type: "DwtInputField", cols: 40 },
+			{ id: ZmSharingView.ID_OWNER, type: "DwtInputField", cols: 40, validator: this._validateOwner },
 			{ id: ZmSharingView.ID_BUTTON, type: "DwtButton", label: "Find Shares", onclick: this._onClick }
 		]
 	};
@@ -114,6 +114,10 @@ ZmSharingView.prototype.toString = function() { return "ZmSharingView"; };
 ZmSharingView.prototype.findShares =
 function(owner) {
 
+	if (!this.validate(ZmSharingView.ID_OWNER)) {
+		appCtxt.setStatusMsg({msg: ZmMsg.sharingErrorOwner, level:ZmStatusView.LEVEL_INFO});
+		return;
+	}
 	var type = owner ? ZmSharingController.TYPE_USER : ZmSharingController.TYPE_GROUP;
 	var respCallback = new AjxCallback(this, this.showShares, [type]);
 	var shares = this._controller.getShares(type, owner, respCallback);
@@ -162,8 +166,7 @@ function(shareId) {
 	if (shareInfo) {
 		AjxDispatcher.require("Share");
 		var share = ZmSharingView.createShare(shareInfo);
-		var acceptDlg = appCtxt.getAcceptShareDialog();
-		acceptDlg.popup(share, shareInfo.ownerName);
+		appCtxt.getAcceptShareDialog().popup(share, shareInfo.ownerEmail);
 	}
 };
 
@@ -176,7 +179,8 @@ function(shareInfo) {
 					 granteeId:		shareInfo.granteeId,
 					 granteeType:	shareInfo.granteeType};
 
-	share.grantor = {email:	shareInfo.ownerName,
+	share.grantor = {email:	shareInfo.ownerEmail,
+					 name:	shareInfo.ownerName,
 			   		 id:	shareInfo.ownerId};
 
 	share.link = {id:	shareInfo.folderId,
@@ -209,6 +213,12 @@ function() {
 		this._acAddrSelectList = new ZmAutocompleteListView(params);
 		var inputCtrl = this.getControl(ZmSharingView.ID_OWNER);
 		this._acAddrSelectList.handle(inputCtrl.getInputElement());
+		var inputContainer = document.getElementById(this._htmlElId + "_OWNER");
+		if (inputContainer) {
+			var inputCtrlDiv = inputCtrl.getHtmlElement();
+			inputCtrlDiv.parentNode.removeChild(inputCtrlDiv);
+			inputContainer.appendChild(inputCtrlDiv);
+		}
 	}
 };
 
@@ -218,6 +228,24 @@ function(listView, listViewDivId) {
  	listDiv.appendChild(listView.getHtmlElement());
 	listView.setUI(null, true); // renders headers and empty list
 	listView._initialized = true;
+};
+
+// make sure user is searching self for shared folders
+ZmSharingView.prototype._validateOwner =
+function(value) {
+
+	if (!value) { return true; }
+	var username = appCtxt.getUsername();
+	if (value == username) {
+		return false;
+	} else {
+		if ((value.indexOf('@') == -1) && (username.indexOf('@') != -1)) {
+			if (value == username.substr(0, username.indexOf('@'))) {
+				return false;
+			}
+		}
+	}
+	return true;
 };
 
 ZmSharingView.prototype._onClick =

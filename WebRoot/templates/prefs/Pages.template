@@ -1708,6 +1708,8 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 <template id='prefs.Pages#Sharing'>
 	<div><$=ZmMsg.sharingText$></div>
 	<br/>
-	<div id="${id}_OWNER" class="ZOptionsInfo"></div>
+	<table>
+		<tr><td><$=ZmMsg.sharingOwnerLabel$></td><td><div id="${id}_owner" class="ZOptionsInfo"></div></td></tr>
+	</table>
 	<br/>
 </template>
