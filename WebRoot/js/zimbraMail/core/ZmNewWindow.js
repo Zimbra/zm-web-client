@@ -540,7 +540,7 @@ function(ev) {
 	{
 		var cc = AjxDispatcher.run("GetComposeController");
 		// only show native confirmation dialog if compose view is dirty
-		if (cc && cc._composeView.isDirty()) {
+		if (cc && cc._composeView && cc._composeView.isDirty()) {
 			return ZmMsg.newWinComposeExit;
 		}
 	}
