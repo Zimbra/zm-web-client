@@ -353,7 +353,15 @@ ZmNotebookPageView.prototype.mutateLink = function(linkNode,doc,linkPrefix){
 		}else{						
 			target = "_new";
 		}
-		
+	    if(linkNode.href != "javascript:;"){
+            var urlParts = AjxStringUtil.parseURL(linkNode.href);
+            if(urlParts.authority == window.location.host){ //internal links
+                var url = linkNode.href;
+                var parts = url.split("#");
+                var nurl = parts[0] + (url.indexOf('?') < 0 ? '?' : '&') + ("disp=i") + (parts[1] ? "#" + parts[1] : '');
+                linkNode.href = nurl;
+            }
+        }	
 	}else{	
 		target = this._iframe1.id;
 	}
