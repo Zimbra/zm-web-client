@@ -411,7 +411,8 @@ function(searchParams, newList) {
 
 ZmApptCache.prototype.handleBatchResponseError =
 function(searchParams, miniCalParams, reminderSearchParams, response) {
-	var resp = response && response._data && response._data.BatchResponse;	
+	var resp = response && response._data && response._data.BatchResponse;
+    this._calViewController.setSearchInProgress(false);
 	this._processErrorCode(resp);
 };
 
