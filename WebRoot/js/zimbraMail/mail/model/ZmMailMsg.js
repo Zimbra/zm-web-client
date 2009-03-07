@@ -695,7 +695,29 @@ function(edited, componentId, callback, errorCallback, instanceDate, accountName
 		this.setAddress(AjxEmailAddress.TO, (new AjxEmailAddress(to)));
 	}
 
-	request.updateOrganizer = this._origMsg.needsRsvp() ? "TRUE" : "FALSE";
+    var needsRsvp = this._origMsg.needsRsvp();
+    if (needsRsvp){
+        var dlg = appCtxt.getYesNoMsgDialog();
+        dlg.registerCallback(DwtDialog.YES_BUTTON, this._sendInviteReplyContinue, this, [jsonObj, "TRUE", edited, callback, errorCallback, instanceDate, accountName]);
+        dlg.registerCallback(DwtDialog.NO_BUTTON, this._sendInviteReplyContinue, this, [jsonObj, "FALSE", edited, callback, errorCallback, instanceDate, accountName]);
+        dlg.setMessage(ZmMsg.organizerNotification, DwtMessageDialog.WARNING_STYLE);
+        dlg.popup();
+    }else {
+        return this._sendInviteReplyContinue(jsonObj, "FALSE", edited, callback, errorCallback, instanceDate, accountName);
+    }
+};
+
+ZmMailMsg.prototype._sendInviteReplyContinue =
+function(jsonObj, updateOrganizer, edited, callback, errorCallback, instanceDate, accountName) {
+
+    var request = jsonObj.SendInviteReplyRequest;    
+    request.updateOrganizer = updateOrganizer;
+
+    if(this._origMsg.needsRsvp()) {
+        var dlg = appCtxt.getYesNoMsgDialog();
+        dlg.popdown();
+    }
+
 	if (instanceDate) {
 		var serverDateTime = AjxDateUtil.getServerDateTime(instanceDate);
 		var timeZone = AjxTimezone.getServerId(AjxTimezone.DEFAULT);
@@ -709,12 +731,16 @@ function(edited, componentId, callback, errorCallback, instanceDate, accountName
 	}
 
 	var respCallback = new AjxCallback(this, this._handleResponseSendInviteReply, [callback]);
-	return this._sendMessage({ jsonObj:jsonObj,
+	var resp = this._sendMessage({ jsonObj:jsonObj,
 								isInvite:true,
 								isDraft:false,
 								callback:respCallback,
 								errorCallback:errorCallback,
 								accountName:accountName });
+    if(window.parentController) {
+        window.close();
+    }
+    return resp;
 };
 
 ZmMailMsg.prototype._handleResponseSendInviteReply =
@@ -722,8 +748,9 @@ function(callback, result) {
 	var resp = result.getResponse();
 
 	var id = resp.id ? resp.id.split("-")[0] : null;
+    var statusOK = (id || resp.status == "OK");
 
-	if (id || resp.status == "OK") {
+	if (statusOK) {
 		this._notifySendListeners();
 		this._origMsg.folderId = ZmFolder.ID_TRASH;
 	}
@@ -1348,7 +1375,26 @@ function () {
 
 ZmMailMsg.prototype.needsRsvp =
 function () {
-	return (this.isInvite() && this.invite.shouldRsvp() && !this.invite.isOrganizer());
+
+    if(!this.isInvite() || this.invite.isOrganizer()) {
+        return false;
+    }
+    
+    var needsRsvp = false;
+    var accEmail = appCtxt.getActiveAccount().getEmail();
+    if(this.isInvite()) {
+        var at = this.invite.getAttendees();
+        for(var i in at) {
+            if(at[i].url == accEmail){
+                return at[i].rsvp;
+            }
+            if(at[i].rsvp) {
+                needsRsvp = true;                
+            }
+        }
+    }
+
+    return needsRsvp;
 };
 
 // Adds child address nodes for the given address type.
