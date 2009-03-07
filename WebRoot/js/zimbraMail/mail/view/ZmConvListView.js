@@ -238,7 +238,7 @@ function(htmlArr, idx, item, field, colIdx, params) {
 			htmlArr[idx++] = this._getParticipantHtml(item, this._getFieldId(item, ZmItem.F_PARTICIPANT));
 		} else if (field == ZmItem.F_SUBJECT) {
 			htmlArr[idx++] = item.subject ? AjxStringUtil.htmlEncode(item.subject, true) : AjxStringUtil.htmlEncode(ZmMsg.noSubject);
-			if (this._isMultiColumn && appCtxt.get(ZmSetting.SHOW_FRAGMENTS) && item.fragment) {
+			if (appCtxt.get(ZmSetting.SHOW_FRAGMENTS) && item.fragment) {
 				htmlArr[idx++] = this._getFragmentSpan(item);
 			}
 		} else if (field == ZmItem.F_SIZE) {

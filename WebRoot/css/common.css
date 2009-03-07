@@ -495,7 +495,7 @@ DIV.vSpace {
 	text-align: center;
 }
 
-.RowDouble td.Count, .Row-selected td.Count {
+.RowDouble td.Count, .RowDouble-selected td.Count {
 	text-align: right;
 }
 

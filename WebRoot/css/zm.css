@@ -323,6 +323,13 @@ td.DDSepInvisible div {
 	font-weight: normal;
 }
 
+.SubjectDoubleRow,
+.DwtListView-Rows .SubjectDoubleRow,
+.Row-Selected .SubjectDoubleRow{
+	color: @darken(AppC,80)@;
+	font-weight: normal;
+}
+
 .ZmConvExpanded {
 	background-color:#eeeeff;
 }

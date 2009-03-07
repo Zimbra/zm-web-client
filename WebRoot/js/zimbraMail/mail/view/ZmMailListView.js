@@ -398,7 +398,7 @@ ZmListView.prototype._getCellClass =
 function(item, field, params) {
 	if (!this._isMultiColumn) {
 		if (field == ZmItem.F_SUBJECT) {
-			return "ZmConvListFragment";
+			return "SubjectDoubleRow";
 		}
 		if (field == ZmItem.F_SELECTION) {
 			return "AbridgedSelection";
