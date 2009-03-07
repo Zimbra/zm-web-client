@@ -259,11 +259,11 @@ function(event) {
 	// Since we may be sharing with multiple users, use a batch command
 	var batchCmd = new ZmBatchCommand();
 	var perm = this._getPermsFromRole();
-	var args = isGuestShare ? this._passwordInput.getValue() : null;
+	var pw = isGuestShare && this._passwordInput.getValue();
 	for (var i = 0; i < shares.length; i++) {
 		var share = shares[i];
 		if (perm != share.link.perm) {
-			var cmd = new AjxCallback(share, share.grant, [perm, args]);
+			var cmd = new AjxCallback(share, share.grant, [perm, pw]);
 			batchCmd.add(cmd);
 		}
 	}

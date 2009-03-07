@@ -327,10 +327,10 @@ function() {
 };
 
 ZmShare.prototype.grant =
-function(perm, args, batchCmd) {
+function(perm, pw, batchCmd) {
 	this.link.perm = perm;
 	var respCallback = new AjxCallback(this, this._handleResponseGrant);
-	this._shareAction("grant", null, {perm: perm, args: args}, respCallback, batchCmd);
+	this._shareAction("grant", null, {perm: perm, pw: pw}, respCallback, batchCmd);
 };
 
 ZmShare.prototype._handleResponseGrant =
