@@ -126,13 +126,14 @@ function(html, appt, data, needSep) {
 	if (needSep) html.append("<tr id='", this._rowId(data), "'><td colspan=4><div class=horizSep></div></td></tr>");
 	html.append("<tr width=100% id='", this._rowId(data), "'>");
 	html.append("<td colspan=2>");
-	html.append("<table cellpadding=0 cellspacing=0 border=0><tr>");
+	html.append("<table cellpadding=1 width='95%' cellspacing=0 border=0><tr>");
 	html.append("<td width=25px>", AjxImg.getImageHtml(appt.otherAttendees ? "ApptMeeting" : "Appointment"), "</td>");
 	html.append("<td><b>", AjxStringUtil.htmlEncode(appt.getReminderName()), "</b> (", this.getDurationText(appt), ") ",  "</td>");
+    html.append("</tr><tr>");
+    html.append("<td align='right' colspan='2' id='", data.deltaId, "'></td>");
 	html.append("</tr></table>");
 	html.append("</td>");
-	html.append("<td id='", data.deltaId, "'></td>");
-	html.append("<td align=right id='", data.buttonId, "'></td>");	
+	html.append("<td align=right id='", data.buttonId, "'></td>");
 	html.append("</tr>");
     //alarm data is common all instances of recurring appt
     //if (appt.otherAttendees) this._addAttr(html, ZmMsg.status, appt.getParticipantStatusStr(), data);
