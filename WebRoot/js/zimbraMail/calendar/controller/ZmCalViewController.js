@@ -2063,8 +2063,15 @@ function() {
 			this._apptCache.batchRequest(params, miniCalParams, reminderParams);
 		    
 			view.setNeedsRefresh(false);
+        }else {
+            this._searchInProgress = false;
         }
 	}
+};
+
+ZmCalViewController.prototype.setSearchInProgress =
+function(val) {
+    this._searchInProgress = val;
 };
 
 ZmCalViewController.prototype.getKeyMapName =
