@@ -259,3 +259,4 @@
 /** combined username/quota **/
 #skin_spacing_tree_top					{	text-align:center;	}
 #skin_container_tree_top				{		background: none;border: none;}
+#ztb_appChooser_items td{white-space: nowrap;}
