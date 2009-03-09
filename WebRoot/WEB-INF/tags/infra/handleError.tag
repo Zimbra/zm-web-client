@@ -17,6 +17,11 @@
         <c:when test="${error.code eq 'service.AUTH_EXPIRED' or error.code eq 'service.AUTH_REQUIRED'}">
             <c:redirect url="/?loginOp=relogin&client=standard&loginErrorCode=${error.code}"/>
         </c:when>
+        <c:when test="${error.code eq 'mail.QUERY_PARSE_ERROR' and empty param.sq}">
+            <app:status style="Critical">
+                <fmt:message key="emptySearchQuery"/>
+            </app:status>
+        </c:when>
         <c:when test="${error.code eq 'zclient.UPLOAD_SIZE_LIMIT_EXCEEDED'}">
             <zm:saveDraft var="draftResult" compose="${uploader.compose}" draftid="${uploader.compose.draftId}"/>
             <c:set scope="request" var="draftid" value="${draftResult.id}"/>
