@@ -1242,7 +1242,10 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 						<td class='ZOptionsField'><select id='${id}_CAL_FIRST_DAY_OF_WEEK' tabindex='30'></select></td>
 					</tr>
 
-					<tr><td colspan=2><hr></td></tr>
+					<tr>
+						<td class='ZOptionsLabel'><$=ZmMsg.calendarInitialApptVisibility $></td>
+						<td class='ZOptionsField'><select id='${id}_CAL_APPT_VISIBILITY' tabindex='35'></select></td>
+					</tr>
 
 					<tr>
 						<td class='ZOptionsLabel'>&nbsp;</td>

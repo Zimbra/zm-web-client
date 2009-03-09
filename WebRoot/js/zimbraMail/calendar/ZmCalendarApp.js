@@ -98,6 +98,7 @@ ZmCalendarApp.prototype._registerSettings =
 function(settings) {
 	var settings = settings || appCtxt.getSettings();
 	settings.registerSetting("CAL_ALWAYS_SHOW_MINI_CAL",	{name: "zimbraPrefCalendarAlwaysShowMiniCal", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
+    settings.registerSetting("CAL_APPT_VISIBILITY",			{name: "zimbraPrefCalendarApptVisibility", type: ZmSetting.T_PREF, dataType: ZmSetting.D_STRING, defaultValue: "public"});    
 	settings.registerSetting("CAL_EXPORT",					{type: ZmSetting.T_PREF, dataType: ZmSetting.D_NONE});
 	settings.registerSetting("CAL_FIRST_DAY_OF_WEEK",		{name: "zimbraPrefCalendarFirstDayOfWeek", type: ZmSetting.T_PREF, dataType: ZmSetting.D_INT, defaultValue: 0});
 	settings.registerSetting("CAL_FREE_BUSY_ACL",			{type: ZmSetting.T_PREF, defaultValue:ZmSetting.ACL_ALL});
@@ -126,6 +127,7 @@ function() {
 			precondition: ZmSetting.CALENDAR_ENABLED,
 			prefs: [
 				ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL,
+                ZmSetting.CAL_APPT_VISIBILITY,
 				ZmSetting.CAL_EXPORT,
 				ZmSetting.CAL_FIRST_DAY_OF_WEEK,
 				ZmSetting.CAL_IMPORT,
@@ -239,6 +241,14 @@ function() {
 		displayFunc:		function() { AjxDispatcher.require("Alert"); return ZmDesktopAlert.getInstance().getDisplayText(); },
 		displayContainer:	ZmPref.TYPE_CHECKBOX
 	});
+
+    ZmPref.registerPref("CAL_APPT_VISIBILITY", {
+        displayName:		ZmMsg.calendarInitialApptVisibility,
+        displayContainer:	ZmPref.TYPE_SELECT,
+        displayOptions:		[ZmMsg._public, ZmMsg._private],
+        options:			[ZmSetting.CAL_VISIBILITY_PUB, ZmSetting.CAL_VISIBILITY_PRIV]
+    });
+
 };
 
 ZmCalendarApp.prototype._registerOperations =

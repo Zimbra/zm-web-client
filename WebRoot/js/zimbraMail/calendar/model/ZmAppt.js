@@ -411,7 +411,10 @@ function() {
 	return (this.privacy != "PUB");
 };
 
-
+ZmAppt.prototype.setPrivacy =
+function(privacy) {
+    this.privacy = privacy;
+};
 
 // Private / Protected methods
 

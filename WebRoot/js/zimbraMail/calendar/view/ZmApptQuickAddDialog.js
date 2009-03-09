@@ -177,7 +177,10 @@ function(loc) {
 
 	var defaultWarningTime = appCtxt.get(ZmSetting.CAL_REMINDER_WARNING_TIME);
 	this._reminderSelect.setSelectedValue(defaultWarningTime);
-	
+
+    var defaultPrivacyOption = appCtxt.get(ZmSetting.CAL_APPT_VISIBILITY);    
+    this._privacySelect.setSelectedValue((defaultPrivacyOption == ZmSetting.CAL_VISIBILITY_PRIV) ?  "PRI" : "PUB");
+    
 	DBG.timePt("ZmQuickAddDialog#popup", true);
 };
 

@@ -359,7 +359,8 @@ function(calItem, mode) {
         var isRemote = calItem.isShared();
         var cal = isRemote ? appCtxt.getById(calItem.folderId) : null;
         var isEnabled = !isRemote || (cal && cal.hasPrivateAccess());
-        this._privacySelect.setSelectedValue(isEnabled ? (calItem.privacy || "PUB") : "PUB");
+        var defaultPrivacyOption = (appCtxt.get(ZmSetting.CAL_APPT_VISIBILITY) == ZmSetting.CAL_VISIBILITY_PRIV)?"PRI":"PUB";                    
+        this._privacySelect.setSelectedValue(isEnabled ? (calItem.privacy || defaultPrivacyOption) : "PUB");
         this._privacySelect.setEnabled(isEnabled);
     }
 
