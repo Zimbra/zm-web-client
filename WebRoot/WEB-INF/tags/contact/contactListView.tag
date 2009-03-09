@@ -116,7 +116,7 @@
 
    <SCRIPT TYPE="text/javascript">
     <!--
-    var zrc = ${context.searchResult.size};
+    var zrc = ${empty context.searchResult ? 0 : context.searchResult.size};
     var zprint = function(){
         try{
         var idex = 0;

@@ -50,7 +50,7 @@
 
     <SCRIPT TYPE="text/javascript">
         <!--
-        var zrc = ${context.searchResult.size};
+        var zrc = ${empty context.searchResult ? 0 : context.searchResult.size };
         var zsr = ${zm:cookInt(selectedRow, 0)};
         var zss = function(r,s) {
             var e = document.getElementById("R"+r);
