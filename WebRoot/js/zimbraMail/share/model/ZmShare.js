@@ -373,9 +373,7 @@ function(name, color, replyType, notes, callback, owner) {
 		color: color,
 		view: this.link.view
 	};
-	if (appCtxt.get(ZmSetting.CALENDAR_ENABLED) &&
-		this.link.view == ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR][0])
-	{
+	if (appCtxt.get(ZmSetting.CALENDAR_ENABLED) && ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR][this.link.view]) {
 		params.f = ZmOrganizer.FLAG_CHECKED;
 	}
 	ZmMountpoint.create(params, respCallback, errorCallback);

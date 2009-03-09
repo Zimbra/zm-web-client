@@ -1023,3 +1023,31 @@ function() {
 	}
 	return this._sharingController;
 };
+
+/**
+ * Returns true if the given address belongs to the current user, including aliases.
+ *
+ * @param addr			[string]		address
+ * @param allowLocal	[boolean]*		if true, domain is not required
+ */
+ZmAppCtxt.prototype.isMyAddress =
+function(addr, allowLocal) {
+
+	if (allowLocal && (addr.indexOf('@') == -1)) {
+		addr = [addr, this.getUserDomain()].join("@");
+	}
+	
+	if (addr == this.get(ZmSetting.USERNAME)) {
+		return true;
+	}
+
+	var aliases = this.get(ZmSetting.MAIL_ALIASES);
+	if (aliases && aliases.length) {
+		for (var i = 0; i < aliases.length; i++) {
+			if (addr == aliases[i])
+				return true;
+		}
+	}
+
+	return false;
+};

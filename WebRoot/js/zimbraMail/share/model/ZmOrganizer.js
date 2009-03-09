@@ -214,7 +214,8 @@ ZmOrganizer.CREATE_FUNC 	= {};		// function that creates this organizer
 ZmOrganizer.LABEL 			= {};		// msg key for text for tree view header item
 ZmOrganizer.ITEMS_KEY 		= {};		// msg key for text describing contents
 ZmOrganizer.TREE_TYPE 		= {};		// type of server data tree that contains this type of organizer
-ZmOrganizer.VIEWS 			= {};		// views by type
+ZmOrganizer.VIEWS 			= {};		// views by org type
+ZmOrganizer.VIEW_HASH		= {};		// view hash by org type
 ZmOrganizer.TYPE 			= {};		// types by view (reverse map of above)
 ZmOrganizer.FOLDER_KEY 		= {};		// keys for label "[org] folder"
 ZmOrganizer.MOUNT_KEY 		= {};		// keys for label "mount [org]"
@@ -298,6 +299,8 @@ function(org, params) {
 	ZmOrganizer.TREE_TYPE[org] = params.treeType || org;	// default to own type
 
 	ZmOrganizer.CREATE_FUNC[org]	= params.createFunc || "ZmOrganizer.create";
+
+	ZmOrganizer.VIEW_HASH[org] = {};
 
 	if (params.hasColor) {
 		ZmOrganizer.DEFAULT_COLOR[org]	= (params.defaultColor != null) ? params.defaultColor :

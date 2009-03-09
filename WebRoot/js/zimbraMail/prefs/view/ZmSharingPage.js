@@ -59,8 +59,11 @@ function(id, setup, value) {
 ZmSharingPage.prototype.showMe =
 function() {
 	ZmPreferencesPage.prototype.showMe.apply(this, arguments);
-	this.view.findShares();
+	if (!this._rendered) {
+		this.view.findShares();	// fetch group shares the first time
+	}
 	this.view.showGrants();
+	this._rendered = true;
 };
 
 
@@ -85,7 +88,8 @@ ZmSharingView = function(params) {
 	this._controller = appCtxt.getSharingController();
 	this._controller._sharingView = this;
 	this._pageId = params.pageId;
-	this._sharesById = {};
+	this._sharesByAcceptId = {};
+	this._shareHash = {};
 
 	this._initialize();
 };
@@ -112,12 +116,19 @@ ZmSharingView.F_WITH	= "wi";
 ZmSharingView.prototype.toString = function() { return "ZmSharingView"; };
 
 ZmSharingView.prototype.findShares =
-function(owner) {
+function(owner, buttonClicked) {
 
-	if (!this.validate(ZmSharingView.ID_OWNER)) {
-		appCtxt.setStatusMsg({msg: ZmMsg.sharingErrorOwner, level:ZmStatusView.LEVEL_INFO});
+	var errorMsg;
+	if (buttonClicked && !owner) {
+		errorMsg = ZmMsg.sharingErrorOwnerMissing;
+	} else if (!this.validate(ZmSharingView.ID_OWNER)) {
+		errorMsg = ZmMsg.sharingErrorOwnerSelf;
+	}
+	if (errorMsg) {
+		appCtxt.setStatusMsg({msg: errorMsg, level: ZmStatusView.LEVEL_INFO});
 		return;
 	}
+
 	var type = owner ? ZmSharingController.TYPE_USER : ZmSharingController.TYPE_GROUP;
 	var respCallback = new AjxCallback(this, this.showShares, [type]);
 	var shares = this._controller.getShares(type, owner, respCallback);
@@ -162,7 +173,7 @@ function(shareId) {
 
 	var ctlr = appCtxt.getSharingController();
 	var sharingView = ctlr && ctlr._sharingView;
-	var shareInfo = sharingView && sharingView._sharesById[shareId];
+	var shareInfo = sharingView && sharingView._sharesByAcceptId[shareId];
 	if (shareInfo) {
 		AjxDispatcher.require("Share");
 		var share = ZmSharingView.createShare(shareInfo);
@@ -185,7 +196,7 @@ function(shareInfo) {
 
 	share.link = {id:	shareInfo.folderId,
 			   	  name:	shareInfo.folderPath.substr(shareInfo.folderPath.lastIndexOf("/") + 1),
-			   	  view:	shareInfo.view,
+			   	  view:	shareInfo.view || "message",
 				  perm:	shareInfo.rights};
 
 	share.action	= "new";
@@ -220,6 +231,8 @@ function() {
 			inputContainer.appendChild(inputCtrlDiv);
 		}
 	}
+
+	appCtxt.getFolderTree().addChangeListener(new AjxListener(this, this._folderTreeChangeListener));
 };
 
 ZmSharingView.prototype._addListView =
@@ -230,27 +243,22 @@ function(listView, listViewDivId) {
 	listView._initialized = true;
 };
 
-// make sure user is searching self for shared folders
+// make sure user is not looking for folders shared from their account
 ZmSharingView.prototype._validateOwner =
 function(value) {
 
 	if (!value) { return true; }
-	var username = appCtxt.getUsername();
-	if (value == username) {
+
+	if (appCtxt.isMyAddress(value, true)) {
 		return false;
-	} else {
-		if ((value.indexOf('@') == -1) && (username.indexOf('@') != -1)) {
-			if (value == username.substr(0, username.indexOf('@'))) {
-				return false;
-			}
-		}
 	}
+
 	return true;
 };
 
 ZmSharingView.prototype._onClick =
 function(ev) {
-	this.findShares(this.getValue(ZmSharingView.ID_OWNER));
+	this.findShares(this.getValue(ZmSharingView.ID_OWNER), true);
 };
 
 ZmSharingView.prototype._getAcLocation =
@@ -327,6 +335,35 @@ function(a, b) {
 	return 0;
 };
 
+/**
+ * Returns a key for a share or a grant. The key combines the owner's account ID and
+ * the folder ID.
+ */
+ZmSharingView.getKey =
+function(item) {
+	var acct = item.ownerId || (item.grantee && item.grantee.id) || item.zid;
+	var folderId = item.folderId || (item.object && item.object.id) || item.rid;
+	return [acct, folderId].join(":");
+};
+
+ZmSharingView.prototype._folderTreeChangeListener =
+function(ev) {
+
+	this._shareListView._changeListener(ev);
+	this._grantListView._changeListener(ev);
+
+	var organizers = ev.getDetail("organizers");
+	if (ev.event == ZmEvent.E_CREATE) {
+		var link = organizers[0];
+		var key = ZmSharingView.getKey(link);
+		var share = this._shareHash[key];
+		if (share && share.granteeType == ZmSharingController.TYPE_GROUP) {
+			share.folderPath = link.getPath(true);
+		}
+	}
+};
+
+
 
 /**
  * A list view that displays some form of shares, either with or by the user.
@@ -342,10 +379,6 @@ ZmSharingListView = function(params) {
 
 	this.view = params.view;
 	this._idMap = {};
-
-	if (this.type == ZmSharingView.SHARE) {
-		appCtxt.getFolderTree().addChangeListener(new AjxListener(this, this._folderTreeChangeListener));
-	}
 };
 
 ZmSharingListView.prototype = new DwtListView;
@@ -374,13 +407,12 @@ function() {
 ZmSharingListView.prototype._getRowId =
 function(item, params) {
 
-	var acct = item.ownerId || (item.grantee && item.grantee.id) || item.zid;
-	var folderId = item.folderId || (item.object && item.object.id) || item.rid;
-	var key = [acct, folderId].join(":");
+	var key = ZmSharingView.getKey(item);
 	var id = this._idMap[key];
 	if (!id) {
 		id = Dwt.getNextId();
 		this._idMap[key] = id;
+		this.view._shareHash[key] = item;
 	}
 
 	return id;
@@ -418,7 +450,7 @@ function(html, idx, item, field, colIdx, params) {
 			html[idx++] = linkName;
 		} else {
 			item.id = Dwt.getNextId();
-			this.view._sharesById[item.id] = item;
+			this.view._sharesByAcceptId[item.id] = item;
 			html[idx++] = "<a href='javascript:;' onclick='ZmSharingView.acceptLinkCallback(" + '"' + item.id + '"' + ");'>" + ZmMsg.accept + "</a>";
 		}
 	} else if (field == ZmSharingView.F_GROUP && (item.granteeType == ZmSharingController.TYPE_GROUP)) {
@@ -428,13 +460,13 @@ function(html, idx, item, field, colIdx, params) {
 	return idx;
 };
 
-ZmSharingListView.prototype._folderTreeChangeListener =
+ZmSharingListView.prototype._changeListener =
 function(ev) {
 
 	var organizers = ev.getDetail("organizers");
 	if (this.type == ZmSharingView.SHARE) {
 		if (ev.event == ZmEvent.E_CREATE) {
-			var link = organizers[0]
+			var link = organizers[0];
 			var key = [link.zid, link.rid].join(":");
 			var row = document.getElementById(this._idMap[key]);
 			if (row) {

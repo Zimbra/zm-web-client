@@ -239,7 +239,7 @@ function(event) {
 				for (var i = 0; i < addrs.length; i++) {
 					// bug fix #26428 - exclude me from list of addresses
 					var addr = addrs[i];
-					if (this._isMe(addr)) { continue; }
+					if (appCtxt._isMyAddress(addr)) { continue; }
 
 					var share = this._setUpShare();
 					share.grantee.name = addr;
@@ -348,23 +348,6 @@ function(shares, result) {
 			}
 		}
 	}
-};
-
-ZmSharePropsDialog.prototype._isMe =
-function(addr) {
-	if (addr == appCtxt.get(ZmSetting.USERNAME)) {
-		return true;
-	}
-
-	var aliases = appCtxt.get(ZmSetting.MAIL_ALIASES);
-	if (aliases && aliases.length) {
-		for (var i = 0; i < aliases.length; i++) {
-			if (addr == aliases[i])
-				return true;
-		}
-	}
-
-	return false; 
 };
 
 // HACK: grep the Faults in BatchResponse and sift out the bad emails
