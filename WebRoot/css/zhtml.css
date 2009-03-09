@@ -276,7 +276,7 @@ A:visited { color: blue; }
 
 .ZhAppColContent {
 	@SkinBorderApp@
-    border-width: 4px !important;
+    border-width: 1px;
 }
 
 .ZhAppViewContent {
@@ -299,6 +299,15 @@ A:visited { color: blue; }
 	@FontSize-normal@
 	@Text@
 	@ToolbarBg@
+}
+
+
+/* IE Hack to prevent buttons creating spaces around the text */
+.IEbutton input{
+#IFDEF MSIE
+	width: 10px;
+	overflow: visible;
+#ENDIF
 }
 
 /* ---- Top Toolbar Container ----- */
