@@ -54,10 +54,21 @@
         <fmt:message key="actionBriefcaseCreated"><fmt:param value="${fn:escapeXml(param.folder_name)}"/></fmt:message>
     </mo:status>
 </c:when>
+
+<c:when test="${zm:actionSet(param, 'actionSaveNotebookFolder')}">
+   <zm:createFolder view="wiki" var="folder" name="${fn:escapeXml(param.folder_name)}" parentid="${fn:escapeXml(param.parentid)}"/>
+   <mo:status style="Info">
+        <fmt:message key="actionWikiCreated"><fmt:param value="${fn:escapeXml(param.folder_name)}"/></fmt:message>
+    </mo:status>
+</c:when>
+    
 <c:when test="${zm:actionSet(param, 'actionSaveSearch')}">
     <c:choose>
         <c:when test="${param.st eq 'briefcase' || param.st eq 'briefcases'}">
             <c:set var="types" value="document"/>
+        </c:when>
+        <c:when test="${param.st eq 'wiki' || param.st eq 'notebooks'}">
+            <c:set var="types" value="wiki"/>
         </c:when>
         <c:when test="${param.st eq 'folders'}">
             <c:set var="types" value="${mailbox.prefs.groupByConversation ? 'conversation' : 'message'}"/>

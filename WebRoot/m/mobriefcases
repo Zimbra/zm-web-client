@@ -29,14 +29,25 @@
     <div class="table-row">
         <div class="table-cell">
             <span class="Title left">
-                    <fmt:message key="briefcases"/>
+                    <c:if test="${param.st eq 'briefcases'}">
+                       <fmt:message key="briefcases"/> | <a href="${context_url}?st=notebooks"><fmt:message key="notebooks"/></a>
+                    </c:if>
+                    <c:if test="${param.st eq 'notebooks'}">
+                        <a href="${context_url}?st=briefcases"><fmt:message key="briefcases"/></a> | <fmt:message key="notebooks"/>
+                    </c:if>
                 </span>
                  <span class="right">
-                    <a class="zo_button1" href="?st=briefcases${empty param.showFolderCreate?'&showBCCreate=1':''}#bc" onclick="return toggleElem(null,'nbcfrm');"><fmt:message key="create"/></a>
+                    <c:if test="${param.st eq 'briefcases'}">
+                        <a class="zo_button1" href="?st=${fn:escapeXml(param.st)}${empty param.showBCCreate?'&showBCCreate=1':''}#bc" onclick="return toggleElem(null,'nbcfrm');"><fmt:message key="create"/></a>
+                    </c:if>
+                    <c:if test="${param.st eq 'notebooks'}">
+                        <a class="zo_button1" href="?st=${fn:escapeXml(param.st)}${empty param.showNbreate?'&showNbreate=1':''}#bc" onclick="return toggleElem(null,'nnbfrm');"><fmt:message key="create"/></a>                        
+                    </c:if>
                 </span>
         </div>
     </div>
 </div>
+<c:if test="${param.st eq 'briefcases'}">
 <div class="table View" id="nbcfrm" style="${empty param.showBCCreate?'display:none':''};">
     <div class="table-row">
         <div class="table-cell">
@@ -67,13 +78,46 @@
         <mo:doFolderTree skiproot="${true}" parentid="${folder.id}" skipsystem="false"/>
     </c:if>
 </zm:forEachFolder>
+</c:if>
+<c:if test="${param.st eq 'notebooks'}">
+<div class="table View" id="nnbfrm" style="${empty param.showNbreate?'display:none':''};">
+    <div class="table-row">
+        <div class="table-cell">
+            <form action="${currentUrl}" method="post" style="padding:0px;margin:0px;" onsubmit="return submitForm(this);">
+                <input type="hidden" name="doFolderAction" value="1">
+                <input name="crumb" type="hidden" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
+                <span class="label"><fmt:message key="name"/>:</span> <input type="text" name="folder_name"
+                                                                             style="width:100px;"  class="Textarea">
+                <input class="zo_button" type="submit" name="actionSaveNotebookFolder" value="<fmt:message key='save'/>">
+                <br/>
+                <select name="parentid" style="width:100px;">
+                <option value="${mailbox.inbox.parentId}">--<fmt:message key="in"/>--</option>
+                <zm:forEachFolder var="fldr" skiproot="${false}" skipsystem="${false}" skiptrash="${true}">
+                <c:if test="${fldr.isWikiView}">
+                        <option value="${fldr.id}">${fn:escapeXml(fldr.rootRelativePath)}</option>
+                    </c:if>
+                </zm:forEachFolder>
+
+            </select>
+            </form>
+        </div>
+        <a name="notebooks" style="padding:0px;margin:0px;"></a>
+    </div>
+</div>
+<zm:forEachFolder var="folder" skiproot="${false}" skipsystem="${false}" skiptrash="${true}">
+    <c:if test="${folder.isWikiView}">
+        <mo:overviewFolder folder="${folder}" types="wiki"/>
+        <mo:doFolderTree skiproot="${true}" parentid="${folder.id}" skipsystem="false"/>
+    </c:if>
+</zm:forEachFolder>
+</c:if>    
 <div class="Toolbar table">
     <div class="table-row">
         <div class="table-cell">
             <span class="Title left">
                 <fmt:message key="searches"/></span>
             <span class="right">
-                <a class="zo_button1" href="?st=briefcases${empty param.showSearchCreate?'&showSearchCreate=1':''}#searches" onclick="return toggleElem(null,'nsrchfrm');"><fmt:message key="create"/></a>
+                <a class="zo_button1" href="?st=${fn:escapeXml(param.st)}${empty param.showSearchCreate?'&showSearchCreate=1':''}#searches" onclick="return toggleElem(null,'nsrchfrm');"><fmt:message key="create"/></a>
             </span>
         </div>
     </div>
@@ -81,7 +125,7 @@
 <div class="table View" id="nsrchfrm" style="${empty param.showSearchCreate?'display:none':''};">
     <div class="table-row">
         <div class="table-cell">
-            <form action="?st=briefcases" method="post" style="padding:0px;margin:0px;" onsubmit="return submitForm(this);">
+            <form action="?st=${fn:escapeXml(param.st)}" method="post" style="padding:0px;margin:0px;" onsubmit="return submitForm(this);">
                 <input type="hidden" name="doFolderAction" value="1">
                 <input type="hidden" name="parentid" value="${mailbox.inbox.parentId}">
                 <input name="crumb" type="hidden" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
@@ -101,8 +145,11 @@
 
 <zm:forEachFolder var="folder" skipsystem="${true}" skiptopsearch="${false}">
     <c:if test="${(folder.isSearchFolder && (empty query || fn:containsIgnoreCase(folder.name,query)))}">
-        <c:if test="${folder.types eq 'document' || folder.types eq 'briefcase'}">
+        <c:if test="${param.st eq 'briefcases' && (folder.types eq 'document' || folder.types eq 'briefcase')}">
         <mo:overviewSearchFolder folder="${folder}" types="briefcase"/>
+        </c:if>
+        <c:if test="${param.st eq 'notebooks' && (folder.types eq 'wiki' || folder.types eq 'notebook')}">
+        <mo:overviewSearchFolder folder="${folder}" types="wiki"/>
         </c:if>
     </c:if>
 </zm:forEachFolder>
@@ -113,7 +160,7 @@
                         <fmt:message key="tags"/>
             </span>
             <c:if test="${mailbox.features.tagging}"><span class="right">
-                <a class="zo_button1" href="?st=briefcases${empty param.showTagCreate?'&showTagCreate=1':''}#tags" onclick="return toggleElem(null,'ntagfrm');"><fmt:message
+                <a class="zo_button1" href="?st=${fn:escapeXml(param.st)}${empty param.showTagCreate?'&showTagCreate=1':''}#tags" onclick="return toggleElem(null,'ntagfrm');"><fmt:message
                                 key="create"/></a>
             </span></c:if>
     </div>
@@ -148,6 +195,6 @@
 </c:if>
 <zm:forEachTag var="tag">
     <c:if test="${empty query || fn:containsIgnoreCase(tag.name, query)}">
-        <mo:overviewTag calendars="${false}" tag="${tag}" types="briefcase"/>
+        <mo:overviewTag calendars="${false}" tag="${tag}" types="${param.st eq 'briefcases'? 'briefcase' : 'wiki'}"/>
     </c:if>
 </zm:forEachTag>

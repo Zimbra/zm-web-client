@@ -19,7 +19,7 @@
     <span onclick='zClickLink("FLDR${folder.id}")'>
         <a id="FLDR${folder.id}" href="${fn:escapeXml(url)}">
             <span class="SmlIcnHldr Fldr${folder.type}">&nbsp;</span>
-            ${fn:escapeXml(label)}
+            ${fn:escapeXml(zm:truncateFixed(label,30,true))}
             <c:if test="${folder.hasUnread}">&nbsp;(${folder.unreadCount})</c:if>
         </a>
     </span>

@@ -11,16 +11,15 @@
     <mo:searchTitle var="title" context="${context}"/>
 </mo:handleError>
 <c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/>
-<zm:currentResultUrl var="actionUrl" value="${context_url}" context="${context}"/>
+<zm:currentResultUrl var="actionUrl" value="${context_url}" context="${context}" refresh="${true}"/>
 <c:set var="title" value="${zm:truncate(context.shortBackTo,20,true)}" scope="request"/>
 <form id="zForm" action="${fn:escapeXml(actionUrl)}" method="post">
     <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
     <input type="hidden" name="doBriefcaseAction" value="1"/>
     <input name="moreActions" type="hidden" value="<fmt:message key="actionGo"/>"/>
    <mo:toolbar context="${context}" urlTarget="${context_url}" isTop="true" mailbox="${mailbox}"/>
-    <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
-        <c:set var="bchit" value="${hit.briefcaseHit}"/>
-        
+   <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
+        <c:set var="bchit" value="${hit.wikiHit}"/>
         <div class="list-row row" id="cn${bchit.id}">
             <c:set value=",${hit.id}," var="stringToCheck"/>
             <c:set var="ctype" value="${fn:split(bchit.document.contentType,';')}" />
@@ -144,7 +143,16 @@
             </span>
         </div>
     </c:forEach>
-    <c:if test="${empty param.supressNoRes && (empty context || empty context.searchResult or context.searchResult.size eq 0)}">
+    <%--c:import url="/m/zmview">
+        <c:param name="sfi" value="${context.sfi}"/>
+        <c:param name="st" value="briefcase"/>
+        <c:param name="top_stb" value="0"/>
+        <c:param name="btm_stb" value="0"/>
+        <c:param name="top_tb" value="0"/>
+        <c:param name="btm_tb" value="0"/>
+        <c:param name="supressNoRes" value="1"/>
+    </c:import--%>
+   <c:if test="${empty context || empty context.searchResult or context.searchResult.size eq 0}">
         <div class='table'>
                 <div class="table-row">
                     <div class="table-cell zo_noresults">

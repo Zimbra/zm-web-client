@@ -122,7 +122,15 @@
     <tag-file>
             <name>briefcaseExplorerView</name>
             <path>/WEB-INF/tags/mobile/moBriefcaseExplorerView.tag</path>
-         </tag-file>
+    </tag-file>
+    <tag-file>
+            <name>wikiListView</name>
+            <path>/WEB-INF/tags/mobile/moWikiListView.tag</path>
+    </tag-file>
+    <tag-file>
+            <name>wikiExplorerView</name>
+            <path>/WEB-INF/tags/mobile/moWikiExplorerView.tag</path>
+    </tag-file>
 
     <tag-file>
         <name>messageView</name>

@@ -463,11 +463,11 @@ var updateOrientation = function() {
             <div class="_month">${darr[2]}</div>
             </span></a> </c:if>
          <c:if test="${mailbox.features.briefcases}">
-            <c:set var="l_view" value="explorer" scope="session"/>
+            <c:set var="l_view" value="list" scope="session"/>
                 <c:set var="active"
                                        value="${param.st eq 'briefcase' ? '-active' : ''}"/>
         <a style='width: ${98/appcount}%;' targetid="maincontainer" accesskey="${requestScope.fldrapp_accesskey}"
-           id="folders${active}" class="appTab${active} table-cell" href="${aurl}?st=briefcase"><span
+           id="folders${active}" class="appTab${active} table-cell" href="${aurl}?st=briefcases"><span
                 onclick="return zClickLink('folders${active}')"><fmt:message
                 key="folders"/></span></a>
         </c:if>             

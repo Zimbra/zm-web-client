@@ -42,9 +42,9 @@
                         </select>
                         </c:if>
                     </c:when>
-                    <c:when test="${context.isBriefcaseSearch}">
-                        <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=briefcases"><fmt:message
-                                key="briefcases"/></a> &laquo;
+                    <c:when test="${context.isBriefcaseSearch || context.isWikiSearch}">
+                        <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=${context.isWikiSearch || context.folder.isWikiView? 'notebooks':'briefcases'}"><fmt:message
+                                key="${context.isWikiSearch || context.folder.isWikiView? 'notebooks':'briefcases'}"/></a> &laquo;
                         <c:if test="${top_fldr_select eq '0'}">
                             ${fn:escapeXml(zm:truncateFixed(context.shortBackTo,12,true))}
                         </c:if>
@@ -52,7 +52,7 @@
 			<select class="_zo_select_button" name="sfi"
                                 onchange="fetchIt('?sfi='+this.value+'&amp;st=${context.st}');">
                             <zm:forEachFolder var="fldr" skiproot="true">
-                                <c:if test="${fldr.isDocumentView}">
+                                <c:if test="${(context.isBriefcaseSearch && fldr.isDocumentView) || (context.isWikiSearch && fldr.isWikiView)}">
                                     <option ${param.sfi eq fldr.id || context.folder.id eq fldr.id ? 'selected="selected"' : ''}
                                             value="${fldr.id}">${fn:escapeXml(zm:truncateFixed(zm:getFolderName(pageContext,fldr.id),15,true))}
                                     </option>
@@ -134,7 +134,7 @@
                     <option value="actionHardDelete"><fmt:message key="delete"/></option>
                 </c:otherwise>
             </c:choose>
-             <c:if test="${context.isBriefcaseSearch}">
+             <c:if test="${context.isBriefcaseSearch || context.isWikiSearch}">
             <optgroup label="<fmt:message key="view"/>">
                 <option value="actionViewList"><fmt:message key="MO_viewList"/></option>
                 <option value="actionViewExplorer"><fmt:message key="MO_viewExplorer"/></option>
@@ -168,7 +168,7 @@
                 </optgroup>
                 </c:when>
             </c:choose>
-            <c:if test="${!context.isBriefcaseSearch}">
+            <c:if test="${!context.isBriefcaseSearch && !context.isWikiSearch }">
             <optgroup label="<fmt:message key="MO_flag"/>">
                 <option value="actionFlag"><fmt:message key="add"/></option>
                 <option value="actionUnflag"><fmt:message key="remove"/></option>
@@ -186,6 +186,13 @@
                     <c:when test="${context.isBriefcaseSearch}">
                         <zm:forEachFolder var="folder">
                             <c:if test="${folder.id != context.folder.id and folder.isDocumentMoveTarget and !folder.isTrash and !folder.isSpam}">
+                                <option value="moveTo_${folder.id}">${fn:escapeXml(folder.rootRelativePath)}</option>
+                            </c:if>
+                        </zm:forEachFolder>
+                    </c:when>
+                    <c:when test="${context.isWikiSearch}">
+                        <zm:forEachFolder var="folder">
+                            <c:if test="${folder.id != context.folder.id and folder.isWikiView and !folder.isTrash and !folder.isSpam}">
                                 <option value="moveTo_${folder.id}">${fn:escapeXml(folder.rootRelativePath)}</option>
                             </c:if>
                         </zm:forEachFolder>
@@ -221,6 +228,12 @@
 <span class="table-cell">-->
 <span class=" f-right">
         <c:choose>
+        <c:when test="${context.isWikiSearch && ! empty context.sfi}">
+            <a class="zo_button" accesskey="${requestScope.mainaction_accesskey}" href="${context_url}?st=briefcase&sfi=${context.sfi}"><fmt:message key="MO_files"/></a>
+        </c:when>
+        <c:when test="${context.folder.isWikiView || context.folder.types eq 'wiki'}">
+            <a class="zo_button" href="${context_url}?st=wiki&sfi=${context.sfi}"><fmt:message key="MO_pages"/></a>
+        </c:when>
         <c:when test="${context.isConversationSearch || context.isMessageSearch}">
             <c:url var="composeUrl" value="${urlTarget}?st=newmail"/>
             <a accesskey="${requestScope.mainaction_accesskey}" href="${composeUrl}" class="zo_button">
@@ -268,9 +281,9 @@
                         </select>       
                         </c:if>
                     </c:when>
-                    <c:when test="${context.isBriefcaseSearch}">
-                        <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=briefcases"><fmt:message
-                                key="briefcases"/></a> &laquo;
+                    <c:when test="${context.isBriefcaseSearch || context.isWikiSearch}">
+                        <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=${context.isWikiSearch || context.folder.isWikiView? 'notebooks':'briefcases'}"><fmt:message
+                                key="${context.isWikiSearch || context.folder.isWikiView? 'notebooks':'briefcases'}"/></a> &laquo;
                         <c:if test="${btm_fldr_select eq '0'}">
                             ${fn:escapeXml(zm:truncateFixed(context.shortBackTo,12,true))}
                         </c:if>
@@ -278,7 +291,7 @@
 			<select class="_zo_select_button" name="sfi"
                                 onchange="fetchIt('?sfi='+this.value+'&amp;st=${context.st}');">
                             <zm:forEachFolder var="fldr" skiproot="true">
-                                <c:if test="${fldr.isDocumentView}">
+                                <c:if test="${(context.isBriefcaseSearch && fldr.isDocumentView) || (context.isWikiSearch && fldr.isWikiView)}">
                                     <option ${param.sfi eq fldr.id || context.folder.id eq fldr.id ? 'selected="selected"' : ''}
                                             value="${fldr.id}">${fn:escapeXml(zm:truncateFixed(zm:getFolderName(pageContext,fldr.id),15,true))}
                                     </option>
