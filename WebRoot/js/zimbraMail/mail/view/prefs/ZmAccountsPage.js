@@ -1459,7 +1459,8 @@ function(account) {
 	this._accountListView.setCellContents(account, ZmItem.F_NAME, AjxStringUtil.htmlEncode(account.getName()));
 	this._accountListView.setCellContents(account, ZmItem.F_EMAIL, AjxStringUtil.htmlEncode(account.getEmail()));
 	var provider = ZmDataSource.getProviderForAccount(account);
-	this._accountListView.setCellContents(account, ZmItem.F_TYPE, provider ? provider.name : account.type);
+	var type = provider ? provider.name : ZmAccountsListView.TYPES[account.type]; 
+	this._accountListView.setCellContents(account, ZmItem.F_TYPE, type);
 };
 
 // generic listeners
