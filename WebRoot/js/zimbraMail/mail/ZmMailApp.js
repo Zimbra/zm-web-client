@@ -661,7 +661,7 @@ function() {
 		AjxCallback.simpleClosure(function(parent) {
 			ZmOperation.addDeferredMenu(ZmMailApp.addForwardMenu, parent);
 	}));*/
-	ZmOperation.registerOp(ZmId.OP_IM, {textKey:"newIM", image:"ImStartChat"}, ZmSetting.IM_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_IM, {textKey:"newIM", image:"ImStartChat", tooltipKey:"imNewChat"}, ZmSetting.IM_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_INC_ATTACHMENT, {textKey:"includeMenuAttachment"});
 	ZmOperation.registerOp(ZmId.OP_INC_NONE, {textKey:"includeMenuNone"});
 	ZmOperation.registerOp(ZmId.OP_INC_NO_PREFIX, {textKey:"includeMenuNoPrefix"});

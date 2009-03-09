@@ -160,6 +160,11 @@ function(view) {
 	if (printButton) {
 		printButton.setText(ZmMsg.print);
 	}
+
+    var saveButton = this._toolbar[view].getButton(ZmOperation.SAVE);
+    if (saveButton) {
+        saveButton.setToolTipContent(ZmMsg.saveContactTooltip);
+    }
 };
 
 ZmContactController.prototype._getTagMenuMsg =

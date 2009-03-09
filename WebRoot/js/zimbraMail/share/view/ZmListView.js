@@ -637,7 +637,10 @@ function(field, itemIdx, isFolder) {
     } else if ( field == ZmItem.F_SIZE){
         tooltip = (this._headerList[itemIdx]._sortable)
                 ? ZmMsg.sortBySize : ZmMsg.sizeToolTip;
+    } else if (field == ZmItem.F_FOLDER) {
+        tooltip = ZmMsg.folder;
     }
+    
     return tooltip;
 };
 
