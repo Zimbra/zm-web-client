@@ -1043,6 +1043,7 @@ function(startDate, duration, folderId) {
             }
         }
     }
+    newAppt.setPrivacy((appCtxt.get(ZmSetting.CAL_APPT_VISIBILITY) == ZmSetting.CAL_VISIBILITY_PRIV)?"PRI" :"PUB");
     return newAppt;
 };
 
@@ -1243,36 +1244,65 @@ function() {
 
 ZmCalViewController.prototype._promptDeleteAppt =
 function(appt, mode) {
-	var cancelNoReplyCallback = new AjxCallback(this, this._continueDelete, [appt, mode]);
-
-	var confirmDialog = appCtxt.getConfirmationDialog();
 	if (appt.isOrganizer()) {
-        if(appt.otherAttendees && appCtxt.get(ZmSetting.MAIL_ENABLED)) {
-		    var cancelReplyCallback = new AjxCallback(this, this._continueDeleteReply, [appt, mode]);
-		    confirmDialog.popup(ZmMsg.confirmCancelApptReply, cancelReplyCallback, cancelNoReplyCallback);
+        if(mode == ZmCalItem.MODE_DELETE_SERIES) {
+             this._promptDeleteFutureInstances(appt, mode);
         }else {
-            confirmDialog.popup(ZmMsg.confirmCancelAppt, cancelNoReplyCallback);
+            this._promptCancelReply(appt, mode);
         }
 	} else {
         this._promptDeleteNotify(appt, mode);
 	}
 };
 
+ZmCalViewController.prototype._promptCancelReply =
+function(appt, mode) {
+    var cancelNoReplyCallback = new AjxCallback(this, this._continueDelete, [appt, mode]);    
+    var confirmDialog = appCtxt.getConfirmationDialog();    
+    if(appt.otherAttendees && appCtxt.get(ZmSetting.MAIL_ENABLED)) {
+        var cancelReplyCallback = new AjxCallback(this, this._continueDeleteReply, [appt, mode]);
+        confirmDialog.popup(ZmMsg.confirmCancelApptReply, cancelReplyCallback, cancelNoReplyCallback);
+    }else {
+        confirmDialog.popup(ZmMsg.confirmCancelAppt, cancelNoReplyCallback);
+    }
+};
+
+ZmCalViewController.prototype._promptDeleteFutureInstances =
+function(appt, mode) {
+    if(!this._delFutureInstNotifyDlg) {
+        this._delFutureInstNotifyDlg = new ZmApptDeleteNotifyDialog({parent: this._shell,
+            title: AjxMsg.confirmTitle, confirmMsg: ZmMsg.confirmCancelAppt,
+            choiceLabel1: ZmMsg.confirmCancelApptWholeSeries, choiceLabel2 : ZmMsg.confirmCancelApptFutureInstances});
+    }
+    this._delFutureInstNotifyDlg.popup(new AjxCallback(this, this._deleteFutureInstYesCallback, [appt,mode]));
+};
+
+ZmCalViewController.prototype._deleteFutureInstYesCallback =
+function(appt, mode) {
+    var deleteWholeSeries = this._delFutureInstNotifyDlg.isDefaultOptionChecked();
+    if(!deleteWholeSeries) {
+        appt.setCancelFutureInstances(true);
+    }
+    this._promptCancelReply(appt, mode);
+};
+
 ZmCalViewController.prototype._promptDeleteNotify =
 function(appt, mode) {
     if(!this._deleteNotifyDialog) {
-        this._deleteNotifyDialog = new ZmApptDeleteNotifyDialog(this._shell);
+        this._deleteNotifyDialog = new ZmApptDeleteNotifyDialog({parent: this._shell,
+            title: AjxMsg.confirmTitle, confirmMsg: ZmMsg.confirmCancelAppt, 
+            choiceLabel1: ZmMsg.dontNotifyOrganizer, choiceLabel2 : ZmMsg.notifyOrganizer});
     }
     this._deleteNotifyDialog.popup(new AjxCallback(this, this._deleteNotifyYesCallback, [appt,mode]));
 };
 
 ZmCalViewController.prototype._deleteNotifyYesCallback =
 function(appt, mode) {
-    var notifyOrg = this._deleteNotifyDialog.notifyOrg();
+    var notifyOrg = !this._deleteNotifyDialog.isDefaultOptionChecked();
     if(notifyOrg) {
-        this._cancelBeforeDelete(appt, mode);
+        this._promptCancelReply(appt, mode);
     }else {
-        this._continueDelete(appt, mode);
+        this._cancelFutureInstance(appt, mode);
     }
 };
 

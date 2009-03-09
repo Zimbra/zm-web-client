@@ -813,8 +813,27 @@ function(mode, callback, errorCallback, ex) {
 	return false;
 };
 
+ZmCalItem.prototype.setCancelFutureInstances =
+function(cancelFutureInstances) {
+    this._cancelFutureInstances = cancelFutureInstances;    
+};
+
 ZmCalItem.prototype._doCancel =
 function(mode, callback, msg, batchCmd, result) {
+
+    if(mode == ZmCalItem.MODE_DELETE_SERIES && this._cancelFutureInstances) {
+
+        var recurrence = this._recurrence;
+        var untilDate = new Date(this.getOrigStartDate().getTime());
+        untilDate.setTime(untilDate.getTime() - AjxDateUtil.MSEC_PER_DAY);
+        recurrence.repeatEndDate = untilDate;
+        recurrence.repeatEndType = "D";
+
+        this.viewMode = ZmCalItem.MODE_EDIT_SERIES;
+        this.save(null, callback);
+        return;
+    }
+
 	if (mode == ZmCalItem.MODE_DELETE ||
 		mode == ZmCalItem.MODE_DELETE_SERIES ||
 		mode == ZmCalItem.MODE_DELETE_INSTANCE)

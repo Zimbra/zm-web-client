@@ -21,19 +21,31 @@
 * @class
 *
 * @author Parag Shah
-* @param parent			the element that created this view
+* @param params			[hash]				hash of params:
+*        parent			[DwtComposite] 		parent widget (the shell)
+*        title			[string]*			title of dialog
+*        confirmMsg 	[string]*			dialog confirmation message 
+*        choiceLabel1	[string]*			label value for choice 1
+*        choiceLabel2	[string]*			label value for choice 2 
 */
-ZmApptDeleteNotifyDialog = function(parent) {
+ZmApptDeleteNotifyDialog = function(params) {
 
+    params = Dwt.getParams(arguments, ZmApptDeleteNotifyDialog.PARAMS);
     var buttons = [ DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON, DwtDialog.CANCEL_BUTTON ];
-    DwtDialog.call(this, {parent:parent, standardButtons:buttons});
+    DwtDialog.call(this, {parent: params.parent, standardButtons:buttons});
 
-	this.setTitle(AjxMsg.confirmTitle);
+    this._choiceLabel1 = params.choiceLabel1;
+    this._choiceLabel2 = params.choiceLabel2;
+    this._confirmMsg = params.confirmMsg;
+
+	this.setTitle(params.title || AjxMsg.confirmTitle);
 	this.setContent(this._setHtml());
 	this._cacheFields();
     this.registerCallback(DwtDialog.YES_BUTTON, new AjxCallback(this, this._handleYesButton));
     this.registerCallback(DwtDialog.NO_BUTTON, new AjxCallback(this, this._handleNoButton));
 };
+
+ZmApptDeleteNotifyDialog.PARAMS = ["parent", "title", "confirmMsg", "choiceLabel1", "choiceLabel2"];
 
 ZmApptDeleteNotifyDialog.prototype = new DwtDialog;
 ZmApptDeleteNotifyDialog.prototype.constructor = ZmApptDeleteNotifyDialog;
@@ -64,9 +76,9 @@ function() {
 	return this._attId;
 };
 
-ZmApptDeleteNotifyDialog.prototype.notifyOrg =
+ZmApptDeleteNotifyDialog.prototype.isDefaultOptionChecked =
 function() {
-	return !this._defaultRadio.checked;
+	return this._defaultRadio.checked;
 };
 
 ZmApptDeleteNotifyDialog.prototype.addSelectionListener =
@@ -81,14 +93,12 @@ ZmApptDeleteNotifyDialog.prototype._setHtml =
 function() {
 	this._defaultRadioId	= Dwt.getNextId();
 	this._notifyChoiceName	= Dwt.getNextId();
-	this._addedListId		= Dwt.getNextId();
-	this._removedListId		= Dwt.getNextId();
 
 	var html = new Array();
 	var i = 0;
 
 	html[i++] = "<div style='width:275px'>";
-	html[i++] = ZmMsg.confirmCancelAppt;
+	html[i++] = this._confirmMsg;
 	html[i++] = "<br>";
 	html[i++] = "</div><p>";
 	html[i++] = "<table align=center border=0 width=1%>";
@@ -97,12 +107,12 @@ function() {
 	html[i++] = "' name='";
 	html[i++] = this._notifyChoiceName;
 	html[i++] = "'></td><td style='white-space:nowrap'>";
-	html[i++] = ZmMsg.dontNotifyOrganizer;
+	html[i++] = this._choiceLabel1;
 	html[i++] = "</td></tr>";
 	html[i++] = "<tr><td width=1%><input value='2' type='radio' name='";
 	html[i++] = this._notifyChoiceName;
 	html[i++] = "'></td><td style='white-space:nowrap'>";
-	html[i++] = ZmMsg.notifyOrganizer;
+	html[i++] = this._choiceLabel2;
 	html[i++] = "</td></tr>";
 	html[i++] = "</table>";
 
