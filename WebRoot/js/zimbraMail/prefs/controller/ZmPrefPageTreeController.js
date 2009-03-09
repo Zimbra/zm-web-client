@@ -113,8 +113,10 @@ ZmPrefPageTreeController.prototype._handleTabStateChange = function(tabView, tre
 	}
 };
 
-ZmPrefPageTreeController.prototype._handleTreeItemSelection = function(tabView, treeView, evt) {
-	if (evt.detail == DwtTree.ITEM_DESELECTED) return;
+ZmPrefPageTreeController.prototype._handleTreeItemSelection =
+function(tabView, treeView, evt) {
+
+	if (evt.detail != DwtTree.ITEM_SELECTED) { return; }
 
 	var organizer = evt.item.getData(Dwt.KEY_OBJECT);
 	var pageId = organizer && organizer.pageId;
