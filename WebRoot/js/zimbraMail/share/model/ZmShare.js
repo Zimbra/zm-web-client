@@ -601,7 +601,8 @@ function(mode, isCompose, addrs, owner) {
 		var addrType = (addrs.size() > 1) ? AjxEmailAddress.BCC : AjxEmailAddress.TO;
 		msg.setAddresses(addrType, addrs);
 	}
-	msg.setSubject(ZmShare._SUBJECTS[mode]);
+    //bug:10008 modified subject to support subject normalization for conversation
+    msg.setSubject(ZmShare._SUBJECTS[mode] + ": " + AjxMessageFormat.format(ZmMsg.sharedBySubject, [this.link.name, this.grantor.name]));	
 	msg.setTopPart(topPart);
 
 	return msg;
