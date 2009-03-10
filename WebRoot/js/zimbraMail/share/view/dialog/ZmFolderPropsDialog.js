@@ -270,7 +270,7 @@ ZmFolderPropsDialog.prototype._handleFolderChange =
 function(event) {
 	var organizer = this._organizer;
 	
-	if (organizer.isSystem()) {
+	if (organizer.isSystem() || organizer.isDataSource()) {
 		this._nameOutputEl.innerHTML = AjxStringUtil.htmlEncode(organizer.name);
 		this._nameOutputEl.style.display = "block";
 		this._nameInputEl.style.display = "none";
