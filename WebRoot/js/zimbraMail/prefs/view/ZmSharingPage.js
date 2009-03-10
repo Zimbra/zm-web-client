@@ -89,6 +89,7 @@ ZmSharingView = function(params) {
 	this._controller._sharingView = this;
 	this._pageId = params.pageId;
 	this._sharesByAcceptId = {};
+	this._grantsByActionId = {};
 	this._shareHash = {};
 
 	this._initialize();
@@ -105,6 +106,7 @@ ZmSharingView.ID_BUTTON	= "button";
 ZmSharingView.SHARE = "SHARE";
 ZmSharingView.GRANT = "GRANT";
 
+ZmSharingView.F_ACTIONS	= "ac";
 ZmSharingView.F_FOLDER	= "fo";
 ZmSharingView.F_GROUP	= "gp";
 ZmSharingView.F_ITEM	= "it";
@@ -129,7 +131,7 @@ function(owner, buttonClicked) {
 		return;
 	}
 
-	var type = owner ? ZmSharingController.TYPE_USER : ZmSharingController.TYPE_GROUP;
+	var type = owner ? ZmShare.TYPE_USER : ZmShare.TYPE_GROUP;
 	var respCallback = new AjxCallback(this, this.showShares, [type]);
 	var shares = this._controller.getShares(type, owner, respCallback);
 };
@@ -138,7 +140,7 @@ ZmSharingView.prototype.showShares =
 function(type, shares) {
 
 	var sharesVec = AjxVector.fromArray(shares);
-	if (type == ZmSharingController.TYPE_USER) {
+	if (type == ZmShare.TYPE_USER) {
 		if (this._groupShares && this._groupShares.size()) {
 			var newVec = this._groupShares.clone();
 			newVec.addList(sharesVec);
@@ -168,16 +170,28 @@ function() {
 	this._grantListView.set(sharesVec);
 };
 
-ZmSharingView.acceptLinkCallback =
+ZmSharingView._handleAcceptLinkc =
 function(shareId) {
 
 	var ctlr = appCtxt.getSharingController();
 	var sharingView = ctlr && ctlr._sharingView;
 	var shareInfo = sharingView && sharingView._sharesByAcceptId[shareId];
 	if (shareInfo) {
-		AjxDispatcher.require("Share");
 		var share = ZmSharingView.createShare(shareInfo);
 		appCtxt.getAcceptShareDialog().popup(share, shareInfo.ownerEmail);
+	}
+	return false;
+};
+
+ZmSharingView._handleShareAction =
+function(shareId, handler) {
+
+	var ctlr = appCtxt.getSharingController();
+	var sharingView = ctlr && ctlr._sharingView;
+	var share = sharingView && sharingView._grantsByActionId[shareId];
+	if (share) {
+		var dlg = appCtxt.getFolderPropsDialog();
+		return dlg[handler](null, share);
 	}
 };
 
@@ -357,7 +371,7 @@ function(ev) {
 		var link = organizers[0];
 		var key = ZmSharingView.getKey(link);
 		var share = this._shareHash[key];
-		if (share && share.granteeType == ZmSharingController.TYPE_GROUP) {
+		if (share && share.granteeType == ZmShare.TYPE_GROUP) {
 			share.folderPath = link.getPath(true);
 		}
 	}
@@ -399,6 +413,8 @@ function() {
 	if (this.type == ZmSharingView.SHARE) {
 		headerList.push(new DwtListHeaderItem({field:ZmSharingView.F_FOLDER, text:ZmMsg.sharingFolder, width:150}));
 		headerList.push(new DwtListHeaderItem({field:ZmSharingView.F_GROUP, text:ZmMsg.sharingGroup, width:180}));
+	} else {
+		headerList.push(new DwtListHeaderItem({field:ZmSharingView.F_ACTIONS, text:ZmMsg.actions, width:120}));
 	}
 
 	return headerList;
@@ -435,7 +451,7 @@ function(html, idx, item, field, colIdx, params) {
 	if (field == ZmSharingView.F_OWNER) {
 		html[idx++] = item.ownerName;
 	} else if (field == ZmSharingView.F_WITH) {
-		html[idx++] = item.grantee && item.grantee.name;
+		html[idx++] = (item.grantee.type == ZmShare.TYPE_GUEST) ? item.grantee.id : item.grantee.name;
 	} else if (field == ZmSharingView.F_ITEM) {
 		html[idx++] = (this.type == ZmSharingView.SHARE) ? item.folderPath : item.object.getPath();
 	} else if (field == ZmSharingView.F_TYPE) {
@@ -449,12 +465,14 @@ function(html, idx, item, field, colIdx, params) {
 		if (linkName) {
 			html[idx++] = linkName;
 		} else {
-			item.id = Dwt.getNextId();
-			this.view._sharesByAcceptId[item.id] = item;
-			html[idx++] = "<a href='javascript:;' onclick='ZmSharingView.acceptLinkCallback(" + '"' + item.id + '"' + ");'>" + ZmMsg.accept + "</a>";
+			var id = Dwt.getNextId();
+			this.view._sharesByAcceptId[id] = item;
+			html[idx++] = "<a href='javascript:;' onclick='ZmSharingView._handleAcceptLink(" + '"' + id + '"' + ");'>" + ZmMsg.accept + "</a>";
 		}
-	} else if (field == ZmSharingView.F_GROUP && (item.granteeType == ZmSharingController.TYPE_GROUP)) {
+	} else if (field == ZmSharingView.F_GROUP && (item.granteeType == ZmShare.TYPE_GROUP)) {
 		html[idx++] = item.granteeName;
+	} else if (field == ZmSharingView.F_ACTIONS) {
+		idx = this._addActionLinks(item, html, idx);
 	}
 
 	return idx;
@@ -478,4 +496,34 @@ function(ev) {
 			}
 		}
 	}
+};
+
+/**
+ * 
+ */
+ZmSharingListView.prototype._addActionLinks =
+function(share, html, idx) {
+
+	var type = share.grantee.type;
+	if (type == ZmShare.TYPE_ALL || type == ZmShare.TYPE_DOMAIN || !share.link.role) {
+		return ZmMsg.configureWithAdmin;
+	}
+
+	var actions = ["edit", "revoke", "resend"];
+	var handlers = ["_handleEditShare", "_handleRevokeShare", "_handleResendShare"]; // handlers in ZmFolderPropsDialog
+
+	for (var i = 0; i < actions.length; i++) {
+
+		var action = actions[i];
+
+		// public shares have no editable fields, and sent no mail
+		if (share.isPublic() &&	(action == "edit" || action == "resend")) {	continue; }
+
+		var id = Dwt.getNextId();
+		this.view._grantsByActionId[id] = share;
+		var handler = 
+		html[idx++] = "<a href='javascript:;' onclick='ZmSharingView._handleShareAction(" + '"' + id + '", "' + handlers[i] + '"' + ");'>" + ZmMsg[action] + "</a> ";
+	}
+
+	return idx;
 };

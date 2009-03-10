@@ -120,38 +120,33 @@ function() {
 };
 
 ZmFolderPropsDialog.prototype._handleEditShare =
-function(event) {
-	var target = DwtUiEvent.getTarget(event);
-	var share = Dwt.getObjectFromElement(target);
-	var dialog = appCtxt.getFolderPropsDialog();
+function(event, share) {
+	share = share || Dwt.getObjectFromElement(DwtUiEvent.getTarget(event));
 	var sharePropsDialog = appCtxt.getSharePropsDialog();
 	sharePropsDialog.popup(ZmSharePropsDialog.EDIT, share.object, share);
 	return false;
 };
 
 ZmFolderPropsDialog.prototype._handleRevokeShare =
-function(event) {
-	var target = DwtUiEvent.getTarget(event);
-	var share = Dwt.getObjectFromElement(target);
-	var dialog = appCtxt.getFolderPropsDialog();
+function(event, share) {
+	share = share || Dwt.getObjectFromElement(DwtUiEvent.getTarget(event));
 	var revokeShareDialog = appCtxt.getRevokeShareDialog();
 	revokeShareDialog.popup(share);
 	return false;
 };
 
 ZmFolderPropsDialog.prototype._handleResendShare =
-function(event) {
+function(event, share) {
+
 	AjxDispatcher.require("Share");
-	var target = DwtUiEvent.getTarget(event);
-	var share = Dwt.getObjectFromElement(target);
-	var dialog = appCtxt.getFolderPropsDialog();
+	share = share || Dwt.getObjectFromElement(DwtUiEvent.getTarget(event));
 
 	// create share info
 	var tmpShare = new ZmShare({object:share.object});
 	tmpShare.grantee.id = share.grantee.id;
-	tmpShare.grantee.email = (share.grantee.type == "guest")? share.grantee.id : share.grantee.name;
+	tmpShare.grantee.email = (share.grantee.type == "guest") ? share.grantee.id : share.grantee.name;
 	tmpShare.grantee.name = share.grantee.name;
-    if(tmpShare.object.isRemote()) {
+    if (tmpShare.object.isRemote()) {
 		tmpShare.grantor.id = tmpShare.object.zid;
 		tmpShare.grantor.email = tmpShare.object.owner;
 		tmpShare.grantor.name = tmpShare.grantor.email;
@@ -167,7 +162,7 @@ function(event) {
 	tmpShare.link.view = ZmOrganizer.getViewName(share.object.type);
 	tmpShare.link.perm = share.link.perm;
 
-	if(share.grantee.type == "guest") {
+	if (share.grantee.type == "guest") {
 		if (!this._guestFormatter) {
 			this._guestFormatter = new AjxMessageFormat(ZmMsg.shareWithGuestNotes);
 		}

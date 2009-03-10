@@ -36,16 +36,12 @@ ZmSharingController.prototype.toString = function() { return "ZmSharingControlle
 // Constants
 //
 
-ZmSharingController.TYPE_USER	= "usr";
-ZmSharingController.TYPE_GROUP	= "grp";
-ZmSharingController.TYPE_ALL	= "all";
-
 ZmSharingController.prototype.getShares =
 function(type, owner, callback) {
 
 	var jsonObj = {GetShareInfoRequest:{_jsns:"urn:zimbraAccount"}};
 	var request = jsonObj.GetShareInfoRequest;
-	if (type && type != ZmSharingController.TYPE_ALL) {
+	if (type && type != ZmShare.TYPE_ALL) {
 		request.grantee = {type:type};
 	}
 	if (owner) {
