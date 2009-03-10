@@ -61,7 +61,12 @@
         <fmt:message key="actionWikiCreated"><fmt:param value="${fn:escapeXml(param.folder_name)}"/></fmt:message>
     </mo:status>
 </c:when>
-    
+<c:when test="${zm:actionSet(param, 'actionSaveTaskFolder')}">
+   <zm:createFolder view="task" var="folder" name="${fn:escapeXml(param.folder_name)}" parentid="${fn:escapeXml(param.parentid)}"/>
+   <mo:status style="Info">
+        <fmt:message key="actionTaskListCreated"><fmt:param value="${fn:escapeXml(param.folder_name)}"/></fmt:message>
+    </mo:status>
+</c:when>
 <c:when test="${zm:actionSet(param, 'actionSaveSearch')}">
     <c:choose>
         <c:when test="${param.st eq 'briefcase' || param.st eq 'briefcases'}">
@@ -78,6 +83,9 @@
         </c:when>
         <c:when test="${param.st eq 'cals'}">
             <c:set var="types" value="appointment"/>
+        </c:when>
+        <c:when test="${param.st eq 'tasks'}">
+            <c:set var="types" value="task"/>
         </c:when>
         <c:otherwise>
             <c:set var="types" value="${param.st}"/>

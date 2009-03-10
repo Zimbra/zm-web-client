@@ -209,7 +209,7 @@ form {
 }
 .Toolbar, .SubToolbar {
     background: #eeeeee;
-    height: 38px !important;
+    height: 40px !important;
     text-align: center;
     white-space:nowrap;
 }

@@ -433,9 +433,13 @@ var updateOrientation = function() {
 <body onorientationchange="updateOrientation()">
 <div class="container table" id="appbar" align="center">
     <div class="table-row">
-            <%-- <div class="table-cell">--%> <c:set var="appcount" value="3"/> <c:if
-            test="${mailbox.features.contacts}"> <c:set var="appcount" value="${appcount+1}"/> </c:if> <c:if
-            test="${mailbox.features.calendar}"> <c:set var="appcount" value="${appcount+1}"/> </c:if> <c:set
+            <%-- <div class="table-cell">--%> <c:set var="appcount" value="1"/> <c:if
+            test="${mailbox.features.mail}"> <c:set var="appcount" value="${appcount+1}"/> </c:if> <c:if
+            test="${mailbox.features.contacts}"> <c:set var="appcount" value="${appcount+1}"/> </c:if>
+            <c:if test="${mailbox.features.calendar}"> <c:set var="appcount" value="${appcount+1}"/></c:if>
+            <c:if test="${mailbox.features.briefcases || mailbox.features.notebook}"> <c:set var="appcount" value="${appcount+1}"/></c:if>
+            <%--c:if test="${mailbox.features.tasks}"> <c:set var="appcount" value="${appcount+1}"/></c:if--%>
+            <c:set
             var="active"
             value="${empty param.st || param.st eq 'message' || param.st eq 'conversation' ? '-active' : ''}"/> <a
             style='width: ${100/appcount}%;' targetid="maincontainer" accesskey="${requestScope.mailapp_accesskey}"
@@ -447,9 +451,10 @@ var updateOrientation = function() {
                                                         value="${param.st eq 'contact' || param.st eq 'ab' ? '-active' : ''}"/>
         <a style='width: ${100/appcount}%;' targetid="maincontainer" accesskey="${requestScope.contactapp_accesskey}"
            id="contact${active}" class="appTab${active} table-cell" href="${aurl}?st=contact"><span
-                onclick="return zClickLink('contact${active}')"><fmt:message
-                key="contacts"/></span></a> </c:if> <c:if test="${mailbox.features.calendar}"> <c:set var="active"
-                                                                                                      value="${param.st eq 'cal' || param.st eq 'cals' ? '-active' : ''}"/>
+                onclick="return zClickLink('contact${active}')"><fmt:message key="contacts"/></span></a>
+            </c:if>
+        <c:if test="${mailbox.features.calendar}">
+        <c:set var="active" value="${param.st eq 'cal' || param.st eq 'cals' ? '-active' : ''}"/>
         <a style='width: ${100/appcount}%;' targetid="maincontainer" accesskey="${requestScope.calapp_accesskey}"
            id="cal${active}" class="appTab${active} table-cell" href="${aurl}?st=cal"><span
                 onclick="return zClickLink('cal${active}')"><fmt:message
@@ -461,17 +466,30 @@ var updateOrientation = function() {
             <div class="_day">${darr[0]}</div>
             <div class="_date">${darr[1]}</div>
             <div class="_month">${darr[2]}</div>
-            </span></a> </c:if>
-         <c:if test="${mailbox.features.briefcases}">
+            </span></a>
+         </c:if>
+         <%--c:if test="${mailbox.features.tasks}">
+            <c:set var="active" value="${param.st eq 'tasks' || param.st eq 'task' ? '-active' : ''}"/>
+            <a style='width: ${100/appcount}%;' targetid="maincontainer" accesskey="${requestScope.taskapp_accesskey}"
+               id="tasks${active}" class="appTab${active} table-cell" href="${aurl}?st=task"><span
+                    onclick="return zClickLink('cal${active}')"><fmt:message
+                    key="tasks"/></span>
+            </a>
+         </c:if--%>
+         <c:if test="${mailbox.features.briefcases || mailbox.features.notebook}">
+            <c:if test="${not empty param.l_view}">
+                <c:set var="l_view" value="${fn:escapeXml(param.l_view)}" scope="session"/>
+            </c:if>
+            <c:if test="${empty sessionScope.l_view}">
             <c:set var="l_view" value="list" scope="session"/>
-                <c:set var="active"
-                                       value="${param.st eq 'briefcase' ? '-active' : ''}"/>
+            </c:if>
+        <c:set var="active" value="${param.st eq 'briefcase' || param.st eq 'wiki' || param.st eq 'briefcases' || param.st eq 'notebooks' ? '-active' : ''}"/>
         <a style='width: ${98/appcount}%;' targetid="maincontainer" accesskey="${requestScope.fldrapp_accesskey}"
-           id="folders${active}" class="appTab${active} table-cell" href="${aurl}?st=briefcases"><span
+           id="folders${active}" class="appTab${active} table-cell" href="${aurl}?st=${mailbox.features.briefcases ? 'briefcases' : 'notebooks'}"><span
                 onclick="return zClickLink('folders${active}')"><fmt:message
                 key="folders"/></span></a>
-        </c:if>             
-             <c:set var="active" value="${param.search eq '1' ? '-active' : ''}"/>
+        </c:if>
+        <c:set var="active" value="${param.search eq '1' ? '-active' : ''}"/>
         <a style='width: ${100/appcount}%;' targetid="maincontainer" accesskey="${requestScope.search_accesskey}"
            id="search${active}" class="appTab${active} table-cell"
            href="${aurl}?search=${param.search eq '1' ? '0' : '1'}&amp;${fn:replace(pageContext.request.queryString,'search=1&amp;','')}"
@@ -489,8 +507,30 @@ var updateOrientation = function() {
                                                               value="${zm:cook(param.invId)}"/> </c:if> <input
                     type="hidden"
                     name="search"
-                    value="1"/> <c:if test="${not empty param.st}"> <input type="hidden" name="st"
-                                                                           value="${param.st}"/> </c:if> <input
+                    value="1"/>
+                <c:if test="${not empty param.st}">
+                    <c:choose>
+                        <c:when test="${param.st eq 'folders'}">
+                            <input type="hidden" name="st" value="${mailbox.prefs.groupMailBy}"/>
+                        </c:when>
+                         <c:when test="${param.st eq 'ab'}">
+                            <input type="hidden" name="st" value="contact"/>
+                        </c:when>
+                         <c:when test="${param.st eq 'cals'}">
+                            <input type="hidden" name="st" value="cal"/>
+                        </c:when>
+                        <c:when test="${param.st eq 'briefcases'}">
+                            <input type="hidden" name="st" value="briefcase"/>
+                        </c:when>
+                        <c:when test="${param.st eq 'notebooks'}">
+                            <input type="hidden" name="st" value="wiki"/>
+                        </c:when>
+                        <c:otherwise>
+                            <input type="hidden" name="st" value="${fn:escapeXml(param.st)}"/>
+                        </c:otherwise>
+                    </c:choose>
+                </c:if>
+                <input
                     type="hidden" name="crumb"
                     value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/> <%-- <span class="table-cell" width="70%">--%>
                 <input type="text" class="searchInput" name="sq" value="${zm:cook(param.sq)}"/>

@@ -20,7 +20,7 @@
          <c:import url="/m/moapptcompose"/>
     </c:when>
 
-    <c:when test="${empty param.st || param.st eq 'message' || param.st eq 'conversation' || param.st eq 'contact' || param.st eq 'briefcase' || param.st eq 'wiki'}">
+    <c:when test="${empty param.st || param.st eq 'message' || param.st eq 'conversation' || param.st eq 'contact' || param.st eq 'briefcase' || param.st eq 'wiki' || param.st eq 'task'}">
          <c:import url="/m/mosearch"/>
     </c:when>
 
@@ -39,6 +39,10 @@
     <c:when test="${param.st eq 'folders'}">
          <c:import url="/m/mofolders"/>
     </c:when>
+
+    <%--c:when test="${param.st eq 'tasks'}">
+         <c:import url="/m/motasks"/>
+    </c:when--%>
 
     <c:when test="${param.st eq 'briefcases' || param.st eq 'notebooks'}">
          <c:import url="/m/mobriefcases"/>

@@ -89,23 +89,20 @@ a {
 }
 
 #appbar a span {
-    padding: 0px;
-    margin: 0px;
+    padding: 2%;
+    margin: 2px;
     position: relative;
     top: 22%;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    width: 55px;
+    width: 90%;
     display: inline-block;
 
 }
 
 #appbar a {
-    width: 55px;
     height: 47px;
-    margin: 1px;
-    padding: 2px;
     text-align: center;
     font-size: small;
     vertical-align: bottom;

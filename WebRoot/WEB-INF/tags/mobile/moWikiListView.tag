@@ -17,7 +17,7 @@
     <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
     <input type="hidden" name="doBriefcaseAction" value="1"/>
     <input name="moreActions" type="hidden" value="<fmt:message key="actionGo"/>"/>
-   <mo:toolbar context="${context}" urlTarget="${context_url}" isTop="true" mailbox="${mailbox}"/>
+   <mo:briefcaseToolbar context="${context}" urlTarget="${context_url}" isTop="true" mailbox="${mailbox}"/>
    <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
         <c:set var="bchit" value="${hit.wikiHit}"/>
         <div class="list-row row" id="cn${bchit.id}">
@@ -161,5 +161,5 @@
                 </div>
             </div>
     </c:if>
-    <mo:toolbar context="${context}" urlTarget="${context_url}" isTop="false" mailbox="${mailbox}"/>
+    <mo:briefcaseToolbar context="${context}" urlTarget="${context_url}" isTop="false" mailbox="${mailbox}"/>
 </form>

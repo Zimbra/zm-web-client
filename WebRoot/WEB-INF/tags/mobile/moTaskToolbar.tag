@@ -22,18 +22,16 @@
     <div class="SubToolbar table top_${context.isContactSearch ? 'cont' : (context.isMessageSearch ? 'mesg' : 'conv') }_lv_subtoolbar">
         <div class="table-row">
             <div class="table-cell">
-                <c:choose>
-                    <c:when test="${context.isContactSearch}">
-                        <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=ab"><fmt:message
-                                key="addressBooks"/></a> &laquo;
+                        <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=tasks"><fmt:message
+                                key="tasks"/></a> &laquo;
                         <c:if test="${top_fldr_select ne '1'}">
                                 ${fn:escapeXml(zm:truncateFixed(context.shortBackTo,12,true))}
                         </c:if>
                         <c:if test="${top_fldr_select eq '1'}">
                         <select class="_zo_select_button" name="sfi"
-                                onchange="document.location.href='?sfi='+this.value+'&amp;st=contact';">
+                                onchange="document.location.href='?sfi='+this.value+'&amp;st=task';">
                             <zm:forEachFolder var="fldr" skiproot="true">
-                                <c:if test="${fldr.isContactView}">
+                                <c:if test="${fldr.isTaskView}">
                                     <option ${param.sfi eq fldr.id || context.folder.id eq fldr.id ? 'selected="selected"' : ''}
                                             value="${fldr.id}">${fn:escapeXml(zm:truncateFixed(zm:getFolderName(pageContext,fldr.id),15,true))}
                                     </option>
@@ -41,26 +39,7 @@
                             </zm:forEachFolder>
                         </select>
                         </c:if>
-                    </c:when>
-                    <c:otherwise>
-                        <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=folders"><fmt:message
-                                key="folders"/></a> &laquo;
-                        <c:if test="${top_fldr_select ne '1'}">
-                            ${fn:escapeXml(zm:truncateFixed(context.shortBackTo,12,true))}
-                        </c:if>
-                        <c:if test="${top_fldr_select eq '1'}">
-                        <select class="_zo_select_button" name="sfi" onchange="document.location.href='?sfi='+this.value;">
-                            <zm:forEachFolder var="fldr" skiproot="true">
-                                <c:if test="${fldr.isConversationView || fldr.isMessageView}">
-                                    <option ${param.sfi eq fldr.id || context.folder.id eq fldr.id ? 'selected="selected"' : ''}
-                                            value="${fldr.id}">${fn:escapeXml(zm:truncateFixed(zm:getFolderName(pageContext,fldr.id),15,true))}
-                                    </option>
-                                </c:if>
-                            </zm:forEachFolder>
-                        </select>
-                        </c:if>
-                    </c:otherwise>
-                </c:choose>
+
                 <c:if test="${not empty param.sq && context.searchResult.size > 0}">
                 &raquo; <a href="?saveSearch=1&sq=${param.sq}&search=0"  onclick='toggleElem(this,"searchbar"); return toggleElem(this,"savesearchbar");'><fmt:message key="saveSearch"/></a>
                 </c:if>    
@@ -69,7 +48,7 @@
     </div>
 </c:if>
 <c:if test="${((isTop && '1' eq  top_tb ) || (!isTop && '1' eq btm_tb))}">
-<div class="Toolbar table ${isTop ? 'top_' : 'btm_'}${context.isContactSearch ? 'cont' : (context.isMessageSearch ? 'mesg' : 'conv') }_lv_toolbar">
+<div class="Toolbar table">
 <div class="table-row">
 <span class="table-cell">
 <span class="zo_button_group">
@@ -120,50 +99,20 @@
                 <option value="selectAll"><fmt:message key="all"/></option>
                 <option value="selectNone"><fmt:message key="none"/></option>
             </optgroup>
-            <c:choose>
-                <c:when test="${context.isConversationSearch || context.isMessageSearch}">
-                    <optgroup label="<fmt:message key="markAs"/>">
-                    <option value="actionMarkRead"><fmt:message key="MO_read"/></option>
-                    <option value="actionMarkUnread"><fmt:message key="MO_unread"/></option>
-                    <c:choose>
-                        <c:when test="${context.folder.isSpam}">
-                            <option value="actionMarkUnspam"><fmt:message key="actionNotSpam"/></option>
-                        </c:when>
-                        <c:otherwise>
-                            <option value="actionMarkSpam"><fmt:message key="actionSpam"/></option>
-                        </c:otherwise>
-                    </c:choose>
-                </optgroup>    
-                </c:when>
-                 <c:when test="${context.isContactSearch}">
-                <optgroup label="<fmt:message key="compose"/>">
-                    <option value="composeTo"><fmt:message key="to"/></option>
-                    <option value="composeCC"><fmt:message key="cc"/></option>
-                    <option value="composeBCC"><fmt:message key="bcc"/></option>
-                </optgroup>
-                </c:when>
-            </c:choose>
-            <optgroup label="<fmt:message key="MO_flag"/>">
-                <option value="actionFlag"><fmt:message key="add"/></option>
-                <option value="actionUnflag"><fmt:message key="remove"/></option>
+            <optgroup label="<fmt:message key='markAs'/>">
+                <option value="TASK_COMP"><fmt:message key="TASK_COMP"/></option>
+                <option value="TASK_WAITING"><fmt:message key="TASK_WAITING"/></option>
+                <option value="TASK_CANC"><fmt:message key="TASK_CANC"/></option>
+                <option value="TASK_INPR"><fmt:message key="TASK_INPR"/></option>
+                <option value="TASK_NEED"><fmt:message key="TASK_NEED"/></option>
             </optgroup>
             <optgroup label="<fmt:message key="moveAction"/>">
-                <c:choose>
-                    <c:when test="${context.isContactSearch}">
+
                         <zm:forEachFolder var="folder">
-                            <c:if test="${folder.id != context.folder.id and folder.isContactMoveTarget and !folder.isTrash and !folder.isSpam}">
+                            <c:if test="${folder.id != context.folder.id and folder.isTaskMoveTarget and !folder.isTrash and !folder.isSpam}">
                                 <option value="moveTo_${folder.id}">${fn:escapeXml(folder.rootRelativePath)}</option>
                             </c:if>
                         </zm:forEachFolder>
-                    </c:when>
-                    <c:otherwise>
-                        <zm:forEachFolder var="folder">
-                            <c:if test="${folder.id != context.folder.id and folder.isMessageMoveTarget and !folder.isTrash and !folder.isSpam}">
-                                <option value="moveTo_${folder.id}">${fn:escapeXml(folder.rootRelativePath)}</option>
-                            </c:if>
-                        </zm:forEachFolder>
-                    </c:otherwise>
-                </c:choose>
             </optgroup>
             <c:if test="${mailbox.features.tagging and mailbox.hasTags}">
                 <c:set var="allTags" value="${mailbox.mailbox.allTags}"/>
@@ -186,14 +135,6 @@
 <!--</span>
 <span class="table-cell">-->
 <span class=" f-right">
-        <c:choose>
-        <c:when test="${context.isConversationSearch || context.isMessageSearch}">
-            <c:url var="composeUrl" value="${urlTarget}?st=newmail"/>
-            <a accesskey="${requestScope.mainaction_accesskey}" href="${composeUrl}" class="zo_button">
-                <fmt:message key="compose"/>
-            </a>
-        </c:when>
-        <c:when test="${context.isContactSearch}">
             <c:url var="composeUrl" value="${urlTarget}">
                 <c:param name="action" value="edit"/>
                 <c:param name="st" value="${context.st}"/>
@@ -202,22 +143,17 @@
             <a accesskey="${requestScope.mainaction_accesskey}" href="${composeUrl}" class="zo_button">
                 <fmt:message key="add"/>
             </a>
-        </c:when>
-    </c:choose>
-
 </span>
 </span>
 </div>
 </div>
 </c:if>
 <c:if test="${!isTop && '1' eq  btm_stb }"> <%-- no_btm_stb => no bottom sub toolbar, set this param to disable bottom subtoolbar --%>
-    <div class="SubToolbar table btm_${context.isContactSearch ? 'cont' : (context.isMessageSearch ? 'mesg' : 'conv') }_lv_subtoolbar">
+    <div class="SubToolbar table">
         <div class="table-row">
             <div class="table-cell">
-                 <c:choose>
-                    <c:when test="${context.isContactSearch}">
-                        <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=ab"><fmt:message
-                                key="addressBooks"/></a> :
+                        <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=tasks"><fmt:message
+                                key="tasks"/></a> :
                         <c:if test="${btm_fldr_select eq '0'}">
                             ${fn:escapeXml(zm:truncateFixed(context.shortBackTo,12,true))}
                         </c:if>
@@ -225,7 +161,7 @@
 			<select class="_zo_select_button" name="sfi"
                                 onchange="fetchIt('?sfi='+this.value+'&amp;st=${context.st}');">
                             <zm:forEachFolder var="fldr" skiproot="true">
-                                <c:if test="${fldr.isContactView}">
+                                <c:if test="${fldr.isTaskView}">
                                     <option ${param.sfi eq fldr.id || context.folder.id eq fldr.id ? 'selected="selected"' : ''}
                                             value="${fldr.id}">${fn:escapeXml(zm:truncateFixed(zm:getFolderName(pageContext,fldr.id),15,true))}
                                     </option>
@@ -233,26 +169,6 @@
                             </zm:forEachFolder>
                         </select>       
                         </c:if>
-                    </c:when>
-                    <c:otherwise>                           
-                        <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=folders"><fmt:message
-                                key="folders"/></a> :
-                        <c:if test="${btm_fldr_select eq '0'}">
-                            ${fn:escapeXml(zm:truncateFixed(context.shortBackTo,12,true))}
-                        </c:if>
-                        <c:if test="${btm_fldr_select ne '0'}">
-                        <select class="_zo_select_button" name="sfi" onchange="fetchIt('?sfi='+this.value+'&amp;st=${context.st}');">
-                            <zm:forEachFolder var="fldr" skiproot="true">
-                                <c:if test="${fldr.isConversationView || fldr.isMessageView}">
-                                    <option ${param.sfi eq fldr.id || context.folder.id eq fldr.id ? 'selected="selected"' : ''}
-                                            value="${fldr.id}">${fn:escapeXml(zm:truncateFixed(zm:getFolderName(pageContext,fldr.id),15,true))}
-                                    </option>
-                                </c:if>
-                            </zm:forEachFolder>
-                        </select>
-                        </c:if>
-                    </c:otherwise>
-                </c:choose>
             </div>
         </div>
     </div>
