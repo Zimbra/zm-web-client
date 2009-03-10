@@ -188,7 +188,7 @@
 					<td style='padding-right:4px;'>
 						<input id='${subjectInputId}' class='subjectField' autocomplete=off>
 					</td>
-					<td id='${identityRowId}' nowrap width='45%' style='display:none;'>
+					<td id='${identityRowId}' nowrap width='10%' style='display:none;'>
 						<table border=0 cellspacing=0 cellpadding=0>
 							<tr><td align=right style='<$=labelStyle$>'><$=ZmMsg.accountLabel$>&nbsp;</td>
 								<td width="*"><select id='${identitySelectId}'></select></td>

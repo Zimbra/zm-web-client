@@ -2054,17 +2054,20 @@ function() {
 		if (acct && acct.isMain) { continue; }
 
 		var text = this._getIdentityText(identity);
-		options.push(new DwtSelectOptionData(identity.id, text));
+		options.push(new DwtSelectOptionData(identity.id, text,null,this._getIdentityText(identity,true)));
 	}
 	return options;
 };
 
 ZmComposeView.prototype._getIdentityText =
-function(identity) {
+function(identity, justName) {
 	var name = identity.name;
 	if (identity.isDefault && name == ZmIdentity.DEFAULT_NAME) {
 		name = ZmMsg.accountDefault;
 	}
+    if(justName){
+        return name;
+    }
 	if (identity.sendFromDisplay) {
 		return [name,  ' ("', identity.sendFromDisplay, '" <', identity.sendFromAddress, '>)'].join("");
 	} else if (identity.sendFromAddress) {
