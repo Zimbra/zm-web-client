@@ -18,6 +18,7 @@
 
 <%-- this checks and redirects to admin if need be --%>
 <zm:adminRedirect/>
+<app:skinAndRedirect />
 
 <%-- get useragent --%>
 <zm:getUserAgent var="ua" session="false"/>
@@ -228,7 +229,6 @@ if (application.getInitParameter("offlineMode") != null)  {
     <c:set var="smallScreen" value="${client eq 'mobile'}"/>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
     <title><fmt:message key="zimbraLoginTitle"/></title>
-    <app:skin />
     <c:set var="version" value="${initParam.zimbraCacheBusterVersion}"/>
     <meta name="viewport" content="width=320; initial-scale=1.0; maximum-scale=8.0; user-scalable=1;">
     <meta name="description" content="<fmt:message key="zimbraLoginMetaDesc"/>">

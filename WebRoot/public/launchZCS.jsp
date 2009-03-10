@@ -5,36 +5,6 @@
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-
-
-
-<%
-	// Set to expire far in the past.
-	response.setHeader("Expires", "Tue, 24 Jan 2000 17:46:50 GMT");
-
-	// Set standard HTTP/1.1 no-cache headers.
-	response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
-
-	// Set standard HTTP/1.0 no-cache header.
-	response.setHeader("Pragma", "no-cache");
-%><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
-<head>
-<!--
- launchZCS.jsp
- * ***** BEGIN LICENSE BLOCK *****
- * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007 Zimbra, Inc.
- * 
- * The contents of this file are subject to the Yahoo! Public License
- * Version 1.0 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
- * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * ***** END LICENSE BLOCK *****
--->
 <%!
 	private static String protocolMode = null;
 	private static String httpPort = null;
@@ -69,8 +39,37 @@
 
     ZAuthResult authResult = (ZAuthResult) request.getAttribute("authResult");
     String skin = authResult.getSkin();
+%>
+<app:skinAndRedirect defaultSkin="${skin}" />
+<%
+	// Set to expire far in the past.
+	response.setHeader("Expires", "Tue, 24 Jan 2000 17:46:50 GMT");
 
-	java.util.List<String> localePref = authResult.getPrefs().get("zimbraPrefLocale");
+	// Set standard HTTP/1.1 no-cache headers.
+	response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
+
+	// Set standard HTTP/1.0 no-cache header.
+	response.setHeader("Pragma", "no-cache");
+%>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<!--
+ launchZCS.jsp
+ * ***** BEGIN LICENSE BLOCK *****
+ * Zimbra Collaboration Suite Web Client
+ * Copyright (C) 2007 Zimbra, Inc.
+ *
+ * The contents of this file are subject to the Yahoo! Public License
+ * Version 1.0 ("License"); you may not use this file except in
+ * compliance with the License.  You may obtain a copy of the License at
+ * http://www.zimbra.com/license.
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * ***** END LICENSE BLOCK *****
+-->
+<%	java.util.List<String> localePref = authResult.getPrefs().get("zimbraPrefLocale");
 	if (localePref != null && localePref.size() > 0) {
 		request.setAttribute("localeId", localePref.get(0));
 	}
@@ -131,7 +130,6 @@
 	pageContext.setAttribute("isLeakDetectorOn", isLeakDetectorOn);
 %>
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-<app:skin defaultSkin="${skin}" />
 <fmt:setLocale value='${locale}' scope='request' />
 <fmt:setBundle basename="/messages/ZmMsg" scope="request" force="true" />
 <title><fmt:message key="zimbraTitle"/></title>
