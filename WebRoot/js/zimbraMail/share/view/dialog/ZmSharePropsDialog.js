@@ -239,7 +239,7 @@ function(event) {
 				for (var i = 0; i < addrs.length; i++) {
 					// bug fix #26428 - exclude me from list of addresses
 					var addr = addrs[i];
-					if (appCtxt._isMyAddress(addr)) { continue; }
+					if (appCtxt.isMyAddress(addr)) { continue; }
 
 					var share = this._setUpShare();
 					share.grantee.name = addr;
