@@ -232,10 +232,14 @@ function() {
 	var options = [];
 	var orgTypes = [ZmOrganizer.FOLDER, ZmOrganizer.CALENDAR, ZmOrganizer.ADDRBOOK, ZmOrganizer.NOTEBOOK,
 					ZmOrganizer.TASKS, ZmOrganizer.BRIEFCASE];
+	var orgKey = {};
+	orgKey[ZmOrganizer.FOLDER]		= "mailFolder";
+	orgKey[ZmOrganizer.TASKS]		= "tasksFolder";
+	orgKey[ZmOrganizer.BRIEFCASE]	= "briefcase";
 	for (var i = 0; i < orgTypes.length; i++) {
 		var orgType = orgTypes[i];
 		if (orgType) {
-			var key = (orgType == ZmOrganizer.FOLDER) ? "mailFolder" : ZmOrganizer.MSG_KEY[orgType];
+			var key = orgKey[orgType] || ZmOrganizer.MSG_KEY[orgType];
 			options.push({id: orgType, value: orgType, label: ZmMsg[key]});
 		}
 	}
@@ -243,7 +247,7 @@ function() {
 	params.form = {
 		items: [
 			{ id: ZmSharingView.ID_FOLDER_TYPE, type: "DwtSelect", items: options},
-			{ id: ZmSharingView.ID_SHARE_BUTTON, type: "DwtButton", label: ZmMsg.shareFolder, onclick: this._onClick }
+			{ id: ZmSharingView.ID_SHARE_BUTTON, type: "DwtButton", label: ZmMsg.share, onclick: this._onClick }
 		]
 	};
 	this._grantForm = new DwtForm(params);
@@ -299,11 +303,15 @@ function(value) {
 // Note that in the handler call, "this" is set to the form
 ZmSharingView.prototype._onClick =
 function(id) {
+
 	if (id == ZmSharingView.ID_FIND_BUTTON) {
 		this.setValue(ZmSharingView.ID_USER, true);
 		this.parent.findShares(this.getValue(ZmSharingView.ID_OWNER), true);
 	} else if (id == ZmSharingView.ID_GROUP) {
 		this.parent.findShares();
+	} else if (id == ZmSharingView.ID_SHARE_BUTTON) {
+		var orgType = this.getValue(ZmSharingView.ID_FOLDER_TYPE);
+		this.parent._showChooser(orgType);
 	}
 };
 
@@ -313,6 +321,29 @@ function(cv, ev) {
 	var location = Dwt.toWindow(ev.element, 0, 0, document.getElementById(this._pageId));
 	var size = Dwt.getSize(ev.element);
 	return new DwtPoint((location.x), (location.y + size.y));
+};
+
+ZmSharingView.prototype._showChooser =
+function(orgType) {
+
+	var dialog = appCtxt.getChooseFolderDialog();
+	var params = {treeIds: 			[orgType],
+				  overviewId:		["ZmSharingView", orgType].join("_"),
+				  title:			ZmMsg.chooseFolder,
+				  skipReadOnly:		true,
+				  hideNewButton:	true,
+				  noRootSelect:		true};
+	dialog.reset();
+	dialog.registerCallback(DwtDialog.OK_BUTTON, this._folderSelectionCallback, this, [dialog]);
+	dialog.popup(params);
+};
+
+ZmSharingView.prototype._folderSelectionCallback =
+function(chooserDialog, org) {
+
+	chooserDialog.popdown();
+	var shareDialog = appCtxt.getSharePropsDialog();
+	shareDialog.popup(ZmSharePropsDialog.NEW, org);
 };
 
 /**

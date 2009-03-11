@@ -1686,7 +1686,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 		</tr>
 		<tr>
 			<td class='ZOptionsSectionMain'>
-				<div id='${id}_pendingSharesContainer'>
+				<div>
 					<div class="sharingPageListTitle"><$=ZmMsg.pendingSharesTitle$></div>
 					<div id='${id}_pendingShares'></div>
 				</div>
@@ -1694,7 +1694,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 		</tr>
 		<tr>
 			<td class='ZOptionsSectionMain'>
-				<div id='${id}_mountedSharesContainer'>
+				<div>
 					<div class="sharingPageListTitle"><$=ZmMsg.mountedSharesTitle$></div>
 					<div id='${id}_mountedShares'></div>
 				</div>
@@ -1727,8 +1727,6 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 </template>
 
 <template id='prefs.Pages#ShareForm'>
-	<div><$=ZmMsg.shareFormText$></div>
-	<br/>
 	<table>
 		<tr><td colspan=3><div id="${id}_group" class="ZOptionsInfo" tabindex='5'></div></td></tr>
 		<tr><td><div id="${id}_user" class="ZOptionsInfo" tabindex='10'></div></td>
