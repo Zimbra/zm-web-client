@@ -1679,14 +1679,25 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr>
 			<td class='ZOptionsSectionMain'>
-			<table width=100%>
-				<tr><td><div id='${id}_SHARING' tabindex='30'></div></td></tr>
-			</table>
+				<table width=100%>
+					<tr><td><div id='${id}_shareForm'></div></td></tr>
+				</table>
 			</td>
 		</tr>
 		<tr>
 			<td class='ZOptionsSectionMain'>
-				<div id='${id}_SHARING_sharesWith'></div>
+				<div id='${id}_pendingSharesContainer'>
+					<div class="sharingPageListTitle"><$=ZmMsg.pendingSharesTitle$></div>
+					<div id='${id}_pendingShares'></div>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td class='ZOptionsSectionMain'>
+				<div id='${id}_mountedSharesContainer'>
+					<div class="sharingPageListTitle"><$=ZmMsg.mountedSharesTitle$></div>
+					<div id='${id}_mountedShares'></div>
+				</div>
 			</td>
 		</tr>
 	</table>
@@ -1701,18 +1712,39 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr>
 			<td class='ZOptionsSectionMain'>
-				<div id='${id}_SHARING_sharesBy'></div>
+				<table width=100%>
+					<tr><td><div id='${id}_grantForm'></div></td></tr>
+				</table>
+			</td>
+		</tr>
+		<tr>
+			<td class='ZOptionsSectionMain'>
+				<div id='${id}_sharesBy'></div>
 			</td>
 		</tr>
 	</table>
 
 </template>
 
-<template id='prefs.Pages#Sharing'>
-	<div><$=ZmMsg.sharingText$></div>
+<template id='prefs.Pages#ShareForm'>
+	<div><$=ZmMsg.shareFormText$></div>
 	<br/>
 	<table>
-		<tr><td><$=ZmMsg.sharingOwnerLabel$></td><td><div id="${id}_owner" class="ZOptionsInfo"></div></td></tr>
+		<tr><td colspan=3><div id="${id}_group" class="ZOptionsInfo" tabindex='5'></div></td></tr>
+		<tr><td><div id="${id}_user" class="ZOptionsInfo" tabindex='10'></div></td>
+			<td><div id="${id}_owner" class="ZOptionsInfo" tabindex='20'></div></td>
+			<td><div id="${id}_findButton" tabindex='30'></div></td></tr>
+	</table>
+	<br/>
+</template>
+
+<template id='prefs.Pages#GrantForm'>
+	<div><$=ZmMsg.grantFormText$></div>
+	<br/>
+	<table cellspacing=5>
+		<tr><td><$=ZmMsg.folderType$></td>
+			<td><div id='${id}_folderType' tabindex='40'></div></td>
+			<td><div id='${id}_shareButton' tabindex='50'></div></td></tr>
 	</table>
 	<br/>
 </template>

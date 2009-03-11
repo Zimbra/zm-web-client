@@ -3762,3 +3762,8 @@ HTML>BODY .appt-selected .appt_allday_body
 .cal_day_expand table {
 	border: 0px;
 }
+
+.sharingPageListTitle {
+	font-size: 14px;
+	font-weight: bold;
+}
