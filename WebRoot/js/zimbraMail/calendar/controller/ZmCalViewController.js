@@ -1114,7 +1114,7 @@ function(ev) {
 
 ZmCalViewController.prototype._deleteListener =
 function(ev) {
-	var op = (ev.item instanceof DwtMenuItem)
+	var op = (ev && ev.item instanceof DwtMenuItem)
 		? ev.item.parent.getData(ZmOperation.KEY_ID) : null;
 	this._doDelete(this._listView[this._currentView].getSelection(), null, null, op);
 };
