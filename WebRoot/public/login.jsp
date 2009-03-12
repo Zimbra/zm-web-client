@@ -44,9 +44,17 @@
             </c:if>
         </c:when>
         <c:when test="${(param.loginOp eq 'login') && !(empty param.username) && !(empty param.password)}">
+        	<c:choose>
+	        	<c:when test="${(fn:indexOf(param.username,'@') == -1) and !(empty param.customerDomain)}">
+	        		<c:set var="fullUserName" value="${param.username}@${param.customerDomain}"/>
+			    </c:when>
+			    <c:otherwise>
+			    	<c:set var="fullUserName" value="${param.username}"/>
+			    </c:otherwise>
+		    </c:choose>        
 		    <c:choose>
 	        	<c:when test="${!empty cookie.ZM_TEST}">
-		            <zm:login username="${param.username}" password="${param.password}" varRedirectUrl="postLoginUrl" varAuthResult="authResult"
+		            <zm:login username="${fullUserName}" password="${param.password}" varRedirectUrl="postLoginUrl" varAuthResult="authResult"
 		                      newpassword="${param.loginNewPassword}" rememberme="${param.zrememberme == '1'}"
 		                      prefs="${prefsToFetch}" attrs="${attrsToFetch}"
 							  requestedSkin="${param.skin}"/>
