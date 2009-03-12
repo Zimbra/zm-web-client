@@ -173,7 +173,7 @@ if (application.getInitParameter("offlineMode") != null)  {
 </c:if>
 
 <zm:getDomainInfo var="domainInfo" by="virtualHostname" value="${zm:getServerName(pageContext)}"/>
-<c:if test="${fn:indexOf(domainInfo.attrs.zimbraWebClientLoginURL,pageContext.request.queryString) == -1}">
+<c:if test="${(empty pageContext.request.queryString) or (fn:indexOf(pageContext.request.queryString,'customerDomain') == -1)}">
 	<c:set var="domainLoginRedirectUrl" value="${domainInfo.attrs.zimbraWebClientLoginURL}" />
 </c:if>
 <c:if test="${not empty domainLoginRedirectUrl}" >
