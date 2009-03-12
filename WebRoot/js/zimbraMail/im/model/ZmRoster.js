@@ -365,7 +365,7 @@ function(chatMessage) {
 	var chat = chatList.getChatByThread(chatMessage.thread);
 	if (chat == null) {
 		if (!chatMessage.fromMe) {
-			chat = chatList.getChatByRosterAddr(chatMessage.from, true);
+			chat = chatList.getChatByRosterAddr(chatMessage.from, true, true);
 		} else {
 			chat = chatList.getChatByRosterAddr(chatMessage.to, false);
 		}

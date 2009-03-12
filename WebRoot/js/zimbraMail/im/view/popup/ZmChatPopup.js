@@ -28,7 +28,6 @@ ZmChatPopup = function(params) {
 	this.chatWidget.addMinimizeListener(params.data.minimizeListener);
 	this.chatWidget.addStatusListener(params.data.statusListener);
 	this.chatWidget._setChat(this._chat);
-	this.chatWidget.focus();
 };
 
 ZmChatPopup.prototype = new ZmTaskbarPopup;
@@ -38,3 +37,12 @@ ZmChatPopup.prototype.toString =
 function() {
 	return "ZmChatPopup";
 };
+
+ZmChatPopup.prototype.popup =
+function(background) {
+	ZmTaskbarPopup.prototype.popup.call(this, arguments);
+	if (!background) {
+		this.chatWidget.focus();
+	}
+};
+

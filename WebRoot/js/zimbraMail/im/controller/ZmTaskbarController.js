@@ -82,7 +82,7 @@ function() {
 };
 
 ZmTaskbarController.prototype.createChatItem =
-function(chat) {
+function(chat, background) {
 	this._addChatToMru(chat);
 	var separator = this._toolbar.addSeparator(null, this._chatButtonIndex++);
 
@@ -109,7 +109,7 @@ function(chat) {
 	var hoverImage = "Close";
 	item.button.setHoverImage(hoverImage);
 	this._closeClass = this._closeClass || AjxImg.getClassForImage(hoverImage);
-	this._toolbar.expandItem(item, true);
+	this._toolbar.expandItem(item, true, background);
 
 	this._chatData[chat.id].chatWidget = item.getPopup().chatWidget;
 	this._chatChangeListenerListenerObj = this._chatChangeListenerListenerObj || new AjxListener(this, this._chatChangeListenerListener);
@@ -353,12 +353,13 @@ function(ev) {
 
 ZmTaskbarController.prototype._chatListListener = function(ev) {
 	if (ev.event == ZmEvent.E_CREATE) {
-		var chat = ev._details.items[0];
+		var chat = ev.getDetails().items[0];
 		var data = this._chatData[chat.id];
+		var item;
 		if (data) {
 			this._toolbar.conditionalExpand(data.item);
 		} else {
-			this.createChatItem(chat);
+			item = this.createChatItem(chat, ev.getDetails().background);
 		}
 	} else if (ev.event == ZmEvent.E_DELETE) {
 		var chat = ev._details.items[0];

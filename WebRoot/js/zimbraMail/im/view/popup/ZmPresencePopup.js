@@ -41,7 +41,7 @@ function() {
 
 ZmPresencePopup.prototype.popup =
 function() {
-	ZmTaskbarPopup.prototype.popup.call(this);
+	ZmTaskbarPopup.prototype.popup.call(this, arguments);
 	this._updatePresenceMenu();
 };
 

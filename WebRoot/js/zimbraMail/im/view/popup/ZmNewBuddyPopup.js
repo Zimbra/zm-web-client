@@ -31,7 +31,7 @@ function() {
 
 ZmNewBuddyPopup.prototype.popup =
 function() {
-	ZmTaskbarPopup.prototype.popup.call(this);
+	ZmTaskbarPopup.prototype.popup.call(this, arguments);
 	this.reset();
 	this._addrEntry.focus();
 	this._setFocusMember(this._addrEntry);

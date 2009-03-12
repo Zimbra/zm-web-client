@@ -40,11 +40,11 @@ function() {
 };
 
 ZmGatewayPopup.prototype.popup =
-function() {
+function(background) {
 	// Call super.popup on a timer because for some reason it causes this popup to flicker
 	// and then appear in the wrong place. No clue why.
 	var self = this;
-	setTimeout(function() { ZmTaskbarPopup.prototype.popup.call(self); }, 0);
+	setTimeout(function() { ZmTaskbarPopup.prototype.popup.call(self, background); }, 0);
 
 	this._updateContent();
 };
@@ -66,7 +66,7 @@ function() {
 	this._tabGroup.addMember(button);
 
 	button = new DwtButton({ parent: this, parentElement: id + "_logoutButton" });
-	button.setText(ZmMsg.logOff);
+	button.setText(ZmMsg.imLogOut);
 	var logoutListener = new AjxListener(this, this._gatewayLogoutListener);
 	button.addSelectionListener(logoutListener);
 	this._tabGroup.addMember(button);

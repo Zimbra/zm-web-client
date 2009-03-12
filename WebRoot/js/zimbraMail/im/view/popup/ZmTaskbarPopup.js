@@ -40,8 +40,10 @@ function(title) {
 };
 
 ZmTaskbarPopup.prototype.popup =
-function() {
-	this._pushKeyHandlers();
+function(background) {
+	if (!background) {
+		this._pushKeyHandlers();
+	}
 };
 
 ZmTaskbarPopup.prototype.popdown =

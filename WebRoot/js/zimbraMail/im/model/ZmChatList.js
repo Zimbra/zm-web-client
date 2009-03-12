@@ -31,9 +31,9 @@ function() {
 // ZmList.prototype.remove(chat);
 
 ZmChatList.prototype.addChat =
-function(chat) {
+function(chat, background) {
 	this.add(chat); // , this._sortIndex(item));
-	this._notify(ZmEvent.E_CREATE, {items: [chat]});
+	this._notify(ZmEvent.E_CREATE, {items: [chat], background: background});
 };
 
 ZmChatList.prototype.removeChat =
@@ -61,7 +61,7 @@ ZmChatList.prototype.getChatByRosterItem = function(item, autoCreate) {
         return chat;
 };
 
-ZmChatList.prototype.getChatByRosterAddr = function(addr, autoCreate) {
+ZmChatList.prototype.getChatByRosterAddr = function(addr, autoCreate, background) {
 	var list = this.getArray();
         var chat;
 	for (var i=0; i < list.length; i++) {
@@ -80,7 +80,7 @@ ZmChatList.prototype.getChatByRosterAddr = function(addr, autoCreate) {
 	chat = new ZmChat(Dwt.getNextId(), item.getDisplayName(), this);
 	chat.addRosterItem(item);
 	// listeners take care of rest...
-	this.addChat(chat);
+	this.addChat(chat, background);
 	return chat;
 };
 

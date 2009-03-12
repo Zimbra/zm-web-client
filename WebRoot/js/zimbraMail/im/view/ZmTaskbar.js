@@ -43,11 +43,11 @@ function(show) {
 
 /** Expands or collapses the item */
 ZmTaskbar.prototype.expandItem =
-function(item, expand) {
+function(item, expand, background) {
 	if (expand && this.expandedItem) {
 		this.expandedItem._expand(false);
 	}
-	item._expand(expand);
+	item._expand(expand, background);
 	this.expandedItem = expand ? item : null;
 };
 
@@ -65,7 +65,7 @@ function(item) {
 ZmTaskbar.prototype.conditionalExpand =
 function(item) {
 	if (!this.expandedItem) {
-		this.expandItem(item, true);
+		this.expandItem(item, true, true);
 		return true;
 	} else {
 		return false;
@@ -140,14 +140,14 @@ function() {
 };
 
 ZmTaskbarItem.prototype._expand =
-function(expand) {
+function(expand, background) {
 	this.expanded = expand;
 	Dwt.setVisible(this._contentEl, expand);
 	this.button.setSelected(expand);
 	var popup = this.getPopup();
 	if (expand) {
 		this.showAlert(false);
-		popup.popup();
+		popup.popup(background);
 		this.positionContent();
 	} else {
 		popup.popdown();
