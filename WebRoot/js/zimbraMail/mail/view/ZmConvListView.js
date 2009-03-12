@@ -664,7 +664,7 @@ function(ev) {
 		var div = document.getElementById(this._getItemId({id:item._oldId}));
 		if (div) {
 			this._createItemHtml(item, {div:div});
-			this.associateItemWithElement(item, div, DwtListView.TYPE_LIST_ITEM);
+			this.associateItemWithElement(item, div);
 			DBG.println(AjxDebug.DBG1, "conv updated from ID " + item._oldId + " to ID " + item.id);
 		}
 		this._expanded[item.id] = this._expanded[item._oldId];

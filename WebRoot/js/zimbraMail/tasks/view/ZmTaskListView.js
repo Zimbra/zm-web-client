@@ -319,7 +319,7 @@ function(ev) {
 		if (div) {
 			var bContained = this._selectedItems.contains(div);
 			this._createItemHtml(task, {div:div, bContained:bContained});
-			this.associateItemWithElement(task, div, DwtListView.TYPE_LIST_ITEM);
+			this.associateItemWithElement(task, div);
 		}
 	} else if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE) {
 		for (var i = 0; i < items.length; i++) {

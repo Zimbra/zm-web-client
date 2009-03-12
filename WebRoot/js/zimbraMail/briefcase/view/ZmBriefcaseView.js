@@ -100,7 +100,7 @@ function(item, params) {
 		Dwt.setPosition(div, Dwt.ABSOLUTE_STYLE);
 	}
 	
-	this.associateItemWithElement(item, div, DwtListView.TYPE_LIST_ITEM);
+	this.associateItemWithElement(item, div);
 	return div;
 };
 

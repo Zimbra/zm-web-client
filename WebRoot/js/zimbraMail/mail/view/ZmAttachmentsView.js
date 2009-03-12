@@ -313,7 +313,7 @@ function(msg) {
         div2.appendChild(span);
         div.appendChild(div2);
 
-        this.associateItemWithElement(msg, div, DwtListView.TYPE_LIST_ITEM);
+        this.associateItemWithElement(msg, div);
 
         htmlEl.push(div);
 

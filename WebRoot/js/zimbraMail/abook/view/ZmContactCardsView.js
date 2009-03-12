@@ -177,7 +177,7 @@ function() {
 			if (el) {
 				el.innerHTML = this._createItemHtml(contact);
 				var div = document.getElementById(this._getItemId(contact));
-				this.associateItemWithElement(contact, div, DwtListView.TYPE_LIST_ITEM);
+				this.associateItemWithElement(contact, div);
 			}
 		}
 	} else {
