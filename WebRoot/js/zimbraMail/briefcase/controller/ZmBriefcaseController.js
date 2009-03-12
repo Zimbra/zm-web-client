@@ -774,9 +774,9 @@ function(event) {
     var action = ZmOperation.NEW_MESSAGE;
     var msg = new ZmMailMsg();
     var toOverride = null;
-    AjxDispatcher.run("Compose", {action: action, inNewWindow: false, msg: msg,
-                                  toOverride: toOverride});
-    var cc = AjxDispatcher.run("GetComposeController");
+
+    var cc = appCtxt.getApp(ZmApp.MAIL).getComposeController();
+    cc._setView({action:action, msg: msg, toOverride: toOverride, inNewWindow: false});
     var callback = new AjxCallback(this, cc._handleResponseSaveDraftListener);
     cc.sendDocs(docInfo,true,callback);
 };
