@@ -32,9 +32,9 @@
        #action{padding:0px;margin:0px;border:0px;}
     </style>
     <jsp:doBody/>
-    <script type="text/javascript">
+    <%--<script type="text/javascript">
      function zClickLink(id) { var a = document.getElementById(id); if (a) window.location = a.href; }
-    </script>
+    </script>--%>
 </head>
 <c:if test="${uiv == '1'}">
     <c:set var="baseURL" value="mainx" scope="request"/>

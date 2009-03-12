@@ -49,7 +49,7 @@
                         <input class="chk" type="checkbox" ${requestScope.select ne 'none' && (fn:contains(requestScope._selectedCids,stringToCheck) || requestScope.select eq 'all') ? 'checked="checked"' : ''} name="cid" value="${chit.id}"/>
                         <span class="SmlIcnHldr ${class}">&nbsp;</span>
                     </span>
-                    <span class="cell m" onclick='zClickLink("a${chit.id}")'>
+                    <span class="cell m" onclick='return zClickLink("a${chit.id}")'>
                         <div class="from-span">
                             <c:set var="dispRec" value="${chit.displayRecipients}"/>
                             <c:set var="_f" value="${empty dispRec ? unknownRecipient : dispRec}"/>

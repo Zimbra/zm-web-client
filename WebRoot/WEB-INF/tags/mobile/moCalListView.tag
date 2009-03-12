@@ -80,7 +80,7 @@
                     </span>
                 </div>
             </c:if>
-            <div class='zo_cal_listi' onclick='zClickLink("a${id}")'>
+            <div class='zo_cal_listi' onclick='return zClickLink("a${id}")'>
                 <span class='zo_cal_listi_time'>
                     <c:choose>
                         <c:when test="${appt.allDay}">

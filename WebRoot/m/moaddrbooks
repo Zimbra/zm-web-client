@@ -18,6 +18,7 @@
     <fmt:setBundle basename="/messages/ZhMsg" scope="request"/>
     <fmt:message var="title" key="addressBooks"/>
 </mo:handleError>
+<c:set var="currentUrl" value="?st=${param.st}"/>
 <c:if test="${not empty param.sq && empty param.actionSaveAddrFolder && empty param.actionSaveSearch && empty param.actionSaveTag}">
     <c:set var="query" value="${param.sq}"/>
 </c:if>
@@ -31,41 +32,18 @@
             </span>
             <c:if test="${mailbox.accountInfo.attrs.zimbraFeatureNewAddrBookEnabled[0]=='TRUE'}">
             <span class="right">
-                    <a class="zo_button1" href="?st=ab${empty param.showABCreate?'&showABCreate=1':''}#abooks" onclick="return toggleElem(null,'naddrfrm');"><fmt:message
-                            key="create"/></a>
+                    <a class="zo_button1" href="?st=ab${empty param.showABCreate?'&showABCreate=1':''}${empty param.ajax ? '#folders' : ''}"><fmt:message key="${empty param.showABCreate ? 'create' : 'close'}"/></a>
             </span>
             </c:if>
         </div>
     </div>
 </div>
 <c:if test="${mailbox.accountInfo.attrs.zimbraFeatureNewAddrBookEnabled[0]=='TRUE'}">
-<div class="table View" id="naddrfrm" style="${empty param.showABCreate?'display:none':''};">
-    <div class="table-row">
-        <div class="table-cell">
-                <form action="${currentUrl}" method="post" onsubmit="return submitForm(this);">
-                    <input type="hidden" name="doFolderAction" value="1">
-                    <input name="crumb" type="hidden" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
-                    <span class="label"><fmt:message key="name"/>:</span><input type="text"  class="Textarea" name="folder_name"
-                                                                                 style="width:100px;">
-                    <input type="submit" class="zo_button" name="actionSaveAddrFolder" value="<fmt:message key='save'/>">
-                    <br/>
-                    <select name="parentid" style="width:100px;">
-                    <option value="${mailbox.contacts.parentId}">--<fmt:message key="in"/>--</option>
-                    <zm:forEachFolder var="fldr" parentid="${mailbox.contacts.parentId}" skiproot="false" skiptrash="true">
-                        <c:if test="${fldr.isContactView}">
-                            <option value="${fldr.id}">${fn:escapeXml(fldr.rootRelativePath)}</option>
-                        </c:if>
-                    </zm:forEachFolder>
-                  </select>
-                </form>
-            <a name="folders" style="padding:0px;margin:0px;"></a>
-       </div>
-    </div>
-</div>
+    <mo:folderForm type="folder" id="${param.id}" hide="${empty param.showABCreate}" url="${currentUrl}" st="${param.st}"/>
 </c:if>
 <mo:doContactFolderTree skiproot="${false}" skipsystem="false" skiptrash="true"/>
 <mo:overviewFolder types="contact" folder="${mailbox.trash}" base="${context_url}"/>
-<mo:doContactFolderTree skiproot="${true}" parentid="${mailbox.trash.id}" skipsystem="false"/>
+<mo:doContactFolderTree skiproot="${true}" parentid="${mailbox.trash.id}" skipsystem="false" skiptrash="${false}"/>
 
 <div class="Toolbar table">
     <div class="table-row">
@@ -74,79 +52,33 @@
                 <fmt:message key="searches"/>
             </span>
             <span class="right">
-                <a class="zo_button1" href="?st=ab${empty param.showSearchCreate?'&showSearchCreate=1':''}#searches" onclick="return toggleElem(null,'nsrchfrm');"><fmt:message key="create"/></a>
+                <a class="zo_button1" href="?st=ab${empty param.showSearchCreate?'&showSearchCreate=1':''}${empty param.ajax ? '#searches' : ''}"><fmt:message key="${empty param.showSearchCreate ? 'create' : 'close'}"/></a>
             </span>
         </div>
     </div>
 </div>
-<div class="table View" id="nsrchfrm" style="${empty param.showSearchCreate?'display:none':''};">
-    <div class="table-row">
-        <div class="table-cell">
-            <form action="?st=ab" method="post" style="padding:0px;margin:0px;" onsubmit="return submitForm(this);">
-                <input type="hidden" name="doFolderAction" value="1">
-                <input type="hidden" name="parentid" value="${mailbox.inbox.parentId}">
-                <input name="crumb" type="hidden" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
-                <span class="label"><fmt:message key="searchQuery"/>:</span> <input type="text" name="sq"
-                                                                             style="width:100px;"  class="Textarea">
-                <br/>
-                <span class="label"><fmt:message key="name"/>:</span> <input type="text" name="sname"
-                                                                             style="width:100px;"  class="Textarea">
-                <input class="zo_button" type="submit" name="actionSaveSearch" value="<fmt:message key='save'/>">
-
-
-            </form>
-        </div>
-        <a name="searches" style="padding:0px;margin:0px;"></a>
-    </div>
-</div>
-        
-
+<mo:folderForm type="search" id="${param.sid}" hide="${empty param.showSearchCreate}" url="${currentUrl}" st="${param.st}"/>
 <zm:forEachFolder var="folder" skipsystem="${true}" skiptopsearch="${false}">
     <c:if test="${(folder.isSearchFolder && (empty query || fn:containsIgnoreCase(folder.name,query)))}">
         <c:if test="${folder.types eq 'contact'}">
-        <mo:overviewSearchFolder folder="${folder}" types="${folder.types}"/>
+            <mo:overviewSearchFolder folder="${folder}" types="${folder.types}"/>
         </c:if>
     </c:if>
 </zm:forEachFolder>
 <div class="Toolbar table">
-<div class="table-row">
-    <div class="table-cell">
+    <div class="table-row">
+        <div class="table-cell">
             <span class="Title left">
                         <fmt:message key="tags"/>
             </span>
             <c:if test="${mailbox.features.tagging}"><span class="right">
-                <a class="zo_button1" href="?st=ab${empty param.showTagCreate?'&showTagCreate=1':''}#tags" onclick="return toggleElem(null,'ntagfrm');"><fmt:message
-                                key="create"/></a>
+                <a class="zo_button1" href="?st=ab${empty param.showTagCreate?'&showTagCreate=1':''}${empty param.ajax ? '#tags' : ''}"><fmt:message key="${empty param.showTagCreate ? 'create' : 'close'}"/></a>
             </span></c:if>
+        </div>
     </div>
-</div>
 </div>
 <c:if test="${mailbox.features.tagging}">
-<div class="table View" id="ntagfrm" style="${empty param.showTagCreate?'display:none':''};">
-    <div class="table-row">
-        <div class="table-cell">
-            <form action="${currentUrl}" method="post" style="padding:0px;margin:0px;" onsubmit="return submitForm(this);">
-                <input type="hidden" name="doFolderAction" value="1">
-                <input name="crumb" type="hidden" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
-                <span class="label"><fmt:message key="name"/>:</span> <input type="text" style="width:100px;"  class="Textarea" name="tag_name">
-                <input type="submit" class="zo_button" name="actionSaveTag" value="<fmt:message key='save'/>">
-                <br/>
-                <select name="tag_color">
-                    <optgroup label="<fmt:message key='color'/>">
-                        <option value="cyan"><fmt:message key="cyan"/></option>
-                        <option value="blue"><fmt:message key="blue"/></option>
-                        <option value="purple"><fmt:message key="purple"/></option>
-                        <option value="red"><fmt:message key="red"/></option>
-                        <option value="orange"><fmt:message key="orange"/></option>
-                        <option value="yellow"><fmt:message key="yellow"/></option>
-                        <option value="green"><fmt:message key="green"/></option>
-                    </optgroup>
-                </select>
-            </form>
-        </div>
-        <a name="tags" style="padding:0px;margin:0px;"></a>
-    </div>
-</div>
+    <mo:folderForm type="tag" id="${param.tid}" hide="${empty param.showTagCreate}" url="${currentUrl}" st="${param.st}"/>
 </c:if>
 <zm:forEachTag var="tag">
     <mo:overviewTag calendars="${false}" tag="${tag}" types="contact"/>

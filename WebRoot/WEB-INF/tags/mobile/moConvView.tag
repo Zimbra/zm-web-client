@@ -101,7 +101,7 @@
                    <input class="chk" type="checkbox" ${fn:contains(requestScope._selectedIds,stringToCheck)?'checked="checked"':''} name="id" value="${mhit.id}"/>
                    <span class="SmlIcnHldr ${class}">&nbsp;</span>
                </span>
-               <span class="cell m" onclick='zClickLink("a${mhit.id}")'>
+               <span class="cell m" onclick='return zClickLink("a${mhit.id}")'>
                    <div class="from-span">
                        <c:set var="dispRec" value="${mhit.displayAddresses}"/>
                        <c:set var="_f" value="${empty dispRec ? unknownRecipient : dispRec}"/>

@@ -199,6 +199,10 @@ form {
     padding: 0px;
     margin: 0px;
 }
+#nsrchfrm, #nfldrfrm, #ntagfrm{
+    margin:2px;
+    width:98%;
+}
 .View {
     -moz-border-radius: 5px;
     -webkit-border-radius: 5px;
@@ -323,7 +327,6 @@ input[type="button"], input[type="reset"] {
 }
 .Attachment {
     background-position: 0 -362px !important;
-    padding-left: 12px;
 }
 .cmp_container .table-cell, .cmp_appt_container .table-cell {
     border-bottom: 1px solid #DDDDDD;
@@ -598,7 +601,7 @@ div.row span.l {
     background-position: 0 -110px !important;
 }
 .Tagcyan {
-    background-position: 0 -92px !important; }
+    background-position: 0 -92px !important; 
 }
 .Tagorange {
     background-position: 0 -128px !important;
@@ -665,4 +668,20 @@ div.row span.l {
 }
 .ZmThumbnailName{
     padding-top:8px; 
+}
+.zo_button1{
+        padding:5px;
+        border:1px outset silver;
+        -webkit-border-radius: 5px;
+        -moz-border-radius: 5px;
+}
+.Edit{
+    background: #eeeeee url("/img/startup/ImgEdit.gif") 50% 50% no-repeat;
+    padding: 3px;
+    border:1px outset #efefef;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+}
+.delete_button{
+    background: #cc0000 url("/img/mobile/iphone/iPhoneDeleteButton1.png") repeat scroll 50% 50% !important;
 }
