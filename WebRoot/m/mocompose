@@ -96,21 +96,19 @@
 <div class="table cmp_from_to_cc_table">
     <c:if test="${fn:length(mailbox.accountInfo.identities) gt 1 }">
         <div class="table-row cmp_from_row">
-            <div class="table-cell">
-            <span class='label'>
+            <span class='label' class='table-cell'>
                 <fmt:message key="from"/>:
             </span>
-            <span>
+            <span class="table-cell">
                 <select id="fromField" name="from">
                     <c:forEach var="identity" items="${mailbox.accountInfo.identities}">
                         <option
                                 <c:if test="${identity.default}">selected='true'</c:if>
-                                value="${fn:escapeXml(identity.fromEmailAddress.fullAddressQuoted)}"><%--${fn:escapeXml(identity.name)}::--%>${fn:escapeXml(identity.fromEmailAddress.fullAddressQuoted)}</option>
+                                value="${fn:escapeXml(identity.fromEmailAddress.fullAddressQuoted)}"><%--${fn:escapeXml(identity.name)}::--%>${fn:escapeXml(identity.fromAddress)}</option>
                     </c:forEach>
                 </select>
             </span>
-            </div>
-        </div>
+         </div>
     </c:if>
     <div class="table-row cmp_to_row">
             <span class='label table-cell'>

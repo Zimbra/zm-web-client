@@ -11,7 +11,6 @@
 <c:if test="${param.loginOp=='logout'}">
     <c:redirect url="/?loginOp=logout&client=mobile"/>
 </c:if>
-<%-- Ajx History--%>
 <c:if test="${not empty param.ajax}">
     <c:set var="prevUrl" scope="session" value="${currentUrl}"/>
     <c:set var="currentUrl" scope="session"
@@ -59,22 +58,9 @@
 <c:if test="${empty sessionScope.zms}">
     <c:set value="${ua.isiPhone || ua.isiPod ? 'iphone-ext' : ( ua.isIE ? 'wm6' : 'iphone-ext')}" var="zms"
            scope="session"/>
-    <%--<%
-        Cookie[] cookies = request.getCookies();
-        for(int i=0; cookies != null && i < cookies.length; i++){
-            if(cookies[i].getName().equals("_zms")){
-                session.setAttribute("zms",cookies[i].getValue());
-            }
-        }
-    %>--%>
 </c:if>
 <c:if test="${not empty param.zms}">
     <c:set value="${fn:escapeXml(param.zms)}" var="zms" scope="session"/>
-    <%--<%
-        Cookie c = new Cookie("_zms",request.getParameter("zms"));
-        c.setMaxAge(365*24*60*60);
-        response.addCookie(c);
-    %>--%>
 </c:if>
 <!-- SKIN param:'${param.zms}' '${sessionScope.zms}' -->
 <c:if test="${sessionScope.limit == null}">
@@ -94,7 +80,6 @@
 <c:set var="prev_accesskey" value="7" scope="request"/>
 <c:set var="next_accesskey" value="8" scope="request"/>
 <c:set var="mainaction_accesskey" value="0" scope="request"/>
-<%-- compose/add edit contact/ add edit appt --%>
 <c:if test="${empty param.ajax}">
 <head>
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
@@ -129,6 +114,32 @@ var getContainer = function(id) {
     return document.getElementById(id);
 };
 
+var currHash = null;
+var checkHash = function(hash,method, force){
+    if(currHash != hash || force){
+            <c:if test="${not empty param.st}">
+                <c:set var="paramSt" value="st=${param.st}"/>
+                window.location = '${pageContext.request.requestURL}#${param.st}&${fn:replace(pageContext.request.queryString,paramSt,'')}';
+                return;
+            </c:if>
+
+            currHash = hash;
+            if(!currHash){
+                query = "st=${mailbox.prefs.groupMailBy}";
+            }
+            else
+            {
+                var splits = currHash.substring(1).split('&');
+                var app = splits[0];
+                delete splits[0];
+                var params = splits.join('&');
+                var query = "st=" + app + params;
+                document.location.hash = currHash;
+            }
+            var url = '<c:url value='/m/zmain'/>?' + query;
+            fetchIt(url,getContainer(),method);
+	}
+};
 var getXHR = function() {
     var xhr = false;
     if (window.XMLHttpRequest) {
@@ -157,14 +168,28 @@ var zClickLink = function(id, t) {
     if (targ.target) return true;
     var xhr = getXHR();
     if (targ.attributes['noajax'] || !xhr) {
-        if (targ) window.location = href;
+        window.location = href;
         return false;
     }
-
+    if(href.match(/[\\?\\&]st=/g)){
+        var r  = new RegExp("([\\?\\&]st=([a-z]+))", "gi");
+        var z  = r.exec(href);
+        if(z && z.length > 1){
+            var y  = href;//.replace(z[1],"");
+            if(z[1].indexOf('?') == 0){
+                var y = y.replace(z[1],'#'+z[2]);
+            }else{
+                var y  = href.replace(z[1],"");
+                y = y.replace('?','#'+z[2]+'&');
+            }
+            href = y;
+        }
+    }
     if (targ.onclick) return false;
     var containerId = targ.targetId ? targ.targetId : containerId;
     var container = getContainer(containerId);
     ajxReq(href, null, container);
+    delete xhr;
     return false;
 };
 
@@ -173,7 +198,7 @@ var getFormValues = function(obj) {
     for (var i = 0; i < obj.getElementsByTagName("input").length; i++) {
         var control = obj.getElementsByTagName("input")[i];
         var type = control.type ;
-        if (type == "text" || type == "button" || type == "submit" || type == "hidden" || type == "password") {
+        if (type == "text" || type == "button" || (type == "submit" && control._wasClicked) || type == "hidden" || type == "password") {
             getstr += control.name + "=" + control.value + "&";
         }
         if (type == "checkbox" || type == "radio") {
@@ -218,6 +243,7 @@ var submitForm = function(fobj, target) {
     var params = getFormValues(fobj);
     var container = getContainer();
     ajxReq(url, params, container, method);
+    delete xhr;
     return false;
 };
 
@@ -249,6 +275,11 @@ var customClick = function (e) {
         return e.returnValue;
 
     } else {
+        var tname = targ.tagName;
+        var ttype = targ.type;
+        if(tname.match(/input/ig) && ttype.match(/submit/ig)){ //submit button; add clicked=true to it
+            targ._wasClicked = true;            
+        }
         return true;
     }
 };
@@ -260,10 +291,14 @@ var fetchIt = function(url, container, method) {
         return;
     }
     ajxReq(url, null, container, method);
+    delete xhr;
 };
-
+var reqTimer; 
 var ajxReq = function(url, query, container, method) {
     //var parts = url.split("#");
+    if((!query && url.indexOf("?") < 0 ) && url.indexOf("#") >= 0){
+        return checkHash(url.substring(url.indexOf("#")),method,true);        
+    }
     url = addParam(url, 'ajax=true'); //parts[0] + (url.indexOf('?') < 0 ? '?ajax=true' : '&ajax=true') + (parts[1] ? "#" + parts[1] : '');
     loading = true;
     container = container ? container : document.getElementById('maincontainer');
@@ -273,7 +308,9 @@ var ajxReq = function(url, query, container, method) {
     var xhr = getXHR();
     if (xhr) {
         xhr.onreadystatechange = function() {
-
+            if(reqTimer){
+                clearTimeout(reqTimer);
+            }
             parseResponse(xhr, container);
         };
         xhr.open(method, url, true);
@@ -283,6 +320,8 @@ var ajxReq = function(url, query, container, method) {
             //xhr.setRequestHeader("Connection", "close");
         }
         xhr.send(query);
+        reqTimer  = setTimeout(function(){ requestTimeout(xhr) },15000); //Try till 15 seconds, give up otherwise
+                
     } else {
         return false;
     }
@@ -325,6 +364,8 @@ var parseResponse = function (request, container) {
             showLoadingMsg('<fmt:message key="error"/> : ' + request.status, true, 'Critical');
         }
         loading = false;
+        getContainer().style.visibility = 'visible';
+        delete request;
     }
 };
 
@@ -426,7 +467,14 @@ var updateOrientation = function() {
     currentWidth = window.innerWidth;
     var orient = (currentWidth == 480) ? "landscape" : "portrait";
     document.body.setAttribute("orient", orient);
-};//-->
+};
+
+var requestTimeout = function (xhr){
+   xhr.abort();
+   loading = false; 
+   showLoadingMsg('<fmt:message key="MO_requestTimedOut"/>', true,'Critical',3000);
+}
+//-->
 </script>
 <mo:autoComplete/>
 </head>
@@ -443,7 +491,7 @@ var updateOrientation = function() {
             var="active"
             value="${empty param.st || param.st eq 'message' || param.st eq 'conversation' ? '-active' : ''}"/> <a
             style='width: ${100/appcount}%;' targetid="maincontainer" accesskey="${requestScope.mailapp_accesskey}"
-            id="mail${active}" class="appTab${active} table-cell" href="${aurl}"><span
+            id="mail${active}" class="appTab${active} table-cell" href="${aurl}?st=${mailbox.prefs.groupMailBy}"><span
             onclick="return zClickLink('mail${active}')"><fmt:message
             key="mail"/></span><span onclick="return zClickLink('mail${active}')" style="display:none;"
                                      class="apunread">${mailbox.inbox.unreadCount}</span> </a> <c:if
@@ -499,6 +547,11 @@ var updateOrientation = function() {
 <div class="container" id="msgDiv"></div>
 </c:if>
 <div class="container" id="maincontainer">
+    <script type="text/javascript">
+        if(document.location.hash && document.location.hash != currHash && getXHR()){
+            getContainer().style.visibility = 'hidden';
+        }
+    </script>
     <div class="container table" id="searchbar" style="${param.search eq '1' ? '' : 'display:none;'}">
         <div class="table-row">
             <form method="post" action="${context_url}" class="table-cell"
@@ -545,7 +598,7 @@ var updateOrientation = function() {
         <div class="table-row">
             <form method="post" action="${context_url}" class="table-cell"
                   onsubmit="if(!this.sname.value){showLoadingMsg('<fmt:message key="actionNoNameSpecified"/>',true,'Warning',1000,'msgbar');return false;}else{return submitForm(this);}">
-                <input type="hidden" name="sq" value="${zm:cook(param.sq)}"/>
+                <input type="hidden" name="query" value="${zm:cook(param.sq)}"/>
                 <input type="hidden" name="st" value="${empty param.st? mailbox.prefs.groupMailBy : (param.st eq 'cal' ? 'appointment' : zm:cook(param.st))}"/>
                 <input type="hidden" name="doFolderAction" value="1"/>
                 <input type="hidden" name="parentid" value="${mailbox.inbox.parentId}"/>
@@ -633,11 +686,14 @@ var updateOrientation = function() {
             setTimeout(function() {
                 updateOrientation();
                 window.scrollTo(0, 1);
-            }, 300);
+            }, 300);                        
         }, false);
         </c:if>
         if (getXHR()) {
             registerOnclickHook();
+            setInterval(function() {
+                checkHash(document.location.hash,'get');
+            }, 300);
         }
         //-->
     </script>

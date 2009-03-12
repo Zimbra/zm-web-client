@@ -12,7 +12,7 @@
 <zm:forEachFolder var="folder" skiproot="${skiproot}" parentid="${parentid}" skipsystem="${skipsystem}"  skiptopsearch="${skiptopsearch}">
     <c:if test="${!folder.isSystemFolder and (folder.isNullView or folder.isMessageView or folder.isConversationView)}">
         <c:if test="${!folder.isSearchFolder}">
-            <mo:overviewFolder base="${context_url}" folder="${folder}"/>
+            <mo:overviewFolder base="${context_url}" folder="${folder}" types="${folder.types}"/>
         </c:if>
         <c:if test="${folder.isSearchFolder and folder.depth gt 0}">
             <mo:overviewSearchFolder folder="${folder}"/>

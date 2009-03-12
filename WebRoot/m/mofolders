@@ -20,6 +20,7 @@
 
     <fmt:message var="title" key="MO_mailFoldersTags"/>
 </mo:handleError>
+<c:set var="currentUrl" value="?st=${param.st}"/>
 <c:if test="${not empty param.sq && empty param.actionSaveFolder && empty param.actionSaveSearch && empty param.actionSaveTag}">
     <c:set var="query" value="${param.sq}"/>
 </c:if>
@@ -35,68 +36,31 @@
                     <fmt:message key="folders"/>
                 </span>
                  <span class="right">
-                    <a class="zo_button1" href="?st=folders${empty param.showFolderCreate?'&showFolderCreate=1':''}#folders" onclick="return toggleElem(null,'nfldrfrm');"><fmt:message key="create"/></a>
+                    <a class="zo_button1"
+                       href="?st=folders${empty param.showFolderCreate?'&showFolderCreate=1':''}${empty param.ajax ? '#folders' : ''}"><fmt:message key="${empty param.showFolderCreate ? 'create' : 'close'}"/></a>
                 </span>
         </div>
     </div>
 </div>
-<div class="table View" id="nfldrfrm" style="${empty param.showFolderCreate?'display:none':''};">
-    <div class="table-row">
-        <div class="table-cell">
-            <form action="${currentUrl}" method="post" style="padding:0px;margin:0px;" onsubmit="return submitForm(this);">
-                <input type="hidden" name="doFolderAction" value="1">
-                <input name="crumb" type="hidden" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
-                <span class="label"><fmt:message key="name"/>:</span> <input type="text" name="folder_name"
-                                                                             style="width:100px;"  class="Textarea">
-                <input class="zo_button" type="submit" name="actionSaveFolder" value="<fmt:message key='save'/>">
-                <br/>
-                <select name="parentid" style="width:100px;">
-                <option value="${mailbox.inbox.parentId}">--<fmt:message key="in"/>--</option>
-                <zm:forEachFolder parentid="${mailbox.inbox.id}" var="fldr" skiproot="false">
-                    <c:if test="${fldr.isConversationView || fldr.isMailView}">
-                        <option value="${fldr.id}">${fn:escapeXml(fldr.rootRelativePath)}</option>
-                    </c:if>
-                </zm:forEachFolder>
-                <zm:forEachFolder parentid="${mailbox.sent.id}" var="fldr" skiproot="false">
-                    <c:if test="${fldr.isConversationView || fldr.isMailView}">
-                        <option value="${fldr.id}">${fn:escapeXml(fldr.rootRelativePath)}</option>
-                    </c:if>
-                </zm:forEachFolder>
-                <zm:forEachFolder parentid="${mailbox.drafts.id}" var="fldr" skiproot="false">
-                    <c:if test="${fldr.isConversationView || fldr.isMailView}">
-                        <option value="${fldr.id}">${fn:escapeXml(fldr.rootRelativePath)}</option>
-                    </c:if>
-                </zm:forEachFolder>
-                <zm:forEachFolder var="fldr" skiproot="${true}" skipsystem="${true}" skiptopsearch="${true}">
-                    <c:if test="${fldr.isConversationView || fldr.isMailView}">
-                        <option value="${fldr.id}">${fn:escapeXml(fldr.rootRelativePath)}</option>
-                    </c:if>
-                </zm:forEachFolder>
-            </select>
-            </form>
-        </div>
-        <a name="folders" style="padding:0px;margin:0px;"></a>
-    </div>
-</div>
-
+<mo:folderForm type="folder" id="${param.id}" hide="${empty param.showFolderCreate}" url="${currentUrl}" st="${param.st}"/>
 <c:if test="${empty query || fn:containsIgnoreCase(mailbox.inbox.name,query)}">
-    <mo:overviewFolder base="${context_url}" folder="${mailbox.inbox}"/>
+    <mo:overviewFolder base="${context_url}" folder="${mailbox.inbox}" types="${mailbox.prefs.groupMailBy}"/>
     <mo:doFolderTree skiproot="${true}" parentid="${mailbox.inbox.id}" skipsystem="false"/>
 </c:if>
 <c:if test="${empty query ||fn:containsIgnoreCase(mailbox.sent.name,query)}">
-    <mo:overviewFolder base="${context_url}" folder="${mailbox.sent}"/>
+    <mo:overviewFolder base="${context_url}" folder="${mailbox.sent}" types="${mailbox.prefs.groupMailBy}"/>
     <mo:doFolderTree skiproot="${true}" parentid="${mailbox.sent.id}" skipsystem="false"/>
 </c:if>
 <c:if test="${empty query ||fn:containsIgnoreCase(mailbox.drafts.name,query)}">
-    <mo:overviewFolder base="${context_url}" folder="${mailbox.drafts}"/>
+    <mo:overviewFolder base="${context_url}" folder="${mailbox.drafts}" types="${mailbox.prefs.groupMailBy}"/>
     <mo:doFolderTree skiproot="${true}" parentid="${mailbox.drafts.id}" skipsystem="false"/>
 </c:if>
 <c:if test="${empty query ||fn:containsIgnoreCase(mailbox.spam.name,query)}">
-    <mo:overviewFolder base="${context_url}" folder="${mailbox.spam}"/>
+    <mo:overviewFolder base="${context_url}" folder="${mailbox.spam}" types="${mailbox.prefs.groupMailBy}"/>
     <mo:doFolderTree skiproot="${true}" parentid="${mailbox.spam.id}" skipsystem="false"/>
 </c:if>
 <c:if test="${empty query ||fn:containsIgnoreCase(mailbox.trash.name,query)}">
-    <mo:overviewFolder base="${context_url}" folder="${mailbox.trash}"/>
+    <mo:overviewFolder base="${context_url}" folder="${mailbox.trash}" types="${mailbox.prefs.groupMailBy}"/>
     <mo:doFolderTree skiproot="${true}" parentid="${mailbox.trash.id}" skipsystem="false"/>
 </c:if>
 <mo:doFolderTree skiproot="${true}" skipsystem="${true}" skiptopsearch="${true}"/>
@@ -108,81 +72,38 @@
                 <fmt:message key="searches"/>
             </span>
             <span class="right">
-                <a class="zo_button1" href="?st=folders${empty param.showSearchCreate?'&showSearchCreate=1':''}#searches" onclick="return toggleElem(null,'nsrchfrm');"><fmt:message key="create"/></a>
+                <a class="zo_button1"
+                   href="?st=folders${empty param.showSearchCreate?'&showSearchCreate=1':''}${empty param.ajax ? '#searches' : ''}"><fmt:message key="${empty param.showSearchCreate ? 'create' : 'close'}"/></a>
             </span>
         </div>
     </div>
 </div>
-<div class="table View" id="nsrchfrm" style="${empty param.showSearchCreate?'display:none':''};">
-    <div class="table-row">
-        <div class="table-cell">
-            <form action="?st=folders" method="post" style="padding:0px;margin:0px;" onsubmit="return submitForm(this);">
-                <input type="hidden" name="doFolderAction" value="1">
-                <input type="hidden" name="parentid" value="${mailbox.inbox.parentId}">
-                <input name="crumb" type="hidden" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
-                <span class="label"><fmt:message key="searchQuery"/>:</span> <input type="text" name="sq"
-                                                                             style="width:100px;"  class="Textarea">
-                <br/>
-                <span class="label"><fmt:message key="name"/>:</span> <input type="text" name="sname"
-                                                                             style="width:100px;"  class="Textarea">
-                <input class="zo_button" type="submit" name="actionSaveSearch" value="<fmt:message key='save'/>">
-                
-
-            </form>
-        </div>
-        <a name="searches" style="padding:0px;margin:0px;"></a>
-    </div>
-</div>
-
+<mo:folderForm type="search" id="${param.sid}" hide="${empty param.showSearchCreate}" url="${currentUrl}" st="${param.st}"/>
 <zm:forEachFolder var="folder" skipsystem="${true}" skiptopsearch="${false}">
     <c:if test="${(folder.isSearchFolder && (empty query || fn:containsIgnoreCase(folder.name,query)))}">
         <c:if test="${folder.types eq 'conversation' || folder.types eq 'message' || empty folder.types}">
-        <mo:overviewSearchFolder folder="${folder}" types="${folder.types}"/>
+            <mo:overviewSearchFolder folder="${folder}" types="${folder.types}"/>
         </c:if>
+        <c:set var="count" value="${count+1}"/>
     </c:if>
 </zm:forEachFolder>
 <div class="Toolbar table">
-<div class="table-row">
-    <div class="table-cell">
+    <div class="table-row">
+        <div class="table-cell">
             <span class="Title left">
                         <fmt:message key="tags"/>
             </span>
             <c:if test="${mailbox.features.tagging}"><span class="right">
-                <a class="zo_button1" href="?st=folders${empty param.showTagCreate?'&showTagCreate=1':''}#tags" onclick="return toggleElem(null,'ntagfrm');"><fmt:message
-                                key="create"/></a>
+                <a class="zo_button1" href="?st=folders${empty param.showTagCreate?'&showTagCreate=1':''}${empty param.ajax ? '#tags' : ''}"><fmt:message key="${empty param.showTagCreate ? 'create' : 'close'}"/></a>
             </span></c:if>
+        </div>
     </div>
-</div>
 </div>
 <c:if test="${mailbox.features.tagging}">
-<div class="table View" id="ntagfrm" style="${empty param.showTagCreate?'display:none':''};">
-    <div class="table-row">
-        <div class="table-cell">
-            <form action="${currentUrl}" method="post" style="padding:0px;margin:0px;" onsubmit="return submitForm(this);">
-                <input type="hidden" name="doFolderAction" value="1">
-                <input name="crumb" type="hidden" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
-                <span class="label"><fmt:message key="name"/>:</span> <input type="text" style="width:100px;"  class="Textarea" name="tag_name">
-                <input type="submit" class="zo_button" name="actionSaveTag" value="<fmt:message key='save'/>">
-                <br/>
-                <select name="tag_color">
-                    <optgroup label="<fmt:message key='color'/>">
-                        <option value="cyan"><fmt:message key="cyan"/></option>
-                        <option value="blue"><fmt:message key="blue"/></option>
-                        <option value="purple"><fmt:message key="purple"/></option>
-                        <option value="red"><fmt:message key="red"/></option>
-                        <option value="orange"><fmt:message key="orange"/></option>
-                        <option value="yellow"><fmt:message key="yellow"/></option>
-                        <option value="green"><fmt:message key="green"/></option>
-                    </optgroup>
-                </select>
-            </form>
-        </div>
-        <a name="tags" style="padding:0px;margin:0px;"></a>
-    </div>
-</div>
+    <mo:folderForm type="tag" id="${param.tid}" hide="${empty param.showTagCreate}" url="${currentUrl}" st="${param.st}"/>
 </c:if>
 <zm:forEachTag var="tag">
     <c:if test="${empty query || fn:containsIgnoreCase(tag.name, query)}">
-        <mo:overviewTag calendars="${false}" tag="${tag}" skiptypes="${true}"/>
+        <mo:overviewTag calendars="${false}" tag="${tag}" types="${mailbox.prefs.groupMailBy}"/>
     </c:if>
 </zm:forEachTag>
