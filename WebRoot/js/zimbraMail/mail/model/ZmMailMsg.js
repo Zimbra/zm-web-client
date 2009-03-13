@@ -666,14 +666,14 @@ function(content) {
 };
 
 ZmMailMsg.prototype.sendInviteReply =
-function(edited, componentId, callback, errorCallback, instanceDate, accountName) {
+function(edited, componentId, callback, errorCallback, instanceDate, accountName, ignoreNotifyDlg) {
 	this._origMsg = this._origMsg || this;
 
-	return this._sendInviteReply(edited, componentId || 0, callback, errorCallback, instanceDate, accountName);
+	return this._sendInviteReply(edited, componentId || 0, callback, errorCallback, instanceDate, accountName, ignoreNotifyDlg);
 };
 
 ZmMailMsg.prototype._sendInviteReply =
-function(edited, componentId, callback, errorCallback, instanceDate, accountName) {
+function(edited, componentId, callback, errorCallback, instanceDate, accountName, ignoreNotifyDlg) {
 	var jsonObj = {SendInviteReplyRequest:{_jsns:"urn:zimbraMail"}};
 	var request = jsonObj.SendInviteReplyRequest;
 
@@ -696,7 +696,7 @@ function(edited, componentId, callback, errorCallback, instanceDate, accountName
 	}
 
     var needsRsvp = this._origMsg.needsRsvp();
-    if (needsRsvp){
+    if (!ignoreNotifyDlg && needsRsvp){
         var dlg = appCtxt.getYesNoMsgDialog();
         dlg.registerCallback(DwtDialog.YES_BUTTON, this._sendInviteReplyContinue, this, [jsonObj, "TRUE", edited, callback, errorCallback, instanceDate, accountName]);
         dlg.registerCallback(DwtDialog.NO_BUTTON, this._sendInviteReplyContinue, this, [jsonObj, "FALSE", edited, callback, errorCallback, instanceDate, accountName]);
@@ -782,7 +782,7 @@ function(isDraft, callback, errorCallback, accountName, noSave, requestReadRecei
 
 	// if we have an invite reply, we have to send a different message
 	if (this.isInviteReply && !isDraft) {
-		return this.sendInviteReply(true, 0, callback, errorCallback, this._instanceDate, aName);
+		return this.sendInviteReply(true, 0, callback, errorCallback, this._instanceDate, aName, true);
 	} else {
 		var jsonObj, request;
 		if (isDraft) {

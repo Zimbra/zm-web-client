@@ -1263,7 +1263,11 @@ function(appt, mode) {
         var cancelReplyCallback = new AjxCallback(this, this._continueDeleteReply, [appt, mode]);
         confirmDialog.popup(ZmMsg.confirmCancelApptReply, cancelReplyCallback, cancelNoReplyCallback);
     }else {
-        confirmDialog.popup(ZmMsg.confirmCancelAppt, cancelNoReplyCallback);
+        var msg = ZmMsg.confirmCancelAppt;
+        if(appt.isRecurring()) {
+            msg = (mode == ZmCalItem.MODE_DELETE_INSTANCE) ? ZmMsg.confirmCancelApptInst :  ZmMsg.confirmCancelApptSeries;
+        }
+        confirmDialog.popup(msg, cancelNoReplyCallback);
     }
 };
 
@@ -1271,7 +1275,7 @@ ZmCalViewController.prototype._promptDeleteFutureInstances =
 function(appt, mode) {
     if(!this._delFutureInstNotifyDlg) {
         this._delFutureInstNotifyDlg = new ZmApptDeleteNotifyDialog({parent: this._shell,
-            title: AjxMsg.confirmTitle, confirmMsg: ZmMsg.confirmCancelAppt,
+            title: AjxMsg.confirmTitle, confirmMsg: ZmMsg.confirmCancelApptSeries,
             choiceLabel1: ZmMsg.confirmCancelApptWholeSeries, choiceLabel2 : ZmMsg.confirmCancelApptFutureInstances});
     }
     this._delFutureInstNotifyDlg.popup(new AjxCallback(this, this._deleteFutureInstYesCallback, [appt,mode]));
@@ -1283,14 +1287,26 @@ function(appt, mode) {
     if(!deleteWholeSeries) {
         appt.setCancelFutureInstances(true);
     }
-    this._promptCancelReply(appt, mode);
+    
+    var cancelNoReplyCallback = new AjxCallback(this, this._continueDelete, [appt, mode]);
+    var confirmDialog = appCtxt.getConfirmationDialog();
+    if(appt.otherAttendees && appCtxt.get(ZmSetting.MAIL_ENABLED)) {
+        var cancelReplyCallback = new AjxCallback(this, this._continueDeleteReply, [appt, mode]);
+        confirmDialog.popup(ZmMsg.confirmCancelApptReply, cancelReplyCallback, cancelNoReplyCallback);
+    }else {
+        this._continueDelete(appt, mode);
+    }    
 };
 
 ZmCalViewController.prototype._promptDeleteNotify =
 function(appt, mode) {
     if(!this._deleteNotifyDialog) {
+        var msg = ZmMsg.confirmCancelAppt;
+        if(appt.isRecurring()) {
+            msg = (mode == ZmCalItem.MODE_DELETE_INSTANCE) ? ZmMsg.confirmCancelApptInst :  ZmMsg.confirmCancelApptSeries;
+        }
         this._deleteNotifyDialog = new ZmApptDeleteNotifyDialog({parent: this._shell,
-            title: AjxMsg.confirmTitle, confirmMsg: ZmMsg.confirmCancelAppt, 
+            title: AjxMsg.confirmTitle, confirmMsg: msg, 
             choiceLabel1: ZmMsg.dontNotifyOrganizer, choiceLabel2 : ZmMsg.notifyOrganizer});
     }
     this._deleteNotifyDialog.popup(new AjxCallback(this, this._deleteNotifyYesCallback, [appt,mode]));
@@ -1300,9 +1316,9 @@ ZmCalViewController.prototype._deleteNotifyYesCallback =
 function(appt, mode) {
     var notifyOrg = !this._deleteNotifyDialog.isDefaultOptionChecked();
     if(notifyOrg) {
-        this._promptCancelReply(appt, mode);
+        this._cancelBeforeDelete(appt, mode);
     }else {
-        this._cancelFutureInstance(appt, mode);
+        this._continueDelete(appt, mode);
     }
 };
 
@@ -1319,7 +1335,7 @@ function(appt, type, mode) {
 	msgController.setMsg(appt.message);
 	// poke the msgController
     var instanceDate = mode == ZmCalItem.MODE_DELETE_INSTANCE ? new Date(appt.uniqStartTime) : null;
-	msgController._sendInviteReply(type, appt.compNum || 0, instanceDate, appt.getRemoteFolderOwner());
+	msgController._sendInviteReply(type, appt.compNum || 0, instanceDate, appt.getRemoteFolderOwner(), true);
     this._continueDelete(appt, mode);
 };
 
