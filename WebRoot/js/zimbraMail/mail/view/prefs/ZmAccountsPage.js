@@ -551,7 +551,18 @@ function(batchCmd) {
 
 	// delete accounts
 	for (var i = 0; i < this._deletedAccounts.length; i++) {
-		this._deletedAccounts[i].doDelete(null, null, batchCmd);
+		var callback = null;
+		var account = this._deletedAccounts[i];
+		var folderId = account.folderId;
+		if (folderId == ZmAccountsPage.DOWNLOAD_TO_FOLDER || folderId != ZmAccountsPage.DOWNLOAD_TO_INBOX) {
+			var root = appCtxt.getById(ZmOrganizer.ID_ROOT);
+			var name = account.getName();
+			var folder = root.getByName(name);
+			if (folder && !folder.isSystem()) {
+				callback = new AjxCallback(this, this._promptToDeleteFolder, [folder]);
+			}
+		}
+		this._deletedAccounts[i].doDelete(callback, null, batchCmd);
 	}
 
 	// for multi-account mbox, check if user changed visible flag on subaccounts
@@ -1851,6 +1862,19 @@ function(account, resp) {
 	delete account._new;
 	account._needsSync = true;
 };
+
+ZmAccountsPage.prototype._promptToDeleteFolder = function(organizer) {
+	var dialog = appCtxt.getConfirmationDialog();
+	var prompt = AjxMessageFormat.format(ZmMsg.accountDeleteFolder, [organizer.getName()]);
+	var callback = new AjxCallback(this, this._handleDeleteFolder, [organizer]);
+	dialog.popup(prompt, callback);
+};
+
+ZmAccountsPage.prototype._handleDeleteFolder = function(organizer) {
+	var trash = appCtxt.getById(ZmOrganizer.ID_TRASH);
+	organizer.move(trash);
+};
+
 
 ZmAccountsPage.prototype._postSave =
 function() {
