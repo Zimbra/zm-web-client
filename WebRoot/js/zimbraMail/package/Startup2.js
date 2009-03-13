@@ -76,5 +76,6 @@ AjxPackage.require("zimbraMail.share.view.dialog.ZmQuickAddDialog");
 AjxPackage.require("zimbraMail.core.ZmNewWindow");
 
 AjxPackage.require("zimbraMail.calendar.model.ZmCalMgr");
+AjxPackage.require("zimbraMail.calendar.model.ZmMiniCalCache");
 AjxPackage.require("zimbraMail.calendar.controller.ZmReminderController");
 AjxPackage.require("zimbraMail.calendar.view.ZmReminderDialog");

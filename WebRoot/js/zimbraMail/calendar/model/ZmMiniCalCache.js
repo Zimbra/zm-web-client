@@ -45,8 +45,13 @@ ZmMiniCalCache.prototype._getCacheKey =
 function(params) {
 	var sortedFolderIds = [];
 	sortedFolderIds = sortedFolderIds.concat(params.folderIds);
-	sortedFolderIds.sort(ZmApptCache._sortFolderId);
+	sortedFolderIds.sort(ZmMiniCalCache._sortFolderId);
 	return (params.start + ":" + params.end + ":" + sortedFolderIds.join(":"));
+};
+
+ZmMiniCalCache._sortFolderId =
+function (a,b) {
+	return a-b;
 };
 
 ZmMiniCalCache.prototype._getMiniCalData =

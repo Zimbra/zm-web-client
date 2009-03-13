@@ -192,7 +192,8 @@ function(ev) {
 		var calController = this.getCalViewController();
 		calController._scheduleMaintenance(ZmCalViewController.MAINT_MINICAL);
 	}else {
-        this._miniCalendar.setHilite([], true, true);
+        //this._miniCalendar.setHilite([], true, true);
+        this.highlightMiniCal();
     }
 };
 
@@ -440,3 +441,31 @@ function(ex) {
 	}
 	return false;
 };
+
+ZmCalMgr.prototype.highlightMiniCal =
+function() {
+    var miniCalParams = this.getMiniCalendarParams();
+    var miniCalCache = this.getMiniCalCache();
+    miniCalCache._getMiniCalData(miniCalParams);
+};
+
+ZmCalMgr.prototype.getMiniCalendarParams =
+function() {
+	var dr = this.getMiniCalendar().getDateRange();
+	return {
+		start: dr.start.getTime(),
+		end: dr.end.getTime(),
+		fanoutAllDay: true,
+		noBusyOverlay: true,
+		folderIds: this.getCheckedCalendarFolderIds()
+	};
+};
+
+ZmCalMgr.prototype.getMiniCalCache =
+function() {
+   if(!this._miniCalCache) {
+       this._miniCalCache = new ZmMiniCalCache(this);
+   }
+   return this._miniCalCache;
+};
+

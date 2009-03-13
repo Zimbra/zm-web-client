@@ -385,6 +385,7 @@ function() {
 	var calMgr = appCtxt.getCalManager();
 	calMgr.getMiniCalendar();
 	appCtxt.getAppViewMgr().showTreeFooter(true);
+    calMgr.highlightMiniCal();
 };
 
 ZmZimbraMail.prototype.showReminder =
@@ -513,7 +514,8 @@ function(params, result) {
 ZmZimbraMail.prototype.handleCalendarComponents =
 function() {
 	if (appCtxt.get(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL)) {
-		this.showMiniCalendar();
+        var miniCalAction = new AjxTimedAction(this, this.showMiniCalendar);
+        AjxTimedAction.scheduleAction(miniCalAction, ZmCalendarApp.MINICAL_DELAY);
 	}
 
 	// reminder controlled by calendar preferences setting
