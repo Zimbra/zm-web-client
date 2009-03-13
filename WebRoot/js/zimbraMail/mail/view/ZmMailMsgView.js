@@ -397,7 +397,8 @@ function() {
 	}
 
 	this._inviteToolbar.addFiller();
-	var label = new DwtText({parent: this._inviteToolbar});
+	var label = new DwtText({parent: this._inviteToolbar, className: "DwtText InviteSelectLabel"});
+    label.setSize(100, DwtControl.DEFAULT);
 	label.setText(AjxMessageFormat.format(ZmMsg.makeLabel, [ZmMsg.calendar]));
 
 	var select = new DwtSelect({parent: this._inviteToolbar});

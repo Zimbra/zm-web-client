@@ -3767,3 +3767,8 @@ HTML>BODY .appt-selected .appt_allday_body
 	font-size: 14px;
 	font-weight: bold;
 }
+
+
+.InviteSelectLabel {
+ text-align: right;   
+}
