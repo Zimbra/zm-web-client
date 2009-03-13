@@ -123,6 +123,12 @@ function(method, idOnly, respCallback, errorCallback, batchCmd) {
 		signatureEl.setAttribute("name", this.name);
 		var contentEl = soapDoc.set("content", this.value, signatureEl);
 		contentEl.setAttribute("type", this.contentType);
+
+        //Empty the other content type
+        var emptyType = (this.contentType == ZmMimeTable.TEXT_HTML) ? ZmMimeTable.TEXT_PLAIN : ZmMimeTable.TEXT_HTML;
+        contentEl = soapDoc.set("content", "", signatureEl);
+		contentEl.setAttribute("type", emptyType);
+        
 	}
 
 	if (batchCmd) {
@@ -159,6 +165,7 @@ ZmSignature.prototype._handleModifyResponse = function(callback, resp) {
 	var signature = signatures.getById(this.id);
 	signature.name = this.name;
 	signature.value = this.value;
+    signature.contentType = this.contentType;
 	signatures._notify(ZmEvent.E_MODIFY, { item: signature });
 
 	if (callback) {
