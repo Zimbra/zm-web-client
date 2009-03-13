@@ -121,6 +121,11 @@
                     <fmt:message key="errorMissingSubject"/>
                 </app:status>
             </c:when>
+            <c:when test="${uploader.isSave and not zm:isValidEmailAddresses(uploader.compose.attendees)}">
+                <app:status style="Critical">
+                    <fmt:message key="invalidAttendees"/>
+                </app:status>
+            </c:when>
             <c:when test="${uploader.isApptCancel or uploader.isApptDelete}">
                 <c:set var="needEditView" value="${true}"/>
                 <zm:checkCrumb crumb="${uploader.paramValues.crumb[0]}"/>
