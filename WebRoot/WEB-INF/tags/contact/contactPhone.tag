@@ -8,5 +8,5 @@
 
 <c:if test="${!empty phone}">
     <fmt:message key="${label}" var="label"/>
-    <tr><td class="contactLabel">${fn:escapeXml(label)}:</td><td class="contactOutput">${fn:escapeXml(phone)}</td></tr>
+    <tr><td nowrap="nowrap" class="contactLabel">${fn:escapeXml(label)}:</td><td nowrap="nowrap" class="contactOutput">${fn:escapeXml(phone)}</td></tr>
 </c:if>
