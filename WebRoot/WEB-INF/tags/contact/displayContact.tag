@@ -68,9 +68,11 @@
     <tr>
         <td width="5">&nbsp;</td>
         <td class="contactOutput">
+            <table>
             <app:contactEmail email="${contact.email}"/>
             <app:contactEmail email="${contact.email2}"/>
             <app:contactEmail email="${contact.email3}"/>
+            </table>    
         </td>
     </tr>
     <tr><td><br></td></tr>
@@ -80,7 +82,7 @@
     <tr><td colspan="4" class="sectionLabel" valign="top"><fmt:message key="work"/></td></tr>
     <tr>
         <td width="5">&nbsp;</td>
-        <td valign="top" width="385" class="contactOutput">
+        <td valign="top" width="100%" class="contactOutput">
                 <app:contactLine line="${contact.workStreet}"/>
                 <app:contactLine line="${contact.workCity}"/>
                 <app:contactLine line="${contact.workState}"/>
@@ -91,7 +93,7 @@
                     <a target=_new href="<c:url value="${prefix}${contact.workURL}"/>">${fn:escapeXml(contact.workURL)}</a>
                 </c:if>
         </td>
-        <td valign="top" width="385">
+        <td valign="top" width="100%">
             <table width="100%" border="0" cellspacing='3'>
                 <tbody>
                     <app:contactPhone label="phone" phone="${contact.workPhone}"/>
@@ -116,7 +118,7 @@
     </tr>
     <tr>
         <td width="5">&nbsp;</td>
-        <td valign="top" width="385" class="contactOutput">
+        <td valign="top" width="100%" class="contactOutput">
                 <app:contactLine line="${contact.homeStreet}"/>
                 <app:contactLine line="${contact.homeCity}"/>
                 <app:contactLine line="${contact.homeState}"/>
@@ -152,7 +154,7 @@
     </tr>
     <tr>
         <td width="5">&nbsp;</td>
-        <td valign="top" width="385" class="contactOutput">
+        <td valign="top" width="100%" class="contactOutput">
                 <app:contactLine line="${contact.otherStreet}"/>
                 <app:contactLine line="${contact.otherCity}"/>
                 <app:contactLine line="${contact.otherState}"/>
@@ -163,7 +165,7 @@
                     <a target=_new href="<c:url value="${prefix}${contact.otherURL}"/>">${fn:escapeXml(contact.otherURL)}</a>
                 </c:if>
         </td>
-        <td valign="top" width="385">
+        <td valign="top" width="100%">
             <table width="100%" border="0" cellspacing='3'>
                 <tbody>
                     <app:contactPhone label="otherPhone" phone="${contact.otherPhone}"/>
