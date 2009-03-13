@@ -14,7 +14,7 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 
-<fmt:formatDate var="dateDf" value="${date.time}" pattern="yyyyMMdd"/>
+<fmt:formatDate var="dateDf" value="${date.time}" pattern="yyyyMMdd" timeZone="${timezone}"/>
 <rest:calendarUrl var="newApptUrl" date="${dateDf}" action="edit"/>
 <rest:calendarUrl var="dayViewUrl" date="${dateDf}" view="day"/>
 <rest:calendarUrl var="weekViewUrl" date="${dateDf}" view="week"/>
