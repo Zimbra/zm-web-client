@@ -168,13 +168,13 @@
     </c:if>
     <tr>
         <td id="iframeBody${counter}" style="padding:5px;" valign='top' colspan="${needExtraCol ? 1 : 2}">
-            <app:body message="${message}" body="${body}" theBody="${theBody}" mailbox="${mailbox}" counter="${counter}"/>
+            <app:body message="${message}" body="${body}" theBody="${theBody}" mailbox="${mailbox}" counter="${counter}" isPrintView="${true}"/>
             <c:set var="bodies" value="${zm:getAdditionalBodies(body,message)}"/>
             <c:if test="${not empty bodies}">
                 <br/>
                 <c:forEach var="addbody" items="${bodies}" varStatus="bstatus">
                     <app:body message="${message}" body="${addbody}" mailbox="${mailbox}"
-                              theBody="${zm:getPartHtmlContent(addbody, message)}" counter="${counter}X${bstatus.count}"/>
+                              theBody="${zm:getPartHtmlContent(addbody, message)}" counter="${counter}X${bstatus.count}"  isPrintView="${true}"/>
                 </c:forEach>
             </c:if>
             <c:if test="${not empty message.attachments}">
