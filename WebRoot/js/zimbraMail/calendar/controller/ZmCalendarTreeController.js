@@ -447,6 +447,8 @@ function(ev, checked) {
 
 ZmCalendarTreeController.prototype._createTreeView =
 function(params) {
-    params.treeStyle = DwtTree.CHECKEDITEM_STYLE;
+    if(params.treeStyle == null) {
+        params.treeStyle = DwtTree.CHECKEDITEM_STYLE;
+    }
 	return new ZmTreeView(params);
 };

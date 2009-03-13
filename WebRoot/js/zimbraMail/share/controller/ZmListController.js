@@ -616,7 +616,8 @@ function() {
 		treeIds:[org],
 		overviewId:"ZmListController",
 		title:this._getMoveDialogTitle(this._pendingActionData.length),
-		description:ZmMsg.targetFolder
+		description:ZmMsg.targetFolder,
+        treeStyle: DwtTree.SINGLE_STYLE
 	};
 };
 
