@@ -55,6 +55,7 @@ function() {
  *        title					[string]*		dialog title
  *        description			[string]*		description of what the user is selecting
  *        skipReadOnly			[boolean]* 		if true, read-only folders will not be displayed
+ *        skipRemote			[boolean]*		if true, remote folders (mountpoints) will not be displayed
  *        skipSyncFailureSubs	[boolean]*		if true, don't show "Local Folders"
  *        hideNewButton 		[boolean]*		if true, New button will not be shown
  *        noRootSelect			[boolean]*		if true, don't make root tree item(s) selectable
@@ -78,6 +79,13 @@ function(params) {
 			if (folder.link && folder.isReadOnly()) {
 				omit[folder.id] = true;
 			}
+		}
+	}
+
+	if (params.skipRemote) {
+		var folders = folderTree.asList({remoteOnly:true});
+		for (var i = 0; i < folders.length; i++) {
+			omit[folders[i].id] = true;
 		}
 	}
 

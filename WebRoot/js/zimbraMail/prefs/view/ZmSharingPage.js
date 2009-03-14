@@ -475,6 +475,7 @@ function(orgType) {
 				  overviewId:		["ZmSharingView", orgType].join("_"),
 				  title:			ZmMsg.chooseFolder,
 				  skipReadOnly:		true,
+				  skipRemote:		true,
 				  hideNewButton:	true,
 				  noRootSelect:		true};
 	dialog.reset();
@@ -710,8 +711,8 @@ function(ev) {
 			if (this.status == ZmSharingView.PENDING) {
 				this.removeItem(share);
 			} else if (this.status == ZmSharingView.MOUNTED) {
-//				var index = this._getIndex(shareInfo);
-				this.addItem(share, 0, true);
+				var index = this._getIndex(share, this._list.getArray(), ZmSharingView.sortCompareShare);
+				this.addItem(share, index, true);
 			}
 		}
 	}
@@ -763,4 +764,16 @@ function(share, html, idx) {
 	}
 
 	return idx;
+};
+
+ZmSharingListView.prototype._getIndex =
+function(share, list, compareFunc) {
+
+	for (var i = 0; i < list.length; i++) {
+		var result = compareFunc(share, list[i]);
+		if (result == -1) {
+			return i;
+		}
+	}
+	return null;
 };
