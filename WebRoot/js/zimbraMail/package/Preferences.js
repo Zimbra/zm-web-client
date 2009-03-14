@@ -55,4 +55,3 @@ AjxPackage.require("zimbraMail.im.view.prefs.ZmImGatewayControl");
 
 AjxPackage.require("zimbraMail.prefs.controller.ZmPrefController");
 AjxPackage.require("zimbraMail.prefs.controller.ZmFilterRulesController");
-AjxPackage.require("zimbraMail.prefs.controller.ZmSharingController");
