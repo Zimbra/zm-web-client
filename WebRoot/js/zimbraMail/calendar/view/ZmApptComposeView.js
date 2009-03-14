@@ -310,7 +310,7 @@ ZmApptComposeView.prototype.updateAttendees =
 function(attendees, type, mode, index) {
 	attendees = (attendees instanceof AjxVector) ? attendees.getArray() :
 				(attendees instanceof Array) ? attendees : [attendees];
-	mode = mode ? mode : ZmApptComposeView.MODE_REPLACE;
+	mode = mode || ZmApptComposeView.MODE_REPLACE;
 	if (mode == ZmApptComposeView.MODE_REPLACE) {
 		this._attendees[type] = new AjxVector();
 		this._attendeeKeys[type] = {};

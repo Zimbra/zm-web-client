@@ -50,9 +50,9 @@ function() {
 
 // consts
 
-ZmCalBaseItem.PERSON				= 1;
-ZmCalBaseItem.LOCATION				= 2;
-ZmCalBaseItem.EQUIPMENT				= 3;
+ZmCalBaseItem.PERSON				= "PERSON";
+ZmCalBaseItem.LOCATION				= "LOCATION";
+ZmCalBaseItem.EQUIPMENT				= "EQUIPMENT";
 
 ZmCalBaseItem.PSTATUS_ACCEPT		= "AC";			// vevent, vtodo
 ZmCalBaseItem.PSTATUS_DECLINED		= "DE";			// vevent, vtodo
