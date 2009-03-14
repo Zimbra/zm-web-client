@@ -72,7 +72,7 @@ ZmSignaturesPage.prototype.getNewSignatures = function(includeEmpty) {
 
 		var hasName = signature.name.replace(/\s*/g,"") != "";
 		var hasValue = signature.getValue().replace(/\s*/g,"") != "";
-		if (includeEmpty || hasName || hasValue) {
+		if (includeEmpty || (hasName && hasValue) ) {
 			array.push(signature);
 		}
 	}
@@ -145,7 +145,7 @@ ZmSignaturesPage.prototype.validate = function() {
         var isNameEmpty = (signature.name.replace(/\s*/g,"") == "");
         var isValueEmpty = (signature.value.replace(/\s*/g,"") == "");
         if(isNameEmpty && isValueEmpty){
-            this._handleDeleteButton(signature._htmlElId);
+            this._deleteSignature(signature);
         }else if(isNameEmpty || isValueEmpty){
             this._errorMsg = isNameEmpty ? ZmMsg.signatureNameMissingRequired : ZmMsg.signatureValueMissingRequired;
 			return false;
@@ -366,10 +366,6 @@ ZmSignaturesPage.prototype._populateSignatures = function(reset) {
 	
 };
 
-ZmSignaturesPage.prototype._getSignatureName = function(){
-
-};
-
 ZmSignaturesPage.prototype._getNewSignature = function(){
 
     var signature = new ZmSignature(null);
@@ -415,8 +411,9 @@ ZmSignaturesPage.prototype._addSignature = function(signature, skipControls, res
         // initialize state
         this._resetSignature(signature);
 
-        this._resetAddButton();
     }
+
+    this._resetAddButton();
 
     return signature;
     
