@@ -1126,7 +1126,7 @@ function(contentPartType, contentPart) {
  * to build href's by the caller
 */
 ZmMailMsg.prototype.getAttachmentLinks =
-function(findHits, includeInlineImages) {
+function(findHits, includeInlineImages, includeInlineAtts) {
 	// cache the attachment links once they've been generated.
 	// NOPE. foundInMsgBody can change after we call this function, it's safer not to cache the links
 	// if (this._attLinks != null)
@@ -1134,13 +1134,33 @@ function(findHits, includeInlineImages) {
 
 	this._attLinks = [];
 
-	if (this.attachments && this.attachments.length > 0) {
-		var hrefRoot = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI) + "&loc=" + AjxEnv.DEFAULT_LOCALE + "&id=" + this.id + "&part=";
+    var attachments = this.attachments;
 
-		for (var i = 0; i < this.attachments.length; i++) {
-			var attach = this.attachments[i];
+    if(includeInlineAtts){
+        var parts = this.getBodyParts();
+        if(parts && parts.length > 1){
+            var iAtts = [], part;
+            for (var k = 0; k < parts.length; k++) {
+                part = parts[k];
+                if(part.filename && part.cd == "inline"){
+                    //part.inlineAtt = true;
+                    iAtts.push(part);
+                }
+            }
+            attachments = [].concat(attachments, iAtts);
+        }
+    }
 
-			if (!this.isRealAttachment(attach) || (attach.foundInMsgBody && !includeInlineImages)) {
+
+
+	if (attachments && attachments.length > 0) {
+
+        var hrefRoot = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI) + "&loc=" + AjxEnv.DEFAULT_LOCALE + "&id=" + this.id + "&part=";
+
+		for (var i = 0; i < attachments.length; i++) {
+			var attach = attachments[i];
+
+			if (!this.isRealAttachment(attach) || (attach.ci && !includeInlineImages) || (attach.cd == "inline" && attach.filename && !includeInlineAtts)) {
 				continue;
 			}
 

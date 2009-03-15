@@ -1595,6 +1595,7 @@ function(action, msg, extraBodyText, incOption, nosig) {
 	}
 
 	var hasInlineImages = false;
+    var hasInlineAtts   = false;
 	this._msgAttId = null;
 	if (incOption == ZmSetting.INCLUDE_NONE || action == ZmOperation.NEW_MESSAGE) {
 		value = extraBodyText ? extraBodyText + value : value;
@@ -1610,25 +1611,33 @@ function(action, msg, extraBodyText, incOption, nosig) {
 
 		// bug fix #7271 - if we have multiple body parts, append them all first
 		var parts = msg.getBodyParts();
-		if (parts && parts.length > 1) {
-			var bodyArr = [];
-			for (var k = 0; k < parts.length; k++) {
-				var part = parts[k];
-				// bug: 28741
-				if (ZmMimeTable.isRenderableImage(part.ct)) {
-					bodyArr.push([crlf,"[",part.ct,":",(part.filename||"..."),"]",crlf].join(""));
-					hasInlineImages = true;
-				}
-				else if (part.ct == ZmMimeTable.TEXT_PLAIN || composingHtml) {
-					bodyArr.push(part.content);
-				} else if (part.ct == ZmMimeTable.TEXT_HTML) {
-					var div = document.createElement("div");
-					div.innerHTML = part.content;
-					bodyArr.push(AjxStringUtil.convertHtml2Text(div));
-				}
-			}
-			body = bodyArr.join(crlf);
-		} else {
+        if (parts && parts.length > 1) {
+            var bodyArr = [];
+            for (var k = 0; k < parts.length; k++) {
+                var part = parts[k];
+                // bug: 28741
+                if (ZmMimeTable.isRenderableImage(part.ct)) {
+                    bodyArr.push([crlf,"[",part.ct,":",(part.filename||"..."),"]",crlf].join(""));
+                    hasInlineImages = true;
+                }else if(part.filename && part.cd == "inline"){   //Inline attachments
+                    var attInfo = ZmMimeTable.getInfo(part.ct);
+                    attInfo = attInfo ? attInfo.desc : part.ct;
+                    bodyArr.push([crlf,"[",attInfo,":",(part.filename||"..."),"]",crlf].join(""));
+                    hasInlineAtts = true;
+                }else if(part.ct == ZmMimeTable.TEXT_PLAIN) {
+                    bodyArr.push( composingHtml ? AjxStringUtil.convertToHtml(part.content) : part.content );
+                } else if(part.ct == ZmMimeTable.TEXT_HTML) {
+                    if(composingHtml){
+                        bodyArr.push(part.content)
+                    }else{
+                        var div = document.createElement("div");
+                        div.innerHTML = part.content;
+                        bodyArr.push(AjxStringUtil.convertHtml2Text(div));
+                    }
+                }
+            }
+            body = bodyArr.join(crlf);
+        } else {
 			if (composingHtml) {
 				body = msg.getBodyPart(ZmMimeTable.TEXT_HTML);
 				if (body) {
@@ -1765,7 +1774,7 @@ function(action, msg, extraBodyText, incOption, nosig) {
 		this._htmlEditor.setContent(value);
 	}
 
-	this._showForwardField(msg, action, incOption, hasInlineImages);
+	this._showForwardField(msg, action, incOption, hasInlineImages, hasInlineAtts);
 	this._fixMultipartRelatedImages_onTimer(msg);
 };
 
@@ -2118,7 +2127,7 @@ function() {
 };
 
 ZmComposeView.prototype._showForwardField =
-function(msg, action, replyPref, includeInlineImages) {
+function(msg, action, replyPref, includeInlineImages, includeInlineAtts) {
 
 	var html = "";
 	if (!(this._msgIds && this._msgIds.length) &&
@@ -2127,9 +2136,9 @@ function(msg, action, replyPref, includeInlineImages) {
 		html = AjxTemplate.expand("mail.Message#ForwardOneMessage", {message:msg});
 		this._attachCount = 1;
 	}
-	else if (msg && (msg.hasAttach || includeInlineImages))
+	else if (msg && (msg.hasAttach || includeInlineImages || includeInlineAtts))
 	{
-		var attLinks = msg.getAttachmentLinks(false, includeInlineImages);
+		var attLinks = msg.getAttachmentLinks(false, includeInlineImages, includeInlineAtts);
 		if (attLinks.length > 0) {
 			var data = {
 				attachments: attLinks,
