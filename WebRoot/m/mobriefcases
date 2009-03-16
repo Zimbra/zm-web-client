@@ -64,11 +64,11 @@
                 </span>
                  <span class="right">
                     <c:if test="${param.st eq 'briefcases'}">
-                        <a class="zo_button1"
+                        <a onclick="return toggleElem('nfldrfrm',this,'<fmt:message key="close"/>','<fmt:message key="create"/>');" class="zo_button1"
                            href="?st=${fn:escapeXml(param.st)}${empty param.showBCCreate?'&showBCCreate=1':''}${empty param.ajax ? '#folders' : ''}"><fmt:message key="${empty param.showBCCreate ? 'create' : 'close'}"/></a>
                     </c:if>
                     <c:if test="${param.st eq 'notebooks'}">
-                        <a class="zo_button1"
+                        <a onclick="return toggleElem('nfldrfrm',this,'<fmt:message key="close"/>','<fmt:message key="create"/>');" class="zo_button1"
                            href="?st=${fn:escapeXml(param.st)}${empty param.showNBCreate?'&showNBCreate=1':''}${empty param.ajax ? '#folders' : ''}"><fmt:message key="${empty param.showNBCreate ? 'create' : 'close'}"/></a>
                     </c:if>
                 </span>
@@ -99,7 +99,7 @@
             <span class="Title left">
                 <fmt:message key="searches"/></span>
             <span class="right">
-                <a class="zo_button1"
+                <a onclick="return toggleElem('nsrchfrm',this,'<fmt:message key="close"/>','<fmt:message key="create"/>');" class="zo_button1"
                    href="?st=${fn:escapeXml(param.st)}${empty param.showSearchCreate?'&showSearchCreate=1':''}${empty param.ajax ? '#searches' : ''}"><fmt:message key="${empty param.showSearchCreate ? 'create' : 'close'}"/></a>
             </span>
         </div>
@@ -123,7 +123,7 @@
                         <fmt:message key="tags"/>
             </span>
             <c:if test="${mailbox.features.tagging}"><span class="right">
-                <a class="zo_button1"
+                <a onclick="return toggleElem('ntagfrm',this,'<fmt:message key="close"/>','<fmt:message key="create"/>');" class="zo_button1"
                    href="?st=${fn:escapeXml(param.st)}${empty param.showTagCreate?'&showTagCreate=1':''}${empty param.ajax ? '#tags' : ''}"><fmt:message key="${empty param.showTagCreate ? 'create' : 'close'}"/></a>
             </span></c:if>
         </div>

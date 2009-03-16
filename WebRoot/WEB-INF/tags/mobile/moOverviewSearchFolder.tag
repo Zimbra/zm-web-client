@@ -40,7 +40,7 @@
     </span>
     <c:if test="${!folder.isSystemFolder}">
         <span class="table-cell right" width="5%"> <a class="SmlIcnHldr Edit"
-                href="?st=${param.st}&show${folder.isSearchFolder ? 'Search' : 'Folder'}Create=1&${folder.isSearchFolder ? 's' : ''}id=${folder.id}">&nbsp;</a></span>
+                href="?st=${param.st}&_ajxnoca=1&show${folder.isSearchFolder ? 'Search' : 'Folder'}Create=1&${folder.isSearchFolder ? 's' : ''}id=${folder.id}">&nbsp;</a></span>
     </c:if>    
     </div>
     </div>    

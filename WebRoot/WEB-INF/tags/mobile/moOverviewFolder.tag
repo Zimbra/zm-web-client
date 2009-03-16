@@ -34,7 +34,7 @@
         <div class="table-row">
             <c:if test="${types eq 'cal'}">
     <span class="table-cell left" width="1%">    
-    <input type="checkbox" onchange="fetchIt('?${folder.isCheckedInUI ? 'un' : ''}check=${folder.id}&st=cals');"
+    <input type="checkbox" onchange="fetchIt('?${folder.isCheckedInUI ? 'un' : ''}check=${folder.id}&st=cals&_ajxnoca=1');"
            value="${folder.id}" name="calid" ${folder.isCheckedInUI ? 'checked=checked':''}>
     </span>
             </c:if>
@@ -71,7 +71,7 @@
                     </c:otherwise>
                 </c:choose>
                 <span class="table-cell right" width="5%">
-                    <a class="SmlIcnHldr Edit" href="?st=${param.st}&show${what}Create=1&${folder.isSearchFolder ? 's' : ''}id=${folder.id}">&nbsp;</a></span>
+                    <a class="SmlIcnHldr Edit" href="?st=${param.st}&_ajxnoca=1&show${what}Create=1&${folder.isSearchFolder ? 's' : ''}id=${folder.id}">&nbsp;</a></span>
             </c:if>
         </div>
     </div>

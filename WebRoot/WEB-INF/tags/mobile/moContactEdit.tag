@@ -158,7 +158,7 @@
             <span class="table-cell">&nbsp;</span>
             <span class="table-cell">
                 <span class="right" style="display:none;" id="showHide">
-                <a id="showHideLink" href="javascript:void(0);" onclick="return toggleElem(this,'dtls_div','<fmt:message key="hide"/>','<fmt:message key="more"/>');"><fmt:message
+                <a id="showHideLink" href="javascript:void(0);" onclick="return toggleElem('dtls_div',this,'<fmt:message key="hide"/>','<fmt:message key="more"/>');"><fmt:message
                 key="more"/> </a></span>
             </span>
         </div>

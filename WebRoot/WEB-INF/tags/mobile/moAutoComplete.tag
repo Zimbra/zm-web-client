@@ -22,26 +22,52 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 
 <c:set var="yahooDomEvent" value="true" scope="request"/>
-<script type="text/javascript" src="<c:url value='/yui/2.5.1/yahoo-dom-event/yahoo-dom-event.js'/>"></script>
+<%--script type="text/javascript" src="<c:url value='/yui/2.5.1/yahoo-dom-event/yahoo-dom-event.js'/>"></script>
 <script type="text/javascript" src="<c:url value='/yui/2.5.1/connection/connection-min.js'/>"></script>
-<script type="text/javascript" src="<c:url value='/yui/2.5.1/autocomplete/autocomplete-min.js'/>"></script>
+<script type="text/javascript" src="<c:url value='/yui/2.5.1/autocomplete/autocomplete-min.js'/>"></script--%>
 
 <script type="text/javascript">
     <!--
+    var script = document.createElement('script');
+
+    script.setAttribute('type', 'text/javascript');
+    script.setAttribute('src', '<c:url value='/yui/2.5.1/yahoo-dom-event/yahoo-dom-event.js'/>');
+    document.getElementsByTagName('HEAD')[0].appendChild(script);
+
+    setTimeout(function() {
+        script = document.createElement('script');
+        script.setAttribute('type', 'text/javascript');
+
+        script.setAttribute('src', '<c:url value='/yui/2.5.1/connection/connection-min.js'/>');
+        document.getElementsByTagName('HEAD')[0].appendChild(script);
+    }, 300);
+
+
+    setTimeout(function() {
+        script = document.createElement('script');
+        script.setAttribute('type', 'text/javascript');
+
+        script.setAttribute('src', '<c:url value='/yui/2.5.1/autocomplete/autocomplete-min.js'/>');
+        document.getElementsByTagName('HEAD')[0].appendChild(script);
+    }, 400);
+
+
     var zimbraAutoComplete = function() {
-        var zhEncode = function(s) {return s == null ? '' : s.replace(/&/g, "&amp;").replace(/[<]/g, "&lt;").replace(/>/g, "&gt;");}
-        var zhFmt = function(str,query,bold) {
+        var zhEncode = function(s) {
+            return s == null ? '' : s.replace(/&/g, "&amp;").replace(/[<]/g, "&lt;").replace(/>/g, "&gt;");
+        }
+        var zhFmt = function(str, query, bold) {
             return bold ?
-                   ["<span class='ZhACB'>",zhEncode(str.substring(0, query.length)), "<"+"/span>", zhEncode(str.substring(query.length))].join("")
+                   ["<span class='ZhACB'>",zhEncode(str.substring(0, query.length)), "<" + "/span>", zhEncode(str.substring(query.length))].join("")
                     : zhEncode(str);
         }
-        var zhDisplay = function(str,query) {
+        var zhDisplay = function(str, query) {
             var index = str.toLowerCase().indexOf(query.toLowerCase());
             if (index < 0)
                 return zhFmt(str, query, false);
             else {
                 return [zhFmt(str.substring(0, index), query, false),
-                        zhFmt(str.substring(index), query, true)].join("");
+                    zhFmt(str.substring(index), query, true)].join("");
             }
         }
         var myacformat = function(aResultItem, query) {
@@ -51,33 +77,36 @@
             var d = aResultItem[i++];
             var t = aResultItem[i++];
             var id = aResultItem[i++];
-            var l  = aResultItem[i++];
+            var l = aResultItem[i++];
 
             if (e) {
-				var imgsrc =
-				   t == 'gal' ? "<app:imgurl value='contacts/ImgGALContact.gif' />"
-	             : t == 'group' ? "<app:imgurl value='contacts/ImgGroup.gif' />"
-				                : "<app:imgurl value='contacts/ImgContact.gif' />" ;
-				return ["<table><tr><td><img src='",imgsrc,"'><"+"/td><td>",
-                        zhDisplay(d ? d : e, query),
-                        "</td></tr></table>"].join("");
+                var imgsrc =
+                        t == 'gal' ? "<app:imgurl value='contacts/ImgGALContact.gif' />"
+                                : t == 'group' ? "<app:imgurl value='contacts/ImgGroup.gif' />"
+                                : "<app:imgurl value='contacts/ImgContact.gif' />" ;
+                return ["<div class='table'><div class='table-row'><span class='table-cell left'><img src='",imgsrc,"'><" + "/span><span class='table-cell left'>",
+                    zhDisplay(d ? d : e, query),
+                    "</span></div></div>"].join("");
             }
             else {
                 return "";
             }
         };
-        var myDataSource = new YAHOO.widget.DS_XHR("<c:url value='/h/ac' />", ["Result","email","ranking","display","type","id","l"]);
-        var initAuto = function(field,container) {
-            var ac = new YAHOO.widget.AutoComplete(field, container, myDataSource);
-            ac.delimChar = [",",";"];
-            ac.queryDelay = 0.25;
-            //ac.useShadow = true;
-            ac.formatResult = myacformat;
-            ac.queryMatchContains = true;
-            ac.maxResultsDisplayed = 20;
-            ac.allowBrowserAutocomplete = false;
-        };
-    <jsp:doBody/>
+        setTimeout(function() {
+            var myDataSource = new YAHOO.widget.DS_XHR("<c:url value='/h/ac' />", ["Result","email","ranking","display","type","id","l"]);
+            var initAuto = function(field, container) {
+                var ac = new YAHOO.widget.AutoComplete(field, container, myDataSource);
+                ac.delimChar = [",",";"];
+                ac.queryDelay = 0.25;
+                //ac.useShadow = true;
+                ac.formatResult = myacformat;
+                ac.queryMatchContains = true;
+                ac.maxResultsDisplayed = 20;
+                ac.allowBrowserAutocomplete = false;
+            };
+
+        <jsp:doBody/>
+        }, 1000);
     }();
     // -->
 </script>

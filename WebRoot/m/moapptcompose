@@ -293,7 +293,7 @@
             </span>
             <span class="right">
             <span style="display:none;" id="showHide">
-                <a id="showHideLink" href="?&more=1&${pageContext.request.queryString}" onclick="return toggleElem(this,'apt_dtls_div','<fmt:message key="hide"/>','<fmt:message key="more"/>')"><fmt:message
+                <a id="showHideLink" href="?more=1&${pageContext.request.queryString}" onclick="return toggleElem('apt_dtls_div',this,'<fmt:message key="hide"/>','<fmt:message key="more"/>')"><fmt:message
                 key="more"/> </a></span></span>
         
     </div>

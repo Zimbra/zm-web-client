@@ -59,7 +59,7 @@
     <c:if test="${not empty from}">
         <span class='label left'><fmt:message key="from"/>:</span>
         <span class="right" id="d_btn_td" <c:if test="${empty param.ajax}">style="display:none;"</c:if>><a id='d_btn'
-                                                                           onclick="return toggleElem(this,'d_div','<fmt:message
+                                                                           onclick="return toggleElem('d_div',this,'<fmt:message
                 key="hide"/>','<fmt:message
                 key="details"/>')"><fmt:message
                 key="details"/></a></span>

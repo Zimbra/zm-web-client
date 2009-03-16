@@ -48,7 +48,7 @@
 
 
                 <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=folders"><fmt:message key="folders"/></a> &laquo; <a
-                    href="${fn:escapeXml(closeurl)}#conv${cid}" class='zo_leftbutton'>
+                    href="${fn:escapeXml(closeurl)}${empty param.ajax ? '#conv' : '&conv'}#${cid}" class='zo_leftbutton'>
                     ${fn:escapeXml(zm:truncateFixed(context.shortBackTo,15,true))}
             </a>
                 <c:if test="${isConv!=null && isConv}">

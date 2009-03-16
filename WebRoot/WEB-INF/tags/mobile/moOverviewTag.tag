@@ -50,7 +50,7 @@
         </a>
     </span>
         <span class="table-cell right" width="5%"> <a class="SmlIcnHldr Edit"
-                        href="?st=${param.st}&showTagCreate=1&tid=${tag.id}">&nbsp;</a></span>            
+                        href="?st=${param.st}&_ajxnoca=1&showTagCreate=1&tid=${tag.id}">&nbsp;</a></span>            
     </div>
     </div>        
 </div>

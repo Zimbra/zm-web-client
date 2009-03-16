@@ -108,15 +108,34 @@
 </style>
 <script type="text/javascript">
 <!--
-var loading = false;
-var getContainer = function(id) {
-    id = id ? id : 'maincontainer';
-    return document.getElementById(id);
-};
+var AjxCache = function(expiry, accessCountLimit){
+    this.expiry  = expiry || 5000;  // cache will expire after this many milis
+    this._cache = new Array();
 
+    this.expire = function(){
+      delete this._cache;
+      this._cache = new Array();          
+    };
+    this.get = function(url){
+        if(data = this._cache[url]){
+            if(data.noExpiry || (new Date().getTime() - data.addedOn) < this.expiry){
+                return data.request;
+            }else{
+                delete data;
+            }
+        }
+        return null;
+    };
+
+    this.set = function(url, request, noExpiry){
+        noExpiry = noExpiry || false;
+        var data = { request: request, addedOn: new Date().getTime(), noExpiry: noExpiry };
+        this._cache[url] = data;
+    };
+};
 var currHash = null;
 var checkHash = function(hash,method, force){
-    if(currHash != hash || force){
+    if(hash && ((currHash != hash  /*&& hash != defHash*/) || force)){
             <c:if test="${not empty param.st}">
                 <c:set var="paramSt" value="st=${param.st}"/>
                 window.location = '${pageContext.request.requestURL}#${param.st}&${fn:replace(pageContext.request.queryString,paramSt,'')}';
@@ -124,7 +143,7 @@ var checkHash = function(hash,method, force){
             </c:if>
 
             currHash = hash;
-            if(!currHash){
+            if(!currHash || hash == '#'){
                 query = "st=${mailbox.prefs.groupMailBy}";
             }
             else
@@ -134,7 +153,7 @@ var checkHash = function(hash,method, force){
                 delete splits[0];
                 var params = splits.join('&');
                 var query = "st=" + app + params;
-                document.location.hash = currHash;
+                //document.location.hash = currHash;   //!FIXME iphone address bar remains open and always shows loading....
             }
             var url = '<c:url value='/m/zmain'/>?' + query;
             fetchIt(url,getContainer(),method);
@@ -171,26 +190,31 @@ var zClickLink = function(id, t) {
         window.location = href;
         return false;
     }
-    if(href.match(/[\\?\\&]st=/g)){
-        var r  = new RegExp("([\\?\\&]st=([a-z]+))", "gi");
-        var z  = r.exec(href);
-        if(z && z.length > 1){
-            var y  = href;//.replace(z[1],"");
-            if(z[1].indexOf('?') == 0){
-                var y = y.replace(z[1],'#'+z[2]);
-            }else{
-                var y  = href.replace(z[1],"");
-                y = y.replace('?','#'+z[2]+'&');
-            }
-            href = y;
-        }
-    }
+    href = convertToHashUrl(href);
     if (targ.onclick) return false;
     var containerId = targ.targetId ? targ.targetId : containerId;
     var container = getContainer(containerId);
     ajxReq(href, null, container);
     delete xhr;
     return false;
+};
+
+var convertToHashUrl = function(url){
+  if(url.match(/[\\?\\&]st=/g)){
+        var r  = new RegExp("([\\?\\&]st=([a-z]+))", "gi");
+        var z  = r.exec(url);
+        if(z && z.length > 1){
+            var y  = url;//.replace(z[1],"");
+            if(z[1].indexOf('?') == 0){
+                var y = y.replace(z[1],'#'+z[2]);
+            }else{
+                var y  = url.replace(z[1],"");
+                y = y.replace('?','#'+z[2]+'&');
+            }
+            url = y;
+        }
+    }
+    return url;
 };
 
 var getFormValues = function(obj) {
@@ -242,6 +266,7 @@ var submitForm = function(fobj, target) {
     var method = fobj.method ? fobj.method : 'GET';
     var params = getFormValues(fobj);
     var container = getContainer();
+    url  = addParam(url,"_ajxnoca=1");    //form submission will not use cache
     ajxReq(url, params, container, method);
     delete xhr;
     return false;
@@ -278,7 +303,7 @@ var customClick = function (e) {
         var tname = targ.tagName;
         var ttype = targ.type;
         if(tname.match(/input/ig) && ttype.match(/submit/ig)){ //submit button; add clicked=true to it
-            targ._wasClicked = true;            
+            targ._wasClicked = true;                                                          //ajxForm submit will send only clicked btns to server
         }
         return true;
     }
@@ -293,25 +318,55 @@ var fetchIt = function(url, container, method) {
     ajxReq(url, null, container, method);
     delete xhr;
 };
-var reqTimer; 
-var ajxReq = function(url, query, container, method) {
+
+var ajxReq = function(url, query, container, method, justPrefetch) {
+    justPrefetch = justPrefetch || false;
+    if(!justPrefetch){
+        if(method != 'post' && (reqCount && reqCount > MAX_CACHE_REQUEST )){
+            reqCount = 0;
+            window.location.href = url + (query ? (url.indexOf('?') >= 0 ? '?' : '&') + query : '');
+            window.location.reload();
+            return;
+        } 
+    }
     //var parts = url.split("#");
     if((!query && url.indexOf("?") < 0 ) && url.indexOf("#") >= 0){
-        return checkHash(url.substring(url.indexOf("#")),method,true);        
+        return checkHash(url.substring(url.indexOf("#")),method,true);
     }
+
     url = addParam(url, 'ajax=true'); //parts[0] + (url.indexOf('?') < 0 ? '?ajax=true' : '&ajax=true') + (parts[1] ? "#" + parts[1] : '');
-    loading = true;
-    container = container ? container : document.getElementById('maincontainer');
+
+    if((new Date().getTime() - lastRendered) > INAVTITIY_TIMEOUT ){ //Let's expire the cache now.
+        ajxCache.expire();
+    }                        
+    if((!method ||(method == "GET" || method == "get")) && url.indexOf("_ajxnoca=1") < 0 ){
+           var xhr = ajxCache.get([url,query].join("?"));
+           if(xhr){
+                parseResponse(xhr, container);
+                return;
+           }
+    }
     method = method ? method : "GET";
-    //container.innerHTML = "<div class='StatusInfo'>Loading....</div>" + container.innerHTML;
-    showLoadingMsg('<fmt:message key="MO_loadingMsg"/>', true);
+    if(!justPrefetch){
+        loading = true;
+        container = container ? container : document.getElementById('maincontainer');
+        showLoadingMsg('<fmt:message key="MO_loadingMsg"/>', true);
+    }
     var xhr = getXHR();
     if (xhr) {
         xhr.onreadystatechange = function() {
             if(reqTimer){
                 clearTimeout(reqTimer);
             }
-            parseResponse(xhr, container);
+            if(xhr.readyState == 4){
+                if((method == "GET" || method == "get") && url.indexOf("_ajxnoca=1") < 0){
+                    ajxCache.set([url,query].join("?"),xhr,justPrefetch);
+                }
+                lastRendered = new Date().getTime();
+                if(!justPrefetch){
+                    parseResponse(xhr, container);
+                }
+            }
         };
         xhr.open(method, url, true);
         if (method == "POST" || method == "post") {
@@ -320,8 +375,8 @@ var ajxReq = function(url, query, container, method) {
             //xhr.setRequestHeader("Connection", "close");
         }
         xhr.send(query);
+        reqCount++;
         reqTimer  = setTimeout(function(){ requestTimeout(xhr) },15000); //Try till 15 seconds, give up otherwise
-                
     } else {
         return false;
     }
@@ -334,32 +389,14 @@ var parseResponse = function (request, container) {
             if (data) {
                 container.innerHTML = data;
                 var scripts = container.getElementsByTagName("script");
-                var jsscript = [];
-                var jstext = [];
-                for (i = 0; i < scripts.length; i++) {
+                for (var i = 0; i < scripts.length; i++) {
                     if (scripts[i].src) {
-                        /*var script = document.createElement('script');
-                         script.setAttribute('type','text/javascript');
-                         script.setAttribute('src',scripts[i].src);
-                         jsscript.push(script);
-                         document.getElementsByTagName('head')[0].appendChild(script);   */
-
-                    } else {
-                        //jstext.push(scripts[i].innerHTML)
+                     } else {
                         eval(scripts[i].innerHTML);
                     }
                 }
-                /*for(i=0;i<jsscript.length;i++){
-                 //alert(jsscript[i].src);
-                 document.getElementsByTagName('head')[0].appendChild(jsscript[i]);
-                 }
-                 for(i=0;i<jstext.length;i++){
-                 eval(jstext[i]);
-                 } */
-
             }
             showLoadingMsg(null, false);
-
         } else {
             showLoadingMsg('<fmt:message key="error"/> : ' + request.status, true, 'Critical');
         }
@@ -409,7 +446,6 @@ var showLoadingMsg = function(msg, show, status, timeout, divId) {
         }
     }
 };
-var currentDate = '${curId}';
 var selectDay = function(datestr) {
     var cell = document.getElementById("cell" + datestr);
     list = document.getElementById("listempty");
@@ -435,7 +471,7 @@ var openURL = function(url) {
     window.location = url.replace(/date=......../, "date=" + currentDate);
 };
 
-var toggleElem = function(me, elem, minMsg, maxMsg) {
+var toggleElem = function(elem, me, minMsg, maxMsg) {
     if (!elem) return false;
     var s = document.getElementById(elem).style;
     if (s && s.display && s.display == 'none') {
@@ -473,10 +509,14 @@ var requestTimeout = function (xhr){
    xhr.abort();
    loading = false; 
    showLoadingMsg('<fmt:message key="MO_requestTimedOut"/>', true,'Critical',3000);
-}
+};
+var getContainer = function(id) {
+    id = id ? id : 'maincontainer';
+    return document.getElementById(id);
+};
+
 //-->
 </script>
-<mo:autoComplete/>
 </head>
 <body onorientationchange="updateOrientation()">
 <div class="container table" id="appbar" align="center">
@@ -541,14 +581,14 @@ var requestTimeout = function (xhr){
         <a style='width: ${100/appcount}%;' targetid="maincontainer" accesskey="${requestScope.search_accesskey}"
            id="search${active}" class="appTab${active} table-cell"
            href="${aurl}?search=${param.search eq '1' ? '0' : '1'}&amp;${fn:replace(pageContext.request.queryString,'search=1&amp;','')}"
-           onclick='return toggleElem(this,"searchbar");'><span><fmt:message key="search"/></span></a>
+           onclick='return toggleElem("searchbar",this);'><span><fmt:message key="search"/></span></a>
     </div>
 </div>
 <div class="container" id="msgDiv"></div>
 </c:if>
 <div class="container" id="maincontainer">
     <script type="text/javascript">
-        if(document.location.hash && document.location.hash != currHash && getXHR()){
+        if(document.location.hash && /*document.location.hash != defHash &&*/ document.location.hash != currHash && getXHR()){
             getContainer().style.visibility = 'hidden';
         }
     </script>
@@ -685,16 +725,38 @@ var requestTimeout = function (xhr){
         window.addEventListener("load", function() {
             setTimeout(function() {
                 updateOrientation();
-                window.scrollTo(0, 1);
-            }, 300);                        
+                window.scrollTo(0,1);
+            }, 300);
         }, false);
         </c:if>
+        
+        var MAX_CACHE_REQUEST = 50; // No of ajx get requests to cache
+        var CACHE_DATA_LIFE = 20000; // miliseconds to keep the cache alive
+        var INAVTITIY_TIMEOUT = 60000; // Inactivity time in miliseconds after which the whole cache will be cleaned
+
+        var ajxCache = new AjxCache(CACHE_DATA_LIFE);
+        var loading = false;
+        var reqCount = 0;
+        var defHash = '#${mailbox.prefs.groupMailBy}';
+        var currentDate = '${curId}';
+        var reqTimer = null;
+        var lastRendered = new Date().getTime();
+
         if (getXHR()) {
             registerOnclickHook();
-            setInterval(function() {
-                checkHash(document.location.hash,'get');
-            }, 300);
+            setTimeout(function() { //!FIXME using SetInterval or polling will have performance issue
+                checkHash(document.location.hash,'get'); 
+            }, 350);
+            <c:if test="${param.st ne 'newmail' && param.st ne 'compose' && mailbox.features.mail && (empty param.st || param.st eq mailbox.prefs.groupMailBy)}">
+            // preloaded the compose
+            if(document.location.hash.indexOf('newmail') < 0 && document.location.hash.indexOf('compose') < 0 ){
+            setTimeout(function() {
+                //ajxReq('<c:url value="/m/zmain"/>'+defHash,null,null,'get',false);
+                ajxReq('<c:url value="/m/zmain?st=newmail"/>',null,null,'get',true);
+            },300);
+            }
+            </c:if>
         }
         //-->
     </script>
-    </body> </html> </c:if>
+    </body> </html> </c:if>    
