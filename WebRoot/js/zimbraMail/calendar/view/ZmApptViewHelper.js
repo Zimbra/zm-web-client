@@ -187,10 +187,17 @@ function(date, list, controller, noheader, emptyMsg) {
  * @param strictEmail	[boolean]*		if true, new attendee will not be created from email address
  */
 ZmApptViewHelper.getAttendeeFromItem =
-function(item, type, strictText, strictEmail) {
+function(item, type, strictText, strictEmail, checkForAvailability) {
 
 	if (!item || !type) return null;
 
+	if (!ZmApptViewHelper._locations) {
+		ZmApptViewHelper._locations = appCtxt.getApp(ZmApp.CALENDAR).getLocations();
+	}
+	if (!ZmApptViewHelper._equipment) {
+		ZmApptViewHelper._equipment = appCtxt.getApp(ZmApp.CALENDAR).getEquipment();
+	}
+	
 	var attendee = null;
 	if (item.type == ZmItem.CONTACT) {
 		// it's already a contact or resource, return it as is
@@ -210,7 +217,7 @@ function(item, type, strictText, strictEmail) {
 			}
 		}
 
-		if (!attendee && !strictEmail) {
+		if (!checkForAvailability && !attendee && !strictEmail) {
 			// AjxEmailAddress has name and email, init a new contact/resource from those
 			attendee = (type == ZmCalBaseItem.PERSON) ? new ZmContact(null) :
 													new ZmResource(type);
@@ -225,7 +232,7 @@ function(item, type, strictText, strictEmail) {
 	 		var addr = email.getAddress();
 	 		// is it a contact/resource we already know about?
 			attendee = ZmApptViewHelper._getAttendeeFromAddr(addr, type);
-			if (!attendee && !strictEmail) {
+			if (!checkForAvailability && !attendee && !strictEmail) {
 				if (type == ZmCalBaseItem.PERSON) {
 					attendee = new ZmContact(null);
 				} else if (type == ZmCalBaseItem.LOCATION) {
@@ -234,7 +241,7 @@ function(item, type, strictText, strictEmail) {
 					attendee = new ZmResource(null, ZmApptViewHelper._equipment, ZmCalBaseItem.EQUIPMENT);
 				}
 				attendee.initFromEmail(email, true);
-			} else if (type == ZmCalBaseItem.PERSON) {
+			} else if (attendee && type == ZmCalBaseItem.PERSON) {
 				// remember actual address (in case it's email2 or email3)
 				attendee._inviteAddress = addr;
 			}
@@ -251,9 +258,9 @@ function(addr, type) {
 		var contactsApp = appCtxt.getApp(ZmApp.CONTACTS);
 		attendee = contactsApp && contactsApp.getContactByEmail(addr);
 	} else if (type == ZmCalBaseItem.LOCATION) {
-
+        attendee = ZmApptViewHelper._locations.getResourceByEmail(addr);
 	} else if (type == ZmCalBaseItem.EQUIPMENT) {
-
+		attendee = ZmApptViewHelper._equipment.getResourceByEmail(addr);
 	}
 	return attendee;
 };

@@ -472,7 +472,7 @@ function(message) {
 			// if multiple resources are present (i.e. aliases) select first one
 			var resourceEmail = AjxEmailAddress.split(resources[i].a)[0];
 
-			var location = ZmApptViewHelper.getAttendeeFromItem(resourceEmail, ZmCalBaseItem.LOCATION);
+			var location = ZmApptViewHelper.getAttendeeFromItem(resourceEmail, ZmCalBaseItem.LOCATION, false, false, true);
 			if (location) {
 				location.setAttr("participationStatus", ptstReplies[resourceEmail] || ptst);
 				this._attendees[ZmCalBaseItem.LOCATION].push(location);
@@ -635,6 +635,32 @@ function() {
 		ptstHashMap[ptst].push(attendee.getAttendeeText(null, true));
 	}
 	this.ptstHashMap = ptstHashMap;
+};
+
+ZmAppt.prototype.addAttendeesToChckConflictsRequest =
+function(soapDoc, inv) {
+    for (var type in this._attendees) {
+        if (this._attendees[type] && this._attendees[type].length) {
+            for (var i = 0; i < this._attendees[type].length; i++) {
+                //this._addAttendeeToSoap(soapDoc, inv, m, notifyList, this._attendees[type][i], type);
+                var attendee = this._attendees[type][i]; 
+                var address;
+                if (attendee._inviteAddress) {
+                    address = attendee._inviteAddress;
+                    delete attendee._inviteAddress;
+                } else {
+                    address = attendee.getEmail();
+                }
+                if (!address) continue;
+
+                var usr = soapDoc.set("usr", null, inv);
+                if (address instanceof Array) {
+                    address = address[0];
+                }
+                usr.setAttribute("name", address);
+            }
+        }
+    }
 };
 
 ZmAppt.prototype._addAttendeesToSoap =

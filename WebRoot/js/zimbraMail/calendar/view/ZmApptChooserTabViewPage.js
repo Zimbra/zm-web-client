@@ -120,10 +120,10 @@ ZmApptChooserTabViewPage.SF_OP[ZmApptChooserTabViewPage.SF_FLOOR]		= "eq";
 ZmApptChooserTabViewPage.ATTRS = {};
 ZmApptChooserTabViewPage.ATTRS[ZmCalBaseItem.LOCATION] =
 	["displayName", "mail", "zimbraCalResLocationDisplayName",
-	 "zimbraCalResCapacity", "zimbraCalResContactEmail", "description"];
+	 "zimbraCalResCapacity", "zimbraCalResContactEmail", "description", "zimbraCalResType"];
 ZmApptChooserTabViewPage.ATTRS[ZmCalBaseItem.EQUIPMENT] =
 	["displayName", "mail", "zimbraCalResLocationDisplayName",
-	 "zimbraCalResContactEmail", "description"];
+	 "zimbraCalResContactEmail", "description", "zimbraCalResType"];
 
 ZmApptChooserTabViewPage.SEARCH_FIELDS = {};
 ZmApptChooserTabViewPage.SEARCH_FIELDS[ZmCalBaseItem.PERSON] =
