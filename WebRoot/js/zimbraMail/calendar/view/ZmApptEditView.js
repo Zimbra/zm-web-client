@@ -41,6 +41,7 @@ ZmApptEditView = function(parent, attendees, controller, dateInfo) {
 	if (appCtxt.get(ZmSetting.GAL_ENABLED) && this.GROUP_CALENDAR_ENABLED) {
 		this._attTypes.push(ZmCalBaseItem.EQUIPMENT);
 	}
+    this._locationTextMap = {};
 };
 
 ZmApptEditView.prototype = new ZmCalItemEditView;
@@ -93,6 +94,7 @@ function() {
         this._attInputField[ZmCalBaseItem.PERSON].setValue("");
     }
     this._attInputField[ZmCalBaseItem.LOCATION].setValue("");
+    this._locationTextMap = {};
 
 	if (this._resourcesContainer) {
 		Dwt.setDisplay(this._resourcesContainer, Dwt.DISPLAY_NONE);
@@ -541,17 +543,30 @@ function() {
 	if (appCtxt.get(ZmSetting.GAL_ENABLED) || appCtxt.get(ZmSetting.GAL_ENABLED)) {
 		// autocomplete for locations
 		var app = appCtxt.getApp(ZmApp.CALENDAR);
+        var locChangeCallback = new AjxCallback(this, this._handleLocationChange);
 		var params = {
 			parent: appCtxt.getShell(),
 			dataClass: appCtxt.getAutocompleter(),
 			matchValue: ZmAutocomplete.AC_VALUE_NAME,
 			compCallback: acCallback,
+            keyUpCallback: locChangeCallback,
 			options: {type:ZmAutocomplete.AC_TYPE_LOCATION}
 		};
 		this._acLocationsList = new ZmAutocompleteListView(params);
 		this._acLocationsList.handle(this._attInputField[ZmCalBaseItem.LOCATION].getInputElement());
 		this._acList[ZmCalBaseItem.LOCATION] = this._acLocationsList;
 	}
+};
+
+
+ZmApptEditView.prototype._handleLocationChange =
+function(event, aclv, result) {
+    var val = this._attInputField[ZmCalBaseItem.LOCATION].getValue();
+    if(val == "") {
+        this.parent.parent.updateAttendees([], ZmCalBaseItem.LOCATION);
+		this._addResourcesDiv();
+		this._isKnownLocation = false;
+    }
 };
 
 ZmApptEditView.prototype._autocompleteCallback =
@@ -563,7 +578,22 @@ function(text, el, match) {
 	var attendee = match.item;
 	if (attendee) {
 		var type = el._attType;
-		this.parent.parent.updateAttendees(attendee, type, ZmApptComposeView.MODE_ADD);
+        if (type == ZmCalBaseItem.LOCATION) {
+	        var name = attendee.getFullName();
+            if(name) {
+                this._locationTextMap[name] = attendee;
+            }
+            var locations = text.split(/[\n,;]/);
+            var newAttendees = [];
+            for(var i in locations) {
+                var l = AjxStringUtil.trim(locations[i]);
+                if(this._locationTextMap[l]) {
+                    newAttendees.push(this._locationTextMap[l]);
+                }
+            }
+            attendee = newAttendees;
+        }
+		this.parent.parent.updateAttendees(attendee, type, (type == ZmCalBaseItem.LOCATION )?ZmApptComposeView.MODE_REPLACE : ZmApptComposeView.MODE_ADD);
 
 		if (type == ZmCalBaseItem.LOCATION) {
 			this._addResourcesDiv();
