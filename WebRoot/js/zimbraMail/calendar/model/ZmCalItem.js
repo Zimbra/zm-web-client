@@ -520,16 +520,13 @@ function(message, viewMode) {
 	this.startsInUTC = start ? start.charAt(start.length-1) == "Z" : null;
 	this.endsInUTC = end && start ? end.charAt(start.length-1) == "Z" : null;
 
-	// record timezone if given, otherwise, guess
-	var serverId = !this.startsInUTC && message.invite.getServerStartTimeTz();
-	this.setTimezone(serverId || AjxTimezone.getServerId(AjxTimezone.DEFAULT));
-
-	// adjust start/end times based on UTC/timezone
+	// record timezone
 	if (viewMode == ZmCalItem.MODE_EDIT_SINGLE_INSTANCE) {
-		var timezone = this.getOrigTimezone();
-		ZmCalItem.__adjustDateForTimezone(this.startDate, timezone, this.startsInUTC);
-		ZmCalItem.__adjustDateForTimezone(this.endDate, timezone, this.endsInUTC);
 		this.setTimezone(AjxTimezone.getServerId(AjxTimezone.DEFAULT));
+	}
+	else {
+		var serverId = !this.startsInUTC && message.invite.getServerStartTimeTz();
+		this.setTimezone(serverId || AjxTimezone.getServerId(AjxTimezone.DEFAULT));
 	}
 
 	var tzrule = AjxTimezone.getRule(AjxTimezone.getClientId(this.getTimezone()));
@@ -1515,17 +1512,4 @@ function(d, format) {
 	format = format || AjxDateFormat.SHORT;
 	var formatter = AjxDateFormat.getDateInstance();
 	return formatter.format(d);
-};
-
-// REVISIT: Move to AjxDateUtil function
-ZmCalItem.__adjustDateForTimezone =
-function(date, timezoneServerId, inUTC) {
-	var currentOffset = AjxTimezone.getOffset(AjxTimezone.DEFAULT, date);
-	var timezoneOffset = currentOffset;
-	if (!inUTC) {
-		var timezoneClientId = AjxTimezone.getClientId(timezoneServerId);
-		timezoneOffset = AjxTimezone.getOffset(timezoneClientId, date);
-	}
-	var offset = currentOffset - timezoneOffset;
-	date.setMinutes(date.getMinutes() + offset);
 };
