@@ -179,13 +179,15 @@ ZmSharingView.prototype.showShares =
 function(shares) {
 
 	var pending = [], mounted = [];
-	for (var i = 0; i < shares.length; i++) {
-		// convert share info to ZmShare
-		var share = ZmSharingView.getShareFromShareInfo(shares[i]);
-		if (share.mounted) {
-			mounted.push(share);
-		} else {
-			pending.push(share);
+	if (shares && shares.length) {
+		for (var i = 0; i < shares.length; i++) {
+			// convert share info to ZmShare
+			var share = ZmSharingView.getShareFromShareInfo(shares[i]);
+			if (share.mounted) {
+				mounted.push(share);
+			} else {
+				pending.push(share);
+			}
 		}
 	}
 	pending.sort(ZmSharingView.sortCompareShare);
