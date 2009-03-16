@@ -36,7 +36,6 @@ ZmAutocomplete.AC_VALUE_EMAIL	= "email";
 ZmAutocomplete.AC_VALUE_NAME	= "name";
 
 // request control
-ZmAutocomplete.AC_MAX 			= 20;	// max # of autocomplete matches to return
 ZmAutocomplete.AC_TIMEOUT		= 20;	// autocomplete timeout (in seconds)
 
 // result types
@@ -123,7 +122,7 @@ function(str, aclv, options, acType, callback) {
 		}
 	}
 
-	var params = {query:str, limit:ZmAutocomplete.AC_MAX, isAutocompleteSearch:true};
+	var params = {query:str, isAutocompleteSearch:true};
 	if (acType != ZmAutocomplete.AC_TYPE_CONTACT) {
 		params.isGalAutocompleteSearch = true;
 		params.isAutocompleteSearch = false;

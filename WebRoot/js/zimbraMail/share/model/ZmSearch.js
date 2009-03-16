@@ -140,26 +140,23 @@ function(params) {
 		if (this.isGalSearch) {
 			soapDoc = AjxSoapDoc.create("SearchGalRequest", "urn:zimbraAccount");
 			var method = soapDoc.getMethod();
-			if (this.galType) {
-				method.setAttribute("type", this.galType);
-			}
+			if (this.galType) {	method.setAttribute("type", this.galType); }
 			soapDoc.set("name", this.query);
 		} else if (this.isAutocompleteSearch) {
 			soapDoc = AjxSoapDoc.create("AutoCompleteRequest", "urn:zimbraMail");
 			var method = soapDoc.getMethod();
-			method.setAttribute("limit", this.limit);
+			if (this.limit) { method.setAttribute("limit", this.limit); }
 			soapDoc.set("name", this.query);
 		} else if (this.isGalAutocompleteSearch) {
 			soapDoc = AjxSoapDoc.create("AutoCompleteGalRequest", "urn:zimbraAccount");
 			var method = soapDoc.getMethod();
-			method.setAttribute("limit", this.limit);
-			method.setAttribute("type", this.galType);
+			if (this.limit) { method.setAttribute("limit", this.limit); }
+			if (this.galType) { method.setAttribute("type", this.galType); }
 			soapDoc.set("name", this.query);
 		} else if (this.isCalResSearch) {
 			soapDoc = AjxSoapDoc.create("SearchCalendarResourcesRequest", "urn:zimbraAccount");
 			var method = soapDoc.getMethod();
-			if (this.attrs)
-				method.setAttribute("attrs", this.attrs.join(","));
+			if (this.attrs) { method.setAttribute("attrs", this.attrs.join(",")); }
 			var searchFilterEl = soapDoc.set("searchFilter");
 			if (this.conds && this.conds.length) {
 				var condsEl = soapDoc.set("conds", null, searchFilterEl);
@@ -257,21 +254,19 @@ function(params) {
 		if (this.isGalSearch) {
 			jsonObj = {SearchGalRequest:{_jsns:"urn:zimbraAccount"}};
 			request = jsonObj.SearchGalRequest;
-			if (this.galType) {
-				request.type = this.galType;
-			}
+			if (this.galType) { request.type = this.galType; }
 			request.name = this.query;
 		} else if (this.isAutocompleteSearch) {
 			jsonObj = {AutoCompleteRequest:{_jsns:"urn:zimbraMail"}};
 			request = jsonObj.AutoCompleteRequest;
-			request.limit = this.limit;
+			if (this.limit) { request.limit = this.limit; }
 			request.name = {_content:this.query};
 		} else if (this.isGalAutocompleteSearch) {
 			jsonObj = {AutoCompleteGalRequest:{_jsns:"urn:zimbraAccount"}};
 			request = jsonObj.AutoCompleteGalRequest;
-			request.limit = this.limit;
+			if (this.limit) { request.limit = this.limit; }
 			request.name = this.query;
-			request.type = this.galType;
+			if (this.galType) { request.type = this.galType; }
 		} else if (this.isCalResSearch) {
 			jsonObj = {SearchCalendarResourcesRequest:{_jsns:"urn:zimbraAccount"}};
 			request = jsonObj.SearchCalendarResourcesRequest;
@@ -334,9 +329,9 @@ function(params) {
 					if (this.markRead) {
 						request.read = 1;
 					}
-                    if(this.headers) {
+                    if (this.headers) {
                         for (var hdr in this.headers) {
-                            if(!request.header) request.header = [];
+                            if (!request.header) { request.header = []; }
                             request.header.push({n:hdr});
                         }
                     }
