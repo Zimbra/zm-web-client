@@ -154,6 +154,11 @@ function(view, force, initialized, stageView) {
 		// HACK: reset search toolbar icon (its a hack we're willing to live with)
 		if (this.isGalSearch()) {
 			appCtxt.getSearchController().setDefaultSearchType(ZmId.SEARCH_GAL);
+			if (this._list.hasMore()) {
+				var d = appCtxt.getMsgDialog();
+				d.setMessage(ZmMsg.errorSearchNotExpanded);
+				d.popup();
+			}
 		}
 
 		this._setTabGroup(this._tabGroups[view]);
@@ -484,7 +489,9 @@ ZmContactListController.prototype._resetNavToolBarButtons =
 function(view) {
 	ZmListController.prototype._resetNavToolBarButtons.call(this, view);
 
-	if (this._list.isCanonical) {
+	if (this._list.isGal) {
+		this._navToolBar[view].enable([ZmOperation.PAGE_BACK, ZmOperation.PAGE_FORWARD], false);
+	} else if (this._list.isCanonical) {
 		this._navToolBar[view].enable(ZmOperation.PAGE_FORWARD, this._list.hasMore());
 	}
 

@@ -38,7 +38,10 @@ function(list, sortField, folderId) {
 	if (list instanceof ZmContactList) {
 		// compute the sublist based on the folderId if applicable
 		list.addChangeListener(this._listChangeListener);
-		subList = list.getSubList(this.offset, this.getLimit(), folderId);
+		// for accounts where gal paging is not supported, show *all* results
+		subList = (list.isGal)
+			? list.getVector().clone()
+			: list.getSubList(this.offset, this.getLimit(), folderId);
 	} else {
 		subList = list;
 	}
