@@ -751,7 +751,11 @@ ZmComposeController.prototype._initializeToolBar =
 function() {
 	if (this._toolbar) { return; }
 
-	var buttons = [ZmOperation.NEW_MENU, ZmOperation.SEP, ZmOperation.SEND];
+	var buttons = [];
+	if (!appCtxt.isChildWindow) {
+		buttons.push(ZmOperation.NEW_MENU, ZmOperation.SEP);
+	}
+	buttons.push(ZmOperation.SEND);
 
 	buttons.push(ZmOperation.CANCEL);
 
