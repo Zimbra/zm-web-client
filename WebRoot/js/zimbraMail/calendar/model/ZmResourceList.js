@@ -53,9 +53,47 @@ function(batchCmd) {
 	var value = (this.resType == ZmCalBaseItem.LOCATION) ? ZmResource.ATTR_LOCATION : ZmResource.ATTR_EQUIPMENT;
 	conds.push({attr: ZmResource.F_type, op: "eq", value: value});
 	var params = {conds: conds, join: ZmSearch.JOIN_OR, attrs: ZmResourceList.ATTRS};
-	var search = new ZmSearch(params);
-	
-	search.execute({callback: new AjxCallback(this, this._handleResponseLoad), batchCmd: batchCmd});
+    if(batchCmd) {
+        var search = new ZmSearch(params);        
+	    search.execute({callback: new AjxCallback(this, this._handleResponseLoad), batchCmd: batchCmd});
+    }else{
+        this.searchCalResources(params);
+    }
+};
+
+ZmResourceList.prototype.searchCalResources =
+function(params) {
+    var soapDoc = AjxSoapDoc.create("SearchCalendarResourcesRequest", "urn:zimbraAccount");
+    var method = soapDoc.getMethod();
+    if (params.attrs)
+        method.setAttribute("attrs", params.attrs.join(","));
+    var searchFilterEl = soapDoc.set("searchFilter");
+    if (params.conds && params.conds.length) {
+        var condsEl = soapDoc.set("conds", null, searchFilterEl);
+        if (params.join == ZmSearch.JOIN_OR) {
+            condsEl.setAttribute("or", 1);
+        }
+        for (var i = 0; i < params.conds.length; i++) {
+            var cond = params.conds[i];
+            var condEl = soapDoc.set("cond", null, condsEl);
+            condEl.setAttribute("attr", cond.attr);
+            condEl.setAttribute("op", cond.op);
+            condEl.setAttribute("value", cond.value);
+        }
+    }
+
+    var response = appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:false,
+        timeout:params.timeout, noBusyOverlay:params.noBusyOverlay});
+    var result = new ZmCsfeResult(response, false);
+
+    var search = new ZmSearch(params);
+    search.isCalResSearch = true;
+
+    var searchResult = new ZmSearchResult(search);
+    searchResult.set(response.SearchCalendarResourcesResponse);
+    result.set(searchResult);
+    
+    this._handleResponseLoad(result);
 };
 
 ZmResourceList.prototype._handleResponseLoad = 
@@ -66,7 +104,6 @@ function(result) {
 	for (var i = 0; i < a.length; i++) {
 		var resource = a[i];
 		this._updateHashes(resource);
-		this._preMatch(resource);
 		this._idHash[resource.id] = resource;
 	}
 	//bug:16436 this._loaded changed to this.isLoaded 

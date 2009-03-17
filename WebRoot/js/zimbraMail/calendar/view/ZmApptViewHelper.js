@@ -191,11 +191,18 @@ function(item, type, strictText, strictEmail, checkForAvailability) {
 
 	if (!item || !type) return null;
 
-	if (!ZmApptViewHelper._locations) {
-		ZmApptViewHelper._locations = appCtxt.getApp(ZmApp.CALENDAR).getLocations();
+	if (type == ZmCalBaseItem.LOCATION && !ZmApptViewHelper._locations) {
+		var locations = ZmApptViewHelper._locations = appCtxt.getApp(ZmApp.CALENDAR).getLocations();
+        if(!locations.isLoaded) {
+            locations.load();
+        }
+
 	}
-	if (!ZmApptViewHelper._equipment) {
-		ZmApptViewHelper._equipment = appCtxt.getApp(ZmApp.CALENDAR).getEquipment();
+	if (type == ZmCalBaseItem.EQUIPMENT && !ZmApptViewHelper._equipment) {
+		var equipment = ZmApptViewHelper._equipment = appCtxt.getApp(ZmApp.CALENDAR).getEquipment();
+        if(!equipment.isLoaded) {
+            equipment.load();
+        }                
 	}
 	
 	var attendee = null;

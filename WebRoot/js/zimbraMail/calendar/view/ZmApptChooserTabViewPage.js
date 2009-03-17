@@ -171,6 +171,9 @@ ZmApptChooserTabViewPage.prototype.showMe =
 function() {
 	var pSize = this.parent.getSize();
 	this.resize(pSize.x, pSize.y);
+    if (this._rendered) {
+		this._chooser.reset();
+	}
 
 	this.parent.tabSwitched(this._tabKey);
 	this._setAttendees();
@@ -944,6 +947,9 @@ function(html, idx, item, field, colIdx, params) {
 		html[idx++] = AjxStringUtil.htmlEncode(name);
 	} else if (field == ZmItem.F_NAME) {
 		var name = (this._chooserType == ZmCalBaseItem.PERSON) ? item.getFullName() : item.getAttr(ZmResource.F_name);
+        if(this._chooserType != ZmCalBaseItem.PERSON && item instanceof ZmContact) {
+            name = item.getFullName();             
+        }
 		html[idx++] = AjxStringUtil.htmlEncode(name);
 	} else if (field == ZmItem.F_EMAIL) {
 		html[idx++] = AjxStringUtil.htmlEncode(item.getEmail());

@@ -648,7 +648,6 @@ function() {
 ZmCalendarApp.prototype.getLocations = 
 function() {
     this.initResources();
-    this.loadResources();
     return this._locations;
 };
 
