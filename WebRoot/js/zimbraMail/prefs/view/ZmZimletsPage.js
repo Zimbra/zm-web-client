@@ -170,7 +170,7 @@ function(){
             }else{
                 desc = allz[i].zimlet[0].description;
             }
-            var z = new ZmPrefZimlet(name,(!checked || checked.length <= 0 || checked.indexOf(name) >=0 ), desc);
+            var z = new ZmPrefZimlet(name,(!checked || checked.length <= 0 || (","+checked.join(",")+",").indexOf(","+name+",") >=0 ), desc);
             zimlets.addPrefZimlet(z);
     }
     return zimlets;
