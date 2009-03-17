@@ -773,7 +773,8 @@ function(event) {
     var msg = new ZmMailMsg();
     var toOverride = null;
 
-    var cc = appCtxt.getApp(ZmApp.MAIL).getComposeController();
+    //var cc = appCtxt.getApp(ZmApp.MAIL).getComposeController();
+    var cc = AjxDispatcher.run("GetComposeController");
     cc._setView({action:action, msg: msg, toOverride: toOverride, inNewWindow: false});
     var callback = new AjxCallback(this, cc._handleResponseSaveDraftListener);
     cc.sendDocs(docInfo,true,callback);
