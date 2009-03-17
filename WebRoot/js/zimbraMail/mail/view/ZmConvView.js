@@ -128,7 +128,7 @@ function(newWidth, newHeight, force) {
 			this._msgView.setBounds(listViewWidth + sashThickness, 0,
 									newWidth - (listViewWidth + sashThickness), newHeight);
 		} else {
-			var listViewHeight, upperHeight;
+			var listViewHeight = 0, upperHeight, rowsHeight = 0;
 			if (this._horizSashY) {
 				listViewHeight = this._horizSashY - summaryHeight;
 				upperHeight = summaryHeight + listViewHeight;
@@ -139,18 +139,20 @@ function(newWidth, newHeight, force) {
 				if (list && list.size() > 0) {
 					var threshold = Math.min(list.size() + 1, 6);
 					var div = document.getElementById(this._mailListView._getItemId(list.get(0)));
-					var rowsHeight = Dwt.getSize(div).y * threshold;
-					listViewHeight = rowsHeight + DwtListView.HEADERITEM_HEIGHT;
-					upperHeight = this._minUpperHeight = summaryHeight + listViewHeight;
-					this._msgView.setBounds(0, upperHeight + sashThickness, newWidth, mvHeight);
-					sash.setLocation(0, upperHeight);
+					if (div) {
+						var rowsHeight = Dwt.getSize(div).y * threshold;
+						listViewHeight = rowsHeight + DwtListView.HEADERITEM_HEIGHT;
+						upperHeight = this._minUpperHeight = summaryHeight + listViewHeight;
+					}
 				}
 			}
-			this._mailListView.setLocation(0, summaryHeight);
-			this._mailListView.resetSize(newWidth, listViewHeight);
-			sash.setLocation(0, upperHeight);
-			var mvHeight = Math.max((newHeight - (upperHeight + sashThickness)), 0);
-			this._msgView.setBounds(0, upperHeight + sashThickness, newWidth, mvHeight);
+			if (summaryHeight && listViewHeight && upperHeight) {
+				this._mailListView.setLocation(0, summaryHeight);
+				this._mailListView.resetSize(newWidth, listViewHeight);
+				sash.setLocation(0, upperHeight);
+				var mvHeight = Math.max((newHeight - (upperHeight + sashThickness)), 0);
+				this._msgView.setBounds(0, upperHeight + sashThickness, newWidth, mvHeight);
+			}
 		}
 	} else {
 		this._mailListView.resetSize(newWidth, newHeight - summaryHeight);
