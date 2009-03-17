@@ -173,14 +173,27 @@ function(view) {
 	return this._pageEditView;
 };
 
+/**
+ * Creates the desired application view.
+ *
+ * @param params		[hash]			hash of params:
+ *        view			[constant]		view ID
+ *        elements		[array]			array of view components
+ *        isAppView		[boolean]*		this view is a top-level app view
+ *        clear			[boolean]*		if true, clear the hidden stack of views
+ *        pushOnly		[boolean]*		don't reset the view's data, just swap the view in
+ *        isTransient	[boolean]*		this view doesn't go on the hidden stack
+ *        stageView		[boolean]*		stage the view rather than push it
+ *        tabParams		[hash]*			button params; view is opened in app tab instead of being stacked
+ */
 ZmPageEditController.prototype._setView =
-function(view, elements, isAppView, clear, pushOnly, isTransient) {
+function(params) {
 	ZmListController.prototype._setView.apply(this, arguments);
 
 	this._format = this._format || ZmPageEditor.DEFAULT;
 
 	if (appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
-		var toolbar = this._toolbar[view];
+		var toolbar = this._toolbar[params.view];
 		var button = toolbar.getButton(ZmOperation.COMPOSE_FORMAT);
 		var menu = button.getMenu();
 		menu.checkItem(ZmPageEditor.KEY_FORMAT, this._format, true);
