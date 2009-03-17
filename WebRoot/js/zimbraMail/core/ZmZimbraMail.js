@@ -565,6 +565,7 @@ function(params) {
 	}
 
 	if (appCtxt.get(ZmSetting.LICENSE_STATUS) != ZmSetting.LICENSE_GOOD) {
+		AjxDispatcher.require("Startup2");
 		var dlg = appCtxt.getMsgDialog();
 		dlg.reset();
 		dlg.setMessage(ZmMsg.licenseExpired, DwtMessageDialog.WARNING_STYLE);
