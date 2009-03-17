@@ -122,7 +122,7 @@ function(params) {
 		overviewId: (appCtxt.multiAccounts) ? ([base, acct.name].join(":")) : base,
 		noRootSelect: params.noRootSelect,
 		account: acct,
-		treeStyle: params.treeStyle
+		treeStyle: params.treeStyle || DwtTree.SINGLE_STYLE		// we don't want checkboxes!
 	};
 
 	// make sure the requisite packages are loaded
@@ -147,6 +147,7 @@ function(params) {
 
 ZmChooseFolderDialog.prototype._doPopup =
 function(params, treeIds, folderTree) {
+
 	this._setOverview(params);
 
 	for (var i = 0; i < treeIds.length; i++) {
