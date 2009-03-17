@@ -63,7 +63,7 @@ function() {
 ZmTree.prototype.asList =
 function(options) {
 	var list = [];
-	return this.root ? this._addToList(this.root, list) : list;
+	return this.root ? this._addToList(this.root, list, options) : list;
 };
 
 ZmTree.prototype.getUnreadHash =
@@ -79,12 +79,12 @@ function(organizer, list, options) {
 	var incRemote = options && options.includeRemote;
 	var remoteOnly = options && options.remoteOnly;
 	var isRemote = organizer.isRemote();
-	if ((!isRemote && !remoteOnly) || (isRemote && (remoteOnly ||incRemote))) {
+	if ((!isRemote && !remoteOnly) || (isRemote && (remoteOnly || incRemote))) {
 		list.push(organizer);
 	}
 	var children = organizer.children.getArray();
     for (var i = 0; i < children.length; i++) {
-        this._addToList(children[i], list);
+        this._addToList(children[i], list, options);
     }
 	return list;
 };
