@@ -1,4 +1,4 @@
-<!--
+<%--
  * ***** BEGIN LICENSE BLOCK *****
  * 
  * Zimbra Collaboration Suite Web Client
@@ -13,7 +13,7 @@
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * 
  * ***** END LICENSE BLOCK *****
--->
+--%>
 <%@ tag body-content="empty" dynamic-attributes="dynattrs" %>
 <%@ attribute name="searchResult" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZSearchResultBean"%>
 <%@ attribute name="max" rtexprvalue="true" required="false" %>
