@@ -777,33 +777,7 @@ function() {
 };
 
 /**
-* Checks if it is ok to log off.
-* 
-* @param 	pendingAction		action to perform if the user allows logout
-*/
-ZmAppViewMgr.prototype.isOkToLogOff =
-function(pendingAction) {
-
-	var views = AjxUtil.getHashKeys(this._isTabView);
-	if (!this._isTabView[this._currentView]) {
-		views.push(this._currentView);
-	}
-	for (var i = 0; i < views.length; i++) {
-		var view = views[i];
-		var callback = this._callbacks[view] && this._callbacks[view][ZmAppViewMgr.CB_PRE_UNLOAD];
-		if (callback) {
-			DBG.println(AjxDebug.DBG2, "checking if ok to log off " + this._currentView);
-			this._pendingAction = pendingAction;
-			this._pendingView = null;
-			var okToContinue = callback.run(view, false);
-			if (!okToContinue) { return false; }
-		}
-	}
-	return true;
-};
-
-/**
-* Checks if it is ok to unload the app (user navigtates away, closes browser, etc.)
+* Checks if it is ok to unload the app (user logs out, navigates away, closes browser, etc.)
 */
 ZmAppViewMgr.prototype.isOkToUnload =
 function() {
