@@ -783,15 +783,23 @@ function() {
 */
 ZmAppViewMgr.prototype.isOkToLogOff =
 function(pendingAction) {
-	var okToContinue = true;
-	var callback = this._callbacks[this._currentView] ? this._callbacks[this._currentView][ZmAppViewMgr.CB_PRE_HIDE] : null;
-	if (callback) {
-		DBG.println(AjxDebug.DBG2, "checking if ok to log off " + this._currentView);
-		this._pendingAction = pendingAction;
-		this._pendingView = null;
-		okToContinue = callback.run(this._currentView, false);
+
+	var views = AjxUtil.getHashKeys(this._isTabView);
+	if (!this._isTabView[this._currentView]) {
+		views.push(this._currentView);
 	}
-	return okToContinue;
+	for (var i = 0; i < views.length; i++) {
+		var view = views[i];
+		var callback = this._callbacks[view] && this._callbacks[view][ZmAppViewMgr.CB_PRE_UNLOAD];
+		if (callback) {
+			DBG.println(AjxDebug.DBG2, "checking if ok to log off " + this._currentView);
+			this._pendingAction = pendingAction;
+			this._pendingView = null;
+			var okToContinue = callback.run(view, false);
+			if (!okToContinue) { return false; }
+		}
+	}
+	return true;
 };
 
 /**
@@ -799,13 +807,21 @@ function(pendingAction) {
 */
 ZmAppViewMgr.prototype.isOkToUnload =
 function() {
-	var okToContinue = true;
-	var callback = this._callbacks[this._currentView] ? this._callbacks[this._currentView][ZmAppViewMgr.CB_PRE_UNLOAD] : null;
-	if (callback) {
-		DBG.println(AjxDebug.DBG2, "checking if ok to unload " + this._currentView);
-		okToContinue = callback.run(this._currentView);
+
+	var views = AjxUtil.getHashKeys(this._isTabView);
+	if (!this._isTabView[this._currentView]) {
+		views.push(this._currentView);
 	}
-	return okToContinue;
+	for (var i = 0; i < views.length; i++) {
+		var view = views[i];
+		var callback = this._callbacks[view] && this._callbacks[view][ZmAppViewMgr.CB_PRE_UNLOAD];
+		if (callback) {
+			DBG.println(AjxDebug.DBG2, "checking if ok to unload " + view);
+			var okToContinue = callback.run(view);
+			if (!okToContinue) { return false; }
+		}
+	}
+	return true;
 };
 
 // Private methods
