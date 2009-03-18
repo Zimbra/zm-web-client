@@ -140,6 +140,17 @@ function() {
 	if (this.ACE_ENABLED && this._mode == DwtHtmlEditor.HTML) {
 		setTimeout(AjxCallback.simpleClosure(this._deserializeAceObjects, this), 100);
 	}
+    if(this._onContentInitializeCallback){
+        this._onContentInitializeCallback.run();
+    }
+};
+
+ZmHtmlEditor.prototype.addOnContentIntializedListener = function(callback){
+    this._onContentInitializeCallback = callback;
+};
+
+ZmHtmlEditor.prototype.removeOnContentIntializedListener = function(){
+    this._onContentInitializeCallback = null; 
 };
 
 ZmHtmlEditor.prototype.getContent =

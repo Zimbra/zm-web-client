@@ -27,6 +27,8 @@
 ZmComposeView = function(parent, controller, composeMode) {
 
 	this._view = ZmId.VIEW_COMPOSE + controller.sessionId;
+    this._sessionId = controller.sessionId;
+    
 	DwtComposite.call(this, {parent:parent, className:"ZmComposeView", posStyle:Dwt.ABSOLUTE_STYLE,
 							 id:ZmId.getViewId(this._view)});
 
@@ -290,8 +292,8 @@ function() {
 	}
 
 	// keep track of "uploaded" attachments as well :/
-	val += this._getForwardAttIds(ZmComposeView.FORWARD_ATT_NAME).join("");
-	val += this._getForwardAttIds(ZmComposeView.FORWARD_MSG_NAME).join("");
+	val += this._getForwardAttIds(ZmComposeView.FORWARD_ATT_NAME+this._sessionId).join("");
+	val += this._getForwardAttIds(ZmComposeView.FORWARD_MSG_NAME+this._sessionId).join("");
 
 	return val;
 };
@@ -318,28 +320,57 @@ function() {
 	return false;
 };
 
-ZmComposeView.prototype._filterInlineAmongForwardAttIds =
-function(msg, atts, forwardAttIds) {
-	var fwdAttIds = [];
-	for (var i=0; i < forwardAttIds.length; i++) {
-		var fwdAtt = forwardAttIds[i];
-		var matched = false;
-		for (var j=0; j < atts.length; j++) {
-			if (atts[j].part == fwdAtt) {
-				var cid = atts[j].ci;
-				if (cid) {
-					cid = cid.substring(1, cid.length-1);
-					msg.addInlineAttachmentId(cid, null, atts[j].part);
-					matched = true;
-				}
-				break;
-			}
-		}
-		if (!matched) {
-			fwdAttIds.push(fwdAtt);
-		}
-	}
-	return fwdAttIds;
+ZmComposeView.prototype._handleInlineAtts =
+function(msg){
+
+    var handled = false, ci, cid, dfsrc, inlineAtt;
+
+    var idoc = this._htmlEditor._getIframeDoc();
+    var images = idoc.getElementsByTagName("img");
+    for (var i = 0; i < images.length; i++) {
+        dfsrc = images[i].getAttribute("dfsrc") || images[i].src;
+        if (dfsrc) {
+            if (dfsrc.substring(0,4) == "cid:") {
+                cid = dfsrc.substring(4);
+                ci = "<" + cid + ">";
+                inlineAtt = msg.findInlineAtt(ci);
+                if (!inlineAtt && this._msg) {
+                    inlineAtt = this._msg.findInlineAtt(ci);
+                }
+                if (inlineAtt) {
+                    msg.addInlineAttachmentId(cid, null, inlineAtt.part);
+                    handled = true;
+                }
+            }
+        }
+    }
+
+    return handled;
+};
+
+ZmComposeView.prototype._mergeInlineAndForwardAtts =
+function(msg, forwardAttIds) {
+
+    var newFwdAttIds = [];
+    var atts = this._msg.attachments;
+
+    function checkFwdAttExists(part){
+        for(var j=0; j<forwardAttIds.length; j++){
+            if(forwardAttIds[j] == part){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    for(var i=0; i<atts.length; i++){
+        var att = atts[i];
+        if(att.ci && !checkFwdAttExists(att.part)){
+            newFwdAttIds.push(att.part);
+        }
+    }
+
+    return [].concat(forwardAttIds, newFwdAttIds);
 };
 
 /**
@@ -449,15 +480,8 @@ function(attId, isDraft) {
 	}
 
 	// get list of message part id's for any forwarded attachements
-	var forwardAttIds = this._getForwardAttIds(ZmComposeView.FORWARD_ATT_NAME);
-	var forwardMsgIds = this._getForwardAttIds(ZmComposeView.FORWARD_MSG_NAME);
-
-	// Handle Inline Attachments as a part of forwardAttIds
-	if (this._msg && this._msg.attachments) {
-		var atts = this._msg.attachments;
-		var filteredForwardAttIds = this._filterInlineAmongForwardAttIds(msg,atts,forwardAttIds);
-		msg._setFilteredForwardAttIds(filteredForwardAttIds);
-	}
+	var forwardAttIds = this._getForwardAttIds(ZmComposeView.FORWARD_ATT_NAME+this._sessionId);
+	var forwardMsgIds = this._getForwardAttIds(ZmComposeView.FORWARD_MSG_NAME+this._sessionId);
 
 	// --------------------------------------------
 	// Passed validation checks, message ok to send
@@ -502,30 +526,7 @@ function(attId, isDraft) {
 
 		htmlPart.setContent(defangedContent);
 
-		// Bug 31535 - inline img atts not preserved on reply/forward
-		// Try to find inline imgs in the composer that were brought into it from the orig msg,
-		// and add them to the new msg's inline atts so that the server sends them.
-		if (( !isDraft && this._action == ZmOperation.DRAFT /*Editing Draft and Sending*/) || this._action == ZmOperation.REPLY || this._action == ZmOperation.FORWARD_INLINE) {
-			var idoc = this._htmlEditor._getIframeDoc();
-			var images = idoc.getElementsByTagName("img");
-			for (var i = 0; i < images.length; i++) {
-				var dfsrc = images[i].getAttribute("dfsrc") || images[i].src;
-				if (dfsrc) {
-					if (dfsrc.substring(0,4) == "cid:") {
-						var cid = dfsrc.substring(4);
-						var ci = "<" + cid + ">";
-						var inlineAtt = msg.findInlineAtt(ci);
-						if (!inlineAtt) {
-							inlineAtt = this._msg.findInlineAtt(ci);
-							if (inlineAtt) {
-								msg.addInlineAttachmentId(cid, null, inlineAtt.part);
-							}
-						}
-					}
-				}
-			}
-		}
-
+        this._handleInlineAtts(msg);           //Better Code
         var inlineAtts = msg.getInlineAttachments();
 		if ( inlineAtts &&  inlineAtts.length > 0 ) {
 			var relatedPart = new ZmMimePart();
@@ -548,11 +549,12 @@ function(attId, isDraft) {
 
 		if (inline) {
 			top.setContentType(ZmMimeTable.MULTI_ALT);
-
 			var relatedPart = new ZmMimePart();
 			relatedPart.setContentType(ZmMimeTable.MULTI_RELATED);
 			relatedPart.children.add(textPart);
 			top.children.add(relatedPart);
+
+            forwardAttIds = this._mergeInlineAndForwardAtts(msg, forwardAttIds);
 		} else {
 			if (this._extraParts) {
 				top.setContentType(ZmMimeTable.MULTI_ALT);
@@ -789,6 +791,10 @@ function(composeMode) {
 			}
 		}
 	}
+
+    if(this._msg && this._isInline() && composeMode == DwtHtmlEditor.TEXT){
+        this._showForwardField(this._msg, this._action, null, true);
+    }
 };
 
 ZmComposeView.prototype._retryHtmlEditorFocus =
@@ -870,17 +876,20 @@ function(msgObj) {
 };
 
 ZmComposeView.prototype._fixMultipartRelatedImages_onTimer = function(msg) {
-        // first time the editor is initialized, idoc.getElementsByTagName("img") is empty
-        // trial and error suggests 500ms is a safe bet.
-        if (!this._firstTimeFixImages) {
-                var self = this;
-                setTimeout(function() {
-                        self._fixMultipartRelatedImages(msg, self._htmlEditor._getIframeDoc());
-                }, 500);
-                this._firstTimeFixImages = true;
-        } else {
-                this._fixMultipartRelatedImages(msg, this._htmlEditor._getIframeDoc());
-        }
+    // first time the editor is initialized, idoc.getElementsByTagName("img") is empty
+    // Instead of waiting for 500ms, trying to add this callback. Risky but works.
+
+    if (!this._firstTimeFixImages) {
+        this._htmlEditor.addOnContentIntializedListener(new AjxCallback(this, this._fixMultipartRelatedImages, [msg, this._htmlEditor._getIframeDoc()]));
+        /* //Old Code
+        var self = this;
+        setTimeout(function() {
+            self._fixMultipartRelatedImages(msg, self._htmlEditor._getIframeDoc());
+        }, 500);
+        this._firstTimeFixImages = true;*/
+    } else {
+        this._fixMultipartRelatedImages(msg, this._htmlEditor._getIframeDoc());
+    }
 };
 
 /**
@@ -889,6 +898,12 @@ ZmComposeView.prototype._fixMultipartRelatedImages_onTimer = function(msg) {
  */
 ZmComposeView.prototype._fixMultipartRelatedImages =
 function(msg, idoc) {
+    
+    if(!this._firstTimeFixImages){
+        this._firstTimeFixImages = true;
+        this._htmlEditor.removeOnContentIntializedListener();
+    }
+
 	if (!idoc) { return; }
 
 	var images = idoc.getElementsByTagName("img");
@@ -1562,7 +1577,8 @@ function(action, msg, extraBodyText, incOption, nosig) {
 		this._htmlEditor.setContent(body);
 
 		if (!isInviteReply) {
-			this._showForwardField(msg, action);
+            var showInlineAtts = !appCtxt.get(ZmSetting.VIEW_AS_HTML);
+			this._showForwardField(msg, action, null, showInlineAtts);
 			this._fixMultipartRelatedImages_onTimer(msg);
 			return;
 		}
@@ -1774,6 +1790,7 @@ function(action, msg, extraBodyText, incOption, nosig) {
 		this._htmlEditor.setContent(value);
 	}
 
+    hasInlineImages = hasInlineImages || !appCtxt.get(ZmSetting.VIEW_AS_HTML);
 	this._showForwardField(msg, action, incOption, hasInlineImages, hasInlineAtts);
 	this._fixMultipartRelatedImages_onTimer(msg);
 };
@@ -2145,7 +2162,8 @@ function(msg, action, replyPref, includeInlineImages, includeInlineAtts) {
 				isNew: action == ZmOperation.NEW_MESSAGE,
 				isForward: action == ZmOperation.FORWARD,
 				isForwardInline: action == ZmOperation.FORWARD_INLINE,
-				isDraft: action == ZmOperation.DRAFT
+				isDraft: action == ZmOperation.DRAFT,
+                fwdFieldName:(ZmComposeView.FORWARD_ATT_NAME+this._sessionId)
 			};
 			html = AjxTemplate.expand("mail.Message#ForwardAttachments", data);
 
@@ -2164,7 +2182,10 @@ function(msg, action, replyPref, includeInlineImages, includeInlineAtts) {
 			if (!message) continue;
 			messages.push(message);
 		}
-		var data = { messages: messages };
+		var data = {
+            messages: messages,
+            fwdFieldName: (ZmComposeView.FORWARD_MSG_NAME+this._sessionId)
+        };
 		html = AjxTemplate.expand("mail.Message#ForwardMessages", data);
 		if (messages.length >= ZmComposeView.SHOW_MAX_ATTACHMENTS) {
 			this._attcDiv.style.height = ZmComposeView.MAX_ATTACHMENT_HEIGHT;

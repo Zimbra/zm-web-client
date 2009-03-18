@@ -501,12 +501,6 @@ function(ids) {
 	this._forAttIds = ids;
 };
 
-ZmMailMsg.prototype._setFilteredForwardAttIds =
-function (filteredFwdAttIds) {
-	this._onChange("filteredForwardAttIds", filteredFwdAttIds);
-	this._filteredFwdAttIds = filteredFwdAttIds;
-};
-
 // Actions
 
 /**
@@ -987,7 +981,7 @@ function(request, isDraft, accountName, requestReadReceipt) {
 
         // attach msg attachments
 		if (this._forAttIds && this._forAttIds.length) {
-			var attIds = this._filteredFwdAttIds ||  this._forAttIds;
+			var attIds = this._forAttIds;
 			if (attIds && attIds.length) {
 				var parts = attachNode.mp = [];
 	            for (var i = 0; i < attIds.length; i++) {
@@ -1094,8 +1088,8 @@ function(attachment) {
 	if (ZmMimeTable.isIgnored(type))
 		return false;
 
-	if (type.match(/^image/) && attachment.foundInMsgBody)
-		return false;
+	/*if (type.match(/^image/) && attachment.foundInMsgBody)
+		return false; */
 
 	// bug fix #8751 - dont ignore text/calendar type if msg is not an invite
 	if (type == ZmMimeTable.TEXT_CAL && appCtxt.get(ZmSetting.CALENDAR_ENABLED) && this.isInvite())
@@ -1151,16 +1145,25 @@ function(findHits, includeInlineImages, includeInlineAtts) {
         }
     }
 
-
+    /*var content = this.getBodyContent(ZmMimeTable.TEXT_HTML);*/
 
 	if (attachments && attachments.length > 0) {
 
         var hrefRoot = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI) + "&loc=" + AjxEnv.DEFAULT_LOCALE + "&id=" + this.id + "&part=";
 
 		for (var i = 0; i < attachments.length; i++) {
-			var attach = attachments[i];
+            var attach = attachments[i];
 
-			if (!this.isRealAttachment(attach) || (attach.ci && !includeInlineImages) || (attach.cd == "inline" && attach.filename && !includeInlineAtts)) {
+            /*if(attach.ci){ //If inline attachment
+                var cid = attach.ci;
+                cid = cid.substr(1, cid.length - 2);
+                var reg = "<img.*cid:"+cid+"[^>]*";
+                if(!this._cidregex) this._cidregex = new RegExp("");
+                var regex = this._cidregex.compile(reg, "i");                      
+                attach.foundInMsgBody = (regex.exec(content) != null );
+            }*/
+
+			if (!this.isRealAttachment(attach) || (attach.ct.match(/^image/) && attach.ci && !includeInlineImages) || (attach.cd == "inline" && attach.filename && !includeInlineAtts)) {
 				continue;
 			}
 
@@ -1264,6 +1267,8 @@ function(findHits, includeInlineImages, includeInlineAtts) {
 			if(attach.ci || (includeInlineImages && attach.cd == "inline")){ // bug: 28741
 				props.ci = true;
 			}
+
+            props.foundInMsgBody = attach.foundInMsgBody;
 
 			// and finally, add to attLink array
 			this._attLinks.push(props);

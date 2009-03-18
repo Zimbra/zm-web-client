@@ -722,7 +722,7 @@ function(msg, elem, aname) {
 			avalue = msg.getContentPartAttachUrl(ZmMailMsg.CONTENT_PART_ID, cid);
 			if (avalue) {
 				elem.setAttribute(aname, avalue);
-				elem.setAttribute(df_aname, avalue)
+				//elem.setAttribute(df_aname, avalue)
 				return false;
 			}
 		}
@@ -730,7 +730,7 @@ function(msg, elem, aname) {
 			avalue = msg.getContentPartAttachUrl(ZmMailMsg.CONTENT_PART_LOCATION, avalue);
 			if (avalue) {
 				elem.setAttribute(aname, avalue);
-				elem.setAttribute(df_aname, avalue)
+				//elem.setAttribute(df_aname, avalue)
 				return false;
 			}
 		}
@@ -1075,7 +1075,8 @@ function(msg, container, callback) {
 		}
 	}
 
-	var attachmentsCount = msg.getAttachmentLinks(true).length;
+    var isTextView = !appCtxt.get(ZmSetting.VIEW_AS_HTML);
+	var attachmentsCount = msg.getAttachmentLinks(true, isTextView).length;
 	var hasAttachments = attachmentsCount != 0;
 
 	// do we add a close button in the header section?
@@ -1361,7 +1362,9 @@ function(msg) {
 
 ZmMailMsgView.prototype._setAttachmentLinks =
 function() {
-	var attLinks = this._msg.getAttachmentLinks(true);
+
+    var isTextView = !appCtxt.get(ZmSetting.VIEW_AS_HTML);
+	var attLinks = this._msg.getAttachmentLinks(true, isTextView);
 	var el = document.getElementById(this._attLinksId + "_tr");
 	if (el) {
 		el.style.display = attLinks.length == 0 ? "none" : "";
