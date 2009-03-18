@@ -158,7 +158,7 @@
                                     <!-- <td class='CB' nowrap><input <c:if test="${hit.id eq msg.id}">checked</c:if> type=checkbox name="idcv" value="${hit.id}"/></td> -->
                                     <td class='MsgStatusImg' align="center"><app:img src="${hit.messageHit.statusImage}" altkey='${hit.messageHit.statusImageAltKey}'/></td>
 
-                                    <td> allow wrap
+                                    <td> <%-- allow wrap --%>
                                         <a href="${msgUrl}">${fn:escapeXml(hit.messageHit.displaySender)}</a>
                                         <br>
                                         <a href="${fn:escapeXml(msgUrl)}" id="A${status.index}">
