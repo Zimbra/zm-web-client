@@ -1,4 +1,4 @@
-<!--
+<%--
  * ***** BEGIN LICENSE BLOCK *****
  * 
  * Zimbra Collaboration Suite Web Client
@@ -13,7 +13,7 @@
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * 
  * ***** END LICENSE BLOCK *****
--->
+--%>
 <%@ tag body-content="scriptless" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>

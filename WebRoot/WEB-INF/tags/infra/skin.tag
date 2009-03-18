@@ -1,4 +1,4 @@
-<!--
+<%--
  * ***** BEGIN LICENSE BLOCK *****
  * 
  * Zimbra Collaboration Suite Web Client
@@ -13,7 +13,7 @@
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * 
  * ***** END LICENSE BLOCK *****
--->
+--%>
 <%@ tag import="com.zimbra.cs.account.Domain" %>
 <%@ attribute name="mailbox" rtexprvalue="true" required="false" type="com.zimbra.cs.taglib.bean.ZMailboxBean" %>
 <%@ attribute name="defaultSkin" rtexprvalue="true" required="false" %>
