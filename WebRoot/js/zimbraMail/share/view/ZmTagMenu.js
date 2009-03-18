@@ -31,7 +31,7 @@
 ZmTagMenu = function(parent, controller) {
 
 	// create a menu (though we don't put anything in it yet) so that parent widget shows it has one
-	ZmPopupMenu.call(this, parent, null, null, controller);
+	ZmPopupMenu.call(this, parent, null, parent.getHTMLElId() + "|MENU", controller);
 
 	parent.setMenu(this);
 	this._addHash = {};
@@ -46,7 +46,7 @@ ZmTagMenu = function(parent, controller) {
 	if (parent instanceof DwtMenuItem) {
 		parent.setHoverDelay(ZmTagMenu._HOVER_TIME);
 	}
-}
+};
 
 ZmTagMenu.prototype = new ZmPopupMenu;
 ZmTagMenu.prototype.constructor = ZmTagMenu;
@@ -61,17 +61,17 @@ ZmTagMenu._HOVER_TIME = 200;
 ZmTagMenu.prototype.toString =
 function() {
 	return "ZmTagMenu";
-}
+};
 
 ZmTagMenu.prototype.addSelectionListener = 
 function(listener) {
 	this._evtMgr.addListener(DwtEvent.SELECTION, listener);
-}
+};
 
 ZmTagMenu.prototype.removeSelectionListener = 
 function(listener) {
 	this._evtMgr.removeListener(DwtEvent.SELECTION, listener);    	
-}
+};
 
 ZmTagMenu.prototype.setEnabled =
 function(enabled) {
@@ -80,7 +80,7 @@ function(enabled) {
 	if (enabled && !this._tagList) { return; }
 
 	this.parent.setEnabled(enabled);
-}
+};
 
 // Dynamically set the list of tags that can be added/removed based on the given list of items.
 ZmTagMenu.prototype.set =
@@ -96,7 +96,7 @@ function(items, tagList) {
 	if (this.parent instanceof DwtMenuItem) {
 		this.parent.setHoverDelay(ZmTagMenu._HOVER_TIME);
 	}
-}
+};
 
 ZmTagMenu.prototype._doPopup =
 function(x, y, kbGenerated) {
@@ -117,7 +117,7 @@ function(x, y, kbGenerated) {
 		}
 	}
 	ZmPopupMenu.prototype._doPopup.call(this, x, y, kbGenerated);
-}
+};
 
 
 // Given a list of items, produce two lists: one of tags that could be added (any tag
@@ -153,7 +153,7 @@ function(items, tagList) {
 	}
 
 	return {add: add, remove: remove};
-}
+};
 
 // Create the list of tags that can be added, and the submenu with the list of
 // tags that can be removed.
@@ -179,7 +179,7 @@ function(tagList, addRemove) {
 	}
 
 	// add static "New Tag" menu item
-	var miNew = this._menuItems[ZmTagMenu.MENU_ITEM_ADD_ID] = new DwtMenuItem({parent:this});
+	var miNew = this._menuItems[ZmTagMenu.MENU_ITEM_ADD_ID] = new DwtMenuItem({parent:this, id: this._htmlElId + "|NEWTAG"});
 	miNew.setText(AjxStringUtil.htmlEncode(ZmMsg.newTag));
 	miNew.setImage("NewTag");
 	miNew.setShortcut(appCtxt._getShortcutHint(this._keyMap, ZmKeyMap.NEW_TAG));
@@ -187,7 +187,7 @@ function(tagList, addRemove) {
 	miNew.addSelectionListener(new AjxListener(this, this._menuItemSelectionListener), 0);
 
 	// add static "Remove Tag" menu item
-	var miRemove = this._menuItems[ZmTagMenu.MENU_ITEM_REM_ID] = new DwtMenuItem({parent:this});
+	var miRemove = this._menuItems[ZmTagMenu.MENU_ITEM_REM_ID] = new DwtMenuItem({parent:this, id: this._htmlElId + "|REMOVETAG"});
 	miRemove.setEnabled(false);
 	miRemove.setText(AjxStringUtil.htmlEncode(ZmMsg.removeTag));
 	miRemove.setImage("DeleteTag");
@@ -224,7 +224,8 @@ function(tagList, addRemove) {
 			mi.addSelectionListener(new AjxListener(this, this._menuItemSelectionListener), 0);
 		}
 	}
-}
+};
+
 ZmTagMenu.tagNameLength = 20;
 ZmTagMenu.prototype._addNewTag =
 function(menu, newTag, add, index, tagHash) {
@@ -238,7 +239,7 @@ function(menu, newTag, add, index, tagHash) {
 	mi.addSelectionListener(new AjxListener(this, this._menuItemSelectionListener), 0);
 	mi.setShortcut(appCtxt._getShortcutHint(null, ZmKeyMap.TAG, newTag.id));
 	tagHash[newTag.id] = mi;
-}
+};
 
 ZmTagMenu.prototype._menuItemSelectionListener =
 function(ev) {
@@ -246,4 +247,5 @@ function(ev) {
 	if (ev.item.getData(ZmTagMenu.KEY_TAG_EVENT)) {
 		this._evtMgr.notifyListeners(DwtEvent.SELECTION, ev.item);
 	}
-}
+};
+
