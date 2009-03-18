@@ -221,7 +221,7 @@
         <c:if test="${briefcase}">
          <tr>
             <td nowrap align=right>
-                <label for="ownersBriefcaseName"><fmt:message key="ownersBriefcasaeName"/>
+                <label for="ownersBriefcaseName"><fmt:message key="ownersBriefcaseName"/>
                 :</label>
             </td>
             <td>

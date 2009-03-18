@@ -58,7 +58,7 @@
                     <fmt:message key="actionNoOwnerEmailSpecified"/>
                 </app:status>
             </c:when>
-            <c:when test="${not empty uploader.params.newFolderOwnersTaskListVisible and empty uploader.params.newFolderOwnersBriefcase}">
+            <c:when test="${not empty uploader.params.newFolderOwnersBriefcaseVisible and empty uploader.params.newFolderOwnersBriefcase}">
                 <app:status style="Warning">
                     <fmt:message key="actionNoOwnerBriefcaseSpecified"/>
                 </app:status>
@@ -105,7 +105,7 @@
                 <zm:emptyFolder id="${uploader.params.folderEmptyId}"/>
                 <c:set var="folderName" value="${zm:getFolderName(pageContext, uploader.params.folderEmptyId)}"/>
                 <app:status>
-                    <fmt:message key="taskListEmptied">
+                    <fmt:message key="briefcaseEmptied">
                         <fmt:param value="${folderName}"/>
                     </fmt:message>
                 </app:status>
