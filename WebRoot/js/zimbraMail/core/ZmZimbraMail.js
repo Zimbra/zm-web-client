@@ -228,7 +228,18 @@ function(params) {
 */
 ZmZimbraMail.unload =
 function() {
+
 	ZmZimbraMail._endSession();
+
+	if (ZmZimbraMail._isLogOff) {
+		ZmZimbraMail._isLogOff = false;
+		// stop keeping track of user input (if applicable)
+		if (window._zimbraMail) {
+			window._zimbraMail.setSessionTimer(false);
+		}
+
+		ZmCsfeCommand.clearAuthToken();
+	}
 
 	var childWinList = window._zimbraMail ? window._zimbraMail._childWinList : null;
 	if (childWinList) {
@@ -1489,29 +1500,9 @@ function() {
 
 ZmZimbraMail.logOff =
 function() {
-	ZmZimbraMail._endSession();
-
-	// stop keeping track of user input (if applicable)
-	if (window._zimbraMail) {
-		window._zimbraMail.setSessionTimer(false);
-	}
-
-	ZmCsfeCommand.clearAuthToken();
-
-	window.onbeforeunload = null;
-
+	ZmZimbraMail._isLogOff = true;
 	var url = AjxUtil.formatUrl({path:appContextPath, qsArgs:{loginOp:'logout'}});
-	ZmZimbraMail.sendRedirect(url);
-};
-
-ZmZimbraMail._logOffListener = new AjxListener(null, ZmZimbraMail.logOff);
-
-ZmZimbraMail.conditionalLogOff =
-function() {
-	if (window._zimbraMail && !window._zimbraMail._appViewMgr.isOkToLogOff(ZmZimbraMail._logOffListener)) {
-		return;
-	}
-	ZmZimbraMail.logOff();
+	ZmZimbraMail.sendRedirect(url);	// will trigger onbeforeunload
 };
 
 ZmZimbraMail._onClickLogOff =
@@ -1522,7 +1513,7 @@ function() {
 		var ev = DwtUiEvent.getEvent();
 		ev.returnValue = false;
 	}
-	ZmZimbraMail.conditionalLogOff();
+	ZmZimbraMail.logOff();
 };
 
 ZmZimbraMail.helpLinkCallback =
@@ -1662,16 +1653,28 @@ function(ex, continuation) {
 	}
 };
 
-// This method is called by the window.onbeforeunload method.
+// This method is called by the window.onbeforeunload handler
 ZmZimbraMail._confirmExitMethod =
 function() {
-	if (this._pollRequest) {
-		this._requestMgr.cancelRequest(this._pollRequest);
-	}
-
-	if (window._zimbraMail && !window._zimbraMail._appViewMgr.isOkToUnload()) {
+	if (!ZmZimbraMail._isOkToExit()) {
+		ZmZimbraMail._isLogOff = false;
 		return ZmMsg.appExitWarning;
 	}
+};
+
+/**
+ * Returns true if there is no unsaved work. If that's the case, it also
+ * cancels any pending poll. Typically called by onbeforeunload handling.
+ */
+ZmZimbraMail._isOkToExit =
+function() {
+	var appCtlr = window._zimbraMail;
+	if (!appCtlr) { return true; }
+	var okToExit = appCtlr._appViewMgr.isOkToUnload();
+	if (okToExit && appCtlr._pollRequest) {
+		appCtlr._requestMgr.cancelRequest(appCtlr._pollRequest);
+	}
+	return okToExit;
 };
 
 ZmZimbraMail.unloadHackCallback =
@@ -1773,7 +1776,7 @@ function(ev) {
 		if (id == ZmAppChooser.B_HELP) {
 			window.open(appCtxt.get(ZmSetting.HELP_URI));
 		} else if (id == ZmAppChooser.B_LOGOUT) {
-			ZmZimbraMail.conditionalLogOff();
+			ZmZimbraMail.logOff();
 		} else if (id && ZmApp.ENABLED_APPS[id] && (id != this._activeTabId)) {
 			this.activateApp(id);
 		} else if (id != this._activeTabId) {
@@ -1877,7 +1880,7 @@ function(actionCode, ev) {
 		}
 
 		case ZmKeyMap.LOGOFF: {
-			ZmZimbraMail.conditionalLogOff();
+			ZmZimbraMail.logOff();
 			break;
 		}
 
