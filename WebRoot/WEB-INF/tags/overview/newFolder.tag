@@ -1,4 +1,4 @@
-<!--
+<%--
  * ***** BEGIN LICENSE BLOCK *****
  * 
  * Zimbra Collaboration Suite Web Client
@@ -13,7 +13,7 @@
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * 
  * ***** END LICENSE BLOCK *****
--->
+--%>
 <%@ tag body-content="empty" %>
 <%@ attribute name="calendar" rtexprvalue="true" required="false" %>
 <%@ attribute name="tasklist" rtexprvalue="true" required="false" %>
