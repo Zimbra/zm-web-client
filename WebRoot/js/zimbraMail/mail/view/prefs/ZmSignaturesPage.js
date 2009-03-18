@@ -226,17 +226,17 @@ ZmSignaturesPage.prototype._initialize = function(container){
     // Signature Name
     var nameEl = document.getElementById(this._htmlElId+"_SIG_NAME");
 
-    /*var params = {
+    var params = {
         parent: this,
         type: DwtInputField.STRING,
         required: true,
-        validationStyle: DwtInputField.ONEXIT_VALIDATION,
-        validator: AjxCallback.simpleClosure(this._validateName, this)
+        validationStyle: DwtInputField.CONTINUAL_VALIDATION,
+        validator: AjxCallback.simpleClosure(this._updateName, this)
     };
     
-    var input = new DwtInputField(params);*/
+    var input = new DwtInputField(params);
 
-    var input = new DwtInputField(this);
+    /*var input = new DwtInputField(this);*/
     this._replaceControlElement(nameEl, input);
     this._sigName = input;
 
@@ -324,6 +324,11 @@ ZmSignaturesPage.prototype._updateSignature = function(select){
 
     var newName = this._sigName.getValue();
     var isNameModified = newName != oldSignature.name;
+    if(newName.replace(/\s*/g,"") == ""){
+        newName = this._sigName._origName;
+        isNameModified = true;
+    }
+
     oldSignature.name = newName;
 
     var isText = this._sigFormat.getValue();
@@ -352,6 +357,8 @@ ZmSignaturesPage.prototype._populateSignatures = function(reset) {
 	var lessThanEqual = sigNames.length <= this._maxEntries;
 	var count = lessThanEqual ? sigNames.length : this._maxEntries;
 
+    this._calcAutoSignatureNames(signatures);
+
 	for (var i = 0; i < count; i++) {
 		this._addSignature(signatures[sigNames[i]], true, reset);
 	}
@@ -364,11 +371,39 @@ ZmSignaturesPage.prototype._populateSignatures = function(reset) {
 	
 };
 
+ZmSignaturesPage.prototype._calcAutoSignatureNames = function(signatures){
+
+    var autoNames = [];
+    var sigregex = "^"+ZmMsg.signature+"\\s#(\\d+)$";
+    sigregex = new RegExp(sigregex, "i");
+    for (var i = 0; i < signatures.length; i++) {
+        if(sigregex.test(signatures[i].name)){
+            autoNames.push(RegExp.$1);
+        }	
+	}
+    autoNames.sort(function(a, b){ return a-b; });
+
+    var newNames = [];
+    for(i=1; i<25; i++){  //Should be ideally appCtxt.get(ZmSetting.SIGNATURE_MAX_LENGTH).
+        newNames.push(i);
+    }
+
+    if(autoNames.length > 0)
+        newNames = AjxUtil.arraySubstract(newNames, autoNames);
+
+    this._newNames = newNames;
+    
+};
+
+ZmSignaturesPage.prototype._getNewSignatureName = function(){
+    return [ZmMsg.signature, " #", this._newNames.shift()].join("");
+};
+
 ZmSignaturesPage.prototype._getNewSignature = function(){
 
     var signature = new ZmSignature(null);
     signature.id   = Dwt.getNextId();
-    signature.name = ZmMsg.signature + signature.id;
+    signature.name = this._getNewSignatureName();
 	signature._new = true;
 
     return signature;
@@ -420,19 +455,13 @@ ZmSignaturesPage.prototype._addSignature = function(signature, skipControls, res
 
 
 ZmSignaturesPage.prototype._resetSignature = function(signature, clear ) {
-	// remove recently added signature
-	/*if (clear && signature._new) {
-		var sigEl = document.getElementById(signature._htmlElId);
-		sigEl.parentNode.removeChild(sigEl);
-		delete this._signatureComps[signature.id];
-		return;
-	}*/
-
-	// reset signature values back to original values
+	
+    this._selSignature = signature;
 
     this._sigList.setSelection(signature, true );
 
     this._sigName.setValue(signature.name);
+    this._sigName._origName = signature.name;
     this._sigFormat.setSelectedValue(signature.getContentType() == ZmMimeTable.TEXT_PLAIN);
 
     var editorMode = (signature.getContentType() == ZmMimeTable.TEXT_PLAIN) ? DwtHtmlEditor.TEXT : DwtHtmlEditor.HTML;
@@ -443,8 +472,6 @@ ZmSignaturesPage.prototype._resetSignature = function(signature, clear ) {
     this._sigEditor.setContent(signature.getValue());
 
     this._resetDeleteButtons();
-
-    this._selSignature = signature;
 	
 };
 
@@ -583,6 +610,7 @@ ZmSignaturesPage.prototype._updateName = function(value){
     
     signature.name = value;
     this._sigList.redrawItem(signature);
+    this._sigList.setSelection(signature, true);
 
 };
 
