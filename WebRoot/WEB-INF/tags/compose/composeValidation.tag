@@ -23,7 +23,7 @@
 <%@ attribute name="isHtml" rtexprvalue="true" required="true" %>
 
 <script type="text/javascript">
-<%--
+<!--
 var composevalidation = function(){
 
     var checkSubject = function() {
