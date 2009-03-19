@@ -103,11 +103,7 @@ ZmSharingView = function(params) {
 
 	DwtComposite.apply(this, arguments);
 
-//	this._controller = appCtxt.getSharingController();
-//	this._controller._sharingView = this;
 	this._pageId = params.pageId;
-	this._sharesByAcceptId = {};
-	this._grantsByActionId = {};
 	this._shareByKey = {};
 	this._shareByDomId = {};
 
@@ -197,9 +193,8 @@ function(shares) {
 };
 
 /**
- * Displays grants (folders shared by the user) in a list view. The grants are culled from
- * the folder information in a <refresh> block. Grants will show up in <acl> objects, and
- * are converted into ZmShare objects.
+ * Displays grants (folders shared by the user) in a list view. Grants show up as shares
+ * in folders owned by the user.
  */
 ZmSharingView.prototype.showGrants =
 function() {
@@ -449,7 +444,7 @@ ZmSharingView.prototype._onClick =
 function(id) {
 
 	if (id == ZmSharingView.ID_FIND_BUTTON) {
-		this.setValue(ZmSharingView.ID_USER, true);
+		this.setValue(ZmSharingView.ID_USER, true, true);
 		this.parent.findShares(this.getValue(ZmSharingView.ID_OWNER), true);
 	} else if (id == ZmSharingView.ID_GROUP) {
 		this.parent.findShares();
@@ -550,41 +545,12 @@ function(a, b) {
 	return 0;
 };
 
-/**
- * Returns a key for a share or a grant. The key combines the owner's account ID and
- * the folder ID.
- *
- * @param item		[object]		ZmShare, share info (from GetShareInfoResponse), or share JSON obj
- */
-/*
-ZmSharingView.getKey =
-function(item) {
-	if (!item) { return ""; }
-	var acct = item.ownerId || (item.grantee && item.grantee.id) || item.zid;
-	var folderId = item.folderId || (item.object && item.object.id) || item.rid;
-	return [acct, folderId].join(":");
-};
-*/
-
 ZmSharingView.prototype._folderTreeChangeListener =
 function(ev) {
 
 	this._pendingShareListView._changeListener(ev);
 	this._mountedShareListView._changeListener(ev);
 	this._grantListView._changeListener(ev);
-
-/*
-	var organizers = ev.getDetail("organizers");
-	if (ev.event == ZmEvent.E_CREATE) {
-		var link = organizers[0];
-		ZmSharingView.getShareFromLink(link);
-		var key = ZmSharingView.getKey(link);
-		var share = this._shareByKey[key];
-		if (share && share.granteeType == ZmShare.TYPE_GROUP) {
-			share.folderPath = link.getPath(true);
-		}
-	}
-*/
 };
 
 
@@ -717,21 +683,44 @@ function(ev) {
 		}
 	}
 
+	// grant changes always come as modifies, even for create or revoke, since they change the shares
+	// on the shared folder
 	if (this.type == ZmSharingView.GRANT) {
 		if (ev.event == ZmEvent.E_MODIFY && fields[ZmOrganizer.F_SHARES]) {
 			for (var i = 0; i < organizers.length; i++) {
 				var org = organizers[i];
 				var shares = org.shares || [];
+				var orgShares = {};
 				for (var j = 0; j < shares.length; j++) {
-					var oldShare = this.view._shareByKey[[shares[j].grantee.id, shares[j].object.id].join(":")];
-					var share = ZmSharingView.getShareFromGrant(shares[j], oldShare);
-					var div = document.getElementById(share.domId);
-					if (div) {
-						var cellId = this._getCellId(share, ZmSharingView.F_ROLE);
-						var cell = document.getElementById(cellId);
-						if (cell) {
-							cell.innerHTML = ZmShare.getRoleName(share.link.role);
+					var orgShare = shares[j];
+					var key = [orgShare.grantee.id, orgShare.object.id].join(":");
+					orgShares[key] = true;
+					var share = this.view._shareByKey[key];
+					if (!share) {
+						// new grant added
+						share = ZmSharingView.getShareFromGrant(orgShare);
+						var index = this._getIndex(share, this._list.getArray(), ZmSharingView.sortCompareGrant);
+						this.addItem(share, index, true);
+					} else {
+						// perms change
+						if (orgShare.link.role != share.link.role) {
+							ZmSharingView.getShareFromGrant(orgShare, curShare);
+							var div = document.getElementById(share.domId);
+							if (div) {
+								var cellId = this._getCellId(share, ZmSharingView.F_ROLE);
+								var cell = document.getElementById(cellId);
+								if (cell) {
+									cell.innerHTML = ZmShare.getRoleName(share.link.role);
+								}
+							}
 						}
+					}
+				}
+				// see if any grants were revoked
+				for (var key in this.view._shareByKey) {
+					var share = this.view._shareByKey[key];
+					if (share.type == ZmSharingView.GRANT && share.object.id == org.id && !orgShares[key]) {
+						this.removeItem(share);
 					}
 				}
 			}
@@ -740,7 +729,11 @@ function(ev) {
 };
 
 /**
- * 
+ * Adds links for editing, revoking, or resending a grant.
+ *
+ * @param share		[ZmShare]		share
+ * @param html		[array]			HTML content
+ * @param idx		[int]			index
  */
 ZmSharingListView.prototype._addActionLinks =
 function(share, html, idx) {
@@ -766,6 +759,13 @@ function(share, html, idx) {
 	return idx;
 };
 
+/**
+ * Returns the position of the share in the given list using the given compare function.
+ *
+ * @param share			[ZmShare]		a share
+ * @param list			[array]			list of shares
+ * @param compareFunc	[function]		compare function
+ */
 ZmSharingListView.prototype._getIndex =
 function(share, list, compareFunc) {
 
