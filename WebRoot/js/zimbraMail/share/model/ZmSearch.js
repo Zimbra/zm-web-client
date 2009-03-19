@@ -150,7 +150,8 @@ function(params) {
 		} else if (this.isGalAutocompleteSearch) {
 			soapDoc = AjxSoapDoc.create("AutoCompleteGalRequest", "urn:zimbraAccount");
 			var method = soapDoc.getMethod();
-			if (this.limit) { method.setAttribute("limit", this.limit); }
+			//if (this.limit) { method.setAttribute("limit", this.limit); }
+			method.setAttribute("limit", this.limit || 20);
 			if (this.galType) { method.setAttribute("type", this.galType); }
 			soapDoc.set("name", this.query);
 		} else if (this.isCalResSearch) {
@@ -264,7 +265,8 @@ function(params) {
 		} else if (this.isGalAutocompleteSearch) {
 			jsonObj = {AutoCompleteGalRequest:{_jsns:"urn:zimbraAccount"}};
 			request = jsonObj.AutoCompleteGalRequest;
-			if (this.limit) { request.limit = this.limit; }
+			//if (this.limit) { request.limit = this.limit; }
+			request.limit = this.limit || 20;
 			request.name = this.query;
 			if (this.galType) { request.type = this.galType; }
 		} else if (this.isCalResSearch) {
