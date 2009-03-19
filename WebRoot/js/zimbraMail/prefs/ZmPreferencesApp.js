@@ -122,6 +122,14 @@ ZmPreferencesApp.prototype._registerOrganizers =  function() {
 
 };
 
+ZmPreferencesApp.prototype._registerOperations =
+function() {
+	ZmOperation.registerOp(ZmId.OP_MOBILE_RESUME_SYNC, {textKey:"mobileResumeSync", image:"ImAvailable"});
+	ZmOperation.registerOp(ZmId.OP_MOBILE_SUSPEND_SYNC, {textKey:"mobileSuspendSync", image:"Offline"});
+	ZmOperation.registerOp(ZmId.OP_MOBILE_WIPE, {textKey:"mobileWipe", image:"MobileWipe"}, ZmSetting.MOBILE_POLICY_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_MOBILE_CANCEL_WIPE, {textKey:"mobileWipeCancel", image:"MobileWipeCancel"}, ZmSetting.MOBILE_POLICY_ENABLED);
+};
+
 ZmPreferencesApp.prototype._registerSettings =
 function(settings) {
 	settings = settings || appCtxt.getSettings();
@@ -173,6 +181,7 @@ function() {
 		},
 		COMPOSING: {
 			title: ZmMsg.composing,
+			icon: "Compose",
 			templateId: "prefs.Pages#Composing",
 			priority: 20,
 			precondition: [ ZmSetting.MAIL_ENABLED ],
@@ -193,6 +202,7 @@ function() {
 		},
 		SHARING: {
 			title: ZmMsg.sharing,
+			icon: "SharedContact",
 			templateId: "prefs.Pages#SharingPrefPage",
 			priority: 85,
 			precondition: ZmSetting.SHARING_ENABLED,
@@ -202,10 +212,22 @@ function() {
 				return new ZmSharingPage(parent, section, controller);
 			}
 		},
+		MOBILE: {
+			title: ZmMsg.mobileDevices,
+			icon: "Mobile",
+			templateId: "prefs.Pages#MobileDevices",
+			priority: 90,
+			precondition: ZmSetting.MOBILE_SYNC_ENABLED,
+			manageChanges: true,
+			createView: function(parent, section, controller) {
+				return new ZmMobileDevicesPage(parent, section, controller);
+			}
+		},
 		IMPORT_EXPORT: {
 			title: ZmMsg.importExport,
+			icon: "SendReceive",
 			templateId: "data.ImportExport#ImportExportPrefPage",
-			priority: 90,
+			priority: 100,
 			precondition: ZmSetting.IMPORT_EXPORT_ENABLED,
 			prefs: [
 				ZmSetting.IMPORT_FOLDER,
@@ -222,7 +244,7 @@ function() {
 		SHORTCUTS: {
 			title: ZmMsg.shortcuts,
 			templateId: "prefs.Pages#Shortcuts",
-			priority: 100,
+			priority: 120,
 			precondition: ZmSetting.USE_KEYBOARD_SHORTCUTS,
 			prefs: [
 				ZmSetting.SHORTCUTS
@@ -236,7 +258,7 @@ function() {
 	        icon: "Zimlet",
 			templateId: "prefs.Pages#Zimlets",
 			manageDirty: true,
-            priority: 120,
+            priority: 140,
 			prefs: [
 				ZmSetting.CHECKED_ZIMLETS    
 			],

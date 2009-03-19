@@ -84,6 +84,16 @@ function() {
 };
 
 /**
+* Returns the mobile devices controller.
+*/
+ZmPrefController.prototype.getMobileDevicesController =
+function() {
+	if (!this._mobileDevicesController)
+		this._mobileDevicesController = new ZmMobileDevicesController(this._container, this._app, this._prefsView);
+	return this._mobileDevicesController;
+};
+
+/**
  * Checks for a precondition on the given object. If one is found, it is
  * evaluated based on its type. Note that the precondition must be contained
  * within the object in a property named "precondition".
