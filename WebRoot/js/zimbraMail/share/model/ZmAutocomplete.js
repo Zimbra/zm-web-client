@@ -357,11 +357,28 @@ ZmAutocompleteMatch = function(match, options, isContact) {
 		this.item = match;
 		this.type = ZmContact.getAttr(match, ZmResource.F_type) || ZmAutocomplete.AC_TYPE_GAL;
 	} else {
-		var email = AjxEmailAddress.parse(match.email);
-		this.fullAddress = email.toString();
-		this.name = email.getName();
-		this.email = email.getAddress();
-		this.text = AjxStringUtil.htmlEncode(match.email);
+        if(this.type == ZmAutocomplete.AC_TYPE_GROUP){
+            this.fullAddress = match.email;
+            this.name        = match.display;
+            //Find all the emails
+            var emails = [];
+            var eIds = match.email.split(',');
+            for(var i=0; i<eIds.length; i++){
+                var email = eIds[i];
+                email = AjxEmailAddress.parse(email);
+                if(email && email.getAddress()){
+                    emails.push(email.getAddress());
+                }
+            }
+            this.email       = emails.join(";");
+            this.text        = match.display;
+        }else{
+            var email = AjxEmailAddress.parse(match.email);
+            this.fullAddress = email.toString();
+            this.name = email.getName();
+            this.email = email.getAddress();
+            this.text = AjxStringUtil.htmlEncode(match.email);
+        }
 		this.icon = ZmAutocomplete.AC_ICON[match.type];
 		this.score = match.ranking;
 		if (options && options.needItem && window.ZmContact) {
