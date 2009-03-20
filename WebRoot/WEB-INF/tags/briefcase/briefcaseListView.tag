@@ -60,33 +60,21 @@
                                 <th nowrap>
                                     <zm:newSortUrl var="nameSortUrl" value="/h/search" context="${context}" sort="${context.ss eq 'nameAsc' ? 'nameDesc' : 'nameAsc'}"/>
                                 <a href="${fn:escapeXml(nameSortUrl)}">
-                                    Name
+                                    <fmt:message key="name"/>
                                 </a>
                                 <th width="15%" nowrap>
-                                    <zm:newSortUrl var="typeSortUrl" value="/h/search" context="${context}" sort="${(context.ss eq 'briefTypeAsc') ? 'briefTypeDesc' : 'briefTypeAsc'}"/>
-                                <a href="${fn:escapeXml(typeSortUrl)}">
-                                    Type
-                                </a>
+                                    <fmt:message key="type"/>
                                 <th width="10%" nowrap>
-                                    <zm:newSortUrl var="sizeSortUrl" value="/h/search" context="${context}" sort="${(context.ss eq 'briefSizeAsc') ? 'briefSizeDesc' : 'briefSizeAsc'}"/>
-                                <a href="${fn:escapeXml(sizeSortUrl)}">
-                                    Size
-                                    </a>
+                                    <fmt:message key="size"/>
                                 <th width="10%" nowrap>
                                     <zm:newSortUrl var="dateSortUrl" value="/h/search" context="${context}" sort="${(context.ss eq 'dateDesc' or empty context.ss) ? 'dateAsc' : 'dateDesc'}"/>
                                 <a href="${fn:escapeXml(dateSortUrl)}">
-                                    Date  
+                                    <fmt:message key="date"/>  
                                 </a>
                                 <th width="10%" nowrap>
-                                    <zm:newSortUrl var="ownerSortUrl" value="/h/search" context="${context}" sort="${(context.ss eq 'briefOwnerDesc' or empty context.ss) ? 'briefOwnerAsc' : 'briefOwnerDesc'}"/>
-                                <a href="${fn:escapeXml(ownerSortUrl)}">
-                                    Owner
-                                </a>
+                                    <fmt:message key="owner"/>
                                 <th width="10%" nowrap>
-                                    <zm:newSortUrl var="folderSortUrl" value="/h/search" context="${context}" sort="${(context.ss eq 'briefFolderDesc' or empty context.ss) ? 'briefFolderAsc' : 'briefFolderDesc'}"/>
-                                <a href="${fn:escapeXml(folderSortUrl)}">
-                                    Folder
-                                </a>
+                                    <fmt:message key="folder"/>
                             </tr>
 
                             <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
