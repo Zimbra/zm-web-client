@@ -74,6 +74,7 @@
                         <zm:forEachTag var="eachtag">
                             <zm:tagItem tagid="${eachtag.id}" var="result" id="${ids}" tag="false"/>
                         </zm:forEachTag>
+                        <zm:clearSearchCache/>
                         <app:status>
                             <fmt:message key="${'actionBriefcaseUntagAll'}" >
                                 <fmt:param value="${result.idCount}"/>
@@ -84,6 +85,7 @@
                         <c:set var="tag" value="${fn:startsWith(actionOp, 't')}"/>
                         <c:set var="tagid" value="${fn:substring(actionOp, 2, -1)}"/>
                         <zm:tagItem tagid="${tagid}"var="result" id="${ids}" tag="${tag}"/>
+                        <zm:clearSearchCache/>
                         <app:status>
                             <fmt:message key="${tag ? 'actionBriefcaseTag' : 'actionBriefcaseUntag'}">
                                 <fmt:param value="${result.idCount}"/>
