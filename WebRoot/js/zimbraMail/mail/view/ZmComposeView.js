@@ -124,6 +124,16 @@ function(params) {
 		msg.onChange = this._onMsgDataChange;
 		var folder = (!obo) ? appCtxt.getById(msg.folderId) : null;
 		obo = (folder && folder.isRemote()) ? folder.getOwner() : null;
+
+		// check if this is a draft that was originally composed obo
+		if (!obo && msg.isDraft) {
+			var ac = window.parentAppCtxt || window.appCtxt;
+			var mainAcct = ac.getMainAccount().getEmail();
+			var from = msg.getAddresses(AjxEmailAddress.FROM).get(0);
+			if (from && from.address != mainAcct) {
+				obo = from.address;
+			}
+		}
 	}
 
 	// list of msg Id's to add as attachments

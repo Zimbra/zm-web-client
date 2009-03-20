@@ -1479,7 +1479,7 @@ function(addrNodes, parentNode, isDraft, accountName) {
 		var addrNode = {t:"f"};
 
 		// bug fix #20630 - handling sending drafts obo
-		if (this._origMsg && this._origMsg.isDraft) {
+		if (this._origMsg && this._origMsg.isDraft && !this._origMsg.sendAsMe) {
 			var mainAcct = ac.getMainAccount().getEmail();
 			var from = this._origMsg.getAddresses(AjxEmailAddress.FROM).get(0);
 			// this means we're sending a draft msg obo

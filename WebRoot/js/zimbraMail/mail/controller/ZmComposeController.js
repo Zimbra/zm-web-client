@@ -373,15 +373,18 @@ function(attId, docIds, draftType, callback) {
         // If this message had been saved from draft and it has a sender
 		// (meaning it's a reply from someone else's account) then get the
 		// account name from the from field.
-        if (!acctName && !isDraft &&
-			this._composeView.sendMsgOboIsOK() &&
-			origMsg && origMsg.isDraft &&
-			origMsg._addrs[ZmMailMsg.HDR_FROM] &&
-            origMsg._addrs[ZmMailMsg.HDR_SENDER] &&
-			origMsg._addrs[ZmMailMsg.HDR_SENDER].size())
-        {
-            acctName =  origMsg._addrs[ZmMailMsg.HDR_FROM].get(0).address;
-        }
+        if (!acctName && !isDraft && origMsg && origMsg.isDraft) {
+			if (this._composeView.sendMsgOboIsOK()) {
+				if (origMsg._addrs[ZmMailMsg.HDR_FROM] &&
+					origMsg._addrs[ZmMailMsg.HDR_SENDER] &&
+					origMsg._addrs[ZmMailMsg.HDR_SENDER].size())
+				{
+					acctName =  origMsg._addrs[ZmMailMsg.HDR_FROM].get(0).address;
+				}
+			} else {
+				origMsg.sendAsMe = true; // hack.
+			}
+		}
 
 		// check for read receipt
 		var requestReadReceipt = false;
