@@ -375,7 +375,7 @@ function(map) {
 
 ZmMailListController.prototype.sendReadReceipt =
 function(msg) {
-	if (!appCtxt.get(ZmSetting.MAIL_READ_RECEIPT_ENABLED) || msg.readReceiptSent) {
+	if (!appCtxt.get(ZmSetting.MAIL_READ_RECEIPT_ENABLED) || msg.readReceiptSent || msg.isSent) {
 		return;
 	}
 
