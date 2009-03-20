@@ -37,14 +37,14 @@
              </c:url>
              <th style='width:20px'><a href="${fn:escapeXml(toggleUrl)}"><app:img altkey="${ expanded ? 'ALT_TREE_EXPANDED' : 'ALT_TREE_COLLAPSED'}" src="${ expanded ? 'startup/ImgNodeExpanded.gif' : 'startup/ImgNodeCollapsed.gif'}"/></a></th>
             <th class='Header'><fmt:message key="folders"/></th>
-            <th width='1%' align='right' class='ZhTreeEdit'>
+            <!--th width='1%' align='right' class='ZhTreeEdit'>
                 <c:url value="/h/mnotebook" var="mabUrl">
                     <c:if test="${not empty param.sfi}">
                         <c:param name="sfi" value="${param.sfi}"/>
                     </c:if>
                 </c:url>
                 <a id="MNOTEBOOK" href="${mabUrl}" ><fmt:message key="TREE_EDIT"/></a>
-            </th>
+            </th-->
         </tr>
         <c:if test="${expanded}">
             <zm:forEachFolder var="folder" skiproot="${false}" skipsystem="${false}" expanded="${sessionScope.expanded}" skiptrash="${true}">
