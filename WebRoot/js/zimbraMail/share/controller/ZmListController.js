@@ -451,6 +451,7 @@ function(params) {
 		callbacks[ZmAppViewMgr.CB_PRE_SHOW]		= this._preShowCallback ? new AjxCallback(this, this._preShowCallback) : null;
 		callbacks[ZmAppViewMgr.CB_POST_SHOW]	= this._postShowCallback ? new AjxCallback(this, this._postShowCallback) : null;
 
+		params.callbacks = callbacks;
 		params.viewId = view;
 		this._app.createView(params);
 		this._appViews[view] = 1;
