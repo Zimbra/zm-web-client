@@ -96,15 +96,21 @@ ZmDataSourceCollection.prototype.importMail = function(accounts) {
             dsrc.setAttribute("id", account.id);
         }
 
-        var callback = new AjxCallback(this, this._checkStatus, [sourceMap, 2000]);
+	    // send import request
         var params = {
             soapDoc: soapDoc,
             asyncMode: true,
 	        noBusyOverlay: true,
-            callback: callback,
+            callback: null,
             errorCallback: null
         };
         appCtxt.getAppController().sendRequest(params);
+
+	    // kick off check status request because import request
+	    // doesn't return for (potentially) a looong time
+	    var delayMs = 2000;
+	    var action = new AjxTimedAction(this, this._checkStatus, [sourceMap, delayMs]);
+	    AjxTimedAction.scheduleAction(action, delayMs);
     }
 };
 
@@ -185,9 +191,13 @@ ZmDataSourceCollection.prototype.initialize = function(dataSources) {
 
 ZmDataSourceCollection.prototype._checkStatus =
 function(sourceMap, delayMs) {
-    var soapDoc = AjxSoapDoc.create("GetImportStatusRequest", "urn:zimbraMail");
+	// Slowly back off import status checks but no more than 15 secs.
+	if (delayMs && delayMs < 15000) {
+		delayMs += 2000;
+	}
 
-    var callback = new AjxCallback(this, this._checkStatusResponse, [sourceMap]);
+    var soapDoc = AjxSoapDoc.create("GetImportStatusRequest", "urn:zimbraMail");
+    var callback = new AjxCallback(this, this._checkStatusResponse, [sourceMap, delayMs]);
     var params = {
         soapDoc: soapDoc,
         asyncMode: true,
@@ -201,7 +211,7 @@ function(sourceMap, delayMs) {
 };
 
 ZmDataSourceCollection.prototype._checkStatusResponse =
-function(sourceMap, result) {
+function(sourceMap, delayMs, result) {
 	var dataSources = [];
 
 	// gather sources from the response
@@ -252,6 +262,6 @@ function(sourceMap, result) {
 
 	// continue checking status
 	if (AjxUtil.keys(sourceMap).length > 0) {
-		this._checkStatus(sourceMap, 2000);
+		this._checkStatus(sourceMap, delayMs);
 	}
 };
