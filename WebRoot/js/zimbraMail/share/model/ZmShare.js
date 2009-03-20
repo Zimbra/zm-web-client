@@ -65,10 +65,9 @@ ZmShare = function(params) {
 	this.grantee.type = params.granteeType;
 	this.grantee.id = params.granteeId;
 	this.grantee.name = params.granteeName || "";
-	this.link.perm = params.perm;
 	this.link.inh = params.inherit;
 	this.link.pw = params.granteePwd;
-	this.link.role = ZmShare._getRoleFromPerm(params.perm);
+	this.setPermissions(params.perm);
 };
 
 // Constants
@@ -242,6 +241,12 @@ function(doc) {
 ZmShare.prototype.toString =
 function() {
 	return "ZmShare";
+};
+
+ZmShare.prototype.setPermissions =
+function(perm) {
+	this.link.perm = perm;
+	this.link.role = ZmShare._getRoleFromPerm(perm);
 };
 
 /**

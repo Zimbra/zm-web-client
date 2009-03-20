@@ -119,6 +119,7 @@ ZmOrganizer.F_QUERY				= "query";
 ZmOrganizer.F_SHARES			= "shares";
 ZmOrganizer.F_FLAGS				= "flags";
 ZmOrganizer.F_REST_URL			= "rest";
+ZmOrganizer.F_PERMS				= "perms";
 
 // server representation of org flags
 ZmOrganizer.FLAG_CHECKED			= "#";
@@ -745,8 +746,7 @@ function(permission) {
 		AjxDispatcher.require("Share");
 		this.addShare(new ZmShare({parent:this, perm:permission}));
 	} else {
-		var share = this.getMainShare();
-		share.perm = permission;
+		this.getMainShare().setPermissions(permission);
 	}
 };
 
@@ -955,6 +955,11 @@ function(obj, details) {
 			}
 		}
 		fields[ZmOrganizer.F_SHARES] = true;
+		doNotify = true;
+	}
+	if (obj.perm && obj._isRemote) {
+		this.setPermissions(obj.perm);
+		fields[ZmOrganizer.F_PERMS] = true;
 		doNotify = true;
 	}
 
