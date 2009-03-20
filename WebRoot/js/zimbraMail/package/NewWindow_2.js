@@ -101,6 +101,7 @@ AjxPackage.require("zimbraMail.calendar.ZmCalendarApp");
 AjxPackage.require("zimbraMail.abook.ZmContactsApp");
 
 AjxPackage.require("zimbraMail.calendar.model.ZmCalBaseItem");
+AjxPackage.require("zimbraMail.calendar.model.ZmMiniCalCache");
 
 AjxPackage.require("zimbraMail.mail.model.ZmMailItem");
 AjxPackage.require("zimbraMail.mail.model.ZmMailMsg");

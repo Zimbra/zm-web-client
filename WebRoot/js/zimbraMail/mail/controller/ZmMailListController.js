@@ -768,7 +768,7 @@ function(params, msg) {
 
 	msg._instanceDate = params.instanceDate;
 
-	params.inNewWindow = this._app._inNewWindow(params.ev);
+	params.inNewWindow = (!appCtxt.isChildWindow && this._app._inNewWindow(params.ev));
 
 	// special handling for multiple forward action
 	var action = params.action;
