@@ -107,7 +107,7 @@
                                     </td>
                                     <td><%-- allow this column to wrap --%>
                                         <c:set var="briefUrl" value="/service/home/~/?id=${briefHit.id}&auth=co"/>
-                                        <a href="${fn:escapeXml(briefUrl)}" id="${aid}">
+                                        <a href="${fn:escapeXml(briefUrl)}" id="${aid}" onclick="return false;">
                                             <c:set var='docName' value="${empty briefHit.document.name ? unknownSubject : zm:truncate(briefHit.document.name,100,true)}"/>
                                             <c:out value="${docName}"/>
                                         </a>
@@ -182,7 +182,7 @@
         var zclick = function(id) { var e2 = document.getElementById(id); if (e2) e2.click(); }
         var zaction = function(a) { var e = document.getElementById(a); if (e) { e.selected = true; zclick("SOPGO"); }}
         var zmove = function(a) { var e = document.getElementById(a); if (e) { e.selected = true; zclick("SOPMOVE"); }}
-        function zSelectRow(ev,id) {var t = ev.target || ev.srcElement;if (t&&t.nodeName != 'INPUT'){var a = document.getElementById(id); if (a) window.location = a.href;} }
+        function zSelectRow(ev,id) {var t = ev.target || ev.srcElement;if (t&&t.nodeName != 'INPUT'){var a = document.getElementById(id); if (a) window.open(a.href);} }
         //-->
     </SCRIPT>
 
