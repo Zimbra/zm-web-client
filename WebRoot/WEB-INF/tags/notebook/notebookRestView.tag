@@ -33,7 +33,7 @@
         </c:otherwise>
     </c:choose>
     <fmt:setBundle basename="/messages/ZhMsg" scope="request"/>
-    <c:set var="title" value="Notebook"/>
+    <fmt:message var="title" key="notebook"/>
     <c:set var="folderName" value="${context.folder.name}" />
     <c:set var="iframeUrl" value="/home/${mailbox.name}/${folderName}" />
 </app:handleError>

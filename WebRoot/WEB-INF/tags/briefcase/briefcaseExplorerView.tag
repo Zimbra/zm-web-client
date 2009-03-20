@@ -33,7 +33,7 @@
     </c:otherwise>
     </c:choose>
     <fmt:setBundle basename="/messages/ZhMsg" scope="request"/>
-    <c:set var="title" value="Briefcase"/>
+    <fmt:message var="title" key="briefcase"/>
     <c:set var="selectedRow" value="${param.selectedRow}"/>
     <fmt:message var="unknownSubject" key="noSubject"/>
     <zm:composeUploader var="uploader"/>
