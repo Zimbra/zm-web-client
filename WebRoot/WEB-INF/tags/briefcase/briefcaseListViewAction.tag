@@ -35,16 +35,16 @@
     <c:when test="${zm:actionSet(param, 'actionChange')}">
         <c:choose>
             <c:when test="${param.viewId eq 'dv'}">
-                <c:redirect url="/h/search?st=briefcase&view=dv"/>
+                <c:redirect url="/h/search?st=briefcase&view=dv&sfi=${param.sfi}"/>
             </c:when>
             <c:when test="${param.viewId eq 'ev'}">
-                <c:redirect url="/h/search?st=briefcase&view=ev"/>
+                <c:redirect url="/h/search?st=briefcase&view=ev&sfi=${param.sfi}"/>
             </c:when>
             <c:when test="${param.viewId eq 'bv'}">
-                <c:redirect url="/h/search?st=briefcase&view=bv"/>
+                <c:redirect url="/h/search?st=briefcase&view=bv&sfi=${param.sfi}"/>
             </c:when>
             <c:otherwise>
-                 <c:redirect url="/h/search?st=briefcase&view=dv"/>
+                 <c:redirect url="/h/search?st=briefcase&view=dv&sfi=${param.sfi}"/>
             </c:otherwise>
         </c:choose>
     </c:when>
