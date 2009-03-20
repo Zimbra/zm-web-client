@@ -16,7 +16,7 @@
 /**
   * Creates an action menu with the given menu items.
   * @constructor
-  * @class
+  * @class ZmActionMenu
   * This class represents an action menu, which is a popup menu with a few added features.
   * It can be easily created using a set of standard operations, and/or custom menu items
   * can be provided. This class is designed for use with items (ZmItem), so it can for
@@ -46,11 +46,11 @@ ZmActionMenu = function(params) {
 	}
 	// weed out disabled ops, save list of ones that make it
 	this.opList = ZmOperation.filterOperations(menuItems);
-	var extraItems = params.extraMenuItems;
 	this._context = params.context;
+	this._menuType = params.menuType;
 
 	this._menuItems = ZmOperation.createOperations(this, this.opList, params.overrides);
-}
+};
 
 ZmActionMenu.prototype = new ZmPopupMenu;
 ZmActionMenu.prototype.constructor = ZmActionMenu;
@@ -60,7 +60,7 @@ ZmActionMenu.prototype.constructor = ZmActionMenu;
 ZmActionMenu.prototype.toString = 
 function() {
 	return "ZmActionMenu";
-}
+};
 
 /**
  * Creates a menu item and adds its operation ID as data.
