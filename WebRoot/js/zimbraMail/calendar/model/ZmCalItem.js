@@ -88,6 +88,7 @@ ZmCalItem.prototype.setName 			= function(newName) 	{ this.name = newName; };
 ZmCalItem.prototype.setOrganizer 		= function(organizer) 	{ this.organizer = organizer != "" ? organizer : null; };
 ZmCalItem.prototype.setRecurType		= function(repeatType)	{ this._recurrence.repeatType = repeatType; };
 ZmCalItem.prototype.setType 			= function(newType) 	{ this.type = newType; };
+ZmCalItem.prototype.setOrigTimezone     = function(timezone)    { this._origTimezone = timezone; };
 
 ZmCalItem.prototype.setFolderId =
 function(folderId) {

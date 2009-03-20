@@ -1727,10 +1727,20 @@ function(appt, viewMode, startDateOffset, endDateOffset, callback, errorCallback
 		}
 		appt.setViewMode(viewMode);
 		if (startDateOffset) {
-			appt.setStartDate(new Date(appt.getStartTime() + startDateOffset));
+			var sd = (viewMode == ZmCalItem.MODE_EDIT_SINGLE_INSTANCE) ? appt.getUniqueStartDate() : new Date(appt.getStartTime());
+			appt.setStartDate(new Date(sd.getTime() + startDateOffset));
 			appt.resetRepeatWeeklyDays();
 		}
-		if (endDateOffset) appt.setEndDate(new Date(appt.getEndTime() + endDateOffset));
+		if (endDateOffset) {
+			var ed = (viewMode == ZmCalItem.MODE_EDIT_SINGLE_INSTANCE) ? appt.getUniqueEndDate() : new Date(appt.getEndTime());
+			appt.setEndDate(new Date(ed.getTime() + endDateOffset));
+		}
+		if(viewMode == ZmCalItem.MODE_EDIT_SINGLE_INSTANCE) {
+            //bug: 32231 - use proper timezone while creating exceptions            
+			appt.setOrigTimezone(AjxTimezone.getServerId(AjxTimezone.DEFAULT));			
+		}
+		
+		appt.setTimezone(AjxTimezone.getServerId(AjxTimezone.DEFAULT));
 		var respCallback = new AjxCallback(this, this._handleResponseUpdateApptDateSave2, [callback]);
         var respErrCallback = new AjxCallback(this, this._handleResponseUpdateApptDateSave2, [errorCallback]);
         appCtxt.getShell().setBusy(true);
