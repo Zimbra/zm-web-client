@@ -358,17 +358,27 @@ function(attId, docIds, draftType, callback) {
         }
     } else {
         var ac = window.parentAppCtxt || window.appCtxt;
-        // if shared folder, make sure we send the email on-behalf-of
-        var folder = msg.folderId ? ac.getById(msg.folderId) : null;
         // always save draft on the main account *unless* in offline mode
-        var acctName = (isDraft && !ac.isOffline)
-            ? (ac.getMainAccount().name)
-            : ((folder && folder.isRemote()) ? folder.getOwner() : this._accountName);
+		var acctName = this._accountName;
+		if (isDraft && !ac.isOffline) {
+			acctName = ac.getMainAccount().name;
+		} else {
+			// if shared folder, make sure we send the email on-behalf-of
+			var folder = msg.folderId ? ac.getById(msg.folderId) : null;
+			if (folder && folder.isRemote() && this._composeView.sendMsgOboIsOK()) {
+				acctName = folder.getOwner();
+			}
+		}
 
-        // If this message had been saved from draft and it has a sender (meaning it's a reply from someone
-        // else's account) then get the account name from the from field.
-        if (!acctName && !isDraft && origMsg && origMsg.isDraft && origMsg._addrs[ZmMailMsg.HDR_FROM] &&
-            origMsg._addrs[ZmMailMsg.HDR_SENDER] && origMsg._addrs[ZmMailMsg.HDR_SENDER].size())
+        // If this message had been saved from draft and it has a sender
+		// (meaning it's a reply from someone else's account) then get the
+		// account name from the from field.
+        if (!acctName && !isDraft &&
+			this._composeView.sendMsgOboIsOK() &&
+			origMsg && origMsg.isDraft &&
+			origMsg._addrs[ZmMailMsg.HDR_FROM] &&
+            origMsg._addrs[ZmMailMsg.HDR_SENDER] &&
+			origMsg._addrs[ZmMailMsg.HDR_SENDER].size())
         {
             acctName =  origMsg._addrs[ZmMailMsg.HDR_FROM].get(0).address;
         }

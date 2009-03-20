@@ -167,7 +167,7 @@
 				<textarea id='${ccInputId}' class='addresses' style='<$=inputStyle$>' rows=1></textarea>
 			</td>
             <td width='5%'>
-                <div><a href='#' id='${bccToggleId}'><$=ZmMsg.showBCC$></a></div>
+                <nobr><a href='#' id='${bccToggleId}'><$=ZmMsg.showBCC$></a></nobr>
             </td>
         </tr>
 
@@ -209,7 +209,10 @@
 				</table>
 			</td>
 		</tr>
-
+		<tr id='${oboRowId}' style='display:none;'>
+			<td align=right><input type='checkbox' id='${oboCheckboxId}'></td>
+			<td colspan=2><div id='${oboLabelId}'></div></td>
+		</tr>
 		<tr id='${attRowId}'>
 			<td colspan=3><div id='${attDivId}'></div></td>
 		</tr>
