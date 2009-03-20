@@ -55,9 +55,6 @@ function(toolbar, listView) {
 	// init list view
 	this._listView = listView;
 	listView.addSelectionListener(new AjxListener(this, this._listSelectionListener));
-
-	// get data from server
-	this._loadDevices();
 };
 
 ZmMobileDevicesController.prototype.getToolbarButtons =
@@ -73,7 +70,7 @@ function() {
 	];
 };
 
-ZmMobileDevicesController.prototype._loadDevices =
+ZmMobileDevicesController.prototype.loadDeviceInfo =
 function() {
 	var soapDoc = AjxSoapDoc.create("GetDeviceStatusRequest", "urn:zimbraSync");
 	var respCallback = new AjxCallback(this, this._handleResponseLoadDevices);
@@ -82,6 +79,10 @@ function() {
 
 ZmMobileDevicesController.prototype._handleResponseLoadDevices =
 function(results) {
+	// clean up
+	this._devices.removeAll();
+	this._devices = new AjxVector();
+
 	var list = results.getResponse().GetDeviceStatusResponse.device;
 	if (list && list.length) {
 		for (var i = 0; i < list.length; i++) {
@@ -161,6 +162,10 @@ function(parent, numSel) {
 		else if (status == ZmMobileDevice.STATUS_REMOTE_WIPE_REQUESTED) {
 			parent.enable(ZmOperation.MOBILE_WIPE, false);
 			parent.enable(ZmOperation.MOBILE_CANCEL_WIPE, true);
+		}
+
+		if (!item.provisionable) {
+			parent.enable(ZmOperation.MOBILE_WIPE, false);
 		}
 	}
 	else {

@@ -54,12 +54,17 @@ function() {
 		this._deviceController.initialize(this._toolbar, this.listView);
 		this._rendered = true;
 	}
+
+	this._deviceController.loadDeviceInfo();
 };
 
 ZmMobileDevicesPage.prototype.reset =
 function(useDefaults) {
 	ZmPreferencesPage.prototype.reset.apply(this, arguments);
-	// todo?
+
+	if (this._controller.getTabView().getActiveView() == this) {
+		this._deviceController.loadDeviceInfo();
+	}
 };
 
 

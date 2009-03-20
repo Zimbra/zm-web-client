@@ -73,22 +73,22 @@ function() {
 
 ZmMobileDevice.prototype.getLastPolicyUpdateString =
 function() {
-	return this.lastPolicyUpdate ? AjxDateUtil.simpleComputeDateStr(new Date(this.lastPolicyUpdate*1000)) : "";
+	return this.lastPolicyUpdate ? AjxDateUtil.computeDateTimeString(new Date(this.lastPolicyUpdate*1000)) : "";
 };
 
 ZmMobileDevice.prototype.getFirstReqReceivedString =
 function() {
-	return this.firstReqReceived ? AjxDateUtil.simpleComputeDateStr(new Date(this.firstReqReceived*1000)) : "";
+	return this.firstReqReceived ? AjxDateUtil.computeDateTimeString(new Date(this.firstReqReceived*1000)) : "";
 };
 
 ZmMobileDevice.prototype.getRemoteWipeAckTimeString =
 function() {
-	return this.remoteWipeAckTime ? AjxDateUtil.simpleComputeDateStr(new Date(this.remoteWipeAckTime*1000)) : "";
+	return this.remoteWipeAckTime ? AjxDateUtil.computeDateTimeString(new Date(this.remoteWipeAckTime*1000)) : "";
 };
 
 ZmMobileDevice.prototype.getRemoteWipeReqTimeString =
 function() {
-	return this.remoteWipeReqTime ? AjxDateUtil.simpleComputeDateStr(new Date(this.remoteWipeReqTime*1000)) : "";
+	return this.remoteWipeReqTime ? AjxDateUtil.computeDateTimeString(new Date(this.remoteWipeReqTime*1000)) : "";
 };
 
 ZmMobileDevice.prototype.doAction =

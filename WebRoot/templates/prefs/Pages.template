@@ -1791,28 +1791,37 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 			<td><$=data.device.protocol$></td>
 		</tr>
 		<tr>
-			<td><$=ZmMsg.status$>:</td>
-			<td><$=data.device.getStatusString()$></td>
-		</tr>
-		<tr>
 			<td><$=ZmMsg.mobileProvisionable$>:</td>
 			<td><$=data.device.provisionable ? AjxMsg.yes : AjxMsg.no $></td>
 		</tr>
 		<tr>
-			<td><$=ZmMsg.mobileLastPolicyUpdate$>:</td>
-			<td><$=data.device.getLastPolicyUpdateString()$></td>
+			<td><$=ZmMsg.status$>:</td>
+			<td><$=data.device.getStatusString()$></td>
 		</tr>
-		<tr>
-			<td><$=ZmMsg.mobileFirstReqReceived$>:</td>
-			<td><$=data.device.getFirstReqReceivedString()$></td>
-		</tr>
-		<tr>
-			<td><$=ZmMsg.mobileRemoteWipeAck$>:</td>
-			<td><$=data.device.getRemoteWipeAckTimeString()$></td>
-		</tr>
-		<tr>
-			<td><$=ZmMsg.mobileRemoteWipeReq$>:</td>
-			<td><$=data.device.getRemoteWipeReqTimeString()$></td>
-		</tr>
+
+		<$ if (data.device.firstReqReceived) { $>
+			<tr>
+				<td><$=ZmMsg.mobileFirstReqReceived$>:</td>
+				<td><$=data.device.getFirstReqReceivedString()$></td>
+			</tr>
+		<$ } $>
+		<$ if (data.device.lastPolicyUpdate) { $>
+			<tr>
+				<td><$=ZmMsg.mobileLastPolicyUpdate$>:</td>
+				<td><$=data.device.getLastPolicyUpdateString()$></td>
+			</tr>
+		<$ } $>
+		<$ if (data.device.remoteWipeReqTime) { $>
+			<tr>
+				<td><$=ZmMsg.mobileRemoteWipeReq$>:</td>
+				<td><$=data.device.getRemoteWipeReqTimeString()$></td>
+			</tr>
+		<$ } $>
+		<$ if (data.device.remoteWipeAckTime) { $>
+			<tr>
+				<td><$=ZmMsg.mobileRemoteWipeAck$>:</td>
+				<td><$=data.device.getRemoteWipeAckTimeString()$></td>
+			</tr>
+		<$ } $>
 	</table>
 </template>
