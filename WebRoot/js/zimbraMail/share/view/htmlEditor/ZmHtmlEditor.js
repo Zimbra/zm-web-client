@@ -1,15 +1,17 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ *
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
- * 
+ * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
+ *
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -140,17 +142,6 @@ function() {
 	if (this.ACE_ENABLED && this._mode == DwtHtmlEditor.HTML) {
 		setTimeout(AjxCallback.simpleClosure(this._deserializeAceObjects, this), 100);
 	}
-    if(this._onContentInitializeCallback){
-        this._onContentInitializeCallback.run();
-    }
-};
-
-ZmHtmlEditor.prototype.addOnContentIntializedListener = function(callback){
-    this._onContentInitializeCallback = callback;
-};
-
-ZmHtmlEditor.prototype.removeOnContentIntializedListener = function(){
-    this._onContentInitializeCallback = null; 
 };
 
 ZmHtmlEditor.prototype.getContent =
@@ -172,24 +163,6 @@ function(insertFontStyle, onlyInnerContent ) {
 	}
 
 	return content;
-};
-
-ZmHtmlEditor.prototype.checkMisspelledWords =
-function(callback, onExitCallback){
-    var text = this.getTextVersion();
-    if (/\S/.test(text)) {
-		AjxDispatcher.require("Extras");
-		this._spellChecker = new ZmSpellChecker(this);
-		this._spellCheck = null;
-        this._spellCheckSuggestionListenerObj = new AjxListener(this, this._spellCheckSuggestionListener);
-        if (!this.onExitSpellChecker) {
-            this.onExitSpellChecker = onExitCallback;
-		}
-        this._spellChecker.check(text, callback);
-		return true;
-	}
-
-	return false;
 };
 
 ZmHtmlEditor.prototype.spellCheck =
@@ -271,20 +244,14 @@ function(keepModeDiv) {
 
 ZmHtmlEditor.prototype._resetFormatControls =
 function() {
-
-    this._resetFormatControlDefaults();
+	this._fontFamilyButton.setText(appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY));
+	this._fontSizeButton.setText(this._getFontSizeLabel(appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE)));
+	this._fontColorButton.setColor(appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR));
+	this._styleMenu.checkItem(ZmHtmlEditor._VALUE, DwtHtmlEditor.PARAGRAPH, true);
+	this._justifyMenu.checkItem(ZmHtmlEditor._VALUE, DwtHtmlEditor.JUSTIFY_LEFT, true);
 
 	setTimeout(AjxCallback.simpleClosure(this._loadExternalStyle, this, "/css/editor.css"), 250);
 	setTimeout(AjxCallback.simpleClosure(this._setFontStyles, this), 250);
-};
-
-ZmHtmlEditor.prototype._resetFormatControlDefaults =
-function(){
-    this._fontFamilyButton.setText(appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY));
-    this._fontSizeButton.setText(this._getFontSizeLabel(appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE)));
-    this._fontColorButton.setColor(appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR));
-    this._styleMenu.checkItem(ZmHtmlEditor._VALUE, DwtHtmlEditor.PARAGRAPH, true);
-    this._justifyMenu.checkItem(ZmHtmlEditor._VALUE, DwtHtmlEditor.JUSTIFY_LEFT, true);
 };
 
 ZmHtmlEditor.prototype._loadExternalStyle =
@@ -644,10 +611,10 @@ ZmHtmlEditor.prototype._insertLinkListener = function() {
                 dlg._tabGroup.addMember(btn, 2);
 
                 dlg.registerCallback(DwtDialog.OK_BUTTON, new AjxListener(this, function(){
-                    var text = dlg.linkText.getValue();
-                    var url = getURL();
+	                var url = getURL();
+	                var text = dlg.linkText.getValue();
                     dlg.popdown();    
-                    this.insertLink({ text : text, url  : url });
+					this.insertLink({ text : text, url  : url });   
                 }));
         }
         var link = this.getLinkProps();
@@ -728,24 +695,24 @@ function(tb) {
 	var listener = new AjxListener(this, this._fontStyleListener);
 	this._boldButton = new DwtToolBarButton(params);
 	this._boldButton.setImage("Bold");
-	this._boldButton.setToolTipContent(appCtxt._getShortcutHint("editor", DwtKeyMap.TEXT_BOLD));
+	this._boldButton.setToolTipContent(AjxKeys["editor.Bold.summary"]);
 	this._boldButton.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.BOLD_STYLE);
 	this._boldButton.addSelectionListener(listener);
 
 	this._italicButton = new DwtToolBarButton(params);
 	this._italicButton.setImage("Italics");
-	this._italicButton.setToolTipContent(appCtxt._getShortcutHint("editor", DwtKeyMap.TEXT_ITALIC));
+	this._italicButton.setToolTipContent(AjxKeys["editor.Italic.summary"]);
 	this._italicButton.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.ITALIC_STYLE);
 	this._italicButton.addSelectionListener(listener);
 
 	this._underlineButton = new DwtToolBarButton(params);
 	this._underlineButton.setImage("Underline");
-	this._underlineButton.setToolTipContent(appCtxt._getShortcutHint("editor", DwtKeyMap.TEXT_UNDERLINE));
+	this._underlineButton.setToolTipContent(AjxKeys["editor.Underline.summary"]);
 	this._underlineButton.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.UNDERLINE_STYLE);
 	this._underlineButton.addSelectionListener(listener);
 
 	if (!appCtxt.isChildWindow) {
-		appCtxt.getZimletMgr().notifyZimlets("on_htmlEditor_createToolbar1", [this, tb]);
+		appCtxt.getZimletMgr().notifyZimlets("on_htmlEditor_createToolbar1", this, tb);
 	}
 };
 
@@ -810,7 +777,7 @@ function(tb) {
 	}
 
 	if (!appCtxt.isChildWindow) {
-		appCtxt.getZimletMgr().notifyZimlets("on_htmlEditor_createToolbar2", [this, tb]);
+		appCtxt.getZimletMgr().notifyZimlets("on_htmlEditor_createToolbar2", this, tb);
 	}
 };
 
@@ -1351,7 +1318,6 @@ function(ev) {
 		id == ZmSetting.COMPOSE_INIT_FONT_FAMILY ||
 		id == ZmSetting.COMPOSE_INIT_FONT_SIZE)
 	{
-		this._resetFormatControlDefaults();
 		this._fontStyle = null;
 	}
 };

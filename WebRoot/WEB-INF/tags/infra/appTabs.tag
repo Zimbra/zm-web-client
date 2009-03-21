@@ -1,19 +1,3 @@
-<%--
- * ***** BEGIN LICENSE BLOCK *****
- * 
- * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009 Zimbra, Inc.
- * 
- * The contents of this file are subject to the Yahoo! Public License
- * Version 1.0 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
- * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
- * ***** END LICENSE BLOCK *****
---%>
 <%@ tag body-content="empty" %>
 <%@ attribute name="selected" rtexprvalue="true" required="false" %>
 <%@ attribute name="keys" rtexprvalue="true" required="true" %>
@@ -81,24 +65,6 @@
                 <a id='TAB_TASKS' href="<c:url value="/h/search?st=task"/>">
                     <span id='tab_ikon_tasks'><app:img src="startup/ImgTaskList.gif" altkey='ALT_APP_TASK'/></span><span><fmt:message
                         key="tasks"/></span></a>
-            </td>
-            <td class='TabSpacerR'/>
-        </c:if>
-        <c:if test="${mailbox.features.notebook}">
-            <td class='TabSpacer'/>
-            <td class='Tab ${selected=='notebook' ? 'TabSelected' :'TabNormal'}'>
-                <a id='TAB_NOTEBOOK' href="<c:url value="/h/search?st=wiki"/>">
-                    <span id='tab_ikon_notebook'><app:img src="startup/ImgNoteApp.gif" altkey='ALT_APP_NOTEBOOK'/></span><span><fmt:message
-                        key="notebook"/></span></a>
-            </td>
-            <td class='TabSpacerR'/>
-        </c:if>
-        <c:if test="${mailbox.features.briefcases}">
-            <td class='TabSpacer'/>
-            <td class='Tab ${selected=='briefcases' ? 'TabSelected' :'TabNormal'}'>
-                <a id='TAB_BRIEFCASES' href="<c:url value="/h/search?st=briefcase"/>">
-                    <span id='tab_ikon_briefcases'><app:img src="startup/ImgFolder.gif" altkey='ALT_APP_BRIEFCASE'/></span><span><fmt:message
-                        key="briefcase"/></span></a>
             </td>
             <td class='TabSpacerR'/>
         </c:if>

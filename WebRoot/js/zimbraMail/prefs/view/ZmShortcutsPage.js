@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -55,20 +57,11 @@ ZmShortcutsPage = function(parent, view, controller) {
 		this._organizers.push(ZmOrganizer.TAG);
 	}
 
-	var button = new DwtButton({parent:this});
-	button.setText(ZmMsg.print);
-	var buttonDiv = document.getElementById(this._printButtonId);
-	buttonDiv.appendChild(button.getHtmlElement());
-	button.addSelectionListener(new AjxListener(this, this._printListener));
-
 	this._scTabView = new ZmShortcutsPageTabView(this, controller, this._organizers, this._prefId );
 	var element = this._scTabView.getHtmlElement();
 	element.parentNode.removeChild(element);
 	var parent = document.getElementById(this._scTabViewId);
 	parent.appendChild(element);
-
-	var listener = new AjxListener(this, this._changeListener);
-	appCtxt.getSettings().getSetting(ZmSetting.SHORTCUTS).addChangeListener(listener);
 
 	this._rendered = false;
 	this._hasRendered = false;
@@ -158,15 +151,12 @@ function() {
 	var i = 0;
 	this._headerId = Dwt.getNextId();
 	this._scTabViewId = Dwt.getNextId();
-	this._printButtonId = Dwt.getNextId();
-
-	html[i++] = "<table width='100%'><tr><td><div class='BigHead' id='";
+	
+	html[i++] = "<div class='BigHead' id='";
 	html[i++] = this._headerId;
 	html[i++] = "'>";
 	html[i++] = ZmMsg.keyboardShortcuts;
-	html[i++] = "</div></td><td><div id='";
-	html[i++] = this._printButtonId;
-	html[i++] = "' align='right'></div></td></tr></table>";
+	html[i++] = "</div>";
 	html[i++] = "<div id='";
 	html[i++] = this._scTabViewId;
 	html[i++] = "'></div>";
@@ -180,49 +170,11 @@ function() {
 	return header ? Dwt.getSize(header).y : 0;
 };
 
-ZmShortcutsPage.prototype._controlListener =
+ZmShortcutsPage.prototype._controlListener = 
 function(ev) {
 	if (ev.oldHeight != ev.newHeight) {
 		this._scTabView._resetSize(ev.oldHeight - ev.newHeight);
 	}
-};
-
-ZmShortcutsPage.prototype._changeListener =
-function() {
-	var listView = this._scTabView && this._scTabView._scTabView && this._scTabView._scTabView[ZmShortcutsPageTabView.SHORTCUTS_LIST];
-	if (listView) {
-		listView._dirty = true;
-	}
-};
-
-ZmShortcutsPage.prototype._printListener =
-function() {
-	var args = "height=650,width=820,location=no,menubar=yes,resizable=yes,scrollbars=yes,toolbar=no";
-	var newWin = window.open("", "_blank", args);
-
-	var col1 = {}, col2 = {};
-//	col1.title = ZmMsg.shortcutsApp;
-	col1.type = col2.type = ZmShortcutList.TYPE_APP;
-	col1.maps = ["global", "mail"];
-	col2.omit = ["global", "mail"];
-	col2.sort = true;
-
-	var list = new ZmShortcutList({style:ZmShortcutList.PRINT_STYLE, cols:[col1, col2, ZmShortcutList.COL_SYS]});
-
-	var html = [], i = 0;
-	html[i++] = "<html><head>";
-	html[i++] = "<link href='/zimbra/css/zm.css' rel='stylesheet' type='text/css' />";
-	html[i++] = "</head><body>";
-	html[i++] = "<div class='ShortcutsPrintHeader'>" + ZmMsg.keyboardShortcuts + "</div>";
-
-	var doc = newWin.document;
-	doc.write(html.join(""));
-
-	var content = list.getContent();
-	doc.write(content);
-	doc.write("</body></html>");
-
-	doc.close();
 };
 
 /**
@@ -232,7 +184,7 @@ function() {
  * This tab view contains up to four tab pages: a list of the current shortcuts,
  * and one page each for creating custom shortcuts for folders, tags, and saved
  * searches.
- *
+ * 
  * @param parent			[DwtControl]		the containing widget
  * @param controller		[ZmPrefController]	prefs controller
  * @param organizers		[array]				list of organizer types to handle
@@ -355,7 +307,7 @@ function(delta) {
  * Creates an empty tab page.
  * @constructor
  * @class
- * This class displays all the keyboard shortcuts that are currently
+ * This class displays all the keyboard shortcuts that are currently 
  * available.
  *
  * @param parent			[DwtControl]				the containing widget
@@ -364,7 +316,7 @@ function(delta) {
 ZmShortcutsPageTabViewList = function(parent, controller) {
 
 	DwtTabViewPage.call(this, parent, "ZmShortcutsPageTabViewList");
-
+	
 	this._controller = controller;
 	this._hasRendered = false;
 };
@@ -374,18 +326,12 @@ ZmShortcutsPageTabViewList.prototype.constructor = ZmShortcutsPageTabViewList;
 
 ZmShortcutsPageTabViewList.prototype.showMe =
 function() {
-	if (this._hasRendered && !this._dirty) { return; }
+	if (this._hasRendered && !this._dirty) return;
 	if (this._dirty) {
-		this.getHtmlElement().innerHTML = "";
+		this._getHtmlElement().innerHTML = "";
 	}
 
-	var col1 = {};
-	col1.title = ZmMsg.shortcutsApp;
-	col1.type = ZmShortcutList.TYPE_APP;
-	col1.sort = true;
-
-	var list = new ZmShortcutList({style:ZmShortcutList.PREFS_STYLE, cols:[col1, ZmShortcutList.COL_SYS]});
-	this.getHtmlElement().innerHTML = list.getContent();
+	this._renderShortcuts();
 
 	if (!this._hasRendered){
 		this._hasRendered = true;
@@ -399,112 +345,41 @@ function() {
 	}
 };
 
-ZmShortcutList = function(params) {
-
-	this._style = params.style;
-	this._content = this._renderShortcuts(params.cols);
-};
-
-ZmShortcutList.prototype = new DwtControl;
-ZmShortcutList.prototype.constructor = ZmShortcutList;
-
-ZmShortcutList.PREFS_STYLE = "prefs";
-ZmShortcutList.PRINT_STYLE = "print";
-ZmShortcutList.PANEL_STYLE = "panel";
-
-ZmShortcutList.TYPE_APP = "APP";
-ZmShortcutList.TYPE_SYS = "SYS";
-
-ZmShortcutList.COL_SYS = {};
-ZmShortcutList.COL_SYS.title = ZmMsg.shortcutsSys;
-ZmShortcutList.COL_SYS.type = ZmShortcutList.TYPE_SYS;
-ZmShortcutList.COL_SYS.sort = true;
-ZmShortcutList.COL_SYS.maps = ["button", "menu", "list", "tree", "dialog", "toolbarHorizontal",
-							   "toolbarVertical", "editor", "tabView"];
-
-ZmShortcutList.prototype.getContent =
+ZmShortcutsPageTabViewList.prototype._renderShortcuts =
 function() {
-	return this._content;
-};
-
-/**
- * Displays shortcut documentation as a set of columns.
- *
- * @param cols		[array]		list of columns; each column may have:
- *        maps		[array]*	list of maps to show in this column; if absent, show all maps
- *        omit		[array]*	list of maps not to show; all others are shown
- *        title		[string]*	text for column header
- *        type		[constant]	app or sys
- *        sort		[boolean]*	if true, sort list of maps based on .sort values in props file
- */
-ZmShortcutList.prototype._renderShortcuts =
-function(cols) {
 	var html = [];
 	var i = 0;
-	html[i++] = "<div class='ZmShortcutList'>";
-    html[i++] = "<table cellspacing=10 cellpadding=0 border=0>";
-	if (cols[0].title) {
-		html[i++] = "<tr>";
-		var style = ZmShortcutList._getClass("shortcutListType", this._style);
-		for (j = 0; j < cols.length; j++) {
-			html[i++] = "<td><div class='" + style + "'>" + cols[j].title + "</div></td>";
-		}
-		html[i++] = "</tr>";
-	}
-	html[i++] = "<tr>";
-	appCtxt._getCustomKeys(ZmKeys);
-	for (j = 0; j < cols.length; j++) {
-		i = this._getKeysHtml(cols[j], html, i);
-	}
-    html[i++] = "</tr></table>";
+	html[i++] = "<div style='padding:10px'>";
+	i = this._getKeysHtml(ZmKeys, ZmKeyMap.MAP_NAME, html, i);
+	i = this._getKeysHtml(AjxKeys, DwtKeyMap.MAP_NAME, html, i);
 	html[i++] = "</div>";
-
-	return html.join("");
+	
+	this.getHtmlElement().innerHTML = html.join("");
 };
 
-ZmShortcutList.prototype._getKeysHtml =
-function(params, html, i) {
-	var keys = (params.type == ZmShortcutList.TYPE_APP) ? ZmKeys : AjxKeys;
+ZmShortcutsPageTabViewList.prototype._getKeysHtml =
+function(keys, mapNames, html, i) {
 	var kmm = appCtxt.getKeyboardMgr().__keyMapMgr;
-	var mapDesc = {}, mapsFound = [], mapsHash = {}, keySequences = {}, mapsToShow = {}, mapsToOmit = {};
-	if (params.maps) {
-		for (var k = 0; k < params.maps.length; k++) {
-			mapsToShow[params.maps[k]] = true;
-		}
-	}
-	if (params.omit) {
-		for (var k = 0; k < params.omit.length; k++) {
-			mapsToOmit[params.omit[k]] = true;
-		}
-	}
+	var mapDesc = {};
+	var maps = [];
+	var keySequences = {};
 	for (var propName in keys) {
 		var propValue = keys[propName];
 		if (!propValue || (typeof propValue != "string")) { continue; }
 		var parts = propName.split(".");
 		var map = parts[0];
-        if ((params.maps && !mapsToShow[map]) || (params.omit && mapsToOmit[map])) { continue; }
 		var isMap = (parts.length == 2);
 		var action = isMap ? null : parts[1];
 		var field = parts[parts.length - 1];
 
-		// HACK: multi-account setting gets set too late for precondition to be applied
-		if (map == "global" &&
-			(action == "GoToNextAccount" || action == "GoToPrevAccount" || action == "GoToAccount") &&
-			appCtxt.numVisibleAccounts <= 1)
-		{
-			continue;
-		}
-
-		if (action && (map != ZmKeyMap.MAP_CUSTOM)) {
+		if (action) {
 			// make sure shortcut is defined && available
-			var mapInt = ZmKeyMap.MAP_NAME[map] || DwtKeyMap.MAP_NAME[map];
-			var ks = kmm.getKeySequences(mapInt, action);
+			var ks = kmm.getKeySequences(mapNames[map], action);
 			if (!(ks && ks.length)) { continue; }
 		}
 		if (field == "description") {
 			if (isMap) {
-				mapsFound.push(map);
-				mapsHash[map] = true;
+				maps.push(map);
 				mapDesc[map] = propValue;
 			} else {
 				keySequences[map] = keySequences[map] || [];
@@ -512,7 +387,7 @@ function(params, html, i) {
 			}
 		}
 	}
-
+	
 	var sortFunc = function(keyA, keyB) {
 		var sortPropNameA = [keyA, "sort"].join(".");
 		var sortPropNameB = [keyB, "sort"].join(".");
@@ -520,70 +395,50 @@ function(params, html, i) {
 		var sortB = keys[sortPropNameB] ? Number(keys[sortPropNameB]) : 0;
 		return (sortA > sortB) ? 1 : (sortA < sortB) ? -1 : 0;
 	}
-	var maps = [];
-	if (params.sort || !params.maps) {
-		mapsFound.sort(sortFunc);
-		maps = mapsFound;
-	} else {
-		for (var j = 0; j < params.maps.length; j++) {
-			var map = params.maps[j];
-			if (mapsHash[map]) {
-				maps.push(map);
-			}
-		}
-	}
-	
+
+	maps.sort(sortFunc);
 	var or = [" ", ZmMsg.or, " "].join("");
-    html[i++] = "<td valign='top'>";
 	for (var j = 0; j < maps.length; j++) {
 		var map = maps[j];
 		if (!keySequences[map]) { continue; }
-        html[i++] = "<table class='" + ZmShortcutList._getClass("shortcutListTable", this._style) + "' cellspacing=0 cellpadding=0>";
-		if (this._style == ZmShortcutList.PANEL_STYLE || this._style == ZmShortcutList.PRINT_STYLE) {
-			html[i++] = "<colgroup><col width=100></col><col width=140></col></colgroup>";
-		}
-		html[i++] = "<tr><td class='" + ZmShortcutList._getClass("shortcutListHeaderTd", this._style) + "' colspan=2>";
-        html[i++] = "<div class='" + ZmShortcutList._getClass("shortcutListHeader", this._style) + "'>";
-		var mapDesc = keys[[map, "description"].join(".")];
-		html[i++] = mapDesc;
+		html[i++] = "<table class='shortcutList' cellspacing=0 cellpadding=0>";
+		html[i++] = "<tr><td class='shortcutListHeader' colspan=2><div class='PanelHead'>";
+		html[i++] = keys[[map, "description"].join(".")];
 		html[i++] = "</div></td></tr>";
 
 		var actions = keySequences[map];
-		if (actions && actions.length) {
-			actions.sort(sortFunc);
-			for (var k = 0; k < actions.length; k++) {
-				var action = actions[k];
-				var ks = keys[[action, "display"].join(".")];
-				var desc = keys[[action, "description"].join(".")];
+		actions.sort(sortFunc);
+		for (var k = 0; k < actions.length; k++) {
+			var action = actions[k];
+			var ks = keys[[action, "display"].join(".")];
+			var desc = keys[[action, "description"].join(".")];
 
-				html[i++] = "<tr><td class='" + ZmShortcutList._getClass("shortcutKeys", this._style) + "'>";
-				var keySeq = ks.split(/\s*;\s*/);
-				var keySeq1 = [];
-				for (var m = 0; m < keySeq.length; m++) {
-					 keySeq1.push(ZmShortcutList._formatKeySequence(keySeq[m], this._style));
-				}
-				html[i++] = keySeq1.join(or);
-				html[i++] = "</span></td>";
-				html[i++] = "<td class='" + ZmShortcutList._getClass("shortcutDescription", this._style) + "'>";
-				html[i++] = desc;
-				html[i++] = "</td></tr>";
-
+			html[i++] = "<tr><td class='shortcutKeys'>";
+			var keySeq = ks.split(/\s*;\s*/);
+			var keySeq1 = [];
+			for (var m = 0; m < keySeq.length; m++) {
+				 keySeq1.push(ZmShortcutsPageTabViewList._formatKeySequence(keySeq[m]));
 			}
-		}
-        html[i++] = "</table>";
-	}
-    html[i++] = "</td>";
+			html[i++] = keySeq1.join(or);
+			html[i++] = "</span></td>";
+			html[i++] = "<td class='shortcutDescription'>";
+			html[i++] = desc;
+			html[i++] = "</td></tr>";
 
+		}
+		html[i++] = "</table>";
+	}
+	
 	return i;
 };
 
 // Translates a key sequence into a friendlier, more readable version
-ZmShortcutList._formatKeySequence =
-function(ks, style) {
+ZmShortcutsPageTabViewList._formatKeySequence =
+function(ks) {
 
 	var html = [];
 	var i = 0;
-	html[i++] = "<span class='" + ZmShortcutList._getClass("shortcutKeyCombo", style) + "'>";
+	html[i++] = "<span class='shortcutKeyCombo'>";
 
 	var keys = (ks[ks.length - 1] != DwtKeyMap.SEP) ? ks.split(DwtKeyMap.SEP) : [ks];
 	for (var j = 0; j < keys.length; j++) {
@@ -601,7 +456,7 @@ function(ks, style) {
 		parts[baseIdx] = base;
 		var newParts = [];
 		for (var k = 0; k < parts.length; k++) {
-			newParts.push(ZmShortcutList._formatKey(parts[k], style));
+			newParts.push(ZmShortcutsPageTabViewList._formatKey(parts[k]));
 		}
 		html[i++] = newParts.join("+");
 	}
@@ -610,21 +465,9 @@ function(ks, style) {
 	return html.join("");
 };
 
-ZmShortcutList._formatKey =
-function(key, style) {
-	return ["<span class='", ZmShortcutList._getClass("shortcutKey", style), "'>", key, "</span>"].join("");
-};
-
-/**
- * Returns a string with two styles in it, a base style and a specialized one, eg
- * "shortcutListHeader shortcutListHeader-prefs".
- *
- * @param base		[string]	base style
- * @param style		[string]	style modifier
- */
-ZmShortcutList._getClass =
-function(base, style) {
-	return [base, [base, style].join("-")].join(" ");
+ZmShortcutsPageTabViewList._formatKey =
+function(key) {
+	return ["<span class='shortcutKey'>", key, "</span>"].join("");
 };
 
 /**
@@ -851,7 +694,7 @@ function(html, i, closeLinkId) {
 	html[i++] = "</div>";
 	html[i++] = AjxMessageFormat.format(ZmMsg.assignShortcuts, [ZmShortcutsPageTabViewCustom.ORG_TEXT_PLURAL[this._organizer]]);
 	html[i++] = "<div>";
-	var key = ZmShortcutList._formatKey(ZmShortcutsPageTabViewCustom.SAMPLE_KEY, ZmShortcutList.PREFS_STYLE);
+	var key = ZmShortcutsPageTabViewList._formatKey(ZmShortcutsPageTabViewCustom.SAMPLE_KEY);
 	var org = ZmMsg[ZmOrganizer.MSG_KEY[this._organizer]];
 	var exampleOrg = ["<i>", ZmShortcutsPageTabViewCustom.SAMPLE_ORG[this._organizer], "</i>"].join("");
 	html[i++] = AjxMessageFormat.format(ZmMsg.exampleShortcutIntro, [key, org, exampleOrg]);
@@ -865,8 +708,8 @@ function(html, i, closeLinkId) {
 			var keySeqs = ZmKeys[propName].split(/\s*;\s*/);
 			var ks = keySeqs[0];
 			var parts = ks.split(",");
-			var scText = AjxMessageFormat.format(ZmMsg.shortcutExample, [ZmShortcutList._formatKeySequence(parts[0], ZmShortcutList.PREFS_STYLE),
-												 ZmShortcutList._formatKey(ZmShortcutsPageTabViewCustom.SAMPLE_KEY, ZmShortcutList.PREFS_STYLE)]);
+			var scText = AjxMessageFormat.format(ZmMsg.shortcutExample, [ZmShortcutsPageTabViewList._formatKeySequence(parts[0]),
+												 ZmShortcutsPageTabViewList._formatKey(ZmShortcutsPageTabViewCustom.SAMPLE_KEY)]);
 			var examplePropName = [shortcuts[j], "example"].join(".");
 			var exampleText = ZmKeys[examplePropName];
 			if (exampleText) {
@@ -1112,97 +955,4 @@ function(ev) {
 	}
 
 	return true;
-};
-
-ZmShortcutsPanel = function() {
-
-	ZmShortcutsPanel.INSTANCE = this;
-	var className = appCtxt.isChildWindow ? "ZmShortcutsWindow" : "ZmShortcutsPanel";
-	DwtControl.call(this, {parent:appCtxt.getShell(), className:className, posStyle:Dwt.ABSOLUTE_STYLE});
-
-	this._createHtml();
-
-	this._tabGroup = new DwtTabGroup(this.toString(), true);
-	this._tabGroup.addMember(this);
-};
-
-ZmShortcutsPanel.prototype = new DwtControl;
-ZmShortcutsPanel.prototype.constructor = ZmShortcutsPanel;
-
-ZmShortcutsPanel.prototype.toString =
-function() {
-	return "ZmShortcutsPanel";
-}
-
-ZmShortcutsPanel.prototype.popup =
-function(cols) {
-	appCtxt.getKeyboardMgr().pushDefaultHandler(this);
-	this._cols = cols;
-	Dwt.setZIndex(appCtxt.getShell()._veilOverlay, Dwt.Z_VEIL);
-	var list = new ZmShortcutList({style:ZmShortcutList.PANEL_STYLE, cols:cols});
-	this._contentDiv.innerHTML = list.getContent();
-	if (!appCtxt.isChildWindow) {
-		this._position();
-	}
-	this._contentDiv.scrollTop = 0;
-	DwtShell.getShell(window).getKeyboardMgr().pushTabGroup(this._tabGroup);
-};
-
-ZmShortcutsPanel.prototype.popdown =
-function(maps) {
-	DwtShell.getShell(window).getKeyboardMgr().popTabGroup(this._tabGroup);
-	this.setLocation(Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
-	Dwt.setZIndex(appCtxt.getShell()._veilOverlay, Dwt.Z_HIDDEN);
-	appCtxt.getKeyboardMgr().popDefaultHandler();
-};
-
-ZmShortcutsPanel.prototype.handleKeyEvent =
-function() {
-	ZmShortcutsPanel.closeCallback();
-};
-
-ZmShortcutsPanel.prototype._createHtml =
-function() {
-	var headerId = [this._htmlElId, "header"].join("_");
-	var contentId = [this._htmlElId, "content"].join("_");
-	var html = [];
-	var i = 0;
-	html[i++] = "<div id='" + headerId + "'>";
-	html[i++] = "<div class='ShortcutsPanelHeader'>" + ZmMsg.keyboardShortcuts + "</div>";
-	html[i++] = "<table border=0 cellpadding=0 cellspacing=0>";
-	html[i++] = "<tr><td class='ShortcutsPanelDescription ShortcutsPanelText' width='70%'>" + ZmMsg.shortcutsCurrent + "</td>";
-	html[i++] = "<td class='ShortcutsPanelLinks ShortcutsPanelText' width='30%'>" +
-				"<span class='ShortcutsPanelLink' onclick='ZmShortcutsPanel.closeCallback();'>" + ZmMsg.close + "</span>";
-	if (!appCtxt.isChildWindow) {
-		html[i++] = "<br /><span class='ShortcutsPanelLink' onclick='ZmShortcutsPanel.newWindowCallback();'>" + ZmMsg.newWindow + "</span></td></tr>";
-	}
-	html[i++] = "</table>";
-	html[i++] = "<hr />";
-	html[i++] = "</div>";
-	html[i++] = "<div id='" + contentId + "' style='overflow:auto'></div>";
-
-	this.getHtmlElement().innerHTML = html.join("");
-	this._headerDiv = document.getElementById(headerId);
-	this._contentDiv = document.getElementById(contentId);
-	var headerHeight = Dwt.getSize(this._headerDiv).y;
-	var h = this.getSize().y - headerHeight;
-	Dwt.setSize(this._contentDiv, Dwt.DEFAULT, h - 10);
-	this.setZIndex(Dwt.Z_DIALOG);	
-};
-
-ZmShortcutsPanel.closeCallback =
-function() {
-	if (appCtxt.isChildWindow) {
-		window.close();
-	} else {
-		ZmShortcutsPanel.INSTANCE.popdown();
-	}
-};
-
-ZmShortcutsPanel.newWindowCallback =
-function() {
-	var newWinObj = appCtxt.getNewWindow(false, 820, 650);
-	newWinObj.command = "shortcuts";
-	newWinObj.params = {cols:ZmShortcutsPanel.INSTANCE._cols};
-	ZmShortcutsPanel.closeCallback();
 };

@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -25,26 +27,15 @@
  * @param parent		[DwtComposite]		the containing widget
  * @param className		[string]*			CSS class
  * @param id			[string]*			an explicit ID to use for the control's HTML element
- * @param controller	[ZmController]*		owning controller
  */
-ZmPopupMenu = function(parent, className, id, controller) {
+ZmPopupMenu = function(parent, className, id) {
 
 	if (arguments.length == 0) return;
-	params = Dwt.getParams(arguments, ZmPopupMenu.PARAMS);
-	params.className = params.className ? params.className : "ActionMenu";
-	params.style = params.style || DwtMenu.POPUP_STYLE;
-	DwtMenu.call(this, params);
-
-	controller = controller || appCtxt.getCurrentController();
-	if (controller) {
-		this._controller = controller;
-		this._keyMap = ZmKeyMap.MAP_NAME_R[this._controller.getKeyMapName()];
-	}
+	className = className ? className : "ActionMenu";
+	DwtMenu.call(this, {parent:parent, style:DwtMenu.POPUP_STYLE, className:className, id:id});
 
 	this._menuItems = {};
 };
-
-ZmPopupMenu.PARAMS = ["parent", "className", "id", "controller"];
 
 ZmPopupMenu.prototype = new DwtMenu;
 ZmPopupMenu.prototype.constructor = ZmPopupMenu;
@@ -103,16 +94,14 @@ function(enabled) {
 
 /**
  * Adds a menu item to this menu.
- *
- * @param params		[hash]			hash of params:
- *        id			[string]		menu item ID
- *        text			[string]*		menu item text
- *        image			[string]*		icon class for the or menu item
- *        disImage		[string]*		disabled version of icon
- *        enabled		[boolean]*		if true, menu item is enabled
- *        style			[constant]*		menu item style
- *        radioGroupId	[string]*		ID of radio group for this menu item
- *        shortcut		[constant]*		shortcut ID (from ZmKeyMap) for showing hint
+ * 
+ * @param id			[string]		menu item ID
+ * @param text			[string]*		menu item text
+ * @param image			[string]*		icon class for the or menu item
+ * @param disImage		[string]*		disabled version of icon
+ * @param enabled		[boolean]*		if true, menu item is enabled
+ * @param style			[constant]*		menu item style
+ * @param radioGroupId	[string]*		ID of radio group for this menu item
  */
 ZmPopupMenu.prototype.createMenuItem =
 function(id, params) {
@@ -124,25 +113,10 @@ function(id, params) {
 	if (params.text) {
 		mi.setText(params.text);
 	}
-	if (params.shortcut) {
-		mi.setShortcut(appCtxt._getShortcutHint(this._keyMap, params.shortcut));
-	}
-
 	mi.setEnabled(params.enabled !== false);
 
 	return mi;
 };
-
-/**
-* Returns the menu item with the given ID.
-*
-* @param id		an operation ID
-*/
-ZmPopupMenu.prototype.getMenuItem =
-function(id) {
-	return this._menuItems[id];
-};
-
 
 ZmPopupMenu.prototype.createSeparator =
 function() {

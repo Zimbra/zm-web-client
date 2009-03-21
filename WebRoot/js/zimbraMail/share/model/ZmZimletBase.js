@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -23,7 +25,7 @@ ZmZimletBase = function() {
 	// For Zimlets, the ZmObjectHandler constructor is a no-op.  Zimlets
 	// don't receive any arguments in constructor.  In the init() function
 	// below we call ZmObjectHandler.init() in order to set some arguments.
-};
+}
 
 ZmZimletBase.PANEL_MENU = 1;
 ZmZimletBase.CONTENTOBJECT_MENU = 2;
@@ -249,9 +251,7 @@ function(spanElement, contentObjText, matchContext, event) {
 				obj["$"+i] = matchContext[i];
 			}
 		}
-        var x = event.docX;
-        var y = event.docY;
-        this.xmlObj().handleActionUrl(c.actionUrl, c.canvas, obj, null, x, y);
+		this.xmlObj().handleActionUrl(c.actionUrl, c.canvas, obj);
 	}
 };
 
@@ -613,10 +613,8 @@ function(object, context, span) {
 };
 
 ZmZimletBase.prototype.makeCanvas =
-function(canvasData, url, x, y) {
-	if(canvasData && canvasData.length)
-        canvasData = canvasData[0];    
-    var canvas = null;
+function(canvasData, url) {
+	var canvas = null;
 	var div;
 
 	div = document.createElement("div");
@@ -686,20 +684,7 @@ function(canvasData, url, x, y) {
 		}
 		canvas.popup();
 		break;
-
-        case "tooltip":
-        var shell = DwtShell.getShell(window);
-	    var canvas = shell.getToolTip();
-	    canvas.setContent('<div id="zimletTooltipDiv" />', true);
-        var el = document.createElement("iframe");
-        el.setAttribute("width",canvasData.width);
-        el.setAttribute("height",canvasData.height);
-        el.setAttribute("style","border:0px");        
-        el.src = url;
-        document.getElementById("zimletTooltipDiv").appendChild(el);
-        canvas.popup(x, y, true);
-        break;
-    }
+	}
 	return canvas;
 };
 
@@ -714,23 +699,6 @@ function(xsltUrl, doc) {
 	}
 	var ret = xslt.transformToDom(doc);
 	return AjxXmlDoc.createFromDom(ret);
-};
-
-ZmZimletBase.prototype.createApp =
-function(label, image, tooltip) {
-
-	AjxDispatcher.require("ZimletApp");
-
-	var appName = [this.name, Dwt.getNextId()].join("_");
-	var controller = appCtxt.getAppController();
-	controller.getAppChooser().addButton(appName, {text:label, image:image, tooltip:tooltip});
-
-	// TODO: Do we have to call ZmApp.registerApp?
-
-	var app = new ZmZimletApp(appName, this, DwtShell.getShell(window));
-	controller.addApp(app);
-
-	return appName;
 };
 
 /* Internal functions -- overriding is not recommended */

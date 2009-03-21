@@ -64,7 +64,7 @@
 <c:if test="${print}">
 <script type="text/javascript">
     <!--
-    window.print();
+    setTimeout('window.print()', 2000);
     // -->
 </script>
 </c:if>

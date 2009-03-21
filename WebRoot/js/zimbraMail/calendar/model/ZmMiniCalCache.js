@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -43,13 +45,8 @@ ZmMiniCalCache.prototype._getCacheKey =
 function(params) {
 	var sortedFolderIds = [];
 	sortedFolderIds = sortedFolderIds.concat(params.folderIds);
-	sortedFolderIds.sort(ZmMiniCalCache._sortFolderId);
+	sortedFolderIds.sort(ZmApptCache._sortFolderId);
 	return (params.start + ":" + params.end + ":" + sortedFolderIds.join(":"));
-};
-
-ZmMiniCalCache._sortFolderId =
-function (a,b) {
-	return a-b;
 };
 
 ZmMiniCalCache.prototype._getMiniCalData =
