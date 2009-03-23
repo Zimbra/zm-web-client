@@ -34,22 +34,12 @@ function(params, data) {
 	this._miniCalData[key] = data;	
 };
 
-ZmMiniCalCache._sortFolderId =
-function (a,b) {
-	return a-b;
-};
-
 ZmMiniCalCache.prototype._getCacheKey =
 function(params) {
 	var sortedFolderIds = [];
 	sortedFolderIds = sortedFolderIds.concat(params.folderIds);
-	sortedFolderIds.sort(ZmMiniCalCache._sortFolderId);
+	sortedFolderIds.sort();
 	return (params.start + ":" + params.end + ":" + sortedFolderIds.join(":"));
-};
-
-ZmMiniCalCache._sortFolderId =
-function (a,b) {
-	return a-b;
 };
 
 ZmMiniCalCache.prototype._getMiniCalData =

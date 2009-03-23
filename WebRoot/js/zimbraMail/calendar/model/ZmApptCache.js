@@ -63,7 +63,7 @@ ZmApptCache.prototype._getCachedMergedKey =
 function(params) {
 	var sortedFolderIds = [];
 	sortedFolderIds = sortedFolderIds.concat(params.folderIds);
-	sortedFolderIds.sort(ZmApptCache._sortFolderId);
+	sortedFolderIds.sort();
 
 	// add query to cache key since user searches should not be cached
 	var query = params.query && params.query.length > 0
