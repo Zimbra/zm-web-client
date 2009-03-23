@@ -59,7 +59,7 @@
 </c:set>
 
 
-<app:view mailbox="${mailbox}" title="${title}" selected='notebook' notebook="${true}" tags="true" context="${context}" keys="true">
+<app:view mailbox="${mailbox}" title="${title}" selected='wiki' notebook="${true}" tags="true" context="${context}" keys="true">
     <table width="100%" cellpadding="0" cellspacing="0">
         <tr>
             <td class='TbTop'>
