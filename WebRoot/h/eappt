@@ -503,8 +503,9 @@
                         </c:if>
                         <tr>
                             <td colspan="3" style='padding:10px'>
+                                ${message.body.content}
                                 <textarea class='MsgCompose' rows="30" cols="80" style='width:100%'
-                                              name="body">${fn:escapeXml(compose.content)}</textarea>
+                                              name="body">${fn:escapeXml(empty compose.content ? compose.description : compose.content)}</textarea>
                             </td>
                         </tr>
                     </table>
