@@ -1808,7 +1808,8 @@ function(myId, tagId) {
 ZmMailMsgView._detachCallback =
 function(result) {
 	var resp = result.getResponse().GetMsgResponse;
-	var msg = new ZmMailMsg(resp.m[0].id, null, true);	// do not cache this temp msg
+	var list = appCtxt.getApp(ZmApp.MAIL).getMailListController().getList();
+	var msg = new ZmMailMsg(resp.m[0].id, list, true);	// do not cache this temp msg
 	msg._loadFromDom(resp.m[0]);
 	msg._loaded = true; // bug fix #8868 - force load for rfc822 msgs since they may not return any content
 	msg.readReceiptRequested = false; // bug #36247 - never allow read receipt for rfc/822 message

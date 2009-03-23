@@ -544,8 +544,16 @@ function(params, batchCmd) {
 			return actionedItems;
 	}
 
-	var type = (this.type == ZmItem.MIXED) ? this._mixedType : this.type;
-	if (!type) return;
+	var type;
+	if (this.type == ZmItem.MIXED) {
+		type = this._mixedType;
+	} else if (params.items.length == 1) {
+		type = params.items[0].type;
+	} else {
+		type = this.type;
+	}
+	if (!type) { return; }
+
 	var soapCmd = ZmItem.SOAP_CMD[type] + "Request";
     var useJson = batchCmd ? batchCmd._useJson : true ;
     var itemActionRequest = null;
