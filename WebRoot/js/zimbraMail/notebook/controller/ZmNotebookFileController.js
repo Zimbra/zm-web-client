@@ -313,6 +313,5 @@ function(ev) {
 	if(ev.handled) return;
 	var details = ev._details;
 	if(!details) return;
-	var items = details.items
-	this._list._notify(ev.event,{items:items})
+	this._list._notify(ev.event,details);
 };
