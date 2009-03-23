@@ -1742,9 +1742,11 @@ function(action, msg, extraBodyText, incOption, nosig) {
 			}
 			var sep = composingHtml ? '<br>' : '\n';
 			var wrapParams = {text:body, len:ZmComposeView.WRAP_LENGTH, pre:prefix + " ", eol:sep, htmlMode:composingHtml};
+
 			if (incOption == ZmSetting.INCLUDE_PREFIX) {
 				value += leadingText + preface + AjxStringUtil.wordWrap(wrapParams);
-			} else if (incOption == ZmSetting.INCLUDE_PREFIX_FULL) {
+			}
+			else if (incOption == ZmSetting.INCLUDE_PREFIX_FULL) {
 				var headers = [];
 				for (var i = 0; i < ZmComposeView.QUOTED_HDRS.length; i++) {
 					var h = msg.getHeaderStr(ZmComposeView.QUOTED_HDRS[i]);
@@ -1762,7 +1764,8 @@ function(action, msg, extraBodyText, incOption, nosig) {
 				wrapParams.text = body;
 				wrapParams.len = ZmComposeView.WRAP_LENGTH;
 				value += leadingText + preface + headers + (composingHtml ? sep : '') + prefix + sep + AjxStringUtil.wordWrap(wrapParams);
-			} else if (incOption == ZmSetting.INCLUDE_SMART) {
+			}
+			else if (incOption == ZmSetting.INCLUDE_SMART) {
 				var chunks = AjxStringUtil.getTopLevel(body);
 				for (var i = 0; i < chunks.length; i++) {
 					wrapParams.text = chunks[i];
@@ -1770,17 +1773,17 @@ function(action, msg, extraBodyText, incOption, nosig) {
 				}
 				var text = chunks.length ? chunks.join(sep + sep) : body;
 				value += leadingText + preface + text;
-			} else if (action == ZmOperation.REPLY_ACCEPT ||
+			}
+			else if (action == ZmOperation.REPLY_ACCEPT ||
 					 action == ZmOperation.REPLY_DECLINE ||
-					 action == ZmOperation.REPLY_TENTATIVE) {
-
-				var bp = msg.getBodyPart(ZmMimeTable.TEXT_PLAIN);
-				var bodyStr = bp ? (bp.content.replace(/\r\n/g, "\n")) : "";
-
+					 action == ZmOperation.REPLY_TENTATIVE)
+			{
 				// bug 5122: always show original meeting details
-				wrapParams.text = bodyStr;
+				var bp = msg.getBodyPart(ZmMimeTable.TEXT_PLAIN);
+				wrapParams.text = bp ? (bp.content.replace(/\r\n/g, "\n")) : "";
 				value = preface + AjxStringUtil.wordWrap(wrapParams);
-			} else if (action == ZmOperation.REPLY_CANCEL) {
+			}
+			else if (action == ZmOperation.REPLY_CANCEL) {
 				cancelledParts = [ leadingText ];
 				cancelledParts.push(crlf);
 				cancelledParts.push(ZmMsg.subjectLabel+" "+msg.subject+crlf);
@@ -2492,7 +2495,7 @@ function(isDraft, status, attId) {
 		}
 
 		this._controller.popupErrorDialog(msg + ZmMsg.errorTryAgain, null, null, true);
-		this._controller.resetToolbarOperations()
+		this._controller.resetToolbarOperations();
 	}
 };
 
