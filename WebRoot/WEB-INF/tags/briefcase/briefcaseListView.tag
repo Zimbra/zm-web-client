@@ -39,7 +39,7 @@
     <zm:composeUploader var="uploader"/>
 </app:handleError>
 
-<app:view mailbox="${mailbox}" title="${title}" context="${context}" selected='briefcases' briefcases="true" searches="false" tags="true" keys="true">
+<app:view mailbox="${mailbox}" title="${title}" context="${context}" selected='briefcase' briefcases="true" searches="false" tags="true" keys="true">
     <zm:currentResultUrl var="currentUrl" value="/h/search" context="${context}"/>
     <form name="zform" action="${fn:escapeXml(currentUrl)}" method="post">
         <table width="100%" cellpadding="0" cellspacing="0">
