@@ -303,13 +303,15 @@ function() {
 	});
     //Yuck: Should add functionality in Pref. to add prefix/postfix to all options. Meanwhile...
     var fontSizeOptions = ["8", "10", "12", "14", "18", "24", "36"];
+    var fontSizeDisplayOptions = new Array();
     for(var i=0; i<fontSizeOptions.length; i++){
-        fontSizeOptions[i] = fontSizeOptions[i] + ZmMsg.pt;
+        fontSizeDisplayOptions[i] = fontSizeOptions[i] + ZmMsg.pt;
     }
     ZmPref.registerPref("COMPOSE_INIT_FONT_SIZE", {
 		displayName:		null,
 		displayContainer:	ZmPref.TYPE_SELECT,
-		displayOptions: 	fontSizeOptions,
+        options:            fontSizeOptions,
+		displayOptions: 	fontSizeDisplayOptions,
 		precondition:		[ZmSetting.HTML_COMPOSE_ENABLED, ZmSetting.NOTEBOOK_ENABLED]
 	});
 
