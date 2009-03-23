@@ -452,7 +452,7 @@ function(cols) {
 		html[i++] = "</tr>";
 	}
 	html[i++] = "<tr>";
-	appCtxt._getCustomKeys(ZmKeys);
+	appCtxt.getCustomKeys(ZmKeys);
 	for (j = 0; j < cols.length; j++) {
 		i = this._getKeysHtml(cols[j], html, i);
 	}

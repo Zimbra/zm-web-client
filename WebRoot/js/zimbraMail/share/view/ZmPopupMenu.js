@@ -125,7 +125,7 @@ function(id, params) {
 		mi.setText(params.text);
 	}
 	if (params.shortcut) {
-		mi.setShortcut(appCtxt._getShortcutHint(this._keyMap, params.shortcut));
+		mi.setShortcut(appCtxt.getShortcutHint(this._keyMap, params.shortcut));
 	}
 
 	mi.setEnabled(params.enabled !== false);

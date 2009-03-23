@@ -886,7 +886,7 @@ function(account, callback) {
  * @param shortcut	[string]	shortcut action
  * @param orgId		[int]*		ID or organizer that may have a shortcut alias
  */
-ZmAppCtxt.prototype._getShortcutHint =
+ZmAppCtxt.prototype.getShortcutHint =
 function(keyMap, shortcut, orgId) {
 	
 	var text = null;
@@ -907,11 +907,12 @@ function(keyMap, shortcut, orgId) {
 			}
 			if (!sc) { return null; }
 			if (orgId) {
-				var customKeys = this._getCustomKeys();
+				var customKeys = this.getCustomKeys();
 				if (!customKeys) { return null; }
 				var key = ["custom", orgId].join(".");
 				var alias = customKeys[key];
 				sc = sc.replace("NNN", alias);
+				if (!alias) { return null; }
 			}
 			sc = sc.replace(/\b[A-Z]\b/g, function(let) { return let.toLowerCase(); });
 			text = [" [", sc.replace(",", ""), "]"].join("");
@@ -930,7 +931,7 @@ function(keyMap, shortcut, orgId) {
  *
  * @param keys		[hash]*		if provided, custom keys will be added to these keys
  */
-ZmAppCtxt.prototype._getCustomKeys =
+ZmAppCtxt.prototype.getCustomKeys =
 function(keys) {
 
 	if (!this._customKeys) {

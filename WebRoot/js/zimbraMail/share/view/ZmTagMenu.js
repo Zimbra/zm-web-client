@@ -182,7 +182,7 @@ function(tagList, addRemove) {
 	var miNew = this._menuItems[ZmTagMenu.MENU_ITEM_ADD_ID] = new DwtMenuItem({parent:this, id: this._htmlElId + "|NEWTAG"});
 	miNew.setText(AjxStringUtil.htmlEncode(ZmMsg.newTag));
 	miNew.setImage("NewTag");
-	miNew.setShortcut(appCtxt._getShortcutHint(this._keyMap, ZmKeyMap.NEW_TAG));
+	miNew.setShortcut(appCtxt.getShortcutHint(this._keyMap, ZmKeyMap.NEW_TAG));
 	miNew.setData(ZmTagMenu.KEY_TAG_EVENT, ZmEvent.E_CREATE);
 	miNew.addSelectionListener(new AjxListener(this, this._menuItemSelectionListener), 0);
 
@@ -218,7 +218,7 @@ function(tagList, addRemove) {
 			var mi = new DwtMenuItem({parent:removeMenu});
 			mi.setText(ZmMsg.allTags);
 			mi.setImage("TagStack");
-			mi.setShortcut(appCtxt._getShortcutHint(this._keyMap, ZmKeyMap.UNTAG));
+			mi.setShortcut(appCtxt.getShortcutHint(this._keyMap, ZmKeyMap.UNTAG));
 			mi.setData(ZmTagMenu.KEY_TAG_EVENT, ZmEvent.E_REMOVE_ALL);
 			mi.setData(Dwt.KEY_OBJECT, removeList);
 			mi.addSelectionListener(new AjxListener(this, this._menuItemSelectionListener), 0);
@@ -237,7 +237,7 @@ function(menu, newTag, add, index, tagHash) {
 	mi.setData(ZmTagMenu.KEY_TAG_ADDED, add);
 	mi.setData(Dwt.KEY_OBJECT, newTag);
 	mi.addSelectionListener(new AjxListener(this, this._menuItemSelectionListener), 0);
-	mi.setShortcut(appCtxt._getShortcutHint(null, ZmKeyMap.TAG, newTag.id));
+	mi.setShortcut(appCtxt.getShortcutHint(null, ZmKeyMap.TAG, newTag.id));
 	tagHash[newTag.id] = mi;
 };
 
