@@ -809,7 +809,7 @@ function(colIdx, params) {
         Dwt.setSize(bdyCol, newWidth, Dwt.DEFAULT);
         Dwt.setSize(hdrCol, newWidth, Dwt.DEFAULT);
 
-        if(AjxEnv.isSafari || AjxEnv.isChrome) {
+        if(AjxEnv.isSafari || AjxEnv.isChrome || (AjxEnv.isFirefox2_0up && !AjxEnv.isFirefox3up)) {
             //change first column cell
             Dwt.setSize(this.getCell(0, colIdx), newWidth, Dwt.DEFAULT);
         }
