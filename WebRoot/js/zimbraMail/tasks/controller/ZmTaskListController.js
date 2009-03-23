@@ -423,6 +423,11 @@ function(ev) {
 	window.open(appContextPath+url, "_blank");
 };
 
+ZmTaskListController.prototype._printListener =
+function(ev) {
+    this._printTaskListener(ev);
+};
+
 ZmTaskListController.prototype._printTaskFolderListener =
 function(ev) {
 	var url;
