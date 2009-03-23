@@ -78,6 +78,9 @@ ZmPrefPageTreeController.prototype.show = function(params) {
 		treeView.setSelected(page1, true);
 	}
 
+	// expand all
+	treeView.getHeaderItem().setExpanded(true, true);
+
 	// add listeners
 	var args = [view, treeView];
 	view.addStateChangeListener(new AjxListener(this, this._handleTabStateChange, args));
