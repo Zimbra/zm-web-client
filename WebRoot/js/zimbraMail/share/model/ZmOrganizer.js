@@ -120,6 +120,7 @@ ZmOrganizer.F_SHARES			= "shares";
 ZmOrganizer.F_FLAGS				= "flags";
 ZmOrganizer.F_REST_URL			= "rest";
 ZmOrganizer.F_PERMS				= "perms";
+ZmOrganizer.F_RNAME				= "rname";	// remote name
 
 // server representation of org flags
 ZmOrganizer.FLAG_CHECKED			= "#";
@@ -901,10 +902,16 @@ function(obj, details) {
 	var details = details || {};
 	var fields = {};
 	if (obj.name != null && this.name != obj.name) {
-		details.oldName = this.name;
-		this.name = obj.name;
-		fields[ZmOrganizer.F_NAME] = true;
-		this.parent.children.sort(eval(ZmTreeView.COMPARE_FUNC[this.type]));
+		if (obj.id == this.id) {
+			details.oldName = this.name;
+			this.name = obj.name;
+			fields[ZmOrganizer.F_NAME] = true;
+			this.parent.children.sort(eval(ZmTreeView.COMPARE_FUNC[this.type]));
+		} else {
+			// rename of a remote folder
+			details.newName = obj.name;
+			fields[ZmOrganizer.F_RNAME] = true;
+		}
 		doNotify = true;
 	}
 	if (obj.u != null && this.numUnread != obj.u) {

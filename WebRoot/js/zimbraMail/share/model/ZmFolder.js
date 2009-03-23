@@ -370,7 +370,7 @@ function(obj) {
 	var details = {};
 	var fields = {};
 	var doNotify = false;
-	if (obj.name != null && this.name != obj.name) {
+	if (obj.name != null && this.name != obj.name && obj.id == this.id) {
 		details.oldPath = this.getPath();
 		this.name = obj.name;
 		fields[ZmOrganizer.F_NAME] = true;
