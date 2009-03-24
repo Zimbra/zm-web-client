@@ -106,12 +106,12 @@
                     }
                     var i_frame = iframe;
                     //alert(b.scrollHeight+"|"+iframe.offsetHeight);
-                    var _delay = isIE ? 100 : 0 ;
+                    var _delay = 100;//isIE ? 100 : 0 ;
                     setTimeout(function(){ i_frame.style.height = b.scrollHeight + 30 + "px";}, _delay);
                 }
             };
 
-            var _delay = isIE ? 300 : 100 ;
+            var _delay = 300;//isIE ? 300 : 100 ;
             setTimeout(resizeIframe, _delay);
         })();
     </script>
