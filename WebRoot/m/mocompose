@@ -116,7 +116,7 @@
     </c:if>
     <div class="table-row cmp_to_row">
             <span class='label table-cell'>
-                <label for="toField"><fmt:message key="toLable"/> </label></span>
+                <label for="toField"><fmt:message key="toLabel"/> </label></span>
             <span class="table-cell">
             <div class="ZhAC ZhACTo">
                 <input id="toField" rows="1" name="to" class="Textarea" value="${fn:escapeXml(compose.to)}"/>

@@ -677,7 +677,7 @@ var getContainer = function(id) {
         self.parent.getContainer().innerHTML = self.getContainer().innerHTML;
     }
     <c:if test="${not empty requestScope.title}">
-    document.title = "<fmt:message key="zimbraTitleLable"/> ${fn:escapeXml(requestScope.title)}";
+    document.title = "<fmt:message key="zimbraTitleLabel"/> ${fn:escapeXml(requestScope.title)}";
     </c:if>
 </script>
 <c:if test="${empty param.ajax}">

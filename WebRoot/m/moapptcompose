@@ -140,12 +140,12 @@
 <div class="View">
     <div class="table">
         <div class="table-row cmp_to_row">
-            <span class="label table-cell"><fmt:message key="subjectLable"/></span>
+            <span class="label table-cell"><fmt:message key="subjectLabel"/></span>
             <span class="table-cell"><input type="text" class="Textarea" value="${fn:escapeXml(compose.subject)}"
                                             name="subject"></span>
         </div>
         <div class="table-row cmp_to_row">
-            <span class="label table-cell"><fmt:message key="locationLable"/></span>
+            <span class="label table-cell"><fmt:message key="locationLabel"/></span>
             <span class="table-cell"><input class="Textarea" type="text" value="${fn:escapeXml(compose.location)}"
                                             name="location"></span>
         </div>
