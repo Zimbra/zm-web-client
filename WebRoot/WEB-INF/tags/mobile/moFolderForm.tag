@@ -44,7 +44,7 @@
 
                     <div class="table">
                         <div class="table-row">
-                                <span class="label table-cell"><fmt:message key="nameLable"/> <input type="text"
+                                <span class="label table-cell"><fmt:message key="nameLabel"/> <input type="text"
                                                                                                  name="folder_name"
                                                                                                  style=""
                                                                                                  class="Textarea"
