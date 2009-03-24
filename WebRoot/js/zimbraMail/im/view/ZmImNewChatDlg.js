@@ -1,15 +1,17 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ *
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009 Zimbra, Inc.
- * 
+ * Copyright (C) 2007 Zimbra, Inc.
+ *
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -38,6 +40,7 @@ ZmImNewChatDlg.prototype._init = function() {
 	this.setButtonListener(DwtDialog.CANCEL_BUTTON, new AjxListener(this, this._cancelButtonListener));
 
 	var list = new ZmImOverview(this, { posStyle	: Dwt.STATIC_STYLE,
+		isFloating  : true,
 		noAssistant : true,
 		expanded	: true
 	});
@@ -67,19 +70,20 @@ ZmImNewChatDlg.prototype.reset = function() {
 	this._contactField.setValue("", true);
 };
 
-ZmImNewChatDlg.prototype._initAutocomplete =
-function() {
-	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) || appCtxt.get(ZmSetting.GAL_ENABLED)) {
-		var acCallback = new AjxCallback(this, this._autocompleteCallback);
-		var params = {
-			parent: DwtShell.getShell(window),
-			dataClass: appCtxt.getAutocompleter(),
-			matchValue: ZmAutocomplete.AC_VALUE_FULL,
-			compCallback : acCallback
-		};
-		this._acContactsList = new ZmAutocompleteListView(params);
-		this._acContactsList.handle(this._contactField.getInputElement());
-	}
+ZmImNewChatDlg.prototype._initAutocomplete = function() {
+        if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+                var acCallback = new AjxCallback(this, this._autocompleteCallback);
+                var contactsClass = appCtxt.getApp(ZmApp.CONTACTS);
+                var contactsLoader = contactsClass.getContactList;
+                var params = { parent	    : DwtShell.getShell(window),
+		               dataClass    : contactsClass,
+		               dataLoader   : contactsLoader,
+                               matchValue   : ZmContactsApp.AC_VALUE_FULL,
+		               compCallback : acCallback
+		             };
+                this._acContactsList = new ZmAutocompleteListView(params);
+                this._acContactsList.handle(this._contactField.getInputElement());
+        }
 };
 
 ZmImNewChatDlg.prototype._autocompleteCallback = function(text, el, match) {

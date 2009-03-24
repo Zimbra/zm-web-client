@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 ZmCalBaseItem = function(type, list, id, folderId) {
@@ -48,9 +50,9 @@ function() {
 
 // consts
 
-ZmCalBaseItem.PERSON				= "PERSON";
-ZmCalBaseItem.LOCATION				= "LOCATION";
-ZmCalBaseItem.EQUIPMENT				= "EQUIPMENT";
+ZmCalBaseItem.PERSON				= 1;
+ZmCalBaseItem.LOCATION				= 2;
+ZmCalBaseItem.EQUIPMENT				= 3;
 
 ZmCalBaseItem.PSTATUS_ACCEPT		= "AC";			// vevent, vtodo
 ZmCalBaseItem.PSTATUS_DECLINED		= "DE";			// vevent, vtodo

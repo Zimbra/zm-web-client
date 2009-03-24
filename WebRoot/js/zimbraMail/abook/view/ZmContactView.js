@@ -1,15 +1,17 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ *
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
- * 
+ * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
+ *
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -243,6 +245,12 @@ function(width, height) {
 	this._sizeChildren(width, height);
 };
 
+ZmContactView.prototype.setBounds =
+function(x, y, width, height) {
+	DwtComposite.prototype.setBounds.call(this, x, y, width, height);
+	this._sizeChildren(width, height);
+};
+
 ZmContactView.prototype.getTitle =
 function() {
 	return [ZmMsg.zimbraTitle, ZmMsg.contact].join(": ");
@@ -450,9 +458,7 @@ function() {
 	if (this._contact.id == null) {
 		var clc = AjxDispatcher.run("GetContactListController");
 		match = clc._folderId;
-	}
-
-    if(this._contact.id != null || !match) {
+	} else {
 		match = this._contact.addrbook ? this._contact.addrbook.id : ZmFolder.ID_CONTACTS;
 	}
 
@@ -528,7 +534,7 @@ function() {
 
 	// notify zimlets that a new contact is being shown.
 	if (appCtxt.zimletsPresent()) {
-		appCtxt.getZimletMgr().notifyZimlets("onContactEdit", [this, this._contact, this._htmlElId]);
+		appCtxt.getZimletMgr().notifyZimlets("onContactEdit", this, this._contact, this._htmlElId);
 	}
 };
 
@@ -913,4 +919,15 @@ function(ev) {
 		}
 	}
 	return true;
+};
+
+ZmContactView.getPrintHtml =
+function(contact, abridged) {
+	// make sure it's a real ZmContact
+	var real = contact.list._realizeContact(contact);
+	var subs = {
+		contact: real,
+		abridged: abridged
+	};
+	return (AjxTemplate.expand("abook.Contacts#PrintContact", subs));
 };

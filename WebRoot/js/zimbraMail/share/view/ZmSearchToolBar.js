@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -323,7 +325,7 @@ function() {
 	var inputFieldId = this._htmlElId + "_inputField";
 	var inputField = document.getElementById(inputFieldId);
 	if (inputField) {
-		this._searchField = new DwtInputField({parent:this, hint:ZmMsg.searchInput, inputId:ZmId.SEARCH_INPUT});
+		this._searchField = new DwtInputField({parent:this, hint:ZmMsg.search, inputId:ZmId.SEARCH_INPUT});
 		var inputEl = this._searchField.getInputElement();
 		inputEl.className = "search_input";
 		Dwt.setHandler(inputEl, DwtEvent.ONKEYPRESS, ZmSearchToolBar._keyPressHdlr);
@@ -471,7 +473,7 @@ function(ev) {
 	} else {
 		var queryString = this.getSearchFieldValue();
 		if (appCtxt.zimletsPresent()) {
-			appCtxt.getZimletMgr().notifyZimlets("onKeyPressSearchField", [queryString]);
+			appCtxt.getZimletMgr().notifyZimlets("onKeyPressSearchField", queryString);
 		}
 		this._callback.run(queryString);
 	}

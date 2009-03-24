@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,23 +11,11 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 ZmIdentity = function(name) {
 	this.name = name;
-	this.id = "";
-	this.sendFromDisplay = "";
-	this.sendFromAddress = "";
-	this.setReplyTo = false;
-	this.setReplyToDisplay = "";
-	this.setReplyToAddress = "";
-	this.readReceiptAddr = "";
-	this.signature = "";
-	this.useWhenSentTo = false;
-	this.whenSentToAddresses = [];
-	this.useWhenInFolder = false;
-	this.whenInFolderIds = [];
-	this.isFromDataSource = false;
 };
 
 ZmIdentity.prototype.toString =
@@ -34,41 +23,43 @@ function() {
 	return "ZmIdentity";
 };
 
-
+//
 // Constants
+//
 
-ZmIdentity.COMPOSE_SAME				= "same";
-ZmIdentity.COMPOSE_TEXT 			= "text";
-ZmIdentity.COMPOSE_HTML 			= "html";
-ZmIdentity.STRING					= 1;
-ZmIdentity.ARRAY					= 2;
-ZmIdentity.BOOLEAN					= 3;
-ZmIdentity.DEFAULT_NAME 			= "DEFAULT";
+ZmIdentity.COMPOSE_SAME = "same";
+ZmIdentity.COMPOSE_TEXT = "text";
+ZmIdentity.COMPOSE_HTML = "html";
+
+ZmIdentity.STRING = 1;
+ZmIdentity.ARRAY = 2;
+ZmIdentity.BOOLEAN = 3;
+
+ZmIdentity.DEFAULT_NAME = "DEFAULT";
 
 var i = 0;
-ZmIdentity.NAME 					= i++;
-ZmIdentity.SEND_FROM_DISPLAY		= i++;
-ZmIdentity.SEND_FROM_ADDRESS		= i++;
-ZmIdentity.SET_REPLY_TO				= i++;
-ZmIdentity.SET_REPLY_TO_DISPLAY		= i++;
-ZmIdentity.SET_REPLY_TO_ADDRESS		= i++;
-ZmIdentity.READ_RECEIPT_TO_ADDR		= i++;
-ZmIdentity.SIGNATURE				= i++;
-ZmIdentity.USE_WHEN_SENT_TO			= i++;
-ZmIdentity.WHEN_SENT_TO_ADDRESSES	= i++;
-ZmIdentity.USE_WHEN_IN_FOLDER		= i++;
-ZmIdentity.WHEN_IN_FOLDERIDS		= i++;
-ZmIdentity.IS_DEFAULT				= i++;
+ZmIdentity.NAME = i++;
+ZmIdentity.SEND_FROM_DISPLAY = i++;
+ZmIdentity.SEND_FROM_ADDRESS = i++;
+ZmIdentity.SET_REPLY_TO = i++;
+ZmIdentity.SET_REPLY_TO_DISPLAY = i++;
+ZmIdentity.SET_REPLY_TO_ADDRESS = i++;
+ZmIdentity.SIGNATURE = i++;
+ZmIdentity.USE_WHEN_SENT_TO = i++;
+ZmIdentity.WHEN_SENT_TO_ADDRESSES = i++;
+ZmIdentity.USE_WHEN_IN_FOLDER = i++;
+ZmIdentity.WHEN_IN_FOLDERIDS = i++;
+ZmIdentity.IS_DEFAULT = i++;
 delete i;
 
 ZmIdentity.FIELDS = {};
 ZmIdentity._SOAP = {};
 
-
+//
 // Static inititialization
+//
 
-ZmIdentity.addField =
-function(fieldId, field) {
+ZmIdentity.addField = function(fieldId, field) {
 	ZmIdentity.FIELDS[fieldId] = field;
 	ZmIdentity._SOAP[field.soap] = field;
 };
@@ -79,7 +70,6 @@ ZmIdentity.addField(ZmIdentity.SEND_FROM_ADDRESS, { name: "sendFromAddress", soa
 ZmIdentity.addField(ZmIdentity.SET_REPLY_TO, { name: "setReplyTo", soap: "zimbraPrefReplyToEnabled", type: ZmIdentity.BOOLEAN });
 ZmIdentity.addField(ZmIdentity.SET_REPLY_TO_DISPLAY, { name: "setReplyToDisplay", soap: "zimbraPrefReplyToDisplay", type: ZmIdentity.STRING });
 ZmIdentity.addField(ZmIdentity.SET_REPLY_TO_ADDRESS, { name: "setReplyToAddress", soap: "zimbraPrefReplyToAddress", type: ZmIdentity.STRING });
-ZmIdentity.addField(ZmIdentity.READ_RECEIPT_TO_ADDR, { name: "readReceiptAddr", soap: "zimbraPrefReadReceiptsToAddress", type: ZmIdentity.STRING });
 ZmIdentity.addField(ZmIdentity.SIGNATURE, { name: "signature", soap: "zimbraPrefDefaultSignatureId", type: ZmIdentity.STRING });
 // Used only for Persona
 ZmIdentity.addField(ZmIdentity.USE_WHEN_SENT_TO, { name: "useWhenSentTo", soap: "zimbraPrefWhenSentToEnabled", type: ZmIdentity.BOOLEAN });
@@ -87,8 +77,30 @@ ZmIdentity.addField(ZmIdentity.WHEN_SENT_TO_ADDRESSES, { name: "whenSentToAddres
 ZmIdentity.addField(ZmIdentity.USE_WHEN_IN_FOLDER, { name: "useWhenInFolder", soap: "zimbraPrefWhenInFoldersEnabled", type: ZmIdentity.BOOLEAN });
 ZmIdentity.addField(ZmIdentity.WHEN_IN_FOLDERIDS, { name: "whenInFolderIds", soap: "zimbraPrefWhenInFolderIds", type: ZmIdentity.ARRAY });
 
+//
+// Data
+//
 
+// field defaults
+
+ZmIdentity.prototype.id = "";
+ZmIdentity.prototype.sendFromDisplay = "";
+ZmIdentity.prototype.sendFromAddress = "";
+ZmIdentity.prototype.setReplyTo = false;
+ZmIdentity.prototype.setReplyToDisplay = "";
+ZmIdentity.prototype.setReplyToAddress = "";
+ZmIdentity.prototype.signature = "";
+ZmIdentity.prototype.useWhenSentTo = false;
+ZmIdentity.prototype.whenSentToAddresses = [];
+ZmIdentity.prototype.useWhenInFolder = false;
+ZmIdentity.prototype.whenInFolderIds = [];
+ZmIdentity.prototype.isFromDataSource = false;
+
+//
 // Public methods
+//
+
+// fields
 
 ZmIdentity.prototype.getField =
 function(fieldId) {
@@ -99,6 +111,8 @@ ZmIdentity.prototype.setField =
 function(fieldId, value) {
 	this[ZmIdentity.FIELDS[fieldId].name] = value;
 };
+
+// requests
 
 ZmIdentity.prototype.create =
 function(callback, errorCallback, batchCmd) {
@@ -115,8 +129,9 @@ function(callback, errorCallback, batchCmd) {
 	return this._doRequest("Delete", this._handleDeleteResponse, callback, errorCallback, batchCmd);
 };
 
-
+//
 // Protected methods
+//
 
 ZmIdentity.prototype._doRequest =
 function(requestType, respFunction, callback, errorCallback, batchCmd) {
@@ -211,7 +226,8 @@ function(callback, result, response) {
 	delete this._new;
 	delete this._dirty;
 
-	appCtxt.getIdentityCollection().add(this);
+	var collection = appCtxt.getIdentityCollection();
+	collection.add(this);
 
 	if (callback) {
 		callback.run(this, result);
@@ -237,7 +253,8 @@ function(callback, result, response) {
 
 ZmIdentity.prototype._handleDeleteResponse =
 function(callback, result, response) {
-	appCtxt.getIdentityCollection().remove(this);
+	var collection = appCtxt.getIdentityCollection();
+	collection.remove(this);
 
 	if (callback) {
 		callback.run(this, result);

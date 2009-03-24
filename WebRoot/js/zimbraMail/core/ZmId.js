@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -45,7 +47,7 @@
  * 
  * @author Conrad Damon
  */
-ZmId = function() {};
+ZmId = function() {}
 
 //
 // Element IDs, and functions to generate them
@@ -83,10 +85,12 @@ ZmId.SKIN_APP_MAIN					= "skin_container_app_main";
 ZmId.SKIN_APP_MAIN_ROW_FULL			= "skin_tr_main_full";
 ZmId.SKIN_APP_MAIN_ROW				= "skin_tr_main";
 ZmId.SKIN_APP_TOP_TOOLBAR			= "skin_container_app_top_toolbar";
+ZmId.SKIN_CURRENT_APP				= "skin_container_current_app";
 ZmId.SKIN_LINKS						= "skin_container_links";
 ZmId.SKIN_LOGO						= "skin_container_logo";
 ZmId.SKIN_OFFLINE_STATUS			= "skin_container_offline_status";
 ZmId.SKIN_QUOTA_INFO				= "skin_container_quota";
+ZmId.SKIN_PRESENCE					= "skin_container_presence";
 ZmId.SKIN_SASH						= "skin_container_tree_app_sash";
 ZmId.SKIN_SEARCH_BUILDER			= "skin_container_search_builder";
 ZmId.SKIN_SEARCH_BUILDER_TOOLBAR	= "skin_container_search_builder_toolbar";
@@ -102,7 +106,6 @@ ZmId.SKIN_TREE						= "skin_container_tree";
 ZmId.SKIN_USER_INFO					= "skin_container_username";
 ZmId.SKIN_WEB_SEARCH				= "skin_container_web_search";
 ZmId.SKIN_WEB_SEARCH_INPUT			= "skin_search_web_input";
-ZmId.SKIN_TASKBAR					= "skin_container_taskbar";
 
 //
 // Literal IDs
@@ -119,7 +122,7 @@ ZmId.SEARCH_TOOLBAR			= "ztb_search";			// search toolbar
 ZmId.USER_NAME				= "z_userName";			// account name
 ZmId.USER_QUOTA				= "z_userQuota";		// quota
 ZmId.PRESENCE				= "z_presence";			// presence
-ZmId.TASKBAR				= "z_taskbar";			// taskbar
+ZmId.CURRENT_APP_TOOLBAR	= "ztb_currentApp";		// current app toolbar (above overview)
 ZmId.NEW_FOLDER_BUTTON		= "zb_newFolder";		// New Folder button on current app toolbar
 ZmId.STATUS_VIEW			= "z_status";			// status view (shows toast)
 ZmId.TOAST					= "z_toast";			// toast
@@ -298,11 +301,6 @@ function(component) {
 ZmId.getTabId =
 function(context, tabName) {
 	return DwtId._makeId(ZmId.WIDGET_TAB, context, tabName);
-};
-
-/** Returns an ID for a pref page tab. */
-ZmId.getPrefPageId = function(tabKey) {
-	return "PREF_PAGE_"+tabKey;
 };
 
 /**************************************************************************
@@ -561,9 +559,6 @@ ZmId.CMP_BCC_ROW			= "_bcc_row";
 ZmId.CMP_BCC_PICKER			= "_bcc_picker";
 ZmId.CMP_BCC_INPUT			= "_bcc_control";
 ZmId.CMP_BCC_TOGGLE			= "_toggle_bcc";
-ZmId.CMP_OBO_CHECKBOX		= "_obo_checkbox";
-ZmId.CMP_OBO_LABEL			= "_obo_label";
-ZmId.CMP_OBO_ROW			= "_obo_row";
 ZmId.CMP_SUBJECT_ROW		= "_subject_row";
 ZmId.CMP_SUBJECT_INPUT		= "_subject_control";
 ZmId.CMP_IDENTITY_ROW		= "_identity_row";
@@ -603,13 +598,11 @@ ZmId.VIEW_APPT_SCHEDULE			= "APPTS";
 ZmId.VIEW_BRIEFCASE			    = "BC";
 ZmId.VIEW_BRIEFCASE_DETAIL		= "BCD";
 ZmId.VIEW_BRIEFCASE_COLUMN		= "BCC";
-ZmId.VIEW_BRIEFCASE_ICON		= "BCI";
-ZmId.VIEW_CAL					= "CAL";
 ZmId.VIEW_CAL_APPT				= "CLA";
 ZmId.VIEW_CAL_DAY				= "CLD";
-ZmId.VIEW_CAL_LIST				= "CLL";
 ZmId.VIEW_CAL_MONTH				= "CLM";
 ZmId.VIEW_CAL_SCHEDULE			= "CLS";
+ZmId.VIEW_CAL					= "CAL";
 ZmId.VIEW_CAL_WEEK				= "CLW";
 ZmId.VIEW_CAL_WORK_WEEK			= "CLWW";
 ZmId.VIEW_CALL_LIST				= "CLIST";
@@ -627,9 +620,7 @@ ZmId.VIEW_IM_CHAT_MEMBER_LIST	= "IMCML";
 ZmId.VIEW_IM_CHAT_MULTI_WINDOW	= "IMCMW";
 ZmId.VIEW_IM_CHAT_TAB			= "IMCT";
 ZmId.VIEW_LOADING				= "LOADING";
-ZmId.VIEW_MAIL_CONFIRM			= "MAILCONFIRM";
 ZmId.VIEW_MIXED					= "MX";
-ZmId.VIEW_MOBILE_DEVICES		= "MD";
 ZmId.VIEW_MSG 					= "MSG";
 ZmId.VIEW_MY_CARD				= "MYC";
 ZmId.VIEW_NOTEBOOK_FILE			= "NBF";
@@ -645,7 +636,6 @@ ZmId.VIEW_TASKEDIT				= "TKE";
 ZmId.VIEW_TASKLIST				= "TKL";
 ZmId.VIEW_TRAD 					= "TV";
 ZmId.VIEW_VOICEMAIL				= "VM";
-ZmId.VIEW_ATTACHMENTS           = "AV";
 
 // item types
 ZmId.ITEM_APPOINTMENT	= "APPT";
@@ -677,7 +667,6 @@ ZmId.ORG_SEARCH				= "SEARCH";
 ZmId.ORG_TAG				= "TAG";
 ZmId.ORG_TASKS				= "TASKS";
 ZmId.ORG_ZIMLET				= "ZIMLET";
-ZmId.ORG_PREF_PAGE			= "PREF_PAGE";
 
 // fields of an item
 ZmId.FLD_ATTACHMENT		= "at";
@@ -695,17 +684,14 @@ ZmId.FLD_HOME_PHONE		= "hp"; // Contacts
 ZmId.FLD_ID				= "id";
 ZmId.FLD_INDEX			= "ix";
 ZmId.FLD_ITEM_ROW		= "rw";
-ZmId.FLD_ITEM_ROW_3PANE	= "r3";
 ZmId.FLD_LOCATION		= "lo";
 ZmId.FLD_NAME			= "na";
 ZmId.FLD_NOTES			= "no";
 ZmId.FLD_PARTICIPANT	= "pa";
 ZmId.FLD_PCOMPLETE		= "pc"; // Tasks
 ZmId.FLD_PRIORITY		= "pr"; // Tasks
-ZmId.FLD_RECURRENCE		= "re";	// Calendar
 ZmId.FLD_SELECTION		= "se";
 ZmId.FLD_SIZE			= "sz";
-ZmId.FLD_SORTED_BY		= "sb";
 ZmId.FLD_STATUS			= "st";
 ZmId.FLD_SUBJECT		= "su";
 ZmId.FLD_TAG			= "tg";
@@ -718,11 +704,9 @@ ZmId.OP_ADD_FILTER_RULE			= "ADD_FILTER_RULE";
 ZmId.OP_ADD_SIGNATURE			= "ADD_SIGNATURE";
 ZmId.OP_ATTACHMENT				= "ATTACHMENT";
 ZmId.OP_BROWSE					= "BROWSE";
-ZmId.OP_BROWSE_FOLDER			= "BROWSE_FOLDER";
 ZmId.OP_CALL					= "CALL";
 ZmId.OP_CALL_MANAGER			= "CALL_MANAGER";
 ZmId.OP_CAL_REFRESH				= "CAL_REFRESH";
-ZmId.OP_CAL_LIST_VIEW			= "CAL_LIST_VIEW";
 ZmId.OP_CAL_VIEW_MENU			= "CAL_VIEW_MENU";
 ZmId.OP_CANCEL					= "CANCEL";
 ZmId.OP_CHECK_ALL				= "CHECK_ALL";
@@ -736,8 +720,6 @@ ZmId.OP_COMPOSE_OPTIONS			= "COMPOSE_OPTIONS";
 ZmId.OP_CONTACT					= "CONTACT";
 ZmId.OP_DAY_VIEW				= "DAY_VIEW";
 ZmId.OP_DELETE					= "DELETE";
-ZmId.OP_DELETE_APPT_INSTANCE	= "DELETE_INSTANCE";
-ZmId.OP_DELETE_APPT_SERIES  	= "DELETE_SERIES";
 ZmId.OP_DELETE_CONV				= "DELETE_CONV";
 ZmId.OP_DELETE_MENU				= "DELETE_MENU";
 ZmId.OP_DELETE_MSG				= "DELETE_MSG";
@@ -759,7 +741,7 @@ ZmId.OP_EDIT_PROPS				= "EDIT_PROPS";
 ZmId.OP_EDIT_REPLY_ACCEPT		= "EDIT_REPLY_ACCEPT";
 ZmId.OP_EDIT_REPLY_CANCEL		= "EDIT_REPLY_CANCEL";
 ZmId.OP_EDIT_REPLY_DECLINE		= "EDIT_REPLY_DECLINE";
-ZmId.OP_EDIT_REPLY_TENTATIVE	= "EDIT_REPLY_TENTATIVE";
+ZmId.OP_EDIT_REPLY_TENTATIVE	= "EDIT_REPLY_TENTATIVE;"
 ZmId.OP_EMPTY_FOLDER			= "EMPTY_FOLDER";
 ZmId.OP_EXPAND					= "EXPAND";
 ZmId.OP_EXPAND_ALL				= "EXPAND_ALL";
@@ -782,17 +764,16 @@ ZmId.OP_IMPORT_FILE				= "IMPORT_FILE";
 //ZmId.OP_IMPORT_FOLDER			= "IMPORT_FOLDER";
 ZmId.OP_IM_ADD_TO_CONTACT		= "IM_ADD_TO_CONTACT";
 ZmId.OP_IM_BLOCK_BUDDY			= "IM_BLOCK_BUDDY";
-ZmId.OP_IM_BUDDY_ARCHIVE		= "IM_BUDDY_ARCHIVE";
-ZmId.OP_IM_BUDDY_LIST			= "IM_BUDDY_LIST";
-ZmId.OP_IM_CLOSE_ALL_CHATS		= "IM_CLOSE_ALL_CHATS";
-ZmId.OP_IM_CLOSE_OTHER_CHATS	= "IM_CLOSE_OTHER_CHATS";
-ZmId.OP_IM_CLOSE_CHAT			= "IM_CLOSE_CHATS";
+ZmId.OP_IM_CLOSE_ALL_TABS		= "IM_CLOSE_ALL_TABS";
+ZmId.OP_IM_CLOSE_OTHER_TABS		= "IM_CLOSE_OTHER_TABS";
+ZmId.OP_IM_CLOSE_TAB			= "IM_CLOSE_TAB";
 ZmId.OP_IM_CREATE_CONTACT		= "IM_CREATE_CONTACT";
 ZmId.OP_IM_EDIT_CONTACT			= "IM_EDIT_CONTACT";
 ZmId.OP_IM_HTML					= "IM_HTML";
 ZmId.OP_IM_DELETE_GROUP			= "IM_DELETE_GROUP";
-ZmId.OP_IM_INVITE				= "IM_INVITE";
+ZmId.OP_IM_GATEWAY_LOGIN		= "IM_GATEWAY_LOGIN";
 ZmId.OP_IM_NEW_CHAT				= "IM_NEW_CHAT";
+ZmId.OP_IM_NEW_GROUP_CHAT		= "IM_NEW_GROUP_CHAT";
 ZmId.OP_IM_PRESENCE_AWAY		= "IM_PRESENCE_AWAY";
 ZmId.OP_IM_PRESENCE_CHAT		= "IM_PRESENCE_CHAT";
 ZmId.OP_IM_PRESENCE_CUSTOM_MSG	= "IM_PRESENCE_CUSTOM_MSG";
@@ -802,7 +783,6 @@ ZmId.OP_IM_PRESENCE_MENU		= "IM_PRESENCE_MENU";
 ZmId.OP_IM_PRESENCE_OFFLINE		= "IM_PRESENCE_OFFLINE";
 ZmId.OP_IM_PRESENCE_ONLINE		= "IM_PRESENCE_ONLINE";
 ZmId.OP_IM_PRESENCE_XA			= "IM_PRESENCE_XA";
-ZmId.OP_IM_LOGOUT_YAHOO			= "IM_LOGOUT_YAHOO";
 ZmId.OP_IM_PRESENCE_CUSTOM_MRU	= "IM_PRESENCE_CUSTOM_MRU";
 ZmId.OP_IM_PRESENCE_MENU		= "IM_PRESENCE_MENU";
 ZmId.OP_IM_SORT_BY_NAME			= "IM_SORT_BY_NAME";
@@ -825,10 +805,6 @@ ZmId.OP_MARK_HEARD				= "MARK_HEARD";
 ZmId.OP_MARK_READ				= "MARK_READ";
 ZmId.OP_MARK_UNHEARD			= "MARK_UNHEARD";
 ZmId.OP_MARK_UNREAD				= "MARK_UNREAD";
-ZmId.OP_MOBILE_CANCEL_WIPE		= "MOBILE_CANCEL_WIPE";
-ZmId.OP_MOBILE_RESUME_SYNC		= "MOBILE_RESUME_SYNC";
-ZmId.OP_MOBILE_SUSPEND_SYNC		= "MOBILE_SUSPEND_SYNC";
-ZmId.OP_MOBILE_WIPE				= "MOBILE_WIPE";
 ZmId.OP_MONTH_VIEW				= "MONTH_VIEW";
 ZmId.OP_MOUNT_ADDRBOOK			= "MOUNT_ADDRBOOK";
 ZmId.OP_MOUNT_BRIEFCASE			= "MOUNT_BRIEFCASE";
@@ -853,15 +829,10 @@ ZmId.OP_NEW_MESSAGE				= "NEW_MESSAGE";
 ZmId.OP_NEW_MESSAGE_WIN			= "NEW_MESSAGE_WIN";
 ZmId.OP_NEW_NOTEBOOK			= "NEW_NOTEBOOK";
 ZmId.OP_NEW_PAGE				= "NEW_PAGE";
-ZmId.OP_NEW_PRESENTATION		= "NEW_PRESENTATION";
-ZmId.OP_NEW_ROSTER_GROUP		= "NEW_ROSTER_GROUP";
 ZmId.OP_NEW_ROSTER_ITEM			= "NEW_ROSTER_ITEM";
 ZmId.OP_NEW_TAG					= "NEW_TAG";
 ZmId.OP_NEW_TASK				= "NEW_TASK";
-ZmId.OP_NOTIFY                  = "NOTIFY";
 ZmId.OP_NEW_TASK_FOLDER			= "NEW_TASK_FOLDER";
-ZmId.OP_OPEN_APPT_INSTANCE		= "OPEN_APPT_INSTANCE";
-ZmId.OP_OPEN_APPT_SERIES		= "OPEN_APPT_SERIES";
 ZmId.OP_OPEN_FILE				= "OPEN_FILE";
 ZmId.OP_PAGE_BACK				= "PAGE_BACK";
 ZmId.OP_PAGE_DBL_BACK			= "PAGE_DBL_BACK";
@@ -893,20 +864,14 @@ ZmId.OP_REPLY_NEW_TIME			= "REPLY_NEW_TIME";
 ZmId.OP_REPLY_TENTATIVE			= "REPLY_TENTATIVE";
 ZmId.OP_REPLY_TENTATIVE			= "REPLY_TENTATIVE";
 ZmId.OP_REPORT					= "REPORT";
-ZmId.OP_REQUEST_READ_RECEIPT	= "REQUEST_READ_RECEIPT";
-ZmId.OP_RESET                   = "RESET";
 ZmId.OP_REVERT_PAGE				= "REVERT_PAGE";
-ZmId.OP_RUN_FILTER_RULE			= "RUN_FILTER_RULE";
 ZmId.OP_SAVE					= "SAVE";
 ZmId.OP_SAVE_DRAFT				= "SAVE_DRAFT";
-ZmId.OP_SAVE_FILE				= "SAVE_FILE";
 ZmId.OP_SCHEDULE_VIEW			= "SCHEDULE_VIEW";
 ZmId.OP_SEARCH					= "SEARCH";
 ZmId.OP_SEARCH_MAIL				= "SEARCH_MAIL";
 ZmId.OP_SEND					= "SEND";
 ZmId.OP_SEND_FILE				= "SEND_FILE";
-ZmId.OP_SEND_FILE_AS_ATT	    = "SEND_FILE_AS_ATT";
-ZmId.OP_SEND_FILE_MENU          = "SEND_FILE_MENU";
 ZmId.OP_SEND_PAGE				= "SEND_PAGE";
 ZmId.OP_SHARE					= "SHARE";
 ZmId.OP_SHARE_ACCEPT			= "SHARE_ACCEPT";
@@ -929,8 +894,6 @@ ZmId.OP_SYNC_OFFLINE_FOLDER		= "SYNC_OFFLINE_FOLDER";
 ZmId.OP_TAG						= "TAG";
 ZmId.OP_TAG_COLOR_MENU			= "TAG_COLOR_MENU";
 ZmId.OP_TAG_MENU				= "TAG_MENU";
-ZmId.OP_PRINT_TASK		    	= "PRINT_TASK";
-ZmId.OP_PRINT_TASKFOLDER		= "PRINT_TASKFOLDER";
 ZmId.OP_TEXT					= "TEXT";
 ZmId.OP_TODAY					= "TODAY";
 ZmId.OP_UNDELETE				= "UNDELETE";
@@ -944,4 +907,3 @@ ZmId.OP_VIEW_MENU				= "VIEW_MENU";
 ZmId.OP_WEEK_VIEW				= "WEEK_VIEW";
 ZmId.OP_WORK_WEEK_VIEW			= "WORK_WEEK_VIEW";
 ZmId.OP_ZIMLET					= "ZIMLET";
-ZmId.OP_SYNC_ALL				= "SYNC_ALL";

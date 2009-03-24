@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 ZmBriefcaseView = function(parent, controller, dropTgt) {
@@ -98,7 +100,7 @@ function(item, params) {
 		Dwt.setPosition(div, Dwt.ABSOLUTE_STYLE);
 	}
 	
-	this.associateItemWithElement(item, div);
+	this.associateItemWithElement(item, div, DwtListView.TYPE_LIST_ITEM);
 	return div;
 };
 
@@ -190,9 +192,9 @@ ZmBriefcaseView.prototype.refresh = function(restUrl){
 };
 
 ZmBriefcaseView.prototype._getToolTip =
-function(params) {
-	if (!params.item) { return; }
-	return this._controller.getItemTooltip(params.item, this);
+function(item, ev, div) {
+	if (!item) { return; }
+	return this._controller.getItemTooltip(item, this);
 };
 
 
@@ -205,7 +207,7 @@ function(ev, div) {
 	if (div) {
 		var item = this.getItemFromElement(div);
 		if(item && !item.isFolder){
-		this.setToolTipContent(this._getToolTip({item:item, ev:ev, div:div}));
+		this.setToolTipContent(this._getToolTip(item, ev, div));
 		}
 	}		
 	return true;

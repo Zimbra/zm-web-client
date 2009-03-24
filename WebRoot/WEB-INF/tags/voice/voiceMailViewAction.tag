@@ -1,19 +1,3 @@
-<%--
- * ***** BEGIN LICENSE BLOCK *****
- * 
- * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008 Zimbra, Inc.
- * 
- * The contents of this file are subject to the Yahoo! Public License
- * Version 1.0 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
- * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
- * ***** END LICENSE BLOCK *****
---%>
 <%@ tag body-content="empty" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -32,12 +16,14 @@
 <c:choose>
     <c:when test="${zm:actionSet(param, 'actionDelete')}">
         <zm:trashVoiceMail var="result" phone="${phone}" id="${ids}"/>
-		<c:redirect url="/h/search">
+		<c:url var="url" value="/h/search">
 			<c:param name="st" value="voicemail"/>
 			<c:param name="sq" value="phone:${phone} in:\"Voicemail Inbox\""/>
 			<c:param name="action" value="actionMessageMovedTrash"/>
 			<c:param name="doVoiceMailListViewAction" value="1"/>
-		</c:redirect>
+		</c:url>
+		<zm:redirect url="${url}"/>
+
     </c:when>
     <c:when test="${zm:actionSet(param, 'actionUndelete')}">
         <zm:untrashVoiceMail var="result" phone="${phone}" id="${ids}"/>
