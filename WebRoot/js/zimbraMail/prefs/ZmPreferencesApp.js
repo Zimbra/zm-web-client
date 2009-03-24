@@ -109,9 +109,11 @@ function(modifies, force) {
 ZmPreferencesApp.prototype.refresh =
 function(refresh) {
 
-	var sharingView = this._getSharingView();
-	if (sharingView) {
-		sharingView.refresh(refresh);
+	if (!appCtxt.inStartup) {
+		var sharingView = this._getSharingView();
+		if (sharingView) {
+			sharingView.refresh(refresh);
+		}
 	}
 };
 
