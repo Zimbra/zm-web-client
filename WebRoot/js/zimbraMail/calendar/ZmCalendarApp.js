@@ -413,7 +413,6 @@ function(refresh) {
 	if (!appCtxt.inStartup) {
 		AjxDispatcher.run("GetCalController").refreshHandler(refresh);
 	}
-	this._handleRefresh();
 };
 
 ZmCalendarApp.prototype.deleteNotify =

@@ -162,6 +162,7 @@ function(owner, userButtonClicked) {
 
 	var respCallback = new AjxCallback(this, this.showShares);
 	var type = owner ? ZmShare.TYPE_USER : ZmShare.TYPE_GROUP;
+	this._curOwner = owner;
 	var shares = this.parent.getShares(type, owner, respCallback);
 };
 
@@ -558,6 +559,59 @@ function(ev) {
 	this._grantListView._changeListener(ev);
 };
 
+/**
+ * Handle modifications to pending shares, which don't have an item to propagate
+ * changes through. The preferences app sends the notifications here.
+ *
+ * @param modifies		[hash]		notifications
+ */
+ZmSharingView.prototype.notifyModify =
+function(modifies) {
+
+	for (var name in modifies) {
+		if (name == "folder") {
+			modifies = modifies.folder;
+			for (var i = 0; i < modifies.length; i++) {
+				var mod = modifies[i];
+				var share = this._shareByKey[mod.id];
+				if (share) {
+					var parts = mod.id.split(":");
+					share.zid = parts[0];
+					share.rid = parts[1];
+					var ev = new ZmEvent();
+					ev.ersatz = true;
+					ev.set(ZmEvent.E_MODIFY);
+					var fields = {};
+					if (mod.perm) {
+						share.setPermissions(mod.perm);
+						fields[ZmOrganizer.F_PERMS] = true;
+					}
+					if (mod.name) {
+						fields[ZmOrganizer.F_RNAME] = true;
+					}
+					if (mod.l) {
+						ev.set(ZmEvent.E_MOVE);
+					}
+					ev.setDetail("share", share);
+					ev.setDetail("fields", fields);
+					this._folderTreeChangeListener(ev);
+					mod._handled = true;
+				}
+			}
+		}
+	}
+};
+
+/**
+ * If we get a refresh block from the server, redraw all three list views.
+ *
+ * @param refresh	[object]	the refresh block JSON
+ */
+ZmSharingView.prototype.refresh =
+function(refresh) {
+	this.findShares(this._curOwner);
+	this.showGrants();
+};
 
 /**
  * A list view that displays some form of shares, either with or by the user. The data
@@ -630,7 +684,7 @@ function(item) {
 ZmSharingListView.prototype._getCellId =
 function(item, field, params) {
 
-	if (field == ZmSharingView.F_ROLE) {
+	if (field == ZmSharingView.F_ROLE || field == ZmSharingView.F_ITEM || field == ZmSharingView.F_FOLDER) {
 		var rowId = this._getItemId(item);
 		return [this._getItemId(item), field].join("_");
 	} else {
@@ -665,7 +719,7 @@ function(html, idx, item, field, colIdx, params) {
 		}
 	}
 
-	return idx;
+	return (params && params.returnText) ? html.join("") : idx;
 };
 
 ZmSharingListView.prototype._changeListener =
@@ -675,11 +729,14 @@ function(ev) {
 	var fields = ev.getDetail("fields");
 
 	if (this.type == ZmSharingView.SHARE) {
-		var mtpt = organizers[0];
-		if (!mtpt.link) { return; }
-		var share = this.view._shareByKey[[mtpt.zid, mtpt.rid].join(":")];
+		var share = ev.getDetail("share");
+		if (!share) {
+			var mtpt = organizers[0];
+			if (!mtpt.link) { return; }
+			var share = this.view._shareByKey[[mtpt.zid, mtpt.rid].join(":")];
+			share = share && ZmSharingView.getShareFromLink(mtpt, share);	// update share
+		}
 		if (!share) { return; }
-		share = ZmSharingView.getShareFromLink(mtpt, share);	// update share
 		if (ev.event == ZmEvent.E_CREATE) {
 			// share accepted, mountpoint created; move from pending to mounted list
 			if (this.status == ZmSharingView.PENDING) {
@@ -689,61 +746,36 @@ function(ev) {
 				this.addItem(share, index, true);
 			}
 		} else if (ev.event == ZmEvent.E_MODIFY) {
+			if ((this.status == ZmSharingView.PENDING && share.mounted) ||
+				(this.status == ZmSharingView.MOUNTED && !share.mounted)) { return; }
 			if (fields[ZmOrganizer.F_PERMS]) {
-				var cellId = this._getCellId(share, ZmSharingView.F_ROLE);
-				var cell = document.getElementById(cellId);
+				var cell = document.getElementById(this._getCellId(share, ZmSharingView.F_ROLE));
 				if (cell) {
-					cell.innerHTML = ZmShare.getRoleName(share.link.role);
+					cell.innerHTML = this._getCellContents([], 0, share, ZmSharingView.F_ROLE, null, {returnText:true});
 				}
-			} else if (fields[ZmOrganizer.F_NAME]) {
-				this.removeItem(share);
-				var index = this._getIndex(share, this._list.getArray(), ZmSharingView.sortCompareShare);
-				this.addItem(share, index, true);
+			}
+			if ((this.status == ZmSharingView.MOUNTED) && fields[ZmOrganizer.F_NAME]) {
+				var cell = document.getElementById(this._getCellId(share, ZmSharingView.F_FOLDER));
+				if (cell) {
+					cell.innerHTML = this._getCellContents([], 0, share, ZmSharingView.F_FOLDER, null, {returnText:true});
+				}
+			}
+		}
+		// if a remote folder has been renamed or moved, rerun the search
+		if (ev.event == ZmEvent.E_MOVE || fields[ZmOrganizer.F_RNAME]) {
+			if (this.view._curOwner) {
+				this.view.findShares(this.view._curOwner);
 			}
 		}
 	}
 
-	// grant changes always come as modifies, even for create or revoke, since they
-	// just modify the shares (grants) on the shared folder
+	// Any change to a grant (including create or revoke) results in a wholesale replacement of
+	// the folder's shares, so it's easiest to just redraw the list. Also check for folder rename.
 	if (this.type == ZmSharingView.GRANT) {
-		if (ev.event == ZmEvent.E_MODIFY && fields[ZmOrganizer.F_SHARES]) {
-			for (var i = 0; i < organizers.length; i++) {
-				var org = organizers[i];
-				var shares = org.shares || [];
-				var orgShares = {};
-				for (var j = 0; j < shares.length; j++) {
-					var orgShare = shares[j];
-					var key = [orgShare.grantee.id, orgShare.object.id].join(":");
-					orgShares[key] = true;
-					var share = this.view._shareByKey[key];
-					if (!share) {
-						// new grant added
-						share = ZmSharingView.getShareFromGrant(orgShare);
-						var index = this._getIndex(share, this._list.getArray(), ZmSharingView.sortCompareGrant);
-						this.addItem(share, index, true);
-					} else {
-						// perms change
-						if (orgShare.link.role != share.link.role) {
-							ZmSharingView.getShareFromGrant(orgShare, curShare);
-							var div = document.getElementById(share.domId);
-							if (div) {
-								var cellId = this._getCellId(share, ZmSharingView.F_ROLE);
-								var cell = document.getElementById(cellId);
-								if (cell) {
-									cell.innerHTML = ZmShare.getRoleName(share.link.role);
-								}
-							}
-						}
-					}
-				}
-				// see if any grants were revoked for this folder
-				for (var key in this.view._shareByKey) {
-					var share = this.view._shareByKey[key];
-					if (share.type == ZmSharingView.GRANT && share.object.id == org.id && !orgShares[key]) {
-						this.removeItem(share);
-					}
-				}
-			}
+		if ((ev.event = ZmEvent.E_MODIFY && fields[ZmOrganizer.F_SHARES]) ||
+		    (ev.event = ZmEvent.E_MODIFY && fields[ZmOrganizer.F_NAME] && organizers[0].shares)) {
+
+			this.view.showGrants();
 		}
 	}
 };

@@ -61,11 +61,6 @@ function() {
 							  });
 };
 
-ZmMixedApp.prototype.refresh =
-function(refresh) {
-	this._handleRefresh();
-};
-
 ZmMixedApp.prototype.launch =
 function() {
 };

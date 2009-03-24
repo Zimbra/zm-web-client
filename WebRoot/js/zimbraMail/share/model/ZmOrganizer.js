@@ -901,7 +901,7 @@ function(obj, details) {
 	var doNotify = false;
 	var details = details || {};
 	var fields = {};
-	if (obj.name != null && this.name != obj.name) {
+	if (obj.name != null && (this.name != obj.name || this.id != obj.id)) {
 		if (obj.id == this.id) {
 			details.oldName = this.name;
 			this.name = obj.name;

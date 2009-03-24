@@ -348,11 +348,6 @@ function(notify) {
 	}
 };
 
-ZmContactsApp.prototype.refresh =
-function(refresh) {
-	this._handleRefresh();
-};
-
 ZmContactsApp.prototype.handleOp =
 function(op) {
 	switch (op) {

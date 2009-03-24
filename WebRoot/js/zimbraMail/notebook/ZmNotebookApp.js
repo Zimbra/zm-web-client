@@ -357,11 +357,6 @@ function(modifies, force) {
 	}
 };
 
-ZmNotebookApp.prototype.refresh =
-function(refresh) {
-	this._handleRefresh();
-};
-
 ZmNotebookApp.prototype.handleOp =
 function(op) {
 	switch (op) {

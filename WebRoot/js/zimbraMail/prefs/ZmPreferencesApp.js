@@ -80,8 +80,9 @@ function() {
 
 ZmPreferencesApp.prototype.getFilterController =
 function() {
-	if (!this._filterController)
+	if (!this._filterController) {
 		this._filterController = new ZmFilterController(this._container, this);
+	}
 	return this._filterController;
 };
 
@@ -95,6 +96,25 @@ function() {
 	}
 	return this._filterRules[activeAcct];
 };
+
+ZmPreferencesApp.prototype.modifyNotify =
+function(modifies, force) {
+
+	var sharingView = this._getSharingView();
+	if (sharingView) {
+		sharingView.notifyModify(modifies);
+	}
+};
+
+ZmPreferencesApp.prototype.refresh =
+function(refresh) {
+
+	var sharingView = this._getSharingView();
+	if (sharingView) {
+		sharingView.refresh(refresh);
+	}
+};
+
 
 //
 // Protected methods
@@ -556,7 +576,12 @@ function(callback) {
 	}
 };
 
-ZmPreferencesApp.prototype.refresh =
+ZmPreferencesApp.prototype._getSharingView =
 function(refresh) {
-	this._handleRefresh();
+	AjxDispatcher.require(["PreferencesCore", "Preferences"]);
+	var prefCtlr = this.getPrefController();
+	var prefsView = prefCtlr && prefCtlr.getPrefsView();
+	var sharingSection = prefsView && prefsView.getView("SHARING");
+	var sharingView = sharingSection && sharingSection.view;
+	return sharingView;
 };

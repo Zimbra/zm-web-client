@@ -563,16 +563,6 @@ function(type) {
 	this._handleDeferredNotifications();
 };
 
-/**
- * Standard method for handling arrival of <refresh> block by resetting
- * the overview content.
- * 
- * @param refresh	[object]	refresh object (JSON)
- */
-ZmApp.prototype._handleRefresh =
-function(refresh) {
-};
-
 ZmApp.prototype._setupDropTargets =
 function() {
 	var appTargets = ZmApp.DROP_TARGETS[this._name];
