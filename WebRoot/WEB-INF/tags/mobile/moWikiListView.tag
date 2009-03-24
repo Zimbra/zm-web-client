@@ -138,15 +138,16 @@
                 <a href="${briefUrl}" target="_blank">
                 <div class="frag-span small-gray-text">
                     <c:set var="cname" value="${fn:split(bchit.document.editor,'@')}" />
-                    <fmt:message key="modified"/>&nbsp;<fmt:message key="by"/>&nbsp;${cname[0]}&nbsp;<fmt:message key="on"/>&nbsp;${fn:escapeXml(zm:displayDate(pageContext, bchit.modifiedDate))}&nbsp;
-                    <%--<fmt:message key="modified"/>&nbsp;<fmt:message key="by"/>&nbsp;${fn:split(bchit.document.editor,'@')[0]}&nbsp;<fmt:message key="on"/>&nbsp;${fn:escapeXml(zm:displayDate(pageContext, bchit.modifiedDate))}--%>
+                    <fmt:message key="itemModifiedByOn">
+                        <fmt:param value="${cname[0]}"/>
+                        <fmt:param value="${bchit.modifiedDate}"/>
+                    </fmt:message>
                 </div>
                 </a>
             </span>
             <span class="cell l" onclick='return zClickLink("a${bchit.id}")'>
                 <fmt:formatDate timeZone="${mailbox.prefs.timeZone}" var="on_dt" pattern="yyyyMMdd" value="${bchit.createdDate}"/>
                 <a <c:if test="${mailbox.features.calendar}">href='${context_url}?st=cal&amp;view=month&amp;date=${on_dt}'</c:if>>
-                    <fmt:parseDate var="mdate" value="${on_dt}" pattern="yyyyMMdd" timeZone="${mailbox.prefs.timeZone}"/>
                     ${fn:escapeXml(zm:displayMsgDate(pageContext, bchit.createdDate))}
                 </a><br/>
                 <span class='small-gray-text'>(${fn:escapeXml(zm:displaySize(pageContext, bchit.document.size))})</span>

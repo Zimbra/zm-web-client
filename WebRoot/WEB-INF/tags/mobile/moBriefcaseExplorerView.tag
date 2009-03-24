@@ -168,7 +168,11 @@
                             </div>
                             <div align="center" class="small-gray-text frag-span">
                                 <c:set var="cname" value="${fn:split(bchit.document.creator,'@')}"/>
-                                <fmt:message key="by"/>&nbsp;${fn:escapeXml(cname[0])}&nbsp;<fmt:message key="on"/>&nbsp;${fn:escapeXml(zm:displayDate(pageContext, bchit.createdDate))}
+                                <c:set var="cname" value="${fn:split(bchit.document.editor,'@')}" />
+                                <fmt:message key="itemModifiedByOn">
+                                    <fmt:param value="${cname[0]}"/>
+                                    <fmt:param value="${bchit.modifiedDate}"/>
+                                </fmt:message>
                             </div>
                         </div>
                     </a>

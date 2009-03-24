@@ -139,8 +139,10 @@
                 <a href="${briefUrl}" target="_blank">
                 <div class="frag-span small-gray-text">
                     <c:set var="cname" value="${fn:split(bchit.document.editor,'@')}" />
-                    <fmt:message key="modified"/>&nbsp;<fmt:message key="by"/>&nbsp;${cname[0]}&nbsp;<fmt:message key="on"/>&nbsp;${fn:escapeXml(zm:displayDate(pageContext, bchit.modifiedDate))}&nbsp;
-                    <%--<fmt:message key="modified"/>&nbsp;<fmt:message key="by"/>&nbsp;${fn:split(bchit.document.editor,'@')[0]}&nbsp;<fmt:message key="on"/>&nbsp;${fn:escapeXml(zm:displayDate(pageContext, bchit.modifiedDate))}--%>
+                    <fmt:message key="itemModifiedByOn">
+                        <fmt:param value="${cname[0]}"/>
+                        <fmt:param value="${bchit.modifiedDate}"/>
+                    </fmt:message>
                 </div>
                 </a>
             </span>
