@@ -37,7 +37,7 @@
                     <td><div class='vertSep'></div></td>
                     <td>
                         <zm:currentResultUrl var="newUploadUrl" value="" context="${context}" action="newbrief"/>
-                        <a <c:if test="${keys}">id="NEW_UPLOAD" </c:if>href="${fn:escapeXml(newUploadUrl)}"><app:img altkey="newTask" src="startup/ImgAttachment.gif"/><span> Upload File</span></a>
+                        <a <c:if test="${keys}">id="NEW_UPLOAD" </c:if>href="${fn:escapeXml(newUploadUrl)}&lbfums="><app:img altkey="uploadNewFile" src="startup/ImgAttachment.gif"/><span>&nbsp;<fmt:message key="uploadNewFile"/></span></a>
                     </td>
                     <td><div class='vertSep'></div></td>
                     <c:choose>
