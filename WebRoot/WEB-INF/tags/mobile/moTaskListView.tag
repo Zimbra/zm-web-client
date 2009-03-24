@@ -56,7 +56,7 @@
                 </div>
                 <a href="${briefUrl}">
                 <div class="frag-span small-gray-text">
-                    <fmt:message key="taskDueDate"/>: ${fn:escapeXml(zm:displayDate(pageContext, taskHit.dueDate))}&nbsp;
+                    <fmt:message key="taskDueDateLable"/> ${fn:escapeXml(zm:displayDate(pageContext, taskHit.dueDate))}&nbsp;
                 </div>
                 </a>
             </span>

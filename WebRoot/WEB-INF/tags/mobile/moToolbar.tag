@@ -233,7 +233,7 @@
                  <c:choose>
                     <c:when test="${context.isContactSearch}">
                         <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=ab"><fmt:message
-                                key="addressBooks"/></a> :
+                                key="addressBooksLabel"/></a>
                         <c:if test="${btm_fldr_select eq '0'}">
                             ${fn:escapeXml(zm:truncateFixed(context.shortBackTo,12,true))}
                         </c:if>
@@ -252,7 +252,7 @@
                     </c:when>
                     <c:otherwise>                           
                         <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=folders"><fmt:message
-                                key="folders"/></a> :
+                                key="foldersLabel"/></a>
                         <c:if test="${btm_fldr_select eq '0'}">
                             ${fn:escapeXml(zm:truncateFixed(context.shortBackTo,12,true))}
                         </c:if>

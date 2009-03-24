@@ -52,7 +52,7 @@
     </c:if>                                                                          
     <c:if test="${not empty appt.organizer}">
            <div class='small-gray-text'>
-               <fmt:message key="organizer"/>: <a href="?st=newmail&to=${appt.organizer.emailAddress.fullAddress}">${fn:escapeXml(appt.organizer.emailAddress.address)}</a>
+               <fmt:message key="organizerLabel"/> <a href="?st=newmail&to=${appt.organizer.emailAddress.fullAddress}">${fn:escapeXml(appt.organizer.emailAddress.address)}</a>
                <br/>
            </div>
     </c:if>

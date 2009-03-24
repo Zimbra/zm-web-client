@@ -140,12 +140,12 @@
 <div class="View">
     <div class="table">
         <div class="table-row cmp_to_row">
-            <span class="label table-cell"><fmt:message key="subject"/>:</span>
+            <span class="label table-cell"><fmt:message key="subjectLable"/></span>
             <span class="table-cell"><input type="text" class="Textarea" value="${fn:escapeXml(compose.subject)}"
                                             name="subject"></span>
         </div>
         <div class="table-row cmp_to_row">
-            <span class="label table-cell"><fmt:message key="location"/>:</span>
+            <span class="label table-cell"><fmt:message key="locationLable"/></span>
             <span class="table-cell"><input class="Textarea" type="text" value="${fn:escapeXml(compose.location)}"
                                             name="location"></span>
         </div>
@@ -155,7 +155,7 @@
 <div class="View">
 <div class="table">
     <div class="table-row cmp_to_row">
-        <span class="label table-cell"><fmt:message key="start"/>:</span>
+        <span class="label table-cell"><fmt:message key="startLabel"/></span>
     <span class="table-cell"><input class="Textarea" id="start" type=text size="12" maxlength="20" name="startDate"
                                     value="${fn:escapeXml(compose.startDate)}"> @ <select name="startHour">
         <c:set var="h" value="${compose.startHour}"/>
@@ -195,7 +195,7 @@
     </span>
     </div>
     <div class="table-row cmp_to_row">
-        <span class="label table-cell"><fmt:message key="end"/>:</span>
+        <span class="label table-cell"><fmt:message key="endLabel"/></span>
     <span class="table-cell"><input class="Textarea" id="end" type=text size="12" maxlength="20" name="endDate"
                                     value="${fn:escapeXml(compose.endDate)}"> @ <select name="endHour">
         <c:set var="h" value="${compose.endHour}"/>
@@ -246,7 +246,7 @@
         <c:when test="${numCalendars gt 1}">
             <div class="View">
             <div class="list-row">
-                <span class="label"><fmt:message key="calendar"/>:</span>
+                <span class="label"><fmt:message key="calendarLabel"/></span>
                      <span class=""><select name='apptFolderId' id="apptFolderId">
                          <zm:forEachFolder var="folder">
                              <c:if test="${folder.isAppointmentView and folder.isAppointmentMoveTarget }">
@@ -265,7 +265,7 @@
 <div class="View">
     <!--<div class="table">-->
     <div class="list-row">
-        <span class="label"><fmt:message key="repeat"/>:</span>
+        <span class="label"><fmt:message key="repeatLabel"/></span>
         <span class="">
                 <input type=radio name='repeatType'
                        <c:if test="${compose.repeatType eq 'NONE'}">checked="checked"</c:if> value="NONE">
@@ -316,7 +316,7 @@
 <div id="apt_dtls_div">
 <div class="View">
     <div class="list-row">
-    <span class="label"><fmt:message key="showAs"/>:</span>
+    <span class="label"><fmt:message key="showAsLabel"/></span>
         <span>
         <select name="freeBusyStatus" id="showAs">
             <option <c:if test="${compose.freeBusyStatus eq 'F'}">selected </c:if>value="F"><fmt:message key="free"/>
@@ -332,7 +332,7 @@
         </span>
     </div>
     <div>
-    <span class="label"><fmt:message key="markAs"/>:</span>
+    <span class="label"><fmt:message key="markAsLabel"/></span>
         <span class=""><select name="classProp" id="markAs">
             <option
                     <c:if test="${compose.classProp eq 'PUB'}">selected </c:if> value="PUB"><fmt:message key="public"/>
@@ -347,7 +347,7 @@
     <c:set var="addedTimeZone" value="true"/>
     <div class="View">
     <div class="list-row">
-        <span class="Label"><fmt:message key="timeZonePref"/></span> :
+        <span class="Label"><fmt:message key="timeZonePrefLabel"/></span>
             <span class=""><select name="timeZone" id="timeZone">
                 <zm:forEachTimeZone var="tz">
                     <fmt:message var="displayName" bundle='${AjxMsg}' key="${tz.id}"/>
@@ -364,7 +364,7 @@
     <div class="View">
     <div class="table">
         <div class="table-row">
-        <span class="table-cell label"><fmt:message key="attendees"/>:</span>
+        <span class="table-cell label"><fmt:message key="attendeesLabel"/></span>
             <span class="table-cell">
             <div class="ZhAC ZhACTo">
                 <input class="Textarea" id="attField" rows="1"

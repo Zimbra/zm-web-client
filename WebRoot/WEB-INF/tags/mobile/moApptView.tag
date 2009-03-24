@@ -57,7 +57,7 @@
                 <c:if test="${empty sessionScope.calendar}">
                 <div class="View">
                 <span class="label"><fmt:message
-                        key="calendar"/> :</span> ${fn:escapeXml(zm:getFolderName(pageContext,apptFolder.id))}
+                        key="calendarLabel"/></span> ${fn:escapeXml(zm:getFolderName(pageContext,apptFolder.id))}
                 </div>
                 </c:if>    
                 <mo:displayAppointment mailbox="${mailbox}" message="${msg}" invite="${invite}"
@@ -67,7 +67,7 @@
                 <c:if test="${repeat != null && repeat.type != null && !repeat.type.none}">
                     <div class="View">
                     <span class="label"><fmt:message
-                            key="repeats"/> :</span> ${fn:escapeXml(zm:getRepeatBlurb(repeat,pageContext,mailbox.prefs.timeZone, invite.component.start.date))}
+                            key="repeatsLabel"/></span> ${fn:escapeXml(zm:getRepeatBlurb(repeat,pageContext,mailbox.prefs.timeZone, invite.component.start.date))}
                     </div>
                 </c:if>
     </div>

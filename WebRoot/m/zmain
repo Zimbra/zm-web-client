@@ -645,7 +645,7 @@ var getContainer = function(id) {
                 <input
                         type="hidden" name="crumb"
                         value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/> <%-- <span class="table-cell" width="70%">--%>
-                <span class="label"><fmt:message key="searchName"/>:</span>
+                <span class="label"><fmt:message key="searchNameLabel"/></span>
                 <input type="text" class="searchInput" style="width:30%;" name="sname" value="${zm:cook(param.sname)}"/>
                 <!--</span>
               <span class="table-cell" width="30%">-->
@@ -677,7 +677,7 @@ var getContainer = function(id) {
         self.parent.getContainer().innerHTML = self.getContainer().innerHTML;
     }
     <c:if test="${not empty requestScope.title}">
-    document.title = "<fmt:message key="zimbraTitle"/>: ${fn:escapeXml(requestScope.title)}";
+    document.title = "<fmt:message key="zimbraTitleLable"/> ${fn:escapeXml(requestScope.title)}";
     </c:if>
 </script>
 <c:if test="${empty param.ajax}">
@@ -689,7 +689,7 @@ var getContainer = function(id) {
             <a href="${fn:escapeXml(logoutUrl)}" id="_logout" noajax='true'> <fmt:message key="logOut"/> </a>
             (${mailbox.accountInfo.attrs["uid"][0]})</span>
             <span class="quota-span">
-            <fmt:message key="MO_quota"/>:
+            <fmt:message key="MO_quotaLabel"/>
             <c:set var="max" value="${mailbox.attrs.zimbraMailQuota[0]}"/>
             <fmt:message var="unlimited" key="unlimited"/>
             <fmt:message key="MO_quotaUsage"> <fmt:param value="${zm:displaySizeFractions(pageContext, mailbox.size,2)}"/> <fmt:param
@@ -707,7 +707,7 @@ var getContainer = function(id) {
                                                                              value="<a noajax='true' href='?zms=${v}&amp;limit=10'>${def}</a>"/>
             </c:if> <c:if test="${!fn:endsWith(sessionScope.zms,'-lowbw')}"> <c:set var="lbw"
                                                                                     value="<a noajax='true' href='?zms=${fn:split(sessionScope.zms,'-')[0]}-lowbw&amp;limit=5'>${lbw}</a>"/>
-            </c:if> <fmt:message key="view"/>: ${def} | ${lbw} | <a href="?st=versions"><fmt:message key="more"/>...</a>
+            </c:if> <fmt:message key="viewLabel"/> ${def} | ${lbw} | <a href="?st=versions"><fmt:message key="more"/>...</a>
             </div>
         </div>
     </div>

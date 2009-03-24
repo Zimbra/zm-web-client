@@ -101,7 +101,7 @@
     <c:if test="${fn:length(mailbox.accountInfo.identities) gt 1 }">
         <div class="table-row cmp_from_row">
             <span class='label' class='table-cell'>
-                <fmt:message key="from"/>:
+                <fmt:message key="fromLabel"/>
             </span>
             <span class="table-cell">
                 <select id="fromField" name="from">
@@ -116,7 +116,7 @@
     </c:if>
     <div class="table-row cmp_to_row">
             <span class='label table-cell'>
-                <label for="toField"><fmt:message key="to"/>: </label></span>
+                <label for="toField"><fmt:message key="toLable"/> </label></span>
             <span class="table-cell">
             <div class="ZhAC ZhACTo">
                 <input id="toField" rows="1" name="to" class="Textarea" value="${fn:escapeXml(compose.to)}"/>
@@ -126,7 +126,7 @@
     </div>
     <div class="table-row cmp_cc_row">
             <span class="label table-cell"><label for="ccField"><fmt:message
-                    key="cc"/>: </label></span>
+                    key="ccLabel"/> </label></span>
             <span class="table-cell">
                 <div class="ZhAC ZhACCc">
                     <input class="Textarea" id="ccField" type="text" value="${fn:escapeXml(compose.cc)}" name="cc">
@@ -136,7 +136,7 @@
     </div>
     <div class="table-row cmp_bcc_row">
             <span class="label table-cell"><label for="bccField"><fmt:message
-                    key="bcc"/>: </label></span>
+                    key="bccLabel"/> </label></span>
             <span class="table-cell">
                 <div class="ZhAC ZhACBCc">
                     <input class="Textarea" id="bccField" type="text" value="${fn:escapeXml(compose.bcc)}" name="bcc">
@@ -150,7 +150,7 @@
 <div class="table">
     <div class="table-row cmp_sub_row">
               <span class='label table-cell'><label for="subjectField"><fmt:message
-                      key="subject"/>: </label></span>
+                      key="subjectLabel"/> </label></span>
                <span class="table-cell"><input class="Textarea" type="text" name="subject"
                              id="subjectField"
                              value="${fn:escapeXml(compose.subject)}"></span>

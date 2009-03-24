@@ -44,7 +44,7 @@
 
                     <div class="table">
                         <div class="table-row">
-                                <span class="label table-cell"><fmt:message key="name"/>: <input type="text"
+                                <span class="label table-cell"><fmt:message key="nameLable"/> <input type="text"
                                                                                                  name="folder_name"
                                                                                                  style=""
                                                                                                  class="Textarea"
@@ -183,7 +183,7 @@
 
                     <div class="table">
                         <div class="table-row">
-                        <span class="label table-cell"> <fmt:message key="name"/>:  <input type="text" name="sname"
+                        <span class="label table-cell"> <fmt:message key="nameLabel"/>  <input type="text" name="sname"
                                                                                            style="width:100px;"
                                                                                            class="Textarea"
                                                                                            value="${efolder.name}">
@@ -196,7 +196,7 @@
 
                     <div class="table">
                         <div class="table-row">
-                                <span class="label table-cell"> <fmt:message key="searchQuery"/>: <input type="text"
+                                <span class="label table-cell"> <fmt:message key="searchQueryLabel"/> <input type="text"
                                                                                                          name="query"
                                                                                                          style="width:100px;"
                                                                                                          class="Textarea"
@@ -233,7 +233,7 @@
                             <c:if test="${not empty etag}">
                                 <span class="SmlIcnHldr Tag${etag.color}">&nbsp;</span>
                             </c:if>
-                    <span class="label table-cell"><fmt:message key="name"/>:
+                    <span class="label table-cell"><fmt:message key="nameLabel"/>
                         <input type="text" style="width:100px;" class="Textarea" name="tag_name" value="${etag.name}">
                         <input type="submit" class="zo_button" name="action${empty etag ? 'Save':'Modify'}Tag"
                                value="<fmt:message key='save'/>">

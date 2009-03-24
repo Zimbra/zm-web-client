@@ -57,7 +57,7 @@
 <c:set var="sender" value="${message.displaySender}"/>
 <div class="View">
     <c:if test="${not empty from}">
-        <span class='label left'><fmt:message key="from"/>:</span>
+        <span class='label left'><fmt:message key="fromLabel"/></span>
         <span class="right" id="d_btn_td" <c:if test="${empty param.ajax}">style="display:none;"</c:if>><a id='d_btn'
                                                                            onclick="return toggleElem('d_div',this,'<fmt:message
                 key="hide"/>','<fmt:message
@@ -70,19 +70,19 @@
     <c:if test="${not empty sender}">
         <div class="View">
             <span valign='top' class='label' width="35" nowrap="nowrap" align="right"><fmt:message
-                    key="sender"/>:</span>
+                    key="senderLabel"/></span>
             <span class="">${fn:escapeXml(sender)}</span>
         </div>
     </c:if>
     <c:if test="${not empty to}">
         <div class="View">
-            <span valign='top' class='label' nowrap="nowrap" width="35" align="right"><fmt:message key="to"/>:</span>
+            <span valign='top' class='label' nowrap="nowrap" width="35" align="right"><fmt:message key="toLabel"/></span>
             <span class="" >${fn:escapeXml(to)}</span>
         </div>
     </c:if>
     <c:if test="${not empty cc}">
         <div class="View">
-            <span valign='top' class='label' width="35" nowrap="nowrap" align="right"><fmt:message key="cc"/>:</span>
+            <span valign='top' class='label' width="35" nowrap="nowrap" align="right"><fmt:message key="ccLabel"/></span>
             <span class="" >${fn:escapeXml(cc)}</span>
         </div>
     </c:if>

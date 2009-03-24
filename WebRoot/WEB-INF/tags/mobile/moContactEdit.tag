@@ -140,7 +140,7 @@
         <mo:contactEditField label="AB_FIELD_email3" contact="${contact}" field="email3"/>
         <mo:contactEditField label="AB_FIELD_mobilePhone" contact="${contact}" field="mobilePhone"/>
         <div class="table-row">
-            <span class="table-cell label"><label for="folderSelect"><fmt:message key="addressBook"/> :</label></span>
+            <span class="table-cell label"><label for="folderSelect"><fmt:message key="addressBookLabel"/></label></span>
             <span class="table-cell">
                 <input type="hidden" name="origFolderId" value="${empty contact ? '': contact.folderId}"/>
                 <select name="folderid" id="folderSelect">

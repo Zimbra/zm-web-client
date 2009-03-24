@@ -109,7 +109,7 @@
     <div class="SubToolbar table">
          <div class="table-row">
             <div class="table-cell">
-        <a href="${urlTarget}?st=cals"><fmt:message key="calendars"/></a> :
+        <a href="${urlTarget}?st=cals"><fmt:message key="calendarsLabel"/></a>
         <c:if test="${btm_fldr_select ne '1'}">
             ${not empty sessionScope.calendar ? zm:truncateFixed(sessionScope.calendar.name,12,true) : checkedInUI}
         </c:if>

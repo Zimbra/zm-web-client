@@ -169,7 +169,7 @@
         <div class="table-row">
             <div class="table-cell">
                         <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=tasks"><fmt:message
-                                key="tasks"/></a> :
+                                key="tasksLabel"/></a>
                         <c:if test="${btm_fldr_select eq '0'}">
                             ${fn:escapeXml(zm:truncateFixed(context.shortBackTo,12,true))}
                         </c:if>

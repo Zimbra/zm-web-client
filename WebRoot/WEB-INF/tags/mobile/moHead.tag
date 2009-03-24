@@ -32,7 +32,7 @@
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
     <title>
         <c:if test="${empty title}"><fmt:message key="zimbraTitle"/></c:if>
-        <c:if test="${!empty title}"><fmt:message key="zimbraTitle"/>: ${fn:escapeXml(title)}</c:if>
+        <c:if test="${!empty title}"><fmt:message key="zimbraTitleLabel"/> ${fn:escapeXml(title)}</c:if>
     </title>
     <c:choose>
         <c:when test="${scale}">
