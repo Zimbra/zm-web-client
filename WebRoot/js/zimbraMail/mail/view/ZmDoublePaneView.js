@@ -41,7 +41,11 @@ ZmDoublePaneView = function(params) {
 	params.id = ZmId.getViewId(ZmId.VIEW_MSG, null, view);
 	this._msgView = new ZmMailMsgView(params);
 
-	this.setReadingPane();
+	if (view == ZmId.VIEW_CONVLIST ||
+		view == ZmId.VIEW_TRAD)
+	{
+		this.setReadingPane();
+	}
 };
 
 ZmDoublePaneView.prototype = new DwtComposite;

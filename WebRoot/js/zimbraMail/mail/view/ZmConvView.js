@@ -77,6 +77,54 @@ function(conv) {
 	this._mailListView.setSelection(hot);
 };
 
+ZmConvView.prototype.isReadingPaneOnRight =
+function() {
+	return (this._readingPaneView == ZmMailListController.READING_PANE_ON_RIGHT_ID);
+};
+
+ZmConvView.prototype.setReadingPaneView =
+function(view) {
+	this._readingPaneView = view;
+
+	// force a reading pane for CV
+	if (!view) {
+		this._readingPaneView = (appCtxt.get(ZmSetting.READING_PANE_ORIENTATION) == ZmSetting.RP_RIGHT)
+			? ZmMailListController.READING_PANE_ON_RIGHT_ID
+			: ZmMailListController.READING_PANE_AT_BOTTOM_ID;
+	} else {
+		if (view == ZmMailListController.READING_PANE_OFF_ID) {
+			this._readingPaneView = ZmMailListController.READING_PANE_OFF_ID;
+		}
+	}
+
+	var rpo = (this._readingPaneView == ZmMailListController.READING_PANE_OFF_ID);
+	if (rpo) {
+		this._msgView.setVisible(false);
+		this._vertMsgSash.setVisible(false);
+		this._horizMsgSash.setVisible(false);
+	} else {
+		this._msgView.setVisible(true);
+		var rpr = (this._readingPaneView == ZmMailListController.READING_PANE_ON_RIGHT_ID);
+		if (rpr) {
+			this._vertMsgSash.setVisible(true);
+			this._horizMsgSash.setVisible(false);
+		} else {
+			this._vertMsgSash.setVisible(false);
+			this._horizMsgSash.setVisible(true);
+		}
+	}
+
+	this._mailListView.reRenderListView();
+	this._msgView.noTab = rpo || AjxEnv.isIE;
+	var sz = this.getSize();
+	this._resetSize(sz.x, sz.y, true);
+};
+
+ZmConvView.prototype.setReadingPane =
+function(view) {
+	// do nothing
+};
+
 ZmConvView.prototype.reset = 
 function() {
 	this._sashMoved = false;
@@ -113,7 +161,8 @@ function(newWidth, newHeight, force) {
 	if (newWidth <= 0 || newHeight <= 0) { return; }
 	if (!force && newWidth == this._lastResetWidth && newHeight == this._lastResetHeight) { return; }
 
-	var readingPaneOnRight = this._controller.isReadingPaneOnRight();
+	var rpView = this._readingPaneView || ZmMailListController.READING_PANE_AT_BOTTOM_ID;
+	var readingPaneOnRight = (rpView == ZmMailListController.READING_PANE_ON_RIGHT_ID);
 
 	var summaryHeight = this._summary.getHtmlElement().offsetHeight;
 	if (this.isMsgViewVisible()) {
@@ -275,7 +324,7 @@ function(conv) {
 	
 	if (!numTags) return;
 		
-	var ta = new Array();	
+	var ta = new Array();
 	for (var j = 0; j < numTags; j++)
 		ta[j] = this._tagList.getById(conv.tags[j]);
 

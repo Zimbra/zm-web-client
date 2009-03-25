@@ -30,9 +30,6 @@ ZmConvController = function(container, mailApp) {
 
 	ZmDoublePaneController.call(this, container, mailApp);
 
-	// always start with reading pane on
-	this._readingPaneOn = true;
-
 	this._convDeleteListener = new AjxListener(this, this._deleteListener);
 	this._listeners[ZmOperation.DELETE_MENU] = this._convDeleteListener;
 	this._msgControllerMode = ZmId.VIEW_CONV;
@@ -74,6 +71,32 @@ function(activeSearch, conv, parentController, callback, markRead) {
 	ZmDoublePaneController.prototype.show.call(this, activeSearch, conv, callback, markRead);
 };
 
+ZmConvController.prototype._handleResponseShow =
+function(item, callback, results) {
+	if (callback) {
+		callback.run();
+	}
+
+	// always reset reading pane view
+	this._doublePaneView.setReadingPaneView();
+
+	// always reset view menu button dropdown
+	var button = this._toolbar[this._currentView].getButton(ZmOperation.VIEW_MENU);
+	var menu = button ? button.getMenu() : null;
+	if (menu) {
+		var id = ZmMailListController.READING_PANE_OFF_ID;
+		if (this.isReadingPaneOn()) {
+			id = (this.isReadingPaneOnRight())
+				? ZmMailListController.READING_PANE_ON_RIGHT_ID
+				: ZmMailListController.READING_PANE_AT_BOTTOM_ID;
+		}
+		var mi = menu.getMenuItem(id);
+		if (mi) {
+			mi.setChecked(true);
+		}
+	}
+};
+
 ZmConvController.prototype.getConv =
 function() {
 	return this._conv;
@@ -81,25 +104,24 @@ function() {
 
 ZmConvController.prototype.isReadingPaneOn =
 function() {
-	return this._readingPaneOn;
+	var mv = this._doublePaneView.getMsgView();
+	return mv ? mv.getVisible() : true;
 };
 
-ZmConvController.prototype._setReadingPanePref =
-function(view) {
-	if (view == ZmMailListController.READING_PANE_OFF_ID) {
-		this._readingPaneOn = false;
-	} else if (view == ZmMailListController.READING_PANE_AT_BOTTOM_ID) {
-		this._readingPaneOn = true;
-		appCtxt.set(ZmSetting.READING_PANE_ORIENTATION, ZmSetting.RP_BOTTOM);
-	} else if (view == ZmMailListController.READING_PANE_ON_RIGHT_ID) {
-		this._readingPaneOn = true;
-		appCtxt.set(ZmSetting.READING_PANE_ORIENTATION, ZmSetting.RP_RIGHT);
-	}
+ZmConvController.prototype.isReadingPaneOnRight =
+function() {
+	return this._doublePaneView.isReadingPaneOnRight();
 };
+
 
 // Private and protected methods
 
-ZmConvController.prototype._createDoublePaneView = 
+ZmConvController.prototype._setReadingPane =
+function(view) {
+	this._doublePaneView.setReadingPaneView(view);
+};
+
+ZmConvController.prototype._createDoublePaneView =
 function() {
 	return (new ZmConvView({parent:this._container, controller:this, dropTgt:this._dropTgt}));
 };
@@ -433,8 +455,13 @@ function() {
 // overloaded...
 ZmConvController.prototype._search = 
 function(view, offset, limit, callback) {
-	var sortby = appCtxt.get(ZmSetting.SORTING_PREF, view);
-	this._conv.load({sortBy:sortby, offset:offset, limit:limit, getFirstMsg:this._readingPaneOn}, callback);
+	var params = {
+		sortBy: appCtxt.get(ZmSetting.SORTING_PREF, view),
+		offset: offset,
+		limit: limit,
+		getFirstMsg: this.isReadingPaneOn()
+	};
+	this._conv.load(params, callback);
 };
 
 ZmConvController.prototype._paginateDouble = 

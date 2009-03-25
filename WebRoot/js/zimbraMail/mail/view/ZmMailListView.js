@@ -116,6 +116,13 @@ function(newWidth, newHeight) {
  */
 ZmMailListView.prototype.isMultiColumn =
 function() {
+	// Ugh: CV handles reading pane independently
+	var view = (this._controller && this._controller._getViewType() == ZmId.VIEW_CONV)
+		? this._controller.getReferenceView() : null;
+	if (view) {
+		return (!view.isReadingPaneOnRight());
+	}
+
 	// NOTE: we dont use the controller's API b/c this method is called before the controller is set
 	return ((appCtxt.get(ZmSetting.READING_PANE_ENABLED) &&
 			 appCtxt.get(ZmSetting.READING_PANE_ORIENTATION) == ZmSetting.RP_BOTTOM) ||
