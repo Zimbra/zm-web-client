@@ -489,6 +489,7 @@ and the container element is replaced with that control.
 				</tr>
 			<$ } $>
 
+			<$ if (appCtxt.get(ZmSetting.SPELL_CHECK_ENABLED)) { $>
 			<tr>
 				<td>&nbsp;</td>
 				<td class='ZOptionsField'>
@@ -497,6 +498,7 @@ and the container element is replaced with that control.
 					</div>
 				</td>
 			</tr>
+			<$ } $>
 			<tr>
 				<td>&nbsp;</td>
 				<td class='ZOptionsField'>
