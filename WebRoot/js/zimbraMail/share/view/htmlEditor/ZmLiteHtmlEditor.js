@@ -1,15 +1,17 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ *
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009 Zimbra, Inc.
- * 
+ * Copyright (C) 2007 Zimbra, Inc.
+ *
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -20,13 +22,13 @@
  *
  * @author Rajesh Segu
  */
-ZmLiteHtmlEditor = function(params) {
+ZmLiteHtmlEditor = function(parent, posStyle, className, mode, content) {
 	if (arguments.length == 0) return;
 
-	params.className = params.className || "ZmLiteHtmlEditor";
-	DwtComposite.call(this, params);
+	className = className || "ZmLiteHtmlEditor";
+	DwtComposite.call(this, {parent:parent, className:className, posStyle:posStyle});
 
-	this._mode = params.mode || ZmLiteHtmlEditor.TEXT;
+	this._mode = mode || ZmLiteHtmlEditor.TEXT;
 	this._initialize();
 
 
@@ -238,36 +240,27 @@ ZmLiteHtmlEditor.prototype.getBasicToolBar = function() {
 
 //Private Methods
 
-ZmLiteHtmlEditor.prototype._initialize = function() {
-	var id = this.getHTMLElId();
-	this._createHtmlFromTemplate(this.TEMPLATE, { id: id });
+ZmLiteHtmlEditor.prototype._initialize = function(){
+
 	this._textArea = this._initEditor();
 
 	this._textArea[ AjxEnv.isIE ? "onkeydown" : "onkeypress" ] = AjxCallback.simpleClosure(this._keyPressHandler,this);
 
-	var toolBarArgs = {
-		parent:this,
-		parentElement: id + "_toolBar",
-		posStyle:Dwt.RELATIVE_STYLE,
-		buttons: [ZmOperation.IM_HTML],
-		index:0
-	};
-	this._basicToolBar = new ZmButtonToolBar(toolBarArgs);
+	this._basicToolBar = new ZmButtonToolBar({parent:this, posStyle:Dwt.RELATIVE_STYLE, buttons: [ZmOperation.IM_HTML], index:0});
 	this._basicToolBar.addSelectionListener(ZmOperation.IM_HTML, new AjxListener(this, this._changeEditorModeListener));
 	
 	this.setMode(this._mode, true);
 };
 
 ZmLiteHtmlEditor.prototype._initEditor = function(){
-	var htmlEl = Dwt.byId(this.getHTMLElId() + "_textarea");
+	var htmlEl = this.getHtmlElement();
 
 	this._textAreaId = "textarea_" + Dwt.getNextId();
 	var html = [
 			Dwt.CARET_HACK_BEGIN,
 			"<textarea id='",
 			this._textAreaId,
-			"' class='DwtHtmlEditorTextArea' style='width:100%;'></textarea>",
-			Dwt.CARET_HACK_END
+			"' class='DwtHtmlEditorTextArea' style='width:100%;'/>"
 	].join("");
 	htmlEl.innerHTML = html; 
 	return Dwt.byId(this._textAreaId);

@@ -1,19 +1,3 @@
-<%--
- * ***** BEGIN LICENSE BLOCK *****
- * 
- * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008 Zimbra, Inc.
- * 
- * The contents of this file are subject to the Yahoo! Public License
- * Version 1.0 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
- * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
- * ***** END LICENSE BLOCK *****
---%>
 <%@ tag body-content="empty" %>
 <%@ attribute name="contact" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZContactBean" %>
 <%@ attribute name="context" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.tag.SearchContext" %>
@@ -158,13 +142,11 @@
                                 <select name="folderid" id="folderIdSelect">
                                     <zm:forEachFolder var="folder">
                                         <c:if test="${folder.isContactCreateTarget}">
-                                            <option <c:if test="${(empty contact and ((context.selectedId eq folder.id) or (empty context.selectedId and folder.isContacts))) or (!empty contact and contact.folderId eq folder.id)}">selected </c:if> value="${folder.id}">
-                                            ${zm:getFolderName(pageContext, folder.id) }</option>
-                                            
+                                            <option <c:if test="${(empty contact and ((context.selectedId eq folder.id) or (empty context.selectedId and folder.isContacts))) or (!empty contact and contact.folderId eq folder.id)}">selected </c:if> value="${folder.id}" />
+                                            ${fn:escapeXml(folder.rootRelativePath)}
                                         </c:if>
                                         <c:if test="${(folder.isMountPoint) and (folder.isContactView) and (folder.effectivePerm eq 'rwidxc')}">
-                                            <option <c:if test="${(empty contact and ((context.selectedId eq folder.id) or (empty context.selectedId and folder.isContacts))) or (!empty contact and contact.folderId eq folder.canonicalRemoteId)}">selected </c:if> value="${folder.id}">
-                                            ${zm:getFolderName(pageContext, folder.id)} </option>
+                                            <option <c:if test="${(empty contact and ((context.selectedId eq folder.id) or (empty context.selectedId and folder.isContacts))) or (!empty contact and contact.folderId eq folder.canonicalRemoteId)}">selected </c:if> value="${folder.id}" />                                            ${fn:escapeXml(folder.rootRelativePath)}
                                         </c:if>
                                     </zm:forEachFolder>
                                 </select>

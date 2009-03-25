@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -95,6 +97,7 @@ function(params, callback) {
 	var offset = params.offset || 0;
 	var limit = params.limit || appCtxt.get(ZmSetting.PAGE_SIZE);
 	var getHtml = params.getHtml || appCtxt.get(ZmSetting.VIEW_AS_HTML);
+	this._getFirstMsg = params.getFirstMsg;
 
 	var doSearch = true;
 	if (this._loaded && this.msgs && this.msgs.size()) {
@@ -275,6 +278,11 @@ function(obj) {
 	ZmMailItem.prototype.notifyModify.apply(this, arguments);
 };
 
+ZmConv.prototype.getPrintHtml =
+function(preferHtml, callback) {
+	ZmConvListView.getPrintHtml(this, preferHtml, callback);
+};
+
 ZmConv.prototype._checkFlags = 
 function(flags) {
 	var msgs = this.msgs.getArray();
@@ -304,9 +312,8 @@ function(flags) {
 		}
 	}
 
-	if (doNotify) {
+	if (doNotify)
 		this._notify(ZmEvent.E_FLAGS, {flags: flags});
-	}
 };
 
 /**
@@ -376,15 +383,6 @@ function(folderId) {
 	}
 	this.folders = {};
 	this.folders[folderId] = true;
-};
-
-ZmConv.prototype.getMsgList =
-function(offset, ascending) {
-	var a = this.msgs.getArray().slice(offset || 0);
-	if (ascending) {
-		a.reverse();
-	}
-	return a;
 };
 
 /**

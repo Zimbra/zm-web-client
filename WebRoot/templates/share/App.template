@@ -159,7 +159,7 @@
 	<table border=0>
 		<$	if (data.lastSync && data.lastSync != "") { $>
 			<tr>
-				<td class='nobreak' align=right><$= ZmMsg.lastSync $>:</td>
+				<td class='nobreak' align=right><$= ZmMsg.lastSync $></td>
 				<td class='nobreak'>${lastSync}</td>
 			</tr>
 		<$	} $>
@@ -174,22 +174,9 @@
 
 <template id='share.App#presenceButton' class='ZWidget'>
 	<$ var buttonClass = data.buttonClass || "ToolbarButton"; $>
-	<table class='ZWidgetTable Z<$=buttonClass$>Table Z<$=buttonClass$>Border' cellspacing=0 cellpadding=0 style='table-layout:auto;'><tr>
-		<td id='${id}_left_icon'  	class='ZLeftIcon ZWidgetIcon'></td>
-		<td id='${id}_title'		class='ZWidgetTitle'></td>
-	</tr></table>
-</template>
-
-<template id='share.App#ZmTaskbarItem' class='ZWidget'>
-	<div id='${id}_button' class='ZmTaskbarButtonParent'></div>
-	<div id='${id}_content' class='ZmTaskbarContentParent' style='display:none;'></div>
-</template>
-
-<template id='share.App#ZmStatusImageButton' class='ZWidget'>
-	<$ var buttonClass = data.buttonClass || "ToolbarButton"; $>
-	<table class='ZWidgetTable Z<$=buttonClass$>Table Z<$=buttonClass$>Border' cellspacing=0 cellpadding=0 style='table-layout:auto;'><tr>
-		<td id='${id}_left_icon'  	class='ZLeftIcon ZWidgetIcon'></td>
-		<td id='${id}_status_icon'	class='ZLeftIcon ZWidgetIcon'><div></div></td>
-	</tr></table>
+	<div class='ZWidgetTable Z<$=buttonClass$>Table Z<$=buttonClass$>Border'>
+		<div id='${id}_left_icon'></div>
+		<div id='${id}_dropdown'></div>
+	</div>
 </template>
 

@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -88,10 +90,12 @@ function(dialog) {
 		this._badAddrsOkay = false;
 	}
 
+	var contactList = AjxDispatcher.run("GetContacts");
+	
 	var respCallback = new AjxCallback(this, this._handleResponseSendMsg, [dialog]);
 	var errorCallback = new AjxCallback(this, this._handleErrorSendMsg, [dialog]);
 	
-	msg.send(false, respCallback, errorCallback);
+	msg.send(contactList, false, respCallback, errorCallback);
 	// need to popdown in handle response instead of returning true..
 	return false;
 };

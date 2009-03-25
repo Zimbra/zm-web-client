@@ -1,19 +1,3 @@
-<%--
- * ***** BEGIN LICENSE BLOCK *****
- * 
- * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008 Zimbra, Inc.
- * 
- * The contents of this file are subject to the Yahoo! Public License
- * Version 1.0 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
- * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
- * ***** END LICENSE BLOCK *****
---%>
 <%@ tag body-content="empty" %>
 <%@ attribute name="folder" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZFolderBean" %>
 <%@ attribute name="base" rtexprvalue="true" required="false" %>
@@ -29,7 +13,7 @@
 <c:set var="label" value="${zm:getFolderName(pageContext, folder.id)}"/>
 <c:set var="padFudge" value="${folder.hasChildren ? 0 : 20}"/>
 <tr>
-    <td nowrap colspan="3" id="folder_${folder.id}" class='Folder<c:if test="${folder.hasUnread and types ne 'contact'}"> Unread</c:if>'
+    <td nowrap colspan="3" class='Folder<c:if test="${folder.hasUnread and types ne 'contact'}"> Unread</c:if>'
         style="padding-left: ${padFudge+folder.depth*8}px">
         <c:url var="url" value="/h/${empty base ? 'search' : base}">
             <c:param name="sfi" value="${folder.id}"/>

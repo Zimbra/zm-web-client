@@ -1,15 +1,17 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ *
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009 Zimbra, Inc.
- * 
+ * Copyright (C) 2006, 2007 Zimbra, Inc.
+ *
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -63,7 +65,7 @@ ZmNotebookController.prototype.switchView = function(view, force) {
 		elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[this._currentView];
 
         //bug: 30036 if the search result notebookpage view should not be set as app view
-        this._setView({view:view, elements:elements, isAppView:!(this._fromSearch  && (view == ZmId.VIEW_NOTEBOOK_PAGE))});
+        this._setView(view, elements, !(this._fromSearch  && (view == ZmId.VIEW_NOTEBOOK_PAGE)));
 	}
 	Dwt.setTitle(this.getCurrentView().getTitle());
 };
@@ -290,6 +292,30 @@ ZmNotebookController.prototype._setViewContents = function(view) {
 	}
 };
 
+/*** TODO: This will be exposed later.
+ZmNotebookController.prototype._setViewMenu = function(view) {
+	var appToolbar = appCtxt.getCurrentAppToolbar();
+	var menu = appToolbar.getViewMenu(view);
+	if (!menu) {
+		var listener = this._listeners[ZmOperation.VIEW];
+
+		menu = new ZmPopupMenu(appToolbar.getViewButton());
+
+		var item = menu.createMenuItem(ZmNotebookApp.PAGE, {image:"Page", text:ZmMsg.notebookPageView, style:DwtMenuItem.RADIO_STYLE});
+		item.setData(ZmOperation.MENUITEM_ID, ZmId.VIEW_NOTEBOOK_PAGE);
+		item.addSelectionListener(listener);
+
+		var item = menu.createMenuItem(ZmNotebookApp.FILE, {image:"Folder", text:ZmMsg.notebookFileView, style:DwtMenuItem.RADIO_STYLE});
+		item.setData(ZmOperation.MENUITEM_ID, ZmId.VIEW_NOTEBOOK_FILE);
+		item.addSelectionListener(listener);
+	}
+
+	var item = menu.getItemById(ZmOperation.MENUITEM_ID, view);
+	item.setChecked(true, true);
+
+	appToolbar.setViewMenu(view, menu);
+};
+/***/
 
 // listeners
 
@@ -490,7 +516,7 @@ ZmNotebookController.prototype._detachListener = function(event) {
 ZmNotebookController.prototype._browseFolderListener = function() {
         var folderId = this._object ? this._object.getFolderId() : ZmNotebookItem.DEFAULT_FOLDER;
         var folder = appCtxt.getById(folderId);
-        appCtxt.getSearchController().search({ query: folder.createQuery(), types: [ZmItem.PAGE, ZmItem.DOCUMENT] }); // FIXME: is there a better way to browse a folder?
+        appCtxt.getSearchController().search({ query: "in:" + ZmFolder.QUERY_NAME[folder.id] }); // FIXME: is there a better way to browse a folder?
 };
 
 ZmNotebookController.prototype._getDefaultFocusItem =
