@@ -103,7 +103,7 @@ function(value) {
 	if (value == 0) return "";
 	if (value == 1) return appCtxt.get(ZmSetting.POP_DOWNLOAD_SINCE);
 	var date = new Date();
-	date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+	date.setMinutes(date.getMinutes() + date.getTimezoneOffset());
 	return AjxDateFormat.format("yyyyMMddHHmmss'Z'", date);
 };
 

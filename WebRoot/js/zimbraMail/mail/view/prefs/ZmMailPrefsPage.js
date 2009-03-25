@@ -94,7 +94,7 @@ function() {
 		var value = appCtxt.get(ZmSetting.POP_DOWNLOAD_SINCE);
 		if (value) {
 			var date = AjxDateFormat.parse("yyyyMMddHHmmss'Z'", value);
-			date.setMinutes(date.getMinutes() + date.getTimezoneOffset());
+			date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
 			value = date;
 		}
 		var pattern = value ? ZmMsg.externalAccessPopCurrentValue : ZmMsg.externalAccessPopNotSet;
