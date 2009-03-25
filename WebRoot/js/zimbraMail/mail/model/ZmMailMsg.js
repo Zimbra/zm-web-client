@@ -1398,6 +1398,15 @@ function () {
 				needsRsvp = true;
 			}
 		}
+		at = this.invite.getResources();
+		for (var i in at) {
+			if (at[i].url == accEmail) {
+				return at[i].rsvp;
+			}
+			if (at[i].rsvp) {
+				needsRsvp = true;
+			}
+		}
 	}
 
 	return needsRsvp;
