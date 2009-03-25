@@ -15,8 +15,8 @@
 
 ZmAccountTestDialog = function(parent) {
 	DwtDialog.call(this, {parent:parent, title:ZmMsg.accountTest, className:"DwtBaseDialog ZmDataSourceTestDialog" });
-	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._handleOkButton));
-	this.setButtonListener(DwtDialog.CANCEL_BUTTON, new AjxListener(this, this._handleCancelButton));
+	this.registerCallback(DwtDialog.OK_BUTTON, this._handleOkButton, this);
+	this.registerCallback(DwtDialog.CANCEL_BUTTON, this._handleCancelButton, this);
 };
 ZmAccountTestDialog.prototype = new DwtDialog;
 ZmAccountTestDialog.prototype.constructor = ZmAccountTestDialog;
