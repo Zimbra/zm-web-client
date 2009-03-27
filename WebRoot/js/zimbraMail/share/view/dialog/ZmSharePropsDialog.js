@@ -102,12 +102,17 @@ function(mode, object, share) {
         this._tabGroupComplete = true;
     }
 
-	var perm = share ? share.link.perm : null;
+	var perm = share && share.link.perm;
 
 	if (perm != null) {
 		perm = perm.replace(/-./g, "");
 		this._privateEl.checked = (perm.indexOf(ZmShare.PERM_PRIVATE) != -1);
 		perm = perm.replace(/p/g, "");
+		var role = ZmShare._getRoleFromPerm(perm);
+		var radioEl = this._radioElByRole[role];
+		if (radioEl) {
+			radioEl.checked = true;
+		}
 	}
 
 	this._privatePermissionEnabled = object.supportsPrivatePermission();
@@ -659,8 +664,11 @@ function() {
 
 	var radios = ["_noneRadioEl", "_viewerRadioEl", "_managerRadioEl", "_adminRadioEl"];
 	var radioEls = document.getElementsByName(roleRadioName);
+	var roles = [ZmShare.ROLE_NONE, ZmShare.ROLE_VIEWER, ZmShare.ROLE_MANAGER, ZmShare.ROLE_ADMIN];
+	this._radioElByRole = {};
 	for (var i = 0; i < radioEls.length; i++) {
 		this[radios[i]] = radioEls[i];
+		this._radioElByRole[roles[i]] = radioEls[i];
 		Dwt.setHandler(radioEls[i], DwtEvent.ONCLICK, ZmSharePropsDialog._handleEdit);
 		Dwt.associateElementWithObject(radioEls[i], this);
 	}
