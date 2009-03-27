@@ -596,6 +596,8 @@ function(modifies) {
 					ev.setDetail("fields", fields);
 					this._folderTreeChangeListener(ev);
 					mod._handled = true;
+				} else if (mod.id.indexOf(":") != -1) {
+					ev.set(ZmEvent.E_CREATE);
 				}
 			}
 		}
@@ -726,7 +728,7 @@ ZmSharingListView.prototype._changeListener =
 function(ev) {
 
 	var organizers = ev.getDetail("organizers") || [];
-	var fields = ev.getDetail("fields");
+	var fields = ev.getDetail("fields") || {};
 
 	if (this.type == ZmSharingView.SHARE) {
 		var share = ev.getDetail("share");
