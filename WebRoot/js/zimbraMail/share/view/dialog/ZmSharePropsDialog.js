@@ -157,21 +157,25 @@ function() {
 		text = text.substr(0, index) + "..." + text.substr(index + length);
 	}
 
-	if (this._object.type == ZmOrganizer.CALENDAR) {
-		this._urlEl.innerHTML = [
-			"<div>", ZmMsg.ics, ":&nbsp;&nbsp;&nbsp;&nbsp;",
-				"<a target=_new href='",url,"'>",text,"</a>",
-			"</div>",
-			"<div>", ZmMsg.view, ":&nbsp;&nbsp;",
-				"<a target=_new href='",url,".html'>",text,".html</a>",
-			"</div>"
-		].join("");
-	} else {
-		this._urlEl.innerHTML = [
-			"<div style='padding-left:2em;'>",
-				"<a target=_new href='",url,"'>",text,"</a>",
-			"</div>"
-		].join("");
+	var isRestFolder = this._object.type != ZmOrganizer.FOLDER;
+	this._urlGroup.setVisible(isRestFolder);
+	if (isRestFolder) {
+		if (this._object.type == ZmOrganizer.CALENDAR) {
+			this._urlEl.innerHTML = [
+				"<div>", ZmMsg.ics, ":&nbsp;&nbsp;&nbsp;&nbsp;",
+					"<a target=_new href='",url,"'>",text,"</a>",
+				"</div>",
+				"<div>", ZmMsg.view, ":&nbsp;&nbsp;",
+					"<a target=_new href='",url,".html'>",text,".html</a>",
+				"</div>"
+			].join("");
+		} else {
+			this._urlEl.innerHTML = [
+				"<div style='padding-left:2em;'>",
+					"<a target=_new href='",url,"'>",text,"</a>",
+				"</div>"
+			].join("");
+		}
 	}
 };
 
