@@ -586,7 +586,10 @@ function(message) {
 	this.notesTopPart = new ZmMimePart();
 	if (html) {
 		var notes = AjxUtil.isString(html) ? html : html.content;
-		var htmlContent = this._trimNotesSummary(notes.replace(/<title\s*>.*\/title>/ig,""), true);
+		var htmlContent = notes.replace(/<title\s*>.*\/title>/ig,"");
+		if(!this._includeEditReply) {
+			htmlContent = this._trimNotesSummary(htmlContent, true);
+		}
 		var textContent = "";
 
 		// create a temp iframe to create a proper DOM tree
@@ -616,7 +619,10 @@ function(message) {
 		this.notesTopPart.children.add(textPart);
 		this.notesTopPart.children.add(htmlPart);
 	} else {
-		var textContent = this._trimNotesSummary((text && text.content) || "");
+        var textContent = (text && text.content) || "";
+		if(!this._includeEditReply) {
+			textContent = this._trimNotesSummary(textContent);
+		}
 
 		this.notesTopPart.setContentType(ZmMimeTable.TEXT_PLAIN);
 		this.notesTopPart.setContent(textContent);
@@ -1361,9 +1367,9 @@ function(soapDoc, m, cancel) {
 
 			var content;
 			if (pct == ZmMimeTable.TEXT_HTML) {
-				content = "<html><body>" + AjxBuffer.concat(hprefix, part.getContent()) + "</body></html>";
+				content = "<html><body>" + (this._includeEditReply ? part.getContent() : AjxBuffer.concat(hprefix, part.getContent())) + "</body></html>";
 			} else {
-				content = AjxBuffer.concat(tprefix, part.getContent());
+				content = this._includeEditReply ? part.getContent() : AjxBuffer.concat(tprefix, part.getContent());
 			}
 			soapDoc.set("content", content, partNode);
 		}
@@ -1371,15 +1377,20 @@ function(soapDoc, m, cancel) {
 		var tcontent = this.notesTopPart ? this.notesTopPart.getContent() : "";
 		var textPart = soapDoc.set("mp", null, mp);
 		textPart.setAttribute("ct", ZmMimeTable.TEXT_PLAIN);
-		soapDoc.set("content", AjxBuffer.concat(tprefix, tcontent), textPart);
+		soapDoc.set("content", (this._includeEditReply ? tcontent : AjxBuffer.concat(tprefix, tcontent)), textPart);
 
 		// bug fix #9592 - html encode the text before setting it as the "HTML" part
 		var hcontent = AjxStringUtil.nl2br(AjxStringUtil.htmlEncode(tcontent));
 		var htmlPart = soapDoc.set("mp", null, mp);
 		htmlPart.setAttribute("ct", ZmMimeTable.TEXT_HTML);
-		var html = "<html><body>" + AjxBuffer.concat(hprefix, hcontent) + "</body></html>";
+		var html = "<html><body>" + (this._includeEditReply ? hcontent : AjxBuffer.concat(hprefix, hcontent)) + "</body></html>";
 		soapDoc.set("content", html, htmlPart);
 	}
+};
+
+ZmCalItem.prototype.setIncludeEditReply =
+function(includeEditReply) {
+	this._includeEditReply = includeEditReply;
 };
 
 ZmCalItem.prototype._sendRequest =

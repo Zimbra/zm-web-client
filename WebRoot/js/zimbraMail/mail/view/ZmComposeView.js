@@ -1787,9 +1787,9 @@ function(action, msg, extraBodyText, incOption, nosig) {
 			else if (action == ZmOperation.REPLY_CANCEL) {
 				cancelledParts = [ leadingText ];
 				cancelledParts.push(crlf);
-				cancelledParts.push(ZmMsg.subjectLabel+" "+msg.subject+crlf);
 				var inv = (msg) ? msg.invite : null;
 				if (inv) {
+					cancelledParts.push(ZmMsg.subjectLabel+" "+ (msg.subject || inv.getName()) +crlf);
 					cancelledParts.push(ZmMsg.organizer + ": " + inv.getOrganizerName() + crlf);
 					var sd = inv.getServerStartDate();
 					if(msg._instanceDate) {

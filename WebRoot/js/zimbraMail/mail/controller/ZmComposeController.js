@@ -352,6 +352,7 @@ function(attId, docIds, draftType, callback) {
         var appt = origMsg._appt;
         var respCallback = new AjxCallback(this, this._handleResponseCancelOrModifyAppt);
         if (isCancel) {
+			appt.setIncludeEditReply(true);
             appt.cancel(origMsg._mode, msg, respCallback);
         } else {
             appt.save();
