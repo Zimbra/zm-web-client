@@ -37,7 +37,6 @@ ZmComposeController = function(container, mailApp, sessionId) {
 	ZmComposeController._setStatics();
 
 	this._listeners = {};
-	this._listeners[ZmOperation.NEW_MENU] = new AjxListener(this, this._newListener);
 	this._listeners[ZmOperation.SEND] = new AjxListener(this, this._sendListener);
 	this._listeners[ZmOperation.IM] = new AjxListener(this, this._imListener);
 	this._listeners[ZmOperation.CANCEL] = new AjxListener(this, this._cancelListener);
@@ -57,7 +56,6 @@ ZmComposeController = function(container, mailApp, sessionId) {
 
 	this._autoSaveTimer = null;
 	this._draftType = ZmComposeController.DRAFT_TYPE_NONE;
-	this._defaultNewId = ZmOperation.NEW_MESSAGE;
 };
 
 ZmComposeController.prototype = new ZmController();
@@ -83,7 +81,7 @@ ZmComposeController._setStatics =
 function() {
 
 	if (ZmComposeController.SETTINGS) { return; }
-	
+
 	// settings whose changes affect us (so we add a listener to them)
 	ZmComposeController.SETTINGS = [ZmSetting.SHOW_BCC];
 
@@ -338,7 +336,7 @@ function(attId, docIds, draftType, callback) {
 
     var msg = this._composeView.getMsg(attId, isDraft);
     if(docIds) {
-        this._composeView.setDocAttachments(msg, docIds);        
+        this._composeView.setDocAttachments(msg, docIds);
     }
 
     if (!msg) return;
@@ -352,7 +350,6 @@ function(attId, docIds, draftType, callback) {
         var appt = origMsg._appt;
         var respCallback = new AjxCallback(this, this._handleResponseCancelOrModifyAppt);
         if (isCancel) {
-			appt.setIncludeEditReply(true);
             appt.cancel(origMsg._mode, msg, respCallback);
         } else {
             appt.save();
@@ -766,9 +763,6 @@ function() {
 	if (this._toolbar) { return; }
 
 	var buttons = [];
-	if (!appCtxt.isChildWindow) {
-		buttons.push(ZmOperation.NEW_MENU, ZmOperation.SEP);
-	}
 	buttons.push(ZmOperation.SEND);
 
 	buttons.push(ZmOperation.CANCEL);
@@ -843,8 +837,6 @@ function() {
 		tb._ZmListController_this = this;
 		tb._ZmListController_newDropDownListener = listener;
 	}
-
-	this._setNewButtonProps(ZmMsg.compose, "NewMessage", "NewMessageDis", ZmOperation.NEW_MESSAGE);
 };
 
 ZmComposeController.prototype._setAddSignatureVisibility =
@@ -858,16 +850,6 @@ function(identity) {
 		}
 	}
 	return visible;
-};
-
-ZmComposeController.prototype._setNewButtonProps =
-function(toolTip, enabledIconId, disabledIconId, defaultId) {
-	var newButton = this._toolbar.getButton(ZmOperation.NEW_MENU);
-	if (newButton) {
-		newButton.setToolTipContent(toolTip);
-		newButton.setImage(enabledIconId);
-		this._defaultNewId = defaultId;
-	}
 };
 
 ZmComposeController.prototype._createOptionsMenu =
@@ -1060,7 +1042,7 @@ function(draftType, msg, resp) {
 			}
 			this._app.popView(true);
 		}
-		
+
 		if (resp || !appCtxt.get(ZmSetting.SAVE_TO_SENT)) {
 			this._composeView.reset(false);
 
@@ -1483,9 +1465,5 @@ function() {
     if(op){
         op.setVisible(appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED));
     }
-   
-};
 
-// leech off ZmListController to handle new menu
-ZmComposeController.prototype._propagateMenuListeners = ZmListController.prototype._propagateMenuListeners;
-ZmComposeController.prototype._newListener = ZmListController.prototype._newListener;
+};
