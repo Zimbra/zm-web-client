@@ -378,7 +378,7 @@ function(appt) {
 		var share = cal.getMainShare();
 		if (cal.link && share && !share.isWrite()) { continue; }
 
-		this._calendarSelect.addOption(cal.getName(), (appt.folderId==cal.id), id);
+		this._calendarSelect.addOption(cal.getName(), (appt.folderId == cal.id) || (appt.folderId == cal.nId), id);
 	}
 
 	var len = this._calendarSelect.size();

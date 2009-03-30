@@ -630,7 +630,7 @@ function(calItem, mode) {
 		var share = cal.getMainShare();
 		if (cal.isFeed() ||	(cal.link && share && !share.isWrite())) { continue; }
 		
-		this._folderSelect.addOption(cal.getName(), (calItem.folderId == cal.id) || (calItem.folderId == id ), id);
+		this._folderSelect.addOption(cal.getName(), (calItem.folderId == cal.id) || (calItem.folderId == id ) || (calItem.folderId == cal.nId), id);
 	}
 	var num = this._folderSelect.size();
 	Dwt.setVisibility(this._folderSelect.getHtmlElement(), num > 1);
