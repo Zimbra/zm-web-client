@@ -170,7 +170,7 @@
                                 <c:set var="cname" value="${fn:split(bchit.document.creator,'@')}"/>
                                 <fmt:message key="itemModifiedByOn">
                                     <fmt:param value="${cname[0]}"/>
-                                    <fmt:param value="${bchit.modifiedDate}"/>
+                                    <fmt:param value="${fn:escapeXml(zm:displayDate(pageContext, bchit.modifiedDate))}"/>
                                 </fmt:message>
                             </div>
                         </div>
