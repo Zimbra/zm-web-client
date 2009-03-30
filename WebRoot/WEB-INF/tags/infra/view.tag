@@ -76,7 +76,7 @@
 			<%--<b>${fn:escapeXml(empty mailbox.defaultIdentity.fromDisplay ? mailbox.name : mailbox.defaultIdentity.fromDisplay)}</b>--%>
 			<%--<br>--%>
 			<a class='skin_yahoo_link' href="<c:url value="/?loginOp=logout"/>"><fmt:message key="logOut"/></a>,
-			<a class='skin_yahoo_link' href='<c:url value="/"/>'><fmt:message key="switchToAdvancedClient" /></a>
+			<a class='skin_yahoo_link' href='<c:url value="/?client=advanced"/>'><fmt:message key="switchToAdvancedClient" /></a>
 			<!--<a class='skin_yahoo_link' target="_new" href="http://www.zimbra.com/products/desktop.html">Offline version</a>-->
         </td>
 
