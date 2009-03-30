@@ -18,6 +18,7 @@
 
 <%-- this checks and redirects to admin if need be --%>
 <zm:adminRedirect/>
+<app:skinAndRedirect />
 
 <%-- get useragent --%>
 <zm:getUserAgent var="ua" session="false"/>
@@ -125,7 +126,7 @@
 
         		</c:when>
         		<c:when test="${client eq 'standard'}">
-		            <c:redirect url="/h/search?mesg=welcome&initial=true">
+		            <c:redirect url="/h/search?mesg=welcome&initial=true&app=${param.app}">
                         <c:forEach var="p" items="${paramValues}">
                             <c:forEach var='value' items='${p.value}'>
                                 <c:if test="${not fn:contains(ignoredQueryParams, p.key)}">
@@ -136,7 +137,7 @@
                     </c:redirect>
         		</c:when>
                 <c:when test="${client eq 'mobile'}">
-		            <c:redirect url="/m/mainx">
+		            <c:redirect url="/m">
                             <c:forEach var="p" items="${paramValues}">
                                 <c:forEach var='value' items='${p.value}'>
                                     <c:if test="${not fn:contains(ignoredQueryParams, p.key)}">
@@ -218,7 +219,7 @@ if (application.getInitParameter("offlineMode") != null)  {
  login.jsp
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007 Zimbra, Inc.
+ * Copyright (C) 2007, 2008, 2009 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -229,9 +230,15 @@ if (application.getInitParameter("offlineMode") != null)  {
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
 -->
+    <c:set var="client" value="${param.client}"/>
+    <c:set var="useStandard" value="${not (ua.isFirefox1_5up or ua.isGecko1_8up or ua.isIE6up or ua.isSafari3Up)}"/>
+    <c:if test="${empty client}">
+        <%-- set client select default based on user agent. --%>
+        <c:set var="client" value="${useMobile ? 'mobile' : useStandard ? 'standard' : 'preferred' }"/>
+    </c:if>
+    <c:set var="smallScreen" value="${client eq 'mobile'}"/>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
     <title><fmt:message key="zimbraLoginTitle"/></title>
-    <app:skin />
     <c:set var="version" value="${initParam.zimbraCacheBusterVersion}"/>
     <meta name="viewport" content="width=320; initial-scale=1.0; maximum-scale=8.0; user-scalable=1;">
     <meta name="description" content="<fmt:message key="zimbraLoginMetaDesc"/>">
@@ -242,7 +249,10 @@ if (application.getInitParameter("offlineMode") != null)  {
 			<c:param name="customerDomain"	value="${param.customerDomain}" />
 		</c:if>	
 	</c:url>">
-    <fmt:message key="favIconUrl" var="favIconUrl"/>
+	<zm:getFavIcon request="${pageContext.request}" var="favIconUrl" />
+	<c:if test="${empty favIconUrl}">
+        <fmt:message key="favIconUrl" var="favIconUrl"/>
+	</c:if>
     <link rel="SHORTCUT ICON" href="<c:url value='${favIconUrl}'/>">
 </head>
 <c:set value="/img" var="iconPath" scope="request"/>
@@ -250,14 +260,14 @@ if (application.getInitParameter("offlineMode") != null)  {
 <table width="100%" style="height:100%;">
     <tr>
         <td align="center" valign="middle">
-            <div id="ZloginPanel">
+            <div id="ZloginPanel" ${smallScreen?'style="width:90%;max-width:500px;"':''}>
                 <table width="100%">
                     <tr>
                         <td>
                             <table width="100%">
                                 <tr>
-                                    <td align="center" valign="middle">
-                                        <a href="http://www.zimbra.com/" id="bannerLink" target="_new"><span style="cursor:pointer;display:block;" class="ImgLoginBanner"></span></a>
+                                    <td ${!smallScreen?'align="center"':'align="left"'} valign="middle">
+                                        <a href="http://www.zimbra.com/" id="bannerLink" target="_new"><span style="cursor:pointer;display:block;" class="Img${smallScreen?'App':'Login'}Banner"></span></a>
                                     </td>
                                 </tr>
                                 <tr>
@@ -317,13 +327,12 @@ if (application.getInitParameter("offlineMode") != null)  {
                                             </tr>
                                         </c:if>
                                         <tr>
-                                            <td class="zLoginLabelContainer"></td>
-                                            <td>
-                                                <table width="100%">
+                                            <td class="zLoginLabelContainer" ${smallScreen ? 'colspan=2' : ''}>${!smallScreen ? '</td><td>' : ''}
+                                                <table>
                                                     <tr>
                                                         <td><input id="remember" value="1" type="checkbox" name="zrememberme" /></td>
-                                                        <td class="zLoginCheckboxLabelContainer"><label for="remember"><fmt:message
-                                                                key="rememberMe"/></label></td>
+                                                        <td class="zLoginCheckboxLabelContainer" ${smallScreen?'style="white-space:normal;"':''}><label for="remember"><fmt:message
+                                                                key="${smallScreen?'rememberMeMobile':'rememberMe'}"/></label></td>
                                                     </tr>
                                                 </table>
                                             </td>
@@ -333,22 +342,23 @@ if (application.getInitParameter("offlineMode") != null)  {
                                     </table>
                                     <table width="100%">
                                         <tr>
-                                        	<td nowrap align="center">
+                                        	<td align="center">
                                                 <div class="ZLoginSeparator" style="margin-top:0px"></div>
-												<fmt:message key="chooseClient"/>&nbsp;
-												<c:set var="client" value="${param.client}"/>
-                                                <c:set var="useStandard" value="${not (ua.isFirefox1_5up or ua.isGecko1_8up or ua.isIE6up or ua.isSafari3Up)}"/>
-                                                <c:if test="${empty client}">
-													<%-- set client select default based on user agent. --%>
-													<c:set var="client" value="${useMobile ? 'mobile' : useStandard ? 'standard' : 'preferred' }"/>
-												</c:if>
+												<c:choose>
+                                                    <c:when test="${!smallScreen}">
+                                                        <fmt:message key="chooseClient"/>&nbsp;
+												    </c:when>
+                                                    <c:otherwise>
+                                                        <fmt:message key="versionLabel"/>&nbsp;
+                                                    </c:otherwise>
+                                                </c:choose>
 												<select name="client" onchange="clientChange(this.options[this.selectedIndex].value)">
 													<option value="preferred" <c:if test="${client eq 'preferred'}">selected</c:if> > <fmt:message key="clientPreferred"/></option>
 													<option value="advanced"  <c:if test="${client eq 'advanced'}">selected</c:if>> <fmt:message key="clientAdvanced"/></option>
 													<option value="standard"  <c:if test="${client eq 'standard'}">selected</c:if>> <fmt:message key="clientStandard"/></option>
                                                     <option value="mobile"  <c:if test="${client eq 'mobile'}">selected</c:if>> <fmt:message key="clientMobile"/></option>
 												</select>
-												
+
 												<script TYPE="text/javascript">
 													// show a message if they should be using the 'standard' client, but have chosen 'advanced' instead
 													function clientChange(selectValue) {
@@ -410,6 +420,14 @@ if (application.getInitParameter("offlineMode") != null)  {
   if (link) {
     link.href = skin.hints.banner.url;
   }
+  <c:if test="${smallScreen && ua.isIE}">       /*HACK FOR IE*/
+  var resizeLoginPanel = function(){
+      var panelElem = document.getElementById('ZloginPanel');
+      if(panelElem && !panelElem.style.maxWidth) { if(document.body.clientWidth >= 500) { panelElem.style.width="500px";}else{panelElem.style.width="90%";} }
+  }
+  resizeLoginPanel();
+  if(window.attachEvent){ window.attachEvent("onresize",resizeLoginPanel);}
+  </c:if>
 </script>
 </body>
 </html>

@@ -98,7 +98,7 @@
 <!--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -112,7 +112,10 @@
 	<fmt:setLocale value='${pageContext.request.locale}' scope='request' />
 	<fmt:setBundle basename="/messages/ZaMsg" scope='request' />
     <title><fmt:message key="zimbraAdminTitle"/></title>
-    <fmt:message key="favIconUrl" var="favIconUrl"/>
+	<zm:getFavIcon request="${pageContext.request}" var="favIconUrl" />
+	<c:if test="${empty favIconUrl}">
+	    <fmt:message key="favIconUrl" var="favIconUrl"/>
+	</c:if>
     <link rel="SHORTCUT ICON" href="<c:url value='${favIconUrl}'/>">
     
 	<script>
@@ -162,7 +165,6 @@ if(!AjxEnv.isFirefox1up && !AjxEnv.isFirefox3up && !AjxEnv.isFirefox2_0up && !Aj
 </script>
     <script type="text/javascript" language="JavaScript">
 	   function launch() {
-		AjxWindowOpener.HELPER_URL = "<%= contextPath %>/public/frameOpenerHelper.jsp"
 		DBG = new AjxDebug(AjxDebug.NONE, null, false);
 		ACCESS_RIGHTS = new Object();
 		// figure out the debug level

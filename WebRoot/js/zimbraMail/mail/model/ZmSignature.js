@@ -1,8 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007 Zimbra, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -11,7 +10,6 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -123,6 +121,12 @@ function(method, idOnly, respCallback, errorCallback, batchCmd) {
 		signatureEl.setAttribute("name", this.name);
 		var contentEl = soapDoc.set("content", this.value, signatureEl);
 		contentEl.setAttribute("type", this.contentType);
+
+        //Empty the other content type
+        var emptyType = (this.contentType == ZmMimeTable.TEXT_HTML) ? ZmMimeTable.TEXT_PLAIN : ZmMimeTable.TEXT_HTML;
+        contentEl = soapDoc.set("content", "", signatureEl);
+		contentEl.setAttribute("type", emptyType);
+        
 	}
 
 	if (batchCmd) {
@@ -159,6 +163,7 @@ ZmSignature.prototype._handleModifyResponse = function(callback, resp) {
 	var signature = signatures.getById(this.id);
 	signature.name = this.name;
 	signature.value = this.value;
+    signature.contentType = this.contentType;
 	signatures._notify(ZmEvent.E_MODIFY, { item: signature });
 
 	if (callback) {

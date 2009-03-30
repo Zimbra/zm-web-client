@@ -1,0 +1,121 @@
+<html>
+<head>
+	<title>ZForms</title>
+</head>
+<body>
+<h1>ZForms</h1>
+
+<a name='toc'></a>
+<h2>Table of Contents</h2>
+<ol>
+	<li><a href='#about'>About</a></li>
+	<li><a href='#background'>Background</a></li>
+	<li><a href='#why'>Why?</a></li>
+	<li><a href='#using'>Using ZForms</a></li>
+</ol>
+
+<a name='about'></a>
+<h2>About</h2>
+<p>
+	ZForms is an attempt to reduce the effort of laying out multiple
+	related controls, hooking up event listeners, and managing them.
+	It eliminates redundant code throughout the application by removing
+	the need for the application author to write this same code over
+	and over again, resulting in more productivity and less errors.
+</p>
+<p>
+	The goals of ZForms include:
+</p>
+<ul>
+	<li>small size</li>
+	<li>simplicity and consistency</li>
+	<li>use existing template system</li>
+	<li>bind controls to arbitrary data objects</li>
+	<li>determining values that are dirty/invalid</li>
+</ul>
+
+<a name='background'></a>
+<h2>Background</h2>
+<p>
+	The DWT toolkit already contains a form-based infrastructure
+	called XForms, roughly based on the
+	<a href='http://www.w3.org/MarkUp/Forms/'>W3C XForms</a>
+	specification. 
+	The Zimbra Collaboration Suite's administration console is
+	written largely using this framework.
+</p>
+<p>
+	The client team for the Zimbra Collaboration Suite refused to adopt
+	the XForms implementation for a variety of reasons.
+	Some of the reasons for this decision were:
+</p>
+<ul>
+	<li>large size</li>
+	<li>complexity</li>
+	<li>lack of debugging (due to generated code)</li>
+	<li>restrictive and mandated UI layout</li>
+	<li>all-or-nothing approach to using framework</li>
+</ul>
+<p>
+	For comparison, the base XForms implementation is around 280K,
+	comprised of multiple source files and many additional classes.
+	Because of the design of XForms, if an author wanted to use any
+	control in the form, a special wrapper class had to be written
+	to map between XForms and the native DWT controls.
+	Meanwhile, ZForms is a single widget, DwtForm, that is under 25K.
+</p>
+<p>
+	XForms also has a tightly coupled layout and modeling
+	description.
+	Authors cannot create their own layout and must adapt their
+	interface to a strict table-based grid style layout.
+	In addition, legacy or custom data objects can not be used
+	transparently with XForms.
+</p>
+
+<a name='why'></a>
+<h2>Why?</h2>
+<p>
+	With the existence of the XForms implementation the question
+	arises: why ZForms?
+	Because of the complexity of XForms and the annoyance of coding
+	everything by hand, there is a need for a solution in between XForms
+	and pure code.
+	ZForms' layered approach fills this need.
+</p>
+<p>
+	Authors can use ZForms as a simple way of constructing and
+	populating a complex control but still attach all of the event
+	listeners and handle the data-binding logic by hand.
+	Or they can populate the control and set the visibility or whether
+	controls are enabled directly within the ZForms form description.
+	Or they can populate the control, manage visibility of components,
+	and bind all of the controls to any arbitrary JavaScript object.
+	The choice is theirs.
+</p>
+
+<a name='using'></a>
+<h2>Using ZForms</h2>
+<p>
+	The ZForms framework (if you can call it that) takes a layered
+	approach to solving this common problem.
+	The author can take advantage of as little or as much of the ZForms
+	functionality as they want.
+	As such, the documentation for ZForms is separated into a series of
+	tutorials, ordered from simple to more complex uses of ZForms:
+</p>
+<ul>
+	<li><a href='zforms-intro.html'>Getting Started</a></li>
+	<li><a href='zforms-handlers.html'>Attaching Handlers</a></li>
+	<li><a href='zforms-binding.html'>Binding Objects</a></li>
+</ul>
+<p>
+	The following links are provided as a good reference to ZForms
+	and its functionality:
+</p>
+<ul>
+	<li><a href='zforms-api.html'>DwtForm API</a></li>
+	<li><a href='zforms-props.html'>Form Descriptor Properties</a></li>
+</ul>
+</body>
+</html>

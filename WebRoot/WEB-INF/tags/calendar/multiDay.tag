@@ -1,3 +1,19 @@
+<%--
+ * ***** BEGIN LICENSE BLOCK *****
+ * 
+ * Zimbra Collaboration Suite Web Client
+ * Copyright (C) 2007, 2008 Zimbra, Inc.
+ * 
+ * The contents of this file are subject to the Yahoo! Public License
+ * Version 1.0 ("License"); you may not use this file except in
+ * compliance with the License.  You may obtain a copy of the License at
+ * http://www.zimbra.com/license.
+ * 
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
+ * ***** END LICENSE BLOCK *****
+--%>
 <%@ tag body-content="empty" %>
 <%@ attribute name="date" rtexprvalue="true" required="true" type="java.util.Calendar" %>
 <%@ attribute name="numdays" rtexprvalue="true" required="true" %>
@@ -6,13 +22,14 @@
 <%@ attribute name="timezone" rtexprvalue="true" required="true" type="java.util.TimeZone"%>
 <%@ attribute name="selectedId" rtexprvalue="true" required="false" %>
 <%@ attribute name="checkedCalendars" rtexprvalue="true" required="false" %>
+<%@ attribute name="print" rtexprvalue="true" required="false" type="java.lang.Boolean" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <app:handleError>
-    <zm:getMailbox var="mailbox"/>    
+    <zm:getMailbox var="mailbox"/>
     <fmt:setTimeZone value="${timezone}"/>
     <c:set var="context" value="${null}"/>
     <fmt:message var="yearTitleFormat" key="CAL_DAY_TITLE_YEAR_FORMAT"/>
@@ -33,13 +50,14 @@
         <!-- ${fn:escapeXml(error.stackStrace)} -->
     </c:if>
     <zm:apptMultiDayLayout timezone="${timezone}"
-            schedule="${scheduleView ? checkedCalendars : ''}"
-            var="layout" appointments="${appts}" start="${currentDay.timeInMillis}" days="${numdays}"
-            hourstart="${mailbox.prefs.calendarDayHourStart}" hourend="${mailbox.prefs.calendarDayHourEnd}"/>
+                           schedule="${scheduleView ? checkedCalendars : ''}"
+                           var="layout" appointments="${appts}" start="${currentDay.timeInMillis}" days="${numdays}"
+                           hourstart="${mailbox.prefs.calendarDayHourStart}" hourend="${mailbox.prefs.calendarDayHourEnd}"/>
 </app:handleError>
 
+<table class='ZhCalDayGrid' width="100%" border="0" cellpadding="0" cellspacing="0" style='border-collapse:collapse; height:100%;border:1px solid #A7A194;'>
 
-<table class='ZhCalDayGrid' width="100%" border="0" cellpadding="0" cellspacing="0" style='border-collapse:collapse; height:100%;'>
+<c:if test="${param.view ne 'month'}">
 <tr class='ZhCalMonthHeaderRow'>
     <td class='ZhCalDayHeader' nowrap align="center" width="1%" style='border-left:none'>
         <fmt:formatDate value="${date.time}" pattern="${yearTitleFormat}"/>
@@ -61,15 +79,20 @@
                 </c:when>
                 <c:otherwise>
                     <app:calendarUrl var="dayUrl" view="${view eq 'day' ? 'week' : 'day'}" timezone="${timezone}" rawdate="${zm:getCalendar(day.startTime, timezone)}" action=""/>
-                    <a href="${fn:escapeXml(dayUrl)}">
-                        <fmt:message var="titleFormat" key="CAL_${numdays > 1 ? 'MDAY_':''}DAY_TITLE_FORMAT"/>
-                        <fmt:formatDate value="${zm:getCalendar(day.startTime, timezone).time}" pattern="${titleFormat}"/>
-                    </a>
+                    <c:if test="${not print}">
+                        <a href="${fn:escapeXml(dayUrl)}">
+                    </c:if>
+                    <fmt:message var="titleFormat" key="CAL_${numdays > 1 ? 'MDAY_':''}DAY_TITLE_FORMAT"/>
+                    <fmt:formatDate value="${zm:getCalendar(day.startTime, timezone).time}" pattern="${titleFormat}"/>
+                    <c:if test="${not print}">
+                        </a>
+                    </c:if>
                 </c:otherwise>
             </c:choose>
         </td>
     </c:forEach>
 </tr>
+</c:if>
 <c:forEach var="row" items="${layout.allDayRows}">
     <tr>
         <td nowrap width="1%" style='border-left:none'>
@@ -93,7 +116,7 @@
                 <c:choose>
                     <c:when test="${not empty cell.appt}">
                         <c:set var="testId" value="${cell.appt.id}-${selectedId}"/>
-                            <app:dayAppt appt="${cell.appt}" selected="${testId eq cell.appt.inviteId}" start="${currentDay.timeInMillis}" end="${rangeEnd}" timezone="${timezone}"/>
+                        <app:dayAppt appt="${cell.appt}" selected="${testId eq cell.appt.inviteId}" start="${currentDay.timeInMillis}" end="${rangeEnd}" timezone="${timezone}"/>
                     </c:when>
                     <c:otherwise>
                         &nbsp;
@@ -103,6 +126,7 @@
         </c:forEach>
     </tr>
 </c:forEach>
+
 <tr>
     <td class='ZhCalDayADB' nowrap width="1%" style='border-left:none'>
         &nbsp;
@@ -127,11 +151,16 @@
         </td>
     </c:forEach>
 </tr>
+
 <c:forEach var="row" items="${layout.rows}">
     <tr style="height:100%">
         <c:if test="${row.rowNum % 4 eq 0}">
-            <td valign=top class='ZhCalDayHour' nowrap width="1%" rowspan="4" style='border-left:none'>
-                <fmt:formatDate value="${row.date}" type="time" timeStyle="short"/>
+            <td valign=top class='ZhCalDayHour' nowrap width="1%" rowspan="4" style='border-left:none;color:blue;'>
+                <app:calendarUrl var="newAppt" timezone="${timezone}" rawdate="${date}" action="edit"/>
+                <c:if test="${not print}"><a href="${newAppt}"></c:if><fmt:formatDate value="${row.date}" type="time" timeStyle="short"/>
+                <c:if test="${not print}"></a></c:if>
+                    <fmt:formatDate var="timetitle" value="${row.date}" type="time" timeStyle="long"/>
+                <%--<fmt:formatDate value="${timetitle}" pattern="${titleFormat}"/>--%>
             </td>
         </c:if>
         <c:choose>

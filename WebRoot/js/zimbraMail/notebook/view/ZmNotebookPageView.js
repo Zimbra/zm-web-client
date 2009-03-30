@@ -1,8 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007 Zimbra, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -11,7 +10,6 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -73,21 +71,9 @@ function(page) {
 			return;
 		}
 
-		var content = ZmNotebookPageView._generateContent(page);
-		element.innerHTML = content;
+		element.innerHTML = ZmNotebookPageView._generateContent(page);
 		ZmNotebookPageView._fixLinks(element);
 		ZmNotebookPageView._findObjects(this._getObjectMgr(), element);
-	}
-};
-
-ZmNotebookPageView.getPrintHtml =
-function(page) {
-	var nbController = appCtxt.getApp(ZmApp.NOTEBOOK).getNotebookController();
-	if( nbController._getViewType()  == ZmId.VIEW_NOTEBOOK_PAGE ) {
-		var view = nbController._getViewType();
-		if(nbController._listView[view] && nbController._listView[view]._iframe){
-			return nbController._listView[view]._iframe.contentWindow.document.documentElement.innerHTML;
-		}
 	}
 };
 
@@ -365,7 +351,15 @@ ZmNotebookPageView.prototype.mutateLink = function(linkNode,doc,linkPrefix){
 		}else{						
 			target = "_new";
 		}
-		
+	    if(linkNode.href != "javascript:;"){
+            var urlParts = AjxStringUtil.parseURL(linkNode.href);
+            if(urlParts.authority == window.location.host){ //internal links
+                var url = linkNode.href;
+                var parts = url.split("#");
+                var nurl = parts[0] + (url.indexOf('?') < 0 ? '?' : '&') + ("disp=i") + (parts[1] ? "#" + parts[1] : '');
+                linkNode.href = nurl;
+            }
+        }	
 	}else{	
 		target = this._iframe1.id;
 	}
@@ -692,10 +686,10 @@ ZmNotebookPageView.prototype.fetchInfo = function(path)
 {
 	if(!path || path=="blank")
 	return;
+
+    path = decodeURIComponent(path);
 	
-	path = unescape(path);
-	
-	if(path.charAt(0)=='/'){
+    if(path.charAt(0)=='/'){
 		path = path.substring(1);
 	}		
 	var accountName = null;

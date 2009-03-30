@@ -1,8 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -11,7 +10,6 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -71,9 +69,6 @@ ZmList.prototype.toString =
 function() {
 	return "ZmList";
 };
-
-// abstract methods
-ZmList.prototype.getPrintHtml = function(preferHtml, callback) {};
 
 ZmList.prototype.get =
 function(index) {
@@ -284,19 +279,20 @@ function(offset, newList) {
 /**
  * Sets/unsets a flag for each of a list of items.
  *
- * @param items		a list of items to set/unset a flag for
- * @param flagOp		the name of the flag operation ("flag" or "read")
- * @param on			whether to set the flag
+ * @param items		[Array]			a list of items to set/unset a flag for
+ * @param flagOp	[String]		the name of the flag operation ("flag" or "read")
+ * @param on		[Boolean]*		whether to set the flag
+ * @param callback	[AjxCallback]*	callback to run after action. Does not apply to mixed action.
  */
 ZmList.prototype.flagItems =
-function(items, flagOp, on) {
+function(items, flagOp, on, callback) {
 	if (this.type == ZmItem.MIXED && !this._mixedType) {
 		this._mixedAction("flagItems", [items, flagOp, on]);
 		return;
 	}
 
 	var action = on ? flagOp : "!" + flagOp;
-	this._itemAction({items: items, action: action});
+	this._itemAction({items: items, action: action, callback: callback});
 };
 
 /**
@@ -318,7 +314,11 @@ function(items, tagId, doTag) {
 		this._mixedAction("tagItems", [items, tagId, doTag]);
 		return;
 	}
-	if (!(items instanceof Array)) items = [items];
+
+	// child window loses type info so test for array in a different way
+	if ((!(items instanceof Array)) && items.length === undefined) {
+		items = [items];
+	}
 
 	// only tag items that don't have the tag, and untag ones that do
 	// always tag a conv, because we don't know if all items in the conv have the tag yet
@@ -354,11 +354,12 @@ function(items) {
  * </p>
  *
  * @param items		[Array]			a list of items to move
- * @param folder		[ZmFolder]		destination folder
+ * @param folder	[ZmFolder]		destination folder
  * @param attrs		[Object]		additional attrs for SOAP command
+ * @param callback	[AjxCallback]*	callback to trigger once operation completes
  */
 ZmList.prototype.moveItems =
-function(items, folder, attrs) {
+function(items, folder, attrs, callback) {
 	if (this.type == ZmItem.MIXED && !this._mixedType) {
 		this._mixedAction("moveItems", [items, folder, attrs]);
 		return;
@@ -368,20 +369,24 @@ function(items, folder, attrs) {
 	attrs = attrs || (new Object());
 	attrs.l = folder.id;
 	
-	var respCallback = null;
-	if (this.type == ZmItem.MIXED)
-		respCallback = new AjxCallback(this, this._handleResponseMoveItems, folder);
+	var respCallback = (this.type == ZmItem.MIXED)
+		? (new AjxCallback(this, this._handleResponseMoveItems, [folder, callback]))
+		: callback;
 	this._itemAction({items: items, action: "move", attrs: attrs, callback: respCallback});
 };
 
 ZmList.prototype._handleResponseMoveItems =
-function(folder, result) {
+function(folder, callback, result) {
 	var movedItems = result.getResponse();	
 	if (movedItems && movedItems.length) {
 		this.moveLocal(movedItems, folder.id);
 		for (var i = 0; i < movedItems.length; i++)
 			movedItems[i].moveLocal(folder.id);
 		this._notify(ZmEvent.E_MOVE, {items: movedItems});
+	}
+
+	if (callback) {
+		callback.run();
 	}
 };
 
@@ -418,36 +423,53 @@ function(result) {
  * it will be removed from the data store (hard delete).
  *
  * @param items			[Array]			list of items to delete
- * @param hardDelete		[boolean]		whether to force physical removal of items
+ * @param hardDelete	[boolean]		whether to force physical removal of items
  * @param attrs			[Object]		additional attrs for SOAP command
+ * @param childWin		[window]*		the child window this action is happening in
  */
 ZmList.prototype.deleteItems =
-function(items, hardDelete, attrs) {
+function(items, hardDelete, attrs, childWin) {
 	if (this.type == ZmItem.MIXED && !this._mixedType) {
 		this._mixedAction("deleteItems", [items, hardDelete, attrs]);
 		return;
 	}
-	if (!(items instanceof Array)) items = [items];
+
+	// child window loses type info so test for array in a different way
+	if ((!(items instanceof Array)) && items.length === undefined) {
+		items = [items];
+	}
 
 	// figure out which items should be moved to Trash, and which should actually be deleted
-	var toMove = new Array();
-	var toDelete = new Array();	
+	var toMove = [];
+	var toDelete = [];
 	for (var i = 0; i < items.length; i++) {
 		var folderId = items[i].getFolderId();
 		var folder = appCtxt.getById(folderId);
-		if (hardDelete || (folder && folder.isHardDelete()))
+		if (hardDelete || (folder && folder.isHardDelete())) {
 			toDelete.push(items[i]);
-		else
+		} else {
 			toMove.push(items[i]);
+		}
 	}
 
+	var callback = (childWin != null) ? (new AjxCallback(this._handleDeleteNewWindowResponse, childWin)) : null;
+
 	// soft delete - items moved to Trash
-	if (toMove.length)
-		this.moveItems(toMove, appCtxt.getById(ZmFolder.ID_TRASH), attrs);
+	if (toMove.length) {
+		this.moveItems(toMove, appCtxt.getById(ZmFolder.ID_TRASH), attrs, callback);
+	}
 
 	// hard delete - items actually deleted from data store
-	if (toDelete.length)
-		this._itemAction({items: toDelete, action: "delete", attrs: attrs});
+	if (toDelete.length) {
+		this._itemAction({items: toDelete, action: "delete", attrs: attrs, callback: callback});
+	}
+};
+
+ZmList.prototype._handleDeleteNewWindowResponse =
+function(childWin, result) {
+	if (childWin) {
+		childWin.close();
+	}
 };
 
 /**
@@ -512,7 +534,7 @@ function(items, folderId) {
  */
 ZmList.prototype._itemAction =
 function(params, batchCmd) {
-	var actionedItems = new Array();
+	var actionedItems = [];
 	var idHash = this._getIds(params.items);
 	var idStr = idHash.list.join(",");
 	if (!(idStr && idStr.length)) {
@@ -522,8 +544,16 @@ function(params, batchCmd) {
 			return actionedItems;
 	}
 
-	var type = (this.type == ZmItem.MIXED) ? this._mixedType : this.type;
-	if (!type) return;
+	var type;
+	if (this.type == ZmItem.MIXED) {
+		type = this._mixedType;
+	} else if (params.items.length == 1) {
+		type = params.items[0].type;
+	} else {
+		type = this.type;
+	}
+	if (!type) { return; }
+
 	var soapCmd = ZmItem.SOAP_CMD[type] + "Request";
     var useJson = batchCmd ? batchCmd._useJson : true ;
     var itemActionRequest = null;
@@ -548,7 +578,8 @@ function(params, batchCmd) {
         }
     }
 
-    var respCallback = params.callback ? new AjxCallback(this, this._handleResponseItemAction, [type, idHash, params.callback]) : null;
+    var respCallback = params.callback
+		? (new AjxCallback(this, this._handleResponseItemAction, [type, idHash, params.callback])) : null;
 
 	if (batchCmd) {
 		batchCmd.addRequestParams(itemActionRequest, respCallback, params.errorCallback);

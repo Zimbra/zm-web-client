@@ -1,8 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -11,7 +10,6 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -65,7 +63,7 @@ ZmApptCache.prototype._getCachedMergedKey =
 function(params) {
 	var sortedFolderIds = [];
 	sortedFolderIds = sortedFolderIds.concat(params.folderIds);
-	sortedFolderIds.sort(ZmApptCache._sortFolderId);
+	sortedFolderIds.sort();
 
 	// add query to cache key since user searches should not be cached
 	var query = params.query && params.query.length > 0
@@ -411,8 +409,8 @@ function(searchParams, newList) {
 
 ZmApptCache.prototype.handleBatchResponseError =
 function(searchParams, miniCalParams, reminderSearchParams, response) {
-	var resp = response && response._data && response._data.BatchResponse;	
-    this._calViewController.setSearchInProgress(false);	
+	var resp = response && response._data && response._data.BatchResponse;
+    this._calViewController.setSearchInProgress(false);
 	this._processErrorCode(resp);
 };
 
@@ -531,8 +529,9 @@ function(params, result) {
 	try {
 		resp = result.getResponse();
 	} catch (ex) {
-		if (callback)
-			callback.run(resp);
+		if (callback) {
+			callback.run(result);
+		}
 		return;
 	}
 
@@ -541,7 +540,7 @@ function(params, result) {
 	if(newList == null) { return; }
 
 	if (callback) {
-		callback.run(newList, params.query);
+		callback.run(newList, params.query, result);
 	} else {
 		return newList;
 	}

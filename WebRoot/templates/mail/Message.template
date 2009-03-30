@@ -74,7 +74,16 @@
                                 </td>
                             </tr>
                         <$ } $>
-
+						<$ for (var i = 0; i < data.additionalHdrs.length; i++) {  $>
+							<tr>
+								<td width=110 valign='top' class='LabelColName'>
+									<$= data.additionalHdrs[i].hdrName $>
+								</td>
+								<td class='LabelColValue' colspan='10'>	
+									<$=  data.additionalHdrs[i].hdrVal $>
+								</td>
+							</tr>
+						<$ } $>
                     </table>
 				</td>
 				<td id='${id}_contactArea' class='ContactArea'>
@@ -84,6 +93,15 @@
 		</table>
 		<div id='${infoBarId}'></div>
 	</div>
+</template>
+
+<template id='mail.Message#AttachmentsView'>
+    <table border='0' width='100%' height='100%'>
+        <tr>
+            <td width='20%'><div id='${id}_filters'></div></td>
+            <td><div id='${id}_results'>Loading...</div></td>
+        </tr>
+    </table>
 </template>
 
 <template id='mail.Message#MessageListHeader'>
@@ -149,7 +167,7 @@
 				<textarea id='${ccInputId}' class='addresses' style='<$=inputStyle$>' rows=1></textarea>
 			</td>
             <td width='5%'>
-                <div><a href='#' id='${bccToggleId}'><$=ZmMsg.showBCC$></a></div>
+                <nobr><a href='#' id='${bccToggleId}'><$=ZmMsg.showBCC$></a></nobr>
             </td>
         </tr>
 
@@ -170,7 +188,7 @@
 					<td style='padding-right:4px;'>
 						<input id='${subjectInputId}' class='subjectField' autocomplete=off>
 					</td>
-					<td id='${identityRowId}' nowrap width='45%' style='display:none;'>
+					<td id='${identityRowId}' nowrap width='10%' style='display:none;'>
 						<table border=0 cellspacing=0 cellpadding=0>
 							<tr><td align=right style='<$=labelStyle$>'><$=ZmMsg.accountLabel$>&nbsp;</td>
 								<td width="*"><select id='${identitySelectId}'></select></td>
@@ -191,7 +209,10 @@
 				</table>
 			</td>
 		</tr>
-
+		<tr id='${oboRowId}' style='display:none;'>
+			<td align=right><input type='checkbox' id='${oboCheckboxId}'></td>
+			<td colspan=2><div id='${oboLabelId}'></div></td>
+		</tr>
 		<tr id='${attRowId}'>
 			<td colspan=3><div id='${attDivId}'></div></td>
 		</tr>
@@ -208,7 +229,7 @@
 		<$ var message = data.messages[i]; $>
 		<tr><td width=65 align=right><div class='ImgMessage'></div></td>
 		<td width=1%>
-			<input value='<$=message.id$>' name='<$= ZmComposeView.FORWARD_MSG_NAME $>' type='checkbox' checked>
+			<input value='<$=message.id$>' name='<$= data.fwdFieldName $>' type='checkbox' checked>
 		</td>
 			<td class='nobreak'></td>
 			<td><b><$= message.subject || AjxStringUtil.htmlEncode(ZmMsg.noSubject) $></b>
@@ -240,8 +261,8 @@
 			</td>
 			<td width=1%>
 				<$ if (!data.isNew) { $>
-					<$ var isChecked = data.isForward || data.isForwardInline || data.isDraft || attachment.ci $>
-					<input type='checkbox' value='<$=attachment.part$>' name='<$= ZmComposeView.FORWARD_ATT_NAME $>' <$= isChecked ? "checked='checked'>" : ">" $>
+					<$ var isChecked = data.isForward || data.isForwardInline || data.isDraft  $>
+					<input type='checkbox' value='<$=attachment.part$>' name='<$= data.fwdFieldName $>' <$= isChecked ? "checked='checked'>" : ">" $>
 				<$ } $>
 			</td>
 			<td class='nobreak'>
@@ -254,5 +275,46 @@
 		</tr>
 	<$ } $>
 	</table>
+</template>
+
+<template id='mail.Message#ZmMailConfirmView'>
+	<table cellspacing=3 cellpadding=0 border=0 width=100%>
+		<tr>
+			<td id='${id}_confirm' style="vertical-align:top;width:300px">
+				<div id='${id}_loading'><$= ZmMsg.loading $></div>
+				<div id='${id}_notLoading'>
+					<div id='${id}_summary' class="Summary"></div>
+					<div>&nbsp;</div>
+					<div id='${id}_displayAddresses' class="displayAddresses">
+						<div><$= ZmMsg.confirmDisplayAddresss $></div>
+						<div id='${id}_displayAddressBox' class="Box DisplayAddressBox"></div>
+					</div>
+					<div id='${id}_newAddresses' class="NewAddresses">
+						 <div><$= ZmMsg.confirmNewAddresses $></div>
+						 <div id='${id}_newAddressBox' class="Box NewAddressBox"></div>
+					</div>
+					<div style="margin:3px" id='${id}_addButton'></div>
+					<br>
+					<div id='${id}_existingContacts' class="ExistingContacts">
+						<div><$= ZmMsg.confirmExistingContacts $></div>
+						<div id='${id}_existingContactBox' class="Box ExistingContactBox"></div>
+					</div>
+				</div>
+			</td>
+			<td id='${id}_ad' style="vertical-align:top;">&nbsp;</td>
+		</tr>
+	</table>
+</template>
+
+<template id='mail.Message#ZmMailConfirmViewNewAddress'>
+	<div id="${id}_CHECKBOX" tabindex='10'></div>
+	<table style="margin-bottom:3px"><tr>
+		<td><div id="${id}_FIRST" tabindex='20'/></td>
+		<td><div id="${id}_LAST" tabindex='30'/></td>
+	</tr></table>
+</template>
+
+<template id='mail.Message#ZmMailConfirmViewExistingContact'>
+	<div style="padding:3px">${text}</div>
 </template>
 

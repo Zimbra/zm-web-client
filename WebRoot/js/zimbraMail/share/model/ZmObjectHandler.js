@@ -1,8 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2009 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -11,7 +10,6 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -108,7 +106,7 @@ function(content, startIndex) {
 
 // OVERRIDE IF NEED BE. Generates content inside the <span>
 ZmObjectHandler.prototype._getHtmlContent =
-function(html, idx, obj, context) {
+function(html, idx, obj, context, spanId) {
 	html[idx++] = AjxStringUtil.htmlEncode(obj, true);
 	return idx;
 };
@@ -121,7 +119,7 @@ function(html, idx, obj, spanId, context) {
 	html[idx++] = "' id='";
 	html[idx++] = spanId;
 	html[idx++] = "'>";
-	idx = this._getHtmlContent(html, idx, obj, context);
+	idx = this._getHtmlContent(html, idx, obj, context, spanId);
 	html[idx++] = "</span>";
 	return idx;
 };

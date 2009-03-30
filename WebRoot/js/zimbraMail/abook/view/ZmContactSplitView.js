@@ -1,17 +1,15 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- *
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
- *
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- *
+ * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -78,12 +76,6 @@ function(width, height) {
 	this._sizeChildren(width, height);
 };
 
-ZmContactSplitView.prototype.setBounds =
-function(x, y, width, height) {
-	DwtComposite.prototype.setBounds.call(this, x, y, width, height);
-	this._sizeChildren(width, height);
-};
-
 ZmContactSplitView.prototype.getTitle =
 function() {
 	return [ZmMsg.zimbraTitle, this._controller.getApp().getDisplayName()].join(": ");
@@ -109,9 +101,10 @@ function(contact, isGal) {
 		this._tabViewHtml = {};
 		this._contactTabView.enable(true);
 		// prevent listview from scrolling back up :/
+		var doHack = Dwt.CARET_HACK_ENABLED;
 		Dwt.CARET_HACK_ENABLED = false;
 		this._contactTabView.switchToTab(1);
-		Dwt.CARET_HACK_ENABLED = AjxEnv.isFirefox;
+		Dwt.CARET_HACK_ENABLED = doHack;
 	}
 
 	if (this._contact.isLoaded) {
@@ -367,7 +360,7 @@ function(contact, isGal, oldContact) {
 
 		// notify zimlets that a new contact is being shown.
 		if (appCtxt.zimletsPresent()) {
-			appCtxt.getZimletMgr().notifyZimlets("onContactView", contact, this._htmlElId, tabIdx);
+			appCtxt.getZimletMgr().notifyZimlets("onContactView", [contact, this._htmlElId, tabIdx]);
 		}
 	}
 
@@ -498,36 +491,25 @@ function(item, skipNotify) {
 
 ZmContactSimpleView.prototype._setNoResultsHtml =
 function() {
-	var contactList = AjxDispatcher.run("GetContacts");
-	if (contactList && !contactList.isLoaded) {
-		// Shows "Loading..."
-		ZmContactsBaseView.prototype._setNoResultsHtml.call(this);
-	} else {
-		var	div = document.createElement("div");
 
-        var isSearch = this._controller._contactSearchResults;
-        if(isSearch){
-            isSearch = !(this._controller._currentSearch && this._controller._currentSearch.folderId);
+	var	div = document.createElement("div");
 
-        }
-        //bug:28365  Show custom "No Results" for Search.
-        if((isSearch || this._folderId == ZmFolder.ID_TRASH) && AjxTemplate.getTemplate("abook.Contacts#SimpleView-NoResults-Search")){
-            div.innerHTML = AjxTemplate.expand("abook.Contacts#SimpleView-NoResults-Search");
-        }else{
-            // Shows "No Results", unless the skin has overridden to show links to plaxo.
-            div.innerHTML = AjxTemplate.expand("abook.Contacts#SimpleView-NoResults");
-        }
-		this._addRow(div);
+	var isSearch = this._controller._contactSearchResults;
+	if(isSearch){
+		isSearch = !(this._controller._currentSearch && this._controller._currentSearch.folderId);
+
 	}
+	//bug:28365  Show custom "No Results" for Search.
+	if ((isSearch || this._folderId == ZmFolder.ID_TRASH) && AjxTemplate.getTemplate("abook.Contacts#SimpleView-NoResults-Search")) {
+		div.innerHTML = AjxTemplate.expand("abook.Contacts#SimpleView-NoResults-Search");
+	} else {
+		// Shows "No Results", unless the skin has overridden to show links to plaxo.
+		div.innerHTML = AjxTemplate.expand("abook.Contacts#SimpleView-NoResults");
+	}
+	this._addRow(div);
+
 	this.parent.clear();
 };
-
-ZmContactSimpleView.prototype._getNoResultsMessage =
-function() {
-	var contactList = AjxDispatcher.run("GetContacts");
-	return contactList && !contactList.isLoaded ? ZmMsg.loading : AjxMsg.noResults;
-};
-
 
 ZmContactSimpleView.prototype._changeListener =
 function(ev) {
@@ -540,8 +522,7 @@ function(ev) {
 		var folder = appCtxt.getById(contact.folderId);
 		var row = this._getElement(contact, ZmItem.F_ITEM_ROW);
 		if (row) {
-			row.className = folder && folder.isInTrash()
-				? "Trash" : "";
+			row.className = (folder && folder.isInTrash()) ? "Trash" : "";
 		}
 	}
 };
@@ -700,9 +681,10 @@ function(htmlArr, idx, contact, field, colIdx, params) {
 };
 
 ZmContactSimpleView.prototype._getToolTip =
-function(field, item, ev) {
-	return (item && (field == ZmItem.F_FROM)) ? item.getToolTip(item.getAttr(ZmContact.F_email)) :
-												ZmContactsBaseView.prototype._getToolTip.apply(this, arguments);
+function(params) {
+	return (params.item && (params.field == ZmItem.F_FROM)) ?
+			params.item.getToolTip(params.item.getAttr(ZmContact.F_email)) :
+			ZmContactsBaseView.prototype._getToolTip.apply(this, arguments);
 };
 
 ZmContactSimpleView.prototype._getDateToolTip =

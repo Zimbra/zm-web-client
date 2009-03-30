@@ -5,36 +5,6 @@
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-
-
-
-<%
-	// Set to expire far in the past.
-	response.setHeader("Expires", "Tue, 24 Jan 2000 17:46:50 GMT");
-
-	// Set standard HTTP/1.1 no-cache headers.
-	response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
-
-	// Set standard HTTP/1.0 no-cache header.
-	response.setHeader("Pragma", "no-cache");
-%><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
-<head>
-<!--
- launchZCS.jsp
- * ***** BEGIN LICENSE BLOCK *****
- * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007 Zimbra, Inc.
- * 
- * The contents of this file are subject to the Yahoo! Public License
- * Version 1.0 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
- * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * ***** END LICENSE BLOCK *****
--->
 <%!
 	private static String protocolMode = null;
 	private static String httpPort = null;
@@ -69,8 +39,37 @@
 
     ZAuthResult authResult = (ZAuthResult) request.getAttribute("authResult");
     String skin = authResult.getSkin();
+%>
+<app:skinAndRedirect defaultSkin="${skin}" />
+<%
+	// Set to expire far in the past.
+	response.setHeader("Expires", "Tue, 24 Jan 2000 17:46:50 GMT");
 
-	java.util.List<String> localePref = authResult.getPrefs().get("zimbraPrefLocale");
+	// Set standard HTTP/1.1 no-cache headers.
+	response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
+
+	// Set standard HTTP/1.0 no-cache header.
+	response.setHeader("Pragma", "no-cache");
+%>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<!--
+ launchZCS.jsp
+ * ***** BEGIN LICENSE BLOCK *****
+ * Zimbra Collaboration Suite Web Client
+ * Copyright (C) 2007, 2008, 2009 Zimbra, Inc.
+ * 
+ * The contents of this file are subject to the Yahoo! Public License
+ * Version 1.0 ("License"); you may not use this file except in
+ * compliance with the License.  You may obtain a copy of the License at
+ * http://www.zimbra.com/license.
+ * 
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * ***** END LICENSE BLOCK *****
+-->
+<%	java.util.List<String> localePref = authResult.getPrefs().get("zimbraPrefLocale");
 	if (localePref != null && localePref.size() > 0) {
 		request.setAttribute("localeId", localePref.get(0));
 	}
@@ -131,7 +130,6 @@
 	pageContext.setAttribute("isLeakDetectorOn", isLeakDetectorOn);
 %>
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-<app:skin defaultSkin="${skin}" />
 <fmt:setLocale value='${locale}' scope='request' />
 <fmt:setBundle basename="/messages/ZmMsg" scope="request" force="true" />
 <title><fmt:message key="zimbraTitle"/></title>
@@ -144,7 +142,10 @@
 		<c:param name="customerDomain"	value="${param.customerDomain}" />
 	</c:if>		
 </c:url>" rel="stylesheet" type="text/css" />
-<fmt:message key="favIconUrl" var="favIconUrl"/>
+<zm:getFavIcon request="${pageContext.request}" var="favIconUrl" />
+<c:if test="${empty favIconUrl}">
+	<fmt:message key="favIconUrl" var="favIconUrl"/>
+</c:if>
 <link rel="SHORTCUT ICON" href="<c:url value='${favIconUrl}'/>">
 <script>
 	appContextPath = "${zm:jsEncode(contextPath)}";
@@ -202,7 +203,7 @@
 	<c:set var="enforceMinDisplay" value="${requestScope.authResult.prefs.zimbraPrefAdvancedClientEnforceMinDisplay[0]}"/>
 	<c:if test="${param.client ne 'advanced'}">
 		var enforceMinDisplay = ${enforceMinDisplay ne 'FALSE'};
-		var unsupported = (screen && (screen.width <= 800 && screen.height <= 600) && !${isOfflineMode}) || (AjxEnv.isSafari && !AjxEnv.isSafari3);
+		var unsupported = (screen && (screen.width <= 800 && screen.height <= 600) && !${isOfflineMode}) || (AjxEnv.isSafari && !AjxEnv.isSafari3up);
 		if (enforceMinDisplay && unsupported) {
 			switchToStandardClient();
 		}
@@ -215,7 +216,7 @@
 	String allPackages = "Startup1_1,Startup1_2";
     if (extraPackages != null) {
     	if (extraPackages.equals("dev")) {
-    		extraPackages = "Leaks,Startup2,CalendarCore,Calendar,CalendarAppt,ContactsCore,Contacts,IMCore,IM,MailCore,Mail,Mixed,NotebookCore,Notebook,BriefcaseCore,Briefcase,PreferencesCore,Preferences,TasksCore,Tasks,Voicemail,Assistant,Browse,Extras,Share,Zimlet,Portal,Alert,ImportExport";
+    		extraPackages = "Leaks,Startup2,CalendarCore,Calendar,CalendarAppt,ContactsCore,Contacts,IMCore,IM,MailCore,Mail,Mixed,NotebookCore,Notebook,BriefcaseCore,Briefcase,PreferencesCore,Preferences,TasksCore,Tasks,Voicemail,Assistant,Browse,Extras,Share,Zimlet,ZimletApp,Portal,Alert,ImportExport,YmSdk,BrowserPlus";
     	}
     	allPackages += "," + extraPackages;
     }
@@ -284,7 +285,6 @@
 		if (!prodMode || debugLevel) {
 			AjxDispatcher.require("Debug");
 			DBG = new AjxDebug(AjxDebug.NONE, null, false);
-			AjxWindowOpener.HELPER_URL = "${contextPath}/public/frameOpenerHelper.jsp";
 			// figure out the debug level
 			if (debugLevel == 't') {
 				DBG.showTiming(true);

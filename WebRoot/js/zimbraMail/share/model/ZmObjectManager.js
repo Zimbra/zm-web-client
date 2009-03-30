@@ -1,17 +1,15 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- *
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
- *
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- *
+ * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -130,6 +128,20 @@ function(h, type, priority) {
 	var oh = this.getHandlers();
 	if (!oh[type]) {oh[type] = [];}
 	oh[type].push(h);
+};
+
+ZmObjectManager.prototype.removeHandler =
+function(h, type) {
+	type = type || (h.getTypeName() ? h.getTypeName() : "none");
+	var oh = this.getHandlers();
+	if (oh[type]) {
+		for (var i = 0, count = oh[type].length; i < count; i++) {
+			if (oh[type][i] == h) {
+				oh[type].splice(i, 1);
+				break;
+			}
+		}
+	}
 };
 
 ZmObjectManager.prototype.sortHandlers =
@@ -471,26 +483,14 @@ function(node, re_discard, re_allow, callbacks) {
 				// consider processed
 				node = next;
 			}
-			// fix style
-			// node.nowrap = "";
-			// node.className = "";
 
-			if (AjxEnv.isIE)
+			if (AjxEnv.isIE) {
 				// strips expression()-s, bwuahahaha!
 				// granted, they get lost on the server-side anyway, but assuming some get through...
 				// the line below exterminates them.
 				node.style.cssText = node.style.cssText;
-
-			// Clear dangerous rules.  FIXME: implement proper way
-			// using removeAttribute (kind of difficult as it's
-			// (expectedly) quite different in IE from *other*
-			// browsers, so for now style.prop="" will do.)
-			tmp = ZmMailMsgView._dangerousCSS;
-			for (i in tmp) {
-				val = tmp[i];
-				if (!val || val.test(node.style[i]))
-					node.style[i] = "";
 			}
+
 			for (i = node.firstChild; i; i = recurse(i, handlers));
 			return node.nextSibling;
 
@@ -673,26 +673,14 @@ function(node, handlers, discard, ignore) {
 		else if (tmp == "style") {
 			return node.nextSibling;
 		}
-		// fix style
-		// node.nowrap = "";
-		// node.className = "";
 
-		if (AjxEnv.isIE)
+		if (AjxEnv.isIE) {
 			// strips expression()-s, bwuahahaha!
 			// granted, they get lost on the server-side anyway, but assuming some get through...
 			// the line below exterminates them.
 			node.style.cssText = node.style.cssText;
-
-		// Clear dangerous rules.  FIXME: implement proper way
-		// using removeAttribute (kind of difficult as it's
-		// (expectedly) quite different in IE from *other*
-		// browsers, so for now style.prop="" will do.)
-		tmp = ZmMailMsgView._dangerousCSS;
-		for (i in tmp) {
-			val = tmp[i];
-			if (!val || val.test(node.style[i]))
-				node.style[i] = "";
 		}
+
 		var child = node.firstChild;
 		while (child) {
 			child = this.processHtmlNode(child, handlers, discardRe, ignoreRe);

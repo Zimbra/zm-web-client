@@ -1,3 +1,19 @@
+<%--
+ * ***** BEGIN LICENSE BLOCK *****
+ * 
+ * Zimbra Collaboration Suite Web Client
+ * Copyright (C) 2007, 2008, 2009 Zimbra, Inc.
+ * 
+ * The contents of this file are subject to the Yahoo! Public License
+ * Version 1.0 ("License"); you may not use this file except in
+ * compliance with the License.  You may obtain a copy of the License at
+ * http://www.zimbra.com/license.
+ * 
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
+ * ***** END LICENSE BLOCK *****
+--%>
 <%@ tag body-content="empty" %>
 <%@ attribute name="theBody" rtexprvalue="true" required="true" type="java.lang.String" %>
 <%@ attribute name="parentId" rtexprvalue="true" required="true" type="java.lang.String" %>
@@ -13,7 +29,7 @@
 </noscript>
 <c:choose>
 <c:when test="${fn:length(theBody) gt 100000}">
-    <iframe style="width:100%; height:600px" scrolling="auto" marginWidth="0" marginHeight="0" frameBorder="0" src="${fn:escapeXml(iframeUrl)}"></iframe>    
+    <iframe style="width:100%; height:600px" scrolling="auto" marginWidth="0" marginHeight="0" frameBorder="0" src="${fn:escapeXml(iframeUrl)}"></frame>    
 </c:when>
     <c:otherwise>
 <script type="text/javascript">
@@ -42,7 +58,7 @@
 				}
                     var i_frame = iframe;
                 //alert(b.scrollHeight+"|"+iframe.offsetHeight);
-                var _delay = isIE ? 300 : 0 ;
+                var _delay = isIE ? 100 : 0 ;
                 setTimeout(function(){ i_frame.style.height = b.scrollHeight + 30 + "px";}, _delay);
             }
 		};

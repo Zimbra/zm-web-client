@@ -1,8 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007 Zimbra, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -11,7 +10,6 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -55,6 +53,7 @@ function() {
  *        title					[string]*		dialog title
  *        description			[string]*		description of what the user is selecting
  *        skipReadOnly			[boolean]* 		if true, read-only folders will not be displayed
+ *        skipRemote			[boolean]*		if true, remote folders (mountpoints) will not be displayed
  *        skipSyncFailureSubs	[boolean]*		if true, don't show "Local Folders"
  *        hideNewButton 		[boolean]*		if true, New button will not be shown
  *        noRootSelect			[boolean]*		if true, don't make root tree item(s) selectable
@@ -78,6 +77,13 @@ function(params) {
 			if (folder.link && folder.isReadOnly()) {
 				omit[folder.id] = true;
 			}
+		}
+	}
+
+	if (params.skipRemote) {
+		var folders = folderTree.asList({remoteOnly:true});
+		for (var i = 0; i < folders.length; i++) {
+			omit[folders[i].id] = true;
 		}
 	}
 
@@ -115,7 +121,8 @@ function(params) {
 		fieldId: this._folderTreeCellId,
 		overviewId: (appCtxt.multiAccounts) ? ([base, acct.name].join(":")) : base,
 		noRootSelect: params.noRootSelect,
-		account: acct
+		account: acct,
+		treeStyle: params.treeStyle || DwtTree.SINGLE_STYLE		// we don't want checkboxes!
 	};
 
 	// make sure the requisite packages are loaded
@@ -138,7 +145,9 @@ function(params) {
 	AjxDispatcher.require(pkg, true, new AjxCallback(this, this._doPopup, [params, treeIds, folderTree]));
 };
 
-ZmChooseFolderDialog.prototype._doPopup = function(params, treeIds, folderTree) {
+ZmChooseFolderDialog.prototype._doPopup =
+function(params, treeIds, folderTree) {
+
 	this._setOverview(params);
 
 	for (var i = 0; i < treeIds.length; i++) {
@@ -147,9 +156,6 @@ ZmChooseFolderDialog.prototype._doPopup = function(params, treeIds, folderTree) 
 
 		// bug #18533 - always make sure header item is visible in "MoveTo" dialog
 		treeView.getHeaderItem().setVisible(true, true);
-
-		// remove checkboxes if treeview has them
-		treeView.showCheckboxes(false);
 
 		// expand root item
 		var ti = treeView.getTreeItemById(folderTree.root.id);
@@ -170,10 +176,9 @@ ZmChooseFolderDialog.prototype._doPopup = function(params, treeIds, folderTree) 
 	folderTree.addChangeListener(this._changeListener);
 
 	ZmDialog.prototype.popup.call(this);
-	
-	if (this._data && (treeId == this._data.type)) {
-		treeView.setSelected(folderTree.root);
-	}
+
+	// set focus to overview, which will select first item if none selected
+	appCtxt.getKeyboardMgr().grabFocus(this._overview[this._curOverviewId]);
 };
 
 ZmChooseFolderDialog.prototype.reset =
@@ -217,7 +222,6 @@ function(ev) {
 		var org = organizers[0];
 		var treeView = this._getOverview().getTreeView(org.type);
 		treeView.setSelected(organizers[0], true);
-		treeView.showCheckboxes(false);
 		this._creatingFolder = false;
 	}
 };
@@ -225,13 +229,23 @@ function(ev) {
 ZmChooseFolderDialog.prototype._okButtonListener =
 function(ev) {
 	var tgtFolder = this._getOverview().getSelected();
-	var msg = (!tgtFolder) ? ZmMsg.noTargetFolder : null;
+	var folderList = (tgtFolder && (!(tgtFolder instanceof Array)))
+		? [tgtFolder] : tgtFolder;
+
+	var msg = (!folderList || (folderList && folderList.length == 0))
+		? ZmMsg.noTargetFolder : null;
 
 	// check for valid target
-	if (!msg && this._data && tgtFolder.mayContain && !tgtFolder.mayContain(this._data)) {
-	    msg = (this._data instanceof ZmFolder)
-			? ZmMsg.badTargetFolder
-			: ZmMsg.badTargetFolderItems;
+	if (!msg && this._data) {
+		for (var i = 0; i < folderList.length; i++) {
+			var folder = folderList[i];
+			if (folder.mayContain && !folder.mayContain(this._data)) {
+				msg = (this._data instanceof ZmFolder)
+					? ZmMsg.badTargetFolder
+					: ZmMsg.badTargetFolderItems;
+				break;
+			}
+		}
 	}
 
 	if (msg) {
@@ -239,4 +253,9 @@ function(ev) {
 	} else {
 		DwtDialog.prototype._buttonListener.call(this, ev, [tgtFolder]);
 	}
+};
+
+ZmChooseFolderDialog.prototype._getTabGroupMembers =
+function() {
+	return [this._overview[this._curOverviewId]];
 };

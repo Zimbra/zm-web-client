@@ -410,7 +410,8 @@
           <url-pattern>/h/ac</url-pattern>
           <url-pattern>/h/addattendees</url-pattern>
           <url-pattern>/h/addcontacts</url-pattern>
-		  <url-pattern>/h/addgroupcontact</url-pattern>
+          <url-pattern>/h/addcontactconfirmation</url-pattern>
+          <url-pattern>/h/addgroupcontact</url-pattern>
           <url-pattern>/h/ads</url-pattern>
           <url-pattern>/h/attachments</url-pattern>
           <url-pattern>/h/calendar</url-pattern>
@@ -435,7 +436,9 @@
           <url-pattern>/h/mtasks</url-pattern>
           <url-pattern>/h/options</url-pattern>
           <url-pattern>/h/printcalls</url-pattern>
+          <url-pattern>/h/printcalendar</url-pattern>
           <url-pattern>/h/printvoicemails</url-pattern>
+          <url-pattern>/h/printappointments</url-pattern>          
           <url-pattern>/h/repeat</url-pattern>
           <url-pattern>/h/rest</url-pattern>
           <url-pattern>/h/search</url-pattern>
@@ -443,9 +446,15 @@
           <url-pattern>/h/voicemail</url-pattern>
           <url-pattern>/m/login</url-pattern>
           <url-pattern>/m/main</url-pattern>
-          <url-pattern>/m/mainx</url-pattern>          
+          <url-pattern>/m/mobriefcases</url-pattern>
+          <url-pattern>/m/mocals</url-pattern>
+          <url-pattern>/m/moversions</url-pattern>
+          <url-pattern>/m/mainx</url-pattern>
+          <url-pattern>/m/zmain</url-pattern>
+          <url-pattern>/m/zmview</url-pattern>
           <url-pattern>/m/mosearch</url-pattern>
           <url-pattern>/m/mocalendar</url-pattern>
+          <url-pattern>/m/moapptcompose</url-pattern>
           <url-pattern>/m/mofolders</url-pattern>
           <url-pattern>/m/moaddrbooks</url-pattern>
           <url-pattern>/m/moquery</url-pattern>
@@ -455,6 +464,7 @@
           <url-pattern>/h/printcontacts</url-pattern>
           <url-pattern>/h/printconversations</url-pattern>
           <url-pattern>/h/printmessage</url-pattern>
+		  <url-pattern>/h/printtasks</url-pattern>
           <url-pattern>/y/calendar</url-pattern>
           <url-pattern>/y/eappt</url-pattern>
           <url-pattern>/y/mcalendars</url-pattern>
@@ -462,6 +472,8 @@
           <url-pattern>/y/repeat</url-pattern>
           <url-pattern>/y/search</url-pattern>
           <url-pattern>/y/todo</url-pattern>
+          <url-pattern>/h/briefcaseupload</url-pattern>
+          <url-pattern>/h/mbriefcases</url-pattern>
       </jsp-property-group>
     </jsp-config>
 

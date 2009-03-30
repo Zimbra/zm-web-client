@@ -1,3 +1,19 @@
+<%--
+ * ***** BEGIN LICENSE BLOCK *****
+ * 
+ * Zimbra Collaboration Suite Web Client
+ * Copyright (C) 2007, 2008 Zimbra, Inc.
+ * 
+ * The contents of this file are subject to the Yahoo! Public License
+ * Version 1.0 ("License"); you may not use this file except in
+ * compliance with the License.  You may obtain a copy of the License at
+ * http://www.zimbra.com/license.
+ * 
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
+ * ***** END LICENSE BLOCK *****
+--%>
 <%@ tag body-content="empty" %>
 <%@ attribute name="appt" rtexprvalue="true" required="true" type="com.zimbra.cs.zclient.ZAppointmentHit" %>
 <%@ attribute name="start" rtexprvalue="true" required="true"%>
@@ -22,26 +38,28 @@
         <c:if test="${appt.startTime lt start}"><c:set var="bleft" value='border-left:none;'/></c:if>
         <c:if test="${appt.endTime gt end}"><c:set var="bright" value='border-right:none;'/></c:if>
         <div <c:if test="${not empty bleft or not empty bright}">style="${bleft}${bright}"</c:if>
-                class='ZhCalMonthAllDayAppt${needsAction ? 'New ':' '} ${color}${needsAction ? 'Dark' : 'Light'}'>
-                <a href="${fn:escapeXml(apptUrl)}">${fn:escapeXml(subject)}</a>
+             class='ZhCalMonthAllDayAppt${needsAction ? 'New ':' '} ${color}${needsAction ? 'Dark' : 'Light'}'>
+            <c:if test="${param.action ne 'print'}"> <a href="${fn:escapeXml(apptUrl)}"></c:if>${fn:escapeXml(subject)}<c:if test="${param.action ne 'print'}"></a></c:if>
         </div>
     </c:when>
     <c:otherwise>
         <div class='ZhCalMonthAppt ${color}${needsAction ? 'DarkC' : 'C'}'>
-            <a href="${fn:escapeXml(apptUrl)}">
-                <c:choose>
-                    <c:when test="${appt.startTime lt start}">
-                        &laquo;
-                    </c:when>
-                    <c:otherwise>
-						&bull;&nbsp;<fmt:formatDate value="${appt.startDate}" type="time" timeStyle="short"/>
-                    </c:otherwise>
-                </c:choose>
-                &nbsp;${fn:escapeXml(subject)}
-				<c:if test="${end lt appt.endTime}">
-					&nbsp;&raquo;
-				</c:if>
-			</a>
+            <c:if test="${param.action ne 'print'}">    <a href="${fn:escapeXml(apptUrl)}">
+            <c:choose>
+                <c:when test="${appt.startTime lt start}">
+                    &laquo;
+                </c:when>
+                <c:otherwise>
+                    &bull;&nbsp;<fmt:formatDate value="${appt.startDate}" type="time" timeStyle="short"/>
+                </c:otherwise>
+            </c:choose>
+            </c:if>&nbsp;${fn:escapeXml(subject)}
+            <c:if test="${param.action ne 'print'}">
+                <c:if test="${end lt appt.endTime}">
+                    &nbsp;&raquo;
+                </c:if>
+            </c:if>
+        </a>
         </div>
     </c:otherwise>
 </c:choose>

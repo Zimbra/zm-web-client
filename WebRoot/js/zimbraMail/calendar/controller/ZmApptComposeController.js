@@ -1,8 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007, 2008 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -11,7 +10,6 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -32,8 +30,6 @@ ZmApptComposeController = function(container, app) {
 
 	this._addedAttendees = [];
 	this._removedAttendees = [];
-	
-	app.loadResources();	// make sure resources are available for autocomplete
 	this._kbMgr = appCtxt.getKeyboardMgr();
 
 	// preload compose view for faster loading
@@ -203,6 +199,7 @@ function(appt, attId, attendees, origAttendees) {
 			this._notifyDialog.addSelectionListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._notifyDlgOkListener));
 			this._notifyDialog.addSelectionListener(DwtDialog.CANCEL_BUTTON, new AjxListener(this, this._notifyDlgCancelListener));
 		}
+        appt.setMailNotificationOption(true);
 		this._notifyDialog.initialize(appt, attId, this._addedAttendees, this._removedAttendees);
 		this._notifyDialog.popup();
 		return true;
@@ -220,6 +217,13 @@ function(ev) {
 	this._app.getCalController().setNeedsRefresh(true);
 
 	ZmCalItemComposeController.prototype._cancelListener.call(this, ev);
+};
+
+ZmApptComposeController.prototype._printListener =
+function() {
+	var calItem = this._composeView._apptEditView._calItem;
+	var url = ("/h/printappointments?id=" + calItem.invId);
+	window.open(appContextPath+url, "_blank");
 };
 
 

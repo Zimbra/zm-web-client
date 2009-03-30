@@ -618,19 +618,7 @@
 			<fileset dir='${customer.img.dir}' includes='**/favicon.ico,**/apple-touch-icon.png'/>
 		</copy>
 	</target>
-	<!-- add skins to global config (zimbraInstalledSkin) -->
-	<target name="reset-skins-config">
-        <java classname="com.zimbra.cs.account.ProvUtil" fork="true" classpathref="class.path" failonerror="true">
-            <arg line="mcf zimbraInstalledSkin ''"/>
-        </java>	
-		<dirset id='this.build.skins.dirset' dir='${build.skin.dir}' includes='*' />
-		<pathconvert property='this.build.skins.files' refid='this.build.skins.dirset' pathsep=','>
-			<flattenmapper />
-		</pathconvert>
-		<foreach target='add-skin-to-config' list='${this.build.skins.files}' param='arg'/>
-	</target>
-	
-	<!--<foreach target='add-skin-to-config' list='${jam-files.list}' param='arg'/> -->
+
 	<target name='images-merge'>
 		<!-- delete output files if files changed -->
 		<dependset>
@@ -965,7 +953,7 @@ if (ext == null) ext = "";
                         <copy tofile="@{var}${nodebug.ext}" file='@{var}'/>
                         <echo>Stripping debug to @{var}${nodebug.ext}</echo>
                         <replaceregexp byline="true">
-                            <regexp pattern="DBG\.\w+\(.*\);"/>
+                            <regexp pattern="^\s*DBG\.\w+\(.*\);\s*$"/>
                             <substitution expression=" "/>
                             <fileset file="@{var}${nodebug.ext}"/>
                         </replaceregexp>
@@ -1064,7 +1052,7 @@ if (ext == null) ext = "";
         <unzip dest='${webapp.dir}' src="${webapp.file}"/>
 
         <antcall target='webxml-deploy-replace'/>
-    	
+
         <ant dir="${server.dir}" target="start-jetty" inheritAll="false"/>
     </target>
 
@@ -1241,10 +1229,4 @@ if (ext == null) ext = "";
          </delete>
      </target>
 
-	<target name='add-skin-to-config'>
-		<echo message="mcf +zimbraInstalledSkin ${arg}"/>
-        <java classname="com.zimbra.cs.account.ProvUtil" fork="true" classpathref="class.path" failonerror="true">
-            <arg line="mcf +zimbraInstalledSkin ${arg}"/>
-        </java>	
-	</target>
 </project>
