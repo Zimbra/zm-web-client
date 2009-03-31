@@ -493,7 +493,19 @@ function(view) {
 	if (this._list.isGal && !this._list.isGalPagingSupported) {
 		this._navToolBar[view].enable([ZmOperation.PAGE_BACK, ZmOperation.PAGE_FORWARD], false);
 	} else {
-		this._navToolBar[view].enable(ZmOperation.PAGE_FORWARD, this._list.hasMore());
+		var lv = this._listView[view];
+
+		// determine if we have more cached items to show (in case hasMore is wrong)
+		var hasMore = false;
+		if (this._list) {
+			hasMore = this._list.hasMore();
+			if (!hasMore && ((lv.offset + lv.getLimit()) < this._list.size())) {
+				hasMore = true;
+			}
+		}
+
+		this._navToolBar[view].enable(ZmOperation.PAGE_BACK, lv.offset > 0);
+		this._navToolBar[view].enable(ZmOperation.PAGE_FORWARD, hasMore);
 	}
 
 	this._navToolBar[view].setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previousPage);

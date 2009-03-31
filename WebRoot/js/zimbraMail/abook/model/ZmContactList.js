@@ -220,7 +220,7 @@ function(id) {
 */
 ZmContactList.prototype.getSubList =
 function(offset, limit, folderId) {
-	if (folderId) {
+	if (folderId && this.isCanonical) {
 		// only collect those contacts that belong to the given folderId if provided
 		var newlist = [];
 		var sublist = this.getArray();
@@ -289,7 +289,8 @@ function(address) {
 	}
 };
 
-ZmContactList.prototype.getContactByIMAddress = function(addr) {
+ZmContactList.prototype.getContactByIMAddress =
+function(addr) {
 	var contact = this._imAddressToContact[addr.toLowerCase()];
 	return contact ? this._realizeContact(contact) : null;
 };

@@ -564,15 +564,16 @@ function(req) {
 	// always set limit (init to user pref for page size if not provided)
 	if (!this.limit) {
 		if (this.contactSource && this.types.size() == 1) {
-			req.limit = this.limit = appCtxt.get(ZmSetting.CONTACTS_PER_PAGE);
+			this.limit = appCtxt.get(ZmSetting.CONTACTS_PER_PAGE);
 		} else if (appCtxt.get(ZmSetting.MAIL_ENABLED)) {
-			req.limit = this.limit = appCtxt.get(ZmSetting.PAGE_SIZE);
+			this.limit = appCtxt.get(ZmSetting.PAGE_SIZE);
 		} else if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-			req.limit = this.limit = appCtxt.get(ZmSetting.CONTACTS_PER_PAGE);
+			this.limit = appCtxt.get(ZmSetting.CONTACTS_PER_PAGE);
 		} else {
-			req.limit = this.limit = ZmSearch.DEFAULT_LIMIT;
+			this.limit = ZmSearch.DEFAULT_LIMIT;
 		}
 	}
+	req.limit = this.limit;
 
 	// and of course, always set the query and append the query hint if
 	// applicable only use query hint if this is not a "simple" search
