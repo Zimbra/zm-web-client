@@ -73,8 +73,8 @@ function() {
 // Public methods
 
 ZmContactListController.prototype.show =
-function(searchResult, bIsGalSearch, folderId) {
-	this._searchType = bIsGalSearch
+function(searchResult, isGalSearch, folderId) {
+	this._searchType = isGalSearch
 		? ZmContactListController.SEARCH_TYPE_GAL
 		: ZmContactListController.SEARCH_TYPE_CANONICAL;
 
@@ -97,10 +97,11 @@ function(searchResult, bIsGalSearch, folderId) {
 		if (searchResult.search && searchResult.search.userText && this.getParentView())
 			this.getParentView().getAlphabetBar().reset();
 
-		if (bIsGalSearch) {
+		if (isGalSearch) {
 			if (this._list == null)
 				this._list = new ZmContactList(searchResult.search, true);
 			this._list._isShared = false;
+			this._list.isGalPagingSupported = AjxUtil.isSpecified(searchResult.getAttribute("offset"));
 		} else {
 			// find out if we just searched for a shared address book
 			var addrbook = folderId ? appCtxt.getById(folderId) : null;
@@ -152,7 +153,7 @@ function(view, force, initialized, stageView) {
 		this._resetNavToolBarButtons(view);
 
 		// HACK: reset search toolbar icon (its a hack we're willing to live with)
-		if (this.isGalSearch()) {
+		if (this.isGalSearch() && !this._list.isGalPagingSupported) {
 			appCtxt.getSearchController().setDefaultSearchType(ZmId.SEARCH_GAL);
 			if (this._list.hasMore()) {
 				var d = appCtxt.getMsgDialog();
@@ -489,9 +490,9 @@ ZmContactListController.prototype._resetNavToolBarButtons =
 function(view) {
 	ZmListController.prototype._resetNavToolBarButtons.call(this, view);
 
-	if (this._list.isGal) {
+	if (this._list.isGal && !this._list.isGalPagingSupported) {
 		this._navToolBar[view].enable([ZmOperation.PAGE_BACK, ZmOperation.PAGE_FORWARD], false);
-	} else if (this._list.isCanonical) {
+	} else {
 		this._navToolBar[view].enable(ZmOperation.PAGE_FORWARD, this._list.hasMore());
 	}
 

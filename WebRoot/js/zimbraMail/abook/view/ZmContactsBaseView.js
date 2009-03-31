@@ -39,7 +39,7 @@ function(list, sortField, folderId) {
 		// compute the sublist based on the folderId if applicable
 		list.addChangeListener(this._listChangeListener);
 		// for accounts where gal paging is not supported, show *all* results
-		subList = (list.isGal)
+		subList = (list.isGal && !list.isGalPagingSupported)
 			? list.getVector().clone()
 			: list.getSubList(this.offset, this.getLimit(), folderId);
 	} else {

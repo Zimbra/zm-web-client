@@ -220,9 +220,9 @@ function(id) {
 */
 ZmContactList.prototype.getSubList =
 function(offset, limit, folderId) {
-	if (folderId && this.isCanonical) {
+	if (folderId) {
 		// only collect those contacts that belong to the given folderId if provided
-		var newlist = new Array();
+		var newlist = [];
 		var sublist = this.getArray();
 		var offsetCount = 0;
 		this.setHasMore(false);

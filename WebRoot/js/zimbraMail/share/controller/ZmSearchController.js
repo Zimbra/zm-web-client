@@ -378,6 +378,7 @@ function(types) {
 			case ZmItem.CONTACT:	viewType = ZmId.VIEW_CONTACT_SIMPLE; break;
 			case ZmItem.APPT:		viewType = ZmId.VIEW_CAL; break;
 			case ZmItem.TASK:		viewType = ZmId.VIEW_TASKLIST; break;
+			case ZmId.SEARCH_GAL:	viewType = ZmId.VIEW_CONTACT_SIMPLE; break;
 			// more types go here as they are suported...
 		}
 
