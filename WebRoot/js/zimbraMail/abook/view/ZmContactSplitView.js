@@ -401,7 +401,7 @@ function() {
 		html[idx++] = '"';
 		html[idx++] = tag.id;
 		html[idx++] = '"';
-		html[idx++] = "); return false;'>"
+		html[idx++] = "); return false;'>";
 		html[idx++] = AjxImg.getImageSpanHtml(icon, null, attr, tag.name);
 		html[idx++] = "</a>&nbsp;";
 	}
@@ -419,8 +419,7 @@ function(clear) {
 
 ZmContactSplitView.prototype._tagChangeListener =
 function(ev) {
-	if (ev.type != ZmEvent.S_TAG)
-		return;
+	if (ev.type != ZmEvent.S_TAG) { return; }
 
 	var fields = ev.getDetail("fields");
 	var changed = fields && (fields[ZmOrganizer.F_COLOR] || fields[ZmOrganizer.F_NAME]);
@@ -647,13 +646,13 @@ function(contact, params) {
 		}
 	}
 
-    if (appCtxt.get(ZmSetting.IM_ENABLED)) {
-            htmlArr[idx++] = "<td style='vertical-align:middle' width=16 class='Presence'>";
-            var presence = contact.getImPresence();
-            var img = presence ? presence.getIcon() : "Blank_16";
-            idx = this._getImageHtml(htmlArr, idx, img, this._getFieldId(contact, ZmItem.F_PRESENCE));
-            htmlArr[idx++] = "</td>";
-    }
+	if (appCtxt.get(ZmSetting.IM_ENABLED)) {
+		htmlArr[idx++] = "<td style='vertical-align:middle' width=16 class='Presence'>";
+		var presence = contact.getImPresence();
+		var img = presence ? presence.getIcon() : "Blank_16";
+		idx = this._getImageHtml(htmlArr, idx, img, this._getFieldId(contact, ZmItem.F_PRESENCE));
+		htmlArr[idx++] = "</td>";
+	}
 
 	htmlArr[idx++] = "</tr></table>";
 

@@ -329,7 +329,7 @@ function(creates, force) {
 					this._handleCreateLink(create, ZmOrganizer.ADDRBOOK);
 				} else if (name == "cn") {
 					var clc = AjxDispatcher.run("GetContactListController");
-					var clcList = clc && clc.getList();
+					var clcList = (clc && clc.getFolderId()) ? clc.getList() : null;
 					if (clcList) {
 						clcList.notifyCreate(create);
 					}
