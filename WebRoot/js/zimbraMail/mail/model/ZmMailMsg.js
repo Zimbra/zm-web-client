@@ -650,6 +650,15 @@ function(contactList, edited, componentId, callback, errorCallback, instanceDate
 	var inv = this._origMsg.invite;
 	if (this.getAddress(AjxEmailAddress.TO) == null && !inv.isOrganizer()) {
 		var to = inv.getSentBy() || inv.getOrganizerEmail();
+        if(to == null) {
+            var ac = window.parentAppCtxt || window.appCtxt;
+            var mainAcct = ac.getMainAccount().getEmail();
+            var from = this._origMsg.getAddresses(AjxEmailAddress.FROM).get(0);
+            //bug: 33639 when organizer component is missing from invitation
+            if (from && from.address != mainAcct) {
+                to = from.address;
+            }
+        }		
 		this.setAddress(AjxEmailAddress.TO, (new AjxEmailAddress(to)));
 	}
 
