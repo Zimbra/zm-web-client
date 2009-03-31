@@ -257,6 +257,13 @@ function(params) {
 			request = jsonObj.SearchGalRequest;
 			if (this.galType) { request.type = this.galType; }
 			request.name = this.query;
+
+			// bug #36188 - add offset/limit for paging support
+			request.offset = this.offset = this.offset || 0;
+			request.limit = this.limit = appCtxt.get(ZmSetting.CONTACTS_PER_PAGE);
+			if (this.sortBy) {
+				request.sortBy = this.sortBy;
+			}
 		} else if (this.isAutocompleteSearch) {
 			jsonObj = {AutoCompleteRequest:{_jsns:"urn:zimbraMail"}};
 			request = jsonObj.AutoCompleteRequest;
@@ -265,7 +272,6 @@ function(params) {
 		} else if (this.isGalAutocompleteSearch) {
 			jsonObj = {AutoCompleteGalRequest:{_jsns:"urn:zimbraAccount"}};
 			request = jsonObj.AutoCompleteGalRequest;
-			//if (this.limit) { request.limit = this.limit; }
 			request.limit = this.limit || 20;
 			request.name = this.query;
 			if (this.galType) { request.type = this.galType; }
@@ -406,16 +412,16 @@ function(params) {
 			request.read = 1;			// mark that msg read
 		}
 		if (this.getHtml) {
-			request.html = 1;		// get it as HTML
+			request.html = 1;			// get it as HTML
 		}
-        //added headers to the request
-        if(ZmMailMsg.requestHeaders) {
-            for (var hdr in ZmMailMsg.requestHeaders) {
-                if(!request.header) request.header = [];
-                request.header.push({n:hdr});
-            }
-        }
-    }
+		// added headers to the request
+		if (ZmMailMsg.requestHeaders) {
+			for (var hdr in ZmMailMsg.requestHeaders) {
+				if (!request.header) request.header = [];
+				request.header.push({n:hdr});
+			}
+		}
+	}
 
 	if (!params.noTruncate) {
 		request.max = appCtxt.get(ZmSetting.MAX_MESSAGE_SIZE);
@@ -553,29 +559,26 @@ function(req) {
 		}
 	}
 
-	this.offset = this.offset || 0;
-	req.offset = this.offset;
+	req.offset = this.offset = this.offset || 0;
 
 	// always set limit (init to user pref for page size if not provided)
 	if (!this.limit) {
 		if (this.contactSource && this.types.size() == 1) {
-			this.limit = appCtxt.get(ZmSetting.CONTACTS_PER_PAGE);
+			req.limit = this.limit = appCtxt.get(ZmSetting.CONTACTS_PER_PAGE);
 		} else if (appCtxt.get(ZmSetting.MAIL_ENABLED)) {
-			this.limit = appCtxt.get(ZmSetting.PAGE_SIZE);
+			req.limit = this.limit = appCtxt.get(ZmSetting.PAGE_SIZE);
 		} else if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-			this.limit = appCtxt.get(ZmSetting.CONTACTS_PER_PAGE);
+			req.limit = this.limit = appCtxt.get(ZmSetting.CONTACTS_PER_PAGE);
 		} else {
-			this.limit = ZmSearch.DEFAULT_LIMIT;
+			req.limit = this.limit = ZmSearch.DEFAULT_LIMIT;
 		}
 	}
-	req.limit = this.limit;
 
-	// and of course, always set the query and append the query hint if applicable
-	// only use query hint if this is not a "simple" search
-	var query = (!this.folderId && this.queryHint)
+	// and of course, always set the query and append the query hint if
+	// applicable only use query hint if this is not a "simple" search
+	req.query = (!this.folderId && this.queryHint)
 		? ([this.query, " (", this.queryHint, ")"].join(""))
 		: this.query;
-	req.query = query;
 
 	// set search field if provided
 	if (this.field) {

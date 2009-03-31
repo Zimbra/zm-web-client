@@ -170,7 +170,7 @@ function(colItem, ascending, firstTime) {
 		offset: this._offset,
 		respCallback: (new AjxCallback(this, this._handleResponseSearch, [firstTime])),
 		errorCallback: this._searchErrorCallback
-	}
+	};
 	ZmContactsHelper.search(params);
 };
 
@@ -274,9 +274,10 @@ function(firstTime, result) {
 	var resp = result.getResponse();
 	var isGal = (this._contactSource == ZmId.SEARCH_GAL);
 	var more = resp.getAttribute("more");
+	var isPagingSupported = AjxUtil.isSpecified(resp.getAttribute("offset"));
 
-	// GAL results cannot be paged
-	if (isGal) {
+	// if offset is returned, then this account support gal paging
+	if (isGal && !isPagingSupported) {
 		this._prevButton.setEnabled(false);
 		this._nextButton.setEnabled(false);
 	} else {
@@ -287,7 +288,7 @@ function(firstTime, result) {
 	var info = resp.getAttribute("info");
 	var expanded = info && info[0].wildcard[0].expanded == "0";
 
-	if (!firstTime && (expanded || (isGal && more))) {
+	if (!firstTime && !isPagingSupported && (expanded || (isGal && more))) {
 		var d = appCtxt.getMsgDialog();
 		d.setMessage(ZmMsg.errorSearchNotExpanded);
 		d.popup();
@@ -359,7 +360,7 @@ ZmContactPicker.prototype._okButtonListener =
 function(ev) {
 	var data = this._chooser.getItems();
 	DwtDialog.prototype._buttonListener.call(this, ev, [data]);
-}
+};
 
 // Call custom popdown method
 ZmContactPicker.prototype._cancelButtonListener =
@@ -370,17 +371,17 @@ function(ev) {
 
 ZmContactPicker._keyPressHdlr =
 function(ev) {
-    var stb = DwtControl.getTargetControl(ev);
+	var stb = DwtControl.getTargetControl(ev);
 	var charCode = DwtKeyEvent.getCharCode(ev);
 	if (!stb._searchCleared) {
 		stb._searchField.className = stb._searchField.value = "";
 		stb._searchCleared = true;
 	}
-    if (stb._keyPressCallback && (charCode == 13 || charCode == 3)) {
+	if (stb._keyPressCallback && (charCode == 13 || charCode == 3)) {
 		stb._keyPressCallback.run();
-	    return false;
+		return false;
 	}
-    return true;
+	return true;
 };
 
 ZmContactPicker._onclickHdlr =
@@ -434,9 +435,7 @@ function(item, list) {
  * This class creates a specialized source list view for the contact chooser.
  */
 ZmContactChooserSourceListView = function(parent) {
-	DwtChooserListView.call(this, {parent:parent, type:DwtChooserListView.SOURCE,
-								   view:ZmId.VIEW_CONTACT_SRC});
-
+	DwtChooserListView.call(this, {parent:parent, type:DwtChooserListView.SOURCE, view:ZmId.VIEW_CONTACT_SRC});
 	this.setScrollStyle(Dwt.CLIP);
 };
 
