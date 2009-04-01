@@ -420,6 +420,11 @@ function(params, noRender, callback, errorCallback) {
 		params = appCtxt.getApp(ZmApp.MAIL).getSearchParams(params);
 	}
 
+	if (this._searchFor == ZmItem.TASK) {
+		var tlc = AjxDispatcher.run("GetTaskListController");
+		params.allowableTaskStatus = (tlc) ? tlc.getAllowableTaskStatus() : null;
+	}
+
 	// if the user explicitly searched for all types, force mixed view
 	var isMixed = (params.searchFor == ZmId.SEARCH_ANY);
 

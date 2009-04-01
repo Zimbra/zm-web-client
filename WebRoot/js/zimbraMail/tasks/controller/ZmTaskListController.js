@@ -24,10 +24,49 @@ ZmTaskListController = function(container, app) {
 	this._listeners[ZmOperation.PRINT] = null; // override base class to do nothing
 	this._listeners[ZmOperation.PRINT_TASK] = new AjxListener(this, this._printTaskListener);
 	this._listeners[ZmOperation.PRINT_TASKFOLDER] = new AjxListener(this, this._printTaskFolderListener);
+
+	this._currentTaskView = ZmId.VIEW_TASK_ALL;
 };
 
 ZmTaskListController.prototype = new ZmListController;
 ZmTaskListController.prototype.constructor = ZmTaskListController;
+
+
+// Consts
+ZmTaskListController.VIEWS = [
+	ZmId.VIEW_TASK_NOT_STARTED,
+	ZmId.VIEW_TASK_COMPLETED,
+	ZmId.VIEW_TASK_IN_PROGRESS,
+	ZmId.VIEW_TASK_WAITING,
+	ZmId.VIEW_TASK_DEFERRED,
+	ZmId.VIEW_TASK_ALL
+];
+
+ZmTaskListController.ICON = {};
+ZmTaskListController.ICON[ZmId.VIEW_TASK_NOT_STARTED]		= "TaskViewNotStarted";
+ZmTaskListController.ICON[ZmId.VIEW_TASK_COMPLETED]			= "TaskViewCompleted";
+ZmTaskListController.ICON[ZmId.VIEW_TASK_IN_PROGRESS]		= "TaskViewInProgress";
+ZmTaskListController.ICON[ZmId.VIEW_TASK_WAITING]			= "TaskViewWaiting";
+ZmTaskListController.ICON[ZmId.VIEW_TASK_DEFERRED]			= "TaskViewDeferred";
+ZmTaskListController.ICON[ZmId.VIEW_TASK_ALL]				= "TaskList";
+
+ZmTaskListController.MSG_KEY = {};
+ZmTaskListController.MSG_KEY[ZmId.VIEW_TASK_NOT_STARTED]	= "notStarted";
+ZmTaskListController.MSG_KEY[ZmId.VIEW_TASK_COMPLETED]		= "completed";
+ZmTaskListController.MSG_KEY[ZmId.VIEW_TASK_IN_PROGRESS]	= "inProgress";
+ZmTaskListController.MSG_KEY[ZmId.VIEW_TASK_WAITING]		= "waitingOn";
+ZmTaskListController.MSG_KEY[ZmId.VIEW_TASK_DEFERRED]		= "deferred";
+ZmTaskListController.MSG_KEY[ZmId.VIEW_TASK_ALL]			= "all";
+
+ZmTaskListController.SOAP_STATUS = {};
+ZmTaskListController.SOAP_STATUS[ZmId.VIEW_TASK_NOT_STARTED]= "NEED";
+ZmTaskListController.SOAP_STATUS[ZmId.VIEW_TASK_COMPLETED]	= "COMP";
+ZmTaskListController.SOAP_STATUS[ZmId.VIEW_TASK_IN_PROGRESS]= "INPR";
+ZmTaskListController.SOAP_STATUS[ZmId.VIEW_TASK_WAITING]	= "WAITING";
+ZmTaskListController.SOAP_STATUS[ZmId.VIEW_TASK_DEFERRED]	= "DEFERRED";
+
+
+// Public methods
 
 ZmTaskListController.prototype.toString =
 function() {
@@ -72,6 +111,31 @@ function(list, folderId) {
 	this._setTabGroup(this._tabGroups[this._currentView]);
 	this._restoreFocus();
 	this._resetNavToolBarButtons(this._currentView);
+};
+
+ZmTaskListController.prototype.switchView =
+function(view) {
+	if (this._currentTaskView == view) { return; }
+
+	this._currentTaskView = view;
+
+	// always reset the view menu button icon to reflect the current view
+	var btn = this._toolbar[this._currentView].getButton(ZmOperation.VIEW_MENU);
+	btn.setImage(ZmTaskListController.ICON[view]);
+
+	var sc = appCtxt.getSearchController();
+	var soapStatus = ZmTaskListController.SOAP_STATUS[view];
+	sc.redoSearch(appCtxt.getCurrentSearch(), false, {allowableTaskStatus:soapStatus});
+};
+
+ZmTaskListController.prototype.getAllowableTaskStatus =
+function() {
+	var tb = this._toolbar && this._toolbar[this._currentView];
+	var menu = tb ? tb.getButton(ZmOperation.VIEW_MENU).getMenu() : null;
+	var mi = menu ? menu.getSelectedItem(DwtMenuItem.RADIO_STYLE) : null;
+	var id = mi ? mi.getData(ZmOperation.MENUITEM_ID) : ZmId.VIEW_TASK_ALL;
+
+	return ZmTaskListController.SOAP_STATUS[id];
 };
 
 ZmTaskListController.prototype.getKeyMapName =
@@ -172,13 +236,17 @@ function(view) {
 
 ZmTaskListController.prototype._getToolBarOps =
 function() {
-	return [ZmOperation.NEW_MENU,
-			ZmOperation.SEP,
-			ZmOperation.EDIT,
-			ZmOperation.SEP,
-			ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.PRINT,
-			ZmOperation.SEP,
-			ZmOperation.TAG_MENU];
+	return [
+		ZmOperation.NEW_MENU,
+		ZmOperation.SEP,
+		ZmOperation.EDIT,
+		ZmOperation.SEP,
+		ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.PRINT,
+		ZmOperation.SEP,
+		ZmOperation.TAG_MENU,
+		ZmOperation.SEP,
+		ZmOperation.VIEW_MENU
+	];
 };
 
 ZmTaskListController.prototype._initializeToolBar =
@@ -189,6 +257,7 @@ function(view) {
 
 	this._setNewButtonProps(view, ZmMsg.createNewTask, "NewTask", "NewTaskDis", ZmOperation.NEW_TASK);
 	this._setupPrintMenu(view);
+	this._setupViewMenu(view);
 
 	this._toolbar[view].addFiller();
 	var tb = new ZmNavToolBar({parent:this._toolbar[view], context:view});
@@ -214,6 +283,35 @@ function(view) {
 	mi = menu.createMenuItem(id, {image:ZmOperation.getProp(id, "image"), text:ZmMsg[ZmOperation.getProp(id, "textKey")]});
 	mi.setData(ZmOperation.MENUITEM_ID, id);
 	mi.addSelectionListener(this._listeners[ZmOperation.PRINT_TASKFOLDER]);
+};
+
+ZmTaskListController.prototype._setupViewMenu =
+function(view) {
+	var btn = this._toolbar[view].getButton(ZmOperation.VIEW_MENU);
+	var menu = btn.getMenu();
+	if (!menu) {
+		menu = new ZmPopupMenu(btn);
+		btn.setMenu(menu);
+		for (var i = 0; i < ZmTaskListController.VIEWS.length; i++) {
+			var id = ZmTaskListController.VIEWS[i];
+			if (id == ZmId.VIEW_TASK_ALL) {
+				new DwtMenuItem({parent:menu, style:DwtMenuItem.SEPARATOR_STYLE});
+			}
+			var params = {
+				image:ZmTaskListController.ICON[id],
+				text:ZmMsg[ZmTaskListController.MSG_KEY[id]],
+				style:DwtMenuItem.RADIO_STYLE
+			};
+			var mi = menu.createMenuItem(id, params);
+			mi.setData(ZmOperation.MENUITEM_ID, id);
+			mi.addSelectionListener(this._listeners[ZmOperation.VIEW]);
+
+			if (id == ZmId.VIEW_TASK_ALL) { // "all" is the default
+				mi.setChecked(true, true);
+			}
+		}
+		btn.setImage(ZmTaskListController.ICON[ZmId.VIEW_TASK_ALL]);
+	}
 };
 
 ZmTaskListController.prototype._getActionMenuOps =
@@ -258,6 +356,8 @@ function(parent, num) {
 	var printOp = (parent instanceof ZmActionMenu)
 		? ZmOperation.PRINT_TASK : ZmOperation.PRINT;
 	parent.enable(printOp, num > 0);
+
+	parent.enable(ZmOperation.VIEW_MENU, true);
 };
 
 ZmTaskListController.prototype._doDelete =

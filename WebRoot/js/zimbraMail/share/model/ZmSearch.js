@@ -42,6 +42,7 @@
  *        response					[object]*		canned JSON response (no request will be made)
  *        galType					[constant]*		type of GAL autocomplete (account or resource)
  *        folders					[array]*		list of folders for autocomplete
+ *        allowableTaskStatus		[array]*		list of task status types to return (assuming one of the values for "types" is "task")
  */
 ZmSearch = function(params) {
 
@@ -317,6 +318,7 @@ function(params) {
 						typeStr.push(ZmSearch.TYPE[a[i]]);
 					}
 					request.types = typeStr.join(",");
+
 					// special handling for showing participants ("To" instead of "From")
 					var folder = appCtxt.getById(this.folderId);
 					if (folder &&
@@ -326,6 +328,7 @@ function(params) {
 					{
 						request.recip = 1;
 					}
+
 					// if we're prefetching the first hit message, also mark it as read
 					if (this.fetch) {
                         request.fetch = ( this.fetch == "all" ) ? "all" : 1;
@@ -334,15 +337,21 @@ function(params) {
 							request.html = 1;
 						}
 					}
+
 					if (this.markRead) {
 						request.read = 1;
 					}
+
                     if (this.headers) {
                         for (var hdr in this.headers) {
                             if (!request.header) { request.header = []; }
                             request.header.push({n:hdr});
                         }
                     }
+
+					if (a.length == 1 && a[0] == ZmItem.TASK && this.allowableTaskStatus) {
+						request.allowableTaskStatus = this.allowableTaskStatus;
+					}
                 }
             }
         }
