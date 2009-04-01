@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008 Zimbra, Inc.
+ * Copyright (C) 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -57,6 +59,28 @@ function() {
 	headerList.push(new DwtListHeaderItem({field:ZmVoiceListView.F_DATE, text:ZmMsg.received, width:ZmCallListView.DATE_WIDTH, sortable:ZmVoiceListView.F_DATE, resizeable:true}));
 
 	return headerList;
+};
+
+ZmCallListView.prototype.getPrintHtml =
+function() {
+	var buffer = [];
+	var rowArgs = {};
+	for(var i = 0, count = this._list.size(); i < count; i++) {
+		var item = this._list.get(i);
+		rowArgs.caller = this._getCallerHtml(item);
+		rowArgs.duration = AjxDateUtil.computeDuration(item.duration);
+		rowArgs.date = AjxDateUtil.simpleComputeDateStr(item.date);
+		AjxTemplate.expand("voicemail.Voicemail#ZmCallListPrintViewRow", rowArgs, buffer);
+	}
+	
+	var isPlaced = this._getCallType() == ZmVoiceFolder.PLACED_CALL;
+	var args = {
+		name: this._folder.getName(false, 0, true),
+		callerHeader: isPlaced ? ZmMsg.to : ZmMsg.from,
+		dateHeader: isPlaced ? ZmMsg.placed : ZmMsg.received,
+		rows: buffer.join("")
+	}
+	return  AjxTemplate.expand("voicemail.Voicemail#ZmCallListPrintView", args);
 };
 
 ZmCallListView.prototype._getCellContents =

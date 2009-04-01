@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -32,7 +34,7 @@ ZmMailItem = function(type, id, list, noCache) {
 
 	this._loaded = false;
 	this._initializeParticipants();
-};
+}
 
 ZmMailItem.prototype = new ZmItem;
 ZmMailItem.prototype.constructor = ZmMailItem;
@@ -56,14 +58,14 @@ function(itemA, itemB) {
 ZmMailItem.prototype.toString =
 function() {
 	return "ZmMailItem";
-};
+}
 
 ZmMailItem.prototype.clear =
 function() {
 	this._clearParticipants();
 	this._loaded = false;
 	ZmItem.prototype.clear.call(this);
-};
+}
 
 ZmMailItem.prototype.getFolderId =
 function() {
@@ -72,7 +74,7 @@ function() {
 	} else {
 		return this.folderId;
 	}
-};
+}
 
 ZmMailItem.prototype.notifyModify =
 function(obj) {
@@ -88,13 +90,13 @@ function(obj) {
 	}
 
 	ZmItem.prototype.notifyModify.call(this, obj);
-};
+}
 
 ZmMailItem.prototype._initializeParticipants =
 function() {
 	this.participants = new AjxVector();
 	this.participantsElided = false;
-};
+}
 
 ZmMailItem.prototype._clearParticipants =
 function() {
@@ -103,30 +105,26 @@ function() {
 		this.participants = null;
 		this.participantsElided = false;
 	}
-};
+}
 
 ZmMailItem.prototype._getFlags =
 function() {
 	var list = ZmItem.prototype._getFlags.call(this);
-	list.push(ZmItem.FLAG_UNREAD, ZmItem.FLAG_REPLIED, ZmItem.FLAG_FORWARDED, ZmItem.FLAG_READ_RECEIPT_SENT);
+	list.push(ZmItem.FLAG_UNREAD, ZmItem.FLAG_REPLIED, ZmItem.FLAG_FORWARDED);
 	return list;
-};
+}
 
 ZmMailItem.prototype._markReadLocal =
 function(on) {
 	this.isUnread = !on;
 	this._notify(ZmEvent.E_FLAGS, {flags:[ZmItem.FLAG_UNREAD]});
-};
+}
 
 ZmMailItem.prototype._parseParticipantNode =
 function(node) {
 	var type = AjxEmailAddress.fromSoapType[node.t];
-	if (type == AjxEmailAddress.READ_RECEIPT) {
-		this.readReceiptRequested = true;
-	} else {
-		this.participants.add(new AjxEmailAddress(node.a, type, node.p, node.d));
-	}
-};
+	this.participants.add(new AjxEmailAddress(node.a, type, node.p, node.d));
+}
 
 ZmMailItem.prototype.getEmails = function() {
 	return this.participants.map("address");

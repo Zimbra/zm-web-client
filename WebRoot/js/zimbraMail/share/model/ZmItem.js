@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -75,17 +77,14 @@ ZmItem.F_HOME_PHONE		= ZmId.FLD_HOME_PHONE;
 ZmItem.F_ID				= ZmId.FLD_ID;
 ZmItem.F_INDEX			= ZmId.FLD_INDEX;
 ZmItem.F_ITEM_ROW		= ZmId.FLD_ITEM_ROW;
-ZmItem.F_ITEM_ROW_3PANE	= ZmId.FLD_ITEM_ROW_3PANE;
 ZmItem.F_LOCATION		= ZmId.FLD_LOCATION;
 ZmItem.F_NAME			= ZmId.FLD_NAME;
 ZmItem.F_NOTES			= ZmId.FLD_NOTES;
 ZmItem.F_PARTICIPANT	= ZmId.FLD_PARTICIPANT;
 ZmItem.F_PCOMPLETE		= ZmId.FLD_PCOMPLETE;
 ZmItem.F_PRIORITY		= ZmId.FLD_PRIORITY;
-ZmItem.F_RECURRENCE		= ZmId.FLD_RECURRENCE;
 ZmItem.F_SELECTION		= ZmId.FLD_SELECTION;
 ZmItem.F_SIZE			= ZmId.FLD_SIZE;
-ZmItem.F_SORTED_BY		= ZmId.FLD_SORTED_BY;
 ZmItem.F_STATUS			= ZmId.FLD_STATUS;
 ZmItem.F_SUBJECT		= ZmId.FLD_SUBJECT;
 ZmItem.F_TAG			= ZmId.FLD_TAG;
@@ -100,42 +99,30 @@ ZmItem.SOAP_CMD = {};
 ZmItem.TAGS_FIELD = 1;
 
 // Item flags
-ZmItem.FLAG_ATTACH				= "a";
-ZmItem.FLAG_FLAGGED				= "f";
-ZmItem.FLAG_FORWARDED			= "w";
-ZmItem.FLAG_ISDRAFT 			= "d";
-ZmItem.FLAG_ISSENT				= "s";
-ZmItem.FLAG_READ_RECEIPT_SENT	= "n";
-ZmItem.FLAG_REPLIED				= "r";
-ZmItem.FLAG_UNREAD				= "u";
-ZmItem.FLAG_LOW_PRIORITY		= "?";
-ZmItem.FLAG_HIGH_PRIORITY		= "!";
-
-ZmItem.ALL_FLAGS = [
-	ZmItem.FLAG_FLAGGED,
-	ZmItem.FLAG_ATTACH,
-	ZmItem.FLAG_UNREAD,
-	ZmItem.FLAG_REPLIED,
-	ZmItem.FLAG_FORWARDED,
-	ZmItem.FLAG_ISSENT,
-	ZmItem.FLAG_READ_RECEIPT_SENT,
-	ZmItem.FLAG_ISDRAFT,
-	ZmItem.FLAG_HIGH_PRIORITY,
-	ZmItem.FLAG_LOW_PRIORITY
-];
+ZmItem.FLAG_ATTACH		= "a";
+ZmItem.FLAG_FLAGGED		= "f";
+ZmItem.FLAG_FORWARDED	= "w";
+ZmItem.FLAG_ISDRAFT 	= "d";
+ZmItem.FLAG_ISSENT		= "s";
+ZmItem.FLAG_REPLIED		= "r";
+ZmItem.FLAG_UNREAD		= "u";
+ZmItem.FLAG_LOW_PRIORITY = "?";
+ZmItem.FLAG_HIGH_PRIORITY = "!";
+ZmItem.ALL_FLAGS = [ZmItem.FLAG_FLAGGED, ZmItem.FLAG_ATTACH, ZmItem.FLAG_UNREAD,
+					ZmItem.FLAG_REPLIED, ZmItem.FLAG_FORWARDED, ZmItem.FLAG_ISSENT, ZmItem.FLAG_ISDRAFT,
+                    ZmItem.FLAG_HIGH_PRIORITY, ZmItem.FLAG_LOW_PRIORITY];
 
 // Map flag to item property
 ZmItem.FLAG_PROP = {};
-ZmItem.FLAG_PROP[ZmItem.FLAG_ATTACH]			= "hasAttach";
-ZmItem.FLAG_PROP[ZmItem.FLAG_FLAGGED]			= "isFlagged";
-ZmItem.FLAG_PROP[ZmItem.FLAG_FORWARDED]			= "isForwarded";
-ZmItem.FLAG_PROP[ZmItem.FLAG_ISDRAFT] 			= "isDraft";
-ZmItem.FLAG_PROP[ZmItem.FLAG_ISSENT]			= "isSent";
-ZmItem.FLAG_PROP[ZmItem.FLAG_READ_RECEIPT_SENT]	= "readReceiptSent";
-ZmItem.FLAG_PROP[ZmItem.FLAG_REPLIED]			= "isReplied";
-ZmItem.FLAG_PROP[ZmItem.FLAG_UNREAD]			= "isUnread";
-ZmItem.FLAG_PROP[ZmItem.FLAG_LOW_PRIORITY]		= "isLowPriority";
-ZmItem.FLAG_PROP[ZmItem.FLAG_HIGH_PRIORITY]		= "isHighPriority";
+ZmItem.FLAG_PROP[ZmItem.FLAG_ATTACH]	= "hasAttach";
+ZmItem.FLAG_PROP[ZmItem.FLAG_FLAGGED]	= "isFlagged";
+ZmItem.FLAG_PROP[ZmItem.FLAG_FORWARDED]	= "isForwarded";
+ZmItem.FLAG_PROP[ZmItem.FLAG_ISDRAFT] 	= "isDraft";
+ZmItem.FLAG_PROP[ZmItem.FLAG_ISSENT]	= "isSent";
+ZmItem.FLAG_PROP[ZmItem.FLAG_REPLIED]	= "isReplied";
+ZmItem.FLAG_PROP[ZmItem.FLAG_UNREAD]	= "isUnread";
+ZmItem.FLAG_PROP[ZmItem.FLAG_LOW_PRIORITY]	= "isLowPriority";
+ZmItem.FLAG_PROP[ZmItem.FLAG_HIGH_PRIORITY]	= "isHighPriority";
 
 // DnD actions this item is allowed
 ZmItem.DND_ACTION_MOVE = 1 << 0;
@@ -202,6 +189,7 @@ function(id) {
 // abstract methods
 ZmItem.prototype.create = function(args) {};
 ZmItem.prototype.modify = function(mods) {};
+ZmItem.prototype.getPrintHtml = function(preferHtml, callback) {};
 
 /**
 * Returns this item if it has the given ID. Used by the app controller for
@@ -367,26 +355,23 @@ function(obj) {
 	if (obj.f != null) {
 		var flags = this._getFlags();
 		var origFlags = {};
-		for (var i = 0; i < flags.length; i++) {
+		for (var i = 0; i < flags.length; i++)
 			origFlags[flags[i]] = this[ZmItem.FLAG_PROP[flags[i]]];
-		}
 		this._parseFlags(obj.f);
 		var changedFlags = [];
 		for (var i = 0; i < flags.length; i++) {
 			var on = this[ZmItem.FLAG_PROP[flags[i]]];
-			if (origFlags[flags[i]] != on) {
+			if (origFlags[flags[i]] != on)
 				changedFlags.push(flags[i]);
-			}
 		}
 		this._notify(ZmEvent.E_FLAGS, {flags: changedFlags});
 	}
 	if (obj.l != null && obj.l != this.folderId) {
-		var details = {oldFolderId:this.folderId};
 		this.moveLocal(obj.l);
 		if (this.list) {
 			this.list.moveLocal([this], obj.l);
 		}
-		this._notify(ZmEvent.E_MOVE, details);
+		this._notify(ZmEvent.E_MOVE);
 	}
 };
 
@@ -498,7 +483,6 @@ function(str) {
 // Takes a string of flag chars and applies them to this item.
 ZmItem.prototype._parseFlags =
 function(str) {
-	this.flags = str;
 	for (var i = 0; i < ZmItem.ALL_FLAGS.length; i++) {
 		var flag = ZmItem.ALL_FLAGS[i];
 		var on = (str && (str.indexOf(flag) != -1)) ? true : false;

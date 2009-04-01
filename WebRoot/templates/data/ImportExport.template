@@ -58,11 +58,7 @@
 		<tr><td class="ZOptionsLabelTop"><$=ZmMsg.typeLabel$></td>
 			<td class="ZOptionsField">
 				<table border="0" cellpadding="0" cellspacing="4">
-					<tr><td><table border="0" cellpadding="0" cellspacing="0"><tr>
-							<td><div id="${id}_TYPE_TGZ" tabindex="100"></div></td>
-							<td><div id="${id}_TYPE_ICS" tabindex="101"></div></td>
-							<td><div id="${id}_TYPE_CSV" tabindex="102"></div></td>
-						</tr></table></td>
+					<tr><td><div id="${id}_TYPE" tabindex="100"></div></td>
 						<td><select id="${id}_SUBTYPE" tabindex="200"></select></td>
 					</tr>
 				</table>
@@ -74,37 +70,35 @@
 			<td class="ZOptionsLabelTop"><$=ZmMsg.destinationLabel$></td>
 			<td class="ZOptionsField">
 				<table border="0" cellpadding="0" cellspacing="0">
-					<tr><td><button id="${id}_FOLDER_BUTTON" tabindex="300"></button></td></tr>
+					<tr><td><button id="${id}_FOLDER_BUTTON" tabindex="700"></button></td></tr>
 				</table>
 			</td>
 		</tr>
 		<tr><td class="ZOptionsLabelTop"><$=ZmMsg.fileLabel$></td>
 			<td class="ZOptionsField" style='padding-left:0.5em;'>
-				<form id="${id}_FORM" method="POST" enctype="multipart/form-data">
-					<input id="${id}_FILE" name="file" type="file" tabindex="400">
+				<form id="${id}_form" method="POST" enctype="multipart/form-data">
+					<input id="${id}_FILE" name="file" type="file" tabindex="300">
 				</form>
 			</td>
 		</tr>
 		<tr id='${id}_RESOLVE_row'>
 			<td class="ZOptionsLabelTop"><$=ZmMsg.resolveDuplicatesLabel$></td>
-			<td class="ZOptionsField"><table border="0" cellpadding="0" cellspacing="0"><tr>
-				<td><div id="${id}_RESOLVE_IGNORE" tabindex="500"></div></td>
-				<td><div id="${id}_RESOLVE_REPLACE" tabindex="501"></div></td>
-				<td><div id="${id}_RESOLVE_RESET" tabindex="502"></div></td>
-			</tr></table></td>
+			<td class="ZOptionsField">
+				<div id="${id}_RESOLVE" tabindex="400"></div>
+			</td>
 		</tr>
 		<tr id="${id}_ADVANCED_row">
 			<td class="ZOptionsLabelTop">&nbsp;</td>
 			<td class="ZOptionsField">
 				<hr>
-				<span id="${id}_ADVANCED" tabindex="700"></span>
+				<span id="${id}_ADVANCED" tabindex="500"></span>
 			</td>
 		</tr>
 		<tr id="${id}_DATA_TYPES_row">
 			<td class="ZOptionsLabelTop"><$=ZmMsg.dataTypesLabel$></td>
 			<td class="ZOptionsField">
 				<div><$=ZmMsg.dataTypesHint$></div>
-				<div id="${id}_DATA_TYPES" tabindex="800"></div>
+				<div rel='ADVANCED' id="${id}_DATA_TYPES" tabindex="800"></div>
 			</td>
 		</tr>
 	</table>
@@ -116,11 +110,7 @@
 		<tr><td class="ZOptionsLabelTop"><$=ZmMsg.typeLabel$></td>
 			<td class="ZOptionsField">
 				<table border="0" cellpadding="0" cellspacing="4">
-					<tr><td><table border="0" cellpadding="0" cellspacing="0"><tr>
-							<td><div id="${id}_TYPE_TGZ" tabindex="100"></div></td>
-							<td><div id="${id}_TYPE_ICS" tabindex="101"></div></td>
-							<td><div id="${id}_TYPE_CSV" tabindex="102"></div></td>
-						</tr></table></td>
+					<tr><td><div id="${id}_TYPE" tabindex="100"></div></td>
 						<td><select id="${id}_SUBTYPE" tabindex="200"></select></td>
 					</tr>
 				</table>
@@ -131,10 +121,10 @@
 		<tr><td class="ZOptionsLabelTop"><$=ZmMsg.sourceLabel$></td>
 			<td class="ZOptionsField">
 				<table border="0" cellpadding="0" cellspacing="0">
-					<tr><td><button id="${id}_FOLDER_BUTTON" tabindex="300"></button></td></tr>
+					<tr><td><button id="${id}_FOLDER_BUTTON" tabindex="700"></button></td></tr>
 				</table>
 				<$ if (appCtxt.get(ZmSetting.OFFLINE_ENABLED)) { $>
-					<div id="${id}_IGNORE_ARCHIVE" tabindex="400"></div>
+					<div id="${id}_IGNORE_ARCHIVE" tabindex="300"></div>
 				<$ } $>
 			</td>
 		</tr>
@@ -149,19 +139,19 @@
 			<td class="ZOptionsLabelTop"><$=ZmMsg.dataTypesLabel$></td>
 			<td class="ZOptionsField">
 				<div><$=ZmMsg.dataTypesHint$></div>
-				<div id="${id}_DATA_TYPES" tabindex="600"></div>
+				<div rel='ADVANCED' id="${id}_DATA_TYPES" tabindex="600"></div>
 			</td>
 		</tr>
 		<tr id="${id}_SEARCH_FILTER_row">
 			<td class="ZOptionsLabelTop" style="width:inherit;"><$=ZmMsg.searchFilterLabel$></td>
 			<td class="ZOptionsField">
-				<input id="${id}_SEARCH_FILTER" length="40" hint="<$=ZmMsg.searchFilterHint$>" tabindex="700">
+				<input rel='ADVANCED' id="${id}_SEARCH_FILTER" length="40" hint="<$=ZmMsg.searchFilterHint$>" tabindex="700">
 			</td>
 		</tr>
 		<tr id="${id}_SKIP_META_row">
 			<td class="ZOptionsLabelTop" style="width:inherit;"><$=ZmMsg.otherLabel$></td>
 			<td class="ZOptionsField">
-				<span id="${id}_SKIP_META" tabindex="800"></span>
+				<span rel='ADVANCED' id="${id}_SKIP_META"></span>
 			</td>
 		</tr>
 	</table>
