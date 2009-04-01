@@ -483,6 +483,9 @@ function(callback, result) {
 	var overviewId = appCtxt.getApp(ZmApp.MAIL).getOverviewId();
 	var treeView = appCtxt.getOverviewController().getTreeView(overviewId, ZmOrganizer.FOLDER);
 	var fid = appCtxt.getActiveAccount().isMain ? this.folderId : ZmOrganizer.getSystemId(this.folderId);
+	if(this.folderId == ZmAccountsPage.DOWNLOAD_TO_FOLDER && this._object_ && this._object_.folderId) {
+		fid = this._object_.folderId;
+	}	
 	var treeItem = treeView ? treeView.getTreeItemById(fid) : null;
 	if (treeItem) {
 		if (this.type == ZmAccount.POP && this.folderId != ZmFolder.ID_INBOX) {
