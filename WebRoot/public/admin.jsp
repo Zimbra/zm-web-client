@@ -1,11 +1,24 @@
 <%@ page session="false" %>
-<%@ page session="false" language="java" import="javax.naming.*"%>
+<%@ page session="false" language="java" import="java.util.*,javax.naming.*"%>
+<%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%!
+	static String getParameter(HttpServletRequest request, String pname, String defValue) {
+		String value = request.getParameter(pname);
+		return value != null ? value : defValue;
+	}
+	static String getAttribute(HttpServletRequest request, String aname, String defValue) {
+		Object object = request.getAttribute(aname);
+		String value = object != null ? String.valueOf(object) : null;
+		return value != null ? value : defValue;
+	}
+%>
 <%
-   	Cookie[] cookies = request.getCookies();
-   	String portsCSV = application.getInitParameter("admin.allowed.ports");
-   	String adminUrl = null;	
+	String adminUrl = null;
+	String portsCSV = null;
+
+   	portsCSV = application.getInitParameter("admin.allowed.ports");
 	try {
 		Context initCtx = new InitialContext();
 		Context envCtx = (Context) initCtx.lookup("java:comp/env");
@@ -13,9 +26,11 @@
 	} catch (NamingException ne) {
 		//nothing to do here
 	}
+	
 	if (adminUrl == null) {
 		adminUrl = "/zimbraAdmin";
     }
+
 
    	if (portsCSV != null) {
 	    // Split on zero-or-more spaces followed by comma followed by
@@ -52,46 +67,47 @@
 	        }
 	    }    
 	}
+
+	Boolean isDev = getParameter(request, "dev", "0").equals("1");
+	if (isDev) {
+		request.setAttribute("mode", "mjsf");
+		request.setAttribute("gzip", "false");
+		request.setAttribute("fileExtension", "");
+		if (request.getAttribute("debug") == null) {
+			request.setAttribute("debug", "1");
+		}
+		request.setAttribute("packages", "dev");
+	}
+	String debug = getParameter(request, "debug", getAttribute(request, "debug", null));
+	
     String mode = (String)request.getAttribute("mode");
     if (mode == null) mode = "";
-    Boolean inDevMode = (mode != null) && (mode.equalsIgnoreCase("mjsf"));
-
+    
+    String prodMode = getAttribute(request, "prodMode", "");
+    
+    Boolean isDevMode = isDev || ((mode != null) && (mode.equalsIgnoreCase("mjsf"))) || (prodMode.equals(""));
+    
     String vers = (String)request.getAttribute("version");
     if (vers == null) vers = "";
 
     String ext = (String)request.getAttribute("fileExtension");
     if (ext == null) ext = "";
-
+    
     String skin = "beach";
 
     //Since we only suppor the beach skin in admin, we will remove the skin related codes.
-	/* final String SKIN_COOKIE_NAME = "ZA_SKIN";
-	
-	String requestSkin = request.getParameter("skin");
-	if (requestSkin != null) {
-		skin = requestSkin;
-	} else if (cookies != null) {
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals(SKIN_COOKIE_NAME)) {
-                skin = cookie.getValue();
-            }
-        }
-    }
-	String skinPreCacheFile = "../skins/" + skin + "/CacheLoRes.html";
-	*/
 	
     String contextPath = request.getContextPath();
     if(contextPath == null || contextPath.equals("/")) {
 		response.sendRedirect(adminUrl+"?mode="+mode+"&version="+vers+"&fileExtension="+ext);    	
     }
-      /*
-    Need a way to get the zimbraPrefLocale after user login, so this pref can take effect for the admin to display the right i18n interface
-	java.util.List<String> localePref = authResult.getPrefs().get("zimbraPrefLocale");
-	if (localePref != null && localePref.size() > 0) {
-		request.setAttribute("localeId", localePref.get(0));
-	}   */
 
+	// make variables available in page context (e.g. ${foo})
+	pageContext.setAttribute("contextPath", contextPath);
 	pageContext.setAttribute("skin", skin);
+	pageContext.setAttribute("ext", ext);
+	pageContext.setAttribute("vers", vers);
+	pageContext.setAttribute("isDevMode", isDevMode);
 %><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
@@ -119,9 +135,10 @@
     <link rel="SHORTCUT ICON" href="<c:url value='${favIconUrl}'/>">
     
 	<script>
-		appContextPath = "<%= contextPath %>";
-	 	appCurrentSkin = "<%= skin %>";
-	 	appVers = "<%= vers %>";
+		appContextPath = "${zm:jsEncode(contextPath)}";
+		appCurrentSkin = "${zm:jsEncode(skin)}";
+		appVers   = "${zm:jsEncode(vers)}";
+		appDevMode     = ${isDevMode};
 	</script>
 <jsp:include page="Resources.jsp">
 	<jsp:param name="res" value="I18nMsg,AjxMsg,ZMsg,ZaMsg,AjxKeys" />
@@ -142,13 +159,13 @@
     String extraPackages = request.getParameter("packages");
     if (extraPackages != null) packages += ","+extraPackages;
 
-    String pprefix = inDevMode ? "public/jsp" : "js";
-    String psuffix = inDevMode ? ".jsp" : "_all.js";
+    String pprefix = isDevMode ? "public/jsp" : "js";
+    String psuffix = isDevMode ? ".jsp" : "_all.js";
 
     String[] pnames = packages.split(",");
     for (String pname : pnames) {
         String pageurl = "/"+pprefix+"/"+pname+psuffix;
-        if (inDevMode) { %>
+        if (isDevMode) { %>
             <jsp:include>
                 <jsp:attribute name='page'><%=pageurl%></jsp:attribute>
             </jsp:include>
