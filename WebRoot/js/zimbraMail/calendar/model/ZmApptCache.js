@@ -279,7 +279,8 @@ function(params) {
 		
 	if (params.callback) {
 		var respCallback = new AjxCallback(this, this._getApptSummariesResponse, [params]);
-		appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback, noBusyOverlay:params.noBusyOverlay});
+		var errorCallback = new AjxCallback(this, this._getApptSummariesError);
+		appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback, errorCallback:errorCallback, noBusyOverlay:params.noBusyOverlay});
 	} else {
 		var response = appCtxt.getAppController().sendRequest({jsonObj: jsonObj});
 		var result = new ZmCsfeResult(response, false);
@@ -543,6 +544,16 @@ function(params, result) {
 		callback.run(newList, params.query, result);
 	} else {
 		return newList;
+	}
+};
+
+ZmApptCache.prototype._getApptSummariesError =
+function(ex) {
+	if (ex.code == ZmCsfeException.MAIL_QUERY_PARSE_ERROR) {
+		var d = appCtxt.getMsgDialog();
+		d.setMessage(ZmMsg.errorCalendarParse);
+		d.popup();
+		return true;
 	}
 };
 
