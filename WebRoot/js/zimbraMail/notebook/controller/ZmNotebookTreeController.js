@@ -218,7 +218,7 @@ function(ev) {
 ZmNotebookTreeController.prototype._browseFolderListener =
 function(ev) {
         var folder = this._getActionedOrganizer(ev);
-        appCtxt.getSearchController().search({ query: "in:" + folder.name }); // FIXME: is there a better way to browse a folder?
+        appCtxt.getSearchController().search({ query: folder.createQuery(), types: [ZmItem.PAGE, ZmItem.DOCUMENT] }); // FIXME: is there a better way to browse a folder?
 };
 
 ZmNotebookTreeController.prototype._editNotebookListener = function(ev) {
