@@ -338,6 +338,10 @@ function(callback) {
 
 	if (!userprop) {return;}
 
+    for (var i = 0; i < userprop.length; ++i) {
+        userprop[i].label = this._zimletContext.processMessage(userprop[i].label);
+	}
+
 	if (!this._dlg_propertyEditor) {
 		var view = new DwtComposite(this.getShell());
 		var pe = this._propertyEditor = new DwtPropertyEditor(view, true);
