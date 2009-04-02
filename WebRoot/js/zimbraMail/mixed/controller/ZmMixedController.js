@@ -249,16 +249,19 @@ function(ev) {
 		
 		miUndelete.setVisible(showUndelete || showBoth || isDraft);
 		miMoveTo.setVisible((showMoveTo || showBoth) && !isDraft);
-	
+        actionMenu.getMenuItem(ZmOperation.PRINT).setVisible(showMoveTo);
+        actionMenu.getMenuItem(ZmOperation.DELETE).setVisible(showMoveTo);
+
 		// if >1 item is selected and they're not all the same type, disable both menu items
 		actionMenu.enable([ZmOperation.UNDELETE, ZmOperation.MOVE], numTypes == 1);
 	} else {
  		miUndelete.setVisible(false);	// never show Undelete option when not in Trash
  		miMoveTo.setVisible(true);		// always show Move To option
- 		// show MoveTo only if one type has been selected and its not contacts or wiki thing
-		var enableMoveTo = numTypes == 1 && selItems[0].type != ZmItem.CONTACT && 
-			selItems[0].type != ZmItem.PAGE && selItems[0].type != ZmItem.DOCUMENT;
+ 		// show MoveTo only if one type has been selected and its either MSG or CONV
+		var enableMoveTo = numTypes == 1 && (selTypes[ZmItem.CONV] === true || selTypes[ZmItem.MSG] === true);
 		actionMenu.enable(ZmOperation.MOVE, enableMoveTo);
+        actionMenu.enable(ZmOperation.PRINT, enableMoveTo);
+        actionMenu.enable(ZmOperation.DELETE, enableMoveTo);
 	}
 	actionMenu.popup(0, ev.docX, ev.docY);
 	if (ev.ersatz) {
