@@ -736,7 +736,7 @@ function(ev) {
 			var mtpt = organizers[0];
 			if (!mtpt.link) { return; }
 			var share = this.view._shareByKey[[mtpt.zid, mtpt.rid].join(":")];
-			share = share && ZmSharingView.getShareFromLink(mtpt, share);	// update share
+			share = ZmSharingView.getShareFromLink(mtpt, share);	// update share
 		}
 		if (!share) { return; }
 		if (ev.event == ZmEvent.E_CREATE) {
