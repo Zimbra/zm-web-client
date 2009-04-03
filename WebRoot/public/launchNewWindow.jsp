@@ -14,7 +14,7 @@
  launchNewWindow.jsp
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -147,6 +147,7 @@
     <script type="text/javascript" language="JavaScript">
 		var cacheKillerVersion = "${vers}";
 		function launch() {
+			AjxWindowOpener.HELPER_URL = "${contextPath}/public/frameOpenerHelper.jsp"
 			DBG = new AjxDebug(AjxDebug.NONE, null, false);
 			ZmNewWindow.run();
 		}

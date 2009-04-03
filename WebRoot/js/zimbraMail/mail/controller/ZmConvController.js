@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -29,6 +31,9 @@
 ZmConvController = function(container, mailApp) {
 
 	ZmDoublePaneController.call(this, container, mailApp);
+
+	// always start with reading pane on
+	this._readingPaneOn = true;
 
 	this._convDeleteListener = new AjxListener(this, this._deleteListener);
 	this._listeners[ZmOperation.DELETE_MENU] = this._convDeleteListener;
@@ -71,32 +76,6 @@ function(activeSearch, conv, parentController, callback, markRead) {
 	ZmDoublePaneController.prototype.show.call(this, activeSearch, conv, callback, markRead);
 };
 
-ZmConvController.prototype._handleResponseShow =
-function(item, callback, results) {
-	if (callback) {
-		callback.run();
-	}
-
-	// always reset reading pane view
-	this._doublePaneView.setReadingPaneView();
-
-	// always reset view menu button dropdown
-	var button = this._toolbar[this._currentView].getButton(ZmOperation.VIEW_MENU);
-	var menu = button ? button.getMenu() : null;
-	if (menu) {
-		var id = ZmMailListController.READING_PANE_OFF_ID;
-		if (this.isReadingPaneOn()) {
-			id = (this.isReadingPaneOnRight())
-				? ZmMailListController.READING_PANE_ON_RIGHT_ID
-				: ZmMailListController.READING_PANE_AT_BOTTOM_ID;
-		}
-		var mi = menu.getMenuItem(id);
-		if (mi) {
-			mi.setChecked(true);
-		}
-	}
-};
-
 ZmConvController.prototype.getConv =
 function() {
 	return this._conv;
@@ -104,24 +83,13 @@ function() {
 
 ZmConvController.prototype.isReadingPaneOn =
 function() {
-	var mv = this._doublePaneView.getMsgView();
-	return mv ? mv.getVisible() : true;
-};
-
-ZmConvController.prototype.isReadingPaneOnRight =
-function() {
-	return this._doublePaneView.isReadingPaneOnRight();
+	return this._readingPaneOn;
 };
 
 
 // Private and protected methods
 
-ZmConvController.prototype._setReadingPane =
-function(view) {
-	this._doublePaneView.setReadingPaneView(view);
-};
-
-ZmConvController.prototype._createDoublePaneView =
+ZmConvController.prototype._createDoublePaneView = 
 function() {
 	return (new ZmConvView({parent:this._container, controller:this, dropTgt:this._dropTgt}));
 };
@@ -132,9 +100,8 @@ function(view) {
 	ZmDoublePaneController.prototype._initialize.call(this, view);
 	
 	// set up custom listeners for this view 
-	if (this._doublePaneView) {
+	if (this._doublePaneView)
 		this._doublePaneView.addTagClickListener(new AjxListener(this, ZmConvController.prototype._convTagClicked));
-	}
 };
 
 ZmConvController.prototype._initializeToolBar = 
@@ -150,15 +117,9 @@ function(view) {
 	this._setupCheckMailButton(this._toolbar[view]);
 };
 
-ZmConvController.prototype._setupViewMenuItems =
-function(view, btn) {
-
-	var menu = new ZmPopupMenu(btn);
-	btn.setMenu(menu);
-
-	this._setupReadingPaneMenuItems(view, menu, this.isReadingPaneOn());
-
-	return menu;
+ZmConvController.prototype._setupViewMenu =
+function(view) {
+	this._setupReadingPaneMenuItem(view, null, true);
 };
 
 ZmConvController.prototype._setupDeleteMenu =
@@ -182,6 +143,20 @@ function(view) {
 	else if (delButton.getMenu()) {
 		delButton.setMenu(null);
 	}
+};
+
+// NOTE: reading pane pref in CV is *not* persisted so we dont save to server
+ZmConvController.prototype._saveReadingPanePref =
+function(checked) {
+	this._readingPaneOn = checked;
+	this._doublePaneView.toggleView();
+
+	// set msg in msg view if reading pane is being shown
+	if (checked) {
+		this._setSelectedItem();
+	}
+
+	this._mailListView._resetColWidth();
 };
 
 ZmConvController.prototype._postHideCallback =
@@ -455,13 +430,8 @@ function() {
 // overloaded...
 ZmConvController.prototype._search = 
 function(view, offset, limit, callback) {
-	var params = {
-		sortBy: appCtxt.get(ZmSetting.SORTING_PREF, view),
-		offset: offset,
-		limit: limit,
-		getFirstMsg: this.isReadingPaneOn()
-	};
-	this._conv.load(params, callback);
+	var sortby = appCtxt.get(ZmSetting.SORTING_PREF, view);
+	this._conv.load({sortBy:sortby, offset:offset, limit:limit, getFirstMsg:this._readingPaneOn}, callback);
 };
 
 ZmConvController.prototype._paginateDouble = 

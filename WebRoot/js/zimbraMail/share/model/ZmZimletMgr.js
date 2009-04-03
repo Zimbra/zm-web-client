@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -19,7 +21,7 @@ ZmZimletMgr = function() {
 	this._CONTENT_ZIMLETS = [];
 	this._serviceZimlets = [];
 	this._requestNotHandledByAnyZimlet = [];
-};
+}
 
 ZmZimletMgr.prototype.constructor = ZmZimletMgr;
 
@@ -45,9 +47,8 @@ function() {
 
 ZmZimletMgr.prototype.loadZimlets =
 function(zimletArray, userProps, target, callback, sync) {
-	if (!zimletArray || !zimletArray.length) {
+	if(!zimletArray || !zimletArray.length) {
 		this.loaded = true;
-		this._resetOverviewTree();
 		return;
 	}
 	var packageCallback = callback ? new AjxCallback(this, this._loadZimlets, [zimletArray, userProps, target, callback, sync]) : null;
@@ -55,10 +56,9 @@ function(zimletArray, userProps, target, callback, sync) {
 	if (!callback) {
 		this._loadZimlets.apply(this, arguments);
 	}
-};
+}
 
-ZmZimletMgr.prototype._loadZimlets =
-function(zimletArray, userProps, target, callback, sync) {
+ZmZimletMgr.prototype._loadZimlets = function(zimletArray, userProps, target, callback, sync) {
 	var z;
 	var loadZimletArray = [];
 	var targetRe = new RegExp("\\b"+(target || "main")+"\\b");
@@ -82,17 +82,15 @@ function(zimletArray, userProps, target, callback, sync) {
 		}
 	}
 	var panelZimlets = this.getPanelZimlets();
-	if (panelZimlets && panelZimlets.length > 0) {
+ 	if (panelZimlets && panelZimlets.length > 0) {
 		var zimletTree = appCtxt.getZimletTree();
-		if (!zimletTree) {
-			zimletTree = new ZmFolderTree(ZmOrganizer.ZIMLET);
-			appCtxt.setTree(ZmOrganizer.ZIMLET, zimletTree);
-		}
-		zimletTree.reset();
-		zimletTree.loadFromJs(panelZimlets, "zimlet");
-	} else { // reset overview tree accordinly
-		this._resetOverviewTree();
-	}
+	 	if (!zimletTree) {
+	 		zimletTree = new ZmFolderTree(ZmOrganizer.ZIMLET);
+	 		appCtxt.setTree(ZmOrganizer.ZIMLET, zimletTree);
+	 	}
+	 	zimletTree.reset();
+	 	zimletTree.loadFromJs(panelZimlets, "zimlet");
+ 	}
 
 	// load zimlet code/CSS
 	var zimletNames = this._getZimletNames(loadZimletArray);
@@ -104,29 +102,14 @@ function(zimletArray, userProps, target, callback, sync) {
 	}
 };
 
-ZmZimletMgr.prototype._resetOverviewTree =
-function() {
-	var zimletTree = appCtxt.getZimletTree();
-	if (zimletTree) {
-		var panelZimlets = this.getPanelZimlets();
-		zimletTree.loadFromJs(panelZimlets, "zimlet");
-		var overview = appCtxt.getCurrentApp().getOverview();
-		if (overview) {
-			var treeView =  overview.getTreeView(ZmOrganizer.ZIMLET);
-			if (treeView && (!panelZimlets || !panelZimlets.length)) {
-				treeView.clear(); //Clear the tree if thr are no panel zimlets
-			}
-		}
-	}
-};
-
 ZmZimletMgr.prototype.getPanelZimlets =
 function() {
 	var panelZimlets = [];
-	for (var i = 0; i < this._ZIMLETS.length; i++) {
-		if (this._ZIMLETS[i].zimletPanelItem) {
+	var j=0;
+	for(var i=0; i < this._ZIMLETS.length; i++) {
+		if(this._ZIMLETS[i].zimletPanelItem) {
 			DBG.println(AjxDebug.DBG2, "Zimlets - add to panel " + this._ZIMLETS[i].name);
-			panelZimlets.push(this._ZIMLETS[i]);
+			panelZimlets[j++] = this._ZIMLETS[i];
 		}
 	}
 	return panelZimlets;
@@ -135,10 +118,11 @@ function() {
 ZmZimletMgr.prototype.getIndexedZimlets =
 function() {
 	var indexedZimlets = [];
-	for (var i=0; i < this._ZIMLETS.length; i++) {
-		if (this._ZIMLETS[i].keyword) {
+	var j=0;
+	for(var i=0; i < this._ZIMLETS.length; i++) {
+		if(this._ZIMLETS[i].keyword) {
 			DBG.println(AjxDebug.DBG2, "Zimlets - add to indexed " + this._ZIMLETS[i].name);
-			indexedZimlets.push(this._ZIMLETS[i]);
+			indexedZimlets[j++] = this._ZIMLETS[i];
 		}
 	}
 	return indexedZimlets;
@@ -196,12 +180,17 @@ function(name) {
 };
 
 ZmZimletMgr.prototype.notifyZimlets =
-function(event, args) {
-	if (args && (!(args instanceof Array))) { args = [args]; }
+function(event) {
+	var args = new Array(arguments.length - 1);
+	for (var i = 0; i < args.length;) {
+		args[i] = arguments[++i];
+	}
 
-	for (var i = 0; i < this._ZIMLETS.length; ++i) {
-		var z = this._ZIMLETS[i].handlerObject;
-		if (z && (z instanceof ZmZimletBase) && z.getEnabled() &&
+	var a = this._ZIMLETS;
+	for (var i = 0; i < a.length; ++i) {
+		var z = a[i].handlerObject;
+		if (z && (z instanceof ZmZimletBase) &&		// we might get here even if Zimlets were not initialized
+			z.getEnabled() &&	 					// avoid calling any hooks on disabled Zimlets
 		    (typeof z[event] == "function"))
 		{
 			z[event].apply(z, args);
@@ -221,28 +210,28 @@ function(event, args) {
 */
 ZmZimletMgr.prototype.processARequest =
 function(request) {
-	if (this._requestNotHandledByAnyZimlet[request]) { return null; }
+
+	if(this._requestNotHandledByAnyZimlet[request])
+		return null;
 
 	var args = new Array(arguments.length - 1);
 	for (var i = 0; i < args.length;) {
 		args[i] = arguments[++i];
 	}
 	var sz = this._serviceZimlets[request];
-	if (sz) { // if we already know a zimlet that serves this request, use it.
+	if(sz){//if we already know a zimlet that serves this request, use it.
 		return sz[request].apply(sz, args);
 	}
 
 	var a = this._ZIMLETS;
 	for (var i = 0; i < a.length; ++i) {
 		var z = a[i].handlerObject;
-		if (z && (z instanceof ZmZimletBase) && z.getEnabled() &&
-			(typeof z[request] == "function"))
-		{
+		if (z && (z instanceof ZmZimletBase) &&	z.getEnabled() &&	(typeof z[request] == "function")){
 			 this._serviceZimlets[request] = z;//store 
 			 return z[request].apply(z, args);
 		}
 	}
-	if (this.isLoaded()) { // add to an array to indicate that no zimlet implements this request
+	if(this.isLoaded()) {//add to an array to indicate that no zimlet implements this request
 		this._requestNotHandledByAnyZimlet[request]=request;
 	}
 	return null;
@@ -271,10 +260,10 @@ function(zimletArray, zimletNames, callback) {
 
 ZmZimletMgr.prototype._finished_loadIncludes =
 function(zimletNames, callback) {
-	if (!appCtxt.isChildWindow) {
-		this.renameZimletsLabel();
-	}
-	this.loaded = true;
+	if(!appCtxt.isChildWindow){
+        this.renameZimletsLabel();
+    }
+    this.loaded = true;
 	var zimlets = this.getZimletsHash();
 	for (var i = 0; i < zimletNames.length; i++) {
 		var name = zimletNames[i];
@@ -285,6 +274,7 @@ function(zimletNames, callback) {
 			name: "Portal",
 			callback: (new AjxCallback(this, this._finished_loadIncludes2, [callback]))
 		};
+		DBG.println("------------------- REQUIRING Portal (ZmZimletMgr)");
 		AjxPackage.require(params);
 	} else {
 		this._finished_loadIncludes2(callback);
@@ -294,10 +284,9 @@ function(zimletNames, callback) {
 ZmZimletMgr.prototype._finished_loadIncludes2 =
 function(callback) {
 	appCtxt.allZimletsLoaded();
-
-	if (callback) {
-		callback.run();
-	}
+    if(callback){
+        callback.run();
+    }
 };
 
 ZmZimletMgr.prototype._loadStyles =
@@ -347,9 +336,8 @@ function(zimletArray, zimletNames, isJS) {
 		var query = isDevZimlet
 			? ("?debug=1&v="+new Date().getTime())
 			: ("?v="+cacheKillerVersion+"&");
-        	query += ((languageId ? "language=" + languageId : "")+"&");
-        	query += ((countryId ? "country=" + countryId : ""));
-
+        query += ((languageId ? "language=" + languageId : "")+"&");
+        query += ((countryId ? "country=" + countryId : ""));
 
 		// include messages
 		if (appDevMode && isJS) {
@@ -373,47 +361,51 @@ function(zimletArray, zimletNames, isJS) {
 
 	// add link to aggregated files
 	if (!appDevMode) {
-		var extension = (!AjxEnv.isIE || (!AjxEnv.isIE6 && AjxEnv.isIE6up)) ? appExtension : "";
+        var extension = (!AjxEnv.isIE || (!AjxEnv.isIE6 && AjxEnv.isIE6up)) ? appExtension : "";
 		includes.unshift([
 			"/service/zimlet/res/Zimlets-nodev_all",
-			(isJS ? (".js" + extension) : ".css"),
-			(languageId ? "?language=" + languageId : ""),
-			(countryId ? "&country=" + countryId : "")
-		].join(""));
+			(isJS ? (".js" + extension) : ".css")+"?",
+            (languageId ? "language=" + languageId : "")+"&",
+            (countryId ? "country=" + countryId : "")    
+        ].join(""));
 	}
 
 	return includes;
 };
 
 ZmZimletMgr.prototype.renameZimletsLabel =
-function() {
-	var treeController = appCtxt.getOverviewController().getTreeController("ZIMLET");
-	var treeView = (treeController) ? treeController.getTreeView("Mail") : null;
-	var root = (treeView) ? treeView.getItems()[0] : null;
-	if (root) {
-		var items = root.getItems();
-		for (var i = 0; i < items.length; i++) {
-			this.changeZimletLabel(items[i]);
-		}
-	}
+function()
+{
+    var treeView = appCtxt.getOverviewController().getTreeController("ZIMLET").getTreeView("Mail");
+	if(treeView){
+        var root = treeView.getItems()[0];
+	    if (root) {
+            var items = root.getItems();
+            for (var i = 0; i < items.length; i++) {
+                this.changeZimletLabel(items[i]);
+            }
+	    }
+    }
 };
 
 ZmZimletMgr.prototype.changeZimletLabel =
-function(item) {
-	var zimlet = item.getData(Dwt.KEY_OBJECT);
-	if (zimlet) {
-		var currentLabel = zimlet.getName();
-		var regEx = /\$/;
-		if (currentLabel.match(regEx)) {
-			var replaceLabel = currentLabel.replace(/\${msg./,'').replace(/}/,'');
-			var zimletContextName = zimlet.getZimletContext().name;
-			if (window[zimletContextName]) {
-				var str = window[zimletContextName][replaceLabel];
-				if (str) {
-					item.setText(str);
-					zimlet.setName(str);
-				}
-			}
-		}
-	}
+function(item)
+{
+    var zimlet = item.getData(Dwt.KEY_OBJECT);
+    if(zimlet){
+        var currentLabel = zimlet.getName();
+        var regEx = /\$/;
+        if(currentLabel.match(regEx))
+        {
+            var replaceLabel = currentLabel.replace(/\${msg./,'').replace(/}/,'');
+            var zimletContextName = zimlet.getZimletContext().name;
+            if(window[zimletContextName]){
+            var str = window[zimletContextName][replaceLabel];
+                if(str){
+                    item.setText(str);
+                    zimlet.setName(str);
+                }
+            }
+        }
+    }
 };
