@@ -229,7 +229,9 @@ function(params) {
 ZmZimbraMail.unload =
 function() {
 
-	ZmZimbraMail._endSession();
+	if (!ZmZimbraMail._endSessionDone) {
+		ZmZimbraMail._endSession();
+	}
 
 	if (ZmZimbraMail._isLogOff) {
 		ZmZimbraMail._isLogOff = false;
@@ -1656,9 +1658,16 @@ function(ex, continuation) {
 // This method is called by the window.onbeforeunload handler
 ZmZimbraMail._confirmExitMethod =
 function() {
+
+	ZmZimbraMail.saveImplicitPrefs();
+	
 	if (!ZmZimbraMail._isOkToExit()) {
 		ZmZimbraMail._isLogOff = false;
 		return ZmMsg.appExitWarning;
+	} else {
+		ZmZimbraMail._endSession();
+		ZmZimbraMail._endSessionDone = true;
+		return;
 	}
 };
 
@@ -2141,14 +2150,6 @@ function(ev) {
 
 ZmZimbraMail._endSession =
 function() {
-	// save implicit prefs for all accounts
-	var accounts = appCtxt.getZimbraAccounts();
-	for (var i in accounts) {
-		var acct = accounts[i];
-		if (acct.visible) {
-			acct.saveImplicitPrefs();
-		}
-	}
 
 	// Let the server know that the session is ending.
 	var errorCallback = new AjxCallback(null, function() { return true; } ); // Ignores any error.
@@ -2158,6 +2159,19 @@ function() {
 		errorCallback: errorCallback
 	};
 	appCtxt.getAppController().sendRequest(args);
+};
+
+ZmZimbraMail.saveImplicitPrefs =
+function() {
+
+	// save implicit prefs for all accounts
+	var accounts = appCtxt.getZimbraAccounts();
+	for (var i in accounts) {
+		var acct = accounts[i];
+		if (acct.visible) {
+			acct.saveImplicitPrefs();
+		}
+	}
 };
 
 // YUCK:
