@@ -527,6 +527,14 @@ function() {
 	this.show(this._object);
 };
 
+ZmBriefcaseController.prototype.handleRefreshFolder =
+function(folderIds) {
+    for(var i in folderIds) {
+        if(this._currentFolder == folderIds[i]) {
+            this.refreshFolder();
+        }
+    }
+};
 
 ZmBriefcaseController.prototype.reloadFolder =
 function(mode) {
@@ -580,13 +588,14 @@ function(ev) {
 	ZmListController.prototype._listSelectionListener.call(this, ev);
 	if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
 		var item = ev.item;
-		if (item && item.restUrl) {
-			window.open(item.restUrl);
-		}else if(item && item.isFolder){
-			if(!this.isMultiColView()){
-			this.show(item.id);
-			}
-		}
+        var restUrl = item.getRestUrl();
+        if(item && item.isFolder){
+            if(!this.isMultiColView()){
+                this.show(item.id);
+            }
+        }else if(restUrl != null) {
+            window.open(restUrl);
+        }
 	}
 };
 
@@ -624,12 +633,13 @@ function() {
 
 	items = items instanceof Array ? items : [ items ];
 	for (var i = 0; i<items.length; i++) {
-		var item = items[i];
-		if (item && item.restUrl) {
-			window.open(item.restUrl);
-		}else if(item && item.isFolder){
-			this.show(item.id);
-		}
+        var item = items[i];
+        var restUrl = item.getRestUrl();
+        if(item && item.isFolder){
+            this.show(item.id);
+        }else if(restUrl != null) {
+            window.open(restUrl);
+        }
 	}
 };
 
