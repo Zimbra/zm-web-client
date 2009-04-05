@@ -634,7 +634,7 @@ function(sched, attendee, type) {
 	var email = attendee.getEmail();
 	if (name && email) {
 		var ptst = ZmMsg.attendeeStatusLabel + ZmCalItem.getLabelForParticipationStatus(attendee.getAttr("participationStatus") || "NE");
-		sched.inputObj.setToolTipContent(email +"<br>"+ ptst);
+		sched.inputObj.setToolTipContent(email + this._editView.getRsvp() ? ("<br>"+ ptst) : "");
 	}
 };
 
