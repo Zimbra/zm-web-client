@@ -80,6 +80,8 @@ ZmDocletMgr.prototype._uploadSaveDocsResponse =
 function(files, status, guids, response) {
     var resp = response && response._data && response._data.BatchResponse;
 
+    var folderIds = [];
+    
 	// mark successful uploads
     if (resp && resp.SaveDocumentResponse) {
         for (var i = 0; i < resp.SaveDocumentResponse.length; i++) {
@@ -88,6 +90,9 @@ function(files, status, guids, response) {
             files[saveDocResp.requestId].rest = saveDocResp.doc[0].rest;
             files[saveDocResp.requestId].ver = saveDocResp.doc[0].ver;
             files[saveDocResp.requestId].id = saveDocResp.doc[0].id;
+            if(files[saveDocResp.requestId].folderId) {
+                folderIds.push(files[saveDocResp.requestId].folderId);
+            }
         }
     }
 
@@ -140,6 +145,15 @@ function(files, status, guids, response) {
 	else*/
     if (this._saveCallback) {
         this._saveCallback.run(files);
+    }
+
+    if(window.opener && window.opener.appCtxt) {
+        parentAppCtxt = window.opener.appCtxt;
+        var app = parentAppCtxt.getApp("Briefcase");
+        if(app) {
+            var briefcaseController = app.getBriefcaseController();
+            briefcaseController.handleRefreshFolder(folderIds);
+        }
     }
 };
 
@@ -262,7 +276,7 @@ function(params,response)
         item.folderId = docResp.l || ZmOrganizer.ID_BRIEFCASE;
 
         if(!item.rest) {
-            item.rest = window.appContextPath + "/home/user1/Briefcase/" + item.name;
+            //item.rest = window.appContextPath + "/home/user1/Briefcase/" + item.name;
         }
     }
 

@@ -87,9 +87,14 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 
     String fileId = request.getParameter("id");
     String fileName = request.getParameter("name");
+    String folderId = request.getParameter("l");
 
     if(fileName == null) {
         fileName = "Untitled";
+    }
+
+    if(folderId == null) {
+        folderId = "";
     }
 
     Locale locale = request.getLocale();
@@ -116,6 +121,8 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
     pageContext.setAttribute("isProdMode", !prodMode.equals(""));
     pageContext.setAttribute("isDebug", isSkinDebugMode || isDevMode);
     pageContext.setAttribute("isLeakDetectorOn", isLeakDetectorOn);
+
+    boolean runSlideShow = getParameter(request, "run", "0").equals("1");
 %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
@@ -243,7 +250,7 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 
         window.onresize = _resize;
 
-        window.fileInfo = {name: '<%= fileName %>', folderId: ZmOrganizer.ID_BRIEFCASE, contentType: 'application/x-zimbra-ppt'};
+        window.fileInfo = {name: '<%= fileName %>', folderId: '<%= folderId %>' || ZmOrganizer.ID_BRIEFCASE, contentType: 'application/x-zimbra-ppt'};
 
         var item = null;
     <% if(fileId != null) {%>
@@ -251,7 +258,7 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
     <% } %>
         if(item) {
             window.fileInfo = item;
-            slideEditView.loadSlide(item);
+            slideEditView.loadSlide(item, <%= runSlideShow %>);
         }else {
             slideEditView.createSlide();
         }

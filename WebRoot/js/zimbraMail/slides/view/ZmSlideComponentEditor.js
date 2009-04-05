@@ -350,6 +350,15 @@ function(ev) {
 	this.setIndent(ev.item.getData(ZmSlideComponentEditor._VALUE));
 };
 
+ZmSlideComponentEditor.prototype._insElementListener =
+function(ev) {
+	var elType = ev.item.getData(ZmSlideComponentEditor._VALUE);
+	switch (elType) {
+	    default:
+		this.insertElement(elType);
+	}
+};
+
 ZmSlideComponentEditor.prototype._createToolBar = function(toolbarParent, locationBoundElement) {
     var toolbar = this._toolbar = new DwtToolBar({parent:toolbarParent, className:"ZToolbar SlideEditorToolbar",
         posStyle:DwtControl.ABSOLUTE_STYLE, cellSpacing:2, index:0});

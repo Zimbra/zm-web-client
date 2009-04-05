@@ -96,33 +96,37 @@ function() {
     editor._enableDesignMode(editor._getIframeDoc());
     this._toolbar = editor._createToolBar(this);
 
-    this.createSlideContainer();
+    this.initSlideContainer();
 
     this._createSelectionBoxes();
 };
 
-ZmSlideEditView.prototype.createSlideContainer =
+ZmSlideEditView.prototype.initSlideContainer =
 function() {
 
     var size = this.getSize();
     var toolbarSize = this._toolbar.getSize();
 
-    var slideDiv = this._slideContainer = document.createElement("div");
-    slideDiv.className = "slidecontainer";
+    var slideDiv = this._slideContainer;
+    if(!slideDiv) {
+        slideDiv = this._slideContainer = document.createElement("div");
+        slideDiv.className = "slidecontainer";
+        this.getHtmlElement().appendChild(slideDiv);
+    }
 
     var slideWidth = 0.19 * size.x;
     slideDiv.style.height = (size.y) + "px";
     slideDiv.style.width = (0.81 * size.x) + "px";
 
 
-    this.getHtmlElement().appendChild(slideDiv);
-
-    slideDiv = this._previewContainer = document.createElement("div");
-    slideDiv.className = "previewcontainer";
-    slideDiv.style.height = (size.y) + "px";
-    slideDiv.style.width = (0.2 * size.x) + "px";
-
-    this.getHtmlElement().appendChild(slideDiv);
+    var slideDiv1 = this._previewContainer;
+    if(!slideDiv1) {
+        slideDiv1 = this._previewContainer = document.createElement("div");
+        slideDiv1.className = "previewcontainer";
+        this.getHtmlElement().appendChild(slideDiv1);
+    }
+    slideDiv1.style.height = (size.y) + "px";
+    slideDiv1.style.width = (0.2 * size.x) + "px";
 };
 
 ZmSlideEditView.prototype.createSlide =
@@ -349,6 +353,7 @@ function(folderId) {
 ZmSlideEditView.prototype.setBounds =
 function(x, y, width, height) {
     DwtComposite.prototype.setBounds.call(this, x, y, width, height);
+    this.initSlideContainer();
 };
 
 
@@ -1061,13 +1066,19 @@ function() {
 
     var win = open("", winname, winfeatures);
 
+    var doc = win.document;
+    this.writeSlideShowContent(doc, content);
+};
+
+ZmSlideEditView.prototype.writeSlideShowContent =
+function(doc, content) {
     var head = [];
 
     head.push('<link href="' +  window.contextPath + '/css/slides.css" rel="stylesheet" type="text/css" />');
     if(this._currentTheme) {
         head.push('<link href="' + this.getThemeCSSPath(this._currentTheme) + '" rel="stylesheet" type="text/css" />');
     }
-    head.push('<script language="javascript" src="' +  window.contextPath + '/public/slides/presentation.js"></script>');
+    head.push('<scr" + "ipt language="javascript" src="' +  window.contextPath + '/public/slides/presentation.js"></script>');
     head.push('<style>');
     head.push('.slide {');
     head.push('font-size: 32px;');
@@ -1078,8 +1089,6 @@ function() {
     head.push('}');
     head.push('</style>');
 
-    var doc = win.document;
-
     doc.open();
     doc.write("<head>")
     doc.write(head.join(""));
@@ -1088,7 +1097,6 @@ function() {
     doc.write(content.join(""));
     doc.write("</body>")
     doc.close();
-
 };
 
 ZmSlideEditView.prototype.getSlideHTML =
@@ -1157,13 +1165,35 @@ function(id) {
 };
 
 ZmSlideEditView.prototype.loadSlide =
-function(item) {
+function(item, runSlideShow) {
     var content = this._docMgr.fetchDocumentContent(item);
     if(content) {
         var div = this.getSlideParserDiv();
         div.innerHTML = content;
-        this.parseSlideContent();
+        if(!runSlideShow) {
+            this.parseSlideContent();
+        }else {
+            this.parseSlideTheme();
+            this.writeSlideShowContent(document, [content]);
+        }
     }
+};
+
+ZmSlideEditView.prototype.parseSlideTheme =
+function() {
+    var node = this._slideParserDiv.firstChild;
+    while(node) {
+        var className = node.className;
+        if(className == "slidemaster") {
+            var theme = node.getAttribute("theme");
+            if(theme) {
+                this._currentTheme = theme;
+                return;
+            }
+        }
+        node = node.nextSibling;
+    }
+    return;
 };
 
 ZmSlideEditView.prototype.getSlideParserDiv =

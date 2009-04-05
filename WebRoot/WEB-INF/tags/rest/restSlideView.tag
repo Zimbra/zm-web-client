@@ -31,6 +31,7 @@
     </c:if>
     <c:set var="packages" value="dev" scope="request"/>
 </c:if>
+<c:set var="runSlideShow" value="${not empty param.run and param.run eq '1'}" scope="request"/>
 
 <c:set var="isDevMode" value="${not empty requestScope.mode and requestScope.mode eq 'mjsf'}" scope="request"/>
 <c:set var="isSkinDebugMode" value="${not empty requestScope.mode} and ${requestScope.mode eq 'skindebug'}" scope="request"/>
@@ -197,8 +198,10 @@
         var item = null;
         item = slideEditView.loadData('${requestScope.zimbra_target_item_id}');
         if(item) {
+            //REST URL will not be generated on server side
+            item.rest = location.href;
             window.fileInfo = item;
-            slideEditView.loadSlide(item);
+            slideEditView.loadSlide(item, ${runSlideShow});
         }else {
             slideEditView.createSlide();
         }
@@ -220,7 +223,6 @@
     AjxCore.addOnloadListener(create);
 
 </script>
-
 
 </body>
 
