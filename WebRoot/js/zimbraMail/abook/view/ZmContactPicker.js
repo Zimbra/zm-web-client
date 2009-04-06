@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -35,6 +37,7 @@ ZmContactPicker = function(buttonInfo) {
 	this._offset = 0;
 	this._defaultQuery = ".";
 
+	this._searchRespCallback = new AjxCallback(this, this._handleResponseSearch);
 	this._searchErrorCallback = new AjxCallback(this, this._handleErrorSearch);
 };
 
@@ -106,7 +109,9 @@ function(buttonId, addrs, str) {
 	this._prevButton.setEnabled(false);
 	this._nextButton.setEnabled(false);
 
-	this.search(null, null, true);
+	//bug: 33041 - preload canonical list to avoid race condition
+	AjxDispatcher.run("GetContacts");
+	this.search();
 
 	DwtDialog.prototype.popup.call(this);
 };
@@ -124,7 +129,7 @@ function() {
 };
 
 ZmContactPicker.prototype.search =
-function(colItem, ascending, firstTime) {
+function(colItem, ascending) {
 	if (typeof ascending == "undefined") {
 		ascending = true;
 	}
@@ -168,9 +173,9 @@ function(colItem, ascending, firstTime) {
 		query: query,
 		queryHint: queryHint,
 		offset: this._offset,
-		respCallback: (new AjxCallback(this, this._handleResponseSearch, [firstTime])),
+		respCallback: this._searchRespCallback,
 		errorCallback: this._searchErrorCallback
-	};
+	}
 	ZmContactsHelper.search(params);
 };
 
@@ -270,14 +275,13 @@ function(ev) {
 };
 
 ZmContactPicker.prototype._handleResponseSearch =
-function(firstTime, result) {
+function(result) {
 	var resp = result.getResponse();
 	var isGal = (this._contactSource == ZmId.SEARCH_GAL);
 	var more = resp.getAttribute("more");
-	var isPagingSupported = AjxUtil.isSpecified(resp.getAttribute("offset"));
 
-	// if offset is returned, then this account support gal paging
-	if (isGal && !isPagingSupported) {
+	// GAL results cannot be paged
+	if (isGal) {
 		this._prevButton.setEnabled(false);
 		this._nextButton.setEnabled(false);
 	} else {
@@ -288,7 +292,7 @@ function(firstTime, result) {
 	var info = resp.getAttribute("info");
 	var expanded = info && info[0].wildcard[0].expanded == "0";
 
-	if (!firstTime && !isPagingSupported && (expanded || (isGal && more))) {
+	if (expanded || (isGal && more)) {
 		var d = appCtxt.getMsgDialog();
 		d.setMessage(ZmMsg.errorSearchNotExpanded);
 		d.popup();
@@ -360,7 +364,7 @@ ZmContactPicker.prototype._okButtonListener =
 function(ev) {
 	var data = this._chooser.getItems();
 	DwtDialog.prototype._buttonListener.call(this, ev, [data]);
-};
+}
 
 // Call custom popdown method
 ZmContactPicker.prototype._cancelButtonListener =
@@ -371,17 +375,17 @@ function(ev) {
 
 ZmContactPicker._keyPressHdlr =
 function(ev) {
-	var stb = DwtControl.getTargetControl(ev);
+    var stb = DwtControl.getTargetControl(ev);
 	var charCode = DwtKeyEvent.getCharCode(ev);
 	if (!stb._searchCleared) {
 		stb._searchField.className = stb._searchField.value = "";
 		stb._searchCleared = true;
 	}
-	if (stb._keyPressCallback && (charCode == 13 || charCode == 3)) {
+    if (stb._keyPressCallback && (charCode == 13 || charCode == 3)) {
 		stb._keyPressCallback.run();
-		return false;
+	    return false;
 	}
-	return true;
+    return true;
 };
 
 ZmContactPicker._onclickHdlr =
@@ -435,7 +439,9 @@ function(item, list) {
  * This class creates a specialized source list view for the contact chooser.
  */
 ZmContactChooserSourceListView = function(parent) {
-	DwtChooserListView.call(this, {parent:parent, type:DwtChooserListView.SOURCE, view:ZmId.VIEW_CONTACT_SRC});
+	DwtChooserListView.call(this, {parent:parent, type:DwtChooserListView.SOURCE,
+								   view:ZmId.VIEW_CONTACT_SRC});
+
 	this.setScrollStyle(Dwt.CLIP);
 };
 
