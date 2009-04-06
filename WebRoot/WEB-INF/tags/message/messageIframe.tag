@@ -68,7 +68,7 @@
 		doc.write("${zm:jsEncode(theBody)}");
 		doc.close();
 		try {
-			if (YAHOO && zimbraKeydownHandler && zimbraKeypressHandler) {
+			if (YAHOO && window.zimbraKeydownHandler && window.zimbraKeypressHandler) {
 				YAHOO.util.Event.addListener(doc, "keydown", zimbraKeydownHandler);
 				YAHOO.util.Event.addListener(doc, "keypress", zimbraKeypressHandler);
 			}
