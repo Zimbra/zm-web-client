@@ -90,7 +90,7 @@ ZmAttachDialog.prototype._okButtonListener = function() {
 
     var okListener = this._okListeners[this._tabView.getCurrentTab()];
     if (okListener) {
-         okListener.run();
+         okListener.run(this);
     } else {
         this._defaultOkCallback.run();
     }
@@ -207,6 +207,10 @@ ZmAttachDialog.prototype.cancelUploadFiles = function() {
 ZmAttachDialog.prototype.setUploadCallback = function(callback) {
     if (!callback) callback = false;
     this._uploadCallback = callback;
+};
+
+ZmAttachDialog.prototype.getUploadCallback = function() {
+    return this._uploadCallback;  
 };
 
 ZmAttachDialog.prototype.upload = function(callback, uploadForm) {

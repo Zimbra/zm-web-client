@@ -106,9 +106,7 @@ ZmBriefcaseTabView.prototype._listSelectionListener =
 function(ev) {
     if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
         var item = ev.item;
-        if (item && item.restUrl) {
-            this.uploadFiles([{id: item.id, ct: item.contentType, s: item.size}]);
-        }else if(item && item.isFolder){
+        if(item && item.isFolder){
             this.showFolder(item.id);
         }
     }
@@ -125,7 +123,7 @@ function() {
 };
 
 ZmBriefcaseTabView.prototype.uploadFiles =
-function(docIds) {
+function(attachDialog, docIds) {
     if(!docIds){
         docIds = [];
         var bcView = this._tabBriefcaseView;
@@ -145,9 +143,10 @@ function(docIds) {
         docIds = [docIds];
     }
 
-    this._composerCtrl = appCtxt.getApp(ZmApp.MAIL).getComposeController();
-    var callback = new AjxCallback(this, this._composerCtrl._handleResponseSaveDraftListener);
-    this._composerCtrl.sendDocs(docIds,true,callback);
+    var callback = attachDialog.getUploadCallback();
+    if(callback) {
+        callback.run(AjxPost.SC_OK, null, docIds);
+    }
 };
 
 ZmBriefcaseTabView.prototype.showBriefcaseTreeView =
