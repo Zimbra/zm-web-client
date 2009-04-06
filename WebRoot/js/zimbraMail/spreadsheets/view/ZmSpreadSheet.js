@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2009 Zimbra, Inc.
- * 
+ *
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -58,6 +58,10 @@ ZmSpreadSheet = function(parent, className, posStyle, deferred) {
 	this.onSelectCell = [];
 	this.onInputModified = [];
 
+    //TODO: Replace it with DwtKeyBoardMgr
+    Dwt.setHandler(document, DwtEvent.ONKEYPRESS, AjxCallback.simpleClosure(this._keyPress, this));
+    if (AjxEnv.isIE || AjxEnv.isOpera)
+		Dwt.setHandler(document, DwtEvent.ONKEYDOWN, AjxCallback.simpleClosure(this._keyPress, this));
 // 	this.ROWS = 5;
 // 	this.COLS = 5;
 
@@ -218,21 +222,9 @@ ZmSpreadSheet.prototype._init = function() {
 		html.push("<div id='", this._relDivID,
 			  "' class='ZmSpreadSheet-RelDiv'>");
 	}
-	this._focusLinkID = Dwt.getNextId();
+	
 	this._tableID = Dwt.getNextId();
     this._autoFillID = Dwt.getNextId();
-
-	// the "focus link" is our clever way to receive key events when the
-	// "spreadsheet" is focused.  As usual, it requires some special bits
-	// for IE (needs to have a href and some content in order to be
-	// focusable).  It looks better in FF without these special bits.
-	html.push("<a class='FocusLink' id='", this._focusLinkID, "'");
-	if (AjxEnv.isIE)
-		html.push(" href='#' onclick='return false'");
-	html.push(">");
-	if (AjxEnv.isIE)
-		html.push("&nbsp;");
-	html.push("</a>");
 
     //AutoFill Div
     html.push("<div class='AutoFill' id='"+this._autoFillID+"'></div>");
@@ -281,11 +273,6 @@ ZmSpreadSheet.prototype._init = function() {
 	table.ondblclick = AjxCallback.simpleClosure(this._table_onClick, this);
 	table.onmousemove = AjxCallback.simpleClosure(this._table_mouseMove, this);
 	table.onmouseout = AjxCallback.simpleClosure(this._table_mouseOut, this);
-
-	var link = this._getFocusLink();
-	link.onkeypress = AjxCallback.simpleClosure(this._focus_keyPress, this);
-	if (AjxEnv.isIE || AjxEnv.isOpera)
-		link.onkeydown = link.onkeypress;
 
     var autoFill = this._getAutoFill();
     autoFill.onmousedown = AjxCallback.simpleClosure(this._table_autoFill_mouseDown, this);
@@ -434,7 +421,7 @@ ZmSpreadSheet.prototype._table_autofill_mouseMove = function(ev){
 
     if (td && /^td$/i.test(td.tagName) && td.cellIndex > 0 && td.parentNode.rowIndex > 0) {
 
-        var destCell = td;        
+        var destCell = td;
         var startRow, startCol, endRow, endCol;
         if(this.isRange()){
 
@@ -666,9 +653,6 @@ ZmSpreadSheet.prototype._cellClicked = function(td, ev) {
 ZmSpreadSheet.prototype.focus = function() {
 	if (!this._selectedCell)
 		this._selectCell(this._getTable().rows[1].cells[1]);
-	// this link will intercept keybindings.  Clever, huh? B-)
-	this._getFocusLink().focus();
-	window.status = ""; // Clear the statusbar for IE's smart ass
 };
 
 ZmSpreadSheet.prototype._getTopLeftCell = function() {
@@ -911,11 +895,6 @@ ZmSpreadSheet.prototype._selectCell = function(td) {
 		Dwt.addClass(this._getTopHeaderCell(td), "TopSelected");
 		Dwt.addClass(this._getLeftHeaderCell(td), "LeftSelected");
 		this._getTopLeftCell().innerHTML = "<div>" + ZmSpreadSheet.getCellName(td) + "</div>";
-		var link = this._getFocusLink();
-		link.style.top = td.offsetTop + 1 + "px";
-		link.style.left = td.offsetLeft + 1 + "px";
-		if (!this._editingCell)
-			this.focus();
 
         var autoFill = this._getAutoFill();
         autoFill.className = "AutoFill";
@@ -923,8 +902,6 @@ ZmSpreadSheet.prototype._selectCell = function(td) {
         autoFill.style.left = td.offsetLeft + td.offsetWidth - 4 + "px";
         autoFill.style.display = "block";
         
-		link.style.top = td.offsetTop + td.offsetHeight - 1 + "px";
-		link.style.left = td.offsetLeft + td.offsetWidth - 1 + "px";
 		if (!this._editingCell) {
 			this.focus();
 			for (var i = this.onSelectCell.length; --i >= 0;)
@@ -939,10 +916,6 @@ ZmSpreadSheet.prototype._getHeaderTable = function() {
 
 ZmSpreadSheet.prototype._getRelDiv = function() {
 	return document.getElementById(this._relDivID);
-};
-
-ZmSpreadSheet.prototype._getFocusLink = function() {
-	return document.getElementById(this._focusLinkID);
 };
 
 ZmSpreadSheet.prototype._input_setValue = function(val) {
@@ -1125,7 +1098,7 @@ ZmSpreadSheet.prototype._getLeftCell = function(td) {
 	return null;
 };
 
-ZmSpreadSheet.prototype._focus_handleKey = function(dwtev, ev) {
+ZmSpreadSheet.prototype._handleKey = function(dwtev, ev) {
 	var needs_keypress = AjxEnv.isIE || AjxEnv.isOpera;
 	this.focus();
 	var handled = true;
@@ -1191,7 +1164,7 @@ ZmSpreadSheet.prototype._focus_handleKey = function(dwtev, ev) {
 		break;
 
 	    default:
-		if (!dwtev.isCommand() && ( (!needs_keypress && ev.charCode) ||
+		if (!this._editingCell && !dwtev.isCommand() && ( (!needs_keypress && ev.charCode) ||
 					    (needs_keypress && /keypress/i.test(dwtev.type)))) {
 			var val = String.fromCharCode(dwtev.charCode);
 // 			// FIXME: this sucks.  Isn't there any way to determine
@@ -1253,12 +1226,12 @@ ZmSpreadSheet.prototype._focus_handleKey = function(dwtev, ev) {
 	return handled;
 };
 
-ZmSpreadSheet.prototype._focus_keyPress = function(ev) {
+ZmSpreadSheet.prototype._keyPress = function(ev) {
 	this._clearTooltip();
 	ev || (ev = window.event);
 	var dwtev = new DwtKeyEvent();
 	dwtev.setFromDhtmlEvent(ev);
-	this._focus_handleKey(dwtev, ev);
+	this._handleKey(dwtev, ev);
 	dwtev.setToDhtmlEvent(ev);
 	return dwtev._returnValue;
 };
@@ -1281,7 +1254,7 @@ ZmSpreadSheet.prototype._input_keyPress = function(ev) {
 			setTimer = false;
 			this._save_value(input.value);
 			input.blur();
-			this._focus_handleKey(dwtev, ev);
+			this._handleKey(dwtev, ev);
 			break;
 
 		    case 37: // LEFT
@@ -1293,9 +1266,13 @@ ZmSpreadSheet.prototype._input_keyPress = function(ev) {
 				setTimer = false;
 				this._save_value(input.value);
 				input.blur();
-				this._focus_handleKey(dwtev, ev);
-			} else
+				this._handleKey(dwtev, ev);
+			} else{                
 				input._caretMoved = true;
+                dwtev._stopPropagation = true;
+                dwtev._returnValue = true;
+            }
+            //setTimer = false;
  			break;
 
 		    case 38: // UP
@@ -1304,7 +1281,7 @@ ZmSpreadSheet.prototype._input_keyPress = function(ev) {
 			setTimer = false;
 			this._save_value(input.value);
 			input.blur();
-			this._focus_handleKey(dwtev, ev);
+			this._handleKey(dwtev, ev);
 			break;
 
 		    case 27: // ESC
