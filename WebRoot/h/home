@@ -21,6 +21,32 @@
 <zm:computeSearchContext var="context" usecache="true"/>
 <zm:getMailbox var="mailbox"/>
 <app:composeCheck/>
+
+<%-- bug:35733 Deep linking  --%>
+<c:if test="${not empty param.app}">
+	<c:choose>
+		<c:when test="${param.app eq 'calendar'}">
+			<c:redirect url="/h/calendar" />
+		</c:when>
+		<c:when test="${param.app eq 'mail'}">
+			<c:redirect url="/h/search" />
+		</c:when>
+		<c:when test="${param.app eq 'voice'}">
+			<c:redirect url="/h/search?st=voicemail" />
+		</c:when>
+		<c:when test="${param.app eq 'options'}">
+			<c:redirect url="/h/options" />
+		</c:when>
+		<c:when test="${param.app eq 'contacts'}">
+			<c:redirect url="/h/search?st=contact" />
+		</c:when>
+		<c:when test="${param.app eq 'tasks'}">
+			<c:redirect url="/h/search?st=task" />
+		</c:when>
+	</c:choose>
+</c:if>
+<%-- end --%>
+
 <c:set var="action" value="${empty param.paction ? param.action : param.paction}" scope="request"/>
 <c:if test="${not empty param.expand}">
     <c:set target="${sessionScope.expanded}" property="${param.expand}" value="expand"/>
