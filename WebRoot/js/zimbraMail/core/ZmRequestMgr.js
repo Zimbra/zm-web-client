@@ -581,7 +581,7 @@ function(creates) {
 				if (tagTree) {
 					tagTree.root.notifyCreate(create);
 				}
-			} else if (name == "folder" || name == "search") {
+			} else if (name == "folder" || name == "search" || name == "link") {
 				var parentId = create.l;
 				var parent = appCtxt.getById(parentId);
 				if (parent) {

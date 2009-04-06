@@ -574,11 +574,11 @@ function(modifies) {
 			for (var i = 0; i < modifies.length; i++) {
 				var mod = modifies[i];
 				var share = this._shareByKey[mod.id];
+				var ev = new ZmEvent();
 				if (share) {
 					var parts = mod.id.split(":");
 					share.zid = parts[0];
 					share.rid = parts[1];
-					var ev = new ZmEvent();
 					ev.ersatz = true;
 					ev.set(ZmEvent.E_MODIFY);
 					var fields = {};
