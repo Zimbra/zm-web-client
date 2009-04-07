@@ -29,7 +29,6 @@ ZmDoublePaneView = function(params) {
 
 	this._vertMsgSash = new DwtSash({parent:this, style:DwtSash.HORIZONTAL_STYLE, className:"AppSash-horiz",
 									 threshold:ZmDoublePaneView.SASH_THRESHOLD, posStyle:Dwt.ABSOLUTE_STYLE});
-	Dwt.addClass(this._vertMsgSash.getHtmlElement(), "readingPaneVerticalSash");
 	this._vertMsgSash.registerCallback(this._sashCallback, this);
 
 	this._horizMsgSash = new DwtSash({parent:this, style:DwtSash.VERTICAL_STYLE, className:"AppSash-vert",

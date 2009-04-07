@@ -436,8 +436,10 @@ td.DDSepInvisible div {
 	white-space: nowrap;
 }
 
-.readingPaneVerticalSash {
-	background-color:@AppC@
+/* the sash next to overview does not need borders or a background color */
+.console_inset_app_l .DwtHorizontalSash {
+	border: 0px;
+	background-color: transparent;
 }
 
 /* ??? MOVE ME */
