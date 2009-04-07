@@ -43,7 +43,12 @@
             <tr>
                 <td>
                     <c:choose>
-                        <c:when test="${part.isImage}">
+                    	<c:when test="${part.isImage and print}">
+                            <a target="_blank" href="${url}&amp;disp=i">
+                                <img class='AttachmentImage' src="${url}" alt="${fn:escapeXml(part.displayName)}" width="120" height="80" border="0"/>
+                            </a>
+                        </c:when>
+                        <c:when test="${part.isImage ant not print}">
                             <a target="_blank" href="${url}&amp;disp=i">
                                 <img class='AttachmentImage' src="${url}" alt="${fn:escapeXml(part.displayName)}"/>
                             </a>
