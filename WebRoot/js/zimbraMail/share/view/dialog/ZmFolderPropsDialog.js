@@ -105,8 +105,10 @@ function(organizer) {
 
 ZmFolderPropsDialog.prototype.popdown =
 function() {
-	this._organizer.removeChangeListener(this._folderChangeListener);
-	this._organizer = null;
+	if (this._organizer) {
+		this._organizer.removeChangeListener(this._folderChangeListener);
+		this._organizer = null;
+	}
 	DwtDialog.prototype.popdown.call(this);
 };
 
