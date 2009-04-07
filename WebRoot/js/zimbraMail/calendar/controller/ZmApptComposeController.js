@@ -142,20 +142,6 @@ function() {
 	return "ZmApptComposeController";
 };
 
-ZmApptComposeController.prototype.handleKeyAction =
-function(actionCode) {
-	if (actionCode == ZmKeyMap.ALL_DAY) {
-		var tabView = this._composeView.getTabView(this._composeView.getCurrentTab());
-		if (tabView && tabView.toggleAllDayField) {
-			tabView.toggleAllDayField();
-		}
-
-		return true;
-	} else {
-		return ZmCalItemComposeController.prototype.handleKeyAction.call(this, actionCode);
-	}
-};
-
 
 // Private / Protected methods
 

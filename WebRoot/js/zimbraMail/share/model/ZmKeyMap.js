@@ -84,7 +84,6 @@ ZmKeyMap.MAP_NAME_R = {};
 
 // Action codes
 ZmKeyMap.ADDRESS_PICKER			= "AddressPicker";
-ZmKeyMap.ALL_DAY				= "AllDay";
 ZmKeyMap.ASSISTANT				= "Assistant";
 ZmKeyMap.ATTACHMENT				= "Attachment";
 ZmKeyMap.CAL_DAY_VIEW			= "DayView";
@@ -131,10 +130,8 @@ ZmKeyMap.GOTO_TAG				= "GoToTag";		// takes NNN
 ZmKeyMap.GOTO_TASKS				= "GoToTasks";
 ZmKeyMap.GOTO_TRASH				= "GoToTrash";
 ZmKeyMap.GOTO_VOICE				= "GoToVoice";
-ZmKeyMap.HIGH_PRIORITY			= "HighPriority";
 ZmKeyMap.HTML_FORMAT			= "HtmlFormat";
 ZmKeyMap.LOGOFF					= "LogOff";
-ZmKeyMap.LOW_PRIORITY			= "LowPriority";
 ZmKeyMap.MARK_COMPLETE			= "MarkComplete";
 ZmKeyMap.MARK_HEARD				= "MarkHeard";
 ZmKeyMap.MARK_READ				= "MarkRead";
@@ -165,7 +162,6 @@ ZmKeyMap.NEW_WINDOW				= "NewWindow";
 ZmKeyMap.NEXT_CONV				= "NextConversation";
 ZmKeyMap.NEXT_PAGE				= "NextPage";
 ZmKeyMap.NEXT_UNREAD			= "NextUnread";
-ZmKeyMap.NORMAL_PRIORITY		= "NormalPriority";
 ZmKeyMap.PLAY					= "Play";
 ZmKeyMap.PRESENCE_MENU			= "PresenceMenu";
 ZmKeyMap.PREV_CONV				= "PreviousConversation";
@@ -269,9 +265,6 @@ function() {
 	ZmKeyMap.ACTION_PRECONDITION["ZmComposeController"][ZmKeyMap.HTML_FORMAT]		= ZmSetting.HTML_COMPOSE_ENABLED;
 	ZmKeyMap.ACTION_PRECONDITION["ZmComposeController"][ZmKeyMap.NEW_WINDOW]		= ZmSetting.NEW_WINDOW_COMPOSE;
 	ZmKeyMap.ACTION_PRECONDITION["ZmComposeController"][ZmKeyMap.SAVE]				= ZmSetting.SAVE_DRAFT_ENABLED;
-	ZmKeyMap.ACTION_PRECONDITION["ZmComposeController"][ZmKeyMap.HIGH_PRIORITY]		= ZmSetting.MAIL_PRIORITY_ENABLED;
-	ZmKeyMap.ACTION_PRECONDITION["ZmComposeController"][ZmKeyMap.NORMAL_PRIORITY]		= ZmSetting.MAIL_PRIORITY_ENABLED;
-	ZmKeyMap.ACTION_PRECONDITION["ZmComposeController"][ZmKeyMap.LOW_PRIORITY]		= ZmSetting.MAIL_PRIORITY_ENABLED;
 	ZmKeyMap.ACTION_PRECONDITION["ZmApptComposeController"] = {};
 	ZmKeyMap.ACTION_PRECONDITION["ZmApptComposeController"][ZmKeyMap.HTML_FORMAT]	= ZmSetting.HTML_COMPOSE_ENABLED;
 };
