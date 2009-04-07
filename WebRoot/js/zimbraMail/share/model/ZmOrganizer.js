@@ -872,15 +872,22 @@ function() {
 	var treeController = overviewController.getTreeController(this.type);
 	var overviewId = appCtxt.getCurrentApp().getOverviewId();
 	var treeView = treeController.getTreeView(overviewId);
-	var organizer = treeView && treeView.getSelected();
-	if (organizer && (organizer == this || organizer.isChildOf(this))) {
-		var folderId = this.parent.id;
-		if (this.parent.nId == ZmOrganizer.ID_ROOT) {
-			folderId = ZmOrganizer.getSystemId(ZmOrganizer.DEFAULT_FOLDER[this.type]);
-		}
-		var skipNotify = false;
-		treeView.setSelected(folderId, skipNotify);
-	}
+    //treeview returns array of organizers for checkbox style trees
+	var organizers = treeView && treeView.getSelected();
+    if (organizers) {
+        if(!(organizers instanceof Array)) organizers = [organizers];
+        for(var i in organizers){
+            var organizer = organizers[i];
+            if(organizer && (organizer == this || organizer.isChildOf(this))){
+                var folderId = this.parent.id;
+                if (this.parent.nId == ZmOrganizer.ID_ROOT) {
+                    folderId = ZmOrganizer.getSystemId(ZmOrganizer.DEFAULT_FOLDER[this.type]);
+                }
+                var skipNotify = false;
+                treeView.setSelected(folderId, skipNotify);
+            }
+        }
+    }
 
 	// perform actual delete
 	this.deleteLocal();
