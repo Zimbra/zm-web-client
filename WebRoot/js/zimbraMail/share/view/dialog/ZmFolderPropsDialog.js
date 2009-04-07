@@ -284,7 +284,7 @@ function(event) {
 	if (this._color) {
 		this._color.setSelectedValue(organizer.color);
 		var isVisible = (organizer.type != ZmOrganizer.FOLDER ||
-						 (organizer.type == ZmOrganizer.FOLDER && false/*appCtxt.get(ZmSetting.MAIL_FOLDER_COLORS_ENABLED)*/));
+						 (organizer.type == ZmOrganizer.FOLDER && appCtxt.get(ZmSetting.MAIL_FOLDER_COLORS_ENABLED)));
 		this._props.setPropertyVisible(this._colorId, isVisible);
 	}
 	this._excludeFbCheckbox.checked = organizer.excludeFreeBusy;
