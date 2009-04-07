@@ -1912,7 +1912,7 @@ HTML>BODY .appt-selected .appt_allday_body
 	background-color: white;
 }
 
-.ZmTaskbarContentParent .ZmImOverview {
+.ZmTaskbarContentParent .ZmImOverview .DwtTree {
 	max-height:400px;
 	max-width:200px;
 }
