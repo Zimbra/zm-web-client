@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -88,7 +90,6 @@ function() {
  *        skipAuthCheck			[boolean]*		don't check if auth token has changed
  *        resend				[constant]*		reason for resending request
  *        sensitive				[boolean]*		attempt to use secure conn to protect data
- *        noSession				[boolean]*		if true, no session info is included
  */
 ZmRequestMgr.prototype.sendRequest =
 function(params) {
@@ -189,8 +190,7 @@ function(params) {
 		logRequest:this._logRequest,
 		highestNotifySeen:this._highestNotifySeen,
 		skipAuthCheck:params.skipAuthCheck,
-		resend:params.resend,
-		noSession:params.noSession
+		resend:params.resend
 	};
 	var methodName = params.methodName = ZmCsfeCommand.getMethodName(cmdParams.jsonObj || cmdParams.soapDoc);
 
@@ -463,15 +463,6 @@ function(refresh) {
 
 	// Run any app-requested refresh routines
 	this._controller.runAppFunction("refresh", false, refresh);
-
-	// Reset the overview that is shared by most apps.
-	ZmAppAccordionController.getInstance().reset();
-
-	// Redisplay the current app's overview.
-	var currentApp = appCtxt.getCurrentApp();
-	if (currentApp) {
-		currentApp.setOverviewPanelContent(true);
-	}
 };
 
 /**
@@ -581,7 +572,7 @@ function(creates) {
 				if (tagTree) {
 					tagTree.root.notifyCreate(create);
 				}
-			} else if (name == "folder" || name == "search" || name == "link") {
+			} else if (name == "folder" || name == "search") {
 				var parentId = create.l;
 				var parent = appCtxt.getById(parentId);
 				if (parent) {
@@ -635,7 +626,7 @@ function(modifies) {
 			}
 
 			if (item) {
-				mod._isRemote = (name == "folder" && item.link);	// remote subfolder
+				mod._isRemote = (name == "folder" && item.link);
 				item.notifyModify(mod);
 			}
 		}

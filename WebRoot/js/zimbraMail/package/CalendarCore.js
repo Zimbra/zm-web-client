@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 /*
@@ -33,6 +35,7 @@ AjxPackage.require("zimbraMail.calendar.model.ZmCalItem");
 AjxPackage.require("zimbraMail.calendar.model.ZmAppt");
 AjxPackage.require("zimbraMail.calendar.model.ZmApptList");
 AjxPackage.require("zimbraMail.calendar.model.ZmApptCache");
+AjxPackage.require("zimbraMail.calendar.model.ZmMiniCalCache");
 AjxPackage.require("zimbraMail.calendar.model.ZmResource");
 AjxPackage.require("zimbraMail.calendar.model.ZmResourceList");
 AjxPackage.require("zimbraMail.calendar.view.ZmApptViewHelper");

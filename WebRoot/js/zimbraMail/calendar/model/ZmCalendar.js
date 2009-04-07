@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -113,53 +115,6 @@ function(checked, result) {
 	}
 	
 };
-
-/**
- * Returns true if the given object(s) may be placed in this folder.
- *
- * @param what		[object]	object(s) to possibly move into this folder (item or organizer)
- */
-ZmCalendar.prototype.mayContain =
-function(what) {
-	if (!what) return true;
-
-	if (!(what instanceof ZmCalendar)) {
-		var invalid = false;
-
-		if (this.nId == ZmOrganizer.ID_ROOT) {
-			// cannot drag anything onto root folder
-			invalid = true;
-		} else if (this.link) {
-			// cannot drop anything onto a read-only addrbook
-			invalid = this.isReadOnly();
-		}
-
-		if (!invalid) {
-			// An item or an array of items is being moved
-			var items = (what instanceof Array) ? what : [what];
-			var item = items[0];
-
-			// can't move items to folder they're already in; we're okay if
-			// we have one item from another folder
-			if (item.folderId) {
-				invalid = true;
-				for (var i = 0; i < items.length; i++) {
-					var tree = appCtxt.getById(items[i].folderId);
-					if (tree != this) {
-						invalid = false;
-						break;
-					}
-				}
-			}
-		}
-
-		return !invalid;
-	}
-
-	// sub-folders are not allowed in calendars
-	return false;
-};
-
 
 // Callbacks
 

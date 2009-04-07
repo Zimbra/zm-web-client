@@ -1,19 +1,3 @@
-<%--
- * ***** BEGIN LICENSE BLOCK *****
- * 
- * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008 Zimbra, Inc.
- * 
- * The contents of this file are subject to the Yahoo! Public License
- * Version 1.0 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
- * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
- * ***** END LICENSE BLOCK *****
---%>
 <%@ tag body-content="empty" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -29,12 +13,6 @@
 <c:set var="ids" value="${fn:join(paramValues.id, ',')}"/>
 <c:set var="folderId" value="${not empty paramValues.folderId[0] ? paramValues.folderId[0] : paramValues.folderId[1]}"/>
 <c:set var="actionOp" value="${not empty paramValues.actionOp[0] ? paramValues.actionOp[0] :  paramValues.actionOp[1]}"/>
-
-<c:set var="dragMsgId" value="${not empty paramValues.dragMsgId[0] ? paramValues.dragMsgId[0] : paramValues.dragMsgId[1]}"/>
-<c:set var="dragTargetFolder" value="${not empty paramValues.dragTargetFolder[0] ? paramValues.dragTargetFolder[0] : paramValues.dragTargetFolder[1]}"/>
-<c:if test="${not empty dragMsgId}">
-    <c:set var="ids" value="${dragMsgId}"/>
-</c:if>
 
 <c:choose>
 <c:when test="${zm:actionSet(param, 'actionCompose')}">
@@ -189,18 +167,6 @@
             <app:status style="Warning"><fmt:message key="actionNoActionSelected"/></app:status>
         </c:otherwise>
     </c:choose>
-</c:when>
-<c:when test="${fn:startsWith(dragTargetFolder, 'm:')}">
-    <c:set var="dragFolderid" value="${fn:substring(dragTargetFolder, 2, -1)}"/>
-    <c:set var="movedFolderName" value="${zm:getFolderName(pageContext, dragFolderid)}"/>
-    <zm:checkCrumb crumb="${param.crumb}"/>
-    <zm:moveConversation folderid="${dragFolderid}"var="result" id="${ids}"/>
-    <app:status>
-        <fmt:message key="actionConvMoved">
-            <fmt:param value="${result.idCount}"/>
-            <fmt:param value="${movedFolderName}"/>
-        </fmt:message>
-    </app:status>
 </c:when>
 <c:when test="${zm:actionSet(param, 'actionMove')}">
     <c:choose>

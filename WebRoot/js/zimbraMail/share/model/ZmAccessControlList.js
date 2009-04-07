@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -146,22 +148,6 @@ function(right) {
 	return list;
 };
 
-ZmAccessControlList.prototype.getGranteesInfo =
-function(right) {
-	var aces = this._aces[right];
-	var list = [];
-	if (aces && aces.length) {
-		for (var i = 0; i < aces.length; i++) {
-			var ace = aces[i];
-			if (ace.granteeType == ZmSetting.ACL_USER || ace.granteeType == ZmSetting.ACL_GROUP) {
-				list.push({grantee: ace.grantee, zid: ace.zid});
-			}
-		}
-	}
-	list.sort(ZmAccessControlList.sortByGrantee);
-	return list;
-};
-
 ZmAccessControlList.prototype.grant =
 function(aces, callback, batchCmd) {
 	this._setPerms(aces, false, callback, batchCmd);
@@ -278,18 +264,6 @@ ZmAccessControlList.prototype.cleanup =
 function() {
 	this._aces = {};
 };
-
-ZmAccessControlList.sortByGrantee =
-function(a, b) {
-    var granteeA = a.grantee;
-    var granteeB = b.grantee;
-
-    if (granteeA.toLowerCase() > granteeB.toLowerCase()) return 1;
-    if (granteeA.toLowerCase() < granteeB.toLowerCase()) return -1;
-    
-	return 0;
-};
-
 
 /**
  * Creates an access control entry.
