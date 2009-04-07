@@ -422,11 +422,12 @@ DIV.vSpace {
 	@ListItemContainer@
 	@DisableSelection@
 	@ListItemHeightDouble@
+	border-bottom-color: #CCCCCC;
+	padding-top: 3px;
 }
 
 .Row TABLE, .RowDouble TABLE {
 	table-layout: fixed;
-	height:100%;
 }
 
 .Row TD, .RowDouble TD {

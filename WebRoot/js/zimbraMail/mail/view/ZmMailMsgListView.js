@@ -155,9 +155,7 @@ ZmMailMsgListView.prototype._getCellContents =
 function(htmlArr, idx, msg, field, colIdx, params) {
 
 	if (field == ZmItem.F_STATUS) {
-		htmlArr[idx++] = "<center>";
 		idx = this._getImageHtml(htmlArr, idx, msg.getStatusIcon(), this._getFieldId(msg, field));
-		htmlArr[idx++] = "</center>";
 	} else if (field == ZmItem.F_FROM || field == ZmItem.F_PARTICIPANT) {
 		// setup participants list for Sent/Drafts/Outbox folders
 		var folder = appCtxt.getById(this._folderId);
@@ -219,7 +217,13 @@ function(htmlArr, idx, msg, field, colIdx, params) {
 			if (this._mode == ZmId.VIEW_CONVLIST && this._isMultiColumn) {
 				htmlArr[idx++] = ZmMailMsgListView.INDENT;
 			}
+			if (!this._isMultiColumn) {
+				htmlArr[idx++] = "<span class='ZmConvListFragment'>";
+			}
 			htmlArr[idx++] = AjxStringUtil.htmlEncode(msg.fragment, true);
+			if (!this._isMultiColumn) {
+				htmlArr[idx++] = "</span>";
+			}
 		} else {
 			// msg on its own (TV) shows subject and fragment
 			var subj = msg.subject || ZmMsg.noSubject;
@@ -258,28 +262,27 @@ ZmMailMsgListView.prototype._getAbridgedContent =
 function(item, colIdx) {
 	var htmlArr = [];
 	var idx = 0;
+
+	// first row
 	htmlArr[idx++] = "<table border=0 cellspacing=0 cellpadding=0 width=100%>";
 	htmlArr[idx++] = (item.isUnread) ? "<tr class='Unread' " : "<tr ";
 	htmlArr[idx++] = "id='";
 	htmlArr[idx++] = DwtId.getListViewItemId(DwtId.WIDGET_ITEM_FIELD, this._view, item.id, ZmItem.F_ITEM_ROW_3PANE);
-	htmlArr[idx++] = "'><td width=10 style='padding:0px'></td>";
-
+	htmlArr[idx++] = "'>";
+	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_STATUS, colIdx, "16", "style='padding-left:0px'");
 	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_FROM, colIdx);
 	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_DATE, colIdx, ZmMsg.COLUMN_WIDTH_DATE, "align=right");
 	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_FLAG, colIdx, "16");
+	htmlArr[idx++] = "</tr></table>";
 
-	htmlArr[idx++] = "</tr><tr>";
-
-	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_PRIORITY, colIdx, "10", "style='padding:0px'");
-
-	htmlArr[idx++] = "<td colspan=2><table border=0 cellpadding=0 cellspacing=0 width=100%><tr>";
-	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_STATUS, colIdx, "16");
+	// second row
+	htmlArr[idx++] = "<table border=0 cellspacing=0 cellpadding=0 width=100%><tr>";
+	if (item.isHighPriority || item.isLowPriority) {
+		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_PRIORITY, colIdx, "10", "align=right");
+	}
 	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_SUBJECT, colIdx);
 	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_ATTACHMENT, colIdx, "16");
-	htmlArr[idx++] = "</tr></table></td>";
-
 	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_TAG, colIdx, "16");
-
 	htmlArr[idx++] = "</tr></table>";
 
 	return htmlArr.join("");

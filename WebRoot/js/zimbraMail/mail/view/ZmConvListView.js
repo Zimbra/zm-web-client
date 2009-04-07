@@ -225,7 +225,12 @@ function(item, field, params) {
 
 ZmConvListView.prototype._getCellContents =
 function(htmlArr, idx, item, field, colIdx, params) {
-	if (field == ZmItem.F_EXPAND) {
+	if (field == ZmItem.F_SELECTION) {
+		idx = ZmMailListView.prototype._getCellContents.apply(this, arguments);
+		if (item.type == ZmItem.MSG && !this._isMultiColumn) {
+			htmlArr[idx++] = "<td width=35 style='text-decoration: none;'></td>";
+		}
+	} else if (field == ZmItem.F_EXPAND) {
 		idx = this._getImageHtml(htmlArr, idx, this._isExpandable(item) ? "NodeCollapsed" : null, this._getFieldId(item, field));
 	} else if (item.type == ZmItem.MSG) {
 		idx = ZmMailMsgListView.prototype._getCellContents.apply(this, arguments);
@@ -266,32 +271,36 @@ ZmConvListView.prototype._getAbridgedContent =
 function(item, colIdx) {
 	var htmlArr = [];
 	var idx = 0;
+
+	// first row
 	htmlArr[idx++] = "<table border=0 cellspacing=0 cellpadding=0 width=100%>";
 	htmlArr[idx++] = (item.isUnread) ? "<tr class='Unread' " : "<tr ";
 	htmlArr[idx++] = "id='";
 	htmlArr[idx++] = DwtId.getListViewItemId(DwtId.WIDGET_ITEM_FIELD, this._view, item.id, ZmItem.F_ITEM_ROW_3PANE);
 	htmlArr[idx++] = "'>";
-
-	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_EXPAND, colIdx, "16", "style='padding:0px'");
+	if (item.type != ZmItem.MSG) {
+		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_EXPAND, colIdx, "16", "style='padding:0px'");
+	} else {
+		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_STATUS, colIdx, "16");
+	}
 	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_FROM, colIdx);
-	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_SIZE, colIdx, ZmMsg.COLUMN_WIDTH_SIZE);
+	if (item.type != ZmItem.MSG) {
+		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_SIZE, colIdx, ZmMsg.COLUMN_WIDTH_SIZE);
+	}
 	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_DATE, colIdx, ZmMsg.COLUMN_WIDTH_DATE, "align=right");
 	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_FLAG, colIdx, "16");
+	htmlArr[idx++] = "</tr></table>";
 
-	htmlArr[idx++] = "</tr><tr>";
-
-	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_PRIORITY, colIdx, "16", "style='padding:0px'");
-
-	htmlArr[idx++] = "<td colspan=3><table border=0 cellpadding=0 cellspacing=0 width=100%><tr>";
-	if (item.type == ZmItem.MSG) {
-		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_STATUS, colIdx, "16");
+	// second row
+	htmlArr[idx++] = "<table border=0 cellspacing=0 cellpadding=0 width=100%><tr>";
+	if (item.type != ZmItem.MSG ||
+		(item.type == ZmItem.MSG && (item.isHighPriority || item.isLowPriority)))
+	{
+		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_PRIORITY, colIdx, "10", "align=right");
 	}
 	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_SUBJECT, colIdx);
 	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_ATTACHMENT, colIdx, "16", "valign=top");
-	htmlArr[idx++] = "</tr></table></td>";
-
 	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_TAG, colIdx, "16");
-
 	htmlArr[idx++] = "</tr></table>";
 
 	return htmlArr.join("");

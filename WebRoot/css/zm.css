@@ -304,6 +304,10 @@ td.DDSepInvisible div {
 }
 
 
+.RowDouble .AbridgedSelection {
+	padding-right:0px;
+}
+
 .AbridgedSelection {
 	padding-top: 3px;
 	vertical-align: top;
