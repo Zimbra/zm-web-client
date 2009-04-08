@@ -462,6 +462,7 @@ function(iframeN) {
         html.push('</html>');
         doc.write(html.join(""));
         doc.close();
+        iContentWindow.focus();
     }
 };
 
@@ -593,6 +594,9 @@ function(div) {
                 doc.body.innerHTML = tmp;
             }
             doc.designMode = "on";
+            setTimeout(function(){
+                iContentWindow.focus();
+            },300);
         }
     }
 
@@ -1078,7 +1082,7 @@ function(doc, content) {
     if(this._currentTheme) {
         head.push('<link href="' + this.getThemeCSSPath(this._currentTheme) + '" rel="stylesheet" type="text/css" />');
     }
-    head.push('<scr" + "ipt language="javascript" src="' +  window.contextPath + '/public/slides/presentation.js"></script>');
+    head.push('<script language="javascript" src="' +  window.contextPath + '/public/slides/presentation.js"></script>');
     head.push('<style>');
     head.push('.slide {');
     head.push('font-size: 32px;');
