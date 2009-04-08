@@ -327,8 +327,19 @@ function() {
 	var style = doc.body.style;
 
 	style.fontFamily = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY);
-	style.fontSize = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE);
 	style.color = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR);
+
+	// bug fix #36919 - set font size by calling execCommand
+	var size = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE);
+	var sizeStr = size + "pt";
+	var index = 3;
+	for (var i = 0; i < ZmHtmlEditor.FONT_SIZE_VALUES.length; i++) {
+		if (sizeStr == ZmHtmlEditor.FONT_SIZE_VALUES[i]) {
+			index = i+1;
+			break;
+		}
+	}
+	this._execCommand(DwtHtmlEditor._FONT_SIZE, index);
 };
 
 ZmHtmlEditor.prototype.highlightMisspelledWords =
