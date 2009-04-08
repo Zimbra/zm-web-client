@@ -148,13 +148,13 @@
 					<td><div id='skin_container_username' class='R1Text'><nobr><b>${fn:escapeXml(empty mailbox.accountInfo.name ? mailbox.name : mailbox.accountInfo.name)}</b></nobr></div></td>
 					<td id='#skin_container_logoff_lite' class='R1Link'><nobr><a href="<c:url value="/?loginOp=logout"/>"><fmt:message key="logOut" /></a></nobr></td>
 					<td class='R1Sep'>|</td>
-					<td class='R1Link'><nobr><a href="https://acctmgt.bbt1.cistest.att.net:9003/Comcast/AcctMgt/acctmgt.cmd?CM.src=top" target=_new >My Account</a></nobr></td>
+					<td class='R1Link'><nobr><a href="http://ccqa4.comcast.com/SmartUrl/Secure/Users.aspx" target=_new >My Account</a></nobr></td>
 					<td width=100%>&nbsp;</td>
 					<td class='R1Link'><nobr><a href="http://www.comcast.net">comcast.net</a></nobr></td>
 					<td class='R1Sep'>|</td>
 					<td><div class=ImgHelp></div></td>
 					<td>&nbsp;</td>
-					<td class='R1Link' id='skin_container_help_lite'> <a target=_new href="<c:url value="http://www.comcast.net/help/faq/index.jsp?cat=Email#SmartZone"/>"><fmt:message key="help"/></a></td>
+					<td class='R1Link' id='skin_container_help_lite'> <a target=_new href="<c:url value="http://ccqa4.comcast.com/SmartUrl/Pages/Help.aspx"/>"><fmt:message key="help"/></a></td>
 					<td>&nbsp;&nbsp;</td>
 					<td><div class=ImgPadlock></div></td>
 					<td class='R1Link'><nobr>&nbsp;<a href="http://www.comcast.net/security/" target=_new>Security</a></nobr></td>
