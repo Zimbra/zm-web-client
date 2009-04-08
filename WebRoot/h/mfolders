@@ -92,11 +92,13 @@
                                         </td>
                                         <td><div class='vertSep'></div></td>
                                         <%--<app:button id="OPNEWSEARCH" name="actionNewSearchFolder" src="startup/ImgNewFolder.gif" tooltip="folderNewSearchFolder" text="folderNewSearchFolder"/>--%>
+                                        <c:if test="${mailbox.features.savedSearches}">
                                         <td>
                                         <a id="actionNewSearchFolder" href="<c:url value="/h/mfolders?actionNewSearchFolder"/>">
                                                 <app:img src="startup/ImgNewFolder.gif" alt="folderNewSearchFolder"/><span style='padding-left:5px'><fmt:message key="folderNewSearchFolder"/></span>
                                         </a>
                                         </td>
+                                        </c:if>
                                     </tr>
                                 </table>
                             </td>
@@ -113,7 +115,7 @@
                                 <table width="100%" cellpadding=2 cellspacing=0>
                                     <c:set var="index" value="${0}"/>
                                     <zm:forEachFolder var="folder">
-                                        <c:if test="${folder.isMailView and not folder.isChats}">
+                                        <c:if test="${folder.isMailView and not folder.isChats and (!folder.isSearchFolder or mailbox.features.savedSearches)}">
                                             <c:if test="${selectedFolder.id eq folder.id and not newFolder}"><c:set var="selectedRow" value="${index}"/></c:if>
                                             <tr <c:if test="${index eq selectedRow}">class='RowSelected'</c:if>>
                                                 <td width="1%">

@@ -25,7 +25,10 @@
             <app:overviewFolder folder="${folder}"/>
         </c:if>
         <c:if test="${folder.isSearchFolder and folder.depth gt 0}">
+            <zm:getMailbox var="mailbox"/>
+            <c:if test="${mailbox.features.savedSearches}">
             <app:overviewSearchFolder folder="${folder}"/>
+            </c:if>    
         </c:if>
 
 
