@@ -318,18 +318,15 @@ td.DDSepInvisible div {
  */
 
 /* message fragment text */
-.ZmConvListFragment,
-.DwtListView-Rows .ZmConvListFragment,
-.Row-Selected .ZmConvListFragment {
+.Row .ZmConvListFragment,
+.DwtListView-Rows .Row .ZmConvListFragment,
+.Row .Row-Selected .ZmConvListFragment {
 	@Text-disabled@
 	font-weight: normal;
 }
 
-.SubjectDoubleRow,
-.DwtListView-Rows .SubjectDoubleRow,
-.Row-Selected .SubjectDoubleRow{
-	color: @darken(AppC,80)@;
-	font-weight: normal;
+.SubjectDoubleRow .ZmConvListFragment {
+	@Text-disabled@
 }
 
 .ZmConvExpanded {
