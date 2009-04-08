@@ -1365,7 +1365,7 @@ function() {
 
     var isTextView = !appCtxt.get(ZmSetting.VIEW_AS_HTML);
 	var attLinks = this._msg.getAttachmentLinks(true, isTextView);
-	var el = document.getElementById(this._attLinksId + "_tr");
+	var el = document.getElementById(this._attLinksId + "_container");
 	if (el) {
 		el.style.display = attLinks.length == 0 ? "none" : "";
 	}
@@ -1378,25 +1378,19 @@ function() {
 	var htmlArr = [];
 	var idx = 0;
 
+	var attColumns = (this._controller.isReadingPaneOn() && this._controller.isReadingPaneOnRight())
+		? 1 : ZmMailMsgView.ATTC_COLUMNS;
 	var dividx = idx;	// we might get back here
 	htmlArr[idx++] = "<table id='" + this._attLinksId + "_table' border=0 cellpadding=0 cellspacing=0>";
 
 	var rows = 0;
-	if (attLinks.length > 1) {
-		htmlArr[idx++] = "<tr><td colspan=";
-		htmlArr[idx++] = ZmMailMsgView.ATTC_COLUMNS;
-		htmlArr[idx++] = ">";
-		htmlArr[idx++] = ZmMailMsgView._buildZipUrl(appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI), this._msg.id, attLinks);
-		htmlArr[idx++] = "</td></tr>";
-		rows++;
-	}
-
 	for (var i = 0; i < attLinks.length; i++) {
 		var att = attLinks[i];
 
-		if ((i % ZmMailMsgView.ATTC_COLUMNS) == 0) {
-			if (i != 0)
+		if ((i % attColumns) == 0) {
+			if (i != 0) {
 				htmlArr[idx++] = "</tr>";
+			}
 			htmlArr[idx++] = "<tr>";
 			++rows;
 		}
@@ -1477,15 +1471,19 @@ function() {
 		htmlArr[idx++] = "</td></tr></table>";
 		htmlArr[idx++] = "</td>";
 	}
+
 	// limit display size.  seems like an attc. row has exactly 16px; we set it
 	// to 56px so that it becomes obvious that there are more attachments.
 	if (this._limitAttachments != 0 && rows > ZmMailMsgView._limitAttachments) {
-		//Commented for bug 12995 if (ZmMailMsgView.LIMIT_ATTACHMENTS != 0 && rows > ZmMailMsgView.LIMIT_ATTACHMENTS) {
 		htmlArr[dividx] = "<div style='height:";
-		htmlArr[dividx] = this._attcMaxSize;//ZmMailMsgView.ATTC_MAX_SIZE;
+		htmlArr[dividx] = this._attcMaxSize;
 		htmlArr[dividx] = "px; overflow:auto;' />";
 	}
 	htmlArr[idx++] = "</tr></table>";
+
+	if (attLinks.length > 1) {
+		htmlArr[idx++] = ZmMailMsgView._buildZipUrl(appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI), this._msg.id, attLinks);
+	}
 
 	var attLinksDiv = document.getElementById(this._attLinksId);
 	attLinksDiv.innerHTML = htmlArr.join("");
@@ -1592,6 +1590,10 @@ function(expand) {
 			table.appendChild(addressRow);
 		}
 		this._addressRows = null;
+	}
+	var attContainer = document.getElementById(this._attLinksId + "_container");
+	if (attContainer) {
+		Dwt.setVisible(attContainer, expand);
 	}
 	if (this._scrollWithIframe) {
 		var iframe = document.getElementById(this._iframeId);

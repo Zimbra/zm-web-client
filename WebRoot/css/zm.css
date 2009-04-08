@@ -403,12 +403,11 @@ td.DDSepInvisible div {
 
 /* Container for the header of the message */
 .ZmMailMsgView .MsgHeaderTable {
-	@MailMsgHeader@
+	@MailMsgHeaderLight@
 }
 
-.ZmMailMsgView .SubjectCol {
-	@FontSize-bigger@
-	@MailMsgHeaderText@
+.MessageHeaderAttachments {
+	@MailMsgAttachments@
 }
 
 .ZmMailMsgView .LabelColName {
@@ -416,6 +415,7 @@ td.DDSepInvisible div {
 	vertical-align: top;
 	text-align: right;
 	padding: 3px 0px 3px 0px;
+	white-space: nowrap;
 }
 
 .ZmMailMsgView .LabelColValue {
@@ -423,6 +423,16 @@ td.DDSepInvisible div {
 	white-space: normal;
 	vertical-align: top;
 	padding: 3px;
+}
+
+.ZmMailMsgView .SubjectCol {
+	@FontSize-big@
+	font-weight: bold;
+	@MailMsgHeaderText@
+}
+
+.ZmMailMsgView .DateCol {
+	white-space: nowrap;
 }
 
 /* ??? USE? */
@@ -3691,7 +3701,8 @@ HTML>BODY .appt-selected .appt_allday_body
 
 #IFDEF MSIE
 .arrowbtn div .ZToolbarButtonBorder {
-	margin: 0px;
+	margin-top:0px;
+	margin-bottom: 0px;
 }
 #ENDIF
 
