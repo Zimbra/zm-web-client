@@ -1019,7 +1019,7 @@ function(creates) {
 			if (appCtxt.get(ZmSetting.MAIL_NOTIFY_TOASTER, null, acct) &&
 				toasterCount < 5)
 			{
-				var msg = appCtxt.getById(mc.id);
+				var msg = appCtxt.getById(mc.id) || ZmMailMsg.createFromDom(mc, {});
 				var text = (msg.subject)
 					? ([msg.subject, " - ", (msg.fragment || "")].join(""))
 					: (msg.fragment || "");
