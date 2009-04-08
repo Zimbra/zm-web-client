@@ -272,6 +272,7 @@ ZmZimletContext.prototype.getProp = function(name) {
 };
 
 ZmZimletContext.prototype._translateConfig = function() {
+	if (!this.config) { return; }
 	if (this.config.global && this.config.global[0]) {
 		var prop = this.config.global[0].property;
 		this.config.global = {};
@@ -289,6 +290,7 @@ ZmZimletContext.prototype._translateConfig = function() {
 };
 
 ZmZimletContext.prototype.getConfig = function(name) {
+	if (!this.config) { return; }
 	if (this.config.local && this.config.local[name]) {
 		return this.config.local[name];
 	}
