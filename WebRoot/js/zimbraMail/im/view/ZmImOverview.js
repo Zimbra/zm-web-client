@@ -894,8 +894,9 @@ ZmImOverview.FILTER_SEARCH = {
 			if (!/\S/.test(this.__searchInputEl.value))
 				return;
 
-                        // initiate chat with the first item, if found
+			// initiate chat with the first item, if found
 			if (this._firstFilterItem) {
+				var rti = this._firstFilterItem.getData("ZmImOverview.data").buddy;
 				this.chatWithBuddy(rti);
 
                                 // and clear value to reset filters
