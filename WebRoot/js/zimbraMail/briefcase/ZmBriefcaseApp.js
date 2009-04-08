@@ -58,7 +58,7 @@ ZmBriefcaseApp.prototype._registerOperations =
 function() {
 	ZmOperation.registerOp(ZmId.OP_NEW_BRIEFCASEITEM, {textKey:"newBriefcase", image:"NewFolder", tooltipKey:"newBriefcaseTooltip", shortcut:ZmKeyMap.NEW_BRIEFCASEITEM});
 	ZmOperation.registerOp(ZmId.OP_NEW_FILE, {textKey:"uploadNewFile", tooltipKey:"uploadNewFile", image:"NewPage"});
-    ZmOperation.registerOp(ZmId.OP_NEW_PRESENTATION, {textKey:"newPresentation", tooltipKey:"newPresentation", image:"MSPowerpointDoc"});
+    ZmOperation.registerOp(ZmId.OP_NEW_PRESENTATION, {textKey:"newPresentation", tooltipKey:"newPresentation", image:"Presentation"});
 	ZmOperation.registerOp(ZmId.OP_SHARE_BRIEFCASE, {textKey:"shareFolder", image:"SharedMailFolder"}, ZmSetting.SHARING_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_MOUNT_BRIEFCASE, {textKey:"mountBriefcase", image:"Notebook"}, ZmSetting.SHARING_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_OPEN_FILE, {textKey:"openFile", tooltipKey:"openFileTooltip", image:"NewPage"});
@@ -132,7 +132,7 @@ ZmBriefcaseApp.prototype._registerApp =
 function() {
 	var newItemOps = {};
 	newItemOps[ZmOperation.NEW_FILE]         = "uploadNewFile";
-	//newItemOps[ZmOperation.NEW_PRESENTATION] = "newPresentation";
+	newItemOps[ZmOperation.NEW_PRESENTATION] = "newPresentation";
 
 	var newOrgOps = {};
 	newOrgOps[ZmOperation.NEW_BRIEFCASEITEM] = "briefcase";
@@ -140,7 +140,7 @@ function() {
 	var actionCodes = {};
 	actionCodes[ZmKeyMap.NEW_FILE]			= ZmOperation.NEW_FILE;
 	actionCodes[ZmKeyMap.NEW_BRIEFCASEITEM]	= ZmOperation.NEW_BRIEFCASEITEM;
-	//actionCodes[ZmKeyMap.NEW_PRESENTATION]	= ZmOperation.NEW_PRESENTATION;
+	actionCodes[ZmKeyMap.NEW_PRESENTATION]	= ZmOperation.NEW_PRESENTATION;
 
 	ZmApp.registerApp(ZmApp.BRIEFCASE,
 					 {mainPkg:				"Briefcase",
@@ -323,11 +323,17 @@ function(op, promptDialog, data) {
             case ZmOperation.NEW_PRESENTATION: contentType = ZmMimeTable.APP_ZIMBRA_SLIDES; break;
         }
 
-        var slideURL = this.getEditURLForContentType(contentType) + "?name=" + data.value;  // appContextPath + "/public/Slides.jsp?name=" + data.value;
+        var overviewController = appCtxt.getOverviewController();
+        var treeController = overviewController.getTreeController(ZmOrganizer.NOTEBOOK);
+        var treeView = treeController.getTreeView(this.getOverviewId());
+        var briefcase = treeView ? treeView.getSelected() : null;
+        var folderId = briefcase ? briefcase.id : ZmOrganizer.ID_BRIEFCASE;
+
+        var slideURL = this.getEditURLForContentType(contentType) + "?name=" + data.value + "&l=" + folderId; 
         var winname = "_newslide" +  data.value;
         var winfeatures = [
-            "width=",(window.outerWidth || 640),",",
-            "height=",(window.outerHeight || 480),",",
+            "width=",(screen.width || 640),",",
+            "height=",(screen.height || 480),",",
             "resizable,toolbar=no,menubar=no,fullscreen=yes,location=no,status=no",
             "fullscreen=yes"
         ].join("");
