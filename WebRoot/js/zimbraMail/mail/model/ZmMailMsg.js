@@ -401,15 +401,32 @@ function(id) {
 
 ZmMailMsg.prototype.addInlineAttachmentId =
 function (cid,aid,part) {
-	if (!this._inlineAtts) {
-		this._inlineAtts = [];
-	}
-	this._onChange("inlineAttachments",aid);
-	if (aid) {
-		this._inlineAtts.push({"cid":cid,"aid":aid});
-	} else if (part) {
-		this._inlineAtts.push({"cid":cid,"part":part});
-	}
+    if (!this._inlineAtts) {
+        this._inlineAtts = [];
+    }
+
+    if(this._chkInlineAtt(cid, aid, part)){
+        return false;
+    }
+
+    this._onChange("inlineAttachments",aid);
+    if (aid) {
+        this._inlineAtts.push({"cid":cid,"aid":aid});
+    } else if (part) {
+        this._inlineAtts.push({"cid":cid,"part":part});
+    }
+    return true;
+};
+
+
+ZmMailMsg.prototype._chkInlineAtt = function( cid, aid, part){
+    for(var i=0; i<this._inlineAtts.length; i++){
+        var iAtt = this._inlineAtts[i];
+        if(iAtt.cid == cid && (iAtt.aid == aid || iAtt.part == part)){
+            return true;
+        }
+    }
+    return false;
 };
 
 ZmMailMsg.prototype.setInlineAttachments =
