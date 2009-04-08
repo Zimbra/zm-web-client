@@ -23,21 +23,27 @@
 <%-- Deep linking  --%>
   <c:if test="${not empty param.app}">
 	  <c:choose>
-		  <c:when test="${param.app eq 'calendar'}">
+		  <c:when test="${param.app eq 'calendar' and mailbox.features.calendar}">
 			  <c:redirect url="/h/calendar" />
 		  </c:when>
-		  <c:when test="${param.app eq 'options'}">
+          	  <c:when test="${param.app eq 'mail' and mailbox.features.mail}">
+			<c:redirect url="/h/search" />
+		  </c:when>
+		  <c:when test="${param.app eq 'voice' and mailbox.features.voice}">
+			<c:redirect url="/h/search?st=voicemail" />
+		  </c:when>
+		  <c:when test="${param.app eq 'options' and mailbox.features.options}">
 			  <c:redirect url="/h/options" />
 		  </c:when>
-		  <c:when test="${param.app eq 'contacts'}">
+		  <c:when test="${param.app eq 'contacts' and mailbox.features.contacts}">
 			  <c:redirect url="/h/search?st=contact" />
 		  </c:when>
-		  <c:when test="${param.app eq 'tasks'}">
+		  <c:when test="${param.app eq 'tasks' and mailbox.features.tasks}">
 			  <c:redirect url="/h/search?st=task" />
 		  </c:when>
-          <c:when test="${param.app eq 'briefcases'}">
+          	  <c:when test="${param.app eq 'briefcases' and mailbox.features.briefcases}">
 			  <c:redirect url="/h/search?st=briefcase" />
-		  </c:when>
+		 </c:when>
       </c:choose>
   </c:if>
   <c:if test="${not empty param.view}">
