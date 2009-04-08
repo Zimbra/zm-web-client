@@ -197,7 +197,7 @@ function(event) {
 	// rename folder
 	var callback = new AjxCallback(this, this._handleColor);
 	var organizer = this._organizer;
-	if (!organizer.isSystem()) {
+	if (!organizer.isSystem() && !organizer.isDataSource()) {
 		var name = this._nameInputEl.value;
 		if (organizer.name != name) {
 			organizer.rename(name, callback, this._handleRenameErrorCallback);
