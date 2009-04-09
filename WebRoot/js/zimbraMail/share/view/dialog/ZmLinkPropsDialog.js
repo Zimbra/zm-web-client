@@ -164,6 +164,7 @@ ZmLinkPropsDialog._handleUrlTest = function(event) {
 	var dialog = Dwt.getObjectFromElement(target);
 
 	var winurl = dialog._urlInput.getValue();
+	if (!winurl) { return; }
 	var winname = "_new";
 	var winfeatures = [
 		"width=",(window.outerWidth || 640),",",

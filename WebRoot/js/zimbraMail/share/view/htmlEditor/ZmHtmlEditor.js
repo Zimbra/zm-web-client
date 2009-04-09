@@ -633,7 +633,7 @@ function() {
 
 		function getURL() {
 				var url = dlg.linkTarget.getValue();
-				if (!/^(https?|ftp):\x2f\x2f/i.test(url)) {
+				if (url && !/^(https?|ftp):\x2f\x2f/i.test(url)) {
 					url = "http://" + url;
 					dlg.linkTarget.setValue(url);
 				}
@@ -643,7 +643,12 @@ function() {
 		var btn = new DwtButton({ parent: dlg, parentElement: id + "_testBtnCont" });
 		btn.setText(ZmMsg.testUrl);
 		btn.setToolTipContent(ZmMsg.testUrlTooltip);
-		btn.addSelectionListener(new AjxListener(this, function(){window.open(getURL());}));
+		btn.addSelectionListener(new AjxListener(this, function() {
+			var url = getURL();
+			if (url) {
+				window.open(url);
+			}
+		}));
 
 		dlg._tabGroup.addMember(dlg.linkText, 0);
 		dlg._tabGroup.addMember(dlg.linkTarget, 1);
