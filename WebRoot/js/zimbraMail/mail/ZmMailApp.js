@@ -594,7 +594,7 @@ ZmMailApp.prototype._registerOperations =
 function() {
 	ZmOperation.registerOp(ZmId.OP_ADD_FILTER_RULE, {textKey:"newFilter", image:"Plus"}, ZmSetting.FILTERS_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_ADD_SIGNATURE, {textKey:"signature", image:"AddSignature", tooltipKey:"chooseSignature"}, ZmSetting.SIGNATURES_ENABLED);
-	ZmOperation.registerOp(ZmId.OP_CHECK_MAIL, {textKey:"checkMail", tooltipKey:"checkMailTooltip", image:"Refresh", precedence:80});
+	ZmOperation.registerOp(ZmId.OP_CHECK_MAIL, {textKey:"checkMail", tooltipKey:"checkMailTooltip", image:"Refresh", precedence:90});
 	ZmOperation.registerOp(ZmId.OP_COMPOSE_OPTIONS, {textKey:"options", image:"Preferences"});
 	ZmOperation.registerOp(ZmId.OP_DELETE_CONV, {textKey:"delConv", image:"DeleteConversation"}, ZmSetting.CONVERSATIONS_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_DELETE_MSG, {textKey:"delMsg", image:"DeleteMessage"});
@@ -641,7 +641,7 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_SHOW_BCC, {textKey:"showBcc"});
 	ZmOperation.registerOp(ZmId.OP_SHOW_ONLY_MAIL, {textKey:"showOnlyMail", image:"Conversation"}, ZmSetting.MIXED_VIEW_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_SHOW_ORIG, {textKey:"showOrig", image:"Message"});
-	ZmOperation.registerOp(ZmId.OP_SPAM, {textKey:"junk", tooltipKey:"junkTooltip", image:"JunkMail", precedence:90}, ZmSetting.SPAM_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_SPAM, {textKey:"junk", tooltipKey:"junkTooltip", image:"JunkMail", precedence:80}, ZmSetting.SPAM_ENABLED);
 };
 
 ZmMailApp.prototype._registerItems =
