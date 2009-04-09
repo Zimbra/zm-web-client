@@ -887,7 +887,12 @@ function() {
 // Returns the currently selected match
 ZmAutocompleteListView.prototype._getSelected =
 function() {
-	return this._matches ? this._matches[this._selected] : null;
+	if (this._matches && this._matches.length) {
+		var selected = this._selected || 0;
+		return this._matches[selected];
+	} else {
+		return null;
+	}
 };
 
 // Force focus to the input element (handle Tab in Firefox)
