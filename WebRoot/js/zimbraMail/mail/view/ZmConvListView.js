@@ -465,7 +465,9 @@ function(item) {
 ZmConvListView.prototype._doCollapse =
 function(item) {
 	var rowIds = this._msgRowIdList[item.id];
-	this._showMsgs(rowIds, false);
+	if (rowIds && rowIds.length) {
+		this._showMsgs(rowIds, false);
+	}
 	this._setImage(item, ZmItem.F_EXPAND, "NodeCollapsed");
 	this._expanded[item.id] = false;
 };
@@ -538,6 +540,15 @@ function(item) {
 
 ZmConvListView.prototype._resetExpansion =
 function() {
+
+	// remove change listeners on conv msg lists
+	for (var id in this._expandedItems) {
+		var item = this._expandedItems[id];
+		if (item.type == ZmItem.CONV && item.msgs) {
+			item.msgs.removeChangeListener(this._listChangeListener);
+		}
+	}
+
 	this._expanded = {};		// current expansion state, by ID
 	this._msgRowIdList = {};	// list of row IDs for a conv ID
 	this._msgOffset = {};		// the offset for a msg ID
@@ -668,7 +679,9 @@ function(ev) {
 		var sortIndex = ev.getDetail("sortIndex");
 		var msgIndex = sortIndex || 0;
 		this._addRow(div, convIndex + msgIndex + 1);
-		this._msgRowIdList[item.cid].push(div.id);
+		if (this._msgRowIdList[item.cid]) {
+			this._msgRowIdList[item.cid].push(div.id);
+		}
 		handled = ev.handled = true;
 	}
 
@@ -682,7 +695,7 @@ function(ev) {
 			DBG.println(AjxDebug.DBG1, "conv updated from ID " + item._oldId + " to ID " + item.id);
 		}
 		this._expanded[item.id] = this._expanded[item._oldId];
-		this._msgRowIdList[item.id] = this._msgRowIdList[item._oldId];
+		this._msgRowIdList[item.id] = this._msgRowIdList[item._oldId] || [];
 	}
 	
 	if (isConv && (ev.event == ZmEvent.E_MODIFY) && (fields && fields[ZmItem.F_INDEX])) {
@@ -728,7 +741,8 @@ function(ev) {
 		var dateField = document.getElementById(fieldId);
 		if (dateField) {
 			var html = [];
-			this._getCellContents(html, 0, item, ZmItem.F_DATE, this._headerHash[ZmItem.F_DATE]._index, new Date());
+			var colIdx = this._headerHash[ZmItem.F_DATE] && this._headerHash[ZmItem.F_DATE]._index;
+			this._getCellContents(html, 0, item, ZmItem.F_DATE, colIdx, new Date());
 			dateField.innerHTML = html.join("");
 		}
 	}
