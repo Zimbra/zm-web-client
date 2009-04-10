@@ -346,13 +346,19 @@ function(ev) {
 
 ZmMailMsgListView.prototype._changeFolderName = 
 function(msg, oldFolderId) {
-	var folderCell = this._getElement(msg, ZmItem.F_FOLDER);
-	var folder = folderCell && appCtxt.getById(msg.folderId);
-	if (folder) {
-		folderCell.innerHTML = folder.getName();
-		if (folder.nId == ZmFolder.ID_TRASH || oldFolderId == ZmFolder.ID_TRASH) {
-			this._changeTrashStatus(msg);
+	var folder = appCtxt.getById(msg.folderId);
+
+	if (!this._controller.isReadingPaneOn() || 
+		!this._controller.isReadingPaneOnRight())
+	{
+		var folderCell = folder ? this._getElement(msg, ZmItem.F_FOLDER) : null;
+		if (folderCell) {
+			folderCell.innerHTML = folder.getName();
 		}
+	}
+
+	if (folder && (folder.nId == ZmFolder.ID_TRASH || oldFolderId == ZmFolder.ID_TRASH)) {
+		this._changeTrashStatus(msg);
 	}
 };
 
