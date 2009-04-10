@@ -1381,6 +1381,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 	<tr>
 		<td class='ZOptionsSectionMain'>
 			<table width=100%>
+				<$ if (data.isEnabled(ZmSetting.IM_PREF_AUTO_LOGIN)) { $>
 				<tr>
 					<td class='ZOptionsLabel'><$=ZmMsg.imLoginLabel$></td>
 					<td class='ZOptionsField'>
@@ -1393,6 +1394,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 						<hr>
 					</td>
 				</tr>
+				<$ } $>
 
 				<$ if (data.isEnabled(ZmSetting.IM_PREF_INSTANT_NOTIFY)) { $>
 				<tr>

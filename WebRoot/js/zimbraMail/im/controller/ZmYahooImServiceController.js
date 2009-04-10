@@ -51,7 +51,7 @@ function(loginParams) {
 	var id = appCtxt.get(ZmSetting.IM_YAHOO_ID);
 	if (id) {
 		this._loginById(loginParams, id, true);
-	} else {
+	} else if (!loginParams || !loginParams.auto) {
 		this._showLoginDialog(loginParams);
 	}
 };
@@ -59,7 +59,7 @@ function(loginParams) {
 ZmYahooImServiceController.prototype.logout =
 function() {
 	this.service.logout();
-	this._saveYahooId("");
+	this._saveSettings("");
 };
 
 ZmYahooImServiceController.prototype.defineStatusMenu =
@@ -107,9 +107,7 @@ function(loginParams, id, remember, dialog) {
 ZmYahooImServiceController.prototype._handleResponseGetYahooCookie =
 function(loginParams, id, remember, dialog, response) {
 	var responseData = response.getResponse().GetYahooCookieResponse;
-	if (responseData.error) {
-		this._showLoginDialog(loginParams, id, remember, ZmMsg.imPasswordExpired);
-	} else {
+	if (!responseData.error) {
 		if (dialog) {
 			dialog.popdown();
 		}
@@ -119,8 +117,10 @@ function(loginParams, id, remember, dialog, response) {
 		var cookie = ["Y=", trim(responseData.Y), "; T=", trim(responseData.T)].join("");
 		this.service.login(cookie, loginParams);
 		if (remember) {
-			this._saveYahooId(id);
+			this._saveSettings(id);
 		}
+	} else if (!loginParams || !loginParams.auto) {
+		this._showLoginDialog(loginParams, id, remember, ZmMsg.imPasswordExpired);
 	}
 };
 
@@ -148,13 +148,15 @@ function(loginParams, id, remember, dialog, response) {
 	}
 };
 
-ZmYahooImServiceController.prototype._saveYahooId =
+ZmYahooImServiceController.prototype._saveSettings =
 function(id) {
 	var settings = appCtxt.getSettings(),
-		setting = settings.getSetting(ZmSetting.IM_YAHOO_ID);
-	if (setting.getValue() != id) {
-		setting.setValue(id);
-		settings.save([setting]);
+		idSetting = settings.getSetting(ZmSetting.IM_YAHOO_ID),
+		loginSetting = settings.getSetting(ZmSetting.IM_PREF_AUTO_LOGIN);
+	if (idSetting.getValue() != id) {
+		idSetting.setValue(id);
+		loginSetting.setValue(id ? true : false);
+		settings.save([idSetting, loginSetting]);
 	}
 };
 

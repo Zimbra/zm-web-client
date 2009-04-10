@@ -43,6 +43,9 @@ ZmImServiceController.ACCOUNTS = "ACCOUNTS";
 /** true if the service supports conferences */
 ZmImServiceController.CONFERENCES = "INSTANT_NOTIFY";
 
+/** true if the service supports a preference for auto login */
+ZmImServiceController.AUTO_LOGIN_PREF = "AUTO_LOGIN_PREF";
+
 /** true if the service allows the users to change instant notify */
 ZmImServiceController.INSTANT_NOTIFY = "INSTANT_NOTIFY";
 
@@ -52,6 +55,7 @@ ZmImServiceController.INSTANT_NOTIFY = "INSTANT_NOTIFY";
  * @param params		[hash]					hash of params:
  *        callback		[AjxCallback] 			Callback to run after login. Optional
  *        presence		[hash]					{ show, customStatusMsg }
+ *        auto			[Boolean]				true if this is auto login on startup
  */
 ZmImServiceController.prototype.login =
 function(params) {

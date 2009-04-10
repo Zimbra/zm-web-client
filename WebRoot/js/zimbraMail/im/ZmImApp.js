@@ -338,7 +338,11 @@ ZmImApp.prototype._registerPrefs = function() {
 
 	ZmPref.registerPref("IM_PREF_AUTO_LOGIN",
 			    { displayName      : ZmMsg.imPrefAutoLogin,
-			      displayContainer : ZmPref.TYPE_CHECKBOX });
+			      displayContainer : ZmPref.TYPE_CHECKBOX,
+				  precondition     : function() {
+					  return ZmImApp.INSTANCE.getServiceController().capabilities[ZmImServiceController.AUTO_LOGIN_PREF]; 
+				  }
+				});
 
 	ZmPref.registerPref("IM_PREF_FLASH_ICON",
 			    { displayName      : ZmMsg.imPrefFlashIcon,
@@ -478,6 +482,7 @@ function() {
  * @param params		[hash]					hash of params:
  *        callback		[AjxCallback] 			Callback to run after login. Optional
  *        presence		[hash]					{ show, customStatusMsg }
+ *        auto			[Boolean]				true if this is auto login on startup
  */
 ZmImApp.prototype.login =
 function(params) {
@@ -492,7 +497,7 @@ function() {
 
 ZmImApp.prototype._postLoadAutoLogin =
 function() {
-	this.login();
+	this.login({ auto: true });
 };
 
 ZmImApp.prototype.getImController = function() {

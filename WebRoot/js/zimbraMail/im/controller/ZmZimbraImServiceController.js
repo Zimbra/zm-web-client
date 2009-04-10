@@ -17,6 +17,7 @@ ZmZimbraImServiceController = function(roster) {
 	var capabilities = [
 		ZmImServiceController.ACCOUNTS,
 		ZmImServiceController.CONFERENCES,
+		ZmImServiceController.AUTO_LOGIN_PREF,
 		ZmImServiceController.INSTANT_NOTIFY
 	];
 	ZmImServiceController.call(this, roster, capabilities);
