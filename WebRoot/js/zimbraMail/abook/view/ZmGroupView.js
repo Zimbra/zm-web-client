@@ -637,6 +637,8 @@ function(result) {
 
 	this._addButton.setEnabled(list.length > 0);
 	this._addAllButton.setEnabled(list.length > 0);
+
+	this._searchButton.setEnabled(true);
 };
 
 
