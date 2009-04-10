@@ -696,8 +696,9 @@ function(addrs) {
 	if (addrs && addrs.length) {
 		for (var i = 0; i < addrs.length; i++) {
 			if (addrs[i]) {
-				var addr = (addrs[i].address || addrs[i]).toLowerCase();
-				if (!this._addrLookupHash[addr]) {
+				var addr = addrs[i].address || addrs[i];
+				addr = (addr && AjxUtil.isString(addr)) ? addr.toLowerCase() : null;
+				if (addr && !this._addrLookupHash[addr]) {
 					this._addrLookupList.push(addr);
 					this._addrLookupHash[addr] = [];
 				}
