@@ -139,6 +139,7 @@
         <c:set var="signatureNameKey" value="signatureName${i}"/>
         <c:set var="origSignatureValueKey" value="origSignatureValue${i}"/>
         <c:set var="signatureValueKey" value="signatureValue${i}"/>
+        <c:set var="signatureTypeKey" value="signatureType${i}"/>
         <c:if test="${(param[origSignatureNameKey] ne param[signatureNameKey]) or
                 (param[origSignatureValueKey] ne param[signtureValueKey])}">
             <c:set var="modSignatureWarning" value="${true}" scope="request"/>
@@ -152,7 +153,7 @@
                 <c:otherwise>
                     <c:set var="signatureIdKey" value="signatureId${i}"/>
                     <zm:modifySiganture id="${param[signatureIdKey]}"
-                                        name="${param[signatureNameKey]}" value="${param[signatureValueKey]}"/>
+                                        name="${param[signatureNameKey]}" value="${param[signatureValueKey]}" type="${param[signatureTypeKey]}"/>
                     <c:set var="signatureUpdated" value="${true}"/>
                     <c:set var="modSignatureWarning" value="${false}" scope="request"/>
                 </c:otherwise>
@@ -171,7 +172,7 @@
             <app:status style="Warning"><fmt:message key="optionsNoSignatureValue"/></app:status>
         </c:when>
         <c:otherwise>
-            <zm:createSiganture var="sigId" name="${param.newSignatureName}" value="${param.newSignatureValue}"/>
+            <zm:createSiganture var="sigId" name="${param.newSignatureName}" value="${param.newSignatureValue}" type="${param.newSignatureType}"/>
             <c:set var="updated" value="${true}"/>
             <c:set var="newSignatureWarning" value="${false}" scope="request"/>
         </c:otherwise>
