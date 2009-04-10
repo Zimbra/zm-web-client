@@ -2109,8 +2109,9 @@ function() {
 	// If the app overview has been created, show the zimlets tree.
 	var accordionController = ZmAppAccordionController.getInstance();
 	var accordion = accordionController.getAccordion(true);
-	if (accordion) {
-		accordionController.getCurrentOverview().setTreeVisible(ZmOrganizer.ZIMLET, true);
+	var overview = (accordion) ? accordionController.getCurrentOverview() : null;
+	if (overview) {
+		overview.setTreeVisible(ZmOrganizer.ZIMLET, true);
 	}
 };
 
