@@ -496,7 +496,7 @@ function(callback, result) {
 			// was created, we didnt know it was a data source
 			treeItem.dispose();
 			var parentNode = treeView.getTreeItemById(ZmOrganizer.ID_ROOT);
-			var organizer = appCtxt.getById(this.folderId);
+			var organizer = appCtxt.getById(fid);
 			if (organizer) {
 				treeView._addNew(parentNode, organizer);
 			}
