@@ -1184,6 +1184,15 @@ function(op) {
 				curText = curText.substring(0, idx).replace(regEx, "");
 			}
 		}
+
+		// forwarding actions are tied to inc option
+		if (this._action == ZmOperation.FORWARD_INLINE && incOption == ZmOperation.INC_ATTACHMENT) {
+			this._action = ZmOperation.FORWARD_ATT;
+		}
+		if (this._action == ZmOperation.FORWARD_ATT && incOption != ZmOperation.INC_ATTACHMENT) {
+			this._action = ZmOperation.FORWARD_INLINE;
+		}
+
 		this._composeView.resetBody(this._action, this._msg, curText, incOption,
 									true /* don't reattach signature (bug 26831) */);
 		this._curIncOption = ZmComposeController.INC_OP[incOption];
