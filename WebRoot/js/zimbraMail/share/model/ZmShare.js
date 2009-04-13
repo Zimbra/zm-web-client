@@ -637,6 +637,8 @@ function(mode, isCompose) {
 
 ZmShare.prototype._createXmlPart =
 function(mode) {
+	var folder = (appCtxt.isOffline) ? appCtxt.getFolderTree().getByPath(this.link.name) : null;
+	var linkId = (folder) ? folder.id : this.link.id;
 	var params = [
 		ZmShare.URI, 
 		ZmShare.VERSION, 
@@ -647,7 +649,7 @@ function(mode) {
 		this.grantor.id, 
 		this.grantor.email,
 		AjxStringUtil.xmlAttrEncode(this.grantor.name),
-		this.link.id, 
+		linkId,
 		AjxStringUtil.xmlAttrEncode(this.link.name), 
 		this.link.view, 
 		this.link.perm,
