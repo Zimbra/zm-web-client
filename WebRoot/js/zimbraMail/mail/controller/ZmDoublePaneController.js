@@ -391,6 +391,7 @@ function(view) {
 	var elements = {};
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[view];
 	elements[ZmAppViewMgr.C_APP_CONTENT] = this._doublePaneView;
+	this._doublePaneView.setReadingPane();
 	this._setView({view:view, elements:elements, isAppView:this._isTopLevelView()});
 	this._resetNavToolBarButtons(view);
 				
