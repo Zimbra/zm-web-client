@@ -271,7 +271,7 @@ ZmConvListView.prototype._getAbridgedContent =
 function(item, colIdx) {
 	var htmlArr = [];
 	var idx = 0;
-	var width = (AjxEnv.isIE || AjxEnv.isSafari) ? "22" : "16";
+	var width = (AjxEnv.isIE || AjxEnv.isSafari) ? 22 : 16;
 
 	// first row
 	htmlArr[idx++] = "<table border=0 cellspacing=0 cellpadding=0 width=100%>";
@@ -299,7 +299,7 @@ function(item, colIdx) {
 	if (item.type == ZmItem.MSG && (item.isHighPriority || item.isLowPriority)) {
 		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_PRIORITY, colIdx, width, "align=right");
 	} else {
-		htmlArr[idx++] = "<td width=" + width + "></td>";
+		htmlArr[idx++] = "<td width='" + (width+15) + "'></td>";
 	}
 	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_FROM, colIdx);
 	if (item.type != ZmItem.MSG) {
