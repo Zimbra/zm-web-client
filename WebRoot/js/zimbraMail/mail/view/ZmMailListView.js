@@ -401,15 +401,8 @@ function(htmlArr, idx, item, field, colIdx, params) {
 
 ZmListView.prototype._getCellClass =
 function(item, field, params) {
-	if (!this._isMultiColumn) {
-		if (field == ZmItem.F_SUBJECT) {
-			return "SubjectDoubleRow";
-		}
-		if (field == ZmItem.F_SELECTION) {
-			return "AbridgedSelection";
-		}
-	}
-	return null;
+	return (!this._isMultiColumn && field == ZmItem.F_SUBJECT)
+		? "SubjectDoubleRow" : null;
 };
 
 // Figure out how many of the participants will fit into a given pixel width.

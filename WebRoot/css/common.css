@@ -434,6 +434,10 @@ DIV.vSpace {
 	@ListItemText@
 }
 
+.RowDouble TD {
+	vertical-align:top;
+}
+
 /* list row styles (bgs & border) */
 
 .Row						{	@ListItemContainer-normal@			}
