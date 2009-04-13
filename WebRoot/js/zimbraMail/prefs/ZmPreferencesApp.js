@@ -323,17 +323,13 @@ function() {
 		options: 			["Arial", "Times New Roman", "Courier", "Verdana"],
 		precondition:		[ZmSetting.HTML_COMPOSE_ENABLED, ZmSetting.NOTEBOOK_ENABLED]
 	});
-    //Yuck: Should add functionality in Pref. to add prefix/postfix to all options. Meanwhile...
-    var fontSizeOptions = ["8", "10", "12", "14", "18", "24", "36"];
-    var fontSizeDisplayOptions = new Array();
-    for(var i=0; i<fontSizeOptions.length; i++){
-        fontSizeDisplayOptions[i] = fontSizeOptions[i] + ZmMsg.pt;
-    }
-    ZmPref.registerPref("COMPOSE_INIT_FONT_SIZE", {
+
+	// Yuck: Should add functionality in Pref. to add prefix/postfix to all options. Meanwhile...
+	var fontSizeOptions = ["8"+ZmMsg.pt, "10"+ZmMsg.pt, "12"+ZmMsg.pt, "14"+ZmMsg.pt, "18"+ZmMsg.pt, "24"+ZmMsg.pt, "36"+ZmMsg.pt];
+	ZmPref.registerPref("COMPOSE_INIT_FONT_SIZE", {
 		displayName:		null,
 		displayContainer:	ZmPref.TYPE_SELECT,
-        options:            fontSizeOptions,
-		displayOptions: 	fontSizeDisplayOptions,
+		displayOptions: 	fontSizeOptions,
 		precondition:		[ZmSetting.HTML_COMPOSE_ENABLED, ZmSetting.NOTEBOOK_ENABLED]
 	});
 
