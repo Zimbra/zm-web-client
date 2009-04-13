@@ -251,25 +251,6 @@ function(ev) {
 	}
 };
 
-// If one or more messages have been moved/deleted, and the CLV from which we came represents
-// folder contents, see if this conv still belongs in that folder. It does if it has at least
-// one message still in that folder. Note that the conv item in the CLV isn't physically moved
-// or deleted, it's just removed from the view and its underlying list.
-ZmConvController.prototype._checkConvLocation =
-function() {
-	var clc = AjxDispatcher.run("GetConvListController");
-	var list = clc.getList();
-	var folderId = list.search.folderId;
-	if (folderId || (this._conv.numMsgs == 1)) {
-		if (this._conv.checkMoved(folderId)) { // view notif happens here
-			list.remove(this._conv);
-			var clv = clc.getCurrentView();
-			var respCallback = new AjxCallback(clv, clv._handleResponseCheckReplenish);
-			clc._checkReplenish(respCallback);
-		}
-	}
-};
-
 // Tag in the summary area clicked, do a tag search.
 ZmConvController.prototype._convTagClicked =
 function(tagId) {
@@ -355,7 +336,6 @@ function() {
 	popView = popView && ((currViewId == this._currentView) || popAnyway);
 
 	if (popView) {
-		this._checkConvLocation();
 		this._app.popView();
 	} else {
 		var delButton = this._toolbar[this._currentView].getButton(ZmOperation.DELETE_MENU);
