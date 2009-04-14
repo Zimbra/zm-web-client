@@ -811,7 +811,8 @@ function(result) {
  *
  * Essentially, we want to handle this as:
  *
- *		modified:	c {id:-676, newId: 678}
+ * 		created:	m {id:677, cid:678}
+ *		modified:	c {id:-676, _newId: 678}
  * 					m {id:676, cid:678}
  *
  */

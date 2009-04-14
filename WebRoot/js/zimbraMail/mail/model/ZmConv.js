@@ -246,25 +246,26 @@ function() {
 ZmConv.prototype.notifyModify =
 function(obj) {
 	var fields = {};
-	// a conv's ID can change if it's a virtual conv becoming real
+	// a conv's ID can change if it's a virtual conv becoming real; 'this' will be
+	// the old conv; if we can, we switch to using the new conv, which will be more
+	// up to date; the new conv will be available if it was received via search results
 	if (obj._newId != null) {
-		this._oldId = this.id;
-		this.id = obj._newId;
-		appCtxt.cacheSet(this.id, this);	// make sure we can get it from cache via new ID
-		appCtxt.cacheSet(this._oldId);
-		if (this.msgs) {
-			this.msgs.convId = this.id;
-			var a = this.msgs.getArray();
+		var conv = appCtxt.getById(obj._newId) || this;
+		conv._oldId = this.id;
+		appCtxt.cacheSet(conv._oldId);
+		conv.msgs = conv.msgs || this.msgs;
+		if (conv.msgs) {
+			conv.msgs.convId = conv.id;
+			var a = conv.msgs.getArray();
 			for (var i = 0; i < a.length; i++) {
-				a[i].cid = this.id;
+				a[i].cid = conv.id;
 			}
 		}
-		if (this.list && this._oldId) {
-			this.list._idHash[this.id] = this.list._idHash[this._oldId];
-			delete this.list._idHash[this._oldId];
+		if (conv.list && conv._oldId) {
+			delete conv.list._idHash[conv._oldId];
 		}
 		fields[ZmItem.F_ID] = true;
-		this._notify(ZmEvent.E_MODIFY, {fields : fields});
+		conv._notify(ZmEvent.E_MODIFY, {fields : fields});
 	}
 	if (obj.n != null) {
 		this.numMsgs = obj.n;
@@ -472,8 +473,7 @@ function(convNode) {
 	this.fragment = convNode.fr;
 	this.sf = convNode.sf;
 
-	// should always be an <m> element; note that the list of msg IDs in a
-	// search result is partial - only msgs that matched are included
+	// note that the list of msg IDs in a search result is partial - only msgs that matched are included
 	if (convNode.m) {
 		this.msgIds = [];
 		for (var i = 0, count = convNode.m.length; i < count; i++) {
