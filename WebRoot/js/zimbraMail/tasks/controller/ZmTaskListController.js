@@ -1,17 +1,15 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- *
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007 Zimbra, Inc.
- *
+ * Copyright (C) 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- *
+ * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -23,10 +21,52 @@ ZmTaskListController = function(container, app) {
 	this._dragSrc.addDragListener(new AjxListener(this, this._dragListener));
 
 	this._listeners[ZmOperation.EDIT] = new AjxListener(this, this._editListener);
+	this._listeners[ZmOperation.PRINT] = null; // override base class to do nothing
+	this._listeners[ZmOperation.PRINT_TASK] = new AjxListener(this, this._printTaskListener);
+	this._listeners[ZmOperation.PRINT_TASKFOLDER] = new AjxListener(this, this._printTaskFolderListener);
+
+	this._currentTaskView = ZmId.VIEW_TASK_ALL;
 };
 
 ZmTaskListController.prototype = new ZmListController;
 ZmTaskListController.prototype.constructor = ZmTaskListController;
+
+
+// Consts
+ZmTaskListController.VIEWS = [
+	ZmId.VIEW_TASK_NOT_STARTED,
+	ZmId.VIEW_TASK_COMPLETED,
+	ZmId.VIEW_TASK_IN_PROGRESS,
+	ZmId.VIEW_TASK_WAITING,
+	ZmId.VIEW_TASK_DEFERRED,
+	ZmId.VIEW_TASK_ALL
+];
+
+ZmTaskListController.ICON = {};
+ZmTaskListController.ICON[ZmId.VIEW_TASK_NOT_STARTED]		= "TaskViewNotStarted";
+ZmTaskListController.ICON[ZmId.VIEW_TASK_COMPLETED]			= "TaskViewCompleted";
+ZmTaskListController.ICON[ZmId.VIEW_TASK_IN_PROGRESS]		= "TaskViewInProgress";
+ZmTaskListController.ICON[ZmId.VIEW_TASK_WAITING]			= "TaskViewWaiting";
+ZmTaskListController.ICON[ZmId.VIEW_TASK_DEFERRED]			= "TaskViewDeferred";
+ZmTaskListController.ICON[ZmId.VIEW_TASK_ALL]				= "TaskList";
+
+ZmTaskListController.MSG_KEY = {};
+ZmTaskListController.MSG_KEY[ZmId.VIEW_TASK_NOT_STARTED]	= "notStarted";
+ZmTaskListController.MSG_KEY[ZmId.VIEW_TASK_COMPLETED]		= "completed";
+ZmTaskListController.MSG_KEY[ZmId.VIEW_TASK_IN_PROGRESS]	= "inProgress";
+ZmTaskListController.MSG_KEY[ZmId.VIEW_TASK_WAITING]		= "waitingOn";
+ZmTaskListController.MSG_KEY[ZmId.VIEW_TASK_DEFERRED]		= "deferred";
+ZmTaskListController.MSG_KEY[ZmId.VIEW_TASK_ALL]			= "all";
+
+ZmTaskListController.SOAP_STATUS = {};
+ZmTaskListController.SOAP_STATUS[ZmId.VIEW_TASK_NOT_STARTED]= "NEED";
+ZmTaskListController.SOAP_STATUS[ZmId.VIEW_TASK_COMPLETED]	= "COMP";
+ZmTaskListController.SOAP_STATUS[ZmId.VIEW_TASK_IN_PROGRESS]= "INPR";
+ZmTaskListController.SOAP_STATUS[ZmId.VIEW_TASK_WAITING]	= "WAITING";
+ZmTaskListController.SOAP_STATUS[ZmId.VIEW_TASK_DEFERRED]	= "DEFERRED";
+
+
+// Public methods
 
 ZmTaskListController.prototype.toString =
 function() {
@@ -35,6 +75,7 @@ function() {
 
 ZmTaskListController.prototype.show =
 function(list, folderId) {
+	this._folderId = folderId;
 
 	// XXX: will "list" ever be ZmTaskList?
 	if (list instanceof ZmTaskList)
@@ -65,11 +106,36 @@ function(list, folderId) {
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
 	elements[ZmAppViewMgr.C_APP_CONTENT] = lv;
 
-	this._setView(this._currentView, elements, true);
+	this._setView({view:this._currentView, elements:elements, isAppView:true});
 
 	this._setTabGroup(this._tabGroups[this._currentView]);
 	this._restoreFocus();
 	this._resetNavToolBarButtons(this._currentView);
+};
+
+ZmTaskListController.prototype.switchView =
+function(view) {
+	if (this._currentTaskView == view) { return; }
+
+	this._currentTaskView = view;
+
+	// always reset the view menu button icon to reflect the current view
+	var btn = this._toolbar[this._currentView].getButton(ZmOperation.VIEW_MENU);
+	btn.setImage(ZmTaskListController.ICON[view]);
+
+	var sc = appCtxt.getSearchController();
+	var soapStatus = ZmTaskListController.SOAP_STATUS[view];
+	sc.redoSearch(appCtxt.getCurrentSearch(), false, {allowableTaskStatus:soapStatus});
+};
+
+ZmTaskListController.prototype.getAllowableTaskStatus =
+function() {
+	var tb = this._toolbar && this._toolbar[this._currentView];
+	var menu = tb ? tb.getButton(ZmOperation.VIEW_MENU).getMenu() : null;
+	var mi = menu ? menu.getSelectedItem(DwtMenuItem.RADIO_STYLE) : null;
+	var id = mi ? mi.getData(ZmOperation.MENUITEM_ID) : ZmId.VIEW_TASK_ALL;
+
+	return ZmTaskListController.SOAP_STATUS[id];
 };
 
 ZmTaskListController.prototype.getKeyMapName =
@@ -95,6 +161,11 @@ function(actionCode) {
 	{
 		return ZmListController.prototype.handleKeyAction.call(this, actionCode);
 	}
+};
+
+ZmTaskListController.prototype.mapSupported =
+function(map) {
+	return (map == "list");
 };
 
 ZmTaskListController.prototype.quickSave =
@@ -165,13 +236,17 @@ function(view) {
 
 ZmTaskListController.prototype._getToolBarOps =
 function() {
-	return [ZmOperation.NEW_MENU,
-			ZmOperation.SEP,
-			ZmOperation.EDIT,
-			ZmOperation.SEP,
-			ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.PRINT,
-			ZmOperation.SEP,
-			ZmOperation.TAG_MENU];
+	return [
+		ZmOperation.NEW_MENU,
+		ZmOperation.SEP,
+		ZmOperation.EDIT,
+		ZmOperation.SEP,
+		ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.PRINT,
+		ZmOperation.SEP,
+		ZmOperation.TAG_MENU,
+		ZmOperation.SEP,
+		ZmOperation.VIEW_MENU
+	];
 };
 
 ZmTaskListController.prototype._initializeToolBar =
@@ -181,17 +256,74 @@ function(view) {
 	ZmListController.prototype._initializeToolBar.call(this, view);
 
 	this._setNewButtonProps(view, ZmMsg.createNewTask, "NewTask", "NewTaskDis", ZmOperation.NEW_TASK);
+	this._setupPrintMenu(view);
+	this._setupViewMenu(view);
 
 	this._toolbar[view].addFiller();
 	var tb = new ZmNavToolBar({parent:this._toolbar[view], context:view});
 	this._setNavToolBar(tb, view);
 };
 
+ZmTaskListController.prototype._setupPrintMenu =
+function(view) {
+	var printButton = this._toolbar[view].getButton(ZmOperation.PRINT);
+	if (!printButton) { return; }
+
+	printButton.setToolTipContent(ZmMsg.printMultiTooltip);
+	printButton.noMenuBar = true;
+	var menu = new ZmPopupMenu(printButton);
+	printButton.setMenu(menu);
+
+	var id = ZmOperation.PRINT_TASK;
+	var mi = menu.createMenuItem(id, {image:ZmOperation.getProp(id, "image"), text:ZmMsg[ZmOperation.getProp(id, "textKey")]});
+	mi.setData(ZmOperation.MENUITEM_ID, id);
+	mi.addSelectionListener(this._listeners[ZmOperation.PRINT_TASK]);
+
+	id = ZmOperation.PRINT_TASKFOLDER;
+	mi = menu.createMenuItem(id, {image:ZmOperation.getProp(id, "image"), text:ZmMsg[ZmOperation.getProp(id, "textKey")]});
+	mi.setData(ZmOperation.MENUITEM_ID, id);
+	mi.addSelectionListener(this._listeners[ZmOperation.PRINT_TASKFOLDER]);
+};
+
+ZmTaskListController.prototype._setupViewMenu =
+function(view) {
+	var btn = this._toolbar[view].getButton(ZmOperation.VIEW_MENU);
+	var menu = btn.getMenu();
+	if (!menu) {
+		menu = new ZmPopupMenu(btn);
+		btn.setMenu(menu);
+		for (var i = 0; i < ZmTaskListController.VIEWS.length; i++) {
+			var id = ZmTaskListController.VIEWS[i];
+			if (id == ZmId.VIEW_TASK_ALL) {
+				new DwtMenuItem({parent:menu, style:DwtMenuItem.SEPARATOR_STYLE});
+			}
+			var params = {
+				image:ZmTaskListController.ICON[id],
+				text:ZmMsg[ZmTaskListController.MSG_KEY[id]],
+				style:DwtMenuItem.RADIO_STYLE
+			};
+			var mi = menu.createMenuItem(id, params);
+			mi.setData(ZmOperation.MENUITEM_ID, id);
+			mi.addSelectionListener(this._listeners[ZmOperation.VIEW]);
+
+			if (id == ZmId.VIEW_TASK_ALL) { // "all" is the default
+				mi.setChecked(true, true);
+			}
+		}
+		btn.setImage(ZmTaskListController.ICON[ZmId.VIEW_TASK_ALL]);
+	}
+};
+
 ZmTaskListController.prototype._getActionMenuOps =
 function() {
-	var list = [ZmOperation.EDIT, ZmOperation.SEP];
-	list = list.concat(this._standardActionMenuOps());
-	return list;
+	return [
+		ZmOperation.EDIT,
+		ZmOperation.SEP,
+		ZmOperation.TAG_MENU,
+		ZmOperation.DELETE,
+		ZmOperation.MOVE,
+		ZmOperation.PRINT_TASK
+	];
 };
 
 ZmTaskListController.prototype._getTagMenuMsg =
@@ -214,6 +346,18 @@ function(parent, num) {
 		parent.enable(ZmOperation.EDIT, canEdit && num == 1);
 		parent.enable(ZmOperation.TAG_MENU, (!isShare && num > 0));
 	}
+	var printButton = (parent instanceof ZmButtonToolBar) ? parent.getButton(ZmOperation.PRINT) : null;
+	var printMenuItem = printButton ? printButton.getMenu().getItem(1) : null;
+	if (printMenuItem) {
+		var text = (folderId != null) ? ZmMsg.printTaskFolder : ZmMsg.printResults;
+		printMenuItem.setText(text);
+	}
+
+	var printOp = (parent instanceof ZmActionMenu)
+		? ZmOperation.PRINT_TASK : ZmOperation.PRINT;
+	parent.enable(printOp, num > 0);
+
+	parent.enable(ZmOperation.VIEW_MENU, true);
 };
 
 ZmTaskListController.prototype._doDelete =
@@ -286,7 +430,7 @@ function(task) {
 	var elements = {};
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[viewId];
 	elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[viewId];
-	this._setView(viewId, elements, null, null, true);
+	this._setView({view:viewId, elements:elements, pushOnly:true});
 };
 
 ZmTaskListController.prototype._showTaskEditView =
@@ -315,7 +459,7 @@ function(task, mode) {
 		this._typeDialog = new ZmCalItemTypeDialog(this._shell);
 		this._typeDialog.addSelectionListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._typeOkListener, [task, mode]));
 	}
-	this._typeDialog.initialize(task, mode);
+	this._typeDialog.initialize(task, mode, ZmItem.TASK);
 	this._typeDialog.popup();
 };
 
@@ -364,6 +508,40 @@ ZmTaskListController.prototype._editListener =
 function(ev) {
 	var task = this._listView[this._currentView].getSelection()[0];
 	this._editTask(task);
+};
+
+ZmTaskListController.prototype._printTaskListener =
+function(ev) {
+	var listView = this._listView[this._currentView];
+	var items = listView.getSelection();
+	var taskIds = [];
+	for (var i = 0; i < items.length; i++) {
+		taskIds.push(items[i].invId);
+	}
+
+	var url = ("/h/printtasks?id=" + taskIds.join(","));
+	window.open(appContextPath+url, "_blank");
+};
+
+ZmTaskListController.prototype._printListener =
+function(ev) {
+    this._printTaskListener(ev);
+};
+
+ZmTaskListController.prototype._printTaskFolderListener =
+function(ev) {
+	var url;
+	if (this._folderId) {
+		url = "/h/printtasks?st=task&sfi=" + this._folderId;
+	} else {
+		var taskIds = [];
+		var list = this._list.getArray();
+		for (var i = 0; i < list.length; i++) {
+			taskIds.push(list[i].invId);
+		}
+		url = ("/h/printtasks?id=" + taskIds.join(","));
+	}
+	window.open(appContextPath+url, "_blank");
 };
 
 ZmTaskListController.prototype._setViewContents =

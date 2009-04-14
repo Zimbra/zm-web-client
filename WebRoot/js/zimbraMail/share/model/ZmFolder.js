@@ -1,8 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -11,7 +10,6 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -69,6 +67,7 @@ ZmFolder.ID_SYNC_FAILURES						= ZmOrganizer.ID_SYNC_FAILURES;
 ZmFolder.ID_ARCHIVE	 							= ZmOrganizer.ID_ARCHIVE;
 ZmFolder.ID_OUTBOX	 							= ZmOrganizer.ID_OUTBOX;
 ZmFolder.ID_CHATS	 							= ZmOrganizer.ID_CHATS;
+ZmFolder.ID_ATTACHMENTS                         = ZmOrganizer.ID_ATTACHMENTS;
 
 // system folder names
 ZmFolder.MSG_KEY = {};
@@ -88,6 +87,7 @@ ZmFolder.MSG_KEY[ZmOrganizer.ID_CHATS]			= "chats";
 ZmFolder.MSG_KEY[ZmFolder.ID_OUTBOX]			= "outbox";
 ZmFolder.MSG_KEY[ZmFolder.ID_ARCHIVE]			= "localFolders";
 ZmFolder.MSG_KEY[ZmFolder.ID_SYNC_FAILURES]		= "errorReports";
+ZmFolder.MSG_KEY[ZmFolder.ID_ATTACHMENTS]       = "attachments";
 
 // system folder icons
 ZmFolder.ICON = {};
@@ -100,6 +100,7 @@ ZmFolder.ICON[ZmFolder.ID_OUTBOX]				= "Outbox";
 ZmFolder.ICON[ZmFolder.ID_DRAFTS]				= "DraftFolder";
 ZmFolder.ICON[ZmFolder.ID_CHATS]				= "ChatFolder";
 ZmFolder.ICON[ZmFolder.ID_LOAD_FOLDERS]			= "Plus";
+ZmFolder.ICON[ZmFolder.ID_ATTACHMENTS]          = "Attachment"
 
 // name to use within the query language
 ZmFolder.QUERY_NAME = {};
@@ -130,6 +131,7 @@ ZmFolder.SORT_ORDER[ZmFolder.ID_ARCHIVE]		= 7;
 ZmFolder.SORT_ORDER[ZmFolder.ID_OUTBOX]			= 8;
 ZmFolder.SORT_ORDER[ZmFolder.ID_SYNC_FAILURES]	= 9;
 ZmFolder.SORT_ORDER[ZmFolder.ID_SEP]			= 10;
+ZmFolder.SORT_ORDER[ZmFolder.ID_ATTACHMENTS]    = 99;      //Last on the list
 
 // character codes for "tcon" attribute in conv action request, which controls
 // which folders are affected
@@ -368,7 +370,7 @@ function(obj) {
 	var details = {};
 	var fields = {};
 	var doNotify = false;
-	if (obj.name != null && this.name != obj.name && !obj._isRemote) {
+	if (obj.name != null && this.name != obj.name && obj.id == this.id) {
 		details.oldPath = this.getPath();
 		this.name = obj.name;
 		fields[ZmOrganizer.F_NAME] = true;
@@ -381,7 +383,7 @@ function(obj) {
 		this._notify(ZmEvent.E_MODIFY, details);
 	}
 
-	if (obj.l != null && (!this.parent || (obj.l != this.parent.id)) && !obj._isRemote) {
+	if (obj.l != null && (!this.parent || (obj.l != this.parent.id))) {
 		var newParent = this._getNewParent(obj.l);
 		if (newParent) {
 			if (newParent.nId == ZmOrganizer.ID_ARCHIVE) {
@@ -500,7 +502,7 @@ function(what, folderType) {
 				   (what.id == this.id) ||
 				   (what.disallowSubFolder) ||
 				   (what.nId == ZmFolder.ID_ARCHIVE) ||
-				   (what.isRemote() && what.parent && what.parent.isRemote()));				// a remote folder can be DnD but not its children
+				   (what.isRemote() && !this._remoteMoveOk(what)));				// a remote folder can be DnD but not its children
 	} else {
 		// An item or an array of items is being moved
 		var items = (what instanceof Array) ? what : [what];
@@ -513,8 +515,6 @@ function(what, folderType) {
 			this.nId == ZmOrganizer.ID_ARCHIVE)
 		{
 			invalid = true;
-		} else if (this.link) {
-			invalid = this.isReadOnly();										// cannot drop anything onto a read-only item
 		} else if (thisType == ZmOrganizer.SEARCH) {
 			invalid = true;														// can't drop items into saved searches
 		} else if ((item.type == ZmItem.CONTACT) && item.isGal) {
@@ -528,7 +528,7 @@ function(what, folderType) {
 						// can only move contacts into Trash
 						invalid = true;
 						break;
-					} else if (items[i].isMyCard()) {
+					} else if (items[i].isMyCard) {
 						// can't trash my card
 						invalid = true;
 						break;
@@ -565,6 +565,9 @@ function(what, folderType) {
 				}
 			}
 		}
+		if (!invalid && this.link) {
+			invalid = this.isReadOnly();										// cannot drop anything onto a read-only item
+		}
 	}
 	return !invalid;
 };
@@ -589,4 +592,21 @@ function() {
 ZmFolder.prototype.isInSpam =
 function(){
 	return this.isUnder(ZmFolder.ID_SPAM);
+};
+
+/**
+ * Returns true if the given remote folder can be moved into this remote folder.
+ * The source and the target folder must belong to the same account. The source
+ * must have delete permission and the target must have insert permission.
+ *
+ * @param folder  [ZmFolder]    source folder
+ */
+ZmFolder.prototype._remoteMoveOk =
+function(folder) {
+	if (!this.link || !folder.link || this.zid != folder.zid) { return false; }
+	if (this.id.split(":")[0] != folder.id.split(":")[0]) { return false; }
+	var share = this.shares && this.shares[0];
+	if (!(share && share.isInsert())) { return false; }
+	share = folder.shares && folder.shares[0];
+	return (share && share.isDelete());
 };

@@ -1,8 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -11,7 +10,6 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -39,9 +37,11 @@ ZmPrefView = function(params) {
 	this.setScrollStyle(DwtControl.SCROLL);
 	this.prefView = {};
     this._tabId = {};
+	this._sectionId = {};
     this._hasRendered = false;
 
 	this.setVisible(false);
+	this.getTabBar().setVisible(false);
 };
 
 ZmPrefView.prototype = new DwtTabView;
@@ -58,6 +58,17 @@ function () {
 ZmPrefView.prototype.getController =
 function() {
 	return this._controller;
+};
+
+ZmPrefView.prototype.getSectionForTab = function(tabKey) {
+	var sectionId = this._sectionId[tabKey];
+	return ZmPref.getPrefSectionMap()[sectionId];
+};
+
+ZmPrefView.prototype.getTabForSection = function(sectionOrId) {
+	var section = typeof sectionOrId == "string" ? ZmPref.getPrefSectionMap()[sectionOrId] : sectionOrId;
+	var sectionId = section && section.id;
+	return this._tabId[sectionId];
 };
 
 /**
@@ -82,6 +93,7 @@ function() {
 		var tabButtonId = ZmId.getTabId(this._controller._currentView, section.title.replace(/[' ]/ig,"_"));
 		var tabId = this.addTab(section.title, view, tabButtonId);
         this._tabId[section.id] = tabId;
+		this._sectionId[tabId] = section.id;
     }
 
 	this.resetKeyBindings();
@@ -275,13 +287,7 @@ function(section, viewPage, dirtyCheck, noValidation, list, errors, view) {
 			}
 		}
 		
-		var unchanged = (value == origValue);
-		// null and "" are the same string for our purposes
-		if (pref.dataType == ZmSetting.D_STRING) {
-			unchanged = unchanged || ((value == null || value == "") &&
-									  (origValue == null ||
-									   origValue == ""));
-		}
+		var unchanged = !this._prefChanged(pref.dataType, origValue, value);
 
 		// don't try to update on server if it's client-side pref
 		var addToList = (!unchanged && (pref.name != null));
@@ -308,6 +314,21 @@ function(section, viewPage, dirtyCheck, noValidation, list, errors, view) {
 			}
 			this._controller.setDirty(view, true);
 		}
+	}
+};
+
+ZmPrefView.prototype._prefChanged =
+function(type, origValue, value) {
+
+	var test1 = value || null;
+	var test2 = origValue || null;
+
+	if (type == ZmSetting.D_LIST) {
+		return !AjxUtil.arrayCompare(test1, test2);
+	} else if (type == ZmSetting.D_HASH) {
+		return !AjxUtil.hashCompare(test1, test2);
+	} else {
+		return Boolean(test1 != test2);
 	}
 };
 

@@ -1,17 +1,15 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- *
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007 Zimbra, Inc.
- *
+ * Copyright (C) 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- *
+ * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- *
  * ***** END LICENSE BLOCK *****
  */
 /**
@@ -64,7 +62,7 @@ ZmApptChooserTabViewPage.COL_IMAGE = {};
 ZmApptChooserTabViewPage.COL_IMAGE[ZmItem.F_NOTES]		= "Page";
 
 ZmApptChooserTabViewPage.COL_WIDTH = {};
-ZmApptChooserTabViewPage.COL_WIDTH[ZmItem.F_FOLDER]		= 120;
+ZmApptChooserTabViewPage.COL_WIDTH[ZmItem.F_FOLDER]		= 160;
 ZmApptChooserTabViewPage.COL_WIDTH[ZmItem.F_NAME]		= 150;
 ZmApptChooserTabViewPage.COL_WIDTH[ZmItem.F_EMAIL]		= null;
 ZmApptChooserTabViewPage.COL_WIDTH[ZmItem.F_WORK_PHONE]	= 100;
@@ -73,7 +71,7 @@ ZmApptChooserTabViewPage.COL_WIDTH[ZmItem.F_LOCATION]	= null;
 ZmApptChooserTabViewPage.COL_WIDTH[ZmItem.F_CONTACT]	= 150;
 ZmApptChooserTabViewPage.COL_WIDTH[ZmItem.F_CAPACITY]	= 50;
 ZmApptChooserTabViewPage.COL_WIDTH[ZmItem.F_NOTES]		= 30;
-ZmApptChooserTabViewPage.COL_WIDTH["FBSTATUS"]			= 60;
+ZmApptChooserTabViewPage.COL_WIDTH["FBSTATUS"]			= 80;
 
 ZmApptChooserTabViewPage.COLS = {};
 ZmApptChooserTabViewPage.COLS[ZmCalBaseItem.PERSON]		= [ZmItem.F_FOLDER, ZmItem.F_NAME, ZmItem.F_EMAIL, ZmItem.F_WORK_PHONE, ZmItem.F_HOME_PHONE, "FBSTATUS"];
@@ -122,10 +120,10 @@ ZmApptChooserTabViewPage.SF_OP[ZmApptChooserTabViewPage.SF_FLOOR]		= "eq";
 ZmApptChooserTabViewPage.ATTRS = {};
 ZmApptChooserTabViewPage.ATTRS[ZmCalBaseItem.LOCATION] =
 	["displayName", "mail", "zimbraCalResLocationDisplayName",
-	 "zimbraCalResCapacity", "zimbraCalResContactEmail", "description"];
+	 "zimbraCalResCapacity", "zimbraCalResContactEmail", "description", "zimbraCalResType"];
 ZmApptChooserTabViewPage.ATTRS[ZmCalBaseItem.EQUIPMENT] =
 	["displayName", "mail", "zimbraCalResLocationDisplayName",
-	 "zimbraCalResContactEmail", "description"];
+	 "zimbraCalResContactEmail", "description", "zimbraCalResType"];
 
 ZmApptChooserTabViewPage.SEARCH_FIELDS = {};
 ZmApptChooserTabViewPage.SEARCH_FIELDS[ZmCalBaseItem.PERSON] =
@@ -173,6 +171,9 @@ ZmApptChooserTabViewPage.prototype.showMe =
 function() {
 	var pSize = this.parent.getSize();
 	this.resize(pSize.x, pSize.y);
+    if (this._rendered) {
+		this._chooser.reset();
+	}
 
 	this.parent.tabSwitched(this._tabKey);
 	this._setAttendees();
@@ -946,6 +947,9 @@ function(html, idx, item, field, colIdx, params) {
 		html[idx++] = AjxStringUtil.htmlEncode(name);
 	} else if (field == ZmItem.F_NAME) {
 		var name = (this._chooserType == ZmCalBaseItem.PERSON) ? item.getFullName() : item.getAttr(ZmResource.F_name);
+        if(this._chooserType != ZmCalBaseItem.PERSON && item instanceof ZmContact) {
+            name = item.getFullName();             
+        }
 		html[idx++] = AjxStringUtil.htmlEncode(name);
 	} else if (field == ZmItem.F_EMAIL) {
 		html[idx++] = AjxStringUtil.htmlEncode(item.getEmail());

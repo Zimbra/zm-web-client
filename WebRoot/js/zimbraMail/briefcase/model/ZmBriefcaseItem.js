@@ -1,8 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007 Zimbra, Inc.
+ * Copyright (C) 2007, 2008, 2009 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -11,7 +10,6 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -46,13 +44,16 @@ function(dontIncludeThisName) {
 	var name = !dontIncludeThisName ? this.name : "";
 	return [notebook.getPath(), "/", name].join("");
 };
-
+                                                                               
 ZmBriefcaseItem.prototype.getRestUrl =
 function(dontIncludeThisName) {
 	var url = ZmItem.prototype.getRestUrl.call(this);
 	if (dontIncludeThisName) {
 		url = url.replace(/[^\/]+$/,"");
 	}
+    if(this.contentType && (this.contentType.indexOf(ZmMimeTable.APP_ZIMBRA_SLIDES)>=0)) {
+        url += "?fmt=html";
+    }
 	return url;
 };
 
@@ -70,6 +71,11 @@ function(data) {
 	if (data.ver) this.version = Number(data.ver);
 	if (data.ct) this.contentType = data.ct.split(";")[0];
 	this._parseTags(data.t);
+};
+
+ZmBriefcaseItem.prototype.getContentType =
+function() {
+    return this.contentType;
 };
 
 ZmBriefcaseItem.prototype.isReadOnly =
@@ -110,10 +116,8 @@ function() {
 
 ZmBriefcaseItem.prototype.createFromAttachment =
 function(msgId, partId, name, folderId) {
-	// bug 30208: server only accepts local ids
 	var acctId = appCtxt.getActiveAccount().id;
-	if (msgId.indexOf(acctId) == 0) msgId = msgId.substr(msgId.indexOf(":")+1);
-
+    
 	var soapDoc = AjxSoapDoc.create("SaveDocumentRequest", "urn:zimbraMail");
 	var doc = soapDoc.set("doc");
 	doc.setAttribute("l", folderId);

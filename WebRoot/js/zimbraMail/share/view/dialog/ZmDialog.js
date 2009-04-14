@@ -1,8 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -11,7 +10,6 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -74,8 +72,10 @@ function() {
 		// tab group filled in here rather than in the constructor b/c we need
 		// all the content fields to have been created
 		var members = this._getTabGroupMembers();
-		for (var i = 0; i < members.length; i++) {
-			this._tabGroup.addMember(members[i], i);
+		if (members && members.length) {
+			for (var i = 0; i < members.length; i++) {
+				this._tabGroup.addMember(members[i], i);
+			}
 		}
 		this._tabGroupComplete = true;
 	}
@@ -137,7 +137,9 @@ function(params) {
 			overviewId: overviewId,
 			overviewClass: "dialogOverview",
 			headerClass: "DwtTreeItem",
-			noTooltips: true
+			noTooltips: true,
+			treeStyle: params.treeStyle,
+			treeIds: params.treeIds
 		};
 		overview = this._overview[overviewId] = this._opc.createOverview(ovParams);
 		this._renderOverview(overview, params.treeIds, params.omit, params.noRootSelect, params.account);
@@ -152,6 +154,7 @@ function(params) {
 		}
 		this._curOverviewId = overviewId;
 	}
+	return overview;
 };
 
 /**
@@ -167,7 +170,7 @@ function(params) {
  */
 ZmDialog.prototype._renderOverview =
 function(overview, treeIds, omit, noRootSelect, account) {
-	overview.set(treeIds, omit, account);
+	overview.set(treeIds, omit, account, true);
 	if (!noRootSelect) {
 		for (var i = 0; i < treeIds.length; i++) {
 			var treeView = overview.getTreeView(treeIds[i]);

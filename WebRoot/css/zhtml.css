@@ -1,8 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007 Zimbra, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -11,7 +10,6 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -274,6 +272,11 @@ A:visited { color: blue; }
 	@SkinBorderApp@
 }
 
+.ZhAppColContent {
+	@SkinBorderApp@
+    border-width: 1px;
+}
+
 .ZhAppViewContent {
 	@AppBg@
 	@NormalOutsetBorder@
@@ -294,6 +297,15 @@ A:visited { color: blue; }
 	@FontSize-normal@
 	@Text@
 	@ToolbarBg@
+}
+
+
+/* IE Hack to prevent buttons creating spaces around the text */
+.IEbutton input{
+#IFDEF MSIE
+	width: 10px;
+	overflow: visible;
+#ENDIF
 }
 
 /* ---- Top Toolbar Container ----- */
@@ -318,7 +330,7 @@ A:visited { color: blue; }
 }
 
 .TbBt {
-	padding:5px;
+	padding:2px;
 }
 
 .TbBt A {
@@ -707,6 +719,7 @@ A:visited { color: blue; }
 	@SeparatorBorder@
 	@NoWrap@
 	vertical-align:top;
+    cursor: pointer;
 }
 
 .ZhCalMonthDaySelected { @SelectedBg@ }
@@ -1219,4 +1232,44 @@ padding: 0 @BoxPaddingSize@ 0 @BoxPaddingSize@;
 .ZhHomeTextLink {
 	color:#000;
 	text-decoration:none;
+}
+
+.ZhContainingBox {
+float:left;
+background-color:#ffffff;
+}
+
+.ZhThumbnailItem {
+background-color:transparent;
+background-repeat:no-repeat;
+cursor:pointer;
+float:left;
+height:120px;
+margin:8px;
+vertical-align:middle;
+width:100px;
+}
+
+.ZhThumbnailItem .ZhThumbnailIcon{
+background-color:transparent;
+border:2px solid #CCCCCC;
+font-size:1px;
+height:100px;
+line-height:100px;
+text-align:center;
+width:96px;    
+}
+
+ .ZhThumbnailItem .ZhThumbnailName {
+display:block;
+@FontSize-normal@
+@FontFamily-html@
+margin:3px 0pt 0pt 0px;
+text-align:center;
+height: 14px;
+overflow: hidden;
+}
+
+.ZhThumbnailImg {
+margin:26px 24px;
 }

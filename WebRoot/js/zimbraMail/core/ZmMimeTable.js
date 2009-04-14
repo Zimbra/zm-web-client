@@ -1,8 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -11,7 +10,6 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -36,6 +34,7 @@ ZmMimeTable.APP_OCTET_STREAM	= "application/octet-stream";
 ZmMimeTable.APP_OPENXML_DOC		= "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
 ZmMimeTable.APP_OPENXML_EXCEL	= "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 ZmMimeTable.APP_OPENXML_PPT		= "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+ZmMimeTable.APP_ZIMBRA_SLIDES   = "application/x-zimbra-slides";
 ZmMimeTable.APP_ZIP				= "application/zip";
 ZmMimeTable.APP_ZIP2			= "application/x-zip-compressed";
 ZmMimeTable.AUDIO				= "audio";
@@ -83,6 +82,7 @@ ZmMimeTable._table[ZmMimeTable.APP_OCTET_STREAM]	= {desc: ZmMsg.unknownBinaryTyp
 ZmMimeTable._table[ZmMimeTable.APP_OPENXML_DOC]		= {desc: ZmMsg.msWordDocument, image: "MSWordDoc", imageLarge: "MSWordDoc_48"};
 ZmMimeTable._table[ZmMimeTable.APP_OPENXML_EXCEL]	= {desc: ZmMsg.msExcelDocument, image: "MSExcelDoc", imageLarge: "MSExcelDoc_48"};
 ZmMimeTable._table[ZmMimeTable.APP_OPENXML_PPT]		= {desc: ZmMsg.msPPTDocument, image: "MSPowerpointDoc", imageLarge: "MSPowerpointDoc_48"};
+ZmMimeTable._table[ZmMimeTable.APP_ZIMBRA_SLIDES]	= {desc: ZmMsg.msPPTDocument, image: "Presentation", imageLarge: "Presentation_48"};
 ZmMimeTable._table[ZmMimeTable.APP_ZIP]				= {desc: ZmMsg.zipFile, image: "ZipDoc", imageLarge: "ZipDoc_48"};
 ZmMimeTable._table[ZmMimeTable.APP_ZIP2]			= {desc: ZmMsg.zipFile, image: "ZipDoc", imageLarge: "ZipDoc_48"};
 ZmMimeTable._table[ZmMimeTable.AUDIO]				= {desc: ZmMsg.audio, image: "AudioDoc", imageLarge: "Doc_48"};

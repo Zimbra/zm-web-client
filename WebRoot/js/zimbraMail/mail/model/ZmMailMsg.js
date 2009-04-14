@@ -1,8 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -11,7 +10,6 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -80,17 +78,18 @@ ZmMailMsg.requestHeaders = {};
 /**
  * Fetches a message from the server.
  *
- * @param params		[hash]			hash of params:
- *        sender		[ZmZimbraMail]	provides access to sendRequest()
- *        msgId			[int]			ID of the msg to be fetched.
- *        partId 		[int]* 			msg part ID (if retrieving attachment part, i.e. rfc/822)
- *        ridZ   		[int]* 			RECURRENCE-ID in Z (UTC) timezone
- *        getHtml		[boolean]*		if true, try to fetch html from the server
- *        markRead		[boolean]*		if true, mark msg read
- *        callback		[AjxCallback]*	async callback
- *        errorCallback	[AjxCallback]*	async error callback
- *        noBusyOverlay	[boolean]*		don't put up busy overlay during request
- *        noTruncate	[boolean]*		don't truncate message body
+ * @param params		[hash]				hash of params:
+ *        sender		[ZmZimbraMail]		provides access to sendRequest()
+ *        msgId			[int]				ID of the msg to be fetched.
+ *        partId 		[int]* 				msg part ID (if retrieving attachment part, i.e. rfc/822)
+ *        ridZ   		[int]* 				RECURRENCE-ID in Z (UTC) timezone
+ *        getHtml		[boolean]*			if true, try to fetch html from the server
+ *        markRead		[boolean]*			if true, mark msg read
+ *        callback		[AjxCallback]*		async callback
+ *        errorCallback	[AjxCallback]*		async error callback
+ *        noBusyOverlay	[boolean]*			don't put up busy overlay during request
+ *        noTruncate	[boolean]*			don't truncate message body
+ *        batchCmd		[ZmBatchCommand]*	if set, request gets added to this batch command
  */
 ZmMailMsg.fetchMsg =
 function(params) {
@@ -108,11 +107,11 @@ function(params) {
 		m.html = 1;
 	}
 
-    if(params.ridZ) {
-        m.ridZ = params.ridZ;
-    }
+	if (params.ridZ) {
+		m.ridZ = params.ridZ;
+	}
 
-    for (var hdr in ZmMailMsg.requestHeaders) {
+	for (var hdr in ZmMailMsg.requestHeaders) {
 		if (!m.header) { m.header = []; }
 		m.header.push({n:hdr});
 	}
@@ -121,14 +120,18 @@ function(params) {
 		m.max = appCtxt.get(ZmSetting.MAX_MESSAGE_SIZE) || ZmMailApp.DEFAULT_MAX_MESSAGE_SIZE;
 	}
 
-	var newParams = {
-		jsonObj: jsonObj,
-		asyncMode: true,
-		callback: (new AjxCallback(null, ZmMailMsg._handleResponseFetchMsg, [params.callback])),
-		errorCallback: params.errorCallback,
-		noBusyOverlay: params.noBusyOverlay
+	if (params.batchCmd) {
+		params.batchCmd.addRequestParams(jsonObj, params.callback);
+	} else {
+		var newParams = {
+			jsonObj: jsonObj,
+			asyncMode: true,
+			callback: (new AjxCallback(null, ZmMailMsg._handleResponseFetchMsg, [params.callback])),
+			errorCallback: params.errorCallback,
+			noBusyOverlay: params.noBusyOverlay
+		};
+		params.sender.sendRequest(newParams);
 	}
-	params.sender.sendRequest(newParams);
 };
 
 ZmMailMsg._handleResponseFetchMsg =
@@ -150,10 +153,10 @@ function() {
 /**
 * Returns a vector of addresses of the given type
 *
-* @param type	[Integer]	an email address type
-* @param used	[Array]		array of addressed that have been used. If not null,
-*		then this method will omit those addresses from the returned vector and
-*		will populate used with the additional new addresses
+* @param type			[constant]	an email address type
+* @param used			[hash]		array of addresses that have been used. If not null,
+*									then this method will omit those addresses from the
+* 									returned vector and will populate used with the additional new addresses
 * @param addAsContact	[boolean]	true if emails should be converted to ZmContacts
 */
 ZmMailMsg.prototype.getAddresses =
@@ -266,15 +269,19 @@ function() {
 ZmMailMsg.prototype.getHeaderStr =
 function(hdr) {
 	if (hdr == ZmMailMsg.HDR_DATE) {
-		var formatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.FULL, AjxDateFormat.FULL);
-		return this.sentDate ? ZmMailMsg.HDR_KEY[hdr] + ": " + formatter.format(new Date(this.sentDate)) : "";
+		if (this.sentDate) {
+			var formatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.FULL, AjxDateFormat.MEDIUM);
+			return (ZmMailMsg.HDR_KEY[hdr] + ": " + formatter.format(new Date(this.sentDate)));
+		}
+		return "";
 	} else if (hdr == ZmMailMsg.HDR_SUBJECT) {
-		return this.subject ? ZmMailMsg.HDR_KEY[hdr] + ": " + this.subject : "";
+		return this.subject ? (ZmMailMsg.HDR_KEY[hdr] + ": " + this.subject) : "";
 	} else {
 		var addrs = this.getAddresses(hdr);
 		var addrStr = addrs.toString(", ", true);
-		if (addrStr)
-			return ZmMailMsg.HDR_KEY[hdr] + ": " + addrStr;
+		if (addrStr) {
+			return (ZmMailMsg.HDR_KEY[hdr] + ": " + addrStr);
+		}
 	}
 };
 
@@ -342,7 +349,6 @@ function(type, addrs) {
 /**
 * Adds the given address to the vector of addresses of the given type
 *
-* @param type	the address type
 * @param addr	an address
 */
 ZmMailMsg.prototype.addAddress =
@@ -354,7 +360,7 @@ function(addr) {
 /**
 * Sets the subject
 *
-* @param	a subject
+* @param	subject
 */
 ZmMailMsg.prototype.setSubject =
 function(subject) {
@@ -383,7 +389,7 @@ ZmMailMsg.prototype.setBodyParts =
 function(parts) {
 	this._onChange("bodyParts", parts);
 	this._bodyParts = parts;
-}
+};
 
 /**
 * Sets the ID of any attachments which have already been uploaded.
@@ -401,32 +407,28 @@ function(id) {
 
 ZmMailMsg.prototype.addInlineAttachmentId =
 function (cid,aid,part) {
-    if (!this._inlineAtts) {
-        this._inlineAtts = [];
-    }
-
-    if(this._chkInlineAtt(cid, aid, part)){
-        return false;
-    }
-
-    this._onChange("inlineAttachments",aid);
-    if (aid) {
-        this._inlineAtts.push({"cid":cid,"aid":aid});
-    } else if (part) {
-        this._inlineAtts.push({"cid":cid,"part":part});
-    }
-    return true;
+	if (!this._inlineAtts) {
+		this._inlineAtts = [];
+	}
+	this._onChange("inlineAttachments",aid);
+	if (aid) {
+		this._inlineAtts.push({"cid":cid,"aid":aid});
+	} else if (part) {
+		this._inlineAtts.push({"cid":cid,"part":part});
+	}
 };
 
-
-ZmMailMsg.prototype._chkInlineAtt = function( cid, aid, part){
-    for(var i=0; i<this._inlineAtts.length; i++){
-        var iAtt = this._inlineAtts[i];
-        if(iAtt.cid == cid && (iAtt.aid == aid || iAtt.part == part)){
-            return true;
-        }
-    }
-    return false;
+ZmMailMsg.prototype.addInlineDocAttachmentId =
+function (cid,docId,part) {
+	if (!this._inlineDocAtts) {
+		this._inlineDocAtts = [];
+	}
+	this._onChange("inlineAttachments",docId);
+	if (docId) {
+		this._inlineDocAtts.push({"cid":cid,"docid":docId});
+	} else if (part) {
+		this._inlineDocAtts.push({"cid":cid,"part":part});
+	}
 };
 
 ZmMailMsg.prototype.setInlineAttachments =
@@ -439,6 +441,11 @@ function(inlineAtts){
 ZmMailMsg.prototype.getInlineAttachments =
 function() {
 	return this._inlineAtts;
+};
+
+ZmMailMsg.prototype.getInlineDocAttachments =
+function() {
+	return this._inlineDocAtts;
 };
 
 /**
@@ -468,6 +475,26 @@ function(ids) {
 };
 
 /**
+* Sets the IDs of docs to attach 
+*
+* @param ids	[Array]		list of document IDs
+*/
+
+ZmMailMsg.prototype.setDocumentAttachmentId =
+function(ids) {
+	this._onChange("documentAttachmentId", ids);
+	this._docAttIds = ids;
+};
+
+ZmMailMsg.prototype.addDocumentAttachmentId =
+function(id) {
+	if(!this._docAttIds) {
+		this._docAttIds = [];
+	}
+	this._docAttIds.push(id);
+};
+
+/**
 * Sets the list of attachment (message part) IDs to be forwarded
 *
 * @param ids	[Array]		list of attachment IDs
@@ -476,12 +503,6 @@ ZmMailMsg.prototype.setForwardAttIds =
 function(ids) {
 	this._onChange("forwardAttIds", ids);
 	this._forAttIds = ids;
-};
-
-ZmMailMsg.prototype._setFilteredForwardAttIds =
-function (filteredFwdAttIds) {
-	this._onChange("filteredForwardAttIds", filteredFwdAttIds);
-	this._filteredFwdAttIds = filteredFwdAttIds;
 };
 
 // Actions
@@ -505,14 +526,15 @@ function(node, args) {
  * Gets the full message object from the back end based on the current message ID, and
  * fills in the message.
  *
- * @param params		[hash]			hash of params:
- *        getHtml		[boolean]*		if true, try to fetch html from the server
- *        markRead		[boolean]*		if true, mark msg read
- *        forceLoad		[boolean]*		if true, get msg from server
- *        callback		[AjxCallback]*	async callback
- *        errorCallback	[AjxCallback]*	async error callback
- *        noBusyOverlay	[boolean]*		don't put up busy overlay during request
- *        noTruncate	[boolean]*		don't set max limit on size of msg body
+ * @param params		[hash]				hash of params:
+ *        getHtml		[boolean]*			if true, try to fetch html from the server
+ *        markRead		[boolean]*			if true, mark msg read
+ *        forceLoad		[boolean]*			if true, get msg from server
+ *        callback		[AjxCallback]*		async callback
+ *        errorCallback	[AjxCallback]*		async error callback
+ *        noBusyOverlay	[boolean]*			don't put up busy overlay during request
+ *        noTruncate	[boolean]*			don't set max limit on size of msg body
+ *        batchCmd		[ZmBatchCommand]*	if set, request gets added to this batch command
  */
 ZmMailMsg.prototype.load =
 function(params) {
@@ -640,19 +662,18 @@ function(content) {
 };
 
 ZmMailMsg.prototype.sendInviteReply =
-function(contactList, edited, componentId, callback, errorCallback, instanceDate, accountName) {
+function(edited, componentId, callback, errorCallback, instanceDate, accountName, ignoreNotifyDlg) {
 	this._origMsg = this._origMsg || this;
 
-	return this._sendInviteReply(contactList, edited, componentId || 0, callback, errorCallback, instanceDate, accountName);
+	return this._sendInviteReply(edited, componentId || 0, callback, errorCallback, instanceDate, accountName, ignoreNotifyDlg);
 };
 
 ZmMailMsg.prototype._sendInviteReply =
-function(contactList, edited, componentId, callback, errorCallback, instanceDate, accountName) {
+function(edited, componentId, callback, errorCallback, instanceDate, accountName, ignoreNotifyDlg) {
 	var jsonObj = {SendInviteReplyRequest:{_jsns:"urn:zimbraMail"}};
 	var request = jsonObj.SendInviteReplyRequest;
 
-	var id = this._origMsg.id;
-	request.id = id;
+	request.id = this._origMsg.id;
 	request.compNum = componentId;
 
 	var verb = "ACCEPT";
@@ -675,11 +696,33 @@ function(contactList, edited, componentId, callback, errorCallback, instanceDate
             if (from && from.address != mainAcct) {
                 to = from.address;
             }
-        }		
+        }
 		this.setAddress(AjxEmailAddress.TO, (new AjxEmailAddress(to)));
 	}
 
-	request.updateOrganizer = this._origMsg.needsRsvp() ? "TRUE" : "FALSE";
+	var needsRsvp = this._origMsg.needsRsvp();
+	if (!ignoreNotifyDlg && needsRsvp) {
+		var dlg = appCtxt.getYesNoMsgDialog();
+		dlg.registerCallback(DwtDialog.YES_BUTTON, this._sendInviteReplyContinue, this, [jsonObj, "TRUE", edited, callback, errorCallback, instanceDate, accountName]);
+		dlg.registerCallback(DwtDialog.NO_BUTTON, this._sendInviteReplyContinue, this, [jsonObj, "FALSE", edited, callback, errorCallback, instanceDate, accountName]);
+		dlg.setMessage(ZmMsg.organizerNotification, DwtMessageDialog.WARNING_STYLE);
+		dlg.popup();
+	} else {
+		return this._sendInviteReplyContinue(jsonObj, "FALSE", edited, callback, errorCallback, instanceDate, accountName);
+	}
+};
+
+ZmMailMsg.prototype._sendInviteReplyContinue =
+function(jsonObj, updateOrganizer, edited, callback, errorCallback, instanceDate, accountName) {
+
+	var request = jsonObj.SendInviteReplyRequest;
+	request.updateOrganizer = updateOrganizer;
+
+	if (this._origMsg.needsRsvp()) {
+		var dlg = appCtxt.getYesNoMsgDialog();
+		dlg.popdown();
+	}
+
 	if (instanceDate) {
 		var serverDateTime = AjxDateUtil.getServerDateTime(instanceDate);
 		var timeZone = AjxTimezone.getServerId(AjxTimezone.DEFAULT);
@@ -689,16 +732,20 @@ function(contactList, edited, componentId, callback, errorCallback, instanceDate
 	}
 
 	if (edited) {
-		this._createMessageNode(request, contactList, null, accountName);
+		this._createMessageNode(request, null, accountName);
 	}
 
 	var respCallback = new AjxCallback(this, this._handleResponseSendInviteReply, [callback]);
-	return this._sendMessage({ jsonObj:jsonObj,
+	var resp = this._sendMessage({ jsonObj:jsonObj,
 								isInvite:true,
 								isDraft:false,
 								callback:respCallback,
 								errorCallback:errorCallback,
 								accountName:accountName });
+	if (window.parentController) {
+		window.close();
+	}
+	return resp;
 };
 
 ZmMailMsg.prototype._handleResponseSendInviteReply =
@@ -706,21 +753,30 @@ function(callback, result) {
 	var resp = result.getResponse();
 
 	var id = resp.id ? resp.id.split("-")[0] : null;
+	var statusOK = (id || resp.status == "OK");
 
-	if (id || resp.status == "OK") {
+	if (statusOK) {
 		this._notifySendListeners();
 		this._origMsg.folderId = ZmFolder.ID_TRASH;
 	}
 
-	if (callback)
+	if (callback) {
 		callback.run(result);
-}
+	}
+};
 
 /**
-* Sends the message out into the world.
-*/
+ * Sends the message out into the world.
+ *
+ * @param isDraft				[Boolean]*		is this a draft we're saving?
+ * @param callback				[AjxCallback]*	callback to trigger after send
+ * @param errorCallback			[AjxCallback]*	error callback to trigger
+ * @param accountName			[String]*		account to send on behalf of
+ * @param noSave				[Boolean]*		if set, a copy will *not* be saved to sent regardless of account/identity settings
+ * @param requestReadReceipt	[Boolean]*		if set, a read receipt is sent to *all* recipients
+ */
 ZmMailMsg.prototype.send =
-function(contactList, isDraft, callback, errorCallback, accountName, noSave) {
+function(isDraft, callback, errorCallback, accountName, noSave, requestReadReceipt) {
 	var aName = accountName;
 	if (!aName) {
 		// only set the account name if this *isnt* the main/parent account
@@ -732,7 +788,7 @@ function(contactList, isDraft, callback, errorCallback, accountName, noSave) {
 
 	// if we have an invite reply, we have to send a different message
 	if (this.isInviteReply && !isDraft) {
-		return this.sendInviteReply(contactList, true, 0, callback, errorCallback, this._instanceDate, aName);
+		return this.sendInviteReply(true, 0, callback, errorCallback, this._instanceDate, aName, true);
 	} else {
 		var jsonObj, request;
 		if (isDraft) {
@@ -748,7 +804,7 @@ function(contactList, isDraft, callback, errorCallback, accountName, noSave) {
 		if (noSave) {
 			request.noSave = 1;
 		}
-		this._createMessageNode(request, contactList, isDraft, aName);
+		this._createMessageNode(request, isDraft, aName, requestReadReceipt);
 
 		var params = {
 			jsonObj: jsonObj,
@@ -778,10 +834,10 @@ function(isDraft, callback, result) {
 	if (callback) {
 		callback.run(result);
 	}
-}
+};
 
 ZmMailMsg.prototype._createMessageNode =
-function(request, contactList, isDraft, accountName) {
+function(request, isDraft, accountName, requestReadReceipt) {
 
 	var msgNode = request.m = {};
 
@@ -833,17 +889,20 @@ function(request, contactList, isDraft, accountName) {
 	var addrNodes = msgNode.e = [];
 	for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
 		var type = ZmMailMsg.COMPOSE_ADDRS[i];
-		this._addAddressNodes(addrNodes, type, contactList, isDraft);
+		this._addAddressNodes(addrNodes, type, isDraft);
 	}
 	this._addFrom(addrNodes, msgNode, isDraft, accountName);
 	this._addReplyTo(addrNodes);
+	if (requestReadReceipt) {
+		this._addReadReceipt(addrNodes, accountName);
+	}
 
 	msgNode.su = {_content:this.subject};
 
 	var topNode = {ct:this._topPart.getContentType()};
 	msgNode.mp = [topNode];
 
-    // if the top part has sub parts, add them as children
+	// if the top part has sub parts, add them as children
 	var numSubParts = this._topPart.children ? this._topPart.children.size() : 0;
 	if (numSubParts > 0) {
 		var partNodes = topNode.mp = [];
@@ -881,6 +940,18 @@ function(request, contactList, isDraft, accountName) {
 							subPartNodes.push(inlineAttNode);
 						}
 					}
+					// Handle Inline Attachments
+					var inlineDocAtts = this.getInlineDocAttachments() || [];
+					if (inlineDocAtts.length) {
+						for (j = 0; j < inlineDocAtts.length; j++) {
+							var inlineDocAttNode = {ci:inlineDocAtts[j].cid};
+							var attachNode = inlineDocAttNode.attach = {};
+							if (inlineDocAtts[j].docid) {
+								attachNode.doc = [{id: inlineDocAtts[j].docid}];
+							} 
+							subPartNodes.push(inlineDocAttNode);
+						}
+					}
 				}
 			} else {
 				partNode.content = {_content:content};
@@ -897,6 +968,7 @@ function(request, contactList, isDraft, accountName) {
 
 	if (this.attId ||
 		(this._msgAttIds && this._msgAttIds.length) ||
+		(this._docAttIds && this._docAttIds.length) ||
 		(this._forAttIds && this._forAttIds.length))
 	{
 		var attachNode = msgNode.attach = {};
@@ -912,9 +984,18 @@ function(request, contactList, isDraft, accountName) {
 			}
 		}
 
+
+		// attach docs
+		if (this._docAttIds) {
+			var docs = attachNode.doc = [];
+			for (var i = 0; i < this._docAttIds.length; i++) {
+				docs.push({id:this._docAttIds[i]});
+			}
+		}
+
 		// attach msg attachments
 		if (this._forAttIds && this._forAttIds.length) {
-			var attIds = this._filteredFwdAttIds ||  this._forAttIds;
+			var attIds = this._forAttIds;
 			if (attIds && attIds.length) {
 				var parts = attachNode.mp = [];
 	            for (var i = 0; i < attIds.length; i++) {
@@ -995,7 +1076,6 @@ function(params, result) {
 	}
 };
 
-
 ZmMailMsg.prototype._notifySendListeners =
 function() {
 	var flag;
@@ -1008,7 +1088,7 @@ function() {
 	if (flag && this._origMsg) {
 		this._origMsg[ZmItem.FLAG_PROP[flag]] = true;
 		if (this._origMsg.list) {
-        	this._origMsg.list._notify(ZmEvent.E_FLAGS, {items: [this._origMsg], flags: [flag]});
+			this._origMsg.list._notify(ZmEvent.E_FLAGS, {items: [this._origMsg], flags: [flag]});
 		}
 	}
 };
@@ -1021,11 +1101,8 @@ function(attachment) {
 	if (ZmMimeTable.isIgnored(type))
 		return false;
 
-	if (type.match(/^image/) && attachment.foundInMsgBody)
-		return false;
-
 	// bug fix #8751 - dont ignore text/calendar type if msg is not an invite
-	if (type == ZmMimeTable.TEXT_CAL && this.isInvite())
+	if (type == ZmMimeTable.TEXT_CAL && appCtxt.get(ZmSetting.CALENDAR_ENABLED) && this.isInvite())
 		return false;
 
 	return true;
@@ -1046,28 +1123,40 @@ function(contentPartType, contentPart) {
 		}
 	}
 	return null;
-}
+};
 
 /**
  * Returns an array of objects containing meta info about attachments to be used
  * to build href's by the caller
 */
 ZmMailMsg.prototype.getAttachmentLinks =
-function(findHits, includeInlineImages) {
-	// cache the attachment links once they've been generated.
-	// NOPE. foundInMsgBody can change after we call this function, it's safer not to cache the links
-	// if (this._attLinks != null)
-	// 	return this._attLinks;
-
+function(findHits, includeInlineImages, includeInlineAtts) {
 	this._attLinks = [];
 
-	if (this.attachments && this.attachments.length > 0) {
+	var attachments = this.attachments;
+
+	if (includeInlineAtts) {
+		var parts = this.getBodyParts();
+		if (parts && parts.length > 1) {
+			var iAtts = [], part;
+			for (var k = 0; k < parts.length; k++) {
+				part = parts[k];
+				if (part.filename && part.cd == "inline") {
+					iAtts.push(part);
+				}
+			}
+			attachments = [].concat(attachments, iAtts);
+		}
+	}
+
+	if (attachments && attachments.length > 0) {
+
 		var hrefRoot = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI) + "&loc=" + AjxEnv.DEFAULT_LOCALE + "&id=" + this.id + "&part=";
 
-		for (var i = 0; i < this.attachments.length; i++) {
-			var attach = this.attachments[i];
+		for (var i = 0; i < attachments.length; i++) {
+			var attach = attachments[i];
 
-			if (!this.isRealAttachment(attach) || (attach.foundInMsgBody && !includeInlineImages)) {
+			if (!this.isRealAttachment(attach) || (attach.ct.match(/^image/) && attach.ci && !includeInlineImages) || (attach.cd == "inline" && attach.filename && !includeInlineAtts)) {
 				continue;
 			}
 
@@ -1172,6 +1261,8 @@ function(findHits, includeInlineImages) {
 				props.ci = true;
 			}
 
+			props.foundInMsgBody = attach.foundInMsgBody;
+
 			// and finally, add to attLink array
 			this._attLinks.push(props);
 		}
@@ -1270,26 +1361,24 @@ function(msgNode) {
 		try {
 			this.invite = ZmInvite.createFromDom(msgNode.inv);
 			this.invite.setMessageId(this.id);
-            //bug:18613
-            var desc = this.invite.getComponentDescription();
-            var descHtml = this.invite.getComponentDescriptionHtml();
-            if((this._bodyParts.length == 0) && (desc || descHtml)){
+			// bug fix #18613
+			var desc = this.invite.getComponentDescription();
+			var descHtml = this.invite.getComponentDescriptionHtml();
+			if ((desc || descHtml) && this._bodyParts.length == 0) {
 				if(desc) {
-                	var textPart = new Object();
-                	textPart.ct = ZmMimeTable.TEXT_PLAIN;
-                	textPart.s = desc.length;
-                	textPart.content = desc;
-                	this._bodyParts.push(textPart);
+					var textPart = { ct:ZmMimeTable.TEXT_PLAIN, s:desc.length, content:desc };
+					this._bodyParts.push(textPart);
 				}
 				if(descHtml) {
-                	var htmlPart = new Object();
-                	htmlPart.ct = ZmMimeTable.TEXT_HTML;
-                	htmlPart.s = descHtml.length;
-                	htmlPart.content = descHtml;
-                	this._bodyParts.push(htmlPart);					
+					var htmlPart = { ct:ZmMimeTable.TEXT_HTML, s:descHtml.length, content:descHtml };
+					this._bodyParts.push(htmlPart);
 				}
-            }
-            this._loaded = this._bodyParts.length > 0  || this.attachments.length > 0;
+			}
+			if (!appCtxt.get(ZmSetting.CALENDAR_ENABLED) &&
+				this.invite.type == "appt")
+			{
+				this.flagLocal(ZmItem.FLAG_ATTACH, true);
+			}
 		} catch (ex) {
 			// do nothing - this means we're trying to load an ZmInvite in new
 			// window, which we dont currently load (re: support).
@@ -1304,28 +1393,46 @@ function () {
 
 ZmMailMsg.prototype.needsRsvp =
 function () {
-	return (this.isInvite() && this.invite.shouldRsvp() && !this.invite.isOrganizer());
+	if (!this.isInvite() || this.invite.isOrganizer()) { return false; }
+
+	var needsRsvp = false;
+	var accEmail = appCtxt.getActiveAccount().getEmail();
+	if (this.isInvite()) {
+		var at = this.invite.getAttendees();
+		for (var i in at) {
+			if (at[i].url == accEmail) {
+				return at[i].rsvp;
+			}
+			if (at[i].rsvp) {
+				needsRsvp = true;
+			}
+		}
+		at = this.invite.getResources();
+		for (var i in at) {
+			if (at[i].url == accEmail) {
+				return at[i].rsvp;
+			}
+			if (at[i].rsvp) {
+				needsRsvp = true;
+			}
+		}
+	}
+
+	return needsRsvp;
 };
 
 // Adds child address nodes for the given address type.
 ZmMailMsg.prototype._addAddressNodes =
-function(addrNodes, type, contactList, isDraft) {
+function(addrNodes, type, isDraft) {
 	var addrs = this._addrs[type];
 	var num = addrs.size();
 	if (num) {
+		var contactsApp = appCtxt.getApp(ZmApp.CONTACTS);
 		for (var i = 0; i < num; i++) {
 			var addr = addrs.get(i);
 			var email = addr.getAddress();
-			var addrNode = {t:AjxEmailAddress.toSoapType[type], a:email};
-	
-			// tell server to add this email to address book if not found
-			if (contactList && !isDraft && appCtxt.get(ZmSetting.AUTO_ADD_ADDRESS) &&
-				!contactList.getContactByEmail(email))
-			{
-				DBG.println(AjxDebug.DBG2, "adding contact: " + email);
-				addrNode.add = 1;
-			}
 			var name = addr.getName();
+			var addrNode = {t:AjxEmailAddress.toSoapType[type], a:email};
 			if (name) {
 				addrNode.p = name;
 			}
@@ -1374,7 +1481,7 @@ function(addrNodes, parentNode, isDraft, accountName) {
 		var addrNode = {t:"f"};
 
 		// bug fix #20630 - handling sending drafts obo
-		if (this._origMsg && this._origMsg.isDraft) {
+		if (this._origMsg && this._origMsg.isDraft && !this._origMsg.sendAsMe) {
 			var mainAcct = ac.getMainAccount().getEmail();
 			var from = this._origMsg.getAddresses(AjxEmailAddress.FROM).get(0);
 			// this means we're sending a draft msg obo
@@ -1412,6 +1519,18 @@ function(addrNodes) {
 	}
 };
 
+ZmMailMsg.prototype._addReadReceipt =
+function(addrNodes, accountName) {
+	var addrNode = {t:"n"};
+	if (this.identity) {
+		addrNode.a = this.identity.readReceiptAddr || this.identity.sendFromAddress;
+		addrNode.p = this.identity.sendFromDisplay;
+	} else {
+		addrNode.a = accountName || appCtxt.getActiveAccount().getEmail();
+	}
+	addrNodes.push(addrNode);
+};
+
 ZmMailMsg.prototype._isAttInHitList =
 function(attach) {
 	for (var i = 0; i < this._attHitList.length; i++) {
@@ -1428,15 +1547,10 @@ function(what, a, b, c) {
 	}
 };
 
-ZmMailMsg.prototype.getPrintHtml =
-function(preferHtml, callback) {
-	ZmMailMsgView.getPrintHtml(this, preferHtml, callback);
-};
-
 ZmMailMsg.prototype.getStatusIcon =
 function() {
 	var imageInfo;
-	if (this.isInvite())		{ imageInfo = "Appointment"; }
+	if (this.isInvite() && appCtxt.get(ZmSetting.CALENDAR_ENABLED))		{ imageInfo = "Appointment"; }
 	else if (this.isDraft)		{ imageInfo = "MsgStatusDraft"; }
 	else if (this.isReplied)	{ imageInfo = "MsgStatusReply"; }
 	else if (this.isForwarded)	{ imageInfo = "MsgStatusForward"; }

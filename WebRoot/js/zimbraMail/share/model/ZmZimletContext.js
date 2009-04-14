@@ -1,8 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -11,7 +10,6 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -52,7 +50,9 @@ ZmZimletContext = function(id, zimlet) {
 			this.type = this.contentObject.type;
 		}
 		if (this.contentObject.contextMenu) {
-			this.contentObject.contextMenu = this.contentObject.contextMenu[0];
+            if(this.contentObject.contextMenu instanceof Array){
+			    this.contentObject.contextMenu = this.contentObject.contextMenu[0];
+            }
 			this._contentActionMenu = new AjxCallback(this, this._makeMenu,[this.contentObject.contextMenu.menuItem]);
 		}
 	}
@@ -70,15 +70,17 @@ ZmZimletContext = function(id, zimlet) {
 			this.icon = this.zimletPanelItem.icon;
 		}
 		if (this.zimletPanelItem.contextMenu) {
-			this.zimletPanelItem.contextMenu = this.zimletPanelItem.contextMenu[0];
+            if(this.zimletPanelItem.contextMenu instanceof Array){
+			    this.zimletPanelItem.contextMenu = this.zimletPanelItem.contextMenu[0];
+            }
 			this._panelActionMenu = new AjxCallback(
 				this, this._makeMenu,
 				[ this.zimletPanelItem.contextMenu.menuItem ]);
 		}
-		if (this.zimletPanelItem.onClick) {
+		if (this.zimletPanelItem.onClick instanceof Array) {
 			this.zimletPanelItem.onClick = this.zimletPanelItem.onClick[0];
 		}
-		if (this.zimletPanelItem.onDoubleClick) {
+		if (this.zimletPanelItem.onDoubleClick instanceof Array) {
 			this.zimletPanelItem.onDoubleClick = this.zimletPanelItem.onDoubleClick[0];
 		}
 	}
@@ -101,7 +103,9 @@ ZmZimletContext = function(id, zimlet) {
 	}
 
 	if(this.config) {
-		this.config = this.config[0];
+        if(this.config instanceof Array) {
+			this.config = this.config[0];
+        }
 		this._translateConfig();
 	}
 
@@ -130,7 +134,9 @@ ZmZimletContext.sanitize =
 function(obj, tag, wantarray_re) {
 	function doit(obj, tag) {
 		var cool_json, val, i;
-		if (obj instanceof Array) {
+        if(obj instanceof DwtControl){ //Don't recurse into DwtControls, causes too much recursion
+           return obj;
+        }else if (obj instanceof Array) {
 			if (obj.length == 1 && !(wantarray_re && wantarray_re.test(tag))) {
 				cool_json = doit(obj[0], tag);
 			} else {
@@ -266,14 +272,15 @@ ZmZimletContext.prototype.getProp = function(name) {
 };
 
 ZmZimletContext.prototype._translateConfig = function() {
-	if (this.config && this.config.global && this.config.global[0]) {
+	if (!this.config) { return; }
+	if (this.config.global && this.config.global[0]) {
 		var prop = this.config.global[0].property;
 		this.config.global = {};
 		for (var i in prop) {
 			this.config.global[prop[i].name] = prop[i]._content;
 		}
 	}
-	if (this.config && this.config.local && this.config.local[0]) {
+	if (this.config.local && this.config.local[0]) {
 		var propLocal = this.config.local[0].property;
 		this.config.local = {};
 		for (var j in propLocal) {
@@ -283,10 +290,11 @@ ZmZimletContext.prototype._translateConfig = function() {
 };
 
 ZmZimletContext.prototype.getConfig = function(name) {
-	if (this.config && this.config.local && this.config.local[name]) {
+	if (!this.config) { return; }
+	if (this.config.local && this.config.local[name]) {
 		return this.config.local[name];
 	}
-	if (this.config && this.config.global && this.config.global[name]) {
+	if (this.config.global && this.config.global[name]) {
 		return this.config.global[name];
 	}
 	return null;
@@ -362,6 +370,7 @@ ZmZimletContext.prototype.processMessage = function(str) {
 };
 
 ZmZimletContext.prototype.replaceObj = function(re, str, obj) {
+    if(!str) return "";
 	return str.replace(re,
 		function(str, p1, prop) {
 			var txt = p1;
@@ -422,7 +431,7 @@ ZmZimletContext.prototype.makeURL = function(actionUrl, obj, props) {
 * pass it to 'div' parameter.  otherwise a canvas (window, popup, dialog) will be created
 * to display the contents from the url.
 */
-ZmZimletContext.prototype.handleActionUrl = function(actionUrl, canvas, obj, div) {
+ZmZimletContext.prototype.handleActionUrl = function(actionUrl, canvas, obj, div, x, y) {
 	var url = this.makeURL(actionUrl, obj);
 	var xslt = null;
 
@@ -433,13 +442,13 @@ ZmZimletContext.prototype.handleActionUrl = function(actionUrl, canvas, obj, div
 	// need to use callback if the paintable canvas already exists, or if it needs xslt transformation.
 	if (div || xslt) {
 		if (!div) {
-			canvas = this.handlerObject.makeCanvas(canvas[0], null);
+			canvas = this.handlerObject.makeCanvas(canvas, null, x, y);
 			div = document.getElementById("zimletCanvasDiv");
 		}
 		url = ZmZimletBase.PROXY + AjxStringUtil.urlComponentEncode(url);
 		AjxRpc.invoke(null, url, null, new AjxCallback(this, this._rpcCallback, [xslt, div]), true);
 	} else {
-		this.handlerObject.makeCanvas(canvas[0], url);
+		this.handlerObject.makeCanvas(canvas, url, x, y);
 	}
 };
 
@@ -505,10 +514,11 @@ ZmZimletContext._zmObjectTransformers = {
 			ret.numMsgs      = oi.numMsgs;
 			ret.tags         = oi.tags;
 			ret.unread       = oi.isUnread;
+
 			
 			// Use first message
 			ret.body         = ZmZimletContext._getMsgBody(oi.getFirstHotMsg());
-			ret.srcObj		 = oi;			
+			ret.srcObj			= oi;
 			all[i] = ret;
 		}
 		if(all.length == 1) {
@@ -602,7 +612,7 @@ ZmZimletContext._zmObjectTransformers = {
 		ret.unread       = oi.numUnread;
 		ret.total        = oi.numTotal;
 		ret.url          = oi.getRestUrl();
-		ret.srcObj		 = oi;
+		ret.srcObj			= oi;
 		return ret;
 	},
 
@@ -625,7 +635,7 @@ ZmZimletContext._zmObjectTransformers = {
 		ret.notes          = oi.getNotesPart();
 		ret.isRecurring    = oi.isRecurring();
 		ret.timeZone       = oi.timezone;
-		ret.srcObj		 = oi;
+		ret.srcObj			= oi;
 		return ret;
 	}
 

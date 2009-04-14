@@ -19,6 +19,7 @@
 
 <%-- this checks and redirects to admin if need be --%>
 <zm:adminRedirect/>
+<app:skinAndRedirect />
 
 <%-- get useragent --%>
 <zm:getUserAgent var="ua" session="false"/>
@@ -140,7 +141,7 @@ if (application.getInitParameter("offlineMode") != null)  {
  login.jsp
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007 Zimbra, Inc.
+ * Copyright (C) 2009 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -153,7 +154,6 @@ if (application.getInitParameter("offlineMode") != null)  {
 -->
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
     <title><fmt:message key="zimbraLoginTitle"/></title>
-    <app:skin />
     <c:set var="version" value="${initParam.zimbraCacheBusterVersion}"/>
     <meta name="viewport" content="width=320; initial-scale=1.0; maximum-scale=8.0; user-scalable=1;">
     <meta name="description" content="<fmt:message key="zimbraLoginMetaDesc"/>">
@@ -164,7 +164,10 @@ if (application.getInitParameter("offlineMode") != null)  {
 			<c:param name="customerDomain"	value="${param.customerDomain}" />
 		</c:if>	
 	</c:url>">
-    <fmt:message key="favIconUrl" var="favIconUrl"/>
+	<zm:getFavIcon request="${pageContext.request}" var="favIconUrl" />
+	<c:if test="${empty favIconUrl}">
+	    <fmt:message key="favIconUrl" var="favIconUrl"/>
+	</c:if>
     <link rel="SHORTCUT ICON" href="<c:url value='${favIconUrl}'/>">
 </head>
 <c:set value="/img" var="iconPath" scope="request"/>

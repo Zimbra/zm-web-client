@@ -1,8 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007 Zimbra, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -11,7 +10,6 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -126,13 +124,14 @@ function(html, appt, data, needSep) {
 	if (needSep) html.append("<tr id='", this._rowId(data), "'><td colspan=4><div class=horizSep></div></td></tr>");
 	html.append("<tr width=100% id='", this._rowId(data), "'>");
 	html.append("<td colspan=2>");
-	html.append("<table cellpadding=0 cellspacing=0 border=0><tr>");
+	html.append("<table cellpadding=1 width='95%' cellspacing=0 border=0><tr>");
 	html.append("<td width=25px>", AjxImg.getImageHtml(appt.otherAttendees ? "ApptMeeting" : "Appointment"), "</td>");
 	html.append("<td><b>", AjxStringUtil.htmlEncode(appt.getReminderName()), "</b> (", this.getDurationText(appt), ") ",  "</td>");
+    html.append("</tr><tr>");
+    html.append("<td align='right' colspan='2' id='", data.deltaId, "'></td>");
 	html.append("</tr></table>");
 	html.append("</td>");
-	html.append("<td id='", data.deltaId, "'></td>");
-	html.append("<td align=right id='", data.buttonId, "'></td>");	
+	html.append("<td align=right id='", data.buttonId, "'></td>");
 	html.append("</tr>");
     //alarm data is common all instances of recurring appt
     //if (appt.otherAttendees) this._addAttr(html, ZmMsg.status, appt.getParticipantStatusStr(), data);
@@ -314,10 +313,9 @@ function() {
 		ZmSoundAlert.getInstance().start();
 	}
 
-	if (appCtxt.isOffline && window.platform &&
-		(AjxEnv.isMac || AjxEnv.isWindows) &&
-		appCtxt.get(ZmSetting.OFFLINE_CALENDAR_TOASTER_ENABELD))
+	if (appCtxt.get(ZmSetting.CAL_REMINDER_NOTIFY_TOASTER))
 	{
+		AjxPackage.require("Alert");
 		var winText = [];
 		var appts = this._list.getArray();
 		// only show, at most, five appointment reminders
@@ -326,7 +324,7 @@ function() {
 			var delta = this._formatDeltaString(this._computeDelta(appt));
 			var text = [appt.getName(), ", ", this.getDurationText(appt), "\n(", delta, ")"].join("");
 			if (AjxEnv.isMac) {
-				window.platform.showNotification(ZmMsg.appointmentReminder, text, "resource://webapp/icons/default/launcher.icns");
+				ZmDesktopAlert.getInstance().start(ZmMsg.appointmentReminder, text);
 			} else if (AjxEnv.isWindows) {
 				winText.push(text);
 			}
@@ -336,7 +334,7 @@ function() {
 			if (appts.length > 5) {
 				winText.push(ZmMsg.andMore);
 			}
-			window.platform.icon().showNotification(ZmMsg.appointmentReminder, winText.join("\n"), 5);
+			ZmDesktopAlert.getInstance().start(ZmMsg.appointmentReminder, winText.join("\n"), 5);
 		}
 	}
 

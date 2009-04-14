@@ -1,3 +1,19 @@
+<%--
+ * ***** BEGIN LICENSE BLOCK *****
+ * 
+ * Zimbra Collaboration Suite Web Client
+ * Copyright (C) 2006, 2007, 2008 Zimbra, Inc.
+ * 
+ * The contents of this file are subject to the Yahoo! Public License
+ * Version 1.0 ("License"); you may not use this file except in
+ * compliance with the License.  You may obtain a copy of the License at
+ * http://www.zimbra.com/license.
+ * 
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
+ * ***** END LICENSE BLOCK *****
+--%>
 <%@ tag body-content="empty" %>
 <%@ attribute name="selected" rtexprvalue="true" required="true" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -29,6 +45,7 @@
             </c:if>
             <zm:pref name="zimbraPrefMailItemsPerPage" value="${param.zimbraPrefMailItemsPerPage}"/>
             <zm:pref name="zimbraPrefShowFragments" value="${param.zimbraPrefShowFragments eq 'TRUE' ? 'TRUE' : 'FALSE'}"/>
+            <zm:pref name="zimbraPrefReadingPaneEnabled" value="${param.zimbraPrefReadingPaneEnabled eq 'TRUE' ? 'TRUE' : 'FALSE'}"/>
             <c:if test="${mailbox.features.initialSearchPreference}">
                 <zm:pref name="zimbraPrefMailInitialSearch" value="${param.zimbraPrefMailInitialSearch}"/>
             </c:if>
@@ -139,7 +156,6 @@
         <c:set var="signatureNameKey" value="signatureName${i}"/>
         <c:set var="origSignatureValueKey" value="origSignatureValue${i}"/>
         <c:set var="signatureValueKey" value="signatureValue${i}"/>
-        <c:set var="signatureTypeKey" value="signatureType${i}"/>
         <c:if test="${(param[origSignatureNameKey] ne param[signatureNameKey]) or
                 (param[origSignatureValueKey] ne param[signtureValueKey])}">
             <c:set var="modSignatureWarning" value="${true}" scope="request"/>
@@ -153,7 +169,7 @@
                 <c:otherwise>
                     <c:set var="signatureIdKey" value="signatureId${i}"/>
                     <zm:modifySiganture id="${param[signatureIdKey]}"
-                                        name="${param[signatureNameKey]}" value="${param[signatureValueKey]}" type="${param[signatureTypeKey]}"/>
+                                        name="${param[signatureNameKey]}" value="${param[signatureValueKey]}"/>
                     <c:set var="signatureUpdated" value="${true}"/>
                     <c:set var="modSignatureWarning" value="${false}" scope="request"/>
                 </c:otherwise>
@@ -172,7 +188,7 @@
             <app:status style="Warning"><fmt:message key="optionsNoSignatureValue"/></app:status>
         </c:when>
         <c:otherwise>
-            <zm:createSiganture var="sigId" name="${param.newSignatureName}" value="${param.newSignatureValue}" type="${param.newSignatureType}"/>
+            <zm:createSiganture var="sigId" name="${param.newSignatureName}" value="${param.newSignatureValue}"/>
             <c:set var="updated" value="${true}"/>
             <c:set var="newSignatureWarning" value="${false}" scope="request"/>
         </c:otherwise>

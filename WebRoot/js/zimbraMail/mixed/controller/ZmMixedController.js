@@ -1,8 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -11,7 +10,6 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -66,7 +64,7 @@ function(searchResults) {
 	var elements = {};
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
 	elements[ZmAppViewMgr.C_APP_CONTENT] = lv;
-	this._setView(this._currentView, elements, true);
+	this._setView({view:this._currentView, elements:elements, isAppView:true});
 	this._resetNavToolBarButtons(this._currentView);
 
 	// always set the selection to the first item in the list
@@ -251,16 +249,19 @@ function(ev) {
 		
 		miUndelete.setVisible(showUndelete || showBoth || isDraft);
 		miMoveTo.setVisible((showMoveTo || showBoth) && !isDraft);
-	
+        actionMenu.getMenuItem(ZmOperation.PRINT).setVisible(showMoveTo);
+        actionMenu.getMenuItem(ZmOperation.DELETE).setVisible(showMoveTo);
+
 		// if >1 item is selected and they're not all the same type, disable both menu items
 		actionMenu.enable([ZmOperation.UNDELETE, ZmOperation.MOVE], numTypes == 1);
 	} else {
  		miUndelete.setVisible(false);	// never show Undelete option when not in Trash
  		miMoveTo.setVisible(true);		// always show Move To option
- 		// show MoveTo only if one type has been selected and its not contacts or wiki thing
-		var enableMoveTo = numTypes == 1 && selItems[0].type != ZmItem.CONTACT && 
-			selItems[0].type != ZmItem.PAGE && selItems[0].type != ZmItem.DOCUMENT;
+ 		// show MoveTo only if one type has been selected and its either MSG or CONV
+		var enableMoveTo = numTypes == 1 && (selTypes[ZmItem.CONV] === true || selTypes[ZmItem.MSG] === true);
 		actionMenu.enable(ZmOperation.MOVE, enableMoveTo);
+        actionMenu.enable(ZmOperation.PRINT, enableMoveTo);
+        actionMenu.enable(ZmOperation.DELETE, enableMoveTo);
 	}
 	actionMenu.popup(0, ev.docX, ev.docY);
 	if (ev.ersatz) {
@@ -295,7 +296,7 @@ function(ev) {
 	var items = this._listView[this._currentView].getSelection();
 	for (var i = 0, count = items.length; i < count; i++) {
 		var item = items[i];
-		if ((item instanceof ZmContact) && item.isMyCard()) {
+		if ((item instanceof ZmContact) && item.isMyCard) {
 			appCtxt.setStatusMsg(ZmMsg.errorMyCardDelete, ZmStatusView.LEVEL_WARNING);
 			return;
 		}
@@ -310,7 +311,7 @@ function(ev) {
 	var items = this._listView[this._currentView].getSelection();
 	for (var i = 0, count = items.length; i < count; i++) {
 		var item = items[i];
-		if ((item instanceof ZmContact) && item.isMyCard()) {
+		if ((item instanceof ZmContact) && item.isMyCard) {
 			appCtxt.setStatusMsg(ZmMsg.errorMyCardMove, ZmStatusView.LEVEL_WARNING);
 			return;
 		}

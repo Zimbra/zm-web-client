@@ -1,8 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -11,7 +10,6 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -149,8 +147,8 @@ function(field, itemIdx) {
 };
 
 ZmMixedView.prototype._getToolTip =
-function(field, item, ev, div, match) {
-	var tooltip = null;
+function(params) {
+	var tooltip, field = params.field, item = params.item;
 	var listViewClass;
 	if (field == ZmItem.F_FROM) {
 		if (item.type == ZmItem.CONTACT) {
@@ -184,22 +182,13 @@ function(field, item, ev, div, match) {
 
 ZmMixedView.prototype._changeListener =
 function(ev) {
-	if (appCtxt.getAppViewMgr().getCurrentViewId() != this.view)
-		return;
+
+	if (appCtxt.getAppViewMgr().getCurrentViewId() != this.view) { return; }
 
 	if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE) {
 		var items = ev.getDetail("items");
-		var contactList = AjxDispatcher.run("GetContacts");
-
-		// walk the list of items and if any are contacts,
 		for (var i = 0; i < items.length; i++) {
-			if ((items[i].type == ZmItem.CONTACT || items[i].type == ZmItem.GROUP) &&
-				ev.event == ZmEvent.E_DELETE)
-			{
-				// and is hard delete, remove from canonical list
-				contactList.remove(items[i]);
-			}
-			// also remove from controller's list
+			// remove from controller's list
 			this._controller.getList().remove(items[i]);
 		}
 	}

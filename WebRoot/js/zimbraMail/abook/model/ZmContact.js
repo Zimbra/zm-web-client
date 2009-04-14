@@ -1,17 +1,15 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- *
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
- *
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- *
+ * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -37,10 +35,6 @@ if (!window.ZmContact) {
 ZmContact = function(id, list, type) {
 	if (arguments.length == 0) { return; }
 
-	// handle to canonical list (for contacts that are part of search results)
-	this.canonicalList = AjxDispatcher.run("GetContacts");
-
-	list = list || this.canonicalList;
 	type = type || ZmItem.CONTACT;
 	ZmItem.call(this, type, id, list);
 
@@ -182,7 +176,7 @@ function(node, args) {
 		contact = new ZmContact(node.id, args.list);
 		contact._loadFromDom(node);
 	} else {
-		contact.list = args.list || AjxDispatcher.run("GetContacts");
+		contact.list = args.list || new ZmContactList(null);
 	}
 
 	return contact;
@@ -412,7 +406,7 @@ function() {
 
 ZmContact.prototype.isGroup =
 function() {
-	return (this.getAttr(ZmContact.F_dlist) != null || this.type == ZmItem.GROUP);
+	return Boolean(this.getAttr(ZmContact.F_dlist) || this.type == ZmItem.GROUP);
 };
 
 // parses "dlist" attr into AjxEmailAddress objects stored in 3 vectors (all, good, and bad)
@@ -428,7 +422,7 @@ function() {
 	if (this.isGal)			{ return "GALContact"; }
 	if (this.isShared())	{ return "SharedContact"; }
 	if (this.isGroup())		{ return "Group"; }
-	if (this.isMyCard())	{ return "MyCard"; }
+	if (this.isMyCard)		{ return "MyCard"; }
 	return "Contact";
 };
 
@@ -441,67 +435,29 @@ function() {
 
 ZmContact.prototype.getAttr =
 function(name) {
-	if (!this.list) { return null; }
-
-	if (this.list.isCanonical || this.list.isGal || this.isShared()) {
-		return this.attr[name];
-	} else {
-		var contact = this.canonicalList.getById(this.id);
-		return contact ? contact.attr[name] : null;
-	}
+	var val = this.attr[name];
+	return val ? ((val instanceof Array) ? val[0] : val) : "";
 };
 
 ZmContact.prototype.setAttr =
 function(name, value) {
-	if (!this.list) { return; }
-
-	if (this.list.isCanonical || this.list.isGal || this.isShared()) {
-		this.attr[name] = value;
-	} else {
-		var contact = this.canonicalList.getById(this.id);
-		if (contact) {
-			contact.attr[name] = value;
-		}
-	}
+	this.attr[name] = value;
 };
 
 ZmContact.prototype.removeAttr =
 function(name) {
-	if (!this.list) { return; }
-
-	if (this.list.isCanonical || this.list.isGal || this.isShared()) {
-		delete this.attr[name];
-	} else {
-		var contact = this.canonicalList.getById(this.id);
-		if (contact) {
-			delete contact.attr[name];
-		}
-	}
+	delete this.attr[name];
 };
 
 ZmContact.prototype.getAttrs =
 function() {
-	if (this.canonicalList && !this.isShared() && !this.list.isGal) {
-		var contact = this.canonicalList.getById(this.id);
-		return contact ? contact.attr : this.attr;
-	} else {
-		return this.attr;
-	}
-};
-
-ZmContact.prototype.clear =
-function() {
-	// if this contact is in the canonical list, dont clear it!
-	var contact = this.canonicalList.getById(this.id);
-	if (contact) { return; }
-
-	ZmItem.prototype.clear.call(this);
+	return this.attr;
 };
 
 /**
 * Creates a contact from the given set of attributes. Used to create contacts on
 * the fly (rather than by loading them). This method is called by a list's create()
-* method; in our case that list is the canonical list of contacts.
+* method.
 * <p>
 * If this is a GAL contact, we assume it is being added to the contact list.</p>
 *
@@ -941,11 +897,6 @@ function() {
 	return this.addrbook;
 };
 
-ZmContact.prototype.isMyCard =
-function() {
-	return this.list && (this.list.getMyCard() == this);
-};
-
 ZmContact.prototype._getAddressField =
 function(street, city, state, zipcode, country) {
 	if (street == null && city == null && state == null && zipcode == null && country == null) return null;
@@ -1046,7 +997,7 @@ function() {
 	this._fileAs = this._fileAsLC = this._fullName = null;
 };
 
-// Parse contact node. A contact will only have attr values if its in canonical list.
+// Parse contact node.
 ZmContact.prototype._loadFromDom =
 function(node) {
 	this.isLoaded = true;
@@ -1063,8 +1014,8 @@ function(node) {
 	if (node.email2) this.attr[ZmContact.F_email2] = node.email2;
 	if (node.email3) this.attr[ZmContact.F_email3] = node.email3;
 
-	this.type = this.attr[ZmContact.F_dlist] != null
-		? ZmItem.GROUP : ZmItem.CONTACT;
+	this.type = (this.attr[ZmContact.F_dlist] != null) ? ZmItem.GROUP : ZmItem.CONTACT;
+	this.isMyCard = Boolean(this.attr[ZmContact.MC_cardOwner] == "isMyCard");
 
 	// check if the folderId is found in our address book (otherwise, we assume
 	// this contact to be a shared contact)
@@ -1105,13 +1056,6 @@ function(type, shortForm) {
 	}
 
 	return text;
-};
-
-ZmContact.prototype.getPrintHtml =
-function(preferHtml, callback) {
-	return this.isGroup()
-		? ZmGroupView.getPrintHtml(this, false)
-		: ZmContactView.getPrintHtml(this, false);
 };
 
 // these need to be kept in sync with ZmContact.F_*

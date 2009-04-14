@@ -1,8 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -11,7 +10,6 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -70,7 +68,7 @@ function(msg, ex, noExecReset, hideReportButton)  {
 		ex.msg = ex.msg || msg;
 		var fields = ["method", "msg", "code", "detail", "trace", "request"];
 		var html = [], i = 0;
-		html[i++] = "<div style='height:300px; overflow:auto;'><table width='100%'>";
+		html[i++] = "<table>";
 		for (var j = 0; j < fields.length; j++) {
 			var fld = fields[j];
 			var value = ex[fld];
@@ -85,7 +83,7 @@ function(msg, ex, noExecReset, hideReportButton)  {
 				html[i++] = ["<tr><td valign='top'>", fields[j], ":</td><td valign='top'>", value, "</td></tr>"].join("");
 			}
 		}
-		html[i++] = "</table></div>";
+		html[i++] = "</table>";
 		detailStr = html.join("");
 	}
 	errorDialog.registerCallback(DwtDialog.OK_BUTTON, this._errorDialogCallback, this);
@@ -101,6 +99,11 @@ function(view) {
 ZmController.prototype.getCurrentView =
 function() {
 	return this._currentView;
+};
+
+ZmController.prototype.getKeyMapName =
+function() {
+	return "Global";
 };
 
 ZmController.prototype.handleKeyAction =
@@ -179,6 +182,17 @@ function(actionCode) {
 			return false;
 	}
 	return true;
+};
+
+/**
+ * Returns true if shortcuts for the given map are supported for this view. For example, given the map
+ * "tabView", a controller that creates a tab view would return true.
+ *
+ * @param map	[string]	name of a map, presumably one from DwtKeyMap
+ */
+ZmController.prototype.mapSupported =
+function(map) {
+	return false;
 };
 
 ZmController.prototype._newListener =
@@ -260,8 +274,6 @@ ZmController.prototype._restoreFocus =
 function(focusItem, noFocus) {
 	var rootTg = appCtxt.getRootTabGroup();
 	var myTg = this.getTabGroup();
-	var kbMgr = appCtxt.getKeyboardMgr();
-
 	if (rootTg && myTg) {
 		focusItem = focusItem || this._savedFocusMember || this._getDefaultFocusItem() || rootTg.getFocusMember();
 		rootTg.replaceMember(ZmController._getCurrentAppViewTabGroup(), myTg, false, false, focusItem, noFocus);

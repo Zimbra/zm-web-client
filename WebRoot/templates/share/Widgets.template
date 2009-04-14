@@ -70,7 +70,7 @@
 </template>
 
 <template id='share.Widgets#ZmChooseFolderDialog'>
-	<table cellpadding=0 cellspacing=0 border=0 width=100%>
+	<table cellpadding=0 cellspacing=0 border=0 width='<$=AjxEnv.isWebKitBased ? "320" : "100%" $>'>
 		<tr>
 			<td class='Label' colspan=2 id='${id}_folderDesc'></td>
 		</tr>

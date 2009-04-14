@@ -1,8 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -11,7 +10,6 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -63,7 +61,7 @@ ZmAutocompleteListView = function(params) {
 	var className = params.className ? params.className : "ZmAutocompleteListView";
 	DwtComposite.call(this, params.parent, className, DwtControl.ABSOLUTE_STYLE);
 
-	this._dataClass = params.dataClass;
+	this._dataClass = this._dataAPI = params.dataClass;
 	this._dataLoader = params.dataLoader;
 	this._dataLoaded = false;
 	this._matchValue = params.matchValue;
@@ -350,6 +348,7 @@ function(info) {
 	if (!info || (info.text == "undefined")) { return; }
 	if (this._dataLoader && !this._dataLoaded) {
 		this._data = this._dataLoader.call(this._dataClass);
+		this._dataAPI = this._data;
 		this._dataLoaded = true;
 	}
 
@@ -426,7 +425,7 @@ function(on) {
 		}
 		var div = this._getDiv(ZmAutocompleteListView.WAIT_ID);
 		this._waitDivId = div.id;
-		this._addRow(div, ZmMsg.galAutocompleteWaiting, "DwtWait16Icon");
+		this._addRow(div, ZmMsg.autocompleteWaiting, "DwtWait16Icon");
 		this.getHtmlElement().appendChild(div);
 	} else {
 		var ta = new AjxTimedAction(this, this._clearWaiting);
@@ -500,7 +499,7 @@ function(text, start) {
 		}
 		if (ZmAutocompleteListView.IS_DELIM[c]) {
 			var chunk = text.substring(start, i);
-			if (this._data.isComplete && this._data.isComplete(chunk)) {
+			if (this._dataAPI.isComplete && this._dataAPI.isComplete(chunk)) {
 				DBG.println(AjxDebug.DBG3, "skipping completed chunk: " + chunk);
 				start = i + 1;
 				while (text.charAt(start) == ' ') {	// ignore leading space
@@ -526,7 +525,7 @@ ZmAutocompleteListView.prototype._autocomplete =
 function(chunk, callback) {
 	DBG.println(AjxDebug.DBG3, "ZmAutocompleteListView: _autocomplete");
 
-	if (!chunk) { return; }
+	if (!chunk || !(this._dataAPI && this._dataAPI.autocompleteMatch)) { return; }
 	var str = AjxStringUtil.trim(chunk.str);
 
 	// if string is empty or already a delimited address, no reason to look for matches
@@ -549,7 +548,7 @@ function(chunk, callback) {
 	this._removeAll();
 
 	var respCallback = new AjxCallback(this, this._handleResponseAutocomplete, [str, chunk, text, start, callback]);
-	this._data.autocompleteMatch(str, respCallback, this, this._options);
+	this._dataAPI.autocompleteMatch(str, respCallback, this, this._options);
 };
 
 ZmAutocompleteListView.prototype._handleResponseAutocomplete =
@@ -557,7 +556,7 @@ function(str, chunk, text, start, callback, list) {
 	var retValue;
 	var change = false;
 	// see if it's already a complete address
-	if (list && list.length == 1 && this._data.isUniqueValue(str)) {
+	if (list && list.length == 1 && (this._dataAPI.isUniqueValue && this._dataAPI.isUniqueValue(str))) {
 		DBG.println(AjxDebug.DBG2, "unique match, hiding autocomplete list");
 		retValue = {text: text, start: start};
 	}
@@ -612,8 +611,8 @@ ZmAutocompleteListView.prototype._complete =
 function(text, str, hasDelim) {
 	DBG.println(AjxDebug.DBG3, "ZmAutocompleteListView: _complete: selected is " + this._selected);
 	var match = this._getSelected();
-	if (!match && str && hasDelim && this._data.quickComplete) {
-		match = this._data.quickComplete(str);
+	if (!match && str && hasDelim && this._dataAPI.quickComplete) {
+		match = this._dataAPI.quickComplete(str);
 	}
 	if (!match)	{ return; }
 
@@ -713,7 +712,7 @@ function(list, sel) {
 		var div = this._getDiv(i);
 		div._pos = i;
 		var match = this._matches[i];
-		if (match) {
+		if (match && (match.text || match.icon)) {
 			this._addRow(div, match.text, match.icon);
 			thisHtmlElement.appendChild(div);
 		}
@@ -888,7 +887,12 @@ function() {
 // Returns the currently selected match
 ZmAutocompleteListView.prototype._getSelected =
 function() {
-	return this._matches ? this._matches[this._selected] : null;
+	if (this._matches && this._matches.length) {
+		var selected = this._selected || 0;
+		return this._matches[selected];
+	} else {
+		return null;
+	}
 };
 
 // Force focus to the input element (handle Tab in Firefox)

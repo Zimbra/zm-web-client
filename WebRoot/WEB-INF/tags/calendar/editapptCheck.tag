@@ -1,3 +1,19 @@
+<%--
+ * ***** BEGIN LICENSE BLOCK *****
+ * 
+ * Zimbra Collaboration Suite Web Client
+ * Copyright (C) 2007, 2008, 2009 Zimbra, Inc.
+ * 
+ * The contents of this file are subject to the Yahoo! Public License
+ * Version 1.0 ("License"); you may not use this file except in
+ * compliance with the License.  You may obtain a copy of the License at
+ * http://www.zimbra.com/license.
+ * 
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
+ * ***** END LICENSE BLOCK *****
+--%>
 <%@ tag body-content="empty" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -88,6 +104,19 @@
             <c:when test="${uploader.isCancel}">
                 <c:set var="needEditView" value="${false}"/>
             </c:when>
+            <c:when test="${uploader.isCancelConfirm}">
+            <c:set var="needEditView" value="${false}"/>
+            <c:if test="${! empty uploader && not empty uploader.compose && (not empty uploader.compose.subject || not empty uploader.compose.location || not empty uploader.compose.attendees || not empty uploader.compose.content)}">
+                <c:set var="needEditView" value="${true}"/>
+                <fmt:message key="yes" var="yes"/>
+                <c:url var="cancelUrl" value="/h/calendar"/>
+                <app:status html="true" style="Warning">
+                    <fmt:message key="confirmUnsavedChanges">
+                        <fmt:param value="<a style='margin:10px;font-weight:bold;' href='${cancelUrl}'>${yes}</a>"/>
+                    </fmt:message>
+                </app:status>
+            </c:if>
+        </c:when>
             <c:when test="${uploader.isSave and not uploader.compose.isValidStartTime}">
                 <app:status style="Critical">
                     <fmt:message key="errorInvalidApptStartDate"/>
@@ -106,6 +135,11 @@
             <c:when test="${uploader.isSave and empty uploader.compose.subject}">
                 <app:status style="Critical">
                     <fmt:message key="errorMissingSubject"/>
+                </app:status>
+            </c:when>
+            <c:when test="${uploader.isSave and not zm:isValidEmailAddresses(uploader.compose.attendees)}">
+                <app:status style="Critical">
+                    <fmt:message key="invalidAttendees"/>
                 </app:status>
             </c:when>
             <c:when test="${uploader.isApptCancel or uploader.isApptDelete}">
