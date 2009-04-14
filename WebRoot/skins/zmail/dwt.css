@@ -14,7 +14,7 @@
  * 
  * ***** END LICENSE BLOCK *****
  */
-.DwtTreeItem-selected {
+.DwtTreeItem-selected, .DwtTreeItem-selected-focused {
 	background-color: #c3d9ff !important;
 	@Text-anchor@
 	@tlRadius@:3px; @blRadius@:3px;
