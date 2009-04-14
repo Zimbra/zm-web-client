@@ -644,8 +644,8 @@ function() {
 		dlg._tabGroup.addMember(btn, 2);
 
 		dlg.registerCallback(DwtDialog.OK_BUTTON, new AjxListener(this, function(){
-			var text = dlg.linkText.getValue();
 			var url = getURL();
+			var text = dlg.linkText.getValue() || url;
 			dlg.popdown();
 			this.insertLink({ text : text, url  : url });
 		}));
