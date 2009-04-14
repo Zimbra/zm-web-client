@@ -28,7 +28,7 @@
 		<link rel="stylesheet" type="text/css" href="${cssurl}">
     </c:if>
 
-    <c:if test="${param.action eq 'compose' and (mailbox.prefs.composeFormat eq 'html' or mailbox.prefs.forwardReplyInOriginalFormat)}">
+    <c:if test="${(param.action eq 'compose' and (mailbox.prefs.composeFormat eq 'html' or mailbox.prefs.forwardReplyInOriginalFormat)) or (param.selected eq 'signatures')}">
         
         <link rel="stylesheet" type="text/css" href="../yui/2.5.1/assets/skins/sam/skin.css" />
         <script type="text/javascript" src="../yui/2.5.1/yahoo-dom-event/yahoo-dom-event.js"></script>
