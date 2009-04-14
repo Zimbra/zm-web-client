@@ -715,6 +715,12 @@ function() {
 	return this._mainShare || (this.shares && this.shares.length && this.shares[0]);
 };
 
+ZmOrganizer.prototype.supportsSharing =
+function() {
+	// overload per organizer type
+	return true;
+};
+
 ZmOrganizer.prototype.supportsPublicAccess =
 function() {
 	// overload per organizer type

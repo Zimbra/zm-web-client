@@ -125,3 +125,9 @@ ZmZimlet.prototype.getZimletContext =
 function() {
 	return this._zimletContext;
 };
+
+ZmZimlet.prototype.supportsSharing =
+function() {
+	// zimlets cannot be shared
+	return false;
+};

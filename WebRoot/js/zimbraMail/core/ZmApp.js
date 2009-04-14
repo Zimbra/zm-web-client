@@ -873,7 +873,9 @@ function(create, org) {
 ZmApp.prototype._handleCreateLink =
 function(create, org) {
 	var parent = appCtxt.getById(create.l);
-	if (parent && (create.view == ZmOrganizer.VIEWS[org][0])) {
+	if (parent && parent.supportsSharing() &&
+		(create.view == ZmOrganizer.VIEWS[org][0]))
+	{
 		parent.notifyCreate(create);
 		// XXX: once bug #4434 is fixed, check if this call is still needed
 		var folderTree = appCtxt.getFolderTree();
