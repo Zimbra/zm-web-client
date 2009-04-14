@@ -18,7 +18,12 @@
 	background-color: #c3d9ff !important;
 	@Text-anchor@
 	@tlRadius@:3px; @blRadius@:3px;
-	font-weight:bold;
+	font-weight: bold;
+	padding-left: 3px;
+}
+
+.DwtTreeItem-text {
+	padding-left: 3px;
 }
 
 /* text style for a right-clicked tree item */
