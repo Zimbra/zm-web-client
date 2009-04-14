@@ -320,6 +320,10 @@ td.DDSepInvisible div {
 	@Text-disabled@
 }
 
+.Unread .SubjectDoubleRow .ZmConvListFragment {
+	@Text@
+}
+
 .ZmConvExpanded {
 	background-color:#eeeeff;
 }

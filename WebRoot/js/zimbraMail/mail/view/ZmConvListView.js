@@ -299,7 +299,8 @@ function(item, colIdx) {
 	if (item.type == ZmItem.MSG && (item.isHighPriority || item.isLowPriority)) {
 		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_PRIORITY, colIdx, width, "align=right");
 	} else {
-		htmlArr[idx++] = "<td width='" + (width+15) + "'></td>";
+		var exWidth = (item.type == ZmItem.MSG) ? width : (width+15);
+		htmlArr[idx++] = "<td width='" + exWidth + "'></td>";
 	}
 	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_FROM, colIdx);
 	if (item.type != ZmItem.MSG) {

@@ -43,10 +43,17 @@ function() {
 // Reset row style
 ZmMailListView.prototype.markUIAsRead = 
 function(item) {
-	var rowId = (this._isMultiColumn) ? ZmItem.F_ITEM_ROW : ZmItem.F_ITEM_ROW_3PANE;
-	var row = this._getElement(item, rowId);
-	if (row) {
-		row.className = this._getRowClass(item);
+	var rowClass = this._getRowClass(item);
+	if (this._isMultiColumn) {
+		var row = this._getElement(item, ZmItem.F_ITEM_ROW);
+		if (row) { row.className = rowClass; }
+	} else {
+		var row = this._getElement(item, ZmItem.F_ITEM_ROW);
+		if (row) { row.className = rowClass; }
+
+		var row2 = this._getElement(item, ZmItem.F_ITEM_ROW_3PANE);
+		if (row2) { row2.className = rowClass; }
+
 	}
 };
 
