@@ -33,6 +33,7 @@
                 </td>
             </tr>
         </c:if>
+        <c:set var="isHtml" value="${fn:escapeXml(signature.type) eq 'text/html' ? true : false }"/>
         <tr>
             <td class='ZOptionsTableLabel'>
                 <fmt:message key="optionsSignatureName"/>
@@ -58,7 +59,7 @@
             <td colspan=2>
                 <input type="hidden" id="signatureType${numSigs}" name="signatureType${numSigs}" value="${fn:escapeXml(signature.type)}"/>
                 <input type="hidden" name="origSignatureValue${numSigs}" value="${fn:escapeXml(signature.value)}"/>
-                <textarea style='width:100%' id="signatureValue${numSigs}" name='signatureValue${numSigs}' cols='80' rows='5' style='visibility:hidden;width:100%'>${fn:escapeXml(signature.value)}</textarea>
+                <textarea style='width:100%' id="signatureValue${numSigs}" name='signatureValue${numSigs}' cols='80' rows='5' style='<c:if test="${isHtml}">visibility:hidden;</c:if>width:100%'>${fn:escapeXml(signature.value)}</textarea>
             </td>
             <td width="20%">&nbsp;</td>
         </tr>
