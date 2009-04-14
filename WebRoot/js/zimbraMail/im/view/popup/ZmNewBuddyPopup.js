@@ -262,7 +262,7 @@ ZmNewBuddyPopup.prototype._getRosterItemData = function() {
 	if (groups) groups = groups.replace(/,$/, "");
 	if (!msg) msg = ZmRosterItem.checkGroups(groups);
 
-	return (msg ? this._showError(msg) : {address: address, name: name, group: groups});
+	return (msg ? this._showError(msg) : {address: address, name: name, groups: groups});
 };
 
 ZmNewBuddyPopup.prototype.reset = function() {
