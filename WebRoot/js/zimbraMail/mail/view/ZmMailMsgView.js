@@ -1808,32 +1808,38 @@ function(myId, tagId) {
 };
 
 ZmMailMsgView._detachCallback =
-function(result) {
+function(isRfc822, result) {
 	var resp = result.getResponse().GetMsgResponse;
 	var list = appCtxt.getApp(ZmApp.MAIL).getMailListController().getList();
-	var msg = new ZmMailMsg(resp.m[0].id, list, true);	// do not cache this temp msg
+	var msg = new ZmMailMsg(resp.m[0].id, list, true); // do not cache this temp msg
 	msg._loadFromDom(resp.m[0]);
 	msg._loaded = true; // bug fix #8868 - force load for rfc822 msgs since they may not return any content
 	msg.readReceiptRequested = false; // bug #36247 - never allow read receipt for rfc/822 message
 
-	ZmMailMsgView.detachMsgInNewWindow(msg);
+	ZmMailMsgView.detachMsgInNewWindow(msg, isRfc822);
 };
 
 ZmMailMsgView.detachMsgInNewWindow =
-function(msg) {
+function(msg, isRfc822) {
 	var appCtxt = window.parentAppCtxt || window.appCtxt;
 	var newWinObj = appCtxt.getNewWindow(true);
 	newWinObj.command = "msgViewDetach";
-	newWinObj.params = { msg:msg };
+	newWinObj.params = { msg:msg, isRfc822:isRfc822 };
 };
 
 ZmMailMsgView.rfc822Callback =
 function(msgId, msgPartId) {
+	var isRfc822 = Boolean((msgPartId != null));
 	var appCtxt = window.parentAppCtxt || window.appCtxt;
-	var getHtml = appCtxt.get(ZmSetting.VIEW_AS_HTML);
-	var sender = appCtxt.getAppController();
-	var callback = new AjxCallback(null, ZmMailMsgView._detachCallback);
-	ZmMailMsg.fetchMsg({ sender:sender, msgId:msgId, partId:msgPartId, getHtml:getHtml, markRead:true, callback:callback });
+	var params = {
+		sender: appCtxt.getAppController(),
+		msgId: msgId,
+		partId: msgPartId,
+		getHtml: appCtxt.get(ZmSetting.VIEW_AS_HTML),
+		markRead: true,
+		callback: (new AjxCallback(null, ZmMailMsgView._detachCallback, [isRfc822]))
+	};
+	ZmMailMsg.fetchMsg(params);
 };
 
 ZmMailMsgView.contactIconCallback =

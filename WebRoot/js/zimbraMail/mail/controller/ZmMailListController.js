@@ -1014,7 +1014,7 @@ function(parent) {
 	var isEnabled = appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED) || appCtxt.get(ZmSetting.IMAP_ACCOUNTS_ENABLED);
 	if (folder && !isInbox && !isFeed && isEnabled) {
 		hasExternalAccounts = folder.isDataSource(null, true);
-    }
+	}
 
 	if (!isInbox && isFeed) {
 		checkMailBtn.setText(ZmMsg.checkFeed);
@@ -1318,7 +1318,10 @@ function(parent, num) {
 	}
 
 	if (parent && parent instanceof ZmToolBar) {
-		if (folder && folder.isReadOnly() && num > 0) {
+		// bug fix #37154 - disable non-applicable buttons if rfc/822 message
+		var isRfc822 = appCtxt.isChildWindow && window.newWindowParams && window.newWindowParams.isRfc822;
+
+		if (isRfc822 || (folder && folder.isReadOnly() && num > 0)) {
 			parent.enable([ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.SPAM, ZmOperation.TAG_MENU], false);
 		} else {
 			var item;
@@ -1346,14 +1349,14 @@ function(parent, num) {
 			parent.enable([ZmOperation.SPAM], (!isDrafts && num > 0));
 		}
 	}
-    
-    if(this._draftsActionMenu){
-       var editMenu = this._draftsActionMenu.getOp(ZmOperation.EDIT);
-       if(editMenu){
-           editMenu.setEnabled(num == 1);   //Enable/disable 'edit' context menu item based on selection count
-       }
-   }
 
+	if (this._draftsActionMenu) {
+		var editMenu = this._draftsActionMenu.getOp(ZmOperation.EDIT);
+		if (editMenu) {
+			// Enable|disable 'edit' context menu item based on selection count
+			editMenu.setEnabled(num == 1);
+		}
+	}
 };
 
 // Enable mark read/unread as appropriate.
