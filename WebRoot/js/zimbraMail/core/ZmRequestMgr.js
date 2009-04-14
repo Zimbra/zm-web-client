@@ -584,7 +584,7 @@ function(creates) {
 			} else if (name == "folder" || name == "search" || name == "link") {
 				var parentId = create.l;
 				var parent = appCtxt.getById(parentId);
-				if (parent) {
+				if (parent && parent.type != ZmOrganizer.TAG) { // bug #37148
 					parent.notifyCreate(create, (name == "search"));
 				}
 			}
