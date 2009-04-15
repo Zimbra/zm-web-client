@@ -59,7 +59,7 @@
 <script type="text/javascript">
 <!--
 var myEditor;
-var htmlCompose = function(){
+
     var saveContentToTextarea = function(){
         myEditor.saveHTML();
         var _htmlval = document.getElementById("body").value;
@@ -75,7 +75,7 @@ var htmlCompose = function(){
         var stripNBSP  = /&nbsp;/g
         document.getElementById("bodyText").value = _htmlval.replace(stripNBSP, ' ').replace(/<br>/gi, '\n').replace(stripHTML, '').replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
 
-        document.getElementById("body").value = "<html><head><style> body {height: 100%; color:${mailbox.prefs.htmlEditorDefaultFontColor}; font-size:${mailbox.prefs.htmlEditorDefaultFontSize}; font-family:${mailbox.prefs.htmlEditorDefaultFontFamily},helvetica,clean,sans-serif;}</style></head><body>"+_htmlval+"</body></html>";
+        document.getElementById("body").value = "<html><head><style> body {height: 100%; color:${mailbox.prefs.htmlEditorDefaultFontColor}; font-size:${mailbox.prefs.htmlEditorDefaultFontSize}; font-family:${mailbox.prefs.htmlEditorDefaultFontFamily},helvetica,clean,sans-serif;}</style></head><body>"+_htmlval+"</body></html>";       
     }
 
     myEditor = new YAHOO.widget.Editor('body', {
@@ -167,7 +167,6 @@ var htmlCompose = function(){
 
     });
     myEditor.render();
-}();
 
 // -->
 </script>

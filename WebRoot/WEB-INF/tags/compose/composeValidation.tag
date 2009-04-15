@@ -24,8 +24,6 @@
 
 <script type="text/javascript">
 <!--
-var composevalidation = function(){
-
     var checkSubject = function() {
         var elesub = document.getElementById("subjectField");
         if(trim(elesub.value) == '') {
@@ -152,6 +150,5 @@ var composevalidation = function(){
         }
     }
 
-}();
 //-->
 </script>
