@@ -232,7 +232,13 @@ function(viewId, startDate, skipMaintenance) {
 			: cv.getCalTitle();
 		this._navToolBar[ZmId.VIEW_CAL].setText(navText);
 		if (!skipMaintenance) {
-			this._scheduleMaintenance(ZmCalViewController.MAINT_VIEW);
+            var work = ZmCalViewController.MAINT_VIEW; 
+            if(window.inlineCalSearchResponse) {
+                this.processInlineCalSearch();
+                window.inlineCalSearchResponse = null;
+                work = ZmCalViewController.MAINT_MINICAL|ZmCalViewController.MAINT_VIEW|ZmCalViewController.MAINT_REMINDER;
+            }
+			this._scheduleMaintenance(work);
 		}
 		DBG.timePt("scheduling maintenance");
 	}
@@ -1831,13 +1837,7 @@ function(ev) {
 ZmCalViewController.prototype._dateRangeListener =
 function(ev) {
 	ev.item.setNeedsRefresh(true);
-	var work = ZmCalViewController.MAINT_VIEW;
-	if(window.inlineCalSearchResponse) {
-		this.processInlineCalSearch();
-		window.inlineCalSearchResponse = null;
-		work = ZmCalViewController.MAINT_MINICAL|ZmCalViewController.MAINT_VIEW|ZmCalViewController.MAINT_REMINDER;
-	}	
-	this._scheduleMaintenance(work);
+	this._scheduleMaintenance(ZmCalViewController.MAINT_VIEW);
 };
 
 ZmCalViewController.prototype.processInlineCalSearch =
