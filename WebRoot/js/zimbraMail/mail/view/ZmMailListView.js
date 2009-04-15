@@ -184,7 +184,8 @@ function() {
 		this.headerColCreated = false;
 		this._headerList = this._getHeaderList();
 		this._normalClass = isMultiColumn ? DwtListView.ROW_CLASS : ZmMailListView.ROW_DOUBLE_CLASS;
-		this.set(this.getList().clone());
+		var list = this.getList() || (new AjxVector());
+		this.set(list.clone());
 	}
 };
 
