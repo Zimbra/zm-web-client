@@ -320,9 +320,9 @@ function(attId, draftType, callback) {
 		var ac = window.parentAppCtxt || window.appCtxt;
 		// if shared folder, make sure we send the email on-behalf-of
 		var folder = msg.folderId ? ac.getById(msg.folderId) : null;
-		// always save draft on the main account *unless* in offline mode
-		var acctName = (isDraft && !ac.isOffline)
-			? (ac.getMainAccount().name)
+		// always save draft on the active account
+		var acctName = (isDraft)
+			? (ac.isOffline ? ac.getActiveAccount().name : ac.getMainAccount().name)
 			: ((folder && folder.isRemote()) ? folder.getOwner() : this._accountName);
 
 		// If this message had been saved from draft and it has a sender (meaning it's a reply from someone
