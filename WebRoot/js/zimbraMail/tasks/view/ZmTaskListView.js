@@ -309,7 +309,7 @@ function(ev) {
 
 			// add new item at the beg. of list view's internal list
 			var idx = this._list && this._list.size() > 0 ? 1 : null;
-			this.addItem(item, idx);
+			this.addItem(item, idx, false, 0);
 		}
 	} else if (ev.event == ZmEvent.E_MODIFY) {
 		var task = items[0];
