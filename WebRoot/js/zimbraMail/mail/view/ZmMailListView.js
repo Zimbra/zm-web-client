@@ -71,9 +71,11 @@ function(list, sortField) {
 			column = ZmItem.F_DATE;
 		} else if (sortBy == ZmSearch.NAME_DESC || sortBy == ZmSearch.NAME_ASC) {
 			column = ZmItem.F_FROM;
+		} else if (sortBy == ZmSearch.SIZE_DESC || sortBy == ZmSearch.SIZE_ASC) {
+			column = ZmItem.F_SIZE;
 		}
 		if (column) {
-			var sortByAsc = (sortBy == ZmSearch.SUBJ_ASC || sortBy == ZmSearch.DATE_ASC || sortBy == ZmSearch.NAME_ASC);
+			var sortByAsc = (sortBy == ZmSearch.SUBJ_ASC || sortBy == ZmSearch.DATE_ASC || sortBy == ZmSearch.NAME_ASC || sortBy == ZmSearch.SIZE_ASC);
 			this.setSortByAsc(column, sortByAsc);
 		}
 	}
@@ -85,12 +87,12 @@ function(list) {
 	if(window.defaultSelection) {
 		var sel = [];
 		var a = list.getArray();
-		for(var i in a) {
-			if(window.defaultSelection[a[i].id]) {
+		for (var i in a) {
+			if (window.defaultSelection[a[i].id]) {
 				sel.push(a[i]);
 			}
 		}
-		if(sel.length >0) {
+		if (sel.length > 0) {
 			this.setSelectedItems(sel);
 		}
 		window.defaultSelection = null;
