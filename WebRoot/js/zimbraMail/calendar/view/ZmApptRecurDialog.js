@@ -1686,5 +1686,5 @@ function(ev) {
 		case ard._yearlyDayField: 		ard._yearlyDefaultRadio.checked = true; break;
 	}
 
-	DwtShell.getShell(window).getKeyboardMgr().grabFocus(dwtObj);
+	appCtxt.getKeyboardMgr().grabFocus(dwtObj);
 };

@@ -208,16 +208,6 @@ function() {
 	return this.viewId;
 };
 
-ZmMsgController.prototype._postHideCallback =
-function() {
-	// bug fix #31601 - Prism only hack to restore keypress
-	if (AjxEnv.isPrism) {
-		var km = appCtxt.getShell().getKeyboardMgr();
-		km.__killKeySeqTimedActionId = -1;
-		km.__keySequence.length = 0;
-	}
-};
-
 ZmMsgController.prototype._initializeListView =
 function(view) {
 	if (!this._listView[view]) {

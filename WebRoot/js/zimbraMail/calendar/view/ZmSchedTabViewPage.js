@@ -52,7 +52,7 @@ ZmSchedTabViewPage = function(parent, attendees, controller, dateInfo) {
 	}
 
 	this._fbCallback = new AjxCallback(this, this._handleResponseFreeBusy);
-	this._kbMgr = appCtxt.getShell().getKeyboardMgr();
+	this._kbMgr = appCtxt.getKeyboardMgr();
     this._emailAliasMap = {};
 };
 

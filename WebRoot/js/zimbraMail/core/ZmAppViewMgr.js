@@ -897,7 +897,7 @@ function(view) {
 // for when it is hidden. The callback must return true for the view to be hidden.
 ZmAppViewMgr.prototype._hideView =
 function(view, force) {
-	if (!view) return true;
+	if (!view) { return true; }
 	var okToContinue = true;
 	var callback = this._callbacks[view] ? this._callbacks[view][ZmAppViewMgr.CB_PRE_HIDE] : null;
 	if (callback) {
@@ -906,6 +906,7 @@ function(view, force) {
 	}
 	if (okToContinue) {
 		this._setViewVisible(view, false);
+		appCtxt.getKeyboardMgr().clearKeySeq();
 		DBG.println(AjxDebug.DBG2, view + " hidden");
 		callback = this._callbacks[view] ? this._callbacks[view][ZmAppViewMgr.CB_POST_HIDE] : null;
 		if (callback) {

@@ -94,7 +94,7 @@ function(embedId, tries) {
 	}
 
 	// Force focus to the keyboard manager's focus obj.
-	var focusObj = appCtxt.getShell().getKeyboardMgr().getFocusObj();
+	var focusObj = appCtxt.getKeyboardMgr().getFocusObj();
 	if (focusObj && focusObj.focus) {
 		focusObj.focus();
 	}

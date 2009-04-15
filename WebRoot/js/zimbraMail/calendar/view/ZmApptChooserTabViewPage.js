@@ -44,7 +44,7 @@ ZmApptChooserTabViewPage = function(parent, attendees, controller, type) {
 	this._searchFields = {};
 	this._searchFieldIds = {};
 	this._keyPressCallback = new AjxCallback(this, this._searchButtonListener);
-	this._kbMgr = appCtxt.getShell().getKeyboardMgr();
+	this._kbMgr = appCtxt.getKeyboardMgr();
 };
 
 ZmApptChooserTabViewPage.COL_LABEL = {};

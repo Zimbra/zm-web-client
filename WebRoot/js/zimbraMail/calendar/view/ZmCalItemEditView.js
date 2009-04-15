@@ -47,7 +47,7 @@ ZmCalItemEditView = function(parent, attendees, controller, dateInfo, posStyle) 
 	this._repeatSelectDisabled = false;
 	this._attachCount = 0;
 
-	this._kbMgr = appCtxt.getShell().getKeyboardMgr();
+	this._kbMgr = appCtxt.getKeyboardMgr();
 };
 
 ZmCalItemEditView.prototype = new DwtComposite;

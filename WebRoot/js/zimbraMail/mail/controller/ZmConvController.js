@@ -184,19 +184,9 @@ function(view) {
 	}
 };
 
-ZmConvController.prototype._postHideCallback =
-function() {
-	// bug fix #31601 - Prism only HACK to restore keypress
-	if (AjxEnv.isPrism) {
-		var km = appCtxt.getShell().getKeyboardMgr();
-		km.__killKeySeqTimedActionId = -1;
-		km.__keySequence.length = 0;
-	}
-};
-
-/*
-* Override to replace DELETE with DELETE_MENU
-*/
+/**
+ * Override to replace DELETE with DELETE_MENU
+ */
 ZmConvController.prototype._standardToolBarOps =
 function() {
 	return [ZmOperation.NEW_MENU,

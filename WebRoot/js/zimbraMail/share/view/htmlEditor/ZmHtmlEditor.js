@@ -1723,7 +1723,7 @@ ZmHtmlEditor.prototype.__enableGeckoFocusHacks = function() {
 			dwtev.setFromDhtmlEvent(ev, true);
 
 			//bug: 24782 - we dont have option to get info related to toolbar button selection
-			var kbMgr = DwtShell.getShell(window).getKeyboardMgr();
+			var kbMgr = appCtxt.getKeyboardMgr();
 			if (kbMgr && kbMgr.__focusObj) {
 				for (var i = 0; i < this._toolbars.length; i++) {
 					if ((kbMgr.__focusObj == this._toolbars[i]) ||

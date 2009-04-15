@@ -1136,7 +1136,8 @@ function() {
 
 ZmShortcutsPanel.prototype.popup =
 function(cols) {
-	appCtxt.getKeyboardMgr().pushDefaultHandler(this);
+	var kbMgr = appCtxt.getKeyboardMgr();
+	kbMgr.pushDefaultHandler(this);
 	this._cols = cols;
 	Dwt.setZIndex(appCtxt.getShell()._veilOverlay, Dwt.Z_VEIL);
 	var list = new ZmShortcutList({style:ZmShortcutList.PANEL_STYLE, cols:cols});
@@ -1145,15 +1146,16 @@ function(cols) {
 		this._position();
 	}
 	this._contentDiv.scrollTop = 0;
-	DwtShell.getShell(window).getKeyboardMgr().pushTabGroup(this._tabGroup);
+	kbMgr.pushTabGroup(this._tabGroup);
 };
 
 ZmShortcutsPanel.prototype.popdown =
 function(maps) {
-	DwtShell.getShell(window).getKeyboardMgr().popTabGroup(this._tabGroup);
+	var kbMgr = appCtxt.getKeyboardMgr();
+	kbMgr.popTabGroup(this._tabGroup);
 	this.setLocation(Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
 	Dwt.setZIndex(appCtxt.getShell()._veilOverlay, Dwt.Z_HIDDEN);
-	appCtxt.getKeyboardMgr().popDefaultHandler();
+	kbMgr.popDefaultHandler();
 };
 
 ZmShortcutsPanel.prototype.handleKeyEvent =
