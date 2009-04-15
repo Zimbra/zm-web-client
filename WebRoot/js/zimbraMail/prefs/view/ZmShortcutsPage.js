@@ -665,11 +665,15 @@ ZmShortcutsPageTabViewCustom.ORG_TEXT[ZmOrganizer.FOLDER]	= ZmMsg.mailFolder;
 ZmShortcutsPageTabViewCustom.ORG_TEXT[ZmOrganizer.TAG]		= ZmMsg.tag;
 ZmShortcutsPageTabViewCustom.ORG_TEXT[ZmOrganizer.SEARCH]	= ZmMsg.search;
 
-// Plural version of above
-ZmShortcutsPageTabViewCustom.ORG_TEXT_PLURAL = {};
-ZmShortcutsPageTabViewCustom.ORG_TEXT_PLURAL[ZmOrganizer.FOLDER]	= ZmMsg.mailFolders;
-ZmShortcutsPageTabViewCustom.ORG_TEXT_PLURAL[ZmOrganizer.TAG]		= ZmMsg.tags;
-ZmShortcutsPageTabViewCustom.ORG_TEXT_PLURAL[ZmOrganizer.SEARCH]	= ZmMsg.savedSearches;
+ZmShortcutsPageTabViewCustom.KEY1 = {};
+ZmShortcutsPageTabViewCustom.KEY1[ZmOrganizer.FOLDER]	= "assignShortcutsFolder";
+ZmShortcutsPageTabViewCustom.KEY1[ZmOrganizer.TAG]		= "assignShortcutsTag";
+ZmShortcutsPageTabViewCustom.KEY1[ZmOrganizer.SEARCH]	= "assignShortcutsSearch";
+
+ZmShortcutsPageTabViewCustom.KEY2 = {};
+ZmShortcutsPageTabViewCustom.KEY2[ZmOrganizer.FOLDER]	= "exampleShortcutIntroFolder";
+ZmShortcutsPageTabViewCustom.KEY2[ZmOrganizer.TAG]		= "exampleShortcutIntroTag";
+ZmShortcutsPageTabViewCustom.KEY2[ZmOrganizer.SEARCH]	= "exampleShortcutIntroSearch";
 
 // Name of a sample organizer for each type
 ZmShortcutsPageTabViewCustom.SAMPLE_ORG = {};
@@ -849,12 +853,12 @@ function(html, i, closeLinkId) {
 	html[i++] = "</div>";
 	html[i++] = AjxMessageFormat.format(ZmMsg.aboutShortcuts, [ZmShortcutsPageTabViewCustom.ORG_TEXT[this._organizer]]);
 	html[i++] = "</div>";
-	html[i++] = AjxMessageFormat.format(ZmMsg.assignShortcuts, [ZmShortcutsPageTabViewCustom.ORG_TEXT_PLURAL[this._organizer]]);
+	html[i++] = ZmMsg[ZmShortcutsPageTabViewCustom.KEY1[this._organizer]];
 	html[i++] = "<div>";
 	var key = ZmShortcutList._formatKey(ZmShortcutsPageTabViewCustom.SAMPLE_KEY, ZmShortcutList.PREFS_STYLE);
 	var org = ZmMsg[ZmOrganizer.MSG_KEY[this._organizer]];
 	var exampleOrg = ["<i>", ZmShortcutsPageTabViewCustom.SAMPLE_ORG[this._organizer], "</i>"].join("");
-	html[i++] = AjxMessageFormat.format(ZmMsg.exampleShortcutIntro, [key, org, exampleOrg]);
+	html[i++] = AjxMessageFormat.format(ZmMsg[ZmShortcutsPageTabViewCustom.KEY2[this._organizer]], [key, exampleOrg]);
 	html[i++] = "<ul>";
 	var shortcuts = ZmShortcutsPageTabViewCustom.SAMPLE_SHORTCUTS[this._organizer];
 	for (var j = 0; j < shortcuts.length; j++) {
