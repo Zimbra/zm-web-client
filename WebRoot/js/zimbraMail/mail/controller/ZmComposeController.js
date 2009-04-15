@@ -355,11 +355,11 @@ function(attId, docIds, draftType, callback) {
             appt.save();
         }
     } else {
-        var ac = window.parentAppCtxt || window.appCtxt;
-        // always save draft on the main account *unless* in offline mode
+		var ac = window.parentAppCtxt || window.appCtxt;
+		// always save draft on the active account
 		var acctName = this._accountName;
-		if (isDraft && !ac.isOffline) {
-			acctName = ac.getMainAccount().name;
+		if (isDraft) {
+			acctName = ac.isOffline ? ac.getActiveAccount().name : ac.getMainAccount().name;
 		} else {
 			// if shared folder, make sure we send the email on-behalf-of
 			var folder = msg.folderId ? ac.getById(msg.folderId) : null;
