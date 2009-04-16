@@ -17,7 +17,8 @@ ZmBriefcaseItem = function(type, id, list) {
 	ZmItem.call(this, type || ZmItem.BRIEFCASE, id, list);
 	this.folderId = ZmOrganizer.ID_BRIEFCASE;
 	this.version = 0;
-}
+};
+
 ZmBriefcaseItem.prototype = new ZmItem;
 ZmBriefcaseItem.prototype.constructor = ZmBriefcaseItem;
 
@@ -51,7 +52,7 @@ function(dontIncludeThisName) {
 	if (dontIncludeThisName) {
 		url = url.replace(/[^\/]+$/,"");
 	}
-    if(this.contentType && (this.contentType.indexOf(ZmMimeTable.APP_ZIMBRA_SLIDES)>=0)) {
+    if(this.contentType && (this.contentType == ZmMimeTable.APP_ZIMBRA_SLIDES || this.contentType == ZmMimeTable.APP_ZIMBRA_EXCEL)) {
         url += "?fmt=html";
     }
 	return url;

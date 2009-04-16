@@ -186,7 +186,7 @@ function(funcName, force) {
 
 ZmDocletMgr.prototype.fetchDocumentContent =
 function(item) {
-    var restURL = item.rest;
+    var restURL = item.rest || item.restUrl;
     var urlParts = AjxStringUtil.parseURL(restURL);
     if(urlParts && urlParts.path) {
         var result = AjxRpc.invoke("", urlParts.path + "?fmt=native", {}, null, true);
@@ -275,8 +275,8 @@ function(params,response)
         if (data.ct) item.contentType = data.ct.split(";")[0];
         item.folderId = docResp.l || ZmOrganizer.ID_BRIEFCASE;
 
-        if(!item.rest) {
-            //item.rest = window.appContextPath + "/home/user1/Briefcase/" + item.name;
+        if(!item.restUrl) {
+            item.restUrl = window.appContextPath + "/home/user1/Briefcase/" + item.name;
         }
     }
 

@@ -16,18 +16,6 @@
 .ZmSpreadSheet table.SpreadSheet .TopBar .TopLeft, .ZmSpreadSheet table.SpreadSheet .LeftBar { padding: 0;
   cursor: default; -moz-user-select: none; user-select: none; }
 
-.ZmSpreadSheet a.FocusLink {
-  text-decoration: none;
-  font-size: 1px;
-  line-height: 1px;
-  position: absolute;
-  cursor: default;
-  display: block;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-}
-
 .ZmSpreadSheet table.SpreadSheet .LeftBar div,
 .ZmSpreadSheet table.SpreadSheet .TopBar .TopLeft div { width: 3em; }
 

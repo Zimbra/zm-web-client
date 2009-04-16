@@ -48,6 +48,9 @@ ZmSpreadSheetModel = function(rows, cols) {
 
 	this._expressionCells = [];
 	this.reset();
+
+    this._maxActiveRow = 0;
+    this._maxActiveCol = 0; 
 };
 
 // Note that debug and profile code might require Firebug (FF extension)
@@ -165,6 +168,18 @@ ZmSpreadSheetModel.prototype.getCellsInRange = function(range) {
 	return cells;
 };
 
+ZmSpreadSheetModel.prototype._setMaxActiveRow = function(row){
+    if(this._maxActiveRow < row){
+        this._maxActiveRow = row;
+    }
+};
+
+ZmSpreadSheetModel.prototype._setMaxActiveCol = function(col){
+    if(this._maxActiveCol < col){
+        this._maxActiveCol = col;
+    }
+};
+
 ZmSpreadSheetModel.prototype.forEachCell = function(range, func, obj) {
 	var cells = this.getCellsInRange(range);
 	for (var i = 0; i < cells.length; ++i)
@@ -234,6 +249,8 @@ ZmSpreadSheetModel.prototype.deleteCol = function(col) {
 };
 
 ZmSpreadSheetModel.prototype.getRowHeight = function(row) {
+    if(!this.rowProps[row])
+        return ZmSpreadSheetModel.getDefaultRowProp().height;
     return this.rowProps[row].height;  
 };
 
@@ -330,6 +347,10 @@ ZmSpreadSheetModel.prototype.recompute = function(reset) {
 			cell._td.firstChild.innerHTML = "#REF";
 		}
 	}
+};
+
+ZmSpreadSheetModel.prototype.fillSeries = function(clipboard, dest){
+    
 };
 
 // Paste the given src range from the given model to the destination range in
@@ -831,7 +852,7 @@ ZmSpreadSheetCellModel.prototype.setToElement = function(el) {
 		val = val.toString().replace(/\s/g, "\xA0");
 	div.innerHTML = "";
 	div.appendChild(document.createTextNode(val));
-	if (AjxEnv.isGeckoBased) {
+	/*if (AjxEnv.isGeckoBased) {
 		// A stupid Gecko bug don't trigger onmouseover events on the
 		// table cells when we capture events for range selection,
 		// _unless_ this div doesn't have "overflow: hidden".  Took
@@ -839,7 +860,7 @@ ZmSpreadSheetCellModel.prototype.setToElement = function(el) {
 		//
 		// OTOH, if we don't set this in IE then layout will be broken
 		div.style.overflow = "visible";
-	}
+	}*/
 	this.setStyleToElement(el);
 	if (this._expr)
 		Dwt.addClass(el, "hasFormula");
@@ -1032,7 +1053,7 @@ ZmSpreadSheetCellModel.prototype._determineType = function(str) {
 	} else if (/^(\d{1,2})(\/|-|\.)(\d{1,2})(\/|-|\.)(\d{2}|\d{4})$/.test(str)){
         if(AjxDateUtil.validDate(RegExp.$5, (RegExp.$1 - 1), RegExp.$3)){
              type = "date";
-             val =   [RegExp.$1,"/",RegExp.$3,"/",RegExp.$5].join("");
+             this._editValue = val =   [RegExp.$1,"/",RegExp.$3,"/",RegExp.$5].join("");
         }
     }
 

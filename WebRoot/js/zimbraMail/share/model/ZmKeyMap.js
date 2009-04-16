@@ -148,6 +148,7 @@ ZmKeyMap.NEW_BRIEFCASEITEM		= "NewBriefcase";
 ZmKeyMap.NEW_CALENDAR			= "NewCalendar";
 ZmKeyMap.NEW_CHAT				= "NewChat";
 ZmKeyMap.NEW_CONTACT			= "NewContact";
+ZmKeyMap.NEW_EXCEL              = "NewExcel";
 ZmKeyMap.NEW_FILE				= "NewFile";
 ZmKeyMap.NEW_FOLDER				= "NewFolder";
 ZmKeyMap.NEW_MESSAGE			= "NewMessage";

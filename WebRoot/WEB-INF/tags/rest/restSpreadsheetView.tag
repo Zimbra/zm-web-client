@@ -59,6 +59,7 @@
         <c:set var="psufix" value="_all.js" scope="request"/>
     </c:otherwise>
 </c:choose>
+
 <head>
     <c:set value="/img" var="iconPath" scope="request"/>
     <c:url var='cssurl' value='/css/images,common,dwt,msgview,login,zm,spellcheck,skin,spreadsheet.css'>
@@ -122,47 +123,12 @@
 
 <script type="text/javascript" language="JavaScript">
 
-    var shell = null;
-    var slideEditView = null;
-    var model = null;
-
-
-    createDummyDBG =
-    function() {
-        window.AjxDebug = function() {};
-        window.AjxDebug.prototype.toString		= function() { return "dummy DBG class"};
-        window.AjxDebug.prototype.display		= function() {};
-        window.AjxDebug.prototype.dumpObj		= function() {};
-        window.AjxDebug.prototype.getDebugLevel	= function() {};
-        window.AjxDebug.prototype.isDisabled	= function() {};
-        window.AjxDebug.prototype.println		= function() {};
-        window.AjxDebug.prototype.printRaw		= function() {};
-        window.AjxDebug.prototype.printXML		= function() {};
-        window.AjxDebug.prototype.setDebugLevel	= function() {};
-        window.AjxDebug.prototype.setTitle		= function() {};
-        window.AjxDebug.prototype.showTiming	= function() {};
-        window.AjxDebug.prototype._getTimeStamp	= function() {};
-        window.AjxDebug.prototype.timePt		= function() {};
-        window.DBG = new window.AjxDebug();
-    };
-
-    <c:choose>
-    <c:when test="${isDevMode}">
-    AjxDispatcher.require("Debug");
-    DBG = new AjxDebug(AjxDebug.NONE, null, false);
-    </c:when>
-    <c:otherwise>
-    createDummyDBG();
-    </c:otherwise>
-    </c:choose>
-
-
     window.contextPath = '${pageContext.request.contextPath}';
     window.appContextPath = '${pageContext.request.contextPath}';
-    window.fileInfo = {id: '${requestScope.zimbra_target_item_id}', contentType: 'application/x-zimbra-xls'};
 
+    ZmSpreadSheetApp._createDBG('${isDevMode}');
 
-    create();
+    ZmSpreadSheetApp.setFile('${requestScope.zimbra_target_item_id}');
 
 </script>
 

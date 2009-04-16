@@ -17,10 +17,11 @@
  * widget itself (when parent == spreadSheet), in which case they will be
  * inserted at the top, or to any other widget.
  */
-ZmSpreadSheetToolbars = function(parentContainer, spreadSheet) {
+ZmSpreadSheetToolbars = function(parentContainer, spreadSheet, controller) {
 	if (spreadSheet == null)
 		spreadSheet = parentContainer;
 	this._spreadSheet = spreadSheet;
+    this._controller = controller;
 	DwtComposite.call(this, {parent:parentContainer, className:"ZmSpreadSheetToolbars", posStyle:DwtControl.RELATIVE_STYLE});
 	this._on_buttonPress = new AjxListener(this, this._on_buttonPress);
 	this._buttons = {};
@@ -58,9 +59,33 @@ ZmSpreadSheetToolbars.prototype._cellSelected = function(cell) {
 ZmSpreadSheetToolbars.prototype._createWidgets = function() {
 
     var toolbar = new DwtToolBar({parent:this, className:"ToolBar", posStyle:DwtControl.RELATIVE_STYLE});
-
+    this._createToolbar(toolbar);
 	this._createToolbar1(toolbar);
 	this._createToolbar2(toolbar);
+};
+
+ZmSpreadSheetToolbars.prototype._createToolbar = function(toolbar) {
+
+    var b = this._buttons.fileName = new DwtInputField({parent:toolbar, size:20});
+
+    b = this._buttons.saveFile = new DwtToolBarButton({parent:toolbar});
+    b.setImage("Save");
+    b.setText(ZmMsg.save);
+    b.setData("SS", "Save");
+    b.addSelectionListener(new AjxListener(this, this._saveButtonListener));
+    b.setToolTipContent(ZmMsg.save);
+
+    new DwtControl({parent:toolbar, className:"vertSep"});
+
+};
+
+ZmSpreadSheetToolbars.prototype._saveButtonListener = function(ev){
+    var spreadSheetCtrl = this._controller;
+    spreadSheetCtrl.save();
+};
+
+ZmSpreadSheetToolbars.prototype.get = function(name){
+    return this._buttons[name];  
 };
 
 ZmSpreadSheetToolbars.prototype._createToolbar1 = function(toolbar) {

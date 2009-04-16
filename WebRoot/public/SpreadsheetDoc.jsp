@@ -71,11 +71,15 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 
     String fileId = request.getParameter("id");
     String fileName = request.getParameter("name");
+    String folderId = request.getParameter("l");
 
-    if(fileName == null) {
+    if(fileName == null) fileName = "";
+    if(fileId == null) fileId = "";
+    if(folderId ==  null) folderId = "";
+     
+    /*if(fileName == null) {
         fileName = "Untitled";
-    }
-
+    }*/
     Locale locale = request.getLocale();
     String localeId = getAttribute(request, "localeId", null);
     if (localeId != null) {
@@ -111,7 +115,7 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
     </script>
     <%
 
-        String packages = "Ajax,Startup1_1,Startup1_2,Debug,Spreadsheet";
+        String packages = "Ajax,Startup1_1,Startup1_2,Spreadsheet";
 
         String extraPackages = request.getParameter("packages");
         if (extraPackages != null) packages += ","+extraPackages;
@@ -135,35 +139,12 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 <body>
 <noscript><p><b>Javascript must be enabled to use this.</b></p></noscript>
 <script type="text/javascript" language="JavaScript">
-
+    
     window.appContextPath = '<%= contextPath %>';
+    ZmSpreadSheetApp._createDBG(<%=isDevMode%>);
+    
+    ZmSpreadSheetApp.setFile('<%= fileId %>', '<%= fileName %>', '<%=folderId%>');
 
-    createDummyDBG =
-    function() {
-	window.AjxDebug = function() {};
-	window.AjxDebug.prototype.toString		= function() { return "dummy DBG class"};
-	window.AjxDebug.prototype.display		= function() {};
-	window.AjxDebug.prototype.dumpObj		= function() {};
-	window.AjxDebug.prototype.getDebugLevel	= function() {};
-	window.AjxDebug.prototype.isDisabled	= function() {};
-	window.AjxDebug.prototype.println		= function() {};
-	window.AjxDebug.prototype.printRaw		= function() {};
-	window.AjxDebug.prototype.printXML		= function() {};
-	window.AjxDebug.prototype.setDebugLevel	= function() {};
-	window.AjxDebug.prototype.setTitle		= function() {};
-	window.AjxDebug.prototype.showTiming	= function() {};
-	window.AjxDebug.prototype._getTimeStamp	= function() {};
-	window.AjxDebug.prototype.timePt		= function() {};
-	window.DBG = new window.AjxDebug();
-    };
-
-    <% if(isDevMode) {%>
-    DBG = new AjxDebug(AjxDebug.NONE, null, false);
-    <% }else {%>
-    createDummyDBG();
-    <% } %>
-
-    window.fileInfo = {name: '<%= fileName %>', folderId: ZmOrganizer.ID_BRIEFCASE, contentType: 'application/x-zimbra-xls'<% if(fileId != null) {%>, id: <%= fileId %> <% } %>};
 </script>
 </body>
 </html>

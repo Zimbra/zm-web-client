@@ -17,11 +17,13 @@
  * A SpreadSheet Widget.
  * @author Mihai Bazon, <mihai@zimbra.com>
  */
-ZmSpreadSheet = function(parent, className, posStyle, deferred) {
+ZmSpreadSheet = function(parent, controller, className, posStyle, deferred) {
 	if (arguments.length == 0)
 		return;
 	className = className || "ZmSpreadSheet";
 	DwtComposite.call(this, {parent:parent, className:className, posStyle:posStyle, deferred:deferred});
+
+    this._controller = controller;
 
 	this._selectRangeCapture = new DwtMouseEventCapture({
 		targetObj:this,
@@ -62,10 +64,7 @@ ZmSpreadSheet = function(parent, className, posStyle, deferred) {
     Dwt.setHandler(document, DwtEvent.ONKEYPRESS, AjxCallback.simpleClosure(this._keyPress, this));
     if (AjxEnv.isIE || AjxEnv.isOpera)
 		Dwt.setHandler(document, DwtEvent.ONKEYDOWN, AjxCallback.simpleClosure(this._keyPress, this));
-// 	this.ROWS = 5;
-// 	this.COLS = 5;
 
-// 	this._init();
 };
 
 ZmSpreadSheet.TOOLTIP_DELAY = 750;
@@ -78,6 +77,11 @@ ZmSpreadSheet.TOOLTIP_DELAY = 750;
 
 ZmSpreadSheet.prototype = new DwtComposite;
 ZmSpreadSheet.prototype.construction = ZmSpreadSheet;
+
+ZmSpreadSheet.prototype.getXml = function(){
+    return (this._model ? this._model.getXml().getDocXml() : null);
+};
+
 
 ZmSpreadSheet.getCellName = function(td) {
 	return ZmSpreadSheetModel.getCellName(td.parentNode.rowIndex, td.cellIndex);
@@ -296,6 +300,7 @@ ZmSpreadSheet.prototype._init = function() {
 	header.onmousedown = AjxCallback.simpleClosure(this._header_onMouseDown, this);
 
  	this._getRelDiv().onscroll = AjxCallback.simpleClosure(this._header_resetScrollTop, this);
+
 
 	this.getHtmlElement().style.display = "none"; // things may be recomputed 1-2 times, let's disable refresh for better performance
 
@@ -623,7 +628,9 @@ ZmSpreadSheet.prototype._cellClicked = function(td, ev) {
 		DwtMenu._activeMenu.popdown();
 
 	if (is_mousedown) {
+        console.log("MouseDown");
         this._selectCell(td);
+        //console.log(td);
 		var stopEvent = true;
 		if (this._editingCell && this._hasExpression) {
 			var input = this._getInputField();
@@ -643,6 +650,7 @@ ZmSpreadSheet.prototype._cellClicked = function(td, ev) {
 	}
 
     if(is_dblclick){
+        console.log("DoubleClick");
         ev._stopPropagation = true;
 		ev._returnValue = false;
 		this._editCell(td);
@@ -762,6 +770,7 @@ ZmSpreadSheet.prototype._setColWidth = function(col, width){
 
     headerColCell.firstChild.style.width = width + "px";
     this._model.setColWidth(col, width);
+    
 };
 
 //TODO: Allow to shrink further
@@ -878,8 +887,16 @@ ZmSpreadSheet.prototype._header_resetScrollTop = function() {
 	this._getHeaderTable().style.top = this._getRelDiv().scrollTop + "px";
 };
 
+ZmSpreadSheet.prototype.getToolbar = function(){
+    if(!this._toolbar){
+        this._toolbar = this._controller._toolbar;
+    }
+    return this._toolbar;
+};
+
 ZmSpreadSheet.prototype._selectCell = function(td) {
-	if (this._selectedCell) {
+
+	if (this._selectedCell) {        
 		Dwt.delClass(this._getTopHeaderCell(this._selectedCell), "TopSelected");
 		Dwt.delClass(this._getLeftHeaderCell(this._selectedCell), "LeftSelected");
 		Dwt.delClass(this._selectedCell, "SSelected");
@@ -908,6 +925,8 @@ ZmSpreadSheet.prototype._selectCell = function(td) {
 				this.onSelectCell[i].run(this.getCellModel(td), td);
 		}
 	}
+    //FileName input field Blur
+    this.getToolbar().get("fileName").blur();
 };
 
 ZmSpreadSheet.prototype._getHeaderTable = function() {
@@ -1154,7 +1173,9 @@ ZmSpreadSheet.prototype._handleKey = function(dwtev, ev) {
 								cell.clearValue();
 						});
 		}
-		// the selected cell _can_ be outside the selected range. ;-)
+        this._showRangeByRangeName(this._selectedRangeName);        
+
+        // the selected cell _can_ be outside the selected range. ;-)
 		// let's clear that too.
 		this.getCellModel(this._selectedCell).clearValue();
 		break;
@@ -1231,7 +1252,13 @@ ZmSpreadSheet.prototype._keyPress = function(ev) {
 	ev || (ev = window.event);
 	var dwtev = new DwtKeyEvent();
 	dwtev.setFromDhtmlEvent(ev);
-	this._handleKey(dwtev, ev);
+    var fileName = this.getToolbar().get("fileName");
+    if(DwtUiEvent.getTarget(dwtev) == fileName.getInputElement()){
+        dwtev._stopPropagation = true;
+        dwtev._returnValue = true;
+    }else{
+	    this._handleKey(dwtev, ev);
+    }
 	dwtev.setToDhtmlEvent(ev);
 	return dwtev._returnValue;
 };
@@ -1383,6 +1410,17 @@ ZmSpreadSheet.prototype._displayRangeIfAny = function() {
 	} catch(ex) {
 		this._hideRange();
 	}
+};
+
+ZmSpreadSheet.prototype._showRangeByRangeName = function(rangeName){
+
+    var a = rangeName.split(/:/);
+    // now a[0] is the supposedly start cell and a[1] the end cell
+    var c1 = ZmSpreadSheetModel.identifyCell(a[0]);
+    var c2 = ZmSpreadSheetModel.identifyCell(a[1]);
+
+    this._showRange(c1.row, c1.col, c2.row, c2.col);
+
 };
 
 ZmSpreadSheet.prototype._showRange = function(sRow, sCol, eRow, eCol) {
@@ -1567,8 +1605,7 @@ ZmSpreadSheet.prototype._hideRange = function() {
 	div.style.left = "0px";
 	div.style.width = "5px";
 	div.style.height = "5px";
-
-    this._selectCell(this._selectedCell);
+    //this._selectCell(this._selectedCell);
 };
 
 ZmSpreadSheet.prototype.isRange = function(){
