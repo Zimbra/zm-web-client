@@ -141,3 +141,40 @@
 		</tr>
 	</table>
 </template>
+
+<template id='calendar.Calendar#ReminderDialogRow'>
+	<$ if (data.needSep) { $>
+		<tr name="rdsep">
+			<td colspan=3><div class="horizSep"></div></td>
+		</tr>
+	<$ } $>
+	<tr id='${rowId}'>
+		<td width=100% valign=top>
+			<b>${reminderName}</b><br>
+			<$= ZmMsg.whenLabel $> ${durationText}<br>
+
+			<$ if (data.organizer) { $>
+				<$= ZmMsg.organizerLabel $> ${organizer}<br>
+			<$ } $>
+
+			<$ if (data.calName) { $>
+				<$= ZmMsg.calendarLabel $> ${calName}<br>
+			<$ } $>
+
+			<$ if (data.location) { $>
+				<$= ZmMsg.locationLabel $> ${location}<br>
+			<$ } $>
+		</td>
+		<td valign=top>
+			<table border=0 cellpadding=1 cellspacing=1>
+				<tr>
+					<td valign=top id='${openBtnId}'></td>
+					<td valign=top id='${dismissBtnId}'></td>
+				</tr>
+				<tr>
+					<td style='white-space:nowrap;' colspan=2 align='right' id='${deltaId}'></td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</template>

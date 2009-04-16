@@ -171,30 +171,28 @@ function() {
 
 	var alarmData = this.alarmData[0];
 	
-	if (!this.alarmData) { return false; }
-	
 	this._nextAlarmTime = alarmData.nextAlarm;
 	this._alarmInstStart = alarmData.alarmInstStart;
 
 	var currentTime = (new Date()).getTime();
 
-    return (currentTime >= this._nextAlarmTime); 
+	return (currentTime >= this._nextAlarmTime);
 };
 
 ZmCalBaseItem.prototype.isAlarmInstance =
 function() {
-    if (!this.alarmData) { return false; }
+	if (!this.alarmData) { return false; }
 
-    var alarmData = this.alarmData[0];
-    this._alarmInstStart = alarmData.alarmInstStart;
+	var alarmData = this.alarmData[0];
+	this._alarmInstStart = alarmData.alarmInstStart;
 
-    return (this._alarmInstStart == this.startDate.getTime());
+	return (this._alarmInstStart == this.startDate.getTime());
 };
 
 ZmCalBaseItem.prototype.hasAlarmData =
 function() {
-    return (this.alarmData !=  null);
-}
+	return (this.alarmData !=  null);
+};
 
 ZmCalBaseItem.prototype._loadFromDom =
 function(calItemNode, instNode) {
@@ -204,12 +202,13 @@ function(calItemNode, instNode) {
 	this.id 			= this._getAttr(calItemNode, instNode, "id");
 	this.name 			= this._getAttr(calItemNode, instNode, "name");
 	this.fragment 		= this._getAttr(calItemNode, instNode, "fr");
-    this.status 		= this._getAttr(calItemNode, instNode, "status");
+	this.status 		= this._getAttr(calItemNode, instNode, "status");
 	this.ptst 			= this._getAttr(calItemNode, instNode, "ptst");
 	this.isException 	= this._getAttr(calItemNode, instNode, "ex");
 	this.allDayEvent	= (instNode.allDay || calItemNode.allDay)  ? "1" : "0";
-	
-	if(instNode.allDay == false) {
+	this.organizer		= calItemNode.or && calItemNode.or.a;
+
+	if (instNode.allDay == false) {
 		this.allDayEvent = "0";
 	}
 
@@ -219,7 +218,7 @@ function(calItemNode, instNode) {
 
 	this.recurring 		= instNode.recur != null ? instNode.recur : calItemNode.recur; // TEST for null since recur can be FALSE
 
-    this.fba = this._getAttr(calItemNode, instNode, "fba");
+	this.fba = this._getAttr(calItemNode, instNode, "fba");
 
 	var sd = this._getAttr(calItemNode, instNode, "s");
 	if (sd) {
@@ -263,16 +262,12 @@ function(d) {
 
 
 ZmCalBaseItem.prototype.getReminderLocation =
-function()
-{
-    var alarmData = this.alarmData[0];
-    return alarmData.loc ? alarmData.loc : "";
-}
+function() {
+	return (this.alarmData[0].loc || "");
+};
 
 
 ZmCalBaseItem.prototype.getReminderName =
-function()
-{
-    var alarmData = this.alarmData[0];
-    return alarmData.name ? alarmData.name : "";
-}
+function() {
+	return (this.alarmData[0].name || "");
+};

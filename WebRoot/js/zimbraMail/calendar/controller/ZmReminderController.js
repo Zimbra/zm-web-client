@@ -137,35 +137,33 @@ function() {
 */
 ZmReminderController.prototype._refreshCallback =
 function(list) {
-    if (this._refreshDelay > 0) {
-        AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._refreshCallback, [list]), this._refreshDelay);
-        this._refreshDelay = 0;
-        return;
-    }
+	if (this._refreshDelay > 0) {
+		AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._refreshCallback, [list]), this._refreshDelay);
+		this._refreshDelay = 0;
+		return;
+	}
 
-    if (list instanceof ZmCsfeException) {
-        this._calController._handleError(list, new AjxCallback(this, this._maintErrorHandler));
-        return;
-    }
+	if (list instanceof ZmCsfeException) {
+		this._calController._handleError(list, new AjxCallback(this, this._maintErrorHandler));
+		return;
+	}
 
-    var newList = new AjxVector();
-    var alarmMap = {};
+	var newList = new AjxVector();
+	var alarmMap = {};
 
-    //filter recurring appt instances, the alarmData is common for all the instances
-    var size = list.size();
-    for(var i=0;i<size;i++) {
-        var appt = list.get(i);
-        var id = appt.id;
+	// filter recurring appt instances, the alarmData is common for all the instances
+	var size = list.size();
+	for (var i = 0; i < size; i++) {
+		var appt = list.get(i);
+		var id = appt.id;
 
-        if(appt.hasAlarmData()) {
-                if(!alarmMap[id]) {
-                    alarmMap[id] = appt;
-                    newList.add(appt);
-                }
-
-        }
-
-    }
+		if (appt.hasAlarmData()) {
+			if (!alarmMap[id]) {
+				alarmMap[id] = appt;
+				newList.add(appt);
+			}
+		}
+	}
 
     this._cachedAppts = newList.clone();
     this._cachedAppts.sort(ZmCalBaseItem.compareByTimeAndDuration);
