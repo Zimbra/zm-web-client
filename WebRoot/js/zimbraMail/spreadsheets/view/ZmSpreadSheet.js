@@ -628,7 +628,7 @@ ZmSpreadSheet.prototype._cellClicked = function(td, ev) {
 		DwtMenu._activeMenu.popdown();
 
 	if (is_mousedown) {
-        console.log("MouseDown");
+        
         this._selectCell(td);
         //console.log(td);
 		var stopEvent = true;
@@ -650,7 +650,7 @@ ZmSpreadSheet.prototype._cellClicked = function(td, ev) {
 	}
 
     if(is_dblclick){
-        console.log("DoubleClick");
+        
         ev._stopPropagation = true;
 		ev._returnValue = false;
 		this._editCell(td);
