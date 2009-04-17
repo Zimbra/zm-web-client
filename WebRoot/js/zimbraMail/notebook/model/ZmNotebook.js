@@ -185,13 +185,22 @@ function(callback, name, response) {
 
 ZmNotebook.prototype.createQuery =
 function(pathOnly) {
+    if (!this.isRemote() && this.isSystem()) {
+		var qName = this.nId == ZmOrganizer.ID_ARCHIVE
+			? ('"' + ZmFolder.QUERY_NAME[this.nId] + '"')
+			: ZmFolder.QUERY_NAME[this.nId];
+		return pathOnly
+			? qName
+			: ("in:" + (qName || ('"'+this.name+'"')));
+	}
+
 	var path = this.name;
 	var f = this.parent;
 	while (f && (f.nId != ZmFolder.ID_ROOT) && f.name.length) {
-		var name =  f.name;
+		var name = f.isSystem() ? ZmFolder.QUERY_NAME[f.nId] : f.name;
 		path = name + "/" + path;
 		f = f.parent;
 	}
 	path = '"' + path + '"';
-	return pathOnly ? path : ("in:" + path);    
+	return pathOnly ? path : ("in:" + path);
 };
