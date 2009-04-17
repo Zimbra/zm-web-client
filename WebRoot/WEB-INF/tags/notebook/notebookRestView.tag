@@ -68,7 +68,7 @@
         </tr>
         <tr>
             <td class="list" style="padding:10px;">
-                <iframe id="notebookIframe" style="width:100%; height:600px" scrolling="auto" marginWidth="0" marginHeight="0" frameBorder="0" src="${fn:escapeXml(iframeUrl)}"></iframe>
+                <iframe onload="resizeIframe();" id="notebookIframe" style="width:100%; height:600px" scrolling="auto" marginWidth="0" marginHeight="0" frameBorder="0" src="${fn:escapeXml(iframeUrl)}"></iframe>
             </td>
         </tr>
         <tr>
@@ -80,39 +80,31 @@
 
     <script type="text/javascript">
 
-        (function() {
+        var isKonqueror = /KHTML/.test(navigator.userAgent);
+        var isIE = ( /MSIE/.test(navigator.userAgent) && !/(Opera|Gecko|KHTML)/.test(navigator.userAgent) );
+        var iframe = document.getElementById("notebookIframe");
+        iframe.style.width = "100%";
+        iframe.style.height = "100px";
+        iframe.style.overflowX = "auto";
+        iframe.scrolling = "no";
+        iframe.marginWidth = 0;
+        iframe.marginHeight = 0;
+        iframe.border = 0;
+        iframe.frameBorder = 0;
+        iframe.style.border = "none";
 
-            var isKonqueror = /KHTML/.test(navigator.userAgent);
-            var isIE = ( /MSIE/.test(navigator.userAgent) && !/(Opera|Gecko|KHTML)/.test(navigator.userAgent) );
-            var iframe = document.getElementById("notebookIframe");
-            iframe.style.width = "100%";
-            iframe.style.height = "20px";
-            iframe.style.overflowX = "auto";
-            iframe.scrolling = "no";
-            iframe.marginWidth = 0;
-            iframe.marginHeight = 0;
-            iframe.border = 0;
-            iframe.frameBorder = 0;
-            iframe.style.border = "none";
-            //            function resizeAndNullIframe() { resizeIframe(); iframe = null;};
-            function resizeIframe() {
-                if (iframe !=null) {
-                    var w = iframe.offsetWidth, b = iframe.contentWindow.document.body;
-                    if (b.scrollWidth > w) {
-                        b.style.overflow = "auto";
-                        b.style.width = w + "px";
-                    } else {
-                        iframe.style.width = b.scrollWidth -20 + "px";
-                    }
-                    var i_frame = iframe;
-                    //alert(b.scrollHeight+"|"+iframe.offsetHeight);
-                    var _delay = 100;//isIE ? 100 : 0 ;
-                    setTimeout(function(){ i_frame.style.height = b.scrollHeight + 30 + "px";}, _delay);
+        var resizeIframe = function() {
+            if (iframe !=null) {
+                var w = iframe.offsetWidth, b = iframe.contentWindow.document.body;
+                if (b.scrollWidth > w) {
+                    b.style.overflow = "auto";
+                    b.style.width = w + "px";
+                } else {
+                    iframe.style.width = b.scrollWidth - 20 + "px";
                 }
-            };
+                iframe.style.height = b.scrollHeight + 30 + "px";
+            }
+        }
 
-            var _delay = 300;//isIE ? 300 : 100 ;
-            setTimeout(resizeIframe, _delay);
-        })();
     </script>
 </app:view>
