@@ -34,8 +34,8 @@
     </c:choose>
     <fmt:setBundle basename="/messages/ZhMsg" scope="request"/>
     <fmt:message var="title" key="notebook"/>
-    <c:set var="folderName" value="${context.folder.name}" />
-    <c:set var="iframeUrl" value="/home/${mailbox.name}/${folderName}" />
+    <c:set var="folderPath" value="${context.folder.path}" />
+    <c:set var="iframeUrl" value="/home/${mailbox.name}/${folderPath}" />
 </app:handleError>
 
 <c:set var="toolbar">
