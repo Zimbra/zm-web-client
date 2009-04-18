@@ -67,7 +67,7 @@
 												<zm:forEachFolder var="folder">
 													<c:if test="${folder.isContactCreateTarget}">
 														<option <c:if test="${(empty contact and ((context.selectedId eq folder.id) or (empty context.selectedId and folder.isContacts))) or (!empty contact and contact.folderId eq folder.id)}">selected </c:if> value="${folder.id}" />
-														${fn:escapeXml(folder.rootRelativePath)}
+														${zm:getFolderName(pageContext, folder.id)}
 													</c:if>
 												</zm:forEachFolder>
 											</select>
