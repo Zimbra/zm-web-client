@@ -77,8 +77,8 @@
                     <td><div class='vertSep'></div></td>
                     <td nowrap>
                         <select name="viewId" onchange="zclick('SOPCHNGVIEW')">
-                            <option value="dv" <c:if test="${param.view eq 'dv'}"> selected </c:if> />Detail View
-                            <option value="ev" <c:if test="${param.view eq 'ev'}"> selected </c:if> />Explorer View
+                            <option value="dv" <c:if test="${param.view eq 'dv'}"> selected </c:if> /><fmt:message key="briefcaseDtlView"/>
+                            <option value="ev" <c:if test="${param.view eq 'ev'}"> selected </c:if> /><fmt:message key="briefcaseExpView"/>
                         </select>
                     </td>
                     <app:button  id="${keys ? 'OPCHNGVIEW' :''}" name="actionChange" text="actionChange" tooltip="actionChangeTT"/>
