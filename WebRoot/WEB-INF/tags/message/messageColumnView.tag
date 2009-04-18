@@ -37,9 +37,9 @@
     <zm:currentResultUrl var="currentUrl" value="/h/search" context="${context}"/>
     <c:set var="useTo" value="${context.folder.isSent or context.folder.isDrafts}"/>
     <c:set var="context" value="${context}" />
-    <c:set var="idcheck" value="${not empty param.id ? param.id : context.currentItem.id}"/>
+    <c:set var="idcheck" value="${not empty param.id && not zm:actionSet(param, 'actionHardDelete') && not zm:actionSet(param, 'actionDelete') ? param.id : context.currentItem.id}"/>
     <c:if test="${mailbox.prefs.readingPaneEnabled and not empty idcheck}">
-        <zm:getMessage var="msg" id="${not empty param.id ? param.id : context.currentItem.id}" markread="${(context.folder.isMountPoint and context.folder.effectivePerm eq 'r') ? 'false' : 'true'}" neuterimages="${empty param.xim}"/>
+        <zm:getMessage var="msg" id="${idcheck}" markread="${(context.folder.isMountPoint and context.folder.effectivePerm eq 'r') ? 'false' : 'true'}" neuterimages="${empty param.xim}"/>
         <zm:computeNextPrevItem var="cursor" searchResult="${context.searchResult}" index="${context.currentItemIndex}"/>
         <c:set var="ads" value='${msg.subject} ${msg.fragment}'/>
     </c:if>
