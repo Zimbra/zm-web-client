@@ -129,7 +129,7 @@
                                                     <app:tagOptions mailbox="${mailbox}" keys="${true}"/>
                                                 </select>
                                             </td>
-                                            <app:button name="actionGo" tooltip="actionConvGoTT" text="actionGo"/>
+                                            <app:button name="actionGo" tooltip="actionTaskListGoTT" text="actionGo"/>
                                             <td><div class='vertSep'></div></td>
                                         </c:if>
                                     </tr>
