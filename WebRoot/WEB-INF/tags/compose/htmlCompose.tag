@@ -165,6 +165,10 @@ var myEditor;
         this.toolbar.enableButton('heading');
         this.toolbar.enableButton('createlink');
 
+        //to set fontname from preferrence
+        var fnObj = this.toolbar.getButtonByValue('fontname');
+        fnObj.checkValue('<c:out value="${mailbox.prefs.htmlEditorDefaultFontFamily}"/>');
+        
     });
     myEditor.render();
 
