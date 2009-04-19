@@ -14,6 +14,8 @@
  * 
  * ***** END LICENSE BLOCK *****
  */
+
+ 
 body {
     font-family: Myriad, "Lucida Grande", Helvetica, Arial, Verdana, Sans-serif;
     font-size: medium;
@@ -44,6 +46,7 @@ a {
 .container {
     background: white;
 }
+
 #appbar {
     background: #464646 url( "/img/mobile/iphone/NavbarBg.gif" );
     height: 48px;
@@ -53,6 +56,7 @@ a {
     min-width: 275px;
     color: white;
 }
+
 .label {
     color: #4d8dc3;
 }
@@ -481,6 +485,13 @@ div.row span.l {
     max-height: 18px;
     display: inline-block;
     background: url("/img/mobile/iphone-ext/common.gif") no-repeat top left;
+}
+.Edit{
+    background: #eeeeee url("/img/startup/ImgEdit.gif") 50% 50% no-repeat;
+    padding: 3px;
+    border:1px outset #efefef;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
 }
 .FldrSearchFolder {
     background: url( "/img/startup/ImgSearchFolder.gif" ) 50% 50% no-repeat;
