@@ -61,6 +61,7 @@ a {
     padding: 2px;
     background: white;
     color: black;
+    clear:both;
 }
 
 .list-row-unread {
@@ -225,6 +226,13 @@ form {
     height: 31px;
     padding: 0px;
     text-align: center;
+	clear: both;
+}
+
+.Edit{
+    background: url("/img/startup/ImgEdit.gif") top left no-repeat;
+    padding: 3px;
+   
 }
 
 .Toolbar .table-cell {
@@ -312,7 +320,6 @@ form {
     height: 18px;
     max-height: 18px;
     display: inline-block;
-    background: url("/img/mobile/iphone-ext/common.gif") no-repeat top left;
 }
 
 .Action {
