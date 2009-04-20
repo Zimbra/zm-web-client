@@ -1788,8 +1788,13 @@ function(ev) {
 			ZmZimbraMail.logOff();
 		} else if (id && ZmApp.ENABLED_APPS[id] && (id != this._activeTabId)) {
 			this.activateApp(id);
-		} else if (id != this._activeTabId) {
-			this._appViewMgr.pushView(id, false, true);
+		} else {
+			if (id != this._activeTabId) {
+				this._appViewMgr.pushView(id, false, true);
+			}
+			if (ev.target && (ev.target.className == "ImgClose")) {
+				this._appViewMgr.popView();
+			}
 		}
 	} catch (ex) {
 		this._handleException(ex);

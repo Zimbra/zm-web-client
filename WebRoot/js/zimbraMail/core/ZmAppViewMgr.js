@@ -467,13 +467,14 @@ function(viewId, force, switchTab) {
 	var viewController;
 	if (isPendingView) {
 		viewId = this._pendingView;
-		var view = this._views[viewId];
-		if (view) {
-			var appContent = view[ZmAppViewMgr.C_APP_CONTENT] || view[ZmAppViewMgr.C_APP_CONTENT_FULL];
-			viewController = appContent.getController && appContent.getController();
-		}
 	}
 	DBG.println(AjxDebug.DBG1, "pushView: " + viewId);
+
+	var view = this._views[viewId];
+	if (view) {
+		var appContent = view[ZmAppViewMgr.C_APP_CONTENT] || view[ZmAppViewMgr.C_APP_CONTENT_FULL];
+		viewController = appContent && appContent.getController && appContent.getController();
+	}
 
 	// if same view, no need to hide previous view or check for callbacks
 	if (viewId == this._currentView) {
@@ -490,7 +491,8 @@ function(viewId, force, switchTab) {
 	if (this._isTabView[viewId]) {
 		var tp = this._tabParams[viewId];
 		if (tp && !switchTab) {
-			appCtxt.getAppController().getAppChooser().addButton(tp.id, tp);
+			var button = appCtxt.getAppController().getAppChooser().addButton(tp.id, tp);
+			button.setHoverImage("Close");
 		}
 	}
 
