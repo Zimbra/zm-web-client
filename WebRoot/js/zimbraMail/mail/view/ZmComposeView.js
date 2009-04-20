@@ -1541,6 +1541,13 @@ function(action, msg, subjOverride) {
 
 	var subj = subjOverride || ( (msg) ? msg.subject : "" );
 
+    if (action == ZmOperation.REPLY_CANCEL && !subj) {
+        var inv = (msg) ? msg.invite : null;
+        if (inv) {
+            subj = inv.getName();
+        }
+    }
+
 	if (action != ZmOperation.DRAFT && subj) {
 		var regex = ZmComposeView.SUBJ_PREFIX_RE;
 		while (regex.test(subj))
