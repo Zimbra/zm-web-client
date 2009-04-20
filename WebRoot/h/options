@@ -62,6 +62,11 @@
                         <c:param name="st" value="contact"/>
                     </c:redirect>
                 </c:when>
+                <c:when test="${prevApp eq 'tasks'}" >
+                    <c:redirect url="/h/search">
+                        <c:param name="st" value="task"/>
+                    </c:redirect>
+                </c:when>
                 <c:when test="${prevApp eq 'options'}" >
                     <c:redirect url="/h/options" />
                 </c:when>
