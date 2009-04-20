@@ -117,7 +117,7 @@ function() {
     ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_CUSTOM_MSG, { textKey: "imCustomStatusMsg", image: "ImAvailable"});
     ZmOperation.registerOp(ZmId.OP_IM_BLOCK_BUDDY, { textKey: "imBlock", image: "BlockUser" });
     ZmOperation.registerOp(ZmId.OP_IM_UNBLOCK_BUDDY, { textKey: "imUnblock", image: "AllowUser" });
-	ZmOperation.registerOp(ZmId.OP_IM_HTML, { image: "HtmlDoc", tooltipKey: "changeEditorMode" });
+	ZmOperation.registerOp(ZmId.OP_IM_HTML, { image: "TextFormat", tooltipKey: "changeEditorMode" });
 	ZmOperation.registerOp(ZmId.OP_IM_DELETE_GROUP, { image: "Delete", textKey: "del" });
 	ZmOperation.registerOp(ZmId.OP_IM_CLOSE_ALL_CHATS, { textKey: "imCloseAllChats" });
 	ZmOperation.registerOp(ZmId.OP_IM_CLOSE_OTHER_CHATS, { textKey: "imCloseOtherChats" });
