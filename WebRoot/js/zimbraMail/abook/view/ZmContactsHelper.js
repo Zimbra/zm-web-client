@@ -30,6 +30,8 @@ ZmContactsHelper = function() {};
  * @param query			[String]		query string to search on
  * @param queryHint		[String]*		query hint (i.e. searching shared folders)
  * @param ascending		[boolean]*		if true, sort in ascending order
+ * @param lastId		[int]*			ID of last item displayed (for pagination)
+ * @param lastSortVal	[string]*		value of sort field for above item
  * @param respCallback	[AjxCallback]*	callback to call once response comes back from server
  * @param errorCallback	[AjxCallback]*	callback to call if error returned from server
  */

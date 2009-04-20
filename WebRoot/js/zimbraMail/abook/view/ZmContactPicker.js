@@ -34,6 +34,7 @@ ZmContactPicker = function(buttonInfo) {
 	this._initialized = false;
 	this._offset = 0;
 	this._defaultQuery = ".";
+	this._list = new AjxVector();
 
 	this._searchErrorCallback = new AjxCallback(this, this._handleErrorSearch);
 };
@@ -119,13 +120,14 @@ function() {
 	// disable search field (hack to fix bleeding cursor)
 	this._searchField.disabled = true;
 	this._contactSource = null;
+	this._list.removeAll();
 
 	DwtDialog.prototype.popdown.call(this);
 };
 
 ZmContactPicker.prototype.search =
-function(colItem, ascending, firstTime) {
-	if (typeof ascending == "undefined") {
+function(colItem, ascending, firstTime, lastId, lastSortVal) {
+	if (!AjxUtil.isSpecified(ascending)) {
 		ascending = true;
 	}
 
@@ -168,6 +170,8 @@ function(colItem, ascending, firstTime) {
 		query: query,
 		queryHint: queryHint,
 		offset: this._offset,
+		lastId: lastId,
+		lastSortVal: lastSortVal,
 		respCallback: (new AjxCallback(this, this._handleResponseSearch, [firstTime])),
 		errorCallback: this._searchErrorCallback
 	};
@@ -266,18 +270,46 @@ function() {
 ZmContactPicker.prototype._searchButtonListener =
 function(ev) {
 	this._offset = 0;
+	this._list.removeAll();
 	this.search();
 };
 
 ZmContactPicker.prototype._handleResponseSearch =
 function(firstTime, result) {
 	var resp = result.getResponse();
-	var isGal = (this._contactSource == ZmId.SEARCH_GAL);
 	var more = resp.getAttribute("more");
-	var isPagingSupported = AjxUtil.isSpecified(resp.getAttribute("offset"));
+	var offset = resp.getAttribute("offset");
+	var isPagingSupported = AjxUtil.isSpecified(offset);
+	var info = resp.getAttribute("info");
+	var expanded = info && info[0].wildcard[0].expanded == "0";
 
+	if (!firstTime && !isPagingSupported &&
+		(expanded || (this._contactSource == ZmId.SEARCH_GAL && more)))
+	{
+		var d = appCtxt.getMsgDialog();
+		d.setMessage(ZmMsg.errorSearchNotExpanded);
+		d.popup();
+		if (expanded) { return; }
+	}
+
+	var list = AjxVector.fromArray(ZmContactsHelper._processSearchResponse(resp));
+
+	if (isPagingSupported) {
+		this._list.merge(offset, list);
+		this._list.hasMore = more;
+	}
+
+	if (list.size() == 0) {
+		this._chooser.sourceListView._setNoResultsHtml();
+	}
+
+	this._showResults(isPagingSupported, more, list);
+};
+
+ZmContactPicker.prototype._showResults =
+function(isPagingSupported, more, list) {
 	// if offset is returned, then this account support gal paging
-	if (isGal && !isPagingSupported) {
+	if (this._contactSource == ZmId.SEARCH_GAL && !isPagingSupported) {
 		this._prevButton.setEnabled(false);
 		this._nextButton.setEnabled(false);
 	} else {
@@ -285,24 +317,8 @@ function(firstTime, result) {
 		this._nextButton.setEnabled(more);
 	}
 
-	var info = resp.getAttribute("info");
-	var expanded = info && info[0].wildcard[0].expanded == "0";
-
-	if (!firstTime && !isPagingSupported && (expanded || (isGal && more))) {
-		var d = appCtxt.getMsgDialog();
-		d.setMessage(ZmMsg.errorSearchNotExpanded);
-		d.popup();
-		if (expanded) { return; }
-	}
-
-	var list = ZmContactsHelper._processSearchResponse(resp);
-
 	this._resetColHeaders(); // bug #2269 - enable/disable sort column per type of search
-	this._chooser.setItems(AjxVector.fromArray(list));
-
-	if (list.length == 0) {
-		this._chooser.sourceListView._setNoResultsHtml();
-	}
+	this._chooser.setItems(list);
 
 	this._searchIcon.className = "ImgSearch";
 	this._searchButton.setEnabled(true);
@@ -318,11 +334,40 @@ ZmContactPicker.prototype._pageListener =
 function(ev) {
 	if (ev.item == this._prevButton) {
 		this._offset -= ZmContactsApp.SEARCHFOR_MAX;
-	} else {
-		this._offset += ZmContactsApp.SEARCHFOR_MAX;
+		this._showResults(true, true, this.getSubList()); // show cached results
 	}
+	else {
+		var lastId;
+		var lastSortVal;
+		this._offset += ZmContactsApp.SEARCHFOR_MAX;
+		var list = this.getSubList();
+		if (!list) {
+			list = this._chooser.sourceListView.getList();
+			var email = (list.size() > 0) ? list.getLast() : null;
+			if (email) {
+				lastId = email.__contact.id;
+				lastSortVal = email.__contact.sf;
+			}
+			this.search(null, null, null, lastId, lastSortVal);
+		} else {
+			var more = this._list.hasMore;
+			if (!more) {
+				more = (this._offset+ZmContactsApp.SEARCHFOR_MAX) < this._list.size();
+			}
+			this._showResults(true, more, list); // show cached results
+		}
+	}
+};
 
-	this.search();
+ZmContactPicker.prototype.getSubList =
+function() {
+	var size = this._list.size();
+
+	var end = (this._offset + ZmContactsApp.SEARCHFOR_MAX > size)
+		? size : (this._offset + ZmContactsApp.SEARCHFOR_MAX);
+
+	return (this._offset < end)
+		? (AjxVector.fromArray(this._list.getArray().slice(this._offset, end))) : null;
 };
 
 ZmContactPicker.prototype._searchTypeListener =

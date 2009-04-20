@@ -141,6 +141,7 @@ function(params) {
 	var soapDoc;
 	if (!this.response) {
 		if (this.isGalSearch) {
+			// XXX: DEPRACATED. Use JSON version
 			soapDoc = AjxSoapDoc.create("SearchGalRequest", "urn:zimbraAccount");
 			var method = soapDoc.getMethod();
 			if (this.galType) {	method.setAttribute("type", this.galType); }
@@ -262,8 +263,15 @@ function(params) {
 			request.name = this.query;
 
 			// bug #36188 - add offset/limit for paging support
-			request.offset = this.offset = this.offset || 0;
-			request.limit = this.limit = appCtxt.get(ZmSetting.CONTACTS_PER_PAGE);
+			request.offset = this.offset = (this.offset || 0);
+			request.limit = this.limit = (this.limit || appCtxt.get(ZmSetting.CONTACTS_PER_PAGE));
+			// cursor is used for paginated searches
+			if (this.lastId != null && this.lastSortVal) {
+				request.cursor = {id:this.lastId, sortVal:this.lastSortVal};
+				if (this.endSortVal) {
+					request.cursor.endSortVal = this.endSortVal;
+				}
+			}
 			if (this.sortBy) {
 				request.sortBy = this.sortBy;
 			}
