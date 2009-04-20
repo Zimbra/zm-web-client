@@ -265,12 +265,9 @@ function(params) {
 			// bug #36188 - add offset/limit for paging support
 			request.offset = this.offset = (this.offset || 0);
 			request.limit = this.limit = (this.limit || appCtxt.get(ZmSetting.CONTACTS_PER_PAGE));
-			// cursor is used for paginated searches
-			if (this.lastId != null && this.lastSortVal) {
-				request.cursor = {id:this.lastId, sortVal:this.lastSortVal};
-				if (this.endSortVal) {
-					request.cursor.endSortVal = this.endSortVal;
-				}
+
+			if (this.lastId) { // add lastSortVal and lastId for cursor-based paging
+				request.cursor = {id:this.lastId, sortVal:(this.lastSortVal || "")};
 			}
 			if (this.sortBy) {
 				request.sortBy = this.sortBy;
