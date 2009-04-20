@@ -599,7 +599,12 @@ ZmPageEditor.prototype.insertLinks = function(filenames) {
 
 ZmPageEditor.prototype._insertImages = function(filenames) {
 	for (var i = 0; i < filenames.length; i++) {
-		this.insertImage(filenames[i]);
+        var page = this._controller.getPage();
+        var notebook = appCtxt.getById(page.folderId);
+        var url = [
+            notebook.getRestUrl(), "/", AjxStringUtil.urlComponentEncode(filenames[i])
+        ].join("");
+		this.insertImage(url);
 	}
 };
 
