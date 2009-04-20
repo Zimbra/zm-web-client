@@ -171,7 +171,11 @@ function(actionCode) {
 			return listView.handleKeyAction(actionCode);
 
 		case ZmKeyMap.DEL:
-			this._deleteListener();
+			var tb = this._toolbar[this._currentView];
+			var button = tb && tb.getButton(ZmOperation.DELETE);
+			if (button && button.getEnabled()) {
+				this._deleteListener();
+			}
 			break;
 
 		case ZmKeyMap.NEXT_PAGE:
