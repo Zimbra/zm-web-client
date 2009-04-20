@@ -28,6 +28,11 @@ ZmContactSplitView = function(params) {
 
 	this.setScrollStyle(Dwt.CLIP);
 
+	this._changeListener = new AjxListener(this, this._contactChangeListener);
+	this._objectManager = new ZmObjectManager();
+
+	this._initialize(params.controller, params.dropTgt);
+
 	var folderTree = appCtxt.getFolderTree();
 	if (folderTree) {
 		folderTree.addChangeListener(new AjxListener(this, this._addrbookTreeListener));
@@ -36,11 +41,6 @@ ZmContactSplitView = function(params) {
 	if (tagTree) {
 		tagTree.addChangeListener(new AjxListener(this, this._tagChangeListener));
 	}
-
-	this._changeListener = new AjxListener(this, this._contactChangeListener);
-	this._objectManager = new ZmObjectManager();
-
-	this._initialize(params.controller, params.dropTgt);
 };
 
 ZmContactSplitView.prototype = new DwtComposite;
@@ -90,8 +90,9 @@ function(contact, isGal) {
 
 	if (!isGal) {
 		// Remove and re-add listeners for current contact if exists
-		if (this._contact)
+		if (this._contact) {
 			this._contact.removeChangeListener(this._changeListener);
+		}
 		contact.addChangeListener(this._changeListener);
 	}
 
@@ -437,8 +438,10 @@ function(tagId) {
 	var sc = appCtxt.getSearchController();
 	if (sc) {
 		var tag = appCtxt.getById(tagId);
-		var query = 'tag:"' + tag.name + '"';
-		sc.search({query: query});
+		if (tag) {
+			var query = 'tag:"' + tag.name + '"';
+			sc.search({query: query});
+		}
 	}
 };
 
