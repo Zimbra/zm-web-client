@@ -82,7 +82,7 @@ function() {
 		for (var i = 0; i < appts.length && i < 5; i++) {
 			var appt = appts[i];
 			var delta = this._formatDeltaString(this._computeDelta(appt));
-			var text = [appt.getName(), ", ", this.getDurationText(appt), "\n(", delta, ")"].join("");
+			var text = [appt.getName(), ", ", this._getDurationText(appt), "\n(", delta, ")"].join("");
 			if (AjxEnv.isMac) {
 				ZmDesktopAlert.getInstance().start(ZmMsg.appointmentReminder, text);
 			} else if (AjxEnv.isWindows) {
