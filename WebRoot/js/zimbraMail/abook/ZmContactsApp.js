@@ -427,6 +427,13 @@ function(query, callback) {
 	appCtxt.getSearchController().search(params);
 };
 
+ZmContactsApp.prototype.getInitialSearchType =
+function() {
+	var list = appCtxt.getCurrentList();
+	return (list && (list instanceof ZmContactList) && list.isGal)
+		? ZmId.SEARCH_GAL : null;
+};
+
 ZmContactsApp.prototype.showSearchResults =
 function(results, callback, isInGal, folderId) {
 	var loadCallback = new AjxCallback(this, this._handleLoadShowSearchResults, [results, callback, isInGal, folderId]);

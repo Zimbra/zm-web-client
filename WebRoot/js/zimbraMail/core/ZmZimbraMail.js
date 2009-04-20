@@ -1362,8 +1362,12 @@ function(appName, view) {
 			var app = this._apps[this._activeApp];
 
 			if (appCtxt.get(ZmSetting.SEARCH_ENABLED)) {
-				if (ZmApp.DEFAULT_SEARCH[appName]) {
-					appCtxt.getSearchController().setDefaultSearchType(ZmApp.DEFAULT_SEARCH[appName]);
+				var searchType = app ? app.getInitialSearchType() : null;
+				if (!searchType) {
+					searchType = ZmApp.DEFAULT_SEARCH[appName];
+				}
+				if (searchType) {
+					appCtxt.getSearchController().setDefaultSearchType(searchType);
 				}
 
 				// set search string value to match current app's last search, if applicable

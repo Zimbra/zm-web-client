@@ -261,6 +261,12 @@ function() {
 	return ZmMsg[ZmApp.NAME[this._name]];
 };
 
+// only have set if different from the default
+ZmApp.prototype.getInitialSearchType =
+function() {
+	return null;
+};
+
 // Convenience functions that call through to app view manager. See ZmAppViewMgr for details.
 
 ZmApp.prototype.setAppView =
