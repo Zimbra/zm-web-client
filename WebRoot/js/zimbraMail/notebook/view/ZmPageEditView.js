@@ -629,6 +629,7 @@ ZmPageEditor.prototype.__popupUploadDialog = function(callback, title) {
 	var notebook = appCtxt.getById(page.folderId);
 
 	var dialog = appCtxt.getUploadDialog();
+    dialog.addPopdownListener(new AjxListener(this, this.focus));
 	dialog.popup(notebook, callback, title);
 };
 
@@ -724,6 +725,7 @@ ZmPageEditor.prototype._popupLinkPropsDialog = function(target, url, text) {
 		this._insertLinkCallback = new AjxCallback(this, this._insertLink);
 	}
 	var dialog = appCtxt.getLinkPropsDialog();
+    dialog.addPopdownListener(new AjxListener(this, this.focus));
 	dialog.popup(linkInfo, this._insertLinkCallback);
 };
 
