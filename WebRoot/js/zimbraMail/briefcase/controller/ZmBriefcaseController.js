@@ -610,8 +610,8 @@ function(ev) {
 		actionMenu.setSelectedItem(0);
 	}
 
-        var item = ev.item;
-        actionMenu.getOp(ZmOperation.SAVE_FILE).setEnabled(item && !item.isFolder && item.restUrl);
+    var item = ev.item;
+        actionMenu.getOp(ZmOperation.SAVE_FILE).setEnabled(item && item.isRealFile());
 };
 
 ZmBriefcaseController.prototype._getActionMenuOps =
@@ -650,12 +650,22 @@ function() {
 	if (!items) { return; }
 
 	items = items instanceof Array ? items : [ items ];
-	for (var i = 0; i<items.length; i++) {
+
+    //Allow download to only one file.
+    var item = items[0];
+    var restUrl = item.getRestUrl();
+    if (item && restUrl) {
+        window.location = restUrl + "?disp=a";
+    }
+
+    //Commented: Multiple downloads doesn't work anyways with this logic
+	/*for (var i = 0; i<items.length; i++) {
 		var item = items[i];
-		if (item && item.restUrl) {
-                        window.location = item.restUrl + "?disp=a";
+        var restUrl = item.getRestUrl();
+		if (item && restUrl) {
+           window.location = restUrl + "?disp=a";
 		}
-	}
+	}*/
 };
 
 ZmBriefcaseController.prototype._viewAsHtmlListener =
@@ -667,8 +677,9 @@ function() {
 	items = items instanceof Array ? items : [ items ];
 	for (var i = 0; i<items.length; i++) {
 		var item = items[i];
-		if (item && item.restUrl) {
-			this.viewAsHtml(item.restUrl);
+		var restUrl = item.getRestUrl();
+		if (item && restUrl) {
+			this.viewAsHtml(restUrl);
 		}
 	}
 };
@@ -875,33 +886,6 @@ function(item) {
 		}
 	}
 	return false;
-};
-
-ZmBriefcaseController.prototype._viewAsHtmlListener =
-function() {
-
-	var view = this._listView[this._currentView];
-	var items = view.getSelection();
-	if(!items)
-	return;
-
-	items = items instanceof Array ? items : [ items ];
-	for(var i = 0;i<items.length;i++){
-		var item = items[i];
-		if(item && item.restUrl){
-			this.viewAsHtml(item.restUrl);
-		}
-	}
-};
-
-ZmBriefcaseController.prototype.viewAsHtml =
-function(restUrl) {
-	if (restUrl.match(/\?/)) {
-		restUrl += "&view=html";
-	} else {
-		restUrl += "?view=html";
-	}
-	window.open(restUrl);
 };
 
 ZmBriefcaseController.prototype.addChangeListeners =

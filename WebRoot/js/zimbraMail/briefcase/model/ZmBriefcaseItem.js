@@ -58,6 +58,10 @@ function(dontIncludeThisName) {
 	return url;
 };
 
+ZmBriefcaseItem.prototype.isRealFile = function(){
+    return (!this.isFolder && !(this.contentType == ZmMimeTable.APP_ZIMBRA_SLIDES || this.contentType == ZmMimeTable.APP_ZIMBRA_EXCEL));  
+};
+
 ZmBriefcaseItem.prototype.set =
 function(data) {
 	this.id = data.id;
