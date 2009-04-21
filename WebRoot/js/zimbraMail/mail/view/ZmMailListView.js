@@ -400,10 +400,17 @@ function(htmlArr, idx, item, field, colIdx, params) {
 	return idx;
 };
 
-ZmListView.prototype._getCellClass =
+ZmMailListView.prototype._getCellClass =
 function(item, field, params) {
 	return (!this._isMultiColumn && field == ZmItem.F_SUBJECT)
 		? "SubjectDoubleRow" : null;
+};
+
+ZmMailListView.prototype._getFlagIcon =
+function(isFlagged, isMouseover) {
+	return (isFlagged || isMouseover)
+		? "FlagRed"
+		: (this._isMultiColumn ? "Blank_16" : "FlagDis");
 };
 
 // Figure out how many of the participants will fit into a given pixel width.

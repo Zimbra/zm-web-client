@@ -268,7 +268,7 @@ function(htmlArr, idx, item, field, colIdx, params) {
 	} else if (field == ZmItem.F_TYPE) {
 		idx = this._getImageHtml(htmlArr, idx, ZmItem.ICON[item.type], this._getFieldId(item, field));
 	} else if (field == ZmItem.F_FLAG) {
-		idx = this._getImageHtml(htmlArr, idx, item.isFlagged ? "FlagRed" : null, this._getFieldId(item, field));
+		idx = this._getImageHtml(htmlArr, idx, this._getFlagIcon(item.isFlagged), this._getFieldId(item, field));
 	} else if (field == ZmItem.F_TAG) {
 		idx = this._getImageHtml(htmlArr, idx, item.getTagImageInfo(), this._getFieldId(item, field));
 	} else if (field == ZmItem.F_ATTACHMENT) {
@@ -321,6 +321,11 @@ function(item) {
 	return [" - ", AjxStringUtil.htmlEncode(item.fragment, true)].join("");
 };
 
+ZmListView.prototype._getFlagIcon =
+function(isFlagged, isMouseover) {
+	return (isFlagged || isMouseover) ? "FlagRed" : "Blank_16";
+};
+
 /**
  * Parse the DOM ID to figure out what got clicked. IDs consist of three to five parts
  * joined by the "|" character.
@@ -361,7 +366,7 @@ function(ev, div) {
 			} else if (m.field == ZmItem.F_FLAG) {
 				var item = this.getItemFromElement(div);
 				if (!item.isFlagged) {
-					AjxImg.setImage(ev.target, "Blank_16", true);
+					AjxImg.setImage(ev.target, this._getFlagIcon(item.isFlagged, false), true);
 				}
 			}
 		}
@@ -661,7 +666,7 @@ function(params) {
         }
     } else if (field == ZmItem.F_FLAG) {
         if (!item.isFlagged) {
-            AjxImg.setDisabledImage(target, "FlagRed", true);
+            AjxImg.setDisabledImage(target, this._getFlagIcon(item.isFlagged, true), true);
         }
     } else if (field == ZmItem.F_PRIORITY) {
         if (item.isHighPriority) {
