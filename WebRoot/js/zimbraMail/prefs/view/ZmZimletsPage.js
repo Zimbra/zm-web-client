@@ -163,9 +163,9 @@ function(){
             var desc = allz[i].zimlet[0].description;
             if(allz[i].zimlet[0].zimletPanelItem){
                 if(allz[i].zimlet[0].zimletPanelItem instanceof Array){
-                    desc = allz[i].zimlet[0].zimletPanelItem[0].label + " - " + desc;
+                    desc = appCtxt.getZimletMgr().getZimletsHash()[name].processMessage(allz[i].zimlet[0].zimletPanelItem[0].label) + " - " + desc;
                 }else{
-                    desc = allz[i].zimlet[0].zimletPanelItem.label + " - " + desc;
+                    desc = appCtxt.getZimletMgr().getZimletsHash()[name].processMessage(allz[i].zimlet[0].zimletPanelItem.label) + " - " + desc;
                 }
             }else{
                 desc = allz[i].zimlet[0].description;
