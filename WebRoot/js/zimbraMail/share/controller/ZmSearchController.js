@@ -53,13 +53,13 @@ function() {
 };
 
 ZmSearchController.prototype.dateSearch =
-function(d) {
+function(d, searchFor) {
 	d = d || new Date();
     var formatter = AjxDateFormat.getDateInstance(AjxDateFormat.SHORT);
     var date = formatter.format(d);
 	var groupBy = appCtxt.getApp(ZmApp.MAIL).getGroupMailBy();
 	var query = "date:" + date;
-	this.search({query:query, types:[groupBy]});
+	this.search({query:query, types:[groupBy], searchFor: searchFor});
 };
 
 ZmSearchController.prototype.fromSearch =

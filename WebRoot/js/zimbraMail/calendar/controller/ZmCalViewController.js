@@ -910,7 +910,7 @@ function(ev) {
 	var d = this._minicalMenu ? this._minicalMenu.__detail : null;
 	if (d != null) {
 	    delete this._minicalMenu.__detail;
-	    appCtxt.getSearchController().dateSearch(d);
+	    appCtxt.getSearchController().dateSearch(d, ZmId.SEARCH_MAIL);
     }
 };
 
