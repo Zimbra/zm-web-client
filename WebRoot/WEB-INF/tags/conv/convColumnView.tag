@@ -43,11 +43,11 @@
         <zm:searchConv var="convSearchResult" id="${not empty param.cid ? param.cid : context.currentItem.id}" context="${context}" fetch="${empty csi ? 'first': 'none'}" markread="true" sort="${param.css}" />
         <c:if test="${empty csi}">
             <c:set var="csi" value="${convSearchResult.fetchedMessageIndex}"/>
-            <c:if test="${csi ge 0 and param.action eq 'view'}">
+            <c:if test="${csi ge 0 and (param.action eq 'view' || param.action eq 'view2')}">
                 <zm:getMessage var="msg" id="${convSearchResult.hits[csi].id}" markread="${(context.folder.isMountPoint and context.folder.effectivePerm eq 'r') ? 'false' : 'true'}" neuterimages="${mailbox.prefs.displayExternalImages ? '1' : param.xim}"/>
             </c:if>
         </c:if>
-        <c:if test="${msg eq null and param.action eq 'view'}">
+        <c:if test="${msg eq null and (param.action eq 'view' || param.action eq 'view2')}">
             <c:if test="${csi lt 0 or csi ge convSearchResult.size}">
                 <c:set var="csi" value="0"/>
             </c:if>
