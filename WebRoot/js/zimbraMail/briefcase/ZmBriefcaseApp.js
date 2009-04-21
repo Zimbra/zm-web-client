@@ -334,9 +334,12 @@ function(op, promptDialog, data) {
 
         var overviewController = appCtxt.getOverviewController();
         var treeController = overviewController.getTreeController(ZmOrganizer.NOTEBOOK);
-        var treeView = treeController.getTreeView(this.getOverviewId());
-        var briefcase = treeView ? treeView.getSelected() : null;
-        var folderId = briefcase ? briefcase.id : ZmOrganizer.ID_BRIEFCASE;
+        var folderId = ZmOrganizer.ID_BRIEFCASE;
+        if(treeController) {
+            var treeView = treeController.getTreeView(this.getOverviewId());
+            var briefcase = treeView ? treeView.getSelected() : null;
+            folderId = briefcase ? briefcase.id : ZmOrganizer.ID_BRIEFCASE;
+        }
 
         var slideURL = this.getEditURLForContentType(contentType) + "?name=" + data.value + "&l=" + folderId;
         var winname = "_newslide" +  data.value;
@@ -354,19 +357,16 @@ ZmBriefcaseApp.prototype.newDoc = function(contentType, name, winName){
 
     var overviewController = appCtxt.getOverviewController();
     var treeController = overviewController.getTreeController(ZmOrganizer.NOTEBOOK);
-    var treeView = treeController.getTreeView(this.getOverviewId());
-    var briefcase = treeView ? treeView.getSelected() : null;
-    var folderId = briefcase ? briefcase.id : ZmOrganizer.ID_BRIEFCASE;
+    var folderId = ZmOrganizer.ID_BRIEFCASE;
+    if(treeController) {
+        var treeView = treeController.getTreeView(this.getOverviewId());
+        var briefcase = treeView ? treeView.getSelected() : null;
+        folderId = briefcase ? briefcase.id : ZmOrganizer.ID_BRIEFCASE;
+    }
 
-    var slideURL = this.getEditURLForContentType(contentType) + "?" + (name ?"name=" + name + "&" : "") + "l="+folderId;
+    var url = this.getEditURLForContentType(contentType) + "?" + (name ?"name=" + name + "&" : "") + "l="+folderId;
     var winname = winName || name;
-/*    var winfeatures = [
-        "width=",(window.outerWidth || 640),",",
-        "height=",(window.outerHeight || 480),",",
-        "resizable,toolbar=no,menubar=no,fullscreen=yes,location=no,status=no",
-        "fullscreen=yes"
-    ].join("");*/
-    window.open(slideURL, winname /*, winfeatures*/); //Commenting winfeatures, opens new window in a tab
+    window.open(url, winname); 
 };
 
 ZmBriefcaseApp.prototype.getEditURLForContentType =
