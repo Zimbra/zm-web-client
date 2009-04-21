@@ -43,11 +43,11 @@
         <zm:searchConv var="convSearchResult" id="${not empty param.cid ? param.cid : context.currentItem.id}" context="${context}" fetch="${empty csi ? 'first': 'none'}" markread="true" sort="${param.css}" />
         <c:if test="${empty csi}">
             <c:set var="csi" value="${convSearchResult.fetchedMessageIndex}"/>
-            <c:if test="${csi ge 0}">
+            <c:if test="${csi ge 0 and param.action eq 'view'}">
                 <zm:getMessage var="msg" id="${convSearchResult.hits[csi].id}" markread="${(context.folder.isMountPoint and context.folder.effectivePerm eq 'r') ? 'false' : 'true'}" neuterimages="${mailbox.prefs.displayExternalImages ? '1' : param.xim}"/>
             </c:if>
         </c:if>
-        <c:if test="${msg eq null}">
+        <c:if test="${msg eq null and param.action eq 'view'}">
             <c:if test="${csi lt 0 or csi ge convSearchResult.size}">
                 <c:set var="csi" value="0"/>
             </c:if>
@@ -138,69 +138,74 @@
             <div class='NoResults'><fmt:message key="noResultsFound"/></div>
         </c:if>
      </td>
-     <c:if test="${mailbox.prefs.readingPaneEnabled and not empty msg}">
-         <td class='ZhAppColContent' valign="top" width="55%">
-             <table width="100%" cellpadding="2" cellspacing="0" class='List'>
-                 <tr class='Header'>
-                     <!-- <th class='CB' nowrap='nowrap'><input id="OPCHCOLALL" onClick="checkAll(document.zform.idcv,this)" type="checkbox" name="allids"/></th> -->
-                     <th><fmt:message key="arrangedBy"/>: <fmt:message key="date"/></th>
-                     <th width="1%" nowrap><app:img src="startup/ImgAttachment.gif" altkey="ALT_ATTACHMENT"/>
-                 </tr>
-             </table>
-             <table width=100% cellpadding=0 cellspacing=0>
-                 <tr valign="top">
-                     <td class=List>
-                         <table width=100% height=100% cellpadding=0 cellspacing=0>
-                             <c:forEach items="${convSearchResult.hits}" var="hit" varStatus="status">
-                                 <zm:currentResultUrl var="msgUrl" value="search" action="view2" context="${context}" cso="${convSearchResult.offset}" csi="${status.index}" css="${param.css}"/>
+     <td class='ZhAppColContent' valign="top" width="55%">
+         <c:choose>
+             <c:when test="${mailbox.prefs.readingPaneEnabled and not empty msg}">
+                 <table width="100%" cellpadding="2" cellspacing="0" class='List'>
+                     <tr class='Header'>
+                         <!-- <th class='CB' nowrap='nowrap'><input id="OPCHCOLALL" onClick="checkAll(document.zform.idcv,this)" type="checkbox" name="allids"/></th> -->
+                         <th><fmt:message key="arrangedBy"/>: <fmt:message key="date"/></th>
+                         <th width="1%" nowrap><app:img src="startup/ImgAttachment.gif" altkey="ALT_ATTACHMENT"/>
+                     </tr>
+                 </table>
+                 <table width=100% cellpadding=0 cellspacing=0>
+                     <tr valign="top">
+                         <td class=List>
+                             <table width=100% height=100% cellpadding=0 cellspacing=0>
+                                 <c:forEach items="${convSearchResult.hits}" var="hit" varStatus="status">
+                                     <zm:currentResultUrl var="msgUrl" value="search" action="view2" context="${context}" cso="${convSearchResult.offset}" csi="${status.index}" css="${param.css}"/>
 
-                                 <tr class='ZhRow${(hit.messageHit.isUnread and (hit.id != msg.id)) ? ' Unread':''}${hit.id eq msg.id ? ' RowSelected' : ((context.showMatches and hit.messageHit.messageMatched) ? ' RowMatched' : '')}'>
-                                    <!-- <td class='CB' nowrap><input <c:if test="${hit.id eq msg.id}">checked</c:if> type=checkbox name="idcv" value="${hit.id}"/></td> -->
-                                    <td class='MsgStatusImg' align="center"><app:img src="${hit.messageHit.statusImage}" altkey='${hit.messageHit.statusImageAltKey}'/></td>
+                                     <tr class='ZhRow${(hit.messageHit.isUnread and (hit.id != msg.id)) ? ' Unread':''}${hit.id eq msg.id ? ' RowSelected' : ((context.showMatches and hit.messageHit.messageMatched) ? ' RowMatched' : '')}'>
+                                         <!-- <td class='CB' nowrap><input <c:if test="${hit.id eq msg.id}">checked</c:if> type=checkbox name="idcv" value="${hit.id}"/></td> -->
+                                         <td class='MsgStatusImg' align="center"><app:img src="${hit.messageHit.statusImage}" altkey='${hit.messageHit.statusImageAltKey}'/></td>
 
-                                    <td> <%-- allow wrap --%>
-                                        <a href="${msgUrl}">${fn:escapeXml(hit.messageHit.displaySender)}</a>
-                                        <br>
-                                        <a href="${fn:escapeXml(msgUrl)}" id="A${status.index}">
-                                            <c:if test="${mailbox.prefs.showFragments and not empty hit.messageHit.fragment}">
-                                                <span class='Fragment'>${fn:escapeXml(empty hit.messageHit.fragment ? noFragment : zm:truncate(hit.messageHit.fragment,50, true))}</span>
-                                            </c:if>
-                                        </a>
-                                    </td>
-                                    <td nowrap align="right">
-                                       ${fn:escapeXml(zm:displayMsgDate(pageContext, hit.messageHit.date))}
-                                       <br>
-                                        <c:if test="${mailbox.features.mailPriority}">
-                                           <app:priorityImage high="${hit.messageHit.isHighPriority}" low="${hit.messageHit.isLowPriority}"/>
-                                        </c:if>
-                                        <c:if test="${mailbox.features.tagging}">
-                                           <app:miniTagImage ids="${hit.messageHit.tagIds}"/>
-                                        </c:if>
-                                        <c:if test="${mailbox.features.flagging}">
-                                            <app:flagImage flagged="${hit.messageHit.isFlagged}"/>
-                                        </c:if>
-                                    </td>
-                                    <td class='Img'><app:attachmentImage attachment="${hit.messageHit.hasAttachment}"/></td>
-                                </tr>
-                             </c:forEach>
-                         </table>
-                     </td>
-                 </tr>
-                 <tr>
-                     <td class='ZhAppContent2' valign="top">
-                         <c:set var="extImageUrl" value=""/>
-                         <c:if test="${empty param.xim}">
-                             <zm:currentResultUrl var="extImageUrl" value="search" action="view" context="${context}" xim="1"/>
-                         </c:if>
-                         <zm:currentResultUrl var="composeUrl" value="search" context="${context}"
-                                              action="compose" paction="view" id="${msg.id}"/>
-                         <zm:currentResultUrl var="newWindowUrl" value="message" context="${context}" id="${msg.id}"/>
-                         <app:displayMessage mailbox="${mailbox}" message="${msg}"externalImageUrl="${extImageUrl}" showconvlink="true" composeUrl="${composeUrl}" newWindowUrl="${newWindowUrl}"/>
-                     </td>
-                 </tr>
-             </table>
-         </td>
-    </c:if>
+                                         <td> <%-- allow wrap --%>
+                                             <a href="${msgUrl}">${fn:escapeXml(hit.messageHit.displaySender)}</a>
+                                             <br>
+                                             <a href="${fn:escapeXml(msgUrl)}" id="A${status.index}">
+                                                 <c:if test="${mailbox.prefs.showFragments and not empty hit.messageHit.fragment}">
+                                                     <span class='Fragment'>${fn:escapeXml(empty hit.messageHit.fragment ? noFragment : zm:truncate(hit.messageHit.fragment,50, true))}</span>
+                                                 </c:if>
+                                             </a>
+                                         </td>
+                                         <td nowrap align="right">
+                                                 ${fn:escapeXml(zm:displayMsgDate(pageContext, hit.messageHit.date))}
+                                             <br>
+                                             <c:if test="${mailbox.features.mailPriority}">
+                                                 <app:priorityImage high="${hit.messageHit.isHighPriority}" low="${hit.messageHit.isLowPriority}"/>
+                                             </c:if>
+                                             <c:if test="${mailbox.features.tagging}">
+                                                 <app:miniTagImage ids="${hit.messageHit.tagIds}"/>
+                                             </c:if>
+                                             <c:if test="${mailbox.features.flagging}">
+                                                 <app:flagImage flagged="${hit.messageHit.isFlagged}"/>
+                                             </c:if>
+                                         </td>
+                                         <td class='Img'><app:attachmentImage attachment="${hit.messageHit.hasAttachment}"/></td>
+                                     </tr>
+                                 </c:forEach>
+                             </table>
+                         </td>
+                     </tr>
+                     <tr>
+                         <td class='ZhAppContent2' valign="top">
+                             <c:set var="extImageUrl" value=""/>
+                             <c:if test="${empty param.xim}">
+                                 <zm:currentResultUrl var="extImageUrl" value="search" action="view" context="${context}" xim="1"/>
+                             </c:if>
+                             <zm:currentResultUrl var="composeUrl" value="search" context="${context}"
+                                                  action="compose" paction="view" id="${msg.id}"/>
+                             <zm:currentResultUrl var="newWindowUrl" value="message" context="${context}" id="${msg.id}"/>
+                             <app:displayMessage mailbox="${mailbox}" message="${msg}"externalImageUrl="${extImageUrl}" showconvlink="true" composeUrl="${composeUrl}" newWindowUrl="${newWindowUrl}"/>
+                         </td>
+                     </tr>
+                 </table>
+             </c:when>
+             <c:otherwise>
+                 <div class='NoResults'><fmt:message key="viewMessage"/></div>
+             </c:otherwise>
+         </c:choose>
+        </td>    
         </tr>
         </table>
     </td>

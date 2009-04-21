@@ -38,8 +38,8 @@
     <c:set var="useTo" value="${context.folder.isSent or context.folder.isDrafts}"/>
     <c:set var="context" value="${context}" />
     <c:set var="idcheck" value="${not empty param.id && not zm:actionSet(param, 'actionHardDelete') && not zm:actionSet(param, 'actionDelete') ? param.id : context.currentItem.id}"/>
-    <c:if test="${mailbox.prefs.readingPaneEnabled and not empty idcheck}">
-        <zm:getMessage var="msg" id="${idcheck}" markread="${(context.folder.isMountPoint and context.folder.effectivePerm eq 'r') ? 'false' : 'true'}" neuterimages="${empty param.xim}"/>
+    <c:if test="${mailbox.prefs.readingPaneEnabled and not empty idcheck and param.action eq 'view'}">
+        <zm:getMessage var="msg" requestHeaders="X-GoodmailSystems-Isp,X-GoodmailSystems-Isp1" id="${idcheck}" markread="${(context.folder.isMountPoint and context.folder.effectivePerm eq 'r') ? 'false' : 'true'}" neuterimages="${empty param.xim}"/>
         <zm:computeNextPrevItem var="cursor" searchResult="${context.searchResult}" index="${context.currentItemIndex}"/>
         <c:set var="ads" value='${msg.subject} ${msg.fragment}'/>
     </c:if>
@@ -82,7 +82,7 @@
                                 <c:if test="${empty selectedRow and hit.messageHit.id == context.currentItem.id}"><c:set var="selectedRow" value="${status.index}"/></c:if>
 
                                 <tr onclick='zSelectRow(event,"A${status.index}")' id="R${status.index}" class='${status.index mod 2 eq 1 ? 'ZhRowOdd' :'ZhRow'} ${hit.messageHit.isUnread ? ' Unread':''}${ selectedRow eq status.index ? ' RowSelected' : ''}'>
-                                    <td class='CB' nowrap><input id="C${status.index}" type=checkbox name="id" value="${hit.messageHit.id}" <c:if test="${param.action eq 'view' and (hit.messageHit.id == context.currentItem.id)}"> checked="" </c:if>></td>
+                                    <td class='CB' nowrap><input id="C${status.index}" type=checkbox name="id" value="${hit.messageHit.id}"></td>
                                     <td class='MsgStatusImg' align="center"><app:img src="${hit.messageHit.statusImage}" altkey='${hit.messageHit.statusImageAltKey}'/></td>
 
                                     <td><%-- allow wrap --%>
@@ -118,24 +118,32 @@
                         <div class='NoResults'><fmt:message key="noResultsFound"/></div>
                     </c:if>
                 </td>
-                <c:if test="${mailbox.prefs.readingPaneEnabled and not empty msg}">
-                    <td class='ZhAppColContent' valign="top" width="55%">
-                        <table width=100% cellpadding=0 cellspacing=0>
-                            <tr valign="top">
-                                <td class='ZhAppContent2' valign="top">
-                                    <c:set var="extImageUrl" value=""/>
-                                    <c:if test="${empty param.xim}">
-                                        <zm:currentResultUrl var="extImageUrl" value="search" action="view" context="${context}" xim="1"/>
-                                    </c:if>
-                                    <zm:currentResultUrl var="composeUrl" value="search" context="${context}"
-                                                         action="compose" paction="view" id="${msg.id}"/>
-                                    <zm:currentResultUrl var="newWindowUrl" value="message" context="${context}" id="${msg.id}"/>
-                                    <app:displayMessage mailbox="${mailbox}" message="${msg}"externalImageUrl="${extImageUrl}" showconvlink="true" composeUrl="${composeUrl}" newWindowUrl="${newWindowUrl}"/>
-                                </td>
-                            </tr>
-                        </table>
-                    </td>
-                </c:if>
+                <td class='ZhAppColContent' valign="top" width="55%">
+                    <c:choose>
+                        <c:when test="${mailbox.prefs.readingPaneEnabled and not empty msg and param.action eq 'view'}">
+                            <table width=100% cellpadding=0 cellspacing=0>
+                                <tr valign="top">
+                                    <td class='ZhAppContent2' valign="top">
+                                        <c:forEach var="hdrs" items="${msg.requestHeader}">
+                                            ${hdrs.key} //// ${hdrs.value}
+                                        </c:forEach>
+                                        <c:set var="extImageUrl" value=""/>
+                                        <c:if test="${empty param.xim}">
+                                            <zm:currentResultUrl var="extImageUrl" value="search" action="view" context="${context}" xim="1"/>
+                                        </c:if>
+                                        <zm:currentResultUrl var="composeUrl" value="search" context="${context}"
+                                                             action="compose" paction="view" id="${msg.id}"/>
+                                        <zm:currentResultUrl var="newWindowUrl" value="message" context="${context}" id="${msg.id}"/>
+                                        <app:displayMessage mailbox="${mailbox}" message="${msg}"externalImageUrl="${extImageUrl}" showconvlink="true" composeUrl="${composeUrl}" newWindowUrl="${newWindowUrl}"/>
+                                    </td>
+                                </tr>
+                            </table>
+                        </c:when>
+                        <c:otherwise>
+                              <div class='NoResults'><fmt:message key="viewMessage"/></div>  
+                        </c:otherwise>
+                    </c:choose>
+                </td>
             </tr>
           </table>
         </td>
