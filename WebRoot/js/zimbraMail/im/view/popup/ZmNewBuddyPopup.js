@@ -205,7 +205,7 @@ function(menu) {
 		this._groupsDropDown.setMenu(this._getGroupsMenu);
 		menu.dispose();
 	});
-	AjxTimedAction.scheduleAction(action, 0);
+	AjxTimedAction.scheduleAction(action, 10000);
 };
 
 ZmNewBuddyPopup.prototype._popupListener = function() {
