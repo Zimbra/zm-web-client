@@ -20,9 +20,9 @@ ZmTaskTreeController = function() {
 	this._listeners[ZmOperation.NEW_TASK_FOLDER] = new AjxListener(this, this._newListener);
 	this._listeners[ZmOperation.SHARE_TASKFOLDER] = new AjxListener(this, this._shareTaskFolderListener);
 	this._listeners[ZmOperation.MOUNT_TASK_FOLDER] = new AjxListener(this, this._mountTaskFolderListener);
-    this._listeners[ZmOperation.BROWSE] = new AjxListener(this, function(){ appCtxt.getSearchController().fromBrowse(""); });
+	this._listeners[ZmOperation.BROWSE] = new AjxListener(this, function(){ appCtxt.getSearchController().fromBrowse(""); });
 
-    this._eventMgrs = {};
+	this._eventMgrs = {};
 };
 
 ZmTaskTreeController.prototype = new ZmFolderTreeController;
@@ -42,11 +42,12 @@ function(parent, type, id) {
 
 	parent.enableAll(true);
 	if (folder) {
-		if ( folder.isSystem()) {
+		if (folder.isSystem()) {
 			parent.enable([ZmOperation.DELETE, ZmOperation.RENAME_FOLDER], false);
 		} else if (folder.link && !folder.isAdmin()) {
 			parent.enable([ZmOperation.SHARE_TASKFOLDER], false);
 		}
+		parent.enable(ZmOperation.SYNC, folder.isFeed());
 	}
 
 	var op = parent.getOp(ZmOperation.DELETE);
@@ -89,7 +90,8 @@ function() {
 		ZmOperation.SHARE_TASKFOLDER,
 		ZmOperation.DELETE,
 		ZmOperation.RENAME_FOLDER,
-		ZmOperation.EDIT_PROPS
+		ZmOperation.EDIT_PROPS,
+		ZmOperation.SYNC
 	];
 };
 

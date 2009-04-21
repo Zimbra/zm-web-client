@@ -38,10 +38,9 @@ function() {
 	this._colorSelect.setSelectedOption(option);
 };
 
-// overload so we dont show this
-ZmNewTaskFolderDialog.prototype._createRemoteContentHtml =
-function(html, idx) {
-	return idx;
+ZmNewTaskFolderDialog.prototype._getRemoteLabel =
+function() {
+	return ZmMsg.addRemoteTasks;
 };
 
 // overload so we dont show this
