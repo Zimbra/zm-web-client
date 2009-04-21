@@ -57,7 +57,7 @@
                        </c:when>
                        <c:otherwise>
                            <c:if test="${selected ne 'shortcuts'}">
-                                <app:button name="actionSave" src="common/ImgSave.gif" tooltip="save" text="save"/>
+                                <app:button id="OPSEND" name="actionSave" src="common/ImgSave.gif" tooltip="save" text="save"/>
                            </c:if>
                            <td><div class='vertSep'></div></td>
                            <app:button  name="actionCancel" src="common/ImgCancel.gif" tooltip="cancel" text="cancel"/>

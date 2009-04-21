@@ -76,4 +76,9 @@
         }
 
     </script>
+
+    <c:if test="${param.selected eq 'signatures'}">
+        <app:yuiInclude/>
+    </c:if>
+    
 </head>

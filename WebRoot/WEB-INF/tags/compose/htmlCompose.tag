@@ -23,38 +23,8 @@
 <%@ attribute name="isHtmlCont" rtexprvalue="true" required="true" %>
 <%@ attribute name="mailbox" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZMailboxBean" %>
 
-
-<link rel="stylesheet" type="text/css" href="../yui/2.5.1/assets/skins/sam/skin.css" />
-<style type="text/css" media="screen">
-    .yui-skin-sam .yui-toolbar-container .yui-toolbar-spellcheck span.yui-toolbar-icon {
-        background-image: url( ../yui/spellcheck/img/ImgSpellCheck.gif );
-        background-position: 1px 0px;
-        top: 1px;
-        left: 4px;
-    }
-    .yui-skin-sam .yui-toolbar-container .yui-toolbar-spellcheck-selected span.yui-toolbar-icon {
-        background-image: url( ../yui/spellcheck/img/ImgSpellCheck.gif );
-        background-position: 1px 0px;
-        top: 1px;
-        left: 4px;
-    }
-    .yui-spellcheck-list {
-        cursor: pointer;
-    }
-    .yui-skin-sam .yui-editor-panel .yui-spellcheck-list li {
-        padding-left: 5px;
-    }
-</style>
-
-<script type="text/javascript" src="../yui/2.5.1/yahoo-dom-event/yahoo-dom-event.js"></script>
-<script type="text/javascript" src="../yui/2.5.1/element/element-beta-min.js"></script>
-<!-- Needed for Menus, Buttons and Overlays used in the Toolbar -->
-<script type="text/javascript" src="../yui/2.5.1/container/container_core-min.js"></script>
-<script type="text/javascript" src="../yui/2.5.1/menu/menu-min.js"></script>
-<script type="text/javascript" src="../yui/2.5.1/button/button-beta-min.js"></script>
-<!-- Source file for Rich Text Editor-->
-<script type="text/javascript" src="../yui/2.5.1/editor/editor-beta-min.js"></script>
-<script type="text/javascript" src="../yui/spellcheck/spellcheck.js"></script>
+<!-- yui js-->
+<app:yuiInclude/>
 
 <script type="text/javascript">
 <!--

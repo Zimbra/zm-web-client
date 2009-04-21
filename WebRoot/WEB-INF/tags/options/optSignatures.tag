@@ -22,6 +22,7 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 
+<body class="yui-skin-sam">
 <table width="100%" cellpadding="10" cellspacing="10">
 <tr>
 <td>
@@ -48,6 +49,7 @@
                 </td>
             </tr>
         </c:if>
+        <c:set var="isHtml" value="${fn:escapeXml(signature.type) eq 'text/html' ? true : false }"/>
         <tr>
             <td class='ZOptionsTableLabel'>
                 <fmt:message key="optionsSignatureName"/>
@@ -71,9 +73,9 @@
                 :
             </td>
             <td colspan=2>
+                <input type="hidden" id="signatureType${numSigs}" name="signatureType${numSigs}" value="${fn:escapeXml(signature.type)}"/>
                 <input type="hidden" name="origSignatureValue${numSigs}" value="${fn:escapeXml(signature.value)}"/>
-                <textarea style='width:100%' id="signatureValue${numSigs}" name='signatureValue${numSigs}' cols='80'
-                          rows='5'>${fn:escapeXml(signature.value)}</textarea>
+                <textarea style='width:100%' id="signatureValue${numSigs}" name='signatureValue${numSigs}' cols='80' rows='5' style='<c:if test="${isHtml}">visibility:hidden;</c:if>width:100%'>${fn:escapeXml(signature.value)}</textarea>
             </td>
             <td width="20%">&nbsp;</td>
         </tr>
@@ -114,7 +116,8 @@
                     <fmt:message key="optionsSignature"/>:
                 </td>
                 <td colspan=2>
-                    <textarea style='width:100%' id="newSignatureValue" name='newSignatureValue' cols='80'rows='5'>${fn:escapeXml(param.newSignatureValue)}</textarea>
+                    <input type="hidden" id="newSignatureType" name="newSignatureType" value="text/html"/>
+                    <textarea style='width:100%' id="newSignatureValue" name='newSignatureValue' cols='80'rows='5' style='visibility:hidden;width:100%'>${fn:escapeXml(param.newSignatureValue)}</textarea>
                 </td>
                 <td width="20%">&nbsp;</td>
             </tr>
@@ -223,3 +226,68 @@
 </td>
 </tr>
 </table>
+
+<script type="text/javascript">
+    var sigcount = ${numSigs};
+
+    var myEdit = new Array();
+    for(var i = 0 ;i < sigcount ; i++) {
+        var sigTextAreaId = "signatureValue"+i;
+        var sigType = document.getElementById("signatureType"+i).value;
+        if(sigType == 'text/html') {
+            myEdit[i] = new YAHOO.widget.SimpleEditor(sigTextAreaId, {
+                height: '100px',
+                width: '100%',
+                dompath: false, //Turns on the bar at the bottom
+                animate: true, //Animates the opening, closing and moving of Editor windows
+                plainText: true,
+                focusAtStart: true,
+                collapse: true,
+                draggable: false
+            });
+            myEdit[i]._defaultToolbar.titlebar = false;
+            myEdit[i].render();
+        } else if(sigType == 'text/plain') {
+            myEdit[i] == null;
+        }
+    }
+
+    var myEditor = new YAHOO.widget.SimpleEditor("newSignatureValue", {
+        height: '100px',
+        width: '100%',
+        dompath: false, //Turns on the bar at the bottom
+        animate: true, //Animates the opening, closing and moving of Editor windows
+        plainText: true,
+        focusAtStart: true,
+        collapse: true,
+        draggable: false
+    });
+
+    /*hide titlebar*/
+    myEditor._defaultToolbar.titlebar = false;
+    myEditor.render();
+
+    /* List of elements that has to be handled for send */
+    var sendElemts = new Array("SOPSEND","IOPSEND");
+    var y;
+    for (y in sendElemts){
+        var _elemA = document.getElementById(sendElemts[y]);
+        _elemA.onclick = function () {
+            return prepToSend();
+        }
+    }
+
+    function prepToSend (){
+       for(var j = 0 ;j < sigcount ; j++) {
+          if(myEdit[j] != null) {
+            myEdit[j].saveHTML();
+          }
+       }
+       myEditor.saveHTML();
+       return true;
+    }
+
+</script>
+</body>
+
+
