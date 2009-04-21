@@ -96,10 +96,7 @@ function(item, callback, results) {
  */
 ZmDoublePaneController.prototype.switchView =
 function(view, force) {
-	if (view == ZmMailListController.READING_PANE_OFF_ID ||
-		view == ZmMailListController.READING_PANE_AT_BOTTOM_ID ||
-		view == ZmMailListController.READING_PANE_ON_RIGHT_ID) {
-
+	if (view == ZmSetting.RP_OFF ||	view == ZmSetting.RP_BOTTOM || view == ZmSetting.RP_RIGHT) {
 		this._setReadingPane(view);
 	} else {
 		ZmMailListController.prototype.switchView.apply(this, arguments);
@@ -120,30 +117,9 @@ function() {
 ZmDoublePaneController.prototype._setReadingPane =
 function(view) {
 
-	// make sure something has changed
-	var readingPaneEnabled = this.isReadingPaneOn();
-	var readingPaneOnRight = this.isReadingPaneOnRight();
-	if (((view == ZmMailListController.READING_PANE_OFF_ID) && !readingPaneEnabled) ||
-		((view == ZmMailListController.READING_PANE_AT_BOTTOM_ID) && readingPaneEnabled && !readingPaneOnRight) ||
-		((view == ZmMailListController.READING_PANE_ON_RIGHT_ID) && readingPaneEnabled && readingPaneOnRight)) {
-
-		return;
-	}
-
-	this._setReadingPanePref(view);
-	this._doublePaneView.setReadingPane();
-};
-
-ZmDoublePaneController.prototype._setReadingPanePref =
-function(view) {
-	if (view == ZmMailListController.READING_PANE_OFF_ID) {
-		appCtxt.set(ZmSetting.READING_PANE_ENABLED, false);
-	} else if (view == ZmMailListController.READING_PANE_AT_BOTTOM_ID) {
-		appCtxt.set(ZmSetting.READING_PANE_ENABLED, true);
-		appCtxt.set(ZmSetting.READING_PANE_ORIENTATION, ZmSetting.RP_BOTTOM);
-	} else if (view == ZmMailListController.READING_PANE_ON_RIGHT_ID) {
-		appCtxt.set(ZmSetting.READING_PANE_ENABLED, true);
-		appCtxt.set(ZmSetting.READING_PANE_ORIENTATION, ZmSetting.RP_RIGHT);
+	if (view != this._getReadingPanePref()) {
+		this._setReadingPanePref(view);
+		this._doublePaneView.setReadingPane();
 	}
 };
 
@@ -319,14 +295,8 @@ function(view, menu, checked) {
 	}
 
 	var miParams = {text:ZmMsg.readingPaneAtBottom, style:DwtMenuItem.RADIO_STYLE, radioGroupId:"RP"};
-	var ids = [ZmMailListController.READING_PANE_AT_BOTTOM_ID, ZmMailListController.READING_PANE_ON_RIGHT_ID,
-			   ZmMailListController.READING_PANE_OFF_ID];
-	var readingPaneEnabled = this.isReadingPaneOn();
-	var readingPaneOnRight = this.isReadingPaneOnRight();
-	var checked = {};
-	checked[ZmMailListController.READING_PANE_AT_BOTTOM_ID]	= readingPaneEnabled && !readingPaneOnRight;
-	checked[ZmMailListController.READING_PANE_ON_RIGHT_ID]	= readingPaneEnabled && readingPaneOnRight;
-	checked[ZmMailListController.READING_PANE_OFF_ID]		= !readingPaneEnabled;
+	var ids = [ZmSetting.RP_BOTTOM, ZmSetting.RP_RIGHT, ZmSetting.RP_OFF];
+	var pref = this._getReadingPanePref();
 	for (var i = 0; i < ids.length; i++) {
 		var id = ids[i];
 		if (!menu._menuItems[id]) {
@@ -335,7 +305,9 @@ function(view, menu, checked) {
 			var mi = menu.createMenuItem(id, miParams);
 			mi.setData(ZmOperation.MENUITEM_ID, id);
 			mi.addSelectionListener(this._listeners[ZmOperation.VIEW]);
-			mi.setChecked(checked[id], true);
+			if (id == pref) {
+				mi.setChecked(true, true);
+			}
 		}
 	}
 };

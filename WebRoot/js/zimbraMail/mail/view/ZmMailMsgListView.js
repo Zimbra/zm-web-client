@@ -18,7 +18,7 @@ ZmMailMsgListView = function(params) {
 	params.view = params.view || params.mode;
 	this.view = params.view;
 	params.type = ZmItem.MSG;
-	params.headerList = this._getHeaderList(params.parent);
+	params.headerList = this._getHeaderList(params.parent, params.controller);
 	ZmMailListView.call(this, params);
 };
 
@@ -385,8 +385,8 @@ function(msg) {
 };
 
 ZmMailMsgListView.prototype._getHeaderList =
-function(parent) {
-	var headers = this.isMultiColumn() ? ZmMailMsgListView.HEADERS_LONG : ZmMailMsgListView.HEADERS_SHORT;
+function(parent, controller) {
+	var headers = this.isMultiColumn(controller) ? ZmMailMsgListView.HEADERS_LONG : ZmMailMsgListView.HEADERS_SHORT;
 	return this._getHeaders(this.view, headers, ZmMailMsgListView.HEADER);
 };
 

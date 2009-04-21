@@ -101,7 +101,7 @@ function(view) {
 ZmTradController.prototype._getMoreSearchParams = 
 function(params) {
 	// OPTIMIZATION: find out if we need to pre-fetch the first hit message
-	params.fetch = appCtxt.get(ZmSetting.READING_PANE_ENABLED);
+	params.fetch = this.isReadingPaneOn();
 	params.markRead = true;
 };
 

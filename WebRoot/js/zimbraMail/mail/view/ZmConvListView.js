@@ -58,7 +58,7 @@ function(params) {
  */
 ZmConvListView = function(params) {
 
-	params.headerList = this._getHeaderList(parent);
+	params.headerList = this._getHeaderList(parent, params.controller);
 	params.view = ZmId.VIEW_CONVLIST;
 	params.type = ZmItem.CONV;
 	ZmMailListView.call(this, params);
@@ -180,8 +180,8 @@ function() {
 };
 
 ZmConvListView.prototype._getHeaderList =
-function(parent) {
-	var headers = this.isMultiColumn() ? ZmConvListView.HEADERS_LONG : ZmConvListView.HEADERS_SHORT;
+function(parent, controller) {
+	var headers = this.isMultiColumn(controller) ? ZmConvListView.HEADERS_LONG : ZmConvListView.HEADERS_SHORT;
 	return this._getHeaders(ZmId.VIEW_CONVLIST, headers, ZmConvListView.HEADER);
 };
 

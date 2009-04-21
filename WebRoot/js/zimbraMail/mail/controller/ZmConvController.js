@@ -71,54 +71,22 @@ function(activeSearch, conv, parentController, callback, markRead) {
 	ZmDoublePaneController.prototype.show.call(this, activeSearch, conv, callback, markRead);
 };
 
-ZmConvController.prototype._handleResponseShow =
-function(item, callback, results) {
-	if (callback) {
-		callback.run();
-	}
-
-	// always reset reading pane view
-	this._doublePaneView.setReadingPaneView();
-
-	// always reset view menu button dropdown
-	var button = this._toolbar[this._currentView].getButton(ZmOperation.VIEW_MENU);
-	var menu = button ? button.getMenu() : null;
-	if (menu) {
-		var id = ZmMailListController.READING_PANE_OFF_ID;
-		if (this.isReadingPaneOn()) {
-			id = (this.isReadingPaneOnRight())
-				? ZmMailListController.READING_PANE_ON_RIGHT_ID
-				: ZmMailListController.READING_PANE_AT_BOTTOM_ID;
-		}
-		var mi = menu.getMenuItem(id);
-		if (mi) {
-			mi.setChecked(true);
-		}
-	}
-};
-
 ZmConvController.prototype.getConv =
 function() {
 	return this._conv;
 };
 
-ZmConvController.prototype.isReadingPaneOn =
-function() {
-	var mv = this._doublePaneView.getMsgView();
-	return mv ? mv.getVisible() : true;
-};
-
-ZmConvController.prototype.isReadingPaneOnRight =
-function() {
-	return this._doublePaneView.isReadingPaneOnRight();
-};
-
 
 // Private and protected methods
 
-ZmConvController.prototype._setReadingPane =
-function(view) {
-	this._doublePaneView.setReadingPaneView(view);
+ZmConvController.prototype._getReadingPanePref =
+function() {
+	return appCtxt.get(ZmSetting.READING_PANE_LOCATION_CV);
+};
+
+ZmConvController.prototype._setReadingPanePref =
+function(value) {
+	appCtxt.set(ZmSetting.READING_PANE_LOCATION_CV, value);
 };
 
 ZmConvController.prototype._createDoublePaneView =

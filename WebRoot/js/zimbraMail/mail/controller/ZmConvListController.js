@@ -224,7 +224,7 @@ ZmConvListController.prototype._getNumTotal = function() { return null; }
 ZmConvListController.prototype._getMoreSearchParams = 
 function(params) {
 	// OPTIMIZATION: find out if we need to pre-fetch the first hit message
-	params.fetch = appCtxt.get(ZmSetting.READING_PANE_ENABLED);
+	params.fetch = this.isReadingPaneOn();
 	params.markRead = true;
 };
 
@@ -252,7 +252,7 @@ function(ev) {
 ZmConvListController.prototype._handleResponseListSelectionListener =
 function(item) {
 	// make sure correct msg is displayed in msg pane when user returns
-	if (appCtxt.get(ZmSetting.READING_PANE_ENABLED)) {
+	if (this.isReadingPaneOn()) {
 		this._setSelectedItem();
 	}
 };
@@ -337,7 +337,7 @@ function(conv, msg, offset, getFirstMsg) {
 		}
 	} else if (!conv._loaded) {
 		// no msgs have been loaded yet
-		var getFirstMsg = (getFirstMsg === false) ? false : appCtxt.get(ZmSetting.READING_PANE_ENABLED);
+		var getFirstMsg = (getFirstMsg === false) ? false : this.isReadingPaneOn();
 		conv.load({getFirstMsg:getFirstMsg}, respCallback);
 	} else {
 		// re-expanding first page of msgs
@@ -367,7 +367,7 @@ function(conv, offset, callback) {
 			offset = ((offset + limit) - max) + 1;
 		}
 		var respCallback = new AjxCallback(this, this._handleResponsePaginateConv, [conv, offset, callback]);
-		var getFirstMsg = appCtxt.get(ZmSetting.READING_PANE_ENABLED);
+		var getFirstMsg = this.isReadingPaneOn();
 		conv.load({offset:offset, limit:limit, getFirstMsg:getFirstMsg}, respCallback);
 		return false;
 	} else {

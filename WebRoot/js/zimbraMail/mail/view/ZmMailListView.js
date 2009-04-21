@@ -124,18 +124,9 @@ function(newWidth, newHeight) {
  * or a single column (for right-pane).
  */
 ZmMailListView.prototype.isMultiColumn =
-function() {
-	// Ugh: CV handles reading pane independently
-	var view = (this._controller && this._controller._getViewType() == ZmId.VIEW_CONV)
-		? this._controller.getReferenceView() : null;
-	if (view) {
-		return (!view.isReadingPaneOnRight());
-	}
-
-	// NOTE: we dont use the controller's API b/c this method is called before the controller is set
-	return ((appCtxt.get(ZmSetting.READING_PANE_ENABLED) &&
-			 appCtxt.get(ZmSetting.READING_PANE_ORIENTATION) == ZmSetting.RP_BOTTOM) ||
-			!appCtxt.get(ZmSetting.READING_PANE_ENABLED));
+function(controller) {
+	var ctlr = controller || this._controller;
+	return !ctlr.isReadingPaneOnRight();
 };
 
 ZmMailListView.prototype._getAbridgedContent =
@@ -598,7 +589,7 @@ function(clickedEl, ev) {
 	ZmListView.prototype._itemClicked.apply(this, arguments);
 	
 	var ctlr = this._controller;
-	if (ctlr.isReadingPaneOn && ctlr.isReadingPaneOn()) {
+	if (ctlr.isReadingPaneOn()) {
 		if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX) && ev.button == DwtMouseEvent.LEFT) {
 			if (!ev.shiftKey && !ev.ctrlKey) {
 				// get the field being clicked

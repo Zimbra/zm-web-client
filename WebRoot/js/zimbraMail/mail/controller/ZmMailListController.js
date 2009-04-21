@@ -75,25 +75,21 @@ ZmMailListController.GROUP_BY_ITEM		= {};	// item type to search for
 ZmMailListController.GROUP_BY_SETTING	= {};	// associated setting on server
 
 // Stuff for the View menu
-ZmMailListController.GROUP_BY_ICON = {};
-ZmMailListController.GROUP_BY_MSG_KEY = {};
-ZmMailListController.GROUP_BY_SHORTCUT = {};
-ZmMailListController.GROUP_BY_VIEWS = [];
+ZmMailListController.GROUP_BY_ICON		= {};
+ZmMailListController.GROUP_BY_MSG_KEY	= {};
+ZmMailListController.GROUP_BY_SHORTCUT	= {};
+ZmMailListController.GROUP_BY_VIEWS		= [];
 
 // reading pane options
-ZmMailListController.READING_PANE_OFF_ID		= "RPO";
-ZmMailListController.READING_PANE_AT_BOTTOM_ID	= "RPB";
-ZmMailListController.READING_PANE_ON_RIGHT_ID	= "RPR";
-
 ZmMailListController.READING_PANE_TEXT = {};
-ZmMailListController.READING_PANE_TEXT[ZmMailListController.READING_PANE_OFF_ID]		= ZmMsg.readingPaneOff;
-ZmMailListController.READING_PANE_TEXT[ZmMailListController.READING_PANE_AT_BOTTOM_ID]	= ZmMsg.readingPaneAtBottom;
-ZmMailListController.READING_PANE_TEXT[ZmMailListController.READING_PANE_ON_RIGHT_ID]	= ZmMsg.readingPaneOnRight;
+ZmMailListController.READING_PANE_TEXT[ZmSetting.RP_OFF]	= ZmMsg.readingPaneOff;
+ZmMailListController.READING_PANE_TEXT[ZmSetting.RP_BOTTOM]	= ZmMsg.readingPaneAtBottom;
+ZmMailListController.READING_PANE_TEXT[ZmSetting.RP_RIGHT]	= ZmMsg.readingPaneOnRight;
 
 ZmMailListController.READING_PANE_ICON = {};
-ZmMailListController.READING_PANE_ICON[ZmMailListController.READING_PANE_OFF_ID]		= "SplitPaneOff";
-ZmMailListController.READING_PANE_ICON[ZmMailListController.READING_PANE_AT_BOTTOM_ID]	= "SplitPane";
-ZmMailListController.READING_PANE_ICON[ZmMailListController.READING_PANE_ON_RIGHT_ID]	= "SplitPaneVertical";
+ZmMailListController.READING_PANE_ICON[ZmSetting.RP_OFF]	= "SplitPaneOff";
+ZmMailListController.READING_PANE_ICON[ZmSetting.RP_BOTTOM]	= "SplitPane";
+ZmMailListController.READING_PANE_ICON[ZmSetting.RP_RIGHT]	= "SplitPaneVertical";
 
 // conv order options
 ZmMailListController.CONV_ORDER_DESC	= ZmSearch.DATE_DESC;
@@ -119,9 +115,9 @@ ZmMailListController.ACTION_CODE_TO_FOLDER_MOVE[ZmKeyMap.MOVE_TO_JUNK]	= ZmFolde
 
 // convert key mapping to view menu item
 ZmMailListController.ACTION_CODE_TO_MENU_ID = {};
-ZmMailListController.ACTION_CODE_TO_MENU_ID[ZmKeyMap.READING_PANE_OFF]		= ZmMailListController.READING_PANE_OFF_ID;
-ZmMailListController.ACTION_CODE_TO_MENU_ID[ZmKeyMap.READING_PANE_BOTTOM]	= ZmMailListController.READING_PANE_AT_BOTTOM_ID;
-ZmMailListController.ACTION_CODE_TO_MENU_ID[ZmKeyMap.READING_PANE_RIGHT]	= ZmMailListController.READING_PANE_ON_RIGHT_ID;
+ZmMailListController.ACTION_CODE_TO_MENU_ID[ZmKeyMap.READING_PANE_OFF]		= ZmSetting.RP_OFF;
+ZmMailListController.ACTION_CODE_TO_MENU_ID[ZmKeyMap.READING_PANE_BOTTOM]	= ZmSetting.RP_BOTTOM;
+ZmMailListController.ACTION_CODE_TO_MENU_ID[ZmKeyMap.READING_PANE_RIGHT]	= ZmSetting.RP_RIGHT;
 
 // Public methods
 
@@ -159,18 +155,24 @@ function(view, force) {
 ZmMailListController.prototype._setupReadingPaneMenuItems = function() {};
 ZmMailListController.prototype._setupConvOrderMenuItems = function() {};
 
-/**
- * This method should get overloaded by derived classes in case they don't obey
- * user preference (i.e. see ZmConvController)
- */
 ZmMailListController.prototype.isReadingPaneOn =
 function() {
-	return appCtxt.get(ZmSetting.READING_PANE_ENABLED);
+	return (this._getReadingPanePref() != ZmSetting.RP_OFF);
 };
 
 ZmMailListController.prototype.isReadingPaneOnRight =
 function() {
-	return (appCtxt.get(ZmSetting.READING_PANE_ORIENTATION) == ZmSetting.RP_RIGHT);
+	return (this._getReadingPanePref() == ZmSetting.RP_RIGHT);
+};
+
+ZmMailListController.prototype._getReadingPanePref =
+function() {
+	return appCtxt.get(ZmSetting.READING_PANE_LOCATION);
+};
+
+ZmMailListController.prototype._setReadingPanePref =
+function(value) {
+	appCtxt.set(ZmSetting.READING_PANE_LOCATION, value);
 };
 
 ZmMailListController.prototype.getKeyMapName =
@@ -925,13 +927,7 @@ ZmMailListController.prototype._setupViewMenu =
 function(view) {
 
 	this._updateViewMenu(view);
-
-	var rpo = this.isReadingPaneOn();
-	var rpr = this.isReadingPaneOnRight();
-	var id = !rpo ? ZmMailListController.READING_PANE_OFF_ID : rpr ? ZmMailListController.READING_PANE_ON_RIGHT_ID :
-															   		 ZmMailListController.READING_PANE_AT_BOTTOM_ID;
-	this._updateViewMenu(id);
-
+	this._updateViewMenu(this._getReadingPanePref());
 	this._updateViewMenu(appCtxt.get(ZmSetting.CONVERSATION_ORDER));
 
 	// always reset the view menu button icon to reflect the current view
