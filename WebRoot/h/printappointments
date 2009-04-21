@@ -86,7 +86,6 @@ action="compose" paction="view" id="${msg.id}"/>
 
 <%--compute body up front, so attachments refereneced in multipart/related don't show up --%>
 <c:set var="body" value="${message.body}"/>
-
 <c:set var="theBody">
     <c:if test="${body.isTextHtml or body.isTextPlain}">
         ${zm:getPartHtmlContent(body, message)}
@@ -247,6 +246,9 @@ action="compose" paction="view" id="${msg.id}"/>
                     <c:param name="xim" value="${true}"/>
                 </c:url>
                 <app:messageIframe theBody="${theBody}" parentId="iframeBody" iframeUrl="${iframeUrl}"/>
+            </c:when>
+            <c:when test="${appt.isNoBlob}">
+                <app:messageIframe theBody="${not empty appt.descriptionHtml ? appt.descriptionHtml : appt.description}" parentId="iframeBody" iframeUrl=""/>
             </c:when>
             <c:otherwise>
                 ${theBody}

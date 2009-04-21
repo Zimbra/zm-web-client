@@ -112,7 +112,7 @@
             </div>
             <br/>
             <div>
-                    ${fn:escapeXml(compose.content)}
+                    ${fn:escapeXml(empty compose.description ? compose.content : compose.description)}
                 <hr/>
             </div>
         </c:forEach>
@@ -144,6 +144,7 @@
                         <zm:fixupMessageCompose message="${message}" compose="${compose}" newattachments="${uploader.compose.hasFileItems}"/>
                     </c:when>
                 </c:choose>
+                
             </app:handleError>
 
             <div style="width: 100%; background-color: rgb(238, 238, 238);">
@@ -192,7 +193,7 @@
             </div>
             <br/>
             <div>
-                    ${fn:escapeXml(compose.content)}
+                    ${fn:escapeXml(empty compose.description ? compose.content : compose.description)}
             </div>
             <br/><br/>
             <hr/>
