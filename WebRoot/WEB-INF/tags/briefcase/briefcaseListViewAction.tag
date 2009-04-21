@@ -27,6 +27,8 @@
 <c:set var="ids" value="${fn:join(paramValues.id, ',')}"/>
 <c:set var="folderId" value="${not empty paramValues.folderId[0] ? paramValues.folderId[0] : paramValues.folderId[1]}"/>
 <c:set var="actionOp" value="${not empty paramValues.actionOp[0] ? paramValues.actionOp[0] :  paramValues.actionOp[1]}"/>
+<c:set var="view" value="${not empty param.view ? param.view : 'dv'}"/>    
+<c:set var="viewId" value="${not empty paramValues.viewId[0] ? (paramValues.viewId[0] eq view ? paramValues.viewId[1] : paramValues.viewId[0]) : (paramValues.viewId[1] eq view ? paramValues.viewId[0] : paramValues.viewId[1])}"/>    
 <zm:composeUploader var="uploader"/>    
 <c:choose>
     <c:when test="${zm:actionSet(param, 'actionAttachAdd')}">
@@ -34,13 +36,13 @@
     </c:when>
     <c:when test="${zm:actionSet(param, 'actionChange')}">
         <c:choose>
-            <c:when test="${param.viewId eq 'dv'}">
+            <c:when test="${viewId eq 'dv'}">
                 <c:redirect url="/h/search?st=briefcase&view=dv${not empty param.sfi ? '&sfi=' : ''}${param.sfi}"/>
             </c:when>
-            <c:when test="${param.viewId eq 'ev'}">
+            <c:when test="${viewId eq 'ev'}">
                 <c:redirect url="/h/search?st=briefcase&view=ev${not empty param.sfi ? '&sfi=' : ''}${param.sfi}"/>
             </c:when>
-            <c:when test="${param.viewId eq 'bv'}">
+            <c:when test="${viewId eq 'bv'}">
                 <c:redirect url="/h/search?st=briefcase&view=bv${not empty param.sfi ? '&sfi=' : ''}${param.sfi}"/>
             </c:when>
             <c:otherwise>
