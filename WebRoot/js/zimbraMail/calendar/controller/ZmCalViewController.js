@@ -501,26 +501,29 @@ function(dlg, folder) {
 
 ZmCalViewController.prototype._doTag =
 function(items, tag, doTag) {
+
 	var list = this._getTaggableItems(items);
 
-	// only show msg dialog if adding a tag
 	if (doTag) {
-		var msg;
-		var dlg = appCtxt.getMsgDialog();
-		if (list.length > 0) {
-			var listener = new AjxListener(this, this._handleDoTag, [dlg, list, tag, doTag]);
-			dlg.setButtonListener(DwtDialog.OK_BUTTON, listener);
-			msg = ZmMsg.tagReadonly;
+		if (list.length > 0 && list.length == items.length) {
+			// there are items to tag, and all are taggable
+			ZmListController.prototype._doTag.call(this, list, tag, doTag);
 		} else {
-			msg = ZmMsg.nothingToTag;
+			var msg;
+			var dlg = appCtxt.getMsgDialog();
+			if (list.length > 0 && list.length < items.length) {
+				// there are taggable and nontaggable items
+				var listener = new AjxListener(this, this._handleDoTag, [dlg, list, tag, doTag]);
+				dlg.setButtonListener(DwtDialog.OK_BUTTON, listener);
+				msg = ZmMsg.tagReadonly;
+			} else if (list.length == 0) {
+				// no taggable items
+				msg = ZmMsg.nothingToTag;
+			}
+			dlg.setMessage(msg);
+			dlg.popup();
 		}
-
-		dlg.setMessage(msg);
-		dlg.popup();
-		return;
-	}
-
-	if (list.length > 0) {
+	} else if (list.length > 0) {
 		ZmListController.prototype._doTag.call(this, list, tag, doTag);
 	}
 };
