@@ -522,7 +522,7 @@ function(message, viewMode) {
 	this.endsInUTC = end && start ? end.charAt(start.length-1) == "Z" : null;
 
 	// record timezone
-	if (viewMode == ZmCalItem.MODE_EDIT_SINGLE_INSTANCE) {
+	if (viewMode == ZmCalItem.MODE_EDIT_SINGLE_INSTANCE || viewMode == ZmCalItem.MODE_DELETE_INSTANCE) {
 		this.setTimezone(AjxTimezone.getServerId(AjxTimezone.DEFAULT));
 	}
 	else {
