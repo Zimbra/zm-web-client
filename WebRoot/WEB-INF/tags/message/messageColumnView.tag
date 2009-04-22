@@ -39,7 +39,7 @@
     <c:set var="context" value="${context}" />
     <c:set var="idcheck" value="${not empty param.id && not zm:actionSet(param, 'actionHardDelete') && not zm:actionSet(param, 'actionDelete') ? param.id : context.currentItem.id}"/>
     <c:if test="${mailbox.prefs.readingPaneEnabled and not empty idcheck and param.action eq 'view'}">
-        <zm:getMessage var="msg" requestHeaders="X-GoodmailSystems-Isp,X-GoodmailSystems-Isp1" id="${idcheck}" markread="${(context.folder.isMountPoint and context.folder.effectivePerm eq 'r') ? 'false' : 'true'}" neuterimages="${empty param.xim}"/>
+        <zm:getMessage var="msg" id="${idcheck}" markread="${(context.folder.isMountPoint and context.folder.effectivePerm eq 'r') ? 'false' : 'true'}" neuterimages="${empty param.xim}"/>
         <zm:computeNextPrevItem var="cursor" searchResult="${context.searchResult}" index="${context.currentItemIndex}"/>
         <c:set var="ads" value='${msg.subject} ${msg.fragment}'/>
     </c:if>
@@ -124,9 +124,6 @@
                             <table width=100% cellpadding=0 cellspacing=0>
                                 <tr valign="top">
                                     <td class='ZhAppContent2' valign="top">
-                                        <c:forEach var="hdrs" items="${msg.requestHeader}">
-                                            ${hdrs.key} //// ${hdrs.value}
-                                        </c:forEach>
                                         <c:set var="extImageUrl" value=""/>
                                         <c:if test="${empty param.xim}">
                                             <zm:currentResultUrl var="extImageUrl" value="search" action="view" context="${context}" xim="1"/>
