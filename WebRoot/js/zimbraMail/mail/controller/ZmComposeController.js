@@ -359,7 +359,7 @@ function(attId, docIds, draftType, callback) {
 		// always save draft on the active account
 		var acctName = this._accountName;
 		if (isDraft) {
-			acctName = ac.isOffline ? ac.getActiveAccount().name : ac.getMainAccount().name;
+			acctName = ac.getActiveAccount().name;
 		} else {
 			// if shared folder, make sure we send the email on-behalf-of
 			var folder = msg.folderId ? ac.getById(msg.folderId) : null;

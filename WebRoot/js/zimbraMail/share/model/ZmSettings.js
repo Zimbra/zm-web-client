@@ -253,6 +253,9 @@ function(callback, accountName, result) {
 			if (acct.visible) {
 				count++;
 				appCtxt.multiAccounts = true;
+				if (!appCtxt.isOffline) {
+					appCtxt.isFamilyMbox = true;
+				}
 
 				// dynamically add keyboard mapping for switching accounts by index
 				var newKs = ks.replace(/NNN/, (48+count));

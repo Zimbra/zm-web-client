@@ -126,9 +126,10 @@ function(params) {
 		obo = (folder && folder.isRemote()) ? folder.getOwner() : null;
 
 		// check if this is a draft that was originally composed obo
-		if (!obo && msg.isDraft) {
+		if (!obo && msg.isDraft && !appCtxt.isFamilyMbox) {
 			var ac = window.parentAppCtxt || window.appCtxt;
-			var mainAcct = ac.getMainAccount().getEmail();
+			var mainAcct = (ac.isOffline)
+				? ac.getActiveAccount().name : ac.getMainAccount().getEmail();
 			var from = msg.getAddresses(AjxEmailAddress.FROM).get(0);
 			if (from && from.address != mainAcct) {
 				obo = from.address;
