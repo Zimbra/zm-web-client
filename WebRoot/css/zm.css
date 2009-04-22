@@ -1,15 +1,17 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ *
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
- * 
+ * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
+ *
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -304,24 +306,17 @@ td.DDSepInvisible div {
 }
 
 
+
+
 /*
  * Conversation view stuff
  */
 
 /* message fragment text */
-.Row .ZmConvListFragment,
-.DwtListView-Rows .Row .ZmConvListFragment,
-.Row .Row-Selected .ZmConvListFragment {
+.ZmConvListFragment,
+.Row-Selected .ZmConvListFragment {
 	@Text-disabled@
 	font-weight: normal;
-}
-
-.SubjectDoubleRow .ZmConvListFragment {
-	@Text-disabled@
-}
-
-.Unread .SubjectDoubleRow .ZmConvListFragment {
-	@Text@
 }
 
 .ZmConvExpanded {
@@ -398,11 +393,12 @@ td.DDSepInvisible div {
 
 /* Container for the header of the message */
 .ZmMailMsgView .MsgHeaderTable {
-	@MailMsgHeaderLight@
+	@MailMsgHeader@
 }
 
-.MessageHeaderAttachments {
-	@MailMsgAttachments@
+.ZmMailMsgView .SubjectCol {
+	@FontSize-bigger@
+	@MailMsgHeaderText@
 }
 
 .ZmMailMsgView .LabelColName {
@@ -410,7 +406,6 @@ td.DDSepInvisible div {
 	vertical-align: top;
 	text-align: right;
 	padding: 3px 0px 3px 0px;
-	white-space: nowrap;
 }
 
 .ZmMailMsgView .LabelColValue {
@@ -418,16 +413,6 @@ td.DDSepInvisible div {
 	white-space: normal;
 	vertical-align: top;
 	padding: 3px;
-}
-
-.ZmMailMsgView .SubjectCol {
-	@FontSize-big@
-	font-weight: bold;
-	@MailMsgHeaderText@
-}
-
-.ZmMailMsgView .DateCol {
-	white-space: nowrap;
 }
 
 /* ??? USE? */
@@ -440,12 +425,6 @@ td.DDSepInvisible div {
 .ZmMailMsgView .AttName-matched {
 	@Anchor-matched@
 	white-space: nowrap;
-}
-
-/* the sash next to overview does not need borders or a background color */
-.console_inset_app_l .DwtHorizontalSash {
-	border: 0px;
-	background-color: transparent;
 }
 
 /* ??? MOVE ME */
@@ -605,7 +584,6 @@ line-height:normal;
 /* Lite HTML Editor */
 .ZmLiteHtmlEditor {
 	width: 100%;
-	height: 57px;
 }
 
 .ZmLiteHtmlEditor .TextArea {
@@ -689,24 +667,9 @@ line-height:normal;
 	background-color:black;
 }
 
-/*
- * Message confirm view
- */
-/* Outer container of message compose view */
-.ZmMailConfirmView {
-	@FullWidth@
- 	padding: 15px;
-}
 
-.ZmMailConfirmView .Summary {
-	@FontSize-bigger@
-}
 
-.ZmMailConfirmView .Box {
-	border: 1px solid @DarkSeparatorColor@;
-	margin-top: 2px;
-	padding: 3px;
-}
+
 
 /*
  *  Contacts app
@@ -1187,12 +1150,6 @@ line-height:normal;
 	@TextPadding@
 }
 
-.calendar_listview_folder {
-	width:16px;
-	height:16px;
-	@borderRadius@:4px;
-}
-
 
 /* set the width of each day column in the month view
 	-- extra space goes to the last column  			*/
@@ -1345,6 +1302,10 @@ line-height:normal;
 	padding-left:@BoxPaddingSize@;
 }
 
+
+
+
+
 /* label of a calendar day when shown in a hover balloon */
 .calendar_tooltip_month_day_label {
 	@NoWrap@
@@ -1352,12 +1313,6 @@ line-height:normal;
 	text-align:center;
 }
 
-.calendar_tooltip_attendees {
-	border-bottom: 1px solid black;
-	padding: 1px;
-	white-space: nowrap;
-	font-weight:bold;
-}
 
 
 
@@ -1868,88 +1823,34 @@ HTML>BODY .appt-selected .appt_allday_body
  *	Chat application
  */
 
-.ZmTaskbar {
-	@ToolbarContainer@
-	@FullWidth@
+/** Presence section **/
+#z_presence {
+	padding-top: 2px;
+#IFNDEF MSIE
+	padding-left: 2px;
+#ENDIF	
 }
 
-.ZmTaskbar .ZToolbarButton,
-.ZmTaskbar .ZmStatusImageButton {
-	height: 23px;
-	margin-top: -2px
+#z_presence_left_icon {
+#IFDEF MSIE
+	margin-top:2px;
+#endif
+	margin-left: 1px;
+	margin-right: 1px;
+	padding-left: 1px;
+	padding-right: 1px;
+	float: left;
+	width: 16px;
 }
 
-.ZAlert .ZmTaskbarButtonParent .ZToolbarButton {
-	@AlertColor@
-}
-
-.ZmTaskbarButtonParent .ZSelected	.ZToolbarButtonBorder,
-.ZmTaskbarButtonParent .ZHover		.ZToolbarButtonBorder,
-.ZmTaskbarButtonParent .ZActive		.ZToolbarButtonBorder {
-	background-color:@TaskbarItem-selected@ !important;
-}
-
-.ZmTaskbar .ZToolbarTable .ZToolbarButtonBorder {
-	border:none;
-}
-
-.ZmTaskbarItemBorder {
-	border:none;
-	background-color:@TaskbarItem-selected@;
-	z-index: 10;
-}
-
-.ZmTaskbarContentParent {
-	@tlRadius@:3px;
-	@trRadius@:3px;
-	background-color:@TaskbarItem-selected@;
-	position:absolute;
-	bottom: 23px;
-	padding: 4px;
-}
-
-.ZmTaskbarPopupTitle {
-	background-color:@TaskbarItem-selected@;
-	padding: 0 3px 3px 6px;
-	font-weight: bold;
-	width: 100%;
-}
-
-.ZmTaskbarPopupContent {
-	@PopupWindowBorder@
-	background-color: white;
-}
-
-.ZmTaskbarContentParent .ZmImOverview .DwtTree {
-	max-height:400px;
-	max-width:200px;
-}
-
-.ZmTaskbarContentParent .overviewHeader {
-	background-color:@TaskbarItem-selected@;
-}
-
-.ZmTaskbarContentParent .DwtTree {
-	border-style: none;
-}
-
-.ZmTaskbarContentParent .ZmChatWidget {
-	height:250px;
-	max-height:400px;
-	max-width:300px;
-	margin-bottom: 4px;
-}
-
-.ZmTaskbarContentParent .ActionMenu {
-	border:none;
-	padding: 0;
-	padding-bottom: 3px;
-	@borderRadius@: 0;
-	background-color: white;
-}
-
-.ZmTaskbarContentParent .ImYahooLoginLabel {
-	width: 90px;
+#z_presence_dropdown {
+#IFDEF MSIE
+	margin-top:2px;
+#endif
+	margin-left: 1px;
+	margin-right: 1px;
+	padding-left: 1px;
+	padding-right: 1px;
 }
 
 /* temporary lite widgets */
@@ -1983,11 +1884,6 @@ HTML>BODY .appt-selected .appt_allday_body
 	@NoWrap@
 	text-align: right;
 	width: 1%;
-	font-weight: bold;
-}
-
-.ZmChatDialogInputCell {
-	padding-left: 10px;
 }
 
 .ZmImNotification {
@@ -2180,27 +2076,6 @@ HTML>BODY .appt-selected .appt_allday_body
 .ImgAolBig { background-image: url("/zimbra/public/tmp/aol.png"); }
 .ImgJiveBig { background-image: url("/zimbra/public/tmp/jive.png"); }
 
-.ImAccountLabel {
-	width: 150px;
-	font-weight: bold;
-	white-space: nowrap;
-	text-align: right;
-	line-height:20px;
-}
-
-.ImAccountGatewayLabel {
-	width: 100px;
-	text-align: right;
-}
-
-.ImAccountGatewayValue {
-	width: 90%;
-}
-
-.ImAccountLogin .FakeAnchor {
-	font-weight: bold;
-}
-
 .ZmChatGwIcon-offline {
  opacity: 0.3;
 
@@ -2218,19 +2093,10 @@ HTML>BODY .appt-selected .appt_allday_body
 #ENDIF
 }
 
-.ZmImToastText {
-	@Text-anchor@
-}
-.ZmImToastText-hover {
-	@Text-anchor-hover@
-	@ActiveCursor@
-}
-
 .ZmBuddyFilterItem {
 	width: 96%;
 	padding-left: 4px;
 	padding-right: 4px;
-	padding-bottom: 1px;
 }
 
 .ZmBuddyFilterItem .DwtSimpleInput {
@@ -2243,31 +2109,6 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 .ZmInfoTreeItem .FakeAnchor {
 	font-weight: bold;
-}
-
-.ZmImYahooLogin {
-	width: 320px;
-}
-
-.ZmImYahooMessage {
-	width: 300px;
-	margin: 10px;
-	padding: 5px;
-	@NormalOutsetBorder@
-	background-color: @HilightColor@;
-}
-
-.ImYahooLoginLabel {
-	width: 110px;
-	font-weight: bold;
-	white-space: nowrap;
-	text-align: right;
-	line-height:20px;
-}
-
-.ImYahooLoginValue {
-	text-align: left;
-	padding-left:10px;
 }
 
 /*
@@ -2528,7 +2369,7 @@ HTML>BODY .appt-selected .appt_allday_body
 .prefLabel {
 	@Label@
 	width: 300px;		/* ??? SIZE */
-	text-align: right;
+	text-align:right;
 	vertical-align: top;
 	padding-top: 2px;
 }
@@ -2542,16 +2383,6 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmPreferencesPage .changePasswordButton { }
 .ZmPreferencesPage .exportButton { }
 .ZmPreferencesPage .resetButton {	width: 100px;	}
-
-.ZmWhiteBlackList {
-	@InputBorder@
-	width: 210px;
-	height: 150px;
-}
-
-.ZmWhiteBlackList .Row {
-	padding-left: 3px;
-}
 
 /* ??? USE? */
 .ZmShortcutsPage .paddedTableCell {
@@ -2776,17 +2607,17 @@ HTML>BODY .appt-selected .appt_allday_body
  *   Shortcut key display
  */
 
-.XshortcutList {
+.shortcutList {
 	width:100%;
 	border-collapse:collapse;
 	margin-bottom:10px;
 }
 
-.XshortcutListHeader {
+.shortcutListHeader {
 	border:1px solid #999999;
 }
 
-.XshortcutKeys {
+.shortcutKeys {
 	text-align:right;
 	padding:6px;
 	vertical-align:top;
@@ -2796,19 +2627,19 @@ HTML>BODY .appt-selected .appt_allday_body
 	@Text-disabled@;
 }
 
-.XshortcutDescription {
+.shortcutDescription {
 	@SeparatorBorder@
 	padding:5px;
 	width:auto;
 }
 
-.XshortcutKeyCombo {
+.shortcutKeyCombo {
 	white-space:nowrap;
 	margin-right:5px;
 	margin-left:5px;
 }
 
-.XshortcutKey {
+.shortcutKey {
 	@SeparatorBorder@
 	@Text@
 	font-weight:bold;
@@ -2817,14 +2648,14 @@ HTML>BODY .appt-selected .appt_allday_body
 	line-height:22px;
 }
 
-.XshortcutTable {
+.shortcutTable {
 	table-layout:fixed;
 	border-collapse:collapse;
 	margin-bottom:10px;
 	border:1px solid #999999;
 }
 
-.XshortcutTable TH {
+.shortcutTable TH {
 	font-size:11px;
 	text-align:left;
 	font-weight:bold;
@@ -2856,225 +2687,6 @@ HTML>BODY .appt-selected .appt_allday_body
 	cursor: pointer;
 	color: blue;
 	text-decoration: underline;
-}
-
-/*
- * Styles for showing a list of shortcuts in a prefs page, a popup info panel, a separate window,
- * or to be printed.
- */
-
-.ShortcutsPrintHeader {
-	font-size: 12px;
-	font-weight: bold;
-	text-align: center;
-	color: black;
-}
-
-.ZmShortcutList {
-	padding: 10 10 10 20;
-}
-
-.shortcutListType {
-	text-align: center;
-	font-size: 14px;
-	font-weight: bold;
-}
-
-.shortcutListType-panel {
-	color: white;
-}
-
-.shortcutListType-print {
-	color: black;
-}
-
-.shortcutListTable {
-	width: 100%;
-	border-collapse: collapse;
-	margin-bottom: 10px;
-}
-
-.shortcutListTable-panel, .shortcutListTable-print {
-	table-layout: fixed;
-}
-
-.shortcutListHeaderTd-prefs {
-	border: 1px solid #999999;
-}
-
-.shortcutListHeader {
-	font-weight: bold;
-	text-align: center;
-}
-
-.shortcutListHeader-prefs {
-	font-size: 12px;
-	padding: 3 10 5 7;
-	background-color: #bab09a;
-}
-
-.shortcutListHeader-panel, .shortcutListHeader-print {
-	text-decoration: underline;
-}
-
-.shortcutListHeader-panel {
-	font-size: 12px;
-	color: #DDDD00;
-}
-
-.shortcutListHeader-print {
-	font-size: 12px;
-	color: black;
-	padding-bottom: 2px;
-}
-
-.shortcutKeys {
-	text-align: right;
-	vertical-align: top;
-	font-weight: bold;
-}
-
-.shortcutKeys-prefs {
-	@SeparatorBorder@
-	@Text-disabled@;
-	padding: 6px;
-	width: 250px;
-}
-
-.shortcutKeys-panel {
-	@Text-disabled@;
-	color: white;
-	white-space: nowrap;
-}
-
-.shortcutKeys-print {
-	font-size: 12px;
-	color: black;
-}
-
-.shortcutDescription {
-	width: auto;
-}
-
-.shortcutDescription-prefs {
-	padding: 5px;
-	@SeparatorBorder@
-	color: black;
-}
-
-.shortcutDescription-panel, .shortcutDescription-print {
-	padding-left: 5px;
-}
-
-.shortcutDescription-panel {
-	color: white;
-	white-space: nowrap;
-}
-
-.shortcutDescription-print {
-	font-size: 12px;
-	color: black;
-}
-
-.shortcutKeyCombo {
-	white-space: nowrap;
-}
-
-.shortcutKeyCombo-prefs {
-	margin-right: 5px;
-	margin-left: 5px;
-}
-
-.shortcutKey {
-	font-weight: bold;
-	padding: 2px 4px;
-}
-
-.shortcutKey-prefs {
-	margin: 1px;
-	@SeparatorBorder@
-	@Text@
-	line-height: 22px;
-}
-
-.shortcutKey-panel, .shortcutKey-print {
-	padding: 1px 2px;
-}
-
-.shortcutKey-panel {
-	color: #DDDD00;
-	line-height: 22px;
-}
-
-.shortcutKey-print {
-	color: black;
-}
-
-/*
- * Styles for showing current aliases on custom shortcuts tab
- */
-.shortcutTable {
-	table-layout: fixed;
-	border-collapse: collapse;
-	margin-bottom: 10px;
-	border: 1px solid #999999;
-}
-
-.shortcutTable TH {
-	font-size: 11px;
-	text-align: left;
-	font-weight: bold;
-	padding-left: 5px;
-	color: #666666;
-	border-bottom: 1px solid #999999;
-}
-
-/*
- * Styles for popup shortcut info panel
- */
-.ZmShortcutsPanel {
-	background-color: #000000;
-	width: 800px;
-	height: 600px;
-	color: white;
-#IFDEF GECKO
-	-moz-border-radius-bottomleft: 10px;
-	-moz-border-radius-bottomright: 10px;
-	-moz-border-radius-topleft: 10px;
-	-moz-border-radius-topright: 10px;
-#ENDIF
-	opacity: 0.90;
-}
-
-.ZmShortcutsWindow {
-	width: 100%;
-	height: 100%;
-	background-color: #000000;
-	color: white;
-}
-
-.ShortcutsPanelHeader {
-	font-size: 18px;
-	font-weight: bold;
-	text-align: center;
-	color: white;
-}
-
-.ShortcutsPanelText {
-	color: white;
-}
-
-.ShortcutsPanelDescription {
-	padding-left: 10px;
-}
-
-.ShortcutsPanelLinks {
-	padding-right: 10px;
-	text-align: right;
-}
-
-.ShortcutsPanelLink {
-	cursor: pointer;
 }
 
 /*
@@ -3632,96 +3244,91 @@ HTML>BODY .appt-selected .appt_allday_body
 /*briefcase app*/
 
 .ZmBriefcaseView {
-	background-color: #ffffff;
+background-color: #ffffff;
 }
 
 .ZmBriefcaseItem,.ZmBriefcaseItemSelected {
-	background-color:transparent;
-	background-repeat:no-repeat;
-	cursor:pointer;
-	float:left;
-	height:120px;
-	margin:8px;
-	vertical-align:middle;
-	width:100px;
+background-color:transparent;
+background-repeat:no-repeat;
+cursor:pointer;
+float:left;
+height:120px;
+margin:8px;
+vertical-align:middle;
+width:100px;
 }
 
-.ZmBriefcaseItem .ZmThumbnailItem,.ZmBriefcaseItemSelected .ZmThumbnailItem {
-	background-color:transparent;
-	border:2px solid #CCCCCC;
-	font-size:1px;
-	height:100px;
-	line-height:100px;
-	text-align:center;
-	width:96px;
+.ZmBriefcaseItem .ZmThumbnailItem,.ZmBriefcaseItemSelected .ZmThumbnailItem{
+background-color:transparent;
+border:2px solid #CCCCCC;
+font-size:1px;
+height:100px;
+line-height:100px;
+text-align:center;
+width:96px;
 }
 
-.ZmBriefcaseItem .ZmThumbnailName,.ZmBriefcaseItemSelected .ZmThumbnailName {
-	display:block;
-	@FontSize-smaller@
-	@FontFamily-html@
-	margin:3px 0pt 0pt 0px;
-	text-align:center;
-	height: 14px;
-	overflow: hidden;
+.ZmBriefcaseItem .ZmThumbnailName,.ZmBriefcaseItemSelected .ZmThumbnailName{
+display:block;
+@FontSize-smaller@
+@FontFamily-html@
+margin:3px 0pt 0pt 0px;
+text-align:center;
+height: 14px;
+overflow: hidden;
 }
 
-.ZmBriefcaseItemSelected {
-	color:#FFFFFF;
+.ZmBriefcaseItemSelected{
+color:#FFFFFF;
 }
 
-.ZmBriefcaseItemSelected .ZmThumbnailItem {
-	border-color: #316AC5;
+.ZmBriefcaseItemSelected .ZmThumbnailItem{
+border-color: #316AC5;
 }
 
 .ZmBriefcaseItemSelected .ZmThumbnailName span {
-	background:#316AC5 none repeat scroll 0%;
-	color:#FFFFFF;
+background:#316AC5 none repeat scroll 0%;
+color:#FFFFFF;
 }
-
 .ZmBriefcaseItemSelected .ZmThumbnailName span a {
-	color:#FFFFFF;
+color:#FFFFFF;
 }
 
-.ZmThumbnailIcon {
-	margin:26px 24px;
+.ZmThumbnailIcon{
+margin:26px 24px;
 }
 
-/*Attachments View*/
-.ZmFilterTree {
-   broder-width: 0px;
-}
 
 /*IE hack - To stop the button shake in the MSg Header*/
 
 #IFDEF MSIE
-.arrowbtn div .ZToolbarButtonBorder {
-	margin-top:0px;
-	margin-bottom: 0px;
+.arrowbtn div .ZToolbarButtonBorder{
+ margin: 0px;
+
 }
 #ENDIF
 
 
 .ZmColListDiv {
-	width: 250px;
-	background: transparent;
-	overflow-x: hidden;
-	overflow-y: scroll;
+width: 250px;
+background: transparent;
+overflow-x: hidden;
+overflow-y: scroll;
 }
 
 .ZmColListCell {
-	vertical-align: top;
+vertical-align: top;
 }
 
 .ZmMultiColView {
-	background-color: white;
-	overflow-x: auto;
-	overflow-y: hidden;
+background-color: white;
+overflow-x: auto;
+overflow-y: hidden;
 }
 
 .ZmFilePropertiesLabel {
-	@TreeHeaderText@
-	white-space: nowrap;
+@TreeHeaderText@
+white-space: nowrap;
 }
 
 .ZmSpreadSheetDoc { background-color: #eee; }
@@ -3750,32 +3357,6 @@ HTML>BODY .appt-selected .appt_allday_body
 	font-weight: normal;
 }
 
-.docsToolbar {
-    background-color: #EEEEEE;
-}
-
-.ZmBriefcaseTabView_Table {
-    padding-top: 10px;
-}
-
-.BriefcaseTabBox {
-    @TreeContainer@
-    @NormalInsetBorder@
-}
-.BriefcaseList {
-    margin-left: 5px;
-}
-
 .cal_day_expand table {
 	border: 0px;
-}
-
-.sharingPageListTitle {
-	font-size: 14px;
-	font-weight: bold;
-}
-
-
-.InviteSelectLabel {
- text-align: right;   
 }

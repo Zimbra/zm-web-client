@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -95,6 +97,7 @@ function(params, callback) {
 	var offset = params.offset || 0;
 	var limit = params.limit || appCtxt.get(ZmSetting.PAGE_SIZE);
 	var getHtml = params.getHtml || appCtxt.get(ZmSetting.VIEW_AS_HTML);
+	this._getFirstMsg = params.getFirstMsg;
 
 	var doSearch = true;
 	if (this._loaded && this.msgs && this.msgs.size()) {
@@ -246,26 +249,25 @@ function() {
 ZmConv.prototype.notifyModify =
 function(obj) {
 	var fields = {};
-	// a conv's ID can change if it's a virtual conv becoming real; 'this' will be
-	// the old conv; if we can, we switch to using the new conv, which will be more
-	// up to date; the new conv will be available if it was received via search results
+	// a conv's ID can change if it's a virtual conv becoming real
 	if (obj._newId != null) {
-		var conv = appCtxt.getById(obj._newId) || this;
-		conv._oldId = this.id;
-		appCtxt.cacheSet(conv._oldId);
-		conv.msgs = conv.msgs || this.msgs;
-		if (conv.msgs) {
-			conv.msgs.convId = conv.id;
-			var a = conv.msgs.getArray();
+		this._oldId = this.id;
+		this.id = obj._newId;
+		appCtxt.cacheSet(this.id, this);	// make sure we can get it from cache via new ID
+		appCtxt.cacheSet(this._oldId);
+		if (this.msgs) {
+			this.msgs.convId = this.id;
+			var a = this.msgs.getArray();
 			for (var i = 0; i < a.length; i++) {
-				a[i].cid = conv.id;
+				a[i].cid = this.id;
 			}
 		}
-		if (conv.list && conv._oldId) {
-			delete conv.list._idHash[conv._oldId];
+		if (this.list && this._oldId) {
+			this.list._idHash[this.id] = this.list._idHash[this._oldId];
+			delete this.list._idHash[this._oldId];
 		}
 		fields[ZmItem.F_ID] = true;
-		conv._notify(ZmEvent.E_MODIFY, {fields : fields});
+		this._notify(ZmEvent.E_MODIFY, {fields : fields});
 	}
 	if (obj.n != null) {
 		this.numMsgs = obj.n;
@@ -274,6 +276,11 @@ function(obj) {
 	}
 
 	ZmMailItem.prototype.notifyModify.apply(this, arguments);
+};
+
+ZmConv.prototype.getPrintHtml =
+function(preferHtml, callback) {
+	ZmConvListView.getPrintHtml(this, preferHtml, callback);
 };
 
 ZmConv.prototype._checkFlags = 
@@ -305,9 +312,8 @@ function(flags) {
 		}
 	}
 
-	if (doNotify) {
+	if (doNotify)
 		this._notify(ZmEvent.E_FLAGS, {flags: flags});
-	}
 };
 
 /**
@@ -377,15 +383,6 @@ function(folderId) {
 	}
 	this.folders = {};
 	this.folders[folderId] = true;
-};
-
-ZmConv.prototype.getMsgList =
-function(offset, ascending) {
-	var a = this.msgs.getArray().slice(offset || 0);
-	if (ascending) {
-		a.reverse();
-	}
-	return a;
 };
 
 /**
@@ -473,7 +470,8 @@ function(convNode) {
 	this.fragment = convNode.fr;
 	this.sf = convNode.sf;
 
-	// note that the list of msg IDs in a search result is partial - only msgs that matched are included
+	// should always be an <m> element; note that the list of msg IDs in a
+	// search result is partial - only msgs that matched are included
 	if (convNode.m) {
 		this.msgIds = [];
 		for (var i = 0, count = convNode.m.length; i < count; i++) {

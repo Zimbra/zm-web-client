@@ -1,19 +1,3 @@
-<%--
- * ***** BEGIN LICENSE BLOCK *****
- * 
- * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009 Zimbra, Inc.
- * 
- * The contents of this file are subject to the Yahoo! Public License
- * Version 1.0 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
- * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
- * ***** END LICENSE BLOCK *****
---%>
 <%@ tag body-content="empty" %>
 <%@ attribute name="context" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.tag.SearchContext"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -42,17 +26,6 @@
                <table width="100%" cellspacing="0" cellpadding="0">
                <tr>
                    <td width="200" class='List' valign='top'>
-                       <table>
-                           <tr>
-                               <td nowrap="nowrap">
-                                   <label for="searchField"><fmt:message key="find"/>&nbsp;:&nbsp;</label>
-                                   <input onkeydown="handleEnter(event);" style="background-color:#FFFFFF;height:auto;padding:2px 4px;cursor:text;" type="text" id="searchField" maxlength="50" name="contactsq" value="${fn:escapeXml(param.sq)}">
-                               </td>
-                               <td>
-                                   <app:button name="actionSearch" id="SEARCH_CONTACT" tooltip="search" text="search"/>
-                               </td>
-                           </tr>
-                       </table>
                        <table width="100%" cellpadding="2" cellspacing="0">
                            <tr>
                                <th class='CB'><input id="OPCHALL" onClick="checkAll(document.zform.id,this)" type=checkbox name="allids"/>
@@ -132,7 +105,7 @@
 
    <SCRIPT TYPE="text/javascript">
     <!--
-    var zrc = ${empty context.searchResult ? 0 : context.searchResult.size};
+    var zrc = ${context.searchResult.size};
     var zprint = function(){
         try{
         var idex = 0;
@@ -147,7 +120,7 @@
         }
         }catch(ex){
         }
-        window.open("/h/printcontacts?sfi=${context.folder.id}&id="+c);
+        window.open("/h/printcontacts?id="+c);
     }
     var zcheck = function() {var e = document.getElementById("CURRCHECK"); if (e) e.checked = !e.checked;}
     var zclick = function(id) { var e2 = document.getElementById(id); if (e2) e2.click(); }

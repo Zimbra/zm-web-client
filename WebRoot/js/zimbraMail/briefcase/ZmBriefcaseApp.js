@@ -1,15 +1,17 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ *
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009 Zimbra, Inc.
- * 
+ * Copyright (C) 2007 Zimbra, Inc.
+ *
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -56,18 +58,14 @@ function() {
 
 ZmBriefcaseApp.prototype._registerOperations =
 function() {
-	ZmOperation.registerOp(ZmId.OP_NEW_BRIEFCASEITEM, {textKey:"newBriefcase", image:"NewFolder", tooltipKey:"newBriefcaseTooltip", shortcut:ZmKeyMap.NEW_BRIEFCASEITEM});
+	ZmOperation.registerOp(ZmId.OP_NEW_BRIEFCASEITEM, {textKey:"newBriefcase", image:"NewFolder"});
 	ZmOperation.registerOp(ZmId.OP_NEW_FILE, {textKey:"uploadNewFile", tooltipKey:"uploadNewFile", image:"NewPage"});
-    ZmOperation.registerOp(ZmId.OP_NEW_PRESENTATION, {textKey:"newPresentation", tooltipKey:"newPresentation", image:"MSPowerpointDoc"});
-    ZmOperation.registerOp(ZmId.OP_NEW_EXCEL, {textKey:"newSpreadsheet", tooltipKey:"newSpreadsheet", image:"ZSpreadSheet"});
 	ZmOperation.registerOp(ZmId.OP_SHARE_BRIEFCASE, {textKey:"shareFolder", image:"SharedMailFolder"}, ZmSetting.SHARING_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_MOUNT_BRIEFCASE, {textKey:"mountBriefcase", image:"Notebook"}, ZmSetting.SHARING_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_OPEN_FILE, {textKey:"openFile", tooltipKey:"openFileTooltip", image:"NewPage"});
-	ZmOperation.registerOp(ZmId.OP_SAVE_FILE, {textKey:"saveFile", tooltipKey:"saveFileTooltip", image:"Save"});
-	ZmOperation.registerOp(ZmId.OP_VIEW_FILE_AS_HTML, {textKey:"viewAsHtml", tooltipKey:"viewAsHtml", image:"HtmlDoc"});
-	ZmOperation.registerOp(ZmId.OP_SEND_FILE, {textKey:"sendLink", tooltipKey:"sendLink", image:"Send"});
-	ZmOperation.registerOp(ZmId.OP_SEND_FILE_AS_ATT, {textKey:"sendAsAttachment", tooltipKey:"sendAsAttachment", image:"Attachment"});
-    ZmOperation.registerOp(ZmId.OP_SEND_FILE_MENU, {textKey:"send", image:"Send"});
+	ZmOperation.registerOp(ZmId.OP_VIEW_FILE_AS_HTML, {textKey:"viewAsHtml", tooltipKey:"viewAsHtml", image:"HtmlDoc"});	
+	ZmOperation.registerOp(ZmId.OP_SEND_FILE, {textKey:"send", tooltipKey:"sendPageTT", image:"Send"});	
+	ZmOperation.registerOp("SAVE_FILE", {textKey:"saveFile", tooltipKey:"saveFileTooltip", image:"Save"});
 };
 
 ZmBriefcaseApp.prototype._registerItems =
@@ -110,8 +108,6 @@ function() {
 							  createFunc     : "ZmOrganizer.create",
 							  compareFunc    : "ZmBriefcase.sortCompare",
 							  deferrable     : true,
-							  newOp			 : ZmOperation.NEW_BRIEFCASEITEM,
-							  displayOrder	 : 100,
 							  hasColor       : true
 							});
 };
@@ -129,31 +125,31 @@ function() {
 								});
 };
 
+ZmBriefcaseApp.prototype._setupCurrentAppToolbar =
+function() {
+	ZmCurrentAppToolBar.registerApp(this.getName(), ZmOperation.NEW_BRIEFCASEITEM, ZmOrganizer.BRIEFCASE);
+};
+
 ZmBriefcaseApp.prototype._registerApp =
 function() {
 	var newItemOps = {};
-	newItemOps[ZmOperation.NEW_FILE]         = "uploadNewFile";
-	newItemOps[ZmOperation.NEW_PRESENTATION] = "newPresentation";
-    newItemOps[ZmOperation.NEW_EXCEL]  = "newSpreadSheet"
+	newItemOps[ZmOperation.NEW_FILE] = "file";
 
 	var newOrgOps = {};
-	newOrgOps[ZmOperation.NEW_BRIEFCASEITEM] = "briefcase";
+	newOrgOps[ZmOperation.NEW_BRIEFCASEITEM] = "folder";
 
 	var actionCodes = {};
-	actionCodes[ZmKeyMap.NEW_FILE]			= ZmOperation.NEW_FILE;
+	actionCodes[ZmKeyMap.NEW_FILE]		= ZmOperation.NEW_FILE;
 	actionCodes[ZmKeyMap.NEW_BRIEFCASEITEM]	= ZmOperation.NEW_BRIEFCASEITEM;
-	actionCodes[ZmKeyMap.NEW_PRESENTATION]	= ZmOperation.NEW_PRESENTATION;
-    actionCodes[ZmKeyMap.NEW_EXCEL]         = ZmOperation.NEW_EXCEL;
 
 	ZmApp.registerApp(ZmApp.BRIEFCASE,
 					 {mainPkg:				"Briefcase",
 					  nameKey:				"briefcase",
 					  icon:					"Folder",
-					  textPrecedence:		30,
 					  chooserTooltipKey:	"gotoBriefcase",
 					  defaultSearch:		ZmItem.BRIEFCASE,
 					  organizer:			ZmOrganizer.BRIEFCASE,
-					  overviewTrees:		[ZmOrganizer.BRIEFCASE, ZmOrganizer.TAG],
+					  overviewTrees:		[ZmOrganizer.BRIEFCASE, ZmOrganizer.ROSTER_TREE_ITEM, ZmOrganizer.TAG],
 					  showZimlets:			true,
 					  searchTypes:			[ZmItem.BRIEFCASE/*, ZmItem.DOCUMENT*/],
 					  newItemOps:			newItemOps,
@@ -184,6 +180,53 @@ function(ids, force) {
 			bc.removeItem(item);
 		}
 	}
+/****************************** WTF?! ************************************/
+/*
+ 	var nextData = null;
+ 	var idStr = ids.join(",")+",";
+ 	var folderInUse = false;
+ 	var briefcaseController = AjxDispatcher.run("GetBriefcaseController");
+ 	var shownFolder = briefcaseController._object;
+ 	var overviewController = appCtxt.getOverviewController();
+ 	var treeController = overviewController.getTreeController(ZmOrganizer.BRIEFCASE);
+ 	var treeView = treeController.getTreeView(this.getOverviewId());
+
+ 	if(!treeView){
+ 		return;
+ 	}
+
+ 	for (var i = 0; i < ids.length; i++) {
+ 			var tmp = treeView.getNextData(ids[i]);
+ 			//next node might also be in the delete list : parent deleted
+ 			if(tmp && idStr.indexOf(tmp.id+",")<0){
+ 				nextData = tmp;
+ 			}
+ 			if (shownFolder && shownFolder == ids[i]) {
+ 				folderInUse = true;
+ 			}
+ 	}
+
+ 	for (var i = 0; i < ids.length; i++) {
+ 		briefcaseController.removeItem({id:ids[i]});
+ 		appCtxt.cacheRemove(ids[i]);
+ 	}
+
+ 	if(nextData && folderInUse){
+ 	briefcaseController.show(nextData.id);
+ 	}else{
+ 	//handled in delete callback : currently we dont get notification
+ 	//for the op in remote folders, so handled differently
+ 	//briefcaseController.show(shownFolder);
+ 	}
+
+ 	for (var i = 0; i < ids.length; i++) {
+ 		var tmp1 = treeView.getTreeItemById(ids[i]);
+ 		if(tmp1){
+ 			tmp1.dispose();
+ 		}
+ 		ids[i] = null;
+ 	}
+*/
 };
 
 /**
@@ -213,6 +256,11 @@ function(creates, force) {
                 if(create.l == bc._currentFolder) {
 					needsRefresh = true;
 				}
+                //DBG.println(AjxDebug.DBG1, "ZmBriefcaseApp: handling CREATE for node: " + name);
+				// REVISIT: use app context item cache
+				//var doc = new ZmBriefcaseItem();
+				//doc.set(create);
+				//bc.putItem(doc);
 			}
 		}
 	}
@@ -229,7 +277,7 @@ function(modifies, force) {
 	if (!force && !this._noDefer && this._deferNotifications("modify", modifies)) { return; }
 
 	var briefcaseController = this.getBriefcaseController();
-    var needsRefresh = false;
+    var needsRefresh = false;	
 
 	for (var name in modifies) {
 		var list = modifies[name];
@@ -248,7 +296,7 @@ function(modifies, force) {
 				}
 				mod._handled = true;
 			}else if (name == "folder") {
-				var currentFolderId = briefcaseController.getCurrentFolderId();
+				var currentFolderId = briefcaseController.getCurrentFolderId();				
                 if(appCtxt.getById(id) &&  (appCtxt.getById(id).nId == currentFolderId || id == currentFolderId)) {
                     needsRefresh = true;
 					mod._handled = true;
@@ -256,7 +304,7 @@ function(modifies, force) {
              }
 		}
 	}
-
+	
 	if(needsRefresh) {
 		briefcaseController.reloadFolder();
 	}
@@ -275,124 +323,8 @@ function(op) {
 			AjxDispatcher.require(["BriefcaseCore", "Briefcase"], false, loadCallback, null, true);
 			break;
 		}
-        case ZmOperation.NEW_PRESENTATION:         {
-			var loadCallback = new AjxCallback(this, this._handleNewDoc, [op]);
-			AjxDispatcher.require(["BriefcaseCore", "Briefcase"], true, loadCallback, null);
-			break;
-		}
-
-         case ZmOperation.NEW_EXCEL: {
-             var newDocCallback = new AjxCallback(this, this.newDoc, [ZmMimeTable.APP_ZIMBRA_EXCEL]);
-             AjxDispatcher.require(["BriefcaseCore", "Briefcase"], true, newDocCallback, null);
-             break;
-         }
 	}
 };
-
-ZmBriefcaseApp.prototype._handleNewDoc =
-function(op) {
-    AjxDispatcher.require("IM");
-    var promptDialog =  ZmPromptDialog.getInstance()
-    var newDocOkCallbackObj =  new AjxCallback(this, this._newDocOkCallback, [op, promptDialog]);
-
-    var title = ZmMsg.briefcaseCreateNewDocument;
-    var label = ZmMsg.documentName;
-
-    if(op == ZmOperation.NEW_PRESENTATION) {
-        title =  ZmMsg.briefcaseCreateNewPresentation;
-        label = ZmMsg.presentationName;
-    }
-
-    var dialogArgs = {
-        title: title,
-        label: label,
-        callback: newDocOkCallbackObj
-    };
-    promptDialog.popup(dialogArgs);
-};
-
-ZmBriefcaseApp.prototype._newDocOkCallback =
-function(op, promptDialog, data) {
-    var message;
-    if (!data.value) {
-        message = ZmMsg.nameEmpty;
-    }
-
-    promptDialog.popdown();
-
-    if (message) {
-        var dialog = appCtxt.getMsgDialog();
-        dialog.reset();
-        dialog.setMessage(message, DwtMessageDialog.CRITICAL_STYLE);
-        dialog.popup();
-    }else {
-        AjxDispatcher.require("Startup1_1");
-        var contentType = ZmMimeTable.APP_ZIMBRA_DOC;
-        switch(op) {
-            case ZmOperation.NEW_PRESENTATION: contentType = ZmMimeTable.APP_ZIMBRA_SLIDES; break;
-        }
-
-        var overviewController = appCtxt.getOverviewController();
-        var treeController = overviewController.getTreeController(ZmOrganizer.NOTEBOOK);
-        var folderId = ZmOrganizer.ID_BRIEFCASE;
-        if(treeController) {
-            var treeView = treeController.getTreeView(this.getOverviewId());
-            var briefcase = treeView ? treeView.getSelected() : null;
-            folderId = briefcase ? briefcase.id : ZmOrganizer.ID_BRIEFCASE;
-        }
-
-        var slideURL = this.getEditURLForContentType(contentType) + "?name=" + data.value + "&l=" + folderId;
-        var winname = "_newslide" +  data.value;
-        var winfeatures = [
-            "width=",(screen.width || 640),",",
-            "height=",(screen.height || 480),",",
-            "resizable,toolbar=no,menubar=no,fullscreen=yes,location=no,status=no",
-            "fullscreen=yes"
-        ].join("");
-        var win = open(slideURL, winname, winfeatures);
-    }
-};
-
-ZmBriefcaseApp.prototype.newDoc = function(contentType, name, winName){
-
-    var overviewController = appCtxt.getOverviewController();
-    var treeController = overviewController.getTreeController(ZmOrganizer.NOTEBOOK);
-    var folderId = ZmOrganizer.ID_BRIEFCASE;
-    if(treeController) {
-        var treeView = treeController.getTreeView(this.getOverviewId());
-        var briefcase = treeView ? treeView.getSelected() : null;
-        folderId = briefcase ? briefcase.id : ZmOrganizer.ID_BRIEFCASE;
-    }
-
-    var url = this.getEditURLForContentType(contentType) + "?" + (name ?"name=" + name + "&" : "") + "l="+folderId;
-    var winname = winName || name;
-    window.open(url, winname); 
-};
-
-ZmBriefcaseApp.prototype.getEditURLForContentType =
-function(contentType) {
-    AjxDispatcher.require("Startup1_1");
-    var editPage = "Slides.jsp";
-    switch(contentType) {
-        case ZmMimeTable.APP_ZIMBRA_SLIDES: editPage = "Slides.jsp"; break;
-        case ZmMimeTable.APP_ZIMBRA_EXCEL:  editPage = "SpreadSheetDoc.jsp"; break;
-        default: return null;
-    };
-    var editURL = appContextPath + "/public/" +  editPage;
-    return editURL;
-};
-
-ZmBriefcaseApp.prototype.isDoclet =
-function(item) {
-    var contentType = item.getContentType();
-    switch(contentType) {
-        case ZmMimeTable.APP_ZIMBRA_SLIDES:
-                                            return true;
-        default: return false;
-    };
-    return false;
-};
-
 
 ZmBriefcaseApp.prototype._handleNewItem =
 function() {
@@ -445,6 +377,12 @@ function(results, callback) {
 
 ZmBriefcaseApp.prototype.setActive =
 function(active) {
+/*
+	if (active) {
+		var briefcaseController = AjxDispatcher.run("GetBriefcaseController");
+		briefcaseController.show();
+	}
+*/
 };
 
 ZmBriefcaseApp.prototype._newBriefcaseCallback =
@@ -506,9 +444,8 @@ function(msgId, partId, name, folderId,items) {
 	}
 
 	if (bController.isShared(folderId)) {
-		if(msgId.indexOf(":") < 0){ //for shared folder, use fully qualified msg id if it is not already
-           msgId = appCtxt.getActiveAccount().id + ":" + msgId; 
-        }
+		ZmOrganizer._showErrorMsg(ZmMsg.sharedFolderNotSupported);
+		return;
 	}
 
 	var itemFound = false;
@@ -517,7 +454,7 @@ function(msgId, partId, name, folderId,items) {
         items = items.getArray();
     }
 
-    for (var i in items) {
+	for (var i in items) {
 		var item = items[i];
 		if (item.name == name) {
 			itemFound = true;

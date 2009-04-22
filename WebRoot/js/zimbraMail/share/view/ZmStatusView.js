@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 ZmStatusView = function(parent, className, posStyle, id) {
@@ -198,8 +200,8 @@ function(level, text, icon, loc, customTransitions) {
     }
 
     // get transitions
-    var location = appCtxt.getSkinHint("toast", "location") || loc;
-    var transitions = customTransitions || appCtxt.getSkinHint("toast", "transitions") || ZmToast.DEFAULT_TRANSITIONS;
+    var location = appCtxt.get(ZmSetting.SKIN_HINTS, "toast.location") || loc;
+    var transitions = customTransitions || appCtxt.get(ZmSetting.SKIN_HINTS, "toast.transitions") || ZmToast.DEFAULT_TRANSITIONS;
 
 	transitions = [].concat( {type:"position", location:location}, transitions, {type:"hide"} );
 

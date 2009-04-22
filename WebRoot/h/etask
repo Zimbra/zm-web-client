@@ -100,10 +100,10 @@
                                         <td><div class='vertSep'></div></td>
                                         <c:choose>
                                             <c:when test="${isNewAppt}">
-                                                <app:button name="actionCancelConfirm" src="common/ImgCancel.gif" tooltip="cancel" text="cancel"/>
+                                                <app:button name="actionCancel" src="common/ImgCancel.gif" tooltip="cancel" text="cancel"/>
                                             </c:when>
                                             <c:otherwise>
-                                                <app:button name="actionCancelConfirm" src="common/ImgClose.gif" tooltip="close" text="close"/>
+                                                <app:button name="actionCancel" src="common/ImgClose.gif" tooltip="close" text="close"/>
                                             </c:otherwise>
                                         </c:choose>
 
@@ -129,7 +129,7 @@
                                                     <app:tagOptions mailbox="${mailbox}" keys="${true}"/>
                                                 </select>
                                             </td>
-                                            <app:button name="actionGo" tooltip="actionTaskListGoTT" text="actionGo"/>
+                                            <app:button name="actionGo" tooltip="actionConvGoTT" text="actionGo"/>
                                             <td><div class='vertSep'></div></td>
                                         </c:if>
                                     </tr>
@@ -366,7 +366,7 @@
                         <tr>
                             <td colspan="3" style='padding:10px'>
                                 <textarea class='MsgCompose' rows="30" cols="80" style='width:100%'
-                                              name="body">${fn:escapeXml(empty compose.content ? compose.description : compose.content)}</textarea>
+                                              name="body">${fn:escapeXml(compose.content)}</textarea>
                             </td>
                         </tr>
                     </table>

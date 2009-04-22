@@ -1,19 +1,3 @@
-<%--
- * ***** BEGIN LICENSE BLOCK *****
- * 
- * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008 Zimbra, Inc.
- * 
- * The contents of this file are subject to the Yahoo! Public License
- * Version 1.0 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
- * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
- * ***** END LICENSE BLOCK *****
---%>
 <%@ tag body-content="empty" %>
 <%@ attribute name="context" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.tag.SearchContext"%>
 <%@ attribute name="keys" rtexprvalue="true" required="true" %>
@@ -57,10 +41,10 @@
                         </td>
                         <td><div class='vertSep'></div></td>
                     </c:if>
-                    <td height="100%" nowrap valign="middle" style="padding: 0 1px 0 1px">
+                    <td height="100%" nowrap valign="middle" style="padding: 0 2px 0 2px">
                         <input onclick="zprint();return false;" id="${keys ? 'IOPPRINT' : ''}" name="actionPrint" type="image" src="${iconPath}/startup/ImgPrint.gif" alt='<fmt:message key="actionPrint" />' title='<fmt:message key="actionPrint" />' />
                     </td>
-                    <td height="100%" nowrap valign="middle" style="padding: 0 1px 0 1px">
+                    <td height="100%" nowrap valign="middle" style="padding: 0 2px 0 2px">
                         <input onclick="zprint();return false;" id="${keys ? 'SOPPRINT' : ''}" name="actionPrint" type="submit" value='<fmt:message key="actionPrint" />' title='<fmt:message key="actionPrint" />' />
                     </td>
                     <%--
@@ -79,17 +63,14 @@
                     <td><div class='vertSep'></div></td>
                     <c:if test="${!context.folder.isDrafts}">
                         <td nowrap valign="middle">
-                            <input  type="hidden" value="" id="drag_target_folder" name="dragTargetFolder" />
-                            <input  type="hidden" value="" id="drag_msg_id" name="dragMsgId" />
                             <select name="folderId" onchange="zclick('SOPMOVE')">
-                                <option value="" selected><fmt:message key="moveAction"/></option>
-                                <optgroup label=<fmt:message key="actionOptSep"/>>
-                                <zm:forEachFolder var="folder">
+                                <option value="" selected><fmt:message key="moveAction"/>
+                                <option disabled><fmt:message key="actionOptSep"/>
+                                    <zm:forEachFolder var="folder">
                                     <c:if test="${folder.isConversationMoveTarget and !folder.isTrash and !folder.isSpam}">
-                                        <option <c:if test="${keys}">id="OPFLDR${folder.id}"</c:if> value="m:${folder.id}">${zm:truncate(fn:escapeXml(zm:getFolderPath(pageContext, folder.id)),10,true)}</option>
+                                <option <c:if test="${keys}">id="OPFLDR${folder.id}"</c:if> value="m:${folder.id}">${zm:truncate(fn:escapeXml(zm:getFolderPath(pageContext, folder.id)),10,true)}
                                     </c:if>
-                                </zm:forEachFolder>
-                                </optgroup>
+                                    </zm:forEachFolder>
                             </select>
                         </td>
                         <app:button id="${keys ? 'OPMOVE' : ''}" name="actionMove" text="actionMove" tooltip="actionMoveTT"/>
