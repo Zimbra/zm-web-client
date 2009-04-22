@@ -867,7 +867,7 @@ function(ev) {
 	}
 	else
 	{
-		var resp = this._sendInviteReply(type, compId);
+		var resp = this._sendInviteReply(type, compId, null, null, null, ev._msg);
 		if (resp && appCtxt.isChildWindow) {
 			window.close();
 		}
@@ -1115,11 +1115,11 @@ function(action, componentId, instanceDate, accountName) {
 };
 
 ZmMailListController.prototype._sendInviteReply =
-function(type, componentId, instanceDate, accountName, ignoreNotifyDlg) {
+function(type, componentId, instanceDate, accountName, ignoreNotifyDlg, origMsg) {
 	var msg = new ZmMailMsg();
 	AjxDispatcher.require("CalendarCore");
 
-	msg._origMsg = this.getMsg();
+	msg._origMsg = origMsg || this.getMsg();
 	msg.inviteMode = type;
 	msg.isReplied = true;
 	msg.isForwarded = false;

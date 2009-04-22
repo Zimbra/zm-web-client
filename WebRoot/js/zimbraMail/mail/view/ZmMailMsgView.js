@@ -1508,6 +1508,7 @@ ZmMailMsgView.prototype._inviteToolBarListener =
 function(ev) {
 	ev._inviteReplyType = ev.item.getData(ZmOperation.KEY_ID);
 	ev._inviteComponentId = null;
+	ev._msg = this._msg;
 	this.notifyListeners(ZmMailMsgView.REPLY_INVITE_EVENT, ev);
 };
 
