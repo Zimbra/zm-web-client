@@ -797,8 +797,9 @@ function(event) {
     //var cc = appCtxt.getApp(ZmApp.MAIL).getComposeController();
     var cc = AjxDispatcher.run("GetComposeController");
     cc._setView({action:action, msg: msg, toOverride: toOverride, inNewWindow: false});
-    var callback = new AjxCallback(this, cc._handleResponseSaveDraftListener);
-    cc.sendDocs(docInfo,true,callback);
+	var draftType = ZmComposeController.DRAFT_TYPE_AUTO;
+    var callback = new AjxCallback(cc, cc._handleResponseSaveDraftListener, [draftType]);
+    cc.sendDocs(docInfo, draftType, callback);
 };
 
 ZmBriefcaseController.prototype._moveCallback =
