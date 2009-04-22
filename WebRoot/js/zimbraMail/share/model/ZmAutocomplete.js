@@ -28,6 +28,9 @@ ZmAutocomplete = function() {
 	this._acCache[ZmAutocomplete.AC_TYPE_CONTACT]	=	{};
 	this._acCache[ZmAutocomplete.AC_TYPE_LOCATION]	=	{};
 	this._acCache[ZmAutocomplete.AC_TYPE_EQUIPMENT]	=	{};
+
+	var settings = appCtxt.getSettings();
+	settings.getSetting(ZmSetting.GAL_AUTOCOMPLETE).addChangeListener(new AjxListener(this, this._settingChangeListener));
 };
 
 // choices for text in the returned match object
@@ -338,6 +341,15 @@ function(str, acType, checkCacheable) {
 		return null;
 	}
 };
+
+ZmAutocomplete.prototype._settingChangeListener =
+function(ev) {
+	if (ev.type != ZmEvent.S_SETTING) { return; }
+	if (ev.source.id == ZmSetting.GAL_AUTOCOMPLETE) {
+		this._acCache[ZmAutocomplete.AC_TYPE_CONTACT] = {};
+	}
+};
+
 
 /**
  * Autocomplete result, with fields for the caller to look at, and fields to
