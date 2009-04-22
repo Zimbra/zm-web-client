@@ -171,12 +171,14 @@ ZmMailListView.prototype.reRenderListView =
 function() {
 	var isMultiColumn = this.isMultiColumn();
 	if (isMultiColumn != this._isMultiColumn) {
+		var sel = this.getSelection();
 		this._isMultiColumn = isMultiColumn;
 		this.headerColCreated = false;
 		this._headerList = this._getHeaderList();
 		this._normalClass = isMultiColumn ? DwtListView.ROW_CLASS : ZmMailListView.ROW_DOUBLE_CLASS;
 		var list = this.getList() || (new AjxVector());
 		this.set(list.clone());
+		this.setSelectedItems(sel);
 	}
 };
 
