@@ -2001,7 +2001,12 @@ function(ev) {
 ZmCalViewController.prototype._handleResponseHandleApptEditRespondAction =
 function(appt, id, op) {
 	var msgController = this._getMsgController();
-	msgController.setMsg(appt.message);
+	var msg = appt.message;
+	msg.subject = msg.subject || appt.name;
+	if (!msg.getAddress(AjxEmailAddress.REPLY_TO)) {
+		msg.setAddress(AjxEmailAddress.REPLY_TO, new AjxEmailAddress(appt.organizer));
+	}
+	msgController.setMsg(msg);
 
 	// poke the msgController
 	switch (id) {
