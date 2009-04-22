@@ -21,7 +21,7 @@
 %><%@ taglib prefix="fmt" uri="com.zimbra.i18n" %><%!
 	static final String A_IMAGES = "com.zimbra.htmlclient:images";
 	static final String V_NO_SKIN = "<noskin>";
-	static final Map<String,Map<String,String>> SKIN_IMAGES = new HashMap<String,Map<String,String>>();
+	static final Map<String,Map<String,String>> SKIN_IMAGES = Collections.synchronizedMap(new HashMap<String,Map<String,String>>());
 
 	static File getImageSrc(File appdir, String src, Locale locale) {
 		File file = new File(appdir, src);
@@ -54,7 +54,7 @@
 	// get image map
 	Map<String,String> images = SKIN_IMAGES.get(cacheId);
 	if (images == null) {
-		images = new HashMap<String,String>();
+		images = Collections.synchronizedMap(new HashMap<String,String>());
 		SKIN_IMAGES.put(cacheId, images);
 	}
 
