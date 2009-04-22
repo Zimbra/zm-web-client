@@ -815,9 +815,17 @@ function() {
 
 // Locates and sizes the given list of components to fit within their containers.
 ZmAppViewMgr.prototype._fitToContainer =
-function(components) {
+function(components, isIeTimerHack) {
 	for (var i = 0; i < components.length; i++) {
 		var cid = components[i];
+		if (!isIeTimerHack && AjxEnv.isIE && (cid == ZmAppViewMgr.C_TASKBAR)) {
+			// Hack for bug 36924: ie bar is in the middle of the screen when resizing ie.
+			if (!this._ieHackAction) {
+				this._ieHackAction = new AjxTimedAction(this, this._fitToContainer, [[ZmAppViewMgr.C_TASKBAR], true]);
+			}
+			AjxTimedAction.scheduleAction(this._ieHackAction, 1);
+		}
+
 		DBG.println(AjxDebug.DBG3, "fitting to container: " + cid);
 		var cont = this._containers[cid];
 		if (cont) {
