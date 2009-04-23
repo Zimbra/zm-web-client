@@ -1720,14 +1720,15 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr>
 			<td class='ZOptionsSectionMain'>
-				<table width=100%>
-					<tr><td><div id='${id}_grantForm'></div></td></tr>
-				</table>
+				<div id='${id}_sharesBy'></div>
 			</td>
 		</tr>
 		<tr>
 			<td class='ZOptionsSectionMain'>
-				<div id='${id}_sharesBy'></div>
+				<table width=100%>
+					<tr><td><div class="sharingPageListTitle"><$=ZmMsg.shareAFolder$></div></td></tr>
+					<tr><td><div id='${id}_grantForm'></div></td></tr>
+				</table>
 			</td>
 		</tr>
 	</table>
