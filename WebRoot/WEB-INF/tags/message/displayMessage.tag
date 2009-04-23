@@ -186,6 +186,13 @@
                                     </td>
                                 </tr>
                             </c:if>
+                            <c:if test="${not empty message.requestHeader}">
+                                <tr>
+                                    <td nowrap align="right" class='MsgHdrAttAnchor'>
+                                        <app:certifiedMessage var="reqHdr" msg="${message}" display="${true}"/>                                                                                
+                                    </td>
+                                </tr>
+                            </c:if>
                         </table>
                     </td>
                 </tr>
