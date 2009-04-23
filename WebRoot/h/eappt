@@ -96,10 +96,10 @@
                             <td><div class='vertSep'></div></td>
                             <c:choose>
                                 <c:when test="${isNewAppt}">
-                                    <app:button name="actionCancelConfirm" src="common/ImgCancel.gif" tooltip="cancel" text="cancel"/>
+                                    <app:button name="actionCancel" id="OPCANCEL" src="common/ImgCancel.gif" tooltip="cancel" text="cancel"/>
                                 </c:when>
                                 <c:otherwise>
-                                    <app:button name="actionCancelConfirm" src="common/ImgClose.gif" tooltip="close" text="close"/>        
+                                    <app:button name="actionCancel" id="OPCANCEL" src="common/ImgClose.gif" tooltip="close" text="close"/>        
                                 </c:otherwise>
                             </c:choose>
 
@@ -156,7 +156,7 @@
         </table>
     </c:set>
 
-    <form action="" method="post" enctype="multipart/form-data" accept-charset="utf-8">
+    <form action="" method="post" enctype="multipart/form-data" accept-charset="utf-8" name="apptForm">
         <table width="100%" style="height:100%;" cellpadding="0" cellspacing="0">
             <tr>
                 <td class='TbTop'>
@@ -503,7 +503,6 @@
                         </c:if>
                         <tr>
                             <td colspan="3" style='padding:10px'>
-                                ${message.body.content}
                                 <textarea class='MsgCompose' rows="30" cols="80" style='width:100%'
                                               name="body">${fn:escapeXml(empty compose.content ? compose.description : compose.content)}</textarea>
                             </td>
@@ -562,6 +561,84 @@
     </app:autoComplete>
     <SCRIPT TYPE="text/javascript">
     <!--
+
+    /* dirty check */
+    var _fields = {} ;
+    grabFieldValues = function(){
+        var form = document.forms["apptForm"];
+        var _el = form.elements;
+        for ( var _i=0;_i < _el.length; _i++){
+            if((_el[_i].type == "hidden") || (_el[_i].type == "submit")){
+                // do nothing
+            }else if(_el[_i].type == "text"){
+                _fields[_el[_i].name] = _el[_i].value;
+            }else if(_el[_i].type == "radio"){
+                if(_el[_i].checked){
+                    _fields[_el[_i].name] = _el[_i].value+"::"+_el[_i].checked;
+                }
+            }else if(_el[_i].type == "checkbox"){
+                _fields[_el[_i].name] = _el[_i].checked;
+            }else if(_el[_i].type == "select-one"){
+                _fields[_el[_i].name] = _el[_i].options[_el[_i].selectedIndex].value;
+            }else if(_el[_i].type == "textarea"){
+                _fields[_el[_i].name] = _el[_i].value;
+            }
+        }
+    }
+    grabFieldValues();
+    var _form = document.forms["apptForm"];
+
+    var trim = function(strVal){
+        return strVal.replace(/^\s*/, "").replace(/\s*$/, "");
+    }
+
+    checkForChanges = function(){
+        var _el = _form.elements;
+        var _checkFail = false;
+        for ( var _i=0;_i < _el.length; _i++){
+            if(_el[_i].name != null && _el[_i].name != ""){
+                if((_el[_i].type == "hidden") || (_el[_i].type == "submit")){
+                    // do nothing
+                }else if(_el[_i].type == "text"){
+                    if(_fields[_el[_i].name] != _el[_i].value) { _checkFail = true; }
+                }else if(_el[_i].type == "radio"){
+                    if(_el[_i].checked){
+                        if(_fields[_el[_i].name] != _el[_i].value+"::"+_el[_i].checked) { _checkFail = true; }
+                    }
+                }else if(_el[_i].type == "checkbox"){
+                    if(_fields[_el[_i].name] != _el[_i].checked) {_checkFail = true; }
+
+                }else if(_el[_i].type == "select-one"){
+                    if(_fields[_el[_i].name] != _el[_i].options[_el[_i].selectedIndex].value) {_checkFail = true; }
+
+                }else if(_el[_i].type == "textarea"){
+                    if(_fields[_el[_i].name] != _el[_i].value) {_checkFail = true; }
+                }
+            }
+        }
+
+        if(_checkFail){
+            return (confirm("<fmt:message key="optionsExitConfirmation"/>"));
+        } else {
+            return true;
+        }
+    }
+
+    /* List of elements that has to be handled for send */
+    var sendElemts = new Array("SOPCANCEL", "IOPCANCEL");
+    var y;
+    for (y in sendElemts){
+        var _elemA = document.getElementById(sendElemts[y]);
+        _elemA.onclick = function () {
+           return cancelOnbeforeUnload();
+        }
+    }
+
+    var cancelOnbeforeUnload = function(){
+        window.onbeforeunload = null;
+        return checkForChanges();
+    }
+    
     var zclick = function(id) { var e = document.getElementById(id); if (e) e.click(); }
     //-->
    </SCRIPT>
