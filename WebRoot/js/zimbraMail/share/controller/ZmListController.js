@@ -620,6 +620,7 @@ function(ev) {
 	} else if (op == ZmOperation.PAGE_DBL_BACK || op == ZmOperation.PAGE_DBL_FORW) {
 		this._paginateDouble(op == ZmOperation.PAGE_DBL_FORW);
 	}
+    appCtxt.getAppViewMgr().fitAppToolbar(true);
 };
 
 // Participant listeners
