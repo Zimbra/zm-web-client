@@ -233,7 +233,7 @@ ZmSpreadSheetToolbars.prototype._createToolbar2 = function() {
 
 	b = new DwtToolBarButton(params);
 	b.setImage("Sum");
-	b.setToolTipContent("Sum cells");
+	b.setToolTipContent(ZmMsg.sumCells);
 	b.setData("SS", "Func-SumCells");
 	b.addSelectionListener(listener);
 
