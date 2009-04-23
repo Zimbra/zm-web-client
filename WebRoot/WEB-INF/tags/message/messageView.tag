@@ -23,7 +23,8 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <app:handleError>
     <zm:getMailbox var="mailbox"/>
-    <zm:getMessage var="msg" id="${not empty param.id ? param.id : context.currentItem.id}" markread="${(context.folder.isMountPoint and context.folder.effectivePerm eq 'r') ? 'false' : 'true'}" neuterimages="${empty param.xim}"/>
+    <app:certifiedMessage var="reqHdr"/>    
+    <zm:getMessage var="msg" id="${not empty param.id ? param.id : context.currentItem.id}" markread="${(context.folder.isMountPoint and context.folder.effectivePerm eq 'r') ? 'false' : 'true'}" neuterimages="${empty param.xim}" requestHeaders="${reqHdr}"/>
     <zm:computeNextPrevItem var="cursor" searchResult="${context.searchResult}" index="${context.currentItemIndex}"/>
     <c:set var="ads" value='${msg.subject} ${msg.fragment}'/>
 
