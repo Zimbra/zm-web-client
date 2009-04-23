@@ -305,28 +305,55 @@ grabFieldValues = function(){
 grabFieldValues();
 var _form = document.forms["optionsForm"];
 
+var trim = function(strVal){
+    return strVal.replace(/^\s*/, "").replace(/\s*$/, "");
+}
+
 checkForChanges = function(){
     var _el = _form.elements;
     var _checkFail = false;
     for ( var _i=0;_i < _el.length; _i++){
-        if((_el[_i].type == "hidden") || (_el[_i].type == "submit")){
-            // do nothing
-        }else if(_el[_i].type == "text"){
-            if(_fields[_el[_i].name] != _el[_i].value) { _checkFail = true;}
-        }else if(_el[_i].type == "radio"){
-            if(_el[_i].checked){
-                if(_fields[_el[_i].name] != _el[_i].value+"::"+_el[_i].checked) { _checkFail = true; }
+        if(_el[_i].name != null && _el[_i].name != ""){
+            if((_el[_i].type == "hidden") || (_el[_i].type == "submit")){
+                // do nothing
+            }else if(_el[_i].type == "text"){
+                if(_fields[_el[_i].name] != _el[_i].value) { _checkFail = true; }
+            }else if(_el[_i].type == "radio"){
+                if(_el[_i].checked){
+                    if(_fields[_el[_i].name] != _el[_i].value+"::"+_el[_i].checked) { _checkFail = true; }
+                }
+            }else if(_el[_i].type == "checkbox"){
+                if(_fields[_el[_i].name] != _el[_i].checked) {_checkFail = true; }
+
+            }else if(_el[_i].type == "select-one"){
+                if(_fields[_el[_i].name] != _el[_i].options[_el[_i].selectedIndex].value) {_checkFail = true; }
+
+            }else if(_el[_i].type == "textarea"){
+                if(_fields[_el[_i].name] != _el[_i].value) {_checkFail = true; }
             }
-        }else if(_el[_i].type == "checkbox"){
-            if(_fields[_el[_i].name] != _el[_i].checked) {_checkFail = true; }
-
-        }else if(_el[_i].type == "select-one"){
-            if(_fields[_el[_i].name] != _el[_i].options[_el[_i].selectedIndex].value) {_checkFail = true;  }
-
-        }else if(_el[_i].type == "textarea"){
-            if(_fields[_el[_i].name] != _el[_i].value) {_checkFail = true;}
         }
     }
+
+    <c:if test="${param.selected eq 'signatures'}">
+        for(var j = 0 ;j < sigcount ; j++) {
+            if(myEdit[j] != null) {
+                myEdit[j].saveHTML();
+                var fname = "signatureValue"+j;
+                var sigValue = trim(document.getElementById(fname).value);
+                if(trim(_fields[fname]) != sigValue) {
+                    _checkFail = true;
+                }
+            }
+        }
+        if(document.getElementById("newSignatureValue")) {
+            myEditor.saveHTML();
+            var newSig = trim(document.getElementById("newSignatureValue").value);
+            if(trim(_fields["newSignatureValue"]) != newSig) {
+                _checkFail = true;
+            }
+        }
+    </c:if>
+
     if(_checkFail){
         return "<fmt:message key="optionsExitConfirmation"/>";
     }else{
