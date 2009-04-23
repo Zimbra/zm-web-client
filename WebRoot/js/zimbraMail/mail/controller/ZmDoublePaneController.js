@@ -205,7 +205,7 @@ function() {
 		list.push(ZmOperation.SEP, ZmOperation.DETACH);
 	}
 
-    list.push(ZmOperation.SEP,ZmOperation.VIEW_MENU);
+    list.push(ZmOperation.VIEW_MENU);
 	return list;
 };
 
