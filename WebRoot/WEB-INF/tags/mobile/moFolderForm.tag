@@ -68,25 +68,25 @@
                                             <zm:forEachFolder parentid="${mailbox.inbox.id}" var="fldr"
                                                               skiproot="false">
                                                 <c:if test="${(fldr.isContactMoveTarget || fldr.isMessageMoveTarget) && (empty efolder || efolder.id != fldr.id)}">
-                                                    <option value="${fldr.id}" ${fldr.id eq efolder.parentId? 'selected=selected' : ''}>${fn:escapeXml(fldr.rootRelativePath)}</option>
+                                                    <option value="${fldr.id}" ${fldr.id eq efolder.parentId? 'selected=selected' : ''}>${zm:getFolderPath(pageContext, fldr.id)}</option>
                                                 </c:if>
                                             </zm:forEachFolder>
                                             <zm:forEachFolder parentid="${mailbox.sent.id}" var="fldr"
                                                               skiproot="false">
                                                 <c:if test="${(fldr.isContactMoveTarget || fldr.isMessageMoveTarget) && (empty efolder || efolder.id != fldr.id)}">
-                                                    <option value="${fldr.id}" ${fldr.id eq efolder.parentId? 'selected=selected' : ''}>${fn:escapeXml(fldr.rootRelativePath)}</option>
+                                                    <option value="${fldr.id}" ${fldr.id eq efolder.parentId? 'selected=selected' : ''}>${zm:getFolderPath(pageContext, fldr.id)}</option>
                                                 </c:if>
                                             </zm:forEachFolder>
                                             <zm:forEachFolder parentid="${mailbox.drafts.id}" var="fldr"
                                                               skiproot="false">
                                                 <c:if test="${(fldr.isContactMoveTarget || fldr.isMessageMoveTarget) && (empty efolder || efolder.id != fldr.id)}">
-                                                    <option value="${fldr.id}" ${fldr.id eq efolder.parentId? 'selected=selected' : ''}>${fn:escapeXml(fldr.rootRelativePath)}</option>
+                                                    <option value="${fldr.id}" ${fldr.id eq efolder.parentId? 'selected=selected' : ''}>${zm:getFolderPath(pageContext, fldr.id)}</option>
                                                 </c:if>
                                             </zm:forEachFolder>
                                             <zm:forEachFolder var="fldr" skiproot="${true}" skipsystem="${true}"
                                                               skiptopsearch="${true}">
                                                 <c:if test="${(fldr.isContactMoveTarget || fldr.isMessageMoveTarget) && (empty efolder || efolder.id != fldr.id)}">
-                                                    <option value="${fldr.id}" ${fldr.id eq efolder.parentId? 'selected=selected' : ''}>${fn:escapeXml(fldr.rootRelativePath)}</option>
+                                                    <option value="${fldr.id}" ${fldr.id eq efolder.parentId? 'selected=selected' : ''}>${zm:getFolderPath(pageContext, fldr.id)}</option>
                                                 </c:if>
                                             </zm:forEachFolder>
                                         </select>
@@ -99,7 +99,7 @@
                                             <zm:forEachFolder var="fldr" parentid="${mailbox.contacts.parentId}"
                                                               skiproot="false" skiptrash="true">
                                                 <c:if test="${fldr.isContactMoveTarget && (empty efolder || efolder.id ne fldr.id)}">
-                                                    <option value="${fldr.id}" ${efolder.parentId eq fldr.id ? 'selected=selected' : ''}>${fn:escapeXml(fldr.rootRelativePath)}</option>
+                                                    <option value="${fldr.id}" ${efolder.parentId eq fldr.id ? 'selected=selected' : ''}>${zm:getFolderPath(pageContext, fldr.id)}</option>
                                                 </c:if>
                                             </zm:forEachFolder>
                                         </select>
@@ -115,7 +115,7 @@
                                             <zm:forEachFolder var="fldr" skiproot="${false}" skipsystem="${false}"
                                                               skiptrash="${true}">
                                                 <c:if test="${fldr.isWikiMoveTarget && (empty efolder || efolder.id ne fldr.id)}">
-                                                    <option value="${fldr.id}" ${efolder.parentId eq fldr.id ? 'selected=selected' : ''}>${fn:escapeXml(fldr.rootRelativePath)}</option>
+                                                    <option value="${fldr.id}" ${efolder.parentId eq fldr.id ? 'selected=selected' : ''}>${zm:getFolderPath(pageContext, fldr.id)}</option>
                                                 </c:if>
                                             </zm:forEachFolder>
 
@@ -129,7 +129,7 @@
                                             <zm:forEachFolder var="fldr" skiproot="${false}" skipsystem="${false}"
                                                               skiptrash="${true}">
                                                 <c:if test="${fldr.isDocumentMoveTarget && (empty efolder || efolder.id ne fldr.id)}">
-                                                    <option value="${fldr.id}" ${fldr.id eq efolder.parentId ? 'selected=selected' : ''}>${fn:escapeXml(fldr.rootRelativePath)}</option>
+                                                    <option value="${fldr.id}" ${fldr.id eq efolder.parentId ? 'selected=selected' : ''}>${zm:getFolderPath(pageContext, fldr.id)}</option>
                                                 </c:if>
                                             </zm:forEachFolder>
 
@@ -141,7 +141,7 @@
                                         <option value="${mailbox.inbox.parentId}">--<fmt:message key="in"/>--</option>
                                         <zm:forEachFolder parentid="${mailbox.inbox.parentId}" var="fldr" skiproot="false">
                                             <c:if test="${fldr.isTaskMoveTarget}">
-                                                <option value="${fldr.id}">${fn:escapeXml(fldr.rootRelativePath)}</option>
+                                                <option value="${fldr.id}">${zm:getFolderPath(pageContext, fldr.id)}</option>
                                             </c:if>
                                         </zm:forEachFolder>
                                     </select>

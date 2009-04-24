@@ -117,7 +117,7 @@
         <optgroup label="<fmt:message key="moveAction"/>">
             <zm:forEachFolder var="folder">
                 <c:if test="${folder.id != context.folder.id and folder.isMessageMoveTarget and !folder.isTrash and !folder.isSpam}">
-                    <option value="moveTo_${folder.id}">${fn:escapeXml(folder.rootRelativePath)}</option>
+                    <option value="moveTo_${folder.id}">${zm:getFolderPath(pageContext, folder.id)}</option>
                 </c:if>
             </zm:forEachFolder>
         </optgroup>
