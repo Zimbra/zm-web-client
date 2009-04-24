@@ -34,13 +34,15 @@ ZmMsgController = function(container, mailApp, sessionId) {
 	this.viewId = [ZmId.VIEW_MSG, this.sessionId].join("");
 };
 
+ZmMsgController.prototype = new ZmMailListController;
+ZmMsgController.prototype.constructor = ZmMsgController;
+
 ZmMsgController.MODE_TO_CONTROLLER = {};
 ZmMsgController.MODE_TO_CONTROLLER[ZmId.VIEW_TRAD]		= "GetTradController";
 ZmMsgController.MODE_TO_CONTROLLER[ZmId.VIEW_CONV]		= "GetConvController";
 ZmMsgController.MODE_TO_CONTROLLER[ZmId.VIEW_CONVLIST]	= "GetConvListController";
 
-ZmMsgController.prototype = new ZmMailListController;
-ZmMsgController.prototype.constructor = ZmMsgController;
+ZmMsgController.DEFAULT_TAB_TEXT = ZmMsg.message;
 
 // Public methods
 
@@ -104,9 +106,12 @@ function() {
 	var elements = {};
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
 	elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[this._currentView];
+	var buttonText = (this._msg && this._msg.subject) ? this._msg.subject.substr(0, ZmAppViewMgr.TAB_BUTTON_MAX_TEXT) :
+					 									ZmMsgController.DEFAULT_TAB_TEXT;
 	this._setView({view:this._currentView, elements:elements, clear:appCtxt.isChildWindow,
-				   tabParams:{id:this.viewId, text:ZmMsg.message, image:"MessageView",
-							  textPrecedence:85, tooltip:ZmMsg.message}});
+				   tabParams:{id:this.viewId, text:buttonText, image:"MessageView",
+							  textPrecedence:85, tooltip:ZmMsgController.DEFAULT_TAB_TEXT}});
+
 };
 
 ZmMsgController.prototype.getKeyMapName =

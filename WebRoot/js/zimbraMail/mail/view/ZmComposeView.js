@@ -2573,6 +2573,13 @@ function(ev) {
 		var key = DwtKeyEvent.getCharCode(ev);
 		if (key == 3 || key == 13) {
 			cv._focusHtmlEditor();
+		} else {
+			var button = cv._controller._tabButton;
+			var buttonText = cv._subjectField.value ? cv._subjectField.value.substr(0, ZmAppViewMgr.TAB_BUTTON_MAX_TEXT) :
+							 						  ZmComposeController.DEFAULT_TAB_TEXT;
+			if (buttonText != button.getText()) {
+				button.setText(buttonText);
+			}
 		}
 	} else {
 		cv._adjustAddrHeight(element);

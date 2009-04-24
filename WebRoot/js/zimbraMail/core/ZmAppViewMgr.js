@@ -190,6 +190,8 @@ ZmAppViewMgr.PENDING_VIEW = "ZmAppViewMgr.PENDING_VIEW";
 ZmAppViewMgr.BROWSER_BACK		= "BACK";
 ZmAppViewMgr.BROWSER_FORWARD	= "FORWARD";
 
+ZmAppViewMgr.TAB_BUTTON_MAX_TEXT = 15;
+
 ZmAppViewMgr._setContainerIds =
 function() {
 	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_BANNER]					= ZmId.SKIN_LOGO;

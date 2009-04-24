@@ -77,6 +77,8 @@ ZmComposeController.DRAFT_TYPE_NONE		= "none";
 ZmComposeController.DRAFT_TYPE_MANUAL	= "manual";
 ZmComposeController.DRAFT_TYPE_AUTO		= "auto";
 
+ZmComposeController.DEFAULT_TAB_TEXT = ZmMsg.compose;
+
 ZmComposeController._setStatics =
 function() {
 
@@ -481,8 +483,8 @@ function(initHide, composeMode) {
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
 	elements[ZmAppViewMgr.C_APP_CONTENT] = this._composeView;
 	this._app.createView({viewId:this.viewId, elements:elements, callbacks:callbacks,
-						 tabParams:{id:this.tabId, text:ZmMsg.compose, image:"NewMessage",
-						 textPrecedence:75, tooltip:ZmMsg.compose}});
+						 tabParams:{id:this.tabId, text:ZmComposeController.DEFAULT_TAB_TEXT, image:"NewMessage",
+						 textPrecedence:75, tooltip:ZmComposeController.DEFAULT_TAB_TEXT}});
     if (initHide) {
 	    this._composeView.setLocation(Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
 	    this._composeView.enableInputs(false);
@@ -740,6 +742,8 @@ function(params) {
 	} else {
 		this._draftType = ZmComposeController.DRAFT_TYPE_NONE;
 	}
+
+	this._tabButton = appCtxt.getAppController().getAppChooser().getButton(this.tabId);
 
 	if (params.callback) {
 		params.callback.run(this);
