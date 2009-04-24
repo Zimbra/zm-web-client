@@ -161,7 +161,7 @@
         <c:set var="h" value="${compose.startHour}"/>
         <c:forEach var="hi" begin="0" end="23">
             <option value="${hi}" <c:if test="${h eq hi}"> selected</c:if>>
-                <fmt:formatDate value="${zm:getTodayHour(hi, null).time}" pattern="${hourFmt}" timeZone="${tz}"/>
+                <fmt:formatDate value="${zm:getTodayHour(hi, tz).time}" pattern="${hourFmt}"/>
             </option>
         </c:forEach>
     </select>
@@ -201,7 +201,7 @@
         <c:set var="h" value="${compose.endHour}"/>
         <c:forEach var="hi" begin="0" end="23">
             <option value="${hi}" <c:if test="${h eq hi}"> selected</c:if>>
-                <fmt:formatDate value="${zm:getTodayHour(hi, null).time}" pattern="${hourFmt}" timeZone="${tz}"/>
+                <fmt:formatDate value="${zm:getTodayHour(hi, null).time}" pattern="${hourFmt}"/>
             </option>
         </c:forEach>
     </select>
@@ -380,8 +380,8 @@
         <div class="table">
             <div class="table-row">
                 <div class="table-cell">
-                    <textarea name="body" id="bodyField" cols="39"
-                              class="Textarea">${fn:escapeXml(compose.content)}</textarea>
+                    <textarea class='Textarea' id="bodyField" cols="39"
+                                              name="body">${fn:escapeXml(empty compose.content ? compose.description : compose.content)}</textarea>
                 </div>
             </div>
         </div>

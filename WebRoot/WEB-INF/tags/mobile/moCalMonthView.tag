@@ -103,14 +103,14 @@
                             <fmt:formatDate var="datef" timeZone="${timezone}" value="${currentDay.time}" pattern="yyyyMMdd"/>
                             <c:set var="hasappt" value="${zm:hasAnyAppointments(appts, currentDay.timeInMillis, zm:addDay(currentDay, 1).timeInMillis)}"/>
                         <c:set var="sel" value="${zm:isSameDate(currentDay, date)}"/>
-                        <fmt:formatDate value="${today.time}" pattern="yyyyMMdd" var="_today"/>
+                        <fmt:formatDate value="${today.time}" pattern="yyyyMMdd" var="_today" scope="request"/>
                         <c:if test="${sel}">
                             <c:set var="currentHasAppt" value="${hasappt}"/>
-                            <c:set var="curId" value="${datef}"/>
+                            <c:set var="curId" value="${datef}" scope="request"/>
                         </c:if>
                         <mo:calendarUrl var="dayUrl" view="day" date="${datef}"/>
                         <td id="cell${datef}" class='zo_cal_mday${sel && !zm:isSameDate(today, currentDay) ? '_select' :''}${zm:isSameDate(today, currentDay) ? ' zo_cal_mday_today' : ''}' onclick="return selectDay('${datef}')">
-                            <c:if test="${hasappt}"><a id='day${datef}' href="${dayUrl}" onfocus="return selectDay('${datef}')"></c:if>
+                            <c:if test="${hasappt}"><a id='day${datef}' href="${dayUrl}" onclick="return selectDay('${datef}')"></c:if>
                             <fmt:formatDate var="dayTitle" value="${currentDay.time}" pattern="${dayFormat}" timeZone="${timezone}"/>
                             <span onclick="return zClickLink('day${datef}');" class='zo_cal_mday_text${O}${hasappt ? ' zo_cal_mday_appt':''}'>${fn:escapeXml(dayTitle)}</span>
                             <c:if test="${hasappt}"></a></c:if>
@@ -184,4 +184,3 @@
     </td>
 </tr>
 </table>
-
