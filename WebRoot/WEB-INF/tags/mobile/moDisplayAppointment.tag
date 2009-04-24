@@ -75,6 +75,10 @@
         <a <c:if test="${mailbox.features.calendar}">href="?st=cal&amp;view=day&amp;date=${date}"</c:if>>${fn:escapeXml(zm:getApptDateBlurb(pageContext, mailbox.prefs.timeZone, startDate.time, endDate.time, appt.allDay))}</a>
         <%--&nbsp;<span class='ZhCalTimeZone'>${mailbox.prefs.timeZoneCanonicalId}</span> --%>
     </p>
+    <c:if test="${not empty appt.description}">
+        <hr size="1"/>
+        ${fn:escapeXml(appt.description)}
+    </c:if>
     <p id="iframeBody">
         <mo:body message="${message}" body="${body}" theBody="${theBody}" mailbox="${mailbox}"/>
         <c:set var="bodies" value="${zm:getAdditionalBodies(body,message)}"/>
