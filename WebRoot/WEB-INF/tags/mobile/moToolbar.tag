@@ -67,7 +67,7 @@
                         <c:if test="${top_fldr_select eq '1'}">
                         <select class="_zo_select_button" name="sfi" onchange="document.location.href='?sfi='+this.value;">
                             <zm:forEachFolder var="fldr" skiproot="true">
-                                <c:if test="${fldr.isConversationView || fldr.isMessageView}">
+                                <c:if test="${fldr.isMailView and not fldr.isChats}">
                                     <option ${param.sfi eq fldr.id || context.folder.id eq fldr.id ? 'selected="selected"' : ''}
                                             value="${fldr.id}">${fn:escapeXml(zm:truncateFixed(zm:getFolderName(pageContext,fldr.id),15,true))}
                                     </option>
@@ -259,7 +259,7 @@
                         <c:if test="${btm_fldr_select ne '0'}">
                         <select class="_zo_select_button" name="sfi" onchange="fetchIt('?sfi='+this.value+'&amp;st=${context.st}');">
                             <zm:forEachFolder var="fldr" skiproot="true">
-                                <c:if test="${fldr.isConversationView || fldr.isMessageView}">
+                                <c:if test="${fldr.isMailView and not fldr.isChats}">
                                     <option ${param.sfi eq fldr.id || context.folder.id eq fldr.id ? 'selected="selected"' : ''}
                                             value="${fldr.id}">${fn:escapeXml(zm:truncateFixed(zm:getFolderName(pageContext,fldr.id),15,true))}
                                     </option>
