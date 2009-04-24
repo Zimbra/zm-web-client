@@ -118,7 +118,7 @@
 <c:forEach var="row" items="${layout.rows}">
     <tr style='height:100%'>
         <c:if test="${row.rowNum % 4 eq 0}">
-            <td class='zo_cal_dayhour' nowrap="nowrap" width="1%" rowspan="4" style='border-left:none'>
+            <td class='zo_cal_dayhour' nowrap="nowrap" width="1%" rowspan="4" style='border-left:none' valign="top"> 
                 <fmt:formatDate value="${row.date}" type="time" timeStyle="short" timeZone="${timezone}"/>
             </td>
         </c:if>

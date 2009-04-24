@@ -82,7 +82,7 @@
 <c:if test="${not empty invId}">
 	<c:param name="useInstance" value="0"/>
 	<c:param name="invId" value="${invId}"/>
-
+    <c:param name="_ajxnoca" value="1"/>    
 </c:if>
 <c:if test="${not empty param.bt}">
 	<c:param name="bt" value="${param.bt}"/>

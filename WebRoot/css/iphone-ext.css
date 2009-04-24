@@ -171,34 +171,34 @@ a {
 #appbar a.appTab,#appbar a.appTab-active{
     background: url( "/img/mobile/iphone-ext/AppsNav.png" ) top left no-repeat;
 }
-a#mail {
+a#mail,a.mail {
     background-position: 50% 0 !important;
 }
-a#mail-active {
+a#mail-active,a.mail-active {
     background-position: 50% 0 !important;
 }
-a#contact {
+a#contact,a.contact {
     background-position: 50% -53px !important;
 }
-a#contact-active {
+a#contact-active,a.contact-active {
     background-position: 50% -53px !important;
 }
-a#cal {
+a#cal,a.cal {
     background-position: 50% -107px !important;
 }
-a#cal-active {
+a#cal-active,a.cal-active {
     background-position: 50% -107px !important;
 }
-a#folders {
+a#folders,a.folders {
     background-position: 50% -160px !important;
 }
-a#folders-active {
+a#folders-active,a.folders-active {
     background-position: 50% -160px !important;
 }
-a#search {
+a#search,a.search {
     background-position: 50% -216px !important;
 }
-a#search-active {
+a#search-active,a.search-active {
     background-position: 50% -216px !important;
 }
 #searchbar,#savesearchbar {

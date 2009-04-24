@@ -100,15 +100,15 @@
 <div class="table cmp_from_to_cc_table">
     <c:if test="${fn:length(mailbox.accountInfo.identities) gt 1 }">
         <div class="table-row cmp_from_row">
-            <span class='label' class='table-cell'>
-                <fmt:message key="fromLabel"/>
+            <span class='table-cell label'>
+                <label for="fromField"><fmt:message key="fromLabel"/></label>
             </span>
             <span class="table-cell">
-                <select id="fromField" name="from">
+                <select id="fromField" name="from" style="width:98% !important;">
                     <c:forEach var="identity" items="${mailbox.accountInfo.identities}">
                         <option
                                 <c:if test="${identity.default}">selected='true'</c:if>
-                                value="${fn:escapeXml(identity.fromEmailAddress.fullAddressQuoted)}"><%--${fn:escapeXml(identity.name)}::--%>${fn:escapeXml(identity.fromAddress)}</option>
+                                value="${fn:escapeXml(identity.fromEmailAddress.fullAddressQuoted)}"><%--${fn:escapeXml(identity.name)}::--%>${zm:truncateFixed(fn:escapeXml(identity.fromEmailAddress.fullAddressQuoted),50,true)}</option>
                     </c:forEach>
                 </select>
             </span>
@@ -116,20 +116,24 @@
     </c:if>
     <div class="table-row cmp_to_row">
             <span class='label table-cell'>
-                <label for="toField"><fmt:message key="toLabel"/> </label></span>
+                <label for="toField"><fmt:message key="toLabel"/> </label>
+                <span><a href="javascript:void(0);" onclick="return toggleElem('cc_bcc_div',this,'&nbsp;','<fmt:message key="ccbcc"/>');"><fmt:message key="ccbcc"/></a></span>
+            </span>
             <span class="table-cell">
             <div class="ZhAC ZhACTo">
-                <input id="toField" rows="1" name="to" class="Textarea" value="${fn:escapeXml(compose.to)}"/>
+                <input id="toField" rows="1" autocomplete="OFF" name="to" class="Textarea" value="${fn:escapeXml(compose.to)}"/>
                 <div class='ZhACCont' id="toContainer" style='width:99%;top:1.5em;'></div>
             </div>
             </span>
     </div>
+    </div>
+    <div class="table cmp_from_to_cc_table" id="cc_bcc_div" style="display:none;">
     <div class="table-row cmp_cc_row">
             <span class="label table-cell"><label for="ccField"><fmt:message
                     key="ccLabel"/> </label></span>
             <span class="table-cell">
                 <div class="ZhAC ZhACCc">
-                    <input class="Textarea" id="ccField" type="text" value="${fn:escapeXml(compose.cc)}" name="cc">
+                    <input class="Textarea" autocomplete="OFF" id="ccField" type="text" value="${fn:escapeXml(compose.cc)}" name="cc">
                     <div class='ZhACCont' id="ccContainer" style='width:99%;'></div>
                 </div>
             </span>
@@ -137,9 +141,9 @@
     <div class="table-row cmp_bcc_row">
             <span class="label table-cell"><label for="bccField"><fmt:message
                     key="bccLabel"/> </label></span>
-            <span class="table-cell">
+        <span class="table-cell">
                 <div class="ZhAC ZhACBCc">
-                    <input class="Textarea" id="bccField" type="text" value="${fn:escapeXml(compose.bcc)}" name="bcc">
+                    <input class="Textarea" autocomplete="OFF" id="bccField" type="text" value="${fn:escapeXml(compose.bcc)}" name="bcc">
                     <div class='ZhACCont' id="bccContainer" style='width:99%;'></div>
                 </div>
             </span>

@@ -105,6 +105,12 @@
         height: 0px;
         visibility:visible;
     }
+    .normalCur{
+       cursor:auto; 
+    }
+    .loadingCur{
+       cursor: wait; 
+    }
 </style>
 <script type="text/javascript">
 <!--
@@ -182,6 +188,7 @@ var getXHR = function() {
 var zClickLink = function(id, t) {
 
     var targ = id ? document.getElementById(id) : t ;
+    if(!targ) return;
     var href = targ.href;
     if (!href || loading) return false;
     if (targ.target) return true;
@@ -196,7 +203,23 @@ var zClickLink = function(id, t) {
     var container = getContainer(containerId);
     ajxReq(href, null, container);
     delete xhr;
+    setActiveTab(targ);
     return false;
+};
+var setActiveTab = function(targ){
+    if(targ && targ.id.match(/(mail|contact|cal|folders|search)/ig)){
+        var ids = ['mail','contact','cal','folders','search'];
+        for(var i=0;i<ids.length;i++){
+            var eid = ids[i];
+            var  e = document.getElementById(eid);
+            if(e){
+                e.className=e.className.replace(e.id+'-active',e.id);
+            }
+        }
+
+        targ.className=targ.className.replace(targ.id,targ.id+'-active').replace('-active-active','-active');//.replace(targ.id+'-active','') + ' '+targ.id + '-active';
+    }
+
 };
 
 var convertToHashUrl = function(url){
@@ -339,7 +362,7 @@ var ajxReq = function(url, query, container, method, justPrefetch) {
     if((new Date().getTime() - lastRendered) > INAVTITIY_TIMEOUT ){ //Let's expire the cache now.
         ajxCache.expire();
     }                        
-    if((!method ||(method == "GET" || method == "get")) && url.indexOf("_ajxnoca=1") < 0 ){
+    if((!method ||(method == "GET" || method == "get")) && url.indexOf("_ajxnoca=1") < 0 && MAX_CACHE_REQUEST > 0){
            var xhr = ajxCache.get([url,query].join("?"));
            if(xhr){
                 parseResponse(xhr, container);
@@ -359,7 +382,7 @@ var ajxReq = function(url, query, container, method, justPrefetch) {
                 clearTimeout(reqTimer);
             }
             if(xhr.readyState == 4){
-                if((method == "GET" || method == "get") && url.indexOf("_ajxnoca=1") < 0){
+                if((method == "GET" || method == "get") && url.indexOf("_ajxnoca=1") < 0 && MAX_CACHE_REQUEST > 0){
                     ajxCache.set([url,query].join("?"),xhr,justPrefetch);
                 }
                 lastRendered = new Date().getTime();
@@ -425,7 +448,12 @@ var showLoadingMsg = function(msg, show, status, timeout, divId) {
                 useShowHide = true;
             }
             msgDiv.className = "shown";
-            msgDiv.innerHTML = "<div class='" + status + "'>" + msg + "</div>";
+            if(window.event && window.event.pageY > 200){
+                document.getElementById('curDiv').style.left = (window.event.pageX-5)+'px';
+                document.getElementById('curDiv').style.top = (window.event.pageY-5)+'px';
+                document.getElementById('curDiv').style.display = 'block';
+            }
+            msgDiv.innerHTML = "<div class='LoadingDiv " + status + "'>" + msg + "</div>";
             if (timeout) {
                 setTimeout(function() {
                     msgDiv.className = "hidden";
@@ -442,7 +470,7 @@ var showLoadingMsg = function(msg, show, status, timeout, divId) {
             if(useShowHide){
                 msgDiv.style.display = 'none';
             }
-
+            document.getElementById('curDiv').style.display = 'none';
         }
     }
 };
@@ -456,14 +484,15 @@ var selectDay = function(datestr) {
             var list = document.getElementById("list" + currentDate);
             if (list == null) list = document.getElementById("listempty");
             list.style.display = "none";
-            document.getElementById("cell" + currentDate).className = "zo_cal_mday" + ((currentDate == '${_today}') ? ' zo_cal_mday_today' : '');
+            if(document.getElementById("cell" + currentDate))
+            document.getElementById("cell" + currentDate).className = "zo_cal_mday" + ((currentDate == _today) ? ' zo_cal_mday_today' : '');
         }
         cell.className = 'zo_cal_mday_select';
         var nlist = document.getElementById("list" + datestr);
         if (nlist == null) nlist = document.getElementById("listempty");
         nlist.style.display = "block";
         currentDate = datestr;
-
+        return false;
     }
 };
 
@@ -531,23 +560,23 @@ var getContainer = function(id) {
             var="active"
             value="${empty param.st || param.st eq 'message' || param.st eq 'conversation' ? '-active' : ''}"/> <a
             style='width: ${100/appcount}%;' targetid="maincontainer" accesskey="${requestScope.mailapp_accesskey}"
-            id="mail${active}" class="appTab${active} table-cell" href="${aurl}?st=${mailbox.prefs.groupMailBy}"><span
-            onclick="return zClickLink('mail${active}')"><fmt:message
-            key="mail"/></span><span onclick="return zClickLink('mail${active}')" style="display:none;"
+            id="mail" class="mail${active} appTab${active} table-cell" href="${aurl}?st=${mailbox.prefs.groupMailBy}"><span
+            onclick="return zClickLink('mail')"><fmt:message
+            key="mail"/></span><span onclick="return zClickLink('mail')" style="display:none;"
                                      class="apunread">${mailbox.inbox.unreadCount}</span> </a> <c:if
             test="${mailbox.features.contacts}"> <c:set var="active"
                                                         value="${param.st eq 'contact' || param.st eq 'ab' ? '-active' : ''}"/>
         <a style='width: ${100/appcount}%;' targetid="maincontainer" accesskey="${requestScope.contactapp_accesskey}"
-           id="contact${active}" class="appTab${active} table-cell" href="${aurl}?st=contact"><span
-                onclick="return zClickLink('contact${active}')"><fmt:message key="contacts"/></span></a>
+           id="contact" class="contact${active} appTab${active} table-cell" href="${aurl}?st=contact"><span
+                onclick="return zClickLink('contact')"><fmt:message key="contacts"/></span></a>
             </c:if>
         <c:if test="${mailbox.features.calendar}">
         <c:set var="active" value="${param.st eq 'cal' || param.st eq 'cals' ? '-active' : ''}"/>
         <a style='width: ${100/appcount}%;' targetid="maincontainer" accesskey="${requestScope.calapp_accesskey}"
-           id="cal${active}" class="appTab${active} table-cell" href="${aurl}?st=cal"><span
-                onclick="return zClickLink('cal${active}')"><fmt:message
+           id="cal" class="cal${active} appTab${active} table-cell" href="${aurl}?st=cal"><span
+                onclick="return zClickLink('cal')"><fmt:message
                 key="calendar"/></span>
-            <span onclick="return zClickLink('cal${active}')" style="display:none;" class="aptoday">
+            <span onclick="return zClickLink('cal')" style="display:none;" class="aptoday">
             <fmt:formatDate value="${zm:getToday(mailbox.prefs.timeZone).time}" timeZone="${mailbox.prefs.timeZone}"
                             pattern="EEE|d|MMM" var="today"/>
             <c:set var="darr" value="${fn:split(today,'|')}"/>
@@ -559,8 +588,8 @@ var getContainer = function(id) {
          <%--c:if test="${mailbox.features.tasks}">
             <c:set var="active" value="${param.st eq 'tasks' || param.st eq 'task' ? '-active' : ''}"/>
             <a style='width: ${100/appcount}%;' targetid="maincontainer" accesskey="${requestScope.taskapp_accesskey}"
-               id="tasks${active}" class="appTab${active} table-cell" href="${aurl}?st=task"><span
-                    onclick="return zClickLink('cal${active}')"><fmt:message
+               id="tasks" class="appTab${active} table-cell" href="${aurl}?st=task"><span
+                    onclick="return zClickLink('cal')"><fmt:message
                     key="tasks"/></span>
             </a>
          </c:if--%>
@@ -573,18 +602,19 @@ var getContainer = function(id) {
             </c:if>
         <c:set var="active" value="${param.st eq 'briefcase' || param.st eq 'wiki' || param.st eq 'briefcases' || param.st eq 'notebooks' ? '-active' : ''}"/>
         <a style='width: ${98/appcount}%;' targetid="maincontainer" accesskey="${requestScope.fldrapp_accesskey}"
-           id="folders${active}" class="appTab${active} table-cell" href="${aurl}?st=${mailbox.features.briefcases ? 'briefcases' : 'notebooks'}"><span
-                onclick="return zClickLink('folders${active}')"><fmt:message
+           id="folders" class="folders${active} appTab${active} table-cell" href="${aurl}?st=${mailbox.features.briefcases ? 'briefcases' : 'notebooks'}"><span
+                onclick="return zClickLink('folders')"><fmt:message
                 key="folders"/></span></a>
         </c:if>
         <c:set var="active" value="${param.search eq '1' ? '-active' : ''}"/>
         <a style='width: ${100/appcount}%;' targetid="maincontainer" accesskey="${requestScope.search_accesskey}"
-           id="search${active}" class="appTab${active} table-cell"
+           id="search" class="search${active} appTab${active} table-cell"
            href="${aurl}?search=${param.search eq '1' ? '0' : '1'}&amp;${fn:replace(pageContext.request.queryString,'search=1&amp;','')}"
            onclick='return toggleElem("searchbar",this);'><span><fmt:message key="search"/></span></a>
     </div>
 </div>
 <div class="container" id="msgDiv"></div>
+<div style="display:none;position:absolute;" class="container LoadingDiv" id="curDiv">&nbsp;&nbsp;</div>
 </c:if>
 <div class="container" id="maincontainer">
     <script type="text/javascript">
@@ -626,10 +656,7 @@ var getContainer = function(id) {
                 <input
                     type="hidden" name="crumb"
                     value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/> <%-- <span class="table-cell" width="70%">--%>
-                <input type="text" class="searchInput" name="sq" value="${zm:cook(param.sq)}"/>
-                <!--</span>
-              <span class="table-cell" width="30%">-->
-                <input type="submit" class="searchButton zo_button" name="actionSearch"
+                <input type="text" class="searchInput" name="sq" value="${zm:cook(param.sq)}"/><input type="submit" class="searchButton zo_button" name="actionSearch"
                        value="<fmt:message key="search"/>"/><!--</span>-->
             </form>
         </div>
@@ -678,6 +705,12 @@ var getContainer = function(id) {
     }
     <c:if test="${not empty requestScope.title}">
     document.title = "<fmt:message key="zimbraTitleLabel"/> ${fn:escapeXml(requestScope.title)}";
+    </c:if>
+    <c:if test="${not empty requestScope.curId}">
+    window.currentDate = '${requestScope.curId}';
+    </c:if>
+    <c:if test="${not empty requestScope._today}">
+    window._today = '${requestScope._today}';
     </c:if>
 </script>
 <c:if test="${empty param.ajax}">
@@ -738,7 +771,6 @@ var getContainer = function(id) {
         var loading = false;
         var reqCount = 0;
         var defHash = '#${mailbox.prefs.groupMailBy}';
-        var currentDate = '${curId}';
         var reqTimer = null;
         var lastRendered = new Date().getTime();
 
@@ -757,6 +789,9 @@ var getContainer = function(id) {
             }
             </c:if>
         }
+        if(document.location.hash){
+            setActiveTab(document.getElementById(document.location.hash.replace('#','').replace(/(notebooks|wiki|briefcases|briefcase)/ig,'folders').replace(/(cals)/ig,'cal').replace(/(message|conversation)/,'mail')));
+        }
         //-->
     </script>
-    </body> </html> </c:if>    
+    </body> </html> </c:if>   

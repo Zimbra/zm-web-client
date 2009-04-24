@@ -46,6 +46,7 @@
     <c:param name="action" value="edit"/>
     <c:param name="id" value="${contact.id}"/>
     <c:param name="pid" value="${contact.id}"/>
+    <c:param name="_ajxnoca" value="1"/>
 </c:url>
 <zm:computeNextPrevItem var="cursor" searchResult="${context.searchResult}"
                         index="${context.currentItemIndex}"/>

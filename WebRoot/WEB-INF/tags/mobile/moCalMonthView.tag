@@ -166,7 +166,7 @@
         <div class='zo_cal_mlist' id="listempty" <c:if test="${not currentHasAppt}">style='display:block'</c:if>>
             <table width="100%" cellpadding="0" cellspacing="0" class='zo_cal_list'>
                     <tr><td colspan="2" class="zo_cal_listi_subject">&nbsp;</td></tr>
-                    <tr><td colspan="2" class="zo_cal_listi_empty">No Appointments</td></tr>
+                    <tr><td colspan="2" class="zo_cal_listi_empty"><fmt:message key="MO_noAppointments"/></td></tr>
             </table>
         </div>
         <div class='zo_cal_mlist' style='display:block'>
