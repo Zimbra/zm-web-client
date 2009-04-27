@@ -144,6 +144,8 @@ ZmAppViewMgr.C_APP_CONTENT				= "main";
 ZmAppViewMgr.C_APP_CONTENT_FULL			= "fullScreen";
 ZmAppViewMgr.C_STATUS					= "status";
 ZmAppViewMgr.C_SASH						= "sash";
+ZmAppViewMgr.C_FOOTER					= "footer";
+ZmAppViewMgr.C_AD						= "adsrvc";
 
 ZmAppViewMgr.ALL_COMPONENTS = [ZmAppViewMgr.C_BANNER, ZmAppViewMgr.C_USER_INFO, ZmAppViewMgr.C_QUOTA_INFO,
 							   ZmAppViewMgr.C_OFFLINE_STATUS, ZmAppViewMgr.C_PRESENCE,
@@ -152,7 +154,7 @@ ZmAppViewMgr.ALL_COMPONENTS = [ZmAppViewMgr.C_BANNER, ZmAppViewMgr.C_USER_INFO, 
 							   ZmAppViewMgr.C_APP_CHOOSER, ZmAppViewMgr.C_TREE, ZmAppViewMgr.C_TREE_FOOTER,
 							   ZmAppViewMgr.C_TOOLBAR_TOP, ZmAppViewMgr.C_TOOLBAR_BOTTOM,
 							   ZmAppViewMgr.C_APP_CONTENT, ZmAppViewMgr.C_APP_CONTENT_FULL,
-                               ZmAppViewMgr.C_STATUS, ZmAppViewMgr.C_SASH];
+                               ZmAppViewMgr.C_STATUS, ZmAppViewMgr.C_SASH, ZmAppViewMgr.C_FOOTER, ZmAppViewMgr.C_AD];
 
 /**
  * These components are the ones that are part of the app display when NOT
@@ -201,6 +203,8 @@ function() {
 	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_APP_CONTENT_FULL]		= ZmId.SKIN_APP_MAIN_FULL;
 	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_STATUS]					= ZmId.SKIN_STATUS;
 	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_SASH]					= ZmId.SKIN_SASH;
+	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_FOOTER]					= ZmId.SKIN_FOOTER;	
+	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_AD]						= ZmId.SKIN_AD;	
 };
 
 // Public methods
