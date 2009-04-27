@@ -1814,6 +1814,7 @@ function(myId, tagId) {
 
 ZmMailMsgView._detachCallback =
 function(isRfc822, result) {
+    var appCtxt = window.parentAppCtxt || window.appCtxt;
 	var resp = result.getResponse().GetMsgResponse;
 	var list = appCtxt.getApp(ZmApp.MAIL).getMailListController().getList();
 	var msg = new ZmMailMsg(resp.m[0].id, list, true); // do not cache this temp msg
