@@ -1156,7 +1156,7 @@ function(findHits, includeInlineImages, includeInlineAtts) {
 		for (var i = 0; i < attachments.length; i++) {
 			var attach = attachments[i];
 
-			if (!this.isRealAttachment(attach) || (attach.ct.match(/^image/) && attach.ci && !includeInlineImages) || (attach.cd == "inline" && attach.filename && !includeInlineAtts)) {
+			if (!this.isRealAttachment(attach) || (attach.ct.match(/^image/) && attach.ci && !includeInlineImages) || (attach.cd == "inline" && attach.filename && ZmMimeTable.isRenderable(attach.ct) && !includeInlineAtts)) {
 				continue;
 			}
 
