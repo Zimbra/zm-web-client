@@ -328,6 +328,7 @@ function(op) {
 
 ZmBriefcaseApp.prototype._handleNewItem =
 function() {
+	appCtxt.getAppViewMgr().popView(true, ZmId.VIEW_LOADING);	// pop "Loading..." page
 	var callback = new AjxCallback(this, this._handleUploadNewItem);
 	this.getBriefcaseController().__popupUploadDialog(callback, ZmMsg.uploadFileToBriefcase);
 };
