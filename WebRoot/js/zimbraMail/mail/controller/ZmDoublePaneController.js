@@ -410,8 +410,10 @@ function(parent, num) {
 	var isDraft = false;
 	if (num == 1) {
 		var item = this._doublePaneView.getSelection()[0];
-		isMsg = (item.type == ZmItem.MSG || (item.numMsgs == 1));
-		isDraft = item.isDraft;
+		if (item) {
+			isMsg = (item.type == ZmItem.MSG || (item.numMsgs == 1));
+			isDraft = item.isDraft;
+		}
 	}
 	parent.enable(ZmOperation.SHOW_ORIG, isMsg);
 	if (appCtxt.get(ZmSetting.FILTERS_ENABLED)) {
