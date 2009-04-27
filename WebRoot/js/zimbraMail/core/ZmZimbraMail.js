@@ -1507,6 +1507,15 @@ function() {
 ZmZimbraMail.logOff =
 function() {
 	ZmZimbraMail._isLogOff = true;
+
+	// bug fix #36791 - reset the systray icon when returning to Account Setup
+	if (appCtxt.isOffline && AjxEnv.isWindows &&
+		appCtxt.get(ZmSetting.OFFLINE_SUPPORTS_DOCK_UPDATE))
+	{
+		window.platform.icon().imageSpec = "resource://webapp/icons/default/launcher.ico";
+		window.platform.icon().title = null;
+	}
+
 	var url = AjxUtil.formatUrl({path:appContextPath, qsArgs:{loginOp:'logout'}});
 	ZmZimbraMail.sendRedirect(url);	// will trigger onbeforeunload
 };
