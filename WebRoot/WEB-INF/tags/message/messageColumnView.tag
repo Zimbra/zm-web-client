@@ -63,7 +63,7 @@
                 <td class='List' width="45%" valign="top">
                     <table width="100%" cellpadding="2" cellspacing="0">
                         <tr>
-                            <th class='CB' nowrap><input id="OPCHALL" onClick="checkAll(document.zform.id,this)" type=checkbox name="allids"/>
+                            <th class='CB' nowrap><input id="OPCHALL" onClick="checkAll(document.zform.id,this);" type=checkbox name="allids"/>
                             <th><fmt:message key="arrangedBy"/>: <fmt:message key="date"/></th>
                             <th width="1%" nowrap><app:img src="startup/ImgAttachment.gif" altkey="ALT_ATTACHMENT"/>
                         </tr>
@@ -203,8 +203,7 @@
         }
         window.open("/h/printmessage?id="+c);
     }
-
-
+    
         //-->
 </SCRIPT>
 
@@ -251,7 +250,7 @@
 
     function init() {
         var rowId, rowObj, rowNo, mesgId, endDr = false;
-
+        var zrcount = ${empty context.searchResult ? 0 : context.searchResult.size };
     <c:set var="ids" value="" />
     <zm:forEachFolder var="folder">
     <c:if test="${(folder.isMessageMoveTarget) and not context.folder.isDrafts}">
@@ -273,7 +272,6 @@
 
         var tBody = $("mess_list_tbody");
         var drop = new YAHOO.util.DDProxy(tBody, 'default', { dragElId: "ddProxy", resizeFrame: false, centerFrame: false });
-
         drop.onMouseDown = function(ev) {
             /*get TR el. from event obj */
             var target = $E.getTarget(ev);
@@ -284,7 +282,19 @@
             rowId = parentNode.id;
             rowObj = parentNode;
             rowNo = rowId.substring(1);
-            mesgId = document.getElementById("C"+rowNo).value;
+
+            //
+            var msgIds = [];
+            var count = 0;
+            for(var k = 0 ; k < zrc ; k++) {
+                if(document.getElementById("C"+k).checked) {
+                    msgIds[count] = document.getElementById("C"+k).value;
+                    count++;
+
+                }
+            }
+            var msgIdstr = msgIds.join(",");
+            mesgId = (msgIdstr != "") ? msgIdstr : document.getElementById("C"+rowNo).value;
             this.deltaY = 15;
             this.deltaX = (YAHOO.util.Event.getPageX(ev) - $D.getXY(document.getElementById(rowId))[0]);
 
@@ -293,13 +303,22 @@
         drop.startDrag= function(){
             var dragEl = this.getDragEl();
             var clickEl = document.getElementById(rowId);
-            /*proxy is a clone of row el. with few extra styles */
-            dragEl.innerHTML = clickEl.innerHTML;
-
-            $D.setStyle(dragEl, "color", $D.getStyle(clickEl, "color"));
-            $D.setStyle(dragEl, "height", $D.getStyle(clickEl, "offsetHeight")+"px");
-            $D.setStyle(dragEl, "width", "70%");
-            $D.addClass(dragEl, "proxy");
+            var msglen = mesgId.split(",").length;
+            dragEl.innerHTML = (msglen > 1) ? '<td><img id="zldragdrop" src="/zimbra/img/large/ImgDndMultiNo_48.gif"/><div style="position:absolute;top:27;left:23;color:white;width:20px;text-align:center;font-weight:bold;">'+msglen+'</div></td>' : clickEl.innerHTML;
+            document.getElementById("C"+rowNo).checked = true;
+            if(msglen == 1) {
+                dragEl.style.border = "2px solid #aaa";
+                $D.setStyle(dragEl, "color", $D.getStyle(clickEl, "color"));                
+                $D.setStyle(dragEl, "height", clickEl.offsetHeight+"px");
+                $D.setStyle(dragEl, "width", "45%");
+                $D.addClass(dragEl.id, "proxy");
+            } else {
+                dragEl.style.border = "none";
+                $D.setStyle(dragEl, "color", "");
+                $D.setStyle(dragEl, "height","");
+                $D.setStyle(dragEl, "width", "");
+                $D.removeClass(dragEl.id, "proxy");
+            }
         };
 
         drop.endDrag = function(){
@@ -315,7 +334,7 @@
                     points: {
                         to: $D.getXY(srcEl)
                     }
-                },0.6,YAHOO.util.Easing.easeOut )
+                },0.4,YAHOO.util.Easing.easeOut )
                 var proxyid = proxy.id;
                 var thisid = this.id;
 
@@ -329,16 +348,27 @@
         };
 
         drop.onDragOver= function(ev, id){
+            var msglen = mesgId.split(",").length;
             if (lastTarget) {
                 $D.removeClass(lastTarget,'dragoverclass');
+                if(msglen > 1) {
+                    document.getElementById("zldragdrop").src = "/zimbra/img/large/ImgDndMultiNo_48.gif"
+                }
             }
             lastTarget = id[0].id;
             $D.addClass(lastTarget,'dragoverclass');
+            if(msglen > 1) {
+                document.getElementById("zldragdrop").src = "/zimbra/img/large/ImgDndMultiYes_48.gif";
+            }
         };
 
         drop.onDragOut= function(ev, id){
             id = id[0].id;
             $D.removeClass(id,'dragoverclass');
+            var msglen = mesgId.split(",").length;
+            if(msglen > 1) {
+                document.getElementById("zldragdrop").src = "/zimbra/img/large/ImgDndMultiNo_48.gif"
+            }
         };
 
         drop.onDragDrop= function(ev, id){
