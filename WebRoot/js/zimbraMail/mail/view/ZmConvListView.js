@@ -228,7 +228,9 @@ function(htmlArr, idx, item, field, colIdx, params) {
 	if (field == ZmItem.F_SELECTION) {
 		idx = ZmMailListView.prototype._getCellContents.apply(this, arguments);
 		if (item.type == ZmItem.MSG && !this._isMultiColumn) {
-			htmlArr[idx++] = "<td width=28></td>";
+			htmlArr[idx++] = "<td width=28>";
+			idx = this._getImageHtml(htmlArr, idx, this._isExpandable(item) ? "NodeCollapsed" : null, this._getFieldId(item, ZmItem.F_EXPAND));
+			htmlArr[idx++] = "</td>";
 		}
 	} else if (field == ZmItem.F_EXPAND) {
 		idx = this._getImageHtml(htmlArr, idx, this._isExpandable(item) ? "NodeCollapsed" : null, this._getFieldId(item, field));
