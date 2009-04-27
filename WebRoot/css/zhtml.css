@@ -576,6 +576,11 @@ A:visited { color: blue; }
   height: 80px;
 }
 
+.ShowAllImageName{
+    font-weight: bold;
+    font-size: 16px;
+}
+
 .Status  {
 	padding: 2px 0px 2px 0px;
 }

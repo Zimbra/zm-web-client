@@ -137,6 +137,11 @@
 			<td style='white-space:nowrap'>
 				<a style='text-decoration:underline' class='AttLink' onclick='ZmZimbraMail.unloadHackCallback();' href='${url}&disp=a&fmt=zip'><$= ZmMsg.downloadAll $></a>
 			</td>
+            <$ if(data.viewAllUrl) { $>
+                <td style='white-space:nowrap'>
+                    &nbsp;&nbsp;<a style='text-decoration:underline' class='AttLink' href='${viewAllUrl}' target="_blank"><$= ZmMsg.viewAllImages $></a>
+                </td>
+            <$}$>
 		</tr>
 	</table>
 </template>

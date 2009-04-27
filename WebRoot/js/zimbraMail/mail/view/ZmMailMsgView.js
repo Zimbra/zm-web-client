@@ -1377,6 +1377,7 @@ function() {
 
 	var htmlArr = [];
 	var idx = 0;
+    var imageAttsFound = 0;
 
 	var attColumns = (this._controller.isReadingPaneOn() && this._controller.isReadingPaneOnRight())
 		? 1 : ZmMailMsgView.ATTC_COLUMNS;
@@ -1470,6 +1471,8 @@ function() {
 
 		htmlArr[idx++] = "</td></tr></table>";
 		htmlArr[idx++] = "</td>";
+
+        if(att.ct.indexOf("image") != -1) ++imageAttsFound;
 	}
 
 	// limit display size.  seems like an attc. row has exactly 16px; we set it
@@ -1482,7 +1485,8 @@ function() {
 	htmlArr[idx++] = "</tr></table>";
 
 	if (attLinks.length > 1) {
-		htmlArr[idx++] = ZmMailMsgView._buildZipUrl(appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI), this._msg.id, attLinks);
+        imageAttsFound = imageAttsFound > 1;
+		htmlArr[idx++] = ZmMailMsgView._buildZipUrl(this._msg.id, attLinks, imageAttsFound);
 	}
 
 	var attLinksDiv = document.getElementById(this._attLinksId);
@@ -1868,7 +1872,8 @@ function(msgId, vcardPartId) {
 };
 
 ZmMailMsgView._buildZipUrl =
-function(csfeUrl, itemId, attachments) {
+function(itemId, attachments, viewAllImages) {
+    var csfeUrl = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI);
 	var url = csfeUrl + "&id=" + itemId + "&part=";
 	for (var j = 0; j < attachments.length; j++) {
 		url += attachments[j].part;
@@ -1876,8 +1881,12 @@ function(csfeUrl, itemId, attachments) {
 			url += ",";
 		}
 	}
+    var params = {url:url};
+    if(viewAllImages){
+        params.viewAllUrl = "/h/viewimages?id="+itemId;             
+    }
 
-	return AjxTemplate.expand("mail.Message#DownloadAll", {url:url});
+	return AjxTemplate.expand("mail.Message#DownloadAll", params);
 };
 
 ZmMailMsgView.briefcaseCallback =

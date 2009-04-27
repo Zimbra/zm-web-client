@@ -474,6 +474,7 @@
           <url-pattern>/y/todo</url-pattern>
           <url-pattern>/h/briefcaseupload</url-pattern>
           <url-pattern>/h/mbriefcases</url-pattern>
+          <url-pattern>/h/viewimages</url-pattern>
       </jsp-property-group>
     </jsp-config>
 
