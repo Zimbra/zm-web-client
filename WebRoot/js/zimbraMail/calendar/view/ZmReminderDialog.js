@@ -236,11 +236,26 @@ ZmReminderDialog.prototype._addOpenApptListener =
 function(base_appt) {
 	appCtxt.getAppController().setStatusMsg(ZmMsg.allRemindersAreSnoozed, ZmStatusView.LEVEL_INFO);
 	this._handleSnoozeButton();
+
+	// bug fix #36946 - switch accounts if reminder is for non-active account
+	var parsed = (appCtxt.isOffline && appCtxt.multiAccounts)
+		? ZmOrganizer.parseId(base_appt.id) : null;
+	if (parsed && parsed.account != appCtxt.getActiveAccount()) {
+		var app = appCtxt.getCurrentApp();
+		var callback = new AjxCallback(this, this._handleOpenButtonListener, base_appt);
+		app.expandAccordionForAccount(parsed.account, true, callback);
+	} else {
+		this._handleOpenButtonListener(base_appt);
+	}
+};
+
+ZmReminderDialog.prototype._handleOpenButtonListener =
+function(base_appt) {
 	var calController = AjxDispatcher.run("GetCalController");
 	var miniCalendar = calController.getMiniCalendar();
 	calController.setDate(base_appt.startDate, 0, miniCalendar.getForceRollOver());
 	calController.setApptToOpenOnCalLoad(base_appt);//set appt to open after load
-	calController.show(ZmId.VIEW_CAL_DAY);	
+	calController.show(ZmId.VIEW_CAL_DAY);
 };
 
 ZmReminderDialog.prototype._getApptFromUid =
