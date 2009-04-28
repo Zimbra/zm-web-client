@@ -443,7 +443,7 @@ and the container element is replaced with that control.
 			<td class='ZOptionsSectionMain'>
 			<table width=100%>
 
-			<$ var isHtmlCompose = data.isEnabled(ZmSetting.HTML_COMPOSE_ENABLED) || data.isEnabled(ZmSetting.NOTEBOOK_ENABLED); $>
+			<$ var isHtmlCompose = data.isEnabled(ZmSetting.HTML_COMPOSE_ENABLED); $>
 			<$ if (isHtmlCompose) { $>
 				<tr><td class='ZOptionsLabel'><$=ZmMsg.composeLabel$></td>
 					<td class='ZOptionsNestedTable'>
