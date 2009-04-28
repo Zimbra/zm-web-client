@@ -199,6 +199,7 @@ function(calItemNode, instNode) {
 
 	this.uid 			= calItemNode.uid;
 	this.folderId 		= calItemNode.l || this._getDefaultFolderId();
+	this.invId			= calItemNode.invId;
 	this.id 			= this._getAttr(calItemNode, instNode, "id");
 	this.name 			= this._getAttr(calItemNode, instNode, "name");
 	this.fragment 		= this._getAttr(calItemNode, instNode, "fr");
@@ -207,6 +208,8 @@ function(calItemNode, instNode) {
 	this.isException 	= this._getAttr(calItemNode, instNode, "ex");
 	this.allDayEvent	= (instNode.allDay || calItemNode.allDay)  ? "1" : "0";
 	this.organizer		= calItemNode.or && calItemNode.or.a;
+	this.isOrg 			= this._getAttr(calItemNode, instNode, "isOrg");
+	this.transparency	= this._getAttr(calItemNode, instNode, "transp");
 
 	if (instNode.allDay == false) {
 		this.allDayEvent = "0";

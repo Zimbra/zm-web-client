@@ -230,11 +230,36 @@ function(ev) {
 	var data = this._apptData[obj.apptUid];
 	var appt = data ? data.appt : null;
 	if (appt) {
-		var cc = AjxDispatcher.run("GetCalController");
-		cc.setDate(appt.startDate, 0, cc.getMiniCalendar().getForceRollOver());
-		cc.setApptToOpenOnCalLoad(appt); //set appt to open after load
-		cc.show(ZmId.VIEW_CAL_DAY);
+		// bug fix #36946 - switch accounts if reminder is for non-active account
+		var parsed = (appCtxt.isOffline && appCtxt.multiAccounts)
+			? ZmOrganizer.parseId(appt.id) : null;
+		if (parsed && parsed.account != appCtxt.getActiveAccount()) {
+			var app = appCtxt.getCurrentApp();
+			var callback = new AjxCallback(this, this._handleOpenButtonListener, appt);
+			app.expandAccordionForAccount(parsed.account, true, callback);
+		} else {
+			this._handleOpenButtonListener(appt);
+		}
 	}
+};
+
+ZmReminderDialog.prototype._handleOpenButtonListener =
+function(appt) {
+	// the give appt object is a ZmCalBaseItem. We need a ZmAppt 
+	var newAppt = new ZmAppt();
+	for (var i in appt) {
+		if (!AjxUtil.isFunction(appt[i])) {
+			newAppt[i] = appt[i];
+		}
+	}
+	var callback = new AjxCallback(this, this._handleNewApptLoaded, newAppt);
+	newAppt.getDetails(null, callback, null, null, true);
+};
+
+ZmReminderDialog.prototype._handleNewApptLoaded =
+function(appt) {
+	var cc = AjxDispatcher.run("GetCalController");
+	cc._showAppointmentDetails(appt);
 };
 
 ZmReminderDialog.prototype._dismissButtonListener =

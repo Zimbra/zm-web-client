@@ -232,12 +232,12 @@ function(viewId, startDate, skipMaintenance) {
 			: cv.getCalTitle();
 		this._navToolBar[ZmId.VIEW_CAL].setText(navText);
 		if (!skipMaintenance) {
-            var work = ZmCalViewController.MAINT_VIEW; 
-            if(window.inlineCalSearchResponse) {
-                this.processInlineCalSearch();
-                window.inlineCalSearchResponse = null;
-                work = ZmCalViewController.MAINT_MINICAL|ZmCalViewController.MAINT_VIEW|ZmCalViewController.MAINT_REMINDER;
-            }
+			var work = ZmCalViewController.MAINT_VIEW;
+			if (window.inlineCalSearchResponse) {
+				this.processInlineCalSearch();
+				window.inlineCalSearchResponse = null;
+				work = ZmCalViewController.MAINT_MINICAL|ZmCalViewController.MAINT_VIEW|ZmCalViewController.MAINT_REMINDER;
+			}
 			this._scheduleMaintenance(work);
 		}
 		DBG.timePt("scheduling maintenance");
@@ -2467,36 +2467,32 @@ function(params) {
 
 ZmCalViewController.prototype._maintGetApptCallback =
 function(work, view, list, skipMiniCalUpdate, query) {
-	// TODO: turn off shell busy
-    if (list instanceof ZmCsfeException) {
-		this._searchInProgress = false;		
+	if (list instanceof ZmCsfeException) {
+		this._searchInProgress = false;
 		this._handleError(list, new AjxCallback(this, this._maintErrorHandler));
 		return;
 	}
-	DBG.println(AjxDebug.DBG2, "ZmCalViewController: _maintGetApptCallback: " + work);	
+	DBG.println(AjxDebug.DBG2, "ZmCalViewController: _maintGetApptCallback: " + work);
 	this._userQuery = query;
-	
+
 	if (work & ZmCalViewController.MAINT_VIEW) {
-        this._list = list;
+		this._list = list;
 		var sel = view.getSelection();
-        view.set(list, skipMiniCalUpdate);
+		view.set(list, skipMiniCalUpdate);
 
-        //For bug 27221, reset toolbar after refresh
-        view.deselectAll();
-        if(sel && sel.length > 0){
-            var id = sel[0].id;
-            for(i=0;i<this._list.size();i++){
-               if(this._list._array[i].id == id){
-                   view.setSelection(this._list._array[i],true);
-                   break;
-               }
-            }
-        }
-        this._resetToolbarOperations();
-
-		//open any appointment if need be after loading the calendar(this appt must be in the view
-		this._openApptOnCalLoad();
-    }
+		// For bug 27221, reset toolbar after refresh
+		view.deselectAll();
+		if (sel && sel.length > 0) {
+			var id = sel[0].id;
+			for (var i = 0; i < this._list.size(); i++) {
+				if (this._list._array[i].id == id) {
+					view.setSelection(this._list._array[i],true);
+					break;
+				}
+			}
+		}
+		this._resetToolbarOperations();
+	}
 
 	if (work & ZmCalViewController.MAINT_REMINDER) {
 		this._app.getReminderController().refresh();
@@ -2504,52 +2500,25 @@ function(work, view, list, skipMiniCalUpdate, query) {
 
 	this._searchInProgress = false;
 
-	//initiate schedule action for pending work (process queued actions)
-	if(this._pendingWork != ZmCalViewController.MAINT_NONE) {
+	// initiate schedule action for pending work (process queued actions)
+	if (this._pendingWork != ZmCalViewController.MAINT_NONE) {
 		var newWork = this._pendingWork;
 		this._pendingWork = ZmCalViewController.MAINT_NONE;
 		this._scheduleMaintenance(newWork);
 	}
-
-};
-
-ZmCalViewController.prototype._openApptOnCalLoad =
-function() {
-	if(!this._apptToOpenOnCalLoad) 
-		return;
-
-	var reqUID = this._apptToOpenOnCalLoad.uid;
-	this._apptToOpenOnCalLoad = null// !!make sure set this to null
-
-	var vec = this._apptCache._cachedApptVectors;
-	var _cachedApptsArry = new Array();
-	for (var el in vec) {
-		var vec2 = vec[el];
-		for (var el2 in vec2) {
-			_cachedApptsArry = _cachedApptsArry.concat(vec2[el2].getArray());
-		}
-	}
-	var len = _cachedApptsArry.length;
-	for (var i = 0; i < len; i++) {
-		if (_cachedApptsArry[i].uid == reqUID) {
-			this._showAppointmentDetails(_cachedApptsArry[i]);
-			return;
-		}
-	}
-};
-
-ZmCalViewController.prototype.setApptToOpenOnCalLoad =
-function(appt) {
-	this._apptToOpenOnCalLoad = appt;
 };
 
 ZmCalViewController.prototype._scheduleMaintenance =
 function(work, forceMaintenance) {
 	// schedule timed action
-	if (  (!this._searchInProgress || forceMaintenance) && (this._pendingWork == ZmCalViewController.MAINT_NONE) ) {
+	if ((!this._searchInProgress || forceMaintenance) &&
+		(this._pendingWork == ZmCalViewController.MAINT_NONE))
+	{
 		this._pendingWork |= work;
 		AjxTimedAction.scheduleAction(this._maintTimedAction, 0);
-	}else {
+	}
+	else
+	{
 		this._pendingWork |= work;
 	}
 };
@@ -2557,42 +2526,42 @@ function(work, forceMaintenance) {
 ZmCalViewController.prototype._maintenanceAction =
 function() {
 	var work = this._pendingWork;
-	this._searchInProgress = true;		
+	this._searchInProgress = true;
 	this._pendingWork = ZmCalViewController.MAINT_NONE;
-	
+
 	var maintainMiniCal = (work & ZmCalViewController.MAINT_MINICAL);
 	var maintainView = (work & ZmCalViewController.MAINT_VIEW);
 	var maintainRemainder = (work & ZmCalViewController.MAINT_REMINDER);
 	
-	if(work == ZmCalViewController.MAINT_REMINDER) {
+	if (work == ZmCalViewController.MAINT_REMINDER) {
 		this._app.getReminderController().refresh();
-		this._searchInProgress = false;		
+		this._searchInProgress = false;
 	}
-	else if(maintainMiniCal || maintainView || maintainRemainder) {
+	else if (maintainMiniCal || maintainView || maintainRemainder) {
 		var view = this.getCurrentView();
 		DBG.println(AjxDebug.DBG2, "ZmCalViewController: _maintenanceAction : View:" + view);
 		if (view && view.needsRefresh()) {
 			var rt = view.getTimeRange();
 			var cb = new AjxCallback(this, this._maintGetApptCallback, [work, view]);
-			
+
 			var params = {start:rt.start, end:rt.end, fanoutAllDay:view._fanoutAllDay(), callback:cb};
 			params.folderIds = this.getCheckedCalendarFolderIds();
 			params.query = this._userQuery;
-			
+
 			var miniCalParams = this.getMiniCalendarParams(work);
-			var reminderParams = null;
-			
-			if(maintainRemainder) {
+			var reminderParams;
+
+			if (maintainRemainder) {
 				reminderParams = this._app.getReminderController().getRefreshParams();
 				reminderParams.callback = null;
 			}
-						
+
 			this._apptCache.batchRequest(params, miniCalParams, reminderParams);
-		    
+
 			view.setNeedsRefresh(false);
-        }else {
-            this._searchInProgress = false;
-        }
+		} else {
+			this._searchInProgress = false;
+		}
 	}
 };
 
