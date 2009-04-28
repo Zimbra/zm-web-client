@@ -163,9 +163,15 @@ function(){
             var desc = allz[i].zimlet[0].description;
             if(allz[i].zimlet[0].zimletPanelItem){
                 if(allz[i].zimlet[0].zimletPanelItem instanceof Array){
-                    desc = appCtxt.getZimletMgr().getZimletsHash()[name].processMessage(allz[i].zimlet[0].zimletPanelItem[0].label) + " - " + desc;
+					var hash = appCtxt.getZimletMgr().getZimletsHash()[name];
+					if (hash) {
+                    	desc = hash.processMessage(allz[i].zimlet[0].zimletPanelItem[0].label) + " - " + desc;
+					}
                 }else{
-                    desc = appCtxt.getZimletMgr().getZimletsHash()[name].processMessage(allz[i].zimlet[0].zimletPanelItem.label) + " - " + desc;
+					var hash = appCtxt.getZimletMgr().getZimletsHash()[name];
+					if (hash) {
+                    	desc = hash.processMessage(allz[i].zimlet[0].zimletPanelItem.label) + " - " + desc;
+					}
                 }
             }else{
                 desc = allz[i].zimlet[0].description;
