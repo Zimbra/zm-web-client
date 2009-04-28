@@ -172,7 +172,8 @@ function(list, skipMiniCalUpdate, skipSort) {
 
 ZmCalListView.prototype._getItemId =
 function(item) {
-	return DwtId.getListViewItemId(DwtId.WIDGET_ITEM, this._view, item.getUniqueId(true));
+	var itemId = (item && item.id) ? item.getUniqueId(true) : Dwt.getNextId();
+	return DwtId.getListViewItemId(DwtId.WIDGET_ITEM, this._view, itemId);
 };
 
 ZmCalListView.prototype._getFieldId =
