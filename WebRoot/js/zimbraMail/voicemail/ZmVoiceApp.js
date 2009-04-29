@@ -173,6 +173,7 @@ ZmVoiceApp.prototype._registerSettings =
 function(settings) {
 	settings = settings || appCtxt.getSettings();
 	settings.registerSetting("VOICE_PAGE_SIZE", {name:"zimbraPrefVoiceItemsPerPage", type:ZmSetting.T_PREF, dataType:ZmSetting.D_INT, defaultValue:25});
+	settings.registerSetting("VOICE_PAGE_SIZE_MAX", {name:"zimbraMaxVoiceItemsPerPage", type:ZmSetting.T_COS, dataType:ZmSetting.D_INT, defaultValue:100});
 };
 
 // Public methods

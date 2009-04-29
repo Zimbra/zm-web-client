@@ -136,11 +136,13 @@ function() {
 
 	// Initialize the page size selector.
 	var current = appCtxt.get(ZmSetting.VOICE_PAGE_SIZE);
-	var choices = ["10", "25", "50", "100"];
+	var setup = {maxSetting: ZmSetting.VOICE_PAGE_SIZE_MAX};
+	ZmPref.loadPageSizes(setup);
+	var choices = setup.options;
 	var options = [];
 	for (var i = 0, count = choices.length; i < count; i++) {
 		var choice = choices[i];
-		var selected = current == choice;
+		var selected = (current == choice);
 		options[i] = new DwtSelectOptionData(choice, choice, selected);
 	}
 	this._pageSizeSelect = new DwtSelect({parent:this, options:options});

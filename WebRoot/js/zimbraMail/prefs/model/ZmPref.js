@@ -83,6 +83,23 @@ ZmPref.__BY_CSVFORMAT = function(a, b) {
 	return a.localeCompare(b);
 };
 
+ZmPref.loadPageSizes =
+function(setup) {
+	var max = (setup.maxSetting && appCtxt.get(setup.maxSetting)) || 100;
+	var list = [];
+	for (var i = 0; i < ZmPref.PAGE_SIZES.length; i++) {
+		var num = parseInt(ZmPref.PAGE_SIZES[i]);
+		if (num <= max) {
+			list.push(ZmPref.PAGE_SIZES[i]);
+		}
+	}
+	if (max > ZmPref.PAGE_SIZES[ZmPref.PAGE_SIZES.length - 1]) {
+		list.push(String(max));
+	}
+	setup.displayOptions = setup.options = list;
+};
+ZmPref.PAGE_SIZES = ["10", "25", "50", "100", "250", "500", "1000"];
+
 ZmPref.validateEmail =
 function(emailStr) {
 	if (emailStr) {
