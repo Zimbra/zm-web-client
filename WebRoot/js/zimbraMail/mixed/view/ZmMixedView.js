@@ -27,7 +27,7 @@ ZmMixedView.prototype.constructor = ZmMixedView;
 // Consts
 ZmMixedView.COLWIDTH_ICON 			= 19;
 ZmMixedView.COLWIDTH_FROM 			= 145;
-ZmMixedView.COLWIDTH_DATE 			= 60;
+ZmMixedView.COLWIDTH_DATE 			= 100;
 
 // support functions for _createItemHtml
 ZmMixedView.LIST_VIEW_FUNCS = ["_addParams", "_getDiv", "_getDivClass", "_getTable",
@@ -101,33 +101,41 @@ function(item, params) {
 		AjxDispatcher.require(["ContactsCore", "Contacts"]);
 		listViewClass = ZmContactSimpleView;
 		this._emulateListView(listViewClass, funcs);
-	} else if (item.type == ZmItem.CONV) {
+	}
+	else if (item.type == ZmItem.CONV) {
 		AjxDispatcher.require(["MailCore", "Mail"]);
 		funcs = funcs.concat(["_getFragmentSpan", "_getFragmentHtml",
 							  "_getParticipantHtml", "_fitParticipants"]);
 		listViewClass = ZmConvListView;
 		this._emulateListView(listViewClass, funcs);
-	} else if (item.type == ZmItem.MSG) {
+	}
+	else if (item.type == ZmItem.MSG) {
 		AjxDispatcher.require(["MailCore", "Mail"]);
 		funcs = funcs.concat(["_getFragmentSpan", "_getFragmentHtml"]);
 		listViewClass = ZmMailMsgListView;
 		this._emulateListView(listViewClass, funcs);
-	} else if (item.type == ZmItem.APPT) {
-		// TODO - need listview for appts (see bug 19338)
-		return null;
-	} else if (item.type == ZmItem.TASK) {
+	}
+	else if (item.type == ZmItem.APPT) {
+		AjxDispatcher.require(["CalendarCore", "Calendar"]);
+		listViewClass = ZmCalListView;
+		this._emulateListView(listViewClass, funcs);
+	}
+	else if (item.type == ZmItem.TASK) {
 		AjxDispatcher.require(["TasksCore", "Tasks"]);
 		listViewClass = ZmTaskListView;
 		this._emulateListView(listViewClass, funcs);
-	} else if (item.type == ZmItem.PAGE /*|| item.type == ZmItem.DOCUMENT*/) {
+	}
+	else if (item.type == ZmItem.PAGE) {
 		AjxDispatcher.require(["NotebookCore", "Notebook"]);
 		listViewClass = ZmFileListView;
 		this._emulateListView(listViewClass, funcs);
-	}else if(item.type == ZmItem.BRIEFCASE){
-        AjxDispatcher.require(["BriefcaseCore", "Briefcase"]);
+	}
+	else if (item.type == ZmItem.BRIEFCASE) {
+		AjxDispatcher.require(["BriefcaseCore", "Briefcase"]);
 		listViewClass = ZmDetailListView;
 		this._emulateListView(listViewClass, funcs);
-    }
+	}
+
 	return listViewClass.prototype._createItemHtml.call(this, item, params);
 };
 
@@ -141,9 +149,9 @@ function(listViewClass, funcs) {
 
 ZmMixedView.prototype._getHeaderToolTip =
 function(field, itemIdx) {
-
-    return (field == ZmItem.F_TYPE) ? ZmMsg.itemType :
-									  ZmListView.prototype._getHeaderToolTip.call(this, field, itemIdx);
+	return (field == ZmItem.F_TYPE)
+		? ZmMsg.itemType
+		: ZmListView.prototype._getHeaderToolTip.call(this, field, itemIdx);
 };
 
 ZmMixedView.prototype._getToolTip =

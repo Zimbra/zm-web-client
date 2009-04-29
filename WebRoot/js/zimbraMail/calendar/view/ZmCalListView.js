@@ -178,7 +178,8 @@ function(item) {
 
 ZmCalListView.prototype._getFieldId =
 function(item, field) {
-	return DwtId.getListViewItemId(DwtId.WIDGET_ITEM_FIELD, this._view, item.getUniqueId(true), field);
+	var itemId = (item && item.getUniqueId) ? item.getUniqueId(true) : item.id;
+	return DwtId.getListViewItemId(DwtId.WIDGET_ITEM_FIELD, this._view, itemId, field);
 };
 
 ZmCalListView.prototype._getCellId =
@@ -200,6 +201,9 @@ function(htmlArr, idx, appt, field, colIdx, params) {
 			icon = "ApptRecur";
 		}
 		idx = this._getImageHtml(htmlArr, idx, icon, this._getFieldId(appt, field));
+
+	} else if (field == ZmItem.F_FROM) { // for mixed view
+		htmlArr[idx++] = appt.getOrganizer();
 
 	} else if (field == ZmItem.F_SUBJECT) {
 		if (params.isMixedView) {

@@ -193,25 +193,32 @@ function(ev) {
 	if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
 		if (ev.item.type == ZmItem.CONTACT || ev.item.type == ZmItem.GROUP) {
 			AjxDispatcher.run("GetContactController").show(ev.item);
-		} else if (ev.item.type == ZmItem.CONV) {
+		}
+		else if (ev.item.type == ZmItem.CONV) {
 			var mailApp = appCtxt.getApp(ZmApp.MAIL);
 			if (ev.item.isDraft) {
 				AjxDispatcher.run("GetConvListController")._doAction({ev:ev, action:ZmOperation.DRAFT});
 			} else {
 				AjxDispatcher.run("GetConvController").show(this._activeSearch, ev.item);
 			}
-		} else if (ev.item.type == ZmItem.MSG) {
+		}
+		else if (ev.item.type == ZmItem.MSG) {
 			var mailApp = appCtxt.getApp(ZmApp.MAIL);
 			if (ev.item.isDraft) {
 				AjxDispatcher.run("GetTradController")._doAction({ev:ev, action:ZmOperation.DRAFT});
 			} else {
 				AjxDispatcher.run("GetMsgController").show(ev.item);
 			}
-		} else if (ev.item.type == ZmItem.TASK) {
+		}
+		else if (ev.item.type == ZmItem.APPT) {
+			var cc = AjxDispatcher.run("GetCalController");
+			cc._showAppointmentDetails(ev.item);
+		}
+		else if (ev.item.type == ZmItem.TASK) {
 			var app = appCtxt.getApp(ZmApp.TASKS);
-			// XXX: prompt user if task is recurring!
 			AjxDispatcher.run("GetTaskController").show(ev.item, ZmCalItem.MODE_EDIT);
-		} else if (ev.item.type == ZmItem.PAGE || ev.item.type == ZmItem.DOCUMENT) {
+		}
+		else if (ev.item.type == ZmItem.PAGE || ev.item.type == ZmItem.DOCUMENT) {
 			appCtxt.getApp(ZmApp.NOTEBOOK).getFileController()._doSelectDblClicked(ev.item, true);
 		}
 	}
@@ -249,19 +256,19 @@ function(ev) {
 		
 		miUndelete.setVisible(showUndelete || showBoth || isDraft);
 		miMoveTo.setVisible((showMoveTo || showBoth) && !isDraft);
-        actionMenu.getMenuItem(ZmOperation.PRINT).setVisible(showMoveTo);
-        actionMenu.getMenuItem(ZmOperation.DELETE).setVisible(showMoveTo);
+		actionMenu.getMenuItem(ZmOperation.PRINT).setVisible(showMoveTo);
+		actionMenu.getMenuItem(ZmOperation.DELETE).setVisible(showMoveTo);
 
 		// if >1 item is selected and they're not all the same type, disable both menu items
 		actionMenu.enable([ZmOperation.UNDELETE, ZmOperation.MOVE], numTypes == 1);
 	} else {
- 		miUndelete.setVisible(false);	// never show Undelete option when not in Trash
- 		miMoveTo.setVisible(true);		// always show Move To option
- 		// show MoveTo only if one type has been selected and its either MSG or CONV
+		miUndelete.setVisible(false);	// never show Undelete option when not in Trash
+		miMoveTo.setVisible(true);		// always show Move To option
+		// show MoveTo only if one type has been selected and its either MSG or CONV
 		var enableMoveTo = numTypes == 1 && (selTypes[ZmItem.CONV] === true || selTypes[ZmItem.MSG] === true);
 		actionMenu.enable(ZmOperation.MOVE, enableMoveTo);
-        actionMenu.enable(ZmOperation.PRINT, enableMoveTo);
-        actionMenu.enable(ZmOperation.DELETE, enableMoveTo);
+		actionMenu.enable(ZmOperation.PRINT, enableMoveTo);
+		actionMenu.enable(ZmOperation.DELETE, enableMoveTo);
 	}
 	actionMenu.popup(0, ev.docX, ev.docY);
 	if (ev.ersatz) {
