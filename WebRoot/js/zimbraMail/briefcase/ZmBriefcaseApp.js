@@ -134,7 +134,7 @@ function() {
 	var newItemOps = {};
 	newItemOps[ZmOperation.NEW_FILE]         = "uploadNewFile";
 	newItemOps[ZmOperation.NEW_PRESENTATION] = "newPresentation";
-    //newItemOps[ZmOperation.NEW_EXCEL]  = "newSpreadSheet"
+    newItemOps[ZmOperation.NEW_EXCEL]  = "newSpreadSheet"
 
 	var newOrgOps = {};
 	newOrgOps[ZmOperation.NEW_BRIEFCASEITEM] = "briefcase";

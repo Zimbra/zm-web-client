@@ -44,7 +44,7 @@ ZmSpreadSheetController.prototype.save = function(){
     }
     //if(this._spreadSheet._model != null) {
         ZmSpreadSheetApp.fileInfo.name    = fileName;
-        ZmSpreadSheetApp.fileInfo.content = this._spreadSheet.getXml();
+        ZmSpreadSheetApp.fileInfo.content = this._spreadSheet.getXML();
         ZmSpreadSheetApp.fileInfo.contentType = ZmSpreadSheetApp.APP_ZIMBRA_XLS;
 
         this._docMgr.setSaveCallback(new AjxCallback(this, this._postSaveHandler));
@@ -84,7 +84,7 @@ function(item) {
     var content = this._docMgr.fetchDocumentContent(item);
     if(content) {
         var model = new ZmSpreadSheetModel(0, 0);
-        model.loadFromXml(content);
+        model.loadFromXML(content);
         this._spreadSheet.setModel(model);
     }
 };

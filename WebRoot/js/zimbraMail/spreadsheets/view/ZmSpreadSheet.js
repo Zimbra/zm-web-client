@@ -78,10 +78,14 @@ ZmSpreadSheet.TOOLTIP_DELAY = 750;
 ZmSpreadSheet.prototype = new DwtComposite;
 ZmSpreadSheet.prototype.construction = ZmSpreadSheet;
 
-ZmSpreadSheet.prototype.getXml = function(){
-    return (this._model ? this._model.getXml().getDocXml() : null);
+ZmSpreadSheet.prototype.getXML = function(){
+    var cell = this.getCellModel(this._selectedCell);
+    var params = {
+        selCol: cell.getCol(),
+        selRow: cell.getRow()
+    };
+    return (this._model ? this._model.getXML(params).getDocXml() : null);
 };
-
 
 ZmSpreadSheet.getCellName = function(td) {
 	return ZmSpreadSheetModel.getCellName(td.parentNode.rowIndex, td.cellIndex);
@@ -101,10 +105,10 @@ ZmSpreadSheet.prototype.setModel = function(model) {
 	model.setViewListener("onDeleteCol", new AjxCallback(this, this._model_deleteCol));
 };
 
-ZmSpreadSheet.prototype._model_cellEdited = function(row, col, cell) {
+/*ZmSpreadSheet.prototype._model_cellEdited = function(row, col, cell) {
 	var td = this._getTable().rows[row].cells[col];
 	cell.setToElement(td);
-};
+};*/
 
 ZmSpreadSheet.prototype._model_cellComputed = function(row, col, cell) {
 	var td = this._getTable().rows[row].cells[col];

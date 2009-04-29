@@ -601,40 +601,216 @@ ZmSpreadSheetModel.prototype.getHtml = function() {
 	return html.join("");
 };
 
-ZmSpreadSheetModel.prototype.getXml = function() {
+// XML Standard for SPREADSHEET
+/*
 
-	var workbookN = AjxXmlDoc.createRoot("Workbook");
+<WorkBook name="" version="">
+    <!-- WorkBook specific properties -->
+    <!-- Custom Properties -->
+    <WorkSheets>
+        <WorkSheet name="">
+            <!-- Sheet speficific properties -->
+            <Selection row="" col=""/>
+            <Active row="" col=""/>                          //Keep track of the bounds, easy to render
+            <Default colWidth="" rowHeight=""/>              //Defaults can here or come from code. Former is idle.
+            <Cols>
+                <Col width=""/>                              //Only changed col widths
+            </Cols>
+            <SheetData>
+                <Row r="" height="">
+                    <Cell row="" col="" type="" value="" decimals="">      //Only Modified cells
+                        <Style color="" bgcolor="" ... />   
+                    </Cell>
+                </Row>
+            </SheetData>
+        </WorkSheet>
+        <WorkSheet>...</WorkSheet>
+    </WorkSheets>
+</WorkBook>
 
-	var worksheetN = AjxXmlDoc.createElement("Worksheet");
-	worksheetN.root.setAttribute("version", 1);
 
-	var colPropsN = AjxXmlDoc.createElement("ColProps");
+*/
 
-	for (var i = 0; i < this.COLS; ++i){
-		var colN = AjxXmlDoc.createElement("Col");
-		colN.root.setAttribute("width", this.colProps[i].width);
-		colPropsN.appendChild(colN);
-	}
-	worksheetN.appendChild(colPropsN);
+ZmSpreadSheetModel.prototype.getXML = function(params) {
 
-	var tableN = AjxXmlDoc.createElement("Table");
-	tableN.root.setAttribute("ExpandedRowCount", this.ROWS);
-	tableN.root.setAttribute("ExpandedColumnCount", this.COLS);
+    var workBookN = AjxXmlDoc.createRoot("WorkBook");
+    workBookN.root.setAttribute("version", 1);
 
-	var rowsN = null;
+        var workSheetsN = AjxXmlDoc.createElement("WorkSheets");
+            var workSheetN = AjxXmlDoc.createElement("WorkSheet");
+            //WorkSheet name must later come from the UI
+            workSheetN.root.setAttribute("name", "Sheet1");
 
-	for (var i = 0; i < this.ROWS; ++i) {
-		rowN = AjxXmlDoc.createElement("Row");
-		for (var j = 0; j < this.COLS; ++j) {
-			var cellN = this.data[i][j].getXml(i+1,j+1);
-			rowN.appendChild(cellN);
-		}
-		tableN.appendChild(rowN);
-	}
-	worksheetN.appendChild(tableN);
-	workbookN.appendChild(worksheetN);
-	return workbookN;
+                if(params.selRow && params.selCol){
+                    var selectionN = AjxXmlDoc.createElement("Selection");
+                    selectionN.root.setAttribute("row", params.selRow);
+                    selectionN.root.setAttribute("col", params.selCol);
+                    workSheetN.appendChild(selectionN);
+                }
+                
+                var colsN = AjxXmlDoc.createElement("Cols");
+                var defaultColWidth = ZmSpreadSheetModel.getDefaultColProp().width, colWidth, colN, flag=false;
+                for (var i = 0; i < this.COLS; ++i){
+                    colWidth = this.colProps[i].width;
+                    if(colWidth != defaultColWidth){
+		                colN = AjxXmlDoc.createElement("Col");
+                        colN.root.setAttribute("col", i+1);
+		                colN.root.setAttribute("width", this.colProps[i].width);
+		                colsN.appendChild(colN);
+                        flag = true;
+                    }
+	            }
+                if(flag) workSheetN.appendChild(colsN);
+    
+                //TODO: Optimize node/attr names such that the data transfer is optimal
+                var sheetDataN = AjxXmlDoc.createElement("SheetData");
+                var rowN, cellN, rowHeight, flag = false, aRow=0, aCol=0, cell;
+                var defaultRowHeight = ZmSpreadSheetModel.getDefaultRowProp().height;
+                for (var i = 0; i < this.ROWS; ++i) {
+                    flag = false;
+		            rowN = AjxXmlDoc.createElement("Row");
+                    rowN.root.setAttribute("row", i+1);
+		            for (var j = 0; j < this.COLS; ++j) {
+                        cell = this.data[i][j];
+			            cellN = cell.getXML(i+1,j+1);
+			            if(cellN){
+                            aRow = cell.getRow();
+                            aCol=cell.getCol();
+                            rowN.appendChild(cellN);
+                            flag = true;
+                        }
+		            }
+                    rowHeight = this.rowProps[i].height;
+                    if(rowHeight != defaultRowHeight){
+                        rowN.root.setAttribute("height", rowHeight);
+                        flag = true;
+                    }
+		            if(flag){
+                        sheetDataN.appendChild(rowN);
+                    }
+	            }
+
+                
+                var activeN = AjxXmlDoc.createElement("Active");
+                activeN.root.setAttribute("row", aRow);
+                activeN.root.setAttribute("col", aCol);
+                workSheetN.appendChild(activeN);
+
+                workSheetN.appendChild(sheetDataN);
+            workSheetsN.appendChild(workSheetN);
+        workBookN.appendChild(workSheetsN);
+
+
+    return workBookN;
+           
 };
+
+ZmSpreadSheetModel.MIN_ROWS = 40;
+ZmSpreadSheetModel.MIN_COLS = 15;
+
+ZmSpreadSheetModel.prototype.loadFromXML = function(xmlStr) {
+    var xml = AjxXmlDoc.createFromXml(xmlStr);
+    if(!xml) return;
+
+    var workBook = xml.toJSObject(false, false, true);
+    if(!workBook) return;
+    this.version = workBook.version;
+
+    var workSheets = workBook.WorkSheets;
+    workSheets  = ( workSheets ) ? workSheets.WorkSheet : null;
+    if(!workSheets) return;
+
+    //Consider only the first Sheet untill support for multiple sheets.
+    var workSheet =  (workSheets instanceof Array ) ? workSheets[0] : workSheets;
+
+    var activeArea, cols, col, i;
+
+    activeArea = workSheet.Active;
+    var aRows = activeArea ? new Number(activeArea.row) : 0;
+    var aCols = activeArea ? new Number(activeArea.col) : 0;
+    this.ROWS = aRows = ( aRows <= ZmSpreadSheetModel.MIN_ROWS) ? ZmSpreadSheetModel.MIN_ROWS : aRows + 5;
+    this.COLS = aCols = ( aCols <= ZmSpreadSheetModel.MIN_COLS) ? ZmSpreadSheetModel.MIN_COLS : aCols + 3;
+
+    this.colProps = new Array(this.COLS);
+    for(i=0; i<this.colProps.length; i++){
+        this.colProps[i] = ZmSpreadSheetModel.getDefaultColProp();
+    }
+
+    this.rowProps = new Array(this.ROWS);
+    for(i=0; i<this.rowProps.length; i++){
+        this.rowProps[i] = ZmSpreadSheetModel.getDefaultRowProp();
+    }
+
+    cols = workSheet.Cols;
+    if(cols && cols.Col){
+        cols = cols.Col;
+        if(!(cols instanceof Array)) cols = [cols];
+        for(var i=0; i<cols.length; i++){
+            col = new Number(cols[i].col) - 1;
+            this.colProps[col].width = cols[i].width;
+        }
+    }
+
+    var sheetData, row, rows, height, cells, cell, cellData, tmpRow;
+
+    function getRowData(rData, r){
+        var rowData = null;
+        for(var k=0; k<rData.length; k++){
+            if(rData[k].row == r){
+                rowData = rData[k];
+                break;
+            }
+        }
+        return rowData;
+    }
+
+    function getCellData(cData, c){
+        var cellData = null;        
+        for(var k=0; k<cData.length; k++){
+            if(cData[k].col == c){
+                cellData = cData[k];
+                break;
+            }
+        }
+        return cellData;
+    }
+
+    sheetData = workSheet.SheetData;
+    rows = sheetData.Row;
+    if(rows){
+        rows = (rows instanceof Array) ? rows : [rows];
+    }
+
+    this.data = new Array(this.ROWS);
+    for (i = 0; i < this.ROWS; ++i) {
+        this.data[i] = row =  new Array(this.COLS);
+        tmpRow = rows ? getRowData(rows, i+1) : null;
+        if(tmpRow){
+            if(tmpRow.height) this.rowProps[i].height = tmpRow.height;
+            cells = tmpRow.Cell;
+            if(cells && !(cells instanceof Array)) cells = [cells];
+        }
+        for (var j = 0; j < this.COLS; ++j) {
+            if(cells) cell = getCellData(cells, j+1);
+            cell = cell || { row: i+1, col: j+1, type: "", decimals: "", editValue:"" };
+            cellData = {
+                row: cell.row,
+                col: cell.col,
+                type: cell.type,
+                decimals: cell.decimals,
+                editValue: cell.value,
+                style: cell.Style
+            };
+            row[j] = ZmSpreadSheetCellModel.deserialize(this, cellData);
+        }
+        cells  = null;
+        tmpRow = null;
+    }
+
+
+};
+
+/* End of New Code */
 
 /// A Range copy
 
@@ -770,6 +946,9 @@ ZmSpreadSheetCellModel.prototype.clone = function() {
 	return newCell;
 };
 
+/*
+//Commented as we do not set height/width on individual cell anymore
+
 ZmSpreadSheetCellModel.prototype.setWidth = function(width) {
 	if (this._td) {
 		// var fuzz = AjxEnv.isIE ? 0 : -2;
@@ -784,7 +963,7 @@ ZmSpreadSheetCellModel.prototype.setHeight = function(height) {
         var fuzz = 0; //Correction if any according to browser
         this._td.firstChild.style.height = height + fuzz + "px";
     }
-};
+}; */
 
 ZmSpreadSheetCellModel.prototype.getHtml = function() {
 	var style = [];
@@ -816,27 +995,38 @@ ZmSpreadSheetCellModel.prototype.getHtml = function() {
 	return [ "<td", cls, style, ">", val, "</td>" ].join("");
 };
 
-ZmSpreadSheetCellModel.prototype.getXml = function(row, col) {
 
-	var styleN = AjxXmlDoc.createElement("Style");
-	for (var i in this._style) {
+//TODO: Optimize the XML stored for Style node.
+ZmSpreadSheetCellModel.prototype.getXML = function(row, col) {
+    
+    var styleN = AjxXmlDoc.createElement("Style");
+    var flag = false;
+    for (var i in this._style) {
 		if (this._style[i] != "") {
 			var css_name = i;
 			if(css_name != "toString") {
 				styleN.root.setAttribute(css_name,this._style[i]);
+                flag = true;
 			}
 		}
 	}
+    
+    if(!flag && !this._editValue && !this._decimals && !this._type) return null;
 
-	var cellN = AjxXmlDoc.createElement("Cell");
+    var cellN = AjxXmlDoc.createElement("Cell");
 	var cellRoot = cellN.root;
 	cellRoot.setAttribute("row", row);
 	cellRoot.setAttribute("col", col);
-	cellRoot.setAttribute("editValue", (this._editValue ? this._editValue : ""));
-	cellRoot.setAttribute("decimals", (this._decimals ? this._decimals : ""));
-	cellRoot.setAttribute("type", (this._type ? this._type : ""));
-	cellN.appendChild(styleN);
-	return cellN;
+	cellRoot.setAttribute("value", (this._editValue ? this._editValue : ""));
+    if(this._decimals)
+	    cellRoot.setAttribute("decimal", (this._decimals ? this._decimals : ""));
+	if(this._type)
+        cellRoot.setAttribute("type", (this._type ? this._type : ""));
+	if(flag) cellN.appendChild(styleN);
+
+    return cellN;
+
+
 };
 
 ZmSpreadSheetCellModel.prototype.setToElement = function(el) {
@@ -881,6 +1071,7 @@ ZmSpreadSheetCellModel.prototype.setStyleToElement = function(el, special) {
 			el.style[i] = val;
 		}
 	}
+    //this._model.updateActiveCell(this.getRow(), this.getCol());
 };
 
 // Returns a set of _all_ cells affected by the current cell in an order
@@ -910,6 +1101,7 @@ ZmSpreadSheetCellModel.prototype.setValue = function(value, noDeps) {
 	if (!this._settingValue) {
 		this._settingValue = true;
 		this._value = value;
+        //this._model.updateActiveCell(this.getRow(), this.getCol());
 		this._model.triggerEvent("onCellValue", this.getRow(), this.getCol(), this);
 		if (!noDeps) {
 			var a = this._mkDeps();
@@ -1077,6 +1269,7 @@ ZmSpreadSheetCellModel.prototype.setType = function(type) {
 		this._decimals = 2;
 	if (this._td)
 		this.setToElement(this._td);
+    //this._model.updateActiveCell(this.getRow(), this.getCol());
 };
 
 ZmSpreadSheetCellModel.prototype.getDecimals = function() {
@@ -1090,6 +1283,7 @@ ZmSpreadSheetCellModel.prototype.setDecimals = function(dec) {
 		this._decimals = 2;
 	if (this._td)
 		this.setToElement(this._td);
+    //this._model.updateActiveCell(this.getRow(), this.getCol());
 };
 
 ZmSpreadSheetCellModel.prototype.clearValue = function() {
@@ -1153,7 +1347,7 @@ ZmSpreadSheetCellModel.prototype.setEditValue = function(editValue, force) {
 		}
 
 		this.setValue(val);
-		this._model.triggerEvent("onCellEdit", this.getRow(), this.getCol(), this);
+		//this._model.triggerEvent("onCellEdit", this.getRow(), this.getCol(), this);
 	}
 };
 
