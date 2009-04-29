@@ -480,6 +480,11 @@ function(ev) {
 	}
 };
 
+ZmCalViewController.prototype._isItemMovable =
+function(item, force) {
+    return (force || (!item.isShared() && !folder.isRemote()));
+};
+
 ZmCalViewController.prototype._moveCallback =
 function(folder) {
 	if (this.isMovingBetwAccounts(this._pendingActionData, folder.id)) {

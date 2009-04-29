@@ -866,8 +866,7 @@ function(items, folder, attrs, force) {
 	for (var i = 0; i < items.length; i++) {
 		var item = items[i];
 		if (!item.folderId || item.folderId != folder.id) {
-			// regardless of force flag, read-only items *cannot* be moved
-			if (!force && (item.isShared() || folder.isRemote()) || item.isReadOnly())
+			if (!this._isItemMovable(item, force))
 				copy.push(item);
 			else
 				move.push(item);
@@ -882,6 +881,17 @@ function(items, folder, attrs, force) {
 	if (copy.length) {
 		list.copyItems(copy, folder, attrs);
 	}
+};
+
+/**
+* Decides whether an item is movable
+*
+* @param item	[Object]	item to be checked
+*/
+ZmListController.prototype._isItemMovable =
+function(item, force){
+    // regardless of force flag, read-only items *cannot* be moved    
+    return !item.isReadOnly() && (force || (!item.isShared() && !folder.isRemote())) ;
 };
 
 // Modify an item
