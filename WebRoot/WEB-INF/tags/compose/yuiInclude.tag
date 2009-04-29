@@ -52,4 +52,4 @@
 <script type="text/javascript" src="../yui/2.5.1/button/button-min.js"></script>
 <!-- Source file for Rich Text Editor-->
 <script type="text/javascript" src="../yui/2.5.1/editor/editor-beta-min.js"></script>
-<script type="text/javascript" src="../yui/spellcheck/spellcheck.js"></script>
+<app:spellcheck/>

@@ -232,6 +232,11 @@
     </tag-file>
 
     <tag-file>
+        <name>spellcheck</name>
+        <path>/WEB-INF/tags/spellcheck.tag</path>
+    </tag-file>
+
+    <tag-file>
         <name>composeValidation</name>
         <path>/WEB-INF/tags/compose/composeValidation.tag</path>
     </tag-file>

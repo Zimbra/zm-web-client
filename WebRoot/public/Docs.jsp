@@ -137,8 +137,7 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
     <script src="../yui/2.5.1/button/button-beta-min.js"></script>
     <!-- Source file for Rich Text Editor-->
     <script src="../yui/2.5.1/editor/editor-beta-min.js"></script>
-
-    <script src="../yui/spellcheck/spellcheck.js"></script>
+    <app:spellcheck/>
     <style type="text/css" media="screen">
         .yui-skin-sam .yui-toolbar-container .yui-toolbar-spellcheck span.yui-toolbar-icon {
             background-image: url( ../yui/spellcheck/img/ImgSpellCheck.gif );
