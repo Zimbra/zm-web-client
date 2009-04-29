@@ -86,7 +86,7 @@ function(item, params) {
 	var span = document.createElement("span");
 	
 	if(item instanceof ZmBriefcaseItem){
-		span.innerHTML = ["<a href='",item.restUrl,"' target='_blank'>",name,"</a>"].join("");
+		span.innerHTML = ['<a href="',item.getRestUrl(),'" target="_blank">',name,'</a>'].join('');
 	}else{
 		span.innerHTML = item;
 	}
