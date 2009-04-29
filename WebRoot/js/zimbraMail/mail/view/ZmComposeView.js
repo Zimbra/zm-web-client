@@ -215,6 +215,7 @@ ZmComposeView.prototype._onMsgDataChange =
 function(what, val) {
 	if (what == "subject") {
 		this._subjectField.value = val;
+		this.updateTabTitle();
 	}
 };
 
@@ -826,6 +827,7 @@ function(params) {
 	}
 
 	this._subjectField.value = params.subj || "";
+	this.updateTabTitle();
 
 	var content = params.body || "";
 	if((content == "") && (this._htmlEditor.getMode() == DwtHtmlEditor.HTML)) {
@@ -999,6 +1001,7 @@ function(bEnableInputs) {
 
 	// reset subject / body fields
 	this._subjectField.value = "";
+	this.updateTabTitle();
 	this._htmlEditor.clear();
 
 	// the div that holds the attc.table and null out innerHTML
@@ -1304,6 +1307,17 @@ function() {
 	return (Dwt.getVisible(this._oboRow)) ? this._oboCheckbox.checked : false;
 };
 
+ZmComposeView.prototype.updateTabTitle =
+function() {
+	var button = this._controller._tabButton;
+	if (!button) { return; }
+	var buttonText = this._subjectField.value ? this._subjectField.value.substr(0, ZmAppViewMgr.TAB_BUTTON_MAX_TEXT) :
+												ZmComposeController.DEFAULT_TAB_TEXT;
+	if (buttonText != button.getText()) {
+		button.setText(buttonText);
+	}
+};
+
 // Private / protected methods
 
 ZmComposeView.prototype._isInviteReply =
@@ -1568,6 +1582,7 @@ function(action, msg, subjOverride) {
 		case ZmOperation.REPLY_NEW_TIME:	prefix = ZmMsg.subjectNewTime + ": "; break;
 	}
 	this._subjectField.value = prefix + (subj || "");
+	this.updateTabTitle();
 };
 
 ZmComposeView.prototype._setBody =
@@ -2009,6 +2024,7 @@ function(templateId, data) {
 	this._attcDiv = document.getElementById(data.attDivId);
 
 	this._setEventHandler(data.subjectInputId, "onKeyUp");
+	this._setEventHandler(data.subjectInputId, "onBlur");
 
 	// initialize identity select
 	var identityOptions = this._getIdentityOptions();
@@ -2296,8 +2312,9 @@ function(incAddrs, incSubject) {
 				vals.push(this._field[type].value);
 		}
 	}
-	if (incSubject)
+	if (incSubject) {
 		vals.push(this._subjectField.value);
+	}
 	vals.push(this._htmlEditor.getContent());
 	var str = vals.join("|");
 	str = str.replace(/\|+/, "|");
@@ -2563,27 +2580,33 @@ function() {
 // NOTE: this handler should only get triggered if/when contacts are DISABLED!
 ZmComposeView._onKeyUp =
 function(ev) {
-	ev || (ev = window.event);
 
+	ev = DwtUiEvent.getEvent(ev);
 	var element = DwtUiEvent.getTargetWithProp(ev, "id");
 	if (!element) { return true; }
-
 	var cv = AjxCore.objectWithId(element._composeView);
+
 	if (element == cv._subjectField) {
 		var key = DwtKeyEvent.getCharCode(ev);
 		if (key == 3 || key == 13) {
 			cv._focusHtmlEditor();
-		} else {
-			var button = cv._controller._tabButton;
-			var buttonText = cv._subjectField.value ? cv._subjectField.value.substr(0, ZmAppViewMgr.TAB_BUTTON_MAX_TEXT) :
-							 						  ZmComposeController.DEFAULT_TAB_TEXT;
-			if (buttonText != button.getText()) {
-				button.setText(buttonText);
-			}
 		}
 	} else {
 		cv._adjustAddrHeight(element);
 	}
+	return true;
+};
+
+ZmComposeView._onBlur =
+function(ev) {
+
+	var element = DwtUiEvent.getTargetWithProp(ev, "id");
+	if (!element) { return true; }
+	var cv = AjxCore.objectWithId(element._composeView);
+
+	cv.updateTabTitle();
+
+	return true;
 };
 
 // for com.zimbra.dnd zimlet

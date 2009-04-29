@@ -718,6 +718,8 @@ function(params) {
 	this._composeView.set(params);
 	this._setComposeTabGroup();
 	this._app.pushView(this.viewId);
+	this._tabButton = appCtxt.getAppController().getAppChooser().getButton(this.tabId);
+	this._composeView.updateTabTitle();
 	this._composeView.reEnableDesignMode();
 
 	if (appCtxt.get(ZmSetting.SAVE_DRAFT_ENABLED) &&
@@ -742,8 +744,6 @@ function(params) {
 	} else {
 		this._draftType = ZmComposeController.DRAFT_TYPE_NONE;
 	}
-
-	this._tabButton = appCtxt.getAppController().getAppChooser().getButton(this.tabId);
 
 	if (params.callback) {
 		params.callback.run(this);
