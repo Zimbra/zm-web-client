@@ -58,7 +58,6 @@ function() {
 	AjxDispatcher.setPackageLoadFunction("Voicemail", new AjxCallback(this, this._postLoadCore));
 	AjxDispatcher.registerMethod("GetVoiceController", "Voicemail", new AjxCallback(this, this.getVoiceController));
 	AjxDispatcher.registerMethod("GetCallListController", "Voicemail", new AjxCallback(this, this.getCallListController));
-	AjxDispatcher.registerMethod("GetVoicePrefsController", ["PreferencesCore", "Preferences", "Voicemail"], new AjxCallback(this, this.GetVoicePrefsController));
 };
 
 ZmVoiceApp.prototype._registerItems =
@@ -148,25 +147,6 @@ function() {
 };
 
 ZmVoiceApp.prototype._registerPrefs = function() {
-    var sections = {
-        VOICE: {
-            title: ZmMsg.callManager,
-            icon: "VoicemailApp",
-            templateId: "prefs.Pages#Voice",
-            priority: 40,
-            precondition: ZmSetting.VOICE_ENABLED,
-            prefs: [
-                ZmSetting.VOICE_ACCOUNTS 
-            ],
-            manageDirty: true,
-            createView: function(parent, section, controller) {
-                return AjxDispatcher.run("GetVoicePrefsController").getListView();
-            }
-        }
-    };
-    for (var id in sections) {
-        ZmPref.registerPrefSection(id, sections[id]);
-    }
 };
 
 ZmVoiceApp.prototype._registerSettings =
@@ -469,16 +449,6 @@ function() {
 		this._callListController = new ZmCallListController(this._container, this);
 	}
 	return this._callListController;
-};
-
-ZmVoiceApp.prototype.GetVoicePrefsController =
-function() {
-	if (!this._voicePrefsController) {
-        var prefsView = AjxDispatcher.run("GetPrefController").getPrefsView();
-        var prefsApp = appCtxt.getApp(ZmApp.PREFERENCES);
-        this._voicePrefsController = new ZmVoicePrefsController(this._container, prefsApp, prefsView);
-	}
-	return this._voicePrefsController;
 };
 
 ZmVoiceApp.prototype.setStorePrincipal =
