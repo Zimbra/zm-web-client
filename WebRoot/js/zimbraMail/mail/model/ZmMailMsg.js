@@ -708,7 +708,7 @@ function(edited, componentId, callback, errorCallback, instanceDate, accountName
 		dlg.setMessage(ZmMsg.organizerNotification, DwtMessageDialog.WARNING_STYLE);
 		dlg.popup();
 	} else {
-		return this._sendInviteReplyContinue(jsonObj, "FALSE", edited, callback, errorCallback, instanceDate, accountName);
+		return this._sendInviteReplyContinue(jsonObj, needsRsvp ? "TRUE" : "FALSE", edited, callback, errorCallback, instanceDate, accountName);
 	}
 };
 
