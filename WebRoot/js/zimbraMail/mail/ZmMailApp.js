@@ -1220,8 +1220,8 @@ function(op, params) {
 			inNewWindow = true;
 			showLoadingPage = false;	// don't show "Loading ..." page since main window view doesn't change
 		case ZmOperation.NEW_MESSAGE:
-			if (!inNewWindow && params && params.ev) {
-				inNewWindow = this._inNewWindow(params.ev);
+			if (!inNewWindow) {
+				inNewWindow = this._inNewWindow(params && params.ev);
 				showLoadingPage = false;
 			}
 			var loadCallback = new AjxCallback(this, this._handleLoadNewMessage, [inNewWindow]);

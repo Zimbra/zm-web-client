@@ -217,7 +217,6 @@ function() {
 	if (cmd == "compose" || cmd == "composeDetach") {
 		var cc = AjxDispatcher.run("GetComposeController");	// get a new compose ctlr
 		appCtxt.composeCtlrSessionId = cc.sessionId;
-		cc.isChildWindow = true;
 		if (params.action == ZmOperation.REPLY_ALL) {
 			params.msg = this._deepCopyMsg(params.msg);
 		}
