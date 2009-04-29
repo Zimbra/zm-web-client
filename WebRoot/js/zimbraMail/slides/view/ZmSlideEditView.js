@@ -1082,7 +1082,6 @@ function(doc, content) {
     if(this._currentTheme) {
         head.push('<link href="' + this.getThemeCSSPath(this._currentTheme) + '" rel="stylesheet" type="text/css" />');
     }
-    head.push('<script language="javascript" src="' +  window.contextPath + '/public/slides/presentation.js"></script>');
     head.push('<style>');
     head.push('.slide {');
     head.push('font-size: 32px;');
@@ -1093,13 +1092,15 @@ function(doc, content) {
     head.push('}');
     head.push('</style>');
 
+    content.push('<script language="javascript" src="' +  window.contextPath + '/public/slides/presentation.js"></script>');    
+
     doc.open();
     doc.write("<head>")
     doc.write(head.join(""));
-    doc.write("</head>")
-    doc.write("<body>")
+    doc.write("</head>");
+    doc.write("<body>");
     doc.write(content.join(""));
-    doc.write("</body>")
+    doc.write("</body>");
     doc.close();
 };
 
@@ -1118,7 +1119,6 @@ function(content, idx, generateEndSlide) {
                 var zindex = Dwt.Z_VIEW;
                 content[idx++] = ["<div class='slide' style='width:100%;height:100%;position:absolute;left:0%;top:0%;z-index:", zindex, ((i!=0)?";display:none;":"") ,"'>"].join("");
                 content[idx++]  = previewNode.innerHTML;
-                DBG.println("zz slide content:" + previewNode.innerHTML);
                 content[idx++] = '</div>';
                 i++;
 
