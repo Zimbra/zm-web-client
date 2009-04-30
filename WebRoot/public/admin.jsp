@@ -149,6 +149,14 @@
 @import url(<%= contextPath %>/css/dwt,common,zmadmin,login,msgview,spellcheck,images,skin.css?v=<%= vers %>&skin=<%= skin %>);
 -->
 </style>
+
+<c:set var="contextPath" value="${pageContext.request.contextPath}"/>
+<script type="text/javascript" src="${contextPath}/yui/2.7.0/yahoo-dom-event/yahoo-dom-event.js"></script> 
+<script type="text/javascript" src="${contextPath}/yui/2.7.0/element/element-min.js"></script> 
+<script type="text/javascript" src="${contextPath}/yui/2.7.0/datasource/datasource-min.js"></script> 
+<script type="text/javascript" src="${contextPath}/yui/2.7.0/json/json-min.js"></script> 
+<script type="text/javascript" src="${contextPath}/yui/2.7.0/charts/charts-min.js"></script> 
+
 <jsp:include page="Boot.jsp"/>
 <script>
 <jsp:include page="/js/ajax/util/AjxTimezoneData.js" />
