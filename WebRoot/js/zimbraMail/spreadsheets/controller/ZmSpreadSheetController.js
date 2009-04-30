@@ -35,28 +35,34 @@ ZmSpreadSheetController.prototype.save = function(){
 
     var fileInfo = ZmSpreadSheetApp.fileInfo;
     var fileName = this._toolbar.get("fileName").getValue();
-    
-    if(!fileInfo.id){
-       if(fileName == ""){
-           appCtxt.setStatusMsg(ZmMsg.emptyDocName);
-           return;
-       }
-    }
-    //if(this._spreadSheet._model != null) {
-        ZmSpreadSheetApp.fileInfo.name    = fileName;
-        ZmSpreadSheetApp.fileInfo.content = this._spreadSheet.getXML();
-        ZmSpreadSheetApp.fileInfo.contentType = ZmSpreadSheetApp.APP_ZIMBRA_XLS;
 
-        this._docMgr.setSaveCallback(new AjxCallback(this, this._postSaveHandler));
-        this._docMgr.saveDocument(ZmSpreadSheetApp.fileInfo);
-    //}
+    if(!fileInfo.id){
+        if(fileName == ""){
+            appCtxt.setStatusMsg(ZmMsg.emptyDocName, ZmStatusView.LEVEL_WARNING);
+            return;
+        }
+    }
+
+    ZmSpreadSheetApp.fileInfo.name    = fileName;
+    ZmSpreadSheetApp.fileInfo.content = this._spreadSheet.getXML();
+    ZmSpreadSheetApp.fileInfo.contentType = ZmSpreadSheetApp.APP_ZIMBRA_XLS;
+
+    this._docMgr.setSaveCallback(new AjxCallback(this, this._postSaveHandler));
+    this._docMgr.saveDocument(ZmSpreadSheetApp.fileInfo);
+
 };
 
 ZmSpreadSheetController.prototype._postSaveHandler =
-function(files) {
-    if(files && files.length > 0) {
-        ZmSpreadSheetApp.fileInfo.id = files[0].id;
-        ZmSpreadSheetApp.fileInfo.version = files[0].ver;
+function(files, conflicts) {
+    if(conflicts){
+        var formatter = new AjxMessageFormat(ZmMsg.saveConflictSpreadsheet);
+        appCtxt.setStatusMsg(formatter.format(files[0].name), ZmStatusView.LEVEL_WARNING);
+    }else {
+        if(files && files.length > 0) {
+            ZmSpreadSheetApp.fileInfo.id = files[0].id;
+            ZmSpreadSheetApp.fileInfo.version = files[0].ver;
+            appCtxt.setStatusMsg(ZmMsg.savedSpreadsheet, ZmStatusView.LEVEL_INFO);
+        }
     }
 };
 

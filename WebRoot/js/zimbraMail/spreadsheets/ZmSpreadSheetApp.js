@@ -15,6 +15,8 @@
 
 ZmSpreadSheetApp = function(){
 
+    appCtxt.setAppController(this);
+
     this._init();
     this.startup();
 
@@ -45,11 +47,13 @@ ZmSpreadSheetApp.launch = function(){
     window.appCtxt = new ZmAppCtxt();
     appCtxt.rememberMe = false;
 
+    window.skin = null;
+    
     // Create and initialize settings
     var settings = new ZmSettings();
     appCtxt.setSettings(settings);
 
-    shell = new DwtShell({className:"MainShell"});
+    var shell = new DwtShell({className:"MainShell"});
     appCtxt.setShell(shell);
 
     shell.getKeyboardMgr().registerKeyMap(new DwtKeyMap(true));
@@ -77,6 +81,15 @@ ZmSpreadSheetApp.setFile = function(fileId, fileName, folderId){
        id:      fileId,
        version: 1
    };
+};
+
+ZmSpreadSheetApp.prototype.setStatusMsg = function(){
+    if(!this.statusView){
+        this.statusView = new ZmStatusView(appCtxt.getShell(), "ZmStatus", Dwt.ABSOLUTE_STYLE, ZmId.STATUS_VIEW);
+    }
+    params = Dwt.getParams(arguments, ZmStatusView.MSG_PARAMS);
+    params.transitions = ZmToast.DEFAULT_TRANSITIONS;
+	this.statusView.setStatusMsg(params);
 };
 
 ZmSpreadSheetApp._createDBG = function(devMode){

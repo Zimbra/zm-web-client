@@ -114,6 +114,7 @@ function(files, status, guids, response) {
                         case "id": { file.id = attr._content; break; }
                         case "ver": { file.version = attr._content; break; }
                         case "rest": { file.rest = attr._content; break; }
+                        
                     }
                 }
                 conflicts.push(file);
@@ -144,7 +145,7 @@ function(files, status, guids, response) {
 	// perform callback
 	else*/
     if (this._saveCallback) {
-        this._saveCallback.run(files);
+        this._saveCallback.run(files, conflicts);
     }
 
     if(window.opener && window.opener.appCtxt) {
