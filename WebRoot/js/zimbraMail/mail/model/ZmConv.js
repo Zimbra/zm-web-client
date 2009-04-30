@@ -252,7 +252,9 @@ function(obj) {
 	if (obj._newId != null) {
 		var conv = appCtxt.getById(obj._newId) || this;
 		conv._oldId = this.id;
+		conv.id = obj._newId;
 		appCtxt.cacheSet(conv._oldId);
+		appCtxt.cacheSet(conv.id, conv);
 		conv.msgs = conv.msgs || this.msgs;
 		if (conv.msgs) {
 			conv.msgs.convId = conv.id;
@@ -263,6 +265,7 @@ function(obj) {
 		}
 		if (conv.list && conv._oldId) {
 			delete conv.list._idHash[conv._oldId];
+			conv.list._idHash[conv.id] = conv;
 		}
 		fields[ZmItem.F_ID] = true;
 		conv._notify(ZmEvent.E_MODIFY, {fields : fields});

@@ -923,9 +923,6 @@ function(notify) {
 		mods["c"] = newMods;
 		appCtxt.getRequestMgr()._handleModifies(mods);
 	}
-
-	// process the normalized notifications
-	return notify;
 };
 
 /**
