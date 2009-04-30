@@ -52,14 +52,14 @@ function(dontIncludeThisName) {
 	if (dontIncludeThisName) {
 		url = url.replace(/[^\/]+$/,"");
 	}
-    if(this.contentType && (this.contentType == ZmMimeTable.APP_ZIMBRA_SLIDES || this.contentType == ZmMimeTable.APP_ZIMBRA_EXCEL)) {
+    if(this.contentType && (this.contentType == ZmMimeTable.APP_ZIMBRA_SLIDES || this.contentType == ZmMimeTable.APP_ZIMBRA_SPREADSHEET)) {
         url += "?fmt=html";
     }
 	return url;
 };
 
 ZmBriefcaseItem.prototype.isRealFile = function(){
-    return (!this.isFolder && !(this.contentType == ZmMimeTable.APP_ZIMBRA_SLIDES || this.contentType == ZmMimeTable.APP_ZIMBRA_EXCEL));  
+    return (!this.isFolder && !(this.contentType == ZmMimeTable.APP_ZIMBRA_SLIDES || this.contentType == ZmMimeTable.APP_ZIMBRA_SPREADSHEET));  
 };
 
 ZmBriefcaseItem.prototype.set =

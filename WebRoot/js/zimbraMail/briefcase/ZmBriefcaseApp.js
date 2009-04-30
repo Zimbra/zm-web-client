@@ -59,7 +59,7 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_NEW_BRIEFCASEITEM, {textKey:"newBriefcase", image:"NewFolder", tooltipKey:"newBriefcaseTooltip", shortcut:ZmKeyMap.NEW_BRIEFCASEITEM});
 	ZmOperation.registerOp(ZmId.OP_NEW_FILE, {textKey:"uploadNewFile", tooltipKey:"uploadNewFile", image:"NewPage"});
     ZmOperation.registerOp(ZmId.OP_NEW_PRESENTATION, {textKey:"newPresentation", tooltipKey:"newPresentation", image:"MSPowerpointDoc"});
-    ZmOperation.registerOp(ZmId.OP_NEW_EXCEL, {textKey:"newSpreadsheet", tooltipKey:"newSpreadsheet", image:"ZSpreadSheet"});
+    ZmOperation.registerOp(ZmId.OP_NEW_SPREADSHEET, {textKey:"newSpreadsheet", tooltipKey:"newSpreadsheet", image:"ZSpreadSheet"});
 	ZmOperation.registerOp(ZmId.OP_SHARE_BRIEFCASE, {textKey:"shareFolder", image:"SharedMailFolder"}, ZmSetting.SHARING_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_MOUNT_BRIEFCASE, {textKey:"mountBriefcase", image:"Notebook"}, ZmSetting.SHARING_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_OPEN_FILE, {textKey:"openFile", tooltipKey:"openFileTooltip", image:"NewPage"});
@@ -134,7 +134,7 @@ function() {
 	var newItemOps = {};
 	newItemOps[ZmOperation.NEW_FILE]         = "uploadNewFile";
 	newItemOps[ZmOperation.NEW_PRESENTATION] = "newPresentation";
-    newItemOps[ZmOperation.NEW_EXCEL]  = "newSpreadSheet"
+    newItemOps[ZmOperation.NEW_SPREADSHEET]  = "newSpreadSheet"
 
 	var newOrgOps = {};
 	newOrgOps[ZmOperation.NEW_BRIEFCASEITEM] = "briefcase";
@@ -143,7 +143,7 @@ function() {
 	actionCodes[ZmKeyMap.NEW_FILE]			= ZmOperation.NEW_FILE;
 	actionCodes[ZmKeyMap.NEW_BRIEFCASEITEM]	= ZmOperation.NEW_BRIEFCASEITEM;
 	actionCodes[ZmKeyMap.NEW_PRESENTATION]	= ZmOperation.NEW_PRESENTATION;
-    actionCodes[ZmKeyMap.NEW_EXCEL]         = ZmOperation.NEW_EXCEL;
+    actionCodes[ZmKeyMap.NEW_SPREADSHEET]   = ZmOperation.NEW_SPREADSHEET;
 
 	ZmApp.registerApp(ZmApp.BRIEFCASE,
 					 {mainPkg:				"Briefcase",
@@ -281,8 +281,8 @@ function(op) {
 			break;
 		}
 
-         case ZmOperation.NEW_EXCEL: {
-             var newDocCallback = new AjxCallback(this, this.newDoc, [ZmMimeTable.APP_ZIMBRA_EXCEL]);
+         case ZmOperation.NEW_SPREADSHEET: {
+             var newDocCallback = new AjxCallback(this, this.newDoc, [ZmMimeTable.APP_ZIMBRA_SPREADSHEET]);
              AjxDispatcher.require(["BriefcaseCore", "Briefcase"], true, newDocCallback, null);
              break;
          }
@@ -374,8 +374,8 @@ function(contentType) {
     AjxDispatcher.require("Startup1_1");
     var editPage = "Slides.jsp";
     switch(contentType) {
-        case ZmMimeTable.APP_ZIMBRA_SLIDES: editPage = "Slides.jsp"; break;
-        case ZmMimeTable.APP_ZIMBRA_EXCEL:  editPage = "SpreadsheetDoc.jsp"; break;
+        case ZmMimeTable.APP_ZIMBRA_SLIDES:         editPage = "Slides.jsp"; break;
+        case ZmMimeTable.APP_ZIMBRA_SPREADSHEET:    editPage = "SpreadsheetDoc.jsp"; break;
         default: return null;
     };
     var editURL = appContextPath + "/public/" +  editPage;
