@@ -319,7 +319,6 @@ function() {
 		var contactsClass = appCtxt.getApp(ZmApp.CONTACTS);
 		var contactsLoader = contactsClass.getContactList;
 		var params = {
-			parent:appCtxt.getShell(),
 			dataClass:appCtxt.getAutocompleter(),
 			separator:"",
 			matchValue:ZmAutocomplete.AC_VALUE_EMAIL,

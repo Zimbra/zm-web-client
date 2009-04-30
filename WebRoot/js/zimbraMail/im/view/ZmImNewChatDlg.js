@@ -72,7 +72,6 @@ function() {
 	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) || appCtxt.get(ZmSetting.GAL_ENABLED)) {
 		var acCallback = new AjxCallback(this, this._autocompleteCallback);
 		var params = {
-			parent: DwtShell.getShell(window),
 			dataClass: appCtxt.getAutocompleter(),
 			matchValue: ZmAutocomplete.AC_VALUE_FULL,
 			compCallback : acCallback

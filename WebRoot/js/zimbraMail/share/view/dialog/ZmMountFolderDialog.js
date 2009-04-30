@@ -23,10 +23,8 @@ ZmMountFolderDialog = function(shell, className) {
 	// create auto-complete
 	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) || appCtxt.get(ZmSetting.GAL_ENABLED)) {
 		var params = {
-			parent: this,
 			dataClass: appCtxt.getAutocompleter(),
 			matchValue: ZmAutocomplete.AC_VALUE_EMAIL,
-			locCallback: (new AjxCallback(this, this._getNewAutocompleteLocation)),
 			compCallback: (new AjxCallback(this, this._handleCompletionData)),
 			keyUpCallback: (new AjxCallback(this, this._acKeyUpListener))
 		};
@@ -94,14 +92,6 @@ function(text, element, match) {
 	catch (ex) {
 		// ignore -- TODO: what to do with this error?
 	}
-};
-
-ZmMountFolderDialog.prototype._getNewAutocompleteLocation =
-function(ev) {
-	var element = ev.element;
-	var location = Dwt.toWindow(element, 0, 0, this.getHtmlElement());
-	var size = Dwt.getSize(element);
-	return (new DwtPoint((location.x), (location.y + size.y)));
 };
 
 // Protected functions

@@ -530,7 +530,6 @@ function() {
 		this.GROUP_CALENDAR_ENABLED)
 	{
 		var params = {
-			parent: appCtxt.getShell(),
 			dataClass: appCtxt.getAutocompleter(),
 			matchValue: ZmAutocomplete.AC_VALUE_FULL,
 			compCallback: acCallback
@@ -545,7 +544,6 @@ function() {
 		var app = appCtxt.getApp(ZmApp.CALENDAR);
         var locChangeCallback = new AjxCallback(this, this._handleLocationChange);
 		var params = {
-			parent: appCtxt.getShell(),
 			dataClass: appCtxt.getAutocompleter(),
 			matchValue: ZmAutocomplete.AC_VALUE_NAME,
 			compCallback: acCallback,

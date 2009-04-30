@@ -304,7 +304,6 @@ ZmNewBuddyPopup.prototype._initAddressAutocomplete = function() {
 
 	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) || appCtxt.get(ZmSetting.GAL_ENABLED)) {
 		var params = {
-			parent: appCtxt.getShell(),
 			dataClass: appCtxt.getAutocompleter(),
 			matchValue : ZmAutocomplete.AC_VALUE_EMAIL
 		};
@@ -318,7 +317,7 @@ ZmNewBuddyPopup.prototype._initGroupAutocomplete = function() {
 
 	var imApp = appCtxt.getApp(ZmApp.IM);
 	var groupList = imApp ? imApp.getAutoCompleteGroups : null;
-	var params = { parent	  : appCtxt.getShell(),
+	var params = {
 		       dataClass  : imApp,
 		       dataLoader : groupList,
 		       matchValue : "text",

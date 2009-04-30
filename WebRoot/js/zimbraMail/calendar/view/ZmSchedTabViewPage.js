@@ -262,7 +262,7 @@ function() {
 
 ZmSchedTabViewPage.prototype._initAutocomplete =
 function() {
-	var shell = appCtxt.getShell();
+
 	var acCallback = new AjxCallback(this, this._autocompleteCallback);
 	var keyUpCallback = new AjxCallback(this, this._autocompleteKeyUpCallback);
 	this._acList = {};
@@ -270,7 +270,6 @@ function() {
 	// autocomplete for attendees
 	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) || appCtxt.get(ZmSetting.GAL_ENABLED)) {
 		var params = {
-			parent: shell,
 			dataClass: appCtxt.getAutocompleter(),
 			separator: "",
 			options: {needItem: true},

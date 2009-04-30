@@ -21,10 +21,8 @@ ZmSharePropsDialog = function(shell, className) {
 	// create auto-completer	
 	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) || appCtxt.get(ZmSetting.GAL_ENABLED)) {
 		var params = {
-			parent: this,
 			dataClass: appCtxt.getAutocompleter(),
 			matchValue: ZmAutocomplete.AC_VALUE_EMAIL,
-			locCallback: (new AjxCallback(this, this._getNewAutocompleteLocation, [this])),
 			compCallback: (new AjxCallback(this, this._handleCompletionData, [this])),
 			keyUpCallback: (new AjxCallback(this, this._acKeyUpListener))
 		};
@@ -384,8 +382,7 @@ function(share) {
 
 ZmSharePropsDialog.prototype._acKeyUpListener =
 function(event, aclv, result) {
-	var dialog = aclv.parent;
-	ZmSharePropsDialog._enableFieldsOnEdit(dialog);
+	ZmSharePropsDialog._enableFieldsOnEdit(this);
 };
 
 ZmSharePropsDialog._handleKeyUp =
@@ -495,13 +492,6 @@ function (control, text, element) {
 	catch (ex) {
 		// ignore -- TODO: what to do with this error?
 	}
-};
-
-ZmSharePropsDialog.prototype._getNewAutocompleteLocation = 
-function(cv, ev) {
-	var location = Dwt.toWindow(ev.element, 0, 0, this.getHtmlElement());
-	var size = Dwt.getSize(ev.element);
-	return new DwtPoint((location.x), (location.y + size.y) );
 };
 
 ZmSharePropsDialog.prototype._createView =

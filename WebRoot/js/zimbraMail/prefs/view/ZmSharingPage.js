@@ -369,7 +369,6 @@ function() {
 		]
 	};
 	this._shareForm = new DwtForm(params);
-	this._shareForm.setScrollStyle(Dwt.VISIBLE);	// so autocomplete list doesn't get clipped
 	var shareFormDiv = document.getElementById(this._pageId + "_shareForm");
 	shareFormDiv.appendChild(this._shareForm.getHtmlElement());
 
@@ -410,11 +409,10 @@ function() {
 	// autocomplete
 	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) || appCtxt.get(ZmSetting.GAL_ENABLED)) {
 		var params = {
-			parent: this,
+			parent: appCtxt.getShell(),
 			dataClass:		appCtxt.getAutocompleter(),
 			matchValue:		ZmAutocomplete.AC_VALUE_EMAIL,
-			separator:		"",
-			locCallback:	(new AjxCallback(this, this._getAcLocation, [this]))
+			separator:		""
 		};
 		this._acAddrSelectList = new ZmAutocompleteListView(params);
 		var inputCtrl = this._shareForm.getControl(ZmSharingView.ID_OWNER);
@@ -458,14 +456,6 @@ function(id) {
 		var orgType = this.getValue(ZmSharingView.ID_FOLDER_TYPE);
 		this.parent._showChooser(orgType);
 	}
-};
-
-ZmSharingView.prototype._getAcLocation =
-function(cv, ev) {
-
-	var location = Dwt.toWindow(ev.element, 0, 0, document.getElementById(this._pageId));
-	var size = Dwt.getSize(ev.element);
-	return new DwtPoint((location.x), (location.y + size.y));
 };
 
 ZmSharingView.prototype._showChooser =

@@ -43,13 +43,13 @@
  * 
  * @author Conrad Damon
  * 
- * @param parent			[DwtComposite]		the element that created this list
- * @param className			[string]*			CSS class
  * @param dataClass			[function]			the class that has the data loader
  * @param dataLoader		[function]			a method of dataClass that returns data to match against
  * @param matchValue		[string]			name of field in match result to use for completion
+ * @param parent			[DwtComposite]*		the control that created this list (defaults to shell)
+ * @param className			[string]*			CSS class
  * @param separator			[string]*			separator (gets added to the end of a match)
- * @param locCallback		[AjxCallback]		callback into client to get desired location of autocomplete list
+ * @param locCallback		[AjxCallback]*		callback into client to get desired location of autocomplete list
  * @param compCallback		[AjxCallback]*		callback into client to notify it that completion happened
  * @param keyDownCallback	[AjxCallback]*		additional ONKEYDOWN handler
  * @param keyUpCallback		[AjxCallback]*		additional ONKEYUP handler
@@ -59,7 +59,7 @@
 ZmAutocompleteListView = function(params) {
 
 	var className = params.className ? params.className : "ZmAutocompleteListView";
-	DwtComposite.call(this, params.parent, className, DwtControl.ABSOLUTE_STYLE);
+	DwtComposite.call(this, params.parent || appCtxt.getShell(), className, DwtControl.ABSOLUTE_STYLE);
 
 	this._dataClass = this._dataAPI = params.dataClass;
 	this._dataLoader = params.dataLoader;

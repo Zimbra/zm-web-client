@@ -109,15 +109,6 @@ function(s) {
 	return false;
 };
 
-ZmLinkPropsDialog.prototype._getAcPageLoc =
-function() {
-	var element = this._pageInput.getHtmlElement();
-	var viewEl = this.getHtmlElement();
-	var location = Dwt.toWindow(element, 0, 0, viewEl);
-	var size = Dwt.getSize(element);
-	return new DwtPoint((location.x), (location.y + size.y));
-};
-
 ZmLinkPropsDialog.prototype._setAcPageCompletion =
 function(text, element, matchObj) {
 	// NOTE: nothing special to be done
@@ -362,18 +353,11 @@ function() {
 		}
 
 		// setup auto-completer
-		var dataClass = this;
-		var dataLoader = this.getPageDataLoader;
-		var locCallback = new AjxCallback(this, this._getNewAutocompleteLocation);
-		var compCallback = new AjxCallback(this, this._setAcPageCompletion);
-
 		var params = {
-			parent: this,
-			dataClass: dataClass,
-			dataLoader: dataLoader,
+			dataClass: this,
+			dataLoader: this.getPageDataLoader,
 			matchValue: "name",
 			separator: "",
-			locCallback: new AjxCallback(this, this._getAcPageLoc),
 			compCallback: new AjxCallback(this, this._setAcPageCompletion),
 			keyUpCallback: new AjxCallback(this, this._acKeyUpListener)
 		}

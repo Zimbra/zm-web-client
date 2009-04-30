@@ -1398,16 +1398,6 @@ function(name) {
 	return forAttIds;
 };
 
-// Returns the location where the autocomplete list should be positioned. Run as a callback.
-ZmComposeView.prototype._getAcListLoc =
-function(cv, ev) {
-	var element = ev.element;
-	var field = document.getElementById(cv._divId[element.addrType]);
-	var offset = Dwt.getLocation(field).y - this.getLocation().y;
-
-	return (new DwtPoint(75, offset + Dwt.getSize(element).y + 6));
-};
-
 ZmComposeView.prototype._acCompHandler =
 function(text, el, match) {
 	this._adjustAddrHeight(el);
@@ -1962,10 +1952,9 @@ function(templateId, data) {
 	// init autocomplete list
 	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) || appCtxt.get(ZmSetting.GAL_ENABLED)) {
 		var params = {
-			parent: this,
+			parent: appCtxt.getShell(),
 			dataClass: appCtxt.getAutocompleter(),
 			matchValue: ZmAutocomplete.AC_VALUE_FULL,
-			locCallback: (new AjxCallback(this, this._getAcListLoc, [this])),
 			compCallback: (new AjxCallback(this, this._acCompHandler)),
 			keyUpCallback: (new AjxCallback(this, this._acKeyupHandler))
 		};
