@@ -97,9 +97,10 @@ function(files, status, guids, response) {
     }
 
 	// check for conflicts
-    var conflicts = [];
+    var conflicts = null;
     if (resp && resp.Fault) {
         var errors = [];
+        conflicts = [];
         for (var i = 0; i < resp.Fault.length; i++) {
             var fault = resp.Fault[i];
             var error = fault.Detail.Error;
@@ -123,8 +124,8 @@ function(files, status, guids, response) {
                 DBG.println("Unknown error occurred: "+code);
                 errors[fault.requestId] = fault;
             }
-        }
-		// TODO: What to do about other errors?
+        }        
+        // TODO: What to do about other errors?
     }
     /*
 	// resolve conflicts
@@ -145,6 +146,7 @@ function(files, status, guids, response) {
 	// perform callback
 	else*/
     if (this._saveCallback) {
+        //Pass on the conflicts to callback
         this._saveCallback.run(files, conflicts);
     }
 
