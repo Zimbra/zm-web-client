@@ -48,6 +48,9 @@ ZmSlideEditController.prototype._initToolBar = function () {
 
     var tb = this._toolbar;
 
+    this._fileName = new DwtInputField({parent:tb, size:20});
+
+
     var listener = new AjxListener(this, this._actionListener);
 
     this._saveSlide = new DwtToolBarButton({parent:tb});
@@ -181,4 +184,24 @@ function() {
 	return "Global";
 };
 
+ZmSlideEditController.prototype.setStatusMsg =
+function(){
+    if(!this.statusView){
+        this.statusView = new ZmStatusView(appCtxt.getShell(), "ZmStatus", Dwt.ABSOLUTE_STYLE, ZmId.STATUS_VIEW);
+    }
+    params = Dwt.getParams(arguments, ZmStatusView.MSG_PARAMS);
+    params.transitions = ZmToast.DEFAULT_TRANSITIONS;
+	this.statusView.setStatusMsg(params);
+};
 
+ZmSlideEditController.prototype.getFileName =
+function() {
+    return this._fileName ? this._fileName.getValue() : null;
+};
+
+ZmSlideEditController.prototype.setFileName =
+function(fileName) {
+    if(this._fileName) {
+        this._fileName.setValue(fileName);
+    }
+};

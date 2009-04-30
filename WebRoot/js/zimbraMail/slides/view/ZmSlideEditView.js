@@ -129,6 +129,12 @@ function() {
     slideDiv1.style.width = (0.2 * size.x) + "px";
 };
 
+ZmSlideEditView.prototype.createNewSlide =
+function() {
+    this._controller.setFileName(window.fileInfo ? window.fileInfo.name : "Untitled");
+    this.createSlide();
+};
+
 ZmSlideEditView.prototype.createSlide =
 function(ignorePreview) {
 
@@ -1148,6 +1154,7 @@ function() {
     var content = [];
     var idx = 0;
     idx = this.getSlideHTML(content, idx);
+    window.fileInfo.name = this._controller.getFileName();
     window.fileInfo.content = content.join("");
     window.fileInfo.contentType = ZmSlideEditView.APP_ZIMBRA_PPT;
     this._docMgr.setSaveCallback(new AjxCallback(this, this._saveHandler));
@@ -1155,12 +1162,17 @@ function() {
 };
 
 ZmSlideEditView.prototype._saveHandler =
-function(files) {
-    if(files && files.length > 0) {
-        window.fileInfo.id = files[0].id;
-        window.fileInfo.version = files[0].ver;
+function(files, conflicts) {
+    if(conflicts){
+        var formatter = new AjxMessageFormat(ZmMsg.saveConflictPresentation);
+        appCtxt.setStatusMsg(formatter.format(files[0].name), ZmStatusView.LEVEL_WARNING);
+    }else {
+        if(files && files.length > 0) {
+            window.fileInfo.id = files[0].id;
+            window.fileInfo.version = files[0].ver;
+            appCtxt.setStatusMsg(ZmMsg.savedPresentation, ZmStatusView.LEVEL_INFO);
+        }
     }
-
 };
 
 ZmSlideEditView.prototype.loadData =
@@ -1171,6 +1183,7 @@ function(id) {
 ZmSlideEditView.prototype.loadSlide =
 function(item, runSlideShow) {
     var content = this._docMgr.fetchDocumentContent(item);
+    this._controller.setFileName(item.name ? item.name : "Untitled");
     if(content) {
         var div = this.getSlideParserDiv();
         div.innerHTML = content;

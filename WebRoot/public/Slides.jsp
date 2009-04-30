@@ -222,6 +222,8 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
         window.appCtxt = new ZmAppCtxt();
         appCtxt.rememberMe = false;
 
+        window.skin = null;
+
         // Create and initialize settings
         var settings = new ZmSettings();
         appCtxt.setSettings(settings);
@@ -260,7 +262,7 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
             window.fileInfo = item;
             slideEditView.loadSlide(item, <%= runSlideShow %>);
         }else {
-            slideEditView.createSlide();
+            slideEditView.createNewSlide();
         }
     }
 
