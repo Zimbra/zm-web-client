@@ -152,6 +152,8 @@ ZmAppViewMgr.C_APP_CONTENT_FULL			= "fullScreen";
 ZmAppViewMgr.C_STATUS					= "status";
 ZmAppViewMgr.C_SASH						= "sash";
 ZmAppViewMgr.C_TASKBAR					= "taskbar";
+ZmAppViewMgr.C_FOOTER					= "footer";
+ZmAppViewMgr.C_AD						= "adsrvc";
 
 ZmAppViewMgr.ALL_COMPONENTS = [
 	ZmAppViewMgr.C_BANNER, ZmAppViewMgr.C_USER_INFO, ZmAppViewMgr.C_QUOTA_INFO,
@@ -161,7 +163,7 @@ ZmAppViewMgr.ALL_COMPONENTS = [
 	ZmAppViewMgr.C_APP_CHOOSER, ZmAppViewMgr.C_TREE, ZmAppViewMgr.C_TREE_FOOTER,
 	ZmAppViewMgr.C_TOOLBAR_TOP, ZmAppViewMgr.C_TOOLBAR_BOTTOM,
 	ZmAppViewMgr.C_APP_CONTENT, ZmAppViewMgr.C_APP_CONTENT_FULL,
-	ZmAppViewMgr.C_STATUS, ZmAppViewMgr.C_SASH, ZmAppViewMgr.C_TASKBAR
+	ZmAppViewMgr.C_STATUS, ZmAppViewMgr.C_SASH, ZmAppViewMgr.C_TASKBAR, ZmAppViewMgr.C_FOOTER, ZmAppViewMgr.C_AD
 ];
 
 /**
@@ -211,6 +213,8 @@ function() {
 	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_STATUS]					= ZmId.SKIN_STATUS;
 	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_SASH]					= ZmId.SKIN_SASH;
 	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_TASKBAR]				= ZmId.SKIN_TASKBAR;
+    ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_FOOTER]					= ZmId.SKIN_FOOTER;
+    ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_AD]						= ZmId.SKIN_AD;	    
 };
 
 // Public methods
@@ -1079,7 +1083,7 @@ function(ev) {
 				var list = [
 					ZmAppViewMgr.C_APP_CHOOSER, ZmAppViewMgr.C_TREE, ZmAppViewMgr.C_TREE_FOOTER,
 					ZmAppViewMgr.C_SASH, ZmAppViewMgr.C_APP_CONTENT, ZmAppViewMgr.C_APP_CONTENT_FULL,
-					ZmAppViewMgr.C_STATUS, ZmAppViewMgr.C_TASKBAR
+					ZmAppViewMgr.C_STATUS, ZmAppViewMgr.C_TASKBAR, ZmAppViewMgr.C_AD, ZmAppViewMgr.C_FOOTER 
 				];
 				this._fitToContainer(list, true);
 			} else if (deltaWidth) {
@@ -1088,7 +1092,7 @@ function(ev) {
 					ZmAppViewMgr.C_OFFLINE_STATUS,
 					ZmAppViewMgr.C_SEARCH_BUILDER, ZmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR,
 					ZmAppViewMgr.C_TOOLBAR_TOP, ZmAppViewMgr.C_APP_CONTENT, ZmAppViewMgr.C_APP_CONTENT_FULL,
-					ZmAppViewMgr.C_TOOLBAR_BOTTOM, ZmAppViewMgr.C_TASKBAR
+					ZmAppViewMgr.C_TOOLBAR_BOTTOM, ZmAppViewMgr.C_TASKBAR, ZmAppViewMgr.C_AD, ZmAppViewMgr.C_FOOTER
 				];
 				this._fitToContainer(list, true);
 			}
