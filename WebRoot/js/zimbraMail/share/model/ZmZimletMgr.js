@@ -195,6 +195,18 @@ function(name) {
 	return this._ZIMLETS_BY_ID[name];
 };
 
+ZmZimletMgr.prototype.getZimletByName =
+function(name) {
+	for (var i = 0; i < this._ZIMLETS.length; i++) {
+		var z = this._ZIMLETS[i];
+		if (z && (z.name == name))
+		{
+			return z;
+		}
+	}
+    return null;
+};
+
 ZmZimletMgr.prototype.notifyZimlets =
 function(event, args) {
 	if (args && (!(args instanceof Array))) { args = [args]; }

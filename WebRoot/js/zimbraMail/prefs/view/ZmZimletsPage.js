@@ -162,16 +162,17 @@ function(){
             var name = allz[i].zimlet[0].name;
             var desc = allz[i].zimlet[0].description;
             if(allz[i].zimlet[0].zimletPanelItem){
+                var label = "";
                 if(allz[i].zimlet[0].zimletPanelItem instanceof Array){
-					var hash = appCtxt.getZimletMgr().getZimletsHash()[name];
-					if (hash) {
-                    	desc = hash.processMessage(allz[i].zimlet[0].zimletPanelItem[0].label) + " - " + desc;
-					}
+                    label = allz[i].zimlet[0].zimletPanelItem[0].label;
                 }else{
-					var hash = appCtxt.getZimletMgr().getZimletsHash()[name];
-					if (hash) {
-                    	desc = hash.processMessage(allz[i].zimlet[0].zimletPanelItem.label) + " - " + desc;
-					}
+                    label = allz[i].zimlet[0].zimletPanelItem.label;
+                }
+                var hash = appCtxt.getZimletMgr().getZimletByName(name);
+                if (hash && hash.processMessage) {
+                    desc = hash.processMessage(label) + " - " + desc;
+				}else{
+                    desc = label + " - " + desc;                    
                 }
             }else{
                 desc = allz[i].zimlet[0].description;
