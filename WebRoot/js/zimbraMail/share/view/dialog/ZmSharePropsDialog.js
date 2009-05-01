@@ -150,7 +150,7 @@ function() {
 	var restUrl = this._object.getRestUrl();
 	if (appCtxt.isOffline) {
 		var remoteUri = appCtxt.get(ZmSetting.OFFLINE_REMOTE_SERVER_URI);
-		restUrl = remoteUri + restUrl.substring((url.indexOf("/",7)));
+		restUrl = remoteUri + restUrl.substring((restUrl.indexOf("/",7)));
 	}
 	var url = AjxStringUtil.htmlEncode(restUrl).replace(/&amp;/g,'%26');
 	var text = url;
