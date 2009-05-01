@@ -121,7 +121,9 @@ ZmApptEditView.prototype.enableInputs =
 function(bEnableInputs) {
 	ZmCalItemEditView.prototype.enableInputs.call(this, bEnableInputs);
     if(this.GROUP_CALENDAR_ENABLED) {
-	    this._attInputField[ZmCalBaseItem.PERSON].setEnabled(bEnableInputs);
+        //only organizer can edit the attendees
+        var bEnableAttendees = (this._isOrganizer != null) ? this._isOrganizer : bEnableInputs;
+	    this._attInputField[ZmCalBaseItem.PERSON].setEnabled(bEnableAttendees);
     }
     this._attInputField[ZmCalBaseItem.LOCATION].setEnabled(bEnableInputs);
 };
@@ -379,6 +381,8 @@ function(calItem, mode) {
         this._requestResponsesCheckbox.checked = calItem.shouldRsvp();
         //by default the changes made to the appt should be visible to others
         this._sendNotificationMailCheckbox.checked = true;
+        this._isOrganizer = calItem.isOrganizer();
+        this._attInputField[ZmCalBaseItem.PERSON].setEnabled(calItem.isOrganizer());
     }
 };
 

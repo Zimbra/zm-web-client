@@ -727,6 +727,10 @@ function(organizer, attendees) {
 	if (emails.length) {
 		this._getFreeBusyInfo(this._getStartTime(), emails.join(","), this._fbCallback);
 	}
+
+    if(this._appt) {
+        this.enableAttendees(this._appt.isOrganizer());
+    }
 };
 
 ZmSchedTabViewPage.prototype._setAttendee =
@@ -1476,6 +1480,21 @@ function(show) {
       }else if(i == this._organizerIndex) {
             var ptstObj = document.getElementById(sched.dwtNameId+"_ptst");
             Dwt.setVisible(ptstObj, show);
+      }
+  }
+};
+
+ZmSchedTabViewPage.prototype.enableAttendees =
+function(enable) {
+  for(var i in this._schedTable) {
+      var sched = this._schedTable[i];
+      if(sched) {
+          if(sched.inputObj) {
+            sched.inputObj.setEnabled(enable);
+          }
+          if(sched.selectObj) {
+            sched.selectObj.setEnabled(enable);
+          }
       }
   }
 };

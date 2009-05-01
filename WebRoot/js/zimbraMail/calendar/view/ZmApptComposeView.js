@@ -143,6 +143,7 @@ function(appt, mode, isDirty) {
 
 	// always switch to appointment tab
 	this.switchToTab(this._apptTabKey);
+    this.setTabVisibility([ZmApptComposeView.TAB_ATTENDEES], appt.isOrganizer());
 };
 
 ZmApptComposeView.prototype.cleanup = 
@@ -427,6 +428,18 @@ function() {
 	
 	this._apptEditView.addRepeatChangeListener(new AjxListener(this, this._repeatChangeListener));
 	this.addControlListener(new AjxListener(this, this._controlListener));
+};
+
+ZmApptComposeView.prototype.setTabVisibility =
+function(ids, visible) {
+    for(var i in ids) {
+        var tabKey = this._tabKeys[ids[i]];
+        var tab = tabKey ? this._tabs[tabKey] : null;
+        var button = tab ? tab.button : null;
+        if(button) {
+            button.setVisible(visible);            
+        }
+    }
 };
 
 ZmApptComposeView.prototype._initializeAddTab =
