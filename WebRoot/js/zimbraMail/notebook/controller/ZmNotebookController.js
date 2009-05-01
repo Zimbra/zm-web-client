@@ -135,38 +135,29 @@ function(view) {
 	if (printButton) {
 		printButton.setToolTipContent(ZmMsg.printDocument);
 	}
-
-	/***
-	var button = toolbar.getButton(ZmOperation.ATTACHMENT);
-	button.setText(ZmMsg.addDocuments);
-	button.setToolTipContent(ZmMsg.addDocumentsTT);
-	/***/
 };
 
-ZmNotebookController.prototype._resetOperations = function(toolbarOrActionMenu, num) {
-	if (!toolbarOrActionMenu) return;
+ZmNotebookController.prototype._resetOperations =
+function(toolbarOrActionMenu, num) {
+	if (!toolbarOrActionMenu) { return; }
+
+	// call base class
 	ZmListController.prototype._resetOperations.call(this, toolbarOrActionMenu, num);
-	toolbarOrActionMenu.enable(ZmOperation.REFRESH, true);
-	toolbarOrActionMenu.enable(ZmOperation.PRINT, true);
-	//toolbarOrActionMenu.enable(ZmOperation.ATTACHMENT, true);
-	//toolbarOrActionMenu.enable(ZmOperation.DETACH, false);
 
-	var buttonIds = [ ZmOperation.SEND_PAGE, ZmOperation.DETACH ];
-	toolbarOrActionMenu.enable(buttonIds, true);
-	var writable = this._object && !this._object.isReadOnly();
-	toolbarOrActionMenu.enable([ZmOperation.EDIT], writable);
-	if(appCtxt.get(ZmSetting.VIEW_ATTACHMENT_AS_HTML) ) {
-        if(this._object && this._object.isIndex() && !this._object.isFolderReadOnly()) {
-            toolbarOrActionMenu.enable([ZmOperation.IMPORT_FILE], true);
-        } else {
-            toolbarOrActionMenu.enable([ZmOperation.IMPORT_FILE], false);
-        }
-    }
-    //bug:22488
-    var deleteEnable = this._object && !this._object.isIndex() && this.isDeletable();
-    toolbarOrActionMenu.enable([ZmOperation.DELETE], deleteEnable);
+	toolbarOrActionMenu.enable([ZmOperation.REFRESH,ZmOperation.PRINT,ZmOperation.DETACH], true);
+	toolbarOrActionMenu.enable(ZmOperation.SEND_PAGE, appCtxt.getActiveAccount().isZimbraAccount);
+	toolbarOrActionMenu.enable(ZmOperation.EDIT, (this._object && !this._object.isReadOnly()));
 
-	var taggable = this._object && !this._object.isShared() && !this._object.isIndex();
+	if (appCtxt.get(ZmSetting.VIEW_ATTACHMENT_AS_HTML)) {
+		var isViewable = (this._object && this._object.isIndex() && !this._object.isFolderReadOnly());
+		toolbarOrActionMenu.enable(ZmOperation.IMPORT_FILE, isViewable);
+	}
+
+	// bug:22488
+	var deleteEnable = (this._object && !this._object.isIndex() && this.isDeletable());
+	toolbarOrActionMenu.enable(ZmOperation.DELETE, deleteEnable);
+
+	var taggable = (this._object && !this._object.isShared() && !this._object.isIndex());
 	toolbarOrActionMenu.enable([ZmOperation.TAG_MENU], taggable);
 };
 

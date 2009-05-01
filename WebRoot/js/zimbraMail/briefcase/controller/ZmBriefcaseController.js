@@ -108,48 +108,49 @@ function(view) {
 
 ZmBriefcaseController.prototype._resetOperations =
 function(parent, num) {
-	if (!parent) return;
+	if (!parent) { return; }
 
+	// call base class
 	ZmListController.prototype._resetOperations.call(this, parent, num);
-	var isFolderSelected =false;
+
+	var isFolderSelected;
 	var items = this._listView[this._currentView].getSelection();
 	var noOfFolders = 0;
-	if(items){
-		for(var i=0;i<items.length;i++){
+	if (items) {
+		for (var i = 0; i < items.length; i++) {
 			var item = items[i];
-			if(item.isFolder){
+			if (item.isFolder) {
 				isFolderSelected = true;
 				noOfFolders++;
 			}
 		}
 	}
-	var multiFolderSelect = (noOfFolders>1);
-
-
+	var isMultiFolder = (noOfFolders>1);
 	var isShared = this.isShared(this._currentFolder);
 	var isReadOnly = this.isReadOnly(this._currentFolder);
 	var isItemSelected = (num>0);
+	var isZimbraAccount = appCtxt.getActiveAccount().isZimbraAccount;
 
 	if (appCtxt.get(ZmSetting.VIEW_ATTACHMENT_AS_HTML)) {
 		var isViewHtmlEnabled = true;
 
 		var items = this._listView[this._currentView].getSelection();
 		if (items) {
-			for (var i=0; i<items.length; i++) {
-				var item = items[i];
-				if (!this.isConvertable(item)) {
+			for (var i = 0; i < items.length; i++) {
+				if (!this.isConvertable(items[i])) {
 					isViewHtmlEnabled = false;
 					break;
 				}
 			}
 		}
-		parent.enable([ZmOperation.VIEW_FILE_AS_HTML], isItemSelected && isViewHtmlEnabled );
+		parent.enable([ZmOperation.VIEW_FILE_AS_HTML], (isItemSelected && isViewHtmlEnabled));
 	}
-	parent.enable([ ZmOperation.OPEN_FILE, ZmOperation.SEND_FILE, ZmOperation.SEND_FILE_MENU], isItemSelected && !multiFolderSelect );
-	parent.enable([ ZmOperation.DELETE ], !isReadOnly && isItemSelected );
-	parent.enable([ ZmOperation.TAG_MENU ], !isShared && isItemSelected && !isFolderSelected);
-	parent.enable([ ZmOperation.NEW_FILE, ZmOperation.VIEW_MENU ], true);
-	parent.enable([ ZmOperation.SEND_FILE_MENU, ZmOperation.SEND_FILE, ZmOperation.SEND_FILE_AS_ATT ], isItemSelected && !isFolderSelected );
+
+	parent.enable([ZmOperation.SEND_FILE_MENU, ZmOperation.SEND_FILE, ZmOperation.SEND_FILE_AS_ATT] (isZimbraAccount && isItemSelected && !isMultiFolder && !isFolderSelected));
+	parent.enable(ZmOperation.OPEN_FILE, (isItemSelected && !isMultiFolder));
+	parent.enable(ZmOperation.DELETE, (!isReadOnly && isItemSelected));
+	parent.enable(ZmOperation.TAG_MENU, (!isShared && isItemSelected && !isFolderSelected));
+	parent.enable([ZmOperation.NEW_FILE, ZmOperation.VIEW_MENU], true);
 };
 
 ZmBriefcaseController.prototype._getTagMenuMsg =
