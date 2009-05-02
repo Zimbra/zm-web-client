@@ -1306,7 +1306,7 @@ function () {
 */
 ZmOrganizer.prototype.isFeed =
 function () {
-	return (this.url != null);
+	return Boolean(this.url);
 };
 
 
