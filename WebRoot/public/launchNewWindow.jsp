@@ -46,6 +46,7 @@
     if (skin == null) {
         skin = application.getInitParameter("zimbraDefaultSkin");
 	}
+	skin = skin.replaceAll("['\"<>&]", "");
 
 	boolean isDev = getParameter(request, "dev", "0").equals("1");
 	if (isDev) {
