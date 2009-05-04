@@ -39,7 +39,7 @@
         <div class="table-row">
             <div class="table-cell">
                         <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=tasks"><fmt:message
-                                key="tasks"/></a> &laquo;
+                                key="tasks"/></a> &raquo;
                         <c:if test="${top_fldr_select ne '1'}">
                                 ${fn:escapeXml(zm:truncateFixed(context.shortBackTo,12,true))}
                         </c:if>

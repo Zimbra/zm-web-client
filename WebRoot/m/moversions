@@ -23,7 +23,7 @@
         <div class="table-cell">
             <fmt:message key="lowBandwidth" var="lbw"/> <fmt:message key="default" var="def"/>
             <span class="Title">      <%-- !TODO i18n Pending, please do that now --%>
-                    <fmt:message key="view"/> &laquo;
+                    <fmt:message key="view"/> &raquo;
                     <c:choose>
                         <c:when test="${fn:startsWith(sessionScope.zms, 'iphone')}">
                             iPhone
@@ -38,7 +38,7 @@
                             Generic
                         </c:when>
                      </c:choose>
-                    &laquo; ${fn:endsWith(sessionScope.zms,'-lowbw') ? lbw : def }
+                    &raquo; ${fn:endsWith(sessionScope.zms,'-lowbw') ? lbw : def }
                 </span>
         </div>
     </div>

@@ -57,7 +57,7 @@
     <div class="SubToolbar table">
          <div class="table-row">
             <div class="table-cell">
-        <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=cals"><fmt:message key="calendars"/></a> &laquo;
+        <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=cals"><fmt:message key="calendars"/></a> &raquo;
         <c:if test="${top_fldr_select ne '1'}">
             ${not empty sessionScope.calendar ? zm:truncateFixed(sessionScope.calendar.name,12,true) : checkedInUI}
         </c:if>

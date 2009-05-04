@@ -90,9 +90,14 @@
 <c:set var="calcss" value=",${sessionScope.zms}-cal"/>
 <link href="<c:url value='/css/${sessionScope.zms}${calcss}.css?v=${version}'/>" type="text/css" rel="stylesheet"/>
 <style type="text/css">
+   	
     #msgDiv, #msgbar {
         -webkit-transition: all 500ms linear;
-        position: relative;
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%;
+      
     }
    .hidden {
         opacity: 0.0;
@@ -682,8 +687,7 @@ var getContainer = function(id) {
         </div>
     </div>
     <mo:handleError>
-        <div class="container" id="msgbar"
-             style="">
+        <div class="container" id="msgbar" style="">
             <c:choose> <c:when test="${not empty param.appmsg}">
                 <div class='StatusInfo' id='statusdiv'><fmt:message key="${fn:escapeXml(param.appmsg)}"/></div>
             </c:when> <c:when test="${not empty requestScope.statusMessage}">
