@@ -477,6 +477,20 @@ function(ev) {
 	}
 };
 
+ZmSearchToolBar.prototype.initAutocomplete =
+function(id) {
+
+	var params = {
+		dataClass:		new ZmSearchAutocomplete(),
+		matchValue:		"matchText",
+		delims:			[" "],
+		separator:		"",
+		compCallback:	new AjxCallback(this, this._handleEnterKeyPress)
+	};
+	this._acList = new ZmAutocompleteListView(params);
+	this._acList.handle(this.getSearchField());
+};
+
 // Static methods
 
 ZmSearchToolBar._keyPressHdlr =
@@ -486,7 +500,7 @@ function(ev) {
     var stb = inputField.parent;
 
     var charCode = DwtKeyEvent.getCharCode(ev);
-	if (charCode == 13 || charCode == 3) {
+	if ((charCode == 13 || charCode == 3) && !stb._acList.getVisible()) {
 		stb._handleEnterKeyPress(ev);
 	    return false;
 	}

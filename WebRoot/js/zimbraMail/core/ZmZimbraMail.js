@@ -382,6 +382,7 @@ function(params) {
 				if (appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
 					this.handleCalendarComponents();
 				}
+				appCtxt.getSearchController().getSearchToolbar().initAutocomplete();
 			});
 		this.addPostRenderCallback(callback, 0, 0, true);
 	}

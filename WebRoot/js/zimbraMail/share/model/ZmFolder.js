@@ -201,6 +201,24 @@ function(folderA, folderB) {
 	return 0;
 };
 
+ZmFolder.sortComparePath =
+function(folderA, folderB) {
+
+	var pathA = folderA && folderA.getPath(false, false, null, true, true);
+	var pathB = folderB && folderB.getPath(false, false, null, true, true);
+	var check = ZmOrganizer.checkSortArgs(pathA, pathB);
+	if (check != null) { return check; }
+
+	if (ZmFolder.SORT_ORDER[folderA.nId] && ZmFolder.SORT_ORDER[folderB.nId]) {
+		return (ZmFolder.SORT_ORDER[folderA.nId] - ZmFolder.SORT_ORDER[folderB.nId]);
+	}
+	if (!ZmFolder.SORT_ORDER[folderA.nId] && ZmFolder.SORT_ORDER[folderB.nId]) { return 1; }
+	if (ZmFolder.SORT_ORDER[folderA.nId] && !ZmFolder.SORT_ORDER[folderB.nId]) { return -1; }
+	if (pathA.toLowerCase() > pathB.toLowerCase()) { return 1; }
+	if (pathA.toLowerCase() < pathB.toLowerCase()) { return -1; }
+	return 0;
+};
+
 /**
 * Checks a folder name for validity. Returns an error message if the
 * name is invalid and null if the name is valid. Note that a name, rather than a path, is

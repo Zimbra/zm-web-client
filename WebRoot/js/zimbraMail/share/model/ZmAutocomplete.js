@@ -432,3 +432,248 @@ function(str) {
 	}
 	return false;
 };
+
+
+
+
+/**
+ * This class supports autocomplete for our query language.
+ *
+ * Each search operator that is supported has an associated handler. A handler is a hash which contains the info
+ * needed for autocomplete. A handler can have the following properties:
+ *
+ * 		listType		A handler needs a list of objects to autocomplete against. By default, that list is
+ * 						identified by the operator. If more than one operator uses the same list, their handlers
+ * 						should use this property to identify the list.
+ * 		loader			Function that populates the list of objects. Lists used by more than one operator provide
+ * 						their loader separately.
+ * 		text			Function that returns a string value of data, to autocomplete against and to display in the
+ * 						autocomplete list.
+ * 		icon			Function that returns an icon to display in the autocomplete list.
+ * 		matchText		Function that returns a string to place in the input when the item is selected. Defaults to
+ * 						the value of the 'text' attribute.
+ * 		quoteMatch		If true, the matchText will be place in double quotes.
+ */
+ZmSearchAutocomplete = function() {
+
+	this._op = {};
+	this._list = {};
+	this._loadFunc = {};
+
+	var params = {
+		loader:		this._loadTags,
+		text:		function(o) { return o.getName(false, null, true, true); },
+		icon:		function(o) { return o.getIcon(); },
+		quoteMatch:	true
+	};
+	this._registerHandler("tag", params);
+
+	params = {
+		listType:	ZmId.ORG_FOLDER,
+		text:		function(o) { return o.getPath(false, false, null, true, true); },
+		icon:		function(o) { return o.getIcon(); },
+		quoteMatch:	true
+	};
+	this._loadFunc[ZmId.ORG_FOLDER] = this._loadFolders;
+	this._registerHandler("in", params);
+	this._registerHandler("under", params);
+
+	params = { loader:		this._loadFlags };
+	this._registerHandler("is", params);
+
+	params = {
+		loader:		this._loadObjects,
+		icon:		function(o) { return ZmSearchAutocomplete.ICON[o]; }
+	};
+	this._registerHandler("has", params);
+
+	params = {listType:		ZmId.ITEM_ATT,
+			  text:			function(o) { return o.desc; },
+			  icon:			function(o) { return o.image; },
+			  matchText:	function(o) { return o.type; },
+			  quoteMatch:	true
+			 };
+	this._loadFunc[ZmId.ITEM_ATT] = this._loadTypes;
+	this._registerHandler("type", params);
+	this._registerHandler("attachment", params);
+
+	appCtxt.getFolderTree().addChangeListener(new AjxListener(this, this._folderTreeChangeListener));
+	appCtxt.getTagTree().addChangeListener(new AjxListener(this, this._tagTreeChangeListener));
+};
+
+ZmSearchAutocomplete.ICON = {};
+ZmSearchAutocomplete.ICON["attachment"]	= "Attachment";
+ZmSearchAutocomplete.ICON["phone"]		= "Telephone";
+ZmSearchAutocomplete.ICON["url"]		= "URL";
+
+ZmSearchAutocomplete.prototype._registerHandler =
+function(op, params) {
+	var loadFunc = params.loader || this._loadFunc[params.listType];
+	this._op[op] = {loader:new AjxCallback(this, loadFunc), text:params.text, icon:params.icon,
+					listType:params.listType || op, matchText:params.matchText || params.text, quoteMatch:params.quoteMatch};
+};
+
+/**
+ * Returns a list of matches for a given query operator.
+ *
+ * @param str		[string]					string to match against
+ * @param callback	[AjxCallback]				callback to run with results
+ * @param aclv		[ZmAutocompleteListView]*	needed to show wait msg
+ * @param options	[hash]*						additional options:
+ *        type		[constant]*					type of result to match; default is
+ * 												ZmAutocomplete.AC_TYPE_CONTACT; other valid values
+ * 												are for location or equipment
+ *        needItem	[boolean]*					if true, return a ZmItem as part of match result
+ */
+ZmSearchAutocomplete.prototype.autocompleteMatch =
+function(str, callback, aclv, options) {
+
+	str = str.toLowerCase().replace(/"/g, '');
+	DBG.println("ac", "begin autocomplete for " + str);
+
+	var m = str.match(/\b([a-z]+):/);
+	if (!(m && m.length)) { return; }
+
+	var op = m[1];
+	var opHash = this._op[op];
+	if (!opHash) { return; }
+	var list = this._list[opHash.listType];
+	if (list) {
+		callback.run(this._getMatches(op, str));
+	} else {
+		var respCallback = new AjxCallback(this, this._handleResponseLoad, [op, str, callback]);
+		this._list[opHash.listType] = [];
+		opHash.loader.run(opHash.listType, respCallback);
+	}
+};
+
+ZmSearchAutocomplete.prototype._getMatches =
+function(op, str) {
+
+	var opHash = this._op[op];
+	var results = [];
+	var list = this._list[opHash.listType];
+	var rest = str.substr(op.length + 1);
+	for (var i = 0, len = list.length; i < len; i++) {
+		var o = list[i];
+		var text = opHash.text ? opHash.text(o) : o;
+		var test = text.toLowerCase();
+		if (test.indexOf(rest) == 0) {
+			var matchText = opHash.matchText ? opHash.matchText(o) : text;
+			matchText = opHash.quoteMatch ? [op, ":", '"', matchText, '"'].join("") :
+											[op, ":", matchText].join("");
+			results.push({text:			text,
+						  icon:			opHash.icon ? opHash.icon(o) : null,
+						  matchText:	matchText});
+		}
+	}
+
+	return results;
+};
+
+ZmSearchAutocomplete.prototype._handleResponseLoad =
+function(op, str, callback) {
+	callback.run(this._getMatches(op, str));
+};
+
+ZmSearchAutocomplete.prototype._loadTags =
+function(listType, callback) {
+
+	var list = this._list[listType];
+	var tags = appCtxt.getTagTree().asList();
+	for (var i = 0, len = tags.length; i < len; i++) {
+		var tag = tags[i];
+		if (tag.id != ZmOrganizer.ID_ROOT) {
+			list.push(tag);
+		}
+	}
+	list.sort(ZmTag.sortCompare);
+	if (callback) {	callback.run();	}
+};
+
+ZmSearchAutocomplete.prototype._loadFolders =
+function(listType, callback) {
+
+	var list = this._list[listType];
+	var folders = appCtxt.getFolderTree().asList({includeRemote:true});
+	for (var i = 0, len = folders.length; i < len; i++) {
+		var folder = folders[i];
+		if (folder.id != ZmOrganizer.ID_ROOT && folder.type == ZmOrganizer.FOLDER) {
+			list.push(folder);
+		}
+	}
+	list.sort(ZmFolder.sortComparePath);
+	if (callback) {	callback.run();	}
+};
+
+ZmSearchAutocomplete.prototype._loadFlags =
+function(listType, callback) {
+
+	this._list[listType] = ["anywhere",
+							"unread", "read", "flagged", "unflagged",
+							"sent", "received", "replied", "unreplied", "forwarded", "unforwarded",
+							"invite",
+							"solo",
+							"tome", "fromme", "ccme", "tofromme", "fromccme", "tofromccme",
+       						"local", "remote"].sort();
+	if (callback) { callback.run(); }
+};
+
+ZmSearchAutocomplete.prototype._loadObjects =
+function(listType, callback) {
+
+	var list = this._list[listType];
+	list.push("attachment");
+	var idxZimlets = appCtxt.getZimletMgr().getIndexedZimlets();
+	if (idxZimlets.length) {
+		for (var i = 0; i < idxZimlets.length; i++) {
+			list.push(idxZimlets[i].keyword);
+		}
+	}
+	list.sort();
+	if (callback) { callback.run(); }
+};
+
+ZmSearchAutocomplete.prototype._loadTypes =
+function(listType, callback) {
+
+	AjxDispatcher.require("Browse");
+	var attachTypeList = new ZmAttachmentTypeList();
+	var respCallback = new AjxCallback(this, this._handleResponseLoadTypes, [attachTypeList, listType, callback]);
+	attachTypeList.load(respCallback);
+};
+
+ZmSearchAutocomplete.prototype._handleResponseLoadTypes =
+function(attachTypeList, listType, callback) {
+
+	this._list[listType] = attachTypeList.getAttachments();
+	if (callback) { callback.run(); }
+};
+
+ZmSearchAutocomplete.prototype._folderTreeChangeListener =
+function(ev) {
+	var fields = ev.getDetail("fields");
+	if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_CREATE || ev.event == ZmEvent.E_MOVE ||
+		((ev.event == ZmEvent.E_MODIFY) && fields && fields[ZmOrganizer.F_NAME])) {
+
+		var listType = ZmId.ORG_FOLDER;
+		if (this._list[listType]) {
+			this._list[listType] = [];
+			this._loadFolders(listType);
+		}
+	}
+};
+
+ZmSearchAutocomplete.prototype._tagTreeChangeListener =
+function(ev) {
+	var fields = ev.getDetail("fields");
+	if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_CREATE || ev.event == ZmEvent.E_MOVE ||
+		((ev.event == ZmEvent.E_MODIFY) && fields && fields[ZmOrganizer.F_NAME])) {
+
+		var listType = "tag";
+		if (this._list[listType]) {
+			this._list[listType] = [];
+			this._loadTags(listType);
+		}
+	}
+};

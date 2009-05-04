@@ -42,19 +42,21 @@
  * </p>
  * 
  * @author Conrad Damon
- * 
- * @param dataClass			[function]			the class that has the data loader
- * @param dataLoader		[function]			a method of dataClass that returns data to match against
- * @param matchValue		[string]			name of field in match result to use for completion
- * @param parent			[DwtComposite]*		the control that created this list (defaults to shell)
- * @param className			[string]*			CSS class
- * @param separator			[string]*			separator (gets added to the end of a match)
- * @param locCallback		[AjxCallback]*		callback into client to get desired location of autocomplete list
- * @param compCallback		[AjxCallback]*		callback into client to notify it that completion happened
- * @param keyDownCallback	[AjxCallback]*		additional ONKEYDOWN handler
- * @param keyUpCallback		[AjxCallback]*		additional ONKEYUP handler
- * @param smartPos		    [boolean]*			if true, support smart positioning (top/bottom placement)
- * @param options			[hash]*				additional options for autocompleteMatch()
+ *
+ * @param params			[hash]				hash of params:
+ *        matchValue		[string]			name of field in match result to use for completion
+ *        dataClass			[function]			the class that has the data loader
+ *        dataLoader		[function]*			a method of dataClass that returns data to match against
+ *        parent			[DwtComposite]*		the control that created this list (defaults to shell)
+ *        className			[string]*			CSS class
+ *        delims			[array]*			list of delimiters (which separate tokens such as addresses)
+ *        separator			[string]*			separator (gets added to the end of a match)
+ *        locCallback		[AjxCallback]*		callback into client to get desired location of autocomplete list
+ *        compCallback		[AjxCallback]*		callback into client to notify it that completion happened
+ *        keyDownCallback	[AjxCallback]*		additional ONKEYDOWN handler
+ *        keyUpCallback		[AjxCallback]*		additional ONKEYUP handler
+ *        smartPos		    [boolean]*			if true, support smart positioning (top/bottom placement)
+ *        options			[hash]*				additional options for autocompleteMatch()
  */
 ZmAutocompleteListView = function(params) {
 
@@ -65,6 +67,8 @@ ZmAutocompleteListView = function(params) {
 	this._dataLoader = params.dataLoader;
 	this._dataLoaded = false;
 	this._matchValue = params.matchValue;
+	this._delims = params.delims || ZmAutocompleteListView.DELIMS;
+	this._isDelim = AjxUtil.arrayAsHash(this._delims);
 	this._separator = (params.separator != null) ? params.separator : AjxEmailAddress.SEPARATOR;
 	this._locCallback = params.locCallback ? params.locCallback : new AjxCallback(this, this._getAcListLoc);
 	this._compCallback = params.compCallback;
@@ -110,11 +114,6 @@ ZmAutocompleteListView.prototype.constructor = ZmAutocompleteListView;
 
 // map of characters that are completion characters
 ZmAutocompleteListView.DELIMS = [',', ';', '\n', '\r', '\t'];
-ZmAutocompleteListView.IS_DELIM = {};
-for (var i = 0; i < ZmAutocompleteListView.DELIMS.length; i++) {
-	ZmAutocompleteListView.IS_DELIM[ZmAutocompleteListView.DELIMS[i]] = true;
-}
-delete i;
 
 ZmAutocompleteListView.WAIT_ID = "wait";
 
@@ -497,7 +496,7 @@ function(text, start) {
 				c = text.charAt(++i);
 			}
 		}
-		if (ZmAutocompleteListView.IS_DELIM[c]) {
+		if (this._isDelim[c]) {
 			var chunk = text.substring(start, i);
 			if (this._dataAPI.isComplete && this._dataAPI.isComplete(chunk)) {
 				DBG.println(AjxDebug.DBG3, "skipping completed chunk: " + chunk);
