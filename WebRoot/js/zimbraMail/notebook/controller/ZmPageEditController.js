@@ -233,7 +233,9 @@ function(popViewWhenSaved) {
 		message = ZmMsg.errorSavingPageNameRequired;
 	} else if (!ZmOrganizer.VALID_NAME_RE.test(name) || ZmPageEditController.INVALID_DOC_NAME_RE.test(name)) {
 		message = AjxMessageFormat.format(ZmMsg.errorInvalidName, name);
-	}
+	} else if ( name.length > ZmOrganizer.MAX_NAME_LENGTH){
+        message = AjxMessageFormat.format(ZmMsg.nameTooLong, ZmOrganizer.MAX_NAME_LENGTH);
+    }
 
 	// bug: 9406 (short term fix, waiting for backend support)
 	var notebook = appCtxt.getById(this._page.folderId || ZmOrganizer.ID_NOTEBOOK);
