@@ -35,7 +35,7 @@ function initSlides() {
 
     //resize all the slides and master slides
     while(n) {
-        if(n.className == "slide" || n.className == "masterslide") {
+        if(n.className == "slide" || n.className == "slidemaster") {
             resizeSlide(n);
         }
         n = n.nextSibling;
