@@ -649,7 +649,28 @@ function(type, tree, account) {
 
 ZmAppCtxt.prototype.getFolderTree =
 function(account) {
-	return this.getTree(ZmOrganizer.FOLDER, account);
+    if (appCtxt.get(ZmSetting.MAIL_ENABLED)) {
+	    return this.getTree(ZmOrganizer.FOLDER, account);
+
+    }else if(appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
+        return this.getTree(ZmOrganizer.CALENDAR, account);
+
+    }else if(appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+        return this.getTree(ZmOrganizer.ADDRBOOK, account);
+
+    }else if(appCtxt.get(ZmSetting.TASKS_ENABLED)) {
+        return this.getTree(ZmOrganizer.TASK, account);
+
+    }else if(appCtxt.get(ZmSetting.NOTEBOOK_ENABLED)) {
+        return this.getTree(ZmOrganizer.NOTEBOOK, account);
+
+    }else if(appCtxt.get(ZmSetting.BRIEFCASE_ENABLED)) {
+        return this.getTree(ZmOrganizer.BRIEFCASE, account);
+
+    }else{
+        return null;
+    }
+
 };
 
 ZmAppCtxt.prototype.getTagTree =
