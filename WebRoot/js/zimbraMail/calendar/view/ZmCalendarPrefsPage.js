@@ -322,7 +322,6 @@ function() {
 			dataClass:appCtxt.getAutocompleter(),
 			separator:"",
 			matchValue:ZmAutocomplete.AC_VALUE_EMAIL,
-			smartPos:true,
 			options:{galOnly:true}
 		};
 		this._acList = new ZmAutocompleteListView(params);

@@ -51,11 +51,9 @@
  *        className			[string]*			CSS class
  *        delims			[array]*			list of delimiters (which separate tokens such as addresses)
  *        separator			[string]*			separator (gets added to the end of a match)
- *        locCallback		[AjxCallback]*		callback into client to get desired location of autocomplete list
  *        compCallback		[AjxCallback]*		callback into client to notify it that completion happened
  *        keyDownCallback	[AjxCallback]*		additional ONKEYDOWN handler
  *        keyUpCallback		[AjxCallback]*		additional ONKEYUP handler
- *        smartPos		    [boolean]*			if true, support smart positioning (top/bottom placement)
  *        options			[hash]*				additional options for autocompleteMatch()
  */
 ZmAutocompleteListView = function(params) {
@@ -70,11 +68,9 @@ ZmAutocompleteListView = function(params) {
 	this._delims = params.delims || ZmAutocompleteListView.DELIMS;
 	this._isDelim = AjxUtil.arrayAsHash(this._delims);
 	this._separator = (params.separator != null) ? params.separator : AjxEmailAddress.SEPARATOR;
-	this._locCallback = params.locCallback ? params.locCallback : new AjxCallback(this, this._getAcListLoc);
 	this._compCallback = params.compCallback;
 	this._keyDownCallback = params.keyDownCallback;
 	this._keyUpCallback = params.keyUpCallback;
-    this._smartPositionMe = params.smartPos;
     this._options = params.options;
 
     // mouse event handling
@@ -107,6 +103,7 @@ ZmAutocompleteListView = function(params) {
 	this._numChars = 0;
 	this._done = {};
 	this.setVisible(false);
+	this.setScrollStyle(Dwt.SCROLL);
 };
 
 ZmAutocompleteListView.prototype = new DwtComposite;
@@ -321,22 +318,7 @@ function(element) {
 };
 
 /**
- * Enable/Disable smart positioning (top/bottom positioning) support.
- */
-ZmAutocompleteListView.prototype.setSmartPositioning =
-function(on) {
-	this._smartPositionMe = on;
-};
-
-/**
- * Getter to check smart positioning (top/bottom positioning) support.
- */
-ZmAutocompleteListView.prototype.isSmartPositioned =
-function() {
-	return this._smartPositionMe;
-};
-/**
-* Autocompletion of addresses. Should be called by a handler for a keyboard event.
+* Autocomplete typed text. Should be called by a handler for a keyboard event.
 *
 * @param element	the element (some sort of text field) doing autocomplete
 * @param loc		where to popup the list, if appropriate
@@ -420,7 +402,7 @@ function(on) {
 	if (on) {
 		if (!this.size()) {
 			// make sure we're visible if "waiting" row is the only one
-			this.show(true, this._loc);
+			this.show(true);
 		}
 		var div = this._getDiv(ZmAutocompleteListView.WAIT_ID);
 		this._waitDivId = div.id;
@@ -443,11 +425,8 @@ function(ev) {
 	aclv._acActionId = -1; // so we don't try to cancel
 	aclv._numChars = 0;
 
-	var loc = this._locCallback ? this._locCallback.run(ev) : null;
-	
 	aclv.reset();				// start fresh
 	aclv._element = element;	// for updating element later
-	aclv._loc = loc;
 	
 	var info = {text: element.value, start: 0};
 	
@@ -584,7 +563,7 @@ function(str, chunk, text, start, callback, list) {
 			// this autocomplete string (eg GAL), and the user selected a result from the
 			// first time we showed the list (bug 28886)
 			if (!this._hasCompleted) {
-				this.show(true, this._loc);
+				this.show(true);
 			}
 		}
 	
@@ -708,10 +687,10 @@ function(list, sel) {
 	this._matches = list;
 	var len = this._matches.length;
 	for (var i = 0; i < len; i++) {
-		var div = this._getDiv(i);
-		div._pos = i;
 		var match = this._matches[i];
 		if (match && (match.text || match.icon)) {
+			var div = this._getDiv(i);
+			div._pos = i;
 			this._addRow(div, match.text, match.icon);
 			thisHtmlElement.appendChild(div);
 		}
@@ -758,69 +737,37 @@ function(div, text, icon) {
 		div.innerHTML = text;
 	}
 };
-/*
-  To support the Smart Positioning
- */
-ZmAutocompleteListView.prototype._getSmartPosition =
-function(loc){
-    this.setLocation(Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
-    this.setVisible(true);
-    var x =  loc.x;
-    var y = loc.y;
-    if(this.parent!=this.shell){
-         x +=  this.parent.getX();
-         y += this.parent.getY();
-    }
-    var windowSize = this.shell.getSize();
-    var mySize = DwtComposite.prototype.getSize.call(this, loc);
-    // bug 9583 - can't query border size so just subtract generic padding
-	windowSize.y -= 10 + AjxEnv.isIE ? 20 : 0;
-	windowSize.x -= 20;
-    if(mySize.y >= windowSize.y ){
-        var space = windowSize.y;
-		var newY = null;
-		space = windowSize.y - y;
-		var above = this.parent.getBounds().y;
-		var below = space;
-		if (space < 50 || (mySize.y > below && mySize.y < above && above / below > 2)) {
-			space = above;
-			newY = above;
-		}
 
-		var rows =  this._matches;
-		var numRows = rows.length;
-		var height = mySize.y;
-		var requiredSpace = space - 25; // Account for space on top & bottom of menu.
-		for (var i = numRows - 1; i >= 0; i--) {
-			height -= Dwt.getSize(rows[i]).y;
-			if (height < requiredSpace) {
-				break;
-			}
-		}
-		if (newY) {
-			y = newY - mySize.y;
-		}
-    }
-    var newX = ((x + mySize.x) >= windowSize.x) ? (windowSize.x - mySize.x) : x;
-    var newY = ((y + mySize.y) >= windowSize.y) ? (windowSize.y - mySize.y) : y;
-    if(this.parent!=this.shell){
-        newX -= this.parent.getX();
-        newY -= this.parent.getY();
-    }
-    return new DwtPoint(newX,newY);
-}
 // Displays the list
 ZmAutocompleteListView.prototype._popup = 
 function(loc) {
-    var x = loc.x;
-    var y = loc.y;
-    if(this.isSmartPositioned()){
-        var p  = this._getSmartPosition(loc);
-        x = p.x;
-        y = p.y;
-    }
+
+	var shellHeight = this.shell.getSize().y;
+	var elLoc = Dwt.getLocation(this._element);
+	var elSize = Dwt.getSize(this._element);
+	var x = elLoc.x;
+	var y = elLoc.y + elSize.y;
+	this.setLocation(Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
+	this.setVisible(true);
+	var myHeight = this.getSize().y;
+	var newHeight;
+	if (y + myHeight > shellHeight) {
+		// If not enough vertical space, set height and let it scroll
+		newHeight = (shellHeight - y) - (10 + (AjxEnv.isIE ? 20 : 0));
+		if (newHeight < 40) {
+			// if we can't show at least a couple rows, position it above the input
+			newHeight = null;
+			y = elLoc.y - myHeight;
+			if (y < 0) {
+				// need to scroll
+				y = 0;
+				newHeight = shellHeight - elLoc.y;
+			}
+		}
+	}
+	this.setSize(Dwt.DEFAULT, newHeight ? newHeight : Dwt.CLEAR);
+
     this.setLocation(x, y);
-    this.setVisible(true);
 	this.setZIndex(Dwt.Z_DIALOG_MENU);
 	ZmAutocompleteListView._activeAcList = this;
 	DwtEventManager.addListener(DwtEvent.ONMOUSEDOWN, ZmAutocompleteListView._outsideMouseDownListener);
@@ -844,7 +791,7 @@ ZmAutocompleteListView.prototype._setSelected =
 function(sel) {
 	DBG.println(AjxDebug.DBG3, "setting selected index to " + sel);
 	var children = this.getHtmlElement().childNodes;
-	if (!children) return;
+	if (!children) { return; }
 
 	var len = children.length;
 	for (var i = 0; i < len; i++) {

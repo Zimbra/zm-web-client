@@ -275,8 +275,7 @@ function() {
 			options: {needItem: true},
 			matchValue: ZmAutocomplete.AC_VALUE_NAME,
 			keyUpCallback: keyUpCallback,
-			compCallback: acCallback,
-			smartPos: true
+			compCallback: acCallback
 		};
 		this._acContactsList = new ZmAutocompleteListView(params);
 		this._acList[ZmCalBaseItem.PERSON] = this._acContactsList;
