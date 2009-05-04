@@ -484,8 +484,7 @@ function(id) {
 		dataClass:		new ZmSearchAutocomplete(),
 		matchValue:		"matchText",
 		delims:			[" "],
-		separator:		"",
-		compCallback:	new AjxCallback(this, this._handleEnterKeyPress)
+		separator:		""
 	};
 	this._acList = new ZmAutocompleteListView(params);
 	this._acList.handle(this.getSearchField());

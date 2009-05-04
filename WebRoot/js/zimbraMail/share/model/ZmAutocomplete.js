@@ -529,14 +529,19 @@ ZmSearchAutocomplete.prototype.autocompleteMatch =
 function(str, callback, aclv, options) {
 
 	str = str.toLowerCase().replace(/"/g, '');
-	DBG.println("ac", "begin autocomplete for " + str);
 
 	var m = str.match(/\b([a-z]+):/);
-	if (!(m && m.length)) { return; }
+	if (!(m && m.length)) {
+		callback.run();
+		return;
+	}
 
 	var op = m[1];
 	var opHash = this._op[op];
-	if (!opHash) { return; }
+	if (!opHash) {
+		callback.run();
+		return;
+	}
 	var list = this._list[opHash.listType];
 	if (list) {
 		callback.run(this._getMatches(op, str));
