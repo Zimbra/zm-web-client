@@ -1,6 +1,6 @@
 <template id='mail.Message#MessageHeader'>
 	<div><!-- empty container DIV here so Dwt.parseHtmlFragment returns the infoBar div below -->
-		<table class='MsgHeaderTable' cellspacing=0 cellpadding=0 border=0 width=100%>
+		<table class='MsgHeaderTable' id='${id}_headerElement'cellspacing=0 cellpadding=0 border=0 width=100%>
 			<tr>
 				<td>
 					<table cellspacing=0 cellpadding=0 border=0 width=100%>

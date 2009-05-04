@@ -1118,7 +1118,7 @@ function(msg, container, callback) {
 
 	var el = container || this.getHtmlElement();
 	el.appendChild(Dwt.parseHtmlFragment(html));
-
+	this._headerElement = Dwt.byId(this._htmlElId + "_headerElement");
 
 	/**************************************************************************/
 	/* Add to DOM based on Id's used to generate HTML via templates           */
@@ -1709,7 +1709,7 @@ ZmMailMsgView._resetIframeHeight =
 function(self, iframe, attempt) {
 	var h;
 	if (self._scrollWithIframe) {
-		h = self.getH() - 7;
+		h = self.getH();
 		function subtract(el) {
 			if (el) {
 				if (typeof el == "string")
@@ -1718,7 +1718,7 @@ function(self, iframe, attempt) {
 					h -= Dwt.getSize(el).y;
 			}
 		};
-		subtract(self._hdrTableId);
+		subtract(self._headerElement);
 		subtract(self._displayImagesId);
 		subtract(self._highlightObjectsId);
 		if (self._isMsgTruncated) {
