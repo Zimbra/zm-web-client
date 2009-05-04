@@ -350,7 +350,7 @@ function(organizer) {
 
 ZmNotebookPageController.prototype._closeListener =
 function(ev) {
-	this.show(null, true);
+    this._app.popView();
 };
 
 //offline related modules
