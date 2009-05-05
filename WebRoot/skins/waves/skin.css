@@ -88,3 +88,9 @@ background: url("@SkinImgDir@/header_bg_bones.png") repeat-x;*/
 	/*background-color: transparent;*/
 	color: white;
 }
+
+.ZmFilePropertiesLabel {
+	color: black;
+	font-weight: bold;
+	white-space: nowrap;
+}
