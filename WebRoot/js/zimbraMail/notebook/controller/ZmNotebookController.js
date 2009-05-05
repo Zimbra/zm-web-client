@@ -495,6 +495,28 @@ function(pageRef) {
 
 };
 
+ZmNotebookController.prototype.getItemTooltip =
+function(item, listView) {
+    var dateStr = this._getDateInLocaleFormat(item.modifyDate);
+    var prop = [
+		{name:ZmMsg.briefcasePropName, value:item.name},
+		{name:ZmMsg.briefcasePropSize, value:AjxUtil.formatSize(item.size)},
+		{name:ZmMsg.briefcasePropModified, value:(item.modifyDate ? dateStr+"" : "")}
+	];
+
+	var subs = {
+		fileProperties: prop,
+		tagTooltip: listView._getTagToolTip(item)
+	};
+    return AjxTemplate.expand("briefcase.Briefcase#Tooltip", subs);
+};
+
+ZmNotebookController.prototype._getDateInLocaleFormat =
+function(date) {
+    var dateFormatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.FULL, AjxDateFormat.MEDIUM);
+    return dateFormatter.format(date);
+}
+
 //
 // Private functions
 //

@@ -104,7 +104,7 @@ function(htmlArr, idx, item, field, colIdx, params) {
 		}
 		htmlArr[idx++] = AjxImg.getImageHtml(icon);
 	} else if (field == ZmItem.F_SUBJECT) {
-		htmlArr[idx++] = AjxStringUtil.htmlEncode(item.name);
+		htmlArr[idx++] = "<div id='"+this._getFieldId(item,ZmItem.F_SUBJECT)+"'>"+AjxStringUtil.htmlEncode(item.name)+"</div>";
 	} else if (field == ZmItem.F_FILE_TYPE) {
 		var mimeInfo = item.contentType ? ZmMimeTable.getInfo(item.contentType) : null;
 		htmlArr[idx++] = mimeInfo ? mimeInfo.desc : "&nbsp;";
@@ -135,7 +135,7 @@ function(htmlArr, idx, item, field, colIdx, params) {
 	} else {
 		idx = ZmListView.prototype._getCellContents.apply(this, arguments);
 	}
-	
+
 	return idx;
 };
 
@@ -204,4 +204,11 @@ function() {
     var files = this.processUploadFiles();
     attachDialog.uploadFiles(files, document.getElementById("zdnd_form"), {id:this._controller._currentFolder});
 };
+
+ZmDetailListView.prototype._getToolTip =
+function(params) {
+	if (!params.item) { return; }
+	return this._controller.getItemTooltip(params.item, this);
+};
+
 //end zimbradnd

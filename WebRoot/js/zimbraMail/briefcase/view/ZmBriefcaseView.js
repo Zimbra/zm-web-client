@@ -72,9 +72,11 @@ function(item, params) {
 	div.className = "ZmBriefcaseItem";
 	
 	var div1 = document.createElement("div");
+    div1.id = this._getFieldId(item,ZmItem.F_NAME);
 	div1.className = "ZmThumbnailItem";
 	
 	var div2 = document.createElement("div");
+    div2.id = this._getFieldId(item,ZmItem.F_SUBJECT);
 	div2.className = icon+" ZmThumbnailIcon";
 	
 	div1.appendChild(div2);
@@ -201,13 +203,13 @@ function(ev, div) {
 	DwtListView.prototype._mouseOverAction.call(this, ev, div);
 	var id = ev.target.id || div.id;
 	if (!id) return true;
-	
+
 	if (div) {
 		var item = this.getItemFromElement(div);
 		if(item && !item.isFolder){
 		this.setToolTipContent(this._getToolTip({item:item, ev:ev, div:div}));
 		}
-	}		
+	}
 	return true;
 };
 

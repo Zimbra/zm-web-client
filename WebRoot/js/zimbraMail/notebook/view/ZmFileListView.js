@@ -79,7 +79,7 @@ function(parent) {
 ZmFileListView.prototype._getCellContents =
 function(htmlArr, idx, item, field, colIdx, params) {
 	if (field == ZmItem.F_SUBJECT) {
-		htmlArr[idx++] = AjxStringUtil.htmlEncode(item.name);
+		htmlArr[idx++] = "<div id='"+this._getFieldId(item,ZmItem.F_SUBJECT)+"'>"+AjxStringUtil.htmlEncode(item.name)+"</div>";
 	} else if (field == ZmItem.F_SIZE) {
 		htmlArr[idx++] = AjxUtil.formatSize(item.size);
 	} else if (field == ZmItem.F_FILE_TYPE) {
@@ -181,4 +181,10 @@ function(ev,item) {
         this._controller._app._checkReplenishListView = this;
 		this._controller._resetToolbarOperations();		
 	}
+};
+
+ZmFileListView.prototype._getToolTip =
+function(params) {
+	if (!params.item) { return; }
+	return this._controller.getItemTooltip(params.item, this);
 };

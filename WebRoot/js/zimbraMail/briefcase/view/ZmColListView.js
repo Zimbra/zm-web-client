@@ -69,7 +69,7 @@ function(htmlArr, idx, item, field, colIdx, params) {
 	htmlArr[idx++] = "<td style='vertical-align:middle;' width=20><center>";
 	htmlArr[idx++] = AjxImg.getImageHtml(icon);
 	htmlArr[idx++] = "</center></td>";
-	htmlArr[idx++] = "<td style='vertical-align:middle;'>&nbsp;";
+	htmlArr[idx++] = "<td style='vertical-align:middle;' id='"+this._getFieldId(item,ZmItem.F_SUBJECT)+"'>&nbsp;";
 	htmlArr[idx++] = AjxStringUtil.htmlEncode(item.name);
 	htmlArr[idx++] = "</td>";
 
@@ -169,7 +169,7 @@ function(ev, div) {
 		if(item && !item.isFolder){
 		this.setToolTipContent(this._getToolTip({item:item, ev:ev, div:div}));
 		}
-	}		
+	}
 	return true;
 };
 
