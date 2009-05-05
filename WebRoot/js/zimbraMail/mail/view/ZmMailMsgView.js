@@ -1894,7 +1894,11 @@ ZmMailMsgView.briefcaseCallback =
 function(msgId, partId, name) {
 	ZmZimbraMail.unloadHackCallback();
 
-	var appCtxt = window.parentAppCtxt || window.appCtxt;
+    //force create deferred folders if not created
+    var aCtxt = appCtxt.isChildWindow ? parentAppCtxt : appCtxt;
+    var briefcaseApp = aCtxt.getApp(ZmApp.BRIEFCASE);
+    briefcaseApp._createDeferredFolders();
+    
 	appCtxt.getApp(ZmApp.BRIEFCASE).createFromAttachment(msgId, partId, name);
 };
 
