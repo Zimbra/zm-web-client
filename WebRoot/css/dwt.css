@@ -1074,6 +1074,13 @@
 
 
 /* widgets */
+.xform_field_disabled {
+	
+}
+
+textarea.xform_field_disabled {
+	@TextArea-disabled@
+}	
 .xform_table {
 	@CompactTable@
 }
