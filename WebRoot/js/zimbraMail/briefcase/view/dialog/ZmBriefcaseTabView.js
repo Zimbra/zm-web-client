@@ -56,11 +56,10 @@ ZmBriefcaseTabView.prototype._createHtml = function(){
     html[idx++] = '</tr>';
     html[idx++] = '</table>';
     this._contentEl.innerHTML = html.join("");
-
-    var bController = this._briefcaseController = AjxDispatcher.run("GetBriefcaseController");
-
+    
     this.showBriefcaseTreeView();
 
+    var bController = this._briefcaseController = AjxDispatcher.run("GetBriefcaseController");    
     var params = {parent: bController._container, className: "BriefcaseTabBox BriefcaseList", posStyle: DwtControl.ABSOLUTE_STYLE, view: ZmId.VIEW_BRIEFCASE_ICON, type: ZmItem.ATT, controller: bController};
     var bcView = this._tabBriefcaseView = new ZmBriefcaseIconView(params);
     bcView.reparentHtmlElement(this._folderListId);
@@ -151,6 +150,12 @@ function(attachDialog, docIds) {
 
 ZmBriefcaseTabView.prototype.showBriefcaseTreeView =
 function() {
+
+    //Force create deferred folders if not created
+    var aCtxt = appCtxt.isChildWindow ? parentAppCtxt : appCtxt;
+    var briefcaseApp = aCtxt.getApp(ZmApp.BRIEFCASE);
+    briefcaseApp._createDeferredFolders();
+
     var base = this.toString();
     var acct = appCtxt.getActiveAccount();
     var params = {

@@ -172,6 +172,7 @@ function() {
 		apps[ZmApp.CALENDAR] = true;
 	}
 	apps[ZmApp.PREFERENCES] = true;
+    apps[ZmApp.BRIEFCASE] = true;  //Need this for both Compose & Msg View detach window.
 	this._createEnabledApps(apps);
 
 	// inherit parent's identity collection

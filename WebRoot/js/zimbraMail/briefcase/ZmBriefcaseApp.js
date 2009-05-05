@@ -112,7 +112,8 @@ function() {
 							  deferrable     : true,
 							  newOp			 : ZmOperation.NEW_BRIEFCASEITEM,
 							  displayOrder	 : 100,
-							  hasColor       : true
+							  hasColor       : true,
+                              childWindow    : true  
 							});
 };
 

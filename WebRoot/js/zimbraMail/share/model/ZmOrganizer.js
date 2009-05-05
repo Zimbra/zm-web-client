@@ -291,7 +291,7 @@ function(org, params) {
 	if (params.displayOrder)	{ ZmOrganizer.DISPLAY_ORDER[org]		= params.displayOrder; }
 	if (params.hideEmpty)		{ ZmOrganizer.HIDE_EMPTY[org]			= params.hideEmpty; }
 
-	if (!appCtxt.isChildWindow) {
+	if (!appCtxt.isChildWindow || params.childWindow ) {
 		if (params.compareFunc)		{ ZmTreeView.COMPARE_FUNC[org]			= params.compareFunc; }
 		if (params.treeController)	{ ZmOverviewController.CONTROLLER[org]	= params.treeController; }
 	}
