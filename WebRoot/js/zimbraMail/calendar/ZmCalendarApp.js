@@ -112,6 +112,8 @@ function(settings) {
 	settings.registerSetting("CAL_USE_QUICK_ADD",			{name: "zimbraPrefCalendarUseQuickAdd", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
 	settings.registerSetting("CALENDAR_INITIAL_VIEW",		{name: "zimbraPrefCalendarInitialView", type: ZmSetting.T_PREF, defaultValue: ZmSetting.CAL_DAY});
 	settings.registerSetting("DELETE_INVITE_ON_REPLY",		{name: "zimbraPrefDeleteInviteOnReply",type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
+	settings.registerSetting("CAL_AUTO_ADD_INVITES",		{name: "zimbraPrefCalendarAutoAddInvites",type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
+	settings.registerSetting("CAL_SEND_INV_DENIED_REPLY",   {name: "zimbraPrefCalendarSendInviteDeniedAutoReply",type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
 };
 
 ZmCalendarApp.prototype._registerPrefs =
@@ -125,6 +127,8 @@ function() {
 			precondition: ZmSetting.CALENDAR_ENABLED,
 			prefs: [
 				ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL,
+                ZmSetting.CAL_AUTO_ADD_INVITES,
+                ZmSetting.CAL_SEND_INV_DENIED_REPLY,
                 ZmSetting.CAL_APPT_VISIBILITY,
 				ZmSetting.CAL_EXPORT,
 				ZmSetting.CAL_FIRST_DAY_OF_WEEK,
@@ -158,7 +162,17 @@ function() {
 		displayName:		ZmMsg.alwaysShowMiniCal,
 		displayContainer:	ZmPref.TYPE_CHECKBOX
 	});
-	
+
+    ZmPref.registerPref("CAL_AUTO_ADD_INVITES", {
+        displayName:		ZmMsg.autoAddInvites,
+        displayContainer:	ZmPref.TYPE_CHECKBOX
+    });
+
+    ZmPref.registerPref("CAL_SEND_INV_DENIED_REPLY", {
+        displayName:		ZmMsg.sendInvDeniedAutoReply,
+        displayContainer:	ZmPref.TYPE_CHECKBOX
+    });
+
 	ZmPref.registerPref("CAL_EXPORT", {
 		displayName:		ZmMsg.exportToICS,
 		displayContainer:	ZmPref.TYPE_EXPORT
