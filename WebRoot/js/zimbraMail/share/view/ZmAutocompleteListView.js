@@ -128,6 +128,11 @@ function(ev) {
 	return result;
 };
 
+ZmAutocompleteListView.onKeyPress =
+function(ev) {
+	DwtKeyEvent.geckoCheck(ev);
+};
+
 ZmAutocompleteListView.onKeyUp =
 function(ev) {
 	ev = DwtUiEvent.getEvent(ev);
@@ -191,6 +196,7 @@ function(ev) {
 	
 	var id = element.id;
 	var key = DwtKeyEvent.getCharCode(ev);
+//	DBG.println("ac", ev.type + " char code: " + key);
 
 	// Tab/Esc handled in keydown for IE
 	if (AjxEnv.isIE && ev.type == "keyup" && (key == 9 || key == 27)) {
@@ -201,7 +207,7 @@ function(ev) {
 	DBG.println(AjxDebug.DBG3, ev.type + " event, key = " + key + ", value = " + value);
 
 	// reset timer on any address field key activity
-	if (aclv._acActionId != -1) {
+	if (aclv._acActionId != -1 && !DwtKeyMap.IS_MODIFIER[key]) {
 		AjxTimedAction.cancelAction(aclv._acActionId);
 		aclv._acActionId = -1;
 	}
@@ -314,6 +320,7 @@ ZmAutocompleteListView.prototype.handle =
 function(element) {
 	element._acListViewId = this._internalId;
 	Dwt.setHandler(element, DwtEvent.ONKEYDOWN, ZmAutocompleteListView.onKeyDown);
+	Dwt.setHandler(element, DwtEvent.ONKEYPRESS, ZmAutocompleteListView.onKeyPress);
 	Dwt.setHandler(element, DwtEvent.ONKEYUP, ZmAutocompleteListView.onKeyUp);
 };
 
