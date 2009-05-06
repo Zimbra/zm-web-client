@@ -26,6 +26,10 @@ ZmBriefcaseController = function(container, app) {
 	this._listeners[ZmOperation.SEND_FILE_AS_ATT] = new AjxListener(this, this._sendFileAsAttachmentListener);
 	this._listeners[ZmOperation.NEW_FILE] = new AjxListener(this, this._uploadFileListener);
 	this._listeners[ZmOperation.VIEW_FILE_AS_HTML] = new AjxListener(this, this._viewAsHtmlListener);
+
+    this._listeners[ZmOperation.NEW_SPREADSHEET] = new AjxListener(this, this._handleDoc, [ZmOperation.NEW_SPREADSHEET]);
+    this._listeners[ZmOperation.NEW_PRESENTATION] = new AjxListener(this, this._handleDoc, [ZmOperation.NEW_PRESENTATION])
+
 	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
 	this._dragSrc.addDragListener(new AjxListener(this, this._dragListener));
 };
@@ -78,8 +82,15 @@ function() {
 			ZmOperation.TAG_MENU,
 			ZmOperation.SEP,
 			ZmOperation.VIEW_MENU,
-			ZmOperation.FILLER,
+            ZmOperation.SEP,
+            ZmOperation.NEW_SPREADSHEET,
+            ZmOperation.NEW_PRESENTATION,
+            ZmOperation.FILLER,
 			ZmOperation.SEND_FILE_MENU];
+};
+
+ZmBriefcaseController.prototype._handleDoc = function(op){
+     this._app.handleOp(op);
 };
 
 ZmBriefcaseController.prototype._initializeToolBar =
@@ -149,6 +160,7 @@ function(parent, num) {
 	parent.enable(ZmOperation.DELETE, (!isReadOnly && isItemSelected));
 	parent.enable(ZmOperation.TAG_MENU, (!isShared && isItemSelected && !isFolderSelected));
 	parent.enable([ZmOperation.NEW_FILE, ZmOperation.VIEW_MENU], true);
+    parent.enable([ZmOperation.NEW_SPREADSHEET, ZmOperation.NEW_PRESENTATION], true);
 };
 
 ZmBriefcaseController.prototype._getTagMenuMsg =
