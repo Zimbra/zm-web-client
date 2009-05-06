@@ -148,12 +148,9 @@ ZmSignaturesPage.prototype.validate = function() {
             this._errorMsg = isNameEmpty ? ZmMsg.signatureNameMissingRequired : ZmMsg.signatureValueMissingRequired;
 			return false;
         }
-        var sigValue = signature.value;
-        if(signature.contentType == ZmMimeTable.TEXT_HTML){
-            sigValue = AjxStringUtil.stripTags(signature.value);
-        }
+        var sigValue = signature.value;        
         if (sigValue.length > maxLength) {
-			this._errorMsg = AjxMessageFormat.format(ZmMsg.errorSignatureTooLong, maxLength);
+			this._errorMsg = AjxMessageFormat.format((signature.contentType == ZmMimeTable.TEXT_HTML) ? ZmMsg.errorHtmlSignatureTooLong : ZmMsg.errorSignatureTooLong, maxLength);
 			return false;
 		}
 	}
