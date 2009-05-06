@@ -104,7 +104,8 @@ ZmTask.prototype.notifyModify =
 function(obj) {
 	ZmItem.prototype.notifyModify.call(this, obj);
 
-	this._loadFromDom(obj);
+    this.uid = obj.uid;
+    if (obj.l) this.folderId = obj.l;
 
 	// update this tasks's list and notify
 	this.list.modifyLocal(obj, {task:this});
