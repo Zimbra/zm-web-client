@@ -528,6 +528,11 @@ function(op, params) {
 ZmSearchAutocomplete.prototype.autocompleteMatch =
 function(str, callback, aclv, options) {
 
+	if (ZmSearchAutocomplete._ignoreNextKey) {
+		ZmSearchAutocomplete._ignoreNextKey = false;
+		return;
+	}
+
 	str = str.toLowerCase().replace(/"/g, '');
 
 	var m = str.match(/\b([a-z]+):/);
@@ -559,6 +564,9 @@ function(op, str) {
 	var results = [];
 	var list = this._list[opHash.listType];
 	var rest = str.substr(op.length + 1);
+	if (opHash.listType == ZmId.ORG_FOLDER) {
+		rest = rest.replace(/^\//, "");	// remove leading slash in folder path
+	}
 	for (var i = 0, len = list.length; i < len; i++) {
 		var o = list[i];
 		var text = opHash.text ? opHash.text(o) : o;

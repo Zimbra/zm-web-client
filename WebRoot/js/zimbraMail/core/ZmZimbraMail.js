@@ -1917,6 +1917,9 @@ function(actionCode, ev) {
 			if (stb) {
 				var searchBox = stb.getSearchField();
 				appCtxt.getKeyboardMgr().grabFocus(searchBox);
+				if (ZmSearchAutocomplete) {
+					ZmSearchAutocomplete._ignoreNextKey = true;
+				}
 			}
 			break;
 		}
