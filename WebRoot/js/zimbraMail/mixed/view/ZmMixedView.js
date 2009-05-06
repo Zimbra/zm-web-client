@@ -167,7 +167,7 @@ function(params) {
 		} else if (item.type == ZmItem.MSG) {
 			listViewClass = ZmMailMsgListView;
 			this._emulateListView(listViewClass, ["_getParticipantToolTip"]);
-		} else {
+		} else{
 			listViewClass = ZmListView;
 		}
 	} else if (field == ZmItem.F_SUBJECT) {
@@ -175,7 +175,9 @@ function(params) {
 			listViewClass = ZmConvListView;
 		} else if (item.type == ZmItem.MSG) {
 			listViewClass = ZmMailMsgListView;
-		} else {
+		} else if(item.type == ZmItem.BRIEFCASE){
+            listViewClass = ZmBriefcaseView
+        }else{
 			listViewClass = ZmListView;
 		}
 	} else if (field == ZmItem.F_TYPE) {

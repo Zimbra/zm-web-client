@@ -943,7 +943,10 @@ function(ids){
 
 ZmBriefcaseController.prototype.getItemTooltip =
 function(item, listView) {
-	var dateStr = this._getDateInLocaleFormat(item.modifyDate);
+
+    var dateFormatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.FULL, AjxDateFormat.MEDIUM);
+	var dateStr = dateFormatter.format(item.modifyDate);
+
 	var prop = [
 		{name:ZmMsg.briefcasePropName, value:item.name},
 		{name:ZmMsg.briefcasePropSize, value:AjxUtil.formatSize(item.size)},

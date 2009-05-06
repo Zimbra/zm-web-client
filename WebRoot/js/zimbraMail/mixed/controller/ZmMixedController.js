@@ -220,7 +220,20 @@ function(ev) {
 		}
 		else if (ev.item.type == ZmItem.PAGE || ev.item.type == ZmItem.DOCUMENT) {
 			appCtxt.getApp(ZmApp.NOTEBOOK).getFileController()._doSelectDblClicked(ev.item, true);
-		}
+		}else if( ev.item.type == ZmItem.BRIEFCASE ){
+            var app = appCtxt.getApp(ZmApp.BRIEFCASE);
+            var briefcaseCtrl = AjxDispatcher.run("GetBriefcaseController");
+            if (app._deferredFolders.length != 0) {  //Creating deferred folders
+		        app._createDeferredFolders();
+	        }                
+            var item = ev.item;                
+            var restUrl = item.getRestUrl();
+            if (item && item.isFolder) {
+                briefcaseCtrl.show(item.id);
+            } else if(restUrl != null) {
+                window.open(restUrl);
+		    }                
+        }
 	}
 };
 

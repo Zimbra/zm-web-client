@@ -193,8 +193,10 @@ ZmBriefcaseView.prototype.refresh = function(restUrl){
 
 ZmBriefcaseView.prototype._getToolTip =
 function(params) {
-	if (!params.item) { return; }
-	return this._controller.getItemTooltip(params.item, this);
+	if (!params.item) { return null; }
+
+	return ZmBriefcaseController.prototype.getItemTooltip.call(this, params.item, this);
+
 };
 
 
