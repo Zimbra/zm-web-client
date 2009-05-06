@@ -102,7 +102,7 @@ function() {
 							  orgPackage     : "BriefcaseCore",
 							  treeController : "ZmBriefcaseTreeController",
 							  labelKey       : "folders",
-							  itemsKey       : "folders",
+							  itemsKey       : "files",
 							  treeType       : ZmOrganizer.FOLDER,
 							  views          : ["document"],
 							  folderKey      : "briefcase",
