@@ -200,10 +200,6 @@ function() {
 	}
 
 	this._createView();
-
-	var kbMgr = appCtxt.getKeyboardMgr();
-	kbMgr.setTabGroup(rootTg);
-	kbMgr.grabFocus(startupFocusItem);
 };
 
 ZmNewWindow.prototype._createView =
@@ -264,6 +260,10 @@ function() {
 		var panel = appCtxt.getShortcutsPanel();
 		panel.popup(params.cols);
 	}
+
+	var kbMgr = appCtxt.getKeyboardMgr();
+	kbMgr.setTabGroup(rootTg);
+	kbMgr.grabFocus(startupFocusItem);
 };
 
 /**
