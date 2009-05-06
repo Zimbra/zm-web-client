@@ -142,9 +142,6 @@ function() {
                 this._statusView = new ZmStatusView(this._shell, "ZmStatus", Dwt.ABSOLUTE_STYLE, ZmId.STATUS_VIEW);
 	}
 
-	var rootTg = appCtxt.getRootTabGroup();
-	var startupFocusItem;
-
 	// get params from parent window b/c of Safari bug #7162
 	if (window.parentController) {
 		var childWinObj = window.parentController.getChildWindow(window);
@@ -184,11 +181,7 @@ function() {
                 }
 	}
 
-        this._createView();
-
-        var kbMgr = appCtxt.getKeyboardMgr();
-	kbMgr.setTabGroup(rootTg);
-	kbMgr.grabFocus(startupFocusItem);
+	this._createView();
 };
 
 ZmNewWindow.prototype._createView = function(){
@@ -242,6 +235,10 @@ ZmNewWindow.prototype._createView = function(){
 
 		target = "view-window";
 	}
+
+	var kbMgr = appCtxt.getKeyboardMgr();
+	kbMgr.setTabGroup(rootTg);
+	kbMgr.grabFocus(startupFocusItem);
 };
 
 /**

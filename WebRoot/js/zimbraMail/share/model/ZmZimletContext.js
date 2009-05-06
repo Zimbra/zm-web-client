@@ -106,7 +106,7 @@ ZmZimletContext = function(id, zimlet) {
 	}
 
 	this._handleMenuItemSelected = new AjxListener(this, this._handleMenuItemSelected);
-}
+};
 
 ZmZimletContext.RE_ARRAY_ELEMENTS = /^(dragSource|include|includeCSS|menuItem|param|property|resource|portlet)$/;
 
@@ -362,7 +362,7 @@ ZmZimletContext.prototype.processMessage = function(str) {
 };
 
 ZmZimletContext.prototype.replaceObj = function(re, str, obj) {
-	return str.replace(re,
+	return String(str).replace(re,
 		function(str, p1, prop) {
 			var txt = p1;
 			if (obj instanceof Array && obj.length > 1) {
