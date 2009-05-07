@@ -1469,9 +1469,6 @@ function(action, msg, extraBodyText, incOption, nosig) {
 		} else if (action == ZmOperation.FORWARD_ATT) {
 			incOption = ZmSetting.INCLUDE_ATTACH;
 		}
-		if (action == ZmOperation.FORWARD_INLINE && incOption != ZmSetting.INCLUDE_PREFIX) {
-			incOption = ZmSetting.INCLUDE;
-		}
 	}
 
 	var hasInlineImages = false;
