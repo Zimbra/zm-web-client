@@ -66,7 +66,9 @@ function(item, params) {
 		}
 	}
 	
-	htmlArr[idx++] = "<table><tr><td>"
+	htmlArr[idx++] = "<table><tr><td>";
+    idx = this._getImageHtml(htmlArr, idx, "TaskCheckbox", this._getFieldId(item, ZmItem.F_SELECTION));
+    htmlArr[idx++] = "</td><td>";
 	htmlArr[idx++] = "<div class='Img" + icon + "'></div>";
 	htmlArr[idx++] = "</td><td nowrap>";
 	htmlArr[idx++] = AjxStringUtil.htmlEncode(item.name);

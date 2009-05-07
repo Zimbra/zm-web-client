@@ -990,3 +990,11 @@ ZmBriefcaseController.prototype.getCurrentFolderId =
 function() {
 	return this._currentFolder;
 };
+
+
+ZmBriefcaseController.prototype._resetToolbarOperations =
+function() {
+    if(this._listView[this._currentView] != null) {
+        this._resetOperations(this._toolbar[this._currentView], this._listView[this._currentView].getSelectionCount());
+    }
+};
