@@ -1,8 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007 Zimbra, Inc.
+ * Copyright (C) 2006, 2007, 2008 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -11,7 +10,6 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -416,7 +414,11 @@ ZmSpreadSheet.prototype._getTopHeaderCell = function(td) {
 };
 
 ZmSpreadSheet.prototype._getLeftHeaderCell = function(td) {
-	return this._getTable().rows[td.parentNode.rowIndex].cells[0];
+	var cell = null;
+	var table = this._getTable();
+	var rows = (table && table.rows)? table.rows : null;
+	var rowIndex = (td && td.parentNode)? td.parentNode.rowIndex : 0;
+	return (rows ? rows[rowIndex][0] : null);
 };
 
 ZmSpreadSheet.prototype._colsize_mouseMove = function(ev) {

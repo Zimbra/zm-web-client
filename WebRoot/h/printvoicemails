@@ -26,19 +26,19 @@
 
 <body style='background-color:white;'>
     <div class='ZhCallListPrintView'>
-        <table><tr>
+        <table><tr>                             
             <td class='ZhZimbraTitle'><fmt:message key="zimbraTitle"/></td>
             <td nowrap width='1%'><b>${fn:escapeXml(mailbox.name)}</b></td>
         </tr></table>
         <hr/>
 
         <h1>${zm:getVoiceFolderName(pageContext, context.folder)}</h1>
-        <table class='ZhCallListPrintTable' cellpadding=2 cellspacing=0 >
+        <table class='ZhCallListPrintTable' cellpadding=2 cellspacing=0 width="80%" >
             <tr class='Header'>
-                <th><app:img src="tasks/ImgTaskHigh.gif" altkey="ALT_PRIORITY"/></th>
-                <th><fmt:message key="${useTo ? 'to' : 'from'}"/>
-                <th><fmt:message key="duration"/></th>
-                <th><fmt:message key="received"/></th>
+                <th width="20%"><app:img src="tasks/ImgTaskHigh.gif" altkey="ALT_PRIORITY"/></th>
+                <th width="20%"><fmt:message key="${useTo ? 'to' : 'from'}"/>
+                <th width="20%"><fmt:message key="duration"/></th>
+                <th width="20%"><fmt:message key="received"/></th>
             </tr>
 
             <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">

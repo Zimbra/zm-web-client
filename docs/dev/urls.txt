@@ -1,0 +1,94 @@
+ABOUT
+
+Many URLs to the Zimbra web application are handled by filters and
+servlets to provide customizations, etc. This section lists some of
+these mappings and their purpose.
+
+NOTE: This list may not be complete or current. Refer to the web.xml
+      file for the current filter and servlet mappings.
+
+
+SERVICE WEB APPLICATION - http://{host}/service/*
+
+/zimlet/res/*
+
+	Aggregates zimlet resources based on the allowed set of zimlets
+	for the user's COS. The output is cached to disk; a debug=1
+	request parameter can be used to prevent the servlet using the
+	cached output.
+
+	SEE: com.zimbra.cs.zimlet.ZimletResources
+	SEE: /opt/zimbra/jetty/work/resource-cache/zimletres/
+
+NOTE: There are a lot more URL mappings in the service web application
+      but they are not of general use for the user client.
+
+
+WEB CLIENT WEB APPLICATION - http://{host}/zimbra/*
+
+*.jsp
+
+	The standard Jasper servlet is extended to allow a custom
+	class loader to be used for requests. This transparently
+	merges skin message files into the default ones allowing
+	skins to independently override messages. The JSP pages
+	continue to use the same mechanisms to load and format
+	messages in JSP pages without having to care about how the
+	skin messages are overloaded.
+
+	SEE: com.zimbra.webClient.servlet.JspServlet
+
+/adminhelp/*
+/bhelp/*
+/help/*
+
+	Redirects user to help files for their preferred locale, if
+	the file exists for that locale. If the requested file does
+	not exist in the requested locale, the default help file is
+	returned (i.e. en_US).
+
+	SEE: com.zimbra.webClient.filters.RedirectHelp
+
+/js/ajax/util/AjxTimezoneData.js
+
+	Returns generated timezone data in JavaScript form.
+
+	SEE: com.zimbra.webClient.filters.TimezoneFilter
+	SEE: /opt/zimbra/conf/timezones.ics
+
+/css/*
+/html/*
+/js/skin.js
+
+	Aggregates skin resources specified in the requested skin's
+	manifest file. The output is cached to disk; a debug=1 request
+	parameter can be used to prevent the servlet using the cached
+	output.
+
+	NOTE: The CSS resources can be a combination of skin CSS files
+	      and files in the css/ directory.
+
+	SEE: com.zimbra.webClient.servlet.SkinResources
+	SEE: /skins/{skin}/manifest.xml
+	SEE: /opt/zimbra/jetty/work/resource-cache/skinres/
+	SEE: /css/*
+
+/keys/*
+/messages/*
+/res/*
+
+	Aggregates messages and key bindings into a single file for
+	performance. The output is cached to memory; a debug=1 request
+	parameter can be used to prevent the servlet using the cached
+	output.
+
+	SEE: com.zimbra.webClient.servlet.Props2JsServlet
+	SEE: /WEB-INF/classes/messages/*
+	SEE: /WEB-INF/classes/keys/*
+	SEE: /opt/zimbra/jetty/work/resource-cache/skinres/
+
+/adminres
+
+	Admin resources.
+
+	SEE: com.zimbra.webClient.servlet.AdminServlet

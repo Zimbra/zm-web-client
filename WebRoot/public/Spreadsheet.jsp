@@ -1,7 +1,7 @@
 <!--
 ***** BEGIN LICENSE BLOCK *****
 Zimbra Collaboration Suite Web Client
-Copyright (C) 2006, 2007 Zimbra, Inc.
+Copyright (C) 2006, 2007, 2008 Zimbra, Inc.
 
 The contents of this file are subject to the Yahoo! Public License
 Version 1.0 ("License"); you may not use this file except in
@@ -64,7 +64,7 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 		<jsp:include page="/js/ajax/util/AjxTimezoneData.js" />
 	</script>
     <%
-      String packages = "Ajax,Spreadsheet";
+      String packages = "Ajax,SpreadsheetALE";
 
       String extraPackages = request.getParameter("packages");
       if (extraPackages != null) packages += ","+extraPackages;

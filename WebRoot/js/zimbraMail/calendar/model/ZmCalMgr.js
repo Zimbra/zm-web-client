@@ -1,8 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
+ * Copyright (C) 2008, 2009 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -11,7 +10,6 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -192,7 +190,8 @@ function(ev) {
 		var calController = this.getCalViewController();
 		calController._scheduleMaintenance(ZmCalViewController.MAINT_MINICAL);
 	}else {
-        this._miniCalendar.setHilite([], true, true);
+        //this._miniCalendar.setHilite([], true, true);
+        this.highlightMiniCal();
     }
 };
 
@@ -381,14 +380,14 @@ function(searchResp, params) {
 	if (this._rawAppts && this._rawAppts.length) {
 		this._list = new ZmList(ZmItem.APPT);
 		for (var i = 0; i < this._rawAppts.length; i++) {
-			DBG.println("appt[j]:" + this._rawAppts[i].name);
+			DBG.println(AjxDebug.DBG2, "appt[j]:" + this._rawAppts[i].name);
 			var apptNode = this._rawAppts[i];
 			var instances = apptNode ? apptNode.inst : null;
 			if (instances) {
 				var args = {list:this._list};
 				for (var j = 0; j < instances.length; j++) {
 					var appt = ZmCalBaseItem.createFromDom(apptNode, args, instances[j]);
-					DBG.println("lite appt :" + appt);
+					DBG.println(AjxDebug.DBG2, "lite appt :" + appt);
 					if (appt) newList.add(appt);
 				}
 			}			
@@ -440,3 +439,31 @@ function(ex) {
 	}
 	return false;
 };
+
+ZmCalMgr.prototype.highlightMiniCal =
+function() {
+    var miniCalParams = this.getMiniCalendarParams();
+    var miniCalCache = this.getMiniCalCache();
+    miniCalCache._getMiniCalData(miniCalParams);
+};
+
+ZmCalMgr.prototype.getMiniCalendarParams =
+function() {
+	var dr = this.getMiniCalendar().getDateRange();
+	return {
+		start: dr.start.getTime(),
+		end: dr.end.getTime(),
+		fanoutAllDay: true,
+		noBusyOverlay: true,
+		folderIds: this.getCheckedCalendarFolderIds()
+	};
+};
+
+ZmCalMgr.prototype.getMiniCalCache =
+function() {
+   if(!this._miniCalCache) {
+       this._miniCalCache = new ZmMiniCalCache(this);
+   }
+   return this._miniCalCache;
+};
+

@@ -1,8 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007 Zimbra, Inc.
+ * Copyright (C) 2006, 2007, 2008 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -11,7 +10,6 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -81,7 +79,7 @@ function(parent) {
 ZmFileListView.prototype._getCellContents =
 function(htmlArr, idx, item, field, colIdx, params) {
 	if (field == ZmItem.F_SUBJECT) {
-		htmlArr[idx++] = AjxStringUtil.htmlEncode(item.name);
+		htmlArr[idx++] = "<div id='"+this._getFieldId(item,ZmItem.F_SUBJECT)+"'>"+AjxStringUtil.htmlEncode(item.name)+"</div>";
 	} else if (field == ZmItem.F_SIZE) {
 		htmlArr[idx++] = AjxUtil.formatSize(item.size);
 	} else if (field == ZmItem.F_FILE_TYPE) {
@@ -183,4 +181,10 @@ function(ev,item) {
         this._controller._app._checkReplenishListView = this;
 		this._controller._resetToolbarOperations();		
 	}
+};
+
+ZmFileListView.prototype._getToolTip =
+function(params) {
+	if (!params.item) { return; }
+	return this._controller.getItemTooltip(params.item, this);
 };

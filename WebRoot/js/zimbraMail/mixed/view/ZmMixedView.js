@@ -1,8 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -11,7 +10,6 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -29,7 +27,7 @@ ZmMixedView.prototype.constructor = ZmMixedView;
 // Consts
 ZmMixedView.COLWIDTH_ICON 			= 19;
 ZmMixedView.COLWIDTH_FROM 			= 145;
-ZmMixedView.COLWIDTH_DATE 			= 60;
+ZmMixedView.COLWIDTH_DATE 			= 100;
 
 // support functions for _createItemHtml
 ZmMixedView.LIST_VIEW_FUNCS = ["_addParams", "_getDiv", "_getDivClass", "_getTable",
@@ -103,33 +101,41 @@ function(item, params) {
 		AjxDispatcher.require(["ContactsCore", "Contacts"]);
 		listViewClass = ZmContactSimpleView;
 		this._emulateListView(listViewClass, funcs);
-	} else if (item.type == ZmItem.CONV) {
+	}
+	else if (item.type == ZmItem.CONV) {
 		AjxDispatcher.require(["MailCore", "Mail"]);
 		funcs = funcs.concat(["_getFragmentSpan", "_getFragmentHtml",
 							  "_getParticipantHtml", "_fitParticipants"]);
 		listViewClass = ZmConvListView;
 		this._emulateListView(listViewClass, funcs);
-	} else if (item.type == ZmItem.MSG) {
+	}
+	else if (item.type == ZmItem.MSG) {
 		AjxDispatcher.require(["MailCore", "Mail"]);
 		funcs = funcs.concat(["_getFragmentSpan", "_getFragmentHtml"]);
 		listViewClass = ZmMailMsgListView;
 		this._emulateListView(listViewClass, funcs);
-	} else if (item.type == ZmItem.APPT) {
-		// TODO - need listview for appts (see bug 19338)
-		return null;
-	} else if (item.type == ZmItem.TASK) {
+	}
+	else if (item.type == ZmItem.APPT) {
+		AjxDispatcher.require(["CalendarCore", "Calendar"]);
+		listViewClass = ZmCalListView;
+		this._emulateListView(listViewClass, funcs);
+	}
+	else if (item.type == ZmItem.TASK) {
 		AjxDispatcher.require(["TasksCore", "Tasks"]);
 		listViewClass = ZmTaskListView;
 		this._emulateListView(listViewClass, funcs);
-	} else if (item.type == ZmItem.PAGE /*|| item.type == ZmItem.DOCUMENT*/) {
+	}
+	else if (item.type == ZmItem.PAGE) {
 		AjxDispatcher.require(["NotebookCore", "Notebook"]);
 		listViewClass = ZmFileListView;
 		this._emulateListView(listViewClass, funcs);
-	}else if(item.type == ZmItem.BRIEFCASE){
-        AjxDispatcher.require(["BriefcaseCore", "Briefcase"]);
+	}
+	else if (item.type == ZmItem.BRIEFCASE) {
+		AjxDispatcher.require(["BriefcaseCore", "Briefcase"]);
 		listViewClass = ZmDetailListView;
 		this._emulateListView(listViewClass, funcs);
-    }
+	}
+
 	return listViewClass.prototype._createItemHtml.call(this, item, params);
 };
 
@@ -143,14 +149,14 @@ function(listViewClass, funcs) {
 
 ZmMixedView.prototype._getHeaderToolTip =
 function(field, itemIdx) {
-
-    return (field == ZmItem.F_TYPE) ? ZmMsg.itemType :
-									  ZmListView.prototype._getHeaderToolTip.call(this, field, itemIdx);
+	return (field == ZmItem.F_TYPE)
+		? ZmMsg.itemType
+		: ZmListView.prototype._getHeaderToolTip.call(this, field, itemIdx);
 };
 
 ZmMixedView.prototype._getToolTip =
-function(field, item, ev, div, match) {
-	var tooltip = null;
+function(params) {
+	var tooltip, field = params.field, item = params.item;
 	var listViewClass;
 	if (field == ZmItem.F_FROM) {
 		if (item.type == ZmItem.CONTACT) {
@@ -161,7 +167,7 @@ function(field, item, ev, div, match) {
 		} else if (item.type == ZmItem.MSG) {
 			listViewClass = ZmMailMsgListView;
 			this._emulateListView(listViewClass, ["_getParticipantToolTip"]);
-		} else {
+		} else{
 			listViewClass = ZmListView;
 		}
 	} else if (field == ZmItem.F_SUBJECT) {
@@ -169,7 +175,9 @@ function(field, item, ev, div, match) {
 			listViewClass = ZmConvListView;
 		} else if (item.type == ZmItem.MSG) {
 			listViewClass = ZmMailMsgListView;
-		} else {
+		} else if(item.type == ZmItem.BRIEFCASE){
+            listViewClass = ZmBriefcaseView
+        }else{
 			listViewClass = ZmListView;
 		}
 	} else if (field == ZmItem.F_TYPE) {
@@ -184,22 +192,13 @@ function(field, item, ev, div, match) {
 
 ZmMixedView.prototype._changeListener =
 function(ev) {
-	if (appCtxt.getAppViewMgr().getCurrentViewId() != this.view)
-		return;
+
+	if (appCtxt.getAppViewMgr().getCurrentViewId() != this.view) { return; }
 
 	if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE) {
 		var items = ev.getDetail("items");
-		var contactList = AjxDispatcher.run("GetContacts");
-
-		// walk the list of items and if any are contacts,
 		for (var i = 0; i < items.length; i++) {
-			if ((items[i].type == ZmItem.CONTACT || items[i].type == ZmItem.GROUP) &&
-				ev.event == ZmEvent.E_DELETE)
-			{
-				// and is hard delete, remove from canonical list
-				contactList.remove(items[i]);
-			}
-			// also remove from controller's list
+			// remove from controller's list
 			this._controller.getList().remove(items[i]);
 		}
 	}

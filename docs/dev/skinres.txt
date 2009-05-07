@@ -1,0 +1,124 @@
+ABOUT
+
+The Zimbra web client allows customization using skins (also known as
+themes). Skins are collection of files that define the HTML layout, CSS
+styles, images, and text messages.
+
+
+STRUCTURE AND CONTENTS
+
+Each skin is a separate directory at this location and is a set of
+resource files and a manifest file. The manifest file lists all of the
+files that apply to the standard or advanced clients or both.
+
+All of the default skins that ship with ZCS are found at the following
+location:
+
+source:     //depot/{branch}/ZimbraWebClient/WebRoot/skins/
+deployed:   /opt/zimbra/jetty/webapps/zimbra/skins/
+
+and may contain the following files:
+
+* manifest.xml (required)
+* skin.properties
+* skin.html
+* skin.css
+* skin.js
+* ...
+
+The skin can define its own resources or rely on resources from another
+(or a base) skin. Most skins use the base skin resources located at:
+
+	//depot/{branch}/ZimbraWebClient/WebRoot/skins/_base/base2/
+
+SEE: http://files.zimbra.com/docs/skins/Themes.html
+SEE: http://files.zimbra.com/docs/skins/Themes.html#skinmanifest
+
+
+RESOURCES
+
+The skin resources are processed and aggregated for the client by the
+SkinResources servlet. The request URL to this servlet can contain a
+comma-separate list of resources of a given resource type. For example:
+
+	http://example.com/zimbra/css/common,dwt,skin.css
+
+For each item in the comma-separated list (e.g. "common", "dwt", and
+"skin"), the resources are combined for the client. The result is
+processed to replace substitution values defined by the skin's manifest.
+If the item in the comma-separated list is "skin", the servlet reads
+the skin's manifest file to determine the set of files to aggregate
+for the request type. Otherwise, the file contents comes from resource
+directory specified in the request URL. For example, the "common" item
+corresponds to /zimbra/css/common.css.
+
+Complete skin details can be found in the Themes document.
+
+SEE: com.zimbra.webClient.servlet.SkinResources
+SEE: http://files.zimbra.com/docs/skins/Themes.html#skinpropertyfiles
+
+
+CHAMELEON SKIN
+
+The chameleon skin is *not* a skin at all. Instead, it is a collection
+of LDAP attributes that affect the appearance of *all* of the skins for
+a given domain or all domains. When set, the chameleon values override
+colors and logos in the skin resources.
+
+zimbraSkinForegroundColor
+
+	Foreground (or text) in the user interface. Default is black.
+	This value is rarely changed and may have unexepected results
+	if changed to a non-dark color.
+
+zimbraSkinBackgroundColor
+
+	Background in the user interface. This is the primary color of the
+	user interface. Other colors in the user interface are based on this
+	color (i.e. lighter and darker shades for borders, etc).
+
+	SEE: zimbraSkinSecondaryColor
+
+zimbraSkinSecondaryColor
+
+	Secondary color in the user interface. This color is used in most
+	skins for accented elements such as the selected app, the app toolbar,
+	etc.
+
+	SEE: zimbraSkinBackgroundColor
+
+zimbraSkinSelectionColor
+
+	Selection color in the user inteface. This color is used to highlight
+	selected items in lists and pop-up menus.
+
+zimbraSkinLogoLoginBanner
+
+	URL of the logo that appears on the login page. Recommend to use
+	absolute URLs but you can use relative URLs if the image is on
+	the deployment server accessible to the web application.
+
+	SEE: zimbraSkinLogoAppBanner
+
+zimbraSkinLogoAppBanner
+
+	URL of the logo that appears in the main app. Recommend to use
+	absolute URLs but you can use relative URLs if the image is on
+	the deployment server accessible to the web application.
+
+	SEE: zimbraSkinLogoLoginBanner
+
+zimbraSkinFavicon
+
+	URL of the browser favorite icon. Recommend to use absolute URLs
+	but you can use relative URLs if the icon is on the deployment
+	server accessible to the web application.
+
+	NOTE: Older versions of ZCS did not support this attribute.
+
+SEE: zmprov md {domain} zimbraSkinForegroundColor silver
+SEE: zimbraSkinLogoURL
+
+NOTE: The overrides only work on skins that use the same property names
+      as the default skins. If you use custom skins, some or all of these
+      attributes may have no effect on the skin seen by the user.

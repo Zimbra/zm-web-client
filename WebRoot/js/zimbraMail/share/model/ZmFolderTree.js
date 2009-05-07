@@ -1,8 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -11,7 +10,6 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -88,7 +86,7 @@ function(parent, obj, tree, elementType, path) {
 			numUnread: obj.u,
 			query: obj.query,
 			types: types,
-			sortBy: (obj.sortBy ? ZmSearch.SORT_BY_MAP[obj.sortBy] : null)
+			sortBy: obj.sortBy
 		};
 		folder = new ZmSearchFolder(params);
 		ZmFolderTree._fillInFolder(folder, obj, path);

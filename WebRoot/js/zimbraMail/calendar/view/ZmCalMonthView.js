@@ -1,8 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -11,16 +10,15 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
  * ***** END LICENSE BLOCK *****
  */
 
 ZmCalMonthView = function(parent, posStyle, controller, dropTgt) {
 	ZmCalBaseView.call(this, parent, "calendar_view", posStyle, controller, ZmId.VIEW_CAL_MONTH, dropTgt);	
-	//this.getHtmlElement().style.overflow = "hidden";
+
 	this.setScrollStyle(DwtControl.CLIP);
 	this._needFirstLayout = true;
-	this.setNumDays(42);
+	this.numDays = 42;
 
 	this._monthItemClass = "calendar_month_day_item_row";
 	this._monthItemSelectedClass = [this._monthItemClass, DwtCssStyle.SELECTED].join('-');
@@ -102,148 +100,6 @@ function(appt) {
 ZmCalMonthView.prototype._getStartDate = 
 function() {
 	return new Date(this.getDate());
-};
-
-ZmCalMonthView.prototype.getPrintHtml = 
-function() {
-	var html = new Array();
-	var idx = 0;
-	var startDate = new Date(this.getTimeRange().start);
-	var endDate = new Date(this.getTimeRange().end);
-	var currDate = new Date(startDate.getTime());
-	var currMonth = this.getDate().getMonth();
-	var currYear = this.getDate().getFullYear();
-	var list = this.getList();
-	var count = 0;
-	var numAppts = 0;
-
-	html[idx++] = "<div style='width:100%'>";
-	html[idx++] = "<table width=100% cellpadding=3 cellspacing=3 bgcolor='#EEEEEE' style='border:2px solid black; margin-bottom:2px'><tr>";
-	html[idx++] = "<td valign=top width=100% style='font-size:22px; font-weight:bold; white-space:nowrap'>";
-	html[idx++] = this._getDateHdrForPrintView();
-	html[idx++] = "</td></tr></table>";
-
-	html[idx++] = "<table border=0 cellpadding=1 cellspacing=1 style='border:2px solid black'><tr><td>";
-	
-	html[idx++] = "<table border=0>";
-	// print the weekdays
-	html[idx++] = "<tr>";
-
-	var fdow = this.firstDayOfWeek();
-
-	for (var i = 0; i < AjxDateUtil.WEEKDAY_LONG.length; i++) {
-		html[idx++] = "<td valign=top style='width:120px; font-family:Arial; font-size:11px; white-space:nowrap; overflow:hidden; border:1px solid black;'><center><b>";
-		html[idx++] = AjxDateUtil.WEEKDAY_LONG[(i+fdow)%7]
-		html[idx++] = "</b></center></td>";
-	}
-	html[idx++] = "</tr>";
-	
-	var style = "width:118px; font-family:Arial; font-size:10px; white-space:nowrap; overflow:hidden;";
-	
-	// calc. the number of weeks in the current month
-	var numOfWeeks = 0;
-	while (currDate < endDate) {
-		if ((currDate.getMonth() > currMonth && currDate.getFullYear() == currYear) || currDate.getFullYear() > currYear)
-			break;
-		currDate.setDate(currDate.getDate() + 7);
-		numOfWeeks++;
-	}
-	
-	currDate = new Date(startDate.getTime());
-	var dayFormatter = DwtCalendar.getDayFormatter();
-	var timeFormatter = AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT);
-	while (currDate < endDate) {
-		// prevent printing extra week for next month
-		if ((currDate.getMonth() > currMonth && currDate.getFullYear() == currYear) || currDate.getFullYear() > currYear)
-			break;
-		
-		var rowHeight = numOfWeeks == 5 ? "100px" : "85px";
-		var maxNumAppts = numOfWeeks == 5 ? 6 : 4;
-		
-		html[idx++] = "<tr style='height:";
-		html[idx++] = rowHeight;
-		html[idx++] = ";'>";
-		for (var i = 0; i < AjxDateUtil.WEEKDAY_LONG.length; i++) {
-			html[idx++] = "<td valign=top style='border:1px solid black;'><div style='text-align:right; color:#AAAAAA; "
-			html[idx++] = style;
-			html[idx++] = "'>";
-			
-			var dateHdr = (i == 0 && currDate.getMonth() != currMonth) || (currDate.getDate() == 1)
-				? dayFormatter.format(currDate)
-				: currDate.getDate();
-			
-			html[idx++] = "<b>";
-			html[idx++] = dateHdr;
-			html[idx++] = "</b></div>";
-			numAppts = 0;
-			var appt = list.get(count);
-			while (appt && appt.startDate.getDate() == currDate.getDate()) {
-				if (numAppts < maxNumAppts) {
-					var loc = appt.getLocation();
-					if (appt.isAllDayEvent()) {
-						html[idx++] = "<div style='border:1px solid #AAAAAA; ";
-						if (currDate.getMonth() != currMonth)
-							html[idx++] = "color:#AAAAAA; ";
-						html[idx++] = style + "'>";
-						html[idx++] = "<b>";
-						html[idx++] = appt.getName();
-						html[idx++] = "</b>";
-						if (loc) {
-							html[idx++] = " (";
-							html[idx++] = loc;
-							html[idx++] = ")";
-						}
-						html[idx++] = "</div>";
-					} else {
-						var startTime = timeFormatter.format(appt.startDate);
-						html[idx++] = "<div style='";
-						html[idx++] = style;
-						if (currDate.getMonth() != currMonth)
-							html[idx++] = " color:#AAAAAA;";
-						html[idx++] = "'>";
-						html[idx++] = startTime;
-						html[idx++] = "&nbsp;";
-						html[idx++] = appt.getName();
-						if (loc) {
-							html[idx++] = " (";
-							html[idx++] = loc;
-							html[idx++] = ")";
-						}
-						html[idx++] = "</div>";
-					}
-					appt = list.get(++count);
-					numAppts++;
-				} else {
-					html[idx++] = "<div style='";
-					html[idx++] = style;
-					html[idx++] = "'>";
-					html[idx++] = ZmMsg.more;
-					html[idx++] = "</div>";
-					// move passed this day
-					while (appt && appt.startDate.getDate() == currDate.getDate())
-						appt = list.get(++count);
-					break;
-				}				
-			}
-			html[idx++] ="</td>";
-			currDate.setDate(currDate.getDate() + 1);
-			// if this is the last day of the week and the next day is the next month, dont bother continuing
-			if (i == 6 && ((currDate.getMonth() > currMonth && currDate.getFullYear() == currYear) || currDate.getFullYear() > currYear))
-				break;
-		}
-		html[idx++] = "</tr>";
-	}
-	html[idx++] = "</table>";
-	
-	html[idx++] = "</td></tr></table>";
-	
-	return html.join("");
-};
-
-ZmCalMonthView.prototype._getDateHdrForPrintView = 
-function() {
-	var formatter = DwtCalendar.getMonthFormatter();
-	return formatter.format(this.getDate());
 };
 
 ZmCalMonthView.prototype._dayTitle =
@@ -784,9 +640,7 @@ function(ev, div, dblclick) {
             date = new Date(this._days[loc].date.getTime());
             var now = new Date();
             date.setHours(now.getHours(), now.getMinutes());
-            if (appCtxt.isOffline) {
-                AjxTimedAction.scheduleAction(new AjxTimedAction(this, this.expandDay, [this._days[loc]]), 200);
-            }
+            AjxTimedAction.scheduleAction(new AjxTimedAction(this, this.expandDay, [this._days[loc]]), 200);
             break;
         default:
             return;
@@ -955,7 +809,7 @@ function(colIdx, params) {
         Dwt.setSize(bdyCol, newWidth, Dwt.DEFAULT);
         Dwt.setSize(hdrCol, newWidth, Dwt.DEFAULT);
 
-        if(AjxEnv.isSafari || AjxEnv.isChrome) {
+        if(AjxEnv.isSafari || AjxEnv.isChrome || (AjxEnv.isFirefox2_0up && !AjxEnv.isFirefox3up)) {
             //change first column cell
             Dwt.setSize(this.getCell(0, colIdx), newWidth, Dwt.DEFAULT);
         }

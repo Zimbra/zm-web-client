@@ -1,8 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007 Zimbra, Inc.
+ * Copyright (C) 2007, 2008, 2009 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -11,7 +10,6 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
  * ***** END LICENSE BLOCK *****
  */
 ZmBriefcaseView = function(parent, controller, dropTgt) {
@@ -74,9 +72,11 @@ function(item, params) {
 	div.className = "ZmBriefcaseItem";
 	
 	var div1 = document.createElement("div");
+    div1.id = this._getFieldId(item,ZmItem.F_NAME);
 	div1.className = "ZmThumbnailItem";
 	
 	var div2 = document.createElement("div");
+    div2.id = this._getFieldId(item,ZmItem.F_SUBJECT);
 	div2.className = icon+" ZmThumbnailIcon";
 	
 	div1.appendChild(div2);
@@ -100,7 +100,7 @@ function(item, params) {
 		Dwt.setPosition(div, Dwt.ABSOLUTE_STYLE);
 	}
 	
-	this.associateItemWithElement(item, div, DwtListView.TYPE_LIST_ITEM);
+	this.associateItemWithElement(item, div);
 	return div;
 };
 
@@ -192,9 +192,11 @@ ZmBriefcaseView.prototype.refresh = function(restUrl){
 };
 
 ZmBriefcaseView.prototype._getToolTip =
-function(item, ev, div) {
-	if (!item) { return; }
-	return this._controller.getItemTooltip(item, this);
+function(params) {
+	if (!params.item) { return null; }
+
+	return ZmBriefcaseController.prototype.getItemTooltip.call(this, params.item, this);
+
 };
 
 
@@ -203,13 +205,13 @@ function(ev, div) {
 	DwtListView.prototype._mouseOverAction.call(this, ev, div);
 	var id = ev.target.id || div.id;
 	if (!id) return true;
-	
+
 	if (div) {
 		var item = this.getItemFromElement(div);
 		if(item && !item.isFolder){
-		this.setToolTipContent(this._getToolTip(item, ev, div));
+		this.setToolTipContent(this._getToolTip({item:item, ev:ev, div:div}));
 		}
-	}		
+	}
 	return true;
 };
 

@@ -1,0 +1,253 @@
+ABOUT
+
+Throughout this document, the source repository directory path is
+written as /depot/{branch}/. The primary (or "head" or "trunk") branch
+is "main" and the 5.0.x branch is "FRANKLIN". This document is written
+according to the main branch but the same information applies to the
+FRANKLIN branch.
+
+
+SOURCE TREE STRUCTURE
+
+The source is organized in the repository as a series of modules (e.g.
+ZimbraServer, ZimbraWebClient, etc). There are many source modules but
+not all of the modules are of interest to the user interface developer.
+
+//depot/{branch}/ZimbraServer/
+
+	Server code and SOAP command documentation.
+
+//depot/{branch}/ZimbraTagLib/
+
+	JSP tag libraries used primarily for the standard (HTML) client.
+
+//depot/{branch}/ZimbraWebClient/
+
+	Web client code for advanced (AJAX), standard (HTML), and mobile
+	(lite HTML such as iPhone) clients.
+
+	This module contains the HTML/JSP pages, JSP tags, CSS styles,
+	JavaScript source, images, messages & key bindings, and customization
+	(i.e. skin and portal) files.
+
+	SEE: zmail.txt
+
+//depot/{branch}/Zimlet/
+
+	Public zimlet source.
+
+
+ZIMBRA SERVER - //depot/{branch}/ZimbraServer/
+
+There are only a few files in this module of interest to the client code.
+
+//depot/{branch}/ZimbraServer/conf/web.xml*
+
+	The web.xml file is used for development and web.xml.production is
+	used for deployment.
+
+	NOTE: ZimbraWebClient uses a single web.xml for both purposes.
+
+	SEE: com.zimbra.cs.zimlet.ZimletResources
+
+//depot/{branch}/ZimbraServer/conf/msgs/ZsMsg*.properties
+
+	Translations for server generated messages including calendar mail
+	message content for resources; server errors; etc.
+
+//depot/{branch}/ZimbraServer/docs/soap*.txt
+
+	Describes the server SOAP commands.
+
+	NOTE: There is no WSDL definition for the SOAP commands.
+
+com.zimbra.cs.zimlet.ZimletResources
+
+	Aggregates zimlet resources into a single file for performance.
+
+	SEE: <servlet> and <servlet-mapping> entries in web.xml* files
+
+
+JSP TAG LIBRARY - //depot/{branch}/ZimbraTagLib/
+
+The JSP tag library is used primarily for the standard and mobile
+clients but is also used by the advanced client for login, etc. This
+module defines beans for server objects and contains utility tags
+and functions.
+
+NOTE: No user interface elements are created with code from this
+      module.
+
+
+ZIMBRA WEB CLIENT - //depot/{branch}/ZimbraWebClient/
+
+The majority of the source code for the user interface is located
+here. This module is divided into Java source code required during
+the build or deployed as servlets to the web container; and all
+of the files that are deployed as part of the web application.
+
+//depot/{branch}/ZimbraWebClient/src/       - Java tools and servlets
+//depot/{branch}/ZimbraWebClient/WebRoot/   - everything else
+
+NOTE: This document does not describe *all* of the contents of the
+      module -- just the important ones.
+
+
+Java Code
+
+This module contains Java source code for tools used during the
+build and servlets used as part of the web application. Some of
+the important packages are:
+
+com.zimbra.kabuki.servlets
+
+	Contains base class of servlet used to convert messages and
+	key bindings from Java .properties files to native JavaScript
+	objects for use in the client.
+
+	SEE: com.zimbra.webClient.servlet.Props2JsServlet
+	SEE: <servlet> and <servlet-mapping> entries in web.xml file
+
+com.zimbra.kabuki.tools
+
+	Build tools for generating data including merging images into
+	icon maps; compiling user interface templates; and generating
+	timezone information.
+
+	SEE: //depot/{branch}/ZimbraServer/conf/timezones.ics
+	SEE: com.zimbra.webClient.filters.TimezoneFilter
+
+com.zimbra.webClient.build
+
+	Build tools to aggregate JavaScript source files into package
+	files for run-time performance.
+
+com.zimbra.webClient.filters
+
+	Web container filters for various tasks including redirecting
+	user to localized versions of help files; generating timezone
+	information for advanced client; and wrapping JSP requests to
+	include skin message and key binding overrides.
+
+	SEE: com.zimbra.kabuki.tools.tz.GenerateData
+	SEE: <filter> and <filter-mapping> entries in web.xml file
+
+
+Web App Code
+
+//depot/{branch}/ZimbraWebClient/WebRoot/js/ajax/
+
+	Ajax toolkit source code. All classes here are prefixed with
+	"Ajx" (Ajax) or "Dwt" (DHTML widget toolkit). The DWT framework
+	implements the user interface controls used in the user and admin
+	clients.
+
+	NOTE: The admin console extensively uses the XForms framework
+	      contained in DWT.
+
+//depot/{branch}/ZimbraWebClient/WebRoot/js/zimbra/
+
+	Code shared between the user and admin clients. All classes
+	here are prefixed "Z" (Zimbra).
+
+	NOTE: There are exceptions to the naming rule. The reason is
+	      historical but the names are left as-is for backward
+	      compatibility.
+
+//depot/{branch}/ZimbraWebClient/WebRoot/js/zimbraAdmin/
+
+	Admin console source code. The classes here are prefixed with "Za"
+	(Zimbra Admin).
+
+//depot/{branch}/ZimbraWebClient/WebRoot/js/zimbraMail/
+
+	User client source code. The classes here are prefixed with "Zm"
+	(Zimbra Mail).
+
+
+User Client Code
+
+The user client code is found under WebRoot/js/zimbraMail/ and
+contains all of the classes needed for the web app.
+
+SEE: zmail.txt
+
+
+Web App JSP Pages and Tags
+
+//depot/{branch}/ZimbraWebClient/WebRoot/h/
+//depot/{branch}/ZimbraWebClient/WebRoot/m/
+
+	Standard and mobile client source code.
+
+	SEE: //depot/{branch}/ZimbraTagLib/
+	SEE: //depot/{branch}/ZimbraWebClient/WebRoot/WEB-INF/tags/*
+	SEE: //depot/{branch}/ZimbraWebClient/WebRoot/WEB-INF/tlds/*
+	SEE: <jsp-property-group> entries in web.xml file
+
+//depot/{branch}/ZimbraWebClient/WebRoot/public/
+
+	HTML and JSP pages used by the clients. These include the
+	login page, the admin and user client launch pages, and
+	other supporting pages.
+
+	SEE: login.jsp
+	SEE: launchZWC.jsp
+
+//depot/{branch}/ZimbraWebClient/WebRoot/WEB-INF/tags/
+//depot/{branch}/ZimbraWebClient/WebRoot/WEB-INF/tlds/
+
+	Tag libraries used by the standard and mobile clients.
+
+	SEE: //depot/{branch}/ZimbraWebClient/WebRoot/h/*
+	SEE: //depot/{branch}/ZimbraWebClient/WebRoot/m/*
+
+
+Web App Files
+
+//depot/{branch}/ZimbraWebClient/WebRoot/img/
+
+	Application images. This directory contains all of the
+	images used as icons as well as default logos and other
+	images that are not combined into icon maps.
+
+//depot/{branch}/ZimbraWebClient/WebRoot/messages/
+//depot/{branch}/ZimbraWebClient/WebRoot/keys/
+
+	Messages and key bindings as Java .properties files. Skins
+	can override or add these messages by creating a file with
+	the same name in the /skins/{skin}/messages/ or keys/
+	directories. If the skin overrides messages and/or key
+	bindings, only the *different* messages need to be
+	specified (i.e. NOT all of the original messages unless they
+	are all changed).
+
+	SEE: com.zimbra.webClient.servlet.Props2JsServlet
+
+//depot/{branch}/ZimbraWebClient/WebRoot/skins/
+//depot/{branch}/ZimbraWebClient/WebRoot/admin_skins/
+
+	Customization files. While similar, the admin console and the
+	user client do not share the same skin source files.
+
+	SEE: /opt/zimbra/bin/zmskindeploy
+
+	NOTE: The zmskindeploy script automatically compiles any
+	      templates and merges images present in the skin.
+
+//depot/{branch}/ZimbraWebClient/WebRoot/portals/
+
+	Example portal pages. The portal "app" adds an application tab
+	before the other app tabs. The content of the portal app is
+	defined in the portal's manifest file.
+
+	SEE: http://{host}/zimbra/portals/{portal}/manifest.xml
+	SEE: zmprov (mc|ma) zimbraFeaturePortalEnabled TRUE
+	SEE: zmprov (mc|ma) zimbraPortalName {portal}
+	SEE: /opt/zimbra/bin/zmzimletctl
+
+//depot/{branch}/ZimbraWebClient/WebRoot/WEB-INF/web.xml
+
+	Web app configuration file. This file is used for both the admin
+	and user clients, either in development or production mode.
+

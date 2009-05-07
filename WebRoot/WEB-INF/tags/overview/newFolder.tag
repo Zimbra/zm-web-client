@@ -1,6 +1,23 @@
+<%--
+ * ***** BEGIN LICENSE BLOCK *****
+ * 
+ * Zimbra Collaboration Suite Web Client
+ * Copyright (C) 2007, 2008 Zimbra, Inc.
+ * 
+ * The contents of this file are subject to the Yahoo! Public License
+ * Version 1.0 ("License"); you may not use this file except in
+ * compliance with the License.  You may obtain a copy of the License at
+ * http://www.zimbra.com/license.
+ * 
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
+ * ***** END LICENSE BLOCK *****
+--%>
 <%@ tag body-content="empty" %>
 <%@ attribute name="calendar" rtexprvalue="true" required="false" %>
 <%@ attribute name="tasklist" rtexprvalue="true" required="false" %>
+<%@ attribute name="briefcase" rtexprvalue="true" required="false" %>
 <%@ attribute name="addressbook" rtexprvalue="true" required="false" %>
 <%@ attribute name="search" rtexprvalue="true" required="false" %>
 <%@ attribute name="url" rtexprvalue="true" required="false" %>
@@ -38,6 +55,14 @@
         <c:set var="newFolderColor" value="${empty param.newFolderColor ? 'gray' : param.newFolderColor}"/>
         <c:set var="newFolderStyleColor" value="${zm:getFolderStyleColor(newFolderColor,'task')}"/>
         <fmt:message var="folderType" key="${link ? 'taskListShared' : 'taskListUser'}"/>
+    </c:when>
+    <c:when test="${briefcase}">
+        <fmt:message var="label" key="briefcaseNew"/>
+        <fmt:message var="createLabel" key="createBriefcase"/>
+        <c:set var="icon" value="${link ? 'startup/ImgFolder.gif' : 'startup/ImgFolder.gif'}"/>
+        <c:set var="newFolderColor" value="${empty param.newFolderColor ? 'gray' : param.newFolderColor}"/>
+        <c:set var="newFolderStyleColor" value="${zm:getFolderStyleColor(newFolderColor,'task')}"/>
+        <fmt:message var="folderType" key="${link ? 'briefcaseShared' : 'briefcaseUser'}"/>
     </c:when>
     <c:otherwise>
         <c:set var="newFolderStyleColor" value="Gray"/>
@@ -91,7 +116,7 @@
     </tr>
 
 <c:choose>
-    <c:when test="${not (calendar or addressbook or tasklist)}">
+    <c:when test="${not (calendar or addressbook or tasklist or briefcase)}">
     <tr>
         <td nowrap align='right'>
             <label for="parentFolder">
@@ -104,6 +129,27 @@
                 <fmt:message key="rootFolder"/>
                 <zm:forEachFolder var="parent">
                     <c:if test="${parent.isMessageMoveTarget and !parent.isTrash and !parent.isSpam}">
+                        <option value="${parent.id}"/>
+                        ${fn:escapeXml(parent.rootRelativePath)}
+                    </c:if>
+                </zm:forEachFolder>
+            </select>
+        </td>
+    </tr>
+    </c:when>
+    <c:when test="${briefcase}">
+    <tr>
+        <td nowrap align='right'>
+            <label for="parentFolder">
+            <fmt:message key="parentFolder"/>
+            :</label>
+        </td>
+        <td>
+            <select name="newFolderParentId" id="parentFolder">
+                <option selected value="1"/>
+                <fmt:message key="rootFolder"/>
+                <zm:forEachFolder var="parent">
+                    <c:if test="${parent.isDocumentMoveTarget and !parent.isTrash and !parent.isSpam}">
                         <option value="${parent.id}"/>
                         ${fn:escapeXml(parent.rootRelativePath)}
                     </c:if>
@@ -172,6 +218,18 @@
             </td>
         </tr>
         </c:if>
+        <c:if test="${briefcase}">
+         <tr>
+            <td nowrap align=right>
+                <label for="ownersBriefcaseName"><fmt:message key="ownersBriefcaseName"/>
+                :</label>
+            </td>
+            <td>
+                <input id="ownersBriefcaseName" name='newFolderOwnersBriefcase' type='text' size='35' value="${fn:escapeXml(param.newFolderOwnersBriefcase)}">
+                <input name='newFolderOwnersBriefcaseVisible' type='hidden' value='TRUE'/>
+            </td>
+        </tr>
+        </c:if>
         <c:if test="${calendar}">
             <tr>
                 <td nowrap align=right>
@@ -186,7 +244,7 @@
         </c:if>
     </c:if>
 
-    <c:if test="${calendar or addressbook or tasklist}">
+    <c:if test="${calendar or addressbook or tasklist or briefcase}">
         <tr>
             <td nowrap align='right'>
                 <label for="color"><fmt:message key="color"/>

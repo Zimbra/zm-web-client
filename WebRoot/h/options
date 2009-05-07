@@ -1,3 +1,21 @@
+<%--
+/*
+ * ***** BEGIN LICENSE BLOCK *****
+ * 
+ * Zimbra Collaboration Suite Web Client
+ * Copyright (C) 2006, 2007, 2008 Zimbra, Inc.
+ * 
+ * The contents of this file are subject to the Yahoo! Public License
+ * Version 1.0 ("License"); you may not use this file except in
+ * compliance with the License.  You may obtain a copy of the License at
+ * http://www.zimbra.com/license.
+ * 
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
+ * ***** END LICENSE BLOCK *****
+ */
+--%>
 <%@ page buffer="8kb" autoFlush="true" %>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
@@ -17,13 +35,13 @@
     </c:choose>
     <fmt:setBundle basename="/messages/ZhMsg" scope='request' />
     
-    <c:set var="selected" value="${empty param.selected ? 'general' : param.selected}"/>
+    <c:set var="selected" value="${empty param.selected ? 'general' : zm:cook(param.selected)}"/>
 
     <c:set var="voiceStatus" value="false"/>
 	<c:if test="${selected eq 'voice' and mailbox.features.voice}">
 		<zm:checkVoiceStatus var="voiceStatus"/>
 	</c:if>
-   <c:set var="prevApp" value="${param.prev}" />
+   <c:set var="prevApp" value="${zm:cook(param.prev)}" />
     <c:choose>
         <c:when test="${zm:actionSet(param, 'actionSave')}">
             <zm:checkCrumb crumb="${param.crumb}"/>
@@ -86,11 +104,11 @@
         </c:when>
         <c:when test="${zm:actionSet(param, 'actionMoveFilterUp') and not empty param.ruleName}">
             <zm:checkCrumb crumb="${param.crumb}"/>
-            <zm:moveFilterRule direction="up" name="${param.ruleName}"/>
+            <zm:moveFilterRule direction="up" name="${zm:cook(param.ruleName)}"/>
         </c:when>
         <c:when test="${zm:actionSet(param, 'actionMoveFilterDown') and not empty param.ruleName}">
             <zm:checkCrumb crumb="${param.crumb}"/>
-            <zm:moveFilterRule direction="down" name="${param.ruleName}"/>
+            <zm:moveFilterRule direction="down" name="${zm:cook(param.ruleName)}"/>
         </c:when>
         <c:when test="${zm:actionSet(param, 'actionFilterSave') and not empty param.frompost}">
             <c:set var="filterSave" value="fail" scope="request"/>
@@ -118,7 +136,7 @@
                 </c:when>
                 <c:when test="${zm:actionSet(param, 'actionEditFilter')}">
                     <zm:checkCrumb crumb="${param.crumb}"/>
-                    <zm:modifyFilterRule originalname="${param.origname}"  rule="${postRule}"/>
+                    <zm:modifyFilterRule originalname="${zm:cook(param.origname)}"  rule="${postRule}"/>
                     <c:set var="filterSave" value="success" scope="request"/>
                 </c:when>
             </c:choose>
@@ -287,28 +305,55 @@ grabFieldValues = function(){
 grabFieldValues();
 var _form = document.forms["optionsForm"];
 
+var trim = function(strVal){
+    return strVal.replace(/^\s*/, "").replace(/\s*$/, "");
+}
+
 checkForChanges = function(){
     var _el = _form.elements;
     var _checkFail = false;
     for ( var _i=0;_i < _el.length; _i++){
-        if((_el[_i].type == "hidden") || (_el[_i].type == "submit")){
-            // do nothing
-        }else if(_el[_i].type == "text"){
-            if(_fields[_el[_i].name] != _el[_i].value) { _checkFail = true;}
-        }else if(_el[_i].type == "radio"){
-            if(_el[_i].checked){
-                if(_fields[_el[_i].name] != _el[_i].value+"::"+_el[_i].checked) { _checkFail = true; }
+        if(_el[_i].name != null && _el[_i].name != ""){
+            if((_el[_i].type == "hidden") || (_el[_i].type == "submit")){
+                // do nothing
+            }else if(_el[_i].type == "text"){
+                if(_fields[_el[_i].name] != _el[_i].value) { _checkFail = true; }
+            }else if(_el[_i].type == "radio"){
+                if(_el[_i].checked){
+                    if(_fields[_el[_i].name] != _el[_i].value+"::"+_el[_i].checked) { _checkFail = true; }
+                }
+            }else if(_el[_i].type == "checkbox"){
+                if(_fields[_el[_i].name] != _el[_i].checked) {_checkFail = true; }
+
+            }else if(_el[_i].type == "select-one"){
+                if(_fields[_el[_i].name] != _el[_i].options[_el[_i].selectedIndex].value) {_checkFail = true; }
+
+            }else if(_el[_i].type == "textarea"){
+                if(_fields[_el[_i].name] != _el[_i].value) {_checkFail = true; }
             }
-        }else if(_el[_i].type == "checkbox"){
-            if(_fields[_el[_i].name] != _el[_i].checked) {_checkFail = true; }
-
-        }else if(_el[_i].type == "select-one"){
-            if(_fields[_el[_i].name] != _el[_i].options[_el[_i].selectedIndex].value) {_checkFail = true;  }
-
-        }else if(_el[_i].type == "textarea"){
-            if(_fields[_el[_i].name] != _el[_i].value) {_checkFail = true;}
         }
     }
+
+    <c:if test="${param.selected eq 'signatures'}">
+        for(var j = 0 ;j < sigcount ; j++) {
+            if(myEdit[j] != null) {
+                myEdit[j].saveHTML();
+                var fname = "signatureValue"+j;
+                var sigValue = trim(document.getElementById(fname).value);
+                if(trim(_fields[fname]) != sigValue) {
+                    _checkFail = true;
+                }
+            }
+        }
+        if(document.getElementById("newSignatureValue")) {
+            myEditor.saveHTML();
+            var newSig = trim(document.getElementById("newSignatureValue").value);
+            if(trim(_fields["newSignatureValue"]) != newSig) {
+                _checkFail = true;
+            }
+        }
+    </c:if>
+
     if(_checkFail){
         return "<fmt:message key="optionsExitConfirmation"/>";
     }else{

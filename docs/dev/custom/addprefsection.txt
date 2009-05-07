@@ -1,0 +1,164 @@
+In order to add a pref section, you need to call
+
+	ZmPref.registerPrefSection( id, params );
+
+The params object is a set of properties that tells the prefs
+app how to create the pref section tab, what name to use on the
+tab, etc. The params object can have these properties:
+
+	title                   Tab title.
+	priority                Where to place the tab.
+	manageChanges           True if page handles its own save operation.
+	manageDirty             True if page handles its own dirty state.
+	createView              Function to return ZmPreferencesPage.
+
+For more information, refer to the JavaDoc for this function in
+ZmPref.js source file and search for registerPrefSection in the
+code for sample usage.
+
+EXAMPLE
+
+	ZmPref.registerPrefSection("CUSTOM", {
+		title:          "Custom",
+		manageChanges:  true,
+		createView:     function(parent, section, controller) {
+		                    var comp = new ZmPreferencesPage(parent, section, controller);
+		                    comp.getHtmlElement().innerHTML = "Hello World";
+		                    return comp;
+		                }
+	} );
+
+In order for this work, the pref section MUST be registered before
+the user goes to the Preferences app.
+
+Where to put this code?
+
+If this code is executed in a zimlet, there may be timing issues
+that prevent the user from seeing the new custom tab.
+
+Another option is to add this code to the custom skin code (or
+the base skin code) because that code gets evaluated *before* the
+Zimbra application starts. But the ZmPref class is not defined
+until the PreferencesCore package is loaded.
+
+To get around the package loading problem, though, you can register
+an app listener on ZmZimbraMail to call your own method when the
+user clicks on the preferences app. This allows you to register
+your custom pref section *before* the preferences app creates the
+preference tabs.
+
+EXAMPLE
+
+	// e.g. at the end of skins/_base/base2/ZmSkin.js
+
+	skin._prefsAppLoaded = function(appId) {
+		ZmPref.registerPrefSection("CUSTOM", {
+			title:          "Custom",
+			manageChanges:  true,
+			createView:     function(parent, section, controller) {
+			                    var comp = new ZmPreferencesPage(parent, section, controller);
+			                    comp.getHtmlElement().innerHTML = "Hello World";
+			                    return comp;
+			                }
+		} );
+	};
+
+	var listener = new AjxListener(skin, skin._prefsAppLoaded);
+	ZmZimbraMail.addAppListener(ZmApp.PREFERENCES, ZmAppEvent.PRE_LAUNCH, listener);
+
+Now you have a custom prefs tab! Notice that the Save button
+is disabled when the user clicks on the tab. This is because
+we set the manageChanges property to true when we registered
+the pref section.
+
+Going further, if you want to place the prefs tab at a specific
+location in the tab list, then you need to set the priority property
+when you register the pref section. To do this, find the priority
+of an existing tab and set your priority based on that.
+
+EXAMPLE
+
+	var calendarPrefSection = ZmPref.getPrefSectionMap()["CALENDAR"];
+	ZmPref.registerPrefSection("CUSTOM", {
+		title:          "Custom",
+		priority:       calendarPrefSection.priority + 1,
+		manageChanges:  true,
+		createView:     function(parent, section, controller) {
+		                    var comp = new ZmPreferencesPage(parent, section, controller);
+		                    comp.getHtmlElement().innerHTML = "Hello World";
+		                    return comp;
+		                }
+	} );
+
+We can create a custom pref section but we may want to perform some
+operation when the user presses the Save button. In order to do this,
+we should set manageChanges to false but set manageDirty to true. Then
+we extend the ZmPreferencesPage returned by createView to override the
+isDirty, addCommand, getPreSaveCallback, and getPostSaveCallback
+methods.
+
+NOTE: This document does *not* describe how to write a prefs page
+      that only shows Zimbra preferences (like General tab). We are
+      only concerned in this document with custom behavior which
+      includes custom saving of information.
+
+EXAMPLE
+
+	// Custom pref page class
+	//
+	// In this example, we show how to create a custom pref page
+	// class, perform pre/post-save actions, and add command to
+	// standard save operation.
+
+	CustomPrefPage = function(parent, section, controller) {
+		ZmPreferencesPage.apply(this, arguments);
+
+		var el = this.getHtmlElement();
+		this._checkboxId = el.id + "_checkbox"; 
+
+		el.innerHTML = [
+			"<input type=checkbox id='",this._checkboxId,"'> ",
+			"<label for='",this._checkboxId,"'>Click to make page dirty</label>"
+		].join("");
+	};
+	CustomPrefPage.prototype = new ZmPreferencesPage;
+	CustomPrefPage.prototype.constructor = CustomPrefPage;
+
+	CustomPrefPage.prototype.isDirty = function() {
+		var checkbox = document.getElementById(this._checkboxId);
+		return checkbox.checked;
+	};
+
+	CustomPrefPage.prototype.getPreSaveCallback = function() {
+		return new AjxCallback(this, this._doPreSave);
+	};
+
+	CustomPrefPage.prototype.getPostSaveCallback = function() {
+		return new AjxCallback(this, this._doPostSave);
+	};
+
+	CustomPrefPage.prototype.addCommand = function(batchCmd) {
+		appCtxt.setStatusMsg("adding command to standard save operation");
+	};
+
+	CustomPrefPage.prototype._doPreSave = function(continueCallback) {
+		appCtxt.setStatusMsg("pre save operation");
+
+		// You MUST call the continueCallback!
+		continueCallback.run();
+	};
+
+	CustomPrefPage.prototype._doPostSave = function() {
+		appCtxt.setStatusMsg("post save operation");
+	};
+
+	// Register custom pref section
+
+	ZmPref.registerPrefSection("CUSTOM", {
+		title:          "Custom",
+		manageChanges:  false,
+		manageDirty:    true,
+		createView:     function(parent, section, controller) {
+		                    return new CustomPrefPage(parent, section, controller);
+		                }
+	} );

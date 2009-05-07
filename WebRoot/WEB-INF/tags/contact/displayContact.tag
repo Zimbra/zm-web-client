@@ -1,3 +1,19 @@
+<%--
+ * ***** BEGIN LICENSE BLOCK *****
+ * 
+ * Zimbra Collaboration Suite Web Client
+ * Copyright (C) 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * 
+ * The contents of this file are subject to the Yahoo! Public License
+ * Version 1.0 ("License"); you may not use this file except in
+ * compliance with the License.  You may obtain a copy of the License at
+ * http://www.zimbra.com/license.
+ * 
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
+ * ***** END LICENSE BLOCK *****
+--%>
 <%@ tag body-content="empty" %>
 <%@ attribute name="contact" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZContactBean" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -68,9 +84,11 @@
     <tr>
         <td width="5">&nbsp;</td>
         <td class="contactOutput">
+            <table>
             <app:contactEmail email="${contact.email}"/>
             <app:contactEmail email="${contact.email2}"/>
             <app:contactEmail email="${contact.email3}"/>
+            </table>    
         </td>
     </tr>
     <tr><td><br></td></tr>
@@ -80,7 +98,7 @@
     <tr><td colspan="4" class="sectionLabel" valign="top"><fmt:message key="work"/></td></tr>
     <tr>
         <td width="5">&nbsp;</td>
-        <td valign="top" width="385" class="contactOutput">
+        <td valign="top" width="100%" class="contactOutput">
                 <app:contactLine line="${contact.workStreet}"/>
                 <app:contactLine line="${contact.workCity}"/>
                 <app:contactLine line="${contact.workState}"/>
@@ -91,7 +109,7 @@
                     <a target=_new href="<c:url value="${prefix}${contact.workURL}"/>">${fn:escapeXml(contact.workURL)}</a>
                 </c:if>
         </td>
-        <td valign="top" width="385">
+        <td valign="top" width="100%">
             <table width="100%" border="0" cellspacing='3'>
                 <tbody>
                     <app:contactPhone label="phone" phone="${contact.workPhone}"/>
@@ -116,7 +134,7 @@
     </tr>
     <tr>
         <td width="5">&nbsp;</td>
-        <td valign="top" width="385" class="contactOutput">
+        <td valign="top" width="100%" class="contactOutput">
                 <app:contactLine line="${contact.homeStreet}"/>
                 <app:contactLine line="${contact.homeCity}"/>
                 <app:contactLine line="${contact.homeState}"/>
@@ -152,7 +170,7 @@
     </tr>
     <tr>
         <td width="5">&nbsp;</td>
-        <td valign="top" width="385" class="contactOutput">
+        <td valign="top" width="100%" class="contactOutput">
                 <app:contactLine line="${contact.otherStreet}"/>
                 <app:contactLine line="${contact.otherCity}"/>
                 <app:contactLine line="${contact.otherState}"/>
@@ -163,7 +181,7 @@
                     <a target=_new href="<c:url value="${prefix}${contact.otherURL}"/>">${fn:escapeXml(contact.otherURL)}</a>
                 </c:if>
         </td>
-        <td valign="top" width="385">
+        <td valign="top" width="100%">
             <table width="100%" border="0" cellspacing='3'>
                 <tbody>
                     <app:contactPhone label="otherPhone" phone="${contact.otherPhone}"/>

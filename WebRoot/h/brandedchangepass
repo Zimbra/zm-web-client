@@ -45,13 +45,7 @@
         </c:when>
 
     </c:choose>
-<c:catch var="getMbxException">
-	<zm:getMailbox var="mailbox"/>
-	<c:set var="currentUserName" value="${mailbox.name}"/>
-</c:catch>	
-<c:if test="${getMbxException != null}">
-	<c:set var="currentUserName" value=""/>
-</c:if>
+
 </app:handleError>
 
 <html>
@@ -118,7 +112,7 @@
                                             <tr>
                                                 <td class='zLoginLabelContainer'><label for="username"><fmt:message key="username"/>:</label></td>
                                                 <td colspan=2 class='zLoginFieldContainer'>
-                                                    <input id="username" autocomplete="off" class='zLoginField' name='username' type='text' value="${currentUserName}"/>
+                                                    <input id="username" autocomplete="off" class='zLoginField' name='username' type='text' value=""/>
                                                 </td>
                                             </tr>
                                             <tr>

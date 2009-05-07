@@ -1,8 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -11,7 +10,6 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -53,9 +51,12 @@ ZmApp = function(name, container, parentController) {
 	this._registerOrganizers();
 	if (!parentController) {
 		this._setupSearchToolbar();
-		this._setupCurrentAppToolbar();
 	}
 	this._registerApp();
+
+	for (var org in ZmOrganizer.VIEWS) {
+		ZmOrganizer.VIEW_HASH[org] = AjxUtil.arrayAsHash(ZmOrganizer.VIEWS[org]);
+	}
 
 	if (!appCtxt.isChildWindow) {
 		this._opc = appCtxt.getOverviewController();
@@ -75,6 +76,8 @@ ZmApp.BUTTON_ID				= {};	// ID for app button on app chooser toolbar
 ZmApp.MAIN_PKG				= {};	// main package that composes the app
 ZmApp.NAME					= {};	// msg key for app name
 ZmApp.ICON					= {};	// name of app icon class
+ZmApp.TEXT_PRECEDENCE		= {};	// order for removing button text
+ZmApp.IMAGE_PRECEDENCE		= {};	// order for removing button image
 ZmApp.QS_ARG				= {};	// arg for 'app' var in QS to jump to app
 ZmApp.QS_ARG_R				= {};
 ZmApp.CHOOSER_TOOLTIP		= {};	// msg key for app view menu tooltip
@@ -125,27 +128,30 @@ function() {
  * false (such as 0 or an empty string) will not do anything.
  * 
  * @param app				[constant]	app ID
- * @param mainPkg			[string]	main package that contains the app
- * @param nameKey			[string]	msg key for app name
- * @param icon				[string]	name of app icon class
- * @param chooserTooltipKey	[string]	msg key for app tooltip
- * @param viewTooltipKey	[string]	msg key for app view menu tooltip
- * @param defaultSearch		[constant]	type of item to search for in the app
- * @param organizer			[constant]	main organizer for this app
- * @param overviewTrees		[array]		list of tree IDs to show in overview
- * @param showZimlets		[boolean]	if true, show Zimlet tree in overview
- * @param assistants		[hash]		hash of assistant class names and required packages
- * @param searchTypes		[array]		list of types of saved searches to show in overview
- * @param gotoActionCode	[constant]	key action for jumping to this app
- * @param newActionCode		[constant]	default "new" action code
- * @param actionCodes		[hash]		keyboard actions mapped to operations
- * @param newItemOps		[hash]		IDs of operations that create a new item, and their text keys
- * @param newOrgOps			[hash]		IDs of operations that create a new organizer, and their text keys
- * @param qsViews			[array]		list of views to handle in query string
- * @param chooserSort		[int]		controls order of apps in app chooser toolbar
- * @param defaultSort		[int]		controls order in which app is chosen as default start app
- * @param trashViewOp		[constant]	menu choice for "Show Only ..." in Trash view
- * @param upsellUrl			[string]	URL for content of upsell
+ * @param params			[hash]		hash of params:
+ *        mainPkg			[string]	main package that contains the app
+ *        nameKey			[string]	msg key for app name
+ *        icon				[string]	name of app icon class
+ *        textPrecedence	[int]		order for removing button text
+ *        imagePrecedence	[int]		order for removing button image
+ *        chooserTooltipKey	[string]	msg key for app tooltip
+ *        viewTooltipKey	[string]	msg key for app view menu tooltip
+ *        defaultSearch		[constant]	type of item to search for in the app
+ *        organizer			[constant]	main organizer for this app
+ *        overviewTrees		[array]		list of tree IDs to show in overview
+ *        showZimlets		[boolean]	if true, show Zimlet tree in overview
+ *        assistants		[hash]		hash of assistant class names and required packages
+ *        searchTypes		[array]		list of types of saved searches to show in overview
+ *        gotoActionCode	[constant]	key action for jumping to this app
+ *        newActionCode		[constant]	default "new" action code
+ *        actionCodes		[hash]		keyboard actions mapped to operations
+ *        newItemOps		[hash]		IDs of operations that create a new item, and their text keys
+ *        newOrgOps			[hash]		IDs of operations that create a new organizer, and their text keys
+ *        qsViews			[array]		list of views to handle in query string
+ *        chooserSort		[int]		controls order of apps in app chooser toolbar
+ *        defaultSort		[int]		controls order in which app is chosen as default start app
+ *        trashViewOp		[constant]	menu choice for "Show Only ..." in Trash view
+ *        upsellUrl			[string]	URL for content of upsell
  */
 ZmApp.registerApp =
 function(app, params) {
@@ -153,6 +159,8 @@ function(app, params) {
 	if (params.mainPkg)				{ ZmApp.MAIN_PKG[app]			= params.mainPkg; }
 	if (params.nameKey)				{ ZmApp.NAME[app]				= params.nameKey; }
 	if (params.icon)				{ ZmApp.ICON[app]				= params.icon; }
+	if (params.textPrecedence)		{ ZmApp.TEXT_PRECEDENCE[app]	= params.textPrecedence; }
+	if (params.imagePrecedence)		{ ZmApp.IMAGE_PRECEDENCE[app]	= params.imagePrecedence; }
 	if (params.chooserTooltipKey)	{ ZmApp.CHOOSER_TOOLTIP[app]	= params.chooserTooltipKey; }
 	if (params.viewTooltipKey)		{ ZmApp.VIEW_TOOLTIP[app]		= params.viewTooltipKey; }
 	if (params.defaultSearch)		{ ZmApp.DEFAULT_SEARCH[app]		= params.defaultSearch; }
@@ -227,7 +235,6 @@ ZmApp.prototype._registerOperations		= function() {};
 ZmApp.prototype._registerItems			= function() {};
 ZmApp.prototype._registerOrganizers		= function() {};
 ZmApp.prototype._setupSearchToolbar		= function() {};
-ZmApp.prototype._setupCurrentAppToolbar = function() {};
 ZmApp.prototype._registerApp			= function() {};
 ZmApp.prototype._registerPrefs			= function() {};						// called when Preferences pkg is loaded
 
@@ -254,6 +261,12 @@ function() {
 	return ZmMsg[ZmApp.NAME[this._name]];
 };
 
+// only have set if different from the default
+ZmApp.prototype.getInitialSearchType =
+function() {
+	return null;
+};
+
 // Convenience functions that call through to app view manager. See ZmAppViewMgr for details.
 
 ZmApp.prototype.setAppView =
@@ -262,8 +275,9 @@ function(view) {
 };
 
 ZmApp.prototype.createView =
-function(viewName, elements, callbacks, isAppView, isTransient) {
-	return this._appViewMgr.createView(viewName, this._name, elements, callbacks, isAppView, isTransient);
+function(params) {
+	params.appName = this._name;
+	return this._appViewMgr.createView(params);
 };
 
 ZmApp.prototype.pushView =
@@ -325,66 +339,13 @@ function() {
  * or DwtComposite instead.
  */
 ZmApp.prototype.getOverviewPanelContent =
+function(dontCreate) {
+	return this.getAccordionController().getAccordion(dontCreate);
+};
+
+ZmApp.prototype.getAccordionController =
 function() {
-	if (this._overviewPanelContent) {
-		return this._overviewPanelContent;
-	}
-
-	// bug: 30408 30499 - make sure app's organizer(s) package is loaded
-	// NOTE: We do this here instead of in the app's constructor because all of
-	//       the enabled apps are instantiated at initial load. So this avoids
-	//       loading packages we may not need right away.
-	var orgs = ZmOrganizer.APP2ORGANIZER[this._name];
-	var orgCount = orgs && orgs.length, org;
-	for (var i = 0; i < orgCount; i++) {
-		org = orgs[i];
-		if (ZmOrganizer.ORG_PACKAGE[org]) {
-			AjxDispatcher.require(ZmOrganizer.ORG_PACKAGE[org]);
-		}
-	}
-
-	if (appCtxt.multiAccounts && ZmApp.SUPPORTS_MULTI_MBOX[this._name]) {
-		// create accordion
-		var accordionId = this.getOverviewPanelContentId();
-		var accordion = this._overviewPanelContent = this._opc.createAccordion({accordionId:accordionId});
-		accordion.addListener(DwtEvent.SELECTION, new AjxListener(this, this._accordionSelectionListener));
-		// for now, we only care to show tooltip for offline client
-		if (appCtxt.isOffline) {
-			accordion.addListener(DwtEvent.ONMOUSEOVER, new AjxListener(this, this._accordionMouseoverListener));
-		}
-
-		// add an accordion item for each account, and create overview for main account
-		var accts = appCtxt.getZimbraAccounts();
-		this._overview = {};
-		for (var i in accts) {
-			var data = {};
-			var acct = data.account = accts[i];
-			if (acct.visible) {
-				var params = {
-					title: acct.getTitle(),
-					data: data,
-					icon: acct.getStatusIcon(),
-					hideHeader: (appCtxt.isOffline && appCtxt.numVisibleAccounts == 1)	// HACK
-				};
-				var item = accordion.addAccordionItem(params);
-				acct.itemId = item.id;
-				if (appCtxt.getActiveAccount() == acct) {
-					this._activateAccordionItem(item);
-				}
-
-				var iconCell = (appCtxt.isOffline && appCtxt.numVisibleAccounts > 1) ? item.getIconCell() : null;
-				if (iconCell) {
-					iconCell.onclick = AjxCallback.simpleClosure(this._handleOnClickStatusIcon, this, acct);
-				}
-			}
-		}
-	} else {
-		var params = this._getOverviewParams();
-		var overview = this._overviewPanelContent = this._opc.createOverview(params);
-		overview.set(this._getOverviewTrees());
-	}
-
-	return this._overviewPanelContent;
+	return ZmAppAccordionController.getInstance();
 };
 
 /**
@@ -394,26 +355,29 @@ function() {
  */
 ZmApp.prototype.setOverviewPanelContent =
 function(reset) {
+	var ac = this.getAccordionController();
 	if (reset) {
-		this._overviewPanelContent = null;
+		ac.reset();
 	}
 
 	// only set overview panel content if not in full screen mode
 	var avm = appCtxt.getAppViewMgr();
 	if (!avm.isFullScreen()) {
-		var opc = this.getOverviewPanelContent();
-		// if we're in mult-mbox mode, check if accordion is in-sync when changing apps
-		if (appCtxt.multiAccounts && ZmApp.SUPPORTS_MULTI_MBOX[this._name]) {
-			var activeItemId = appCtxt.getActiveAccount().itemId;
-			if (this.accordionItem.id != activeItemId) {
-				this.getOverviewPanelContent().getItem(appCtxt.getActiveAccount().itemId);
-				var accordionItem = opc.getItem(activeItemId);
-				if (accordionItem) {
-					this._handleSetActiveAccount(accordionItem);
+		var accordion = ac.getAccordion();
+		var expandedItem = accordion.getExpandedItem();
+		if (expandedItem) {
+			if (appCtxt.multiAccounts && ZmApp.SUPPORTS_MULTI_MBOX[this._name]) {
+				if (this.accordionItem && this.accordionItem != expandedItem) {
+					this._activateAccordionItem(expandedItem);
 				}
+				this.accordionItem = expandedItem;
+			}
+
+			if (appCtxt.getActiveAccount().loaded) {
+				ac.showOverview(expandedItem);
 			}
 		}
-		avm.setComponent(ZmAppViewMgr.C_TREE, opc);
+		avm.setComponent(ZmAppViewMgr.C_TREE, accordion);
 	}
 };
 
@@ -422,7 +386,7 @@ function(reset) {
  */
 ZmApp.prototype.getOverviewPanelContentId =
 function() {
-	return this._name;
+	return ZmAppAccordionController.ID;
 };
 
 /**
@@ -452,33 +416,7 @@ function(overviewId) {
  */
 ZmApp.prototype.getOverviewId =
 function(account) {
-	if (appCtxt.multiAccounts && ZmApp.SUPPORTS_MULTI_MBOX[this._name]) {
-		if (!account) {
-			// bug #20310 - default to main account if all else fails
-			account = this.accordionItem
-				? this.accordionItem.data.account
-				: appCtxt.getMainAccount(true);
-		}
-		return ([this.getOverviewPanelContentId(), account.name].join(":"));
-	}
-
-	return this.getOverviewPanelContentId();
-};
-
-/**
- * Returns a hash of params with the standard overview options.
- */
-ZmApp.prototype._getOverviewParams =
-function() {
-	return {
-		overviewId:this.getOverviewPanelContentId(),
-		posStyle:Dwt.ABSOLUTE_STYLE,
-		selectionSupported:true,
-		actionSupported:true,
-		dndSupported:true,
-		showUnread:true,
-		hideEmpty:this._getHideEmpty()
-	};
+	return this.getAccordionController().getOverviewId();
 };
 
 /**
@@ -495,7 +433,8 @@ function(account, unloadCurrent, callback) {
 		if (unloadCurrent) {
 			appCtxt.getActiveAccount().unload();
 		}
-		this._expandAccordionItem(accordionItem, false, callback);
+		var ac = ZmAppAccordionController.getInstance();
+		ac._expandAccordionItem(accordionItem, false, callback);
 	}
 };
 
@@ -506,7 +445,7 @@ function(account, unloadCurrent, callback) {
  */
 ZmApp.prototype._getOverviewTrees =
 function() {
-	var list = ZmApp.OVERVIEW_TREES[this._name];
+	var list = ZmApp.OVERVIEW_TREES[this._name] || [];
 	var newList = [];
 	for (var i = 0, count = list.length; i < count; i++) {
 		if ((list[i] == ZmOrganizer.FOLDER && !appCtxt.get(ZmSetting.MAIL_ENABLED))) {
@@ -514,135 +453,10 @@ function() {
 		}
 		newList.push(list[i]);
 	}
+	if (window[ZmOverviewController.CONTROLLER[ZmOrganizer.ZIMLET]] && ZmApp.SHOW_ZIMLETS[this._name]) {
+		newList.push(ZmOrganizer.ZIMLET);
+	}
 	return newList;
-};
-
-/**
- * Returns a hash detailing which tree views to not show if they are empty.
- */
-ZmApp.prototype._getHideEmpty =
-function() {
-	var hideEmpty = {};
-	hideEmpty[ZmOrganizer.SEARCH] = true;
-	hideEmpty[ZmOrganizer.ZIMLET] = true;
-
-	return hideEmpty;
-};
-
-/**
- * Handles a click on on accordion item.
- * 
- * @param ev	[DwtUiEvent]	the click event
- */
-ZmApp.prototype._accordionSelectionListener =
-function(ev) {
-	if (ev.detail.data.account != appCtxt.getActiveAccount()) {
-		// before loading the selected account, "unload" the existing one
-		appCtxt.getActiveAccount().unload();
-	}
-
-	this._expandAccordionItem(ev.detail, true);
-	return true;
-};
-
-ZmApp.prototype._accordionMouseoverListener =
-function(ev) {
-	if (ev.detail && ev.item) {
-		var account = ev.detail.data.account;
-		ev.item.setToolTipContent(account.getToolTip());
-	}
-	return true;
-};
-
-ZmApp.prototype._handleOnClickStatusIcon =
-function(account) {
-	account.showErrorMessage();
-};
-
-ZmApp.prototype._expandAccordionItem =
-function(accordionItem, byUser, callback) {
-	if (accordionItem == this.accordionItem) { return; }
-
-	this.accordionItem = accordionItem;
-	DBG.println(AjxDebug.DBG1, "Accordion switching to item: " + accordionItem.title);
-
-	// hide and clear advanced search since it may have overviews for previous account
-	if (appCtxt.get(ZmSetting.BROWSE_ENABLED)) {
-		var searchCtlr = appCtxt.getSearchController();
-		var bvc = searchCtlr._browseViewController;
-		if (bvc) {
-			bvc.removeAllPickers();
-			bvc.setBrowseViewVisible(false);
-		}
-	}
-
-	var activeAcct = this.accordionItem.data.account;
-
-	// enable/disable app tabs based on whether app supports multi-mbox
-	var appChooser = appCtxt.getAppController().getAppChooser();
-	for (var i = 0; i < ZmApp.APPS.length; i++) {
-		var app = ZmApp.APPS[i];
-		var b = appChooser.getButton(app);
-		if (!b) { continue; }
-
-		if (activeAcct.isMain) {
-			b.setEnabled(true);
-		} else {
-			b.setEnabled(ZmApp.SUPPORTS_MULTI_MBOX[app]);
-		}
-	}
-
-	var respCallback = new AjxCallback(this, this._handleSetActiveAccount, [this.accordionItem, byUser, callback]);
-	appCtxt.setActiveAccount(activeAcct, respCallback);
-};
-
-ZmApp.prototype._handleSetActiveAccount =
-function(accordionItem, byUser, callback) {
-	if (byUser) {
-		// reset unread count for all accordion items
-		var accounts = appCtxt.getZimbraAccounts();
-		for (var i in accounts) {
-			var acct = accounts[i];
-			if (acct.visible) {
-				this._opc.updateAccountTitle(acct.itemId, acct.getTitle());
-			}
-		}
-	}
-
-	var ac = appCtxt.getAppController();
-	ac.setUserInfo();
-	this._activateAccordionItem(accordionItem, callback);
-	this._setMiniCalForActiveAccount(byUser);
-
-	// reset instant notify every time account changes
-	if (appCtxt.isOffline) {
-		var interval = (AjxEnv.isFirefox2_0up && !AjxEnv.isFirefox3up) ? 10000 : 100;
-		AjxTimedAction.scheduleAction(new AjxTimedAction(ac, ac.setInstantNotify, true), interval);
-
-		if (appCtxt.inStartup) {
-			// load settings for all accounts
-			var accounts = appCtxt.getZimbraAccounts();
-			var unloaded = [];
-			for (var i in accounts) {
-				var acct = accounts[i];
-				if (acct.visible && !acct.loaded) {
-					unloaded.push(acct);
-				}
-			}
-			if (unloaded.length > 0) {
-				this._loadOfflineAccount(unloaded);
-			}
-		}
-	}
-};
-
-ZmApp.prototype._loadOfflineAccount =
-function(accounts) {
-	var acct = accounts.shift();
-	if (acct) {
-		var callback = new AjxCallback(this, this._loadOfflineAccount, [accounts]);
-		acct.load(callback);
-	}
 };
 
 // NOTE: calendar overloads this method since it handles minical independently
@@ -711,16 +525,15 @@ function(ev) {
 ZmApp.prototype._activateAccordionItem =
 function(item) {
 	this.accordionItem = item;
-	var accordion = item.accordion;
-	var expanded = accordion.getExpandedItem() != item;
-	accordion.expandItem(item.id, !expanded);
-	var overviewId = this.getOverviewId();
-	if (!this._opc.getOverview(overviewId)) {
-		var params = this._getOverviewParams();
-		params.overviewId = overviewId;
-		var overview = this._opc.createOverview(params);
-		overview.set(this._getOverviewTrees(), null, item.data.account);
-		accordion.setItemContent(item.id, overview);
+
+	// handle an overview item being selected before overview has been created; this happens
+	// once, during startup, if the initial search maps to an organizer
+	if (this._selectedOverviewItem) {
+		var overview = this.getOverview();
+		if (overview) {
+			overview.setSelected(this._selectedOverviewItem);
+			this._selectedOverviewItem = null;
+		}
 	}
 };
 
@@ -754,19 +567,6 @@ function(type) {
 		this._createDeferredFolders(type);
 	}
 	this._handleDeferredNotifications();
-};
-
-/**
- * Standard method for handling arrival of <refresh> block by resetting
- * the overview content.
- * 
- * @param refresh	[object]	refresh object (JSON)
- */
-ZmApp.prototype._handleRefresh =
-function(refresh) {
-	if (this._overviewPanelContent) {
-		this.resetOverview();
-	}
 };
 
 ZmApp.prototype._setupDropTargets =
@@ -864,7 +664,7 @@ function(ev) {
 ZmApp.prototype._handleCreateFolder =
 function(create, org) {
 	var parent = appCtxt.getById(create.l);
-	if (parent && (create.view == ZmOrganizer.VIEWS[org][0])) {
+	if (parent && (ZmOrganizer.VIEWS[org][create.view])) {
 		parent.notifyCreate(create);
 		create._handled = true;
 	}
@@ -873,8 +673,9 @@ function(create, org) {
 ZmApp.prototype._handleCreateLink =
 function(create, org) {
 	var parent = appCtxt.getById(create.l);
+	var view = create.view || "message";
 	if (parent && parent.supportsSharing() &&
-		(create.view == ZmOrganizer.VIEWS[org][0]))
+		(ZmOrganizer.VIEW_HASH[org][view]))
 	{
 		parent.notifyCreate(create);
 		// XXX: once bug #4434 is fixed, check if this call is still needed
@@ -951,7 +752,7 @@ function() {
 };
 
 /**
-* Sttops an alert on the app tab.
+* Stops an alert on the app tab.
 */
 ZmApp.prototype.stopAlert =
 function() {

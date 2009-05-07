@@ -1,8 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -11,7 +10,6 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -248,10 +246,11 @@ function(overviewId, parent, types) {
 		overviewId: overviewId,
 		parent: parent,
 		headerClass: "DwtTreeItem",
-		treeStyle: DwtTree.CHECKEDITEM_STYLE
+		treeStyle: DwtTree.CHECKEDITEM_STYLE,
+		treeIds: types
 	};
 	var overview = this._overview = appCtxt.getOverviewController().createOverview(params);
-	overview.set(types);
+	overview.set(types, null, null, true);
 	this._treeView = {};
 	for (var i = 0; i < types.length; i++) {
 		var treeView = this._treeView[types[i]] = overview.getTreeView(types[i]);
@@ -269,7 +268,7 @@ function(type) {
 		var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT)
 		ti = this._treeView[type].getTreeItemById(rootId);
 	}
-	Dwt.setVisible(ti._checkBoxCell, false);
+	ti.showCheckBox(false);
 	ti.setExpanded(true);
 	ti.setVisible(false, true);
 };

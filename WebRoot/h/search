@@ -17,7 +17,6 @@
     </c:otherwise>
     </c:choose>
     <fmt:setBundle basename="/messages/ZhMsg" scope='request' />
-    <app:composeCheck/>
     <c:set var="action" value="${empty param.paction ? param.action : param.paction}" scope="request"/>
     <jsp:useBean id="expanded" scope="session" class="java.util.HashMap" />
 
@@ -27,7 +26,7 @@
 		  <c:when test="${param.app eq 'calendar' and mailbox.features.calendar}">
 			  <c:redirect url="/h/calendar" />
 		  </c:when>
-          <c:when test="${param.app eq 'mail' and mailbox.features.mail}">
+          	  <c:when test="${param.app eq 'mail' and mailbox.features.mail}">
 			<c:redirect url="/h/search" />
 		  </c:when>
 		  <c:when test="${param.app eq 'voice' and mailbox.features.voice}">
@@ -42,7 +41,10 @@
 		  <c:when test="${param.app eq 'tasks' and mailbox.features.tasks}">
 			  <c:redirect url="/h/search?st=task" />
 		  </c:when>
-	  </c:choose>
+          	  <c:when test="${param.app eq 'briefcases' and mailbox.features.briefcases}">
+			  <c:redirect url="/h/search?st=briefcase" />
+		 </c:when>
+      </c:choose>
   </c:if>
   <c:if test="${not empty param.view}">
 	  <c:if test="${param.view eq 'compose'}">
@@ -82,6 +84,9 @@
     </c:if>
      <%-- switch based on context search types --%>
      <c:choose>
+         <c:when test="${param.action eq 'compose'}">
+             <app:composeCheck/>
+         </c:when>
          <c:when test="${not empty param.doConvListViewAction}">
              <app:convListViewAction/>
          </c:when>
@@ -93,6 +98,12 @@
          </c:when>
          <c:when test="${not empty param.doTaskAction}">
              <app:taskAction/>
+         </c:when>
+         <c:when test="${param.action eq 'newbrief'}">
+             <app:newBriefCheck/>
+         </c:when>
+          <c:when test="${not empty param.doBriefcaseAction}">
+             <app:briefcaseListViewAction/>
          </c:when>
          <c:when test="${not empty param.doContactListViewAction or param.action eq 'newcontact' or param.action eq 'newcontactgroup'}">
              <app:contactListViewAction/>
@@ -158,6 +169,9 @@
 
  <%-- switch based on context search types --%>
 <c:choose>
+    <c:when test="${context.isConversationSearch and mailbox.prefs.readingPaneEnabled}">
+        <app:convColumnView context="${context}"/>
+    </c:when>
     <c:when test="${context.isConversationSearch and action eq 'view'}">
         <app:convView context="${context}"/>
     </c:when>
@@ -167,6 +181,12 @@
     <c:when test="${context.isConversationSearch}">
         <app:convListView context="${context}"/>
     </c:when>
+    <c:when test="${context.isMessageSearch and mailbox.prefs.readingPaneEnabled and action eq 'view'}">
+        <app:messageColumnView context="${context}"/>
+    </c:when>
+    <c:when test="${context.isMessageSearch and mailbox.prefs.readingPaneEnabled}">
+        <app:messageColumnView context="${context}"/>
+    </c:when>    
     <c:when test="${context.isMessageSearch and action eq 'view'}">
         <app:messageView context="${context}"/>
     </c:when>
@@ -190,6 +210,15 @@
     </c:when>
     <c:when test="${context.isCallSearch}">
         <app:callListView context="${context}"/>
+    </c:when>
+    <c:when test="${context.isBriefcaseSearch and (param.view eq 'dv' or empty param.view)}">
+        <app:briefcaseListView context="${context}"/>
+    </c:when>
+    <c:when test="${context.isBriefcaseSearch and param.view eq 'ev'}">
+        <app:briefcaseExplorerView context="${context}"/>
+    </c:when>
+    <c:when test="${context.isWikiSearch}">
+        <app:notebookRestView context="${context}"/>
     </c:when>
     <c:otherwise>
         <fmt:message key="error" var="title"/>

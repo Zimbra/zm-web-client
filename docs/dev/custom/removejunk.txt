@@ -1,0 +1,51 @@
+The spam/junk features in the application appear in several places:
+
+1) the junk/spam folder in the tree view
+2) the junk/not-junk buttons in the mail app toolbars
+3) the "Include Junk folder in searches" preferences in General
+4) the "Also search junk" in advanced search Basic pane
+
+To hide the presence of the spam functionality in the client, you
+need to add app listeners for the mail and preferences app. The best
+place to put this code is within the skin's source code because this
+will be processed before the Zimbra client runs.
+
+EXAMPLE
+
+	// hook into mail app
+	skin._mailAppPreLaunch = function(appId) {
+		var precondition = true; // TODO: determine if spam is enabled for user
+		if (precondition) {
+			// override spam settings
+			appCtxt.set(ZmSetting.SPAM_ENABLED, false);
+			appCtxt.set(ZmSetting.SEARCH_INCLUDES_SPAM, false);
+
+			// hide spam/junk folder in nav-tree
+			ZmFolder.HIDE_ID[ZmOrganizer.ID_SPAM] = true;
+		}
+	};
+	var listener = new AjxListener(skin, skin._mailAppPreLaunch);
+	ZmZimbraMail.addAppListener(ZmApp.MAIL, ZmAppEvent.PRE_LAUNCH, listener);
+
+	// hook into preferences app
+	skin._prefsAppPreLaunch = function(appId) {
+		var precondition = true; // TODO: determine if spam is enabled for user
+		if (precondition) {
+			ZmPref.SETUP[ZmSetting.SEARCH_INCLUDES_SPAM].precondition = ZmSetting.SEARCH_INCLUDES_SPAM;
+		}
+	};
+	var listener = new AjxListener(skin, skin._prefsAppPreLaunch);
+	ZmZimbraMail.addAppListener(ZmApp.PREFERENCES, ZmAppEvent.PRE_LAUNCH, listener);
+
+In the example code, I set the precondition variable to true so that
+it will always remove the spam feature from the user interface. But
+you will want to change this code to your needs. For example, if the
+user is a member of the "no-spam" class of service.
+
+EXAMPLE
+
+	var cosName = appCtxt.getSettings().getInfoResponse.cos.name;
+	var precondition = cosName == "no-spam";
+	if (precondition) {
+		// ...
+	}

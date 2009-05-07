@@ -1,3 +1,19 @@
+<%--
+ * ***** BEGIN LICENSE BLOCK *****
+ * 
+ * Zimbra Collaboration Suite Web Client
+ * Copyright (C) 2007, 2008 Zimbra, Inc.
+ * 
+ * The contents of this file are subject to the Yahoo! Public License
+ * Version 1.0 ("License"); you may not use this file except in
+ * compliance with the License.  You may obtain a copy of the License at
+ * http://www.zimbra.com/license.
+ * 
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
+ * ***** END LICENSE BLOCK *****
+--%>
 <%@ tag body-content="empty" %>
 <%@ attribute name="label" rtexprvalue="true" required="true" %>
 <%@ attribute name="value" rtexprvalue="true" required="false" %>
@@ -15,14 +31,12 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
-
-
+<c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/>
 <c:if test="${(not empty value) or isaddress}">
 	<fmt:message key="${label}" var="label"/>
-    <table width="100%" cellpadding="0" cellspacing="0" border="0" <c:if test="${!noborder}">class="zo_m_list_row" </c:if> >
-    <tr>
-        <td <c:if test="${isaddress}">valign="top"</c:if> class='label' width="20%" nowrap="nowrap" align="right">${fn:escapeXml(label)}</td>
-        <td height="28" class="Padding" width="80%">
+    <div <c:if test="${!noborder}">class="list-row" </c:if> >
+        <span class='label' width="20%">${fn:escapeXml(label)}</span>
+        <span class=" value">
             <c:choose>
                 <c:when test="${isurl}">
                     <c:set var="prefix" value="${fn:contains(value,'//') ? '' : 'http://'}"/>
@@ -49,8 +63,8 @@
                     <a href="${fn:escapeXml(url)}">${fn:escapeXml(value)}</a>
                 </c:when>
                 <c:when test="${isemail}">
-                    <c:url value="/m/mosearch" var="url">
-                        <c:param name="action" value="compose"/>
+                    <c:url value="${context_url}" var="url">
+                        <c:param name="st" value="newmail"/>
                         <c:param name="to" value="${value}"/>
                     </c:url>
                     <a href="${fn:escapeXml(url)}">${fn:escapeXml(value)}</a>
@@ -59,7 +73,6 @@
                     ${fn:escapeXml(value)}
                 </c:otherwise>
             </c:choose>
-        </td>
-    </tr>
-    </table>
+        </span>
+    </div>
 </c:if>
