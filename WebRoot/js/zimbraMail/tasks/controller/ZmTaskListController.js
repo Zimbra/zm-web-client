@@ -259,6 +259,8 @@ function(view) {
 	this._setupPrintMenu(view);
 	this._setupViewMenu(view);
 
+	this._toolbar[view].getButton(ZmOperation.DELETE).setToolTipContent(ZmMsg.hardDeleteTooltip);
+
 	this._toolbar[view].addFiller();
 	var tb = new ZmNavToolBar({parent:this._toolbar[view], context:view});
 	this._setNavToolBar(tb, view);

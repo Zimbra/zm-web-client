@@ -622,6 +622,8 @@ function(viewId) {
 		printButton.setToolTipContent(ZmMsg.printCalendar);
 	}
 
+	toolbar.getButton(ZmOperation.DELETE).setToolTipContent(ZmMsg.hardDeleteTooltip);
+
 	var viewButton = toolbar.getButton(ZmOperation.VIEW_MENU);
 	if (viewButton) {
 		viewButton.setMenu(new AjxCallback(this, this._setupViewMenuItems, [toolbar]));
