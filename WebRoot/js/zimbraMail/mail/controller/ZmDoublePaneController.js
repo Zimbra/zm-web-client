@@ -658,7 +658,7 @@ function() {
 		var childNodes = listView._parentEl.childNodes;
 		for (var i = idx + 1; i < childNodes.length; i++) {
 			var item = listView.getItemFromElement(childNodes[i]);
-			if (item && !selIds[item.id]) {
+			if (item && !selIds[item.id] && (item.type == first.type)) {
 				return item;
 			}
 		}

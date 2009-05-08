@@ -618,7 +618,7 @@ function(ev) {
 		handled = true;
 		if (conv) {
 			if (item.folderId == ZmFolder.ID_SPAM || ev.event == ZmEvent.E_DELETE) {
-				// msg marked as Junk, or deleted via Empty Trash
+				// msg marked as Junk, or hard-deleted
 				// TODO: handle expandable msg removal
 				conv.removeMsg(item);
 				if (this._isExpandable(conv) && conv.numMsgs == 1) {
@@ -626,6 +626,7 @@ function(ev) {
 					this._removeMsgRows(conv.id);
 				}
 				this.removeItem(item, true);	// remove msg row
+				this._controller._app._checkReplenishListView = this;
 			} else {
 				// if this conv now has no msgs that match current search, remove it
 				var removeConv = true;
