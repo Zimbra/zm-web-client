@@ -213,9 +213,7 @@ function(ev) {
 ZmConvController.prototype._convTagClicked =
 function(tagId) {
 	var tag = appCtxt.getById(tagId);
-	var query = 'tag:"' + tag.name + '"';
-	var searchController = appCtxt.getSearchController();
-	searchController.search({query: query});
+	appCtxt.getSearchController().search({query: tag.createQuery()});
 };
 
 // Handle DnD tagging (can only add a tag to a single item) - if a tag got dropped onto

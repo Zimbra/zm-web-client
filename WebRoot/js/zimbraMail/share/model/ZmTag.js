@@ -120,6 +120,11 @@ function() {
 	return (this.id == ZmOrganizer.ID_ROOT) ? null : ZmTag.COLOR_ICON[this.color];
 };
 
+ZmTag.prototype.createQuery =
+function() {
+	return ['tag:"', this.name, '"'].join("");
+};
+
 ZmTag.prototype.getToolTip = function() {};
 
 ZmTag.prototype.notifyCreate =

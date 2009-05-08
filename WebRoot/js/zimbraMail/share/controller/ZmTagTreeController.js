@@ -144,7 +144,7 @@ function(tag) {
 
 	var sc = appCtxt.getSearchController();
 	var getHtml = appCtxt.get(ZmSetting.VIEW_AS_HTML);
-	sc.search({query:'tag:"' + tag.name + '"', searchFor:searchFor, getHtml:getHtml});
+	sc.search({query:tag.createQuery(), searchFor:searchFor, getHtml:getHtml});
 };
 
 // Listeners

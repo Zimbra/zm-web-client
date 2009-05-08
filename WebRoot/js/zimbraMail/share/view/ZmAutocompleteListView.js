@@ -39,6 +39,9 @@
  * The calling client also specifies the key in the match result for the string that will be used
  * to replace the typed text (also called the "completion string"). For example, the completion 
  * string for matching contacts could be a full address, or just the email.
+ * </p><p>
+ * The client may provide additional key event handlers in the form of callbacks. If the callback
+ * explicitly returns true or false, that's what the event handler will return.
  * </p>
  * 
  * @author Conrad Damon
@@ -53,8 +56,9 @@
  *        separator			[string]*			separator (gets added to the end of a match)
  *        compCallback		[AjxCallback]*		callback into client to notify it that completion happened
  *        keyDownCallback	[AjxCallback]*		additional ONKEYDOWN handler
+ *        keyPressCallback	[AjxCallback]*		additional ONKEYPRESS handler
  *        keyUpCallback		[AjxCallback]*		additional ONKEYUP handler
- *        options			[hash]*				additional options for autocompleteMatch()
+ *        options			[hash]*				additional options for autocompleteMatch() in data class
  */
 ZmAutocompleteListView = function(params) {
 
@@ -70,6 +74,7 @@ ZmAutocompleteListView = function(params) {
 	this._separator = (params.separator != null) ? params.separator : AjxEmailAddress.SEPARATOR;
 	this._compCallback = params.compCallback;
 	this._keyDownCallback = params.keyDownCallback;
+	this._keyPressCallback = params.keyPressCallback;
 	this._keyUpCallback = params.keyUpCallback;
     this._options = params.options;
 
@@ -123,7 +128,8 @@ function(ev) {
 	var element = DwtUiEvent.getTargetWithProp(ev, "id");
 	var aclv = AjxCore.objectWithId(element._acListViewId);
 	if (aclv._keyDownCallback) {
-		aclv._keyDownCallback.run(ev, aclv, result);
+		var cbResult = aclv._keyDownCallback.run(ev, aclv, result);
+		result = (cbResult === true || cbResult === false) ? cbResult : result;
 	}
 	return result;
 };
@@ -131,6 +137,14 @@ function(ev) {
 ZmAutocompleteListView.onKeyPress =
 function(ev) {
 	DwtKeyEvent.geckoCheck(ev);
+	var result = null;
+	var element = DwtUiEvent.getTargetWithProp(ev, "id");
+	var aclv = AjxCore.objectWithId(element._acListViewId);
+	if (aclv._keyPressCallback) {
+		var cbResult = aclv._keyPressCallback.run(ev, aclv);
+		result = (cbResult === true || cbResult === false) ? cbResult : result;
+	}
+	return (result != null) ? result : ZmAutocompleteListView._echoKey(true, ev);
 };
 
 ZmAutocompleteListView.onKeyUp =
@@ -140,7 +154,8 @@ function(ev) {
 	var element = DwtUiEvent.getTargetWithProp(ev, "id");
 	var aclv = AjxCore.objectWithId(element._acListViewId);
 	if (aclv._keyUpCallback) {
-		aclv._keyUpCallback.run(ev, aclv, result);
+		var cbResult = aclv._keyUpCallback.run(ev, aclv, result);
+		result = (cbResult === true || cbResult === false) ? cbResult : result;
 	}
 	return result;
 };

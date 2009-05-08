@@ -326,7 +326,6 @@ function() {
 		this._searchField = new DwtInputField({parent:this, hint:ZmMsg.searchInput, inputId:ZmId.SEARCH_INPUT});
 		var inputEl = this._searchField.getInputElement();
 		inputEl.className = "search_input";
-		Dwt.setHandler(inputEl, DwtEvent.ONKEYPRESS, ZmSearchToolBar._keyPressHdlr);
 		this._searchField.reparentHtmlElement(inputFieldId);
 	}
 
@@ -481,26 +480,21 @@ ZmSearchToolBar.prototype.initAutocomplete =
 function(id) {
 
 	var params = {
-		dataClass:		new ZmSearchAutocomplete(),
-		matchValue:		"matchText",
-		delims:			[" "],
-		separator:		""
+		dataClass:			new ZmSearchAutocomplete(),
+		matchValue:			"matchText",
+		delims:				[" "],
+		separator:			"",
+		keyPressCallback:	new AjxCallback(this, this._keyPressHdlr)
 	};
 	this._acList = new ZmAutocompleteListView(params);
 	this._acList.handle(this.getSearchField());
 };
 
-// Static methods
-
-ZmSearchToolBar._keyPressHdlr =
+ZmSearchToolBar.prototype._keyPressHdlr =
 function(ev) {
-    // DwtInputField > ZmSearchToolBar
-    var inputField = DwtControl.getTargetControl(ev);
-    var stb = inputField.parent;
-
     var charCode = DwtKeyEvent.getCharCode(ev);
-	if ((charCode == 13 || charCode == 3) && !stb._acList.getVisible()) {
-		stb._handleEnterKeyPress(ev);
+	if ((charCode == 13 || charCode == 3) && !this._acList.getVisible()) {
+		this._handleEnterKeyPress(ev);
 	    return false;
 	}
 	return true;

@@ -1652,9 +1652,7 @@ function() {
 ZmMailMsgView.prototype._msgTagClicked =
 function(tagId) {
 	var tag = appCtxt.getById(tagId);
-	var query = 'tag:"' + tag.name + '"';
-	var searchController = appCtxt.getSearchController();
-	searchController.search({query: query});
+	appCtxt.getSearchController().search({query: tag.createQuery()});
 };
 
 ZmMailMsgView.prototype._handleMsgTruncated =

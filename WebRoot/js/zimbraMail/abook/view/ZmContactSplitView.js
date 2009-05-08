@@ -439,8 +439,7 @@ function(tagId) {
 	if (sc) {
 		var tag = appCtxt.getById(tagId);
 		if (tag) {
-			var query = 'tag:"' + tag.name + '"';
-			sc.search({query: query});
+			sc.search({query: tag.createQuery()});
 		}
 	}
 };
