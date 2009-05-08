@@ -100,6 +100,9 @@ ZmSpreadSheetController.prototype._initModel = function(){
 
     if(ZmSpreadSheetApp.fileInfo && ZmSpreadSheetApp.fileInfo.id) {
         var item = this.loadData(ZmSpreadSheetApp.fileInfo.id);
+        if(!item.rest){    //TODO: Change this code to construct a rest url
+            item.rest = ZmSpreadSheetApp.restUrl;
+        }
         if(item != null) {
             ZmSpreadSheetApp.fileInfo = item;
             this.loadSheet(item);

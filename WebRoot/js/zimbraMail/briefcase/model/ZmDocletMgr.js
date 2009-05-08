@@ -189,7 +189,7 @@ function(funcName, force) {
 
 ZmDocletMgr.prototype.fetchDocumentContent =
 function(item) {
-    var restURL = item.rest || item.restUrl;
+    var restURL = item.rest;
     var urlParts = AjxStringUtil.parseURL(restURL);
     if(urlParts && urlParts.path) {
         var result = AjxRpc.invoke("", urlParts.path + "?fmt=native", {}, null, true);
@@ -266,7 +266,7 @@ function(params,response)
         item = new ZmItem();
         var data = docResp;
         if (data.id) item.id = data.id;        
-        if (data.rest) item.restUrl = data.rest;
+        if (data.rest) item.rest = data.rest;
         if (data.l) item.folderId = data.l;
         if (data.name) item.name = data.name;
         if (data.cr) item.creator = data.cr;
@@ -277,10 +277,6 @@ function(params,response)
         if (data.ver) item.version = Number(data.ver);
         if (data.ct) item.contentType = data.ct.split(";")[0];
         item.folderId = docResp.l || ZmOrganizer.ID_BRIEFCASE;
-
-        if(!item.restUrl) {
-            item.restUrl = window.appContextPath + "/home/user1/Briefcase/" + item.name;
-        }
     }
 
     if(callback){

@@ -58,6 +58,10 @@ ZmSpreadSheetApp.launch = function(){
 
     shell.getKeyboardMgr().registerKeyMap(new DwtKeyMap(true));
 
+    //Removing all the arguments
+    var rest = location.href;
+    ZmSpreadSheetApp.restUrl = rest.replace(/\?.*/,'');
+
     new ZmSpreadSheetApp();
 
 };
