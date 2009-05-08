@@ -444,7 +444,8 @@ function(name) {
 	if (!this.list) { return null; }
 
 	if (this.list.isCanonical || this.list.isGal || this.isShared()) {
-		return this.attr[name];
+		var val = this.attr[name];
+		return (val instanceof Array) ? val[0] : val;
 	} else {
 		var contact = this.canonicalList.getById(this.id);
 		return contact ? contact.attr[name] : null;
