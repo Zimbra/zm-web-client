@@ -451,8 +451,8 @@ function(str) {
  * 						autocomplete list.
  * 		icon			Function that returns an icon to display in the autocomplete list.
  * 		matchText		Function that returns a string to place in the input when the item is selected. Defaults to
- * 						the value of the 'text' attribute.
- * 		quoteMatch		If true, the matchText will be place in double quotes.
+ * 						the 'op:' plus the value of the 'text' attribute.
+ * 		quoteMatch		If true, the text that goes into matchText will be place in double quotes.
  */
 ZmSearchAutocomplete = function() {
 
@@ -464,7 +464,7 @@ ZmSearchAutocomplete = function() {
 		loader:		this._loadTags,
 		text:		function(o) { return o.getName(false, null, true, true); },
 		icon:		function(o) { return o.getIcon(); },
-		quoteMatch:	true
+		matchText:	function(o) { return o.createQuery(); }
 	};
 	this._registerHandler("tag", params);
 
@@ -472,7 +472,7 @@ ZmSearchAutocomplete = function() {
 		listType:	ZmId.ORG_FOLDER,
 		text:		function(o) { return o.getPath(false, false, null, true, true); },
 		icon:		function(o) { return o.getIcon(); },
-		quoteMatch:	true
+		matchText:	function(o) { return o.createQuery(); }
 	};
 	this._loadFunc[ZmId.ORG_FOLDER] = this._loadFolders;
 	this._registerHandler("in", params);
@@ -572,9 +572,9 @@ function(op, str) {
 		var text = opHash.text ? opHash.text(o) : o;
 		var test = text.toLowerCase();
 		if (test.indexOf(rest) == 0) {
-			var matchText = opHash.matchText ? opHash.matchText(o) : text;
-			matchText = opHash.quoteMatch ? [op, ":", '"', matchText, '"'].join("") :
-											[op, ":", matchText].join("");
+			var matchText = opHash.matchText ? opHash.matchText(o) :
+								opHash.quoteMatch ? [op, ":", '"', text, '"'].join("") :
+													[op, ":", text].join("");
 			results.push({text:			text,
 						  icon:			opHash.icon ? opHash.icon(o) : null,
 						  matchText:	matchText});
