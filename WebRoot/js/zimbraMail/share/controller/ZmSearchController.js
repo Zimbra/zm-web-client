@@ -1,8 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -11,7 +10,6 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -55,13 +53,13 @@ function() {
 };
 
 ZmSearchController.prototype.dateSearch =
-function(d) {
+function(d, searchFor) {
 	d = d || new Date();
     var formatter = AjxDateFormat.getDateInstance(AjxDateFormat.SHORT);
     var date = formatter.format(d);
 	var groupBy = appCtxt.getApp(ZmApp.MAIL).getGroupMailBy();
 	var query = "date:" + date;
-	this.search({query:query, types:[groupBy]});
+	this.search({query:query, types:[groupBy], searchFor: searchFor});
 };
 
 ZmSearchController.prototype.fromSearch =
@@ -196,7 +194,6 @@ function() {
 
 	var tg = this._createTabGroup();
 	tg.addMember(this._searchToolBar.getSearchField());
-	tg.addMember(this._searchToolBar);
 
 	// Register keyboard callback for search field
 	this._searchToolBar.registerCallback(this._searchFieldCallback, this);
@@ -248,7 +245,7 @@ function(menu) {
  */
 ZmSearchController.prototype.search =
 function(params) {
-	if (this._searchFor != ZmItem.APPT && (!(params.query && params.query.length))) { return; }
+	if (params.searchFor != ZmItem.APPT && (!(params.query && params.query.length))) { return; }
 
 	// if the search string starts with "$set:" then it is a command to the client
 	if (params.query.indexOf("$set:") == 0 || params.query.indexOf("$cmd:") == 0) {
@@ -292,6 +289,7 @@ function(search, noRender, changes, callback, errorCallback) {
 	params.lastSortVal	= search.lastSortVal;
 	params.lastId		= search.lastId;
 	params.soapInfo		= search.soapInfo;
+	params.searchFor	= this._searchFor;
 
 	if (changes) {
 		for (var key in changes) {
@@ -380,6 +378,7 @@ function(types) {
 			case ZmItem.CONTACT:	viewType = ZmId.VIEW_CONTACT_SIMPLE; break;
 			case ZmItem.APPT:		viewType = ZmId.VIEW_CAL; break;
 			case ZmItem.TASK:		viewType = ZmId.VIEW_TASKLIST; break;
+			case ZmId.SEARCH_GAL:	viewType = ZmId.VIEW_CONTACT_SIMPLE; break;
 			// more types go here as they are suported...
 		}
 
@@ -402,9 +401,9 @@ function(types) {
 ZmSearchController.prototype._doSearch =
 function(params, noRender, callback, errorCallback) {
 
-	params.searchFor = this._searchFor = params.searchFor || this._searchFor;
+	this._searchFor = params.searchFor || this._searchFor;
 	if (appCtxt.zimletsPresent()) {
-		appCtxt.getZimletMgr().notifyZimlets("onSearch", params.query);
+		appCtxt.getZimletMgr().notifyZimlets("onSearch", [params.query]);
 	}
 
 	if (this._searchToolBar) {
@@ -419,6 +418,11 @@ function(params, noRender, callback, errorCallback) {
 	}
 	if (params.searchFor == ZmId.SEARCH_MAIL) {
 		params = appCtxt.getApp(ZmApp.MAIL).getSearchParams(params);
+	}
+
+	if (this._searchFor == ZmItem.TASK) {
+		var tlc = AjxDispatcher.run("GetTaskListController");
+		params.allowableTaskStatus = (tlc) ? tlc.getAllowableTaskStatus() : null;
 	}
 
 	// if the user explicitly searched for all types, force mixed view
@@ -481,13 +485,15 @@ function(search, noRender, isMixed, callback, result) {
 		this._showResults(results, search, isMixed);
 	}
 
-	if (callback) callback.run(result);
+	if (callback) {
+		callback.run(result);
+	}
 };
 
 ZmSearchController.prototype._showResults =
 function(results, search, isMixed) {
 	// allow old results to dtor itself
-	if (this._results && (this._results.type == results.type)) {
+	if (this._results && (this._results.type == results.type) && this._results.dtor) {
 		this._results.dtor();
 	}
 	this._results = results;
@@ -495,7 +501,6 @@ function(results, search, isMixed) {
 	DBG.timePt("handle search results");
 
 	// determine if we need to default to mixed view
-	var folder = appCtxt.getById(search.folderId);
 	var isInGal = (this._contactSource == ZmId.SEARCH_GAL);
 	if (appCtxt.get(ZmSetting.SAVED_SEARCHES_ENABLED)) {
 		var saveBtn = this._searchToolBar ? this._searchToolBar.getButton(ZmSearchToolBar.SAVE_BUTTON) : null;
@@ -511,7 +516,7 @@ function(results, search, isMixed) {
 	app.currentSearch = search;
 	app.currentQuery = search.query;
 	app.showSearchResults(results, loadCallback, isInGal, search.folderId);
-	appCtxt.getAppController().focusContentPane();
+//	appCtxt.getAppController().focusContentPane();
 };
 
 ZmSearchController.prototype._handleLoadShowResults =
@@ -607,7 +612,7 @@ function(ev) {
 			queryString = this._currentQuery ? this._currentQuery : "";
 		}
 		if (appCtxt.zimletsPresent()) {
-			appCtxt.getZimletMgr().notifyZimlets("onSearchButtonClick", queryString);
+			appCtxt.getZimletMgr().notifyZimlets("onSearchButtonClick", [queryString]);
 		}
 		var getHtml = appCtxt.get(ZmSetting.VIEW_AS_HTML);
 		this.search({query: queryString, userText: userText, getHtml: getHtml});
@@ -711,7 +716,9 @@ function(ev, id) {
 
 /**
  * Selects the appropriate item in the overview based on the search. Selection only happens
- * if the search was a simple search for a folder, tag, or saved search.
+ * if the search was a simple search for a folder, tag, or saved search. A check is done to
+ * make sure that item is not already selected, so selection should only occur for a query
+ * manually run by the user.
  *
  * @param search		[ZmSearch]		the current search
  */
@@ -732,16 +739,10 @@ function(search) {
 	}
 	var app = appCtxt.getCurrentApp();
 	var overview = app.getOverview();
-	if (!overview) { return; }
-	if (id) {
-		var treeView = overview.getTreeView(type);
-		if (treeView) {
-			treeView.setSelected(id, true);
-		}
-		overview.itemSelected(type);
+	if (overview) {
+		overview.setSelected(id, type);
 	} else {
-		// clear overview of selection
-		overview.itemSelected();
+		app._selectedOverviewItem = id;
 	}
 };
 

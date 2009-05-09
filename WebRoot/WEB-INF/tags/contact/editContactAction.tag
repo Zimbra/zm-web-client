@@ -1,3 +1,19 @@
+<%--
+ * ***** BEGIN LICENSE BLOCK *****
+ * 
+ * Zimbra Collaboration Suite Web Client
+ * Copyright (C) 2006, 2007, 2008 Zimbra, Inc.
+ * 
+ * The contents of this file are subject to the Yahoo! Public License
+ * Version 1.0 ("License"); you may not use this file except in
+ * compliance with the License.  You may obtain a copy of the License at
+ * http://www.zimbra.com/license.
+ * 
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
+ * ***** END LICENSE BLOCK *****
+--%>
 <%@ tag body-content="empty" %>
 <%@ attribute name="id" rtexprvalue="true" required="true" type="java.lang.String" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -18,9 +34,9 @@
     <zm:field name="jobTitle" value="${param.jobTitle}"/>
     <zm:field name="company" value="${param.company}"/>
 
-    <zm:field name="email" value="${param.email}"/>
-    <zm:field name="email2" value="${param.email2}"/>
-    <zm:field name="email3" value="${param.email3}"/>
+    <zm:field name="email" value="${fn:replace(param.email,'\"','')}"/>
+    <zm:field name="email2" value="${fn:replace(param.email2,'\"','')}"/>
+    <zm:field name="email3" value="${fn:replace(param.email3,'\"','')}"/>
 
     <zm:field name="workStreet" value="${param.workStreet}"/>
     <zm:field name="workCity" value="${param.workCity}"/>

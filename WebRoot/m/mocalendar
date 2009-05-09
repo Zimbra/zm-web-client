@@ -43,27 +43,33 @@
         <zm:clearApptSummaryCache/>
     </c:if>
 
-    <c:set var="view" value="${not empty param.view ? param.view : 'list'}"/>
+    <c:set var="view" value="${not empty param.view ? param.view : ( not empty param.sq ? 'list' : 'month')}"/>
 
     <c:if test="${param.action eq 'view'}">
          <c:set var="needViewAppt" value="${true}"/>
    </c:if>
-    
+    <c:if test="${not empty param.sfi}">
+        <c:set var="calendar" value="${zm:getFolder(pageContext, param.sfi)}"/>
+        <c:if test="${calendar.isAppointmentView and calendar.isAppointmentMoveTarget}">
+            <c:set var="calendar" value="${calendar}" scope="session"/>
+        </c:if>
+    </c:if>
 </mo:handleError>
-
+<fmt:formatDate value="${dateContext.time}" pattern="EEE, MMM dd, yyyy" var="ttldt"/>
+<c:set var="title" value="${ttldt}" scope="request"/>
 <mo:handleError>
 <c:choose>
     <c:when test="${needViewAppt}">
-        <mo:apptView/>
+        <mo:apptView urlTarget="${context_url}" date="${dateContext}" timezone='${tz}'/>
     </c:when>
     <c:when test="${view eq 'day'}">
-        <mo:calMultiDayView timezone="${tz}" date="${dateContext}" view='${view}' numdays="${not empty param.numdays ? param.numdays : 1}"/>
+        <mo:calMultiDayView urlTarget="${context_url}" timezone="${tz}" date="${dateContext}" view='${view}' numdays="${not empty param.numdays ? param.numdays : 1}"/>
     </c:when>
     <c:when test="${view eq 'month'}">
-        <mo:calMonthView timezone="${tz}" date="${dateContext}"/>
+        <mo:calMonthView urlTarget="${context_url}" timezone="${tz}" date="${dateContext}"/>
     </c:when>
     <c:otherwise>
-        <mo:calListView timezone="${tz}" date="${dateContext}"/>
+        <mo:calListView urlTarget="${context_url}" timezone="${tz}" date="${dateContext}"/>
     </c:otherwise>
 </c:choose>
 </mo:handleError>

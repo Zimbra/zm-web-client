@@ -1,0 +1,239 @@
+ABOUT
+
+The Zimbra Collaboration Suite contains different user interfaces
+targeted to different users' needs. System administrators connect
+to the admin console while end users can choose between the
+advanced, standard, and mobile clients. However, this document
+will focus on the advanced client.
+
+
+PACKAGING
+
+The user client code is organized into packages of individual
+JavaScript files that represent related functionality in the product
+such as the Mail or Address Book application. During the build, the
+files in each package are combined into a single JavaScript file.
+Refer to the build document for more information about this process.
+
+SEE: build.txt
+
+
+USER LOGIN
+
+When a user connects to the user client without an auth token, they
+are shown a login page to enter their credentials. A single login page
+is used for all of the clients (except for the admin console) -- the
+user can select which client to use from the login page.
+
+SEE: //depot/{branch}/ZimbraWebClient/WebRoot/public/login.jsp
+
+Once the user successfully logs into the system, they are directed
+to the client's primary page for the selected client:
+
+advanced:   /public/launchZCS.jsp
+standard:   /h/search
+mobile:     /m/mainx
+
+
+Parameters
+
+The login.jsp page accept some URL query parameters that affect the
+login.
+
+dev=1
+
+	Passed to launchZCS.jsp to load the client in dev mode after
+	the user is authenticated.
+
+client={client}
+
+	Determines with client is selected by default on the login screen.
+	The allowed values are: "advanced", "standard", and "mobile".
+
+skin={skin}
+
+	Passed to launchZCS.jsp to specify the client skin after the
+	user is authenticated.
+
+
+LAUNCH ZCS JSP
+
+The launchZCS.jsp loads the advanced client code. The content of
+this file (as seen by the user's web browser) is comprised of the
+following, in order:
+
+1) remote style: app & skin CSS
+2) inline script: global constants such as appContextPath, etc
+3) remote script: message & key binding resources
+4) inline HTML: skin HTML (from /skins/{skin}/manifest.xml)
+5) inline script: /js/Boot_all.js
+6) inline script: timezone data
+7) remote script: /js/Startup1_1_all.js
+8) remote script: /js/Startup1_2_all.js
+9) inline script: skin JS (from /skins/{skin}/manifest.xml) **
+10) inline script: onload code to launch the app
+
+NOTE: The term "inline" versus "remote" script in the above list
+      refers to JavaScript code that is contained directly in the
+      resulting HTML document or loaded separately using a <script>
+      tag with a src attribute, respectively.
+
+SEE: skinres.txt
+
+** Includes the skin's compiled template sources. If the skin code
+   and templates is too large, only the skin code is inlined and
+   the skin's compiled template source is loaded in a separate
+   remote script tag.
+
+
+Parameters
+
+The launchZCS.jsp page accepts some URL query parameters that
+affect how the client is loaded.
+
+dev=1
+
+	Loads the client in dev mode. In this mode, each source file
+	is loaded separately. All of the source for all of the apps
+	are loaded at the beginning -- no packages are deferred.
+
+client=1
+
+	Forces the client to load a specific client. This is only used
+	when a user is already authenticated and is accessing the top
+	level app URL (e.g. http://{host}/zimbra/) or is being redirected
+	to the top level app URL.
+
+skin={skin}
+
+	Specifies the client skin. This value will override the user's
+	preference.
+
+app={app-name}
+
+	At launch, starts in the specified app. Allowed values are
+	"mail", "contacts", "calendar", "tasks", "documents", "briefcase",
+	and "options".
+
+packages={comma-separated-package-list}
+
+	This parameter allows specific packages to be pre-loaded by
+	the client with in prod mode. This parameter is not used in
+	dev mode.
+
+localeId={locale-name}
+
+	Overrides the browser or user's preferred locale preference
+	to load the client with resources for a specific locale.
+
+
+SOURCE CODE
+
+The advanced client is built on the Ajax framework which contains
+user interface controls and low-level utilities used by the
+application.
+
+Here is the general layout of the Ajax source tree:
+
+//depot/{branch}/ZimbraWebClient/WebRoot/js/ajax/
+	boot/       - bootstrap code (e.g. loading source, callbacks, etc)
+	dwt/        - DWT framework (widgets/, etc)
+	package/    - package manifests for combining files
+	util/       - utility code (e.g. text formatting, etc)
+	...
+
+Here is the general layout of the Zimbra advanced client source tree:
+
+//depot/{branch}/ZimbraWebClient/WebRoot/js/zimbraMail/
+	abook/      - Address Book app
+	briefcase/  - Briefcase app
+	calendar/   - Calendar app
+	core/       - core advanced client functionality
+	im/         - Instant Messaging app
+	mail/       - Mail app
+	mixed/      - Mixed view ***
+	notebook/   - Notebook app
+	package/    - package manifests for combining files
+	portal/     - Portal (or Home page) app
+	prefs/      - Preferences app
+	share/      - common code shared among apps
+	tasks/      - Tasks app
+	...
+
+*** The mixed view is used to display mixed folder content. Usually,
+    list views display only items of a single type; the mixed view
+    will show items of multiple types. For example, this view is
+    used for showing the contents of the Trash folder.
+
+NOTE: Not all of the source directories are listed here.
+
+
+ARCHITECTURE
+
+The Zimbra advanced client contains a lot of functionality and
+therefore is a large and complex software application. This section
+describes the general architecture of the the client.
+
+In general, the client follows the model-view-controller paradigm.
+For each application such as mail or address book, item objects,
+organizers (i.e. folders), and other classes are located in the model/
+sub-directory; user interface elements are located in the view/ sub-
+directory; and controller classes are located in the controller/ sub-
+directory.
+
+For example, the root level of the mail application is:
+
+	//depot/{branch}/ZimbraWebClient/WebRoot/js/zimbraMail/mail/
+
+and the important classes for this application are:
+
+	ZmMailApp.js
+	controller/
+		ZmMailListController.js
+		...
+	model/
+		ZmMailMsg.js
+		...
+	view/
+		ZmMailListView.js
+		ZmMailMsgView.js
+		...
+
+The other applications are arranged in a similar way.
+
+
+CORE ZIMBRA MAIL CLASSES
+
+* ZmController
+* ZmListController : ZmController
+* ZmOverviewController : ZmController
+* ZmTreeController : ZmController
+
+* ZmZimbraMail : ZmController
+
+* ZmAppCtxt
+* ZmApp
+* ZmOperation
+* ZmRequestMgr
+
+* ZmOrganizer
+* ZmFolder : ZmOrganizer
+* ...
+
+* ZmModel
+* ZmItem : ZmModel
+* ZmList : ZmModel
+* ZmSetting : ZmModel
+* ZmSettings : ZmModel
+* ZmTree : ZmModel
+
+* ZmListView : DwtListView
+* ZmOverview : DwtComposite
+* ZmTreeView : DwtTree
+* ZmToolBar : DwtToolBar
+
+* ZmAppChooser : ZmToolBar
+
+* ZmZimletBase
+* ZmZimletContext
+* ZmZimletMgr

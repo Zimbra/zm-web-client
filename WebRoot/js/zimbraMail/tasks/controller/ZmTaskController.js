@@ -1,8 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007 Zimbra, Inc.
+ * Copyright (C) 2006, 2007, 2008 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -11,7 +10,6 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -97,6 +95,23 @@ function() {
 	return "ZmTaskController";
 };
 
+// returns true if moving given appt from local to remote folder or vice versa
+ZmTaskController.prototype.isMovingBetwAccounts =
+function(task, newFolderId) {
+	var isMovingBetw = false;
+	if (task._orig) {
+		var origFolder = task._orig.getFolder();
+		var newFolder = appCtxt.getById(newFolderId);
+		if (origFolder && newFolder) {
+			if ((origFolder.id != newFolderId) &&
+				((origFolder.link && !newFolder.link) || (!origFolder.link && newFolder.link)))
+			{
+				isMovingBetw = true;
+			}
+		}
+	}
+	return isMovingBetw;
+};
 
 // Private / Protected methods
 
@@ -113,4 +128,10 @@ function() {
 	if (appCtxt.numVisibleAccounts > 1) {
 		appCtxt.getApp(ZmApp.TASKS).getOverviewPanelContent().setEnabled(true);
 	}
+};
+
+ZmTaskController.prototype._printListener =
+function() {
+	var url = ("/h/printtasks?id=" + this._composeView._calItem.invId);
+	window.open(appContextPath+url, "_blank");
 };

@@ -1,0 +1,98 @@
+ABOUT
+
+In addition to compiling Java source code and generating the
+web application .war file, the build process also:
+
+* combines images into icon map files
+* combines JavaScript source into package files
+* compiles advanced client templates
+
+
+IMAGE MERGE
+
+For performance, groups of similar images are combined into a
+single icon file. This reduces the number of requests from the
+client to the server for the images used in the application.
+
+//depot/{branch}/ZimbraWebClient/WebRoot/img/
+
+This directory contains all of the images used by the user clients.
+The images in each sub-directory are combined into a single GIF file
+of all of the images with the name {dirname}.gif. In addition, CSS
+selectors are generated for each image.
+
+SEE images.txt
+SEE ZimbraWebClient% ant -Dimages.force=TRUE images
+
+
+PACKAGE JAMMING
+
+The JavaScript source is organized into packages. Each package is
+defined by a manifest that lists each source file in the package.
+The package manifests can be found in the package/ sub-directories
+in the JavaScript source tree of ZimbraWebClient:
+
+//depot/{branch}/ZimbraWebClient/WebRoot/js/ajax/package/
+//depot/{branch}/ZimbraWebClient/WebRoot/js/zimbra/package/
+//depot/{branch}/ZimbraWebClient/WebRoot/js/zimbraAdmin/package/
+//depot/{branch}/ZimbraWebClient/WebRoot/js/zimbraMail/package/
+
+During the  build, each package manifest is scanned for the list
+of source files in that package. For each package, two files are
+created:
+
+* a JSP file with a <script> tag for each source file
+* a single JavaScript file with all of the source files combined
+
+After the aggregated JavaScript package is generated, the source
+file is minimized, a license header is prepended, and it is
+compressed using GZip. For example, the following shows the source,
+build, and deployed files for the "Ajax" package in the js/ajax/
+source tree:
+
+source:   //depot/{branch}/ZimbraWebClient/WebRoot/js/ajax/package/Ajax.js
+build:    //depot/{branch}/ZimbraWebClient/build/WebRoot/js/Ajax_all.js.zgz
+deployed: /opt/zimbra/jetty/webapps/zimbra/js/Ajax_all.js.zgz
+
+NOTE: The .zgz extension is used instead of .gz for the GZip'd
+      files because of an Internet Explorer bug that would
+      incorrectly retrieve the compressed file from the browser
+      cache.
+
+The *_all.js* files are only generated for a production build and
+loaded by the client when in a "prod" mode. If the user loads the
+the client in "dev" mode, all of the JavaScript files are loaded
+immediately (not deferred) and are loaded individually. In order
+to load the user client in dev mode, add the "dev=1" parameter to
+the URL.
+
+SEE: ZimbraWebClient% ant jam-files
+
+
+COMPILE TEMPLATES
+
+The template system is a very powerful feature that allows HTML
+elements of the user interface to be customized. This allows skin
+authors to change the appearance of user interface components such
+as buttons, etc.
+
+The template files are HTML files that contain <template> tags to
+define each template. For the client to use these templates, they
+must be compiled to native JavaScript during the build. Skin templates,
+however, are compiled by the zmskindeploy script when deployed.
+
+The source, compiled, and deployed templates are found at the following
+locations:
+
+source:   //depot/{branch}/ZimbraWebClient/WebRoot/templates/
+build:    //depot/{branch}/ZimbraWebClient/build/WebRoot/templates/
+deployed: /opt/zimbra/jetty/webapps/zimbra/templates/
+
+NOTE: The entire product has NOT been converted to using the
+      template system. Therefore, not every user interface can be
+      customized by a skin.
+
+SEE: ../ajax/template.txt
+SEE: ZimbraWebClient% ant templates
+SEE: com.zimbra.kabuki.tools.templates.Template
+SEE: /opt/zimbra/bin/zmskindeploy

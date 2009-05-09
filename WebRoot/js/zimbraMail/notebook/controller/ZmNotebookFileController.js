@@ -1,8 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007 Zimbra, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -11,7 +10,6 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -79,7 +77,7 @@ function(searchResults, fromUserSearch) {
 	var elements = new Object();
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
 	elements[ZmAppViewMgr.C_APP_CONTENT] = lv;
-	this._setView(this._currentView, elements, true);
+	this._setView({view:this._currentView, elements:elements, isAppView:true});
 	this._resetNavToolBarButtons(this._currentView);
 
 	// always set the selection to the first item in the list
@@ -87,6 +85,15 @@ function(searchResults, fromUserSearch) {
 	if (list && list.size() > 0) {
 		lv.setSelection(list.get(0));
 	}
+};
+
+ZmNotebookFileController.prototype._printListener =
+function(ev) {
+	var listView = this._listView[this._currentView];
+	var items = listView.getSelection();
+	var page = (items instanceof Array) ? items[0] : items;
+
+	window.open(page.getRestUrl(true), "_blank");
 };
 
 // Resets the available options on a toolbar or action menu.
@@ -233,7 +240,9 @@ function(item, fromSearch) {
 		controller.show(item, true, this._fromSearch || fromSearch);
 	} else if (item.type == ZmItem.DOCUMENT) {
 		var url = item.getRestUrl();
-		window.open(url, "_new", "");											// TODO: popup window w/ REST URL
+        var parts = url.split("#");
+        var nurl = parts[0] + (url.indexOf('?') < 0 ? '?' : '&') + ("disp=i") + (parts[1] ? "#" + parts[1] : '');
+		window.open(nurl, "_new", "");											// TODO: popup window w/ REST URL
 	}
 };
 
@@ -304,6 +313,5 @@ function(ev) {
 	if(ev.handled) return;
 	var details = ev._details;
 	if(!details) return;
-	var items = details.items
-	this._list._notify(ev.event,{items:items})
+	this._list._notify(ev.event,details);
 };

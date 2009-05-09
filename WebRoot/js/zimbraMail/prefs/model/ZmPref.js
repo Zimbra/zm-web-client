@@ -1,17 +1,15 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- *
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
- *
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- *
+ * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -63,15 +61,19 @@ function(setup) {
 ZmPref.loadCsvFormats =
 function(setup){
     var formats = appCtxt.get(ZmSetting.AVAILABLE_CSVFORMATS);
-	var options = setup.options = [];
-	var displayOptions = setup.displayOptions = [];
-    for(var i=0; i<formats.length; i++){
-        options.push(formats[i]);
+	if (!formats._options) {
+		var options = formats._options = [];
+		var displayOptions = formats._displayOptions = [];
+		for(var i=0; i<formats.length; i++){
+			options.push(formats[i]);
+		}
+		options.sort(ZmPref.__BY_CSVFORMAT);
+		for(var i=0; i < options.length; i++){
+			displayOptions.push((ZmMsg[options[i]] || options[i]));
+		}
 	}
-	options.sort(ZmPref.__BY_CSVFORMAT);
-	for(var i=0; i < options.length; i++){
-        displayOptions.push((ZmMsg[options[i]] || options[i]));
-    }
+	setup.options = formats._options;
+	setup.displayOptions = formats._displayOptions;
 };
 ZmPref.__BY_CSVFORMAT = function(a, b) {
 	if (a.match(/^zimbra/)) return -1;
@@ -80,6 +82,23 @@ ZmPref.__BY_CSVFORMAT = function(a, b) {
 	if (b.match(/^yahoo/))  return  1;
 	return a.localeCompare(b);
 };
+
+ZmPref.loadPageSizes =
+function(setup) {
+	var max = (setup.maxSetting && appCtxt.get(setup.maxSetting)) || 100;
+	var list = [];
+	for (var i = 0; i < ZmPref.PAGE_SIZES.length; i++) {
+		var num = parseInt(ZmPref.PAGE_SIZES[i]);
+		if (num <= max) {
+			list.push(ZmPref.PAGE_SIZES[i]);
+		}
+	}
+	if (max > ZmPref.PAGE_SIZES[ZmPref.PAGE_SIZES.length - 1]) {
+		list.push(String(max));
+	}
+	setup.displayOptions = setup.options = list;
+};
+ZmPref.PAGE_SIZES = ["10", "25", "50", "100", "250", "500", "1000"];
 
 ZmPref.validateEmail =
 function(emailStr) {
@@ -391,6 +410,7 @@ function(prefsId, list) {
  * Available properties are:
  *
  * displayName			descriptive text
+ * displayFunc			A function that returns the descriptive text. Only implemented for checkboxes.
  * displayContainer		type of form input: checkbox, select, input, or textarea
  * options				values for a select input
  * displayOptions		text for the select input's values

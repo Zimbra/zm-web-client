@@ -1,8 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007 Zimbra, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -11,7 +10,6 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -306,8 +304,7 @@ ZmPageEditor.HTML_SOURCE = "htmlsrc";
 ZmPageEditor.MEDIA_WIKI = "mediawiki";
 ZmPageEditor.RICH_TEXT = "richtext";
 ZmPageEditor.TWIKI = "twiki";
-
-ZmPageEditor.DEFAULT = AjxEnv.isSafari ? ZmPageEditor.HTML_SOURCE : ZmPageEditor.RICH_TEXT;
+ZmPageEditor.DEFAULT = ZmPageEditor.RICH_TEXT;
 
 ZmPageEditor._MODES = {};
 ZmPageEditor._MODES[ZmPageEditor.HTML_SOURCE] = DwtHtmlEditor.TEXT;
@@ -532,10 +529,10 @@ ZmPageEditor.prototype._createToolBar2 = function(parent) {
 	button.setToolTipContent(ZmMsg.insertAttachment);
 	button.addSelectionListener(new AjxListener(this, this._insertAttachmentsListener));
 
-	button = new DwtToolBarButton(params);
+	/*button = new DwtToolBarButton(params);
 	button.setImage("URL");
 	button.setToolTipContent(ZmMsg.insertLink);
-	button.addSelectionListener(new AjxListener(this, this._insertLinkListener));
+	button.addSelectionListener(new AjxListener(this, this._insertLinkListener)); */
 	
 	button = new DwtToolBarButton(params);
 	button.setImage("FindReplace");
@@ -588,7 +585,12 @@ ZmPageEditor.prototype.insertLinks = function(filenames) {
 			insertTarget = space;
 		}
 		var link = this._getIframeDoc().createElement("A");
-		link.href = filenames[i];
+        var page = this._controller.getPage();
+        var notebook = appCtxt.getById(page.folderId);
+        var url = [
+            notebook.getRestUrl(), "/", AjxStringUtil.urlComponentEncode(filenames[i])
+        ].join("");
+		link.href = url;
 		link.innerHTML = decodeURI(filenames[i]);
 		this._insertLink(link, insertTarget, true);
 		insertTarget = link;
@@ -597,7 +599,12 @@ ZmPageEditor.prototype.insertLinks = function(filenames) {
 
 ZmPageEditor.prototype._insertImages = function(filenames) {
 	for (var i = 0; i < filenames.length; i++) {
-		this.insertImage(filenames[i]);
+        var page = this._controller.getPage();
+        var notebook = appCtxt.getById(page.folderId);
+        var url = [
+            notebook.getRestUrl(), "/", AjxStringUtil.urlComponentEncode(filenames[i])
+        ].join("");
+		this.insertImage(url);
 	}
 };
 
@@ -622,6 +629,7 @@ ZmPageEditor.prototype.__popupUploadDialog = function(callback, title) {
 	var notebook = appCtxt.getById(page.folderId);
 
 	var dialog = appCtxt.getUploadDialog();
+    dialog.addPopdownListener(new AjxListener(this, this.focus));
 	dialog.popup(notebook, callback, title);
 };
 
@@ -717,6 +725,7 @@ ZmPageEditor.prototype._popupLinkPropsDialog = function(target, url, text) {
 		this._insertLinkCallback = new AjxCallback(this, this._insertLink);
 	}
 	var dialog = appCtxt.getLinkPropsDialog();
+    dialog.addPopdownListener(new AjxListener(this, this.focus));
 	dialog.popup(linkInfo, this._insertLinkCallback);
 };
 

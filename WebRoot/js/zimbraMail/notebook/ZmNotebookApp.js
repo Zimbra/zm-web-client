@@ -1,17 +1,15 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- *
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007 Zimbra, Inc.
- *
+ * Copyright (C) 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- *
+ * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -74,13 +72,13 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_FORMAT_RICH_TEXT, {textKey:"formatRichText"}, ZmSetting.HTML_COMPOSE_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_FORMAT_TWIKI, {textKey:"formatTWiki"}, ZmSetting.HTML_COMPOSE_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_MOUNT_NOTEBOOK, {textKey:"mountNotebook", image:"Notebook"}, ZmSetting.SHARING_ENABLED);
-	ZmOperation.registerOp(ZmId.OP_NEW_NOTEBOOK, {textKey:"newNotebook", image:"NewNotebook"});
+	ZmOperation.registerOp(ZmId.OP_NEW_NOTEBOOK, {textKey:"newNotebook", image:"NewNotebook", tooltipKey:"newNotebookTooltip", shortcut:ZmKeyMap.NEW_NOTEBOOK});
 	ZmOperation.registerOp(ZmId.OP_NEW_PAGE, {textKey:"newPage", tooltipKey:"createNewPage", image:"NewPage"});
 	ZmOperation.registerOp(ZmId.OP_IMPORT_FILE, {textKey:"_import", tooltipKey:"importDocs"});
 	ZmOperation.registerOp(ZmId.OP_SEND_PAGE, {textKey:"send", tooltipKey:"sendPageTT", image:"Send"}, ZmSetting.MAIL_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_SHARE_NOTEBOOK, {textKey:"shareNotebook", image:"Notebook"}, ZmSetting.SHARING_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_REVERT_PAGE, {textKey:"revert", tooltipKey:"restorePage", image:"Edit"});
-	ZmOperation.registerOp("BROWSE_FOLDER", {textKey:"browse", image:"Browse"});
+	ZmOperation.registerOp(ZmId.OP_BROWSE_FOLDER, {textKey:"browse", image:"Browse"});
 };
 
 ZmNotebookApp.prototype._registerItems =
@@ -136,10 +134,12 @@ function() {
 							 defaultColor:		ZmOrganizer.C_NONE,
 							 treeType:			ZmOrganizer.FOLDER,
 							 views:				["wiki"],
-							 folderKey:			"notebookFolder",
+							 folderKey:			"notebook",
 							 mountKey:			"mountNotebook",
 							 createFunc:		"ZmOrganizer.create",
 							 compareFunc:		"ZmNotebook.sortCompare",
+							 newOp:				ZmOperation.NEW_NOTEBOOK,
+							 displayOrder:		100,
 							 deferrable:		true
 							});
 };
@@ -154,11 +154,6 @@ function() {
 								 setting:		ZmSetting.NOTEBOOK_ENABLED,
 								 id:			ZmId.getMenuItemId(ZmId.SEARCH, ZmId.ITEM_PAGE)
 								});
-};
-
-ZmNotebookApp.prototype._setupCurrentAppToolbar =
-function() {
-	ZmCurrentAppToolBar.registerApp(this.getName(), ZmOperation.NEW_NOTEBOOK, ZmOrganizer.NOTEBOOK);
 };
 
 ZmNotebookApp.prototype._registerApp =
@@ -177,10 +172,11 @@ function() {
 							 {mainPkg:				"Notebook",
 							  nameKey:				"documents",
 							  icon:					"NoteApp",
+							  textPrecedence:		10,
 							  chooserTooltipKey:	"goToDocuments",
 							  defaultSearch:		ZmItem.PAGE,
 							  organizer:			ZmOrganizer.NOTEBOOK,
-							  overviewTrees:		[ZmOrganizer.NOTEBOOK, ZmOrganizer.ROSTER_TREE_ITEM, ZmOrganizer.TAG],
+							  overviewTrees:		[ZmOrganizer.NOTEBOOK, ZmOrganizer.TAG],
 							  showZimlets:			true,
 							  searchTypes:			[ZmItem.PAGE, ZmItem.DOCUMENT],
 							  newItemOps:			newItemOps,
@@ -359,11 +355,6 @@ function(modifies, force) {
 			}
 		}
 	}
-};
-
-ZmNotebookApp.prototype.refresh =
-function(refresh) {
-	this._handleRefresh();
 };
 
 ZmNotebookApp.prototype.handleOp =

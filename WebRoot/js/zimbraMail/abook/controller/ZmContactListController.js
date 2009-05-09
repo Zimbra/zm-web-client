@@ -1,8 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -11,7 +10,6 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -75,14 +73,13 @@ function() {
 // Public methods
 
 ZmContactListController.prototype.show =
-function(searchResult, bIsGalSearch, folderId) {
-	this._searchType = bIsGalSearch
+function(searchResult, isGalSearch, folderId) {
+	this._searchType = isGalSearch
 		? ZmContactListController.SEARCH_TYPE_GAL
 		: ZmContactListController.SEARCH_TYPE_CANONICAL;
 
     this._folderId = folderId;
 
-	// use toString() here due to flakiness of 'instanceof' for ZmContactList
 	if (searchResult instanceof ZmContactList) {
 		this._list = searchResult;			// set as canonical list of contacts
 		this._list._isShared = false;		// this list is not a search of shared items
@@ -100,10 +97,11 @@ function(searchResult, bIsGalSearch, folderId) {
 		if (searchResult.search && searchResult.search.userText && this.getParentView())
 			this.getParentView().getAlphabetBar().reset();
 
-		if (bIsGalSearch) {
+		if (isGalSearch) {
 			if (this._list == null)
 				this._list = new ZmContactList(searchResult.search, true);
 			this._list._isShared = false;
+			this._list.isGalPagingSupported = AjxUtil.isSpecified(searchResult.getAttribute("offset"));
 		} else {
 			// find out if we just searched for a shared address book
 			var addrbook = folderId ? appCtxt.getById(folderId) : null;
@@ -151,12 +149,17 @@ function(view, force, initialized, stageView) {
 			this._initializeAlphabetBar(view);
 		}
 
-		this._setView(view, elements, true, false, false, false, stageView);
+		this._setView({view:view, elements:elements, isAppView:true, stageView:stageView});
 		this._resetNavToolBarButtons(view);
 
 		// HACK: reset search toolbar icon (its a hack we're willing to live with)
-		if (this.isGalSearch()) {
+		if (this.isGalSearch() && !this._list.isGalPagingSupported) {
 			appCtxt.getSearchController().setDefaultSearchType(ZmId.SEARCH_GAL);
+			if (this._list.hasMore()) {
+				var d = appCtxt.getMsgDialog();
+				d.setMessage(ZmMsg.errorSearchNotExpanded);
+				d.popup();
+			}
 		}
 
 		this._setTabGroup(this._tabGroups[view]);
@@ -237,6 +240,11 @@ function(actionCode) {
 			return ZmListController.prototype.handleKeyAction.call(this, actionCode);
 	}
 	return true;
+};
+
+ZmContactListController.prototype.mapSupported =
+function(map) {
+	return (map == "list");
 };
 
 
@@ -482,8 +490,22 @@ ZmContactListController.prototype._resetNavToolBarButtons =
 function(view) {
 	ZmListController.prototype._resetNavToolBarButtons.call(this, view);
 
-	if (this._list.isCanonical) {
-		this._navToolBar[view].enable(ZmOperation.PAGE_FORWARD, this._list.hasMore());
+	if (this._list.isGal && !this._list.isGalPagingSupported) {
+		this._navToolBar[view].enable([ZmOperation.PAGE_BACK, ZmOperation.PAGE_FORWARD], false);
+	} else {
+		var lv = this._listView[view];
+
+		// determine if we have more cached items to show (in case hasMore is wrong)
+		var hasMore = false;
+		if (this._list) {
+			hasMore = this._list.hasMore();
+			if (!hasMore && ((lv.offset + lv.getLimit()) < this._list.size())) {
+				hasMore = true;
+			}
+		}
+
+		this._navToolBar[view].enable(ZmOperation.PAGE_BACK, lv.offset > 0);
+		this._navToolBar[view].enable(ZmOperation.PAGE_FORWARD, hasMore);
 	}
 
 	this._navToolBar[view].setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previousPage);
@@ -596,40 +618,36 @@ function(ev) {
 
 ZmContactListController.prototype._printContactListener =
 function(ev) {
-	var printView = appCtxt.getPrintView();
 	var contacts = this._listView[this._currentView].getSelection();
-	if (contacts.length == 1) {
-		var contact = contacts[0];
-		if (contact) {
-			if (contact.isLoaded) {
-				printView.render(contact);
-			} else {
-				var callback = new AjxCallback(this, this._handleResponsePrintLoad);
-				contact.load(callback);
-			}
-		}
-	} else {
-		var html = ZmContactCardsView.getPrintHtml(AjxVector.fromArray(contacts));
-		printView.renderHtml(html);
+	var ids = [];
+	for (var i = 0; i < contacts.length; i++) {
+		ids.push(contacts[i].id);
 	}
+	var url = "/h/printcontacts?id=" + ids.join(",");
+	window.open(appContextPath+url, "_blank");
 };
 
 ZmContactListController.prototype._printAddrBookListener =
 function(ev) {
-	var printView = appCtxt.getPrintView();
-	if (this._folderId && !this._list._isShared) {
-		var subList = this._list.getSubList(0, this._list.size(), this._folderId);
-		printView.renderHtml(ZmContactCardsView.getPrintHtml(subList));
-	} else if ((this._searchType & ZmContactListController.SEARCH_TYPE_ANYWHERE) != 0) {
-		printView.render(AjxDispatcher.run("GetContacts"));
-	} else {
-		printView.render(this._list);
-	}
-};
+	var url;
 
-ZmContactListController.prototype._handleResponsePrintLoad =
-function(result, contact) {
-	appCtxt.getPrintView().render(contact);
+	if (this._folderId && !this._list._isShared) {
+		url = "/h/printcontacts?folderid=" + this._folderId;
+	} else {
+		var contacts = ((this._searchType & ZmContactListController.SEARCH_TYPE_ANYWHERE) != 0)
+			? AjxDispatcher.run("GetContacts")
+			: this._list;
+
+		var ids = [];
+		var list = contacts.getArray();
+		for (var i = 0; i < list.length; i++) {
+			ids.push(list[i].id);
+		}
+		// XXX: won't this run into GET limits for large addrbooks? would be better to have
+		// URL that prints all contacts (maybe "id=all")
+		url = "/h/printcontacts?id=" + ids.join(",");
+	}
+	window.open(appContextPath+url, "_blank");
 };
 
 // Returns the type of item in the underlying list
@@ -718,7 +736,7 @@ ZmContactListController.prototype._doDelete =
 function(items, hardDelete, attrs) {
 	// Disallow my card delete.
 	for (var i = 0, count = items.length; i < count; i++) {
-		if (items[i].isMyCard()) {
+		if (items[i].isMyCard) {
 			appCtxt.setStatusMsg(ZmMsg.errorMyCardDelete, ZmStatusView.LEVEL_WARNING);
 			return;
 		}
@@ -742,7 +760,7 @@ function(ev) {
 	// Disallow my card move.
 	var items = this._listView[this._currentView].getSelection();
 	for (var i = 0, count = items.length; i < count; i++) {
-		if (items[i].isMyCard()) {
+		if (items[i].isMyCard) {
 			appCtxt.setStatusMsg(ZmMsg.errorMyCardMove, ZmStatusView.LEVEL_WARNING);
 			return;
 		}

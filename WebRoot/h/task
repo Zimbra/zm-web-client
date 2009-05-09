@@ -293,7 +293,7 @@
                         </c:if>
                         <tr>
                             <td colspan="3" style='padding:10px;' width="100%" >
-		                            <div class='MsgCompose'  style='width:100%;border:1px solid #ccc;padding:7px;'>${fn:escapeXml(compose.content)}</div>
+		                            <div class='MsgCompose'  style='width:100%;border:1px solid #ccc;padding:7px;'>${fn:escapeXml(empty compose.content ? compose.description : compose.content)}</div>
                             </td>
                         </tr>
                     </table>

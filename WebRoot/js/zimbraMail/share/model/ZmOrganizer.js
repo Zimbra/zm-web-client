@@ -1,8 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -11,7 +10,6 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -41,6 +39,7 @@
 * @param zid		[string]*		Zimbra ID of owner, if remote folder
 * @param rid		[string]*		Remote ID of organizer, if remote folder
 * @param restUrl	[string]*		REST URL of this organizer.
+* @param newOp		[string]*		Name of operation run by button in overview header
 */
 ZmOrganizer = function(params) {
 
@@ -59,6 +58,7 @@ ZmOrganizer = function(params) {
 	this.url = params.url;
 	this.owner = params.owner;
 	this.link = params.link || (Boolean(params.zid)) || (this.parent && this.parent.link);
+	this.isMountpoint = params.link;
 	this.zid = params.zid;
 	this.rid = params.rid;
 	this.restUrl = params.restUrl;
@@ -86,6 +86,7 @@ ZmOrganizer = function(params) {
 ZmOrganizer.TAG					= ZmEvent.S_TAG;
 ZmOrganizer.SEARCH				= ZmEvent.S_SEARCH;
 ZmOrganizer.MOUNTPOINT			= ZmEvent.S_MOUNTPOINT;
+ZmOrganizer.ZIMLET				= ZmEvent.S_ZIMLET;
 
 // folder IDs defined in com.zimbra.cs.mailbox.Mailbox
 ZmOrganizer.ID_ROOT				= 1;
@@ -106,6 +107,7 @@ ZmOrganizer.ID_ZIMLET			= -1000;	// zimlets need a range.  start from -1000 incr
 ZmOrganizer.ID_ROSTER_LIST		= -11;
 ZmOrganizer.ID_ROSTER_TREE_ITEM	= -13;
 ZmOrganizer.ID_MY_CARD			= -15;
+ZmOrganizer.ID_ATTACHMENTS      = -17;      // Attachments View
 
 // fields that can be part of a displayed organizer
 ZmOrganizer.F_NAME				= "name";
@@ -117,6 +119,8 @@ ZmOrganizer.F_QUERY				= "query";
 ZmOrganizer.F_SHARES			= "shares";
 ZmOrganizer.F_FLAGS				= "flags";
 ZmOrganizer.F_REST_URL			= "rest";
+ZmOrganizer.F_PERMS				= "perms";
+ZmOrganizer.F_RNAME				= "rname";	// remote name
 
 // server representation of org flags
 ZmOrganizer.FLAG_CHECKED			= "#";
@@ -210,13 +214,17 @@ ZmOrganizer.CREATE_FUNC 	= {};		// function that creates this organizer
 ZmOrganizer.LABEL 			= {};		// msg key for text for tree view header item
 ZmOrganizer.ITEMS_KEY 		= {};		// msg key for text describing contents
 ZmOrganizer.TREE_TYPE 		= {};		// type of server data tree that contains this type of organizer
-ZmOrganizer.VIEWS 			= {};		// views by type
+ZmOrganizer.VIEWS 			= {};		// views by org type
+ZmOrganizer.VIEW_HASH		= {};		// view hash by org type
 ZmOrganizer.TYPE 			= {};		// types by view (reverse map of above)
 ZmOrganizer.FOLDER_KEY 		= {};		// keys for label "[org] folder"
 ZmOrganizer.MOUNT_KEY 		= {};		// keys for label "mount [org]"
 ZmOrganizer.DEFERRABLE 		= {};		// creation can be deferred to app launch
 ZmOrganizer.PATH_IN_NAME	= {};		// if true, provide full path when asked for name
 ZmOrganizer.OPEN_SETTING	= {};		// setting that controls whether the tree view is open
+ZmOrganizer.NEW_OP			= {};		// name of operation for new button in tree header (optional)
+ZmOrganizer.DISPLAY_ORDER	= {};		// sort number to determine order of tree view (optional)
+ZmOrganizer.HIDE_EMPTY		= {};		// if true, hide tree header if tree is empty
 
 ZmOrganizer.APP2ORGANIZER	= {};		// organizer types, keyed by app name
 
@@ -251,6 +259,8 @@ ZmOrganizer.APP2ORGANIZER	= {};		// organizer types, keyed by app name
  *        shortcutKey		[string]	letter encoding of this org type for custom shortcuts
  *        pathInName		[boolean]	if true, provide full path when asked for name
  *        openSetting		[const]		setting that controls whether the tree view is open
+ *        displayOrder		[int]		A number that is used when sorting the display of trees. (Lower number means higher display.)
+ *        hideEmpty			[boolean]	if true, hide tree header if tree is empty
  */
 ZmOrganizer.registerOrg =
 function(org, params) {
@@ -277,8 +287,11 @@ function(org, params) {
 	if (params.deferrable)		{ ZmOrganizer.DEFERRABLE[org]			= params.deferrable; }
 	if (params.pathInName)		{ ZmOrganizer.PATH_IN_NAME[org]			= params.pathInName; }
 	if (params.openSetting)		{ ZmOrganizer.OPEN_SETTING[org]			= params.openSetting; }
+	if (params.newOp)			{ ZmOrganizer.NEW_OP[org]				= params.newOp; }
+	if (params.displayOrder)	{ ZmOrganizer.DISPLAY_ORDER[org]		= params.displayOrder; }
+	if (params.hideEmpty)		{ ZmOrganizer.HIDE_EMPTY[org]			= params.hideEmpty; }
 
-	if (!appCtxt.isChildWindow) {
+	if (!appCtxt.isChildWindow || params.childWindow ) {
 		if (params.compareFunc)		{ ZmTreeView.COMPARE_FUNC[org]			= params.compareFunc; }
 		if (params.treeController)	{ ZmOverviewController.CONTROLLER[org]	= params.treeController; }
 	}
@@ -286,6 +299,8 @@ function(org, params) {
 	ZmOrganizer.TREE_TYPE[org] = params.treeType || org;	// default to own type
 
 	ZmOrganizer.CREATE_FUNC[org]	= params.createFunc || "ZmOrganizer.create";
+
+	ZmOrganizer.VIEW_HASH[org] = {};
 
 	if (params.hasColor) {
 		ZmOrganizer.DEFAULT_COLOR[org]	= (params.defaultColor != null) ? params.defaultColor :
@@ -538,6 +553,7 @@ function(id, type) {
 ZmOrganizer.parseId =
 function(id, result) {
 	result = result || {};
+	if (!id) { return result; }
 	var idx = id.indexOf(":");
 	if (idx == -1) {
 		result.account = appCtxt.getMainAccount();
@@ -607,12 +623,8 @@ ZmOrganizer.prototype.getToolTip =
 function(force) {
 	if (!this._tooltip || force) {
 		var itemText = this._getItemsText();
-		if (this.numTotal) {
-			var subs = {itemText:itemText, numTotal:this.numTotal, sizeTotal:this.sizeTotal};
-			this._tooltip = AjxTemplate.expand("share.App#FolderTooltip", subs);
-		} else {
-			this._tooltip = AjxMessageFormat.format(ZmMsg.noItems, itemText);
-		}
+		var subs = {itemText:itemText, numTotal:this.numTotal, sizeTotal:this.sizeTotal};
+		this._tooltip = AjxTemplate.expand("share.App#FolderTooltip", subs);
 	}
 	return this._tooltip;
 };
@@ -741,8 +753,7 @@ function(permission) {
 		AjxDispatcher.require("Share");
 		this.addShare(new ZmShare({parent:this, perm:permission}));
 	} else {
-		var share = this.getMainShare();
-		share.perm = permission;
+		this.getMainShare().setPermissions(permission);
 	}
 };
 
@@ -825,17 +836,20 @@ function() {
 };
 
 ZmOrganizer.prototype._empty = 
-function() {
-	DBG.println(AjxDebug.DBG1, "emptying: " + this.name + ", ID: " + this.id);
+function(doRecursive) {
+    doRecursive = doRecursive || false;
+    DBG.println(AjxDebug.DBG1, "emptying: " + this.name + ", ID: " + this.id);
 	var isEmptyOp = ((this.type == ZmOrganizer.FOLDER || this.type == ZmOrganizer.ADDRBOOK) &&
-					 (this.nId == ZmFolder.ID_SPAM || this.nId == ZmFolder.ID_TRASH || this.nId == ZmOrganizer.ID_SYNC_FAILURES));
+					 (this.nId == ZmFolder.ID_SPAM || this.nId == ZmFolder.ID_TRASH || this.nId == ZmFolder.ID_CHATS || this.nId == ZmOrganizer.ID_SYNC_FAILURES));
 	// make sure we're not emptying a system object (unless it's SPAM/TRASH/SYNCFAILURES)
 	if (this.isSystem() && !isEmptyOp) return;
 
 	var params = {action:"empty"};
 	if (this.id == ZmFolder.ID_TRASH) {
 		params.attrs = {recursive:"true"};
-	}
+	}else{
+        params.attrs = {recursive:doRecursive};
+    }
 	if (this.isRemote()) {
 		params.id = this.getRemoteId();
 	}
@@ -864,15 +878,22 @@ function() {
 	var treeController = overviewController.getTreeController(this.type);
 	var overviewId = appCtxt.getCurrentApp().getOverviewId();
 	var treeView = treeController.getTreeView(overviewId);
-	var organizer = treeView && treeView.getSelected();
-	if (organizer && (organizer == this || organizer.isChildOf(this))) {
-		var folderId = this.parent.id;
-		if (this.parent.nId == ZmOrganizer.ID_ROOT) {
-			folderId = ZmOrganizer.getSystemId(ZmOrganizer.DEFAULT_FOLDER[this.type]);
-		}
-		var skipNotify = false;
-		treeView.setSelected(folderId, skipNotify);
-	}
+    //treeview returns array of organizers for checkbox style trees
+	var organizers = treeView && treeView.getSelected();
+    if (organizers) {
+        if(!(organizers instanceof Array)) organizers = [organizers];
+        for(var i in organizers){
+            var organizer = organizers[i];
+            if(organizer && (organizer == this || organizer.isChildOf(this))){
+                var folderId = this.parent.id;
+                if (this.parent.nId == ZmOrganizer.ID_ROOT) {
+                    folderId = ZmOrganizer.getSystemId(ZmOrganizer.DEFAULT_FOLDER[this.type]);
+                }
+                var skipNotify = false;
+                treeView.setSelected(folderId, skipNotify);
+            }
+        }
+    }
 
 	// perform actual delete
 	this.deleteLocal();
@@ -893,11 +914,17 @@ function(obj, details) {
 	var doNotify = false;
 	var details = details || {};
 	var fields = {};
-	if (obj.name != null && this.name != obj.name && !obj._isRemote) {
-		details.oldName = this.name;
-		this.name = obj.name;
-		fields[ZmOrganizer.F_NAME] = true;
-		this.parent.children.sort(eval(ZmTreeView.COMPARE_FUNC[this.type]));
+	if (obj.name != null && (this.name != obj.name || this.id != obj.id)) {
+		if (obj.id == this.id) {
+			details.oldName = this.name;
+			this.name = obj.name;
+			fields[ZmOrganizer.F_NAME] = true;
+			this.parent.children.sort(eval(ZmTreeView.COMPARE_FUNC[this.type]));
+		} else {
+			// rename of a remote folder
+			details.newName = obj.name;
+			fields[ZmOrganizer.F_RNAME] = true;
+		}
 		doNotify = true;
 	}
 	if (obj.u != null && this.numUnread != obj.u) {
@@ -950,6 +977,11 @@ function(obj, details) {
 		fields[ZmOrganizer.F_SHARES] = true;
 		doNotify = true;
 	}
+	if (obj.perm && obj._isRemote) {
+		this.setPermissions(obj.perm);
+		fields[ZmOrganizer.F_PERMS] = true;
+		doNotify = true;
+	}
 
 	// Send out composite MODIFY change event
 	if (doNotify) {
@@ -957,13 +989,15 @@ function(obj, details) {
 		this._notify(ZmEvent.E_MODIFY, details);
 	}
 
-	if (this.parent && obj.l != null && obj.l != this.parent.id && !obj._isRemote) {
+	if (this.parent && obj.l != null && obj.l != this.parent.id) {
 		var newParent = this._getNewParent(obj.l);
-		this.reparent(newParent);
-		this._notify(ZmEvent.E_MOVE);
-		// could be moving search between Folders and Searches - make sure
-		// it has the correct tree
-		this.tree = newParent.tree;
+		if (newParent) {
+			this.reparent(newParent);
+			this._notify(ZmEvent.E_MOVE);
+			// could be moving search between Folders and Searches - make sure
+			// it has the correct tree
+			this.tree = newParent.tree;
+		}
 	}
 };
 
@@ -1197,7 +1231,7 @@ function(parentId) {
 
 ZmOrganizer.prototype.isUnder =
 function(id) {
-	if (this.nId == id) { return true; }
+	if (this.nId == id || (this.isRemote() && this.rid == id)) { return true; }
 
 	var parent = this.parent;
 	while (parent && parent.nId != ZmOrganizer.ID_ROOT) {
@@ -1241,6 +1275,10 @@ function() {
 	return this._hasPrivateAccess;
 };
 
+/**
+ * Returns true if this organizer is "remote". That applies to mountpoints (links),
+ * the folders they represent, and any subfolders we know about.
+ */
 ZmOrganizer.prototype.isRemote =
 function() {
 	if (this._isRemote == null) {

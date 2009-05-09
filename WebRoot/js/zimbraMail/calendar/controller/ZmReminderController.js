@@ -1,8 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007 Zimbra, Inc.
+ * Copyright (C) 2006, 2007, 2008 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -11,7 +10,6 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -139,35 +137,33 @@ function() {
 */
 ZmReminderController.prototype._refreshCallback =
 function(list) {
-    if (this._refreshDelay > 0) {
-        AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._refreshCallback, [list]), this._refreshDelay);
-        this._refreshDelay = 0;
-        return;
-    }
+	if (this._refreshDelay > 0) {
+		AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._refreshCallback, [list]), this._refreshDelay);
+		this._refreshDelay = 0;
+		return;
+	}
 
-    if (list instanceof ZmCsfeException) {
-        this._calController._handleError(list, new AjxCallback(this, this._maintErrorHandler));
-        return;
-    }
+	if (list instanceof ZmCsfeException) {
+		this._calController._handleError(list, new AjxCallback(this, this._maintErrorHandler));
+		return;
+	}
 
-    var newList = new AjxVector();
-    var alarmMap = {};
+	var newList = new AjxVector();
+	var alarmMap = {};
 
-    //filter recurring appt instances, the alarmData is common for all the instances
-    var size = list.size();
-    for(var i=0;i<size;i++) {
-        var appt = list.get(i);
-        var id = appt.id;
+	// filter recurring appt instances, the alarmData is common for all the instances
+	var size = list.size();
+	for (var i = 0; i < size; i++) {
+		var appt = list.get(i);
+		var id = appt.id;
 
-        if(appt.hasAlarmData()) {
-                if(!alarmMap[id]) {
-                    alarmMap[id] = appt;
-                    newList.add(appt);
-                }
-
-        }
-
-    }
+		if (appt.hasAlarmData()) {
+			if (!alarmMap[id]) {
+				alarmMap[id] = appt;
+				newList.add(appt);
+			}
+		}
+	}
 
     this._cachedAppts = newList.clone();
     this._cachedAppts.sort(ZmCalBaseItem.compareByTimeAndDuration);

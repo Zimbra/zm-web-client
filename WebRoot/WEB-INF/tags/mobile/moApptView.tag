@@ -1,4 +1,23 @@
+<%--
+ * ***** BEGIN LICENSE BLOCK *****
+ * 
+ * Zimbra Collaboration Suite Web Client
+ * Copyright (C) 2007, 2008, 2009 Zimbra, Inc.
+ * 
+ * The contents of this file are subject to the Yahoo! Public License
+ * Version 1.0 ("License"); you may not use this file except in
+ * compliance with the License.  You may obtain a copy of the License at
+ * http://www.zimbra.com/license.
+ * 
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
+ * ***** END LICENSE BLOCK *****
+--%>
 <%@ tag body-content="empty" %>
+<%@ attribute name="date" rtexprvalue="true" required="true" type="java.util.Calendar" %>
+<%@ attribute name="timezone" rtexprvalue="true" required="true" type="java.util.TimeZone" %>
+<%@ attribute name="urlTarget" rtexprvalue="true" required="true" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
@@ -24,41 +43,32 @@
     <c:set var="readOnly" value="${apptFolder.isMountPoint or apptFolder.isFeed}"/>
 
 </mo:handleError>
-
-<mo:view mailbox="${mailbox}" title="${msg.subject}" context="${null}" clazz="zo_obj_body" scale="true">
-
-
-
-                <table width=100% cellspacing="0" cellpadding="2" border=0 class="ToolbarBg">
-                    <tr>
-                        <td>
-                                    <mo:calendarUrl var="backurl" action="${null}"/>
-                                    <a href="${backurl}">
-                                        <fmt:message key="close"/>
-                                    </a>
-								</td>
-                                </tr>
-                            </table>
-    <table width=100% height=100% class="Stripes" border="0">
-        <tr>
-            <td>
+    <c:set var="title" scope="request" value="${requestScope.title} : ${zm:truncate(msg.subject,10,true)}"/>
+    <mo:calendarViewToolbar invId="${invite.component.isOrganizer ? id : ''}"  urlTarget="${urlTarget}" date="${date}" timezone="${timezone}" view="appt" isTop="${true}"/>
+    <div class="Stripes">
                 <c:set var="extImageUrl" value=""/>
                 <c:if test="${empty param.xim}">
                     <zm:currentResultUrl var="extImageUrl" value="search" action="view" context="${context}" xim="1"/>
                 </c:if>
-                    <%--
-       <zm:currentResultUrl var="composeUrl" value="search" context="${context}"
-                    action="compose" paction="view" id="${msg.id}"/>
-                    --%>
                 <mo:calendarUrl var="composeUrl" id="${id}" action="compose" paction="view" apptFromParam="${true}"
                                 inviteReplyInst="${isInstance ? param.instStartTime : ''}"
                                 inviteReplyAllDay="${isInstance and invite.component.allDay ? '1' : ''}"/>
                     <%-- <zm:currentResultUrl var="newWindowUrl" value="message" context="${context}" id="${msg.id}"/> --%>
+                <c:if test="${empty sessionScope.calendar}">
+                <div class="View">
+                <span class="label"><fmt:message
+                        key="calendarLabel"/></span> ${fn:escapeXml(zm:getFolderName(pageContext,apptFolder.id))}
+                </div>
+                </c:if>    
                 <mo:displayAppointment mailbox="${mailbox}" message="${msg}" invite="${invite}"
                                        showInviteReply="${not readOnly}" externalImageUrl="${extImageUrl}"
                                        composeUrl="${composeUrl}" newWindowUrl=""/>
-            </td>
-        </tr>
-    </table>
-
-</mo:view>
+                <c:set var="repeat" value="${invite.component.simpleRecurrence}"/>
+                <c:if test="${repeat != null && repeat.type != null && !repeat.type.none}">
+                    <div class="View">
+                    <span class="label"><fmt:message
+                            key="repeatsLabel"/></span> ${fn:escapeXml(zm:getRepeatBlurb(repeat,pageContext,mailbox.prefs.timeZone, invite.component.start.date))}
+                    </div>
+                </c:if>
+    </div>
+<mo:calendarViewToolbar invId="${invite.component.isOrganizer ? id : ''}" urlTarget="${urlTarget}" date="${date}" timezone="${timezone}" view="appt" isTop="${false}"/>

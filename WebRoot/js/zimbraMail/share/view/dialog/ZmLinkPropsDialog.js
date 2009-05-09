@@ -1,8 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007 Zimbra, Inc.
+ * Copyright (C) 2006, 2007, 2008 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -11,7 +10,6 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -111,15 +109,6 @@ function(s) {
 	return false;
 };
 
-ZmLinkPropsDialog.prototype._getAcPageLoc =
-function() {
-	var element = this._pageInput.getHtmlElement();
-	var viewEl = this.getHtmlElement();
-	var location = Dwt.toWindow(element, 0, 0, viewEl);
-	var size = Dwt.getSize(element);
-	return new DwtPoint((location.x), (location.y + size.y));
-};
-
 ZmLinkPropsDialog.prototype._setAcPageCompletion =
 function(text, element, matchObj) {
 	// NOTE: nothing special to be done
@@ -166,6 +155,7 @@ ZmLinkPropsDialog._handleUrlTest = function(event) {
 	var dialog = Dwt.getObjectFromElement(target);
 
 	var winurl = dialog._urlInput.getValue();
+	if (!winurl) { return; }
 	var winname = "_new";
 	var winfeatures = [
 		"width=",(window.outerWidth || 640),",",
@@ -363,18 +353,11 @@ function() {
 		}
 
 		// setup auto-completer
-		var dataClass = this;
-		var dataLoader = this.getPageDataLoader;
-		var locCallback = new AjxCallback(this, this._getNewAutocompleteLocation);
-		var compCallback = new AjxCallback(this, this._setAcPageCompletion);
-
 		var params = {
-			parent: this,
-			dataClass: dataClass,
-			dataLoader: dataLoader,
+			dataClass: this,
+			dataLoader: this.getPageDataLoader,
 			matchValue: "name",
 			separator: "",
-			locCallback: new AjxCallback(this, this._getAcPageLoc),
 			compCallback: new AjxCallback(this, this._setAcPageCompletion),
 			keyUpCallback: new AjxCallback(this, this._acKeyUpListener)
 		}

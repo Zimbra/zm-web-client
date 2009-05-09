@@ -1,8 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -11,7 +10,6 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -145,6 +143,7 @@ function(appt, mode, isDirty) {
 
 	// always switch to appointment tab
 	this.switchToTab(this._apptTabKey);
+    this.setTabVisibility([ZmApptComposeView.TAB_ATTENDEES], appt.isOrganizer());
 };
 
 ZmApptComposeView.prototype.cleanup = 
@@ -310,7 +309,7 @@ ZmApptComposeView.prototype.updateAttendees =
 function(attendees, type, mode, index) {
 	attendees = (attendees instanceof AjxVector) ? attendees.getArray() :
 				(attendees instanceof Array) ? attendees : [attendees];
-	mode = mode ? mode : ZmApptComposeView.MODE_REPLACE;
+	mode = mode || ZmApptComposeView.MODE_REPLACE;
 	if (mode == ZmApptComposeView.MODE_REPLACE) {
 		this._attendees[type] = new AjxVector();
 		this._attendeeKeys[type] = {};
@@ -429,6 +428,18 @@ function() {
 	
 	this._apptEditView.addRepeatChangeListener(new AjxListener(this, this._repeatChangeListener));
 	this.addControlListener(new AjxListener(this, this._controlListener));
+};
+
+ZmApptComposeView.prototype.setTabVisibility =
+function(ids, visible) {
+    for(var i in ids) {
+        var tabKey = this._tabKeys[ids[i]];
+        var tab = tabKey ? this._tabs[tabKey] : null;
+        var button = tab ? tab.button : null;
+        if(button) {
+            button.setVisible(visible);            
+        }
+    }
 };
 
 ZmApptComposeView.prototype._initializeAddTab =
