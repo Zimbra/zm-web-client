@@ -407,7 +407,7 @@ function(parentNode, organizer, index, noTooltips, omit) {
 	}
 
 	if (ds && ds.type == ZmAccount.IMAP) {
-		ti.setExpanded(true);
+		ti.setExpanded(!appCtxt.get(ZmSetting.COLLAPSE_IMAP_TREES));
 	}
 
 	return ti;

@@ -464,6 +464,8 @@ function(params, result) {
 
 	ZmApp.initialize();
 
+	this._evtMgr.notifyListeners(ZmAppEvent.PRE_STARTUP, this._evt);
+
 	params.result = result;
 	var respCallback = new AjxCallback(this, this._handleResponseStartup1, params);
 

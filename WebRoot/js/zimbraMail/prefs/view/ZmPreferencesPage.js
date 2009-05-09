@@ -672,13 +672,14 @@ function(id, setup, value) {
 
 	var radioIds = {};
 	var selectedId;
+	var name = Dwt.getNextId();
 	for (var i = 0; i < options.length; i++) {
 		var optValue = isChoices ? options[i].value : options[i];
 		var optLabel = isChoices ? options[i].label : (isDisplayString ? setup.displayOptions : setup.displayOptions[i]);
 		optLabel = ZmPreferencesPage.__formatLabel(optLabel, optValue);
 		var isSelected = value == optValue; 
 
-		var radioBtn = new DwtRadioButton({parent:container, name:id, checked:isSelected});
+		var radioBtn = new DwtRadioButton({parent:container, name:name, checked:isSelected});
 		radioBtn.setText(optLabel);
 		radioBtn.setValue(optValue);
 

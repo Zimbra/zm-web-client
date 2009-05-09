@@ -27,10 +27,21 @@
  */
 ZmAppEvent = function(app) {
 	ZmEvent.call(this);
-}
+};
 
 ZmAppEvent.prototype = new ZmEvent;
 ZmAppEvent.prototype.constructor = ZmAppEvent;
+
+/**
+ * Event used to notify listeners before startup (i.e. before the first
+ * app is activated). This is a bit of a misnomer because this event occurs
+ * after the apps are initialized but before the first app is shown. This
+ * allows code to be executed after the apps have registered settings
+ * but before the app actually acts on those settings.
+ *
+ * @see ZmAppEvent.POST_STARTUP
+ */
+ZmAppEvent.PRE_STARTUP	= "PRESTARTUP";
 
 ZmAppEvent.POST_STARTUP	= "POSTSTARTUP";
 ZmAppEvent.PRE_LAUNCH	= "PRELAUNCH";
