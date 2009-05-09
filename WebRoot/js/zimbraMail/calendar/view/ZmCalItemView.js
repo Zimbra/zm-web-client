@@ -276,7 +276,7 @@ function(ev) {
     var item = this._calItem
     var mode = ZmCalItem.MODE_EDIT;
     if (item.isRecurring()) {
-          mode = ZmCalItem.MODE_EDIT_SINGLE_INSTANCE;
+          mode = this._mode || ZmCalItem.MODE_EDIT_SINGLE_INSTANCE;
     }
     item.setViewMode(mode);
     this._controller._viewMgr.setView(this._prevView);
