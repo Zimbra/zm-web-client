@@ -141,16 +141,7 @@ function() {
 	}
 
 	var cbox = this.getFormObject(ZmSetting.VACATION_MSG_ENABLED);
-	if (cbox && cbox.isSelected()) {
-		if (this._startDateVal.value) {
-			this._startDateCheckbox.setSelected(true);
-			this._setEnabledStartDate(true);
-		}
-		if (this._endDateVal.value) {
-			this._endDateCheckbox.setSelected(true);
-			this._setEnabledEndDate(true);
-		}
-	}
+
 	if (cbox) {
 		this._handleEnableVacationMsg(cbox);
 	}
@@ -294,13 +285,27 @@ function(cbox, id, evt) {
 			this._setEnabledEndDate(cbox.isSelected());
 		} else {
 			textarea.setEnabled(cbox.isSelected());
-			this._startDateCheckbox.setEnabled(cbox.isSelected());
-			this._endDateCheckbox.setEnabled(cbox.isSelected());
 
-			this._setEnabledStartDate(cbox.isSelected());
-			this._setEnabledEndDate(cbox.isSelected());
+            this._startDateCheckbox.setEnabled(cbox.isSelected());
+            this._endDateCheckbox.setEnabled(cbox.isSelected());
+
+            if(!this._startDateVal.value){
+                this._startDateCheckbox.setSelected(false);
+            }else{
+                this._startDateCheckbox.setSelected(true);
+            }
+
+            if(!this._endDateVal.value){
+                this._endDateCheckbox.setSelected(false);
+            }else{
+                this._endDateCheckbox.setSelected(true);
+            }
+            this._setEnabledStartDate(this._startDateCheckbox.isSelected());
+            this._setEnabledEndDate(this._endDateCheckbox.isSelected());
+
 		}
 	}
+    
 };
 
 ZmMailPrefsPage.prototype._setEnabledStartDate =
