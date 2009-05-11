@@ -1044,6 +1044,48 @@ function(draftType, msg, resp) {
 			var origMsg = msg._origMsg;
 			if (origMsg && origMsg.isDraft)
 				this._deleteDraft(origMsg);
+
+			// bug 36341
+			if (!appCtxt.isOffline && resp && appCtxt.get(ZmSetting.SAVE_TO_IMAP_SENT) && msg.identity) {
+				var datasources = appCtxt.getDataSourceCollection();
+				var datasource = datasources && datasources.getById(msg.identity.id);
+				if (datasource && datasource.type == ZmAccount.IMAP) {
+					var parent = appCtxt.getById(datasource.folderId);
+					var folder;
+					if (parent) {
+						// try to find the sent folder from list of possible choices
+						var prefix = parent.getName(false, null, true, true) + "/";
+						var folderNames = [
+							appCtxt.get(ZmSetting.SENT_FOLDER_NAME) || "Sent",
+							ZmMsg.sent, "Sent Messages", "[Gmail]/Sent Mail"
+						];
+						for (var i = 0; i < folderNames.length; i++) {
+							folder = parent.getByPath(prefix+folderNames[i]);
+							if (folder) break;
+						}
+					}
+					if (folder) {
+						var jsonObj = {
+							ItemActionRequest: {
+								_jsns:  "urn:zimbraMail",
+								action: {
+									id:     resp.m[0].id,
+									op:     "move",
+									l:      folder.id
+								}
+							}
+						};
+						var params = {
+							jsonObj: jsonObj,
+							asyncMode: true,
+							noBusyOverlay: true
+						};
+						appCtxt.getAppController().sendRequest(params);
+					}
+				}
+			}
+
+			this._app.popView(true);
 		}
 	} else {
 		// TODO - disable save draft button indicating a draft was saved
