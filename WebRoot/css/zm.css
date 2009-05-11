@@ -1925,6 +1925,13 @@ HTML>BODY .appt-selected .appt_allday_body
 	max-width:200px;
 }
 
+#IFDEF MSIE
+.ZmTaskbarContentParent .ZmImOverview {
+	width:200px;
+}
+#ENDIF
+
+
 .ZmTaskbarContentParent .overviewHeader {
 	background-color:@TaskbarItem-selected@;
 }
