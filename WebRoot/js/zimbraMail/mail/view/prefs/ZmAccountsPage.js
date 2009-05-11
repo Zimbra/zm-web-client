@@ -1515,7 +1515,7 @@ function(email) {
 
 ZmAccountsPage.prototype._handleTypeChange =
 function(evt) {
-	var type = ZmAccountsListView.TYPES[this._getControlValue("ACCOUNT_TYPE")] || "???";
+	var type = ZmAccountsListView.TYPES[this._getControlValue("ACCOUNT_TYPE", this._currentSection)] || "???";
 	this._accountListView.setCellContents(this._currentAccount, ZmItem.F_TYPE, type);
 	this._handleTypeOrSslChange(evt);
 };
