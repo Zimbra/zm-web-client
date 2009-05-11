@@ -223,10 +223,13 @@ function(enable){
 
 ZmLiteHtmlEditor.prototype.insertText =
 function(text) {
-	if (this._textArea.createTextRange && this._textArea.selection) {
+	if (AjxEnv.isIE) {
+		this._textArea.focus();
+		document.selection.createRange().text = text;
+	} else if (this._textArea.createTextRange && this._textArea.selection) { // I don't believe this block ever gets executed.
 		var textRange = this._textArea.selection;
 		textRange.text = (textRange.text.charAt(textRange.text.length-1) == '') ? smiley + ' ' : text;
-		textRange.selection = nulltext
+		textRange.selection = nulltext;
 	} else {
 		this._textArea.value += text;
 	}
