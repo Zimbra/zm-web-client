@@ -67,6 +67,9 @@
                             <c:when test="${param.st eq 'briefcases'}">
                                 <c:set var="what" value="BC"/>
                             </c:when>
+                            <c:when test="${param.st eq 'tasks'}">
+                                <c:set var="what" value="Task"/>
+                            </c:when>
                         </c:choose>
                     </c:otherwise>
                 </c:choose>

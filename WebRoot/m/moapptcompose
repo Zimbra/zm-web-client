@@ -23,6 +23,11 @@
            value="${fn:replace(fn:replace(fn:substringAfter(header['referer'],'?'),'appmsg=messageSent',''),'&','|')}"/>
 </c:when>
 </c:choose>
+<c:if test="${!fn:containsIgnoreCase(caction, '_back=1')}">
+<c:url value="${caction}" var="caction">
+    <c:param name="_back" value="1"/>
+</c:url>
+</c:if>
 <mo:handleError>
     <c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/>
     <zm:getMailbox var="mailbox"/>
@@ -64,8 +69,9 @@
 
     <c:choose>
         <c:when test="${empty compose}">
+            <fmt:parseDate pattern="yyyyMMdd" timeZone="${mailbox.prefs.timeZone}" var="parsedDate" value="${param.date}"/>
             <zm:messageCompose var="compose" message="${message}" action="${empty message ? 'apptnew' : 'apptedit'}"
-                               date="${requestScope.dateContext}"
+                               date="${zm:getCalendarMidnight(parsedDate.time, mailbox.prefs.timeZone)}"
                                inviteId="${empty param.invId? null : param.invId}"
                                exceptionInviteId="${empty param.exInvId? null : param.exInvId}"
                                useInstance="${param.useInstance eq '1'}"
@@ -101,8 +107,7 @@
 <fmt:message var="title" key="ALT_MSG_STATUS_APPT"/>
 <fmt:message var="addedit" key="${empty message ? 'add' : 'edit'}"/>
 <c:set var="title" value="${title} : ${addedit}" scope="request"/>
-<c:if test="${empty param.noframe}"><iframe src='about:blank' style='display:none' name='aniframe' id='aniframe'></iframe></c:if>
-<form action="?st=newappt&more=true&bt=${bt}" method="post" enctype="multipart/form-data" accept-charset="utf-8" onsubmit="return submitForm(this,'aniframe');">
+<form action="?st=newappt&more=true&bt=${bt}" method="post" enctype="multipart/form-data" accept-charset="utf-8" onsubmit="return submitForm(this,'aniframe1');">
 <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
 
 <div class="table Toolbar">

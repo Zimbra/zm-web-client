@@ -1,0 +1,12 @@
+<%@ page buffer="8kb" autoFlush="true" %>
+<%@ page pageEncoding="UTF-8" contentType="text/javascript; charset=UTF-8" %>
+<%@ taglib prefix="zm" uri="com.zimbra.zm" %>
+<%@ taglib prefix="mo" uri="com.zimbra.mobileclient" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
+<%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
+<c:if test="${empty mailbox}">
+    <zm:getMailbox var="mailbox"/>
+</c:if>
+<mo:js mailbox="${mailbox}" scriptTag="${false}"/>

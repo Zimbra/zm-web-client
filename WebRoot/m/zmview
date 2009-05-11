@@ -40,9 +40,9 @@
          <c:import url="/m/mofolders"/>
     </c:when>
 
-    <%--c:when test="${param.st eq 'tasks'}">
+    <c:when test="${param.st eq 'tasks'}">
          <c:import url="/m/motasks"/>
-    </c:when--%>
+    </c:when>
 
     <c:when test="${param.st eq 'briefcases' || param.st eq 'notebooks'}">
          <c:import url="/m/mobriefcases"/>

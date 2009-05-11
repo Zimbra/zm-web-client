@@ -39,7 +39,7 @@
         <div class="table-row">
             <div class="table-cell">
                         <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=tasks"><fmt:message
-                                key="tasks"/></a> &raquo;
+                                key="tasks"/></a> &laquo;
                         <c:if test="${top_fldr_select ne '1'}">
                                 ${fn:escapeXml(zm:truncateFixed(context.shortBackTo,12,true))}
                         </c:if>
@@ -57,7 +57,7 @@
                         </c:if>
 
                 <c:if test="${not empty param.sq && context.searchResult.size > 0}">
-                &raquo; <a href="?saveSearch=1&sq=${param.sq}&search=0"  onclick='toggleElem("searchbar",this); return toggleElem("savesearchbar",this);'><fmt:message key="saveSearch"/></a>
+                &laquo; <a href="?saveSearch=1&sq=${param.sq}&search=0"  onclick='toggleElem("searchbar",this); return toggleElem("savesearchbar",this);'><fmt:message key="saveSearch"/></a>
                 </c:if>    
             </div>
         </div>

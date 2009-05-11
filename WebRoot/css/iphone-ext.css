@@ -25,24 +25,8 @@ body *{
     font-family: Helvetica, Arial, Verdana, Sans-serif;
 }
 
-body[orient="portrait"] {
-    max-width: 320px;
-}
-body[orient="landscape"] {
-    max-width: 480px;
-}
-body[orient="portrait"] div.row span.m, div.row span.m {
-    max-width: 188px;
-    min-width: 188px;
-    width: 188px;
-}
-body[orient="landscape"] div.row span.m {
-    max-width: 347px;
-    min-width: 347px;
-    width: 347px;
-}
 a {
-    color: #4D8DC3;
+    color: #0066cc;
     text-decoration: none;
 }
 .container {
@@ -56,10 +40,10 @@ a {
     white-space: nowrap;
     min-width: 275px;
     color: white;
-    border-bottom:2px solid gray;    
+    border-bottom:0px solid gray;
 }
 .label {
-    color: #4d8dc3;
+    color: gray;
 }
 .list-row, .list-row-unread {
     border-bottom: 1px solid #DDDDDD;
@@ -85,11 +69,6 @@ a {
 .from-span a {
     color: black;
 }
-/*.frag-span{
-    overflow-y: hidden;
-    text-overflow: ellipsis;
-    height: 30px;
-}*/
 .ConvOpen{
     background-position: 0 -326px !important;
 }
@@ -137,7 +116,7 @@ a {
 }
 #appbar a span.aptoday div {
     margin:0px;
-    padding:2px;
+    padding:1px;
     text-align:center;
     overflow:hidden;
     white-space:nowrap;
@@ -146,7 +125,8 @@ a {
 #appbar a span.aptoday div._day {
     color: white;
     font-weight:normal;
-    padding-top:4px;
+    padding-top:10px;
+    font-size: 10px;
 }
 #appbar a span.aptoday div._date {
     font-size:medium;
@@ -167,6 +147,14 @@ a {
     width:55px;
     text-overflow: ellipsis;
     overflow: hidden;
+}
+#appbar a.appTab-active{
+    background-color:#eeeeee !important;
+    -webkit-border-top-left-radius:8px;
+    -webkit-border-top-right-radius:8px;
+    -moz-border-radius-topleft:8px;
+    -moz-border-radius-topright:8px;
+    border-bottom:1px solid #EEEEEE;
 }
 #appbar a.appTab,#appbar a.appTab-active{
     background: url( "/img/mobile/iphone-ext/AppsNav.png" ) top left no-repeat;
@@ -241,7 +229,7 @@ form {
     background: #efefef url( "/img/mobile/iphone/iPhoneToolbar1.png" ) bottom repeat-x;
 }
 .StatusInfo, .StatusWarning, .StatusCritical, .zo_noresults {
-    padding: 3px;
+    padding: 10px;
     margin: 0px;
     font-weight: bold;
     text-align: center;
@@ -265,7 +253,6 @@ form {
     margin:4px;
     vertical-align:middle;
     width:200px;
-    -webkit-appearance: searchfield;
     font-size:medium;
 }
 .cmp_container .table-cell, .cmp_appt_container .table-cell {
@@ -301,6 +288,38 @@ input[type="button"], input[type="reset"] {
      background: #2e69e0 url( "/img/mobile/iphone/iPhoneGoButton1.png" ) 50% 50% repeat-x;
     -webkit-border-radius: 5px;
     -webkit-appearance: button;
+}
+#msgbar{
+    opacity: 0.9;
+}
+#msgDiv,#msgbar {
+    -webkit-transition: all 500ms linear;
+    position: absolute;
+    left: 0;
+    top: 50;
+    width: 100%;
+    z-index:800 !important;
+
+}
+.hidden {
+    opacity: 0.0;
+    height: 0px;
+    visibility: hidden;
+}
+
+.shown {
+    opacity: 0.9;
+    height: 0px;
+    visibility:visible;
+}
+.loadingIcon{
+    padding:10px;
+    background:#ffffd0 url("/img/mobile/iphone/loading.gif") 50% 50% no-repeat !important;
+    -webkit-border-radius: 5px;
+}
+.LoadingDiv{
+    background-color:#ffffd0;
+    padding:10px !important;
 }
 .Reply {
     background-position: 0 -20px !important;
@@ -533,7 +552,11 @@ div.row span.f {
     padding-left: 10px;
     min-width:40px;
 }
+div.row span.m {
+    width:100%;
+}
 div.row span.l {
+    width: 60px;
     min-width: 60px;
     text-align: right;
 }

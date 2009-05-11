@@ -49,12 +49,17 @@
 </mo:handleError>
 <fmt:message var="addedit" key="${empty contact ? 'add' : 'edit'}"/>
 <c:set var="title" value="${title} : ${addedit}"  scope="request"/>
-<c:url var="caction" value="${closeUrl}">
+<c:url var="caction" value="${prevUrl}">
     <c:if test="${param.pid!=null}">
         <c:param name="action" value="view"/>
         <c:param name="id" value="${param.pid}"/>
     </c:if>
 </c:url>
+<c:if test="${!fn:containsIgnoreCase(caction, '_back=1')}">
+<c:url value="${caction}" var="caction">
+    <c:param name="_back" value="1"/>
+</c:url>
+</c:if>
 <%--<c:set var="factionurl" value="${context_url}?st=contact"/>
 <c:if test="${contact!=null}">
     <c:set var="factionurl" value="${caction}"/>

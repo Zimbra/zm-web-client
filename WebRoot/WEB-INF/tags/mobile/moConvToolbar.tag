@@ -47,18 +47,18 @@
                                      context="${context}"/>
 
 
-                <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=folders"><fmt:message key="folders"/></a> &raquo; <a
+                <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=folders"><fmt:message key="folders"/></a> &laquo; <a
                     href="${fn:escapeXml(closeurl)}${empty param.ajax ? '#conv' : '&conv'}#${cid}" class='zo_leftbutton'>
                     ${fn:escapeXml(zm:truncateFixed(context.shortBackTo,15,true))}
             </a>
                 <c:if test="${isConv!=null && isConv}">
-                    &raquo; <fmt:message key="backToConv"/>
+                    &laquo; <fmt:message key="backToConv"/>
                 </c:if>
                 <c:if test="${isConv==null || !isConv }">
                     <zm:currentResultUrl var="closeUrl" value="${urlTarget}" action='view' context="${context}"
                                          cso="${param.cso}" csi="${param.csi}" css="${param.css}"/>
-                    &raquo; <a href="${fn:escapeXml(closeUrl)}" class='zo_leftbutton'> <fmt:message
-                        key="backToConv"/> </a> &raquo; ${fn:escapeXml(zm:truncateFixed(message.subject,12,true))}
+                    &laquo; <a href="${fn:escapeXml(closeUrl)}" class='zo_leftbutton'> <fmt:message
+                        key="backToConv"/> </a> &laquo; ${fn:escapeXml(zm:truncateFixed(message.subject,12,true))}
                 </c:if>
 
             </div>

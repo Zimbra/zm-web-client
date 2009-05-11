@@ -24,10 +24,53 @@
     <c:set var="query" value="${param.sq}"/>
 </c:if>
 <c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/>
+<c:set var="currentUrl" value="?st=${param.st}"/>
 <c:set value="${title}" var="title" scope="request"/>
 
 <%--<c:import url="mobriefcases"/>--%>
+<div class="SubToolbar table">
+    <div class="table-row">
 
+            <span class="table-cell" >
+               &laquo;
+                <c:if test="${mailbox.features.tasks}">
+                    <c:if test="${param.st ne 'tasks'}">
+                        <a href='${context_url}?st=tasks'>
+                    </c:if>
+                        <fmt:message key="tasks"/>
+                    <c:if test="${param.st ne 'tasks'}">
+                        </a>
+                    </c:if>
+                <%--</span>--%> ::
+                </c:if>
+
+                <c:if test="${mailbox.features.notebook}">
+
+                    <c:if test="${param.st ne 'notebooks'}">
+                        <a href='${context_url}?st=notebooks'>
+                    </c:if>
+                        <fmt:message key="notebooks"/>
+                    <c:if test="${param.st ne 'notebooks'}">
+                        </a>
+                    </c:if>
+                <%--</span>--%> ::
+                </c:if>
+
+                <c:if test="${mailbox.features.briefcases}">
+            <%--<span class="table-cell" style="text-align:right;padding-right:5px;">--%>
+
+                                <c:if test="${param.st ne 'briefcases'}">
+                                    <a href='${context_url}?st=briefcases'>
+                                </c:if>
+                                    <fmt:message key="briefcases"/>
+                                <c:if test="${param.st ne 'briefcases'}">
+                                    </a>
+                                </c:if>
+
+                            </c:if>  &raquo; </span>
+
+    </div>
+</div>
 <div class="Toolbar table">
     <div class="table-row">
         <div class="table-cell">
@@ -35,7 +78,7 @@
                     <fmt:message key="tasks"/>
                 </span>
                  <span class="right">
-                    <a class="zo_button1" href="?st=tasks${empty param.showTaskCreate?'&showTaskCreate=1':''}#${empty param.ajax ? '#folders' : ''}"><fmt:message key="${empty param.showABCreate ? 'create' : 'close'}"/></a>
+                    <a class="zo_button1" href="?st=tasks${empty param.showTaskCreate?'&showTaskCreate=1':''}#${empty param.ajax ? '#folders' : ''}"><fmt:message key="${empty param.showTaskCreate ? 'create' : 'close'}"/></a>
                 </span>
         </div>
     </div>

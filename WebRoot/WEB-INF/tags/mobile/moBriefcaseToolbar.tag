@@ -39,7 +39,7 @@
         <div class="table-row">
             <div class="table-cell">
                         <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=${context.isWikiSearch || context.folder.isWikiView || context.folder.types eq 'wiki' ? 'notebooks':'briefcases'}"><fmt:message
-                                key="${context.isWikiSearch || context.folder.isWikiView || context.folder.types eq 'wiki' ? 'notebooks':'briefcases'}"/></a> &raquo;
+                                key="${context.isWikiSearch || context.folder.isWikiView || context.folder.types eq 'wiki' ? 'notebooks':'briefcases'}"/></a> &laquo;
                         <c:if test="${top_fldr_select eq '0'}">
                             ${fn:escapeXml(zm:truncateFixed(context.shortBackTo,12,true))}
                         </c:if>
@@ -56,7 +56,7 @@
                         </select>
                         </c:if>
                 <c:if test="${not empty param.sq && context.searchResult.size > 0}">
-                &raquo; <a href="?saveSearch=1&sq=${param.sq}&search=0"  onclick='toggleElem("searchbar",this); return toggleElem("savesearchbar",this);'><fmt:message key="saveSearch"/></a>
+                &laquo; <a href="?saveSearch=1&sq=${param.sq}&search=0"  onclick='toggleElem("searchbar",this); return toggleElem("savesearchbar",this);'><fmt:message key="saveSearch"/></a>
                 </c:if>    
             </div>
         </div>
@@ -164,7 +164,7 @@
         <div class="table-row">
             <div class="table-cell">
                         <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=${context.isWikiSearch || context.folder.isWikiView || context.folder.types eq 'wiki' ? 'notebooks':'briefcases'}"><fmt:message
-                                key="${context.isWikiSearch || context.folder.isWikiView || context.folder.types eq 'wiki' ? 'notebooks' : 'briefcases'}"/></a> &raquo;
+                                key="${context.isWikiSearch || context.folder.isWikiView || context.folder.types eq 'wiki' ? 'notebooks' : 'briefcases'}"/></a> &laquo;
                         <c:if test="${btm_fldr_select eq '0'}">
                             ${fn:escapeXml(zm:truncateFixed(context.shortBackTo,12,true))}
                         </c:if>

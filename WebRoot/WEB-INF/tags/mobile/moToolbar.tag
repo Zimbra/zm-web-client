@@ -17,7 +17,8 @@
 <%@ tag body-content="empty" dynamic-attributes="dynattrs" %>
 <%@ attribute name="mailbox" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZMailboxBean" %>
 <%@ attribute name="urlTarget" rtexprvalue="true" required="true" %>
-<%@ attribute name="context" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.tag.SearchContext" %><%@ attribute name="isTop" rtexprvalue="true" required="false" %>
+<%@ attribute name="context" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.tag.SearchContext" %>
+<%@ attribute name="isTop" rtexprvalue="true" required="false" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
@@ -78,7 +79,7 @@
                     </c:otherwise>
                 </c:choose>
                 <c:if test="${not empty param.sq && context.searchResult.size > 0}">
-                &raquo; <a href="?saveSearch=1&sq=${param.sq}&search=0"  onclick='toggleElem("searchbar",this); return toggleElem("savesearchbar",this);'><fmt:message key="saveSearch"/></a>
+                &laquo; <a href="?saveSearch=1&sq=${param.sq}&search=0"  onclick='toggleElem("searchbar",this); return toggleElem("savesearchbar",this);'><fmt:message key="saveSearch"/></a>
                 </c:if>    
             </div>
         </div>
@@ -149,7 +150,7 @@
                             <option value="actionMarkSpam"><fmt:message key="actionSpam"/></option>
                         </c:otherwise>
                     </c:choose>
-                </optgroup>    
+                </optgroup>
                 </c:when>
                  <c:when test="${context.isContactSearch}">
                 <optgroup label="<fmt:message key="compose"/>">

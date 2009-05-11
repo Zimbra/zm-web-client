@@ -31,7 +31,7 @@
 <c:when test="${empty param.bt && not empty header['referer']}">
     <c:set var="caction" value='${header["referer"]}'/>
     <c:set var="bt"
-           value="${fn:replace(fn:replace(fn:substringAfter(header['referer'],'?'),'appmsg=messageSent',''),'&','|')}"/>
+           value="${fn:replace(fn:replace(fn:substringAfter(header['referer'],'?'),'appmsg=actionApptSaved',''),'&','|')}"/>
 </c:when>
 </c:choose>
 <c:url var="caction" value="${caction}">

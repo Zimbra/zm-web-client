@@ -135,17 +135,9 @@
 
                                         </select>
                                     </c:when>
-                                    <%--<c:when test="${st eq 'task' || st eq 'tasks'}">
-                                                        <hr size="1"/>
-                                    <select name="parentid" style="width:100px;">
-                                        <option value="${mailbox.inbox.parentId}">--<fmt:message key="in"/>--</option>
-                                        <zm:forEachFolder parentid="${mailbox.inbox.parentId}" var="fldr" skiproot="false">
-                                            <c:if test="${fldr.isTaskMoveTarget}">
-                                                <option value="${fldr.id}">${zm:getFolderPath(pageContext, fldr.id)}</option>
-                                            </c:if>
-                                        </zm:forEachFolder>
-                                    </select>
-                                    </c:when>--%>
+                                    <c:when test="${st eq 'task' || st eq 'tasks'}">
+                                        <input type="hidden" name="parentid" value="${not empty efolder ? efolder.parentId : mailbox.tasks.parentId}">
+                                    </c:when>
                                 </c:choose>
 
                             </div>

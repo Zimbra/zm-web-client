@@ -31,24 +31,45 @@
 <c:set value="${title}" var="title" scope="request"/>
 <div class="SubToolbar table">
     <div class="table-row">
-        <div class="table-cell" align="center">
-            <span class="zo_button_group">
-                <%--c:if test="${mailbox.features.tasks}">
-                    <a href='${context_url}?st=tasks' class="zo_button${param.st eq 'tasks' ? '_disabled':''} prev_button"><fmt:message key="tasks"/></a>
-                </c:if--%>
+
+            <span class="table-cell" >
+               &laquo;
+                <%--<c:if test="${mailbox.features.tasks}">
+                    <c:if test="${param.st ne 'tasks'}">
+                        <a href='${context_url}?st=tasks'>
+                    </c:if>
+                        <fmt:message key="tasks"/>
+                    <c:if test="${param.st ne 'tasks'}">
+                        </a>
+                    </c:if>
+                ::
+                </c:if>--%>
+
                 <c:if test="${mailbox.features.notebook}">
-                    <a href='${context_url}?st=notebooks'
-                       class="zo_button${param.st eq 'notebooks' ? '_disabled':''} prev_button"><fmt:message
-                            key="notebooks"/></a>
+                  
+                    <c:if test="${param.st ne 'notebooks'}">
+                        <a href='${context_url}?st=notebooks'>
+                    </c:if>
+                        <fmt:message key="notebooks"/>
+                    <c:if test="${param.st ne 'notebooks'}">
+                        </a>    
+                    </c:if>
+                <%--</span>--%> ::
                 </c:if>
+
                 <c:if test="${mailbox.features.briefcases}">
-                    <a href='${context_url}?st=briefcases'
-                       class="zo_button${param.st eq 'briefcases' ? '_disabled':''} next_button"><fmt:message
-                            key="briefcases"/></a>
-                </c:if>
-                <%--a href='${context_url}?st=more' class="zo_button${param.st eq 'more' ? '_disabled':''} next_button">...</a--%>    
-            </span>
-        </div>
+            <%--<span class="table-cell" style="text-align:right;padding-right:5px;">--%>
+                               
+                                <c:if test="${param.st ne 'briefcases'}">
+                                    <a href='${context_url}?st=briefcases'>
+                                </c:if>
+                                    <fmt:message key="briefcases"/>
+                                <c:if test="${param.st ne 'briefcases'}">
+                                    </a>
+                                </c:if>
+                                            
+                            </c:if>  &raquo; </span>
+
     </div>
 </div>
 <div class="Toolbar table">

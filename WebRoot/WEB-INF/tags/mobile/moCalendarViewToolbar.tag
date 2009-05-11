@@ -28,9 +28,9 @@
 <%@ taglib prefix="mo" uri="com.zimbra.mobileclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <fmt:formatDate var="dateDf" value="${date.time}" pattern="yyyyMMdd" timeZone="${timezone}"/>
-<mo:calendarUrl var="dayViewUrl" view="day"/>
-<mo:calendarUrl var="listViewUrl" view="list"/>
-<mo:calendarUrl var="monthViewUrl" view="month"/>
+<mo:calendarUrl var="dayViewUrl" view="day" date="${dateDf}" _replaceDate="1"/>
+<mo:calendarUrl var="listViewUrl" view="list" date="${dateDf}" _replaceDate="1"/>
+<mo:calendarUrl var="monthViewUrl" view="month" date="${dateDf}" _replaceDate="1"/>
 <c:choose>
     <c:when test="${openurl}">
         <c:set var="list">onclick='openURL("${fn:escapeXml(zm:jsEncode(listViewUrl))}")'</c:set>
@@ -57,7 +57,7 @@
     <div class="SubToolbar table">
          <div class="table-row">
             <div class="table-cell">
-        <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=cals"><fmt:message key="calendars"/></a> &raquo;
+        <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=cals"><fmt:message key="calendars"/></a> &laquo;
         <c:if test="${top_fldr_select ne '1'}">
             ${not empty sessionScope.calendar ? zm:truncateFixed(sessionScope.calendar.name,12,true) : checkedInUI}
         </c:if>
@@ -79,6 +79,9 @@
     </div>
 </c:if>
 <c:url var='eaction' value="?st=newappt&date=${dateDf}">
+<c:if test="${empty invId}">
+    <c:param name="_replaceDate" value="1"/>    
+</c:if>
 <c:if test="${not empty invId}">
 	<c:param name="useInstance" value="0"/>
 	<c:param name="invId" value="${invId}"/>
