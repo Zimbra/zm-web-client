@@ -173,6 +173,7 @@ var setActiveTab = function(tabId){
 };
 var loadThisFrameResponse = function(response,frameId){
     getContainer().innerHTML = response;
+};
 
 var convertToHashUrl = function(url){
   if(url.match(/[\\?\\&]st=/g)){
