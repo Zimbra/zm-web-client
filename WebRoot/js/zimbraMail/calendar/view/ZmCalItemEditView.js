@@ -379,7 +379,7 @@ function(calItem) {
 	}
 
 	calItem.setFolderId(folderId);
-	calItem.setOrganizer(this._calendarOrgs[folderId]);
+	calItem.setOrganizer(this._calItem.organizer || this._calendarOrgs[folderId]);
 
 	// set the notes parts (always add text part)
 	var top = new ZmMimePart();
