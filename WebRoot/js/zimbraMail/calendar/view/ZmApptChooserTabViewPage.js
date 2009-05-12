@@ -44,7 +44,8 @@ ZmApptChooserTabViewPage = function(parent, attendees, controller, type) {
 	this._searchFields = {};
 	this._searchFieldIds = {};
 	this._keyPressCallback = new AjxCallback(this, this._searchButtonListener);
-	this._kbMgr = appCtxt.getKeyboardMgr();
+	this._kbMgr = appCtxt.getKeyboardMgr();    
+    this._list = new AjxVector();
 };
 
 ZmApptChooserTabViewPage.COL_LABEL = {};
@@ -193,6 +194,7 @@ ZmApptChooserTabViewPage.prototype.initialize =
 function(appt, mode, isDirty) {
 	this._appt = appt;
 	this._isDirty = isDirty;
+    this._list.removeAll();
 
 	if (this._rendered) {
 		this._chooser.reset();
@@ -489,6 +491,7 @@ function(tabGroup) {
 
 ZmApptChooserTabViewPage.prototype._searchButtonListener =
 function(ev) {
+    this._list.removeAll();
 	if (this.type == ZmCalBaseItem.PERSON) {
 		this._offset = 0;
 		this.searchContacts();
@@ -509,13 +512,42 @@ function(ev) {
 
 ZmApptChooserTabViewPage.prototype._pageListener =
 function(ev) {
-	if (ev.item == this._prevButton) {
-		this._offset -= ZmContactsApp.SEARCHFOR_MAX;
-	} else {
-		this._offset += ZmContactsApp.SEARCHFOR_MAX;
-	}
+    if (ev.item == this._prevButton) {
+        this._offset -= ZmContactsApp.SEARCHFOR_MAX;
+        this._showResults(true, true, this.getSubList()); // show cached results
+    }
+    else {
+        var lastId;
+        var lastSortVal;
+        this._offset += ZmContactsApp.SEARCHFOR_MAX;
+        var list = this.getSubList();
+        if (!list) {
+            list = this._chooser.sourceListView.getList();
+            var contact = (list.size() > 0) ? list.getLast() : null;
+            if (contact) {
+                lastId = contact.id;
+                lastSortVal = contact.sf;
+            }
+            this.searchContacts(null, lastId, lastSortVal);
+        } else {
+            var more = this._list.hasMore;
+            if (!more) {
+                more = (this._offset+ZmContactsApp.SEARCHFOR_MAX) < this._list.size();
+            }
+            this._showResults(true, more, list); // show cached results
+        }
+    }
+};
 
-	this.searchContacts();
+ZmApptChooserTabViewPage.prototype.getSubList =
+function() {
+	var size = this._list.size();
+
+	var end = (this._offset + ZmContactsApp.SEARCHFOR_MAX > size)
+		? size : (this._offset + ZmContactsApp.SEARCHFOR_MAX);
+
+	return (this._offset < end)
+		? (AjxVector.fromArray(this._list.getArray().slice(this._offset, end))) : null;
 };
 
 /*
@@ -556,10 +588,11 @@ function() {
 * the source list view with the results.
 *
 * @param sortBy			[constant]		ID of column to sort by
-* @param ascending		[boolean]		if true, sort in ascending order
+* @param lastId		    [int]*			ID of last item displayed (for pagination)
+* @param lastSortVal	[string]*		value of sort field for above item
 */
 ZmApptChooserTabViewPage.prototype.searchContacts =
-function(sortBy) {
+function(sortBy, lastId, lastSortVal) {
 	var id = this._searchFieldIds[ZmApptChooserTabViewPage.SF_ATT_NAME];
 	var query = AjxStringUtil.trim(document.getElementById(id).value);
 	if (!query.length) {
@@ -595,8 +628,10 @@ function(sortBy) {
 		types: (AjxVector.fromArray([ZmItem.CONTACT])),
 		sortBy: (sortBy || ZmApptChooserTabViewPage.SORT_BY[this.type]),
 		offset: this._offset,
-		limit: ZmContactsApp.SEARCHFOR_MAX,
-		contactSource: this._contactSource
+		limit: (this._contactSource != ZmId.SEARCH_GAL) ? ZmContactsApp.SEARCHFOR_MAX : "",
+		contactSource: this._contactSource,
+        lastId: lastId,
+        lastSortVal: lastSortVal        
 	};
 	var search = new ZmSearch(params);
 	search.execute({callback: new AjxCallback(this, this._handleResponseSearchContacts)});
@@ -606,17 +641,53 @@ function(sortBy) {
 ZmApptChooserTabViewPage.prototype._handleResponseSearchContacts =
 function(result) {
 	var resp = result.getResponse();
+    var offset = resp.getAttribute("offset");
+    var isPagingSupported = AjxUtil.isSpecified(offset);
+    var more = resp.getAttribute("more");    
+    var info = resp.getAttribute("info");
+    var expanded = info && info[0].wildcard[0].expanded == "0";
 
-	if (this._prevButton && this._nextButton) {
-		var more = resp.getAttribute("more");
-		this._prevButton.setEnabled(this._offset > 0);
-		this._nextButton.setEnabled(more);
-	}
+    if (!isPagingSupported &&
+        (expanded || (this._contactSource == ZmId.SEARCH_GAL && more)))
+    {
+        var d = appCtxt.getMsgDialog();
+        d.setMessage(ZmMsg.errorSearchNotExpanded);
+        d.popup();
+        if (expanded) { return; }
+    }
 
-	var list = resp.getResults(ZmItem.CONTACT).getArray();
+    var list = AjxVector.fromArray(ZmContactsHelper._processSearchResponse(resp));
+
+    if (isPagingSupported) {
+        this._list.merge(offset, list);
+        this._list.hasMore = more;
+    }
+
+    this._showResults(isPagingSupported, more, list.getArray());
+};
+
+ZmApptChooserTabViewPage.prototype._showResults =
+function(isPagingSupported, more, list) {
+    if(this._prevButton && this._nextButton) {
+        // if offset is returned, then this account support gal paging
+        if (this._contactSource == ZmId.SEARCH_GAL && !isPagingSupported) {
+            this._prevButton.setEnabled(false);
+            this._nextButton.setEnabled(false);
+        } else {
+            this._prevButton.setEnabled(this._offset > 0);
+            this._nextButton.setEnabled(more);
+        }
+    }
+    
 	var list1 = [];
-	for (var i = 0; i < list.length; i++) {
-		var contact = list[i];
+    var contactList = list ? list : [];
+    if(!(contactList instanceof Array)) {
+        contactList = contactList.getArray();                
+    }
+
+	for (var i = 0; i < contactList.length; i++) {
+        if(!contactList[i]) continue;
+		var contact = (contactList[i] && contactList[i].__contact) ? contactList[i].__contact : contactList[i];
 		var emails = contact.isGal ? [contact.getEmail()] : contact.getEmails();
 		if (emails && emails.length > 1) {
 			var workPhone = contact.getAttr(ZmContact.F_workPhone);
