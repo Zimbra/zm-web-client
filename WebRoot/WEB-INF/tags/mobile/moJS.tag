@@ -171,6 +171,8 @@ var setActiveTab = function(tabId){
     }
 
 };
+var loadThisFrameResponse = function(response,frameId){
+    getContainer().innerHTML = response;
 
 var convertToHashUrl = function(url){
   if(url.match(/[\\?\\&]st=/g)){
@@ -231,7 +233,7 @@ var getFormValues = function(obj) {
 var createUploaderFrame = function(iframeId){
     var html = [ "<iframe name='", iframeId, "' id='", iframeId,
              "' src='about:blank",
-             "' style='position: absolute; top: 0; left: 0; visibility: hidden'></iframe>" ];
+             "' style='position: absolute; top: -900; left: -900; height:0px;width:0px; visibility: hidden; display:none;'></iframe>" ];
     var div = document.createElement("div");
     div.innerHTML = html.join("");
     document.body.appendChild(div.firstChild);
@@ -245,7 +247,9 @@ var submitForm = function(fobj, target) {
         return false;
     }
     if (target) {
-        createUploaderFrame(target);
+        if(!document.getElementById(target)){
+            createUploaderFrame(target);
+        }
         fobj.target = target;
         fobj.action = fobj.action.replace('ajax=true', '');
         showLoadingMsg('<fmt:message key="MO_sendingRequestMsg"/>', true);

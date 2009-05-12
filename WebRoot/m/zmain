@@ -269,7 +269,8 @@
     var msg = (d) ? d.innerHTML : null;
     if (self.parent && msg) {
         if(d.className && d.className.indexOf("StatusInfo") > -1){
-            self.parent.getContainer().innerHTML = self.getContainer().innerHTML;
+            //self.parent.getContainer().innerHTML = self.getContainer().innerHTML;
+            parent.loadThisFrameResponse(self.getContainer().innerHTML,self.frameElement.id);
             nojs = true;
         }else{
             nojs = true;
