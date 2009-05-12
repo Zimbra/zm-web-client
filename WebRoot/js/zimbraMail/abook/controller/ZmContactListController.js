@@ -712,7 +712,7 @@ function(items, folder, attrs, force) {
 		list.copyItems(copy, folder, attrs);
 	}
 
-	if (moveFromGal) {
+	if (moveFromGal.length) {
 		var batchCmd = new ZmBatchCommand(true, null, true);
 		for (var j = 0; j < moveFromGal.length; j++) {
 			var contact = moveFromGal[j];
