@@ -306,7 +306,7 @@ function(event) {
 	}
 
 	this._props.setPropertyVisible(this._ownerId, organizer.owner != null);
-	this._props.setPropertyVisible(this._urlId, organizer.url != null);
+	this._props.setPropertyVisible(this._urlId, organizer.url);
 	this._props.setPropertyVisible(this._permId, showPerm);
 
 	Dwt.setVisible(this._excludeFbEl, !organizer.link && (organizer.type == ZmOrganizer.CALENDAR));
