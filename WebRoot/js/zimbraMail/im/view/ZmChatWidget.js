@@ -371,6 +371,7 @@ ZmChatWidget.prototype._init = function() {
 
 	this._content = new DwtComposite({ parent: this, parentElement: this._getElement("convLayout"), className: "ZmChatWindowChat" });
 	this._content._setAllowSelection();
+	this._content.setSize("100%", "100%");
 	this._content.setScrollStyle(Dwt.SCROLL);
 	var mouseEvents = [ // All the usual ones except ONSELECTSTART.
 		DwtEvent.ONCONTEXTMENU, DwtEvent.ONDBLCLICK, DwtEvent.ONMOUSEDOWN,
@@ -521,9 +522,21 @@ function(widget, name, fuzz) {
 
 ZmChatWidget.prototype._doResize =
 function() {
-	this._resizeElement(this._toolbar, "toolbarLayout");
-	this._resizeElement(this._content, "convLayout", 4);
+	// Make the chat message area fit inside the vertical space not used by the other components.
+	var height = 0;
+	var elements = ["toolbarLayout", "sash", "inputLayout"];
+	for (var i = 0, count = elements.length; i < count; i++) {
+		var cont = this._getElement(elements[i]);
+		var visible = Dwt.getVisible(cont);
+		if (visible) {
+			height += cont.offsetHeight;
+		}
+	}
+	var myHeight = this.getHtmlElement().offsetHeight;
+	var convElement = this._getElement("convLayout");
+	Dwt.setSize(convElement, Dwt.DEFAULT, myHeight - height);
 
+	// Size the send button.
 	if (this._sendButton) {
 		var editControl = this._liteEditor.getEditor();
 		this._sendButton.setSize(Dwt.DEFAULT,Dwt.getSize(editControl).y);

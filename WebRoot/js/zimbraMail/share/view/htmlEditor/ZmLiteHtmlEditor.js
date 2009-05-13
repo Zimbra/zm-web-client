@@ -227,8 +227,14 @@ function(text) {
 	this._textArea.value += text;
 };
 
-ZmLiteHtmlEditor.prototype.getBasicToolBar = function() {
+ZmLiteHtmlEditor.prototype.getBasicToolBar =
+function() {
 	return this._basicToolBar;
+};
+
+ZmLiteHtmlEditor.prototype.getFormatToolBar =
+function() {
+	return this._formatToolBar;
 };
 
 //Private Methods
@@ -321,13 +327,19 @@ ZmLiteHtmlEditor.prototype._createFormatToolBar = function(){
 		var formatToolBar = this._formatToolBar = new DwtToolBar({parent:this, className:"ZToolbar",
 												  posStyle:DwtControl.RELATIVE_STYLE, cellSpacing:2, index:0});
 		this._initFormatToolBar(formatToolBar);
+		ZmLiteHtmlEditor._toolbarHeight = ZmLiteHtmlEditor._toolbarHeight || this._formatToolBar.getHtmlElement().offsetHeight;
+		this.setSize(Dwt.DEFAULT, this.getH() + ZmLiteHtmlEditor._toolbarHeight);
 	}
 };
 
 ZmLiteHtmlEditor.prototype._enableToolbar =
-function(enable){
-        if (this._formatToolBar)
-	        this._formatToolBar.setVisible(!!enable);
+function(enable) {
+	var visible = !!enable;
+	if (this._formatToolBar && (visible != !!this._formatToolBar.getVisible())) {
+		this._formatToolBar.setVisible(visible);
+		var sizeDiff = visible ? ZmLiteHtmlEditor._toolbarHeight : -ZmLiteHtmlEditor._toolbarHeight;
+		this.setSize(Dwt.DEFAULT, this.getH() + sizeDiff);
+	}
 };
 
 ZmLiteHtmlEditor.prototype._initFormatToolBar = function(tb){
