@@ -157,7 +157,13 @@ function(compNum) {
 	return this.components[cn] ? this.components[cn].alarm : null;
 };
 
-ZmInvite.prototype.getOrganizerEmail = 
+ZmInvite.prototype.getInviteMethod =
+function(compNum) {
+	var cn = compNum || 0;
+	return this.components[cn] ? this.components[cn].method : null;
+};
+
+ZmInvite.prototype.getOrganizerEmail =
 function(compNum) {
 	var cn = compNum || 0;
 	return (this.components[cn] && this.components[cn].or && this.components[cn].or.url)
@@ -567,3 +573,9 @@ function() {
 	return false;
 };
 
+ZmInvite.prototype.hasInviteReplyMethod =
+function(compNum) {
+    var methodName = this.getInviteMethod(compNum);
+    var publishOrRequest = (methodName == ZmCalendarApp.METHOD_REQUEST || methodName == ZmCalendarApp.METHOD_PUBLISH);
+    return ((methodName == null) || publishOrRequest);
+};
