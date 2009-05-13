@@ -348,7 +348,20 @@
             rowId = parentNode.id;
             rowObj = parentNode;
             rowNo = rowId.substring(1);
-            mesgId = document.getElementById("C"+rowNo).value;
+
+            /* to support multiple drag & drop */
+            var msgIds = [];
+            var count = 0;
+            for(var k = 0 ; k < zrc ; k++) {
+                if(document.getElementById("C"+k).checked) {
+                    msgIds[count] = document.getElementById("C"+k).value;
+                    count++;
+
+                }
+            }
+            var msgIdstr = msgIds.join(",");
+            mesgId = (msgIdstr != "") ? msgIdstr : document.getElementById("C"+rowNo).value;
+
             this.deltaY = 15;
             this.deltaX = (YAHOO.util.Event.getPageX(ev) - $D.getXY(document.getElementById(rowId))[0]);
 
@@ -357,13 +370,22 @@
         drop.startDrag= function(){
             var dragEl = this.getDragEl();
             var clickEl = document.getElementById(rowId);
-            /*proxy is a clone of row el. with few extra styles */
-            dragEl.innerHTML = clickEl.innerHTML;
-
-            $D.setStyle(dragEl, "color", $D.getStyle(clickEl, "color"));
-            $D.setStyle(dragEl, "height", $D.getStyle(clickEl, "offsetHeight")+"px");
-            $D.setStyle(dragEl, "width", "70%");
-            $D.addClass(dragEl, "proxy");
+            var msglen = mesgId.split(",").length;
+            dragEl.innerHTML = (msglen > 1) ? '<td><img id="zldragdrop" src="/zimbra/img/large/ImgDndMultiNo_48.gif"/><div style="position:absolute;top:27;left:23;color:white;width:20px;text-align:center;font-weight:bold;">'+msglen+'</div></td>' : clickEl.innerHTML;
+            document.getElementById("C"+rowNo).checked = true;
+            if(msglen == 1) {
+                dragEl.style.border = "2px solid #aaa";
+                $D.setStyle(dragEl, "color", $D.getStyle(clickEl, "color"));
+                $D.setStyle(dragEl, "height", clickEl.offsetHeight+"px");
+                $D.setStyle(dragEl, "width", "70%");
+                $D.addClass(dragEl.id, "proxy");
+            } else {
+                dragEl.style.border = "none";
+                $D.setStyle(dragEl, "color", "");
+                $D.setStyle(dragEl, "height","");
+                $D.setStyle(dragEl, "width", "");
+                $D.removeClass(dragEl.id, "proxy");
+            }
         };
 
         drop.endDrag = function(){
@@ -393,16 +415,27 @@
         };
 
         drop.onDragOver= function(ev, id){
+            var msglen = mesgId.split(",").length;
             if (lastTarget) {
                 $D.removeClass(lastTarget,'dragoverclass');
+                if(msglen > 1) {
+                    document.getElementById("zldragdrop").src = "/zimbra/img/large/ImgDndMultiNo_48.gif"
+                }
             }
             lastTarget = id[0].id;
             $D.addClass(lastTarget,'dragoverclass');
+            if(msglen > 1) {
+                document.getElementById("zldragdrop").src = "/zimbra/img/large/ImgDndMultiYes_48.gif";
+            }
         };
 
         drop.onDragOut= function(ev, id){
             id = id[0].id;
             $D.removeClass(id,'dragoverclass');
+            var msglen = mesgId.split(",").length;
+            if(msglen > 1) {
+                document.getElementById("zldragdrop").src = "/zimbra/img/large/ImgDndMultiNo_48.gif"
+            }
         };
 
         drop.onDragDrop= function(ev, id){
