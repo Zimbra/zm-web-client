@@ -596,9 +596,10 @@ function(searchResp, params) {
 		// create a list of appts for each folder returned
 		var folder2List = {};
 		for (var j = 0; j < this._rawAppts.length; j++) {
-			var fid = params.folderIdMapper[this._rawAppts[j].l];
-			if (!folder2List[fid])
+			var fid = params.folderIdMapper && params.folderIdMapper[this._rawAppts[j].l];
+			if (!folder2List[fid]) {
 				folder2List[fid] = [];
+			}
 			folder2List[fid].push(this._rawAppts[j]);
 		}
 
