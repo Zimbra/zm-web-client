@@ -399,6 +399,8 @@ function() {
     label.setSize(100, DwtControl.DEFAULT);
 	label.setText(AjxMessageFormat.format(ZmMsg.makeLabel, [ZmMsg.calendar]));
 
+	this._inviteToolbar.addSpacer();
+
 	var select = new DwtSelect({parent: this._inviteToolbar});
 	select.addChangeListener(new AjxListener(this, this._moveAppt));
 	this._inviteMoveSelect = select;
