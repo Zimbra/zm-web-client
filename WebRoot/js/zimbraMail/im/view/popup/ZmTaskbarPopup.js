@@ -140,19 +140,3 @@ function(msg, loc) {
 	msgDialog.popup(loc);
 	return null;
 };
-
-
-/*---- Temp class to help introduce the popup -----------*/
-
-ZmTaskbarPopup1 = function(params) {
-	ZmTaskbarPopup.call(this, params);
-	params.callback.run(this, this.getHtmlElement());
-};
-
-ZmTaskbarPopup1.prototype = new ZmTaskbarPopup;
-ZmTaskbarPopup1.prototype.constructor = ZmTaskbarPopup1;
-
-ZmTaskbarPopup1.prototype.toString =
-function() {
-	return "ZmTaskbarPopup1";
-};
