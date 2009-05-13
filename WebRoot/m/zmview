@@ -20,7 +20,7 @@
          <c:import url="/m/moapptcompose"/>
     </c:when>
 
-    <c:when test="${empty param.st || param.st eq 'message' || param.st eq 'conversation' || param.st eq 'contact' || param.st eq 'briefcase' || param.st eq 'wiki' || param.st eq 'task'}">
+    <c:when test="${empty param.st || param.st eq 'message' || param.st eq 'conversation' || param.st eq 'contact' || param.st eq 'briefcase' || param.st eq 'wiki' || param.st eq 'task' || param.st eq 'gal'}">
          <c:import url="/m/mosearch"/>
     </c:when>
 

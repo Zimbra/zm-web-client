@@ -40,20 +40,25 @@
         <c:set var="chit" value="${hit.contactHit}"/>
         <zm:currentResultUrl var="contactUrl" value="${context_url}" action="view" id="${chit.id}"
                              index="${status.index}" context="${context}"/>
-
+        <c:if test="${context.isGALSearch}">
+            <c:url value="${contactUrl}" var="contactUrl">
+                <c:param name="email" value="${chit.email}"/>
+            </c:url>
+        </c:if>
         <div class="list-row row" id="cn${chit.id}">
             <c:set value=",${hit.id}," var="stringToCheck"/>
             <c:set var="class" value="Contact${chit.isGroup ? 'Group' : ''}"/>
             <span class="cell f">
+                    <c:if test="${!context.isGALSearch}">
                     <input class="chk" type="checkbox" ${requestScope.select ne 'none' && (fn:contains(requestScope._selectedIds,stringToCheck) || requestScope.select eq 'all') ? 'checked="checked"' : ''}
-                           name="id" value="${chit.id}"/>
+                           name="id" value="${chit.id}"/></c:if>
             <span class="SmlIcnHldr ${class}">&nbsp;</span>
             </span>
             <span class="cell m" onclick='return zClickLink("a${chit.id}")'>
             <a id="a${chit.id}"
                                            href="${contactUrl}">
                 <div>
-                    <strong>${zm:truncate(fn:escapeXml(empty chit.fileAsStr ? '<None>' : chit.fileAsStr),50, true)}</strong>
+                    <strong>${zm:truncate(fn:escapeXml(empty chit.fileAsStr ? (context.isGALSearch ? chit.fullName : '<None>') : chit.fileAsStr),50, true)}</strong>
                 </div>
             </a>
                 <div class="Email">

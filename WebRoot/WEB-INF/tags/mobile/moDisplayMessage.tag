@@ -88,8 +88,10 @@
     </c:if>
 </div>
 <script type="text/javascript">
-    document.getElementById('d_div').style.display = 'none';
-    document.getElementById('d_btn_td').style.display = 'block';
+    var elem =  document.getElementById('d_div');
+    if(elem) elem.style.display = 'none';
+    elem = document.getElementById('d_btn_td');
+    if(elem) elem.style.display = 'block';
 </script>
 <div class="View">
 <div class="table">

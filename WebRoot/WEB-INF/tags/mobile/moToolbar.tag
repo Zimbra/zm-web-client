@@ -40,7 +40,7 @@
         <div class="table-row">
             <div class="table-cell">
                 <c:choose>
-                    <c:when test="${context.isContactSearch}">
+                    <c:when test="${context.isContactSearch || context.isGALSearch}">
                         <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=ab"><fmt:message
                                 key="addressBooks"/></a> &laquo;
                         <c:if test="${top_fldr_select ne '1'}">
@@ -119,7 +119,7 @@
 </span>
 <!--</span>
 <span class="table-cell">-->
-<c:if test="${context.searchResult.size gt 0}">
+<c:if test="${context.searchResult.size gt 0 && !context.isGALSearch}">
     <span>
         <select class="zo_select_button" name="anAction" onchange="submitForm(document.getElementById('zForm'))">
             <option value="" selected="selected"><fmt:message key="moreActions"/></option>

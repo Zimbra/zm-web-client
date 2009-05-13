@@ -62,7 +62,7 @@
 <mo:folderForm type="search" id="${param.sid}" hide="${empty param.showSearchCreate}" url="${currentUrl}" st="${param.st}"/>
 <zm:forEachFolder var="folder" skipsystem="${true}" skiptopsearch="${false}">
     <c:if test="${(folder.isSearchFolder && (empty query || fn:containsIgnoreCase(folder.name,query)))}">
-        <c:if test="${folder.types eq 'contact'}">
+        <c:if test="${folder.types eq 'contact' || folder.types eq 'gal'}">
             <mo:overviewSearchFolder folder="${folder}" types="${folder.types}"/>
         </c:if>
     </c:if>

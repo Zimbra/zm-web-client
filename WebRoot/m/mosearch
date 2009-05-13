@@ -44,7 +44,7 @@
                 </mo:status>
             </c:when>
             <c:otherwise><zm:computeSearchContext  var="context" usecache="true" query="${sq}" limit="${sessionScope.limit}"/>
-                                
+
             </c:otherwise>
         </c:choose>
     <c:set var="pcontext" value="${context}" scope="session"/>
@@ -94,10 +94,13 @@
         </c:otherwise>
         </c:choose>
     </c:when>
+    <c:when test="${context.isGALSearch and action eq'view'}">
+            <mo:galContactView email="${param.email}" id="${param.id}" context="${context}"/>
+    </c:when>
     <c:when test="${context.isContactSearch and action eq'edit'}">
         <mo:contactEdit context="${context}"/>
     </c:when>
-    <c:when test="${context.isContactSearch}">
+    <c:when test="${context.isContactSearch or context.isGALSearch}">
         <mo:contactListView context="${context}"/>
     </c:when>
     <c:when test="${context.isTaskSearch}">

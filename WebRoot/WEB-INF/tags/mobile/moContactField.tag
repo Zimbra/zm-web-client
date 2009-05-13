@@ -60,7 +60,7 @@
                 </c:when>
                 <c:when test="${isphone}">
                     <c:url var="url" value="tel:${value}"/>
-                    <a href="${fn:escapeXml(url)}">${fn:escapeXml(value)}</a>
+                    <a target="_new" href="${fn:escapeXml(url)}">${fn:escapeXml(value)}</a>
                 </c:when>
                 <c:when test="${isemail}">
                     <c:url value="${context_url}" var="url">

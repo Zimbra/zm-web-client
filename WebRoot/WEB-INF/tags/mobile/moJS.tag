@@ -352,7 +352,7 @@ var ajxReq = function(url, query, container, method, justPrefetch) {
     if(((method == "GET" || method == "get")) && url.indexOf("_ajxnoca=1") < 0 && MAX_CACHE_REQUEST > 0){
            var xhr = ajxCache.get([url,query].join("?"));
            if(xhr){
-                parseResponse(xhr, container,url);
+                parseResponse(xhr, container,[url,query].join("?"));
                 return;
            }
     }
@@ -375,7 +375,7 @@ var ajxReq = function(url, query, container, method, justPrefetch) {
                 }
                 lastRendered = new Date().getTime();
                 if(!justPrefetch){
-                    parseResponse(xhr, container,url);
+                    parseResponse(xhr, container,[url,query].join("?"));
                 }
             }
         };
@@ -546,7 +546,8 @@ var updateOrientation = function() {
 var requestTimeout = function (xhr){
    xhr.abort();
    loading = false;
-   showLoadingMsg('<fmt:message key="MO_requestTimedOut"/>', true,'Critical',3000);
+   showLoadingMsg(null, false);
+   showLoadingMsg('<fmt:message key="MO_requestTimedOut"/>', true,'Critical',3000,'msgbar',true);
 };
 var getContainer = function(id) {
     id = id ? id : 'maincontainer';

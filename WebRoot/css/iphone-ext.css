@@ -59,7 +59,8 @@ a {
     font-size: small;
 }
 .list-row-unread .small-gray-text,.Email a {
-    color: #777777;
+    color: #666666;
+    font-weight:normal;
 }
 .list-row-unread .l{
 	font-weight: normal;
@@ -91,6 +92,14 @@ a {
 .right {
     float: right;
     padding-right:4px;
+}
+.aleft {
+    text-align:left !important;
+    padding-left: 5px;
+}
+.aright {
+    text-align:right !important;
+    padding-right:5px;
 }
 #appbar a span {
     padding: 0px;
@@ -217,15 +226,14 @@ form {
 }
 .Toolbar, .SubToolbar {
     background: #eeeeee;
+    border-bottom:1px solid #E8E8E8;
     height: 40px !important;
     text-align: center;
     white-space:nowrap;
 }
 .Toolbar {
     background: #d3d2d7;
-    
-    border-left: 0px;
-    border-right: 0px;
+    border:0px;
     background: #efefef url( "/img/mobile/iphone/iPhoneToolbar1.png" ) bottom repeat-x;
 }
 .StatusInfo, .StatusWarning, .StatusCritical, .zo_noresults {
@@ -252,7 +260,9 @@ form {
     height:20px;
     margin:4px;
     vertical-align:middle;
-    width:200px;
+    min-width:200px;
+    width:96%;
+    max-width:300px;
     font-size:medium;
 }
 .cmp_container .table-cell, .cmp_appt_container .table-cell {
@@ -263,8 +273,6 @@ form {
     -webkit-border-radius: 4px;
     padding: 5px;
     margin: 0px;
-    -webkit-margin: 0px;
-    -webkit-padding: 5px;
     color: #ffffff;
     border: 1px groove #58759d;
     boder-collapse: collapse;
@@ -367,7 +375,7 @@ input[type="button"], input[type="reset"] {
     border-bottom: 1px solid #DDDDDD;
     padding: 2px;
 }
-.Textarea#bodyField {
+.Textarea#bodyField {                
     width: 98%;
     min-height: 150px;
 }
@@ -375,10 +383,20 @@ input[type="button"], input[type="reset"] {
     height: 17px;
     width: 90%;
 }
+.moquery .Textarea,.moquery .sq_folder,.moquery .sq_tag,.moquery .st{
+    width:92%;
+}
+.moquery .sq_size_comp,.moquery .sq_size_units, .moquery .sq_size{
+    width:29%;
+}
+.moquery .table-cell{
+    padding: 4px 2px;
+    border-bottom: 1px solid #EEEEEE;
+}
 .cmp_appt_container .table-cell .Textarea#start, .cmp_appt_container .table-cell .Textarea#end {
     width: 30%;
 }
-.cmp_appt_container .label, .cmp_container .label {
+.cmp_appt_container .label, .cmp_container .label,.moquery .label{
     width: 50px;
 }
 /*Auto Complete*/
@@ -524,6 +542,7 @@ select {
     width: 15px;
     padding: 0px;
     margin: 0px;
+    font-size: 15px;
 }
 div.row span.cell {
     display: table-cell;
@@ -546,7 +565,7 @@ h1, h2, h3, h4, h5, h6 {
     font-weight: normal;
 }
 div.row span.f {
-    max-width: 50px;
+    max-width: 40px;
     width: 40px;
     white-space: nowrap;
     padding-left: 10px;

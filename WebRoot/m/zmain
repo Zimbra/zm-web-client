@@ -190,33 +190,78 @@
                     type="hidden"
                     name="search"
                     value="1"/>
-                <c:if test="${not empty param.st}">
+                <c:set var="st" value="${fn:escapeXml(param.st)}"/>
+                <c:if test="${not empty st}">
                     <c:choose>
                         <c:when test="${param.st eq 'folders'}">
-                            <input type="hidden" name="st" value="${mailbox.prefs.groupMailBy}"/>
+                            <%--<input type="hidden" name="st" value="${mailbox.prefs.groupMailBy}"/>--%>
+                            <c:set var="st" value="${mailbox.prefs.groupMailBy}"/>
                         </c:when>
                          <c:when test="${param.st eq 'ab'}">
-                            <input type="hidden" name="st" value="contact"/>
+                            <%--<input type="hidden" name="st" value="contact"/>--%>
+                             <c:set var="st" value="contact"/>
                         </c:when>
                          <c:when test="${param.st eq 'cals'}">
-                            <input type="hidden" name="st" value="cal"/>
+                            <%--<input type="hidden" name="st" value="cal"/>--%>
+                             <c:set var="st" value="cal"/>
                         </c:when>
                         <c:when test="${param.st eq 'briefcases'}">
-                            <input type="hidden" name="st" value="briefcase"/>
+                            <%--<input type="hidden" name="st" value="briefcase"/>--%>
+                            <c:set var="st" value="briefcase"/>
                         </c:when>
                         <c:when test="${param.st eq 'notebooks'}">
-                            <input type="hidden" name="st" value="wiki"/>
+                           <%-- <input type="hidden" name="st" value="wiki"/>--%>
+                            <c:set var="st" value="wiki"/>
                         </c:when>
                         <c:otherwise>
-                            <input type="hidden" name="st" value="${fn:escapeXml(param.st)}"/>
+                           <%-- <input type="hidden" name="st" value="${fn:escapeXml(param.st)}"/>--%>
                         </c:otherwise>
                     </c:choose>
                 </c:if>
                 <input
                     type="hidden" name="crumb"
-                    value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/> <%-- <span class="table-cell" width="70%">--%>
-                <input type="text" class="searchInput" name="sq" value="${zm:cook(param.sq)}"/><input type="submit" class="searchButton zo_button" name="actionSearch"
-                       value="<fmt:message key="search"/>"/><!--</span>-->
+                    value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/> 
+                <div class="table">
+                    <div class="table-row">
+                          <span class="table-cell aleft">
+                             <input type="text" class="searchInput" name="sq" value="${zm:cook(param.sq)}"/>
+                          </span>
+                          <span class="table-cell aright">
+                             <input type="submit" class="searchButton zo_button" name="actionSearch"
+                       value="<fmt:message key="search"/>"/>
+                          </span>
+                    </div>
+
+                </div>
+                <div class="table">
+                    <div class="table-row">
+                          <span class="table-cell aleft">
+                    <select name="st" style="border:1px solid gray;">
+                                <c:if test="${mailbox.features.mail}">
+                                <option value="${mailbox.prefs.groupMailBy}" ${empty st or st eq  mailbox.prefs.groupMailBy ? 'selected=selected' : ''}><fmt:message key="mails"/></option>
+                                </c:if>
+                                <c:if test="${mailbox.features.contacts}">
+                                <option value="contact" ${st eq 'contact' ? 'selected=selected' : ''}><fmt:message key="contacts"/></option>
+                                </c:if>
+                                <c:if test="${mailbox.features.gal}">
+                                <option value="gal" ${st eq 'gal' ? 'selected=selected' : ''}><fmt:message key="GAL"/></option>
+                                </c:if>
+                                <c:if test="${mailbox.features.calendar}">
+                                <option value="cal" ${st eq 'cal' ? 'selected=selected' : ''}><fmt:message key="appointments"/></option>
+                                </c:if>
+                                <c:if test="${mailbox.features.notebook}">
+                                <option value="wiki" ${st eq 'wiki' ? 'selected=selected' : ''}><fmt:message key="pages"/></option>
+                                </c:if>
+                                <c:if test="${mailbox.features.briefcases}">
+                                <option value="briefcase" ${st eq 'briefcase' ? 'selected=selected' : ''}><fmt:message key="files"/></option>
+                                </c:if>    
+                            </select>
+                     </span>
+                     <span class="table-cell aright">
+                        <a href="${context_url}?st=query&s=${st}"><fmt:message key="advancedSearch"/> </a>
+                    </span>
+                    </div>    
+                    </div>
             </form>
         </div>
     </div>
