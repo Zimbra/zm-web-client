@@ -38,6 +38,9 @@
 		  <c:when test="${param.app eq 'contacts' and mailbox.features.contacts}">
 			  <c:redirect url="/h/search?st=contact" />
 		  </c:when>
+          <c:when test="${param.app eq 'gal' and mailbox.features.gal}">
+			  <c:redirect url="/h/search?st=gal" />
+		  </c:when>
 		  <c:when test="${param.app eq 'tasks' and mailbox.features.tasks}">
 			  <c:redirect url="/h/search?st=task" />
 		  </c:when>
@@ -196,7 +199,7 @@
     <c:when test="${context.isContactSearch and action eq 'view'}">
         <app:contactView context="${context}"/>
     </c:when>
-    <c:when test="${context.isContactSearch}">
+    <c:when test="${context.isContactSearch or context.isGALSearch}">
         <app:contactListView context="${context}"/>
     </c:when>
     <c:when test="${context.isTaskSearch}">

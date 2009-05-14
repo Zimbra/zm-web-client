@@ -25,6 +25,11 @@
 <zm:getMailbox var="mailbox"/>
 
 <c:set var="ids" value="${fn:join(paramValues.id, ',')}"/>
+<c:if test="${param.st eq 'gal'}">                  <%-- gal contact id contains , so will replace the id's , with | to avoid the conflict with delimiter , used for forEach--%>
+    <c:set var="paraids" value="${fn:join(paramValues.id, '#')}"/>
+    <c:set var="paraids" value="${fn:replace(paraids, ',','|')}"/>
+    <c:set var="ids" value="${fn:replace(paraids, '#',',')}"/>
+</c:if>
 <c:set var="folderId" value="${not empty paramValues.folderId[0] ? paramValues.folderId[0] : paramValues.folderId[1]}"/>
 <c:set var="actionOp" value="${not empty paramValues.actionOp[0] ? paramValues.actionOp[0] :  paramValues.actionOp[1]}"/>
 <c:set var="searchQuery" value="${not empty paramValues.contactsq[0] ? paramValues.contactsq[0] :  paramValues.contactsq[1]}"/>
@@ -44,7 +49,7 @@
         </app:status>
     </c:when>
     <c:when test="${zm:actionSet(param, 'actionSearch')}">
-        <c:redirect url="/h/search?st=contact&search=Search">
+        <c:redirect url="/h/search?st=${not empty param.st ? param.st : 'contact' }&search=Search"> <%-- st can be gal for gal search --%>
             <c:param name="sq" value="${fn:escapeXml(searchQuery)}"/>
         </c:redirect>
     </c:when>
@@ -142,7 +147,17 @@
                 <c:set var="contactIds" value="" />
                 <c:forEach items="${ids}" var="id">
                     <c:if test="${not empty contactIds}"><c:set var="sep" value=", " /></c:if>
-                    <zm:getContact var="contact" id="${id}" />
+                     <c:choose>
+                        <c:when test="${param.st eq 'contact'}"><zm:getContact id="${id}" var="contact"/></c:when>
+                        <c:when test="${param.st eq 'gal'}">
+                            <zm:searchGal var="result" query="${empty param.email ? '*' : param.email}"/>      <%--!TODO optiomizartion needed--%>
+                            <c:forEach items="${result.contacts}" var="acontact">
+                                <c:if test="${fn:replace(acontact.id,',','|') eq id}">
+                                    <c:set var="contact" value="${acontact}"/>
+                                </c:if>
+                            </c:forEach>
+                        </c:when>
+                    </c:choose>
                     <c:choose>
                         <c:when test="${contact.isGroup}">
                             <c:set var="emailIds" value="" />

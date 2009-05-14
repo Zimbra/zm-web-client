@@ -23,8 +23,20 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <app:handleError>
     <zm:getMailbox var="mailbox"/>
-    <c:set var="contactId" value="${context.currentItem.id}"/>    
-    <c:if test="${not empty contactId}"><zm:getContact id="${contactId}" var="contact"/></c:if>
+    <c:set var="contactId" value="${context.currentItem.id}"/>
+    <c:if test="${not empty contactId}">
+    <c:choose>
+        <c:when test="${context.isContactSearch}"><zm:getContact id="${contactId}" var="contact"/></c:when>
+        <c:when test="${context.isGALSearch}">
+            <zm:searchGal var="result" query="${context.currentItem.contactHit.email}"/>      <%--!TODO optiomizartion needed--%>
+            <c:forEach items="${result.contacts}" var="acontact">
+                <c:if test="${acontact.id eq context.currentItem.id}">
+                    <c:set var="contact" value="${acontact}"/>
+                </c:if>
+            </c:forEach>
+        </c:when>
+    </c:choose>
+    </c:if>
     <app:searchTitle var="title" context="${context}"/>
 </app:handleError>
 
@@ -80,7 +92,7 @@
                                        <fmt:message var="noNameStr" key="noName"/>
                                        <c:set var="noName" value="${noNameStr} ${not empty hit.contactHit.email ? hit.contactHit.email : hit.contactHit.email2 }" />
                                        <a  href="${fn:escapeXml(contactUrl)}" id="A${status.index}">
-                                               ${fn:escapeXml(empty hit.contactHit.fileAsStr ? noName : hit.contactHit.fileAsStr)}
+                                               ${fn:escapeXml(empty hit.contactHit.fileAsStr ? (context.isGALSearch ? hit.contactHit.fullName : noName) : hit.contactHit.fileAsStr)}
                                        </a></span>
                                        <c:if test="${hit.contactHit.id == context.currentItem.id}">
                                            <zm:computeNextPrevItem var="cursor" searchResult="${context.searchResult}" index="${context.currentItemIndex}"/>
@@ -141,13 +153,13 @@
         {
         if(document.getElementById("C"+idex).checked) {
             cid = document.getElementById("C"+idex).value;
-            c += cid + ",";
+            c += "id="+cid + "&";
         }
             idex++ ;
         }
         }catch(ex){
         }
-        window.open("/h/printcontacts?sfi=${context.folder.id}&id="+c);
+        window.open("/h/printcontacts?st=${param.st}&sfi=${context.folder.id}&"+c);
     }
     var zcheck = function() {var e = document.getElementById("CURRCHECK"); if (e) e.checked = !e.checked;}
     var zclick = function(id) { var e2 = document.getElementById(id); if (e2) e2.click(); }

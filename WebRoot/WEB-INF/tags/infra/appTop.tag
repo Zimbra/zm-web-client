@@ -70,6 +70,9 @@
                 <c:if test="${mailbox.features.contacts}">
                     <option <c:if test="${isContact}">selected </c:if>value="contact"/><fmt:message key="searchPersonalContacts"/>
                 </c:if>
+                <c:if test="${mailbox.features.gal}">
+                    <option <c:if test="${param.st eq 'gal'}">selected </c:if>value="gal"/><fmt:message key="GAL"/>
+                </c:if>
                 <c:if test="${mailbox.features.calendar}">
                     <option <c:if test="${calendars}">selected </c:if> value="appointment"/><fmt:message key="searchPersonalCalendars"/>
                 </c:if>

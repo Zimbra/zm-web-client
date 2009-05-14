@@ -17,6 +17,11 @@
     </c:choose>
     <fmt:setBundle basename="/messages/ZhMsg" scope="request"/>
     <c:set var="contactIds" value="${fn:join(paramValues.id, ',')}"/>
+    <c:if test="${param.st eq 'gal'}">                  <%-- gal contact id contains , so will replace the id's , with | to avoid the conflict with delimiter , used for forEach--%>
+        <c:set var="paraids" value="${fn:join(paramValues.id, '#')}"/>
+        <c:set var="paraids" value="${fn:replace(paraids, ',','|')}"/>
+        <c:set var="contactIds" value="${fn:replace(paraids, '#',',')}"/>
+    </c:if>
 </app:handleError>
 <html>
 <app:head mailbox="${mailbox}"/>
@@ -45,7 +50,17 @@
 <td>
 <c:if test="${not empty contactIds}">
     <c:forEach items="${contactIds}" var="contactId" varStatus="status">
-        <zm:getContact id="${contactId}" var="contact"/>
+        <c:choose>
+            <c:when test="${param.st eq 'contact'}"><zm:getContact id="${contactId}" var="contact"/></c:when>
+            <c:when test="${param.st eq 'gal'}">
+                <zm:searchGal var="result" query="${empty param.email ? '*' : param.email}"/>      <%--!TODO optiomizartion needed--%>
+                <c:forEach items="${result.contacts}" var="acontact">
+                    <c:if test="${fn:replace(acontact.id,',','|') eq contactId}">
+                        <c:set var="contact" value="${acontact}"/>
+                    </c:if>
+                </c:forEach>
+            </c:when>
+        </c:choose>
         <div  style="border:1px solid rgb(204, 204, 204); padding:1px;margin:10px;float:left;min-width:45%;">
           <app:displayContact contact="${contact}"/>
         </div>
@@ -53,6 +68,7 @@
 </c:if>
 
 <c:if test="${empty contactIds}">
+    <c:if test="${param. st eq 'contact'}">
     <zm:computeSearchContext var="context" types="contact" limit="1000" usecache="true"/>
     <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
         <zm:getContact id="${hit.contactHit.id}" var="contact"/>
@@ -60,6 +76,15 @@
             <app:displayContact contact="${contact}"/>
         </div>
     </c:forEach>
+    </c:if>
+    <c:if test="${param. st eq 'gal'}">
+    <zm:searchGal var="result" query="*"/>
+    <c:forEach items="${result.contacts}" var="contact" varStatus="status">
+        <div  style="border:1px solid rgb(204, 204, 204); padding:1px;margin:10px;float:left;min-width:45%;">
+            <app:displayContact contact="${contact}"/>
+        </div>
+    </c:forEach>
+    </c:if>
 </c:if>
 </td>
 </tr>

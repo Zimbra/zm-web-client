@@ -47,11 +47,12 @@
                     <td height="100%" nowrap valign="middle" style="padding: 0 2px 0 2px">
                         <input onclick="zprint();return false;" id="${keys ? 'SOPPRINT' : ''}" name="actionPrint" type="submit" value='<fmt:message key="actionPrint" />' title='<fmt:message key="actionPrint" />' />
                     </td>
-                    <c:if test="${not empty contact}">
+                    <c:if test="${not empty contact and !contact.isGalContact}">
                         <td><div class='vertSep'></div><input type='hidden' name="actionEditId" value="${contact.id}"></td>
                         <app:button id="${keys ? 'OPEDIT' : ''}" name="actionEdit" src="startup/ImgEdit.gif" tooltip="edit" text="edit"/>
                     </c:if>
                     <td><div class='vertSep'></div></td>
+                    <c:if test="${!contact.isGalContact}">
                     <c:choose>
                         <c:when test="${context.isFolderSearch and context.folder.isTrash}">
                             <app:button id="${keys ? 'OPDELETE' : ''}" name="actionHardDelete" src="startup/ImgDelete.gif" text="actionDelete" tooltip="actionTrashTT" />
@@ -60,8 +61,10 @@
                             <app:button id="${keys ? 'OPDELETE' : ''}" src="startup/ImgDelete.gif" name="actionDelete" text="actionDelete" tooltip="actionTrashTT"/>
                         </c:otherwise>
                     </c:choose>
+                    </c:if>    
                     <td><div class='vertSep'></div></td>
                     <app:button id="${keys ? 'OPCOMPOSE' : ''}" src="startup/ImgNewMessage.gif" name="actionCompose" text="compose" tooltip="compose"/>
+                    <c:if test="${context.isContactSearch}">
                     <td><div class='vertSep'></div></td>
                     <td nowrap>
                         <select name="folderId" onchange="zclick('SOPMOVE')">
@@ -87,6 +90,7 @@
                     </td>
                     <app:button id="${keys ? 'OPGO' : ''}" name="action" tooltip="actionContactGoTT" text="actionGo" />
                     </c:if>
+                    </c:if>    
                     <c:if test="${context.folder.isTrash}">
                         <td><div class='vertSep'></div><input type="hidden" name="contextFolderId" value="${context.selectedId}"></td>
                         <app:button extra="onclick='return validatefn();'" name="actionEmpty" tooltip="emptyTrash" text="emptyTrash"/>

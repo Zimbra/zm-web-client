@@ -30,7 +30,7 @@
         <table width="100%" cellspacing="0" cellpadding="0">
             <tr class='${zm:getFolder(pageContext, contact.folderId).styleColor}Bg'>
         <td width="20"><center><app:img src="${contact.isGroup ? 'contacts/ImgGroup.gif' : 'contacts/ImgContact.gif'}" altkey="${contact.imageAltKey}"/></center></td>
-        <td class='contactHeader'>${fn:escapeXml(empty contact.displayFileAs ? noDisplayAs : contact.displayFileAs)}
+        <td class='contactHeader'>${fn:escapeXml(empty contact.displayFileAs ? noDisplayAs : (contact.isGalContact ? contact.fullName : contact.displayFileAs))} <c:if test="${contact.isGalContact}"> (${fn:escapeXml(contact.displayFileAs)}) </c:if>
         </td>
         <td align='right' class='Tags'>
             <c:if test="${contact.hasTags and mailbox.features.tagging}">
@@ -56,8 +56,10 @@
                 ${fn:escapeXml(contact.company)}
             </c:if>
         </td><td width="20">
+        <c:if test="${!contact.isGalContact}">
         <c:set var="folderImage" value="${zm:getFolder(pageContext, contact.folderId).image}"/>
         <app:img altkey='ALT_CONTACT_FOLDER' src="${folderImage}"/>
+        </c:if>
     </td><td
             class="companyFolder">${fn:escapeXml(zm:getFolderName(pageContext, contact.folderId))}</td>
     </tr>
