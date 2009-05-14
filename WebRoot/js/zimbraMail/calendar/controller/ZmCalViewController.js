@@ -2192,9 +2192,11 @@ function(appt, actionMenu) {
 	}
 
 	var del = actionMenu.getMenuItem(ZmOperation.DELETE);
-	del.setText((isOrganizer && appt.otherAttendees) ? ZmMsg.cancel : ZmMsg.del);
-	var isSynced = Boolean(calendar.url);
-	del.setEnabled(!calendar.isReadOnly() && !isSynced && !isPrivate);
+    if(del) {
+	    del.setText((isOrganizer && appt.otherAttendees) ? ZmMsg.cancel : ZmMsg.del);
+	    var isSynced = Boolean(calendar.url);
+	    del.setEnabled(!calendar.isReadOnly() && !isSynced && !isPrivate);
+    }
 
 	// recurring action menu options
 	this._recurringActionMenu.enable(ZmOperation.VIEW_APPT_SERIES, !appt.exception);
@@ -2205,16 +2207,18 @@ function(ev) {
 	ZmListController.prototype._listActionListener.call(this, ev);
 	var appt = ev.item;
 	var actionMenu = this.getActionMenu();
-	this._enableActionMenuReplyOptions(appt, actionMenu);
 	var menu = appt.isRecurring() ? this._recurringActionMenu : actionMenu;
-    var op = menu == actionMenu && appt.exception ? ZmOperation.VIEW_APPT_INSTANCE : null;
+    this._enableActionMenuReplyOptions(appt, menu);
+    var op = (menu == actionMenu) && appt.exception ? ZmOperation.VIEW_APPT_INSTANCE : null;
     actionMenu.__appt = appt;
 	menu.setData(ZmOperation.KEY_ID, op);
     if(appt.isRecurring()) {
         var menuItem = menu.getMenuItem(ZmOperation.VIEW_APPT_INSTANCE);
         this._setTagMenu(menuItem.getMenu());
+        this._enableActionMenuReplyOptions(appt, menuItem.getMenu());
         menuItem = menu.getMenuItem(ZmOperation.VIEW_APPT_SERIES);
         this._setTagMenu(menuItem.getMenu());
+        this._enableActionMenuReplyOptions(appt, menuItem.getMenu());
     }    
 	menu.popup(0, ev.docX, ev.docY);
 };
