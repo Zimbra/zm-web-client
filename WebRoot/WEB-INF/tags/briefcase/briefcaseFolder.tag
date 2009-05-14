@@ -50,7 +50,7 @@
         <a href='${fn:escapeXml(url)}' id="FLDR${folder.id}">
             <app:img src="${folder.image}" alt='${fn:escapeXml(label)}'/>
             <span <c:if test="${folder.id eq requestScope.context.selectedId}"> class='ZhTISelected'</c:if>>
-                ${zm:truncate(fn:escapeXml(label),15,true)}
+                ${fn:escapeXml(zm:truncate(label,15,true))}
                 <c:if test="${folder.hasUnread}">(${folder.unreadCount}) </c:if>
             </span>
         </a>
