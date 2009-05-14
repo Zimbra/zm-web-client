@@ -34,12 +34,12 @@
                     <c:choose>
                         <c:when test="${context.isFolderSearch and context.folder.isFeed}">
                             <td><input type="hidden" name="contextFolderId" value="${context.selectedId}"></td>
-                            <app:button name="actionLoadFeed" src="arrows/ImgRefresh.gif" tooltip="checkFeed" text="checkFeed"/>
+                            <app:button name="actionLoadFeed" src="startup/ImgRefresh.gif" tooltip="checkFeed" text="checkFeed"/>
                         </c:when>
                         <c:otherwise>
                             <td nowrap>
                                 <zm:currentResultUrl var="refreshUrl" value="/h/search" context="${context}" refresh="true" />
-                                <a href="${fn:escapeXml(refreshUrl)}" <c:if test="${keys}"></c:if>><app:img src="arrows/ImgRefresh.gif" altkey="refresh"/><span>&nbsp;<fmt:message key="refresh"/></span></a>
+                                <a href="${fn:escapeXml(refreshUrl)}" <c:if test="${keys}"></c:if>><app:img src="startup/ImgRefresh.gif" altkey="refresh"/><span>&nbsp;<fmt:message key="refresh"/></span></a>
                             </td>
                         </c:otherwise>
                     </c:choose>

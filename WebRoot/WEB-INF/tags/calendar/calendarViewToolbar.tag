@@ -38,7 +38,7 @@
                 <tr valign="middle">
                     <app:calendarUrl var="refreshUrl" refresh="1"/>
                     <td height="100%">
-                        <a href="${fn:escapeXml(refreshUrl)}" <c:if test="${keys}"> id="CAL_REFRESH"</c:if>><app:img altkey="ALT_CAL_REFRESH" src="arrows/ImgRefresh.gif"/><span style='padding-left:5px'><fmt:message key="refresh"/></span></a>
+                        <a href="${fn:escapeXml(refreshUrl)}" <c:if test="${keys}"> id="CAL_REFRESH"</c:if>><app:img altkey="ALT_CAL_REFRESH" src="startup/ImgRefresh.gif"/><span style='padding-left:5px'><fmt:message key="refresh"/></span></a>
                     </td>
                     <td>
                         <div class='vertSep'></div>

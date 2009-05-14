@@ -51,7 +51,7 @@
             <c:when test="${not empty folder.remoteURL}">
                 <app:calendarUrl var="syncUrl" sync="${folder.id}"/>
                 <fmt:message key="reloadCalendar" var="reload"/>
-                <a href="${fn:escapeXml(syncUrl)}"><app:img src="arrows/ImgRefresh.gif" title="${reload}"/></a>
+                <a href="${fn:escapeXml(syncUrl)}"><app:img src="startup/ImgRefresh.gif" title="${reload}"/></a>
             </c:when>
             <c:otherwise>
                 &nbsp;
