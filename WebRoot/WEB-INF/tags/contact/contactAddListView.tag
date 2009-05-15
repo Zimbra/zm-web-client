@@ -15,6 +15,7 @@
  * ***** END LICENSE BLOCK *****
 --%>
 <%@ tag body-content="empty" %>
+<%@ attribute name="uploader" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZComposeUploaderBean"%>
 <%@ attribute name="searchResult" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZSearchResultBean"%>
 <%@ attribute name="searchGalResult" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZSearchGalResultBean"%>
 <%@ attribute name="attendeeMode" rtexprvalue="true" required="false"%>
@@ -24,6 +25,18 @@
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
+<c:set var="tz" value="${zm:getTimeZone(uploader.compose.timeZone)}"/>
+<c:set var="today" value="${zm:getToday(tz)}"/>
+<c:choose>
+    <c:when test="${uploader.compose.allDay}">
+        <c:set var="apptStartLong" value="${today.timeInMillis}"/>
+        <c:set var="apptEndLong" value="${zm:addDay(today, 1).timeInMillis}"/>
+    </c:when>
+    <c:otherwise>
+        <c:set var="apptStartLong" value="${today.timeInMillis + 1000*60*(uploader.compose.startHour * 60 + uploader.compose.startMinute )}"/>
+        <c:set var="apptEndLong" value="${today.timeInMillis + 1000*60*(uploader.compose.endHour * 60 + uploader.compose.endMinute )}"/>
+    </c:otherwise>
+</c:choose>
 
 
 <table width=100% cellpadding=2 cellspacing=0 class="topborder">
@@ -31,7 +44,12 @@
         <th width=1%>&nbsp;
             <c:choose>
                 <c:when test="${attendeeMode}">
+                    <c:if test="${uploader.contactLocation eq 'resources'}">
+                    <th width=2%><fmt:message key="resource"/>:
+                    </c:if>
+                    <c:if test="${uploader.contactLocation ne 'resources'}">
                     <th width=2%><fmt:message key="attendee"/>:
+                    </c:if>
                 </c:when>
                 <c:when test="${groupMode}">
                     <th width=2%><fmt:message key="contact"/>:
@@ -48,12 +66,18 @@
         <c:choose>
             <c:when test="${not empty searchGalResult}">
                 <th nowrap><fmt:message key="email"/>
+                <c:if test="${uploader.contactLocation eq 'resources'}">
+                <th width=20% nowrap><fmt:message key="type"/>
+                </c:if>
             </c:when>
             <c:otherwise>
                 <th width=20% nowrap><fmt:message key="name"/>
                 <th ><fmt:message key="email"/>
            </c:otherwise>
         </c:choose>
+        <th width="10%">
+            <fmt:message key="freeBusy"/>
+        </th>
     </tr>
     <c:forEach items="${searchResult.hits}" var="hit" varStatus="status">
     <c:if test="${not empty hit.contactHit.displayEmail or hit.contactHit.isGroup}">
@@ -79,6 +103,23 @@
                     ${fn:escapeXml(empty hit.contactHit.fileAsStr ? '' : hit.contactHit.fileAsStr)}
             </td>
             <td >&nbsp;${fn:escapeXml(hit.contactHit.displayEmail)}</td>
+            <td>
+               <zm:getFreeBusyAppointments varexception="exp" var="freeBusyAppts" start="${apptStartLong}" end="${apptEndLong}" email="${hit.contactHit.email}"/>
+               <c:if test="${empty exp or exp eq null}">
+                    <c:set var="freeBusyStatusKey" value="free"/>
+                    <c:forEach items="${freeBusyAppts.appointments}" var="appt" >
+                        <c:if test="${freeBusyStatusKey eq 'free'}">
+                            <c:if test="${appt.freeBusyActualBusy}">
+                                <c:set var="freeBusyStatusKey" value="busy"/>
+                            </c:if>
+                            <c:if test="${appt.freeBusyActualTentative}">
+                                <c:set var="freeBusyStatusKey" value="tentative"/>
+                            </c:if>
+                        </c:if>
+                    </c:forEach>
+                   <fmt:message key="${freeBusyStatusKey}"/>
+                </c:if>
+            </td>
         </tr>
     </c:if>
     <c:if test="${not empty hit.contactHit.email2}">
@@ -104,6 +145,26 @@
                     ${fn:escapeXml(empty hit.contactHit.fileAsStr ? '' : hit.contactHit.fileAsStr)}
             </td>
             <td >&nbsp;${fn:escapeXml(hit.contactHit.email2)}</td>
+            <td>
+               <zm:getFreeBusyAppointments varexception="exp" var="freeBusyAppts" start="${apptStartLong}" end="${apptEndLong}" email="${hit.contactHit.email2}"/>
+               <c:if test="${empty exp or exp eq null}">
+                    <c:set var="freeBusyStatusKey" value="free"/>
+                    <c:forEach items="${freeBusyAppts.appointments}" var="appt" >
+                        <c:if test="${freeBusyStatusKey eq 'free'}">
+                            <c:if test="${appt.freeBusyActualBusy}">
+                                <c:set var="freeBusyStatusKey" value="busy"/>
+                            </c:if>
+                            <c:if test="${appt.freeBusyActualTentative}">
+                                <c:set var="freeBusyStatusKey" value="tentative"/>
+                            </c:if>
+                            <c:if test="${appt.freeBusyActualOufOfOffice}">
+                                <c:set var="freeBusyStatusKey" value="outOfOffice"/>
+                            </c:if>
+                        </c:if>
+                    </c:forEach>
+                   <fmt:message key="${freeBusyStatusKey}"/>
+                </c:if>
+            </td>
         </tr>
     </c:if>
     <c:if test="${not empty hit.contactHit.email3}">
@@ -129,6 +190,26 @@
                     ${fn:escapeXml(empty hit.contactHit.fileAsStr ? '' : hit.contactHit.fileAsStr)}
             </td>
             <td >&nbsp;${fn:escapeXml(hit.contactHit.email3)}</td>
+            <td>
+               <zm:getFreeBusyAppointments varexception="exp" var="freeBusyAppts" start="${apptStartLong}" end="${apptEndLong}" email="${hit.contactHit.email3}"/>
+               <c:if test="${empty exp or exp eq null}">
+                    <c:set var="freeBusyStatusKey" value="free"/>
+                    <c:forEach items="${freeBusyAppts.appointments}" var="appt" >
+                        <c:if test="${freeBusyStatusKey eq 'free'}">
+                            <c:if test="${appt.freeBusyActualBusy}">
+                                <c:set var="freeBusyStatusKey" value="busy"/>
+                            </c:if>
+                            <c:if test="${appt.freeBusyActualTentative}">
+                                <c:set var="freeBusyStatusKey" value="tentative"/>
+                            </c:if>
+                            <c:if test="${appt.freeBusyActualOufOfOffice}">
+                                <c:set var="freeBusyStatusKey" value="outOfOffice"/>
+                            </c:if>
+                        </c:if>
+                    </c:forEach>
+                   <fmt:message key="${freeBusyStatusKey}"/>
+                </c:if>
+            </td>
         </tr>
     </c:if>
     <c:if test="${not empty hit.contactHit.workEmail1}">
@@ -154,6 +235,26 @@
                     ${fn:escapeXml(empty hit.contactHit.fileAsStr ? '' : hit.contactHit.fileAsStr)}
             </td>
             <td >&nbsp;${fn:escapeXml(hit.contactHit.workEmail1)}</td>
+            <td>
+               <zm:getFreeBusyAppointments varexception="exp" var="freeBusyAppts" start="${apptStartLong}" end="${apptEndLong}" email="${hit.contactHit.workEmail1}"/>
+               <c:if test="${empty exp or exp eq null}">
+                    <c:set var="freeBusyStatusKey" value="free"/>
+                    <c:forEach items="${freeBusyAppts.appointments}" var="appt" >
+                        <c:if test="${freeBusyStatusKey eq 'free'}">
+                            <c:if test="${appt.freeBusyActualBusy}">
+                                <c:set var="freeBusyStatusKey" value="busy"/>
+                            </c:if>
+                            <c:if test="${appt.freeBusyActualTentative}">
+                                <c:set var="freeBusyStatusKey" value="tentative"/>
+                            </c:if>
+                            <c:if test="${appt.freeBusyActualOufOfOffice}">
+                                <c:set var="freeBusyStatusKey" value="outOfOffice"/>
+                            </c:if>
+                        </c:if>
+                    </c:forEach>
+                   <fmt:message key="${freeBusyStatusKey}"/>
+                </c:if>
+            </td>
         </tr>
     </c:if>
     <c:if test="${not empty hit.contactHit.workEmail2}">
@@ -179,6 +280,26 @@
                     ${fn:escapeXml(empty hit.contactHit.fileAsStr ? '' : hit.contactHit.fileAsStr)}
             </td>
             <td >&nbsp;${fn:escapeXml(hit.contactHit.workEmail2)}</td>
+            <td>
+               <zm:getFreeBusyAppointments varexception="exp" var="freeBusyAppts" start="${apptStartLong}" end="${apptEndLong}" email="${hit.contactHit.workEmail2}"/>
+               <c:if test="${empty exp or exp eq null}">
+                    <c:set var="freeBusyStatusKey" value="free"/>
+                    <c:forEach items="${freeBusyAppts.appointments}" var="appt" >
+                        <c:if test="${freeBusyStatusKey eq 'free'}">
+                            <c:if test="${appt.freeBusyActualBusy}">
+                                <c:set var="freeBusyStatusKey" value="busy"/>
+                            </c:if>
+                            <c:if test="${appt.freeBusyActualTentative}">
+                                <c:set var="freeBusyStatusKey" value="tentative"/>
+                            </c:if>
+                            <c:if test="${appt.freeBusyActualOufOfOffice}">
+                                <c:set var="freeBusyStatusKey" value="outOfOffice"/>
+                            </c:if>
+                        </c:if>
+                    </c:forEach>
+                   <fmt:message key="${freeBusyStatusKey}"/>
+                </c:if>
+            </td>
         </tr>
     </c:if>
     <c:if test="${not empty hit.contactHit.workEmail3}">
@@ -204,6 +325,26 @@
                     ${fn:escapeXml(empty hit.contactHit.fileAsStr ? '' : hit.contactHit.fileAsStr)}
             </td>
             <td >&nbsp;${fn:escapeXml(hit.contactHit.workEmail3)}</td>
+            <td>
+               <zm:getFreeBusyAppointments varexception="exp" var="freeBusyAppts" start="${apptStartLong}" end="${apptEndLong}" email="${hit.contactHit.workEmail3}"/>
+               <c:if test="${empty exp or exp eq null}">
+                    <c:set var="freeBusyStatusKey" value="free"/>
+                    <c:forEach items="${freeBusyAppts.appointments}" var="appt" >
+                        <c:if test="${freeBusyStatusKey eq 'free'}">
+                            <c:if test="${appt.freeBusyActualBusy}">
+                                <c:set var="freeBusyStatusKey" value="busy"/>
+                            </c:if>
+                            <c:if test="${appt.freeBusyActualTentative}">
+                                <c:set var="freeBusyStatusKey" value="tentative"/>
+                            </c:if>
+                            <c:if test="${appt.freeBusyActualOufOfOffice}">
+                                <c:set var="freeBusyStatusKey" value="outOfOffice"/>
+                            </c:if>
+                        </c:if>
+                    </c:forEach>
+                    <fmt:message key="${freeBusyStatusKey}"/>
+                </c:if>
+            </td>
         </tr>
     </c:if>
     </c:forEach>
@@ -213,7 +354,15 @@
             <td width=1%>&nbsp;</td>
             <c:choose>
                 <c:when test="${attendeeMode}">
-                    <td width=2% nowrap><input type=checkbox  name="addAttendees" value="${fn:escapeXml(contact.galFullAddress)}"></td>
+                    <c:choose>
+                        <c:when test="${uploader.contactLocation eq 'resources'}">
+                            <td width=2% nowrap><input type=checkbox  name="addResources" value="${fn:escapeXml(contact.galFullAddress)}"></td>
+                        </c:when>
+                    <c:otherwise>
+                        <td width=2% nowrap><input type=checkbox  name="addAttendees" value="${fn:escapeXml(contact.galFullAddress)}"></td>
+                    </c:otherwise>
+                    </c:choose>
+
                 </c:when>
                 <c:when test="${groupMode}">
                     <td width=2% nowrap><input type=checkbox  name="addToGroup" value="${fn:escapeXml(contact.galFullAddress)}"></td>
@@ -230,6 +379,32 @@
             <td >
                     ${fn:escapeXml(contact.galFullAddress)}
             </td>
+            <c:if test="${uploader.contactLocation eq 'resources'}">
+            <td>
+                    ${fn:escapeXml(contact.attrs.zimbraCalResType)}
+            </td>
+            </c:if>
+            <td>
+                <zm:getFreeBusyAppointments varexception="exp" var="freeBusyAppts" start="${apptStartLong}" end="${apptEndLong}" email="${contact.email}"/>
+               <c:if test="${empty exp or exp eq null}">
+                    <c:set var="freeBusyStatusKey" value="free"/>
+                    <c:forEach items="${freeBusyAppts.appointments}" var="appt" >
+                        <c:if test="${freeBusyStatusKey eq 'free'}">
+                            <c:if test="${appt.freeBusyActualBusy}">
+                                <c:set var="freeBusyStatusKey" value="busy"/>
+                            </c:if>
+                            <c:if test="${appt.freeBusyActualTentative}">
+                                <c:set var="freeBusyStatusKey" value="tentative"/>
+                            </c:if>
+                            <c:if test="${appt.freeBusyActualOufOfOffice}">
+                                <c:set var="freeBusyStatusKey" value="outOfOffice"/>
+                            </c:if>
+                        </c:if>
+                    </c:forEach>
+                    <fmt:message key="${freeBusyStatusKey}"/>
+                </c:if>
+            </td>
+
         </tr>
         </c:if>
     </c:forEach>

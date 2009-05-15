@@ -109,7 +109,7 @@
                             <app:button name="actionRepeatEdit" src="calendar/ImgApptRecur.gif" tooltip="editRecurrence" text="repeat" disabled="${not editrecur}"/>
                             <c:if test="${mailbox.features.groupcalendarEnabled}">
                                 <td><div class='vertSep'></div></td>
-                                <app:button name="actionContactAdd" src="contacts/ImgContactsPicker.gif" tooltip="addAttendeesFromContacts" text="addAttendeesFromContacts"/>
+                                <app:button id="actionContactAdd" name="actionContactAdd" src="contacts/ImgContactsPicker.gif" tooltip="addAttendeesResourcesFromContacts" text="addAttendeesResourcesFromContacts"/>
                             </c:if>
 
 
@@ -157,6 +157,7 @@
     </c:set>
 
     <form action="" method="post" enctype="multipart/form-data" accept-charset="utf-8" name="apptForm">
+        <input type="hidden" name="contactLocation" value="personal">
         <table width="100%" style="height:100%;" cellpadding="0" cellspacing="0">
             <tr>
                 <td class='TbTop'>
@@ -440,13 +441,31 @@
                                                 <div class="ZhAC ZhACTo">
                                                     <textarea id="attField" rows="3" style='width:99%' cols="80"
                                                               name="attendees">${fn:escapeXml(compose.attendees)}</textarea>
-                                                    <br><div class='ZhACCont' id="attContainer" style='width:99%;'></div>
+                                                    <br><div class='ZhACCont' id="attContainer" style='width:99%;z-index:999;'></div>
                                                 </div>
                                             </td>
                                         </tr>
                                     </table>
                                 </td>
                             </tr>
+                            <c:if test="${not empty compose.resources}">
+                            <tr>
+                                <td colspan="2">
+                                    <table>
+                                        <tr>
+                                            <td valign='top' width="1%" align="right" nowrap> <fmt:message key="resources"/>: </td>
+                                            <td colspan="2" nowrap>
+                                                <div>
+                                                    <input type="hidden" name="resources" value="${fn:escapeXml(compose.resources)}">
+                                                    <a href="javascript:void(0);" onclick="document.forms['apptForm'].contactLocation.value='resources'; zclick('SactionContactAdd')">
+                                                    ${fn:escapeXml(compose.resources)} </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            </c:if>    
                         </c:if>
                         <c:set var="firstAttachment" value="${true}"/>
                         <c:if test="${!empty compose.messageAttachments}">
