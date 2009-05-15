@@ -172,15 +172,6 @@ ZmNotebookPageController.prototype.show = function(pageOrFolderId, force, fromSe
 
 // initialization
 
-ZmNotebookPageController.prototype._printListener =
-function(ev) {
-	var listView = this._listView[this._currentView];
-	var items = listView.getSelection();
-	var page = (items instanceof Array) ? items[0] : items;
-
-	window.open(page.getRestUrl(true), "_blank");
-};
-
 ZmNotebookPageController.prototype._getNaviToolBarOps = function() {
 	var list = ZmNotebookController.prototype._getNaviToolBarOps.call(this);
 	list = list.concat(
