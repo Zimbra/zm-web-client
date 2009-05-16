@@ -1175,7 +1175,7 @@ ZmSpreadSheet.prototype._handleKey = function(dwtev, ev) {
 	    case 113: // F2
 		this._editCell(this._selectedCell);
 		break;
-
+                
 	    case 46: // DEL
 		if (this._selectedRangeName) {
 			this._model.forEachCell(this._selectedRangeName,
@@ -1186,7 +1186,7 @@ ZmSpreadSheet.prototype._handleKey = function(dwtev, ev) {
 								cell.clearValue();
 						});
 		}
-        this._showRangeByRangeName(this._selectedRangeName);        
+        this._showRangeByRangeName(this._selectedRangeName);
 
         // the selected cell _can_ be outside the selected range. ;-)
 		// let's clear that too.
@@ -1198,7 +1198,9 @@ ZmSpreadSheet.prototype._handleKey = function(dwtev, ev) {
 		break;
 
 	    default:
-		if (!this._editingCell && !dwtev.isCommand() && ( (!needs_keypress && ev.charCode) ||
+        if(!this._editingCell && dwtev.keyCode == 8){ //BackSpace
+            this._handleDelKey(dwtev);
+        }else if (!this._editingCell && !dwtev.isCommand() && ( (!needs_keypress && ev.charCode) ||
 					    (needs_keypress && /keypress/i.test(dwtev.type)))) {
 			var val = String.fromCharCode(dwtev.charCode);
 // 			// FIXME: this sucks.  Isn't there any way to determine
@@ -1260,6 +1262,24 @@ ZmSpreadSheet.prototype._handleKey = function(dwtev, ev) {
 	return handled;
 };
 
+ZmSpreadSheet.prototype._handleDelKey =
+function(ev){
+    if (this._selectedRangeName) {
+        this._model.forEachCell(this._selectedRangeName,
+                function(cell) {
+                    if (dwtev.isCommand())
+                        cell.clearAll();
+                    else
+                        cell.clearValue();
+                });
+        this._showRangeByRangeName(this._selectedRangeName);
+    }
+    
+    // the selected cell _can_ be outside the selected range. ;-)
+    // let's clear that too.
+    this.getCellModel(this._selectedCell).clearValue();
+};
+
 ZmSpreadSheet.prototype._keyPress = function(ev) {
 	this._clearTooltip();
 	ev || (ev = window.event);
@@ -1271,9 +1291,7 @@ ZmSpreadSheet.prototype._keyPress = function(ev) {
     if(targetEl == fileName.getInputElement()){
         dwtev._stopPropagation = true;
         dwtev._returnValue = true;
-    }/*else if(targetEl == this._getInputField()){
-        this._input_keyPress(ev);
-    }*/else{
+    }else{
 	    this._handleKey(dwtev, ev);
     }
     dwtev.setToDhtmlEvent(ev);
