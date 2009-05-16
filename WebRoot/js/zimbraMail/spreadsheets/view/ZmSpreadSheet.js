@@ -632,20 +632,28 @@ ZmSpreadSheet.prototype._cellClicked = function(td, ev) {
 		DwtMenu._activeMenu.popdown();
 
 	if (is_mousedown) {
-        
-        this._selectCell(td);
-        //console.log(td);
+
 		var stopEvent = true;
 		if (this._editingCell && this._hasExpression) {
+            //this._selectCell(td);
+            var cN = ZmSpreadSheet.getCellName(td);
+            cN = cN+":"+cN;
+            this._showRangeByRangeName(cN);
 			var input = this._getInputField();
 			var start = Dwt.getSelectionStart(input);
 			var str = input.value.substr(0, start);
-			if (/\)\s*$/.test(str))
+			if (/\)\s*$/.test(str)){
 				stopEvent = false;
-			else
+            }
+			else{
+                this._editRangeSelectedCell = td;
 				this._updateCellRangeToken();
-		} else
+                stopEvent = true;
+            }
+		} else{
+            this._selectCell(td);
 			this.focus();
+        }
 		if (stopEvent) {
 			ev._stopPropagation = true;
 			ev._returnValue = false;
@@ -654,7 +662,6 @@ ZmSpreadSheet.prototype._cellClicked = function(td, ev) {
 	}
 
     if(is_dblclick){
-        
         ev._stopPropagation = true;
 		ev._returnValue = false;
 		this._editCell(td);
@@ -908,7 +915,7 @@ ZmSpreadSheet.prototype._selectCell = function(td) {
 	this._selectedCell = td;
 	if (td) {
 
-        if(this.isRange()){
+        if(this.isRange() && !this._editingCell){
             this._hideRange();
         }
         
@@ -930,7 +937,9 @@ ZmSpreadSheet.prototype._selectCell = function(td) {
 		}
 	}
     //FileName input field Blur
-    this.getToolbar().get("fileName").blur();
+    if(!this._editingCell){
+        this.getToolbar().get("fileName").blur();
+    }
 };
 
 ZmSpreadSheet.prototype._getHeaderTable = function() {
@@ -1256,14 +1265,18 @@ ZmSpreadSheet.prototype._keyPress = function(ev) {
 	ev || (ev = window.event);
 	var dwtev = new DwtKeyEvent();
 	dwtev.setFromDhtmlEvent(ev);
+    var targetEl = DwtUiEvent.getTarget(dwtev);
+
     var fileName = this.getToolbar().get("fileName");
-    if(DwtUiEvent.getTarget(dwtev) == fileName.getInputElement()){
+    if(targetEl == fileName.getInputElement()){
         dwtev._stopPropagation = true;
         dwtev._returnValue = true;
-    }else{
+    }/*else if(targetEl == this._getInputField()){
+        this._input_keyPress(ev);
+    }*/else{
 	    this._handleKey(dwtev, ev);
     }
-	dwtev.setToDhtmlEvent(ev);
+    dwtev.setToDhtmlEvent(ev);
 	return dwtev._returnValue;
 };
 
@@ -1358,11 +1371,6 @@ ZmSpreadSheet.prototype._selectRange = function(c1, c2, showSingleCell) {
 	c1 = ZmSpreadSheetModel.identifyCell(c1);
 	c2 = ZmSpreadSheetModel.identifyCell(c2);
 	if (show && c1 && c2) {
-		/*var startRow = Math.min(c1.row, c2.row);
-		var startCol = Math.min(c1.col, c2.col);
-		var endRow   = Math.max(c1.row, c2.row);
-		var endCol   = Math.max(c1.col, c2.col);
-		this._showRange(startRow, startCol, endRow, endCol); */
         this._showRange(c1.row, c1.col, c2.row, c2.col);
 	} else
 		this._hideRange();
@@ -1436,6 +1444,8 @@ ZmSpreadSheet.prototype._showRange = function(sRow, sCol, eRow, eCol) {
     this._endRangeRow   = eRow;
     this._endRangeCol   = eCol;
 
+    //Logic to Select Range
+
     var startRow = Math.min(sRow, eRow);
     var startCol = Math.min(sCol, eCol);
     var endRow   = Math.max(sRow, eRow);
@@ -1475,8 +1485,13 @@ ZmSpreadSheet.prototype._showRange = function(sRow, sCol, eRow, eCol) {
     autoFill.style.left = c2.offsetLeft + c2.offsetWidth - 4 + "px";
     autoFill.style.display = "block";
 
+    // End of Logic
+
     this._startRangeCell = c1;
     this._endRangeCell   = c2;
+
+    this._selectedRangeName = [ ZmSpreadSheet.getCellName(c1),
+				    ZmSpreadSheet.getCellName(c2) ].join(":");
 };
 
 ZmSpreadSheet.prototype._getRangeDiv = function() {
@@ -1523,14 +1538,15 @@ ZmSpreadSheet.prototype._rangediv_mousedown = function(ev) {
 	this._clearTooltip();
 	var dwtev = new DwtUiEvent(ev);
 	dwtev.setFromDhtmlEvent(ev);
-    this._rangediv_findCell(dwtev);
+    var isEditingExpr = ( this._editingCell && this._hasExpression );
+    this._rangediv_findCell(dwtev, isEditingExpr, isEditingExpr);
 	this._hideRange();
 	dwtev._stopPropagation = true;
 	dwtev._returnValue = false;
 	dwtev.setToDhtmlEvent(ev);
 };
 
-ZmSpreadSheet.prototype._rangediv_findCell = function(ev){
+ZmSpreadSheet.prototype._rangediv_findCell = function(ev, selectRange, donotselectcell){
 
     var startRow = this._startRangeRow;
     var startCol = this._startRangeCol;
@@ -1543,7 +1559,16 @@ ZmSpreadSheet.prototype._rangediv_findCell = function(ev){
     posY = posY - this._getRelDiv().offsetTop; // Relative height according to reldiv.
 
     var cell = this._findCell( posX, posY, startRow, startCol, endRow, endCol);
-    if(cell) this._selectCell( cell );
+    if(cell && selectRange){
+        this._editRangeSelectedCell = cell;
+        var cN = ZmSpreadSheet.getCellName(cell);
+        cN = cN+":"+cN;
+        this._showRangeByRangeName(cN);
+		this._updateCellRangeToken();
+    }
+    if(cell && !donotselectcell){
+        this._selectCell( cell );
+    }
 
 };
 
@@ -1661,8 +1686,12 @@ ZmSpreadSheet.prototype._table_selrange_MouseMove = function(ev) {
 
     if (td && /^td$/i.test(td.tagName)
             && td.cellIndex > 0 && td.parentNode.rowIndex > 0) {
-        this._selectRange(ZmSpreadSheet.getCellName(this._selectedCell),
-                ZmSpreadSheet.getCellName(td), false);
+        var startCell = this._selectedCell;
+        if(this._editingCell){
+            startCell = this._editRangeSelectedCell;    
+        }
+        this._selectRange(ZmSpreadSheet.getCellName(startCell),
+                ZmSpreadSheet.getCellName(td), true);
         this._updateCellRangeToken();
     }
 
