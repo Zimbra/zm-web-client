@@ -24,8 +24,10 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <mo:handleError>
     <zm:getMailbox var="mailbox"/>
+    <c:if test="${!context.isGALSearch}">
     <c:set var="contactId" value="${context.currentItem.id}"/>
     <c:if test="${not empty contactId}"><zm:getContact id="${contactId}" var="contact"/></c:if>
+    </c:if>
     <mo:searchTitle var="title" context="${context}"/>
 </mo:handleError>
 <c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/>
