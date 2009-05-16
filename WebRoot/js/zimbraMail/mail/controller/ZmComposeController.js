@@ -1020,6 +1020,7 @@ ZmComposeController.prototype._processSendMsg =
 function(draftType, msg, resp) {
 	var isDraft = (draftType != ZmComposeController.DRAFT_TYPE_NONE);
 	if (!isDraft) {
+		var popped = false;
 		if (appCtxt.get(ZmSetting.SHOW_MAIL_CONFIRM)) {
 			var confirmController = AjxDispatcher.run("GetMailConfirmController");
 			confirmController.showConfirmation(msg, this.viewId, this.tabId);
@@ -1034,7 +1035,7 @@ function(draftType, msg, resp) {
 					appCtxt.setStatusMsg(ZmMsg.messageSent);
 				}
 			}
-			this._app.popView(true);
+			popped = this._app.popView(true);
 		}
 
 		if (resp || !appCtxt.get(ZmSetting.SAVE_TO_SENT)) {
@@ -1085,7 +1086,9 @@ function(draftType, msg, resp) {
 				}
 			}
 
-			this._app.popView(true);
+			if (!popped) {
+				this._app.popView(true);
+			}
 		}
 	} else {
 		// TODO - disable save draft button indicating a draft was saved
