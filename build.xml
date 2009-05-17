@@ -1069,6 +1069,7 @@ if (ext == null) ext = "";
         <replace file="${webapp.dir}/WEB-INF/web.xml" token="%%zimbraMailURL%%" value="/zimbra"/>
         <replace file="${webapp.dir}/WEB-INF/web.xml" token="%%zimbraMailPort%%" value="7070"/>
         <replace file="${webapp.dir}/WEB-INF/web.xml" token="%%zimbraMailSSLPort%%" value="7443"/>
+    	<replace file="${webapp.dir}/WEB-INF/web.xml" token="%%zimbraMailTrustedIP%%" value=""/>
     </target>
 
     <target name='clean' depends='customer-init'>
