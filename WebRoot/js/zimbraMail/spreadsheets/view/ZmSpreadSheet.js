@@ -213,6 +213,7 @@ ZmSpreadSheet.prototype._model_insertCol = function(cells, colIndex) {
 		cells[i]._td = td;
 		cells[i].setToElement(td);
 	}
+    this._setColWidth(colIndex);
 	this._header_resetColWidths();
 	this._selectCell(selected);
 };
