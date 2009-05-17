@@ -57,6 +57,7 @@ function() {
 	AjxDispatcher.registerMethod("GetPageEditController", ["NotebookCore", "Notebook"], new AjxCallback(this, this.getPageEditController));
 	AjxDispatcher.registerMethod("GetNotebookCache", ["NotebookCore", "Notebook"], new AjxCallback(this, this.getNotebookCache));
 	AjxDispatcher.registerMethod("GetPageVersionController", ["NotebookCore", "Notebook"], new AjxCallback(this, this.getPageVersionController));
+	AjxDispatcher.registerMethod("GetNotebookFileController", ["NotebookCore", "Notebook"], new AjxCallback(this, this.getFileController));
 };
 
 ZmNotebookApp.prototype._registerOperations =

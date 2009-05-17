@@ -236,9 +236,6 @@ function(view) {
 	this._doublePaneView.setItem(this._item);
 };
 
-// Called after pagination, but we don't want an item to be selected.
-ZmDoublePaneController.prototype._resetSelection = function(idx) {};
-
 ZmDoublePaneController.prototype._displayMsg =
 function(msg) {
 	if (!msg._loaded) { return; }
@@ -409,7 +406,7 @@ function(parent, num) {
 	var isMsg = false;
 	var isDraft = false;
 	if (num == 1) {
-		var item = this._doublePaneView.getSelection()[0];
+		var item = this._mailListView.getSelection()[0];
 		if (item) {
 			isMsg = (item.type == ZmItem.MSG || (item.numMsgs == 1));
 			isDraft = item.isDraft;
@@ -524,7 +521,9 @@ function() {
 
 ZmDoublePaneController.prototype._handleResponseSetSelectedItem =
 function(msg) {
-	this._displayMsg(msg);
+	if (msg) {
+		this._displayMsg(msg);
+	}
 };
 
 ZmDoublePaneController.prototype._listActionListener =

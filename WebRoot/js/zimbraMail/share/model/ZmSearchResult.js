@@ -150,8 +150,8 @@ function(respEl) {
 
 	if (numTypes <= 1) {
 		this.type = currentType;
-	} else if (numTypes == 2 && (currentType == ZmItem.PAGE || currentType == ZmItem.DOCUMENT)) {
-		this.type = ZmItem.PAGE;
+	} else if (numTypes == 2 && (foundType[ZmItem.PAGE] || foundType[ZmItem.DOCUMENT])) {
+		this.type = ZmItem.PAGE;	// notebook search can return either/both
 	} else {
 		this.type = appCtxt.get(ZmSetting.MIXED_VIEW_ENABLED) ? ZmItem.MIXED : currentType;
 	}

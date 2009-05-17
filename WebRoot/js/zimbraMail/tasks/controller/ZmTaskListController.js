@@ -349,14 +349,14 @@ function(parent, num) {
 		parent.enable(ZmOperation.TAG_MENU, (!isShare && num > 0));
 	}
 	var printButton = (parent instanceof ZmButtonToolBar) ? parent.getButton(ZmOperation.PRINT) : null;
-	var printMenuItem = printButton ? printButton.getMenu().getItem(1) : null;
+	var printMenu = printMenu && printButton.getMenu();
+	var printMenuItem = printMenu && printMenu.getItem(1);
 	if (printMenuItem) {
 		var text = (folderId != null) ? ZmMsg.printTaskFolder : ZmMsg.printResults;
 		printMenuItem.setText(text);
 	}
 
-	var printOp = (parent instanceof ZmActionMenu)
-		? ZmOperation.PRINT_TASK : ZmOperation.PRINT;
+	var printOp = (parent instanceof ZmActionMenu) ? ZmOperation.PRINT_TASK : ZmOperation.PRINT;
 	parent.enable(printOp, num > 0);
 
 	parent.enable(ZmOperation.VIEW_MENU, true);

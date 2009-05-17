@@ -578,7 +578,10 @@ function(ev) {
 	}
 
 	var item = ev.item;
-	actionMenu.getOp(ZmOperation.SAVE_FILE).setEnabled(item && item.isRealFile());
+	var op = actionMenu.getOp(ZmOperation.SAVE_FILE);
+	if (op) {
+		op.setEnabled(item && item.isRealFile());
+	}
 };
 
 ZmBriefcaseController.prototype._getActionMenuOps =

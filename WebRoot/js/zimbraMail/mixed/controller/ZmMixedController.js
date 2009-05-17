@@ -26,21 +26,56 @@
  */
 ZmMixedController = function(container, mixedApp) {
 
-	ZmMailListController.call(this, container, mixedApp);
+	ZmListController.call(this, container, mixedApp);
 
 	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
 	this._dragSrc.addDragListener(new AjxListener(this, this._dragListener));
 	
-	this._listeners[ZmOperation.UNDELETE] = new AjxListener(this, this._undeleteListener);
+	// controllers to handle particular types
+	this._listController = {};
 };
 
-ZmMixedController.prototype = new ZmMailListController;
+ZmMixedController.prototype = new ZmListController;
 ZmMixedController.prototype.constructor = ZmMixedController;
 
 ZmMixedController.prototype.toString = 
 function() {
 	return "ZmMixedController";
 };
+
+// Required packages
+ZmMixedController.PKGS = {};
+ZmMixedController.PKGS[ZmItem.CONTACT]		= ["ContactsCore", "Contacts"];
+ZmMixedController.PKGS[ZmItem.GROUP]		= ["ContactsCore", "Contacts"];
+ZmMixedController.PKGS[ZmItem.CONV]			= ["MailCore", "Mail"];
+ZmMixedController.PKGS[ZmItem.MSG]			= ["MailCore", "Mail"];
+ZmMixedController.PKGS[ZmItem.APPT]			= ["CalendarCore", "Calendar"];
+ZmMixedController.PKGS[ZmItem.TASK]			= ["TasksCore", "Tasks"];
+ZmMixedController.PKGS[ZmItem.PAGE]			= ["NotebookCore", "Notebook"];
+ZmMixedController.PKGS[ZmItem.BRIEFCASE]	= ["BriefcaseCore", "Briefcase"];
+
+
+ZmMixedController.LIST_CTLR = {};
+ZmMixedController.LIST_CTLR[ZmItem.MSG]			= "ZmTradController";
+ZmMixedController.LIST_CTLR[ZmItem.CONV]		= "ZmConvListController";
+ZmMixedController.LIST_CTLR[ZmItem.CONTACT]		= "ZmContactListController";
+ZmMixedController.LIST_CTLR[ZmItem.GROUP]		= "ZmContactListController";
+ZmMixedController.LIST_CTLR[ZmItem.APPT]		= "ZmCalViewController";
+ZmMixedController.LIST_CTLR[ZmItem.TASK]		= "ZmTaskListController";
+ZmMixedController.LIST_CTLR[ZmItem.PAGE]		= "ZmNotebookFileController";
+ZmMixedController.LIST_CTLR[ZmItem.DOCUMENT]	= "ZmNotebookFileController";
+ZmMixedController.LIST_CTLR[ZmItem.BRIEFCASE]	= "ZmBriefcaseController";
+
+ZmMixedController.APP = {};
+ZmMixedController.APP[ZmItem.MSG]		= ZmApp.MAIL;
+ZmMixedController.APP[ZmItem.CONV]		= ZmApp.MAIL;
+ZmMixedController.APP[ZmItem.CONTACT]	= ZmApp.CONTACTS;
+ZmMixedController.APP[ZmItem.GROUP]		= ZmApp.CONTACTS;
+ZmMixedController.APP[ZmItem.APPT]		= ZmApp.CALENDAR;
+ZmMixedController.APP[ZmItem.TASK]		= ZmApp.TASKS;
+ZmMixedController.APP[ZmItem.PAGE]		= ZmApp.NOTEBOOK;
+ZmMixedController.APP[ZmItem.DOCUMENT]	= ZmApp.NOTEBOOK;
+ZmMixedController.APP[ZmItem.BRIEFCASE]	= ZmApp.BRIEFCASE;
 
 // Public methods
 
@@ -80,10 +115,10 @@ function(parent, num) {
 	ZmListController.prototype._resetOperations.call(this, parent, num);
 	parent.enable(ZmOperation.CHECK_MAIL, true);
 	
-	// Disallow printing of ZmDocuments.
+	// Disallow printing of documents.
 	if (num == 1) {
 		var selectedItem = this.getCurrentView().getSelection()[0];
-		if (selectedItem.toString() == "ZmDocument") {
+		if (selectedItem.type == ZmItem.DOCUMENT) {
 			parent.enable(ZmOperation.PRINT, false);
 		}
 	}
@@ -106,23 +141,8 @@ function(view) {
 	var tb = new ZmNavToolBar({parent:this._toolbar[view], context:view});
 	this._setNavToolBar(tb, view);
 
+	// TODO: mail enabled?
 	this._setNewButtonProps(view, ZmMsg.compose, "NewMessage", "NewMessageDis", ZmOperation.NEW_MESSAGE);
-};
-
-ZmMixedController.prototype._initializeActionMenu = 
-function() {
-	ZmListController.prototype._initializeActionMenu.call(this);
-
-	// based on current search, show/hide undelete menu option
-	var showUndelete = false;
-	var folderId = this._getSearchFolderId();
-	if (folderId) {
-		var folder = appCtxt.getById(folderId);
-		showUndelete = folder && folder.isInTrash();
-	}
-	var actionMenu = this._actionMenu;
-	var mi = actionMenu.getMenuItem(ZmOperation.UNDELETE);
-	mi.setVisible(showUndelete);
 };
 
 ZmMixedController.prototype._getToolBarOps =
@@ -134,9 +154,7 @@ function() {
 
 ZmMixedController.prototype._getActionMenuOps =
 function() {
-	var list = this._standardActionMenuOps();
-	list.push(ZmOperation.UNDELETE);
-	return list;
+	return this._standardActionMenuOps();
 };
 
 ZmMixedController.prototype._getViewType = 
@@ -172,170 +190,89 @@ function(view) {
 	this._listView[view].set(this._list);
 };
 
-ZmMixedController.prototype._getTrashViewOps =
-function() {
-	var list = [];
-	for (var i = 0; i < ZmApp.APPS.length; i++) {
-		var op = ZmApp.TRASH_VIEW_OP[ZmApp.APPS[i]];
-		if (op) {
-			list.push(op);
-		}
+ZmMixedController.prototype._getListController =
+function(type) {
+	if (!this._listController[type]) {
+		AjxDispatcher.require(ZmMixedController.PKGS[type]);
+		var ctlrClass = window[ZmMixedController.LIST_CTLR[type]];
+		var ctlr = this._listController[type] = new ctlrClass(appCtxt.getShell(), appCtxt.getApp(ZmMixedController.APP[type]));
+		this._emulateListController(ctlr, type);
 	}
-	return list;
+	return this._listController[type];
 };
 
-// List listeners
+ZmMixedController.prototype._emulateListController =
+function(ctlr, type) {
+	if (type == ZmItem.CONV || type == ZmItem.MSG) {
+		ctlr.isReadingPaneOn = function() { return false; };
+		ctlr._doublePaneView = ctlr._createDoublePaneView();
+		ctlr._mailListView = ctlr._doublePaneView._mailListView = this._listView[this._currentView];
+	} else if (type == ZmItem.APPT) {
+		ctlr._viewMgr = new ZmCalViewMgr(ctlr._container, ctlr, ctlr._dropTgt);
+		ctlr._viewMgr._currentViewName = ZmId.VIEW_CAL_LIST;
+		ctlr._viewMgr._views[ZmId.VIEW_CAL_LIST] = this._listView[this._currentView];
+	}
+	ctlr._list = this._list;
+	ctlr._currentView = this._currentView;
+	ctlr._listView = {};
+	ctlr._listView[this._currentView] = this._listView[this._currentView];
+	ctlr._toolbar = {};
+	ctlr._toolbar[this._currentView] = this._toolbar[this._currentView];
+	ctlr._actionMenu = this.getActionMenu();
+};
 
 // Double click displays an item.
 ZmMixedController.prototype._listSelectionListener =
 function(ev) {
-	ZmListController.prototype._listSelectionListener.call(this, ev);
 	if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
-		if (ev.item.type == ZmItem.CONTACT || ev.item.type == ZmItem.GROUP) {
-			AjxDispatcher.run("GetContactController").show(ev.item);
-		}
-		else if (ev.item.type == ZmItem.CONV) {
-			var mailApp = appCtxt.getApp(ZmApp.MAIL);
-			if (ev.item.isDraft) {
-				AjxDispatcher.run("GetConvListController")._doAction({ev:ev, action:ZmOperation.DRAFT});
-			} else {
-				AjxDispatcher.run("GetConvController").show(this._activeSearch, ev.item);
-			}
-		}
-		else if (ev.item.type == ZmItem.MSG) {
-			var mailApp = appCtxt.getApp(ZmApp.MAIL);
-			if (ev.item.isDraft) {
-				AjxDispatcher.run("GetTradController")._doAction({ev:ev, action:ZmOperation.DRAFT});
-			} else {
-				AjxDispatcher.run("GetMsgController").show(ev.item);
-			}
-		}
-		else if (ev.item.type == ZmItem.APPT) {
-			var cc = AjxDispatcher.run("GetCalController");
-			cc._showAppointmentDetails(ev.item);
-		}
-		else if (ev.item.type == ZmItem.TASK) {
-			var app = appCtxt.getApp(ZmApp.TASKS);
-			AjxDispatcher.run("GetTaskController").show(ev.item, ZmCalItem.MODE_EDIT);
-		}
-		else if (ev.item.type == ZmItem.PAGE || ev.item.type == ZmItem.DOCUMENT) {
-			appCtxt.getApp(ZmApp.NOTEBOOK).getFileController()._doSelectDblClicked(ev.item, true);
-		}else if( ev.item.type == ZmItem.BRIEFCASE ){
-            var app = appCtxt.getApp(ZmApp.BRIEFCASE);
-            var briefcaseCtrl = AjxDispatcher.run("GetBriefcaseController");
-            if (app._deferredFolders.length != 0) {  //Creating deferred folders
-		        app._createDeferredFolders();
-	        }                
-            var item = ev.item;                
-            var restUrl = item.getRestUrl();
-            if (item && item.isFolder) {
-                briefcaseCtrl.show(item.id);
-            } else if(restUrl != null) {
-                window.open(restUrl);
-		    }                
-        }
-	}
-};
-
-ZmMixedController.prototype._listActionListener = 
-function(ev) {
-	ZmListController.prototype._listActionListener.call(this, ev);
-	
-	// based on the items selected, enable/disable and/or show/hide appropriate menu items
-	var selItems = this._listView[this._currentView].getSelection();
-	var selTypes = {};
-	var numTypes = 0;
-	for (var i = 0; i < selItems.length; i++) {
-		// bug fix #11577 - if we get GROUP type, just treat it as a contact
-		var t = selItems[i].type == ZmItem.GROUP ? ZmItem.CONTACT : selItems[i].type;
-		if (!selTypes[t]) {
-			selTypes[t] = true;
-			numTypes++;
-		}
-	}
-
-	var actionMenu = this.getActionMenu();
-	var miUndelete = actionMenu.getMenuItem(ZmOperation.UNDELETE);
-	var miMoveTo = actionMenu.getMenuItem(ZmOperation.MOVE);
-	var folderId = this._getSearchFolderId();
-	var folder = appCtxt.getById(folderId);
-
-	if (folder && folder.isInTrash()) {
-		// only want to show Undelete menu item if contact(s) is selected
-		var showUndelete = numTypes == 1 && selTypes[ZmItem.CONTACT] === true;
-		var showMoveTo = numTypes == 1 && (selTypes[ZmItem.CONV] === true || selTypes[ZmItem.MSG] === true);
-		var showBoth = selItems.length > 1 && numTypes > 1;
-		var isDraft = numTypes == 1 && selItems[0].isDraft;
-		
-		miUndelete.setVisible(showUndelete || showBoth || isDraft);
-		miMoveTo.setVisible((showMoveTo || showBoth) && !isDraft);
-		actionMenu.getMenuItem(ZmOperation.PRINT).setVisible(showMoveTo);
-		actionMenu.getMenuItem(ZmOperation.DELETE).setVisible(showMoveTo);
-
-		// if >1 item is selected and they're not all the same type, disable both menu items
-		actionMenu.enable([ZmOperation.UNDELETE, ZmOperation.MOVE], numTypes == 1);
+		var ctlr = this._getListController(ev.item.type);
+		ctlr._listSelectionListener(ev);
 	} else {
-		miUndelete.setVisible(false);	// never show Undelete option when not in Trash
-		miMoveTo.setVisible(true);		// always show Move To option
-		// show MoveTo only if one type has been selected and its either MSG or CONV
-		var enableMoveTo = numTypes == 1 && (selTypes[ZmItem.CONV] === true || selTypes[ZmItem.MSG] === true);
-		actionMenu.enable(ZmOperation.MOVE, enableMoveTo);
-		actionMenu.enable(ZmOperation.PRINT, enableMoveTo);
-		actionMenu.enable(ZmOperation.DELETE, enableMoveTo);
-	}
-	actionMenu.popup(0, ev.docX, ev.docY);
-	if (ev.ersatz) {
-		// menu popped up via keyboard nav
-		actionMenu.setSelectedItem(0);
+		ZmListController.prototype._listSelectionListener.call(this, ev);
+		this._resetOperations(this._toolbar[this._currentView]);
 	}
 };
 
-ZmMixedController.prototype._undeleteListener = 
+ZmMixedController.prototype._listActionListener =
 function(ev) {
-	var items = this._listView[this._currentView].getSelection();
-
-	// figure out the default for this item should be moved to
-	var folder;
-	if (items[0] instanceof ZmContact) {
-		folder = new ZmFolder({id: ZmOrganizer.ID_ADDRBOOK});
-	} else if (items[0] instanceof ZmAppt) {
-		folder = new ZmFolder({id: ZmOrganizer.ID_CALENDAR});
-	} else {
-		var folderId = items[0].isDraft ? ZmFolder.ID_DRAFTS : ZmFolder.ID_INBOX;
-		folder = appCtxt.getById(folderId);
-	}
-
-	if (folder) {
-		this._doMove(items, folder);
-	}
+	var ctlr = this._getListController(ev.item.type);
+	ctlr._listActionListener(ev);
+	this._resetOperations(this._actionMenu);
 };
 
-ZmMixedController.prototype._deleteListener =
-function(ev) {
-	// Disallow my card delete.
+ZmMixedController.prototype._resetOperations =
+function(parent) {
+	var itemHash = this._divvyItems();
+	parent.enable(ZmOperation.PRINT, !itemHash[ZmItem.BRIEFCASE]);
+};
+
+ZmMixedController.prototype._divvyItems =
+function() {
+	var itemsByType = {};
 	var items = this._listView[this._currentView].getSelection();
 	for (var i = 0, count = items.length; i < count; i++) {
 		var item = items[i];
-		if ((item instanceof ZmContact) && item.isMyCard) {
-			appCtxt.setStatusMsg(ZmMsg.errorMyCardDelete, ZmStatusView.LEVEL_WARNING);
-			return;
+		if (!itemsByType[item.type]) {
+			itemsByType[item.type] = [];
 		}
+		itemsByType[item.type].push(item);
 	}
-
-	ZmMailListController.prototype._deleteListener.call(this, ev);
+	return itemsByType;
 };
 
-ZmMixedController.prototype._moveListener =
-function(ev) {
-	// Disallow my card move.
-	var items = this._listView[this._currentView].getSelection();
-	for (var i = 0, count = items.length; i < count; i++) {
-		var item = items[i];
-		if ((item instanceof ZmContact) && item.isMyCard) {
-			appCtxt.setStatusMsg(ZmMsg.errorMyCardMove, ZmStatusView.LEVEL_WARNING);
-			return;
-		}
-	}
+ZmMixedController.prototype._deleteListener = function(ev) { this._callListener(ev, "_deleteListener"); };
+ZmMixedController.prototype._moveListener = function(ev) { this._callListener(ev, "_moveListener"); };
+ZmMixedController.prototype._tagListener = function(ev) { this._callListener(ev, "_tagListener"); };
+ZmMixedController.prototype._printListener = function(ev) { this._callListener(ev, "_printListener"); };
 
-	ZmMailListController.prototype._moveListener.call(this, ev);
+ZmMixedController.prototype._callListener =
+function(ev, listener) {
+	var itemHash = this._divvyItems();
+	for (var type in itemHash) {
+		var ctlr = this._getListController(type);
+		if (listener == "_printListener" && type == ZmItem.CONTACT || type == ZmItem.GROUP) {
+			listener = "_printContactListener";
+		}
+		ctlr[listener](ev);
+	}
 };

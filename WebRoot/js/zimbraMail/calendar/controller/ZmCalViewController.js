@@ -1908,7 +1908,9 @@ function(parent, num) {
 	}
 	else
 	{
-		this._navToolBar[ZmId.VIEW_CAL].setVisible(true);
+		if (this._navToolBar[ZmId.VIEW_CAL]) {
+			this._navToolBar[ZmId.VIEW_CAL].setVisible(true);
+		}
 		var currView = this._viewMgr.getCurrentView();
 		var appt = currView ? currView.getSelection()[0] : null;
 		var calendar = appt && appt.getFolder();
@@ -2199,7 +2201,9 @@ function(appt, actionMenu) {
     }
 
 	// recurring action menu options
-	this._recurringActionMenu.enable(ZmOperation.VIEW_APPT_SERIES, !appt.exception);
+	if (this._recurringActionMenu) {
+		this._recurringActionMenu.enable(ZmOperation.VIEW_APPT_SERIES, !appt.exception);
+	}
 };
 
 ZmCalViewController.prototype._listActionListener =

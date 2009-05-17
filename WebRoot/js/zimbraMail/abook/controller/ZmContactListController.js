@@ -83,23 +83,27 @@ function(searchResult, isGalSearch, folderId) {
 	if (searchResult instanceof ZmContactList) {
 		this._list = searchResult;			// set as canonical list of contacts
 		this._list._isShared = false;		// this list is not a search of shared items
-		if (!this._currentView)
+		if (!this._currentView) {
 			this._currentView = this._defaultView();
+		}
         this._contactSearchResults = false;
     } else if (searchResult instanceof ZmSearchResult) {
 		this._searchType |= ZmContactListController.SEARCH_TYPE_NEW;
 		this._list = searchResult.getResults(ZmItem.CONTACT);
 
 		// HACK - find out if user did a "is:anywhere" search (for printing)
-		if (searchResult.search && searchResult.search.isAnywhere)
+		if (searchResult.search && searchResult.search.isAnywhere) {
 			this._searchType |= ZmContactListController.SEARCH_TYPE_ANYWHERE;
+		}
 
-		if (searchResult.search && searchResult.search.userText && this.getParentView())
+		if (searchResult.search && searchResult.search.userText && this.getParentView()) {
 			this.getParentView().getAlphabetBar().reset();
+		}
 
 		if (isGalSearch) {
-			if (this._list == null)
+			if (this._list == null) {
 				this._list = new ZmContactList(searchResult.search, true);
+			}
 			this._list._isShared = false;
 			this._list.isGalPagingSupported = AjxUtil.isSpecified(searchResult.getAttribute("offset"));
 		} else {
@@ -116,8 +120,9 @@ function(searchResult, isGalSearch, folderId) {
 
 	// reset offset if list view has been created
 	var view = this._currentView;
-	if (this._listView[view])
+	if (this._listView[view]) {
 		this._listView[view].offset = 0;
+	}
 
 	this.switchView(view, true);
 };
@@ -443,14 +448,14 @@ function(parent, num) {
 	var printMenuItem;
 	if (parent instanceof ZmButtonToolBar) {
 		var printButton = parent.getButton(ZmOperation.PRINT);
-		if (printButton) {
-			printMenuItem = printButton.getMenu().getItem(1);
+		var printMenu = printButton && printButton.getMenu();
+		if (printMenu) {
+			printMenuItem = printMenu.getItem(1);
 			printMenuItem.setText(ZmMsg.printResults);
 		}
 	}
 
-	var printOp = (parent instanceof ZmActionMenu)
-		? ZmOperation.PRINT_CONTACT : ZmOperation.PRINT;
+	var printOp = (parent instanceof ZmActionMenu) ? ZmOperation.PRINT_CONTACT : ZmOperation.PRINT;
 
 	if (!this.isGalSearch()) {
 		parent.enable([ZmOperation.SEARCH, ZmOperation.BROWSE, ZmOperation.NEW_MENU, ZmOperation.VIEW_MENU], true);
@@ -549,13 +554,12 @@ function(ev) {
 
 	if (ev.detail == DwtListView.ITEM_SELECTED)	{
 		this._resetNavToolBarButtons(this._currentView);
-		if (this._currentView == ZmId.VIEW_CONTACT_SIMPLE)
+		if (this._currentView == ZmId.VIEW_CONTACT_SIMPLE) {
 			this._parentView[this._currentView].setContact(ev.item, this.isGalSearch());
+		}
 	} else if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
 		var folder = appCtxt.getById(ev.item.folderId);
-		if (!this.isGalSearch() &&
-			(!folder || (!folder.isReadOnly() && !folder.isInTrash())))
-		{
+		if (!this.isGalSearch() && (!folder || (!folder.isReadOnly() && !folder.isInTrash()))) {
 			AjxDispatcher.run("GetContactController").show(ev.item);
 		}
 	}

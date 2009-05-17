@@ -258,13 +258,10 @@ function(ev, div) {
 	} else {
 		var item = this.getItemFromElement(div);
 		if (item) {
-
 			var match = this._parseId(id);
-			if (match && match.field && (match.field == ZmItem.F_SELECTION || match.field == ZmItem.F_TAG)) {
-				this.setToolTipContent(this._getToolTip({field:match.field, item:item, ev:ev, div:div, match:match}));
-			} else if (item.getToolTip) {
-				this.setToolTipContent(item.getToolTip(this._controller));
-
+			if (!match) { return; }
+			this.setToolTipContent(this._getToolTip({field:match.field, item:item, ev:ev, div:div, match:match}));
+			if (match.field != ZmItem.F_SELECTION && match.field != ZmItem.F_TAG && item.getToolTip) {
 				// load attendee status if necessary
 				if (item.otherAttendees && (item.ptstHashMap == null)) {
 					var clone = ZmAppt.quickClone(item);
@@ -276,6 +273,17 @@ function(ev, div) {
 		}
 	}
 	return true;
+};
+
+ZmCalListView.prototype._getToolTip =
+function(params) {
+	var tooltip, field = params.field, item = params.item;
+	if (field && (field == ZmItem.F_SELECTION || field == ZmItem.F_TAG)) {
+		tooltip = ZmListView.prototype._getToolTip.apply(this, arguments);
+	} else if (item.getToolTip) {
+		tooltip = item.getToolTip(this._controller);
+	}
+	return tooltip;
 };
 
 ZmCalListView.prototype.getApptDetails =
