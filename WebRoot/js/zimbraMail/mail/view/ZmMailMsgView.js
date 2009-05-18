@@ -1895,6 +1895,7 @@ function(msgId, partId, name) {
 	ZmZimbraMail.unloadHackCallback();
 
     //force create deferred folders if not created
+    AjxDispatcher.require("BriefcaseCore");
     var aCtxt = appCtxt.isChildWindow ? parentAppCtxt : appCtxt;
     var briefcaseApp = aCtxt.getApp(ZmApp.BRIEFCASE);
     briefcaseApp._createDeferredFolders();
