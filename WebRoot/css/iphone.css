@@ -314,7 +314,7 @@ input[type="button"], input[type="reset"] {
     -webkit-appearance: button;
 }
 .searchButton, input[type="submit"], input.submit {
-     background: #2e69e0 url( "/img/mobile/iphone/iPhoneGoButton1.png" ) 50% 50% repeat-x;
+     background: #2e69e0 url( "/img/mobile/iphone/iPhoneButton2.png" ) 50% 50% repeat-x;
     -webkit-border-radius: 5px;
     -webkit-appearance: button;
     height: 26px;
@@ -451,7 +451,7 @@ select {
     padding: 0 5px;
 }
 .zo_select_button,.zo_button,.zo_button_disabled, .zo_button_group, input[type="button"], input[type="reset"],.searchButton,.zo_button1 {
-    background: #58759d url( "/img/mobile/iphone/iPhoneGoButton1.png" ) 50% 50% repeat-x;
+    background: #58759d url( "/img/mobile/iphone/iPhoneButton2.png" ) 50% 50% repeat-x;
     vertical-align:middle !important;
     text-shadow: rgba( 0, 0, 0, 0.6 ) 0px -1px 0;
 
