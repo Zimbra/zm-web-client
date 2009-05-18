@@ -30,7 +30,7 @@
         </tr></table>
         <hr/>
 <c:forEach items="${convIds}" var="cid" varStatus="status">
-<zm:searchConv var="convSearchResult" id="${cid}" context="${context}"  markread="false" />
+<zm:searchConv var="convSearchResult" id="${cid}" context="${context}"  markread="false" fetch="all"/>
 <table cellpadding="0" cellspacing="5"  width="100%">
     <tr>
         <td>
@@ -41,7 +41,7 @@
         <td>
             <c:forEach items="${convSearchResult.hits}" var="hit" varStatus="status">
                          <zm:getMessage var="message" id="${hit.id}" markread="false" neuterimages="${empty param.xim}" />
-                          <app:messagePrintView mailbox="${mailbox}" message="${message}" />
+                         <app:messagePrintView mailbox="${mailbox}" message="${message}" />
             </c:forEach>
         </td>
     </tr>

@@ -31,7 +31,27 @@
 	</tr>
 <hr/>
 <c:forEach items="${messageIds}" var="mid" varStatus="status">
-<zm:getMessage var="message" id="${mid}" markread="false" neuterimages="${empty param.xim}"/>
+<c:set var="cid" value="${fn:split(mid,':')}"/>
+<c:if test="${cid[0] eq 'C'}">
+    <zm:searchConv var="convSearchResult" id="${cid[1]}" context="${context}"  markread="false" fetch="all"/>
+    <table cellpadding="0" cellspacing="5"  width="100%">
+        <tr>
+            <td>
+                <div style="padding: 10px; font-size: 20px; font-weight: bold;">${convSearchResult.hits[0].subject}</div><hr/>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <c:forEach items="${convSearchResult.hits}" var="hit" varStatus="status">
+                    <zm:getMessage var="message" id="${hit.id}" markread="false" neuterimages="${empty param.xim}" />
+                    <app:messagePrintView mailbox="${mailbox}" message="${message}" />
+                </c:forEach>
+            </td>
+        </tr>
+    </table>
+</c:if>
+<c:if test="${cid[0] != 'C'}">
+    <zm:getMessage var="message" id="${mid}" markread="false" neuterimages="${empty param.xim}"/>
 	<tr>
 		<td colspan="2">
 			<div style="padding: 10px; font-size: 20px; font-weight: bold;">${zm:cook(message.subject)}</div><hr/>
@@ -43,8 +63,8 @@
 			<app:messagePrintView mailbox="${mailbox}" externalImageUrl="${extImageUrl}" message="${message}" />
 		</td>
 	</tr>
-
-</c:forEach>    
+</c:if>    
+</c:forEach>
 </table>
 
 <c:if test="${empty messageIds}">

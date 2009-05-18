@@ -1196,13 +1196,11 @@ function(ev) {
 		items = [items];
 	}
 	var ids = [];
-
 	for (var i = 0; i < items.length; i++) {
 		var item = items[i];
-
 		// always extract out the msg ids from the conv
-		if (item.toString() == "ZmConv") {
-			ids = ids.concat(item.msgIds);
+        if (item.toString() == "ZmConv") {
+			ids.push("C:"+item.id); item.msgIds;
 		} else {
 			ids.push(item.id);
 		}
