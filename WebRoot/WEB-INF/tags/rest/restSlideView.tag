@@ -196,7 +196,7 @@
         window.fileInfo = {name: 'Untitled', folderId: ZmOrganizer.ID_BRIEFCASE, contentType: 'application/x-zimbra-ppt'};
 
         var item = null;
-        item = slideEditView.loadData('${requestScope.zimbra_target_item_id}');
+        item = slideEditView.loadData('${requestScope.zimbra_target_account_id}:${requestScope.zimbra_target_item_id}');
         if(item) {
             //REST URL will not be generated on server side
             item.rest = location.href;

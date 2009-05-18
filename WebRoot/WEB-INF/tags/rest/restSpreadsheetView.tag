@@ -128,7 +128,7 @@
 
     ZmSpreadSheetApp._createDBG('${isDevMode}');
 
-    ZmSpreadSheetApp.setFile('${requestScope.zimbra_target_item_id}');
+    ZmSpreadSheetApp.setFile('${requestScope.zimbra_target_account_id}:${requestScope.zimbra_target_item_id}');
 
 </script>
 
