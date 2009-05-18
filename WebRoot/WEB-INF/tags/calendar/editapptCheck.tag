@@ -77,6 +77,34 @@
             <c:when test="${uploader.isRepeatEdit}">
                 <jsp:forward page="/h/repeat"/>
             </c:when>
+            <c:when test="${not empty uploader.paramValues.removeAttendee}">
+                <c:set property="attendees" target="${uploader.compose}" value="${fn:replace(uploader.compose.attendees,uploader.paramValues.removeAttendee[0],'')}"/>
+                <c:set property="pendingAttendees" target="${uploader}" value="${fn:replace(uploader.pendingAttendees,uploader.paramValues.removeAttendee[0],'')}"/>
+                <c:set property="resources" target="${uploader.compose}" value="${fn:replace(uploader.compose.resources,uploader.paramValues.removeAttendee[0],'')}"/>
+                <c:set property="pendingResources" target="${uploader}" value="${fn:replace(uploader.pendingResources,uploader.paramValues.removeAttendee[0],'')}"/>
+                <jsp:forward page="/h/addattendees"/>
+            </c:when>
+            <c:when test="${not empty uploader.paramValues.schedulePrevDate or not empty uploader.paramValues.scheduleNextDate}">
+                <fmt:message key="CAL_APPT_EDIT_DATE_FORMAT" var="calEditDateFmt"/>
+                <fmt:parseDate value="${uploader.compose.startDate}" pattern="${calEditDateFmt}" var="apptSDate"/>
+                <fmt:parseDate value="${uploader.compose.endDate}" pattern="${calEditDateFmt}" var="apptEDate"/>
+
+                <c:if test="${not empty uploader.paramValues.schedulePrevDate}">
+                    <c:set var="newStartDate" value="${zm:addDay(zm:getCalendar(apptSDate.time,null), -1)}"/>
+                    <c:set var="newEndDate" value="${zm:addDay(zm:getCalendar(apptEDate.time,null), -1)}"/>
+                </c:if>
+                <c:if test="${not empty uploader.paramValues.scheduleNextDate}">
+                    <c:set var="newStartDate" value="${zm:addDay(zm:getCalendar(apptSDate.time,null), 1)}"/>
+                    <c:set var="newEndDate" value="${zm:addDay(zm:getCalendar(apptEDate.time,null), 1)}"/>
+                </c:if>
+
+                <fmt:formatDate value="${newStartDate.time}" var="newStartDate" pattern="${calEditDateFmt}"/>
+                <fmt:formatDate value="${newEndDate.time}" var="newEndDate" pattern="${calEditDateFmt}"/>
+                <c:set property="startDate" target="${uploader.compose}" value="${newStartDate}"/>
+                <c:set property="endDate" target="${uploader.compose}" value="${newEndDate}"/>
+
+                <jsp:forward page="/h/addattendees"/>
+            </c:when>
             <c:when test="${uploader.isContactAdd or uploader.isContactSearch}">
                 <%--
             <zm:saveDraft var="draftResult" compose="${upload,er.compose}" draftid="${uploader.compose.draftId}"/>

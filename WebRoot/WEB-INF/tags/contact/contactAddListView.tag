@@ -26,7 +26,8 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <c:set var="tz" value="${zm:getTimeZone(uploader.compose.timeZone)}"/>
-<c:set var="today" value="${zm:getToday(tz)}"/>
+<c:set var="today" value="${zm:getCalendarMidnight(uploader.compose.apptStartCalendar.timeInMillis,tz)}"/>
+<c:set var="endDay" value="${zm:getCalendarMidnight(uploader.compose.apptEndCalendar.timeInMillis,tz)}"/>
 <c:choose>
     <c:when test="${uploader.compose.allDay}">
         <c:set var="apptStartLong" value="${today.timeInMillis}"/>
@@ -34,10 +35,12 @@
     </c:when>
     <c:otherwise>
         <c:set var="apptStartLong" value="${today.timeInMillis + 1000*60*(uploader.compose.startHour * 60 + uploader.compose.startMinute )}"/>
-        <c:set var="apptEndLong" value="${today.timeInMillis + 1000*60*(uploader.compose.endHour * 60 + uploader.compose.endMinute )}"/>
+        <c:set var="apptEndLong" value="${endDay.timeInMillis + 1000*60*(uploader.compose.endHour * 60 + uploader.compose.endMinute )}"/>
     </c:otherwise>
 </c:choose>
-
+<c:if test="${empty mailbox}">
+    <zm:getMailbox var="mailbox"/>
+</c:if>
 
 <table width=100% cellpadding=2 cellspacing=0 class="topborder">
     <tr valign='top'>
@@ -80,6 +83,14 @@
         </th>
     </tr>
     <c:forEach items="${searchResult.hits}" var="hit" varStatus="status">
+    <c:if test="${
+                !fn:contains(mailbox.defaultIdentity.fromEmailAddress.fullAddress,hit.contactHit.displayEmail)
+                and !fn:contains(uploader.pendingAttendees,hit.contactHit.displayEmail)
+                and !fn:contains(uploader.compose.attendees,hit.contactHit.displayEmail)
+                and !fn:contains(uploader.pendingResources,hit.contactHit.displayEmail)
+                and !fn:contains(uploader.compose.resources,hit.contactHit.displayEmail)
+    }">   <%-- This condition is for not to list the contact/resource which has been already added --%>
+    
     <c:if test="${not empty hit.contactHit.displayEmail or hit.contactHit.isGroup}">
         <tr>
             <td width=1%>&nbsp;</td>
@@ -122,6 +133,15 @@
             </td>
         </tr>
     </c:if>
+    </c:if>
+    <c:if test="${
+                !fn:contains(mailbox.defaultIdentity.fromEmailAddress.fullAddress,hit.contactHit.email2)
+                and !fn:contains(uploader.pendingAttendees,hit.contactHit.email2)
+                and !fn:contains(uploader.compose.attendees,hit.contactHit.email2)
+                and !fn:contains(uploader.pendingResources,hit.contactHit.email2)
+                and !fn:contains(uploader.compose.resources,hit.contactHit.email2)
+    }">
+
     <c:if test="${not empty hit.contactHit.email2}">
         <tr>
             <td width=1%>&nbsp;</td>
@@ -167,6 +187,15 @@
             </td>
         </tr>
     </c:if>
+    </c:if>
+    <c:if test="${
+                    !fn:contains(mailbox.defaultIdentity.fromEmailAddress.fullAddress,hit.contactHit.email3)
+                    and !fn:contains(uploader.pendingAttendees,hit.contactHit.email3)
+                    and !fn:contains(uploader.compose.attendees,hit.contactHit.email3)
+                    and !fn:contains(uploader.pendingResources,hit.contactHit.email3)
+                    and !fn:contains(uploader.compose.resources,hit.contactHit.email3)
+        }">
+
     <c:if test="${not empty hit.contactHit.email3}">
         <tr>
             <td width=1%>&nbsp;</td>
@@ -212,6 +241,15 @@
             </td>
         </tr>
     </c:if>
+    </c:if>
+    <c:if test="${
+                    !fn:contains(mailbox.defaultIdentity.fromEmailAddress.fullAddress,hit.contactHit.workEmail1)
+                    and !fn:contains(uploader.pendingAttendees,hit.contactHit.workEmail1)
+                    and !fn:contains(uploader.compose.attendees,hit.contactHit.workEmail1)
+                    and !fn:contains(uploader.pendingResources,hit.contactHit.workEmail1)
+                    and !fn:contains(uploader.compose.resources,hit.contactHit.workEmail1)
+        }">
+
     <c:if test="${not empty hit.contactHit.workEmail1}">
         <tr>
             <td width=1%>&nbsp;</td>
@@ -257,6 +295,15 @@
             </td>
         </tr>
     </c:if>
+    </c:if>
+    <c:if test="${
+                        !fn:contains(mailbox.defaultIdentity.fromEmailAddress.fullAddress,hit.contactHit.workEmail2)
+                        and !fn:contains(uploader.pendingAttendees,hit.contactHit.workEmail2)
+                        and !fn:contains(uploader.compose.attendees,hit.contactHit.workEmail2)
+                        and !fn:contains(uploader.pendingResources,hit.contactHit.workEmail2)
+                        and !fn:contains(uploader.compose.resources,hit.contactHit.workEmail2)
+            }">
+
     <c:if test="${not empty hit.contactHit.workEmail2}">
         <tr>
             <td width=1%>&nbsp;</td>
@@ -302,6 +349,15 @@
             </td>
         </tr>
     </c:if>
+    </c:if>
+    <c:if test="${
+                        !fn:contains(mailbox.defaultIdentity.fromEmailAddress.fullAddress,hit.contactHit.workEmail3)
+                        and !fn:contains(uploader.pendingAttendees,hit.contactHit.workEmail3)
+                        and !fn:contains(uploader.compose.attendees,hit.contactHit.workEmail3)
+                        and !fn:contains(uploader.pendingResources,hit.contactHit.workEmail3)
+                        and !fn:contains(uploader.compose.resources,hit.contactHit.workEmail3)
+            }">
+
     <c:if test="${not empty hit.contactHit.workEmail3}">
         <tr>
             <td width=1%>&nbsp;</td>
@@ -347,9 +403,16 @@
             </td>
         </tr>
     </c:if>
+    </c:if>
     </c:forEach>
     <c:forEach items="${searchGalResult.contacts}" var="contact" varStatus="status">
-        <c:if test="${not empty contact.displayEmail}">
+        <c:if test="${
+                    !fn:contains(mailbox.defaultIdentity.fromEmailAddress.fullAddress,contact.galFullAddress)
+                    and !fn:contains(uploader.pendingAttendees,contact.galFullAddress)
+                    and !fn:contains(uploader.compose.attendees,contact.galFullAddress)
+                    and !fn:contains(uploader.pendingResources,contact.galFullAddress)
+                    and !fn:contains(uploader.compose.resources,contact.galFullAddress)
+        }">
         <tr>
             <td width=1%>&nbsp;</td>
             <c:choose>

@@ -440,7 +440,8 @@
                                             <td colspan="2" nowrap>
                                                 <div class="ZhAC ZhACTo">
                                                     <textarea id="attField" rows="3" style='width:99%' cols="80"
-                                                              name="attendees">${fn:escapeXml(compose.attendees)}</textarea>
+                                                              name="attendees"><c:forEach items="${compose.attendeesAddrs}" var="anAttendee"> ${fn:escapeXml(anAttendee.fullAddress)},</c:forEach>
+                                                    </textarea>
                                                     <br><div class='ZhACCont' id="attContainer" style='width:99%;z-index:999;'></div>
                                                 </div>
                                             </td>
@@ -448,7 +449,7 @@
                                     </table>
                                 </td>
                             </tr>
-                            <c:if test="${not empty compose.resources}">
+                            <c:if test="${compose.resourcesAddrs != null and fn:length(compose.resourcesAddrs) > 0}">
                             <tr>
                                 <td colspan="2">
                                     <table>

@@ -17,13 +17,15 @@
         </c:otherwise>
         </c:choose>
         <fmt:setBundle basename="/messages/ZhMsg" scope='request' />
+        <fmt:setBundle basename='/messages/AjxMsg' var='AjxMsg' scope='request' />
     
     <fmt:message var="title" key="addAttendeesResourcesFromContacts"/>
-
+    <fmt:message var="hourFmt" key="CAL_APPT_EDIT_HOUR_FORMAT"/>
     <zm:composeUploader var="uploader"/>
     <c:set var="compose" value="${uploader.compose}"/>
     <c:set var="tz" value="${zm:getTimeZone(compose.timeZone)}"/>
-    <c:set var="today" value="${zm:getToday(tz)}"/>
+    <c:set var="today" value="${zm:getCalendarMidnight(uploader.compose.apptStartCalendar.timeInMillis,tz)}"/>
+    <c:set var="endDay" value="${zm:getCalendarMidnight(uploader.compose.apptEndCalendar.timeInMillis,tz)}"/>
     <c:choose>
         <c:when test="${compose.allDay}">
             <c:set var="aStart" value="${0}"/>
@@ -34,7 +36,7 @@
             <c:set var="aEnd" value="${uploader.compose.endHour * 60 + uploader.compose.endMinute}"/>
         </c:otherwise>
     </c:choose>
-
+    <c:set var="aEnd" value="${aEnd + (endDay.timeInMillis - today.timeInMillis)/(1000*60)}"/>
     <c:if test="${aStart % 30 ne 0 }">
         <c:set var="aStart" value="${aStart + (30 - (aStart % 30))}"/>
     </c:if>
@@ -90,49 +92,6 @@ if (k == 13) { document.getElementById("doSearch").click();return false;} else {
 //-->
 </SCRIPT>
 <form action="" method="post" enctype="multipart/form-data" accept-charset="utf-8">
-<style> <%-- TODO! move the css to appropriate css file--%>
-    .ZhSchedularTbl .attName{
-        border:1px solid silver;
-        padding:0 10px;
-        white-space:nowrap;
-    }
-    .ZhSchedularTbl .hourLblDiv{
-         width:26px;height:22px;
-    }
-    .ZhSchedularTbl .gridDiv{
-        width:13px;
-        height:22px;
-    }
-    .ZhSchedularTbl .halfHour{
-        width:13px;
-        height:22px;
-        border:1px solid silver;
-        border-left:0;
-    }
-    .ZhSchedularTbl .anHour{
-        border-right:1px solid #aaaaaa;
-    }
-
-    .ZhSchedularTbl .firstDiv{
-        border-left:1px solid silver;
-    }
-    .ZhSchedularTbl .start{
-        border-left:3px solid green;
-    }
-    .ZhSchedularTbl .end{
-        border-left:3px solid darkred;
-    }
-    .ZmScheduler-F 		{	background-color: #FFFFFF;	}
-    .ZmScheduler-B 		{	background-color: #990000;	}
-    .ZmScheduler-T 	    {	background-color: #FF3300;	}
-    .ZmScheduler-O      {	background-color: #FFCC00;	}
-    .ZmScheduler-U 	    {	background-color: #FFF5CC;	}
-    .keyDiv{
-        width:16px;
-        height:15px;
-        border:2px inset #77736a;
-    }
-</style>
 <table width=100% cellpadding="0" cellspacing="0">
     <tr>
         <td class='TbTop'>
@@ -143,39 +102,175 @@ if (k == 13) { document.getElementById("doSearch").click();return false;} else {
         <td class='ZhAppContent' align="">
             <table width="100%">
                 <tr>
-                    <td align="right">
-                        <fieldset style="width:400px;padding-right:10px;">
+                    <td style="padding:0px 15px;">
+                        <table cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td>
+                                <table cellpadding="0" cellspacing="3">
+                                                        <tr>
+                                                            <td>&nbsp;</td>
+                                                            <td>
+                                                                <table cellpadding="0" cellspacing="0">
+                                                                    <tr>
+                                                                        <td>
+                                                                            <input id="allday" type=checkbox name="allDay" <c:if test="${compose.allDay}">checked</c:if> value="1">
+                                                                        </td>
+                                                                        <td>
+                                                                           <label for="allday"><fmt:message key="allDayEvent"/></label>
+                                                                        </td>
+                                                                    </tr>
+                                                                </table>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td width="1%" align="right"><label for="start"><fmt:message key="start"/>:</label></td>
+                                                            <td>
+                                                                <table cellpadding="0" cellspacing="0">
+                                                                    <tr>
+                                                                        <td>
+                                                                            <input id="start" type=text size="12" maxlength="20" name="startDate" value="${fn:escapeXml(compose.startDate)}">
+                                                                        </td>
+                                                                        <td>&nbsp;</td>
+                                                                        <td>@</td>
+                                                                        <td>&nbsp;</td>
+                                                                        <td>
+                                                                            <select name="startHour">
+                                                                                <c:set var="h" value="${compose.startHour}"/>
+                                                                                <c:forEach var="hi" begin="0" end="23">
+                                                                                    <option value="${hi}" <c:if test="${h eq hi}"> selected</c:if>>
+                                                                                        <fmt:formatDate value="${zm:getTodayHour(hi, null).time}" pattern="${hourFmt}"/>
+                                                                                    </option>
+                                                                                </c:forEach>
+                                                                            </select>
+                                                                        </td>
+                                                                        <td>&nbsp;</td>
+                                                                        <td>
+                                                                            <select name="startMinute">
+                                                                                <c:set var="m" value="${compose.startMinute}"/>
+                                                                                <option <c:if test="${m eq 0}">selected </c:if> value="0">:00
+                                                                                <option <c:if test="${m eq 5}">selected </c:if> value="5">:05
+                                                                                <option <c:if test="${m eq 10}">selected </c:if> value="10">:10
+                                                                                <option <c:if test="${m eq 15}">selected </c:if> value="15">:15
+                                                                                <option <c:if test="${m eq 20}">selected </c:if> value="20">:20
+                                                                                <option <c:if test="${m eq 25}">selected </c:if> value="25">:25
+                                                                                <option <c:if test="${m eq 30}">selected </c:if> value="30">:30
+                                                                                <option <c:if test="${m eq 35}">selected </c:if> value="35">:35
+                                                                                <option <c:if test="${m eq 40}">selected </c:if> value="40">:40
+                                                                                <option <c:if test="${m eq 45}">selected </c:if> value="45">:45
+                                                                                <option <c:if test="${m eq 50}">selected </c:if> value="50">:50
+                                                                                <option <c:if test="${m eq 55}">selected </c:if> value="55">:55
+                                                                            </select>
+                                                                        </td>
+                                                                        <td>
+
+                                                                        </td>
+                                                                    </tr>
+                                                                </table>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td width="1%" align="right"><label for="end"><fmt:message key="end"/>:</label></td>
+                                                            <td>
+                                                                <table cellpadding="0" cellspacing="0">
+                                                                    <tr>
+                                                                        <td>
+                                                                            <input id="end" type=text size="12" maxlength="20" name="endDate" value="${fn:escapeXml(compose.endDate)}">
+                                                                        </td>
+                                                                        <td>&nbsp;</td>
+                                                                        <td>@</td>
+                                                                        <td>&nbsp;</td>
+                                                                        <td>
+                                                                            <select name="endHour">
+                                                                                <c:set var="h" value="${compose.endHour}"/>
+                                                                                <c:forEach var="hi" begin="0" end="23">
+                                                                                    <option value="${hi}" <c:if test="${h eq hi}"> selected</c:if>>
+                                                                                        <fmt:formatDate value="${zm:getTodayHour(hi, null).time}" pattern="${hourFmt}"/>
+                                                                                    </option>
+                                                                                </c:forEach>
+                                                                            </select>
+                                                                        </td>
+                                                                        <td>&nbsp;</td>
+                                                                        <td>
+                                                                            <select name="endMinute">
+                                                                                <c:set var="m" value="${compose.endMinute}"/>
+                                                                                <option <c:if test="${m eq 0}">selected </c:if> value="0">:00
+                                                                                <option <c:if test="${m eq 5}">selected </c:if> value="5">:05
+                                                                                <option <c:if test="${m eq 10}">selected </c:if> value="10">:10
+                                                                                <option <c:if test="${m eq 15}">selected </c:if> value="15">:15
+                                                                                <option <c:if test="${m eq 20}">selected </c:if> value="20">:20
+                                                                                <option <c:if test="${m eq 25}">selected </c:if> value="25">:25
+                                                                                <option <c:if test="${m eq 30}">selected </c:if> value="30">:30
+                                                                                <option <c:if test="${m eq 35}">selected </c:if> value="35">:35
+                                                                                <option <c:if test="${m eq 40}">selected </c:if> value="40">:40
+                                                                                <option <c:if test="${m eq 45}">selected </c:if> value="45">:45
+                                                                                <option <c:if test="${m eq 50}">selected </c:if> value="50">:50
+                                                                                <option <c:if test="${m eq 55}">selected </c:if> value="55">:55
+                                                                            </select>
+                                                                        </td>
+                                                                    </tr>
+                                                                </table>
+                                                            </td>
+                                                        </tr>
+                                                        <c:if test="${mailbox.prefs.useTimeZoneListInCalendar or not zm:isSameTimeZone(compose.timeZone, mailbox.prefs.timeZoneCanonicalId)}">
+                                                            <c:set var="addedTimeZone" value="true"/>
+                                                            <tr>
+                                                                <td nowrap align=right>
+                                                                    <label for="timeZone"><fmt:message key="timeZonePref"/> :</label>
+                                                                </td>
+                                                                <td>
+                                                                    <select name="timeZone" id="timeZone">
+                                                                        <zm:forEachTimeZone var="tz">
+                                                                            <fmt:message var="displayName" bundle='${AjxMsg}' key="${tz.id}"/>
+                                                                            <option
+                                                                                    <c:if test="${compose.timeZone eq tz.id}">selected</c:if>
+                                                                                    value="${fn:escapeXml(tz.id)}">${fn:escapeXml(displayName)}</option>
+                                                                        </zm:forEachTimeZone>
+                                                                    </select>
+                                                                </td>
+                                                            </tr>
+                                                        </c:if>
+
+                                                        </table>
+                            </td>
+                            <td valign="bottom" style="padding:3px 10px;">
+                                <input type="submit" value="<fmt:message key="applyChanges"/>" name="actionContactAdd" class="SearchButton"/>
+                            </td>
+                        </tr>
+                    </table>
+                    </td>
+                    <td align="right" valign="top" width="20%" nowrap="nowrap">
+                        <fieldset>
                             <legend><fmt:message key="key"/></legend>
                             <table width="100%">
                             <tr>
                                 <td>
                                     <div class="keyDiv ZmScheduler-F "></div>
                                 </td>
-                                <td>
+                                <td nowrap="nowrap">
                                     <fmt:message key="free"/>
                                 </td>
                                 <td>
                                     <div class="keyDiv ZmScheduler-B "></div>
                                 </td>
-                                <td>
+                                <td nowrap="nowrap">
                                     <fmt:message key="busy"/>
                                 </td>
                                 <td>
                                     <div class="keyDiv ZmScheduler-T "></div>
                                 </td>
-                                <td>
+                                <td nowrap="nowrap">
                                     <fmt:message key="tentative"/>
                                 </td>
                                 <td>
                                     <div class="keyDiv ZmScheduler-O "></div>
                                 </td>
-                                <td>
+                                <td nowrap="nowrap">
                                     <fmt:message key="outOfOffice"/>
                                 </td>
-                                <td>
+                                <td nowrap="nowrap">
                                     <div class="keyDiv ZmScheduler-U "></div>
                                 </td>
-                                <td>
+                                <td nowrap="nowrap">
                                     <fmt:message key="unknown"/>
                                 </td>
                             </tr>
@@ -184,149 +279,133 @@ if (k == 13) { document.getElementById("doSearch").click();return false;} else {
                                       
                     </td>
                 </tr>
+                 <tr>
+                    <td colspan="2">
+                        <hr size="1"/>
+                    </td>
+                </tr>
             </table>
-            <table cellpadding="0" cellspacing="0" style="margin:20px;" class="ZhSchedularTbl">
+            
+            <table cellpadding="0" cellspacing="0" class="ZhSchedularTbl">
+                <tr><fmt:message key="CAL_APPT_SCHEDULE_HEADER_FORMAT" var="hdrFormat"/>
+                    <th width="30%">
+                        <table align="center">
+                            <tr>
+                                <td>
+                                    <input type="image" value="1" src="<app:imgurl value="startup/ImgLeftArrow.gif"/>" name="schedulePrevDate"/>
+                                </td>
+                                <th nowrap="nowrap">
+                                    <fmt:formatDate pattern="${hdrFormat}" value="${compose.apptStartCalendar.time}" timeZone="${tz}"/>
+                                </th>
+                                <td>
+                                    <input type="image" value="1" src="<app:imgurl value="startup/ImgRightArrow.gif"/>" name="scheduleNextDate"/>
+                                </td>
+                            </tr>
+                        </table>
+
+                    </th>
+                    <td>&nbsp;</td>
                 <tr>
                     <th width="30%" class="attName MsgHdr"> <fmt:message key="attendees"/> </th>
-                    <td align="left">
-                        <table cellpadding="0" cellspacing="0" style="border-collapse:collapse;box-sizing:border-box;">
+                    <td>
+                        <table cellpadding="0" cellspacing="0">
                             <tr>
                                 <c:forEach begin="0" end="24" step="1" var="indx">
                                     <td colspan="2" align="center"><div class="hourLblDiv"/>${indx % 12 eq 0 ? 12 : (indx > 12 ? indx - 12 : indx) }</td>
                                 </c:forEach>
+                                <td>&nbsp;</td>
                             </tr>
                             <tr>
                                 <td><div class="gridDiv"/></td>
                                 <c:forEach begin="0" end="47" step="1" var="indx">
+                                    <%--<c:set var="allAttFBStaus" value="${allAttFBStaus},${indx}=F"/>--%>
                                     <c:set var="curTm" value="${indx*30}"/>
-                                    <td><div class="gridDiv halfHour ${curTm eq aStart ? ' start ' :''} ${curTm eq aEnd ? ' end ' :''} ${indx eq 0 ? ' firstDiv ' : ''} ${indx % 2 eq 1 ? ' anHour ' : ''}"/></td>
+                                    <td><div id="allAtt_${indx}" class="allAttShDiv ZmScheduler-F gridDiv halfHour ${curTm eq aStart ? ' start ' :''} ${curTm eq aEnd ? ' end ' :''} ${indx eq 0 ? ' firstDiv ' : ''} ${indx % 2 eq 1 ? ' anHour ' : ''}"/></td>
                                 </c:forEach>
                                  <td><div class="gridDiv ${compose.allDay ? 'end ':''}"/></td>
+                                <td>&nbsp;</td>
                             </tr>
                         </table>
                     </td>
                 </tr>
-                    <c:if test="${not empty compose.attendees}">
-                    <c:forEach items="${compose.attendeesAddrs}" var="anAttendee">
-                        <c:if test="${! empty anAttendee and not empty fn:trim(anAttendee.fullAddressQuoted)}">
-                        <tr>
-                            <td class="attName">${fn:escapeXml(anAttendee.fullAddressQuoted)}</td>
-                            <td>
-                                <table cellpadding="0" cellspacing="0">
-                                    <tr>
-                                        <td><div class="gridDiv"/></td>
-                                        <c:set var="aday" value="${today}"/>
-                                        <c:set var="emailid" value="${fn:trim(anAttendee.address)}"/>
-                                        <zm:getFreeBusyAppointments var="attFreeBusy" varexception="exp" start="${aday.timeInMillis}" end="${zm:addDay(aday,1).timeInMillis}" email="${emailid}"/>
-                                        <c:forEach begin="0" end="47" step="1" var="indx">
-                                            <c:set var="curTm" value="${indx*30}"/>
-                                           <c:set var="hasappt" value="${zm:hasAnyAppointments(attFreeBusy, today.timeInMillis + curTm*60*1000, today.timeInMillis + (curTm+30)*60*1000)}"/>
-                                            <c:if test="${hasappt}">
-                                                <zm:forEachAppoinment var="anAppt" appointments="${attFreeBusy}" start="${today.timeInMillis + curTm*60*1000}" end="${today.timeInMillis + (curTm+30)*60*1000}">
-                                                    <c:set var="status" value="${anAppt.freeBusyActual}"/>
-                                                </zm:forEachAppoinment>
-                                            </c:if>
-                                            <td><div class="gridDiv halfHour ${hasappt ? ' ZmScheduler-' : ''}${status} ${curTm eq aStart ? ' start ' :''} ${curTm eq aEnd ? ' end ' :''} ${indx eq 0 ? ' firstDiv ' : ''} ${indx % 2 eq 1 ? ' anHour ' : ''}"/></td>
-                                        </c:forEach>
-                                        <td><div class="gridDiv ${compose.allDay ? 'end ':''}"/></td>
-                                    </tr>
-                                </table>
-                            </td>
-                        </tr>
-                        </c:if>
-                    </c:forEach>
+                <tr>
+                    <td class="attName">${fn:escapeXml(mailbox.defaultIdentity.fromEmailAddress.fullAddress)}</td>
+                    <td>
+                        <table cellpadding="0" cellspacing="0">
+                            <tr>
+                                <td><div class="gridDiv"/></td>
+                                <c:set var="aday" value="${today}"/>
+                                <c:set var="emailid" value="${fn:trim(mailbox.defaultIdentity.fromEmailAddress.address)}"/>
+                                <zm:getFreeBusyAppointments var="attFreeBusy" varexception="exp" start="${aday.timeInMillis}" end="${zm:addDay(aday,1).timeInMillis}" email="${emailid}"/>
+                                <c:forEach begin="0" end="47" step="1" var="indx">
+                                    <c:set var="curTm" value="${indx*30}"/>
+                                   <c:set var="hasappt" value="${zm:hasAnyAppointments(attFreeBusy, today.timeInMillis + curTm*60*1000, today.timeInMillis + (curTm+30)*60*1000)}"/>
+                                    <c:if test="${hasappt}">
+                                        <zm:forEachAppoinment var="anAppt" appointments="${attFreeBusy}" start="${today.timeInMillis + curTm*60*1000}" end="${today.timeInMillis + (curTm+30)*60*1000}">
+                                            <c:set var="status" value="${anAppt.freeBusyActual}"/>
+                                        </zm:forEachAppoinment>
+                                    </c:if>
+                                    <td><div id="att_0_${indx}" class="gridDiv halfHour ${hasappt ? ' ZmScheduler-' : ''}${status} ${curTm eq aStart ? ' start ' :''} ${curTm eq aEnd ? ' end ' :''} ${indx eq 0 ? ' firstDiv ' : ''} ${indx % 2 eq 1 ? ' anHour ' : ''}"/></td>
+                                </c:forEach>
+                                <c:set var="rows" value="1"/>
+                                <td><div class="gridDiv ${compose.allDay ? 'end ':''}"/></td>
+                                <td>
+                                   &nbsp;
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <c:forEach items="${uploader.allAttendeesAndResourcesList}" var="anAttendee" varStatus="row">
+                    <c:if test="${! empty anAttendee and not empty fn:trim(anAttendee.fullAddressQuoted)}">
+                    <tr>
+                        <td class="attName">${fn:escapeXml(anAttendee.fullAddressQuoted)}</td>
+                        <td>
+                            <table cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <td><div class="gridDiv"/></td>
+                                    <c:set var="aday" value="${today}"/>
+                                    <c:set var="emailid" value="${fn:trim(anAttendee.address)}"/>
+                                    <zm:getFreeBusyAppointments var="attFreeBusy" varexception="exp" start="${aday.timeInMillis}" end="${zm:addDay(aday,1).timeInMillis}" email="${emailid}"/>
+                                    <c:forEach begin="0" end="47" step="1" var="indx">
+                                        <c:set var="curTm" value="${indx*30}"/>
+                                       <c:set var="hasappt" value="${zm:hasAnyAppointments(attFreeBusy, today.timeInMillis + curTm*60*1000, today.timeInMillis + (curTm+30)*60*1000)}"/>
+                                        <c:if test="${hasappt}">
+                                            <zm:forEachAppoinment var="anAppt" appointments="${attFreeBusy}" start="${today.timeInMillis + curTm*60*1000}" end="${today.timeInMillis + (curTm+30)*60*1000}">
+                                                <c:set var="status" value="${anAppt.freeBusyActual}"/>
+                                            </zm:forEachAppoinment>
+                                        </c:if>
+                                        <td><div id="att_${rows}_${indx}" class="gridDiv halfHour ${hasappt ? ' ZmScheduler-' : ''}${status} ${curTm eq aStart ? ' start ' :''} ${curTm eq aEnd ? ' end ' :''} ${indx eq 0 ? ' firstDiv ' : ''} ${indx % 2 eq 1 ? ' anHour ' : ''}"/></td>
+                                    </c:forEach>
+                                    <c:set var="rows" value="${rows+1}"/>
+                                    <td><div class="gridDiv ${compose.allDay ? 'end ':''}"/></td>
+                                    <td>
+                                        <input type="image" name="removeAttendee" alt="<fmt:message key="remove"/>" value="${fn:escapeXml(anAttendee.fullAddress)}" src="<app:imgurl value="common/ImgCancel.gif"/>">
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
                     </c:if>
-                    <c:if test="${not empty uploader.pendingAttendees}">
-                    <c:forEach items="${uploader.pendingAttendeesList}" var="anAttendee">
-                        <c:if test="${! empty anAttendee and not empty fn:trim(anAttendee.fullAddressQuoted)}">
-                        <tr>
-                            <td class="attName">${fn:escapeXml(anAttendee.fullAddressQuoted)}</td>
-                            <td>
-                                <table cellpadding="0" cellspacing="0">
-                                    <tr>
-                                        <td><div class="gridDiv"/></td>
-                                        <c:set var="aday" value="${today}"/>
-                                        <c:set var="emailid" value="${fn:trim(anAttendee.address)}"/>
-                                        <zm:getFreeBusyAppointments var="attFreeBusy" varexception="exp" start="${aday.timeInMillis}" end="${zm:addDay(aday,1).timeInMillis}" email="${emailid}"/>
-                                        <c:forEach begin="0" end="47" step="1" var="indx">
-                                            <c:set var="curTm" value="${indx*30}"/>
-                                           <c:set var="hasappt" value="${zm:hasAnyAppointments(attFreeBusy, today.timeInMillis + curTm*60*1000, today.timeInMillis + (curTm+30)*60*1000)}"/>
-                                            <c:if test="${hasappt}">
-                                                <zm:forEachAppoinment var="anAppt" appointments="${attFreeBusy}" start="${today.timeInMillis + curTm*60*1000}" end="${today.timeInMillis + (curTm+30)*60*1000}">
-                                                    <c:set var="status" value="${anAppt.freeBusyActual}"/>
-                                                </zm:forEachAppoinment>
-                                            </c:if>
-                                            <td><div class="gridDiv halfHour ${hasappt ? ' ZmScheduler-' : ''}${status} ${curTm eq aStart ? ' start ' :''} ${curTm eq aEnd ? ' end ' :''} ${indx eq 0 ? ' firstDiv ' : ''} ${indx % 2 eq 1 ? ' anHour ' : ''}"/></td>
-                                        </c:forEach>
-                                        <td><div class="gridDiv ${compose.allDay ? 'end ':''}"/></td>
-                                    </tr>
-                                </table>
-                            </td>
-                        </tr>
-                        </c:if>
-                    </c:forEach>
-                    </c:if>
-
-                    <c:if test="${not empty compose.resources}">
-                    <c:forEach items="${compose.resourcesAddrs}" var="anAttendee">
-                        <c:if test="${! empty anAttendee and not empty fn:trim(anAttendee.fullAddressQuoted)}">
-                        <tr>
-                            <td class="attName">${fn:escapeXml(anAttendee.fullAddressQuoted)}</td>
-                            <td>
-                                <table cellpadding="0" cellspacing="0">
-                                    <tr>
-                                        <td><div class="gridDiv"/></td>
-                                        <c:set var="aday" value="${today}"/>
-                                        <c:set var="emailid" value="${fn:trim(anAttendee.address)}"/>
-                                        <zm:getFreeBusyAppointments var="attFreeBusy" varexception="exp" start="${aday.timeInMillis}" end="${zm:addDay(aday,1).timeInMillis}" email="${emailid}"/>
-                                        <c:forEach begin="0" end="47" step="1" var="indx">
-                                            <c:set var="curTm" value="${indx*30}"/>
-                                           <c:set var="hasappt" value="${zm:hasAnyAppointments(attFreeBusy, today.timeInMillis + curTm*60*1000, today.timeInMillis + (curTm+30)*60*1000)}"/>
-                                            <c:if test="${hasappt}">
-                                                <zm:forEachAppoinment var="anAppt" appointments="${attFreeBusy}" start="${today.timeInMillis + curTm*60*1000}" end="${today.timeInMillis + (curTm+30)*60*1000}">
-                                                    <c:set var="status" value="${anAppt.freeBusyActual}"/>
-                                                </zm:forEachAppoinment>
-                                            </c:if>
-                                            <td><div class="gridDiv halfHour ${hasappt ? ' ZmScheduler-' : ''}${status} ${curTm eq aStart ? ' start ' :''} ${curTm eq aEnd ? ' end ' :''} ${indx eq 0 ? ' firstDiv ' : ''} ${indx % 2 eq 1 ? ' anHour ' : ''}"/></td>
-                                        </c:forEach>
-                                        <td><div class="gridDiv ${compose.allDay ? 'end ':''}"/></td>
-                                    </tr>
-                                </table>
-                            </td>
-                        </tr>
-                        </c:if>
-                    </c:forEach>
-                    </c:if>
-                    <c:if test="${not empty uploader.pendingResources}">
-                    <c:forEach items="${uploader.pendingResourcesList}" var="anAttendee">
-                        <c:if test="${! empty anAttendee and not empty fn:trim(anAttendee.fullAddressQuoted)}">
-                        <tr>
-                            <td class="attName">${fn:escapeXml(anAttendee.fullAddressQuoted)}</td>
-                            <td>
-                                <table cellpadding="0" cellspacing="0">
-                                    <tr>
-                                        <td><div class="gridDiv"/></td>
-                                        <c:set var="aday" value="${today}"/>
-                                        <c:set var="emailid" value="${fn:trim(anAttendee.address)}"/>
-                                        <zm:getFreeBusyAppointments var="attFreeBusy" varexception="exp" start="${aday.timeInMillis}" end="${zm:addDay(aday,1).timeInMillis}" email="${emailid}"/>
-                                        <c:forEach begin="0" end="47" step="1" var="indx">
-                                            <c:set var="curTm" value="${indx*30}"/>
-                                           <c:set var="hasappt" value="${zm:hasAnyAppointments(attFreeBusy, today.timeInMillis + curTm*60*1000, today.timeInMillis + (curTm+30)*60*1000)}"/>
-                                            <c:if test="${hasappt}">
-                                                <zm:forEachAppoinment var="anAppt" appointments="${attFreeBusy}" start="${today.timeInMillis + curTm*60*1000}" end="${today.timeInMillis + (curTm+30)*60*1000}">
-                                                    <c:set var="status" value="${anAppt.freeBusyActual}"/>
-                                                </zm:forEachAppoinment>
-                                            </c:if>
-                                            <td><div class="gridDiv halfHour ${hasappt ? ' ZmScheduler-' : ''}${status} ${curTm eq aStart ? ' start ' :''} ${curTm eq aEnd ? ' end ' :''} ${indx eq 0 ? ' firstDiv ' : ''} ${indx % 2 eq 1 ? ' anHour ' : ''}"/></td>
-                                        </c:forEach>
-                                        <td><div class="gridDiv ${compose.allDay ? 'end ':''}"/></td>
-                                    </tr>
-                                </table>
-                            </td>
-                        </tr>
-                        </c:if>
-                    </c:forEach>
-                    </c:if>
+                </c:forEach>
+                <script type="text/javascript">       <%-- to update the all attendees row with the f/b union of indiviual attendees statuses --%>
+                    for(var i=0;i<=${rows};i++){
+                        for(var j=0;j<=47;j++){
+                            var elem = document.getElementById('att_'+i+'_'+j);
+                            if(elem && elem.className){
+                                if(elem.className.indexOf('ZmScheduler-B') > -1 ){
+                                    document.getElementById('allAtt_'+j).className = document.getElementById('allAtt_'+j).className.replace(/ZmScheduler-[FUTO]/ig,'ZmScheduler-B');
+                                }else if(elem.className.indexOf('ZmScheduler-O') > -1 ){
+                                    document.getElementById('allAtt_'+j).className = document.getElementById('allAtt_'+j).className.replace(/ZmScheduler-[FUT]/ig,'ZmScheduler-O');
+                                }else if(elem.className.indexOf('ZmScheduler-T') > -1 ){
+                                    document.getElementById('allAtt_'+j).className = document.getElementById('allAtt_'+j).className.replace(/ZmScheduler-[FU]/ig,'ZmScheduler-T');
+                                }else if(elem.className.indexOf('ZmScheduler-U') > -1 ){
+                                    document.getElementById('allAtt_'+j).className = document.getElementById('allAtt_'+j).className.replace(/ZmScheduler-F/ig,'ZmScheduler-U');
+                                }
+                            }
+                        }
+                    }
+                </script>
                 <tr>
                     <td colspan="2">&nbsp;</td>
                 </tr>
@@ -368,6 +447,7 @@ if (k == 13) { document.getElementById("doSearch").click();return false;} else {
                 </tr>
                 <tr>
                     <td class='List' colspan="2">
+                        <div class="TbTop">${toolbar}</div>
                         <app:contactAddListView attendeeMode="${true}" searchResult="${search}" searchGalResult="${searchGal}" uploader="${uploader}"/>
                     </td>
                 </tr>
@@ -376,7 +456,7 @@ if (k == 13) { document.getElementById("doSearch").click();return false;} else {
     </tr>
     <tr>
         <td class='TbBottom'>
-                ${toolbar}
+                <%--${toolbar}--%>&nbsp;
         </td>
     </tr>
 </table>
@@ -391,7 +471,7 @@ if (k == 13) { document.getElementById("doSearch").click();return false;} else {
     <input type="hidden" name="subject" value="${fn:escapeXml(compose.subject)}"/>
     <input type="hidden" name="location" value="${fn:escapeXml(compose.location)}"/>
     <input type="hidden" name="freeBusyStatus" value="${fn:escapeXml(compose.freeBusyStatus)}"/>
-    <input type="hidden" name="allDay" value="${fn:escapeXml(compose.allDay ? '1':'0')}"/>
+    <%--<input type="hidden" name="allDay" value="${fn:escapeXml(compose.allDay ? '1':'0')}"/>--%>
     <input type="hidden" name="startDate" value="${fn:escapeXml(compose.startDate)}"/>
     <input type="hidden" name="startHour" value="${fn:escapeXml(compose.startHour)}"/>
     <input type="hidden" name="startMinute" value="${fn:escapeXml(compose.startMinute)}"/>
