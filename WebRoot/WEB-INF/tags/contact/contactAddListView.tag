@@ -78,9 +78,11 @@
                 <th ><fmt:message key="email"/>
            </c:otherwise>
         </c:choose>
+        <c:if test="${attendeeMode}">
         <th width="10%">
             <fmt:message key="freeBusy"/>
         </th>
+        </c:if>
     </tr>
     <c:forEach items="${searchResult.hits}" var="hit" varStatus="status">
     <c:if test="${
@@ -114,6 +116,7 @@
                     ${fn:escapeXml(empty hit.contactHit.fileAsStr ? '' : hit.contactHit.fileAsStr)}
             </td>
             <td >&nbsp;${fn:escapeXml(hit.contactHit.displayEmail)}</td>
+            <c:if test="${attendeeMode}">
             <td>
                <zm:getFreeBusyAppointments varexception="exp" var="freeBusyAppts" start="${apptStartLong}" end="${apptEndLong}" email="${hit.contactHit.email}"/>
                <c:if test="${empty exp or exp eq null}">
@@ -131,6 +134,7 @@
                    <fmt:message key="${freeBusyStatusKey}"/>
                 </c:if>
             </td>
+            </c:if>    
         </tr>
     </c:if>
     </c:if>
@@ -165,6 +169,7 @@
                     ${fn:escapeXml(empty hit.contactHit.fileAsStr ? '' : hit.contactHit.fileAsStr)}
             </td>
             <td >&nbsp;${fn:escapeXml(hit.contactHit.email2)}</td>
+            <c:if test="${attendeeMode}">
             <td>
                <zm:getFreeBusyAppointments varexception="exp" var="freeBusyAppts" start="${apptStartLong}" end="${apptEndLong}" email="${hit.contactHit.email2}"/>
                <c:if test="${empty exp or exp eq null}">
@@ -185,6 +190,7 @@
                    <fmt:message key="${freeBusyStatusKey}"/>
                 </c:if>
             </td>
+            </c:if>    
         </tr>
     </c:if>
     </c:if>
@@ -219,6 +225,7 @@
                     ${fn:escapeXml(empty hit.contactHit.fileAsStr ? '' : hit.contactHit.fileAsStr)}
             </td>
             <td >&nbsp;${fn:escapeXml(hit.contactHit.email3)}</td>
+            <c:if test="${attendeeMode}">
             <td>
                <zm:getFreeBusyAppointments varexception="exp" var="freeBusyAppts" start="${apptStartLong}" end="${apptEndLong}" email="${hit.contactHit.email3}"/>
                <c:if test="${empty exp or exp eq null}">
@@ -239,6 +246,7 @@
                    <fmt:message key="${freeBusyStatusKey}"/>
                 </c:if>
             </td>
+            </c:if>    
         </tr>
     </c:if>
     </c:if>
@@ -273,6 +281,7 @@
                     ${fn:escapeXml(empty hit.contactHit.fileAsStr ? '' : hit.contactHit.fileAsStr)}
             </td>
             <td >&nbsp;${fn:escapeXml(hit.contactHit.workEmail1)}</td>
+            <c:if test="${attendeeMode}">
             <td>
                <zm:getFreeBusyAppointments varexception="exp" var="freeBusyAppts" start="${apptStartLong}" end="${apptEndLong}" email="${hit.contactHit.workEmail1}"/>
                <c:if test="${empty exp or exp eq null}">
@@ -293,6 +302,7 @@
                    <fmt:message key="${freeBusyStatusKey}"/>
                 </c:if>
             </td>
+            </c:if>
         </tr>
     </c:if>
     </c:if>
@@ -327,6 +337,7 @@
                     ${fn:escapeXml(empty hit.contactHit.fileAsStr ? '' : hit.contactHit.fileAsStr)}
             </td>
             <td >&nbsp;${fn:escapeXml(hit.contactHit.workEmail2)}</td>
+            <c:if test="${attendeeMode}">
             <td>
                <zm:getFreeBusyAppointments varexception="exp" var="freeBusyAppts" start="${apptStartLong}" end="${apptEndLong}" email="${hit.contactHit.workEmail2}"/>
                <c:if test="${empty exp or exp eq null}">
@@ -347,6 +358,7 @@
                    <fmt:message key="${freeBusyStatusKey}"/>
                 </c:if>
             </td>
+            </c:if>
         </tr>
     </c:if>
     </c:if>
@@ -381,6 +393,7 @@
                     ${fn:escapeXml(empty hit.contactHit.fileAsStr ? '' : hit.contactHit.fileAsStr)}
             </td>
             <td >&nbsp;${fn:escapeXml(hit.contactHit.workEmail3)}</td>
+            <c:if test="${attendeeMode}">
             <td>
                <zm:getFreeBusyAppointments varexception="exp" var="freeBusyAppts" start="${apptStartLong}" end="${apptEndLong}" email="${hit.contactHit.workEmail3}"/>
                <c:if test="${empty exp or exp eq null}">
@@ -401,6 +414,7 @@
                     <fmt:message key="${freeBusyStatusKey}"/>
                 </c:if>
             </td>
+            </c:if>
         </tr>
     </c:if>
     </c:if>
@@ -447,6 +461,7 @@
                     ${fn:escapeXml(contact.attrs.zimbraCalResType)}
             </td>
             </c:if>
+            <c:if test="${attendeeMode}">
             <td>
                 <zm:getFreeBusyAppointments varexception="exp" var="freeBusyAppts" start="${apptStartLong}" end="${apptEndLong}" email="${contact.email}"/>
                <c:if test="${empty exp or exp eq null}">
@@ -467,6 +482,7 @@
                     <fmt:message key="${freeBusyStatusKey}"/>
                 </c:if>
             </td>
+            </c:if>    
 
         </tr>
         </c:if>
