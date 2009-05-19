@@ -39,6 +39,14 @@
 </c:set>
 
 <c:set var="appt" value="${invite.component}"/>
+<c:if test="${empty theBody and appt.isNoBlob}">
+    <c:if test="${!empty appt.descriptionHtml}">
+        <c:set var="theBody" value="${appt.descriptionHtml}"/>
+    </c:if>
+    <c:if test="${empty appt.descriptionHtml}">
+        <c:set var="theBody" value="${appt.description}"/>
+    </c:if>
+</c:if>
 <c:catch>
     <c:set var="myAttendee" value="${zm:getMyAttendee(invite, mailbox)}"/>
     <c:set var="pstat" value="${not empty param.pstat ? param.pstat : not empty myAttendee ? myAttendee.participantStatus : ''}"/>
