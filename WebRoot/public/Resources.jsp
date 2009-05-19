@@ -52,11 +52,13 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
                        "&country=" + localeId.substring(localeId.length() - 2);
         }
     }
+	localeQs = localeQs.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll("\"", "&quot;");
 
 	String skin = request.getParameter("skin");
 	if (skin == null) {
 		skin = application.getInitParameter("zimbraDefaultSkin");
 	}
+	skin = skin.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll("\"", "&quot;");
 
 	String resources = (String)request.getAttribute("res");
 	if (resources == null) {
