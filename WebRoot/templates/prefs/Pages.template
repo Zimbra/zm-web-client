@@ -316,6 +316,7 @@ and the container element is replaced with that control.
 						</tr>
 						<$ } $>
 
+					    <$ if (data.isEnabled(ZmSetting.MAIL_READ_RECEIPT_ENABLED)) { $>
 						<tr><td colspan=2><hr></td></tr>
 
 						<tr>
@@ -337,6 +338,8 @@ and the container element is replaced with that control.
 							<td class='ZOptionsLabel'>&nbsp;</td>
 							<td class='ZOptionsField'><div id='${id}_DEDUPE_MSG_TO_SELF' tabindex='180'></div></td>
 						</tr>
+						<$ } $>
+
 					<$ } $>
 				</table>
 			</td>
