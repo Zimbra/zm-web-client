@@ -183,11 +183,18 @@
 </c:if>
 <c:if test="${!empty compose.originalAttachments}">
     <c:forEach var="part" items="${compose.originalAttachments}" varStatus="status">
-        <app:attachment firstAttachment="${firstAttachment}" url="/service/home/~/?id=${message.id}&part=${part.partName}&auth=co"
-                        displayName="${part.displayName}" contentType="${part.contentType}"
-                        checked="${compose.checkedAttachmentNames[part.partName] or (part.isMssage and not empty compose.messageAttachments)}" displaySize="${part.displaySize}"
-                        value="${part.partName}" name="originalAttachment"/>
-        <c:set var="firstAttachment" value="${false}"/>
+        <c:set var="cid" value="${fn:replace(part.contentId,'<' ,'')}"/>
+        <c:set var="cid" value="${fn:replace(cid,'>' ,'')}"/>
+        <c:if test="${not (part.isImage and not empty part.contentId and fn:contains(cid,'DWT'))}">
+            <app:attachment firstAttachment="${firstAttachment}" url="/service/home/~/?id=${message.id}&part=${part.partName}&auth=co"
+                            displayName="${part.displayName}" contentType="${part.contentType}"
+                            checked="${compose.checkedAttachmentNames[part.partName] != null or (part.isMssage and not empty compose.messageAttachments)}" displaySize="${part.displaySize}"
+                            value="${part.partName},${empty cid ? compose.checkedAttachmentNames[part.partName] : cid }" name="originalAttachment"/>
+            <c:set var="firstAttachment" value="${false}"/>
+        </c:if>
+        <c:if test="${(part.isImage and not empty part.contentId and fn:contains(part.contentId,'DWT'))}">
+            <input type="hidden" value="${part.partName},${empty cid ? compose.checkedAttachmentNames[part.partName] : cid}" name="originalAttachment"/>
+        </c:if>    
     </c:forEach>
 </c:if>
 <c:if test="${(not empty param.attachId) and (not empty param.attachUrl) and (not empty param.attachName)}">
@@ -200,8 +207,19 @@
     <td colspan="3"  width="100%" >
         <%--<c:set var="isHtmlCont" value="${compose.contentType eq 'text/html' or not empty compose.htmlContent}" />--%>
         <c:set var="isHtmlCont" value="${not empty compose.htmlContent}" />
-
-        <textarea class='MsgCompose' name="body" id="body" rows="20" cols="80" style='<c:if test="${isHtml}">visibility:hidden;</c:if>width:100%'>${isHtml ? (empty compose.htmlContent ?  fn:escapeXml(compose.content) : fn:escapeXml(compose.htmlContent)) : compose.content}</textarea>
+        <c:set var="theBody" value="${isHtml ? (empty compose.htmlContent ?  fn:escapeXml(compose.content) : fn:escapeXml(compose.htmlContent)) : compose.content}"/>
+        <c:if test="${not empty message}">
+            <c:forEach var="part" items="${message.attachments}">
+               <c:if test="${part.isImage}"> <%-- SWAP the inline images dfsrc and src from the attached parts to display the images. --%>
+                   <c:set var="cid" value="${fn:replace(part.contentId,'<' ,'')}"/>
+                   <c:set var="cid" value="cid:${fn:replace(cid,'>' ,'')}"/>
+                   <c:set var="cidUrl" value=" src=\"${cid}\""/>
+                   <c:set var="imgUrl" value=" dfsrc=\"${cid}\" src=\"/service/home/~/?id=${message.id}&amp;part=${part.partName}&amp;auth=co\""/>
+                   <c:set var="theBody" value="${fn:replace(theBody,fn:escapeXml(cidUrl),fn:escapeXml(imgUrl))}"/>
+               </c:if>
+            </c:forEach>
+        </c:if>
+        <textarea class='MsgCompose' name="body" id="body" rows="20" cols="80" style='<c:if test="${isHtml}">visibility:hidden;</c:if>width:100%'>${theBody}</textarea>
         <!--<textarea class='MsgCompose' rows="30" cols="80" style='width:100%'>${isHtml ? (empty compose.htmlContent ?  fn:escapeXml(compose.content) : fn:escapeXml(compose.htmlContent)) : compose.content}</textarea>-->
         <input type="hidden" id="bodyText" class='MsgCompose' name="bodyText" value="" style='width:100%' />
 
