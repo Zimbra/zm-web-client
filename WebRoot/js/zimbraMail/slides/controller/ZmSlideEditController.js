@@ -36,6 +36,7 @@ ZmSlideEditController._VALUE = "value";
 ZmSlideEditController.ACTION_INSERT_TEXTBOX = "textbox";
 ZmSlideEditController.ACTION_DELETE_TEXTBOX = "delete";
 ZmSlideEditController.ACTION_INSERT_IMG = "insertimg";
+ZmSlideEditController.ACTION_INSERT_IMG1 = "insertimg1";
 ZmSlideEditController.ACTION_INSERT_GRPH = "insertgrph";
 ZmSlideEditController.ACTION_NEW_SLIDE = "newslide";
 ZmSlideEditController.ACTION_DELETE_SLIDE = "deleteslide";
@@ -69,7 +70,7 @@ ZmSlideEditController.prototype._initToolBar = function () {
     this._insertSlide.setData(ZmSlideEditController._VALUE, ZmSlideEditController.ACTION_NEW_SLIDE);
     this._insertSlide.addSelectionListener(listener);
 
-    new DwtControl({parent:tb, className:"vertSep"});
+    //new DwtControl({parent:tb, className:"vertSep"});
 
     this._deleteSlideButton = new DwtToolBarButton({parent:tb});
     this._deleteSlideButton.setToolTipContent(ZmMsg.slides_deleteSlide);
@@ -78,7 +79,7 @@ ZmSlideEditController.prototype._initToolBar = function () {
     this._deleteSlideButton.setData(ZmSlideEditController._VALUE, ZmSlideEditController.ACTION_DELETE_SLIDE);
     this._deleteSlideButton.addSelectionListener(listener);
 
-    new DwtControl({parent:tb, className:"vertSep"});
+    //new DwtControl({parent:tb, className:"vertSep"});
 
     this._insertButton = new DwtToolBarButton({parent:tb});
     this._insertButton.setToolTipContent(ZmMsg.slides_insertTextBox);
@@ -87,7 +88,7 @@ ZmSlideEditController.prototype._initToolBar = function () {
     this._insertButton.setData(ZmSlideEditController._VALUE, ZmSlideEditController.ACTION_INSERT_TEXTBOX);
     this._insertButton.addSelectionListener(listener);
 
-    new DwtControl({parent:tb, className:"vertSep"});
+    //new DwtControl({parent:tb, className:"vertSep"});
 
     this._deleteButton = new DwtToolBarButton({parent:tb});
     this._deleteButton.setToolTipContent(ZmMsg.slides_deleteTextBox);
@@ -96,8 +97,16 @@ ZmSlideEditController.prototype._initToolBar = function () {
     this._deleteButton.setData(ZmSlideEditController._VALUE, ZmSlideEditController.ACTION_DELETE_TEXTBOX);
     this._deleteButton.addSelectionListener(listener);
 
-    new DwtControl({parent:tb, className:"vertSep"});
+    //new DwtControl({parent:tb, className:"vertSep"});
 
+	/*
+    var button = this._insertImage1 = new DwtToolBarButton({parent:tb});
+    button.setImage("ImageDoc");
+    button.setToolTipContent(ZmMsg.insertImage);
+    button.setData(ZmSlideEditController._VALUE, ZmSlideEditController.ACTION_INSERT_IMG1);
+    button.addSelectionListener(listener);    
+    */
+    
     this._insertImage = new DwtToolBarButton({parent:tb});
     this._insertImage.setToolTipContent(ZmMsg.insertImage);
     this._insertImage.setImage("AddImage");
@@ -105,7 +114,7 @@ ZmSlideEditController.prototype._initToolBar = function () {
     this._insertImage.setData(ZmSlideEditController._VALUE, ZmSlideEditController.ACTION_INSERT_IMG);
     this._insertImage.addSelectionListener(listener);
 
-    new DwtControl({parent:tb, className:"vertSep"});
+    //new DwtControl({parent:tb, className:"vertSep"});
 
     this._themesButton = new DwtToolBarButton({parent:tb});
     this._themesButton.setToolTipContent(ZmMsg.slides_runSlideShow);
@@ -132,7 +141,7 @@ ZmSlideEditController.prototype._initToolBar = function () {
     this._themesButton.setMenu(menu);
 
     
-    new DwtControl({parent:tb, className:"vertSep"});
+    //new DwtControl({parent:tb, className:"vertSep"});
 
     this._runSlideShow = new DwtToolBarButton({parent:tb});
     this._runSlideShow.setToolTipContent(ZmMsg.slides_runSlideShow);
@@ -146,31 +155,50 @@ ZmSlideEditController.prototype._initToolBar = function () {
 
 ZmSlideEditController.prototype._actionListener =
 function(ev) {
-    var action = ev.item.getData(ZmSlideEditController._VALUE);
+	var action = ev.item.getData(ZmSlideEditController._VALUE);
 
-    if(action == ZmSlideEditController.ACTION_INSERT_TEXTBOX) {
-        this._currentView.insertTextBox();
-    }
-    else if(action == ZmSlideEditController.ACTION_DELETE_TEXTBOX) {
-        this._currentView.deleteTextBox();
-    }
-    else if(action == ZmSlideEditController.ACTION_NEW_SLIDE) {
-        this._currentView.createSlide();
-    }
-    else if(action == ZmSlideEditController.ACTION_DELETE_SLIDE) {
-        this._currentView.deleteSlide();
-    }
-    else if(action == ZmSlideEditController.ACTION_RUN) {
-        this._currentView.runSlideShow();
-    }
-    else if(action == ZmSlideEditController.ACTION_SAVE) {
-        this._currentView.saveFile();
-    }
-    else if(action == ZmSlideEditController.ACTION_INSERT_IMG) {
-        this._currentView.insertImage();
-    }
+	if(action == ZmSlideEditController.ACTION_INSERT_TEXTBOX) {
+		this._currentView.insertTextBox();
+	}
+	else if(action == ZmSlideEditController.ACTION_DELETE_TEXTBOX) {
+		this._currentView.deleteTextBox();
+	}
+	else if(action == ZmSlideEditController.ACTION_NEW_SLIDE) {
+		this._currentView.createSlide();
+	}
+	else if(action == ZmSlideEditController.ACTION_DELETE_SLIDE) {
+		this._currentView.deleteSlide();
+	}
+	else if(action == ZmSlideEditController.ACTION_RUN) {
+		this._currentView.runSlideShow();
+	}
+	else if(action == ZmSlideEditController.ACTION_SAVE) {
+		this._currentView.saveFile();
+	}
+	else if(action == ZmSlideEditController.ACTION_INSERT_IMG) {
+		this._currentView.insertImage();
+	}
+	else if(action == ZmSlideEditController.ACTION_INSERT_IMG1) {
+		if (!this._insertObjectsCallback) {
+			this._insertObjectsCallback = new AjxCallback(this, this._insertObjects);
+		}
+		this.__popupUploadDialog(this._insertObjectsCallback);
+	}
 };
 
+ZmSlideEditController.prototype.__popupUploadDialog =
+function(callback) {
+    AjxDispatcher.require(["NotebookCore", "Notebook"]);    
+	var dialog = appCtxt.getUploadDialog();
+    dialog.addPopdownListener(new AjxListener(this, this.focus));
+	dialog.popup({id: window.fileInfo.folderId}, callback, ZmMsg.insertAttachment);
+};
+
+ZmSlideEditController.prototype._insertObjects =
+function(folder, filenames) {
+	//func.call(this, filenames);
+    this._currentView.insertFile();    
+};
 
 ZmSlideEditController.prototype._themeListener =
 function(ev) {

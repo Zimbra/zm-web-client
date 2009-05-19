@@ -1007,14 +1007,51 @@ function() {
 
     var div = document.createElement("div");
     div.className = "slide_object_img";
-    div.innerHTML = '<img src="' + imgSrc + '" width="100%" height="100%">';
+    //div.innerHTML = '<img src="' + imgSrc + '">';
     div.style.zIndex = Dwt.Z_VIEW;
 
     Dwt.setPosition(div, Dwt.ABSOLUTE_STYLE);
     Dwt.setBounds(div, 20,20, 200, 100);
+    div.style.overflow = "hidden";
+
+    //resize image after inserting
+    var editor = this;
+    var imgNode = document.createElement("img");
+    imgNode.onload = function() {
+      editor.resizeImg(div, imgNode);
+    };
+    imgNode.src = imgSrc;
+    div.appendChild(imgNode);
 
     var container  = this.getCurrentSlideElement();
     container.appendChild(div);
+};
+
+//resize image dimension from pixel to percentage
+ZmSlideEditView.prototype.resizeImg =
+function(div, imgNode) {
+    var width = imgNode.offsetWidth;
+    var height = imgNode.offsetHeight
+    var container  = this.getCurrentSlideElement();
+    var imgRatio = width/height;
+    var cWidth = container.offsetWidth;
+    var cHeight  = container.offsetHeight;
+
+    if(width > cWidth) {
+        percentWidth = 80;
+        percentHeight = percentWidth * height/width;
+
+    }else if(height > cHeight) {
+        percentHeight = 70;
+        percentWidth = percentHeight * width/height;        
+    }else {
+        percentHeight = 100*height/cHeight;
+        percentWidth = 100*width/cWidth;
+    }
+
+    Dwt.setBounds(div, (100-percentWidth)/2 + "%",  (100-percentHeight)/2 + "%", percentWidth + "%", percentHeight + "%");
+    Dwt.setSize(imgNode, '100%', '100%');
+    //this.positionBoxInCenter(div);
 };
 
 ZmSlideEditView.prototype.insertGraph =
