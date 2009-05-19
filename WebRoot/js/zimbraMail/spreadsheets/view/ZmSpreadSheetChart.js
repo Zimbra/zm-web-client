@@ -116,12 +116,30 @@ function(type, params){
         }
         params.series = seriesDef;
         params.yField = this._dataFields[0];
+        params.style = {
+            legend: {
+                display: 'bottom',
+                font:{
+					family: "Arial",
+					size: 10
+				}
+            }
+        };
 
     }else if ( type == ZmSpreadSheetChart.PIE){
         
         params.categoryField = this._dataFields[0];
         params.dataField = this._dataFields[1];
         params.series = [{}];
+        params.style = {
+            legend: {
+                display: 'right',
+                font:{
+					family: "Arial",
+					size: 10
+				}
+            }
+        };
 
     }
     return params;
@@ -136,8 +154,8 @@ function(){
     this._containerId = Dwt.getNextId();
 
     html[idx++] = "<div class='ZmSpreadSheetChartHeader' id ='"+this._headerId+"'>";
-    html[idx++] =   "<span class='ZmSpreadSheetChartName' id='"+this._headerId+"_name'>Sample Chart:"+this.getHTMLElId()+"</span>";
-    html[idx++] =   "<span class='ZmSpreadSheetChartClose' id='"+this._headerId+"_close'><img width='15px' height='15px' src='.."+ (window.isRestView ? "/../../zimbra" : "")+"/img/close_icon.gif'/></span>"
+    html[idx++] =   "<div class='ZmSpreadSheetChartName' id='"+this._headerId+"_name'>Sample Chart:"+this.getHTMLElId()+"</div>";
+    html[idx++] =   "<div class='ImgCancel ZmSpreadSheetChartClose' id='"+this._headerId+"_close'></div>"
     html[idx++] = "</div>";
 
     html[idx++] = "<div id='"+this._containerId+"' class='ZmSpreadSheetChartContainer'></div>";

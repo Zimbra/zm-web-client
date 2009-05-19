@@ -96,7 +96,7 @@
 .ZmSpreadSheetChartHeader {
     border: thin solid gray;
     background-color: gray;
-    height: 15px;
+    height: 14px;
     text-align: center;
     cursor: move;
 }
@@ -107,7 +107,7 @@
 }
 
 .ZmSpreadSheetChartContainer {
-    height: 283px;
+    height: 284px;
     width: 100%;
 }
 
@@ -115,12 +115,6 @@
     float: right;
     valign: middle;
     cursor: pointer;
-    background:transparent url('../img/close_icon.gif') no-repeat scroll 0 0;
-    height:14px !important;
-    overflow:hidden;
-    width:14px !important;
-}
-
-.ZmSpreadSheetChartClose .View {
-    background: transparent url('../../../zimbra/img/close_icon.gif') no-repeat scroll 0 0;
+    height: 14px !important;
+    width:  14px !important;
 }

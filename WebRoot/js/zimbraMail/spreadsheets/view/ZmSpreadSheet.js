@@ -65,6 +65,8 @@ ZmSpreadSheet = function(parent, controller, className, posStyle, deferred) {
     if (AjxEnv.isIE || AjxEnv.isOpera)
 		Dwt.setHandler(document, DwtEvent.ONKEYDOWN, AjxCallback.simpleClosure(this._keyPress, this));
 
+    //copy-paste
+    Dwt.setHandler(window, DwtEvent.ONBLUR, AjxCallback.simpleClosure(this._clipboard_blur, this));
 };
 
 ZmSpreadSheet.TOOLTIP_DELAY = 750;
@@ -336,6 +338,8 @@ ZmSpreadSheet.prototype._init = function() {
 
 	this.getHtmlElement().style.display = "";
 	this._header_resetColWidths();
+
+    this._showCharts();
 };
 
 ZmSpreadSheet.prototype._getAutoFillRangeDiv = function(){
@@ -652,8 +656,10 @@ ZmSpreadSheet.prototype._cellClicked = function(td, ev) {
                 stopEvent = true;
             }
 		} else{
-            this._selectCell(td);
-			this.focus();
+            if(this._editingCell){
+                this._input_blur();
+            }
+            this._selectCell(td);			
         }
 		if (stopEvent) {
 			ev._stopPropagation = true;
@@ -1044,7 +1050,7 @@ ZmSpreadSheet.prototype._input_blur = function(ev) {
 	input.style.left = 0;
 	input.style.top = 0;
 	input.style.width = "";
-	if (!this._preventSaveOnBlur)
+	if (!this._preventSaveOnBlur && this._editingCell)
 		this._save_value(input.value);
 	this._editingCell = null;
 	this._hideRange();
@@ -1137,9 +1143,10 @@ ZmSpreadSheet.prototype._handleKey = function(dwtev, ev) {
 	var handled = true;
 	var is_movement = false;
 	var old_sel = this._selectedCell;
+    var td;
 	switch (dwtev.keyCode) {
 	    case 9: // TAB
-		var td = dwtev.shiftKey
+		td = dwtev.shiftKey
 			? this._getPrevCell()
 			: this._getNextCell();
 		if (td)
@@ -1148,30 +1155,37 @@ ZmSpreadSheet.prototype._handleKey = function(dwtev, ev) {
 
 	    case 37: // LEFT
 	    case 39: // RIGHT
-		var td = dwtev.keyCode == 37
-			? this._getLeftCell()
-			: this._getRightCell();
-		if (td) {
-			this._selectCell(td);
-			is_movement = true;
-		}
+        td = (dwtev.shiftKey && this._shiftRangeEnd) ? this._shiftRangeEnd : this._selectedCell;                
+		td = dwtev.keyCode == 37
+			? this._getLeftCell(td)
+			: this._getRightCell(td);
+        if(!dwtev.shiftKey && td){
+            this._selectCell(td);
+        }else{
+           is_movement = true;
+        }		
 		break;
 
-	    case 38: // UP
-	    case 13: // ENTER
-	    case 40: // DOWN
-		var td = (dwtev.keyCode == 13
-			  ? ( dwtev.shiftKey
+        case 13: //ENTER
+        td = ( dwtev.shiftKey
 			      ? this._getUpCell()
-			      : this._getDownCell())
-			  : ( dwtev.keyCode == 38
-			      ? this._getUpCell()
-			      : this._getDownCell()));
-		if (td) {
-			this._selectCell(td);
-			is_movement = dwtev.keyCode != 13;
-		}
-		break;
+			      : this._getDownCell());
+        if(td) this._selectCell(td);
+        break;
+
+        case 38:    //UP
+        case 40:    //DOWN
+        td = (dwtev.shiftKey && this._shiftRangeEnd) ? this._shiftRangeEnd : this._selectedCell;                
+        td = ( dwtev.keyCode == 38
+			      ? this._getUpCell(td)
+			      : this._getDownCell(td)
+                );
+        if(!dwtev.shiftKey && td){
+            this._selectCell(td);
+        }else{
+           is_movement = true; 
+        }
+        break;	    
 
 	    case 113: // F2
 		this._editCell(this._selectedCell);
@@ -1222,8 +1236,13 @@ ZmSpreadSheet.prototype._handleKey = function(dwtev, ev) {
 
 		    case "c":	// COPY
 			if (dwtev.isCommand()) {
-				handled = true;
+				//handled = true;
 				this.clipboardCopy();
+
+                //Copy Data to System
+                this.focusTextArea();
+                this._addDataToTextArea();
+
 			}
 			break;
 
@@ -1235,10 +1254,13 @@ ZmSpreadSheet.prototype._handleKey = function(dwtev, ev) {
 			break;
 
 		    case "v":	// PASTE
-			if (dwtev.isCommand()) {
+			if (dwtev.isCommand() && this.hasClipboardData()) {
 				handled = true;
 				this.clipboardPaste();
-			}
+			}else{
+                this.focusTextArea();
+                window.setTimeout(AjxCallback.simpleClosure(this._pasteFromTextArea, this), 50);
+            }
 			break;
 
 		}
@@ -1248,16 +1270,19 @@ ZmSpreadSheet.prototype._handleKey = function(dwtev, ev) {
 		dwtev._returnValue = false;
 	}
 	if (is_movement) {
-		if (dwtev.shiftKey && !this._shiftRangeStart)
+		if (dwtev.shiftKey && !this._shiftRangeStart){
 			this._shiftRangeStart = old_sel;
-		else if (!dwtev.shiftKey) {
+            this._shiftRangeEnd = old_sel;
+        }else if (!dwtev.shiftKey) {
 			this._shiftRangeStart = null;
+            this._shiftRangeEnd = null;
 			this._hideRange();
 		}
-		if (this._shiftRangeStart) {
+		if (this._shiftRangeStart && td) {
+            this._shiftRangeEnd = td;
 			// we select the range between _shiftRangeStart and _selectedCell
 			this._selectRange(ZmSpreadSheet.getCellName(this._shiftRangeStart),
-					  ZmSpreadSheet.getCellName(this._selectedCell), false);
+					  ZmSpreadSheet.getCellName(this._shiftRangeEnd), false);
 		}
 	}
 	return handled;
@@ -1268,7 +1293,7 @@ function(ev){
     if (this._selectedRangeName) {
         this._model.forEachCell(this._selectedRangeName,
                 function(cell) {
-                    if (dwtev.isCommand())
+                    if (ev.isCommand())
                         cell.clearAll();
                     else
                         cell.clearValue();
@@ -1930,17 +1955,372 @@ ZmSpreadSheet.prototype.getSelectedCellModel = function() {
 ZmSpreadSheet.prototype.clipboardCopy = function() {
 	window.top._ZmSpreadSheet_clipboard = new ZmSpreadSheetClipboard
 		(this._model, this.getSelectionRange(), false);
+    window.top._ZmSpreadSheet_cliboard_backup = null;
 };
 
 ZmSpreadSheet.prototype.clipboardCut = function() {
 	window.top._ZmSpreadSheet_clipboard = new ZmSpreadSheetClipboard
 		(this._model, this.getSelectionRange(), true);
+    window.top._ZmSpreadSheet_cliboard_backup = null;
 };
 
 ZmSpreadSheet.prototype.clipboardPaste = function() {
 	var c = window.top._ZmSpreadSheet_clipboard;
+    c = c || window.top._ZmSpreadSheet_cliboard_backup;
 	if (c) {
 		var r = this._model.paste(c, this.getSelectionRange());
 		this._selectRange.apply(this, r);
 	}
+};
+
+ZmSpreadSheet.prototype.hasClipboardData =
+function(){
+    return (window.top._ZmSpreadSheet_clipboard != null);
+};
+
+ZmSpreadSheet.prototype._clipboard_blur =
+function() { //backup to allow copy-paste from external sources
+    window.top._ZmSpreadSheet_cliboard_backup = window.top._ZmSpreadSheet_clipboard;
+    window.top._ZmSpreadSheet_clipboard = null;
+};
+
+ZmSpreadSheet.prototype._addDataToTextArea =
+function(){
+
+    var sRow = this._startRangeRow;
+    var sCol = this._startRangeCol;
+    var eRow = this._endRangeRow;
+    var eCol = this._endRangeCol;
+
+    //Logic to Select Range
+
+    var startRow = Math.min(sRow, eRow);
+    var startCol = Math.min(sCol, eCol);
+    var endRow   = Math.max(sRow, eRow);
+    var endCol   = Math.max(sCol, eCol);
+
+    var textArea = this._getTextArea();
+    var data = "";
+    for(var i=startRow; i<=endRow; i++){        
+        for(var j=startCol; j<=endCol; j++){
+            data += this.getCell(i, j).getValue();
+            if(j != endCol ) data += '\t';
+        }
+        if( i != endRow) data += '\n';
+    }
+
+    textArea.value = data;
+    this.focusTextArea();
+
+};
+
+ZmSpreadSheet.prototype._pasteFromTextArea =
+function(){
+
+    var textArea = this._getTextArea();
+    var str = textArea.value;
+
+    //Parsing Logic
+    var data, maxCols=0,maxRows=0,cols=0,totRows, totCols, selCell, extra, i;
+    var strings = str.split("\n");
+    for(i=0; i< strings.length ; i++){
+        cols = (strings[i].split("\t")).length;
+        if(cols > maxCols){
+            maxCols = cols;
+        }
+    }
+    maxRows = strings.length;
+    if(cols == 0){
+        maxRows = maxRows-1;
+    }
+
+    var selCell = this.getCellModel(this._selectedCell);
+    var selRow  = selCell.getRow() - 1;
+    var selCol  = selCell.getCol() - 1;
+
+    maxRows = maxRows + selRow;
+    maxCols = maxCols + selCol;
+    
+    totRows = this._model.ROWS;
+    totCols = this._model.COLS;
+    extra = 2;
+    i = 0;
+    if(maxRows > totRows ){
+        totRows = ( maxRows - totRows ) + extra;
+        while(i < totRows){
+            this._model.insertRow();
+            i++;
+        }
+    }
+    i = 0;
+    if(maxCols > totCols){
+        totCols = ( maxCols - totCols ) + extra;
+        while(i < totCols){
+            this._model.insertCol();
+            i++;
+        }
+    }
+    
+    var eRow, eCol, cols, rows = str.split('\n');
+    for(var i=0; i<rows.length; i++){
+        eRow = selRow+i;
+        cols = rows[i].split('\t');
+        for(var j=0; j<cols.length; j++){
+            this.getCell(selRow+i, selCol+j).setEditValue(cols[j], true);
+            eCol = selCol+j;
+        }
+    }
+
+    this._showRange(selRow, selCol, eRow, eCol);
+
+    //Copy this for future
+    this.clipboardCopy();
+
+    //Control back to spreadsheet
+    textArea.blur();
+    
+};
+
+ZmSpreadSheet.prototype.focusTextArea =
+function(){
+    var textArea = this._getTextArea();
+    textArea.focus();
+    textArea.select();
+};
+
+ZmSpreadSheet.prototype._getTextArea =
+function(){
+
+    if(!this._textarea) {
+
+        var div = document.createElement("div");
+        div.style.top = "-1000px";
+        div.style.left = "-1000px";
+        div.style.position = "absolute";
+
+        this._textAreaId = Dwt.getNextId();
+        var textArea = this._textarea = document.createElement("textarea");
+        textArea.id  = this._textAreaId;
+        textArea.onKeyDown = function() { this.blur(); };
+        div.appendChild(textArea);
+        appCtxt.getShell().getHtmlElement().appendChild(div);
+        
+    }
+    
+    return this._textarea;
+
+};
+
+//Charting
+
+ZmSpreadSheet.prototype._showCharts =
+function(){
+    var rawCharts = this._model._rawCharts;
+    if(!rawCharts) return;
+    
+    for(var i=0; i<rawCharts.length; i++){
+        var rChart = rawCharts[i];
+        this.makeChart(rChart.type, rChart, {posX:rChart.x, posY:rChart.y});        
+    }
+};
+
+ZmSpreadSheet.prototype.addChart =
+function(chart){
+    this._model.addChart(chart);    
+};
+
+ZmSpreadSheet.prototype.removeChart =
+function(id){
+    this._model.removeChart(id);
+}
+
+ZmSpreadSheet.prototype.getChart =
+function(type, data){
+    return (new ZmSpreadSheetChart(appCtxt.getShell(), this, type, data));    
+};
+
+ZmSpreadSheet.prototype.getNextChartPos =
+function(){
+    if(!this._chartPos){
+        this._chartPos = {
+            x: 100,
+            y: 100
+        }        
+    }
+
+    this._chartPos.x = this._chartPos.x + 10;
+    this._chartPos.y = this._chartPos.y + 5;
+
+    return {posX: this._chartPos.x, posY: this._chartPos.y};
+};
+
+
+ZmSpreadSheet.prototype.makeChart =
+function(type , range, pos){
+
+    type = type || ZmSpreadSheetChart.BAR;
+
+    var cData = this.getChartData(range);
+
+    var chart = this.getChart(type, cData);    
+    pos = pos || this.getNextChartPos();
+
+    chart.show(type, pos);
+    chart.makeDraggable();
+
+    this.addChart(chart);
+
+};
+
+ZmSpreadSheet.prototype._getSeriesName =
+function(index){
+    return ("Series "+index);
+};
+
+ZmSpreadSheet.prototype.getCell =
+function(row, col){
+    return this.getCellModel(this._getCell(row, col));
+};
+
+ZmSpreadSheet.prototype.getChartData =
+function(range){
+
+    var cData = {};
+    
+    var data = new Array();    
+
+    if(!this.isRange() && !range){
+
+        data[0]     = new Array();
+        data[0][0]  = "";
+        data[0][1]  = "1";
+
+        data[1]     = new Array();
+        data[1][0]  = this._getSeriesName(1);
+
+        var cell = this._selectedCell;
+        cell = this.getCellModel(cell);
+        data[1][1] = cell.getDisplayValue();
+
+        cData.sRow = cell.getRow();
+        cData.sCol = cell.getCol();
+        cData.eRow = cell.getRow();
+        cData.eCol = cell.getCol();
+    }else{        
+        var i, j, k, l;
+        range = range || {};
+        
+        var sRow = range.sRow || this._startRangeRow;
+        var sCol = range.sCol || this._startRangeCol;
+        var eRow = range.eRow || this._endRangeRow;
+        var eCol = range.eCol || this._endRangeCol;
+
+        var startRow = cData.sRow = Math.min(sRow, eRow);
+        var startCol = cData.sCol = Math.min(sCol, eCol);
+        var endRow   = cData.eRow = Math.max(sRow, eRow);
+        var endCol   = cData.eCol = Math.max(sCol, eCol);
+
+        var rows = endRow - startRow + 1;
+        var cols = endCol - startCol + 1;
+
+        var firstCell = this.getCell(startRow, startCol);
+        var firstCellVal  = firstCell.getValue();
+        var firstCellType = firstCell.getType();
+
+        //if (rows == 1 || cols == 1) {
+            data[0] = new Array();
+            data[0][0] = "";
+        //}
+
+        if( rows == 1 && cols > 1 ){            
+            data[1] = new Array();
+            if(firstCellType == "string" || firstCellType == "date"){
+                data[1][0] = firstCellVal;
+                j = 1;
+            }else{
+                data[1][0] = this._getSeriesName(1);
+                j = 0;
+            }
+            var i = 1;
+            while (j < cols) {
+                data[0][i] = i;
+                data[1][i] = this.getCell(startRow, startCol + j).getValue(); 
+                i++;
+                j++;
+            }            
+        }else if ( cols == 1 && rows > 1){
+            if(firstCellType == "string" || firstCellType == "date"){
+                data[0][1] = firstCellVal;
+                j = 1;
+            }else{
+                data[0][1] = this._getSeriesName(1);
+                j = 0;
+            }
+
+            var i = 1;
+            while (j < rows) {
+                data[i] = new Array();
+                data[i][0] = i;
+                data[i][1] = this.getCell(startRow + j, startCol).getValue();
+                i++;
+                j++;
+            }
+        }else {
+
+            var isLabelRow = this._isLabelRow(startRow, endRow, startCol);
+            var isLabelCol = this._isLabelCol(startCol, endCol, startRow);
+
+
+            i = 1;
+            while(i < cols){
+                data[0][i] = isLabelCol ? this.getCell(startRow, startCol + i).getValue() : this._getSeriesName(i);
+                i++;
+            }
+
+            i = 1;
+            j = isLabelRow ? 1 : 0;
+            while(j < rows){
+                data[i] = new Array();
+                data[i][0] = isLabelRow ? this.getCell(startRow+i, startCol).getValue() : this._getSeriesName(i);
+                k = 1;
+                l = isLabelCol ? 1 : 0;
+                while(l < cols){
+                    data[i][k] = this.getCell(startRow+i, startCol+k).getValue();
+                    k++;
+                    l++;
+                }
+                i++;
+                j++;
+            }
+        }
+    }
+    DBG.println(data);
+    cData.data = data;
+
+    //return data;
+    return cData;
+};
+
+ZmSpreadSheet.prototype._isLabelRow =
+function(sRow, eRow, col){
+    var type;
+    for(var k = sRow; k <= eRow; k++){
+       type = this.getCell(k, col).getType();
+       if(type == "string" || type == "date"){
+           return true;
+       }
+    }
+    return false;
+};
+
+ZmSpreadSheet.prototype._isLabelCol =
+function(sCol, eCol, row){
+    var type;
+    for(var k = sCol; k <= eCol; k++){
+       type = this.getCell(row, k).getType();
+       if(type == "string" || type == "date"){
+           return true;
+       }
+    }
+    return false;
 };
