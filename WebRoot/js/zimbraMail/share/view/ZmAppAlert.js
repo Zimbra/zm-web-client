@@ -34,7 +34,7 @@ function() {
 
 ZmAppAlert.prototype.start =
 function() {
-	if (!this.app.isActive()) {
+	if (!this._isLooping && !this.app.isActive()) {
 		var button = this._getAppButton();
 		this._origImage = button.getImage();
 		button.showAlert(true);
