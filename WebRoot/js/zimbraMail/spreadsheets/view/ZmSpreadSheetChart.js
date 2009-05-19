@@ -162,11 +162,11 @@ function(){
 
     this.setContent(html.join(''));
 
-    Dwt.setHandler(Dwt.byId(this._headerId+"_close"), DwtEvent.ONCLICK, new AjxCallback(this, this._closeListener));
+    Dwt.setHandler(Dwt.byId(this._headerId+"_close"), DwtEvent.ONCLICK, AjxCallback.simpleClosure(this._closeListener, this));
 
 };
 
-ZmSpreadSheetChart.prototype._closeListener = function(){
+ZmSpreadSheetChart.prototype._closeListener = function(ev){
     this._spreadsheet.removeChart(this.getHTMLElId());
     this.setContent("");
     this.dispose();

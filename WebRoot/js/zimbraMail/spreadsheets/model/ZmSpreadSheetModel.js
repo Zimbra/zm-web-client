@@ -604,8 +604,6 @@ ZmSpreadSheetModel.prototype.getHtml = function() {
 
 //Charting
 
-
-
 ZmSpreadSheetModel.prototype.addChart =
 function(chart){
 
@@ -618,8 +616,9 @@ function(chart){
 ZmSpreadSheetModel.prototype.removeChart =
 function(id){
     if(this._charts){
-        this._charts.id = null;
-        delete this._charts.id;
+        delete this._charts[id];
+        if(this._charts[id])
+            this._charts[id] = null;  //Double Make Sure
     }
 };
 
