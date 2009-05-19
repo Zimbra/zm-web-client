@@ -232,7 +232,7 @@ function(popViewWhenSaved) {
 	if (name == "") {
 		message = ZmMsg.errorSavingPageNameRequired;
 	} else if (!ZmOrganizer.VALID_NAME_RE.test(name) || ZmPageEditController.INVALID_DOC_NAME_RE.test(name)) {
-		message = AjxMessageFormat.format(ZmMsg.errorInvalidName, name);
+		message = AjxMessageFormat.format(ZmMsg.errorInvalidName, AjxStringUtil.htmlEncode(name));
 	} else if ( name.length > ZmOrganizer.MAX_NAME_LENGTH){
         message = AjxMessageFormat.format(ZmMsg.nameTooLong, ZmOrganizer.MAX_NAME_LENGTH);
     }
