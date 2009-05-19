@@ -258,6 +258,18 @@ ZmSpreadSheetToolbars.prototype._createToolbar2 = function(toolbar) {
 	b.addSelectionListener(listener);
 	b.setToolTipContent(ZmMsg.deleteColumn);
 
+    new DwtControl({parent:toolbar, className:"vertSep"});
+
+    b = this._buttons.chart = new DwtToolBarButton(params);
+    b.setImage("ImageDoc");
+    b.setData("SS", "PieChart");
+	b.addSelectionListener(listener);
+
+    b = this._buttons.chart = new DwtToolBarButton(params);
+    b.setImage("ImageDoc");
+    b.setData("SS", "BarChart");
+	b.addSelectionListener(listener);
+
 	new DwtControl({parent:toolbar, className:"vertSep"});
 
 	b = new DwtToolBarButton(params);
@@ -459,6 +471,15 @@ ZmSpreadSheetToolbars.prototype._on_buttonPress = function(ev) {
 	    case "Func-SumCells":
 		this.insertFunction("sum");
 		break;
+
+        //Charts
+        case "BarChart":
+        this._spreadSheet.makeChart(ZmSpreadSheetChart.BAR);
+        break;
+
+        case "PieChart":
+        this._spreadSheet.makeChart(ZmSpreadSheetChart.PIE);
+        break;
 	}
 };
 

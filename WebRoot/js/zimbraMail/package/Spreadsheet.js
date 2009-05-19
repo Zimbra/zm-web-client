@@ -23,6 +23,7 @@ AjxPackage.require("zimbraMail.spreadsheets.model.ZmSpreadSheetModel");
 AjxPackage.require("zimbraMail.spreadsheets.model.ZmSpreadSheetFormulae");
 
 AjxPackage.require("zimbraMail.spreadsheets.view.ZmSpreadSheet");
+AjxPackage.require("zimbraMail.spreadsheets.view.ZmSpreadSheetChart");
 
 AjxPackage.require("zimbraMail.briefcase.model.ZmDocletMgr");
 

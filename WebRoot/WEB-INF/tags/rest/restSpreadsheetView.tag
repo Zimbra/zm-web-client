@@ -115,6 +115,24 @@
             window.viewMode = "embed";
         </script>
     </c:if>
+
+    <!-- YUI Library for Charts -->
+    <% String yuiPath = "../../../zimbra/yui/2.7.0"; %>
+    <link rel="stylesheet" type="text/css" href="<%=yuiPath%>/assets/skins/sam/skin.css" />
+    <!-- Dependencies -->
+	<script type="text/javascript" src="<%=yuiPath%>/yahoo-dom-event/yahoo-dom-event.js"></script>
+	<script type="text/javascript" src="<%=yuiPath%>/element/element-min.js"></script>
+	<script type="text/javascript" src="<%=yuiPath%>/datasource/datasource-min.js"></script>
+	<script type="text/javascript" src="<%=yuiPath%>/json/json-min.js"></script>
+    <!-- Drag and Drop source file -->
+	<script type="text/javascript" src="<%=yuiPath%>/dragdrop/dragdrop-min.js" ></script>
+    <!-- Source files -->
+	<script type="text/javascript" src="<%=yuiPath%>/charts/charts-min.js"></script>
+    <script type="text/javascript">
+        YAHOO.widget.Chart.SWFURL = "<%=yuiPath%>/charts/assets/charts.swf";
+    </script>
+    <!-- END OF YUI Library -->
+
 </head>
 
 <body>
@@ -122,6 +140,8 @@
 <noscript><p><b>Javascript must be enabled to use this.</b></p></noscript>
 
 <script type="text/javascript" language="JavaScript">
+
+    window.isRestView = true;
 
     window.contextPath = '${pageContext.request.contextPath}';
     window.appContextPath = '${pageContext.request.contextPath}';

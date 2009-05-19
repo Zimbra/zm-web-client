@@ -86,3 +86,41 @@
   background-color: white;
   border: 2px dotted #000;
 }
+
+.ZmSpreadSheetChart {
+    border: 2px solid gray;
+    height: 300px;
+    width: 300px;
+}
+
+.ZmSpreadSheetChartHeader {
+    border: thin solid gray;
+    background-color: gray;
+    height: 15px;
+    text-align: center;
+    cursor: move;
+}
+
+.ZmSpreadSheetChartName {
+    font-size: 12px;
+    float:left;
+}
+
+.ZmSpreadSheetChartContainer {
+    height: 283px;
+    width: 100%;
+}
+
+.ZmSpreadSheetChartClose {
+    float: right;
+    valign: middle;
+    cursor: pointer;
+    background:transparent url('../img/close_icon.gif') no-repeat scroll 0 0;
+    height:14px !important;
+    overflow:hidden;
+    width:14px !important;
+}
+
+.ZmSpreadSheetChartClose .View {
+    background: transparent url('../../../zimbra/img/close_icon.gif') no-repeat scroll 0 0;
+}

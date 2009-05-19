@@ -601,6 +601,28 @@ ZmSpreadSheetModel.prototype.getHtml = function() {
 	return html.join("");
 };
 
+
+//Charting
+
+
+
+ZmSpreadSheetModel.prototype.addChart =
+function(chart){
+
+    if(!this._charts) this._charts = {};
+    var id = chart.getHTMLElId();
+    this._charts[id] = chart;
+
+};
+
+ZmSpreadSheetModel.prototype.removeChart =
+function(id){
+    if(this._charts){
+        this._charts.id = null;
+        delete this._charts.id;
+    }
+};
+
 // XML Standard for SPREADSHEET
 /*
 
@@ -616,6 +638,10 @@ ZmSpreadSheetModel.prototype.getHtml = function() {
             <Cols>
                 <Col width=""/>                              //Only changed col widths
             </Cols>
+            <Charts>
+                <Chart name='' type='' srow='' scol='' erow='' ecol='' x='' y=''/>
+                ...
+            </Charts>
             <SheetData>
                 <Row r="" height="">
                     <Cell row="" col="" type="" value="" decimals="">      //Only Modified cells
@@ -661,6 +687,11 @@ ZmSpreadSheetModel.prototype.getXML = function(params) {
                     }
 	            }
                 if(flag) workSheetN.appendChild(colsN);
+
+                //Add Charts Data
+                var chartsN = this.getChartsXML();
+                if(chartsN) workSheetN.appendChild(chartsN);
+                    
     
                 //TODO: Optimize node/attr names such that the data transfer is optimal
                 var sheetDataN = AjxXmlDoc.createElement("SheetData");
@@ -705,6 +736,37 @@ ZmSpreadSheetModel.prototype.getXML = function(params) {
            
 };
 
+ZmSpreadSheetModel.prototype.getChartsXML =
+function(){
+
+    if(!this._charts) return null;
+
+
+    var chartsN = AjxXmlDoc.createElement("Charts");
+    var chartN, flag=false;
+    for(var id in this._charts){
+        var chart = this._charts[id];
+        chartN = AjxXmlDoc.createElement("Chart");
+        chartN.root.setAttribute("type", chart.getChartType());
+        var data = chart.getChartRange();
+        chartN.root.setAttribute("srow", data.sRow);
+        chartN.root.setAttribute("scol", data.sCol);
+        chartN.root.setAttribute("erow", data.eRow);
+        chartN.root.setAttribute("ecol", data.eCol);
+        var pos = chart.getChartPos();
+        if(pos){
+            chartN.root.setAttribute("x", pos.x);
+            chartN.root.setAttribute("y", pos.y);
+        }
+        chartsN.appendChild(chartN);
+        flag = true;
+    }
+
+    return ( flag ? chartsN : null);
+
+};
+
+
 ZmSpreadSheetModel.MIN_ROWS = 40;
 ZmSpreadSheetModel.MIN_COLS = 15;
 
@@ -748,6 +810,25 @@ ZmSpreadSheetModel.prototype.loadFromXML = function(xmlStr) {
         for(var i=0; i<cols.length; i++){
             col = new Number(cols[i].col) - 1;
             this.colProps[col].width = cols[i].width;
+        }
+    }
+
+    var chart, charts = workSheet.Charts;
+    if(charts && charts.Chart){
+        this._rawCharts = [];
+        charts = charts.Chart;
+        if(!(charts instanceof Array)) charts = [charts];
+        for(i=0; i<charts.length; i++){
+            chart = charts[i];
+            this._rawCharts.push({
+                type: chart.type,
+                sRow: chart.srow,
+                sCol: chart.scol,
+                eRow: chart.erow,
+                eCol: chart.ecol,
+                x:  chart.x,
+                y:  chart.y
+            });
         }
     }
 
@@ -1120,6 +1201,11 @@ ZmSpreadSheetCellModel.prototype.getValue = function() {
 		return ZmSpreadSheetFormulae.parseFloat(this._value);
 	}
 	return this._value;
+};
+
+ZmSpreadSheetCellModel.prototype.getEditValue =
+function(){
+     return this._editValue; 
 };
 
 ZmSpreadSheetCellModel.prototype.getDisplayValue = function() {
