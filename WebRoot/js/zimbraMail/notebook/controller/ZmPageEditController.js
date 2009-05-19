@@ -192,7 +192,7 @@ function(popViewWhenSaved) {
 	if (name == "") {
 		message = ZmMsg.errorSavingPageNameRequired;
 	} else if (!ZmOrganizer.VALID_NAME_RE.test(name) || ZmPageEditController.INVALID_DOC_NAME_RE.test(name)) {
-		message = AjxMessageFormat.format(ZmMsg.errorInvalidName, name);
+		message = AjxMessageFormat.format(ZmMsg.errorInvalidName, AjxStringUtil.htmlEncode(name));
 	}
 
 	// bug: 9406 (short term fix, waiting for backend support)
