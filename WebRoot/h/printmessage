@@ -29,7 +29,10 @@
 		<td class='ZhZimbraTitle'><fmt:message key="zimbraTitle"/></td>
 		<td nowrap width='1%'><b>${fn:escapeXml(mailbox.name)}</b></td>
 	</tr>
+</table>
+<div align="right"><a style="font-size:12px;" href="javascript:increaseFontSize();">+</a> Font size <a href="javascript:decreaseFontSize();" style="font-size:12px;">-</a></div>
 <hr/>
+<div id="zPrintMsg" class="zPrintMsgs11">
 <c:forEach items="${messageIds}" var="mid" varStatus="status">
 <c:set var="cid" value="${fn:split(mid,':')}"/>
 <c:if test="${cid[0] eq 'C'}">
@@ -37,7 +40,7 @@
     <table cellpadding="0" cellspacing="5"  width="100%">
         <tr>
             <td>
-                <div style="padding: 10px; font-size: 20px; font-weight: bold;">${convSearchResult.hits[0].subject}</div><hr/>
+                <div style="padding: 10px; font-size: 20px !important; font-weight: bold;">${convSearchResult.hits[0].subject}</div><hr/>
             </td>
         </tr>
         <tr>
@@ -52,9 +55,10 @@
 </c:if>
 <c:if test="${cid[0] != 'C'}">
     <zm:getMessage var="message" id="${mid}" markread="false" neuterimages="${empty param.xim}"/>
-	<tr>
+	<table cellpadding="0" cellspacing="5"  width="100%">
+    <tr>
 		<td colspan="2">
-			<div style="padding: 10px; font-size: 20px; font-weight: bold;">${zm:cook(message.subject)}</div><hr/>
+			<div style="padding: 10px; font-size: 20px !important; font-weight: bold;">${zm:cook(message.subject)}</div><hr/>
 		</td>
 	</tr>
 	<tr>
@@ -63,17 +67,66 @@
 			<app:messagePrintView mailbox="${mailbox}" externalImageUrl="${extImageUrl}" message="${message}" />
 		</td>
 	</tr>
+    </table>    
 </c:if>    
 </c:forEach>
-</table>
-
+</div>
 <c:if test="${empty messageIds}">
 	<div class='NoResults'><fmt:message key="noResultsFound"/></div>
 </c:if>
+<style type="text/css">
+    .zPrintMsgs11 *{
+        font-family:Tahoma,Arial,Helvetica,sans-serif;
+        font-size:11px !important;
+    }
+    .zPrintMsgs13 *{
+        font-family:Tahoma,Arial,Helvetica,sans-serif;
+        font-size:13px !important;
+    }
+    .zPrintMsgs15 *{
+        font-family:Tahoma,Arial,Helvetica,sans-serif;
+        font-size:15px !important;
+    }
+    .zPrintMsgs17 *{
+        font-family:Tahoma,Arial,Helvetica,sans-serif;
+        font-size:17px !important;
+    }
+    .zPrintMsgs19 *{
+        font-family:Tahoma,Arial,Helvetica,sans-serif;
+        font-size:19px !important;
+    }
+</style>
 <script type="text/javascript">
-	<!--
-	window.print();
-	// -->
+    <!--
+    window.print();
+
+    var min=11;
+    var max=19;
+    function increaseFontSize() {
+        var p = document.getElementById('zPrintMsg');
+        if(p.className) {
+            var s = parseInt(p.className.replace("zPrintMsgs",""));
+        } else {
+            var s = 11;
+        }
+        if(s!=max) {
+            s += 2;
+        }
+        p.className = "zPrintMsgs"+s;
+    }
+    function decreaseFontSize() {
+        var p = document.getElementById('zPrintMsg');
+        if(p.className) {
+            var s = parseInt(p.className.replace("zPrintMsgs",""));
+        } else {
+            var s = 13;
+        }
+        if(s!=min) {
+            s -= 2;
+        }
+        p.className = "zPrintMsgs"+s;
+    }
+    // -->
 </script>
 
 </body>
