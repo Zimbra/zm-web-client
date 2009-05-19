@@ -303,6 +303,14 @@ td.DDSepInvisible div {
 	 @Label@
 }
 
+.ZmPickerOverview{
+	@PickerSize@
+}
+
+.ZmPickerOverview .DwtTree{
+	border: none !important;
+}
+
 
 /*
  * Conversation view stuff
