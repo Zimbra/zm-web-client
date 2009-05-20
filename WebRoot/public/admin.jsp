@@ -156,6 +156,9 @@
 <script type="text/javascript" src="${contextPath}/yui/2.7.0/datasource/datasource-min.js"></script> 
 <script type="text/javascript" src="${contextPath}/yui/2.7.0/json/json-min.js"></script> 
 <script type="text/javascript" src="${contextPath}/yui/2.7.0/charts/charts-min.js"></script> 
+<script type="text/javascript">
+    YAHOO.widget.Chart.SWFURL = "yui/2.7.0/charts/assets/charts.swf";
+</script>
 
 <jsp:include page="Boot.jsp"/>
 <script>
