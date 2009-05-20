@@ -694,7 +694,8 @@ function(html, idx, item, field, colIdx, params) {
 	} else if (field == ZmSharingView.F_ITEM) {
 		html[idx++] = item.link.path;
 	} else if (field == ZmSharingView.F_TYPE) {
-		html[idx++] = ZmShare._getFolderType(item.link.view);
+		html[idx++] = (item.object && item.object.type) ? ZmMsg[ZmOrganizer.FOLDER_KEY[item.object.type]] :
+					  									  ZmShare._getFolderType(item.link.view);
 	} else if (field == ZmSharingView.F_ROLE) {
 		var role = item.link.role || ZmShare._getRoleFromPerm(item.link.perm);
 		html[idx++] = ZmShare.getRoleName(role);
