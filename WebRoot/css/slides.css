@@ -1,20 +1,3 @@
-
-.slide_object_title{
-    font-size: 200%;
-    font-weight: bold;
-	padding: 0px;
-	margin: 0px;
-	color: purple;
-}
-
-.slide_object_notes{
-    font-size: 135%;
-    font-weight: bold;
-	padding: 0px;
-	margin: 0px;
-	color: black;
-}
-
 body {
     padding:0px;
     margin:0px;
@@ -50,11 +33,29 @@ h1 {
 	color: #ffffff;
 }
 
-.masterslide {
+.slidemaster, .masterslide {
     background-color: white;
 }
 
 .slide ul, .slide ol, body ul, body ol {
     margin:0pt 0pt 0pt 1.8em;
     padding:0px;
+}
+
+.slide_object_title{
+	font-family: arial, helvetica, verdana, sans-serif;
+    font-size: 200%;
+    font-weight: bold;
+	padding: 0px;
+	margin: 0px;
+	color: #333333;
+}
+
+.slide_object_notes{
+	font-family: arial, helvetica, verdana, sans-serif;
+    font-size: 135%;
+    font-weight: bold;
+	padding: 0px;
+	margin: 0px;
+	color: #333333;
 }
