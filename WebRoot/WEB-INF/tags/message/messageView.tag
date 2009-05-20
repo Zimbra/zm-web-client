@@ -23,8 +23,14 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <app:handleError>
     <zm:getMailbox var="mailbox"/>
-    <app:certifiedMessage var="reqHdr"/>    
+    <app:certifiedMessage var="reqHdr"/>
+
     <zm:getMessage var="msg" id="${not empty param.id ? param.id : context.currentItem.id}" markread="${(context.folder.isMountPoint and context.folder.effectivePerm eq 'r') ? 'false' : 'true'}" neuterimages="${empty param.xim}" requestHeaders="${reqHdr}"/>
+    
+    <c:if test="${not empty msg.requestHeader}">
+        <zm:getMessage var="msg" id="${not empty param.id ? param.id : context.currentItem.id}" markread="${(context.folder.isMountPoint and context.folder.effectivePerm eq 'r') ? 'false' : 'true'}" neuterimages="${false}" requestHeaders="${reqHdr}"/>
+    </c:if>
+    
     <zm:computeNextPrevItem var="cursor" searchResult="${context.searchResult}" index="${context.currentItemIndex}"/>
     <c:set var="ads" value='${msg.subject} ${msg.fragment}'/>
 
@@ -101,13 +107,13 @@
             <tr>
                 <td class='ZhAppContent'>
                         <c:set var="extImageUrl" value=""/>
-                        <c:if test="${empty param.xim}">
+                        <c:if test="${empty param.xim and empty msg.requestHeader}">
                             <zm:currentResultUrl var="extImageUrl" value="search" action="view" context="${context}" xim="1"/>
                         </c:if>
                         <zm:currentResultUrl var="composeUrl" value="search" context="${context}"
                                              action="compose" paction="view" id="${msg.id}"/>
                         <zm:currentResultUrl var="newWindowUrl" value="message" context="${context}" id="${msg.id}"/>
-                        <app:displayMessage mailbox="${mailbox}" message="${msg}"externalImageUrl="${extImageUrl}" showconvlink="true" composeUrl="${composeUrl}" newWindowUrl="${newWindowUrl}"/>
+                        <app:displayMessage mailbox="${mailbox}" message="${msg}" externalImageUrl="${extImageUrl}" showconvlink="true" composeUrl="${composeUrl}" newWindowUrl="${newWindowUrl}"/>
                 </td>
             </tr>
             <tr>

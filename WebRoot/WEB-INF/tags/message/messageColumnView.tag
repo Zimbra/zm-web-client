@@ -41,6 +41,9 @@
     <app:certifiedMessage var="reqHdr"/>
     <c:if test="${mailbox.prefs.readingPaneEnabled and not empty idcheck and param.action eq 'view'}">
         <zm:getMessage var="msg" id="${idcheck}" markread="${(context.folder.isMountPoint and context.folder.effectivePerm eq 'r') ? 'false' : 'true'}" neuterimages="${empty param.xim}" requestHeaders="${reqHdr}"/>
+        <c:if test="${not empty msg.requestHeader}">
+            <zm:getMessage var="msg" id="${idcheck}" markread="${(context.folder.isMountPoint and context.folder.effectivePerm eq 'r') ? 'false' : 'true'}" neuterimages="${false}" requestHeaders="${reqHdr}"/>
+        </c:if>
         <zm:computeNextPrevItem var="cursor" searchResult="${context.searchResult}" index="${context.currentItemIndex}"/>
         <c:set var="ads" value='${msg.subject} ${msg.fragment}'/>
     </c:if>
@@ -64,7 +67,10 @@
                     <table width="100%" cellpadding="2" cellspacing="0">
                         <tr>
                             <th class='CB' nowrap><input id="OPCHALL" onClick="checkAll(document.zform.id,this);" type=checkbox name="allids"/>
-                            <th><fmt:message key="arrangedBy"/>: <fmt:message key="date"/></th>
+                            <th><fmt:message key="arrangedBy"/>: <select name="actionSort"  onchange="zclick('SOPGO')">
+                                                                    <option value="" selected/><fmt:message key="subject"/>
+                                                                 </select>   
+                            </th>
                             <th width="1%" nowrap><app:img src="startup/ImgAttachment.gif" altkey="ALT_ATTACHMENT"/>
                         </tr>
                     </table>
@@ -126,7 +132,7 @@
                                 <tr valign="top">
                                     <td class='ZhAppContent2' valign="top">
                                         <c:set var="extImageUrl" value=""/>
-                                        <c:if test="${empty param.xim}">
+                                        <c:if test="${empty param.xim and empty msg.requestHeader}">
                                             <zm:currentResultUrl var="extImageUrl" value="search" action="view" context="${context}" xim="1"/>
                                         </c:if>
                                         <zm:currentResultUrl var="composeUrl" value="search" context="${context}"

@@ -39,19 +39,26 @@
     <c:set var="selectedRow" value="${param.selectedRow}"/>
     <c:set var="context" value="${context}" />
     <c:set var="csi" value="${param.csi}"/>
+    <app:certifiedMessage var="reqHdr"/>    
     <c:if test="${context.searchResult.size ne '0' and mailbox.prefs.readingPaneEnabled and not empty cid}">
         <zm:searchConv var="convSearchResult" id="${not empty param.cid ? param.cid : context.currentItem.id}" context="${context}" fetch="${empty csi ? 'first': 'none'}" markread="true" sort="${param.css}" />
         <c:if test="${empty csi}">
             <c:set var="csi" value="${convSearchResult.fetchedMessageIndex}"/>
             <c:if test="${csi ge 0 and (param.action eq 'view' || param.action eq 'view2')}">
-                <zm:getMessage var="msg" id="${convSearchResult.hits[csi].id}" markread="${(context.folder.isMountPoint and context.folder.effectivePerm eq 'r') ? 'false' : 'true'}" neuterimages="${mailbox.prefs.displayExternalImages ? '1' : param.xim}"/>
+                <zm:getMessage var="msg" id="${convSearchResult.hits[csi].id}" markread="${(context.folder.isMountPoint and context.folder.effectivePerm eq 'r') ? 'false' : 'true'}" neuterimages="${mailbox.prefs.displayExternalImages ? '1' : empty param.xim}" requestHeaders="${reqHdr}"/>
+                <c:if test="${not empty msg.requestHeader}">
+                    <zm:getMessage var="msg" id="${convSearchResult.hits[csi].id}" markread="${(context.folder.isMountPoint and context.folder.effectivePerm eq 'r') ? 'false' : 'true'}" neuterimages="${false}" requestHeaders="${reqHdr}"/>                    
+                </c:if>
             </c:if>
         </c:if>
         <c:if test="${msg eq null and (param.action eq 'view' || param.action eq 'view2')}">
             <c:if test="${csi lt 0 or csi ge convSearchResult.size}">
                 <c:set var="csi" value="0"/>
             </c:if>
-            <zm:getMessage var="msg" id="${not empty param.id ? param.id : convSearchResult.hits[csi].id}" markread="${(context.folder.isMountPoint and context.folder.effectivePerm eq 'r') ? 'false' : 'true'}" neuterimages="${mailbox.prefs.displayExternalImages ? '1' : param.xim}"/>
+            <zm:getMessage var="msg" id="${not empty param.id ? param.id : convSearchResult.hits[csi].id}" markread="${(context.folder.isMountPoint and context.folder.effectivePerm eq 'r') ? 'false' : 'true'}" neuterimages="${mailbox.prefs.displayExternalImages ? '1' : empty param.xim}" requestHeaders="${reqHdr}"/>
+            <c:if test="${not empty msg.requestHeader}">
+                <zm:getMessage var="msg" id="${not empty param.id ? param.id : convSearchResult.hits[csi].id}" markread="${(context.folder.isMountPoint and context.folder.effectivePerm eq 'r') ? 'false' : 'true'}" neuterimages="${false}" requestHeaders="${reqHdr}"/>                
+            </c:if>
         </c:if>
         <zm:computeNextPrevItem var="cursor" searchResult="${context.searchResult}" index="${context.currentItemIndex}"/>
         <c:set var="ads" value='${msg.subject} ${msg.fragment}'/>
@@ -87,7 +94,7 @@
                             <zm:currentResultUrl var="convUrl" value="search" index="${status.index}" context="${context}" usecache="true" id="${fn:substringAfter(convHit.id,'-')}" action="compose"/>
                         </c:when>
                         <c:otherwise>
-                            <zm:currentResultUrl var="convUrl" value="search" cid="${hit.id}" action='view' index="${status.index}" context="${context}" usecache="true"/>
+                            <zm:currentResultUrl var="convUrl" value="search" cid="${hit.id}" action='view' index="${status.index}" context="${context}" usecache="true" xim="${mailbox.prefs.displayExternalImages ? '1' : param.xim}"/>
                         </c:otherwise>
                     </c:choose>
                     <c:if test="${empty selectedRow and convHit.id == context.currentItem.id}"><c:set var="selectedRow" value="${status.index}"/></c:if>
@@ -190,7 +197,7 @@
                      <tr>
                          <td class='ZhAppContent2' valign="top">
                              <c:set var="extImageUrl" value=""/>
-                             <c:if test="${empty param.xim}">
+                             <c:if test="${empty param.xim and empty msg.requestHeader}">
                                  <zm:currentResultUrl var="extImageUrl" value="search" action="view" context="${context}" xim="1"/>
                              </c:if>
                              <zm:currentResultUrl var="composeUrl" value="search" context="${context}"
