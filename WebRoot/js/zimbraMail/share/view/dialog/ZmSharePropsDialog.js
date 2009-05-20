@@ -151,7 +151,7 @@ function(mode, object, share) {
 	} else {
 		this._urlEl.innerHTML = [
 			"<div style='padding-left:2em;'>",
-				"<a target=_new href='",url,".html'>",text,".html</a>",
+				"<a target=_new href='",url,"'>",text,"</a>",
 			"</div>"
 		].join("");
 	}
