@@ -89,6 +89,7 @@ function() {
  *        resend				[constant]*		reason for resending request
  *        sensitive				[boolean]*		attempt to use secure conn to protect data
  *        noSession				[boolean]*		if true, no session info is included
+ *        restUri				[string]*		REST URI to send the request to
  */
 ZmRequestMgr.prototype.sendRequest =
 function(params) {
@@ -178,21 +179,29 @@ function(params) {
 		var acct = appCtxt.getActiveAccount();
 		accountName = (acct && acct.id != ZmZimbraAccount.DEFAULT_ID) ? acct.name : null;
 	}
-	var cmdParams = {
-		jsonObj:params.jsonObj,
-		soapDoc:params.soapDoc,
-		accountName:accountName,
-		useXml:this._useXml,
-		changeToken:(accountName ? null : this._changeToken),
-		asyncMode:params.asyncMode,
-		callback:asyncCallback,
-		logRequest:this._logRequest,
-		highestNotifySeen:this._highestNotifySeen,
-		skipAuthCheck:params.skipAuthCheck,
-		resend:params.resend,
-		noSession:params.noSession
-	};
-	var methodName = params.methodName = ZmCsfeCommand.getMethodName(cmdParams.jsonObj || cmdParams.soapDoc);
+	var cmdParams, methodName;
+
+	if (params.restUri) {
+		cmdParams =	{	restUri:			params.restUri,
+						asyncMode:			params.asyncMode,
+						callback:			asyncCallback
+					};
+	} else {
+		cmdParams = {	jsonObj:			params.jsonObj,
+						soapDoc:			params.soapDoc,
+						accountName:		accountName,
+						useXml:				this._useXml,
+						changeToken:		(accountName ? null : this._changeToken),
+						asyncMode:			params.asyncMode,
+						callback:			asyncCallback,
+						logRequest:			this._logRequest,
+						highestNotifySeen:	this._highestNotifySeen,
+						skipAuthCheck:		params.skipAuthCheck,
+						resend:				params.resend,
+						noSession:			params.noSession
+					};
+		methodName = params.methodName = ZmCsfeCommand.getMethodName(cmdParams.jsonObj || cmdParams.soapDoc);
+	}
 
 	appCtxt.currentRequestParams = params;
 	DBG.println(AjxDebug.DBG2, "sendRequest(" + reqId + "): " + methodName);
@@ -216,15 +225,14 @@ function(params) {
 	this._pendingRequests[reqId] = command;
 
 	try {
-		var response = command.invoke(cmdParams);
+		var response = params.restUri ? command.invokeRest(cmdParams) : command.invoke(cmdParams);
 		command.state = ZmRequestMgr._SENT;
 	} catch (ex) {
 		this._handleResponseSendRequest(params, new ZmCsfeResult(ex, true));
 		return;
 	}
 
-	return (params.asyncMode)
-		? reqId : (this._handleResponseSendRequest(params, response));
+	return (params.asyncMode) ? reqId : (this._handleResponseSendRequest(params, response));
 };
 
 ZmRequestMgr.prototype._handleResponseSendRequest =
@@ -252,7 +260,7 @@ function(params, result) {
 
 	var response;
 	try {
-		if (params.asyncMode) {
+		if (params.asyncMode && !params.restUri) {
 			response = result.getResponse(); // may throw exception
 		} else {
 			// for sync responses, manually throw exception if necessary
@@ -262,7 +270,9 @@ function(params, result) {
 				response = result;
 			}
 		}
-		this._handleHeader(response.Header);
+		if (response.Header) {
+			this._handleHeader(response.Header);
+		}
 	} catch (ex) {
 		DBG.println(AjxDebug.DBG2, "Request " + params.reqId + " got an exception");
 		if (params.errorCallback) {
@@ -274,13 +284,15 @@ function(params, result) {
 			this._handleException(ex, params);
 		}
 		var hdr = result.getHeader();
-		this._handleHeader(hdr);
-		this._handleNotifications(hdr);
+		if (hdr) {
+			this._handleHeader(hdr);
+			this._handleNotifications(hdr);
+		}
 		this._clearPendingRequest(params.reqId);
 		return;
 	}
 
-	if (params.asyncMode) {
+	if (params.asyncMode && !params.restUri) {
 		result.set(response.Body);
 	}
 

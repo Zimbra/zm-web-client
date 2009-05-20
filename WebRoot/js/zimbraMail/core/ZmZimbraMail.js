@@ -514,6 +514,7 @@ function(params, result) {
 			if (appCtxt.isOffline) {
 				appCtxt.getSearchController().resetSearchToolbar();
 			}
+			AjxDispatcher.run("GetContacts");
 		});
 	this.addPostRenderCallback(callback, 5, 100);
 

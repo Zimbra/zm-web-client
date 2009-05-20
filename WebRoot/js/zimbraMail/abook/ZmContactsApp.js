@@ -520,13 +520,15 @@ function(address, callback) {
 	var addr = address.toLowerCase();
 	var contact = this._byEmail[addr];
 
-	// handle case where we searched for a contact and didn't find one (don't repeat search)
-	if (contact === null) {
+	// if we have a failed search for this address, or have loaded all contacts,
+	// don't bother doing a search
+	if (!contact && this._notFound(addr)) {
 		this._removeAddrFromLookupGroup(addr);
 		if (callback) { callback.run(null); }
 		return null;
 	}
 
+	// found a cached contact, return it
 	if (contact) {
 		this._removeAddrFromLookupGroup(addr);
 		contact = this._realizeContact(contact);
@@ -535,6 +537,7 @@ function(address, callback) {
 		return contact;
 	}
 
+	// search for contact
 	if (callback) {
 		var search = null,
 			isGroupSearch = false,
@@ -591,7 +594,7 @@ function(addr, isGroupSearch, callback, result) {
 };
 
 /**
- * Returns the contacts with the given addresses, if any. If thre are addresses not in our cache
+ * Returns the contacts with the given addresses, if any. If there are addresses not in our cache
  * and we are given a callback, we do a search. Unlike getContactByEmail, this method does not
  * use or modify the Address Lookup Group (See ZmContactsApp#setAddrLookupGroup)
  *
@@ -681,6 +684,11 @@ function(addrs) {
 		types: AjxVector.fromArray([ZmItem.CONTACT])
 	};
 	return new ZmSearch(params);
+};
+
+ZmContactsApp.prototype._notFound =
+function(contact) {
+	return (contact === null || Boolean(this._contactList[appCtxt.getActiveAccount().id]));
 };
 
 /**
