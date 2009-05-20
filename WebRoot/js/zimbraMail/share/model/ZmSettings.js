@@ -186,6 +186,10 @@ function(callback, accountName, result) {
     if (obj.rest)			{ this._settings[ZmSetting.REST_URL].setValue(obj.rest); }
 	if (obj.license)		{ this._settings[ZmSetting.LICENSE_STATUS].setValue(obj.license.status); }
 
+	if (obj.rest && appCtxt.get(ZmSetting.DEV) && (location.hostname == "localhost") && (obj.rest.indexOf("localhost") == -1)) {
+		this._settings[ZmSetting.REST_URL].setValue(obj.rest.replace(appCtxt.getUserDomain(), "localhost"));
+	}
+
 	if (obj.prefs && obj.prefs._attrs) {
 		this.createFromJs(obj.prefs._attrs);
 	}
