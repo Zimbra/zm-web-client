@@ -1572,7 +1572,7 @@ function(evt) {
 		this._setControlEnabled("DOWNLOAD_TO", this._currentSection, isPop);
 	}
 
-	var ssl = this._getControlValue("SSL", section);
+	var ssl = this._getControlValue("SSL", section) == ZmDataSource.CONNECT_SSL;
 	dataSource.connectionType = ssl ? ZmDataSource.CONNECT_SSL : ZmDataSource.CONNECT_CLEAR;
 	dataSource.port = dataSource.getDefaultPort();
 	this._setPortControls(dataSource.type, dataSource.connectionType, dataSource.port);
