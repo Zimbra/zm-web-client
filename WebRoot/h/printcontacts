@@ -51,7 +51,7 @@
 <c:if test="${not empty contactIds}">
     <c:forEach items="${contactIds}" var="contactId" varStatus="status">
         <c:choose>
-            <c:when test="${param.st eq 'contact'}"><zm:getContact id="${contactId}" var="contact"/></c:when>
+            <c:when test="${param.st ne 'gal'}"><zm:getContact id="${contactId}" var="contact"/></c:when>
             <c:when test="${param.st eq 'gal'}">
                 <zm:searchGal var="result" query="${empty param.email ? '*' : param.email}"/>      <%--!TODO optiomizartion needed--%>
                 <c:forEach items="${result.contacts}" var="acontact">
@@ -68,7 +68,7 @@
 </c:if>
 
 <c:if test="${empty contactIds}">
-    <c:if test="${param. st eq 'contact'}">
+    <c:if test="${param. st ne 'gal'}">
     <zm:computeSearchContext var="context" types="contact" limit="1000" usecache="true"/>
     <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
         <zm:getContact id="${hit.contactHit.id}" var="contact"/>
