@@ -1220,3 +1220,6 @@ padding: 0 @BoxPaddingSize@ 0 @BoxPaddingSize@;
 	color:#000;
 	text-decoration:none;
 }
+
+/* Fix for YUI editor Toolbar Wrap Issue */
+.yui-skin-sam .yui-toolbar-container .yui-toolbar-subcont{padding:0 1em 0.5em 1em !important;border-bottom:1px solid #808080;}
