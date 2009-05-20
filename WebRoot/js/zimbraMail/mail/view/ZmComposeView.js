@@ -2124,16 +2124,37 @@ function(identity, justName) {
 	if (identity.isDefault && name == ZmIdentity.DEFAULT_NAME) {
 		name = ZmMsg.accountDefault;
 	}
-	if (justName) {
-		return name;
+	if (justName) {		return name;	}
+
+	// default replacement parameters
+	var defaultIdentity = appCtxt.getIdentityCollection().defaultIdentity;
+	var params = [
+		name, identity.sendFromDisplay, identity.sendFromAddress,
+		ZmMsg.accountDefault, appCtxt.get(ZmSetting.DISPLAY_NAME), defaultIdentity.sendFromAddress
+	];
+
+	// get appropriate pattern
+	var pattern;
+	if (identity.isDefault) {
+		pattern = ZmMsg.identityTextPrimary;
 	}
-	if (identity.sendFromDisplay) {
-		return [name,  ' ("', identity.sendFromDisplay, '" <', identity.sendFromAddress, '>)'].join("");
+	else if (identity.isFromDataSource) {
+		var ds = appCtxt.getDataSourceCollection().getById(identity.id);
+		params[1] = ds.userName;
+		params[2] = ds.email;
+		var provider = ZmDataSource.getProviderForAccount(ds);
+		if (provider) {
+			pattern = ZmMsg["identityText-"+provider.id];
+			params[2] = params[2] || params[1]+"@"+provider._host;
+		}
+		pattern = pattern || ZmMsg.identityTextExternal;
 	}
-	if (identity.sendFromAddress) {
-		return [name,  ' (', identity.sendFromAddress, ')'].join("");
+	else {
+		pattern = ZmMsg.identityTextPersona;
 	}
-	return name;
+
+	// format text
+	return AjxMessageFormat.format(pattern, params);
 };
 
 ZmComposeView.prototype._identityChangeListener =
