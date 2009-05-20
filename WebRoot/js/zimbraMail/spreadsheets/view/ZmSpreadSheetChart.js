@@ -19,6 +19,7 @@ ZmSpreadSheetChart.prototype.constructor = ZmSpreadSheetChart;
 
 ZmSpreadSheetChart.BAR = "bar";
 ZmSpreadSheetChart.PIE = "pie";
+ZmSpreadSheetChart.LINE = "line";
 
 ZmSpreadSheetChart.prototype.getChartType =
 function(){
@@ -51,6 +52,9 @@ function(type, containerId, yDataSource, attributes){
             break;
         case ZmSpreadSheetChart.PIE:
             chart = new YAHOO.widget.PieChart(containerId , yDataSource , attributes);
+            break;
+        case ZmSpreadSheetChart.LINE:
+            chart = new YAHOO.widget.LineChart(containerId, yDataSource, attributes);
             break;
     }
     return chart;
@@ -107,41 +111,62 @@ function(type, params){
 
 ZmSpreadSheetChart.prototype._getAttributes =
 function(type, params){
-    if(type == ZmSpreadSheetChart.BAR){
-        //Series Definition
-        var seriesDef = new Array();
-        var fieldsLen = this._dataFields.length;
-        for(var i=1; i< fieldsLen; i++){
-            seriesDef.push({xField:this._dataFields[i], displayName:this._dataFields[i]});
-        }
-        params.series = seriesDef;
-        params.yField = this._dataFields[0];
-        params.style = {
-            legend: {
-                display: 'bottom',
-                font:{
-					family: "Arial",
-					size: 10
-				}
-            }
-        };
 
-    }else if ( type == ZmSpreadSheetChart.PIE){
-        
-        params.categoryField = this._dataFields[0];
-        params.dataField = this._dataFields[1];
-        params.series = [{}];
-        params.style = {
-            legend: {
-                display: 'right',
-                font:{
-					family: "Arial",
-					size: 10
-				}
+    switch(type) {
+        case ZmSpreadSheetChart.BAR:
+            var seriesDef = new Array();
+            var fieldsLen = this._dataFields.length;
+            for(var i=1; i< fieldsLen; i++){
+                seriesDef.push({xField:this._dataFields[i], displayName:this._dataFields[i]});
             }
-        };
+            params.series = seriesDef;
+            params.yField = this._dataFields[0];
+            params.style = {
+                legend: {
+                    display: 'bottom',
+                    font:{
+                        family: "Arial",
+                        size: 10
+                    }
+                }
+            };
+            break;
 
+        case ZmSpreadSheetChart.PIE:
+            params.categoryField = this._dataFields[0];
+            params.dataField = this._dataFields[1];
+            params.series = [{}];
+            params.style = {
+                legend: {
+                    display: 'right',
+                    font:{
+                        family: "Arial",
+                        size: 10
+                    }
+                }
+            };
+            break;
+
+        case ZmSpreadSheetChart.LINE:
+            var seriesDef = new Array();
+            var fieldsLen = this._dataFields.length;
+            for(var i=1; i< fieldsLen; i++){
+                seriesDef.push({yField:this._dataFields[i], displayName:this._dataFields[i]});
+            }
+            params.series = seriesDef;
+            params.xField = this._dataFields[0];
+            params.style = {
+                legend: {
+                    display: 'bottom',
+                    font: {
+                        family: "Arial",
+                        size: 10
+                    }
+                }
+            };
+            break;
     }
+
     return params;
 };
 

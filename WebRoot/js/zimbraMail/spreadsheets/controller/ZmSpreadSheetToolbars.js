@@ -261,13 +261,18 @@ ZmSpreadSheetToolbars.prototype._createToolbar2 = function(toolbar) {
     new DwtControl({parent:toolbar, className:"vertSep"});
 
     b = this._buttons.chart = new DwtToolBarButton(params);
-    b.setImage("ImageDoc");
+    b.setImage("PieChart");
     b.setData("SS", "PieChart");
 	b.addSelectionListener(listener);
 
     b = this._buttons.chart = new DwtToolBarButton(params);
-    b.setImage("ImageDoc");
+    b.setImage("BarChart");
     b.setData("SS", "BarChart");
+	b.addSelectionListener(listener);
+
+    b = this._buttons.chart = new DwtToolBarButton(params);
+    b.setImage("LineChart");
+    b.setData("SS", "LineChart");
 	b.addSelectionListener(listener);
 
 	new DwtControl({parent:toolbar, className:"vertSep"});
@@ -479,6 +484,10 @@ ZmSpreadSheetToolbars.prototype._on_buttonPress = function(ev) {
 
         case "PieChart":
         this._spreadSheet.makeChart(ZmSpreadSheetChart.PIE);
+        break;
+
+        case "LineChart":
+        this._spreadSheet.makeChart(ZmSpreadSheetChart.LINE);
         break;
 	}
 };
