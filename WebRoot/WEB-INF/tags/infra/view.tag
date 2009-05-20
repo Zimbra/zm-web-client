@@ -418,6 +418,7 @@
 				</td>
 			</tr>
 	</table>
+    <app:footer title="${title}" selected="${selected}"/>
     <script type="text/javascript">
     if (screen.width<=800) {
         /*remove sidebar ad when resolution is less than eq 800 x 600*/

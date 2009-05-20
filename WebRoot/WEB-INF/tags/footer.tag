@@ -14,7 +14,9 @@
  * 
  * ***** END LICENSE BLOCK *****
 --%>
-<%@ tag body-content="scriptless" %>
+<%@ tag body-content="empty" %>
+<%@ attribute name="title" rtexprvalue="true" required="false" %>
+<%@ attribute name="selected" rtexprvalue="true" required="false" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
