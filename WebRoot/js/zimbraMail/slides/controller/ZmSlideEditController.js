@@ -14,7 +14,7 @@
  */
 
 ZmSlideEditController = function() {
-
+    this._requestMgr = new ZmRequestMgr(this);
 };
 
 ZmSlideEditController.prototype.toString = function() {
@@ -99,20 +99,37 @@ ZmSlideEditController.prototype._initToolBar = function () {
 
     //new DwtControl({parent:tb, className:"vertSep"});
 
-	/*
     var button = this._insertImage1 = new DwtToolBarButton({parent:tb});
-    button.setImage("ImageDoc");
+    button.setImage("AddImage");
     button.setToolTipContent(ZmMsg.insertImage);
+    button.setText(ZmMsg.insertImage);    
     button.setData(ZmSlideEditController._VALUE, ZmSlideEditController.ACTION_INSERT_IMG1);
-    button.addSelectionListener(listener);    
-    */
+    button.addSelectionListener(listener);
+
+    var imgMenu = new ZmPopupMenu(button, null, null, this);
+    var imgMenuListener = new AjxListener(this, this._imgListener);
+
+    var imgMenuItems = [
+        {name: ZmMsg.uploadNewFile, value: "upload"},
+        {name: ZmMsg.insertLink, value: "link"}
+    ];
+
+
+    for (var i=0;  i< imgMenuItems.length; i++) {
+        var mi = imgMenu.createMenuItem(imgMenuItems[i].name, {text:imgMenuItems[i].name});
+        mi.addSelectionListener(imgMenuListener);
+        mi.setData(ZmSlideEditController._VALUE, imgMenuItems[i].value);
+    }
+    button.setMenu(imgMenu);
     
+    /*
     this._insertImage = new DwtToolBarButton({parent:tb});
     this._insertImage.setToolTipContent(ZmMsg.insertImage);
     this._insertImage.setImage("AddImage");
     this._insertImage.setText(ZmMsg.insertImage);
     this._insertImage.setData(ZmSlideEditController._VALUE, ZmSlideEditController.ACTION_INSERT_IMG);
     this._insertImage.addSelectionListener(listener);
+    */
 
     //new DwtControl({parent:tb, className:"vertSep"});
 
@@ -188,7 +205,7 @@ function(ev) {
 
 ZmSlideEditController.prototype.__popupUploadDialog =
 function(callback) {
-    AjxDispatcher.require(["NotebookCore", "Notebook"]);    
+    //AjxDispatcher.require(["NotebookCore", "Notebook"]);    
 	var dialog = appCtxt.getUploadDialog();
     dialog.addPopdownListener(new AjxListener(this, this.focus));
 	dialog.popup({id: window.fileInfo.folderId}, callback, ZmMsg.insertAttachment);
@@ -197,8 +214,23 @@ function(callback) {
 ZmSlideEditController.prototype._insertObjects =
 function(folder, filenames) {
 	//func.call(this, filenames);
-    this._currentView.insertFile();    
+    this._currentView.insertFile(filenames);    
 };
+
+ZmSlideEditController.prototype._imgListener =
+function(ev) {
+    var value = ev.item.getData(ZmSlideEditController._VALUE);
+
+    if(value == "upload") {
+        if (!this._insertObjectsCallback) {
+            this._insertObjectsCallback = new AjxCallback(this, this._insertObjects);
+        }
+        this.__popupUploadDialog(this._insertObjectsCallback);
+    }else {
+        this._currentView.insertImage();
+    }
+};
+
 
 ZmSlideEditController.prototype._themeListener =
 function(ev) {
@@ -232,4 +264,15 @@ function(fileName) {
     if(this._fileName) {
         this._fileName.setValue(fileName);
     }
+};
+
+ZmSlideEditController.prototype.sendRequest =
+function(params) {
+    params.noSession = true;
+    this._requestMgr.sendRequest(params);
+};
+
+ZmSlideEditController.prototype._kickPolling =
+function(resetBackoff) {
+
 };

@@ -73,7 +73,7 @@ ZmUploadConflictDialog.prototype.popup = function(folder, conflicts, callback, l
 };
 
 ZmUploadConflictDialog.prototype.popdown = function() {
-	ZmDialog.prototype.popdown.call(this);
+	DwtDialog.prototype.popdown.call(this);
 	this._conflictCallback = null;
 };
 

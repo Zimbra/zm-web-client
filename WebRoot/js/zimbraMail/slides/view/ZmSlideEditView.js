@@ -1002,12 +1002,17 @@ function() {
 
 ZmSlideEditView.prototype.insertImage =
 function() {
-
     var imgSrc = prompt(ZmMsg.slides_imageURL);
+    if(imgSrc != null) {
+        this._insertImage(imgSrc);
+    }
+};
+
+ZmSlideEditView.prototype._insertImage =
+function(imgSrc) {
 
     var div = document.createElement("div");
     div.className = "slide_object_img";
-    //div.innerHTML = '<img src="' + imgSrc + '">';
     div.style.zIndex = Dwt.Z_VIEW;
 
     Dwt.setPosition(div, Dwt.ABSOLUTE_STYLE);
@@ -1025,6 +1030,28 @@ function() {
 
     var container  = this.getCurrentSlideElement();
     container.appendChild(div);
+};
+
+ZmSlideEditView.prototype.insertFile =
+function(filenames) {
+
+    var url = "";
+
+    if(window.restPage) {
+        url = location.href;
+        url = url.split("/");
+        url.pop();
+        url = url.join("/");
+    }else {
+        var wAppCtxt = window.opener.appCtxt;
+        var folder = wAppCtxt.getById(window.fileInfo.folderId);
+        url = folder.getRestUrl();
+    }
+
+    for(var i in filenames) {
+        if(!filenames[i]) return;
+        this._insertImage(url + "/" + filenames[i]);
+    }
 };
 
 //resize image dimension from pixel to percentage

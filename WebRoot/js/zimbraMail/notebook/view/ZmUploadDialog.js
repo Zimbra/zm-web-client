@@ -74,7 +74,7 @@ ZmUploadDialog.prototype.popdown = function() {
 	this._uploadFolder = null;
 	this._uploadCallback = null;
 	/***/
-	ZmDialog.prototype.popdown.call(this);
+	DwtDialog.prototype.popdown.call(this);
 };
 
 //to give explicitly the uploadForm, files to upload and folderId used for breifcase

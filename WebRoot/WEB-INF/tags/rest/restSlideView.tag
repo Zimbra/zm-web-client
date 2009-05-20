@@ -162,6 +162,7 @@
     </c:otherwise>
     </c:choose>
 
+        window.restPage = true;
         window.appCtxt = new ZmAppCtxt();
         appCtxt.rememberMe = false;
 
