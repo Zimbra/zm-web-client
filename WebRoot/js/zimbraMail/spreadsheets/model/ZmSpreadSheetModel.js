@@ -1308,21 +1308,21 @@ ZmSpreadSheetCellModel.prototype._determineType = function(str) {
 	}
 
 	// number
-	else if (/^([0-9]*\.?[0-9]+)$/.test(str)) {
+	else if (/^(\-?[0-9]*\.?[0-9]+)$/.test(str)) {
 		type = "number";
 		val = RegExp.$1;
 	}
 
 	// currency
-	else if (/^\$\s*([0-9]*\.?[0-9]+)$/.test(str) ||
-		 /^([0-9]*\.?[0-9]+)\$$/.test(str)) {
+	else if (/^\$\s*(\-?[0-9]*\.?[0-9]+)$/.test(str) ||
+		 /^(\-?[0-9]*\.?[0-9]+)\$$/.test(str)) {
 		type = "currency";
 		val = RegExp.$1;
 		if (this._decimals == null)
 			this._decimals = 2;
-
+                
     //  precentage
-	} else if (/^([0-9]*\.?[0-9]+)\s*%$/.test(str)) {
+	} else if (/^(\-?[0-9]*\.?[0-9]+)\s*%$/.test(str)) {
 		type = "percentage";
 		val = RegExp.$1;
 

@@ -66,7 +66,7 @@ ZmSpreadSheet = function(parent, controller, className, posStyle, deferred) {
 		Dwt.setHandler(document, DwtEvent.ONKEYDOWN, AjxCallback.simpleClosure(this._keyPress, this));
 
     //copy-paste
-    Dwt.setHandler(window, DwtEvent.ONBLUR, AjxCallback.simpleClosure(this._clipboard_blur, this));
+    Dwt.setHandler(document, DwtEvent.ONBLUR, AjxCallback.simpleClosure(this._clipboard_blur, this));
 };
 
 ZmSpreadSheet.TOOLTIP_DELAY = 750;
@@ -1234,36 +1234,38 @@ ZmSpreadSheet.prototype._handleKey = function(dwtev, ev) {
 	if (!handled) {
 		switch (String.fromCharCode(dwtev.charCode).toLowerCase()) {
 
-		    case "c":	// COPY
-			if (dwtev.isCommand()) {
-				//handled = true;
-				this.clipboardCopy();
+            case "c":	// COPY
+                if (dwtev.isCommand()) {
+                    //handled = true;
+                    this.clipboardCopy();
 
-                //Copy Data to System
-                this.focusTextArea();
-                this._addDataToTextArea();
+                    //Copy Data to System
+                    this.focusTextArea();
+                    this._addDataToTextArea();
 
-			}
-			break;
+                }
+                break;
 
-		    case "x":	// CUT
-			if (dwtev.isCommand()) {
-				handled = true;
-				this.clipboardCut();
-			}
-			break;
+            case "x":	// CUT
+                if (dwtev.isCommand()) {
+                    handled = true;
+                    this.clipboardCut();
+                }
+                break;
 
-		    case "v":	// PASTE
-			if (dwtev.isCommand() && this.hasClipboardData()) {
-				handled = true;
-				this.clipboardPaste();
-			}else{
-                this.focusTextArea();
-                window.setTimeout(AjxCallback.simpleClosure(this._pasteFromTextArea, this), 50);
-            }
-			break;
+            case "v":	// PASTE
+                if(dwtev.isCommand()){
+                    if (this.hasClipboardData()) {
+                        handled = true;
+                        this.clipboardPaste();
+                    }else{
+                        this.focusTextArea();
+                        window.setTimeout(AjxCallback.simpleClosure(this._pasteFromTextArea, this), 50);
+                    }
+                }
+                break;
 
-		}
+        }
 	}
 	if (handled) {
 		dwtev._stopPropagation = true;
