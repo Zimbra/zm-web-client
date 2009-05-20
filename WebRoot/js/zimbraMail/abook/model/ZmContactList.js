@@ -47,7 +47,6 @@ ZmContactList = function(search, isGal, type) {
 	this._imAddressToContact = this._app._byIM;
 	this._phoneToContact = this._app._byPhone;
 	
-	this._loadCount = 0;
 	this._myCard = null;
 };
 
@@ -57,11 +56,14 @@ ZmContactList.prototype.constructor = ZmContactList;
 
 // Constants
 
-// Load contacts in chunks so browser remains reasonably responsive.
-// To increase browser responsiveness, lower the chunk size and increase the
-// delay (of course, it will then take longer to load the contacts).
-ZmContactList.MAX_LOAD_COUNT	= AjxEnv.isIE ? 100 : 500;	// chunk size for loading contacts
-ZmContactList.LOAD_PAUSE		= AjxEnv.isIE ? 500 : 250;	// delay between chunks
+// Support for loading user's local contacts from a large string
+
+ZmContactList.URL = "/Contacts?fmt=cf&t=2";		// REST URL for loading user's local contacts
+ZmContactList.CONTACT_SPLIT_CHAR	= '\u001E';	// char for splitting string into contacts
+ZmContactList.FIELD_SPLIT_CHAR		= '\u001D';	// char for splitting contact into fields
+// fields that belong to a contact rather than its attrs
+ZmContactList.IS_CONTACT_FIELD = {"id":true, "l":true, "d":true, "fileAsStr":true, "rev":true};
+
 
 ZmContactList.prototype.toString =
 function() {
@@ -82,6 +84,7 @@ function(callback) {
 
 ZmContactList.prototype._finishLoading =
 function() {
+	DBG.timePt("done loading " + this.size() + " contacts");
 	this.isLoaded = true;
 	if (this._loadedCallbacks) {
 		var callback;
@@ -100,74 +103,62 @@ function() {
 ZmContactList.prototype.load =
 function(callback, errorCallback) {
 	// only the canonical list gets loaded
-	DBG.println(AjxDebug.DBG1, "loading contacts");
 	this.isCanonical = true;
-	var jsonObj = {GetContactsRequest:{_jsns:"urn:zimbraMail", sortBy:"nameAsc"}};
 	var respCallback = new AjxCallback(this, this._handleResponseLoad, [callback]);
 	DBG.timePt("requesting contact list", true);
-	appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, noBusyOverlay:true,
-											callback:respCallback, errorCallback:errorCallback});
+
+	var params = {asyncMode:true, noBusyOverlay:true, callback:respCallback, errorCallback:errorCallback};
+	params.restUri = appCtxt.get(ZmSetting.REST_URL) + ZmContactList.URL;
+	DBG.println(AjxDebug.DBG1, "loading contacts from " + params.restUri);
+	appCtxt.getAppController().sendRequest(params);
 };
 
 ZmContactList.prototype._handleResponseLoad =
 function(callback, result) {
 	DBG.timePt("got contact list");
-	var list = result.getResponse().GetContactsResponse.cn;
-	if (list) {
-		if (list.length > ZmContactList.MAX_LOAD_COUNT) {
-			this._loadAction = new AjxTimedAction(this, this._smartLoad, [list]);
+
+	var text = result.getResponse();
+	if (text) {
+		var contacts = text.split(ZmContactList.CONTACT_SPLIT_CHAR);
+		for (var i = 0, len = contacts.length; i < len; i++) {
+			var fields = contacts[i].split(ZmContactList.FIELD_SPLIT_CHAR);
+			var contact = {}, attrs = {};;
+			for (var j = 0, len1 = fields.length; j < len1; j += 2) {
+				if (ZmContactList.IS_CONTACT_FIELD[fields[j]]) {
+					contact[fields[j]] = fields[j + 1];
+				} else {
+					attrs[fields[j]] = fields[j + 1];
+				}
+			}
+			contact._attrs = attrs;
+			this._addContact(contact);
 		}
-		this.set(list);
 	}
-	// user has no contacts
-	else {
-		this._finishLoading();
-	}
+	this._finishLoading();
 
 	if (callback) {
 		callback.run();
 	}
 };
 
-ZmContactList.prototype.set =
-function(list) {
-	this.clear();
-	this._smartLoad(list);
-};
+ZmContactList.prototype._addContact =
+function(contact) {
 
-ZmContactList.prototype._smartLoad =
-function(list) {
-	DBG.timePt("loading contacts - " + this._loadCount);
-	var diff = list.length - this._loadCount;
-	var limit = diff < ZmContactList.MAX_LOAD_COUNT ? (diff + this._loadCount) :
-													  (ZmContactList.MAX_LOAD_COUNT + this._loadCount);
-
-	for (var i = this._loadCount; i < limit; i++) {
-		var contact = list[i];
-		if (!contact._attrs) contact._attrs = {}; // handle empty contacts
-		// note that we don't create a ZmContact here (optimization)
-		contact.list = this;
-		this._updateHashes(contact, true);
-		var fn = [], fl = [];
-		if (contact._attrs[ZmContact.F_firstName])	{ fn.push(contact._attrs[ZmContact.F_firstName]); }
-		if (contact._attrs[ZmContact.F_middleName])	{ fn.push(contact._attrs[ZmContact.F_middleName]); }
-		if (contact._attrs[ZmContact.F_lastName])	{ fn.push(contact._attrs[ZmContact.F_lastName]); }
-		if (fn.length) {
-			contact._attrs[ZmContact.X_fullName] = fn.join(" ");
-		}
-		if (contact._attrs[ZmContact.F_firstName])	{ fl.push(contact._attrs[ZmContact.F_firstName]); }
-		if (contact._attrs[ZmContact.F_lastName])	{ fl.push(contact._attrs[ZmContact.F_lastName]); }
-		contact._attrs[ZmContact.X_firstLast] = fl.join(" ");
-		this.add(contact);
+	// note that we don't create a ZmContact here (optimization)
+	contact.list = this;
+	this._updateHashes(contact, true);
+	var fn = [], fl = [];
+	if (contact._attrs[ZmContact.F_firstName])	{ fn.push(contact._attrs[ZmContact.F_firstName]); }
+	if (contact._attrs[ZmContact.F_middleName])	{ fn.push(contact._attrs[ZmContact.F_middleName]); }
+	if (contact._attrs[ZmContact.F_lastName])	{ fn.push(contact._attrs[ZmContact.F_lastName]); }
+	if (fn.length) {
+		contact._attrs[ZmContact.X_fullName] = fn.join(" ");
 	}
+	if (contact._attrs[ZmContact.F_firstName])	{ fl.push(contact._attrs[ZmContact.F_firstName]); }
+	if (contact._attrs[ZmContact.F_lastName])	{ fl.push(contact._attrs[ZmContact.F_lastName]); }
+	contact._attrs[ZmContact.X_firstLast] = fl.join(" ");
 
-	if (i < (list.length - 1) && this._loadAction) {
-		this._loadCount = i;
-		AjxTimedAction.scheduleAction(this._loadAction, ZmContactList.LOAD_PAUSE);
-	} else {
-		DBG.timePt("done loading contacts");
-		this._finishLoading();
-	}
+	this.add(contact);
 };
 
 /*
@@ -183,7 +174,7 @@ function(contact, idx) {
 
 	var args = {list:this};
 	var obj = eval(ZmList.ITEM_CLASS[this.type]);
-	var realContact = obj ? obj.createFromDom(contact, args) : null;
+	var realContact = obj && obj.createFromDom(contact, args);
 
 	if (this.isCanonical) {
 		var a = this.getArray();
@@ -205,8 +196,9 @@ ZmContactList.prototype._getIndexById =
 function(id) {
 	var a = this.getArray();
 	for (var i = 0; i < a.length; i++) {
-		if (a[i].id == id)
+		if (a[i].id == id) {
 			return i;
+		}
 	}
 	return null;
 };
@@ -518,10 +510,11 @@ function(contact, doAdd) {
 	for (var i = 0; i < ZmContact.F_EMAIL_FIELDS.length; i++) {
 		var email = ZmContact.getAttr(contact, ZmContact.F_EMAIL_FIELDS[i]);
 		if (email) {
-			if (doAdd)
+			if (doAdd) {
 				this._emailToContact[email.toLowerCase()] = contact;
-			else
+			} else {
 				delete this._emailToContact[email.toLowerCase()];
+			}
 		}
 	}
 
@@ -533,10 +526,11 @@ function(contact, doAdd) {
 			if (phone) {
 				var digits = this._getPhoneDigits(phone);
 				if (digits) {
-					if (doAdd)
+					if (doAdd) {
 						this._phoneToContact[digits] = {contact: contact, field: field};
-					else
+					} else {
 						delete this._phoneToContact[digits];
+					}
 				}
 			}
 		}
@@ -548,10 +542,11 @@ function(contact, doAdd) {
 			var imaddr = ZmContact.getAttr(contact, ZmContact.F_IM_FIELDS[i]);
 			if (imaddr) {
 				imaddr = imaddr.toLowerCase();
-				if (doAdd)
+				if (doAdd) {
 					this._imAddressToContact[imaddr] = contact;
-				else
+				} else {
 					delete this._imAddressToContact[imaddr];
+				}
 			}
 		}
 	}
@@ -567,9 +562,11 @@ function(phone) {
 ZmContactList.prototype._sortIndex =
 function(contact) {
 	var a = this._vector.getArray();
-	for (var i = 0; i < a.length; i++)
-		if (ZmContact.compareByFileAs(a[i], contact) > 0)
+	for (var i = 0; i < a.length; i++) {
+		if (ZmContact.compareByFileAs(a[i], contact) > 0) {
 			return i;
+		}
+	}
 	return a.length;
 };
 
