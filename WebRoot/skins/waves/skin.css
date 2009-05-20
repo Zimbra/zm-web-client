@@ -94,3 +94,7 @@ background: url("@SkinImgDir@/header_bg_bones.png") repeat-x;*/
 	font-weight: bold;
 	white-space: nowrap;
 }
+
+.calendar_header_allday_separator {
+	background-color: #C0D9EA;
+}
