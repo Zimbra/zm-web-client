@@ -262,7 +262,12 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
             window.fileInfo = item;
             slideEditView.loadSlide(item, <%= runSlideShow %>);
         }else {
-            slideEditView.createNewSlide();
+            if(window.opener && window.opener.importSlides) {
+                window.opener.importSlides = null;                 
+                slideEditView.importSlides();
+            }else {
+                slideEditView.createNewSlide();
+            }
         }
     }
 

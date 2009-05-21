@@ -92,11 +92,14 @@ ZmSlideLayoutManager = function(){
 };
 
 ZmSlideLayoutManager.prototype.getSlideLayout =
-function(themeName){
+function(themeName, titleOnly, titleContent){
     var content = [];
     var idx = 0;
-    content[idx++] = '<div class="slide_object_title" style="position: absolute; left: 4%; top: 4%; width: 76.8%; height: 9%;">Click here to edit title</div>'
-    content[idx++] = '<div class="slide_object_notes" style="position: absolute; left: 4%; top: 23%; width: 92%; height: 72%;">Click here to edit slide contents <br> </div>';
+    var title = titleContent || 'Click here to edit title';
+    content[idx++] = '<div class="slide_object_title" style="position: absolute; left: 4%; top: 3%; width: 92%; height: 9%;">'  + title + '</div>'
+    if(!titleOnly) {
+        content[idx++] = '<div class="slide_object_notes" style="position: absolute; left: 4%; top: 23%; width: 92%; height: 72%;">Click here to edit slide contents <br> </div>';
+    }
     return content.join("");
 };
 

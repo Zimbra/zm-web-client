@@ -26,6 +26,7 @@ ZmBriefcaseController = function(container, app) {
 	this._listeners[ZmOperation.SEND_FILE_AS_ATT] = new AjxListener(this, this._sendFileAsAttachmentListener);
 	this._listeners[ZmOperation.NEW_FILE] = new AjxListener(this, this._uploadFileListener);
 	this._listeners[ZmOperation.VIEW_FILE_AS_HTML] = new AjxListener(this, this._viewAsHtmlListener);
+	this._listeners[ZmOperation.CREATE_SLIDE_SHOW] = new AjxListener(this, this._createSlideShow);
 
     this._listeners[ZmOperation.NEW_SPREADSHEET] = new AjxListener(this, this._handleDoc, [ZmOperation.NEW_SPREADSHEET]);
     this._listeners[ZmOperation.NEW_PRESENTATION] = new AjxListener(this, this._handleDoc, [ZmOperation.NEW_PRESENTATION])
@@ -158,6 +159,7 @@ function(parent, num) {
 	parent.enable([ZmOperation.SEND_FILE_MENU, ZmOperation.SEND_FILE, ZmOperation.SEND_FILE_AS_ATT], (isZimbraAccount && isItemSelected && !isMultiFolder && !isFolderSelected));
 	parent.enable(ZmOperation.OPEN_FILE, (isItemSelected && !isMultiFolder));
 	parent.enable(ZmOperation.DELETE, (!isReadOnly && isItemSelected));
+    parent.enable(ZmOperation.CREATE_SLIDE_SHOW, (!isReadOnly && isItemSelected));
 	parent.enable(ZmOperation.TAG_MENU, (!isShared && isItemSelected && !isFolderSelected));
 	parent.enable([ZmOperation.NEW_FILE, ZmOperation.VIEW_MENU], true);
     parent.enable([ZmOperation.NEW_SPREADSHEET, ZmOperation.NEW_PRESENTATION], true);
@@ -595,6 +597,7 @@ function() {
 	if (appCtxt.get(ZmSetting.VIEW_ATTACHMENT_AS_HTML)) {
 		list.push(ZmOperation.VIEW_FILE_AS_HTML);
 	}
+    list.push(ZmOperation.CREATE_SLIDE_SHOW);
 	list.push(ZmOperation.SEP);
 	list = list.concat(this._standardActionMenuOps());
 	return list;
@@ -1000,4 +1003,10 @@ function() {
     if(this._listView[this._currentView] != null) {
         this._resetOperations(this._toolbar[this._currentView], this._listView[this._currentView].getSelectionCount());
     }
+};
+
+ZmBriefcaseController.prototype._createSlideShow =
+function() {
+    window.importSlides = true;
+    this._app._handleNewDoc(ZmOperation.NEW_PRESENTATION);      
 };

@@ -136,7 +136,7 @@ function() {
 };
 
 ZmSlideEditView.prototype.createSlide =
-function(ignorePreview) {
+function(ignorePreview, titleOnly, titleContent) {
 
     var cdiv = this._currentSlideDiv;
 
@@ -184,7 +184,7 @@ function(ignorePreview) {
 
     this._currentSlideDiv = div;
 
-    div.innerHTML = this._layoutManager.getSlideLayout();
+    div.innerHTML = this._layoutManager.getSlideLayout(null, titleOnly, titleContent);
 
     if(!ignorePreview) {
         this.createPreviewSlide();
@@ -987,14 +987,14 @@ function() {
 };
 
 ZmSlideEditView.prototype.insertTextBox =
-function() {
+function(content) {
 
     var div = document.createElement("div");
 	//todo: change this
     div.className = "slide_object_notes"; //"slide_object_title";
-    div.innerHTML = ZmMsg.slides_textBoxMessage;
+    div.innerHTML = content || ZmMsg.slides_textBoxMessage;
     Dwt.setPosition(div, Dwt.ABSOLUTE_STYLE);
-    Dwt.setBounds(div, 20,20, 200, 100);
+    Dwt.setBounds(div, '25%','25%', 200, 100);
 
     var container  = this.getCurrentSlideElement();
     container.appendChild(div);
@@ -1016,7 +1016,7 @@ function(imgSrc) {
     div.style.zIndex = Dwt.Z_VIEW;
 
     Dwt.setPosition(div, Dwt.ABSOLUTE_STYLE);
-    Dwt.setBounds(div, 20,20, 200, 100);
+    Dwt.setBounds(div, '20%','20%', 200, 100);
     div.style.overflow = "hidden";
 
     //resize image after inserting
@@ -1024,6 +1024,8 @@ function(imgSrc) {
     var imgNode = document.createElement("img");
     imgNode.onload = function() {
       editor.resizeImg(div, imgNode);
+      editor._syncPreview();
+      editor._importPendingImages();
     };
     imgNode.src = imgSrc;
     div.appendChild(imgNode);
@@ -1054,6 +1056,65 @@ function(filenames) {
     }
 };
 
+
+ZmSlideEditView.prototype.importSlides =
+function(filenames) {
+
+    var url = "";
+
+    if(window.restPage || !window.opener) return;
+
+    var wAppCtxt = window.opener.appCtxt;
+    var folder = wAppCtxt.getById(window.fileInfo.folderId);
+    url = folder.getRestUrl();
+
+    var app = wAppCtxt.getApp(ZmApp.BRIEFCASE);
+    var controller = app ? app.getBriefcaseController() : null;
+    var view = controller ?  controller.getCurrentView() : null;
+    if(view) {
+        var items = view.getSelection();
+        if (!items) { return; }
+
+        var pendingSlides = this._pendingSlides = [];
+        for (var i in items) {
+            var item = items[i];
+            var restUrl = item.getRestUrl();
+            if(item && !item.isFolder && restUrl != null) {
+                pendingSlides.push(restUrl);
+            }
+        }
+        if(pendingSlides.length > 0) {
+            this._importPendingImages();
+        }else {
+            this.createNewSlide();
+        }
+
+    }
+
+};
+
+ZmSlideEditView.prototype.isImage  =
+function(url) {
+    return url.toLowerCase().match(/\.jpg$|\.gif$|\.jpeg$|\.png$|\.bmp$$/);    
+};
+
+ZmSlideEditView.prototype._importPendingImages =
+function() {
+    if(this._pendingSlides && this._pendingSlides.length > 0) {
+        var restUrl = this._pendingSlides.pop();
+        var fileName = unescape(restUrl.replace(/^.*\//,""));
+        fileName = fileName.replace("?fmt=html", "");
+        this.createSlide(null, true, fileName);
+        if(this.isImage(restUrl)) {
+            this._insertImage(restUrl);
+        }else {
+            this.insertTextBox("<a href='" + restUrl+ "'>" + fileName + "</a>");
+            this._importPendingImages();
+        }
+
+    }
+};
+
 //resize image dimension from pixel to percentage
 ZmSlideEditView.prototype.resizeImg =
 function(div, imgNode) {
@@ -1065,20 +1126,19 @@ function(div, imgNode) {
     var cHeight  = container.offsetHeight;
 
     if(width > cWidth) {
-        percentWidth = 80;
+        percentWidth = 90;
         percentHeight = percentWidth * height/width;
 
     }else if(height > cHeight) {
-        percentHeight = 70;
+        percentHeight = 90;
         percentWidth = percentHeight * width/height;        
     }else {
         percentHeight = 100*height/cHeight;
         percentWidth = 100*width/cWidth;
     }
 
-    Dwt.setBounds(div, (100-percentWidth)/2 + "%",  (100-percentHeight)/2 + "%", percentWidth + "%", percentHeight + "%");
+    Dwt.setBounds(div, (100-percentWidth)/2 + "%",  15/2 + (85 - percentHeight)/2 + "%", percentWidth + "%", percentHeight + "%");
     Dwt.setSize(imgNode, '100%', '100%');
-    //this.positionBoxInCenter(div);
 };
 
 ZmSlideEditView.prototype.insertGraph =
@@ -1128,7 +1188,7 @@ function() {
     var content = [];
     var idx = 0;
 
-    idx = this.getSlideHTML(content, idx, true);
+    idx = this.getSlideHTML(content, idx, true, true);
 
     var winname = "_new";
     var winfeatures = [
@@ -1175,7 +1235,7 @@ function(doc, content) {
 };
 
 ZmSlideEditView.prototype.getSlideHTML =
-function(content, idx, generateEndSlide) {
+function(content, idx, generateEndSlide, forSlideShow) {
 
     var i = 0;
 
@@ -1187,7 +1247,8 @@ function(content, idx, generateEndSlide) {
 
             if(previewNode && (previewNode.className == "preview") ) {
                 var zindex = Dwt.Z_VIEW;
-                content[idx++] = ["<div class='slide' style='width:100%;height:100%;position:absolute;left:0%;top:0%;z-index:", zindex, ((i!=0)?";display:none;":"") ,"'>"].join("");
+                var width = forSlideShow ? 75 : 100;
+                content[idx++] = ["<div class='slide' style='width:" + width + "%;height:100%;position:absolute;left:0%;top:0%;z-index:", zindex, ((i!=0)?";display:none;":"") ,"'>"].join("");
                 content[idx++]  = previewNode.innerHTML;
                 content[idx++] = '</div>';
                 i++;
