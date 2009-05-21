@@ -55,7 +55,7 @@
 
             if (e) {
 				var imgsrc = 
-				   t == 'gal' ? "<app:imgurl value='contacts/ImgGALContact.gif' />" 
+				   t == 'gal' ? "<app:imgurl value='startup/ImgGALContact.gif' />" 
 	             : t == 'group' ? "<app:imgurl value='contacts/ImgGroup.gif' />" 
 				                : "<app:imgurl value='contacts/ImgContact.gif' />" ;
 				return ["<table><tr><td><img src='",imgsrc,"'><"+"/td><td>",
