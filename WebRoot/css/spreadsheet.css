@@ -1,9 +1,57 @@
-.ZmSpreadSheet { border: 1px solid #000; }
-.ZmSpreadSheet .ToolBar { background-color: #eee; }
+/*
+ * ***** BEGIN LICENSE BLOCK *****
+ * Zimbra Collaboration Suite Web Client
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * 
+ * The contents of this file are subject to the Yahoo! Public License
+ * Version 1.0 ("License"); you may not use this file except in
+ * compliance with the License.  You may obtain a copy of the License at
+ * http://www.zimbra.com/license.
+ * 
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * ***** END LICENSE BLOCK *****
+ */
+
+/*
+* Conventions
+*
+* - Classes that start with "Dwt" or "Zm" have a corollary Javascript object.
+* - Use one line if there is only one selector and one declaration. Otherwise, indent each declaration on its own line.
+* - Group selectors to avoid repetition of styles, as appropriate (ie group within a section). That means you may have
+*   to look at more than one definition to figure out all the applicable styles, but it lets you give the styles a
+*   hierarchy. That way, you're more likely to need to change a style in just one place.
+* - Use shorthand styles when possible (font, margin, padding, etc).
+* - When grouping selectors that correspond to our Javascript objects, show inheritance by using a different line for
+*   each level of inheritance. CSS doesn't care about our object hierarchy, but doing that enhances readability.
+* - Use hex RGB values for colors that don't have names (eg:  #EEEEEE)
+* - Try to stick to hex values of   00, 33, 66, 99, AA, FF so they map cleanly to the web palette,
+*    eg: #666666 rather than #616161
+* - Modifiers are lower case, whether they're a class (eg .hover) or tacked on (eg -selected).
+*
+* Classes are laid out in the following general order:
+*	- HTML elements
+*	- General app stuff (shell, overlays, banner)
+*	- Widgets that tend toward abstract (minimal subclassing), such as tool tips and sashes
+*	- Heavier use widgets such as buttons and dialogs
+*		- General widget stuff, then specialized subclasses
+*	- List views, with common stuff first
+*	- Other views (lots of them)
+*	- Miscellaneous stuff that multiple apps might use (objects, autocomplete)
+*	- Modifiers
+*
+* Many of the Dwt widgets don't have corresponding classes here, since they are only subclassed.
+* If you create and display one of those widgets, you'll have to add a class for it.
+*/
+
+/**  CSS for Spreadsheet  **/
+
+.ZmSpreadSheet { border: 1px solid #c0b49c; }
+.ZmSpreadSheet .ToolBar { background-color: #bfb39b; }
 .ZmSpreadSheet .ToolBar2 { border-bottom: 1px solid #000; }
 .ZmSpreadSheet-RelDiv { position: relative !important; overflow: auto !important; background-color: #bbb; }
 .ZmSpreadSheet .InputField, .ZmSpreadSheet table.SpreadSheet { font: 11px tahoma,verdana,sans-serif; }
-.ZmSpreadSheet table.SpreadSheet { background-color: #bbb; color: #000; }
+.ZmSpreadSheet table.SpreadSheet { background-color: #ddd6c6; color: #000; }
 .ZmSpreadSheet table.SpreadSheet td { background-color: #fff; color: #000; padding: 1px; overflow: hidden; cursor: default; }
 .ZmSpreadSheet table.SpreadSheet .TopBar td { padding: 0; }
 
@@ -21,15 +69,15 @@
 
 .ZmSpreadSheet table.SpreadSheet .TopBar div, .ZmSpreadSheet table.SpreadSheet .LeftBar div {
   cursor: default; -moz-user-select: none; user-select: none;
-  background-color: #e8e8e8; color: #000; border: 1px solid; border-color: #f5f5f5 #ddd #ddd #f5f5f5;
+  background-color: #f2ead5; color: #000; border: 1px solid; border-color: #f7f1e7 #ddd6c6 #ddd6c6 #f7f1e7;
   text-align: center;
 }
 
 
 
-.ZmSpreadSheet table.SpreadSheet td.SSelected { border: 1px solid #000; padding: 0; }
-.ZmSpreadSheet table.SpreadSheet td.TopSelected div { background-color: #ccc; border-color: #fff; }
-.ZmSpreadSheet table.SpreadSheet td.LeftSelected div { background-color: #ccc; border-color: #fff; }
+.ZmSpreadSheet table.SpreadSheet td.SSelected { border: 1px solid #736448; padding: 0; }
+.ZmSpreadSheet table.SpreadSheet td.TopSelected div { background-color: #bfb39b; border-color: #ddd6c6; }
+.ZmSpreadSheet table.SpreadSheet td.LeftSelected div { background-color: #bfb39b; border-color: #ddd6c6; }
 
 .ZmSpreadSheet .InputField { position: absolute; padding: 0 !important; border: 2px solid #000; }
 .ZmSpreadSheet input.InputField { z-index: 10; }
@@ -50,8 +98,8 @@
   font-size: 1px; line-height: 1px;
   opacity: 0.4;
   filter: alpha(opacity=40);
-  background-color: #def;
-  border: 1px solid #00c;
+  background-color: #fefaf1;
+  border: 1px solid #333333;
 }
 
 .ZmSpreadSheet-Tooltip .CellName { font-weight: bold; border-bottom: 1px solid #000; margin-bottom: 0.5em; }
@@ -61,7 +109,7 @@
 .ZmSpreadSheet-Tooltip .CellDesc { font-style: italic; text-align: center; }
 
 .ZmSpreadSheet .AutoFill {
-    background-color: #000;
+    background-color: #333333;
     border: 2px solid white;
     height: 5px;
     width: 5px;
@@ -73,7 +121,7 @@
 }
 
 .ZmSpreadSheet .AutoFillRange {
-    background-color: #0000CC;
+    background-color: #333333;
 }
 
 .ZmSpreadSheet .ShowAutoFillRange {
@@ -88,26 +136,29 @@
 }
 
 .ZmSpreadSheetChart {
-    border: 2px solid gray;
-    height: 300px;
+    border: 2px solid #bfb39b;
+    height: 305px;
     width: 300px;
+    background-color: white;
 }
 
 .ZmSpreadSheetChartHeader {
-    border: thin solid gray;
-    background-color: gray;
+    background-color: #bfb39b;
     height: 14px;
     text-align: center;
     cursor: move;
+    padding: 4px;
+    
 }
 
 .ZmSpreadSheetChartName {
-    font-size: 12px;
+    font-size: 11px;
+    font-weight: bold;
     float:left;
 }
 
 .ZmSpreadSheetChartContainer {
-    height: 284px;
+    height: 282px;
     width: 100%;
 }
 
