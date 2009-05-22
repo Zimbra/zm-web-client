@@ -104,7 +104,10 @@ SUBMIT,
 /* ------- tree --------------- */
 
 .Overview { 
-	width: 162px; 
+	width: 170px; 
+	#IFDEF MSIE
+	width: 189px !important;
+	#ENDIF
 	padding:0px 6px 0px 6px; 
 }
 
