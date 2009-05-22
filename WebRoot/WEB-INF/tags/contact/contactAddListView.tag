@@ -25,6 +25,7 @@
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
+<c:if test="${attendeeMode}">
 <c:set var="tz" value="${zm:getTimeZone(uploader.compose.timeZone)}"/>
 <c:set var="today" value="${zm:getCalendarMidnight(uploader.compose.apptStartCalendar.timeInMillis,tz)}"/>
 <c:set var="endDay" value="${zm:getCalendarMidnight(uploader.compose.apptEndCalendar.timeInMillis,tz)}"/>
@@ -38,6 +39,8 @@
         <c:set var="apptEndLong" value="${endDay.timeInMillis + 1000*60*(uploader.compose.endHour * 60 + uploader.compose.endMinute )}"/>
     </c:otherwise>
 </c:choose>
+</c:if>
+
 <c:if test="${empty mailbox}">
     <zm:getMailbox var="mailbox"/>
 </c:if>
@@ -69,7 +72,7 @@
         <c:choose>
             <c:when test="${not empty searchGalResult}">
                 <th nowrap><fmt:message key="email"/>
-                <c:if test="${uploader.contactLocation eq 'resources'}">
+                <c:if test="${attendeeMode and uploader.contactLocation eq 'resources'}">
                 <th width=20% nowrap><fmt:message key="type"/>
                 </c:if>
             </c:when>
@@ -86,7 +89,7 @@
     </tr>
     <c:forEach items="${searchResult.hits}" var="hit" varStatus="status">
     <c:if test="${
-                !fn:contains(mailbox.defaultIdentity.fromEmailAddress.fullAddress,hit.contactHit.displayEmail)
+                groupMode or !fn:contains(mailbox.defaultIdentity.fromEmailAddress.fullAddress,hit.contactHit.displayEmail)
                 and !fn:contains(uploader.pendingAttendees,hit.contactHit.displayEmail)
                 and !fn:contains(uploader.compose.attendees,hit.contactHit.displayEmail)
                 and !fn:contains(uploader.pendingResources,hit.contactHit.displayEmail)
@@ -139,7 +142,7 @@
     </c:if>
     </c:if>
     <c:if test="${
-                !fn:contains(mailbox.defaultIdentity.fromEmailAddress.fullAddress,hit.contactHit.email2)
+                groupMode or !fn:contains(mailbox.defaultIdentity.fromEmailAddress.fullAddress,hit.contactHit.email2)
                 and !fn:contains(uploader.pendingAttendees,hit.contactHit.email2)
                 and !fn:contains(uploader.compose.attendees,hit.contactHit.email2)
                 and !fn:contains(uploader.pendingResources,hit.contactHit.email2)
@@ -195,7 +198,7 @@
     </c:if>
     </c:if>
     <c:if test="${
-                    !fn:contains(mailbox.defaultIdentity.fromEmailAddress.fullAddress,hit.contactHit.email3)
+                    groupMode or !fn:contains(mailbox.defaultIdentity.fromEmailAddress.fullAddress,hit.contactHit.email3)
                     and !fn:contains(uploader.pendingAttendees,hit.contactHit.email3)
                     and !fn:contains(uploader.compose.attendees,hit.contactHit.email3)
                     and !fn:contains(uploader.pendingResources,hit.contactHit.email3)
@@ -251,7 +254,7 @@
     </c:if>
     </c:if>
     <c:if test="${
-                    !fn:contains(mailbox.defaultIdentity.fromEmailAddress.fullAddress,hit.contactHit.workEmail1)
+                    groupMode or !fn:contains(mailbox.defaultIdentity.fromEmailAddress.fullAddress,hit.contactHit.workEmail1)
                     and !fn:contains(uploader.pendingAttendees,hit.contactHit.workEmail1)
                     and !fn:contains(uploader.compose.attendees,hit.contactHit.workEmail1)
                     and !fn:contains(uploader.pendingResources,hit.contactHit.workEmail1)
@@ -307,7 +310,7 @@
     </c:if>
     </c:if>
     <c:if test="${
-                        !fn:contains(mailbox.defaultIdentity.fromEmailAddress.fullAddress,hit.contactHit.workEmail2)
+                        groupMode or !fn:contains(mailbox.defaultIdentity.fromEmailAddress.fullAddress,hit.contactHit.workEmail2)
                         and !fn:contains(uploader.pendingAttendees,hit.contactHit.workEmail2)
                         and !fn:contains(uploader.compose.attendees,hit.contactHit.workEmail2)
                         and !fn:contains(uploader.pendingResources,hit.contactHit.workEmail2)
@@ -363,7 +366,7 @@
     </c:if>
     </c:if>
     <c:if test="${
-                        !fn:contains(mailbox.defaultIdentity.fromEmailAddress.fullAddress,hit.contactHit.workEmail3)
+                        groupMode or !fn:contains(mailbox.defaultIdentity.fromEmailAddress.fullAddress,hit.contactHit.workEmail3)
                         and !fn:contains(uploader.pendingAttendees,hit.contactHit.workEmail3)
                         and !fn:contains(uploader.compose.attendees,hit.contactHit.workEmail3)
                         and !fn:contains(uploader.pendingResources,hit.contactHit.workEmail3)
@@ -421,7 +424,7 @@
     </c:forEach>
     <c:forEach items="${searchGalResult.contacts}" var="contact" varStatus="status">
         <c:if test="${
-                    !fn:contains(mailbox.defaultIdentity.fromEmailAddress.fullAddress,contact.galFullAddress)
+                    groupMode or !fn:contains(mailbox.defaultIdentity.fromEmailAddress.fullAddress,contact.galFullAddress)
                     and !fn:contains(uploader.pendingAttendees,contact.galFullAddress)
                     and !fn:contains(uploader.compose.attendees,contact.galFullAddress)
                     and !fn:contains(uploader.pendingResources,contact.galFullAddress)
@@ -456,7 +459,7 @@
             <td >
                     ${fn:escapeXml(contact.galFullAddress)}
             </td>
-            <c:if test="${uploader.contactLocation eq 'resources'}">
+            <c:if test="${attendeeMode and uploader.contactLocation eq 'resources'}">
             <td>
                     ${fn:escapeXml(contact.attrs.zimbraCalResType)}
             </td>
