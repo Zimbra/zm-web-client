@@ -1212,6 +1212,7 @@ textarea.xform_field_disabled {
 
 .DwtDialog .XFormCase {
 	position:relative;
+	overflow:visible;
 }
 
 /* Groupers -- the xforms way of doing fieldSets... */
