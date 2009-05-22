@@ -13,16 +13,33 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * Creates a dialog for choosing a tag.
+ * @constructor
+ * @class
+ * This class presents the user with their list of tags in a tree view so that they
+ * can choose one. There is a text input that can be used to filter the list.
+ *
+ * @param parent
+ * @param className
+ */
 ZmPickTagDialog = function(parent, className) {
 
 	var newButton = new DwtDialog_ButtonDescriptor(ZmPickTagDialog.NEW_BUTTON, ZmMsg._new, DwtDialog.ALIGN_LEFT);
 	var params = {parent:parent, className:className, title:ZmMsg.pickATag, extraButtons:[newButton]};
 	ZmDialog.call(this, params);
 
-	this._tagTree = appCtxt.getTagTree();
-	this._tagTree.addChangeListener(new AjxListener(this, this._tagTreeChangeListener));
+	this._createControls();
+	appCtxt.getTagTree().addChangeListener(new AjxListener(this, this._tagTreeChangeListener));
 	this.registerCallback(ZmPickTagDialog.NEW_BUTTON, this._showNewDialog, this);
 	this._creatingTag = false;
+	this._loadTags();
+
+	this._setOverview({treeIds:[ZmOrganizer.TAG], fieldId:this._tagTreeDivId});
+	this._tagTreeView = this._getOverview().getTreeView(ZmOrganizer.TAG);
+	this._tagTreeView.addSelectionListener(new AjxListener(this, this._treeViewListener));
+	var root = this._tagTreeView.getTreeItemById(ZmOrganizer.ID_ROOT);
+	root.enableSelection(false);
 };
 
 ZmPickTagDialog.prototype = new ZmDialog;
@@ -37,28 +54,32 @@ function() {
 
 ZmPickTagDialog.prototype.popup = 
 function(params) {
-	this._setOverview({treeIds:[ZmOrganizer.TAG], fieldId:this._tagTreeCellId});
-	this._tagTreeView = this._getOverview().getTreeView(ZmOrganizer.TAG);
+	this._resetTreeView();
 	ZmDialog.prototype.popup.apply(this, arguments);
-	var root = this._tagTreeView.getTreeItemById(ZmOrganizer.ID_ROOT);
-	root.enableSelection(false);
+	this._inputField.setValue("");
+	this._inputField.focus();
 };
 
 ZmPickTagDialog.prototype._contentHtml = 
 function() {
-	this._tagTreeCellId = Dwt.getNextId();
-	var html = new Array();
+	this._tagTreeDivId = Dwt.getNextId();
+	this._inputDivId = Dwt.getNextId();
+	var html = [];
 	var idx = 0;
-	html[idx++] = "<table cellpadding='0' cellspacing='0' border='0'>";
-	html[idx++] = "<tr><td class='Label' colspan=2>";
-	html[idx++] = ZmMsg.targetTag;
-	html[idx++] = "</td></tr>";
-	html[idx++] = "<tr><td colspan=2'><div style='background-color:white; width:300px; border:1px solid black; overflow:auto' id='";
-	html[idx++] = this._tagTreeCellId;
-	html[idx++] = "'></div></td></tr>";
-	html[idx++] = "</table>";
-	
+	html[idx++] = "<div style='width:300px'>" + ZmMsg.chooserDescription + "</div>";
+	html[idx++] = "<div id ='" + this._inputDivId + "'></div>";
+	html[idx++] = "<div style='background-color:white; width:300px; border:1px solid black; overflow:auto' id='";
+	html[idx++] = this._tagTreeDivId;
+	html[idx++] = "'></div>";
+
 	return html.join("");
+};
+
+ZmPickTagDialog.prototype._createControls =
+function() {
+	this._inputField = new DwtInputField({parent: this});
+	document.getElementById(this._inputDivId).appendChild(this._inputField.getHtmlElement());
+	this._inputField.addListener(DwtEvent.ONKEYUP, new AjxListener(this, this._handleKeyUp));
 };
 
 ZmPickTagDialog.prototype._showNewDialog = 
@@ -77,7 +98,19 @@ function(parent, name) {
 	this._creatingTag = true;
 };
 
-ZmPickTagDialog.prototype._tagTreeChangeListener = 
+ZmPickTagDialog.prototype._loadTags =
+function() {
+	this._tags = [];
+	var tags = appCtxt.getTagTree().asList();
+	for (var i = 0, len = tags.length; i < len; i++) {
+		var tag = tags[i];
+		if (tag.id != ZmOrganizer.ID_ROOT) {
+			this._tags.push({id:tag.id, name:tag.getName(false, null, true, true).toLowerCase()});
+		}
+	}
+};
+
+ZmPickTagDialog.prototype._tagTreeChangeListener =
 function(ev) {
 	// TODO - listener for changing tags
 	if (ev.event == ZmEvent.E_CREATE && this._creatingTag) {
@@ -85,15 +118,62 @@ function(ev) {
 		this._tagTreeView.setSelected(tag, true);
 		this._creatingTag = false;
 	}
+	this._tagList = this._loadTags();
 };
 
 ZmPickTagDialog.prototype._okButtonListener = 
 function(ev) {
-	// Reset the msg dialog (it is a shared resource)
-	var msgDialog = appCtxt.getMsgDialog();
-	msgDialog.reset();
-	var loc = new DwtPoint(this.getLocation().x + 50, this.getLocation().y + 100);
-	var selectedTag = this._tagTreeView.getSelected();
+	DwtDialog.prototype._buttonListener.call(this, ev, [this._tagTreeView.getSelected()]);
+};
 
-	DwtDialog.prototype._buttonListener.call(this, ev, [selectedTag]);
+ZmPickTagDialog.prototype._handleKeyUp =
+function(ev) {
+
+	var num = 0, firstMatch;
+	var value = this._inputField.getValue().toLowerCase();
+	if (value == this._lastVal) { return; }
+	for (var i = 0, len = this._tags.length; i < len; i++) {
+		var tagInfo = this._tags[i];
+		var ti = this._tagTreeView.getTreeItemById(tagInfo.id);
+		if (ti) {
+			var matches = (tagInfo.name.indexOf(value) == 0);
+			ti.setVisible(matches);
+			if (matches && !firstMatch) {
+				firstMatch = tagInfo.id;
+			}
+		}
+	}
+
+	if (firstMatch) {
+		this._tagTreeView.setSelected(appCtxt.getById(firstMatch), true, true);
+	}
+	this._lastVal = value;
+};
+
+ZmPickTagDialog.prototype._resetTreeView =
+function() {
+	// make all tree items visible (in case there was prior filtering)
+	for (var i = 0, len = this._tags.length; i < len; i++) {
+		var ti = this._tagTreeView.getTreeItemById(this._tags[i].id);
+		if (ti) {
+			ti.setVisible(true);
+		}
+	}
+};
+
+ZmPickTagDialog.prototype._treeViewListener =
+function(ev) {
+
+	if (ev.detail != DwtTree.ITEM_SELECTED)	{ return; }
+
+	var tag = ev.item.getData(Dwt.KEY_OBJECT);
+	if (tag) {
+		var value = this._lastVal = tag.getName(false, null, true, true);
+		this._inputField.setValue(value);
+	}
+};
+
+ZmPickTagDialog.prototype._getTabGroupMembers =
+function() {
+	return [this._inputField, this._overview[this._curOverviewId]];
 };
