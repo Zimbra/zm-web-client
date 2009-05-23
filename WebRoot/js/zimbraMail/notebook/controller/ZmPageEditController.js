@@ -430,7 +430,12 @@ function(content, mineOrTheirs, conflict) {
 
 ZmPageEditController.prototype._closeListener =
 function(ev) {
-	this._app.popView();
+    var treeController = appCtxt.getOverviewController().getTreeController(ZmOrganizer.NOTEBOOK);
+    var treeView = treeController.getTreeView(this._app.getOverviewId());
+    var selNotebook = treeView.getSelected();
+
+    treeController._itemClicked(selNotebook);
+
 };
 
 ZmPageEditController.prototype._notifyListener =

@@ -171,10 +171,7 @@ ZmNotebookPageView.prototype._createHtml = function() {
 		var params1 = {parent: this, hidden: true, html: '<body></body>', onload: this._hiddenIframeLoader+ "(this)"};
 		this._diframe1 = new DwtIframe(params1);
 		this._diframe1.setVisible(false);
-		this._iframe1 = this._diframe1.getIframe();	
-		Dwt.associateElementWithObject(this._iframe, this);
-		Dwt.associateElementWithObject(this._iframe1, this);
-		window.wikiFrame = this._iframe;
+		this._iframe1 = this._diframe1.getIframe();
 	}else{		
 		var iframeId = this._htmlElId+"_iframe";
 		var iframeId1 = this._htmlElId+"_iframe_hidden";
@@ -189,10 +186,10 @@ ZmNotebookPageView.prototype._createHtml = function() {
 
 		this._iframe = document.getElementById(iframeId);
 		this._iframe1 = document.getElementById(iframeId1);
-		Dwt.associateElementWithObject(this._iframe, this);
-		Dwt.associateElementWithObject(this._iframe1, this);
-		window.wikiFrame = this._iframe;				
 	}
+    Dwt.associateElementWithObject(this._iframe, this);
+	Dwt.associateElementWithObject(this._iframe1, this);
+    window["wikiFrame_"+this._htmlElId] = this._iframe;  
 };
 
 ZmNotebookPageView.prototype._getObjectMgr =
@@ -433,8 +430,6 @@ ZmNotebookPageView.prototype.addColumn = function(doc)
 		isReadOnly = true;
 	}	
 	
-	var cache = appCtxt.getApp(ZmApp.NOTEBOOK).getNotebookCache();	
-	
 	var tblBodyObj = table.tBodies[0];
 	for (var i=0; i<tblBodyObj.rows.length; i++) {
 		var row = tblBodyObj.rows[i];	
@@ -487,7 +482,7 @@ ZmNotebookPageView.prototype.createEditLink = function(doc,wikiName){
 
 	var editLink = doc.createElement("a");
 	editLink.innerHTML = ZmMsg.edit;
-	editLink.href='javascript:window.parent.Dwt.getObjectFromElement(window.parent.wikiFrame).editPage("'+wikiName+'");'	
+	editLink.href='javascript:window.parent.Dwt.getObjectFromElement(window.parent.wikiFrame_'+this._htmlElId+').editPage("'+wikiName+'");'	
 	editLink.className = "zmwiki-author";
 	return editLink;
 	
@@ -497,7 +492,7 @@ ZmNotebookPageView.prototype.createDeleteLink = function(doc,wikiName){
 
 	var delLink = doc.createElement("a");
 	delLink.innerHTML = ZmMsg.del;
-	delLink.href='javascript:window.parent.Dwt.getObjectFromElement(window.parent.wikiFrame).deletePage("'+wikiName+'");'
+	delLink.href='javascript:window.parent.Dwt.getObjectFromElement(window.parent.wikiFrame_'+this._htmlElId+').deletePage("'+wikiName+'");'
 	delLink.className = "zmwiki-author";
 	return delLink;
 	
@@ -507,7 +502,7 @@ ZmNotebookPageView.prototype.createHistoryLink = function(doc,wikiName){
 
 	var delLink = doc.createElement("a");
 	delLink.innerHTML = ZmMsg.historyLabel;
-	delLink.href='javascript:window.parent.Dwt.getObjectFromElement(window.parent.wikiFrame).showHistory("'+wikiName+'");'
+	delLink.href='javascript:window.parent.Dwt.getObjectFromElement(window.parent.wikiFrame_'+this._htmlElId+').showHistory("'+wikiName+'");'
 	delLink.className = "zmwiki-author";
 	return delLink;
 	
@@ -590,7 +585,7 @@ ZmNotebookPageView._iframeOnLoad1 = function(iframe) {
                 isPermissionDenied = true;
             }
         }
-
+        
         if(isErrorPage){
             DBG.println(AjxDebug.DBG3,"Missing Page:"+iSrc);
             view.createNewPage(iframe.contentWindow.location.pathname);
@@ -614,7 +609,7 @@ ZmNotebookPageView._iframeOnLoad1 = function(iframe) {
             }else{
                 view.copyIframeContents(ndoc,doc);
             };
-            view._currentURL = iSrc;
+            view._currentURL = iSrc;            
         }
 
         if(view._diframe) {
@@ -678,7 +673,8 @@ ZmNotebookPageView.prototype.loadURL = function(restUrl){
             languageId = locale.substr(0, index);
         }
         url += (url.match(/\?/) ?  '&' : '?') + 'language=' + languageId;
-    }    
+    }
+    url = url + (url.indexOf('?') ? '&' : '?') + 't=' + (new Date()).getTime(); 
     this._iframe1.src = url;
 };
 
@@ -768,7 +764,7 @@ ZmNotebookPageView.prototype.fixCrossDomainReference = function(url, linkPrefix)
 };
 
 ZmNotebookPageView.prototype.copyIframeContents =
-function(ndoc, cdoc) {
+function(ndoc, cdoc) {    
 
 	var h1 = ndoc.getElementsByTagName("head") ?  ndoc.getElementsByTagName("head")[0] : null;
     var b1 = ndoc.getElementsByTagName("body") ?  ndoc.getElementsByTagName("body")[0] : null;
