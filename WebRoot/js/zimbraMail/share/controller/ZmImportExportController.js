@@ -70,6 +70,17 @@ ZmImportExportController.SUBTYPE_DEFAULT[ZmImportExportController.TYPE_TGZ] = Zm
 ZmImportExportController.SUBTYPE_DEFAULT[ZmImportExportController.TYPE_CSV] = ZmImportExportController.SUBTYPE_ZIMBRA_CSV;
 ZmImportExportController.SUBTYPE_DEFAULT[ZmImportExportController.TYPE_ICS] = ZmImportExportController.SUBTYPE_ZIMBRA_ICS;
 
+ZmImportExportController.__FAULT_ARGS_MAPPING = {
+	"formatter.INVALID_FORMAT": [ "filename" ],
+	"formatter.INVALID_TYPE": [ "view", "path" ],
+	"formatter.MISMATCHED_META": [ "path" ],
+	"formatter.MISMATCHED_SIZE": [ "path" ],
+	"formatter.MISMATCHED_TYPE": [ "path" ],
+	"formatter.MISSING_BLOB": [ "path" ],
+	"formatter.MISSING_META": [ "path" ],
+	"formatting.MISSING_VCARD_FIELDS": [ "path" ]
+};
+
 //
 // Public methods
 //
@@ -370,10 +381,26 @@ ZmImportExportController.prototype._doImportTGZ = function(params) {
 };
 
 ZmImportExportController.prototype._handleImportTGZResponse =
-function(funcName, params, el, message, exName, code) {
+function(funcName, params, type, fault1 /* , ... , faultN */) {
 	// show success or failure
-	if (message) {
-		this._importError(params.errorCallback, ZMsg[code] || message);
+	if (type == "fail") {
+		// TODO: Show warnings!
+		var code = fault1.Detail.Error.Code;
+		var message = fault1.Reason.Text;
+		var args = ZmImportExportController.__faultArgs(fault1.Detail.Error.a);
+		if (code == "formatter.UNKNOWN_ERROR") {
+			var formatArgs = [ args.path, message ];
+			message = ZMsg[code] ? AjxMessageFormat.format(ZMsg[code], formatArgs) : message;
+		}
+		else {
+			var mappings = ZmImportExportController.__FAULT_ARGS_MAPPING[code];
+			var formatArgs = new Array(mappings ? mappings.length : 0);
+			for (var i = 0; i < formatArgs.length; i++) {
+				formatArgs[i] = args[mappings[i]];
+			}
+			message = ZMsg[code] ? AjxMessageFormat.format(ZMsg[code], formatArgs) : message;
+		}
+		this._importError(params.errorCallback, message);
 	}
 	else {
 		this._importSuccess(params.callback);
@@ -381,10 +408,16 @@ function(funcName, params, el, message, exName, code) {
 
 	// cleanup
 	delete window[funcName];
-	var form = params.form;
-	form.parentNode.removeChild(form);
 	var iframe = params.iframe;
 	iframe.parentNode.removeChild(iframe);
+};
+
+ZmImportExportController.__faultArgs = function(array) {
+	var args = {};
+	for (var i = 0; array && i < array.length; i++) {
+		args[array[i].n] = array[i]._content;
+	}
+	return args;
 };
 
 ZmImportExportController.prototype._confirmImportReset = function(params) {
