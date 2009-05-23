@@ -32,15 +32,15 @@
 <app:handleError>
     <zm:getMailbox var="mailbox"/>
     <app:searchTitle var="title" context="${context}"/>
-    <c:set var="cid" value="${empty param.id ? context.searchResult.hits[0].id : param.id}"/>
+    <c:set var="cid" value="${(not empty param.cid && not zm:actionSet(param, 'actionHardDelete') && not zm:actionSet(param, 'actionDelete')) ? param.cid : context.currentItem.id}"/>
     <fmt:message var="unknownRecipient" key="unknownRecipient"/>
     <fmt:message var="unknownSubject" key="noSubject"/>
     <c:set var="useTo" value="${context.folder.isSent or context.folder.isDrafts}"/>
     <c:set var="selectedRow" value="${param.selectedRow}"/>
     <c:set var="context" value="${context}" />
     <c:set var="csi" value="${param.csi}"/>
-    <app:certifiedMessage var="reqHdr"/>    
-    <c:if test="${context.searchResult.size ne '0' and mailbox.prefs.readingPaneEnabled and not empty cid}">
+    <app:certifiedMessage var="reqHdr"/>
+    <c:if test="${context.searchResult.size ne '0' and mailbox.prefs.readingPaneEnabled and not empty cid and (param.action eq 'view' or param.action eq 'view2')}">
         <zm:searchConv var="convSearchResult" id="${not empty param.cid ? param.cid : context.currentItem.id}" context="${context}" fetch="${empty csi ? 'first': 'none'}" markread="true" sort="${param.css}" />
         <c:if test="${empty csi}">
             <c:set var="csi" value="${convSearchResult.fetchedMessageIndex}"/>
@@ -147,7 +147,7 @@
      </td>
      <td class='ZhAppColContent' valign="top" width="55%">
          <c:choose>
-             <c:when test="${mailbox.prefs.readingPaneEnabled and not empty msg}">
+             <c:when test="${mailbox.prefs.readingPaneEnabled and not empty msg and (param.action eq 'view' or param.action eq 'view2')}">
                  <table width="100%" cellpadding="2" cellspacing="0" class='List'>
                      <tr class='Header'>
                          <!-- <th class='CB' nowrap='nowrap'><input id="OPCHCOLALL" onClick="checkAll(document.zform.idcv,this)" type="checkbox" name="allids"/></th> -->
