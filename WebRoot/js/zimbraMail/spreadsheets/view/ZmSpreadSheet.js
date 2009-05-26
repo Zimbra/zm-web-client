@@ -1927,7 +1927,7 @@ ZmSpreadSheet.prototype._onResize = function(ev) {
 	var h = el.offsetHeight;
 	reldiv.style.display = "";
 	h -= reldiv.offsetTop + 2;
-	var w = ev.requestedWidth;
+	var w = ev.requestedWidth || el.offsetWidth;
 	if (AjxEnv.isIE)
 		w -= 2;		// don't ask..
 	var p = reldiv.nextSibling;
