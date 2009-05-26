@@ -1067,7 +1067,7 @@ function(callback, msg) {
 };
 
 ZmMailListController.prototype._getInviteReplyBody =
-function(type, instanceDate) {
+function(type, instanceDate, isResourceInvite) {
 	var replyBody;
 
 	if (instanceDate) {
@@ -1077,6 +1077,16 @@ function(type, instanceDate) {
 			case ZmOperation.REPLY_DECLINE:		replyBody = ZmMsg.defaultInviteReplyDeclineInstanceMessage; break;
 			case ZmOperation.REPLY_TENTATIVE: 	replyBody = ZmMsg.defaultInviteReplyTentativeInstanceMessage; break;
 		}
+
+        if(isResourceInvite) {
+            switch (type) {
+                case ZmOperation.REPLY_ACCEPT:		replyBody = ZmMsg.defaultInviteReplyResourceAcceptInstanceMessage; break;
+                case ZmOperation.REPLY_CANCEL:		replyBody = ZmMsg.apptInstanceCanceled; break;
+                case ZmOperation.REPLY_DECLINE:		replyBody = ZmMsg.defaultInviteReplyResourceDeclineInstanceMessage; break;
+                case ZmOperation.REPLY_TENTATIVE: 	replyBody = ZmMsg.defaultInviteReplyResourceTentativeInstanceMessage; break;
+            }
+        }
+        
 		if (replyBody) {
 			return AjxMessageFormat.format(replyBody, instanceDate);
 		}
@@ -1088,6 +1098,16 @@ function(type, instanceDate) {
 		case ZmOperation.REPLY_TENTATIVE: 	replyBody = ZmMsg.defaultInviteReplyTentativeMessage; break;
 		case ZmOperation.REPLY_NEW_TIME: 	replyBody = ZmMsg.defaultInviteReplyNewTimeMessage;	break;
 	}
+
+    if(isResourceInvite) {
+        switch (type) {
+            case ZmOperation.REPLY_ACCEPT:		replyBody = ZmMsg.defaultInviteReplyResourceAcceptMessage; break;
+            case ZmOperation.REPLY_CANCEL:		replyBody = ZmMsg.apptCanceled; break;
+            case ZmOperation.REPLY_DECLINE:		replyBody = ZmMsg.defaultInviteReplyResourceDeclineMessage; break;
+            case ZmOperation.REPLY_TENTATIVE: 	replyBody = ZmMsg.defaultInviteReplyResourceTentativeMessage; break;
+            case ZmOperation.REPLY_NEW_TIME: 	replyBody = ZmMsg.defaultInviteReplyNewTimeMessage;	break;
+        }
+    }
 
 	//format the escaped apostrophe in ZmMsg entry
 	if (replyBody) {
@@ -1124,7 +1144,7 @@ function(type, componentId, instanceDate, accountName, ignoreNotifyDlg, origMsg)
 	msg.isReplied = true;
 	msg.isForwarded = false;
 	msg.isInviteReply = true;
-	var replyBody = this._getInviteReplyBody(type, instanceDate);
+	var replyBody = this._getInviteReplyBody(type, instanceDate, msg._origMsg.isResourceInvite());
 	if (replyBody != null) {
 		var dummyAppt = new ZmAppt();
 		dummyAppt.setFromMessage(msg._origMsg);

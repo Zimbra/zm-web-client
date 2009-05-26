@@ -1296,6 +1296,7 @@ function(msgNode) {
 	if (msgNode.mid)	{ this.messageId = msgNode.mid; }
 	if (msgNode._attrs) { this.attrs = msgNode._attrs; }
 	if (msgNode.sf) 	{ this.sf = msgNode.sf; }
+    if (msgNode.cif) 	{ this.cif = msgNode.cif; }
 
 	//Copying msg. header's
 	if (msgNode.header) {
@@ -1567,4 +1568,16 @@ function(obj) {
 	}
 
 	ZmMailItem.prototype.notifyModify.apply(this, arguments);
+};
+
+ZmMailMsg.prototype.isResourceInvite =
+function() {
+  if(!this.cif || !this.invite) return false;
+  var resources = this.invite.getResources();
+  for(var i in resources) {
+      if(resources[i] && resources[i].url == this.cif) {
+          return true;
+      }
+  }
+    return false;
 };
