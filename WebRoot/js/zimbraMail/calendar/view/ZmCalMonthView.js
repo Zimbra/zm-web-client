@@ -527,10 +527,10 @@ function() {
 
 	var fdow = this.firstDayOfWeek();
 	for (var i=0; i < 7; i++) {
-		var col = document.getElementById(this._headerColId[i]);
-		Dwt.setSize(col, colWidth, Dwt.DEFAULT);
-		col = document.getElementById(this._bodyColId[i]);
-		Dwt.setSize(col, colWidth, Dwt.DEFAULT);		
+        var col = document.getElementById(this._headerColId[i]);
+        Dwt.setSize(col, colWidth, Dwt.DEFAULT);
+        col = document.getElementById(this._bodyColId[i]);
+        Dwt.setSize(col, colWidth, Dwt.DEFAULT);
 
 		var dayName = document.getElementById(this._dayNameId[i]);
 		dayName.innerHTML = AjxDateUtil.WEEKDAY_LONG[(i+fdow)%7];
@@ -765,6 +765,10 @@ function() {
             avgHeight = avgHeight-1;
         }
         Dwt.setSize(row, Dwt.DEFAULT, avgHeight);
+
+        if(AjxEnv.isSafari) {
+            Dwt.setSize(this.getCell(i, 0), Dwt.DEFAULT, avgHeight);            
+        }
     }
 
     for (var j=0; j < 7; j++) {
@@ -775,6 +779,9 @@ function() {
         }
         Dwt.setSize(hdrCol, avgWidth, Dwt.DEFAULT);
         Dwt.setSize(bdyCol, avgWidth, Dwt.DEFAULT);
+        if(AjxEnv.isSafari) {
+            Dwt.setSize(this.getCell(0, j), avgWidth, Dwt.DEFAULT);            
+        }
     }
 };
 
