@@ -100,7 +100,13 @@ function(email) {
 
 ZmDataSource.prototype.getEmail =
 function() {
-	return this.email != null ? this.email : this.identity.getField(ZmIdentity.SEND_FROM_ADDRESS); // bug: 23042
+	var email = this.email != null ? this.email : this.identity.getField(ZmIdentity.SEND_FROM_ADDRESS); // bug: 23042
+	if (!email) { // bug: 38175
+		var provider = ZmDataSource.getProviderForAccount(this);
+		var host = (provider && provider._host) || this.mailServer;
+		email = [ this.userName, host].join("@");
+	}
+	return email;
 };
 
 ZmDataSource.prototype.setFolderId =

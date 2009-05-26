@@ -2141,13 +2141,9 @@ function(identity, justName) {
 	else if (identity.isFromDataSource) {
 		var ds = appCtxt.getDataSourceCollection().getById(identity.id);
 		params[1] = ds.userName;
-		params[2] = ds.email;
+		params[2] = ds.getEmail();
 		var provider = ZmDataSource.getProviderForAccount(ds);
-		if (provider) {
-			pattern = ZmMsg["identityText-"+provider.id];
-			params[2] = params[2] || params[1]+"@"+provider._host;
-		}
-		pattern = pattern || ZmMsg.identityTextExternal;
+		pattern = (provider && ZmMsg["identityText-"+provider.id]) || ZmMsg.identityTextExternal;
 	}
 	else {
 		pattern = ZmMsg.identityTextPersona;
