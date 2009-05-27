@@ -467,11 +467,12 @@ function(parent, num) {
 		if (this._folderId) {
 			var folder = appCtxt.getById(this._folderId);
 			var isShare = folder && folder.link;
+			var isInTrash = folder && folder.isInTrash();
 			var canEdit = (folder == null || !folder.isReadOnly());
 
 			parent.enable([ZmOperation.TAG_MENU], (!isShare && num > 0));
 			parent.enable([ZmOperation.DELETE, ZmOperation.MOVE], canEdit && num > 0);
-			parent.enable([ZmOperation.EDIT, ZmOperation.CONTACT], canEdit && num == 1 && !folder.isInTrash());
+			parent.enable([ZmOperation.EDIT, ZmOperation.CONTACT], canEdit && num == 1 && !isInTrash);
 
 			if (printMenuItem) {
 				var text = isShare ? ZmMsg.printResults : ZmMsg.printAddrBook;
