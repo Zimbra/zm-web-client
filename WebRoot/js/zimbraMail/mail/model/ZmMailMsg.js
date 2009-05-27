@@ -1365,16 +1365,13 @@ function(msgNode) {
 			// bug fix #18613
 			var desc = this.invite.getComponentDescription();
 			var descHtml = this.invite.getComponentDescriptionHtml();
-			if ((desc || descHtml) && this._bodyParts.length == 0) {
-				if(desc) {
-					var textPart = { ct:ZmMimeTable.TEXT_PLAIN, s:desc.length, content:desc };
-					this._bodyParts.push(textPart);
-				}
-				if(descHtml) {
-					var htmlPart = { ct:ZmMimeTable.TEXT_HTML, s:descHtml.length, content:descHtml };
-					this._bodyParts.push(htmlPart);
-				}
-			}
+            if(descHtml) {
+                this.setHtmlContent(descHtml);
+            }
+            if (desc && this._bodyParts.length == 0) {
+                var textPart = { ct:ZmMimeTable.TEXT_PLAIN, s:desc.length, content:desc };
+                this._bodyParts.push(textPart);
+            }
 			if (!appCtxt.get(ZmSetting.CALENDAR_ENABLED) &&
 				this.invite.type == "appt")
 			{
