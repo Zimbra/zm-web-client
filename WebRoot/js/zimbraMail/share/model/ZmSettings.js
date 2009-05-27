@@ -338,13 +338,12 @@ function(callback, accountName, result) {
 			DwtControl.globalSelectionListener = new AjxListener(null, ZmZimbraMail.globalButtonListener);
 		}
 
-		DBG.println(AjxDebug.DBG1, "Zimlets - Loading " + obj.zimlets.zimlet.length + " Zimlets");
-		var prCallback = new AjxCallback(this,
+		var listener = new AjxListener(this,
 			function() {
 				var zimletsCallback = new AjxCallback(this, this._loadZimlets, [obj.zimlets.zimlet, obj.props.prop]);
 				AjxDispatcher.require("Zimlet", false, zimletsCallback);
 			});
-		appCtxt.getAppController().addPostRenderCallback(prCallback, 4, 500, true);
+		appCtxt.getAppController().addListener(ZmAppEvent.POST_STARTUP, listener);
 	} else {
 		appCtxt.allZimletsLoaded();
 	}
@@ -361,20 +360,22 @@ function(callback, accountName, result) {
 
 ZmSettings.prototype._loadZimlets =
 function(allzimlets, props) {
+
     allzimlets = allzimlets || [];
 	this.registerSetting("ZIMLETS",		{type:ZmSetting.T_CONFIG, defaultValue:allzimlets, isGlobal:true});
 	this.registerSetting("USER_PROPS",	{type:ZmSetting.T_CONFIG, defaultValue:props});
 
     var zimlets = []; //Filter zimlets from getinforesponse and load only user checked
     var checkedZimlets = appCtxt.get(ZmSetting.CHECKED_ZIMLETS) || [];
-    for (var i=0; i < allzimlets.length; i++) {
+    for (var i = 0; i < allzimlets.length; i++) {
         var zimletObj = allzimlets[i];
         var zimlet0 = zimletObj.zimlet[0];
-        if(!checkedZimlets || checkedZimlets.length <= 0 || (","+checkedZimlets.join(",")+",").indexOf(","+zimlet0.name+",") >= 0 ){
+        if (!checkedZimlets || checkedZimlets.length <= 0 || ("," + checkedZimlets.join(",") + ",").indexOf("," + zimlet0.name + ",") >= 0 ) {
            zimlets.push(zimletObj);
         }
     }
 
+	DBG.println(AjxDebug.DBG1, "Zimlets - Loading " + zimlets.length + " Zimlets");
 	appCtxt.getZimletMgr().loadZimlets(zimlets, props);
 
 	if (zimlets && zimlets.length) {
