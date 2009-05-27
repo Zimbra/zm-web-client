@@ -117,6 +117,7 @@ function(settings) {
 	settings.registerSetting("DELETE_INVITE_ON_REPLY",		{name: "zimbraPrefDeleteInviteOnReply",type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
 	settings.registerSetting("CAL_AUTO_ADD_INVITES",		{name: "zimbraPrefCalendarAutoAddInvites",type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
 	settings.registerSetting("CAL_SEND_INV_DENIED_REPLY",   {name: "zimbraPrefCalendarSendInviteDeniedAutoReply",type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
+    settings.registerSetting("CAL_INV_FORWARDING_ADDRESS",  {name: "zimbraPrefCalendarForwardInvitesTo", type:ZmSetting.T_PREF});    
 };
 
 ZmCalendarApp.prototype._registerPrefs =
@@ -147,7 +148,8 @@ function() {
 				ZmSetting.CAL_FREE_BUSY_ACL_USERS,
 				ZmSetting.CAL_INVITE_ACL,
 				ZmSetting.CAL_INVITE_ACL_USERS,
-				ZmSetting.CAL_REMINDER_NOTIFY_TOASTER
+				ZmSetting.CAL_REMINDER_NOTIFY_TOASTER,
+                ZmSetting.CAL_INV_FORWARDING_ADDRESS                    
 			],
 			manageDirty: true,
 			createView: function(parent, section, controller) {
@@ -264,6 +266,12 @@ function() {
         options:			[ZmSetting.CAL_VISIBILITY_PUB, ZmSetting.CAL_VISIBILITY_PRIV]
     });
 
+    ZmPref.registerPref("CAL_INV_FORWARDING_ADDRESS", {
+        displayName:		ZmMsg.inviteForwardingAddress,
+        displayContainer:	ZmPref.TYPE_INPUT,
+        validationFunction: ZmPref.validateEmail,
+        errorMessage:       ZmMsg.invalidEmail
+    });
 };
 
 ZmCalendarApp.prototype._registerOperations =
