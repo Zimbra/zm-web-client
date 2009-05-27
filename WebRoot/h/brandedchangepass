@@ -107,7 +107,7 @@
                             
                             <c:if test="${successfullLogin ne 'true'}">
                                 <div id='ZloginFormPanel'>
-                                    <form method='post' name="changePassForm" action="" autocomplete="off">
+                                    <form method='post' name="changePassForm" action="" autocomplete="off" accept-charset="utf-8">
                                         <table width=100% cellpadding=4>
                                             <tr>
                                                 <td class='zLoginLabelContainer'><label for="username"><fmt:message key="username"/>:</label></td>

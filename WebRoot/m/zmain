@@ -183,7 +183,7 @@
     </script>
     <div class="container table" id="searchbar" style="${param.search eq '1' ? '' : 'display:none;'}">
         <div class="table-row">
-            <form method="post" action="${context_url}" class="table-cell"
+            <form method="post" accept-charset="UTF-8" action="${context_url}" class="table-cell"
                   onsubmit="if(!this.sq.value){showLoadingMsg('<fmt:message key="actionNoSearchQuerySpecified"/>',true,'Warning',1000);return false;}else{return submitForm(this);}">
                 <c:if test="${not empty param.invId}"> <input type="hidden" name="invId"
                                                               value="${zm:cook(param.invId)}"/> </c:if> <input
@@ -267,7 +267,7 @@
     </div>
     <div class="container table" id="savesearchbar" style="${param.saveSearch eq '1' ? '' : 'display:none;'}">
         <div class="table-row">
-            <form method="post" action="${context_url}" class="table-cell"
+            <form method="post" accept-charset="UTF-8" action="${context_url}" class="table-cell"
                   onsubmit="if(!this.sname.value){showLoadingMsg('<fmt:message key="actionNoNameSpecified"/>',true,'Warning',1000,'msgbar');return false;}else{return submitForm(this);}">
                 <input type="hidden" name="query" value="${zm:cook(param.sq)}"/>
                 <input type="hidden" name="st" value="${empty param.st? mailbox.prefs.groupMailBy : (param.st eq 'cal' ? 'appointment' : zm:cook(param.st))}"/>

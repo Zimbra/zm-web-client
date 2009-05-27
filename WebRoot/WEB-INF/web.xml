@@ -56,6 +56,22 @@
 		<param-value></param-value>
     </context-param>
 
+	<!-- NOTE: This filter needs to be first because Jetty will ignore
+	     NOTE: HttpServletRequest.setCharacterEncoding as soon as *anyone*
+	     NOTE: has queried the input stream.
+	-->
+	<filter>
+	    <filter-name>CharEncodingFilter</filter-name>
+	    <filter-class>
+	        com.zimbra.webClient.filters.CharEncodingFilter
+	    </filter-class>
+	</filter>
+	<filter-mapping>
+	    <filter-name>CharEncodingFilter</filter-name>
+		<url-pattern>/h/*</url-pattern>
+		<url-pattern>/m/*</url-pattern>
+	</filter-mapping>
+
     <filter>
         <filter-name>GzipFilter</filter-name>
         <filter-class>
@@ -206,20 +222,6 @@
 		<filter-name>TimezoneFilter</filter-name>
 		<url-pattern>/js/ajax/util/AjxTimezoneData.js</url-pattern>
 	</filter-mapping>
-
-	<!-- not needed under jetty
-    <filter>
-        <filter-name>CharEncodingFilter</filter-name>
-        <filter-class>
-            com.zimbra.webClient.filters.CharEncodingFilter
-        </filter-class>
-    </filter>
-
-    <filter-mapping>
-        <filter-name>CharEncodingFilter</filter-name>
-        <url-pattern>/h/*</url-pattern>
-    </filter-mapping>
-    -->
 
     <error-page>
 		<error-code>404</error-code>

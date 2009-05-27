@@ -92,7 +92,7 @@
     <!--<table width="100%" align="center">
         <tr class="searchbar">
             <td>-->
-                <form method="get" action="${context_url}" style=";"
+                <form method="get" accept-charset="UTF-8" action="${context_url}" style=";"
                       onsubmit="if(!this.sq.value){var v = document.getElementById('d_msg');v.innerHTML='<div class=StatusWarning><fmt:message key="actionNoSearchQuerySpecified"/></div>';v.style.display='block';return false;}else{return true;}">
                     <c:if test="${not empty param.action}">
                         <input type="hidden" name="action" value="${zm:cook(param.action)}"/>
