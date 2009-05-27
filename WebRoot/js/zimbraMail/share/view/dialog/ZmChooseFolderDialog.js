@@ -22,12 +22,13 @@ ZmChooseFolderDialog = function(parent, className) {
 	var params = {parent:parent, className:className, extraButtons:[newButton]};
 	ZmDialog.call(this, params);
 
-//	this._createOverview(this._folderTreeCellId);
-
+	this._createControls();
 	this.registerCallback(ZmChooseFolderDialog.NEW_BUTTON, this._showNewDialog, this);
 	this._changeListener = new AjxListener(this, this._folderTreeChangeListener);
 
+	this._treeView = {};
 	this._creatingFolder = false;
+	this._treeViewListener = new AjxListener(this, this._treeViewSelectionListener);
 };
 
 ZmChooseFolderDialog.prototype = new ZmDialog;
@@ -101,7 +102,7 @@ function(params) {
 	this.setTitle(params.title || ZmMsg.chooseFolder);
 
 	if (params.description) {
-		var descCell = document.getElementById(this._folderDescCellId);
+		var descCell = document.getElementById(this._folderDescDivId);
 		descCell.innerHTML = params.description;
 	}
 
@@ -118,7 +119,7 @@ function(params) {
 	var params = {
 		treeIds: treeIds,
 		omit: omit,
-		fieldId: this._folderTreeCellId,
+		fieldId: this._folderTreeDivId,
 		overviewId: (appCtxt.multiAccounts) ? ([base, acct.name].join(":")) : base,
 		noRootSelect: params.noRootSelect,
 		account: acct,
@@ -152,7 +153,7 @@ function(params, treeIds, folderTree) {
 
 	for (var i = 0; i < treeIds.length; i++) {
 		var treeId = treeIds[i];
-		var treeView = this._getOverview().getTreeView(treeId, true);
+		var treeView = this._treeView[treeId] = this._getOverview().getTreeView(treeId, true);
 
 		// bug #18533 - always make sure header item is visible in "MoveTo" dialog
 		treeView.getHeaderItem().setVisible(true, true);
@@ -168,6 +169,9 @@ function(params, treeIds, folderTree) {
 		if (ti) {
 			ti.setData(ZmTreeView.KEY_TYPE, treeId);
 		}
+
+		treeView.removeSelectionListener(this._treeViewListener);
+		treeView.addSelectionListener(this._treeViewListener);
 	}
 
 	folderTree.removeChangeListener(this._changeListener);
@@ -175,15 +179,16 @@ function(params, treeIds, folderTree) {
 	// (so that it comes after the view's standard change listener)
 	folderTree.addChangeListener(this._changeListener);
 
+	this._loadFolders();
+	this._resetTreeView(true);
 	ZmDialog.prototype.popup.call(this);
-
-	// set focus to overview, which will select first item if none selected
-	appCtxt.getKeyboardMgr().grabFocus(this._overview[this._curOverviewId]);
+	this._inputField.setValue("");
+	this._inputField.focus();
 };
 
 ZmChooseFolderDialog.prototype.reset =
 function() {
-	var descCell = document.getElementById(this._folderDescCellId);
+	var descCell = document.getElementById(this._folderDescDivId);
 	descCell.innerHTML = "";
 	ZmDialog.prototype.reset.call(this);
 	this._data = this._treeIds = null;
@@ -192,10 +197,18 @@ function() {
 
 ZmChooseFolderDialog.prototype._contentHtml =
 function() {
-	this._folderDescCellId = this._htmlElId + "_folderDesc";
-	this._folderTreeCellId = this._htmlElId + "_folderTreeCell";
+	this._inputDivId = this._htmlElId + "_inputDivId";
+	this._folderDescDivId = this._htmlElId + "_folderDescDivId";
+	this._folderTreeDivId = this._htmlElId + "_folderTreeDivId";
 
 	return AjxTemplate.expand("share.Widgets#ZmChooseFolderDialog", {id:this._htmlElId});
+};
+
+ZmChooseFolderDialog.prototype._createControls =
+function() {
+	this._inputField = new DwtInputField({parent: this});
+	document.getElementById(this._inputDivId).appendChild(this._inputField.getHtmlElement());
+	this._inputField.addListener(DwtEvent.ONKEYUP, new AjxListener(this, this._handleKeyUp));
 };
 
 ZmChooseFolderDialog.prototype._showNewDialog =
@@ -220,10 +233,10 @@ function(ev) {
 	if (ev.event == ZmEvent.E_CREATE && this._creatingFolder) {
 		var organizers = ev.getDetail("organizers") || (ev.source && [ev.source]);
 		var org = organizers[0];
-		var treeView = this._getOverview().getTreeView(org.type);
-		treeView.setSelected(organizers[0], true);
+		this._treeView[org.type].setSelected(organizers[0], true);
 		this._creatingFolder = false;
 	}
+	this._loadFolders();
 };
 
 ZmChooseFolderDialog.prototype._okButtonListener =
@@ -257,5 +270,87 @@ function(ev) {
 
 ZmChooseFolderDialog.prototype._getTabGroupMembers =
 function() {
-	return [this._overview[this._curOverviewId]];
+	return [this._inputField, this._overview[this._curOverviewId]];
+};
+
+ZmChooseFolderDialog.prototype._loadFolders =
+function() {
+	this._folders = [];
+	for (var type in this._treeView) {
+		var treeView = this._treeView[type];
+		var items = treeView.getTreeItemList();
+		for (var i = 0, len = items.length; i < len; i++) {
+			var ti = items[i];
+			if (ti.getData) {
+				var folder = items[i].getData(Dwt.KEY_OBJECT);
+				if (folder && (folder.id != ZmOrganizer.ID_ROOT)) {
+					var name = folder.getName(false, null, true, true).toLowerCase();
+					var path = "/" + folder.getPath(false, false, null, true).toLowerCase();
+					this._folders.push({id:folder.id, type:type, name:name, path:path});
+				}
+			}
+		}
+	}
+};
+
+ZmChooseFolderDialog.prototype._handleKeyUp =
+function(ev) {
+
+	var num = 0, firstMatch, matches = [];
+	var value = this._inputField.getValue().toLowerCase();
+	if (value == this._lastVal) { return; }
+	for (var i = 0, len = this._folders.length; i < len; i++) {
+		var folderInfo = this._folders[i];
+		var treeView = this._treeView[folderInfo.type];
+		var ti = treeView.getTreeItemById(folderInfo.id);
+		if (ti) {
+			var testPath = "/" + value.replace(/^\//, "");
+			var path = folderInfo.path;
+			if (folderInfo.name.indexOf(value) == 0 ||
+				(path.indexOf(testPath) == 0 && (path.substr(testPath.length).indexOf("/") == -1))) {
+
+				matches.push(ti);
+				if (!firstMatch) {
+					firstMatch = folderInfo;
+				}
+			}
+		}
+	}
+
+	// now that we know which folders match, hide all items and then show
+	// the matches, expanding their parent chains as needed
+	this._resetTreeView(false);
+	for (var i = 0, len = matches.length; i < len; i++) {
+		var ti = matches[i];
+		ti._tree._expandUp(ti);
+		ti.setVisible(true);
+	}
+
+	if (firstMatch) {
+		this._treeView[firstMatch.type].setSelected(appCtxt.getById(firstMatch.id), true, true);
+	}
+	this._lastVal = value;
+};
+
+ZmChooseFolderDialog.prototype._resetTreeView =
+function(visible) {
+	for (var i = 0, len = this._folders.length; i < len; i++) {
+		var folderInfo = this._folders[i];
+		var ti = this._treeView[folderInfo.type].getTreeItemById(folderInfo.id);
+		if (ti) {
+			ti.setVisible(visible);
+		}
+	}
+};
+
+ZmChooseFolderDialog.prototype._treeViewSelectionListener =
+function(ev) {
+
+	if (ev.detail != DwtTree.ITEM_SELECTED)	{ return; }
+
+	var folder = ev.item.getData(Dwt.KEY_OBJECT);
+	if (folder) {
+		var value = this._lastVal = folder.getName(false, null, true, true);
+		this._inputField.setValue(value);
+	}
 };

@@ -329,6 +329,8 @@ function() {
 	}
 	params.omit = omit;
 	params.overviewId = "ZmContactListController";
+	params.description = ZmMsg.targetAddressBook;
+
 	return params;
 };
 

@@ -1443,6 +1443,8 @@ function() {
 	}
 	params.omit = omit;
 	params.overviewId = "ZmCalViewController";
+	params.description = ZmMsg.targetCalendar;
+
 	return params;
 };
 

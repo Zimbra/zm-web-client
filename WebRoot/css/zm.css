@@ -2667,6 +2667,25 @@ HTML>BODY .appt-selected .appt_allday_body
 	color: #666;
 }
 
+/* ZmChooseFolderDialog and ZmPickTagDialog */
+.ChooserDialog {
+	width: 320px;
+}
+
+.ChooserDialog .DwtInputField {
+	padding-bottom:3px;
+	padding-top:3px;
+}
+
+.ChooserDialog input {
+	width: 100%;
+}
+
+.ChooserDialog .overview {
+	background-color:white;
+	border:1px solid black;
+	overflow:auto;
+}
 
 /*
  *  Notes application

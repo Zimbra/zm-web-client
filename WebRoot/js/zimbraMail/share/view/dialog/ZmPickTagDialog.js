@@ -33,13 +33,7 @@ ZmPickTagDialog = function(parent, className) {
 	appCtxt.getTagTree().addChangeListener(new AjxListener(this, this._tagTreeChangeListener));
 	this.registerCallback(ZmPickTagDialog.NEW_BUTTON, this._showNewDialog, this);
 	this._creatingTag = false;
-	this._loadTags();
-
-	this._setOverview({treeIds:[ZmOrganizer.TAG], fieldId:this._tagTreeDivId});
-	this._tagTreeView = this._getOverview().getTreeView(ZmOrganizer.TAG);
-	this._tagTreeView.addSelectionListener(new AjxListener(this, this._treeViewListener));
-	var root = this._tagTreeView.getTreeItemById(ZmOrganizer.ID_ROOT);
-	root.enableSelection(false);
+	this._treeViewListener = new AjxListener(this, this._treeViewSelectionListener);
 };
 
 ZmPickTagDialog.prototype = new ZmDialog;
@@ -54,6 +48,16 @@ function() {
 
 ZmPickTagDialog.prototype.popup = 
 function(params) {
+
+	// all this is done here instead of in the constructor due to multi-account issues
+	this._setOverview({treeIds:[ZmOrganizer.TAG], fieldId:this._tagTreeDivId});
+	this._tagTreeView = this._getOverview().getTreeView(ZmOrganizer.TAG);
+	this._tagTreeView.removeSelectionListener(this._treeViewListener);
+	this._tagTreeView.addSelectionListener(this._treeViewListener);
+	var root = this._tagTreeView.getTreeItemById(ZmOrganizer.ID_ROOT);
+	root.enableSelection(false);
+
+	this._loadTags();	// item list for this account's tree view will be cached after the first time
 	this._resetTreeView();
 	ZmDialog.prototype.popup.apply(this, arguments);
 	this._inputField.setValue("");
@@ -62,17 +66,10 @@ function(params) {
 
 ZmPickTagDialog.prototype._contentHtml = 
 function() {
-	this._tagTreeDivId = Dwt.getNextId();
-	this._inputDivId = Dwt.getNextId();
-	var html = [];
-	var idx = 0;
-	html[idx++] = "<div style='width:300px'>" + ZmMsg.chooserDescription + "</div>";
-	html[idx++] = "<div id ='" + this._inputDivId + "'></div>";
-	html[idx++] = "<div style='background-color:white; width:300px; border:1px solid black; overflow:auto' id='";
-	html[idx++] = this._tagTreeDivId;
-	html[idx++] = "'></div>";
+	this._tagTreeDivId = this._htmlElId + "_tagTreeDivId";
+	this._inputDivId = this._htmlElId + "_inputDivId";
 
-	return html.join("");
+	return AjxTemplate.expand("share.Widgets#ZmPickTagDialog", {id:this._htmlElId});
 };
 
 ZmPickTagDialog.prototype._createControls =
@@ -101,9 +98,9 @@ function(parent, name) {
 ZmPickTagDialog.prototype._loadTags =
 function() {
 	this._tags = [];
-	var tags = appCtxt.getTagTree().asList();
-	for (var i = 0, len = tags.length; i < len; i++) {
-		var tag = tags[i];
+	var items = this._tagTreeView.getTreeItemList();
+	for (var i = 0, len = items.length; i < len; i++) {
+		var tag = items[i].getData(Dwt.KEY_OBJECT);
 		if (tag.id != ZmOrganizer.ID_ROOT) {
 			this._tags.push({id:tag.id, name:tag.getName(false, null, true, true).toLowerCase()});
 		}
@@ -118,7 +115,7 @@ function(ev) {
 		this._tagTreeView.setSelected(tag, true);
 		this._creatingTag = false;
 	}
-	this._tagList = this._loadTags();
+	this._loadTags();
 };
 
 ZmPickTagDialog.prototype._okButtonListener = 
@@ -161,7 +158,7 @@ function() {
 	}
 };
 
-ZmPickTagDialog.prototype._treeViewListener =
+ZmPickTagDialog.prototype._treeViewSelectionListener =
 function(ev) {
 
 	if (ev.detail != DwtTree.ITEM_SELECTED)	{ return; }
