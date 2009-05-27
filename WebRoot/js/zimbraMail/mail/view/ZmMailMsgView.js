@@ -204,7 +204,6 @@ function(msg) {
 			this._inviteMoveSelect.setVisible(visible);
 			this._lastApptFolder = ZmOrganizer.ID_CALENDAR;
 			this._hasInviteToolbar = true;
-			this.enableInviteReplyMenus(invite.shouldRsvp());
 		}
 	}
 	else if (appCtxt.get(ZmSetting.SHARING_ENABLED) &&
@@ -361,6 +360,16 @@ function() {
 		ZmOperation.INVITE_REPLY_TENTATIVE,
 		ZmOperation.INVITE_REPLY_DECLINE
 	];
+    var notifyOperationButtonIds = [
+        ZmOperation.REPLY_ACCEPT_NOTIFY,
+        ZmOperation.REPLY_TENTATIVE_NOTIFY,
+        ZmOperation.REPLY_DECLINE_NOTIFY
+    ];
+    var ignoreOperationButtonIds = [
+        ZmOperation.REPLY_ACCEPT_IGNORE,
+        ZmOperation.REPLY_TENTATIVE_IGNORE,
+        ZmOperation.REPLY_DECLINE_IGNORE
+    ];    
 	var params = {
 		parent: this,
 		buttons: operationButtonIds,
@@ -384,7 +393,7 @@ function() {
 
 		this._inviteToolbar.addSelectionListener(id, listener);
 
-		var standardItems = [id, replyButtonIds[i]];
+		var standardItems = [notifyOperationButtonIds[i], replyButtonIds[i], ignoreOperationButtonIds[i]];
 		var menu = new ZmActionMenu({parent:button, menuItems:standardItems});
 		standardItems = menu.opList;
 		for (var j = 0; j < standardItems.length; j++) {

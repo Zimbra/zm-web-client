@@ -35,6 +35,19 @@ ZmMailListController = function(container, mailApp) {
 	ZmMailListController.INVITE_REPLY_MAP[ZmOperation.INVITE_REPLY_DECLINE]		= ZmOperation.REPLY_DECLINE;
 	ZmMailListController.INVITE_REPLY_MAP[ZmOperation.INVITE_REPLY_TENTATIVE]	= ZmOperation.REPLY_TENTATIVE;
 
+    ZmMailListController.REPLY_ACTION_MAP = {};
+    ZmMailListController.REPLY_ACTION_MAP[ZmOperation.REPLY_ACCEPT_NOTIFY]		= ZmOperation.REPLY_ACCEPT;
+    ZmMailListController.REPLY_ACTION_MAP[ZmOperation.REPLY_ACCEPT_IGNORE]		= ZmOperation.REPLY_ACCEPT;
+    ZmMailListController.REPLY_ACTION_MAP[ZmOperation.REPLY_DECLINE_NOTIFY]		= ZmOperation.REPLY_DECLINE;
+    ZmMailListController.REPLY_ACTION_MAP[ZmOperation.REPLY_DECLINE_IGNORE]		= ZmOperation.REPLY_DECLINE;
+    ZmMailListController.REPLY_ACTION_MAP[ZmOperation.REPLY_TENTATIVE_NOTIFY]	= ZmOperation.REPLY_TENTATIVE;
+    ZmMailListController.REPLY_ACTION_MAP[ZmOperation.REPLY_TENTATIVE_IGNORE]	= ZmOperation.REPLY_TENTATIVE;
+
+    ZmMailListController.NOTIFY_ACTION_MAP = {};
+    ZmMailListController.NOTIFY_ACTION_MAP[ZmOperation.REPLY_ACCEPT]		= ZmOperation.REPLY_ACCEPT_NOTIFY;
+    ZmMailListController.NOTIFY_ACTION_MAP[ZmOperation.REPLY_DECLINE]		= ZmOperation.REPLY_DECLINE_NOTIFY;
+    ZmMailListController.NOTIFY_ACTION_MAP[ZmOperation.REPLY_TENTATIVE]	    = ZmOperation.REPLY_TENTATIVE_NOTIFY;
+
 	// convert key mapping to operation
 	ZmMailListController.ACTION_CODE_TO_OP = {};
 	ZmMailListController.ACTION_CODE_TO_OP[ZmKeyMap.REPLY]			= ZmOperation.REPLY;
@@ -1144,7 +1157,8 @@ function(type, componentId, instanceDate, accountName, ignoreNotifyDlg, origMsg)
 	msg.isReplied = true;
 	msg.isForwarded = false;
 	msg.isInviteReply = true;
-	var replyBody = this._getInviteReplyBody(type, instanceDate, msg._origMsg.isResourceInvite());
+    var replyActionMode = ZmMailListController.REPLY_ACTION_MAP[type] ? ZmMailListController.REPLY_ACTION_MAP[type] : type;
+	var replyBody = this._getInviteReplyBody(replyActionMode, instanceDate, msg._origMsg.isResourceInvite());
 	if (replyBody != null) {
 		var dummyAppt = new ZmAppt();
 		dummyAppt.setFromMessage(msg._origMsg);
@@ -1166,7 +1180,7 @@ function(type, componentId, instanceDate, accountName, ignoreNotifyDlg, origMsg)
 
 		msg.setTopPart(topPart);
 	}
-	var subject = this._getInviteReplySubject(type) + msg._origMsg.invite.getEventName();
+	var subject = this._getInviteReplySubject(replyActionMode) + msg._origMsg.invite.getEventName();
 	if (subject != null) {
 		msg.setSubject(subject);
 	}

@@ -300,11 +300,17 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_NEW_APPT, {textKey:"newAppt", tooltipKey:"newApptTooltip", image:"NewAppointment", shortcut:ZmKeyMap.NEW_APPT});
 	ZmOperation.registerOp(ZmId.OP_NEW_CALENDAR, {textKey:"newCalendar", image:"NewAppointment", tooltipKey: "newCalendarTooltip", shortcut:ZmKeyMap.NEW_CALENDAR});
 	ZmOperation.registerOp(ZmId.OP_REPLY_ACCEPT, {textKey:"replyAccept", image:"Check"});
+    ZmOperation.registerOp(ZmId.OP_REPLY_ACCEPT_NOTIFY, {textKey:"notifyOrganizerLabel", image:"Check"});
+    ZmOperation.registerOp(ZmId.OP_REPLY_ACCEPT_IGNORE, {textKey:"dontNotifyOrganizerLabel", image:"Check"});
 	ZmOperation.registerOp(ZmId.OP_REPLY_CANCEL);
 	ZmOperation.registerOp(ZmId.OP_REPLY_DECLINE, {textKey:"replyDecline", image:"Cancel"});
+    ZmOperation.registerOp(ZmId.OP_REPLY_DECLINE_NOTIFY, {textKey:"notifyOrganizerLabel", image:"Cancel"});
+    ZmOperation.registerOp(ZmId.OP_REPLY_DECLINE_IGNORE, {textKey:"dontNotifyOrganizerLabel", image:"Cancel"});
 	ZmOperation.registerOp(ZmId.OP_REPLY_MODIFY);
 	ZmOperation.registerOp(ZmId.OP_REPLY_NEW_TIME, {textKey:"replyNewTime", image:"NewTime"});
 	ZmOperation.registerOp(ZmId.OP_REPLY_TENTATIVE, {textKey:"replyTentative", image:"QuestionMark"});
+    ZmOperation.registerOp(ZmId.OP_REPLY_TENTATIVE_NOTIFY, {textKey:"notifyOrganizerLabel", image:"QuestionMark"});
+    ZmOperation.registerOp(ZmId.OP_REPLY_TENTATIVE_IGNORE, {textKey:"dontNotifyOrganizerLabel", image:"QuestionMark"});
 	ZmOperation.registerOp(ZmId.OP_SCHEDULE_VIEW, {textKey:"viewSchedule", tooltipKey:"viewScheduleTooltip", image:"GroupSchedule", shortcut:ZmKeyMap.CAL_SCHEDULE_VIEW});
 	ZmOperation.registerOp(ZmId.OP_SEARCH_MAIL, {textKey:"searchMail", image:"SearchMail"}, ZmSetting.MAIL_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_SHARE_CALENDAR, {textKey:"shareCalendar", image:"CalendarFolder"});

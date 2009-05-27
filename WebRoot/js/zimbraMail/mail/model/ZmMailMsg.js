@@ -677,13 +677,24 @@ function(edited, componentId, callback, errorCallback, instanceDate, accountName
 	request.compNum = componentId;
 
 	var verb = "ACCEPT";
-	switch (this.inviteMode) {
-		case ZmOperation.REPLY_ACCEPT: 		verb = "ACCEPT"; break;
-		case ZmOperation.REPLY_DECLINE:		verb = "DECLINE"; break;
-		case ZmOperation.REPLY_TENTATIVE: 	verb = "TENTATIVE";	break;
-		case ZmOperation.REPLY_NEW_TIME: 	verb = "DELEGATED"; break; // XXX: WRONG MAPPING!
-	}
-	request.verb = verb;
+    var needsRsvp = true;
+    
+    switch (this.inviteMode) {
+        case ZmOperation.REPLY_ACCEPT_IGNORE:    needsRsvp = false;
+        case ZmOperation.REPLY_ACCEPT_NOTIFY:
+        case ZmOperation.REPLY_ACCEPT:           verb = "ACCEPT"; break;
+
+        case ZmOperation.REPLY_DECLINE_IGNORE:   needsRsvp = false;
+        case ZmOperation.REPLY_DECLINE_NOTIFY:
+        case ZmOperation.REPLY_DECLINE:          verb = "DECLINE"; break;
+
+        case ZmOperation.REPLY_TENTATIVE_IGNORE: needsRsvp = false;
+        case ZmOperation.REPLY_TENTATIVE_NOTIFY:
+        case ZmOperation.REPLY_TENTATIVE:        verb = "TENTATIVE"; break;
+
+        case ZmOperation.REPLY_NEW_TIME: 	     verb = "DELEGATED"; break; // XXX: WRONG MAPPING!
+    }
+    request.verb = verb;
 
 	var inv = this._origMsg.invite;
 	if (this.getAddress(AjxEmailAddress.TO) == null && !inv.isOrganizer()) {
@@ -700,16 +711,10 @@ function(edited, componentId, callback, errorCallback, instanceDate, accountName
 		this.setAddress(AjxEmailAddress.TO, (new AjxEmailAddress(to)));
 	}
 
-	var needsRsvp = this._origMsg.needsRsvp();
-	if (!ignoreNotifyDlg && needsRsvp) {
-		var dlg = appCtxt.getYesNoMsgDialog();
-		dlg.registerCallback(DwtDialog.YES_BUTTON, this._sendInviteReplyContinue, this, [jsonObj, "TRUE", edited, callback, errorCallback, instanceDate, accountName]);
-		dlg.registerCallback(DwtDialog.NO_BUTTON, this._sendInviteReplyContinue, this, [jsonObj, "FALSE", edited, callback, errorCallback, instanceDate, accountName]);
-		dlg.setMessage(ZmMsg.organizerNotification, DwtMessageDialog.WARNING_STYLE);
-		dlg.popup();
-	} else {
-		return this._sendInviteReplyContinue(jsonObj, needsRsvp ? "TRUE" : "FALSE", edited, callback, errorCallback, instanceDate, accountName);
-	}
+    if(!ZmMailListController.REPLY_ACTION_MAP[this.inviteMode]) {
+        needsRsvp = this._origMsg.needsRsvp();        
+    }
+    return this._sendInviteReplyContinue(jsonObj, needsRsvp ? "TRUE" : "FALSE", edited, callback, errorCallback, instanceDate, accountName);
 };
 
 ZmMailMsg.prototype._sendInviteReplyContinue =
@@ -717,11 +722,6 @@ function(jsonObj, updateOrganizer, edited, callback, errorCallback, instanceDate
 
 	var request = jsonObj.SendInviteReplyRequest;
 	request.updateOrganizer = updateOrganizer;
-
-	if (this._origMsg.needsRsvp()) {
-		var dlg = appCtxt.getYesNoMsgDialog();
-		dlg.popdown();
-	}
 
 	if (instanceDate) {
 		var serverDateTime = AjxDateUtil.getServerDateTime(instanceDate);

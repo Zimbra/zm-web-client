@@ -626,7 +626,8 @@ function(attId, isDraft) {
 			msg.origId = this._msg.id;
 		}
 		msg.isInviteReply = isInviteReply;
-		msg.inviteMode = isInviteReply ? this._action : null;
+        var inviteMode = ZmMailListController.NOTIFY_ACTION_MAP[this._action] ? ZmMailListController.NOTIFY_ACTION_MAP[this._action] : this._action;
+		msg.inviteMode = isInviteReply ? inviteMode : null;
 		msg.irtMessageId = this._msg.messageId;
 		msg.folderId = this._msg.folderId;
 	}
@@ -2124,7 +2125,9 @@ function(identity, justName) {
 	if (identity.isDefault && name == ZmIdentity.DEFAULT_NAME) {
 		name = ZmMsg.accountDefault;
 	}
-	if (justName) {		return name;	}
+	if (justName) {
+		return name;
+	}
 
 	// default replacement parameters
 	var defaultIdentity = appCtxt.getIdentityCollection().defaultIdentity;
