@@ -581,6 +581,11 @@ function(op, str) {
 		}
 	}
 
+	// no need to show list of one item that is same as what was typed
+	if (results.length == 1 && results[0].matchText == str) {
+		results = [];
+	}
+
 	return results;
 };
 

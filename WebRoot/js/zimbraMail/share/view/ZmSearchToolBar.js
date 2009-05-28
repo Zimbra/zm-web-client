@@ -483,7 +483,7 @@ function(id) {
 		dataClass:			new ZmSearchAutocomplete(),
 		matchValue:			"matchText",
 		delims:				[" "],
-		separator:			"",
+		separator:			" ",
 		keyPressCallback:	new AjxCallback(this, this._keyPressHdlr)
 	};
 	this._acList = new ZmAutocompleteListView(params);
@@ -493,7 +493,12 @@ function(id) {
 ZmSearchToolBar.prototype._keyPressHdlr =
 function(ev) {
     var charCode = DwtKeyEvent.getCharCode(ev);
-	if ((charCode == 13 || charCode == 3) && !this._acList.getVisible()) {
+	if ((charCode == 13 || charCode == 3) && (!this._acList.getVisible() || this._acList.size() == 1)) {
+		if (this._acList.size() == 1) {
+			// a bit ugly, but keypress happens before the field is updated, and we can't use keyup
+			// because by that time the acList has been popped down and cleared
+			this._acList._update(true);
+		}
 		this._handleEnterKeyPress(ev);
 	    return false;
 	}
