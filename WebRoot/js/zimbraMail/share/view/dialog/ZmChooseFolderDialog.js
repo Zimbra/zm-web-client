@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -22,13 +24,12 @@ ZmChooseFolderDialog = function(parent, className) {
 	var params = {parent:parent, className:className, extraButtons:[newButton]};
 	ZmDialog.call(this, params);
 
-	this._createControls();
+//	this._createOverview(this._folderTreeCellId);
+
 	this.registerCallback(ZmChooseFolderDialog.NEW_BUTTON, this._showNewDialog, this);
 	this._changeListener = new AjxListener(this, this._folderTreeChangeListener);
 
-	this._treeView = {};
 	this._creatingFolder = false;
-	this._treeViewListener = new AjxListener(this, this._treeViewSelectionListener);
 };
 
 ZmChooseFolderDialog.prototype = new ZmDialog;
@@ -54,7 +55,6 @@ function() {
  *        title					[string]*		dialog title
  *        description			[string]*		description of what the user is selecting
  *        skipReadOnly			[boolean]* 		if true, read-only folders will not be displayed
- *        skipRemote			[boolean]*		if true, remote folders (mountpoints) will not be displayed
  *        skipSyncFailureSubs	[boolean]*		if true, don't show "Local Folders"
  *        hideNewButton 		[boolean]*		if true, New button will not be shown
  *        noRootSelect			[boolean]*		if true, don't make root tree item(s) selectable
@@ -81,13 +81,6 @@ function(params) {
 		}
 	}
 
-	if (params.skipRemote) {
-		var folders = folderTree.asList({remoteOnly:true});
-		for (var i = 0; i < folders.length; i++) {
-			omit[folders[i].id] = true;
-		}
-	}
-
 	if (appCtxt.isOffline && params.skipSyncFailureSubs) {
 		// omit any folders that are under "Local Folders" if applicable
 		var folders = folderTree.asList();
@@ -102,7 +95,7 @@ function(params) {
 	this.setTitle(params.title || ZmMsg.chooseFolder);
 
 	if (params.description) {
-		var descCell = document.getElementById(this._folderDescDivId);
+		var descCell = document.getElementById(this._folderDescCellId);
 		descCell.innerHTML = params.description;
 	}
 
@@ -119,11 +112,10 @@ function(params) {
 	var params = {
 		treeIds: treeIds,
 		omit: omit,
-		fieldId: this._folderTreeDivId,
+		fieldId: this._folderTreeCellId,
 		overviewId: (appCtxt.multiAccounts) ? ([base, acct.name].join(":")) : base,
 		noRootSelect: params.noRootSelect,
-		account: acct,
-		treeStyle: params.treeStyle || DwtTree.SINGLE_STYLE		// we don't want checkboxes!
+		account: acct
 	};
 
 	// make sure the requisite packages are loaded
@@ -146,17 +138,18 @@ function(params) {
 	AjxDispatcher.require(pkg, true, new AjxCallback(this, this._doPopup, [params, treeIds, folderTree]));
 };
 
-ZmChooseFolderDialog.prototype._doPopup =
-function(params, treeIds, folderTree) {
-
+ZmChooseFolderDialog.prototype._doPopup = function(params, treeIds, folderTree) {
 	this._setOverview(params);
 
 	for (var i = 0; i < treeIds.length; i++) {
 		var treeId = treeIds[i];
-		var treeView = this._treeView[treeId] = this._getOverview().getTreeView(treeId, true);
+		var treeView = this._getOverview().getTreeView(treeId, true);
 
 		// bug #18533 - always make sure header item is visible in "MoveTo" dialog
 		treeView.getHeaderItem().setVisible(true, true);
+
+		// remove checkboxes if treeview has them
+		treeView.showCheckboxes(false);
 
 		// expand root item
 		var ti = treeView.getTreeItemById(folderTree.root.id);
@@ -169,9 +162,6 @@ function(params, treeIds, folderTree) {
 		if (ti) {
 			ti.setData(ZmTreeView.KEY_TYPE, treeId);
 		}
-
-		treeView.removeSelectionListener(this._treeViewListener);
-		treeView.addSelectionListener(this._treeViewListener);
 	}
 
 	folderTree.removeChangeListener(this._changeListener);
@@ -179,16 +169,16 @@ function(params, treeIds, folderTree) {
 	// (so that it comes after the view's standard change listener)
 	folderTree.addChangeListener(this._changeListener);
 
-	this._loadFolders();
-	this._resetTreeView(true);
 	ZmDialog.prototype.popup.call(this);
-	this._inputField.setValue("");
-	this._inputField.focus();
+	
+	if (this._data && (treeId == this._data.type)) {
+		treeView.setSelected(folderTree.root);
+	}
 };
 
 ZmChooseFolderDialog.prototype.reset =
 function() {
-	var descCell = document.getElementById(this._folderDescDivId);
+	var descCell = document.getElementById(this._folderDescCellId);
 	descCell.innerHTML = "";
 	ZmDialog.prototype.reset.call(this);
 	this._data = this._treeIds = null;
@@ -197,18 +187,10 @@ function() {
 
 ZmChooseFolderDialog.prototype._contentHtml =
 function() {
-	this._inputDivId = this._htmlElId + "_inputDivId";
-	this._folderDescDivId = this._htmlElId + "_folderDescDivId";
-	this._folderTreeDivId = this._htmlElId + "_folderTreeDivId";
+	this._folderDescCellId = this._htmlElId + "_folderDesc";
+	this._folderTreeCellId = this._htmlElId + "_folderTreeCell";
 
 	return AjxTemplate.expand("share.Widgets#ZmChooseFolderDialog", {id:this._htmlElId});
-};
-
-ZmChooseFolderDialog.prototype._createControls =
-function() {
-	this._inputField = new DwtInputField({parent: this});
-	document.getElementById(this._inputDivId).appendChild(this._inputField.getHtmlElement());
-	this._inputField.addListener(DwtEvent.ONKEYUP, new AjxListener(this, this._handleKeyUp));
 };
 
 ZmChooseFolderDialog.prototype._showNewDialog =
@@ -233,124 +215,28 @@ function(ev) {
 	if (ev.event == ZmEvent.E_CREATE && this._creatingFolder) {
 		var organizers = ev.getDetail("organizers") || (ev.source && [ev.source]);
 		var org = organizers[0];
-		this._treeView[org.type].setSelected(organizers[0], true);
+		var treeView = this._getOverview().getTreeView(org.type);
+		treeView.setSelected(organizers[0], true);
+		treeView.showCheckboxes(false);
 		this._creatingFolder = false;
 	}
-	this._loadFolders();
 };
 
 ZmChooseFolderDialog.prototype._okButtonListener =
 function(ev) {
 	var tgtFolder = this._getOverview().getSelected();
-	var folderList = (tgtFolder && (!(tgtFolder instanceof Array)))
-		? [tgtFolder] : tgtFolder;
-
-	var msg = (!folderList || (folderList && folderList.length == 0))
-		? ZmMsg.noTargetFolder : null;
+	var msg = (!tgtFolder) ? ZmMsg.noTargetFolder : null;
 
 	// check for valid target
-	if (!msg && this._data) {
-		for (var i = 0; i < folderList.length; i++) {
-			var folder = folderList[i];
-			if (folder.mayContain && !folder.mayContain(this._data)) {
-				msg = (this._data instanceof ZmFolder)
-					? ZmMsg.badTargetFolder
-					: ZmMsg.badTargetFolderItems;
-				break;
-			}
-		}
+	if (!msg && this._data && tgtFolder.mayContain && !tgtFolder.mayContain(this._data)) {
+	    msg = (this._data instanceof ZmFolder)
+			? ZmMsg.badTargetFolder
+			: ZmMsg.badTargetFolderItems;
 	}
 
 	if (msg) {
 		this._showError(msg);
 	} else {
 		DwtDialog.prototype._buttonListener.call(this, ev, [tgtFolder]);
-	}
-};
-
-ZmChooseFolderDialog.prototype._getTabGroupMembers =
-function() {
-	return [this._inputField, this._overview[this._curOverviewId]];
-};
-
-ZmChooseFolderDialog.prototype._loadFolders =
-function() {
-	this._folders = [];
-	for (var type in this._treeView) {
-		var treeView = this._treeView[type];
-		var items = treeView.getTreeItemList();
-		for (var i = 0, len = items.length; i < len; i++) {
-			var ti = items[i];
-			if (ti.getData) {
-				var folder = items[i].getData(Dwt.KEY_OBJECT);
-				if (folder && (folder.id != ZmOrganizer.ID_ROOT)) {
-					var name = folder.getName(false, null, true, true).toLowerCase();
-					var path = "/" + folder.getPath(false, false, null, true).toLowerCase();
-					this._folders.push({id:folder.id, type:type, name:name, path:path});
-				}
-			}
-		}
-	}
-};
-
-ZmChooseFolderDialog.prototype._handleKeyUp =
-function(ev) {
-
-	var num = 0, firstMatch, matches = [];
-	var value = this._inputField.getValue().toLowerCase();
-	if (value == this._lastVal) { return; }
-	for (var i = 0, len = this._folders.length; i < len; i++) {
-		var folderInfo = this._folders[i];
-		var treeView = this._treeView[folderInfo.type];
-		var ti = treeView.getTreeItemById(folderInfo.id);
-		if (ti) {
-			var testPath = "/" + value.replace(/^\//, "");
-			var path = folderInfo.path;
-			if (folderInfo.name.indexOf(value) == 0 ||
-				(path.indexOf(testPath) == 0 && (path.substr(testPath.length).indexOf("/") == -1))) {
-
-				matches.push(ti);
-				if (!firstMatch) {
-					firstMatch = folderInfo;
-				}
-			}
-		}
-	}
-
-	// now that we know which folders match, hide all items and then show
-	// the matches, expanding their parent chains as needed
-	this._resetTreeView(false);
-	for (var i = 0, len = matches.length; i < len; i++) {
-		var ti = matches[i];
-		ti._tree._expandUp(ti);
-		ti.setVisible(true);
-	}
-
-	if (firstMatch) {
-		this._treeView[firstMatch.type].setSelected(appCtxt.getById(firstMatch.id), true, true);
-	}
-	this._lastVal = value;
-};
-
-ZmChooseFolderDialog.prototype._resetTreeView =
-function(visible) {
-	for (var i = 0, len = this._folders.length; i < len; i++) {
-		var folderInfo = this._folders[i];
-		var ti = this._treeView[folderInfo.type].getTreeItemById(folderInfo.id);
-		if (ti) {
-			ti.setVisible(visible);
-		}
-	}
-};
-
-ZmChooseFolderDialog.prototype._treeViewSelectionListener =
-function(ev) {
-
-	if (ev.detail != DwtTree.ITEM_SELECTED)	{ return; }
-
-	var folder = ev.item.getData(Dwt.KEY_OBJECT);
-	if (folder) {
-		var value = this._lastVal = folder.getName(false, null, true, true);
-		this._inputField.setValue(value);
 	}
 };

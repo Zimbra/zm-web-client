@@ -1,5 +1,6 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2007 Zimbra, Inc.
  * 
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -38,9 +40,10 @@ function() {
 	this._colorSelect.setSelectedOption(option);
 };
 
-ZmNewTaskFolderDialog.prototype._getRemoteLabel =
-function() {
-	return ZmMsg.addRemoteTasks;
+// overload so we dont show this
+ZmNewTaskFolderDialog.prototype._createRemoteContentHtml =
+function(html, idx) {
+	return idx;
 };
 
 // overload so we dont show this

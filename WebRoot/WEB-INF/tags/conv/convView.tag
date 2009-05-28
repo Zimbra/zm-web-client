@@ -1,19 +1,3 @@
-<%--
- * ***** BEGIN LICENSE BLOCK *****
- * 
- * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009 Zimbra, Inc.
- * 
- * The contents of this file are subject to the Yahoo! Public License
- * Version 1.0 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
- * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
- * ***** END LICENSE BLOCK *****
---%>
 <%@ tag body-content="empty" %>
 <%@ attribute name="context" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.tag.SearchContext"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -23,8 +7,6 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <app:handleError>
     <zm:getMailbox var="mailbox"/>
-    <app:certifiedMessage var="reqHdr"/>
-    
     <fmt:message var="emptyFragment" key="fragmentIsEmpty"/>
     <fmt:message var="emptySubject" key="noSubject"/>
     <c:set var="csi" value="${param.csi}"/>
@@ -36,20 +18,14 @@
     <c:if test="${empty csi}">
         <c:set var="csi" value="${convSearchResult.fetchedMessageIndex}"/>
         <c:if test="${csi ge 0}">
-            <zm:getMessage var="message" id="${convSearchResult.hits[csi].id}" markread="${(context.folder.isMountPoint and context.folder.effectivePerm eq 'r') ? 'false' : 'true'}" neuterimages="${mailbox.prefs.displayExternalImages ? '1' : empty param.xim}" requestHeaders="${reqHdr}"/>
-            <c:if test="${not empty message.requestHeader}">
-                <zm:getMessage var="message" id="${convSearchResult.hits[csi].id}" markread="${(context.folder.isMountPoint and context.folder.effectivePerm eq 'r') ? 'false' : 'true'}" neuterimages="${false}" requestHeaders="${reqHdr}"/>                
-            </c:if>
+            <zm:getMessage var="message" id="${convSearchResult.hits[csi].id}" markread="${(context.folder.isMountPoint and context.folder.effectivePerm eq 'r') ? 'false' : 'true'}" neuterimages="${mailbox.prefs.displayExternalImages ? '1' : param.xim}"/>
         </c:if>
     </c:if>
     <c:if test="${message eq null}">
         <c:if test="${csi lt 0 or csi ge convSearchResult.size}">
             <c:set var="csi" value="0"/>
         </c:if>
-        <zm:getMessage var="message" id="${not empty param.id ? param.id : convSearchResult.hits[csi].id}" markread="${(context.folder.isMountPoint and context.folder.effectivePerm eq 'r') ? 'false' : 'true'}" neuterimages="${mailbox.prefs.displayExternalImages ? '1' : empty param.xim}" requestHeaders="${reqHdr}"/>
-        <c:if test="${not empty message.requestHeader}">
-            <zm:getMessage var="message" id="${not empty param.id ? param.id : convSearchResult.hits[csi].id}" markread="${(context.folder.isMountPoint and context.folder.effectivePerm eq 'r') ? 'false' : 'true'}" neuterimages="${false}" requestHeaders="${reqHdr}"/>            
-        </c:if>
+        <zm:getMessage var="message" id="${not empty param.id ? param.id : convSearchResult.hits[csi].id}" markread="${(context.folder.isMountPoint and context.folder.effectivePerm eq 'r') ? 'false' : 'true'}" neuterimages="${mailbox.prefs.displayExternalImages ? '1' : param.xim}"/>
     </c:if>
 
     <%-- blah, optimize this later --%>
@@ -74,7 +50,7 @@
 
     <SCRIPT TYPE="text/javascript">
         <!--
-        var zrc = ${empty context.searchResult ? 0 : context.searchResult.size };
+        var zrc = ${context.searchResult.size};
         var zsr = ${zm:cookInt(selectedRow, 0)};
         var zss = function(r,s) {
             var e = document.getElementById("R"+r);
@@ -249,7 +225,7 @@
                                 </td>
                             </tr>
                                 <c:set var="extImageUrl" value=""/>
-                            <c:if test="${empty param.xim and empty message.requestHeader}">
+                            <c:if test="${empty param.xim}">
                                 <zm:currentResultUrl var="extImageUrl" value="search" action="view" context="${context}"
                                                      cso="${convSearchResult.offset}" csi="${csi}" css="${param.css}" xim="1"/>
                             </c:if>

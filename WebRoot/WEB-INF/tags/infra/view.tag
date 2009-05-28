@@ -1,19 +1,3 @@
-<%--
- * ***** BEGIN LICENSE BLOCK *****
- * 
- * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009 Zimbra, Inc.
- * 
- * The contents of this file are subject to the Yahoo! Public License
- * Version 1.0 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
- * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
- * ***** END LICENSE BLOCK *****
---%>
 <%@ tag body-content="scriptless" %>
 <%@ attribute name="selected" rtexprvalue="true" required="false" %>
 <%@ attribute name="folders" rtexprvalue="true" required="false" %>
@@ -22,8 +6,6 @@
 <%@ attribute name="voice" rtexprvalue="true" required="false" %>
 <%@ attribute name="calendars" rtexprvalue="true" required="false" %>
 <%@ attribute name="tasks" rtexprvalue="true" required="false" %>
-<%@ attribute name="briefcases" rtexprvalue="true" required="false" %>
-<%@ attribute name="notebook" rtexprvalue="true" required="false" %>
 <%@ attribute name="minical" rtexprvalue="true" required="false" %>
 <%@ attribute name="date" rtexprvalue="true" required="false" type="java.util.Calendar" %>
 <%@ attribute name="editmode" rtexprvalue="true" required="false" %>
@@ -81,7 +63,7 @@
         </td>
 
         <td valign="top" class="TopContent" align="center">
-            <app:appTop mailbox="${mailbox}" keys="${keys}" query="${empty context.query ? param.sq : context.query}" calendars="${calendars}" voice="${voice}" tasks="${tasks}" briefcases="${briefcases}"/>
+            <app:appTop mailbox="${mailbox}" keys="${keys}" query="${empty context.query ? param.sq : context.query}" calendars="${calendars}" voice="${voice}" tasks="${tasks}"/>
         </td>
         <td align="right" style="white-space:nowrap;padding-right:0.5em;">
 	        <form action="<fmt:message key='yahooWebSearchURL'/>" method="GET" target="_new">
@@ -107,7 +89,7 @@
 						</td>
 					</tr>
 					<tr><td style="background-color: white;" valign="top">
-						<app:overviewTree mailbox="${mailbox}" keys="${keys}" minical="${minical}" calendars="${calendars}" contacts="${contacts}" notebook="${notebook}" voice="${voice}" tasks="${tasks}" briefcases="${briefcases}" tags="${tags}" searches="${searches}" folders="${folders}" editmode="${editmode}" date="${date}"/>
+						<app:overviewTree mailbox="${mailbox}" keys="${keys}" minical="${minical}" calendars="${calendars}" contacts="${contacts}" voice="${voice}" tasks="${tasks}"  tags="${tags}" searches="${searches}" folders="${folders}" editmode="${editmode}" date="${date}"/>
 						</td>
 					</tr>
 					</table>
@@ -163,16 +145,16 @@
 			<table width=99% cellspacing=0 cellpadding=0 align="center">
 				<tr>
 					<td class='R1Text'>hi,</td>
-					<td><div id='skin_container_username' class='R1Text'><nobr><b>${fn:escapeXml(mailbox.name)}</b></nobr></div></td>
+					<td><div id='skin_container_username' class='R1Text'><nobr><b>${fn:escapeXml(empty mailbox.accountInfo.name ? mailbox.name : mailbox.accountInfo.name)}</b></nobr></div></td>
 					<td id='#skin_container_logoff_lite' class='R1Link'><nobr><a href="<c:url value="/?loginOp=logout"/>"><fmt:message key="logOut" /></a></nobr></td>
 					<td class='R1Sep'>|</td>
-					<td class='R1Link'><nobr><a href="https://acctmgt.bbt1.cistest.att.net:9003/Comcast/AcctMgt/acctmgt.cmd?CM.src=top" target=_new >My Account</a></nobr></td>
+					<td class='R1Link'><nobr><a href="http://ccqa4.comcast.com/SmartUrl/Secure/Users.aspx" target=_new >My Account</a></nobr></td>
 					<td width=100%>&nbsp;</td>
 					<td class='R1Link'><nobr><a href="http://www.comcast.net">comcast.net</a></nobr></td>
 					<td class='R1Sep'>|</td>
 					<td><div class=ImgHelp></div></td>
 					<td>&nbsp;</td>
-					<td class='R1Link' id='skin_container_help_lite'> <a target=_new href="<c:url value="http://www.comcast.net/help/faq/index.jsp?cat=Email#SmartZone"/>"><fmt:message key="help"/></a></td>
+					<td class='R1Link' id='skin_container_help_lite'> <a target=_new href="<c:url value="http://ccqa4.comcast.com/SmartUrl/Pages/Help.aspx"/>"><fmt:message key="help"/></a></td>
 					<td>&nbsp;&nbsp;</td>
 					<td><div class=ImgPadlock></div></td>
 					<td class='R1Link'><nobr>&nbsp;<a href="http://www.comcast.net/security/" target=_new>Security</a></nobr></td>
@@ -204,8 +186,8 @@
 						<td id='skin_container_app_name'></td>
 						<td width='100%'>&nbsp;</td>
                         <td id='skin_td_search' align='right'>
-                            <!-- search box -->
-                            <app:appTop mailbox="${mailbox}" keys="${keys}" query="${empty context.query ? param.sq : context.query}" web="${mailbox.features.webSearchEnabled}" calendars="${calendars}" tasks="${tasks}" voice="${voice}" briefcases="${briefcases}"/>
+                            <!-- search box -->				
+                            <app:appTop mailbox="${mailbox}" keys="${keys}" query="${empty context.query ? param.sq : context.query}" web="${mailbox.features.webSearchEnabled}" calendars="${calendars}" tasks="${tasks}" voice="${voice}" />					
 						</td>
                     </tr>
 					</table>
@@ -330,7 +312,7 @@
 							<td height='100%' id='skin_td_tree' colspan=3 valign='top'>
 								<div id='skin_container_tree' class='skin_container'>
 								<c:if test="${empty editmode}">
-								<app:overviewTree mailbox="${mailbox}" keys="${keys}" minical="${minical}" calendars="${calendars}" contacts="${contacts}" tasks="${tasks}" voice = "${voice}" notebook="${notebook}" briefcases="${briefcases}" tags="${tags}" searches="${searches}" folders="${folders}" editmode="${editmode}" date="${date}"/>
+								<app:overviewTree mailbox="${mailbox}" keys="${keys}" minical="${minical}" calendars="${calendars}" contacts="${contacts}" tasks="${tasks}" voice = "${voice}" tags="${tags}" searches="${searches}" folders="${folders}" editmode="${editmode}" date="${date}"/>
 								</c:if>
 								</div>
 							</td>
@@ -382,9 +364,17 @@
 			</c:forEach>
 
 			<c:if test="${(selected eq 'mail') and mailbox.features.portalEnabled and comcast_adsrvc}">
-			
+                <c:set var="action" value="${empty param.paction ? param.action : param.paction}"/>
+                <c:choose>
+                    <c:when test="${not empty context and (context.isMessageSearch or context.isConversationSearch ) and action eq 'view'}">
+                        <c:set var="yahoo_ad_space_id" value="2142030098"/>
+                    </c:when>
+                    <c:otherwise>
+                        <c:set var="yahoo_ad_space_id" value="2142030097"/>                        
+                    </c:otherwise>
+                </c:choose>
 				<td id="_sidebarAd" colspan="1" width="160" valign="top" bgcolor="#f5f5f5" align="center">
-		  			  <iframe src="http://pn2.adserver.yahoo.com/a?f=2022363871&pn=comcast&p=com-mail&l=SKY&c=sh&bg=f5f5f5&no_expandable=1"
+                      <iframe src="http://pn2.adserver.yahoo.com/a?f=${yahoo_ad_space_id}&pn=comcast&p=com-mail&l=SKY&c=sh&bg=f5f5f5&no_expandable=1"
 		              marginwidth="0"
 		              marginheight="0"
 		              width="160"
@@ -393,7 +383,7 @@
 		              frameborder="0"
 		              style="border:none;"
 		              scrolling="no" align="center"></iframe>
-		           <a style="color:black;text-decoration:none;" target="_blank" href="<fmt:message key="adSlugLink" />" ><fmt:message key="advertisement" /></a>
+                    <a style="color:black;text-decoration:none;" target="_blank" href="<fmt:message key="adSlugLink" />" ><fmt:message key="advertisement" /></a>				     
 				</td>
 			</c:if>
 	
@@ -411,14 +401,13 @@
 							<td><a href="http://www.comcast.net/terms/" target="_new">Terms of Service</a></td>
 							<td><a href="http://www.comcast.net/help/contact" target="_new">Contact Us</a></td>
 							<td><a href="http://www.comcast.com/shop/buyflow/default.ashx" target="_new">Add Comcast Services</a></td>
-							<td><a href="http://www.comcastsupport.com/sdcxuser/lachat/user/webmailfeedback.asp" target="_new">Tell Us What You Think</a></td>
+							<td><a href="http://www.comcastsupport.com/forms/net/sccfeedback.asp" target="_new">Tell Us What You Think</a></td>
 							<td width=1 align=right><a href="http://www.comcast.net/"><div class='ImgSkin_Customer_Logo_Bottom'></div></a></td>
 						</tr>
 					</table>
 				</td>
 			</tr>
 	</table>
-    <app:footer title="${title}" selected="${selected}"/>
     <script type="text/javascript">
     if (screen.width<=800) {
         /*remove sidebar ad when resolution is less than eq 800 x 600*/
@@ -426,108 +415,6 @@
     }
     </script>
     </c:when>
-    
-    
-<c:when test="${skin eq 'zmail'}">
-	<table cellpadding="0" cellspacing="0" border="0" style="border-bottom: 1px solid #C9D7F1;">
-		<tr>
-		<td id='skin_container_app_chooser_lite'>
-				<app:appTabs context="${context}" mailbox="${mailbox}" keys="${keys}" selected='${selected}'/>
-			</td>
-			<td width="90%"></td>
-			<td nowrap="nowrap" class="Tab">
-			<b>${fn:escapeXml(empty mailbox.defaultIdentity.fromDisplay ? mailbox.name : mailbox.defaultIdentity.fromDisplay)}</b> |
-			</td>
-			<td nowrap="nowrap" class="Tab">	<a href='<c:url value="/?client=advanced"/>'><fmt:message key="switchToAdvancedClient" /></a>  |
-			</td>
-			<c:if test="${mailbox.attrs.zimbraIsDomainAdminAccount[0] eq 'TRUE' and not empty adminReference }">
-							<td align="left" nowrap="nowrap" class="Tab">
-								<a target="_new" href="${adminReference}"><fmt:message key="adminLinkLabel"/></a> |
-							</td>
-						</c:if>
-						<td align="right" nowrap="nowrap" class="Tab">
-							<a target="_new" href="<c:url value="${helpUrl}"><c:param name='locid'><fmt:getLocale /></c:param></c:url>"><fmt:message key="help"/></a> |
-						</td>
-						
-						<td align="right" nowrap="nowrap" class="Tab">
-							<a href="<c:url value="/?loginOp=logout"/>"><fmt:message key="logOut"/></a>
-						</td>
-			</tr>
-			</table>
-	<table cellpadding="0" cellspacing="0" border="0">
-	
-		<tr>
-			<td valign="top" align="center" class="Overview">
-             <c:choose>
-                <c:when test="${not empty logoUrl}">
-                    <a href="${logoUrl}" target="_new"> <span style='cursor:pointer; display: block;' class='ImgAppBanner'></span> </a>
-                </c:when>
-                <c:otherwise>
-                    <span style='display: block;' class='ImgAppBanner'></span>
-                </c:otherwise>
-            </c:choose>
-			</td>
-			<td valign="middle" class="TopContent" width="90%">
-                <table cellpadding="0" cellspacing="0" width="50%">
-                    <tr>
-                        <td>
-                            <app:appTop mailbox="${mailbox}" keys="${keys}" query="${empty context.query ? param.sq : context.query}" calendars="${calendars}" voice="${voice}" tasks="${tasks}" briefcases="${briefcases}"/>
-                        </td>
-						
-                    </tr>
-                </table>
-			</td>
-			<td align="center" style="padding-right:5px;">	
-			</td>
-		</tr>
-		</table>
-	    <table width="100%" cellpadding="0" cellspacing="0" height="27">
-		
-		<tr>
-			<td class="Overview">
-			
-			</td>
-			<td align="center" colspan="3">
-				<app:appStatus/>
-			</td>
-		</tr>
-		</table>
-		<table cellpadding="0" cellspacing="0" border="0" width="100%">
-		
-		<tr>
-			<c:if test="${empty editmode}">
-				<td valign="top" class="Overview">
-					<app:overviewTree mailbox="${mailbox}" keys="${keys}" minical="${minical}" calendars="${calendars}" contacts="${contacts}" voice="${voice}" tasks="${tasks}" notebook="${notebook}" briefcases="${briefcases}" tags="${tags}" searches="${searches}" folders="${folders}" editmode="${editmode}" date="${date}"/>
-				</td>
-			</c:if>
-			<c:set var="adsOn" value="${!empty ads}"/>
-	<c:if test="${adsOn}" >
-			<td valign="top" colspan="3">
-				<table width="100%" cellpadding="0" cellspacing="0">
-					<tr>
-	</c:if>
-			<td valign="top" colspan="${empty editmode ? 3 : 4}" style="padding-left:${editmode ? 10 : 0}px;border: 7px solid #C3D9FF;-moz-border-radius: 4px;">
-			<jsp:doBody/>
-		</td>
-		<c:if test="${adsOn}" >
-							<td valign="top" style="border-top: 1px solid #98adbe; width: 180px;">
-							   <app:ads content="${ads}"/>
-							</td>
-	
-						</tr>
-					</table>
-				</td>
-		</c:if>
-		<td style="width:6px;">
-			&nbsp; <%-- for IE's scrollbar, this should be CSS browser-specific --%>
-		</td>
-	</tr>
-	<tr>
-	 <td colspan="4">&nbsp;</td>
-	</tr>
-	</table>
-	
- </c:when>
 <c:otherwise>
 	<table width="100%" cellpadding="0" cellspacing="0">
 		<tr>
@@ -536,7 +423,7 @@
 	
 		<tr>
 			<td valign="top" align="center" class="Overview">
-             <c:choose>
+            <c:choose>
                 <c:when test="${not empty logoUrl}">
                     <a href="${logoUrl}" target="_new"> <span style='cursor:pointer; display: block;' class='ImgAppBanner'></span> </a>
                 </c:when>
@@ -549,7 +436,7 @@
                 <table cellpadding="0" cellspacing="0" width="100%">
                     <tr>
                         <td width="66%">
-                            <app:appTop mailbox="${mailbox}" keys="${keys}" query="${empty context.query ? param.sq : context.query}" calendars="${calendars}" voice="${voice}" tasks="${tasks}" briefcases="${briefcases}"/>
+                            <app:appTop mailbox="${mailbox}" keys="${keys}" query="${empty context.query ? param.sq : context.query}" calendars="${calendars}" voice="${voice}" tasks="${tasks}" />
                         </td>
 						<c:if test="${mailbox.features.webSearchEnabled}">
                             <td>
@@ -626,7 +513,7 @@
 		<tr>
 			<c:if test="${empty editmode}">
 				<td valign="top" class="Overview">
-					<app:overviewTree mailbox="${mailbox}" keys="${keys}" minical="${minical}" calendars="${calendars}" contacts="${contacts}" voice="${voice}" tasks="${tasks}" notebook="${notebook}" briefcases="${briefcases}" tags="${tags}" searches="${searches}" folders="${folders}" editmode="${editmode}" date="${date}"/>
+					<app:overviewTree mailbox="${mailbox}" keys="${keys}" minical="${minical}" calendars="${calendars}" contacts="${contacts}" voice="${voice}" tasks="${tasks}" tags="${tags}" searches="${searches}" folders="${folders}" editmode="${editmode}" date="${date}"/>
 				</td>
 			</c:if>
 			<c:set var="adsOn" value="${!empty ads}"/>

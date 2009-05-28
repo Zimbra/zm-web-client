@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008 Zimbra, Inc.
+ * Copyright (C) 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -29,7 +31,11 @@ ZmNotebookPageController.prototype.toString = function() {
 
 // Data
 
+ZmNotebookPageController.prototype._object;
+ZmNotebookPageController.prototype._folderId;
+
 ZmNotebookPageController.prototype._place = -1;
+ZmNotebookPageController.prototype._history;
 
 //
 // Public methods
@@ -65,11 +71,6 @@ function(actionCode) {
 	return true;
 };
 
-ZmNotebookPageController.prototype.mapSupported =
-function(map) {
-	return (map == "editor");
-};
-
 // page
 
 ZmNotebookPageController.prototype.gotoPage = function(pageRef) {
@@ -83,7 +84,8 @@ ZmNotebookPageController.prototype.gotoPage = function(pageRef) {
 	} else if(pageRef.name) {
         params={folderId:pageRef.folderId,name:pageRef.name};
     }
-	this._object = cache.getItemInfo(params);
+    var page = cache.getItemInfo(params);
+	this._object = page;
 	this._setViewContents(this._currentView);
 	this._resetOperations(this._toolbar[this._currentView]);
 };
@@ -341,13 +343,7 @@ function(organizer) {
 
 ZmNotebookPageController.prototype._closeListener =
 function(ev) {
-
-	var treeController = appCtxt.getOverviewController().getTreeController(ZmOrganizer.NOTEBOOK);
-    var treeView = treeController.getTreeView(this._app.getOverviewId());
-    var selNotebook = treeView.getSelected();
-
-    treeController._itemClicked(selNotebook);
-
+	this.show(null, true);
 };
 
 //offline related modules

@@ -1,22 +1,5 @@
-<%--
- * ***** BEGIN LICENSE BLOCK *****
- * 
- * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008 Zimbra, Inc.
- * 
- * The contents of this file are subject to the Yahoo! Public License
- * Version 1.0 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
- * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
- * ***** END LICENSE BLOCK *****
---%>
 <%@ tag body-content="empty" %>
 <%@ attribute name="date" rtexprvalue="true" required="true" type="java.util.Calendar" %>
-<%@ attribute name="urlTarget" rtexprvalue="true" required="true" %>
 <%@ attribute name="numdays" rtexprvalue="true" required="true" %>
 <%@ attribute name="view" rtexprvalue="true" required="true" %>
 <%@ attribute name="timezone" rtexprvalue="true" required="true" type="java.util.TimeZone"%>
@@ -36,23 +19,21 @@
     <c:choose>
         <c:when test="${scheduleView}">
             <fmt:message var="titleFormat" key="CAL_SCHEDULE_TITLE_FORMAT"/>
-            <fmt:formatDate var="pageTitle" value="${currentDay.time}" pattern="${titleFormat}" timeZone="${timezone}"/>
+            <fmt:formatDate var="pageTitle" value="${currentDay.time}" pattern="${titleFormat}"/>
             <fmt:message var="tbTitleFormat" key="CAL_SCHEDULE_TB_TITLE_FORMAT"/>
-            <fmt:formatDate var="tbTitle" value="${currentDay.time}" pattern="${tbTitleFormat}" timeZone="${timezone}"/>
+            <fmt:formatDate var="tbTitle" value="${currentDay.time}" pattern="${tbTitleFormat}"/>
         </c:when>
         <c:when test="${numdays eq 1}">
             <fmt:message var="titleFormat" key="CAL_DAY_TITLE_FORMAT"/>
-            <fmt:formatDate var="pageTitle" value="${currentDay.time}" pattern="${titleFormat}" timeZone="${timezone}"/>
+            <fmt:formatDate var="pageTitle" value="${currentDay.time}" pattern="${titleFormat}"/>
             <fmt:message var="tbTitleFormat" key="CAL_DAY_TB_TITLE_FORMAT"/>
-            <fmt:formatDate var="tbTitle" value="${currentDay.time}" pattern="${tbTitleFormat}" timeZone="${timezone}"/>
+            <fmt:formatDate var="tbTitle" value="${currentDay.time}" pattern="${tbTitleFormat}"/>
         </c:when>
         <c:otherwise>
             <fmt:message var="singleDayFormat" key="CAL_DAY_TB_TITLE_FORMAT"/>
             <fmt:message var="pageTitle" key="CAL_MDAY_TITLE_FORMAT">
-                <fmt:param><fmt:formatDate value="${currentDay.time}" pattern="${singleDayFormat}"
-                                           timeZone="${timezone}"/></fmt:param>
-                <fmt:param><fmt:formatDate value="${zm:addDay(currentDay, numdays-1).time}" pattern="${singleDayFormat}"
-                                           timeZone="${timezone}"/></fmt:param>
+                <fmt:param><fmt:formatDate value="${currentDay.time}" pattern="${singleDayFormat}"/></fmt:param>
+                <fmt:param><fmt:formatDate value="${zm:addDay(currentDay, numdays-1).time}" pattern="${singleDayFormat}"/></fmt:param>
             </fmt:message>
             <c:set var="tbTitle" value="${pageTitle}"/>
         </c:otherwise>
@@ -64,14 +45,11 @@
     <c:set var="nextDate" value="${zm:addDay(date,  dayIncr)}"/>
 
     <c:set var="rangeEnd" value="${zm:addDay(currentDay,numdays).timeInMillis}"/>
-    <c:set var="checkedCalendars" value="${empty sessionScope.calendar ? zm:getCheckedCalendarFolderIds(mailbox) : sessionScope.calendar.id}"/>
-        
+    <c:set var="checkedCalendars" value="${zm:getCheckedCalendarFolderIds(mailbox)}"/>
 
     <%-- fetch mini cal appts first, so they are in cache, as well as any data neded by this view --%>
     <c:set var="startOfMonth" value="${zm:getFirstDayOfMonthView(date, mailbox.prefs.calendarFirstDayOfWeek)}"/>
-    <zm:getAppointmentSummaries timezone="${timezone}" var="minicalappts" folderid="${checkedCalendars}"
-                                start="${startOfMonth.timeInMillis}" end="${zm:addDay(startOfMonth, 42).timeInMillis}"
-                                query="${requestScope.calendarQuery}" varexception="gasException"/>
+    <zm:getAppointmentSummaries timezone="${timezone}" var="minicalappts" folderid="${checkedCalendars}" start="${startOfMonth.timeInMillis}" end="${zm:addDay(startOfMonth, 42).timeInMillis}" query="${requestScope.calendarQuery}" varexception="gasException"/>
     <c:if test="${not empty gasException}">
         <zm:getException var="error" exception="${gasException}"/>
         <mo:status style="Critical">
@@ -80,31 +58,44 @@
         <!-- ${fn:escapeXml(error.stackStrace)} -->
     </c:if>
     <c:set var="multiDay">
-        <mo:calMultiDay date="${date}" numdays="${numdays}" view="${view}" timezone="${timezone}"
-                        checkedCalendars="${checkedCalendars}" query="${requestScope.calendarQuery}"/>
+        <mo:calMultiDay date="${date}" numdays="${numdays}" view="${view}" timezone="${timezone}" checkedCalendars="${checkedCalendars}" query="${requestScope.calendarQuery}"/>
     </c:set>
 
 </mo:handleError>
 
-<div>
-    <mo:calendarViewToolbar urlTarget="${urlTarget}" date="${date}" timezone="${timezone}" view="${view}" isTop="${true}"/>
-    <div class="zo_cal_dayheader">
-        <mo:calendarUrl var="prevUrl" rawdate="${prevDate}" timezone="${timezone}"/>
-        <mo:calendarUrl var="nextUrl" rawdate="${nextDate}" timezone="${timezone}"/>
-                        <span>
-                            <a class="cal_prev" href="${fn:escapeXml(prevUrl)}">&nbsp;</a>
-                        </span>
-                        <span class='zo_unread Medium${(date.timeInMillis eq today.timeInMillis) ? '_today':''}'>
-                            <fmt:message var="titleFormat" key="CAL_DAY_TITLE_FORMAT"/>
-                            <fmt:formatDate value="${date.time}" pattern="${titleFormat}" timeZone="${timezone}"/>
-                        </span>
-                        <span>
-                            <a class="cal_next" href="${fn:escapeXml(nextUrl)}">&nbsp;</a>
-                        </span>
-    </div>
+<mo:view mailbox="${mailbox}" title="${pageTitle}" context="${null}">
 
-    <div>
-        ${multiDay}
-    </div>
-    <mo:calendarViewToolbar urlTarget="${urlTarget}" date="${date}" timezone="${timezone}" view="${view}" isTop="${false}"/>
-</div>
+    <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+            <td>
+                <mo:calendarViewToolbar date="${date}"/>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <mo:calendarUrl var="prevUrl" rawdate="${prevDate}" timezone="${timezone}"/>
+                        <mo:calendarUrl var="nextUrl" rawdate="${nextDate}" timezone="${timezone}"/>
+                        <td width="1%">
+                            <a href="${fn:escapeXml(prevUrl)}"><mo:img src="arrows/ImgPreviousPage.gif" alt="previous"/></a>
+                        </td>
+                        <td align="center" nowrap="nowrap" class='zo_unread Medium${(date.timeInMillis eq today.timeInMillis) ? '_today':''}'>
+                            <fmt:message var="titleFormat" key="CAL_DAY_TITLE_FORMAT"/>
+                            <fmt:formatDate value="${date.time}" pattern="${titleFormat}"/>
+                        </td>
+                        <td width="1%">
+                            <a href="${fn:escapeXml(nextUrl)}"><mo:img src="arrows/ImgNextPage.gif" alt="next"/></a>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                ${multiDay}
+            </td>
+        </tr>
+    </table>
+</mo:view>
+

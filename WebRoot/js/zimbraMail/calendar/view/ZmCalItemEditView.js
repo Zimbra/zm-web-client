@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008 Zimbra, Inc.
+ * Copyright (C) 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 /**
@@ -47,7 +49,7 @@ ZmCalItemEditView = function(parent, attendees, controller, dateInfo, posStyle) 
 	this._repeatSelectDisabled = false;
 	this._attachCount = 0;
 
-	this._kbMgr = appCtxt.getKeyboardMgr();
+	this._kbMgr = appCtxt.getShell().getKeyboardMgr();
 };
 
 ZmCalItemEditView.prototype = new DwtComposite;
@@ -156,19 +158,20 @@ function(excludeAttendees) {
 
 ZmCalItemEditView.prototype.isReminderOnlyChanged =
 function() {
-
+	
 	if(!this._hasReminderSupport) { return false; }
-
+	
 	var formValue = this._origFormValueMinusReminder;
 
 	var isDirty = (this._gotAttachments() || this._removedAttachments()) ||
 			this._isDirty ||
 		   (this._formValue(false, true) != formValue);
-
+		
 	var isReminderChanged = (this._origReminderValue != this._reminderSelect.getValue());
-
+	
 	return isReminderChanged && !isDirty;
 };
+
 
 ZmCalItemEditView.prototype.isValid =
 function() {
@@ -330,7 +333,7 @@ function(calItem, mode, firstTime) {
 	// (i.e. html editor) may not have finished initializing yet.
     if (firstTime || this._notesHtmlModeFirstTime) {   // Also, handling HTML mode specially as it takes some time to initialize.
 		var ta = new AjxTimedAction(this, this._finishReset);
-		AjxTimedAction.scheduleAction(ta, 500);
+		AjxTimedAction.scheduleAction(ta, 250);
 	} else {
 		this._finishReset();
 	}
@@ -379,7 +382,7 @@ function(calItem) {
 	}
 
 	calItem.setFolderId(folderId);
-	calItem.setOrganizer(this._calItem.organizer || this._calendarOrgs[folderId]);
+	calItem.setOrganizer(this._calendarOrgs[folderId]);
 
 	// set the notes parts (always add text part)
 	var top = new ZmMimePart();
@@ -872,7 +875,7 @@ function(ev) {
 	else
 	{
 		var sd = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
-		this._calItem._recurrence.setRecurrenceStartTime(sd.getTime());
+		this._calItem._recurrence._startDate.setTime(sd.getTime());
 		this._setRepeatDesc(this._calItem);
 	}
 };
@@ -1069,7 +1072,7 @@ function(sd) {
 	}
 	else
 	{
-		calItem._recurrence.setRecurrenceStartTime(sd.getTime());
+		calItem._recurrence._startDate.setTime(sd.getTime());
 		this._setRepeatDesc(calItem);
 	}
 };

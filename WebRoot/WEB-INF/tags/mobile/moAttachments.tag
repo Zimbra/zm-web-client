@@ -1,19 +1,3 @@
-<%--
- * ***** BEGIN LICENSE BLOCK *****
- * 
- * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008 Zimbra, Inc.
- * 
- * The contents of this file are subject to the Yahoo! Public License
- * Version 1.0 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
- * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
- * ***** END LICENSE BLOCK *****
---%>
 <%@ tag body-content="empty" %>
 <%@ attribute name="message" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZMessageBean" %>
 <%@ attribute name="mailbox" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZMailboxBean" %>
@@ -24,16 +8,16 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="mo" uri="com.zimbra.mobileclient" %>
 
-<div>
+<table cellspacing="5" cellpadding="5">
 <c:forEach var="part" items="${message.attachments}" varStatus="partStatus">
 <c:if test="${part.isMssage}">
 
-    <div>
-        <span>
+    <tr>
+        <td colspan="2">
             <zm:getMessage var="partMessage" id="${message.id}" part="${part.partName}"/>
             <mo:displayMessage mailbox="${mailbox}" message="${partMessage}" composeUrl="${composeUrl}&part=${part.partName}" counter="${partStatus.count}"/>
-        </span>
-    </div>
+        </td>
+    </tr>
 </c:if>
 </c:forEach>
 <c:forEach var="part" items="${message.attachments}">
@@ -41,25 +25,25 @@
         <c:set var="pname" value="${part.displayName}"/>
         <c:if test="${empty pname}"><fmt:message key="unknownContentType" var="pname"><fmt:param value="${part.contentType}"/></fmt:message></c:if>
         <c:set var="url" value="/service/home/~/?id=${message.id}&part=${part.partName}&auth=co"/>
-        <div>
-            <span>
-                <div>
-                    <div>
-                        <span>
+        <tr>
+            <td colspan="2">
+                <table cellspacing="4">
+                    <tr>
+                        <td>
                             <mo:img src="${part.image}" alt="${fn:escapeXml(part.displayName)}"/>
-                        </span>
-                        <span>
+                        </td>
+                        <td>
                             <a href="${fn:escapeXml(url)}&amp;disp=a"><b>${fn:escapeXml(pname)}</b></a> (${part.displaySize})
-                        </span>
+                        </td>
                         <c:if test="${mailbox.features.viewInHtml and part.isViewAsHtmlTarget}">
-                            <span>
+                            <td>
                                 <a target="_blank" href="${fn:escapeXml(url)}&amp;view=html"><fmt:message key="viewAsHtml"/></a>
-                            </span>
+                            </td>
                         </c:if>
-                    </div>
-                </div>
-            </span>
-        </div>
+                    </tr>
+                </table>
+            </td>
+        </tr>
     </c:if>
 </c:forEach>
-</div>
+</table>

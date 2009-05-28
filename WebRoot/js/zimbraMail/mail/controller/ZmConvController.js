@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -29,6 +31,9 @@
 ZmConvController = function(container, mailApp) {
 
 	ZmDoublePaneController.call(this, container, mailApp);
+
+	// always start with reading pane on
+	this._readingPaneOn = true;
 
 	this._convDeleteListener = new AjxListener(this, this._deleteListener);
 	this._listeners[ZmOperation.DELETE_MENU] = this._convDeleteListener;
@@ -76,20 +81,15 @@ function() {
 	return this._conv;
 };
 
+ZmConvController.prototype.isReadingPaneOn =
+function() {
+	return this._readingPaneOn;
+};
+
 
 // Private and protected methods
 
-ZmConvController.prototype._getReadingPanePref =
-function() {
-	return appCtxt.get(ZmSetting.READING_PANE_LOCATION_CV);
-};
-
-ZmConvController.prototype._setReadingPanePref =
-function(value) {
-	appCtxt.set(ZmSetting.READING_PANE_LOCATION_CV, value);
-};
-
-ZmConvController.prototype._createDoublePaneView =
+ZmConvController.prototype._createDoublePaneView = 
 function() {
 	return (new ZmConvView({parent:this._container, controller:this, dropTgt:this._dropTgt}));
 };
@@ -100,9 +100,8 @@ function(view) {
 	ZmDoublePaneController.prototype._initialize.call(this, view);
 	
 	// set up custom listeners for this view 
-	if (this._doublePaneView) {
+	if (this._doublePaneView)
 		this._doublePaneView.addTagClickListener(new AjxListener(this, ZmConvController.prototype._convTagClicked));
-	}
 };
 
 ZmConvController.prototype._initializeToolBar = 
@@ -118,15 +117,9 @@ function(view) {
 	this._setupCheckMailButton(this._toolbar[view]);
 };
 
-ZmConvController.prototype._setupViewMenuItems =
-function(view, btn) {
-
-	var menu = new ZmPopupMenu(btn);
-	btn.setMenu(menu);
-
-	this._setupReadingPaneMenuItems(view, menu, this.isReadingPaneOn());
-
-	return menu;
+ZmConvController.prototype._setupViewMenu =
+function(view) {
+	this._setupReadingPaneMenuItem(view, null, true);
 };
 
 ZmConvController.prototype._setupDeleteMenu =
@@ -152,9 +145,33 @@ function(view) {
 	}
 };
 
-/**
- * Override to replace DELETE with DELETE_MENU
- */
+// NOTE: reading pane pref in CV is *not* persisted so we dont save to server
+ZmConvController.prototype._saveReadingPanePref =
+function(checked) {
+	this._readingPaneOn = checked;
+	this._doublePaneView.toggleView();
+
+	// set msg in msg view if reading pane is being shown
+	if (checked) {
+		this._setSelectedItem();
+	}
+
+	this._mailListView._resetColWidth();
+};
+
+ZmConvController.prototype._postHideCallback =
+function() {
+	// bug fix #31601 - Prism only HACK to restore keypress
+	if (AjxEnv.isPrism) {
+		var km = appCtxt.getShell().getKeyboardMgr();
+		km.__killKeySeqTimedActionId = -1;
+		km.__keySequence.length = 0;
+	}
+};
+
+/*
+* Override to replace DELETE with DELETE_MENU
+*/
 ZmConvController.prototype._standardToolBarOps =
 function() {
 	return [ZmOperation.NEW_MENU,
@@ -209,11 +226,32 @@ function(ev) {
 	}
 };
 
+// If one or more messages have been moved/deleted, and the CLV from which we came represents
+// folder contents, see if this conv still belongs in that folder. It does if it has at least
+// one message still in that folder. Note that the conv item in the CLV isn't physically moved
+// or deleted, it's just removed from the view and its underlying list.
+ZmConvController.prototype._checkConvLocation =
+function() {
+	var clc = AjxDispatcher.run("GetConvListController");
+	var list = clc.getList();
+	var folderId = list.search.folderId;
+	if (folderId || (this._conv.numMsgs == 1)) {
+		if (this._conv.checkMoved(folderId)) { // view notif happens here
+			list.remove(this._conv);
+			var clv = clc.getCurrentView();
+			var respCallback = new AjxCallback(clv, clv._handleResponseCheckReplenish);
+			clc._checkReplenish(respCallback);
+		}
+	}
+};
+
 // Tag in the summary area clicked, do a tag search.
 ZmConvController.prototype._convTagClicked =
 function(tagId) {
 	var tag = appCtxt.getById(tagId);
-	appCtxt.getSearchController().search({query: tag.createQuery()});
+	var query = 'tag:"' + tag.name + '"';
+	var searchController = appCtxt.getSearchController();
+	searchController.search({query: query});
 };
 
 // Handle DnD tagging (can only add a tag to a single item) - if a tag got dropped onto
@@ -292,6 +330,7 @@ function() {
 	popView = popView && ((currViewId == this._currentView) || popAnyway);
 
 	if (popView) {
+		this._checkConvLocation();
 		this._app.popView();
 	} else {
 		var delButton = this._toolbar[this._currentView].getButton(ZmOperation.DELETE_MENU);
@@ -391,13 +430,8 @@ function() {
 // overloaded...
 ZmConvController.prototype._search = 
 function(view, offset, limit, callback) {
-	var params = {
-		sortBy: appCtxt.get(ZmSetting.SORTING_PREF, view),
-		offset: offset,
-		limit: limit,
-		getFirstMsg: this.isReadingPaneOn()
-	};
-	this._conv.load(params, callback);
+	var sortby = appCtxt.get(ZmSetting.SORTING_PREF, view);
+	this._conv.load({sortBy:sortby, offset:offset, limit:limit, getFirstMsg:this._readingPaneOn}, callback);
 };
 
 ZmConvController.prototype._paginateDouble = 

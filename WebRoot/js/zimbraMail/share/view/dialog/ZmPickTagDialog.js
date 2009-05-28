@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,30 +11,20 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
-/**
- * Creates a dialog for choosing a tag.
- * @constructor
- * @class
- * This class presents the user with their list of tags in a tree view so that they
- * can choose one. There is a text input that can be used to filter the list.
- *
- * @param parent
- * @param className
- */
 ZmPickTagDialog = function(parent, className) {
 
 	var newButton = new DwtDialog_ButtonDescriptor(ZmPickTagDialog.NEW_BUTTON, ZmMsg._new, DwtDialog.ALIGN_LEFT);
 	var params = {parent:parent, className:className, title:ZmMsg.pickATag, extraButtons:[newButton]};
 	ZmDialog.call(this, params);
 
-	this._createControls();
-	appCtxt.getTagTree().addChangeListener(new AjxListener(this, this._tagTreeChangeListener));
+	this._tagTree = appCtxt.getTagTree();
+	this._tagTree.addChangeListener(new AjxListener(this, this._tagTreeChangeListener));
 	this.registerCallback(ZmPickTagDialog.NEW_BUTTON, this._showNewDialog, this);
 	this._creatingTag = false;
-	this._treeViewListener = new AjxListener(this, this._treeViewSelectionListener);
 };
 
 ZmPickTagDialog.prototype = new ZmDialog;
@@ -48,35 +39,28 @@ function() {
 
 ZmPickTagDialog.prototype.popup = 
 function(params) {
-
-	// all this is done here instead of in the constructor due to multi-account issues
-	this._setOverview({treeIds:[ZmOrganizer.TAG], fieldId:this._tagTreeDivId});
+	this._setOverview({treeIds:[ZmOrganizer.TAG], fieldId:this._tagTreeCellId});
 	this._tagTreeView = this._getOverview().getTreeView(ZmOrganizer.TAG);
-	this._tagTreeView.removeSelectionListener(this._treeViewListener);
-	this._tagTreeView.addSelectionListener(this._treeViewListener);
+	ZmDialog.prototype.popup.apply(this, arguments);
 	var root = this._tagTreeView.getTreeItemById(ZmOrganizer.ID_ROOT);
 	root.enableSelection(false);
-
-	this._loadTags();	// item list for this account's tree view will be cached after the first time
-	this._resetTreeView();
-	ZmDialog.prototype.popup.apply(this, arguments);
-	this._inputField.setValue("");
-	this._inputField.focus();
 };
 
 ZmPickTagDialog.prototype._contentHtml = 
 function() {
-	this._tagTreeDivId = this._htmlElId + "_tagTreeDivId";
-	this._inputDivId = this._htmlElId + "_inputDivId";
-
-	return AjxTemplate.expand("share.Widgets#ZmPickTagDialog", {id:this._htmlElId});
-};
-
-ZmPickTagDialog.prototype._createControls =
-function() {
-	this._inputField = new DwtInputField({parent: this});
-	document.getElementById(this._inputDivId).appendChild(this._inputField.getHtmlElement());
-	this._inputField.addListener(DwtEvent.ONKEYUP, new AjxListener(this, this._handleKeyUp));
+	this._tagTreeCellId = Dwt.getNextId();
+	var html = new Array();
+	var idx = 0;
+	html[idx++] = "<table cellpadding='0' cellspacing='0' border='0'>";
+	html[idx++] = "<tr><td class='Label' colspan=2>";
+	html[idx++] = ZmMsg.targetTag;
+	html[idx++] = "</td></tr>";
+	html[idx++] = "<tr><td colspan=2'><div style='background-color:white; width:300px; border:1px solid black; overflow:auto' id='";
+	html[idx++] = this._tagTreeCellId;
+	html[idx++] = "'></div></td></tr>";
+	html[idx++] = "</table>";
+	
+	return html.join("");
 };
 
 ZmPickTagDialog.prototype._showNewDialog = 
@@ -95,19 +79,7 @@ function(parent, name) {
 	this._creatingTag = true;
 };
 
-ZmPickTagDialog.prototype._loadTags =
-function() {
-	this._tags = [];
-	var items = this._tagTreeView.getTreeItemList();
-	for (var i = 0, len = items.length; i < len; i++) {
-		var tag = items[i].getData(Dwt.KEY_OBJECT);
-		if (tag.id != ZmOrganizer.ID_ROOT) {
-			this._tags.push({id:tag.id, name:tag.getName(false, null, true, true).toLowerCase()});
-		}
-	}
-};
-
-ZmPickTagDialog.prototype._tagTreeChangeListener =
+ZmPickTagDialog.prototype._tagTreeChangeListener = 
 function(ev) {
 	// TODO - listener for changing tags
 	if (ev.event == ZmEvent.E_CREATE && this._creatingTag) {
@@ -115,62 +87,15 @@ function(ev) {
 		this._tagTreeView.setSelected(tag, true);
 		this._creatingTag = false;
 	}
-	this._loadTags();
 };
 
 ZmPickTagDialog.prototype._okButtonListener = 
 function(ev) {
-	DwtDialog.prototype._buttonListener.call(this, ev, [this._tagTreeView.getSelected()]);
-};
+	// Reset the msg dialog (it is a shared resource)
+	var msgDialog = appCtxt.getMsgDialog();
+	msgDialog.reset();
+	var loc = new DwtPoint(this.getLocation().x + 50, this.getLocation().y + 100);
+	var selectedTag = this._tagTreeView.getSelected();
 
-ZmPickTagDialog.prototype._handleKeyUp =
-function(ev) {
-
-	var num = 0, firstMatch;
-	var value = this._inputField.getValue().toLowerCase();
-	if (value == this._lastVal) { return; }
-	for (var i = 0, len = this._tags.length; i < len; i++) {
-		var tagInfo = this._tags[i];
-		var ti = this._tagTreeView.getTreeItemById(tagInfo.id);
-		if (ti) {
-			var matches = (tagInfo.name.indexOf(value) == 0);
-			ti.setVisible(matches);
-			if (matches && !firstMatch) {
-				firstMatch = tagInfo.id;
-			}
-		}
-	}
-
-	if (firstMatch) {
-		this._tagTreeView.setSelected(appCtxt.getById(firstMatch), true, true);
-	}
-	this._lastVal = value;
-};
-
-ZmPickTagDialog.prototype._resetTreeView =
-function() {
-	// make all tree items visible (in case there was prior filtering)
-	for (var i = 0, len = this._tags.length; i < len; i++) {
-		var ti = this._tagTreeView.getTreeItemById(this._tags[i].id);
-		if (ti) {
-			ti.setVisible(true);
-		}
-	}
-};
-
-ZmPickTagDialog.prototype._treeViewSelectionListener =
-function(ev) {
-
-	if (ev.detail != DwtTree.ITEM_SELECTED)	{ return; }
-
-	var tag = ev.item.getData(Dwt.KEY_OBJECT);
-	if (tag) {
-		var value = this._lastVal = tag.getName(false, null, true, true);
-		this._inputField.setValue(value);
-	}
-};
-
-ZmPickTagDialog.prototype._getTabGroupMembers =
-function() {
-	return [this._inputField, this._overview[this._curOverviewId]];
+	DwtDialog.prototype._buttonListener.call(this, ev, [selectedTag]);
 };

@@ -1,15 +1,17 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ *
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009 Zimbra, Inc.
- * 
+ * Copyright (C) 2007 Zimbra, Inc.
+ *
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ *
  * ***** END LICENSE BLOCK *****
  */
 ZmBriefcaseController = function(container, app) {
@@ -22,15 +24,9 @@ ZmBriefcaseController = function(container, app) {
 	this._listChangeListener = new AjxListener(this,this._fileListChangeListener);
 	this._listeners[ZmOperation.OPEN_FILE] = new AjxListener(this, this._openFileListener);
 	this._listeners[ZmOperation.SAVE_FILE] = new AjxListener(this, this._saveFileListener);
-	this._listeners[ZmOperation.SEND_FILE] = new AjxListener(this, this._sendFileListener);
-	this._listeners[ZmOperation.SEND_FILE_AS_ATT] = new AjxListener(this, this._sendFileAsAttachmentListener);
-	this._listeners[ZmOperation.NEW_FILE] = new AjxListener(this, this._uploadFileListener);
-	this._listeners[ZmOperation.VIEW_FILE_AS_HTML] = new AjxListener(this, this._viewAsHtmlListener);
-	this._listeners[ZmOperation.CREATE_SLIDE_SHOW] = new AjxListener(this, this._createSlideShow);
-
-    this._listeners[ZmOperation.NEW_SPREADSHEET] = new AjxListener(this, this._handleDoc, [ZmOperation.NEW_SPREADSHEET]);
-    this._listeners[ZmOperation.NEW_PRESENTATION] = new AjxListener(this, this._handleDoc, [ZmOperation.NEW_PRESENTATION])
-
+   	this._listeners[ZmOperation.SEND_FILE] = new AjxListener(this, this._sendFileListener);
+  	this._listeners[ZmOperation.NEW_FILE] = new AjxListener(this, this._uploadFileListener);
+   	this._listeners[ZmOperation.VIEW_FILE_AS_HTML] = new AjxListener(this, this._viewAsHtmlListener);
 	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
 	this._dragSrc.addDragListener(new AjxListener(this, this._dragListener));
 };
@@ -83,15 +79,8 @@ function() {
 			ZmOperation.TAG_MENU,
 			ZmOperation.SEP,
 			ZmOperation.VIEW_MENU,
-            ZmOperation.SEP,
-            ZmOperation.NEW_SPREADSHEET,
-            ZmOperation.NEW_PRESENTATION,
-            ZmOperation.FILLER,
-			ZmOperation.SEND_FILE_MENU];
-};
-
-ZmBriefcaseController.prototype._handleDoc = function(op){
-     this._app.handleOp(op);
+			ZmOperation.FILLER,
+			ZmOperation.SEND_FILE];
 };
 
 ZmBriefcaseController.prototype._initializeToolBar =
@@ -109,8 +98,6 @@ function(view) {
 
 		button = toolbar.getButton(ZmOperation.DELETE);
 		button.setToolTipContent(ZmMsg.deletePermanentTooltip);
-
-		this._initSendMenu(view);
 	}
 
 	this._setupViewMenu(view, false);
@@ -156,13 +143,11 @@ function(parent, num) {
 		parent.enable([ZmOperation.VIEW_FILE_AS_HTML], (isItemSelected && isViewHtmlEnabled));
 	}
 
-	parent.enable([ZmOperation.SEND_FILE_MENU, ZmOperation.SEND_FILE, ZmOperation.SEND_FILE_AS_ATT], (isZimbraAccount && isItemSelected && !isMultiFolder && !isFolderSelected));
+	parent.enable(ZmOperation.SEND_FILE, (isZimbraAccount && isItemSelected && !isMultiFolder && !isFolderSelected));
 	parent.enable(ZmOperation.OPEN_FILE, (isItemSelected && !isMultiFolder));
 	parent.enable(ZmOperation.DELETE, (!isReadOnly && isItemSelected));
-    parent.enable(ZmOperation.CREATE_SLIDE_SHOW, (!isReadOnly && isItemSelected));
 	parent.enable(ZmOperation.TAG_MENU, (!isShared && isItemSelected && !isFolderSelected));
 	parent.enable([ZmOperation.NEW_FILE, ZmOperation.VIEW_MENU], true);
-    parent.enable([ZmOperation.NEW_SPREADSHEET, ZmOperation.NEW_PRESENTATION], true);
 };
 
 ZmBriefcaseController.prototype._getTagMenuMsg =
@@ -343,6 +328,7 @@ function(items) {
 		}
 	}
 
+
 	// switch view
 	var view = this._currentView;
 	if (!view) {
@@ -373,7 +359,7 @@ function(view, force) {
 		elements[ZmAppViewMgr.C_APP_CONTENT] = (this._currentView == ZmId.VIEW_BRIEFCASE_COLUMN)
 			? this._parentView[this._currentView]
 			: this._listView[this._currentView];
-		this._setView({view:view, elements:elements, isAppView:true});
+		this._setView(view, elements, true);
 	}
 	Dwt.setTitle(this.getCurrentView().getTitle());
 };
@@ -580,10 +566,7 @@ function(ev) {
 	}
 
 	var item = ev.item;
-	var op = actionMenu.getOp(ZmOperation.SAVE_FILE);
-	if (op) {
-		op.setEnabled(item && item.isRealFile());
-	}
+	actionMenu.getOp(ZmOperation.SAVE_FILE).setEnabled(item && !item.isFolder && item.restUrl);
 };
 
 ZmBriefcaseController.prototype._getActionMenuOps =
@@ -592,12 +575,10 @@ function() {
 		ZmOperation.OPEN_FILE,
 		ZmOperation.SAVE_FILE,
 		ZmOperation.SEND_FILE,
-		ZmOperation.SEND_FILE_AS_ATT
 	];
 	if (appCtxt.get(ZmSetting.VIEW_ATTACHMENT_AS_HTML)) {
 		list.push(ZmOperation.VIEW_FILE_AS_HTML);
 	}
-    list.push(ZmOperation.CREATE_SLIDE_SHOW);
 	list.push(ZmOperation.SEP);
 	list = list.concat(this._standardActionMenuOps());
 	return list;
@@ -647,9 +628,8 @@ function() {
 	items = items instanceof Array ? items : [ items ];
 	for (var i = 0; i<items.length; i++) {
 		var item = items[i];
-		var restUrl = item.getRestUrl();
-		if (item && restUrl) {
-			this.viewAsHtml(restUrl);
+		if (item && item.restUrl) {
+			this.viewAsHtml(item.restUrl);
 		}
 	}
 };
@@ -732,39 +712,6 @@ function(names, urls, inNewWindow) {
 	AjxDispatcher.run("Compose", {action: action, inNewWindow: inNewWindow, msg: msg,
 								  toOverride: toOverride, subjOverride: subjOverride,
 								  extraBodyText: extraBodyText});
-	AjxDispatcher.run("GetComposeController");
-};
-
-ZmBriefcaseController.prototype._sendFileAsAttachmentListener =
-function(event) {
-	var view = this._listView[this._currentView];
-	var items = view.getSelection();
-	items = items instanceof Array ? items : [ items ];
-
-	var docInfo = [];
-
-	for (var i = 0; i < items.length; i++) {
-		var item = items[i];
-
-		var briefcase = appCtxt.getById(item.folderId);
-		if (briefcase.isRemote() || briefcase.isReadOnly()) {
-			continue;
-		}
-
-		docInfo.push({id: item.id, ct: item.contentType, s: item.size});
-	}
-
-	if (docInfo.length == 0) { return; }
-
-	var action = ZmOperation.NEW_MESSAGE;
-	var msg = new ZmMailMsg();
-	var toOverride;
-
-	var cc = AjxDispatcher.run("GetComposeController");
-	cc._setView({action:action, msg:msg, toOverride:toOverride, inNewWindow:false});
-	var draftType = ZmComposeController.DRAFT_TYPE_AUTO;
-	var callback = new AjxCallback(cc, cc._handleResponseSaveDraftListener, [draftType]);
-	cc.sendDocs(docInfo, draftType, callback);
 };
 
 ZmBriefcaseController.prototype._moveCallback =
@@ -778,26 +725,6 @@ function(folder) {
 ZmBriefcaseController.prototype._resetOpForCurrentView =
 function(num) {
 	this._resetOperations(this._toolbar[this._currentView], num || 0);
-};
-
-ZmBriefcaseController.prototype._initSendMenu =
-function(view) {
-	var sendBtn = this._toolbar[view].getButton(ZmOperation.SEND_FILE_MENU);
-	var menu = new ZmPopupMenu(sendBtn);
-	sendBtn.setMenu(menu);
-
-	var sendOps = [ZmOperation.SEND_FILE, ZmOperation.SEND_FILE_AS_ATT];
-	for (var i = 0; i < sendOps.length; i++) {
-		var id = sendOps[i];
-		var params = {
-			image:ZmOperation.getProp(id, "image"),
-			text:ZmMsg[ZmOperation.getProp(id, "textKey")]
-		};
-		var mi = menu.createMenuItem(id, params);
-		mi.setData(ZmOperation.MENUITEM_ID, id);
-		mi.addSelectionListener(this._listeners[id]);
-	}
-	return menu;
 };
 
 ZmBriefcaseController.prototype._setupViewMenu =
@@ -851,6 +778,33 @@ function(item) {
 		}
 	}
 	return false;
+};
+
+ZmBriefcaseController.prototype._viewAsHtmlListener =
+function() {
+
+	var view = this._listView[this._currentView];
+	var items = view.getSelection();
+	if(!items)
+	return;
+
+	items = items instanceof Array ? items : [ items ];
+	for(var i = 0;i<items.length;i++){
+		var item = items[i];
+		if(item && item.restUrl){
+			this.viewAsHtml(item.restUrl);
+		}
+	}
+};
+
+ZmBriefcaseController.prototype.viewAsHtml =
+function(restUrl) {
+	if (restUrl.match(/\?/)) {
+		restUrl += "&view=html";
+	} else {
+		restUrl += "?view=html";
+	}
+	window.open(restUrl);
 };
 
 ZmBriefcaseController.prototype.addChangeListeners =
@@ -922,11 +876,6 @@ function() {
 	return (this._currentView == ZmId.VIEW_BRIEFCASE_COLUMN);
 };
 
-ZmBriefcaseController.prototype.mapSupported =
-function(map) {
-	return (map == "list" && (this._currentView != ZmId.VIEW_BRIEFCASE));
-};
-
 ZmBriefcaseController.prototype.deleteCallback =
 function(ids){
 	if (this.isMultiColView()) {
@@ -961,14 +910,10 @@ function(ids){
 
 ZmBriefcaseController.prototype.getItemTooltip =
 function(item, listView) {
-
-    var dateFormatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.FULL, AjxDateFormat.MEDIUM);
-	var dateStr = dateFormatter.format(item.modifyDate);
-
 	var prop = [
 		{name:ZmMsg.briefcasePropName, value:item.name},
 		{name:ZmMsg.briefcasePropSize, value:AjxUtil.formatSize(item.size)},
-		{name:ZmMsg.briefcasePropModified, value:(item.modifyDate ? dateStr+"" : "")}
+		{name:ZmMsg.briefcasePropModified, value:(item.modifyDate ? item.modifyDate+"" : "")}
 	];
 
 	var subs = {
@@ -977,13 +922,6 @@ function(item, listView) {
 	};
 	return AjxTemplate.expand("briefcase.Briefcase#Tooltip", subs);
 };
-
-ZmBriefcaseController.prototype._getDateInLocaleFormat =
-function(date) {
-	var dateFormatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.FULL, AjxDateFormat.MEDIUM);
-	return dateFormatter.format(date);
-};
-
 
 // offline related modules
 ZmBriefcaseController.prototype.handleMailboxChange =
@@ -995,18 +933,4 @@ function() {
 ZmBriefcaseController.prototype.getCurrentFolderId =
 function() {
 	return this._currentFolder;
-};
-
-
-ZmBriefcaseController.prototype._resetToolbarOperations =
-function() {
-    if(this._listView[this._currentView] != null) {
-        this._resetOperations(this._toolbar[this._currentView], this._listView[this._currentView].getSelectionCount());
-    }
-};
-
-ZmBriefcaseController.prototype._createSlideShow =
-function() {
-    window.importSlides = true;
-    this._app._handleNewDoc(ZmOperation.NEW_PRESENTATION);      
 };

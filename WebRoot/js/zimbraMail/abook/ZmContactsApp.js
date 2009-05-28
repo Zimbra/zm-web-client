@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -30,13 +32,8 @@ ZmContactsApp = function(container, parentController) {
 	settings.addChangeListener(new AjxListener(this, this._settingsChangeListener));
 
 	this.contactsLoaded = {};
-	this._contactList = {};		// canonical list by acct ID
+	this._contactList = {};
 	this._initialized = false;
-
-	// contact lookup caches
-	this._byEmail	= {};
-	this._byIM		= {};
-	this._byPhone	= {};
 };
 
 // Organizer and item-related constants
@@ -54,11 +51,15 @@ ZmApp.UPSELL_SETTING[ZmApp.CONTACTS]	= ZmSetting.CONTACTS_UPSELL_ENABLED;
 ZmApp.LOAD_SORT[ZmApp.CONTACTS]			= 30;
 ZmApp.QS_ARG[ZmApp.CONTACTS]			= "contacts";
 
-// search menu
+// fields used for autocomplete matching
+ZmContactsApp.AC_VALUE_FULL 	= "fullAddress";
+ZmContactsApp.AC_VALUE_EMAIL	= "email";
+ZmContactsApp.AC_VALUE_NAME		= "name";
+
 ZmContactsApp.SEARCHFOR_CONTACTS 	= 1;
 ZmContactsApp.SEARCHFOR_GAL 		= 2;
 ZmContactsApp.SEARCHFOR_PAS			= 3; // PAS = personal and shared
-ZmContactsApp.SEARCHFOR_MAX 		= 50;
+ZmContactsApp.SEARCHFOR_MAX 		= 100;
 
 ZmContactsApp.prototype = new ZmApp;
 ZmContactsApp.prototype.constructor = ZmContactsApp;
@@ -82,16 +83,15 @@ function() {
 ZmContactsApp.prototype._registerSettings =
 function(settings) {
 	var settings = settings || appCtxt.getSettings();
-	settings.registerSetting("AUTO_ADD_ADDRESS",				{name: "zimbraPrefAutoAddAddressEnabled", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
-	settings.registerSetting("AUTOCOMPLETE_SHARED_ADDR_BOOKS",	{name: "zimbraPrefSharedAddrBookAutoCompleteEnabled", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
-	settings.registerSetting("CONTACTS_PER_PAGE",				{name: "zimbraPrefContactsPerPage", type: ZmSetting.T_PREF, dataType: ZmSetting.D_INT, defaultValue: 25});
-	settings.registerSetting("CONTACTS_PER_PAGE_MAX",			{name: "zimbraMaxContactsPerPage", type: ZmSetting.T_COS, dataType: ZmSetting.D_INT, defaultValue: 100});
-	settings.registerSetting("CONTACTS_VIEW",					{name: "zimbraPrefContactsInitialView", type: ZmSetting.T_PREF, defaultValue: ZmSetting.CV_LIST});
-	settings.registerSetting("EXPORT",							{type: ZmSetting.T_PREF, dataType: ZmSetting.D_NONE});
-	settings.registerSetting("GAL_AUTOCOMPLETE",				{name: "zimbraPrefGalAutoCompleteEnabled", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
-	settings.registerSetting("IMPORT",							{type: ZmSetting.T_PREF, dataType: ZmSetting.D_NONE});
-	settings.registerSetting("MAX_CONTACTS",					{name: "zimbraContactMaxNumEntries", type: ZmSetting.T_COS, dataType: ZmSetting.D_INT, defaultValue: 0});
-	settings.registerSetting("NEW_ADDR_BOOK_ENABLED",			{name: "zimbraFeatureNewAddrBookEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
+	settings.registerSetting("AUTO_ADD_ADDRESS",			{name: "zimbraPrefAutoAddAddressEnabled", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
+	settings.registerSetting("CONTACTS_PER_PAGE",			{name: "zimbraPrefContactsPerPage", type: ZmSetting.T_PREF, dataType: ZmSetting.D_INT, defaultValue: 25});
+	settings.registerSetting("CONTACTS_VIEW",				{name: "zimbraPrefContactsInitialView", type: ZmSetting.T_PREF, defaultValue: ZmSetting.CV_LIST});
+	settings.registerSetting("EXPORT",						{type: ZmSetting.T_PREF, dataType: ZmSetting.D_NONE});
+	settings.registerSetting("GAL_AUTOCOMPLETE",			{name: "zimbraPrefGalAutoCompleteEnabled", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
+	settings.registerSetting("GAL_AUTOCOMPLETE_SESSION",	{type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
+	settings.registerSetting("IMPORT",						{type: ZmSetting.T_PREF, dataType: ZmSetting.D_NONE});
+	settings.registerSetting("MAX_CONTACTS",				{name: "zimbraContactMaxNumEntries", type: ZmSetting.T_COS, dataType: ZmSetting.D_INT, defaultValue: 0});
+	settings.registerSetting("NEW_ADDR_BOOK_ENABLED",		{name: "zimbraFeatureNewAddrBookEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 };
 
 ZmContactsApp.prototype._registerPrefs =
@@ -99,17 +99,16 @@ function() {
 	var sections = {
 		CONTACTS: {
 			title: ZmMsg.addressBook,
-			icon: "ContactsApp",
 			templateId: "prefs.Pages#Contacts",
 			priority: 50,
 			precondition: ZmSetting.CONTACTS_ENABLED,
 			prefs: [
 				ZmSetting.AUTO_ADD_ADDRESS,
-				ZmSetting.AUTOCOMPLETE_SHARED_ADDR_BOOKS,
 				ZmSetting.CONTACTS_PER_PAGE,
 				ZmSetting.CONTACTS_VIEW,
 				ZmSetting.EXPORT,
 				ZmSetting.GAL_AUTOCOMPLETE,
+				ZmSetting.GAL_AUTOCOMPLETE_SESSION,
 				ZmSetting.INITIALLY_SEARCH_GAL,
 				ZmSetting.IMPORT
 			]
@@ -124,16 +123,10 @@ function() {
 		displayContainer:	ZmPref.TYPE_CHECKBOX
 	});
 
-	ZmPref.registerPref("AUTOCOMPLETE_SHARED_ADDR_BOOKS", {
-		displayName:		ZmMsg.autocompleteSharedAddrBooks,
-		displayContainer:	ZmPref.TYPE_CHECKBOX
-	});
-
 	ZmPref.registerPref("CONTACTS_PER_PAGE", {
-		loadFunction:		ZmPref.loadPageSizes,
-		maxSetting:			ZmSetting.CONTACTS_PER_PAGE_MAX,
 		displayName:		ZmMsg.contactsPerPage,
-	 	displayContainer:	ZmPref.TYPE_SELECT
+	 	displayContainer:	ZmPref.TYPE_SELECT,
+		displayOptions:		["10", "25", "50", "100"]
 	});
 
 	ZmPref.registerPref("CONTACTS_VIEW", {
@@ -159,6 +152,12 @@ function() {
 			}
 	});
 
+	ZmPref.registerPref("GAL_AUTOCOMPLETE_SESSION", {
+		displayName:		ZmMsg.galAutocompleteSession,
+		displayContainer:	ZmPref.TYPE_CHECKBOX,
+		precondition:		ZmSetting.GAL_AUTOCOMPLETE
+	});
+
 	ZmPref.registerPref("IMPORT", {
 		displayName:		ZmMsg.importFromCSV,
 		displayContainer:	ZmPref.TYPE_IMPORT
@@ -178,12 +177,12 @@ function() {
 ZmContactsApp.prototype._registerOperations =
 function() {
 	ZmOperation.registerOp(ZmId.OP_CONTACT);	// placeholder
-	ZmOperation.registerOp(ZmId.OP_EDIT_CONTACT, {textKey:"AB_EDIT_CONTACT", image:"Edit", shortcut:ZmKeyMap.EDIT});
+	ZmOperation.registerOp(ZmId.OP_EDIT_CONTACT, {textKey:"AB_EDIT_CONTACT", image:"Edit"});
 	ZmOperation.registerOp(ZmId.OP_MOUNT_ADDRBOOK, {textKey:"mountAddrBook", image:"ContactsFolder"});
 	ZmOperation.registerOp(ZmId.OP_NEW_ADDRBOOK, {textKey:"newAddrBook", tooltipKey:"newAddrBookTooltip", image:"NewContactsFolder"}, ZmSetting.NEW_ADDR_BOOK_ENABLED);
-	ZmOperation.registerOp(ZmId.OP_NEW_CONTACT, {textKey:"newContact", tooltipKey:"newContactTooltip", image:"NewContact", shortcut:ZmKeyMap.NEW_CONTACT}, ZmSetting.CONTACTS_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_NEW_CONTACT, {textKey:"newContact", tooltipKey:"newContactTooltip", image:"NewContact"}, ZmSetting.CONTACTS_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_NEW_GROUP, {textKey:"newGroup", tooltipKey:"newGroupTooltip", image:"NewGroup"}, ZmSetting.CONTACTS_ENABLED);
-	ZmOperation.registerOp(ZmId.OP_PRINT_CONTACT, {textKey:"printContact", image:"Print", shortcut:ZmKeyMap.PRINT}, ZmSetting.PRINT_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_PRINT_CONTACT, {textKey:"printContact", image:"Print"}, ZmSetting.PRINT_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_PRINT_ADDRBOOK, {textKey:"printAddrBook", image:"Print"}, ZmSetting.PRINT_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_SHARE_ADDRBOOK, {textKey:"shareAddrBook", image:"SharedContactsFolder"});
 	ZmOperation.registerOp(ZmId.OP_SHOW_ONLY_CONTACTS, {textKey:"showOnlyContacts", image:"Contact"}, ZmSetting.MIXED_VIEW_ENABLED);
@@ -237,12 +236,10 @@ function() {
 							 treeType:			ZmOrganizer.FOLDER,
 							 dropTargets:		[ZmOrganizer.ADDRBOOK],
 							 views:				["contact"],
-							 folderKey:			"addressBook",
+							 folderKey:			"addressBookFolder",
 							 mountKey:			"mountAddrBook",
 							 createFunc:		"ZmOrganizer.create",
 							 compareFunc:		"ZmAddrBook.sortCompare",
-							 displayOrder:		100,
-							 newOp:             ZmOperation.NEW_ADDRBOOK,
 							 deferrable:		true
 							});
 };
@@ -282,12 +279,11 @@ function() {
 							 {mainPkg:				"Contacts",
 							  nameKey:				"addressBook",
 							  icon:					"ContactsApp",
-							  textPrecedence:		40,
 							  chooserTooltipKey:	"goToContacts",
 							  viewTooltipKey:		"displayContacts",
 							  defaultSearch:		ZmItem.CONTACT,
 							  organizer:			ZmOrganizer.ADDRBOOK,
-							  overviewTrees:		[ZmOrganizer.ADDRBOOK, ZmOrganizer.SEARCH, ZmOrganizer.TAG],
+							  overviewTrees:		[ZmOrganizer.ADDRBOOK, ZmOrganizer.ROSTER_TREE_ITEM, ZmOrganizer.SEARCH, ZmOrganizer.TAG],
 							  showZimlets:			true,
 							  assistants:			{"ZmContactAssistant":["ContactsCore", "Contacts"]},
 							  searchTypes:			[ZmItem.CONTACT],
@@ -307,6 +303,13 @@ function() {
 
 // App API
 
+/*
+ZmContactsApp.prototype.startup =
+function(result) {
+	AjxDispatcher.run("GetContacts");
+};
+*/
+
 /**
  * Checks for the creation of an address book or a mount point to one. Regular
  * contact creates are handed to the canonical list.
@@ -320,21 +323,30 @@ function(creates, force) {
 
 	for (var name in creates) {
 		var list = creates[name];
-		if (list && list.length) {
-			for (var i = 0; i < list.length; i++) {
-				var create = list[i];
-				if (appCtxt.cacheGet(create.id)) { continue; }
-
-				if (name == "folder") {
-					this._handleCreateFolder(create, ZmOrganizer.ADDRBOOK);
-				} else if (name == "link") {
-					this._handleCreateLink(create, ZmOrganizer.ADDRBOOK);
-				} else if (name == "cn") {
+		for (var i = 0; i < list.length; i++) {
+			var create = list[i];
+			if (appCtxt.cacheGet(create.id)) { continue; }
+	
+			if (name == "folder") {
+				this._handleCreateFolder(create, ZmOrganizer.ADDRBOOK);
+			} else if (name == "link") {
+				this._handleCreateLink(create, ZmOrganizer.ADDRBOOK);
+			} else if (name == "cn") {
+				DBG.println(AjxDebug.DBG1, "ZmContactsApp: handling CREATE for node: " + name);
+				// find out if we're dealing with shared contact
+				var folder = appCtxt.getById(create.l);
+				if (folder && folder.isRemote()) {
 					var clc = AjxDispatcher.run("GetContactListController");
-					var clcList = (clc && clc.getFolderId()) ? clc.getList() : new ZmContactList(null);
-					clcList.notifyCreate(create);
-					create._handled = true;
+
+					var newPid = ZmOrganizer.parseId(folder.id);
+					var curPid = ZmOrganizer.parseId(clc._folderId);
+					if (newPid.id == curPid.id && newPid.account == curPid.account) {
+						clc.getList().notifyCreate(create);
+					}
+				} else {
+					AjxDispatcher.run("GetContacts").notifyCreate(create);
 				}
+				create._handled = true;
 			}
 		}
 	}
@@ -348,13 +360,19 @@ function(notify) {
 	}
 };
 
+ZmContactsApp.prototype.refresh =
+function(refresh) {
+	this._handleRefresh();
+};
+
 ZmContactsApp.prototype.handleOp =
 function(op) {
 	switch (op) {
 		case ZmOperation.NEW_CONTACT:
 		case ZmOperation.NEW_GROUP: {
 			var type = (op == ZmOperation.NEW_GROUP) ? ZmItem.GROUP : null;
-			var loadCallback = new AjxCallback(this, this._handleLoadNewItem, [type]);
+			var contact = new ZmContact(null, null, type);
+			var loadCallback = new AjxCallback(this, this._handleLoadNewItem, [contact]);
 			AjxDispatcher.require(["ContactsCore", "Contacts"], false, loadCallback, null, true);
 			break;
 		}
@@ -367,8 +385,7 @@ function(op) {
 };
 
 ZmContactsApp.prototype._handleLoadNewItem =
-function(type) {
-	var contact = new ZmContact(null, null, type);
+function(contact) {
 	AjxDispatcher.run("GetContactController").show(contact);
 };
 
@@ -384,54 +401,55 @@ function() {
 
 // Public methods
 
-ZmContactsApp.prototype.activate =
-function(active) {
-	ZmApp.prototype.activate.apply(this, arguments);
-	if (!this._myCardChecked) {
-		var myCardSupport = appCtxt.getSkinHint("myCardSupport");
-		if (myCardSupport) {
-			var root = appCtxt.getById(ZmOrganizer.ID_ROOT);
-			var params = {
-				id: ZmOrganizer.ID_MY_CARD,
-				name: ZmMsg.myCard,
-				parent: root,
-				tree: root.tree,
-				type: ZmOrganizer.ADDRBOOK,
-				numTotal: 1
-			};
-			var addrBook = new ZmAddrBook(params);
-			root.children.add(addrBook);
-			addrBook._notify(ZmEvent.E_CREATE);
+ZmContactsApp.prototype.launch =
+function(params, callback) {
+	if (appCtxt.get(ZmSetting.NEW_ADDR_BOOK_ENABLED)) {
+		ZmCurrentAppToolBar.registerApp(this.getName(), ZmOperation.NEW_ADDRBOOK, ZmOrganizer.ADDRBOOK);
+	}
+	var loadCallback = new AjxCallback(this, this._handleLoadLaunch, [callback]);
+	AjxDispatcher.require(["ContactsCore", "Contacts"], true, loadCallback, null, true);
+};
 
-			// enable selection (ZmFolderTreeController creates tree as CHECKED style by default :| )
-			var ti = appCtxt.getOverviewController().getOverview(this.getOverviewId()).getTreeItemById(addrBook.id, ZmOrganizer.ADDRBOOK);
-			ti.enableSelection(true);
-		}
-		this._myCardChecked = true;
+ZmContactsApp.prototype._handleLoadLaunch =
+function(callback) {
+	// contacts should already be loaded
+	var respCallback = new AjxCallback(this, this._handleLoadLaunchResponse, callback);
+	var contactList = this.getContactList(respCallback);
+	if (contactList && !contactList.isLoaded) {
+		contactList.addLoadedCallback(new AjxCallback(this, this._showContactList));
 	}
 };
 
-ZmContactsApp.prototype.launch =
-function(params, callback) {
-	this._contactsSearch("in:contacts", callback);
+ZmContactsApp.prototype._handleLoadLaunchResponse =
+function(callback) {
+	var clc = AjxDispatcher.run("GetContactListController");
+	if (!this._initialized) {
+		// set search toolbar field manually
+		if (appCtxt.get(ZmSetting.SHOW_SEARCH_STRING)) {
+			var folder = appCtxt.getById(ZmFolder.ID_CONTACTS);
+			if (folder) {
+				this.currentQuery = folder.createQuery();
+			}
+		}
+		// create contact view for the first time
+		this._showContactList();
+	} else {
+		// just push the view so it looks the same as last you saw it
+		clc.switchView(clc._getViewType(), true, this._initialized);
+	}
+
+	if (callback) {
+		callback.run();
+	}
+
+	this._initialized = true;
 };
 
-ZmContactsApp.prototype._contactsSearch =
-function(query, callback) {
-	var params = {
-		searchFor: ZmId.ITEM_CONTACT,
-		query: query,
-		types: [ZmId.ITEM_CONTACT],
-		callback: callback
-	};
-	appCtxt.getSearchController().search(params);
-};
-
-ZmContactsApp.prototype.getInitialSearchType =
+ZmContactsApp.prototype._showContactList =
 function() {
-	var list = appCtxt.getCurrentList();
-	return (list && (list instanceof ZmContactList) && list.isGal)
-		? ZmId.SEARCH_GAL : null;
+	var clc = AjxDispatcher.run("GetContactListController");
+	var acctId = appCtxt.getActiveAccount().id;
+	clc.show(this._contactList[acctId], null, ZmOrganizer.ID_ADDRBOOK);
 };
 
 ZmContactsApp.prototype.showSearchResults =
@@ -451,10 +469,12 @@ function(results, callback, isInGal, folderId) {
 ZmContactsApp.prototype._activateAccordionItem =
 function(accordionItem) {
 	ZmApp.prototype._activateAccordionItem.call(this, accordionItem);
+
+	// ensure contact list is loaded for the currently active account
+
 	var callback = (this._appViewMgr.getCurrentViewId() != ZmId.VIEW_GROUP)
 		? new AjxCallback(this, this._handleResponseActivateAccordion) : null;
-
-	this._contactsSearch("in:contacts", callback);
+	this.getContactList(callback);
 };
 
 ZmContactsApp.prototype._handleResponseActivateAccordion =
@@ -472,13 +492,15 @@ function() {
 		{
 			this.currentQuery = folder.createQuery();
 			this.currentSearch = null;
-		var clc = AjxDispatcher.run("GetContactListController");
-		clc.getParentView().getAlphabetBar().reset();
+			this.showFolder(folder);
 
-		var oc = appCtxt.getOverviewController();
-		var tv = oc.getTreeController(ZmOrganizer.ADDRBOOK).getTreeView(this.getOverviewId());
-		tv.setSelected(folder, true);
-	}
+			var clc = AjxDispatcher.run("GetContactListController");
+			clc.getParentView().getAlphabetBar().reset();
+
+			var oc = appCtxt.getOverviewController();
+			var tv = oc.getTreeController(ZmOrganizer.ADDRBOOK).getTreeView(this.getOverviewId());
+			tv.setSelected(folder, true);
+		}
 		else {
 			// first time, make sure current app toolbar has registered this app
 			if (appCtxt.get(ZmSetting.NEW_ADDR_BOOK_ENABLED)) {
@@ -489,6 +511,21 @@ function() {
 			this._firstTimeActivateAccordion = true;
 		}
 	}
+};
+
+ZmContactsApp.prototype.showFolder =
+function(folder) {
+	// we manually set search bar's field since contacts dont always make search requests
+	if (appCtxt.get(ZmSetting.SHOW_SEARCH_STRING)) {
+		var query = folder.createQuery();
+		var stb = appCtxt.getSearchController().getSearchToolbar();
+		if (stb) {
+			stb.setSearchFieldValue(query);
+		}
+	}
+	var acctId = appCtxt.getActiveAccount().id;
+	var clc = AjxDispatcher.run("GetContactListController");
+	clc.show(this._contactList[acctId], null, folder.id);
 };
 
 ZmContactsApp.prototype.setActive =
@@ -505,313 +542,6 @@ function(acctId) {
 	return (this._contactList[aid] && this._contactList[aid].isLoaded);
 };
 
-/**
- * Returns the contact with the given address, if any. If it's not in our cache
- * and we are given a callback, we do a search. If a search is performed then any
- * addresses in the Address Lookup Group (See ZmContactsApp#setAddrLookupGroup)
- * are also searched for.
- *
- * @param address	[string]		an email address
- * @param callback	[AjxCallback]*	callback to run
- */
-ZmContactsApp.prototype.getContactByEmail =
-function(address, callback) {
-	if (!address) { return null; }
-	var addr = address.toLowerCase();
-	var contact = this._byEmail[addr];
-
-	// if we have a failed search for this address, or have loaded all contacts,
-	// don't bother doing a search
-	if (!contact && this._notFound(addr)) {
-		this._removeAddrFromLookupGroup(addr);
-		if (callback) { callback.run(null); }
-		return null;
-	}
-
-	// found a cached contact, return it
-	if (contact) {
-		this._removeAddrFromLookupGroup(addr);
-		contact = this._realizeContact(contact);
-		contact._lookupEmail = address;	// so caller knows which address matched
-		if (callback) { callback.run(contact); }
-		return contact;
-	}
-
-	// search for contact
-	if (callback) {
-		var search = null,
-			isGroupSearch = false,
-			lookupAddrs = [];
-		if (this._addrLookupHash && this._addrLookupHash[addr]) {
-			if (this._addrLookupList) {
-				for (var i = 0; i < this._addrLookupList.length; i++) {
-					lookupAddrs.push(this._addrLookupList[i]);
-				}
-				search = this._getSearchForAddresses(this._addrLookupList);
-				isGroupSearch = true;
-				this._addrLookupList = null;
-			}
-			this._addrLookupHash[addr].push(callback);
-		} else {
-			search = this._getSearchForAddresses([address]);
-		}
-
-		if (search) {
-			var respCallback = new AjxCallback(this, this._handleResponseSearch, [isGroupSearch ? lookupAddrs : addr, isGroupSearch, callback]);
-			search.execute({callback:respCallback, noBusyOverlay:true});
-		}
-	}
-};
-
-ZmContactsApp.prototype._handleResponseSearch =
-function(addr, isGroupSearch, callback, result) {
-	var resp = result.getResponse();
-	var contactList = resp && resp.getResults(ZmItem.CONTACT);
-	if (isGroupSearch) {
-		var list = contactList.getArray();
-		for (var i = 0; i < list.length; i++) {
-			this._updateLookupCache(list[i]);
-		}
-		for (var i = 0; i < addr.length; i++) {
-			var a = addr[i];
-			if (!this._byEmail[a]) {
-				this._updateLookupCache(null, a); // Make sure there's a null entry in the map for the address.	
-			}
-			var callbacks = this._addrLookupHash[a];
-			if (callbacks && callbacks.length) {
-				for (var j = 0; j < callbacks.length; j++) {
-					callbacks[j].run(this._byEmail[a]);
-				}
-			}
-			this._removeAddrFromLookupGroup(a);
-		}
-	} else {
-		var contact = contactList ? contactList.get(0) : null;	// return null if not found
-		this._updateLookupCache(contact, addr);
-		this._byEmail[addr] = contact;
-		callback.run(contact);
-	}
-};
-
-/**
- * Returns the contacts with the given addresses, if any. If there are addresses not in our cache
- * and we are given a callback, we do a search. Unlike getContactByEmail, this method does not
- * use or modify the Address Lookup Group (See ZmContactsApp#setAddrLookupGroup)
- *
- * @param addresses	[Array]			An array of AjxEmailAddress
- * @param callback	[AjxCallback]*	callback to run
- * @return			[Array]			An array of { address, contact } pairs.
- */
-ZmContactsApp.prototype.getContactsByEmails =
-function(addresses, callback) {
-	// Go through the addresses, separating known ones from unknown.
-	var resultArray = [],
-		searchAddresses = null,
-		searchAddressStrings = null;
-	for (var i = 0, count = addresses.length; i < count; i++) {
-		var address = addresses[i];
-		var contact = this.getContactByEmail(address.getAddress());
-		if (contact || contact === null) {
-			resultArray.push({ address: address, contact: contact });
-		} else {
-			searchAddresses = searchAddresses || [];
-			searchAddressStrings = searchAddressStrings || [];
-			searchAddresses.push(address);
-			searchAddressStrings.push(address.getAddress());
-		}
-	}
-
-	// See if we can exit without performing a search.
-	if (!callback) {
-		return resultArray;
-	}
-	if (!searchAddresses) {
-		callback.run(resultArray);
-		return resultArray;
-	}
-
-	// Perform the search.
-	var search = this._getSearchForAddresses(searchAddressStrings);
-	var respCallback = new AjxCallback(this, this._handleResponseSearchByEmails, [searchAddresses, resultArray, callback]);
-	search.execute({callback:respCallback});
-};
-
-ZmContactsApp.prototype._handleResponseSearchByEmails =
-function(addresses, resultArray, callback, result) {
-	// Add the search results to our cache.
-	var resp = result.getResponse();
-	var contactList = resp && resp.getResults(ZmItem.CONTACT);
-	if (contactList) {
-		for (var contactIndex = 0, contactCount = contactList.size(); contactIndex < contactCount; contactIndex++) {
-			var contact = contactList.get(contactIndex);
-			for (var fieldIndex = 0, fieldCount = ZmContact.F_EMAIL_FIELDS.length; fieldIndex < fieldCount; fieldIndex++) {
-				var addr = contact.getAttr(ZmContact.F_EMAIL_FIELDS[fieldIndex]);
-				if (addr) {
-					this._byEmail[addr] = contact;
-				}
-			}
-		}
-	}
-
-	// Fill in the results.
-	for (var i = 0, count = addresses.length; i < count; i++) {
-		var address = addresses[i];
-		var contact = this.getContactByEmail(address.getAddress());
-		resultArray.push({ address: address, contact: contact });
-	}
-	callback.run(resultArray);
-};
-
-ZmContactsApp.prototype._getSearchForAddresses =
-function(addrs) {
-	var buffer;
-	if (addrs.length == 1) {
-		buffer = ["to:", addrs[0], " not #type:group"];
-	} else {
-		buffer = ["("];
-		for (var i = 0, count = addrs.length; i < count; i++) {
-			if (i > 0) {
-				buffer.push(" OR ");
-			}
-			buffer.push("to:");
-			buffer.push(addrs[i]);
-		}
-		buffer.push(") not #type:group");
-	}
-	var params = {
-		query: buffer.join(""),
-		limit: addrs.length * 2,
-		types: AjxVector.fromArray([ZmItem.CONTACT])
-	};
-	return new ZmSearch(params);
-};
-
-ZmContactsApp.prototype._notFound =
-function(contact) {
-	return (contact === null || Boolean(this._contactList[appCtxt.getActiveAccount().id]));
-};
-
-/**
- * Sets up a list of email addresses to use to find their contacts with a single search. The addresses passed
- * in can either be raw email addresses (strings), or AjxEmailAddress objects. A list of the addresses is kept
- * so that it can later be used to create a single search query. Each address will also keep track of the
- * callbacks that will need to be run with its search result (it's a list of callbacks since the same address
- * may be used in more than one context).
- *
- * One example of this group approach is in rendering a message header, where each email address in the header
- * is rendered based on whether it maps to a contact. The group approach lets us do a single search rather than
- * several.
- *
- * @param addrs		[array]		list of addresses to look up
- */
-ZmContactsApp.prototype.setAddrLookupGroup =
-function(addrs) {
-	this._addrLookupList = [];
-	this._addrLookupHash = {};
-	if (addrs && addrs.length) {
-		for (var i = 0; i < addrs.length; i++) {
-			if (addrs[i]) {
-				var addr = addrs[i].address || addrs[i];
-				addr = (addr && AjxUtil.isString(addr)) ? addr.toLowerCase() : null;
-				if (addr && !this._addrLookupHash[addr]) {
-					this._addrLookupList.push(addr);
-					this._addrLookupHash[addr] = [];
-				}
-			}
-		}
-	}
-};
-
-ZmContactsApp.prototype._removeAddrFromLookupGroup =
-function(addr) {
-	if (!(this._addrLookupList && this._addrLookupList.length)) { return; }
-	AjxUtil.arrayRemove(this._addrLookupList, addr);
-	delete this._addrLookupHash[addr];
-};
-
-ZmContactsApp.prototype._updateLookupCache =
-function(contact, addr) {
-	if (addr) {
-		this._byEmail[addr] = contact;
-	}
-	if (contact) {
-		for (var i = 0; i < ZmContact.F_EMAIL_FIELDS.length; i++) {
-			var attr = contact.getAttr(ZmContact.F_EMAIL_FIELDS[i]);
-			if (attr) {
-				this._byEmail[attr.toLowerCase()] = contact;
-			}
-		}
-	}
-};
-
-ZmContactsApp.prototype.getContactByIMAddress =
-function(addr) {
-	if (!addr) { return null; }
-	var contact = this._byIM[addr.toLowerCase()];
-	return this._realizeContact(contact);
-};
-
-/**
-* Returns information about the contact with the given phone number, if any.
-* Canonical list only.
-*
-* @param phone	[string]	a phone number
-* @return		[Object]	an object with contact = the contact & field = the field with the matching phone number
-*/
-ZmContactsApp.prototype.getContactByPhone =
-function(phone) {
-	if (!phone) { return null; }
-	var digits = phone.replace(/[^\d]/g, '');
-	var data = this._phoneToContact[digits];
-	if (data) {
-		data.contact = this._realizeContact(data.contact);
-	}
-	return data;
-};
-
-ZmContactsApp.prototype._realizeContact =
-function(contact) {
-	var acctId = appCtxt.getActiveAccount().id;
-	var cl = this._contactList[acctId];
-	return cl ? cl._realizeContact(contact) : contact;
-}
-
-ZmContactsApp.prototype.updateCache =
-function(contact, doAdd) {
-
-	this._updateHash(contact, doAdd, ZmContact.F_EMAIL_FIELDS, this._byEmail);
-	if (appCtxt.get(ZmSetting.VOICE_ENABLED)) {
-		this._updateHash(contact, doAdd, ZmContact.F_PHONE_FIELDS, this._byPhone, true, true);
-	}
-	if (appCtxt.get(ZmSetting.IM_ENABLED)) {
-		this._updateHash(contact, doAdd, ZmContact.F_IM_FIELDS, this._byIM);
-	}
-};
-
-ZmContactsApp.prototype._updateHash =
-function(contact, doAdd, fields, hash, includeField, isNumeric) {
-
-	for (var i = 0; i < fields.length; i++) {
-		var field = fields[i];
-		var value = ZmContact.getAttr(contact, fields[i]);
-		if (value) {
-			value = isNumeric ? value.replace(/[^\d]/g, '') : value.toLowerCase();
-			if (doAdd) {
-				hash[value] = includeField ? contact : {contact:contact, field:field};
-			} else {
-				delete hash[value];
-			}
-		}
-	}
-};
-
-/**
- * Returns a ZmContactList with all of the user's local contacts. If that's a large
- * number, performance may be slow.
- * 
- * @param callback
- * @param errorCallback
- */
 ZmContactsApp.prototype.getContactList =
 function(callback, errorCallback) {
 	var acctId = appCtxt.getActiveAccount().id;
@@ -867,26 +597,6 @@ ZmContactsApp.prototype.createFromVCard =
 function(msgId, vcardPartId) {
 	var contact = new ZmContact(null);
 	contact.createFromVCard(msgId, vcardPartId);
-};
-
-ZmContactsApp.prototype.getMyCard =
-function(callback) {
-    if (this._myCard) {
-		this._myCard = this._realizeContact(this._myCard);
-		callback.run(this._myCard);
-    } else {
-		var sc = appCtxt.getSearchController();
-		var respCallback = new AjxCallback(this, this._handleResponseGetMyCard, [callback]);
-		sc.search({query:"#cardOwner:isMyCard", types:[ZmItem.CONTACT], noRender:true, callback:respCallback});
-	}
-};
-
-ZmContactsApp.prototype._handleResponseGetMyCard =
-function(callback, result) {
-	var resp = result.getResponse();
-	var cl = resp && resp.getResults(ZmItem.CONTACT);
-	this._myCard = cl ? cl.get(0) : null;
-	callback.run(this._myCard);
 };
 
 ZmContactsApp.prototype.getContactListController =

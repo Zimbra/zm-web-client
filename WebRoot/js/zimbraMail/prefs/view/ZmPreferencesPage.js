@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -208,6 +210,9 @@ function() {
 			pref.origValue = this._getPrefValue(id);
 			var value = this._getPrefValue(id, false);
 
+			// we only show this one if it's false
+			if ((id == ZmSetting.GAL_AUTOCOMPLETE_SESSION) && value) { continue; }
+
 			this._prefPresent[id] = true;
 			DBG.println(AjxDebug.DBG3, "adding pref " + pref.name + " / " + value);
 
@@ -312,7 +317,7 @@ function(id, object) {
 
 ZmPreferencesPage.prototype.getFormObject =
 function(id) {
-	return this._dwtObjects[id];
+	return this._dwtObjects[id]; 
 };
 
 /**
@@ -672,7 +677,7 @@ function(id, setup, value) {
 		var optValue = isChoices ? options[i].value : options[i];
 		var optLabel = isChoices ? options[i].label : (isDisplayString ? setup.displayOptions : setup.displayOptions[i]);
 		optLabel = ZmPreferencesPage.__formatLabel(optLabel, optValue);
-		var isSelected = value == optValue;
+		var isSelected = value == optValue; 
 
 		var radioBtn = new DwtRadioButton({parent:container, name:name, checked:isSelected});
 		radioBtn.setText(optLabel);
@@ -702,7 +707,7 @@ function(id, setup, value) {
 	// store radio button group
 	this.setFormObject(id, new DwtRadioButtonGroup(radioIds, selectedId));
 
-	var func = ZmPreferencesPage.__radioGroup_getTabGroupMember;
+	var func = ZmPreferencesPage.__radioGroup_getTabGroupMember; 
 	container.getTabGroupMember = AjxCallback.simpleClosure(func, container, radioIds);
 	return container;
 };
@@ -722,8 +727,7 @@ ZmPreferencesPage.prototype._setupCheckbox =
 function(id, setup, value) {
 	var checkbox = new DwtCheckbox({parent:this, checked:value});
 	this.setFormObject(id, checkbox);
-	var text = setup.displayFunc ? setup.displayFunc() : setup.displayName;
-	var cboxLabel = ZmPreferencesPage.__formatLabel(text, value);
+	var cboxLabel = ZmPreferencesPage.__formatLabel(setup.displayName, value);
 	checkbox.setText(cboxLabel);
 	checkbox.setSelected(value);
 

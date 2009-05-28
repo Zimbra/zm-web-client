@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -157,13 +159,7 @@ function(compNum) {
 	return this.components[cn] ? this.components[cn].alarm : null;
 };
 
-ZmInvite.prototype.getInviteMethod =
-function(compNum) {
-	var cn = compNum || 0;
-	return this.components[cn] ? this.components[cn].method : null;
-};
-
-ZmInvite.prototype.getOrganizerEmail =
+ZmInvite.prototype.getOrganizerEmail = 
 function(compNum) {
 	var cn = compNum || 0;
 	return (this.components[cn] && this.components[cn].or && this.components[cn].or.url)
@@ -571,11 +567,4 @@ function() {
 	}
 	
 	return false;
-};
-
-ZmInvite.prototype.hasInviteReplyMethod =
-function(compNum) {
-    var methodName = this.getInviteMethod(compNum);
-    var publishOrRequest = (methodName == ZmCalendarApp.METHOD_REQUEST || methodName == ZmCalendarApp.METHOD_PUBLISH);
-    return ((methodName == null) || publishOrRequest);
 };
