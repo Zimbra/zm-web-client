@@ -391,13 +391,13 @@ ZmAutocompleteMatch = function(match, options, isContact) {
 				this.email = email.getAddress();
 			}
             this.text = AjxStringUtil.htmlEncode(match.email);
+			if (options && options.needItem && window.ZmContact) {
+				this.item = new ZmContact(null);
+				this.item.initFromEmail(email || match.email);
+			}
         }
 		this.icon = ZmAutocomplete.AC_ICON[match.type];
 		this.score = match.ranking;
-		if (options && options.needItem && window.ZmContact) {
-			this.item = new ZmContact(null);
-			this.item.initFromEmail(match.email);
-		}
 	}
 	this.acType = (this.type == ZmAutocomplete.AC_TYPE_LOCATION || this.type == ZmAutocomplete.AC_TYPE_EQUIPMENT) ?
 					this.type : ZmAutocomplete.AC_TYPE_CONTACT;
