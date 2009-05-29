@@ -721,6 +721,7 @@ line-height:normal;
 
 .ZmContactEditTabViewPage {
 	display: none;
+	width: 100%;
 }
 
 .ZmContactTabViewPage, .ZmContactEditTabViewPage {
