@@ -320,7 +320,7 @@ function(ev, aclv, result) {
 	var key = DwtKeyEvent.getCharCode(ev);
 	if ((key == 3 || key == 13) && !aclv.getVisible()) {
 		var el = DwtUiEvent.getTargetWithProp(ev, "id");
-		this._addAttendeeRow(false, null, true, null, true, true); // add new empty slot
+        this._handleAttendeeField(el);        
 	}
 };
 
