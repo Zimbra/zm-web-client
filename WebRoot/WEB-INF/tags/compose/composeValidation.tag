@@ -82,7 +82,7 @@
             }
         }
     <c:if test="${(isHtml)}" >
-        setTimeout(function() { myEditor.saveHTML() }, 1000);  // Saves to content text area
+        setTimeout(function() { myEditor.saveHTML() }, 4000);  // Saves to content text area
         _fields["body"] = trim(document.getElementById("body").value);
     </c:if>
     }

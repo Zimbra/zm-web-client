@@ -25,7 +25,7 @@ function enableSpellCheck(myEditor) {
     };
 
     var _handleWindow = function() {
-        this.nodeChange();
+        try{ this.nodeChange(); } catch(ex) {;}
         var el = this.currentElement[0],
         win = new YAHOO.widget.EditorWindow('spellcheck', {
             width: '170px'
@@ -69,7 +69,7 @@ function enableSpellCheck(myEditor) {
                     this.toolbar.set('disabled', false);
                     this.closeWindow();
                 }
-                this.nodeChange();
+                try{ this.nodeChange(); } catch(ex) {;}
             }
         }, this, true);
 
@@ -109,10 +109,10 @@ function enableSpellCheck(myEditor) {
             var tar =Event.getTarget(ev);
             if (this._isElement(tar, 'a') || this._isElement(tar.parentNode, 'a')) {
                 Event.stopEvent(ev);
-                this.nodeChange();
+                try{ this.nodeChange(); } catch(ex) {;}
             }
         } else {
-            this.nodeChange();
+            try{ this.nodeChange(); } catch(ex) {;}
         }
     };
     /* }}} */
@@ -133,11 +133,11 @@ function enableSpellCheck(myEditor) {
 			alert('<fmt:message key="spellcheckNoMistakesFound"/>');
 			this.endSpellCheck();
 		} else {
-			var html = this._getDoc().body.innerHTML;
-			for (var i = 0; i < data.data.length; i++) {
-				html = html.replace(data.data[i].word, '<span class="yui-spellcheck">' + data.data[i].word + '</span>');
-			}
-			this.setEditorHTML(html);
+                var html = this._getDoc().body.innerHTML;
+                for (var i = 0; i < data.data.length; i++) {
+                    html = html.replace(data.data[i].word, '<span class="yui-spellcheck">' + data.data[i].word + '</span>');
+                }
+                this.setEditorHTML(html);
 			this._spellData = data.data;
 		}
 	};
@@ -189,7 +189,7 @@ function enableSpellCheck(myEditor) {
 			Dom.removeClass(el, 'yui-spellcheck');
 			Dom.addClass(el, 'yui-none');
 			this.toolbar.set('disabled', false);
-			this.nodeChange();
+			try{ this.nodeChange(); } catch(ex) {;}
 		}
 	}
 	myEditor.on('toolbarLoaded', function() {

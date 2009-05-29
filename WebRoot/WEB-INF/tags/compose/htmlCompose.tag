@@ -67,7 +67,6 @@ var myEditor;
         draggable: false,
         buttonType: 'advanced'
     });
-    enableSpellCheck(myEditor);
     myEditor.on('editorContentLoaded', function() {
         var html = document.getElementById('body').innerHTML;;
         if(html==""){
@@ -140,6 +139,7 @@ var myEditor;
         fnObj.checkValue('<c:out value="${mailbox.prefs.htmlEditorDefaultFontFamily}"/>');
         
     });
+    enableSpellCheck(myEditor);
     myEditor.render();
 
 // -->
