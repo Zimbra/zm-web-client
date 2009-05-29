@@ -35,6 +35,11 @@ ZmComposeView = function(parent, controller, composeMode) {
 
 	ZmComposeView.ADDR_SETTING[AjxEmailAddress.BCC]	= ZmSetting.SHOW_BCC;
 
+	ZmComposeView.NOTIFY_ACTION_MAP = {};
+	ZmComposeView.NOTIFY_ACTION_MAP[ZmOperation.REPLY_ACCEPT]		= ZmOperation.REPLY_ACCEPT_NOTIFY;
+	ZmComposeView.NOTIFY_ACTION_MAP[ZmOperation.REPLY_DECLINE]		= ZmOperation.REPLY_DECLINE_NOTIFY;
+	ZmComposeView.NOTIFY_ACTION_MAP[ZmOperation.REPLY_TENTATIVE]	    = ZmOperation.REPLY_TENTATIVE_NOTIFY;
+
 	this._onMsgDataChange = new AjxCallback(this, this._onMsgDataChange);
 
 	this._controller = controller;
@@ -626,7 +631,7 @@ function(attId, isDraft) {
 			msg.origId = this._msg.id;
 		}
 		msg.isInviteReply = isInviteReply;
-        var inviteMode = ZmMailListController.NOTIFY_ACTION_MAP[this._action] ? ZmMailListController.NOTIFY_ACTION_MAP[this._action] : this._action;
+        var inviteMode = ZmComposeView.NOTIFY_ACTION_MAP[this._action] ? ZmComposeView.NOTIFY_ACTION_MAP[this._action] : this._action;
 		msg.inviteMode = isInviteReply ? inviteMode : null;
 		msg.irtMessageId = this._msg.messageId;
 		msg.folderId = this._msg.folderId;

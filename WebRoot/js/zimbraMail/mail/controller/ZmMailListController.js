@@ -43,11 +43,6 @@ ZmMailListController = function(container, mailApp) {
     ZmMailListController.REPLY_ACTION_MAP[ZmOperation.REPLY_TENTATIVE_NOTIFY]	= ZmOperation.REPLY_TENTATIVE;
     ZmMailListController.REPLY_ACTION_MAP[ZmOperation.REPLY_TENTATIVE_IGNORE]	= ZmOperation.REPLY_TENTATIVE;
 
-    ZmMailListController.NOTIFY_ACTION_MAP = {};
-    ZmMailListController.NOTIFY_ACTION_MAP[ZmOperation.REPLY_ACCEPT]		= ZmOperation.REPLY_ACCEPT_NOTIFY;
-    ZmMailListController.NOTIFY_ACTION_MAP[ZmOperation.REPLY_DECLINE]		= ZmOperation.REPLY_DECLINE_NOTIFY;
-    ZmMailListController.NOTIFY_ACTION_MAP[ZmOperation.REPLY_TENTATIVE]	    = ZmOperation.REPLY_TENTATIVE_NOTIFY;
-
 	// convert key mapping to operation
 	ZmMailListController.ACTION_CODE_TO_OP = {};
 	ZmMailListController.ACTION_CODE_TO_OP[ZmKeyMap.REPLY]			= ZmOperation.REPLY;
