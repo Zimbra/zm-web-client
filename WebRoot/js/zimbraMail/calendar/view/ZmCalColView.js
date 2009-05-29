@@ -56,8 +56,6 @@ ZmCalColView._UNION_DIV_WIDTH = 40; // width of div holding union in sched view
 
 ZmCalColView._ALL_DAY_SEP_HEIGHT = 5; // height of separator between all day appts and body
 
-ZmCalColView._SCROLLBAR_WIDTH = 22;
-
 ZmCalColView._SCROLL_PRESSURE_FUDGE = 10; // pixels for scroll pressure around top/bottom
 
 ZmCalColView._DAY_HEADING_HEIGHT = 20;
@@ -1219,7 +1217,7 @@ function(id, x, y, w, h) {
 
 ZmCalColView.prototype._calcColWidth =
 function(bodyWidth, numCols, horzScroll) {
-//	var sbwfudge = (AjxEnv.isIE ? 1 : 0) + (horzScroll ? 0 : ZmCalColView._SCROLLBAR_WIDTH);
+//	var sbwfudge = (AjxEnv.isIE ? 1 : 0) + (horzScroll ? 0 : Dwt.SCROLLBAR_WIDTH);
 	var sbwfudge = 0;
 	return dayWidth = Math.floor((bodyWidth-sbwfudge)/numCols) - (this._daySepWidth == 1 ? 0 : 1);
 };
@@ -1265,7 +1263,7 @@ function(refreshApptLayout) {
 
 	this._horizontalScrollbar(needHorzScroll);
 	var sbwfudge = AjxEnv.isIE ? 1 : 0;
-	var dayWidth = this._calcColWidth(this._apptBodyDivWidth - ZmCalColView._SCROLLBAR_WIDTH, numCols);
+	var dayWidth = this._calcColWidth(this._apptBodyDivWidth - Dwt.SCROLLBAR_WIDTH, numCols);
 
 	if (needHorzScroll) this._apptBodyDivWidth -= 18;
 	var scrollFudge = needHorzScroll ? 20 : 0; // need all day to be a little wider then grid
