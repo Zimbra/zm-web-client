@@ -94,7 +94,7 @@ function(params, callback) {
 	var sortBy = params.sortBy || ZmSearch.DATE_DESC;
 	var offset = params.offset || 0;
 	var limit = params.limit || appCtxt.get(ZmSetting.PAGE_SIZE);
-	var getHtml = params.getHtml || appCtxt.get(ZmSetting.VIEW_AS_HTML);
+	var getHtml = params.getHtml || this.isDraft || appCtxt.get(ZmSetting.VIEW_AS_HTML);
 
 	var doSearch = true;
 	if (this._loaded && this.msgs && this.msgs.size()) {

@@ -541,7 +541,7 @@ function(params) {
 	// If we are already loaded, then don't bother loading
 	if (!this._loaded || params.forceLoad) {
 		var respCallback = new AjxCallback(this, this._handleResponseLoad, [params, params.callback]);
-		params.getHtml = (params.getHtml == undefined) ? appCtxt.get(ZmSetting.VIEW_AS_HTML) : params.getHtml;
+		params.getHtml = params.getHtml || this.isDraft || appCtxt.get(ZmSetting.VIEW_AS_HTML);
 		params.sender = appCtxt.getAppController();
 		params.msgId = this.id;
 		params.callback = respCallback;
