@@ -298,7 +298,7 @@ function(folder) {
 		var params = {
 			query: folder.createQuery(),
 			searchFor: searchFor,
-			getHtml: appCtxt.get(ZmSetting.VIEW_AS_HTML),
+			getHtml: (folder.nId == ZmFolder.ID_DRAFTS) || appCtxt.get(ZmSetting.VIEW_AS_HTML), //bug: 
 			types: ((folder.nId == ZmOrganizer.ID_SYNC_FAILURES) ? [ZmItem.MSG] : null)	// for Sync Failures folder, always show in traditional view
 
 		};
