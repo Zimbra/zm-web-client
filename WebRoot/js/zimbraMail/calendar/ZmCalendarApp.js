@@ -118,6 +118,7 @@ function(settings) {
 	settings.registerSetting("CAL_AUTO_ADD_INVITES",		{name: "zimbraPrefCalendarAutoAddInvites",type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
 	settings.registerSetting("CAL_SEND_INV_DENIED_REPLY",   {name: "zimbraPrefCalendarSendInviteDeniedAutoReply",type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
     settings.registerSetting("CAL_INV_FORWARDING_ADDRESS",  {name: "zimbraPrefCalendarForwardInvitesTo", type:ZmSetting.T_PREF});    
+    settings.registerSetting("CAL_SHOW_PAST_DUE_REMINDERS", {name: "zimbraPrefCalendarShowPastDueReminders", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue: true});    
 };
 
 ZmCalendarApp.prototype._registerPrefs =
@@ -149,7 +150,8 @@ function() {
 				ZmSetting.CAL_INVITE_ACL,
 				ZmSetting.CAL_INVITE_ACL_USERS,
 				ZmSetting.CAL_REMINDER_NOTIFY_TOASTER,
-                ZmSetting.CAL_INV_FORWARDING_ADDRESS                    
+                ZmSetting.CAL_INV_FORWARDING_ADDRESS,
+                ZmSetting.CAL_SHOW_PAST_DUE_REMINDERS                    
 			],
 			manageDirty: true,
 			createView: function(parent, section, controller) {
@@ -272,6 +274,11 @@ function() {
         validationFunction: ZmPref.validateEmail,
         errorMessage:       ZmMsg.invalidEmail
     });
+
+    ZmPref.registerPref("CAL_SHOW_PAST_DUE_REMINDERS", {
+        displayName: ZmMsg.apptPastDueReminderLabel,
+        displayContainer:	ZmPref.TYPE_CHECKBOX
+    });    
 };
 
 ZmCalendarApp.prototype._registerOperations =

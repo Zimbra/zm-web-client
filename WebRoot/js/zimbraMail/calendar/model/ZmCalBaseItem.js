@@ -274,3 +274,21 @@ ZmCalBaseItem.prototype.getReminderName =
 function() {
 	return (this.alarmData[0].name || "");
 };
+
+ZmCalBaseItem.prototype.isAlarmOld =
+function() {
+	if (!this.alarmData) { return false; }
+
+	var alarmData = this.alarmData[0];
+	this._nextAlarmTime = alarmData.nextAlarm;
+	this._alarmInstStart = alarmData.alarmInstStart;
+
+	var currentTime = (new Date()).getTime();
+
+    var diff = (currentTime - this._nextAlarmTime);
+
+    if(diff > 2*AjxDateUtil.MSEC_PER_DAY) {
+        return true;
+    }
+    return false;
+};
