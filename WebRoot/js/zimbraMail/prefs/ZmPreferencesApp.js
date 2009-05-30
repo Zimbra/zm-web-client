@@ -356,6 +356,7 @@ function() {
 	ZmPref.registerPref("DEFAULT_TIMEZONE", {
 		displayName:		ZmMsg.selectTimezone,
 		displayContainer:	ZmPref.TYPE_SELECT,
+		displayParams:		{ cascade: false },
 		displayOptions:		AjxTimezone.getZonePreferences(),
 		options:			AjxTimezone.getZonePreferencesOptions()
 	});

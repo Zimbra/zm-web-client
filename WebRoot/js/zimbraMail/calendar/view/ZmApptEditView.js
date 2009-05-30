@@ -500,7 +500,7 @@ function(width) {
     // timezone DwtSelect
 	var timezoneListener = new AjxListener(this, this._timezoneListener);
 
-	this._tzoneSelect = new DwtSelect({parent:this, parentElement: (this._htmlElId + "_tzoneSelect")});
+	this._tzoneSelect = new DwtSelect({parent:this, parentElement: (this._htmlElId + "_tzoneSelect"), cascade:false});
 	this._tzoneSelect.addChangeListener(timezoneListener);
 	// NOTE: tzone select is initialized later
 

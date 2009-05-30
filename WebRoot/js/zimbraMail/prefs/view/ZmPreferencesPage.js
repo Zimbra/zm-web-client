@@ -597,7 +597,11 @@ ZmPreferencesPage.prototype._setupSelect =
 function(id, setup, value) {
 	value = this._prepareValue(id, setup, value);
 
-	var selObj = new DwtSelect({parent:this});
+	var params = {parent:this};
+	for (var p in setup.displayParams) {
+		params[p] = setup.displayParams[p];
+	}
+	var selObj = new DwtSelect(params);
 	this.setFormObject(id, selObj);
 
 	var options = setup.options || setup.displayOptions || setup.choices || [];
