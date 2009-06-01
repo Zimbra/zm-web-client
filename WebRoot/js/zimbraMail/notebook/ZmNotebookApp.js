@@ -77,6 +77,7 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_NEW_PAGE, {textKey:"newPage", tooltipKey:"createNewPage", image:"NewPage"});
 	ZmOperation.registerOp(ZmId.OP_IMPORT_FILE, {textKey:"_import", tooltipKey:"importDocs"});
 	ZmOperation.registerOp(ZmId.OP_SEND_PAGE, {textKey:"send", tooltipKey:"sendPageTT", image:"Send"}, ZmSetting.MAIL_ENABLED);
+    ZmOperation.registerOp(ZmId.OP_REFRESH, {textKey:"refresh", tooltipKey:"refreshTooltip", image:"Refresh"});
 	ZmOperation.registerOp(ZmId.OP_SHARE_NOTEBOOK, {textKey:"shareNotebook", image:"Notebook"}, ZmSetting.SHARING_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_REVERT_PAGE, {textKey:"revert", tooltipKey:"restorePage", image:"Edit"});
 	ZmOperation.registerOp(ZmId.OP_BROWSE_FOLDER, {textKey:"browse", image:"Browse"});
