@@ -619,7 +619,17 @@ function(text, str, hasDelim) {
 	var start = this._start;
 	var end = hasDelim ? this._end + 1 : this._end;
 	DBG.println(AjxDebug.DBG2, "update replace range: " + start + " - " + end);
-	var value = match[this._matchValue] || "";
+	var value = "";
+	if (this._matchValue instanceof Array) {
+		for (var i = 0, len = this._matchValue.length; i < len; i++) {
+			if (match[this._matchValue[i]]) {
+				value = match[this._matchValue[i]];
+				break;
+			}
+		}
+	} else {
+		value = match[this._matchValue] || "";
+	}
 	var newText = [text.substring(0, start), value, this._separator, text.substring(end, text.length)].join("");
 	if (value) {
 		this._done[value] = true;

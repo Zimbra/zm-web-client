@@ -273,7 +273,7 @@ function() {
 			dataClass: appCtxt.getAutocompleter(),
 			separator: "",
 			options: {needItem: true},
-			matchValue: ZmAutocomplete.AC_VALUE_NAME,
+			matchValue: [ZmAutocomplete.AC_VALUE_NAME, ZmAutocomplete.AC_VALUE_EMAIL],
 			keyUpCallback: keyUpCallback,
 			compCallback: acCallback
 		};
