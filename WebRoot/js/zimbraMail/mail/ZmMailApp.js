@@ -1401,7 +1401,14 @@ function(sessionId) {
 
 ZmMailApp.prototype.getComposeController =
 function(sessionId) {
-	return this.getSessionController(ZmId.VIEW_COMPOSE, ZmComposeController, sessionId);
+    return this.getSessionController(ZmId.VIEW_COMPOSE, ZmComposeController, sessionId);
+};
+
+ZmMailApp.prototype.getCurrentSessionId =
+function(type) {
+    var sid = this._sessionId[type]; //this value points to the next available value
+    if(sid) --sid;
+    return sid;
 };
 
 ZmMailApp.prototype.getSessionController =
