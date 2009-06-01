@@ -225,7 +225,7 @@
 
     <error-page>
 		<error-code>404</error-code>
-		<location>/public/404.html</location>
+		<location>/public/error.jsp</location>
 	</error-page>
 
     <servlet>
