@@ -1249,7 +1249,16 @@ function() {
 
 ZmAccountsPage.prototype._resetAccountListView =
 function(accountOrIndex) {
-	this._accountListView.set(this._accounts.clone());
+	var accounts = this._accounts.clone();
+	var count = accounts.size();
+	// NOTE: We go backwards so we don't have to adjust index when we remove an item.
+	for (var i = count - 1; i >= 0; i--) {
+		var account = accounts.get(i);
+		if (account.type == ZmAccount.ZIMBRA && !account.isMain && !account.visible) {
+			accounts.removeAt(i);
+		}
+	}
+	this._accountListView.set(accounts);
 	var account = accountOrIndex;
 	if (AjxUtil.isNumber(account)) {
 		var index = accountOrIndex;
@@ -1951,7 +1960,7 @@ ZmAccountsListView.TYPES[ZmAccount.PERSONA]					= ZmMsg.accountTypePersona;
 
 ZmAccountsListView.WIDTH_NAME	= 170;
 ZmAccountsListView.WIDTH_STATUS	= 80;
-ZmAccountsListView.WIDTH_TYPE	= 80;
+ZmAccountsListView.WIDTH_TYPE	= 85;
 
 // Public methods
 
