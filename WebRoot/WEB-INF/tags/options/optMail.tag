@@ -263,12 +263,13 @@
 		 <td class='ZOptionsTableLabel'>
 			<fmt:message key="startDate"/> :
 		</td>
-		<td style='padding-left:20px'>
+        <fmt:message key="CAL_APPT_EDIT_DATE_FORMAT" var="editDateFmt"/>
+        <td style='padding-left:20px'>
 			<c:set var="fromDate" value="${fn:escapeXml(mailbox.prefs.outOfOfficeFromDate)}" />
 			<c:if test="${not empty fromDate}">
 				<c:catch var="parseError">
 					<fmt:parseDate pattern="yyyyMMddHHmmss'Z'" value="${fromDate}" var="parsedDate"  />
-					<fmt:formatDate value="${parsedDate}" pattern="MM/dd/yyyy" var="fmtDate" />
+					<fmt:formatDate value="${parsedDate}" pattern="${editDateFmt}" var="fmtDate" />
 				</c:catch>
 				<c:if test="${not empty parseError}">
 					<c:set var="fmtDate" value="" />
@@ -287,7 +288,7 @@
 			<c:if test="${not empty untilDate}">
 				<c:catch var="parseError2">
 					<fmt:parseDate pattern="yyyyMMddHHmmss'Z'" value="${untilDate}" var="parsedDate"  />
-					<fmt:formatDate value="${parsedDate}" pattern="MM/dd/yyyy" var="fmtDate" />
+					<fmt:formatDate value="${parsedDate}" pattern="${editDateFmt}" var="fmtDate" />
 				</c:catch>
 				<c:if test="${not empty parseError2}">
 					<c:set var="fmtDate" value="" />

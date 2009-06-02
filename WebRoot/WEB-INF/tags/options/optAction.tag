@@ -53,13 +53,14 @@
             <c:if test="${mailbox.features.outOfOfficeReply}">
                 <zm:pref name="zimbraPrefOutOfOfficeReplyEnabled" value="${param.zimbraPrefOutOfOfficeReplyEnabled eq 'TRUE' ? 'TRUE' : 'FALSE'}"/>
                 <zm:pref name="zimbraPrefOutOfOfficeReply" value="${param.zimbraPrefOutOfOfficeReply}"/>
-	            <c:choose>
+	            <fmt:message key="CAL_APPT_EDIT_DATE_FORMAT" var="editDateFmt"/>
+                <c:choose>
 		            <c:when test="${param.zimbraPrefOutOfOfficeReplyEnabled eq 'TRUE'}">
 			            <c:set var="fromDate" value="${param.zimbraPrefOutOfOfficeFromDate}" />
 			            <c:set var="untilDate" value="${param.zimbraPrefOutOfOfficeUntilDate}" />
 			            <c:if test="${not empty fromDate}">
 				            <c:catch var="parseError">
-					            <fmt:parseDate pattern="MM/dd/yyyy" value="${fromDate}" var="parsedDate"  />
+					            <fmt:parseDate pattern="${editDateFmt}" value="${fromDate}" var="parsedDate"  />
 					            <fmt:formatDate value="${parsedDate}" pattern="yyyyMMddHHmmss'Z'" var="fmtDate" />
 				            </c:catch>
 				            <c:if test="${not empty parseError}">
@@ -69,7 +70,7 @@
 			            </c:if>
 			            <c:if test="${not empty untilDate}">
 				            <c:catch var="parseError">
-					            <fmt:parseDate pattern="MM/dd/yyyy" value="${untilDate}" var="parsedDate"  />
+					            <fmt:parseDate pattern="${editDateFmt}" value="${untilDate}" var="parsedDate"  />
 					            <fmt:formatDate value="${parsedDate}" pattern="yyyyMMddHHmmss'Z'" var="fmtDate" />
 				            </c:catch>
 				            <c:if test="${not empty parseError}">
