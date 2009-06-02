@@ -154,6 +154,23 @@
                             </c:when>
                         </c:choose>
                     </c:if>
+                   <c:if test="${mailbox.features.conversations}">
+                    <td><div class='vertSep'></div></td>
+                    <td  nowrap valign="middle">
+                        <fmt:message key="viewLabel"/>
+                        <select name="actionOp" onchange="zclick('SOPSET')">
+                            <c:if test="${!empty param.st}">
+                                <option value="byConv" ${param.st eq 'conversation' ? 'selected=selected' : ''}><fmt:message key="byConversation"/></option>
+                                <option value="byMsg" ${param.st eq 'message' ? 'selected=selected' : ''}><fmt:message key="byMessage"/></option>
+                            </c:if>
+                            <c:if test="${empty param.st}">
+                                <option value="byConv" ${mailbox.prefs.groupByConversation ? 'selected=selected' : ''}><fmt:message key="byConversation"/></option>
+                                <option value="byMsg" ${mailbox.prefs.groupByMessage ? 'selected=selected' : ''}><fmt:message key="byMessage"/></option>
+                            </c:if>
+                        </select>
+                        <app:button id="${keys ? 'OPSET' : ''}" name="viewAction" text="actionGo" />
+                    </td>
+                    </c:if>
                 </tr>
             </table>
         </td>
