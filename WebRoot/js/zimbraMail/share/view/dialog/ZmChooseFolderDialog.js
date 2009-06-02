@@ -23,6 +23,7 @@ ZmChooseFolderDialog = function(parent, className) {
 	ZmDialog.call(this, params);
 
 	this._createControls();
+	this._setNameField(this._inputDivId);
 	this.registerCallback(ZmChooseFolderDialog.NEW_BUTTON, this._showNewDialog, this);
 	this._changeListener = new AjxListener(this, this._folderTreeChangeListener);
 
@@ -209,6 +210,7 @@ function() {
 	this._inputField = new DwtInputField({parent: this});
 	document.getElementById(this._inputDivId).appendChild(this._inputField.getHtmlElement());
 	this._inputField.addListener(DwtEvent.ONKEYUP, new AjxListener(this, this._handleKeyUp));
+	this._inputField.buttonId = DwtDialog.OK_BUTTON;	// hack for enter listener
 };
 
 ZmChooseFolderDialog.prototype._showNewDialog =
@@ -353,4 +355,9 @@ function(ev) {
 		var value = this._lastVal = folder.getName(false, null, true, true);
 		this._inputField.setValue(value);
 	}
+};
+
+ZmChooseFolderDialog.prototype._enterListener =
+function(ev) {
+	this._okButtonListener.call(this, ev);
 };

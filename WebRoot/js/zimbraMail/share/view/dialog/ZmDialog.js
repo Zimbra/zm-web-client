@@ -101,7 +101,9 @@ function(fieldId) {
 	if (this._nameField) {
 		this._focusElementId = fieldId;
 	}
-	this.addEnterListener(new AjxListener(this, this._enterListener));
+	if (this._enterListener) {
+		this.addEnterListener(new AjxListener(this, this._enterListener));
+	}
 };
 
 /**

@@ -379,15 +379,17 @@ function() {
 ZmNewOrganizerDialog.prototype._okButtonListener =
 function(ev) {
 	var results = this._getFolderData();
-	if (results)
+	if (results) {
 		DwtDialog.prototype._buttonListener.call(this, ev, results);
+	}
 };
 
 ZmNewOrganizerDialog.prototype._enterListener =
 function(ev) {
 	var results = this._getFolderData();
-	if (results)
+	if (results) {
 		this._runEnterCallback(results);
+	}
 };
 
 

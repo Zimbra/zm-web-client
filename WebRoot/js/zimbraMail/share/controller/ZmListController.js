@@ -178,6 +178,14 @@ function(actionCode) {
 			}
 			break;
 
+		case ZmKeyMap.FLAG:
+			this._doFlag(listView.getSelection());
+			break;
+
+		case ZmKeyMap.MOVE:
+			this._moveListener.call(this);
+			break;
+
 		case ZmKeyMap.NEXT_PAGE:
 			var ntb = this._navToolBar[this._currentView];
 			var button = ntb ? ntb.getButton(ZmOperation.PAGE_FORWARD) : null;
@@ -200,20 +208,16 @@ function(actionCode) {
 			}
 			break;
 
-		case ZmKeyMap.UNTAG:
-			if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
-				var items = listView.getSelection();
-				if (items && items.length) {
-					this._doRemoveAllTags(items);
-				}
+		case ZmKeyMap.TAG:
+			var items = listView.getSelection();
+			if (items && items.length) {
+				var dialog = appCtxt.getPickTagDialog();
+				dialog.registerCallback(DwtDialog.OK_BUTTON, this._tagSelectionCallback, this, [items, dialog]);
+				dialog.popup();
 			}
 			break;
 
-		case ZmKeyMap.FLAG:
-			this._doFlag(listView.getSelection());
-			break;
-
-		case ZmKeyMap.TAG:
+		case ZmKeyMap.TAG_CUSTOM:
 			var items = listView.getSelection();
 			if (items && items.length && shortcut) {
 				var tagId = (appCtxt.multiAccounts && !appCtxt.getActiveAccount().isMain)
@@ -221,6 +225,15 @@ function(actionCode) {
 				var tag = appCtxt.getById(tagId);
 				if (tag) {
 					this._doTag(items, tag, true);
+				}
+			}
+			break;
+
+		case ZmKeyMap.UNTAG:
+			if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
+				var items = listView.getSelection();
+				if (items && items.length) {
+					this._doRemoveAllTags(items);
 				}
 			}
 			break;
@@ -577,6 +590,15 @@ function(ev) {
 			this._doRemoveAllTags(items);
 		}
 	}
+};
+
+// Called after tag selection via dialog
+ZmListController.prototype._tagSelectionCallback =
+function(items, dialog, tag) {
+	if (tag) {
+		this._doTag(items, tag, true);
+	}
+	dialog.popdown();
 };
 
 // overload if you want to print in a different way

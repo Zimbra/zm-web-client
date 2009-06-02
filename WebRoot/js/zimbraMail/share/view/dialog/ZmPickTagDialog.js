@@ -30,6 +30,7 @@ ZmPickTagDialog = function(parent, className) {
 	ZmDialog.call(this, params);
 
 	this._createControls();
+	this._setNameField(this._inputDivId);
 	appCtxt.getTagTree().addChangeListener(new AjxListener(this, this._tagTreeChangeListener));
 	this.registerCallback(ZmPickTagDialog.NEW_BUTTON, this._showNewDialog, this);
 	this._creatingTag = false;
@@ -77,6 +78,7 @@ function() {
 	this._inputField = new DwtInputField({parent: this});
 	document.getElementById(this._inputDivId).appendChild(this._inputField.getHtmlElement());
 	this._inputField.addListener(DwtEvent.ONKEYUP, new AjxListener(this, this._handleKeyUp));
+	this._inputField.buttonId = DwtDialog.OK_BUTTON;	// hack for enter listener
 };
 
 ZmPickTagDialog.prototype._showNewDialog = 
@@ -173,4 +175,9 @@ function(ev) {
 ZmPickTagDialog.prototype._getTabGroupMembers =
 function() {
 	return [this._inputField, this._overview[this._curOverviewId]];
+};
+
+ZmPickTagDialog.prototype._enterListener =
+function(ev) {
+	this._okButtonListener.call(this, ev);
 };
