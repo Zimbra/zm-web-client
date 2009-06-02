@@ -211,9 +211,8 @@ function(actionCode) {
 		case ZmKeyMap.TAG:
 			var items = listView.getSelection();
 			if (items && items.length) {
-				var dialog = appCtxt.getPickTagDialog();
-				dialog.registerCallback(DwtDialog.OK_BUTTON, this._tagSelectionCallback, this, [items, dialog]);
-				dialog.popup();
+				var dlg = appCtxt.getPickTagDialog();
+				ZmController.showDialog(dlg, new AjxCallback(this, this._tagSelectionCallback, [items, dlg]));
 			}
 			break;
 

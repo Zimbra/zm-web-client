@@ -210,7 +210,6 @@ function() {
 	this._inputField = new DwtInputField({parent: this});
 	document.getElementById(this._inputDivId).appendChild(this._inputField.getHtmlElement());
 	this._inputField.addListener(DwtEvent.ONKEYUP, new AjxListener(this, this._handleKeyUp));
-	this._inputField.buttonId = DwtDialog.OK_BUTTON;	// hack for enter listener
 };
 
 ZmChooseFolderDialog.prototype._showNewDialog =

@@ -168,6 +168,15 @@ function(actionCode) {
 			break;
 
 		case ZmKeyMap.SAVED_SEARCH:
+			if (appCtxt.get(ZmSetting.SEARCH_ENABLED)) {
+				var dlg = appCtxt.getChooseFolderDialog();
+				var params = {treeIds:	[ZmOrganizer.SEARCH],
+							  title:	ZmMsg.selectSearch};
+				ZmController.showDialog(dlg, new AjxCallback(null, ZmController._searchSelectionCallback, [dlg]), params);
+			}
+			break;
+
+		case ZmKeyMap.SAVED_SEARCH_CUSTOM:
 			if (shortcut && appCtxt.get(ZmSetting.SEARCH_ENABLED)) {
 				var sid = (appCtxt.multiAccounts && !appCtxt.getActiveAccount().isMain)
 					? ZmOrganizer.getSystemId(shortcut.arg) : shortcut.arg;
@@ -182,6 +191,14 @@ function(actionCode) {
 			return false;
 	}
 	return true;
+};
+
+ZmController._searchSelectionCallback =
+function(dialog, searchFolder) {
+	if (searchFolder) {
+		appCtxt.getSearchController().redoSearch(searchFolder.search);
+	}
+	dialog.popdown();
 };
 
 /**
