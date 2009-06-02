@@ -245,7 +245,7 @@ function() {
 		}
 		cc._setComposeTabGroup();
 		rootTg.addMember(cc.getTabGroup());
-		startupFocusItem = cc._composeView.getAddrFields()[0];
+		startupFocusItem = cc._getDefaultFocusItem();
 
 		target = "compose-window";
 	} else if (cmd == "msgViewDetach") {
