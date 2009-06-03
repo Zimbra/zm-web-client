@@ -116,6 +116,24 @@
             </c:otherwise>
         </c:choose>
     </c:when>
+    <c:when test="${zm:actionSet(param, 'viewAction')}">
+        <c:choose>
+            <c:when test="${actionOp eq 'byConv'}">
+                <zm:modifyPrefs var="updated">
+                    <zm:pref name="zimbraPrefGroupMailBy" value="conversation"/>
+                </zm:modifyPrefs>
+                <%--<zm:getMailbox var="mailbox" refreshaccount="${true}"/>--%>
+                <c:redirect url="/h/search?st=conversation"/>
+            </c:when>
+            <c:when test="${actionOp eq 'byMsg'}">
+                <zm:modifyPrefs var="updated">
+                    <zm:pref name="zimbraPrefGroupMailBy" value="message"/>
+                </zm:modifyPrefs>
+                <%--<zm:getMailbox var="mailbox" refreshaccount="${true}"/>--%>
+                <c:redirect url="/h/search?st=message"/>
+            </c:when>
+        </c:choose>
+    </c:when>
     <c:when test="${empty ids}">
         <app:status style="Warning"><fmt:message key="actionNoMessageSelected"/></app:status>
     </c:when>
