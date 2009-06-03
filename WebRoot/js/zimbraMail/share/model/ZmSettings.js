@@ -202,6 +202,7 @@ function(callback, accountName, result) {
 		mainAcct.name = obj.name;
 		mainAcct.isMain = true;
 		mainAcct.loaded = true;
+		mainAcct.visible = true;
 		mainAcct.settings = this;
 		// replace dummy account with this one
 		if (appCtxt._accounts[ZmZimbraAccount.DEFAULT_ID]) {
@@ -212,7 +213,6 @@ function(callback, accountName, result) {
 
 		// XXX: hack
 		if (appCtxt.isOffline) {
-			mainAcct.visible = true;
 			mainAcct.displayName = "Local Folders";
 		}
 

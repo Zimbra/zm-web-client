@@ -52,11 +52,20 @@ ZmTag.ID_ATTACHED	= 37;
 * ZmFolder does (recursively create children).
 */
 ZmTag.createFromJs =
-function(parent, obj, tree, sorted) {
+function(parent, obj, tree, sorted, accountId) {
 	var nId = ZmOrganizer.normalizeId(obj.id);
 	if (nId < ZmOrganizer.FIRST_USER_ID[ZmOrganizer.TAG]) { return; }
-	var tag = new ZmTag({id: obj.id, name: obj.name, color: ZmTag.checkColor(obj.color),
-						 parent: parent, tree: tree, numUnread: obj.u});
+
+	var params = {
+		id: obj.id,
+		name: obj.name,
+		color: ZmTag.checkColor(obj.color),
+		parent: parent,
+		tree: tree,
+		numUnread: obj.u,
+		accountId: accountId
+	};
+	var tag = new ZmTag(params);
 	var index = sorted ? ZmOrganizer.getSortIndex(tag, ZmTag.sortCompare) : null;
 	parent.children.add(tag, index);
 

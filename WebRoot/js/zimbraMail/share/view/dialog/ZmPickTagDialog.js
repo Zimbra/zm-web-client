@@ -51,7 +51,7 @@ ZmPickTagDialog.prototype.popup =
 function(params) {
 
 	// all this is done here instead of in the constructor due to multi-account issues
-	this._setOverview({treeIds:[ZmOrganizer.TAG], fieldId:this._tagTreeDivId});
+	this._setOverview({treeIds:[ZmOrganizer.TAG], fieldId:this._tagTreeDivId}, true);
 	this._tagTreeView = this._getOverview().getTreeView(ZmOrganizer.TAG);
 	this._tagTreeView.removeSelectionListener(this._treeViewListener);
 	this._tagTreeView.addSelectionListener(this._treeViewListener);
@@ -157,6 +157,8 @@ function() {
 			ti.setVisible(true);
 		}
 	}
+
+	this._tagTreeView.getHeaderItem().setExpanded(true, false, true);
 };
 
 ZmPickTagDialog.prototype._treeViewSelectionListener =

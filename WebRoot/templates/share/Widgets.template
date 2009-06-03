@@ -83,6 +83,6 @@
 	<div class='ChooserDialog'>
 		<div style='width:300px'><$= ZmMsg.chooserDescription $></div>
 		<div id='${id}_inputDivId'></div>
-		<div style='background-color:white; width:300px; border:1px solid black; overflow:auto' id='${id}_tagTreeDivId'></div>
+		<div style='background-color:white; width:100%; overflow:auto' id='${id}_tagTreeDivId'></div>
 	</div>
 </template>

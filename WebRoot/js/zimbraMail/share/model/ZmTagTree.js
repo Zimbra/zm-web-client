@@ -31,11 +31,11 @@ function() {
 };
 
 ZmTagTree.prototype.loadFromJs =
-function(tagsObj) {
+function(tagsObj, type, accountId) {
 	if (!tagsObj || !tagsObj.tag || !tagsObj.tag.length) return;
 
 	for (var i = 0; i < tagsObj.tag.length; i++) {
-		ZmTag.createFromJs(this.root, tagsObj.tag[i], this);
+		ZmTag.createFromJs(this.root, tagsObj.tag[i], this, null, accountId);
 	}
 	var children = this.root.children.getArray();
 	if (children.length)

@@ -111,7 +111,9 @@ function(fieldId) {
  */
 ZmDialog.prototype.getOverviewId =
 function() {
-	return this.toString();
+	return (appCtxt.multiAccounts)
+		? ([appCtxt.getActiveAccount().name, this.toString()].join(":"))
+		: (this.toString());
 };
 
 /**
@@ -127,13 +129,14 @@ function() {
  *        fieldId		[string]			DOM ID of element that contains overview
  *        overviewId	[string]*			ID for the overview
  *        noRootSelect	[boolean]*			if true, don't make root tree item(s) selectable
+ * @param forceSingle	[boolean]*			if true, don't make multi-account overviews
  */
 ZmDialog.prototype._setOverview =
-function(params) {
+function(params, forceSingle) {
 	// todo - refactor repetitive code(?)
 
 	// multi-account uses overview container
-	if (appCtxt.multiAccounts) {
+	if (appCtxt.multiAccounts && !forceSingle) {
 		var appName = this.toString();
 		var ovContainer = this._opc.getOverviewContainer(appName);
 		if (!ovContainer) {
