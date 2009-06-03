@@ -634,10 +634,15 @@ function() {
 		}
 		// now check all folders by name
 		if (!this.folderId) {
-			var folders = appCtxt.getFolderTree();
+			var account = this.accountName && appCtxt.getAccountByName(this.accountName);
+			var folders = appCtxt.getFolderTree(account);
 			var folder = folders ? folders.getByPath(path, true) : null;
 			if (folder) {
 				this.folderId = folder.id;
+			}
+		} else {
+			if (this.accountName) {
+				this.folderId = ZmOrganizer.getSystemId(this.folderId, appCtxt.getAccountByName(this.accountName));
 			}
 		}
 	}

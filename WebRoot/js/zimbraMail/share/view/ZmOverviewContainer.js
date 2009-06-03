@@ -62,12 +62,18 @@ function(account) {
 
 ZmOverviewContainer.prototype.getSelected =
 function() {
+	var selected;
 	for (var i in this._overview) {
-		var selected = this._overview[i].getSelected();
+		selected = this._overview[i].getSelected();
 		if (selected) {
 			return selected;
 		}
 	}
+
+	selected = this.getSelection()[0];
+	var account = selected && appCtxt.getAccount(selected.getData(Dwt.KEY_ID));
+	var tree = account && appCtxt.getFolderTree(account);
+	return tree && tree.root;
 };
 
 ZmOverviewContainer.prototype.deselectAll =
@@ -165,12 +171,15 @@ function(headerLabel, headerIcon, headerDataId, omit, overviewParams) {
 
 ZmOverviewContainer.prototype._itemClicked =
 function(item, ev) {
-	var appName = appCtxt.getCurrentAppName();
-	if (appName == ZmApp.CALENDAR) { return; }
+	// calendar app does not process folder clicks
+	if (this._appName == ZmApp.CALENDAR) { return; }
 
 	DwtTree.prototype._itemClicked.call(this, item, ev);
 
 	this._deselectAllTreeViews();
+
+	// this avoids processing clicks in dialogs etc.
+	if (!ZmApp.NAME[this._appName]) { return; }
 
 	// if an account header item was clicked, run the default search for it
 	var acctId = item.getData(Dwt.KEY_ID);
@@ -178,13 +187,13 @@ function(item, ev) {
 		var account = appCtxt.getAccount(acctId);
 		appCtxt.setActiveAccount(account);
 
-		var fid = ZmOrganizer.DEFAULT_FOLDER[ZmApp.ORGANIZER[appName]];
+		var fid = ZmOrganizer.DEFAULT_FOLDER[ZmApp.ORGANIZER[this._appName]];
 		var folder = appCtxt.getById(ZmOrganizer.getSystemId(fid, account));
 		var sc = appCtxt.getSearchController();
 		var params = {
 			query: folder.createQuery(),
 			getHtml: appCtxt.get(ZmSetting.VIEW_AS_HTML),
-			searchFor: (ZmApp.DEFAULT_SEARCH[appName]),
+			searchFor: (ZmApp.DEFAULT_SEARCH[this._appName]),
 			sortBy: ((sc.currentSearch && folder.nId == sc.currentSearch.folderId) ? null : ZmSearch.DATE_DESC),
 			accountName: (account && account.name)
 		};

@@ -70,8 +70,11 @@ ZmOrganizer = function(params) {
 	this.noSuchFolder = false; // Is this a link to some folder that ain't there.
 
 	var color = (this.parent && !params.color) ? this.parent.color : params.color;
-	this.color = color || ZmOrganizer.ORG_COLOR[id] || ZmOrganizer.ORG_COLOR[this.nId] ||
-				 ZmOrganizer.DEFAULT_COLOR[this.type] || ZmOrganizer.C_NONE;
+	this.color = color ||
+				 ZmOrganizer.ORG_COLOR[id] ||
+				 ZmOrganizer.ORG_COLOR[this.nId] ||
+				 ZmOrganizer.DEFAULT_COLOR[this.type] ||
+				 ZmOrganizer.C_NONE;
 
 	if (id && params.tree) {
 		appCtxt.cacheSet(id, this);
@@ -298,28 +301,28 @@ function(org, params) {
 		if (params.treeController)	{ ZmOverviewController.CONTROLLER[org]	= params.treeController; }
 	}
 
-	ZmOrganizer.TREE_TYPE[org] = params.treeType || org;	// default to own type
-
-	ZmOrganizer.CREATE_FUNC[org]	= params.createFunc || "ZmOrganizer.create";
+	ZmOrganizer.TREE_TYPE[org] = params.treeType || org; // default to own type
+	ZmOrganizer.CREATE_FUNC[org] = params.createFunc || "ZmOrganizer.create";
 
 	ZmOrganizer.VIEW_HASH[org] = {};
 
 	if (params.hasColor) {
-		ZmOrganizer.DEFAULT_COLOR[org]	= (params.defaultColor != null) ? params.defaultColor :
-																		  ZmOrganizer.ORG_DEFAULT_COLOR;
+		ZmOrganizer.DEFAULT_COLOR[org] = (params.defaultColor != null)
+			? params.defaultColor
+			: ZmOrganizer.ORG_DEFAULT_COLOR;
 	}
-	
+
 	if (params.orgColor) {
 		for (var id in params.orgColor) {
 			ZmOrganizer.ORG_COLOR[id] = params.orgColor[id];
 		}
 	}
-	
+
 	if (params.shortcutKey) {
 		ZmShortcut.ORG_KEY[org] = params.shortcutKey;
 		ZmShortcut.ORG_TYPE[params.shortcutKey] = org;
 	}
-	
+
 	if (params.dropTargets) {
 		if (!ZmApp.DROP_TARGETS[params.app]) {
 			ZmApp.DROP_TARGETS[params.app] = {};
@@ -390,67 +393,6 @@ function(msg) {
 	msgDialog.popup();
 };
 
-/**
- * This method creates a sub-tree of organizers of a given view type
- * as specified by a path (e.g. "foo/bar/baz").
- *
- * @param path			[string]		Path of new folder.
- * @param attrs			[object]		Attributes of the folder object
- *										to set at creation. If no view
- *										is specified, the view of this
- *										organizer is used.
- * @param callback		[AjxCallback]	Optional. The first argument
- *										passed to the post-processing
- *										callback will be the last organizer
- *										object created in the path.
- * @param errorCallback	[AjxCallback]	Optional.
- */
-/*** TODO ***
-// make static
-ZmOrganizer.prototype.createPath =
-function(path, attrs, callback, errorCallback) {
-	var organizer = this;
-	if (path.match(/^\//)) {
-		while (organizer.id != ZmOrganizer.ID_ROOT) {
-			organizer = organizer.parent;
-		}
-		path = path.substr(1);
-	}
-	var parts = path.replace(/\/$/,"").split('/');
-	var rest = parts.slice(1).join('/');
-	var name = parts[0];
-
-	var child = this.getChild(name);
-	if (child) {
-		child.createPath(rest, attrs, callback, errorCallback, postCallback);
-	}
-
-	var createCallback = new AjxCallback(this, this._handleCreatePath, [callback]);
-	var createPostCallback = new AjxCallback(this, this._handlePostCreatePath, [rest, attrs, callback, errorCallback]);
-	this.create(name, attrs, createCallback, errorCallback, createPostCallback);
-};
-ZmOrganizer.prototype._handleCreatePath =
-function(callback, result) {
-	// NOTE: The user callback is not called at each
-	//       folder creation stage; rather, it is called
-	//       at the end and is passed the leaf organizer
-	//       so that it can operate on it.
-	//if (callback) {
-	//	callback.run(result);
-	//}
-};
-ZmOrganizer.prototype._handlePostCreatePath =
-function(path, attrs, callback, errorCallback, response) {
-	var folderId = response.CreateFolderResponse.folder.id;
-	var organizer = appCtxt.getById(folderId);
-	if (path != "") {
-		organizer.create(path, attrs, callback, errorCallback, postCallback);
-	}
-	else if (callback) {
-		callback.run(organizer, response);
-	}
-};
-/***/
 
 // Static methods
 
@@ -1287,9 +1229,9 @@ function() {
 		if (this.zid != null) {
 			this._isRemote = true;
 		} else {
-			var acct = appCtxt.getActiveAccount();
-			var id = String(this.id);
-			this._isRemote = ((id.indexOf(":") != -1) && (id.indexOf(acct.id) != 0));
+			var parsed = ZmOrganizer.parseId(this.id);
+			var accountId = this.accountId || appCtxt.getActiveAccount().id;
+			this._isRemote = (parsed.account.id != accountId);
 		}
 	}
 	return this._isRemote;
@@ -1316,8 +1258,8 @@ function () {
 * Returns true if this folder maps to a datasource. If type is given, returns
 * true if folder maps to a datasource *and* is of the given type.
 *
-* @type			[Int]*		Either ZmAccount.POP or ZmAccount.IMAP
-* @checkParent	[Boolean]*	walk up the parent chain
+* @param		type			[Int]*		Either ZmAccount.POP or ZmAccount.IMAP
+* @param		checkParent		[Boolean]*	walk up the parent chain
 */
 ZmOrganizer.prototype.isDataSource =
 function(type, checkParent) {
@@ -1330,12 +1272,12 @@ function(type, checkParent) {
 * returns non-null result only if folder maps to datasource(s) *and* is of the
 * given type.
 *
-* @type			[Int]*		Either ZmAccount.POP or ZmAccount.IMAP
-* @checkParent	[Boolean]*	walk up the parent chain
+* @param		type			[Int]*		Either ZmAccount.POP or ZmAccount.IMAP
+* @param		checkParent		[Boolean]*	walk up the parent chain
 */
 ZmOrganizer.prototype.getDataSources =
 function(type, checkParent) {
-	if (!appCtxt.get(ZmSetting.MAIL_ENABLED)) { return null };
+	if (!appCtxt.get(ZmSetting.MAIL_ENABLED)) { return null; }
 
 	var dsc = appCtxt.getDataSourceCollection();
 	var dataSources = dsc.getByFolderId(this.nId, type);
@@ -1426,7 +1368,7 @@ ZmOrganizer.prototype._parseFlags =
 function(str) {
 	for (var i = 0; i < ZmOrganizer.ALL_FLAGS.length; i++) {
 		var flag = ZmOrganizer.ALL_FLAGS[i];
-		this[ZmOrganizer.FLAG_PROP[flag]] = (str && (str.indexOf(flag) != -1)) ? true : false;
+		this[ZmOrganizer.FLAG_PROP[flag]] = (Boolean(str && (str.indexOf(flag) != -1)));
 	}
 };
 

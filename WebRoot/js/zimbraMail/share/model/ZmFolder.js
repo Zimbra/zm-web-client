@@ -366,7 +366,10 @@ function(obj, isSearch, skipNotify) {
 	var nId = ZmOrganizer.normalizeId(obj.id);
 	if (nId < ZmOrganizer.FIRST_USER_ID[this.type]) { return; }
 
-	var folder = ZmFolderTree.createFromJs(this, obj, this.tree, isSearch ? "search" : "folder");
+	var account = ZmOrganizer.parseId(obj.id).account;
+	var accountId = account && account.id;
+	var type = isSearch ? "search" : "folder";
+	var folder = ZmFolderTree.createFromJs(this, obj, this.tree, type, null, accountId);
 	var index = ZmOrganizer.getSortIndex(folder, ZmFolder.sortCompare);
 	this.children.add(folder, index);
 
@@ -525,7 +528,7 @@ function(what, folderType) {
 		// An item or an array of items is being moved
 		var items = (what instanceof Array) ? what : [what];
 		var item = items[0];
-		var searchFolder = (item.list && item.list.search) ? appCtxt.getById(item.list.search.folderId) : null;
+		var searchFolder = item.list && item.list.search && appCtxt.getById(item.list.search.folderId);
 
 		if (this.nId == ZmOrganizer.ID_ROOT ||									// container can only have folders/searches
 			this.nId == ZmOrganizer.ID_OUTBOX ||								// nothing can be moved to outbox/sync failures/archive folders

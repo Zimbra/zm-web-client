@@ -562,6 +562,16 @@ function(id) {
 	return this._accounts[id];
 };
 
+ZmAppCtxt.prototype.getAccountByName =
+function(name) {
+	for (var i in this._accounts) {
+		if (this._accounts[i].name == name) {
+			return this._accounts[i];
+		}
+	}
+	return null;
+};
+
 /**
  * Returns the main account for a multi-mbox login
  *
