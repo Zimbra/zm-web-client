@@ -40,6 +40,7 @@
 * @param rid		[string]*		Remote ID of organizer, if remote folder
 * @param restUrl	[string]*		REST URL of this organizer.
 * @param newOp		[string]*		Name of operation run by button in overview header
+* @param accountId	[string]*		Account ID this organizer belongs to
 */
 ZmOrganizer = function(params) {
 
@@ -62,6 +63,7 @@ ZmOrganizer = function(params) {
 	this.zid = params.zid;
 	this.rid = params.rid;
 	this.restUrl = params.restUrl;
+	this.accountId = params.accountId;
 	if (params.perm) {
 		this.setPermissions(params.perm);
 	}

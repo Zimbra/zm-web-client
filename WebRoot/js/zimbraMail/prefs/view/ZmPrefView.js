@@ -36,9 +36,9 @@ ZmPrefView = function(params) {
 
 	this.setScrollStyle(DwtControl.SCROLL);
 	this.prefView = {};
-    this._tabId = {};
+	this._tabId = {};
 	this._sectionId = {};
-    this._hasRendered = false;
+	this._hasRendered = false;
 
 	this.setVisible(false);
 	this.getTabBar().setVisible(false);
@@ -60,13 +60,16 @@ function() {
 	return this._controller;
 };
 
-ZmPrefView.prototype.getSectionForTab = function(tabKey) {
+ZmPrefView.prototype.getSectionForTab =
+function(tabKey) {
 	var sectionId = this._sectionId[tabKey];
 	return ZmPref.getPrefSectionMap()[sectionId];
 };
 
-ZmPrefView.prototype.getTabForSection = function(sectionOrId) {
-	var section = typeof sectionOrId == "string" ? ZmPref.getPrefSectionMap()[sectionOrId] : sectionOrId;
+ZmPrefView.prototype.getTabForSection =
+function(sectionOrId) {
+	var section = (typeof sectionOrId == "string")
+		? ZmPref.getPrefSectionMap()[sectionOrId] : sectionOrId;
 	var sectionId = section && section.id;
 	return this._tabId[sectionId];
 };
@@ -92,9 +95,9 @@ function() {
 		this.prefView[section.id] = view;
 		var tabButtonId = ZmId.getTabId(this._controller._currentView, section.title.replace(/[' ]/ig,"_"));
 		var tabId = this.addTab(section.title, view, tabButtonId);
-        this._tabId[section.id] = tabId;
+		this._tabId[section.id] = tabId;
 		this._sectionId[tabId] = section.id;
-    }
+	}
 
 	this.resetKeyBindings();
 	this._hasRendered = true;
@@ -179,11 +182,10 @@ function() {
 	var callbacks = [];
 	for (var id in this.prefView) {
 		var viewPage = this.prefView[id];
-		if (viewPage && viewPage.getPostSaveCallback && viewPage.hasRendered()) {
-			var callback = viewPage.getPostSaveCallback();
-			if (callback) {
-				callbacks.push(callback);
-			}
+		var callback = viewPage && viewPage.hasRendered() &&
+					   viewPage.getPostSaveCallback && viewPage.getPostSaveCallback();
+		if (callback) {
+			callbacks.push(callback);
 		}
 	}
 	return callbacks;
@@ -209,7 +211,7 @@ function(dirtyCheck, noValidation, batchCommand, prefView) {
 	for (var view in pv) {
 		var section = sections[view];
 		if (section.manageChanges) { continue; }
-        
+
 		var viewPage = pv[view];
 		if (!viewPage || (viewPage && !viewPage.hasRendered())) { continue; }
 
@@ -292,7 +294,7 @@ function(section, viewPage, dirtyCheck, noValidation, list, errors, view) {
 		// don't try to update on server if it's client-side pref
 		var addToList = (!unchanged && (pref.name != null));
 		if (dirtyCheck && addToList) {
-				return true;
+			return true;
 		}
 
 		if (!unchanged) {
@@ -325,11 +327,11 @@ function(type, origValue, value) {
 
 	if (type == ZmSetting.D_LIST) {
 		return !AjxUtil.arrayCompare(test1, test2);
-	} else if (type == ZmSetting.D_HASH) {
-		return !AjxUtil.hashCompare(test1, test2);
-	} else {
-		return Boolean(test1 != test2);
 	}
+	if (type == ZmSetting.D_HASH) {
+		return !AjxUtil.hashCompare(test1, test2);
+	}
+	return Boolean(test1 != test2);
 };
 
 /**

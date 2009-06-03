@@ -524,6 +524,16 @@ DIV.vSpace {
 }
 
 
+.ZmOverviewContainer {
+	@TreeContainer@
+}
+
+.ZmOverviewContainer .ZmOverview,
+.dialogOverviewContainer .OverviewTree {
+	height: auto;
+	padding-left: @SmallIconWidth@;
+}
+
 .OverviewTree {
 	@FullWidth@
 }
@@ -536,6 +546,9 @@ DIV.vSpace {
 	height: 200px;		/* ??? SIZE */
 }
 
+.dialogOverviewContainer {
+	@PanelBg@
+}
 
 .dialogOverview td {
 	@Text@

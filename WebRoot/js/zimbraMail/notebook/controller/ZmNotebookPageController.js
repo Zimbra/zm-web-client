@@ -18,7 +18,7 @@ ZmNotebookPageController = function(container, app) {
 	ZmNotebookController.call(this, container, app);
 
 	this._history = [];
-    this._listeners[ZmOperation.CLOSE] = new AjxListener(this, this._closeListener);    
+    this._listeners[ZmOperation.CLOSE] = new AjxListener(this, this._closeListener);
 }
 ZmNotebookPageController.prototype = new ZmNotebookController;
 ZmNotebookPageController.prototype.constructor = ZmNotebookPageController;
@@ -43,7 +43,7 @@ function() {
 ZmNotebookPageController.prototype.handleKeyAction =
 function(actionCode) {
 	DBG.println(AjxDebug.DBG3, "ZmNotebookPageController.handleKeyAction");
-	
+
 	switch (actionCode) {
 		case ZmKeyMap.EDIT:
 			if (this._object && !this._object.isReadOnly()) {
@@ -143,7 +143,7 @@ ZmNotebookPageController.prototype.show = function(pageOrFolderId, force, fromSe
 		return;
 	}
 
-	if(!this._currentView._USE_IFRAME){		
+	if(!this._currentView._USE_IFRAME){
 	// update history
 	this._folderId = null;
 	if (this._object) {
@@ -204,7 +204,7 @@ function(ev) {
 	// only tags can be dropped on us
 	if (ev.action == DwtDropEvent.DRAG_ENTER) {
 		if(this._object && (this._object.isShared() || this._object.isIndex() )){
-		ev.doIt = false;	
+		ev.doIt = false;
 		}else{
 		ev.doIt = this._dropTgt.isValidTarget(ev.srcData);
 		}
@@ -218,7 +218,7 @@ function(ev) {
 
 ZmNotebookPageController.prototype._showIndex = function(folderId, force, fromSearch) {
 	var cache = this._app.getNotebookCache();
-	var params = {id:folderId};	
+	var params = {id:folderId};
 //	var index = cache.getPageByName(folderId, ZmNotebook.PAGE_INDEX, true);
 	var index = cache.getItemInfo(params);
 	if (index) {
@@ -246,9 +246,9 @@ ZmNotebookPageController.__setButtonToolTip = function(button, pageRef, defaultV
 };
 
 ZmNotebookPageController.prototype.updateHistory = function() {
-	
+
 	this._folderId = null;
-	
+
 	if (this._object) {
 		this._folderId = this._object.folderId;
 		for (var i = this._place + 1; i < this._history.length; i++) {
@@ -266,7 +266,7 @@ ZmNotebookPageController.prototype.updateHistory = function() {
 	if (this._object) {
 		this._list.add(this._object);
 	}
-	
+
 };
 
 ZmNotebookPageController.prototype.refreshCurrentPage = function(){
@@ -279,7 +279,7 @@ ZmNotebookPageController.prototype.isIframeEnabled = function(){
 	if(this._listView[ZmId.VIEW_NOTEBOOK_PAGE]){
 		return this._listView[ZmId.VIEW_NOTEBOOK_PAGE]._USE_IFRAME;
 	}else{
-		return false;	
+		return false;
 	}
 };
 
@@ -290,8 +290,8 @@ ZmNotebookPageController.prototype._refreshListener = function(event) {
 		//workaround for remote folder notification problem
 		cache.removeItem(page);
 		this.refreshCurrentPage();
-	}else{	
-		ZmNotebookController.prototype._refreshListener.call(this, event);		
+	}else{
+		ZmNotebookController.prototype._refreshListener.call(this, event);
 	}
 };
 
@@ -299,11 +299,11 @@ ZmNotebookController.prototype.handleUpdate =
 function(ev, organizers) {
 
 	if(!organizers) return;
-		
+
 	var shownPage = this.getPage();
     if (!shownPage) return;
-	
-	var cache = this._app.getNotebookCache();	
+
+	var cache = this._app.getNotebookCache();
 	for (var i = 0; i < organizers.length; i++) {
         var organizer = organizers[i];
         var id = organizer.id;
@@ -348,10 +348,4 @@ function(ev) {
 
     treeController._itemClicked(selNotebook);
 
-};
-
-//offline related modules
-ZmNotebookPageController.prototype.handleMailboxChange =
-function() {
-	this.show(null, true);
 };

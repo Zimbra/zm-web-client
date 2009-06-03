@@ -52,5 +52,4 @@ AjxPackage.require("zimbraMail.voicemail.controller.ZmVoiceListController");
 AjxPackage.require("zimbraMail.voicemail.controller.ZmCallListController");
 AjxPackage.require("zimbraMail.voicemail.controller.ZmVoicemailListController");
 AjxPackage.require("zimbraMail.voicemail.controller.ZmVoiceTreeController");
-AjxPackage.require("zimbraMail.voicemail.controller.ZmVoiceAccordionController");
 

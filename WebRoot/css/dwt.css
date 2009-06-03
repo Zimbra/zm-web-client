@@ -2054,25 +2054,6 @@ textarea.xform_field_disabled {
 */
 
 
-/***************
- *
- *	Accordion
- *
- ***************/
-.ZAccordionBorder 					{	@AccordionBorder@											}
-.ZAccordionTable 					{	width:100%; height:100%;									}
-.ZAccordionCell						{	vertical-align: top; height: 100%; overflow:hidden; 		}
-.ZAccordionHeader 					{	@ActiveCursor@ @AccordionItemHeight@						}
-
-.ZAccordionBody						{	display:none; overflow:auto; 								}
-
-.ZAccordionHeaderBorder 			{	@AccordionItemBorder@ 	@AccordionItemBorder-normal@		}
-.ZSelected .ZAccordionHeaderBorder	{							@AccordionItemBorder-selected@		}
-
-.ZAccordionTitle 					{	@AccordionItemText@		@AccordionItemText-normal@			}
-.ZSelected  .ZAccordionTitle 		{							@AccordionItemText-selected@		}
-
-
 
 /***************
  *

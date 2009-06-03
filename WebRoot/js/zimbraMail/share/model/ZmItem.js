@@ -45,6 +45,10 @@ ZmItem = function(type, id, list, noCache) {
 	this.tagHash = {};
 	this.folderId = 0;
 
+	// if this is a shared/remote folder, cache the account it belongs to
+	var parsed = (appCtxt.multiAccounts) ? ZmOrganizer.parseId(id) : null;
+	this.account = parsed && parsed.account;
+
 	if (id && !noCache) {
 		appCtxt.cacheSet(id, this);
 	}
@@ -286,16 +290,21 @@ function() {
 ZmItem.prototype.getTagImageInfo =
 function() {
 	var tagImageInfo;
-	// bug fix #23317 - dont show tag info for shared items until bug 5210 is fixed
-	if (!this.tags.length || this.isShared()) {
+
+	if (!this.tags.length) {
 		tagImageInfo = "Blank_16";
-	} else if (this.tags.length == 1) {
-		var tag = appCtxt.getById(ZmOrganizer.getSystemId(this.tags[0]));
-		var color = tag ? tag.color : ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.TAG];
-		tagImageInfo = ZmTag.COLOR_ICON[color];
-	} else {
+	}
+	else if (this.tags.length == 1) {
+		var tagId = (this.account && !this.account.isMain)
+			? ([this.account.id, this.tags[0]].join(":"))
+			: (ZmOrganizer.getSystemId(this.tags[0]));
+		var tag = appCtxt.getById(tagId);
+		tagImageInfo = tag ? ZmTag.COLOR_ICON[tag.color] : "Blank_16";
+	}
+	else {
 		tagImageInfo = "TagStack";
 	}
+
 	return tagImageInfo;
 };
 

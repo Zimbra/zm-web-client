@@ -123,7 +123,7 @@ function() {
 // Returns a list of desired action menu operations
 ZmBriefcaseTreeController.prototype._getActionMenuOps =
 function() {
-	var ops = [ ZmOperation.NEW_BRIEFCASEITEM ];
+	var ops = [ZmOperation.NEW_BRIEFCASEITEM];
 	if (appCtxt.get(ZmSetting.SHARING_ENABLED)) {
 		ops.push(ZmOperation.MOUNT_BRIEFCASE);
 	}
@@ -131,25 +131,12 @@ function() {
 	if (appCtxt.get(ZmSetting.SHARING_ENABLED)) {
 		ops.push(ZmOperation.SHARE_BRIEFCASE);
 	}
-	ops.push(
-		ZmOperation.DELETE, ZmOperation.EDIT_PROPS, ZmOperation.REFRESH
-		/***
-		ZmOperation.SEP,
-		ZmOperation.EDIT_NOTEBOOK_INDEX
-		ZmOperation.SEP,
-		ZmOperation.EDIT_NOTEBOOK_HEADER, ZmOperation.EDIT_NOTEBOOK_FOOTER,
-		ZmOperation.EDIT_NOTEBOOK_SIDE_BAR,
-		ZmOperation.SEP,
-		ZmOperation.EDIT_NOTEBOOK_CHROME, ZmOperation.EDIT_NOTEBOOK_STYLES
-		/***/
-	);
-//	if (appCtxt.get(ZmSetting.IMPORT_EXPORT_ENABLED)) {
-//		ops.push(ZmOperation.EXPORT_FOLDER, ZmOperation.IMPORT_FOLDER);
-//	}
+	ops.push(ZmOperation.DELETE, ZmOperation.EDIT_PROPS, ZmOperation.REFRESH);
 	return ops;
 };
 
-ZmBriefcaseTreeController.prototype._getNewDialog = function() {
+ZmBriefcaseTreeController.prototype._getNewDialog =
+function() {
 	return appCtxt.getNewBriefcaseDialog();
 };
 
@@ -161,9 +148,8 @@ function() {
 // Method that is run when a tree item is left-clicked
 ZmBriefcaseTreeController.prototype._itemClicked =
 function(briefcase) {
-	
-	var briefcaseController = AjxDispatcher.run("GetBriefcaseController");
-	briefcaseController.show(briefcase.id);
+	var bc = AjxDispatcher.run("GetBriefcaseController");
+	bc.show(briefcase.id);
 };
 
 // Handles a drop event
@@ -172,7 +158,7 @@ function(ev) {
 	var briefcaseItems = ev.srcData.data;
 	var dropFolder = ev.targetControl.getData(Dwt.KEY_OBJECT);
 
-	if(!briefcaseItems) {
+	if (!briefcaseItems) {
 		ev.doIt = false;
 		return;
 	}

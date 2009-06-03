@@ -115,7 +115,7 @@ function(id, key, account) {
 };
 
 /**
- * Returns the value of a setting.
+ * Sets the value of a setting.
  *
  * @param id			[constant]		setting ID
  * @param value			[any]			setting value
@@ -589,12 +589,10 @@ function(checkOfflineMode) {
  * tree. The account goes and fetches its data if necessary.
  *
  * @param account	[ZmZimbraAccount]		account to make active
- * @param callback	[AjxCallback]*	client callback
  */
 ZmAppCtxt.prototype.setActiveAccount =
-function(account, callback) {
+function(account) {
 	this._activeAccount = account;
-	this._activeAccount.load(callback);
 
 	this._evt = this._evt || new ZmEvent();
 	this._evt.account = account;

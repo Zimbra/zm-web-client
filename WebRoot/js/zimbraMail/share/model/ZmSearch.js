@@ -43,6 +43,7 @@
  *        galType					[constant]*		type of GAL autocomplete (account or resource)
  *        folders					[array]*		list of folders for autocomplete
  *        allowableTaskStatus		[array]*		list of task status types to return (assuming one of the values for "types" is "task")
+ *        accountName				[String]*		account name to run this search against
  */
 ZmSearch = function(params) {
 
@@ -369,10 +370,18 @@ function(params) {
 	if (params.batchCmd) {
 		params.batchCmd.addRequestParams(soapDoc, respCallback);
 	} else {
-		return appCtxt.getAppController().sendRequest({jsonObj:jsonObj, soapDoc:soapDoc, asyncMode:true, callback:respCallback,
-													   errorCallback:params.errorCallback,
-													   timeout:params.timeout, noBusyOverlay:params.noBusyOverlay,
-													   response:this.response});
+		var searchParams = {
+			jsonObj:jsonObj,
+			soapDoc:soapDoc,
+			asyncMode:true,
+			callback:respCallback,
+			errorCallback:params.errorCallback,
+			timeout:params.timeout,
+			noBusyOverlay:params.noBusyOverlay,
+			response:this.response,
+			accountName:this.accountName
+		};
+		return appCtxt.getAppController().sendRequest(searchParams);
 	}
 };
 
@@ -382,19 +391,14 @@ function(params) {
 ZmSearch.prototype._handleResponseExecute = 
 function(callback, result) {
 	var response = result.getResponse();
-	if (this.isGalSearch) {
-		response = response.SearchGalResponse;
-	} else if (this.isCalResSearch) {
-		response = response.SearchCalendarResourcesResponse;
-	} else if (this.isAutocompleteSearch) {
-		response = response.AutoCompleteResponse;
-	} else if (this.isGalAutocompleteSearch) {
-		response = response.AutoCompleteGalResponse;
-	} else if (this.soapInfo) {
-		response = response[this.soapInfo.response];
-	} else {
-		response = response.SearchResponse;
-	}
+
+	if      (this.isGalSearch)				{ response = response.SearchGalResponse; }
+	else if (this.isCalResSearch)			{ response = response.SearchCalendarResourcesResponse; }
+	else if (this.isAutocompleteSearch)		{ response = response.AutoCompleteResponse; }
+	else if (this.isGalAutocompleteSearch)	{ response = response.AutoCompleteGalResponse; }
+	else if (this.soapInfo)					{ response = response[this.soapInfo.response]; }
+	else									{ response = response.SearchResponse; }
+
 	var searchResult = new ZmSearchResult(this);
 	searchResult.set(response);
 	result.set(searchResult);
@@ -443,8 +447,13 @@ function(params) {
 		request.max = appCtxt.get(ZmSetting.MAX_MESSAGE_SIZE);
 	}
 
-	var respCallback = new AjxCallback(this, this._handleResponseGetConv, params.callback);
-	appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback});
+	var searchParams = {
+		jsonObj: jsonObj,
+		asyncMode: true,
+		callback: (new AjxCallback(this, this._handleResponseGetConv, params.callback)),
+		accountName:this.accountName
+	};
+	appCtxt.getAppController().sendRequest(searchParams);
 };
 
 ZmSearch.prototype._handleResponseGetConv = 

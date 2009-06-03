@@ -303,12 +303,14 @@ function(folder) {
 			}
 		}
 		var sc = appCtxt.getSearchController();
+		var account = folder.accountId && appCtxt.getAccount(folder.accountId);
 		var params = {
 			query: folder.createQuery(),
 			searchFor: searchFor,
 			getHtml: (folder.nId == ZmFolder.ID_DRAFTS) || appCtxt.get(ZmSetting.VIEW_AS_HTML),
 			types: ((folder.nId == ZmOrganizer.ID_SYNC_FAILURES) ? [ZmItem.MSG] : null), // for Sync Failures folder, always show in traditional view
-			sortBy: ((sc.currentSearch && folder.nId == sc.currentSearch.folderId) ? null : ZmSearch.DATE_DESC)
+			sortBy: ((sc.currentSearch && folder.nId == sc.currentSearch.folderId) ? null : ZmSearch.DATE_DESC),
+			accountName: (account && account.name)
 		};
 
 		// make sure we have permissions for this folder (in case an "external"

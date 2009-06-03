@@ -23,7 +23,6 @@ ZmAccountAlert = function(account) {
 	ZmAlert.call(this);
 	this.account = account;
 	this._alertApps = {};
-	appCtxt.getAppController().addListener(ZmAppEvent.ACTIVATE, new AjxListener(this, this._appListener));
 	appCtxt.addActiveAcountListener(new AjxListener(this, this._accountListener));
 };
 
@@ -48,7 +47,6 @@ ZmAccountAlert.prototype.start =
 function(app) {
 	if (this.account != appCtxt.getActiveAccount()) {
 		this._started = true;
-		this._doIt(true);
 		if (app) {
 			this._alertApps[app.getName()] = app;
 		}
@@ -57,14 +55,7 @@ function(app) {
 
 ZmAccountAlert.prototype.stop =
 function() {
-	this._doIt(false);
 	this._started = false;
-};
-
-ZmAccountAlert.prototype._appListener =
-function(evt) {
-	// The current app changed, so update the accordion item on the current app.
-	this._doIt(this._started);
 };
 
 ZmAccountAlert.prototype._accountListener =
@@ -75,13 +66,5 @@ function(evt) {
 			this._alertApps[appName].startAlert();
 		}
 		this._alertApps = {};
-	}
-};
-
-ZmAccountAlert.prototype._doIt =
-function(status) {
-	var item = ZmAppAccordionController.getInstance().getAccordionItem(this.account);
-	if (item) {
-		item.accordion.showAlert(item.id, status);
 	}
 };

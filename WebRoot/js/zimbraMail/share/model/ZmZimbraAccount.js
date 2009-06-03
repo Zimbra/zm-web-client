@@ -146,8 +146,13 @@ function(acctInfo) {
 	if (this.status != acctInfo.status) {
 		this.status = acctInfo.status;
 		if (this.isMain || this.visible) {
-			ZmAppAccordionController.getInstance().updateAccountIcon(this, this.getStatusIcon());
-			appCtxt.getAppController().setOfflineStatus();
+			// todo - need server to give app-specific status updates per account
+			// temporary:
+			var app = appCtxt.getCurrentApp();
+			var hdr = app && app._overviewContainer && app._overviewContainer.getHeaderItem(this);
+			if (hdr) {
+				hdr.setImage(this.getStatusIcon());
+			}
 		}
 	}
 
@@ -162,7 +167,7 @@ function(acctInfo) {
 	if (this.visible && acctInfo.unread != this.unread) {
 		this.unread = acctInfo.unread;
 		if (appCtxt.multiAccounts && appCtxt.getActiveAccount() != this) {
-			ZmAppAccordionController.getInstance().updateAccountTitle(this.itemId, this.getTitle());
+			// todo?
 		}
 	}
 };
@@ -179,7 +184,7 @@ function() {
 	switch (this.status) {
 		case ZmZimbraAccount.STATUS_UNKNOWN:	return "ImgOffline";
 		case ZmZimbraAccount.STATUS_OFFLINE:	return "ImgImAway";
-		case ZmZimbraAccount.STATUS_ONLINE:		return "ImgImAvailable";
+		case ZmZimbraAccount.STATUS_ONLINE:		return "Globe";/*"ImgImAvailable";*/
 		case ZmZimbraAccount.STATUS_RUNNING:	return "DwtWait16Icon";
 		case ZmZimbraAccount.STATUS_AUTHFAIL:	return "ImgImDnd";
 		case ZmZimbraAccount.STATUS_ERROR:		return "ImgCritical";
@@ -302,7 +307,7 @@ function(callback) {
 		command.run(respCallback, errCallback);
 	} else {
 		// always reload account-specific shortcuts
-		this.settings.loadShortcuts();
+//		this.settings.loadShortcuts();
 
 		if (callback) {	callback.run(); }
 	}
@@ -401,15 +406,9 @@ function(callback) {
 			var app = appCtxt.getApp(i);
 			var org = ZmOrganizer.APP2ORGANIZER[i];
 			if (app && org && org.length) {
-				app._createDeferredFolders(org[0]);
+				app._createDeferredFolders(org[0], this.id);
 			}
 		}
-	}
-
-	var ac = appCtxt.getCurrentApp().getAccordionController();
-	var expandedItem = ac.getAccordion().getExpandedItem();
-	if (expandedItem) {
-		ac.showOverview(expandedItem);
 	}
 
 	if (callback) {

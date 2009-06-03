@@ -179,7 +179,6 @@ function() {
 							  defaultSearch:		ZmItem.PAGE,
 							  organizer:			ZmOrganizer.NOTEBOOK,
 							  overviewTrees:		[ZmOrganizer.NOTEBOOK, ZmOrganizer.TAG],
-							  showZimlets:			true,
 							  searchTypes:			[ZmItem.PAGE, ZmItem.DOCUMENT],
 							  newItemOps:			newItemOps,
 							  newOrgOps:			newOrgOps,
@@ -187,8 +186,7 @@ function() {
 							  gotoActionCode:		ZmKeyMap.GOTO_NOTEBOOK,
 							  newActionCode:		ZmKeyMap.NEW_PAGE,
 							  chooserSort:			50,
-							  defaultSort:			30,
-							  supportsMultiMbox:	true
+							  defaultSort:			30
 							  });
 };
 
@@ -505,12 +503,4 @@ function() {
 		this._versionController = new ZmPageVersionController(this._container, this);
 	}
 	return this._versionController;
-};
-
-ZmNotebookApp.prototype._activateAccordionItem =
-function(accordionItem) {
-	ZmApp.prototype._activateAccordionItem.call(this, accordionItem);
-
-	var notebookController = AjxDispatcher.run("GetNotebookController");
-	notebookController.handleMailboxChange();
 };

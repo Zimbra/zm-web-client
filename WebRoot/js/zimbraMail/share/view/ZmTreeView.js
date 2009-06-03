@@ -128,16 +128,19 @@ function(params) {
 
 	// create header item
 	var root = this._dataTree.root;
-	var treeItemId = ZmId.getTreeItemId(this.overviewId, null, this.type);
+	var isMultiAcctSubHeader = (appCtxt.multiAccounts && (this.type == ZmOrganizer.SEARCH || this.type == ZmOrganizer.TAG));
+	var imageInfo = this._getHeaderTreeItemImage();
 	var ti = this._headerItem = new DwtHeaderTreeItem({
-		parent:this,
-		className:this._headerClass,
-		id:treeItemId,
-		button: params.newButton,
+		parent: this,
+		className: (isMultiAcctSubHeader ? "ZmTreeHeaderItemMultiAccount" : this._headerClass),
+		imageInfo: imageInfo,
+		id: (ZmId.getTreeItemId(this.overviewId, null, this.type)),
+		button: (isMultiAcctSubHeader ? null : params.newButton),
 		dndScrollCallback: this._overview._dndScrollCallback,
 		dndScrollId: this._overview.id
+//		expandNodeImage: (isMultiAcctSubHeader ? "NodeMinus" : null),
+//		collapseNodeImage: (isMultiAcctSubHeader ? "NodePlus" : null)
 	});
-//	ti.enableSelection(false); // by default, disallow selection
 	ti._isHeader = true;
 	var name = ZmMsg[ZmOrganizer.LABEL[this.type]];
 	if (name) {
@@ -157,8 +160,14 @@ function(params) {
 	params.organizer = root;
 	this._render(params);
 	ti.setExpanded(!params.collapsed, null, true);
-	this.addSeparator();
-	if (appCtxt.getSkinHint("noOverviewHeaders")) {
+
+	if (!appCtxt.multiAccounts) {
+		this.addSeparator();
+	}
+
+	if (appCtxt.getSkinHint("noOverviewHeaders") ||
+		this._hideHeaderTreeItem())
+	{
 		ti.setVisible(false, true);
 	}
 };
@@ -354,6 +363,8 @@ function(parentNode, organizer, index, noTooltips, omit) {
 					dndScrollCallback: this._overview._dndScrollCallback,
 					dndScrollId: this._overview.id,
 					id: ZmId.getTreeItemId(this.overviewId, parentOrganizer.id)
+//					expandNodeImage: (appCtxt.multiAccounts ? "NodeMinus" : null),
+//					collapseNodeImage: (appCtxt.multiAccounts ? "NodePlus" : null)
 				});
 				parentNode.setData(Dwt.KEY_ID, parentOrganizer.id);
 				parentNode.setData(Dwt.KEY_OBJECT, parentOrganizer);
@@ -371,9 +382,18 @@ function(parentNode, organizer, index, noTooltips, omit) {
 			imageInfo:organizer.getIcon(),
 			extraInfo: ((appCtxt.isOffline && organizer.isOfflineSyncable && organizer.isOfflineSyncing) ? "SyncStatusOn" : null),
 			id:ZmId.getTreeItemId(this.overviewId, organizer.id)
+//			expandNodeImage: (appCtxt.multiAccounts ? "NodeMinus" : null),
+//			collapseNodeImage: (appCtxt.multiAccounts ? "NodePlus" : null)
 		};
 		// now add item
 		ti = new DwtTreeItem(params);
+	}
+
+	if (appCtxt.multiAccounts &&
+		(organizer.type == ZmOrganizer.SEARCH ||
+		 organizer.type == ZmOrganizer.TAG))
+	{
+		ti.addClassName("DwtTreeItemChildDiv");
 	}
 
 	ti.setDndText(organizer.getName());
@@ -447,7 +467,7 @@ function(id) {
 };
 
 ZmTreeView.prototype.findNext =
-function(treeItem,treeItems,i) {
+function(treeItem, treeItems, i) {
 	for (var j = i + 1; j < treeItems.length; j++) {
 		var next = treeItems[j];
 		if (next && next.getData) {
@@ -495,4 +515,26 @@ ZmTreeView.prototype._getNextTreeItem =
 function(next) {
 	var nextItem = DwtTree.prototype._getNextTreeItem.apply(this, arguments);
 	return nextItem || this._overview._getNextTreeItem(next, this);
+};
+
+ZmTreeView.prototype._hideHeaderTreeItem =
+function() {
+	return (appCtxt.multiAccounts &&
+			(this.type == ZmOrganizer.FOLDER ||
+			 this.type == ZmOrganizer.ADDRBOOK ||
+			 this.type == ZmOrganizer.CALENDAR ||
+			 this.type == ZmOrganizer.TASKS ||
+			 this.type == ZmOrganizer.NOTEBOOK ||
+			 this.type == ZmOrganizer.BRIEFCASE ||
+			 this.type == ZmOrganizer.PREF_PAGE ||
+			 this.type == ZmOrganizer.ZIMLET));
+};
+
+ZmTreeView.prototype._getHeaderTreeItemImage =
+function() {
+	if (appCtxt.multiAccounts) {
+		if (this.type == ZmOrganizer.SEARCH)	{ return "SearchFolder"; }
+		if (this.type == ZmOrganizer.TAG)		{ return "TagStack"; }
+	}
+	return null;
 };

@@ -18,8 +18,15 @@ ZmSearchFolder = function(params) {
 	ZmFolder.call(this, params);
 	
 	if (params.query) {
-		this.search = new ZmSearch({query:params.query, types:params.types,
-								   sortBy:params.sortBy, searchId:params.id});
+		var account = this.accountId && appCtxt.getAccount(this.accountId);
+		var searchParams = {
+			query:params.query,
+			types:params.types,
+			sortBy:params.sortBy,
+			searchId:params.id,
+			accountName:(account && account.name)
+		};
+		this.search = new ZmSearch(searchParams);
 	}
 };
 

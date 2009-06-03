@@ -30,10 +30,11 @@
 ZmOverviewController = function(container) {
 
 	ZmController.call(this, container);
-	
-	this._overview		= {};
-	this._controller	= {};
-	this._appOverviewId	= {};
+
+	this._overviewContainer = {};
+	this._overview			= {};
+	this._controller		= {};
+	this._appOverviewId		= {};
 };
 
 // Controller for given org type
@@ -50,17 +51,51 @@ function() {
 };
 
 /**
+ * Creates a new overview container with the given options. Used when mailbox
+ * has multiple accounts.
+ *
+ * @param containerParams	hash of params (see ZmOverviewContainer)
+ * @param overviewParams	hash of params (see ZmOverview)
+ */
+ZmOverviewController.prototype.createOverviewContainer =
+function(containerParams, overviewParams) {
+	containerParams.parent = containerParams.parent || this._shell;
+	containerParams.controller = this;
+	var id = containerParams.id = ZmId.getOverviewContainerId(containerParams.appName);
+
+	// the overview container will create overviews for each account
+	var container = this._overviewContainer[id] = new ZmOverviewContainer(containerParams);
+
+	// we call initialize *after* creating new object since it references
+	// this._overviewContainer hash
+	container.initialize(overviewParams);
+
+	return container;
+};
+
+/**
  * Creates a new overview with the given options.
  *
- * @param params	hash of params (see ZmOverview)
+ * @param params			[Object]	hash of params (see ZmOverview)
  */
 ZmOverviewController.prototype.createOverview =
 function(params) {
 	params.parent = params.parent || this._shell;
-	params.id = ZmId.getOverviewId(params.overviewId);
-	var overview = this._overview[params.overviewId] = new ZmOverview(params, this);
+	params.id = ZmId.getOverviewId(params.overviewId); // used as the HTML element Id
 
-	return overview;
+	var ov = this._overview[params.overviewId] = new ZmOverview(params, this);
+	return ov;
+};
+
+/**
+ * Returns the overview container for the given appName.
+ *
+ * @param appName			[String]*	When mbox has multiple accounts, specify optional appName.
+ */
+ZmOverviewController.prototype.getOverviewContainer =
+function(appName) {
+	var containerId = ZmId.getOverviewContainerId(appName || appCtxt.getCurrentAppName());
+	return this._overviewContainer[containerId];
 };
 
 /**

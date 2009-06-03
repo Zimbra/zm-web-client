@@ -299,22 +299,15 @@ function(objects) {
 
 ZmBriefcaseController.prototype.show =
 function(folderId, force, fromSearch) {
-	if (folderId == null) {
-		folderId = ZmOrganizer.ID_BRIEFCASE;
-	}
-
-	DBG.println(AjxDebug.DBG2,"ZmBriefcaseController.show folder id:"+folderId);
+	folderId = folderId || ZmOrganizer.ID_BRIEFCASE;
 
 	// save state
 	this._fromSearch = fromSearch;
-
-	var shownFolder = this._object;
-	var currentFolder = folderId;
-	this._object = currentFolder;
-	this._currentFolder = currentFolder;
+	this._object = this._currentFolder = folderId;
 	this._forceSwitch = force;
-	var callback = new AjxCallback(this,this.showFolderContents);
-	this.getItemsInFolder(currentFolder,callback);
+
+	var callback = new AjxCallback(this, this.showFolderContents);
+	this.getItemsInFolder(folderId, callback);
 };
 
 ZmBriefcaseController.prototype.showFolderContents =
@@ -400,12 +393,15 @@ function(callback,folderId,results) {
 
 ZmBriefcaseController.prototype.searchFolder =
 function(folderId, callback) {
+	var folder = appCtxt.getById(folderId);
+	var account = folder && folder.accountId && appCtxt.getAccount(folder.accountId);
 	var soapDoc = AjxSoapDoc.create("SearchRequest", "urn:zimbraMail");
 	soapDoc.setMethodAttribute("types", ZmSearch.TYPE[ZmItem.BRIEFCASE]);
 	soapDoc.setMethodAttribute("limit", "250");
 	soapDoc.set("query", ('inid:"'+folderId+'"'));
 
-	var response = appCtxt.getAppController().sendRequest({soapDoc:soapDoc,noBusyOverlay:false});
+	var params = { soapDoc:soapDoc, noBusyOverlay:false, accountName: (account && account.name) };
+	var response = appCtxt.getAppController().sendRequest(params);
 	this.handleSearchResponse(folderId, response, callback);
 };
 
@@ -470,7 +466,7 @@ function(itemId) {
 ZmBriefcaseController.prototype.getItemsInFolder =
 function(folderId, callback) {
 	folderId = folderId || ZmOrganizer.ID_BRIEFCASE;
-	this.searchFolder(folderId,callback);
+	this.searchFolder(folderId, callback);
 };
 
 ZmBriefcaseController.prototype._dragListener =
@@ -984,13 +980,6 @@ function(date) {
 	return dateFormatter.format(date);
 };
 
-
-// offline related modules
-ZmBriefcaseController.prototype.handleMailboxChange =
-function() {
-	this._idMap = {};
-	this.show(null, true);
-};
 
 ZmBriefcaseController.prototype.getCurrentFolderId =
 function() {

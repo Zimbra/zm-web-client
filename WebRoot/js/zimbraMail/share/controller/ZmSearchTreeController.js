@@ -65,7 +65,7 @@ function(params) {
 		params.omit[ZmFolder.ID_TRASH] = true;
 		params.omitParents = true;
         var setting = ZmOrganizer.OPEN_SETTING[this.type];
-        params.collapsed = !(!setting || (appCtxt.get(setting) !== false));
+        params.collapsed = !(!setting || (appCtxt.get(setting, null, params.account) !== false));
 		this._setupNewOp(params);
 		this._treeView[id].set(params);
 		this._checkTreeView(id, params.account);

@@ -137,7 +137,6 @@ function() {
 							  chooserTooltipKey:	"goToVoice",
 							  defaultSearch:		ZmId.SEARCH_MAIL,
 							  overviewTrees:		[ZmOrganizer.VOICE],
-							  showZimlets:			true,
 							  searchTypes:			[ZmItem.VOICEMAIL],
 							  gotoActionCode:		ZmKeyMap.GOTO_VOICE,
 							  chooserSort:			15,
@@ -173,22 +172,17 @@ function(modifies) {
 	this._handleModifies(modifies);
 };
 
-ZmVoiceApp.prototype.getOverviewPanelContentId =
-function() {
-	return this._name;
-};
-
-ZmVoiceApp.prototype.getAccordionController =
-function() {
-	AjxDispatcher.require("Voicemail");
-	this._accordionController = this._accordionController || new ZmVoiceAccordionController(this, this._name);
-	return this._accordionController;
-};
+//ZmVoiceApp.prototype.getAccordionController =
+//function() {
+//	AjxDispatcher.require("Voicemail");
+//	this._accordionController = this._accordionController || new ZmVoiceAccordionController(this, this._name);
+//	return this._accordionController;
+//};
 
 ZmVoiceApp.prototype.getOverviewId =
 function() {
 	var name = this.accordionItem ? this.accordionItem.data.phone.name : "";
-	return [this.getOverviewPanelContentId(), name].join(":");
+	return [this._name, name].join(":");
 };
 
 ZmVoiceApp.prototype.getVoiceInfo =

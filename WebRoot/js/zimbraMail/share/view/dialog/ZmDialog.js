@@ -111,8 +111,7 @@ function(fieldId) {
  */
 ZmDialog.prototype.getOverviewId =
 function() {
-	var base = this.toString();
-	return appCtxt.multiAccounts ? [base, appCtxt.getActiveAccount().name].join(":") : base;
+	return this.toString();
 };
 
 /**
@@ -128,10 +127,35 @@ function() {
  *        fieldId		[string]			DOM ID of element that contains overview
  *        overviewId	[string]*			ID for the overview
  *        noRootSelect	[boolean]*			if true, don't make root tree item(s) selectable
- *        account		[ZmZimbraAccount]*	account this overview belongs to
  */
 ZmDialog.prototype._setOverview =
 function(params) {
+	// todo - refactor repetitive code(?)
+
+	// multi-account uses overview container
+	if (appCtxt.multiAccounts) {
+		var appName = this.toString();
+		var ovContainer = this._opc.getOverviewContainer(appName);
+		if (!ovContainer) {
+			var ovParams = {
+				appName: appName,
+				overviewClass: "dialogOverviewContainer",
+				headerClass: "DwtTreeItem",
+				noTooltips: true,
+				treeStyle: params.treeStyle,
+				treeIds: params.treeIds,
+				overviewTrees: params.overviewTrees,
+				omit: params.omit,
+				omitPerAcct: params.omitPerAcct
+			};
+			ovContainer = this._opc.createOverviewContainer({appName:appName}, ovParams);
+			ovContainer.setSize(Dwt.DEFAULT, "200");
+			document.getElementById(params.fieldId).appendChild(ovContainer.getHtmlElement());
+		}
+		return ovContainer;
+	}
+
+	// single-account overview handling
 	var overviewId = params.overviewId || this.getOverviewId();
 	var overview = this._opc.getOverview(overviewId);
 	if (!overview) {
@@ -144,11 +168,10 @@ function(params) {
 			treeIds: params.treeIds
 		};
 		overview = this._overview[overviewId] = this._opc.createOverview(ovParams);
-		this._renderOverview(overview, params.treeIds, params.omit, params.noRootSelect, params.account);
+		this._renderOverview(overview, params.treeIds, params.omit, params.noRootSelect);
 		document.getElementById(params.fieldId).appendChild(overview.getHtmlElement());
-	} else if (params.account) {
-		overview.account = params.account;
 	}
+
 	// make the current overview the only visible one
 	if (overviewId != this._curOverviewId) {
 		for (var id in this._overview) {
@@ -156,6 +179,7 @@ function(params) {
 		}
 		this._curOverviewId = overviewId;
 	}
+
 	return overview;
 };
 
@@ -168,11 +192,10 @@ function(params) {
  * @param treeIds		[array]				list of tree views to show
  * @param omit			[hash]*				IDs of organizers to exclude
  * @param noRootSelect	[boolean]*			if true, don't make root tree item(s) selectable
- * @param account		[ZmZimbraAccount]*	account this overview belongs to
  */
 ZmDialog.prototype._renderOverview =
-function(overview, treeIds, omit, noRootSelect, account) {
-	overview.set(treeIds, omit, account, true);
+function(overview, treeIds, omit, noRootSelect) {
+	overview.set(treeIds, omit, true);
 	if (!noRootSelect) {
 		for (var i = 0; i < treeIds.length; i++) {
 			var treeView = overview.getTreeView(treeIds[i]);

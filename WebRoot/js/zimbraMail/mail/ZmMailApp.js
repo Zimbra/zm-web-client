@@ -262,6 +262,7 @@ function() {
 		},
 		SIGNATURES: {
 			parentId: "MAIL",
+			icon: "AddSignature",
 			title: ZmMsg.signatures,
 			templateId: "prefs.Pages#Signatures",
 			priority: 30,
@@ -749,7 +750,6 @@ function() {
 							  defaultSearch:		appCtxt.isChildWindow ? null : ZmId.SEARCH_MAIL,
 							  organizer:			ZmOrganizer.FOLDER,
 							  overviewTrees:		[ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG],
-							  showZimlets:			true,
 							  assistants:			{"ZmMailAssistant":"Mail"},
 							  searchTypes:			[ZmItem.MSG, ZmItem.CONV],
 							  newItemOps:			newItemOps,
@@ -760,8 +760,7 @@ function() {
 							  trashViewOp:			ZmOperation.SHOW_ONLY_MAIL,
 							  chooserSort:			10,
 							  defaultSort:			10,
-							  upsellUrl:			ZmSetting.MAIL_UPSELL_URL,
-							  supportsMultiMbox:	true
+							  upsellUrl:			ZmSetting.MAIL_UPSELL_URL
 							  });
 };
 
@@ -1248,22 +1247,6 @@ function(params, ex) {
 		// reset the params so we default to searching the inbox which *will* work
 		var newParams = {query:"in:inbox", callback:params.callback, errorCallback:null, types:params.types};
 		appCtxt.getSearchController().search(newParams);
-	}
-};
-
-ZmMailApp.prototype._activateAccordionItem =
-function(accordionItem, callback) {
-	ZmApp.prototype._activateAccordionItem.call(this, accordionItem);
-
-	if (appCtxt.isOffline || !appCtxt.inStartup) {
-		this._addSettingsChangeListeners();
-
-		// *reset* type for initial search
-		this._groupBy[appCtxt.getActiveAccount().name] = appCtxt.get(ZmSetting.GROUP_MAIL_BY);
-
-		var respCallback = (appCtxt.inStartup && appCtxt.multiAccounts)
-			? (new AjxCallback(this, this._handleOfflineMailSearch)) : callback;
-		this._mailSearch(null, respCallback);
 	}
 };
 

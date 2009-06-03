@@ -92,7 +92,7 @@ function() {
 							 itemsKey:			"tasks",
                              folderKey:			"tasksFolder",   
                              hasColor:			true,
-							 defaultColor:		ZmOrganizer.C_GRAY,
+							 defaultColor:		ZmOrganizer.C_NONE,
 							 treeType:			ZmOrganizer.FOLDER,
 							 views:				["task"],
 							 createFunc:		"ZmOrganizer.create",
@@ -136,7 +136,6 @@ function() {
 							  defaultSearch:		ZmItem.TASK,
 							  organizer:			ZmOrganizer.TASKS,
 							  overviewTrees:		[ZmOrganizer.TASKS, ZmOrganizer.SEARCH, ZmOrganizer.TAG],
-							  showZimlets:			true,
 							  assistants:			{"ZmTaskAssistant": ["TasksCore", "Tasks"]},
 							  newItemOps:			newItemOps,
 							  newOrgOps:			newOrgOps,
@@ -145,8 +144,7 @@ function() {
 							  gotoActionCode:		ZmKeyMap.GOTO_TASKS,
 							  newActionCode:		ZmKeyMap.NEW_TASK,
 							  chooserSort:			35,
-							  defaultSort:			25,
-							  supportsMultiMbox:	true
+							  defaultSort:			25
 							  });
 };
 
@@ -253,13 +251,6 @@ function(results, callback, folderId) {
 	if (callback) callback.run();
 };
 
-ZmTasksApp.prototype._activateAccordionItem =
-function(accordionItem) {
-	ZmApp.prototype._activateAccordionItem.call(this, accordionItem);
-
-	this.search();
-};
-
 // common API shared by calendar app
 ZmTasksApp.prototype.getListController =
 function() {
@@ -302,9 +293,15 @@ function(mailItem, date, subject) {
 
 ZmTasksApp.prototype.search =
 function(folder, startDate, endDate, callback) {
-	var query = folder ? folder.createQuery() : "in:tasks";
-	var sc = appCtxt.getSearchController();
-	sc.search({query:query, types:[ZmItem.TASK], searchFor:ZmItem.TASK, callback:callback});
+	var account = folder && folder.accountId && appCtxt.getAccount(folder.accountId);
+	var params = {
+		query: (folder ? folder.createQuery() : "in:tasks"),
+		types: [ZmItem.TASK],
+		searchFor: ZmItem.TASK,
+		callback: callback,
+		accountName: (account && account.name)
+	};
+	appCtxt.getSearchController().search(params);
 };
 
 

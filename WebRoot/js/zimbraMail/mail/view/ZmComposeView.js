@@ -1032,6 +1032,7 @@ function(bEnableInputs) {
 	// reset state of the spell check button
 	this._controller.toggleSpellCheckButton(false);
 
+	/*
 	if (this._accountChanged) {
 		this.identitySelect.clearOptions();
 		var identityOptions = this._getIdentityOptions();
@@ -1045,6 +1046,7 @@ function(bEnableInputs) {
 		// account changed.. so reset the signatures
 		this._controller._signatureChangeListener();
 	}
+	*/
 
 	//reset state of previous Signature cache variable.
 	this._previousSignature = null;
@@ -1909,10 +1911,10 @@ function(composeMode) {
 	// init listeners
 	this.addControlListener(new AjxListener(this, this._controlListener));
 
-	if (!appCtxt.isChildWindow && appCtxt.multiAccounts) {
-		var opc = this._controller._app.getOverviewPanelContent();
-		opc.addSelectionListener(new AjxListener(this, this._accountChangeListener));
-	}
+//	if (!appCtxt.isChildWindow && appCtxt.multiAccounts) {
+//		var opc = this._controller._app.getOverviewPanelContent();
+//		opc.addSelectionListener(new AjxListener(this, this._accountChangeListener));
+//	}
 };
 
 ZmComposeView.prototype._createHtml =
@@ -2370,10 +2372,10 @@ function() {
 	this._resetBodySize();
 };
 
-ZmComposeView.prototype._accountChangeListener =
-function(ev) {
-	this._accountChanged = true;
-};
+//ZmComposeView.prototype._accountChangeListener =
+//function(ev) {
+//	this._accountChanged = true;
+//};
 
 
 // Callbacks

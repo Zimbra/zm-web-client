@@ -33,8 +33,7 @@ ZmPortalApp.prototype._registerApp = function() {
         chooserTooltipKey:	"goToPortal",
         button: ZmAppChooser.B_PORTAL,
         chooserSort: 1,
-        defaultSort: 1,
-		supportsMultiMbox:	true		
+        defaultSort: 1
 	});
 };
 
@@ -176,10 +175,10 @@ function() {
 	return this._getOverviewApp()._getOverviewTrees();
 };
 
-ZmPortalApp.prototype.getAccordionController =
-function() {
-	return this._getOverviewApp().getAccordionController();
-};
+//ZmPortalApp.prototype.getAccordionController =
+//function() {
+//	return this._getOverviewApp().getAccordionController();
+//};
 
 ZmPortalApp.prototype._getOverviewApp =
 function() {

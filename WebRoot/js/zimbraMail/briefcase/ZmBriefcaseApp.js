@@ -156,7 +156,6 @@ function() {
 					  defaultSearch:		ZmItem.BRIEFCASE,
 					  organizer:			ZmOrganizer.BRIEFCASE,
 					  overviewTrees:		[ZmOrganizer.BRIEFCASE, ZmOrganizer.TAG],
-					  showZimlets:			true,
 					  searchTypes:			[ZmItem.BRIEFCASE/*, ZmItem.DOCUMENT*/],
 					  newItemOps:			newItemOps,
 					  newOrgOps:			newOrgOps,
@@ -164,8 +163,7 @@ function() {
 					  gotoActionCode:		ZmKeyMap.GOTO_BRIEFCASE,
 					  newActionCode:		ZmKeyMap.NEW_FILE,
 					  chooserSort:			70,
-					  defaultSort:			60,
-					  supportsMultiMbox:	true
+					  defaultSort:			60
 					  });
 };
 
@@ -548,12 +546,4 @@ function(url, restUrlAuthority) {
 		}
 	}
 	return url;
-};
-
-ZmBriefcaseApp.prototype._activateAccordionItem =
-function(accordionItem) {
-	ZmApp.prototype._activateAccordionItem.call(this, accordionItem);
-
-	var bc = AjxDispatcher.run("GetBriefcaseController");
-	bc.handleMailboxChange();
 };

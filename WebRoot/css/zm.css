@@ -159,8 +159,20 @@
 	margin-bottom:5px;
 }
 
-.ZAlert .ZAccordionHeaderBorder {
-	@AlertColor@
+.ZmOverviewContainer .DwtTreeItemLevel1ChildDiv {
+	padding-top: 0px;
+	margin-bottom: 0px;
+}
+
+.ZmTreeHeaderItemMultiAccount {
+	@TreeItem@
+}
+
+.ZmTreeHeaderItemMultiAccount-Text,
+.ZmTreeHeaderItemMultiAccount-selected,
+.ZmTreeHeaderItemMultiAccount-actioned,
+.ZmTreeHeaderItemMultiAccount-selected-focused {
+	@TreeItemText@
 }
 
 /*

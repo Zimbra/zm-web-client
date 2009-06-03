@@ -47,10 +47,10 @@ function() {
  * Loads the folder or the zimlet tree.
  */
 ZmFolderTree.prototype.loadFromJs =
-function(rootObj, elementType) {
+function(rootObj, elementType, accountId) {
 	this.root = (elementType == "zimlet")
 		? ZmZimlet.createFromJs(null, rootObj, this)
-		: ZmFolderTree.createFromJs(null, rootObj, this, elementType);
+		: ZmFolderTree.createFromJs(null, rootObj, this, elementType, null, accountId);
 };
 
 /**
@@ -62,9 +62,10 @@ function(rootObj, elementType) {
  * @param tree			[ZmFolderTree]	containing tree
  * @param elementType	[string]		type of containing JSON element
  * @param path			[array]			list of path elements
+ * @param accountId		[string]*		account ID this folder belongs to
  */
 ZmFolderTree.createFromJs =
-function(parent, obj, tree, elementType, path) {
+function(parent, obj, tree, elementType, path, accountId) {
 	if (!(obj && obj.id)) { return; }
 
 	var folder;
@@ -86,11 +87,12 @@ function(parent, obj, tree, elementType, path) {
 			numUnread: obj.u,
 			query: obj.query,
 			types: types,
-			sortBy: obj.sortBy
+			sortBy: obj.sortBy,
+			accountId: accountId
 		};
 		folder = new ZmSearchFolder(params);
 		ZmFolderTree._fillInFolder(folder, obj, path);
-		ZmFolderTree._traverse(folder, obj, tree, (path || []), elementType);
+		ZmFolderTree._traverse(folder, obj, tree, (path || []), elementType, accountId);
 	} else {
 		var type = obj.view ? ZmOrganizer.TYPE[obj.view] : parent ? parent.type : ZmOrganizer.FOLDER;
 		if (!type) {
@@ -99,14 +101,23 @@ function(parent, obj, tree, elementType, path) {
 		}
 		if (appCtxt.inStartup && ZmOrganizer.DEFERRABLE[type]) {
 			var app = appCtxt.getApp(ZmOrganizer.APP[type]);
-			app.addDeferredFolder({type:type, parent:parent, obj:obj, tree:tree, path:path, elementType:elementType});
+			var defParams = {
+				type: type,
+				parent: parent,
+				obj: obj,
+				tree: tree,
+				path: path,
+				elementType: elementType,
+				accountId:accountId
+			};
+			app.addDeferredFolder(defParams);
 		} else {
 			var pkg = ZmOrganizer.ORG_PACKAGE[type];
 			if (pkg) {
 				AjxDispatcher.require(pkg);
 			}
-			folder = ZmFolderTree.createFolder(type, parent, obj, tree, path, elementType);
-			ZmFolderTree._traverse(folder, obj, tree, (path || []), elementType);
+			folder = ZmFolderTree.createFolder(type, parent, obj, tree, path, elementType, accountId);
+			ZmFolderTree._traverse(folder, obj, tree, (path || []), elementType, accountId);
 		}
 	}
 
@@ -114,7 +125,7 @@ function(parent, obj, tree, elementType, path) {
 };
 
 ZmFolderTree._traverse =
-function(folder, obj, tree, path, elementType) {
+function(folder, obj, tree, path, elementType, accountId) {
 
 	var isRoot = (folder.nId == ZmOrganizer.ID_ROOT);
 	if (obj.folder && obj.folder.length) {
@@ -123,7 +134,7 @@ function(folder, obj, tree, path, elementType) {
 		}
 		for (var i = 0; i < obj.folder.length; i++) {
 			var folderObj = obj.folder[i];
-			var childFolder = ZmFolderTree.createFromJs(folder, folderObj, tree, (elementType || "folder"), path);
+			var childFolder = ZmFolderTree.createFromJs(folder, folderObj, tree, (elementType || "folder"), path, accountId);
 			if (folder && childFolder) {
 				folder.children.add(childFolder);
 			}
@@ -139,7 +150,7 @@ function(folder, obj, tree, path, elementType) {
 		}
 		for (var i = 0; i < obj.search.length; i++) {
 			var searchObj = obj.search[i];
-			var childSearch = ZmFolderTree.createFromJs(folder, searchObj, tree, "search", path);
+			var childSearch = ZmFolderTree.createFromJs(folder, searchObj, tree, "search", path, accountId);
 			if (childSearch) {
 				folder.children.add(childSearch);
 			}
@@ -161,7 +172,7 @@ function(folder, obj, tree, path, elementType) {
 };
 
 ZmFolderTree.createFolder =
-function(type, parent, obj, tree, path, elementType) {
+function(type, parent, obj, tree, path, elementType, accountId) {
 	var orgClass = eval(ZmOrganizer.ORG_CLASS[type]);
 	if (!orgClass) { return null; }
 
@@ -182,7 +193,8 @@ function(type, parent, obj, tree, path, elementType) {
 		numTotal: 	obj.n,
 		sizeTotal: 	obj.s,
 		perm: 		obj.perm,
-		link: 		elementType == "link"
+		link: 		elementType == "link",
+		accountId:	accountId
 	};
 
 	var folder = new orgClass(params);

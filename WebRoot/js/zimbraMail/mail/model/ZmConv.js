@@ -116,7 +116,8 @@ function(params, callback) {
 		this._limit = limit;
 		var fetchId = (params.getFirstMsg && this.msgIds && this.msgIds.length) ? this.msgIds[0] : null;
 		var types = AjxVector.fromArray([ZmItem.MSG]);
-		var searchParams = {query:query, types:types, sortBy:sortBy, offset:offset, limit:limit, getHtml:getHtml};
+		var acctName = this.account && this.account.name;
+		var searchParams = {query:query, types:types, sortBy:sortBy, offset:offset, limit:limit, getHtml:getHtml, accountName:acctName};
 		var search = this.search = new ZmSearch(searchParams);
 		var respCallback = new AjxCallback(this, this._handleResponseLoad, [params, callback]);
 		search.getConv({cid:this.id, callback:respCallback, fetchId:fetchId, markRead:params.markRead});

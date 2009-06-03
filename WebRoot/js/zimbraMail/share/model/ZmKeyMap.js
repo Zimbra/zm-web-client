@@ -112,7 +112,6 @@ ZmKeyMap.FOCUS_TOOLBAR			= "FocusToolbar";
 ZmKeyMap.FOCUS_WEB_SEARCH_BOX	= "FocusWebSearchBox";
 ZmKeyMap.FORWARD				= "Forward";
 ZmKeyMap.GET_MAIL				= "GetMail";
-ZmKeyMap.GOTO_ACCT				= "GoToAccount";	// takes NNN
 ZmKeyMap.GOTO_BRIEFCASE			= "GoToBriefcase";
 ZmKeyMap.GOTO_CALENDAR			= "GoToCalendar";
 ZmKeyMap.GOTO_CONTACTS			= "GoToContacts";
@@ -121,9 +120,7 @@ ZmKeyMap.GOTO_JUNK				= "GoToJunk";
 ZmKeyMap.GOTO_FOLDER			= "GoToFolder";		// takes NNN
 ZmKeyMap.GOTO_INBOX				= "GoToInbox";
 ZmKeyMap.GOTO_MAIL				= "GoToMail";
-ZmKeyMap.GOTO_NEXT_ACCT			= "GoToNextAccount";
 ZmKeyMap.GOTO_NOTEBOOK			= "GoToNotebook";
-ZmKeyMap.GOTO_PREV_ACCT			= "GoToPrevAccount";
 ZmKeyMap.GOTO_OPTIONS			= "GoToOptions";
 ZmKeyMap.GOTO_SENT				= "GoToSent";
 ZmKeyMap.GOTO_TAG				= "GoToTag";		// takes NNN
@@ -192,8 +189,6 @@ ZmKeyMap.TODAY					= "Today";
 ZmKeyMap.UNTAG					= "Untag";
 ZmKeyMap.VIEW_BY_CONV			= "ViewByConversation";
 ZmKeyMap.VIEW_BY_MSG			= "ViewByMessage";
-
-ZmKeyMap.GOTO_ACCT_RE		= new RegExp(ZmKeyMap.GOTO_ACCT + "(\\d+)");
 
 // HTML entities (used to display keys)
 ZmKeyMap.ENTITY = {};

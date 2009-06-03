@@ -85,21 +85,22 @@ function(name) {
  * @param showBasic
  */
 ZmSearchController.prototype.showBrowsePickers =
-function(pickers,showBasic) {
-	showBasic = (!showBasic || showBasic == null)?true:showBasic;
+function(pickers, showBasic) {
+	// WTF:
+	showBasic = (!showBasic || showBasic == null) ? true : showBasic;
 
 	// Pickers array
 	this.showBrowseView(true, null);
 
 	// now remove all pickers and add those from array
 	if (pickers instanceof Array) {
-	   this._browseViewController.removeAllPickers();
-	   if (showBasic) { //
+		this._browseViewController.removeAllPickers();
+		if (showBasic) {
 			this._browseViewController.addPicker(ZmPicker.BASIC);
-	   }
-	   for (var i = 0; i < pickers.length; i++) {
-		   this._browseViewController.addPicker(pickers[i]);
-	   }
+		}
+	for (var i = 0; i < pickers.length; i++) {
+			this._browseViewController.addPicker(pickers[i]);
+		}
 	}
 };
 
@@ -147,16 +148,16 @@ function(callback) {
 
 ZmSearchController.prototype.getBrowseView =
 function() {
-	var bvc = this._browseViewController;
-	return (bvc == null) ? null : bvc.getBrowseView();
+	return (this._browseViewController && this._browseViewController.getBrowseView());
 };
 
 ZmSearchController.prototype.setSearchField =
 function(searchString) {
-	if (appCtxt.get(ZmSetting.SHOW_SEARCH_STRING) && this._searchToolBar)
+	if (appCtxt.get(ZmSetting.SHOW_SEARCH_STRING) && this._searchToolBar) {
 		this._searchToolBar.setSearchFieldValue(searchString);
-	else
+	} else {
 		this._currentQuery = searchString;
+	}
 };
 
 ZmSearchController.prototype.getSearchFieldValue =
@@ -289,6 +290,7 @@ function(search, noRender, changes, callback, errorCallback) {
 	params.lastSortVal	= search.lastSortVal;
 	params.lastId		= search.lastId;
 	params.soapInfo		= search.soapInfo;
+	params.accountName	= search.accountName;
 	params.searchFor	= this._searchFor;
 
 	if (changes) {
@@ -334,28 +336,14 @@ function(params) {
 
 	if (searchFor == ZmId.SEARCH_MAIL) {
 		types.add(groupBy);
-	} else if (searchFor == ZmId.SEARCH_ANY)	{
-		if (groupBy && appCtxt.get(ZmSetting.MAIL_ENABLED)) {
-			types.add(groupBy);
-		}
-		if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-			types.add(ZmItem.CONTACT);
-		}
-		if (appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
-			types.add(ZmItem.APPT);
-		}
-		if (appCtxt.get(ZmSetting.TASKS_ENABLED)) {
-			types.add(ZmItem.TASK);
-		}
-		if (appCtxt.get(ZmSetting.NOTEBOOK_ENABLED)) {
-			types.add(ZmItem.PAGE);
-			//types.add(ZmItem.DOCUMENT);
-		}
-        if (appCtxt.get(ZmSetting.BRIEFCASE_ENABLED)) {
-			types.add(ZmItem.BRIEFCASE);
-			//types.add(ZmItem.DOCUMENT);
-		}
-    } else {
+	} else if (searchFor == ZmId.SEARCH_ANY) {
+		if (appCtxt.get(ZmSetting.MAIL_ENABLED) && groupBy)	{ types.add(groupBy); }
+		if (appCtxt.get(ZmSetting.CONTACTS_ENABLED))		{ types.add(ZmItem.CONTACT); }
+		if (appCtxt.get(ZmSetting.CALENDAR_ENABLED))		{ types.add(ZmItem.APPT); }
+		if (appCtxt.get(ZmSetting.TASKS_ENABLED))			{ types.add(ZmItem.TASK); }
+		if (appCtxt.get(ZmSetting.NOTEBOOK_ENABLED))		{ types.add(ZmItem.PAGE); }
+		if (appCtxt.get(ZmSetting.BRIEFCASE_ENABLED))		{ types.add(ZmItem.BRIEFCASE); }
+	} else {
 		types.add(searchFor);
 		if (searchFor == ZmItem.PAGE) {
 			types.add(ZmItem.DOCUMENT);
@@ -430,11 +418,14 @@ function(params, noRender, callback, errorCallback) {
 
 	// a query hint is part of the query that the user does not see
 	if (this._inclSharedItems) {
-		params.queryHint = isMixed ? ZmSearchController.QUERY_ISREMOTE : ZmSearchController.generateQueryHint(types.getArray());
+		params.queryHint = isMixed
+			? ZmSearchController.QUERY_ISREMOTE
+			: ZmSearchController.generateQueryHint(types.getArray());
 	}
 
 	// only set contact source if we are searching for contacts
-	params.contactSource = (types.contains(ZmItem.CONTACT) || types.contains(ZmId.SEARCH_GAL)) ? this._contactSource : null;
+	params.contactSource = (types.contains(ZmItem.CONTACT) || types.contains(ZmId.SEARCH_GAL))
+		? this._contactSource : null;
 
 	// find suitable sort by value if not given one (and if applicable)
 	params.sortBy = params.sortBy || this._getSuitableSortBy(types);
@@ -503,7 +494,7 @@ function(results, search, isMixed) {
 	// determine if we need to default to mixed view
 	var isInGal = (this._contactSource == ZmId.SEARCH_GAL);
 	if (appCtxt.get(ZmSetting.SAVED_SEARCHES_ENABLED)) {
-		var saveBtn = this._searchToolBar ? this._searchToolBar.getButton(ZmSearchToolBar.SAVE_BUTTON) : null;
+		var saveBtn = this._searchToolBar && this._searchToolBar.getButton(ZmSearchToolBar.SAVE_BUTTON);
 		if (saveBtn) {
 			saveBtn.setEnabled(!isInGal);
 		}
@@ -516,7 +507,6 @@ function(results, search, isMixed) {
 	app.currentSearch = search;
 	app.currentQuery = search.query;
 	app.showSearchResults(results, loadCallback, isInGal, search.folderId);
-//	appCtxt.getAppController().focusContentPane();
 };
 
 ZmSearchController.prototype._handleLoadShowResults =
@@ -540,17 +530,16 @@ function(search, isMixed, ex) {
 	if (ex.code == ZmCsfeException.MAIL_NO_SUCH_TAG ||
 		ex.code == ZmCsfeException.MAIL_QUERY_PARSE_ERROR ||
 		ex.code == ZmCsfeException.MAIL_TOO_MANY_TERMS ||
-		(ex.code == ZmCsfeException.MAIL_NO_SUCH_FOLDER && !(ex.data.itemId && ex.data.itemId.length))) {
-
+		(ex.code == ZmCsfeException.MAIL_NO_SUCH_FOLDER && !(ex.data.itemId && ex.data.itemId.length)))
+	{
 		var msg = ex.getErrorMsg();
 		appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_WARNING);
 		var results = new ZmSearchResult(search);
 		results.type = search.types ? search.types.get(0) : null;
 		this._showResults(results, search, isMixed);
 		return true;
-	} else {
-		return false;
 	}
+	return false;
 };
 
 /**
@@ -728,7 +717,7 @@ function(search) {
 	if (search.folderId) {
 		id = this._getNormalizedId(search.folderId);
 		var folderTree = appCtxt.getFolderTree();
-		var folder = folderTree ? folderTree.getById(id) : null;
+		var folder = folderTree && folderTree.getById(id);
 		type = folder ? folder.type : ZmOrganizer.FOLDER;
 	} else if (search.tagId) {
 		id = this._getNormalizedId(search.tagId);
@@ -741,8 +730,6 @@ function(search) {
 	var overview = app.getOverview();
 	if (overview) {
 		overview.setSelected(id, type);
-	} else {
-		app._selectedOverviewItem = id;
 	}
 };
 

@@ -19,7 +19,8 @@ ZmPrefPageTreeController = function() {
 ZmPrefPageTreeController.prototype = new ZmTreeController;
 ZmPrefPageTreeController.prototype.constructor = ZmPrefPageTreeController;
 
-ZmPrefPageTreeController.prototype.toString = function() {
+ZmPrefPageTreeController.prototype.toString =
+function() {
 	return "ZmPrefPageTreeController";
 };
 
@@ -27,16 +28,16 @@ ZmPrefPageTreeController.prototype.toString = function() {
 // Public methods
 //
 
-ZmPrefPageTreeController.prototype.show = function(params) {
+ZmPrefPageTreeController.prototype.show =
+function(params) {
 	var treeView = ZmTreeController.prototype.show.apply(this, arguments);
 
 	// populate tree
 	var app = appCtxt.getApp(ZmApp.PREFERENCES);
-	var controller = app.getPrefController();
-	var view = controller.getPrefsView();
+	var view = app.getPrefController().getPrefsView();
 
 	var tree = new ZmTree(ZmOrganizer.PREF_PAGE);
-	var root = tree.root = new ZmPrefPage( { id:ZmId.getPrefPageId(0), name:"", tree:tree } );
+	var root = tree.root = new ZmPrefPage({id:ZmId.getPrefPageId(0), name:"", tree:tree});
 	appCtxt.cacheSet(root.id, root);
 
 	// create pseudo-organizers
@@ -48,17 +49,33 @@ ZmPrefPageTreeController.prototype.show = function(params) {
 		var id = ZmId.getPrefPageId(tabKey);
 		var section = view.getSectionForTab(tabKey);
 
-		var organizer = new ZmPrefPage({
-			id:id, name:name, parent:root, tree:tree, pageId:tabKey,
-			icon:section.icon, tooltip: section.description 
-		});
-		organizers.push(organizer);
+		// for multi-account mbox, child accounts only show a select few pref options
+		if (this._showSection(params.account, section.id)) {
+			var prefParams = {
+				id: id,
+				name: name,
+				parent: root,
+				tree: tree,
+				pageId: tabKey,
+				icon: section.icon,
+				tooltip: section.description,
+				accountId: params.account && params.account.id
+			};
+			var organizer = new ZmPrefPage(prefParams);
+			organizers.push(organizer);
+		}
 	}
 
 	// order pages
-	for (var i = 0; i < count; i++) {
+	for (var i = 0; i < organizers.length; i++) {
 		var organizer = organizers[i];
 		var section = view.getSectionForTab(organizer.pageId);
+
+		// for multi-account, move the child account prefs under account header
+		if (appCtxt.multiAccounts && !params.account.isMain && this._isChildAccountPref(section.id)) {
+			section.parentId = null;
+		}
+
 		var tabKey = section.parentId && view.getTabForSection(section.parentId);
 		var id = tabKey && ZmId.getPrefPageId(tabKey);
 
@@ -70,23 +87,36 @@ ZmPrefPageTreeController.prototype.show = function(params) {
 	}
 
 	// setup tree view
-	var params = { dataTree:tree, omitParents:true };
-	treeView.set(params);
+	treeView.set({dataTree:tree, omitParents:true});
 
-	var page1 = root.children.get(0); 
-	if (page1) {
-		treeView.setSelected(page1, true);
+	if (!appCtxt.multiAccounts || (appCtxt.multiAccounts && params.account.isMain)) {
+		var page1 = root.children.get(0);
+		if (page1) {
+			treeView.setSelected(page1, true);
+		}
 	}
-
-	// expand all
 	treeView.getHeaderItem().setExpanded(true, true);
-
-	// add listeners
-	var args = [view, treeView];
-	view.addStateChangeListener(new AjxListener(this, this._handleTabStateChange, args));
-	treeView.addSelectionListener(new AjxListener(this, this._handleTreeItemSelection, args));
+	treeView.addSelectionListener(new AjxListener(this, this._handleTreeItemSelection, [view, treeView]));
 
 	return treeView;
+};
+
+ZmPrefPageTreeController.prototype._showSection =
+function(account, sectionId) {
+	if (appCtxt.multiAccounts && !account.isMain) {
+		return this._isChildAccountPref(sectionId);
+	}
+	return true;
+};
+
+ZmPrefPageTreeController.prototype._isChildAccountPref =
+function(sectionId) {
+	return (
+		sectionId == "SIGNATURES" ||
+		sectionId == "ACCOUNTS" ||
+		sectionId == "FILTERS" ||
+		sectionId == "SHARING"
+	);
 };
 
 //
@@ -95,28 +125,20 @@ ZmPrefPageTreeController.prototype.show = function(params) {
 
 // ZmTreeController methods
 
-ZmPrefPageTreeController.prototype._dragListener = function(ev) {
+ZmPrefPageTreeController.prototype._dragListener =
+function(ev) {
 	ev.operation = Dwt.DND_DROP_NONE;
 };
 
-ZmPrefPageTreeController.prototype._dropListener = function(ev) {
+ZmPrefPageTreeController.prototype._dropListener =
+function(ev) {
 	ev.doIt = false;
 };
 
 // handlers
 
-ZmPrefPageTreeController.prototype._handleTabStateChange = function(tabView, treeView, evt) {
-	var tabKey = tabView.getCurrentTab();
-	var id = ZmId.getPrefPageId(tabKey);
-	var organizer = appCtxt.getById(id);
-	if (organizer) {
-		treeView.setSelected(organizer, true);
-	}
-};
-
 ZmPrefPageTreeController.prototype._handleTreeItemSelection =
 function(tabView, treeView, evt) {
-
 	if (evt.detail != DwtTree.ITEM_SELECTED) { return; }
 
 	var organizer = evt.item.getData(Dwt.KEY_OBJECT);

@@ -323,9 +323,6 @@ function(params) {
 			this._createUserInfo("BannerTextUser", ZmAppViewMgr.C_USER_INFO, ZmId.USER_NAME);
 		this._components[ZmAppViewMgr.C_QUOTA_INFO] = this._usedQuotaField =
 			this._createUserInfo("BannerTextQuota", ZmAppViewMgr.C_QUOTA_INFO, ZmId.USER_QUOTA);
-		if (appCtxt.isOffline) {
-			this._components[ZmAppViewMgr.C_OFFLINE_STATUS] = this.offlineStatusField = this._createOfflineStatus();
-		}
 		this._components[ZmAppViewMgr.C_STATUS] = this.statusView =
 			new ZmStatusView(this._shell, "ZmStatus", Dwt.ABSOLUTE_STYLE, ZmId.STATUS_VIEW);
 	}
@@ -387,7 +384,7 @@ function(params) {
 		this.addPostRenderCallback(callback, 0, 0, true);
 	}
 
-	var respCallback = new AjxCallback(this, this._handleResponseStartup, params);
+	var respCallback = new AjxCallback(this, this._handleResponseLoadUserSettings, params);
 	this._errorCallback = new AjxCallback(this, this._handleErrorStartup, params);
 	this._settings.loadUserSettings(respCallback, this._errorCallback, null, params.getInfoResponse);
 };
@@ -428,6 +425,49 @@ function(params, ex) {
 	ZmZimbraMail.killSplash();
 	appCtxt.inStartup = false;
 	return false;
+};
+
+ZmZimbraMail.prototype._handleResponseLoadUserSettings =
+function(params, result) {
+	if (appCtxt.multiAccounts) {
+		var callback = new AjxCallback(this, this._handleResponseStartup, [params, result]);
+		this._loadChildAccounts(callback);
+	} else {
+		this._handleResponseStartup(params, result);
+	}
+};
+
+ZmZimbraMail.prototype._loadChildAccounts =
+function(callback) {
+	var accounts = appCtxt.getZimbraAccounts();
+	var visible = [];
+	for (var i in accounts) {
+		var acct = accounts[i];
+		if (acct.visible) {
+			visible.push(acct);
+		}
+	}
+
+	if (visible.length > 0) {
+		this._loadAccount(visible, callback);
+	}
+};
+
+ZmZimbraMail.prototype._loadAccount =
+function(accounts, callback) {
+	var acct = accounts.shift();
+	if (acct) {
+		var callback = new AjxCallback(this, this._loadAccount, [accounts, callback]);
+		acct.load(callback);
+	} else {
+		// do any post account load initialization
+		ZmOrganizer.HIDE_EMPTY[ZmOrganizer.TAG] = true;
+		ZmOrganizer.HIDE_EMPTY[ZmOrganizer.SEARCH] = true;
+
+		if (callback) {
+			callback.run();
+		}
+	}
 };
 
 /**
@@ -490,7 +530,7 @@ function(params, result) {
 	// Set up post-render callbacks
 
 	// run app-related startup functions
-	callback = new AjxCallback(this,
+	var callback = new AjxCallback(this,
 		function() {
 			this.runAppFunction("startup", false, params.result);
 		});
@@ -557,7 +597,6 @@ function(params) {
 
 	this._setExternalLinks();
 	this.setUserInfo();
-	this.setOfflineStatus();
 
 	if (appCtxt.get(ZmSetting.SEARCH_ENABLED)) {
 		this._components[ZmAppViewMgr.C_SEARCH] = appCtxt.getSearchController().getSearchPanel();
@@ -1523,12 +1562,11 @@ function() {
 		? AjxTemplate.expand('share.Quota#Tooltip', data) : null;
 	this._components[ZmAppViewMgr.C_USER_INFO].setToolTipContent(html);
 	this._components[ZmAppViewMgr.C_QUOTA_INFO].setToolTipContent(html);
-};
 
-ZmZimbraMail.prototype.setOfflineStatus =
-function() {
-	if (appCtxt.isOffline && appCtxt.numVisibleAccounts == 1) {
-		this.offlineStatusField.setToolTipContent(appCtxt.getActiveAccount().getToolTip());
+	// multi-account doesn't care to show username so bump up the quota info
+	if (appCtxt.multiAccounts) {
+		this._userNameField.setDisplay(Dwt.DISPLAY_NONE);
+		this._usedQuotaField.addClassName("BannerTextQuota-MultiAccount");
 	}
 };
 
@@ -1708,11 +1746,10 @@ function() {
 	if (!ZmZimbraMail._isOkToExit()) {
 		ZmZimbraMail._isLogOff = false;
 		return ZmMsg.appExitWarning;
-	} else {
-		ZmZimbraMail._endSession();
-		ZmZimbraMail._endSessionDone = true;
-		return;
 	}
+
+	ZmZimbraMail._endSession();
+	ZmZimbraMail._endSessionDone = true;
 };
 
 /**
@@ -1770,28 +1807,6 @@ function(className, cid, id) {
 	}
 	ui._setMouseEventHdlrs();
 	return ui;
-};
-
-ZmZimbraMail.prototype._createOfflineStatus =
-function() {
-	var params = {
-		parent: this._shell,
-		className: "OfflineStatusField",
-		posStyle: Dwt.ABSOLUTE_STYLE,
-		id:ZmId.SKIN_OFFLINE_STATUS
-	};
-	var ui = new DwtComposite(params);
-	ui._setMouseEventHdlrs();
-
-	var listener = new AjxListener(this, this._handleOfflineStatusOnclick);
-	ui.addListener(DwtEvent.ONMOUSEUP, listener);
-
-	return ui;
-};
-
-ZmZimbraMail.prototype._handleOfflineStatusOnclick =
-function(ev) {
-	appCtxt.getActiveAccount().showErrorMessage();
 };
 
 ZmZimbraMail.prototype._createAppChooser =
@@ -1972,18 +1987,6 @@ function(actionCode, ev) {
 			break;
 		}
 
-		case ZmKeyMap.GOTO_PREV_ACCT:
-		case ZmKeyMap.GOTO_NEXT_ACCT: {
-			var active = (appCtxt.numVisibleAccounts > 1) ? appCtxt.getActiveAccount() : null;
-			if (active) {
-				var index = (actionCode == ZmKeyMap.GOTO_PREV_ACCT)
-					? ((active.itemId > 0) ? (active.itemId-1) : null)
-					: ((active.itemId < (appCtxt.numVisibleAccounts-1)) ? (active.itemId+1) : null);
-				this._switchToAccount(index);
-			}
-			break;
-		}
-
 		case ZmKeyMap.SHORTCUTS: {
 
 			var panel = appCtxt.getShortcutsPanel();
@@ -2046,14 +2049,6 @@ function(actionCode, ev) {
 		}
 
 		default: {
-			if (appCtxt.numVisibleAccounts > 1) {
-				// Handle action code like "GoToAcct3"
-				var m = actionCode.match(ZmKeyMap.GOTO_ACCT_RE);
-				if (m && m.length) {
-					this._switchToAccount(m[1]-1);
-					return true;
-				}
-			}
 			var ctlr = appCtxt.getCurrentController();
 			return (ctlr && ctlr.handleKeyAction)
 				? ctlr.handleKeyAction(actionCode, ev)
@@ -2082,26 +2077,6 @@ function() {
 	var toolbar = ctlr ? ctlr.getCurrentToolbar() : null;
 	if (toolbar) {
 		appCtxt.getKeyboardMgr().grabFocus(toolbar);
-	}
-};
-
-ZmZimbraMail.prototype._switchToAccount =
-function(index) {
-	var app = appCtxt.getCurrentApp();
-	var item = app.getOverviewPanelContent().getItemByIndex(index);;
-	if (item) {
-		var account = item.data.account;
-		var callback = new AjxCallback(this, this._handleSwitchToAccount, account);
-		app.expandAccordionForAccount(account, true, callback);
-	}
-};
-
-ZmZimbraMail.prototype._handleSwitchToAccount =
-function(account) {
-	var item = ZmAppAccordionController.getInstance().getAccordionItem(account);
-	var accordion = item ? item.accordion : null;
-	if (accordion) {
-		accordion.notifySelectionListeners(item);
 	}
 };
 
@@ -2157,14 +2132,6 @@ function() {
 ZmZimbraMail.prototype._postLoadZimlet =
 function() {
 	appCtxt.setZimletsPresent(true);
-
-	// If the app overview has been created, show the zimlets tree.
-	var accordionController = ZmAppAccordionController.getInstance();
-	var accordion = accordionController.getAccordion(true);
-	var overview = (accordion) ? accordionController.getCurrentOverview() : null;
-	if (overview) {
-		overview.setTreeVisible(ZmOrganizer.ZIMLET, true);
-	}
 };
 
 ZmZimbraMail.globalButtonListener =

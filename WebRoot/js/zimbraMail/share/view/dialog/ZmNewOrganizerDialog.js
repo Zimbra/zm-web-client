@@ -32,9 +32,7 @@ function() {
 // Public methods
 
 /**
- * Popup the dialog. Note that if family mailbox is enabled, we may have
- * changed accounts since the last time we were popped up. In that case,
- * we need to show the overview for the current account's folders.
+ * Popup the dialog.
  * 
  * @param folder	[ZmFolder]*		folder to select initially
  */
@@ -45,15 +43,9 @@ function(folder) {
 			treeIds: this._treeIds,
 			omit: this._omit,
 			fieldId: this._folderTreeCellId,
-			account: appCtxt.getActiveAccount()
+			overviewTrees: [this._organizerType]
 		};
 		this._setOverview(params);
-
-		// reset folder tree view if user has multiple accounts set up
-		if (appCtxt.multiAccounts) {
-			var overview = this._opc.getOverview(this.getOverviewId());
-			this._folderTreeView = overview ? overview.getTreeView(this._organizerType) : null;
-		}
 
 		if (this._folderTreeView) {
 			// bug #18533 - always make sure header item is visible in "New" dialog
@@ -299,6 +291,7 @@ function() {
 		this._omit[syncIssuesFolder.id] = true;
 	}
 	this._omit[ZmOrganizer.ID_MY_CARD] = true;
+	this._omit[ZmOrganizer.ID_ZIMLET] = true;
 };
 
 // other
@@ -322,16 +315,11 @@ function(overview, treeIds, omit, noRootSelect) {
 ZmNewOrganizerDialog.prototype._getFolderData =
 function() {
 	// make sure a parent was selected
-	var parentFolder;
-	if (this._folderTreeView) {
-		// default to the root if no folder is selected
-		parentFolder = this._folderTreeView.getSelected() || appCtxt.getFolderTree().root;
-	} else {
-		var folderTree = appCtxt.getFolderTree();
-		if (folderTree) {
-			parentFolder = folderTree.root;
-		}
-	}
+	var ov = appCtxt.multiAccounts 
+		? this._opc.getOverviewContainer(this.toString())
+		: this._opc.getOverview(this.getOverviewId());
+
+	var parentFolder = ov ? ov.getSelected() : appCtxt.getFolderTree().root;
 
 	// check name for presence and validity
 	var name = AjxStringUtil.trim(this._nameField.value);

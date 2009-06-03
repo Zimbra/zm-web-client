@@ -212,7 +212,7 @@ function(folder) {
 		var capp = appCtxt.getApp(ZmApp.CONTACTS);
 		capp.currentSearch = null;
 		var query = capp.currentQuery = folder.createQuery();
-
+		var account = folder.accountId && appCtxt.getAccount(folder.accountId);
 		var sc = appCtxt.getSearchController();
 		sc.setDefaultSearchType(ZmItem.CONTACT);
 		var params = {
@@ -220,7 +220,8 @@ function(folder) {
 			searchFor: ZmItem.CONTACT,
 			fetch: true,
 			sortBy: ZmSearch.NAME_ASC,
-			callback: new AjxCallback(this, this._handleSearchResponse, [folder])
+			callback: new AjxCallback(this, this._handleSearchResponse, [folder]),
+			accountName: (account && account.name)
 		};
 		sc.search(params);
 

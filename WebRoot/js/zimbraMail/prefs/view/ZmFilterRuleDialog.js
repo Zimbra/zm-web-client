@@ -828,7 +828,7 @@ function(ev) {
 	dialog.reset();
 	dialog.setTitle((type == ZmFilterRule.TYPE_FOLDER_PICKER) ? ZmMsg.chooseFolder : ZmMsg.chooseTag);
 	dialog.registerCallback(DwtDialog.OK_BUTTON, this._browseSelectionCallback, this, ev.item);
-	dialog.popup({overviewId:this.toString(), skipSyncFailureSubs:appCtxt.isOffline});
+	dialog.popup({overviewId:this.toString()});
 };
 
 /**

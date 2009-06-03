@@ -120,14 +120,6 @@ BODY						{	margin:0px; 				}
 	z-index:1;
 	height:30px;
 }
-#skin_container_offline_status			{	
-	position:absolute; 
-	left:10px;
-	top:6px;
-	width:16px;
-	height:16px;
-}
-
 
 /** App Toolbar **/
 #skin_spacing_app_top_toolbar			{	}
@@ -348,6 +340,10 @@ TEXTAREA
 .BannerTextUser,
 .BannerTextQuota {
 	cursor:default;
+}
+
+.BannerTextQuota-MultiAccount {
+	padding-top:5px;
 }
 
 

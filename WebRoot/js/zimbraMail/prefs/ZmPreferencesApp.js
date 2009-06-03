@@ -26,8 +26,8 @@ ZmPreferencesApp = function(container) {
 };
 
 // Organizer and item-related constants
-ZmEvent.S_FILTER			= "FILTER";
-ZmEvent.S_PREF_ZIMLET			= "PREF_ZIMLET";
+ZmEvent.S_FILTER					= "FILTER";
+ZmEvent.S_PREF_ZIMLET				= "PREF_ZIMLET";
 
 // App-related constants
 ZmApp.PREFERENCES					= ZmId.APP_PREFERENCES;
@@ -173,10 +173,9 @@ function() {
 							  chooserTooltipKey:	"goToOptions",
 							  button:				appCtxt.isChildWindow ? null : ZmAppChooser.B_OPTIONS,
 							  overviewTrees:		[ZmOrganizer.PREF_PAGE],
-							  showZimlets:			false,
+							  hideZimlets:			true,
 							  gotoActionCode:		ZmKeyMap.GOTO_OPTIONS,
-							  chooserSort:			180,
-							  supportsMultiMbox:	true
+							  chooserSort:			180
                   });
 };
 
@@ -184,7 +183,7 @@ ZmPreferencesApp.prototype._registerPrefs =
 function() {
 	var sections = {
 		GENERAL: {
-			title: ((appCtxt.isOffline && appCtxt.multiAccounts) ? ZmMsg.global : ZmMsg.general),
+			title: ZmMsg.general,
 			description: "[General settings]",
 			templateId: "prefs.Pages#General",
 			priority: 0,
@@ -202,6 +201,7 @@ function() {
 			]
 		},
 		COMPOSING: {
+			parentId: "MAIL",
 			title: ZmMsg.composing,
 			icon: "Compose",
 			templateId: "prefs.Pages#Composing",
@@ -585,6 +585,15 @@ function(refresh) {
 	var prefCtlr = this.getPrefController();
 	var prefsView = prefCtlr && prefCtlr.getPrefsView();
 	var sharingSection = prefsView && prefsView.getView("SHARING");
-	var sharingView = sharingSection && sharingSection.view;
-	return sharingView;
+	return (sharingSection && sharingSection.view);
+};
+
+// needed to hide zimlet tree view for multi-account
+ZmPreferencesApp.prototype._getOverviewParams =
+function() {
+	var params = ZmApp.prototype._getOverviewParams.call(this);
+	params.omit = {};
+	params.omit[ZmOrganizer.ID_ZIMLET] = true;
+
+	return params;
 };

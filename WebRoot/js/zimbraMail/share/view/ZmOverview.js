@@ -24,6 +24,7 @@
  * @param params 				[hash]					hash of params:
  *        overviewId			[constant]				overview ID
  *        treeIds				[array]					array of organizer types that may be displayed in this overview
+ *        account				[ZmZimbraAccount]		account this overview belongs to
  *        parent				[DwtControl]*			containing widget
  *        overviewClass			[string]*				class name for overview DIV
  *        posStyle				[constant]*				positioning style for overview DIV
@@ -39,15 +40,16 @@
  * @param controller			[ZmOverviewController]	the overview controller
  */
 ZmOverview = function(params, controller) {
-	
+
 	var overviewClass = params.overviewClass ? params.overviewClass : "ZmOverview";
 	DwtComposite.call(this, {parent:params.parent, className:overviewClass, posStyle:params.posStyle, id:params.id});
-	
+
 	this.id = params.overviewId;
 	this._controller = controller;
 
 	this.setScrollStyle(params.scroll || Dwt.SCROLL);
 
+	this.account			= params.account;
 	this.selectionSupported	= params.selectionSupported;
 	this.actionSupported	= params.actionSupported;
 	this.dndSupported		= params.dndSupported;
@@ -57,26 +59,28 @@ ZmOverview = function(params, controller) {
 	this.treeStyle			= params.treeStyle;
 	this.noTooltips			= params.noTooltips;
 	this.isAppOverview		= params.isAppOverview;
-	
-	this._treeIds	= [];
-	this._treeHash	= {};
+
+	this._treeIds			= [];
+	this._treeHash			= {};
+	this._treeParents		= {};
 
 	// Create a parent div for each overview tree.
-	this._treeParents = {};
 	var doc = document;
 	var element = this.getHtmlElement();
-	for (var i = 0, count = params.treeIds.length; i < count; i++) {
-		var div = doc.createElement("DIV");
-		var treeId = params.treeIds[i];
-		this._treeParents[treeId] = div.id = [this.id, treeId].join("-parent-");
-		element.appendChild(div);
+	if (params.treeIds) {
+		for (var i = 0, count = params.treeIds.length; i < count; i++) {
+			var div = doc.createElement("DIV");
+			var treeId = params.treeIds[i];
+			this._treeParents[treeId] = div.id = [this.id, treeId].join("-parent-");
+			element.appendChild(div);
+		}
 	}
 
 	if (this.dndSupported) {
-		var params = {container:this.getHtmlElement(), threshold:15, amount:5, interval:10, id:this.id}
+		var params = {container:this.getHtmlElement(), threshold:15, amount:5, interval:10, id:this.id};
 		this._dndScrollCallback = new AjxCallback(null, DwtControl._dndScrollCallback, [params]);
 	}
-}
+};
 
 ZmOverview.prototype = new DwtComposite;
 ZmOverview.prototype.constructor = ZmOverview;
@@ -95,51 +99,16 @@ function(treeId) {
 };
 
 /**
- * Sets the list of trees that are visible. All trees that are not
- * in treeIds are hidden.
- *
- * @param treeIds	[array]				list of organizer types
- */
-ZmOverview.prototype.setVisibleTrees =
-function(treeIds) {
-	var doc = document;
-	for (var id in this._treeParents) {
-		this.setTreeVisible(id, false, doc);
-	}
-	for (var i = 0, count = treeIds.length; i < count; i++) {
-		this.setTreeVisible(treeIds[i], true, doc);
-	}
-};
-
-/**
- * Sets the visibility of the tree with the given id.
- *
- * @param treeId	[string]				id of tree
- * @param visible	[boolean]				visibility
- * @param doc		[document]				optional document
- */
-ZmOverview.prototype.setTreeVisible =
-function(treeId, visible, doc) {
-	if (visible && !this._treeHash[treeId]) {
-		this.setTreeView(treeId);
-	}
-	doc = doc || document;
-	Dwt.setVisible(document.getElementById(this._treeParents[treeId]), visible);
-};
-
-/**
  * Displays the given list of tree views in this overview.
  *
  * @param treeIds	[array]				list of organizer types
  * @param omit		[hash]*				hash of organizer IDs to ignore
- * @param account	[ZmZimbraAccount]*	account to set overview for
  */
 ZmOverview.prototype.set =
-function(treeIds, omit, account) {
-	this.account = account;
+function(treeIds, omit) {
 	if (treeIds && treeIds.length) {
 		for (var i = 0; i < treeIds.length; i++) {
-			this.setTreeView(treeIds[i], omit, account);
+			this.setTreeView(treeIds[i], omit);
 		}
 	}
 };
@@ -152,10 +121,9 @@ function(treeIds, omit, account) {
  * 
  * @param treeId	[constant]			organizer ID
  * @param omit		[hash]*				hash of organizer IDs to ignore
- * @param account	[ZmZimbraAccount]*	account to set overview for
  */
 ZmOverview.prototype.setTreeView =
-function(treeId, omit, account) {
+function(treeId, omit) {
 	// check for false since setting precondition is optional (can be null)
 	if (appCtxt.get(ZmOrganizer.PRECONDITION[treeId]) === false) { return; }
 
@@ -170,9 +138,9 @@ function(treeId, omit, account) {
 		overviewId: this.id,
 		omit: omit,
 		showUnread: this.showUnread,
-		account: account
+		account: this.account
 	};
-	this._treeHash[treeId] = treeController.show(params);	// render tree view
+	this._treeHash[treeId] = treeController.show(params); // render tree view
 };
 
 ZmOverview.prototype.getTreeView =
@@ -181,7 +149,7 @@ function(treeId) {
 };
 
 ZmOverview.prototype.getTreeViews =
-function(treeId) {
+function() {
 	return this._treeIds;
 };
 
@@ -215,10 +183,10 @@ function(typeOnly) {
 	for (var i = 0; i < this._treeIds.length; i++) {
 		var treeView = this._treeHash[this._treeIds[i]];
 		if (treeView) {
-            var item = treeView.getSelected();
-            if (item) {
-                return typeOnly ? treeView.type : item;
-            } //otherwise continue with other treeviews to look for selected item
+			var item = treeView.getSelected();
+			if (item) {
+				return typeOnly ? treeView.type : item;
+			} // otherwise continue with other treeviews to look for selected item
 		}
 	}
 	return null;
@@ -255,7 +223,7 @@ function(id, type) {
  * other tree views, enforcing single selection within the overview.
  * Passing a null argument will clear selection in all tree views.
  *
- * @param treeId			[constant]	organizer type
+ * @param treeItem			[DwtTreeItem]
  */
 ZmOverview.prototype.itemSelected =
 function(treeItem) {
@@ -278,6 +246,12 @@ function() {
 			delete this._treeHash[treeId];
 		}
 	}
+};
+
+ZmOverview.prototype._initialize =
+function() {
+	// do nothing. 
+	// - called by DwtTreeItem b/c it thinks its adding another tree item
 };
 
 ZmOverview.prototype._focus =

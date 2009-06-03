@@ -218,7 +218,7 @@ function() {
 ZmContactsApp.prototype._registerOrganizers =
 function() {
 	var orgColor = {};
-	orgColor[ZmFolder.ID_AUTO_ADDED] = ZmOrganizer.C_YELLOW;
+//	orgColor[ZmFolder.ID_AUTO_ADDED] = ZmOrganizer.C_YELLOW;
 	
 	ZmOrganizer.registerOrg(ZmOrganizer.ADDRBOOK,
 							{app:				ZmApp.CONTACTS,
@@ -232,7 +232,7 @@ function() {
 							 labelKey:			"addressBooks",
 							 itemsKey:			"contacts",
 							 hasColor:			true,
-							 defaultColor:		ZmOrganizer.C_GRAY,
+							 defaultColor:		ZmOrganizer.C_NONE,
 							 orgColor:			orgColor,
 							 treeType:			ZmOrganizer.FOLDER,
 							 dropTargets:		[ZmOrganizer.ADDRBOOK],
@@ -288,7 +288,6 @@ function() {
 							  defaultSearch:		ZmItem.CONTACT,
 							  organizer:			ZmOrganizer.ADDRBOOK,
 							  overviewTrees:		[ZmOrganizer.ADDRBOOK, ZmOrganizer.SEARCH, ZmOrganizer.TAG],
-							  showZimlets:			true,
 							  assistants:			{"ZmContactAssistant":["ContactsCore", "Contacts"]},
 							  searchTypes:			[ZmItem.CONTACT],
 							  newItemOps:			newItemOps,
@@ -299,8 +298,7 @@ function() {
 							  trashViewOp:			ZmOperation.SHOW_ONLY_CONTACTS,
 							  chooserSort:			20,
 							  defaultSort:			40,
-							  upsellUrl:			ZmSetting.CONTACTS_UPSELL_URL,
-							  supportsMultiMbox:	true
+							  upsellUrl:			ZmSetting.CONTACTS_UPSELL_URL
 							  });
 };
 
@@ -445,49 +443,6 @@ function(results, callback, isInGal, folderId) {
 	this.getContactListController().show(results, isInGal, folderId);
 	if (callback) {
 		callback.run();
-	}
-};
-
-ZmContactsApp.prototype._activateAccordionItem =
-function(accordionItem) {
-	ZmApp.prototype._activateAccordionItem.call(this, accordionItem);
-	var callback = (this._appViewMgr.getCurrentViewId() != ZmId.VIEW_GROUP)
-		? new AjxCallback(this, this._handleResponseActivateAccordion) : null;
-
-	this._contactsSearch("in:contacts", callback);
-};
-
-ZmContactsApp.prototype._handleResponseActivateAccordion =
-function() {
-	var fid = ZmOrganizer.getSystemId(ZmFolder.ID_CONTACTS);
-	var folder = appCtxt.getById(fid);
-
-	if (appCtxt.getAppViewMgr().getCurrentViewId() == ZmId.VIEW_CONTACT) {
-		return;
-	}
-
-	if (folder) {
-		if (this._firstTimeActivateAccordion || !this.currentSearch ||
-			(this.currentSearch && this.currentSearch.folderId))
-		{
-			this.currentQuery = folder.createQuery();
-			this.currentSearch = null;
-		var clc = AjxDispatcher.run("GetContactListController");
-		clc.getParentView().getAlphabetBar().reset();
-
-		var oc = appCtxt.getOverviewController();
-		var tv = oc.getTreeController(ZmOrganizer.ADDRBOOK).getTreeView(this.getOverviewId());
-		tv.setSelected(folder, true);
-	}
-		else {
-			// first time, make sure current app toolbar has registered this app
-			if (appCtxt.get(ZmSetting.NEW_ADDR_BOOK_ENABLED)) {
-				ZmCurrentAppToolBar.registerApp(this.getName(), ZmOperation.NEW_ADDRBOOK, ZmOrganizer.ADDRBOOK);
-			}
-
-			appCtxt.getSearchController().redoSearch(this.currentSearch);
-			this._firstTimeActivateAccordion = true;
-		}
 	}
 };
 

@@ -487,14 +487,6 @@ function(params, html, i) {
 		var action = isMap ? null : parts[1];
 		var field = parts[parts.length - 1];
 
-		// HACK: multi-account setting gets set too late for precondition to be applied
-		if (map == "global" &&
-			(action == "GoToNextAccount" || action == "GoToPrevAccount" || action == "GoToAccount") &&
-			appCtxt.numVisibleAccounts <= 1)
-		{
-			continue;
-		}
-
 		if (action && (map != ZmKeyMap.MAP_CUSTOM)) {
 			// make sure shortcut is defined && available
 			var mapInt = ZmKeyMap.MAP_NAME[map] || DwtKeyMap.MAP_NAME[map];

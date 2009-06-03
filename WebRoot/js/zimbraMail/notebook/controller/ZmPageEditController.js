@@ -53,10 +53,6 @@ function(page) {
 	this._page = AjxUtil.createProxy(page);
 	this._page.version = page.version;
 
-	if (appCtxt.numVisibleAccounts > 1) {
-		appCtxt.getApp(ZmApp.NOTEBOOK).getOverviewPanelContent().setEnabled(false);
-	}
-
 	var elements;
 	if (!this._currentView) {
 		this._currentView = this._defaultView();
@@ -489,13 +485,6 @@ function(ev) {
 	this._format = ev.item.getData(ZmPageEditor.KEY_FORMAT);
 	this._pageEditView.setFormat(this._format);
 	this._pageEditView.setContent(content);
-};
-
-ZmPageEditController.prototype._postHideCallback =
-function() {
-	if (appCtxt.numVisibleAccounts > 1) {
-		appCtxt.getApp(ZmApp.NOTEBOOK).getOverviewPanelContent().setEnabled(true);
-	}
 };
 
 ZmPageEditController.prototype._preHideCallback =

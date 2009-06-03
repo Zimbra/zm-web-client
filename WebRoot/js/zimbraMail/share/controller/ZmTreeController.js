@@ -162,13 +162,13 @@ function(params) {
 		this._treeView[id] = this.getTreeView(id, true);
 	}
 	// bug fix #24241 - for offline, zimlet tree is re-used across accounts
-	var realAcct = (this.type == ZmOrganizer.ZIMLET && appCtxt.isOffline && appCtxt.multiAccounts)
+	var account = (appCtxt.multiAccounts && this.type == ZmOrganizer.ZIMLET)
 		? appCtxt.getMainAccount(true) : params.account;
-	var dataTree = this.getDataTree(realAcct);
+	var dataTree = this.getDataTree(account);
 	if (dataTree) {
 		params.dataTree = dataTree;
 		var setting = ZmOrganizer.OPEN_SETTING[this.type];
-		params.collapsed = !(!setting || (appCtxt.get(setting) !== false));
+		params.collapsed = !(!setting || (appCtxt.get(setting, null, account) !== false));
 		var overview = this._opc.getOverview(id);
 		if (overview.showNewButtons) {
 			this._setupNewOp(params);
@@ -187,7 +187,8 @@ function(params) {
 /**
  * Returns the tree view for the given overview.
  *
- * @param overviewId		[constant]	overview ID
+ * @param overviewId	[constant]			overview ID
+ * @param force			[boolean]*			force tree view creation
  */
 ZmTreeController.prototype.getTreeView =
 function(overviewId, force) {
@@ -631,6 +632,17 @@ function(ev) {
 				overview._treeSelectionShortcutDelayActionId =
 					AjxTimedAction.scheduleAction(action, ZmTreeController.TREE_SELECTION_SHORTCUT_DELAY);
 			} else {
+				if (appCtxt.multiAccounts && (item instanceof ZmOrganizer)) {
+
+					appCtxt.getCurrentApp().getOverviewContainer().deselectAll(overview);
+
+					// set the active account based on the item clicked
+					var account = item.accountId
+						? appCtxt.getAccount(item.accountId)
+						: appCtxt.getMainAccount();
+					appCtxt.setActiveAccount(account);
+				}
+
 				this._itemClicked(item);
 			}
 		}
@@ -656,22 +668,15 @@ ZmTreeController.prototype._treeListener =
 function(ev) {
 	var treeItem = ev && ev.item;
 	var overviewId = treeItem && treeItem._tree && treeItem._tree.overviewId;
+
 	// only handle events that come from headers in app overviews
-	var opc = appCtxt.getOverviewController();
-	var overview = opc.getOverview(overviewId);
+	var overview = appCtxt.getOverviewController().getOverview(overviewId);
 	if (!(ev && ev.detail && overview && overview.isAppOverview && treeItem._isHeader)) { return; }
 
-	var expanded = (ev.detail == DwtTree.ITEM_EXPANDED);
-	for (var ovId in this._treeView) {
-		if (ovId == overviewId) { continue; }
-		overview = opc.getOverview(ovId);
-		if (!overview.isAppOverview) { continue; }
-		var treeView = this._treeView[ovId];
-		treeView._headerItem.setExpanded(expanded, null, true);
-	}
-	var setting = ZmOrganizer.OPEN_SETTING[this.type];
+	var settings = appCtxt.getSettings(overview.account);
+	var setting = settings.getSetting(ZmOrganizer.OPEN_SETTING[this.type]);
 	if (setting) {
-		appCtxt.set(setting, expanded);
+		setting.setValue(ev.detail == DwtTree.ITEM_EXPANDED);
 	}
 };
 

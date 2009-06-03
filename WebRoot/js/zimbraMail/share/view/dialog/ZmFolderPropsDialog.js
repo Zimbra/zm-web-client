@@ -63,7 +63,11 @@ function(organizer) {
 
 	// dont allow "None" option in color picker
 	// bug 22490 removed None option when not in use
-	if (organizer.type != ZmOrganizer.FOLDER && this._color) {
+	if (this._color &&
+		organizer.type != ZmOrganizer.FOLDER &&
+		organizer.type != ZmOrganizer.TASKS &&
+		organizer.type != ZmOrganizer.ADDRBOOK)
+	{
 		this._color.clearOptions();
 		for (var i = 1; i < ZmOrganizer.COLOR_CHOICES.length; i++) {
 			var color = ZmOrganizer.COLOR_CHOICES[i];
@@ -75,7 +79,6 @@ function(organizer) {
 			var color = ZmOrganizer.COLOR_CHOICES[i];
 			this._color.addOption(color.label, false, color.value);
 		}
-		this._color.getMenu().getItem(0).setEnabled(organizer.type == ZmOrganizer.FOLDER);
 	}
 
 	this._handleFolderChange();

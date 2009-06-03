@@ -161,9 +161,6 @@ function(params) {
 		newWinObj.command = "compose";
 		newWinObj.params = params;
 	} else {
-		if (appCtxt.numVisibleAccounts > 1) {
-			this._app.getOverviewPanelContent().setEnabled(false);
-		}
 		this._setView(params);
 		this._listController = params.listController;
 	}
@@ -275,10 +272,6 @@ function() {
 
 ZmComposeController.prototype._postHideCallback =
 function() {
-	if (!appCtxt.isChildWindow && appCtxt.numVisibleAccounts > 1) {
-		this._app.getOverviewPanelContent().setEnabled(true);
-	}
-
 	// hack to kill the child window when replying to an invite
 	if (appCtxt.isChildWindow &&
 		this._action == ZmOperation.REPLY_ACCEPT ||

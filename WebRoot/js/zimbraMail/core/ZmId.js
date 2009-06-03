@@ -60,6 +60,7 @@ ZmId.WIDGET_INPUT			= "zi";			// text input or textarea
 ZmId.WIDGET_MENU			= "zm";			// menu
 ZmId.WIDGET_MENU_ITEM		= "zmi";		// menu item
 ZmId.WIDGET_SELECT			= "zs";			// dropdown select
+ZmId.WIDGET_OVERVIEW_CNTR	= "zovc";		// collection of overviews
 ZmId.WIDGET_OVERVIEW		= "zov";		// collection of tree views
 ZmId.WIDGET_TREE			= "zt";			// tree view
 ZmId.WIDGET_TREE_ITEM_HDR	= "ztih";		// root tree item
@@ -85,7 +86,6 @@ ZmId.SKIN_APP_MAIN_ROW				= "skin_tr_main";
 ZmId.SKIN_APP_TOP_TOOLBAR			= "skin_container_app_top_toolbar";
 ZmId.SKIN_LINKS						= "skin_container_links";
 ZmId.SKIN_LOGO						= "skin_container_logo";
-ZmId.SKIN_OFFLINE_STATUS			= "skin_container_offline_status";
 ZmId.SKIN_QUOTA_INFO				= "skin_container_quota";
 ZmId.SKIN_SASH						= "skin_container_tree_app_sash";
 ZmId.SKIN_SEARCH_BUILDER			= "skin_container_search_builder";
@@ -197,6 +197,16 @@ ZmId.MENU_DRAFTS		= "Dra";
 ZmId.getMenuItemId =
 function(context, op, menuType) {
 	return DwtId._makeId(ZmId.WIDGET_MENU_ITEM, context, menuType, op);
+};
+
+/**
+ * Generates the ID for an overview container.
+ *
+ * @param overviewContainerId	[string]	overview container ID
+ */
+ZmId.getOverviewContainerId =
+function(overviewContainerId) {
+	return DwtId._makeId(ZmId.WIDGET_OVERVIEW_CNTR, overviewContainerId);
 };
 
 /**

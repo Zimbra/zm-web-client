@@ -424,7 +424,6 @@ function() {
 							  defaultSearch:		ZmItem.APPT,
 							  organizer:			ZmOrganizer.CALENDAR,
 							  overviewTrees:		[ZmOrganizer.CALENDAR, ZmOrganizer.SEARCH, ZmOrganizer.TAG],
-							  showZimlets:			true,
 							  assistants:			{"ZmAppointmentAssistant":	["CalendarCore", "Calendar", "CalendarAppt"],
 							  						 "ZmCalendarAssistant":		["CalendarCore", "Calendar", "CalendarAppt"]},
 							  newItemOps:			newItemOps,
@@ -435,8 +434,7 @@ function() {
 							  newActionCode:		ZmKeyMap.NEW_APPT,
 							  chooserSort:			30,
 							  defaultSort:			20,
-							  upsellUrl:			ZmSetting.CALENDAR_UPSELL_URL,
-							  supportsMultiMbox:	true
+							  upsellUrl:			ZmSetting.CALENDAR_UPSELL_URL
 							  });
 };
 
@@ -700,13 +698,6 @@ function() {
 ZmCalendarApp.prototype._setMiniCalForActiveAccount =
 function() {
 	// do nothing since calendar handles mini cal on its own
-};
-
-ZmCalendarApp.prototype._activateAccordionItem =
-function(accordionItem) {
-	ZmApp.prototype._activateAccordionItem.call(this, accordionItem);
-
-	this.getCalController().handleMailboxChange();
 };
 
 /**

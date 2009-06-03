@@ -148,18 +148,6 @@ function(viewId, startDate, skipMaintenance) {
 		viewId = this._currentView ? this._currentView : this._defaultView();
 	}
 
-	if (!this._calTreeController) {
-		this._calTreeController = appCtxt.getOverviewController().getTreeController(ZmOrganizer.CALENDAR);
-		if (this._calTreeController) {
-			this._calTreeController.addSelectionListener(this._app.getOverviewId(), this._treeSelectionListener);
-			var calTree = appCtxt.getFolderTree();
-			if (calTree) {
-				calTree.addChangeListener(new AjxListener(this, this._calTreeChangeListener));
-			}
-		}
-		DBG.timePt("getting tree controller", true);
-	}
-
 	if (!this._viewMgr) {
 		var newDate = startDate || (this._miniCalendar ? this._miniCalendar.getDate() : new Date());
 
@@ -242,6 +230,27 @@ function(viewId, startDate, skipMaintenance) {
 		}
 		DBG.timePt("scheduling maintenance");
 	}
+
+	// do this last
+	if (!this._calTreeController) {
+		this._calTreeController = appCtxt.getOverviewController().getTreeController(ZmOrganizer.CALENDAR);
+		if (this._calTreeController) {
+			if (appCtxt.multiAccounts) {
+				var overviews = this._app.getOverviewContainer().getOverviews();
+				for (var i in overviews) {
+					this._calTreeController.addSelectionListener(i, this._treeSelectionListener);
+				}
+			} else {
+				this._calTreeController.addSelectionListener(this._app.getOverviewId(), this._treeSelectionListener);
+			}
+			var calTree = appCtxt.getFolderTree();
+			if (calTree) {
+				calTree.addChangeListener(new AjxListener(this, this._calTreeChangeListener));
+			}
+		}
+		DBG.timePt("getting tree controller", true);
+	}
+
 };
 
 ZmCalViewController.prototype.getCheckedCalendars =
@@ -277,42 +286,38 @@ function(id) {
 	return null;
 };
 
-ZmCalViewController.prototype.handleMailboxChange =
-function() {
-	if (!this._viewMgr) { return; }
-
-	var viewId = this._viewMgr.getCurrentViewName();
-	if (viewId == ZmId.VIEW_CAL_APPT) {
-		this._viewMgr.getCurrentView().close();
-	}
-
-	if (this._calTreeController) {
-		this._calTreeController.addSelectionListener(this._app.getOverviewId(), this._treeSelectionListener);
-	}
-	this._updateCheckedCalendars();
-	this._refreshAction(false);
-};
-
 ZmCalViewController.prototype._updateCheckedCalendars =
 function() {
 	var cc = [];	
 	if (this._calTreeController) {
-		cc = this._calTreeController.getCheckedCalendars(this._app.getOverviewId());
-		// bug fix #25512 - avoid race condition
-		if (!cc.length && this._app._overviewPanelContent == null) {
-			this._app.setOverviewPanelContent(true);
+		if (appCtxt.multiAccounts) {
+			var overviews = this._app.getOverviewContainer().getOverviews();
+			for (var i in overviews) {
+				cc = cc.concat(this._calTreeController.getCheckedCalendars(i));
+			}
+		} else {
+			// bug fix #25512 - avoid race condition
+			if (!this._app._overviewPanelContent) {
+				this._app.setOverviewPanelContent(true);
+			}
 			cc = this._calTreeController.getCheckedCalendars(this._app.getOverviewId());
 		}
 	} else {
 		this._app._createDeferredFolders(ZmOrganizer.ID_CALENDAR);
-		var calendars = appCtxt.getFolderTree().getByType(ZmOrganizer.CALENDAR);
-		for (var i = 0; i < calendars.length; i++) {
-			if (calendars[i].isChecked) {
-				cc.push(calendars[i]);
+		var accounts = appCtxt.getZimbraAccounts();
+		for (var j in accounts) {
+			var acct = accounts[j];
+			if (!acct.visible) { continue; }
+			
+			var calendars = appCtxt.getFolderTree(acct).getByType(ZmOrganizer.CALENDAR);
+			for (var i = 0; i < calendars.length; i++) {
+				if (calendars[i].isChecked) {
+					cc.push(calendars[i]);
+				}
 			}
 		}
 	}
-	
+
 	this._checkedCalendars = cc;
 	this._checkedCalendarFolderIds = [];
 	this._checkedLocalCalendarFolderIds = [];
@@ -333,8 +338,6 @@ function(ev) {
 	if (ev.detail != DwtTree.ITEM_CHECKED) { return; }
 
 	this._updateCheckedCalendars();
-	//organizer change listener will trigger refresh action
-	//this._refreshAction(true);
 
 	if (!this._calItemStatus) {
 		this._calItemStatus = {};

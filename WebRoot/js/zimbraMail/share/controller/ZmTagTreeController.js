@@ -28,7 +28,7 @@ ZmTagTreeController = function() {
 	this._listeners[ZmOperation.NEW_TAG] = new AjxListener(this, this._newListener);
 	this._listeners[ZmOperation.RENAME_TAG] = new AjxListener(this, this._renameListener);
 	this._listeners[ZmOperation.TAG_COLOR_MENU] = new AjxListener(this, this._colorListener);
-    this._listeners[ZmOperation.BROWSE] = new AjxListener(this, this._browseListener);
+	this._listeners[ZmOperation.BROWSE] = new AjxListener(this, this._browseListener);
 };
 
 ZmTagTreeController.prototype = new ZmTreeController;
@@ -85,8 +85,7 @@ function(parent, type, id) {
 */
 ZmTagTreeController.prototype._getHeaderActionMenuOps =
 function() {
-	return [ZmOperation.NEW_TAG,
-            ZmOperation.BROWSE];
+	return [ZmOperation.NEW_TAG, ZmOperation.BROWSE];
 };
 
 /*
@@ -94,14 +93,13 @@ function() {
 */
 ZmTagTreeController.prototype._getActionMenuOps =
 function() {
-	return [ZmOperation.NEW_TAG,
-			ZmOperation.MARK_ALL_READ,
-			ZmOperation.RENAME_TAG,
-			ZmOperation.DELETE,
-			ZmOperation.TAG_COLOR_MENU];
-//	if (appCtxt.get(ZmSetting.IMPORT_EXPORT_ENABLED)) {
-//		ops.push(ZmOperation.EXPORT_FOLDER);
-//	}
+	return [
+		ZmOperation.NEW_TAG,
+		ZmOperation.MARK_ALL_READ,
+		ZmOperation.RENAME_TAG,
+		ZmOperation.DELETE,
+		ZmOperation.TAG_COLOR_MENU
+	];
 };
 
 /*
@@ -130,21 +128,23 @@ function() {
 */
 ZmTagTreeController.prototype._itemClicked =
 function(tag) {
-	var app = appCtxt.getCurrentAppName();
-
 	var searchFor;
-        switch (app) {
-                case ZmApp.CONTACTS:    searchFor = ZmItem.CONTACT; break;
-                case ZmApp.NOTEBOOK:    searchFor = ZmItem.PAGE; break;
-                case ZmApp.CALENDAR:    searchFor = ZmItem.APPT; break;
-                case ZmApp.BRIEFCASE:   searchFor = ZmItem.BRIEFCASE; break; //Search for generic briefcase items when we are in briefcase
-                case ZmApp.TASKS:       searchFor = ZmItem.TASK; break;
-                default:                searchFor = ZmId.SEARCH_MAIL; break;
-        }
+	switch (appCtxt.getCurrentAppName()) {
+		case ZmApp.CONTACTS:    searchFor = ZmItem.CONTACT; break;
+		case ZmApp.NOTEBOOK:    searchFor = ZmItem.PAGE; break;
+		case ZmApp.CALENDAR:    searchFor = ZmItem.APPT; break;
+		case ZmApp.BRIEFCASE:   searchFor = ZmItem.BRIEFCASE; break; //Search for generic briefcase items when we are in briefcase
+		case ZmApp.TASKS:       searchFor = ZmItem.TASK; break;
+		default:                searchFor = ZmId.SEARCH_MAIL; break;
+	}
 
-	var sc = appCtxt.getSearchController();
-	var getHtml = appCtxt.get(ZmSetting.VIEW_AS_HTML);
-	sc.search({query:tag.createQuery(), searchFor:searchFor, getHtml:getHtml});
+	var params = {
+		query: tag.createQuery(),
+		searchFor: searchFor,
+		getHtml: appCtxt.get(ZmSetting.VIEW_AS_HTML),
+		accountName: (tag.account && tag.account.name)
+	};
+	appCtxt.getSearchController().search(params);
 };
 
 // Listeners
@@ -175,19 +175,20 @@ function(ev) {
 ZmTagTreeController.prototype._colorListener = 
 function(ev) {
 	var tag = this._getActionedOrganizer(ev);
-	if (tag)
+	if (tag) {
 		tag.setColor(ev.item.getData(ZmOperation.MENUITEM_ID));
+	}
 };
 
 ZmTagTreeController.prototype._browseListener =
 function(ev){
-    var folder = this._getActionedOrganizer(ev);
-    if (folder) {
-        AjxDispatcher.require("Browse");
-        appCtxt.getSearchController().showBrowsePickers([ZmPicker.TAG]);
-        //appCtxt.getSearchController()._browseViewController.addPicker(ZmPicker.FOLDER);
-    }
-}
+	var folder = this._getActionedOrganizer(ev);
+	if (folder) {
+		AjxDispatcher.require("Browse");
+		appCtxt.getSearchController().showBrowsePickers([ZmPicker.TAG]);
+	}
+};
+
 /*
 * Handles the potential drop of something onto a tag. Only items may be dropped.
 * The source data is not the items themselves, but an object with the items (data)
@@ -244,7 +245,3 @@ function(ev, treeView, overviewId) {
 ZmTagTreeController.prototype._setTreeItemColor =
 function(treeItem, organizer) {
 };
-
-//ZmTagTreeController.prototype._folderExportListener = function(ev) {
-//	alert("export tag");
-//};
