@@ -563,7 +563,7 @@
 
 		<$ if (data.attendees && data.org) { $><$= AjxTemplate.expand("calendar.Appointment#AddEntry", {lbl:ZmMsg.organizer, val:data.org}) $><$ } $>
 		<$ if (data.attendees && data.obo) { $><$= AjxTemplate.expand("calendar.Appointment#AddEntry", {lbl:ZmMsg.onBehalfOf, val:data.obo}) $><$ } $>
-		<$ if (data.attendees) { $><$= AjxTemplate.expand("calendar.Appointment#AddEntry", {lbl:ZmMsg.attendees, val:data.attendees}) $><$ } $>
+		<$ if (data.attendees) { $><$= AjxTemplate.expand("calendar.Appointment#AddEntry", {lbl:ZmMsg.attendees, val:data.attendees, isAtt: true}) $><$ } $>
 		<$ if (data.recurStr) { $><$= AjxTemplate.expand("calendar.Appointment#AddEntry", {lbl:ZmMsg.repeats, val:data.recurStr}) $><$ } $>
 		<$ if (data.attachStr) { $><$= AjxTemplate.expand("calendar.Appointment#AddEntry", {lbl:ZmMsg.attachments, val:data.attachStr}) $><$ } $>
 		<tr>
@@ -616,7 +616,15 @@
 <template id="calendar.Appointment#AddEntry">
 	<tr>
 		<td class='LabelColName'><$= AjxMessageFormat.format(ZmMsg.makeLabel, AjxStringUtil.htmlEncode(data.lbl)) $> </td>
-		<td class='LabelColValue' colspan=100><$= data.val $></td>
+		<td class='LabelColValue' colspan=100>
+            <$ if (data.isAtt) { $>
+            <div style="width:100%;overflow:auto;max-height:90px;<$=AjxEnv.isIE ? 'height:30px;' : '' $>">            
+            <$ } $>
+            <$= data.val $>
+            <$ if (data.isAtt) { $>
+            </div>
+            <$ } $>
+        </td>
 	</tr>
 </template>
 
