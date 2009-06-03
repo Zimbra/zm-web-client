@@ -127,10 +127,10 @@ function enableSpellCheck(myEditor) {
         //Change this code to suit your backend checker
         var data = eval('(' + o.responseText + ')');
 		if (!data || !data.available) {
-			alert('<fmt:message key="spellcheckServiceUnavailableMessage"/>');
+			alert("<fmt:message key="spellcheckServiceUnavailableMessage"/>");
 			this.endSpellCheck();
 		} else if (!data.data.length) {
-			alert('<fmt:message key="spellcheckNoMistakesFound"/>');
+			alert("<fmt:message key="spellcheckNoMistakesFound"/>");
 			this.endSpellCheck();
 		} else {
                 var html = this._getDoc().body.innerHTML;
