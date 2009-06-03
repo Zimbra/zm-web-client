@@ -53,10 +53,14 @@ function resizeSlide(currentSlide) {
         return;
     }
 
+    var size = getSlideWindowSize();
+    var ht = size.y;
+    var wd = size.x;
+    var newWidth = (ht/wd)*(4/3)*100;
     //resize slide in 4:3 aspect ratio
-    currentSlide.style.width = "75%";
+    currentSlide.style.width =  newWidth + "%";
     currentSlide.style.height = '100%';
-    currentSlide.style.left = '12.5%';
+    currentSlide.style.left = (100-newWidth)/2 + "%";
 }
 
 function slidesHandler(ev) {
