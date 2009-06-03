@@ -93,6 +93,11 @@
 <script>
     AjxEnv.DEFAULT_LOCALE = "${locale}";
     <jsp:include page="/js/ajax/util/AjxTimezoneData.js" />
+    <c:if test="${runSlideShow}">
+        <jsp:include page="/public/slides/presentation.js" />
+        window.runSlideShow = true;
+        window.presentationMode = "embed";                        
+    </c:if>
 </script>
 
 <c:forEach var="pname" items="${pnames}">
