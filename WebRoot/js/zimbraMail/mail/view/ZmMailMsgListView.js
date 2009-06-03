@@ -30,7 +30,7 @@ ZmMailMsgListView.prototype.constructor = ZmMailMsgListView;
 
 // Consts
 
-ZmMailMsgListView.COL_WIDTH_FROM = 105;
+ZmMailMsgListView.COL_WIDTH_FROM = ZmMsg.COLUMN_WIDTH_MSG_FROM;
 
 ZmMailMsgListView.HEADERS = [ZmItem.F_SELECTION, ZmItem.F_FLAG, ZmItem.F_PRIORITY, ZmItem.F_TAG, ZmItem.F_STATUS,
 							 ZmItem.F_FROM, ZmItem.F_ATTACHMENT, ZmItem.F_SUBJECT, ZmItem.F_FOLDER, ZmItem.F_SIZE, ZmItem.F_DATE];

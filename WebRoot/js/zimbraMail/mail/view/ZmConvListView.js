@@ -79,7 +79,7 @@ ZmConvListView.prototype.constructor = ZmConvListView;
 
 // Constants
 
-ZmConvListView.COL_WIDTH_FROM	= 145;
+ZmConvListView.COL_WIDTH_FROM	= ZmMsg.COLUMN_WIDTH_CONV_FROM;
 ZmConvListView.INDENT			= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 
 ZmListView.FIELD_CLASS[ZmItem.F_EXPAND] = "Expand";
