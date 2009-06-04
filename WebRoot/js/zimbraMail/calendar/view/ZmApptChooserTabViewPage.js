@@ -991,7 +991,8 @@ function() {
 		var text = ZmMsg[ZmApptChooserTabViewPage.COL_LABEL[id]];
 		var image = ZmApptChooserTabViewPage.COL_IMAGE[id];
 		var width = ZmApptChooserTabViewPage.COL_WIDTH[id];
-		headerList.push(new DwtListHeaderItem({field:id, text:text, icon:image, width:width}));
+		headerList.push(new DwtListHeaderItem({field:id, text:text, icon:image, width:width,
+											   resizeable:(id == ZmItem.F_NAME)}));
 	}
 
 	return headerList;
@@ -1064,15 +1065,14 @@ function(ev, div) {
 		}
 	} else {
         var note = this._notes[id];
-        if(note == null) {
+        if (!note) {
             var item = this.getItemFromElement(div);
-            if(item) {
+            if (item) {
                 var notesId = this._getFieldId(item, ZmItem.F_NOTES);
                 note = this._notes[notesId];
             }
-            
         }
-        if (note != null) {
+        if (note) {
 			this.setToolTipContent(AjxStringUtil.htmlEncode(note));
 		}
 	}
