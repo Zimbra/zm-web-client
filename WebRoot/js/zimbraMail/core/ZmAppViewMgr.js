@@ -544,7 +544,7 @@ ZmAppViewMgr.prototype.popView =
 function(force, viewId) {
 	if (!this._currentView) {
 		DBG.println(AjxDebug.DBG1, "ERROR: no view to pop");
-		return;
+		return false;
 	}
 
 	var isPendingView = (force == ZmAppViewMgr.PENDING_VIEW);

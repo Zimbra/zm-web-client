@@ -127,14 +127,7 @@ function () {
 ZmCalViewController.prototype._defaultView =
 function() {
 	var view = appCtxt.get(ZmSetting.CALENDAR_INITIAL_VIEW);
-	switch (view) {
-		case "day": 		return ZmId.VIEW_CAL_DAY;
-		case "workWeek": 	return ZmId.VIEW_CAL_WORK_WEEK;
-		case "week": 		return ZmId.VIEW_CAL_WEEK;
-		case "month": 		return ZmId.VIEW_CAL_MONTH;
-		case "schedule": 	return ZmId.VIEW_CAL_SCHEDULE;
-		default:  			return ZmId.VIEW_CAL_WORK_WEEK;
-	}
+	return ZmCalendarApp.VIEW_FOR_SETTING[view] || ZmId.VIEW_CAL_WORK_WEEK;
 };
 
 ZmCalViewController.prototype.firstDayOfWeek =

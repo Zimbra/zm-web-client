@@ -951,7 +951,7 @@ function() {
 };
 
 /**
-* Sttops an alert on the app tab.
+* Stops an alert on the app tab.
 */
 ZmApp.prototype.stopAlert =
 function() {
@@ -960,3 +960,10 @@ function() {
 	}
 };
 
+ZmApp.prototype._notifyRendered =
+function() {
+	if (!this._hasRendered) {
+		appCtxt.getAppController().appRendered(this._name);
+		this._hasRendered = true;
+	}
+};
