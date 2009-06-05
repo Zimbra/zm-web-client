@@ -227,9 +227,18 @@ function(id, type) {
  */
 ZmOverview.prototype.itemSelected =
 function(treeItem) {
+	if (appCtxt.multiAccounts) {
+		var name = this.id.substring(0, this.id.indexOf(":"));
+		var container = this._controller.getOverviewContainer(name);
+		if (container) {
+			container.deselectAll(this);
+		}
+	}
+
 	if (this._selectedTreeItem && (this._selectedTreeItem._tree != (treeItem && treeItem._tree))) {
 		this._selectedTreeItem._tree.deselectAll();
 	}
+
 	this._selectedTreeItem = treeItem;
 };
 

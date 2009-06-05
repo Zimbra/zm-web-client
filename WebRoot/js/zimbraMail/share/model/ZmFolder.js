@@ -540,7 +540,7 @@ function(what, folderType) {
 			invalid = true;														// can't drop items into saved searches
 		} else if ((item.type == ZmItem.CONTACT) && item.isGal) {
 			invalid = true;
-		} else if (item.type == ZmItem.CONV && searchFolder && searchFolder.nId == this.nId) {
+		} else if (item.type == ZmItem.CONV && searchFolder && searchFolder.id == this.id) {
 			invalid = true;														// convs which are a result of a search for this folder
 		} else {																// checks that need to be done for each item
 			for (var i = 0; i < items.length; i++) {
@@ -567,7 +567,7 @@ function(what, folderType) {
 			// items in the "Sync Failures" folder cannot be dragged out
 			if (appCtxt.isOffline && !invalid) {
 				var cs = appCtxt.getCurrentSearch();
-				var folder = cs ? appCtxt.getById(cs.folderId) : null;
+				var folder = cs && appCtxt.getById(cs.folderId);
 				if (folder && folder.nId == ZmOrganizer.ID_SYNC_FAILURES) {
 					invalid = true;
 				}

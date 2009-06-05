@@ -526,11 +526,14 @@ function(items, folderId) {
 /**
  * Performs an action on items via a SOAP request.
  *
- * @param items				[Array]			list of items to act upon
- * @param action			[string]		SOAP operation
- * @param attrs				[Object]		hash of additional attrs for SOAP request
- * @param callback			[AjxCallback]	async callback
- * @param errorCallback		[AjxCallback]	async error callback
+ * @param params			[Object]			list of parameters
+ *        items				[Array]				list of items to act upon
+ *        action			[string]			SOAP operation
+ *        attrs				[Object]			hash of additional attrs for SOAP request
+ *        callback			[AjxCallback]		async callback
+ *        errorCallback		[AjxCallback]		async error callback
+ *        accountName		[String]*			account to send request on behalf of
+ * @param batchCmd			[ZmBatchCommand]*	If set, request data is added to batch request
  */
 ZmList.prototype._itemAction =
 function(params, batchCmd) {
@@ -584,9 +587,9 @@ function(params, batchCmd) {
 	if (batchCmd) {
 		batchCmd.addRequestParams(itemActionRequest, respCallback, params.errorCallback);
 	} else {
-        var params = { asyncMode: true, callback: respCallback };
-        useJson ? params.jsonObj = itemActionRequest : params.soapDoc = itemActionRequest;
-        appCtxt.getAppController().sendRequest(params);
+        var reqParams = { asyncMode:true, callback:respCallback, accountName:params.accountName };
+        useJson ? reqParams.jsonObj = itemActionRequest : reqParams.soapDoc = itemActionRequest;
+        appCtxt.getAppController().sendRequest(reqParams);
 	}
 };
 
@@ -594,7 +597,7 @@ ZmList.prototype._handleResponseItemAction =
 function(type, idHash, callback, result) {
 	if (callback) {
 		var response = result.getResponse();
-		var resp = response[ZmItem.SOAP_CMD[type] + "Response"]
+		var resp = response[ZmItem.SOAP_CMD[type] + "Response"];
 		var actionedItems = new Array();
 		if (resp && resp.action) {
 			var ids = resp.action.id.split(",");

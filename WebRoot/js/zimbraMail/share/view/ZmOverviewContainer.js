@@ -76,6 +76,11 @@ function() {
 	return tree && tree.root;
 };
 
+/**
+ * Deselects all tree views for each overview in this container
+ *
+ * @param exception		[ZmOverview]*	If set, this overview is skipped during deselection
+ */
 ZmOverviewContainer.prototype.deselectAll =
 function(exception) {
 	DwtTree.prototype.deselectAll.call(this);
