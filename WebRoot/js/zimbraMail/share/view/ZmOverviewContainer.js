@@ -102,13 +102,13 @@ function(params) {
 	for (var i in accounts) {
 		var acct = accounts[i];
 		// skip the main account in offline mode since we'll add it at the end
-		if (!acct.visible || (appCtxt.isOffline && acct.isMain)) { continue; }
+		if (!acct.visible || (appCtxt.isOffline && acct.isMain && this._appName != ZmApp.PREFERENCES)) { continue; }
 
 		this._addAccount(params, acct);
 	}
 
 	// add the "local" account last
-	if (appCtxt.isOffline) {
+	if (appCtxt.isOffline && this._appName != ZmApp.PREFERENCES) {
 		var main = appCtxt.getMainAccount();
 
 		// hide Junk folder for "local" account
@@ -141,7 +141,11 @@ function(params, account) {
 	if (this._appName == ZmApp.PREFERENCES || isSupported) {
 		var omit = params.omitPerAcct
 			? params.omitPerAcct[account.id] : params.omit;
-		this._addSection(account.getDisplayName(), null, account.id, omit, params);
+
+		var headerLabel = (this._appName == ZmApp.PREFERENCES && account.isMain)
+			? ZmMsg.global : account.getDisplayName();
+
+		this._addSection(headerLabel, null, account.id, omit, params);
 	}
 };
 

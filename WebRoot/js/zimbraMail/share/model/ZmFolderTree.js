@@ -163,7 +163,7 @@ function(folder, obj, tree, path, elementType, accountId) {
 	if (obj.link && obj.link.length) {
 		for (var i = 0; i < obj.link.length; i++) {
 			var link = obj.link[i];
-			var childFolder = ZmFolderTree.createFromJs(folder, link, tree, "link", path);
+			var childFolder = ZmFolderTree.createFromJs(folder, link, tree, "link", path, accountId);
 			if (childFolder) {
 				folder.children.add(childFolder);
 			}
