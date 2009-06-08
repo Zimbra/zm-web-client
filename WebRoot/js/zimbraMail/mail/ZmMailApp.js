@@ -1208,33 +1208,37 @@ function(inNewWindow) {
 
 ZmMailApp.prototype.launch =
 function(params, callback) {
-	var query;
-	params = params || {};
-
-	if (location && location.search) {
-		if (params.checkQS) {
-			if (location.search.match(/\bview=compose\b/)) {
-				this._showComposeView(callback);
-				return;
-			}
-			else if (location.search.match(/\bview=msg\b/)) {
-				var match = location.search.match(/\bid=(\d+)/);
-				var id = match ? match[1] : null;
-				if (id) {
-					query = ["item:", id].join("");
-					params.searchResponse = null;
-					this._forceMsgView = true;
-				}
-			}
-		}
-		else if (appCtxt.get(ZmSetting.OFFLINE_SUPPORTS_MAILTO) && !appCtxt.multiAccounts) {
-			if (appCtxt.getAppController().handleOfflineMailTo(location.search, callback))
-				return;
-		}
-	}
 
 	// set type for initial search
 	this._groupBy[appCtxt.getActiveAccount().name] = appCtxt.get(ZmSetting.GROUP_MAIL_BY);
+
+	var query;
+	params = params || {};
+
+	if (params.qsParams) {
+		var view = params.qsParams.view, id = params.qsParams.id;
+		if (view == "compose") {
+			this._showComposeView(callback);
+			return;
+		} else if (id) {
+			view = view || "msg";
+			if (view == "list") {
+				query = ["item:", id].join("");
+				params.searchResponse = null;
+				this._forceMsgView = true;
+			} else if (view == "msg") {
+				var msg = new ZmMailMsg(id, null, true);
+				var params = {getHtml:	appCtxt.get(ZmSetting.VIEW_AS_HTML),
+							  markRead:	(appCtxt.get(ZmSetting.MARK_MSG_READ) == ZmSetting.MARK_READ_NOW),
+							  callback:	new AjxCallback(this, this._handleResponseMsgLoad, [msg, callback])};
+				msg.load(params);
+				return;
+			}
+		}
+	} else if (appCtxt.get(ZmSetting.OFFLINE_SUPPORTS_MAILTO) && !appCtxt.multiAccounts) {
+		if (appCtxt.getAppController().handleOfflineMailTo(location.search, callback)) { return; }
+	}
+
 	this._mailSearch(query, callback, params.searchResponse);
 };
 
@@ -1248,6 +1252,15 @@ function(params, ex) {
 		var newParams = {query:"in:inbox", callback:params.callback, errorCallback:null, types:params.types};
 		appCtxt.getSearchController().search(newParams);
 	}
+};
+
+ZmMailApp.prototype._handleResponseMsgLoad =
+function(msg, callback) {
+	AjxDispatcher.run("GetMsgController").show(msg);
+	if (callback) {
+		callback.run();
+	}
+	this._notifyRendered();
 };
 
 ZmMailApp.prototype._mailSearch =
@@ -1304,10 +1317,7 @@ function(results, callback) {
 	if (callback) {
 		callback.run();
 	}
-	if (!this._hasRendered) {
-		appCtxt.getAppController().appRendered(this._name);
-		this._hasRendered = true;
-	}
+	this._notifyRendered();
 };
 
 ZmMailApp.prototype._showComposeView =
@@ -1347,10 +1357,7 @@ function(callback, queryStr) {
 		composeController.doAction(params);
 	}
 
-	if (!this._hasRendered) {
-		appCtxt.getAppController().appRendered(this._name);
-		this._hasRendered = true;
-	}
+	this._notifyRendered();
 };
 
 ZmMailApp.prototype.getConvListController =

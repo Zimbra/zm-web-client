@@ -259,11 +259,11 @@ ZmMsgController.prototype._resetNavToolBarButtons =
 function(view) {
 	// NOTE: we purposely do not call base class here!
 	if (!appCtxt.isChildWindow) {
-		var list = this._msg.list.getVector();
+		var list = this._msg.list && this._msg.list.getVector();
 
-		this._navToolBar[view].enable(ZmOperation.PAGE_BACK, list.get(0) != this._msg);
+		this._navToolBar[view].enable(ZmOperation.PAGE_BACK, (list && (list.get(0) != this._msg)));
 
-		var bEnableForw = this._msg.list.hasMore() || (list.getLast() != this._msg);
+		var bEnableForw = list && (this._msg.list.hasMore() || (list.getLast() != this._msg));
 		this._navToolBar[view].enable(ZmOperation.PAGE_FORWARD, bEnableForw);
 
 		this._navToolBar[view].setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previousMessage);
@@ -318,4 +318,11 @@ function(params) {
 ZmMsgController.prototype._getDefaultFocusItem = 
 function() {
 	return this._toolbar[this._currentView];
+};
+
+ZmMsgController.prototype._backListener =
+function(ev) {
+	if (!this._app.popView()) {
+		this._app._mailSearch();
+	}
 };

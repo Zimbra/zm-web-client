@@ -719,24 +719,14 @@ function(params) {
 		startApp = (params && params.isRelogin && this._activeApp) ? this._activeApp : defaultStartApp;
 	}
 
-	// check for jump to compose page or msg view
-	var checkQS = false;
-	if (startApp == ZmApp.CALENDAR) {
-		// let calendar check for jumps
-		checkQS = true;
-	} else {
-		var match;
-		if (location.search && (match = location.search.match(/\bview=(\w+)\b/))) {
-			var view = match[1];
-			if (ZmApp.QS_VIEWS[view]) {
-				startApp = ZmApp.QS_VIEWS[view];
-				checkQS = true;
-			}
-		}
+	// parse query string, in case we are coming in with a deep link	
+	var qsParams = AjxStringUtil.parseQueryString();
+	if (qsParams && qsParams.view && !qsParams.app) {
+		startApp = ZmApp.QS_VIEWS[qsParams.view];
 	}
 
 	params.startApp = startApp;
-	params.checkQS = checkQS;
+	params.qsParams = qsParams;
 };
 
 /**

@@ -750,3 +750,10 @@ function() {
 	}
 };
 
+ZmApp.prototype._notifyRendered =
+function() {
+	if (!this._hasRendered) {
+		appCtxt.getAppController().appRendered(this._name);
+		this._hasRendered = true;
+	}
+};

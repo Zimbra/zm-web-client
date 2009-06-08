@@ -45,6 +45,14 @@ ZmApp.QS_ARG[ZmApp.CALENDAR]			= "calendar";
 ZmCalendarApp.REMINDER_START_DELAY = 10000;
 ZmCalendarApp.MINICAL_DELAY = 5000;
 
+ZmCalendarApp.VIEW_FOR_SETTING = {};
+ZmCalendarApp.VIEW_FOR_SETTING[ZmSetting.CAL_DAY]		= ZmId.VIEW_CAL_DAY;
+ZmCalendarApp.VIEW_FOR_SETTING[ZmSetting.CAL_WEEK]		= ZmId.VIEW_CAL_WEEK;
+ZmCalendarApp.VIEW_FOR_SETTING[ZmSetting.CAL_WORK_WEEK]	= ZmId.VIEW_CAL_WORK_WEEK;
+ZmCalendarApp.VIEW_FOR_SETTING[ZmSetting.CAL_MONTH]		= ZmId.VIEW_CAL_MONTH;
+ZmCalendarApp.VIEW_FOR_SETTING[ZmSetting.CAL_SCHEDULE]	= ZmId.VIEW_CAL_SCHEDULE;
+ZmCalendarApp.VIEW_FOR_SETTING[ZmSetting.CAL_LIST]		= ZmId.VIEW_CAL_LIST;
+
 ZmCalendarApp.COLORS = [];
 // these need to match CSS rules
 ZmCalendarApp.COLORS[ZmOrganizer.C_ORANGE]	= "Orange";
@@ -548,32 +556,20 @@ function(params, callback) {
 	var sd = null;
 
 	params = params || {};
-	if (params.checkQS && location) {
-		var search = location.search;
-		var found = false;
-		if (search.match(/\bview=day\b/)) {
-			found = true;
-			view = ZmId.VIEW_CAL_DAY;
-		} else if (search.match(/\bview=workWeek\b/)) {
-			found = true;
-			view = ZmId.VIEW_CAL_WORK_WEEK;
-		} else if (search.match(/\bview=week\b/)) {
-			found = true;
-			view = ZmId.VIEW_CAL_WEEK;
-		} else if (search.match(/\bview=month\b/)) {
-			found = true;
-			view = ZmId.VIEW_CAL_MONTH;
-		} else if (search.match(/\bview=list\b/)) {
-			found = true;
-			view = ZmId.VIEW_CAL_LIST;
-		}
-
-		if (found) {
-			var match = search.match(/\bdate=([^&]+)/);
-			var pDate = (match && match.length > 1) ? match[1] : null;
-			var parsed = pDate ? AjxDateUtil.parseServerDateTime(pDate) : null;
-			if (parsed && !isNaN(parsed))
-				sd = new Date((parsed).setHours(0,0,0,0));
+	if (params.qsParams) {
+		var viewArg = params.qsParams.view;
+		if (viewArg) {
+			var viewId = ZmCalendarApp.VIEW_FOR_SETTING[viewArg];
+			if (viewId) {
+				view = viewId;
+				var date = params.qsParams.date;
+				if (date) {
+					date = AjxDateUtil.parseServerDateTime(date);
+					if (date && !isNaN(date)) {
+						sd = new Date((date).setHours(0,0,0,0));
+					}
+				}
+			}
 		}
 	}
 
