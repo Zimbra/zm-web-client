@@ -328,9 +328,6 @@ function(callback, accountName, result) {
 		appCtxt.allZimletsLoaded();
 	}
 
-	// load shortcuts
-	this.loadShortcuts();
-
 	// DONE
 	this.userSettingsLoaded = true;
 	if (callback) {
@@ -557,37 +554,6 @@ function() {
 };
 
 /**
- * Loads the user's custom shortcuts, which consist of key bindings for organizers
- * that have aliases.
- *
- * @param unload	[Boolean]*		If set, removes user-defined shortcuts from global kmm
- */
-ZmSettings.prototype.loadShortcuts =
-function(unload) {
-	// NOTE: the key map mgr is *global* (i.e. singleton object)
-	var kmm = appCtxt.getAppController().getKeyMapMgr();
-	var scString = this.get(ZmSetting.SHORTCUTS);
-	if (!scString || !kmm) { return; }
-	var shortcuts = ZmShortcut.parse(scString, kmm);
-	var maps = {};
-	for (var i = 0, count = shortcuts.length; i < count; i++) {
-		var sc = shortcuts[i];
-		if (unload) {
-			kmm.removeMapping(sc.mapName, sc.keySequence);
-			kmm.removeArg(sc.mapName, sc.action);
-		} else {
-			kmm.setMapping(sc.mapName, sc.keySequence, sc.action);
-			kmm.setArg(sc.mapName, sc.action, sc.arg);
-		}
-		maps[sc.mapName] = true;
-	}
-
-	for (var map in maps) {
-		kmm.reloadMap(map);
-	}
-};
-
-/**
  * Loads the standard settings and their default values.
  */
 ZmSettings.prototype._initialize =
@@ -806,9 +772,6 @@ function(ev) {
 		cd.registerCallback(DwtDialog.YES_BUTTON, this._refreshBrowserCallback, this, [cd]);
 		cd.setMessage(ZmMsg.localeChangeRestart, DwtMessageDialog.WARNING_STYLE);
 		cd.popup();
-	} else if (id == ZmSetting.SHORTCUTS) {
-		appCtxt.getKeyboardMgr().registerKeyMap(new ZmKeyMap());
-		this.loadShortcuts();
 	} else if (id == ZmSetting.CHILD_ACCTS_VISIBLE) {
 		var cd = appCtxt.getYesNoMsgDialog();
 		cd.reset();

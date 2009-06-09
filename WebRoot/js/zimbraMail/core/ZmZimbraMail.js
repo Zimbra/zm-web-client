@@ -1226,7 +1226,6 @@ function() {
 							 mountKey:			"mountFolder",
 							 createFunc:		"ZmOrganizer.create",
 							 compareFunc:		"ZmFolder.sortCompare",
-							 shortcutKey:		"F",
 							 newOp:				ZmOperation.NEW_FOLDER,
 							 displayOrder:		100,
 							 openSetting:		ZmSetting.FOLDER_TREE_OPEN
@@ -1245,7 +1244,6 @@ function() {
  							 dropTargets:		[ZmOrganizer.FOLDER, ZmOrganizer.SEARCH],
 							 createFunc:		"ZmSearchFolder.create",
 							 compareFunc:		"ZmFolder.sortCompare",
-							 shortcutKey:		"S",
 							 openSetting:		ZmSetting.SEARCH_TREE_OPEN,
 							 displayOrder:		300
 							});
@@ -1264,7 +1262,6 @@ function() {
 							 treeType:			ZmOrganizer.TAG,
 							 createFunc:		"ZmTag.create",
 							 compareFunc:		"ZmTag.sortCompare",
-							 shortcutKey:		"T",
 							 newOp:				ZmOperation.NEW_TAG,
 							 openSetting:		ZmSetting.TAG_TREE_OPEN,
 							 displayOrder:		400
@@ -1996,7 +1993,6 @@ function(actionCode, ev) {
 				maps1.push(ZmKeyMap.MAP_NAME_R[maps[i]] || DwtKeyMap.MAP_NAME_R[maps[i]]);
 			}
 
-			maps1.push(ZmKeyMap.MAP_CUSTOM);
 			var col1 = {}, col2 = {};
 			col1.type = ZmShortcutList.TYPE_APP;
 			col1.maps = maps1;

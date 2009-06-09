@@ -2820,68 +2820,6 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 /*
- *   Shortcut key display
- */
-
-.XshortcutList {
-	width:100%;
-	border-collapse:collapse;
-	margin-bottom:10px;
-}
-
-.XshortcutListHeader {
-	border:1px solid #999999;
-}
-
-.XshortcutKeys {
-	text-align:right;
-	padding:6px;
-	vertical-align:top;
-	@SeparatorBorder@
-	width:250px;
-	font-weight:bold;
-	@Text-disabled@;
-}
-
-.XshortcutDescription {
-	@SeparatorBorder@
-	padding:5px;
-	width:auto;
-}
-
-.XshortcutKeyCombo {
-	white-space:nowrap;
-	margin-right:5px;
-	margin-left:5px;
-}
-
-.XshortcutKey {
-	@SeparatorBorder@
-	@Text@
-	font-weight:bold;
-	padding:2px 4px 2px 4px;
-	margin:1px 1px 1px 1px;
-	line-height:22px;
-}
-
-.XshortcutTable {
-	table-layout:fixed;
-	border-collapse:collapse;
-	margin-bottom:10px;
-	border:1px solid #999999;
-}
-
-.XshortcutTable TH {
-	font-size:11px;
-	text-align:left;
-	font-weight:bold;
-	padding-left:5px;
-	color:#666666;
-	border-bottom:1px solid #999999;
-}
-
-
-/*
  * Temporary styles for the shortcuts tab. These should be
  * replaced with the proper substitutions from skin files.
  */

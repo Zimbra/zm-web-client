@@ -268,11 +268,8 @@ function() {
 			templateId: "prefs.Pages#Shortcuts",
 			priority: 120,
 			precondition: ZmSetting.USE_KEYBOARD_SHORTCUTS,
-			prefs: [
-				ZmSetting.SHORTCUTS
-			],
 			createView: function(parent, section, controller) {
-				return new ZmShortcutsPage(parent, section.id, controller);
+				return new ZmShortcutsPage(parent, section, controller);
 			}
 		},
         PREF_ZIMLETS: {
@@ -523,11 +520,6 @@ function() {
 		displayName:		ZmMsg.includeTrashFolder,
 		displayContainer:	ZmPref.TYPE_CHECKBOX,
 		precondition:		[ZmSetting.MAIL_ENABLED, ZmSetting.CONTACTS_ENABLED]
-	});
-
-	ZmPref.registerPref("SHORTCUTS", {
-		displayContainer:	ZmPref.TYPE_SHORTCUTS,
-		precondition:		ZmSetting.USE_KEYBOARD_SHORTCUTS
 	});
 
 	ZmPref.registerPref("SHOW_FRAGMENTS", {

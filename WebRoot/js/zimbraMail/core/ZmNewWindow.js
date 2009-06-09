@@ -160,8 +160,6 @@ function() {
 	}
 
 	var rootTg = appCtxt.getRootTabGroup();
-	var startupFocusItem;
-
 
 	var apps = {};
 	apps[ZmApp.MAIL] = true;
@@ -209,6 +207,7 @@ function() {
 	var params = window.newWindowParams;
 
 	var rootTg = appCtxt.getRootTabGroup();
+	var startupFocusItem;
 
 	// depending on the command, do the right thing
 	if (cmd == "compose" || cmd == "composeDetach") {

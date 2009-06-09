@@ -892,10 +892,9 @@ function(account, callback) {
  *
  * @param keyMap	[string]	key map
  * @param shortcut	[string]	shortcut action
- * @param orgId		[int]*		ID or organizer that may have a shortcut alias
  */
 ZmAppCtxt.prototype.getShortcutHint =
-function(keyMap, shortcut, orgId) {
+function(keyMap, shortcut) {
 	
 	var text = null;
 	keyMap = keyMap || "global";
@@ -914,14 +913,6 @@ function(keyMap, shortcut, orgId) {
 				}
 			}
 			if (!sc) { return null; }
-			if (orgId) {
-				var customKeys = this.getCustomKeys();
-				if (!customKeys) { return null; }
-				var key = ["custom", orgId].join(".");
-				var alias = customKeys[key];
-				sc = sc.replace("NNN", alias);
-				if (!alias) { return null; }
-			}
 			sc = sc.replace(/\b[A-Z]\b/g, function(let) { return let.toLowerCase(); });
 			text = [" [", sc.replace(",", ""), "]"].join("");
 		} else {
@@ -931,58 +922,6 @@ function(keyMap, shortcut, orgId) {
 	}
 
 	return text;
-};
-
-/**
- * Returns an object that looks like a keys properties map, which contains the
- * properties needed to display the user's aliased shortcuts.
- *
- * @param keys		[hash]*		if provided, custom keys will be added to these keys
- */
-ZmAppCtxt.prototype.getCustomKeys =
-function(keys) {
-
-	if (!this._customKeys) {
-		var kmm = this.getAppController().getKeyMapMgr();
-		var setting = this.get(ZmSetting.SHORTCUTS);
-		var shortcuts = kmm ? ZmShortcut.parse(setting, kmm) : null;
-		if (!(shortcuts && shortcuts.length)) { return null; }
-
-		var c = ZmKeyMap.MAP_CUSTOM;
-		var customKeys = keys || {};
-		var key, key1;
-		key = key1 = [c, "description"].join(".");
-		customKeys[key] = ZmKeys[key1];
-		key = key1 = [c, "sort"].join(".");
-		customKeys[key] = ZmKeys[key1];
-		var regex = new RegExp(ZmShortcut.ALIAS, "g");
-
-		for (var i = 0, count = shortcuts.length; i < count; i++) {
-			var sc = shortcuts[i];
-			var org = this.getById(sc.arg);
-			if (!org) {
-				continue;
-			}
-			key = [c, org.id].join(".");
-			customKeys[key] = sc.num;
-			var map = ZmKeyMap.MAP_NAME_R[sc.mapName];
-			key = [map, sc.baseAction, "display"].join(".");
-			var keySeq = ZmKeys[key];
-			keySeq = keySeq.replace(regex, sc.num);
-			key = [c, sc.action, "display"].join(".");
-			customKeys[key] = keySeq;
-			key = [c, sc.action, "description"].join(".");
-			key1 = [map, sc.baseAction, "custom"].join(".");
-			customKeys[key] = AjxMessageFormat.format(ZmKeys[key1], org.getName());
-			key = [c, sc.action, "sort"].join(".");
-			key1 = [map, sc.baseAction, "sort"].join(".");
-			customKeys[key] = Number(sc.num) + Number(ZmKeys[key1]);
-		}
-		
-		this._customKeys = customKeys;
-	}
-
-	return this._customKeys;
 };
 
 ZmAppCtxt.prototype.getShortcutsPanel =

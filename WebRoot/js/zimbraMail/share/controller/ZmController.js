@@ -115,12 +115,6 @@ function(actionCode) {
 	if (tabView && tabView.handleKeyAction(actionCode)) {
 		return true;
 	}
-	
-	// check for action code with argument, eg MoveToFolder3
-	var shortcut = ZmShortcut.parseAction("Global", actionCode);
-	if (shortcut) {
-		actionCode = shortcut.baseAction;
-	}
 
 	// shortcuts tied directly to operations
 	var app = ZmApp.ACTION_CODES_R[actionCode];
@@ -156,34 +150,12 @@ function(actionCode) {
 			}
 			break;
 
-		case ZmKeyMap.GOTO_TAG:
-			if (shortcut && appCtxt.get(ZmSetting.SEARCH_ENABLED)) {
-				var tagId = (appCtxt.multiAccounts && !appCtxt.getActiveAccount().isMain)
-					? ZmOrganizer.getSystemId(shortcut.arg) : shortcut.arg;
-				var tag = appCtxt.getById(tagId);
-				if (tag) {
-					appCtxt.getSearchController().search({query: 'tag:"' + tag.name + '"'});
-				}
-			}
-			break;
-
 		case ZmKeyMap.SAVED_SEARCH:
 			if (appCtxt.get(ZmSetting.SEARCH_ENABLED)) {
 				var dlg = appCtxt.getChooseFolderDialog();
 				var params = {treeIds:	[ZmOrganizer.SEARCH],
 							  title:	ZmMsg.selectSearch};
 				ZmController.showDialog(dlg, new AjxCallback(null, ZmController._searchSelectionCallback, [dlg]), params);
-			}
-			break;
-
-		case ZmKeyMap.SAVED_SEARCH_CUSTOM:
-			if (shortcut && appCtxt.get(ZmSetting.SEARCH_ENABLED)) {
-				var sid = (appCtxt.multiAccounts && !appCtxt.getActiveAccount().isMain)
-					? ZmOrganizer.getSystemId(shortcut.arg) : shortcut.arg;
-				var searchFolder = appCtxt.getById(sid);
-				if (searchFolder) {
-					appCtxt.getSearchController().redoSearch(searchFolder.search);
-				}
 			}
 			break;
 
