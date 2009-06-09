@@ -311,6 +311,11 @@ function() {
 	return userPropsArray;
 };
 
+ZmNewWindow.prototype.cancelRequest =
+function(reqId, errorCallback, noBusyOverlay) {
+	return window.parentController ? window.parentController.cancelRequest(reqId, errorCallback, noBusyOverlay) : null;
+};
+
 /**
 * Pass server requests to the main controller.
 */
