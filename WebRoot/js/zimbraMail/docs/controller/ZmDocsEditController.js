@@ -45,6 +45,8 @@ ZmDocsEditController.prototype._initToolBar = function () {
 
     var tb = this._toolbar;
 
+    this._fileName = new DwtInputField({parent:tb, size:20});
+
     var listener = new AjxListener(this, this._actionListener);
 
     this._saveSlide = new DwtToolBarButton({parent:tb});
@@ -55,7 +57,7 @@ ZmDocsEditController.prototype._initToolBar = function () {
     this._saveSlide.addSelectionListener(listener);
 
     tb.setVisible(true);
-}
+};
 
 ZmDocsEditController.prototype._actionListener =
 function(ev) {
@@ -64,6 +66,40 @@ function(ev) {
     if(action == ZmDocsEditController.ACTION_SAVE) {
         this._currentView.saveFile();
     }
-}
+};
+
+
+ZmDocsEditController.prototype.setStatusMsg =
+function(){
+    if(!this.statusView){
+        this.statusView = new ZmStatusView(appCtxt.getShell(), "ZmStatus", Dwt.ABSOLUTE_STYLE, ZmId.STATUS_VIEW);
+    }
+    params = Dwt.getParams(arguments, ZmStatusView.MSG_PARAMS);
+    params.transitions = ZmToast.DEFAULT_TRANSITIONS;
+	this.statusView.setStatusMsg(params);
+};
+
+ZmDocsEditController.prototype.getFileName =
+function() {
+    return this._fileName ? this._fileName.getValue() : null;
+};
+
+ZmDocsEditController.prototype.setFileName =
+function(fileName) {
+    if(this._fileName) {
+        this._fileName.setValue(fileName);
+    }
+};
+
+ZmDocsEditController.prototype.sendRequest =
+function(params) {
+    params.noSession = true;
+    this._requestMgr.sendRequest(params);
+};
+
+ZmDocsEditController.prototype._kickPolling =
+function(resetBackoff) {
+
+};
 
 

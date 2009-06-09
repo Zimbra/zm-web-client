@@ -60,6 +60,7 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_NEW_FILE, {textKey:"uploadNewFile", tooltipKey:"uploadNewFile", image:"NewPage"});
     ZmOperation.registerOp(ZmId.OP_NEW_PRESENTATION, {textKey:"newPresentation", tooltipKey:"newPresentation", image:"Presentation"});
     ZmOperation.registerOp(ZmId.OP_NEW_SPREADSHEET, {textKey:"newSpreadSheet", tooltipKey:"newSpreadsheet", image:"ZSpreadSheet"});
+    ZmOperation.registerOp(ZmId.OP_NEW_DOC, {textKey:"newDocument", tooltipKey:"newDocument", image:"Doc"});
 	ZmOperation.registerOp(ZmId.OP_SHARE_BRIEFCASE, {textKey:"shareFolder", image:"SharedMailFolder"}, ZmSetting.SHARING_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_MOUNT_BRIEFCASE, {textKey:"mountBriefcase", image:"Notebook"}, ZmSetting.SHARING_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_OPEN_FILE, {textKey:"openFile", tooltipKey:"openFileTooltip", image:"NewPage"});
@@ -146,6 +147,7 @@ function() {
 	actionCodes[ZmKeyMap.NEW_BRIEFCASEITEM]	= ZmOperation.NEW_BRIEFCASEITEM;
 	actionCodes[ZmKeyMap.NEW_PRESENTATION]	= ZmOperation.NEW_PRESENTATION;
     actionCodes[ZmKeyMap.NEW_SPREADSHEET]   = ZmOperation.NEW_SPREADSHEET;
+    actionCodes[ZmKeyMap.NEW_DOC]           = ZmOperation.NEW_DOC;
 
 	ZmApp.registerApp(ZmApp.BRIEFCASE,
 					 {mainPkg:				"Briefcase",
@@ -286,6 +288,12 @@ function(op) {
              AjxDispatcher.require(["BriefcaseCore", "Briefcase"], true, newDocCallback, null);
              break;
          }
+
+         case ZmOperation.NEW_DOC: {
+             var newDocCallback = new AjxCallback(this, this.newDoc, [ZmMimeTable.APP_ZIMBRA_DOC]);
+             AjxDispatcher.require(["BriefcaseCore", "Briefcase"], true, newDocCallback, null);
+             break;
+         }
 	}
 };
 
@@ -376,6 +384,7 @@ function(contentType) {
     switch(contentType) {
         case ZmMimeTable.APP_ZIMBRA_SLIDES:         editPage = "Slides.jsp"; break;
         case ZmMimeTable.APP_ZIMBRA_SPREADSHEET:    editPage = "SpreadsheetDoc.jsp"; break;
+        case ZmMimeTable.APP_ZIMBRA_DOC:            editPage = "Docs.jsp"; break;
         default: return null;
     };
     var editURL = appContextPath + "/public/" +  editPage;

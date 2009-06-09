@@ -1,5 +1,5 @@
 <%@ page buffer="8kb" session="false" autoFlush="true" pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
-<%@ page import="java.util.*,javax.naming.*,com.zimbra.cs.zclient.ZAuthResult" %>
+<%@ page import="java.util.*,javax.naming.*" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
@@ -76,7 +76,7 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
     if (ext == null){
         ext = "";
     }
-    boolean isDevMode = false && (mode != null) && (mode.equalsIgnoreCase("mjsf"));
+    boolean isDevMode = isDev;//false && (mode != null) && (mode.equalsIgnoreCase("mjsf"));
     boolean isSkinDebugMode = (mode != null) && (mode.equalsIgnoreCase("skindebug"));
 
 
@@ -126,18 +126,30 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
         @import url(<%= contextPath %>/css/common,dwt,msgview,login,zm,spellcheck,wiki,spreadsheet,presentation,slides,images,skin.css?v=<%= vers %><%= isSkinDebugMode || isDevMode ? "&debug=1" : "" %>&skin=<%= skin %>);
         -->
     </style>
-    <link rel="stylesheet" type="text/css" href="../yui/2.5.1/assets/skins/sam/skin.css" />
-    <script type="text/javascript" src="../yui/2.5.1/yahoo-dom-event/yahoo-dom-event.js"></script>
-    <script type="text/javascript" src="../yui/2.5.1/element/element-beta-min.js"></script>
-    <!-- Needed for Menus, Buttons and Overlays used in the Toolbar -->
-    <script src="../yui/2.5.1/container/container_core-min.js"></script>
 
-    <script src="../yui/2.5.1/menu/menu-min.js"></script>
+    <link rel="stylesheet" type="text/css" href="../yui/2.7.0/menu/assets/skins/sam/menu.css" />
+    <link rel="stylesheet" type="text/css" href="../yui/2.7.0/button/assets/skins/sam/button.css" />
+    <link rel="stylesheet" type="text/css" href="../yui/2.7.0/fonts/fonts-min.css" />
+    <link rel="stylesheet" type="text/css" href="../yui/2.7.0/container/assets/skins/sam/container.css" />
 
-    <script src="../yui/2.5.1/button/button-beta-min.js"></script>
-    <!-- Source file for Rich Text Editor-->
-    <script src="../yui/2.5.1/editor/editor-beta-min.js"></script>
-    <app:spellcheck/>
+    <link rel="stylesheet" type="text/css" href="../yui/2.7.0/editor/assets/skins/sam/editor.css" />
+    <script type="text/javascript" src="../yui/2.7.0/yahoo-dom-event/yahoo-dom-event.js"></script>
+    <script type="text/javascript" src="../yui/2.7.0/animation/animation-min.js"></script>
+    <script type="text/javascript" src="../yui/2.7.0/element/element-min.js"></script>
+    <script type="text/javascript" src="../yui/2.7.0/container/container-min.js"></script>
+    <script type="text/javascript" src="../yui/2.7.0/menu/menu-min.js"></script>
+    <script type="text/javascript" src="../yui/2.7.0/button/button-min.js"></script>
+    <script type="text/javascript" src="../yui/2.7.0/editor/editor-min.js"></script>
+
+    <!--link rel="stylesheet" type="text/css" href="../yui/2.7.0/assets/skins/sam/skin.css" />
+    <script type="text/javascript" src="../yui/2.7.0/yahoo-dom-event/yahoo-dom-event.js"></script>
+    <script type="text/javascript" src="../yui/2.7.0/element/element-beta-min.js"></script>
+    <script src="../yui/2.7.0/container/container_core-min.js"></script>
+
+    <script src="../yui/2.7.0/menu/menu-min.js"></script>
+
+    <script src="../yui/2.7.0/button/button-beta-min.js"></script>
+    <script src="../yui/2.7.0/editor/editor-beta-min.js"></script-->
     <style type="text/css" media="screen">
         .yui-skin-sam .yui-toolbar-container .yui-toolbar-spellcheck span.yui-toolbar-icon {
             background-image: url( ../yui/spellcheck/img/ImgSpellCheck.gif );
@@ -161,12 +173,27 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
         .docsToolbar {
             background-color: #BCCBD6;
         }
+
+        .yui-skin-sam .yui-toolbar-container .yui-toolbar-flickr span.yui-toolbar-icon {
+            background-image: url(  ../yui/spellcheck/img/ImgSpellCheck.gif );
+            background-position: 1px 0px;
+            left: 5px;
+        }
+        .yui-skin-sam .yui-toolbar-container .yui-toolbar-flickr-selected span.yui-toolbar-icon {
+            background-image: url( ../yui/spellcheck/img/ImgSpellCheck.gif );
+            background-position: 1px 0px;
+            left: 5px;
+        }
+
     </style>
     <jsp:include page="Resources.jsp">
         <jsp:param name="res" value="I18nMsg,AjxMsg,ZMsg,ZmMsg,AjxKeys" />
         <jsp:param name="skin" value="${skin}" />
     </jsp:include>
     <jsp:include page="Boot.jsp"/>
+    <script>
+        
+    </script>
     <script>
         AjxEnv.DEFAULT_LOCALE = "${locale}";
         <jsp:include page="/js/ajax/util/AjxTimezoneData.js" />
@@ -238,6 +265,8 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
         window.appCtxt = new ZmAppCtxt();
         appCtxt.rememberMe = false;
 
+        window.skin = null;
+
         // Create and initialize settings
         var settings = new ZmSettings();
         appCtxt.setSettings(settings);
@@ -248,6 +277,7 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
         shell._veilOverlay.style.display = "none";
 
         var controller = new ZmDocsEditController();
+        appCtxt.setAppController(controller);
 
         docsEditView  = new ZmDocsEditView(shell, null, DwtControl.ABSOLUTE_STYLE, controller);
         var size = shell.getSize();
@@ -265,6 +295,8 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
         window.onresize = _resize;
 
         window.fileInfo = {name: '<%= fileName %>', folderId: ZmOrganizer.ID_BRIEFCASE, contentType: 'application/x-zimbra-doc'};
+
+        controller.setFileName(window.fileInfo.name ? window.fileInfo.name : "Untitled");
 
         var item = null;
     <% if(fileId != null) {%>

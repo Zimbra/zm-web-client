@@ -30,6 +30,7 @@ ZmBriefcaseController = function(container, app) {
 
     this._listeners[ZmOperation.NEW_SPREADSHEET] = new AjxListener(this, this._handleDoc, [ZmOperation.NEW_SPREADSHEET]);
     this._listeners[ZmOperation.NEW_PRESENTATION] = new AjxListener(this, this._handleDoc, [ZmOperation.NEW_PRESENTATION])
+    this._listeners[ZmOperation.NEW_DOC] = new AjxListener(this, this._handleDoc, [ZmOperation.NEW_DOC])
 
 	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
 	this._dragSrc.addDragListener(new AjxListener(this, this._dragListener));
@@ -86,6 +87,7 @@ function() {
             ZmOperation.SEP,
             ZmOperation.NEW_SPREADSHEET,
             ZmOperation.NEW_PRESENTATION,
+            ZmOperation.NEW_DOC,
             ZmOperation.FILLER,
 			ZmOperation.SEND_FILE_MENU];
 };
@@ -162,7 +164,7 @@ function(parent, num) {
     parent.enable(ZmOperation.CREATE_SLIDE_SHOW, (!isReadOnly && isItemSelected));
 	parent.enable(ZmOperation.TAG_MENU, (!isShared && isItemSelected && !isFolderSelected));
 	parent.enable([ZmOperation.NEW_FILE, ZmOperation.VIEW_MENU], true);
-    parent.enable([ZmOperation.NEW_SPREADSHEET, ZmOperation.NEW_PRESENTATION], true);
+    parent.enable([ZmOperation.NEW_SPREADSHEET, ZmOperation.NEW_PRESENTATION, ZmOperation.NEW_DOC], true);
 };
 
 ZmBriefcaseController.prototype._getTagMenuMsg =
