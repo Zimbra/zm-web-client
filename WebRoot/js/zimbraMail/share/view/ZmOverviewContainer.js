@@ -35,6 +35,9 @@ ZmOverviewContainer = function(params) {
 	this._controller = params.controller;
 	this._headerItems = {};
 	this._overview = {};
+
+	// add listeners
+	this.addSelectionListener(new AjxListener(this, this._treeViewListener));
 };
 
 ZmOverviewContainer.prototype = new DwtTree;
@@ -146,13 +149,20 @@ function(params, account) {
 			? ZmMsg.global : account.getDisplayName();
 
 		this._addSection(headerLabel, null, account.id, omit, params);
+
+		this._initializeActionMenu(account);
 	}
 };
 
 ZmOverviewContainer.prototype._addSection =
 function(headerLabel, headerIcon, headerDataId, omit, overviewParams) {
 	// create a top-level section header
-	var params = {parent:this, text:headerLabel, imageInfo:headerIcon/*, className:"overviewHeader"*/};
+	var params = {
+		parent: this,
+		text: headerLabel,
+		imageInfo: headerIcon
+		/*className:"overviewHeader"*/
+	};
 	var header = this._headerItems[headerDataId] = new DwtTreeItem(params);
 	header.setData(Dwt.KEY_ID, headerDataId);
 	header.setScrollStyle(Dwt.CLIP);
@@ -178,35 +188,105 @@ function(headerLabel, headerIcon, headerDataId, omit, overviewParams) {
 	ov.set(treeIds, omit);
 };
 
-ZmOverviewContainer.prototype._itemClicked =
-function(item, ev) {
-	// calendar app does not process folder clicks
-	if (this._appName == ZmApp.CALENDAR) { return; }
+ZmOverviewContainer.prototype._treeViewListener =
+function(ev) {
+	if (ev.detail != DwtTree.ITEM_ACTIONED &&
+		ev.detail != DwtTree.ITEM_SELECTED &&
+		ev.detail != DwtTree.ITEM_DBL_CLICKED)
+	{
+		return;
+	}
 
-	DwtTree.prototype._itemClicked.call(this, item, ev);
+	var item = this._actionedHeaderItem = ev.item;
 
-	this._deselectAllTreeViews();
+	if (ev.detail == DwtTree.ITEM_ACTIONED) {									// right click
+		var actionMenu = this._getActionMenu(ev);
+		if (actionMenu) {
+			actionMenu.popup(0, ev.docX, ev.docY);
+		}
+	}
+	else if ((ev.detail == DwtTree.ITEM_SELECTED) && item) {					// left click
+		if (this._appName == ZmApp.CALENDAR) { return; }
 
-	// this avoids processing clicks in dialogs etc.
-	if (!ZmApp.NAME[this._appName]) { return; }
+		this._deselectAllTreeViews();
 
-	// if an account header item was clicked, run the default search for it
-	var acctId = item.getData(Dwt.KEY_ID);
-	if (acctId) {
-		var account = appCtxt.getAccount(acctId);
-		appCtxt.setActiveAccount(account);
+		// this avoids processing clicks in dialogs etc.
+		if (!ZmApp.NAME[this._appName]) { return; }
 
-		var fid = ZmOrganizer.DEFAULT_FOLDER[ZmApp.ORGANIZER[this._appName]];
-		var folder = appCtxt.getById(ZmOrganizer.getSystemId(fid, account));
-		var sc = appCtxt.getSearchController();
-		var params = {
-			query: folder.createQuery(),
-			getHtml: appCtxt.get(ZmSetting.VIEW_AS_HTML),
-			searchFor: (ZmApp.DEFAULT_SEARCH[this._appName]),
-			sortBy: ((sc.currentSearch && folder.nId == sc.currentSearch.folderId) ? null : ZmSearch.DATE_DESC),
-			accountName: (account && account.name)
-		};
-		sc.search(params);
+		// if an account header item was clicked, run the default search for it
+		var acctId = item.getData(Dwt.KEY_ID);
+		if (acctId) {
+			var account = appCtxt.getAccount(acctId);
+			appCtxt.setActiveAccount(account);
+
+			var fid = ZmOrganizer.DEFAULT_FOLDER[ZmApp.ORGANIZER[this._appName]];
+			var folder = appCtxt.getById(ZmOrganizer.getSystemId(fid, account));
+			var sc = appCtxt.getSearchController();
+			var params = {
+				query: folder.createQuery(),
+				getHtml: appCtxt.get(ZmSetting.VIEW_AS_HTML),
+				searchFor: (ZmApp.DEFAULT_SEARCH[this._appName]),
+				sortBy: ((sc.currentSearch && folder.nId == sc.currentSearch.folderId) ? null : ZmSearch.DATE_DESC),
+				accountName: (account && account.name)
+			};
+			sc.search(params);
+		}
+	} else {																	// double click
+		// handle double click?
+	}
+};
+
+ZmOverviewContainer.prototype._initializeActionMenu =
+function(account) {
+	var ops = [
+		ZmOperation.NEW_FOLDER,
+		ZmOperation.EXPAND_ALL
+		/*ZmOperation.SYNC*/
+	];
+
+	if (!this._actionMenu) {
+		var args = [appCtxt.getShell(), ops, account];
+		this._actionMenu = new AjxCallback(this, this._createActionMenu, args);
+	}
+};
+
+ZmOverviewContainer.prototype._getActionMenu =
+function() {
+	if (this._actionMenu instanceof AjxCallback) {
+		var callback = this._actionMenu;
+		this._actionMenu = callback.run();
+	}
+	return this._actionMenu;
+};
+
+ZmOverviewContainer.prototype._createActionMenu =
+function(parent, menuItems, account) {
+	if (!menuItems) { return; }
+
+	var listener = new AjxListener(this, this._actionMenuListener);
+	var actionMenu = new ZmActionMenu({parent:parent, menuItems:menuItems});
+	menuItems = actionMenu.opList;
+	for (var i = 0; i < menuItems.length; i++) {
+		actionMenu.getItem(i).setData(Dwt.KEY_OBJECT, appCtxt.getFolderTree(account).root);
+		actionMenu.addSelectionListener(menuItems[i], listener);
+	}
+
+	return actionMenu;
+};
+
+ZmOverviewContainer.prototype._actionMenuListener =
+function(ev) {
+	var opId = ev.item.getData(ZmOperation.KEY_ID);
+
+	if (opId == ZmOperation.NEW_FOLDER) {
+		var treeId = ZmApp.ORGANIZER[this._appName];
+		var tc = this._controller.getTreeController(treeId, true);
+		if (tc) {
+			tc._newListener(ev);
+		}
+	}
+	else if (opId == ZmOperation.EXPAND_ALL) {
+		this._actionedHeaderItem.setExpanded(true, true);
 	}
 };
 

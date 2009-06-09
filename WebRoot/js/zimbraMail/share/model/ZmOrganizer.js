@@ -45,7 +45,7 @@
 ZmOrganizer = function(params) {
 
 	if (arguments.length == 0) { return; }
-	
+
 	this.type = params.type;
 	var id = this.id = params.id;
 	this.nId = ZmOrganizer.normalizeId(id);
@@ -520,14 +520,17 @@ function() {
 */
 ZmOrganizer.prototype.getName = 
 function(showUnread, maxLength, noMarkup, useSystemName) {
-    if (this.nId == ZmFolder.ID_ROOT) {
-		return ZmOrganizer.LABEL[this.type] ? ZmMsg[ZmOrganizer.LABEL[this.type]] : "";
-    }
-	var name = (useSystemName && this._systemName) ? this._systemName : this.name || "";
-    if (ZmOrganizer.PATH_IN_NAME[this.type] && this.path) {
-    	name = [this.path, name].join("/");
-    }
-	name = (maxLength && name.length > maxLength) ? name.substring(0, maxLength - 3) + "..." : name;
+	if (this.nId == ZmFolder.ID_ROOT) {
+		return (ZmOrganizer.LABEL[this.type])
+			? ZmMsg[ZmOrganizer.LABEL[this.type]] : "";
+	}
+	var name = (useSystemName && this._systemName)
+		? this._systemName : this.name || "";
+	if (ZmOrganizer.PATH_IN_NAME[this.type] && this.path) {
+		name = [this.path, name].join("/");
+	}
+	name = (maxLength && name.length > maxLength)
+		? name.substring(0, maxLength - 3) + "..." : name;
 	return this._markupName(name, showUnread, noMarkup);
 };
 
@@ -548,7 +551,7 @@ function(includeRoot, showUnread, maxLength, noMarkup, useSystemName) {
 		path = parent.getName(showUnread, maxLength, noMarkup, useSystemName) + ZmFolder.SEP + path;
 		parent = parent.parent;
 	}
-	
+
 	return path;
 };
 
@@ -570,7 +573,8 @@ function(force) {
 /** Returns the full path, suitable for use in search expressions. */
 ZmOrganizer.prototype.getSearchPath =
 function() {
-	return (this.nId != ZmOrganizer.ID_ROOT) ? this.getPath(null, null, null, true, true) : "/";
+	return (this.nId != ZmOrganizer.ID_ROOT)
+		? this.getPath(null, null, null, true, true) : "/";
 };
 
 /** @deprecated Use getRestUrl. */
@@ -596,14 +600,13 @@ function() {
 
 ZmOrganizer.prototype.getRestUrl =
 function() {
-    //return REST URL as seen by the GetInfoResponse
-    var restUrl = appCtxt.get(ZmSetting.REST_URL);
-    if(restUrl){
-        restUrl = [restUrl,"/",AjxStringUtil.urlEncode(this.getSearchPath())].join("");
-        return restUrl;
-    }
-    
-    // return REST URL as seen by server
+	// return REST URL as seen by the GetInfoResponse
+	var restUrl = appCtxt.get(ZmSetting.REST_URL);
+	if (restUrl) {
+		return ([restUrl, "/", AjxStringUtil.urlEncode(this.getSearchPath())].join(""));
+	}
+
+	// return REST URL as seen by server
 	if (this.restUrl) {
 		return this.restUrl;
 	}
@@ -612,10 +615,11 @@ function() {
 	var loc = document.location;
 	var uname = this.owner || appCtxt.get(ZmSetting.USERNAME);
 	var host = loc.host;
-
 	var m = uname.match(/^(.*)@(.*)$/);
+
 	uname = (m && m[1]) || uname;
 	host = (m && m[2]) || host;
+
 	// REVISIT: What about port? For now assume other host uses same port
 	if (loc.port && loc.port != 80) {
 		host = host + ":" + loc.port;
@@ -719,15 +723,17 @@ ZmOrganizer.prototype.setColor =
 function(color, callback, errorCallback) {
 	var color = ZmOrganizer.checkColor(color);
 	if (this.color == color) { return; }
-    /*if (color == ZmOrganizer.DEFAULT_COLOR[this.type]) {
-		color = 0;
-	}*/
+
 	this._organizerAction({action: "color", attrs: {color: color}, callback: callback, errorCallback: errorCallback});
 };
 
-// Though it's possible to use this method to change just about any folder attribute,
-// it should only be used to set multiple attributes at once since it has extra
-// overhead on the server.
+/**
+ * Though it's possible to use this method to change just about any folder
+ * attribute, it should only be used to set multiple attributes at once since it
+ * has extra overhead on the server.
+ *
+ * @param attrs
+ */
 ZmOrganizer.prototype.update =
 function(attrs) {
 	this._organizerAction({action: "update", attrs: attrs});
@@ -740,13 +746,17 @@ function(attrs) {
 */
 ZmOrganizer.prototype.move =
 function(newParent) {
-	var newId = (newParent.nId > 0) ? newParent.id : ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
+	var newId = (newParent.nId > 0)
+		? newParent.id
+		: ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
+
 	if ((newId == this.id || newId == this.parent.id) ||
 		(this.type == ZmOrganizer.FOLDER && (ZmOrganizer.normalizeId(newId, this.type) == ZmFolder.ID_SPAM)) ||
 		(newParent.isChildOf(this)))
 	{
 		return;
 	}
+
 	if (newId == ZmOrganizer.ID_TRASH) {
 		this._organizerAction({action: "trash"});
 	}
@@ -775,22 +785,22 @@ function() {
 
 ZmOrganizer.prototype._empty = 
 function(doRecursive) {
-    doRecursive = doRecursive || false;
-    DBG.println(AjxDebug.DBG1, "emptying: " + this.name + ", ID: " + this.id);
+	doRecursive = doRecursive || false;
+
 	var isEmptyOp = ((this.type == ZmOrganizer.FOLDER || this.type == ZmOrganizer.ADDRBOOK) &&
 					 (this.nId == ZmFolder.ID_SPAM || this.nId == ZmFolder.ID_TRASH || this.nId == ZmFolder.ID_CHATS || this.nId == ZmOrganizer.ID_SYNC_FAILURES));
 	// make sure we're not emptying a system object (unless it's SPAM/TRASH/SYNCFAILURES)
 	if (this.isSystem() && !isEmptyOp) return;
 
 	var params = {action:"empty"};
-	if (this.id == ZmFolder.ID_TRASH) {
-		params.attrs = {recursive:"true"};
-	}else{
-        params.attrs = {recursive:doRecursive};
-    }
+	params.attrs = (this.id == ZmFolder.ID_TRASH)
+		? {recursive:true}
+		: {recursive:doRecursive};
+
 	if (this.isRemote()) {
 		params.id = this.getRemoteId();
 	}
+
 	this._organizerAction(params);
 };
 
@@ -809,29 +819,27 @@ function() {
 
 ZmOrganizer.prototype.notifyDelete =
 function() {
-	// select next reasonable organizer if the currently selected
-	// organizer is the one being deleted or is a descendent of the
-	// one being deleted
-	var overviewController = appCtxt.getOverviewController();
-	var treeController = overviewController.getTreeController(this.type);
-	var overviewId = appCtxt.getCurrentApp().getOverviewId();
-	var treeView = treeController.getTreeView(overviewId);
-    //treeview returns array of organizers for checkbox style trees
+	// select next reasonable organizer if the currently selected organizer is
+	// the one being deleted or is a descendent of the one being deleted
+	var tc = appCtxt.getOverviewController().getTreeController(this.type);
+	var treeView = tc.getTreeView(appCtxt.getCurrentApp().getOverviewId());
+
+	// treeview returns array of organizers for checkbox style trees
 	var organizers = treeView && treeView.getSelected();
-    if (organizers) {
-        if(!(organizers instanceof Array)) organizers = [organizers];
-        for(var i in organizers){
-            var organizer = organizers[i];
-            if(organizer && (organizer == this || organizer.isChildOf(this))){
-                var folderId = this.parent.id;
-                if (this.parent.nId == ZmOrganizer.ID_ROOT) {
-                    folderId = ZmOrganizer.getSystemId(ZmOrganizer.DEFAULT_FOLDER[this.type]);
-                }
-                var skipNotify = false;
-                treeView.setSelected(folderId, skipNotify);
-            }
-        }
-    }
+	if (organizers) {
+		if (!(organizers instanceof Array)) organizers = [organizers];
+		for (var i in organizers) {
+			var organizer = organizers[i];
+			if (organizer && (organizer == this || organizer.isChildOf(this))) {
+				var folderId = this.parent.id;
+				if (this.parent.nId == ZmOrganizer.ID_ROOT) {
+					folderId = ZmOrganizer.getSystemId(ZmOrganizer.DEFAULT_FOLDER[this.type]);
+				}
+				var skipNotify = false;
+				treeView.setSelected(folderId, skipNotify);
+			}
+		}
+	}
 
 	// perform actual delete
 	this.deleteLocal();
@@ -840,7 +848,7 @@ function() {
 
 ZmOrganizer.prototype.notifyCreate = function() {};
 
-/*
+/**
 * Handle modifications to fields that organizers have in general. Note that
 * the notification object may contain multiple notifications.
 *

@@ -289,27 +289,23 @@ function(callback) {
 		var loadCallback = new AjxCallback(this, this._handleLoadSettings);
 		this.settings.loadUserSettings(loadCallback, null, this.name, null, command);
 
-		// get folder info for this account
-		var folderDoc = AjxSoapDoc.create("GetFolderRequest", "urn:zimbraMail");
-		var method = folderDoc.getMethod();
-		method.setAttribute("visible", "1");
-
-		var folderCallback = new AjxCallback(this, this._handleLoadFolders);
-		command.addNewRequestParams(folderDoc, folderCallback);
-
-		// get tag info for this account
+		// get tag info for this account *FIRST* - otherwise, root ID get overridden
 		var tagDoc = AjxSoapDoc.create("GetTagRequest", "urn:zimbraMail");
 		var tagCallback = new AjxCallback(this, this._handleLoadTags);
 		command.addNewRequestParams(tagDoc, tagCallback);
 
+		// get folder info for this account
+		var folderDoc = AjxSoapDoc.create("GetFolderRequest", "urn:zimbraMail");
+		folderDoc.getMethod().setAttribute("visible", "1");
+		var folderCallback = new AjxCallback(this, this._handleLoadFolders);
+		command.addNewRequestParams(folderDoc, folderCallback);
+
 		var respCallback = new AjxCallback(this, this._handleLoadUserInfo, callback);
 		var errCallback = new AjxCallback(this, this._handleErrorLoad);
 		command.run(respCallback, errCallback);
-	} else {
-		// always reload account-specific shortcuts
-//		this.settings.loadShortcuts();
-
-		if (callback) {	callback.run(); }
+	}
+	else if (callback) {
+		callback.run();
 	}
 };
 

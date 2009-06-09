@@ -506,7 +506,7 @@ function(type, unread, obj, objType, account) {
 	if (tree) {
 		tree.reset();
 	} else {
-		tree = isTag ? new ZmTagTree() : new ZmFolderTree();
+		tree = isTag ? new ZmTagTree(account) : new ZmFolderTree();
 	}
 	appCtxt.setTree(type, tree, account);
 	tree.addChangeListener(this._unreadListener);

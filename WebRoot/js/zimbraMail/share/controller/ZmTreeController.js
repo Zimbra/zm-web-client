@@ -42,9 +42,9 @@ ZmTreeController = function(type) {
 	this._listeners[ZmOperation.EXPAND_ALL]		= new AjxListener(this, this._expandAllListener);
 	this._listeners[ZmOperation.MARK_ALL_READ]	= new AjxListener(this, this._markAllReadListener);
 	this._listeners[ZmOperation.SYNC]			= new AjxListener(this, this._syncListener);
-    this._listeners[ZmOperation.SYNC_ALL]		= new AjxListener(this, this._syncAllListener);
-    this._listeners[ZmOperation.EDIT_PROPS]		= new AjxListener(this, this._editPropsListener);
-	this._listeners[ZmOperation.EMPTY_FOLDER]   = new AjxListener(this,this._emptyListener);
+	this._listeners[ZmOperation.SYNC_ALL]		= new AjxListener(this, this._syncAllListener);
+	this._listeners[ZmOperation.EDIT_PROPS]		= new AjxListener(this, this._editPropsListener);
+	this._listeners[ZmOperation.EMPTY_FOLDER]   = new AjxListener(this, this._emptyListener);
 
 	// drag-and-drop
 	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
@@ -584,7 +584,7 @@ function(ev) {
 		return;
 	}
 
-	var treeItem = this._actionedTreeItem = ev.item;
+	var treeItem = ev.item;
 
 	var type = treeItem.getData(ZmTreeView.KEY_TYPE);
 	if (!type) { return; }
@@ -819,10 +819,10 @@ function(organizer, ev, overviewId) {
  * Makes a request to add a new item to the tree, returning true if the item was
  * actually added, or false if it was omitted.
  *
- * @param treeView	[ZmTreeView]	a tree view
+ * @param treeView		[ZmTreeView]	a tree view
  * @param parentNode	[DwtTreeItem]	node under which to add the new one
- *  @param organizer	[ZmOrganizer]	organizer for the new node
- * @param index		[int]*			position at which to add the new node
+ * @param organizer		[ZmOrganizer]	organizer for the new node
+ * @param idx			[int]*			position at which to add the new node
  */
 ZmTreeController.prototype._addNew =
 function(treeView, parentNode, organizer, idx) {
@@ -841,10 +841,10 @@ function(ev) {
 	if (!this._newCb) {
 		this._newCb = new AjxCallback(this, this._newCallback);
 	}
-    if(this._pendingActionData && !appCtxt.getById(this._pendingActionData.id)) {
-        this._pendingActionData =  appCtxt.getFolderTree().root;         
-    }
-    ZmController.showDialog(newDialog, this._newCb, this._pendingActionData);
+	if (this._pendingActionData && !appCtxt.getById(this._pendingActionData.id)) {
+		this._pendingActionData = appCtxt.getFolderTree().root;
+	}
+	ZmController.showDialog(newDialog, this._newCb, this._pendingActionData);
 	newDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._clearDialog, this, newDialog);
 };
 
@@ -895,13 +895,6 @@ function(ev) {
 	ZmController.showDialog(moveToDialog, this._moveCb, this._getMoveParams());
 	moveToDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._clearDialog, this, moveToDialog);
 };
-
-//ZmTreeController.prototype._folderExportListener = function(ev) {
-//	alert("export");
-//};
-//ZmTreeController.prototype._folderImportListener = function(ev) {
-//	alert("import");
-//};
 
 ZmTreeController.prototype._getMoveParams =
 function() {

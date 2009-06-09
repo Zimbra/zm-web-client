@@ -13,9 +13,12 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmTagTree = function() {
+ZmTagTree = function(account) {
 	ZmTree.call(this, ZmOrganizer.TAG);
-	this.root = new ZmTag({id: ZmTag.ID_ROOT, tree: this});
+	var id = (account)
+		? ([account.id, ZmTag.ID_ROOT].join(":"))
+		: ZmTag.ID_ROOT;
+	this.root = new ZmTag({ id:id, tree:this });
 };
 
 ZmTagTree.prototype = new ZmTree;
