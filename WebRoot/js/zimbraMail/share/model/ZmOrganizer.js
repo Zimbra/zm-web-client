@@ -491,11 +491,11 @@ function(id, type) {
 ZmOrganizer.parseId =
 function(id, result) {
 	result = result || {};
-	if (!id) { return result; }
-	var idx = id.indexOf(":");
+	if (id == null) { return result; }
+	var idx = (typeof id == "string") ? id.indexOf(":") : -1;
 	if (idx == -1) {
 		result.account = appCtxt.getMainAccount();
-		result.id = id ;
+		result.id = id;
 	} else {
 		result.account = appCtxt.getAccount(id.substring(0, idx));
 		result.id = id.substr(idx + 1);

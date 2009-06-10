@@ -62,7 +62,11 @@ function(params) {
 	this._resetTreeView();
 	ZmDialog.prototype.popup.apply(this, arguments);
 	this._inputField.setValue("");
-	this._inputField.focus();
+	appCtxt.getKeyboardMgr().grabFocus(this._inputField);
+	var tags = appCtxt.getTagTree().asList();
+	if (tags.length == 1) {
+		this._tagTreeView.setSelected(tags[0], true, true);
+	}
 };
 
 ZmPickTagDialog.prototype._contentHtml = 
