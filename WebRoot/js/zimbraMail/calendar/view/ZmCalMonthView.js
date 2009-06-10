@@ -640,7 +640,9 @@ function(ev, div, dblclick) {
             date = new Date(this._days[loc].date.getTime());
             var now = new Date();
             date.setHours(now.getHours(), now.getMinutes());
-            AjxTimedAction.scheduleAction(new AjxTimedAction(this, this.expandDay, [this._days[loc]]), 200);
+			if(ev.button == DwtMouseEvent.LEFT) {
+            	AjxTimedAction.scheduleAction(new AjxTimedAction(this, this.expandDay, [this._days[loc]]), 200);
+			}
             break;
         default:
             return;
