@@ -787,19 +787,14 @@ function(ev, treeView, overviewId) {
 					}
 					appCtxt.getAppViewMgr().updateTitle();
 				}
-				// if we're here just because unread changed, don't expand parent (bug 1964)
-				if (fields[ZmOrganizer.F_NAME] || fields[ZmOrganizer.F_FLAGS] || fields[ZmOrganizer.F_COLOR] ||
-					((organizer.nId == ZmFolder.ID_DRAFTS || organizer.nId == ZmOrganizer.ID_OUTBOX) && fields[ZmOrganizer.F_TOTAL])) {
-					if (parentNode) {
-						parentNode.setExpanded(true);
-					}
-					this._fixupTreeNode(node, organizer, treeView);
 
-					if (appCtxt.isOffline && fields[ZmOrganizer.F_FLAGS] && node._extraCell) {
-						var nodeImg = (organizer.isOfflineSyncing) ? "SyncStatusOn" : "Blank_16";
-						AjxImg.setImage(node._extraCell, nodeImg);
-					}
+				this._fixupTreeNode(node, organizer, treeView);
+
+				if (appCtxt.isOffline && fields[ZmOrganizer.F_FLAGS] && node._extraCell) {
+					var nodeImg = (organizer.isOfflineSyncing) ? "SyncStatusOn" : "Blank_16";
+					AjxImg.setImage(node._extraCell, nodeImg);
 				}
+
 				this._evHandled[overviewId] = true;
 			}
 		}
