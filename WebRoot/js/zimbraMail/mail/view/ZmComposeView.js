@@ -574,7 +574,9 @@ function(attId, isDraft) {
 				msg.origId = msg.isReplied || msg.isForwarded ? this._msg.origId : null;
 				msg.id = this._msg.id;
 				msg.nId = this._msg.nId;
-			}
+			}else{
+                msg.origId = this._msg.origId || this._msg.id;
+            }
 		} else {
 			msg.isReplied = (this._action == ZmOperation.REPLY || this._action == ZmOperation.REPLY_ALL || isInviteReply);
 			msg.isForwarded = (this._action == ZmOperation.FORWARD_INLINE || this._action == ZmOperation.FORWARD_ATT);
