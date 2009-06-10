@@ -844,7 +844,14 @@ function(ev) {
 	if (this._pendingActionData && !appCtxt.getById(this._pendingActionData.id)) {
 		this._pendingActionData = appCtxt.getFolderTree().root;
 	}
-	ZmController.showDialog(newDialog, this._newCb, this._pendingActionData);
+
+	var account;
+	if (appCtxt.multiAccounts) {
+		var ov = this._opc.getOverviewContainer().getOverview(this._actionedOverviewId);
+		account = ov && ov.account;
+	}
+
+	ZmController.showDialog(newDialog, this._newCb, this._pendingActionData, account);
 	newDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._clearDialog, this, newDialog);
 };
 

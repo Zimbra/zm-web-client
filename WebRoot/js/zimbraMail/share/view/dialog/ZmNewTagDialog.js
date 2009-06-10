@@ -16,8 +16,9 @@
 ZmNewTagDialog = function(parent, className) {
 	ZmDialog.call(this, {parent:parent, className:className, title:ZmMsg.createNewTag});
 
-	this._setNameField(this._nameFieldId);
-	this._setTagColorMenu(this._tagColorButtonCellId);
+	this._setNameField(this._htmlElId+"_name");
+	this._setTagColorMenu();
+	this._setAccountMenu();
 	DBG.timePt("set content");
 };
 
@@ -29,11 +30,20 @@ function() {
 	return "ZmNewTagDialog";
 };
 
+ZmNewTagDialog.prototype.popup =
+function(org, account) {
+	if (this._accountSelect && account) {
+		this._accountSelect.setSelectedValue(account.id);
+	}
+
+	ZmDialog.prototype.popup.call(this, org, account);
+};
+
 ZmNewTagDialog.prototype.cleanup =
 function(bPoppedUp) {
 	DwtDialog.prototype.cleanup.call(this, bPoppedUp);
-    var color = this._getNextColor();
- 	this._setColorButton(color, ZmOrganizer.COLOR_TEXT[color], ZmTag.COLOR_ICON[color]);
+	var color = this._getNextColor();
+	this._setColorButton(color, ZmOrganizer.COLOR_TEXT[color], ZmTag.COLOR_ICON[color]);
 };
 
 ZmNewTagDialog.prototype._colorListener = 
@@ -43,18 +53,38 @@ function(ev) {
 };
 
 ZmNewTagDialog.prototype._setTagColorMenu =
-function(fieldId) {
-    this._colorButton = new DwtButton({parent:this, id:"ZmTagColorMenu"});
-    this._colorButton.noMenuBar = true;
- 	document.getElementById(fieldId).appendChild(this._colorButton.getHtmlElement());
+function() {
+	var fieldId = this._htmlElId + "_tagColor";
+	this._colorButton = new DwtButton({parent:this, id:"ZmTagColorMenu"});
+	this._colorButton.noMenuBar = true;
+	document.getElementById(fieldId).appendChild(this._colorButton.getHtmlElement());
 	ZmOperation.addColorMenu(this._colorButton);
-    this._tagColorListener = new AjxListener(this, this._colorListener);
-    var color = ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.TAG];
- 	this._setColorButton(color, ZmOrganizer.COLOR_TEXT[color], ZmTag.COLOR_ICON[color]);
+	this._tagColorListener = new AjxListener(this, this._colorListener);
+	var color = ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.TAG];
+	this._setColorButton(color, ZmOrganizer.COLOR_TEXT[color], ZmTag.COLOR_ICON[color]);
 	var menu = this._colorButton.getMenu();
 	var items = menu.getItems();
-	for (var i = 0; i < items.length; i++)
+	for (var i = 0; i < items.length; i++) {
 		items[i].addSelectionListener(this._tagColorListener);
+	}
+};
+
+ZmNewTagDialog.prototype._setAccountMenu =
+function() {
+	if (!appCtxt.multiAccounts) { return; }
+
+	var fieldId = this._htmlElId + "_account";
+	this._accountSelect = new DwtSelect({parent:this, parentElement:fieldId});
+
+	var accounts = appCtxt.getZimbraAccounts();
+	for (var i in accounts) {
+		if (!accounts[i].visible) { continue; }
+
+		var acct = accounts[i];
+		if (appCtxt.get(ZmSetting.TAGGING_ENABLED, null, acct)) {
+			this._accountSelect.addOption(acct.getDisplayName(), this._account == acct, acct.id);
+		}
+	}
 };
 
 ZmNewTagDialog.prototype._setColorButton =
@@ -68,41 +98,43 @@ ZmNewTagDialog.prototype._contentHtml =
 function() {
 	this._nameFieldId = Dwt.getNextId();
 	this._tagColorButtonCellId = Dwt.getNextId();
-	return ["<table cellpadding=2 cellspacing=2 border=0 style='padding:8px;margin:8px;'>",
-			"<tr><td class='Label' colspan=2>", ZmMsg.tagName, ": </td></tr>",
-			"<tr><td>", Dwt.CARET_HACK_BEGIN, "<input type=text autocomplete=OFF class='Field' id='", this._nameFieldId, "' />", Dwt.CARET_HACK_END, "</td>",
-		    "<td id='", this._tagColorButtonCellId, "' /></tr>",
-			"</table>"].join("");
-
+	return AjxTemplate.expand("share.Dialogs#ZmPromptDialog", {id:this._htmlElId});
 };
 
 ZmNewTagDialog.prototype._okButtonListener =
 function(ev) {
 	var results = this._getTagData();
-	if (results)
+	if (results) {
 		DwtDialog.prototype._buttonListener.call(this, ev, results);
+	}
 };
 
 ZmNewTagDialog.prototype._getTagData =
 function() {
+	var acctId = this._accountSelect && this._accountSelect.getValue();
+	var account = acctId && appCtxt.getAccount(acctId);
+
 	// check name for presence and validity
 	var name = AjxStringUtil.trim(this._nameField.value);
 	var msg = ZmTag.checkName(name);
 
 	// make sure tag doesn't already exist
-	var tagTree = appCtxt.getTagTree();
+	var tagTree = appCtxt.getTagTree(account);
 	if (!msg && tagTree && tagTree.getByName(name)) {
-		msg = ZmMsg.tagNameExists
+		msg = ZmMsg.tagNameExists;
 	}
 
-	return (msg ? this._showError(msg) : {name:name, color:this._colorButton.getData(ZmOperation.MENUITEM_ID)});
+	return (msg)
+		? this._showError(msg)
+		: {name:name, color:this._colorButton.getData(ZmOperation.MENUITEM_ID), accountName:account.name};
 };
 
 ZmNewTagDialog.prototype._enterListener =
 function(ev) {
 	var results = this._getTagData();
-	if (results)
+	if (results) {
 		this._runEnterCallback(results);
+	}
 };
 
 ZmNewTagDialog.prototype._getNextColor =
@@ -112,10 +144,12 @@ function() {
 	if (!tagTree) {
 		return ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.TAG];
 	}
+
 	var tags = tagTree.root.children.getArray();
 	if (!(tags && tags.length)) {
 		return ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.TAG];
 	}
+
 	for (var i = 0; i < tags.length; i++) {
 		colorUsed[tags[i].color] = true;
 	}
@@ -125,6 +159,7 @@ function() {
 			return color;
 		}
 	}
+
 	return ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.TAG];
 };
 

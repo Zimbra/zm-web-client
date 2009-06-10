@@ -402,3 +402,24 @@
 		</tr>
 	</table>
 </template>
+
+<template id="share.Dialogs#ZmPromptDialog">
+	<table cellpadding=2 cellspacing=2 border=0>
+		<tr>
+			<td class='Label'><$= ZmMsg.tagName $>:</td>
+			<$ if (appCtxt.multiAccounts) { $>
+				<td class='Label'><$= ZmMsg.colorLabel $></td>
+				<td class='Label'><$= ZmMsg.accountLabel $></td>
+			<$ } $>
+		</tr>
+		<tr>
+			<td>
+				<$= Dwt.CARET_HACK_BEGIN $>
+				<input type=text autocomplete=OFF id='${id}_name' />
+				<$= Dwt.CARET_HACK_END $>
+			</td>
+			<td id='${id}_tagColor'></td>
+			<td id='${id}_account'></td>
+		</tr>
+	</table>
+</template>

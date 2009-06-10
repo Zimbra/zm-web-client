@@ -37,7 +37,7 @@ function() {
  * @param folder	[ZmFolder]*		folder to select initially
  */
 ZmNewOrganizerDialog.prototype.popup =
-function(folder) {
+function(folder, account) {
 	if (this._folderTreeCellId) {
 		var params = {
 			treeIds: this._treeIds,

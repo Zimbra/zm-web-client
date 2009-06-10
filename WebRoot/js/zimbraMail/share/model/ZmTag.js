@@ -85,10 +85,11 @@ function(tagA, tagB) {
 ZmTag.checkName =
 function(name) {
 	var msg = ZmOrganizer.checkName(name);
-	if (msg) return msg;
+	if (msg) { return msg; }
 
-	if (name.indexOf('\\') == 0)
+	if (name.indexOf('\\') == 0) {
 		return AjxMessageFormat.format(ZmMsg.errorInvalidName, AjxStringUtil.htmlEncode(name));
+	}
 
 	return null;
 };
@@ -109,7 +110,7 @@ function(params) {
 		tagNode.setAttribute("color", color);
 	}
 	var errorCallback = new AjxCallback(null, ZmTag._handleErrorCreate, params);
-	appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, errorCallback:errorCallback});
+	appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, errorCallback:errorCallback, accountName:params.accountName});
 };
 
 ZmTag._handleErrorCreate =

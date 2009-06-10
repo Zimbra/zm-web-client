@@ -199,7 +199,7 @@ function(ev) {
 
 	var item = this._actionedHeaderItem = ev.item;
 
-	if (ev.detail == DwtTree.ITEM_ACTIONED) {									// right click
+	if (ev.detail == DwtTree.ITEM_ACTIONED && appCtxt.getApp(this._appName)) {	// right click
 		var actionMenu = this._getActionMenu(ev);
 		if (actionMenu) {
 			actionMenu.popup(0, ev.docX, ev.docY);

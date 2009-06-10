@@ -528,10 +528,10 @@ function() {
 
 // Pop up a dialog. Since it's a shared resource, we need to reset first.
 ZmController.showDialog = 
-function(dialog, callback, params) {
+function(dialog, callback, params, account) {
 	dialog.reset();
 	dialog.registerCallback(DwtDialog.OK_BUTTON, callback);
-	dialog.popup(params);
+	dialog.popup(params, account);
 };
 
 // Pop down the dialog and clear any pending actions (initiated from an action menu).
