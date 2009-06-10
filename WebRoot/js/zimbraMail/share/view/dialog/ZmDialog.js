@@ -44,7 +44,8 @@ ZmDialog = function(params) {
 
 	this._overview = {};
 	this._opc = appCtxt.getOverviewController();
-	this._tabGroupComplete = false;
+
+	this._baseTabGroupSize = this._tabGroup.size();
 };
 
 ZmDialog.prototype = new DwtDialog;
@@ -68,17 +69,11 @@ function(newView, noReset) {
 
 ZmDialog.prototype.popup =
 function() {
-	if (!this._tabGroupComplete) {
-		// tab group filled in here rather than in the constructor b/c we need
-		// all the content fields to have been created
-		var members = this._getTabGroupMembers();
-		if (members && members.length) {
-			for (var i = 0; i < members.length; i++) {
-				this._tabGroup.addMember(members[i], i);
-			}
-		}
-		this._tabGroupComplete = true;
-	}
+	// Bug 38281: for multiuse dialogs, we need to re-add the discretionary
+	// tab stops to the base list (the dialog buttons)
+	this._tabGroup.__members._array.splice(this._baseTabGroupSize);
+	this._tabGroup.addMember(this._getTabGroupMembers());
+
 	DwtDialog.prototype.popup.call(this);
 };
 
