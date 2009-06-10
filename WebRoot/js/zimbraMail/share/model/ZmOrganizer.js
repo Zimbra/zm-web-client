@@ -793,7 +793,7 @@ function(doRecursive) {
 	if (this.isSystem() && !isEmptyOp) return;
 
 	var params = {action:"empty"};
-	params.attrs = (this.id == ZmFolder.ID_TRASH)
+	params.attrs = (this.nId == ZmFolder.ID_TRASH)
 		? {recursive:true}
 		: {recursive:doRecursive};
 

@@ -84,9 +84,9 @@ function(settings) {
 	var settings = settings || appCtxt.getSettings();
 	settings.registerSetting("AUTO_ADD_ADDRESS",				{name: "zimbraPrefAutoAddAddressEnabled", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
 	settings.registerSetting("AUTOCOMPLETE_SHARED_ADDR_BOOKS",	{name: "zimbraPrefSharedAddrBookAutoCompleteEnabled", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
-	settings.registerSetting("CONTACTS_PER_PAGE",				{name: "zimbraPrefContactsPerPage", type: ZmSetting.T_PREF, dataType: ZmSetting.D_INT, defaultValue: 25});
+	settings.registerSetting("CONTACTS_PER_PAGE",				{name: "zimbraPrefContactsPerPage", type: ZmSetting.T_PREF, dataType: ZmSetting.D_INT, defaultValue: 25, isGlobal:true});
 	settings.registerSetting("CONTACTS_PER_PAGE_MAX",			{name: "zimbraMaxContactsPerPage", type: ZmSetting.T_COS, dataType: ZmSetting.D_INT, defaultValue: 100});
-	settings.registerSetting("CONTACTS_VIEW",					{name: "zimbraPrefContactsInitialView", type: ZmSetting.T_PREF, defaultValue: ZmSetting.CV_LIST});
+	settings.registerSetting("CONTACTS_VIEW",					{name: "zimbraPrefContactsInitialView", type: ZmSetting.T_PREF, defaultValue: ZmSetting.CV_LIST, isGlobal:true});
 	settings.registerSetting("EXPORT",							{type: ZmSetting.T_PREF, dataType: ZmSetting.D_NONE});
 	settings.registerSetting("GAL_AUTOCOMPLETE",				{name: "zimbraPrefGalAutoCompleteEnabled", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
 	settings.registerSetting("IMPORT",							{type: ZmSetting.T_PREF, dataType: ZmSetting.D_NONE});

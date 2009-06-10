@@ -146,7 +146,7 @@ function(params, account) {
 			? params.omitPerAcct[account.id] : params.omit;
 
 		var headerLabel = (this._appName == ZmApp.PREFERENCES && account.isMain)
-			? ZmMsg.global : account.getDisplayName();
+			? ZmMsg.allAccounts : account.getDisplayName();
 
 		this._addSection(headerLabel, null, account.id, omit, params);
 
