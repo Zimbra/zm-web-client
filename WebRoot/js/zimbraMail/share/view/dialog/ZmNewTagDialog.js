@@ -55,15 +55,16 @@ function(ev) {
 ZmNewTagDialog.prototype._setTagColorMenu =
 function() {
 	var fieldId = this._htmlElId + "_tagColor";
-	this._colorButton = new DwtButton({parent:this, id:"ZmTagColorMenu"});
+	this._colorButton = new DwtButton({parent:this, parentElement:fieldId, id:"ZmTagColorMenu"});
 	this._colorButton.noMenuBar = true;
-	document.getElementById(fieldId).appendChild(this._colorButton.getHtmlElement());
+
 	ZmOperation.addColorMenu(this._colorButton);
-	this._tagColorListener = new AjxListener(this, this._colorListener);
+
 	var color = ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.TAG];
 	this._setColorButton(color, ZmOrganizer.COLOR_TEXT[color], ZmTag.COLOR_ICON[color]);
-	var menu = this._colorButton.getMenu();
-	var items = menu.getItems();
+
+	this._tagColorListener = new AjxListener(this, this._colorListener);
+	var items = this._colorButton.getMenu().getItems();
 	for (var i = 0; i < items.length; i++) {
 		items[i].addSelectionListener(this._tagColorListener);
 	}
@@ -96,8 +97,6 @@ function(color, text, image) {
 
 ZmNewTagDialog.prototype._contentHtml = 
 function() {
-	this._nameFieldId = Dwt.getNextId();
-	this._tagColorButtonCellId = Dwt.getNextId();
 	return AjxTemplate.expand("share.Dialogs#ZmPromptDialog", {id:this._htmlElId});
 };
 
@@ -126,7 +125,7 @@ function() {
 
 	return (msg)
 		? this._showError(msg)
-		: {name:name, color:this._colorButton.getData(ZmOperation.MENUITEM_ID), accountName:account.name};
+		: {name:name, color:this._colorButton.getData(ZmOperation.MENUITEM_ID), accountName:(account && account.name)};
 };
 
 ZmNewTagDialog.prototype._enterListener =
