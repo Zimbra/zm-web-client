@@ -1183,9 +1183,6 @@ function() {
 	if (appCtxt.get(ZmSetting.SEARCH_ENABLED)) {
 		rootTg.addMember(appCtxt.getSearchController().getTabGroup());
 	}
-//	var appChooserTg = new DwtTabGroup("ZmAppChooser");
-//	appChooserTg.addMember(this._components[ZmAppViewMgr.C_APP_CHOOSER]);
-//	rootTg.addMember(appChooserTg);
 	this._components[ZmAppViewMgr.C_APP_CHOOSER].noFocus = true;
 
 	var curApp = appCtxt.getCurrentApp();
@@ -1195,11 +1192,6 @@ function() {
 		rootTg.addMember(overview);
 	}
 	
-	// Add dummy app view tab group. This will get replaced right away when the
-	// app view comes into play
-	var dummyTg = new DwtTabGroup("DUMMY APPVIEW");
-	ZmController._setCurrentAppViewTabGroup(dummyTg);
-	rootTg.addMember(dummyTg);
 	appCtxt.getKeyboardMgr().setTabGroup(rootTg);
 };
 
