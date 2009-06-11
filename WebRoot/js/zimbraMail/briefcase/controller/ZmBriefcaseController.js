@@ -999,5 +999,5 @@ function() {
 ZmBriefcaseController.prototype._createSlideShow =
 function() {
     window.importSlides = true;
-    this._app._handleNewDoc(ZmOperation.NEW_PRESENTATION);      
+    this._app.handleOp(ZmOperation.NEW_PRESENTATION);      
 };
