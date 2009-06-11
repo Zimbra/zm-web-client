@@ -203,7 +203,7 @@ function(actionCode) {
 
 		case ZmKeyMap.TAG:
 			var items = listView.getSelection();
-			if (items && items.length) {
+			if (items && items.length && (appCtxt.getTagTree().size() > 0)) {
 				var dlg = appCtxt.getPickTagDialog();
 				ZmController.showDialog(dlg, new AjxCallback(this, this._tagSelectionCallback, [items, dlg]));
 			}
