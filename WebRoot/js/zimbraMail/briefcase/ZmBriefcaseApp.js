@@ -278,7 +278,7 @@ function(op) {
 			break;
 		}
         case ZmOperation.NEW_PRESENTATION:         {
-			var loadCallback = new AjxCallback(this, this._handleNewDoc, [op]);
+			var loadCallback = new AjxCallback(this, this.newDoc, [ZmMimeTable.APP_ZIMBRA_SLIDES]);
 			AjxDispatcher.require(["BriefcaseCore", "Briefcase"], true, loadCallback, null);
 			break;
 		}

@@ -572,23 +572,26 @@ function(div) {
     var tmp = div.innerHTML;
     DBG.println("createEditor:" + div + "[" +  tmp +  "]");
     var iframe = this._iframe;
-    var bounds = Dwt.getBounds(div);
+    var bounds = Dwt.toWindow(div, 0, 0, this._currentSlideDiv, true);
+    var divSize = Dwt.getSize(div);
 
     //this.convertToPercentage(div);
 
     var offsetBounds = Dwt.toWindow(this._currentSlideDiv, 0, 0, this.getHtmlElement(), true);
 
-	//var offsetBounds = Dwt.getBounds(this._slideContainer);
-
-    DBG.println("editor bounds: "+  bounds.x + "," + bounds.y + ", " + bounds.width + ", " + bounds.height);
+    DBG.println("editor div bounds: "+  bounds.x + "," + bounds.y + ", " + divSize.x + ", " + divSize.y);
     DBG.println("container bounds: "+ offsetBounds.x +  "," + offsetBounds.y + ", " + offsetBounds.width + ", " + offsetBounds.height);
 
     DBG.println("iframe location :" + (offsetBounds.x + bounds.x) + " , y:" + (offsetBounds.y + bounds.y));
-    Dwt.setBounds(iframe, offsetBounds.x + bounds.x, offsetBounds.y + bounds.y, bounds.width, bounds.height);
+
+    Dwt.setBounds(iframe, offsetBounds.x + bounds.x, offsetBounds.y + bounds.y, divSize.x, divSize.y);   
     div.innerHTML = "";
+
 	//div.appendChild(iframe);
+
     iframe.className = "SlideComponentEditor";
     iframe.style.visibility = "visible";
+
     var iContentWindow = iframe.contentWindow;
     if(iContentWindow != null) {
         var doc = iContentWindow.document;
