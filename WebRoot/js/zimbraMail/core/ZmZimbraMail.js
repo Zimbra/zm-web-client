@@ -1190,6 +1190,7 @@ function() {
 	var overview = ovId && appCtxt.getOverviewController().getOverview(ovId);
 	if (overview) {
 		rootTg.addMember(overview);
+		ZmController._currentOverview = overview;
 	}
 	
 	appCtxt.getKeyboardMgr().setTabGroup(rootTg);

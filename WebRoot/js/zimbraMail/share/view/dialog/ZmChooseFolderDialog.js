@@ -176,9 +176,9 @@ function(params, treeIds) {
 		this._resetTree(treeIds, ov);
 	}
 
-	ZmDialog.prototype.popup.call(this);
+	this._focusElement = this._inputField;
 	this._inputField.setValue("");
-	appCtxt.getKeyboardMgr().grabFocus(this._inputField);
+	ZmDialog.prototype.popup.call(this);
 };
 
 ZmChooseFolderDialog.prototype._resetTree =

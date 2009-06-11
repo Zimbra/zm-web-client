@@ -60,13 +60,13 @@ function(params) {
 
 	this._loadTags();	// item list for this account's tree view will be cached after the first time
 	this._resetTreeView();
-	ZmDialog.prototype.popup.apply(this, arguments);
+	this._focusElement = this._inputField;
 	this._inputField.setValue("");
-	appCtxt.getKeyboardMgr().grabFocus(this._inputField);
 	var tags = appCtxt.getTagTree().asList();
 	if (tags.length == 1) {
 		this._tagTreeView.setSelected(tags[0], true, true);
 	}
+	ZmDialog.prototype.popup.apply(this, arguments);
 };
 
 ZmPickTagDialog.prototype._contentHtml = 

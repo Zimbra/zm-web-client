@@ -109,7 +109,6 @@ function(list, folderId) {
 	this._setView({view:this._currentView, elements:elements, isAppView:true});
 
 	this._setTabGroup(this._tabGroups[this._currentView]);
-	this._restoreFocus();
 	this._resetNavToolBarButtons(this._currentView);
 };
 

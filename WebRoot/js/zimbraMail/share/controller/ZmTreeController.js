@@ -622,6 +622,7 @@ function(ev) {
 		overview.itemSelected(treeItem);
 		if (ev.kbNavEvent) {
 			DwtControl._scrollIntoView(treeItem._itemDiv, overview.getHtmlElement());
+			ZmController.noFocus = true;
 		}
 		if (overview._treeSelectionShortcutDelayActionId) {
 			AjxTimedAction.cancelAction(overview._treeSelectionShortcutDelayActionId);

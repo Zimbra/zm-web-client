@@ -279,7 +279,7 @@ function() {
 		organizer.getRestUrl(), "/", AjxStringUtil.urlComponentEncode(this.name)
 	].join("");
 
-	DBG.println("NO REST URL FROM SERVER. GENERATED URL: " + url);
+	DBG.println(AjxDebug.DBG1, "NO REST URL FROM SERVER. GENERATED URL: " + url);
 
 	return url;
 };

@@ -168,7 +168,6 @@ function(view, force, initialized, stageView) {
 		}
 
 		this._setTabGroup(this._tabGroups[view]);
-		this._restoreFocus();
 
 		if (!initialized) {
 			var list = this._listView[view].getList();

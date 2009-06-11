@@ -27,18 +27,6 @@ ZmController = function(container, app) {
 	this._authenticating = false;
 };
 
-ZmController._currAppViewTabGroup = null;
-
-ZmController._setCurrentAppViewTabGroup =
-function(tabGroup) {
-	ZmController._currAppViewTabGroup = tabGroup;
-};
-
-ZmController._getCurrentAppViewTabGroup =
-function() {
-	return ZmController._currAppViewTabGroup;
-};
-
 // Abstract methods
 
 ZmController.prototype._setView =
@@ -261,13 +249,25 @@ function() {
 // postShowCallback.
 ZmController.prototype._restoreFocus = 
 function(focusItem, noFocus) {
+
 	var rootTg = appCtxt.getRootTabGroup();
-	var myTg = this.getTabGroup();
-	if (rootTg && myTg) {
-		focusItem = focusItem || this._savedFocusMember || this._getDefaultFocusItem() || rootTg.getFocusMember();
-		rootTg.replaceMember(ZmController._getCurrentAppViewTabGroup(), myTg, false, false, focusItem, noFocus);
-		ZmController._setCurrentAppViewTabGroup(myTg);
+
+	var curApp = appCtxt.getCurrentApp();
+	var ovId = curApp && curApp.getOverviewId();
+	var overview = ovId && appCtxt.getOverviewController().getOverview(ovId);
+	if (rootTg && overview && (overview != ZmController._currentOverview)) {
+		rootTg.replaceMember(ZmController._currentOverview, overview);
+		ZmController._currentOverview = overview;
 	}
+
+	var myTg = this.getTabGroup();
+	if (rootTg && myTg && (myTg != ZmController._currentAppViewTabGroup)) {
+		focusItem = focusItem || this._savedFocusMember || this._getDefaultFocusItem() || rootTg.getFocusMember();
+		noFocus = noFocus || ZmController.noFocus;
+		rootTg.replaceMember(ZmController._currentAppViewTabGroup, myTg, false, false, focusItem, noFocus);
+		ZmController._currentAppViewTabGroup = myTg;
+	}
+	ZmController.noFocus = false;
 };
 
 ZmController.prototype._getDefaultFocusItem = 

@@ -131,15 +131,14 @@ function(params) {
 	var isMultiAcctSubHeader = (appCtxt.multiAccounts && (this.type == ZmOrganizer.SEARCH || this.type == ZmOrganizer.TAG));
 	var imageInfo = this._getHeaderTreeItemImage();
 	var ti = this._headerItem = new DwtHeaderTreeItem({
-		parent: this,
-		className: (isMultiAcctSubHeader ? "ZmTreeHeaderItemMultiAccount" : this._headerClass),
-		imageInfo: imageInfo,
-		id: (ZmId.getTreeItemId(this.overviewId, null, this.type)),
-		button: (isMultiAcctSubHeader ? null : params.newButton),
-		dndScrollCallback: this._overview._dndScrollCallback,
-		dndScrollId: this._overview.id
-//		expandNodeImage: (isMultiAcctSubHeader ? "NodeMinus" : null),
-//		collapseNodeImage: (isMultiAcctSubHeader ? "NodePlus" : null)
+		parent:				this,
+		className:			isMultiAcctSubHeader ? "ZmTreeHeaderItemMultiAccount" : this._headerClass,
+		imageInfo:			imageInfo,
+		id:					ZmId.getTreeItemId(this.overviewId, null, this.type),
+		button:				isMultiAcctSubHeader ? null : params.newButton,
+		dndScrollCallback:	this._overview._dndScrollCallback,
+		dndScrollId:		this._overview.id,
+		selectable:			false
 	});
 	ti._isHeader = true;
 	var name = ZmMsg[ZmOrganizer.LABEL[this.type]];

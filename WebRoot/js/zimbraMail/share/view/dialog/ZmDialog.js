@@ -75,6 +75,9 @@ function() {
 	this._tabGroup.addMember(this._getTabGroupMembers());
 
 	DwtDialog.prototype.popup.call(this);
+	if (this._focusElement) {
+		appCtxt.getKeyboardMgr().grabFocus(this._focusElement);
+	}
 };
 
 ZmDialog.prototype.reset =
@@ -92,10 +95,7 @@ function() {
 
 ZmDialog.prototype._setNameField =
 function(fieldId) {
-	this._nameField = document.getElementById(fieldId);
-	if (this._nameField) {
-		this._focusElementId = fieldId;
-	}
+	this._nameField = this._focusElement = document.getElementById(fieldId);
 	if (this._enterListener) {
 		this.addEnterListener(new AjxListener(this, this._enterListener));
 	}
