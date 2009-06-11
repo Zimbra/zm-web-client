@@ -743,9 +743,10 @@ function(msgDraft) {
 	this._action = ZmOperation.DRAFT;
 	this._msg = msgDraft;
 	this._msgAttId = null;
+    var showInlineImages = true;
 	// always redo att links since user couldve removed att before saving draft
 	this.cleanupAttachments(true);
-	this._showForwardField(msgDraft, ZmOperation.DRAFT);
+	this._showForwardField(msgDraft, ZmOperation.DRAFT, null, showInlineImages);
 	this._resetBodySize();
 	// save form state (to check for change later)
 	this._origFormValue = this._formValue();
@@ -1415,7 +1416,7 @@ function(action, msg, subjOverride) {
 ZmComposeView.prototype._setBody =
 function(action, msg, extraBodyText, incOption, nosig) {
 	var composingHtml = this._composeMode == DwtHtmlEditor.HTML;
-
+    var showInlineImages = true;
 	// XXX: consolidate this code later.
 	var isDraft = action == ZmOperation.DRAFT;
 	var isShare = action == ZmOperation.SHARE;
@@ -1444,7 +1445,7 @@ function(action, msg, extraBodyText, incOption, nosig) {
 		this._htmlEditor.setContent(body);
 
 		if (!isInviteReply) {
-			this._showForwardField(msg, action);
+			this._showForwardField(msg, action, null, showInlineImages);
 			this._fixMultipartRelatedImages_onTimer(msg);
 			return;
 		}
@@ -1642,7 +1643,7 @@ function(action, msg, extraBodyText, incOption, nosig) {
 		this._htmlEditor.setContent(value);
 	}
 
-	this._showForwardField(msg, action, incOption, hasInlineImages);
+	this._showForwardField(msg, action, incOption, hasInlineImages || showInlineImages);
 	this._fixMultipartRelatedImages_onTimer(msg);
 };
 

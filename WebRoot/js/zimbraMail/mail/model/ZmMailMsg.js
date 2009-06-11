@@ -1021,8 +1021,8 @@ function(attachment) {
 	if (ZmMimeTable.isIgnored(type))
 		return false;
 
-	if (type.match(/^image/) && attachment.foundInMsgBody)
-		return false;
+	/*if (type.match(/^image/) && attachment.foundInMsgBody)
+		return false;*/
 
 	// bug fix #8751 - dont ignore text/calendar type if msg is not an invite
 	if (type == ZmMimeTable.TEXT_CAL && this.isInvite())
@@ -1067,7 +1067,7 @@ function(findHits, includeInlineImages) {
 		for (var i = 0; i < this.attachments.length; i++) {
 			var attach = this.attachments[i];
 
-			if (!this.isRealAttachment(attach) || (attach.foundInMsgBody && !includeInlineImages)) {
+			if (!this.isRealAttachment(attach) || (attach.ct.match(/^image/) && attach.ci && !includeInlineImages)) {
 				continue;
 			}
 
