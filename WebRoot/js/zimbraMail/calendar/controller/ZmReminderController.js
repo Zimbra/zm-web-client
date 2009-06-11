@@ -221,7 +221,7 @@ function() {
 			}
 		}
 
-		if (!appt || appt.isAllDayEvent() || appt.ptst == ZmCalBaseItem.PSTATUS_DECLINED) {
+		if (!appt || appt.ptst == ZmCalBaseItem.PSTATUS_DECLINED) {
 			toRemove.push(appt);
 		} else if (appt.isAlarmInRange()) {
 			var uid = appt.getUniqueId(true);

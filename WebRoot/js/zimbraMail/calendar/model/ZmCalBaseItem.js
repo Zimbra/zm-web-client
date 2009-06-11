@@ -171,22 +171,30 @@ function() {
 
 	var alarmData = this.alarmData[0];
 	
-	this._nextAlarmTime = alarmData.nextAlarm;
-	this._alarmInstStart = alarmData.alarmInstStart;
+	if (!alarmData) { return false; }
+	
+    this._nextAlarmTime = this.adjustMS(alarmData.nextAlarm, this.tzo);
+    this._alarmInstStart = this.adjustMS(alarmData.alarmInstStart, this.tzo);
 
 	var currentTime = (new Date()).getTime();
 
-	return (currentTime >= this._nextAlarmTime);
+    return (currentTime >= this._nextAlarmTime); 
+};
+
+ZmCalBaseItem.prototype.adjustMS =
+function(s, tzo) {
+    var adjustMs = this.isAllDayEvent() ? (tzo + new Date(s).getTimezoneOffset()*60*1000) : 0;
+    return parseInt(s, 10) + adjustMs;
 };
 
 ZmCalBaseItem.prototype.isAlarmInstance =
 function() {
-	if (!this.alarmData) { return false; }
+    if (!this.alarmData) { return false; }
 
-	var alarmData = this.alarmData[0];
-	this._alarmInstStart = alarmData.alarmInstStart;
+    var alarmData = this.alarmData[0];
+    this._alarmInstStart = this.adjustMS(alarmData.alarmInstStart, this.tzo);
 
-	return (this._alarmInstStart == this.startDate.getTime());
+    return (this._alarmInstStart == this.startDate.getTime());
 };
 
 ZmCalBaseItem.prototype.hasAlarmData =
@@ -225,7 +233,7 @@ function(calItemNode, instNode) {
 
 	var sd = this._getAttr(calItemNode, instNode, "s");
 	if (sd) {
-        var tzo = instNode.tzo != null ? instNode.tzo : calItemNode.tzo;
+        var tzo = this.tzo = instNode.tzo != null ? instNode.tzo : calItemNode.tzo;
 		var adjustMs = this.isAllDayEvent() ? (tzo + new Date(instNode.s).getTimezoneOffset()*60*1000) : 0;
 		var startTime = parseInt(sd,10) + adjustMs;
 		this.startDate = new Date(startTime);
