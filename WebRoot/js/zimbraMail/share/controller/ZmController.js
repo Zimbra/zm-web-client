@@ -256,18 +256,20 @@ function(focusItem, noFocus) {
 	var ovId = curApp && curApp.getOverviewId();
 	var overview = ovId && appCtxt.getOverviewController().getOverview(ovId);
 	if (rootTg && overview && (overview != ZmController._currentOverview)) {
-		rootTg.replaceMember(ZmController._currentOverview, overview);
+		rootTg.replaceMember(ZmController._currentOverview, overview, false, false, null, true);
 		ZmController._currentOverview = overview;
 	}
 
 	var myTg = this.getTabGroup();
+	focusItem = focusItem || this._savedFocusMember || this._getDefaultFocusItem() || rootTg.getFocusMember();
+	noFocus = noFocus || ZmController.noFocus;
+	ZmController.noFocus = false;
 	if (rootTg && myTg && (myTg != ZmController._currentAppViewTabGroup)) {
-		focusItem = focusItem || this._savedFocusMember || this._getDefaultFocusItem() || rootTg.getFocusMember();
-		noFocus = noFocus || ZmController.noFocus;
 		rootTg.replaceMember(ZmController._currentAppViewTabGroup, myTg, false, false, focusItem, noFocus);
 		ZmController._currentAppViewTabGroup = myTg;
+	} else if (focusItem && !noFocus) {
+		appCtxt.getKeyboardMgr().grabFocus(focusItem);
 	}
-	ZmController.noFocus = false;
 };
 
 ZmController.prototype._getDefaultFocusItem = 
