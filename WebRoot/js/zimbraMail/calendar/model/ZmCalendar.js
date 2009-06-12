@@ -34,7 +34,7 @@
 ZmCalendar = function(params) {
 	params.type = ZmOrganizer.CALENDAR;
 	ZmOrganizer.call(this, params);
-}
+};
 
 ZmCalendar.prototype = new ZmOrganizer;
 ZmCalendar.prototype.constructor = ZmCalendar;
@@ -68,9 +68,8 @@ function(params, ex) {
 		msg = AjxMessageFormat.format(ZmMsg.calFeedInvalid, params.url);
 		ZmOrganizer._showErrorMsg(msg);
 		return true;
-	} else {
-		return ZmOrganizer._handleErrorCreate(params, ex);
 	}
+	return ZmOrganizer._handleErrorCreate(params, ex);
 };
 
 ZmCalendar.prototype.getIcon = 
@@ -107,11 +106,10 @@ function(checked, result) {
 	var treeController = overviewController.getTreeController(this.type);
 	var overviewId = appCtxt.getCurrentApp().getOverviewId();
 	var treeView = treeController.getTreeView(overviewId);
-	
-	if(treeView && this.id && treeView._treeItemHash[this.id]) {
+
+	if (treeView && this.id && treeView._treeItemHash[this.id]) {
 		treeView._treeItemHash[this.id].setChecked(checked);
 	}
-	
 };
 
 /**
@@ -121,7 +119,7 @@ function(checked, result) {
  */
 ZmCalendar.prototype.mayContain =
 function(what) {
-	if (!what) return true;
+	if (!what) { return true; }
 
 	if (!(what instanceof ZmCalendar)) {
 		var invalid = false;
@@ -186,7 +184,7 @@ function(obj) {
 		fields["excludeFreeBusy"] = true;
 		doNotify = true;
 	}
-	
+
 	if (doNotify) {
 		this._notify(ZmEvent.E_MODIFY, {fields: fields});
 	}
@@ -203,13 +201,13 @@ function(name) {
 ZmCalendar.sortCompare = 
 function(calA, calB) {
 	var check = ZmOrganizer.checkSortArgs(calA, calB);
-	if (check != null) return check;
+	if (check != null) { return check; }
 
 	// links appear after personal calendars
 	if (calA.link != calB.link) {
 		return calA.link ? 1 : -1;
 	}
-	
+
 	// sort by calendar name
 	var calAName = calA.name.toLowerCase();
 	var calBName = calB.name.toLowerCase();

@@ -194,7 +194,14 @@ function() {
 	}
 
 	var folder = this.getFolder();
-	return (folder && folder.link) ? folder.owner : null;
+	var owner = folder && folder.link && folder.owner;
+
+	if (!owner && appCtxt.multiAccounts) {
+		var acct = appCtxt.getAccount(folder.accountId);
+		owner = acct && acct.name;
+	}
+
+	return owner;
 };
 
 ZmCalItem.prototype.isReadOnly =
@@ -1147,42 +1154,37 @@ function(result) {
 };
 
 ZmCalItem.prototype._setSimpleSoapAttributes =
-function(soapDoc, attachmentId, notifyList, onBehalfOf) {
+function(soapDoc, attachmentId, notifyList, accountName) {
 
 	var m = this._messageNode = soapDoc.set('m');
 
-	if (onBehalfOf) {
-		m.setAttribute("l", this.getFolder().rid);
-	} else {
-		m.setAttribute("l", this.folderId);
-	}
+	var calendar = this.getFolder();
+
+	var acct = calendar.accountId && appCtxt.getAccount(calendar.accountId);
+	var isOnBehalfOf = accountName && acct && acct.name && (acct.name != accountName);
+	m.setAttribute("l", (isOnBehalfOf ? this.getFolder().rid : this.folderId));
 
 	var inv = soapDoc.set("inv", null, m);
-	if (this.uid != null && this.uid != -1)
+	if (this.uid != null && this.uid != -1) {
 		inv.setAttribute("uid", this.uid);
+	}
 
 	var comp = soapDoc.set("comp", null, inv);
 
 	// attendees
-	//if (this.isOrganizer()) {
-		this._addAttendeesToSoap(soapDoc, comp, m, notifyList, onBehalfOf);
-	//}
+	this._addAttendeesToSoap(soapDoc, comp, m, notifyList, accountName);
 
-    if(this.isOrganizer() && !onBehalfOf) {
-        var mailFromAddress = this.getMailFromAddress();
-        if(mailFromAddress) {
-            var e = soapDoc.set("e", null, m);
-            e.setAttribute("a", mailFromAddress);
-            e.setAttribute("t", AjxEmailAddress.toSoapType[AjxEmailAddress.FROM]);
-        }        
-    }
+	if (this.isOrganizer() && !accountName) {
+		var mailFromAddress = this.getMailFromAddress();
+		if (mailFromAddress) {
+			var e = soapDoc.set("e", null, m);
+			e.setAttribute("a", mailFromAddress);
+			e.setAttribute("t", AjxEmailAddress.toSoapType[AjxEmailAddress.FROM]);
+		}
+	}
 
 	this._addExtrasToSoap(soapDoc, inv, comp);
-
-	// date/time
 	this._addDateTimeToSoap(soapDoc, inv, comp);
-
-	// xprops
 	this._addXPropsToSoap(soapDoc, inv, comp);
 	
 	// subject/location
@@ -1202,7 +1204,6 @@ function(soapDoc, attachmentId, notifyList, onBehalfOf) {
 	var organizer = this.organizer || user;
 	var org = soapDoc.set("or", null, comp);
 	org.setAttribute("a", organizer);
-	var calendar  = this.getFolder();
 	if (calendar.isRemote()) {
 		org.setAttribute("sentBy", user); // if on-behalf of, set sentBy
 	}
@@ -1339,11 +1340,11 @@ function(soapDoc, inv, comp) {
 };
 
 ZmCalItem.prototype._addAttendeesToSoap =
-function(soapDoc, inv, m, notifyList, onBehalfOf) {
+function(soapDoc, inv, m, notifyList, accountName) {
 	// if this appt is on-behalf-of, set the from address to that person
-    if (this.isOrganizer() && onBehalfOf) {
+    if (this.isOrganizer() && accountName) {
         e = soapDoc.set("e", null, m);
-        e.setAttribute("a", onBehalfOf);
+        e.setAttribute("a", accountName);
         e.setAttribute("t", AjxEmailAddress.toSoapType[AjxEmailAddress.FROM]);
     }
 };

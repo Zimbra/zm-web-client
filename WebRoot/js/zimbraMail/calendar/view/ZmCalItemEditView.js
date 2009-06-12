@@ -300,7 +300,7 @@ function() {
 */
 ZmCalItemEditView.prototype.getOrganizer =
 function() {
-	var folderId = this._folderSelect.getValue();
+	var folderId = this._folderSelect ? this._folderSelect.getValue() : this._folderPickedId;
 	var organizer = new ZmContact(null);
 	organizer.initFromEmail(ZmApptViewHelper.getOrganizerEmail(this._calendarOrgs[folderId]), true);
 
@@ -366,7 +366,8 @@ function(calItem) {
 	// save field values of this view w/in given appt
 	calItem.setName(this._subjectField.getValue());
 
-	var folderId = this._folderSelect.getValue();
+	var folderId = this._folderSelect
+		? this._folderSelect.getValue() : this._folderPickedId;
 	if (this._mode != ZmCalItem.MODE_NEW && this._calItem.folderId != folderId) {
 		// if moving existing calitem across mail boxes, cache the new folderId
 		// so we can save it as a separate request
@@ -530,42 +531,60 @@ function() {
 ZmCalItemEditView.prototype._createWidgets =
 function(width) {
 	// subject DwtInputField
-	this._subjectField = new DwtInputField({parent: this, type:DwtInputField.STRING,
-											errorIconStyle: DwtInputField.ERROR_ICON_NONE,
-											validationStyle: DwtInputField.CONTINUAL_VALIDATION,
-											skipCaretHack:true});
+	var params = {
+		parent: this,
+		parentElement: (this._htmlElId + "_subject"),
+		type: DwtInputField.STRING,
+		errorIconStyle: DwtInputField.ERROR_ICON_NONE,
+		validationStyle: DwtInputField.CONTINUAL_VALIDATION,
+		skipCaretHack:true
+	};
+	this._subjectField = new DwtInputField(params);
 	this._subjectField.setRequired();
 	Dwt.setSize(this._subjectField.getInputElement(), width, "22px");
-	this._subjectField.reparentHtmlElement(this._htmlElId + "_subject");
 
 	// CalItem folder DwtSelect
-	this._folderSelect = new DwtSelect({parent:this});
-	this._folderSelect.reparentHtmlElement(this._htmlElId + "_folderSelect");
+	if (appCtxt.multiAccounts) {
+		this._folderPickerButton = new DwtButton({parent:this, parentElement:(this._htmlElId + "_folderSelect")});
+	} else {
+		this._folderSelect = new DwtSelect({parent:this, parentElement:(this._htmlElId + "_folderSelect")});
+	}
 
 	// recurrence DwtSelect
-	this._repeatSelect = new DwtSelect({parent:this});
+	this._repeatSelect = new DwtSelect({parent:this, parentElement:(this._htmlElId + "_repeatSelect")});
 	this._repeatSelect.addChangeListener(new AjxListener(this, this._repeatChangeListener));
 	for (var i = 0; i < ZmApptViewHelper.REPEAT_OPTIONS.length; i++) {
 		var option = ZmApptViewHelper.REPEAT_OPTIONS[i];
 		this._repeatSelect.addOption(option.label, option.selected, option.value);
 	}
-	this._repeatSelect.reparentHtmlElement(this._htmlElId + "_repeatSelect");
 
-	//reminder DwtSelect
-	var	displayOptions = [ZmMsg.apptRemindNever, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNHoursBefore, ZmMsg.apptRemindNHoursBefore, ZmMsg.apptRemindNHoursBefore, ZmMsg.apptRemindNHoursBefore, ZmMsg.apptRemindNHoursBefore ];
+	// reminder DwtSelect
+	var	displayOptions = [
+		ZmMsg.apptRemindNever,
+		ZmMsg.apptRemindNMinutesBefore,
+		ZmMsg.apptRemindNMinutesBefore,
+		ZmMsg.apptRemindNMinutesBefore,
+		ZmMsg.apptRemindNMinutesBefore,
+		ZmMsg.apptRemindNMinutesBefore,
+		ZmMsg.apptRemindNMinutesBefore,
+		ZmMsg.apptRemindNMinutesBefore,
+		ZmMsg.apptRemindNHoursBefore,
+		ZmMsg.apptRemindNHoursBefore,
+		ZmMsg.apptRemindNHoursBefore,
+		ZmMsg.apptRemindNHoursBefore,
+		ZmMsg.apptRemindNHoursBefore
+	];
 	var	options = this._reminderOptions = [0, 1, 5, 10, 15, 30, 45, 60, 120, 180, 240, 300, 1080];
 	var	labels = [0, 1, 5, 10, 15, 30, 45, 60, 2, 3, 4, 5, 18];
-
 	var defaultWarningTime = appCtxt.get(ZmSetting.CAL_REMINDER_WARNING_TIME);
-	
+
 	this._hasReminderSupport = Boolean(Dwt.byId(this._htmlElId + "_reminderSelect") != null);
 	if (this._hasReminderSupport) {
-		this._reminderSelect = new DwtSelect({parent:this});
+		this._reminderSelect = new DwtSelect({parent:this, parentElement:(this._htmlElId + "_reminderSelect")});
 		for (var j = 0; j < options.length; j++) {
 			var optLabel = ZmCalendarApp.__formatLabel(displayOptions[j], labels[j]);			
 			this._reminderSelect.addOption(optLabel, (defaultWarningTime == options[j]), options[j]);
 		}
-		this._reminderSelect.reparentHtmlElement(this._htmlElId + "_reminderSelect");
 	}
 
 	// start/end date DwtButton's
@@ -578,7 +597,7 @@ function(width) {
 	// notes ZmHtmlEditor
 	this._notesHtmlEditor = new ZmHtmlEditor(this, null, null, this._composeMode);
 	this._notesHtmlEditor.reparentHtmlElement(this._htmlElId + "_notes");
-	//bug:19079 to avoid access denied exception set some content which corrects the doc domain
+	// bug: 19079 to avoid access denied exception set some content which corrects the doc domain
 	this._notesHtmlEditor.setContent("");
 };
 
@@ -605,8 +624,6 @@ function(calItem, mode) {
 	var len = data.length;
 
 	// look for calItem's calendar
-	this._folderSelect.clearOptions();
-	this._calendarOrgs = {};
 	var itemCal;
 	for (var i = 0; i < len; i++) {
 		var cal = data[i];
@@ -616,26 +633,42 @@ function(calItem, mode) {
 		}
 	}
 
+	if (this._folderSelect) {
+		this._folderSelect.clearOptions();
+	}
+	this._calendarOrgs = {};
+
 	for (var i = 0; i < len; i++) {
 		var cal = data[i];
 		var id = cal.link ? cal.getRemoteId() : cal.id;
 		this._calendarOrgs[id] = cal.owner;
 
-        //bug: 28363 owner attribute is not available for shared sub folder for mountpoints
-        if(cal.isRemote() && !cal.owner && cal.parent && cal.parent.isRemote()) {
-            this._calendarOrgs[id] = cal.parent.getOwner();
-        }
+		// bug: 28363 - owner attribute is not available for shared sub
+		// folder for mountpoints
+		if (cal.isRemote() && !cal.owner && cal.parent && cal.parent.isRemote()) {
+			this._calendarOrgs[id] = cal.parent.getOwner();
+		}
 
-        // don't show calendar if feed, or remote and don't have write perms
-		var share = cal.getMainShare();
-		if (cal.isFeed() ||	(cal.link && share && !share.isWrite())) { continue; }
-		
-		this._folderSelect.addOption(cal.getName(), (calItem.folderId == cal.id) || (calItem.folderId == id ) || (calItem.folderId == cal.nId), id);
+		if (this._folderSelect) {
+			// don't show calendar if feed, or remote and don't have write perms
+			var share = cal.getMainShare();
+			if (cal.isFeed() || (cal.link && share && !share.isWrite())) { continue; }
+
+			var selected = ((calItem.folderId == cal.id) || (calItem.folderId == id ) || (calItem.folderId == cal.nId));
+			this._folderSelect.addOption(cal.getName(), selected, id);
+		}
 	}
-	var num = this._folderSelect.size();
-	Dwt.setVisibility(this._folderSelect.getHtmlElement(), num > 1);
-	Dwt.setVisibility(this._folderLabelField, num > 1);
 
+	if (this._folderSelect) {
+		var num = this._folderSelect.size();
+		Dwt.setVisibility(this._folderSelect.getHtmlElement(), num > 1);
+		Dwt.setVisibility(this._folderLabelField, num > 1);
+	}
+	else if (this._folderPickerButton) {
+		var folder = appCtxt.getById(calItem.folderId);
+		this._folderPickerButton.setText(folder.name);
+		this._folderPickedId = folder.id;
+	}
 };
 
 ZmCalItemEditView.prototype._initAttachContainer =

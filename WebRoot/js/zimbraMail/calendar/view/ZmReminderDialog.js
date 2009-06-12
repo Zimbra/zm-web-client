@@ -232,32 +232,18 @@ function(ev) {
 	if (appt) {
 		AjxDispatcher.require(["CalendarCore", "Calendar"]);
 
-		// bug fix #36946 - switch accounts if reminder is for non-active account
-		var parsed = (appCtxt.isOffline && appCtxt.multiAccounts)
-			? ZmOrganizer.parseId(appt.id) : null;
-		if (parsed && parsed.account != appCtxt.getActiveAccount()) {
-			var app = appCtxt.getCurrentApp();
-			var callback = new AjxCallback(this, this._handleOpenButtonListener, appt);
-			app.expandAccordionForAccount(parsed.account, true, callback);
-		} else {
-			this._handleOpenButtonListener(appt);
-		}
-	}
-};
+		var cc = AjxDispatcher.run("GetCalController");
 
-ZmReminderDialog.prototype._handleOpenButtonListener =
-function(appt) {
-	var cc = AjxDispatcher.run("GetCalController");
-
-	// the give appt object is a ZmCalBaseItem. We need a ZmAppt 
-	var newAppt = new ZmAppt();
-	for (var i in appt) {
-		if (!AjxUtil.isFunction(appt[i])) {
-			newAppt[i] = appt[i];
+		// the give appt object is a ZmCalBaseItem. We need a ZmAppt
+		var newAppt = new ZmAppt();
+		for (var i in appt) {
+			if (!AjxUtil.isFunction(appt[i])) {
+				newAppt[i] = appt[i];
+			}
 		}
+		var callback = new AjxCallback(cc, cc._showAppointmentDetails, newAppt);
+		newAppt.getDetails(null, callback, null, null, true);
 	}
-	var callback = new AjxCallback(cc, cc._showAppointmentDetails, newAppt);
-	newAppt.getDetails(null, callback, null, null, true);
 };
 
 ZmReminderDialog.prototype._dismissButtonListener =
