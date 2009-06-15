@@ -2346,7 +2346,7 @@ HTML>BODY .appt-selected .appt_allday_body
 	@MenuContainer@
 	background-color:@ListItemBgColor-normal@;
 	#IFDEF MSIE
-	width: 25%;
+	width: 400px;
 	#ENDIF
 	#IFNDEF MSIE
 	width: auto;
