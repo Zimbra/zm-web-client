@@ -469,9 +469,7 @@ function(ev) {
 		data[2].run(ev); // call original listener
 	} else {
 		var queryString = this.getSearchFieldValue();
-		if (appCtxt.zimletsPresent()) {
-			appCtxt.getZimletMgr().notifyZimlets("onKeyPressSearchField", [queryString]);
-		}
+		appCtxt.notifyZimlets("onKeyPressSearchField", [queryString]);
 		this._callback.run(queryString);
 	}
 };

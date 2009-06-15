@@ -949,9 +949,7 @@ function(view, force, isNewView) {
 		}
 	}
 
-	if (!this._isNewWindow && appCtxt.zimletsPresent()) {
-		appCtxt.getZimletMgr().notifyZimlets("onShowView", [view, isNewView]);
-	}
+	appCtxt.notifyZimlets("onShowView", [view, isNewView], {noChildWindow:true});
 
 	return okToContinue;
 };
@@ -1026,8 +1024,7 @@ function(view) {
 
 // Tells a view that it has been hidden.
 ZmAppViewMgr.prototype._deactivateView =
-function(viewId) {
-	var view = this._views[viewId];
+function(view) {
 	for (var cid in view) {
 		var comp = view[cid];
 		if (comp.deactivate) {

@@ -521,9 +521,7 @@ function(msg, oldMsg) {
 	this.getHtmlElement().scrollTop = 0;
 
 	// notify zimlets that a new message has been opened
-	if (appCtxt.zimletsPresent()) {
-		appCtxt.getZimletMgr().notifyZimlets("onMsgView", [msg, oldMsg, this]);
-	}
+	appCtxt.notifyZimlets("onMsgView", [msg, oldMsg, this]);
 
 	// for CV, the first hot message is automatically marked as read via SearchConvRequest
 	if (!msg.isDraft && msg.readReceiptRequested &&
@@ -1036,9 +1034,7 @@ function(msg, container, callback) {
 		this._lazyCreateObjectManager();
 
 		// notify zimlets that we're finding objects in the message
-		if (appCtxt.zimletsPresent()) {
-			appCtxt.getZimletMgr().notifyZimlets("onFindMsgObjects", [msg, this._objectManager, this]);
-		}
+		appCtxt.notifyZimlets("onFindMsgObjects", [msg, this._objectManager, this]);
 
 		this._objectManager.setHandlerAttr(ZmObjectManager.DATE,
 											ZmObjectManager.ATTR_CURRENT_DATE,

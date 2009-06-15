@@ -824,6 +824,8 @@ function() {
 		tb._ZmListController_this = this;
 		tb._ZmListController_newDropDownListener = listener;
 	}
+
+	appCtxt.notifyZimlets("initializeToolbar", [this._app, tb, this, this.viewId], {waitUntilLoaded:true});
 };
 
 ZmComposeController.prototype._setAddSignatureVisibility =

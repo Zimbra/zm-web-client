@@ -540,9 +540,7 @@ function() {
 	this._setValues();
 
 	// notify zimlets that a new contact is being shown.
-	if (appCtxt.zimletsPresent()) {
-		appCtxt.getZimletMgr().notifyZimlets("onContactEdit", [this, this._contact, this._htmlElId]);
-	}
+	appCtxt.notifyZimlets("onContactEdit", [this, this._contact, this._htmlElId]);
 };
 
 ZmContactView.prototype._getFields =

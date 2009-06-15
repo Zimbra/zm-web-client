@@ -740,9 +740,7 @@ function(tb) {
 	this._underlineButton.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.UNDERLINE_STYLE);
 	this._underlineButton.addSelectionListener(listener);
 
-	if (!appCtxt.isChildWindow) {
-		appCtxt.getZimletMgr().notifyZimlets("on_htmlEditor_createToolbar1", [this, tb]);
-	}
+	appCtxt.notifyZimlets("on_htmlEditor_createToolbar1", [this, tb], {noChildWindow:true});
 };
 
 ZmHtmlEditor.prototype._createToolBar2 =
@@ -805,9 +803,7 @@ function(tb) {
 		b.addSelectionListener(new AjxListener(this, this._menu_insertObject));
 	}
 
-	if (!appCtxt.isChildWindow) {
-		appCtxt.getZimletMgr().notifyZimlets("on_htmlEditor_createToolbar2", [this, tb]);
-	}
+	appCtxt.notifyZimlets("on_htmlEditor_createToolbar2", [this, tb], {noChildWindow:true});
 };
 
 ZmHtmlEditor.prototype.__createTableOperationItems =

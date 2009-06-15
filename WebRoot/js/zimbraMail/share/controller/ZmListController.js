@@ -348,16 +348,7 @@ function(view) {
 		this._setupTagMenu(tb);
 	}
 
-	if (appCtxt.areZimletsLoaded()) {
-		this._notifyZimletsToolbar(this._app, tb, view);
-	} else {
-		appCtxt.addZimletsLoadedListener(new AjxListener(this, this._notifyZimletsToolbar, [this._app, tb, view]));
-	}
-};
-
-ZmListController.prototype._notifyZimletsToolbar =
-function(app, tb, view) {
-	appCtxt.getZimletMgr().notifyZimlets("initializeToolbar", [app, tb, this, view]);
+	appCtxt.notifyZimlets("initializeToolbar", [app, tb, this, view], {waitUntilLoaded:true});
 };
 
 // list view and its listeners

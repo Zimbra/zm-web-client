@@ -676,14 +676,11 @@ function(attId, isDraft) {
 	**/
 	if (!isDraft) {
 		if (appCtxt.zimletsPresent()) {
-			if (!this._zimletMgr) {
-				this._zimletMgr = appCtxt.getZimletMgr(); // cache zimletMgr
-			}
 			var boolAndErrorMsgArray = [];
 			var showErrorDlg = false;
 			var errorMsg = "";
 			var zimletName = "";
-			this._zimletMgr.notifyZimlets("emailErrorCheck", [msg, boolAndErrorMsgArray]);
+			appCtxt.notifyZimlets("emailErrorCheck", [msg, boolAndErrorMsgArray]);
 			var blen =  boolAndErrorMsgArray.length;
 			for (var k = 0; k < blen; k++) {
 				var obj = boolAndErrorMsgArray[k];
@@ -1233,11 +1230,8 @@ ZmComposeView.prototype._getExtraSignature =
 function() {
 	var extraSignature = "";
 	if (appCtxt.zimletsPresent()) {
-		if (!this._zimletMgr) {
-			this._zimletMgr = appCtxt.getZimletMgr();//cache zimletMgr
-		}
 		var buffer = [];
-		this._zimletMgr.notifyZimlets("appendExtraSignature", [buffer]);
+		appCtxt.notifyZimlets("appendExtraSignature", [buffer]);
 		extraSignature = buffer.join(this._getSignatureNewLine());
 		if (extraSignature != "") {
 			extraSignature = this._getSignatureNewLine() + extraSignature;
@@ -1248,7 +1242,7 @@ function() {
 
 ZmComposeView.prototype._getSignatureSeparator =
 function() {
-        var newLine = this._getSignatureNewLine();
+	var newLine = this._getSignatureNewLine();
 	var sep = newLine + newLine;
 	if (appCtxt.get(ZmSetting.SIGNATURE_STYLE) == ZmSetting.SIG_INTERNET) {
 		sep += "-- " + newLine;

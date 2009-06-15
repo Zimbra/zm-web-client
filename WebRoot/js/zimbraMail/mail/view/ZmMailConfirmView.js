@@ -75,9 +75,7 @@ function(msg) {
 		appCtxt.getApp(ZmId.APP_CONTACTS).getContactsByEmails(addresses, callback);
 	}
 
-	if (appCtxt.zimletsPresent()) {
-		appCtxt.getZimletMgr().notifyZimlets("onMailConfirm", [this, msg, Dwt.byId(this._htmlElId + "_ad")]);
-	}
+	appCtxt.notifyZimlets("onMailConfirm", [this, msg, Dwt.byId(this._htmlElId + "_ad")]);
 };
 
 ZmMailConfirmView.prototype.getController =

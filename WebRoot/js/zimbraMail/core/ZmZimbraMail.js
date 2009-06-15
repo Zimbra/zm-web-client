@@ -2144,7 +2144,7 @@ function(ev) {
 		var currentViewId = avm.getCurrentViewId();
 		var lastViewId = avm.getLastViewId();
 		var action = (AjxStringUtil.split(text, " ")).join("");
-		appCtxt.getZimletMgr().notifyZimlets("onAction", [type, action, currentViewId, lastViewId]);
+		appCtxt.notifyZimlets("onAction", [type, action, currentViewId, lastViewId]);
 	}
 };
 

@@ -390,9 +390,7 @@ ZmSearchController.prototype._doSearch =
 function(params, noRender, callback, errorCallback) {
 
 	this._searchFor = params.searchFor || this._searchFor;
-	if (appCtxt.zimletsPresent()) {
-		appCtxt.getZimletMgr().notifyZimlets("onSearch", [params.query]);
-	}
+	appCtxt.notifyZimlets("onSearch", [params.query]);
 
 	if (this._searchToolBar) {
 		var value = (appCtxt.get(ZmSetting.SHOW_SEARCH_STRING) || params.userText) ? params.query : "";
@@ -600,9 +598,7 @@ function(ev) {
 		} else {
 			queryString = this._currentQuery ? this._currentQuery : "";
 		}
-		if (appCtxt.zimletsPresent()) {
-			appCtxt.getZimletMgr().notifyZimlets("onSearchButtonClick", [queryString]);
-		}
+		appCtxt.notifyZimlets("onSearchButtonClick", [queryString]);
 		var getHtml = appCtxt.get(ZmSetting.VIEW_AS_HTML);
 		this.search({query: queryString, userText: userText, getHtml: getHtml});
 	}

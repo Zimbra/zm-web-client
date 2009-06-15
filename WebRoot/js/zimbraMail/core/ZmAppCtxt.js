@@ -873,6 +873,29 @@ function() {
 	}
 };
 
+/**
+ * Notifies zimlets if they are present and loaded.
+ *
+ * @param event				[string]	zimlet event (called as a zimlet function)
+ * @param args				[array]		list of args to the function
+ * @param options			[hash]*		hash of options:
+ *        noChildWindow		[boolean]	if true, skip notify if we are in a child window
+ *        waitUntilLoaded	[boolean]	if true and zimlets aren't yet loaded, add a listener
+ * 										so that notify happens on load
+ */
+ZmAppCtxt.prototype.notifyZimlets =
+function(event, args, options) {
+	if (!this.zimletsPresent() || !this.areZimletsLoaded()) { return; }
+	if (options && options.noChildWindow && this.isChildWindow) { return; }
+
+	if (options && options.waitUntilLoaded && !this.areZimletsLoaded()) {
+		this.addZimletsLoadedListener(new AjxListener(this, this.notifyZimlets, [event, args]));
+		return;
+	}
+
+	this.getZimletMgr().notifyZimlets(event, args);
+};
+
 ZmAppCtxt.prototype.getCalManager =
 function() {
 	if (!this._calMgr) {

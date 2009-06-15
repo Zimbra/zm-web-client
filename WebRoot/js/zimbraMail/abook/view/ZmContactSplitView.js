@@ -360,9 +360,7 @@ function(contact, isGal, oldContact) {
 		}
 
 		// notify zimlets that a new contact is being shown.
-		if (appCtxt.zimletsPresent()) {
-			appCtxt.getZimletMgr().notifyZimlets("onContactView", [contact, this._htmlElId, tabIdx]);
-		}
+		appCtxt.notifyZimlets("onContactView", [contact, this._htmlElId, tabIdx]);
 	}
 
 	this._setHeaderInfo();
@@ -496,9 +494,8 @@ function() {
 	var	div = document.createElement("div");
 
 	var isSearch = this._controller._contactSearchResults;
-	if(isSearch){
+	if (isSearch){
 		isSearch = !(this._controller._currentSearch && this._controller._currentSearch.folderId);
-
 	}
 	//bug:28365  Show custom "No Results" for Search.
 	if ((isSearch || this._folderId == ZmFolder.ID_TRASH) && AjxTemplate.getTemplate("abook.Contacts#SimpleView-NoResults-Search")) {

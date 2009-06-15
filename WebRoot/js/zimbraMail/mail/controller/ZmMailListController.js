@@ -1445,16 +1445,12 @@ function(items, on) {
 	}
 
 	ZmListController.prototype._doFlag.call(this, items, on);
-	if (appCtxt.zimletsPresent()) {
-		appCtxt.getZimletMgr().notifyZimlets("onMailFlagClick", [items, on]);
-	}
+	appCtxt.notifyZimlets("onMailFlagClick", [items, on]);
 };
 
 // Tag/untag items(override ZmListController to add hook to zimletMgr
 ZmMailListController.prototype._doTag =
 function(items, tag, doTag) {
 	ZmListController.prototype._doTag.call(this, items, tag, doTag);
-	if (appCtxt.zimletsPresent()) {
-		appCtxt.getZimletMgr().notifyZimlets("onTagAction", [items, tag, doTag]);
-	}
+	appCtxt.notifyZimlets("onTagAction", [items, tag, doTag]);
 };
