@@ -150,7 +150,7 @@
 .zo_obj_body {
 /*background: lightgray;*/
     box-sizing: border-box;
-    background: #c8c8c8 url( /img/mobile/iphone/pinstripes.png );
+    background: #c8c8c8;
 }
 
 .zo_appt_view {
@@ -535,13 +535,14 @@
     color: #8e9198;
 }
 
-.zo_cal_mday_today .zo_cal_mday_text, .zo_cal_mday_select .zo_cal_mday_textO, .zo_cal_mday_today .zo_cal_mday_text0 {
+.zo_cal_mday_today .zo_cal_mday_text, .zo_cal_mday_select .zo_cal_mday_textO,.zo_cal_mday_today .zo_cal_mday_text0 {
     color: white !important;
 }
 
 .zo_cal_mday_appt {
     text-decoration: underline;
 }
+
 
 table {
     border-collapse: collapse;

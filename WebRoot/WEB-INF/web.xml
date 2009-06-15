@@ -467,6 +467,7 @@
           <url-pattern>/m/moapptcompose</url-pattern>
           <url-pattern>/m/mofolders</url-pattern>
           <url-pattern>/m/moaddrbooks</url-pattern>
+          <url-pattern>/m/moprefs</url-pattern>
           <url-pattern>/m/moquery</url-pattern>
           <url-pattern>/m/mocompose</url-pattern>
           <url-pattern>/h/overviewAds</url-pattern>

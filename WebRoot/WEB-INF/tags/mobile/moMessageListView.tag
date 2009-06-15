@@ -41,7 +41,7 @@
 </mo:handleError>
 <zm:currentResultUrl var="actionUrl" value="${context_url}" context="${context}"/>
 <c:set var="title" value="${zm:truncate(context.shortBackTo,20,true)}" scope="request"/>
-<form id="zForm" action="${fn:escapeXml(actionUrl)}" method="post">
+<form id="zForm" action="${fn:escapeXml(actionUrl)}" method="post" onsubmit="return submitForm(this);">
     <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
     <input type="hidden" name="doMessageAction" value="1"/>
     <input name="moreActions" type="hidden" value="<fmt:message key="actionGo"/>"/>
@@ -76,7 +76,7 @@
                        <a class="zo_m_list_from" id="a${mhit.id}" href="${fn:escapeXml(msgUrl)}">${fn:escapeXml(_f)}</a></div>
                    <div class="sub-span">
                        <c:set var="_f" value="${empty mhit.subject ? unknownSubject : mhit.subject}"/>
-                       <c:if test="${fn:length(_f) > 25}"><c:set var="_f" value="${fn:substring(_f, 0, 25)}..."/></c:if>
+                       <c:if test="${fn:length(_f) > 20}"><c:set var="_f" value="${fn:substring(_f, 0, 20)}..."/></c:if>
                        ${fn:escapeXml(_f)}
                    </div>
                    <div class="frag-span small-gray-text">

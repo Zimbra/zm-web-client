@@ -29,34 +29,36 @@
 <c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/>
 <zm:currentResultUrl var="actionUrl" value="${context_url}" context="${context}" refresh="${true}"/>
 <c:set var="title" value="${zm:truncate(context.shortBackTo,20,true)}" scope="request"/>
-<form id="zForm" action="${fn:escapeXml(actionUrl)}" method="post">
+<form id="zForm" action="${fn:escapeXml(actionUrl)}" method="post" onsubmit="return submitForm(this);">
     <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
     <input type="hidden" name="doTaskAction" value="1"/>
     <input name="moreActions" type="hidden" value="<fmt:message key="actionGo"/>"/>
    <mo:taskToolbar context="${context}" urlTarget="${context_url}" isTop="true" mailbox="${mailbox}"/>
    <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
         <c:set var="taskHit" value="${hit.taskHit}"/>
-        <div class="list-row row" id="cn${taskHit.id}">
+        <div class="list-row${taskHit.percentComplete eq '100' ? '' : '-unread'} row" id="cn${taskHit.id}">
             <c:set value=",${hit.id}," var="stringToCheck"/>
+            <c:set var="taskUrl" value="${context_url}?st=newtask&action=edit&id=${taskHit.inviteId}"/>
             <span class="cell f">
                     <input class="chk" type="checkbox" ${requestScope.select ne 'none' && (fn:contains(requestScope._selectedIds,stringToCheck) || requestScope.select eq 'all') ? 'checked="checked"' : ''}
                            name="id" value="${taskHit.id}"/>
             <span class="SmlIcnHldr Task">&nbsp;</span>
             </span>
-            <span class="cell m" onclick='return zClickLink("a${taskHit.id}")'>
-                <a id="a${taskHit.id}" href="${briefUrl}">
+            <span class="cell m" onclick='return zClickLink("a${taskHit.id}")' style="${taskHit.percentComplete eq '100' ? 'text-decoration:line-through;' : ''}">
+                <a id="a${taskHit.id}" href="${taskUrl}">
                 <div>
                     <strong><c:out escapeXml="true" value="${zm:truncate(taskHit.subject,100,true)}"/></strong>
                 </div>
                 </a>
                <div class="Email from-span">
-                    <a href="${briefUrl}">
+                    <a href="${taskUrl}">
                     <fmt:message key="TASK_${taskHit.status}"/> (${taskHit.percentComplete} %) 
                     </a>
                 </div>
-                <a href="${briefUrl}">
+                <a href="${taskUrl}">
                 <div class="frag-span small-gray-text">
-                    <fmt:message key="taskDueDateLabel"/> ${fn:escapeXml(zm:displayDate(pageContext, taskHit.dueDate))}&nbsp;
+                    <fmt:message key="taskDueDateLabel"/>
+                    ${fn:escapeXml(zm:displayDate(pageContext, taskHit.dueDate))}&nbsp;
                 </div>
                 </a>
             </span>

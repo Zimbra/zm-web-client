@@ -32,16 +32,16 @@
 
 <c:set var="top_fldr_select" value="${param.top_fldr_select eq '1' ? '1' : (empty sessionScope.top_fldr_select ? '0' : sessionScope.top_fldr_select)}"/> <%-- Default disabled--%>
 <c:set var="btm_fldr_select" value="${param.btm_fldr_select eq '0' ? '0' : (empty sessionScope.btm_fldr_select ? '1' : sessionScope.btm_fldr_select)}"/> <%-- Default enabled--%>
-<c:if test="${not empty requestScope.statusMessage && isTop}"> <%-- For search query errors --%>
+<%--<c:if test="${not empty requestScope.statusMessage && isTop}"> --%><%-- For search query errors --%><%--
     <div class="${requestScope.statusClass}">${fn:escapeXml(requestScope.statusMessage)} </div>
-</c:if>
+</c:if>--%>
 <c:if test="${isTop && '1' eq  top_stb}">
     <div class="SubToolbar table top_${context.isContactSearch ? 'cont' : (context.isMessageSearch ? 'mesg' : 'conv') }_lv_subtoolbar">
         <div class="table-row">
             <div class="table-cell">
                 <c:choose>
                     <c:when test="${context.isContactSearch || context.isGALSearch}">
-                        <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=ab"><fmt:message
+                        <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=ab&_pv=1"><fmt:message
                                 key="addressBooks"/></a> &laquo;
                         <c:if test="${top_fldr_select ne '1'}">
                                 ${fn:escapeXml(zm:truncateFixed(context.shortBackTo,12,true))}
@@ -60,7 +60,7 @@
                         </c:if>
                     </c:when>
                     <c:otherwise>
-                        <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=folders"><fmt:message
+                        <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=folders&_pv=1"><fmt:message
                                 key="folders"/></a> &laquo;
                         <c:if test="${top_fldr_select ne '1'}">
                             ${fn:escapeXml(zm:truncateFixed(context.shortBackTo,12,true))}
@@ -121,7 +121,7 @@
 <span class="table-cell">-->
 <c:if test="${context.searchResult.size gt 0 && !context.isGALSearch}">
     <span>
-        <select class="zo_select_button" name="anAction" onchange="submitForm(document.getElementById('zForm'))">
+        <select class="zo_select_button" name="anAction" onchange="return submitForm(document.getElementById('zForm'),null,this.value)">
             <option value="" selected="selected"><fmt:message key="moreActions"/></option>
                 <%--<optgroup label="<fmt:message key="delete"/>">--%>
             <c:choose>
@@ -139,6 +139,7 @@
             </optgroup>
             <c:choose>
                 <c:when test="${context.isConversationSearch || context.isMessageSearch}">
+                    <c:if test="${context.isMessageSearch}"><option value="actionAttachToCompose"><fmt:message key="sendAsAttachments"/></option></c:if>
                     <optgroup label="<fmt:message key="markAs"/>">
                     <option value="actionMarkRead"><fmt:message key="MO_read"/></option>
                     <option value="actionMarkUnread"><fmt:message key="MO_unread"/></option>
@@ -196,9 +197,9 @@
                 </optgroup>
             </c:if>
         </select>
-        <noscript><input id="actGo${isTop}" class="zo_button" name="moreActions" type="submit" value="<fmt:message key="actionGo"/>"/></noscript>
-    <script type="text/javascript">var actGo = document.getElementById('actGo${isTop}');if(actGo){actGo.style.display='none';}</script>
     </span>
+    <noscript><span><input id="actGo${isTop}" class="zo_button" name="moreActions" type="submit" value="<fmt:message key="actionGo"/>"/></span></noscript>
+    <script type="text/javascript">var actGo = document.getElementById('actGo${isTop}');if(actGo){actGo.style.display='none';}</script>
 </c:if>
 <!--</span>
 <span class="table-cell">-->
@@ -233,7 +234,7 @@
             <div class="table-cell">
                  <c:choose>
                     <c:when test="${context.isContactSearch}">
-                        <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=ab"><fmt:message
+                        <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=ab&_pv=1"><fmt:message
                                 key="addressBooksLabel"/></a>
                         <c:if test="${btm_fldr_select eq '0'}">
                             ${fn:escapeXml(zm:truncateFixed(context.shortBackTo,12,true))}
@@ -252,7 +253,7 @@
                         </c:if>
                     </c:when>
                     <c:otherwise>                           
-                        <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=folders"><fmt:message
+                        <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=folders&_pv=1"><fmt:message
                                 key="foldersLabel"/></a>
                         <c:if test="${btm_fldr_select eq '0'}">
                             ${fn:escapeXml(zm:truncateFixed(context.shortBackTo,12,true))}
@@ -274,3 +275,4 @@
         </div>
     </div>
 </c:if>
+<input type="hidden" name="isInTrash" value="${context.folder.isInTrash}">

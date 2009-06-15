@@ -37,7 +37,7 @@
                     <c:if test="${param.st ne 'tasks'}">
                         <a href='${context_url}?st=tasks'>
                     </c:if>
-                        <fmt:message key="tasks"/>
+                        <fmt:message key="taskList"/>
                     <c:if test="${param.st ne 'tasks'}">
                         </a>
                     </c:if>
@@ -75,10 +75,10 @@
     <div class="table-row">
         <div class="table-cell">
             <span class="Title left">
-                    <fmt:message key="tasks"/>
+                    <fmt:message key="taskList"/>
                 </span>
                  <span class="right">
-                    <a class="zo_button1" href="?st=tasks${empty param.showTaskCreate?'&showTaskCreate=1':''}#${empty param.ajax ? '#folders' : ''}"><fmt:message key="${empty param.showTaskCreate ? 'create' : 'close'}"/></a>
+                    <a onclick="return toggleElem('nfldrfrm',this,'<fmt:message key="close"/>','<fmt:message key="create"/>');" class="zo_button1" href="?st=tasks${empty param.showTaskCreate?'&showTaskCreate=1':''}#${empty param.ajax ? '#folders' : ''}"><fmt:message key="${empty param.showTaskCreate ? 'create' : 'close'}"/></a>
                 </span>
         </div>
     </div>
@@ -90,6 +90,12 @@
         <mo:doFolderTree skiproot="${true}" parentid="${folder.id}" skipsystem="false"/>
     </c:if>
 </zm:forEachFolder>
+<mo:overviewFolder types="task" folder="${mailbox.trash}"/>
+<zm:forEachFolder var="folder" skiproot="${true}" parentid="${mailbox.trash.id}" skipsystem="${false}">
+    <c:if test="${folder.isTaskView}">
+        <mo:overviewFolder folder="${folder}" types="task"/>
+    </c:if>
+</zm:forEachFolder>
 
 <div class="Toolbar table">
     <div class="table-row">
@@ -98,7 +104,7 @@
                 <fmt:message key="searches"/>
             </span>
             <span class="right">
-                <a class="zo_button1" href="?st=tasks${empty param.showSearchCreate?'&showSearchCreate=1':''}#${empty param.ajax ? '#searches' : ''}"><fmt:message key="${empty param.showSearchCreate ? 'create' : 'close'}"/></a>
+                <a onclick="return toggleElem('nsrchfrm',this,'<fmt:message key="close"/>','<fmt:message key="create"/>');" class="zo_button1" href="?st=tasks${empty param.showSearchCreate?'&showSearchCreate=1':''}#${empty param.ajax ? '#searches' : ''}"><fmt:message key="${empty param.showSearchCreate ? 'create' : 'close'}"/></a>
             </span>
         </div>
     </div>
@@ -118,7 +124,7 @@
                         <fmt:message key="tags"/>
             </span>
             <c:if test="${mailbox.features.tagging}"><span class="right">
-                <a class="zo_button1" href="?st=tasks${empty param.showTagCreate?'&showTagCreate=1':''}#${empty param.ajax ? '#tags' : ''}"><fmt:message key="${empty param.showTagCreate ? 'create' : 'close'}"/></a>
+                <a onclick="return toggleElem('ntagfrm',this,'<fmt:message key="close"/>','<fmt:message key="create"/>');" class="zo_button1" href="?st=tasks${empty param.showTagCreate?'&showTagCreate=1':''}#${empty param.ajax ? '#tags' : ''}"><fmt:message key="${empty param.showTagCreate ? 'create' : 'close'}"/></a>
             </span></c:if>
     </div>
 </div>

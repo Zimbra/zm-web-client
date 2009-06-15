@@ -71,6 +71,20 @@
         </fmt:message>
     </mo:status>
 </c:when>
+<c:when test="${zm:actionSet(param, 'actionSaveDocs') || (zm:actionSet(param,'moreActions') && fn:startsWith(anAction,'actionSaveDocs'))}">
+    <c:set var="mid" value="${param.mid}"/>
+    <c:set var="briefcase" value="${param.briefcase}"/>
+    <zm:saveAttachmentsToBriefcase mid="${mid}" partId="${paramValues.attachIds}" folderId="${briefcase}" var="res"/>
+    <c:if test="${fn:length(res) gt 0}">
+        <mo:status>
+        <fmt:message key="documentsSaved">
+            <fmt:param value="${fn:length(res)}"/>
+            <fmt:param value="${zm:getFolderName(pageContext, briefcase)}"/>
+        </fmt:message>
+    </mo:status>
+    </c:if>
+</c:when>
+
 <c:when test="${zm:actionSet(param, 'actionEmpty') and (param.contextFolderId eq mailbox.trash.id or param.contextFolderId eq mailbox.spam.id)}">
     <zm:emptyFolder id="${param.contextFolderId}"/>
     <mo:status>
@@ -116,10 +130,10 @@
 <c:otherwise>
 <c:choose>
 <%--Consolidated group actions using moreAction param, actual action to perform is specified by anAction param--%>
-<c:when test="${(zm:actionSet(param,'moreActions') && empty anAction) }">
+<c:when test="${(zm:actionSet(param,'moreActions') && empty anAction && empty param.actionDelete) }">
     <mo:status style="Warning"><fmt:message key="actionNoActionSelected"/></mo:status>
 </c:when>
-<c:when test="${zm:actionSet(param, 'actionMarkSpam') || (zm:actionSet(param,'moreActions') && anAction == 'actionMarkSpam') }">
+<c:when test="${zm:actionSet(param, 'actionMarkSpam') || (zm:actionSet(param,'moreActions') && anAction eq 'actionMarkSpam') }">
     <c:choose>
         <c:when test="${type eq 'Conv'}">
             <zm:markConversationSpam var="result" id="${ids}" spam="${true}"/>
@@ -137,7 +151,14 @@
         <c:set var="op" value="x" scope="request"/>
     </c:if>
 </c:when>
-<c:when test="${zm:actionSet(param, 'actionMarkUnspam') || (zm:actionSet(param,'moreActions') && anAction == 'actionMarkUnspam') }">
+<c:when test="${zm:actionSet(param, 'actionAttachToCompose') || (zm:actionSet(param,'moreActions') && fn:startsWith(anAction,'actionAttachToCompose'))}">
+    <c:forEach var="id" items="${ids}">
+        <zm:getMessage var="ma" id="${id}"/>
+        <c:set var="messageAttachments" value="${ma.id}:${fn:escapeXml(fn:replace(ma.subject,':','_$'))},${messageAttachments}"/>
+    </c:forEach>
+    <c:redirect url="/m/zmain?st=newmail&messageAttachments=${messageAttachments}&ajax=${param.ajax}"/>
+</c:when>
+<c:when test="${zm:actionSet(param, 'actionMarkUnspam') || (zm:actionSet(param,'moreActions') && anAction eq 'actionMarkUnspam') }">
     <c:choose>
         <c:when test="${type eq 'Conv'}">
             <zm:markConversationSpam var="result" id="${ids}" spam="${false}"/>
@@ -155,25 +176,7 @@
         <c:set var="op" value="x" scope="request"/>
     </c:if>
 </c:when>
-<c:when test="${zm:actionSet(param, 'actionDelete') || (zm:actionSet(param,'moreActions') && anAction == 'actionDelete') }">
-    <c:choose>
-        <c:when test="${type eq 'Conv'}">
-            <zm:trashConversation var="result" id="${ids}"/>
-        </c:when>
-        <c:otherwise>
-            <zm:trashMessage var="result" id="${ids}"/>
-        </c:otherwise>
-    </c:choose>
-     <c:if test="${param.action eq 'view'}">
-        <c:set var="op" value="x" scope="request"/>
-    </c:if>
-    <mo:status>
-        <fmt:message key="action${type}MovedTrash">
-            <fmt:param value="${result.idCount}"/>
-        </fmt:message>
-    </mo:status>
-</c:when>
-<c:when test="${zm:actionSet(param, 'actionHardDelete') || (zm:actionSet(param,'moreActions') && anAction == 'actionHardDelete') }">
+<c:when test="${(zm:actionSet(param, 'actionDelete') && param.isInTrash eq 'true') || (zm:actionSet(param, 'actionHardDelete') || ((zm:actionSet(param,'moreActions') && anAction eq 'actionHardDelete')))}">
     <c:choose>
         <c:when test="${type eq 'Conv'}">
             <zm:deleteConversation var="result" id="${ids}"/>
@@ -191,7 +194,26 @@
         </fmt:message>
     </mo:status>
 </c:when>
-<c:when test="${zm:actionSet(param, 'actionMarkRead') || (zm:actionSet(param,'moreActions') && anAction == 'actionMarkRead') }">
+<c:when test="${zm:actionSet(param, 'actionDelete') || (zm:actionSet(param,'moreActions') && anAction eq 'actionDelete') }">
+    <c:choose>
+        <c:when test="${type eq 'Conv'}">
+            <zm:trashConversation var="result" id="${ids}"/>
+        </c:when>
+        <c:otherwise>
+            <zm:trashMessage var="result" id="${ids}"/>
+        </c:otherwise>
+    </c:choose>
+     <c:if test="${param.action eq 'view'}">
+        <c:set var="op" value="x" scope="request"/>
+    </c:if>
+    <mo:status>
+        <fmt:message key="action${type}MovedTrash">
+            <fmt:param value="${result.idCount}"/>
+        </fmt:message>
+    </mo:status>
+</c:when>
+
+<c:when test="${zm:actionSet(param, 'actionMarkRead') || (zm:actionSet(param,'moreActions') && anAction eq 'actionMarkRead') }">
     <c:choose>
         <c:when test="${type eq 'Conv'}">
             <zm:markConversationRead var="result" id="${ids}" read="${true}"/>
@@ -206,7 +228,7 @@
         </fmt:message>
     </mo:status>
 </c:when>
-<c:when test="${zm:actionSet(param, 'actionMarkUnread') || (zm:actionSet(param,'moreActions') && anAction == 'actionMarkUnread')}">
+<c:when test="${zm:actionSet(param, 'actionMarkUnread') || (zm:actionSet(param,'moreActions') && anAction eq 'actionMarkUnread')}">
     <c:choose>
         <c:when test="${type eq 'Conv'}">
             <zm:markConversationRead var="result" id="${ids}" read="${false}"/>
@@ -222,7 +244,7 @@
     </mo:status>
     <c:set var="idsMarkedUnread" value="${paramValues.id}" scope="request"/>
 </c:when>
-<c:when test="${zm:actionSet(param, 'actionFlag') || (zm:actionSet(param,'moreActions') && anAction == 'actionFlag')}">
+<c:when test="${zm:actionSet(param, 'actionFlag') || (zm:actionSet(param,'moreActions') && anAction eq 'actionFlag')}">
     <c:choose>
         <c:when test="${type eq 'Conv'}">
             <zm:flagConversation var="result" id="${ids}" flag="${true}"/>
@@ -237,7 +259,7 @@
         </fmt:message>
     </mo:status>
 </c:when>
-<c:when test="${zm:actionSet(param, 'actionUnflag') || (zm:actionSet(param,'moreActions') && anAction == 'actionUnflag')}">
+<c:when test="${zm:actionSet(param, 'actionUnflag') || (zm:actionSet(param,'moreActions') && anAction eq 'actionUnflag')}">
     <c:choose>
         <c:when test="${type eq 'Conv'}">
             <zm:flagConversation var="result" id="${ids}" flag="${false}"/>
@@ -292,7 +314,7 @@
         </fmt:message>
     </mo:status>
 </c:when>
-<c:when test="${zm:actionSet(param, 'actionMove') || zm:actionSet(param,'moreActions')}">
+<c:when test="${zm:actionSet(param, 'actionMove') || (zm:actionSet(param,'moreActions') && fn:startsWith(anAction,'moveTo_'))}">
     <c:choose>
         <c:when test="${fn:startsWith(anAction,'moveTo_')}">
             <c:set var="folderId" value="${fn:replace(anAction,'moveTo_','')}"/>                <%--The folder id is prefixed in anAction with 'moveTo_' --%>
@@ -318,7 +340,7 @@
         <c:when test="${empty param.folderId}">  <%--In case of moveAction, we have to specify folderId param to move to--%>
             <mo:status style="Warning"><fmt:message key="actionNoFolderSelected"/></mo:status>
         </c:when>
-        <c:otherwise>
+        <c:when test="${zm:actionSet(param, 'actionMove')}">
             <c:choose>
                 <c:when test="${type eq 'Conv'}">                     <%--Move Conv--%>
                     <zm:moveConversation folderid="${param.folderId}" var="result" id="${ids}"/>
@@ -336,9 +358,10 @@
              <c:if test="${param.action eq 'view'}">
                 <c:set var="op" value="x" scope="request"/>
             </c:if>
-        </c:otherwise>
+        </c:when>
     </c:choose>
 </c:when>
 </c:choose>
 </c:otherwise>
 </c:choose>
+<c:remove var="op"/>

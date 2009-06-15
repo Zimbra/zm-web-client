@@ -36,17 +36,20 @@
     </div>
 </c:if>
 </c:forEach>
+<c:set var="count" value="0"/>    
 <c:forEach var="part" items="${message.attachments}">
     <c:if test="${!part.isMssage}">
+        <c:set var="count" value="${count+1}"/>
         <c:set var="pname" value="${part.displayName}"/>
+        <c:set var="partId" value="${part.partName}"/>
         <c:if test="${empty pname}"><fmt:message key="unknownContentType" var="pname"><fmt:param value="${part.contentType}"/></fmt:message></c:if>
-        <c:set var="url" value="/service/home/~/?id=${message.id}&part=${part.partName}&auth=co"/>
+        <c:set var="url" value="/service/home/~/?id=${message.id}&part=${partId}&auth=co"/>
         <div>
             <span>
                 <div>
                     <div>
                         <span>
-                            <mo:img src="${part.image}" alt="${fn:escapeXml(part.displayName)}"/>
+                            <c:if test="${mailbox.features.briefcases}"><input type="checkbox" name="attachIds" value="${fn:escapeXml(partId)}"/></c:if> <mo:img src="${part.image}" alt="${fn:escapeXml(part.displayName)}"/>
                         </span>
                         <span>
                             <a href="${fn:escapeXml(url)}&amp;disp=a"><b>${fn:escapeXml(pname)}</b></a> (${part.displaySize})
@@ -62,4 +65,23 @@
         </div>
     </c:if>
 </c:forEach>
+<c:if test="${count gt 0 && mailbox.features.briefcases}">
+    <hr size="1"/>
+    <input type="hidden" name="mid" value="${message.id}">
+    <div class="table" width="100%"><div class="table-row">
+    <span class="table-cell aleft">Add to
+    </span>
+    <span class="aright table-cell">
+        <select name="briefcase" style="width:70%;">
+                <option value="">Select briefcase</option>
+                <zm:forEachFolder var="folder" skiproot="${false}" skipsystem="${false}" skiptrash="${true}">
+                        <c:if test="${folder.isDocumentView}">
+                <option value="${folder.id}">${fn:escapeXml(zm:getFolderPath(pageContext,folder.id))}</option>
+                        </c:if>
+                </zm:forEachFolder>
+            </select>
+    <input type="submit" class="zo_button" name="actionSaveDocs" value="<fmt:message key="add"/>">
+    </span>    
+    </div></div>
+</c:if>
 </div>

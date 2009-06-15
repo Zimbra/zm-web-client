@@ -29,7 +29,7 @@
 <c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/>
 <zm:currentResultUrl var="actionUrl" value="${context_url}" context="${context}"/>
 <c:set var="title" value="${zm:truncate(context.shortBackTo,20,true)}" scope="request"/>
-<form id="zForm" action="${fn:escapeXml(actionUrl)}" method="post">
+<form id="zForm" action="${fn:escapeXml(actionUrl)}" method="post" onsubmit="return submitForm(this);">
     <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
     <input type="hidden" name="doBriefcaseAction" value="1"/>
     <input name="moreActions" type="hidden" value="<fmt:message key="actionGo"/>"/>
@@ -131,7 +131,7 @@
                 </div>
                 </a>
                 <c:set var="cname" value="${fn:split(bchit.document.creator,'@')}" />
-               <div class="Email from-span">
+               <div class="Email">
                     <a href="${briefUrl}" target="_blank">
                     ${fn:escapeXml(bchit.document.creator)}
                     </a>

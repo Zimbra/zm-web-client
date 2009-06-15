@@ -131,8 +131,17 @@
              <c:set var="currentContactId" value="${result}" scope="request"/>
         </c:if>
     </c:when>--%>
-    <c:when test="${(zm:actionSet(param,'moreActions') && empty anAction) }">
+    <c:when test="${(zm:actionSet(param,'moreActions') && empty anAction && empty param.actionDelete) }">
         <mo:status style="Warning"><fmt:message key="actionNoActionSelected"/></mo:status>
+    </c:when>
+    <c:when test="${(zm:actionSet(param, 'actionDelete') && param.isInTrash eq 'true') || zm:actionSet(param, 'actionHardDelete' || (zm:actionSet(param,'moreActions') && anAction == 'actionHardDelete'))}">
+    <zm:deleteContact var="result" id="${ids}"/>
+    <c:set var="op" value="x" scope="request"/>
+    <mo:status>
+        <fmt:message key="actionContactHardDeleted">
+            <fmt:param value="${result.idCount}"/>
+        </fmt:message>
+    </mo:status>
     </c:when>
     <c:when test="${zm:actionSet(param, 'actionDelete') || (zm:actionSet(param,'moreActions') && anAction == 'actionDelete')}">
         <zm:trashContact var="result" id="${ids}"/>
@@ -142,16 +151,6 @@
                 <fmt:param value="${result.idCount}"/>
             </fmt:message>
         </mo:status>
-    </c:when>
-
-    <c:when test="${zm:actionSet(param, 'actionHardDelete' || (zm:actionSet(param,'moreActions') && anAction == 'actionHardDelete'))}">
-    <zm:deleteContact var="result" id="${ids}"/>
-    <c:set var="op" value="x" scope="request"/>
-    <mo:status>
-        <fmt:message key="actionContactHardDeleted">
-            <fmt:param value="${result.idCount}"/>
-        </fmt:message>
-    </mo:status>
     </c:when>
     <c:when test="${zm:actionSet(param, 'composeTo') || (zm:actionSet(param,'moreActions') && anAction == 'composeTo')}">
         <c:forEach var="id" items="${ids}">

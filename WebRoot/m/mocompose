@@ -125,7 +125,7 @@
             </span>
             <span class="table-cell">
             <div class="ZhAC ZhACTo">
-                <input id="toField" rows="1" autocomplete="OFF" name="to" class="Textarea" value="${fn:escapeXml(compose.to)}"/>
+                <input id="toField" rows="1" autocorrect="off" autocomplete="OFF" name="to" class="Textarea" value="${fn:escapeXml(compose.to)}"/>
                 <div class='ZhACCont' id="toContainer" style='width:99%;top:1.5em;'></div>
             </div>
             </span>
@@ -137,7 +137,7 @@
                     key="ccLabel"/> </label></span>
             <span class="table-cell">
                 <div class="ZhAC ZhACCc">
-                    <input class="Textarea" autocomplete="OFF" id="ccField" type="text" value="${fn:escapeXml(compose.cc)}" name="cc">
+                    <input class="Textarea" autocorrect="off" autocomplete="OFF" id="ccField" type="text" value="${fn:escapeXml(compose.cc)}" name="cc">
                     <div class='ZhACCont' id="ccContainer" style='width:99%;'></div>
                 </div>
             </span>
@@ -147,7 +147,7 @@
                     key="bccLabel"/> </label></span>
         <span class="table-cell">
                 <div class="ZhAC ZhACBCc">
-                    <input class="Textarea" autocomplete="OFF" id="bccField" type="text" value="${fn:escapeXml(compose.bcc)}" name="bcc">
+                    <input class="Textarea" autocorrect="off" autocomplete="OFF" id="bccField" type="text" value="${fn:escapeXml(compose.bcc)}" name="bcc">
                     <div class='ZhACCont' id="bccContainer" style='width:99%;'></div>
                 </div>
             </span>
@@ -157,9 +157,9 @@
 <div class="View">
 <div class="table">
     <div class="table-row cmp_sub_row">
-              <span class='label table-cell'><label for="subjectField"><fmt:message
+              <span class='label table-cell nb'><label for="subjectField"><fmt:message
                       key="subjectLabel"/> </label></span>
-               <span class="table-cell"><input class="Textarea" type="text" name="subject"
+               <span class="table-cell nb"><input class="Textarea" type="text" name="subject"
                              id="subjectField"
                              value="${fn:escapeXml(compose.subject)}"></span>
     </div>    
@@ -172,26 +172,107 @@
         <c:forEach var="ma" items="${compose.messageAttachments}" varStatus="status">
         <div class="table-row cmp_msg_att_row">
             <span class="table-cell">
-                    <c:if test="${firstAttachment}">
+                    <%--<c:if test="${firstAttachment}">--%>
                         <%--<mo:img altkey="ALT_ATTACHMENT" src="startup/ImgAttachment.gif"/>--%>
                         <span class="SmlIcnHldr Attachment">&nbsp;</span>
-                        <c:set var="firstAttachment" value="${false}"/>
-                    </c:if>
+                        <%--<c:set var="firstAttachment" value="${false}"/>--%>
+                    <%--</c:if>--%>
                     <c:choose>
                         <c:when test="${empty ma.subject}"><fmt:message var="subj"
                                                                         key="noSubject"/></c:when>
                         <c:otherwise><c:set var="subj"
                                             value="${zm:truncate(ma.subject,100,true)}"/></c:otherwise>
                     </c:choose>
-                        ${fn:escapeXml(subj)}
+                        <div style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100px;">${fn:escapeXml(subj)}</div  >
                     <input type="hidden" name="messageAttachment"
                            value="${ma.id}:${fn:escapeXml(ma.subject)}"/>
              </span>
-             </c:forEach>
-        </div>
+            </div>
+        </c:forEach>
     </div>
     </div>
     </c:if>
+<c:if test="${!empty param.messageAttachments}">
+<div class="View">
+    <div class="table">
+        <c:forEach var="ma" items="${param.messageAttachments}" varStatus="status">
+        <c:set var="ma" value="${fn:split(ma,':')}"/>    
+        <div class="table-row cmp_msg_att_row">
+            <span class="table-cell">
+                    <%--<c:if test="${firstAttachment}">--%>
+                        <%--<mo:img altkey="ALT_ATTACHMENT" src="startup/ImgAttachment.gif"/>--%>
+                        <span class="SmlIcnHldr Attachment">&nbsp;</span>
+                        <%--<c:set var="firstAttachment" value="${false}"/>--%>
+                    <%--</c:if>--%>
+                    <c:choose>
+                        <c:when test="${empty ma[1]}"><fmt:message var="subj"
+                                                                        key="noSubject"/></c:when>
+                        <c:otherwise><c:set var="subj"
+                                            value="${zm:truncate(fn:replace(ma[1],'_$',':'),100,true)}"/></c:otherwise>
+                    </c:choose>
+                        <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${fn:escapeXml(subj)}</span>
+                    <input type="hidden" name="messageAttachment"
+                           value="${ma[0]}:${fn:escapeXml(subj)}"/>
+             </span>
+            </div>
+        </c:forEach>
+    </div>
+    </div>
+    </c:if>
+
+    <c:if test="${!empty compose.documentAttachments}">
+    <div class="View">
+        <div class="table">
+            <c:forEach var="doc" items="${compose.documentAttachments}" varStatus="status">
+            <div class="table-row cmp_msg_att_row">
+                <span class="table-cell">
+                        <%--<c:if test="${firstAttachment}">--%>
+                            <%--<mo:img altkey="ALT_ATTACHMENT" src="startup/ImgAttachment.gif"/>--%>
+                            <span class="SmlIcnHldr Attachment">&nbsp;</span>
+                            <%--<c:set var="firstAttachment" value="${false}"/>
+                        </c:if>--%>
+                        <c:choose>
+                            <c:when test="${empty doc.subject}"><fmt:message var="subj"
+                                                                            key="noSubject"/></c:when>
+                            <c:otherwise><c:set var="subj"
+                                                value="${zm:truncate(doc.subject,100,true)}"/></c:otherwise>
+                        </c:choose>
+                            ${fn:escapeXml(subj)}
+                        <input type="hidden" name="documentAttachment"
+                               value="${doc.id}:${fn:escapeXml(doc.subject)}"/>
+                 </span>
+            </div>
+           </c:forEach>
+       </div>
+    </div>
+        </c:if>
+    <c:if test="${!empty param.documentAttachments}">
+        <div class="View">
+            <div class="table">
+                <c:forEach var="doc" items="${param.documentAttachments}" varStatus="status">
+                <c:set var="doc" value="${fn:split(doc,':')}"/>
+                <div class="table-row cmp_msg_att_row">
+                    <span class="table-cell">
+                            <%--<c:if test="${firstAttachment}">--%>
+                                <%--<mo:img altkey="ALT_ATTACHMENT" src="startup/ImgAttachment.gif"/>--%>
+                                <span class="SmlIcnHldr Attachment">&nbsp;</span>
+                                <%--<c:set var="firstAttachment" value="${false}"/>
+                            </c:if>--%>
+                            <c:choose>
+                                <c:when test="${empty doc[1]}"><fmt:message var="subj"
+                                                                                key="noSubject"/></c:when>
+                                <c:otherwise><c:set var="subj"
+                                                    value="${zm:truncate(fn:replace(doc[1],'_$',':'),100,true)}"/></c:otherwise>
+                            </c:choose>
+                                ${fn:escapeXml(subj)}
+                            <input type="hidden" name="documentAttachment"
+                                   value="${doc[0]}:${fn:escapeXml(subj)}"/>
+                     </span>
+                    </div>
+                </c:forEach>
+            </div>
+            </div>
+            </c:if>
 
 <c:if test="${!empty compose.originalAttachments}">
 <div class="View cmp_att_table">

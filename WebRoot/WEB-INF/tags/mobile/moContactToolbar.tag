@@ -31,8 +31,11 @@
     <div class="SubToolbar table">
         <div class="table-row">
             <div class="table-cell">
+                <c:url value="${closeUrl}" var="backUrl">
+                    <c:param name="_pv" value="1"/>
+                </c:url>
                 <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=ab"><fmt:message key="addressBooks"/></a> &laquo;
-                <a href="${fn:escapeXml(closeUrl)}<c:if test="${empty context.sfi}">&sfi=${contact.folderId}</c:if>${empty param.ajax ? '#cn' : '&cn'}#${contact.id}" class='zo_leftbutton'>
+                <a href="${fn:escapeXml(backUrl)}<c:if test="${empty context.sfi}">&sfi=${contact.folderId}</c:if>${empty param.ajax ? '#cn' : '&cn'}#${contact.id}" class='zo_leftbutton'>
                         ${fn:escapeXml(zm:truncate(context.shortBackTo,15,true))}
                 </a> &laquo; ${fn:escapeXml(fn:substring(contact.firstName,0,8))}...
             </div>
@@ -54,7 +57,7 @@
                 <c:choose>
                     <c:when test="${cursor.hasPrev}">
                         <zm:prevItemUrl var="prevMsgUrl" value="${urlTarget}" action='view'
-                                        cursor="${cursor}" context="${context}"/>
+                                        cursor="${cursor}" context="${context}" _pv="1"/>
                         <a accesskey="${requestScope.prev_accesskey}" href="${fn:escapeXml(prevMsgUrl)}" class='zo_button prev_button'>
                             <fmt:message key="MO_PREV"/>
                         </a>
@@ -73,7 +76,7 @@
                             <fmt:message key="MO_NEXT"/>
                         </a>
                     </c:when>
-                    <c:otherwise>
+                    <c:otherwise>                                                                                                                         
                         <a class='zo_button_disabled next_button'>
                             <fmt:message key="MO_NEXT"/>
                         </a>

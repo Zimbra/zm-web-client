@@ -24,6 +24,7 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="mo" uri="com.zimbra.mobileclient" %>
+<fmt:setBundle basename="/messages/ZhMsg" scope="request"/>
 <c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'mainx'}"/>
 <c:if test="${empty ua}">
 <zm:getUserAgent var="ua" session="false"/>
@@ -35,18 +36,23 @@
 <script type="text/javascript">
 <!--
 </c:if>
-
-var AjxCache = function(expiry, accessCountLimit){
+var $ = function(id){
+    return document.getElementById(id);
+};
+var $iO = function(s1,s2){
+    return s1.indexOf(s2);
+};
+var AjxCache = function(expiry){
     this.expiry  = expiry || 5000;  // cache will expire after this many milis
-    this._cache = new Array();
+    this._cache = []; //new Array();
 
     this.expire = function(){
       delete this._cache;
-      this._cache = new Array();
+      this._cache = []; //new Array();
     };
     this.get = function(url){
-        if(this.expiry ==0) return null;
-        if(data = this._cache[url]){
+        if(this.expiry ===0) { return null;}
+        if((data = this._cache[url])){
             if(data.noExpiry || (new Date().getTime() - data.addedOn) < this.expiry){
                 return data.request;
             }else{
@@ -57,13 +63,12 @@ var AjxCache = function(expiry, accessCountLimit){
     };
 
     this.set = function(url, request, noExpiry){
-        if(this.expiry ==0) return;
+        if(this.expiry ===0) {return;}
         noExpiry = noExpiry || false;
         var data = { request: request, addedOn: new Date().getTime(), noExpiry: noExpiry };
         this._cache[url] = data;
     };
 };
-var currHash = null;
 <c:choose>
     <c:when test="${mailbox.features.mail}">
     var defHash = '#${mailbox.prefs.groupMailBy}';
@@ -81,14 +86,15 @@ var currHash = null;
     var defHash = '#briefcase';
     </c:when>
 </c:choose>
-
+var currHash = defHash;
 var checkHash = function(url,method, force){
+    if(!url) return false;
     if(url.match(/st=[a-zA-Z0-9]+/)){
         window.location = convertToHashUrl(url);
         return;
     }
 
-    var hash = url.indexOf('#') > 0 ?  url.substring(url.indexOf('#')) : false;
+    var hash = $iO(url,'#') > 0 ?  url.substring($iO(url,'#')) : false;
     if(hash && ((currHash != hash  /*&& hash != defHash*/) || force)){
             currHash = hash;
             if(!currHash || hash == '#'){
@@ -101,13 +107,13 @@ var checkHash = function(url,method, force){
                 delete splits[0];
                 var params = splits.join('&');
                 var query = "st=" + app + params;
-                /*setTimeout(function(){
+                //setTimeout(function(){
                     document.location.hash = currHash;   //!FIXME iphone address bar remains open and always shows loading....
-                },200);*/
+                //},200);
 
             }
-            var url = '<c:url value='/m/zmain'/>?' + query;
-            fetchIt(url,getContainer(),method);
+            url = '<c:url value='/m/zmain'/>?' + query;
+            fetchIt(url,GC(),method);
 	}
 };
 
@@ -128,18 +134,15 @@ var getXHR = function() {
     }
     return xhr;
 };
-
-//var xhr = getXHR();
-
 var zClickLink = function(id, t) {
-
-    var targ = id ? document.getElementById(id) : t ;
-    if(!targ) return;
+    if((typeof(window.evHandled) != 'undefined' && window.evHandled)) { return; }
+    var targ = id ? $(id) : t ;
+    if(!targ) {return;}
     var href = targ.href;
-    if (!href || loading) return false;
-    if (targ.target) return true;
+    if (!href || loading) {return false;}
+    if (targ.target) {return true;}
     var xhr = getXHR();
-    if(href.indexOf("_replaceDate") > -1){
+    if($iO(href,"_replaceDate") > -1){
         href = href.replace(/date=......../, "date=" + currentDate);
     }
     if (targ.attributes['noajax'] || !xhr) {
@@ -147,21 +150,21 @@ var zClickLink = function(id, t) {
         return false;
     }
     href = convertToHashUrl(href);
-    if (targ.onclick) return false;
+    if (targ.onclick) {return false;}
     var containerId = targ.targetId ? targ.targetId : containerId;
-    var container = getContainer(containerId);
+    var container = GC(containerId);
     ajxReq(href, null, container);
     delete xhr;
     return false;
 };
 var setActiveTab = function(tabId){
     tabId = tabId.replace('#','').replace(/(notebooks|wiki|briefcases|briefcase|task|tasks)/ig,'docs').replace(/(cals)/ig,'cal').replace(/(message|conversation|folders)/,'mail');
-    var targ = document.getElementById(tabId);
+    var targ = $(tabId);
     if(targ && targ.id.match(/(mail|contact|cal|docs|search)/ig)){
         var ids = ['mail','contact','cal','docs','search'];
         for(var i=0;i<ids.length;i++){
             var eid = ids[i];
-            var  e = document.getElementById(eid);
+            var  e = $(eid);
             if(e){
                 e.className=e.className.replace(e.id+'-active',e.id).replace('appTab-active','appTab');
             }
@@ -169,10 +172,9 @@ var setActiveTab = function(tabId){
 
         targ.className=targ.className.replace(targ.id,targ.id+'-active').replace('appTab','appTab-active').replace('-active-active','-active');//.replace(targ.id+'-active','') + ' '+targ.id + '-active';
     }
-
 };
 var loadThisFrameResponse = function(response,frameId){
-    getContainer().innerHTML = response;
+    GC().innerHTML = response;
 };
 
 var convertToHashUrl = function(url){
@@ -181,10 +183,10 @@ var convertToHashUrl = function(url){
         var z  = r.exec(url);
         if(z && z.length > 1){
             var y  = url;//.replace(z[1],"");
-            if(z[1].indexOf('?') == 0){
-                var y = y.replace(z[1],'#'+z[2]);
+            if($iO(z[1],'?') === 0){
+                y = y.replace(z[1],'#'+z[2]);
             }else{
-                var y  = url.replace(z[1],"");
+                y  = url.replace(z[1],"");
                 y = y.replace('?','#'+z[2]+'&');
             }
             url = y;
@@ -195,7 +197,7 @@ var convertToHashUrl = function(url){
 
 var convertToParamUrl = function(url){
 
-    url = url.replace(/#([a-zA-Z0-9]+)/,'?st=$1')
+    url = url.replace(/#([a-zA-Z0-9]+)/,'?st=$1');
     return url;
 
 };
@@ -206,7 +208,7 @@ var getFormValues = function(obj) {
         var control = obj.getElementsByTagName("input")[i];
         var type = control.type ;
         if (type == "text" || type == "button" || (type == "submit" && control._wasClicked) || type == "hidden" || type == "password") {
-            getstr += control.name + "=" + control.value + "&";
+            getstr += control.name + "=" + escape(control.value) + "&";
         }
         if (type == "checkbox" || type == "radio") {
             if (control.checked) {
@@ -221,12 +223,12 @@ var getFormValues = function(obj) {
 
     }
     for (i = 0; i < obj.getElementsByTagName("SELECT").length; i++) {
-        var control = obj.getElementsByTagName("SELECT")[i];
+        control = obj.getElementsByTagName("SELECT")[i];
         getstr += control.name + "=" + control.options[control.selectedIndex].value + "&";
     }
     for (i = 0; i < obj.getElementsByTagName("TEXTAREA").length; i++) {
-        var control = obj.getElementsByTagName("TEXTAREA")[i];
-        getstr += control.name + "=" + control.value + "&";
+        control = obj.getElementsByTagName("TEXTAREA")[i];
+        getstr += control.name + "=" + escape(control.value) + "&";
     }
     return getstr;
 };
@@ -234,25 +236,33 @@ var getFormValues = function(obj) {
 var createUploaderFrame = function(iframeId){
     var html = [ "<iframe name='", iframeId, "' id='", iframeId,
              "' src='about:blank",
-             "' style='position: absolute; top: -900; left: -900; height:0px;width:0px; visibility: hidden; display:none;'></iframe>" ];
+             "' style='position: absolute; top: -1000px; left: -1000px;z-index:-999; height:0px;width:0px;display:none;visibility:hidden;border:0px;'></iframe>" ];
     var div = document.createElement("div");
     div.innerHTML = html.join("");
     document.body.appendChild(div.firstChild);
 };
 
-var submitForm = function(fobj, target) {
-    if (!fobj) return false;
+var submitForm = function(fobj, target, val) {
+    if(val && (val == "selectAll" || val == "selectNone")){
+        var cbs = (fobj.cid ? fobj.cid : (fobj.mid ? fobj.mid : (fobj.id ? fobj.id : null)));
+        if(cbs){
+            checkAll(cbs, (val == "selectAll"));
+            return;
+        }
+    }
+    if (!fobj) {return false;}
     var xhr = getXHR();
     if (!xhr) {
         fobj.submit();
         return false;
     }
     if (target) {
-        if(!document.getElementById(target)){
+        if(!$(target)){
             createUploaderFrame(target);
         }
         fobj.target = target;
         fobj.action = fobj.action.replace('ajax=true', '');
+        fobj.action = addParam(fobj.action,'isinframe=true');        
         showLoadingMsg('<fmt:message key="MO_sendingRequestMsg"/>', true);
         fobj.submit();
         return true;
@@ -260,17 +270,16 @@ var submitForm = function(fobj, target) {
     var url = fobj.action;
     var method = fobj.method ? fobj.method : 'GET';
     var params = getFormValues(fobj);
-    var container = getContainer();
+    var container = GC();
     url  = addParam(url,"_ajxnoca=1");    //form submission will not use cache
     ajxReq(url, params, container, method);
     delete xhr;
     return false;
 };
-
 var customClick = function (e) {
 
-    if (!e) var e = event ? event : window.event;
-    var targ = e.target
+    if (!e) e = event ? event : window.event;
+    var targ = e.target;
     if (!targ && e.srcElement) targ = e.srcElement;
 
     if (targ.nodeType == 3) {// defeat Safari bug
@@ -302,6 +311,7 @@ var customClick = function (e) {
         }
         return true;
     }
+    targ.dispatchEvent(e);
 };
 
 var fetchIt = function(url, container, method) {
@@ -321,18 +331,18 @@ var ajxReq = function(url, query, container, method, justPrefetch) {
         //POST method is always non ajax
         if(method != 'post' && (reqCount && reqCount > MAX_CACHE_REQUEST )){
             reqCount = 0;
-            window.location = url + (query ? (url.indexOf('?') >= 0 ? '?' : '&') + query : '');
+            window.location = url + (query ? ($iO(url,'?') >= 0 ? '?' : '&') + query : '');
             return;
         }
     }
     //if hash URL then use hash based request call
-    if((!query && url.indexOf("?") < 0 ) && url.indexOf("#") >= 0){
+
+    if((!query && $iO(url,"?") < 0 ) && $iO(url,"#") >= 0){
         return checkHash(url,method,true);
     }
+    url = addParam(url, 'ajax=true'); //parts[0] + ($iO(url,'?') < 0 ? '?ajax=true' : '&ajax=true') + (parts[1] ? "#" + parts[1] : '');
 
-    url = addParam(url, 'ajax=true'); //parts[0] + (url.indexOf('?') < 0 ? '?ajax=true' : '&ajax=true') + (parts[1] ? "#" + parts[1] : '');
-
-    if((new Date().getTime() - lastRendered) > INAVTITIY_TIMEOUT ){ //Let's expire the cache now.
+    if((new Date().getTime() - lastRendered) > INAVTITIY_TIMEOUT || (method == "POST" || method == "post")  ){ //Let's expire the cache now.
         ajxCache.expire();
     }
 
@@ -340,16 +350,17 @@ var ajxReq = function(url, query, container, method, justPrefetch) {
     method = method ? method : "GET";
 
     if(!justPrefetch ){
-        if(url.indexOf('_back') > 0 && window.prevUrl){
-            url = window.prevUrl;
+        if(method == "GET" || method == "get"){
+            if($iO(url,'_back') > 0 && window.prevUrl){
+                url = window.prevUrl;
+            }
+            window.prevUrl = window.currentUrl;
+            window.currentUrl = (query ? addParam(url,query) : url);
         }
-        window.prevUrl = window.currentUrl;
-        window.currentUrl = (query ? addParam(url,query) : url);
-
     }
 
 
-    if(((method == "GET" || method == "get")) && url.indexOf("_ajxnoca=1") < 0 && MAX_CACHE_REQUEST > 0){
+    if(((method == "GET" || method == "get")) && $iO(url,"_ajxnoca=1") < 0 && MAX_CACHE_REQUEST > 0){
            var xhr = ajxCache.get([url,query].join("?"));
            if(xhr){
                 parseResponse(xhr, container,[url,query].join("?"));
@@ -360,17 +371,18 @@ var ajxReq = function(url, query, container, method, justPrefetch) {
 
     if(!justPrefetch){
         loading = true;
-        container = container ? container : document.getElementById('maincontainer');
+        container = container ? container : $('maincontainer');
         showLoadingMsg('<fmt:message key="MO_loadingMsg"/>', true);
     }
     var xhr = getXHR();
     if (xhr) {
+        window._xhr = xhr;
         xhr.onreadystatechange = function() {
             if(reqTimer){
                 clearTimeout(reqTimer);
             }
             if(xhr.readyState == 4){
-                if((method == "GET" || method == "get") && url.indexOf("_ajxnoca=1") < 0 && MAX_CACHE_REQUEST > 0){
+                if((method == "GET" || method == "get") && $iO(url,"_ajxnoca=1") < 0 && MAX_CACHE_REQUEST > 0){
                     ajxCache.set([url,query].join("?"),xhr,justPrefetch);
                 }
                 lastRendered = new Date().getTime();
@@ -382,12 +394,10 @@ var ajxReq = function(url, query, container, method, justPrefetch) {
         xhr.open(method, url, true);
         if (method == "POST" || method == "post") {
             xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-            //xhr.setRequestHeader("Content-length", query.length);
-            //xhr.setRequestHeader("Connection", "close");
         }
         xhr.send(query);
         reqCount++;
-        reqTimer  = setTimeout(function(){ requestTimeout(xhr) },15000); //Try till 15 seconds, give up otherwise
+        reqTimer  = setTimeout(function(){ requestTimeout(xhr); },15000); //Try till 15 seconds, give up otherwise
     } else {
         return false;
     }
@@ -403,8 +413,33 @@ var parseResponse = function (request, container,url) {
             setActiveTab(match[1]);
         }
         if (request.status == 200) {
+            var isPv = -1;
+            if(url.match(/_pv=1|_back|st=briefcases|st=notebooks|st=folders|st=tasks|st=ab|st=cals/)){                                             
+                isPv=true;
+            }else if(url.match(/_pv=0|action=view|sti/)){
+                isPv=false;
+            }
             var data = request.responseText;
-            if (data) {
+            if (data) {                                                                                                 
+                var fo = -1;
+                setTimeout(function(){
+                    if(url.match(/st=prefs|action=edit|st=newmail|st=newappt|st=newtask/)){
+                        setTimeout(function(){$('maincontainer').className += " persp";$('card').className = "card flipped";$('front').className = $('front').className.replace("front","back");},10);
+                        fo = 1;
+                    }else if($('card').className.match(/flipped/)){
+                        fo = 0;
+                        $('card').className = "card";
+                        setTimeout(function(){$('card').className = "";$('maincontainer').className = $('maincontainer').className.replace(/ persp/ig,"");},1200);
+                        $('front').className = $('front').className.replace("back","front");
+                    }
+                    if(fo == -1 && isPv != -1){
+                        var c1 =isPv ? " cRight1": " cHide",c2 = isPv ? " cHide1" : " cRight";
+                        container.className = container.className.replace(" cShow",c2);
+                        setTimeout(function(){
+                            container.className = container.className.replace(c2," cShow");
+                        },10);
+                    }
+                },10);
                 container.innerHTML = data;
                 var scripts = container.getElementsByTagName("script");
                 for (var i = 0; i < scripts.length; i++) {
@@ -412,84 +447,68 @@ var parseResponse = function (request, container,url) {
                         eval(scripts[i].innerHTML);
                     }
                 }
+                window.scrollTo(0,1);
             }
-            showLoadingMsg(null, false);
+            //if(!$('statusdiv')){
+                showLoadingMsg(null, false);
+            //}
         } else {
             showLoadingMsg('<fmt:message key="error"/> : ' + request.status, true, 'Critical');
         }
         loading = false;
-        getContainer().style.visibility = 'visible';
+        GC().style.visibility = 'visible';
         delete request;
     }
 };
 
 var registerOnclickHook = function () {
     if (document.attachEvent) {
-        document.attachEvent("onclick", customClick, false);
+        document.attachEvent("click", customClick, false);
     } else if (document.addEventListener) {
         document.addEventListener("click", customClick, true);
     }
 };
 
-var showLoadingMsg = function(msg, show, status, timeout, divId, isActionMsg) {
-    var msgDiv = document.getElementById((divId || 'msgDiv'));
-    status = 'Status' + (status ? status.replace("Status","") : 'Info');
-    if (msgDiv) {
-        if(window.scrollY > 50){
-            msgDiv.style.top = window.scrollY + "px";
-        }
-        var useShowHide = isActionMsg ? true: false;
+var showLoadingMsg = function(msg, show, status, timeout, divId) {
+    //return false;
+    var aMsgDiv = $((divId || 'loadingDiv'));
+    status = 'Status' + (status ? status.replace("Status","") : '');
+    if (aMsgDiv) {
         if (msg && show) {
-            if(msgDiv.style.display == 'none' || isActionMsg) {
-                msgDiv.style.display = 'block';
-                useShowHide = true;
-            }else{
-                msgDiv.className = "shown";
-            }
-
-            msgDiv.innerHTML = "<div class='table LoadingDiv"+(isActionMsg ? 'D':'' )+" "+status+"'><div class='table-row'><span class='table-cell loadingIcon"+(isActionMsg ? 'D':'' )+"'></span><span class='table-cell'>" + msg + "</span></div></div>";
+            aMsgDiv.className = aMsgDiv.className.replace("hidden","").replace("shown","");
+            aMsgDiv.className += " shown";
+            aMsgDiv.innerHTML = "<div class='table "+status+"'><div class='table-row'><span class='table-cell loadingIcon'></span><span style='width:90%;text-align:left;' class='table-cell'>" + msg + "</span><span class='SmlIcnHldr table-cell Cancel'></span></div></div>";
 
             if (timeout) {
                 setTimeout(function() {
-                    if(useShowHide){
-                        msgDiv.style.display = 'none';
-                    }else{
-                        msgDiv.className = "hidden";
-                    }
+                    aMsgDiv.className = aMsgDiv.className.replace("shown","hidden");
+                    showLoadingMsg(msg, false, status, null, divId);
                 }, timeout);
             }
-
-
         } else {
-            //msgDiv.style.display = 'none';
-                setTimeout(function() {
-                    if(useShowHide){
-                            msgDiv.style.display = 'none';
-                    }else{
-                        msgDiv.className = "hidden";
-                    }
-                }, timeout || 300);
-
-           // document.getElementById('curDiv').style.display = 'none';
+            setTimeout(function() {
+                aMsgDiv.className = aMsgDiv.className.replace("shown","").replace("hidden","");
+                aMsgDiv.className += " hidden";
+            }, timeout || 300);
         }
     }
 };
 var selectDay = function(datestr) {
-    var cell = document.getElementById("cell" + datestr);
-    list = document.getElementById("listempty");
+    var cell = $("cell" + datestr);
+    list = $("listempty");
     list.style.display = "none";
 
     if (cell) {
         if (currentDate) {
-            var list = document.getElementById("list" + currentDate);
-            if (list == null) list = document.getElementById("listempty");
+            var list = $("list" + currentDate);
+            if (list === null) list = $("listempty");
             list.style.display = "none";
-            if(document.getElementById("cell" + currentDate))
-            document.getElementById("cell" + currentDate).className = "zo_cal_mday" + ((currentDate == _today) ? ' zo_cal_mday_today' : '');
+            if($("cell" + currentDate))
+            $("cell" + currentDate).className = "zo_cal_mday" + ((currentDate == _today) ? ' zo_cal_mday_today' : '');
         }
         cell.className = 'zo_cal_mday_select';
-        var nlist = document.getElementById("list" + datestr);
-        if (nlist == null) nlist = document.getElementById("listempty");
+        var nlist = $("list" + datestr);
+        if (nlist === null) nlist = $("listempty");
         nlist.style.display = "block";
         currentDate = datestr;
         return false;
@@ -499,10 +518,108 @@ var selectDay = function(datestr) {
 var openURL = function(url) {
     window.location = url.replace(/date=......../, "date=" + currentDate);
 };
+var startX,startY,iH=[],xD=0,yD=0,dV=[],dId=0;
+var registerSwipeHandler = function(frm){
+    if(frm){
+        frm.addEventListener('touchstart', function(e) {
+            if (e.targetTouches.length != 1){
+                return false;
+            }
+            var p = e.target;
+            window.evHandled=false;
+            while(p && (!p.className || $iO(p.className,"list-row") < 0)){
+                p = p.parentNode;
+            }
+            if(!p || !p.className || $iO(p.className,"list-row") < 0) {return;}
+            xD=0,yD=0;
+            startX = e.targetTouches[0].clientX;
+            startY = e.targetTouches[0].clientY;
+            //console.log("Touch called...");
+            frm.addEventListener('touchmove', function(e) {
+                if (e.targetTouches.length != 1){
+                    return false;
+                }
+                //$('appbar').style.top = window.scrollY + "px";
+                var p = e.target;
+                while(p && (!p.className || $iO(p.className,"list-row") < 0)){
+                    p = p.parentNode;
+                }
+                if(!p || !p.className || $iO(p.className,"list-row") < 0) {/*window.evHandled=false;*/return;}
+
+                xD = e.targetTouches[0].clientX - startX;
+                yD = e.targetTouches[0].clientY - startY;
+            }, false);
+            frm.addEventListener('touchend', function(e) {
+                var p = e.target;
+                while(p && (!p.className || $iO(p.className,"list-row") < 0)){
+                    p = p.parentNode;
+                }
+                if(!p || !p.className || $iO(p.className,"list-row") < 0) {/*window.evHandled=false;*/return;}
+                //console.log("XD:"+xD+",yD:"+yD);
+                if(Math.abs(xD) > 50 && Math.abs(yD) < 15 ){
+                   var l = p.getElementsByClassName("l");
+                   if(l && l.length > 0){
+                       if(dId && dId != p.id && dV[dId]){
+                            hideDelete(dId);
+                       }
+                       l = l[0];
+                       dId = p.id;
+                       if(!dV[dId]){
+                           showDelete(dId);
+                       }else{
+                           hideDelete(dId);
+                       }
+                       e.cancelBubble = true;
+                       e.preventDefault();
+                       if (e.stopPropagation){ e.stopPropagation();}
+                       window.evHandled=true;
+                       frm.removeEventListener('touchmove');
+                       frm.removeEventListener('touchend');
+                   }
+                }
+                xD=0;
+            }, false);
+        }, false);
+        
+    }
+};
+var hideDelete = function(id){
+   var p = $(id);
+   if(!p) {return ;}
+   var l = p.getElementsByClassName("l");
+    if(l && l.length > 0 && dV[id]){
+        l = l[0];
+        l.innerHTML = iH[id];
+        p.getElementsByClassName('chk')[0].checked=false;
+        $('zForm').anAction[0].value='';
+        dV[id]=false;
+        delete iH[id];
+    }
+};
+
+var showDelete = function(id){
+   var p = $(id);
+   if(!p) {return ;}
+   var l = p.getElementsByClassName("l");
+   if(l && l.length > 0 && !dV[id]){
+       l = l[0];
+       iH[id] = l.innerHTML;
+       p.getElementsByClassName('chk')[0].checked=true;
+       var cCount = 0,cbs=$('zForm').getElementsByClassName('chk');
+       for(var i=0;cbs && i < cbs.length; i++){
+           if(cbs[i].checked){ cCount++;} 
+       }
+       $('zForm').anAction[0].value='';
+       l.innerHTML = "<input type='submit'  id='delBtn' style='z-index:-999' class='zo_button delete_button' name='actionDelete' value='<fmt:message key="delete"/>"+(cCount > 1 ? ' ('+cCount+')' : '')+"'>";
+       $('delBtn').className += " delBtnV";
+       dV[id]=true;
+   }
+};
 
 var toggleElem = function(elem, me, minMsg, maxMsg) {
-    if (!elem) return false;
-    var s = document.getElementById(elem).style;
+    if (!elem && !$(elem)) {return false;}
+    if(typeof(elem) == "string"){elem = $(elem);}
+    var s = elem.style;
     if (s && s.display && s.display == 'none') {
         s.display = '';
         if (me && minMsg)
@@ -515,11 +632,11 @@ var toggleElem = function(elem, me, minMsg, maxMsg) {
     return false;
 };
 var addParam = function(url, param) {
-    if(url.indexOf("&"+param) > -1 || url.indexOf("?"+param) > -1){
+    if($iO(url,"&"+param) > -1 || $iO(url,"?"+param) > -1){
         return url;
     }
 
-    if(url.indexOf("?") < 0){
+    if($iO(url,"?") < 0){
         var parts = url.split("#");
         url = parts[0] + "?" + (param) + (parts[1] ? "#" + parts[1] : '');
     }else{
@@ -543,15 +660,18 @@ var updateOrientation = function() {
     document.body.setAttribute("orient", orient);
 };
 
-var requestTimeout = function (xhr){
+var requestTimeout = function (xhr,msg,status){
+   xhr = xhr ? xhr : window._xhr; 
    xhr.abort();
    loading = false;
-   showLoadingMsg(null, false);
-   showLoadingMsg('<fmt:message key="MO_requestTimedOut"/>', true,'Critical',3000,'msgbar',true);
+   //showLoadingMsg(null, false);
+   msg = msg ? msg : '<fmt:message key="MO_requestTimedOut"/>';
+   status = status ? status : 'Critical'; 
+   showLoadingMsg(msg, true,status,3000);
 };
-var getContainer = function(id) {
-    id = id ? id : 'maincontainer';
-    return document.getElementById(id);
+var GC = function(id) {
+    id = id ? id : 'front';
+    return $(id);
 };
 
 //Init vals
@@ -563,7 +683,6 @@ var loading = false;
 var reqCount = 0;
 var reqTimer = null;
 var lastRendered = new Date().getTime();
-window.currentUrl = '${pageContext.request.requestURL}?ajax=true&${pageContext.request.queryString}';
 var ajxCache = new AjxCache(CACHE_DATA_LIFE);
 
 if(document.location.hash){
@@ -571,7 +690,7 @@ if(document.location.hash){
     if(match){
         setActiveTab(match[0]);
     }
-}
+};
 <c:if test="${ua.isiPhone || ua.isiPod}">
     window.addEventListener("load", function() {
         setTimeout(function() {
@@ -579,18 +698,8 @@ if(document.location.hash){
             window.scrollTo(0,1);
         }, 300);
     }, false);
-    window.onscroll = function() {
-        var h = document.getElementById('appbar').style.height || 50;
-        if(window.scrollY < h ){
-            document.getElementById('msgDiv').style.top = h+"px";
-            document.getElementById('msgbar').style.top = h+"px";
-        }else{
-            document.getElementById('msgDiv').style.top = window.scrollY + "px";
-            document.getElementById('msgbar').style.top = window.scrollY + "px";
-        }
-    };
+    registerSwipeHandler(document);
 </c:if>
-
 <c:if test="${scriptTag}">
 //-->
 </script>

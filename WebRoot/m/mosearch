@@ -43,8 +43,7 @@
                      <fmt:message key="actionNoSearchQuerySpecified"/>
                 </mo:status>
             </c:when>
-            <c:otherwise><zm:computeSearchContext  var="context" usecache="true" query="${sq}" limit="${sessionScope.limit}"/>
-
+            <c:otherwise><zm:computeSearchContext  var="context" usecache="true" query="${sq}" limit="${param.st eq 'contact' ? mailbox.prefs.contactsPerPage : mailbox.prefs.mailItemsPerPage}"/>
             </c:otherwise>
         </c:choose>
     <c:set var="pcontext" value="${context}" scope="session"/>

@@ -181,15 +181,16 @@
         </c:forEach>
     </c:if>
 </div>
-
+</div>
 <c:if test="${not empty message.attachments}">
+<div class="View">
     <div>
-        <hr size="1"/>
         <a name="attachments${message.partName}"></a>
     </div>
     <div>
         <mo:attachments mailbox="${mailbox}" message="${message}" composeUrl="${composeUrl}"/>
     </div>
+</div>    
 </c:if>
 
 <c:if test="${not empty param.debug}">
@@ -197,5 +198,4 @@
         <pre>${fn:escapeXml(message)}</pre>
     </div>
 </c:if>
-</div>
 </c:if>

@@ -40,8 +40,9 @@
         </c:otherwise>
     </c:choose>
     <fmt:setBundle basename="/messages/ZhMsg" scope="request"/>
+    <fmt:setBundle basename='/messages/AjxMsg' var='AjxMsg' scope='request' />
 
-    <%--<fmt:message var="title" key="newAppointment"/>--%>
+    <%--<fmt:message var="title" key="newAppointment"/>--%>                          `
     <fmt:message var="hourFmt" key="CAL_APPT_EDIT_HOUR_FORMAT"/>
     <zm:clearApptSummaryCache/>
     <zm:composeUploader var="uploader"/>
@@ -57,6 +58,11 @@
             <c:set var="compNum" value="${empty param.invCompNum ? 0 : param.invCompNum}"/>
             <zm:getMessage var="message" id="${id}" markread="true" neuterimages="${empty param.xim}" wanthtml="false"/>
         </c:when>
+        <c:when test="${not empty param.id}">
+            <c:set var="id" value="${param.id}"/>
+            <c:set var="compNum" value="${empty param.invCompNum ? 0 : param.invCompNum}"/>
+            <zm:getMessage var="message" id="${id}" markread="true" neuterimages="${empty param.xim}" wanthtml="false"/>
+        </c:when>
         <c:otherwise>
             <c:set var="message" value="${null}"/>
         </c:otherwise>
@@ -69,10 +75,13 @@
 
     <c:choose>
         <c:when test="${empty compose}">
-            <fmt:parseDate pattern="yyyyMMdd" timeZone="${mailbox.prefs.timeZone}" var="parsedDate" value="${param.date}"/>
+            <c:if test="${!empty param.date}">
+                <fmt:parseDate pattern="yyyyMMdd" timeZone="${mailbox.prefs.timeZone}" var="parsedDate" value="${param.date}"/>
+            </c:if>
             <zm:messageCompose var="compose" message="${message}" action="${empty message ? 'apptnew' : 'apptedit'}"
-                               date="${zm:getCalendarMidnight(parsedDate.time, mailbox.prefs.timeZone)}"
-                               inviteId="${empty param.invId? null : param.invId}"
+                               date="${empty parsedDate ? requestScope.dateContext : zm:getCalendarMidnight(parsedDate.time, mailbox.prefs.timeZone)}"
+                               inviteId="${empty param.invId? param.id : param.invId}"
+                               istask="${param.st eq 'newtask'}"
                                exceptionInviteId="${empty param.exInvId? null : param.exInvId}"
                                useInstance="${param.useInstance eq '1'}"
                                instanceStartTime="${param.instStartTime}"
@@ -99,7 +108,6 @@
             <c:set var="isNewAppt" value="${false}"/>
         </c:otherwise>
     </c:choose>
-
     <c:set var="isInstance"
            value="${not empty appt and (appt.exception or not empty appt.recurrence) and compose.useInstance}"/>
 
@@ -107,12 +115,12 @@
 <fmt:message var="title" key="ALT_MSG_STATUS_APPT"/>
 <fmt:message var="addedit" key="${empty message ? 'add' : 'edit'}"/>
 <c:set var="title" value="${title} : ${addedit}" scope="request"/>
-<form action="?st=newappt&more=true&bt=${bt}" method="post" enctype="multipart/form-data" accept-charset="utf-8" onsubmit="return submitForm(this,'aniframe1');">
+<form action="?st=${param.st}&more=true&bt=${bt}" method="post" enctype="multipart/form-data" accept-charset="utf-8" onsubmit="return submitForm(this,'aniframe1');">
 <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
 
 <div class="table Toolbar">
     <div class="table-row">
-        <div class="table-cell">
+        <div class="table-cell">   
                     <span class="zo_tb_submit">
                         <a href="${caction}" class="zo_button"><fmt:message key="cancel"/></a>
                     </span>
@@ -125,7 +133,8 @@
 </div>
 
 <div class="Stripes cmp_appt_container">
-<div class="View"><b>${fn:escapeXml(apptSubject)}</b></div>
+<fmt:message key="newTask" var="newTaskSub"/>
+<div class="View"><b>${fn:escapeXml(param.st eq 'newtask' ? newTaskSub : apptSubject)}</b></div>
 <c:if test="${isInstance}">
     <div class="View">
         <div class="table">
@@ -243,30 +252,38 @@
 </div>
 <c:set var="numCalendars" value="0"/>
     <zm:forEachFolder var="folder">
-        <c:if test="${folder.isAppointmentView and folder.isAppointmentMoveTarget}">
-            <c:set var="numCalendars" value="${numCalendars+1}"/>
-        </c:if>
+        <c:choose>
+            <c:when test="${param.st eq 'newtask' and folder.isTaskView and folder.isTaskMoveTarget}">
+                <c:set var="numCalendars" value="${numCalendars+1}"/>
+            </c:when>
+            <c:when test="${param.st ne 'newtask' and folder.isAppointmentView and folder.isAppointmentMoveTarget}">
+                <c:set var="numCalendars" value="${numCalendars+1}"/>
+            </c:when>
+        </c:choose>
     </zm:forEachFolder>
-    <c:choose>
-        <c:when test="${numCalendars gt 1}">
             <div class="View">
             <div class="list-row">
-                <span class="label"><fmt:message key="calendarLabel"/></span>
+                <span class="label"><c:if test="${param.st eq 'newtask'}"><fmt:message key="taskList"/></c:if><c:if test="${param.st ne 'newtask'}"><fmt:message key="calendarLabel"/></c:if></span>
                      <span class=""><select name='apptFolderId' id="apptFolderId">
                          <zm:forEachFolder var="folder">
-                             <c:if test="${folder.isAppointmentView and folder.isAppointmentMoveTarget }">
+                             <c:if test="${param.st ne 'newtask' and folder.isAppointmentView and folder.isAppointmentMoveTarget }">
                                  <option value="${folder.id}"
-                                         <c:if test="${(param.invId ne '' && compose.apptFolderId eq folder.id) || (not empty sessionScope.calendar && sessionScope.calendar.id eq folder.id) || (empty sessionScope.calendar && folder.isCheckedInUI) }">selected='selected'</c:if>/>
-                                 ${fn:escapeXml(zm:getFolderName(pageContext, folder.id))}
+                                         <c:if test="${(param.invId ne '' && compose.apptFolderId eq folder.id) || (not empty sessionScope.calendar && sessionScope.calendar.id eq folder.id) || (empty sessionScope.calendar && folder.isCheckedInUI) }">selected='selected'</c:if>>
+                                 ${fn:escapeXml(zm:getFolderName(pageContext, folder.id))}</option>
+                             </c:if>
+                             <c:if test="${param.st eq 'newtask' and folder.isTaskView and folder.isTaskMoveTarget }">
+                                 <option value="${folder.id}"
+                                         <c:if test="${compose.apptFolderId eq folder.id }">selected='selected'</c:if>>
+                                 ${fn:escapeXml(zm:getFolderName(pageContext, folder.id))}</option>
                              </c:if>
                          </zm:forEachFolder>
                      </select></span></div>
+            <div class="aright">
+            <span style="display:none;" id="showHide">
+                <a id="showHideLink" href="?more=1&${pageContext.request.queryString}" onclick="return toggleElem('apt_dtls_div',this,'<fmt:message key="hide"/>','<fmt:message key="more"/>')"><fmt:message
+                key="more"/> </a></span></div>    
             </div>
-        </c:when>
-        <%--<c:otherwise>
-            &nbsp;
-        </c:otherwise>--%>
-    </c:choose>
+<c:if test="${param.st ne 'newtask'}">
 <div class="View">
     <!--<div class="table">-->
     <div class="list-row">
@@ -296,14 +313,14 @@
             <span class="label">
                 <input id="allday" type=checkbox name="allDay" <c:if test="${compose.allDay}">checked="checked"</c:if> value="1"> <fmt:message key="allDayEvent"/>
             </span>
-            <span class="right">
+            <div class="aright">
             <span style="display:none;" id="showHide">
                 <a id="showHideLink" href="?more=1&${pageContext.request.queryString}" onclick="return toggleElem('apt_dtls_div',this,'<fmt:message key="hide"/>','<fmt:message key="more"/>')"><fmt:message
-                key="more"/> </a></span></span>
-        
+                key="more"/> </a></span></div>
+
     </div>
     </div>    
-    
+</c:if>
 <%--<c:set var="repeat" value="${compose.simpleRecurrence}"/>
 <c:if test="${repeat != null && repeat.type != null && !repeat.type.none}">
     <div class="View">
@@ -320,6 +337,46 @@
 
 <div id="apt_dtls_div">
 <div class="View">
+    <c:if test="${param.st eq 'newtask'}">
+    <div class="list-row">
+        <span class="label"><fmt:message key="priority"/></span>
+        <span>
+            <select name="taskPriority" id="priority">
+                <option <c:if test="${compose.taskPriority eq '9'}">selected </c:if>value="9"><fmt:message key="taskPrioLow"/>
+                <option <c:if test="${compose.taskPriority eq '5'}">selected </c:if>value="5"><fmt:message key="taskPrioNormal"/>
+                <option <c:if test="${compose.taskPriority eq '1'}">selected </c:if>value="1"><fmt:message key="taskPrioHigh"/>
+            </select>
+        </span>
+    </div>
+    <div class="list-row">
+        <span class="label"><fmt:message key="priority"/></span>
+        <span>
+            <select name="taskStatus" id="status">
+                <option id="NEED" <c:if test="${compose.taskStatus eq 'NEED'}">selected </c:if>value="NEED"><fmt:message key="TASK_NEED"/>
+                <option id="COMP" <c:if test="${compose.taskStatus eq 'COMP'}">selected </c:if>value="COMP"><fmt:message key="TASK_COMP"/>
+                <option id="INPR" <c:if test="${compose.taskStatus eq 'INPR'}">selected </c:if>value="INPR"><fmt:message key="TASK_INPR"/>
+                <option <c:if test="${compose.taskStatus eq 'WAITING'}">selected </c:if>value="WAITING"><fmt:message key="TASK_WAITING"/>
+                <option <c:if test="${compose.taskStatus eq 'DEFERRED'}">selected </c:if>value="DEFERRED"><fmt:message key="TASK_DEFERRED"/>
+            </select>
+        </span>
+        <span>
+            <select name="taskPercentComplete" id="percent">
+                <option id="percent0" <c:if test="${compose.taskPercentComplete eq '0'}">selected </c:if>value="0">0%
+                <option <c:if test="${compose.taskPercentComplete eq '10'}">selected </c:if>value="10">10%
+                <option <c:if test="${compose.taskPercentComplete eq '20'}">selected </c:if>value="20">20%
+                <option <c:if test="${compose.taskPercentComplete eq '30'}">selected </c:if>value="30">30%
+                <option <c:if test="${compose.taskPercentComplete eq '40'}">selected </c:if>value="40">40%
+                <option <c:if test="${compose.taskPercentComplete eq '50'}">selected </c:if>value="50">50%
+                <option <c:if test="${compose.taskPercentComplete eq '60'}">selected </c:if>value="60">60%
+                <option <c:if test="${compose.taskPercentComplete eq '70'}">selected </c:if>value="70">70%
+                <option <c:if test="${compose.taskPercentComplete eq '80'}">selected </c:if>value="80">80%
+                <option <c:if test="${compose.taskPercentComplete eq '90'}">selected </c:if>value="90">90%
+                <option id="percent100" <c:if test="${compose.taskPercentComplete eq '100'}">selected </c:if>value="100">100%
+            </select>
+        </span>
+    </div>    
+    </c:if>
+    <c:if test="${param.st ne 'newtask'}">
     <div class="list-row">
     <span class="label"><fmt:message key="showAsLabel"/></span>
         <span>
@@ -347,12 +404,14 @@
                 <%--<option <c:if test="${compose.classProp eq 'CON'}">selected </c:if> value="CON"><fmt:message key="confidential"/>--%>
         </select></span>
         </div>
+    </c:if>    
 </div>
+<c:if test="${param.st ne 'newtask'}">
 <c:if test="${mailbox.prefs.useTimeZoneListInCalendar or not zm:isSameTimeZone(compose.timeZone, mailbox.prefs.timeZoneCanonicalId)}">
     <c:set var="addedTimeZone" value="true"/>
     <div class="View">
     <div class="list-row">
-        <span class="Label"><fmt:message key="timeZonePrefLabel"/></span>
+        <span class="label"><fmt:message key="timeZonePrefLabel"/></span>
             <span class=""><select name="timeZone" id="timeZone">
                 <zm:forEachTimeZone var="tz">
                     <fmt:message var="displayName" bundle='${AjxMsg}' key="${tz.id}"/>
@@ -373,14 +432,14 @@
             <span class="table-cell">
             <div class="ZhAC ZhACTo">
                 <input class="Textarea" id="attField" rows="1"
-                          name="attendees" value="${fn:escapeXml(compose.attendees)}"/>
+                          name="attendees" autocorrect="off" autocomplete="off" value="${fn:escapeXml(compose.attendees)}"/>
                 <div class='ZhACCont' id="attContainer" style='width:99%;top:1.5em;'></div>
             </div></span>
     </div>
     </div>
     </div>    
 </c:if>
-
+</c:if>
     <div class="View">
         <div class="table">
             <div class="table-row">

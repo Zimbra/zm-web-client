@@ -6,6 +6,13 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
+<c:if test="${empty param.ajax}">
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<c:remove var="prevUrl" scope="session"/>
+<c:remove var="currentUrl" scope="session"/>
+</c:if>
 <c:set var="baseURL" scope="request" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/>
 <c:set var="context_url" value="${requestScope.baseURL}"/>
 <c:if test="${param.loginOp=='logout'}">
@@ -15,13 +22,6 @@
     <c:set var="prevUrl" scope="session" value="${sessionScope.currentUrl}"/>
     <c:set var="currentUrl" scope="session"
            value="${pageContext.request.requestURL}?${pageContext.request.queryString}"/>
-</c:if>
-<c:if test="${empty param.ajax}">
-    <c:remove var="prevUrl" scope="session"/>
-    <c:remove var="currentUrl" scope="session"/>
-    <?xml version="1.0" encoding="UTF-8"?>
-    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-    <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 </c:if>
 <c:set var="version" value="${initParam.zimbraCacheBusterVersion}"/>
 <c:set var="uiv" value="1" scope="session"/>
@@ -40,6 +40,28 @@
     <mo:apptComposeCheck/>
     <mo:composeCheck/>
     <c:choose>
+        <c:when test="${not empty param.doPrefsAction}">
+            <zm:modifyPrefs var="updated">
+                <zm:pref name="zimbraPrefTimeZoneId" value="${param.zimbraPrefTimeZoneId}"/>
+                <c:if test="${mailbox.features.conversations}">
+                    <zm:pref name="zimbraPrefGroupMailBy" value="${param.zimbraPrefGroupMailBy}"/>
+                </c:if>
+                <c:if test="${mailbox.features.initialSearchPreference}">
+                    <zm:pref name="zimbraPrefMailInitialSearch" value="${param.zimbraPrefMailInitialSearch}"/>
+                </c:if>
+                <zm:pref name="zimbraPrefAutoAddAddressEnabled" value="${param.zimbraPrefAutoAddAddressEnabled eq 'TRUE' ? 'TRUE' : 'FALSE'}"/>
+                <zm:pref name="zimbraPrefContactsPerPage" value="${param.zimbraPrefContactsPerPage}"/>
+                <zm:pref name="zimbraPrefMailItemsPerPage" value="${param.zimbraPrefMailItemsPerPage}"/>
+                <zm:pref name="zimbraPrefCalendarFirstdayOfWeek" value="${param.zimbraPrefCalendarFirstdayOfWeek}"/>
+                <zm:pref name="zimbraPrefUseTimeZoneListInCalendar" value="${param.zimbraPrefUseTimeZoneListInCalendar eq 'TRUE' ? 'TRUE' : 'FALSE'}"/>
+            </zm:modifyPrefs>
+            <c:if test="${updated}">
+                <zm:getMailbox var="mailbox" refreshaccount="${true}"/>
+                <c:set var="limit" value="${mailbox.prefs.mailItemsPerPage}" scope="session"/>
+                <zm:clearSearchCache />
+                <app:status><fmt:message key="optionsSaved"/></app:status>
+            </c:if>
+        </c:when>
         <c:when test="${not empty param.doMessageAction}">
             <mo:messageAction/>
         </c:when>
@@ -59,7 +81,7 @@
     <c:set var="action" value="${zm:cook(empty param.paction ? param.action : param.paction)}" scope="request"/>
 </mo:handleError>
 <c:if test="${empty sessionScope.zms}">
-    <c:set value="${ua.isiPhone || ua.isiPod ? 'iphone-ext' : ( ua.isIE ? 'wm6' : 'iphone-ext')}" var="zms"
+    <c:set value="${ua.isiPhone || ua.isiPod ? 'iphone' : ( ua.isIE ? 'wm6' : 'iphone')}" var="zms"
            scope="session"/>
 </c:if>
 <c:if test="${not empty param.zms}">
@@ -67,7 +89,7 @@
 </c:if>
 <!-- SKIN param:'${param.zms}' '${sessionScope.zms}' -->
 <c:if test="${sessionScope.limit == null}">
-    <c:set var="limit" value="${sessionScope.zms eq 'xlite' ? '5' : '10'}" scope="session"/>
+    <c:set var="limit" value="${sessionScope.zms eq 'xlite' ? '5' : mailbox.prefs.mailItemsPerPage}" scope="session"/>
 </c:if>
 <c:if test="${(sessionScope.limit != param.limit && param.limit != null && param.limit != '')  }">
     <c:set var="limit" value="${zm:cook(param.limit)}" scope="session"/>
@@ -85,26 +107,61 @@
 <c:set var="mainaction_accesskey" value="0" scope="request"/>
 <c:if test="${empty param.ajax}">
 <head>
-<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black" />    
 <title>
     <fmt:message key="zimbraTitle"/>
 </title>
 <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0;"/>
 <c:set var="calcss" value=",${sessionScope.zms}-cal"/>
-<link href="<c:url value='/css/${sessionScope.zms}${calcss}.css?v=${version}'/>" type="text/css" rel="stylesheet"/>
+<link href="<c:url value='/css/${sessionScope.zms}${calcss}.css'/>" type="text/css" rel="stylesheet"/>
+<c:if test="${empty param.djs}">
+<script type="text/javascript">
+    window.currentUrl = '${pageContext.request.requestURL}?ajax=true&${pageContext.request.queryString}';
+    <c:import url="/m/mojs${(!empty param.debug || !empty param.dev) ? '?dev=1':''}"/>
+</script>
+<%--<script type="text/javascript" src="/m/mojs${!empty param.debug ? '?debug=1':''}"></script>--%>
+</c:if>
 <style type="text/css">
-.hidden {
-    opacity: 0.0;
-    height: 0px;
-    visibility: hidden;
+#delBtn{
+    -webkit-transition: all 150ms linear;
+    position:relative;
+    left:120px;
+    visibility:hidden;
 }
-.shown {
-    opacity: 0.9;
-    height: 0px;
-    visibility:visible;
+.delBtnV{
+    left:-6px !important;
+    margin-left:6px;
+    z-index:1000 !important;
+    visibility:visible !important;
+    overflow:visible !important;
+}
+.cHide{
+    -webkit-transition: left 200ms linear !important;
+}
+.cShow{
+    -webkit-transition: left 200ms linear !important;
+
+}
+.cRight1{
+    -webkit-transition: left 200ms linear !important;
+
+}
+.persp{
+    -webkit-perspective: 600;
+}
+.card
+{
+	-webkit-transform-style: preserve-3d;
+    -webkit-transition-property: -webkit-transform;
+	-webkit-transition-duration: 1.25s;
+}
+.flipped,.back
+{
+	-webkit-transform: rotateY(180deg);
 }
 </style>
-<mo:js ua="${ua}" mailbox="${mailbox}"/>
 </head>
 <body onorientationchange="updateOrientation()">
 <div class="container table" id="appbar" align="center">
@@ -118,20 +175,20 @@
             <c:set
             var="active"
             value="${empty param.st || param.st eq 'message' || param.st eq 'conversation' || param.st eq 'folders' ? '-active' : ''}"/> <a
-            style='width: ${95/appcount}%;' targetid="maincontainer" accesskey="${requestScope.mailapp_accesskey}"
+            style='width: ${95/appcount}%;'  accesskey="${requestScope.mailapp_accesskey}"
             id="mail" class="mail${active} appTab${active} table-cell" href="${aurl}?st=${mailbox.prefs.groupMailBy}"><span
             onclick="return zClickLink('mail')"><fmt:message
             key="mail"/></span><span onclick="return zClickLink('mail')" style="display:none;"
-                                     class="apunread">${mailbox.inbox.unreadCount}</span> </a> <c:if
+                                     class="apunread">${mailbox.inbox.unreadCount > 0 ? mailbox.inbox.unreadCount : ''}</span> </a> <c:if
             test="${mailbox.features.contacts}"> <c:set var="active"
                                                         value="${param.st eq 'contact' || param.st eq 'ab' ? '-active' : ''}"/>
-        <a style='width: ${95/appcount}%;' targetid="maincontainer" accesskey="${requestScope.contactapp_accesskey}"
+        <a style='width: ${95/appcount}%;'  accesskey="${requestScope.contactapp_accesskey}"
            id="contact" class="contact${active} appTab${active} table-cell" href="${aurl}?st=contact"><span
                 onclick="return zClickLink('contact')"><fmt:message key="contacts"/></span></a>
             </c:if>
         <c:if test="${mailbox.features.calendar}">
         <c:set var="active" value="${param.st eq 'cal' || param.st eq 'cals' ? '-active' : ''}"/>
-        <a style='width: ${95/appcount}%;' targetid="maincontainer" accesskey="${requestScope.calapp_accesskey}"
+        <a style='width: ${95/appcount}%;'  accesskey="${requestScope.calapp_accesskey}"
            id="cal" class="cal${active} appTab${active} table-cell" href="${aurl}?st=cal"><span
                 onclick="return zClickLink('cal')"><fmt:message
                 key="calendar"/></span>
@@ -146,7 +203,7 @@
          </c:if>
          <%--c:if test="${mailbox.features.tasks}">
             <c:set var="active" value="${param.st eq 'tasks' || param.st eq 'task' ? '-active' : ''}"/>
-            <a style='width: ${100/appcount}%;' targetid="maincontainer" accesskey="${requestScope.taskapp_accesskey}"
+            <a style='width: ${100/appcount}%;'  accesskey="${requestScope.taskapp_accesskey}"
                id="tasks" class="appTab${active} table-cell" href="${aurl}?st=task"><span
                     onclick="return zClickLink('cal')"><fmt:message
                     key="tasks"/></span>
@@ -160,27 +217,43 @@
             <c:set var="l_view" value="list" scope="session"/>
             </c:if>
         <c:set var="active" value="${param.st eq 'tasks' || param.st eq 'task'|| param.st eq 'briefcase' || param.st eq 'wiki' || param.st eq 'briefcases' || param.st eq 'notebooks' ? '-active' : ''}"/>
-        <a style='width: ${98/appcount}%;' targetid="maincontainer" accesskey="${requestScope.fldrapp_accesskey}"
-           id="docs" class="folders${active} appTab${active} table-cell" href="${aurl}?st=${mailbox.features.briefcases ? 'briefcases' : 'notebooks'}"><span
+        <a style='width: ${98/appcount}%;'  accesskey="${requestScope.fldrapp_accesskey}"
+           id="docs" class="folders${active} docs${active} appTab${active} table-cell" href="${aurl}?st=${mailbox.features.briefcases ? 'briefcases' : 'notebooks'}"><span
                 onclick="return zClickLink('docs')"><fmt:message
                 key="folders"/></span></a>
         </c:if>
         <c:set var="active" value="${param.search eq '1' ? '' : ''}"/>
-        <a style='width: ${95/appcount}%;' targetid="maincontainer" accesskey="${requestScope.search_accesskey}"
+        <a style='width: ${95/appcount}%;'  accesskey="${requestScope.search_accesskey}"
            id="search" class="search${active} appTab${active} table-cell"
            href="${aurl}?search=${param.search eq '1' ? '0' : '1'}&amp;${fn:replace(pageContext.request.queryString,'search=1&amp;','')}"
            onclick='return toggleElem("searchbar",this);'><span><fmt:message key="search"/></span></a>
     </div>
 </div>
-<div class="container" id="msgDiv"></div>
+
 <div style="display:none;position:absolute;" class="container loadingIcon" id="curDiv"></div>
+<div class="loadingDiv" id="loadingDiv" onclick="function(){return requestTimeout(false,'Aborted by user.');}"></div>    
 </c:if>
 <div class="container" id="maincontainer">
-    <script type="text/javascript">
-        if(document.location.hash && document.location.hash != currHash && getXHR()){
-            getContainer().style.visibility = 'hidden';
-        }
-    </script>
+<div id="card">
+<div class="front face cShow" id="front">
+    <div class="container table" id="msgDiv" onclick="return toggleElem(this);">
+        <c:choose> <c:when test="${not empty param.appmsg}">
+            <c:set var="statusMessage" value="${fn:escapeXml(param.appmsg)}"/>
+            <c:set var="statusClass" value="Info"/>
+            <div id='statusdiv' class="table StatusInfo" style="width:100%;padding-left:1%;padding-right:1%">
+                <span  style='width:90%;text-align:left;' class='table-cell'><fmt:message key="${fn:escapeXml(param.appmsg)}"/></span>
+                <span class='SmlIcnHldr table-cell aright right Cancel'></span>
+            </div>
+        </c:when> <c:when test="${not empty requestScope.statusMessage}">
+            <c:set var="statusMessage" value="${fn:escapeXml(requestScope.statusMessage)}"/>
+            <c:set var="statusClass" value="${requestScope.statusClass}"/>
+                <div id='statusdiv' class="table ${requestScope.statusClass}" style="width:100%;padding-left:1%;padding-right:1%">
+                    <span class="table-cell" style='width:90%;text-align:left;'>${fn:escapeXml(requestScope.statusMessage)}</span>
+                    <span class='SmlIcnHldr table-cell aright Cancel'></span>
+                </div>
+        </c:when> </c:choose>
+    </div>
+    <script type="text/javascript">if(document.location.hash&&document.location.hash!=currHash&&typeof(getXHR)=='function'&&getXHR()){GC().style.visibility='hidden';}</script>
     <div class="container table" id="searchbar" style="${param.search eq '1' ? '' : 'display:none;'}">
         <div class="table-row">
             <form method="post" accept-charset="UTF-8" action="${context_url}" class="table-cell"
@@ -201,9 +274,13 @@
                             <%--<input type="hidden" name="st" value="contact"/>--%>
                              <c:set var="st" value="contact"/>
                         </c:when>
-                         <c:when test="${param.st eq 'cals'}">
+                        <c:when test="${param.st eq 'cals'}">
                             <%--<input type="hidden" name="st" value="cal"/>--%>
                              <c:set var="st" value="cal"/>
+                        </c:when>
+                        <c:when test="${param.st eq 'tasks'}">
+                            <%--<input type="hidden" name="st" value="cal"/>--%>
+                             <c:set var="st" value="task"/>
                         </c:when>
                         <c:when test="${param.st eq 'briefcases'}">
                             <%--<input type="hidden" name="st" value="briefcase"/>--%>
@@ -213,9 +290,6 @@
                            <%-- <input type="hidden" name="st" value="wiki"/>--%>
                             <c:set var="st" value="wiki"/>
                         </c:when>
-                        <c:otherwise>
-                           <%-- <input type="hidden" name="st" value="${fn:escapeXml(param.st)}"/>--%>
-                        </c:otherwise>
                     </c:choose>
                 </c:if>
                 <input
@@ -223,22 +297,22 @@
                     value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/> 
                 <div class="table">
                     <div class="table-row">
-                          <span class="table-cell aleft">
+                          <span class="table-cell aleft" style="width:98%;">
                              <input type="text" class="searchInput" name="sq" value="${zm:cook(param.sq)}"/>
                           </span>
-                          <span class="table-cell aright">
+                          <span class="table-cell aright" style="white-space:nowrap;">
                              <input type="submit" class="searchButton zo_button" name="actionSearch"
                        value="<fmt:message key="search"/>"/>
                           </span>
                     </div>
 
                 </div>
-                <div class="table">
+                <div class="table avs">
                     <div class="table-row">
                           <span class="table-cell aleft">
                     <select name="st" style="border:1px solid gray;">
                                 <c:if test="${mailbox.features.mail}">
-                                <option value="${mailbox.prefs.groupMailBy}" ${empty st or st eq  mailbox.prefs.groupMailBy ? 'selected=selected' : ''}><fmt:message key="mails"/></option>
+                                <option value="${mailbox.prefs.groupMailBy}" ${empty st or st eq  mailbox.prefs.groupMailBy ? 'selected="selected"' : ''}><fmt:message key="mails"/></option>
                                 </c:if>
                                 <c:if test="${mailbox.features.contacts}">
                                 <option value="contact" ${st eq 'contact' ? 'selected=selected' : ''}><fmt:message key="contacts"/></option>
@@ -248,6 +322,9 @@
                                 </c:if>
                                 <c:if test="${mailbox.features.calendar}">
                                 <option value="cal" ${st eq 'cal' ? 'selected=selected' : ''}><fmt:message key="appointments"/></option>
+                                </c:if>
+                                <c:if test="${mailbox.features.tasks}">
+                                <option value="task" ${st eq 'task' ? 'selected=selected' : ''}><fmt:message key="tasks"/></option>
                                 </c:if>
                                 <c:if test="${mailbox.features.notebook}">
                                 <option value="wiki" ${st eq 'wiki' ? 'selected=selected' : ''}><fmt:message key="pages"/></option>
@@ -268,7 +345,7 @@
     <div class="container table" id="savesearchbar" style="${param.saveSearch eq '1' ? '' : 'display:none;'}">
         <div class="table-row">
             <form method="post" accept-charset="UTF-8" action="${context_url}" class="table-cell"
-                  onsubmit="if(!this.sname.value){showLoadingMsg('<fmt:message key="actionNoNameSpecified"/>',true,'Warning',1000,'msgbar');return false;}else{return submitForm(this);}">
+                  onsubmit="if(!this.sname.value){showLoadingMsg('<fmt:message key="actionNoNameSpecified"/>',true,'Warning',1000);return false;}else{return submitForm(this);}">
                 <input type="hidden" name="query" value="${zm:cook(param.sq)}"/>
                 <input type="hidden" name="st" value="${empty param.st? mailbox.prefs.groupMailBy : (param.st eq 'cal' ? 'appointment' : zm:cook(param.st))}"/>
                 <input type="hidden" name="doFolderAction" value="1"/>
@@ -278,60 +355,32 @@
                         value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/> <%-- <span class="table-cell" width="70%">--%>
                 <span class="label"><fmt:message key="searchNameLabel"/></span>
                 <input type="text" class="searchInput" style="width:30%;" name="sname" value="${zm:cook(param.sname)}"/>
-                <!--</span>
-              <span class="table-cell" width="30%">-->
                 <input type="submit" class="searchButton zo_button" name="actionSaveSearch"
                        value="<fmt:message key="save"/>"/><!--</span>-->
             </form>
         </div>
     </div>
     <mo:handleError>
-        <div class="container" id="msgbar" style="">
-            <c:choose> <c:when test="${not empty param.appmsg}">
-                <c:set var="statusMessage" value="${fn:escapeXml(param.appmsg)}"/>
-                <c:set var="statusClass" value="Info"/>
-                <div class='StatusInfo' id='statusdiv'><fmt:message key="${fn:escapeXml(param.appmsg)}"/></div>
-            </c:when> <c:when test="${not empty requestScope.statusMessage}">
-                <c:set var="statusMessage" value="${fn:escapeXml(requestScope.statusMessage)}"/>
-                <c:set var="statusClass" value="${requestScope.statusClass}"/>
-                <div class="${requestScope.statusClass}"
-                     id='statusdiv'>${fn:escapeXml(requestScope.statusMessage)}</div>
-            </c:when> </c:choose>
-            <script type="text/javascript">
-                top.showLoadingMsg(null, false);//hide loading div
-                top.showLoadingMsg('${statusMessage}', true,'${statusClass}',4000,'msgbar',true);
-            </script>
-            <c:remove var="statusMessage"/> <%-- cleanup when rendered--%>
-        </div>
         <div class="container" id="body">
             <c:import url="/m/zmview"/>
         </div>
     </mo:handleError>
 </div>
+</div>
+</div>
 <script type="text/javascript"> //This code runs from the ajax response
-    var d = document.getElementById('statusdiv');
-    var nojs = false;
-    var msg = (d) ? d.innerHTML : null;
-    if (self.parent && msg) {
-        if(d.className && d.className.indexOf("StatusInfo") > -1){
-            //self.parent.getContainer().innerHTML = self.getContainer().innerHTML;
-            parent.loadThisFrameResponse(self.getContainer().innerHTML,self.frameElement.id);
-            nojs = true;
-        }else{
-            nojs = true;
-        }
-        self.parent.showLoadingMsg(null, false , null, 4000);
-        self.parent.showLoadingMsg(null, false, null,4000,'msgbar',true);
-    }
-    <c:if test="${not empty requestScope.title}">
-    document.title = "<fmt:message key="zimbraTitleLabel"/>"+" "+"${fn:escapeXml(requestScope.title)}";
-    </c:if>
-    <c:if test="${not empty requestScope.curId}">
-    window.currentDate = '${requestScope.curId}';
-    </c:if>
-    <c:if test="${not empty requestScope._today}">
-    window._today = '${requestScope._today}';
-    </c:if>
+var nojs = false;
+if(window != parent){
+var d = document.getElementById('statusdiv');var msg = (d) ? d.innerHTML : null;
+if (msg != null) {parent.showLoadingMsg(null, false);if(d.className && d.className.indexOf("StatusInfo") > -1){parent.loadThisFrameResponse(self.GC().innerHTML,self.frameElement.id);
+nojs = true;}else{nojs = true;}}
+}    
+<c:if test="${not empty requestScope.title}">document.title = "<fmt:message key="zimbraTitleLabel"/>"+" "+"${fn:escapeXml(requestScope.title)}";</c:if>
+<c:if test="${not empty requestScope.curId}">window.currentDate = '${requestScope.curId}';</c:if>
+<c:if test="${not empty requestScope._today}">window._today = '${requestScope._today}';</c:if>
+if(dId && dV[dId]){//hide swipe to delete button
+    hideDelete(dId);
+}
 </script>
 <c:if test="${empty param.ajax}">
     <div class="table">
@@ -342,8 +391,7 @@
             <a href="${fn:escapeXml(logoutUrl)}" id="_logout" noajax='true'> <fmt:message key="logOut"/> </a>
             (${mailbox.accountInfo.attrs["uid"][0]})</span>
             <span class="quota-span">
-            <fmt:message key="MO_quotaLabel"/>
-            <c:set var="max" value="${mailbox.attrs.zimbraMailQuota[0]}"/>
+            <fmt:message key="MO_quotaLabel"/>&nbsp;<c:set var="max" value="${mailbox.attrs.zimbraMailQuota[0]}"/>
             <fmt:message var="unlimited" key="unlimited"/>
             <fmt:message key="MO_quotaUsage"> <fmt:param value="${zm:displaySizeFractions(pageContext, mailbox.size,2)}"/> <fmt:param
                     value="${max==0 ? unlimited : zm:displaySizeFractions(pageContext, max,2)}"/> </fmt:message>
@@ -351,16 +399,29 @@
             </div>
         </div>
     </div>
-    <div class="table container">
+    <div class="table container" style="height:32px;">
         <div class="table-row">
-            <div class="table-cell small-gray-text list-row">
-                <c:set var="v" value="${ua.isiPhone || ua.isiPod ? 'iphone-ext' : ( ua.isIE ? 'wm6' : 'xlite')}"/>
-                <fmt:message key="lowBandwidth" var="lbw"/> <fmt:message key="default" var="def"/> <c:if
-                    test="${fn:endsWith(sessionScope.zms,'-lowbw')}"> <c:set var="def"
-                                                                             value="<a noajax='true' href='?zms=${v}&amp;limit=10'>${def}</a>"/>
-            </c:if> <c:if test="${!fn:endsWith(sessionScope.zms,'-lowbw')}"> <c:set var="lbw"
-                                                                                    value="<a noajax='true' href='?zms=${fn:split(sessionScope.zms,'-')[0]}-lowbw&amp;limit=5'>${lbw}</a>"/>
-            </c:if> <fmt:message key="viewLabel"/> ${def} | ${lbw} | <a href="?st=versions"><fmt:message key="more"/>...</a>
+            <div class="table-cell list-row">
+                <a href="?st=prefs"><fmt:message key="options"/></a>
+            </div>
+        </div>
+    </div>
+    <div class="table container" style="height:30px;">
+        <div class="table-row">
+            <div class="table-cell list-row">
+                <c:set var="v" value="${ua.isiPhone || ua.isiPod ? 'iphone' : ( ua.isIE ? 'wm6' : 'xlite')}"/>
+                <fmt:message key="lowBandwidth" var="lbw"/>
+                <fmt:message key="default" var="def"/>
+                <fmt:message key="viewLabel"/>&nbsp;
+                <c:if test="${fn:endsWith(sessionScope.zms,'xlite')}">
+                    <c:set var="def" value="<a noajax='true' href='?zms=${v}&amp;limit=10'>${def}</a>"/>
+                    ${def}
+                </c:if>
+                <c:if test="${!fn:endsWith(sessionScope.zms,'xlite')}">
+                    <c:set var="lbw" value="<a noajax='true' href='?zms=xlite&amp;limit=5'>${lbw}</a>"/>
+                    ${lbw}
+                </c:if>
+                  | <a href="?st=versions"><fmt:message key="more"/>...</a>
             </div>
         </div>
     </div>
@@ -373,27 +434,21 @@
         </div>
     </div>
     <script type="text/javascript" xml:space="preserve">
-                
-        if (getXHR()) {
-            <c:if test="${empty param.noframe}">
-            if(!nojs){
+        if (typeof(getXHR)=='function'&&getXHR()) {
+        <c:if test="${empty param.noframe || empty param.isiniframe}">if(!nojs && (window == parent)){//run this only from parent document
                 registerOnclickHook();
-                setTimeout(function() { //!FIXME using SetInterval or polling will have performance issue
-                    checkHash(document.location.href,'get',true);
+                setInterval(function() { //!FIXME using SetInterval or polling will have performance issue
+                    checkHash(document.location.href,'get');
                 }, 350);
 
-                <c:if test="${param.st ne 'newmail' && param.st ne 'compose' && mailbox.features.mail && (empty param.st || param.st eq mailbox.prefs.groupMailBy)}">
-                // preloaded the compose
-                if(document.location.hash.indexOf('newmail') < 0 && document.location.hash.indexOf('compose') < 0 ){
+                <c:if test="${param.st ne 'newmail' && param.st ne 'compose' && mailbox.features.mail && (empty param.st || param.st eq mailbox.prefs.groupMailBy)}">if(document.location.hash.indexOf('newmail') < 0 && document.location.hash.indexOf('compose') < 0 ){
                     setTimeout(function() {
                         ajxReq('<c:url value="/m/zmain?st=newmail"/>',null,null,'get',true);
                     },300);
-                }
-                </c:if>
-           }
-           </c:if>    
+                }</c:if>
+           }</c:if>    
         }
         //-->
-    </script>
-    </body> </html> </c:if>
+</script>
+</body></html> </c:if>
 

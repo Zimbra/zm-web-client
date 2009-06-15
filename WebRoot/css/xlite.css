@@ -1,119 +1,720 @@
-body {
-    font-family: Myriad, "Lucida Grande", Helvetica, Arial, Verdana, Sans-serif;
-    width: 99%;
-    font-size: small;
-    padding:0px;
+body{
     margin:0px;
+    madding:0px;
+    font-size:small;
+    font-family: Myriad, "Lucida Grande", Helvetica, Arial, Verdana, Sans-serif;
 }
 a{
-    color: royalblue;
-}
-.container {
-    margin: 0px;
-    padding: 0px;
-    border: 0px;
-    background: white;
-}
-
-.Toolbar, .SubToolbar, #appbar,#msgbar {
-    background:#EFEFEF;
-    border:1px solid gray;
-    margin:1px;
-    padding:2px;
-    height:22px;
-	text-align:left;
-	vertical-align: middle;
-}
-.Toolbar,.SubToolbar, #appbar{
-    font-size: medium;
-    white-space:nowrap;
-}
-.appTab{
-    vertical-align:middle;
-}
-.appTab-active{
+    color: #003399;
     text-decoration:none;
 }
-.View{
-    border:1px solid gray;
-    margin:1px;
-    padding:2px;
-}
-.right{
-    float:right;
-}
-.next_button {
-    border-left: 1px solid gray;
-    padding-left:2px;
-}
-.l{
-    float:right;
-    position:relative;
-    left:-5px;
-    top:-48px;
-}
-.list-row,.list-row-unread{
-	border-bottom:1px solid #efefef;
-    padding:2px;
-}
-.list-row-unread{
-	font-weight:bold;
-}
-.f{
-    float:left;
-    clear:left;
-    width:20px;
-}
-.quota_span{
-   font-size:smaller;
-}
-.sub-span, .from-span{
-    width:56%;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    white-space:nowrap;
-}
-.frag-span,.sub-span,.Email{
-    width:90%;
-	padding-left:18px;
-	overflow:hidden;
-    text-overflow:ellipsis;
-    white-space:nowrap;
-
-}
 .table{
-    display: table;
-    width:99%;
+    display:table;
+    width:100%;
 }
 .table-row{
-    display: table-row;
-    width:99%;
+    display:table-row;
 }
 .table-cell{
-	vertical-align: middle;
     display:table-cell;
 }
-.small-gray-text, .quota_span {
-    color: #999999;
+#appbar{
+    height:18px;
+    line-height:18px;
+    vertical-align:middle;
+    background: #ebebff;
 }
-#copyright_notice{
-    text-align:left;
-    font-size:smaller;
+.appTab,.appTab-active{
+    border-bottom:1px solid silver;
+    padding:2px;
+}
+.appTab-active{
+    border:1px solid silver;
+    border-bottom:0px solid silver;
+    background:#ffffff;
+}
+.Toolbar,.SubToolbar{
+    height:20px;
+    line-height:20px;
+    vertical-align:middle;
+    background: #ebebff;
+    border-bottom:1px solid silver;
+    text-align:center;
+    padding:2px 0px;
+}
+.SubToolbar{
+    background:#ffffff;
+}
+.zo_button,.zo_button_disabled,.zo_select_button,input[type="submit"],.submitButton,select,input[type="button"]{
+    padding:2px;
+    border:0px;
+    background:transparent;
+    text-decoration:none;
+    color: #3943e6;
+    text-decoration:none;
+}
+.zo_button_disabled {
+    color: silver;
+}
+.next_button{
+    border-left:1px solid #dddddd;
+}
+select{
+    width:30%;
+    border:1px solid silver;
+}
+.list-row,.list-row-unread{
+    border-bottom:1px solid #dddddd;
+    vertical-align:middle;
+    padding:2px 1px;
+    background:#eeeefe;
+}
+.list-row-unread{
+    background:#ffffff;
+}
+.list-row-unread .from-span,.list-row-unread .sub-span {
+    font-weight:bold;
+}
+.Email a {
+    color: #666666;
+}
+span.f,span.m,span.l{
+    display:table-cell;
+    padding:2px;
+}
+span.m{
+    width:100%;
+}
+span.f{
+    vertical-align:middle;
+    text-align:center;
+    width:25px;
+    min-width:25px;
+}
+span.l{
+    text-align:right;
+    width:40px;
+    white-space:nowrap;;
+}
+.frag-span,.small-gray-text{
+    color:gray;
+}
+.shown{
+    visibility:visible;
+}
+.hidden{
+    visibility:hidden;
+}
+.LoadingDiv{
+    position:absolute;
+    background:#ffeeaa !important;
+    padding:2px;
+    width:auto;
+}
+#msgDiv,#msgbar {
+    position: absolute;
+    left: 0;
+    top: 20px;
+    width: 100%;
+    z-index:800 !important;
+}
+
+.left {
+    float: left;
+    padding-left: 2px;
+}
+.right {
+    float: right;
+    padding-right:2px;
+}
+.aleft {
+    text-align:left !important;
+    padding-left: 2px;
+}
+.aright {
+    text-align:right !important;
+    padding-right:2px;
+}
+#searchbar,#savesearchbar {
+    text-align: center;
+    vertical-align: middle;
+    padding:2px 0px;
+    margin: 0px;
+    border-bottom: 1px solid silver;
+}
+form {
+    padding: 0px;
+    margin: 0px;
+}
+.View {
+    background-color: white;
+    margin: 1px;
+    border: 1px solid #a7b2bc;
+    padding: 1px; /* font-size:medium;*/
+}
+.label{
+    color:gray;
+}
+hr{
+    color:gray;
+    border:1px solid gray;
+}
+
+#userinfo {
+    color: #999999;
+    padding: 2px 1px;
+    font-size: small;
+    height: 20px;
+    border-bottom: 1px solid silver;
+}
+#userinfo .logout-span {
+    float: left;
+}
+#copyright_notice {
+    text-align: center;
+    padding: 2px;
+}
+.StatusInfo, .StatusWarning, .StatusCritical, .zo_noresults {
+    padding: 2px;
+    margin: 0px;
+    height:20px;
+    font-weight: bold;
+    text-align: center;
+    font-size: small;
+}
+.zo_noresults {
+    height: 100px;
+    text-align: center;
+}
+.StatusInfo {
+    background-color: lightgreen;
+}
+.StatusWarning {
+    background-color: yellow;
+}
+.StatusCritical {
+    background-color: red;
 }
 .Textarea#bodyField {
     width: 98%;
-    height: 150px;
+    min-height: 150px;
 }
-select{
-	max-width:70px;
-	width:70px;
-	overflow:hidden;
-	text-overflow:ellipsis;
-	white-space:nowrap;
+.cmp_appt_container .Textarea, .cmp_container .table-cell .Textarea {
+    height: 17px;
+    width: 90%;
 }
-.zo_button, zo_button_group{
-    margin: 2px;
+.moquery .Textarea,.moquery .sq_folder,.moquery .sq_tag,.moquery .st{
+    width:92%;
 }
-.zo_button_disabled{
-	color: gray;
+.moquery .sq_size_comp,.moquery .sq_size_units, .moquery .sq_size{
+    width:29%;
+}
+.moquery .table-cell{
+    padding: 2px 1px;
+    border-bottom: 1px solid #EEEEEE;
+}
+.cmp_appt_container .table-cell .Textarea#start, .cmp_appt_container .table-cell .Textarea#end {
+    width: 30%;
+}
+.cmp_appt_container .label, .cmp_container .label,.moquery .label{
+    width: 20px;
+}
+.searchInput {
+    height:16px;
+    margin:1px;
+    vertical-align:middle;
+    width:95%;
+}
+/*Auto Complete*/
+.ZhAC {
+    position: relative;
+}
+.ZhACB {
+    font-weight: bold;
+}
+.ZhACCont {
+    position: absolute;
+    bottom: 0;
+}
+.ZhACCont .yui-ac-content {
+    position: absolute;
+    border: 1px solid #404040;
+    background: #fff;
+    overflow: hidden;
+    z-index: 9050;
+}
+.ZhACCont .yui-ac-shadow {
+    position: absolute;
+    margin: .3em;
+    background: #a0a0a0;
+    z-index: 9010;
+}
+.ZhACCont ul {
+    margin: 0;
+    padding: 1px 0;
+    list-style: none
+}
+.ZhACCont li {
+    margin: 0;
+    padding: 0 1px;
+    cursor: default;
+    white-space: nowrap;
+}
+.ZhACCont li.yui-ac-highlight {
+@SelectedBg@
+}
+.ZhACCont li.yui-ac-prehighlight {
+    background: #FFFFCC;
+}
+.ZhACCont table {
+    font-size: small;
+}
+.ZhACTo {
+    z-index: 9050;
+}
+.ZhACCc {
+    z-index: 9040;
+}
+.ZhACBCc {
+    z-index: 9030;
+}
+
+.Flag:before {
+    content:"|>";
+    word-spacing:1px;
+    color:red;
+}
+.Tagblue:before {
+    content:"t";
+    color:blue;
+}
+.Tagcyan:before {
+    content:"t";
+    color:cyan;
+}
+.Tagorange:before {
+    content:"t";
+    color:orange;
+}
+.Taggreen:before {
+    content:"t";
+    color:green;
+}
+.Tagpurple:before {
+    content:"t";
+    color:purple;
+}
+.Tagred:before {
+    content:"t";
+    color:red;
+}
+.Tagyellow:before {
+    content:"t";
+    color:yellow;
+}
+.TagStack {
+    content:"t+";
+    color:brown;
+}
+.TagdefaultColor,.Tag {
+    background-position: 0 -146px !important;
+}
+
+.SmlIcnHldr {
+    width: 10px;
+    height: 10px;
+    max-height: 10px;
+    display: inline-block;
+    vertical-align: middle;
+}
+.Edit:before{
+	content:"#";
+}
+
+/*CALENDAAR**/
+.zo_cal_mpage {
+    background: #D6D6D6; /*#D0D0F0;*/
+    padding: 2px;
+    color: black;
+    font-size: medium;
+    font-weight: bold;
+    text-align: center;
+}
+.zo_cal_mdow {
+    background: #D6D6D6; /*#D0D0F0;*/
+    font-weight: bold;
+    font-size: smaller;
+    text-align: center;
+    color: #555555;
+    border-bottom: 1px solid #E0E0E0;
+}
+
+.zo_cal_mday, .zo_cal_mday_select{
+    background: #E6E6E6; /*#D0D0F0;*/
+    border: 1px outset white;
+    vertical-align: middle;
+    text-align: center;
+    padding: 2px;
+}
+
+.zo_cal_mday_today {
+    background: #2e69e0;
+    color: white;
+    vertical-align: middle;
+    text-align: center;
+    padding: 2px;
+}
+
+.zo_cal_mday_text, .zo_cal_mday_textO {
+    font-size: medium;
+    font-weight: bold;
+    color: #3a3e47; /*#474d59;*/
+
+}
+.zo_cal_mday_textO {
+    color: #8e9198;
+}
+
+.zo_cal_mday_today .zo_cal_mday_text, .zo_cal_mday_select .zo_cal_mday_textO,.zo_cal_mday_today .zo_cal_mday_text0 {
+    color: white !important;
+}
+
+.zo_cal_mday_appt {
+    text-decoration: underline;
+}
+table {
+    border-collapse: collapse;
+}
+.zo_cal_mlist {
+    display: none;
+}
+.zo_cal_listheader, .zo_cal_dayheader {
+    text-align: center;
+    border-bottom: 1px solid #E0E0E0;
+    line-height: 2.0em;
+    font-weight: bold;
+}
+
+.zo_cal_listh_dow, .zo_cal_listi_time {
+    padding-left: 2px;
+}
+
+.zo_cal_listi {
+    padding: 2px;
+
+}
+.zo_cal_listi_subject{
+    white-space:nowrap;
+    text-overflow:ellipsis;
+}
+.zo_cal_listi_subject a {
+    color: black;
+    font-weight: bold;
+}
+
+.zo_cal_listh_date {
+    float: right;
+}
+
+.zo_cal_listh {
+    background: #9ca9b2;
+    color: white;
+    font-weight: bold;
+    border-top: 2px double #9ca9b2;
+    border-bottom: 1px double #9ca9b2;
+}
+.zo_cal_list TD, .zo_ab_list TD {
+    border-bottom: 1px solid #E0E0E0;
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+.zo_cal_listi_empty {
+    text-align: center;
+}
+.cal_bottom_shadow {
+    border-top: 2px outset #cccccc;
+}
+
+.zo_allday_appt A, .zo_day_appt A {
+    text-decoration: none;
+    color: black;
+}
+
+.zo_allday_appt {
+    border: 1px solid #333333;
+}
+
+.zo_allday_appt_noright {
+    border-right: none;
+}
+
+.zo_allday_appt_noleft {
+    border-left: none;
+}
+
+.zo_day_appt {
+    width: 100%;
+    height: 100%;
+    border: 1px outset #DDDDDD;
+}
+
+.zo_allday_appt .zo_appt_text {
+    padding: 1px 2px; /*font-weight: bold;*/
+    color: black;
+}
+
+.zo_day_appt .zo_appt_text {
+    padding: 2px; /*font-weight: bold;*/
+    color: black;
+}
+
+
+.Orange {
+    background-color: #FF9940;
+}
+
+.OrangeDark {
+    background-color: #FF7700;
+}
+
+.OrangeLight {
+    background-color: #FFBB80;
+}
+
+.OrangeBg {
+    background-color: #FFDDBF;
+}
+
+.OrangeC {
+    color: #FF9940;
+}
+
+.OrangeDarkC {
+    color: #FF7700;
+}
+
+.OrangeLightC {
+    color: #FFBB80;
+}
+
+.OrangeBgC {
+    color: #FFDDBF;
+}
+
+.Yellow {
+    background-color: #FFE640;
+}
+
+.YellowDark {
+    background-color: #FFDD00;
+}
+
+.YellowLight {
+    background-color: #FFEE80;
+}
+
+.YellowBg {
+    background-color: #FFF6BF;
+}
+
+.YellowC {
+    color: #FFE640;
+}
+
+.YellowDarkC {
+    color: #FFDD00;
+}
+
+.YellowLightC {
+    color: #FFEE80;
+}
+
+.YellowBgC {
+    color: #FFF6BF;
+}
+
+.Green {
+    background-color: #40A05F;
+}
+
+.GreenDark {
+    background-color: #00802A;
+}
+
+.GreenLight {
+    background-color: #80C095;
+}
+
+.GreenBg {
+    background-color: #BFDFCA;
+}
+
+.GreenC {
+    color: #40A05F;
+}
+
+.GreenDarkC {
+    color: #00802A;
+}
+
+.GreenLightC {
+    color: #80C095;
+}
+
+.GreenBgC {
+    color: #BFDFCA;
+}
+
+.Cyan {
+    background-color: #40D9D9;
+}
+
+.CyanDark {
+    background-color: #00CCCC;
+}
+
+.CyanLight {
+    background-color: #80E6E6;
+}
+
+.CyanBg {
+    background-color: #BFF2F2;
+}
+
+.CyanC {
+    color: #40D9D9;
+}
+
+.CyanDarkC {
+    color: #00CCCC;
+}
+
+.CyanLightC {
+    color: #80E6E6;
+}
+
+.CyanBgC {
+    color: #BFF2F2;
+}
+
+.Blue {
+    background-color: #4073D9;
+}
+
+.BlueDark {
+    background-color: #0044CC;
+}
+
+.BlueLight {
+    background-color: #80A2E6;
+}
+
+.BlueBg {
+    background-color: #BFD0F2;
+}
+
+.BlueC {
+    color: #4073D9;
+}
+
+.BlueDarkC {
+    color: #0044CC;
+}
+
+.BlueLightC {
+    color: #80A2E6;
+}
+
+.BlueBgC {
+    color: #BFD0F2;
+}
+
+.Purple {
+    background-color: #7940A0;
+}
+
+.PurpleDark {
+    background-color: #4C0080;
+}
+
+.PurpleLight {
+    background-color: #A680C0;
+}
+
+.PurpleBg {
+    background-color: #D2BFDF;
+}
+
+.PurpleC {
+    color: #7940A0;
+}
+
+.PurpleDarkC {
+    color: #4C0080;
+}
+
+.PurpleLightC {
+    color: #A680C0;
+}
+
+.PurpleBgC {
+    color: #D2BFDF;
+}
+
+.Gray {
+    background-color: #BFBFBF;
+}
+
+.GrayDark {
+    background-color: #A9A9A9;
+}
+
+.GrayLight {
+    background-color: #D4D4D4;
+}
+
+.GrayBg {
+    background-color: #E9E9E9;
+}
+
+.GrayC {
+    color: #BFBFBF;
+}
+
+.GrayDarkC {
+    color: #A9A9A9;
+}
+
+.GrayLightC {
+    color: #D4D4D4;
+}
+
+.GrayBgC {
+    color: #E9E9E9;
+}
+.zo_cal_hs, .zo_cal_hsb, .zo_cal_adhs {
+    border-right: 1px solid #E0E0E0;
+}
+
+.zo_cal_adds, .zo_cal_dsep {
+    border-left: 1px solid #E0E0E0;
+}
+
+.zo_cal_hsb {
+    border-bottom: 1px solid #E0E0E0;
+}
+
+/* allday bottom */
+.zo_cal_adb, .zo_cal_adhs {
+    border-bottom: 4px solid #e5e5e5; /*    @BottomSeparator-light@ */
+}
+
+/* hour bottom */
+.zo_cal_dhb, .zo_cal_dhhb {
+    border-bottom: 1px solid #C0C0C0; /*    @BottomSeparator-light@ */
+}
+
+/* half hour bottom */
+.zo_cal_dhhb {
+    border-bottom-style: dashed;
 }

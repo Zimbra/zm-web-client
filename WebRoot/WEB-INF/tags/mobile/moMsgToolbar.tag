@@ -49,7 +49,7 @@
 <span class="zo_button_group">
 <c:choose>
         <c:when test="${cursor.hasPrev}">
-            <zm:prevItemUrl var="prevMsgUrl" value="${urlTarget}" action='view'
+            <zm:prevItemUrl var="prevMsgUrl" value="${urlTarget}" action='view' _pv="1"
                             cursor="${cursor}" context="${context}"/>
             <a accesskey="${requestScope.prev_accesskey}" class='zo_button prev_button' href="${fn:escapeXml(prevMsgUrl)}">
                 <fmt:message key="MO_PREV"/>

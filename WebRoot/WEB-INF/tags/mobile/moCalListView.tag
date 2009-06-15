@@ -88,10 +88,10 @@
         <zm:forEachAppoinment var="appt" appointments="${appts}" start="${dayStart}" end="${dayEnd}">
             <c:if test="${count eq 0}">
                 <div class='zo_cal_listh'>
-                    <span class='zo_cal_listh_dow'>
+                    <span class='zo_cal_listh_dow aleft'>
                         <fmt:formatDate value="${currentDay.time}" pattern="${dayFormat}" timeZone="${timezone}"/>
                     </span>
-                    <span class='zo_cal_listh_date'>
+                    <span class='zo_cal_listh_date aright'>
                         <fmt:formatDate value="${currentDay.time}" type="date" dateStyle="medium" timeZone="${timezone}"/>
                     </span>
                 </div>

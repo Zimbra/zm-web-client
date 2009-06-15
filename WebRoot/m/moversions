@@ -38,7 +38,7 @@
                             Generic
                         </c:when>
                      </c:choose>
-                    &raquo; ${fn:endsWith(sessionScope.zms,'-lowbw') ? lbw : def }
+                    &raquo; ${fn:endsWith(sessionScope.zms,'xlite') ? lbw : def }
                 </span>
         </div>
     </div>
@@ -55,28 +55,28 @@
 </div>
 <div onclick='zClickLink("FLDR_iph1")' class='Folders list-row'>
     <span>
-        <a noajax="true" id="FLDR_iph1" href="?zms=iphone-ext&amp;limit=10">
+        <a noajax="true" id="FLDR_iph1" href="?zms=iphone&amp;limit=10">
             Default
         </a>
-        <div class="small-gray-text">Default on iPhone/iPod</div>
+        <div class="small-gray-text">iPhone/iPod classic</div>
     </span>
 </div>
-<div onclick='zClickLink("FLDR_iph2")' class='Folders list-row'>
+<%--<div onclick='zClickLink("FLDR_iph2")' class='Folders list-row'>
     <span>
         <a noajax="true" id="FLDR_iph2" href="?zms=iphone&amp;limit=10">
             Classic
         </a>
         <div class="small-gray-text">Classic iPhone Look</div>
     </span>
-</div>
-<div onclick='zClickLink("FLDR_iph3")' class='Folders list-row'>
+</div>--%>
+<%--<div onclick='zClickLink("FLDR_iph3")' class='Folders list-row'>
     <span>
         <a noajax="true" id="FLDR_iph3" href="?zms=iphone-lowbw&amp;limit=5">
             Thin
         </a>
         <div class="small-gray-text">for slow networks (EDGE/GPRS)</div>
     </span>
-</div>
+</div>--%>
 <div class="Toolbar table">
     <div class="table-row">
         <div class="table-cell">
@@ -92,7 +92,7 @@
             Default
         </a>
         <div class="small-gray-text">
-            Default on WindowsMobile/IE
+            WindowsMobile/IE classic
         </div>
     </span>
 </div>
@@ -141,8 +141,8 @@
 <div onclick='zClickLink("FLDR_xlite")' class='Folders list-row'>
     <span>
         <a noajax="true" id="FLDR_xlite" href="?zms=xlite&amp;limit=10">
-            Default
+            ${lbw}
         </a>
-        <div class="small-gray-text">Compact for small screen devices</div>    
+        <div class="small-gray-text">lightweight for small screen devices/slow networks</div>    
     </span>
 </div>

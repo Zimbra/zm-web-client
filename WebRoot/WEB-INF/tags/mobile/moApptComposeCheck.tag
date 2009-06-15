@@ -98,7 +98,12 @@
                             <c:set var="message" value="${null}"/>
                         </c:otherwise>
                     </c:choose>
+                    <c:if test="${param.st ne 'newtask'}">
                     <zm:saveAppointment var="createResult" compose="${uploader.compose}" message="${message}"/>
+                    </c:if>
+                    <c:if test="${param.st eq 'newtask'}">
+                    <zm:saveTask var="createResult" compose="${uploader.compose}" message="${message}"/>
+                    </c:if>
                     <c:if test="${not empty message and uploader.compose.apptFolderId ne message.folderId}">
                         <zm:moveItem var="moveResult" id="${apptId}" folderid="${uploader.compose.apptFolderId}"/>
                     </c:if>
@@ -106,7 +111,12 @@
                     <app:status><fmt:message key="${empty message ? 'actionApptCreated' : 'actionApptSaved'}"/></app:status>
 		    
                     <c:redirect url="${caction}">
-                        <c:param name="appmsg" value="${empty message ? 'actionApptCreated' : 'actionApptSaved'}"></c:param>
+                    <c:if test="${param.st eq 'newtask'}">
+                        <c:param name="appmsg" value="${empty message ? 'actionTaskCreated' : 'actionTaskSaved'}"/>
+                    </c:if>
+                    <c:if test="${param.st ne 'newtask'}">
+                        <c:param name="appmsg" value="${empty message ? 'actionApptCreated' : 'actionApptSaved'}"/>
+                    </c:if>    
 			<c:param name="bt" value="${bt}"/>
                     </c:redirect>
 		    <c:set var="needEditView" value="${false}"/>

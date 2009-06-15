@@ -16,8 +16,8 @@
              <c:import url="/m/mocompose"/>
     </c:when>
 
-    <c:when test="${param.st eq 'newappt'}">
-         <c:import url="/m/moapptcompose"/>
+    <c:when test="${param.st eq 'newappt' or param.st eq 'newtask'}">
+         <c:import url="/m/moapptcompose?st=${param.st}"/>
     </c:when>
 
     <c:when test="${empty param.st || param.st eq 'message' || param.st eq 'conversation' || param.st eq 'contact' || param.st eq 'briefcase' || param.st eq 'wiki' || param.st eq 'task' || param.st eq 'gal'}">
@@ -50,5 +50,8 @@
 
     <c:when test="${param.st eq 'ab'}">
          <c:import url="/m/moaddrbooks"/>
+    </c:when>
+    <c:when test="${param.st eq 'prefs'}">
+         <c:import url="/m/moprefs"/>
     </c:when>
 </c:choose>

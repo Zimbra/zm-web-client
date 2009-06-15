@@ -31,9 +31,9 @@
 
 <c:set var="top_fldr_select" value="${param.top_fldr_select eq '1' ? '1' : (empty sessionScope.top_fldr_select ? '0' : sessionScope.top_fldr_select)}"/> <%-- Default disabled--%>
 <c:set var="btm_fldr_select" value="${param.btm_fldr_select eq '0' ? '0' : (empty sessionScope.btm_fldr_select ? '1' : sessionScope.btm_fldr_select)}"/> <%-- Default enabled--%>
-<c:if test="${not empty requestScope.statusMessage && isTop}"> <%-- For search query errors --%>
+<%--<c:if test="${not empty requestScope.statusMessage && isTop}"> --%><%-- For search query errors --%><%--
     <div class="${requestScope.statusClass}">${fn:escapeXml(requestScope.statusMessage)} </div>
-</c:if>
+</c:if>--%>
 <c:if test="${isTop && '1' eq  top_stb}">
     <div class="SubToolbar table">
         <div class="table-row">
@@ -69,7 +69,7 @@
 <span class="zo_button_group">
 <c:choose>
     <c:when test="${context.searchResult.hasPrevPage}">
-        <zm:prevResultUrl var="url" value="${urlTarget}" index="0" context="${context}"/>
+        <zm:prevResultUrl var="url" value="${urlTarget}" index="0" context="${context}" _pv="1"/>
         <a accesskey="${requestScope.prev_accesskey}" href="${fn:escapeXml(url)}" class='zo_button prev_button'>
             <!--&#9668;--><fmt:message key="MO_PREV"/>
         </a>
@@ -98,7 +98,7 @@
 <span class="table-cell">-->
 <c:if test="${context.searchResult.size gt 0}">
     <span>
-        <select class="zo_select_button" name="anAction" onchange="submitForm(document.getElementById('zForm'))">
+        <select class="zo_select_button" name="anAction" onchange="submitForm(document.getElementById('zForm'),null,this.value)">
             <option value="" selected="selected"><fmt:message key="moreActions"/></option>
                 <%--<optgroup label="<fmt:message key="delete"/>">--%>
             <c:choose>
@@ -113,6 +113,7 @@
                 <option value="actionViewList"><fmt:message key="MO_viewList"/></option>
                 <option value="actionViewExplorer"><fmt:message key="MO_viewExplorer"/></option>
             </optgroup>
+            <option value="actionAttachToCompose"><fmt:message key="sendAsAttachments"/></option>
             <!--</optgroup>-->
             <optgroup label="<fmt:message key='select'/>">
                 <option value="selectAll"><fmt:message key="all"/></option>
@@ -184,3 +185,5 @@
         </div>
     </div>
 </c:if>
+<input type="hidden" name="isInTrash" value="${context.folder.isInTrash}">
+    

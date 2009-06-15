@@ -15,7 +15,7 @@
  * ***** END LICENSE BLOCK *****
  */
 body {
-    font-family: Myriad, "Lucida Grande", Helvetica, Arial, Verdana, Sans-serif;
+    font-family: Tahoma, SegoeUI, "Lucida Grande", Helvetica, Arial, Verdana, Sans-serif;
     width: 99%;
     padding:0px;
     margin:0px;
@@ -26,7 +26,13 @@ a {
     text-decoration: none;
 
 }
+.hidden {
+    visibility: hidden;
+}
 
+.shown {
+    visibility:visible;
+}
 .zo_m_list_row {
     border-bottom: 1px dotted #E0E0E0;
 }
@@ -59,14 +65,17 @@ a {
 .list-row, .list-row-unread {
     border-top: 1px solid #4493ba;
     padding: 2px;
-    background: white;
+
+    background: #eeeeff;
     color: black;
     clear:both;
 }
-
+/*.f,.m,.l {
+    border-bottom:1px solid #cfe5fc;
+}*/
 .list-row-unread {
     font-weight: bold;
-    background: #b1d3e3;
+    background: white;
 }
 
 .small-gray-text {
@@ -76,19 +85,19 @@ a {
 }
 
 .list-row-unread .small-gray-text, .list-row-unread .from-span a {
-    color: #0d4055;
+    /*color: #0d4055;*/
 }
 
 .from-span a {
-    color: #0d4055; /*white;*/
+    /*color: #0d4055; *//*white;*//**/
 }
 
 .sub-span {
-    color: #0d4055; /*#777777;*/
+    color: #666666; /*#777777;*/
 }
 
 .list-row-unread .sub-span {
-    color: #555555; /*#777777;*/
+    color: #000000; /*#777777;*/
 }
 
 .spacer {
@@ -103,7 +112,6 @@ a {
 .zo_m_cv_sub {
     padding: 7px;
     padding-left: 22px;
-    background: #c5ccd4 url( "/img/startup/ImgConversationView.gif" ) 3px 50% no-repeat;
     color: darkblue;
 }
 
@@ -124,12 +132,12 @@ a {
 }
 
 #appbar {
-    background: #79aebc url( "/img/mobile/wm6/appbar1.gif" );
-    height: 48px;
+    background-color: #79aebc;
+    background-position:0px -32px !important;
+    height: 42px;
     padding: 0px;
     margin: 0px;
     white-space: nowrap;
-    min-width: 275px;
     color: white;
     border-bottom: 0px solid #0d4055;
 
@@ -142,8 +150,7 @@ a {
 }
 
 #appbar a {
-    width: 50px;
-    height: 48px;
+    height: 42px;
     padding: 0px;
     text-align: center;
     font-size: small;
@@ -151,53 +158,35 @@ a {
     vertical-align: bottom;
     display: inline-block;
 }
-
-a#mail {
-    background: transparent url( "/img/mobile/wm6/Mail.png" ) 50% 50% no-repeat; /*content: url( "/img/mobile/wm6/Mail.png" );*/
+.appTab,.appTab-active{
+    background: transparent url( "/img/mobile/wm6/AppsNav.gif" ) no-repeat top left;
+}
+a.appTab-active{
+    background-color: #105d65 !important;    
+}
+a#mail,a.mail,a#mail-active,a.mail-active {
+    background-position: 50% -120px;
+}
+a#contact,a.contact,a#contact-active,a.contact-active {
+        background-position: 50% -41px;
+}
+a#cal,a.cal,a#cal-active,a.cal-active {
+    background-position: 50% 0px;
 }
 
-a#mail-active {
-    background: #105d65 url( "/img/mobile/wm6/Mail.png" ) 50% 50% no-repeat; /*background:url( "/img/mobile/wm6/Mail.png" );*/
+a#folders,a.folders,a#folders-active,a.folders-active {
+    background-position: 50% -81px;
 }
-
-a#contact {
-    background: transparent url( "/img/mobile/wm6/Contact.png" ) 50% 50% no-repeat;
-}
-
-a#contact-active {
-    background: #105d65 url( "/img/mobile/wm6/Contact.png" ) 50% 50% no-repeat;
-}
-
-a#cal {
-    background: transparent url( "/img/mobile/wm6/Cal.png" ) 50% 50% no-repeat;
-}
-
-a#cal-active {
-    background: #105d65 url( "/img/mobile/wm6/Cal.png" ) 50% 50% no-repeat;
-}
-
-a#folders {
-    background: transparent url( "/img/mobile/wm6/Folder.png" ) 50% 50% no-repeat;
-
-}
-
-a#folders-active {
-    background: #105d65 url( "/img/mobile/wm6/Folder.png" ) 50% 50% no-repeat;
-}
-
-a#search {
-    background: transparent url( "/img/mobile/wm6/Search.png" ) 50% 50% no-repeat;
-}
-
-a#search-active {
-    background: #105d65 url( "/img/mobile/wm6/Search.png" ) 50% 50% no-repeat;
+a#search,a.search,a#search-active,a.search-active {
+    background-position: 50% -160px; 
 }
 
 #searchbar {
     text-align: center;
     vertical-align: middle;
+    height:30px;
     padding-top: 2px;
-    padding-bottom: 2px;
+    padding-bottom: 0px;
     margin: 0px;
     background: #105d65;
     color:white;
@@ -207,7 +196,14 @@ form {
     padding: 0px;
     margin: 0px;
 }
-
+#nsrchfrm, #nfldrfrm, #ntagfrm{
+    margin:2px;
+    width:98%;
+}
+#nsrchfrm .zo_button, #nfldrfrm .zo_button, #ntagfrm .zo_button{
+    border: 1px solid #4493ba;
+    color: darkblue;
+}
 .View {
     background-color: white;
     margin: 2px;
@@ -227,14 +223,72 @@ form {
     padding: 0px;
     text-align: center;
 	clear: both;
+    color: #abe3f2;
 }
-
-.Edit{
-    background: url("/img/startup/ImgEdit.gif") top left no-repeat;
-    padding: 3px;
-   
+.SmlDocIcnHldr {
+    width: 18px;
+    height: 18px;
+    max-height: 18px;
+    display: inline-block;
+    vertical-align: -22%;
+    background: url("/img/doctypes.gif?v=090227110051") no-repeat top left;
 }
-
+.ImgAudioDoc{background:url("/img/doctypes.gif?v=090227110051") 0px 0px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
+ .ImgDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -16px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
+ .ImgExeDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -32px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
+ .ImgGenericDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -48px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
+ .ImgHtmlDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -64px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
+ .ImgImageDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -80px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
+ .ImgMSExcelDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -96px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
+ .ImgMSPowerpointDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -112px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
+ .ImgMSProjectDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -128px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
+ .ImgMSVisioDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -144px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
+ .ImgMSWordDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -160px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
+ .ImgMessageDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -176px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
+ .ImgPDFDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -192px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
+ .ImgPresentation{background:url("/img/doctypes.gif?v=090227110051") 0px -208px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
+ .ImgUnknownDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -224px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
+ .ImgVideoDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -240px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
+ .ImgZSpreadSheet{background:url("/img/doctypes.gif?v=090227110051") 0px -256px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
+ .ImgZipDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -272px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
+ .ZmThumbnailItem{
+    float:left;
+     width:43%;
+     margin:2%;
+     padding:1%;
+     overflow:hidden;
+     text-overflow:ellipsis;
+     border:1px dotted #eeeeee;
+     -webkit-border-radius:5px;
+     -moz-border-radius: 5px;
+ }
+.ZmThumbnailIcon{
+    border-bottom:1px solid #eeeeee;
+    padding-bottom:8px;
+}
+.ZmThumbnailName{
+    padding-top:8px;
+}
+.zo_button1{
+    color:white;
+    font-weight:bold;
+}
+.table{
+    display:table;
+    vertical-align:middle;
+    width:100%;
+}
+.table-row{
+    display:table-row;
+    vertical-align:middle;
+    text-align:center;
+    width:100%;
+}
+.table-cell{
+    display:table-cell;
+    vertical-align:middle;
+    text-align:center;
+}
 .Toolbar .table-cell {
     position: relative;
     top: 15%;
@@ -243,7 +297,6 @@ form {
 }
 
 .Toolbar {
-    background: #87a7b7 url( "/img/mobile/wm6/Toolbar.png" ) bottom repeat-x;
     white-space: nowrap;
     overflow: hidden;
 }
@@ -254,6 +307,7 @@ form {
     font-size: medium;
     padding-top: 5px;
     color:silver;
+    height:41px;
 }
 .SubToolbar a{
     color:white;
@@ -261,7 +315,7 @@ form {
     margin:0px;
 }
 .StatusInfo, .StatusWarning, .StatusCritical, .zo_noresults {
-    padding: 3px;
+    padding: 10px;
     margin: 0px;
     font-weight: bold;
     text-align: center;
@@ -293,12 +347,24 @@ form {
     border:1px solid #4895bf;
     background: #11849e;
     color:white;
+    width:100%;
 }
-
+.avs{
+  display:none;  
+}
 .cmp_container .table-cell, .cmp_appt_container .table-cell {
     text-align: left;
 }
-
+#msgDiv,#msgbar {
+    position: absolute;
+    left: 0;
+    top: 50px;
+    width: 100%;
+    z-index:800 !important;
+}
+.zo_select_button,.zo_button,.zo_button_disabled, .zo_button_group, input[type="button"], input[type="reset"],.searchButton {
+    font-size:medium;
+}
 .zo_button_disabled, .zo_button {
     font-weight: bold;
     color: white;
@@ -308,11 +374,13 @@ form {
 
 .zo_select_button {
     border: 0px;
-    background: transparent;
     position: relative;
     top: 0px;
     height: 20px;
-    width: 90px;
+    width: 85px;
+    font-weight:bold;
+    font-size:medium;
+    /*color:#c2e0ee;*/
 }
 
 .SmlIcnHldr {
@@ -457,9 +525,13 @@ form {
 .ZhACCb {
     z-index: 9030;
 }
+.searchButton,.Toolbar,#appbar{
+    background: transparent url("/img/mobile/wm6/tb.gif") repeat-x;
+}
 .searchButton {
-    background:transparent url(/img/mobile/wm6/Toolbar.png) repeat-x scroll 100% 50%;
+    background-position:0px -4px !important;
     border:1px solid white;
+    border:1px solid #4493EF;
     height:21px;
     vertical-align:middle;
 }
@@ -527,7 +599,15 @@ form {
     float: none;
     clear: none;
 }
-
+.loadingIcon{
+    padding:10px;
+    background:#ffffd0 url("/img/mobile/iphone/loading.gif") 50% 50% no-repeat !important;
+    -webkit-border-radius: 5px;
+}
+.LoadingDiv{
+    background-color:#ffffd0;
+    padding:10px !important;
+}
 #copyright_notice {
     text-align: center;
     padding: 5px;
@@ -547,9 +627,16 @@ form {
     height: 15px;
     width: 15px;
     padding: 0px;
-    margin: 0px;
+    margin-left: 5px;
 }
-
+.aleft {
+    text-align:left !important;
+    padding-left: 5px;
+}
+.aright {
+    text-align:right !important;
+    padding-right:5px;
+}
 div.row span.cell {
     display: table-cell;
     vertical-align: middle;
@@ -581,7 +668,7 @@ div.row span.f {
     max-width: 50px;
     width: 40px;
     white-space: nowrap;
-    display: inline-block;
+    display: table-cell;
     position: relative;
     top: 30%;
 }
@@ -590,17 +677,18 @@ div.row span.l {
     width: 55px;
     text-align: right;
     font-size: small;
+    white-space:nowrap;
 }
 
 div.row span.l {
-    display: inline-block;
+    display: table-cell;
 }
 
 body div.row span.m {
-    max-width: 150px;
-    min-width: 150px;
+    /*max-width: 150px;
+    min-width: 150px;*/
     width: 100%;
-    display: inline-block;
+    display: table-cell;
 }
 
 .msg-list-in-conv {
@@ -611,74 +699,87 @@ body div.row span.m {
     padding: 2px !important;
 }
 
+.SmlIcnHldr,.Edit {
+    width: 16px;
+    height: 16px;
+    max-height: 16px;
+    display: inline-block;
+    background: url("/img/mobile/iphone-ext/common.gif") no-repeat top left;
+}
+.Edit{
+    background-color: transparent;
+    background-position:50% -409px !important;
+    padding: 1px 3px;
+    border:1px outset #efefef;
+}
 .FldrSearchFolder {
-    background: url( "/img/startup/ImgSearchFolder.gif" ) 50% 50% no-repeat;
+    background-position: 0px  -441px;
 }
 .FldrFolder {
-    background: url( "/img/startup/ImgFolder.gif" ) 50% 50% no-repeat;
+    background-position: 0px  -426px;
 }
 .FldrSharedCalendarFolder {
-    background: url( "/img/calendar/ImgSharedCalendarFolder.gif" ) 50% 50% no-repeat;
+    background-position: 0px  -457px;
 }
 .FldrCalendarFolder {
-    background: url( "/img/calendar/ImgCalendarFolder.gif" ) 50% 50% no-repeat;
+    background-position: 0px  -472px;
 }
 .FldrSharedContactsFolder {
-    background: url( "/img/startup/ImgSearchFolder.gif" ) 50% 50% no-repeat;
+    background-position: 0px  -521px;
 }
 .FldrEmailedContacts {
-    background: url( "/img/contacts/ImgSharedContactsFolder.gif" ) 50% 50% no-repeat;
+    background-position: 0px  -505px;
 }
 .FldrContactsFolder {
-    background: url( "/img/contacts/ImgContactsFolder.gif" ) 50% 50% no-repeat;
+    background-position: 0px  -488px;
 }
 .FldrSharedTaskList {
-    background: url( "/img/tasks/ImgSharedTaskList.gif" ) 50% 50% no-repeat;
+    background-position: 0px  -540px;
 }
 .FldrTaskList {
-    background: url( "/img/startup/ImgTaskList.gif" ) 50% 50% no-repeat;
+    background-position: 0px  -556px;
 }
 .FldrInbox {
-    background: url( "/img/startup/ImgSearchFolder.gif" ) 50% 50% no-repeat;
+    background-position: 0px  -426px;
 }
 .FldrTrash {
-    background: url( "/img/startup/ImgTrash.gif" ) 50% 50% no-repeat;
+    background-position: 0px  -573px;
 }
 .FldrSpamFolder {
-    background: url( "/img/startup/ImgSpamFolder.gif" ) 50% 50% no-repeat;
+    background-position: 0px  -590px;
 }
 .FldrSentFolder {
-    background: url( "/img/startup/ImgSentFolder.gif" ) 50% 50% no-repeat;
+    background-position: 0px  -624px;
 }
 .FldrDraftFolder {
-    background: url( "/img/startup/ImgDraftFolder.gif" ) 50% 50% no-repeat;
+    background-position: 0px  -607px;
 }
 .FldrRSS {
-    background: url( "/img/startup/ImgRSS.gif" ) 50% 50% no-repeat;
+    background-position: 0px  -642px;
 }
 .FldrSharedMailFolder {
-    background: url( "/img/startup/ImgSharedMailFolder.gif" ) 50% 50% no-repeat;
+    background-position: 0px  -658px;
 }
 .FldrPlacedCalls {
-    background: url( "/img/voicemail/ImgPlacedCalls.gif" ) 50% 50% no-repeat;
+    background-position: 0px  -675px;
 }
 .FldrAnsweredCalls {
-    background: url( "/img/voicemail/ImgAnsweredCalls.gif" ) 50% 50% no-repeat;
+    background-position: 0px  -692px;
 }
 .FldrMissedCalls {
-    background: url( "/img/voicemail/ImgMissedCalls.gif" ) 50% 50% no-repeat;
+    background-position: 0px  -709px;
 }
 .FldrVoicemail {
-    background: url( "/img/voicemail/ImgVoicemail.gif" ) 50% 50% no-repeat;
+    background-position: 0px  -675px;
 }
 .Flag {
-    background-position: 0 -164px !important !important;
+    background-position: 0 -164px !important;
 }
 .Tagblue {
     background-position: 0 -110px !important;
 }
 .Tagcyan {
-    background-position: 0 -92px !important; }
+    background-position: 0 -92px !important;
 }
 .Tagorange {
     background-position: 0 -128px !important;

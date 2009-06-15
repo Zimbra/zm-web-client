@@ -31,9 +31,9 @@
 
 <c:set var="top_fldr_select" value="${param.top_fldr_select eq '1' ? '1' : (empty sessionScope.top_fldr_select ? '0' : sessionScope.top_fldr_select)}"/> <%-- Default disabled--%>
 <c:set var="btm_fldr_select" value="${param.btm_fldr_select eq '0' ? '0' : (empty sessionScope.btm_fldr_select ? '1' : sessionScope.btm_fldr_select)}"/> <%-- Default enabled--%>
-<c:if test="${not empty requestScope.statusMessage && isTop}"> <%-- For search query errors --%>
+<%--<c:if test="${not empty requestScope.statusMessage && isTop}"> --%><%-- For search query errors --%><%--
     <div class="${requestScope.statusClass}">${fn:escapeXml(requestScope.statusMessage)} </div>
-</c:if>
+</c:if>--%>
 <c:if test="${isTop && '1' eq  top_stb}">
     <div class="SubToolbar table top_${context.isContactSearch ? 'cont' : (context.isMessageSearch ? 'mesg' : 'conv') }_lv_subtoolbar">
         <div class="table-row">
@@ -99,7 +99,7 @@
 <span class="table-cell">-->
 <c:if test="${context.searchResult.size gt 0}">
     <span>
-        <select class="zo_select_button" name="anAction" onchange="submitForm(document.getElementById('zForm'))">
+        <select class="zo_select_button" name="anAction" onchange="submitForm(document.getElementById('zForm'),null,this.value)">
             <option value="" selected="selected"><fmt:message key="moreActions"/></option>
                 <%--<optgroup label="<fmt:message key="delete"/>">--%>
             <c:choose>
@@ -151,14 +151,33 @@
 <!--</span>
 <span class="table-cell">-->
 <span class=" f-right">
-            <c:url var="composeUrl" value="${urlTarget}">
-                <c:param name="action" value="edit"/>
-                <c:param name="st" value="${context.st}"/>
-                <c:param name="folderid" value="${context.folder.id}"/>
-            </c:url>
-            <a accesskey="${requestScope.mainaction_accesskey}" href="${composeUrl}" class="zo_button">
-                <fmt:message key="add"/>
-            </a>
+    <c:choose>
+        <c:when test="${not empty param.tz}">
+            <fmt:setTimeZone var="tz" value="${param.tz}" scope="request"/>
+        </c:when>
+        <c:otherwise>
+            <c:set var="tz" value="${mailbox.prefs.timeZone}" scope="request"/>
+        </c:otherwise>
+    </c:choose>
+    <c:choose>
+        <c:when test="${not empty param.date}">
+            <fmt:parseDate var="date" timeZone="${tz}" pattern="yyyyMMdd" value="${param.date}"/>
+            <c:set scope="request" var="dateContext" value="${zm:getCalendarMidnight(date.time, tz)}"/>
+        </c:when>
+        <c:otherwise>
+            <c:set scope="request" var="dateContext" value="${zm:getToday(tz)}"/>
+        </c:otherwise>
+    </c:choose>
+    <fmt:formatDate var="dateDf" value="${dateContext.time}" pattern="yyyyMMdd" timeZone="${tz}"/>
+    <c:url var="composeUrl" value="${urlTarget}">
+        <c:param name="action" value="edit"/>
+        <c:param name="st" value="newtask"/>
+        <c:param name="date" value="${dateDf}"/>
+        <c:param name="folderid" value="${context.folder.id}"/>
+    </c:url>
+    <a accesskey="${requestScope.mainaction_accesskey}" href="${composeUrl}" class="zo_button">
+        <fmt:message key="add"/>
+    </a>
 </span>
 </span>
 </div>
@@ -189,3 +208,4 @@
         </div>
     </div>
 </c:if>
+<input type="hidden" name="isInTrash" value="${context.folder.isInTrash}">

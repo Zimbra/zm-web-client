@@ -38,11 +38,11 @@
         <div class="table-row">
             <div class="table-cell">
                 <c:if test="${isConv!=null && isConv}">
-                    <zm:currentResultUrl var="closeurl" value="${urlTarget}"
+                    <zm:currentResultUrl var="closeurl" value="${urlTarget}" _pv="1"
                                          index="${context.currentItemIndex}"
                                          context="${context}"/>
                 </c:if>
-                <zm:currentResultUrl var="closeurl" value="${urlTarget}"
+                <zm:currentResultUrl var="closeurl" value="${urlTarget}" _pv="1"
                                      index="${context.currentItemIndex}"
                                      context="${context}"/>
 
@@ -55,7 +55,7 @@
                     &laquo; <fmt:message key="backToConv"/>
                 </c:if>
                 <c:if test="${isConv==null || !isConv }">
-                    <zm:currentResultUrl var="closeUrl" value="${urlTarget}" action='view' context="${context}"
+                    <zm:currentResultUrl var="closeUrl" value="${urlTarget}" action='view' context="${context}" _pv="1"
                                          cso="${param.cso}" csi="${param.csi}" css="${param.css}"/>
                     &laquo; <a href="${fn:escapeXml(closeUrl)}" class='zo_leftbutton'> <fmt:message
                         key="backToConv"/> </a> &laquo; ${fn:escapeXml(zm:truncateFixed(message.subject,12,true))}
@@ -76,7 +76,7 @@
         <c:choose>
             <c:when test="${context.hasPrevItem}">
                 <zm:prevItemUrl var="prevItemUrl" value="${urlTarget}" action="view"
-                                cursor="${convCursor}" context="${context}"
+                                cursor="${convCursor}" context="${context}" _pv="1"
                                 css="${param.css}"/>
                 <a accesskey="${requestScope.prev_accesskey}" class='zo_button prev_button' href="${fn:escapeXml(prevItemUrl)}">
                     <fmt:message key="MO_PREV"/>
@@ -95,7 +95,7 @@
         <c:choose>
             <c:when test="${messCursor.hasPrev}">
                 <zm:currentResultUrl var="prevMsgUrl" value="${urlTarget}" action='view'
-                                     context="${context}" mview="1"
+                                     context="${context}" mview="1" _pv="1"
                                      cso="${messCursor.prevOffset}"
                                      csi="${messCursor.prevIndex}" css="${param.css}"/>
                 <a accesskey="${requestScope.prev_accesskey}" class='zo_button prev_button' href="${fn:escapeXml(prevMsgUrl)}">
@@ -229,7 +229,7 @@
                 </c:otherwise>
             </c:choose>
         </optgroup>
-
+        <option value="actionAttachToCompose"><fmt:message key="sendAsAttachments"/></option>
         <optgroup label="<fmt:message key="markAs"/>">
             <option value="actionMarkRead"><fmt:message key="MO_read"/></option>
             <option value="actionMarkUnread"><fmt:message key="MO_unread"/></option>
@@ -284,3 +284,5 @@
 </div>
 </div>
 </div>
+<input type="hidden" name="isInTrash" value="${context.folder.isInTrash}">
+    

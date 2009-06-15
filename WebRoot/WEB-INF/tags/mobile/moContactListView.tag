@@ -33,7 +33,7 @@
 <c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/>
 <zm:currentResultUrl var="actionUrl" value="${context_url}" context="${context}"/>
 <c:set var="title" value="${zm:truncate(context.shortBackTo,20,true)}" scope="request"/>
-<form id="zForm" action="${fn:escapeXml(actionUrl)}" method="post">
+<form id="zForm" action="${fn:escapeXml(actionUrl)}" method="post" onsubmit="return submitForm(this);">
     <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
     <input type="hidden" name="doContactAction" value="1"/>
     <input name="moreActions" type="hidden" value="<fmt:message key="actionGo"/>"/>
@@ -60,7 +60,7 @@
             <a id="a${chit.id}"
                                            href="${contactUrl}">
                 <div>
-                    <strong>${zm:truncate(fn:escapeXml(empty chit.fileAsStr ? (context.isGALSearch ? chit.fullName : '<None>') : chit.fileAsStr),50, true)}</strong>
+                    <strong>${zm:truncate(fn:escapeXml(empty chit.fileAsStr ? (context.isGALSearch ? chit.fullName : '<None>') : chit.fileAsStr),23, true)}</strong>
                 </div>
             </a>
                 <div class="Email">
@@ -69,7 +69,7 @@
                     <a href="${fn:escapeXml(murl)}">${fn:escapeXml(chit.email)}</a>
                 </div>
             </span>
-            <span class="cell l" onclick='return zClickLink("a${chit.id}")'>
+            <span class="cell l">
                 <c:if test="${chit.isFlagged}">
                     <span class="SmlIcnHldr Flag">&nbsp;</span>
                 </c:if>

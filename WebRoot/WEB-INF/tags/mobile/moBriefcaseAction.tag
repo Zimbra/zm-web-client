@@ -42,32 +42,32 @@
     <c:when test="${zm:actionSet(param,'moreActions') && anAction eq 'selectNone'}">
         <c:set var="select" value="none" scope="request"/>
     </c:when>
-    <c:when test="${(zm:actionSet(param,'moreActions') && empty anAction) }">
+    <c:when test="${(zm:actionSet(param,'moreActions') && empty anAction && empty param.actionDelete) }">
         <mo:status style="Warning"><fmt:message key="actionNoActionSelected"/></mo:status>
     </c:when>
     <c:when test="${empty ids}">
         <mo:status style="Warning"><fmt:message key="actionNoItemSelected"/></mo:status>
     </c:when>
-    <c:when test="${zm:actionSet(param, 'actionDelete') || (zm:actionSet(param,'moreActions') && anAction == 'actionDelete')}">
-        <zm:moveItem folderid="${mailbox.trash}" var="result" id="${ids}"/>
-        <c:set var="op" value="x" scope="request"/>
-        <mo:status>
-            <fmt:message key="actionBriefcaseMoved">
-                <fmt:param value="${result.idCount}"/>
-                <fmt:param value="${zm:getFolderName(pageContext, mailbox.trash.id)}"/>
-            </fmt:message>
-        </mo:status>
-    </c:when>
-
-    <c:when test="${zm:actionSet(param, 'actionHardDelete' || (zm:actionSet(param,'moreActions') && anAction == 'actionHardDelete'))}">
+    <c:when test="${(param.isInTrash eq 'true' && zm:actionSet(param, 'actionDelete')) || zm:actionSet(param, 'actionHardDelete' || (zm:actionSet(param,'moreActions') && anAction == 'actionHardDelete'))}">
         <zm:deleteBriefcase var="result" id="${ids}"/>
         <zm:clearSearchCache/>
         <c:set var="op" value="x" scope="request"/>
         <mo:status>
-            <fmt:message key="actionBriefcaseDeleted">
+            <fmt:message key="actionBriefcaseItemsDeleted">
                 <fmt:param value="${result.idCount}"/>
             </fmt:message>
         </mo:status>
+    </c:when>
+    <c:when test="${zm:actionSet(param, 'actionDelete') || (zm:actionSet(param,'moreActions') && anAction == 'actionDelete')}">
+            <zm:moveItem folderid="${mailbox.trash.id}" var="result" id="${ids}"/>
+            <zm:clearSearchCache/>
+            <c:set var="op" value="x" scope="request"/>
+            <mo:status>
+                <fmt:message key="actionBriefcaseMoved">
+                    <fmt:param value="${result.idCount}"/>
+                    <fmt:param value="${zm:getFolderName(pageContext, mailbox.trash.id)}"/>
+                </fmt:message>
+            </mo:status>
     </c:when>
     <c:when test="${zm:actionSet(param, 'actionAddTag') || (zm:actionSet(param,'moreActions') && fn:startsWith(anAction,'addTag_'))}">
         <c:set var="tag" value="${param.tagId}"/>
@@ -96,6 +96,13 @@
                 <fmt:param value="${zm:getTagName(pageContext, tag)}"/>
             </fmt:message>
         </mo:status>
+    </c:when>
+    <c:when test="${zm:actionSet(param, 'actionAttachToCompose') || (zm:actionSet(param,'moreActions') && fn:startsWith(anAction,'actionAttachToCompose'))}">
+        <c:forEach var="id" items="${ids}">
+            <zm:getDocument var="doc" id="${id}"/>
+            <c:set var="documentAttachments" value="${doc.id}:${fn:escapeXml(fn:replace(doc.name,':','_$'))},${documentAttachments}"/>
+        </c:forEach>
+        <c:redirect url="/m/zmain?st=newmail&documentAttachments=${documentAttachments}&ajax=${param.ajax}"/>
     </c:when>
     <c:when test="${zm:actionSet(param, 'actionMove') || zm:actionSet(param,'moreActions')}">
         <c:choose>

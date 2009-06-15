@@ -34,7 +34,7 @@
         <div class="table-row">
             <c:if test="${types eq 'cal'}">
     <span class="table-cell left" width="1%">    
-    <input type="checkbox" onchange="fetchIt('?${folder.isCheckedInUI ? 'un' : ''}check=${folder.id}&st=cals&_ajxnoca=1');"
+    <input type="checkbox" onchange="fetchIt('?${folder.isCheckedInUI ? 'un' : ''}check=${folder.id}&st=cals&_ajxnoca=1',null,'POST');"
            value="${folder.id}" name="calid" ${folder.isCheckedInUI ? 'checked=checked':''}>
     </span>
             </c:if>
