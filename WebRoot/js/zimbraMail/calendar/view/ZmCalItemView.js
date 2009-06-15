@@ -233,14 +233,19 @@ function() {
 
 ZmApptView.prototype.close =
 function() {
-	this._controller._viewMgr.setView(this._prevView);
-	this._controller._currentView = this._prevView;
-	this._controller._resetToolbarOperations();
-	// HACK: Since the appt read-only view is not a true view (in the
-	//       ZmAppViewMgr sense), we need to force a refresh, if needed.
-	if (this._controller._viewMgr.needsRefresh()) {
-		this._controller._scheduleMaintenance(ZmCalViewController.MAINT_VIEW);
-	}
+    if(this._prevView) {
+        var newView =
+        this._controller._viewMgr.setView(this._prevView);
+        this._controller._currentView = this._prevView;
+        this._controller._resetToolbarOperations();
+        // HACK: Since the appt read-only view is not a true view (in the
+        //       ZmAppViewMgr sense), we need to force a refresh, if needed.
+        if (this._controller._viewMgr.needsRefresh()) {
+            this._controller._scheduleMaintenance(ZmCalViewController.MAINT_VIEW);
+        }
+    }else {
+        this._controller.show(this._controller._defaultView());
+    }
 };
 
 ZmApptView.prototype.move =

@@ -141,19 +141,8 @@ function(viewId, startDate, skipMaintenance) {
 	}
 
 	if (!this._viewMgr) {
-		var newDate = startDate || (this._miniCalendar ? this._miniCalendar.getDate() : new Date());
-
-		if (!this._miniCalendar) {
-			this._createMiniCalendar(newDate);
-		}
-
-		this._viewMgr = new ZmCalViewMgr(this._container, this, this._dropTgt);
-		this._viewMgr.setDate(newDate);
-		this._setup(viewId);
-		this._viewMgr.addTimeSelectionListener(new AjxListener(this, this._timeSelectionListener));
-		this._viewMgr.addDateRangeListener(new AjxListener(this, this._dateRangeListener));
-		this._viewMgr.addViewActionListener(new AjxListener(this, this._viewActionListener));
-		DBG.timePt("created view manager");
+        this.createViewMgr(startDate);
+        this._setup(viewId);        
 	}
 
 	if (!this._viewMgr.getView(viewId)) {
@@ -243,6 +232,22 @@ function(viewId, startDate, skipMaintenance) {
 		DBG.timePt("getting tree controller", true);
 	}
 
+};
+
+ZmCalViewController.prototype.createViewMgr =
+function(startDate) {
+    var newDate = startDate || (this._miniCalendar ? this._miniCalendar.getDate() : new Date());
+
+    if (!this._miniCalendar) {
+        this._createMiniCalendar(newDate);
+    }
+
+    this._viewMgr = new ZmCalViewMgr(this._container, this, this._dropTgt);
+    this._viewMgr.setDate(newDate);
+    this._viewMgr.addTimeSelectionListener(new AjxListener(this, this._timeSelectionListener));
+    this._viewMgr.addDateRangeListener(new AjxListener(this, this._dateRangeListener));
+    this._viewMgr.addViewActionListener(new AjxListener(this, this._viewActionListener));
+    DBG.timePt("created view manager");    
 };
 
 ZmCalViewController.prototype.getCheckedCalendars =
@@ -1476,6 +1481,9 @@ function(appt, mode) {
 ZmCalViewController.prototype._showApptReadOnlyView =
 function(appt, mode) {
 	var viewId = ZmId.VIEW_CAL_APPT;
+    if(!this._viewMgr) {
+        this.createViewMgr();
+    }
 	var apptView = this._viewMgr.getView(viewId);
 	if (!apptView) {
 		this._setup(viewId);
