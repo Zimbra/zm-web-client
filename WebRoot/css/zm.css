@@ -1951,6 +1951,10 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmTaskbarContentParent .ZmImOverview {
 	width:250px;
 }
+
+.ZmTaskbarContentParent .ZmImOverview .DwtTree{
+	height: 400px;
+}
 #ENDIF
 
 
