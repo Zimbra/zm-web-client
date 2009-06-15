@@ -413,9 +413,9 @@ function(obj) {
 				this.isOfflineSyncable = true;
 				this.isOfflineSyncing = false;
 			}
+			details.oldPath = this.getPath();
 			this.reparent(newParent);
 			this.isOfflineArchive = this.isUnder(ZmOrganizer.ID_ARCHIVE);
-			details.oldPath = this.getPath();
 			this._notify(ZmEvent.E_MOVE, details);
 			obj.l = null;
 		}

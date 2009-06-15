@@ -613,14 +613,17 @@ function(req) {
 };
 
 /**
-* Parse simple queries so we can do basic matching on new items (determine whether
-* they match this search query). The following types of queries are handled:
-*
-*    in:foo
-*    tag:foo
-*
-* which may result in this.folderId or this.tagId getting set.
-*/
+ * Parse simple queries so we can do basic matching on new items (determine whether
+ * they match this search query). The following types of queries are handled:
+ *
+ *    in:[folder]
+ *    tag:[tag]
+ *
+ * which may result in this.folderId or this.tagId getting set.
+ *
+ * NOTE: The scope of this parsing should remain limited. We don't want to get into
+ * the business of trying to mimic the server's query parsing, which is quite complex.
+ */
 ZmSearch.prototype._parseQuery =
 function() {
 	var results = this.query.match(ZmSearch.FOLDER_QUERY_RE);
@@ -659,11 +662,13 @@ function() {
 	}
 	this.hasUnreadTerm = ZmSearch.UNREAD_QUERY_RE.test(this.query);
 	this.isAnywhere = ZmSearch.IS_ANYWHERE_QUERY_RE.test(this.query);
+
+
 };
 
 ZmSearch.prototype.hasFolderTerm =
 function(path) {
-	if (!path) return false;
+	if (!path) { return false; }
 	var regEx = new RegExp('\\s*in:\\s*"?(' + AjxStringUtil.regExEscape(path) + ')"?\\s*', "i");
 	var regExNot = new RegExp('(-|not)\\s*in:\\s*"?(' + AjxStringUtil.regExEscape(path) + ')"?\\s*', "i");
 	return (regEx.test(this.query) && !regExNot.test(this.query));
@@ -671,14 +676,14 @@ function(path) {
 
 ZmSearch.prototype.replaceFolderTerm =
 function(oldPath, newPath) {
-	if (!(oldPath && newPath)) return;
+	if (!(oldPath && newPath)) { return; }
 	var regEx = new RegExp('(\\s*in:\\s*"?)(' + AjxStringUtil.regExEscape(oldPath) + ')("?\\s*)', "gi");
 	this.query = this.query.replace(regEx, "$1" + newPath + "$3");
 };
 
 ZmSearch.prototype.hasTagTerm =
 function(name) {
-	if (!name) return false;
+	if (!name) { return false; }
 	var regEx = new RegExp('\\s*tag:\\s*"?(' + AjxStringUtil.regExEscape(name) + ')"?\\s*', "i");
 	var regExNot = new RegExp('(-|not)\\s*tag:\\s*"?(' + AjxStringUtil.regExEscape(name) + ')"?\\s*', "i");
 	return (regEx.test(this.query) && !regExNot.test(this.query));
@@ -686,7 +691,7 @@ function(name) {
 
 ZmSearch.prototype.replaceTagTerm =
 function(oldName, newName) {
-	if (!(oldName && newName)) return;
+	if (!(oldName && newName)) { return; }
 	var regEx = new RegExp('(\\s*tag:\\s*"?)(' + AjxStringUtil.regExEscape(oldName) + ')("?\\s*)', "gi");
 	this.query = this.query.replace(regEx, "$1" + newName + "$3");
 };

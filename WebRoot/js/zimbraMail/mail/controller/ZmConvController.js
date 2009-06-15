@@ -261,8 +261,9 @@ function() {
 		var folderId;
 		if (search.folderId) {
 			folderId = parseInt(search.folderId);
-			if (appCtxt.multiAccounts)
+			if (appCtxt.multiAccounts) {
 				folderId = ZmOrganizer.getSystemId(folderId);
+			}
 		}
 		if (folderId && this._conv.msgs) {
 			// search all msgs in conv to see if at least one is in search folder

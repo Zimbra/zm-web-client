@@ -510,13 +510,16 @@ function() {
 	var folders = [ZmFolder.ID_TRASH, ZmFolder.ID_SPAM, ZmFolder.ID_SENT];
 	for (var i = 0; i < folders.length; i++) {
 		var name = ZmFolder.QUERY_NAME[folders[i]];
-		if (!(this.search && this.search.hasFolderTerm(name)))
+		if (!(this.search && this.search.hasFolderTerm(name))) {
 			chars.push(ZmFolder.TCON_CODE[folders[i]]);
+		}
 	}
 
 	return chars.join("");
 };
 
+// If this list is the result of a search that is constrained by the read
+// status, and the user has marked all read in a folder, redo the search.
 ZmMailList.prototype._folderTreeChangeListener = 
 function(ev) {
 	if (this.size() == 0) return;
@@ -527,8 +530,9 @@ function(ev) {
 
 	if (ev.event == ZmEvent.E_FLAGS && (flag == ZmItem.FLAG_UNREAD)) {
 		if (this.type == ZmItem.CONV) {
-			if (view == ZmId.VIEW_CONVLIST && ctlr._currentSearch.hasUnreadTerm)
+			if (view == ZmId.VIEW_CONVLIST && ctlr._currentSearch.hasUnreadTerm) {
 				this._redoSearch(ctlr);
+			}
 		} else if (this.type == ZmItem.MSG) {
 			if (view == ZmId.VIEW_TRAD && ctlr._currentSearch.hasUnreadTerm) {
 				this._redoSearch(ctlr);
