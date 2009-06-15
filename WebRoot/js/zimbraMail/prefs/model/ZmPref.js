@@ -476,20 +476,20 @@ function(id, params) {
     params.id = id;
 
     // save section
-    ZmPref._prefSectionMap[id] = params;
+	appCtxt.set(ZmSetting.PREF_SECTIONS, params, id);
     ZmPref._prefSectionArray = null;
 };
 
 ZmPref.unregisterPrefSection =
 function(id) {
-	delete ZmPref._prefSectionMap[id];
+	appCtxt.set(ZmSetting.PREF_SECTIONS, null, id);
 	ZmPref._prefSectionArray = null;
 };
 
 /** Returns the pref sections map. */
 ZmPref.getPrefSectionMap =
 function() {
-    return ZmPref._prefSectionMap;
+	return appCtxt.get(ZmSetting.PREF_SECTIONS);
 };
 
 /** Returns a sorted array of pref sections (based on priority). */
@@ -497,8 +497,9 @@ ZmPref.getPrefSectionArray =
 function() {
     if (!ZmPref._prefSectionArray) {
         ZmPref._prefSectionArray = [];
-        for (var id in ZmPref._prefSectionMap) {
-            ZmPref._prefSectionArray.push(ZmPref._prefSectionMap[id]);
+		var prefSectionMap = appCtxt.get(ZmSetting.PREF_SECTIONS);
+		for (var id in prefSectionMap) {
+            ZmPref._prefSectionArray.push(prefSectionMap[id]);
         }
         ZmPref._prefSectionArray.sort(ZmPref.__BY_PRIORITY);
     }
@@ -508,8 +509,9 @@ function() {
 /** Returns the section that contains the specified pref. */
 ZmPref.getPrefSectionWithPref =
 function(prefId) {
-    for (var sectionId in ZmPref._prefSectionMap) {
-        var section = ZmPref._prefSectionMap[sectionId];
+	var prefSectionMap = appCtxt.get(ZmSetting.PREF_SECTIONS);
+	for (var sectionId in ZmPref._prefSectionMap) {
+		var section = prefSectionMap[sectionId];
         if (!section.prefs) continue;
 
         for (var i = 0; i < section.prefs.length; i++) {
@@ -533,7 +535,7 @@ function(pre1 /* ..., preN */) {
 		}
 	}
 	return true;
-}
+};
 
 // Make sure the pref sections are init'd
 ZmPref.clearPrefSections();

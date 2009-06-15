@@ -47,6 +47,7 @@ ZmZimbraMail = function(params) {
 
 	// all subsequent calls to register static app listeners go to instance
 	ZmZimbraMail.addListener = AjxCallback.simpleClosure(this.addListener, this);
+	ZmZimbraMail.addAppListener = AjxCallback.simpleClosure(this.addAppListener, this);
 
 	// ALWAYS set back reference into our world (also used by unload handler)
 	window._zimbraMail = this;

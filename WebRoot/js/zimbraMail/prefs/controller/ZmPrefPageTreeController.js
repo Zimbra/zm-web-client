@@ -30,8 +30,6 @@ function() {
 
 ZmPrefPageTreeController.prototype.show =
 function(params) {
-	var treeView = ZmTreeController.prototype.show.apply(this, arguments);
-
 	// populate tree
 	var app = appCtxt.getApp(ZmApp.PREFERENCES);
 	var view = app.getPrefController().getPrefsView();
@@ -46,22 +44,13 @@ function(params) {
 	for (var i = 0; i < count; i++) {
 		var tabKey = i+1;
 		var name = view.getTabTitle(tabKey);
-		var id = ZmId.getPrefPageId(tabKey);
 		var section = view.getSectionForTab(tabKey);
 
 		// for multi-account mbox, child accounts only show a select few pref options
 		if (this._showSection(params.account, section.id)) {
-			var prefParams = {
-				id: id,
-				name: name,
-				parent: root,
-				tree: tree,
-				pageId: tabKey,
-				icon: section.icon,
-				tooltip: section.description,
-				accountId: params.account && params.account.id
-			};
-			var organizer = new ZmPrefPage(prefParams);
+			var organizer = ZmPrefPage.createFromSection(section);
+			organizer.pageId = tabKey;
+			organizer.accountId = params.account && params.account.id
 			organizers.push(organizer);
 		}
 	}
@@ -76,18 +65,17 @@ function(params) {
 			section.parentId = null;
 		}
 
-		var tabKey = section.parentId && view.getTabForSection(section.parentId);
-		var id = tabKey && ZmId.getPrefPageId(tabKey);
-
-		var parent = id ? appCtxt.getById(id) : root;
+		var parent = (section.parentId && tree.getById(ZmId.getPrefPageId(section.parentId))) || root;
 		parent.children.add(organizer);
 
 		organizer.parent = parent;
 		organizer.icon = section.icon || parent.getIcon();
 	}
 
+	appCtxt.setTree(tree.type, tree);
+
 	// setup tree view
-	treeView.set({dataTree:tree, omitParents:true});
+	var treeView = ZmTreeController.prototype.show.apply(this, arguments);
 
 	if (!appCtxt.multiAccounts || (appCtxt.multiAccounts && params.account.isMain)) {
 		var page1 = root.children.get(0);

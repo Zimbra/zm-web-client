@@ -41,7 +41,7 @@ ZmPrefView = function(params) {
 	this._hasRendered = false;
 
 	this.setVisible(false);
-	this.getTabBar().setVisible(false);
+//	this.getTabBar().setVisible(false);
 };
 
 ZmPrefView.prototype = new DwtTabView;
@@ -82,26 +82,101 @@ ZmPrefView.prototype.show =
 function() {
 	if (this._hasRendered) { return; }
 
+	// add sections that have been registered so far
 	var sections = ZmPref.getPrefSectionArray();
 	for (var i = 0; i < sections.length; i++) {
 		var section = sections[i];
-		// does the section meet the precondition?
-		if (!this._controller.checkPreCondition(section)) { continue; }
-
-		// add section as a tab
-		var view = (section.createView)
-			? (section.createView(this, section, this._controller))
-			: (new ZmPreferencesPage(this, section, this._controller));
-		this.prefView[section.id] = view;
-		var tabButtonId = ZmId.getTabId(this._controller._currentView, section.title.replace(/[' ]/ig,"_"));
-		var tabId = this.addTab(section.title, view, tabButtonId);
-		this._tabId[section.id] = tabId;
-		this._sectionId[tabId] = section.id;
+		this._addSection(section);
 	}
 
+	// add listener for sections added/removed later...
+	var setting = appCtxt.getSettings().getSetting(ZmSetting.PREF_SECTIONS);
+	setting.addChangeListener(new AjxListener(this, this._prefSectionsModified));
+
+	// display
 	this.resetKeyBindings();
 	this._hasRendered = true;
 	this.setVisible(true);
+};
+
+ZmPrefView.prototype._prefSectionsModified = function(evt) {
+	var sectionId = evt.getDetails();
+	var section = appCtxt.get(ZmSetting.PREF_SECTIONS, sectionId);
+	if (section) {
+		this._prefSectionAdded(section);
+	}
+	else {
+		this._prefSectionRemoved(sectionId);
+	}
+};
+
+ZmPrefView.prototype._prefSectionAdded = function(section) {
+	// add section to tabs
+	var index = this._getIndexForSection(section.id);
+	this._addSection(section, index);
+
+	// create new page pref organizer
+	var organizer = ZmPrefPage.createFromSection(section);
+	var treeController = appCtxt.getOverviewController().getTreeController(ZmOrganizer.PREF_PAGE);
+	var tree = treeController.getDataTree();
+	var parent = tree.getById(ZmId.getPrefPageId(section.parentId)) || tree.root;
+	organizer.pageId = this.getNumTabs();
+	organizer.parent = parent;
+
+	// find index within parent's children
+	var index = null;
+	var children = parent.children.getArray();
+	for (var i = 0; i < children.length; i++) {
+		if (section.priority < this.getSectionForTab(children[i].pageId).priority) {
+			index = i;
+			break;
+		}
+	}
+	parent.children.add(organizer, index);
+
+	// notify so that views can be updated
+	organizer._notify(ZmEvent.E_CREATE);
+};
+
+ZmPrefView.prototype._prefSectionRemoved = function(sectionId) {
+	var index = this._getIndexForSection(sectionId);
+	var tree = appCtxt.getTree(ZmOrganizer.PREF_PAGE);
+	var organizer = tree && tree.getById(ZmId.getPrefPageId(sectionId));
+	if (organizer) {
+		organizer.notifyDelete();
+	}
+};
+
+/**
+ * <strong>Note:</strong>
+ * This is typically called automatically when adding sections.
+ *
+ * @param section   [object]    The section to add.
+ * @param index     [number]    (Optional) The index where to add.
+ */
+ZmPrefView.prototype._addSection = function(section, index) {
+	// does the section meet the precondition?
+	if (!this._controller.checkPreCondition(section)) { return; }
+
+	// create pref page's view
+	var view = (section.createView)
+		? (section.createView(this, section, this._controller))
+		: (new ZmPreferencesPage(this, section, this._controller));
+	this.prefView[section.id] = view;
+	
+	// add section as a tab
+	var tabButtonId = ZmId.getTabId(this._controller._currentView, ZmId.getPrefPageId(section.id));
+	var tabId = this.addTab(section.title, view, tabButtonId, index);
+    this._tabId[section.id] = tabId;
+	this._sectionId[tabId] = section.id;
+};
+
+ZmPrefView.prototype._getIndexForSection = function(id) {
+	var sections = ZmPref.getPrefSectionArray();
+	for (var i = 0; i < sections.length; i++) {
+		if (sections[i].id == id) break;
+	}
+	return i;
 };
 
 ZmPrefView.prototype.reset =

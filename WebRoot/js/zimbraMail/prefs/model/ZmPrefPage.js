@@ -51,6 +51,24 @@ ZmPrefPage.prototype.toString = function() {
 ZmOrganizer.ORG_CLASS[ZmId.ORG_PREF_PAGE] = "ZmPrefPage";
 
 //
+// Static functions
+//
+
+ZmPrefPage.createFromSection = function(section) {
+	var overviewController = appCtxt.getOverviewController(); 
+	var treeController = overviewController.getTreeController(ZmOrganizer.PREF_PAGE);
+	var params = {
+		id: ZmId.getPrefPageId(section.id),
+		name: section.title,
+		parent: null,
+		tree: treeController.getDataTree(),
+		icon: section.icon,
+		tooltip: section.description
+	};
+	return new ZmPrefPage(params);
+};
+
+//
 // Public methods
 //
 

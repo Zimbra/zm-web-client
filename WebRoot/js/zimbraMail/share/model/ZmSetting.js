@@ -312,7 +312,7 @@ function(value, key, setDefault, skipNotify, skipImplicit) {
 
 	// Setting an internal pref is equivalent to saving it, so we should notify
 	if (!this.name && !skipNotify) {
-		this._notify(ZmEvent.E_MODIFY);
+		this._notify(ZmEvent.E_MODIFY, key);
 	}
 };
 
