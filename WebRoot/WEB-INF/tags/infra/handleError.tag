@@ -10,6 +10,7 @@
 </c:catch>
 <c:if test="${!empty actionException}">
     <zm:getException var="error" exception="${actionException}"/>
+	<c:set var="lastErrorCode" value="${error.code}" scope="request"/>
     <c:choose>
         <c:when test="${error.code eq 'ztaglib.SERVER_REDIRECT'}">
             <c:redirect url="${not empty requestScope.SERVIER_REDIRECT_URL ? requestScope.SERVIER_REDIRECT_URL : '/'}"/>
@@ -26,6 +27,9 @@
             <c:set var="statusMessage" scope="request" value="${errorMsg}"/>
             <jsp:forward page="/h/compose"/>
         </c:when>
+		<c:when test="${error.code eq 'voice.SECONDARY_NOT_ALLOWED'}">
+			<%-- no-op --%>
+		</c:when>
         <c:otherwise>
             <app:status style="Critical">
                 <fmt:message key="${error.code}"/>

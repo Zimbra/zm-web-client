@@ -247,8 +247,13 @@
                                         <app:optMailFilter mailbox="${mailbox}"/>
                                     </c:when>
                                     <%------------------- Voice ------------------%>
-                                    <c:when test="${selected eq 'voice' and mailbox.features.voice and (voiceStatus ne 'false')}">
-                                        <app:optVoice mailbox="${mailbox}"/>
+                                    <c:when test="${(selected eq 'voice') and mailbox.features.voice}">
+										<c:if test="${voiceStatus ne 'false'}">
+                                        	<app:optVoice mailbox="${mailbox}"/>
+										</c:if>
+										<c:if test="${(voiceStatus eq 'false') and (lastErrorCode eq 'voice.SECONDARY_NOT_ALLOWED')}">
+											<fmt:message key="${lastErrorCode}"/>
+										</c:if>
                                     </c:when>
                                     <%------------------- ADDRESS BOOK ------------------%>
                                     <c:when test="${selected eq 'addressbook'}">
