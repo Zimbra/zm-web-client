@@ -1927,6 +1927,7 @@ HTML>BODY .appt-selected .appt_allday_body
 	position:absolute;
 	bottom: 23px;
 	padding: 4px;
+	width: 250px;
 }
 
 .ZmTaskbarPopupTitle {
@@ -1948,7 +1949,7 @@ HTML>BODY .appt-selected .appt_allday_body
 
 #IFDEF MSIE
 .ZmTaskbarContentParent .ZmImOverview {
-	width:200px;
+	width:250px;
 }
 #ENDIF
 
