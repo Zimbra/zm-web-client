@@ -134,11 +134,36 @@ function(item, colIdx) {
 	// override me
 };
 
+
+//apply colors to from and subject cells via zimlet
+ZmMailListView.prototype._getStyleViaZimlet =
+function(field, item) {
+	if (field != "fr" && field != "su")
+		return "";
+
+	if (appCtxt.zimletsPresent() && this._ignoreProcessingGetMailCellStyle == undefined) {
+		if (!this._zimletMgr) {
+			this._zimletMgr = appCtxt.getZimletMgr();//cache zimletMgr
+		}
+		var style = this._zimletMgr.processARequest("getMailCellStyle", item, field);
+		if (style != undefined && style != null) {
+			return style;//set style
+		} else if (style == null && this._zimletMgr.isLoaded()) {
+			//zimlet not available or disabled, set _ignoreProcessingGetMailCellStyle to true
+			//to ignore this entire section for this session
+			this._ignoreProcessingGetMailCellStyle = true;
+		}
+	}
+	return "";
+};
+
+
 ZmMailListView.prototype._getAbridgedCell =
 function(htmlArr, idx, item, field, colIdx, width, attr) {
 	var params = {};
 
 	htmlArr[idx++] = "<td";
+	htmlArr[idx++] = this._getStyleViaZimlet(field, item);
 	if (width) {
 		htmlArr[idx++] = " width='";
 		htmlArr[idx++] = width;
@@ -378,21 +403,7 @@ function(htmlArr, idx, item, field, colIdx, params) {
 	var attrText = [idText, widthText, classText, alignText, otherText].join(" ");
 
 	htmlArr[idx++] = "<td";
-	if (field == "fr" || field == "su") {//apply colors to from and subject cells via zimlet
-		if (appCtxt.zimletsPresent() && this._ignoreProcessingGetMailCellStyle == undefined) {
-			if (!this._zimletMgr) {
-				this._zimletMgr = appCtxt.getZimletMgr();//cache zimletMgr
-			}
-			var style = this._zimletMgr.processARequest("getMailCellStyle", item, field);
-			if (style != undefined && style != null) {
-				htmlArr[idx++] = style;//set style
-			} else if (style == null && this._zimletMgr.isLoaded()) {
-				//zimlet not available or disabled, set _ignoreProcessingGetMailCellStyle to true
-				//to ignore this entire section for this session
-				this._ignoreProcessingGetMailCellStyle = true;
-			}
-		}
-	}
+	htmlArr[idx++] = this._getStyleViaZimlet(field, item);
 	htmlArr[idx++] = attrText ? (" " + attrText) : "";
 	htmlArr[idx++] = ">";
 	
