@@ -280,7 +280,7 @@ function(obj) {
 		this.lastError = obj.lastError[0]._content;
 	}
 	else {
-		delete this.failingSize;
+		delete this.failingSince;
 		delete this.lastError;
 	}
 	// data source fields
