@@ -885,11 +885,13 @@ function() {
  */
 ZmAppCtxt.prototype.notifyZimlets =
 function(event, args, options) {
-	if (!this.zimletsPresent() || !this.areZimletsLoaded()) { return; }
+	if (!this.zimletsPresent()) { return; }
 	if (options && options.noChildWindow && this.isChildWindow) { return; }
 
-	if (options && options.waitUntilLoaded && !this.areZimletsLoaded()) {
-		this.addZimletsLoadedListener(new AjxListener(this, this.notifyZimlets, [event, args]));
+	if (!this.areZimletsLoaded()) {
+		if (options && options.waitUntilLoaded) {
+			this.addZimletsLoadedListener(new AjxListener(this, this.notifyZimlets, [event, args]));
+		}
 		return;
 	}
 

@@ -348,7 +348,7 @@ function(view) {
 		this._setupTagMenu(tb);
 	}
 
-	appCtxt.notifyZimlets("initializeToolbar", [app, tb, this, view], {waitUntilLoaded:true});
+	appCtxt.notifyZimlets("initializeToolbar", [this._app, tb, this, view], {waitUntilLoaded:true});
 };
 
 // list view and its listeners
