@@ -615,11 +615,11 @@ function(account, section) {
 	this._setGenericFields(account, section);
 	this._setDataSourceFields(account, section);
 	this._setIdentityFields(account, section);
-	if (this._setControlVisible("ALERT", section, !account.enabled)) {
+	if (this._setControlVisible("ALERT", section, !account.isStatusOk())) {
 		var alert = section.controls["ALERT"];
 		alert.setStyle(DwtAlert.CRITICAL);
-		alert.setTitle(ZmMsg.accountInactiveTitle);
-		alert.setContent(ZmMsg.accountInactiveContent);
+		alert.setTitle(account.failingSince ? ZmMsg.dataSourceFailureTitle : ZmMsg.accountInactiveTitle);
+		alert.setContent(account.lastError || ZmMsg.accountInactiveContent);
 	}
 };
 
@@ -1978,7 +1978,7 @@ function(buffer, i, item, field, col, params) {
 		return i;
 	}
 	if (field == ZmItem.F_STATUS) {
-		if (item instanceof ZmDataSource && !item.enabled) {
+		if (item instanceof ZmDataSource && !item.isStatusOk()) {
 			buffer[i++] = "<table border=0 cellpadding=0 cellpadding=0><tr>";
 			buffer[i++] = "<td><div class='ImgCritical_12'></div></td><td>";
 			buffer[i++] = ZmMsg.ALT_ERROR;

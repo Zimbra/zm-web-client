@@ -268,8 +268,21 @@ function() {
 	return this.port || this.getDefaultPort();
 };
 
+ZmDataSource.prototype.isStatusOk = function() {
+	return this.enabled && !this.failingSince;
+};
+
 ZmDataSource.prototype.setFromJson =
 function(obj) {
+	// errors
+	if (obj.failingSince) {
+		this.failingSince = obj.failingSince;
+		this.lastError = obj.lastError[0]._content;
+	}
+	else {
+		delete this.failingSize;
+		delete this.lastError;
+	}
 	// data source fields
 	for (var aname in ZmDataSource.DATASOURCE_ATTRS) {
 		var avalue = obj[aname];
