@@ -164,25 +164,74 @@ ZmDataSourceCollection.prototype.remove = function(item) {
 ZmDataSourceCollection.prototype.initialize = function(dataSources) {
 	if (!dataSources || this._initialized) { return; }
 
+	var errors = [];
+
 	if (appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED)) {
 		var popAccounts = dataSources.pop3 || [];
 		for (var i = 0; i < popAccounts.length; i++) {
-			var pop3 = new ZmPopAccount(popAccounts[i].id);
-			pop3.setFromJson(popAccounts[i]);
-			this.add(pop3);
+			var object = popAccounts[i];
+			var dataSource = new ZmPopAccount(object.id);
+			dataSource.setFromJson(object);
+			this.add(dataSource);
+			if (!dataSource.isStatusOk()) {
+				errors.push(dataSource);
+			}
 		}
 	}
 
 	if (appCtxt.get(ZmSetting.IMAP_ACCOUNTS_ENABLED)) {
 		var imapAccounts = dataSources.imap || [];
 		for (var i = 0; i < imapAccounts.length; i++) {
-			var imap = new ZmImapAccount(imapAccounts[i].id);
-			imap.setFromJson(imapAccounts[i]);
-			this.add(imap);
+			var object = imapAccounts[i];
+			var dataSource = new ZmImapAccount(object.id);
+			dataSource.setFromJson(object);
+			this.add(dataSource);
+			if (!dataSource.isStatusOk()) {
+				errors.push(dataSource);
+			}
 		}
 	}
 
 	this._initialized = true;
+
+	var count = errors.length;
+	if (count > 0) {
+		// build error message
+		var array = [
+			AjxMessageFormat.format(ZmMsg.dataSourceFailureDescription, [count])
+		];
+		for (var i = 0; i < count; i++) {
+			var dataSource = errors[i];
+			var timestamp = Number(dataSource.failingSince);
+			var lastError = dataSource.lastError;
+			var params = [
+				AjxStringUtil.htmlEncode(dataSource.getName()), new Date(timestamp * 1000),
+				AjxStringUtil.htmlEncode(lastError)
+			];
+			array.push(AjxMessageFormat.format(ZmMsg.dataSourceFailureItem, params));
+		}
+		array.push(ZmMsg.dataSourceFailureInstructions);
+		var message = array.join("");
+
+		// show error message
+		var shell = DwtShell.getShell(window);
+		var dialog = new DwtMessageDialog({parent:shell,buttons:[DwtDialog.OK_BUTTON,DwtDialog.CANCEL_BUTTON]});
+		dialog.setMessage(message, DwtMessageDialog.CRITICAL_STYLE, ZmMsg.dataSourceFailureTitle);
+		dialog.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this.__handleErrorDialogOk, [dialog]));
+		dialog.popup();
+	}
+};
+
+ZmDataSourceCollection.prototype.__handleErrorDialogOk = function(dialog) {
+	dialog.popdown();
+
+	var callback = new AjxCallback(this, this.__gotoPrefSection, ["ACCOUNTS"]);
+	appCtxt.getAppController().activateApp(ZmApp.PREFERENCES, true, callback);
+};
+
+ZmDataSourceCollection.prototype.__gotoPrefSection = function(prefSectionId) {
+	var controller = appCtxt.getApp(ZmApp.PREFERENCES).getPrefController();
+	controller.getPrefsView().selectSection(prefSectionId);
 };
 
 //
