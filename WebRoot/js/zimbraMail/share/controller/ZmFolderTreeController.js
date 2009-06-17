@@ -548,7 +548,7 @@ function(ev) {
 		} else {
 			var ctlr = ev.srcData.controller;
 			var items = (data instanceof Array) ? data : [data];
-			ctlr._doMove(items, dropFolder, null, !isShiftKey);
+			ctlr._doMove(items, dropFolder, null, isShiftKey);
 		}
 	}
 };

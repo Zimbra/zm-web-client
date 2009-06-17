@@ -687,7 +687,7 @@ function(view, bPageForward) {
 };
 
 ZmContactListController.prototype._doMove =
-function(items, folder, attrs, force) {
+function(items, folder, attrs, isShiftKey) {
 	if (!(items instanceof Array)) items = [items];
 
 	var move = [];
@@ -698,7 +698,7 @@ function(items, folder, attrs, force) {
 		if (item.isGal) {
 			moveFromGal.push(item);
 		} else if (!item.folderId || item.folderId != folder.id) {
-			if (!force && (item.isShared() || folder.isRemote()) || item.isReadOnly()) {
+			if (isShiftKey || item.isShared() || folder.isRemote() || item.isReadOnly()) {
 				copy.push(item);
 			} else {
 				move.push(item);

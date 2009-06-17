@@ -515,8 +515,8 @@ function(items, hardDelete, attrs) {
 };
 
 ZmConvListController.prototype._doMove =
-function(items, folder, attrs, force) {
-	this._applyAction(items, "_doMove", [folder, attrs, force]);
+function(items, folder, attrs, isShiftKey) {
+	this._applyAction(items, "_doMove", [folder, attrs, isShiftKey]);
 };
 
 ZmConvListController.prototype._doMarkRead =

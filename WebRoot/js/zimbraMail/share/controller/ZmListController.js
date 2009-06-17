@@ -394,7 +394,6 @@ function(view) {
 
 	this._tabGroups[view] = this._createTabGroup();
 	this._tabGroups[view].newParent(appCtxt.getRootTabGroup());
-//	this._tabGroups[view].addMember(this._toolbar[view]);
 	this._toolbar[view].noFocus = true;
 	this._tabGroups[view].addMember(this._listView[view]);
 };
@@ -475,8 +474,9 @@ ZmListController.prototype._listActionListener =
 function(ev) {
 	this._actionEv = ev;
 	var actionMenu = this.getActionMenu();
-	if (appCtxt.get(ZmSetting.TAGGING_ENABLED))
+	if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
 		this._setTagMenu(actionMenu);
+	}
 	this._resetOperations(actionMenu, this._listView[this._currentView].getSelectionCount());
 };
 
@@ -601,7 +601,7 @@ function() {
 		overviewId:"ZmListController",
 		title:this._getMoveDialogTitle(this._pendingActionData.length),
 		description:ZmMsg.targetFolder,
-        treeStyle: DwtTree.SINGLE_STYLE
+		treeStyle: DwtTree.SINGLE_STYLE
 	};
 };
 
@@ -822,10 +822,10 @@ function(items, hardDelete, attrs) {
 * @param items		[Array]			a list of items to move
 * @param folder		[ZmFolder]		destination folder
 * @param attrs		[Object]		additional attrs for SOAP command
-@ @param force		[boolean]		true if forcing a move request (no copy)
+@ @param isShiftKey	[boolean]		true if forcing a copy action
 */
 ZmListController.prototype._doMove =
-function(items, folder, attrs, force) {
+function(items, folder, attrs, isShiftKey) {
 	if (!(items instanceof Array)) items = [items];
 
 	var move = [];
@@ -833,10 +833,11 @@ function(items, folder, attrs, force) {
 	for (var i = 0; i < items.length; i++) {
 		var item = items[i];
 		if (!item.folderId || item.folderId != folder.id) {
-			if (!this._isItemMovable(item, force))
+			if (!this._isItemMovable(item, isShiftKey, folder)) {
 				copy.push(item);
-			else
+			} else {
 				move.push(item);
+			}
 		}
 	}
 
@@ -851,14 +852,16 @@ function(items, folder, attrs, force) {
 };
 
 /**
-* Decides whether an item is movable
-*
-* @param item	[Object]	item to be checked
-*/
+ * Decides whether an item is movable
+ *
+ * @param item			[Object]	item to be checked
+ * @param isShiftKey	[Boolean]*	true if forcing a copy (not a move)
+ * @param folder		[ZmFolder]	folder this item belongs under
+ */
 ZmListController.prototype._isItemMovable =
-function(item, force){
-    // regardless of force flag, read-only items *cannot* be moved    
-    return !item.isReadOnly() && (force || (!item.isShared() && !folder.isRemote())) ;
+function(item, isShiftKey, folder) {
+	// regardless of force flag, read-only items *cannot* be moved
+	return !item.isReadOnly() && (!isShiftKey && (!item.isShared() && !folder.isRemote()));
 };
 
 // Modify an item
