@@ -143,7 +143,8 @@ function(appName) {
 
 ZmAppCtxt.prototype.getCurrentAppName =
 function() {
-	return this._appController.getActiveApp();
+	var context = this.isChildWindow ? parentAppCtxt : this;
+	return context._appController.getActiveApp();
 };
 
 ZmAppCtxt.prototype.getCurrentApp =
