@@ -886,17 +886,20 @@ function() {
  */
 ZmAppCtxt.prototype.notifyZimlets =
 function(event, args, options) {
-	if (!this.zimletsPresent()) { return; }
+
+	var context = this.isChildWindow ? parentAppCtxt : this;
+
+	if (!context.zimletsPresent()) { return; }
 	if (options && options.noChildWindow && this.isChildWindow) { return; }
 
-	if (!this.areZimletsLoaded()) {
+	if (!context.areZimletsLoaded()) {
 		if (options && options.waitUntilLoaded) {
-			this.addZimletsLoadedListener(new AjxListener(this, this.notifyZimlets, [event, args]));
+			context.addZimletsLoadedListener(new AjxListener(context, context.notifyZimlets, [event, args]));
 		}
 		return;
 	}
 
-	this.getZimletMgr().notifyZimlets(event, args);
+	context.getZimletMgr().notifyZimlets(event, args);
 };
 
 ZmAppCtxt.prototype.getCalManager =
