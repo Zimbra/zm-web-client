@@ -1445,7 +1445,9 @@ function(addrNodes, parentNode, isDraft, accountName) {
 
 	// only use account name if we either dont have any identities to choose
 	// from or the one we have is the default anyway
-	if (accountName && (!this.identity || (this.identity && this.identity.isDefault))) {
+	var identity = this.identity;
+	var isPrimary = identity == null || identity.isDefault;
+	if (accountName && isPrimary) {
 		// when saving a draft, even if obo, we do it on the main account so reset the from
 		if (isDraft) {
 			var folder = appCtxt.getById(this.folderId);
@@ -1463,9 +1465,9 @@ function(addrNodes, parentNode, isDraft, accountName) {
 			}
 		}
 
-		var addr = this.identity ? this.identity.sendFromAddress : accountName;
+		var addr = identity ? identity.sendFromAddress : accountName;
 		var node = {t:"f", a:addr};
-		var displayName = this.identity ? this.identity.sendFromDisplay : null;
+		var displayName = identity && identity.sendFromDisplay;
 		if (displayName) {
 			node.p = displayName;
 		}
@@ -1495,12 +1497,26 @@ function(addrNodes, parentNode, isDraft, accountName) {
 			}
 		}
 
-		addrNode.a = this.identity.sendFromAddress;
-		var name = this.identity.sendFromDisplay;
+		addrNode.a = identity.sendFromAddress;
+		var name = identity.sendFromDisplay;
 		if (name) {
 			addrNode.p = name;
 		}
 		addrNodes.push(addrNode);
+
+		if (identity && identity.isFromDataSource && appCtxt.get(ZmSetting.SEND_ON_BEHALF_OF)) {
+			var dataSource = appCtxt.getDataSourceCollection().getById(identity.id);
+			if (dataSource) {
+				// main account is "sender"
+				addrNode.t = "s";
+				// mail is "from" external account
+				addrNode = {
+					t:"f",
+					a:dataSource.getEmail()
+				};
+				addrNodes.push(addrNode);
+			}
+		}
 	}
 };
 
