@@ -155,7 +155,9 @@
                             <tr>
                                 <td nowrap align='right' class='MsgHdrSent'>
                                     <fmt:message var="dateFmt" key="formatDateSent"/>
-                                    <fmt:formatDate timeZone="${mailbox.prefs.timeZone}" pattern="${dateFmt}" value="${zm:contains(message.displaySentDate,'1969') ? message.receivedDate : message.sentDate}"/>
+                                    <c:if test="${not empty message.displaySentDate}">
+                                        <fmt:formatDate timeZone="${mailbox.prefs.timeZone}" pattern="${dateFmt}" value="${zm:contains(message.displaySentDate,'1969') ? message.receivedDate : message.sentDate}"/>
+                                    </c:if>
                                 </td>
                             </tr>
                             <c:if test="${message.hasTags or message.isFlagged}">
