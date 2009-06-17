@@ -103,8 +103,6 @@ ZmSearch.PCOMPLETE_ASC	= "taskPercCompletedAsc";
 ZmSearch.DUE_DATE_DESC	= "taskDueDesc";
 ZmSearch.DUE_DATE_ASC	= "taskDueAsc";
 
-ZmSearch.FOLDER_QUERY_RE = new RegExp('^in:\\s*"?(' + ZmOrganizer.VALID_PATH_CHARS + '+)"?\\s*$', "i");
-ZmSearch.TAG_QUERY_RE = new RegExp('^tag:\\s*"?(' + ZmOrganizer.VALID_NAME_CHARS + '+)"?\\s*$', "i");
 ZmSearch.UNREAD_QUERY_RE = new RegExp('\\bis:\\s*(un)?read\\b', "i");
 ZmSearch.IS_ANYWHERE_QUERY_RE = new RegExp('\\bis:\\s*anywhere\\b', "i");
 
@@ -612,58 +610,209 @@ function(req) {
 	}
 };
 
+ZmSearch.IS_OP	= {"in":true, "inid":true, "is":true, "tag":true};
+ZmSearch.COND	= {"and":" && ", "or":" || ", "not":" !"};
+ZmSearch.EOW	= {" ":true, ":":true, "(":true, ")":true};
+ZmSearch.FLAG = {};
+ZmSearch.FLAG["unread"]			= "item.isUnread";
+ZmSearch.FLAG["read"]			= "!item.isUnread";
+ZmSearch.FLAG["flagged"]		= "item.isFlagged";
+ZmSearch.FLAG["unflagged"]		= "!item.isFlagged";
+ZmSearch.FLAG["forwarded"]		= "item.isForwarded";
+ZmSearch.FLAG["unforwarded"]	= "!item.isForwarded";
+ZmSearch.FLAG["sent"]			= "item.isSent";
+ZmSearch.FLAG["replied"]		= "item.isReplied";
+ZmSearch.FLAG["unreplied"]		= "!item.isReplied";
+
 /**
  * Parse simple queries so we can do basic matching on new items (determine whether
- * they match this search query). The following types of queries are handled:
+ * they match this search query). The following types of query terms are handled:
  *
  *    in:[folder]
  *    tag:[tag]
+ *    is:[flag]
  *
- * which may result in this.folderId or this.tagId getting set.
+ * Those may be joined by conditionals: "and", "or", "not", "-", and the implied "and"
+ * that appears between consecutive terms. The result of the parsing is the creation
+ * of a function that takes an item as its argument and returns true if that item
+ * matches this search. If the parsing fails for any reason, the function is not
+ * created.
  *
- * NOTE: The scope of this parsing should remain limited. We don't want to get into
- * the business of trying to mimic the server's query parsing, which is quite complex.
+ * If the query is a single term of "in:" or "tag:", then this.folderId or this.tagId
+ * will be set.
+ *
+ * Compound terms such as "in:(inbox or sent)" are not handled. Anything that invokes
+ * a text search (such as "in:inbox xml") is not handled.
  */
 ZmSearch.prototype._parseQuery =
 function() {
-	var results = this.query.match(ZmSearch.FOLDER_QUERY_RE);
-	if (results) {
-		var path = results[1].toLowerCase();
-		// first check if it's a system folder (name in query string may not match actual name)
-		for (var id in ZmFolder.QUERY_NAME) {
-			if (ZmFolder.QUERY_NAME[id] == path) {
-				this.folderId = id;
-			}
-		}
-		// now check all folders by name
-		if (!this.folderId) {
-			var account = this.accountName && appCtxt.getAccountByName(this.accountName);
-			var folders = appCtxt.getFolderTree(account);
-			var folder = folders ? folders.getByPath(path, true) : null;
-			if (folder) {
-				this.folderId = folder.id;
-			}
-		} else {
-			if (this.accountName) {
-				this.folderId = ZmOrganizer.getSystemId(this.folderId, appCtxt.getAccountByName(this.accountName));
-			}
-		}
-	}
-	results = this.query.match(ZmSearch.TAG_QUERY_RE);
-	if (results) {
-		var name = results[1].toLowerCase();
-		var tagTree = appCtxt.getTagTree();
-		if (tagTree) {
-			var tag = tagTree.getByName(name);
-			if (tag) {
-				this.tagId = tag.id;
-			}
-		}
-	}
+
 	this.hasUnreadTerm = ZmSearch.UNREAD_QUERY_RE.test(this.query);
 	this.isAnywhere = ZmSearch.IS_ANYWHERE_QUERY_RE.test(this.query);
 
+	function skipSpace(str, pos) {
+		while (pos < str.length && str[pos] == " ") {
+			pos++;
+		}
+		return pos;
+	}
 
+	function getQuotedStr(str, pos) {
+		var q = str[pos++];
+		var done = false, ch, quoted = "";
+		while (pos < str.length && !done) {
+			ch = str[pos];
+			if (ch == q) {
+				done = true;
+			} else {
+				quoted += ch;
+				pos++;
+			}
+		}
+
+		return done ? {str:quoted, pos:pos + 1} : null;
+	}
+
+	var query = this.query;
+	var len = this.query.length;
+	var tokens = [], ch, op, word = "", fail = false, eow = false;
+	var pos = skipSpace(query, 0);
+	while (pos < len && !fail) {
+		ch = query[pos];
+		eow = ZmSearch.EOW[ch];
+
+		if (ch == ":") {
+			if (ZmSearch.IS_OP[word]) {
+				op = word;
+				word = "";
+				pos = skipSpace(query, pos + 1);
+				continue;
+			} else {
+				fail = true;
+			}
+		}
+
+		if (eow) {
+			if (op && word) {
+				tokens.push({isTerm:true, op:op, arg:word});
+				op = word = "";
+			} else if (!op) {
+				if (ZmSearch.COND[word.toLowerCase()]) {
+					tokens.push(ZmSearch.COND[word.toLowerCase()]);
+					word = "";
+				} else if (word) {
+					fail = true;
+				}
+			}
+		}
+
+		if (ch == "'" || ch == '"') {
+			var results = getQuotedStr(query, pos);
+			if (results) {
+				word = results.str;
+				pos = results.pos;
+			} else {
+				fail = true;
+			}
+		} else if (ch == "(" || ch == ")") {
+			tokens.push(ch);
+			pos = skipSpace(query, pos + 1);
+		} else if (ch == "-" && !word) {
+			tokens.push("not");
+			pos = skipSpace(query, pos + 1);
+		} else {
+			if (ch != " ") {
+				word += ch;
+			}
+			pos++;
+		}
+	}
+
+	if (fail) { return; }
+
+	// only need to check for term at end - cannot end with conditional
+	if ((pos == query.length) && op && word) {
+		tokens.push({isTerm:true, op:op, arg:word});
+	}
+
+	var numTerms = 0, id;
+	var func = ["return Boolean("];
+	for (var i = 0, len = tokens.length; i < len; i++) {
+		var t = tokens[i];
+		if (t.isTerm) {
+			if (t.op == "in" || t.op == "inid") {
+				id = (t.op == "in") ? this._getFolderId(t.arg) : t.arg;
+				if (!id) { return; }
+				func.push("((item.type == ZmItem.CONV) ? item.folders && item.folders['" + id +"'] : item.folderId == '" + id + "')");
+			} else if (t.op == "tag") {
+				id = this._getTagId(t.arg);
+				if (!id) { return; }
+				func.push("item.hasTag('" + id + "')");
+			} else if (t.op == "is") {
+				var test = ZmSearch.FLAG[t.arg];
+				if (!test) { return; }
+				func.push(test);
+			}
+			numTerms++;
+			var next = tokens[i + 1];
+			if (next && (next.isTerm || next == ZmSearch.COND["not"] || next == "(")) {
+				func.push(ZmSearch.COND["and"]);
+			}
+		} else {
+			func.push(t);
+		}
+	}
+	func.push(")");
+
+	try {
+		this.matches = new Function("item", func.join(""));
+	} catch(ex) {}
+
+	if (numTerms == 1) {
+		var t = tokens[0];
+		if (t.op == "in" || t.op == "inid") {
+			this.folderId = id;
+		} else if (t.op == "tag") {
+			this.tagId = id;
+		}
+	}
+};
+
+/**
+ * Returns the fully-qualified ID for the given folder path.
+ *
+ * @param path
+ */
+ZmSearch.prototype._getFolderId =
+function(path) {
+	// first check if it's a system folder (name in query string may not match actual name)
+	var folderId = ZmFolder.QUERY_ID[path];
+	// now check all folders by name
+	if (!folderId) {
+		var account = this.accountName && appCtxt.getAccountByName(this.accountName);
+		var folders = appCtxt.getFolderTree(account);
+		var folder = folders ? folders.getByPath(path, true) : null;
+		if (folder) {
+			folderId = folder.id;
+		}
+	}
+
+	if (this.accountName) {
+		folderId = ZmOrganizer.getSystemId(folderId, appCtxt.getAccountByName(this.accountName));
+	}
+
+	return folderId;
+};
+
+ZmSearch.prototype._getTagId =
+function(name) {
+	var tagTree = appCtxt.getTagTree();
+	if (tagTree) {
+		var tag = tagTree.getByName(name.toLowerCase());
+		if (tag) {
+			return tag.id;
+		}
+	}
 };
 
 ZmSearch.prototype.hasFolderTerm =

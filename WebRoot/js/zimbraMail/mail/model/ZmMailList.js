@@ -249,9 +249,7 @@ function(items, folderId) {
 
 ZmMailList.prototype.notifyCreate = 
 function(convs, msgs) {
-	var searchFolder = this.search
-		? (appCtxt.getActiveAccount().isMain ? this.search.folderId : ZmOrganizer.getSystemId(this.search.folderId))
-		: null;
+
 	var createdItems = [];
 	var newConvs = [];
 	var newMsgs = [];
@@ -261,14 +259,14 @@ function(convs, msgs) {
 	var fields = {};
 	var sortBy = this.search ? this.search.sortBy : null;
 	var sortIndex = {};
-	if (this.type == ZmItem.CONV && searchFolder) {
+	if ((this.type == ZmItem.CONV) && this.search && this.search.matches) {
 
 		// handle new convs first so we can set their fragments later from new msgs
 		for (var id in convs) {
 			if (this.getById(id)) { continue; }	// already have this conv
 			newConvId[id] = convs[id];
 			var conv = convs[id];
-			if (conv.folders && conv.folders[searchFolder]) {
+			if (this.search.matches(conv)) {
 				// a new msg for this conv matches current search
 				conv.list = this;
 				newConvs.push(conv);
@@ -279,7 +277,7 @@ function(convs, msgs) {
 		for (var id in msgs) {
 			var msg = msgs[id];
 			var cid = msg.cid;
-			var msgMatches = (msg.folderId == searchFolder);
+			var msgMatches = this.search.matches(msg);
 			var conv = newConvId[cid] || this.getById(cid);
 			if (msgMatches) {
 				if (!conv) {
@@ -314,7 +312,6 @@ function(convs, msgs) {
 					flaggedItems.push(conv);
 				}
 				// if the new msg matches current search, update conv date, fragment, and sort order
-				// TODO: handle simple tag searches
 				if (msgMatches) {
 					msg.inHitList = true;
 					if (conv.fragment != msg.fragment) {
@@ -346,7 +343,7 @@ function(convs, msgs) {
 					newMsgs.push(msg);
 				}
 			} else { // MLV (traditional)
-				if (msg.folderId == searchFolder) {
+				if (this.search.matches && this.search.matches(msg)) {
 					msg.list = this;
 					newMsgs.push(msg);
 				}

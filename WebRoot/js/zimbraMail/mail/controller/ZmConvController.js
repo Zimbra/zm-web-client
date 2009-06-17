@@ -255,29 +255,7 @@ function() {
 	var popView = true;
 
 	if (this._conv.numMsgs > 1) {
-		// get the search folder if one exists
-		var clc = AjxDispatcher.run("GetConvListController");
-		var search = clc.getList().search;
-		var folderId;
-		if (search.folderId) {
-			folderId = parseInt(search.folderId);
-			if (appCtxt.multiAccounts) {
-				folderId = ZmOrganizer.getSystemId(folderId);
-			}
-		}
-		if (folderId && this._conv.msgs) {
-			// search all msgs in conv to see if at least one is in search folder
-			var msgs = this._conv.msgs.getArray();
-			for (var i = 0; i < msgs.length; i++) {
-				if (msgs[i].folderId == folderId) {
-					popView = false;
-					break;
-				}
-			}
-		} else {
-			// must be custom/saved search, don't pop!
-			popView = false;
-		}
+		popView = !this._conv.hasMatchingMsg(AjxDispatcher.run("GetConvListController").getList().search, true);
 	}
 
 	// Don't pop unless we're currently visible!
@@ -287,7 +265,7 @@ function() {
 	var popAnyway = false;
 	if (currViewId == ZmId.VIEW_COMPOSE && this._conv.numMsgs == 1 && this._conv.msgs) {
 		var msg = this._conv.msgs.getArray()[0];
-		popAnyway = msg.isInvite() && msg.folderId == ZmFolder.ID_TRASH;
+		popAnyway = (msg.isInvite() && msg.folderId == ZmFolder.ID_TRASH);
 	}
 
 	popView = popView && ((currViewId == this._currentView) || popAnyway);

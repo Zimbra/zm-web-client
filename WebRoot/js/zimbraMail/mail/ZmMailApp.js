@@ -1023,9 +1023,8 @@ function(creates, list, controller) {
 	var msgs = {};
 	var folders = {};
 
-	// XXX: should handle simple tag search as well
-	var folderId = list.search ? list.search.folderId : null;
-	if (!folderId && (controller != this._convController)) { return; }
+	// make sure current search is matchable (conv ctlr can just match on cid)
+	if (!(list.search && list.search.matches) && (controller != this._convController)) { return; }
 
 	var sortBy = list.search.sortBy;
 	var a = list.getArray();

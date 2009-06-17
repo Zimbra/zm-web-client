@@ -628,27 +628,7 @@ function(ev) {
 				this.removeItem(item, true);	// remove msg row
 				this._controller._app._checkReplenishListView = this;
 			} else {
-				// if this conv now has no msgs that match current search, remove it
-				var removeConv = true;
-				var curSearch = this._controller._app.currentSearch;
-				var folderId;
-				if (curSearch) {
-					folderId = appCtxt.multiAccounts
-						? ZmOrganizer.getSystemId(curSearch.folderId)
-						: curSearch.folderId;
-				}
-				if (folderId && conv.msgs) {
-					var msgs = conv.msgs.getArray();
-					for (var i = 0; i < msgs.length; i++) {
-						if (msgs[i].folderId == folderId) {
-							removeConv = false;
-							break;
-						}
-					}
-				} else {
-					removeConv = false;
-				}
-				if (removeConv) {
+				if (!(conv.hasMatchingMsg(this._controller._app.currentSearch), true)) {
 					this._list.remove(conv);				// view has sublist of controller list
 					this._controller._list.remove(conv);	// complete list
 					ev.item = item = conv;

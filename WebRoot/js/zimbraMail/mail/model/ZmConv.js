@@ -239,6 +239,29 @@ function() {
 };
 
 /**
+ * Returns true if this conversation has a msg that matches the given search.
+ * If the search is not present or not matchable, the provided default value is
+ * returned.
+ *
+ * @param search			[ZmSearch]		search to match against
+ * @param defaultValue		[boolean]		value to return if search is not matchable
+ */
+ZmConv.prototype.hasMatchingMsg =
+function(search, defaultValue) {
+	if (search && search.matches && this.msgs) {
+		var msgs = this.msgs.getArray();
+		for (var i = 0; i < msgs.length; i++) {
+			if (search.matches(msgs[i])) {
+				return true;
+			}
+		}
+	} else {
+		return defaultValue;
+	}
+	return false;
+};
+
+/**
 * Handles a modification notification.
 * TODO: Bundle MODIFY notifs (should bubble up to parent handlers as well)
 *
@@ -352,26 +375,6 @@ function() {
 	if (notify) {
 		this._notify(ZmEvent.E_TAGS);
 	}
-};
-
-ZmConv.prototype.checkMoved = 
-function(folderId) {
-	var msgs = this.msgs.getArray();
-	var doNotify = true;
-	if (msgs.length > 1) {
-		var fid = appCtxt.multiAccounts ? ZmOrganizer.getSystemId(folderId) : folderId;
-		for (var i = 0; i < msgs.length; i++) {
-			if (msgs[i].folderId == fid) {
-				doNotify = false;
-				break;
-			}
-		}
-	}
-	if (doNotify) {
-		this._notify(ZmEvent.E_MOVE);
-	}
-	
-	return doNotify;
 };
 
 ZmConv.prototype.moveLocal =
@@ -520,7 +523,9 @@ function(ev) {
 		this._checkFlags(ev.getDetail("flags"));
 	} else 	if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE) {
 		// a msg was moved or deleted, see if this conv's row should remain
-		this.checkMoved(this.getFolderId());
+		if (this.list && this.list.search && !this.hasMatchingMsg(this.list.search, true)) {
+			this._notify(ZmEvent.E_MOVE);
+		}
 	}
 };
 

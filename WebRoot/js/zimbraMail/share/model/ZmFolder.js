@@ -119,6 +119,11 @@ ZmFolder.QUERY_NAME[ZmOrganizer.ID_BRIEFCASE]	= "briefcase";
 ZmFolder.QUERY_NAME[ZmFolder.ID_CHATS]			= "chats";
 ZmFolder.QUERY_NAME[ZmFolder.ID_SYNC_FAILURES]	= '"Error Reports"';
 
+ZmFolder.QUERY_ID = {};
+for (var id in ZmFolder.QUERY_NAME) {
+	ZmFolder.QUERY_ID[ZmFolder.QUERY_NAME[id]] = id;
+}
+
 // order within the overview panel
 ZmFolder.SORT_ORDER = {};
 ZmFolder.SORT_ORDER[ZmFolder.ID_INBOX]			= 1;
@@ -528,7 +533,6 @@ function(what, folderType) {
 		// An item or an array of items is being moved
 		var items = (what instanceof Array) ? what : [what];
 		var item = items[0];
-		var searchFolder = item.list && item.list.search && appCtxt.getById(item.list.search.folderId);
 
 		if (this.nId == ZmOrganizer.ID_ROOT ||									// container can only have folders/searches
 			this.nId == ZmOrganizer.ID_OUTBOX ||								// nothing can be moved to outbox/sync failures/archive folders
@@ -540,7 +544,7 @@ function(what, folderType) {
 			invalid = true;														// can't drop items into saved searches
 		} else if ((item.type == ZmItem.CONTACT) && item.isGal) {
 			invalid = true;
-		} else if (item.type == ZmItem.CONV && searchFolder && searchFolder.id == this.id) {
+		} else if ((item.type == ZmItem.CONV) && item.list && item.list.search && (item.list.search.folderId == this.id)) {
 			invalid = true;														// convs which are a result of a search for this folder
 		} else {																// checks that need to be done for each item
 			for (var i = 0; i < items.length; i++) {
