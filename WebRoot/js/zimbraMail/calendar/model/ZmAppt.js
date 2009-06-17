@@ -143,7 +143,7 @@ function(controller, callback) {
 		var respCallback = new AjxCallback(this, this._handleResponseGetToolTip, [controller, callback]);
 		clone.getDetails(null, respCallback);
 	} else {
-		return this._handleResponseGetToolTip(controller);
+		return this._handleResponseGetToolTip(controller, callback);
 	}
 };
 
