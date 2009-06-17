@@ -41,6 +41,11 @@
     </tag-file>
 
     <tag-file>
+        <name>documentView</name>
+        <path>/WEB-INF/tags/rest/restDocumentView.tag</path>
+    </tag-file>
+
+    <tag-file>
         <name>spreadsheetView</name>
         <path>/WEB-INF/tags/rest/restSpreadsheetView.tag</path>
     </tag-file>
