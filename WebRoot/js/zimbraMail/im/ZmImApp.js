@@ -169,13 +169,6 @@ ZmImApp.prototype._registerSettings = function(settings) {
             defaultValue:   true
     });
 
-	settings.registerSetting("IM_PREF_FLASH_ICON",
-			{	name         : "zimbraPrefIMFlashIcon",
-				type         : ZmSetting.T_PREF,
-				dataType     : ZmSetting.D_BOOLEAN,
-				defaultValue : true
-			});
-
 	settings.registerSetting("IM_PREF_FLASH_BROWSER",
 			{	name         : "zimbraPrefIMFlashTitle",
 				type         : ZmSetting.T_PREF,
@@ -304,7 +297,6 @@ ZmImApp.prototype._registerPrefs = function() {
 			prefs: [
 				ZmSetting.IM_PREF_INSTANT_NOTIFY,
 				ZmSetting.IM_PREF_AUTO_LOGIN,
-				ZmSetting.IM_PREF_FLASH_ICON,
 				ZmSetting.IM_PREF_FLASH_BROWSER,
 				ZmSetting.IM_PREF_DESKTOP_ALERT,
 				ZmSetting.IM_PREF_NOTIFY_PRESENCE,
@@ -343,10 +335,6 @@ ZmImApp.prototype._registerPrefs = function() {
 					  return ZmImApp.INSTANCE.getServiceController().capabilities[ZmImServiceController.AUTO_LOGIN_PREF]; 
 				  }
 				});
-
-	ZmPref.registerPref("IM_PREF_FLASH_ICON",
-			    { displayName      : ZmMsg.imPrefFlashIcon,
-			      displayContainer : ZmPref.TYPE_CHECKBOX });
 
 	ZmPref.registerPref("IM_PREF_FLASH_BROWSER",
 			    { displayName      : ZmMsg.flashBrowser,
