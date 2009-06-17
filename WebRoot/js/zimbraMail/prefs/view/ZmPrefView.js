@@ -41,7 +41,7 @@ ZmPrefView = function(params) {
 	this._hasRendered = false;
 
 	this.setVisible(false);
-//	this.getTabBar().setVisible(false);
+	this.getTabBar().setVisible(false);
 };
 
 ZmPrefView.prototype = new DwtTabView;
