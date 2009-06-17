@@ -159,7 +159,6 @@ function(ev) {
 		}
 		this._controller._app._checkReplenishListView = this;
 		this._controller._resetToolbarOperations();
-		this._controller._restoreFocus(this);
 	}
 };
 
