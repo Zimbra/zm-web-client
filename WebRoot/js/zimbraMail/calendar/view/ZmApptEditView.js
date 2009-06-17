@@ -536,7 +536,6 @@ function(dlg, folder) {
 
 	this._folderPickerButton.setText(folder.name);
 	this._folderPickedId = folder.id;
-//	this._isDirty = true;
 };
 
 ZmApptEditView.prototype._initAutocomplete =
