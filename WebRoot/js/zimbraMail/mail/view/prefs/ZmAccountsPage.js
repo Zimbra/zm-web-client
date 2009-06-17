@@ -1589,7 +1589,13 @@ function(evt) {
 
 ZmAccountsPage.prototype._handleUserNameChange =
 function(evt) {
-	this._currentAccount.userName = this._getControlValue("USERNAME", this._currentSection);
+	var userName = this._getControlValue("USERNAME", this._currentSection);
+	this._currentAccount.userName = userName;
+	if (!this._getControlValue("EMAIL", this._currentSection)) {
+		var provider = ZmDataSource.getProviderForAccount(this._currentAccount);
+		var email = userName && provider && provider._host ? [userName,provider._host].join("@") : userName;
+		this._updateEmailCell(email);
+	}
 };
 
 ZmAccountsPage.prototype._handleHostChange =

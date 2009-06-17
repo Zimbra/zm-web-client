@@ -104,7 +104,7 @@ function() {
 	if (!email) { // bug: 38175
 		var provider = ZmDataSource.getProviderForAccount(this);
 		var host = (provider && provider._host) || this.mailServer;
-		email = [ this.userName, host].join("@");
+		email = this.userName && host ? [ this.userName, host].join("@") : "";
 	}
 	return email;
 };
