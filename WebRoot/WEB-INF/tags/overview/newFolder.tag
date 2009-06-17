@@ -91,7 +91,7 @@
     </tr>
 
 <c:choose>
-    <c:when test="${not (calendar or addressbook or tasklist)}">
+    <c:when test="${not (calendar or addressbook or tasklist)}"> 
     <tr>
         <td nowrap align='right'>
             <label for="parentFolder">
@@ -104,6 +104,27 @@
                 <fmt:message key="rootFolder"/>
                 <zm:forEachFolder var="parent">
                     <c:if test="${parent.isMessageMoveTarget and !parent.isTrash and !parent.isSpam}">
+                        <option value="${parent.id}"/>
+                        ${fn:escapeXml(parent.rootRelativePath)}
+                    </c:if>
+                </zm:forEachFolder>
+            </select>
+        </td>
+    </tr>
+    </c:when>
+    <c:when test="${addressbook}"> <%-- bug: 23848 allowing nested addr books to be created --%>
+    <tr>
+        <td nowrap align='right'>
+            <label for="parentFolder">
+            <fmt:message key="parentFolder"/>
+            :</label>
+        </td>
+        <td>
+            <select name="newFolderParentId" id="parentFolder">
+                <option selected value="1"/>
+                <fmt:message key="rootFolder"/>
+                <zm:forEachFolder var="parent">
+                    <c:if test="${parent.isContactMoveTarget and !parent.isTrash and !parent.isSpam}">
                         <option value="${parent.id}"/>
                         ${fn:escapeXml(parent.rootRelativePath)}
                     </c:if>

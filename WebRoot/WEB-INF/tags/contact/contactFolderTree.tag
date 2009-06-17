@@ -34,9 +34,9 @@
         <c:if test="${expanded}">
 			<c:set var="myCard" value="${mailbox.myCard}"/>
 			<c:set var="myCardSelected" value="${not empty myCard and myCard.id eq param.id and not empty param.actionEdit}" scope="request"/>
-
-            <app:doContactFolderTree skiproot="${false}" skipsystem="false" skiptrash="true"/>
-			<c:if test="${not empty myCard}">
+            <app:overviewFolder types="contact" folder="${mailbox.contacts}"/>
+            <app:doContactFolderTree skiproot="${true}" parentid="${mailbox.contacts.id}" skipsystem="false"/>
+            <c:if test="${not empty myCard}">
 				<app:myCardFolder myCard="${myCard}"/>
 			</c:if>
             <app:overviewFolder types="contact" folder="${mailbox.trash}"/>

@@ -37,6 +37,7 @@
             </c:when>
             <c:otherwise>
                 <zm:updateFolder
+                        parentid="${empty uploader.params.folderParentId ? folder.parentId : uploader.params.folderParentId}"
                         id="${uploader.params.folderId}"
                         name="${uploader.params.folderName}"
                         color="${uploader.params.folderColor}"/>
@@ -67,7 +68,7 @@
                 <c:choose>
                     <c:when test="${not empty uploader.params.newFolderOwnersEmailVisible}">
                         <zm:createMountpoint var="folder"
-                                             parentid="1"
+                                             parentid="${param.newFolderParentId}"
                                              name="${uploader.params.newFolderName}"
                                              view="contact"
                                              color="${uploader.params.newFolderColor}"
@@ -77,7 +78,7 @@
                     </c:when>
                     <c:otherwise>
                         <zm:createFolder var="folder"
-                                         parentid="1"
+                                         parentid="${uploader.params.newFolderParentId}"
                                          name="${uploader.params.newFolderName}"
                                          view="contact"
                                          color="${uploader.params.newFolderColor}"
