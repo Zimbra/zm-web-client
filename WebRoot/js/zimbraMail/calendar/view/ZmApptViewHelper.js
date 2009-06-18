@@ -329,11 +329,22 @@ function(appt, id, body_style, controller) {
 		endtime: (!appt._fanoutLast && (appt._fanoutFirst || (appt._fanoutNum > 0))) ? "" : ZmCalBaseItem._getTTHour(appt.endDate),
 		location: AjxStringUtil.htmlEncode(appt.getLocation()),
 		status: appt.isOrganizer() ? "" : appt.getParticipantStatusStr(),
-		icon: appt.isPrivate() ? "ReadOnly" : null
+		icon: appt.isPrivate() ? "ReadOnly" : null,
+		showAsColor : ZmApptViewHelper._getShowAsColorFromId(appt.fba)
 	};
     return AjxTemplate.expand("calendar.Calendar#calendar_appt_allday", subs);
 };
 
+ZmApptViewHelper._getShowAsColorFromId =
+function(id) {
+	switch(id) {
+		case "F": return "ZmScheduler-free";
+		case "B": return "ZmScheduler-busy";
+		case "T": return "ZmScheduler-tentative";
+		case "O": return "ZmScheduler-outOfOffice";
+	}
+	return "ZmScheduler-busy";
+};
 
 /**
 * Creates up to three separate DwtSelects for the time (hour, minute, am|pm)

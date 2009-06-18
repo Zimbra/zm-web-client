@@ -1355,7 +1355,6 @@ line-height:normal;
 /* text box for a single appt in the month view in various states */
 .calendar_month_day_item {
 	@NoWrap@
-	padding-left:@BoxPaddingSize@;
 	/*color:#2869FF;*/		/* ??? USE?  text color comes from OrangeC, RedC, etc? */
 }
 

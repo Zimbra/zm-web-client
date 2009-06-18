@@ -2,6 +2,7 @@
 	<div id='${id}_body' class='appt_body ${bodyColor}'>
 		<table style='width:100%; height:100%' cellspacing=0 cellpadding=0>
 			<tr class='${headerColor}'>
+				<td width='4x' class='${showAsColor}' ></td>
 				<td class='appt${newState}_time' id='${id}_st'>
 					<$ if (data.icon) { $>
 						<div class='appt_icon'><$= AjxImg.getImageHtml(data.icon, "width:16") $></div>
@@ -13,6 +14,7 @@
 				</td>
 			</tr>
 			<tr valign=top>
+				<td width='4x' class='${showAsColor}' ></td>
 				<td colspan=2 class=appt${newState}_name style='height:100%'>
 					${name}
 					<$ if (data.location) { $>
@@ -22,6 +24,7 @@
 			</tr>
 			<$ if(!data.hideTime) {$>			
 			<tr>
+				<td width='4x' class='${showAsColor}' ></td>
 				<td colspan=2 class=appt_end_time id='${id}_et'>${endtime}</td>
 			</tr>
 			<$ } $>
@@ -33,6 +36,7 @@
 	<div id='${id}_body' class='appt_body ${bodyColor}'>
 		<table style='width:100%;height:100%' cellspacing=0 cellpadding=2>
 			<tr valign=top>
+				<td width='4x' class='${showAsColor}' ></td>			
 				<td colspan=2 class=appt${newState}_name style='height:100%'>
 					${name}
 					<$ if (data.location) { $>
@@ -57,6 +61,7 @@
 		<$ } $>
 		<table width=100% cellspacing=0 cellpadding=0>
 			<tr>
+				<td width='4x' class='${showAsColor}' ></td>
 				<td class=appt_30${newState}_name>${name}</td>
 				<$ if ((AjxEnv.isIE || AjxEnv.isFirefox3up) && data.tagIcon) { $>
 					<td valign=top width=16><$= AjxImg.getImageHtml(data.tagIcon, "width:16") $></td>
@@ -73,6 +78,7 @@
 	<div id='${id}_body' ${body_style} class='appt_allday_body ${headerColor}'>
 		<table width=100% cellspacing=0 cellpadding=0>
 			<tr>
+				<td width='4x' class='${showAsColor}' ></td>
 				<td class=appt_allday${newState}_name>
 					<$ if (data.icon) { $>
 						<div class='appt_icon'><$= AjxImg.getImageHtml(data.icon, "width:16") $></div>
@@ -90,23 +96,29 @@
 <template id='calendar.Calendar#month_appt'>
 	<$ var continues = data.multiday && !data.last; $>
 	<$ var continued = data.multiday && !data.first; $>
-	<$ var style = continues ? "padding-right:15px;" : ""; $>
-
-	<div class='${color}' style='overflow:hidden; <$=style$>'>
-		<$ if (continues) { $>
-			<div class='calendar_month_day_item_continues'>&raquo;</div>
-		<$ } $>
-		<$ if (continued) { $>
-			&laquo;&nbsp;
-		<$ } else { $>
-			&bull;&nbsp;${duration}
-		<$ } $>
-		<$= AjxStringUtil.htmlEncode(data.appt.getName()) $>
-	</div>
+	<$ var style = continues ? "padding-right:14x;" : ""; $>
+	<table border=0 width=100% cellspacing=0 cellpadding=2>
+	<tr>
+		<td width='1x' class='${showAsColor}' ></td>
+		<td  class='${color}'>
+			<div class='${color}' style='overflow:hidden; <$=style$>'>
+				<$ if (continues) { $>
+					<div class='calendar_month_day_item_continues'>&raquo;</div>
+				<$ } $>
+				<$ if (continued) { $>
+					&laquo;&nbsp;
+				<$ } else { $>
+					&nbsp;${duration}
+				<$ } $>
+				<$= AjxStringUtil.htmlEncode(data.appt.getName()) $>
+			</div>
+		</td>
+	</tr>
+	</table>
 </template>
 
 <template id='calendar.Calendar#TypeDialog'>
-	<div style='width:275px' id='${id}_question'></div><p>
+	<div style='width:274x' id='${id}_question'></div><p>
 	<table align=center border=0 width=1%>
 		<tr>
 			<td width=1%><input checked value='1' type='radio' id='${id}_defaultRadio' name='${id}_instSeriesName'></td>

@@ -299,7 +299,8 @@ function(appt) {
 				(appt.ptst == ZmCalBaseItem.PSTATUS_NEEDS_ACTION ? "Dark" : "Bg"),
 		multiday: appt._fanoutFirst != null,
 		first: appt._fanoutFirst,
-		last: appt._fanoutLast
+		last: appt._fanoutLast,
+		showAsColor : ZmApptViewHelper._getShowAsColorFromId(appt.fba)
 	};
 
 	var cell = result.insertCell(-1);

@@ -562,7 +562,8 @@ function(appt) {
 		status: (appt.isOrganizer() ? "" : appt.getParticipantStatusStr()),
 		icon: ((appt.isPrivate()) ? "ReadOnly" : null),
 		tagIcon: tagIcon,
-		hideTime: is60
+		hideTime: is60,
+		showAsColor : ZmApptViewHelper._getShowAsColorFromId(appt.fba)
 	};
 
 	var template;
@@ -602,6 +603,7 @@ function(appt) {
 	}
 	return div;
 };
+
 
 // TODO: i18n
 ZmCalColView.prototype._createHoursHtml =
