@@ -1099,7 +1099,7 @@ ZmSpreadSheetCellModel.prototype.getXML = function(row, col) {
 	cellRoot.setAttribute("col", col);
 	cellRoot.setAttribute("value", (this._editValue ? this._editValue : ""));
     if(this._decimals)
-	    cellRoot.setAttribute("decimal", (this._decimals ? this._decimals : ""));
+	    cellRoot.setAttribute("decimals", (this._decimals ? this._decimals : ""));
 	if(this._type)
         cellRoot.setAttribute("type", (this._type ? this._type : ""));
 	if(flag) cellN.appendChild(styleN);
