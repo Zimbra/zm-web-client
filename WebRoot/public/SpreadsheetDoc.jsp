@@ -1,3 +1,7 @@
+<%@ page buffer="8kb" session="false" autoFlush="true" pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
+<%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ page import="java.util.Locale" %>
 <!--
 ***** BEGIN LICENSE BLOCK *****
@@ -43,6 +47,30 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
         request.setAttribute("packages", "dev");
     }
 
+    String mode = getAttribute(request, "mode", null);
+
+    boolean isDevMode = isDev && (mode != null && mode.equalsIgnoreCase("mjsf"));
+
+    String vers = getAttribute(request, "version", "");
+    String ext = getAttribute(request, "fileExtension", null);
+    if (ext == null || isDevMode) ext = "";
+    String extraPackages = getParameter(request, "packages", getAttribute(request, "packages", null));
+    String offlineMode = getParameter(request, "offline", application.getInitParameter("offlineMode"));
+
+    String prodMode = getAttribute(request, "prodMode", "");
+         
+    Locale locale = request.getLocale();
+    String localeId = getAttribute(request, "localeId", null);
+    if (localeId != null) {
+        int index = localeId.indexOf("_");
+        if (index == -1) {
+            locale = new Locale(localeId);
+        } else {
+            String language = localeId.substring(0, index);
+            String country = localeId.substring(localeId.length() - 2);
+            locale = new Locale(language, country);
+        }
+    }
 
     final String SKIN_COOKIE_NAME = "ZM_SKIN";
     String skin = application.getInitParameter("zimbraDefaultSkin");
@@ -57,68 +85,59 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
             }
         }
     }
-    String vers = (String)request.getAttribute("version");
-    String ext = (String)request.getAttribute("fileExtension");
-    String mode = (String) request.getAttribute("mode");
-    if (vers == null){
-        vers = "";
-    }
-    if (ext == null){
-        ext = "";
-    }
-    Boolean isDevMode = (mode != null) && (mode.equalsIgnoreCase("mjsf"));
-    Boolean inSkinDebugMode = (mode != null) && (mode.equalsIgnoreCase("skindebug"));
 
-    String fileId = request.getParameter("id");
-    String fileName = request.getParameter("name");
-    String folderId = request.getParameter("l");
-
-    if(fileName == null) fileName = "";
-    if(fileId == null) fileId = "";
-    if(folderId ==  null) folderId = "";
-     
-    /*if(fileName == null) {
-        fileName = "Untitled";
-    }*/
-    Locale locale = request.getLocale();
-    String localeId = getAttribute(request, "localeId", null);
-    if (localeId != null) {
-        int index = localeId.indexOf("_");
-        if (index == -1) {
-            locale = new Locale(localeId);
-        } else {
-            String language = localeId.substring(0, index);
-            String country = localeId.substring(localeId.length() - 2);
-            locale = new Locale(language, country);
-        }
-    }
-
+    // make variables available in page context (e.g. ${foo})
+    pageContext.setAttribute("contextPath", contextPath);
     pageContext.setAttribute("skin", skin);
+    pageContext.setAttribute("ext", ext);
+    pageContext.setAttribute("vers", vers);
+    pageContext.setAttribute("locale", locale);
+    pageContext.setAttribute("isDevMode", isDev);
+    pageContext.setAttribute("isOfflineMode", offlineMode != null && offlineMode.equals("true"));
+    pageContext.setAttribute("isProdMode", !prodMode.equals(""));
+    pageContext.setAttribute("isDebug", isDevMode);
+
 %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-    <title>Zimbra Spreadsheet</title>
-    <style type="text/css">
-        <!--
-        @import url(<%= contextPath %>/css/common,dwt,msgview,login,zm,spellcheck,wiki,spreadsheet,images,skin.css?v=<%= vers %><%= inSkinDebugMode || isDevMode ? "&debug=1" : "" %>&skin=<%= skin %>);
-        -->
-    </style>
+    <fmt:setBundle basename="/messages/ZmMsg" scope="request" force="true" />
+    <title><fmt:message key="spreadsheetTitle"/></title>
+    <link href="<c:url value="/css/common,dwt,msgview,login,zm,spellcheck,wiki,spreadsheet,presentation,slides,images,skin.css">
+        <c:param name="v" value="${vers}" />
+	    <c:param name="debug" value='${isDebug?"1":""}' />
+	    <c:param name="skin" value="${skin}" />
+	    <c:param name="locale" value="${locale}" />
+	    <c:if test="${not empty param.customerDomain}">
+		    <c:param name="customerDomain"	value="${param.customerDomain}" />
+	    </c:if>
+    </c:url>" rel="stylesheet" type="text/css" />
+
+    <zm:getFavIcon request="${pageContext.request}" var="favIconUrl" />
+    <c:if test="${empty favIconUrl}">
+	    <fmt:message key="favIconUrl" var="favIconUrl"/>
+    </c:if>
+    <link rel="SHORTCUT ICON" href="<c:url value='${favIconUrl}'/>">
+
     <jsp:include page="Resources.jsp">
         <jsp:param name="res" value="I18nMsg,AjxMsg,ZMsg,ZmMsg,AjxKeys" />
         <jsp:param name="skin" value="${skin}" />
     </jsp:include>
+
     <jsp:include page="Boot.jsp"/>
+    
     <script>
         AjxEnv.DEFAULT_LOCALE = "${locale}";
         <jsp:include page="/js/ajax/util/AjxTimezoneData.js" />
     </script>
     <%
-
-        String packages = "Ajax,Startup1_1,Startup1_2,Spreadsheet";
-
-        String extraPackages = request.getParameter("packages");
-        if (extraPackages != null) packages += ","+extraPackages;
+        String packages = "Ajax,Startup1_1,Startup1_2,Startup2,Spreadsheet";
+        if (extraPackages != null) {
+            if (extraPackages.equals("dev")) {
+                extraPackages = "Leaks,Debug";
+            }
+            packages += "," + extraPackages;
+        }        
 
         String pprefix = isDevMode ? "public/jsp" : "js";
         String psuffix = isDevMode ? ".jsp" : "_all.js";
@@ -126,15 +145,15 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
         String[] pnames = packages.split(",");
         for (String pname : pnames) {
             String pageurl = "/"+pprefix+"/"+pname+psuffix;
+            request.setAttribute("pageurl", pageurl);
             if (isDevMode) { %>
-    <jsp:include>
-        <jsp:attribute name='page'><%=pageurl%></jsp:attribute>
-    </jsp:include>
-    <% } else { %>
-    <script type="text/javascript" src="<%=contextPath%><%=pageurl%><%=ext%>?v=<%=vers%>"></script>
-    <% } %>
-    <% }
+                <jsp:include page='${pageurl}' />                
+            <% } else { %>
+                <script type="text/javascript" src="${contextPath}${pageurl}${ext}?v=${vers}"></script>
+            <% } %>
+        <% }
     %>
+    
     <!-- YUI Library for Charts -->
     <% String yuiPath = "../yui/2.7.0"; %>
     <link rel="stylesheet" type="text/css" href="<%=yuiPath%>/assets/skins/sam/skin.css" />
@@ -153,12 +172,20 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
     <!-- END OF YUI Library -->
 </head>
 <body>
-<noscript><p><b>Javascript must be enabled to use this.</b></p></noscript>
+<noscript><p><strong>Javascript must be enabled to use this.</strong></p></noscript>
 <script type="text/javascript" language="JavaScript">
+
+    window.appContextPath = "${zm:jsEncode(contextPath)}";
+    window.appDevMode     = ${isDevMode};
     
-    window.appContextPath = '<%= contextPath %>';
-    ZmSpreadSheetApp._createDBG(<%=isDevMode%>);
-    
+    ZmSpreadSheetApp._createDBG(${isDevMode});
+
+    <%
+        String fileId = getParameter(request,"id","");
+        String fileName = getParameter(request,"name","");
+        String folderId = getParameter(request,"l","");    
+    %>
+
     ZmSpreadSheetApp.setFile('<%= fileId %>', '<%= fileName %>', '<%=folderId%>');
 
 </script>
