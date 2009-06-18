@@ -1478,7 +1478,7 @@ function(addrNodes, parentNode, isDraft, accountName) {
 			// the main account is *always* the sender
 			addrNodes.push({t:"s", a:mainAcct});
 		}
-	} else if (this.identity) {
+	} else if (identity) {
 		var addrNode = {t:"f"};
 
 		// bug fix #20630 - handling sending drafts obo
@@ -1498,15 +1498,15 @@ function(addrNodes, parentNode, isDraft, accountName) {
 			}
 		}
 
-		addrNode.a = identity.sendFromAddress;
+		addrNode.a = identity.sendFromAddress || ac.getMainAccount().getEmail();
 		var name = identity.sendFromDisplay;
 		if (name) {
 			addrNode.p = name;
 		}
 		addrNodes.push(addrNode);
 
-		if (identity && identity.isFromDataSource && appCtxt.get(ZmSetting.SEND_ON_BEHALF_OF)) {
-			var dataSource = appCtxt.getDataSourceCollection().getById(identity.id);
+		if (identity && identity.isFromDataSource && ac.get(ZmSetting.SEND_ON_BEHALF_OF)) {
+			var dataSource = ac.getDataSourceCollection().getById(identity.id);
 			if (dataSource) {
 				// main account is "sender"
 				addrNode.t = "s";
