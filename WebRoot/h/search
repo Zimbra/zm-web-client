@@ -26,7 +26,10 @@
 		  <c:when test="${param.app eq 'calendar' and mailbox.features.calendar}">
 			  <c:redirect url="/h/calendar" />
 		  </c:when>
-          	  <c:when test="${param.app eq 'mail' and mailbox.features.mail}">
+          <c:when test="${param.app eq 'mail' and mailbox.features.mail and not empty param.id}">
+              <c:redirect url="/h/search?st=message&id=${param.id}&action=view" />
+          </c:when>
+          <c:when test="${param.app eq 'mail' and mailbox.features.mail}">
 			<c:redirect url="/h/search" />
 		  </c:when>
 		  <c:when test="${param.app eq 'voice' and mailbox.features.voice}">
