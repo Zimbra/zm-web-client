@@ -99,6 +99,14 @@ function(list) {
 	}
 };
 
+ZmMailListView.prototype.handleKeyAction =
+function(actionCode, ev) {
+	if (actionCode == DwtKeyMap.SELECT_NEXT || actionCode == DwtKeyMap.SELECT_PREV) {
+		this._controller.lastListAction = actionCode;
+	}
+	return DwtListView.prototype.handleKeyAction.apply(this, arguments);
+};
+
 ZmMailListView.prototype.getTitle =
 function() {
 	var search = this._controller._activeSearch ? this._controller._activeSearch.search : null;

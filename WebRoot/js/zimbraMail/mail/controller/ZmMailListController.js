@@ -341,6 +341,7 @@ function(actionCode) {
 					}
 				}
 			}
+			this.lastListAction = actionCode;
 			break;
 
 		default:

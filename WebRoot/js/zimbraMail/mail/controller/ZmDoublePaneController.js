@@ -542,7 +542,7 @@ function(ev) {
 ZmDoublePaneController.prototype._deleteListener =
 function(ev) {
 	this._itemToSelect = this._getNextItemToSelect();
-	ZmMailListController.prototype._deleteListener.apply(this, arguments);                             
+	ZmMailListController.prototype._deleteListener.apply(this, arguments);
 };
 
 ZmDoublePaneController.prototype._moveListener =
@@ -646,19 +646,33 @@ function() {
 ZmDoublePaneController.prototype._getNextItemToSelect =
 function() {
 	var listView = this._listView[this._currentView];
-	if (listView.getSelectionCount()) {
+	var numSelected = listView.getSelectionCount();
+	if (numSelected) {
 		var selection = listView.getSelection();
 		var selIds = {};
 		for (var i = 0; i < selection.length; i++) {
 			selIds[selection[i].id] = true;
 		}
-		var first = selection[0];
-		var idx = listView._getRowIndex(first);
-		var childNodes = listView._parentEl.childNodes;
-		for (var i = idx + 1; i < childNodes.length; i++) {
-			var item = listView.getItemFromElement(childNodes[i]);
-			if (item && !selIds[item.id] && (item.type == first.type)) {
-				return item;
+		var goingUp = (this.lastListAction == DwtKeyMap.SELECT_PREV || this.lastListAction == ZmKeyMap.PREV_UNREAD);
+		if (goingUp && (numSelected == 1)) {
+			var last = selection[selection.length - 1];
+			var idx = listView._getRowIndex(last);
+			var childNodes = listView._parentEl.childNodes;
+			for (var i = idx - 1; i >= 0; i--) {
+				var item = listView.getItemFromElement(childNodes[i]);
+				if (item && !selIds[item.id] && (item.type == last.type)) {
+					return item;
+				}
+			}
+		} else {
+			var first = selection[0];
+			var idx = listView._getRowIndex(first);
+			var childNodes = listView._parentEl.childNodes;
+			for (var i = idx + 1; i < childNodes.length; i++) {
+				var item = listView.getItemFromElement(childNodes[i]);
+				if (item && !selIds[item.id] && (item.type == first.type)) {
+					return item;
+				}
 			}
 		}
 	}
