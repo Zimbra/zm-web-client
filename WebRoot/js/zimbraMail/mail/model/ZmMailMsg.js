@@ -886,17 +886,18 @@ function(request, isDraft, accountName, requestReadReceipt) {
 		msgNode.f = ZmItem.FLAG_LOW_PRIORITY;
 	}
 
-	var addrNodes = msgNode.e = [];
-	for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
-		var type = ZmMailMsg.COMPOSE_ADDRS[i];
-		this._addAddressNodes(addrNodes, type, isDraft);
-	}
-	this._addFrom(addrNodes, msgNode, isDraft, accountName);
-	this._addReplyTo(addrNodes);
-	if (requestReadReceipt) {
-		this._addReadReceipt(addrNodes, accountName);
-	}
-
+    if(ZmMailMsg.COMPOSE_ADDRS.length > 0){ //If no addrs, no element 'e'
+        var addrNodes = msgNode.e = [];
+        for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
+            var type = ZmMailMsg.COMPOSE_ADDRS[i];
+            this._addAddressNodes(addrNodes, type, isDraft);
+        }
+        this._addFrom(addrNodes, msgNode, isDraft, accountName);
+        this._addReplyTo(addrNodes);
+        if (requestReadReceipt) {
+            this._addReadReceipt(addrNodes, accountName);
+        }
+    }
 	msgNode.su = {_content:this.subject};
 
 	var topNode = {ct:this._topPart.getContentType()};
