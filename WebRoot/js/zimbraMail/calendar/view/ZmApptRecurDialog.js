@@ -86,8 +86,14 @@ function(startDate, endDate, repeatType, appt) {
 
 	// reset time based fields
 	this._endByField.setValue(AjxDateUtil.simpleComputeDateStr(this._startDate));
-	this._weeklySelectButton._selected = startDay;
-	this._weeklyCheckboxes[startDay].checked = true;
+    this._weeklySelectButton._selected = startDay;
+    this._weeklySelectButton.setDisplayState(DwtControl.SELECTED);
+
+    var formatter = new AjxMessageFormat(ZmMsg.recurWeeklyEveryWeekday);
+    var dayFormatter = formatter.getFormatsByArgumentIndex()[0];
+    this._weeklySelectButton.setText(dayFormatter.format(this._origRefDate));
+    
+    this._weeklyCheckboxes[startDay].checked = true;
 	this._monthlyDayField.setValue(startDate);
 	this._monthlyWeekdaySelect.setSelected(startDay);
 	this._yearlyDayField.setValue(startDate);
@@ -1396,7 +1402,12 @@ function(appt) {
 				if (recur.repeatWeeklyDays[0] == ZmCalItem.SERVER_WEEK_DAYS[j]) {
 					this._weeklySelectButton._selected = j;
                     this._weeklySelectButton.setDisplayState(DwtControl.SELECTED);
-					break;
+
+                    var formatter = new AjxMessageFormat(ZmMsg.recurWeeklyEveryWeekday);
+                    var dayFormatter = formatter.getFormatsByArgumentIndex()[0];
+                    this._weeklySelectButton.setText(dayFormatter.format(this._startDate));
+
+                    break;
 				}
 			}
 		} else {
