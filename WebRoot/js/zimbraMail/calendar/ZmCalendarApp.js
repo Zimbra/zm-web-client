@@ -123,6 +123,7 @@ function(settings) {
 	settings.registerSetting("CAL_USE_QUICK_ADD",			{name: "zimbraPrefCalendarUseQuickAdd", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
 	settings.registerSetting("CALENDAR_INITIAL_VIEW",		{name: "zimbraPrefCalendarInitialView", type: ZmSetting.T_PREF, defaultValue: ZmSetting.CAL_DAY});
 	settings.registerSetting("DELETE_INVITE_ON_REPLY",		{name: "zimbraPrefDeleteInviteOnReply",type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
+    settings.registerSetting("ENABLE_APPL_ICAL_DELEGATION", {name: "zimbraPrefAppleIcalDelegationEnabled",type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
 	settings.registerSetting("CAL_AUTO_ADD_INVITES",		{name: "zimbraPrefCalendarAutoAddInvites",type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
 	settings.registerSetting("CAL_SEND_INV_DENIED_REPLY",   {name: "zimbraPrefCalendarSendInviteDeniedAutoReply",type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
     settings.registerSetting("CAL_INV_FORWARDING_ADDRESS",  {name: "zimbraPrefCalendarForwardInvitesTo", type:ZmSetting.T_PREF});    
@@ -153,6 +154,7 @@ function() {
 				ZmSetting.CAL_USE_QUICK_ADD,
 				ZmSetting.CALENDAR_INITIAL_VIEW,
 				ZmSetting.DELETE_INVITE_ON_REPLY,
+                ZmSetting.ENABLE_APPL_ICAL_DELEGATION,
 				ZmSetting.CAL_FREE_BUSY_ACL,
 				ZmSetting.CAL_FREE_BUSY_ACL_USERS,
 				ZmSetting.CAL_INVITE_ACL,
@@ -261,6 +263,11 @@ function() {
 
 	ZmPref.registerPref("DELETE_INVITE_ON_REPLY", {
 		displayName: ZmMsg.deleteInviteOnReply,
+		displayContainer:	ZmPref.TYPE_CHECKBOX
+	});
+
+    ZmPref.registerPref("ENABLE_APPL_ICAL_DELEGATION", {
+		displayName: ZmMsg.enableAppleICalDelegation,
 		displayContainer:	ZmPref.TYPE_CHECKBOX
 	});
 

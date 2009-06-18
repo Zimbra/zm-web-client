@@ -147,6 +147,7 @@
             <zm:pref name="zimbraPrefCalendarFirstdayOfWeek" value="${param.zimbraPrefCalendarFirstdayOfWeek}"/>
             <zm:pref name="zimbraPrefCalendarDayHourStart" value="${param.zimbraPrefCalendarDayHourStart}"/>
             <zm:pref name="zimbraPrefCalendarDayHourEnd" value="${param.zimbraPrefCalendarDayHourEnd}"/>
+            <zm:pref name="zimbraPrefAppleIcalDelegationEnabled" value="${param.zimbraPrefAppleIcalDelegationEnabled eq 'TRUE' ? 'TRUE' : 'FALSE'}"/>
         </c:when>
     </c:choose>
 </zm:modifyPrefs>
