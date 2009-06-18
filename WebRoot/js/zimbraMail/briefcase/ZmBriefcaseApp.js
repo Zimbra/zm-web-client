@@ -364,7 +364,7 @@ function(op, promptDialog, data) {
 ZmBriefcaseApp.prototype.newDoc = function(contentType, name, winName){
 
     var overviewController = appCtxt.getOverviewController();
-    var treeController = overviewController.getTreeController(ZmOrganizer.NOTEBOOK);
+    var treeController = overviewController.getTreeController(ZmOrganizer.BRIEFCASE);
     var folderId = ZmOrganizer.ID_BRIEFCASE;
     if(treeController) {
         var treeView = treeController.getTreeView(this.getOverviewId());
