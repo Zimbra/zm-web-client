@@ -437,9 +437,11 @@ function(params, noRender, callback, errorCallback) {
 	// calendar searching is special so hand it off if necessary
 	if (this._searchFor == ZmItem.APPT) {
 		var controller = AjxDispatcher.run("GetCalController");
-		if (controller) {
+		if (controller && types.contains(ZmItem.APPT)) {
 			controller.handleUserSearch(params, respCallback);
-		}
+		}else {
+            search.execute({callback:respCallback, errorCallback:errorCallback});            
+        }
 	} else {
 		search.execute({callback:respCallback, errorCallback:errorCallback});
 	}
