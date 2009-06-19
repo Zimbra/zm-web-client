@@ -107,7 +107,9 @@ function() {
 		preLoadOk: false
 	};
 	AjxDispatcher.run(params);
-	appCtxt.getApp(ZmApp.VOICE).getVoiceInfo(new AjxCallback(this, this._handleResponseGetVoiceInfo));
+	var voiceInfoCallback = new AjxCallback(this, this._handleResponseGetVoiceInfo);
+	var voiceInfoErrorCallback = new AjxCallback(this, this._handleErrorGetVoiceInfo);
+	appCtxt.getApp(ZmApp.VOICE).getVoiceInfo(voiceInfoCallback, voiceInfoErrorCallback);
 };
 
 ZmVoicePrefsView.prototype._handleResponseContactsLoaded =
@@ -123,11 +125,24 @@ function(contacts) {
 	}
 };
 
+ZmVoicePrefsView.prototype._handleErrorGetVoiceInfo =
+function(ex) {
+	if (ex.code == "voice.SECONDARY_NOT_ALLOWED") {
+		if (!this._showingErrorMessage) {
+			this._showingErrorMessage = true;
+			this.getHtmlElement().innerHTML = ZMsg[ex.code];
+		}
+		return true;
+	}
+	return false;
+};
+
 ZmVoicePrefsView.prototype._handleResponseGetVoiceInfo =
 function() {
 	var id = this._htmlElId;
 	var data = { id: id };
 	this.getHtmlElement().innerHTML = AjxTemplate.expand("voicemail.Voicemail#ZmVoicePrefsView", data);
+	this._showingErrorMessage = false;
 
 	// Create the list view and the contents of the detail pane.
 	this._list = new ZmPhoneList(this);
