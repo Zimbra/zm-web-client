@@ -16,10 +16,11 @@
     <fmt:setLocale value='${pageContext.request.locale}' scope='request' />
 </c:otherwise>
 </c:choose>
-<fmt:setBundle basename="/messages/ZhMsg" scope="request"/>
 
 <zm:computeSearchContext var="context" usecache="true"/>
 <zm:getMailbox var="mailbox"/>
+<app:skin mailbox="${mailbox}" />
+<fmt:setBundle basename="/messages/ZhMsg" scope="request"/>
 <app:composeCheck/>
 
 <%-- bug:35733 Deep linking  --%>
