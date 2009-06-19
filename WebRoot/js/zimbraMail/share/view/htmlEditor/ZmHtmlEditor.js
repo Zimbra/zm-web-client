@@ -165,7 +165,7 @@ function(insertFontStyle, onlyInnerContent ) {
 	var content;
 	if (this._mode == DwtHtmlEditor.HTML) {
 		var iframeDoc = this._getIframeDoc();
-		var html = iframeDoc && iframeDoc.body ? (this._getIframeDoc().body.innerHTML) : "";
+		var html = this._pendingContent || (iframeDoc && iframeDoc.body ? (this._getIframeDoc().body.innerHTML) : "");
 		content = this._embedHtmlContent(html, insertFontStyle, onlyInnerContent);
 		if (this.ACE_ENABLED) {
 			content = this._serializeAceObjects(content);
