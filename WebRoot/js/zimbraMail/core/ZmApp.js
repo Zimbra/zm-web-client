@@ -387,7 +387,7 @@ function(reset) {
  */
 ZmApp.prototype.getOverview =
 function() {
-	return this._opc.getOverview(this.getOverviewId());
+	return this._opc && this._opc.getOverview(this.getOverviewId());
 };
 
 /**

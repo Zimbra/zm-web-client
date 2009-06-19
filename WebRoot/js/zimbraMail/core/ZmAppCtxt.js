@@ -894,12 +894,12 @@ function(event, args, options) {
 
 	if (!context.areZimletsLoaded()) {
 		if (options && options.waitUntilLoaded) {
-			context.addZimletsLoadedListener(new AjxListener(context, context.notifyZimlets, [event, args]));
+			context.addZimletsLoadedListener(new AjxListener(this, this.notifyZimlets, [event, args]));
 		}
 		return;
 	}
 
-	context.getZimletMgr().notifyZimlets(event, args);
+	this.getZimletMgr().notifyZimlets(event, args);
 };
 
 ZmAppCtxt.prototype.getCalManager =

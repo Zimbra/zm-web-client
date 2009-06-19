@@ -81,17 +81,19 @@ function(zimletArray, userProps, target, callback, sync) {
 			}
 		}
 	}
-	var panelZimlets = this.getPanelZimlets();
-	if (panelZimlets && panelZimlets.length > 0) {
-		var zimletTree = appCtxt.getZimletTree();
-		if (!zimletTree) {
-			zimletTree = new ZmFolderTree(ZmOrganizer.ZIMLET);
-			appCtxt.setTree(ZmOrganizer.ZIMLET, zimletTree);
+	if (!appCtxt.isChildWindow) {
+		var panelZimlets = this.getPanelZimlets();
+		if (panelZimlets && panelZimlets.length > 0) {
+			var zimletTree = appCtxt.getZimletTree();
+			if (!zimletTree) {
+				zimletTree = new ZmFolderTree(ZmOrganizer.ZIMLET);
+				appCtxt.setTree(ZmOrganizer.ZIMLET, zimletTree);
+			}
+			zimletTree.reset();
+			zimletTree.loadFromJs(panelZimlets, "zimlet");
+		} else { // reset overview tree accordingly
+			this._resetOverviewTree();
 		}
-		zimletTree.reset();
-		zimletTree.loadFromJs(panelZimlets, "zimlet");
-	} else { // reset overview tree accordinly
-		this._resetOverviewTree();
 	}
 
 	// load zimlet code/CSS
