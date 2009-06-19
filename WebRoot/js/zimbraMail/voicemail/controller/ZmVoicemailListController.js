@@ -31,7 +31,7 @@ ZmVoicemailListController = function(container, app) {
 	this._dragSrc.addDragListener(new AjxListener(this, this._dragListener));
 
 	this._markingHeard = {}; // Prevents repeated markHeard requests during playback.
-}
+};
 ZmVoicemailListController.prototype = new ZmVoiceListController;
 ZmVoicemailListController.prototype.constructor = ZmVoicemailListController;
 
@@ -46,7 +46,7 @@ function(searchResult, folder) {
 		this._getView().stopPlaying(true);
 	}
 	this._markingHeard = {};
-	ZmVoiceListController.prototype.show.call(this, searchResult, folder)
+	ZmVoiceListController.prototype.show.call(this, searchResult, folder);
 };
 
 ZmVoicemailListController.prototype._defaultView =
