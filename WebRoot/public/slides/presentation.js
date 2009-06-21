@@ -1,5 +1,6 @@
 var currentSlide = null;
 var prevSlide = null;
+var nextSlide = null;
 var firstSlide = null;
 var parentView = null;
 
@@ -42,9 +43,7 @@ function initSlides() {
     }
 
     resizeSlide(currentSlide);
-
 }
-
 
 function resizeSlide(currentSlide) {
 
@@ -58,12 +57,27 @@ function resizeSlide(currentSlide) {
     var wd = size.x;
     var newWidth = (ht/wd)*(4/3)*100;
     //resize slide in 4:3 aspect ratio
-    currentSlide.style.width =  newWidth + "%";
-    currentSlide.style.height = '100%';
-    currentSlide.style.left = (100-newWidth)/2 + "%";
+    if(currentSlide) {
+        currentSlide.style.width =  newWidth + "%";
+        currentSlide.style.height = '100%';
+        currentSlide.style.left = (100-newWidth)/2 + "%";
+    }
 }
 
 function slidesHandler(ev) {
+    var target = getTarget(ev);
+    if(isTargetValid(target)) {
+        goNextSlide();
+    }
+}
+
+function isTargetValid(target) {
+    return (target.className != "slideShowNavToolbar") && (target.className != "navBtns") && (target.className != "navImg"); 
+}
+
+function goNextSlide() {
+
+    if(currentSlide == null) currentSlide = firstSlide;
 
     if(currentSlide && currentSlide.className == "endslide") {
         if(firstSlide && window.presentationMode == "embed") {
@@ -76,9 +90,6 @@ function slidesHandler(ev) {
             window.close();
         }
     }
-
-    var ht = window.document.body.innerHeight;
-    var wd = window
 
     if(currentSlide) {
         prevSlide = currentSlide;
@@ -93,6 +104,20 @@ function slidesHandler(ev) {
     }
 }
 
+function goPrevSlide() {
+
+    if(currentSlide) {
+        nextSlide = currentSlide;
+        currentSlide = getPreviousSlide(currentSlide.previousSibling, true);
+
+        if(currentSlide && ( currentSlide.className == 'slide' || currentSlide. className == "endslide")) {
+            nextSlide.style.display = "none";
+            resizeSlide(currentSlide);
+            currentSlide.style.display = "block";
+        }
+
+    }
+}
 
 function getNextSlide(currentSlide, includeEndSlide) {
 
@@ -103,14 +128,50 @@ function getNextSlide(currentSlide, includeEndSlide) {
     return currentSlide;
 }
 
+function getPreviousSlide(currentSlide) {
+
+    while(currentSlide && (currentSlide.className != "slide") ) {
+        currentSlide = currentSlide.previousSibling;
+    }
+
+    return currentSlide;
+}
+
+function getEvent(ev) {
+    return ev || window.event;
+}
+
+function getTarget(ev, useRelatedTarget)  {
+	ev = getEvent(ev);
+
+    if (!ev) { return null; }
+
+	if (!useRelatedTarget) {
+		if (ev.target) {
+			// if text node (like on Safari) return parent
+			return (ev.target.nodeType == 3) ? ev.target.parentNode : ev.target;
+		} else if (ev.srcElement) {		// IE
+			return ev.srcElement;
+		}
+	} else {
+		if (ev.relatedTarget) {
+			return ev.relatedTarget;
+		} else if (ev.toElement) {		// IE
+			return ev.toElement;
+		} else if (ev.fromElement) {	// IE
+			return ev.fromElement;
+		}
+	}
+	return null;
+}
 
 function getSlideWindowSize () {
-    if (window.innerWidth) {
-        return { x: window.innerWidth, y:  window.innerHeight } ;
-    } else if (document.body && document.body.parentElement) {
-        return { x: document.body.parentElement.clientWidth, y: document.body.parentElement.clientHeight };
-    } else if (document.body && document.body.clientWidth) {
-        return {x: document.body.clientWidth, y:document.body.clientHeight};
+    if( typeof( window.innerWidth ) == 'number' ) {
+        return {x: window.innerWidth, y: window.innerHeight};
+    } else if( document.documentElement && ( document.documentElement.clientWidth || document.documentElement.clientHeight ) ) {
+        return {x: document.documentElement.clientWidth, y: document.documentElement.clientHeight};
+    } else if( document.body && ( document.body.clientWidth || document.body.clientHeight ) ) {
+        return {x: document.body.clientWidth, y: document.body.clientHeight };
     }
     return {};
 }

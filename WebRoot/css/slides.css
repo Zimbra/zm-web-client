@@ -59,3 +59,15 @@ h1 {
 	margin: 0px;
 	color: #333333;
 }
+
+.slideShowNavToolbar {
+    z-index:9000;
+    position:absolute;
+    left:0;
+    bottom:10px;
+    padding-left:10px;
+}
+
+.navBtns, .navImg {
+    cursor: pointer;
+}

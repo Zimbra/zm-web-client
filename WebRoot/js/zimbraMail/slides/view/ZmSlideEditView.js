@@ -1274,6 +1274,13 @@ function(content, idx, generateEndSlide, forSlideShow) {
     content[idx++] = ["<div class='slidemaster' ", themeStr," style='width:100%;height:100%;position:absolute;left:0%;top:0%;z-index:", (Dwt.Z_VIEW-10), "'>"].join("");
     content[idx++]  = this._currentSlideThemeDiv.innerHTML;
     content[idx++] = '</div>';
+
+    if(forSlideShow) {
+        var leftNav = window.contextPath + '/img/large/ImgLeftArrow_32.gif';
+        var rightNav = window.contextPath + '/img/large/ImgRightArrow_32.gif';    
+        content[idx++] = '<div class="slideShowNavToolbar"><span class="navBtns" onclick="goPrevSlide()"> <img class="navImg" src="' + leftNav + '"/> </span><span class="navBtns" onclick="goNextSlide()"> <img class="navImg" src="' + rightNav + '"/> </span></div>'
+    }
+
     return idx;
 };
 
