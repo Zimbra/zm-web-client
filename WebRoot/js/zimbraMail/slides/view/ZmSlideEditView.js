@@ -1242,6 +1242,7 @@ function(content, idx, generateEndSlide, forSlideShow) {
 
     var i = 0;
 
+
     if(this._previewContainer.firstChild) {
         var node = this._previewContainer.firstChild;
         while(node) {
@@ -1251,7 +1252,8 @@ function(content, idx, generateEndSlide, forSlideShow) {
             if(previewNode && (previewNode.className == "preview") ) {
                 var zindex = Dwt.Z_VIEW;
                 var width = forSlideShow ? 75 : 100;
-                content[idx++] = ["<div class='slide' style='width:" + width + "%;height:100%;position:absolute;left:0%;top:0%;z-index:", zindex, ((i!=0)?";display:none;":"") ,"'>"].join("");
+                var hideSlide = (!forSlideShow && i==0) ? '' : ';display:none;'; 
+                content[idx++] = ["<div class='slide' style='width:" + width + "%;height:100%;position:absolute;left:0%;top:0%;z-index:", zindex, hideSlide ,"'>"].join("");
                 content[idx++]  = previewNode.innerHTML;
                 content[idx++] = '</div>';
                 i++;
@@ -1271,9 +1273,16 @@ function(content, idx, generateEndSlide, forSlideShow) {
 
     var themeStr = this._currentTheme ? ["theme='", this._currentTheme ,"'"].join("") : "";
     //master slide content
-    content[idx++] = ["<div class='slidemaster' ", themeStr," style='width:100%;height:100%;position:absolute;left:0%;top:0%;z-index:", (Dwt.Z_VIEW-10), "'>"].join("");
+    content[idx++] = ["<div class='slidemaster' ", themeStr," style='width:100%;height:100%;position:absolute;left:0%;top:0%;z-index:", (Dwt.Z_VIEW-50), (forSlideShow?';display:none;' : ''), "'>"].join("");
     content[idx++]  = this._currentSlideThemeDiv.innerHTML;
     content[idx++] = '</div>';
+
+    //end slide content
+    if(generateEndSlide) {
+        content[idx++] = ["<div class='splashscreen' id='splashscreen' style='width:100%;height:100%;position:absolute;left:0%;top:0%;display: block;z-index:", (Dwt.Z_VIEW+100), "'>"].join("");
+        content[idx++]  = "<center>" + ZmMsg.loading + "</center>";
+        content[idx++] = '</div>';
+    }    
 
     if(forSlideShow) {
         var leftNav = window.contextPath + '/img/large/ImgLeftArrow_32.gif';

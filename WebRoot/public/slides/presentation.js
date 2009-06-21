@@ -38,11 +38,20 @@ function initSlides() {
     while(n) {
         if(n.className == "slide" || n.className == "slidemaster") {
             resizeSlide(n);
+            if(n.className == "slidemaster") {
+                show(n);
+            }
         }
         n = n.nextSibling;
     }
 
     resizeSlide(currentSlide);
+    show(currentSlide);
+
+    var splashscreen = document.getElementById("splashscreen");
+    if(splashscreen) {
+        splashscreen.parentNode.removeChild(splashscreen);
+    }
 }
 
 function resizeSlide(currentSlide) {
@@ -84,8 +93,8 @@ function goNextSlide() {
             prevSlide = currentSlide;
             firstSlide = getNextSlide(firstSlide, true);
             currentSlide = firstSlide;
-            prevSlide.style.display = "none";
-            currentSlide.style.display = "block";
+            hide(prevSlide);
+            show(currentSlide);
         }else {
             window.close();
         }
@@ -96,9 +105,9 @@ function goNextSlide() {
         currentSlide = getNextSlide(currentSlide.nextSibling, true);
 
         if(currentSlide && ( currentSlide.className == 'slide' || currentSlide. className == "endslide")) {
-            prevSlide.style.display = "none";
+            hide(prevSlide);
             resizeSlide(currentSlide);
-            currentSlide.style.display = "block";
+            show(currentSlide);
         }
 
     }
@@ -111,9 +120,9 @@ function goPrevSlide() {
         currentSlide = getPreviousSlide(currentSlide.previousSibling, true);
 
         if(currentSlide && ( currentSlide.className == 'slide' || currentSlide. className == "endslide")) {
-            nextSlide.style.display = "none";
+            hide(nextSlide);
             resizeSlide(currentSlide);
-            currentSlide.style.display = "block";
+            show(currentSlide);
         }
 
     }
@@ -163,6 +172,18 @@ function getTarget(ev, useRelatedTarget)  {
 		}
 	}
 	return null;
+}
+
+function hide(el) {
+    if(el) {
+        el.style.display = 'none';
+    }
+}
+
+function show(el, clearDisplayStyle) {
+    if(el) {
+        el.style.display = clearDisplayStyle ? '' : 'block';
+    }
 }
 
 function getSlideWindowSize () {
