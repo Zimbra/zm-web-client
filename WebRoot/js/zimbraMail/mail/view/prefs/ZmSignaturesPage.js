@@ -239,13 +239,15 @@ ZmSignaturesPage.prototype._initialize = function(container){
 
     //Signature FORMAT
     var formatEl = document.getElementById(this._htmlElId+"_SIG_FORMAT");
-    var select = new DwtSelect(this);
-    select.setToolTipContent(ZmMsg.formatTooltip);
-    select.addOption(ZmMsg.formatAsText, 1 , true);
-    select.addOption(ZmMsg.formatAsHtml, 0, false);
-    select.addChangeListener(new AjxListener(this,this._handleFormatSelect));
-    this._replaceControlElement(formatEl, select);
-    this._sigFormat = select;
+    if(formatEl && appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)){
+        var select = new DwtSelect(this);
+        select.setToolTipContent(ZmMsg.formatTooltip);
+        select.addOption(ZmMsg.formatAsText, 1 , true);
+        select.addOption(ZmMsg.formatAsHtml, 0, false);
+        select.addChangeListener(new AjxListener(this,this._handleFormatSelect));
+        this._replaceControlElement(formatEl, select);
+        this._sigFormat = select;
+    }
 
 
     //Signature EDIT/DONE
@@ -328,7 +330,7 @@ ZmSignaturesPage.prototype._updateSignature = function(select){
 
     oldSignature.name = newName;
 
-    var isText = this._sigFormat.getValue();
+    var isText = this._sigFormat ? this._sigFormat.getValue() : true;
     oldSignature.setContentType(isText ? ZmMimeTable.TEXT_PLAIN : ZmMimeTable.TEXT_HTML);
 
     if(!isText){
@@ -512,15 +514,16 @@ ZmSignaturesPage.prototype._resetSignature = function(signature, clear ) {
 
     this._sigName.setValue(signature.name);
     this._sigName._origName = signature.name;
-    this._sigFormat.setSelectedValue(signature.getContentType() == ZmMimeTable.TEXT_PLAIN);
+    if(this._sigFormat)
+        this._sigFormat.setSelectedValue(signature.getContentType() == ZmMimeTable.TEXT_PLAIN);
 
-    var editorMode = (signature.getContentType() == ZmMimeTable.TEXT_PLAIN) ? DwtHtmlEditor.TEXT : DwtHtmlEditor.HTML;
+    var editorMode = (appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED) && signature.getContentType() == ZmMimeTable.TEXT_HTML) ?  DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT ;
     var htmlModeInited = this._sigEditor.isHtmlModeInited();
     if(editorMode != this._sigEditor.getMode()){
         this._sigEditor.setMode(editorMode);
         this._resetEditorSize();
     }
-    this._sigEditor.setContent(signature.getValue());
+    this._sigEditor.setContent(signature.getValue(editorMode == DwtHtmlEditor.HTML ? ZmMimeTable.TEXT_HTML : ZmMimeTable.TEXT_PLAIN));
     if(editorMode == DwtHtmlEditor.HTML){
         /*htmlModeInited ?    this._fixSignatureInlineImages()
                        :    window.setTimeout(new AjxCallback(this, this._fixSignatureInlineImages), 100);*/
@@ -548,7 +551,7 @@ ZmSignaturesPage.prototype._handleFormatSelect = function(ev){
 
     var signature = this._selSignature;
 
-    var isText = this._sigFormat.getValue();
+    var isText = this._sigFormat ? this._sigFormat.getValue() : true;
     this._sigEditor.setMode( isText ? DwtHtmlEditor.TEXT : DwtHtmlEditor.HTML, true);
     this._resetEditorSize();
 
