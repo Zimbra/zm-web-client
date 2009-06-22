@@ -399,11 +399,14 @@ function() {
 	grantFormDiv.appendChild(this._grantForm.getHtmlElement());
 
 	// list views of shares and grants
-	this._pendingShareListView = new ZmSharingListView({parent:this, type:ZmSharingView.SHARE, status:ZmSharingView.PENDING, view:this});
+	this._pendingShareListView = new ZmSharingListView({parent:this, type:ZmSharingView.SHARE,
+		status:ZmSharingView.PENDING, sharingView:this, view:ZmId.VIEW_SHARE_PENDING});
 	this._addListView(this._pendingShareListView, this._pageId + "_pendingShares");
-	this._mountedShareListView = new ZmSharingListView({parent:this, type:ZmSharingView.SHARE, status:ZmSharingView.MOUNTED, view:this});
+	this._mountedShareListView = new ZmSharingListView({parent:this, type:ZmSharingView.SHARE,
+		status:ZmSharingView.MOUNTED, sharingView:this, view:ZmId.VIEW_SHARE_MOUNTED});
 	this._addListView(this._mountedShareListView, this._pageId + "_mountedShares");
-	this._grantListView = new ZmSharingListView({parent:this, type:ZmSharingView.GRANT, view:this});
+	this._grantListView = new ZmSharingListView({parent:this, type:ZmSharingView.GRANT,
+		sharingView:this, view:ZmId.VIEW_SHARE_GRANTS});
 	this._addListView(this._grantListView, this._pageId + "_sharesBy");
 
 	// autocomplete
@@ -621,7 +624,7 @@ ZmSharingListView = function(params) {
 	params.headerList = this._getHeaderList();
 	DwtListView.call(this, params);
 
-	this.view = params.view;
+	this.sharingView = params.sharingView;
 	this._idMap = {};
 };
 
@@ -666,8 +669,8 @@ function(item) {
 	if (!id) {
 		id = Dwt.getNextId();
 		item.domId = id;
-		this.view._shareByDomId[id] = item;
-		this.view._shareByKey[key] = item;
+		this.sharingView._shareByDomId[id] = item;
+		this.sharingView._shareByKey[key] = item;
 	}
 
 	return id;
@@ -726,7 +729,7 @@ function(ev) {
 		if (!share) {
 			var mtpt = organizers[0];
 			if (!mtpt.link) { return; }
-			var share = this.view._shareByKey[[mtpt.zid, mtpt.rid].join(":")];
+			var share = this.sharingView._shareByKey[[mtpt.zid, mtpt.rid].join(":")];
 			share = ZmSharingView.getShareFromLink(mtpt, share);	// update share
 		}
 		if (!share) { return; }
@@ -756,8 +759,8 @@ function(ev) {
 		}
 		// if a remote folder has been renamed or moved, rerun the search
 		if (ev.event == ZmEvent.E_MOVE || fields[ZmOrganizer.F_RNAME]) {
-			if (this.view._curOwner) {
-				this.view.findShares(this.view._curOwner);
+			if (this.sharingView._curOwner) {
+				this.sharingView.findShares(this.sharingView._curOwner);
 			}
 		}
 	}
@@ -768,7 +771,7 @@ function(ev) {
 		if ((ev.event = ZmEvent.E_MODIFY && fields[ZmOrganizer.F_SHARES]) ||
 		    (ev.event = ZmEvent.E_MODIFY && fields[ZmOrganizer.F_NAME] && organizers[0].shares)) {
 
-			this.view.showGrants();
+			this.sharingView.showGrants();
 		}
 	}
 };
