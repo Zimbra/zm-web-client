@@ -747,7 +747,7 @@ function() {
 
 		if (type == ZmCalBaseItem.LOCATION) {
 			var curVal = AjxStringUtil.trim(this._attInputField[type].getValue());
-			if (curVal == "" || this._isKnownLocation) {
+			if (curVal == "" || (!this._knownLocation && val!= "" && curVal != val) || this._isKnownLocation) {
 				this._attInputField[type].setValue(val);
 				this._isKnownLocation = true;
 			}
