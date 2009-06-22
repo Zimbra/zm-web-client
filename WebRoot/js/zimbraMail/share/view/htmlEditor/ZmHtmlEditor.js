@@ -106,6 +106,8 @@ function(mode, convert) {
 		var toolbar = this._toolbars[i];
 		toolbar.setVisible(mode == DwtHtmlEditor.HTML);
 	}
+
+	appCtxt.notifyZimlets("on_htmlEditor_setMode", [this, mode]);
 };
 
 ZmHtmlEditor.prototype.getBodyFieldId =
