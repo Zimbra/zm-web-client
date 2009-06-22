@@ -330,6 +330,10 @@ ZmSignaturesPage.prototype._updateSignature = function(select){
 
     var isText = this._sigFormat.getValue();
     oldSignature.setContentType(isText ? ZmMimeTable.TEXT_PLAIN : ZmMimeTable.TEXT_HTML);
+
+    if(!isText){
+        this._restoreSignatureInlineImages();
+    }
     oldSignature.value = this._sigEditor.getContent(false, true);
 
     if(isNameModified){
@@ -449,7 +453,56 @@ ZmSignaturesPage.prototype._addSignature = function(signature, skipControls, res
     
 };
 
+ZmSignaturesPage.prototype._fixSignatureInlineImages_onTimer =
+function(msg) {
+	// first time the editor is initialized, idoc.getElementsByTagName("img") is empty
+	// Instead of waiting for 500ms, trying to add this callback. Risky but works.
+	if (!this._firstTimeFixImages) {
+		this._sigEditor.addOnContentIntializedListener(new AjxCallback(this, this._fixSignatureInlineImages));
+	} else {
+		this._fixSignatureInlineImages();
+	}
+};
 
+ZmSignaturesPage.prototype._fixSignatureInlineImages =
+function() {
+    var idoc = this._sigEditor.getIframeDoc();
+    if (idoc) {
+
+        if (!this._firstTimeFixImages) {
+            this._firstTimeFixImages = true;
+            this._sigEditor.removeOnContentIntializedListener();
+        }
+
+        var images = idoc.getElementsByTagName("img");
+        var path = appCtxt.get(ZmSetting.REST_URL) + ZmFolder.SEP;
+        var img;
+		for (var i = 0; i < images.length; i++) {
+            img = images[i];
+            var dfsrc = img.getAttribute("dfsrc");
+            if(dfsrc && dfsrc.indexOf("doc:") == 0){
+                img.src = [path, dfsrc.substring(4)].join('');                
+            }            
+		}
+	}
+};
+
+ZmSignaturesPage.prototype._restoreSignatureInlineImages =
+function(){
+    var idoc = this._sigEditor.getIframeDoc();
+    if (idoc) {
+		var images = idoc.getElementsByTagName("img");
+        //var path = appCtxt.get(ZmSetting.REST_URL) + ZmFolder.SEP;
+        var img;
+        for (var i = 0; i < images.length; i++) {
+            img = images[i];
+            var dfsrc = img.getAttribute("dfsrc");
+            if(dfsrc && dfsrc.substring(0, 4) == "doc:"){
+                img.removeAttribute("src");
+            }
+        }
+    }
+};
 
 ZmSignaturesPage.prototype._resetSignature = function(signature, clear ) {
 	
@@ -462,12 +515,17 @@ ZmSignaturesPage.prototype._resetSignature = function(signature, clear ) {
     this._sigFormat.setSelectedValue(signature.getContentType() == ZmMimeTable.TEXT_PLAIN);
 
     var editorMode = (signature.getContentType() == ZmMimeTable.TEXT_PLAIN) ? DwtHtmlEditor.TEXT : DwtHtmlEditor.HTML;
+    var htmlModeInited = this._sigEditor.isHtmlModeInited();
     if(editorMode != this._sigEditor.getMode()){
         this._sigEditor.setMode(editorMode);
         this._resetEditorSize();
     }
     this._sigEditor.setContent(signature.getValue());
-
+    if(editorMode == DwtHtmlEditor.HTML){
+        /*htmlModeInited ?    this._fixSignatureInlineImages()
+                       :    window.setTimeout(new AjxCallback(this, this._fixSignatureInlineImages), 100);*/
+        this._fixSignatureInlineImages_onTimer();
+    }
     this._resetDeleteButtons();
 	
 };
@@ -692,46 +750,67 @@ ZmSignatureEditor.prototype.TEXTAREA_CLASSNAME = "ZmSignatureEditorTextArea";
 ZmSignatureEditor.prototype._createToolbars = function(){
     if (!this._toolbar1) {
         ZmHtmlEditor.prototype._createToolbars.call(this);
+        this._createUrlImageButton(this._toolbar1);
         this._createImageButton(this._toolbar1);
     }
 };
 
-ZmSignatureEditor.prototype._createImageButton = function(tb){
-	var button = new DwtToolBarButton({parent:tb})
-	button.setImage("ImageDoc");
+ZmSignatureEditor.prototype._createImageButton =
+function(tb){
+    var button = new DwtToolBarButton({parent:tb})
+	button.setImage("InsertImage");
 	button.setToolTipContent(ZmMsg.insertImage);
 	button.addSelectionListener(new AjxListener(this, this._insertImagesListener));
 };
 
-ZmSignatureEditor.prototype._insertImagesListener = function(ev){
-
-    var dlg = this._getImgSelDlg();
-    dlg.popup();
-    return;
-
-    var callback = new AjxCallback(this, this._imageUploaded);
-
-    var cFolder = appCtxt.getById(ZmOrganizer.ID_BRIEFCASE);
-    var dialog = appCtxt.getUploadDialog();
-    dialog.popup(cFolder,callback, "Upload Image");
+ZmSignatureEditor.prototype._createUrlImageButton =
+function(tb){
+	var button = new DwtToolBarButton({parent:tb})
+	button.setImage("ImageDoc");
+	button.setToolTipContent(ZmMsg.insertImageUrl);
+	button.addSelectionListener(new AjxListener(this, this._insertUrlImagesListener));
 };
 
-ZmSignatureEditor.prototype._imageUploaded = function(folder, files){
+ZmSignatureEditor.prototype._insertUrlImagesListener =
+function(ev){
+   this._getImgSelDlg().popup(); 
+};
+
+ZmSignatureEditor.prototype._insertImagesListener = function(ev){
+
+    AjxDispatcher.require("BriefcaseCore");
+    appCtxt.getApp(ZmApp.BRIEFCASE)._createDeferredFolders();
+
+    var callback = new AjxCallback(this, this._imageUploaded);
+    var cFolder = appCtxt.getById(ZmOrganizer.ID_BRIEFCASE);
+    var dialog = appCtxt.getUploadDialog();
+    dialog.popup(cFolder,callback, ZmMsg.uploadImage, null, true);
+};
+
+ZmSignatureEditor.prototype._imageUploaded = function(folder, fileNames, files){
      for(var i=0; i< files.length; i++){
          var file = files[i];
-         if(file.rest){
-             this.insertImageDoc(file);
-         }
+
+         var path = appCtxt.get(ZmSetting.REST_URL) + ZmFolder.SEP;
+         var docPath = folder.getRestUrl() + ZmFolder.SEP + file.name;
+         docPath = ["doc:", docPath.substr(docPath.indexOf(path) + path.length)].join("");
+
+         file.docpath = docPath;         
+         file.rest = folder.getRestUrl() + ZmFolder.SEP + AjxStringUtil.urlComponentEncode(file.name);
+         
+         this.insertImageDoc(file);         
      }
 };
 
 ZmSignatureEditor.prototype.insertImageDoc = function(file, width, height){
+
+    var src = file.rest;
+    if(!src) return;    
+
     var doc = this._getIframeDoc();
     var img = doc.createElement("img");
-    img.src = file.rest;
-    img.setAttribute('docId', file.id);
-    img.setAttribute('folderId', ZmOrganizer.ID_BRIEFCASE);
-    img.setAttribute('docName', file.name);
+    img.src = src;    
+    if(file.docpath) img.setAttribute("dfsrc", file.docPath);
     if(width) img.width = width;
     else img.removeAttribute('width');
     if(height) img.height = height;
@@ -789,6 +868,13 @@ ZmSignatureEditor.prototype.insertLink = function(params) {
     }
     ZmHtmlEditor.prototype.insertLink.call(this, params);
 
+};
+
+ZmSignatureEditor.prototype.getIframeDoc = function(){
+    if(!this._iframeDoc){
+        this._iframeDoc = this._getIframeDoc();
+    }
+    return this._iframeDoc;
 };
 
 

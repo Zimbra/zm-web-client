@@ -418,15 +418,17 @@ function (cid,aid,part) {
 	}
 };
 
-ZmMailMsg.prototype.addInlineDocAttachmentId =
-function (cid,docId,part) {
+ZmMailMsg.prototype.addInlineDocAttachment =
+function (cid, docId, docpath, part) {
 	if (!this._inlineDocAtts) {
 		this._inlineDocAtts = [];
 	}
-	this._onChange("inlineAttachments",docId);
+	this._onChange("inlineDocAttachments", docId, docpath, part);
 	if (docId) {
 		this._inlineDocAtts.push({"cid":cid,"docid":docId});
-	} else if (part) {
+	} else if (docpath) {
+		this._inlineDocAtts.push({"cid":cid,"docpath":docpath});
+	}else if (part) {
 		this._inlineDocAtts.push({"cid":cid,"part":part});
 	}
 };
@@ -947,7 +949,9 @@ function(request, isDraft, accountName, requestReadReceipt) {
 						for (j = 0; j < inlineDocAtts.length; j++) {
 							var inlineDocAttNode = {ci:inlineDocAtts[j].cid};
 							var attachNode = inlineDocAttNode.attach = {};
-							if (inlineDocAtts[j].docid) {
+							if (inlineDocAtts[j].docpath) {
+								attachNode.doc = [{path: inlineDocAtts[j].docpath, optional:1 }];
+							}else if (inlineDocAtts[j].docid) {
 								attachNode.doc = [{id: inlineDocAtts[j].docid}];
 							} 
 							subPartNodes.push(inlineDocAttNode);

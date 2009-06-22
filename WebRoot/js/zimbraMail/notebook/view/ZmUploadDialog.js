@@ -44,7 +44,7 @@ ZmUploadDialog.prototype._uploadCallback;
 
 // Public methods
 
-ZmUploadDialog.prototype.popup = function(folder, callback, title, loc) {
+ZmUploadDialog.prototype.popup = function(folder, callback, title, loc, oneFileOnly) {
 	this._uploadFolder = folder;
 	this._uploadCallback = callback;
 
@@ -56,7 +56,7 @@ ZmUploadDialog.prototype.popup = function(folder, callback, title, loc) {
 	while (rows.length) {
 		table.deleteRow(rows.length - 1);
 	}
-	this._addFileInputRow();
+	this._addFileInputRow(oneFileOnly);
 
 	// enable buttons
 	this.setButtonEnabled(DwtDialog.OK_BUTTON, true);
@@ -210,6 +210,8 @@ function(files, status, guids, response) {
 			var saveDocResp = resp.SaveDocumentResponse[i];
 			files[saveDocResp.requestId].done = true;
 			files[saveDocResp.requestId].name = saveDocResp.doc[0].name;
+            files[saveDocResp.requestId].id   = saveDocResp.doc[0].id;
+            files[saveDocResp.requestId].ver   = saveDocResp.doc[0].ver;
 		}
 	}
 
@@ -228,11 +230,13 @@ function(files, status, guids, response) {
 				for (var p in attrs) {
 					var attr = attrs[p];
 					switch (attr.n) {
+                        case "itemId" : { file.id = attr._content; break }
 						case "id": { file.id = attr._content; break; }
 						case "ver": { file.version = attr._content; break; }
 						case "name": { file.name = attr._content; break; }
 					}
 				}
+                file.version = file.version || 1;
 				conflicts.push(file);
 			}
 			else {
@@ -266,11 +270,11 @@ function(files, status, guids, response) {
 		for (var i = 0; i < files.length; i++) {
 			filenames.push(files[i].name);
 		}
-		this._uploadCallback.run(this._uploadFolder, filenames);
+		this._uploadCallback.run(this._uploadFolder, filenames, files);
 	}
 };
 
-ZmUploadDialog.prototype._addFileInputRow = function() {
+ZmUploadDialog.prototype._addFileInputRow = function(oneInputOnly) {
 	var id = Dwt.getNextId();
 	var inputId = id + "_input";
 	var removeId = id + "_remove";
@@ -286,31 +290,35 @@ ZmUploadDialog.prototype._addFileInputRow = function() {
 
 	var cell = row.insertCell(-1);
 	cell.innerHTML = "&nbsp;";
-	var cell = row.insertCell(-1);
-	cell.innerHTML = [
-		"<span ",
-			"id='",removeId,"' ",
-			"onmouseover='this.style.cursor=\"pointer\"' ",
-			"onmouseout='this.style.cursor=\"default\"' ",
-			"style='color:blue;text-decoration:underline;'",
-		">", ZmMsg.remove, "</span>"
-	].join("");
-	var removeSpan = document.getElementById(removeId);
-	Dwt.setHandler(removeSpan, DwtEvent.ONCLICK, ZmUploadDialog._removeHandler);
+    if(oneInputOnly){
+        cell.colSpan = 3;
+    }else{    
+        var cell = row.insertCell(-1);
+        cell.innerHTML = [
+            "<span ",
+            "id='",removeId,"' ",
+            "onmouseover='this.style.cursor=\"pointer\"' ",
+            "onmouseout='this.style.cursor=\"default\"' ",
+            "style='color:blue;text-decoration:underline;'",
+            ">", ZmMsg.remove, "</span>"
+        ].join("");
+        var removeSpan = document.getElementById(removeId);
+        Dwt.setHandler(removeSpan, DwtEvent.ONCLICK, ZmUploadDialog._removeHandler);
 
-	var cell = row.insertCell(-1);
-	cell.innerHTML = "&nbsp;";
-	var cell = row.insertCell(-1);
-	cell.innerHTML = [
-		"<span ",
-			"id='",addId,"' ",
-			"onmouseover='this.style.cursor=\"pointer\"' ",
-			"onmouseout='this.style.cursor=\"default\"' ",
-			"style='color:blue;text-decoration:underline;'",
-		">", ZmMsg.add, "</span>"
-	].join("");
-	var addSpan = document.getElementById(addId);
-	Dwt.setHandler(addSpan, DwtEvent.ONCLICK, ZmUploadDialog._addHandler);
+        var cell = row.insertCell(-1);
+        cell.innerHTML = "&nbsp;";
+        var cell = row.insertCell(-1);
+        cell.innerHTML = [
+            "<span ",
+            "id='",addId,"' ",
+            "onmouseover='this.style.cursor=\"pointer\"' ",
+            "onmouseout='this.style.cursor=\"default\"' ",
+            "style='color:blue;text-decoration:underline;'",
+            ">", ZmMsg.add, "</span>"
+        ].join("");
+        var addSpan = document.getElementById(addId);
+        Dwt.setHandler(addSpan, DwtEvent.ONCLICK, ZmUploadDialog._addHandler);
+    }
 };
 
 ZmUploadDialog._removeHandler = function(event) {

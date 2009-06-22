@@ -734,8 +734,13 @@ function(msg, elem, aname) {
 				//elem.setAttribute(df_aname, avalue)
 				return false;
 			}
-		}
-		else if (avalue.indexOf("//") == -1) { // check for content-location verison
+		}else if(avalue.substring(0,4) == "doc:"){
+            avalue = [appCtxt.get(ZmSetting.REST_URL), ZmFolder.SEP, avalue.substring(4)].join('');
+            if (avalue) {
+				elem.setAttribute(aname, avalue);
+				return false;
+            }
+        }else if (avalue.indexOf("//") == -1) { // check for content-location verison
 			avalue = msg.getContentPartAttachUrl(ZmMailMsg.CONTENT_PART_LOCATION, avalue);
 			if (avalue) {
 				elem.setAttribute(aname, avalue);
