@@ -831,6 +831,23 @@ function(origText) {
 	})();
 };
 
+ZmMailMsgView.prototype._stripHtmlComments =
+function(html){
+
+    //bug:38273
+    //Remove HTML Comments <!-- -->
+    // But make sure not to remove inside style|script tags.
+    var regex =  /<(?:!(?:--[\s\S]*?--\s*)?(>)\s*|(?:script|style|SCRIPT|STYLE)[\s\S]*?<\/(?:script|style|SCRIPT|STYLE)>)/g;
+    html = html.replace(regex,function(m, $1){
+        return $1 ? '':m;
+    });
+
+    // standard remove comments
+    //html = html.replace(/<!--(.|\n)*?-->/g, "");
+
+    return html;
+};
+
 ZmMailMsgView.prototype._makeIframeProxy =
 function(container, html, isTextMsg, isTruncated) {
 	// bug fix #4943
@@ -879,8 +896,8 @@ function(container, html, isTextMsg, isTruncated) {
 		if (AjxEnv.isSafari) {
 			html = "<html><head></head><body>" + html + "</body></html>";
 		}
-	} else {
-		html = html.replace(/<!--(.|\n)*?-->/g, ""); 							// remove comments
+	} else {        
+        html = this._stripHtmlComments(html);
 		if (this._objectManager) {
 			// this callback will post-process the HTML after the IFRAME is created
 			if (msgSize <= ZmMailMsgView.OBJ_SIZE_HTML)
