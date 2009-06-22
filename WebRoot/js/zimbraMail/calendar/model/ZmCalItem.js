@@ -898,7 +898,8 @@ function(mode, callback, msg, batchCmd, result) {
 				this._addAttendeesToSoap(soapDoc, null, m, null, accountName);
 			}
 		}
-		soapDoc.set("su", ([ZmMsg.cancelled, ": ", this.name].join("")), m);
+        var subject = (msg && msg.subject) ? msg.subject : ([ZmMsg.cancelled, ": ", this.name].join(""));
+		soapDoc.set("su", subject, m);
 		this._addNotesToSoap(soapDoc, m, true);
 
 		if (batchCmd) {
