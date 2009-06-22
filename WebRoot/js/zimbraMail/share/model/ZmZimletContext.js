@@ -58,12 +58,12 @@ ZmZimletContext = function(id, zimlet) {
 	}
 
 	this._panelActionMenu = null;
-	if (zimlet.zimletPanelItem) {
+	if (zimlet.zimletPanelItem && !appCtxt.isChildWindow) {
 		this.zimletPanelItem = zimlet.zimletPanelItem[0];
 		if (this.zimletPanelItem.label) {
 			this.zimletPanelItem.label = this.process(this.zimletPanelItem.label);
 		}
-		if (this.zimletPanelItem.toolTipText) {
+		if (this.zimletPanelItem.toolTipText && this.zimletPanelItem.toolTipText[0]) {
 			this.zimletPanelItem.toolTipText = this.process(this.zimletPanelItem.toolTipText[0]._content);
 		}
 		if (this.zimletPanelItem.icon) {
