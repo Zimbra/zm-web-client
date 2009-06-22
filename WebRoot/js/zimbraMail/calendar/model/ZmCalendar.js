@@ -142,8 +142,8 @@ function(what) {
 			if (item.folderId) {
 				invalid = true;
 				for (var i = 0; i < items.length; i++) {
-					var tree = appCtxt.getById(items[i].folderId);
-					if (tree != this) {
+					var folder = appCtxt.getById(items[i].folderId);
+					if (item.viewMode == ZmCalItem.MODE_NEW || folder != this) {
 						invalid = false;
 						break;
 					}

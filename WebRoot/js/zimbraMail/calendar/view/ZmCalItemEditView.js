@@ -587,6 +587,10 @@ function(width) {
 		}
 	}
 
+	if (this._folderPickerButton) {
+		this._folderPickerButton.addSelectionListener(new AjxListener(this, this._folderPickerListener));
+	}
+
 	// start/end date DwtButton's
 	var dateButtonListener = new AjxListener(this, this._dateButtonListener);
 	var dateCalSelectionListener = new AjxListener(this, this._dateCalSelectionListener);
@@ -669,6 +673,42 @@ function(calItem, mode) {
 		this._folderPickerButton.setText(folder.name);
 		this._folderPickedId = folder.id;
 	}
+};
+
+ZmCalItemEditView.prototype._getFolderPickerTreeIds =
+function() {
+	// override
+};
+
+ZmCalItemEditView.prototype._folderPickerListener =
+function(ev) {
+	var dlg = appCtxt.getChooseFolderDialog();
+	var callback = new AjxCallback(this, this._folderPickerCallback, [dlg]);
+	var folder = this._calItem && appCtxt.getById(this._calItem.folderId);
+	var account = folder && appCtxt.getAccount(folder.accountId);
+
+	if (this._calItem.viewMode == ZmCalItem.MODE_NEW) {
+		
+	}
+
+	var params = {
+		data: this._calItem,
+		treeIds: this._getFolderPickerTreeIds(),
+		overviewId: this.toString(),
+		omit:{}
+	};
+	params.omit[ZmFolder.ID_TRASH] = true;
+	params.omit[ZmOrganizer.ID_AUTO_ADDED] = true;
+
+	ZmController.showDialog(dlg, callback, params, account);
+};
+
+ZmCalItemEditView.prototype._folderPickerCallback =
+function(dlg, folder) {
+	dlg.popdown();
+
+	this._folderPickerButton.setText(folder.name);
+	this._folderPickedId = folder.id;
 };
 
 ZmCalItemEditView.prototype._initAttachContainer =

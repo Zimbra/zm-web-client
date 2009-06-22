@@ -218,6 +218,11 @@ function(width) {
 	this._pCompleteSelect.reparentHtmlElement(this._htmlElId + "_complete");
 };
 
+ZmTaskEditView.prototype._getFolderPickerTreeIds =
+function() {
+	return [ZmOrganizer.TASKS];
+};
+
 ZmTaskEditView.prototype._addEventHandlers =
 function() {
 	var edvId = AjxCore.assignId(this);
@@ -252,7 +257,11 @@ function(excludeAttendees) {
 	vals.push(this._subjectField.getValue());
 	vals.push(this._location.getValue());
 	vals.push(this._prioritySelect.getValue());
-	vals.push(this._folderSelect.getValue());
+	if (this._folderSelect) {
+		vals.push(this._folderSelect.getValue());
+	} else if (this._folderPickedId) {
+		vals.push(this._folderPickedId);
+	}
 	vals.push("" + this._statusCheckbox.checked);
 	vals.push(this._pCompleteSelect.getValue());
 	vals.push(this._statusSelect.getValue());

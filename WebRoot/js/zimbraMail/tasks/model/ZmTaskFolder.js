@@ -95,8 +95,9 @@ function(what) {
 			if (!invalid && item.folderId) {
 				invalid = true;
 				for (var i = 0; i < items.length; i++) {
-					var tree = appCtxt.getById(items[i].folderId);
-					if (tree != this) {
+					var item = items[i];
+					var folder = appCtxt.getById(item.folderId);
+					if (item.viewMode == ZmCalItem.MODE_NEW || folder != this) {
 						invalid = false;
 						break;
 					}

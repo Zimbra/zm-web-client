@@ -30,6 +30,8 @@ ZmChooseFolderDialog = function(parent, className) {
 	this._treeView = {};
 	this._creatingFolder = false;
 	this._treeViewListener = new AjxListener(this, this._treeViewSelectionListener);
+
+	this._multiAcctOverviews = {};
 };
 
 ZmChooseFolderDialog.prototype = new ZmDialog;
@@ -130,12 +132,13 @@ function(params) {
 	}
 	
 	// use an overview ID that comprises calling class, this class, and current account
-	var params = {
+	this._currentOverviewId = [this.toString(), params.overviewId].join("-");
+	var popupParams = {
 		treeIds: treeIds,
 		omit: omitParam,
 		omitPerAcct: omitPerAcct,
 		fieldId: this._folderTreeDivId,
-		overviewId: ([this.toString(), params.overviewId].join("-")),
+		overviewId: this._currentOverviewId,
 		noRootSelect: params.noRootSelect,
 		treeStyle: params.treeStyle || DwtTree.SINGLE_STYLE	// we don't want checkboxes!
 	};
@@ -157,23 +160,32 @@ function(params) {
 	if (treeIdMap[ZmOrganizer.NOTEBOOK]) pkg.push("NotebookCore","Notebook");
 	if (treeIdMap[ZmOrganizer.TASKS]) pkg.push("TasksCore","Tasks");
 	
-	AjxDispatcher.require(pkg, true, new AjxCallback(this, this._doPopup, [params, treeIds]));
+	AjxDispatcher.require(pkg, true, new AjxCallback(this, this._doPopup, [popupParams]));
+};
+
+ZmChooseFolderDialog.prototype.getOverviewId =
+function() {
+	return this._currentOverviewId;
 };
 
 ZmChooseFolderDialog.prototype._doPopup =
-function(params, treeIds) {
-
+function(params) {
 	var ov = this._setOverview(params);
 
 	if (appCtxt.multiAccounts) {
+		this._multiAcctOverviews[params.overviewId] = ov;
+		for (var i in this._multiAcctOverviews) {
+			this._multiAcctOverviews[i].setVisible(i == params.overviewId);
+		}
+
 		var overviews = ov.getOverviews();
 		for (var i in overviews) {
 			var overview = overviews[i];
-			this._resetTree(treeIds, overview);
+			this._resetTree(params.treeIds, overview);
 		}
 	}
 	else {
-		this._resetTree(treeIds, ov);
+		this._resetTree(params.treeIds, ov);
 	}
 
 	this._focusElement = this._inputField;
@@ -391,7 +403,7 @@ function(visible) {
 ZmChooseFolderDialog.prototype._getOverview =
 function() {
 	if (appCtxt.multiAccounts) {
-		return this._opc.getOverviewContainer(this.toString());
+		return this._opc.getOverviewContainer(this._currentOverviewId);
 	}
 
 	return ZmDialog.prototype._getOverview.call(this);

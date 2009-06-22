@@ -132,7 +132,7 @@ function(params, forceSingle) {
 
 	// multi-account uses overview container
 	if (appCtxt.multiAccounts && !forceSingle) {
-		var appName = this.toString();
+		var appName = this.getOverviewId();
 		var ovContainer = this._opc.getOverviewContainer(appName);
 		if (!ovContainer) {
 			var ovParams = {
@@ -154,7 +154,7 @@ function(params, forceSingle) {
 	}
 
 	// single-account overview handling
-	var overviewId = params.overviewId || this.getOverviewId();
+	var overviewId = this.getOverviewId();
 	var overview = this._opc.getOverview(overviewId);
 	if (!overview) {
 		var ovParams = {

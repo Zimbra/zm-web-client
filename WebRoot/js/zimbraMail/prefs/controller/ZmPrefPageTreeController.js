@@ -50,7 +50,7 @@ function(params) {
 		if (this._showSection(params.account, section.id)) {
 			var organizer = ZmPrefPage.createFromSection(section);
 			organizer.pageId = tabKey;
-			organizer.accountId = params.account && params.account.id
+			organizer.accountId = params.account && params.account.id;
 			organizers.push(organizer);
 		}
 	}
@@ -83,7 +83,10 @@ function(params) {
 			treeView.setSelected(page1, true);
 		}
 	}
-	treeView.getHeaderItem().setExpanded(true, true);
+	var hi = treeView.getHeaderItem();
+	if (hi) {
+		hi.setExpanded(true, true);
+	}
 	treeView.addSelectionListener(new AjxListener(this, this._handleTreeItemSelection, [view, treeView]));
 
 	return treeView;
@@ -91,10 +94,8 @@ function(params) {
 
 ZmPrefPageTreeController.prototype._showSection =
 function(account, sectionId) {
-	if (appCtxt.multiAccounts && !account.isMain) {
-		return this._isChildAccountPref(sectionId);
-	}
-	return true;
+	return (appCtxt.multiAccounts && !account.isMain)
+		? this._isChildAccountPref(sectionId) : true;
 };
 
 ZmPrefPageTreeController.prototype._isChildAccountPref =

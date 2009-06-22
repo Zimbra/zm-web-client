@@ -469,8 +469,6 @@ function(width) {
 	}
 	if (this._folderSelect) {
 		this._folderSelect.addChangeListener(new AjxListener(this, this._folderListener));
-	} else if (this._folderPickerButton) {
-		this._folderPickerButton.addSelectionListener(new AjxListener(this, this._folderPickerListener));
 	}
 
 	// time ZmTimeSelect
@@ -516,26 +514,9 @@ function() {
 	this._privacySelect.setEnabled(isEnabled);
 };
 
-ZmApptEditView.prototype._folderPickerListener =
-function(ev) {
-	var dlg = appCtxt.getChooseFolderDialog();
-	var callback = new AjxCallback(this, this._folderPickerCallback, [dlg]);
-	var folder = this._calItem && appCtxt.getById(this._calItem.folderId);
-	var account = folder && appCtxt.getAccount(folder.accountId);
-
-	var params = { data:this._calItem, treeIds:[ZmOrganizer.CALENDAR], omit:{} };
-	params.omit[ZmFolder.ID_TRASH] = true;
-	params.omit[ZmOrganizer.ID_AUTO_ADDED] = true;
-
-	ZmController.showDialog(dlg, callback, params, account);
-};
-
-ZmApptEditView.prototype._folderPickerCallback =
-function(dlg, folder) {
-	dlg.popdown();
-
-	this._folderPickerButton.setText(folder.name);
-	this._folderPickedId = folder.id;
+ZmApptEditView.prototype._getFolderPickerTreeIds =
+function() {
+	return [ZmOrganizer.CALENDAR];
 };
 
 ZmApptEditView.prototype._initAutocomplete =

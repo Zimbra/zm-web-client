@@ -481,7 +481,8 @@ function() {
 			this._folderPickerButton.setText(folder.name);
 			this._folderPickedId = folder.id;
 		} else {
-			this._folderPickerButton.setText(folder.name);
+			var name = ZmMsg[ZmFolder.MSG_KEY[ZmOrganizer.ID_ADDRBOOK]];
+			this._folderPickerButton.setText(name);
 			this._folderPickedId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ADDRBOOK, appCtxt.getActiveAccount());
 		}
 	}
