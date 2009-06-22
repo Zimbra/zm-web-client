@@ -39,6 +39,10 @@ function initSlides() {
         if(n.className == "slide" || n.className == "slidemaster") {
             resizeSlide(n);
             if(n.className == "slidemaster") {
+                var theme = n.getAttribute("theme");
+                if(window.presentationMode == "embed" &&  theme) {
+                    loadThemeCSS(theme);
+                }
                 show(n);
             }
         }
@@ -58,6 +62,7 @@ function resizeSlide(currentSlide) {
 
     //no need for resize in embed mode
     if(window.presentationMode == "embed") {
+        resizeFont(currentSlide);
         return;
     }
 
@@ -70,7 +75,17 @@ function resizeSlide(currentSlide) {
         currentSlide.style.width =  newWidth + "%";
         currentSlide.style.height = '100%';
         currentSlide.style.left = (100-newWidth)/2 + "%";
+        resizeFont(currentSlide);
     }
+}
+
+function resizeFont(slide) {
+
+    if(!slide || slide.className != "slide") return;
+
+    var size = getSlideWindowSize();
+    var newFontSize = (size.x < 1600) ? size.x*32/1600 : 32;
+    slide.style.fontSize = newFontSize + 'px'; 
 }
 
 function slidesHandler(ev) {
@@ -197,6 +212,19 @@ function getSlideWindowSize () {
     return {};
 }
 
+function loadThemeCSS(themeName) {
+    var cssNode = document.createElement('link');
+    cssNode.type = 'text/css';
+    cssNode.rel = 'stylesheet';
+    cssNode.href =  getThemeCSSPath(themeName);
+    cssNode.media = 'screen';
+    cssNode.title = 'dynamicLoadedSheet';
+    document.getElementsByTagName("head")[0].appendChild(cssNode);
+}
+
+function getThemeCSSPath(themeName) {
+     return  window.contextPath + "/public/slides/themes/" + themeName + "/css/slide.css";
+}
 
 window.onloadListeners=new Array();
 
@@ -205,7 +233,11 @@ window.addOnLoadListener = function (listener) {
 }
 
 
-
+function _resize() {
+    if(currentSlide) {
+        resizeSlide(currentSlide);
+    }
+}
 
 window.onload=function(){
     for(var i=0;i<window.onloadListeners.length;i++){
@@ -216,4 +248,5 @@ window.onload=function(){
 
 window.addOnLoadListener(initSlides);
 
+window.onresize = _resize;
 

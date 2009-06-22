@@ -215,15 +215,19 @@
 
 
     _resize = function() {
-        slideEditView.setDisplay("none");
-        var w = document.body.clientWidth;
-        var h = document.body.clientHeight;
-        if (!AjxEnv.isIE) {
-            w -= 2;
-            h -= 2;
+        if(${runSlideShow}) {
+            resizeSlide(currentSlide);
+        }else {
+            slideEditView.setDisplay("none");
+            var w = document.body.clientWidth;
+            var h = document.body.clientHeight;
+            if (!AjxEnv.isIE) {
+                w -= 2;
+                h -= 2;
+            }
+            slideEditView.setDisplay("block");
+            slideEditView.setBounds(0, 0, w, h);
         }
-        slideEditView.setDisplay("block");
-        slideEditView.setBounds(0, 0, w, h);
     };
     
     AjxCore.addOnloadListener(create);

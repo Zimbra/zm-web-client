@@ -78,10 +78,16 @@ function(themeName) {
 
 ZmSlideThemeManager.prototype.loadThemeCSS =
 function(themeName) {
+    var themePath = this.getThemeCSSPath(themeName);
+    this.loadCSS(themePath);
+};
+
+ZmSlideThemeManager.prototype.loadCSS =
+function(themePath) {
     var cssNode = document.createElement('link');
     cssNode.type = 'text/css';
     cssNode.rel = 'stylesheet';
-    cssNode.href =  this.getThemeCSSPath(themeName);
+    cssNode.href = themePath;
     cssNode.media = 'screen';
     cssNode.title = 'dynamicLoadedSheet';
     document.getElementsByTagName("head")[0].appendChild(cssNode);

@@ -1266,9 +1266,7 @@ function(content, idx, generateEndSlide, forSlideShow) {
 
 	//end slide content
     if(generateEndSlide) {
-        content[idx++] = ["<div class='endslide' id='endslide' style='width:100%;height:100%;position:absolute;left:0%;top:0%;display: none;z-index:", (Dwt.Z_VIEW), "'>"].join("");
-        content[idx++]  = "<center>" + ZmMsg.slides_endSlideMsg + "</center>";
-        content[idx++] = '</div>';
+        idx = this.getEndSlideContent(content);
     }
 
     var themeStr = this._currentTheme ? ["theme='", this._currentTheme ,"'"].join("") : "";
@@ -1279,17 +1277,40 @@ function(content, idx, generateEndSlide, forSlideShow) {
 
     //end slide content
     if(generateEndSlide) {
-        content[idx++] = ["<div class='splashscreen' id='splashscreen' style='width:100%;height:100%;position:absolute;left:0%;top:0%;display: block;z-index:", (Dwt.Z_VIEW+100), "'>"].join("");
-        content[idx++]  = "<center>" + ZmMsg.loading + "</center>";
-        content[idx++] = '</div>';
-    }    
-
-    if(forSlideShow) {
-        var leftNav = window.contextPath + '/img/large/ImgLeftArrow_32.gif';
-        var rightNav = window.contextPath + '/img/large/ImgRightArrow_32.gif';    
-        content[idx++] = '<div class="slideShowNavToolbar"><span class="navBtns" onclick="goPrevSlide()"> <img class="navImg" src="' + leftNav + '"/> </span><span class="navBtns" onclick="goNextSlide()"> <img class="navImg" src="' + rightNav + '"/> </span></div>'
+        idx = this.getSplashScreenContent(content);
     }
 
+    if(forSlideShow) {
+        idx = this.getNavigationButtonContent(content);
+    }
+
+    return idx;
+};
+
+ZmSlideEditView.prototype.getSplashScreenContent =
+function(content) {
+    var idx = content.length;
+    content[idx++] = ["<div class='splashscreen' id='splashscreen' style='width:100%;height:100%;position:absolute;left:0%;top:0%;display: block;z-index:", (Dwt.Z_VIEW+100), "'>"].join("");
+    content[idx++]  = "<center>" + ZmMsg.loading + "</center>";
+    content[idx++] = '</div>';
+    return idx;
+};
+
+ZmSlideEditView.prototype.getEndSlideContent =
+function(content) {
+    var idx = content.length;
+    content[idx++] = ["<div class='endslide' id='endslide' style='width:100%;height:100%;position:absolute;left:0%;top:0%;display: none;z-index:", (Dwt.Z_VIEW), "'>"].join("");
+    content[idx++]  = "<center>" + ZmMsg.slides_endSlideMsg + "</center>";
+    content[idx++] = '</div>';
+    return idx;
+};
+
+ZmSlideEditView.prototype.getNavigationButtonContent =
+function(content) {
+    var idx = content.length;
+    var leftNav = window.contextPath + '/img/large/ImgLeftArrow_32.gif';
+    var rightNav = window.contextPath + '/img/large/ImgRightArrow_32.gif';
+    content[idx++] = '<div class="slideShowNavToolbar"><span class="navBtns" onclick="goPrevSlide()"> <img class="navImg" src="' + leftNav + '"/> </span><span class="navBtns" onclick="goNextSlide()"> <img class="navImg" src="' + rightNav + '"/> </span></div>'
     return idx;
 };
 
@@ -1336,10 +1357,6 @@ function(item, runSlideShow) {
         }else {
             var head = [];
 
-            head.push('<link href="' +  window.contextPath + '/css/slides.css" rel="stylesheet" type="text/css" />');
-            if(this._currentTheme) {
-                head.push('<link href="' + this.getThemeCSSPath(this._currentTheme) + '" rel="stylesheet" type="text/css" />');
-            }
             head.push('<style>');
             head.push('.slide {');
             head.push('font-size: 32px;');
@@ -1351,21 +1368,21 @@ function(item, runSlideShow) {
             head.push('</style>');
 
             content = [content];
-            var idx = content.length;
-            content[idx++] = ["<div class='endslide' id='endslide' style='width:100%;height:100%;position:absolute;left:0%;top:0%;display: none;z-index:", (Dwt.Z_VIEW), "'>"].join("");
-            content[idx++]  = "<center>" + ZmMsg.slides_endSlideMsg + "</center>";
-            content[idx++] = '</div>';
-
-            //content1.push('<script language="javascript" src="' +  window.contextPath + '/public/slides/presentation.js"></script>');
-
+            var idx = this.getEndSlideContent(content);
+            idx = this.getSplashScreenContent(content);
+            idx = this.getNavigationButtonContent(content);
+            
             if(document.body) {
+                //import css for running slide show
+                this._themeManager.loadCSS(window.contextPath + '/css/slides.css');
+                if(this._currentTheme) {
+                    this._themeManager.loadThemeCSS(this._currentTheme);
+                }
                 document.body.innerHTML = head.join("") + content.join("");
+                //trigger slide show
                 initSlides();
+                window.onresize = _resize;
             }
-            /*
-            this.parseSlideTheme();
-            this.writeSlideShowContent(document, [content]);
-            */
         }
     }
 };
