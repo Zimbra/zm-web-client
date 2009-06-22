@@ -116,6 +116,16 @@ AjxPackage.require("zimbraMail.briefcase.ZmBriefcaseApp");
 AjxPackage.require("zimbraMail.calendar.model.ZmCalBaseItem");
 AjxPackage.require("zimbraMail.calendar.model.ZmMiniCalCache");
 
+AjxPackage.require("zimbraMail.share.model.ZmAccount");
+AjxPackage.require("zimbraMail.share.model.ZmZimbraAccount");
+AjxPackage.require("zimbraMail.mail.model.ZmDataSource");
+AjxPackage.require("zimbraMail.mail.model.ZmDataSourceCollection");
+AjxPackage.require("zimbraMail.mail.model.ZmPopAccount");
+AjxPackage.require("zimbraMail.mail.model.ZmImapAccount");
+AjxPackage.require("zimbraMail.mail.model.ZmIdentity");
+AjxPackage.require("zimbraMail.mail.model.ZmIdentityCollection");
+AjxPackage.require("zimbraMail.prefs.model.ZmPersona");
+
 AjxPackage.require("zimbraMail.mail.model.ZmMailItem");
 AjxPackage.require("zimbraMail.mail.model.ZmMailMsg");
 AjxPackage.require("zimbraMail.mail.model.ZmMimePart");
