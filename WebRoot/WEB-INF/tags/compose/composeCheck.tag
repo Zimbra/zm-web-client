@@ -1,19 +1,3 @@
-<%--
- * ***** BEGIN LICENSE BLOCK *****
- * 
- * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009 Zimbra, Inc.
- * 
- * The contents of this file are subject to the Yahoo! Public License
- * Version 1.0 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
- * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
- * ***** END LICENSE BLOCK *****
---%>
 <%@ tag body-content="empty" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -24,27 +8,7 @@
 <app:handleError>
 <zm:composeUploader var="uploader"/>
 <c:set var="needComposeView" value="${param.action eq 'compose'}"/>
-<c:if test="${param.cancelConfirmed}">
-    <c:set var="needComposeView" value="${false}"/>
-    <c:if test="${not empty sessionScope.temp_draftid}">
-        <zm:deleteMessage var="result" id="${param.temp_draftid}"/>
-        <c:remove var="temp_draftid" scope="session"/>
-    </c:if>
-</c:if>
 <c:if test="${uploader.isUpload}">
-    <c:set var="composeformat" value="${mailbox.prefs.composeFormat}" />
-    <c:if test="${mailbox.prefs.forwardReplyInOriginalFormat && !empty param.rf && (param.rf eq 'html' || param.rf eq 'text')}">
-        <c:set var="composeformat" value="${param.rf}"/>
-    </c:if>
-    <%-- SWAP the inline images src and dfsrc before send, save etc. --%>
-    <c:set var="isHtml" value="${composeformat eq 'html'}"/>
-    <c:set var="theBody" value="${isHtml ? (empty uploader.compose.htmlContent ?  uploader.compose.content : uploader.compose.htmlContent) : uploader.compose.content}"/>
-    <c:set var="theBody" value="${fn:replace(theBody,' dfsrc=',' asrc=')}"/>
-    <c:set var="theBody" value="${fn:replace(theBody,' src=',' dfsrc=')}"/>
-    <c:set var="theBody" value="${fn:replace(theBody,' asrc=',' src=')}"/>
-    <c:set var="contentToSet" value="${isHtml ? (empty uploader.compose.htmlContent ?  'content' : 'htmlContent') : 'content'}"/>
-    <c:set property="${contentToSet}" value="${theBody}" target="${uploader.compose}"/>
-
     <c:choose>
         <c:when test="${uploader.isContactAdd or uploader.isContactSearch}">
             <%--
@@ -61,7 +25,6 @@
                 <c:otherwise>
                     <zm:saveDraft var="draftResult" compose="${uploader.compose}" draftid="${uploader.compose.draftId}"/>
                     <c:set scope="request" var="draftid" value="${draftResult.id}"/>
-                    <c:set var="temp_draftid" scope="session" value="${draftResult.id}"/>
                 </c:otherwise>
             </c:choose>
             <jsp:forward page="/h/attachments"/>
@@ -78,43 +41,12 @@
                        <app:status><fmt:message key="zeroSizedAtts"/></app:status> 
                     </c:if>
                 </c:forEach>
-                <c:choose>
-                    <c:when test="${not empty uploader.compose.draftId}">
-                        <zm:saveDraft var="draftResult" compose="${uploader.compose}" draftid="${uploader.compose.draftId}"/>
-                        <c:set scope="request" var="draftid" value="${draftResult.id}"/>
-                    </c:when>
-                    <c:otherwise>
-                        <zm:saveDraft var="draftResult" compose="${uploader.compose}" draftid="${uploader.compose.draftId}"/>
-                        <c:set scope="request" var="draftid" value="${draftResult.id}"/>
-                        <c:set var="temp_draftid" scope="session" value="${draftResult.id}"/>
-                    </c:otherwise>
-                </c:choose>
+                <zm:saveDraft var="draftResult" compose="${uploader.compose}" draftid="${uploader.compose.draftId}"/>
+                <c:set scope="request" var="draftid" value="${draftResult.id}"/>                
             </c:if>
         </c:when>
         <c:when test="${uploader.isCancel}">
             <c:set var="needComposeView" value="${false}"/>
-        </c:when>
-        <c:when test="${uploader.isCancelConfirm}">
-            <c:set var="needComposeView" value="${false}"/>
-            <c:if test="${! empty uploader && not empty uploader.compose && (not empty uploader.compose.to || not empty uploader.compose.cc || not empty uploader.compose.bcc || not empty uploader.compose.subject || not empty uploader.compose.content || not empty sessionScope.temp_draftid)}">
-                <c:set var="needComposeView" value="${true}"/>
-                <fmt:message key="yes" var="yes"/>
-                 <c:url var="cancelUrl" value="/h/search">
-                     <c:if test="${not empty sessionScope.temp_draftid}">
-                        <c:param name="action" value="compose"/>
-                        <c:param name="cancelConfirmed" value="true"/>
-                        <c:param name="temp_draftid" value="${sessionScope.temp_draftid}"/>
-                    </c:if>
-                    <c:if test="${not empty param.sfi}">
-                        <c:param name="sfi" value="${param.sfi}"/>
-                    </c:if>
-                </c:url>
-                <app:status html="true" style="Warning">
-                    <fmt:message key="confirmUnsavedChanges">
-                        <fmt:param value="<a style='margin:10px;font-weight:bold;' href='${cancelUrl}'>${yes}</a>"/>
-                    </fmt:message>
-                </app:status>
-            </c:if>
         </c:when>
         <c:when test="${uploader.isSend and empty fn:trim(uploader.compose.to) and empty fn:trim(uploader.compose.cc) and empty fn:trim(uploader.compose.bcc)}">
             <app:status>
@@ -147,7 +79,6 @@
             <zm:checkCrumb crumb="${uploader.paramValues.crumb[0]}"/>
             <zm:saveDraft var="draftResult" compose="${uploader.compose}" draftid="${uploader.compose.draftId}"/>
             <c:set scope="request" var="draftid" value="${draftResult.id}"/>
-            <c:remove var="temp_draftid" scope="session"/>
             <%-- TODO: check for errors, etc, set success message var and forward to prev page, or set error message and continue --%>
             <app:status><fmt:message key="draftSavedSuccessfully"/></app:status>
             <c:set var="needComposeView" value="${true}"/>

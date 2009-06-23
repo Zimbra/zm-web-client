@@ -1,15 +1,17 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ *
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008 Zimbra, Inc.
- * 
+ * Copyright (C) 2006, 2007 Zimbra, Inc.
+ *
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -100,12 +102,16 @@ function(controller) {
 	DBG.println("------------ TODO: getTooltip! --------------");
 };
 
+ZmTask.prototype.getPrintHtml =
+function(preferHtml, callback) {
+	this.getDetails(ZmCalItem.MODE_EDIT, new AjxCallback(null, ZmTaskView.getPrintHtml, [this, preferHtml, callback]));
+};
+
 ZmTask.prototype.notifyModify =
 function(obj) {
 	ZmItem.prototype.notifyModify.call(this, obj);
 
-    this.uid = obj.uid;
-    if (obj.l) this.folderId = obj.l;
+	this._loadFromDom(obj);
 
 	// update this tasks's list and notify
 	this.list.modifyLocal(obj, {task:this});
@@ -141,17 +147,6 @@ function(mode, batchCmd) {
 	batchCmd.addRequestParams(soapDoc);
 };
 
-// returns "owner" of remote/shared calItem folder this calItem belongs to
-ZmTask.prototype.getRemoteFolderOwner =
-function() {
-	// bug fix #18855 - dont return the folder owner if moving betw. accounts
-	var controller = AjxDispatcher.run("GetTaskController");
-	if (controller.isMovingBetwAccounts(this, this.folderId)) {
-		return null;
-	}
-	var folder = this.getFolder();
-	return (folder && folder.link) ? folder.owner : null;
-};
 
 // Private/protected methods
 

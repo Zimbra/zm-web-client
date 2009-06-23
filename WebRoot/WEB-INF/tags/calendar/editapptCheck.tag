@@ -1,19 +1,3 @@
-<%--
- * ***** BEGIN LICENSE BLOCK *****
- * 
- * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009 Zimbra, Inc.
- * 
- * The contents of this file are subject to the Yahoo! Public License
- * Version 1.0 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
- * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
- * ***** END LICENSE BLOCK *****
---%>
 <%@ tag body-content="empty" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -77,34 +61,6 @@
             <c:when test="${uploader.isRepeatEdit}">
                 <jsp:forward page="/h/repeat"/>
             </c:when>
-            <c:when test="${not empty uploader.paramValues.removeAttendee}">
-                <c:set property="attendees" target="${uploader.compose}" value="${fn:replace(uploader.compose.attendees,uploader.paramValues.removeAttendee[0],'')}"/>
-                <c:set property="pendingAttendees" target="${uploader}" value="${fn:replace(uploader.pendingAttendees,uploader.paramValues.removeAttendee[0],'')}"/>
-                <c:set property="resources" target="${uploader.compose}" value="${fn:replace(uploader.compose.resources,uploader.paramValues.removeAttendee[0],'')}"/>
-                <c:set property="pendingResources" target="${uploader}" value="${fn:replace(uploader.pendingResources,uploader.paramValues.removeAttendee[0],'')}"/>
-                <jsp:forward page="/h/addattendees"/>
-            </c:when>
-            <c:when test="${not empty uploader.paramValues.schedulePrevDate or not empty uploader.paramValues.scheduleNextDate}">
-                <fmt:message key="CAL_APPT_EDIT_DATE_FORMAT" var="calEditDateFmt"/>
-                <fmt:parseDate value="${uploader.compose.startDate}" pattern="${calEditDateFmt}" var="apptSDate"/>
-                <fmt:parseDate value="${uploader.compose.endDate}" pattern="${calEditDateFmt}" var="apptEDate"/>
-
-                <c:if test="${not empty uploader.paramValues.schedulePrevDate}">
-                    <c:set var="newStartDate" value="${zm:addDay(zm:getCalendar(apptSDate.time,null), -1)}"/>
-                    <c:set var="newEndDate" value="${zm:addDay(zm:getCalendar(apptEDate.time,null), -1)}"/>
-                </c:if>
-                <c:if test="${not empty uploader.paramValues.scheduleNextDate}">
-                    <c:set var="newStartDate" value="${zm:addDay(zm:getCalendar(apptSDate.time,null), 1)}"/>
-                    <c:set var="newEndDate" value="${zm:addDay(zm:getCalendar(apptEDate.time,null), 1)}"/>
-                </c:if>
-
-                <fmt:formatDate value="${newStartDate.time}" var="newStartDate" pattern="${calEditDateFmt}"/>
-                <fmt:formatDate value="${newEndDate.time}" var="newEndDate" pattern="${calEditDateFmt}"/>
-                <c:set property="startDate" target="${uploader.compose}" value="${newStartDate}"/>
-                <c:set property="endDate" target="${uploader.compose}" value="${newEndDate}"/>
-
-                <jsp:forward page="/h/addattendees"/>
-            </c:when>
             <c:when test="${uploader.isContactAdd or uploader.isContactSearch}">
                 <%--
             <zm:saveDraft var="draftResult" compose="${upload,er.compose}" draftid="${uploader.compose.draftId}"/>
@@ -132,19 +88,6 @@
             <c:when test="${uploader.isCancel}">
                 <c:set var="needEditView" value="${false}"/>
             </c:when>
-            <c:when test="${uploader.isCancelConfirm}">
-            <c:set var="needEditView" value="${false}"/>
-            <c:if test="${! empty uploader && not empty uploader.compose && (not empty uploader.compose.subject || not empty uploader.compose.location || not empty uploader.compose.attendees || not empty uploader.compose.content)}">
-                <c:set var="needEditView" value="${true}"/>
-                <fmt:message key="yes" var="yes"/>
-                <c:url var="cancelUrl" value="/h/calendar"/>
-                <app:status html="true" style="Warning">
-                    <fmt:message key="confirmUnsavedChanges">
-                        <fmt:param value="<a style='margin:10px;font-weight:bold;' href='${cancelUrl}'>${yes}</a>"/>
-                    </fmt:message>
-                </app:status>
-            </c:if>
-        </c:when>
             <c:when test="${uploader.isSave and not uploader.compose.isValidStartTime}">
                 <app:status style="Critical">
                     <fmt:message key="errorInvalidApptStartDate"/>
@@ -163,16 +106,6 @@
             <c:when test="${uploader.isSave and empty uploader.compose.subject}">
                 <app:status style="Critical">
                     <fmt:message key="errorMissingSubject"/>
-                </app:status>
-            </c:when>
-            <c:when test="${uploader.isSave and not zm:isValidEmailAddresses(uploader.compose.attendees)}">
-                <app:status style="Critical">
-                    <fmt:message key="invalidAttendees"/>
-                </app:status>
-            </c:when>
-            <c:when test="${uploader.isSave and not zm:isValidEmailAddresses(uploader.compose.resources)}">
-                <app:status style="Critical">
-                    <fmt:message key="invalidResources"/>
                 </app:status>
             </c:when>
             <c:when test="${uploader.isApptCancel or uploader.isApptDelete}">

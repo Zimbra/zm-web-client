@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -53,13 +55,13 @@ function() {
 };
 
 ZmSearchController.prototype.dateSearch =
-function(d, searchFor) {
+function(d) {
 	d = d || new Date();
     var formatter = AjxDateFormat.getDateInstance(AjxDateFormat.SHORT);
     var date = formatter.format(d);
 	var groupBy = appCtxt.getApp(ZmApp.MAIL).getGroupMailBy();
 	var query = "date:" + date;
-	this.search({query:query, types:[groupBy], searchFor: searchFor});
+	this.search({query:query, types:[groupBy]});
 };
 
 ZmSearchController.prototype.fromSearch =
@@ -85,22 +87,21 @@ function(name) {
  * @param showBasic
  */
 ZmSearchController.prototype.showBrowsePickers =
-function(pickers, showBasic) {
-	// WTF:
-	showBasic = (!showBasic || showBasic == null) ? true : showBasic;
+function(pickers,showBasic) {
+	showBasic = (!showBasic || showBasic == null)?true:showBasic;
 
 	// Pickers array
 	this.showBrowseView(true, null);
 
 	// now remove all pickers and add those from array
 	if (pickers instanceof Array) {
-		this._browseViewController.removeAllPickers();
-		if (showBasic) {
+	   this._browseViewController.removeAllPickers();
+	   if (showBasic) { //
 			this._browseViewController.addPicker(ZmPicker.BASIC);
-		}
-	for (var i = 0; i < pickers.length; i++) {
-			this._browseViewController.addPicker(pickers[i]);
-		}
+	   }
+	   for (var i = 0; i < pickers.length; i++) {
+		   this._browseViewController.addPicker(pickers[i]);
+	   }
 	}
 };
 
@@ -148,16 +149,16 @@ function(callback) {
 
 ZmSearchController.prototype.getBrowseView =
 function() {
-	return (this._browseViewController && this._browseViewController.getBrowseView());
+	var bvc = this._browseViewController;
+	return (bvc == null) ? null : bvc.getBrowseView();
 };
 
 ZmSearchController.prototype.setSearchField =
 function(searchString) {
-	if (appCtxt.get(ZmSetting.SHOW_SEARCH_STRING) && this._searchToolBar) {
+	if (appCtxt.get(ZmSetting.SHOW_SEARCH_STRING) && this._searchToolBar)
 		this._searchToolBar.setSearchFieldValue(searchString);
-	} else {
+	else
 		this._currentQuery = searchString;
-	}
 };
 
 ZmSearchController.prototype.getSearchFieldValue =
@@ -195,6 +196,7 @@ function() {
 
 	var tg = this._createTabGroup();
 	tg.addMember(this._searchToolBar.getSearchField());
+	tg.addMember(this._searchToolBar);
 
 	// Register keyboard callback for search field
 	this._searchToolBar.registerCallback(this._searchFieldCallback, this);
@@ -246,7 +248,7 @@ function(menu) {
  */
 ZmSearchController.prototype.search =
 function(params) {
-	if (params.searchFor != ZmItem.APPT && (!(params.query && params.query.length))) { return; }
+	if (this._searchFor != ZmItem.APPT && (!(params.query && params.query.length))) { return; }
 
 	// if the search string starts with "$set:" then it is a command to the client
 	if (params.query.indexOf("$set:") == 0 || params.query.indexOf("$cmd:") == 0) {
@@ -290,8 +292,6 @@ function(search, noRender, changes, callback, errorCallback) {
 	params.lastSortVal	= search.lastSortVal;
 	params.lastId		= search.lastId;
 	params.soapInfo		= search.soapInfo;
-	params.accountName	= search.accountName;
-	params.searchFor	= this._searchFor;
 
 	if (changes) {
 		for (var key in changes) {
@@ -336,14 +336,28 @@ function(params) {
 
 	if (searchFor == ZmId.SEARCH_MAIL) {
 		types.add(groupBy);
-	} else if (searchFor == ZmId.SEARCH_ANY) {
-		if (appCtxt.get(ZmSetting.MAIL_ENABLED) && groupBy)	{ types.add(groupBy); }
-		if (appCtxt.get(ZmSetting.CONTACTS_ENABLED))		{ types.add(ZmItem.CONTACT); }
-		if (appCtxt.get(ZmSetting.CALENDAR_ENABLED))		{ types.add(ZmItem.APPT); }
-		if (appCtxt.get(ZmSetting.TASKS_ENABLED))			{ types.add(ZmItem.TASK); }
-		if (appCtxt.get(ZmSetting.NOTEBOOK_ENABLED))		{ types.add(ZmItem.PAGE); }
-		if (appCtxt.get(ZmSetting.BRIEFCASE_ENABLED))		{ types.add(ZmItem.BRIEFCASE); }
-	} else {
+	} else if (searchFor == ZmId.SEARCH_ANY)	{
+		if (groupBy && appCtxt.get(ZmSetting.MAIL_ENABLED)) {
+			types.add(groupBy);
+		}
+		if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+			types.add(ZmItem.CONTACT);
+		}
+		if (appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
+			types.add(ZmItem.APPT);
+		}
+		if (appCtxt.get(ZmSetting.TASKS_ENABLED)) {
+			types.add(ZmItem.TASK);
+		}
+		if (appCtxt.get(ZmSetting.NOTEBOOK_ENABLED)) {
+			types.add(ZmItem.PAGE);
+			//types.add(ZmItem.DOCUMENT);
+		}
+        if (appCtxt.get(ZmSetting.BRIEFCASE_ENABLED)) {
+			types.add(ZmItem.BRIEFCASE);
+			//types.add(ZmItem.DOCUMENT);
+		}
+    } else {
 		types.add(searchFor);
 		if (searchFor == ZmItem.PAGE) {
 			types.add(ZmItem.DOCUMENT);
@@ -366,7 +380,6 @@ function(types) {
 			case ZmItem.CONTACT:	viewType = ZmId.VIEW_CONTACT_SIMPLE; break;
 			case ZmItem.APPT:		viewType = ZmId.VIEW_CAL; break;
 			case ZmItem.TASK:		viewType = ZmId.VIEW_TASKLIST; break;
-			case ZmId.SEARCH_GAL:	viewType = ZmId.VIEW_CONTACT_SIMPLE; break;
 			// more types go here as they are suported...
 		}
 
@@ -389,8 +402,10 @@ function(types) {
 ZmSearchController.prototype._doSearch =
 function(params, noRender, callback, errorCallback) {
 
-	this._searchFor = params.searchFor || this._searchFor;
-	appCtxt.notifyZimlets("onSearch", [params.query]);
+	params.searchFor = this._searchFor = params.searchFor || this._searchFor;
+	if (appCtxt.zimletsPresent()) {
+		appCtxt.getZimletMgr().notifyZimlets("onSearch", params.query);
+	}
 
 	if (this._searchToolBar) {
 		var value = (appCtxt.get(ZmSetting.SHOW_SEARCH_STRING) || params.userText) ? params.query : "";
@@ -406,24 +421,16 @@ function(params, noRender, callback, errorCallback) {
 		params = appCtxt.getApp(ZmApp.MAIL).getSearchParams(params);
 	}
 
-	if (this._searchFor == ZmItem.TASK) {
-		var tlc = AjxDispatcher.run("GetTaskListController");
-		params.allowableTaskStatus = (tlc) ? tlc.getAllowableTaskStatus() : null;
-	}
-
 	// if the user explicitly searched for all types, force mixed view
 	var isMixed = (params.searchFor == ZmId.SEARCH_ANY);
 
 	// a query hint is part of the query that the user does not see
 	if (this._inclSharedItems) {
-		params.queryHint = isMixed
-			? ZmSearchController.QUERY_ISREMOTE
-			: ZmSearchController.generateQueryHint(types.getArray());
+		params.queryHint = isMixed ? ZmSearchController.QUERY_ISREMOTE : ZmSearchController.generateQueryHint(types.getArray());
 	}
 
 	// only set contact source if we are searching for contacts
-	params.contactSource = (types.contains(ZmItem.CONTACT) || types.contains(ZmId.SEARCH_GAL))
-		? this._contactSource : null;
+	params.contactSource = (types.contains(ZmItem.CONTACT) || types.contains(ZmId.SEARCH_GAL)) ? this._contactSource : null;
 
 	// find suitable sort by value if not given one (and if applicable)
 	params.sortBy = params.sortBy || this._getSuitableSortBy(types);
@@ -440,8 +447,8 @@ function(params, noRender, callback, errorCallback) {
 		if (controller && types.contains(ZmItem.APPT)) {
 			controller.handleUserSearch(params, respCallback);
 		}else {
-            search.execute({callback:respCallback, errorCallback:errorCallback});            
-        }
+			search.execute({callback:respCallback, errorCallback:errorCallback});
+		}
 	} else {
 		search.execute({callback:respCallback, errorCallback:errorCallback});
 	}
@@ -476,15 +483,13 @@ function(search, noRender, isMixed, callback, result) {
 		this._showResults(results, search, isMixed);
 	}
 
-	if (callback) {
-		callback.run(result);
-	}
+	if (callback) callback.run(result);
 };
 
 ZmSearchController.prototype._showResults =
 function(results, search, isMixed) {
 	// allow old results to dtor itself
-	if (this._results && (this._results.type == results.type) && this._results.dtor) {
+	if (this._results && (this._results.type == results.type)) {
 		this._results.dtor();
 	}
 	this._results = results;
@@ -492,9 +497,10 @@ function(results, search, isMixed) {
 	DBG.timePt("handle search results");
 
 	// determine if we need to default to mixed view
+	var folder = appCtxt.getById(search.folderId);
 	var isInGal = (this._contactSource == ZmId.SEARCH_GAL);
 	if (appCtxt.get(ZmSetting.SAVED_SEARCHES_ENABLED)) {
-		var saveBtn = this._searchToolBar && this._searchToolBar.getButton(ZmSearchToolBar.SAVE_BUTTON);
+		var saveBtn = this._searchToolBar ? this._searchToolBar.getButton(ZmSearchToolBar.SAVE_BUTTON) : null;
 		if (saveBtn) {
 			saveBtn.setEnabled(!isInGal);
 		}
@@ -507,6 +513,7 @@ function(results, search, isMixed) {
 	app.currentSearch = search;
 	app.currentQuery = search.query;
 	app.showSearchResults(results, loadCallback, isInGal, search.folderId);
+	appCtxt.getAppController().focusContentPane();
 };
 
 ZmSearchController.prototype._handleLoadShowResults =
@@ -530,16 +537,17 @@ function(search, isMixed, ex) {
 	if (ex.code == ZmCsfeException.MAIL_NO_SUCH_TAG ||
 		ex.code == ZmCsfeException.MAIL_QUERY_PARSE_ERROR ||
 		ex.code == ZmCsfeException.MAIL_TOO_MANY_TERMS ||
-		(ex.code == ZmCsfeException.MAIL_NO_SUCH_FOLDER && !(ex.data.itemId && ex.data.itemId.length)))
-	{
+		(ex.code == ZmCsfeException.MAIL_NO_SUCH_FOLDER && !(ex.data.itemId && ex.data.itemId.length))) {
+
 		var msg = ex.getErrorMsg();
 		appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_WARNING);
 		var results = new ZmSearchResult(search);
 		results.type = search.types ? search.types.get(0) : null;
 		this._showResults(results, search, isMixed);
 		return true;
+	} else {
+		return false;
 	}
-	return false;
 };
 
 /**
@@ -600,7 +608,9 @@ function(ev) {
 		} else {
 			queryString = this._currentQuery ? this._currentQuery : "";
 		}
-		appCtxt.notifyZimlets("onSearchButtonClick", [queryString]);
+		if (appCtxt.zimletsPresent()) {
+			appCtxt.getZimletMgr().notifyZimlets("onSearchButtonClick", queryString);
+		}
 		var getHtml = appCtxt.get(ZmSetting.VIEW_AS_HTML);
 		this.search({query: queryString, userText: userText, getHtml: getHtml});
 	}
@@ -703,9 +713,7 @@ function(ev, id) {
 
 /**
  * Selects the appropriate item in the overview based on the search. Selection only happens
- * if the search was a simple search for a folder, tag, or saved search. A check is done to
- * make sure that item is not already selected, so selection should only occur for a query
- * manually run by the user.
+ * if the search was a simple search for a folder, tag, or saved search.
  *
  * @param search		[ZmSearch]		the current search
  */
@@ -715,7 +723,7 @@ function(search) {
 	if (search.folderId) {
 		id = this._getNormalizedId(search.folderId);
 		var folderTree = appCtxt.getFolderTree();
-		var folder = folderTree && folderTree.getById(id);
+		var folder = folderTree ? folderTree.getById(id) : null;
 		type = folder ? folder.type : ZmOrganizer.FOLDER;
 	} else if (search.tagId) {
 		id = this._getNormalizedId(search.tagId);
@@ -726,8 +734,16 @@ function(search) {
 	}
 	var app = appCtxt.getCurrentApp();
 	var overview = app.getOverview();
-	if (overview) {
-		overview.setSelected(id, type);
+	if (!overview) { return; }
+	if (id) {
+		var treeView = overview.getTreeView(type);
+		if (treeView) {
+			treeView.setSelected(id, true);
+		}
+		overview.itemSelected(type);
+	} else {
+		// clear overview of selection
+		overview.itemSelected();
 	}
 };
 

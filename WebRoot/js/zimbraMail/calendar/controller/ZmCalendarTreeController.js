@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -20,10 +22,11 @@ ZmCalendarTreeController = function() {
 	this._listeners[ZmOperation.NEW_CALENDAR] = new AjxListener(this, this._newListener);
 	this._listeners[ZmOperation.CHECK_ALL] = new AjxListener(this, this._checkAllListener);
 	this._listeners[ZmOperation.CLEAR_ALL] = new AjxListener(this, this._clearAllListener);
-	this._listeners[ZmOperation.BROWSE] = new AjxListener(this, this._browseListener);
+
+    this._listeners[ZmOperation.BROWSE] = new AjxListener(this, this._browseListener);
 	this._listeners[ZmOperation.DETACH_WIN] = new AjxListener(this, this._detachListener);
-	this._listeners[ZmOperation.FREE_BUSY_LINK] = new AjxListener(this, this._freeBusyLinkListener);
-	if (appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED)) {
+    this._listeners[ZmOperation.FREE_BUSY_LINK] = new AjxListener(this, this._freeBusyLinkListener);
+    if (appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED)) {
 		this._listeners[ZmOperation.SHARE_CALENDAR] = new AjxListener(this, this._shareCalListener);
 		this._listeners[ZmOperation.MOUNT_CALENDAR] = new AjxListener(this, this._mountCalListener);
 	}
@@ -34,8 +37,7 @@ ZmCalendarTreeController = function() {
 ZmCalendarTreeController.prototype = new ZmTreeController;
 ZmCalendarTreeController.prototype.constructor = ZmCalendarTreeController;
 
-ZmCalendarTreeController.prototype.toString =
-function() {
+ZmCalendarTreeController.prototype.toString = function() {
 	return "ZmCalendarTreeController";
 };
 
@@ -47,7 +49,7 @@ function(overviewId) {
 	var items = this._getItems(overviewId);
 	for (var i = 0; i < items.length; i++) {
 		var item = items[i];
-		if (item._isSeparator) { continue; }
+		if (item._isSeparator) continue;
 		if (item.getChecked()) {
 			var calendar = item.getData(Dwt.KEY_OBJECT);
 			calendars.push(calendar);
@@ -63,9 +65,9 @@ function(overviewId, owner) {
 	var items = this._getItems(overviewId);
 	for (var i = 0; i < items.length; i++) {
 		var item = items[i];
-		if (!item || item._isSeparator) { continue; }
+		if (!item || item._isSeparator) continue;
 		var calendar = item.getData(Dwt.KEY_OBJECT);
-		if (calendar.getOwner() == owner) {
+		if(calendar.getOwner() == owner){
 			calendars.push(calendar);
 		}
 	}
@@ -73,13 +75,14 @@ function(overviewId, owner) {
 	return calendars;
 };
 
+// XXX: 6/1/07 - each app manages own overview now, do we need this?
 ZmCalendarTreeController.prototype.addSelectionListener =
 function(overviewId, listener) {
 	// Each overview gets its own event manager
 	if (!this._eventMgrs[overviewId]) {
 		this._eventMgrs[overviewId] = new AjxEventMgr;
-		// Each event manager has its own selection event to avoid multi-threaded
-		// collisions
+		// Each event manager has its own selection event to avoid
+		// multi-threaded collisions
 		this._eventMgrs[overviewId]._selEv = new DwtSelectionEvent(true);
 	}
 	this._eventMgrs[overviewId].addListener(DwtEvent.SELECTION, listener);
@@ -145,7 +148,6 @@ function(ev){
 		window.open(url+".html", "_blank");
 	}
 };
-
 ZmCalendarTreeController.prototype._freeBusyLinkListener =
 function(ev){
 	var inNewWindow = false;
@@ -157,13 +159,14 @@ function(ev){
 	if (restUrl) {
 	   restUrl += "?fmt=freebusy";
 	}
-	var params = {
-		action: ZmOperation.NEW_MESSAGE, 
-		inNewWindow: inNewWindow,
-		msg: (new ZmMailMsg()),
-		extraBodyText: restUrl
-	};
-	AjxDispatcher.run("Compose", params);
+	var action = ZmOperation.NEW_MESSAGE;
+	var msg = new ZmMailMsg();
+	var toOverride = null;
+	var subjOverride = null;
+	var extraBodyText = restUrl;
+	AjxDispatcher.run("Compose", {action: action, inNewWindow: inNewWindow, msg: msg,
+								  toOverride: toOverride, subjOverride: subjOverride,
+								  extraBodyText: extraBodyText});
 };
 
 // Returns a list of desired header action menu operations
@@ -194,15 +197,21 @@ function() {
 			ZmOperation.SYNC,
 			ZmOperation.DETACH_WIN);
 
-	return ops;
+    return ops;
 };
 
 ZmCalendarTreeController.prototype._getActionMenu =
 function(ev) {
 	var organizer = ev.item.getData(Dwt.KEY_OBJECT);
-	if (organizer.type != this.type) { return null; }
-
+	if (organizer.type != this.type) {
+		return null;
+	}
 	return ZmTreeController.prototype._getActionMenu.apply(this, arguments);
+};
+
+ZmCalendarTreeController.prototype.getTreeStyle =
+function() {
+	return DwtTree.CHECKEDITEM_STYLE;
 };
 
 // Method that is run when a tree item is left-clicked
@@ -238,55 +247,47 @@ function(organizer, app) {
 // Handles a drop event
 ZmCalendarTreeController.prototype._dropListener =
 function(ev) {
-	var data = ev.srcData.data;
-	var appts = (!(data instanceof Array)) ? [data] : data;
+	var appt = ev.srcData.data;
 	var dropFolder = ev.targetControl.getData(Dwt.KEY_OBJECT);
 	var isShiftKey = (ev.shiftKey || ev.uiEvent.shiftKey);
 
 	if (ev.action == DwtDropEvent.DRAG_ENTER) {
-		if (!(appts[0] instanceof ZmAppt)) {
+		if (!(appt instanceof ZmAppt)) {
 			ev.doIt = false;
 		}
-		else if (this._dropTgt.isValidTarget(data)) {
-			var type = ev.targetControl.getData(ZmTreeView.KEY_TYPE);
-			ev.doIt = dropFolder.mayContain(data, type);
-
-			var action;
-			// walk thru the array and find out what action is allowed
-			for (var i = 0; i < appts.length; i++) {
-				if (appts[i] instanceof ZmItem) {
-					action |= appts[i].getDefaultDndAction(isShiftKey);
-				}
-			}
+		else if (appt.isReadOnly() || dropFolder.isReadOnly()) {
+			ev.doIt = false;
+		} else if (appt.getFolder().id == dropFolder.id) {
+			ev.doIt = false;
+		} else {
+			ev.doIt = this._dropTgt.isValidTarget(appt);
+			var action = (appt instanceof ZmItem)
+				? appt.getDefaultDndAction(isShiftKey) : null;
 
 			if (((action & ZmItem.DND_ACTION_COPY) != 0)) {
-				var plusDiv = (appts.length == 1)
-					? ev.dndProxy.firstChild.nextSibling
-					: ev.dndProxy.firstChild.nextSibling.nextSibling;
-
+				var plusDiv = ev.dndProxy.firstChild.nextSibling;
 				Dwt.setVisibility(plusDiv, true);
 			}
 		}
-	}
-	else if (ev.action == DwtDropEvent.DRAG_DROP) {
+	} else if (ev.action == DwtDropEvent.DRAG_DROP) {
 		var ctlr = ev.srcData.controller;
 		var cc = AjxDispatcher.run("GetCalController");
-		if (!isShiftKey && cc.isMovingBetwAccounts(appts, dropFolder.id)) {
+		if (!isShiftKey && cc.isMovingBetwAccounts(appt, dropFolder.id)) {
 			var dlg = appCtxt.getYesNoMsgDialog();
-			dlg.registerCallback(DwtDialog.YES_BUTTON, this._changeOrgCallback, this, [ctlr, dlg, appts, dropFolder]);
+			dlg.registerCallback(DwtDialog.YES_BUTTON, this._changeOrgCallback, this, [ctlr, dlg, appt, dropFolder]);
 			var msg = AjxMessageFormat.format(ZmMsg.orgChange, dropFolder.getOwner());
 			dlg.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
 			dlg.popup();
 		} else {
-			ctlr._doMove(appts, dropFolder, null, !isShiftKey);
+			ctlr._doMove(appt, dropFolder, null, !isShiftKey);
 		}
 	}
 };
 
 ZmCalendarTreeController.prototype._changeOrgCallback =
-function(controller, dialog, appts, dropFolder) {
+function(controller, dialog, appt, dropFolder) {
 	dialog.popdown();
-	controller._doMove(appts, dropFolder, null, true);
+	controller._doMove(appt, dropFolder, null, true);
 };
 
 /*
@@ -303,13 +304,10 @@ ZmCalendarTreeController.prototype._changeListener =
 function(ev, treeView, overviewId) {
 	ZmTreeController.prototype._changeListener.call(this, ev, treeView, overviewId);
 
-	if (ev.type != this.type) { return; }
-
+	if (ev.type != this.type) return;
+	
 	var fields = ev.getDetail("fields") || {};
-	if (ev.event == ZmEvent.E_CREATE ||
-		ev.event == ZmEvent.E_DELETE ||
-		(ev.event == ZmEvent.E_MODIFY && fields[ZmOrganizer.F_FLAGS]))
-	{
+	if (ev.event == ZmEvent.E_CREATE || ev.event == ZmEvent.E_DELETE || (ev.event == ZmEvent.E_MODIFY && fields[ZmOrganizer.F_FLAGS])) {
 		var app = appCtxt.getApp(ZmApp.CALENDAR);
 		var controller = app.getCalController();
 		controller._updateCheckedCalendars();
@@ -329,10 +327,10 @@ function(ev) {
 		var calendar = ev.item.getData(Dwt.KEY_OBJECT);
 
 		//checkbox event may not be propagated to close action menu
-		if (this._getActionMenu(ev)) {
+		if(this._getActionMenu(ev)){
 			this._getActionMenu(ev).popdown();
 		}
-
+		
 		// notify listeners of selection
 		if (this._eventMgrs[overviewId]) {
 			this._eventMgrs[overviewId].notifyListeners(DwtEvent.SELECTION, ev);
@@ -357,33 +355,36 @@ function(ev) {
 ZmCalendarTreeController.prototype._shareCalListener =
 function(ev) {
 	this._pendingActionData = this._getActionedOrganizer(ev);
-	appCtxt.getSharePropsDialog().popup(ZmSharePropsDialog.NEW, this._pendingActionData);
+	
+	var calendar = this._pendingActionData;
+	var share = null;
+	
+	var sharePropsDialog = appCtxt.getSharePropsDialog();
+	sharePropsDialog.popup(ZmSharePropsDialog.NEW, calendar, share);
 };
 
 ZmCalendarTreeController.prototype._mountCalListener =
 function(ev) {
-	appCtxt.getMountFolderDialog().popup(ZmOrganizer.CALENDAR);
+	var dialog = appCtxt.getMountFolderDialog();
+	dialog.popup(ZmOrganizer.CALENDAR/*, ...*/);
 };
 
-ZmCalendarTreeController.prototype._deleteListener =
-function(ev) {
+ZmCalendarTreeController.prototype._deleteListener = function(ev) {
 	var organizer = this._getActionedOrganizer(ev);
-	var callback = new AjxCallback(this, this._deleteListener2, [organizer]);
+	var callback = new AjxCallback(this, this._deleteListener2, [ organizer ]);
 	var message = AjxMessageFormat.format(ZmMsg.confirmDeleteCalendar, organizer.name);
 
-	appCtxt.getConfirmationDialog().popup(message, callback);
+	var dialog = appCtxt.getConfirmationDialog();
+	dialog.popup(message, callback);
 };
 
-ZmCalendarTreeController.prototype._deleteListener2 =
-function(organizer) {
+ZmCalendarTreeController.prototype._deleteListener2 = function(organizer) {
 	this._doDelete(organizer);
-};
+}
 
 ZmCalendarTreeController.prototype._notifyListeners =
 function(overviewId, type, items, detail, srcEv, destEv) {
-	if (this._eventMgrs[overviewId] &&
-		this._eventMgrs[overviewId].isListenerRegistered(type))
-	{
+	if (this._eventMgrs[overviewId] && this._eventMgrs[overviewId].isListenerRegistered(type)) {
 		if (srcEv) DwtUiEvent.copy(destEv, srcEv);
 		destEv.items = items;
 		if (items.length == 1) destEv.item = items[0];
@@ -396,12 +397,11 @@ ZmCalendarTreeController.prototype._getItems =
 function(overviewId) {
 	var treeView = this.getTreeView(overviewId);
 	if (treeView) {
-		var account = appCtxt.multiAccounts ? treeView._overview.account : null;
-		var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT, account);
+		var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
 		var root = treeView.getTreeItemById(rootId);
 		if (root) {
 			var totalItems = [];
-			this._getSubItems(root, totalItems);
+			this._getSubItems(root, totalItems);			
 			return totalItems;
 		}
 	}
@@ -410,16 +410,16 @@ function(overviewId) {
 
 ZmCalendarTreeController.prototype._getSubItems =
 function(root, totalItems) {
-	if (!root || (root && root._isSeparator)) { return; }
-
+	if(!root) return;
+	if(root._isSeparator) return;
 	var items = root.getItems();
-	for (var i in items) {
+	for(var i in items){				
 		var item = items[i];
-		if (item && !item._isSeparator) {
+		if(item && !item._isSeparator){
 			totalItems.push(item);
 			this._getSubItems(item, totalItems);
 		}
-	}
+	}	
 };
 
 ZmCalendarTreeController.prototype._setAllChecked =
@@ -430,23 +430,16 @@ function(ev, checked) {
 	var item, organizer;
 	for (var i = 0;  i < items.length; i++) {
 		item = items[i];
-		if (item._isSeparator) { continue; }
+		if (item._isSeparator) continue;
 		organizer = item.getData(Dwt.KEY_OBJECT);
-		if (!organizer || organizer.type != ZmOrganizer.CALENDAR) { continue; }
+		if (!organizer || organizer.type != ZmOrganizer.CALENDAR) continue;
 		item.setChecked(checked);
 		checkedItems.push(item);
 	}
 
 	// notify listeners of selection
 	if (checkedItems.length && this._eventMgrs[overviewId]) {
-		this._notifyListeners(overviewId, DwtEvent.SELECTION, checkedItems, DwtTree.ITEM_CHECKED, ev, this._eventMgrs[overviewId]._selEv);
+		this._notifyListeners(overviewId, DwtEvent.SELECTION, checkedItems, DwtTree.ITEM_CHECKED,
+							  ev, this._eventMgrs[overviewId]._selEv);
 	}
-};
-
-ZmCalendarTreeController.prototype._createTreeView =
-function(params) {
-	if (params.treeStyle == null) {
-		params.treeStyle = DwtTree.CHECKEDITEM_STYLE;
-	}
-	return new ZmTreeView(params);
 };

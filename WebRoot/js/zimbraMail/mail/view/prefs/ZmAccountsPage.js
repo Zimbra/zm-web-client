@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -81,9 +83,6 @@ function() {
 		},
 		REPLY_TO_EMAIL: {
 			displayContainer:	ZmPref.TYPE_COMBOBOX
-		},
-		READ_RECEIPT_TO_ADDR: {
-			displayContainer:	ZmPref.TYPE_INPUT
 		},
 		SIGNATURE: {
 			displayContainer:	ZmPref.TYPE_SELECT
@@ -172,17 +171,16 @@ function() {
 		PRIMARY: {
 			id: "PRIMARY",
 			prefs: [
-				"NAME",					// A
-				"HEADER",				//
-				"EMAIL",				// A
-				"VISIBLE",				//
-				"FROM_NAME",			// I
-				"FROM_EMAIL",			// I
-				"REPLY_TO",				// I
-				"REPLY_TO_NAME",		// I
-				"REPLY_TO_EMAIL",		// I
-				"READ_RECEIPT_TO_ADDR",	// I
-				"SIGNATURE"				// I
+				"NAME",				// A
+				"HEADER",
+				"EMAIL",			// A
+				"VISIBLE",			//
+				"FROM_NAME",		// I
+				"FROM_EMAIL",		// I
+				"REPLY_TO",			// I
+				"REPLY_TO_NAME",	// I
+				"REPLY_TO_EMAIL",	// I
+				"SIGNATURE"			// I
 			]
 		},
 		EXTERNAL: {
@@ -209,7 +207,6 @@ function() {
 				"REPLY_TO",					// I
 				"REPLY_TO_NAME",			// I
 				"REPLY_TO_EMAIL",			// I
-				"READ_RECEIPT_TO_ADDR",		// I
 				"SIGNATURE"					// I
 			]
 		},
@@ -223,7 +220,6 @@ function() {
 				"REPLY_TO",					// I
 				"REPLY_TO_NAME",			// I
 				"REPLY_TO_EMAIL",			// I
-				"READ_RECEIPT_TO_ADDR",		// I
 				"SIGNATURE",				// I
 				"WHEN_SENT_TO",				// I
 				"WHEN_SENT_TO_LIST",		// I
@@ -277,7 +273,6 @@ ZmAccountsPage.IDENTITY_PROPS = {
 	"REPLY_TO":				"setReplyTo",
 	"REPLY_TO_NAME":		"setReplyToDisplay",
 	"REPLY_TO_EMAIL":		"setReplyToAddress",
-	"READ_RECEIPT_TO_ADDR":	"readReceiptAddr",
 	"SIGNATURE":			"signature",
 	"WHEN_SENT_TO":			"useWhenSentTo",
 	"WHEN_SENT_TO_LIST":	"whenSentToAddresses",
@@ -492,31 +487,26 @@ function() {
 	return true;
 };
 
-ZmAccountsPage.prototype.__getAccountValue =
-function(account, id) {
+ZmAccountsPage.prototype.__getAccountValue = function(account, id) {
 	var prop = ZmAccountsPage.ACCOUNT_PROPS[id];
 	if (!prop) return;
 	return typeof prop == "string" ? account[prop] : account[prop.getter]();
 };
-
-ZmAccountsPage.prototype.__getIdentityValue =
-function(account, id) {
+ZmAccountsPage.prototype.__getIdentityValue = function(account, id) {
 	var prop = ZmAccountsPage.IDENTITY_PROPS[id];
 	if (!prop) return;
 	var identity = account.getIdentity();
 	return identity && (typeof prop == "string" ? identity[prop] : identity[prop]());
 };
 
-ZmAccountsPage.prototype.__validateEmail =
-function(s) {
+ZmAccountsPage.prototype.__validateEmail = function(s) {
 	if (!ZmPref.validateEmail(s)) {
 		this._errorMsg = AjxStringUtil.htmlEncode(AjxMessageFormat.format(ZmMsg.invalidEmail, [s]));
 		return false;
 	}
 	return true;
 };
-ZmAccountsPage.prototype.__validateEmailList =
-function(l) {
+ZmAccountsPage.prototype.__validateEmailList = function(l) {
 	var ss = String(l).split(/[,;]/);
 	for (var i = 0; i < ss.length; i++) {
 		var valid = this.__validateEmail(ss[i]);
@@ -729,7 +719,6 @@ function(account, section) {
 	this._setControlValue("REPLY_TO", section, identity.setReplyTo);
 	this._setControlValue("REPLY_TO_NAME", section, identity.setReplyToDisplay);
 	this._setControlValue("REPLY_TO_EMAIL", section, identity.setReplyToAddress);
-	this._setControlValue("READ_RECEIPT_TO_ADDR", section, identity.readReceiptAddr);
 	this._setControlValue("SIGNATURE", section, identity.signature);
 	this._setControlValue("WHEN_SENT_TO", section, identity.useWhenSentTo);
 	this._setControlValue("WHEN_SENT_TO_LIST", section, identity.whenSentToAddresses);
@@ -836,8 +825,7 @@ function(id, section, value) {
 	}
 };
 
-ZmAccountsPage.prototype._getControlObject =
-function(id, section) {
+ZmAccountsPage.prototype._getControlObject = function(id, section) {
 	return section && section.controls[id];
 };
 
@@ -1064,8 +1052,7 @@ function(ovalue, nvalue) {
 
 // init ui
 
-ZmAccountsPage.prototype._initControl =
-function(id, setup, value, section) {
+ZmAccountsPage.prototype._initControl = function(id, setup, value, section) {
 	ZmPreferencesPage.prototype._initControl.apply(this, arguments);
 	if (id == "PROVIDER" && !setup.options) {
 		var providers = AjxUtil.values(ZmDataSource.getProviders());
@@ -1471,8 +1458,7 @@ function(evt) {
 	this._resetAccountListView(persona);
 };
 
-ZmAccountsPage.prototype._updateList =
-function(account) {
+ZmAccountsPage.prototype._updateList = function(account) {
 	var list = this._accountListView;
 	this._accountListView.setCellContents(account, ZmItem.F_NAME, AjxStringUtil.htmlEncode(account.getName()));
 	this._accountListView.setCellContents(account, ZmItem.F_EMAIL, AjxStringUtil.htmlEncode(account.getEmail()));
@@ -1529,14 +1515,12 @@ function(evt) {
 	this._handleTypeOrSslChange(evt);
 };
 
-ZmAccountsPage.prototype._handleDownloadTo =
-function(evt) {
+ZmAccountsPage.prototype._handleDownloadTo = function(evt) {
 	var isInbox = this._getControlValue("DOWNLOAD_TO", this._currentSection) == ZmAccountsPage.DOWNLOAD_TO_INBOX;
 	this._currentAccount.folderId = isInbox ? ZmOrganizer.ID_INBOX : -1; 
 };
 
-ZmAccountsPage.prototype._handleProviderChange =
-function() {
+ZmAccountsPage.prototype._handleProviderChange = function() {
 	var id = this._getControlValue("PROVIDER", this._currentSection);
 	var dataSource = this._currentAccount;
 

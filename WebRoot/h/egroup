@@ -7,7 +7,6 @@
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <app:handleError>
 <zm:getMailbox var="mailbox"/>
-<zm:composeUploader var="uploader"/>
 <c:choose>
 <c:when test="${not empty mailbox.prefs.locale}">
     <fmt:setLocale value='${mailbox.prefs.locale}' scope='request' />
@@ -147,7 +146,7 @@
         </tr>
         <tr>
             <td class='List' colspan="2">
-                <app:contactAddListView groupMode="${true}" searchResult="${search}" searchGalResult="${searchGal}" uploader="${uploader}"/>
+                <app:contactAddListView groupMode="${true}" searchResult="${search}" searchGalResult="${searchGal}"/>
             </td>
         </tr>
         <!-- tr>

@@ -1,19 +1,3 @@
-<%--
- * ***** BEGIN LICENSE BLOCK *****
- * 
- * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009 Zimbra, Inc.
- * 
- * The contents of this file are subject to the Yahoo! Public License
- * Version 1.0 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
- * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
- * ***** END LICENSE BLOCK *****
---%>
 <%@ tag body-content="empty" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -25,11 +9,6 @@
 <zm:getMailbox var="mailbox"/>
 
 <c:set var="ids" value="${fn:join(paramValues.id, ',')}"/>
-<c:if test="${param.st eq 'gal'}">                  <%-- gal contact id contains , so will replace the id's , with | to avoid the conflict with delimiter , used for forEach--%>
-    <c:set var="paraids" value="${fn:join(paramValues.id, '#')}"/>
-    <c:set var="paraids" value="${fn:replace(paraids, ',','|')}"/>
-    <c:set var="ids" value="${fn:replace(paraids, '#',',')}"/>
-</c:if>
 <c:set var="folderId" value="${not empty paramValues.folderId[0] ? paramValues.folderId[0] : paramValues.folderId[1]}"/>
 <c:set var="actionOp" value="${not empty paramValues.actionOp[0] ? paramValues.actionOp[0] :  paramValues.actionOp[1]}"/>
 <c:set var="searchQuery" value="${not empty paramValues.contactsq[0] ? paramValues.contactsq[0] :  paramValues.contactsq[1]}"/>
@@ -49,9 +28,7 @@
         </app:status>
     </c:when>
     <c:when test="${zm:actionSet(param, 'actionSearch')}">
-        <c:redirect url="/h/search?st=${not empty param.st ? param.st : 'contact' }&search=Search"> <%-- st can be gal for gal search --%>
-            <c:param name="sq" value="${fn:escapeXml(searchQuery)}"/>
-        </c:redirect>
+        <c:redirect url="/h/search?sq=${searchQuery}&st=contact&search=Search"/>
     </c:when>
 </c:choose>
 
@@ -143,38 +120,6 @@
 					</c:otherwise>
 				</c:choose>
 			</c:when>
-            <c:when test="${zm:actionSet(param, 'actionCompose')}">
-                <c:set var="contactIds" value="" />
-                <c:forEach items="${ids}" var="id">
-                    <c:if test="${not empty contactIds}"><c:set var="sep" value=", " /></c:if>
-                     <c:choose>
-                        <c:when test="${param.st eq 'contact'}"><zm:getContact id="${id}" var="contact"/></c:when>
-                        <c:when test="${param.st eq 'gal'}">
-                            <zm:searchGal var="result" query="${empty param.email ? '*' : param.email}"/>      <%--!TODO optiomizartion needed--%>
-                            <c:forEach items="${result.contacts}" var="acontact">
-                                <c:if test="${fn:replace(acontact.id,',','|') eq id}">
-                                    <c:set var="contact" value="${acontact}"/>
-                                </c:if>
-                            </c:forEach>
-                        </c:when>
-                    </c:choose>
-                    <c:choose>
-                        <c:when test="${contact.isGroup}">
-                            <c:set var="emailIds" value="" />
-                            <c:forEach var="member" items="${contact.groupMembers}">
-                                <c:if test="${not empty emailIds}"><c:set var="grpsep" value=", " /></c:if>
-                                <c:set var="emailIds" value="${emailIds}${grpsep}${member}" /> 
-                                </tr>
-                            </c:forEach>
-                        </c:when>
-                        <c:otherwise>
-                            <c:set var="emailIds" value="${contact.email}" />
-                        </c:otherwise>
-                    </c:choose>
-                    <c:set var="contactIds" value="${contactIds}${sep}${emailIds}" />
-                </c:forEach>
-                <c:redirect url="/h/search?action=compose&to=${contactIds}" />
-            </c:when>
             <c:when test="${fn:startsWith(actionOp, 't:') or fn:startsWith(actionOp, 'u:')}">
                 <c:set var="untagall" value="${fn:startsWith(actionOp, 'u:all')}"/>
                 <c:choose>

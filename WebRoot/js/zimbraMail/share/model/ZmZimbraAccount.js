@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -146,13 +148,8 @@ function(acctInfo) {
 	if (this.status != acctInfo.status) {
 		this.status = acctInfo.status;
 		if (this.isMain || this.visible) {
-			// todo - need server to give app-specific status updates per account
-			// temporary:
-			var app = appCtxt.getCurrentApp();
-			var hdr = app && app._overviewContainer && app._overviewContainer.getHeaderItem(this);
-			if (hdr) {
-				hdr.setImage(this.getStatusIcon());
-			}
+			appCtxt.getOverviewController().updateAccountIcon(this, this.getStatusIcon());
+			appCtxt.getAppController().setOfflineStatus();
 		}
 	}
 
@@ -167,7 +164,7 @@ function(acctInfo) {
 	if (this.visible && acctInfo.unread != this.unread) {
 		this.unread = acctInfo.unread;
 		if (appCtxt.multiAccounts && appCtxt.getActiveAccount() != this) {
-			// todo?
+			appCtxt.getOverviewController().updateAccountTitle(this.itemId, this.getTitle());
 		}
 	}
 };
@@ -184,7 +181,7 @@ function() {
 	switch (this.status) {
 		case ZmZimbraAccount.STATUS_UNKNOWN:	return "ImgOffline";
 		case ZmZimbraAccount.STATUS_OFFLINE:	return "ImgImAway";
-		case ZmZimbraAccount.STATUS_ONLINE:		return "Globe";/*"ImgImAvailable";*/
+		case ZmZimbraAccount.STATUS_ONLINE:		return "ImgImAvailable";
 		case ZmZimbraAccount.STATUS_RUNNING:	return "DwtWait16Icon";
 		case ZmZimbraAccount.STATUS_AUTHFAIL:	return "ImgImDnd";
 		case ZmZimbraAccount.STATUS_ERROR:		return "ImgCritical";
@@ -289,23 +286,27 @@ function(callback) {
 		var loadCallback = new AjxCallback(this, this._handleLoadSettings);
 		this.settings.loadUserSettings(loadCallback, null, this.name, null, command);
 
-		// get tag info for this account *FIRST* - otherwise, root ID get overridden
+		// get folder info for this account
+		var folderDoc = AjxSoapDoc.create("GetFolderRequest", "urn:zimbraMail");
+		var method = folderDoc.getMethod();
+		method.setAttribute("visible", "1");
+
+		var folderCallback = new AjxCallback(this, this._handleLoadFolders);
+		command.addNewRequestParams(folderDoc, folderCallback);
+
+		// get tag info for this account
 		var tagDoc = AjxSoapDoc.create("GetTagRequest", "urn:zimbraMail");
 		var tagCallback = new AjxCallback(this, this._handleLoadTags);
 		command.addNewRequestParams(tagDoc, tagCallback);
 
-		// get folder info for this account
-		var folderDoc = AjxSoapDoc.create("GetFolderRequest", "urn:zimbraMail");
-		folderDoc.getMethod().setAttribute("visible", "1");
-		var folderCallback = new AjxCallback(this, this._handleLoadFolders);
-		command.addNewRequestParams(folderDoc, folderCallback);
-
 		var respCallback = new AjxCallback(this, this._handleLoadUserInfo, callback);
 		var errCallback = new AjxCallback(this, this._handleErrorLoad);
 		command.run(respCallback, errCallback);
-	}
-	else if (callback) {
-		callback.run();
+	} else {
+		// always reload account-specific shortcuts
+		this.settings.loadShortcuts();
+
+		if (callback) {	callback.run(); }
 	}
 };
 
@@ -362,11 +363,6 @@ function(result) {
 
 	// HACK: data sources are disabled for Zimbra accounts so check if we got any
 	this.isZimbraAccount = (!obj.dataSources.pop3 && !obj.dataSources.imap);
-
-	// read receipts are not currently allowed for non zimbra accounts
-	if (!this.isZimbraAccount) {
-		appCtxt.set(ZmSetting.MAIL_READ_RECEIPT_ENABLED, false);
-	}
 };
 
 ZmZimbraAccount.prototype._handleLoadFolders =
@@ -381,6 +377,7 @@ function(result) {
 ZmZimbraAccount.prototype._handleLoadTags =
 function(result) {
 	var resp = result.getResponse().GetTagResponse;
+	var tags = (resp && resp.tag) ? resp.tag[0] : null;
 	appCtxt.getRequestMgr()._loadTree(ZmOrganizer.TAG, null, resp, null, this);
 };
 
@@ -402,7 +399,7 @@ function(callback) {
 			var app = appCtxt.getApp(i);
 			var org = ZmOrganizer.APP2ORGANIZER[i];
 			if (app && org && org.length) {
-				app._createDeferredFolders(org[0], this.id);
+				app._createDeferredFolders(org[0]);
 			}
 		}
 	}

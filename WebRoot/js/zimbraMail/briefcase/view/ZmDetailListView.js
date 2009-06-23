@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008 Zimbra, Inc.
+ * Copyright (C) 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -104,7 +106,7 @@ function(htmlArr, idx, item, field, colIdx, params) {
 		}
 		htmlArr[idx++] = AjxImg.getImageHtml(icon);
 	} else if (field == ZmItem.F_SUBJECT) {
-		htmlArr[idx++] = "<div id='"+this._getFieldId(item,ZmItem.F_SUBJECT)+"'>"+AjxStringUtil.htmlEncode(item.name)+"</div>";
+		htmlArr[idx++] = AjxStringUtil.htmlEncode(item.name);
 	} else if (field == ZmItem.F_FILE_TYPE) {
 		var mimeInfo = item.contentType ? ZmMimeTable.getInfo(item.contentType) : null;
 		htmlArr[idx++] = mimeInfo ? mimeInfo.desc : "&nbsp;";
@@ -135,7 +137,7 @@ function(htmlArr, idx, item, field, colIdx, params) {
 	} else {
 		idx = ZmListView.prototype._getCellContents.apply(this, arguments);
 	}
-
+	
 	return idx;
 };
 
@@ -204,11 +206,4 @@ function() {
     var files = this.processUploadFiles();
     attachDialog.uploadFiles(files, document.getElementById("zdnd_form"), {id:this._controller._currentFolder});
 };
-
-ZmDetailListView.prototype._getToolTip =
-function(params) {
-	if (!params.item) { return; }
-	return this._controller.getItemTooltip(params.item, this);
-};
-
 //end zimbradnd

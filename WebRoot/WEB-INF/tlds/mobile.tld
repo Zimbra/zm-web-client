@@ -25,16 +25,6 @@
         <path>/WEB-INF/tags/mobile/moConvView.tag</path>
     </tag-file>
 
-    <tag-file>
-       <name>folderAction</name>
-        <path>/WEB-INF/tags/mobile/moFolderAction.tag</path>
-    </tag-file>
-
-    <tag-file>
-       <name>folderForm</name>
-        <path>/WEB-INF/tags/mobile/moFolderForm.tag</path>
-    </tag-file>
-    
    <tag-file>
        <name>handleError</name>
         <path>/WEB-INF/tags/mobile/moHandleError.tag</path>
@@ -104,10 +94,6 @@
         <name>contactView</name>
          <path>/WEB-INF/tags/mobile/moContactView.tag</path>
      </tag-file>
-    <tag-file>
-            <name>galContactView</name>
-             <path>/WEB-INF/tags/mobile/moGALContactView.tag</path>
-         </tag-file>
 
     <tag-file>
         <name>displayContact</name>
@@ -124,26 +110,6 @@
         <path>/WEB-INF/tags/mobile/moContactListView.tag</path>
      </tag-file>
 
-    <tag-file>
-        <name>briefcaseListView</name>
-        <path>/WEB-INF/tags/mobile/moBriefcaseListView.tag</path>
-     </tag-file>
-    <tag-file>
-            <name>briefcaseExplorerView</name>
-            <path>/WEB-INF/tags/mobile/moBriefcaseExplorerView.tag</path>
-    </tag-file>
-    <tag-file>
-            <name>wikiListView</name>
-            <path>/WEB-INF/tags/mobile/moWikiListView.tag</path>
-    </tag-file>
-     <tag-file>
-            <name>taskListView</name>
-            <path>/WEB-INF/tags/mobile/moTaskListView.tag</path>
-    </tag-file>
-    <tag-file>
-            <name>wikiExplorerView</name>
-            <path>/WEB-INF/tags/mobile/moWikiExplorerView.tag</path>
-    </tag-file>
 
     <tag-file>
         <name>messageView</name>
@@ -226,11 +192,6 @@
      </tag-file>
 
     <tag-file>
-        <name>apptComposeCheck</name>
-        <path>/WEB-INF/tags/mobile/moApptComposeCheck.tag</path>
-     </tag-file>
-    
-    <tag-file>
         <name>attachment</name>
         <path>/WEB-INF/tags/mobile/moAttachment.tag</path>
      </tag-file>
@@ -243,14 +204,6 @@
     <tag-file>
             <name>toolbar</name>
              <path>/WEB-INF/tags/mobile/moToolbar.tag</path>
-    </tag-file>
-     <tag-file>
-            <name>taskToolbar</name>
-             <path>/WEB-INF/tags/mobile/moTaskToolbar.tag</path>
-    </tag-file>
-    <tag-file>
-            <name>briefcaseToolbar</name>
-             <path>/WEB-INF/tags/mobile/moBriefcaseToolbar.tag</path>
     </tag-file>
     <tag-file>
             <name>msgToolbar</name>
@@ -269,28 +222,13 @@
              <path>/WEB-INF/tags/mobile/moContactAction.tag</path>
     </tag-file>
     <tag-file>
-            <name>briefcaseAction</name>
-            <path>/WEB-INF/tags/mobile/moBriefcaseAction.tag</path>
-    </tag-file>
-     <tag-file>
-            <name>taskAction</name>
-            <path>/WEB-INF/tags/mobile/moTaskAction.tag</path>
-    </tag-file>
-    <tag-file>
             <name>contactEdit</name>
              <path>/WEB-INF/tags/mobile/moContactEdit.tag</path>
     </tag-file>
-    <tag-file>
-            <name>contactEditField</name>
-             <path>/WEB-INF/tags/mobile/moContactEditField.tag</path>
-    </tag-file>
+    
     <tag-file>
             <name>autoComplete</name>
              <path>/WEB-INF/tags/mobile/moAutoComplete.tag</path>
-    </tag-file>
-    <tag-file>
-            <name>js</name>
-             <path>/WEB-INF/tags/mobile/moJS.tag</path>
     </tag-file>
     
 </taglib>

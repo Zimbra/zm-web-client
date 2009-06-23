@@ -1,19 +1,3 @@
-<%--
- * ***** BEGIN LICENSE BLOCK *****
- * 
- * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009 Zimbra, Inc.
- * 
- * The contents of this file are subject to the Yahoo! Public License
- * Version 1.0 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
- * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
- * ***** END LICENSE BLOCK *****
---%>
 <%@ tag body-content="empty" %>
 <%@ attribute name="context" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.tag.SearchContext"%>
 <%@ attribute name="keys" rtexprvalue="true" required="true" %>
@@ -38,7 +22,7 @@
                 <tr valign="middle">
                     <app:calendarUrl var="refreshUrl" refresh="1"/>
                     <td height="100%">
-                        <a href="${fn:escapeXml(refreshUrl)}" <c:if test="${keys}"> id="CAL_REFRESH"</c:if>><app:img altkey="ALT_CAL_REFRESH" src="startup/ImgRefresh.gif"/><span style='padding-left:5px'><fmt:message key="refresh"/></span></a>
+                        <a href="${fn:escapeXml(refreshUrl)}" <c:if test="${keys}"> id="CAL_REFRESH"</c:if>><app:img altkey="ALT_CAL_REFRESH" src="arrows/ImgRefresh.gif"/><span style='padding-left:5px'><fmt:message key="refresh"/></span></a>
                     </td>
                     <td>
                         <div class='vertSep'></div>
@@ -74,14 +58,6 @@
                     <td height="100%">
                         <a id="CAL_TODAY" href="${fn:escapeXml(todayUrl)}"><app:img altkey="ALT_CAL_TODAY" src="calendar/ImgDate.gif"/><span style='padding-left:5px'><fmt:message key="today"/></span></a>
                     </td>
-                    <td height="100%"><div class='vertSep'></div></td>
-                    <td height="100%" nowrap valign="middle" style="padding: 0 2px 0 2px">
-                        <td height="100%" nowrap valign="middle" style="padding: 0 2px 0 2px">
-                        <input onclick="zprint();return false;" id="${keys ? 'IOPPRINT' : ''}" name="actionPrint" type="image" src="${iconPath}/startup/ImgPrint.gif" alt='<fmt:message key="actionPrint" />' title='<fmt:message key="actionPrint" />' />
-                    </td>
-                    <td height="100%" nowrap valign="middle" style="padding: 0 2px 0 2px">
-                        <input onclick="zprint();return false;" id="${keys ? 'SOPPRINT' : ''}" name="actionPrint" type="submit" value='<fmt:message key="actionPrint" />' title='<fmt:message key="actionPrint" />' />
-                    </td>
                 </tr>
             </table>
         </td>
@@ -97,7 +73,7 @@
             ${fn:escapeXml(title)}
                     </td>
                     <td>
-            <a <c:if test="${keys}">id="NEXT_PAGE"</c:if> href="${fn:escapeXml(nextUrl)}"><app:img altkey="ALT_PAGE_NEXT" src="startup/ImgRightArrow.gif" border="0"/></a>
+            <a <c:if test="${keys}">id="NEXT_PAGE"</c:if> href="${fn:escapeXml(nextUrl)}"><app:img alt="ALT_PAGE_NEXT" src="startup/ImgRightArrow.gif" border="0"/></a>
                     </td>
                 </tr>
             </table>

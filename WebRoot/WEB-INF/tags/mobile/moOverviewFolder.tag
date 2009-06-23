@@ -1,19 +1,3 @@
-<%--
- * ***** BEGIN LICENSE BLOCK *****
- * 
- * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009 Zimbra, Inc.
- * 
- * The contents of this file are subject to the Yahoo! Public License
- * Version 1.0 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
- * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
- * ***** END LICENSE BLOCK *****
---%>
 <%@ tag body-content="empty" %>
 <%@ attribute name="folder" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZFolderBean" %>
 <%@ attribute name="base" rtexprvalue="true" required="false" %>
@@ -23,59 +7,18 @@
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="mo" uri="com.zimbra.mobileclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
-<c:set var="label" value="${zm:getFolderPath(pageContext, folder.id)}"/>
-<c:url var="url" value="${empty base ? 'zmain' : base}">
+<c:set var="label" value="${zm:getFolderName(pageContext, folder.id)}"/>
+<c:url var="url" value="${empty base ? 'mosearch' : base}">
     <c:param name="sfi" value="${folder.id}"/>
     <c:if test="${!empty types}"><c:param name="st" value="${types}"/></c:if>
 </c:url>
-<div class='Folders ${param.id eq folder.id ? 'StatusWarning' : ''} list-row${folder.hasUnread ? '-unread' : ''}'
-     <c:if test="${types ne 'cal'}">onclick='return zClickLink("FLDR${folder.id}")'</c:if>>
-    <div class="table">
-        <div class="table-row">
-            <c:if test="${types eq 'cal'}">
-    <span class="table-cell left" width="1%">    
-    <input type="checkbox" onchange="fetchIt('?${folder.isCheckedInUI ? 'un' : ''}check=${folder.id}&st=cals&_ajxnoca=1',null,'POST');"
-           value="${folder.id}" name="calid" ${folder.isCheckedInUI ? 'checked=checked':''}>
-    </span>
-            </c:if>
-    <span class='table-cell left' onclick='return zClickLink("FLDR${folder.id}")' width="94%">
+
+<tr onclick='zClickLink("FLDR${folder.id}")'>
+    <td class='Folders${folder.hasUnread ? ' zo_unread':''} zo_m_list_row' style='padding: 5px;'>
         <a id="FLDR${folder.id}" href="${fn:escapeXml(url)}">
-            <span class="SmlIcnHldr Fldr${folder.type}">&nbsp;</span>
-            ${fn:escapeXml(zm:truncateFixed(label,30,true))}
+            <mo:img src="${folder.image}" alt="${fn:escapeXml(folder.name)}"/>
+            ${fn:escapeXml(label)}
             <c:if test="${folder.hasUnread}">&nbsp;(${folder.unreadCount})</c:if>
         </a>
-    </span>
-            <c:if test="${!folder.isSystemFolder}">
-                <c:choose>
-                    <c:when test="${folder.isSearchFolder}">
-                        <c:set var="what" value="Search"/>                        
-                    </c:when>
-                    <c:otherwise>
-                        <c:choose>
-                            <c:when test="${param.st eq 'folders'}">
-                                <c:set var="what" value="Folder"/>
-                            </c:when>
-                            <c:when test="${param.st eq 'ab'}">
-                                <c:set var="what" value="AB"/>
-                            </c:when>
-                            <c:when test="${param.st eq 'cals'}">
-                                <c:set var="what" value="Cal"/>
-                            </c:when>
-                            <c:when test="${param.st eq 'notebooks'}">
-                                <c:set var="what" value="NB"/>
-                            </c:when>
-                            <c:when test="${param.st eq 'briefcases'}">
-                                <c:set var="what" value="BC"/>
-                            </c:when>
-                            <c:when test="${param.st eq 'tasks'}">
-                                <c:set var="what" value="Task"/>
-                            </c:when>
-                        </c:choose>
-                    </c:otherwise>
-                </c:choose>
-                <span class="table-cell right" width="5%">
-                    <a class="SmlIcnHldr Edit" href="?st=${param.st}&_ajxnoca=1&show${what}Create=1&${folder.isSearchFolder ? 's' : ''}id=${folder.id}">&nbsp;</a></span>
-            </c:if>
-        </div>
-    </div>
-</div>
+    </td>
+</tr>

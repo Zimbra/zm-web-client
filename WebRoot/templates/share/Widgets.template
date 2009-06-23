@@ -70,19 +70,12 @@
 </template>
 
 <template id='share.Widgets#ZmChooseFolderDialog'>
-	<div class='ChooserDialog'>
-		<div id='${id}_folderDescDivId'></div>
-		<p/>
-		<div><$= ZmMsg.chooserDescription $></div>
-		<div id='${id}_inputDivId'></div>
-		<div class='overview' id='${id}_folderTreeDivId'></div>
-	</div>
-</template>
-
-<template id='share.Widgets#ZmPickTagDialog'>
-	<div class='ChooserDialog'>
-		<div style='width:300px'><$= ZmMsg.chooserDescription $></div>
-		<div id='${id}_inputDivId'></div>
-		<div style='background-color:white; width:100%; overflow:auto' id='${id}_tagTreeDivId'></div>
-	</div>
+	<table cellpadding=0 cellspacing=0 border=0 width=100%>
+		<tr>
+			<td class='Label' colspan=2 id='${id}_folderDesc'></td>
+		</tr>
+		<tr>
+			<td colspan=2 id='${id}_folderTreeCell'></td>
+		</tr>
+	</table>
 </template>

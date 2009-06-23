@@ -114,7 +114,7 @@
 <!--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -128,10 +128,7 @@
 	<fmt:setLocale value='${pageContext.request.locale}' scope='request' />
 	<fmt:setBundle basename="/messages/ZaMsg" scope='request' />
     <title><fmt:message key="zimbraAdminTitle"/></title>
-	<zm:getFavIcon request="${pageContext.request}" var="favIconUrl" />
-	<c:if test="${empty favIconUrl}">
-	    <fmt:message key="favIconUrl" var="favIconUrl"/>
-	</c:if>
+    <fmt:message key="favIconUrl" var="favIconUrl"/>
     <link rel="SHORTCUT ICON" href="<c:url value='${favIconUrl}'/>">
     
 	<script>
@@ -149,17 +146,6 @@
 @import url(<%= contextPath %>/css/dwt,common,zmadmin,login,msgview,spellcheck,images,skin.css?v=<%= vers %>&skin=<%= skin %>);
 -->
 </style>
-
-<c:set var="contextPath" value="${pageContext.request.contextPath}"/>
-<script type="text/javascript" src="${contextPath}/yui/2.7.0/yahoo-dom-event/yahoo-dom-event.js"></script> 
-<script type="text/javascript" src="${contextPath}/yui/2.7.0/element/element-min.js"></script> 
-<script type="text/javascript" src="${contextPath}/yui/2.7.0/datasource/datasource-min.js"></script> 
-<script type="text/javascript" src="${contextPath}/yui/2.7.0/json/json-min.js"></script> 
-<script type="text/javascript" src="${contextPath}/yui/2.7.0/charts/charts-min.js"></script> 
-<script type="text/javascript">
-    YAHOO.widget.Chart.SWFURL = "yui/2.7.0/charts/assets/charts.swf";
-</script>
-
 <jsp:include page="Boot.jsp"/>
 <script>
 <jsp:include page="/js/ajax/util/AjxTimezoneData.js" />
@@ -193,6 +179,7 @@ if(!AjxEnv.isFirefox1up && !AjxEnv.isFirefox3up && !AjxEnv.isFirefox2_0up && !Aj
 </script>
     <script type="text/javascript" language="JavaScript">
 	   function launch() {
+		AjxWindowOpener.HELPER_URL = "<%= contextPath %>/public/frameOpenerHelper.jsp"
 		DBG = new AjxDebug(AjxDebug.NONE, null, false);
 		ACCESS_RIGHTS = new Object();
 		// figure out the debug level
