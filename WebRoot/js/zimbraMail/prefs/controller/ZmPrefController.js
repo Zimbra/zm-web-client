@@ -148,15 +148,15 @@ function(actionCode) {
 	DBG.println("ZmPrefController.handleKeyAction");
 	switch (actionCode) {
 
-        case ZmKeyMap.CANCEL:
+		case ZmKeyMap.CANCEL:
 			this._backListener();
 			break;
 
-        case ZmKeyMap.SAVE:
-            this._saveListener();
-            break;
+		case ZmKeyMap.SAVE:
+			this._saveListener();
+			break;
 
-        default:
+		default:
 			return ZmController.prototype.handleKeyAction.call(this, actionCode);
 			break;
 	}
@@ -191,9 +191,9 @@ function(view) {
 */
 ZmPrefController.prototype._resetOperations =
 function(parent, view) {
-    var section = ZmPref.getPrefSectionMap()[view];
-    var manageChanges = section && section.manageChanges; 
-    parent.enable(ZmOperation.SAVE, !manageChanges);
+	var section = ZmPref.getPrefSectionMap()[view];
+	var manageChanges = section && section.manageChanges;
+	parent.enable(ZmOperation.SAVE, !manageChanges);
 	parent.enable(ZmOperation.CANCEL, appCtxt.getAppViewMgr()._hidden.length > 0);
 };
 
@@ -401,27 +401,15 @@ function() {
 		if (viewPage) {
 			viewPage.showMe();
 		}
-
-		// add account name to toolbar
-		if (!this._acctInfoContainer) {
-			this._toolbar.addFiller();
-			this._acctInfoContainer = new DwtComposite({parent:this._toolbar});
-		}
-		this._acctInfoContainer.getHtmlElement().innerHTML = [
-			"<span class='ZOptionsAcctName'>",
-			ZmMsg.accountLabel, " ",
-			appCtxt.getActiveAccount().getDisplayName(),
-			"</span>"].join("");
 	}
-	// *always* return true!
-	return true;
+	return true; // *always* return true!
 };
 
 ZmPrefController.prototype._postShowCallback =
 function() {
 	ZmController.prototype._postShowCallback.call(this);
-	// NOTE: Some pages need to know when they are being shown
-	//       again in order to display the state correctly.
+	// NOTE: Some pages need to know when they are being shown again in order to
+	//       display the state correctly.
 	this._prefsView.reset();
 };
 

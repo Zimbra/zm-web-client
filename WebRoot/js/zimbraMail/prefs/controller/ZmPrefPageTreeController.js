@@ -33,7 +33,7 @@ function(params) {
 	// populate tree
 	var app = appCtxt.getApp(ZmApp.PREFERENCES);
 	var view = app.getPrefController().getPrefsView();
-
+	var account = params.account;
 	var tree = new ZmTree(ZmOrganizer.PREF_PAGE);
 	var root = tree.root = new ZmPrefPage({id:ZmId.getPrefPageId(0), name:"", tree:tree});
 	appCtxt.cacheSet(root.id, root);
@@ -46,11 +46,11 @@ function(params) {
 		var name = view.getTabTitle(tabKey);
 		var section = view.getSectionForTab(tabKey);
 
-		// for multi-account mbox, child accounts only show a select few pref options
-		if (this._showSection(params.account, section.id)) {
+		if (this._showSection(account, section.id)) {
+			// for multi-account mbox, child accounts only show a select few pref options
 			var organizer = ZmPrefPage.createFromSection(section);
 			organizer.pageId = tabKey;
-			organizer.accountId = params.account && params.account.id;
+			organizer.accountId = account && account.id;
 			organizers.push(organizer);
 		}
 	}
@@ -60,11 +60,6 @@ function(params) {
 		var organizer = organizers[i];
 		var section = view.getSectionForTab(organizer.pageId);
 
-		// for multi-account, move the child account prefs under account header
-		if (appCtxt.multiAccounts && !params.account.isMain && this._isChildAccountPref(section.id)) {
-			section.parentId = null;
-		}
-
 		var parent = (section.parentId && tree.getById(ZmId.getPrefPageId(section.parentId))) || root;
 		parent.children.add(organizer);
 
@@ -72,12 +67,12 @@ function(params) {
 		organizer.icon = section.icon || parent.getIcon();
 	}
 
-	appCtxt.setTree(tree.type, tree);
+	appCtxt.setTree(tree.type, tree, account);
 
 	// setup tree view
 	var treeView = ZmTreeController.prototype.show.apply(this, arguments);
 
-	if (!appCtxt.multiAccounts || (appCtxt.multiAccounts && params.account.isMain)) {
+	if (!appCtxt.multiAccounts || (appCtxt.multiAccounts && account.isMain)) {
 		var page1 = root.children.get(0);
 		if (page1) {
 			treeView.setSelected(page1, true);
@@ -94,18 +89,18 @@ function(params) {
 
 ZmPrefPageTreeController.prototype._showSection =
 function(account, sectionId) {
-	return (appCtxt.multiAccounts && !account.isMain)
-		? this._isChildAccountPref(sectionId) : true;
-};
+	if (appCtxt.isOffline) {
+		if (account.isMain && (sectionId == "FILTERS")) {
+			return false;
+		}
+	}
 
-ZmPrefPageTreeController.prototype._isChildAccountPref =
-function(sectionId) {
-	return (
-		sectionId == "SIGNATURES" ||
-		sectionId == "ACCOUNTS" ||
-		sectionId == "FILTERS" ||
-		sectionId == "SHARING"
-	);
+	return (account.isMain ||
+			(!account.isMain && (sectionId != "GENERAL" &&
+								 sectionId != "SHORTCUTS" &&
+								 sectionId != "PREF_ZIMLETS" &&
+								 sectionId != "IMPORT_EXPORT")
+			));
 };
 
 //

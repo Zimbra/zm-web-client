@@ -206,7 +206,12 @@ function(ev) {
 		}
 	}
 	else if ((ev.detail == DwtTree.ITEM_SELECTED) && item) {					// left click
-		if (this._appName == ZmApp.CALENDAR) { return; }
+		// if calendar/prefs app, do nothing
+		if (this._appName == ZmApp.CALENDAR ||
+			this._appName == ZmApp.PREFERENCES)
+		{
+			return;
+		}
 
 		this._deselectAllTreeViews();
 
