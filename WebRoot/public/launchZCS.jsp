@@ -159,7 +159,7 @@
 </head>
 <body>
 <jsp:include page="Resources.jsp">
-	<jsp:param name="res" value="I18nMsg,AjxMsg,ZMsg,ZmMsg,AjxKeys,ZmKeys,ZdMsg" />
+	<jsp:param name="res" value="I18nMsg,AjxMsg,ZMsg,ZmMsg,AjxKeys,ZmKeys,ZdMsg,AjxTemplateMsg" />
 	<jsp:param name="skin" value="${skin}" />
 </jsp:include>
 
@@ -264,6 +264,13 @@
 	</c:if>	
 </c:url>"></script>
 </c:if>
+<script>
+// compile locale specific templates
+for (var pkg in window.AjxTemplateMsg) {
+	var text = AjxTemplateMsg[pkg];
+	AjxTemplate.compile(pkg, true, true, text);
+}
+</script>
 
 <script>
 	var cacheKillerVersion = "${zm:jsEncode(vers)}";

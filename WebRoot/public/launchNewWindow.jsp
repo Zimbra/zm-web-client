@@ -96,7 +96,7 @@
 <fmt:setLocale value='${pageContext.request.locale}' scope='request' />
 <title><fmt:setBundle basename="/messages/ZmMsg"/><fmt:message key="zimbraTitle"/></title>
 <jsp:include page="Resources.jsp">
-	<jsp:param name="res" value="I18nMsg,AjxMsg,ZMsg,ZmMsg,AjxKeys,ZmKeys" />
+	<jsp:param name="res" value="I18nMsg,AjxMsg,ZMsg,ZmMsg,AjxKeys,ZmKeys,AjxTemplateMsg" />
 	<jsp:param name="skin" value="${skin}" />
 </jsp:include>
 <link href='${contextPath}/css/common,dwt,msgview,login,zm,spellcheck,wiki,images,skin.css?v=${vers}${isDebug?"&debug=1":""}&skin=${skin}' rel='stylesheet' type="text/css">
@@ -143,6 +143,13 @@
 	<jsp:param name="locale" value="${locale}" />
 	<jsp:param name='debug' value='${isDebug}' />
 </jsp:include>
+</script>
+<script>
+// compile locale specific templates
+for (var pkg in window.AjxTemplateMsg) {
+	var text = AjxTemplateMsg[pkg];
+	AjxTemplate.compile(pkg, true, true, text);
+}
 </script>
 
     <script type="text/javascript" language="JavaScript">

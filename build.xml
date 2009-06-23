@@ -472,19 +472,56 @@
                          classname='com.zimbra.kabuki.tools.templates.TemplateTask'
                          classpathref='class.path'
                         />
-                <template destdir='${build.template.dir}'>
-                    <fileset dir='${template.dir}' includes='${template.includes}' excludes='${template.excludes}'/>
-                </template>
-                <template destdir='${build.skin.dir}' authoritative='true'>
-                    <fileset dir='${skins.dir}' includes='**/*.template'/>
-                </template>
-
+	            <antcall target="templates-generate">
+		            <param name="srcdir" value="${template.dir}" />
+		            <param name="gendir" value="${build.template.dir}" />
+		            <param name="destdir" value="${build.classes.dir}/messages" />
+	            </antcall>
+	            <dirset id="skin.dirs" dir="${skins.dir}" includes="*" excludes="_*" />
+	            <pathconvert property="skin.names" refid="skin.dirs" pathsep=",">
+		            <flattenmapper />
+	            </pathconvert>
+	            <for list="${skin.names}" param="name">
+		            <sequential>
+			            <antcall target="templates-generate">
+				            <param name="srcdir" value="${skins.dir}/@{name}" />
+				            <param name="gendir" value="${build.skin.dir}/@{name}" />
+				            <param name="destdir" value="${build.web.dir}/skins/@{name}/messages" />
+			            </antcall>
+		            </sequential>
+	            </for>
                 <antcall target="customer-templates"/>
 
                 <touch file="${templates.done}"/>
             </then>
         </if>
     </target>
+
+	<target name='templates-generate'>
+		<echo>srcdir: ${srcdir}, gendir: ${gendir}, destdir: ${destdir}</echo>
+		<template destdir='${gendir}'>
+		    <fileset dir='${srcdir}' includes='${template.includes}' excludes='**/*_*.template,${template.excludes}'/>
+		</template>
+		<template destdir='${gendir}' format="properties">
+		    <fileset dir='${srcdir}' includes='**/*_*.template' excludes='${template.excludes}'/>
+		</template>
+		<fileset id='templates.fileset' dir='${srcdir}' includes='**/*_*.template' />
+		<pathconvert property='locids' refid='templates.fileset' pathsep=','>
+			<regexpmapper from="^.*/.*?_(.*).template" to="\1" />
+		</pathconvert>
+		<for list="${locids}" param="locid">
+			<sequential>
+				<if><not><isset property="templates.@{locid}" /></not>
+					<then>
+						<property name="templates.@{locid}" value="true" />
+						<concat destfile="${destdir}/AjxTemplateMsg_@{locid}.properties" fixlastline="yes">
+							<fileset dir="${gendir}" includes="**/*_@{locid}.template.properties" />
+						</concat>
+					</then>
+				</if>
+			</sequential>
+		</for>
+	</target>
 
     <target name='customer-templates' depends='compile' if='env.CUSTOMER_SKIN'>
         <if>
@@ -504,9 +541,14 @@
                 </pathconvert>
                 <for list='${skins.list}' param='name'>
                     <sequential>
-                        <template destdir='${build.web.dir}/skins' authoritative='true'>
-                            <fileset dir='${customer.skin.dir}' includes='@{name}/**/*.template'/>
-                        </template>
+                        <!--<template destdir='${build.web.dir}/skins' authoritative='true'>-->
+                            <!--<fileset dir='${customer.skin.dir}' includes='@{name}/**/*.template'/>-->
+                        <!--</template>-->
+	                    <antcall target="templates-generate">
+		                    <param name="srcdir" value="${customer.skin.dir}/@{name}" />
+		                    <param name="gendir" value="${build.web.dir}/skins/@{name}" />
+		                    <param name="destdir" value="${build.web.dir}/skins/@{name}/messages" />
+	                    </antcall>
                     </sequential>
                 </for>
             </then>
