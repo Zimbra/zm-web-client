@@ -90,7 +90,7 @@ function(parent) {
 	var hList = [];
 
 	if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
-		hList.push(new DwtListHeaderItem({field:ZmItem.F_SELECTION, icon:"TaskCheckbox", width:ZmMixedView.COLWIDTH_ICON}));
+		hList.push(new DwtListHeaderItem({field:ZmItem.F_SELECTION, icon:"CheckboxUnchecked", width:ZmMixedView.COLWIDTH_ICON}));
 	}
 
 	if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {

@@ -197,8 +197,8 @@ function(ev, div) {
 	} else if (type == DwtListView.TYPE_LIST_ITEM) {
 		var match = this._parseId(id);
 		if (match && match.field && match.field == ZmItem.F_SELECTION) {
-			if (ev.target.className != "ImgTaskCheckboxCompleted")
-				ev.target.className = "ImgTaskCheckboxCompleted";
+			if (ev.target.className != "ImgCheckboxChecked")
+				ev.target.className = "ImgCheckboxChecked";
 			return;
 		}
 
@@ -226,8 +226,8 @@ function(ev, div) {
 		if (m && m.field) {
 			if (m.field == ZmItem.F_SELECTION) {
 				ev.target.className = (this.getSelectedItems().contains(div))
-					? "ImgTaskCheckboxCompleted"
-					: "ImgTaskCheckbox";
+					? "ImgCheckboxChecked"
+					: "ImgCheckboxUnchecked";
 			}
 		}
 	}

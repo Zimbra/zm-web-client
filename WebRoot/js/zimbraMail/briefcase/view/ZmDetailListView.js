@@ -67,7 +67,7 @@ function(parent) {
 	var headers = [];
 	var view = this._view;
 	if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
-		headers.push(new DwtListHeaderItem({field:ZmItem.F_SELECTION, icon:"TaskCheckbox", width:ZmListView.COL_WIDTH_ICON,
+		headers.push(new DwtListHeaderItem({field:ZmItem.F_SELECTION, icon:"CheckboxUnchecked", width:ZmListView.COL_WIDTH_ICON,
 											name:ZmMsg.selection}));
 	}	
 	if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
@@ -90,7 +90,7 @@ ZmDetailListView.prototype._getCellContents =
 function(htmlArr, idx, item, field, colIdx, params) {
 
 	if (field == ZmItem.F_SELECTION) {
-		var icon = params.bContained ? "TaskCheckboxCompleted" : "TaskCheckbox";
+		var icon = params.bContained ? "CheckboxChecked" : "CheckboxUnchecked";
 		idx = this._getImageHtml(htmlArr, idx, icon, this._getFieldId(item, field));
 	} else if (field == ZmItem.F_TYPE) {
 		var contentType = item.contentType;

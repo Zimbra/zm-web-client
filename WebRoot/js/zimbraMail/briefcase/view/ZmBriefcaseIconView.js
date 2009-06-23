@@ -67,10 +67,10 @@ function(item, params) {
 	}
 	
 	htmlArr[idx++] = "<table><tr><td>";
-    idx = this._getImageHtml(htmlArr, idx, "TaskCheckbox", this._getFieldId(item, ZmItem.F_SELECTION));
-    htmlArr[idx++] = "</td><td>";
-	htmlArr[idx++] = "<div class='Img" + icon + "'></div>";
-	htmlArr[idx++] = "</td><td nowrap>";
+    idx = this._getImageHtml(htmlArr, idx, "CheckboxUnchecked", this._getFieldId(item, ZmItem.F_SELECTION));
+    htmlArr[idx++] = "</td><td><div class='Img";
+	htmlArr[idx++] = icon;
+	htmlArr[idx++] = "'></div></td><td nowrap>";
 	htmlArr[idx++] = AjxStringUtil.htmlEncode(item.name);
 	htmlArr[idx++] = "</td><tr></table>";
 	

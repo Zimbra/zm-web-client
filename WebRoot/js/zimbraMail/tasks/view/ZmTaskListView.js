@@ -156,7 +156,7 @@ ZmTaskListView.prototype._getCellContents =
 function(htmlArr, idx, task, field, colIdx, params) {
 
 	if (field == ZmItem.F_SELECTION) {
-		var icon = params.bContained ? "TaskCheckboxCompleted" : "TaskCheckbox";
+		var icon = params.bContained ? "CheckboxChecked" : "CheckboxUnchecked";
 		idx = this._getImageHtml(htmlArr, idx, icon, this._getFieldId(task, field));
 
 	} else if (field == ZmItem.F_PRIORITY) {
@@ -263,7 +263,7 @@ function(parent) {
 	var hList = [];
 
 	if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
-		hList.push(new DwtListHeaderItem({field:ZmItem.F_SELECTION, icon:"TaskCheckbox", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.selection}));
+		hList.push(new DwtListHeaderItem({field:ZmItem.F_SELECTION, icon:"CheckboxUnchecked", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.selection}));
 	}
 	if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
 		hList.push(new DwtListHeaderItem({field:ZmItem.F_TAG, icon:"Tag", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.tag}));

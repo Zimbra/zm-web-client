@@ -605,7 +605,7 @@ function(contact, params) {
 	// checkbox selection
 	if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
 		htmlArr[idx++] = "<td style='vertical-align:middle;' width=20><center>";
-		idx = this._getImageHtml(htmlArr, idx, "TaskCheckbox", this._getFieldId(contact, ZmItem.F_SELECTION));
+		idx = this._getImageHtml(htmlArr, idx, "CheckboxUnchecked", this._getFieldId(contact, ZmItem.F_SELECTION));
 		htmlArr[idx++] = "</center></td>";
 	}
 

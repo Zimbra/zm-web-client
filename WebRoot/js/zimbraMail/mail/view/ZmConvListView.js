@@ -101,7 +101,7 @@ ZmConvListView.HEADERS_LONG = [
 ];
 
 ZmConvListView.HEADER = {};
-ZmConvListView.HEADER[ZmItem.F_SELECTION]	= {icon:"TaskCheckbox", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.selection, precondition:ZmSetting.SHOW_SELECTION_CHECKBOX};
+ZmConvListView.HEADER[ZmItem.F_SELECTION]	= {icon:"CheckboxUnchecked", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.selection, precondition:ZmSetting.SHOW_SELECTION_CHECKBOX};
 ZmConvListView.HEADER[ZmItem.F_EXPAND]		= {icon:"NodeCollapsed", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.expand};
 ZmConvListView.HEADER[ZmItem.F_FLAG]		= {icon:"FlagRed", width:ZmListView.COL_WIDTH_ICON, sortable:ZmItem.F_FLAG, name:ZmMsg.flag, noSortArrow:true, precondition:ZmSetting.FLAGGING_ENABLED};
 ZmConvListView.HEADER[ZmItem.F_PRIORITY]	= {icon:"PriorityHigh_list", width:ZmListView.COL_WIDTH_NARROW_ICON, name:ZmMsg.priority, precondition:ZmSetting.MAIL_PRIORITY_ENABLED};

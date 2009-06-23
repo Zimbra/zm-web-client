@@ -264,7 +264,7 @@ function(item, field, params) {
 ZmListView.prototype._getCellContents =
 function(htmlArr, idx, item, field, colIdx, params) {
 	if (field == ZmItem.F_SELECTION) {
-		idx = this._getImageHtml(htmlArr, idx, "TaskCheckbox", this._getFieldId(item, field));
+		idx = this._getImageHtml(htmlArr, idx, "CheckboxUnchecked", this._getFieldId(item, field));
 	} else if (field == ZmItem.F_TYPE) {
 		idx = this._getImageHtml(htmlArr, idx, ZmItem.ICON[item.type], this._getFieldId(item, field));
 	} else if (field == ZmItem.F_FLAG) {
@@ -399,16 +399,16 @@ function(clickedEl, ev) {
 					var selField = selFieldId ? document.getElementById(selFieldId) : null;
 					if (selField && sel == clickedEl) {
 						var origClass = this._getItemData(sel, "origSelClassName");
-						if (origClass == "ImgTaskCheckboxCompleted") {
-							selField.className = "ImgTaskCheckbox";
-							this._setItemData(sel, "origSelClassName", "ImgTaskCheckbox");
-						} else if (origClass == "ImgTaskCheckbox") {
-							selField.className = "ImgTaskCheckboxCompleted";
-							this._setItemData(sel, "origSelClassName", "ImgTaskCheckboxCompleted");
+						if (origClass == "ImgCheckboxChecked") {
+							selField.className = "ImgCheckboxUnchecked";
+							this._setItemData(sel, "origSelClassName", "ImgCheckboxUnchecked");
+						} else if (origClass == "ImgCheckboxUnchecked") {
+							selField.className = "ImgCheckboxChecked";
+							this._setItemData(sel, "origSelClassName", "ImgCheckboxChecked");
 							return;
 						}
 					} else {
-						if (selField && selField.className == "ImgTaskCheckbox") {
+						if (selField && selField.className == "ImgCheckboxUnchecked") {
 							DwtListView.prototype.deselectAll.call(this);
 						}
 					}
@@ -453,11 +453,11 @@ function(clickedCol) {
 			var hdrId = DwtId.getListViewHdrId(DwtId.WIDGET_HDR_ICON, this._view, item._field);
 			var hdrDiv = document.getElementById(hdrId);
 			if (hdrDiv) {
-				if (hdrDiv.className == "ImgTaskCheckboxCompleted") {
+				if (hdrDiv.className == "ImgCheckboxChecked") {
 					this.deselectAll();
-					hdrDiv.className = "ImgTaskCheckbox";
+					hdrDiv.className = "ImgCheckboxUnchecked";
 				} else {
-					hdrDiv.className = "ImgTaskCheckboxCompleted";
+					hdrDiv.className = "ImgCheckboxChecked";
 					this.setSelectedItems(this._list.getArray());
 				}
 			}
@@ -501,7 +501,7 @@ function(obj, bContained) {
 	var selFieldId = item ? this._getFieldId(item, ZmItem.F_SELECTION) : null;
 	var selField = selFieldId ? document.getElementById(selFieldId) : null;
 	if (selField) {
-		selField.className = bContained ? "ImgTaskCheckbox" : "ImgTaskCheckboxCompleted";
+		selField.className = bContained ? "ImgCheckboxUnchecked" : "ImgCheckboxChecked";
 		this._setItemData(obj, "origSelClassName", selField.className);
 	}
 };
@@ -513,8 +513,8 @@ function(check) {
 	var hdrDiv = hdrId ? document.getElementById(hdrId) : null;
 	if (hdrDiv) {
 		hdrDiv.className = check
-			? "ImgTaskCheckboxCompleted"
-			: "ImgTaskCheckbox";
+			? "ImgCheckboxChecked"
+			: "ImgCheckboxUnchecked";
 	}
 };
 
@@ -661,8 +661,8 @@ function(params) {
     var tooltip, field = params.field, target = params.ev.target, item = params.item;
     if (field == ZmItem.F_SELECTION) {
 		this._setItemData(params.div, "origSelClassName", target.className);
-        if (target.className != "ImgTaskCheckboxCompleted") {
-            target.className = "ImgTaskCheckboxCompleted";
+        if (target.className != "ImgCheckboxChecked") {
+            target.className = "ImgCheckboxChecked";
         }
     } else if (field == ZmItem.F_FLAG) {
         if (!item.isFlagged) {

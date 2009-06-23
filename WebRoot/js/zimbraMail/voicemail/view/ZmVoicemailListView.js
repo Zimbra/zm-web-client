@@ -88,7 +88,7 @@ function(parent) {
 	var headerList = [];
 
 	if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
-		headerList.push(new DwtListHeaderItem({field:ZmItem.F_SELECTION, icon:"TaskCheckbox", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.selection}));
+		headerList.push(new DwtListHeaderItem({field:ZmItem.F_SELECTION, icon:"CheckboxUnchecked", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.selection}));
 	}
 	headerList.push(new DwtListHeaderItem({field:ZmVoicemailListView.F_PRIORITY, icon:"TaskHigh", width:ZmVoicemailListView.PRIORITY_WIDTH}));
 	headerList.push(new DwtListHeaderItem({field:ZmVoiceListView.F_CALLER, text:ZmMsg.from, width:ZmVoicemailListView.FROM_WIDTH, resizeable:true}));

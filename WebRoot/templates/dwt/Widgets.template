@@ -1,160 +1,172 @@
 <template id='dwt.Widgets#DwtAlert'>
 	<table width=100% border=0 cellpadding=0 cellspacing=0>
-		<tr><td width=1%>
+		<tr>
+			<td width=1%>
 				<div id='${id}_icon' style='margin-right:5px;'></div>
 			</td>
 			<td width=99%>
 				<table border=0 cellpadding=0 cellspacing=0>
-					<tr><td id='${id}_title' class='DwtAlertTitle'></td></tr>
-					<tr><td id='${id}_content' class='DwtAlertContent'></td></tr>
+					<tr>
+						<td id='${id}_title' class='DwtAlertTitle'></td>
+					</tr>
+					<tr>
+						<td id='${id}_content' class='DwtAlertContent'></td>
+					</tr>
 				</table>
 			</td>
 			<td width=1%>
-			    <div id='${id}_dismiss' style='margin-left:5px;'></div>
+				<div id='${id}_dismiss' style='margin-left:5px;'></div>
 			</td>
 		</tr>
 	</table>
 </template>
 
 <template id='dwt.Widgets#DwtCheckbox'>
-  <table cellpadding='2' cellspacing='0' border='0'>
-    <tr>
-      <td>
-        <label id='${id}_text_left' for='${id}_input' class='Text' style='text-align:right'></label>
-      </td>
-      <td> <input id='${id}_input' name='${name}' value='${value}' type='checkbox' ${checked}> </td>
-      <td>
-        <label id='${id}_text_right' for='${id}_input' class='Text' style='text-align:left'></label>
-      </td>
-    </tr>
-  </table>
+<table cellpadding='2' cellspacing='0' border='0'>
+		<tr>
+			<td>
+				<label id='${id}_text_left' for='${id}_input' class='Text' style='text-align:right'></label>
+			</td>
+			<td>
+				<input id='${id}_input' name='${name}' value='${value}' type='checkbox' ${checked}>
+			</td>
+			<td>
+				<label id='${id}_text_right' for='${id}_input' class='Text' style='text-align:left'></label>
+			</td>
+		</tr>
+	</table>
 </template>
 
 <template id='dwt.Widgets#DwtRadioButton'>
-  <table cellpadding='2' cellspacing='0' border='0'>
-    <tr>
-      <td>
-        <label id='${id}_text_left' for='${id}_input' class='Text' style='text-align:right'></label>
-      </td>
-      <td> <input id='${id}_input' name='${name}' value='${value}' type='radio' ${checked}> </td>
-      <td>
-        <label id='${id}_text_right' for='${id}_input' class='Text' style='text-align:left'></label>
-      </td>
-    </tr>
-  </table>
+	<table cellpadding='2' cellspacing='0' border='0'>
+		<tr>
+			<td>
+				<label id='${id}_text_left' for='${id}_input' class='Text' style='text-align:right'></label>
+			</td>
+			<td>
+				<input id='${id}_input' name='${name}' value='${value}' type='radio' ${checked}>
+			</td>
+			<td>
+				<label id='${id}_text_right' for='${id}_input' class='Text' style='text-align:left'></label>
+			</td>
+		</tr>
+	</table>
 </template>
 
 <template id='dwt.Widgets#DwtBaseDialog' width='20' height='32'>
-    <div class='DwtDialog WindowOuterContainer'>
-        <table cellspacing=0 cellpadding=0>
-            <tr id='${dragId}'>
-                <td class='minWidth'>${icon}</td>
-                <td id='${id}_title' class='DwtDialogTitle'>${title}</td>
-                <td class='minWidth'><div class='${closeIcon2}'></div></td>
-                <td class='minWidth'><div class='${closeIcon1}'></div></td>
-            </tr>
-            <tr>
-                <td class='WindowInnerContainer' colspan='4'>
-                  <div id='${id}_content' class='DwtDialogBody'></div>
-                  <$ if (data.controlsTemplateId) { $>
-                    <$= AjxTemplate.expand(data.controlsTemplateId, data) $>
-                  <$ } $>
-                </td>
-            </tr>
-        </table>
-    </div>
+	<div class='DwtDialog WindowOuterContainer'>
+		<table cellspacing=0 cellpadding=0>
+			<tr id='${dragId}'>
+				<td class='minWidth'>${icon}</td>
+				<td id='${id}_title' class='DwtDialogTitle'>${title}</td>
+				<td class='minWidth'><div class='${closeIcon2}'></div></td>
+				<td class='minWidth'><div class='${closeIcon1}'></div></td>
+			</tr>
+			<tr>
+				<td class='WindowInnerContainer' colspan='4'>
+					<div id='${id}_content' class='DwtDialogBody'></div>
+					<$ if (data.controlsTemplateId) { $>
+						<$= AjxTemplate.expand(data.controlsTemplateId, data) $>
+					<$ } $>
+				</td>
+			</tr>
+		</table>
+	</div>
 </template>
 
 <template id='dwt.Widgets#DwtDialogControls'>
-  <div class='horizSep'></div>
-  <div id='${id}_buttons' class='DwtDialogButtonBar'>
-    <$ if (AjxEnv.isNav) { $>
-      <input type='button' id='${id}_focus' style='height:0px;width:0px;display:none;'>
-    <$ } $>
-  </div>
+	<div class='horizSep'></div>
+	<div id='${id}_buttons' class='DwtDialogButtonBar'>
+		<$ if (AjxEnv.isNav) { $>
+			<input type='button' id='${id}_focus' style='height:0px;width:0px;display:none;'>
+		<$ } $>
+	</div>
 </template>
 
 <template id='dwt.Widgets#DwtSemiModalDialog' width='20' height='32'>
-    <div class='DwtDialog LightWindowOuterContainer'>
-        <table cellspacing=0 cellpadding=0 style='cursor:move;'>
-            <tr id='${dragId}'>
-                <td class='minWidth'>${icon}</td>
-                <td id='${id}_title' class='DwtDialogTitle'>${title}</td>
-                <td class='minWidth'><div class='${closeIcon2}'></div></td>
-                <td class='minWidth'><div class='${closeIcon1}'></div></td>
-            </tr>
-            <tr>
-                <td class='LightWindowInnerContainer full_size' colspan='4'>
-                  <div id='${id}_content' class='DwtDialogBody'></div>
-                  <div class='horizSep'></div>
-                  <div id='${id}_buttons' class='DwtDialogButtonBar'>
-                    <$ if (AjxEnv.isNav) { $>
-                      <input type='button' id='${id}_focus' style='height:0px;width:0px;display:none;'>
-                    <$ } $>
-                  </div>
-                </td>
-            </tr>
-        </table>
-    </div>
+	<div class='DwtDialog LightWindowOuterContainer'>
+		<table cellspacing=0 cellpadding=0 style='cursor:move;'>
+			<tr id='${dragId}'>
+				<td class='minWidth'>${icon}</td>
+				<td id='${id}_title' class='DwtDialogTitle'>${title}</td>
+				<td class='minWidth'><div class='${closeIcon2}'></div></td>
+				<td class='minWidth'><div class='${closeIcon1}'></div></td>
+			</tr>
+			<tr>
+				<td class='LightWindowInnerContainer full_size' colspan='4'>
+					<div id='${id}_content' class='DwtDialogBody'></div>
+					<div class='horizSep'></div>
+					<div id='${id}_buttons' class='DwtDialogButtonBar'>
+						<$ if (AjxEnv.isNav) { $>
+						<input type='button' id='${id}_focus' style='height:0px;width:0px;display:none;'>
+						<$ } $>
+					</div>
+				</td>
+			</tr>
+		</table>
+	</div>
 </template>
 
 <template id='dwt.Widgets#DwtToolTip' width='5' height='5'>
-        <div id='${id}TopPointer' class='DwtToolTipTopPointer'>
-            <center>
-                <div class='DwtToolTipPointerRow' style='width:1px;'>&nbsp;</div>
-                <div class='DwtToolTipPointerRow' style='width:3px;'>&nbsp;</div>
-                <div class='DwtToolTipPointerRow' style='width:5px;'>&nbsp;</div>
-                <div class='DwtToolTipPointerRow' style='width:7px;'>&nbsp;</div>
-                <div class='DwtToolTipPointerRow' style='width:9px;'>&nbsp;</div>
-                <div class='DwtToolTipPointerRow' style='width:11px;'>&nbsp;</div>
-                <div class='DwtToolTipPointerRow' style='width:13px;'>&nbsp;</div>
-                <div class='DwtToolTipPointerRow' style='width:15px;'>&nbsp;</div>
-                <div class='DwtToolTipPointerRow' style='width:17px;'>&nbsp;</div>
-                <div class='DwtToolTipPointerRow' style='width:19px;'>&nbsp;</div>
-                <div class='DwtToolTipPointerRow' style='width:21px;'>&nbsp;</div>
-            </center>
-        </div>
-        <div id='${id}Contents' class='DwtToolTipBody'></div>
-        <div id='${id}BottomPointer' class='DwtToolTipBottomPointer'>
-            <center>
-                <div class='DwtToolTipPointerRow' style='width:21px;'>&nbsp;</div>
-                <div class='DwtToolTipPointerRow' style='width:19px;'>&nbsp;</div>
-                <div class='DwtToolTipPointerRow' style='width:17px;'>&nbsp;</div>
-                <div class='DwtToolTipPointerRow' style='width:15px;'>&nbsp;</div>
-                <div class='DwtToolTipPointerRow' style='width:13px;'>&nbsp;</div>
-                <div class='DwtToolTipPointerRow' style='width:11px;'>&nbsp;</div>
-                <div class='DwtToolTipPointerRow' style='width:9px;'>&nbsp;</div>
-                <div class='DwtToolTipPointerRow' style='width:7px;'>&nbsp;</div>
-                <div class='DwtToolTipPointerRow' style='width:5px;'>&nbsp;</div>
-                <div class='DwtToolTipPointerRow' style='width:3px;'>&nbsp;</div>
-                <div class='DwtToolTipPointerRow' style='width:1px;'>&nbsp;</div>
-            </center>
-        </div>
+	<div id='${id}TopPointer' class='DwtToolTipTopPointer'>
+		<center>
+			<div class='DwtToolTipPointerRow' style='width:1px;'>&nbsp;</div>
+			<div class='DwtToolTipPointerRow' style='width:3px;'>&nbsp;</div>
+			<div class='DwtToolTipPointerRow' style='width:5px;'>&nbsp;</div>
+			<div class='DwtToolTipPointerRow' style='width:7px;'>&nbsp;</div>
+			<div class='DwtToolTipPointerRow' style='width:9px;'>&nbsp;</div>
+			<div class='DwtToolTipPointerRow' style='width:11px;'>&nbsp;</div>
+			<div class='DwtToolTipPointerRow' style='width:13px;'>&nbsp;</div>
+			<div class='DwtToolTipPointerRow' style='width:15px;'>&nbsp;</div>
+			<div class='DwtToolTipPointerRow' style='width:17px;'>&nbsp;</div>
+			<div class='DwtToolTipPointerRow' style='width:19px;'>&nbsp;</div>
+			<div class='DwtToolTipPointerRow' style='width:21px;'>&nbsp;</div>
+		</center>
+	</div>
+	<div id='${id}Contents' class='DwtToolTipBody'></div>
+	<div id='${id}BottomPointer' class='DwtToolTipBottomPointer'>
+		<center>
+			<div class='DwtToolTipPointerRow' style='width:21px;'>&nbsp;</div>
+			<div class='DwtToolTipPointerRow' style='width:19px;'>&nbsp;</div>
+			<div class='DwtToolTipPointerRow' style='width:17px;'>&nbsp;</div>
+			<div class='DwtToolTipPointerRow' style='width:15px;'>&nbsp;</div>
+			<div class='DwtToolTipPointerRow' style='width:13px;'>&nbsp;</div>
+			<div class='DwtToolTipPointerRow' style='width:11px;'>&nbsp;</div>
+			<div class='DwtToolTipPointerRow' style='width:9px;'>&nbsp;</div>
+			<div class='DwtToolTipPointerRow' style='width:7px;'>&nbsp;</div>
+			<div class='DwtToolTipPointerRow' style='width:5px;'>&nbsp;</div>
+			<div class='DwtToolTipPointerRow' style='width:3px;'>&nbsp;</div>
+			<div class='DwtToolTipPointerRow' style='width:1px;'>&nbsp;</div>
+		</center>
+	</div>
 </template>
 
 
 <template id='dwt.Widgets#DwtVerticalSash' width='0' height='0'>
 	<div class='DwtVerticalSash'>
-        <center>
-        	<div class='ImgVSash_thumb'></div>
-        </center>
-    </div>
+		<center>
+			<div class='ImgVSash_thumb'></div>
+		</center>
+	</div>
 </template>
 
 <template id='dwt.Widgets#DwtHorizontalSash' width='0' height='0'>
-    <div class='DwtHorizontalSash'>
-        <table cellspacing=0 cellpadding=0 height='100%'>
-            <tr><td height='100%' valign='middle'><div class='ImgHSash_thumb'></div></td></tr>
-        </table>
-    </div>
+	<div class='DwtHorizontalSash'>
+		<table cellspacing=0 cellpadding=0 height='100%'>
+			<tr>
+				<td height='100%' valign='middle'><div class='ImgHSash_thumb'></div></td>
+			</tr>
+		</table>
+	</div>
 </template>
 
-
 <template id='dwt.Widgets#DwtMissingSoundPlayer'>
-    <table class='DwtMissingSoundPlayer'><tr>
-    	<td nowrap class='ImgCritical'>&nbsp;</td>
-    	<td nowrap><$= ZmMsg.missingPlugin $></td>
-    </tr></table>
+	<table class='DwtMissingSoundPlayer'>
+		<tr>
+			<td nowrap class='ImgCritical'>&nbsp;</td>
+			<td nowrap><$= ZmMsg.missingPlugin $></td>
+		</tr>
+	</table>
 </template>
 
 
@@ -175,36 +187,42 @@
 </template>
 
 <template id='dwt.Widgets#ZLabel' class='ZWidget'>
-	<table class='ZWidgetTable ZLabelBorder' cellspacing=0 cellpadding=0><tr>
-		<td id='${id}_left_icon'  	class='ZLeftIcon ZWidgetIcon'></td>
-		<td id='${id}_title'		class='ZWidgetTitle'></td>
-		<td id='${id}_right_icon' 	class='ZRightIcon ZWidgetIcon'></td>
-	</tr></table>
+	<table class='ZWidgetTable ZLabelBorder' cellspacing=0 cellpadding=0>
+		<tr>
+			<td id='${id}_left_icon'  	class='ZLeftIcon ZWidgetIcon'></td>
+			<td id='${id}_title'		class='ZWidgetTitle'></td>
+			<td id='${id}_right_icon' 	class='ZRightIcon ZWidgetIcon'></td>
+		</tr>
+	</table>
 </template>
 
 <template id='dwt.Widgets#ZButton' class='ZWidget'>
-  <$ var buttonClass = data.buttonClass || "Button"; $>
-  <table class='ZWidgetTable Z<$=buttonClass$>Table Z<$=buttonClass$>Border' cellspacing=0 cellpadding=0 style='table-layout:auto;'><tr>
-		<td id='${id}_left_icon'  	class='ZLeftIcon ZWidgetIcon'></td>
-		<td id='${id}_title'		class='ZWidgetTitle'></td>
-		<td id='${id}_right_icon' 	class='ZRightIcon ZWidgetIcon'></td>
-		<td id='${id}_dropdown' 	class='ZDropDown'></td>
-	</tr></table>
+	<$ var buttonClass = data.buttonClass || "Button"; $>
+	<table class='ZWidgetTable Z<$=buttonClass$>Table Z<$=buttonClass$>Border' cellspacing=0 cellpadding=0 style='table-layout:auto;'>
+		<tr>
+			<td id='${id}_left_icon'  	class='ZLeftIcon ZWidgetIcon'></td>
+			<td id='${id}_title'		class='ZWidgetTitle'></td>
+			<td id='${id}_right_icon' 	class='ZRightIcon ZWidgetIcon'></td>
+			<td id='${id}_dropdown' 	class='ZDropDown'></td>
+		</tr>
+	</table>
 </template>
 
 <template id='dwt.Widgets#ZToolbarButton' class='ZWidget'>
-  <$ data.buttonClass = data.buttonClass || "ToolbarButton" $>
-  <$= AjxTemplate.expand("#ZButton", data) $>
+	<$ data.buttonClass = data.buttonClass || "ToolbarButton" $>
+	<$= AjxTemplate.expand("#ZButton", data) $>
 </template>
 
 <template id='dwt.Widgets#ZBorderlessButton' class='ZWidget'>
-  <$ var buttonClass = data.buttonClass || "Button"; $>
-  <table class='ZWidgetTable Z<$=buttonClass$>Table' cellspacing=0 cellpadding=0 style='table-layout:auto;'><tr>
-		<td id='${id}_left_icon'  	class='ZLeftIcon ZWidgetIcon'></td>
-		<td id='${id}_title'		class='ZWidgetTitle'></td>
-		<td id='${id}_right_icon' 	class='ZRightIcon ZWidgetIcon'></td>
-		<td id='${id}_dropdown' 	class='ZDropDown'></td>
-	</tr></table>
+	<$ var buttonClass = data.buttonClass || "Button"; $>
+	<table class='ZWidgetTable Z<$=buttonClass$>Table' cellspacing=0 cellpadding=0 style='table-layout:auto;'>
+		<tr>
+			<td id='${id}_left_icon'  	class='ZLeftIcon ZWidgetIcon'></td>
+			<td id='${id}_title'		class='ZWidgetTitle'></td>
+			<td id='${id}_right_icon' 	class='ZRightIcon ZWidgetIcon'></td>
+			<td id='${id}_dropdown' 	class='ZDropDown'></td>
+		</tr>
+	</table>
 </template>
 
 <template id='dwt.Widgets#ZButtonColorDisplay'>
@@ -222,67 +240,71 @@
 </template>
 
 <template id='dwt.Widgets#DwtComboBoxButton' class='ZWidget'>
-  <$ var buttonClass = data.buttonClass || "Button"; $>
-  <table class='Z<$=buttonClass$>Border' cellspacing=0 cellpadding=0><tr>
-		<td id='${id}_dropdown' 	class='ZDropDown'></td>
-  </tr></table>
+	<$ var buttonClass = data.buttonClass || "Button"; $>
+	<table class='Z<$=buttonClass$>Border' cellspacing=0 cellpadding=0>
+		<tr>
+			<td id='${id}_dropdown' class='ZDropDown'></td>
+		</tr>
+	</table>
 </template>
 
-
-
 <template id='dwt.Widgets#ZTabView' class='ZWidget'>
-  <div id='${id}_tabbar'></div>
-  <div id='${id}_page'></div>
+	<div id='${id}_tabbar'></div>
+	<div id='${id}_page'></div>
 </template>
 
 <template id='dwt.Widgets#ZTabBar' class='ZWidget'>
-  <table border=0 cellpadding=0 cellspacing=0>
-    <tr valign='bottom' id='${id}_items'>
-      <$= AjxTemplate.expand("#ZTabBarPrefix", data) $>
-      <$= AjxTemplate.expand("#ZTabBarSuffix", data) $>
-    </tr>
-  </table>
+	<table border=0 cellpadding=0 cellspacing=0>
+		<tr valign='bottom' id='${id}_items'>
+			<$= AjxTemplate.expand("#ZTabBarPrefix", data) $>
+			<$= AjxTemplate.expand("#ZTabBarSuffix", data) $>
+		</tr>
+	</table>
 </template>
 
 <template id='dwt.Widgets#ZTabBarFloat' class='ZWidget'>
-<div id='${id}_items'>
-      <$= AjxTemplate.expand("#ZTabBarPrefixFloat", data) $>
-      <$= AjxTemplate.expand("#ZTabBarSuffixFloat", data) $>
-</div>      
+	<div id='${id}_items'>
+		<$= AjxTemplate.expand("#ZTabBarPrefixFloat", data) $>
+		<$= AjxTemplate.expand("#ZTabBarSuffixFloat", data) $>
+	</div>
 </template>
 
 <template id='dwt.Widgets#ZTabBarPrefixFloat'>
-  <div id='${id}_prefix' class='ZTabBarPrefix'>&nbsp;</div>
+	<div id='${id}_prefix' class='ZTabBarPrefix'>&nbsp;</div>
 </template>
 
 <template id='dwt.Widgets#ZTabBarSuffixFloat'>
-  <div id='${id}_suffix' class='ZTabBarSuffix'>&nbsp;</div>
+	<div id='${id}_suffix' class='ZTabBarSuffix'>&nbsp;</div>
 </template>
 
 <template id='dwt.Widgets#ZTabBarPrefix'>
-  <td id='${id}_prefix' class='ZTabBarPrefix'>&nbsp;</td>
+	<td id='${id}_prefix' class='ZTabBarPrefix'>&nbsp;</td>
 </template>
 
 <template id='dwt.Widgets#ZTabBarSuffix'>
-  <td id='${id}_suffix' class='ZTabBarSuffix'>&nbsp;</td>
+	<td id='${id}_suffix' class='ZTabBarSuffix'>&nbsp;</td>
 </template>
 
 <template id='dwt.Widgets#ZTab' class='ZWidget'>
-  <$ var buttonClass = data.buttonClass || "Tab" $> 
-  <table id='${id}_select' class='Z<$=buttonClass$>Table Z<$=buttonClass$>Border ZWidgetTable ZWidgetBorder' cellspacing=0 cellpadding=0><tr>
-    <td id='${id}_left_icon'  class='ZLeftIcon ZWidgetIcon'></td>
-    <td id='${id}_title'		 class='ZWidgetTitle'></td>
-    <td id='${id}_right_icon' class='ZRightIcon ZWidgetIcon'></td>
-  </tr></table>
+	<$ var buttonClass = data.buttonClass || "Tab" $>
+	<table id='${id}_select' class='Z<$=buttonClass$>Table Z<$=buttonClass$>Border ZWidgetTable ZWidgetBorder' cellspacing=0 cellpadding=0>
+		<tr>
+			<td id='${id}_left_icon' class='ZLeftIcon ZWidgetIcon'></td>
+			<td id='${id}_title' class='ZWidgetTitle'></td>
+			<td id='${id}_right_icon' class='ZRightIcon ZWidgetIcon'></td>
+		</tr>
+	</table>
 </template>
 
 <template id='dwt.Widgets#ZTabFloat' class='ZWidget'>
-  <$ var buttonClass = data.buttonClass || "Tab" $> 
-  <table id='${id}_select' class='Z<$=buttonClass$>Table Z<$=buttonClass$>Border ZWidgetBorder' cellspacing=0 cellpadding=0><tr>
-    <td id='${id}_left_icon'  class='ZLeftIcon ZWidgetIcon'></td>
-    <td id='${id}_title'		 class='ZWidgetTitle'></td>
-    <td id='${id}_right_icon' class='ZRightIcon ZWidgetIcon'></td>
-  </tr></table>
+	<$ var buttonClass = data.buttonClass || "Tab" $>
+	<table id='${id}_select' class='Z<$=buttonClass$>Table Z<$=buttonClass$>Border ZWidgetBorder' cellspacing=0 cellpadding=0>
+		<tr>
+			<td id='${id}_left_icon' class='ZLeftIcon ZWidgetIcon'></td>
+			<td id='${id}_title' class='ZWidgetTitle'></td>
+			<td id='${id}_right_icon' class='ZRightIcon ZWidgetIcon'></td>
+		</tr>
+	</table>
 </template>
 
 <template id='dwt.Widgets#ZTabPage' class='ZWidget'></template>
@@ -295,35 +317,39 @@ NOTE: Do NOT override this template! This is used internally by the
       the select to the width of the widest option.
 -->
 <template id='dwt.Widgets#ZSelectAutoSizingContainer'>
-  <table border=0 cellpadding=0 cellspacing=0>
-    <tr><td id="${id}_select_container">
-      <$= AjxTemplate.expand(data.selectTemplateId, data.selectData) $>
-    </td></tr>
-    <tr><td>
-      <table id="${id}_pseudoitems_container" border=0 cellpadding=0 cellspacing=0></table>
-    </td></tr>
-  </table>
+	<table border=0 cellpadding=0 cellspacing=0>
+		<tr>
+			<td id="${id}_select_container">
+				<$= AjxTemplate.expand(data.selectTemplateId, data.selectData) $>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<table id="${id}_pseudoitems_container" border=0 cellpadding=0 cellspacing=0></table>
+			</td>
+		</tr>
+	</table>
 </template>
 
 <template id='dwt.Widgets#ZSelect' class='ZWidget'>
-  <$= AjxTemplate.expand("#ZButton", data) $>
+	<$= AjxTemplate.expand("#ZButton", data) $>
 </template>
 
 <template id='dwt.Widgets#ZSelectMenu' class='ZWidget'>
-  <$= AjxTemplate.expand("#ZMenu", data) $>
+	<$= AjxTemplate.expand("#ZMenu", data) $>
 </template>
 
 <template id='dwt.Widgets#ZSelectMenuItem' class='ZWidget'>
-  <$= AjxTemplate.expand("#ZMenuItem", data) $>
+	<$= AjxTemplate.expand("#ZMenuItem", data) $>
 </template>
 
 <template id='dwt.Widgets#ZToolbar' class='ZWidget'>
-  <table class='ZToolbarTable' border=0 cellpadding=0 cellspacing=0>
-    <tr id='${id}_items'>
-      <$= AjxTemplate.expand("#ZToolbarPrefix", data) $>
-      <$= AjxTemplate.expand("#ZToolbarSuffix", data) $>
-    </tr>
-  </table>
+	<table class='ZToolbarTable' border=0 cellpadding=0 cellspacing=0>
+		<tr id='${id}_items'>
+			<$= AjxTemplate.expand("#ZToolbarPrefix", data) $>
+			<$= AjxTemplate.expand("#ZToolbarSuffix", data) $>
+		</tr>
+	</table>
 </template>
 
 <template id='dwt.Widgets#ZToolbarPrefix'></template>
@@ -334,27 +360,35 @@ NOTE: The outer table/tr is a necessary hack. It is NOT inserted in the
       destination; only the element with ${itemId} identifier is inserted.
 -->
 <template id='dwt.Widgets#ZToolbarItem'>
-  <table><tr>
-    <td id='${itemId}'></td>
-  </tr></table>
+	<table>
+		<tr>
+			<td id='${itemId}'></td>
+		</tr>
+	</table>
 </template>
 
 <template id='dwt.Widgets#ZToolbarSeparator'>
-  <table><tr>
-  <td id='${itemId}' class='ZToolbarSeparator'>&nbsp;</td>
-  </tr></table>
+	<table>
+		<tr>
+			<td id='${itemId}' class='ZToolbarSeparator'>&nbsp;</td>
+		</tr>
+	</table>
 </template>
 
 <template id='dwt.Widgets#ZToolbarSpacer'>
-  <table><tr>
-  <td id='${itemId}' class='ZToolbarSpacer'>&nbsp;</td>
-  </tr></table>
+	<table>
+		<tr>
+			<td id='${itemId}' class='ZToolbarSpacer'>&nbsp;</td>
+		</tr>
+	</table>
 </template>
 
 <template id='dwt.Widgets#ZToolbarFiller'>
-  <table><tr>
-  <td id='${itemId}' class='ZToolbarFiller' width='100%'>&nbsp;</td>
-  </tr></table>
+	<table>
+		<tr>
+			<td id='${itemId}' class='ZToolbarFiller' width='100%'>&nbsp;</td>
+		</tr>
+	</table>
 </template>
 
 <template id='dwt.Widgets#ZField' class='ZWidget'>
@@ -367,9 +401,7 @@ NOTE: The outer table/tr is a necessary hack. It is NOT inserted in the
 			<tr>
 				<td align=center nowrap id='${id}_nodeCell'></td>
 				<$ if (data.isCheckedStyle) { $>
-					<td nowrap id='${id}_checkboxCell'>
-						<input type='checkbox' id='${id}_checkbox'>
-					</td>
+					<td nowrap id='${id}_checkboxCell'></td>
 				<$ } $>
 				<td nowrap class='imageCell' id='${id}_imageCell'></td>
 				<td nowrap class='${textClassName}' id='${id}_textCell'></td>
@@ -416,61 +448,61 @@ NOTE: The outer table/tr is a necessary hack. It is NOT inserted in the
 </template>
 
 <template id='dwt.Widgets#DwtTabView'>
-  <table width='100%' border='0' cellspacing='0' cellpadding='0' backgroundColor='${bgcolor}'>
-    <tr align='left' valign='middle'>
-      <td id='${id}_tabs' class='DwtTabTable' nowrap align='left' valign='middle' width='100%'></td> 
-    </tr>
-  </table>
+	<table width='100%' border='0' cellspacing='0' cellpadding='0' backgroundColor='${bgcolor}'>
+		<tr align='left' valign='middle'>
+			<td id='${id}_tabs' class='DwtTabTable' nowrap align='left' valign='middle' width='100%'></td>
+		</tr>
+	</table>
 </template>
 
-
 <template id='dwt.Widgets#DwtTabBar'>
-  <!-- TODO -->
+	<!-- TODO -->
 </template>
 
 <template id='dwt.Widgets#DwtTabSpacer'>
-  <table width='100%' cellspacing='0' cellpadding='0'>
-    <tr></tr>
-    <tr></tr>
-    <tr>
-      <td><div class='ImgTabSpacer'></div></td>
-    </tr>
-  </table>
+	<table width='100%' cellspacing='0' cellpadding='0'>
+		<tr></tr>
+		<tr></tr>
+		<tr>
+			<td><div class='ImgTabSpacer'></div></td>
+		</tr>
+	</table>
 </template>
-
-
 
 <template id='dwt.Widgets#ZMenu' class='ZWidget'>
 	<div id='${id}_container' class='ZMenuBorder'></div>
 </template>
 
 <template id='dwt.Widgets#ZMenuItem' class='ZWidget'>
-	<table class='ZWidgetTable ZMenuItemTable ZMenuItemBorder' cellspacing=0 cellpadding=0><tr>
-	    <td id='${id}_check'	 	class='ZCheckIcon'><div></div></td>
-    	<td id='${id}_left_icon'	class='ZLeftIcon ZWidgetIcon'><div></div></td>
-		<td id='${id}_title'		class='ZWidgetTitle'></td>
-		<td id='${id}_dropdown'		class='ZDropDown'><div></div></td>
-	</tr></table>
+	<table class='ZWidgetTable ZMenuItemTable ZMenuItemBorder' cellspacing=0 cellpadding=0>
+		<tr>
+			<td id='${id}_check' class='ZCheckIcon'><div></div></td>
+			<td id='${id}_left_icon' class='ZLeftIcon ZWidgetIcon'><div></div></td>
+			<td id='${id}_title' class='ZWidgetTitle'></td>
+			<td id='${id}_dropdown' class='ZDropDown'><div></div></td>
+		</tr>
+	</table>
 </template>
 
 <template id='dwt.Widgets#ZMenuItemSeparator' class='ZWidget'>
-	<table class='ZWidgetTable ZMenuItemTable ZMenuItemBorder ZMenuItemSeparatorBorder' cellspacing=0 cellpadding=0><tr>
-		<td id='${id}_title'		class='ZWidgetTitle'><div class='ZMenuItem-Separator'></div></td>
-	</tr></table>
+	<table class='ZWidgetTable ZMenuItemTable ZMenuItemBorder ZMenuItemSeparatorBorder' cellspacing=0 cellpadding=0>
+		<tr>
+			<td id='${id}_title' class='ZWidgetTitle'><div class='ZMenuItem-Separator'></div></td>
+		</tr>
+	</table>
 </template>
 
 <template id='dwt.Widgets#ZMenuItemBlankCheck'>
-  <div class='ZMenuItem-BlankCheck'></div>
+	<div class='ZMenuItem-BlankCheck'></div>
 </template>
 
 <template id='dwt.Widgets#ZMenuItemBlankIcon'>
-  <div class='ZMenuItem-BlankIcon'></div>
+	<div class='ZMenuItem-BlankIcon'></div>
 </template>
 
 <template id='dwt.Widgets#ZMenuItemBlankCascade'>
-  <div class='ZMenuItem-BlankCascade'></div>
+	<div class='ZMenuItem-BlankCascade'></div>
 </template>
-
 
 <template id='dwt.Widgets#DwtListView-NoResults'>
 	<table width='100%' cellspacing=0 cellpadding=1>
