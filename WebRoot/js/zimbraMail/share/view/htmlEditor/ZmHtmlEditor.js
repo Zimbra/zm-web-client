@@ -138,6 +138,7 @@ function(callback) {
 
 ZmHtmlEditor.prototype._onContentInitialized =
 function() {
+	DwtHtmlEditor.prototype._onContentInitialized.call(this);
 	this._loadExternalStyle("/css/editor.css");
 	this._setFontStyles();
 	if (this.ACE_ENABLED && this._mode == DwtHtmlEditor.HTML) {
