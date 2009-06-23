@@ -35,7 +35,6 @@ ZmImportExportController.TYPE_TGZ = "tgz";
 
 ZmImportExportController.TYPE_DEFAULT = ZmImportExportController.TYPE_TGZ;
 
-ZmImportExportController.SUBTYPE_GMAIL_CSV = "gmail-csv";
 ZmImportExportController.SUBTYPE_OUTLOOK_CSV = "outlook-unknown-csv";
 ZmImportExportController.SUBTYPE_OUTLOOK_2000_CSV = "outlook-2000-csv";
 ZmImportExportController.SUBTYPE_OUTLOOK_2003_CSV = "outlook-2003-csv";
@@ -54,7 +53,6 @@ ZmImportExportController.SUBTYPES_ICS = [
 ZmImportExportController.SUBTYPES_CSV = [
 	ZmImportExportController.SUBTYPE_ZIMBRA_CSV,
 	ZmImportExportController.SUBTYPE_YAHOO_CSV,
-	ZmImportExportController.SUBTYPE_GMAIL_CSV,
 	ZmImportExportController.SUBTYPE_OUTLOOK_CSV,
 	ZmImportExportController.SUBTYPE_OUTLOOK_2000_CSV,
 	ZmImportExportController.SUBTYPE_OUTLOOK_2003_CSV,
