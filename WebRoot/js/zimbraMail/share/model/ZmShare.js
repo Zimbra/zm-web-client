@@ -367,7 +367,6 @@ function(callback) {
 ZmShare.prototype.accept = 
 function(name, color, replyType, notes, callback, owner) {
 	var respCallback = new AjxCallback(this, this._handleResponseAccept, [replyType, notes, callback, owner]);
-	var errorCallback = new AjxCallback(this, this._handleErrorAccept, name);
 	var params = {
 		l: ZmOrganizer.ID_ROOT,
 		name: name,
@@ -379,7 +378,7 @@ function(name, color, replyType, notes, callback, owner) {
 	if (appCtxt.get(ZmSetting.CALENDAR_ENABLED) && ZmOrganizer.VIEW_HASH[ZmOrganizer.CALENDAR][this.link.view]) {
 		params.f = ZmOrganizer.FLAG_CHECKED;
 	}
-	ZmMountpoint.create(params, respCallback, errorCallback);
+	ZmMountpoint.create(params, respCallback);
 };
 
 ZmShare.prototype._handleResponseAccept =
@@ -399,18 +398,6 @@ function(replyType, notes, callback, owner) {
 			this.sendMessage(ZmShare.ACCEPT, null, owner);
 		}
 	}
-};
-
-ZmShare.prototype._handleErrorAccept =
-function(name, ex) {
-	var message = ZmMsg.unknownError;
-	if (ex instanceof ZmCsfeException && ex.code == "mail.ALREADY_EXISTS") {
-		message = AjxMessageFormat.format(ZmMsg.errorAlreadyExists, [name]);
-		ex = null; // NOTE: This prevents details from being shown
-	}
-
-	appCtxt.getAppController().popupErrorDialog(message, ex, null, true);
-	return true;
 };
 
 ZmShare.prototype.sendMessage =

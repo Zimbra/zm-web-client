@@ -42,7 +42,7 @@ function() {
  * @param params		[Object]		A hash of the request attributes and values.
  */
 ZmMountpoint.create =
-function(params, callback, errorCallback) {
+function(params, callback) {
 	var soapDoc = AjxSoapDoc.create("CreateMountpointRequest", "urn:zimbraMail");
 
 	var linkNode = soapDoc.set("link");
@@ -51,8 +51,24 @@ function(params, callback, errorCallback) {
 		linkNode.setAttribute(p, params[p]);
 	}
 
+	var errorCallback = new AjxCallback(null, ZmMountpoint._handleCreateError, params.name);
 	appCtxt.getAppController().sendRequest({soapDoc:soapDoc,
 											asyncMode:true,
 											callback:callback,
 											errorCallback:errorCallback});
+};
+
+ZmMountpoint._handleCreateError =
+function(name, response) {
+
+	var msg;
+	if (response.code == ZmCsfeException.SVC_PERM_DENIED || response.code == ZmCsfeException.MAIL_NO_SUCH_FOLDER) {
+		msg = ZmCsfeException.getErrorMsg(response.code);
+	} else if (response.code == ZmCsfeException.MAIL_ALREADY_EXISTS) {
+		msg = AjxMessageFormat.format(ZmMsg.errorAlreadyExists, [name]);
+	}
+	if (msg) {
+		appCtxt.getAppController().popupErrorDialog(msg, null, null, true);
+		return true;
+	}
 };

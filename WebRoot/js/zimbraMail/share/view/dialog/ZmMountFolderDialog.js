@@ -166,19 +166,7 @@ function(ev) {
 	var callback = new AjxCallback(this, this.popdown);
 	var errorCallback = new AjxCallback(this, this._handleCreateError);
 
-	ZmMountpoint.create(params, callback, errorCallback)
-};
-
-ZmMountFolderDialog.prototype._handleCreateError =
-function(response) {
-	var code = response.code;
-	if (code == ZmCsfeException.SVC_PERM_DENIED ||
-		code == ZmCsfeException.MAIL_NO_SUCH_FOLDER)
-	{
-		var msg = ZmCsfeException.getErrorMsg(code);
-		appCtxt.getAppController().popupErrorDialog(msg, null, null, true);
-		return true;
-	}
+	ZmMountpoint.create(params, callback);
 };
 
 ZmMountFolderDialog.prototype._createMountHtml =
