@@ -108,7 +108,7 @@ function(callback, errorCallback) {
 	DBG.timePt("requesting contact list", true);
 
 	var params = {asyncMode:true, noBusyOverlay:true, callback:respCallback, errorCallback:errorCallback};
-	params.restUri = AjxUtil.formatUrl({path:["/home/", appCtxt.getUsername(), ZmContactList.URL].join("")});
+	params.restUri = AjxUtil.formatUrl({path:["/home/", appCtxt.getUsername(), ZmContactList.URL].join(""), qsReset:true});
 	DBG.println(AjxDebug.DBG1, "loading contacts from " + params.restUri);
 	appCtxt.getAppController().sendRequest(params);
 };

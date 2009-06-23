@@ -1256,11 +1256,15 @@ function(params, ex) {
 
 ZmMailApp.prototype._handleResponseMsgLoad =
 function(msg, callback) {
-	AjxDispatcher.run("GetMsgController").show(msg);
-	if (callback) {
-		callback.run();
+	AjxDispatcher.require("Startup2");
+	var msgCtlr = AjxDispatcher.run("GetMsgController");
+	if (msgCtlr) {
+		msgCtlr.show(msg);
+		if (callback) {
+			callback.run();
+		}
+		this._notifyRendered();
 	}
-	this._notifyRendered();
 };
 
 ZmMailApp.prototype._mailSearch =
@@ -1429,12 +1433,12 @@ function() {
 
 ZmMailApp.prototype.getMsgController =
 function(sessionId) {
-	return this.getSessionController(ZmId.VIEW_MSG, ZmMsgController, sessionId);
+	return this.getSessionController(ZmId.VIEW_MSG, "ZmMsgController", sessionId);
 };
 
 ZmMailApp.prototype.getComposeController =
 function(sessionId) {
-    return this.getSessionController(ZmId.VIEW_COMPOSE, ZmComposeController, sessionId);
+    return this.getSessionController(ZmId.VIEW_COMPOSE, "ZmComposeController", sessionId);
 };
 
 ZmMailApp.prototype.getCurrentSessionId =
@@ -1467,7 +1471,8 @@ function(type, controllerClass, sessionId) {
 
 	if (!controller) {
 		var sessionId = this._sessionId[type]++;
-		controller = this._sessionController[type][sessionId] = new controllerClass(this._container, this, sessionId);
+		var ctlrClass = eval(controllerClass);
+		controller = this._sessionController[type][sessionId] = new ctlrClass(this._container, this, sessionId);
 		controller.sessionId = sessionId;
 	}
 	controller.inactive = false;
@@ -1477,7 +1482,7 @@ function(type, controllerClass, sessionId) {
 
 ZmMailApp.prototype.getConfirmController =
 function(sessionId) {
-	return this.getSessionController(ZmId.VIEW_MAIL_CONFIRM, ZmMailConfirmController, sessionId);
+	return this.getSessionController(ZmId.VIEW_MAIL_CONFIRM, "ZmMailConfirmController", sessionId);
 };
 
 ZmMailApp.prototype.getMailListController =
