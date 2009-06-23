@@ -101,7 +101,7 @@ ZmAttachDialog.prototype._okButtonListener = function() {
 ZmAttachDialog.prototype._createBaseHtml = function() {
     var view = this._baseContainerView = new DwtComposite(this);
     view.setScrollStyle(Dwt.CLIP);
-    view.setSize("500px", "300px");
+    view.setSize("500px", "310px");
     this._initializeTabView(view);
     this.setView(view);
 };
