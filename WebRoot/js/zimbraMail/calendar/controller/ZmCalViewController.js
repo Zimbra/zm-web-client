@@ -881,7 +881,7 @@ function(delay) {
 
 ZmCalViewController.prototype._todayButtonListener =
 function(ev) {
-	this.setDate(new Date(), 0, true);
+	this.setDate(new Date(), 0, false);
 };
 
 ZmCalViewController.prototype._newApptAction =
