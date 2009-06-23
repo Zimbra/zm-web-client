@@ -38,7 +38,7 @@ function() {
 
 ZmChatPopup.prototype.popup =
 function(background) {
-	ZmTaskbarPopup.prototype.popup.call(this, arguments);
+	ZmTaskbarPopup.prototype.popup.apply(this, arguments);
 	if (!background) {
 		this.chatWidget.focus();
 	}
