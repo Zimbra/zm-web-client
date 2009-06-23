@@ -449,6 +449,9 @@ function() {
 		this._participantActionMenu.addPopdownListener(this._menuPopdownListener);
 		this._setupTagMenu(this._participantActionMenu);
 		this._setupEditButton(this._participantActionMenu);
+		
+		//notify Zimlet before showing 
+		appCtxt.notifyZimlets("onParticipantActionMenuInitialized", [this, this._participantActionMenu]);
 	}
 	return this._participantActionMenu;
 };
@@ -508,6 +511,8 @@ function() {
 			this._setupEditButton(this._actionMenu);
 		}
 	}
+	//notify Zimlet before showing 
+	appCtxt.notifyZimlets("onActionMenuInitialized", [this, this._actionMenu]);
 };
 
 // Groups of mail-related operations
