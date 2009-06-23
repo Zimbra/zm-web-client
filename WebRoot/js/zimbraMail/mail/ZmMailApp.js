@@ -1320,29 +1320,72 @@ function(results, callback) {
 	this._notifyRendered();
 };
 
+ZmMailApp.prototype._parseComposeUrl =
+function(urlQueryStr){
+
+    urlQueryStr = urlQueryStr || '';
+
+    var match = urlQueryStr.match(/\bto=([^&]+)/);
+	var to = match ? decodeURIComponent(match[1]) : null;
+
+    match = urlQueryStr.match(/\bsubject=([^&]+)/);
+	var subject = match ? (decodeURIComponent(match[1]).replace(/\+/g, " ")) : null;
+
+    match = urlQueryStr.match(/\bcc=([^&]+)/);
+	var cc = match ? decodeURIComponent(match[1]) : null;
+
+    match = urlQueryStr.match(/\bbcc=([^&]+)/);
+	var bcc = match ? decodeURIComponent(match[1]) : null;
+
+    match = urlQueryStr.match(/\bbody=([^&]+)/);
+	var body = match ? (decodeURIComponent(match[1]).replace(/\+/g, " ")) : null;
+
+    return {
+        to: to,
+        subject: subject,
+        cc: cc,
+        bcc: bcc,
+        body: body
+    };
+};
+
 ZmMailApp.prototype._showComposeView =
 function(callback, queryStr) {
 	var qs = queryStr || location.search;
 
 	AjxDispatcher.require("Startup2");
 	var composeController = AjxDispatcher.run("GetComposeController");
-	var match = qs.match(/\bsubject=([^&]+)/);
-	var subject = match ? (decodeURIComponent(match[1]).replace(/\+/g, " ")) : null;
-	match = qs.match(/\bto=([^&]+)/);
-	var to = match ? decodeURIComponent(match[1]) : null;
-    match = qs.match(/\bcc=([^&]+)/);
-	var cc = match ? decodeURIComponent(match[1]) : null;
-    match = qs.match(/\bbcc=([^&]+)/);
-	var bcc = match ? decodeURIComponent(match[1]) : null;
-	match = qs.match(/\bbody=([^&]+)/);
-	var body = match ? (decodeURIComponent(match[1]).replace(/\+/g, " ")) : null;
-	var params = {
+
+    //RFC 2368
+    //mailto:user@zimbra.com?(headers=values)*
+    var composeParams = this._parseComposeUrl(qs);
+    var to = composeParams.to;
+    if(to && to.indexOf('mailto') == 0){
+        to = to.replace(/mailto:/,'');
+        var mailtoQuery = to.split('?');
+        composeParams.to = mailtoQuery[0];
+        if(mailtoQuery.length > 1){
+            //mailto:xyz@abc.com?....
+            mailtoQuery = mailtoQuery[1];
+            var mailtoParams = this._parseComposeUrl(mailtoQuery);
+            // mailto:user@abc.com?to=xyz@abc.com&... or mailto:?to=xyz@abc.com
+            composeParams.to = composeParams.to
+                    ? (mailtoParams.to ? [composeParams.to, ','+mailtoParams.to].join('') : composeParams.to )
+                    :  mailtoParams.to;            
+            composeParams.subject = mailtoParams.subject || composeParams.subject;  
+            composeParams.cc = mailtoParams.cc || composeParams.cc;
+            composeParams.bcc = mailtoParams.bcc || composeParams.bcc;
+            composeParams.body = mailtoParams.body || composeParams.body;
+        }
+    }
+
+    var params = {
 		action: ZmOperation.NEW_MESSAGE,
-		toOverride: to,
-        ccOverride: cc,
-        bccOverride: bcc,
-		subjOverride: subject,
-		extraBodyText: body,
+		toOverride: composeParams.to,
+        ccOverride: composeParams.cc,
+        bccOverride: composeParams.bcc,
+		subjOverride: composeParams.subject,
+		extraBodyText: composeParams.body,
 		callback: callback
 	};
 
