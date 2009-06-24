@@ -239,6 +239,7 @@ function() {
 ZmAppCtxt.prototype.getErrorDialog = 
 function() {
 	if (!this._errorDialog) {
+		AjxDispatcher.require("Startup2");
 		this._errorDialog = new ZmErrorDialog(this._shell, ZmMsg);
 	}
 	return this._errorDialog;
