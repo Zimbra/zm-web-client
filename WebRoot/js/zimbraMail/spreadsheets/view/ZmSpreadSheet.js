@@ -238,9 +238,9 @@ ZmSpreadSheet.prototype._init = function() {
     this._autoFillID = Dwt.getNextId();
 
     //AutoFill Div
-    html.push("<div class='AutoFill' id='"+this._autoFillID+"'></div>");
+    html.push("<div class='AutoFill' id='"+this._autoFillID+"'><img src='/zmbra/img/starup/ImgBlank_9.gif' width='5' height='5'/></div>");
 
-	html.push("<table class='SpreadSheet' id='", this._tableID, "' cellspacing='1' cellpadding='0' border='0'>");
+    html.push("<table class='SpreadSheet' id='", this._tableID, "' cellspacing='1' cellpadding='0' border='0'>");
 	var row = [ "<tr><td class='LeftBar'></td>" ];
 
 	var ROWS = this._model.ROWS;
@@ -1175,6 +1175,7 @@ ZmSpreadSheet.prototype._handleKey = function(dwtev, ev) {
 
         case 38:    //UP
         case 40:    //DOWN
+        console.log(dwtev.keyCode == 38 ? "UP" : "DOWN");        
         td = (dwtev.shiftKey && this._shiftRangeEnd) ? this._shiftRangeEnd : this._selectedCell;                
         td = ( dwtev.keyCode == 38
 			      ? this._getUpCell(td)
@@ -1183,7 +1184,12 @@ ZmSpreadSheet.prototype._handleKey = function(dwtev, ev) {
         if(!dwtev.shiftKey && td){
             this._selectCell(td);
         }else{
-           is_movement = true; 
+            if(this._editingCell){
+                is_movement = false;
+                handled = false;
+            }else{
+                is_movement = false;
+            }           
         }
         break;	    
 
@@ -1200,9 +1206,8 @@ ZmSpreadSheet.prototype._handleKey = function(dwtev, ev) {
 							else
 								cell.clearValue();
 						});
-		}
-        this._showRangeByRangeName(this._selectedRangeName);
-
+		    this._showRangeByRangeName(this._selectedRangeName);
+        }        
         // the selected cell _can_ be outside the selected range. ;-)
 		// let's clear that too.
 		this.getCellModel(this._selectedCell).clearValue();
@@ -1316,7 +1321,7 @@ ZmSpreadSheet.prototype._keyPress = function(ev) {
     var targetEl = DwtUiEvent.getTarget(dwtev);
 
     var fileName = this.getToolbar().get("fileName");
-    if(targetEl == fileName.getInputElement()){
+    if(targetEl == fileName.getInputElement() || ( this._import && targetEl == this._import)){
         dwtev._stopPropagation = true;
         dwtev._returnValue = true;
     }else{
@@ -1388,8 +1393,12 @@ ZmSpreadSheet.prototype._input_keyPress = function(ev) {
 			break;
 
 		}
-		dwtev.setToDhtmlEvent(ev);
-		this._preventSaveOnBlur = false;
+        if(setTimer){
+            dwtev._stopPropagation = true;
+            dwtev._returnValue = true;
+        }
+        dwtev.setToDhtmlEvent(ev);
+        this._preventSaveOnBlur = false;
 	}
 	if (setTimer) {
 		if (this._input_keyPress_timer)
@@ -2325,4 +2334,37 @@ function(sCol, eCol, row){
        }
     }
     return false;
+};
+
+ZmSpreadSheet.prototype._importDialog =
+function(ev) {
+
+    var importId = Dwt.getNextId();
+    
+    var dlg = new DwtDialog(appCtxt.getShell(), null, "Import Spreadsheet XML content");
+    var html = [
+            "<table height='400' width='300'  padding='5' cellspacing='5'>",
+                "<tr><td><textarea id='",importId,"' style='width:100%;height:100%;'></textarea></td></tr>",
+            "</table>"
+    ].join("");
+    dlg.setContent(html);
+
+    dlg.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this,function(){
+        this._importContent(document.getElementById(importId).value);
+        dlg.popdown();
+    }));
+    
+    dlg.popup();
+
+    this._import = document.getElementById(importId);
+    
+};
+
+ZmSpreadSheet.prototype._importContent =
+function(value){
+    if(value){
+        var model = new ZmSpreadSheetModel(0, 0);
+        model.loadFromXML(value);
+        this.setModel(model);
+    }
 };

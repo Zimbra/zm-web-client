@@ -220,6 +220,8 @@ ZmSpreadSheetToolbars.prototype._createToolbar2 = function(toolbar) {
 
 	// toolbar.getHtmlElement().style.display = "none";
 
+    new DwtControl({parent:toolbar, className:"vertSep"});
+
 	b = this._buttons.rowInsertAbove = new DwtToolBarButton(params);
 	b.setImage("InsertRowBefore");
 	b.setData("SS", "RowInsertAbove");
@@ -275,7 +277,15 @@ ZmSpreadSheetToolbars.prototype._createToolbar2 = function(toolbar) {
     b.setData("SS", "LineChart");
 	b.addSelectionListener(listener);
 
+    new DwtControl({parent:toolbar, className:"vertSep"});
+
+    /*
+    b = new DwtToolBarButton(params);
+    b.setImage("NewPage");
+    b.setData("SS", "Import");
+    b.addSelectionListener(listener);
 	new DwtControl({parent:toolbar, className:"vertSep"});
+	*/
 
 	b = new DwtToolBarButton(params);
 	b.setImage("Sum");
@@ -318,7 +328,7 @@ ZmSpreadSheetToolbars.prototype._createToolbar2 = function(toolbar) {
 	// END: insert function
 
 	new DwtControl({parent:toolbar, className:"vertSep"});
-
+    
 
 
 	var s = this._buttons.typeSelect = new ZmSpreadSheetEditorSelect(toolbar, null);
@@ -488,6 +498,11 @@ ZmSpreadSheetToolbars.prototype._on_buttonPress = function(ev) {
 
         case "LineChart":
         this._spreadSheet.makeChart(ZmSpreadSheetChart.LINE);
+        break;
+
+
+        case "Import":
+        this._spreadSheet._importDialog();
         break;
 	}
 };
