@@ -435,16 +435,17 @@ function() {
 	treeIds.sort(sortFunc);
 
 	return {
-		overviewId:this.getOverviewId(),
-		posStyle:Dwt.ABSOLUTE_STYLE,
-		selectionSupported:true,
-		actionSupported:true,
-		dndSupported:true,
-		showUnread:true,
-		showNewButtons:true,
-		isAppOverview:true,
-		treeIds:treeIds,
-		appName:this._name
+		overviewId:			this.getOverviewId(),
+		posStyle:			Dwt.ABSOLUTE_STYLE,
+		selectionSupported:	true,
+		actionSupported:	true,
+		dndSupported:		true,
+		showUnread:			true,
+		showNewButtons:		true,
+		isAppOverview:		true,
+		treeIds:			treeIds,
+		appName:			this._name,
+		account:			appCtxt.getActiveAccount()
 	};
 };
 
