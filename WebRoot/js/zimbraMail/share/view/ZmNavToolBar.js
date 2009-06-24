@@ -89,6 +89,7 @@ ZmNavToolBar.prototype.setText =
 function(text) {
 	if (!this._textButton) return;
 	this._textButton.setText(text);
+	appCtxt.getAppViewMgr().fitAppToolbar(true);
 };
 
 ZmNavToolBar.prototype._getButtons = 

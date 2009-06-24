@@ -145,6 +145,18 @@ function(refElement, reset) {
 	var el = this.getHtmlElement();
 	if (!el || !refElement) { return; }
 
+	// don't consider width of fillers!
+	var fillerEls = [];
+	var items = this._items;
+	for (var i = 0; i < items.length; i++) {
+		var item = items[i];
+		if (item.rel == "filler") {
+			fillerEls.push(item);
+			// NOTE: IE didn't like setting the width property directly
+			item.setAttribute("width", "0");
+		}
+	}
+
 	var offset1 = refElement.offsetWidth;
 	var offset2 = el.firstChild ? el.firstChild.offsetWidth : offset1;
 
@@ -170,6 +182,10 @@ function(refElement, reset) {
 			// re-calc firstChild offset since we may have removed its label
 			offset2 = el.firstChild ? el.firstChild.offsetWidth : offset1;
 		}
+	}
+
+	for (var i = 0; i < fillerEls.length; i++) {
+		fillerEls[i].setAttribute("width", "100%");
 	}
 };
 
