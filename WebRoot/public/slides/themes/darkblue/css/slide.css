@@ -1,0 +1,18 @@
+
+.slide_object_title{
+	font-family: arial, helvetica, verdana, sans-serif;
+    font-size: 180%;
+    font-weight: bold;
+	padding: 0px;
+	margin: 0px;
+	color: #ffffff;
+}
+
+.slide_object_notes{
+	font-family: arial, helvetica, verdana, sans-serif;
+    font-size: 135%;
+    font-weight: bold;
+	padding: 0px;
+	margin: 0px;
+	color: #ffffff;
+}
