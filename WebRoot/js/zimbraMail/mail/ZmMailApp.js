@@ -1207,6 +1207,7 @@ function(params, ex) {
 
 ZmMailApp.prototype._handleResponseMsgLoad =
 function(msg, callback) {
+	AjxDispatcher.require("Startup2");
 	AjxDispatcher.run("GetMsgController").show(msg);
 	if (callback) {
 		callback.run();
