@@ -95,7 +95,19 @@
 .Row-Selected .ZmConvListFragment {
 	color:#dddddd;
 }
-
+.ZSelectAutoSizingContainer {
+    height : 24px;
+}
+.ZWidgetTable .ZDropDown div{
+    margin : 0 4px;
+}
+/* Some cal specific alignment */
+.quickAddDateFld {
+    vertical-align : top;
+}
+.quickAddDateFld input{
+    height : 20px !important;
+}
 
 /* Yahoo! skin-specific CSS */
 .skin_yahoo_userinfo			{	padding-left:10px;				}
