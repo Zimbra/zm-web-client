@@ -120,6 +120,9 @@
 .skin_google_app_chooser {
 	border-bottom:1px solid #c9d7f1;
 }
+#goog_skin_container {
+    height : auto;
+}
 
 .skin_google_loading {
 	font-family:arial,sans-serif;
