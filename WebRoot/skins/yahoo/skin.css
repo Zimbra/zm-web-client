@@ -141,3 +141,13 @@ A.skin_yahoo_link, A.skin_yahoo_link:link A.skin_yahoo_link:visited
 .overviewHeader {
 	padding: 1px;
 }
+.yTabGap {
+    height:25px;
+    position:absolute;
+    right:-4px;
+    top:0px;
+    width:4px;
+    border-bottom : 1px solid;
+    border-color : @darken(AppC,50)@;
+
+}
