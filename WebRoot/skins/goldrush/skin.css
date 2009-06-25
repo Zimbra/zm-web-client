@@ -1,0 +1,80 @@
+/*
+ * ***** BEGIN LICENSE BLOCK *****
+ * 
+ * Zimbra Collaboration Suite Web Client
+ * Copyright (C) 2007 Zimbra, Inc.
+ * 
+ * The contents of this file are subject to the Yahoo! Public License
+ * Version 1.0 ("License"); you may not use this file except in
+ * compliance with the License.  You may obtain a copy of the License at
+ * http://www.zimbra.com/license.
+ * 
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
+ * ***** END LICENSE BLOCK *****
+ */
+
+#skin_td_tree	{	
+	border-width: 0px 1px 1px 1px; border-color: #d2e5ef; border-style: solid;
+}
+
+#skin_td_app_main	{	
+	padding:5px;
+}
+
+#skin_td_tree_footer	{	
+	padding:5px;
+}
+
+
+#skin_container_current_app,
+#skin_container_app_top_toolbar,
+#skin_container_app_toolbar_sep	{	
+	height:28px;
+	padding:2px;
+}
+
+#skin_spacing_search					{	width:100%; padding:0px 10px 0px @cssValue(HSashContainer,width)@;			}
+
+#skin_container_app_toolbar_sep .vertSep {
+	display:none;
+}
+
+.ZmComposeView {
+	background-color: #CBE0F1 !important;
+	@FullWidth@
+}
+
+.ZmContactInfoView .contactHeaderSection {
+	padding: 4px;
+	background-color: #CBE0F1 !important; 				/* get this from skin.properties */
+	@FontSize-big@
+	font-weight: bold;
+	margin-top: 10px;
+	border-bottom: 1px solid #c0d9ee;		/* get this from skin.properties */
+}
+
+.DwtListView-Column {
+	@ListColHeaderContainer@
+	@ListColHeaderContainer-normal@
+	border-bottom-color: #f5f5f5 !important;
+}
+
+.DwtTreeItem-selected {
+	background-color: #e0f2f5;
+	color: #333333;
+	@TreeItemSpacing@
+}
+
+.Row {	background-color: #fbfbfb; border-color: #eeeeee; border-top-width: 0px;}
+
+.RowOdd {	background-color: #fbfbfb; border-color: #eeeeee; border-top-width: 0px;}
+
+.Row-selected, 
+.Row-selected-dragProxy, 
+.Row-selected-disabled 		{	background-color: #cae5c3; border-color: #eeeeee; border-top-color: #cae5c3;}
+
+.ZToolbarButtonTable .ZWidgetTitle,.ZHover .ZToolbarButtonTable .ZWidgetTitle,.ZDisabled .ZToolbarButtonTable .ZWidgetTitle{ color: white;}
+
+.ZmOverview{background-color: #F5F5F5;} 
