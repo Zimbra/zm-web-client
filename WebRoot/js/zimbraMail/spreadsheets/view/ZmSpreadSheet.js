@@ -1175,7 +1175,6 @@ ZmSpreadSheet.prototype._handleKey = function(dwtev, ev) {
 
         case 38:    //UP
         case 40:    //DOWN
-        console.log(dwtev.keyCode == 38 ? "UP" : "DOWN");        
         td = (dwtev.shiftKey && this._shiftRangeEnd) ? this._shiftRangeEnd : this._selectedCell;                
         td = ( dwtev.keyCode == 38
 			      ? this._getUpCell(td)
