@@ -1,14 +1,8 @@
-<%@ page buffer="8kb" session="false" autoFlush="true" pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
-<%@ page import="java.util.*,javax.naming.*" %>
-<%@ taglib prefix="zm" uri="com.zimbra.zm" %>
-<%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
-<%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page import="java.util.Locale" %>
 <!--
 ***** BEGIN LICENSE BLOCK *****
 Zimbra Collaboration Suite Web Client
-Copyright (C) 2008 Zimbra, Inc.
+Copyright (C) 2008, 2009 Zimbra, Inc.
 
 The contents of this file are subject to the Yahoo! Public License
 Version 1.0 ("License"); you may not use this file except in
@@ -31,6 +25,7 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
         return value != null ? value : defValue;
     }
 %>
+
 <%
     String contextPath = request.getContextPath();
     if(contextPath.equals("/")) {
@@ -47,8 +42,6 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
         }
         request.setAttribute("packages", "dev");
     }
-    String debug = getParameter(request, "debug", getAttribute(request, "debug", null));
-
 
 
     final String SKIN_COOKIE_NAME = "ZM_SKIN";
@@ -64,9 +57,6 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
             }
         }
     }
-
-    boolean isLeakDetectorOn = getParameter(request, "leak", "0").equals("1");
-
     String vers = (String)request.getAttribute("version");
     String ext = (String)request.getAttribute("fileExtension");
     String mode = (String) request.getAttribute("mode");
@@ -76,22 +66,20 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
     if (ext == null){
         ext = "";
     }
-    boolean isDevMode = isDev;//false && (mode != null) && (mode.equalsIgnoreCase("mjsf"));
-    boolean isSkinDebugMode = (mode != null) && (mode.equalsIgnoreCase("skindebug"));
-
-
-    String prodMode = getAttribute(request, "prodMode", "");
-    if (ext == null || isDevMode) ext = "";
-
-    String offlineMode = getParameter(request, "offline", application.getInitParameter("offlineMode"));
+    Boolean isDevMode = (mode != null) && (mode.equalsIgnoreCase("mjsf"));
+    Boolean inSkinDebugMode = (mode != null) && (mode.equalsIgnoreCase("skindebug"));
 
     String fileId = request.getParameter("id");
     String fileName = request.getParameter("name");
+    String folderId = request.getParameter("l");
 
-    if(fileName == null) {
+    if(fileName == null) fileName = "";
+    if(fileId == null) fileId = "";
+    if(folderId ==  null) folderId = "";
+
+    /*if(fileName == null) {
         fileName = "Untitled";
-    }
-
+    }*/
     Locale locale = request.getLocale();
     String localeId = getAttribute(request, "localeId", null);
     if (localeId != null) {
@@ -105,86 +93,16 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
         }
     }
 
-    // make variables available in page context (e.g. ${foo})
-    pageContext.setAttribute("contextPath", contextPath);
     pageContext.setAttribute("skin", skin);
-    pageContext.setAttribute("ext", ext);
-    pageContext.setAttribute("vers", vers);
-    pageContext.setAttribute("locale", locale);
-    pageContext.setAttribute("isDevMode", isDev);
-    pageContext.setAttribute("isOfflineMode", offlineMode != null && offlineMode.equals("true"));
-    pageContext.setAttribute("isProdMode", !prodMode.equals(""));
-    pageContext.setAttribute("isDebug", isSkinDebugMode || isDevMode);
-    pageContext.setAttribute("isLeakDetectorOn", isLeakDetectorOn);
 %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-    <title>Zimbra Document</title>
+    <title>Zimbra Docs</title>
     <style type="text/css">
         <!--
-        @import url(<%= contextPath %>/css/common,dwt,msgview,login,zm,spellcheck,wiki,spreadsheet,presentation,slides,images,skin.css?v=<%= vers %><%= isSkinDebugMode || isDevMode ? "&debug=1" : "" %>&skin=<%= skin %>);
+        @import url(<%= contextPath %>/css/common,dwt,msgview,login,zm,spellcheck,wiki,spreadsheet,docs,images,skin.css?v=<%= vers %><%= inSkinDebugMode || isDevMode ? "&debug=1" : "" %>&skin=<%= skin %>);
         -->
-    </style>
-
-    <link rel="stylesheet" type="text/css" href="../yui/2.7.0/menu/assets/skins/sam/menu.css" />
-    <link rel="stylesheet" type="text/css" href="../yui/2.7.0/button/assets/skins/sam/button.css" />
-    <link rel="stylesheet" type="text/css" href="../yui/2.7.0/fonts/fonts-min.css" />
-    <link rel="stylesheet" type="text/css" href="../yui/2.7.0/container/assets/skins/sam/container.css" />
-
-    <link rel="stylesheet" type="text/css" href="../yui/2.7.0/editor/assets/skins/sam/editor.css" />
-    <script type="text/javascript" src="../yui/2.7.0/yahoo-dom-event/yahoo-dom-event.js"></script>
-    <script type="text/javascript" src="../yui/2.7.0/animation/animation-min.js"></script>
-    <script type="text/javascript" src="../yui/2.7.0/element/element-min.js"></script>
-    <script type="text/javascript" src="../yui/2.7.0/container/container-min.js"></script>
-    <script type="text/javascript" src="../yui/2.7.0/menu/menu-min.js"></script>
-    <script type="text/javascript" src="../yui/2.7.0/button/button-min.js"></script>
-    <script type="text/javascript" src="../yui/2.7.0/editor/editor-min.js"></script>
-
-    <!--link rel="stylesheet" type="text/css" href="../yui/2.7.0/assets/skins/sam/skin.css" />
-    <script type="text/javascript" src="../yui/2.7.0/yahoo-dom-event/yahoo-dom-event.js"></script>
-    <script type="text/javascript" src="../yui/2.7.0/element/element-beta-min.js"></script>
-    <script src="../yui/2.7.0/container/container_core-min.js"></script>
-
-    <script src="../yui/2.7.0/menu/menu-min.js"></script>
-
-    <script src="../yui/2.7.0/button/button-beta-min.js"></script>
-    <script src="../yui/2.7.0/editor/editor-beta-min.js"></script-->
-    <style type="text/css" media="screen">
-        .yui-skin-sam .yui-toolbar-container .yui-toolbar-spellcheck span.yui-toolbar-icon {
-            background-image: url( ../yui/spellcheck/img/ImgSpellCheck.gif );
-            background-position: 1px 0px;
-            top: 1px;
-            left: 4px;
-        }
-        .yui-skin-sam .yui-toolbar-container .yui-toolbar-spellcheck-selected span.yui-toolbar-icon {
-            background-image: url( ../yui/spellcheck/img/ImgSpellCheck.gif );
-            background-position: 1px 0px;
-            top: 1px;
-            left: 4px;
-        }
-        .yui-spellcheck-list {
-            cursor: pointer;
-        }
-        .yui-skin-sam .yui-editor-panel .yui-spellcheck-list li {
-            padding-left: 5px;
-        }
-
-        .docsToolbar {
-            background-color: #BCCBD6;
-        }
-
-        .yui-skin-sam .yui-toolbar-container .yui-toolbar-flickr span.yui-toolbar-icon {
-            background-image: url(  ../yui/spellcheck/img/ImgSpellCheck.gif );
-            background-position: 1px 0px;
-            left: 5px;
-        }
-        .yui-skin-sam .yui-toolbar-container .yui-toolbar-flickr-selected span.yui-toolbar-icon {
-            background-image: url( ../yui/spellcheck/img/ImgSpellCheck.gif );
-            background-position: 1px 0px;
-            left: 5px;
-        }
-
     </style>
     <jsp:include page="Resources.jsp">
         <jsp:param name="res" value="I18nMsg,AjxMsg,ZMsg,ZmMsg,AjxKeys" />
@@ -192,14 +110,12 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
     </jsp:include>
     <jsp:include page="Boot.jsp"/>
     <script>
-        
-    </script>
-    <script>
         AjxEnv.DEFAULT_LOCALE = "${locale}";
         <jsp:include page="/js/ajax/util/AjxTimezoneData.js" />
     </script>
     <%
-        String packages = "Ajax,Startup1_1,Startup1_2,Debug,Docs";
+
+        String packages = "Ajax,Startup1_1,Startup1_2,Startup2,Docs";
 
         String extraPackages = request.getParameter("packages");
         if (extraPackages != null) packages += ","+extraPackages;
@@ -219,108 +135,18 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
     <% } %>
     <% }
     %>
-
-
-
 </head>
-<body class="yui-skin-sam">
+<body>
 <div id="main_shell"></div>
 <noscript><p><b>Javascript must be enabled to use this.</b></p></noscript>
 <script type="text/javascript" language="JavaScript">
-    var shell = null;
-    var docsEditView = null;
-    var model = null;
 
-    window.contextPath = '<%= contextPath %>';
     window.appContextPath = '<%= contextPath %>';
+    window.isRestView = false;
+    ZmDocsEditApp._createDBG(<%=isDevMode%>);
 
-    createDummyDBG =
-    function() {
-        window.AjxDebug = function() {};
-        window.AjxDebug.prototype.toString		= function() { return "dummy DBG class"};
-        window.AjxDebug.prototype.display		= function() {};
-        window.AjxDebug.prototype.dumpObj		= function() {};
-        window.AjxDebug.prototype.getDebugLevel	= function() {};
-        window.AjxDebug.prototype.isDisabled	= function() {};
-        window.AjxDebug.prototype.println		= function() {};
-        window.AjxDebug.prototype.printRaw		= function() {};
-        window.AjxDebug.prototype.printXML		= function() {};
-        window.AjxDebug.prototype.setDebugLevel	= function() {};
-        window.AjxDebug.prototype.setTitle		= function() {};
-        window.AjxDebug.prototype.showTiming	= function() {};
-        window.AjxDebug.prototype._getTimeStamp	= function() {};
-        window.AjxDebug.prototype.timePt		= function() {};
-        window.DBG = new window.AjxDebug();
-    };
+    ZmDocsEditApp.setFile('<%= fileId %>', '<%= fileName %>', '<%=folderId%>');
 
-
-    function launch() {
-
-    <% if(isDevMode) {%>
-        DBG = new AjxDebug(AjxDebug.NONE, null, false);
-    <% }else { %>
-        createDummyDBG();
-    <% } %>
-
-        window.appCtxt = new ZmAppCtxt();
-        appCtxt.rememberMe = false;
-
-        window.skin = null;
-
-        // Create and initialize settings
-        var settings = new ZmSettings();
-        appCtxt.setSettings(settings);
-
-        var shell = window.shell = new DwtShell({className:"MainShell", userShell: document.getElementById("main_shell"), id:ZmId.SHELL});
-        appCtxt.setShell(shell);
-        shell.getKeyboardMgr().registerKeyMap(new DwtKeyMap(true));
-        shell._veilOverlay.style.display = "none";
-
-        var controller = new ZmDocsEditController();
-        appCtxt.setAppController(controller);
-
-        docsEditView  = new ZmDocsEditView(shell, null, DwtControl.ABSOLUTE_STYLE, controller);
-        var size = shell.getSize();
-        docsEditView.setSize(size.x, size.y);
-
-        var slideToolbar = new DwtToolBar({parent:docsEditView, cellSpacing:2, index:0, posStyle:DwtControl.RELATIVE_STYLE, className: 'docsToolbar'});
-        controller.setCurrentView(docsEditView);
-        docsEditView.setZIndex(Dwt.Z_VIEW);
-        _resize();
-        //render editor after resizing the container
-        docsEditView.renderEditor();
-        controller.setToolBar(slideToolbar);
-
-
-        window.onresize = _resize;
-
-        window.fileInfo = {name: '<%= fileName %>', folderId: ZmOrganizer.ID_BRIEFCASE, contentType: 'application/x-zimbra-doc'};
-
-        controller.setFileName(window.fileInfo.name ? window.fileInfo.name : "Untitled");
-
-        var item = null;
-    <% if(fileId != null) {%>
-        item = docsEditView.loadData(<%= fileId %>);
-    <% } %>
-        if(item) {
-            window.fileInfo = item;
-            docsEditView.loadDoc(item);
-        }
-    }
-
-    _resize = function() {
-        docsEditView.setDisplay("none");
-        var w = document.body.clientWidth;
-        var h = document.body.clientHeight;
-        if (!AjxEnv.isIE) {
-            w -= 2;
-            h -= 2;
-        }
-        docsEditView.setDisplay("block");
-        docsEditView.setBounds(0, 0, w, h);
-    };
-
-    AjxCore.addOnloadListener(launch);
 </script>
 </body>
 </html>

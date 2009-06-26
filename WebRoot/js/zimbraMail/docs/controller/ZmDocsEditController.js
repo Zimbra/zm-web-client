@@ -13,86 +13,96 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmDocsEditController = 	function() {
+ZmDocsEditController = 	function(shell) {
+   if(arguments.length == 0) return;
+    ZmController.call(this, shell);
 
+    this._docsEdit = null;
+    this._toolbar = null;
+
+    this._docMgr = new ZmDocletMgr();
+    this._requestMgr = new ZmRequestMgr(this);
+    appCtxt.getShell().addControlListener(new AjxListener(this, this.resize));
 };
+
+ZmDocsEditController.prototype = new ZmController();
+ZmDocsEditController.prototype.constructor = ZmDocsEditController;
 
 ZmDocsEditController.prototype.toString = function() {
-    return "ZmSlideController";
+    return "ZmDocsEditController";
 };
 
+ZmDocsEditController.prototype._initDocsEdit = function(){
+    if(this._docsEdit) return;
+    this._docsEdit = new ZmDocsEditView(this._container, null, DwtControl.ABSOLUTE_STYLE, this, "absolute");
+};
 
-ZmDocsEditController.prototype.setToolBar = function(toolbar) {
-    this._toolbar = toolbar;
-    this._initToolBar();
-}
+ZmDocsEditController.prototype.show = function(data){
+
+    this._initDocsEdit(); 
+
+    var docsEdit = this._docsEdit;
+
+    docsEdit.setZIndex(Dwt.Z_VIEW);
+
+    this.resize();
+
+    this._initModel();
+    
+};
+
+ZmDocsEditController.prototype.resize = function(ev){
+
+    var docsEdit = this._docsEdit;
+
+    if(!docsEdit) return;
+
+    docsEdit.setDisplay("none");
+    var w = document.body.clientWidth;
+    var h = document.body.clientHeight;
+    if (!AjxEnv.isIE) {
+        w += 2;
+        h -= 2;
+    }
+    docsEdit.setDisplay("block");
+    docsEdit.setBounds(0, 0, w, h);
+
+};
 
 ZmDocsEditController.prototype.setCurrentView = function(view) {
     this._currentView = view;
-}
-
-ZmDocsEditController._VALUE = "value";
-
-ZmDocsEditController.ACTION_INSERT_TEXTBOX = "textbox";
-ZmDocsEditController.ACTION_DELETE_TEXTBOX = "delete";
-ZmDocsEditController.ACTION_NEW_SLIDE = "newslide";
-ZmDocsEditController.ACTION_DELETE_SLIDE = "deleteslide";
-ZmDocsEditController.ACTION_RUN = "run";
-ZmDocsEditController.ACTION_SAVE = "save";
-
-
-ZmDocsEditController.prototype._initToolBar = function () {
-
-    var tb = this._toolbar;
-
-    this._fileName = new DwtInputField({parent:tb, size:20});
-
-    var listener = new AjxListener(this, this._actionListener);
-
-    this._saveSlide = new DwtToolBarButton({parent:tb});
-    this._saveSlide.setToolTipContent(ZmMsg.save);
-    this._saveSlide.setImage("Save");
-    this._saveSlide.setText(ZmMsg.save);
-    this._saveSlide.setData(ZmDocsEditController._VALUE, ZmDocsEditController.ACTION_SAVE);
-    this._saveSlide.addSelectionListener(listener);
-
-    tb.setVisible(true);
 };
 
-ZmDocsEditController.prototype._actionListener =
-function(ev) {
-    var action = ev.item.getData(ZmDocsEditController._VALUE);
+ZmDocsEditController.prototype.loadData =
+function(id) {
+    return this._docMgr.getItemInfo({id:id});
+};
 
-    if(action == ZmDocsEditController.ACTION_SAVE) {
-        this._currentView.saveFile();
+ZmDocsEditController.prototype.loadDocument = function(item) {
+    var content = this._docMgr.fetchDocumentContent(item);
+    if(content) {
+        this._docsEdit._editor.setContent(content);
     }
 };
 
+ZmDocsEditController.prototype._initModel = function(){
 
-ZmDocsEditController.prototype.setStatusMsg =
-function(){
-    if(!this.statusView){
-        this.statusView = new ZmStatusView(appCtxt.getShell(), "ZmStatus", Dwt.ABSOLUTE_STYLE, ZmId.STATUS_VIEW);
-    }
-    params = Dwt.getParams(arguments, ZmStatusView.MSG_PARAMS);
-    params.transitions = ZmToast.DEFAULT_TRANSITIONS;
-	this.statusView.setStatusMsg(params);
-};
+    if(ZmDocsEditApp.fileInfo && ZmDocsEditApp.fileInfo.id) {
+        var item = this.loadData(ZmDocsEditApp.fileInfo.id);
+        if(!item.rest){    //TODO: Change this code to construct a rest url
+            item.rest = ZmDocsEditApp.restUrl;
+        }
+        if(item != null) {
+            ZmDocsEditApp.fileInfo = item;
+            this._docsEdit._buttons.fileName.setValue(item.name);
+            this.loadDocument(item);
+            this._docsEdit.setFooterInfo(item);
+        }
 
-ZmDocsEditController.prototype.getFileName =
-function() {
-    return this._fileName ? this._fileName.getValue() : null;
-};
-
-ZmDocsEditController.prototype.setFileName =
-function(fileName) {
-    if(this._fileName) {
-        this._fileName.setValue(fileName);
     }
 };
 
-ZmDocsEditController.prototype.sendRequest =
-function(params) {
+ZmDocsEditController.prototype.sendRequest = function(params) {
     params.noSession = true;
     this._requestMgr.sendRequest(params);
 };
@@ -101,5 +111,3 @@ ZmDocsEditController.prototype._kickPolling =
 function(resetBackoff) {
 
 };
-
-
