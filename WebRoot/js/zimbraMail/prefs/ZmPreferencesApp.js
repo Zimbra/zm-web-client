@@ -239,16 +239,16 @@ function() {
 		options: 			["Arial", "Times New Roman", "Courier", "Verdana"],
 		precondition:		[ZmSetting.HTML_COMPOSE_ENABLED, ZmSetting.NOTEBOOK_ENABLED]
 	});
-    //Yuck: Should add functionality in Pref. to add prefix/postfix to all options. Meanwhile...
-    var fontSizeOptions = ["8", "10", "12", "14", "18", "24", "36"];
-    for(var i=0; i<fontSizeOptions.length; i++){
-        fontSizeOptions[i] = fontSizeOptions[i] + ZmMsg.pt;
-    }
-    ZmPref.registerPref("COMPOSE_INIT_FONT_SIZE", {
-		displayName:		null,
+    // Yuck: Should add functionality in Pref. to add prefix/postfix to all options. Meanwhile...
+	var fontSizeOptions = ["8"+ZmMsg.pt, "10"+ZmMsg.pt, "12"+ZmMsg.pt, "14"+ZmMsg.pt, "18"+ZmMsg.pt, "24"+ZmMsg.pt, "36"+ZmMsg.pt];
+    //Server values are stored with 'pt' to work irrespective of locale, while display options are as per the respective locale
+    var fontSizeValueOptions = ["8pt", "10pt", "12pt", "14pt", "18pt", "24pt", "36pt"];
+	ZmPref.registerPref("COMPOSE_INIT_FONT_SIZE", {
+	    displayName:		null,
 		displayContainer:	ZmPref.TYPE_SELECT,
 		displayOptions: 	fontSizeOptions,
-		precondition:		[ZmSetting.HTML_COMPOSE_ENABLED, ZmSetting.NOTEBOOK_ENABLED]
+        options:            fontSizeValueOptions,
+	    precondition:		[ZmSetting.HTML_COMPOSE_ENABLED, ZmSetting.NOTEBOOK_ENABLED]
 	});
 
 	ZmPref.registerPref("COMPOSE_SAME_FORMAT", {
