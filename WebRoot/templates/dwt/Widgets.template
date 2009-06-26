@@ -401,7 +401,9 @@ NOTE: The outer table/tr is a necessary hack. It is NOT inserted in the
 			<tr>
 				<td align=center nowrap id='${id}_nodeCell'></td>
 				<$ if (data.isCheckedStyle) { $>
-					<td nowrap id='${id}_checkboxCell'></td>
+					<td nowrap id='${id}_checkboxCell'>
+                        <input type='checkbox' id='${id}_checkbox'>
+					</td>
 				<$ } $>
 				<td nowrap class='imageCell' id='${id}_imageCell'></td>
 				<td nowrap class='${textClassName}' id='${id}_textCell'></td>
