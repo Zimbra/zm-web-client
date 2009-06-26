@@ -20,7 +20,14 @@ body {
     padding:0px;
     margin:0px;
 }
-
+.hiddenFrame {
+    z-index:-9999;
+    position:absolute;
+    left:-9999px;
+    top:-9999px;
+    width:0px;
+    height:0px;
+}
 a {
     color: darkblue;
     text-decoration: none;
@@ -28,10 +35,12 @@ a {
 }
 .hidden {
     visibility: hidden;
+    display:none;
 }
 
 .shown {
     visibility:visible;
+    display:block;
 }
 .zo_m_list_row {
     border-bottom: 1px dotted #E0E0E0;
@@ -162,7 +171,7 @@ a {
     background: transparent url( "/img/mobile/wm6/AppsNav.gif" ) no-repeat top left;
 }
 a.appTab-active{
-    background-color: #105d65 !important;    
+    background-color: #105d65 !important;
 }
 a#mail,a.mail,a#mail-active,a.mail-active {
     background-position: 50% -120px;
@@ -215,7 +224,7 @@ form {
     color: #666666;
 }
 
-.Toolbar, .SubToolbar {
+.tb, .stb {
     background: #0d4055; /*39a515;*/
     border-bottom: 0px solid silver;
     border-top: 0px solid silver;
@@ -273,35 +282,35 @@ form {
     color:white;
     font-weight:bold;
 }
-.table{
+.tbl{
     display:table;
     vertical-align:middle;
     width:100%;
 }
-.table-row{
+.tr{
     display:table-row;
     vertical-align:middle;
     text-align:center;
     width:100%;
 }
-.table-cell{
+.td{
     display:table-cell;
     vertical-align:middle;
     text-align:center;
 }
-.Toolbar .table-cell {
+.tb .td {
     position: relative;
     top: 15%;
     padding-left: 1%;
     padding-right: 1%;
 }
 
-.Toolbar {
+.tb {
     white-space: nowrap;
     overflow: hidden;
 }
 
-.SubToolbar {
+.stb {
     border: 0px solid silver;
     background:#105d65;
     font-size: medium;
@@ -309,7 +318,7 @@ form {
     color:silver;
     height:41px;
 }
-.SubToolbar a{
+.stb a{
     color:white;
     pading:0px;
     margin:0px;
@@ -342,7 +351,7 @@ form {
 }
 
 .searchInput {
-    height: 17px;
+    height: 25px;
     vertical-align: middle;
     border:1px solid #4895bf;
     background: #11849e;
@@ -352,15 +361,8 @@ form {
 .avs{
   display:none;  
 }
-.cmp_container .table-cell, .cmp_appt_container .table-cell {
+.cmp_container .td, .cmp_appt_container .td {
     text-align: left;
-}
-#msgDiv,#msgbar {
-    position: absolute;
-    left: 0;
-    top: 50px;
-    width: 100%;
-    z-index:800 !important;
 }
 .zo_select_button,.zo_button,.zo_button_disabled, .zo_button_group, input[type="button"], input[type="reset"],.searchButton {
     font-size:medium;
@@ -438,7 +440,7 @@ form {
     padding-left: 12px;
 }
 
-.cmp_container .table-cell, .cmp_appt_container .table-cell {
+.cmp_container .td, .cmp_appt_container .td {
     border-bottom: 1px solid #DDDDDD;
     padding: 2px;
 }
@@ -448,12 +450,12 @@ form {
     height: 150px;
 }
 
-.cmp_appt_container .Textarea, .cmp_container .table-cell .Textarea {
+.cmp_appt_container .Textarea, .cmp_container .td .Textarea {
     height: 17px;
     width: 90%;
 }
 
-.cmp_appt_container .table-cell .Textarea#start, .cmp_appt_container .table-cell .Textarea#end {
+.cmp_appt_container .td .Textarea#start, .cmp_appt_container .td .Textarea#end {
     width: 30%;
 }
 
@@ -525,14 +527,14 @@ form {
 .ZhACCb {
     z-index: 9030;
 }
-.searchButton,.Toolbar,#appbar{
+.searchButton,.tb,#appbar{
     background: transparent url("/img/mobile/wm6/tb.gif") repeat-x;
 }
 .searchButton {
-    background-position:0px -4px !important;
+    background-position:0px -2px !important;
     border:1px solid white;
     border:1px solid #4493EF;
-    height:21px;
+    height:29px;
     vertical-align:middle;
 }
 
@@ -569,7 +571,7 @@ form {
 
 }
 
-.cont_view .table-cell {
+.cont_view .td {
     text-align: left;
 }
 
@@ -604,9 +606,12 @@ form {
     background:#ffffd0 url("/img/mobile/iphone/loading.gif") 50% 50% no-repeat !important;
     -webkit-border-radius: 5px;
 }
-.LoadingDiv{
+.loadingDiv{
+    position:absolute;
+    top:43px;
+    width:98%;
     background-color:#ffffd0;
-    padding:10px !important;
+    padding:12px !important;
 }
 #copyright_notice {
     text-align: center;

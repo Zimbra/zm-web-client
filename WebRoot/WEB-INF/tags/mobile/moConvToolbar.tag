@@ -34,9 +34,9 @@
                    context="${context}" fetch="none" markread="false" sort="${param.css}"/>
 </c:if>
 <c:if test="${isTop}">
-    <div class="SubToolbar table top_conv_v_subtoolbar">
-        <div class="table-row">
-            <div class="table-cell">
+    <div class="stb tbl top_conv_v_subtoolbar">
+        <div class="tr">
+            <div class="td">
                 <c:if test="${isConv!=null && isConv}">
                     <zm:currentResultUrl var="closeurl" value="${urlTarget}" _pv="1"
                                          index="${context.currentItemIndex}"
@@ -48,7 +48,7 @@
 
 
                 <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=folders"><fmt:message key="folders"/></a> &laquo; <a
-                    href="${fn:escapeXml(closeurl)}${empty param.ajax ? '#conv' : '&conv'}#${cid}" class='zo_leftbutton'>
+                    href="${fn:escapeXml(closeurl)}${empty param.ajax ? '#conv' : '&conv'}${cid}" class='zo_leftbutton'>
                     ${fn:escapeXml(zm:truncateFixed(context.shortBackTo,15,true))}
             </a>
                 <c:if test="${isConv!=null && isConv}">
@@ -66,9 +66,9 @@
     </div>
 </c:if>
 
-<div class="Toolbar table">
-<div class="table-row">
-<div class="table-cell">
+<div class="tb tbl">
+<div class="tr">
+<div class="td">
 <span class="zo_button_group">
     <c:if test="${isConv !=null && isConv}">
         <zm:computeNextPrevItem var="convCursor" searchResult="${context.searchResult}"
@@ -254,9 +254,6 @@
                 </c:if>
             </zm:forEachFolder>
         </optgroup>
-            <%--<zm:forEachFolder var="folder">
-                <input type="hidden" name="folderId" value="${folder.id}"/>
-            </zm:forEachFolder>--%>
         <c:if test="${mailbox.features.tagging and mailbox.hasTags}">
             <c:set var="allTags" value="${mailbox.mailbox.allTags}"/>
             <optgroup label="<fmt:message key="MO_actionAddTag"/>">

@@ -16,167 +16,135 @@
         </c:otherwise>
     </c:choose>
     <fmt:setBundle basename="/messages/ZhMsg" scope="request"/>
-    <fmt:setBundle basename='/messages/AjxMsg' var='AjxMsg' scope='request' />
+    <fmt:setBundle basename='/messages/AjxMsg' var='AjxMsg' scope='request'/>
 </mo:handleError>
 <c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/>
-<%--<div class="SubToolbar table">
-    <div class="table-row">
-        <div class="table-cell">
-            <span class="Title left">
-                    <fmt:message key="options"/>
-                </span>
+<form action="" method="post" name="optionsForm" onsubmit="return submitForm(this);" accept-charset="UTF-8">
+    <div class="tb tbl">
+            <div class="tr">
+                <div class="td aleft"><fmt:message key="options"/></div>
+            </div>
+    </div>
+    <div class="Stripes" id="prefDiv">
+        <div class="sectionLbl"><fmt:message key="general"/></div>
+        <div class='View'>
+            <div class="tbl">
+                <div class="tr">
+                    <span class="label aleft  td" style='white-space:nowrap;'><fmt:message key="timeZonePref"/></span>
+        <span class="value aright td"><select name="zimbraPrefTimeZoneId" id="timeZone" style="width:100%;">
+            <c:set var="tzpref" value="${mailbox.prefs.timeZoneCanonicalId}"/>
+            <zm:forEachTimeZone var="tz">
+                <fmt:message var="displayName" bundle='${AjxMsg}' key="${tz.id}"/>
+                <option
+                        <c:if test="${tzpref eq tz.id}">selected</c:if>
+                        value="${fn:escapeXml(tz.id)}">${fn:escapeXml(displayName)}</option>
+            </zm:forEachTimeZone>
+        </select></span>
+                </div>
+            </div>
         </div>
-    </div>
-</div>--%>
-<form method="post" name="optionsForm" onsubmit="return submitForm(this);" accept-charset="UTF-8">
-<div class="Toolbar table">
-    <div class="table-row">
-        <%--<div class="table-cell">--%>
-            <span class="Title table-cell aleft">
-                    <fmt:message key="options"/>
-             </span>
-             <%--<span class="table-cell aright" onclick="return zClickLink('_back')">
-                <span class="SmlIcnHldr Cancel">&nbsp;</span>
-            </span>--%>
-        <%--</div>--%>
-    </div>
-</div>    
-<style>
-    #prefDiv .table-cell{padding:4px !important;}
-</style>
-<%--<div class="Toolbar table">
-    <div class="table-row">
-        <div class="table-cell">
-            <a href="?_back=1&from=prefs" class="zo_button"><fmt:message key="cancel"/></a>
-            <input type="hidden" name="doPrefsAction" value="1">
-            <app:button id="OPSEND" name="actionSave" src="common/ImgSave.gif" tooltip="save" text="save"/>
-            <input type="submit" class="zo_button" name="actionPrefsSave" value="<fmt:message key="save"/>">
-        </div>
-    </div>
-</div>--%>    
-<div class="Stripes" id="prefDiv">
-<div class='View table' style="width:98%;margin:1%">
-    <div class="table-row">
-        <span class="aleft list-row table-cell" ><fmt:message key="general"/></span><span class="list-row table-cell">&nbsp;</span>
-    </div>    
-    <div class="table-row">
-        <span class="label aleft  table-cell"><fmt:message key="timeZonePref"/></span>
-        <span class="label aright table-cell"><select name="zimbraPrefTimeZoneId" id="timeZone" style="width:150px;">
-                <c:set var="tzpref" value="${mailbox.prefs.timeZoneCanonicalId}"/>
-                <zm:forEachTimeZone var="tz">
-                    <fmt:message var="displayName" bundle='${AjxMsg}' key="${tz.id}"/>
-                    <option
-                            <c:if test="${tzpref eq tz.id}">selected</c:if>
-                            value="${fn:escapeXml(tz.id)}">${fn:escapeXml(displayName)}</option>
-                </zm:forEachTimeZone>
-            </select></span>
-   </div>
-</div>
-<%--</div>
-<div class="Toolbar table">
-    <div class="table-row">
-        <div class="table-cell">
-            <span class="Title left">
-                <fmt:message key="mail"/>
-            </span>
-        </div>
-    </div>
-</div>
-<div class="Stripes">--%>
-<div class='View table' style="width:98%;margin:1%">
-    <div class="table-row">
-        <span class="aleft list-row table-cell" ><fmt:message key="mail"/></span><span class="list-row table-cell">&nbsp;</span>
-    </div>
-    <div class="table-row">
-        <span class="label aleft list-row table-cell"><fmt:message key="optionsEmailPerPage"/></span>
-        <span class="value aright list-row table-cell"><select style="width:150px" name="zimbraPrefMailItemsPerPage" id="itemsPP">
+        <div class="sectionLbl"><fmt:message key="mail"/></div>
+        <div class='View'>
+            <div class="tbl">
+                <div class="tr">
+                    <span class="label aleft td"><fmt:message key="optionsEmailPerPage"/></span>
+        <span class="value aright td"><select style="width:100%;" name="zimbraPrefMailItemsPerPage"
+                                                               id="itemsPP">
             <c:set var="mailItemsPP" value="${mailbox.prefs.mailItemsPerPage}"/>
             <option <c:if test="${mailItemsPP eq 5}"> selected="selected"</c:if>>5</option>
             <option <c:if test="${mailItemsPP eq 10}"> selected="selected"</c:if>>10</option>
             <option <c:if test="${mailItemsPP eq 15}"> selected="selected"</c:if>>15</option>
             <option <c:if test="${mailItemsPP eq 20}"> selected="selected"</c:if>>20</option>
             <option <c:if test="${mailItemsPP eq 25}"> selected="selected"</c:if>>25</option>
-            </select></span>
-    </div>
-    <c:if test="${mailbox.features.conversations}">
-    <div class="table-row">
-        <span class="label aleft list-row  table-cell"><fmt:message key="groupMailBy"/></span>
-        <span class="value aright list-row table-cell"><select style="width:150px" name="zimbraPrefGroupMailBy" id="groupMailBy">
+        </select></span>
+                </div>
+                <c:if test="${mailbox.features.conversations}">
+                    <div class="tr nr">
+                        <span class="label aleft td"><fmt:message key="groupMailBy"/></span>
+        <span class="value aright td"><select style="width:150px" name="zimbraPrefGroupMailBy"
+                                                               id="groupMailBy">
             <c:set var="groupMailBy" value="${mailbox.prefs.groupMailBy}"/>
-            <option <c:if test="${groupMailBy eq 'conversation'}">selected</c:if> value="conversation"><fmt:message key="conversation"/></option>
-            <option <c:if test="${groupMailBy eq 'message'}">selected</c:if> value="message"><fmt:message key="message"/></option>
-            </select></span>
-    </div></c:if>
-    <c:if test="${mailbox.features.initialSearchPreference}">
-	<div class="table-row">
-        <span class="label aleft table-cell"><fmt:message key="optionsDefaultMailSearch"/></span>
-		<span class="value aright table-cell"><input id="zimbraPrefMailInitialSearch" style="width:138px;" type="text" name='zimbraPrefMailInitialSearch' value="${fn:escapeXml(mailbox.prefs.mailInitialSearch)}">
+            <option
+                    <c:if test="${groupMailBy eq 'conversation'}">selected</c:if> value="conversation"><fmt:message
+                    key="conversation"/></option>
+            <option
+                    <c:if test="${groupMailBy eq 'message'}">selected</c:if> value="message"><fmt:message
+                    key="message"/></option>
+        </select></span>
+                    </div>
+                </c:if>
+                <c:if test="${mailbox.features.initialSearchPreference}">
+                    <div class="tr nr">
+                        <span class="label aleft td"><fmt:message key="optionsDefaultMailSearch"/></span>
+		<span class="value aright td"><input id="zimbraPrefMailInitialSearch" style="width:138px;" type="text"
+                                                     name='zimbraPrefMailInitialSearch'
+                                                     value="${fn:escapeXml(mailbox.prefs.mailInitialSearch)}">
 		</span>
-	</div>
-    </c:if>
-</div>
-<%--</div>
-<div class="Toolbar table">
-    <div class="table-row">
-        <div class="table-cell">
-            <span class="Title left">
-                    <fmt:message key="contacts"/>
-                </span>
+                    </div>
+                </c:if>
+            </div>
         </div>
-    </div>
-</div>
-<div class="Stripes">--%>
-<div class='View table' style="width:98%;margin:1%">
-    <div class="table-row">
-        <span class="aleft list-row table-cell" ><fmt:message key="contact"/></span><span class="list-row table-cell">&nbsp;</span>
-    </div>
-    <div class="table-row">
-        <span class="label aleft list-row  table-cell"><fmt:message key="optionsContactsPerPage"/></span>
-        <span class="value aright list-row table-cell">
-            <select name="zimbraPrefContactsPerPage" id="itemsPP1" style="width:150px" >
-            <c:set var="pageSize" value="${mailbox.prefs.contactsPerPage}"/>
-            <option <c:if test="${pageSize eq 5}"> selected="selected"</c:if>>5</option>
-            <option <c:if test="${pageSize eq 10}"> selected="selected"</c:if>>10</option>
-            <option <c:if test="${pageSize eq 15}"> selected="selected"</c:if>>15</option>
-            <option <c:if test="${pageSize eq 20}"> selected="selected"</c:if>>20</option>
-            <option <c:if test="${pageSize eq 25}"> selected="selected"</c:if>>25</option>
+        <div class="sectionLbl"><fmt:message key="contact"/></div>
+        <div class='View'>
+            <div class="tbl">
+                <div class="tr">
+                    <span class="label aleft  td"><fmt:message key="optionsContactsPerPage"/></span>
+        <span class="value aright td">
+            <select name="zimbraPrefContactsPerPage" id="itemsPP1" style="width:150px">
+                <c:set var="pageSize" value="${mailbox.prefs.contactsPerPage}"/>
+                <option <c:if test="${pageSize eq 5}"> selected="selected"</c:if>>5</option>
+                <option <c:if test="${pageSize eq 10}"> selected="selected"</c:if>>10</option>
+                <option <c:if test="${pageSize eq 15}"> selected="selected"</c:if>>15</option>
+                <option <c:if test="${pageSize eq 20}"> selected="selected"</c:if>>20</option>
+                <option <c:if test="${pageSize eq 25}"> selected="selected"</c:if>>25</option>
             </select></span>
-    </div>
-    <div class="table-row">
-        <span class="label aleft table-cell"><fmt:message key="autoAddContacts"/></span>
-        <span class="value table-cell aright"><input type="checkbox" id="zimbraPrefAutoAddAddressEnabled" name='zimbraPrefAutoAddAddressEnabled' value="TRUE" <c:if test="${mailbox.prefs.autoAddAddressEnabled}">checked="checked"</c:if>></span>
-    </div>
-</div>
-<div class='View table' style="width:98%;margin:1%">
-    <div class="table-row">
-        <span class="aleft list-row table-cell" ><fmt:message key="calendar"/></span><span class="list-row table-cell">&nbsp;</span>
-    </div>
-    <div class="table-row">
-        <span class="label aleft list-row  table-cell"><fmt:message key="calendarFirstDayOfWeek"/></span>
-        <span class="value aright list-row table-cell">
+                </div>
+                <div class="tr nr">
+                    <span class="label aleft td"><fmt:message key="autoAddContacts"/></span>
+        <span class="value td aright">
+            <input onchange="this.className = 'check '+(this.checked ? 'on':'off');" type="checkbox"
+                   id="zimbraPrefAutoAddAddressEnabled" name='zimbraPrefAutoAddAddressEnabled' value="TRUE"
+                   class="check <c:if test="${mailbox.prefs.autoAddAddressEnabled}">on" checked="checked</c:if>">
+        </span>
+                </div>
+            </div>
+        </div>
+        <div class="sectionLbl"><fmt:message key="calendar"/></div>
+        <div class='View'>
+            <div class="tbl">
+                <div class="tr">
+                    <span class="label aleft td"><fmt:message key="calendarFirstDayOfWeek"/></span>
+        <span class="value aright td">
             <fmt:getLocale var="userLocale"/>
             <c:set var="dateSymbols" value="${zm:getDateFormatSymbols(userLocale,pageContext)}"/>
             <c:set var="weekDays" value="${dateSymbols.weekdays}"/>
             <c:set var="dow" value="${mailbox.prefs.calendarFirstDayOfWeek}"/>
-             <select name="zimbraPrefCalendarFirstdayOfWeek" id="fdow" style="width:150px;">
+             <select name="zimbraPrefCalendarFirstdayOfWeek" id="fdow" style="width:100%;padding:0px !important;margin:0px !important;overflow:hidden;">
                  <c:forEach var="day" begin="1" end="7">
                      <option value="${day-1}" <c:if test="${dow eq (day-1)}"> selected</c:if>>${weekDays[day]}</option>
                  </c:forEach>
              </select></span>
-    </div>
-    <div class="table-row">
-        <span class="label aleft table-cell"><fmt:message key="shouldShowTimezone"/></span>
-        <span class="value table-cell aright"><input type="checkbox" id="zimbraPrefUseTimeZoneListInCalendar" name='zimbraPrefUseTimeZoneListInCalendar' value="TRUE" <c:if test="${mailbox.prefs.useTimeZoneListInCalendar}">checked="checked"</c:if>></span>
-    </div>
-</div>
-<div class="Toolbar table">
-    <div class="table-row">
-        <div class="table-cell">
-            <a id='_back' href="?st=${mailbox.prefs.groupMailBy}&_back=1" class="zo_button"><fmt:message key="cancel"/></a>
-            <input type="hidden" name="doPrefsAction" value="1"> 
-            <app:button id="OPSEND" name="actionSave" src="common/ImgSave.gif" tooltip="save" text="save"/>
-            <input type="submit" class="zo_button" name="actionPrefsSave" value="<fmt:message key="save"/>"> 
+                </div>
+                <div class="tr nr">
+                    <span class="label aleft td"><fmt:message key="shouldShowTimezone"/></span>
+        <span class="value td aright">
+            <input onchange="this.className ='check '+(this.checked ? 'on':'off');" type="checkbox"
+                   id="zimbraPrefUseTimeZoneListInCalendar" name='zimbraPrefUseTimeZoneListInCalendar' value="TRUE"
+                   class="check <c:if test="${mailbox.prefs.useTimeZoneListInCalendar}">on"
+                   checked="checked</c:if>"></span>
+                </div>
+            </div>
         </div>
     </div>
-</div>
-</form>    
+    <div class="tb tbl">
+        <div class="tr">
+            <div class="td">
+                <a id='_back' href="?st=${mailbox.prefs.groupMailBy}&_back=1" class="zo_button"><fmt:message
+                        key="cancel"/></a>
+                <input type="hidden" name="doPrefsAction" value="1">
+                <%--<app:button id="OPSEND" name="actionSave" src="common/ImgSave.gif" tooltip="save" text="save"/>--%>
+                <input type="submit" class="zo_button" name="actionPrefsSave" value="<fmt:message key="save"/>">
+            </div>
+        </div>
+    </div>
+</form>

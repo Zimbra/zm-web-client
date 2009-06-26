@@ -35,9 +35,9 @@
     <div class="${requestScope.statusClass}">${fn:escapeXml(requestScope.statusMessage)} </div>
 </c:if>--%>
 <c:if test="${isTop && '1' eq  top_stb}">
-    <div class="SubToolbar table">
-        <div class="table-row">
-            <div class="table-cell">
+    <div class="stb tbl">
+        <div class="tr">
+            <div class="td">
                         <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=${context.isWikiSearch || context.folder.isWikiView || context.folder.types eq 'wiki' ? 'notebooks':'briefcases'}"><fmt:message
                                 key="${context.isWikiSearch || context.folder.isWikiView || context.folder.types eq 'wiki' ? 'notebooks':'briefcases'}"/></a> &laquo;
                         <c:if test="${top_fldr_select eq '0'}">
@@ -63,9 +63,9 @@
     </div>
 </c:if>
 <c:if test="${((isTop && '1' eq  top_tb ) || (!isTop && '1' eq btm_tb))}">
-<div class="Toolbar table">
-<div class="table-row">
-<span class="table-cell">
+<div class="tb tbl">
+<div class="tr">
+<span class="td">
 <span class="zo_button_group">
 <c:choose>
     <c:when test="${context.searchResult.hasPrevPage}">
@@ -95,7 +95,7 @@
 </c:choose>
 </span>
 <!--</span>
-<span class="table-cell">-->
+<span class="td">-->
 <c:if test="${context.searchResult.size gt 0}">
     <span>
         <select class="zo_select_button" name="anAction" onchange="submitForm(document.getElementById('zForm'),null,this.value)">
@@ -145,7 +145,7 @@
     </span>
 </c:if>
 <!--</span>
-<span class="table-cell">-->
+<span class="td">-->
 <span class=" f-right">
 <c:choose>
 <c:when test="${context.isWikiSearch && ! empty context.sfi && !context.folder.isSearchFolder}">
@@ -161,9 +161,9 @@
 </div>
 </c:if>
 <c:if test="${!isTop && '1' eq  btm_stb }"> <%-- no_btm_stb => no bottom sub toolbar, set this param to disable bottom subtoolbar --%>
-    <div class="SubToolbar table">
-        <div class="table-row">
-            <div class="table-cell">
+    <div class="stb tbl">
+        <div class="tr">
+            <div class="td">
                         <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=${context.isWikiSearch || context.folder.isWikiView || context.folder.types eq 'wiki' ? 'notebooks':'briefcases'}"><fmt:message
                                 key="${context.isWikiSearch || context.folder.isWikiView || context.folder.types eq 'wiki' ? 'notebooks' : 'briefcases'}"/></a> &laquo;
                         <c:if test="${btm_fldr_select eq '0'}">

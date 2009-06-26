@@ -30,11 +30,11 @@
 <zm:currentResultUrl var="closeUrl" value="${urlTarget}" context="${context}"/>
 <zm:computeNextPrevItem var="cursor" searchResult="${context.searchResult}" index="${context.currentItemIndex}"/>
 <c:if test="${isTop}">
-    <div class="SubToolbar table">
-        <div class="table-row">
-            <div class="table-cell">
+    <div class="stb tbl">
+        <div class="tr">
+            <div class="td">
                 <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=folders"><fmt:message key="folders"/></a> &laquo; <a
-                    href="${fn:escapeXml(closeUrl)}${empty param.ajax ? '#msg' : '&msg'}#${mid}" class='zo_leftbutton'>
+                    href="${fn:escapeXml(closeUrl)}${empty param.ajax ? '#msg' : '&msg'}${mid}" class='zo_leftbutton'>
                     ${fn:escapeXml(zm:truncateFixed(context.shortBackTo,15,true))}
             </a>
                 &laquo; ${fn:escapeXml(zm:truncateFixed(msg.subject,12,true))}
@@ -42,9 +42,9 @@
         </div>
     </div>
 </c:if>
-<div class="Toolbar table">
-<div class="table-row">
-<div class="table-cell">
+<div class="tb tbl">
+<div class="tr">
+<div class="td">
 
 <span class="zo_button_group">
 <c:choose>

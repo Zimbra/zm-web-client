@@ -35,9 +35,9 @@
     <div class="${requestScope.statusClass}">${fn:escapeXml(requestScope.statusMessage)} </div>
 </c:if>--%>
 <c:if test="${isTop && '1' eq  top_stb}">
-    <div class="SubToolbar table top_${context.isContactSearch ? 'cont' : (context.isMessageSearch ? 'mesg' : 'conv') }_lv_subtoolbar">
-        <div class="table-row">
-            <div class="table-cell">
+    <div class="stb tbl top_${context.isContactSearch ? 'cont' : (context.isMessageSearch ? 'mesg' : 'conv') }_lv_subtoolbar">
+        <div class="tr">
+            <div class="td">
                         <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=tasks"><fmt:message
                                 key="tasks"/></a> &laquo;
                         <c:if test="${top_fldr_select ne '1'}">
@@ -64,20 +64,20 @@
     </div>
 </c:if>
 <c:if test="${((isTop && '1' eq  top_tb ) || (!isTop && '1' eq btm_tb))}">
-<div class="Toolbar table">
-<div class="table-row">
-<span class="table-cell">
+<div class="tb tbl">
+<div class="tr">
+<span class="td">
 <span class="zo_button_group">
 <c:choose>
     <c:when test="${context.searchResult.hasPrevPage}">
         <zm:prevResultUrl var="url" value="${urlTarget}" index="0" context="${context}"/>
         <a accesskey="${requestScope.prev_accesskey}" href="${fn:escapeXml(url)}" class='zo_button prev_button'>
-            <!--&#9668;--><fmt:message key="MO_PREV"/>
+            <fmt:message key="MO_PREV"/>
         </a>
     </c:when>
     <c:otherwise>
         <a class='zo_button_disabled prev_button'>
-            <!--&#9668;--><fmt:message key="MO_PREV"/>
+            <fmt:message key="MO_PREV"/>
         </a>
     </c:otherwise>
 </c:choose>
@@ -85,23 +85,20 @@
     <c:when test="${context.searchResult.hasNextPage}">
         <zm:nextResultUrl var="url" value="${urlTarget}" index="0" context="${context}"/>
         <a accesskey="${requestScope.next_accesskey}" class='zo_button next_button' href="${fn:escapeXml(url)}">
-           <!-- &nbsp;&#9658;--><fmt:message key="MO_NEXT"/>
+           <fmt:message key="MO_NEXT"/>
         </a>
     </c:when>
     <c:otherwise>
         <a class='zo_button_disabled next_button'>
-           <!-- &#9658;--><fmt:message key="MO_NEXT"/>
+           <fmt:message key="MO_NEXT"/>
         </a>
     </c:otherwise>
 </c:choose>
 </span>
-<!--</span>
-<span class="table-cell">-->
 <c:if test="${context.searchResult.size gt 0}">
     <span>
         <select class="zo_select_button" name="anAction" onchange="submitForm(document.getElementById('zForm'),null,this.value)">
             <option value="" selected="selected"><fmt:message key="moreActions"/></option>
-                <%--<optgroup label="<fmt:message key="delete"/>">--%>
             <c:choose>
                 <c:when test="${not context.folder.isInTrash}">
                     <option value="actionDelete"><fmt:message key="delete"/></option>
@@ -110,7 +107,6 @@
                     <option value="actionHardDelete"><fmt:message key="delete"/></option>
                 </c:otherwise>
             </c:choose>
-            <!--</optgroup>-->
             <optgroup label="<fmt:message key='select'/>">
                 <option value="selectAll"><fmt:message key="all"/></option>
                 <option value="selectNone"><fmt:message key="none"/></option>
@@ -148,8 +144,6 @@
     <script type="text/javascript">var actGo = document.getElementById('actGo${isTop}');if(actGo){actGo.style.display='none';}</script>
     </span>
 </c:if>
-<!--</span>
-<span class="table-cell">-->
 <span class=" f-right">
     <c:choose>
         <c:when test="${not empty param.tz}">
@@ -184,9 +178,9 @@
 </div>
 </c:if>
 <c:if test="${!isTop && '1' eq  btm_stb }"> <%-- no_btm_stb => no bottom sub toolbar, set this param to disable bottom subtoolbar --%>
-    <div class="SubToolbar table">
-        <div class="table-row">
-            <div class="table-cell">
+    <div class="stb tbl">
+        <div class="tr">
+            <div class="td">
                         <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=tasks"><fmt:message
                                 key="tasksLabel"/></a>
                         <c:if test="${btm_fldr_select eq '0'}">

@@ -98,7 +98,7 @@
 </c:when>
 <c:otherwise>
     <div class='zo_m_cv_sub'>
-        <span class="SmlIcnHldr ConvOpen">&nbsp;</span>${fn:escapeXml(empty subject ? emptySubject : subject)}
+        <span class="SmlIcnHldr ConvOpen">&nbsp;</span>&nbsp;${fn:escapeXml(empty subject ? emptySubject : subject)}
     </div>
     <div class="msg-list-in-conv">
         <c:forEach items="${convSearchResult.hits}" var="hit" varStatus="status">
@@ -110,8 +110,7 @@
 <fmt:message var="unknownSubject" key="noSubject"/>
 <c:set var="useTo" value="${context.folder.isSent or context.folder.isDrafts}"/>
      <div id="conv${mhit.id}" class="row conv_v_list_row list-row${mhit.isUnread ? '-unread' : ''}">
-               <%--<mo:img src="mail/ImgEnvelope${mhit.isUnread?'':'Gray'}.gif" class="left-icon"/>--%>
-               <c:set value="Msg${mhit.isUnread ? '' : 'Gray'}" var="class"/> 
+               <c:set value="Msg${mhit.isUnread ? '' : 'Gray'}" var="class"/>
                <span class="cell f">
                    <c:set value=",${mhit.id}," var="stringToCheck"/>
                    <input class="chk" type="checkbox" ${fn:contains(requestScope._selectedIds,stringToCheck)?'checked="checked"':''} name="id" value="${mhit.id}"/>
@@ -153,11 +152,7 @@
                </span>
            </div>
 </c:forEach>
-
-      <%--!TODO we should limit this conv list
-        <c:if test="${convSearchResult.hasPrevPage}"><a href=""><fmt:message key="MO_PREV"/></a></c:if>
-      <c:if test="${convSearchResult.hasNextPage}"><a href=""><fmt:message key="MO_NEXT"/></a></c:if>--%>
-    </div>
+</div>
 </c:otherwise>
 </c:choose>
 <%-- INCLUDE TOOLBAR BOTTOM --%>

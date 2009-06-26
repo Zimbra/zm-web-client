@@ -57,6 +57,9 @@
 </mo:handleError>
 <fmt:formatDate value="${dateContext.time}" pattern="EEE, MMM dd, yyyy" var="ttldt"/>
 <c:set var="title" value="${ttldt}" scope="request"/>
+<c:set var="cDay" value="${zm:getFirstDayOfMonthView(dateContext, mailbox.prefs.calendarFirstDayOfWeek)}"/>
+<fmt:formatDate var="datef" timeZone="${tz}" value="${cDay.time}" pattern="yyyyMMdd"/>
+<c:set var="curId" value="${datef}" scope="request"/>
 <mo:handleError>
 <c:choose>
     <c:when test="${needViewAppt}">

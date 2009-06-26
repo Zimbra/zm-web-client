@@ -28,23 +28,23 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <zm:currentResultUrl var="closeUrl" value="${urlTarget}" context="${context}"/>
 <c:if test="${isTop}">
-    <div class="SubToolbar table">
-        <div class="table-row">
-            <div class="table-cell">
+    <div class="stb tbl">
+        <div class="tr">
+            <div class="td">
                 <c:url value="${closeUrl}" var="backUrl">
                     <c:param name="_pv" value="1"/>
                 </c:url>
                 <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=ab"><fmt:message key="addressBooks"/></a> &laquo;
-                <a href="${fn:escapeXml(backUrl)}<c:if test="${empty context.sfi}">&sfi=${contact.folderId}</c:if>${empty param.ajax ? '#cn' : '&cn'}#${contact.id}" class='zo_leftbutton'>
+                <a href="${fn:escapeXml(backUrl)}<c:if test="${empty context.sfi}">&sfi=${contact.folderId}</c:if>${empty param.ajax ? '#cn' : '&cn'}${contact.id}" class='zo_leftbutton'>
                         ${fn:escapeXml(zm:truncate(context.shortBackTo,15,true))}
                 </a> &laquo; ${fn:escapeXml(fn:substring(contact.firstName,0,8))}...
             </div>
         </div>
     </div>
 </c:if>
-<div class="Toolbar table">
-<div class="table-row">
-<div class="table-cell">
+<div class="tb tbl">
+<div class="tr">
+<div class="td">
 <c:url var="editUrl" value="${closeUrl}">
     <c:param name="action" value="edit"/>
     <c:param name="id" value="${contact.id}"/>
@@ -109,9 +109,6 @@
                 </c:if>
             </zm:forEachFolder>
         </optgroup>
-        <%-- <zm:forEachFolder var="folder">
-            <input type="hidden" name="folderId" value="${folder.id}"/>
-        </zm:forEachFolder>--%>
         <c:if test="${mailbox.features.tagging and mailbox.hasTags}">
             <c:set var="tagsToAdd"
                    value="${zm:getAvailableTags(pageContext,contact.tagIds,true)}"/>

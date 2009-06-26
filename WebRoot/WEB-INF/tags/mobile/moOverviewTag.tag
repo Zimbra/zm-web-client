@@ -28,8 +28,8 @@
 <c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/>
 <c:set var="types" value="${not empty types ? types : not empty param.st ? param.st : ''}"/>
 <div onclick='return zClickLink("TAG${tag.id}")' class='Folders ${param.tid eq tag.id ? 'StatusWarning' : ''} list-row${tag.hasUnread ? '-unread' : ''}'>
-    <div class="table">
-        <div class="table-row">
+    <div class="tbl">
+        <div class="tr">
     <c:choose>
         <c:when test="${calendars}">
             <mo:calendarUrl var="url" sq='tag:"${tag.name}"'/>
@@ -41,15 +41,14 @@
             </c:url>
         </c:otherwise>
     </c:choose>
-    <span class="table-cell left">
+    <span class="td left">
         <a id="TAG${tag.id}" href="${fn:escapeXml(url)}">
-            <%--<mo:img src="${tag.image}" alt='${fn:escapeXml(tag.name)}'/>--%>
             <span class="SmlIcnHldr Tag${tag.color}">&nbsp;</span>
             ${fn:escapeXml(tag.name)}
             <c:if test="${tag.hasUnread}"> (${tag.unreadCount}) </c:if>
         </a>
     </span>
-        <span class="table-cell right" width="5%"> <a class="SmlIcnHldr Edit"
+        <span class="td right" width="5%"> <a class="SmlIcnHldr Edit"
                         href="?st=${param.st}&_ajxnoca=1&showTagCreate=1&tid=${tag.id}">&nbsp;</a></span>            
     </div>
     </div>        

@@ -82,9 +82,9 @@
 <form action="?${nmail}&bt=${bt}" method="post" enctype="multipart/form-data" accept-charset="utf-8" onsubmit="return submitForm(this,'aniframe');">
 <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
 <%-- TOP TOOLBAR --%>
-<div class="table Toolbar">
-    <div class="table-row">
-        <div class="table-cell">
+<div class="tbl tb">
+    <div class="tr">
+        <div class="td">
         <span class='zo_tb_submit'>
                 <a href="${caction}" class="zo_button"><fmt:message key="cancel"/></a>
         </span>
@@ -101,13 +101,14 @@
 </div>
 <div class="Stripes cmp_container">
 <div class="View">
-<div class="table cmp_from_to_cc_table">
+<div class="tbl cmp_from_to_cc_table">
     <c:if test="${fn:length(mailbox.accountInfo.identities) gt 1 }">
-        <div class="table-row cmp_from_row">
-            <span class='table-cell label'>
+        <c:set value="nr" var="classForNextRow"/>
+        <div class="tr cmp_from_row">
+            <span class='td label'>
                 <label for="fromField"><fmt:message key="fromLabel"/></label>
             </span>
-            <span class="table-cell">
+            <span class="td value">
                 <select id="fromField" name="from" style="width:98% !important;">
                     <c:forEach var="identity" items="${mailbox.accountInfo.identities}">
                         <option
@@ -118,34 +119,35 @@
             </span>
          </div>
     </c:if>
-    <div class="table-row cmp_to_row">
-            <span class='label table-cell'>
+    <div class="tr ${classForNextRow}">
+            <c:set value="nr" var="classForNextRow"/>
+            <span class='label td'>
                 <label for="toField"><fmt:message key="toLabel"/> </label>
                 <span><a href="javascript:void(0);" onclick="return toggleElem('cc_bcc_div',this,'&nbsp;','<fmt:message key="ccbcc"/>');"><fmt:message key="ccbcc"/></a></span>
             </span>
-            <span class="table-cell">
+            <span class="td value">
             <div class="ZhAC ZhACTo">
-                <input id="toField" rows="1" autocorrect="off" autocomplete="OFF" name="to" class="Textarea" value="${fn:escapeXml(compose.to)}"/>
+                <input id="toField" type="text" rows="1" autocorrect="off" autocomplete="OFF" name="to" class="Textarea" value="${fn:escapeXml(compose.to)}"/>
                 <div class='ZhACCont' id="toContainer" style='width:99%;top:1.5em;'></div>
             </div>
             </span>
     </div>
-    </div>
-    <div class="table cmp_from_to_cc_table" id="cc_bcc_div" style="display:none;">
-    <div class="table-row cmp_cc_row">
-            <span class="label table-cell"><label for="ccField"><fmt:message
+</div>
+    <div class="tbl" id="cc_bcc_div" style="display:none;">
+    <div class="tr ${classForNextRow}">
+            <span class="label td"><label for="ccField"><fmt:message
                     key="ccLabel"/> </label></span>
-            <span class="table-cell">
+            <span class="td value">
                 <div class="ZhAC ZhACCc">
                     <input class="Textarea" autocorrect="off" autocomplete="OFF" id="ccField" type="text" value="${fn:escapeXml(compose.cc)}" name="cc">
                     <div class='ZhACCont' id="ccContainer" style='width:99%;'></div>
                 </div>
             </span>
     </div>
-    <div class="table-row cmp_bcc_row">
-            <span class="label table-cell"><label for="bccField"><fmt:message
+    <div class="tr ${classForNextRow}">
+            <span class="label td"><label for="bccField"><fmt:message
                     key="bccLabel"/> </label></span>
-        <span class="table-cell">
+        <span class="td value">
                 <div class="ZhAC ZhACBCc">
                     <input class="Textarea" autocorrect="off" autocomplete="OFF" id="bccField" type="text" value="${fn:escapeXml(compose.bcc)}" name="bcc">
                     <div class='ZhACCont' id="bccContainer" style='width:99%;'></div>
@@ -155,11 +157,11 @@
 </div>
 </div>
 <div class="View">
-<div class="table">
-    <div class="table-row cmp_sub_row">
-              <span class='label table-cell nb'><label for="subjectField"><fmt:message
+<div class="tbl">
+    <div class="tr cmp_sub_row">
+              <span class='label td nb'><label for="subjectField"><fmt:message
                       key="subjectLabel"/> </label></span>
-               <span class="table-cell nb"><input class="Textarea" type="text" name="subject"
+               <span class="td nb value"><input class="Textarea" type="text" name="subject"
                              id="subjectField"
                              value="${fn:escapeXml(compose.subject)}"></span>
     </div>    
@@ -168,15 +170,11 @@
 <c:set var="firstAttachment" value="${true}"/>
 <c:if test="${!empty compose.messageAttachments}">
 <div class="View">
-    <div class="table">
+    <div class="tbl">
         <c:forEach var="ma" items="${compose.messageAttachments}" varStatus="status">
-        <div class="table-row cmp_msg_att_row">
-            <span class="table-cell">
-                    <%--<c:if test="${firstAttachment}">--%>
-                        <%--<mo:img altkey="ALT_ATTACHMENT" src="startup/ImgAttachment.gif"/>--%>
-                        <span class="SmlIcnHldr Attachment">&nbsp;</span>
-                        <%--<c:set var="firstAttachment" value="${false}"/>--%>
-                    <%--</c:if>--%>
+        <div class="tr ${status.index gt 0 ? 'nr':''} cmp_msg_att_row">
+            <span class="td">
+                    <span class="SmlIcnHldr Attachment">&nbsp;</span>
                     <c:choose>
                         <c:when test="${empty ma.subject}"><fmt:message var="subj"
                                                                         key="noSubject"/></c:when>
@@ -194,16 +192,12 @@
     </c:if>
 <c:if test="${!empty param.messageAttachments}">
 <div class="View">
-    <div class="table">
+    <div class="tbl">
         <c:forEach var="ma" items="${param.messageAttachments}" varStatus="status">
         <c:set var="ma" value="${fn:split(ma,':')}"/>    
-        <div class="table-row cmp_msg_att_row">
-            <span class="table-cell">
-                    <%--<c:if test="${firstAttachment}">--%>
-                        <%--<mo:img altkey="ALT_ATTACHMENT" src="startup/ImgAttachment.gif"/>--%>
-                        <span class="SmlIcnHldr Attachment">&nbsp;</span>
-                        <%--<c:set var="firstAttachment" value="${false}"/>--%>
-                    <%--</c:if>--%>
+        <div class="tr ${status.index gt 0 ? 'nr':''} cmp_msg_att_row">
+            <span class="td">${fn:length(ma)}:${status.index+1}
+                    <span class="SmlIcnHldr Attachment">&nbsp;</span>
                     <c:choose>
                         <c:when test="${empty ma[1]}"><fmt:message var="subj"
                                                                         key="noSubject"/></c:when>
@@ -222,15 +216,11 @@
 
     <c:if test="${!empty compose.documentAttachments}">
     <div class="View">
-        <div class="table">
+        <div class="tbl">
             <c:forEach var="doc" items="${compose.documentAttachments}" varStatus="status">
-            <div class="table-row cmp_msg_att_row">
-                <span class="table-cell">
-                        <%--<c:if test="${firstAttachment}">--%>
-                            <%--<mo:img altkey="ALT_ATTACHMENT" src="startup/ImgAttachment.gif"/>--%>
-                            <span class="SmlIcnHldr Attachment">&nbsp;</span>
-                            <%--<c:set var="firstAttachment" value="${false}"/>
-                        </c:if>--%>
+            <div class="tr ${status.index gt 0 ? 'nr':''} cmp_msg_att_row">
+                <span class="td">
+                        <span class="SmlIcnHldr Attachment">&nbsp;</span>
                         <c:choose>
                             <c:when test="${empty doc.subject}"><fmt:message var="subj"
                                                                             key="noSubject"/></c:when>
@@ -248,16 +238,12 @@
         </c:if>
     <c:if test="${!empty param.documentAttachments}">
         <div class="View">
-            <div class="table">
+            <div class="tbl">
                 <c:forEach var="doc" items="${param.documentAttachments}" varStatus="status">
                 <c:set var="doc" value="${fn:split(doc,':')}"/>
-                <div class="table-row cmp_msg_att_row">
-                    <span class="table-cell">
-                            <%--<c:if test="${firstAttachment}">--%>
-                                <%--<mo:img altkey="ALT_ATTACHMENT" src="startup/ImgAttachment.gif"/>--%>
-                                <span class="SmlIcnHldr Attachment">&nbsp;</span>
-                                <%--<c:set var="firstAttachment" value="${false}"/>
-                            </c:if>--%>
+                <div class="tr ${status.index gt 0 ? 'nr':''} cmp_msg_att_row">
+                    <span class="td">
+                            <span class="SmlIcnHldr Attachment">&nbsp;</span>
                             <c:choose>
                                 <c:when test="${empty doc[1]}"><fmt:message var="subj"
                                                                                 key="noSubject"/></c:when>
@@ -278,6 +264,7 @@
 <div class="View cmp_att_table">
         <c:forEach var="part" items="${compose.originalAttachments}" varStatus="status">
                 <mo:attachment firstAttachment="${firstAttachment}"
+                                             index="${status.index}"
                                              url="/service/home/~/?id=${message.id}&part=${part.partName}&auth=co"
                                              displayName="${part.displayName}"
                                              contentType="${part.contentType}"
@@ -292,12 +279,13 @@
 <c:if test="${(!empty param.attachId) and (!empty param.attachUrl) and (!empty param.attachName)}">
     <div class="View cmp_att_table">
         <mo:attachment firstAttachment="${firstAttachment}" url="${param.attachUrl}"
+                        index="${status.index}"
                         displayName="${param.attachName}"
                         checked="true"
                         value="${param.attachId}" name="uploadedAttachment"/>
     </div>
 </c:if>
-<div class="View cmp_body">
+<div class="View cmp_body value">
         <textarea class="Textarea"
                   id="bodyField" rows="20" name="body">${fn:escapeXml(compose.content)}</textarea>
         <!-- Shd be removed later-->
@@ -306,9 +294,9 @@
  </div>
 </div>
 <%-- BOTTOM TOOLBAR --%>
-<div class="table Toolbar">
-    <div class="table-row">
-        <div class="table-cell">
+<div class="tbl tb">
+    <div class="tr">
+        <div class="td">
         <span class='zo_tb_submit'>
                 <a href="${caction}" class="zo_button"><fmt:message key="cancel"/></a>
         </span>

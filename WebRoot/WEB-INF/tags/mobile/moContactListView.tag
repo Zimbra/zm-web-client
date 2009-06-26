@@ -81,9 +81,9 @@
         </div>
     </c:forEach>
     <c:if test="${empty context || empty context.searchResult or context.searchResult.size eq 0}">
-        <div class='table'>
-                <div class="table-row">
-                    <div class="table-cell zo_noresults">
+        <div class='tbl'>
+                <div class="tr">
+                    <div class="td zo_noresults">
                         <fmt:message key="noResultsFound"/>
                      </div>
                 </div>

@@ -160,19 +160,10 @@
             </span>
         </div>
     </c:forEach>
-    <%--c:import url="/m/zmview">
-        <c:param name="sfi" value="${context.sfi}"/>
-        <c:param name="st" value="briefcase"/>
-        <c:param name="top_stb" value="0"/>
-        <c:param name="btm_stb" value="0"/>
-        <c:param name="top_tb" value="0"/>
-        <c:param name="btm_tb" value="0"/>
-        <c:param name="supressNoRes" value="1"/>
-    </c:import--%>
    <c:if test="${empty context || empty context.searchResult or context.searchResult.size eq 0}">
-        <div class='table'>
-                <div class="table-row">
-                    <div class="table-cell zo_noresults">
+        <div class='tbl'>
+                <div class="tr">
+                    <div class="td zo_noresults">
                         <fmt:message key="noResultsFound"/>
                      </div>
                 </div>

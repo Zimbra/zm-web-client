@@ -29,9 +29,9 @@
 <zm:getMailbox var="mailbox"/>
 <c:choose>
 <c:when test="${type eq 'folder'}">
-    <div class="table View" id="nfldrfrm" style="${hide ? 'display:none':''};">
-        <div class="table-row">
-            <div class="table-cell">
+    <div class="tbl View" id="nfldrfrm" style="${hide ? 'display:none':''};">
+        <div class="tr">
+            <div class="td">
                 <form action="${url}" method="post"
                       onsubmit="return submitForm(this);">
                     <c:if test="${not empty id}">
@@ -42,9 +42,9 @@
                     <input name="crumb" type="hidden" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
                     <input name="st" type="hidden" value="${fn:escapeXml(st)}"/>
 
-                    <div class="table">
-                        <div class="table-row">
-                                <span class="label table-cell"><fmt:message key="nameLabel"/> <input type="text"
+                    <div class="tbl">
+                        <div class="tr">
+                                <span class="label td"><fmt:message key="nameLabel"/> <input type="text"
                                                                                                  name="folder_name"
                                                                                                  style=""
                                                                                                  class="Textarea"
@@ -55,9 +55,9 @@
                                             value="<fmt:message key='save'/>"></span>
                         </div>
                     </div>
-                    <div class="table">
-                        <div class="table-row">
-                            <div class="table-cell">
+                    <div class="tbl">
+                        <div class="tr">
+                            <div class="td">
                                 <c:choose>
                                     <c:when test="${empty st || st eq 'folders' || st eq mailbox.prefs.groupMailBy}">
                                         <hr size="1"/>
@@ -156,9 +156,9 @@
     </div>
 </c:when>
 <c:when test="${type eq 'search'}">
-    <div class="table View" id="nsrchfrm" style="${hide ?'display:none':''};">
-        <div class="table-row">
-            <div class="table-cell">
+    <div class="tbl View" id="nsrchfrm" style="${hide ?'display:none':''};">
+        <div class="tr">
+            <div class="td">
                 <form action="${url}" method="post"
                       onsubmit="return submitForm(this);">
                     <input type="hidden" name="doFolderAction" value="1">
@@ -173,9 +173,9 @@
                         <input type="hidden" name="parentid" value="${mailbox.inbox.parentId}">
                     </c:if>
 
-                    <div class="table">
-                        <div class="table-row">
-                        <span class="label table-cell"> <fmt:message key="nameLabel"/>  <input type="text" name="sname"
+                    <div class="tbl">
+                        <div class="tr">
+                        <span class="label td"> <fmt:message key="nameLabel"/>  <input type="text" name="sname"
                                                                                            style="width:100px;"
                                                                                            class="Textarea"
                                                                                            value="${efolder.name}">
@@ -186,9 +186,9 @@
                     </div>
                     <hr size="1"/>
 
-                    <div class="table">
-                        <div class="table-row">
-                                <span class="label table-cell"> <fmt:message key="searchQueryLabel"/> <input type="text"
+                    <div class="tbl">
+                        <div class="tr">
+                                <span class="label td"> <fmt:message key="searchQueryLabel"/> <input type="text"
                                                                                                          name="query"
                                                                                                          style="width:100px;"
                                                                                                          class="Textarea"
@@ -209,9 +209,9 @@
 
 </c:when>
 <c:when test="${type eq 'tag'}">
-    <div class="table View" id="ntagfrm" style="${hide ? 'display:none' : ''};">
-        <div class="table-row">
-            <div class="table-cell">
+    <div class="tbl View" id="ntagfrm" style="${hide ? 'display:none' : ''};">
+        <div class="tr">
+            <div class="td">
                 <form action="${url}" method="post"
                       onsubmit="return submitForm(this);">
                     <input type="hidden" name="doFolderAction" value="1">
@@ -220,12 +220,12 @@
                         <c:set var="etag" value="${zm:getTag(pageContext, fn:escapeXml(id))}"/>
                         <input type="hidden" name="etagid" value="${etag.id}">
                     </c:if>
-                    <div class="table">
-                        <div class="table-row">
+                    <div class="tbl">
+                        <div class="tr">
                             <c:if test="${not empty etag}">
                                 <span class="SmlIcnHldr Tag${etag.color}">&nbsp;</span>
                             </c:if>
-                    <span class="label table-cell"><fmt:message key="nameLabel"/>
+                    <span class="label td"><fmt:message key="nameLabel"/>
                         <input type="text" style="width:100px;" class="Textarea" name="tag_name" value="${etag.name}">
                         <input type="submit" class="zo_button" name="action${empty etag ? 'Save':'Modify'}Tag"
                                value="<fmt:message key='save'/>">
@@ -233,9 +233,9 @@
                         </div>
                     </div>
                     <hr size="1"/>
-                    <div class="table">
-                        <div class="table-row">
-                            <div class="table-cell">
+                    <div class="tbl">
+                        <div class="tr">
+                            <div class="td">
                                 <select name="tag_color">
                                     <optgroup label="<fmt:message key='color'/>">
                                         <option value="cyan" ${etag.color eq 'cyan' ? 'selected=selected' : ''}>

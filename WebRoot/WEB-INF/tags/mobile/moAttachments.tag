@@ -68,11 +68,11 @@
 <c:if test="${count gt 0 && mailbox.features.briefcases}">
     <hr size="1"/>
     <input type="hidden" name="mid" value="${message.id}">
-    <div class="table" width="100%"><div class="table-row">
-    <span class="table-cell aleft">Add to
+    <div class="tbl" width="100%"><div class="tr">
+    <span class="td aleft">Add to
     </span>
-    <span class="aright table-cell">
-        <select name="briefcase" style="width:70%;">
+    <span class="aright td">
+        <select name="briefcase" style="width:65%;">
                 <option value="">Select briefcase</option>
                 <zm:forEachFolder var="folder" skiproot="${false}" skipsystem="${false}" skiptrash="${true}">
                         <c:if test="${folder.isDocumentView}">

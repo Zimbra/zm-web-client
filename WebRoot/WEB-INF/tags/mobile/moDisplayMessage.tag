@@ -66,7 +66,7 @@
         <span class=""><span id="d_from">${fn:escapeXml(from)}</span></span>
     </c:if>
 </div>
-<div id="d_div" style="display:${empty param.ajax ? 'block' : 'none'};">
+<div id="d_div" style="display:${empty param.ajax ? 'block' : 'none'};" >
     <c:if test="${not empty sender}">
         <div class="View">
             <span valign='top' class='label' width="35" nowrap="nowrap" align="right"><fmt:message
@@ -76,14 +76,14 @@
     </c:if>
     <c:if test="${not empty to}">
         <div class="View">
-            <span valign='top' class='label' nowrap="nowrap" width="35" align="right"><fmt:message key="toLabel"/></span>
+                    <span valign='top' class='label' nowrap="nowrap" width="35" align="right"><fmt:message key="toLabel"/></span>
             <span class="" >${fn:escapeXml(to)}</span>
         </div>
-    </c:if>
+</c:if>
     <c:if test="${not empty cc}">
         <div class="View">
             <span valign='top' class='label' width="35" nowrap="nowrap" align="right"><fmt:message key="ccLabel"/></span>
-            <span class="" >${fn:escapeXml(cc)}</span>
+                       <span class="" >${fn:escapeXml(cc)}</span>
         </div>
     </c:if>
 </div>
@@ -94,9 +94,9 @@
     if(elem) elem.style.display = 'block';
 </script>
 <div class="View">
-<div class="table">
-    <div class="table-row">
-        <div class="table-cell">
+<div class="tbl">
+    <div class="tr">
+        <div class="td">
             <span class="SmlIcnHldr Reply">&nbsp;</span>
             <a
                     <c:if test="${not isPart}">id="OPREPLY"</c:if>
@@ -138,9 +138,9 @@
 <hr size="1"/>
 <c:if test="${not hideops}">
     <c:if test="${showInviteReply}">
-        <div class="table">
-            <div class="table-row">
-                <div class="table-cell">
+        <div class="tbl">
+            <div class="tr">
+                <div class="td">
                     <span class="SmlIcnHldr Check">&nbsp;</span>
                     <a
                             <c:if test="${not isPart}">id="OPACCEPT"</c:if>

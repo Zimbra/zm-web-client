@@ -24,9 +24,9 @@
 </c:if>
 <c:set value="${title}" var="title" scope="request"/>
 <c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/>
-<div class="Toolbar table">
-    <div class="table-row">
-        <div class="table-cell">
+<div class="tb tbl">
+    <div class="tr">
+        <div class="td">
             <span class="Title left">
                 <fmt:message key="addressBooks"/>
             </span>
@@ -46,9 +46,9 @@
 <mo:overviewFolder types="contact" folder="${mailbox.trash}" base="${context_url}"/>
 <mo:doContactFolderTree skiproot="${true}" parentid="${mailbox.trash.id}" skipsystem="false" skiptrash="${false}"/>
 
-<div class="Toolbar table">
-    <div class="table-row">
-        <div class="table-cell">
+<div class="tb tbl">
+    <div class="tr">
+        <div class="td">
             <span class="Title left">
                 <fmt:message key="searches"/>
             </span>
@@ -67,9 +67,9 @@
         </c:if>
     </c:if>
 </zm:forEachFolder>
-<div class="Toolbar table">
-    <div class="table-row">
-        <div class="table-cell">
+<div class="tb tbl">
+    <div class="tr">
+        <div class="td">
             <span class="Title left">
                         <fmt:message key="tags"/>
             </span>

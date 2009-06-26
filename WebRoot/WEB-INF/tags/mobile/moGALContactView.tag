@@ -24,22 +24,20 @@
 <%@ taglib prefix="mo" uri="com.zimbra.mobileclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
-
 <zm:searchGal var="result" query="${context.currentItem.contactHit.email}"/>      <%--!TODO optiomizartion needed--%>
 <c:forEach items="${result.contacts}" var="acontact">
     <c:if test="${acontact.id eq context.currentItem.id}">
         <c:set var="contact" value="${acontact}"/>
     </c:if>
 </c:forEach>
-
 <mo:handleError>
     <zm:getMailbox var="mailbox"/>
     <c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/>
 </mo:handleError>
 <zm:currentResultUrl var="closeUrl" value="${context_url}" context="${context}"/>
-<div class="SubToolbar table">
-    <div class="table-row">
-        <div class="table-cell">
+<div class="stb tbl">
+    <div class="tr">
+        <div class="td">
             <a accesskey="${requestScope.navlink_accesskey}" href="${context_url}?st=ab"><fmt:message
                     key="addressBooks"/></a> &laquo;
             <a href="${fn:escapeXml(closeUrl)}<c:if test="${empty context.sfi}">&sfi=${contact.folderId}</c:if>${empty param.ajax ? '#cn' : '&cn'}#${contact.id}"
@@ -51,9 +49,9 @@
 </div>
 <zm:computeNextPrevItem var="cursor" searchResult="${context.searchResult}"
                         index="${context.currentItemIndex}"/>
-<div class="Toolbar table">
-    <div class="table-row">
-        <div class="table-cell">
+<div class="tb tbl">
+    <div class="tr">
+        <div class="td">
 
             <span class="zo_button_group">
                 <c:choose>
@@ -92,16 +90,11 @@
 <c:set var="title" value="${zm:truncate(contact.fullName,20,true)}" scope="request"/>
 <div class="Stripes cont_view">
     <div class="View">
-        <div class="table cont_sum_table">
-            <div class="table-row">
-                <span class="table-cell Person48">&nbsp;
-                     <%--<img id="cont-img" src="<app:imgurl value='large/ImgPerson_48.gif' />" border="0"
-                                       class=""/>--%>
-                 </span>
-                <span class="table-cell">
-                   <div>
-                       <strong>${fn:escapeXml(contact.fullName)}</strong>
-                   </div>
+        <div class="tbl cont_sum_table">
+            <div class="tr">
+                <span class="td Person48">&nbsp;</span>
+                <span class="td">
+                   <div><strong>${fn:escapeXml(contact.fullName)}</strong></div>
                    <c:if test="${not empty contact.jobTitle}">
                        <div>${fn:escapeXml(contact.jobTitle)}</div>
                    </c:if>
@@ -112,9 +105,9 @@
             </div>
         </div>
         <c:if test="${contact.isFlagged || (contact.hasTags && mailbox.features.tagging)}">
-            <div class="table">
-                <div class="table-row">
-                <span class="table-cell">
+            <div class="tbl">
+                <div class="tr">
+                <span class="td">
                 <c:if test="${contact.isFlagged}">
                     <span class="SmlIcnHldr Flag">&nbsp;</span></c:if>
                 <c:if test="${contact.hasTags and mailbox.features.tagging}">
@@ -128,19 +121,17 @@
             </div>
         </c:if>
     </div>
-
-    <div class="table">
-        <div class="table-row">
-            <div class="table-cell">
+    <div class="tbl">
+        <div class="tr">
+            <div class="td">
                 <mo:displayContact contact="${contact}"/>
             </div>
         </div>
     </div>
 </div>
-<div class="Toolbar table">
-    <div class="table-row">
-        <div class="table-cell">
-
+<div class="tb tbl">
+    <div class="tr">
+        <div class="td">
             <span class="zo_button_group">
                 <c:choose>
                     <c:when test="${cursor.hasPrev}">
@@ -175,9 +166,9 @@
         </div>
     </div>
 </div>
-<div class="SubToolbar table">
-    <div class="table-row">
-        <div class="table-cell">
+<div class="stb tbl">
+    <div class="tr">
+        <div class="td">
             <a accesskey="${requestScope.navlink_accesskey}" href="${context_url}?st=ab"><fmt:message
                     key="addressBooks"/></a> &laquo;
             <a href="${fn:escapeXml(closeUrl)}<c:if test="${empty context.sfi}">&sfi=${contact.folderId}</c:if>${empty param.ajax ? '#cn' : '&cn'}#${contact.id}"

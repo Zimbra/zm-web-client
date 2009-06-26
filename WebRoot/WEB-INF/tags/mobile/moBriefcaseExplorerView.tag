@@ -34,9 +34,9 @@
     <input type="hidden" name="doBriefcaseAction" value="1"/>
     <input name="moreActions" type="hidden" value="<fmt:message key="actionGo"/>"/>
     <mo:briefcaseToolbar context="${context}" urlTarget="${context_url}" isTop="true" mailbox="${mailbox}"/>
-    <div class="table">
-        <div class="table-row">
-            <div class="table-cell" align="center">
+    <div class="tbl">
+        <div class="tr">
+            <div class="td" align="center">
 
                 <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
                     <c:set var="bchit" value="${hit.briefcaseHit}"/>
@@ -181,9 +181,9 @@
         </div>
     </div>
     <c:if test="${empty param.supressNoRes && (empty context || empty context.searchResult or context.searchResult.size eq 0)}">
-        <div class='table'>
-            <div class="table-row">
-                <div class="table-cell zo_noresults">
+        <div class='tbl'>
+            <div class="tr">
+                <div class="td zo_noresults">
                     <fmt:message key="noResultsFound"/>
                 </div>
             </div>

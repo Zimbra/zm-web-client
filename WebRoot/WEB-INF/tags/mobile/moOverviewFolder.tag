@@ -30,15 +30,15 @@
 </c:url>
 <div class='Folders ${param.id eq folder.id ? 'StatusWarning' : ''} list-row${folder.hasUnread ? '-unread' : ''}'
      <c:if test="${types ne 'cal'}">onclick='return zClickLink("FLDR${folder.id}")'</c:if>>
-    <div class="table">
-        <div class="table-row">
+    <div class="tbl">
+        <div class="tr">
             <c:if test="${types eq 'cal'}">
-    <span class="table-cell left" width="1%">    
+    <span class="td left" width="1%">
     <input type="checkbox" onchange="fetchIt('?${folder.isCheckedInUI ? 'un' : ''}check=${folder.id}&st=cals&_ajxnoca=1',null,'POST');"
            value="${folder.id}" name="calid" ${folder.isCheckedInUI ? 'checked=checked':''}>
     </span>
             </c:if>
-    <span class='table-cell left' onclick='return zClickLink("FLDR${folder.id}")' width="94%">
+    <span class='td left' onclick='return zClickLink("FLDR${folder.id}")' width="94%">
         <a id="FLDR${folder.id}" href="${fn:escapeXml(url)}">
             <span class="SmlIcnHldr Fldr${folder.type}">&nbsp;</span>
             ${fn:escapeXml(zm:truncateFixed(label,30,true))}
@@ -73,7 +73,7 @@
                         </c:choose>
                     </c:otherwise>
                 </c:choose>
-                <span class="table-cell right" width="5%">
+                <span class="td right" width="5%">
                     <a class="SmlIcnHldr Edit" href="?st=${param.st}&_ajxnoca=1&show${what}Create=1&${folder.isSearchFolder ? 's' : ''}id=${folder.id}">&nbsp;</a></span>
             </c:if>
         </div>

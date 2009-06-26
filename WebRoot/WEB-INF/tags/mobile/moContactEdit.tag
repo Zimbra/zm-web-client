@@ -60,40 +60,24 @@
     <c:param name="_back" value="1"/>
 </c:url>
 </c:if>
-<%--<c:set var="factionurl" value="${context_url}?st=contact"/>
-<c:if test="${contact!=null}">
-    <c:set var="factionurl" value="${caction}"/>
-</c:if>--%>
 <form action="${currentUrl}" method="post" accept-charset="utf-8" onsubmit="return submitForm(this);">
-<%--<c:if test="${not empty param.folderid}">
-<input type="hidden" name="folderid" value="${fn:escapeXml(param.folderid)}"/>
-</c:if>--%>
 <input type="hidden" name="doContactAction" value="1"/>
 <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
-<div class="Toolbar table">
-    <div class="table-row">
-        <span class='zo_tb_submit table-cell'>
+<div class="tb tbl">
+    <div class="tr">
+        <span class='zo_tb_submit td'>
             <a href="${caction}" class="zo_button"><fmt:message key="cancel"/></a>
-            <%--<c:if test="${contact!=null}">--%>
                 <input class="zo_button" name="actionSave" type="submit" value="<fmt:message key="save"/>">
-            <%--</c:if>
-            <c:if test="${contact==null}">
-                <input class="zo_button" name="actionAdd" type="submit" value="<fmt:message key="add"/>">
-            </c:if>--%>
-
         </span>
     </div>
 </div>
 <div class="Stripes cont_view">
 <c:if test="${contact!=null}">
     <div class="View">
-            <div class="table cont_sum_table">
-            <div class="table-row">
-                <span class="table-cell Person48">&nbsp;
-                     <%--<img id="cont-img" src="<app:imgurl value='large/ImgPerson_48.gif' />" border="0"
-                                       class=""/>--%>
-                 </span>
-                <span class="table-cell">
+            <div class="tbl cont_sum_table">
+            <div class="tr">
+                <span class="td Person48">&nbsp;</span>
+                <span class="td">
                    <div>
                        <b>${fn:escapeXml(contact.displayFileAs)}</b>
                    </div>
@@ -107,9 +91,9 @@
             </div>
             </div>
             <c:if test="${contact.isFlagged || (contact.hasTags && mailbox.features.tagging)}">
-            <div class="table">
-            <div class="table-row">
-                <span class="table-cell">
+            <div class="tbl">
+            <div class="tr nr">
+                <span class="td">
                 <c:if test="${contact.isFlagged}">
                                 &nbsp;<mo:img src="startup/ImgFlagRed.gif" alt="flag"/></c:if>
                 <c:if test="${contact.hasTags and mailbox.features.tagging}">
@@ -126,27 +110,23 @@
     </div>
 </c:if>
 <c:if test="${contact==null}">
-    <div class="View">
+    <div class="sectionLbl">
         <fmt:message key="newContact"/>
     </div>
 </c:if>
 <div class="View">
-    <div class="table">
-        <mo:contactEditField label="AB_FIELD_lastName" contact="${contact}" field="lastName"/>
+    <div class="tbl">
+        <mo:contactEditField label="AB_FIELD_lastName" contact="${contact}" field="lastName" index="0"/>
         <mo:contactEditField label="AB_FIELD_firstName" contact="${contact}" field="firstName"/>
         <mo:contactEditField label="AB_FIELD_jobTitle" contact="${contact}" field="jobTitle"/>
         <mo:contactEditField label="AB_FIELD_company" contact="${contact}" field="company"/>
-<%--    </div>
-</div>
-<div class="View">
-    <div class="table">--%>
         <mo:contactEditField label="AB_FIELD_email" contact="${contact}" field="email"/>
         <mo:contactEditField label="AB_FIELD_email2" contact="${contact}" field="email2"/>
         <mo:contactEditField label="AB_FIELD_email3" contact="${contact}" field="email3"/>
         <mo:contactEditField label="AB_FIELD_mobilePhone" contact="${contact}" field="mobilePhone"/>
-        <div class="table-row">
-            <span class="table-cell label"><label for="folderSelect"><fmt:message key="addressBookLabel"/></label></span>
-            <span class="table-cell">
+        <div class="tr nr">
+            <span class="td label"><label for="folderSelect"><fmt:message key="addressBookLabel"/></label></span>
+            <span class="td value">
                 <input type="hidden" name="origFolderId" value="${empty contact ? '': contact.folderId}"/>
                 <select name="folderid" id="folderSelect">
                     <zm:forEachFolder var="folder">
@@ -158,75 +138,40 @@
                 </select>
             </span>
         </div>
-
-        <div class="table-row">
-            <span class="table-cell">&nbsp;</span>
-            <span class="table-cell">
-                <span class="right" style="display:none;" id="showHide">
-                <a id="showHideLink" href="javascript:void(0);" onclick="return toggleElem('dtls_div',this,'<fmt:message key="hide"/>','<fmt:message key="more"/>');"><fmt:message
-                key="more"/> </a></span>
-            </span>
+    </div>
+</div>
+    <div class="View">
+        <div class="tbl">
+            <mo:contactEditField label="AB_FIELD_workPhone" contact="${contact}" field="workPhone" index="0"/>
+            <mo:contactEditField label="AB_FIELD_workPhone2" contact="${contact}" field="workPhone2"/>
+            <mo:contactEditField label="AB_FIELD_workStreet" contact="${contact}" field="workStreet" address="true"/>
+            <mo:contactEditField label="AB_FIELD_workCity" contact="${contact}" field="workCity"/>
+            <mo:contactEditField label="AB_FIELD_workState" contact="${contact}" field="workState"/>
+            <mo:contactEditField label="AB_FIELD_workPostalCode" contact="${contact}" field="workPostalCode"/>
+            <mo:contactEditField label="AB_FIELD_workCountry" contact="${contact}" field="workCountry"/>
+            <mo:contactEditField label="AB_FIELD_workURL" contact="${contact}" field="workURL"/>
+        </div>
+    </div>
+    <div class="View">
+        <div class="tbl">
+            <mo:contactEditField label="AB_FIELD_homePhone" contact="${contact}" field="homePhone" index="0"/>
+            <mo:contactEditField label="AB_FIELD_homePhone2" contact="${contact}" field="homePhone2"/>
+            <mo:contactEditField label="AB_FIELD_homeStreet" contact="${contact}" field="homeStreet" address="true"/>
+            <mo:contactEditField label="AB_FIELD_homeCity" contact="${contact}" field="homeCity"/>
+            <mo:contactEditField label="AB_FIELD_homeState" contact="${contact}" field="homeState"/>
+            <mo:contactEditField label="AB_FIELD_homePostalCode" contact="${contact}" field="homePostalCode"/>
+            <mo:contactEditField label="AB_FIELD_homeCountry" contact="${contact}" field="homeCountry"/>
+            <mo:contactEditField label="AB_FIELD_homeURL" contact="${contact}" field="homeURL"/>
         </div>
     </div>
 </div>
-<div id="dtls_div">
-<div class="View">
-    <div class="table">
-        <mo:contactEditField label="AB_FIELD_workPhone" contact="${contact}" field="workPhone"/>
-        <mo:contactEditField label="AB_FIELD_workPhone2" contact="${contact}" field="workPhone2"/>
-        <%--<mo:contactEditField label="AB_FIELD_workFax" contact="${contact}" field="workFax"/>
-        <mo:contactEditField label="AB_FIELD_assistantPhone" contact="${contact}" field="assistantPhone"/>
-        <mo:contactEditField label="AB_FIELD_companyPhone" contact="${contact}" field="companyPhone"/>
-        <mo:contactEditField label="AB_FIELD_callbackPhone" contact="${contact}" field="callbackPhone"/>--%>
-        <mo:contactEditField label="AB_FIELD_workStreet" contact="${contact}" field="workStreet" address="true"/>
-        <mo:contactEditField label="AB_FIELD_workCity" contact="${contact}" field="workCity"/>
-        <mo:contactEditField label="AB_FIELD_workState" contact="${contact}" field="workState"/>
-        <mo:contactEditField label="AB_FIELD_workPostalCode" contact="${contact}" field="workPostalCode"/>
-        <mo:contactEditField label="AB_FIELD_workCountry" contact="${contact}" field="workCountry"/>
-        <mo:contactEditField label="AB_FIELD_workURL" contact="${contact}" field="workURL"/>
-    </div>
-</div>
-<div class="View">
-    <div class="table">
-        <mo:contactEditField label="AB_FIELD_homePhone" contact="${contact}" field="homePhone"/>
-        <mo:contactEditField label="AB_FIELD_homePhone2" contact="${contact}" field="homePhone2"/>
-        <%--<app:contactEditField label="AB_FIELD_homeFax" contact="${contact}" field="homeFax"/>
-        <app:contactEditField label="AB_FIELD_mobilePhone" contact="${contact}" field="mobilePhone"/>
-        <app:contactEditField label="AB_FIELD_pager" contact="${contact}" field="pager"/>
-        <app:contactEditField label="AB_FIELD_carPhone" contact="${contact}" field="carPhone"/>
-        --%>
-        <mo:contactEditField label="AB_FIELD_homeStreet" contact="${contact}" field="homeStreet" address="true"/>
-        <mo:contactEditField label="AB_FIELD_homeCity" contact="${contact}" field="homeCity"/>
-        <mo:contactEditField label="AB_FIELD_homeState" contact="${contact}" field="homeState"/>
-        <mo:contactEditField label="AB_FIELD_homePostalCode" contact="${contact}" field="homePostalCode"/>
-        <mo:contactEditField label="AB_FIELD_homeCountry" contact="${contact}" field="homeCountry"/>
-        <mo:contactEditField label="AB_FIELD_homeURL" contact="${contact}" field="homeURL"/>
-    </div>
-</div>
-</div> <%-- Wrapper show hide div--%>
-</div>
 
-<div class="Toolbar table">
-    <div class="table-row">
-        <span class='zo_tb_submit table-cell'>
-<a href="${caction}" class="zo_button"><fmt:message key="cancel"/></a>
-            <%--<c:if test="${contact!=null}">--%>
-                <input class="zo_button" name="actionSave" type="submit" value="<fmt:message key="save"/>">
-            <%--</c:if>
-            <c:if test="${contact==null}">
-                <input class="zo_button" name="actionAdd" type="submit" value="<fmt:message key="add"/>">
-            </c:if>--%>
-
+<div class="tb tbl">
+    <div class="tr">
+        <span class='zo_tb_submit td'>
+            <a href="${caction}" class="zo_button"><fmt:message key="cancel"/></a> <input class="zo_button" name="actionSave" type="submit" value="<fmt:message key="save"/>">
         </span>
-
     </div>
 </div>
 <input type="hidden" name="id" value="${fn:escapeXml(contact.id)}"/> 
 </form>
-<script type="text/javascript">
-    <c:if test="${empty param.more}">
-    document.getElementById('dtls_div').style.display = 'none';
-    </c:if>
-    document.getElementById('showHide').style.display = '';
-</script>
-

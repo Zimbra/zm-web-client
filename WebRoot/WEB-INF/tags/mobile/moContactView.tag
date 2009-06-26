@@ -30,65 +30,51 @@
     <c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/>
     <zm:currentResultUrl var="closeUrl" value="${context_url}" context="${context}"/>
     <zm:computeNextPrevItem var="cursor" searchResult="${context.searchResult}" index="${context.currentItemIndex}"/>
-    <zm:currentResultUrl var="actionUrl" value="${context_url}" context="${context}" action="view"
-                                     id="${contact.id}"/>
-                       
+    <zm:currentResultUrl var="actionUrl" value="${context_url}" context="${context}" action="view" id="${contact.id}"/>
 </mo:handleError>
 <c:set var="title" value="${zm:truncate(contact.displayFileAs,20,true)}" scope="request"/>
 <form id="zForm" action="${fn:escapeXml(actionUrl)}" method="post" onsubmit="return submitForm(this);">
     <input type="hidden" name="doContactAction" value="1"/>
     <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
-    
+
     <input name="moreActions" type="hidden" value="<fmt:message key="actionGo"/>"/>
-    <mo:contactToolbar contact="${contact}" urlTarget="${context_url}" context="${context}" keys="false"
-                               isTop="true" mailbox="${mailbox}"/>
-    <div class="Stripes cont_view">
+    <mo:contactToolbar contact="${contact}" urlTarget="${context_url}" context="${context}" keys="false" isTop="true" mailbox="${mailbox}"/>
+    <div class="Stripes">
         <div class="View">
-            <div class="table cont_sum_table">
-            <div class="table-row">
-                <span class="table-cell Person48">&nbsp;
-                     <%--<img id="cont-img" src="<app:imgurl value='large/ImgPerson_48.gif' />" border="0"
-                                       class=""/>--%>
-                 </span>
-                <span class="table-cell">
-                   <div>
-                       <strong>${fn:escapeXml(contact.displayFileAs)}</strong>
-                   </div>
-                   <c:if test="${not empty contact.jobTitle}">
-                        <div>${fn:escapeXml(contact.jobTitle)}</div>
-                   </c:if>
-                   <c:if test="${not empty contact.company}">
-                        <div>${fn:escapeXml(contact.company)}</div>
-                    </c:if>
-             </span>
+            <div class="tbl">
+                <div class="tr">
+                    <span class="td aleft Person48">&nbsp;</span>
+                    <span class="td aleft">
+                       <div>
+                           <strong>${fn:escapeXml(contact.displayFileAs)}</strong>
+                       </div>
+                       <c:if test="${not empty contact.jobTitle}">
+                           <div>${fn:escapeXml(contact.jobTitle)}</div>
+                       </c:if>
+                       <c:if test="${not empty contact.company}">
+                           <div>${fn:escapeXml(contact.company)}</div>
+                       </c:if>
+                    </span>
+                </div>
             </div>
-            </div>    
             <c:if test="${contact.isFlagged || (contact.hasTags && mailbox.features.tagging)}">
-            <div class="table">
-            <div class="table-row">
-                <span class="table-cell">
+                <div class="tbl">
+                    <div class="tr nr">
+                <span class="td aleft">
                 <c:if test="${contact.isFlagged}">
-                                <span class="SmlIcnHldr Flag">&nbsp;</span></c:if>
+                    <span class="SmlIcnHldr Flag">&nbsp;</span></c:if>
                 <c:if test="${contact.hasTags and mailbox.features.tagging}">
-                        <c:set var="tags" value="${zm:getTags(pageContext, contact.tagIds)}"/>
-                        <c:forEach items="${tags}" var="tag">
+                    <c:set var="tags" value="${zm:getTags(pageContext, contact.tagIds)}"/>
+                    <c:forEach items="${tags}" var="tag">
                         <span class="SmlIcnHldr Tag${tag.color}">&nbsp;</span><span>${fn:escapeXml(tag.name)}</span>
-                        </c:forEach>
+                    </c:forEach>
                 </c:if>
                 </span>
-            </div>    
-          </div>
-          </c:if>
+                    </div>
+                </div>
+            </c:if>
         </div>
-                    
-        <div class="table">
-        <div class="table-row">
-            <div class="table-cell">
-                    <mo:displayContact contact="${contact}"/>
-            </div>
-        </div>
-        </div>    
+        <mo:displayContact contact="${contact}"/>
     </div>
-     <mo:contactToolbar contact="${contact}" urlTarget="${context_url}" context="${context}" keys="false"
-                       isTop="false" mailbox="${mailbox}"/>
+    <mo:contactToolbar contact="${contact}" urlTarget="${context_url}" context="${context}" keys="false" isTop="false" mailbox="${mailbox}"/>
 </form>

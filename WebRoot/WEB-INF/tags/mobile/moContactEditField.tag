@@ -20,6 +20,7 @@
 <%@ attribute name="field" rtexprvalue="true" required="true" %>
 <%@ attribute name="hint" rtexprvalue="true" required="false" %>
 <%@ attribute name="address" rtexprvalue="true" required="false" %>
+<%@ attribute name="index" rtexprvalue="true" required="false" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
@@ -29,9 +30,9 @@
 <c:if test="${not empty hint}">
 <fmt:message key="${hint}" var="hint"/>
 </c:if>
-<div class="table-row">
-    <span class="label  list-row table-cell"><label for="${field}">${fn:escapeXml(label)}:</label></span>
-    <span class="table-cell  list-row">
+<div class="tr ${index eq 0 ? '' : 'nr'}">
+    <span class="label td"><label for="${field}">${fn:escapeXml(label)}:</label></span>
+    <span class="td value">
     <c:choose>
         <c:when test="${address}">
             <textarea name='${field}' id='${field}' style="width:95%">${fn:escapeXml(value)}</textarea>

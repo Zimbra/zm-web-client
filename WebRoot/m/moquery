@@ -33,9 +33,9 @@
 <form action="<c:url value="${action_url}"/>" method="post" accept-charset="UTF-8" onsubmit="if(!this.sq.value){showLoadingMsg('<fmt:message key="actionNoSearchQuerySpecified"/>',true,'Warning',1000);return false;}else{return submitForm(this);}">
 <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
 <input type="hidden" name="bt" value="${bt}"/>
-<div class="table Toolbar">
-    <div class="table-row">
-        <div class="table-cell">
+<div class="tbl tb">
+    <div class="tr">
+        <div class="td">
         <span class='zo_tb_submit'>
                 <a href="${caction}" class="zo_button"><fmt:message key="cancel"/></a>
         </span>
@@ -49,20 +49,20 @@
 </div>
 <div class="Stripes">
 <div class="View">
-<div class="table moquery cmp_container">
-    <div class="table-row">
-        <span class="table-cell label" style="width:20%;">
+<div class="tbl moquery cmp_container">
+    <div class="tr">
+        <span class="td label" style="width:20%;">
             <fmt:message key="find"/>
         </span>
-        <span class="table-cell value">
+        <span class="td value">
               <input type="text" name="sq" class="Textarea"/>
         </span>
     </div>
-     <div class="table-row">
-        <span class="table-cell label" style="width:20%;">
+     <div class="tr">
+        <span class="td label" style="width:20%;">
             <fmt:message key="in"/>
         </span>
-        <span class="table-cell value">
+        <span class="td value">
            <select name="st" class="st">
             <c:if test="${mailbox.features.mail}">
             <option value="${mailbox.prefs.groupMailBy}" ${param.s eq mailbox.prefs.groupMailBy ? 'selected=selected' : ''}>
@@ -84,6 +84,11 @@
                 <fmt:message key="appointments"/>
             </option>
             </c:if>
+            <c:if test="${mailbox.features.tasks}">
+            <option value="task" ${param.s eq 'task' ? 'selected=selected' : ''}>
+                <fmt:message key="tasks"/>
+            </option>
+            </c:if>
             <c:if test="${mailbox.features.notebook}">
             <option value="wiki" ${param.s eq 'wiki' ? 'selected=selected' : ''}>
                 <fmt:message key="pages"/>
@@ -97,11 +102,11 @@
             </select>
         </span>
     </div>
-    <div class="table-row">
-        <span class='table-cell label'>
+    <div class="tr">
+        <span class='td label'>
             <fmt:message key="folder"/>
         </span>
-        <span class='table-cell value'>
+        <span class='td value'>
             <select name="sq_folder" class="sq_folder">
                 <option value="">
                     <fmt:message key="MO_selectFolder"/>
@@ -117,9 +122,9 @@
         </span>
     </div>
     <c:if test="${mailbox.features.tagging}">
-    <div class="table-row">
-        <span class='table-cell label'><fmt:message key="MO_tag"/></span>
-        <span class='table-cell value'>
+    <div class="tr">
+        <span class='td label'><fmt:message key="MO_tag"/></span>
+        <span class='td value'>
             <select name="sq_tag" class="sq_tag">
                 <option value=""><fmt:message key="MO_selectTag"/></option>
                 <zm:forEachTag var="tag">
@@ -131,11 +136,11 @@
         </span>
     </div>
     </c:if>
-    <div class="table-row">
-    <span class='table-cell label'>
+    <div class="tr">
+    <span class='td label'>
         <fmt:message key="MO_size"/>
     </span>
-    <span class='table-cell value'>
+    <span class='td value'>
             <select name="sq_size_comp" class="sq_size_comp">
                 <option value="larger"><fmt:message key="MO_larger"/></option>
                 <option value="smaller"><fmt:message key="MO_smaller"/></option>
@@ -147,11 +152,11 @@
             </select>
     </span>
     </div>
-    <div class="table-row">
-        <span class='table-cell label' style="vertical-align:top;">
+    <div class="tr">
+        <span class='td label' style="vertical-align:top;">
             <fmt:message key="status"/>
         </span>
-        <span class='table-cell value'>
+        <span class='td value'>
             <div>
                 <span class='zo_query_fvalue'><input id="unread" type="checkbox" name="sq_unread" value=" is:unread"/></span>
                 <span class='label'><label for="unread"><fmt:message key="MO_unread"/></label></span>
@@ -162,28 +167,28 @@
         </span>
     </div>
 
-    <div class="table-row">
-        <span class='table-cell label'>
+    <div class="tr">
+        <span class='td label'>
             <fmt:message key="from"/>
         </span>
-        <span class='table-cell label'>
+        <span class='td label'>
             <input type="text" name="sq_from" class="Textarea"/>
         </span>
     </div>
-    <div class="table-row">
-        <span class='table-cell label'>
+    <div class="tr">
+        <span class='td label'>
             <fmt:message key="MO_tocc"/>
         </span>
-        <span class='table-cell value'>
+        <span class='td value'>
             <input type="text" name="sq_tocc" class="Textarea"/>
         </span>
     </div>
 
-    <div class="table-row">
-        <span class='table-cell label' style="border:0px;">
+    <div class="tr">
+        <span class='td label' style="border:0px;">
             <fmt:message key="subject"/>
         </span>
-        <span class='table-cell value' style="border:0px;">
+        <span class='td value' style="border:0px;">
             <input type="text" name="sq_subject" class="Textarea"/>
         </span>
     </div>
@@ -191,9 +196,9 @@
 </div> <!--tablke-->
 </div></div>
 
-<div class="table Toolbar">
-    <div class="table-row">
-        <div class="table-cell">
+<div class="tbl tb">
+    <div class="tr">
+        <div class="td">
         <span class='zo_tb_submit'>
                 <a href="${caction}" class="zo_button"><fmt:message key="cancel"/></a>
         </span>

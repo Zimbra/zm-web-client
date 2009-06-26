@@ -135,9 +135,10 @@ var getXHR = function() {
     return xhr;
 };
 var zClickLink = function(id, t) {
-    if((typeof(window.evHandled) != 'undefined' && window.evHandled)) { return; }
+    if((typeof(window.evHandled) != 'undefined' && window.evHandled)) { return false; }
     var targ = id ? $(id) : t ;
     if(!targ) {return;}
+    if (targ.onclick) {var r = targ.onclick(); if(!r)return false;}
     var href = targ.href;
     if (!href || loading) {return false;}
     if (targ.target) {return true;}
@@ -150,7 +151,7 @@ var zClickLink = function(id, t) {
         return false;
     }
     href = convertToHashUrl(href);
-    if (targ.onclick) {return false;}
+
     var containerId = targ.targetId ? targ.targetId : containerId;
     var container = GC(containerId);
     ajxReq(href, null, container);
@@ -174,7 +175,8 @@ var setActiveTab = function(tabId){
     }
 };
 var loadThisFrameResponse = function(response,frameId){
-    GC().innerHTML = response;
+    var req = {responseText: response,status: 200, readyState: 4};
+    parseResponse(req,GC(),$(frameId).src);
 };
 
 var convertToHashUrl = function(url){
@@ -234,9 +236,9 @@ var getFormValues = function(obj) {
 };
 
 var createUploaderFrame = function(iframeId){
-    var html = [ "<iframe name='", iframeId, "' id='", iframeId,
+    var html = [ "<iframe class='hiddenFrame' name='", iframeId, "' id='", iframeId,
              "' src='about:blank",
-             "' style='position: absolute; top: -1000px; left: -1000px;z-index:-999; height:0px;width:0px;display:none;visibility:hidden;border:0px;'></iframe>" ];
+             "' style='position: absolute; top: -1000px; left: -1000px;z-index:-9999; height:0px;width:0px;border:1px;'></iframe>" ];
     var div = document.createElement("div");
     div.innerHTML = html.join("");
     document.body.appendChild(div.firstChild);
@@ -285,9 +287,6 @@ var customClick = function (e) {
     if (targ.nodeType == 3) {// defeat Safari bug
         targ = targ.parentNode;
     }
-    if (!document.attachEvent)
-        if (targ.onclick) e.returnValue = targ.onclick();
-
     if ((targ.tagName == "a" || targ.tagName == "A")) {
         e.returnValue = zClickLink(targ.id, targ);
         if (!e.returnValue) {
@@ -311,7 +310,7 @@ var customClick = function (e) {
         }
         return true;
     }
-    targ.dispatchEvent(e);
+    //targ.dispatchEvent(e);
 };
 
 var fetchIt = function(url, container, method) {
@@ -402,7 +401,40 @@ var ajxReq = function(url, query, container, method, justPrefetch) {
         return false;
     }
 };
-
+<c:if test="${ua.isiPhone or ua.isiPod}">
+var slideElem = function(elem,dir){
+    elem = (typeof(elem) == 'string')? $(elem) : elem;
+    if(dir == -1){
+        if($('card').className.match(/flipped/)){
+            $('card').className = "card";
+            setTimeout(function(){$('card').className = "";$('maincontainer').className = $('maincontainer').className.replace(/ persp/ig,"");},1200);
+            $('front').className = $('front').className.replace("back","front");
+            //$('back').className = $('back').className.replace("front","back");
+        }else{
+            setTimeout(function(){
+                $('maincontainer').className += " persp";
+                $('card').className = "card flipped";
+                $('front').className = $('front').className.replace("front","back");
+                //$('back').className = $('back').className.replace("back","front");
+            },10);
+        }
+        return;
+    }
+    var c1 = " cShow",c2 = " cLeft";
+    switch(dir){
+        case 0: c2 = " cLeft"; break;
+        case 1: c2 = " cRight"; break;
+        case 2: c2 = " cTop"; break;
+        case 3: c2 = " cBottom"; break;
+    }
+    if(dir > -1 && dir < 4){
+        elem.className = elem.className.replace(c1,c2);
+        setTimeout(function(){
+            elem.className = elem.className.replace(c2,c1);
+        },10);
+    }
+};
+</c:if>
 var parseResponse = function (request, container,url) {
     if (request.readyState == 4) {
         var match = url.match(/#([a-zA-Z0-9]+)/);
@@ -413,33 +445,21 @@ var parseResponse = function (request, container,url) {
             setActiveTab(match[1]);
         }
         if (request.status == 200) {
-            var isPv = -1;
-            if(url.match(/_pv=1|_back|st=briefcases|st=notebooks|st=folders|st=tasks|st=ab|st=cals/)){                                             
-                isPv=true;
-            }else if(url.match(/_pv=0|action=view|sti/)){
-                isPv=false;
-            }
+            showLoadingMsg(null, false);
             var data = request.responseText;
             if (data) {                                                                                                 
-                var fo = -1;
-                setTimeout(function(){
-                    if(url.match(/st=prefs|action=edit|st=newmail|st=newappt|st=newtask/)){
-                        setTimeout(function(){$('maincontainer').className += " persp";$('card').className = "card flipped";$('front').className = $('front').className.replace("front","back");},10);
-                        fo = 1;
-                    }else if($('card').className.match(/flipped/)){
-                        fo = 0;
-                        $('card').className = "card";
-                        setTimeout(function(){$('card').className = "";$('maincontainer').className = $('maincontainer').className.replace(/ persp/ig,"");},1200);
-                        $('front').className = $('front').className.replace("back","front");
-                    }
-                    if(fo == -1 && isPv != -1){
-                        var c1 =isPv ? " cRight1": " cHide",c2 = isPv ? " cHide1" : " cRight";
-                        container.className = container.className.replace(" cShow",c2);
-                        setTimeout(function(){
-                            container.className = container.className.replace(c2," cShow");
-                        },10);
-                    }
-                },10);
+               // var fo = -1;
+                //setTimeout(function(){
+                    <c:if test="${ua.isiPhone or ua.isiPod}">if(url.match(/st=prefs|action=edit|st=newmail|st=newappt|st=newtask/) || $('card').className.match(/flipped/)){
+                        slideElem(container,-1);
+                    }else if(url.match(/_pv=1|_back|st=briefcases|st=notebooks|st=folders|st=tasks|st=ab|st=cals/)){
+                        slideElem(container,0);
+                    }else if(url.match(/_pv=0|action=view|sti/)){
+                        slideElem(container,1);                        
+                    }</c:if>
+                    window.scrollTo(0,1);
+                //},30);
+
                 container.innerHTML = data;
                 var scripts = container.getElementsByTagName("script");
                 for (var i = 0; i < scripts.length; i++) {
@@ -447,11 +467,7 @@ var parseResponse = function (request, container,url) {
                         eval(scripts[i].innerHTML);
                     }
                 }
-                window.scrollTo(0,1);
             }
-            //if(!$('statusdiv')){
-                showLoadingMsg(null, false);
-            //}
         } else {
             showLoadingMsg('<fmt:message key="error"/> : ' + request.status, true, 'Critical');
         }
@@ -475,9 +491,9 @@ var showLoadingMsg = function(msg, show, status, timeout, divId) {
     status = 'Status' + (status ? status.replace("Status","") : '');
     if (aMsgDiv) {
         if (msg && show) {
-            aMsgDiv.className = aMsgDiv.className.replace("hidden","").replace("shown","");
-            aMsgDiv.className += " shown";
-            aMsgDiv.innerHTML = "<div class='table "+status+"'><div class='table-row'><span class='table-cell loadingIcon'></span><span style='width:90%;text-align:left;' class='table-cell'>" + msg + "</span><span class='SmlIcnHldr table-cell Cancel'></span></div></div>";
+            aMsgDiv.className = aMsgDiv.className.replace("hidden","").replace("shown","").replace(/Status(Info|Warning|Critical)/,"");
+            aMsgDiv.className += " "+status+" shown";
+            aMsgDiv.innerHTML = "<div class='tbl'><div class='tr'><span class='td loadingIcon'></span><span style='width:90%;text-align:left;' class='td'>" + msg + "</span><span style='overflow:hidden;height:16px;' class='SmlIcnHldr Cancel'></span></div></div>";
 
             if (timeout) {
                 setTimeout(function() {
@@ -495,12 +511,12 @@ var showLoadingMsg = function(msg, show, status, timeout, divId) {
 };
 var selectDay = function(datestr) {
     var cell = $("cell" + datestr);
-    list = $("listempty");
+    var list = $("listempty");
     list.style.display = "none";
 
     if (cell) {
         if (currentDate) {
-            var list = $("list" + currentDate);
+            list = $("list" + currentDate);
             if (list === null) list = $("listempty");
             list.style.display = "none";
             if($("cell" + currentDate))
@@ -518,6 +534,7 @@ var selectDay = function(datestr) {
 var openURL = function(url) {
     window.location = url.replace(/date=......../, "date=" + currentDate);
 };
+<c:if test="${ua.isiPhone or ua.isiPod}">
 var startX,startY,iH=[],xD=0,yD=0,dV=[],dId=0;
 var registerSwipeHandler = function(frm){
     if(frm){
@@ -534,12 +551,10 @@ var registerSwipeHandler = function(frm){
             xD=0,yD=0;
             startX = e.targetTouches[0].clientX;
             startY = e.targetTouches[0].clientY;
-            //console.log("Touch called...");
             frm.addEventListener('touchmove', function(e) {
                 if (e.targetTouches.length != 1){
                     return false;
                 }
-                //$('appbar').style.top = window.scrollY + "px";
                 var p = e.target;
                 while(p && (!p.className || $iO(p.className,"list-row") < 0)){
                     p = p.parentNode;
@@ -555,7 +570,6 @@ var registerSwipeHandler = function(frm){
                     p = p.parentNode;
                 }
                 if(!p || !p.className || $iO(p.className,"list-row") < 0) {/*window.evHandled=false;*/return;}
-                //console.log("XD:"+xD+",yD:"+yD);
                 if(Math.abs(xD) > 50 && Math.abs(yD) < 15 ){
                    var l = p.getElementsByClassName("l");
                    if(l && l.length > 0){
@@ -590,13 +604,20 @@ var hideDelete = function(id){
     if(l && l.length > 0 && dV[id]){
         l = l[0];
         l.innerHTML = iH[id];
+        updateChecked(false);
         p.getElementsByClassName('chk')[0].checked=false;
         $('zForm').anAction[0].value='';
         dV[id]=false;
         delete iH[id];
     }
 };
-
+var updateChecked = function(disabled){
+   var cCount = 0,cbs=$('zForm').getElementsByClassName('chk');
+   for(var i=0;cbs && i < cbs.length; i++){
+       if(cbs[i].checked){ cCount++;cbs[i].disabled = disabled;}
+   }
+   return cCount; 
+};
 var showDelete = function(id){
    var p = $(id);
    if(!p) {return ;}
@@ -605,17 +626,14 @@ var showDelete = function(id){
        l = l[0];
        iH[id] = l.innerHTML;
        p.getElementsByClassName('chk')[0].checked=true;
-       var cCount = 0,cbs=$('zForm').getElementsByClassName('chk');
-       for(var i=0;cbs && i < cbs.length; i++){
-           if(cbs[i].checked){ cCount++;} 
-       }
+       var cCount = updateChecked(true);
        $('zForm').anAction[0].value='';
        l.innerHTML = "<input type='submit'  id='delBtn' style='z-index:-999' class='zo_button delete_button' name='actionDelete' value='<fmt:message key="delete"/>"+(cCount > 1 ? ' ('+cCount+')' : '')+"'>";
        $('delBtn').className += " delBtnV";
        dV[id]=true;
    }
 };
-
+</c:if>
 var toggleElem = function(elem, me, minMsg, maxMsg) {
     if (!elem && !$(elem)) {return false;}
     if(typeof(elem) == "string"){elem = $(elem);}
@@ -653,13 +671,13 @@ var checkAll = function(cb, checked) {
     else
         cb.checked = checked;
 };
-
+<c:if test="${ua.isiPhone or ua.isiPod}">
 var updateOrientation = function() {
     currentWidth = window.innerWidth;
     var orient = (currentWidth == 480) ? "landscape" : "portrait";
     document.body.setAttribute("orient", orient);
 };
-
+</c:if>
 var requestTimeout = function (xhr,msg,status){
    xhr = xhr ? xhr : window._xhr; 
    xhr.abort();

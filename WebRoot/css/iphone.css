@@ -14,54 +14,26 @@
  * 
  * ***** END LICENSE BLOCK *****
  */
-
-
 body {
-    font-family: Myriad, "Lucida Grande", Helvetica, Arial, Verdana, Sans-serif;
+    font-family: Helvetica;
     font-size: medium;
     -webkit-text-size-adjust: none;
     padding: 0px;
     margin: 0px;
 }
-body[orient="portrait"] {
-    max-width: 320px;
-}
-body[orient="landscape"] {
-    max-width: 480px;
-}
-body[orient="portrait"] div.row span.m, div.row span.m {
-    max-width: 188px;
-    min-width: 188px;
-    width: 188px;
-}
-body[orient="landscape"] div.row span.m {
-    max-width: 347px;
-    min-width: 347px;
-    width: 347px;
-}
 a {
-    color: #0033cc;
+    color: #0066cc;
     text-decoration: none;
 }
 .container {
     background: white;
 }
-
-#appbar {
-    background: #88929f;
-    height: 50px;
-    padding: 0px;
-    margin: 0px;
-    white-space: nowrap;
-    min-width: 275px;
-    color: white;
-}
 .label {
-    color: #999999;/*#4d8dc3;*/
+    color: gray;
 }
 .list-row, .list-row-unread {
-    border-bottom: 1px solid #DDDDDD;
-    padding: 2px;
+    border-bottom: 1px solid #DDD;
+    padding: 3px;
     background: #fafafa;
 }
 .list-row-unread {
@@ -73,35 +45,30 @@ a {
     font-size: small;
 }
 .list-row-unread .small-gray-text,.Email a {
-    color: #777777;
+    color: #666666;
+    font-weight:normal;
 }
 .list-row-unread .l{
 	font-weight: normal;
-
 }
-
 .from-span a {
     color: black;
 }
-/*.frag-span{
-    overflow-y: hidden;
-    text-overflow: ellipsis;
-    height: 30px;
-}*/
 .ConvOpen{
     background-position: 0 -326px !important;
 }
 .zo_m_cv_sub {
     padding: 7px;
-    padding-left: 22px;
+    padding-left: 12px;
     background: #e8ebef;
     color: darkblue;
 }
 .Stripes {
-    background: #c5ccd4;
+    background: #c5ccd8;
+    background: -webkit-gradient(linear, left top, right top, from(#c5ccd4), to(#cbd2d8));
     margin: 0px;
-    padding: 2px;
-    min-height:200px;
+    padding: 4px;
+    background-image:url("/img/mobile/iphone/pinstripes.png");
 }
 .left {
     float: left;
@@ -111,11 +78,30 @@ a {
     float: right;
     padding-right:4px;
 }
-#appbar a span {
+.aleft {
+    text-align:left !important;
+    padding-left: 5px;
+}
+.aright {
+    text-align:right !important;
+    padding-right:5px;
+}
+#appbar {
+    background-color: #88929f;
+    background: -webkit-gradient(linear, left top, left bottom, from(#777777), to(#000000), color-stop(0.5, #555555),color-stop(0.5, #222222) );
+    height: 48px;
     padding: 0px;
     margin: 0px;
-    display: none;
+    white-space: nowrap;
+    color: white;
+    border-bottom:0px solid gray;
+    background-position:0px -1px;
 }
+#appbar,.delete_button,.tb,.searchButton, input[type="submit"], input.submit,.zo_select_button,.zo_button,.zo_button_disabled, .zo_button_group, input[type="button"], input[type="reset"],.searchButton {
+    background: url("/img/mobile/iphone-ext/common2.gif") repeat-x;
+    -webkit-user-select: none;
+}
+span.nstd {padding: 0px;margin: 0px;display: none;}
 #appbar a {
     width: 55px;
     height: 48px;
@@ -127,92 +113,64 @@ a {
     vertical-align: bottom;
     display: inline-block;
 }
-#appbar a span.aptoday {
-    color:black;
+.aptoday {
+    color:#888888;
     display:inline !important;
     font-size:smaller;
     font-weight:bold;
-    position:relative;
-    left:-2px;
 }
-#appbar a span.aptoday div {
+.aptoday div {
     margin:0px;
+    padding:1px;
     text-align:center;
     overflow:hidden;
     white-space:nowrap;
     text-overflow:ellipsis;
 }
-#appbar a span.aptoday div._day {
-    color:white;
-    font-weight:normal;
-    position:relative;
-    top:32px;
-}
-
-#appbar a span.aptoday div._date {
-    font-size:medium;
-    color:gray;
-}
-#appbar a.cal-active span.aptoday div._date, #appbar a.mail-active span.apunread{
-    color:#000000 !important;
-}
-#appbar a span.aptoday div._month {
-    color:white;
-    display:none;
-}
-#appbar a span.apunread {
-    text-align:center;
-    color:gray;
-    font-size:smaller;
+.aptoday div._day {
     font-weight:bold;
+    padding-top:34px;
+    font-size: 10px;
+    left:-3px;
+    position:relative;
+}
+.aptoday div._date {
+    font-size:15px;
     left:-2px;
     position:relative;
-    top:18px;
+    top:-36px;
+}
+.aptoday div._month {
+    display:none;
+}
+
+.apunread {
+    text-align:center;
+    color:#888888;
+    display:inline !important;
+    font-size:10px;
+    font-weight:bold;
+    left:0;
+    position:relative;
+    top:34px;
     white-space:normal;
     width:55px;
     text-overflow: ellipsis;
     overflow: hidden;
-    display:none !important;
 }
-#appbar {
-    background: #464646 url( "/img/mobile/iphone/NavbarBg.gif" )50% 50% ;
-    height: 48px;
-    padding: 0px;
-    margin: 0px;
-    white-space: nowrap;
-    min-width: 275px;
-    color: white;
+.appTab,.appTab-active{
+    background: url("/img/mobile/iphone-ext/AppsNav.png") no-repeat top left;
 }
-a#mail,a.mail {
-    background: url( "/img/mobile/iphone/Mail.gif" ) 50% 50% no-repeat; /*content: url( "/img/mobile/iphone/Mail.gif" );*/
-}
-a#mail-active,a.mail-active {
-    background: url( "/img/mobile/iphone/Mail-sel.gif" ) 50% 50% no-repeat !important; /*content: url( "/img/mobile/iphone/Mail-sel.gif" );*/
-}
-a#contact,a.contact {
-    background: url( "/img/mobile/iphone/Contacts.gif" ) 50% 50% no-repeat; /*    content: url( "/img/mobile/iphone/Contacts.gif" );*/
-}
-a#contact-active,a.contact-active {
-    background: url( "/img/mobile/iphone/Contacts-sel.gif" ) 50% 50% no-repeat !important; /*content: url( "/img/mobile/iphone/Contacts-sel.gif" );*/
-}
-a#cal,a.cal {
-    background: url( "/img/mobile/iphone/Calendar1.gif" ) 50% 50% no-repeat; /*content: url( "/img/mobile/iphone/Calendar.gif" );*/
-}
-a#cal-active,a.cal-active {
-    background: url( "/img/mobile/iphone/Calendar1-sel.gif" ) 50% 50% no-repeat !important; /*content: url( "/img/mobile/iphone/Calendar-sel.gif" );*/
-}
-a#folders,a.folders {
-    background: url( "/img/mobile/iphone/Folders.gif" ) 50% 50% no-repeat; /*content: url( "/img/mobile/iphone/Folders.gif" );*/
-}
-a#folders-active,a.folders-active {
-    background: url( "/img/mobile/iphone/Folders-sel.gif" ) 50% 50% no-repeat !important; /*content: url( "/img/mobile/iphone/Folders-sel.gif" );*/
-}
-a#search,a.search {
-    background: url( "/img/mobile/iphone/Search.gif" ) 50% 50% no-repeat; /*content: url( "/img/mobile/iphone/Search.gif" );*/
-}
-a#search-active,a.search-active {
-    background: url( "/img/mobile/iphone/Search-sel.gif" ) 50% 50% no-repeat !important; /* content: url( "/img/mobile/iphone/Search-sel.gif" );*/
-}
+a.cal-active { background-position: 50% -1px !important; }
+a.cal { background-position: 50% -50px !important; }
+a.contact-active { background-position: 50% -99px !important; }
+a.contact { background-position: 50% -148px !important; }
+a.docs-active { background-position: 50% -197px !important; }
+a.docs { background-position: 50% -246px !important; }
+a.mail-active { background-position: 50% -295px !important; }
+a.mail { background-position: 50% -344px !important; }
+a.search-active { background-position: 50% -393px !important; }
+a.search { background-position: 50% -442px !important; }
 #searchbar,#savesearchbar {
     text-align: center;
     vertical-align: middle;
@@ -220,12 +178,8 @@ a#search-active,a.search-active {
     padding-top: 2px;
     padding-bottom: 2px;
     margin: 0px;
-    background: #eeeeee;
+    background: #EEE;
     border-bottom: 1px solid silver;
-}
-.LoadingDiv{
-    background:#ffffd0 url("/img/mobile/iphone/loading.gif") 5% 50% no-repeat !important;
-    padding:10px !important;
 }
 form {
     padding: 0px;
@@ -236,89 +190,160 @@ form {
     width:98%;
 }
 .View {
-    -moz-border-radius: 5px;
-    -webkit-border-radius: 5px;
+    -moz-border-radius: 8px;
+    -webkit-border-radius: 8px;
     background-color: white;
     margin: 2px;
     border: 1px solid #a7b2bc;
     padding: 4px; /* font-size:medium;*/
 }
-.Toolbar, .SubToolbar {
-    background-color: #f1f1f1;
+.tb, .stb {
+    background-color: #EEE;
+    border-bottom:1px solid #DDD;
     height: 40px !important;
     text-align: center;
     white-space:nowrap;
 }
-.Toolbar {
-    border-left: 0px;
-    border-right: 0px;
-    background: #efefef url( "/img/mobile/iphone/iPhoneToolbar1.png" ) bottom repeat-x;
+.tb {
+    background-color: #d3d2d7;
+    background-position: 0px -52px;    
 }
 .StatusInfo, .StatusWarning, .StatusCritical, .zo_noresults {
+    padding: 10px 0px;
     margin: 0px;
     font-weight: bold;
     text-align: center;
     font-size: small;
-    padding: 10px 3px;
-    height: 28px;
 }
-
-
+.zo_noresults {
+    height: 200px;
+    text-align: center;
+}
 .StatusInfo {
-    background-color: green;
+    background-color: lightgreen !important;
 }
 .StatusWarning {
-    background-color: yellow;
+    background-color: yellow !important;
 }
 .StatusCritical {
-    background-color: red;
-}
-input[type="text"],input[type="password"],.Textarea{
-    font-size:medium !important;
+    background-color: red !important;
 }
 .searchInput {
-    height:20px;
-    margin:4px;
+    height:21px;
     vertical-align:middle;
-    width:200px;
-    -webkit-appearance: searchfield;
+    width:100%;
+    max-width:250px;
     font-size:medium;
 }
-.cmp_container .table-cell, .cmp_appt_container .table-cell {
+.cmp_container .td, .cmp_appt_container .td {
     text-align: left;
 }
-.zo_button, .zo_button_disabled,.zo_button1 {
-    -moz-border-radius: 4px;
-    -webkit-border-radius: 4px;
-    padding: 5px;
-    margin: 0px;
-    -webkit-margin: 0px;
-    -webkit-padding: 5px;
-    color: #ffffff;
-    border: 1px groove #58759d;
-    boder-collapse: collapse;
-    text-shadow: rgba( 0, 0, 0, 0.6 ) 0px -1px 0;
-    font-size: medium;
-}
 .zo_button_group {
-    -moz-border-radius: 4px;
-    -webkit-border-radius: 4px;
-    border: 1px groove #58759d;
-    boder-collapse: collapse;
-    padding: 5px;
-    margin:2px;
-    font-size: medium;
+    margin:0px 3px;
+} 
+.sectionLbl{
+    padding:15px 4px 3px 10px;text-shadow: 0px 1px 0px #fff;color:#4d5466;font-weight:bold;font-size:16px;
 }
-input[type="button"], input[type="reset"] {
-    -webkit-border-radius: 5px;
-    -webkit-appearance: button;
+.label{
+    color:#232323;
+    font-weight:bold;
+    font-size:14px;
 }
-.searchButton, input[type="submit"], input.submit {
-     background: #2e69e0 url( "/img/mobile/iphone/iPhoneButton2.png" ) 50% 50% repeat-x;
+.value input[type="text"],.value textarea,.value select{
+    -webkit-border-radius: 0px;
+    -webkit-box-shadow: 0px 0px 0px #FFFFFF;
+    -webkit-appearance: none;
+    background:transparent;
+    border:0px;
+    color:#4b5878;
+    padding:inherit 0px;
+    margin:inherit 0px;
+    font-size:14px;
+    overflow:hidden;    
+}
+.searchButton, input[type="submit"], input.submit,input[type="reset"],input[type="button"] {
+    background-color: #2e69e0;
+    background-position: 0px -129px;
+    background-repeat:repeat-x;
     -webkit-border-radius: 5px;
-    -webkit-appearance: button;
-    height: 26px;
-	
+    padding:0px !important;
+    height:30px;
+}
+.cLeft{
+    -webkit-transition: none;
+    left:-100%;
+}
+.hiddenFrame{
+    z-index:-9999;
+    position:absolute;
+    left:-9999px;
+    top:-9999px;
+    width:0px;
+    height:0px;
+}
+.cTop{
+    -webkit-transition: none;
+    top:-480px;
+}
+.cShow{
+    position:relative;
+    -webkit-transition-property: top, left;
+    -webkit-transition-duration: 350ms, 250ms;
+    left:0%;
+    top:0%;
+}
+.cRight{
+    -webkit-transition: none;
+    left:100%;
+}
+.cBottom{
+    -webkit-transition: none;
+    top:480px;
+}
+#delBtn{
+    -webkit-transition: all 200ms linear;
+    position:absolute;
+    margin-top:6px;
+    visibility:hidden;
+}
+.delBtnV{
+    right:8px !important;
+    margin-left:6px;
+    z-index:1000 !important;
+    visibility:visible !important;
+    overflow:visible !important;
+}
+.persp{
+    -webkit-perspective: 600;
+}
+.card
+{
+	-webkit-transform-style: preserve-3d;
+    -webkit-transition-property: -webkit-transform;
+	-webkit-transition-duration: 1.25s;
+    -webkit-backface-visibility: hidden;
+}
+.flipped,.back
+{
+	-webkit-transform: rotateY(180deg);
+}
+.loadingDiv{
+    -webkit-transition: opacity 250ms linear;
+    position:absolute;
+    top:48px;
+    width:98%;
+    background-color:#ffffd0;
+    z-index:1000;
+}
+.hidden {
+    opacity: 0.0 !important;
+    display:none;
+}
+
+.shown {
+    padding:8px 1%;
+    opacity: 1.0 !important;
+    display:block;
 }
 .Reply {
     background-position: 0 -20px !important;
@@ -362,22 +387,32 @@ input[type="button"], input[type="reset"] {
 .Attachment {
     background-position: 0 -362px !important;
 }
-.cmp_container .table-cell, .cmp_appt_container .table-cell {
-    border-bottom: 0px solid #DDDDDD;
-    padding: 2px;
+.nr .td{
+    border-top:1px solid #DDD;
 }
-.Textarea#bodyField {
+
+.Textarea#bodyField {                
     width: 98%;
     min-height: 150px;
 }
-.cmp_appt_container .Textarea, .cmp_container .table-cell .Textarea {
+.cmp_appt_container .Textarea, .cmp_container .td .Textarea {
     height: 17px;
     width: 90%;
 }
-.cmp_appt_container .table-cell .Textarea#start, .cmp_appt_container .table-cell .Textarea#end {
+.moquery .Textarea,.moquery .sq_folder,.moquery .sq_tag,.moquery .st{
+    width:92%;
+}
+.moquery .sq_size_comp,.moquery .sq_size_units, .moquery .sq_size{
+    width:29%;
+}
+.moquery .td{
+    padding: 4px 2px;
+    border-bottom: 1px solid #EEE;
+}
+.cmp_appt_container .td .Textarea#start, .cmp_appt_container .td .Textarea#end {
     width: 30%;
 }
-.cmp_appt_container .label, .cmp_container .label {
+.cmp_appt_container .label, .cmp_container .label,.moquery .label{
     width: 50px;
 }
 /*Auto Complete*/
@@ -434,27 +469,21 @@ input[type="button"], input[type="reset"] {
     z-index: 9030;
 }
 .prev_button, .mid_button, .next_button {
-    border: 0px;
-    margin: 0px;
-    -moz-border-radius: 0px;
-    -webkit-border-radius: 0px;
-    text-align: center;
-    padding: 2px 6px 2px 6px;
-    vertical-align:top !important;
+    border: 0px !important;
+    margin: 0px !important;
+    -moz-border-radius: 0px !important;
+    -webkit-border-radius: 0px !important;
+    vertical-align:0% !important;
     background: transparent !important;
+    -webkit-box-shadow: none !important;
 }
 .next_button {
-    border-left: 1px solid #335787;
+    border-left: 1px solid #335787 !important;
 }
 select {
+    height: 28px;
     vertical-align: middle !important;
     padding: 0 5px;
-}
-.zo_select_button,.zo_button,.zo_button_disabled, .zo_button_group, input[type="button"], input[type="reset"],.searchButton,.zo_button1 {
-    background: #58759d url( "/img/mobile/iphone/iPhoneButton2.png" ) 50% 50% repeat-x;
-    vertical-align:middle !important;
-    text-shadow: rgba( 0, 0, 0, 0.6 ) 0px -1px 0;
-
 }
 .zo_select_button {
     max-width: 90px;
@@ -467,25 +496,43 @@ select {
     -moz-border-radius: 4px;
     -webkit-border-radius: 4px;
     border: 1px groove #58759d;
-    text-shadow: rgba( 0, 0, 0, 0.6 ) 0px -1px 0;
-    font-size: medium;
+    text-shadow: rgba( 0, 0, 0, 0.6 ) 0px 1px 0;
+    font-size:medium;
     -webkit-appearance: button;
 }
+.zo_select_button,.zo_button,.zo_button_disabled, .zo_button_group, input[type="button"], input[type="reset"],.searchButton{
+    background-color: #58759d;
+    background-position: 0px -98px;
+    vertical-align:middle;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.6);
+    font-size:medium;
+    padding:5px 6px !important;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    color: #ffffff;
+    border: 1px solid #58759d;
+    -webkit-box-shadow: 1px 1px 0px #eee;
+
+}
+
 .zo_button_disabled {
     color: silver;
 }
 .cont_sum_table {
-    border-bottom: 1px solid #DDDDDD;
+    border-bottom: 1px solid #DDD;
 }
-.cont_view .table-cell {
+.cont_view .td {
     text-align: left;
+}
+#userinfo a{
+    font-size:medium;
 }
 #userinfo {
     color: #999999;
     padding: 4px;
     font-size: small;
     height: 30px;
-    border-bottom: 1px solid #DDDDDD;
+    border-bottom: 1px solid #DDD;
 }
 #userinfo .logout-span {
     float: left;
@@ -494,19 +541,21 @@ select {
     text-align: center;
     padding: 5px;
 }
-.table {
+.tbl {
     display: table;
     width: 100%;
     text-align:center;
 }
-.table-row {
+.tr {
     display: table-row;
     text-align:center;
 }
-.table-cell {
+.td {
     display: table-cell;
     vertical-align: middle;
     text-align: center;
+    padding-top:4px;
+    padding-bottom:4px;
 }
 .Folders {
     padding: 5px;
@@ -522,15 +571,16 @@ select {
     width: 15px;
     padding: 0px;
     margin: 0px;
+    font-size: 15px;
 }
-div.row span.cell {
+span.cell {
     display: table-cell;
     vertical-align: middle;
     padding: 2px;
     border-collapse: collapse;
     text-align: left;
 }
-div.row span.l, div.row span.m {
+span.l, span.m {
     vertical-align: top;
 }
 .from-span, .sub-span {
@@ -543,16 +593,24 @@ h1, h2, h3, h4, h5, h6 {
     font-size: 100%;
     font-weight: normal;
 }
-div.row span.f {
-    max-width: 50px;
+span.f {
+    max-width: 40px;
     width: 40px;
     white-space: nowrap;
     padding-left: 10px;
     min-width:40px;
 }
+span.m {
+    width:95%;
+    max-width:180px;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
 div.row span.l {
+    width: 60px;
     min-width: 60px;
     text-align: right;
+    overflow:visible;
 }
 .msg-list-in-conv {
     padding: 2%;
@@ -560,71 +618,72 @@ div.row span.l {
 .msg-list-in-conv .cell {
     padding: 2px !important;
 }
-.SmlIcnHldr {
+.SmlIcnHldr,.Edit {
     width: 16px;
     height: 16px;
+    max-height: 16px;
     display: inline-block;
-    background: url("/img/mobile/iphone-ext/common.gif") no-repeat top left;
+    background: url("/img/mobile/iphone-ext/common.png") no-repeat top left;
 }
 .FldrSearchFolder {
-    background: url( "/img/startup/ImgSearchFolder.gif" ) 50% 50% no-repeat;
+    background-position: 0px  -441px;
 }
 .FldrFolder {
-    background: url( "/img/startup/ImgFolder.gif" ) 50% 50% no-repeat;
+    background-position: 0px  -426px;
 }
 .FldrSharedCalendarFolder {
-    background: url( "/img/calendar/ImgSharedCalendarFolder.gif" ) 50% 50% no-repeat;
+    background-position: 0px  -457px;
 }
 .FldrCalendarFolder {
-    background: url( "/img/calendar/ImgCalendarFolder.gif" ) 50% 50% no-repeat;
+    background-position: 0px  -472px;
 }
 .FldrSharedContactsFolder {
-    background: url( "/img/startup/ImgSearchFolder.gif" ) 50% 50% no-repeat;
+    background-position: 0px  -521px;
 }
 .FldrEmailedContacts {
-    background: url( "/img/contacts/ImgSharedContactsFolder.gif" ) 50% 50% no-repeat;
+    background-position: 0px  -505px;
 }
 .FldrContactsFolder {
-    background: url( "/img/contacts/ImgContactsFolder.gif" ) 50% 50% no-repeat;
+    background-position: 0px  -488px;
 }
 .FldrSharedTaskList {
-    background: url( "/img/tasks/ImgSharedTaskList.gif" ) 50% 50% no-repeat;
+    background-position: 0px  -540px;
 }
 .FldrTaskList {
-    background: url( "/img/startup/ImgTaskList.gif" ) 50% 50% no-repeat;
+    background-position: 0px  -556px;
 }
 .FldrInbox {
-    background: url( "/img/startup/ImgSearchFolder.gif" ) 50% 50% no-repeat;
+    background-position: 0px  -426px;
 }
 .FldrTrash {
-    background: url( "/img/startup/ImgTrash.gif" ) 50% 50% no-repeat;
+    background-position: 0px  -573px;
 }
 .FldrSpamFolder {
-    background: url( "/img/startup/ImgSpamFolder.gif" ) 50% 50% no-repeat;
+    background-position: 0px  -590px;
 }
 .FldrSentFolder {
-    background: url( "/img/startup/ImgSentFolder.gif" ) 50% 50% no-repeat;
+    background-position: 0px  -624px;
 }
 .FldrDraftFolder {
-    background: url( "/img/startup/ImgDraftFolder.gif" ) 50% 50% no-repeat;
+    background-position: 0px  -607px;
 }
 .FldrRSS {
-    background: url( "/img/startup/ImgRSS.gif" ) 50% 50% no-repeat;
+    background-position: 0px  -642px;
 }
 .FldrSharedMailFolder {
-    background: url( "/img/startup/ImgSharedMailFolder.gif" ) 50% 50% no-repeat;
+    background-position: 0px  -658px;
 }
 .FldrPlacedCalls {
-    background: url( "/img/voicemail/ImgPlacedCalls.gif" ) 50% 50% no-repeat;
+    background-position: 0px  -675px;
 }
 .FldrAnsweredCalls {
-    background: url( "/img/voicemail/ImgAnsweredCalls.gif" ) 50% 50% no-repeat;
+    background-position: 0px  -692px;
 }
 .FldrMissedCalls {
-    background: url( "/img/voicemail/ImgMissedCalls.gif" ) 50% 50% no-repeat;
+    background-position: 0px  -709px;
 }
 .FldrVoicemail {
-    background: url( "/img/voicemail/ImgVoicemail.gif" ) 50% 50% no-repeat;
+    background-position: 0px  -675px;
 }
 .Flag {
     background-position: 0 -164px !important;
@@ -633,7 +692,7 @@ div.row span.l {
     background-position: 0 -110px !important;
 }
 .Tagcyan {
-    background-position: 0 -92px !important;
+    background-position: 0 -92px !important; 
 }
 .Tagorange {
     background-position: 0 -128px !important;
@@ -658,31 +717,32 @@ div.row span.l {
 }
 
 .SmlDocIcnHldr {
-    width: 18px;
-    height: 18px;
-    max-height: 18px;
+    width: 16px;
+    height: 16px;
+    max-height: 16px;
     display: inline-block;
     vertical-align: -22%;
-    background: url("/img/doctypes.gif?v=090227110051") no-repeat top left;
+    background: url("/img/doctypes.gif") no-repeat top left;
+    overflow:hidden;
 }
-.ImgAudioDoc{background:url("/img/doctypes.gif?v=090227110051") 0px 0px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -16px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgExeDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -32px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgGenericDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -48px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgHtmlDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -64px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgImageDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -80px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgMSExcelDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -96px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgMSPowerpointDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -112px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgMSProjectDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -128px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgMSVisioDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -144px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgMSWordDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -160px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgMessageDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -176px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgPDFDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -192px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgPresentation{background:url("/img/doctypes.gif?v=090227110051") 0px -208px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgUnknownDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -224px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgVideoDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -240px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgZSpreadSheet{background:url("/img/doctypes.gif?v=090227110051") 0px -256px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgZipDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -272px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
+.ImgAudioDoc{ background-position:0px 0px ;}
+ .ImgDoc{background-position: 0px -16px ;}
+ .ImgExeDoc{background-position: 0px -32px ;}
+ .ImgGenericDoc{background-position: 0px -48px ;}
+ .ImgHtmlDoc{background-position: 0px -64px ;}
+ .ImgImageDoc{background-position: 0px -80px ;}
+ .ImgMSExcelDoc{background-position: 0px -96px ;}
+ .ImgMSPowerpointDoc{background-position: 0px -112px ;}
+ .ImgMSProjectDoc{background-position: 0px -128px ;}
+ .ImgMSVisioDoc{background-position: 0px -144px ;}
+ .ImgMSWordDoc{background-position: 0px -160px ;}
+ .ImgMessageDoc{background-position: 0px -176px ;}
+ .ImgPDFDoc{background-position: 0px -192px ;}
+ .ImgPresentation{background-position: 0px -208px ;}
+ .ImgUnknownDoc{background-position: 0px -224px ;}
+ .ImgVideoDoc{background-position: 0px -240px ;}
+ .ImgZSpreadSheet{background-position: 0px -256px ;}
+ .ImgZipDoc{background-position: 0px -272px ;}
  .ZmThumbnailItem{
     float:left;
      width:43%;
@@ -690,25 +750,32 @@ div.row span.l {
      padding:1%;
      overflow:hidden;
      text-overflow:ellipsis;
-     border:1px dotted #eeeeee;
+     border:1px dotted #EEE;
      -webkit-border-radius:5px;
      -moz-border-radius: 5px;
  }
 .ZmThumbnailIcon{
-    border-bottom:1px solid #eeeeee;
+    border-bottom:1px solid #EEE;
     padding-bottom:8px;
 }
 .ZmThumbnailName{
-    padding-top:8px;
+    padding-top:8px; 
 }
-
+.zo_button1{
+    padding:5px;
+    border:1px outset silver;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+}
 .Edit{
-    background: #eeeeee url("/img/startup/ImgEdit.gif") 50% 50% no-repeat;
-    padding: 3px;
+    background-color: #EEE;
+    background-position:50% -409px;
+    padding: 1px 3px;
     border:1px outset #efefef;
     -webkit-border-radius: 5px;
     -moz-border-radius: 5px;
 }
 .delete_button{
-    background: #cc0000 url("/img/mobile/iphone/iPhoneDeleteButton1.png") repeat scroll 50% 50% !important;
+    background-color: #cc0000 !important;
+    background-position: 0px -160px !important;
 }

@@ -29,10 +29,9 @@
 </c:if>
 <c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/>
 <c:set value="${title}" var="title" scope="request"/>
-<div class="SubToolbar table">
-    <div class="table-row">
-
-            <span class="table-cell" >
+<div class="stb tbl">
+    <div class="tr">
+            <span class="td" >
                &laquo;
                 <c:if test="${mailbox.features.tasks}">
                     <c:if test="${param.st ne 'tasks'}">
@@ -54,12 +53,9 @@
                     <c:if test="${param.st ne 'notebooks'}">
                         </a>    
                     </c:if>
-                <%--</span>--%> ::
+                 ::
                 </c:if>
-
                 <c:if test="${mailbox.features.briefcases}">
-            <%--<span class="table-cell" style="text-align:right;padding-right:5px;">--%>
-                               
                                 <c:if test="${param.st ne 'briefcases'}">
                                     <a href='${context_url}?st=briefcases'>
                                 </c:if>
@@ -72,9 +68,9 @@
 
     </div>
 </div>
-<div class="Toolbar table">
-    <div class="table-row">
-        <div class="table-cell">
+<div class="tb tbl">
+    <div class="tr">
+        <div class="td">
             <span class="Title left">
                     <c:if test="${param.st eq 'briefcases'}">
                         <fmt:message key="briefcases"/>
@@ -123,9 +119,9 @@
         <mo:overviewFolder folder="${folder}" types="wiki"/>
     </c:if>
 </zm:forEachFolder>
-<div class="Toolbar table">
-    <div class="table-row">
-        <div class="table-cell">
+<div class="tb tbl">
+    <div class="tr">
+        <div class="td">
             <span class="Title left">
                 <fmt:message key="searches"/></span>
             <span class="right">
@@ -146,9 +142,9 @@
         </c:if>
     </c:if>
 </zm:forEachFolder>
-<div class="Toolbar table">
-    <div class="table-row">
-        <div class="table-cell">
+<div class="tb tbl">
+    <div class="tr">
+        <div class="td">
             <span class="Title left">
                         <fmt:message key="tags"/>
             </span>

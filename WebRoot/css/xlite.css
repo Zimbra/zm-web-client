@@ -4,18 +4,26 @@ body{
     font-size:small;
     font-family: Myriad, "Lucida Grande", Helvetica, Arial, Verdana, Sans-serif;
 }
+.hiddenFrame {
+    z-index:-9999;
+    position:absolute;
+    left:-9999px;
+    top:-9999px;
+    width:0px;
+    height:0px;
+}
 a{
     color: #003399;
     text-decoration:none;
 }
-.table{
+.tbl{
     display:table;
     width:100%;
 }
-.table-row{
+.tr{
     display:table-row;
 }
-.table-cell{
+.td{
     display:table-cell;
 }
 #appbar{
@@ -25,24 +33,26 @@ a{
     background: #ebebff;
 }
 .appTab,.appTab-active{
-    border-bottom:1px solid silver;
+    border-bottom:1px solid rgb(160, 182, 230);
     padding:2px;
+    text-align:center;
+    vertical-align:middle;
 }
 .appTab-active{
-    border:1px solid silver;
+    border:1px solid rgb(160, 182, 230);
     border-bottom:0px solid silver;
     background:#ffffff;
 }
-.Toolbar,.SubToolbar{
+.tb,.stb{
     height:20px;
     line-height:20px;
     vertical-align:middle;
     background: #ebebff;
-    border-bottom:1px solid silver;
+    border-bottom:1px solid rgb(160, 182, 230);
     text-align:center;
     padding:2px 0px;
 }
-.SubToolbar{
+.stb{
     background:#ffffff;
 }
 .zo_button,.zo_button_disabled,.zo_select_button,input[type="submit"],.submitButton,select,input[type="button"]{
@@ -51,23 +61,28 @@ a{
     background:transparent;
     text-decoration:none;
     color: #3943e6;
+    font-size:14px;
     text-decoration:none;
 }
 .zo_button_disabled {
     color: silver;
 }
+.nr .td{
+    border-top:1px solid #eee;
+}
 .next_button{
-    border-left:1px solid #dddddd;
+    border-left:1px solid silver;
+    padding-left:5px;
 }
 select{
     width:30%;
-    border:1px solid silver;
+    
 }
 .list-row,.list-row-unread{
     border-bottom:1px solid #dddddd;
     vertical-align:middle;
     padding:2px 1px;
-    background:#eeeefe;
+    background:rgb(248,248,252);
 }
 .list-row-unread{
     background:#ffffff;
@@ -101,15 +116,18 @@ span.l{
 }
 .shown{
     visibility:visible;
+    display:block;
 }
 .hidden{
     visibility:hidden;
+    display:none;
 }
-.LoadingDiv{
+.loadingDiv{
     position:absolute;
     background:#ffeeaa !important;
-    padding:2px;
+    padding:4px;
     width:auto;
+    width:98%;
 }
 #msgDiv,#msgbar {
     position: absolute;
@@ -150,7 +168,7 @@ form {
     background-color: white;
     margin: 1px;
     border: 1px solid #a7b2bc;
-    padding: 1px; /* font-size:medium;*/
+    padding: 2px; /* font-size:medium;*/
 }
 .label{
     color:gray;
@@ -199,7 +217,7 @@ hr{
     width: 98%;
     min-height: 150px;
 }
-.cmp_appt_container .Textarea, .cmp_container .table-cell .Textarea {
+.cmp_appt_container .Textarea, .cmp_container .td .Textarea {
     height: 17px;
     width: 90%;
 }
@@ -209,11 +227,11 @@ hr{
 .moquery .sq_size_comp,.moquery .sq_size_units, .moquery .sq_size{
     width:29%;
 }
-.moquery .table-cell{
+.moquery .td{
     padding: 2px 1px;
     border-bottom: 1px solid #EEEEEE;
 }
-.cmp_appt_container .table-cell .Textarea#start, .cmp_appt_container .table-cell .Textarea#end {
+.cmp_appt_container .td .Textarea#start, .cmp_appt_container .td .Textarea#end {
     width: 30%;
 }
 .cmp_appt_container .label, .cmp_container .label,.moquery .label{
