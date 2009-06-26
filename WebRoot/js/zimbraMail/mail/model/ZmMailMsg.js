@@ -744,6 +744,7 @@ function(jsonObj, updateOrganizer, edited, callback, errorCallback, instanceDate
 								callback:respCallback,
 								errorCallback:errorCallback,
 								accountName:accountName });
+
 	if (window.parentController) {
 		window.close();
 	}
@@ -762,9 +763,37 @@ function(callback, result) {
 		this._origMsg.folderId = ZmFolder.ID_TRASH;
 	}
 
+    if(this.acceptFolderId && this.acceptFolderId != ZmOrganizer.ID_CALENDAR && resp.apptId != null) {
+        //move appt
+        this.moveApptItem(resp.apptId, this.acceptFolderId);
+    }
+    
 	if (callback) {
 		callback.run(result);
 	}
+};
+
+ZmMailMsg.prototype.moveApptItem =
+function(itemId, nfolder) {
+    var callback = new AjxCallback(this, this._handleMoveApptResponse, [nfolder]);
+    var errorCallback = new AjxCallback(this, this._handleMoveApptError, [nfolder]);
+    ZmItem.move(itemId, nfolder, callback, errorCallback);
+};
+
+ZmMailMsg.prototype._handleMoveApptResponse =
+function(nfolder, resp) {
+	this._lastApptFolder = nfolder;
+	// TODO: Display some sort of confirmation?
+};
+
+ZmMailMsg.prototype._handleMoveApptError =
+function(nfolder, resp) {
+	var params = {
+		msg:	ZmMsg.errorMoveAppt,
+		level:	ZmStatusView.LEVEL_CRITICAL
+	};
+	appCtxt.setStatusMsg(params);
+	return true;
 };
 
 /**

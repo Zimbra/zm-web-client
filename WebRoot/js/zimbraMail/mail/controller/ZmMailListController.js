@@ -842,17 +842,18 @@ function(items, markAsSpam, folder) {
 ZmMailListController.prototype._inviteReplyHandler =
 function(ev) {
 	var type = ev._inviteReplyType;
+    var folderId = ev._inviteReplyFolderId || ZmOrganizer.ID_CALENDAR;
 	var compId = ev._inviteComponentId;
 	if (type == ZmOperation.INVITE_REPLY_ACCEPT ||
 		type == ZmOperation.EDIT_REPLY_CANCEL ||
 		type == ZmOperation.INVITE_REPLY_DECLINE ||
 		type == ZmOperation.INVITE_REPLY_TENTATIVE)
 	{
-		this._editInviteReply(ZmMailListController.INVITE_REPLY_MAP[type], compId);
+		this._editInviteReply(ZmMailListController.INVITE_REPLY_MAP[type], compId, null, null, folderId);
 	}
 	else
 	{
-		var resp = this._sendInviteReply(type, compId, null, null, null, ev._msg);
+		var resp = this._sendInviteReply(type, compId, null, null, null, ev._msg, folderId);
 		if (resp && appCtxt.isChildWindow) {
 			window.close();
 		}
@@ -1114,13 +1115,13 @@ function(type) {
 };
 
 ZmMailListController.prototype._editInviteReply =
-function(action, componentId, instanceDate, accountName) {
+function(action, componentId, instanceDate, accountName, acceptFolderId) {
 	var replyBody = this._getInviteReplyBody(action, instanceDate);
-	this._doAction({action:action, extraBodyText:replyBody, instanceDate:instanceDate, accountName:accountName});
+	this._doAction({action:action, extraBodyText:replyBody, instanceDate:instanceDate, accountName:accountName, acceptFolderId: acceptFolderId});
 };
 
 ZmMailListController.prototype._sendInviteReply =
-function(type, componentId, instanceDate, accountName, ignoreNotifyDlg, origMsg) {
+function(type, componentId, instanceDate, accountName, ignoreNotifyDlg, origMsg, acceptFolderId) {
 	var msg = new ZmMailMsg();
 	AjxDispatcher.require("CalendarCore");
 
@@ -1129,6 +1130,7 @@ function(type, componentId, instanceDate, accountName, ignoreNotifyDlg, origMsg)
 	msg.isReplied = true;
 	msg.isForwarded = false;
 	msg.isInviteReply = true;
+    msg.acceptFolderId = acceptFolderId;
     var replyActionMode = ZmMailListController.REPLY_ACTION_MAP[type] ? ZmMailListController.REPLY_ACTION_MAP[type] : type;
 	var replyBody = this._getInviteReplyBody(replyActionMode, instanceDate, msg._origMsg.isResourceInvite());
 	if (replyBody != null) {

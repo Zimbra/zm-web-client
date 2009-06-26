@@ -123,6 +123,7 @@ function(params) {
 	if (this._msg) {
 		this._msg.onChange = null;
 	}
+    this._acceptFolderId = params.acceptFolderId;
 	var obo = params.accountName;
 	var msg = this._msg = this._addressesMsg = params.msg;
 	if (msg) {
@@ -639,6 +640,7 @@ function(attId, isDraft) {
 			msg.origId = this._msg.id;
 		}
 		msg.isInviteReply = isInviteReply;
+		msg.acceptFolderId = this._acceptFolderId;
         var inviteMode = ZmComposeView.NOTIFY_ACTION_MAP[this._action] ? ZmComposeView.NOTIFY_ACTION_MAP[this._action] : this._action;
 		msg.inviteMode = isInviteReply ? inviteMode : null;
 		msg.irtMessageId = this._msg.messageId;

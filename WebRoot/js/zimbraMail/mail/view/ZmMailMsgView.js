@@ -192,7 +192,7 @@ function(msg) {
 			topToolbar.reparentHtmlElement(contentDiv);
 			topToolbar.setVisible(Dwt.DISPLAY_BLOCK);
 
-			var calendars = appCtxt.getApp(ZmApp.CALENDAR).getCalController().getCalendars();
+			var calendars = appCtxt.getApp(ZmApp.CALENDAR).getCalController().getCalendars(true);
 			var visible = calendars.length > 1;
 			if (visible) {
 				this._inviteMoveSelect.clearOptions();
@@ -411,7 +411,7 @@ function() {
 	this._inviteToolbar.addSpacer();
 
 	var select = new DwtSelect({parent: this._inviteToolbar});
-	select.addChangeListener(new AjxListener(this, this._moveAppt));
+	//select.addChangeListener(new AjxListener(this, this._moveAppt));
 	this._inviteMoveSelect = select;
 
 	return this._inviteToolbar;
@@ -451,9 +451,14 @@ function(ev) {
 	if (ofolder == nfolder) return;
 
 	var itemId = this._msg.invite.components[0].apptId;
-	var callback = new AjxCallback(this, this._handleMoveApptResponse, [ofolder, nfolder]);
-	var errorCallback = new AjxCallback(this, this._handleMoveApptError, [ofolder, nfolder, select]);
-	ZmItem.move(itemId, nfolder, callback, errorCallback);
+    this.moveApptItem(itemId, ofolder, nfolder, select);
+};
+
+ZmMailMsgView.prototype.moveApptItem =
+function(itemId, ofolder, nfolder, select) {
+    var callback = new AjxCallback(this, this._handleMoveApptResponse, [ofolder, nfolder]);
+    var errorCallback = new AjxCallback(this, this._handleMoveApptError, [ofolder, nfolder, select]);
+    ZmItem.move(itemId, nfolder, callback, errorCallback);    
 };
 
 ZmMailMsgView.prototype._handleMoveApptResponse =
@@ -1540,6 +1545,11 @@ ZmMailMsgView.prototype.addAttachmentLinkHandler = function(contentType,handlerI
 ZmMailMsgView.prototype._inviteToolBarListener =
 function(ev) {
 	ev._inviteReplyType = ev.item.getData(ZmOperation.KEY_ID);
+    var folderId = ZmOrganizer.ID_CALENDAR;
+    if(this._inviteMoveSelect && this._inviteMoveSelect.getValue()) {
+        folderId = this._inviteMoveSelect.getValue();                        
+    }
+	ev._inviteReplyFolderId = folderId;
 	ev._inviteComponentId = null;
 	ev._msg = this._msg;
 	this.notifyListeners(ZmMailMsgView.REPLY_INVITE_EVENT, ev);
