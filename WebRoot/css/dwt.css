@@ -1077,7 +1077,9 @@
 .xform_field_disabled {
 	
 }
-
+input.xform_field_disabled {
+	@InputField-disabled@
+}
 textarea.xform_field_disabled {
 	@TextArea-disabled@
 }	
@@ -1106,6 +1108,9 @@ textarea.xform_field_disabled {
 
 }
 
+input.xform_field {
+	@InputField-normal@
+}
 .xform_output {
 	@TextPadding@
 }
