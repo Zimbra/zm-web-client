@@ -2006,62 +2006,6 @@ input.xform_field {
 
 /***************
  *
- *	Tree
- *
- ***************/
-
-/* MOW NOTE: THIS DOESN'T SEEM TO BE USED!
-
-.ZTree						{
-								position:relative;
-								width:100%;
-								background-color:white;
-								border:1px solid #666666;
-							}
-.ZTreeTable					{	width:100%; height:100%;	}
-.ZTreeTableHeaderCell		{		}
-.ZTreeTableBodyCell			{	height:100%; vertical-align:top;	}
-
-
-.ZTreeHeader				{	position:relative; height:20px;
-								border-bottom:1px solid #999999;
-								margin-top:1px;
-								cursor:pointer;
-							}
-
-.ZTreeHeaderCenter			{	left:6;	right:39; width:auto; }
-.ZTreeHeaderTitle			{
-								position:absolute;
-								left:10px; right:33px;
-								top:3px;
-								overflow:hidden;
-							}
-
-.ZTreeBody					{	position:relative; height:100%;
-								border-bottom:1px solid #999999;
-							}
-.ZTreeItem					{	position:relative; height:20px;
-								border-bottom:1px solid #dddddd;
-							}
-.ZTreeItemIcon				{	position:absolute;	top:2px; }
-.ZTreeItemTitle				{	position:absolute;	top:4px; right:0px; padding-left:2px;}
-
-.ZTreeIndent0				{	position:absolute;	left:4px;	}
-.ZTreeIndent1				{	position:absolute;	left:22px;	}
-.ZTreeIndent2				{	position:absolute;	left:40px;	}
-.ZTreeIndent3				{	position:absolute;	left:58px;	}
-.ZTreeIndent4				{	position:absolute;	left:76px;	}
-.ZTreeIndent5				{	position:absolute;	left:92px;	}
-
-
-.ZTreeBody .ZSelected		{	background-color:#d0daf9 !important;	}
-
-*/
-
-
-
-/***************
- *
  *	ZMenu	-- outer class for menus
  *
  ***************/
@@ -2093,12 +2037,6 @@ input.xform_field {
 .ZFocused	.ZMenuItemTable .ZWidgetTitle	{						@MenuItemText-focused@		}
 .ZActive	.ZMenuItemTable .ZWidgetTitle	{						@MenuItemText-active@		}
 .ZSelected	.ZMenuItemTable .ZWidgetTitle	{						@MenuItemText-selected@		}
-
-/*
-.ZMenuItem-BlankCheck 						{	width:9px; 	height:9px;		}
-.ZMenuItem-BlankIcon 						{	width:16px; height:16px;	}
-.ZMenuItem-BlankCascade						{	width:16px; height:16px;	}
-*/
 
 
 /* if any item in the menu has a check, icon or submenu,
@@ -2182,12 +2120,38 @@ input.xform_field {
 .ZWizardButtonRef		{	font-weight:bold;	}
 
 
-
-
-
 /* TODO: move us */
 .ZRadioLabel			{	@ActiveCursor@	}
 .ZRadioLabelDisabled	{	@Text-disabled@ }
 
+.ZTreeItemCheckboxCell {
+	width: 16px;
+	height: 16px;
+}
 
+.ZTreeItemCheckbox {
+	cursor: pointer;
+	border-width: 1px;
+	border-style: solid;
+	border-color: #363636 #b8b8b8 #b8b8b8 #363636;
+	margin-right: 2px;
+	width: 12px;
+	height: 12px;
 
+#IFDEF MSIE
+	width: 14px;
+	height: 14px;
+#ENDIF
+}
+
+.ZTreeItemCheckboxImg {
+	padding-left: 2px;
+	padding-top: 2px;
+	width: 10px;
+	height: 10px;
+
+#IFDEF MSIE
+	width: 12px;
+	height: 12px;
+#ENDIF
+}

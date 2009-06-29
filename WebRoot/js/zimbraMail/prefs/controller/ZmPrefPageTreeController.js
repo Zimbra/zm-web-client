@@ -46,7 +46,7 @@ function(params) {
 		var name = view.getTabTitle(tabKey);
 		var section = view.getSectionForTab(tabKey);
 
-		if (this._showSection(account, section.id)) {
+		if (!account || this._showSection(account, section.id)) {
 			// for multi-account mbox, child accounts only show a select few pref options
 			var organizer = ZmPrefPage.createFromSection(section);
 			organizer.pageId = tabKey;
@@ -72,7 +72,7 @@ function(params) {
 	// setup tree view
 	var treeView = ZmTreeController.prototype.show.apply(this, arguments);
 
-	if (!appCtxt.multiAccounts || (appCtxt.multiAccounts && account && account.isMain)) {
+	if (!appCtxt.multiAccounts || (appCtxt.multiAccounts && account.isMain)) {
 		var page1 = root.children.get(0);
 		if (page1) {
 			treeView.setSelected(page1, true);
@@ -89,7 +89,7 @@ function(params) {
 
 ZmPrefPageTreeController.prototype._showSection =
 function(account, sectionId) {
-	if (!account) { return false; }
+
 	if (appCtxt.isOffline) {
 		if (account.isMain && (sectionId == "FILTERS")) {
 			return false;

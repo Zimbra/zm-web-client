@@ -401,8 +401,12 @@ NOTE: The outer table/tr is a necessary hack. It is NOT inserted in the
 			<tr>
 				<td align=center nowrap id='${id}_nodeCell'></td>
 				<$ if (data.isCheckedStyle) { $>
-					<td nowrap id='${id}_checkboxCell'>
-                        <input type='checkbox' id='${id}_checkbox'>
+					<td nowrap id='${id}_checkboxCell' class="ZTreeItemCheckboxCell">
+                        <div class="ZTreeItemCheckbox" id='${id}_checkbox'>
+							<div class="ZTreeItemCheckboxImg" id='${id}_checkboxImg'>
+								<$= AjxImg.getImageHtml("MenuCheck") $>
+							</div>
+                        </div>
 					</td>
 				<$ } $>
 				<td nowrap class='imageCell' id='${id}_imageCell'></td>

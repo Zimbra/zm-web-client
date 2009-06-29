@@ -343,15 +343,25 @@ function(treeItem, organizer, treeView) {
  */
 ZmTreeController.prototype._setTreeItemColor =
 function(treeItem, organizer) {
-	if (!treeItem || !organizer) { return; }
-	if (organizer.isInTrash()) { return; }
+	var className = this._getTreeItemColorClassName(treeItem, organizer);
 
-	// a color value of 0 means DEFAULT
-	var color = organizer.color ? organizer.color : ZmOrganizer.DEFAULT_COLOR[organizer.type];
-	var className = (color && (color != ZmOrganizer.C_NONE)) ? ZmTreeController.COLOR_CLASS[color] : "";
-	if(treeItem.getHtmlElement())  {
+	if (className && treeItem.getHtmlElement()) {
 		treeItem.setTreeItemColor(className);
 	}
+};
+
+ZmTreeController.prototype._getTreeItemColorClassName =
+function(treeItem, organizer) {
+	if (!treeItem || !organizer) { return null; }
+	if (organizer.isInTrash()) { return null; }
+
+	// a color value of 0 means DEFAULT
+	var color = organizer.color
+		? organizer.color
+		: ZmOrganizer.DEFAULT_COLOR[organizer.type];
+
+	return (color && (color != ZmOrganizer.C_NONE))
+		? ZmTreeController.COLOR_CLASS[color] : "";
 };
 
 /**
