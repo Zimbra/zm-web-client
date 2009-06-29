@@ -226,34 +226,34 @@ ZmDocsEditView.prototype._createToolbar2 = function(toolbar) {
     var listener = new AjxListener(this, this._quickTbActionListener);
     
     var b = this._buttons.docElTb = new DwtToolBarButton(params);
-    b.setText("Document Elements");
+    b.setText(ZmMsg.zd_docElements);
     b.setData(ZmDocsEditView.ZD_VALUE, "DocElements");
     b.addSelectionListener(listener);
-    b.setToolTipContent("Create quick tables");
+    b.setToolTipContent(ZmMsg.zd_docElementsTT);
 
     new DwtControl({parent:toolbar, className:"vertSep"});
 
     b = this._buttons.quickTb = new DwtToolBarButton(params);
-    b.setText("Quick Tables");
+    b.setText(ZmMsg.zd_docQuickTables);
     b.setData(ZmDocsEditView.ZD_VALUE, "QuickTables");
     b.addSelectionListener(listener);
-    b.setToolTipContent("Create quick tables");
+    b.setToolTipContent(ZmMsg.zd_docQuickTablesTT);
 
     new DwtControl({parent:toolbar, className:"vertSep"});
 
     b = this._buttons.chartTb = new DwtToolBarButton(params);
-    b.setText("Charts");
+    b.setText(ZmMsg.zd_docCharts);
     b.setData(ZmDocsEditView.ZD_VALUE, "QuickCharts");
     b.addSelectionListener(listener);
-    b.setToolTipContent("Create quick tables");
+    b.setToolTipContent(ZmMsg.zd_docChartsTT);
 
     new DwtControl({parent:toolbar, className:"vertSep"});
 
     b = this._buttons.smartTb = new DwtToolBarButton(params);
-    b.setText("SmartArt Graphics");
+    b.setText(ZmMsg.zd_docSmartArt);
     b.setData(ZmDocsEditView.ZD_VALUE, "SmartArt");
     b.addSelectionListener(listener);
-    b.setToolTipContent("Create quick tables");
+    b.setToolTipContent(ZmMsg.zd_docSmartArtTT);
 
     this._createQuickTables();
 
@@ -399,13 +399,13 @@ ZmDocsEditView.prototype._createDocElements = function() {
     b.setImage("DocElement2");
     b.setData(ZmDocsEditView.ZD_VALUE, "DocElement2");
     b.addSelectionListener(listener);
-    b.setToolTipContent("Create quick tables");
+    b.setToolTipContent(ZmMsg.zd_docQuickInsert);
 
     b = new DwtToolBarButton(params);
     b.setImage("DocElement3");
     b.setData(ZmDocsEditView.ZD_VALUE, "DocElement3");
     b.addSelectionListener(listener);
-    b.setToolTipContent("Create quick tables");
+    b.setToolTipContent(ZmMsg.zd_docQuickInsert);
 
     this._toolbar4.setVisible(false);
 };
@@ -422,28 +422,28 @@ ZmDocsEditView.prototype._createQuickTables = function() {
     b.setImage("QuickTable1");
     b.setData(ZmDocsEditView.ZD_VALUE, "QuickTable1");
     b.addSelectionListener(listener);
-    b.setToolTipContent("Create quick tables");
+    b.setToolTipContent(ZmMsg.zd_docQuickInsert);
     b.getHtmlElement().style.padding = "6px";
 
     b = new DwtToolBarButton(params);
     b.setImage("QuickTable2");
     b.setData(ZmDocsEditView.ZD_VALUE, "QuickTable2");
     b.addSelectionListener(listener);
-    b.setToolTipContent("Create quick tables");
+    b.setToolTipContent(ZmMsg.zd_docQuickInsert);
     b.getHtmlElement().style.padding = "6px";
 
     b = new DwtToolBarButton(params);
     b.setImage("QuickTable3");
     b.setData(ZmDocsEditView.ZD_VALUE, "QuickTable3");
     b.addSelectionListener(listener);
-    b.setToolTipContent("Create quick tables");
+    b.setToolTipContent(ZmMsg.zd_docQuickInsert);
     b.getHtmlElement().style.padding = "6px";
 
     b = new DwtToolBarButton(params);
     b.setImage("QuickTable4");
     b.setData(ZmDocsEditView.ZD_VALUE, "QuickTable4");
     b.addSelectionListener(listener);
-    b.setToolTipContent("Create quick tables");
+    b.setToolTipContent(ZmMsg.zd_docQuickInsert);
     b.getHtmlElement().style.padding = "6px";
     
     this._toolbar3.setVisible(false);
@@ -487,11 +487,11 @@ ZmDocsEditView.prototype._createToolbar = function(toolbar) {
     new DwtControl({parent:toolbar, className:"vertSep"});
 
     b = this._buttons.clipboardPaste = new DwtToolBarButton(params);
-    b.setText("New Document");
+    b.setText(ZmMsg.newDocument);
     b.setImage("Doc");
     b.setData(ZmDocsEditView.ZD_VALUE, "NewDocument");
     b.addSelectionListener(listener);
-    b.setToolTipContent(ZmMsg.paste);
+    b.setToolTipContent(ZmMsg.briefcaseCreateNewDocument);
 
     /*b = this._buttons.clipboardPaste = new DwtToolBarButton(params);
     b.setText("Open Document");
