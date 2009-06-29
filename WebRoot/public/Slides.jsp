@@ -86,16 +86,6 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
     String offlineMode = getParameter(request, "offline", application.getInitParameter("offlineMode"));
 
     String fileId = request.getParameter("id");
-    String fileName = request.getParameter("name");
-    String folderId = request.getParameter("l");
-
-    if(fileName == null) {
-        fileName = "Untitled";
-    }
-
-    if(folderId == null) {
-        folderId = "";
-    }
 
     Locale locale = request.getLocale();
     String localeId = getAttribute(request, "localeId", null);
@@ -121,7 +111,6 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
     pageContext.setAttribute("isProdMode", !prodMode.equals(""));
     pageContext.setAttribute("isDebug", isSkinDebugMode || isDevMode);
     pageContext.setAttribute("isLeakDetectorOn", isLeakDetectorOn);
-
     boolean runSlideShow = getParameter(request, "run", "0").equals("1");
 %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
@@ -165,6 +154,9 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
     <% }
     %>
 </head>
+<c:set var="fileName" value="${empty param.name ? 'Untitled' : zm:cook(param.name)}"/>
+<c:set var="folderId" value="${empty param.l ? '' : zm:cook(param.l)}"/>
+<c:set var="fileId" value="${empty param.id ? '' : zm:cook(param.id)}"/>
 <body>
 <div id="main_shell"></div>
 <noscript><p><b>Javascript must be enabled to use this.</b></p></noscript>
@@ -252,11 +244,11 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 
         window.onresize = _resize;
 
-        window.fileInfo = {name: '<%= fileName %>', folderId: '<%= folderId %>' || ZmOrganizer.ID_BRIEFCASE, contentType: 'application/x-zimbra-ppt'};
+        window.fileInfo = {name: '${fileName}', folderId: '${folderId}' || ZmOrganizer.ID_BRIEFCASE, contentType: 'application/x-zimbra-ppt'};
 
         var item = null;
     <% if(fileId != null) {%>
-        item = slideEditView.loadData(<%= fileId %>);
+        item = slideEditView.loadData('${fileId}');
     <% } %>
         if(item) {
             window.fileInfo = item;

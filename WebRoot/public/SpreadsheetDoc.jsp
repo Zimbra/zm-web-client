@@ -171,6 +171,9 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
     </script>
     <!-- END OF YUI Library -->
 </head>
+<c:set var="fileName" value="${empty param.name ? 'Untitled' : zm:cook(param.name)}"/>
+<c:set var="folderId" value="${empty param.l ? '' : zm:cook(param.l)}"/>
+<c:set var="fileId" value="${empty param.id ? '' : zm:cook(param.id)}"/>
 <body>
 <noscript><p><strong>Javascript must be enabled to use this.</strong></p></noscript>
 <script type="text/javascript" language="JavaScript">
@@ -180,13 +183,7 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
     
     ZmSpreadSheetApp._createDBG(${isDevMode});
 
-    <%
-        String fileId = getParameter(request,"id","");
-        String fileName = getParameter(request,"name","");
-        String folderId = getParameter(request,"l","");    
-    %>
-
-    ZmSpreadSheetApp.setFile('<%= fileId %>', '<%= fileName %>', '<%=folderId%>');
+    ZmSpreadSheetApp.setFile('${fileId}', '${fileName}', '${folderId}');
 
 </script>
 </body>

@@ -1,4 +1,5 @@
 <%@ page import="java.util.Locale" %>
+<%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <!--
 ***** BEGIN LICENSE BLOCK *****
 Zimbra Collaboration Suite Web Client
@@ -69,17 +70,6 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
     Boolean isDevMode = (mode != null) && (mode.equalsIgnoreCase("mjsf"));
     Boolean inSkinDebugMode = (mode != null) && (mode.equalsIgnoreCase("skindebug"));
 
-    String fileId = request.getParameter("id");
-    String fileName = request.getParameter("name");
-    String folderId = request.getParameter("l");
-
-    if(fileName == null) fileName = "";
-    if(fileId == null) fileId = "";
-    if(folderId ==  null) folderId = "";
-
-    /*if(fileName == null) {
-        fileName = "Untitled";
-    }*/
     Locale locale = request.getLocale();
     String localeId = getAttribute(request, "localeId", null);
     if (localeId != null) {
@@ -94,6 +84,7 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
     }
 
     pageContext.setAttribute("skin", skin);
+    pageContext.setAttribute("isDevMode", isDevMode);
 %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
@@ -136,6 +127,9 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
     <% }
     %>
 </head>
+<c:set var="fileName" value="${empty param.name ? 'Untitled' : zm:cook(param.name)}"/>
+<c:set var="folderId" value="${empty param.l ? '' : zm:cook(param.l)}"/>
+<c:set var="fileId" value="${empty param.id ? '' : zm:cook(param.id)}"/>
 <body>
 <div id="main_shell"></div>
 <noscript><p><b>Javascript must be enabled to use this.</b></p></noscript>
@@ -143,9 +137,9 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 
     window.appContextPath = '<%= contextPath %>';
     window.isRestView = false;
-    ZmDocsEditApp._createDBG(<%=isDevMode%>);
+    ZmDocsEditApp._createDBG(${isDevMode});
 
-    ZmDocsEditApp.setFile('<%= fileId %>', '<%= fileName %>', '<%=folderId%>');
+    ZmDocsEditApp.setFile('${fileId}', '${fileName}', '${folderId}');
 
 </script>
 </body>
