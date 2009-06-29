@@ -92,7 +92,7 @@ ZmImportExportController.__FAULT_ARGS_MAPPING = {
  * 									assumes import to root folder.
  *        type			[string]*	Type. Defaults to <code>TYPE_TGZ</code>.
  *        subType		[string]*	Sub-type. Defaults to <code>SUBTYPE_DEFAULT[type]</code>.
- *        resolve		[string]*	Resolve duplicates: "ignore", "replace", "reset".
+ *        resolve		[string]*	Resolve duplicates: "ignore", "modify", "replace", "reset".
  * 									Defaults to <code>"ignore"</code>.
  *        views			[string]*	Comma-separated list of views.
  *        callback		[AjxCallback]*	Callback for success.
@@ -489,11 +489,15 @@ ZmImportExportController.prototype._importWarnings = function(callback, messages
 	for (var i = 0; i < messages.length; i++) {
 		msgmap[messages[i]] = true;
 	}
-	messages = AjxUtil.keys(msgmap);
+	messages = AjxUtil.map(AjxUtil.keys(msgmap), AjxStringUtil.htmlEncode);
+	if (messages.length > 5) {
+		var count = messages.length - 5;
+		messages.splice(5, count, AjxMessageFormat.format(ZmMsg.importAdditionalWarnings, [count]));
+	}
 	// show warnings
 	var msglist = [];
 	for (var i = 0; i < messages.length; i++) {
-		msglist.push("<li>", AjxStringUtil.htmlEncode(messages[i]));
+		msglist.push("<li>", messages[i]);
 	}
 	var msg = AjxMessageFormat.format(ZmMsg.importSuccessWithWarnings, [ messages.length, msglist.join("") ]);
 	ZmImportExportController.__showMessage(msg, DwtMessageDialog.WARNING_STYLE);

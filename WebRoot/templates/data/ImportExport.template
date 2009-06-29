@@ -89,8 +89,9 @@
 			<td class="ZOptionsLabelTop"><$=ZmMsg.resolveDuplicatesLabel$></td>
 			<td class="ZOptionsField"><table border="0" cellpadding="0" cellspacing="0"><tr>
 				<td><div id="${id}_RESOLVE_IGNORE" tabindex="500"></div></td>
-				<td><div id="${id}_RESOLVE_REPLACE" tabindex="501"></div></td>
-				<td><div id="${id}_RESOLVE_RESET" tabindex="502"></div></td>
+				<td><div id="${id}_RESOLVE_MODIFY" tabindex="501"></div></td>
+				<td><div id="${id}_RESOLVE_REPLACE" tabindex="502"></div></td>
+				<td><div id="${id}_RESOLVE_RESET" tabindex="503"></div></td>
 			</tr></table></td>
 		</tr>
 		<tr id="${id}_ADVANCED_row">

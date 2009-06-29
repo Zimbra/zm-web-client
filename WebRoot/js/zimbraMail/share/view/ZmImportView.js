@@ -39,6 +39,7 @@ ZmImportView = function(params) {
 			{ id: "RESOLVE", type: "DwtRadioButtonGroup", value: "",
 				items: [
 					{ id: "RESOLVE_IGNORE", label: ZmMsg.resolveDuplicateIgnore, value: "" },
+					{ id: "RESOLVE_MODIFY", label: ZmMsg.resolveDuplicateModify, value: "modify" },
 					{ id: "RESOLVE_REPLACE", label: ZmMsg.resolveDuplicateReplace, value: "replace" },
 					{ id: "RESOLVE_RESET", label: ZmMsg.resolveDuplicateReset, value: "reset" }
 				],
