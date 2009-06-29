@@ -76,7 +76,8 @@ ZmImportExportController.__FAULT_ARGS_MAPPING = {
 	"formatter.MISMATCHED_TYPE": [ "path" ],
 	"formatter.MISSING_BLOB": [ "path" ],
 	"formatter.MISSING_META": [ "path" ],
-	"formatting.MISSING_VCARD_FIELDS": [ "path" ]
+	"formatter.MISSING_VCARD_FIELDS": [ "path" ],
+	"formatter.UNKNOWN_ERROR": [ "path", "message" ]
 };
 
 //
@@ -380,25 +381,32 @@ ZmImportExportController.prototype._doImportTGZ = function(params) {
 
 ZmImportExportController.prototype._handleImportTGZResponse =
 function(funcName, params, type, fault1 /* , ... , faultN */) {
-	// show success or failure
-	if (type == "fail") {
-		// TODO: Show warnings!
-		var code = fault1.Detail.Error.Code;
-		var message = fault1.Reason.Text;
-		var args = ZmImportExportController.__faultArgs(fault1.Detail.Error.a);
-		if (code == "formatter.UNKNOWN_ERROR") {
-			var formatArgs = [ args.path, message ];
-			message = ZMsg[code] ? AjxMessageFormat.format(ZMsg[code], formatArgs) : message;
-		}
-		else {
+	// gather error/warning messages
+	var messages = [];
+	if (fault1) {
+		for (var j = 3; j < arguments.length; j++) {
+			var fault = arguments[j];
+			var code = fault.Detail.Error.Code;
+			var message = fault.Reason.Text;
+			var args = ZmImportExportController.__faultArgs(fault.Detail.Error.a);
+			if (code == "formatter.UNKNOWN_ERROR") {
+				args.path = args.path || ["(",ZmMsg.unknown,")"].join("");
+				args.message = message;
+			}
 			var mappings = ZmImportExportController.__FAULT_ARGS_MAPPING[code];
 			var formatArgs = new Array(mappings ? mappings.length : 0);
 			for (var i = 0; i < formatArgs.length; i++) {
 				formatArgs[i] = args[mappings[i]];
 			}
-			message = ZMsg[code] ? AjxMessageFormat.format(ZMsg[code], formatArgs) : message;
+			messages.push(ZMsg[code] ? AjxMessageFormat.format(ZMsg[code], formatArgs) : message);
 		}
-		this._importError(params.errorCallback, message);
+	}
+	// show success or failure
+	if (type == "fail") {
+		this._importError(params.errorCallback, messages[0]);
+	}
+	else if (type == "warn") {
+		this._importWarnings(params.callback, messages);
 	}
 	else {
 		this._importSuccess(params.callback);
@@ -472,11 +480,31 @@ ZmImportExportController.prototype._importSuccess = function(callback) {
 	return true;
 };
 
+ZmImportExportController.prototype._importWarnings = function(callback, messages) {
+	if (callback) {
+		callback.run(false);
+	}
+	// remove duplicates
+	var msgmap = {};
+	for (var i = 0; i < messages.length; i++) {
+		msgmap[messages[i]] = true;
+	}
+	messages = AjxUtil.keys(msgmap);
+	// show warnings
+	var msglist = [];
+	for (var i = 0; i < messages.length; i++) {
+		msglist.push("<li>", AjxStringUtil.htmlEncode(messages[i]));
+	}
+	var msg = AjxMessageFormat.format(ZmMsg.importSuccessWithWarnings, [ messages.length, msglist.join("") ]);
+	ZmImportExportController.__showMessage(msg, DwtMessageDialog.WARNING_STYLE);
+	return true;
+};
+
 ZmImportExportController.prototype._importError = function(errorCallback, message) {
 	if (errorCallback) {
 		errorCallback.run(false);
 	}
-	var msg = message || ZmMsg.importFailed; 
+	var msg = AjxStringUtil.htmlEncode(message) || ZmMsg.importFailed; 
 	ZmImportExportController.__showMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
 	return true;
 };
