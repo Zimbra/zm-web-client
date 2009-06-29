@@ -1588,10 +1588,14 @@ ZmCalViewController.prototype._performApptAction =
 function(appt, mode, isInstance) {
 	if (mode == ZmCalItem.MODE_DELETE) {
 		var delMode = isInstance ? ZmCalItem.MODE_DELETE_INSTANCE : ZmCalItem.MODE_DELETE_SERIES;
-        if (appt.isOrganizer()) {
+        if (appt instanceof Array) {
             this._continueDelete(appt, delMode);
         }else {
-            this._promptDeleteNotify(appt, delMode);
+            if (appt.isOrganizer()) {
+                this._continueDelete(appt, delMode);
+            }else {
+                this._promptDeleteNotify(appt, delMode);
+            }
         }
 	}
 	else if (mode == ZmAppt.MODE_DRAG_OR_SASH) {
