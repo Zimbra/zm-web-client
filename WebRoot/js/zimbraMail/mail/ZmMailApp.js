@@ -1179,9 +1179,10 @@ function(params, callback) {
 				this._forceMsgView = true;
 			} else if (view == "msg") {
 				var msg = new ZmMailMsg(id, null, true);
-				var params = {getHtml:	appCtxt.get(ZmSetting.VIEW_AS_HTML),
-							  markRead:	(appCtxt.get(ZmSetting.MARK_MSG_READ) == ZmSetting.MARK_READ_NOW),
-							  callback:	new AjxCallback(this, this._handleResponseMsgLoad, [msg, callback])};
+				var params = {getHtml:			appCtxt.get(ZmSetting.VIEW_AS_HTML),
+							  markRead:			(appCtxt.get(ZmSetting.MARK_MSG_READ) == ZmSetting.MARK_READ_NOW),
+							  callback:			new AjxCallback(this, this._handleResponseMsgLoad, [msg, callback]),
+							  errorCallback:	new AjxCallback(this, this._handleErrorMsgLoad)};
 				msg.load(params);
 				return;
 			}
@@ -1203,6 +1204,12 @@ function(params, ex) {
 		var newParams = {query:"in:inbox", callback:params.callback, errorCallback:null, types:params.types};
 		appCtxt.getSearchController().search(newParams);
 	}
+};
+
+ZmMailApp.prototype._handleErrorMsgLoad =
+function(ex) {
+	ZmZimbraMail.killSplash();
+	return false;
 };
 
 ZmMailApp.prototype._handleResponseMsgLoad =
