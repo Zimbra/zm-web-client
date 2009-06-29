@@ -1543,10 +1543,16 @@ function(addrNodes, parentNode, isDraft, accountName) {
 			if (dataSource) {
 				// main account is "sender"
 				addrNode.t = "s";
+				addrNode.p = addrNode.p || ac.get(ZmSetting.DISPLAY_NAME);
+				var provider = ZmDataSource.getProviderForAccount(dataSource);
+				if (provider && provider._nosender) {
+					addrNodes.pop();
+				}
 				// mail is "from" external account
 				addrNode = {
 					t:"f",
-					a:dataSource.getEmail()
+					a:dataSource.getEmail(),
+					p:dataSource.getName()
 				};
 				addrNodes.push(addrNode);
 			}
