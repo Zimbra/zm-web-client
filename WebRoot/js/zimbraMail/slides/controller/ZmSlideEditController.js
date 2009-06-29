@@ -144,8 +144,10 @@ ZmSlideEditController.prototype._initToolBar = function () {
 
     var graphMenuItems = [
         {name: ZmMsg.slides_themeDefault, value: "default"},
+        {name: ZmMsg.slides_themeDarkBlue, value: "darkblue"},
         {name: ZmMsg.slides_themeBlue, value: "blue"},
         {name: ZmMsg.slides_themeGreen, value: "green"},
+        {name: ZmMsg.slides_themePurple, value: "purple"},
         {name: ZmMsg.slides_themeBlueBand, value: "blueband"}
     ];
 
