@@ -124,7 +124,9 @@
                 <option selected value="1"/>
                 <fmt:message key="rootFolder"/>
                 <zm:forEachFolder var="parent">
-                    <c:if test="${parent.isContactMoveTarget and !parent.isTrash and !parent.isSpam}">
+                    <%-- still hacky to use skin than the old newAddrBookEnabled to tell whether or not Emailed Contacts are shown... --%>
+                    <c:set var="omit" value="${parent.isAutoContacts and skin eq 'velodrome2'}"/>
+                    <c:if test="${parent.isContactMoveTarget and !parent.isTrash and !parent.isSpam and !omit}">
                         <option value="${parent.id}"/>
                         ${fn:escapeXml(parent.rootRelativePath)}
                     </c:if>
