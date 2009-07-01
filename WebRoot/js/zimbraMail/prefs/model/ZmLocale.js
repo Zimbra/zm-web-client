@@ -98,6 +98,7 @@ function() {
 		case "iw": return "FlagIL"; // Hebrew -> Israel
 		case "hi": return "FlagIN"; // Hindi -> India
 		case "hu": return "FlagHU"; // Hungarian -> Hungary
+		case "id": return "FlagID"; // Indonesian -> Indonesia
 		case "is": return "FlagIS"; // Icelandic -> Iceland
 		case "it": return "FlagIT"; // Italian -> Italy
 		case "ja": return "FlagJP"; // Japanese -> Japan
@@ -118,6 +119,6 @@ function() {
 		case "tr": return "FlagTR"; // Turkish -> Turkey
 		case "uk": return "FlagUA"; // Ukrainian -> Ukraine
 		case "vi": return "FlagVN"; // Vietnamese -> Vietnam
-		default: return null;
+		default: return "FlagNone";
 	}
 };

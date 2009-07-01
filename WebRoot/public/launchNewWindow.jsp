@@ -102,7 +102,7 @@
 <link href='${contextPath}/css/common,dwt,msgview,login,zm,spellcheck,wiki,images,skin.css?v=${vers}${isDebug?"&debug=1":""}&skin=${skin}' rel='stylesheet' type="text/css">
 <jsp:include page="Boot.jsp"/>
 <script type="text/javascript">
-	AjxEnv.DEFAULT_LOCALE = "${locale}";
+	AjxEnv.DEFAULT_LOCALE = "${zm:javaLocaleId(locale)}";
 
 	appContextPath = "${contextPath}";
 	appCurrentSkin = "${skin}";

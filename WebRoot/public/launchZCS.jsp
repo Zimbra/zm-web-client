@@ -195,7 +195,7 @@
   -->
 <jsp:include page="Boot.jsp"/>
 <script>
-	AjxEnv.DEFAULT_LOCALE = "${locale}";
+	AjxEnv.DEFAULT_LOCALE = "${zm:javaLocaleId(locale)}";
 
 	function switchToStandardClient() {
 		document.location = appContextPath + "/?client=standard";

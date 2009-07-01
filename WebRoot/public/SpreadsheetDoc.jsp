@@ -127,7 +127,7 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
     <jsp:include page="Boot.jsp"/>
     
     <script>
-        AjxEnv.DEFAULT_LOCALE = "${locale}";
+        AjxEnv.DEFAULT_LOCALE = "${zm:javaLocaleId(locale)}";
         <jsp:include page="/js/ajax/util/AjxTimezoneData.js" />
     </script>
     <%
