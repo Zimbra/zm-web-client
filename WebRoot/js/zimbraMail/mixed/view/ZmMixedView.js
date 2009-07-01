@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -19,7 +21,6 @@ ZmMixedView = function(params) {
 	params.view = ZmId.VIEW_MIXED;
 	params.type = ZmItem.MIXED;
 	ZmListView.call(this, params);
-	this._mixedController = params.controller;
 };
 
 ZmMixedView.prototype = new ZmListView;
@@ -28,36 +29,13 @@ ZmMixedView.prototype.constructor = ZmMixedView;
 // Consts
 ZmMixedView.COLWIDTH_ICON 			= 19;
 ZmMixedView.COLWIDTH_FROM 			= 145;
-ZmMixedView.COLWIDTH_DATE 			= 100;
-
-// Stuff to support the use of type-based list view classes
-
-// List view class
-ZmMixedView.LV_CLASS = {};
-ZmMixedView.LV_CLASS[ZmItem.CONTACT]	= "ZmContactSimpleView";
-ZmMixedView.LV_CLASS[ZmItem.GROUP]		= "ZmContactSimpleView";
-ZmMixedView.LV_CLASS[ZmItem.CONV]		= "ZmConvListView";
-ZmMixedView.LV_CLASS[ZmItem.MSG]		= "ZmMailMsgListView";
-ZmMixedView.LV_CLASS[ZmItem.APPT]		= "ZmCalListView";
-ZmMixedView.LV_CLASS[ZmItem.TASK]		= "ZmTaskListView";
-ZmMixedView.LV_CLASS[ZmItem.PAGE]		= "ZmDetailListView";
-ZmMixedView.LV_CLASS[ZmItem.BRIEFCASE]	= "ZmDetailListView";
+ZmMixedView.COLWIDTH_DATE 			= 60;
 
 // support functions for _createItemHtml
-ZmMixedView.LV_FUNCS = ["_addParams", "_getDiv", "_getDivClass", "_getTable",
-						"_getRow", "_getRowClass", "_getRowId", "_getCell", "_getCellId",
-						"_getCellClass", "_getCellAttrText", "_getCellContents",
-						"_getFieldId"];
-
-// functions particular to certain types
-ZmMixedView.LV_ADDED_FUNCS = {};
-ZmMixedView.LV_ADDED_FUNCS[ZmItem.CONV]	= ["_getFragmentSpan", "_getFragmentHtml",
-										   "_getParticipantHtml", "_fitParticipants"];
-ZmMixedView.LV_ADDED_FUNCS[ZmItem.MSG]	= ["_getFragmentSpan", "_getFragmentHtml"];
-
-ZmMixedView.LV_FUNCS_TT = {};
-ZmMixedView.LV_FUNCS_TT[ZmItem.CONV]	= ["_getParticipantToolTip", "_handleResponseGetContact"];
-ZmMixedView.LV_FUNCS_TT[ZmItem.MSG]		= ["_getParticipantToolTip", "_handleResponseGetContact"];
+ZmMixedView.LIST_VIEW_FUNCS = ["_addParams", "_getDiv", "_getDivClass", "_getTable",
+							   "_getRow", "_getRowClass", "_getRowId", "_getCell", "_getCellId",
+							   "_getCellClass", "_getCellAttrText", "_getCellContents",
+							   "_getFieldId"];
 
 ZmMixedView.prototype.toString = 
 function() {
@@ -72,7 +50,7 @@ function(list, sortField) {
 	// We need to add listeners to each of the lists that 
 	// owns items in the mixed array...
 	var items = list.getArray();
-	var owners = {};
+	var owners = new Object();
 	for (var i = 0; i < items.length; i++) {
 		var list = items[i].list;
 		if (list) {
@@ -90,7 +68,11 @@ function(parent) {
 	var hList = [];
 
 	if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
-		hList.push(new DwtListHeaderItem({field:ZmItem.F_SELECTION, icon:"CheckboxUnchecked", width:ZmMixedView.COLWIDTH_ICON}));
+		hList.push(new DwtListHeaderItem({field:ZmItem.F_SELECTION, icon:"TaskCheckbox", width:ZmMixedView.COLWIDTH_ICON}));
+	}
+
+	if (appCtxt.get(ZmSetting.FLAGGING_ENABLED)) {
+		hList.push(new DwtListHeaderItem({field:ZmItem.F_FLAG, icon:"FlagRed", width:ZmMixedView.COLWIDTH_ICON}));
 	}
 
 	if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
@@ -108,34 +90,51 @@ function(parent) {
 
 /**
  * Let the main view for the given item handle creating the HTML for it.
- * We also need to make sure any functions called by DwtListView::_createItemHtml
- * come from the right class. Since there might not be an instance of the right
- * list view class around, we call its prototype directly.
+ * We also need to make sure any functions called by DwtListView._createItemHtml
+ * come from the right class. Kinda hacky, but it works.
  */
 ZmMixedView.prototype._createItemHtml =
 function(item, params) {
-
 	params = params || {};
 	params.isMixedView = true;
-	AjxDispatcher.require(ZmMixedController.PKGS[item.type]);
-	var listViewClass = window[ZmMixedView.LV_CLASS[item.type]];
-	var funcs = ZmMixedView.LV_FUNCS.concat(ZmMixedView.LV_ADDED_FUNCS[item.type]);
-	this._emulateListView(listViewClass, funcs);
-
+	var listViewClass;
+	var funcs = ZmMixedView.LIST_VIEW_FUNCS;
+	if (item.type == ZmItem.CONTACT || item.type == ZmItem.GROUP) {
+		AjxDispatcher.require(["ContactsCore", "Contacts"]);
+		listViewClass = ZmContactSimpleView;
+		this._emulateListView(listViewClass, funcs);
+	} else if (item.type == ZmItem.CONV) {
+		AjxDispatcher.require(["MailCore", "Mail"]);
+		funcs = funcs.concat(["_getFragmentSpan", "_getFragmentHtml",
+							  "_getParticipantHtml", "_fitParticipants"]);
+		listViewClass = ZmConvListView;
+		this._emulateListView(listViewClass, funcs);
+	} else if (item.type == ZmItem.MSG) {
+		AjxDispatcher.require(["MailCore", "Mail"]);
+		funcs = funcs.concat(["_getFragmentSpan", "_getFragmentHtml"]);
+		listViewClass = ZmMailMsgListView;
+		this._emulateListView(listViewClass, funcs);
+	} else if (item.type == ZmItem.APPT) {
+		// TODO - need listview for appts (see bug 19338)
+		return null;
+	} else if (item.type == ZmItem.TASK) {
+		AjxDispatcher.require(["TasksCore", "Tasks"]);
+		listViewClass = ZmTaskListView;
+		this._emulateListView(listViewClass, funcs);
+	} else if (item.type == ZmItem.PAGE /*|| item.type == ZmItem.DOCUMENT*/) {
+		AjxDispatcher.require(["NotebookCore", "Notebook"]);
+		listViewClass = ZmFileListView;
+		this._emulateListView(listViewClass, funcs);
+	}else if(item.type == ZmItem.BRIEFCASE){
+        AjxDispatcher.require(["BriefcaseCore", "Briefcase"]);
+		listViewClass = ZmDetailListView;
+		this._emulateListView(listViewClass, funcs);
+    }
 	return listViewClass.prototype._createItemHtml.call(this, item, params);
 };
 
-/**
- * Copy function pointers from appropriate class to this one, making this class
- * act like that one.
- *
- * @param listViewClass		[function]		source of list view functions
- * @param funcs				[array]			list of functions to copy
- */
 ZmMixedView.prototype._emulateListView =
 function(listViewClass, funcs) {
-
-	if (!(funcs && funcs.length)) { return; }
 	for (var i = 0; i < funcs.length; i++) {
 		var funcName = funcs[i];
 		ZmMixedView.prototype[funcName] = listViewClass.prototype[funcName];
@@ -144,35 +143,63 @@ function(listViewClass, funcs) {
 
 ZmMixedView.prototype._getHeaderToolTip =
 function(field, itemIdx) {
-	return (field == ZmItem.F_TYPE)	? ZmMsg.itemType : ZmListView.prototype._getHeaderToolTip.apply(this, arguments);
+
+    return (field == ZmItem.F_TYPE) ? ZmMsg.itemType :
+									  ZmListView.prototype._getHeaderToolTip.call(this, field, itemIdx);
 };
 
 ZmMixedView.prototype._getToolTip =
-function(params) {
-
-	var tooltip, field = params.field, item = params.item;
-	if (field == ZmItem.F_TYPE) {
+function(field, item, ev, div, match) {
+	var tooltip = null;
+	var listViewClass;
+	if (field == ZmItem.F_FROM) {
+		if (item.type == ZmItem.CONTACT) {
+			listViewClass = ZmContactSimpleView;
+		} else if (item.type == ZmItem.CONV) {
+			listViewClass = ZmConvListView;
+			this._emulateListView(listViewClass, ["_getParticipantToolTip"]);
+		} else if (item.type == ZmItem.MSG) {
+			listViewClass = ZmMailMsgListView;
+			this._emulateListView(listViewClass, ["_getParticipantToolTip"]);
+		} else {
+			listViewClass = ZmListView;
+		}
+	} else if (field == ZmItem.F_SUBJECT) {
+		if (item.type == ZmItem.CONV) {
+			listViewClass = ZmConvListView;
+		} else if (item.type == ZmItem.MSG) {
+			listViewClass = ZmMailMsgListView;
+		} else {
+			listViewClass = ZmListView;
+		}
+	} else if (field == ZmItem.F_TYPE) {
 		tooltip = ZmMsg[ZmItem.MSG_KEY[item.type]];
 	} else {
-		var listViewClass = window[ZmMixedView.LV_CLASS[item.type]];
-		this._emulateListView(listViewClass, ZmMixedView.LV_FUNCS_TT[item.type]);
-		// some views hand off to their controllers
-		this._controller = this._mixedController._getListController(item.type);
-		tooltip = listViewClass.prototype._getToolTip.apply(this, arguments);
-		this._controller = this._mixedController;
+		listViewClass = ZmListView;
 	}
+
+	tooltip = listViewClass ? listViewClass.prototype._getToolTip.apply(this, arguments) : tooltip;
 	return tooltip;
 };
 
 ZmMixedView.prototype._changeListener =
 function(ev) {
-
-	if (appCtxt.getAppViewMgr().getCurrentViewId() != this.view) { return; }
+	if (appCtxt.getAppViewMgr().getCurrentViewId() != this.view)
+		return;
 
 	if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE) {
 		var items = ev.getDetail("items");
+		var contactList = AjxDispatcher.run("GetContacts");
+
+		// walk the list of items and if any are contacts,
 		for (var i = 0; i < items.length; i++) {
-			// remove from controller's list
+			if ((items[i].type == ZmItem.CONTACT || items[i].type == ZmItem.GROUP) &&
+				ev.event == ZmEvent.E_DELETE)
+			{
+				// and is hard delete, remove from canonical list
+				contactList.remove(items[i]);
+			}
+			// also remove from controller's list
 			this._controller.getList().remove(items[i]);
 		}
 	}

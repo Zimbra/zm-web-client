@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -25,6 +27,18 @@ ZmController = function(container, app) {
 	this._currentView = null;
 	
 	this._authenticating = false;
+};
+
+ZmController._currAppViewTabGroup = null;
+
+ZmController._setCurrentAppViewTabGroup =
+function(tabGroup) {
+	ZmController._currAppViewTabGroup = tabGroup;
+};
+
+ZmController._getCurrentAppViewTabGroup =
+function() {
+	return ZmController._currAppViewTabGroup;
 };
 
 // Abstract methods
@@ -56,7 +70,7 @@ function(msg, ex, noExecReset, hideReportButton)  {
 		ex.msg = ex.msg || msg;
 		var fields = ["method", "msg", "code", "detail", "trace", "request"];
 		var html = [], i = 0;
-		html[i++] = "<table>";
+		html[i++] = "<div style='height:300px; overflow:auto;'><table width='100%'>";
 		for (var j = 0; j < fields.length; j++) {
 			var fld = fields[j];
 			var value = ex[fld];
@@ -71,7 +85,7 @@ function(msg, ex, noExecReset, hideReportButton)  {
 				html[i++] = ["<tr><td valign='top'>", fields[j], ":</td><td valign='top'>", value, "</td></tr>"].join("");
 			}
 		}
-		html[i++] = "</table>";
+		html[i++] = "</table></div>";
 		detailStr = html.join("");
 	}
 	errorDialog.registerCallback(DwtDialog.OK_BUTTON, this._errorDialogCallback, this);
@@ -89,11 +103,6 @@ function() {
 	return this._currentView;
 };
 
-ZmController.prototype.getKeyMapName =
-function() {
-	return "Global";
-};
-
 ZmController.prototype.handleKeyAction =
 function(actionCode) {
 	DBG.println(AjxDebug.DBG3, "ZmController.handleKeyAction");
@@ -102,6 +111,12 @@ function(actionCode) {
 	var tabView = this.getTabView ? this.getTabView() : null;
 	if (tabView && tabView.handleKeyAction(actionCode)) {
 		return true;
+	}
+	
+	// check for action code with argument, eg MoveToFolder3
+	var shortcut = ZmShortcut.parseAction("Global", actionCode);
+	if (shortcut) {
+		actionCode = shortcut.baseAction;
 	}
 
 	// shortcuts tied directly to operations
@@ -138,12 +153,25 @@ function(actionCode) {
 			}
 			break;
 
+		case ZmKeyMap.GOTO_TAG:
+			if (shortcut && appCtxt.get(ZmSetting.SEARCH_ENABLED)) {
+				var tagId = (appCtxt.multiAccounts && !appCtxt.getActiveAccount().isMain)
+					? ZmOrganizer.getSystemId(shortcut.arg) : shortcut.arg;
+				var tag = appCtxt.getById(tagId);
+				if (tag) {
+					appCtxt.getSearchController().search({query: 'tag:"' + tag.name + '"'});
+				}
+			}
+			break;
+
 		case ZmKeyMap.SAVED_SEARCH:
-			if (appCtxt.get(ZmSetting.SEARCH_ENABLED)) {
-				var dlg = appCtxt.getChooseFolderDialog();
-				var params = {treeIds:	[ZmOrganizer.SEARCH],
-							  title:	ZmMsg.selectSearch};
-				ZmController.showDialog(dlg, new AjxCallback(null, ZmController._searchSelectionCallback, [dlg]), params);
+			if (shortcut && appCtxt.get(ZmSetting.SEARCH_ENABLED)) {
+				var sid = (appCtxt.multiAccounts && !appCtxt.getActiveAccount().isMain)
+					? ZmOrganizer.getSystemId(shortcut.arg) : shortcut.arg;
+				var searchFolder = appCtxt.getById(sid);
+				if (searchFolder) {
+					appCtxt.getSearchController().redoSearch(searchFolder.search);
+				}
 			}
 			break;
 
@@ -151,25 +179,6 @@ function(actionCode) {
 			return false;
 	}
 	return true;
-};
-
-ZmController._searchSelectionCallback =
-function(dialog, searchFolder) {
-	if (searchFolder) {
-		appCtxt.getSearchController().redoSearch(searchFolder.search);
-	}
-	dialog.popdown();
-};
-
-/**
- * Returns true if shortcuts for the given map are supported for this view. For example, given the map
- * "tabView", a controller that creates a tab view would return true.
- *
- * @param map	[string]	name of a map, presumably one from DwtKeyMap
- */
-ZmController.prototype.mapSupported =
-function(map) {
-	return false;
 };
 
 ZmController.prototype._newListener =
@@ -249,26 +258,14 @@ function() {
 // postShowCallback.
 ZmController.prototype._restoreFocus = 
 function(focusItem, noFocus) {
-
 	var rootTg = appCtxt.getRootTabGroup();
-
-	var curApp = appCtxt.getCurrentApp();
-	var ovId = curApp && curApp.getOverviewId();
-	var overview = ovId && appCtxt.getOverviewController().getOverview(ovId);
-	if (rootTg && overview && (overview != ZmController._currentOverview)) {
-		rootTg.replaceMember(ZmController._currentOverview, overview, false, false, null, true);
-		ZmController._currentOverview = overview;
-	}
-
 	var myTg = this.getTabGroup();
-	focusItem = focusItem || this._savedFocusMember || this._getDefaultFocusItem() || rootTg.getFocusMember();
-	noFocus = noFocus || ZmController.noFocus;
-	ZmController.noFocus = false;
-	if (rootTg && myTg && (myTg != ZmController._currentAppViewTabGroup)) {
-		rootTg.replaceMember(ZmController._currentAppViewTabGroup, myTg, false, false, focusItem, noFocus);
-		ZmController._currentAppViewTabGroup = myTg;
-	} else if (focusItem && !noFocus) {
-		appCtxt.getKeyboardMgr().grabFocus(focusItem);
+	var kbMgr = appCtxt.getKeyboardMgr();
+
+	if (rootTg && myTg) {
+		focusItem = focusItem || this._savedFocusMember || this._getDefaultFocusItem() || rootTg.getFocusMember();
+		rootTg.replaceMember(ZmController._getCurrentAppViewTabGroup(), myTg, false, false, focusItem, noFocus);
+		ZmController._setCurrentAppViewTabGroup(myTg);
 	}
 };
 
@@ -530,10 +527,10 @@ function() {
 
 // Pop up a dialog. Since it's a shared resource, we need to reset first.
 ZmController.showDialog = 
-function(dialog, callback, params, account) {
+function(dialog, callback, params) {
 	dialog.reset();
 	dialog.registerCallback(DwtDialog.OK_BUTTON, callback);
-	dialog.popup(params, account);
+	dialog.popup(params);
 };
 
 // Pop down the dialog and clear any pending actions (initiated from an action menu).

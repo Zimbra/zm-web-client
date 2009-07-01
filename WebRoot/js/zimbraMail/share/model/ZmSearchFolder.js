@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -18,15 +20,8 @@ ZmSearchFolder = function(params) {
 	ZmFolder.call(this, params);
 	
 	if (params.query) {
-		var account = this.accountId && appCtxt.getAccount(this.accountId);
-		var searchParams = {
-			query:params.query,
-			types:params.types,
-			sortBy:params.sortBy,
-			searchId:params.id,
-			accountName:(account && account.name)
-		};
-		this.search = new ZmSearch(searchParams);
+		this.search = new ZmSearch({query:params.query, types:params.types,
+								   sortBy:params.sortBy, searchId:params.id});
 	}
 };
 
@@ -49,7 +44,7 @@ function(params) {
 		}
 	}
 	if (params.search.sortBy) {
-		searchNode.setAttribute("sortBy", params.search.sortBy);
+		searchNode.setAttribute("sortBy", ZmSearch.SORT_BY[params.search.sortBy]);
 	}
 	searchNode.setAttribute("l", params.parent.id);
 	var errorCallback = new AjxCallback(null, ZmOrganizer._handleErrorCreate, params);
@@ -90,3 +85,25 @@ function(parentId) {
 	return appCtxt.getById(parentId); 
 };
 
+/**
+ * Returns true if this saved search contains one of the types in the given hash.
+ * 
+ * @param types		[hash]		a hash of search types (item type IDs)
+ */
+ZmSearchFolder.prototype._typeMatch =
+function(types) {
+	if (!this.search) {
+		return false;
+	}
+	if (!this.search.types) {
+		// if types are missing, default to mail
+		return (types[ZmItem.CONV] || types[ZmItem.MSG]);
+	}
+	var childSearchTypes = this.search.types;
+	for (var j = 0; j < childSearchTypes.length; j++) {
+		if (types && types[childSearchTypes[j]]) {
+			return true;
+		}
+	}
+	return false;
+};

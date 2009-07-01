@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008 Zimbra, Inc.
+ * Copyright (C) 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -67,7 +69,7 @@ function(parent) {
 	var headers = [];
 	var view = this._view;
 	if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
-		headers.push(new DwtListHeaderItem({field:ZmItem.F_SELECTION, icon:"CheckboxUnchecked", width:ZmListView.COL_WIDTH_ICON,
+		headers.push(new DwtListHeaderItem({field:ZmItem.F_SELECTION, icon:"TaskCheckbox", width:ZmListView.COL_WIDTH_ICON,
 											name:ZmMsg.selection}));
 	}	
 	if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
@@ -90,7 +92,7 @@ ZmDetailListView.prototype._getCellContents =
 function(htmlArr, idx, item, field, colIdx, params) {
 
 	if (field == ZmItem.F_SELECTION) {
-		var icon = params.bContained ? "CheckboxChecked" : "CheckboxUnchecked";
+		var icon = params.bContained ? "TaskCheckboxCompleted" : "TaskCheckbox";
 		idx = this._getImageHtml(htmlArr, idx, icon, this._getFieldId(item, field));
 	} else if (field == ZmItem.F_TYPE) {
 		var contentType = item.contentType;
@@ -104,7 +106,7 @@ function(htmlArr, idx, item, field, colIdx, params) {
 		}
 		htmlArr[idx++] = AjxImg.getImageHtml(icon);
 	} else if (field == ZmItem.F_SUBJECT) {
-		htmlArr[idx++] = "<div id='"+this._getFieldId(item,ZmItem.F_SUBJECT)+"'>"+AjxStringUtil.htmlEncode(item.name)+"</div>";
+		htmlArr[idx++] = AjxStringUtil.htmlEncode(item.name);
 	} else if (field == ZmItem.F_FILE_TYPE) {
 		var mimeInfo = item.contentType ? ZmMimeTable.getInfo(item.contentType) : null;
 		htmlArr[idx++] = mimeInfo ? mimeInfo.desc : "&nbsp;";
@@ -135,7 +137,7 @@ function(htmlArr, idx, item, field, colIdx, params) {
 	} else {
 		idx = ZmListView.prototype._getCellContents.apply(this, arguments);
 	}
-
+	
 	return idx;
 };
 
@@ -204,11 +206,4 @@ function() {
     var files = this.processUploadFiles();
     attachDialog.uploadFiles(files, document.getElementById("zdnd_form"), {id:this._controller._currentFolder});
 };
-
-ZmDetailListView.prototype._getToolTip =
-function(params) {
-	if (!params.item) { return; }
-	return this._controller.getItemTooltip(params.item, this);
-};
-
 //end zimbradnd

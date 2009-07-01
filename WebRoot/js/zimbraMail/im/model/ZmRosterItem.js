@@ -1,15 +1,17 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ *
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008 Zimbra, Inc.
- * 
+ * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
+ *
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ *
  * ***** END LICENSE BLOCK *****
  */
 ZmRosterItem = function(id, list, name, presence, groupNames) {
@@ -42,18 +44,26 @@ function() {
  */
 ZmRosterItem.prototype._delete =
 function() {
-	ZmImApp.INSTANCE.getService().deleteRosterItem(this);
+	this._modify(this.id, this.name, this.groupNames, true);
+};
+
+/**
+ * modify item on server. notification will remove us from list
+ */
+ZmRosterItem.prototype._modify =
+function(id, name, groupNames, doDelete) {
+	var soapDoc = AjxSoapDoc.create("IMSubscribeRequest", "urn:zimbraIM");
+	var method = soapDoc.getMethod();
+	method.setAttribute("addr", id);
+	if (name) method.setAttribute("name", name);
+	if (groupNames) method.setAttribute("groups", groupNames);
+	method.setAttribute("op", doDelete ? "remove" : "add");
+	appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true});
 };
 
 ZmRosterItem.prototype.getPresence =
 function() {
 	return this.presence;
-};
-
-ZmRosterItem.prototype.addGroup =
-function(groupName) {
-	this.groups.push(groupName);
-	this.groupNames = this.groups.join(",");
 };
 
 ZmRosterItem.prototype._notifyTyping = function(typing) {
@@ -100,6 +110,27 @@ function(newName) {
 	fields[ZmRosterItem.F_NAME] = this.name;
 	this.list._notify(ZmEvent.E_MODIFY, { fields: fields, items: [this] });
 	delete this._toolTip;
+};
+
+/**
+ * sends updated group list to server
+ */
+ZmRosterItem.prototype.doRenameGroup =
+function(oldGroup, newGroup) {
+	var oldI = -1;
+	var newI = -1;
+	for (var i in this.groups) {
+		if (this.groups[i] == oldGroup) oldI = i;
+		if (this.groups[i] == newGroup) newI = i;
+	}
+	if (newI !=-1 || oldI == -1) return;
+	var newGroups = [];
+	for (var i in this.groups) {
+		if (i != oldI) newGroups.push(this.groups[i]);
+	}
+	newGroups.push(newGroup);
+	var newGroupNames = newGroups.join(",");
+	this._modify(this.id, this.name, newGroupNames, false);
 };
 
 ZmRosterItem.sortCompare =

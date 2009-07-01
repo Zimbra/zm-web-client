@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -36,12 +38,10 @@ ZmPrefView = function(params) {
 
 	this.setScrollStyle(DwtControl.SCROLL);
 	this.prefView = {};
-	this._tabId = {};
-	this._sectionId = {};
-	this._hasRendered = false;
+    this._tabId = {};
+    this._hasRendered = false;
 
 	this.setVisible(false);
-	this.getTabBar().setVisible(false);
 };
 
 ZmPrefView.prototype = new DwtTabView;
@@ -60,20 +60,6 @@ function() {
 	return this._controller;
 };
 
-ZmPrefView.prototype.getSectionForTab =
-function(tabKey) {
-	var sectionId = this._sectionId[tabKey];
-	return ZmPref.getPrefSectionMap()[sectionId];
-};
-
-ZmPrefView.prototype.getTabForSection =
-function(sectionOrId) {
-	var section = (typeof sectionOrId == "string")
-		? ZmPref.getPrefSectionMap()[sectionOrId] : sectionOrId;
-	var sectionId = section && section.id;
-	return this._tabId[sectionId];
-};
-
 /**
 * Displays a set of tabs, one for each preferences page. The first tab will have its
 * page rendered.
@@ -82,101 +68,25 @@ ZmPrefView.prototype.show =
 function() {
 	if (this._hasRendered) { return; }
 
-	// add sections that have been registered so far
 	var sections = ZmPref.getPrefSectionArray();
 	for (var i = 0; i < sections.length; i++) {
 		var section = sections[i];
-		this._addSection(section);
-	}
+		// does the section meet the precondition?
+		if (!this._controller.checkPreCondition(section)) { continue; }
 
-	// add listener for sections added/removed later...
-	var setting = appCtxt.getSettings().getSetting(ZmSetting.PREF_SECTIONS);
-	setting.addChangeListener(new AjxListener(this, this._prefSectionsModified));
+		// add section as a tab
+		var view = (section.createView)
+			? (section.createView(this, section, this._controller))
+			: (new ZmPreferencesPage(this, section, this._controller));
+		this.prefView[section.id] = view;
+		var tabButtonId = ZmId.getTabId(this._controller._currentView, section.title.replace(/[' ]/ig,"_"));
+		var tabId = this.addTab(section.title, view, tabButtonId);
+        this._tabId[section.id] = tabId;
+    }
 
-	// display
 	this.resetKeyBindings();
 	this._hasRendered = true;
 	this.setVisible(true);
-};
-
-ZmPrefView.prototype._prefSectionsModified = function(evt) {
-	var sectionId = evt.getDetails();
-	var section = appCtxt.get(ZmSetting.PREF_SECTIONS, sectionId);
-	if (section) {
-		this._prefSectionAdded(section);
-	}
-	else {
-		this._prefSectionRemoved(sectionId);
-	}
-};
-
-ZmPrefView.prototype._prefSectionAdded = function(section) {
-	// add section to tabs
-	var index = this._getIndexForSection(section.id);
-	this._addSection(section, index);
-
-	// create new page pref organizer
-	var organizer = ZmPrefPage.createFromSection(section);
-	var treeController = appCtxt.getOverviewController().getTreeController(ZmOrganizer.PREF_PAGE);
-	var tree = treeController.getDataTree();
-	var parent = tree.getById(ZmId.getPrefPageId(section.parentId)) || tree.root;
-	organizer.pageId = this.getNumTabs();
-	organizer.parent = parent;
-
-	// find index within parent's children
-	var index = null;
-	var children = parent.children.getArray();
-	for (var i = 0; i < children.length; i++) {
-		if (section.priority < this.getSectionForTab(children[i].pageId).priority) {
-			index = i;
-			break;
-		}
-	}
-	parent.children.add(organizer, index);
-
-	// notify so that views can be updated
-	organizer._notify(ZmEvent.E_CREATE);
-};
-
-ZmPrefView.prototype._prefSectionRemoved = function(sectionId) {
-	var index = this._getIndexForSection(sectionId);
-	var tree = appCtxt.getTree(ZmOrganizer.PREF_PAGE);
-	var organizer = tree && tree.getById(ZmId.getPrefPageId(sectionId));
-	if (organizer) {
-		organizer.notifyDelete();
-	}
-};
-
-/**
- * <strong>Note:</strong>
- * This is typically called automatically when adding sections.
- *
- * @param section   [object]    The section to add.
- * @param index     [number]    (Optional) The index where to add.
- */
-ZmPrefView.prototype._addSection = function(section, index) {
-	// does the section meet the precondition?
-	if (!this._controller.checkPreCondition(section)) { return; }
-
-	// create pref page's view
-	var view = (section.createView)
-		? (section.createView(this, section, this._controller))
-		: (new ZmPreferencesPage(this, section, this._controller));
-	this.prefView[section.id] = view;
-	
-	// add section as a tab
-	var tabButtonId = ZmId.getTabId(this._controller._currentView, ZmId.getPrefPageId(section.id));
-	var tabId = this.addTab(section.title, view, tabButtonId, index);
-    this._tabId[section.id] = tabId;
-	this._sectionId[tabId] = section.id;
-};
-
-ZmPrefView.prototype._getIndexForSection = function(id) {
-	var sections = ZmPref.getPrefSectionArray();
-	for (var i = 0; i < sections.length; i++) {
-		if (sections[i].id == id) break;
-	}
-	return i;
 };
 
 ZmPrefView.prototype.reset =
@@ -257,10 +167,11 @@ function() {
 	var callbacks = [];
 	for (var id in this.prefView) {
 		var viewPage = this.prefView[id];
-		var callback = viewPage && viewPage.hasRendered() &&
-					   viewPage.getPostSaveCallback && viewPage.getPostSaveCallback();
-		if (callback) {
-			callbacks.push(callback);
+		if (viewPage && viewPage.getPostSaveCallback && viewPage.hasRendered()) {
+			var callback = viewPage.getPostSaveCallback();
+			if (callback) {
+				callbacks.push(callback);
+			}
 		}
 	}
 	return callbacks;
@@ -286,7 +197,7 @@ function(dirtyCheck, noValidation, batchCommand, prefView) {
 	for (var view in pv) {
 		var section = sections[view];
 		if (section.manageChanges) { continue; }
-
+        
 		var viewPage = pv[view];
 		if (!viewPage || (viewPage && !viewPage.hasRendered())) { continue; }
 
@@ -364,12 +275,18 @@ function(section, viewPage, dirtyCheck, noValidation, list, errors, view) {
 			}
 		}
 		
-		var unchanged = !this._prefChanged(pref.dataType, origValue, value);
+		var unchanged = (value == origValue);
+		// null and "" are the same string for our purposes
+		if (pref.dataType == ZmSetting.D_STRING) {
+			unchanged = unchanged || ((value == null || value == "") &&
+									  (origValue == null ||
+									   origValue == ""));
+		}
 
 		// don't try to update on server if it's client-side pref
 		var addToList = (!unchanged && (pref.name != null));
 		if (dirtyCheck && addToList) {
-			return true;
+				return true;
 		}
 
 		if (!unchanged) {
@@ -392,21 +309,6 @@ function(section, viewPage, dirtyCheck, noValidation, list, errors, view) {
 			this._controller.setDirty(view, true);
 		}
 	}
-};
-
-ZmPrefView.prototype._prefChanged =
-function(type, origValue, value) {
-
-	var test1 = value || null;
-	var test2 = origValue || null;
-
-	if (type == ZmSetting.D_LIST) {
-		return !AjxUtil.arrayCompare(test1, test2);
-	}
-	if (type == ZmSetting.D_HASH) {
-		return !AjxUtil.hashCompare(test1, test2);
-	}
-	return Boolean(test1 != test2);
 };
 
 /**

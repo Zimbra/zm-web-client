@@ -1,19 +1,3 @@
-<%--
- * ***** BEGIN LICENSE BLOCK *****
- * 
- * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008 Zimbra, Inc.
- * 
- * The contents of this file are subject to the Yahoo! Public License
- * Version 1.0 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
- * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
- * ***** END LICENSE BLOCK *****
---%>
 <%@ tag body-content="empty" %>
 <%@ attribute name="message" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZMessageBean" %>
 <%@ attribute name="invite" rtexprvalue="true" required="true" type="com.zimbra.cs.zclient.ZInvite" %>
@@ -39,14 +23,6 @@
 </c:set>
 
 <c:set var="appt" value="${invite.component}"/>
-<c:if test="${empty theBody and appt.isNoBlob}">
-    <c:if test="${!empty appt.descriptionHtml}">
-        <c:set var="theBody" value="${appt.descriptionHtml}"/>
-    </c:if>
-    <c:if test="${empty appt.descriptionHtml}">
-        <c:set var="theBody" value="${appt.description}"/>
-    </c:if>
-</c:if>
 <c:catch>
     <c:set var="myAttendee" value="${zm:getMyAttendee(invite, mailbox)}"/>
     <c:set var="pstat" value="${not empty param.pstat ? param.pstat : not empty myAttendee ? myAttendee.participantStatus : ''}"/>
@@ -132,7 +108,7 @@
                                         </c:otherwise>
                                     </c:choose>
                                     ${fn:escapeXml(zm:getApptDateBlurb(pageContext, mailbox.prefs.timeZone, startDate.time, endDate.time, appt.allDay))}
-                                    &nbsp;<span class='ZhCalTimeZone'>${mailbox.prefs.timeZoneCanonicalId}</span>
+                                    &nbsp;<span class='ZhCalTimeZone'>${mailbox.prefs.timeZoneWindowsId}</span>
                                 </td>
                             </tr>
                             <c:if test="${appt.exception}">

@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -84,16 +86,6 @@ function() {
 };
 
 /**
-* Returns the mobile devices controller.
-*/
-ZmPrefController.prototype.getMobileDevicesController =
-function() {
-	if (!this._mobileDevicesController)
-		this._mobileDevicesController = new ZmMobileDevicesController(this._container, this._app, this._prefsView);
-	return this._mobileDevicesController;
-};
-
-/**
  * Checks for a precondition on the given object. If one is found, it is
  * evaluated based on its type. Note that the precondition must be contained
  * within the object in a property named "precondition".
@@ -148,24 +140,19 @@ function(actionCode) {
 	DBG.println("ZmPrefController.handleKeyAction");
 	switch (actionCode) {
 
-		case ZmKeyMap.CANCEL:
+        case ZmKeyMap.CANCEL:
 			this._backListener();
 			break;
 
-		case ZmKeyMap.SAVE:
-			this._saveListener();
-			break;
+        case ZmKeyMap.SAVE:
+            this._saveListener();
+            break;
 
-		default:
+        default:
 			return ZmController.prototype.handleKeyAction.call(this, actionCode);
 			break;
 	}
 	return true;
-};
-
-ZmPrefController.prototype.mapSupported =
-function(map) {
-	return (map == "tabView");
 };
 
 ZmPrefController.prototype.getTabView =
@@ -191,9 +178,9 @@ function(view) {
 */
 ZmPrefController.prototype._resetOperations =
 function(parent, view) {
-	var section = ZmPref.getPrefSectionMap()[view];
-	var manageChanges = section && section.manageChanges;
-	parent.enable(ZmOperation.SAVE, !manageChanges);
+    var section = ZmPref.getPrefSectionMap()[view];
+    var manageChanges = section && section.manageChanges; 
+    parent.enable(ZmOperation.SAVE, !manageChanges);
 	parent.enable(ZmOperation.CANCEL, appCtxt.getAppViewMgr()._hidden.length > 0);
 };
 
@@ -212,8 +199,8 @@ function() {
 		this._prefsView = new ZmPrefView({parent:this._container, posStyle:Dwt.ABSOLUTE_STYLE, controller:this});
 		var elements = {};
 		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
-		elements[ZmAppViewMgr.C_APP_CONTENT] = this._prefsView;
-		this._app.createView({viewId:this._currentView, elements:elements, callbacks:callbacks, isAppView:true});
+		elements[ZmAppViewMgr.C_APP_CONTENT_FULL] = this._prefsView;
+		this._app.createView(this._currentView, elements, callbacks, true);
 		this._initializeTabGroup();
 	}
 };
@@ -401,15 +388,27 @@ function() {
 		if (viewPage) {
 			viewPage.showMe();
 		}
+
+		// add account name to toolbar
+		if (!this._acctInfoContainer) {
+			this._toolbar.addFiller();
+			this._acctInfoContainer = new DwtComposite({parent:this._toolbar});
+		}
+		this._acctInfoContainer.getHtmlElement().innerHTML = [
+			"<span class='ZOptionsAcctName'>",
+			ZmMsg.accountLabel, " ",
+			appCtxt.getActiveAccount().getDisplayName(),
+			"</span>"].join("");
 	}
-	return true; // *always* return true!
+	// *always* return true!
+	return true;
 };
 
 ZmPrefController.prototype._postShowCallback =
 function() {
 	ZmController.prototype._postShowCallback.call(this);
-	// NOTE: Some pages need to know when they are being shown again in order to
-	//       display the state correctly.
+	// NOTE: Some pages need to know when they are being shown
+	//       again in order to display the state correctly.
 	this._prefsView.reset();
 };
 

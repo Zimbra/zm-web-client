@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -61,12 +63,11 @@ function() {
  * @param items		[Array]			a list of items to move
  * @param folder	[ZmFolder]		destination folder
  * @param attrs		[Object]		additional attrs for SOAP command
- * @param callback	[AjxCallback]*	callback to trigger once operation completes
  */
 ZmMailList.prototype.moveItems =
-function(items, folder, attrs, callback) {
+function(items, folder, attrs) {
 	if (this.type != ZmItem.CONV) {
-		ZmList.prototype.moveItems.call(this, items, folder, attrs, callback);
+		ZmList.prototype.moveItems.call(this, items, folder, attrs);
 		return;
 	}
 	
@@ -74,22 +75,12 @@ function(items, folder, attrs, callback) {
 	attrs.tcon = this._getTcon();
 	attrs.l = folder.id;
 	var action = (folder.id == ZmFolder.ID_TRASH) ? "trash" : "move";
-	var respCallback = new AjxCallback(this, this._handleResponseMoveItems, [folder, callback]);
-
-	// HACK: force action to happen on main account since stored folder ID isn't
-	// fully qualified. Otherwise action is performed on "active" account which
-	// would be wrong. Alternatively, setting folder ID to be fully qualified
-	// results in a server error (no auth token). Bah.
-	var accountName;
-	if (appCtxt.multiAccounts && folder.id == folder.nId) {
-		accountName = appCtxt.getMainAccount().name;
-	}
-
-	this._itemAction({items: items, action: action, attrs: attrs, callback: respCallback, accountName: accountName});
+	var respCallback = new AjxCallback(this, this._handleResponseMoveItems, [folder]);
+	this._itemAction({items: items, action: action, attrs: attrs, callback: respCallback});
 };
 
 ZmMailList.prototype._handleResponseMoveItems =
-function(folder, callback, result) {
+function(folder, result) {
 	var movedItems = result.getResponse();	
 	if (movedItems && movedItems.length) {
 		this.moveLocal(movedItems, folder.id);
@@ -98,10 +89,6 @@ function(folder, callback, result) {
 		}
 		// note: this happens before we process real notifications
 		ZmModel.notifyEach(movedItems, ZmEvent.E_MOVE);
-	}
-
-	if (callback) {
-		callback.run();
 	}
 };
 
@@ -112,10 +99,9 @@ function(folder, callback, result) {
 * @param items			[Array]			a list of items to move
 * @param markAsSpam		[boolean]		if true, mark as "spam"
 * @param folder			[ZmFolder]*		destination folder
-* @param childWin		[window]*		child window this action is happening for
 */
 ZmMailList.prototype.spamItems = 
-function(items, markAsSpam, folder, childWin) {
+function(items, markAsSpam, folder) {
 	if (this.type == ZmItem.MIXED && !this._mixedType) {
 		this._mixedAction("spamItems", [items, markAsSpam, folder]);
 		return;
@@ -127,12 +113,12 @@ function(items, markAsSpam, folder, childWin) {
 	attrs.tcon = this._getTcon();
 	if (folder) attrs.l = folder.id;
 
-	var respCallback = new AjxCallback(this, this._handleResponseSpamItems, [markAsSpam, folder, childWin]);
+	var respCallback = new AjxCallback(this, this._handleResponseSpamItems, [markAsSpam, folder]);
 	this._itemAction({items: items, action: action, attrs: attrs, callback: respCallback});
 };
 
 ZmMailList.prototype._handleResponseSpamItems =
-function(markAsSpam, folder, childWin, result) {
+function(markAsSpam, folder, result) {
 	var movedItems = result.getResponse();
 	if (movedItems && movedItems.length) {
 		folderId = markAsSpam ? ZmFolder.ID_SPAM : (folder ? folder.id : ZmFolder.ID_INBOX);
@@ -144,10 +130,6 @@ function(markAsSpam, folder, childWin, result) {
 
 		var msg = markAsSpam ? ZmMsg.markedAsJunk : ZmMsg.markedAsNotJunk;
 		appCtxt.setStatusMsg(AjxMessageFormat.format(msg, movedItems.length));
-
-		if (childWin) {
-			childWin.close();
-		}
 	}
 };
 
@@ -159,10 +141,9 @@ function(markAsSpam, folder, childWin, result) {
  * @param items			[Array]			list of items to delete
  * @param hardDelete	[boolean]		whether to force physical removal of items
  * @param attrs			[Object]		additional attrs for SOAP command
- * @param childWin		[window]*		the child window this action is happening in
  */
 ZmMailList.prototype.deleteItems =
-function(items, hardDelete, attrs, childWin) {
+function(items, hardDelete, attrs) {
 	if (this.type == ZmItem.CONV || this._mixedType == ZmItem.CONV) {
 		var searchFolder = this.search ? appCtxt.getById(this.search.folderId) : null;
 		if (searchFolder && searchFolder.isHardDelete()) {
@@ -181,7 +162,7 @@ function(items, hardDelete, attrs, childWin) {
 			return;
 		}
 	}
-	ZmList.prototype.deleteItems.call(this, items, hardDelete, attrs, childWin);
+	ZmList.prototype.deleteItems.call(this, items, hardDelete, attrs);
 };
 
 ZmMailList.prototype._handleResponseDeleteItems =
@@ -210,7 +191,7 @@ function() {
  * Only make the request for items whose state will be changed. 
  */
 ZmMailList.prototype.markRead =
-function(items, on, callback) {
+function(items, on) {
 	var items1 = [];
 	for (var i = 0; i < items.length; i++) {
 		if (items[i].isUnread == on) {
@@ -218,7 +199,7 @@ function(items, on, callback) {
 		}
 	}
 	if (items1.length) {
-		this.flagItems(items1, "read", on, callback);
+		this.flagItems(items1, "read", on);
 	}
 };
 
@@ -249,7 +230,9 @@ function(items, folderId) {
 
 ZmMailList.prototype.notifyCreate = 
 function(convs, msgs) {
-
+	var searchFolder = this.search
+		? (appCtxt.getActiveAccount().isMain ? this.search.folderId : ZmOrganizer.getSystemId(this.search.folderId))
+		: null;
 	var createdItems = [];
 	var newConvs = [];
 	var newMsgs = [];
@@ -259,14 +242,14 @@ function(convs, msgs) {
 	var fields = {};
 	var sortBy = this.search ? this.search.sortBy : null;
 	var sortIndex = {};
-	if ((this.type == ZmItem.CONV) && this.search && this.search.matches) {
+	if (this.type == ZmItem.CONV && searchFolder) {
 
 		// handle new convs first so we can set their fragments later from new msgs
 		for (var id in convs) {
 			if (this.getById(id)) { continue; }	// already have this conv
 			newConvId[id] = convs[id];
 			var conv = convs[id];
-			if (this.search.matches(conv)) {
+			if (conv.folders && conv.folders[searchFolder]) {
 				// a new msg for this conv matches current search
 				conv.list = this;
 				newConvs.push(conv);
@@ -277,7 +260,7 @@ function(convs, msgs) {
 		for (var id in msgs) {
 			var msg = msgs[id];
 			var cid = msg.cid;
-			var msgMatches = this.search.matches(msg);
+			var msgMatches = (msg.folderId == searchFolder);
 			var conv = newConvId[cid] || this.getById(cid);
 			if (msgMatches) {
 				if (!conv) {
@@ -312,6 +295,7 @@ function(convs, msgs) {
 					flaggedItems.push(conv);
 				}
 				// if the new msg matches current search, update conv date, fragment, and sort order
+				// TODO: handle simple tag searches
 				if (msgMatches) {
 					msg.inHitList = true;
 					if (conv.fragment != msg.fragment) {
@@ -343,7 +327,7 @@ function(convs, msgs) {
 					newMsgs.push(msg);
 				}
 			} else { // MLV (traditional)
-				if (this.search.matches && this.search.matches(msg)) {
+				if (msg.folderId == searchFolder) {
 					msg.list = this;
 					newMsgs.push(msg);
 				}
@@ -507,16 +491,13 @@ function() {
 	var folders = [ZmFolder.ID_TRASH, ZmFolder.ID_SPAM, ZmFolder.ID_SENT];
 	for (var i = 0; i < folders.length; i++) {
 		var name = ZmFolder.QUERY_NAME[folders[i]];
-		if (!(this.search && this.search.hasFolderTerm(name))) {
+		if (!(this.search && this.search.hasFolderTerm(name)))
 			chars.push(ZmFolder.TCON_CODE[folders[i]]);
-		}
 	}
 
 	return chars.join("");
 };
 
-// If this list is the result of a search that is constrained by the read
-// status, and the user has marked all read in a folder, redo the search.
 ZmMailList.prototype._folderTreeChangeListener = 
 function(ev) {
 	if (this.size() == 0) return;
@@ -527,9 +508,8 @@ function(ev) {
 
 	if (ev.event == ZmEvent.E_FLAGS && (flag == ZmItem.FLAG_UNREAD)) {
 		if (this.type == ZmItem.CONV) {
-			if (view == ZmId.VIEW_CONVLIST && ctlr._currentSearch.hasUnreadTerm) {
+			if (view == ZmId.VIEW_CONVLIST && ctlr._currentSearch.hasUnreadTerm)
 				this._redoSearch(ctlr);
-			}
 		} else if (this.type == ZmItem.MSG) {
 			if (view == ZmId.VIEW_TRAD && ctlr._currentSearch.hasUnreadTerm) {
 				this._redoSearch(ctlr);

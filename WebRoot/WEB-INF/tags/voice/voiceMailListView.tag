@@ -1,19 +1,3 @@
-<%--
- * ***** BEGIN LICENSE BLOCK *****
- * 
- * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008 Zimbra, Inc.
- * 
- * The contents of this file are subject to the Yahoo! Public License
- * Version 1.0 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
- * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
- * ***** END LICENSE BLOCK *****
---%>
 <%@ tag body-content="empty" %>
 <%@ attribute name="context" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.tag.SearchContext"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -31,6 +15,9 @@
 	<c:set var="selectedRow" value="${not empty param.selectedRow ? param.selectedRow : 0}"/>
 </app:handleError>
 <app:view editmode="${voiceStatus eq 'false' ? 'true' : ''}" mailbox="${mailbox}" title="${title}" selected='voice' voice="true" folders="false" tags="false" searches="false" context="${context}" keys="true">
+	<c:if test="${lastErrorCode eq 'voice.SECONDARY_NOT_ALLOWED'}">
+		<fmt:message key="${lastErrorCode}"/>
+	</c:if>
 	<c:if test="${voiceStatus}">
 		<zm:currentResultUrl var="currentUrl" value="/h/search" context="${context}"/>
 		<form name="zform" action="${currentUrl}" method="post">

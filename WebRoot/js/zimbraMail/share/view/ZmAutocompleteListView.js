@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -39,43 +41,38 @@
  * The calling client also specifies the key in the match result for the string that will be used
  * to replace the typed text (also called the "completion string"). For example, the completion 
  * string for matching contacts could be a full address, or just the email.
- * </p><p>
- * The client may provide additional key event handlers in the form of callbacks. If the callback
- * explicitly returns true or false, that's what the event handler will return.
  * </p>
  * 
  * @author Conrad Damon
- *
- * @param params			[hash]				hash of params:
- *        matchValue		[string]			name of field in match result to use for completion
- *        dataClass			[function]			the class that has the data loader
- *        dataLoader		[function]*			a method of dataClass that returns data to match against
- *        parent			[DwtComposite]*		the control that created this list (defaults to shell)
- *        className			[string]*			CSS class
- *        delims			[array]*			list of delimiters (which separate tokens such as addresses)
- *        separator			[string]*			separator (gets added to the end of a match)
- *        compCallback		[AjxCallback]*		callback into client to notify it that completion happened
- *        keyDownCallback	[AjxCallback]*		additional ONKEYDOWN handler
- *        keyPressCallback	[AjxCallback]*		additional ONKEYPRESS handler
- *        keyUpCallback		[AjxCallback]*		additional ONKEYUP handler
- *        options			[hash]*				additional options for autocompleteMatch() in data class
+ * 
+ * @param parent			[DwtComposite]		the element that created this list
+ * @param className			[string]*			CSS class
+ * @param dataClass			[function]			the class that has the data loader
+ * @param dataLoader		[function]			a method of dataClass that returns data to match against
+ * @param matchValue		[string]			name of field in match result to use for completion
+ * @param separator			[string]*			separator (gets added to the end of a match)
+ * @param locCallback		[AjxCallback]		callback into client to get desired location of autocomplete list
+ * @param compCallback		[AjxCallback]*		callback into client to notify it that completion happened
+ * @param keyDownCallback	[AjxCallback]*		additional ONKEYDOWN handler
+ * @param keyUpCallback		[AjxCallback]*		additional ONKEYUP handler
+ * @param smartPos		    [boolean]*			if true, support smart positioning (top/bottom placement)
+ * @param options			[hash]*				additional options for autocompleteMatch()
  */
 ZmAutocompleteListView = function(params) {
 
 	var className = params.className ? params.className : "ZmAutocompleteListView";
-	DwtComposite.call(this, params.parent || appCtxt.getShell(), className, DwtControl.ABSOLUTE_STYLE);
+	DwtComposite.call(this, params.parent, className, DwtControl.ABSOLUTE_STYLE);
 
-	this._dataClass = this._dataAPI = params.dataClass;
+	this._dataClass = params.dataClass;
 	this._dataLoader = params.dataLoader;
 	this._dataLoaded = false;
 	this._matchValue = params.matchValue;
-	this._delims = params.delims || ZmAutocompleteListView.DELIMS;
-	this._isDelim = AjxUtil.arrayAsHash(this._delims);
 	this._separator = (params.separator != null) ? params.separator : AjxEmailAddress.SEPARATOR;
+	this._locCallback = params.locCallback ? params.locCallback : new AjxCallback(this, this._getAcListLoc);
 	this._compCallback = params.compCallback;
 	this._keyDownCallback = params.keyDownCallback;
-	this._keyPressCallback = params.keyPressCallback;
 	this._keyUpCallback = params.keyUpCallback;
+    this._smartPositionMe = params.smartPos;
     this._options = params.options;
 
     // mouse event handling
@@ -84,6 +81,15 @@ ZmAutocompleteListView = function(params) {
 	this.addListener(DwtEvent.ONMOUSEOVER, new AjxListener(this, this._mouseOverListener));
 	this._addSelectionListener(new AjxListener(this, this._listSelectionListener));
 	this._outsideListener = new AjxListener(null, ZmAutocompleteListView._outsideMouseDownListener);
+
+	// bug fix #32455 - reset data when account changes
+	if (appCtxt.numVisibleAccounts > 1) {
+		var mailApp = appCtxt.getApp(ZmApp.MAIL);
+		if (mailApp) {
+			var listener = new AjxListener(this, this._accountChangeListener);
+			mailApp.getOverviewPanelContent().addSelectionListener(listener);
+		}
+	}
 
 	// only trigger matching after a sufficient pause
 	this._acInterval = appCtxt.get(ZmSetting.AC_TIMER_INTERVAL);
@@ -99,7 +105,6 @@ ZmAutocompleteListView = function(params) {
 	this._numChars = 0;
 	this._done = {};
 	this.setVisible(false);
-	this.setScrollStyle(Dwt.SCROLL);
 };
 
 ZmAutocompleteListView.prototype = new DwtComposite;
@@ -107,6 +112,11 @@ ZmAutocompleteListView.prototype.constructor = ZmAutocompleteListView;
 
 // map of characters that are completion characters
 ZmAutocompleteListView.DELIMS = [',', ';', '\n', '\r', '\t'];
+ZmAutocompleteListView.IS_DELIM = {};
+for (var i = 0; i < ZmAutocompleteListView.DELIMS.length; i++) {
+	ZmAutocompleteListView.IS_DELIM[ZmAutocompleteListView.DELIMS[i]] = true;
+}
+delete i;
 
 ZmAutocompleteListView.WAIT_ID = "wait";
 
@@ -119,23 +129,9 @@ function(ev) {
 	var element = DwtUiEvent.getTargetWithProp(ev, "id");
 	var aclv = AjxCore.objectWithId(element._acListViewId);
 	if (aclv._keyDownCallback) {
-		var cbResult = aclv._keyDownCallback.run(ev, aclv, result);
-		result = (cbResult === true || cbResult === false) ? cbResult : result;
+		aclv._keyDownCallback.run(ev, aclv, result);
 	}
 	return result;
-};
-
-ZmAutocompleteListView.onKeyPress =
-function(ev) {
-	DwtKeyEvent.geckoCheck(ev);
-	var result = null;
-	var element = DwtUiEvent.getTargetWithProp(ev, "id");
-	var aclv = AjxCore.objectWithId(element._acListViewId);
-	if (aclv._keyPressCallback) {
-		var cbResult = aclv._keyPressCallback.run(ev, aclv);
-		result = (cbResult === true || cbResult === false) ? cbResult : result;
-	}
-	return (result != null) ? result : ZmAutocompleteListView._echoKey(true, ev);
 };
 
 ZmAutocompleteListView.onKeyUp =
@@ -145,8 +141,7 @@ function(ev) {
 	var element = DwtUiEvent.getTargetWithProp(ev, "id");
 	var aclv = AjxCore.objectWithId(element._acListViewId);
 	if (aclv._keyUpCallback) {
-		var cbResult = aclv._keyUpCallback.run(ev, aclv, result);
-		result = (cbResult === true || cbResult === false) ? cbResult : result;
+		aclv._keyUpCallback.run(ev, aclv, result);
 	}
 	return result;
 };
@@ -202,7 +197,6 @@ function(ev) {
 	
 	var id = element.id;
 	var key = DwtKeyEvent.getCharCode(ev);
-//	DBG.println("ac", ev.type + " char code: " + key);
 
 	// Tab/Esc handled in keydown for IE
 	if (AjxEnv.isIE && ev.type == "keyup" && (key == 9 || key == 27)) {
@@ -213,7 +207,7 @@ function(ev) {
 	DBG.println(AjxDebug.DBG3, ev.type + " event, key = " + key + ", value = " + value);
 
 	// reset timer on any address field key activity
-	if (aclv._acActionId != -1 && !DwtKeyMap.IS_MODIFIER[key]) {
+	if (aclv._acActionId != -1) {
 		AjxTimedAction.cancelAction(aclv._acActionId);
 		aclv._acActionId = -1;
 	}
@@ -305,6 +299,11 @@ function(ev) {
 	}
 };
 
+ZmAutocompleteListView.prototype._accountChangeListener =
+function(ev) {
+	this._dataLoaded = false;
+};
+
 // Public methods
 
 ZmAutocompleteListView.prototype.toString = 
@@ -321,12 +320,26 @@ ZmAutocompleteListView.prototype.handle =
 function(element) {
 	element._acListViewId = this._internalId;
 	Dwt.setHandler(element, DwtEvent.ONKEYDOWN, ZmAutocompleteListView.onKeyDown);
-	Dwt.setHandler(element, DwtEvent.ONKEYPRESS, ZmAutocompleteListView.onKeyPress);
 	Dwt.setHandler(element, DwtEvent.ONKEYUP, ZmAutocompleteListView.onKeyUp);
 };
 
 /**
-* Autocomplete typed text. Should be called by a handler for a keyboard event.
+ * Enable/Disable smart positioning (top/bottom positioning) support.
+ */
+ZmAutocompleteListView.prototype.setSmartPositioning =
+function(on) {
+	this._smartPositionMe = on;
+};
+
+/**
+ * Getter to check smart positioning (top/bottom positioning) support.
+ */
+ZmAutocompleteListView.prototype.isSmartPositioned =
+function() {
+	return this._smartPositionMe;
+};
+/**
+* Autocompletion of addresses. Should be called by a handler for a keyboard event.
 *
 * @param element	the element (some sort of text field) doing autocomplete
 * @param loc		where to popup the list, if appropriate
@@ -337,7 +350,6 @@ function(info) {
 	if (!info || (info.text == "undefined")) { return; }
 	if (this._dataLoader && !this._dataLoaded) {
 		this._data = this._dataLoader.call(this._dataClass);
-		this._dataAPI = this._data;
 		this._dataLoaded = true;
 	}
 
@@ -410,11 +422,11 @@ function(on) {
 	if (on) {
 		if (!this.size()) {
 			// make sure we're visible if "waiting" row is the only one
-			this.show(true);
+			this.show(true, this._loc);
 		}
 		var div = this._getDiv(ZmAutocompleteListView.WAIT_ID);
 		this._waitDivId = div.id;
-		this._addRow(div, ZmMsg.autocompleteWaiting, "DwtWait16Icon");
+		this._addRow(div, ZmMsg.galAutocompleteWaiting, "DwtWait16Icon");
 		this.getHtmlElement().appendChild(div);
 	} else {
 		var ta = new AjxTimedAction(this, this._clearWaiting);
@@ -433,8 +445,11 @@ function(ev) {
 	aclv._acActionId = -1; // so we don't try to cancel
 	aclv._numChars = 0;
 
+	var loc = this._locCallback ? this._locCallback.run(ev) : null;
+	
 	aclv.reset();				// start fresh
 	aclv._element = element;	// for updating element later
+	aclv._loc = loc;
 	
 	var info = {text: element.value, start: 0};
 	
@@ -483,9 +498,9 @@ function(text, start) {
 				c = text.charAt(++i);
 			}
 		}
-		if (this._isDelim[c]) {
+		if (ZmAutocompleteListView.IS_DELIM[c]) {
 			var chunk = text.substring(start, i);
-			if (this._dataAPI.isComplete && this._dataAPI.isComplete(chunk)) {
+			if (this._data.isComplete && this._data.isComplete(chunk)) {
 				DBG.println(AjxDebug.DBG3, "skipping completed chunk: " + chunk);
 				start = i + 1;
 				while (text.charAt(start) == ' ') {	// ignore leading space
@@ -511,7 +526,7 @@ ZmAutocompleteListView.prototype._autocomplete =
 function(chunk, callback) {
 	DBG.println(AjxDebug.DBG3, "ZmAutocompleteListView: _autocomplete");
 
-	if (!chunk || !(this._dataAPI && this._dataAPI.autocompleteMatch)) { return; }
+	if (!chunk) { return; }
 	var str = AjxStringUtil.trim(chunk.str);
 
 	// if string is empty or already a delimited address, no reason to look for matches
@@ -534,7 +549,7 @@ function(chunk, callback) {
 	this._removeAll();
 
 	var respCallback = new AjxCallback(this, this._handleResponseAutocomplete, [str, chunk, text, start, callback]);
-	this._dataAPI.autocompleteMatch(str, respCallback, this, this._options);
+	this._data.autocompleteMatch(str, respCallback, this, this._options);
 };
 
 ZmAutocompleteListView.prototype._handleResponseAutocomplete =
@@ -542,7 +557,7 @@ function(str, chunk, text, start, callback, list) {
 	var retValue;
 	var change = false;
 	// see if it's already a complete address
-	if (list && list.length == 1 && (this._dataAPI.isUniqueValue && this._dataAPI.isUniqueValue(str))) {
+	if (list && list.length == 1 && this._data.isUniqueValue(str)) {
 		DBG.println(AjxDebug.DBG2, "unique match, hiding autocomplete list");
 		retValue = {text: text, start: start};
 	}
@@ -571,7 +586,7 @@ function(str, chunk, text, start, callback, list) {
 			// this autocomplete string (eg GAL), and the user selected a result from the
 			// first time we showed the list (bug 28886)
 			if (!this._hasCompleted) {
-				this.show(true);
+				this.show(true, this._loc);
 			}
 		}
 	
@@ -597,25 +612,15 @@ ZmAutocompleteListView.prototype._complete =
 function(text, str, hasDelim) {
 	DBG.println(AjxDebug.DBG3, "ZmAutocompleteListView: _complete: selected is " + this._selected);
 	var match = this._getSelected();
-	if (!match && str && hasDelim && this._dataAPI.quickComplete) {
-		match = this._dataAPI.quickComplete(str);
+	if (!match && str && hasDelim && this._data.quickComplete) {
+		match = this._data.quickComplete(str);
 	}
 	if (!match)	{ return; }
 
 	var start = this._start;
 	var end = hasDelim ? this._end + 1 : this._end;
 	DBG.println(AjxDebug.DBG2, "update replace range: " + start + " - " + end);
-	var value = "";
-	if (this._matchValue instanceof Array) {
-		for (var i = 0, len = this._matchValue.length; i < len; i++) {
-			if (match[this._matchValue[i]]) {
-				value = match[this._matchValue[i]];
-				break;
-			}
-		}
-	} else {
-		value = match[this._matchValue] || "";
-	}
+	var value = match[this._matchValue] || "";
 	var newText = [text.substring(0, start), value, this._separator, text.substring(end, text.length)].join("");
 	if (value) {
 		this._done[value] = true;
@@ -705,10 +710,10 @@ function(list, sel) {
 	this._matches = list;
 	var len = this._matches.length;
 	for (var i = 0; i < len; i++) {
+		var div = this._getDiv(i);
+		div._pos = i;
 		var match = this._matches[i];
-		if (match && (match.text || match.icon)) {
-			var div = this._getDiv(i);
-			div._pos = i;
+		if (match) {
 			this._addRow(div, match.text, match.icon);
 			thisHtmlElement.appendChild(div);
 		}
@@ -755,37 +760,69 @@ function(div, text, icon) {
 		div.innerHTML = text;
 	}
 };
+/*
+  To support the Smart Positioning
+ */
+ZmAutocompleteListView.prototype._getSmartPosition =
+function(loc){
+    this.setLocation(Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
+    this.setVisible(true);
+    var x =  loc.x;
+    var y = loc.y;
+    if(this.parent!=this.shell){
+         x +=  this.parent.getX();
+         y += this.parent.getY();
+    }
+    var windowSize = this.shell.getSize();
+    var mySize = DwtComposite.prototype.getSize.call(this, loc);
+    // bug 9583 - can't query border size so just subtract generic padding
+	windowSize.y -= 10 + AjxEnv.isIE ? 20 : 0;
+	windowSize.x -= 20;
+    if(mySize.y >= windowSize.y ){
+        var space = windowSize.y;
+		var newY = null;
+		space = windowSize.y - y;
+		var above = this.parent.getBounds().y;
+		var below = space;
+		if (space < 50 || (mySize.y > below && mySize.y < above && above / below > 2)) {
+			space = above;
+			newY = above;
+		}
 
+		var rows =  this._matches;
+		var numRows = rows.length;
+		var height = mySize.y;
+		var requiredSpace = space - 25; // Account for space on top & bottom of menu.
+		for (var i = numRows - 1; i >= 0; i--) {
+			height -= Dwt.getSize(rows[i]).y;
+			if (height < requiredSpace) {
+				break;
+			}
+		}
+		if (newY) {
+			y = newY - mySize.y;
+		}
+    }
+    var newX = ((x + mySize.x) >= windowSize.x) ? (windowSize.x - mySize.x) : x;
+    var newY = ((y + mySize.y) >= windowSize.y) ? (windowSize.y - mySize.y) : y;
+    if(this.parent!=this.shell){
+        newX -= this.parent.getX();
+        newY -= this.parent.getY();
+    }
+    return new DwtPoint(newX,newY);
+}
 // Displays the list
 ZmAutocompleteListView.prototype._popup = 
 function(loc) {
-
-	var shellHeight = this.shell.getSize().y;
-	var elLoc = Dwt.getLocation(this._element);
-	var elSize = Dwt.getSize(this._element);
-	var x = elLoc.x;
-	var y = elLoc.y + elSize.y;
-	this.setLocation(Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
-	this.setVisible(true);
-	var myHeight = this.getSize().y;
-	var newHeight;
-	if (y + myHeight > shellHeight) {
-		// If not enough vertical space, set height and let it scroll
-		newHeight = (shellHeight - y) - (10 + (AjxEnv.isIE ? 20 : 0));
-		if (newHeight < 40) {
-			// if we can't show at least a couple rows, position it above the input
-			newHeight = null;
-			y = elLoc.y - myHeight;
-			if (y < 0) {
-				// need to scroll
-				y = 0;
-				newHeight = shellHeight - elLoc.y;
-			}
-		}
-	}
-	this.setSize(Dwt.DEFAULT, newHeight ? newHeight : Dwt.CLEAR);
-
+    var x = loc.x;
+    var y = loc.y;
+    if(this.isSmartPositioned()){
+        var p  = this._getSmartPosition(loc);
+        x = p.x;
+        y = p.y;
+    }
     this.setLocation(x, y);
+    this.setVisible(true);
 	this.setZIndex(Dwt.Z_DIALOG_MENU);
 	ZmAutocompleteListView._activeAcList = this;
 	DwtEventManager.addListener(DwtEvent.ONMOUSEDOWN, ZmAutocompleteListView._outsideMouseDownListener);
@@ -809,7 +846,7 @@ ZmAutocompleteListView.prototype._setSelected =
 function(sel) {
 	DBG.println(AjxDebug.DBG3, "setting selected index to " + sel);
 	var children = this.getHtmlElement().childNodes;
-	if (!children) { return; }
+	if (!children) return;
 
 	var len = children.length;
 	for (var i = 0; i < len; i++) {
@@ -851,12 +888,7 @@ function() {
 // Returns the currently selected match
 ZmAutocompleteListView.prototype._getSelected =
 function() {
-	if (this._matches && this._matches.length) {
-		var selected = this._selected || 0;
-		return this._matches[selected];
-	} else {
-		return null;
-	}
+	return this._matches ? this._matches[this._selected] : null;
 };
 
 // Force focus to the input element (handle Tab in Firefox)

@@ -1,15 +1,17 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ *
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009 Zimbra, Inc.
- * 
+ * Copyright (C) 2006, 2007 Zimbra, Inc.
+ *
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -26,7 +28,6 @@ ZmPageEditController = function(container, app) {
 	this._listeners[ZmOperation.CLOSE] = new AjxListener(this, this._closeListener);
 	this._listeners[ZmOperation.SPELL_CHECK] = new AjxListener(this, this._spellCheckListener);
 	this._listeners[ZmOperation.COMPOSE_FORMAT] = new AjxListener(this, this._formatListener);
-	this._listeners[ZmOperation.NOTIFY] = new AjxListener(this, this._notifyListener);
 
 	// data
 	this._page = null;
@@ -35,7 +36,6 @@ ZmPageEditController = function(container, app) {
 	this._pageEditView = null;
 	this._popViewWhenSaved = null;
 };
-
 ZmPageEditController.prototype = new ZmListController;
 ZmPageEditController.prototype.constructor = ZmPageEditController;
 
@@ -53,6 +53,10 @@ function(page) {
 	this._page = AjxUtil.createProxy(page);
 	this._page.version = page.version;
 
+	if (appCtxt.numVisibleAccounts > 1) {
+		appCtxt.getApp(ZmApp.NOTEBOOK).getOverviewPanelContent().setEnabled(false);
+	}
+
 	var elements;
 	if (!this._currentView) {
 		this._currentView = this._defaultView();
@@ -64,35 +68,13 @@ function(page) {
 	}
 
 	this._resetOperations(this._toolbar[this._currentView], 1); // enable all buttons
-	this._setView({view:this._currentView, elements:elements, isTransient:true});
+	this._setView(this._currentView, elements, false, false, false, true);
 };
 
 ZmPageEditController.prototype.getPage =
 function() {
 	return this._page;
 };
-
-ZmPageEditController.prototype.getKeyMapName =
-function() {
-	return "ZmPageEditController";
-};
-
-ZmPageEditController.prototype.handleKeyAction =
-function(actionCode) {
-	DBG.println(AjxDebug.DBG2, "ZmPageEditController.handleKeyAction");
-	switch (actionCode) {
-
-		case ZmKeyMap.SAVE:
-			this._saveListener();
-			break;
-
-		case ZmKeyMap.CANCEL:
-			this._closeListener();
-			break;
-	}
-	return true;
-};
-
 
 // Protected methods
 
@@ -110,8 +92,6 @@ function() {
 		list.push(ZmOperation.COMPOSE_FORMAT);
 	}
 
-    list.push(ZmOperation.NOTIFY);
-
 	return list;
 };
 
@@ -126,6 +106,9 @@ function(view) {
 	var spellCheckButton = toolbar.getButton(ZmOperation.SPELL_CHECK);
 	if (spellCheckButton) {
 		spellCheckButton.setAlign(DwtLabel.IMAGE_LEFT | DwtButton.TOGGLE_STYLE);
+		if (AjxEnv.is800x600orLower) {
+			spellCheckButton.setText("");
+		}
 	}
 
 	// NOTE: probably cleaner to use ZmActionMenu, which knows about operations
@@ -169,37 +152,18 @@ function(view) {
 	return this._pageEditView;
 };
 
-/**
- * Creates the desired application view.
- *
- * @param params		[hash]			hash of params:
- *        view			[constant]		view ID
- *        elements		[array]			array of view components
- *        isAppView		[boolean]*		this view is a top-level app view
- *        clear			[boolean]*		if true, clear the hidden stack of views
- *        pushOnly		[boolean]*		don't reset the view's data, just swap the view in
- *        isTransient	[boolean]*		this view doesn't go on the hidden stack
- *        stageView		[boolean]*		stage the view rather than push it
- *        tabParams		[hash]*			button params; view is opened in app tab instead of being stacked
- */
 ZmPageEditController.prototype._setView =
-function(params) {
+function(view, elements, isAppView, clear, pushOnly, isTransient) {
 	ZmListController.prototype._setView.apply(this, arguments);
 
 	this._format = this._format || ZmPageEditor.DEFAULT;
 
 	if (appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
-		var toolbar = this._toolbar[params.view];
+		var toolbar = this._toolbar[view];
 		var button = toolbar.getButton(ZmOperation.COMPOSE_FORMAT);
 		var menu = button.getMenu();
 		menu.checkItem(ZmPageEditor.KEY_FORMAT, this._format, true);
 	}
-    //Dwt.setTitle(this._listView[view].getTitle());
-    if(!this._page || !this._page.name){
-        Dwt.setTitle(ZmMsg.zimbraTitle);        
-    }else{
-        Dwt.setTitle([ZmMsg.zimbraTitle, this._page.name].join(": "));
-    }
 };
 
 ZmPageEditController.prototype._setViewContents =
@@ -229,9 +193,7 @@ function(popViewWhenSaved) {
 		message = ZmMsg.errorSavingPageNameRequired;
 	} else if (!ZmOrganizer.VALID_NAME_RE.test(name) || ZmPageEditController.INVALID_DOC_NAME_RE.test(name)) {
 		message = AjxMessageFormat.format(ZmMsg.errorInvalidName, AjxStringUtil.htmlEncode(name));
-	} else if ( name.length > ZmOrganizer.MAX_NAME_LENGTH){
-        message = AjxMessageFormat.format(ZmMsg.nameTooLong, ZmOrganizer.MAX_NAME_LENGTH);
-    }
+	}
 
 	// bug: 9406 (short term fix, waiting for backend support)
 	var notebook = appCtxt.getById(this._page.folderId || ZmOrganizer.ID_NOTEBOOK);
@@ -426,18 +388,7 @@ function(content, mineOrTheirs, conflict) {
 
 ZmPageEditController.prototype._closeListener =
 function(ev) {
-    var treeController = appCtxt.getOverviewController().getTreeController(ZmOrganizer.NOTEBOOK);
-    var treeView = treeController.getTreeView(this._app.getOverviewId());
-    var selNotebook = treeView.getSelected();
-
-    treeController._itemClicked(selNotebook);
-
-};
-
-ZmPageEditController.prototype._notifyListener =
-function(ev){
-    var folderNotifyDlg = appCtxt.getFolderNotifyDialog();
-    folderNotifyDlg.popup(this.getPage().getNotebook());
+	this._app.popView();
 };
 
 ZmPageEditController.prototype._spellCheckListener =
@@ -485,6 +436,13 @@ function(ev) {
 	this._format = ev.item.getData(ZmPageEditor.KEY_FORMAT);
 	this._pageEditView.setFormat(this._format);
 	this._pageEditView.setContent(content);
+};
+
+ZmPageEditController.prototype._postHideCallback =
+function() {
+	if (appCtxt.numVisibleAccounts > 1) {
+		appCtxt.getApp(ZmApp.NOTEBOOK).getOverviewPanelContent().setEnabled(true);
+	}
 };
 
 ZmPageEditController.prototype._preHideCallback =

@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008 Zimbra, Inc.
+ * Copyright (C) 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 /**
@@ -47,7 +49,7 @@ ZmCalItemEditView = function(parent, attendees, controller, dateInfo, posStyle) 
 	this._repeatSelectDisabled = false;
 	this._attachCount = 0;
 
-	this._kbMgr = appCtxt.getKeyboardMgr();
+	this._kbMgr = appCtxt.getShell().getKeyboardMgr();
 };
 
 ZmCalItemEditView.prototype = new DwtComposite;
@@ -156,19 +158,20 @@ function(excludeAttendees) {
 
 ZmCalItemEditView.prototype.isReminderOnlyChanged =
 function() {
-
+	
 	if(!this._hasReminderSupport) { return false; }
-
+	
 	var formValue = this._origFormValueMinusReminder;
 
 	var isDirty = (this._gotAttachments() || this._removedAttachments()) ||
 			this._isDirty ||
 		   (this._formValue(false, true) != formValue);
-
+		
 	var isReminderChanged = (this._origReminderValue != this._reminderSelect.getValue());
-
+	
 	return isReminderChanged && !isDirty;
 };
+
 
 ZmCalItemEditView.prototype.isValid =
 function() {
@@ -300,7 +303,7 @@ function() {
 */
 ZmCalItemEditView.prototype.getOrganizer =
 function() {
-	var folderId = this._folderSelect ? this._folderSelect.getValue() : this._folderPickedId;
+	var folderId = this._folderSelect.getValue();
 	var organizer = new ZmContact(null);
 	organizer.initFromEmail(ZmApptViewHelper.getOrganizerEmail(this._calendarOrgs[folderId]), true);
 
@@ -330,7 +333,7 @@ function(calItem, mode, firstTime) {
 	// (i.e. html editor) may not have finished initializing yet.
     if (firstTime || this._notesHtmlModeFirstTime) {   // Also, handling HTML mode specially as it takes some time to initialize.
 		var ta = new AjxTimedAction(this, this._finishReset);
-		AjxTimedAction.scheduleAction(ta, 500);
+		AjxTimedAction.scheduleAction(ta, 250);
 	} else {
 		this._finishReset();
 	}
@@ -366,8 +369,7 @@ function(calItem) {
 	// save field values of this view w/in given appt
 	calItem.setName(this._subjectField.getValue());
 
-	var folderId = this._folderSelect
-		? this._folderSelect.getValue() : this._folderPickedId;
+	var folderId = this._folderSelect.getValue();
 	if (this._mode != ZmCalItem.MODE_NEW && this._calItem.folderId != folderId) {
 		// if moving existing calitem across mail boxes, cache the new folderId
 		// so we can save it as a separate request
@@ -380,7 +382,7 @@ function(calItem) {
 	}
 
 	calItem.setFolderId(folderId);
-	calItem.setOrganizer(this._calItem.organizer || this._calendarOrgs[folderId]);
+	calItem.setOrganizer(this._calendarOrgs[folderId]);
 
 	// set the notes parts (always add text part)
 	var top = new ZmMimePart();
@@ -531,64 +533,42 @@ function() {
 ZmCalItemEditView.prototype._createWidgets =
 function(width) {
 	// subject DwtInputField
-	var params = {
-		parent: this,
-		parentElement: (this._htmlElId + "_subject"),
-		type: DwtInputField.STRING,
-		errorIconStyle: DwtInputField.ERROR_ICON_NONE,
-		validationStyle: DwtInputField.CONTINUAL_VALIDATION,
-		skipCaretHack:true
-	};
-	this._subjectField = new DwtInputField(params);
+	this._subjectField = new DwtInputField({parent: this, type:DwtInputField.STRING,
+											errorIconStyle: DwtInputField.ERROR_ICON_NONE,
+											validationStyle: DwtInputField.CONTINUAL_VALIDATION,
+											skipCaretHack:true});
 	this._subjectField.setRequired();
 	Dwt.setSize(this._subjectField.getInputElement(), width, "22px");
+	this._subjectField.reparentHtmlElement(this._htmlElId + "_subject");
 
 	// CalItem folder DwtSelect
-	if (appCtxt.multiAccounts) {
-		this._folderPickerButton = new DwtButton({parent:this, parentElement:(this._htmlElId + "_folderSelect")});
-	} else {
-		this._folderSelect = new DwtSelect({parent:this, parentElement:(this._htmlElId + "_folderSelect")});
-	}
+	this._folderSelect = new DwtSelect({parent:this});
+	this._folderSelect.reparentHtmlElement(this._htmlElId + "_folderSelect");
 
 	// recurrence DwtSelect
-	this._repeatSelect = new DwtSelect({parent:this, parentElement:(this._htmlElId + "_repeatSelect")});
+	this._repeatSelect = new DwtSelect({parent:this});
 	this._repeatSelect.addChangeListener(new AjxListener(this, this._repeatChangeListener));
 	for (var i = 0; i < ZmApptViewHelper.REPEAT_OPTIONS.length; i++) {
 		var option = ZmApptViewHelper.REPEAT_OPTIONS[i];
 		this._repeatSelect.addOption(option.label, option.selected, option.value);
 	}
+	this._repeatSelect.reparentHtmlElement(this._htmlElId + "_repeatSelect");
 
-	// reminder DwtSelect
-	var	displayOptions = [
-		ZmMsg.apptRemindNever,
-		ZmMsg.apptRemindNMinutesBefore,
-		ZmMsg.apptRemindNMinutesBefore,
-		ZmMsg.apptRemindNMinutesBefore,
-		ZmMsg.apptRemindNMinutesBefore,
-		ZmMsg.apptRemindNMinutesBefore,
-		ZmMsg.apptRemindNMinutesBefore,
-		ZmMsg.apptRemindNMinutesBefore,
-		ZmMsg.apptRemindNHoursBefore,
-		ZmMsg.apptRemindNHoursBefore,
-		ZmMsg.apptRemindNHoursBefore,
-		ZmMsg.apptRemindNHoursBefore,
-		ZmMsg.apptRemindNHoursBefore
-	];
+	//reminder DwtSelect
+	var	displayOptions = [ZmMsg.apptRemindNever, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNHoursBefore, ZmMsg.apptRemindNHoursBefore, ZmMsg.apptRemindNHoursBefore, ZmMsg.apptRemindNHoursBefore, ZmMsg.apptRemindNHoursBefore ];
 	var	options = this._reminderOptions = [0, 1, 5, 10, 15, 30, 45, 60, 120, 180, 240, 300, 1080];
 	var	labels = [0, 1, 5, 10, 15, 30, 45, 60, 2, 3, 4, 5, 18];
-	var defaultWarningTime = appCtxt.get(ZmSetting.CAL_REMINDER_WARNING_TIME);
 
+	var defaultWarningTime = appCtxt.get(ZmSetting.CAL_REMINDER_WARNING_TIME);
+	
 	this._hasReminderSupport = Boolean(Dwt.byId(this._htmlElId + "_reminderSelect") != null);
 	if (this._hasReminderSupport) {
-		this._reminderSelect = new DwtSelect({parent:this, parentElement:(this._htmlElId + "_reminderSelect")});
+		this._reminderSelect = new DwtSelect({parent:this});
 		for (var j = 0; j < options.length; j++) {
 			var optLabel = ZmCalendarApp.__formatLabel(displayOptions[j], labels[j]);			
 			this._reminderSelect.addOption(optLabel, (defaultWarningTime == options[j]), options[j]);
 		}
-	}
-
-	if (this._folderPickerButton) {
-		this._folderPickerButton.addSelectionListener(new AjxListener(this, this._folderPickerListener));
+		this._reminderSelect.reparentHtmlElement(this._htmlElId + "_reminderSelect");
 	}
 
 	// start/end date DwtButton's
@@ -601,7 +581,7 @@ function(width) {
 	// notes ZmHtmlEditor
 	this._notesHtmlEditor = new ZmHtmlEditor(this, null, null, this._composeMode);
 	this._notesHtmlEditor.reparentHtmlElement(this._htmlElId + "_notes");
-	// bug: 19079 to avoid access denied exception set some content which corrects the doc domain
+	//bug:19079 to avoid access denied exception set some content which corrects the doc domain
 	this._notesHtmlEditor.setContent("");
 };
 
@@ -628,6 +608,8 @@ function(calItem, mode) {
 	var len = data.length;
 
 	// look for calItem's calendar
+	this._folderSelect.clearOptions();
+	this._calendarOrgs = {};
 	var itemCal;
 	for (var i = 0; i < len; i++) {
 		var cal = data[i];
@@ -637,78 +619,26 @@ function(calItem, mode) {
 		}
 	}
 
-	if (this._folderSelect) {
-		this._folderSelect.clearOptions();
-	}
-	this._calendarOrgs = {};
-
 	for (var i = 0; i < len; i++) {
 		var cal = data[i];
 		var id = cal.link ? cal.getRemoteId() : cal.id;
 		this._calendarOrgs[id] = cal.owner;
 
-		// bug: 28363 - owner attribute is not available for shared sub
-		// folder for mountpoints
-		if (cal.isRemote() && !cal.owner && cal.parent && cal.parent.isRemote()) {
-			this._calendarOrgs[id] = cal.parent.getOwner();
-		}
+        //bug: 28363 owner attribute is not available for shared sub folder for mountpoints
+        if(cal.isRemote() && !cal.owner && cal.parent && cal.parent.isRemote()) {
+            this._calendarOrgs[id] = cal.parent.getOwner();
+        }
 
-		if (this._folderSelect) {
-			// don't show calendar if feed, or remote and don't have write perms
-			var share = cal.getMainShare();
-			if (cal.isFeed() || (cal.link && share && !share.isWrite())) { continue; }
-
-			var selected = ((calItem.folderId == cal.id) || (calItem.folderId == id ) || (calItem.folderId == cal.nId));
-			this._folderSelect.addOption(cal.getName(), selected, id);
-		}
-	}
-
-	if (this._folderSelect) {
-		var num = this._folderSelect.size();
-		Dwt.setVisibility(this._folderSelect.getHtmlElement(), num > 1);
-		Dwt.setVisibility(this._folderLabelField, num > 1);
-	}
-	else if (this._folderPickerButton) {
-		var folder = appCtxt.getById(calItem.folderId);
-		this._folderPickerButton.setText(folder.name);
-		this._folderPickedId = folder.id;
-	}
-};
-
-ZmCalItemEditView.prototype._getFolderPickerTreeIds =
-function() {
-	// override
-};
-
-ZmCalItemEditView.prototype._folderPickerListener =
-function(ev) {
-	var dlg = appCtxt.getChooseFolderDialog();
-	var callback = new AjxCallback(this, this._folderPickerCallback, [dlg]);
-	var folder = this._calItem && appCtxt.getById(this._calItem.folderId);
-	var account = folder && appCtxt.getAccount(folder.accountId);
-
-	if (this._calItem.viewMode == ZmCalItem.MODE_NEW) {
+        // don't show calendar if feed, or remote and don't have write perms
+		var share = cal.getMainShare();
+		if (cal.isFeed() ||	(cal.link && share && !share.isWrite())) { continue; }
 		
+		this._folderSelect.addOption(cal.getName(), (calItem.folderId == cal.id) || (calItem.folderId == id ) || (calItem.folderId == cal.nId), id);
 	}
+	var num = this._folderSelect.size();
+	Dwt.setVisibility(this._folderSelect.getHtmlElement(), num > 1);
+	Dwt.setVisibility(this._folderLabelField, num > 1);
 
-	var params = {
-		data: this._calItem,
-		treeIds: this._getFolderPickerTreeIds(),
-		overviewId: this.toString(),
-		omit:{}
-	};
-	params.omit[ZmFolder.ID_TRASH] = true;
-	params.omit[ZmOrganizer.ID_AUTO_ADDED] = true;
-
-	ZmController.showDialog(dlg, callback, params, account);
-};
-
-ZmCalItemEditView.prototype._folderPickerCallback =
-function(dlg, folder) {
-	dlg.popdown();
-
-	this._folderPickerButton.setText(folder.name);
-	this._folderPickedId = folder.id;
 };
 
 ZmCalItemEditView.prototype._initAttachContainer =
@@ -945,7 +875,7 @@ function(ev) {
 	else
 	{
 		var sd = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
-		this._calItem._recurrence.setRecurrenceStartTime(sd.getTime());
+		this._calItem._recurrence._startDate.setTime(sd.getTime());
 		this._setRepeatDesc(this._calItem);
 	}
 };
@@ -1142,7 +1072,7 @@ function(sd) {
 	}
 	else
 	{
-		calItem._recurrence.setRecurrenceStartTime(sd.getTime());
+		calItem._recurrence._startDate.setTime(sd.getTime());
 		this._setRepeatDesc(calItem);
 	}
 };

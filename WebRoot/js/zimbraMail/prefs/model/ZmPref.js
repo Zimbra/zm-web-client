@@ -1,15 +1,17 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ *
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
- * 
+ * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
+ *
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -61,19 +63,15 @@ function(setup) {
 ZmPref.loadCsvFormats =
 function(setup){
     var formats = appCtxt.get(ZmSetting.AVAILABLE_CSVFORMATS);
-	if (!formats._options) {
-		var options = formats._options = [];
-		var displayOptions = formats._displayOptions = [];
-		for(var i=0; i<formats.length; i++){
-			options.push(formats[i]);
-		}
-		options.sort(ZmPref.__BY_CSVFORMAT);
-		for(var i=0; i < options.length; i++){
-			displayOptions.push((ZmMsg[options[i]] || options[i]));
-		}
+	var options = setup.options = [];
+	var displayOptions = setup.displayOptions = [];
+    for(var i=0; i<formats.length; i++){
+        options.push(formats[i]);
 	}
-	setup.options = formats._options;
-	setup.displayOptions = formats._displayOptions;
+	options.sort(ZmPref.__BY_CSVFORMAT);
+	for(var i=0; i < options.length; i++){
+        displayOptions.push((ZmMsg[options[i]] || options[i]));
+    }
 };
 ZmPref.__BY_CSVFORMAT = function(a, b) {
 	if (a.match(/^zimbra/)) return -1;
@@ -82,23 +80,6 @@ ZmPref.__BY_CSVFORMAT = function(a, b) {
 	if (b.match(/^yahoo/))  return  1;
 	return a.localeCompare(b);
 };
-
-ZmPref.loadPageSizes =
-function(setup) {
-	var max = (setup.maxSetting && appCtxt.get(setup.maxSetting)) || 100;
-	var list = [];
-	for (var i = 0; i < ZmPref.PAGE_SIZES.length; i++) {
-		var num = parseInt(ZmPref.PAGE_SIZES[i]);
-		if (num <= max) {
-			list.push(ZmPref.PAGE_SIZES[i]);
-		}
-	}
-	if (max > ZmPref.PAGE_SIZES[ZmPref.PAGE_SIZES.length - 1]) {
-		list.push(String(max));
-	}
-	setup.displayOptions = setup.options = list;
-};
-ZmPref.PAGE_SIZES = ["10", "25", "50", "100", "250", "500", "1000"];
 
 ZmPref.validateEmail =
 function(emailStr) {
@@ -410,7 +391,6 @@ function(prefsId, list) {
  * Available properties are:
  *
  * displayName			descriptive text
- * displayFunc			A function that returns the descriptive text. Only implemented for checkboxes.
  * displayContainer		type of form input: checkbox, select, input, or textarea
  * options				values for a select input
  * displayOptions		text for the select input's values
@@ -476,20 +456,20 @@ function(id, params) {
     params.id = id;
 
     // save section
-	appCtxt.set(ZmSetting.PREF_SECTIONS, params, id);
+    ZmPref._prefSectionMap[id] = params;
     ZmPref._prefSectionArray = null;
 };
 
 ZmPref.unregisterPrefSection =
 function(id) {
-	appCtxt.set(ZmSetting.PREF_SECTIONS, null, id);
+	delete ZmPref._prefSectionMap[id];
 	ZmPref._prefSectionArray = null;
 };
 
 /** Returns the pref sections map. */
 ZmPref.getPrefSectionMap =
 function() {
-	return appCtxt.get(ZmSetting.PREF_SECTIONS);
+    return ZmPref._prefSectionMap;
 };
 
 /** Returns a sorted array of pref sections (based on priority). */
@@ -497,9 +477,8 @@ ZmPref.getPrefSectionArray =
 function() {
     if (!ZmPref._prefSectionArray) {
         ZmPref._prefSectionArray = [];
-		var prefSectionMap = appCtxt.get(ZmSetting.PREF_SECTIONS);
-		for (var id in prefSectionMap) {
-            ZmPref._prefSectionArray.push(prefSectionMap[id]);
+        for (var id in ZmPref._prefSectionMap) {
+            ZmPref._prefSectionArray.push(ZmPref._prefSectionMap[id]);
         }
         ZmPref._prefSectionArray.sort(ZmPref.__BY_PRIORITY);
     }
@@ -509,9 +488,8 @@ function() {
 /** Returns the section that contains the specified pref. */
 ZmPref.getPrefSectionWithPref =
 function(prefId) {
-	var prefSectionMap = appCtxt.get(ZmSetting.PREF_SECTIONS);
-	for (var sectionId in ZmPref._prefSectionMap) {
-		var section = prefSectionMap[sectionId];
+    for (var sectionId in ZmPref._prefSectionMap) {
+        var section = ZmPref._prefSectionMap[sectionId];
         if (!section.prefs) continue;
 
         for (var i = 0; i < section.prefs.length; i++) {
@@ -535,7 +513,7 @@ function(pre1 /* ..., preN */) {
 		}
 	}
 	return true;
-};
+}
 
 // Make sure the pref sections are init'd
 ZmPref.clearPrefSections();

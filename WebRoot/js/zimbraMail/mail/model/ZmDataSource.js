@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -504,8 +504,8 @@ function(callback, result) {
 	var fid = appCtxt.getActiveAccount().isMain ? this.folderId : ZmOrganizer.getSystemId(this.folderId);
 	if(this.folderId == ZmAccountsPage.DOWNLOAD_TO_FOLDER && this._object_ && this._object_.folderId) {
 		fid = this._object_.folderId;
-	}	
-	var treeItem = treeView ? treeView.getTreeItemById(fid) : null;
+	}
+	var treeItem = treeView ? treeView.getTreeItemById(fid) : null;	
 	if (treeItem) {
 		if (this.type == ZmAccount.POP && this.folderId != ZmFolder.ID_INBOX) {
 			// reset icon since POP folder is no longer hooked up to a datasource

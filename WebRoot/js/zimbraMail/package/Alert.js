@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008 Zimbra, Inc.
+ * Copyright (C) 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 /*
@@ -23,5 +25,4 @@ AjxPackage.require("zimbraMail.share.view.ZmAlert");
 AjxPackage.require("zimbraMail.share.view.ZmAccountAlert");
 AjxPackage.require("zimbraMail.share.view.ZmAppAlert");
 AjxPackage.require("zimbraMail.share.view.ZmBrowserAlert");
-AjxPackage.require("zimbraMail.share.view.ZmDesktopAlert");
 AjxPackage.require("zimbraMail.share.view.ZmSoundAlert");

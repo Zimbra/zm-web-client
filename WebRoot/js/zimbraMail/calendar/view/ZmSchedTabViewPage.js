@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -52,8 +54,7 @@ ZmSchedTabViewPage = function(parent, attendees, controller, dateInfo) {
 	}
 
 	this._fbCallback = new AjxCallback(this, this._handleResponseFreeBusy);
-	this._kbMgr = appCtxt.getKeyboardMgr();
-    this._emailAliasMap = {};
+	this._kbMgr = appCtxt.getShell().getKeyboardMgr();
 };
 
 ZmSchedTabViewPage.prototype = new DwtTabViewPage;
@@ -112,7 +113,6 @@ function() {
 
 	this.set(this._dateInfo, this._editView.getOrganizer(), this._attendees);
 	this._controller._setComposeTabGroup();
-    this.enablePartcipantStatusColumn(this._editView.getRsvp());
 };
 
 ZmSchedTabViewPage.prototype.tabBlur =
@@ -190,8 +190,6 @@ function() {
 		this._acEquipmentList.reset();
 		this._acEquipmentList.show(false);
 	}
-
-    this._emailAliasMap = {};
 };
 
 ZmSchedTabViewPage.prototype.isDirty =
@@ -262,34 +260,30 @@ function() {
 
 ZmSchedTabViewPage.prototype._initAutocomplete =
 function() {
-
+	var shell = appCtxt.getShell();
 	var acCallback = new AjxCallback(this, this._autocompleteCallback);
 	var keyUpCallback = new AjxCallback(this, this._autocompleteKeyUpCallback);
 	this._acList = {};
 
 	// autocomplete for attendees
-	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) || appCtxt.get(ZmSetting.GAL_ENABLED)) {
-		var params = {
-			dataClass: appCtxt.getAutocompleter(),
-			separator: "",
-			options: {needItem: true},
-			matchValue: [ZmAutocomplete.AC_VALUE_NAME, ZmAutocomplete.AC_VALUE_EMAIL],
-			keyUpCallback: keyUpCallback,
-			compCallback: acCallback
-		};
+	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+		var contactsClass = appCtxt.getApp(ZmApp.CONTACTS);
+		var contactsLoader = contactsClass.getContactList;
+		var params = {parent: shell, dataClass: contactsClass, dataLoader: contactsLoader, separator: "",
+					  matchValue: ZmContactsApp.AC_VALUE_NAME, keyUpCallback: keyUpCallback, compCallback: acCallback, smartPos: true};
 		this._acContactsList = new ZmAutocompleteListView(params);
 		this._acList[ZmCalBaseItem.PERSON] = this._acContactsList;
-
-		// autocomplete for locations/equipment
-		if (appCtxt.get(ZmSetting.GAL_ENABLED)) {
-			params.options = {type:ZmAutocomplete.AC_TYPE_LOCATION};
-			this._acLocationsList = new ZmAutocompleteListView(params);
-			this._acList[ZmCalBaseItem.LOCATION] = this._acLocationsList;
-
-			params.options = {type:ZmAutocomplete.AC_TYPE_EQUIPMENT};
-			this._acEquipmentList = new ZmAutocompleteListView(params);
-			this._acList[ZmCalBaseItem.EQUIPMENT] = this._acEquipmentList;
-		}
+	}
+	// autocomplete for locations/equipment
+	if (appCtxt.get(ZmSetting.GAL_ENABLED)) {
+		var resourcesClass = appCtxt.getApp(ZmApp.CALENDAR);
+		var params = {parent: shell, dataClass: resourcesClass, dataLoader: resourcesClass.getLocations, separator: "",
+					  matchValue: ZmContactsApp.AC_VALUE_NAME, compCallback: acCallback, smartPos: true};
+		this._acLocationsList = new ZmAutocompleteListView(params);
+		this._acList[ZmCalBaseItem.LOCATION] = this._acLocationsList;
+		params.dataLoader = resourcesClass.getEquipment;
+		this._acEquipmentList = new ZmAutocompleteListView(params);
+		this._acList[ZmCalBaseItem.EQUIPMENT] = this._acEquipmentList;
 	}
 };
 
@@ -297,7 +291,7 @@ function() {
 ZmSchedTabViewPage.prototype._autocompleteCallback =
 function(text, el, match) {
 	if (match && match.item) {
-		if (match.item.isGroup && match.item.isGroup()) {
+		if (match.item.isGroup()) {
 			var members = match.item.getGroupMembers().good.getArray();
 			for (var i = 0; i < members.length; i++) {
 				el.value = members[i].address;
@@ -320,7 +314,7 @@ function(ev, aclv, result) {
 	var key = DwtKeyEvent.getCharCode(ev);
 	if ((key == 3 || key == 13) && !aclv.getVisible()) {
 		var el = DwtUiEvent.getTargetWithProp(ev, "id");
-        this._handleAttendeeField(el);        
+		this._handleAttendeeField(el);
 	}
 };
 
@@ -423,12 +417,11 @@ function(isAllAttendees, organizer, drawBorder, index, updateTabGroup, setFocus)
 		}
 		
 		sched.ptstObj = document.getElementById(sched.dwtNameId+"_ptst");
-
-        Dwt.setVisible(sched.ptstObj, this._editView.getRsvp());
 		
 		// set handlers
 		var attendeeInput = document.getElementById(sched.dwtInputId);
 		if (attendeeInput) {
+			this._activeInputIdx = null;
 			this._activeInputIdx = index;
 			// handle focus moving to/from an enabled input
 			Dwt.setHandler(attendeeInput, DwtEvent.ONFOCUS, ZmSchedTabViewPage._onFocus);
@@ -468,7 +461,7 @@ ZmSchedTabViewPage.prototype._createDwtObjects =
 function() {
 	var timezoneListener = new AjxListener(this, this._timezoneListener);
 
-	this._tzoneSelect = new DwtSelect({parent:this, cascade:false});
+	this._tzoneSelect = new DwtSelect({parent:this});
 	this._tzoneSelect.reparentHtmlElement(this._tzoneSelectId);
 	this._tzoneSelect.addChangeListener(timezoneListener);
 	// NOTE: tzone select is initialized later
@@ -632,7 +625,7 @@ function(sched, attendee, type) {
 	var email = attendee.getEmail();
 	if (name && email) {
 		var ptst = ZmMsg.attendeeStatusLabel + ZmCalItem.getLabelForParticipationStatus(attendee.getAttr("participationStatus") || "NE");
-		sched.inputObj.setToolTipContent(email + this._editView.getRsvp() ? ("<br>"+ ptst) : "");
+		sched.inputObj.setToolTipContent(email +"<br>"+ ptst);
 	}
 };
 
@@ -726,10 +719,6 @@ function(organizer, attendees) {
 	if (emails.length) {
 		this._getFreeBusyInfo(this._getStartTime(), emails.join(","), this._fbCallback);
 	}
-
-    if(this._appt) {
-        this.enableAttendees(this._appt.isOrganizer());
-    }
 };
 
 ZmSchedTabViewPage.prototype._setAttendee =
@@ -765,8 +754,8 @@ function(index, attendee, type, isOrganizer) {
 				imgDiv._schedViewPageId = this._svpId;
 				imgDiv._schedTableIdx = index;
 			}
-        }
-    }
+		}
+	}
 
 	var email = attendee.getEmail();
 	if (email instanceof Array) {
@@ -1279,57 +1268,15 @@ function() {
 		var endTime = startTime + 30*60*1000;
 		var endDate = new Date(endTime);
 
-        this.getAccountEmail(startDate, endDate, x, y, email);
+		var cc = AjxDispatcher.run("GetCalController");
+		var tooltipContent = cc.getUserStatusToolTipText(startDate, endDate, true, email);
+
+		var shell = DwtShell.getShell(window);
+		var tooltip = shell.getToolTip();
+		tooltip.setContent(tooltipContent, true);
+		tooltip.popup(x, y, true);		
 	}
 	this._fbToolTipInfo = null;
-};
-
-ZmSchedTabViewPage.prototype.popupFreeBusyToolTop =
-function(startDate, endDate, x, y, email) {
-    var cc = AjxDispatcher.run("GetCalController");
-    var tooltipContent = cc.getUserStatusToolTipText(startDate, endDate, true, email);
-
-    var shell = DwtShell.getShell(window);
-    var tooltip = shell.getToolTip();
-    tooltip.setContent(tooltipContent, true);
-    tooltip.popup(x, y, true);
-};
-
-//bug: 30989 - getting proper email address from alias
-ZmSchedTabViewPage.prototype.getAccountEmail =
-function(startDate, endDate, x, y, email) {
-
-    if(this._emailAliasMap[email]) {
-        this.popupFreeBusyToolTop(startDate, endDate, x, y, this._emailAliasMap[email]);
-        return;
-    }
-
-    var soapDoc = AjxSoapDoc.create("GetAccountInfoRequest", "urn:zimbraAccount", null);
-    var elBy = soapDoc.set("account", email);
-    elBy.setAttribute("by", "name");
-
-    var callback = new AjxCallback(this, this._handleGetAccountInfo, [startDate, endDate, x, y, email]);
-    var errorCallback = new AjxCallback(this, this._handleGetAccountInfoError, [startDate, endDate, x, y, email]);
-    appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback: callback, errorCallback:errorCallback});
-};
-
-ZmSchedTabViewPage.prototype._handleGetAccountInfo =
-function(startDate, endDate, x, y, email, result) {
-    var response = result.getResponse();
-    var getAccInfoResponse = response.GetAccountInfoResponse;
-    var accountName = (getAccInfoResponse && getAccInfoResponse.name) ? getAccInfoResponse.name : null;
-    if(accountName) {
-        this._emailAliasMap[email] = accountName;
-    }
-    this.popupFreeBusyToolTop(startDate, endDate, x, y, accountName || email);
-};
-
-ZmSchedTabViewPage.prototype._handleGetAccountInfoError =
-function(startDate, endDate, x, y, email, result) {
-	//ignore the error : thrown for external email ids
-	this._emailAliasMap[email] = email;
-	this.popupFreeBusyToolTop(startDate, endDate, x, y, email);
-	return true;
 };
 
 // Static methods
@@ -1467,33 +1414,4 @@ function(idx, status) {
 ZmSchedTabViewPage.prototype.getAllAttendeeStatus =
 function(idx) {
 	return this._allAttendeesStatus[idx] ? this._allAttendeesStatus[idx] : ZmSchedTabViewPage.STATUS_FREE;
-};
-
-
-ZmSchedTabViewPage.prototype.enablePartcipantStatusColumn =
-function(show) {
-  for(var i in this._schedTable) {
-      var sched = this._schedTable[i];
-      if(sched && sched.ptstObj) {
-            Dwt.setVisible(sched.ptstObj, show);
-      }else if(i == this._organizerIndex) {
-            var ptstObj = document.getElementById(sched.dwtNameId+"_ptst");
-            Dwt.setVisible(ptstObj, show);
-      }
-  }
-};
-
-ZmSchedTabViewPage.prototype.enableAttendees =
-function(enable) {
-  for(var i in this._schedTable) {
-      var sched = this._schedTable[i];
-      if(sched) {
-          if(sched.inputObj) {
-            sched.inputObj.setEnabled(enable);
-          }
-          if(sched.selectObj) {
-            sched.selectObj.setEnabled(enable);
-          }
-      }
-  }
 };
