@@ -442,12 +442,12 @@ function(inlineAtts){
 
 ZmMailMsg.prototype.getInlineAttachments =
 function() {
-	return this._inlineAtts;
+	return this._inlineAtts || [];
 };
 
 ZmMailMsg.prototype.getInlineDocAttachments =
 function() {
-	return this._inlineDocAtts;
+	return this._inlineDocAtts || [];
 };
 
 /**
@@ -1482,32 +1482,43 @@ function(addrNodes, parentNode, isDraft, accountName) {
 	var identity = this.identity;
 	var isPrimary = identity == null || identity.isDefault;
 	if (accountName && isPrimary) {
+
+        var mainAcct = ac.getMainAccount().getEmail();
+        var onBehalfOf = false;
+        
 		// when saving a draft, even if obo, we do it on the main account so reset the from
 		if (isDraft) {
 			var folder = appCtxt.getById(this.folderId);
 			if (folder && folder.isRemote()) {
 				accountName = folder.getOwner();
+                onBehalfOf  = (accountName != mainAcct); 
 			}
 		}
 
-		var mainAcct = ac.getMainAccount().getEmail();
 		if (this._origMsg && this._origMsg.isDraft) {
 			var from = this._origMsg.getAddresses(AjxEmailAddress.FROM).get(0);
 			// this means we're sending a draft msg obo so reset account name
 			if (from && from.address != mainAcct) {
 				accountName = from.address;
+                onBehalfOf = true;
 			}
 		}
 
-		var addr = identity ? identity.sendFromAddress : accountName;
-		var node = {t:"f", a:addr};
-		var displayName = identity && identity.sendFromDisplay;
-		if (displayName) {
-			node.p = displayName;
-		}
-		addrNodes.push(node);
+        var addr, displayName=null;
+        if(onBehalfOf){
+            addr = accountName;
+        }else{
+            addr = identity ? identity.sendFromAddress : accountName;
+            displayName = identity && identity.sendFromDisplay;
+        }
 
-		if (!ac.isOffline && !isDraft) {
+        var node = {t:"f", a:addr};
+        if (displayName) {
+            node.p = displayName;
+        }
+        addrNodes.push(node);
+
+		if (!ac.isOffline && ( !isDraft || onBehalfOf )) {
 			// the main account is *always* the sender
 			addrNodes.push({t:"s", a:mainAcct});
 		}
