@@ -63,7 +63,7 @@
                     <c:set var="count" value="${count+1}"/>
                 </c:forEach>
                 <app:status>
-                    <fmt:message key="actionBriefcaseDeleted">
+                    <fmt:message key="actionBriefcaseItemsDeleted">
                         <fmt:param value="${count}"/>
                     </fmt:message>
                 </app:status>
@@ -103,7 +103,7 @@
                 <zm:moveItem folderid="${folderid}"var="result" id="${ids}"/>
                 <zm:clearSearchCache/>
                 <app:status>
-                    <fmt:message key="actionBriefcaseMoved">
+                    <fmt:message key="actionBriefcaseItemsMoved">
                         <fmt:param value="${result.idCount}"/>
                         <fmt:param value="${zm:getFolderName(pageContext, folderid)}"/>
                     </fmt:message>

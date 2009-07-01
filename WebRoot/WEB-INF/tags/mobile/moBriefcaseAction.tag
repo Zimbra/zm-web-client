@@ -63,7 +63,7 @@
             <zm:clearSearchCache/>
             <c:set var="op" value="x" scope="request"/>
             <mo:status>
-                <fmt:message key="actionBriefcaseMoved">
+                <fmt:message key="actionBriefcaseItemsMoved">
                     <fmt:param value="${result.idCount}"/>
                     <fmt:param value="${zm:getFolderName(pageContext, mailbox.trash.id)}"/>
                 </fmt:message>
@@ -111,7 +111,7 @@
                 <zm:moveItem folderid="${folderId}" var="result" id="${ids}"/>
                 <zm:clearSearchCache/>
                 <mo:status>
-                    <fmt:message key="actionBriefcaseMoved">
+                    <fmt:message key="actionBriefcaseItemsMoved">
                         <fmt:param value="${result.idCount}"/>
                         <fmt:param value="${zm:getFolderName(pageContext, folderId)}"/>
                     </fmt:message>
