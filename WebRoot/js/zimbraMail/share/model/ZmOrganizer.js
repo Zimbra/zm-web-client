@@ -64,10 +64,10 @@ ZmOrganizer = function(params) {
 	this.rid = params.rid;
 	this.restUrl = params.restUrl;
 	this.accountId = params.accountId;
-	if (params.perm) {
-		this.setPermissions(params.perm);
-	}
+
 	this.noSuchFolder = false; // Is this a link to some folder that ain't there.
+
+	this._isAdmin = this._isReadOnly = this._hasPrivateAccess = null;
 
 	var color = (this.parent && !params.color) ? this.parent.color : params.color;
 	this.color = color ||
@@ -687,18 +687,6 @@ function() {
 	return false;
 };
 
-// XXX: temp method until we get better *server* support post Birdseye! (see bug #4434)
-// DO NOT REMOVE OR I WILL HUNT YOU DOWN AND SHOOT YOU.
-ZmOrganizer.prototype.setPermissions =
-function(permission) {
-	if (this.shares == null) {
-		AjxDispatcher.require("Share");
-		this.addShare(new ZmShare({parent:this, perm:permission}));
-	} else {
-		this.getMainShare().setPermissions(permission);
-	}
-};
-
 ZmOrganizer.prototype.getIcon = function() {};
 
 // Actions
@@ -924,9 +912,11 @@ function(obj, details) {
 		doNotify = true;
 	}
 	if (obj.perm && obj._isRemote) {
-		this.setPermissions(obj.perm);
 		fields[ZmOrganizer.F_PERMS] = true;
 		doNotify = true;
+
+		// clear acl-related flags so they are recalculated
+		this._isAdmin = this._isReadOnly = this._hasPrivateAccess = null;
 	}
 
 	// Send out composite MODIFY change event
@@ -1196,7 +1186,7 @@ function() {
 
 ZmOrganizer.prototype.isReadOnly =
 function() {
-	if (!this._isReadOnly) {
+	if (this._isReadOnly == null) {
 		var share = this.getMainShare();
 		this._isReadOnly = (this.isRemote() && share && !share.isWrite());
 	}
@@ -1205,7 +1195,7 @@ function() {
 
 ZmOrganizer.prototype.isAdmin =
 function() {
-	if (!this._isAdmin) {
+	if (this._isAdmin == null) {
 		var share = this.getMainShare();
 		this._isAdmin = (this.isRemote() && share && share.isAdmin());
 	}
@@ -1214,7 +1204,7 @@ function() {
 
 ZmOrganizer.prototype.hasPrivateAccess =
 function() {
-	if (!this._hasPrivateAccess) {
+	if (this._hasPrivateAccess == null) {
 		var share = this.getMainShare();
 		this._hasPrivateAccess = (this.isRemote() && share && share.hasPrivateAccess());
 	}

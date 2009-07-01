@@ -597,24 +597,26 @@ function(searchResp, params) {
 			folder2List[fid].push(this._rawAppts[j]);
 		}
 
-		for (var i = 0; i < folderIds.length; i++) {
-			var folderId = folderIds[i];
-			var systemFolderId = appCtxt.getActiveAccount().isMain
-				? folderId
-				: ZmOrganizer.getSystemId(folderId);
+		if (folderIds && folderIds.length) {
+			for (var i = 0; i < folderIds.length; i++) {
+				var folderId = folderIds[i];
+				var systemFolderId = appCtxt.getActiveAccount().isMain
+					? folderId
+					: ZmOrganizer.getSystemId(folderId);
 
-			var apptList = new ZmApptList();
-			apptList.loadFromSummaryJs(folder2List[systemFolderId]);
+				var apptList = new ZmApptList();
+				apptList.loadFromSummaryJs(folder2List[systemFolderId]);
 
-			// cache it
-			this._updateCachedIds(apptList);
-			this._cacheApptSummaries(apptList, start, end, systemFolderId, query);
+				// cache it
+				this._updateCachedIds(apptList);
+				this._cacheApptSummaries(apptList, start, end, systemFolderId, query);
 
-			// convert to sorted vector
-			var list = ZmApptList.toVector(apptList, start, end, fanoutAllDay, params.includeReminders);
-			this._cacheVector(list, start, end, fanoutAllDay, systemFolderId, query); // id in response tied back to folder id
+				// convert to sorted vector
+				var list = ZmApptList.toVector(apptList, start, end, fanoutAllDay, params.includeReminders);
+				this._cacheVector(list, start, end, fanoutAllDay, systemFolderId, query); // id in response tied back to folder id
 
-			params.resultList.push(list);
+				params.resultList.push(list);
+			}
 		}
 	}
 

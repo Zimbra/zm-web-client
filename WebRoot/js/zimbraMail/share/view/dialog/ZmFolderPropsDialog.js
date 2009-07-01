@@ -317,19 +317,33 @@ function(event) {
 
 ZmFolderPropsDialog.prototype._populateShares =
 function(organizer) {
+
 	this._sharesGroup.setContent("");
 
 	var link = organizer.link;
 	var shares = organizer.shares;
-	var table;
+	var displayShares = [];
 	if ((!link || organizer.isAdmin()) && shares && shares.length > 0) {
 		AjxDispatcher.require("Share");
-		table = document.createElement("TABLE");
+		var userZid = appCtxt.getMainAccount().id;
+		// if a folder was shared with us with admin, a share is created since we could share it;
+		// don't show any share that's for us in the list
+		for (var i = 0; i < shares.length; i++) {
+			var share = shares[i];
+			var granteeId = share.grantee && share.grantee.id;
+			if (granteeId && (granteeId != userZid)) {
+				displayShares.push(share);
+			}
+		}
+	}
+
+	if (displayShares.length) {
+		var table = document.createElement("TABLE");
 		table.border = 0;
 		table.cellSpacing = 0;
 		table.cellPadding = 3;
-		for (var i = 0; i < shares.length; i++) {
-			var share = shares[i];
+		for (var i = 0; i < displayShares.length; i++) {
+			var share = displayShares[i];
 			var row = table.insertRow(-1);
 			var nameEl = row.insertCell(-1);
 			nameEl.style.paddingRight = "15px";
@@ -357,7 +371,7 @@ function(organizer) {
 		Dwt.setSize(insetElement, width, height);
 	}
 
-	this._sharesGroup.setVisible(!!(table && table.rows && table.rows.length > 0));
+	this._sharesGroup.setVisible(!!(displayShares.length > 0));
 };
 
 ZmFolderPropsDialog.prototype.__createCmdCells =
