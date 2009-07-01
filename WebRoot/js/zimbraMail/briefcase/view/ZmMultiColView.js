@@ -246,14 +246,23 @@ function(item) {
 		name = name.substring(0,20) + "..";
 	}
 
-	var restUrl = item.getRestUrl();
-	// commented for bug 32457 :: restUrl = this._controller.getApp().fixCrossDomainReference(restUrl);
-	var fileLink = [ '<a href="', restUrl, '" target="_blank">', name, '</a>' ].join("");
+	var restURL = item.getRestUrl();
+	var originalRestURL = item.getRestUrl(false, true);
+
+	// commented for bug 32457 :: restURL = this._controller.getApp().fixCrossDomainReference(restUrl);
+	var fileLink = [ '<a href="', restURL, '" target="_blank">', name, '</a>' ].join("");
 
 	var dateFormatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.FULL, AjxDateFormat.MEDIUM);
 
+    var actionLink = [ '<a href="', originalRestURL, "?disp=a", '" target="_blank">', ZmMsg.saveFile, '</a>' ].join("");
+
+    if(item.isSlideDoc()) {
+        actionLink += [ ', <a href="', originalRestURL, "?fmt=html&run=1", '" target="_blank">', ZmMsg.slides_launchSlideShow, '</a>' ].join("");
+    }
+
 	var prop = [
 		{name:ZmMsg.name, value:fileLink},
+		{name:ZmMsg.actionLabel, value: actionLink},
 		{name:ZmMsg.path, value:path},
 		{name:ZmMsg.size, value:AjxUtil.formatSize(item.size)},
 		{name:ZmMsg.created, value:dateFormatter.format(item.createDate)},
@@ -262,7 +271,7 @@ function(item) {
 		{name:ZmMsg.modifier, value:item.modifier}
 	];
 
-	var imgSrc = restUrl.toLowerCase().match(/\.jpg$|\.gif$|\.jpeg$|\.bmp$$/) ? restUrl : null;
+	var imgSrc = restURL.toLowerCase().match(/\.jpg$|\.gif$|\.jpeg$|\.bmp$$/) ? restURL : null;
 
 	var subs = {
 		imgSrc: imgSrc,

@@ -47,12 +47,12 @@ function(dontIncludeThisName) {
 };
                                                                                
 ZmBriefcaseItem.prototype.getRestUrl =
-function(dontIncludeThisName) {
+function(dontIncludeThisName, ignoreCustomDocs) {
 	var url = ZmItem.prototype.getRestUrl.call(this);
 	if (dontIncludeThisName) {
 		url = url.replace(/[^\/]+$/,"");
 	}
-    if(this.contentType && this.isWebDoc()) {
+    if(!ignoreCustomDocs && this.contentType && this.isWebDoc()) {
         url += "?fmt=html";
     }
 	return url;
@@ -64,6 +64,10 @@ ZmBriefcaseItem.prototype.isRealFile = function(){
 
 ZmBriefcaseItem.prototype.isWebDoc = function(){
     return (this.contentType == ZmMimeTable.APP_ZIMBRA_SLIDES || this.contentType == ZmMimeTable.APP_ZIMBRA_SPREADSHEET || this.contentType == ZmMimeTable.APP_ZIMBRA_DOC);
+};
+
+ZmBriefcaseItem.prototype.isSlideDoc = function(){
+    return (this.contentType == ZmMimeTable.APP_ZIMBRA_SLIDES);
 };
 
 ZmBriefcaseItem.prototype.set =
