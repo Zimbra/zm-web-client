@@ -69,8 +69,14 @@ function(htmlArr, idx, item, field, colIdx, params) {
 	htmlArr[idx++] = "<td style='vertical-align:middle;' width=20><center>";
 	htmlArr[idx++] = AjxImg.getImageHtml(icon);
 	htmlArr[idx++] = "</center></td>";
-	htmlArr[idx++] = "<td style='vertical-align:middle;' id='"+this._getFieldId(item,ZmItem.F_SUBJECT)+"'>&nbsp;";
-	htmlArr[idx++] = AjxStringUtil.htmlEncode(item.name);
+	htmlArr[idx++] = "<td style='vertical-align:middle;' width='100%' id='"+this._getFieldId(item,ZmItem.F_SUBJECT)+"'>&nbsp;";
+	htmlArr[idx++] =    AjxStringUtil.htmlEncode(item.name);
+	htmlArr[idx++] = "</td>";
+
+    htmlArr[idx++] = "<td style='vertical-align:middle;' width='16' align='right' id='"+this._getFieldId(item,ZmItem.F_SUBJECT)+"'>";
+    if(item.tags.length > 0){
+	    idx = this._getImageHtml(htmlArr, idx, item.getTagImageInfo(), this._getFieldId(item, ZmItem.F_TAG));
+    }
 	htmlArr[idx++] = "</td>";
 
 	htmlArr[idx++] = "</tr></table>";
