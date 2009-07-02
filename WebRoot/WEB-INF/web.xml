@@ -304,8 +304,9 @@
 				WEB-INF/classes/messages/${name},
 				WEB-INF/classes/keys/${name},
 				WEB-INF/classes/${dir}/${name},
-				../service/zimlet/${name}/${name},
-				../service/zimlet/_dev/${name}/${name}
+				/opt/zimbra/zimlets-properties/${name}/${name},
+                /opt/zimbra/zimlets-deployed/${name}/${name},
+				/opt/zimbra/zimlets-deployed/_dev/${name}/${name}
 			</param-value>
 		</init-param>
 	</servlet>
