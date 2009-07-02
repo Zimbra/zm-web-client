@@ -1228,11 +1228,11 @@ function(params, callback) {
 				this._forceMsgView = true;
 			} else if (view == "msg") {
 				var msg = new ZmMailMsg(id, null, true);
-				var params = {getHtml:			appCtxt.get(ZmSetting.VIEW_AS_HTML),
-							  markRead:			(appCtxt.get(ZmSetting.MARK_MSG_READ) == ZmSetting.MARK_READ_NOW),
-							  callback:			new AjxCallback(this, this._handleResponseMsgLoad, [msg, callback]),
-							  errorCallback:	new AjxCallback(this, this._handleErrorMsgLoad)};
-				msg.load(params);
+				var msgParams = {getHtml:			appCtxt.get(ZmSetting.VIEW_AS_HTML),
+								 markRead:			(appCtxt.get(ZmSetting.MARK_MSG_READ) == ZmSetting.MARK_READ_NOW),
+								 callback:			new AjxCallback(this, this._handleResponseMsgLoad, [msg, callback]),
+								 errorCallback:		new AjxCallback(this, this._handleErrorMsgLoad, callback)};
+				msg.load(msgParams);
 				return;
 			}
 		}
@@ -1255,9 +1255,20 @@ function(params, ex) {
 	}
 };
 
+/**
+ * If we can't show the given msg, just do regular mail launch and show initial search. Make sure to
+ * run the callback so that the rest of the UI is drawn.
+ *
+ * @param callback
+ * @param ex
+ */
 ZmMailApp.prototype._handleErrorMsgLoad =
-function(ex) {
-	ZmZimbraMail.killSplash();
+function(callback, ex) {
+	this._mailSearch();
+	if (callback) {
+		callback.run();
+	}
+	this._notifyRendered();
 	return false;
 };
 
