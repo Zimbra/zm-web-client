@@ -221,7 +221,7 @@ ZmDocsEditView.prototype._tbActionListener = function(ev) {
 
 ZmDocsEditView.prototype._createToolbar2 = function(toolbar) {
 
-    var params = {parent:toolbar,style:DwtButton.ALWAYS_FLAT};
+    var params = {parent:toolbar,style:DwtButton.TOGGLE_STYLE};
 
     var listener = new AjxListener(this, this._quickTbActionListener);
     
@@ -264,10 +264,18 @@ ZmDocsEditView.prototype._quickTbActionListener = function(ev) {
     var action = ev.item.getData(ZmDocsEditView.ZD_VALUE);
 
     if(action == "QuickTables") {
-        this._toolbar3.setVisible(true);
+        if(this._toolbar3.getVisible()) {
+            this._toolbar3.setVisible(false);                
+        } else {
+            this._toolbar3.setVisible(true);
+        }
         this._toolbar4.setVisible(false);
     } else if(action == "DocElements") {
-        this._toolbar4.setVisible(true);
+        if(this._toolbar4.getVisible()) {
+            this._toolbar4.setVisible(false);
+        } else {
+            this._toolbar4.setVisible(true);
+        }    
         this._toolbar3.setVisible(false);
     } else {
         this._toolbar4.setVisible(false);
