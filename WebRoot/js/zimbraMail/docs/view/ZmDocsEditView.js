@@ -74,7 +74,7 @@ function(files) {
         } else {
             wAppCtxt = window.opener.appCtxt;
         }
-        wAppCtxt.setStatusMsg(ZmMsg.savedDocument, ZmStatusView.LEVEL_INFO);
+        appCtxt.setStatusMsg(ZmMsg.savedDoc, ZmStatusView.LEVEL_INFO);
     }
 
 };

@@ -89,15 +89,6 @@ ZmDocsEditApp.setFile = function(fileId, fileName, folderId){
    };
 };
 
-ZmDocsEditApp.prototype.setStatusMsg = function(){
-    if(!this.statusView){
-        this.statusView = new ZmStatusView(appCtxt.getShell(), "ZmStatus", Dwt.ABSOLUTE_STYLE, ZmId.STATUS_VIEW);
-    }
-    params = Dwt.getParams(arguments, ZmStatusView.MSG_PARAMS);
-    params.transitions = ZmToast.DEFAULT_TRANSITIONS;
-	this.statusView.setStatusMsg(params);
-};
-
 ZmDocsEditApp._createDBG = function(devMode){
 
     var isDevMode = /^(1|true|on|yes)$/i.test(devMode);
