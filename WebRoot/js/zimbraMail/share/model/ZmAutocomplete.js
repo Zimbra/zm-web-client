@@ -30,7 +30,10 @@ ZmAutocomplete = function() {
 	this._acCache[ZmAutocomplete.AC_TYPE_EQUIPMENT]	=	{};
 
 	var settings = appCtxt.getSettings();
-	settings.getSetting(ZmSetting.GAL_AUTOCOMPLETE).addChangeListener(new AjxListener(this, this._settingChangeListener));
+	var galSetting = settings.getSetting(ZmSetting.GAL_AUTOCOMPLETE);
+    if(galSetting){ //AddrBook might be disabled
+        galSetting.addChangeListener(new AjxListener(this, this._settingChangeListener));
+    }
 };
 
 // choices for text in the returned match object

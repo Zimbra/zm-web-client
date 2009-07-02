@@ -75,7 +75,7 @@ function() {
 
 ZmBriefcaseController.prototype._getToolBarOps =
 function() {
-	return [ZmOperation.NEW_MENU,
+    var ops = [ZmOperation.NEW_MENU,
 			ZmOperation.SEP,
 			ZmOperation.NEW_FILE,
 			ZmOperation.SEP,
@@ -88,8 +88,13 @@ function() {
             ZmOperation.NEW_SPREADSHEET,
             ZmOperation.NEW_PRESENTATION,
             ZmOperation.NEW_DOC,
-            ZmOperation.FILLER,
-			ZmOperation.SEND_FILE_MENU];
+            ZmOperation.FILLER];
+    
+    if(appCtxt.get(ZmSetting.MAIL_ENABLED)){
+        ops.push(ZmOperation.SEND_FILE_MENU);
+    }
+
+    return ops;
 };
 
 ZmBriefcaseController.prototype._handleDoc = function(op){
@@ -142,6 +147,7 @@ function(parent, num) {
 	var isReadOnly = this.isReadOnly(this._currentFolder);
 	var isItemSelected = (num>0);
 	var isZimbraAccount = appCtxt.getActiveAccount().isZimbraAccount;
+    var isMailEnabled = appCtxt.get(ZmSetting.MAIL_ENABLED);
 
 	if (appCtxt.get(ZmSetting.VIEW_ATTACHMENT_AS_HTML)) {
 		var isViewHtmlEnabled = true;
@@ -158,7 +164,7 @@ function(parent, num) {
 		parent.enable([ZmOperation.VIEW_FILE_AS_HTML], (isItemSelected && isViewHtmlEnabled));
 	}
 
-	parent.enable([ZmOperation.SEND_FILE_MENU, ZmOperation.SEND_FILE, ZmOperation.SEND_FILE_AS_ATT], (isZimbraAccount && isItemSelected && !isMultiFolder && !isFolderSelected));
+	parent.enable([ZmOperation.SEND_FILE_MENU, ZmOperation.SEND_FILE, ZmOperation.SEND_FILE_AS_ATT], (isZimbraAccount && isMailEnabled && isItemSelected && !isMultiFolder && !isFolderSelected));
 	parent.enable(ZmOperation.OPEN_FILE, (isItemSelected && !isMultiFolder));
 	parent.enable(ZmOperation.DELETE, (!isReadOnly && isItemSelected));
     parent.enable(ZmOperation.CREATE_SLIDE_SHOW, (!isReadOnly && isItemSelected));
@@ -730,7 +736,6 @@ function(names, urls, inNewWindow) {
 	AjxDispatcher.run("Compose", {action: action, inNewWindow: inNewWindow, msg: msg,
 								  toOverride: toOverride, subjOverride: subjOverride,
 								  extraBodyText: extraBodyText});
-	AjxDispatcher.run("GetComposeController");
 };
 
 ZmBriefcaseController.prototype._sendFileAsAttachmentListener =
@@ -780,7 +785,10 @@ function(num) {
 
 ZmBriefcaseController.prototype._initSendMenu =
 function(view) {
-	var sendBtn = this._toolbar[view].getButton(ZmOperation.SEND_FILE_MENU);
+
+    var sendBtn = this._toolbar[view].getButton(ZmOperation.SEND_FILE_MENU);
+    if(!sendBtn) return;
+    
 	var menu = new ZmPopupMenu(sendBtn);
 	sendBtn.setMenu(menu);
 
