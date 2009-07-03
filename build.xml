@@ -476,6 +476,7 @@
 		            <param name="srcdir" value="${template.dir}" />
 		            <param name="gendir" value="${build.template.dir}" />
 		            <param name="destdir" value="${build.classes.dir}/messages" />
+		            <param name="authoritative" value="false" />
 	            </antcall>
 	            <dirset id="skin.dirs" dir="${skins.dir}" includes="*" excludes="_*" />
 	            <pathconvert property="skin.names" refid="skin.dirs" pathsep=",">
@@ -487,6 +488,7 @@
 				            <param name="srcdir" value="${skins.dir}/@{name}" />
 				            <param name="gendir" value="${build.skin.dir}/@{name}" />
 				            <param name="destdir" value="${build.web.dir}/skins/@{name}/messages" />
+				            <param name="authoritative" value="true" />
 			            </antcall>
 		            </sequential>
 	            </for>
@@ -498,8 +500,8 @@
     </target>
 
 	<target name='templates-generate'>
-		<echo>srcdir: ${srcdir}, gendir: ${gendir}, destdir: ${destdir}</echo>
-		<template destdir='${gendir}'>
+		<echo>srcdir: ${srcdir}, gendir: ${gendir}, destdir: ${destdir}, authoritative: ${authoritative}</echo>
+		<template destdir='${gendir}' authoritative="${authoritative}">
 		    <fileset dir='${srcdir}' includes='${template.includes}' excludes='**/*_*.template,${template.excludes}'/>
 		</template>
 		<template destdir='${gendir}' format="properties">
@@ -541,13 +543,11 @@
                 </pathconvert>
                 <for list='${skins.list}' param='name'>
                     <sequential>
-                        <!--<template destdir='${build.web.dir}/skins' authoritative='true'>-->
-                            <!--<fileset dir='${customer.skin.dir}' includes='@{name}/**/*.template'/>-->
-                        <!--</template>-->
 	                    <antcall target="templates-generate">
 		                    <param name="srcdir" value="${customer.skin.dir}/@{name}" />
 		                    <param name="gendir" value="${build.web.dir}/skins/@{name}" />
 		                    <param name="destdir" value="${build.web.dir}/skins/@{name}/messages" />
+		                    <param name="authoritative" value="true" />
 	                    </antcall>
                     </sequential>
                 </for>
