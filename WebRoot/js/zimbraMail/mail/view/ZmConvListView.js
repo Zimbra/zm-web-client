@@ -179,6 +179,34 @@ function() {
 	ZmMailListView.prototype.reRenderListView.call(this);
 };
 
+ZmConvListView.prototype.getList =
+function(allItems) {
+	if (!allItems) {
+		return ZmMailListView.prototype.getList.call(this);
+	} else {
+		var list = [];
+		var childNodes = this._parentEl.childNodes;
+		for (var i = 0; i < childNodes.length; i++) {
+			list.push(this.getItemFromElement(childNodes[i]));
+		}
+		return AjxVector.fromArray(list);
+	}
+};
+
+ZmConvListView.prototype.getItemIndex =
+function(item, allItems) {
+	var list = this.getList(allItems);
+	if (list) {
+		var len = list.size();
+		for (var i = 0; i < len; ++i) {
+			if (list.get(i).id == item.id) {
+				return i;
+			}
+		}
+	}
+	return null;
+};
+
 ZmConvListView.prototype._getHeaderList =
 function(parent, controller) {
 	var headers = this.isMultiColumn(controller) ? ZmConvListView.HEADERS_LONG : ZmConvListView.HEADERS_SHORT;
