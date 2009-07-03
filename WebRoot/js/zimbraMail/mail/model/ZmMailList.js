@@ -213,8 +213,9 @@ ZmMailList.prototype.markRead =
 function(items, on, callback) {
 	var items1 = [];
 	for (var i = 0; i < items.length; i++) {
-		if (items[i].isUnread == on) {
-			items1.push(items[i]);
+		var item = items[i];
+		if ((item.type == ZmItem.CONV && item.hasFlag(ZmItem.FLAG_UNREAD, on)) || (item.isUnread == on)) {
+			items1.push(item);
 		}
 	}
 	if (items1.length) {

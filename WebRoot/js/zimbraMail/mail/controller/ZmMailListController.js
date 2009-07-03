@@ -571,16 +571,26 @@ function(ev) {
 	var items = this._listView[this._currentView].getSelection();
 
 	// enable/disable mark as read/unread as necessary
-	var bHasRead = false;
-	var bHasUnread = false;
+	var hasRead = false;
+	var hasUnread = false;
 
 	// dont bother checking for read/unread state for read-only folders
 	var folderId = this._getSearchFolderId();
 	var folder = folderId ? appCtxt.getById(folderId) : null;
 	if (!folder || (folder && !folder.isReadOnly())) {
 		for (var i = 0; i < items.length; i++) {
-			(items[i].isUnread) ? bHasUnread = true : bHasRead = true;
-			if (bHasUnread && bHasRead) { break; }
+			var item = items[i];
+			if (item.type == ZmItem.MSG) {
+				if (item.isUnread) {
+					hasUnread = true;
+				} else {
+					hasRead = true;
+				}
+			} else if (item.type == ZmItem.CONV) {
+				hasUnread = item.hasFlag(ZmItem.FLAG_UNREAD, true);
+				hasRead = item.hasFlag(ZmItem.FLAG_UNREAD, false);
+			}
+			if (hasUnread && hasRead) { break; }
 		}
 	}
 
@@ -600,7 +610,7 @@ function(ev) {
 		this._setTagMenu(this._participantActionMenu);
 		this._actionEv.address = address;
 		this._setupSpamButton(this._participantActionMenu);
-		this._enableFlags(this._participantActionMenu, bHasUnread, bHasRead);
+		this._enableFlags(this._participantActionMenu, hasUnread, hasRead);
 		var imItem = this._participantActionMenu.getOp(ZmOperation.IM);
 		var contactsApp = appCtxt.getApp(ZmApp.CONTACTS);
 		if (contactsApp) {
@@ -629,7 +639,7 @@ function(ev) {
 	} else {
 		var actionMenu = this.getActionMenu();
 		this._setupSpamButton(actionMenu);
-		this._enableFlags(actionMenu, bHasUnread, bHasRead);
+		this._enableFlags(actionMenu, hasUnread, hasRead);
 		actionMenu.popup(0, ev.docX, ev.docY);
 		if (ev.ersatz) {
 			// menu popped up via keyboard nav
@@ -1363,12 +1373,14 @@ function(parent, num) {
 
 // Enable mark read/unread as appropriate.
 ZmMailListController.prototype._enableFlags =
-function(menu, bHasUnread, bHasRead) {
+function(menu, hasUnread, hasRead) {
 	menu.enable([ZmOperation.MARK_READ, ZmOperation.MARK_UNREAD], true);
-	if (!bHasUnread)
+	if (!hasUnread) {
 		menu.enable(ZmOperation.MARK_READ, false);
-	if (!bHasRead)
+	}
+	if (!hasRead) {
 		menu.enable(ZmOperation.MARK_UNREAD, false);
+	}
 };
 
 /**

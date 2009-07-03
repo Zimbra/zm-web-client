@@ -303,6 +303,28 @@ function(obj) {
 	ZmMailItem.prototype.notifyModify.apply(this, arguments);
 };
 
+/**
+ * Returns true if any of the msgs within this conv has the given value for
+ * the given flag. If the conv hasn't been loaded, looks at the conv-level flag.Å
+ *
+ * @param flag		[constant]		ZmItem.FLAG_*
+ * @param value		[boolean]		test value
+ */
+ZmConv.prototype.hasFlag =
+function(flag, value) {
+	if (!this.msgs) {
+		return (this[ZmItem.FLAG_PROP[flag]] == value);
+	}
+	var msgs = this.msgs.getArray();
+	for (var j = 0; j < msgs.length; j++) {
+		var msg = msgs[j];
+		if (msg[ZmItem.FLAG_PROP[flag]] == value) {
+			return true;
+		}
+	}
+	return false;
+};
+
 ZmConv.prototype._checkFlags = 
 function(flags) {
 	var msgs = this.msgs.getArray();
@@ -310,17 +332,9 @@ function(flags) {
 	var msgsOn = {};
 	for (var i = 0; i < flags.length; i++) {
 		var flag = flags[i];
-		if (!(flag == ZmItem.FLAG_FLAGGED || flag == ZmItem.FLAG_UNREAD 
-			|| flag == ZmItem.FLAG_ATTACH)) continue;
+		if (!(flag == ZmItem.FLAG_FLAGGED || flag == ZmItem.FLAG_UNREAD || flag == ZmItem.FLAG_ATTACH)) { continue; }
 		convOn[flag] = this[ZmItem.FLAG_PROP[flag]];
-		msgsOn[flag] = false;
-		for (var j = 0; j < msgs.length; j++) {
-			var msg = msgs[j];
-			if (msg[ZmItem.FLAG_PROP[flag]]) {
-				msgsOn[flag] = true;
-				break;
-			}
-		}
+		msgsOn[flag] = this.hasFlag(flag, true);
 	}			
 	var doNotify = false;
 	var flags = new Array();
