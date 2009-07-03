@@ -1,5 +1,8 @@
-<%@ page import="java.util.Locale" %>
+<%@ page buffer="8kb" session="false" autoFlush="true" pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
+<%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
+<%@ page import="java.util.Locale" %>
 <!--
 ***** BEGIN LICENSE BLOCK *****
 Zimbra Collaboration Suite Web Client
@@ -69,7 +72,10 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
     }
     Boolean isDevMode = (mode != null) && (mode.equalsIgnoreCase("mjsf"));
     Boolean inSkinDebugMode = (mode != null) && (mode.equalsIgnoreCase("skindebug"));
+    String offlineMode = getParameter(request, "offline", application.getInitParameter("offlineMode"));
 
+    String prodMode = getAttribute(request, "prodMode", "");
+    
     Locale locale = request.getLocale();
     String localeId = getAttribute(request, "localeId", null);
     if (localeId != null) {
@@ -83,8 +89,16 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
         }
     }
 
+    // make variables available in page context (e.g. ${foo})
+    pageContext.setAttribute("contextPath", contextPath);
     pageContext.setAttribute("skin", skin);
-    pageContext.setAttribute("isDevMode", isDevMode);
+    pageContext.setAttribute("ext", ext);
+    pageContext.setAttribute("vers", vers);
+    pageContext.setAttribute("locale", locale);
+    pageContext.setAttribute("isDevMode", isDev);
+    pageContext.setAttribute("isOfflineMode", offlineMode != null && offlineMode.equals("true"));
+    pageContext.setAttribute("isProdMode", !prodMode.equals(""));
+    pageContext.setAttribute("isDebug", isDevMode);
 %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
