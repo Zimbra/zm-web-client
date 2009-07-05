@@ -685,7 +685,7 @@ function(attId, isDraft) {
 	* continue?", zimletName:"com_zimbra_attachmentAlert"}
 	**/
 	if (!isDraft) {
-		if (appCtxt.zimletsPresent()) {
+		if (appCtxt.areZimletsLoaded()) {
 			var boolAndErrorMsgArray = [];
 			var showErrorDlg = false;
 			var errorMsg = "";
