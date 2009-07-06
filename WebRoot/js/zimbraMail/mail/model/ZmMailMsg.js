@@ -1414,7 +1414,7 @@ function(addrNodes, parentNode, isDraft, accountName) {
 				addrNode = {
 					t:"f",
 					a:dataSource.getEmail(),
-					p:dataSource.getName()
+					p:name||dataSource.getName()
 				};
 				addrNodes.push(addrNode);
 			}
