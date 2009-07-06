@@ -259,6 +259,43 @@ function(origText) {
 		// than parsing the DOM.
 		DBG.timePt("START - highlight objects on-demand, text msg.");
 		this._lazyCreateObjectManager();
+		var msgSizeKB = origText.length / 1024;
+		if (msgSizeKB >= ZmMailMsgView.OBJ_SIZE_TEXT) {
+			// break large text into chunks
+			console.log("splitting into chunks");
+			var chunks = [];
+			var chunkSizeB = ZmMailMsgView.OBJ_SIZE_TEXT * 512; // 25K chunks
+			var offset = 0;
+			var before = new Date().getTime();
+			while (offset + chunkSizeB < origText.length) {
+				for (var i = offset + chunkSizeB; i < origText.length; i++) {
+					// break at newline so that highlighters can work correctly
+					var c = origText.charCodeAt(i);
+					if (c == 10 || c == 13) { // \r or \n
+						chunks.push(origText.substring(offset, i));
+						offset = i + 1;
+						break;
+					}
+				}
+			}
+			if (offset < origText.length) {
+				chunks.push(origText.substr(offset));
+			}
+			var after = new Date().getTime();
+			console.log(chunks.length," chunks took ",after-before," ms");
+
+			console.log("highlighting objects in the chunks");
+			for (var i = 0; i < chunks.length; i++) {
+				var before = new Date().getTime();
+				chunks[i] = this._objectManager.findObjects(origText, true, null, true);
+				chunks[i] = chunks[i].replace(/^ /mg, "&nbsp;")
+					.replace(/\t/g, "<pre style='display:inline;'>\t</pre>")
+					.replace(/\n/g, "<br>");
+				var after = new Date().getTime();
+				console.dir("chunk ",i," took ",after-before," ms");
+			}
+			return;
+		}
 		var html = this._objectManager.findObjects(origText, true, null, true);
 		html = html.replace(/^ /mg, "&nbsp;")
 			.replace(/\t/g, "<pre style='display:inline;'>\t</pre>")
