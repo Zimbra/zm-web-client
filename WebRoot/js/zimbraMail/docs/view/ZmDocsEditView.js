@@ -239,7 +239,7 @@ ZmDocsEditView.prototype._createToolbar2 = function(toolbar) {
     b.addSelectionListener(listener);
     b.setToolTipContent(ZmMsg.zd_docQuickTablesTT);
 
-    new DwtControl({parent:toolbar, className:"vertSep"});
+    /*new DwtControl({parent:toolbar, className:"vertSep"});
 
     b = this._buttons.chartTb = new DwtToolBarButton(params);
     b.setText(ZmMsg.zd_docCharts);
@@ -253,7 +253,7 @@ ZmDocsEditView.prototype._createToolbar2 = function(toolbar) {
     b.setText(ZmMsg.zd_docSmartArt);
     b.setData(ZmDocsEditView.ZD_VALUE, "SmartArt");
     b.addSelectionListener(listener);
-    b.setToolTipContent(ZmMsg.zd_docSmartArtTT);
+    b.setToolTipContent(ZmMsg.zd_docSmartArtTT);*/
 
     this._createQuickTables();
 
