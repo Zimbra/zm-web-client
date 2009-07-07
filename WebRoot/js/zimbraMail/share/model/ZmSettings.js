@@ -211,9 +211,8 @@ function(callback, accountName, result) {
 		}
 		appCtxt.setActiveAccount(mainAcct);
 
-		// XXX: hack
 		if (appCtxt.isOffline) {
-			mainAcct.displayName = "Local Folders";
+			mainAcct.displayName = ZmMsg.localFolders;
 		}
 
 		// for offline, find out whether this client supports prism-specific features

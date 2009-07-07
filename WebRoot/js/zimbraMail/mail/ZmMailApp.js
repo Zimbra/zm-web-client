@@ -1287,7 +1287,8 @@ function(msg, callback) {
 
 ZmMailApp.prototype._mailSearch =
 function(query, callback, response) {
-	query = query || appCtxt.get(ZmSetting.INITIAL_SEARCH);
+	var account = appCtxt.isOffline && appCtxt.inStartup && appCtxt.getMainAccount(true);
+	query = query || appCtxt.get(ZmSetting.INITIAL_SEARCH, null, account);
 	var types = new AjxVector();
 	types.add(this.getGroupMailBy());
 
@@ -1295,7 +1296,8 @@ function(query, callback, response) {
 		searchFor: ZmId.SEARCH_MAIL,
 		query: query,
 		types: types,
-		getHtml: appCtxt.get(ZmSetting.VIEW_AS_HTML),
+		getHtml: appCtxt.get(ZmSetting.VIEW_AS_HTML, null, account),
+		accountName: (account && account.name),
 		callback: callback,
 		response: response
 	};
