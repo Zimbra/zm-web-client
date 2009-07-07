@@ -1223,7 +1223,7 @@ function() {
 		} else {
 			var parsed = ZmOrganizer.parseId(this.id);
 			var accountId = this.accountId || appCtxt.getActiveAccount().id;
-			this._isRemote = (parsed.account.id != accountId);
+			this._isRemote = (parsed.account && (parsed.account.id != accountId));
 		}
 	}
 	return this._isRemote;
