@@ -38,7 +38,7 @@
                 <app:img altkey="checked" src="tasks/ImgTask.gif"/>
             </c:when>
                 <c:otherwise>
-                    <app:img altkey="unchecked" src="startup/ImgTaskCheckbox.gif"/>
+                    <app:img altkey="unchecked" src="startup/ImgCheckboxUnchecked.gif"/>
                 </c:otherwise>
             </c:choose>
             <app:img src="${folder.image}" alt='${fn:escapeXml(label)}'/>
