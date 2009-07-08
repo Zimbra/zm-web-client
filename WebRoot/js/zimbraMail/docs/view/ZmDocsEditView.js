@@ -471,9 +471,9 @@ ZmDocsEditView.prototype._createToolbar = function(toolbar) {
     b.setToolTipContent(ZmMsg.save);
 
     new DwtControl({parent:toolbar, className:"vertSep"});
-    
+
     var listener = new AjxListener(this, this._tbActionListener);
-    
+    /*
     b = this._buttons.clipboardCopy = new DwtToolBarButton(params);
 	b.setImage("Copy");
 	b.setData(ZmDocsEditView.ZD_VALUE, "ClipboardCopy");
@@ -493,8 +493,9 @@ ZmDocsEditView.prototype._createToolbar = function(toolbar) {
 	b.setToolTipContent(ZmMsg.paste);
 
     new DwtControl({parent:toolbar, className:"vertSep"});
+    */
 
-    b = this._buttons.clipboardPaste = new DwtToolBarButton(params);
+    b = this._buttons.newDocument = new DwtToolBarButton(params);
     b.setText(ZmMsg.newDocument);
     b.setImage("Doc");
     b.setData(ZmDocsEditView.ZD_VALUE, "NewDocument");
