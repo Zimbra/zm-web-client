@@ -365,7 +365,6 @@ function(callback, skipNotify, result) {
 							mtpt.addShare(ZmShare.createFromJs(mtpt, acl.grant[j]));
 						}
 					}
-					mtpt.setPermissions(link.perm);
 				}
 
 				if (link.folder && link.folder.length > 0) {
