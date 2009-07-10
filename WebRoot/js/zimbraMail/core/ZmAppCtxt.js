@@ -600,15 +600,19 @@ function(checkOfflineMode) {
  * when fetching any account-specific data such as settings or folder
  * tree. The account goes and fetches its data if necessary.
  *
- * @param account	[ZmZimbraAccount]		account to make active
+ * @param account		[ZmZimbraAccount]	account to make active
+ * @param skipNotify	[Boolean]*			skip notify if true
  */
 ZmAppCtxt.prototype.setActiveAccount =
-function(account) {
+function(account, skipNotify) {
 	this._activeAccount = account;
 
 	this._evt = this._evt || new ZmEvent();
 	this._evt.account = account;
-	this._evtMgr.notifyListeners("ACCOUNT", this._evt);
+
+	if (!skipNotify) {
+		this._evtMgr.notifyListeners("ACCOUNT", this._evt);
+	}
 };
 
 ZmAppCtxt.prototype.getActiveAccount =

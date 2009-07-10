@@ -917,18 +917,18 @@ function(request, isDraft, accountName, requestReadReceipt) {
 		msgNode.f = ZmItem.FLAG_LOW_PRIORITY;
 	}
 
-    if(ZmMailMsg.COMPOSE_ADDRS.length > 0){ //If no addrs, no element 'e'
-        var addrNodes = msgNode.e = [];
-        for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
-            var type = ZmMailMsg.COMPOSE_ADDRS[i];
-            this._addAddressNodes(addrNodes, type, isDraft);
-        }
-        this._addFrom(addrNodes, msgNode, isDraft, accountName);
-        this._addReplyTo(addrNodes);
-        if (requestReadReceipt) {
-            this._addReadReceipt(addrNodes, accountName);
-        }
-    }
+	if (ZmMailMsg.COMPOSE_ADDRS.length > 0) { // If no addrs, no element 'e'
+		var addrNodes = msgNode.e = [];
+		for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
+			var type = ZmMailMsg.COMPOSE_ADDRS[i];
+			this._addAddressNodes(addrNodes, type, isDraft);
+		}
+		this._addFrom(addrNodes, msgNode, isDraft, accountName);
+		this._addReplyTo(addrNodes);
+		if (requestReadReceipt) {
+			this._addReadReceipt(addrNodes, accountName);
+		}
+	}
 	msgNode.su = {_content:this.subject};
 
 	var topNode = {ct:this._topPart.getContentType()};
@@ -1483,15 +1483,15 @@ function(addrNodes, parentNode, isDraft, accountName) {
 	var isPrimary = identity == null || identity.isDefault;
 	if (accountName && isPrimary) {
 
-        var mainAcct = ac.getMainAccount().getEmail();
-        var onBehalfOf = false;
-        
+		var mainAcct = ac.getMainAccount().getEmail();
+		var onBehalfOf = false;
+
 		// when saving a draft, even if obo, we do it on the main account so reset the from
 		if (isDraft) {
 			var folder = appCtxt.getById(this.folderId);
 			if (folder && folder.isRemote()) {
 				accountName = folder.getOwner();
-                onBehalfOf  = (accountName != mainAcct); 
+				onBehalfOf  = (accountName != mainAcct);
 			}
 		}
 
@@ -1500,23 +1500,28 @@ function(addrNodes, parentNode, isDraft, accountName) {
 			// this means we're sending a draft msg obo so reset account name
 			if (from && from.address != mainAcct) {
 				accountName = from.address;
-                onBehalfOf = true;
+				onBehalfOf = true;
 			}
 		}
 
-        var addr, displayName=null;
-        if(onBehalfOf){
-            addr = accountName;
-        }else{
-            addr = identity ? identity.sendFromAddress : accountName;
-            displayName = identity && identity.sendFromDisplay;
-        }
+		var addr, displayName = null;
+		if (this.offlineFromValue) {
+			addr = this.offlineFromValue.address;
+			displayName = this.offlineFromValue.name;
+		} else {
+			if (onBehalfOf) {
+				addr = accountName;
+			} else {
+				addr = identity ? identity.sendFromAddress : accountName;
+				displayName = identity && identity.sendFromDisplay;
+			}
+		}
 
-        var node = {t:"f", a:addr};
-        if (displayName) {
-            node.p = displayName;
-        }
-        addrNodes.push(node);
+		var node = {t:"f", a:addr};
+		if (displayName) {
+			node.p = displayName;
+		}
+		addrNodes.push(node);
 
 		if (!ac.isOffline && ( !isDraft || onBehalfOf )) {
 			// the main account is *always* the sender

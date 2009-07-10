@@ -285,7 +285,7 @@ function(dirtyCheck, noValidation, batchCommand, prefView) {
 	var pv = prefView || this.prefView;
 	for (var view in pv) {
 		var section = sections[view];
-		if (section.manageChanges) { continue; }
+		if (!section || (section && section.manageChanges)) { continue; }
 
 		var viewPage = pv[view];
 		if (!viewPage || (viewPage && !viewPage.hasRendered())) { continue; }

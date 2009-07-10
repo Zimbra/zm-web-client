@@ -1288,6 +1288,9 @@ function(msg, callback) {
 ZmMailApp.prototype._mailSearch =
 function(query, callback, response) {
 	var account = appCtxt.isOffline && appCtxt.inStartup && appCtxt.getMainAccount(true);
+	if (account) {
+		appCtxt.setActiveAccount(account);
+	}
 	query = query || appCtxt.get(ZmSetting.INITIAL_SEARCH, null, account);
 	var types = new AjxVector();
 	types.add(this.getGroupMailBy());
@@ -1640,10 +1643,8 @@ function(account) {
 	var activeAcct = account ? account.name : appCtxt.getActiveAccount().name;
 
 	if (!this._identityCollection[activeAcct]) {
-		this._identityCollection[activeAcct] = new ZmIdentityCollection();
-		if (appCtxt.getActiveAccount().isMain) {
-			this._identityCollection[activeAcct].initialize(appCtxt.getSettings().getInfoResponse.identities);
-		}
+		var ic = this._identityCollection[activeAcct] = new ZmIdentityCollection();
+		ic.initialize(appCtxt.getSettings(account).getInfoResponse.identities);
 	}
 	return this._identityCollection[activeAcct];
 };
@@ -1654,10 +1655,8 @@ function(account) {
 	var activeAcct = account ? account.name : appCtxt.getActiveAccount().name;
 
 	if (!this._signatureCollection[activeAcct]) {
-		this._signatureCollection[activeAcct] = new ZmSignatureCollection();
-		if (appCtxt.getActiveAccount().isMain) {
-			this._signatureCollection[activeAcct].initialize(appCtxt.getSettings().getInfoResponse.signatures);
-		}
+		var sc = this._signatureCollection[activeAcct] = new ZmSignatureCollection();
+		sc.initialize(appCtxt.getSettings(account).getInfoResponse.signatures);
 	}
 	return this._signatureCollection[activeAcct];
 };

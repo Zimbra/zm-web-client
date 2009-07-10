@@ -368,7 +368,14 @@ function(attId, docIds, draftType, callback) {
 	// always save draft on the active account
 	var acctName = this._accountName;
 	if (isDraft) {
-		acctName = ac.getActiveAccount().name;
+		if (appCtxt.isOffline) {
+			// for offline, always save drafts under Local Folders account
+			// unless active account is a Zimbra account
+			var acct = appCtxt.getAccount(msg.offlineFromValue.accountId);
+			acctName = acct.isZimbraAccount ? acct.name : ac.getMainAccount().name;
+		} else {
+			acctName = ac.getActiveAccount().name;
+		}
 	} else {
 		// if shared folder, make sure we send the email on-behalf-of
 		var folder = msg.folderId ? ac.getById(msg.folderId) : null;
@@ -377,9 +384,9 @@ function(attId, docIds, draftType, callback) {
 		}
 	}
 
-	// If this message had been saved from draft and it has a sender
-	// (meaning it's a reply from someone else's account) then get the
-	// account name from the from field.
+	// If this message had been saved from draft and it has a sender (meaning
+	// it's a reply from someone else's account) then get the account name from
+	// the from field.
 	if (!acctName && !isDraft && origMsg && origMsg.isDraft) {
 		if (this._composeView.sendMsgOboIsOK()) {
 			if (origMsg._addrs[ZmMailMsg.HDR_FROM] &&
