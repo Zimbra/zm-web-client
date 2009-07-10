@@ -894,7 +894,6 @@ function(event, args, options) {
 
 	var context = this.isChildWindow ? parentAppCtxt : this;
 
-	if (!context.zimletsPresent()) { return; }
 	if (options && options.noChildWindow && this.isChildWindow) { return; }
 
 	if (!context.areZimletsLoaded()) {
