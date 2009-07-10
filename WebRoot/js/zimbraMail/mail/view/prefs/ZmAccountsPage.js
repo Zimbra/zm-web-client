@@ -93,7 +93,7 @@ function() {
 			displayContainer:	ZmPref.TYPE_RADIO_GROUP,
 			orientation:		ZmPref.ORIENT_HORIZONTAL,
 			displayOptions:		["POP3", "IMAP"], // TODO: i18n
-			options:			[ZmAccount.POP, ZmAccount.IMAP]
+			options:			[ZmAccount.TYPE_POP, ZmAccount.TYPE_IMAP]
 		},
 		USERNAME: {
 			displayContainer:	ZmPref.TYPE_INPUT
@@ -303,7 +303,7 @@ function(account, skipUpdate, ignoreProvider) {
 
 	// toggle delete button
 	if (this._deleteButton) {
-		this._deleteButton.setEnabled(account && account.type != ZmAccount.ZIMBRA);
+		this._deleteButton.setEnabled(account && account.type != ZmAccount.TYPE_ZIMBRA);
 	}
 
 	// intialize sections
@@ -322,13 +322,13 @@ function(account, skipUpdate, ignoreProvider) {
 		this._currentAccount = account;
 		Dwt.setVisible(div, true);
 		switch (account.type) {
-			case ZmAccount.ZIMBRA: {
+			case ZmAccount.TYPE_ZIMBRA: {
 				this._currentSection = ZmAccountsPage.SECTIONS["PRIMARY"];
 				this._setZimbraAccount(account, this._currentSection);
 				break;
 			}
-			case ZmAccount.POP:
-			case ZmAccount.IMAP: {
+			case ZmAccount.TYPE_POP:
+			case ZmAccount.TYPE_IMAP: {
 				this._currentSection = provider && ZmAccountsPage.SECTIONS[provider.id];
 				this._currentSection = this._currentSection || ZmAccountsPage.SECTIONS["EXTERNAL"];
 				this._setExternalAccount(account, this._currentSection);
@@ -343,7 +343,7 @@ function(account, skipUpdate, ignoreProvider) {
 				}
 				break;
 			}
-			case ZmAccount.PERSONA: {
+			case ZmAccount.TYPE_PERSONA: {
 				this._currentSection = ZmAccountsPage.SECTIONS["PERSONA"];
 				this._setPersona(account, this._currentSection);
 				break;
@@ -356,15 +356,17 @@ function(account, skipUpdate, ignoreProvider) {
 	this._updateList(account);
 
 	var control = this._currentSection && this._currentSection.controls[isExternal ? "EMAIL" : "NAME"];
-    //When a hidden field is applied focus(), IE throw's an exception. Thus checking for isActive()
-    if (control && this.isActive()) {
+
+	// When a hidden field is applied focus(), IE throw's an exception.
+	// Thus checking for isActive()
+	if (control && this.isActive()) {
 		control.focus();
 	}
 };
 
 ZmAccountsPage.prototype.isActive =
 function() {
-    return (this._controller.getTabView().getActiveView().toString() == this.toString());
+	return (this._controller.getTabView().getActiveView().toString() == this.toString());
 };
 
 // ZmPreferencesPage methods
@@ -463,13 +465,13 @@ function() {
 	for (var i = 0; i < accounts.length; i++) {
 		var account = accounts[i];
 		var type = account.type;
-		var isPrimary = type == ZmAccount.ZIMBRA;
-		var isExternal = type == ZmAccount.POP || type == ZmAccount.IMAP;
-		var isPersona = type == ZmAccount.PERSONA;
+		var isPrimary = type == ZmAccount.TYPE_ZIMBRA;
+		var isExternal = type == ZmAccount.TYPE_POP || type == ZmAccount.TYPE_IMAP;
+		var isPersona = type == ZmAccount.TYPE_PERSONA;
 
 		// bug 21104
 		if (isPersona && (account._new || account._dirty) && 
-		    !(account.identity && account.identity.name)) {
+			!(account.identity && account.identity.name)) {
 			this._errorMsg = ZmMsg.invalidPersonaName;
 			return false;
 		}
@@ -478,14 +480,14 @@ function() {
 			return false;
 		}
 		if (this.__getIdentityValue(account, "REPLY_TO") &&
-		    !this.__validateEmail(this.__getIdentityValue(account, "REPLY_TO_EMAIL"))) {
+			!this.__validateEmail(this.__getIdentityValue(account, "REPLY_TO_EMAIL"))) {
 			return false;
 		}
 		if (isExternal && !this.__validateEmail(this.__getIdentityValue(account, "FROM_EMAIL"))) {
 			return false;
 		}
 		if (isPersona && this.__getIdentityValue(account, "WHEN_SENT_TO") &&
-		    !this.__validateEmailList(this.__getIdentityValue(account, "WHEN_SENT_TO_LIST"))) {
+			!this.__validateEmailList(this.__getIdentityValue(account, "WHEN_SENT_TO_LIST"))) {
 			return false;
 		}
 	}
@@ -496,7 +498,7 @@ ZmAccountsPage.prototype.__getAccountValue =
 function(account, id) {
 	var prop = ZmAccountsPage.ACCOUNT_PROPS[id];
 	if (!prop) return;
-	return typeof prop == "string" ? account[prop] : account[prop.getter]();
+	return (typeof prop == "string") ? account[prop] : account[prop.getter]();
 };
 
 ZmAccountsPage.prototype.__getIdentityValue =
@@ -515,6 +517,7 @@ function(s) {
 	}
 	return true;
 };
+
 ZmAccountsPage.prototype.__validateEmailList =
 function(l) {
 	var ss = String(l).split(/[,;]/);
@@ -532,12 +535,12 @@ function() {
 
 ZmAccountsPage.prototype.getPreSaveCallback =
 function() {
-    return new AjxCallback(this, this._preSave);
+	return new AjxCallback(this, this._preSave);
 };
 
 ZmAccountsPage.prototype.getPostSaveCallback =
 function() {
-    return new AjxCallback(this, this._postSave);
+	return new AjxCallback(this, this._postSave);
 };
 
 ZmAccountsPage.prototype.addCommand =
@@ -687,7 +690,7 @@ function(account) {
 	var radioButton = radioGroup.getRadioButtonByValue(ZmAccountsPage.DOWNLOAD_TO_FOLDER);
 	radioButton.setText(text);
 
-	var isImap = account.type == ZmAccount.IMAP;
+	var isImap = account.type == ZmAccount.TYPE_IMAP;
 	var isInbox = !isImap && account.folderId == ZmOrganizer.ID_INBOX;
 	var value = isInbox ? ZmAccountsPage.DOWNLOAD_TO_INBOX : ZmAccountsPage.DOWNLOAD_TO_FOLDER;
 	this._setControlValue("DOWNLOAD_TO", section, value);
@@ -696,7 +699,7 @@ function(account) {
 
 ZmAccountsPage.prototype._setPortControls =
 function(accountType, connectionType, accountPort) {
-	var isPop = accountType == ZmAccount.POP;
+	var isPop = accountType == ZmAccount.TYPE_POP;
 	var isSsl = connectionType == ZmDataSource.CONNECT_SSL;
 
 	var section = this._currentSection;
@@ -1254,7 +1257,7 @@ function(accountOrIndex) {
 	// NOTE: We go backwards so we don't have to adjust index when we remove an item.
 	for (var i = count - 1; i >= 0; i--) {
 		var account = accounts.get(i);
-		if (account.type == ZmAccount.ZIMBRA && !account.isMain && !account.visible) {
+		if (account.type == ZmAccount.TYPE_ZIMBRA && !account.isMain && !account.visible) {
 			accounts.removeAt(i);
 		}
 	}
@@ -1322,7 +1325,7 @@ ZmAccountsPage.prototype._setupPrimaryDiv =
 function() {
 	var div = document.getElementById(this._htmlElId+"_PRIMARY");
 	if (div) {
-		this._sectionDivs[ZmAccount.ZIMBRA] = div;
+		this._sectionDivs[ZmAccount.TYPE_ZIMBRA] = div;
 		this._createSection("PRIMARY", div);
 	}
 };
@@ -1332,8 +1335,8 @@ function() {
 	// setup generic external account div
 	var div = document.getElementById(this._htmlElId+"_EXTERNAL");
 	if (div) {
-		this._sectionDivs[ZmAccount.POP] = div;
-		this._sectionDivs[ZmAccount.IMAP] = div;
+		this._sectionDivs[ZmAccount.TYPE_POP] = div;
+		this._sectionDivs[ZmAccount.TYPE_IMAP] = div;
 		this._createSection("EXTERNAL", div);
 	}
 
@@ -1351,7 +1354,7 @@ ZmAccountsPage.prototype._setupPersonaDiv =
 function() {
 	var div = document.getElementById(this._htmlElId+"_PERSONA");
 	if (div) {
-		this._sectionDivs[ZmAccount.PERSONA] = div;
+		this._sectionDivs[ZmAccount.TYPE_PERSONA] = div;
 		this._createSection("PERSONA", div);
 	}
 };
@@ -1490,7 +1493,7 @@ function(evt) {
 	this._setControlValue("HEADER", this._currentSection, inputEl.value);
 
 	var type = this._currentAccount.type;
-	if (type == ZmAccount.POP || type == ZmAccount.IMAP) {
+	if (type == ZmAccount.TYPE_POP || type == ZmAccount.TYPE_IMAP) {
 		this._setDownloadToFolder(this._currentAccount);
 	}
 };
@@ -1572,11 +1575,11 @@ function(evt) {
 	if (dataSource._new) {
 		var type = this._getControlValue("ACCOUNT_TYPE", section);
 		if (!type) {
-			type = appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED) ? ZmAccount.POP : ZmAccount.IMAP;
+			type = appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED) ? ZmAccount.TYPE_POP : ZmAccount.TYPE_IMAP;
 		}
 		dataSource.setType(type);
 
-		var isPop = type == ZmAccount.POP;
+		var isPop = type == ZmAccount.TYPE_POP;
 		this._setControlEnabled("DELETE_AFTER_DOWNLOAD", this._currentSection, isPop);
 		this._setControlEnabled("DOWNLOAD_TO", this._currentSection, isPop);
 	}
@@ -1698,7 +1701,7 @@ function(continueCallback) {
 	var accounts = this._accounts.getArray();
 	for (var i = 0; i < accounts.length; i++) {
 		var account = accounts[i];
-		if (account.type == ZmAccount.POP || account.type == ZmAccount.IMAP) {
+		if (account.type == ZmAccount.TYPE_POP || account.type == ZmAccount.TYPE_IMAP) {
 			if (account._new || account._dirty) {
 				dirtyAccounts.push(account);
 			}
@@ -1708,7 +1711,7 @@ function(continueCallback) {
 	// test for invalid name
 	for (var i = 0; i < dirtyAccounts.length; i++) {
 		var account = dirtyAccounts[i];
-		if (account.type == ZmAccount.IMAP && account.name.match(/^\s*inbox\s*$/i)) {
+		if (account.type == ZmAccount.TYPE_IMAP && account.name.match(/^\s*inbox\s*$/i)) {
 			var params = {
 				msg: AjxMessageFormat.format(ZmMsg.accountNameReserved, [account.name]),
 				level: ZmStatusView.LEVEL_CRITICAL
@@ -1757,7 +1760,7 @@ function(continueCallback) {
 	var accounts = this._accounts.getArray();
 	for (var i = 0; i < accounts.length; i++) {
 		var account = accounts[i];
-		if (account.type == ZmAccount.POP || account.type == ZmAccount.IMAP) {
+		if (account.type == ZmAccount.TYPE_POP || account.type == ZmAccount.TYPE_IMAP) {
 			if (account.folderId != ZmOrganizer.ID_INBOX) {
 				var name = account.getName();
 				if (!batchCmd) { batchCmd = new ZmBatchCommand(false); }
@@ -1917,8 +1920,8 @@ function() {
 ZmAccountsPage.__ACCOUNT_COMPARATOR =
 function(a, b) {
 	var isOfflineMulti = appCtxt.isOffline && appCtxt.multiAccounts;
-	if (a.type == ZmAccount.ZIMBRA && (a.isMain || isOfflineMulti)) return -1;
-	if (b.type == ZmAccount.ZIMBRA && (b.isMain || isOfflineMulti)) return 1;
+	if (a.type == ZmAccount.TYPE_ZIMBRA && (a.isMain || isOfflineMulti)) return -1;
+	if (b.type == ZmAccount.TYPE_ZIMBRA && (b.isMain || isOfflineMulti)) return 1;
 	return a.getName().localeCompare(b.getName());
 };
 
@@ -1959,10 +1962,10 @@ function() {
 // Constants
 
 ZmAccountsListView.TYPES = {};
-ZmAccountsListView.TYPES[ZmAccount.ZIMBRA]					= ZmMsg.accountTypePrimary;
-ZmAccountsListView.TYPES[ZmAccount.POP]						= ZmMsg.accountTypePop;
-ZmAccountsListView.TYPES[ZmAccount.IMAP]					= ZmMsg.accountTypeImap;
-ZmAccountsListView.TYPES[ZmAccount.PERSONA]					= ZmMsg.accountTypePersona;
+ZmAccountsListView.TYPES[ZmAccount.TYPE_ZIMBRA]		= ZmMsg.accountTypePrimary;
+ZmAccountsListView.TYPES[ZmAccount.TYPE_POP]		= ZmMsg.accountTypePop;
+ZmAccountsListView.TYPES[ZmAccount.TYPE_IMAP]		= ZmMsg.accountTypeImap;
+ZmAccountsListView.TYPES[ZmAccount.TYPE_PERSONA]	= ZmMsg.accountTypePersona;
 
 ZmAccountsListView.WIDTH_NAME	= 170;
 ZmAccountsListView.WIDTH_STATUS	= 80;
@@ -2020,7 +2023,7 @@ function(buffer, i, item, field, col, params) {
 		var type = provider && AjxStringUtil.htmlEncode(provider.name);
 		if (!type) {
 			var isOfflineMulti = appCtxt.isOffline && appCtxt.multiAccounts;
-			type = (item.type == ZmAccount.ZIMBRA && !item.isMain && !isOfflineMulti)
+			type = (item.type == ZmAccount.TYPE_ZIMBRA && !item.isMain && !isOfflineMulti)
 				? ZmMsg.accountTypeSecondary
 				: ZmAccountsListView.TYPES[item.type];
 		}
@@ -2064,7 +2067,7 @@ function() {
 ZmNewDataSource = function() {
 	var number = ++ZmNewDataSource.ID;
 	var id = "new-dsrc-"+number;
-	this.setType(appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED) ? ZmAccount.POP : ZmAccount.IMAP);
+	this.setType(appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED) ? ZmAccount.TYPE_POP : ZmAccount.TYPE_IMAP);
 	ZmDataSource.call(this, this.type, id);
 	this.email = "";
 	this.name = AjxMessageFormat.format(ZmMsg.newExternalAccount, number);
@@ -2095,7 +2098,7 @@ ZmNewDataSource.prototype.ELEMENT_NAME = ZmPopAccount.prototype.ELEMENT_NAME;
 ZmNewDataSource.prototype.setType =
 function(type) {
 	this.type = type;
-	var TYPE = this.type == ZmAccount.POP ? ZmPopAccount : ZmImapAccount;
+	var TYPE = this.type == ZmAccount.TYPE_POP ? ZmPopAccount : ZmImapAccount;
 	this.ELEMENT_NAME = TYPE.prototype.ELEMENT_NAME;
 	this.getDefaultPort = TYPE.prototype.getDefaultPort;
 };

@@ -563,6 +563,7 @@ ZmId.MV_MSG_BODY			= "_body";				// DIV that contains content iframe
 
 // components from the template
 ZmId.CMP_HEADER				= "_header";
+ZmId.CMP_FROM_SELECT		= "_from_select";
 ZmId.CMP_TO_ROW				= "_to_row";
 ZmId.CMP_TO_PICKER			= "_to_picker";
 ZmId.CMP_TO_INPUT			= "_to_control";

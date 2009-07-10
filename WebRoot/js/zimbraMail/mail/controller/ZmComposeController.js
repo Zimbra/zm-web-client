@@ -196,9 +196,22 @@ function() {
 	// this is how child window knows what to do once loading:
 	var newWinObj = appCtxt.getNewWindow();
 	newWinObj.command = "composeDetach";
-	newWinObj.params = {action:action, msg:msg, addrs:addrs, subj:subj, forwardHtml:forAttHtml, body:body,
-					  composeMode:composeMode, identityId:identityId, accountName:this._accountName,
-					  backupForm:backupForm, sendUID:sendUID, msgIds:this._msgIds, forAttIds:this._forAttIds, sessionId:this.sessionId};
+	newWinObj.params = {
+		action:action,
+		msg:msg,
+		addrs:addrs,
+		subj:subj,
+		forwardHtml:forAttHtml,
+		body:body,
+		composeMode:composeMode,
+		identityId:identityId,
+		accountName:this._accountName,
+		backupForm:backupForm,
+		sendUID:sendUID,
+		msgIds:this._msgIds,
+		forAttIds:this._forAttIds,
+		sessionId:this.sessionId
+	};
 };
 
 ZmComposeController.prototype.popShield =
@@ -326,78 +339,78 @@ function(docIds, draftType, callback) {
 ZmComposeController.prototype._sendMsg =
 function(attId, docIds, draftType, callback) {
 
-    draftType = draftType || ZmComposeController.DRAFT_TYPE_NONE;
-    var isDraft = draftType != ZmComposeController.DRAFT_TYPE_NONE;
+	draftType = draftType || ZmComposeController.DRAFT_TYPE_NONE;
+	var isDraft = draftType != ZmComposeController.DRAFT_TYPE_NONE;
 
-    var msg = this._composeView.getMsg(attId, isDraft);
-    if(docIds) {
-        this._composeView.setDocAttachments(msg, docIds);
-    }
+	var msg = this._composeView.getMsg(attId, isDraft);
+	if (docIds) {
+		this._composeView.setDocAttachments(msg, docIds);
+	}
 
-    if (!msg) return;
+	if (!msg) { return; }
 
-    var inviteMode = msg.inviteMode;
-    var isCancel = (inviteMode == ZmOperation.REPLY_CANCEL);
-    var isModify = (inviteMode == ZmOperation.REPLY_MODIFY);
+	var origMsg = msg._origMsg;
+	var isCancel = (msg.inviteMode == ZmOperation.REPLY_CANCEL);
+	var isModify = (msg.inviteMode == ZmOperation.REPLY_MODIFY);
 
-    var origMsg = msg._origMsg;
-    if (isCancel || isModify) {
-        var appt = origMsg._appt;
-        var respCallback = new AjxCallback(this, this._handleResponseCancelOrModifyAppt);
-        if (isCancel) {
-            appt.cancel(origMsg._mode, msg, respCallback);
-        } else {
-            appt.save();
-        }
-    } else {
-		var ac = window.parentAppCtxt || window.appCtxt;
-		// always save draft on the active account
-		var acctName = this._accountName;
-		if (isDraft) {
-			acctName = ac.getActiveAccount().name;
+	if (isCancel || isModify) {
+		var appt = origMsg._appt;
+		var respCallback = new AjxCallback(this, this._handleResponseCancelOrModifyAppt);
+		if (isCancel) {
+			appt.cancel(origMsg._mode, msg, respCallback);
 		} else {
-			// if shared folder, make sure we send the email on-behalf-of
-			var folder = msg.folderId ? ac.getById(msg.folderId) : null;
-			if (folder && folder.isRemote() && this._composeView.sendMsgOboIsOK()) {
-				acctName = folder.getOwner();
+			appt.save();
+		}
+		return;
+	}
+
+	var ac = window.parentAppCtxt || window.appCtxt;
+	// always save draft on the active account
+	var acctName = this._accountName;
+	if (isDraft) {
+		acctName = ac.getActiveAccount().name;
+	} else {
+		// if shared folder, make sure we send the email on-behalf-of
+		var folder = msg.folderId ? ac.getById(msg.folderId) : null;
+		if (folder && folder.isRemote() && this._composeView.sendMsgOboIsOK()) {
+			acctName = folder.getOwner();
+		}
+	}
+
+	// If this message had been saved from draft and it has a sender
+	// (meaning it's a reply from someone else's account) then get the
+	// account name from the from field.
+	if (!acctName && !isDraft && origMsg && origMsg.isDraft) {
+		if (this._composeView.sendMsgOboIsOK()) {
+			if (origMsg._addrs[ZmMailMsg.HDR_FROM] &&
+				origMsg._addrs[ZmMailMsg.HDR_SENDER] &&
+				origMsg._addrs[ZmMailMsg.HDR_SENDER].size())
+			{
+				acctName = origMsg._addrs[ZmMailMsg.HDR_FROM].get(0).address;
 			}
+		} else {
+			origMsg.sendAsMe = true; // hack.
 		}
+	}
 
-        // If this message had been saved from draft and it has a sender
-		// (meaning it's a reply from someone else's account) then get the
-		// account name from the from field.
-        if (!acctName && !isDraft && origMsg && origMsg.isDraft) {
-			if (this._composeView.sendMsgOboIsOK()) {
-				if (origMsg._addrs[ZmMailMsg.HDR_FROM] &&
-					origMsg._addrs[ZmMailMsg.HDR_SENDER] &&
-					origMsg._addrs[ZmMailMsg.HDR_SENDER].size())
-				{
-					acctName =  origMsg._addrs[ZmMailMsg.HDR_FROM].get(0).address;
-				}
-			} else {
-				origMsg.sendAsMe = true; // hack.
-			}
-		}
+	// check for read receipt
+	var requestReadReceipt = false;
+	if (appCtxt.get(ZmSetting.MAIL_READ_RECEIPT_ENABLED)) {
+		var menu = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS).getMenu();
+		var mi = menu.getItemById(ZmOperation.KEY_ID, ZmOperation.REQUEST_READ_RECEIPT);
+		requestReadReceipt = (!!(mi && mi.getChecked()));
+	}
 
-		// check for read receipt
-		var requestReadReceipt = false;
-		if (appCtxt.get(ZmSetting.MAIL_READ_RECEIPT_ENABLED)) {
-			var menu = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS).getMenu();
-			var mi = menu.getItemById(ZmOperation.KEY_ID, ZmOperation.REQUEST_READ_RECEIPT);
-			requestReadReceipt = (!!(mi && mi.getChecked()));
-		}
+	var respCallback = new AjxCallback(this, this._handleResponseSendMsg, [draftType, msg, callback]);
+	var errorCallback = new AjxCallback(this, this._handleErrorSendMsg);
+	var resp = msg.send(isDraft, respCallback, errorCallback, acctName, null, requestReadReceipt);
 
-        var respCallback = new AjxCallback(this, this._handleResponseSendMsg, [draftType, msg, callback]);
-        var errorCallback = new AjxCallback(this, this._handleErrorSendMsg);
-        var resp = msg.send(isDraft, respCallback, errorCallback, acctName, null, requestReadReceipt);
-
-        // XXX: temp bug fix #4325 - if resp returned, we're processing sync
-        //      request REVERT this bug fix once mozilla fixes bug #295422!
-        if (resp) {
-            this._processSendMsg(draftType, msg, resp);
-            if (callback) callback.run(resp);
-        }
-    }
+	// XXX: temp bug fix #4325 - if resp returned, we're processing sync
+	//      request REVERT this bug fix once mozilla fixes bug #295422!
+	if (resp) {
+		this._processSendMsg(draftType, msg, resp);
+		if (callback) callback.run(resp);
+	}
 };
 
 ZmComposeController.prototype._handleResponseSendMsg =
@@ -483,7 +496,9 @@ function(initHide, composeMode) {
 	    this._composeView.enableInputs(false);
 	}
 
-	this._composeView.identitySelect.addChangeListener(new AjxListener(this, this._identityChangeListener, [true]));
+	if (this._composeView.identitySelect) {
+		this._composeView.identitySelect.addChangeListener(new AjxListener(this, this._identityChangeListener, [true]));
+	}
 };
 
 ZmComposeController.prototype._identityChangeListener =
@@ -1045,7 +1060,7 @@ function(draftType, msg, resp) {
 			if (!appCtxt.isOffline && resp && appCtxt.get(ZmSetting.SAVE_TO_IMAP_SENT) && msg.identity) {
 				var datasources = appCtxt.getDataSourceCollection();
 				var datasource = datasources && datasources.getById(msg.identity.id);
-				if (datasource && datasource.type == ZmAccount.IMAP) {
+				if (datasource && datasource.type == ZmAccount.TYPE_IMAP) {
 					var parent = appCtxt.getById(datasource.folderId);
 					var folder;
 					if (parent) {
@@ -1296,7 +1311,7 @@ function(ev) {
 	var htmlEditor = this._composeView.getHtmlEditor();
 
 	if (spellCheckButton.isToggled()) {
-		var callback = new AjxCallback(this, this.toggleSpellCheckButton)
+		var callback = new AjxCallback(this, this.toggleSpellCheckButton);
 		if (!htmlEditor.spellCheck(callback))
 			this.toggleSpellCheckButton(false);
 	} else {

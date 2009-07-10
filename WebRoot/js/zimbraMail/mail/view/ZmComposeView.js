@@ -38,7 +38,7 @@ ZmComposeView = function(parent, controller, composeMode) {
 	ZmComposeView.NOTIFY_ACTION_MAP = {};
 	ZmComposeView.NOTIFY_ACTION_MAP[ZmOperation.REPLY_ACCEPT]		= ZmOperation.REPLY_ACCEPT_NOTIFY;
 	ZmComposeView.NOTIFY_ACTION_MAP[ZmOperation.REPLY_DECLINE]		= ZmOperation.REPLY_DECLINE_NOTIFY;
-	ZmComposeView.NOTIFY_ACTION_MAP[ZmOperation.REPLY_TENTATIVE]	    = ZmOperation.REPLY_TENTATIVE_NOTIFY;
+	ZmComposeView.NOTIFY_ACTION_MAP[ZmOperation.REPLY_TENTATIVE]	= ZmOperation.REPLY_TENTATIVE_NOTIFY;
 
 	this._onMsgDataChange = new AjxCallback(this, this._onMsgDataChange);
 
@@ -148,7 +148,7 @@ function(params) {
 
 	this.reset(true);
 
-	if (params.identity) {
+	if (params.identity && this.identitySelect) {
 		this.identitySelect.setSelectedValue(params.identity.id);
 		if (appCtxt.get(ZmSetting.SIGNATURES_ENABLED)) {
 			this._controller.setSelectedSignature(params.identity.signature || "");
@@ -531,7 +531,9 @@ function(attId, isDraft) {
 
 		var idoc = this._htmlEditor._getIframeDoc();
 		this._restoreMultipartRelatedImages(idoc);
-        if(!isDraft) this._cleanupSignatureIds(idoc);
+		if (!isDraft) {
+			this._cleanupSignatureIds(idoc);
+		}
 		var defangedContent = this._htmlEditor.getContent(true);
 
 		// Bug 27422 - Firefox and Safari implementation of execCommand("bold")
@@ -551,11 +553,11 @@ function(attId, isDraft) {
 		}
 
 		htmlPart.setContent(defangedContent);
-        
-		this._handleInlineAtts(msg, true);           //Better Code
+
+		this._handleInlineAtts(msg, true); // Better Code
 		var inlineAtts = msg.getInlineAttachments();
-        var inlineDocAtts = msg.getInlineDocAttachments();
-        var iAtts = [].concat(inlineAtts, inlineDocAtts);
+		var inlineDocAtts = msg.getInlineDocAttachments();
+		var iAtts = [].concat(inlineAtts, inlineDocAtts);
 		if ( iAtts &&  iAtts.length > 0 ) {
 			var relatedPart = new ZmMimePart();
 			relatedPart.setContentType(ZmMimeTable.MULTI_RELATED);
@@ -675,6 +677,10 @@ function(attId, isDraft) {
 		msg.flagLocal(priority, true);
 	}
 
+	if (this._fromSelect) {
+		msg.offlineFromValue = this._fromSelect.getValue();
+	}
+
 	/**
 	* finally, check for any errors via zimlets..
 	* A Zimlet can listen to emailErrorCheck action to perform further check and
@@ -684,31 +690,29 @@ function(attId, isDraft) {
 	* errorMsg:"you might have forgotten attaching an attachment, do you want to
 	* continue?", zimletName:"com_zimbra_attachmentAlert"}
 	**/
-	if (!isDraft) {
-		if (appCtxt.areZimletsLoaded()) {
-			var boolAndErrorMsgArray = [];
-			var showErrorDlg = false;
-			var errorMsg = "";
-			var zimletName = "";
-			appCtxt.notifyZimlets("emailErrorCheck", [msg, boolAndErrorMsgArray]);
-			var blen =  boolAndErrorMsgArray.length;
-			for (var k = 0; k < blen; k++) {
-				var obj = boolAndErrorMsgArray[k];
-				if (obj == null || obj == undefined)
-					continue;
-				var hasError =obj.hasError;
-				zimletName = obj.zimletName;
-				if (hasError == true || hasError == "true") {
-					if (this._ignoredZimlets) {
-						if (this._ignoredZimlets[zimletName]) { // if we should ignore this zimlet
-							delete this._ignoredZimlets[zimletName];
-							continue; // skip
-						}
+	if (!isDraft && appCtxt.areZimletsLoaded()) {
+		var boolAndErrorMsgArray = [];
+		var showErrorDlg = false;
+		var errorMsg = "";
+		var zimletName = "";
+		appCtxt.notifyZimlets("emailErrorCheck", [msg, boolAndErrorMsgArray]);
+		var blen =  boolAndErrorMsgArray.length;
+		for (var k = 0; k < blen; k++) {
+			var obj = boolAndErrorMsgArray[k];
+			if (obj == null || obj == undefined) { continue; }
+
+			var hasError =obj.hasError;
+			zimletName = obj.zimletName;
+			if (Boolean(hasError)) {
+				if (this._ignoredZimlets) {
+					if (this._ignoredZimlets[zimletName]) { // if we should ignore this zimlet
+						delete this._ignoredZimlets[zimletName];
+						continue; // skip
 					}
-					showErrorDlg = true;
-					errorMsg = obj.errorMsg;
-					break;
 				}
+				showErrorDlg = true;
+				errorMsg = obj.errorMsg;
+				break;
 			}
 		}
 		if (showErrorDlg) {
@@ -852,7 +856,7 @@ function(params) {
 	if (params.forwardHtml) {
 		this._attcDiv.innerHTML = params.forwardHtml;
 	}
-	if (params.identityId) {
+	if (params.identityId && this.identitySelect) {
 		this.identitySelect.setSelectedValue(params.identityId);
 	}
 
@@ -2014,6 +2018,7 @@ function(templateId) {
 	var data = {
 		id:					this._htmlElId,
 		headerId:			ZmId.getViewId(this._view, ZmId.CMP_HEADER),
+		fromSelectId:		ZmId.getViewId(this._view, ZmId.CMP_FROM_SELECT),
 		toRowId:			ZmId.getViewId(this._view, ZmId.CMP_TO_ROW),
 		toPickerId:			ZmId.getViewId(this._view, ZmId.CMP_TO_PICKER),
 		toInputId:			ZmId.getViewId(this._view, ZmId.CMP_TO_INPUT),
@@ -2112,22 +2117,50 @@ function(templateId, data) {
 	this._setEventHandler(data.subjectInputId, "onKeyUp");
 	this._setEventHandler(data.subjectInputId, "onBlur");
 
-	// initialize identity select
-	var identityOptions = this._getIdentityOptions();
-	this.identitySelect = new DwtSelect({parent:this, options:identityOptions});
-	this.identitySelect.setToolTipContent(ZmMsg.chooseIdentity);
+	if (appCtxt.isOffline) {
+		if (!this._fromSelect) {
+			this._fromSelect = new DwtSelect({parent:this, parentElement:data.fromSelectId});
+			this._fromSelect.addChangeListener(new AjxListener(this, this._handleFromListener));
+			var active = appCtxt.getActiveAccount();
+			if (active.isMain) {
+				active = appCtxt.getMainAccount(true);
+			}
+			var accounts = appCtxt.getZimbraAccounts();
+			for (var i in accounts) {
+				var acct = accounts[i];
+				if (!acct.visible || acct.isMain) { continue; }
 
-	if (!this._identityChangeListenerObj) {
-		this._identityChangeListenerObj = new AjxListener(this, this._identityChangeListener);
-	}
-	var accounts = appCtxt.getZimbraAccounts();
-	for (var id in accounts) {
-		var identityCollection = appCtxt.getIdentityCollection(accounts[id]);
-		identityCollection.addChangeListener(this._identityChangeListenerObj);
-	}
+				var isSelected = acct == active;
+				if (isSelected) {
+					this._controller._accountName = acct.name;
+				}
+				var identities = appCtxt.getIdentityCollection(acct).getIdentities();
+				for (var j = 0; j < identities.length; j++) {
+					var identity = identities[j];
+					var addr = new AjxEmailAddress(identity.sendFromAddress, AjxEmailAddress.FROM, identity.sendFromDisplay);
+					addr.accountId = acct.id;
+					this._fromSelect.addOption(addr.toString(), isSelected, addr);
+				}
+			}
+		}
+	} else {
+		// initialize identity select
+		var identityOptions = this._getIdentityOptions();
+		this.identitySelect = new DwtSelect({parent:this, options:identityOptions});
+		this.identitySelect.setToolTipContent(ZmMsg.chooseIdentity);
 
-	this.identitySelect.replaceElement(data.identitySelectId);
-	this._setIdentityVisible();
+		if (!this._identityChangeListenerObj) {
+			this._identityChangeListenerObj = new AjxListener(this, this._identityChangeListener);
+		}
+		var accounts = appCtxt.getZimbraAccounts();
+		for (var id in accounts) {
+			var identityCollection = appCtxt.getIdentityCollection(accounts[id]);
+			identityCollection.addChangeListener(this._identityChangeListenerObj);
+		}
+
+		this.identitySelect.replaceElement(data.identitySelectId);
+		this._setIdentityVisible();
+	}
 
 	if (appCtxt.get(ZmSetting.MAIL_PRIORITY_ENABLED)) {
 		var buttonId = ZmId.getButtonId(this._view, ZmId.CMP_PRIORITY);
@@ -2142,6 +2175,19 @@ function(templateId, data) {
 	if (this._toggleBccEl) {
 		Dwt.setHandler(this._toggleBccEl, DwtEvent.ONCLICK, AjxCallback.simpleClosure(this._toggleBccField, this));
 	}
+};
+
+ZmComposeView.prototype._handleFromListener =
+function(ev) {
+	if (ev._args.oldValue == ev._args.newValue) { return; }
+
+	var val = ev._args.newValue;
+	this._controller._accountName = appCtxt.getAccount(val.accountId).name;
+
+	// todo:
+	// 1. reset signature based on newly selected value
+	// 2. if draft is saved, check whether it needs to be moved based on
+	//    newly selected value
 };
 
 ZmComposeView.prototype._toggleBccField =
@@ -2170,12 +2216,8 @@ function() {
 
 ZmComposeView.prototype._getPriorityImage =
 function(flag) {
-	if (flag == ZmItem.FLAG_HIGH_PRIORITY) {
-		return "PriorityHigh";
-	}
-	if (flag == ZmItem.FLAG_LOW_PRIORITY) {
-		return "PriorityLow";
-	}
+	if (flag == ZmItem.FLAG_HIGH_PRIORITY)	{ return "PriorityHigh"; }
+	if (flag == ZmItem.FLAG_LOW_PRIORITY)	{ return "PriorityLow"; }
 	return "PriorityNormal";
 };
 
@@ -2262,19 +2304,25 @@ function(ev) {
 		var identity = ev.getDetail("item");
 		var text = this._getIdentityText(identity);
 		var option = new DwtSelectOptionData(identity.id, text);
-		this.identitySelect.addOption(option);
+		if (this.identitySelect) {
+			this.identitySelect.addOption(option);
+		}
 	} else if (ev.event == ZmEvent.E_DELETE) {
 		// DwtSelect doesn't support removing an option, so recreate the whole thing.
-		this.identitySelect.clearOptions();
-		var options = this._getIdentityOptions();
-		for (var i = 0, count = options.length; i < count; i++)	 {
-			this.identitySelect.addOption(options[i]);
+		if (this.identitySelect) {
+			this.identitySelect.clearOptions();
+			var options = this._getIdentityOptions();
+			for (var i = 0, count = options.length; i < count; i++)	 {
+				this.identitySelect.addOption(options[i]);
+			}
+			this._setIdentityVisible();
 		}
-		this._setIdentityVisible();
 	} else if (ev.event == ZmEvent.E_MODIFY) {
-		var identity = ev.getDetail("item");
-		var text = this._getIdentityText(identity);
-		this.identitySelect.rename(identity.id, text);
+		if (this.identitySelect) {
+			var identity = ev.getDetail("item");
+			var text = this._getIdentityText(identity);
+			this.identitySelect.rename(identity.id, text);
+		}
 	}
 };
 
@@ -2291,10 +2339,12 @@ function() {
 
 ZmComposeView.prototype.getIdentity =
 function() {
-	var identityCollection = appCtxt.getIdentityCollection();
-	var id = this.identitySelect.getValue();
-	var result = identityCollection.getById(id);
-	return result ? result : identityCollection.defaultIdentity;
+	if (this.identitySelect) {
+		var identityCollection = appCtxt.getIdentityCollection();
+		var id = this.identitySelect.getValue();
+		var result = identityCollection.getById(id);
+		return result ? result : identityCollection.defaultIdentity;
+	}
 };
 
 ZmComposeView.prototype._showForwardField =
@@ -2381,9 +2431,9 @@ function(type, show, skipNotify, skipFocus) {
 	this._resetBodySize();
 };
 
-// Grab the addresses out of the form. Optionally, they can be returned broken out into good and
-// bad addresses, with an aggregate list of the bad ones also returned. If the field is hidden,
-// its contents are ignored.
+// Grab the addresses out of the form. Optionally, they can be returned broken
+// out into good and bad addresses, with an aggregate list of the bad ones also
+// returned. If the field is hidden, its contents are ignored.
 ZmComposeView.prototype._collectAddrs =
 function() {
 	var addrs = {};

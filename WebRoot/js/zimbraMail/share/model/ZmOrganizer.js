@@ -1250,7 +1250,7 @@ function () {
 * Returns true if this folder maps to a datasource. If type is given, returns
 * true if folder maps to a datasource *and* is of the given type.
 *
-* @param		type			[Int]*		Either ZmAccount.POP or ZmAccount.IMAP
+* @param		type			[Int]*		Either ZmAccount.TYPE_POP or ZmAccount.TYPE_IMAP
 * @param		checkParent		[Boolean]*	walk up the parent chain
 */
 ZmOrganizer.prototype.isDataSource =
@@ -1264,7 +1264,7 @@ function(type, checkParent) {
 * returns non-null result only if folder maps to datasource(s) *and* is of the
 * given type.
 *
-* @param		type			[Int]*		Either ZmAccount.POP or ZmAccount.IMAP
+* @param		type			[Int]*		Either ZmAccount.TYPE_POP or ZmAccount.TYPE_IMAP
 * @param		checkParent		[Boolean]*	walk up the parent chain
 */
 ZmOrganizer.prototype.getDataSources =

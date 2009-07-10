@@ -16,7 +16,8 @@
 ZmPersona = function(identity, list) {
 	if (arguments.length == 0) { return; }
 	
-	ZmAccount.call(this, ZmAccount.PERSONA, identity.id, null, list);
+	ZmAccount.call(this, ZmAccount.TYPE_PERSONA, identity.id, null, list);
+
 	identity.sendFromDisplay = identity.sendFromDisplay || appCtxt.get(ZmSetting.DISPLAY_NAME);
 	identity.sendFromAddress = identity.sendFromAddress || appCtxt.get(ZmSetting.USERNAME);
 	this.identity = identity;
@@ -29,11 +30,6 @@ function() {
 	return "ZmPersona";
 };
 
-//
-// Constants
-//
-
-ZmAccount.PERSONA = "PERSONA";
 
 //
 // Public methods

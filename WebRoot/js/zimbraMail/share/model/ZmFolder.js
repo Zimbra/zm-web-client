@@ -183,15 +183,15 @@ function(folderA, folderB) {
 
 	// offline client wants POP folders above all else *unless* we are POP'ing into Inbox
 	if (appCtxt.isOffline) {
-		if (folderA.isDataSource(ZmAccount.POP)) {
+		if (folderA.isDataSource(ZmAccount.TYPE_POP)) {
 			if (folderA.id == ZmFolder.ID_INBOX) return -1;
-			if (folderB.isDataSource(ZmAccount.POP)) {
+			if (folderB.isDataSource(ZmAccount.TYPE_POP)) {
 				if (folderA.name.toLowerCase() > folderB.name.toLowerCase()) { return 1; }
 				if (folderA.name.toLowerCase() < folderB.name.toLowerCase()) { return -1; }
 				return 0;
 			}
 			return -1;
-		} else if (folderB.isDataSource(ZmAccount.POP)) {
+		} else if (folderB.isDataSource(ZmAccount.TYPE_POP)) {
 			return 1;
 		}
 	}
@@ -472,16 +472,16 @@ function(showUnread, maxLength, noMarkup, useSystemName) {
 
 ZmFolder.prototype.getIcon =
 function() {
-	if (this.nId == ZmOrganizer.ID_ROOT)	{ return null; }
-	if (this.isOfflineArchive)				{ return "ArchiveFolder"; }
-	if (ZmFolder.ICON[this.nId])			{ return ZmFolder.ICON[this.nId]; }
-	if (this.isFeed())						{ return "RSS"; }
-	if (this.isRemote())					{ return "SharedMailFolder"; }
-	if (this.isDataSource(ZmAccount.POP))	{ return "POPAccount"; }
+	if (this.nId == ZmOrganizer.ID_ROOT)		{ return null; }
+	if (this.isOfflineArchive)					{ return "ArchiveFolder"; }
+	if (ZmFolder.ICON[this.nId])				{ return ZmFolder.ICON[this.nId]; }
+	if (this.isFeed())							{ return "RSS"; }
+	if (this.isRemote())						{ return "SharedMailFolder"; }
+	if (this.isDataSource(ZmAccount.TYPE_POP))	{ return "POPAccount"; }
 
 	// make a "best-effort" to map imap folders to a well-known icon
 	// (parent will be the root imap folder)
-	if (this.parent && this.parent.isDataSource(ZmAccount.IMAP)) {
+	if (this.parent && this.parent.isDataSource(ZmAccount.TYPE_IMAP)) {
 		var mappedId = ZmFolder.getIdForName(this.name);
 		if (mappedId) { return ZmFolder.ICON[mappedId] || "Folder"; }
 	}

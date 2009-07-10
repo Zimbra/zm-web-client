@@ -14,20 +14,22 @@
  */
 
 ZmPopAccount = function(id, list) {
-	ZmDataSource.call(this, ZmAccount.POP, id, list);
+	ZmDataSource.call(this, ZmAccount.TYPE_POP, id, list);
+
+	// advanced settings
+	this.ELEMENT_NAME = "pop3";
+	this.port = ZmPopAccount.PORT_DEFAULT;
+
 };
+
 ZmPopAccount.prototype = new ZmDataSource;
 ZmPopAccount.prototype.constructor = ZmPopAccount;
 
 // Constants
-ZmAccount.POP 				= "POP";
+
 ZmPopAccount.PORT_CLEAR 	= 110;
 ZmPopAccount.PORT_SSL 		= 995;
 ZmPopAccount.PORT_DEFAULT	= ZmPopAccount.PORT_CLEAR;
-
-// advanced settings
-ZmPopAccount.prototype.ELEMENT_NAME = "pop3";
-ZmPopAccount.prototype.port = ZmPopAccount.PORT_DEFAULT;
 
 
 // Public methods

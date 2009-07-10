@@ -250,7 +250,7 @@ ZmTreeView.prototype._render =
 function(params) {
 	var org = params.organizer;
 	var children = org.children.getArray();
-	if (org.isDataSource(ZmAccount.IMAP)) {
+	if (org.isDataSource(ZmAccount.TYPE_IMAP)) {
 		children.sort(ZmImapAccount.sortCompare);
 	} else if (ZmTreeView.COMPARE_FUNC[this.type]) {
 		children.sort(eval(ZmTreeView.COMPARE_FUNC[this.type]));
@@ -340,7 +340,7 @@ function(parentNode, organizer, index, noTooltips, omit) {
 	var dss = dsColl && dsColl.getByFolderId(organizer.nId);
 	var ds = (dss && dss.length > 0) ? dss[0] : null;
 
-	if (ds && ds.type == ZmAccount.IMAP) {
+	if (ds && ds.type == ZmAccount.TYPE_IMAP) {
 		ti = new DwtTreeItem({parent:this, text:organizer.getName(), className:this._headerClass});
 		ti.enableSelection(false);
 	} else {
@@ -423,7 +423,7 @@ function(parentNode, organizer, index, noTooltips, omit) {
 		this._render({treeNode:ti, organizer:organizer, omit:omit});
 	}
 
-	if (ds && ds.type == ZmAccount.IMAP) {
+	if (ds && ds.type == ZmAccount.TYPE_IMAP) {
 		ti.setExpanded(!appCtxt.get(ZmSetting.COLLAPSE_IMAP_TREES));
 	}
 

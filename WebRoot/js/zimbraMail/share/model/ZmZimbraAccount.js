@@ -28,14 +28,13 @@
  */
 ZmZimbraAccount = function(id, name, visible, list) {
 
-	ZmAccount.call(this, ZmAccount.ZIMBRA, id, name, list);
-	this.visible = (visible !== false);
+	ZmAccount.call(this, null, id, name, list);
 
+	this.visible = (visible !== false);
 	this.settings = null;
 	this.trees = {};
 	this.loaded = false;
 	this.acl = new ZmAccessControlList();
-	this.isZimbraAccount = true; // false if non-zimbra, i.e. gmail, yahoo, etc.
 };
 
 ZmZimbraAccount.prototype = new ZmAccount;
@@ -51,7 +50,6 @@ function() {
 // Constants
 //
 
-ZmAccount.ZIMBRA				= "Zimbra";
 ZmZimbraAccount.DEFAULT_ID		= "main";
 ZmZimbraAccount.STATUS_UNKNOWN	= "unknown";
 ZmZimbraAccount.STATUS_OFFLINE	= "offline";
@@ -423,7 +421,10 @@ function(node) {
 	this.name = node.name;
 	this.visible = node.visible;
 
-	var data = (node.attrs && node.attrs._attrs) ? node.attrs._attrs : null;
+	var data = node.attrs && node.attrs._attrs;
 	this._displayName = data ? data.displayName : this.email;
-	this._accountName = data ? data.zimbraPrefLabel : null;
+	this._accountName = data && data.zimbraPrefLabel;
+	this.type = data ? data.offlineAccountFlavor : ZmZimbraAccount.TYPE_ZIMBRA;
+
+	this.isZimbraAccount = this.type == ZmAccount.TYPE_ZIMBRA;
 };

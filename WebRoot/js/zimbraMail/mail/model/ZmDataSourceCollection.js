@@ -138,10 +138,10 @@ ZmDataSourceCollection.prototype.getByFolderId = function(folderId, type) {
 
 ZmDataSourceCollection.prototype.add = function(item) {
 	this._itemMap[item.id] = item;
-	if (item.type == ZmAccount.POP) {
+	if (item.type == ZmAccount.TYPE_POP) {
 		this._pop3Map[item.id] = item;
 	}
-	else if (item.type == ZmAccount.IMAP) {
+	else if (item.type == ZmAccount.TYPE_IMAP) {
 		this._imapMap[item.id] = item;
 	}
 	appCtxt.getIdentityCollection().add(item.getIdentity());

@@ -619,7 +619,7 @@ function(ev) {
 	if (ev.detail == DwtTree.ITEM_ACTIONED) {
 		// right click
 		if (overview.actionSupported) {
-			var actionMenu = (item.nId == ZmOrganizer.ID_ROOT || item.isDataSource(ZmAccount.IMAP))
+			var actionMenu = (item.nId == ZmOrganizer.ID_ROOT || item.isDataSource(ZmAccount.TYPE_IMAP))
 				? this._getHeaderActionMenu(ev)
 				: this._getActionMenu(ev);
 			if (actionMenu) {

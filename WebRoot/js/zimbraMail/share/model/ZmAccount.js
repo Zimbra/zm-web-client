@@ -18,17 +18,33 @@ ZmAccount = function(type, id, name, list) {
 
 	this.id = id;
 	this.name = name;
-	this.type = type;
+	this.type = type || ZmAccount.TYPE_ZIMBRA;
 };
+
+
+//
+// Consts
+//
+
+ZmAccount.TYPE_AOL		= "AOL";
+ZmAccount.TYPE_GMAIL	= "Gmail";
+ZmAccount.TYPE_IMAP		= "Imap";
+ZmAccount.TYPE_LIVE		= "Live";   // MS Live / hotmail
+ZmAccount.TYPE_MSE		= "MSE";    // exchange IMAP
+ZmAccount.TYPE_PERSONA	= "PERSONA";
+ZmAccount.TYPE_POP		= "Pop";
+ZmAccount.TYPE_YMP		= "YMP";    // Y! mail
+ZmAccount.TYPE_ZIMBRA	= "Zimbra";
+
+
+//
+// Public methods
+//
 
 ZmAccount.prototype.toString =
 function() {
 	return "ZmAccount";
 };
-
-//
-// Public methods
-//
 
 ZmAccount.prototype.setName =
 function(name) {

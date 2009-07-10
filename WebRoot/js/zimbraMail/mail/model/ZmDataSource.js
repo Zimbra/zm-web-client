@@ -377,10 +377,10 @@ ZmDataSource.addProvider = function(provider) {
 	providers[provider.id] = provider;
 	// normalize values -- defensive programming
 	if (provider.type) {
-		provider.type = provider.type.toLowerCase() == "pop" ? ZmAccount.POP : ZmAccount.IMAP;
+		provider.type = provider.type.toLowerCase() == "pop" ? ZmAccount.TYPE_POP : ZmAccount.TYPE_IMAP;
 	}
 	else {
-		provider.type = ZmAccount.POP;
+		provider.type = ZmAccount.TYPE_POP;
 	}
 	if (provider.connectionType) {
 		var isSsl = provider.connectionType.toLowerCase() == "ssl";
@@ -390,7 +390,7 @@ ZmDataSource.addProvider = function(provider) {
 		provider.connectionType = ZmDataSource.CONNECT_CLEAR;
 	}
 	if (!provider.port) {
-		var isPop = provider.type == ZmAccount.POP;
+		var isPop = provider.type == ZmAccount.TYPE_POP;
 		if (isSsl) {
 			provider.port = isPop ? ZmPopAccount.PORT_SSL : ZmImapAccount.PORT_SSL;
 		}
@@ -461,10 +461,10 @@ function(callback, result) {
 	if (treeItem) {
 		// reset the icon in the tree view if POP account since the first time it
 		// was created, we didnt know it was a data source
-		if (this.type == ZmAccount.POP && this.folderId != ZmFolder.ID_INBOX) {
+		if (this.type == ZmAccount.TYPE_POP && this.folderId != ZmFolder.ID_INBOX) {
 			treeItem.setImage("POPAccount");
 		}
-		else if (this.type == ZmAccount.IMAP) {
+		else if (this.type == ZmAccount.TYPE_IMAP) {
 			// change imap folder to a tree header since folder is first created
 			// without knowing its a datasource
 			treeItem.dispose();
@@ -507,10 +507,10 @@ function(callback, result) {
 	}	
 	var treeItem = treeView ? treeView.getTreeItemById(fid) : null;
 	if (treeItem) {
-		if (this.type == ZmAccount.POP && this.folderId != ZmFolder.ID_INBOX) {
+		if (this.type == ZmAccount.TYPE_POP && this.folderId != ZmFolder.ID_INBOX) {
 			// reset icon since POP folder is no longer hooked up to a datasource
 			treeItem.setImage("Folder");
-		} else if (this.type == ZmAccount.IMAP) {
+		} else if (this.type == ZmAccount.TYPE_IMAP) {
 			// reset the icon in the tree view if POP account since the first time it
 			// was created, we didnt know it was a data source
 			treeItem.dispose();

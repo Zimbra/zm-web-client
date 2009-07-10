@@ -14,7 +14,11 @@
  */
 
 ZmImapAccount = function(id, list) {
-	ZmDataSource.call(this, ZmAccount.IMAP, id, list);
+	ZmDataSource.call(this, ZmAccount.TYPE_IMAP, id, list);
+
+	// advanced settings
+	this.ELEMENT_NAME = "imap";
+	this.port = ZmImapAccount.PORT_DEFAULT;
 };
 
 ZmImapAccount.prototype = new ZmDataSource;
@@ -22,15 +26,10 @@ ZmImapAccount.prototype.constructor = ZmImapAccount;
 
 
 // Constants
-ZmAccount.IMAP				= "IMAP";
+
 ZmImapAccount.PORT_CLEAR	= 143;
 ZmImapAccount.PORT_SSL		= 993;
 ZmImapAccount.PORT_DEFAULT	= ZmImapAccount.PORT_CLEAR;
-
-
-// advanced settings
-ZmImapAccount.prototype.ELEMENT_NAME = "imap";
-ZmImapAccount.prototype.port = ZmImapAccount.PORT_DEFAULT;
 
 
 // Public methods
