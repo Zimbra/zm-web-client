@@ -18,8 +18,8 @@
  * Application for the preferences UI. This is where the preferences
  * hook into the overall application.
  */
-ZmPreferencesApp = function(container) {
-	ZmApp.call(this, ZmApp.PREFERENCES, container);
+ZmPreferencesApp = function(container, parentController) {
+	ZmApp.call(this, ZmApp.PREFERENCES, container, parentController);
 
 	// must be hash for case of multi-accounts
 	this._filterRules = {};
