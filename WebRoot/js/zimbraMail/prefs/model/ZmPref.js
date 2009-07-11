@@ -510,9 +510,9 @@ function() {
 ZmPref.getPrefSectionWithPref =
 function(prefId) {
 	var prefSectionMap = appCtxt.get(ZmSetting.PREF_SECTIONS);
-	for (var sectionId in ZmPref._prefSectionMap) {
+	for (var sectionId in prefSectionMap) {
 		var section = prefSectionMap[sectionId];
-        if (!section.prefs) continue;
+        if (section.prefs == null) continue;
 
         for (var i = 0; i < section.prefs.length; i++) {
             if (section.prefs[i] == prefId) {
