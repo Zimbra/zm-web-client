@@ -1946,7 +1946,7 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 #IFDEF MSIE
-.ZmTaskbarContentParent .ZmImOverview {
+.ZmTaskbarContentParent, .ZmTaskbarContentParent .ZmImOverview {
 	width:250px;
 }
 
