@@ -1974,8 +1974,9 @@ function(ev) {
 	var isSynced = Boolean(calendar.url);
 	if (appt.isReadOnly() || isSynced) {
 		// always get details on appt as if we're editing series (since its read only)
-		var callback = new AjxCallback(this, this._showApptReadOnlyView, [appt]);
-		appt.getDetails(ZmCalItem.MODE_EDIT_SERIES, callback, this._errorCallback);
+        var clone = ZmAppt.quickClone(appt);
+		var callback = new AjxCallback(this, this._showApptReadOnlyView, [clone, ZmCalItem.MODE_EDIT_SERIES]);
+		clone.getDetails(ZmCalItem.MODE_EDIT_SERIES, callback, this._errorCallback);
 	} else {
 		var mode = ZmCalItem.MODE_EDIT;
 		var menuItem = ev.item;
