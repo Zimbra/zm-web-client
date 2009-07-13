@@ -131,7 +131,7 @@
                         ${mailbox.accountInfo.recent}&nbsp;<fmt:message key="new"/>
 						|
 --%>
-						${folder.unreadCount}&nbsp;<fmt:message key="unread"/>
+						<fmt:message key="inbox"/>&nbsp;(${folder.unreadCount})&nbsp;<fmt:message key="unread"/>
                     </a>
 				</td>
             </tr>
