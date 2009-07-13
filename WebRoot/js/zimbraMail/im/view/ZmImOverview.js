@@ -283,9 +283,7 @@ ZmImOverview.prototype._doSort = function() {
 ZmImOverview.prototype.chatWithBuddy =
 function(buddy) {
 	ZmTaskbarController.INSTANCE.chatWithRosterItem(buddy);
-	if (ZmImNewChatDlg._INSTANCE) {
-		ZmImNewChatDlg._INSTANCE.popdown();
-	}
+	ZmImOverview._popdownDialog()
 };
 
 ZmImOverview.prototype._actionMenuPopdownListener =
@@ -485,6 +483,14 @@ function(ev) {
         }
 };
 
+ZmImOverview._popdownDialog =
+function() {
+	if (ZmImNewChatDlg._INSTANCE) {
+		ZmImNewChatDlg._INSTANCE.popdown();
+	}
+};
+
+
 ZmImOverview.login =
 function() {
 	ZmImApp.INSTANCE.login();
@@ -493,6 +499,7 @@ function() {
 ZmImOverview.newBuddy =
 function() {
 	ZmImApp.INSTANCE.prepareVisuals();
+	ZmImOverview._popdownDialog();
 	ZmImApp.INSTANCE.getImController()._newRosterItemListener();
 };
 
