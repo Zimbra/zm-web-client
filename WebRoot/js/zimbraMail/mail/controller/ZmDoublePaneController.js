@@ -35,7 +35,9 @@ ZmDoublePaneController = function(container, mailApp) {
 	
 	this._listeners[ZmOperation.SHOW_ORIG] = new AjxListener(this, this._showOrigListener);
 	this._listeners[ZmOperation.ADD_FILTER_RULE] = new AjxListener(this, this._filterListener);
-	
+	this._listeners[ZmOperation.CREATE_APPT] = new AjxListener(this, this._createApptListener);
+	this._listeners[ZmOperation.CREATE_TASK] = new AjxListener(this, this._createTaskListener);
+
 	this._listSelectionShortcutDelayAction = new AjxTimedAction(this, this._listSelectionTimedAction);
 };
 
@@ -191,6 +193,12 @@ function() {
 	if (appCtxt.get(ZmSetting.FILTERS_ENABLED)) {
 		list.push(ZmOperation.ADD_FILTER_RULE);
 	}
+    if(appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
+        list.push(ZmOperation.CREATE_APPT);
+    }
+    if(appCtxt.get(ZmSetting.TASKS_ENABLED)) {
+        list.push(ZmOperation.CREATE_TASK);        
+    }
 	return list;
 };
 
@@ -567,10 +575,38 @@ function(ev) {
 	var msg = this._getLoadedMsg(null, respCallback);
 };
 
-ZmDoublePaneController.prototype._handleResponseFilterListener = 
+ZmDoublePaneController.prototype._createApptListener =
+function(ev) {
+	var respCallback = new AjxCallback(this, this._handleResponseNewApptListener);
+	var msg = this._getLoadedMsg(null, respCallback);
+};
+
+ZmDoublePaneController.prototype._createTaskListener = 
+function(ev) {
+	var respCallback = new AjxCallback(this, this._handleResponseNewTaskListener);
+	var msg = this._getLoadedMsg(null, respCallback);
+};
+
+ZmDoublePaneController.prototype._handleResponseNewApptListener =
 function(msg) {
 	if (!msg) { return; }
-	
+
+    var calController = AjxDispatcher.run("GetCalController"); 
+    calController.newApptFromMailItem(msg, new Date());    
+};
+
+ZmDoublePaneController.prototype._handleResponseNewTaskListener =
+function(msg) {
+	if (!msg) { return; }
+
+    AjxDispatcher.require(["TasksCore", "Tasks"]);
+    appCtxt.getApp(ZmApp.TASKS).newTaskFromMailItem(msg, new Date());
+};
+
+ZmDoublePaneController.prototype._handleResponseFilterListener =
+function(msg) {
+	if (!msg) { return; }
+
 	AjxDispatcher.require(["PreferencesCore", "Preferences"]);
 	var rule = new ZmFilterRule();
 
