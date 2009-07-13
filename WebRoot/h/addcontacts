@@ -208,8 +208,8 @@ if (k == 13) { document.getElementById("doSearch").click();return false;} else {
         <c:set var="composeformat" value="${param.rf}"/>
     </c:if>
     <c:set var="isHtml" value="${composeformat eq 'html'}"/>
-    <c:set var="theBody" value="${isHtml ? (empty compose.htmlContent ?  fn:escapeXml(compose.content) : fn:escapeXml(compose.htmlContent)) : compose.content}"/>
-    <input type="hidden" name="body" value="${theBody}"/>
+    <c:set var="theBody" value="${isHtml ? (empty compose.htmlContent ?  compose.content : compose.htmlContent) : compose.content}"/>
+    <input type="hidden" name="body" value="${fn:escapeXml(theBody)}"/>
     <input type="hidden" name="replyto" value="${fn:escapeXml(compose.replyTo)}"/>
     <input type="hidden" name="from" value="${fn:escapeXml(compose.from)}"/>
     <input type="hidden" name="inreplyto" value="${fn:escapeXml(compose.inReplyTo)}"/>
