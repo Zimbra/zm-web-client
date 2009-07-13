@@ -1125,8 +1125,8 @@ function(ev) {
 };
 
 /**
- * Shows or hides the tree view. It is hidden only if there is no data, and we have been told
- * to hide empty tree views of this type.
+ * Shows or hides the tree view. It is hidden only if there is no data, and we
+ * have been told to hide empty tree views of this type.
  * 
  * @param overviewId		[constant]		overview ID
  */

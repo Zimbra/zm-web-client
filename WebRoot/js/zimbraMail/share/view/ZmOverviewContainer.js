@@ -159,8 +159,8 @@ function(headerLabel, headerIcon, headerDataId, omit, overviewParams) {
 	// create a top-level section header
 	var params = {
 		parent: this,
-		text: headerLabel,
-		imageInfo: headerIcon
+		text: headerLabel
+		/*imageInfo: headerIcon*/
 		/*className:"overviewHeader"*/
 	};
 	var header = this._headerItems[headerDataId] = new DwtTreeItem(params);
