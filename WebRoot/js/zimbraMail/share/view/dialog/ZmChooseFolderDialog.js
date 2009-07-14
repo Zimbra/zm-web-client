@@ -414,11 +414,8 @@ function(ev) {
 
 	if (ev.detail != DwtTree.ITEM_SELECTED)	{ return; }
 
-	var folder = ev.item.getData(Dwt.KEY_OBJECT);
-	if (folder) {
-		var value = this._lastVal = folder.getName(false, null, true, true);
-		this._inputField.setValue(value);
-	}
+	var value = this._lastVal = ev.item.getText();
+	this._inputField.setValue(value);
 };
 
 ZmChooseFolderDialog.prototype._enterListener =
