@@ -251,7 +251,8 @@ function(search, defaultValue) {
 	if (search && search.matches && this.msgs) {
 		var msgs = this.msgs.getArray();
 		for (var i = 0; i < msgs.length; i++) {
-			if (search.matches(msgs[i])) {
+			var msg = msgs[i];
+			if (search.matches(msg) && !msg.ignoreJunkTrash()) {
 				return true;
 			}
 		}
@@ -259,6 +260,13 @@ function(search, defaultValue) {
 		return defaultValue;
 	}
 	return false;
+};
+
+ZmConv.prototype.ignoreJunkTrash =
+function() {
+	return Boolean((this.numMsgs == 1) && this.folders &&
+				   ((this.folders[ZmFolder.ID_SPAM] && !appCtxt.get(ZmSetting.SEARCH_INCLUDES_SPAM)) ||
+			 	    (this.folders[ZmFolder.ID_TRASH] && !appCtxt.get(ZmSetting.SEARCH_INCLUDES_TRASH))));
 };
 
 /**

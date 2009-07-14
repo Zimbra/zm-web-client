@@ -267,7 +267,7 @@ function(convs, msgs) {
 			if (this.getById(id)) { continue; }	// already have this conv
 			newConvId[id] = convs[id];
 			var conv = convs[id];
-			if (this.search.matches(conv)) {
+			if (this.search.matches(conv) && !conv.ignoreJunkTrash()) {
 				// a new msg for this conv matches current search
 				conv.list = this;
 				newConvs.push(conv);
@@ -278,7 +278,7 @@ function(convs, msgs) {
 		for (var id in msgs) {
 			var msg = msgs[id];
 			var cid = msg.cid;
-			var msgMatches = this.search.matches(msg);
+			var msgMatches = this.search.matches(msg) && !msg.ignoreJunkTrash();
 			var conv = newConvId[cid] || this.getById(cid);
 			if (msgMatches) {
 				if (!conv) {
@@ -344,7 +344,7 @@ function(convs, msgs) {
 					newMsgs.push(msg);
 				}
 			} else { // MLV (traditional)
-				if (this.search.matches && this.search.matches(msg)) {
+				if (this.search.matches && this.search.matches(msg) && !msg.ignoreJunkTrash()) {
 					msg.list = this;
 					newMsgs.push(msg);
 				}

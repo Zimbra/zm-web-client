@@ -128,6 +128,17 @@ function(node) {
 	}
 };
 
-ZmMailItem.prototype.getEmails = function() {
+ZmMailItem.prototype.getEmails =
+function() {
 	return this.participants.map("address");
+};
+
+/**
+ * Returns true if this item is in Junk or Trash and the user is not including
+ * those in search results.
+ */
+ZmMailItem.prototype.ignoreJunkTrash =
+function() {
+	return Boolean((this.folderId == ZmFolder.ID_SPAM && !appCtxt.get(ZmSetting.SEARCH_INCLUDES_SPAM)) ||
+				   (this.folderId == ZmFolder.ID_TRASH && !appCtxt.get(ZmSetting.SEARCH_INCLUDES_TRASH)));
 };
