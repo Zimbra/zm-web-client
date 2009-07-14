@@ -156,19 +156,22 @@ ZmTreeController.prototype.show =
 function(params) {
 	var id = params.overviewId;
 	this._hideEmpty[id] = params.hideEmpty;
+
 	if (!this._treeView[id] || params.forceCreate) {
 		this._treeViewCreated = false;
 		this._treeView[id] = null;
 		this._treeView[id] = this.getTreeView(id, true);
 	}
+
 	// bug fix #24241 - for offline, zimlet tree is re-used across accounts
-	var account = (appCtxt.multiAccounts && this.type == ZmOrganizer.ZIMLET)
-		? appCtxt.getMainAccount(true) : params.account;
+	var isMultiAccountZimlet = (appCtxt.multiAccounts && this.type == ZmOrganizer.ZIMLET);
+	var account = isMultiAccountZimlet ? appCtxt.getMainAccount() : params.account;
 	var dataTree = this.getDataTree(account);
+
 	if (dataTree) {
 		params.dataTree = dataTree;
 		var setting = ZmOrganizer.OPEN_SETTING[this.type];
-		params.collapsed = !(!setting || (appCtxt.get(setting, null, account) !== false));
+		params.collapsed = (!isMultiAccountZimlet && (!(!setting || (appCtxt.get(setting, null, account) !== false)))); // yikes!
 		var overview = this._opc.getOverview(id);
 		if (overview.showNewButtons) {
 			this._setupNewOp(params);
@@ -176,6 +179,7 @@ function(params) {
 		this._treeView[id].set(params);
 		this._checkTreeView(id, params.account);
 	}
+
 	if (!this._treeViewCreated) {
 		this._treeViewCreated = true;
 		this._postSetup(id, params.account);

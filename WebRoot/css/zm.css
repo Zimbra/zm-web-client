@@ -164,6 +164,10 @@
 	margin-bottom: 0px;
 }
 
+.ZmTreeHeaderItemMultiAccount .imageCell {
+	padding-right: 5px;
+}
+
 .ZmTreeHeaderItemMultiAccount {
 	@TreeItem@
 }

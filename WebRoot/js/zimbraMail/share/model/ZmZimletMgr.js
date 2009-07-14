@@ -87,7 +87,8 @@ function(zimletArray, userProps, target, callback, sync) {
 			var zimletTree = appCtxt.getZimletTree();
 			if (!zimletTree) {
 				zimletTree = new ZmFolderTree(ZmOrganizer.ZIMLET);
-				appCtxt.setTree(ZmOrganizer.ZIMLET, zimletTree);
+				var account = appCtxt.multiAccounts && appCtxt.getMainAccount();
+				appCtxt.setTree(ZmOrganizer.ZIMLET, zimletTree, account);
 			}
 			zimletTree.reset();
 			zimletTree.loadFromJs(panelZimlets, "zimlet");

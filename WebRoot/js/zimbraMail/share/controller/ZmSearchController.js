@@ -193,8 +193,7 @@ function() {
 	this._searchPanel = new DwtComposite({parent:this._container, className:"SearchPanel", posStyle:Dwt.ABSOLUTE_STYLE});
 	this._searchToolBar = new ZmSearchToolBar(this._searchPanel, ZmId.SEARCH_TOOLBAR);
 
-	var tg = this._createTabGroup();
-	tg.addMember(this._searchToolBar.getSearchField());
+	this._createTabGroup().addMember(this._searchToolBar.getSearchField());
 
 	// Register keyboard callback for search field
 	this._searchToolBar.registerCallback(this._searchFieldCallback, this);
@@ -587,9 +586,9 @@ ZmSearchController.prototype._searchButtonListener =
 function(ev) {
 	// find out if the custom search menu item is selected and pass it the query
 	var btn = this._searchToolBar.getButton(ZmSearchToolBar.SEARCH_MENU_BUTTON);
-	var menu = btn ? btn.getMenu() : null;
-	var mi = menu ? menu.getSelectedItem() : null;
-	var data = mi ? mi.getData("CustomSearchItem") : null;
+	var menu = btn && btn.getMenu();
+	var mi = menu && menu.getSelectedItem();
+	var data = mi && mi.getData("CustomSearchItem");
 	if (data) {
 		data[2].run(ev);
 	} else {

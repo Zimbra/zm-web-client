@@ -18,15 +18,23 @@ ZmSearchToolBar = function(parent, id) {
 	DwtComposite.call(this, {parent:parent, className:"ZmSearchToolbar", id:id});
 
 	// set up "search all" menu item
-	var id = ZmId.getMenuItemId(ZmId.SEARCH, ZmId.SEARCH_ANY);
-	var params = { msgKey:"searchAll", tooltipKey:"searchForAny", icon:"Globe",
-				   setting:ZmSetting.MIXED_VIEW_ENABLED, index:0, id:id };
+	var params = {
+		msgKey: "searchAll",
+		tooltipKey: "searchForAny",
+		icon: "Globe",
+		setting: ZmSetting.MIXED_VIEW_ENABLED,
+		index: 0,
+		id: ZmId.getMenuItemId(ZmId.SEARCH, ZmId.SEARCH_ANY)
+	};
 	ZmSearchToolBar.addMenuItem(ZmId.SEARCH_ANY, params);
 
-	// set up "incl. shared items" menu item
-	id = ZmId.getMenuItemId(ZmId.SEARCH, ZmId.SEARCH_SHARED);
-	params = { msgKey:"searchShared", tooltipKey:"searchShared", icon:"Group",
-			   setting:ZmSetting.SHARING_ENABLED, id:id };
+	params = {
+		msgKey: "searchShared",
+		tooltipKey: "searchShared",
+		icon: "Group",
+		setting: ZmSetting.SHARING_ENABLED,
+		id: ZmId.getMenuItemId(ZmId.SEARCH, ZmId.SEARCH_SHARED)
+	};
 	ZmSearchToolBar.addMenuItem(ZmId.SEARCH_SHARED, params);
 
 	this._createHtml();
@@ -103,7 +111,7 @@ function(id) {
 		ZmSearchToolBar.ID[id]			= "";
 	}
 	this.dedupSeparators(menu);
-}
+};
 
 // Attempt to dedup separators, and remove any that start or end the menu
 ZmSearchToolBar.prototype.dedupSeparators =
@@ -115,7 +123,7 @@ function(menu) {
 	var children = menu.getItems();
 	var wasSep = false;
 	var toRemove = [];
-	for ( mi in children ) {
+	for (mi in children) {
 		if (!children[mi].__text) {
 			if (wasSep == true || wasSep == null) {
 				toRemove.push(children[mi]);
@@ -126,7 +134,7 @@ function(menu) {
 			wasSep = false;
 		}
 	}
-	for ( mi in toRemove ) {
+	for (mi in toRemove) {
 		menu.removeChild(toRemove[mi]);
 	}
 	if (!children[children.length-1].__text) {	 // No trailing separators
@@ -188,7 +196,7 @@ function() {
 
 ZmSearchToolBar.prototype.setEnabled =
 function(enable) {
-	if (this._searchField)		{ this._searchField.setEnabled(enable);	}
+	if (this._searchField)		{ this._searchField.setEnabled(enable); }
 	if (this._searchMenuButton) { this._searchMenuButton.setEnabled(enable); }
 	if (this._searchButton)		{ this._searchButton.setEnabled(enable); }
 	if (this._saveButton)		{ this._saveButton.setEnabled(enable); }
@@ -198,9 +206,7 @@ function(enable) {
 
 ZmSearchToolBar.prototype.setSearchFieldValue =
 function(value) {
-    if (this._searchField &&
-		value != this.getSearchFieldValue())
-	{
+	if (this._searchField && value != this.getSearchFieldValue()) {
 		this._searchField.setValue(value);
 	}
 };
@@ -270,16 +276,23 @@ function(icon, text, listener, id) {
 ZmSearchToolBar.prototype._createCustomSearchMenuItem =
 function(menu, icon, text, listener, id) {
 	var mi = menu.getItem(0);
-	var addSep = !(mi && mi.getData("CustomSearchItem"));
-	var params = {parent:menu, imageInfo:icon, text:text, enabled:true, style:DwtMenuItem.RADIO_STYLE,
-				  radioGroupId:0, index:0, id:id};
+	var params = {
+		parent: menu,
+		imageInfo: icon,
+		text: text,
+		enabled: true,
+		style: DwtMenuItem.RADIO_STYLE,
+		radioGroupId: 0,
+		index: 0,
+		id: id
+	};
 	mi = DwtMenuItem.create(params);
 	mi.setData("CustomSearchItem", [icon, text, listener]);
 	mi.setData(ZmSearchToolBar.MENUITEM_ID, ZmId.SEARCH_CUSTOM);
 	mi.addSelectionListener(this._customSearchListener);
 
 	// only add separator if this is the first custom search menu item
-	if (addSep) {
+	if (!(mi && mi.getData("CustomSearchItem"))) {
 		mi = new DwtMenuItem({parent:menu, style:DwtMenuItem.SEPARATOR_STYLE, index:1});
 	}
 };
@@ -334,11 +347,11 @@ function() {
 	var searchMenuBtn = document.getElementById(searchMenuBtnId);
 	if (searchMenuBtn) {
 		var mailEnabled = appCtxt.get(ZmSetting.MAIL_ENABLED);
-        this._searchMenuButton = this._addButton({ tdId:		"_searchMenuButton",
-        										   buttonId:	ZmId.getButtonId(ZmId.SEARCH, ZmId.SEARCH_MENU),
+		this._searchMenuButton = this._addButton({ tdId:		"_searchMenuButton",
+												   buttonId:	ZmId.getButtonId(ZmId.SEARCH, ZmId.SEARCH_MENU),
 												   lbl:			mailEnabled ? ZmMsg.searchMail : ZmMsg.searchAll,
 												   icon:		mailEnabled ? "Message" : "Globe" });
-        var menu = new AjxCallback(this, this._createSearchMenu);
+		var menu = new AjxCallback(this, this._createSearchMenu);
 		this._searchMenuButton.setMenu(menu, false, DwtMenuItem.RADIO_STYLE);
 		this._searchMenuButton.reparentHtmlElement(searchMenuBtnId);
 	}
@@ -408,10 +421,10 @@ function() {
 			mi = new DwtMenuItem({parent:menu, style:DwtMenuItem.SEPARATOR_STYLE});
 		}
 	}
-	
+
 	appCtxt.getSearchController()._addMenuListeners(menu);
 	this._searchMenuCreated = true;
-	
+
 	return menu;
 };
 
@@ -490,15 +503,20 @@ function(id) {
 
 ZmSearchToolBar.prototype._keyPressHdlr =
 function(ev) {
-    var charCode = DwtKeyEvent.getCharCode(ev);
-	if ((charCode == 13 || charCode == 3) && (!this._acList.getVisible() || this._acList.size() == 1)) {
+	var charCode = DwtKeyEvent.getCharCode(ev);
+
+	if ((charCode == 13 || charCode == 3) &&
+		(!this._acList.getVisible() || this._acList.size() == 1))
+	{
 		if (this._acList.size() == 1) {
-			// a bit ugly, but keypress happens before the field is updated, and we can't use keyup
-			// because by that time the acList has been popped down and cleared
+			// a bit ugly, but keypress happens before the field is updated, and
+			// we can't use keyup because by that time the acList has been
+			// popped down and cleared
 			this._acList._update(true);
 		}
 		this._handleEnterKeyPress(ev);
-	    return false;
+		return false;
 	}
+
 	return true;
 };

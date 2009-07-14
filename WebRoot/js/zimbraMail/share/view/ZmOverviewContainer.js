@@ -132,6 +132,17 @@ function(params) {
 	}
 };
 
+ZmOverviewContainer.prototype.resetOperations =
+function(parent, acctId) {
+
+	parent.enableAll(true);
+
+	var acct = appCtxt.getAccount(acctId);
+	if (acct.type == ZmAccount.TYPE_POP) {
+		parent.enable(ZmOperation.NEW_FOLDER, false);
+	}
+};
+
 ZmOverviewContainer.prototype._addAccount =
 function(params, account) {
 	params.overviewId = [params.appName, account.name].join(":"); 				// reset overviewId to be based on account
@@ -198,10 +209,12 @@ function(ev) {
 	}
 
 	var item = this._actionedHeaderItem = ev.item;
+	var acctId = item && item.getData(Dwt.KEY_ID);
 
 	if (ev.detail == DwtTree.ITEM_ACTIONED && appCtxt.getApp(this._appName)) {	// right click
 		var actionMenu = this._getActionMenu(ev);
 		if (actionMenu) {
+			this.resetOperations(actionMenu, acctId);
 			actionMenu.popup(0, ev.docX, ev.docY);
 		}
 	}
@@ -219,7 +232,6 @@ function(ev) {
 		if (!ZmApp.NAME[this._appName]) { return; }
 
 		// if an account header item was clicked, run the default search for it
-		var acctId = item.getData(Dwt.KEY_ID);
 		if (acctId) {
 			var account = appCtxt.getAccount(acctId);
 			appCtxt.setActiveAccount(account);
@@ -243,13 +255,12 @@ function(ev) {
 
 ZmOverviewContainer.prototype._initializeActionMenu =
 function(account) {
-	var ops = [
-		ZmOperation.NEW_FOLDER,
-		ZmOperation.EXPAND_ALL
-		/*ZmOperation.SYNC*/
-	];
-
 	if (!this._actionMenu) {
+		var ops = [
+			ZmOperation.NEW_FOLDER,
+			ZmOperation.EXPAND_ALL
+			/*ZmOperation.SYNC*/
+		];
 		var args = [appCtxt.getShell(), ops, account];
 		this._actionMenu = new AjxCallback(this, this._createActionMenu, args);
 	}
