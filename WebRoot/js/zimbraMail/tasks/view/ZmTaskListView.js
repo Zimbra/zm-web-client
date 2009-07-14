@@ -24,9 +24,9 @@ ZmTaskListView.prototype.constructor = ZmTaskListView;
 
 
 // Consts
-ZmTaskListView.COL_WIDTH_STATUS		= 110;
-ZmTaskListView.COL_WIDTH_PCOMPLETE	= 75;
-ZmTaskListView.COL_WIDTH_DATE_DUE	= 110;
+ZmTaskListView.COL_WIDTH_STATUS		= ZmMsg.COLUMN_WIDTH_STATUS_TLV;
+ZmTaskListView.COL_WIDTH_PCOMPLETE	= ZmMsg.COLUMN_WIDTH_PCOMPLETE_TLV;
+ZmTaskListView.COL_WIDTH_DATE_DUE	= ZmMsg.COLUMN_WIDTH_DATE_DUE_TLV;
 
 
 // Public Methods

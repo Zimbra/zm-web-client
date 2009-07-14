@@ -27,8 +27,8 @@ ZmMixedView.prototype.constructor = ZmMixedView;
 
 // Consts
 ZmMixedView.COLWIDTH_ICON 			= 19;
-ZmMixedView.COLWIDTH_FROM 			= 145;
-ZmMixedView.COLWIDTH_DATE 			= 100;
+ZmMixedView.COLWIDTH_FROM 			= ZmMsg.COLUMN_WIDTH_FROM_CLV;
+ZmMixedView.COLWIDTH_DATE 			= ZmMsg.COLUMN_WIDTH_DATE;
 
 // Stuff to support the use of type-based list view classes
 

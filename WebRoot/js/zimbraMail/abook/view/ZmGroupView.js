@@ -710,8 +710,8 @@ function(items) {
 ZmGroupListView.prototype._getHeaderList =
 function() {
 	return [
-		(new DwtListHeaderItem({field:ZmItem.F_TYPE,	icon:"Contact",		width:20})),
-		(new DwtListHeaderItem({field:ZmItem.F_NAME,	text:ZmMsg._name,	width:100})),
+		(new DwtListHeaderItem({field:ZmItem.F_TYPE,	icon:"Contact",		width:ZmMsg.COLUMN_WIDTH_TYPE_CN})),
+		(new DwtListHeaderItem({field:ZmItem.F_NAME,	text:ZmMsg._name,	width:ZmMsg.COLUMN_WIDTH_NAME_CN})),
 		(new DwtListHeaderItem({field:ZmItem.F_EMAIL,	text:ZmMsg.email}))
 	];
 };

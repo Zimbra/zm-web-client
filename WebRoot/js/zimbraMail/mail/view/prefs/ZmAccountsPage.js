@@ -1966,9 +1966,9 @@ ZmAccountsListView.TYPES[ZmAccount.TYPE_POP]		= ZmMsg.accountTypePop;
 ZmAccountsListView.TYPES[ZmAccount.TYPE_IMAP]		= ZmMsg.accountTypeImap;
 ZmAccountsListView.TYPES[ZmAccount.TYPE_PERSONA]	= ZmMsg.accountTypePersona;
 
-ZmAccountsListView.WIDTH_NAME	= 170;
-ZmAccountsListView.WIDTH_STATUS	= 80;
-ZmAccountsListView.WIDTH_TYPE	= 85;
+ZmAccountsListView.WIDTH_NAME	= ZmMsg.COLUMN_WIDTH_NAME_ACC;
+ZmAccountsListView.WIDTH_STATUS	= ZmMsg.COLUMN_WIDTH_STATUS_ACC;
+ZmAccountsListView.WIDTH_TYPE	= ZmMsg.COLUMN_WIDTH_TYPE_ACC;
 
 // Public methods
 

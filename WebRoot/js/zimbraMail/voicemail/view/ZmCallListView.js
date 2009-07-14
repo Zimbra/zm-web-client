@@ -26,9 +26,9 @@ ZmCallListView.prototype.toString = function() {
 	return "ZmCallListView";
 };
 
-ZmCallListView.FROM_WIDTH = 190;
+ZmCallListView.FROM_WIDTH = ZmMsg.COLUMN_WIDTH_FROM_CALL;
 ZmCallListView.DURATION_WIDTH = null; // Auto
-ZmCallListView.DATE_WIDTH = 180;
+ZmCallListView.DATE_WIDTH = ZmMsg.COLUMN_WIDTH_DATE_CALL;
 
 ZmCallListView.prototype.createHeaderHtml = 
 function(defaultColumnSort) {

@@ -44,10 +44,10 @@ ZmCalListView.prototype.constructor = ZmCalListView;
 // Consts
 ZmCalListView.DEFAULT_CALENDAR_PERIOD	= AjxDateUtil.MSEC_PER_DAY*14;			// 14 days
 ZmCalListView.DEFAULT_SEARCH_PERIOD		= AjxDateUtil.MSEC_PER_DAY*31;			// 31 days
-ZmCalListView.COL_WIDTH_DATE			= 105;
-ZmCalListView.COL_WIDTH_LOCATION		= 175;
-ZmCalListView.COL_WIDTH_STATUS			= 80;
-ZmCalListView.COL_WIDTH_FOLDER			= 100;
+ZmCalListView.COL_WIDTH_DATE			= ZmMsg.COLUMN_WIDTH_DATE_CAL;
+ZmCalListView.COL_WIDTH_LOCATION		= ZmMsg.COLUMN_WIDTH_LOCATION_CAL;
+ZmCalListView.COL_WIDTH_STATUS			= ZmMsg.COLUMN_WIDTH_STATUS_CAL;
+ZmCalListView.COL_WIDTH_FOLDER			= ZmMsg.COLUMN_WIDTH_FOLDER_CAL;
 
 
 // Public methods

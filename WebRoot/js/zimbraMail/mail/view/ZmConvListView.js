@@ -77,8 +77,6 @@ ZmConvListView.prototype.constructor = ZmConvListView;
 
 // Constants
 
-ZmConvListView.COL_WIDTH_FROM	= 145;
-
 ZmListView.FIELD_CLASS[ZmItem.F_EXPAND] = "Expand";
 
 ZmConvListView.HEADERS_SHORT = [
@@ -107,7 +105,7 @@ ZmConvListView.HEADER[ZmItem.F_FLAG]		= {icon:"FlagRed", width:ZmListView.COL_WI
 ZmConvListView.HEADER[ZmItem.F_PRIORITY]	= {icon:"PriorityHigh_list", width:ZmListView.COL_WIDTH_NARROW_ICON, name:ZmMsg.priority, precondition:ZmSetting.MAIL_PRIORITY_ENABLED};
 ZmConvListView.HEADER[ZmItem.F_TAG]			= {icon:"Tag", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.tag, precondition:ZmSetting.TAGGING_ENABLED};
 ZmConvListView.HEADER[ZmItem.F_STATUS]		= {icon:"MsgStatus", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.status};
-ZmConvListView.HEADER[ZmItem.F_FROM]		= {text:ZmMsg.from, width:ZmConvListView.COL_WIDTH_FROM, resizeable:true};
+ZmConvListView.HEADER[ZmItem.F_FROM]		= {text:ZmMsg.from, width:ZmMsg.COLUMN_WIDTH_FROM_CLV, resizeable:true};
 ZmConvListView.HEADER[ZmItem.F_ATTACHMENT]	= {icon:"Attachment", width:ZmListView.COL_WIDTH_ICON, sortable:ZmItem.F_ATTACHMENT, noSortArrow:true, name:ZmMsg.attachment};
 ZmConvListView.HEADER[ZmItem.F_SUBJECT]		= {text:ZmMsg.subject, sortable:ZmItem.F_SUBJECT, noRemove:true, resizeable:true};
 ZmConvListView.HEADER[ZmItem.F_FOLDER]		= {text:ZmMsg.folder, width:ZmMsg.COLUMN_WIDTH_FOLDER, resizeable:true};
@@ -371,7 +369,7 @@ function(conv, fieldId) {
 		}
 
 		var headerCol = this._headerHash[ZmItem.F_FROM];
-		var partColWidth = headerCol ? headerCol._width : ZmConvListView.COL_WIDTH_FROM;
+		var partColWidth = headerCol ? headerCol._width : ZmMsg.COLUMN_WIDTH_FROM_CLV;
 		var part2 = this._fitParticipants(part1, conv.participantsElided, partColWidth);
 		for (var j = 0; j < part2.length; j++) {
 			if (j == 1 && (conv.participantsElided || part2.length < origLen)) {

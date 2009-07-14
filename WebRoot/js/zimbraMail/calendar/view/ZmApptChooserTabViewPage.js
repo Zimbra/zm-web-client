@@ -63,16 +63,16 @@ ZmApptChooserTabViewPage.COL_IMAGE = {};
 ZmApptChooserTabViewPage.COL_IMAGE[ZmItem.F_NOTES]		= "Page";
 
 ZmApptChooserTabViewPage.COL_WIDTH = {};
-ZmApptChooserTabViewPage.COL_WIDTH[ZmItem.F_FOLDER]		= 160;
-ZmApptChooserTabViewPage.COL_WIDTH[ZmItem.F_NAME]		= 150;
+ZmApptChooserTabViewPage.COL_WIDTH[ZmItem.F_FOLDER]		= ZmMsg.COLUMN_WIDTH_FOLDER_NA;
+ZmApptChooserTabViewPage.COL_WIDTH[ZmItem.F_NAME]		= ZmMsg.COLUMN_WIDTH_NAME_NA;
 ZmApptChooserTabViewPage.COL_WIDTH[ZmItem.F_EMAIL]		= null;
-ZmApptChooserTabViewPage.COL_WIDTH[ZmItem.F_WORK_PHONE]	= 100;
-ZmApptChooserTabViewPage.COL_WIDTH[ZmItem.F_HOME_PHONE]	= 100;
+ZmApptChooserTabViewPage.COL_WIDTH[ZmItem.F_WORK_PHONE]	= ZmMsg.COLUMN_WIDTH_WORK_PHONE_NA;
+ZmApptChooserTabViewPage.COL_WIDTH[ZmItem.F_HOME_PHONE]	= ZmMsg.COLUMN_WIDTH_HOME_PHONE_NA;
 ZmApptChooserTabViewPage.COL_WIDTH[ZmItem.F_LOCATION]	= null;
-ZmApptChooserTabViewPage.COL_WIDTH[ZmItem.F_CONTACT]	= 150;
-ZmApptChooserTabViewPage.COL_WIDTH[ZmItem.F_CAPACITY]	= 50;
-ZmApptChooserTabViewPage.COL_WIDTH[ZmItem.F_NOTES]		= 30;
-ZmApptChooserTabViewPage.COL_WIDTH["FBSTATUS"]			= 80;
+ZmApptChooserTabViewPage.COL_WIDTH[ZmItem.F_CONTACT]	= ZmMsg.COLUMN_WIDTH_CONTACT_NA;
+ZmApptChooserTabViewPage.COL_WIDTH[ZmItem.F_CAPACITY]	= ZmMsg.COLUMN_WIDTH_CAPACITY_NA;
+ZmApptChooserTabViewPage.COL_WIDTH[ZmItem.F_NOTES]		= ZmMsg.COLUMN_WIDTH_NOTES_NA;
+ZmApptChooserTabViewPage.COL_WIDTH["FBSTATUS"]			= ZmMsg.COLUMN_WIDTH_FBSTATUS_NA;
 
 ZmApptChooserTabViewPage.COLS = {};
 ZmApptChooserTabViewPage.COLS[ZmCalBaseItem.PERSON]		= [ZmItem.F_FOLDER, ZmItem.F_NAME, ZmItem.F_EMAIL, ZmItem.F_WORK_PHONE, ZmItem.F_HOME_PHONE, "FBSTATUS"];

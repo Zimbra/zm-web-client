@@ -49,11 +49,11 @@ function() {
 ZmFileListView.KEY_ID = "_keyId";
 
 ZmFileListView.COLWIDTH_ICON 			= 20;
-ZmFileListView.COLWIDTH_TYPE			= 80;
-ZmFileListView.COLWIDTH_SIZE 			= 45;
-ZmFileListView.COLWIDTH_DATE 			= 80;
-ZmFileListView.COLWIDTH_OWNER			= 80;
-ZmFileListView.COLWIDTH_FOLDER			= 120;
+ZmFileListView.COLWIDTH_TYPE			= ZmMsg.COLUMN_WIDTH_TYPE_DLV;
+ZmFileListView.COLWIDTH_SIZE 			= ZmMsg.COLUMN_WIDTH_SIZE_DLV;
+ZmFileListView.COLWIDTH_DATE 			= ZmMsg.COLUMN_WIDTH_DATE_DLV;
+ZmFileListView.COLWIDTH_OWNER			= ZmMsg.COLUMN_WIDTH_OWNER_DLV;
+ZmFileListView.COLWIDTH_FOLDER			= ZmMsg.COLUMN_WIDTH_FOLDER_FLV;
 
 // Protected methods
 

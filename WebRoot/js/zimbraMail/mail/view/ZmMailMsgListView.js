@@ -28,7 +28,6 @@ ZmMailMsgListView.prototype.constructor = ZmMailMsgListView;
 
 // Consts
 
-ZmMailMsgListView.COL_WIDTH_FROM = 105;
 ZmMailMsgListView.INDENT		= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 
 ZmMailMsgListView.HEADERS_SHORT = [
@@ -54,7 +53,7 @@ ZmMailMsgListView.HEADER[ZmItem.F_FLAG]			= {icon:"FlagRed", width:ZmListView.CO
 ZmMailMsgListView.HEADER[ZmItem.F_PRIORITY]		= {icon:"PriorityHigh_list", width:ZmListView.COL_WIDTH_NARROW_ICON, name:ZmMsg.priority, precondition:ZmSetting.MAIL_PRIORITY_ENABLED};
 ZmMailMsgListView.HEADER[ZmItem.F_TAG]			= {icon:"Tag", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.tag, precondition:ZmSetting.TAGGING_ENABLED};
 ZmMailMsgListView.HEADER[ZmItem.F_STATUS]		= {icon:"MsgStatus", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.status};
-ZmMailMsgListView.HEADER[ZmItem.F_FROM]			= {text:ZmMsg.from, width:ZmMailMsgListView.COL_WIDTH_FROM, resizeable:true, sortable:ZmItem.F_FROM};
+ZmMailMsgListView.HEADER[ZmItem.F_FROM]			= {text:ZmMsg.from, width:ZmMsg.COLUMN_WIDTH_FROM_MLV, resizeable:true, sortable:ZmItem.F_FROM};
 ZmMailMsgListView.HEADER[ZmItem.F_ATTACHMENT]	= {icon:"Attachment", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.attachment, sortable:ZmItem.F_ATTACHMENT, noSortArrow:true};
 ZmMailMsgListView.HEADER[ZmItem.F_SUBJECT]		= {text:ZmMsg.subject, sortable:ZmItem.F_SUBJECT, noRemove:true, resizeable:true};
 ZmMailMsgListView.HEADER[ZmItem.F_FOLDER]		= {text:ZmMsg.folder, width:ZmMsg.COLUMN_WIDTH_FOLDER, resizeable:true};

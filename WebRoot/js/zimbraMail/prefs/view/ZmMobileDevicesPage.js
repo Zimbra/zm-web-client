@@ -105,10 +105,10 @@ function() {
 
 	var headerList = [];
 	headerList.push(new DwtListHeaderItem({field:ZmMobileDeviceListView.F_DEVICE, text:ZmMsg.mobileDevice}));
-	headerList.push(new DwtListHeaderItem({field:ZmMobileDeviceListView.F_ID, text:ZmMsg.mobileDeviceId, width:250}));
-	headerList.push(new DwtListHeaderItem({field:ZmMobileDeviceListView.F_STATUS, text:ZmMsg.status, width:150}));
-	headerList.push(new DwtListHeaderItem({field:ZmMobileDeviceListView.F_PROTOCOL, text:ZmMsg.mobileProtocolVersion, width:100}));
-	headerList.push(new DwtListHeaderItem({field:ZmMobileDeviceListView.F_PROVISIONABLE, text:ZmMsg.mobileProvisionable, width:75}));
+	headerList.push(new DwtListHeaderItem({field:ZmMobileDeviceListView.F_ID, text:ZmMsg.mobileDeviceId, width:ZmMsg.COLUMN_WIDTH_ID_MDL}));
+	headerList.push(new DwtListHeaderItem({field:ZmMobileDeviceListView.F_STATUS, text:ZmMsg.status, width:ZmMsg.COLUMN_WIDTH_STATUS_MDL}));
+	headerList.push(new DwtListHeaderItem({field:ZmMobileDeviceListView.F_PROTOCOL, text:ZmMsg.mobileProtocolVersion, width:ZmMsg.COLUMN_WIDTH_PROTOCOL_MDL}));
+	headerList.push(new DwtListHeaderItem({field:ZmMobileDeviceListView.F_PROVISIONABLE, text:ZmMsg.mobileProvisionable, width:ZmMsg.COLUMN_WIDTH_PROVISIONABLE_MDL}));
 
 	return headerList;
 };

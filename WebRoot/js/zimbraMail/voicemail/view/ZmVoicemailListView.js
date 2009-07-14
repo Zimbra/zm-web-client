@@ -34,10 +34,10 @@ function() {
 	return "ZmVoicemailListView";
 };
 
-ZmVoicemailListView.FROM_WIDTH		= 190;
+ZmVoicemailListView.FROM_WIDTH		= ZmMsg.COLUMN_WIDTH_FROM_CALL;
 ZmVoicemailListView.PLAYING_WIDTH	= null; // Auto
 ZmVoicemailListView.PRIORITY_WIDTH	= ZmListView.COL_WIDTH_ICON;
-ZmVoicemailListView.DATE_WIDTH		= 180;
+ZmVoicemailListView.DATE_WIDTH		= ZmMsg.COLUMN_WIDTH_DATE_CALL;
 
 ZmVoicemailListView.F_PRIORITY		= "py";
 
