@@ -719,11 +719,18 @@ function(soapDoc, inv, m, notifyList, attendee, type) {
 				: (attendee.getAttr("participationStatus") || ZmCalBaseItem.PSTATUS_NEEDS_ACTION);
 		}
 		at.setAttribute("ptst", ptst);
-		
+
+        var rsvpVal = this.rsvp ? "1" : "0";
 		if (type != ZmCalBaseItem.PERSON) {
 			at.setAttribute("cutype", ZmCalendarApp.CUTYPE_RESOURCE);
+            if(this.isOrganizer()) {
+                rsvpVal = "1";
+            }
 		}
-		at.setAttribute("rsvp", this.rsvp ? "1" : "0");
+        if(this._cancelFutureInstances) {
+            rsvpVal = "0";
+        }
+		at.setAttribute("rsvp", rsvpVal);
 
 		if (address instanceof Array) {
 			address = address[0];
