@@ -322,7 +322,7 @@ function(treeItem, organizer, treeView) {
 		}
 		if (treeView.isCheckedStyle) {
 			if (organizer.type == this.type && treeView.isCheckedStyle) {
-				treeItem.setChecked(organizer.isChecked);
+				treeItem.setChecked(organizer.isChecked, true);
 			} else {
 				treeItem.showCheckBox(false);
 				treeItem.enableSelection(true);
