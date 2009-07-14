@@ -300,7 +300,7 @@ function(ev) {
 				folderId = appCtxt.getById(folderId)._remoteId; //getRemoteId();
 			}
 
-			if (appCtxt.isOffline && appCtxt.multiAccounts) {
+			if (appCtxt.isOffline) {
 				folderId = ZmOrganizer.getSystemId(folderId);
 			}
 

@@ -1919,9 +1919,8 @@ function() {
 
 ZmAccountsPage.__ACCOUNT_COMPARATOR =
 function(a, b) {
-	var isOfflineMulti = appCtxt.isOffline && appCtxt.multiAccounts;
-	if (a.type == ZmAccount.TYPE_ZIMBRA && (a.isMain || isOfflineMulti)) return -1;
-	if (b.type == ZmAccount.TYPE_ZIMBRA && (b.isMain || isOfflineMulti)) return 1;
+	if (a.type == ZmAccount.TYPE_ZIMBRA && (a.isMain || appCtxt.isOffline)) return -1;
+	if (b.type == ZmAccount.TYPE_ZIMBRA && (b.isMain || appCtxt.isOffline)) return 1;
 	return a.getName().localeCompare(b.getName());
 };
 
@@ -2022,8 +2021,7 @@ function(buffer, i, item, field, col, params) {
 		var provider = ZmDataSource.getProviderForAccount(item);
 		var type = provider && AjxStringUtil.htmlEncode(provider.name);
 		if (!type) {
-			var isOfflineMulti = appCtxt.isOffline && appCtxt.multiAccounts;
-			type = (item.type == ZmAccount.TYPE_ZIMBRA && !item.isMain && !isOfflineMulti)
+			type = (item.type == ZmAccount.TYPE_ZIMBRA && !item.isMain && !appCtxt.isOffline)
 				? ZmMsg.accountTypeSecondary
 				: ZmAccountsListView.TYPES[item.type];
 		}

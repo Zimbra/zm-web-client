@@ -159,7 +159,7 @@ function(settings) {
 	settings.registerSetting("IMPORT_BUTTON",				{type:ZmSetting.T_PSEUDO, dataType:ZmSetting.D_NONE});
 	settings.registerSetting("EXPORT_FOLDER",				{type:ZmSetting.T_PSEUDO, dataType:ZmSetting.D_NONE});
 	settings.registerSetting("EXPORT_BUTTON",				{type:ZmSetting.T_PSEUDO, dataType:ZmSetting.D_NONE});
-	settings.registerSetting("PREF_SECTIONS",				{type:ZmSetting.T_PSEUDO, dataType:ZmSetting.D_HASH});
+	settings.registerSetting("PREF_SECTIONS",				{type:ZmSetting.T_PSEUDO, dataType:ZmSetting.D_HASH, isGlobal:true});
 	settings.registerSetting("SIGNATURE_MAX_LENGTH",		{name:"zimbraMailSignatureMaxLength", type:ZmSetting.T_COS, dataType:ZmSetting.D_INT, defaultValue:1024});
 	settings.registerSetting("DISCARD_IN_FILTER_ENABLED",	{name:"zimbraFeatureDiscardInFiltersEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 };

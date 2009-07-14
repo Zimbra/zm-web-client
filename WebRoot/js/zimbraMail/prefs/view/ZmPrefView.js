@@ -90,7 +90,8 @@ function() {
 	}
 
 	// add listener for sections added/removed later...
-	var setting = appCtxt.getSettings().getSetting(ZmSetting.PREF_SECTIONS);
+	var account = appCtxt.isOffline && appCtxt.getMainAccount();
+	var setting = appCtxt.getSettings(account).getSetting(ZmSetting.PREF_SECTIONS);
 	setting.addChangeListener(new AjxListener(this, this._prefSectionsModified));
 
 	// display
@@ -99,7 +100,8 @@ function() {
 	this.setVisible(true);
 };
 
-ZmPrefView.prototype._prefSectionsModified = function(evt) {
+ZmPrefView.prototype._prefSectionsModified =
+function(evt) {
 	var sectionId = evt.getDetails();
 	var section = appCtxt.get(ZmSetting.PREF_SECTIONS, sectionId);
 	if (section) {
@@ -110,7 +112,8 @@ ZmPrefView.prototype._prefSectionsModified = function(evt) {
 	}
 };
 
-ZmPrefView.prototype._prefSectionAdded = function(section) {
+ZmPrefView.prototype._prefSectionAdded =
+function(section) {
 	// add section to tabs
 	var index = this._getIndexForSection(section.id);
 	this._addSection(section, index);
@@ -138,7 +141,8 @@ ZmPrefView.prototype._prefSectionAdded = function(section) {
 	organizer._notify(ZmEvent.E_CREATE);
 };
 
-ZmPrefView.prototype._prefSectionRemoved = function(sectionId) {
+ZmPrefView.prototype._prefSectionRemoved =
+function(sectionId) {
 	var index = this._getIndexForSection(sectionId);
 	var tree = appCtxt.getTree(ZmOrganizer.PREF_PAGE);
 	var organizer = tree && tree.getById(ZmId.getPrefPageId(sectionId));
@@ -154,7 +158,8 @@ ZmPrefView.prototype._prefSectionRemoved = function(sectionId) {
  * @param section   [object]    The section to add.
  * @param index     [number]    (Optional) The index where to add.
  */
-ZmPrefView.prototype._addSection = function(section, index) {
+ZmPrefView.prototype._addSection =
+function(section, index) {
 	// does the section meet the precondition?
 	if (!this._controller.checkPreCondition(section)) { return; }
 
@@ -171,7 +176,8 @@ ZmPrefView.prototype._addSection = function(section, index) {
 	this._sectionId[tabId] = section.id;
 };
 
-ZmPrefView.prototype._getIndexForSection = function(id) {
+ZmPrefView.prototype._getIndexForSection =
+function(id) {
 	var sections = ZmPref.getPrefSectionArray();
 	for (var i = 0; i < sections.length; i++) {
 		if (sections[i].id == id) break;
@@ -285,7 +291,7 @@ function(dirtyCheck, noValidation, batchCommand, prefView) {
 	var pv = prefView || this.prefView;
 	for (var view in pv) {
 		var section = sections[view];
-		if (!section || (section && section.manageChanges)) { continue; }
+		if (section.manageChanges) { continue; }
 
 		var viewPage = pv[view];
 		if (!viewPage || (viewPage && !viewPage.hasRendered())) { continue; }
@@ -350,7 +356,7 @@ function(section, viewPage, dirtyCheck, noValidation, list, errors, view) {
 				throw e;
 			}
 		}
-		var pref = (appCtxt.isOffline && appCtxt.multiAccounts && section.id == "GENERAL")
+		var pref = (appCtxt.isOffline && section.id == "GENERAL")
 			? appCtxt.getMainAccount().settings.getSetting(id)
 			: settings.getSetting(id);
 		var origValue = pref.origValue;

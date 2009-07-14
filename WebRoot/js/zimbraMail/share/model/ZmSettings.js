@@ -290,9 +290,8 @@ function(callback, accountName, result) {
 		}
 	}
 
-	// HACK HACK HACK: for offline/multi-account, general prefs come from the
-	// invisible parent account
-	if (appCtxt.isOffline && appCtxt.multiAccounts) {
+	// HACK: for offline, general prefs come from the "local" account
+	if (appCtxt.isOffline) {
 		var main = appCtxt.getMainAccount();
 		for (var i in ZmSetting.IS_GLOBAL) {
 			var global = ZmSetting.IS_GLOBAL[i];
@@ -729,7 +728,7 @@ function() {
 ZmSettings.prototype._registerZimletsSettings =
 function() {
 	// zimlet-specific
-	this.registerSetting("CHECKED_ZIMLETS",			{name:"zimbraPrefZimlets", type:ZmSetting.T_PREF, dataType:ZmSetting.D_LIST});
+	this.registerSetting("CHECKED_ZIMLETS",			{name:"zimbraPrefZimlets", type:ZmSetting.T_PREF, dataType:ZmSetting.D_LIST, isGlobal:true});
 
 };
 

@@ -181,7 +181,7 @@ function() {
 
 		// add preference controls
 		var prefs = this._section.prefs || [];
-		var settings = (appCtxt.isOffline && appCtxt.multiAccounts && this._section.id == "GENERAL")
+		var settings = (appCtxt.isOffline && this._section.id == "GENERAL")
 			? appCtxt.getMainAccount().settings
 			: appCtxt.getSettings();
 
@@ -511,7 +511,7 @@ function(list) {
 ZmPreferencesPage.prototype.getPreSaveCallback =
 function() {
 	// in offline mode, general (aka global) prefs apply to the *parent* account
-	if (appCtxt.isOffline && appCtxt.multiAccounts && this._section.id == "GENERAL") {
+	if (appCtxt.isOffline && this._section.id == "GENERAL") {
 		// just get changed prefs for general/global tab only
 		var prefView = {"GENERAL": this.parent.prefView["GENERAL"]};
 		this._origDirtyList = this.parent.getChangedPrefs(false, false, null, prefView);
@@ -552,7 +552,7 @@ function(templateId, data) {
 */
 ZmPreferencesPage.prototype._getPrefValue =
 function(id, useDefault) {
-	var pref = (appCtxt.isOffline && appCtxt.multiAccounts && this._section.id == "GENERAL")
+	var pref = (appCtxt.isOffline && this._section.id == "GENERAL")
 		? appCtxt.getMainAccount().settings.getSetting(id)
 		: appCtxt.getSettings().getSetting(id);
 	return useDefault ? pref.getDefaultValue() : pref.getValue();

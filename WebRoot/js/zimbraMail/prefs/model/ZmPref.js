@@ -24,25 +24,25 @@ ZmPref = function(id, name, dataType) {
 ZmPref.prototype = new ZmSetting;
 ZmPref.prototype.constructor = ZmPref;
 
-ZmPref.KEY_ID = "prefId_";
+ZmPref.KEY_ID				= "prefId_";
 
-ZmPref.TYPE_STATIC		= "STATIC"; // static text
-ZmPref.TYPE_INPUT		= "INPUT";
-ZmPref.TYPE_CHECKBOX	= "CHECKBOX";
-ZmPref.TYPE_COLOR		= "COLOR";
-ZmPref.TYPE_RADIO_GROUP	= "RADIO_GROUP";
-ZmPref.TYPE_SELECT		= "SELECT";
-ZmPref.TYPE_COMBOBOX	= "COMBOBOX";
-ZmPref.TYPE_TEXTAREA	= "TEXTAREA";
-ZmPref.TYPE_PASSWORD	= "PASSWORD";
-ZmPref.TYPE_IMPORT		= "IMPORT";
-ZmPref.TYPE_EXPORT		= "EXPORT";
-ZmPref.TYPE_SHORTCUTS	= "SHORTCUTS";
-ZmPref.TYPE_CUSTOM		= "CUSTOM";
-ZmPref.TYPE_LOCALES     = "LOCALES";
+ZmPref.TYPE_STATIC			= "STATIC"; // static text
+ZmPref.TYPE_INPUT			= "INPUT";
+ZmPref.TYPE_CHECKBOX		= "CHECKBOX";
+ZmPref.TYPE_COLOR			= "COLOR";
+ZmPref.TYPE_RADIO_GROUP		= "RADIO_GROUP";
+ZmPref.TYPE_SELECT			= "SELECT";
+ZmPref.TYPE_COMBOBOX		= "COMBOBOX";
+ZmPref.TYPE_TEXTAREA		= "TEXTAREA";
+ZmPref.TYPE_PASSWORD		= "PASSWORD";
+ZmPref.TYPE_IMPORT			= "IMPORT";
+ZmPref.TYPE_EXPORT			= "EXPORT";
+ZmPref.TYPE_SHORTCUTS		= "SHORTCUTS";
+ZmPref.TYPE_CUSTOM			= "CUSTOM";
+ZmPref.TYPE_LOCALES			= "LOCALES";
 
-ZmPref.ORIENT_VERTICAL      = "vertical";
-ZmPref.ORIENT_HORIZONTAL    = "horizontal";
+ZmPref.ORIENT_VERTICAL		= "vertical";
+ZmPref.ORIENT_HORIZONTAL	= "horizontal";
 
 // custom functions for loading and validation
 
@@ -170,9 +170,7 @@ function(value) {
 		if (n < 10)
 			a[i] = "0" + n;
 	}
-	var gmt = a.join("") + "Z";
-	// console.log("GMT date: %o, local: %o", gmt, value);
-	return gmt;
+	return (a.join("") + "Z");
 };
 
 ZmPref.dateGMT2Local =
@@ -420,14 +418,16 @@ function(prefsId, list) {
  */
 ZmPref.SETUP = {};
 
-ZmPref.registerPref = function(id, params) {
+ZmPref.registerPref =
+function(id, params) {
 	ZmPref.SETUP[id] = params;
 };
+
 /** Clears all of the preference sections. */
 ZmPref.clearPrefSections =
 function() {
-    ZmPref._prefSectionMap = {};
-    ZmPref._prefSectionArray = null;
+	ZmPref._prefSectionMap = {};
+	ZmPref._prefSectionArray = null;
 };
 
 /**
@@ -465,19 +465,19 @@ function() {
  */
 ZmPref.registerPrefSection =
 function(id, params) {
-    if (!id || !params) return;
+	if (!id || !params) { return; }
 
-    // set template for section
-    var templateId = params.templateId || id;
-    if (!templateId.match(/#/)) {
-        templateId = ["prefs.Pages",templateId].join("#");
-    }
-    params.templateId = templateId;
-    params.id = id;
+	// set template for section
+	var templateId = params.templateId || id;
+	if (!templateId.match(/#/)) {
+		templateId = ["prefs.Pages",templateId].join("#");
+	}
+	params.templateId = templateId;
+	params.id = id;
 
-    // save section
+	// save section
 	appCtxt.set(ZmSetting.PREF_SECTIONS, params, id);
-    ZmPref._prefSectionArray = null;
+	ZmPref._prefSectionArray = null;
 };
 
 ZmPref.unregisterPrefSection =
@@ -495,15 +495,15 @@ function() {
 /** Returns a sorted array of pref sections (based on priority). */
 ZmPref.getPrefSectionArray =
 function() {
-    if (!ZmPref._prefSectionArray) {
-        ZmPref._prefSectionArray = [];
+	if (!ZmPref._prefSectionArray) {
+		ZmPref._prefSectionArray = [];
 		var prefSectionMap = appCtxt.get(ZmSetting.PREF_SECTIONS);
 		for (var id in prefSectionMap) {
-            ZmPref._prefSectionArray.push(prefSectionMap[id]);
-        }
-        ZmPref._prefSectionArray.sort(ZmPref.__BY_PRIORITY);
-    }
-    return ZmPref._prefSectionArray;
+			ZmPref._prefSectionArray.push(prefSectionMap[id]);
+		}
+		ZmPref._prefSectionArray.sort(ZmPref.__BY_PRIORITY);
+	}
+	return ZmPref._prefSectionArray;
 };
 
 /** Returns the section that contains the specified pref. */
@@ -512,15 +512,15 @@ function(prefId) {
 	var prefSectionMap = appCtxt.get(ZmSetting.PREF_SECTIONS);
 	for (var sectionId in prefSectionMap) {
 		var section = prefSectionMap[sectionId];
-        if (section.prefs == null) continue;
+		if (section.prefs == null) continue;
 
-        for (var i = 0; i < section.prefs.length; i++) {
-            if (section.prefs[i] == prefId) {
-                return section;
-            }
-        }
-    }
-    return null;
+		for (var i = 0; i < section.prefs.length; i++) {
+			if (section.prefs[i] == prefId) {
+				return section;
+			}
+		}
+	}
+	return null;
 };
 
 /** Returns true if <em>all</em> of the preconditions pass. */
@@ -546,6 +546,5 @@ ZmPref.clearPrefSections();
 
 ZmPref.__BY_PRIORITY =
 function(a, b) {
-    return Number(a.priority) - Number(b.priority);
+	return Number(a.priority) - Number(b.priority);
 };
-

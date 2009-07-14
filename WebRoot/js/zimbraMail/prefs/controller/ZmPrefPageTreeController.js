@@ -78,9 +78,11 @@ function(params) {
 			treeView.setSelected(page1, true);
 		}
 	}
-	var hi = treeView.getHeaderItem();
-	if (hi) {
-		hi.setExpanded(true, true);
+	if (!appCtxt.isOffline) {
+		var hi = treeView.getHeaderItem();
+		if (hi) {
+			hi.setExpanded(true, true);
+		}
 	}
 	treeView.addSelectionListener(new AjxListener(this, this._handleTreeItemSelection, [view, treeView]));
 

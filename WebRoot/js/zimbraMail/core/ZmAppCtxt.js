@@ -117,19 +117,19 @@ function(id, key, account) {
 /**
  * Sets the value of a setting.
  *
- * @param id			[constant]		setting ID
- * @param value			[any]			setting value
- * @param key			[string]*		setting key (for settings that are of the hash type)
- * @param setDefault	[boolean]*		if true, also replace setting's default value
- * @param skipNotify	[boolean]*		if true, do not notify setting listeners
+ * @param id			[constant]			setting ID
+ * @param value			[any]				setting value
+ * @param key			[string]*			setting key (for settings that are of the hash type)
+ * @param setDefault	[boolean]*			if true, also replace setting's default value
+ * @param skipNotify	[boolean]*			if true, do not notify setting listeners
+ * @param account		[ZmZimbraAccount]*	if set, use this account's setting instead of the currently active account
  */
 ZmAppCtxt.prototype.set =
-function(id, value, key, setDefault, skipNotify) {
-	// for offline / multi-account, global settings should always come from the
-	// invisible parent account
-	var setting = (this.isOffline && this.multiAccounts && ZmSetting.IS_GLOBAL[id])
-		? this.getSettings(this.getMainAccount()).getSetting(id)
-		: this.getSettings().getSetting(id);
+function(id, value, key, setDefault, skipNotify, account) {
+	// for offline, global settings always come from "parent" account
+	var acct = (this.isOffline && ZmSetting.IS_GLOBAL[id])
+		? this.getMainAccount() : account;
+	var setting = this.getSettings(acct).getSetting(id);
 
 	if (setting) {
 		setting.setValue(value, key, setDefault, skipNotify);
@@ -586,7 +586,7 @@ function(checkOfflineMode) {
 	for (var id in this._accounts) {
 		var account = this._accounts[id];
 		// if checking for offline mode, return the first non-main account
-		if (checkOfflineMode && appCtxt.isOffline && appCtxt.multiAccounts) {
+		if (checkOfflineMode && appCtxt.isOffline) {
 			if (!account.isMain) { return account; }
 			continue;
 		}

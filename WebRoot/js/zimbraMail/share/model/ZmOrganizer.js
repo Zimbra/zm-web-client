@@ -64,9 +64,7 @@ ZmOrganizer = function(params) {
 	this.rid = params.rid;
 	this.restUrl = params.restUrl;
 	this.accountId = params.accountId;
-
 	this.noSuchFolder = false; // Is this a link to some folder that ain't there.
-
 	this._isAdmin = this._isReadOnly = this._hasPrivateAccess = null;
 
 	var color = (this.parent && !params.color) ? this.parent.color : params.color;
@@ -75,6 +73,14 @@ ZmOrganizer = function(params) {
 				 ZmOrganizer.ORG_COLOR[this.nId] ||
 				 ZmOrganizer.DEFAULT_COLOR[this.type] ||
 				 ZmOrganizer.C_NONE;
+
+	// for offline, POP accounts are not allowed to create subfolders
+	if (appCtxt.isOffline) {
+		var account = appCtxt.getAccount(this.accountId);
+		if (account && account.type == ZmAccount.TYPE_POP) {
+			this.disallowSubFolder = true;
+		}
+	}
 
 	if (id && params.tree) {
 		appCtxt.cacheSet(id, this);
