@@ -304,9 +304,9 @@ function(actionCode) {
 
 		case ZmKeyMap.NEXT_UNREAD:
 		case ZmKeyMap.PREV_UNREAD:
-			var size = lv.size();
+			var list = lv.getList(true).getArray();
+			var size = list.length;
 			if (size) {
-				var list = lv.getList(true).getArray();
 				var sel = lv.getSelection();
 				var start, index;
 				if (sel && sel.length) {
@@ -328,7 +328,7 @@ function(actionCode) {
 						if (item.isUnread) {
 							unreadItem = item;
 						} else {
-							(actionCode == ZmKeyMap.NEXT_UNREAD) ? index++ : index--;
+							index = (actionCode == ZmKeyMap.NEXT_UNREAD) ? index + 1 : index - 1;
 						}
 					}
 					if (unreadItem) {
