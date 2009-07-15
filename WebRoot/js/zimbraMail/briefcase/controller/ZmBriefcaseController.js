@@ -85,9 +85,9 @@ function() {
 			ZmOperation.SEP,
 			ZmOperation.VIEW_MENU,
             ZmOperation.SEP,
+            ZmOperation.NEW_DOC,
             ZmOperation.NEW_SPREADSHEET,
             ZmOperation.NEW_PRESENTATION,
-            ZmOperation.NEW_DOC,
             ZmOperation.FILLER];
     
     if(appCtxt.get(ZmSetting.MAIL_ENABLED)){
@@ -171,6 +171,7 @@ function(parent, num) {
 	parent.enable(ZmOperation.TAG_MENU, (!isShared && isItemSelected && !isFolderSelected));
 	parent.enable([ZmOperation.NEW_FILE, ZmOperation.VIEW_MENU], true);
     parent.enable([ZmOperation.NEW_SPREADSHEET, ZmOperation.NEW_PRESENTATION, ZmOperation.NEW_DOC], true);
+    parent.enable(ZmOperation.MOVE, ( isItemSelected &&  !isReadOnly && !isShared));
 };
 
 ZmBriefcaseController.prototype._getTagMenuMsg =
