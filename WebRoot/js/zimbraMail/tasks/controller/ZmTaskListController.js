@@ -558,3 +558,11 @@ ZmTaskListController.prototype._getMoveDialogTitle =
 function(num) {
 	return (num == 1) ? ZmMsg.moveTask : ZmMsg.moveTasks;
 };
+
+// Move stuff to a new folder.
+ZmTaskListController.prototype._moveCallback =
+function(folder) {
+	this._doMove(this._pendingActionData, folder, null, false);
+	this._clearDialog(appCtxt.getChooseFolderDialog());
+	this._pendingActionData = null;
+};

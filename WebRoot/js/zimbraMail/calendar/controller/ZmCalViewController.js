@@ -494,7 +494,9 @@ function(folder) {
 		dlg.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
 		dlg.popup();
 	} else {
-		ZmListController.prototype._moveCallback.call(this, folder);
+		this._doMove(this._pendingActionData, folder, null, false);
+	    this._clearDialog(appCtxt.getChooseFolderDialog());
+	    this._pendingActionData = null;
 	}
 };
 
