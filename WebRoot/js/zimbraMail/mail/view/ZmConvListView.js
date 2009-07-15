@@ -177,6 +177,11 @@ function() {
 	ZmMailListView.prototype.reRenderListView.call(this);
 };
 
+/**
+ * Overrides DwtListView.getList to optionally include any visible msgs.
+ *
+ * @param allItems	[boolean]*	if true, include visible msgs
+ */
 ZmConvListView.prototype.getList =
 function(allItems) {
 	if (!allItems) {
@@ -185,7 +190,10 @@ function(allItems) {
 		var list = [];
 		var childNodes = this._parentEl.childNodes;
 		for (var i = 0; i < childNodes.length; i++) {
-			list.push(this.getItemFromElement(childNodes[i]));
+			var el = childNodes[i];
+			if (Dwt.getVisible(el)) {
+				list.push(this.getItemFromElement(el));
+			}
 		}
 		return AjxVector.fromArray(list);
 	}
@@ -827,4 +835,13 @@ function() {
 		var id = list[i];
 		this._expand(id, offsets[id]);
 	}
+};
+
+ZmConvListView.prototype._getLastItem =
+function() {
+	var a = this.getList(true).getArray();
+	if (a && a.length > 1) {
+		return a[a.length - 1];
+	}
+	return null;
 };
