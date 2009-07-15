@@ -654,7 +654,7 @@ function() {
  */
 ZmMailListView.prototype._getItemToSelect =
 function() {
-	var item = this._itemToSelect || this._list.get(0);
+	var item = this._itemToSelect || (this._list && this._list.get(0));
 	if (item == ZmMailListView.FIRST_ITEM) {
 		var list = this.getList(true).getArray();
 		item = list && list[0];
