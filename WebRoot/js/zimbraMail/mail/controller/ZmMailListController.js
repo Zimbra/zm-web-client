@@ -332,22 +332,45 @@ function(actionCode) {
 						}
 					}
 					if (unreadItem) {
-						lv._unmarkKbAnchorElement(true);
-						lv.setSelection(unreadItem);
-						var el = lv._getElFromItem(unreadItem);
-						if (el) {
-							lv._scrollList(el);
-						}
+						this._selectItem(lv, unreadItem);
 					}
 				}
 			}
 			this.lastListAction = actionCode;
 			break;
 
+		case ZmKeyMap.FIRST_UNREAD:
+		case ZmKeyMap.LAST_UNREAD:
+			var list = lv.getList(true).getArray();
+			var index = (actionCode == ZmKeyMap.FIRST_UNREAD) ? 0 : list.length - 1;
+			var unreadItem = null;
+			while ((index >= 0 && index < list.length) && !unreadItem) {
+				var item = list[index];
+				if (item.isUnread) {
+					unreadItem = item;
+				} else {
+					index = (actionCode == ZmKeyMap.FIRST_UNREAD) ? index + 1 : index - 1;
+				}
+			}
+			if (unreadItem) {
+				this._selectItem(lv, unreadItem);
+			}
+			break;
+	
 		default:
 			return ZmListController.prototype.handleKeyAction.call(this, actionCode);
 	}
 	return true;
+};
+
+ZmMailListController.prototype._selectItem =
+function(listView, item) {
+	listView._unmarkKbAnchorElement(true);
+	listView.setSelection(item);
+	var el = listView._getElFromItem(item);
+	if (el) {
+		listView._scrollList(el);
+	}
 };
 
 ZmMailListController.prototype.mapSupported =
