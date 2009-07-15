@@ -323,7 +323,9 @@ function() {
 	});
 
 	// Yuck: Should add functionality in Pref. to add prefix/postfix to all options. Meanwhile...
-	var fontSizeOptions = ["8"+ZmMsg.pt, "10"+ZmMsg.pt, "12"+ZmMsg.pt, "14"+ZmMsg.pt, "18"+ZmMsg.pt, "24"+ZmMsg.pt, "36"+ZmMsg.pt];
+	var fontSizeOptions = [AjxMessageFormat.format(ZmMsg.pt,"8"), AjxMessageFormat.format(ZmMsg.pt,"10"),
+        AjxMessageFormat.format(ZmMsg.pt,"12"), AjxMessageFormat.format(ZmMsg.pt,"14"), AjxMessageFormat.format(ZmMsg.pt,"18"),
+        AjxMessageFormat.format(ZmMsg.pt,"24"), AjxMessageFormat.format(ZmMsg.pt,"36")];
     //Server values are stored with 'pt' to work irrespective of locale, while display options are as per the respective locale 
     var fontSizeValueOptions = ["8pt", "10pt", "12pt", "14pt", "18pt", "24pt", "36pt"];
 	ZmPref.registerPref("COMPOSE_INIT_FONT_SIZE", {
