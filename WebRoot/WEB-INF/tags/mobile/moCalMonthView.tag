@@ -67,15 +67,9 @@
                         <tr>
                             <mo:calendarUrl view="month" var="prevUrl" rawdate="${prevDate}" timezone="${timezone}"/>
                             <mo:calendarUrl view="month" var="nextUrl" rawdate="${nextDate}" timezone="${timezone}"/>
-                            <td width="1%" class='zo_cal_mpage'>
-                                        <a class="cal_prev" href="${fn:escapeXml(prevUrl)}">&nbsp;<%--<mo:img src="arrows/ImgPreviousPage.gif" alt="«"/>--%></a>
-                            </td>
-                                    <td nowrap="nowrap" class='zo_cal_mpage${(date.timeInMillis eq today.timeInMillis) ? '':''}'>
-                                    ${fn:escapeXml(title)}
-                            </td>
-                            <td width="1%" class='zo_cal_mpage'>
-                                <a class="cal_next" href="${fn:escapeXml(nextUrl)}">&nbsp;<%--<mo:img src="arrows/ImgNextPage.gif" alt="»"/>--%></a>
-                            </td>
+                            <td width="1%" class='zo_cal_mpage'><a class="cal_prev" href="${fn:escapeXml(prevUrl)}">&nbsp;</a></td>
+                            <td nowrap="nowrap" class='zo_cal_mpage${(date.timeInMillis eq today.timeInMillis) ? '':''}'>${fn:escapeXml(title)}</td>
+                            <td width="1%" class='zo_cal_mpage'><a class="cal_next" href="${fn:escapeXml(nextUrl)}">&nbsp;</a></td>
                         </tr>
                     </table>
                 </td>
@@ -84,9 +78,7 @@
                 <c:forEach var="day"
                            begin="${mailbox.prefs.calendarFirstDayOfWeek}"
                            end="${mailbox.prefs.calendarFirstDayOfWeek+6}">
-                    <td width="14%" class='zo_cal_mdow'>
-                            ${weekDays[(day mod 7)+1]}
-                    </td>
+                    <td width="14%" class='zo_cal_mdow'>${weekDays[(day mod 7)+1]}</td>
                 </c:forEach>
             </tr>
         </table>
@@ -109,12 +101,8 @@
                             <c:set var="curId" value="${datef}" scope="request"/>
                         </c:if>
                         <mo:calendarUrl var="dayUrl" view="day" date="${datef}"/>
-                        <td id="cell${datef}" class='zo_cal_mday${sel && !zm:isSameDate(today, currentDay) ? '_select' :''}${zm:isSameDate(today, currentDay) ? ' zo_cal_mday_today' : ''}' onclick="return selectDay('${datef}')">
-                            <c:if test="${hasappt}"><a id='day${datef}' href="${dayUrl}" onclick="return selectDay('${datef}')"></c:if>
-                            <fmt:formatDate var="dayTitle" value="${currentDay.time}" pattern="${dayFormat}" timeZone="${timezone}"/>
-                            <span onclick="return zClickLink('day${datef}');" class='zo_cal_mday_text${O}${hasappt ? ' zo_cal_mday_appt':''}'>${fn:escapeXml(dayTitle)}</span>
-                            <c:if test="${hasappt}"></a></c:if>
-                        </td>
+                        <fmt:formatDate var="dayTitle" value="${currentDay.time}" pattern="${dayFormat}" timeZone="${timezone}"/>
+                        <td id="cell${datef}" class='zo_cal_mday${sel && !zm:isSameDate(today, currentDay) ? '_select' :''}${zm:isSameDate(today, currentDay) ? ' zo_cal_mday_today' : ''}' onclick="return selectDay('${datef}')"><c:if test="${hasappt}"><a id='day${datef}' href="${dayUrl}" onclick="return selectDay('${datef}')"></c:if><span onclick="return zClickLink('day${datef}');" class='zo_cal_mday_text${O}${hasappt ? ' zo_cal_mday_appt':''}'>${fn:escapeXml(dayTitle)}</span><c:if test="${hasappt}"></a></c:if></td>
                         ${zm:getNextDay(currentDay)}
                     </c:forEach>
                 </tr>
@@ -125,17 +113,14 @@
 </tr>
 
 <tr>
-    <td>
-        <c:forEach var="week" begin="1" end="6">
+    <td><c:forEach var="week" begin="1" end="6">
             <c:forEach var="dow" begin="1" end="7" varStatus="dowStatus">
                 <c:set var="dayStart" value="${currentDay2.timeInMillis}"/>
                 <c:set var="dayEnd" value="${zm:addDay(currentDay2, 1).timeInMillis}"/>
                 <c:set var="count" value="${0}"/>
+                <fmt:formatDate var="datef" timeZone="${timezone}" value="${currentDay2.time}" pattern="yyyyMMdd"/>
                 <zm:forEachAppoinment var="appt" appointments="${appts}" start="${dayStart}" end="${dayEnd}">
-                    <c:if test="${count eq 0}">
-                            <fmt:formatDate var="datef" timeZone="${timezone}" value="${currentDay2.time}" pattern="yyyyMMdd"/>
-                            <div class='zo_cal_mlist' id="list${datef}" <c:if test="${datef eq curId}"> style='display:block'</c:if>>
-                    </c:if>
+                    <c:if test="${count eq 0}"><div class='zo_cal_mlist' id="list${datef}" <c:if test="${datef eq curId}"> style='display:block'</c:if>></c:if>
                     <mo:calendarUrl appt="${appt}" var="apptUrl" view="month"/>
                             <div class="zo_cal_listi" onclick='return zClickLink("appt${appt.id}")'>
                             <span class='zo_cal_listi_time'>
@@ -156,13 +141,9 @@
                             </div>
                     <c:set var="count" value="${count+1}"/>
                 </zm:forEachAppoinment>
-                <c:if test="${count gt 0}">
-                    </div>
-                </c:if>
-                ${zm:getNextDay(currentDay2)}
+                <c:if test="${count gt 0}"></div></c:if>${zm:getNextDay(currentDay2)}
             </c:forEach>
         </c:forEach>
-
         <div class='zo_cal_mlist' id="listempty" <c:if test="${not currentHasAppt}">style='display:block'</c:if>>
             <table width="100%" cellpadding="0" cellspacing="0" class='zo_cal_list'>
                     <tr><td colspan="2" class="zo_cal_listi_subject">&nbsp;</td></tr>
@@ -180,7 +161,7 @@
 </tr>
 <tr>
     <td>
-        <mo:calendarViewToolbar urlTarget="${urlTarget}" date="${date}" view="month" openurl="false" timezone="${timezone}" isTop="${fa}"/>
+        <mo:calendarViewToolbar urlTarget="${urlTarget}" date="${date}" view="month" openurl="false" timezone="${timezone}" isTop="${false}"/>
     </td>
 </tr>
 </table>

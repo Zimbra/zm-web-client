@@ -38,6 +38,7 @@
     <input type="hidden" name="doContactAction" value="1"/>
     <input name="moreActions" type="hidden" value="<fmt:message key="actionGo"/>"/>
     <mo:toolbar context="${context}" urlTarget="${context_url}" isTop="true" mailbox="${mailbox}"/>
+    <div class="tbl dlist">
     <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
         <c:set var="chit" value="${hit.contactHit}"/>
         <zm:currentResultUrl var="contactUrl" value="${context_url}" action="view" id="${chit.id}"
@@ -47,18 +48,17 @@
                 <c:param name="email" value="${chit.email}"/>
             </c:url>
         </c:if>
-        <div class="list-row row" id="cn${chit.id}">
+        <div class="tr list-row" id="cn${chit.id}">
             <c:set value=",${hit.id}," var="stringToCheck"/>
             <c:set var="class" value="Contact${chit.isGroup ? 'Group' : ''}"/>
-            <span class="cell f">
+            <span class="td f">
                     <c:if test="${!context.isGALSearch}">
                     <input class="chk" type="checkbox" ${requestScope.select ne 'none' && (fn:contains(requestScope._selectedIds,stringToCheck) || requestScope.select eq 'all') ? 'checked="checked"' : ''}
                            name="id" value="${chit.id}"/></c:if>
             <span class="SmlIcnHldr ${class}">&nbsp;</span>
             </span>
-            <span class="cell m" onclick='return zClickLink("a${chit.id}")'>
-            <a id="a${chit.id}"
-                                           href="${contactUrl}">
+            <span class="td m" onclick='return zClickLink("a${chit.id}");'>
+            <a id="a${chit.id}" href="${contactUrl}">
                 <div>
                     <strong>${zm:truncate(fn:escapeXml(empty chit.fileAsStr ? (context.isGALSearch ? chit.fullName : '<None>') : chit.fileAsStr),23, true)}</strong>
                 </div>
@@ -69,17 +69,17 @@
                     <a href="${fn:escapeXml(murl)}">${fn:escapeXml(chit.email)}</a>
                 </div>
             </span>
-            <span class="cell l">
+            <span class="td l">
                 <c:if test="${chit.isFlagged}">
                     <span class="SmlIcnHldr Flag">&nbsp;</span>
                 </c:if>
                 <c:if test="${chit.hasTags}">
-                    <mo:miniTagImage
-                                           ids="${chit.tagIds}"/>
+                    <mo:miniTagImage ids="${chit.tagIds}"/>
                 </c:if>
             </span>
         </div>
     </c:forEach>
+    </div>        
     <c:if test="${empty context || empty context.searchResult or context.searchResult.size eq 0}">
         <div class='tbl'>
                 <div class="tr">

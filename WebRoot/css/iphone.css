@@ -31,10 +31,13 @@ a {
 .label {
     color: gray;
 }
-.list-row, .list-row-unread {
+.dlist .list-row .td, .dlist .list-row-unread .td{
     border-bottom: 1px solid #DDD;
+}
+.list-row, .list-row-unread{
     padding: 3px;
     background: #fafafa;
+    border-bottom: 1px solid #DDD;
 }
 .list-row-unread {
     font-weight: bold;
@@ -228,11 +231,12 @@ form {
 .StatusCritical {
     background-color: red !important;
 }
+.sih{width:99%;}
 .searchInput {
     height:21px;
     vertical-align:middle;
-    width:100%;
-    max-width:250px;
+    width:99%;
+    max-width:99%;
     font-size:medium;
 }
 .cmp_container .td, .cmp_appt_container .td {
@@ -266,7 +270,7 @@ form {
     background-position: 0px -129px;
     background-repeat:repeat-x;
     -webkit-border-radius: 5px;
-    padding:0px !important;
+    padding:0px 3px !important;
     height:30px;
 }
 .cLeft{
@@ -524,6 +528,7 @@ select {
 .cont_view .td {
     text-align: left;
 }
+.fw{width:100%;}
 #userinfo a{
     font-size:medium;
 }
@@ -532,6 +537,7 @@ select {
     padding: 4px;
     font-size: small;
     height: 30px;
+    width:100%;
     border-bottom: 1px solid #DDD;
 }
 #userinfo .logout-span {
@@ -573,16 +579,6 @@ select {
     margin: 0px;
     font-size: 15px;
 }
-span.cell {
-    display: table-cell;
-    vertical-align: middle;
-    padding: 2px;
-    border-collapse: collapse;
-    text-align: left;
-}
-span.l, span.m {
-    vertical-align: top;
-}
 .from-span, .sub-span {
     overflow: hidden;
     text-overflow: ellipsis;
@@ -593,24 +589,31 @@ h1, h2, h3, h4, h5, h6 {
     font-size: 100%;
     font-weight: normal;
 }
-span.f {
+.dlist .td{
+    padding:4px;
+}
+.f {
     max-width: 40px;
     width: 40px;
     white-space: nowrap;
     padding-left: 10px;
     min-width:40px;
 }
-span.m {
-    width:95%;
-    max-width:180px;
-    overflow:hidden;
-    text-overflow:ellipsis;
+.l, .m {
+    vertical-align: top;
+    text-align:left;
 }
-div.row span.l {
+.l {
     width: 60px;
     min-width: 60px;
     text-align: right;
     overflow:visible;
+}
+.m {
+    width:95%;
+    max-width:180px;
+    overflow:hidden;
+    text-overflow:ellipsis;
 }
 .msg-list-in-conv {
     padding: 2%;

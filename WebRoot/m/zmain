@@ -6,8 +6,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
-<c:if test="${empty param.ajax}">
-<?xml version="1.0" encoding="UTF-8"?>
+<c:if test="${empty param.ajax}"><?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <c:remove var="prevUrl" scope="session"/>
@@ -104,283 +103,147 @@
 <c:set var="prev_accesskey" value="7" scope="request"/>
 <c:set var="next_accesskey" value="8" scope="request"/>
 <c:set var="mainaction_accesskey" value="0" scope="request"/>
-<c:if test="${empty param.ajax}">
-<head>
+<c:if test="${empty param.ajax}"><head>
 <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black" />    
-<title>
-    <fmt:message key="zimbraTitle"/>
-</title>
+<title><fmt:message key="zimbraTitle"/></title>
 <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0;"/>
-<c:if test="${empty param.djs}">
-<script type="text/javascript">
-window.currentUrl='${pageContext.request.requestURL}?ajax=true&${pageContext.request.queryString}';<c:import url="/m/mojs${(!empty param.debug || !empty param.dev) ? '?dev=1':''}"/>
-</script>
-</c:if>    
+<c:if test="${empty param.djs}"><script type="text/javascript">window.currentUrl='${pageContext.request.requestURL}?ajax=true&${pageContext.request.queryString}';<c:import url="/m/mojs${(!empty param.debug || !empty param.dev) ? '?dev=1':''}"/></script></c:if>    
 <c:set var="calcss" value=",${sessionScope.zms}-cal"/>
 <link href="<c:url value='/css/${sessionScope.zms}${calcss}.css'/>" type="text/css" rel="stylesheet"/>
 </head>
 <body onorientationchange="updateOrientation()">
-<div class="container tbl" id="appbar" align="center">
+<div class="container tbl" id="appbar" align="center"><c:set var="appcount" value="1"/>
+    <c:if test="${mailbox.features.mail}"><c:set var="appcount" value="${appcount+1}"/></c:if>
+    <c:if test="${mailbox.features.contacts}"><c:set var="appcount" value="${appcount+1}"/></c:if>
+    <c:if test="${mailbox.features.calendar}"><c:set var="appcount" value="${appcount+1}"/></c:if>
+    <c:if test="${mailbox.features.briefcases || mailbox.features.notebook}"><c:set var="appcount" value="${appcount+1}"/></c:if>
+    <c:set var="active" value="${empty param.st || param.st eq 'message' || param.st eq 'conversation' || param.st eq 'folders' ? '-active' : ''}"/>
     <div class="tr">
-            <%-- <div class="td">--%> <c:set var="appcount" value="1"/> <c:if
-            test="${mailbox.features.mail}"> <c:set var="appcount" value="${appcount+1}"/> </c:if> <c:if
-            test="${mailbox.features.contacts}"> <c:set var="appcount" value="${appcount+1}"/> </c:if>
-            <c:if test="${mailbox.features.calendar}"> <c:set var="appcount" value="${appcount+1}"/></c:if>
-            <c:if test="${mailbox.features.briefcases || mailbox.features.notebook}"> <c:set var="appcount" value="${appcount+1}"/></c:if>
-            <%--c:if test="${mailbox.features.tasks}"> <c:set var="appcount" value="${appcount+1}"/></c:if--%>
-            <c:set
-            var="active"
-            value="${empty param.st || param.st eq 'message' || param.st eq 'conversation' || param.st eq 'folders' ? '-active' : ''}"/> <a
-            style='width: ${95/appcount}%;'  accesskey="${requestScope.mailapp_accesskey}"
-            id="mail" class="mail${active} appTab${active} td" href="${aurl}?st=${mailbox.prefs.groupMailBy}"><span
-            onclick="return zClickLink('mail')" class="nstd"><fmt:message
-            key="mail"/></span><span onclick="return zClickLink('mail')" style="display:none;"
-                                     class="apunread nstd">${mailbox.inbox.unreadCount > 0 ? mailbox.inbox.unreadCount : ''}</span> </a> <c:if
-            test="${mailbox.features.contacts}"> <c:set var="active"
-                                                        value="${param.st eq 'contact' || param.st eq 'ab' ? '-active' : ''}"/>
-        <a style='width: ${95/appcount}%;'  accesskey="${requestScope.contactapp_accesskey}"
-           id="contact" class="contact${active} appTab${active} td" href="${aurl}?st=contact"><span
-                onclick="return zClickLink('contact')" class="nstd"><fmt:message key="contacts"/></span></a>
-            </c:if>
-        <c:if test="${mailbox.features.calendar}">
-        <c:set var="active" value="${param.st eq 'cal' || param.st eq 'cals' ? '-active' : ''}"/>
-        <a style='width: ${95/appcount}%;'  accesskey="${requestScope.calapp_accesskey}"
-           id="cal" class="cal${active} appTab${active} td" href="${aurl}?st=cal"><span class="nstd"
-                onclick="return zClickLink('cal')"><fmt:message
-                key="calendar"/></span>
+        <a style='width: ${95/appcount}%;'  accesskey="${requestScope.mailapp_accesskey}" id="mail" class="mail${active} appTab${active} td" href="${aurl}?st=${mailbox.prefs.groupMailBy}">
+            <span onclick="return zClickLink('mail')" class="nstd"><fmt:message key="mail"/></span>
+            <span onclick="return zClickLink('mail')" style="display:none;" class="apunread nstd">${mailbox.inbox.unreadCount > 0 ? mailbox.inbox.unreadCount : ''}</span>
+        </a><c:if test="${mailbox.features.contacts}"><c:set var="active" value="${param.st eq 'contact' || param.st eq 'ab' ? '-active' : ''}"/>
+        <a style='width: ${95/appcount}%;'  accesskey="${requestScope.contactapp_accesskey}" id="contact" class="contact${active} appTab${active} td" href="${aurl}?st=contact">
+            <span onclick="return zClickLink('contact')" class="nstd"><fmt:message key="contacts"/></span>
+        </a></c:if><c:if test="${mailbox.features.calendar}"><c:set var="active" value="${param.st eq 'cal' || param.st eq 'cals' ? '-active' : ''}"/>
+        <a style='width: ${95/appcount}%;'  accesskey="${requestScope.calapp_accesskey}" id="cal" class="cal${active} appTab${active} td" href="${aurl}?st=cal">
+            <span class="nstd" onclick="return zClickLink('cal')"><fmt:message key="calendar"/></span><fmt:formatDate value="${zm:getToday(mailbox.prefs.timeZone).time}" timeZone="${mailbox.prefs.timeZone}" pattern="EEE|d|MMM" var="today"/><c:set var="darr" value="${fn:split(today,'|')}"/>
             <span onclick="return zClickLink('cal')" style="display:none;" class="aptoday nstd">
-            <fmt:formatDate value="${zm:getToday(mailbox.prefs.timeZone).time}" timeZone="${mailbox.prefs.timeZone}"
-                            pattern="EEE|d|MMM" var="today"/>
-            <c:set var="darr" value="${fn:split(today,'|')}"/>
-            <div class="_day">${darr[0]}</div>
-            <div class="_date">${darr[1]}</div>
-            <div class="_month">${darr[2]}</div>
-            </span></a>
-         </c:if>
-         <c:if test="${mailbox.features.briefcases || mailbox.features.notebook}">
-            <c:if test="${not empty param.l_view}">
-                <c:set var="l_view" value="${fn:escapeXml(param.l_view)}" scope="session"/>
-            </c:if>
-            <c:if test="${empty sessionScope.l_view}">
-            <c:set var="l_view" value="list" scope="session"/>
-            </c:if>
-        <c:set var="active" value="${param.st eq 'tasks' || param.st eq 'task'|| param.st eq 'briefcase' || param.st eq 'wiki' || param.st eq 'briefcases' || param.st eq 'notebooks' ? '-active' : ''}"/>
-        <a style='width: ${98/appcount}%;'  accesskey="${requestScope.fldrapp_accesskey}"
-           id="docs" class="folders${active} docs${active} appTab${active} td" href="${aurl}?st=${mailbox.features.briefcases ? 'briefcases' : 'notebooks'}"><span class="nstd"
-                onclick="return zClickLink('docs')"><fmt:message
-                key="folders"/></span></a>
-        </c:if>
+                <div class="_day">${darr[0]}</div><div class="_date">${darr[1]}</div><div class="_month">${darr[2]}</div>
+            </span>
+        </a></c:if><c:if test="${mailbox.features.briefcases || mailbox.features.notebook}">
+            <c:if test="${not empty param.l_view}"><c:set var="l_view" value="${fn:escapeXml(param.l_view)}" scope="session"/></c:if>
+            <c:if test="${empty sessionScope.l_view}"><c:set var="l_view" value="list" scope="session"/></c:if>
+            <c:set var="active" value="${param.st eq 'tasks' || param.st eq 'task'|| param.st eq 'briefcase' || param.st eq 'wiki' || param.st eq 'briefcases' || param.st eq 'notebooks' ? '-active' : ''}"/>
+        <a style='width: ${98/appcount}%;'  accesskey="${requestScope.fldrapp_accesskey}" id="docs" class="folders${active} docs${active} appTab${active} td" href="${aurl}?st=${mailbox.features.briefcases ? 'briefcases' : 'notebooks'}">
+            <span class="nstd" onclick="return zClickLink('docs')"><fmt:message key="folders"/></span>
+        </a></c:if>
         <c:set var="active" value="${param.search eq '1' ? '' : ''}"/>
-        <a style='width: ${95/appcount}%;'  accesskey="${requestScope.search_accesskey}"
-           id="search" class="search${active} appTab${active} td"
-           href="${aurl}?search=${param.search eq '1' ? '0' : '1'}&amp;${fn:replace(pageContext.request.queryString,'search=1&amp;','')}"
-           onclick='return toggleElem("searchbar",this);'><span class="nstd"><fmt:message key="search"/></span></a>
+        <a style='width: ${95/appcount}%;'  accesskey="${requestScope.search_accesskey}" id="search" class="search${active} appTab${active} td" href="${aurl}?search=${param.search eq '1' ? '0' : '1'}&amp;${fn:replace(pageContext.request.queryString,'search=1&amp;','')}" onclick='return toggleElem("searchbar",this);'>
+            <span class="nstd"><fmt:message key="search"/></span>
+        </a>
     </div>
 </div>
-
-<div style="display:none;position:absolute;" class="container loadingIcon" id="curDiv"></div>
-<div class="loadingDiv hidden" id="loadingDiv" onclick="function(){return requestTimeout(false,'Aborted by user.');}"></div>    
-</c:if>
-<div class="container" id="maincontainer">
-<div id="card">
-<div class="front face cShow" id="front">
-    <div class="container tbl" id="msgDiv" onclick="return toggleElem(this);">
-        <c:choose> <c:when test="${not empty param.appmsg}">
-            <c:set var="statusMessage" value="${fn:escapeXml(param.appmsg)}"/>
+<div class="loadingDiv hidden" id="loadingDiv" onclick="function(){return requestTimeout(false,'Aborted by user.');}"></div></c:if>
+<div class="container" id="maincontainer"><div id="card"><div class="front face cShow" id="front">
+    <c:choose><c:when test="${not empty param.appmsg}"><c:set var="statusMessage" value="${fn:escapeXml(param.appmsg)}"/>
             <c:set var="statusClass" value="Info"/>
-            <div id='statusdiv' class="tbl StatusInfo">
-                <span  class='td aleft'><fmt:message key="${fn:escapeXml(param.appmsg)}"/></span>
-                <span class='SmlIcnHldr aright right Cancel'></span>
-            </div>
-        </c:when> <c:when test="${not empty requestScope.statusMessage}">
+            <div class="container tbl" id="msgDiv" onclick="return toggleElem(this);"><div id='statusdiv' class="tbl StatusInfo"><span  class='td aleft'><fmt:message key="${fn:escapeXml(param.appmsg)}"/></span><span class='SmlIcnHldr aright right Cancel'></span></div></div>
+        </c:when><c:when test="${not empty requestScope.statusMessage}">
             <c:set var="statusMessage" value="${fn:escapeXml(requestScope.statusMessage)}"/>
             <c:set var="statusClass" value="${requestScope.statusClass}"/>
-                <div id='statusdiv' class="tbl ${requestScope.statusClass}">
-                    <span class="td aleft">${fn:escapeXml(requestScope.statusMessage)}</span>
-                    <span class='SmlIcnHldr aright Cancel'></span>
-                </div>
-        </c:when> </c:choose>
-    </div>
-    <script type="text/javascript">if(document.location.hash&&document.location.hash!=currHash&&typeof(getXHR)=='function'&&getXHR()){GC().style.visibility='hidden';}</script>
-    <div class="container tbl" id="searchbar" style="${param.search eq '1' ? '' : 'display:none;'}">
-        <div class="tr">
-            <form method="post" accept-charset="UTF-8" action="${context_url}" class="td"
-                  onsubmit="if(!this.sq.value){showLoadingMsg('<fmt:message key="actionNoSearchQuerySpecified"/>',true,'Warning',1000);return false;}else{return submitForm(this);}">
-                <c:if test="${not empty param.invId}"> <input type="hidden" name="invId"
-                                                              value="${zm:cook(param.invId)}"/> </c:if> <input
-                    type="hidden"
-                    name="search"
-                    value="1"/>
-                <c:set var="st" value="${fn:escapeXml(param.st)}"/>
-                <c:if test="${not empty st}">
-                    <c:choose>
-                        <c:when test="${param.st eq 'folders'}">
-                            <%--<input type="hidden" name="st" value="${mailbox.prefs.groupMailBy}"/>--%>
-                            <c:set var="st" value="${mailbox.prefs.groupMailBy}"/>
-                        </c:when>
-                         <c:when test="${param.st eq 'ab'}">
-                            <%--<input type="hidden" name="st" value="contact"/>--%>
-                             <c:set var="st" value="contact"/>
-                        </c:when>
-                        <c:when test="${param.st eq 'cals'}">
-                            <%--<input type="hidden" name="st" value="cal"/>--%>
-                             <c:set var="st" value="cal"/>
-                        </c:when>
-                        <c:when test="${param.st eq 'tasks'}">
-                            <%--<input type="hidden" name="st" value="cal"/>--%>
-                             <c:set var="st" value="task"/>
-                        </c:when>
-                        <c:when test="${param.st eq 'briefcases'}">
-                            <%--<input type="hidden" name="st" value="briefcase"/>--%>
-                            <c:set var="st" value="briefcase"/>
-                        </c:when>
-                        <c:when test="${param.st eq 'notebooks'}">
-                           <%-- <input type="hidden" name="st" value="wiki"/>--%>
-                            <c:set var="st" value="wiki"/>
-                        </c:when>
-                    </c:choose>
-                </c:if>
-                <input
-                    type="hidden" name="crumb"
-                    value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/> 
+            <div class="container tbl" id="msgDiv" onclick="return toggleElem(this);"><div id='statusdiv' class="tbl ${requestScope.statusClass}"><span class="td aleft">${fn:escapeXml(requestScope.statusMessage)}</span><span class='SmlIcnHldr aright Cancel'></span></div></div>
+        </c:when></c:choose>
+    <script type="text/javascript">if(window.location.hash&&window.location.hash!=currHash&&typeof(getXHR)=='function'&&getXHR()){GC().style.visibility='hidden';}</script>
+    <div class="container" id="searchbar" style="${param.search eq '1' ? '' : 'display:none;'}">
+        <form method="post" accept-charset="UTF-8" action="${context_url}" onsubmit="if(!this.sq.value){showLoadingMsg('<fmt:message key="actionNoSearchQuerySpecified"/>',true,'Warning',1000);return false;}else{return submitForm(this);}">
+            <c:if test="${not empty param.invId}"><input type="hidden" name="invId" value="${zm:cook(param.invId)}"/></c:if><input type="hidden" name="search" value="1"/><c:set var="st" value="${fn:escapeXml(param.st)}"/>
+            <c:choose>
+                <c:when test="${param.st eq 'folders'}">
+                    <c:set var="st" value="${mailbox.prefs.groupMailBy}"/>
+                </c:when>
+                 <c:when test="${param.st eq 'ab'}">
+                     <c:set var="st" value="contact"/>
+                </c:when>
+                <c:when test="${param.st eq 'cals'}">
+                     <c:set var="st" value="cal"/>
+                </c:when>
+                <c:when test="${param.st eq 'tasks'}">
+                     <c:set var="st" value="task"/>
+                </c:when>
+                <c:when test="${param.st eq 'briefcases'}">
+                    <c:set var="st" value="briefcase"/>
+                </c:when>
+                <c:when test="${param.st eq 'notebooks'}">
+                   <c:set var="st" value="wiki"/>
+                </c:when>
+            </c:choose><input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/> 
                 <div class="tbl">
                     <div class="tr">
-                          <span class="td aleft" style="width:96%;">
-                             <input type="text" class="searchInput" name="sq" value="${zm:cook(param.sq)}"/>
-                          </span>
-                          <span class="td aright" style="white-space:nowrap;">
-                             <input type="submit" class="searchButton zo_button" name="actionSearch"
-                       value="<fmt:message key="search"/>"/>
-                          </span>
+                          <span class="td sih aleft"><input type="text" class="searchInput" name="sq" value="${zm:cook(param.sq)}"/></span>
+                          <span class="td aright" style="white-space:nowrap;"><input type="submit" class="searchButton zo_button" name="actionSearch" value="<fmt:message key="search"/>"/></span>
                     </div>
-
                 </div>
-                <div class="tbl avs">
-                    <div class="tr">
-                          <span class="td aleft">
-                    <select name="st" style="border:1px solid gray;">
-                                <c:if test="${mailbox.features.mail}">
-                                <option value="${mailbox.prefs.groupMailBy}" ${empty st or st eq  mailbox.prefs.groupMailBy ? 'selected="selected"' : ''}><fmt:message key="mails"/></option>
-                                </c:if>
-                                <c:if test="${mailbox.features.contacts}">
-                                <option value="contact" ${st eq 'contact' ? 'selected=selected' : ''}><fmt:message key="contacts"/></option>
-                                </c:if>
-                                <c:if test="${mailbox.features.gal}">
-                                <option value="gal" ${st eq 'gal' ? 'selected=selected' : ''}><fmt:message key="GAL"/></option>
-                                </c:if>
-                                <c:if test="${mailbox.features.calendar}">
-                                <option value="cal" ${st eq 'cal' ? 'selected=selected' : ''}><fmt:message key="appointments"/></option>
-                                </c:if>
-                                <c:if test="${mailbox.features.tasks}">
-                                <option value="task" ${st eq 'task' ? 'selected=selected' : ''}><fmt:message key="tasks"/></option>
-                                </c:if>
-                                <c:if test="${mailbox.features.notebook}">
-                                <option value="wiki" ${st eq 'wiki' ? 'selected=selected' : ''}><fmt:message key="pages"/></option>
-                                </c:if>
-                                <c:if test="${mailbox.features.briefcases}">
-                                <option value="briefcase" ${st eq 'briefcase' ? 'selected=selected' : ''}><fmt:message key="files"/></option>
-                                </c:if>    
+                <div class="tbl avs"><div class="tr">
+                    <span class="td aleft">
+                        <select name="st" style="border:1px solid gray;">
+                                <c:if test="${mailbox.features.mail}"><option value="${mailbox.prefs.groupMailBy}" ${empty st or st eq  mailbox.prefs.groupMailBy ? 'selected="selected"' : ''}><fmt:message key="mails"/></option></c:if>
+                                <c:if test="${mailbox.features.contacts}"><option value="contact" ${st eq 'contact' ? 'selected=selected' : ''}><fmt:message key="contacts"/></option></c:if>
+                                <c:if test="${mailbox.features.gal}"><option value="gal" ${st eq 'gal' ? 'selected=selected' : ''}><fmt:message key="GAL"/></option></c:if>
+                                <c:if test="${mailbox.features.calendar}"><option value="cal" ${st eq 'cal' ? 'selected=selected' : ''}><fmt:message key="appointments"/></option></c:if>
+                                <c:if test="${mailbox.features.tasks}"><option value="task" ${st eq 'task' ? 'selected=selected' : ''}><fmt:message key="tasks"/></option></c:if>
+                                <c:if test="${mailbox.features.notebook}"><option value="wiki" ${st eq 'wiki' ? 'selected=selected' : ''}><fmt:message key="pages"/></option></c:if>
+                                <c:if test="${mailbox.features.briefcases}"><option value="briefcase" ${st eq 'briefcase' ? 'selected=selected' : ''}><fmt:message key="files"/></option></c:if>    
                             </select>
                      </span>
-                     <span class="td aright">
-                        <a href="${context_url}?st=query&s=${st}"><fmt:message key="advancedSearch"/> </a>
-                    </span>
-                    </div>    
-                    </div>
+                     <span class="td aright"><a href="${context_url}?st=query&s=${st}"><fmt:message key="advancedSearch"/></a></span>
+                </div></div>
             </form>
-        </div>
     </div>
-    <div class="container tbl" id="savesearchbar" style="${param.saveSearch eq '1' ? '' : 'display:none;'}">
-        <div class="tr">
-            <form method="post" accept-charset="UTF-8" action="${context_url}"
-                  onsubmit="if(!this.sname.value){showLoadingMsg('<fmt:message key="actionNoNameSpecified"/>',true,'Warning',1000);return false;}else{return submitForm(this);}">
-                <input type="hidden" name="query" value="${zm:cook(param.sq)}"/>
-                <input type="hidden" name="st" value="${empty param.st? mailbox.prefs.groupMailBy : (param.st eq 'cal' ? 'appointment' : zm:cook(param.st))}"/>
-                <input type="hidden" name="doFolderAction" value="1"/>
-                <input type="hidden" name="parentid" value="${mailbox.inbox.parentId}"/>
-                <input
-                        type="hidden" name="crumb"
-                        value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/> <%-- <span class="td" width="70%">--%>
-                <span style="white-space:nowrap;" class="label td"><fmt:message key="searchNameLabel"/></span>
-                <span class="td" style="width:40%"><input type="text" class="searchInput" name="sname" value="${zm:cook(param.sname)}"/></span>
-                <span class="td"><input type="submit" class="searchButton zo_button" name="actionSaveSearch"
-                       value="<fmt:message key="save"/>"/></span>
-            </form>
-        </div>
+    <div class="container stb tbl" id="savesearchbar" style="${param.saveSearch eq '1' ? '' : 'display:none;'}">
+        <form method="post" accept-charset="UTF-8" action="${context_url}" onsubmit="if(!this.sname.value){showLoadingMsg('<fmt:message key="actionNoNameSpecified"/>',true,'Warning',1000);return false;}else{return submitForm(this);}">
+            <input type="hidden" name="query" value="${zm:cook(param.sq)}"/><input type="hidden" name="st" value="${empty param.st? mailbox.prefs.groupMailBy : (param.st eq 'cal' ? 'appointment' : zm:cook(param.st))}"/>
+            <input type="hidden" name="doFolderAction" value="1"/>
+            <input type="hidden" name="parentid" value="${mailbox.inbox.parentId}"/>
+            <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
+            <span style="white-space:nowrap;" class="label td"><fmt:message key="searchNameLabel"/></span>
+            <span class="td" style="width:40%"><input type="text" class="searchInput" name="sname" value="${zm:cook(param.sname)}"/></span>
+            <span class="td"><input type="submit" class="searchButton zo_button" name="actionSaveSearch" value="<fmt:message key="save"/>"/></span>
+        </form>
     </div>
-    <mo:handleError>
-        <div class="container" id="body">
-            <c:import url="/m/zmview"/>
-        </div>
-    </mo:handleError>
-</div>
-</div>
-</div>
+    <mo:handleError><div class="container" id="body"><c:import url="/m/zmview"/></div></mo:handleError>
+</div></div></div>
 <script type="text/javascript"> //This code runs from the ajax response
 var nojs = false;if(window != parent){var d = document.getElementById('statusdiv');var msg = (d) ? d.innerHTML : null;if (msg != null) {parent.showLoadingMsg(null, false);if(d.className && d.className.indexOf("Status") > -1){parent.loadThisFrameResponse(self.GC().innerHTML,self.frameElement.id);nojs = true;}else{nojs = true;}}}    
 <c:if test="${not empty requestScope.title}">document.title = "<fmt:message key="zimbraTitleLabel"/>"+" "+"${fn:escapeXml(requestScope.title)}";</c:if><c:if test="${not empty requestScope.curId}">window.currentDate = '${requestScope.curId}';</c:if><c:if test="${not empty requestScope._today}">window._today = '${requestScope._today}';</c:if><c:if test="${ua.isiPhone or ua.isiPod}">
 if(dId && dV[dId]){hideDelete(dId);}</c:if>
-</script>
-<c:if test="${empty param.ajax}">
-    <div class="tbl">
-        <div class="tr">
-            <div class="container td" id="userinfo">
-                <c:url var="logoutUrl" value="${context_url}?loginOp=logout&client=mobile"/>
-            <span class="logout-span">
-            <a href="${fn:escapeXml(logoutUrl)}" id="_logout" noajax='true'> <fmt:message key="logOut"/> </a>
-            (${mailbox.accountInfo.attrs["uid"][0]})</span>
-            <span class="quota-span">
-            <fmt:message key="MO_quotaLabel"/>&nbsp;<c:set var="max" value="${mailbox.attrs.zimbraMailQuota[0]}"/>
-            <fmt:message var="unlimited" key="unlimited"/>
-            <fmt:message key="MO_quotaUsage"> <fmt:param value="${zm:displaySizeFractions(pageContext, mailbox.size,2)}"/> <fmt:param
-                    value="${max==0 ? unlimited : zm:displaySizeFractions(pageContext, max,2)}"/> </fmt:message>
-            </span>
-            </div>
+</script><c:if test="${empty param.ajax}">
+    <div class="tbl"><div class="tr">
+        <div class="container td" id="userinfo"><c:url var="logoutUrl" value="${context_url}?loginOp=logout&client=mobile"/>
+            <span class="logout-span"><a href="${fn:escapeXml(logoutUrl)}" id="_logout" noajax='true'><fmt:message key="logOut"/></a>(${mailbox.accountInfo.attrs["uid"][0]})</span>
+            <span class="quota-span"><fmt:message key="MO_quotaLabel"/>&nbsp;<c:set var="max" value="${mailbox.attrs.zimbraMailQuota[0]}"/><fmt:message var="unlimited" key="unlimited"/><fmt:message key="MO_quotaUsage"><fmt:param value="${zm:displaySizeFractions(pageContext, mailbox.size,2)}"/><fmt:param value="${max==0 ? unlimited : zm:displaySizeFractions(pageContext, max,2)}"/></fmt:message></span>
         </div>
-    </div>
-    <div class="tbl container" style="height:32px;">
-        <div class="tr">
-            <div class="td list-row">
-                <a href="?st=prefs"><fmt:message key="options"/></a>
-            </div>
-        </div>
-    </div>
-    <div class="tbl container" style="height:30px;">
-        <div class="tr">
-            <div class="td list-row">
-                <c:set var="v" value="${ua.isiPhone || ua.isiPod ? 'iphone' : ( ua.isIE ? 'wm6' : 'xlite')}"/>
+    </div></div>
+    <div class="tbl container" style="height:32px;"><div class="tr"><div class="td fw list-row"><a href="?st=prefs"><fmt:message key="options"/></a></div></div></div>
+    <div class="tbl container" style="height:30px;"><div class="tr">
+            <div class="td fw list-row"><c:set var="v" value="${ua.isiPhone || ua.isiPod ? 'iphone' : ( ua.isIE ? 'wm6' : 'xlite')}"/>
                 <fmt:message key="lowBandwidth" var="lbw"/>
                 <fmt:message key="default" var="def"/>
                 <fmt:message key="viewLabel"/>&nbsp;
-                <c:if test="${fn:endsWith(sessionScope.zms,'xlite')}">
-                    <c:set var="def" value="<a noajax='true' href='?zms=${v}&amp;limit=10'>${def}</a>"/>
-                    ${def}
-                </c:if>
-                <c:if test="${!fn:endsWith(sessionScope.zms,'xlite')}">
-                    <c:set var="lbw" value="<a noajax='true' href='?zms=xlite&amp;limit=5'>${lbw}</a>"/>
-                    ${lbw}
-                </c:if>
-                  | <a href="?st=versions"><fmt:message key="more"/>...</a>
+                <c:if test="${fn:endsWith(sessionScope.zms,'xlite')}"><c:set var="def" value="<a noajax='true' href='?zms=${v}&amp;limit=10'>${def}</a>"/>${def}</c:if>
+                <c:if test="${!fn:endsWith(sessionScope.zms,'xlite')}"><c:set var="lbw" value="<a noajax='true' href='?zms=xlite&amp;limit=5'>${lbw}</a>"/>${lbw}</c:if> | <a href="?st=versions"><fmt:message key="more"/>...</a>
             </div>
-        </div>
-    </div>
-    <div class="tbl">
-        <div class="tr">
-            <div class="container td" id="copyright_notice">
-                <a noajax='true' target="_blank" href="<fmt:message key="logoURL"/>"><fmt:message
-                        key="footerCopyright"/></a>
-            </div>
-        </div>
-    </div>
-        <c:if test="${empty param.noframe || empty param.isiniframe}">
+    </div></div>
+    <div class="tbl"><div class="tr"><div class="container td fw" id="copyright_notice">
+        <a noajax='true' target="_blank" href="<fmt:message key="logoURL"/>"><fmt:message key="footerCopyright"/></a>
+    </div></div></div><c:if test="${empty param.noframe || empty param.isiniframe}">
     <script type="text/javascript" xml:space="preserve">
     if (typeof(getXHR)=='function'&&getXHR()) {if(!nojs && (window == parent)){registerOnclickHook();
-        setInterval(function() {checkHash(document.location.href,'get');}, 350);
-        <c:if test="${param.st ne 'newmail' && param.st ne 'compose' && mailbox.features.mail && (empty param.st || param.st eq mailbox.prefs.groupMailBy)}">if(document.location.hash.indexOf('newmail') < 0 && document.location.hash.indexOf('compose') < 0 ){
+        set${ua.isIE ? 'Timeout':'Interval'}(function() {checkHash(null,'get');}, 400);
+        <c:if test="${param.st ne 'newmail' && param.st ne 'compose' && mailbox.features.mail && (empty param.st || param.st eq mailbox.prefs.groupMailBy)}">if(window.location.hash.indexOf('newmail') < 0 && window.location.hash.indexOf('compose') < 0 ){
             setTimeout(function() {ajxReq('<c:url value="/m/zmain?st=newmail"/>',null,null,'get',true);},300);}</c:if>
-    }}</script>
-        </c:if>
-</body></html> </c:if>
+    }}</script></c:if>
+</body></html></c:if>
 

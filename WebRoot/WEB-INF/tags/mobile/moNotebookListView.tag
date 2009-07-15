@@ -34,12 +34,12 @@
     <input type="hidden" name="doNotebookAction" value="1"/>
     <input name="moreActions" type="hidden" value="<fmt:message key="actionGo"/>"/>
    <mo:toolbar context="${context}" urlTarget="${context_url}" isTop="true" mailbox="${mailbox}"/>
+    <div class="tbl dlist">
     <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
         <c:set var="bchit" value="${hit.wikiHit}"/>
         <%--<zm:currentResultUrl var="contactUrl" value="${context_url}" action="view" id="${chit.id}"
                              index="${status.index}" context="${context}"/>--%>
-
-        <div class="list-row row" id="cn${bchit.id}">
+        <div class="list-row tr" id="cn${bchit.id}">
             <c:set value=",${hit.id}," var="stringToCheck"/>
             <c:choose>
                 <c:when test="${zm:contains(bchit.document.contentType,'image')}">
@@ -58,12 +58,12 @@
                     <c:set var="class" value="FileUnknownDoc.gif"/>
                 </c:otherwise>
             </c:choose>
-            <span class="cell f">
+            <span class="td f">
                     <input class="chk" type="checkbox" ${requestScope.select ne 'none' && (fn:contains(requestScope._selectedIds,stringToCheck) || requestScope.select eq 'all') ? 'checked="checked"' : ''}
                            name="id" value="${bchit.id}"/>
             <span class="SmlIcnHldr ${class}">&nbsp;</span>
             </span>
-            <span class="cell m" onclick='return zClickLink("a${bchit.id}")'>
+            <span class="td m" onclick='return zClickLink("a${bchit.id}")'>
             <a id="a${bchit.id}"
                                            href="${bchit.document.restUrl}">
                 <div>
@@ -75,7 +75,7 @@
                     by ${cname[0]} on <fmt:formatDate value="${bchit.modifiedDate}" pattern="M/d/yyyy" timeZone="${mailbox.prefs.timeZone}"/>
                 </div>
             </span>
-            <span class="cell l" onclick='return zClickLink("a${bchit.id}")'>
+            <span class="td l" onclick='return zClickLink("a${bchit.id}")'>
                 <fmt:formatDate timeZone="${mailbox.prefs.timeZone}" var="on_dt" pattern="yyyyMMdd" value="${bchit.modifiedDate}"/>
                 <a <c:if test="${mailbox.features.calendar}">href='${context_url}?st=cal&amp;view=month&amp;date=${on_dt}'</c:if>>
                     <fmt:parseDate var="mdate" value="${on_dt}" pattern="yyyyMMdd" timeZone="${mailbox.prefs.timeZone}"/>
@@ -85,6 +85,7 @@
             </span>
         </div>
     </c:forEach>
+    </div>
     <c:if test="${empty context || empty context.searchResult or context.searchResult.size eq 0}">
         <div class='tbl'>
                 <div class="tr">

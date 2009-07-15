@@ -38,6 +38,7 @@
 <input name="moreActions" type="hidden" value="<fmt:message key="actionGo"/>"/>
 <c:set var="title" value="${zm:truncate(context.shortBackTo,20,true)}" scope="request"/>    
 <mo:toolbar context="${context}" urlTarget="${context_url}" isTop="true" mailbox="${mailbox}"/>
+    <div class='tbl dlist'>
             <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
                 <c:set var="chit" value="${hit.conversationHit}"/>
                   <c:choose>
@@ -51,7 +52,7 @@
                                              index="${status.index}" context="${context}" usecache="true"/>
                     </c:otherwise>
                 </c:choose>
-                <div id="conv${chit.id}" class="row conv_lv_list_row list-row${chit.isUnread ? '-unread' : ''}">
+                <div id="conv${chit.id}" class="tr conv_lv_list_row list-row${chit.isUnread ? '-unread' : ''}">
                     <c:if test="${chit.messageCount ge 2}">
                         <c:set value="Conv" var="class"/>
                         <%--<mo:img src="startup/ImgConversationView.gif" class="left-icon"/>--%>
@@ -60,12 +61,12 @@
                         <c:set value="Msg${chit.isUnread ? '' : 'Gray'}" var="class"/> 
                         <%--<mo:img src="mail/ImgEnvelope${chit.isUnread?'':'Gray'}.gif" class="left-icon"/>--%>
                     </c:if>
-                    <span class="cell f">
+                    <span class="td f">
                         <c:set value=",${chit.id}," var="stringToCheck"/>
                         <input class="chk" type="checkbox" ${requestScope.select ne 'none' && (fn:contains(requestScope._selectedCids,stringToCheck) || requestScope.select eq 'all') ? 'checked="checked"' : ''} name="cid" value="${chit.id}"/>
                         <span class="SmlIcnHldr ${class}">&nbsp;</span>
                     </span>
-                    <span class="cell m" onclick='return zClickLink("a${chit.id}")'>
+                    <span class="td m" onclick='return zClickLink("a${chit.id}");'>
                         <div class="from-span">
                             <c:set var="dispRec" value="${chit.displayRecipients}"/>
                             <c:set var="_f" value="${empty dispRec ? unknownRecipient : dispRec}"/>
@@ -82,7 +83,7 @@
                             ${fn:escapeXml(_f)}
                         </div>
                     </span>
-                    <span class="cell l">
+                    <span class="td l">
                         <fmt:formatDate timeZone="${mailbox.prefs.timeZone}" var="on_dt" pattern="yyyyMMdd" value="${chit.date}"/>
                         <a <c:if test="${mailbox.features.calendar}">href='${context_url}?st=cal&amp;view=month&amp;date=${on_dt}'</c:if>>
                             ${fn:escapeXml(zm:displayMsgDate(pageContext, chit.date))}
@@ -102,6 +103,7 @@
                     </span>
                 </div>
             </c:forEach>
+        </div>
         <c:if test="${empty context || empty context.searchResult || context.searchResult.size == 0}">
             <div class='tbl'>
                 <div class="tr">

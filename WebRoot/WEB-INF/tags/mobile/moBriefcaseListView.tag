@@ -34,10 +34,10 @@
     <input type="hidden" name="doBriefcaseAction" value="1"/>
     <input name="moreActions" type="hidden" value="<fmt:message key="actionGo"/>"/>
    <mo:briefcaseToolbar context="${context}" urlTarget="${context_url}" isTop="true" mailbox="${mailbox}"/>
-    <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
+   <div class="tbl dlist">
+   <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
         <c:set var="bchit" value="${hit.briefcaseHit}"/>
-        
-        <div class="list-row row" id="cn${bchit.id}">
+        <div class="list-row tr" id="cn${bchit.id}">
             <c:set value=",${hit.id}," var="stringToCheck"/>
             <c:set var="ctype" value="${fn:split(bchit.document.contentType,';')}" />
             <c:choose>
@@ -118,12 +118,11 @@
 
     </c:otherwise>
 </c:choose>
-            <span class="cell f">
-                    <input class="chk" type="checkbox" ${requestScope.select ne 'none' && (fn:contains(requestScope._selectedIds,stringToCheck) || requestScope.select eq 'all') ? 'checked="checked"' : ''}
-                           name="id" value="${bchit.id}"/>
-            <span class="SmlDocIcnHldr ${mimeImg}">&nbsp;</span>
+            <span class="td f">
+                <input class="chk" type="checkbox" ${requestScope.select ne 'none' && (fn:contains(requestScope._selectedIds,stringToCheck) || requestScope.select eq 'all') ? 'checked="checked"' : ''} name="id" value="${bchit.id}"/>
+                <span class="SmlDocIcnHldr ${mimeImg}">&nbsp;</span>
             </span>
-            <span class="cell m" onclick='return zClickLink("a${bchit.id}")'>
+            <span class="td m" onclick='return zClickLink("a${bchit.id}")'>
                 <c:set var="briefUrl" value="/service/home/~/?id=${bchit.id}&auth=co"/>
                 <a id="a${bchit.id}" href="${briefUrl}" target="_blank">
                 <div>
@@ -146,7 +145,7 @@
                 </div>
                 </a>
             </span>
-            <span class="cell l" onclick='return zClickLink("a${bchit.id}")'>
+            <span class="td l" onclick='return zClickLink("a${bchit.id}")'>
                 <fmt:formatDate timeZone="${mailbox.prefs.timeZone}" var="on_dt" pattern="yyyyMMdd" value="${bchit.createdDate}"/>
                 <a <c:if test="${mailbox.features.calendar}">href='${context_url}?st=cal&amp;view=month&amp;date=${on_dt}'</c:if>>
                     <fmt:parseDate var="mdate" value="${on_dt}" pattern="yyyyMMdd" timeZone="${mailbox.prefs.timeZone}"/>
@@ -155,21 +154,15 @@
                 <span class='small-gray-text'>(${fn:escapeXml(zm:displaySize(pageContext, bchit.document.size))})</span>
                 <c:if test="${!empty bchit.document.tagIds}">
                 <div>
-                <mo:miniTagImage
-                                ids="${bchit.document.tagIds}"/>
+                <mo:miniTagImage ids="${bchit.document.tagIds}"/>
                 </div>
                 </c:if>
             </span>
         </div>
     </c:forEach>
+   </div>
     <c:if test="${empty param.supressNoRes && (empty context || empty context.searchResult or context.searchResult.size eq 0)}">
-        <div class='tbl'>
-                <div class="tr">
-                    <div class="td zo_noresults">
-                        <fmt:message key="noResultsFound"/>
-                     </div>
-                </div>
-            </div>
+        <div class='tbl'><div class="tr"><div class="td zo_noresults"><fmt:message key="noResultsFound"/></div></div></div>
     </c:if>
     <mo:briefcaseToolbar context="${context}" urlTarget="${context_url}" isTop="false" mailbox="${mailbox}"/>
 </form>

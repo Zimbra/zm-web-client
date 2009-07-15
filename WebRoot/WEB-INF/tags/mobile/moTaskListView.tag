@@ -34,17 +34,18 @@
     <input type="hidden" name="doTaskAction" value="1"/>
     <input name="moreActions" type="hidden" value="<fmt:message key="actionGo"/>"/>
    <mo:taskToolbar context="${context}" urlTarget="${context_url}" isTop="true" mailbox="${mailbox}"/>
+   <div class="tbl dlist">
    <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
         <c:set var="taskHit" value="${hit.taskHit}"/>
-        <div class="list-row${taskHit.percentComplete eq '100' ? '' : '-unread'} row" id="cn${taskHit.id}">
+        <div class="list-row${taskHit.percentComplete eq '100' ? '' : '-unread'} tr" id="cn${taskHit.id}">
             <c:set value=",${hit.id}," var="stringToCheck"/>
             <c:set var="taskUrl" value="${context_url}?st=newtask&action=edit&id=${taskHit.inviteId}"/>
-            <span class="cell f">
+            <span class="td f">
                     <input class="chk" type="checkbox" ${requestScope.select ne 'none' && (fn:contains(requestScope._selectedIds,stringToCheck) || requestScope.select eq 'all') ? 'checked="checked"' : ''}
                            name="id" value="${taskHit.id}"/>
             <span class="SmlIcnHldr Task">&nbsp;</span>
             </span>
-            <span class="cell m" onclick='return zClickLink("a${taskHit.id}")' style="${taskHit.percentComplete eq '100' ? 'text-decoration:line-through;' : ''}">
+            <span class="td m" onclick='return zClickLink("a${taskHit.id}")' style="${taskHit.percentComplete eq '100' ? 'text-decoration:line-through;' : ''}">
                 <a id="a${taskHit.id}" href="${taskUrl}">
                 <div>
                     <strong><c:out escapeXml="true" value="${zm:truncate(taskHit.subject,100,true)}"/></strong>
@@ -62,7 +63,7 @@
                 </div>
                 </a>
             </span>
-            <span class="cell l" onclick='return zClickLink("a${taskHit.id}")'>
+            <span class="td l" onclick='return zClickLink("a${taskHit.id}")'>
                 <fmt:formatDate timeZone="${mailbox.prefs.timeZone}" var="on_dt" pattern="yyyyMMdd" value="${taskHit.dueDate}"/>
                 <a <c:if test="${mailbox.features.calendar}">href='${context_url}?st=cal&amp;view=month&amp;date=${on_dt}'</c:if>>
                     <fmt:parseDate var="mdate" value="${on_dt}" pattern="yyyyMMdd" timeZone="${mailbox.prefs.timeZone}"/>
@@ -78,6 +79,7 @@
             </span>
         </div>
     </c:forEach>
+    </div>       
    <c:if test="${empty context || empty context.searchResult or context.searchResult.size eq 0}">
         <div class='tbl'>
                 <div class="tr">

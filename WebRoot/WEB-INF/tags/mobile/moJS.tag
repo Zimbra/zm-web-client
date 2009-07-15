@@ -88,13 +88,13 @@ var AjxCache = function(expiry){
 </c:choose>
 var currHash = defHash;
 var checkHash = function(url,method, force){
-    if(!url) return false;
+    var hash = null;
+    if(!url) {url=window.location.href;hash=window.location.hash;}
     if(url.match(/st=[a-zA-Z0-9]+/)){
         window.location = convertToHashUrl(url);
         return;
     }
-
-    var hash = $iO(url,'#') > 0 ?  url.substring($iO(url,'#')) : false;
+    hash = hash || $iO(url,'#') > 0 ?  url.substring($iO(url,'#')) : false;
     if(hash && ((currHash != hash  /*&& hash != defHash*/) || force)){
             currHash = hash;
             if(!currHash || hash == '#'){
@@ -107,16 +107,114 @@ var checkHash = function(url,method, force){
                 delete splits[0];
                 var params = splits.join('&');
                 var query = "st=" + app + params;
-                //setTimeout(function(){
-                    document.location.hash = currHash;   //!FIXME iphone address bar remains open and always shows loading....
-                //},200);
-
+                window.location.hash = currHash;   //!FIXME iphone address bar remains open and always shows loading....
             }
             url = '<c:url value='/m/zmain'/>?' + query;
             fetchIt(url,GC(),method);
 	}
 };
+var sAC = function(inp,id,v,c,si){
+  var e = $(id);
+  if(trim(e.value) != ''){
+    var iv = trim(e.value).substring(0,si);
+    e.value = iv+trim(e.value).substring(si).replace(inp,unescape(v).replace(/&lt;/g, "<").replace(/&gt;/g, ">")+",").replace(/,+/ig,",");
+  }
+  $(c).style.display = 'none';
+  e.focus();  
+  return false;  
+};
+var kU = function(e,f,c){
+    if (!e) e = event ? event : window.event;
+    if (!f && e.srcElement) f = e.srcElement;
+    var k = e.keyCode?  e.keyCode : e.which;
+    if(f.value == null || trim(f.value)  == ''){c.style.display="none";return false;}
+    var val = trim(f.value).substring(trim(f.value).lastIndexOf(",")+1);
+    var si = 0;
+    if(f.selectionStart){
+       val = trim(f.value).substring(0,f.selectionStart);
+       si = val.lastIndexOf(",")+1;
+       val  = val.substring(si);
+    }else{
+       val = trim(f.value).substring(0); 
+       si = val.lastIndexOf(",")+1;
+       val  = val.substring(si); 
+    }
+    if(val==null || val  == ''){c.style.display="none";return false;}
+    if(val==null || val  == ''){c.style.display="none";return false;}
+    if(typeof(window.ktmId) != 'undefined' && window.ktmId != -1){
+        clearTimeout(ktmId);
+    }
+    if(k == 27){
+      c.style.display="none";
+    }else if(k == 38 && (c.style.display == "block")){
+        $('cn_'+window.sindx).className = "";
+        window.sindx--;
+        if(window.sindx < 0){
+            window.sindx = 0;
+            c.style.display="none";stopEvent(e);return false;
+        }
+        $('cn_'+window.sindx).className = "yui-ac-highlight";
 
+    }else if(k == 40 && (c.style.display == "block")){
+        $('cn_'+window.sindx).className = "";
+        window.sindx++;
+        if(window.sindx >= ssize){
+            window.sindx = ssize-1;
+        }
+        $('cn_'+window.sindx).className = "yui-ac-highlight";
+    }else if(k == 13 && (c.style.display == "block")){
+        sAC(val,f.id,escape($('em_'+window.sindx).innerHTML),c.id,si);
+        c.style.display="none";stopEvent(e);
+        return false;
+    }else{
+        stopEvent(e);
+        window.ktmId = setTimeout(function(){
+            var xhr = getXHR();
+            if(xhr){
+                xhr.onreadystatechange = function() {
+                    if(xhr.readyState == 4){
+                       var r = xhr.responseText;
+                       if(r && r.indexOf("error") < 0){
+                            r = r.replace(/\{"Result":\[(.*)\]}/ig,"var acR = [$1]");
+                            r = r.replace(/\\"/ig,"'");
+                            r = r.replace(/("([a-zA-Z0-9]+)"):/ig,"$2:");
+                            eval(r);
+                            var htm = "";
+                            for(var i=0;i < acR.length;i++){
+                                var t = acR[i].type;
+                                var e = acR[i].email.replace(/[']/g,"\"").replace(/&/g, "&amp;").replace(/[<]/g, "&lt;").replace(/>/g, "&gt;");
+                                var imgsrc = t == 'gal' ? "<app:imgurl value='startup/ImgGALContact.gif' />" : t == 'group' ? "<app:imgurl value='contacts/ImgGroup.gif' />" : "<app:imgurl value='contacts/ImgContact.gif' />";
+                                htm = htm+"<li id='cn_"+i+"' onclick=\"return sAC(\'"+val+"\',\'"+f.id+"\',\'"+escape(e)+"\',\'"+c.id+"\',\'"+si+"\');\" class='"+((i==0)?'yui-ac-highlight':'')+"'><div class='tbl'><div class='tr'><span class='td left'><img src='"+imgsrc+"'></span><span class='td left'><span class='ZhACB' id='em_"+i+"'>"+e+"</span></span></div></div></li>";
+                            }
+                            if(htm.length > 0 && acR.length > 0){
+                                c.innerHTML = "<div class='yui-ac-content'><div class='yui-ac-bcd'><ul>"+htm+"<ul></div></div>";
+                                c.style.display="block";
+                                window.sindx = 0;
+                                window.ssize = acR.length;
+                            }else{
+                                c.style.display="none";
+                            }
+                        }
+                    }
+                };
+                xhr.open('GET', '<c:url value="/h/ac"/>?query='+escape(val), true);
+                xhr.send(null);
+                c.style.display="none";
+            }
+        },500);
+    }
+};
+var AC = function(f,c){
+    f = (typeof(f) == 'string')? $(f) : f;
+    c = (typeof(c) == 'string')? $(c) : c;
+    if (document.attachEvent) {
+        f.attachEvent("onkeyup", function(e){kU(e,f,c);});
+        f.attachEvent("onkeydown", function(e){ if (!e) e = event ? event : window.event;var k = e.keyCode?  e.keyCode : e.which; if((k==13 || k == 38 || k==40) && c.style.display=="block"){ window.acon = true;stopEvent(e);return false;}});
+    } else if (document.addEventListener) {
+        f.addEventListener("keyup", function(e){kU(e,f,c);},true);
+        f.addEventListener("keydown", function(e){if (!e) e = event ? event : window.event;var k = e.keyCode?  e.keyCode : e.which; if((k==13 || k == 38 || k==40) && c.style.display=="block"){ window.acon = true;stopEvent(e);return false;}},true);
+    }
+};
 var getXHR = function() {
     var xhr = false;
     if (window.XMLHttpRequest) {
@@ -137,8 +235,8 @@ var getXHR = function() {
 var zClickLink = function(id, t) {
     if((typeof(window.evHandled) != 'undefined' && window.evHandled)) { return false; }
     var targ = id ? $(id) : t ;
-    if(!targ) {return;}
-    if (targ.onclick) {var r = targ.onclick(); if(!r)return false;}
+    if(!targ) {return false;}
+    if (targ.onclick) {var r=false;<c:if test="${!ua.isIE && !ua.isOpera}">r = targ.onclick();</c:if> if(!r)return false;}
     var href = targ.href;
     if (!href || loading) {return false;}
     if (targ.target) {return true;}
@@ -151,7 +249,6 @@ var zClickLink = function(id, t) {
         return false;
     }
     href = convertToHashUrl(href);
-
     var containerId = targ.targetId ? targ.targetId : containerId;
     var container = GC(containerId);
     ajxReq(href, null, container);
@@ -245,11 +342,12 @@ var createUploaderFrame = function(iframeId){
 };
 
 var submitForm = function(fobj, target, val) {
+    if(typeof(window.acon) != 'undefined' && window.acon){window.acon=false;return false;}
     if(val && (val == "selectAll" || val == "selectNone")){
         var cbs = (fobj.cid ? fobj.cid : (fobj.mid ? fobj.mid : (fobj.id ? fobj.id : null)));
         if(cbs){
             checkAll(cbs, (val == "selectAll"));
-            return;
+            return false;
         }
     }
     if (!fobj) {return false;}
@@ -278,8 +376,19 @@ var submitForm = function(fobj, target, val) {
     delete xhr;
     return false;
 };
+var stopEvent =function(e){
+    if (!e) e = event ? event : window.event;
+    if (e.stopPropagation) {
+        e.stopPropagation();
+    }
+    if (e.preventDefault) {
+        e.preventDefault();
+    }
+    e.cancelBubble = true;
+    e.stopped = true;
+    e.returnValue = false;
+};
 var customClick = function (e) {
-
     if (!e) e = event ? event : window.event;
     var targ = e.target;
     if (!targ && e.srcElement) targ = e.srcElement;
@@ -290,15 +399,7 @@ var customClick = function (e) {
     if ((targ.tagName == "a" || targ.tagName == "A")) {
         e.returnValue = zClickLink(targ.id, targ);
         if (!e.returnValue) {
-            if (e.stopPropagation) {
-                e.stopPropagation();
-            }
-            if (e.preventDefault) {
-                e.preventDefault();
-            }
-
-            e.cancelBubble = true;
-            e.stopped = true;
+            stopEvent(e);
         }
         return e.returnValue;
 
@@ -307,8 +408,8 @@ var customClick = function (e) {
         var ttype = targ.type;
         if(tname.match(/input/ig) && ttype.match(/submit/ig)){ //submit button; add clicked=true to it
             targ._wasClicked = true;                                                          //ajxForm submit will send only clicked btns to server
+            return true;
         }
-        return true;
     }
     //targ.dispatchEvent(e);
 };
@@ -323,7 +424,9 @@ var fetchIt = function(url, container, method) {
     ajxReq(url, null, container, method);
     delete xhr;
 };
-
+var trim = function(str){
+    return str.replace(/^\s+|\s+$/g, '');
+};
 var ajxReq = function(url, query, container, method, justPrefetch) {
     justPrefetch = justPrefetch || false;
     if(!justPrefetch){
@@ -401,7 +504,7 @@ var ajxReq = function(url, query, container, method, justPrefetch) {
         return false;
     }
 };
-<c:if test="${ua.isiPhone or ua.isiPod}">
+<c:if test="${(ua.isiPhone or ua.isiPod) and param.anim}">
 var slideElem = function(elem,dir){
     elem = (typeof(elem) == 'string')? $(elem) : elem;
     if(dir == -1){
@@ -448,18 +551,14 @@ var parseResponse = function (request, container,url) {
             showLoadingMsg(null, false);
             var data = request.responseText;
             if (data) {                                                                                                 
-               // var fo = -1;
-                //setTimeout(function(){
-                    <c:if test="${ua.isiPhone or ua.isiPod}">if(url.match(/st=prefs|action=edit|st=newmail|st=newappt|st=newtask/) || $('card').className.match(/flipped/)){
-                        slideElem(container,-1);
-                    }else if(url.match(/_pv=1|_back|st=briefcases|st=notebooks|st=folders|st=tasks|st=ab|st=cals/)){
-                        slideElem(container,0);
-                    }else if(url.match(/_pv=0|action=view|sti/)){
-                        slideElem(container,1);                        
-                    }</c:if>
-                    window.scrollTo(0,1);
-                //},30);
-
+                <c:if test="${(ua.isiPhone or ua.isiPod) and param.anim}">if(url.match(/st=prefs|action=edit|st=newmail|st=newappt|st=newtask/) || $('card').className.match(/flipped/)){
+                    slideElem(container,-1);
+                }else if(url.match(/_pv=1|_back|st=briefcases|st=notebooks|st=folders|st=tasks|st=ab|st=cals/)){
+                    slideElem(container,0);
+                }else if(url.match(/_pv=0|action=view|sti/)){
+                    slideElem(container,1);
+                }</c:if>
+                <c:if test="${!ua.isIE}">window.scrollTo(0,1);</c:if>
                 container.innerHTML = data;
                 var scripts = container.getElementsByTagName("script");
                 for (var i = 0; i < scripts.length; i++) {
@@ -479,7 +578,7 @@ var parseResponse = function (request, container,url) {
 
 var registerOnclickHook = function () {
     if (document.attachEvent) {
-        document.attachEvent("click", customClick, false);
+        document.attachEvent("onclick", customClick);
     } else if (document.addEventListener) {
         document.addEventListener("click", customClick, true);
     }
@@ -487,6 +586,7 @@ var registerOnclickHook = function () {
 
 var showLoadingMsg = function(msg, show, status, timeout, divId) {
     //return false;
+    <c:if test="${!ua.isIE}">
     var aMsgDiv = $((divId || 'loadingDiv'));
     status = 'Status' + (status ? status.replace("Status","") : '');
     if (aMsgDiv) {
@@ -508,6 +608,7 @@ var showLoadingMsg = function(msg, show, status, timeout, divId) {
             }, timeout || 300);
         }
     }
+    </c:if>
 };
 var selectDay = function(datestr) {
     var cell = $("cell" + datestr);
@@ -583,9 +684,8 @@ var registerSwipeHandler = function(frm){
                        }else{
                            hideDelete(dId);
                        }
-                       e.cancelBubble = true;
-                       e.preventDefault();
-                       if (e.stopPropagation){ e.stopPropagation();}
+                       stopEvent(e);
+                       e.returnValue = false; 
                        window.evHandled=true;
                        frm.removeEventListener('touchmove');
                        frm.removeEventListener('touchend');
@@ -703,8 +803,8 @@ var reqTimer = null;
 var lastRendered = new Date().getTime();
 var ajxCache = new AjxCache(CACHE_DATA_LIFE);
 
-if(document.location.hash){
-    var match = document.location.hash.match(/(#[a-zA-Z0-9]+)/ig);
+if(window.location.hash){
+    var match = window.location.hash.match(/(#[a-zA-Z0-9]+)/ig);
     if(match){
         setActiveTab(match[0]);
     }

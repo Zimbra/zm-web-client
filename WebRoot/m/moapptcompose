@@ -507,8 +507,7 @@
 <input type="hidden" name="repeatWeeklySat" value="${fn:escapeXml(compose.repeatWeeklySat) ? '1' : '0'}"/>
 <input type="hidden" name="repeatMonthlyInterval" value="${fn:escapeXml(compose.repeatMonthlyInterval)}"/>
 <input type="hidden" name="repeatMonthlyMonthDay" value="${fn:escapeXml(compose.repeatMonthlyMonthDay)}"/>
-<input type="hidden" name="repeatMonthlyRelativeInterval"
-       value="${fn:escapeXml(compose.repeatMonthlyRelativeInterval)}"/>
+<input type="hidden" name="repeatMonthlyRelativeInterval" value="${fn:escapeXml(compose.repeatMonthlyRelativeInterval)}"/>
 <input type="hidden" name="repeatMonthlyRelativeOrd" value="${fn:escapeXml(compose.repeatMonthlyRelativeOrd)}"/>
 <input type="hidden" name="repeatMonthlyRelativeDay" value="${fn:escapeXml(compose.repeatMonthlyRelativeDay)}"/>
 <input type="hidden" name="repeatYearlyMonthDay" value="${fn:escapeXml(compose.repeatYearlyMonthDay)}"/>
@@ -521,12 +520,11 @@
 <input type="hidden" name="repeatEndDate" value="${fn:escapeXml(compose.repeatEndDate)}"/>
 </form>
 <script type="text/javascript">
-    
     <c:if test="${empty param.more and param.st ne 'newtask'}">
     document.getElementById('apt_dtls_div').style.display = 'none';
     document.getElementById('showHide').style.display = '';
     </c:if>
+    <c:if test="${param.st ne 'newtask'}">
+    AC("attField","attContainer");
+    </c:if>
 </script>
-<mo:autoComplete>
-    initAuto("attField","attContainer");
-</mo:autoComplete>

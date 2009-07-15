@@ -127,7 +127,7 @@
             </span>
             <span class="td value">
             <div class="ZhAC ZhACTo">
-                <input id="toField" type="text" rows="1" autocorrect="off" autocomplete="OFF" name="to" class="Textarea" value="${fn:escapeXml(compose.to)}"/>
+                <input id="toField" type="text" rows="1" autocorrect="off" autocomplete="OFF" name="to" class="Textarea" value="${fn:escapeXml(compose.to)}"/><br/>
                 <div class='ZhACCont' id="toContainer" style='width:99%;top:1.5em;'></div>
             </div>
             </span>
@@ -135,42 +135,35 @@
 </div>
     <div class="tbl" id="cc_bcc_div" style="display:none;">
     <div class="tr ${classForNextRow}">
-            <span class="label td"><label for="ccField"><fmt:message
-                    key="ccLabel"/> </label></span>
+            <span class="label td"><label for="ccField"><fmt:message key="ccLabel"/> </label></span>
             <span class="td value">
                 <div class="ZhAC ZhACCc">
-                    <input class="Textarea" autocorrect="off" autocomplete="OFF" id="ccField" type="text" value="${fn:escapeXml(compose.cc)}" name="cc">
+                    <input class="Textarea" autocorrect="off" autocomplete="OFF" id="ccField" type="text" value="${fn:escapeXml(compose.cc)}" name="cc"><br/>
                     <div class='ZhACCont' id="ccContainer" style='width:99%;'></div>
                 </div>
             </span>
     </div>
     <div class="tr ${classForNextRow}">
-            <span class="label td"><label for="bccField"><fmt:message
-                    key="bccLabel"/> </label></span>
+        <span class="label td"><label for="bccField"><fmt:message key="bccLabel"/> </label></span>
         <span class="td value">
                 <div class="ZhAC ZhACBCc">
-                    <input class="Textarea" autocorrect="off" autocomplete="OFF" id="bccField" type="text" value="${fn:escapeXml(compose.bcc)}" name="bcc">
+                    <input class="Textarea" autocorrect="off" autocomplete="OFF" id="bccField" type="text" value="${fn:escapeXml(compose.bcc)}" name="bcc"><br/>
                     <div class='ZhACCont' id="bccContainer" style='width:99%;'></div>
                 </div>
             </span>
     </div>
 </div>
 </div>
-<div class="View">
-<div class="tbl">
-    <div class="tr cmp_sub_row">
+<div class="View"><div class="tbl"><div class="tr cmp_sub_row">
               <span class='label td nb'><label for="subjectField"><fmt:message
                       key="subjectLabel"/> </label></span>
                <span class="td nb value"><input class="Textarea" type="text" name="subject"
                              id="subjectField"
                              value="${fn:escapeXml(compose.subject)}"></span>
-    </div>    
-</div>
-</div>    
+    </div></div></div>
 <c:set var="firstAttachment" value="${true}"/>
 <c:if test="${!empty compose.messageAttachments}">
-<div class="View">
-    <div class="tbl">
+<div class="View"><div class="tbl">
         <c:forEach var="ma" items="${compose.messageAttachments}" varStatus="status">
         <div class="tr ${status.index gt 0 ? 'nr':''} cmp_msg_att_row">
             <span class="td">
@@ -187,12 +180,9 @@
              </span>
             </div>
         </c:forEach>
-    </div>
-    </div>
-    </c:if>
+    </div></div></c:if>
 <c:if test="${!empty param.messageAttachments}">
-<div class="View">
-    <div class="tbl">
+<div class="View"><div class="tbl">
         <c:forEach var="ma" items="${param.messageAttachments}" varStatus="status">
         <c:set var="ma" value="${fn:split(ma,':')}"/>    
         <div class="tr ${status.index gt 0 ? 'nr':''} cmp_msg_att_row">
@@ -210,10 +200,7 @@
              </span>
             </div>
         </c:forEach>
-    </div>
-    </div>
-    </c:if>
-
+    </div></div></c:if>
     <c:if test="${!empty compose.documentAttachments}">
     <div class="View">
         <div class="tbl">
@@ -231,11 +218,9 @@
                         <input type="hidden" name="documentAttachment"
                                value="${doc.id}:${fn:escapeXml(doc.subject)}"/>
                  </span>
-            </div>
-           </c:forEach>
+            </div></c:forEach>
        </div>
-    </div>
-        </c:if>
+    </div></c:if>
     <c:if test="${!empty param.documentAttachments}">
         <div class="View">
             <div class="tbl">
@@ -257,9 +242,7 @@
                     </div>
                 </c:forEach>
             </div>
-            </div>
-            </c:if>
-
+            </div></c:if>
 <c:if test="${!empty compose.originalAttachments}">
 <div class="View cmp_att_table">
         <c:forEach var="part" items="${compose.originalAttachments}" varStatus="status">
@@ -273,9 +256,7 @@
                                              value="${part.partName}" name="originalAttachment"/>
                 <c:set var="firstAttachment" value="${false}"/>
         </c:forEach>
-</div>
-</c:if>
-
+</div></c:if>
 <c:if test="${(!empty param.attachId) and (!empty param.attachUrl) and (!empty param.attachName)}">
     <div class="View cmp_att_table">
         <mo:attachment firstAttachment="${firstAttachment}" url="${param.attachUrl}"
@@ -283,14 +264,11 @@
                         displayName="${param.attachName}"
                         checked="true"
                         value="${param.attachId}" name="uploadedAttachment"/>
-    </div>
-</c:if>
+    </div></c:if>
 <div class="View cmp_body value">
-        <textarea class="Textarea"
-                  id="bodyField" rows="20" name="body">${fn:escapeXml(compose.content)}</textarea>
-        <!-- Shd be removed later-->
-        <input type="hidden" id="bodyText" class='MsgCompose' name="bodyText" value=""
-                />
+        <textarea class="Textarea" id="bodyField" rows="20" name="body">${fn:escapeXml(compose.content)}</textarea>
+        <%-- Shd be removed later--%>
+        <input type="hidden" id="bodyText" class='MsgCompose' name="bodyText" value="" />
  </div>
 </div>
 <%-- BOTTOM TOOLBAR --%>
@@ -327,8 +305,8 @@
     <input type="hidden" name="draftid" value="${message.id}"/>
 </c:if>
 </form>
-<mo:autoComplete>
-    initAuto("toField","toContainer");
-    initAuto("ccField","ccContainer");
-    initAuto("bccField","bccContainer");
-</mo:autoComplete>
+<script type="text/javascript">
+    AC("toField","toContainer");
+    AC("ccField","ccContainer");
+    AC("bccField","bccContainer");
+</script>

@@ -46,6 +46,7 @@
     <input type="hidden" name="doMessageAction" value="1"/>
     <input name="moreActions" type="hidden" value="<fmt:message key="actionGo"/>"/>
     <mo:toolbar urlTarget="${context_url}" context="${context}" isTop="true" mailbox="${mailbox}"/>
+    <div class="tbl dlist">
     <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
         <c:set var="mhit" value="${hit.messageHit}"/>
         <c:choose>
@@ -60,15 +61,15 @@
                                      context="${context}" id="${mhit.id}"/>
             </c:otherwise>
         </c:choose>
-        <div id="conv${mhit.id}" class="row msg_lv_list_row list-row${mhit.isUnread ? '-unread' : ''}">
+        <div id="conv${mhit.id}" class="tr msg_lv_list_row list-row${mhit.isUnread ? '-unread' : ''}">
                <%--<mo:img src="mail/ImgEnvelope${mhit.isUnread?'':'Gray'}.gif" class="left-icon"/>--%>
                <c:set value="Msg${mhit.isUnread ? '' : 'Gray'}" var="class"/> 
-               <span class="cell f">
+               <span class="td f">
                    <c:set value=",${mhit.id}," var="stringToCheck"/>
                    <input class="chk" type="checkbox" ${requestScope.select ne 'none' && (fn:contains(requestScope._selectedIds,stringToCheck) || requestScope.select eq 'all') ? 'checked="checked"':''} name="id" value="${mhit.id}"/>
                    <span class="SmlIcnHldr ${class}">&nbsp;</span>
                </span>
-               <span class="cell m" onclick='return zClickLink("a${mhit.id}")'>
+               <span class="td m" onclick='return zClickLink("a${mhit.id}");'>
                    <div class="from-span">
                        <c:set var="dispRec" value="${mhit.displayAddresses}"/>
                        <c:set var="_f" value="${empty dispRec ? unknownRecipient : dispRec}"/>
@@ -85,7 +86,7 @@
                        ${fn:escapeXml(_f)}
                    </div>
                </span>
-               <span class="cell l">
+               <span class="td l">
                    <fmt:formatDate timeZone="${mailbox.prefs.timeZone}" var="on_dt" pattern="yyyyMMdd" value="${mhit.date}"/>
                    <a <c:if test="${mailbox.features.calendar}">href='${context_url}?st=cal&view=month&date=${on_dt}'</c:if>>
                        ${fn:escapeXml(zm:displayMsgDate(pageContext, mhit.date))}
@@ -104,6 +105,7 @@
                </span>
            </div>
     </c:forEach>
+    </div>
     <c:if test="${empty context || empty context.searchResult || context.searchResult.size == 0}">
         <div class='tbl'>
                 <div class="tr">

@@ -100,7 +100,7 @@
     <div class='zo_m_cv_sub'>
         <span class="SmlIcnHldr ConvOpen">&nbsp;</span>&nbsp;${fn:escapeXml(empty subject ? emptySubject : subject)}
     </div>
-    <div class="msg-list-in-conv">
+    <div class="msg-list-in-conv tbl dlist">
         <c:forEach items="${convSearchResult.hits}" var="hit" varStatus="status">
 <c:set var="mhit" value="${hit.messageHit}"/>
 <zm:currentResultUrl var="msgUrl" value="${context_url}" cid="${convSummary.id}" id="${hit.id}"
@@ -109,14 +109,14 @@
 <fmt:message var="unknownRecipient" key="unknownRecipient"/>
 <fmt:message var="unknownSubject" key="noSubject"/>
 <c:set var="useTo" value="${context.folder.isSent or context.folder.isDrafts}"/>
-     <div id="conv${mhit.id}" class="row conv_v_list_row list-row${mhit.isUnread ? '-unread' : ''}">
+     <div id="conv${mhit.id}" class="tr conv_v_list_row list-row${mhit.isUnread ? '-unread' : ''}">
                <c:set value="Msg${mhit.isUnread ? '' : 'Gray'}" var="class"/>
-               <span class="cell f">
+               <span class="td f">
                    <c:set value=",${mhit.id}," var="stringToCheck"/>
                    <input class="chk" type="checkbox" ${fn:contains(requestScope._selectedIds,stringToCheck)?'checked="checked"':''} name="id" value="${mhit.id}"/>
                    <span class="SmlIcnHldr ${class}">&nbsp;</span>
                </span>
-               <span class="cell m" onclick='return zClickLink("a${mhit.id}")'>
+               <span class="td m" onclick='return zClickLink("a${mhit.id}");'>
                    <div class="from-span">
                        <c:set var="dispRec" value="${mhit.displayAddresses}"/>
                        <c:set var="_f" value="${empty dispRec ? unknownRecipient : dispRec}"/>
@@ -133,7 +133,7 @@
                        ${fn:escapeXml(_f)}
                    </div>
                </span>
-               <span class="cell l">
+               <span class="td l">
                    <fmt:formatDate timeZone="${mailbox.prefs.timeZone}" var="on_dt" pattern="yyyyMMdd" value="${mhit.date}"/>
                    <a <c:if test="${mailbox.features.calendar}">href='${context_url}?st=cal&view=month&date=${on_dt}'</c:if>>
                        ${fn:escapeXml(zm:displayMsgDate(pageContext, mhit.date))}

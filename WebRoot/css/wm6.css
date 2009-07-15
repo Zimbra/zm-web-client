@@ -34,12 +34,10 @@ a {
 
 }
 .hidden {
-    visibility: hidden;
     display:none;
 }
 
 .shown {
-    visibility:visible;
     display:block;
 }
 .zo_m_list_row {
@@ -58,9 +56,9 @@ a {
 }
 
 .label {
-    color: #4d8dc3;
+    color: #4d8dc3;width:20%;float:left;
 }
-
+.value {width:65%;float:left;}
 .list-row-1, .list-row-2, .list-row-3 {
     width: 100%;
     padding: 0px;
@@ -174,20 +172,20 @@ a.appTab-active{
     background-color: #105d65 !important;
 }
 a#mail,a.mail,a#mail-active,a.mail-active {
-    background-position: 50% -120px;
+    background-position: 50% -120px !important;
 }
 a#contact,a.contact,a#contact-active,a.contact-active {
-        background-position: 50% -41px;
+        background-position: 50% -41px !important;
 }
 a#cal,a.cal,a#cal-active,a.cal-active {
-    background-position: 50% 0px;
+    background-position: 50% 0px !important;
 }
 
 a#folders,a.folders,a#folders-active,a.folders-active {
-    background-position: 50% -81px;
+    background-position: 50% -81px !important;
 }
 a#search,a.search,a#search-active,a.search-active {
-    background-position: 50% -160px; 
+    background-position: 50% -160px !important; 
 }
 
 #searchbar {
@@ -218,6 +216,7 @@ form {
     margin: 2px;
     border: 1px solid #4493ba;
     padding: 4px; /* font-size:medium;*/
+    width:99%;
 }
 
 .Email a {
@@ -240,26 +239,26 @@ form {
     max-height: 18px;
     display: inline-block;
     vertical-align: -22%;
-    background: url("/img/doctypes.gif?v=090227110051") no-repeat top left;
+    background: url("/img/doctypes.gif") no-repeat top left;
 }
-.ImgAudioDoc{background:url("/img/doctypes.gif?v=090227110051") 0px 0px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -16px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgExeDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -32px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgGenericDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -48px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgHtmlDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -64px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgImageDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -80px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgMSExcelDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -96px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgMSPowerpointDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -112px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgMSProjectDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -128px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgMSVisioDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -144px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgMSWordDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -160px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgMessageDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -176px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgPDFDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -192px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgPresentation{background:url("/img/doctypes.gif?v=090227110051") 0px -208px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgUnknownDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -224px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgVideoDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -240px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgZSpreadSheet{background:url("/img/doctypes.gif?v=090227110051") 0px -256px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
- .ImgZipDoc{background:url("/img/doctypes.gif?v=090227110051") 0px -272px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
+.ImgAudioDoc{background:url("/img/doctypes.gif") 0px 0px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
+ .ImgDoc{background:url("/img/doctypes.gif") 0px -16px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
+ .ImgExeDoc{background:url("/img/doctypes.gif") 0px -32px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
+ .ImgGenericDoc{background:url("/img/doctypes.gif") 0px -48px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
+ .ImgHtmlDoc{background:url("/img/doctypes.gif") 0px -64px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
+ .ImgImageDoc{background:url("/img/doctypes.gif") 0px -80px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
+ .ImgMSExcelDoc{background:url("/img/doctypes.gif") 0px -96px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
+ .ImgMSPowerpointDoc{background:url("/img/doctypes.gif") 0px -112px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
+ .ImgMSProjectDoc{background:url("/img/doctypes.gif") 0px -128px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
+ .ImgMSVisioDoc{background:url("/img/doctypes.gif") 0px -144px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
+ .ImgMSWordDoc{background:url("/img/doctypes.gif") 0px -160px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
+ .ImgMessageDoc{background:url("/img/doctypes.gif") 0px -176px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
+ .ImgPDFDoc{background:url("/img/doctypes.gif") 0px -192px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
+ .ImgPresentation{background:url("/img/doctypes.gif") 0px -208px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
+ .ImgUnknownDoc{background:url("/img/doctypes.gif") 0px -224px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
+ .ImgVideoDoc{background:url("/img/doctypes.gif") 0px -240px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
+ .ImgZSpreadSheet{background:url("/img/doctypes.gif") 0px -256px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
+ .ImgZipDoc{background:url("/img/doctypes.gif") 0px -272px no-repeat;width:16px !important;height:16px !important;overflow:hidden;}
  .ZmThumbnailItem{
     float:left;
      width:43%;
@@ -282,27 +281,38 @@ form {
     color:white;
     font-weight:bold;
 }
+.dlist .tr{
+    text-align:left;
+}
+.dlist .td{
+    padding:4px;    
+}
+.dlist .m{
+    width:60%;
+}
 .tbl{
-    display:table;
-    vertical-align:middle;
+    display: block;
     width:100%;
 }
 .tr{
-    display:table-row;
+    display:block;
     vertical-align:middle;
     text-align:center;
     width:100%;
+    height:100%;
+    overflow:visible;
 }
 .td{
-    display:table-cell;
+    display:inline-block;
     vertical-align:middle;
     text-align:center;
+    height:100%;
 }
 .tb .td {
+    padding-left: 5px;
+    padding-right: 5px;
     position: relative;
-    top: 15%;
-    padding-left: 1%;
-    padding-right: 1%;
+    top:10%;
 }
 
 .tb {
@@ -349,7 +359,7 @@ form {
 .StatusCritical {
     background-color: red;
 }
-
+.sih{width:65%;}
 .searchInput {
     height: 25px;
     vertical-align: middle;
@@ -363,9 +373,10 @@ form {
 }
 .cmp_container .td, .cmp_appt_container .td {
     text-align: left;
+    padding: 2px;
 }
-.zo_select_button,.zo_button,.zo_button_disabled, .zo_button_group, input[type="button"], input[type="reset"],.searchButton {
-    font-size:medium;
+.zo_select_button,.zo_button,.zo_button_disabled, .zo_button_group, input[type="button"], input[type="reset"],.searchButton,input[type="submit"] {
+    font-size:small !important;
 }
 .zo_button_disabled, .zo_button {
     font-weight: bold;
@@ -381,15 +392,7 @@ form {
     height: 20px;
     width: 85px;
     font-weight:bold;
-    font-size:medium;
     /*color:#c2e0ee;*/
-}
-
-.SmlIcnHldr {
-    width: 18px;
-    height: 18px;
-    max-height: 18px;
-    display: inline-block;
 }
 
 .Action {
@@ -439,19 +442,16 @@ form {
     background-position: 0 -362px !important;
     padding-left: 12px;
 }
-
-.cmp_container .td, .cmp_appt_container .td {
-    border-bottom: 1px solid #DDDDDD;
-    padding: 2px;
+.nr .td{
+    border-top:1px solid #DDD;
 }
-
 .Textarea#bodyField {
     width: 98%;
     height: 150px;
 }
 
 .cmp_appt_container .Textarea, .cmp_container .td .Textarea {
-    height: 17px;
+    height: 20px;
     width: 90%;
 }
 
@@ -467,7 +467,7 @@ form {
     position: relative;
 }
 
-.ZhACB {
+.ZhACB,.Title {
     font-weight: bold;
 }
 
@@ -505,7 +505,7 @@ form {
 }
 
 .ZhACCont li.yui-ac-highlight {
-@SelectedBg @
+@SelectedBg@
 }
 
 .ZhACCont li.yui-ac-prehighlight {
@@ -588,12 +588,13 @@ form {
 .cal_bottom_shadow {
     border-top: 3px outset #cccccc;
 }
-
+.fw{width:100%;}
 #userinfo {
     color: #999999;
     padding: 4px;
     font-size: small;
     height: 30px;
+    width:100%;
     border-bottom: 1px solid #DDDDDD;
 }
 
@@ -602,7 +603,7 @@ form {
     clear: none;
 }
 .loadingIcon{
-    padding:10px;
+    padding:0px 10px;
     background:#ffffd0 url("/img/mobile/iphone/loading.gif") 50% 50% no-repeat !important;
     -webkit-border-radius: 5px;
 }
@@ -623,7 +624,7 @@ form {
 }
 
 .row {
-    display: block;
+    display: table-row;
     min-height: 50px;
 }
 
@@ -642,20 +643,6 @@ form {
     text-align:right !important;
     padding-right:5px;
 }
-div.row span.cell {
-    display: table-cell;
-    vertical-align: middle;
-    padding: 4px;
-    border-collapse: collapse;
-    text-align: left;
-
-}
-
-div.row span.l, div.row span.m {
-    vertical-align: top;
-
-}
-
 .from-span, .sub-span {
     overflow: hidden;
     text-overflow: ellipsis;
@@ -669,31 +656,25 @@ h1, h2, h3, h4, h5, h6 {
     font-weight: normal;
 }
 
-div.row span.f {
+.f {
     max-width: 50px;
     width: 40px;
     white-space: nowrap;
-    display: table-cell;
-    position: relative;
-    top: 30%;
+    padding-top:33% !important;
+    text-align:center;
 }
-
-div.row span.l {
+.l, .m {
+    vertical-align: top;
+    text-align:left;
+    overflow:hidden;
+}
+.l {
     width: 55px;
     text-align: right;
     font-size: small;
     white-space:nowrap;
-}
-
-div.row span.l {
-    display: table-cell;
-}
-
-body div.row span.m {
-    /*max-width: 150px;
-    min-width: 150px;*/
-    width: 100%;
-    display: table-cell;
+    position:absolute;
+    right:5px;overflow:visible;
 }
 
 .msg-list-in-conv {
@@ -708,7 +689,8 @@ body div.row span.m {
     width: 16px;
     height: 16px;
     max-height: 16px;
-    display: inline-block;
+    display:inline-block;
+    font-size:13px !important;
     background: url("/img/mobile/iphone-ext/common.gif") no-repeat top left;
 }
 .Edit{
