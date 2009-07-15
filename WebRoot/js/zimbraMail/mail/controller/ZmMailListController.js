@@ -1207,6 +1207,7 @@ function(result) {
 
 ZmMailListController.prototype._spamListener =
 function(ev) {
+	this._listView[this._currentView]._itemToSelect = this._getNextItemToSelect();
 	var items = this._listView[this._currentView].getSelection();
 	var markAsSpam = (this._getSearchFolderId() != ZmFolder.ID_SPAM);
 	this._doSpam(items, markAsSpam);

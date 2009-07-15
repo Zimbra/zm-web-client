@@ -549,13 +549,13 @@ function(ev) {
 
 ZmDoublePaneController.prototype._deleteListener =
 function(ev) {
-	this._itemToSelect = this._getNextItemToSelect();
+	this._listView[this._currentView]._itemToSelect = this._getNextItemToSelect();
 	ZmMailListController.prototype._deleteListener.apply(this, arguments);
 };
 
 ZmDoublePaneController.prototype._moveListener =
 function(ev) {
-	this._itemToSelect = this._getNextItemToSelect();
+	this._listView[this._currentView]._itemToSelect = this._getNextItemToSelect();
 	ZmMailListController.prototype._moveListener.apply(this, arguments);
 };
 
@@ -669,7 +669,7 @@ function() {
 ZmDoublePaneController.prototype._resetSelection =
 function() {
 	var listView = this._listView[this._currentView];
-	var item = listView && listView._itemToSelect;
+	var item = listView && listView._getItemToSelect();
 	if (item && (listView.getItemIndex(item) != null)) {
 		listView.setSelection(item);
 	}
@@ -691,26 +691,26 @@ function() {
 		}
 		var goingUp = (this.lastListAction == DwtKeyMap.SELECT_PREV || this.lastListAction == ZmKeyMap.PREV_UNREAD);
 		if (goingUp && (numSelected == 1)) {
-			var last = selection[selection.length - 1];
-			var idx = listView._getRowIndex(last);
+			var idx = listView._getRowIndex(selection[selection.length - 1]);
 			var childNodes = listView._parentEl.childNodes;
 			for (var i = idx - 1; i >= 0; i--) {
 				var item = listView.getItemFromElement(childNodes[i]);
-				if (item && !selIds[item.id]) {
+				if (item && !selIds[item.id] && !(item.cid && selIds[item.cid])) {
 					return item;
 				}
 			}
+			return ZmMailListView.FIRST_ITEM;
 		} else {
-			var first = selection[0];
-			var idx = listView._getRowIndex(first);
+			var idx = listView._getRowIndex(selection[0]);
 			var childNodes = listView._parentEl.childNodes;
 			for (var i = idx + 1; i < childNodes.length; i++) {
 				var item = listView.getItemFromElement(childNodes[i]);
-				if (item && !selIds[item.id]) {
+				if (item && !selIds[item.id] && !(item.cid && selIds[item.cid])) {
 					return item;
 				}
 			}
+			return ZmMailListView.LAST_ITEM;
 		}
 	}
-	return null;	
+	return ZmMailListView.FIRST_ITEM;	
 };

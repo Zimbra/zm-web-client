@@ -33,6 +33,9 @@ ZmMailListView.prototype.constructor = ZmMailListView;
 // Consts
 ZmMailListView.ROW_DOUBLE_CLASS	= "RowDouble";
 
+ZmMailListView.FIRST_ITEM	= -1;
+ZmMailListView.LAST_ITEM	= -2;
+
 // Public methods
 
 ZmMailListView.prototype.toString = 
@@ -639,10 +642,27 @@ function(clickedEl, ev) {
 
 ZmMailListView.prototype._setNextSelection =
 function() {
-	var item = this._controller._itemToSelect || this._list.get(0);
+	var item = this._getItemToSelect();
 	if (item) {
 		this.setSelection(item, false);
 	}
+};
+
+/**
+ * Returns the next item to select, typically set by the controller.
+ * A value of -1 means return the last item.
+ */
+ZmMailListView.prototype._getItemToSelect =
+function() {
+	var item = this._itemToSelect || this._list.get(0);
+	if (item == ZmMailListView.FIRST_ITEM) {
+		var list = this.getList(true).getArray();
+		item = list && list[0];
+	} else if (item == ZmMailListView.LAST_ITEM) {
+		var list = this.getList(true).getArray();
+		item = list && list[list.length - 1];
+	}
+	return item;
 };
 
 ZmMailListView.prototype._getSearchForSort =
