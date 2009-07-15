@@ -936,7 +936,7 @@ function(view) {
 ZmMailListController.prototype._setupViewMenuItems =
 function(view, btn) {
 
-	var menu = new ZmPopupMenu(btn);
+	var menu = new ZmPopupMenu(btn, null, null, this);
 	btn.setMenu(menu);
 
 	if (appCtxt.get(ZmSetting.CONVERSATIONS_ENABLED)) {
