@@ -54,10 +54,14 @@ ZmTaskbarController = function(components) {
 		contentClassName: "ZmBuddyListPopup",
 		op: ZmId.OP_IM_BUDDY_LIST
 	};
-	this._createItem(buddyListArgs);
+	this._createItem(buddyListArgs);   
 	
 	this._toolbar.addFiller(null);
 	this._chatButtonIndex = this._toolbar.getNumChildren() + 1;
+
+    this._betaButton = new DwtToolBarButton({parent: this._toolbar});
+    this._betaButton.setText(ZmMsg.betaIM);
+    this._betaButton.setEnabled(false);
 
 	var height = appCtxt.getSkinHint("presence", "height") || 24;
 	Dwt.setSize(parentEl, Dwt.DEFAULT, height);
