@@ -22,6 +22,7 @@
     <c:set var="currentUrl" scope="session"
            value="${pageContext.request.requestURL}?${pageContext.request.queryString}"/>
 </c:if>
+<c:if test="${not empty param.djs}"><c:set var="djs" value="${fn:escapeXml(param.djs)}" scope="session" /></c:if>
 <c:set var="version" value="${initParam.zimbraCacheBusterVersion}"/>
 <c:set var="uiv" value="1" scope="session"/>
 <mo:handleError>
@@ -109,7 +110,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black" />    
 <title><fmt:message key="zimbraTitle"/></title>
 <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0;"/>
-<c:if test="${empty param.djs}"><script type="text/javascript">window.currentUrl='${pageContext.request.requestURL}?ajax=true&${pageContext.request.queryString}';<c:import url="/m/mojs${(!empty param.debug || !empty param.dev) ? '?dev=1':''}"/></script></c:if>    
+<script type="text/javascript">window.onerror=function(m,u,l){if(window.console){window.console.log("An error occured in: "+u+"\n{\n\tmsg: "+m+",\n\tline: "+l+"\n}");}return false;};</script>
+<c:if test="${empty djs or not djs}"><script type="text/javascript">window.currentUrl='${pageContext.request.requestURL}?ajax=true&${pageContext.request.queryString}';<c:import url="/m/mojs${(!empty param.debug || !empty param.dev) ? '?dev=1':''}"/></script></c:if>    
 <c:set var="calcss" value=",${sessionScope.zms}-cal"/>
 <link href="<c:url value='/css/${sessionScope.zms}${calcss}.css'/>" type="text/css" rel="stylesheet"/>
 </head>

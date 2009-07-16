@@ -563,7 +563,7 @@ var parseResponse = function (request, container,url) {
                 var scripts = container.getElementsByTagName("script");
                 for (var i = 0; i < scripts.length; i++) {
                     if (!scripts[i].src) {
-                        eval(scripts[i].innerHTML);
+                        try{eval(scripts[i].innerHTML);}catch(e){if(window.console){console.log(e);}}
                     }
                 }
             }

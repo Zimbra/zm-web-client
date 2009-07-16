@@ -13,8 +13,7 @@
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * 
  * ***** END LICENSE BLOCK *****
---%>
-<%@ tag body-content="empty" dynamic-attributes="dynattrs" import="java.io.*,java.util.*"
+--%><%@ tag body-content="empty" dynamic-attributes="dynattrs" import="java.io.*,java.util.*"
 %><%@ attribute name="value" rtexprvalue="true" required="true"
 %><%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"
 %><%@ taglib prefix="zm" uri="com.zimbra.zm"
