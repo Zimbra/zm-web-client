@@ -644,6 +644,7 @@ function(ev) {
 
 	var fields = ev.getDetail("fields");
 	var isConv = (item.type == ZmItem.CONV);
+	var sortBy = this._sortByString || ZmSearch.DATE_DESC;
 	var handled = false;
 	
 	// msg moved or deleted
@@ -716,13 +717,19 @@ function(ev) {
 		this._expanded[item.id] = this._expanded[item._oldId];
 		this._msgRowIdList[item.id] = this._msgRowIdList[item._oldId] || [];
 	}
-	
-	if (isConv && (ev.event == ZmEvent.E_MODIFY) && (fields && fields[ZmItem.F_INDEX])) {
-		// a conv has gotten a new msg and may need to be moved within the list of convs
+
+	// when adding a conv (or changing its position within the list), we need to look at its sort order
+	// within the list of rows (which may include msg rows) rather than in the ZmList of convs, since
+	// those two don't necessarily map to each other
+	if (isConv && ((ev.event == ZmEvent.E_MODIFY) && (fields && fields[ZmItem.F_INDEX]) ||
+				  ((ev.event == ZmEvent.E_CREATE) && (sortBy == ZmSearch.DATE_DESC)))) {
+
+		// INDEX change: a conv has gotten a new msg and may need to be moved within the list of convs
 		// if an expanded conv gets a new msg, don't move it to top
 		// if we're not on first page, leave conv row alone - don't make conv row disappear or move to top
-		var sortIndex = ev.getDetail("sortIndex");
-		if ((sortIndex != null) && (this._list.indexOf(item) != sortIndex) && !this._expanded[item.id] && (this.offset == 0)) {
+		var sortIndex = this._getSortIndex(item, sortBy);
+		var curIndex = this.getItemIndex(item, true);
+		if ((sortIndex != null) && (sortIndex != curIndex) && !this._expanded[item.id] && (this.offset == 0)) {
             this._removeMsgRows(item.id);
             this.removeItem(item);
 			this.addItem(item, sortIndex);
@@ -770,6 +777,23 @@ function(ev) {
 		isConv ? ZmMailListView.prototype._changeListener.apply(this, arguments) :
 				 ZmMailMsgListView.prototype._changeListener.apply(this, arguments);
 	}
+};
+
+ZmConvListView.prototype._getSortIndex =
+function(conv, sortBy) {
+
+	var itemDate = parseInt(conv.date);
+	var a = this.getList(true).getArray();
+	for (var i = 0; i < a.length; i++) {
+		var item = a[i];
+		if (item.type == ZmItem.MSG) { continue; }
+		var date = parseInt(item.date);
+		if ((sortBy == ZmSearch.DATE_DESC && (itemDate >= date)) ||
+			(sortBy == ZmSearch.DATE_ASC && (itemDate <= date))) {
+			return i;
+		}
+	}
+	return i;
 };
 
 ZmConvListView.prototype._removeMsgRows =

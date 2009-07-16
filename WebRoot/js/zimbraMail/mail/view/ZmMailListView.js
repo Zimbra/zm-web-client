@@ -589,7 +589,6 @@ function(ev) {
 	
 	if (ev.event == ZmEvent.E_CREATE) {
 		DBG.println(AjxDebug.DBG2, "ZmMailListView: CREATE");
-		var sortIndex = ev.getDetail("sortIndex");
 		if (this._list && this._list.contains(item)) { return; } // skip if we already have it
 		if (!this._handleEventType[item.type]) { return; }
 
@@ -598,9 +597,8 @@ function(ev) {
 		// we handle is where the user is on the first page.
 		//
 		// TODO: handle other sort orders, arbitrary insertion points
-		var index = sortIndex || 0;
 		if ((this.offset == 0) && (!this._sortByString || this._sortByString == ZmSearch.DATE_DESC)) {
-			this.addItem(item, index);
+			this.addItem(item, ev.getDetail("sortIndex") || 0);
 		}
 		ev.handled = true;
 	}
