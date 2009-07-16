@@ -253,6 +253,17 @@ function(str) {
 	}
 };
 
+ZmAutocomplete.prototype.clearCache =
+function(type) {
+	if (type) {
+		this._acCache[type] = {};
+	} else {
+		this._acCache[ZmAutocomplete.AC_TYPE_CONTACT]	=	{};
+		this._acCache[ZmAutocomplete.AC_TYPE_LOCATION]	=	{};
+		this._acCache[ZmAutocomplete.AC_TYPE_EQUIPMENT]	=	{};
+	}
+};
+
 /**
  * @param str			[string]		string to match against
  * @param acType		[constant]		type of result to match

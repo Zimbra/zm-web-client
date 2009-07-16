@@ -665,10 +665,18 @@ function(obj) {
 	this.list.modifyLocal(obj, details);
 	this._notify(ZmEvent.E_MODIFY, obj);
 
+	appCtxt.getAutocompleter().clearCache(ZmAutocomplete.AC_TYPE_CONTACT);
+	
 	var buddy = this.getBuddy();
 	if (buddy) {
 		buddy._notifySetName(buddy.name);	// trigger a refresh
 	}
+};
+
+ZmContact.prototype.notifyDelete =
+function() {
+	ZmItem.prototype.notifyDelete.call(this);
+	appCtxt.getAutocompleter().clearCache(ZmAutocomplete.AC_TYPE_CONTACT);
 };
 
 /**

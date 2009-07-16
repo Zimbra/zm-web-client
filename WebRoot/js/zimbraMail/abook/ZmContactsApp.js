@@ -331,6 +331,7 @@ function(creates, force) {
 					var clc = AjxDispatcher.run("GetContactListController");
 					var clcList = (clc && clc.getFolderId()) ? clc.getList() : new ZmContactList(null);
 					clcList.notifyCreate(create);
+					appCtxt.getAutocompleter().clearCache(ZmAutocomplete.AC_TYPE_CONTACT);
 					create._handled = true;
 				}
 			}
