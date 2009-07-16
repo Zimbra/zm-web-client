@@ -254,22 +254,29 @@ function(item) {
 
 	var dateFormatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.FULL, AjxDateFormat.MEDIUM);
 
-    var actionLink = [ '<a href="', originalRestURL, "?disp=a", '" target="_blank">', ZmMsg.saveFile, '</a>' ].join("");
-
-    if(item.isSlideDoc()) {
-        actionLink += [ ', <a href="', originalRestURL, "?fmt=html&run=1", '" target="_blank">', ZmMsg.slides_launchSlideShow, '</a>' ].join("");
-    }
-
 	var prop = [
 		{name:ZmMsg.name, value:fileLink},
-		{name:ZmMsg.actionLabel, value: actionLink},
-		{name:ZmMsg.path, value:path},
+	];
+
+
+    if(item.isRealFile() || item.isSlideDoc()){
+        var actionLink;
+        if(item.isSlideDoc()) {
+            actionLink = [ '<a href="', originalRestURL, "?fmt=html&run=1", '" target="_blank">', ZmMsg.slides_launchSlideShow, '</a>' ].join("");
+        }else{
+            actionLink = [ '<a href="', originalRestURL, "?disp=a", '" target="_blank">', ZmMsg.saveFile, '</a>' ].join("");
+        }
+        prop.push({name:ZmMsg.actionLabel, value: actionLink});
+    }
+
+    prop = prop.concat([
+        {name:ZmMsg.path, value:path},
 		{name:ZmMsg.size, value:AjxUtil.formatSize(item.size)},
 		{name:ZmMsg.created, value:dateFormatter.format(item.createDate)},
 		{name:ZmMsg.creator, value:item.creator},
 		{name:ZmMsg.modified, value:dateFormatter.format(item.modifyDate)},
 		{name:ZmMsg.modifier, value:item.modifier}
-	];
+    ]);
 
 	var imgSrc = restURL.toLowerCase().match(/\.jpg$|\.gif$|\.jpeg$|\.bmp$$/) ? restURL : null;
 
