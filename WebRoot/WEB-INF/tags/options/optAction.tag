@@ -197,7 +197,9 @@
         </c:otherwise>
     </c:choose>
 </c:if>
-
+<c:if test="${mailbox.features.skinChange and updated}">
+    <c:remove var="skin" scope="session"/> <%-- remove old var so that new skin gets applied using skin.tag --%>    
+</c:if>
 <c:choose>
     <c:when test="${newSignatureWarning or modSignatureWarning}">
         <%-- do nothing --%>
