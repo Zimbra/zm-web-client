@@ -515,6 +515,11 @@ function(params, result) {
 
 	ZmApp.initialize();
 
+    if(appCtxt.get(ZmSetting.DEFAULT_TIMEZONE)) {
+        AjxTimezone.DEFAULT_RULE = AjxTimezone._guessMachineTimezone(appCtxt.get(ZmSetting.DEFAULT_TIMEZONE));
+        AjxTimezone.DEFAULT = AjxTimezone.getClientId(AjxTimezone.DEFAULT_RULE.serverId);
+    }
+
 	this._evtMgr.notifyListeners(ZmAppEvent.PRE_STARTUP, this._evt);
 
 	params.result = result;
