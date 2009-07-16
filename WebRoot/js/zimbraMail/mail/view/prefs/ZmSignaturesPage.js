@@ -813,7 +813,7 @@ ZmSignatureEditor.prototype.insertImageDoc = function(file, width, height){
     var doc = this._getIframeDoc();
     var img = doc.createElement("img");
     img.src = src;    
-    if(file.docpath) img.setAttribute("dfsrc", file.docPath);
+    if(file.docpath) img.setAttribute("dfsrc", file.docpath);
     if(width) img.width = width;
     else img.removeAttribute('width');
     if(height) img.height = height;
