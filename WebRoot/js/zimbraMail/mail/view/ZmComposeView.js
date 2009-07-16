@@ -942,13 +942,13 @@ function(msg, idoc) {
 					images[i].src = src;
 					images[i].setAttribute("dfsrc", dfsrc);
 				}
-            }else if (dfsrc.substring(0,4) == "doc:"){
+            } else if (dfsrc.substring(0,4) == "doc:") {
                 images[i].src = [appCtxt.get(ZmSetting.REST_URL), ZmFolder.SEP, dfsrc.substring(4)].join('');
-			} else if (dfsrc.indexOf("//") == -1) { // check for content-location verison
+			} else if (msg && dfsrc.indexOf("//") == -1) { // check for content-location verison
 				var src = msg.getContentPartAttachUrl(ZmMailMsg.CONTENT_PART_LOCATION, dfsrc);
 				//Cache cleared, becoz part id's may change.
-				src = src + "&t=" + (new Date()).getTime();
 				if (src) {
+					src = src + "&t=" + (new Date()).getTime();
 					num++;
 					images[i].src = src;
 					images[i].setAttribute("dfsrc", dfsrc);
