@@ -1227,8 +1227,17 @@ function() {
 		if (this.zid != null) {
 			this._isRemote = true;
 		} else {
+			var accountId = this.accountId;
 			var parsed = ZmOrganizer.parseId(this.id);
-			var accountId = this.accountId || appCtxt.getActiveAccount().id;
+
+			if (!accountId) {
+				if (appCtxt.multiAccounts && parsed.account && parsed.account.isMain) {
+					this._isRemote = false;
+					return this._isRemote;
+				}
+				accountId = appCtxt.getActiveAccount().id;
+			}
+
 			this._isRemote = (parsed.account && (parsed.account.id != accountId));
 		}
 	}
