@@ -713,7 +713,15 @@ function(edited, componentId, callback, errorCallback, instanceDate, accountName
 		this.setAddress(AjxEmailAddress.TO, (new AjxEmailAddress(to)));
 	}
 
-    if(!ZmMailListController.REPLY_ACTION_MAP[this.inviteMode]) {
+    var replyActionMap = {};
+    replyActionMap[ZmOperation.REPLY_ACCEPT_NOTIFY]		= ZmOperation.REPLY_ACCEPT;
+    replyActionMap[ZmOperation.REPLY_ACCEPT_IGNORE]		= ZmOperation.REPLY_ACCEPT;
+    replyActionMap[ZmOperation.REPLY_DECLINE_NOTIFY]	= ZmOperation.REPLY_DECLINE;
+    replyActionMap[ZmOperation.REPLY_DECLINE_IGNORE]	= ZmOperation.REPLY_DECLINE;
+    replyActionMap[ZmOperation.REPLY_TENTATIVE_NOTIFY]	= ZmOperation.REPLY_TENTATIVE;
+    replyActionMap[ZmOperation.REPLY_TENTATIVE_IGNORE]	= ZmOperation.REPLY_TENTATIVE;
+    
+    if(!replyActionMap[this.inviteMode]) {
         needsRsvp = this._origMsg.needsRsvp();        
     }
     return this._sendInviteReplyContinue(jsonObj, needsRsvp ? "TRUE" : "FALSE", edited, callback, errorCallback, instanceDate, accountName);
