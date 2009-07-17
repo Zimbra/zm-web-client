@@ -472,7 +472,9 @@ function(callback, result) {
 ZmSearch.prototype.getTitle =
 function() {
 	var where;
+	DBG.println("bt", "ZmSearch.prototype.getTitle");
 	if (this.folderId) {
+		DBG.println("bt", "got folder id: " + this.folderId);
 		var fid = ZmOrganizer.getSystemId(this.folderId);
 		var folder = appCtxt.getById(fid);
 		if (folder) {
@@ -678,7 +680,7 @@ function() {
 	var tokens = [], ch, op, word = "", fail = false, eow = false;
 	var pos = skipSpace(query, 0);
 	while (pos < len && !fail) {
-		ch = query[pos];
+		ch = query.charAt(pos);
 		eow = ZmSearch.EOW[ch];
 
 		if (ch == ":") {
@@ -768,6 +770,7 @@ function() {
 		this.matches = new Function("item", func.join(""));
 	} catch(ex) {}
 
+	DBG.println("bt", "num terms: " + numTerms);
 	if (numTerms == 1) {
 		var t = tokens[0];
 		if (t.op == "in" || t.op == "inid") {
