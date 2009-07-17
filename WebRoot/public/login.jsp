@@ -9,6 +9,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <fmt:setLocale value='${pageContext.request.locale}' scope='request' />
 <fmt:setBundle basename="/messages/ZmMsg" scope="request"/>
+<fmt:setBundle basename="/messages/ZhMsg" var="zhmsg" scope="request"/>
 <fmt:setBundle basename="/messages/ZMsg" var="zmsg" scope="request"/>
 
 <%-- query params to ignore when constructing form port url or redirect url --%>
@@ -159,6 +160,11 @@
     <zm:getException var="error" exception="${loginException}"/>
     <c:set var="errorCode" value="${error.code}"/>
     <fmt:message bundle="${zmsg}" var="errorMessage" key="${errorCode}"/>
+    <c:forEach var="arg" items="${error.arguments}">
+        <fmt:message bundle="${zhmsg}" var="errorMessage" key="${errorCode}.${arg.name}">
+            <fmt:param value="${arg.val}"/>
+        </fmt:message>
+    </c:forEach>
 </c:if>
 
 <%

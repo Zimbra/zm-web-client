@@ -5,7 +5,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
-<%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 
 <app:handleError>
@@ -45,6 +44,11 @@
                 <c:set var="errorCode" value="${error.code}"/>
                 <fmt:message var="errorMessage" key="${errorCode}"/>
                 <c:set var="messageImage" value="dwt/ImgCritical_32.gif"/>
+                <c:forEach var="arg" items="${error.arguments}">
+                    <fmt:message var="errorMessage" key="${errorCode}.${arg.name}">
+                        <fmt:param value="${arg.val}"/>
+                    </fmt:message>
+                </c:forEach>
             </c:if>
         </c:when>
 
@@ -55,7 +59,7 @@
 <html>
 
 <head>
-    <title><fmt:message key="changePassword"/></title>
+    <title><fmt:message key="changePassword"/></title>                         
 	<c:url var='cssurl' value='/css/common,login,zhtml,${skin},skin.css'>
 		<c:param name="skin" value="${skin}" />
 	</c:url>
