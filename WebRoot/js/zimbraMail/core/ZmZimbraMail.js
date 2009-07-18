@@ -1391,10 +1391,12 @@ function(callback, appName) {
 * @param view		[constant]	the newly current view
 */
 ZmZimbraMail.prototype.setActiveApp =
-function(appName, view) {
+function(appName, view, isTabView) {
 
 	// update app chooser
-	this._components[ZmAppViewMgr.C_APP_CHOOSER].setSelected(appName);
+	if (!isTabView) {
+		this._components[ZmAppViewMgr.C_APP_CHOOSER].setSelected(appName);
+	}
 
 	// app not actually enabled if this is result of upsell view push
 	var appEnabled = !ZmApp.SETTING[appName] || appCtxt.get(ZmApp.SETTING[appName]);

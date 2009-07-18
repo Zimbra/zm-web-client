@@ -1000,7 +1000,7 @@ function(view, show) {
 			this._controller.setActiveTabId(tabId);
 		}
 		if (this._viewApp[view]) {
-			this._controller.setActiveApp(this._viewApp[view], view);
+			this._controller.setActiveApp(this._viewApp[view], view, this._isTabView[view]);
 		}
 	} else {
 		for (var cid in elements) {
