@@ -76,14 +76,9 @@ function(items, folder, attrs, callback) {
 	var action = (folder.id == ZmFolder.ID_TRASH) ? "trash" : "move";
 	var respCallback = new AjxCallback(this, this._handleResponseMoveItems, [folder, callback]);
 
-	// HACK: force action to happen on main account since stored folder ID isn't
-	// fully qualified. Otherwise action is performed on "active" account which
-	// would be wrong. Alternatively, setting folder ID to be fully qualified
-	// results in a server error (no auth token). Bah.
-	var accountName;
-	if (appCtxt.multiAccounts && folder.id == folder.nId) {
-		accountName = appCtxt.getMainAccount().name;
-	}
+	// for account name for multi-account to always be main "local" account
+	// since we assume actioned ID's will always be fully qualified
+	var accountName = appCtxt.multiAccounts && appCtxt.getMainAccount().name;
 
 	this._itemAction({items: items, action: action, attrs: attrs, callback: respCallback, accountName: accountName});
 };
