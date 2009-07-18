@@ -227,7 +227,7 @@ function(id, type) {
  */
 ZmOverview.prototype.itemSelected =
 function(treeItem) {
-	if (appCtxt.multiAccounts) {
+	if (appCtxt.multiAccounts && treeItem) {
 		var name = this.id.substring(0, this.id.indexOf(":"));
 		var container = this._controller.getOverviewContainer(name);
 		if (container) {

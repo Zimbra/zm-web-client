@@ -244,13 +244,19 @@ function(ev) {
 				getHtml: appCtxt.get(ZmSetting.VIEW_AS_HTML),
 				searchFor: (ZmApp.DEFAULT_SEARCH[this._appName]),
 				sortBy: ((sc.currentSearch && folder.nId == sc.currentSearch.folderId) ? null : ZmSearch.DATE_DESC),
-				accountName: (account && account.name)
+				accountName: (account && account.name),
+				callback: new AjxCallback(this, this._handleSearchCallback)
 			};
 			sc.search(params);
 		}
 	} else {																	// double click
 		// handle double click?
 	}
+};
+
+ZmOverviewContainer.prototype._handleSearchCallback =
+function(ev) {
+	this.setSelection(this._actionedHeaderItem, true);
 };
 
 ZmOverviewContainer.prototype._initializeActionMenu =

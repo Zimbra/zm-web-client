@@ -735,7 +735,7 @@ function(id) {
 	var nid = id;
 
 	var acct = appCtxt.getActiveAccount();
-	if (!acct.isMain) {
+	if (!acct.isMain && id.indexOf(":") == -1) {
 		nid = acct.id + ":" + id;
 	}
 
