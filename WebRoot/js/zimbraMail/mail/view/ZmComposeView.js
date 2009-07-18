@@ -2152,9 +2152,10 @@ function(templateId, data) {
 		if (!this._identityChangeListenerObj) {
 			this._identityChangeListenerObj = new AjxListener(this, this._identityChangeListener);
 		}
-		var accounts = appCtxt.getZimbraAccounts();
+		var ac = window.parentAppCtxt || window.appCtxt;
+		var accounts = ac.getZimbraAccounts();
 		for (var id in accounts) {
-			var identityCollection = appCtxt.getIdentityCollection(accounts[id]);
+			var identityCollection = ac.getIdentityCollection(accounts[id]);
 			identityCollection.addChangeListener(this._identityChangeListenerObj);
 		}
 
@@ -2162,7 +2163,7 @@ function(templateId, data) {
 		this._setIdentityVisible();
 	}
 
-	if (appCtxt.get(ZmSetting.MAIL_PRIORITY_ENABLED)) {
+	if (ac.get(ZmSetting.MAIL_PRIORITY_ENABLED)) {
 		var buttonId = ZmId.getButtonId(this._view, ZmId.CMP_PRIORITY);
 		this._priorityButton = new DwtButton({parent:this, id:buttonId});
 		this._priorityButton.setMenu(new AjxCallback(this, this._priorityButtonMenuCallback));
