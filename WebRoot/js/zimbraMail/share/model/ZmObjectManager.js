@@ -259,8 +259,8 @@ function(content, htmlEncode, type, isTextMsg) {
 				}
 			}
 			// If it's an email address just handle it and return the result.
-			if (content instanceof AjxEmailAddress) {
-				if(lowestHandler) {
+			if (type == "email" || content instanceof AjxEmailAddress) {
+				if (lowestHandler) {
 					this.generateSpan(lowestHandler, html, idx, content, null);
 				} else {
 					html[idx++] = AjxStringUtil.htmlEncode(content.toString());
