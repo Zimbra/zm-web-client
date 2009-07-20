@@ -1242,7 +1242,7 @@ function(params, callback) {
 		if (appCtxt.getAppController().handleOfflineMailTo(location.search, callback)) { return; }
 	}
 
-	this._mailSearch(query, callback, params.searchResponse);
+	this.mailSearch(query, callback, params.searchResponse);
 };
 
 ZmMailApp.prototype._handleErrorLaunch =
@@ -1266,7 +1266,7 @@ function(params, ex) {
  */
 ZmMailApp.prototype._handleErrorMsgLoad =
 function(callback, ex) {
-	this._mailSearch();
+	this.mailSearch();
 	if (callback) {
 		callback.run();
 	}
@@ -1287,15 +1287,15 @@ function(msg, callback) {
 	}
 };
 
-ZmMailApp.prototype._mailSearch =
-function(query, callback, response) {
+ZmMailApp.prototype.mailSearch =
+function(query, callback, response, type) {
 	var account = appCtxt.isOffline && appCtxt.inStartup && appCtxt.getMainAccount(true);
 	if (account) {
 		appCtxt.setActiveAccount(account);
 	}
 	query = query || appCtxt.get(ZmSetting.INITIAL_SEARCH, null, account);
 	var types = new AjxVector();
-	types.add(this.getGroupMailBy());
+	types.add(type || this.getGroupMailBy());
 
 	var params = {
 		searchFor: ZmId.SEARCH_MAIL,

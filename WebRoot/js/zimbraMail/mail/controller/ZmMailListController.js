@@ -1242,7 +1242,7 @@ function(ev) {
 		var item = items[i];
 		// always extract out the msg ids from the conv
         if (item.toString() == "ZmConv") {
-			ids.push("C:"+item.id); item.msgIds;
+			ids.push("C:"+item.id);
 		} else {
 			ids.push(item.id);
 		}
@@ -1285,7 +1285,7 @@ function() {
 		var normalizedFolderId = ZmOrganizer.normalizeId(folderId);
 		if ((normalizedFolderId == ZmFolder.ID_INBOX) || !hasExternalAccounts) {
 			// call explicitly from mail app (this may be mixed ctlr) - bug 23268
-			appCtxt.getApp(ZmApp.MAIL)._mailSearch();
+			appCtxt.getApp(ZmApp.MAIL).mailSearch();
 		}
 	}
 };

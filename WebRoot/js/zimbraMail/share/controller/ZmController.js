@@ -19,11 +19,11 @@ ZmController = function(container, app) {
 
 	this._container = container;
 	this._app = app;
-	
+
 	this._shell = appCtxt.getShell();
 	this._appViews = {};
 	this._currentView = null;
-	
+
 	this._authenticating = false;
 };
 
@@ -40,7 +40,8 @@ function() {
 	return "ZmController";
 };
 
-ZmController.prototype.getApp = function() {
+ZmController.prototype.getApp =
+function() {
 	return this._app;
 };
 
@@ -203,8 +204,7 @@ function(parent, name, color, url) {
 
 ZmController.prototype._newTagCallback =
 function(params) {
-	var dialog = appCtxt.getNewTagDialog();
-	dialog.popdown();
+	appCtxt.getNewTagDialog().popdown();
 	var oc = appCtxt.getOverviewController();
 	oc.getTreeController(ZmOrganizer.TAG)._doCreate(params);
 };
@@ -359,7 +359,7 @@ function(ex, continuation) {
 		var vid = appCtxt.getCurrentViewId();
 		// only process if we're in one of these views otherwise, do the default
 		if (vid == ZmId.VIEW_CONVLIST || vid == ZmId.VIEW_TRAD) {
-			appCtxt.getApp(ZmApp.MAIL)._mailSearch();
+			appCtxt.getApp(ZmApp.MAIL).mailSearch();
 			return;
 		}
 	}

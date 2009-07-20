@@ -323,6 +323,6 @@ function() {
 ZmMsgController.prototype._backListener =
 function(ev) {
 	if (!this._app.popView()) {
-		this._app._mailSearch();
+		this._app.mailSearch();
 	}
 };
