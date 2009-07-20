@@ -138,7 +138,7 @@
                     </c:redirect>
         		</c:when>
                 <c:when test="${client eq 'mobile'}">
-		            <c:redirect url="/m">
+		            <c:redirect url="/m/zmain">
                             <c:forEach var="p" items="${paramValues}">
                                 <c:forEach var='value' items='${p.value}'>
                                     <c:if test="${not fn:contains(ignoredQueryParams, p.key)}">
