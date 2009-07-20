@@ -156,7 +156,7 @@
 		<tr id="${id}_SEARCH_FILTER_row">
 			<td class="ZOptionsLabelTop" style="width:inherit;"><$=ZmMsg.searchFilterLabel$></td>
 			<td class="ZOptionsField">
-				<input id="${id}_SEARCH_FILTER" length="40" hint="<$=ZmMsg.searchFilterHint$>" tabindex="700">
+				<input id="${id}_SEARCH_FILTER" length="40" hint="<$=ZmMsg.searchFilterHint$>" tabindex="700" size="40">
 			</td>
 		</tr>
 		<tr id="${id}_SKIP_META_row">
