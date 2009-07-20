@@ -57,7 +57,7 @@
 		<$ if (appCtxt.get(ZmSetting.CALENDAR_ENABLED) || appCtxt.get(ZmSetting.CONTACTS_ENABLED)) { $>
 		<tr><td class="ZOptionsLabelTop"><$=ZmMsg.typeLabel$></td>
 			<td class="ZOptionsField">
-				<table border="0" cellpadding="0" cellspacing="4">
+				<table border="0" cellpadding="0" cellspacing="0">
 					<tr><td><table border="0" cellpadding="0" cellspacing="0"><tr>
 							<td><div id="${id}_TYPE_TGZ" tabindex="100"></div></td>
 							<td><div id="${id}_TYPE_ICS" tabindex="101"></div></td>
@@ -103,7 +103,7 @@
 		</tr>
 		<tr id="${id}_DATA_TYPES_row">
 			<td class="ZOptionsLabelTop"><$=ZmMsg.dataTypesLabel$></td>
-			<td class="ZOptionsField">
+			<td class="ZOptionsField" style="padding-top: 5px;">
 				<div><$=ZmMsg.dataTypesHint$></div>
 				<div id="${id}_DATA_TYPES" tabindex="800"></div>
 			</td>
@@ -116,7 +116,7 @@
 		<$ if (appCtxt.get(ZmSetting.CALENDAR_ENABLED) || appCtxt.get(ZmSetting.CONTACTS_ENABLED)) { $>
 		<tr><td class="ZOptionsLabelTop"><$=ZmMsg.typeLabel$></td>
 			<td class="ZOptionsField">
-				<table border="0" cellpadding="0" cellspacing="4">
+				<table border="0" cellpadding="0" cellspacing="0">
 					<tr><td><table border="0" cellpadding="0" cellspacing="0"><tr>
 							<td><div id="${id}_TYPE_TGZ" tabindex="100"></div></td>
 							<td><div id="${id}_TYPE_ICS" tabindex="101"></div></td>
@@ -148,7 +148,7 @@
 		</tr>
 		<tr id="${id}_DATA_TYPES_row">
 			<td class="ZOptionsLabelTop"><$=ZmMsg.dataTypesLabel$></td>
-			<td class="ZOptionsField">
+			<td class="ZOptionsField" style="padding-top: 5px;">
 				<div><$=ZmMsg.dataTypesHint$></div>
 				<div id="${id}_DATA_TYPES" tabindex="600"></div>
 			</td>
