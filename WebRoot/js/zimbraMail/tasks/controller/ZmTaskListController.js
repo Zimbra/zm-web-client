@@ -562,7 +562,7 @@ function(num) {
 // Move stuff to a new folder.
 ZmTaskListController.prototype._moveCallback =
 function(folder) {
-	this._doMove(this._pendingActionData, folder, null, false);
+	this._doMove(this._pendingActionData, folder);
 	this._clearDialog(appCtxt.getChooseFolderDialog());
 	this._pendingActionData = null;
 };
