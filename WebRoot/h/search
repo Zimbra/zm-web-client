@@ -151,9 +151,10 @@
     </c:if>
 
     <zm:computeSearchContext var="context" usecache="true"/>
-
 </app:handleError>
 <c:if test="${param.mesg eq 'welcome'}">
+    <c:set var="refreshSkin" value="${true}" scope="request"/>
+    <c:remove var="skin" scope="session"/>
     <app:status style="info" html="true">
         <fmt:message key="htmlWelcomeMesg"/>
     </app:status>

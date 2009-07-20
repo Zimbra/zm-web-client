@@ -30,21 +30,18 @@
 <c:set var="skin" value="${param.skin}" />
 <c:set var="availableSkins" value="" />
 <c:set var="defaultSkin" value="${initParam.zimbraDefaultSkin}" />
-
 <%-- use current session skin value --%>
 <c:if test="${empty skin}">
 	<c:set var="skin" value="${sessionScope_skin}" />
 </c:if>
-
-<%-- use user's pref from mailbox --%>
+<%-- use user's pref from mailbox --%> <%-- refresh the account to get new skin value if refreshskin is true --%>
 <c:if test="${empty skin and not empty mailbox}">
 	<c:catch>
-		<zm:getMailbox var="mailbox" />
+		<zm:getMailbox var="mailbox" refreshaccount="${requestScope.refreshSkin ? true : false}"/>
 		<c:set var="skin" value="${mailbox.prefs.skin}" />
 		<c:set var="availableSkins" value="${mailbox.availableSkins}" />
 	</c:catch>
 </c:if>
-
 <%-- use domain skin --%>
 <c:if test="${empty skin}">
 	<c:catch>
