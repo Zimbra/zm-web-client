@@ -120,3 +120,11 @@ window.onload = function() {
             ZmDocsEditApp.launch();
     }, 200);
 };
+
+window.onbeforeunload = function() {
+    if(!ZmDocsEditApp.fileInfo.id) {
+        return ZmMsg.exitDocNotSaved;
+    } else {
+        return ZmMsg.exitDocUnSavedChanges;
+    }
+};
