@@ -33,17 +33,36 @@ function() {
 	return this._controller;
 };
 
+ZmDocsEditView.prototype._focusPageInput =
+function() {
+	if (this.warngDlg) {
+		this.warngDlg.popdown();
+	}
+	this._buttons.fileName.focus();
+};
+
 ZmDocsEditView.prototype.save = function(){
 
     var fileInfo = ZmDocsEditApp.fileInfo;
     var fileName = this._buttons.fileName.getValue();
+    var message;
 
     if(!fileInfo.id){
-        if(fileName == ""){
+        if (fileName == "") {
             appCtxt.setStatusMsg(ZmMsg.emptyDocName, ZmStatusView.LEVEL_WARNING);
-            return;
+            return;    
         }
+        message = this._docMgr.checkInvalidDocName(fileName);
     }
+
+    if (message) {
+		var style = DwtMessageDialog.WARNING_STYLE;
+		var dialog = this.warngDlg = appCtxt.getMsgDialog();
+		dialog.setMessage(message, style);
+		dialog.popup();
+	    dialog.registerCallback(DwtDialog.OK_BUTTON, this._focusPageInput, this);
+		return false;
+	}
 
     ZmDocsEditApp.fileInfo.name    = fileName;
     ZmDocsEditApp.fileInfo.content = this._editor.getContent();
