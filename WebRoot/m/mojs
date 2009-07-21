@@ -11,15 +11,6 @@
 </c:if>
 <c:set scope="page" var="js"><mo:js mailbox="${mailbox}" scriptTag="${false}"/></c:set>
 <c:if test="${empty param.dev}">        
-    <%
-        String js = (String)pageContext.getAttribute("js");
-        js = js.replaceAll("([;\\s{}]+)//.*\\n","$1");
-        js = js.replaceAll("/\\*.*\\*/"," ");
-        js = js.replaceAll("\\bAjxCache\\b","A").replaceAll("\\bajxCache\\b","B").replaceAll("\\bexpire\\b","C").replaceAll("\\bparseResponse\\b","E").replaceAll("\\baddParam\\b","F").replaceAll("\\bcreateUploaderFrame\\b","G").replaceAll("\\bgetFormValues\\b","H").replaceAll("\\bconvertToHashUrl\\b","I").replaceAll("\\bMAX_CACHE_REQUEST\\b","j");
-        js = js.replaceAll("\\bxhr\\b","K").replaceAll("\\burl\\b","L").replaceAll("\\bconvertToParamUrl\\b","M").replaceAll("\\baMsgDiv\\b","N");
-        js = js.replaceAll("([\\s\\t])*(!=|=|==|===|<|>|<=|>=|\\+|-|\\|\\||&&|\\{|\\}|\\(|\\)|,|;)([\\s\\t])*","$2");
-        js = js.replaceAll("([\\t\\n\\s])+"," ");
-        pageContext.setAttribute("js",js);
-    %>
+    <c:set var="js" value="${zm:yuiCompress(js,'js')}"/>
 </c:if>
 ${js}

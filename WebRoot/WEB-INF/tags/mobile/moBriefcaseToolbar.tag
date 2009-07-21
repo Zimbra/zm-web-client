@@ -31,76 +31,43 @@
 
 <c:set var="top_fldr_select" value="${param.top_fldr_select eq '1' ? '1' : (empty sessionScope.top_fldr_select ? '0' : sessionScope.top_fldr_select)}"/> <%-- Default disabled--%>
 <c:set var="btm_fldr_select" value="${param.btm_fldr_select eq '0' ? '0' : (empty sessionScope.btm_fldr_select ? '1' : sessionScope.btm_fldr_select)}"/> <%-- Default enabled--%>
-<%--<c:if test="${not empty requestScope.statusMessage && isTop}"> --%><%-- For search query errors --%><%--
-    <div class="${requestScope.statusClass}">${fn:escapeXml(requestScope.statusMessage)} </div>
-</c:if>--%>
-<c:if test="${isTop && '1' eq  top_stb}">
-    <div class="stb tbl">
-        <div class="tr">
-            <div class="td">
-                        <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=${context.isWikiSearch || context.folder.isWikiView || context.folder.types eq 'wiki' ? 'notebooks':'briefcases'}"><fmt:message
-                                key="${context.isWikiSearch || context.folder.isWikiView || context.folder.types eq 'wiki' ? 'notebooks':'briefcases'}"/></a> &laquo;
-                        <c:if test="${top_fldr_select eq '0'}">
-                            ${fn:escapeXml(zm:truncateFixed(context.shortBackTo,12,true))}
-                        </c:if>
-                        <c:if test="${top_fldr_select ne '0'}">
-			<select class="_zo_select_button" name="sfi"
-                                onchange="fetchIt('?sfi='+this.value+'&amp;st=${context.st}');">
-                            <zm:forEachFolder var="fldr" skiproot="true">
-                                <c:if test="${(context.isBriefcaseSearch && fldr.isDocumentView && !context.folder.isWikiView && context.folder.types ne 'wiki') || ((context.isWikiSearch || context.folder.isWikiView || context.folder.types eq 'wiki') && fldr.isWikiView )}">
-                                    <option ${param.sfi eq fldr.id || context.folder.id eq fldr.id ? 'selected="selected"' : ''}
-                                            value="${fldr.id}">${fn:escapeXml(zm:truncateFixed(zm:getFolderName(pageContext,fldr.id),15,true))}
-                                    </option>
-                                </c:if>
-                            </zm:forEachFolder>
-                        </select>
-                        </c:if>
-                <c:if test="${not empty param.sq && context.searchResult.size > 0}">
-                &laquo; <a href="?saveSearch=1&sq=${param.sq}&search=0"  onclick='toggleElem("searchbar",this); return toggleElem("savesearchbar",this);'><fmt:message key="saveSearch"/></a>
-                </c:if>    
-            </div>
-        </div>
-    </div>
-</c:if>
+<c:if test="${isTop && '1' eq  top_stb}"><div class="stb tbl"><div class="tr"><div class="td">
+                <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=${context.isWikiSearch || context.folder.isWikiView || context.folder.types eq 'wiki' ? 'notebooks':'briefcases'}"><fmt:message key="${context.isWikiSearch || context.folder.isWikiView || context.folder.types eq 'wiki' ? 'notebooks':'briefcases'}"/></a> &laquo;
+                <c:if test="${top_fldr_select eq '0'}">${fn:escapeXml(zm:truncateFixed(context.shortBackTo,12,true))}</c:if>
+                <c:if test="${top_fldr_select ne '0'}">
+			    <select class="_zo_select_button" name="sfi" onchange="fetchIt('?sfi='+this.value+'&amp;st=${context.st}');">
+                    <zm:forEachFolder var="fldr" skiproot="true">
+                    <c:if test="${(context.isBriefcaseSearch && fldr.isDocumentView && !context.folder.isWikiView && context.folder.types ne 'wiki') || ((context.isWikiSearch || context.folder.isWikiView || context.folder.types eq 'wiki') && fldr.isWikiView )}">
+                    <option ${param.sfi eq fldr.id || context.folder.id eq fldr.id ? 'selected="selected"' : ''} value="${fldr.id}">${fn:escapeXml(zm:truncateFixed(zm:getFolderName(pageContext,fldr.id),15,true))}</option></c:if></zm:forEachFolder>
+                </select></c:if>
+                <c:if test="${not empty param.sq && context.searchResult.size > 0}">&laquo; <a href="?saveSearch=1&sq=${param.sq}&search=0"  onclick='toggleElem("searchbar",this); return toggleElem("savesearchbar",this);'><fmt:message key="saveSearch"/></a></c:if>    
+    </div></div></div></c:if>
 <c:if test="${((isTop && '1' eq  top_tb ) || (!isTop && '1' eq btm_tb))}">
-<div class="tb tbl">
-<div class="tr">
-<span class="td">
+<div class="tb tbl"><div class="tr"><span class="td">
 <span class="zo_button_group">
 <c:choose>
     <c:when test="${context.searchResult.hasPrevPage}">
         <zm:prevResultUrl var="url" value="${urlTarget}" index="0" context="${context}" _pv="1"/>
-        <a accesskey="${requestScope.prev_accesskey}" href="${fn:escapeXml(url)}" class='zo_button prev_button'>
-            <!--&#9668;--><fmt:message key="MO_PREV"/>
-        </a>
+        <a accesskey="${requestScope.prev_accesskey}" href="${fn:escapeXml(url)}" class='zo_button prev_button'><fmt:message key="MO_PREV"/></a>
     </c:when>
     <c:otherwise>
-        <a class='zo_button_disabled prev_button'>
-            <!--&#9668;--><fmt:message key="MO_PREV"/>
-        </a>
+        <a class='zo_button_disabled prev_button'><fmt:message key="MO_PREV"/></a>
     </c:otherwise>
 </c:choose>
 <c:choose>
     <c:when test="${context.searchResult.hasNextPage}">
         <zm:nextResultUrl var="url" value="${urlTarget}" index="0" context="${context}"/>
-        <a accesskey="${requestScope.next_accesskey}" class='zo_button next_button' href="${fn:escapeXml(url)}">
-           <!-- &nbsp;&#9658;--><fmt:message key="MO_NEXT"/>
-        </a>
+        <a accesskey="${requestScope.next_accesskey}" class='zo_button next_button' href="${fn:escapeXml(url)}"><fmt:message key="MO_NEXT"/></a>
     </c:when>
     <c:otherwise>
-        <a class='zo_button_disabled next_button'>
-           <!-- &#9658;--><fmt:message key="MO_NEXT"/>
-        </a>
+        <a class='zo_button_disabled next_button'><fmt:message key="MO_NEXT"/></a>
     </c:otherwise>
 </c:choose>
 </span>
-<!--</span>
-<span class="td">-->
 <c:if test="${context.searchResult.size gt 0}">
     <span>
         <select class="zo_select_button" name="anAction" onchange="submitForm(document.getElementById('zForm'),null,this.value)">
             <option value="" selected="selected"><fmt:message key="moreActions"/></option>
-                <%--<optgroup label="<fmt:message key="delete"/>">--%>
             <c:choose>
                 <c:when test="${not context.folder.isInTrash}">
                     <option value="actionDelete"><fmt:message key="delete"/></option>
@@ -114,7 +81,6 @@
                 <option value="actionViewExplorer"><fmt:message key="MO_viewExplorer"/></option>
             </optgroup>
             <option value="actionAttachToCompose"><fmt:message key="sendAsAttachments"/></option>
-            <!--</optgroup>-->
             <optgroup label="<fmt:message key='select'/>">
                 <option value="selectAll"><fmt:message key="all"/></option>
                 <option value="selectNone"><fmt:message key="none"/></option>
@@ -141,11 +107,9 @@
             </c:if>
         </select>
         <noscript><input id="actGo${isTop}" class="zo_button" name="moreActions" type="submit" value="<fmt:message key="actionGo"/>"/></noscript>
-    <script type="text/javascript">var actGo = document.getElementById('actGo${isTop}');if(actGo){actGo.style.display='none';}</script>
+    <script type="text/javascript">var actGo=document.getElementById('actGo${isTop}');if(actGo){actGo.style.display='none';}</script>
     </span>
 </c:if>
-<!--</span>
-<span class="td">-->
 <span class=" f-right">
 <c:choose>
 <c:when test="${context.isWikiSearch && ! empty context.sfi && !context.folder.isSearchFolder}">
@@ -160,30 +124,19 @@
 </div>
 </div>
 </c:if>
-<c:if test="${!isTop && '1' eq  btm_stb }"> <%-- no_btm_stb => no bottom sub toolbar, set this param to disable bottom subtoolbar --%>
-    <div class="stb tbl">
-        <div class="tr">
-            <div class="td">
-                        <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=${context.isWikiSearch || context.folder.isWikiView || context.folder.types eq 'wiki' ? 'notebooks':'briefcases'}"><fmt:message
-                                key="${context.isWikiSearch || context.folder.isWikiView || context.folder.types eq 'wiki' ? 'notebooks' : 'briefcases'}"/></a> &laquo;
-                        <c:if test="${btm_fldr_select eq '0'}">
-                            ${fn:escapeXml(zm:truncateFixed(context.shortBackTo,12,true))}
-                        </c:if>
-                        <c:if test="${btm_fldr_select ne '0'}">
-			<select class="_zo_select_button" name="sfi"
-                                onchange="fetchIt('?sfi='+this.value+'&amp;st=${context.st}');">
-                            <zm:forEachFolder var="fldr" skiproot="true">
-                                <c:if test="${(context.isBriefcaseSearch && fldr.isDocumentView && !context.folder.isWikiView && context.folder.types ne 'wiki') || ((context.isWikiSearch || context.folder.isWikiView || context.folder.types eq 'wiki') && fldr.isWikiView )}">
-                                    <option ${param.sfi eq fldr.id || context.folder.id eq fldr.id ? 'selected="selected"' : ''}
-                                            value="${fldr.id}">${fn:escapeXml(zm:truncateFixed(zm:getFolderName(pageContext,fldr.id),15,true))}
-                                    </option>
-                                </c:if>
-                            </zm:forEachFolder>
-                        </select>
-                        </c:if>
-            </div>
-        </div>
-    </div>
-</c:if>
+<c:if test="${!isTop && '1' eq  btm_stb }"><div class="stb tbl"><div class="tr"><div class="td">
+        <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=${context.isWikiSearch || context.folder.isWikiView || context.folder.types eq 'wiki' ? 'notebooks':'briefcases'}"><fmt:message
+                key="${context.isWikiSearch || context.folder.isWikiView || context.folder.types eq 'wiki' ? 'notebooks' : 'briefcases'}"/></a> &laquo;
+        <c:if test="${btm_fldr_select eq '0'}">
+            ${fn:escapeXml(zm:truncateFixed(context.shortBackTo,12,true))}
+        </c:if>
+        <c:if test="${btm_fldr_select ne '0'}"><select class="_zo_select_button" name="sfi" onchange="fetchIt('?sfi='+this.value+'&amp;st=${context.st}');">
+                <zm:forEachFolder var="fldr" skiproot="true">
+                    <c:if test="${(context.isBriefcaseSearch && fldr.isDocumentView && !context.folder.isWikiView && context.folder.types ne 'wiki') || ((context.isWikiSearch || context.folder.isWikiView || context.folder.types eq 'wiki') && fldr.isWikiView )}">
+                        <option ${param.sfi eq fldr.id || context.folder.id eq fldr.id ? 'selected="selected"' : ''} value="${fldr.id}">${fn:escapeXml(zm:truncateFixed(zm:getFolderName(pageContext,fldr.id),15,true))}</option>
+                    </c:if>
+                </zm:forEachFolder>
+            </select></c:if>
+</div></div></div></c:if>
 <input type="hidden" name="isInTrash" value="${context.folder.isInTrash}">
     

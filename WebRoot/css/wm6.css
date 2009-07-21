@@ -58,7 +58,7 @@ a {
 .label {
     color: #4d8dc3;width:20%;float:left;
 }
-.value {width:65%;float:left;}
+.value {width:78%;text-align:right;}
 .list-row-1, .list-row-2, .list-row-3 {
     width: 100%;
     padding: 0px;
@@ -297,10 +297,13 @@ form {
 .tr{
     display:block;
     vertical-align:middle;
-    text-align:center;
     width:100%;
-    height:100%;
+    padding:0px;
+    margin:0px;
     overflow:visible;
+    max-height:80px;
+    min-height:25px;
+    clear:both;
 }
 .td{
     display:inline-block;
@@ -442,8 +445,9 @@ form {
     background-position: 0 -362px !important;
     padding-left: 12px;
 }
-.nr .td{
+.nr {
     border-top:1px solid #DDD;
+    clear:both;
 }
 .Textarea#bodyField {
     width: 98%;
@@ -459,9 +463,9 @@ form {
     width: 30%;
 }
 
-.cmp_appt_container .label, .cmp_container .label {
+/*.cmp_appt_container .label, .cmp_container .label {
     width: 50px;
-}
+}*/
 
 .ZhAC {
     position: relative;
@@ -660,7 +664,7 @@ h1, h2, h3, h4, h5, h6 {
     max-width: 50px;
     width: 40px;
     white-space: nowrap;
-    padding-top:33% !important;
+    padding-top:20px !important;
     text-align:center;
 }
 .l, .m {
@@ -675,6 +679,9 @@ h1, h2, h3, h4, h5, h6 {
     white-space:nowrap;
     position:absolute;
     right:5px;overflow:visible;
+    display:inline;
+    margin-right:10px;
+    max-height:80px;
 }
 
 .msg-list-in-conv {

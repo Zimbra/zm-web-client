@@ -217,11 +217,27 @@
     </div>
     <mo:handleError><div class="container" id="body"><c:import url="/m/zmview"/></div></mo:handleError>
 </div></div></div>
-<script type="text/javascript"> //This code runs from the ajax response
-var nojs = false;if(window != parent){var d = document.getElementById('statusdiv');var msg = (d) ? d.innerHTML : null;if (msg != null) {parent.showLoadingMsg(null, false);if(d.className && d.className.indexOf("Status") > -1){parent.loadThisFrameResponse(self.GC().innerHTML,self.frameElement.id);nojs = true;}else{nojs = true;}}}    
-<c:if test="${not empty requestScope.title}">document.title = "<fmt:message key="zimbraTitleLabel"/>"+" "+"${fn:escapeXml(requestScope.title)}";</c:if><c:if test="${not empty requestScope.curId}">window.currentDate = '${requestScope.curId}';</c:if><c:if test="${not empty requestScope._today}">window._today = '${requestScope._today}';</c:if><c:if test="${ua.isiPhone or ua.isiPod}">
-if(dId && dV[dId]){hideDelete(dId);}</c:if>
-</script><c:if test="${empty param.ajax}">
+<script type="text/javascript"><c:set var="js">
+//This code runs from the ajax response
+var nojs = false;
+if(window != parent){
+    var d = document.getElementById('statusdiv');
+    var msg = (d) ? d.innerHTML : null;
+    if (msg != null) {
+        parent.showLoadingMsg(null, false);
+        if(d.className && d.className.indexOf("Status") > -1){
+            parent.loadThisFrameResponse(self.GC().innerHTML,self.frameElement.id);nojs = true;
+        }else{
+            nojs = true;
+        }
+    }
+}
+<c:if test="${not empty requestScope.title}">
+document.title = "<fmt:message key="zimbraTitleLabel"/>"+" "+"${fn:escapeXml(requestScope.title)}";</c:if>
+<c:if test="${not empty requestScope.curId}">window.currentDate = '${requestScope.curId}';</c:if>
+<c:if test="${not empty requestScope._today}">window._today = '${requestScope._today}';</c:if>
+<c:if test="${ua.isiPhone or ua.isiPod}">if(dId && dV[dId]){hideDelete(dId);}</c:if>
+</c:set>${zm:yuiCompress(js, 'js')}</script><c:if test="${empty param.ajax}">
     <div class="tbl"><div class="tr">
         <div class="container td" id="userinfo"><c:url var="logoutUrl" value="${context_url}?loginOp=logout&client=mobile"/>
             <span class="logout-span"><a href="${fn:escapeXml(logoutUrl)}" id="_logout" noajax='true'><fmt:message key="logOut"/></a>(${mailbox.accountInfo.attrs["uid"][0]})</span>
@@ -241,11 +257,12 @@ if(dId && dV[dId]){hideDelete(dId);}</c:if>
     <div class="tbl"><div class="tr"><div class="container td fw" id="copyright_notice">
         <a noajax='true' target="_blank" href="<fmt:message key="logoURL"/>"><fmt:message key="footerCopyright"/></a>
     </div></div></div><c:if test="${empty param.noframe || empty param.isiniframe}">
-    <script type="text/javascript" xml:space="preserve">
+    <script type="text/javascript"><c:set var="js">
     if (typeof(getXHR)=='function'&&getXHR()) {if(!nojs && (window == parent)){registerOnclickHook();
         set${ua.isIE ? 'Timeout':'Interval'}(function() {checkHash(null,'get');}, 400);
         <c:if test="${param.st ne 'newmail' && param.st ne 'compose' && mailbox.features.mail && (empty param.st || param.st eq mailbox.prefs.groupMailBy)}">if(window.location.hash.indexOf('newmail') < 0 && window.location.hash.indexOf('compose') < 0 ){
             setTimeout(function() {ajxReq('<c:url value="/m/zmain?st=newmail"/>',null,null,'get',true);},300);}</c:if>
-    }}</script></c:if>
+    }}</c:set>
+    ${zm:yuiCompress(js, 'js')}</script></c:if>
 </body></html></c:if>
 

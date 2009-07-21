@@ -33,43 +33,24 @@
     <zm:searchConv var="convSearchResult" id="${not empty param.cid ? param.cid : context.currentItem.id}" limit="100"
                    context="${context}" fetch="none" markread="false" sort="${param.css}"/>
 </c:if>
-<c:if test="${isTop}">
-    <div class="stb tbl top_conv_v_subtoolbar">
-        <div class="tr">
-            <div class="td">
-                <c:if test="${isConv!=null && isConv}">
-                    <zm:currentResultUrl var="closeurl" value="${urlTarget}" _pv="1"
-                                         index="${context.currentItemIndex}"
-                                         context="${context}"/>
-                </c:if>
-                <zm:currentResultUrl var="closeurl" value="${urlTarget}" _pv="1"
-                                     index="${context.currentItemIndex}"
-                                     context="${context}"/>
+<c:if test="${isTop}"><div class="stb tbl top_conv_v_subtoolbar"><div class="tr"><div class="td">
+    <c:if test="${isConv!=null && isConv}">
+        <zm:currentResultUrl var="closeurl" value="${urlTarget}" _pv="1"
+                             index="${context.currentItemIndex}"
+                             context="${context}"/>
+    </c:if>
+    <zm:currentResultUrl var="closeurl" value="${urlTarget}" _pv="1"
+                         index="${context.currentItemIndex}"
+                         context="${context}"/>
+    <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=folders"><fmt:message key="folders"/></a> &laquo; <a href="${fn:escapeXml(closeurl)}${empty param.ajax ? '#conv' : '&conv'}${cid}" class='zo_leftbutton'>${fn:escapeXml(zm:truncateFixed(context.shortBackTo,15,true))}</a>
+    <c:if test="${isConv!=null && isConv}">&laquo; <fmt:message key="backToConv"/></c:if>
+    <c:if test="${isConv==null || !isConv }"><zm:currentResultUrl var="closeUrl" value="${urlTarget}" action='view' context="${context}" _pv="1"
+                             cso="${param.cso}" csi="${param.csi}" css="${param.css}"/>
+        &laquo; <a href="${fn:escapeXml(closeUrl)}" class='zo_leftbutton'> <fmt:message key="backToConv"/> </a> &laquo; ${fn:escapeXml(zm:truncateFixed(message.subject,12,true))}
+    </c:if>
 
-
-                <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=folders"><fmt:message key="folders"/></a> &laquo; <a
-                    href="${fn:escapeXml(closeurl)}${empty param.ajax ? '#conv' : '&conv'}${cid}" class='zo_leftbutton'>
-                    ${fn:escapeXml(zm:truncateFixed(context.shortBackTo,15,true))}
-            </a>
-                <c:if test="${isConv!=null && isConv}">
-                    &laquo; <fmt:message key="backToConv"/>
-                </c:if>
-                <c:if test="${isConv==null || !isConv }">
-                    <zm:currentResultUrl var="closeUrl" value="${urlTarget}" action='view' context="${context}" _pv="1"
-                                         cso="${param.cso}" csi="${param.csi}" css="${param.css}"/>
-                    &laquo; <a href="${fn:escapeXml(closeUrl)}" class='zo_leftbutton'> <fmt:message
-                        key="backToConv"/> </a> &laquo; ${fn:escapeXml(zm:truncateFixed(message.subject,12,true))}
-                </c:if>
-
-            </div>
-        </div>
-    </div>
-</c:if>
-
-<div class="tb tbl">
-<div class="tr">
-<div class="td">
-<span class="zo_button_group">
+</div></div></div></c:if>
+<div class="tb tbl"><div class="tr"><div class="td"><span class="zo_button_group">
     <c:if test="${isConv !=null && isConv}">
         <zm:computeNextPrevItem var="convCursor" searchResult="${context.searchResult}"
                                 index="${context.currentItemIndex}"/>
@@ -78,34 +59,25 @@
                 <zm:prevItemUrl var="prevItemUrl" value="${urlTarget}" action="view"
                                 cursor="${convCursor}" context="${context}" _pv="1"
                                 css="${param.css}"/>
-                <a accesskey="${requestScope.prev_accesskey}" class='zo_button prev_button' href="${fn:escapeXml(prevItemUrl)}">
-                    <fmt:message key="MO_PREV"/>
-                </a>
+                <a accesskey="${requestScope.prev_accesskey}" class='zo_button prev_button' href="${fn:escapeXml(prevItemUrl)}"><fmt:message key="MO_PREV"/></a>
             </c:when>
             <c:otherwise>
-                <a class='zo_button_disabled prev_button'>
-                    <fmt:message key="MO_PREV"/>
-                </a>
+                <a class='zo_button_disabled prev_button'><fmt:message key="MO_PREV"/></a>
             </c:otherwise>
         </c:choose>
     </c:if>
     <c:if test="${isConv == null || !isConv}">
-        <zm:computeNextPrevItem var="messCursor" searchResult="${convSearchResult}"
-                                index="${param.csi}"/>
+        <zm:computeNextPrevItem var="messCursor" searchResult="${convSearchResult}" index="${param.csi}"/>
         <c:choose>
             <c:when test="${messCursor.hasPrev}">
                 <zm:currentResultUrl var="prevMsgUrl" value="${urlTarget}" action='view'
                                      context="${context}" mview="1" _pv="1"
                                      cso="${messCursor.prevOffset}"
                                      csi="${messCursor.prevIndex}" css="${param.css}"/>
-                <a accesskey="${requestScope.prev_accesskey}" class='zo_button prev_button' href="${fn:escapeXml(prevMsgUrl)}">
-                    <fmt:message key="MO_PREV"/>
-                </a>
+                <a accesskey="${requestScope.prev_accesskey}" class='zo_button prev_button' href="${fn:escapeXml(prevMsgUrl)}"><fmt:message key="MO_PREV"/></a>
             </c:when>
             <c:otherwise>
-                <a class='zo_button_disabled prev_button'>
-                    <fmt:message key="MO_PREV"/>
-                </a>
+                <a class='zo_button_disabled prev_button'><fmt:message key="MO_PREV"/></a>
             </c:otherwise>
         </c:choose>
     </c:if>
@@ -117,17 +89,12 @@
                 <zm:nextItemUrl var="nextItemUrl" value="${urlTarget}" action="view"
                                 cursor="${convCursor}" context="${context}"
                                 css="${param.css}"/>
-                <a accesskey="${requestScope.next_accesskey}" class='zo_button next_button' href="${fn:escapeXml(nextItemUrl)}">
-                    <fmt:message key="MO_NEXT"/>
-                </a>
+                <a accesskey="${requestScope.next_accesskey}" class='zo_button next_button' href="${fn:escapeXml(nextItemUrl)}"><fmt:message key="MO_NEXT"/></a>
             </c:when>
             <c:otherwise>
-                <a class='zo_button_disabled next_button'>
-                    <fmt:message key="MO_NEXT"/>
-                </a>
+                <a class='zo_button_disabled next_button'><fmt:message key="MO_NEXT"/></a>
             </c:otherwise>
         </c:choose>
-
     </c:if>
     <c:if test="${isConv == null || !isConv}">
         <c:choose>
@@ -136,97 +103,60 @@
                                      context="${context}" mview="1"
                                      cso="${messCursor.nextOffset}"
                                      csi="${messCursor.nextIndex}" css="${param.css}"/>
-                <a accesskey="${requestScope.next_accesskey}" class='zo_button next_button' href="${fn:escapeXml(nextMsgUrl)}">
-                    <fmt:message key="MO_NEXT"/>
-                </a>
+                <a accesskey="${requestScope.next_accesskey}" class='zo_button next_button' href="${fn:escapeXml(nextMsgUrl)}"><fmt:message key="MO_NEXT"/></a>
             </c:when>
             <c:otherwise>
-                <a class='zo_button_disabled next_button'>
-                    <fmt:message key="MO_NEXT"/>
-                </a>
+                <a class='zo_button_disabled next_button'><fmt:message key="MO_NEXT"/></a>
             </c:otherwise>
         </c:choose>
     </c:if>
-</span>
-<span>
+</span><span>
 <c:if test="${singleMessage}">
     <select class="zo_select_button" name="anAction" onchange="submitForm(document.getElementById('zForm'));">
         <option value="" selected="selected"><fmt:message key="moreActions"/></option>
         <c:set var="myFolder" value="${zm:getFolder(pageContext, message.folderId)}"/>
         <c:set var="inTrash" value="${myFolder.isInTrash}"/>
-        <!--<optgroup label="Delete">-->
         <c:choose>
-            <c:when test="${inTrash}">
-                <option value="actionHardDelete"><fmt:message key="delete"/></option>
-            </c:when>
-            <c:otherwise>
-                <option value="actionDelete"><fmt:message key="delete"/></option>
-            </c:otherwise>
+            <c:when test="${inTrash}"><option value="actionHardDelete"><fmt:message key="delete"/></option></c:when>
+            <c:otherwise><option value="actionDelete"><fmt:message key="delete"/></option></c:otherwise>
         </c:choose>
-            <%-- </optgroup>--%>
         <optgroup label="<fmt:message key="markAs"/>">
-            <c:if test="${message.isUnread}">
-                <option value="actionMarkRead"><fmt:message key="MO_read"/></option>
-            </c:if>
-            <c:if test="${not message.isUnread}">
-                <option value="actionMarkUnread"><fmt:message key="MO_unread"/></option>
-            </c:if>
+            <c:if test="${message.isUnread}"><option value="actionMarkRead"><fmt:message key="MO_read"/></option></c:if>
+            <c:if test="${not message.isUnread}"><option value="actionMarkUnread"><fmt:message key="MO_unread"/></option></c:if>
             <c:choose>
-                <c:when test="${myFolder.isSpam}">
-                    <option value="actionMarkUnspam"><fmt:message key="actionNotSpam"/></option>
-                </c:when>
-                <c:otherwise>
-                    <option value="actionMarkSpam"><fmt:message key="actionSpam"/></option>
-                </c:otherwise>
+                <c:when test="${myFolder.isSpam}"><option value="actionMarkUnspam"><fmt:message key="actionNotSpam"/></option></c:when>
+                <c:otherwise><option value="actionMarkSpam"><fmt:message key="actionSpam"/></option></c:otherwise>
             </c:choose>
         </optgroup>
         <optgroup label="<fmt:message key="MO_flag"/>">
-            <c:if test="${not message.isFlagged}">
-                <option value="actionFlag"><fmt:message key="add"/></option>
-            </c:if>
-            <c:if test="${message.isFlagged}">
-                <option value="actionUnflag"><fmt:message key="remove"/></option>
-            </c:if>
+            <c:if test="${not message.isFlagged}"><option value="actionFlag"><fmt:message key="add"/></option></c:if>
+            <c:if test="${message.isFlagged}"><option value="actionUnflag"><fmt:message key="remove"/></option></c:if>
         </optgroup>
         <optgroup label="<fmt:message key="moveAction"/>">
             <zm:forEachFolder var="folder">
-                <c:if test="${folder.id != context.folder.id and folder.isMessageMoveTarget and !folder.isTrash and !folder.isSpam}">
-                    <option value="moveTo_${folder.id}">${zm:getFolderPath(pageContext, folder.id)}</option>
-                </c:if>
+                <c:if test="${folder.id != context.folder.id and folder.isMessageMoveTarget and !folder.isTrash and !folder.isSpam}"><option value="moveTo_${folder.id}">${zm:getFolderPath(pageContext, folder.id)}</option></c:if>
             </zm:forEachFolder>
         </optgroup>
         <c:if test="${mailbox.features.tagging and mailbox.hasTags}">
             <c:set var="tagsToAdd" value="${zm:getAvailableTags(pageContext,message.tagIds,true)}"/>
             <c:set var="tagsToRemove" value="${zm:getAvailableTags(pageContext,message.tagIds,false)}"/>
             <optgroup label="<fmt:message key="MO_actionAddTag"/>">
-                <c:forEach var="atag" items="${tagsToAdd}">
-                    <option value="addTag_${atag.id}">${fn:escapeXml(atag.name)}</option>
-                </c:forEach>
+                <c:forEach var="atag" items="${tagsToAdd}"><option value="addTag_${atag.id}">${fn:escapeXml(atag.name)}</option></c:forEach>
             </optgroup>
             <optgroup label="<fmt:message key="MO_actionRemoveTag"/>">
-                <c:forEach var="atag" items="${tagsToRemove}">
-                    <option value="remTag_${atag.id}">${fn:escapeXml(atag.name)}</option>
-                </c:forEach>
+                <c:forEach var="atag" items="${tagsToRemove}"><option value="remTag_${atag.id}">${fn:escapeXml(atag.name)}</option></c:forEach>
             </optgroup>
         </c:if>
-            <%--<zm:forEachFolder var="folder">
-                <input type="hidden" name="folderId" value="${folder.id}"/>
-            </zm:forEachFolder>--%>
-    </select>
-    <noscript><input id="actGo${isTop}" class="zo_button" name="moreActions" type="submit" value="<fmt:message key="actionGo"/>"/></noscript>
-    <script type="text/javascript">var actGo = document.getElementById('actGo${isTop}');if(actGo){actGo.style.display='none';}</script>
+    </select><noscript><input id="actGo${isTop}" class="zo_button" name="moreActions" type="submit" value="<fmt:message key="actionGo"/>"/></noscript>
+    <script type="text/javascript">var actGo=document.getElementById('actGo${isTop}');if(actGo){actGo.style.display='none';}</script>
 </c:if>
 <c:if test="${!singleMessage && convSearchResult.size gt 0}">
     <select class="zo_select_button" name="anAction" onchange="submitForm(document.getElementById('zForm'));">
         <option value="" selected="selected"><fmt:message key="moreActions"/></option>
         <optgroup label="Delete">
             <c:choose>
-                <c:when test="${not context.folder.isInTrash}">
-                    <option value="actionHardDelete"><fmt:message key="delete"/></option>
-                </c:when>
-                <c:otherwise>
-                    <option value="actionDelete"><fmt:message key="delete"/></option>
-                </c:otherwise>
+                <c:when test="${not context.folder.isInTrash}"><option value="actionHardDelete"><fmt:message key="delete"/></option></c:when>
+                <c:otherwise><option value="actionDelete"><fmt:message key="delete"/></option></c:otherwise>
             </c:choose>
         </optgroup>
         <option value="actionAttachToCompose"><fmt:message key="sendAsAttachments"/></option>
@@ -234,52 +164,35 @@
             <option value="actionMarkRead"><fmt:message key="MO_read"/></option>
             <option value="actionMarkUnread"><fmt:message key="MO_unread"/></option>
             <c:choose>
-                <c:when test="${context.folder.isSpam}">
-                    <option value="actionMarkUnspam"><fmt:message key="actionNotSpam"/></option>
-                </c:when>
-                <c:otherwise>
-                    <option value="actionMarkSpam"><fmt:message key="actionSpam"/></option>
-                </c:otherwise>
+                <c:when test="${context.folder.isSpam}"><option value="actionMarkUnspam"><fmt:message key="actionNotSpam"/></option></c:when>
+                <c:otherwise><option value="actionMarkSpam"><fmt:message key="actionSpam"/></option></c:otherwise>
             </c:choose>
         </optgroup>
         <optgroup label="<fmt:message key="MO_flag"/>">
-                        <option value="actionFlag"><fmt:message key="add"/></option>
-                        <option value="actionUnflag"><fmt:message key="remove"/></option>
-                    </optgroup>
-        
+            <option value="actionFlag"><fmt:message key="add"/></option>
+            <option value="actionUnflag"><fmt:message key="remove"/></option>
+        </optgroup>
         <optgroup label="<fmt:message key="moveAction"/>">
-            <zm:forEachFolder var="folder">
-                <c:if test="${folder.id != context.folder.id and folder.isMessageMoveTarget and !folder.isTrash and !folder.isSpam}">
-                    <option value="moveTo_${folder.id}">${fn:escapeXml(folder.rootRelativePath)}</option>
-                </c:if>
-            </zm:forEachFolder>
+        <zm:forEachFolder var="folder">
+        <c:if test="${folder.id != context.folder.id and folder.isMessageMoveTarget and !folder.isTrash and !folder.isSpam}"><option value="moveTo_${folder.id}">${fn:escapeXml(folder.rootRelativePath)}</option></c:if></zm:forEachFolder>
         </optgroup>
         <c:if test="${mailbox.features.tagging and mailbox.hasTags}">
             <c:set var="allTags" value="${mailbox.mailbox.allTags}"/>
             <optgroup label="<fmt:message key="MO_actionAddTag"/>">
-                <c:forEach var="atag" items="${allTags}">
-                    <option value="addTag_${atag.id}">${fn:escapeXml(atag.name)}</option>
-                </c:forEach>
+                <c:forEach var="atag" items="${allTags}"><option value="addTag_${atag.id}">${fn:escapeXml(atag.name)}</option></c:forEach>
             </optgroup>
             <optgroup label="<fmt:message key="MO_actionRemoveTag"/>">
-                <c:forEach var="atag" items="${allTags}">
-                    <option value="remTag_${atag.id}">${fn:escapeXml(atag.name)}</option>
-                </c:forEach>
+                <c:forEach var="atag" items="${allTags}"><option value="remTag_${atag.id}">${fn:escapeXml(atag.name)}</option></c:forEach>
             </optgroup>
         </c:if>
     </select>
     <noscript><input id="actGo${isTop}" class="zo_button" name="moreActions" type="submit" value="<fmt:message key="actionGo"/>"/></noscript>
-    <script type="text/javascript">var actGo = document.getElementById('actGo${isTop}');if(actGo){actGo.style.display='none';}</script>
+    <script type="text/javascript">var actGo=document.getElementById('actGo${isTop}');if(actGo){actGo.style.display='none';}</script>
 </c:if>
 </span>
-<span class="">
-    <c:url var="composeUrl" value="${urlTarget}?st=newmail"/>
-    <a accesskey="${requestScope.mainaction_accesskey}" href="${composeUrl}" class="zo_button">
-        <fmt:message key="compose"/>
-    </a>
+<span class=""><c:url var="composeUrl" value="${urlTarget}?st=newmail"/>
+    <a accesskey="${requestScope.mainaction_accesskey}" href="${composeUrl}" class="zo_button"><fmt:message key="compose"/></a>
 </span>
-</div>
-</div>
-</div>
+</div></div></div>
 <input type="hidden" name="isInTrash" value="${context.folder.isInTrash}">
     

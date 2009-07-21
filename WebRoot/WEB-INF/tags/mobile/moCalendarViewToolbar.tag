@@ -54,7 +54,7 @@
 <c:set var="btm_fldr_select" value="${param.btm_fldr_select eq '0' ? '0' : (empty sessionScope.btm_fldr_select ? '1' : sessionScope.btm_fldr_select)}"/> <%-- Default enabled--%>
 <fmt:message key="checkedCalendars" var="checkedInUI"/>
 <c:if test="${isTop && '1' eq top_stb}">
-    <div class="stb"><div class="tbl"><div class="tr"><div class="td">
+    <div class="stb tbl"><div class="tr"><div class="td">
         <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=cals"><fmt:message key="calendars"/></a> &laquo;
         <c:if test="${top_fldr_select ne '1'}">
             ${not empty sessionScope.calendar ? zm:truncateFixed(sessionScope.calendar.name,12,true) : checkedInUI}
@@ -69,9 +69,9 @@
         </zm:forEachFolder>
         </select>
         </c:if>
-    </div></div></div></div>
+    </div></div></div>
 </c:if>
-<c:url var='eaction' value="?st=newappt&date=${dateDf}">
+<c:url var='eaction' value="?st=newappt&date=${dateDf}">                
 <c:if test="${empty invId}">
     <c:param name="_replaceDate" value="1"/>    
 </c:if>
@@ -96,7 +96,7 @@
 </span></span></div>
 </c:if>    
 <c:if test="${!isTop && '1' eq btm_stb}">
-    <div class="stb"><div class="tbl"><div class="tr"><div class="td">
+    <div class="stb tbl"><div class="tr"><div class="td">
         <a href="${urlTarget}?st=cals"><fmt:message key="calendarsLabel"/></a>
         <c:if test="${btm_fldr_select ne '1'}">
             ${not empty sessionScope.calendar ? zm:truncateFixed(sessionScope.calendar.name,12,true) : checkedInUI}
@@ -111,5 +111,5 @@
         </zm:forEachFolder>
         </select>
         </c:if>    
-    </div></div></div></div>
+    </div></div></div>
 </c:if>
