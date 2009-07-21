@@ -302,7 +302,7 @@ function(themePath)
 
 
 ZmDocletMgr.INVALID_DOC_NAME_CHARS = "[\\|]";
-ZmDocletMgr.INVALID_DOC_NAME_RE = new RegExp(ZmDocsEditView.INVALID_DOC_NAME_CHARS);
+ZmDocletMgr.INVALID_DOC_NAME_RE = new RegExp(ZmDocletMgr.INVALID_DOC_NAME_CHARS);
 
 ZmDocletMgr.prototype.checkInvalidDocName = function(fileName) {
 
