@@ -251,9 +251,14 @@ function(item) {
 // Note that images typically get IDs in _getCellContents().
 ZmListView.prototype._getCellId =
 function(item, field) {
-	return (field == ZmItem.F_DATE)
-		? this._getFieldId(item, field)
-		: DwtListView.prototype._getCellId.apply(this, arguments);
+	if (field == ZmItem.F_DATE) {
+		return this._getFieldId(item, field);
+	} else if (field == ZmItem.F_SELECTION) {
+		return this._getFieldId(item, ZmItem.F_SELECTION_CELL);
+
+	} else {
+		return DwtListView.prototype._getCellId.apply(this, arguments);
+	}
 };
 
 ZmListView.prototype._getCellClass =
@@ -391,7 +396,7 @@ function(clickedEl, ev) {
 			// get the field being clicked
 			var id = (ev.target.id && ev.target.id.indexOf("AjxImg") == -1)	? ev.target.id : clickedEl.id;
 			var m = id ? this._parseId(id) : null;
-			if (m && m.field == ZmItem.F_SELECTION) {
+			if (m && (m.field == ZmItem.F_SELECTION) || (m.field == ZmItem.F_SELECTION_CELL) ) {
 				if (this._selectedItems.size() == 1) {
 					var sel = this._selectedItems.get(0);
 					var item = this.getItemFromElement(sel);
