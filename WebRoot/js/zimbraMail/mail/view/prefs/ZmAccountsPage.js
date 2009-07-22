@@ -303,7 +303,10 @@ function(account, skipUpdate, ignoreProvider) {
 
 	// toggle delete button
 	if (this._deleteButton) {
-		this._deleteButton.setEnabled(account && account.type != ZmAccount.TYPE_ZIMBRA);
+		var isEnabled = (appCtxt.isOffline)
+			? (account && account.type == ZmAccount.TYPE_PERSONA)
+			: (account && account.type != ZmAccount.TYPE_ZIMBRA);
+		this._deleteButton.setEnabled(isEnabled);
 	}
 
 	// intialize sections
@@ -322,11 +325,6 @@ function(account, skipUpdate, ignoreProvider) {
 		this._currentAccount = account;
 		Dwt.setVisible(div, true);
 		switch (account.type) {
-			case ZmAccount.TYPE_ZIMBRA: {
-				this._currentSection = ZmAccountsPage.SECTIONS["PRIMARY"];
-				this._setZimbraAccount(account, this._currentSection);
-				break;
-			}
 			case ZmAccount.TYPE_POP:
 			case ZmAccount.TYPE_IMAP: {
 				this._currentSection = provider && ZmAccountsPage.SECTIONS[provider.id];
@@ -346,6 +344,11 @@ function(account, skipUpdate, ignoreProvider) {
 			case ZmAccount.TYPE_PERSONA: {
 				this._currentSection = ZmAccountsPage.SECTIONS["PERSONA"];
 				this._setPersona(account, this._currentSection);
+				break;
+			}
+			default: {
+				this._currentSection = ZmAccountsPage.SECTIONS["PRIMARY"];
+				this._setZimbraAccount(account, this._currentSection);
 				break;
 			}
 		}
@@ -1480,7 +1483,7 @@ function(account) {
 	this._accountListView.setCellContents(account, ZmItem.F_NAME, AjxStringUtil.htmlEncode(account.getName()));
 	this._accountListView.setCellContents(account, ZmItem.F_EMAIL, AjxStringUtil.htmlEncode(account.getEmail()));
 	var provider = ZmDataSource.getProviderForAccount(account);
-	var type = provider ? provider.name : ZmAccountsListView.TYPES[account.type]; 
+	var type = provider ? provider.name : ZmAccount.getTypeName(account.type);
 	this._accountListView.setCellContents(account, ZmItem.F_TYPE, type);
 };
 
@@ -1527,7 +1530,7 @@ function(email) {
 
 ZmAccountsPage.prototype._handleTypeChange =
 function(evt) {
-	var type = ZmAccountsListView.TYPES[this._getControlValue("ACCOUNT_TYPE", this._currentSection)] || "???";
+	var type = ZmAccount.getTypeName(this._getControlValue("ACCOUNT_TYPE", this._currentSection));
 	this._accountListView.setCellContents(this._currentAccount, ZmItem.F_TYPE, type);
 	this._handleTypeOrSslChange(evt);
 };
@@ -1960,12 +1963,6 @@ function() {
 
 // Constants
 
-ZmAccountsListView.TYPES = {};
-ZmAccountsListView.TYPES[ZmAccount.TYPE_ZIMBRA]		= ZmMsg.accountTypePrimary;
-ZmAccountsListView.TYPES[ZmAccount.TYPE_POP]		= ZmMsg.accountTypePop;
-ZmAccountsListView.TYPES[ZmAccount.TYPE_IMAP]		= ZmMsg.accountTypeImap;
-ZmAccountsListView.TYPES[ZmAccount.TYPE_PERSONA]	= ZmMsg.accountTypePersona;
-
 ZmAccountsListView.WIDTH_NAME	= ZmMsg.COLUMN_WIDTH_NAME_ACC;
 ZmAccountsListView.WIDTH_STATUS	= ZmMsg.COLUMN_WIDTH_STATUS_ACC;
 ZmAccountsListView.WIDTH_TYPE	= ZmMsg.COLUMN_WIDTH_TYPE_ACC;
@@ -1980,7 +1977,7 @@ function(account, field) {
 ZmAccountsListView.prototype.setCellContents =
 function(account, field, html) {
 	var el = this.getCellElement(account, field);
-	if (!el) return;
+	if (!el) { return; }
 
 	if (field == ZmItem.F_NAME) {
 		el = document.getElementById(this._getCellId(account, field)+"_name");
@@ -1995,8 +1992,8 @@ function(buffer, i, item, field, col, params) {
 	if (field == ZmItem.F_NAME) {
 		var cellId = this._getCellId(item, field);
 		buffer[i++] = "<div id='";
-		buffer[i++] = cellId+"_name";
-		buffer[i++] = "'>";
+		buffer[i++] = cellId;
+		buffer[i++] = "_name'>";
 		buffer[i++] = item.getName();
 		buffer[i++] = "</div>";
 		return i;
@@ -2023,7 +2020,7 @@ function(buffer, i, item, field, col, params) {
 		if (!type) {
 			type = (item.type == ZmAccount.TYPE_ZIMBRA && !item.isMain && !appCtxt.isOffline)
 				? ZmMsg.accountTypeSecondary
-				: ZmAccountsListView.TYPES[item.type];
+				: ZmAccount.getTypeName(item.type);
 		}
 		buffer[i++] = type;
 		return i;
@@ -2035,16 +2032,6 @@ ZmAccountsListView.prototype._getCellId =
 function(item, field, params) {
 	return DwtId.getListViewItemId(DwtId.WIDGET_ITEM_CELL, this._view, item.id, field);
 };
-
-/***
-// TODO: handle tooltip hover
-ZmAccountsListView.prototype._getToolTip = function(field, item, ev, div, match) {
-	if (field == ZmItem.F_NAME && item instanceof ZmDataSource && !item.enabled) {
-		return ZmMsg.accountDisabled;
-	}
-	return DwtListView.prototype._getToolTip.apply(this, arguments);
-};
-/***/
 
 ZmAccountsListView.prototype._getHeaderList =
 function() {
@@ -2064,9 +2051,8 @@ ZmAccountsPage._defineClasses =
 function() {
 ZmNewDataSource = function() {
 	var number = ++ZmNewDataSource.ID;
-	var id = "new-dsrc-"+number;
 	this.setType(appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED) ? ZmAccount.TYPE_POP : ZmAccount.TYPE_IMAP);
-	ZmDataSource.call(this, this.type, id);
+	ZmDataSource.call(this, this.type, ("new-dsrc-"+number));
 	this.email = "";
 	this.name = AjxMessageFormat.format(ZmMsg.newExternalAccount, number);
 	this._new = true;

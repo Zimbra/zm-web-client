@@ -60,7 +60,16 @@ function(params) {
 		var organizer = organizers[i];
 		var section = view.getSectionForTab(organizer.pageId);
 
-		var parent = (section.parentId && tree.getById(ZmId.getPrefPageId(section.parentId))) || root;
+		var parentId = section.parentId;
+		if (appCtxt.isOffline &&
+			(section.id == "SIGNATURES" ||
+			 section.id == "ACCOUNTS" ||
+			 section.id == "COMPOSING" ||
+			 section.id == "FILTERS"))
+		{
+			parentId = null;
+		}
+		var parent = (parentId && tree.getById(ZmId.getPrefPageId(parentId))) || root;
 		parent.children.add(organizer);
 
 		organizer.parent = parent;
@@ -92,6 +101,10 @@ function(params) {
 ZmPrefPageTreeController.prototype._showSection =
 function(account, sectionId) {
 
+	if (appCtxt.multiAccounts && sectionId == "MOBILE") {
+		return false;
+	}
+
 	if (appCtxt.isOffline) {
 		if (account.isMain) {
 			if (sectionId == "FILTERS" ||
@@ -106,7 +119,12 @@ function(account, sectionId) {
 			if (sectionId == "COMPOSING") {
 				return false;
 			}
-			if (sectionId == "SHARING" && !account.isZimbraAccount) {
+			if (!account.isZimbraAccount &&
+				(sectionId == "MAIL" ||
+				 sectionId == "SHARING" ||
+				 sectionId == "CALENDAR" ||
+				 sectionId == "CONTACTS"))
+			{
 				return false;
 			}
 		}

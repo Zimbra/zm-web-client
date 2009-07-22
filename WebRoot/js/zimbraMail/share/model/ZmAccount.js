@@ -38,6 +38,27 @@ ZmAccount.TYPE_ZIMBRA	= "Zimbra";
 
 
 //
+// Public static methods
+//
+
+ZmAccount.getTypeName =
+function(type) {
+	switch (type) {
+		case ZmAccount.TYPE_AOL:		return "AOL";
+		case ZmAccount.TYPE_GMAIL:		return "Gmail";
+		case ZmAccount.TYPE_IMAP:		return ZmMsg.accountTypeImap;
+		case ZmAccount.TYPE_LIVE:		return "Microsoft Live";
+		case ZmAccount.TYPE_MSE:		return "Microsoft Exchange";
+		case ZmAccount.TYPE_PERSONA:	return ZmMsg.accountTypePersona;
+		case ZmAccount.TYPE_POP:		return ZmMsg.accountTypePop;
+		case ZmAccount.TYPE_YMP:		return "Yahoo! Mail";
+		case ZmAccount.TYPE_ZIMBRA:		return "Zimbra";
+	}
+	return ZmMsg.unknown;
+};
+
+
+//
 // Public methods
 //
 
