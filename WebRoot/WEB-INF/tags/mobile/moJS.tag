@@ -409,7 +409,8 @@ var customClick = function (e) {
         if(tname.match(/input/ig) && ttype.match(/submit/ig)){ //submit button; add clicked=true to it
             targ._wasClicked = true;                                                          //ajxForm submit will send only clicked btns to server
             return true;
-        }
+        }<c:if test="${ua.isiPhone or ua.isiPod}">else if(dV[dId] && tname.match(/input/ig) && ttype.match(/checkbox/ig))
+            updateChecked(false,true);</c:if>
     }
     //targ.dispatchEvent(e);
 };
@@ -711,11 +712,16 @@ var hideDelete = function(id){
         delete iH[id];
     }
 };
-var updateChecked = function(disabled){
+var updateChecked = function(disabled,doItAll){
    var cCount = 0,cbs=$('zForm').getElementsByClassName('chk');
    for(var i=0;cbs && i < cbs.length; i++){
        if(cbs[i].checked){ cCount++;cbs[i].disabled = disabled;}
    }
+   if(doItAll)
+    if(cCount <= 0)
+        hideDelete(dId);
+    else
+        $('delBtn').value = "<fmt:message key="delete"/> ("+cCount+")";
    return cCount; 
 };
 var showDelete = function(id){
@@ -726,7 +732,7 @@ var showDelete = function(id){
        l = l[0];
        iH[id] = l.innerHTML;
        p.getElementsByClassName('chk')[0].checked=true;
-       var cCount = updateChecked(true);
+       var cCount = updateChecked(false);
        $('zForm').anAction[0].value='';
        l.innerHTML = "<input type='submit'  id='delBtn' style='z-index:-999' class='zo_button delete_button' name='actionDelete' value='<fmt:message key="delete"/>"+(cCount > 1 ? ' ('+cCount+')' : '')+"'>";
        $('delBtn').className += " delBtnV";
@@ -770,6 +776,8 @@ var checkAll = function(cb, checked) {
             cb[i].checked = checked;
     else
         cb.checked = checked;
+    <c:if test="${ua.isiPhone or ua.isiPod}">if(dV[dId])
+        updateChecked(false,true);</c:if>
 };
 <c:if test="${ua.isiPhone or ua.isiPod}">
 var updateOrientation = function() {

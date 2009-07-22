@@ -115,5 +115,5 @@
     </c:if>
 </div>
 </div>
-<c:if test="${not empty message.attachments}"><div class="View"><div><a name="attachments${message.partName}"></a></div><div></div></div></c:if>
+<c:if test="${not empty message.attachments}"><div class="View"><a name="attachments${message.partName}"></a><mo:attachments mailbox="${mailbox}" message="${message}" composeUrl="${composeUrl}"/></div></c:if>
 <c:if test="${not empty param.debug}"><div><pre>${fn:escapeXml(message)}</pre></div></c:if></c:if>

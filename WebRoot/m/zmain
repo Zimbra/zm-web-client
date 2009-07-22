@@ -9,6 +9,7 @@
 <c:if test="${empty param.ajax}"><?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<c:if test="${(!empty param.debug || !empty param.dev)}"><c:set var="dbg" value="${true}"/></c:if>    
 <c:remove var="prevUrl" scope="session"/>
 <c:remove var="currentUrl" scope="session"/>
 </c:if>
@@ -111,11 +112,12 @@
 <title><fmt:message key="zimbraTitle"/></title>
 <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0;"/>
 <script type="text/javascript">window.onerror=function(m,u,l){if(window.console){window.console.log("An error occured in: "+u+"\n{\n\tmsg: "+m+",\n\tline: "+l+"\n}");}return false;};</script>
-<c:if test="${empty djs or not djs}"><script type="text/javascript">window.currentUrl='${pageContext.request.requestURL}?ajax=true&${pageContext.request.queryString}';<c:import url="/m/mojs${(!empty param.debug || !empty param.dev) ? '?dev=1':''}"/></script></c:if>    
+<c:if test="${empty djs or not djs}"><script type="text/javascript">window.currentUrl='${pageContext.request.requestURL}?ajax=true&${pageContext.request.queryString}';<c:import url="/m/mojs${dbg ? '?dev=1':''}"/></script></c:if>    
 <c:set var="calcss" value=",${sessionScope.zms}-cal"/>
 <link href="<c:url value='/css/${sessionScope.zms}${calcss}.css'/>" type="text/css" rel="stylesheet"/>
 </head>
 <body onorientationchange="updateOrientation()">
+<c:if test="${dbg}"><!--${ua.userAgent}--></c:if>    
 <div class="container tbl" id="appbar" align="center"><c:set var="appcount" value="1"/>
     <c:if test="${mailbox.features.mail}"><c:set var="appcount" value="${appcount+1}"/></c:if>
     <c:if test="${mailbox.features.contacts}"><c:set var="appcount" value="${appcount+1}"/></c:if>
@@ -237,7 +239,7 @@ document.title = "<fmt:message key="zimbraTitleLabel"/>"+" "+"${fn:escapeXml(req
 <c:if test="${not empty requestScope.curId}">window.currentDate = '${requestScope.curId}';</c:if>
 <c:if test="${not empty requestScope._today}">window._today = '${requestScope._today}';</c:if>
 <c:if test="${ua.isiPhone or ua.isiPod}">if(dId && dV[dId]){hideDelete(dId);}</c:if>
-</c:set>${zm:yuiCompress(js, 'js')}</script><c:if test="${empty param.ajax}">
+</c:set>${dbg ? js : zm:yuiCompress(js, 'js')}</script><c:if test="${empty param.ajax}">
     <div class="tbl"><div class="tr">
         <div class="container td" id="userinfo"><c:url var="logoutUrl" value="${context_url}?loginOp=logout&client=mobile"/>
             <span class="logout-span"><a href="${fn:escapeXml(logoutUrl)}" id="_logout" noajax='true'><fmt:message key="logOut"/></a>(${mailbox.accountInfo.attrs["uid"][0]})</span>
@@ -263,6 +265,6 @@ document.title = "<fmt:message key="zimbraTitleLabel"/>"+" "+"${fn:escapeXml(req
         <c:if test="${param.st ne 'newmail' && param.st ne 'compose' && mailbox.features.mail && (empty param.st || param.st eq mailbox.prefs.groupMailBy)}">if(window.location.hash.indexOf('newmail') < 0 && window.location.hash.indexOf('compose') < 0 ){
             setTimeout(function() {ajxReq('<c:url value="/m/zmain?st=newmail"/>',null,null,'get',true);},300);}</c:if>
     }}</c:set>
-    ${zm:yuiCompress(js, 'js')}</script></c:if>
+    ${dbg ? js : zm:yuiCompress(js, 'js')}</script></c:if>
 </body></html></c:if>
 

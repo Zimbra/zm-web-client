@@ -298,7 +298,7 @@
                     <option <c:if test="${compose.timeZone eq tz.id}">selected</c:if> value="${fn:escapeXml(tz.id)}">${fn:escapeXml(displayName)}</option>
                 </zm:forEachTimeZone>
             </select></span></div>
-    </div></c:if>
+    </c:if></div>
 <c:if test="${mailbox.features.groupcalendarEnabled}">
     <div class="tbl"><div class="tr nr"><span class="td label"><fmt:message key="attendeesLabel"/></span>
         <span class="td value"><div class="ZhAC ZhACTo">
