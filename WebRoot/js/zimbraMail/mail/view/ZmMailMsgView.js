@@ -53,9 +53,9 @@ ZmMailMsgView = function(params) {
 	this._setMouseEventHdlrs(); // needed by object manager
 
 	// XXX: for now, turn off object handling in new window
-	if (!appCtxt.isChildWindow) {
+	//if (!appCtxt.isChildWindow) {
 		this._objectManager = true;
-	}
+	//}
 
 	this._changeListener = new AjxListener(this, this._msgChangeListener);
 	this.addListener(DwtEvent.ONSELECTSTART, new AjxListener(this, this._selectStartListener));

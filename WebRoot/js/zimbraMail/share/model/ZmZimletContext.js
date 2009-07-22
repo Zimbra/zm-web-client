@@ -132,6 +132,10 @@ ZmZimletContext.RE_SCAN_MSG = /(^|[^\\])\$\{msg\.([\$a-zA-Z0-9_]+)\}/g;
 
 ZmZimletContext.__RE_SCAN_SETTING = /\$\{setting\.([\$a-zA-Z0-9_]+)\}/g;
 
+ZmZimletContext._isArray =
+function(obj){
+    return ( appCtxt.isChildWindow && obj.length && AjxUtil.isFunction(obj.sort) && AjxUtil.isFunction(obj.unshift) );
+};
 
 /** This function creates a 'sane' JSON object, given one returned by the
  * Zimbra server.
@@ -156,7 +160,7 @@ function(obj, tag, wantarray_re) {
 		if (obj instanceof DwtControl) { //Don't recurse into DwtControls, causes too much recursion
 			return obj;
 		}
-		else if (obj instanceof Array) {
+		else if (obj instanceof Array || ZmZimletContext._isArray(obj) ) {
 			if (obj.length == 1 && !(wantarray_re && wantarray_re.test(tag))) {
 				cool_json = doit(obj[0], tag);
 			} else {
@@ -258,7 +262,7 @@ function() {
 
 ZmZimletContext.prototype.getVal =
 function(key) {
-	var zim = this.json.zimlet;
+	var zim = this.json.zimlet;    
 	return eval("zim." + key);
 };
 

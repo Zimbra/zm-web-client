@@ -214,6 +214,14 @@ function() {
 	return this._imageAttachmentHandler;
 };
 
+ZmObjectManager.prototype._getAjxEmailAddress =
+function(obj){
+    if(appCtxt.isChildWindow && obj.isAjxEmailAddress){ //Making sure child window knows its type AjxEmailAddress
+        obj = AjxEmailAddress.copy(obj);
+    }
+    return obj;
+};
+
 // type is optional.. if you know what type of content is being passed in, set the
 // type param so we dont have to figure out what kind of content we're dealing with
 ZmObjectManager.prototype.findObjects =
@@ -261,6 +269,7 @@ function(content, htmlEncode, type, isTextMsg) {
 			// If it's an email address just handle it and return the result.
 			if (type == "email" || content instanceof AjxEmailAddress) {
 				if (lowestHandler) {
+                    content = this._getAjxEmailAddress(content);
 					this.generateSpan(lowestHandler, html, idx, content, null);
 				} else {
 					html[idx++] = AjxStringUtil.htmlEncode(content.toString());

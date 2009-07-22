@@ -184,7 +184,7 @@ function() {
 	} else if (cmd == "msgViewDetach") {
 		target = "view-window";
 	}
-
+    
 	// setup zimlets, Load it first becoz.. zimlets has to get processed first.
 	if (target) {
 		var zimletArray = this.__hack_zimletArray() || [];
@@ -192,6 +192,7 @@ function() {
 			var zimletMgr = appCtxt.getZimletMgr();
 			var userProps = this.__hack_userProps();
 			var createViewCallback =  new AjxCallback(this, this._createView);
+            appCtxt.setZimletsPresent(true);
 			zimletMgr.loadZimlets(zimletArray, userProps, target, createViewCallback, true);
 			return;
 		}
