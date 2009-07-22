@@ -307,62 +307,58 @@ ZmDocsEditView.prototype._insertQuickTables = function(ev) {
   var action = ev.item.getData(ZmDocsEditView.ZD_VALUE);
 
     var doc = this._editor._getIframeDoc();
-    var tableEl = doc.createElement("table");
-    tableEl.width = "90%";
-    tableEl.cellspacing="0";
-    tableEl.cellpadding="3";
-    tableEl.align="center";
+    var spanEl = doc.createElement("span");
 
     if(action == "QuickTable1") {
         var tableHtml = [];
-        tableHtml.push('<tbody><tr><th style="width:33%; background-color:rgb(237,37,37);"></br></th><th style="width:33%; background-color:rgb(237,37,37);" ></br></th><th style="width:33%; background-color:rgb(237,37,37);"></br></td></tr>' +
+        tableHtml.push('<table width="90%" cellspacing="1" cellpadding="3" align="center"><tbody><tr><th style="width:33%; background-color:rgb(237,37,37);"></br></th><th style="width:33%; background-color:rgb(237,37,37);" ></br></th><th style="width:33%; background-color:rgb(237,37,37);"></br></td></tr>' +
                        '<tr><td style="background-color:rgb(255,197,197);"></br></td><td style="background-color:rgb(255,197,197);"></br></td><td style="background-color:rgb(255,197,197);"></br></td></tr>' +
                        '<tr><td></br></td><td></br></td><td></br></td></tr>' +
                        '<tr><td style="background-color:rgb(255,197,197);"></br></td><td style="background-color:rgb(255,197,197);"></br></td><td style="background-color:rgb(255,197,197);"></br></td></tr>' +
                        '<tr><td></br></td><td></br></td><td></br></td></tr>' +
                        '<tr><td style="background-color:rgb(255,197,197);"></br></td><td style="background-color:rgb(255,197,197);"></br></td><td style="background-color:rgb(255,197,197);"></br></td></tr>' +
-                       '<tr><td></br></td><td></br></td><td></br></td></tr></tbody>');
+                       '<tr><td></br></td><td></br></td><td></br></td></tr></tbody></table>');
 
-        tableEl.innerHTML = tableHtml;
+        spanEl.innerHTML = tableHtml.join("");
     } else if(action == "QuickTable2") {
         var tableHtml = [];
-        tableHtml.push('<tbody><tr><th style="background-color:rgb(115,170,270);"></br></th></tr>' +
+        tableHtml.push('<table width="90%" cellspacing="1" cellpadding="3" align="center"><tbody><tr><th style="background-color:rgb(115,170,270);"></br></th></tr>' +
                        '<tr><td style="background-color:rgb(198,220,238);"></br></td></tr>' +
                        '<tr><td></br></td></tr>' +
                        '<tr><td style="background-color:rgb(198,220,238);"></br></td></tr>' +
                        '<tr><td></br></td></tr>' +
                        '<tr><td style="background-color:rgb(198,220,238);"></br></td></tr>' +
-                       '<tr><td></br></td></tr></tbody>');
+                       '<tr><td></br></td></tr></tbody></table>');
 
-        tableEl.innerHTML = tableHtml;        
+        spanEl.innerHTML = tableHtml.join("");;
     } else if(action == "QuickTable3") {
         var tableHtml = [];
-        tableHtml.push('<tbody><tr><th style="width:33%; background-color:rgb(128,128,128);"></br></th><th style="width:33%; background-color:rgb(128,128,128);" ></br></th><th style="width:33%; background-color:rgb(128,128,128);"></br></td></tr>' +
+        tableHtml.push('<table width="90%" cellspacing="1" cellpadding="3" align="center"><tbody><tr><th style="width:33%; background-color:rgb(128,128,128);"></br></th><th style="width:33%; background-color:rgb(128,128,128);" ></br></th><th style="width:33%; background-color:rgb(128,128,128);"></br></td></tr>' +
                        '<tr><td colspan="1" rowspan="5" style="background-color:rgb(196,196,196);"></br></td><td style="background-color:rgb(234,234,234);"></br></td><td style="background-color:rgb(234,234,234);"></br></td></tr>' +
                        '<tr><td style="background-color:rgb(234,234,234);"></br></td><td style="background-color:rgb(234,234,234);"></br></td></tr>' +
                        '<tr><td style="background-color:rgb(234,234,234);"></br></td><td style="background-color:rgb(234,234,234);"></br></td></tr>' +
                        '<tr><td style="background-color:rgb(234,234,234);"></br></td><td style="background-color:rgb(234,234,234);"></br></td></tr>' +
                        '<tr><td style="background-color:rgb(234,234,234);"></br></td><td style="background-color:rgb(234,234,234);"></br></td></tr>' +
-                       '<tr><td style="background-color:rgb(234,234,234);"></br></td><td style="background-color:rgb(234,234,234);"></br></td><td style="background-color:rgb(234,234,234);"></br></td></tbody>');
+                       '<tr><td style="background-color:rgb(234,234,234);"></br></td><td style="background-color:rgb(234,234,234);"></br></td><td style="background-color:rgb(234,234,234);"></br></td></tr></tbody></table>');
 
-        tableEl.innerHTML = tableHtml.join("");
+        spanEl.innerHTML = tableHtml.join("");
     } else if(action == "QuickTable4") {
         var tableHtml = [];
-        tableHtml.push('<tbody><tr><th style="width:33%; background-color:rgb(1,171,37);"></br></th><th style="width:33%; background-color:rgb(1,171,37);" ></br></th><th style="width:33%; background-color:rgb(1,171,37);"></br></td></tr>' +
+        tableHtml.push('<table width="90%" cellspacing="1" cellpadding="3" align="center"><tbody><tr><th style="width:33%; background-color:rgb(1,171,37);"></br></th><th style="width:33%; background-color:rgb(1,171,37);" ></br></th><th style="width:33%; background-color:rgb(1,171,37);"></br></td></tr>' +
                        '<tr><td style="background-color:rgb(216,255,225);"></br></td><td style="background-color:rgb(216,255,225);"></br></td><td style="background-color:rgb(216,255,225);"></br></td></tr>' +
                        '<tr><td style="background-color:rgb(216,255,225);"></br></td><td style="background-color:rgb(216,255,225);"></br></td><td style="background-color:rgb(216,255,225);"></br></td></tr>' +
                        '<tr><td style="background-color:rgb(216,255,225);"></br></td><td style="background-color:rgb(216,255,225);"></br></td><td style="background-color:rgb(216,255,225);"></br></td></tr>' +
                        '<tr><td style="background-color:rgb(216,255,225);"></br></td><td style="background-color:rgb(216,255,225);"></br></td><td style="background-color:rgb(216,255,225);"></br></td></tr>' +
                        '<tr><td style="background-color:rgb(216,255,225);"></br></td><td style="background-color:rgb(216,255,225);"></br></td><td style="background-color:rgb(216,255,225);"></br></td></tr>' +
-                       '<tr><td style="background-color:rgb(216,255,225);"></br></td><td style="background-color:rgb(216,255,225);"></br></td><td style="background-color:rgb(216,255,225);"></br></td></tr>');
+                       '<tr><td style="background-color:rgb(216,255,225);"></br></td><td style="background-color:rgb(216,255,225);"></br></td><td style="background-color:rgb(216,255,225);"></br></td></tr></tbody></table>');
 
-        tableEl.innerHTML = tableHtml.join("");
+        spanEl.innerHTML = tableHtml.join("");
     }
 
     var p = doc.createElement("br");
     var df = doc.createDocumentFragment();
     df.appendChild(p);
-    df.appendChild(tableEl);
+    df.appendChild(spanEl.getElementsByTagName("table")[0]);
     df.appendChild(p.cloneNode(true));
 
     this._editor._insertNodeAtSelection(df);
@@ -374,39 +370,33 @@ ZmDocsEditView.prototype._insertDocElements = function(ev) {
     var action = ev.item.getData(ZmDocsEditView.ZD_VALUE);
 
     var doc = this._editor._getIframeDoc();
-    var tableEl = doc.createElement("table");
-    tableEl.width = "90%";
-    tableEl.cellspacing="0";
-    tableEl.cellpadding="0";
-    tableEl.align="center";
+    var spanEl = doc.createElement("span");
 
     if(action == "DocElement2") {
-        tableEl.style.border = "1px solid rgb(0, 0, 0)";
-        
-        tableEl.innerHTML = '<tr height="40"><td style="background-color: rgb(204, 0, 0);"><br/></td></tr><tr><td><br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/>' +
+        spanEl.innerHTML = '<table width="90%" cellspacing="1" cellpadding="3" align="center" style="border:1px solid rgb(0,0,0);"><tbody><tr height="40"><td style="background-color: rgb(204, 0, 0);"><br/></td></tr><tr><td><br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/>' +
                             '<br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/><div _moz_dirty="" style="margin-left: 80px;">' +
                             '<font size="7" _moz_dirty="">[ Document Title ]</font><br _moz_dirty=""/><font size="3" _moz_dirty="" style="color: rgb(192, 192, 192);">&nbsp;[ Sub Title]</font><br _moz_dirty=""/></div><br _moz_dirty=""/>' +
                             '<br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/>' +
                             '<br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/><div _moz_dirty="" style="margin-left: 76%;">&nbsp;' +
                             '<img src="http://www.zimbra.com/_media/logos/zimbra_logo.gif" alt="http://www.zimbra.com/_media/logos/zimbra_logo.gif" _moz_dirty="" style="width: 211px; height: 101px;"/>' +
-                            '<br _moz_dirty=""/></div><br _moz_dirty=""/><br _moz_dirty=""/></td></tr>';
+                            '<br _moz_dirty=""/></div><br _moz_dirty=""/><br _moz_dirty=""/></td></tr></tbody></table>';
 
     } else if(action == "DocElement3") {
 
-        tableEl.innerHTML = '<tr><td style="border: 1px solid rgb(0, 0, 0);"><br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/>' +
+        spanEl.innerHTML = '<table width="90%" cellspacing="1" cellpadding="3" align="center"><tbody><tr><td style="border: 1px solid rgb(0, 0, 0);"><br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/>' +
                             '<br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/><div _moz_dirty="" style="margin-left: 80px;">' +
                             '<font size="7" _moz_dirty="">[ Document Title ]</font><br _moz_dirty=""/><font size="3" _moz_dirty="" style="color: rgb(192, 192, 192);">&nbsp;[ Sub Title]</font><br _moz_dirty=""/></div><br _moz_dirty=""/>' +
                             '<br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/>' +
                             '<br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/><br _moz_dirty=""/><div _moz_dirty="" style="margin-left: 80%;">&nbsp;' +
                             '<img src="http://yhoo.client.shareholder.com/press/images/yahoobang-small.gif" alt="http://yhoo.client.shareholder.com/press/images/yahoobang-small.gif" _moz_dirty="" style="width: 156px; height: 91px;"/>' +
-                            '<br _moz_dirty=""/></div><br _moz_dirty=""/><br _moz_dirty=""/></td></tr>';
+                            '<br _moz_dirty=""/></div><br _moz_dirty=""/><br _moz_dirty=""/></td></tr></tbody></table>';
 
     }
 
     var p = doc.createElement("br");
     var df = doc.createDocumentFragment();
     df.appendChild(p);
-    df.appendChild(tableEl);
+    df.appendChild(spanEl.getElementsByTagName("table")[0]);
     df.appendChild(p.cloneNode(true));
 
     this._editor._insertNodeAtSelection(df);
