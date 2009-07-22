@@ -75,8 +75,8 @@ function(sectionOrId) {
 };
 
 /**
-* Displays a set of tabs, one for each preferences page. The first tab will have its
-* page rendered.
+* Displays a set of tabs, one for each preferences page. The first tab will have
+* its page rendered.
 */
 ZmPrefView.prototype.show =
 function() {

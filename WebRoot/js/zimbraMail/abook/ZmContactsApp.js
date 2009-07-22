@@ -154,8 +154,7 @@ function() {
 		precondition:
 			function() {
 				return appCtxt.get(ZmSetting.GAL_AUTOCOMPLETE_ENABLED) &&
-					   appCtxt.get(ZmSetting.GAL_ENABLED) &&
-					   appCtxt.getActiveAccount().isZimbraAccount;
+					   appCtxt.get(ZmSetting.GAL_ENABLED);
 			}
 	});
 

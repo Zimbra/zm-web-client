@@ -59,7 +59,7 @@ ZmSetting = function(id, params) {
 	} else {
 		this.value = null;
 	}
-}
+};
 
 ZmSetting.prototype = new ZmModel;
 ZmSetting.prototype.constructor = ZmSetting;

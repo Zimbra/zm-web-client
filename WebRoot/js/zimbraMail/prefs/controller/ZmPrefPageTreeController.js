@@ -93,8 +93,22 @@ ZmPrefPageTreeController.prototype._showSection =
 function(account, sectionId) {
 
 	if (appCtxt.isOffline) {
-		if (account.isMain && (sectionId == "FILTERS")) {
-			return false;
+		if (account.isMain) {
+			if (sectionId == "FILTERS" ||
+				sectionId == "SHARING" ||
+				sectionId == "SIGNATURES" ||
+				sectionId == "ACCOUNTS")
+			{
+				return false;
+			}
+		}
+		else {
+			if (sectionId == "COMPOSING") {
+				return false;
+			}
+			if (sectionId == "SHARING" && !account.isZimbraAccount) {
+				return false;
+			}
 		}
 	}
 

@@ -37,9 +37,11 @@ function() {
 
 	if (!this._initialized) {
 		this._initialized = true;
-		var soapDoc = AjxSoapDoc.create("GetWhiteBlackListRequest", "urn:zimbraAccount");
-		var callback = new AjxCallback(this, this._handleResponseLoadWhiteBlackList);
-		appCtxt.getRequestMgr().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:callback});
+		if (this._blackListControl && this._whiteListControl) {
+			var soapDoc = AjxSoapDoc.create("GetWhiteBlackListRequest", "urn:zimbraAccount");
+			var callback = new AjxCallback(this, this._handleResponseLoadWhiteBlackList);
+			appCtxt.getRequestMgr().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:callback});
+		}
 	}
 };
 
@@ -53,8 +55,10 @@ function(useDefaults) {
 	}
 	this._setPopDownloadSinceControls();
 
-	this._blackListControl.reset();
-	this._whiteListControl.reset();
+	if (this._blackListControl && this._whiteListControl) {
+		this._blackListControl.reset();
+		this._whiteListControl.reset();
+	}
 };
 
 ZmMailPrefsPage.prototype.isDirty =
@@ -65,8 +69,11 @@ function() {
 
 ZmMailPrefsPage.prototype.isWhiteBlackListDirty =
 function() {
-	return this._blackListControl.isDirty() ||
-		   this._whiteListControl.isDirty();
+	if (this._blackListControl && this._whiteListControl) {
+		return this._blackListControl.isDirty() ||
+			   this._whiteListControl.isDirty();
+	}
+	return false;
 };
 
 ZmMailPrefsPage.prototype.addCommand =
@@ -251,6 +258,7 @@ function(id, setup, value) {
 ZmMailPrefsPage.prototype._setupCustom =
 function(id, setup, value) {
 	var el = document.getElementById([this._htmlElId, id].join("_"));
+	if (!el) { return; }
 
 	if (id == ZmSetting.MAIL_BLACKLIST) {
 		this._blackListControl = new ZmWhiteBlackList(this, id, "BlackList");
@@ -286,26 +294,19 @@ function(cbox, id, evt) {
 		} else {
 			textarea.setEnabled(cbox.isSelected());
 
-            this._startDateCheckbox.setEnabled(cbox.isSelected());
-            this._endDateCheckbox.setEnabled(cbox.isSelected());
+			this._startDateCheckbox.setEnabled(cbox.isSelected());
+			this._endDateCheckbox.setEnabled(cbox.isSelected());
 
-            if(!this._startDateVal.value){
-                this._startDateCheckbox.setSelected(false);
-            }else{
-                this._startDateCheckbox.setSelected(true);
-            }
+			var val = !this._startDateVal.value ? false : true;
+			this._startDateCheckbox.setSelected(val);
 
-            if(!this._endDateVal.value){
-                this._endDateCheckbox.setSelected(false);
-            }else{
-                this._endDateCheckbox.setSelected(true);
-            }
-            this._setEnabledStartDate(this._startDateCheckbox.isSelected());
-            this._setEnabledEndDate(this._endDateCheckbox.isSelected());
+			val = !this._endDateVal.value ? false : true;
+			this._endDateCheckbox.setSelected(val);
 
+			this._setEnabledStartDate(this._startDateCheckbox.isSelected());
+			this._setEnabledEndDate(this._endDateCheckbox.isSelected());
 		}
 	}
-    
 };
 
 ZmMailPrefsPage.prototype._setEnabledStartDate =

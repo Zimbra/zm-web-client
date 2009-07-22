@@ -34,23 +34,26 @@ and the container element is replaced with that control.
 			<td class='ZOptionsSectionMain'>
 				<table width=100%>
 				<$ if (!appCtxt.isOffline) { $>
-					<tr><td class='ZOptionsLabelTop'><$=ZmMsg.loginLabel$></td>
+					<tr>
+						<td class='ZOptionsLabelTop'><$=ZmMsg.loginLabel$></td>
 						<td class='ZOptionsField'><div id='${id}_CLIENT_TYPE' tabindex='20'></div></td>
 					</tr>
 				<$ } $>
 
 				<$ if (data.isEnabled(ZmSetting.SKIN_CHANGE_ENABLED)) { $>
-					<tr><td class='ZOptionsLabel'><$=ZmMsg.themeLabel$></td>
+					<tr>
+						<td class='ZOptionsLabel'><$=ZmMsg.themeLabel$></td>
 						<td class='ZOptionsField'><div id='${id}_SKIN_NAME' tabindex='30'></div></td>
 					</tr>
 				<$ } $>
 
-				<$ if (data.isEnabled(ZmSetting.LOCALE_NAME)) { $>
-					<tr><td class='ZOptionsLabel'><$=ZmMsg.languageLabel$></td>
+					<tr>
+						<td class='ZOptionsLabel'><$=ZmMsg.languageLabel$></td>
 						<td class='ZOptionsField'><div id='${id}_LOCALE_NAME' tabindex='40'></div></td>
 					</tr>
-				<$ } $>
-					<tr><td class='ZOptionsLabel'><$=ZmMsg.defualtTimezone$></td>
+
+					<tr>
+						<td class='ZOptionsLabel'><$=ZmMsg.defualtTimezone$></td>
 						<td class='ZOptionsField'><div id='${id}_DEFAULT_TIMEZONE' tabindex='45'></div></td>
 					</tr>
 				<$ if (!appCtxt.isOffline) { $>
@@ -141,66 +144,68 @@ and the container element is replaced with that control.
 			</tr>
 		</table>
 	</div>
-	<table border=0 cellspacing=0 cellpadding=0 width=100%>
-		<tr class='ZOptionsHeaderRow'>
-			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
-			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.displayMessages$></td>
-			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
-		</tr>
-	</table>
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
-		<tr>
-			<td class='ZOptionsSectionMain'>
-				<table width=100%>
-					<tr>
-						<td class='ZOptionsLabel'><$=ZmMsg.displayMessagesLabel$></td>
-						<td class='ZOptionsField'><input id='${id}_PAGE_SIZE' tabindex='20'></td>
-					</tr>
-
-					<$ if (!appCtxt.isOffline && data.isEnabled(ZmSetting.POLLING_INTERVAL_ENABLED)) { $>
+	<$ if (!appCtxt.multiAccounts || data.activeAccount.isMain) { $>
+		<table border=0 cellspacing=0 cellpadding=0 width=100%>
+			<tr class='ZOptionsHeaderRow'>
+				<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+				<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.displayMessages$></td>
+				<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
+			</tr>
+		</table>
+		<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+			<tr>
+				<td class='ZOptionsSectionMain'>
+					<table width=100%>
 						<tr>
-							<td class='ZOptionsLabel'><$=ZmMsg.pollingIntervalLabel$></td>
-							<td class='ZOptionsField'><input id='${id}_POLLING_INTERVAL' tabindex='40' size='3'></td>
+							<td class='ZOptionsLabel'><$=ZmMsg.displayMessagesLabel$></td>
+							<td class='ZOptionsField'><input id='${id}_PAGE_SIZE' tabindex='20'></td>
 						</tr>
-					<$ } $>
 
-					<tr>
-						<td class='ZOptionsLabel'><$=ZmMsg.displayMail$></td>
-						<td class='ZOptionsField'><select id='${id}_VIEW_AS_HTML' tabindex='50'></select></td>
-					</tr>
+						<$ if (!appCtxt.isOffline && data.isEnabled(ZmSetting.POLLING_INTERVAL_ENABLED)) { $>
+							<tr>
+								<td class='ZOptionsLabel'><$=ZmMsg.pollingIntervalLabel$></td>
+								<td class='ZOptionsField'><input id='${id}_POLLING_INTERVAL' tabindex='40' size='3'></td>
+							</tr>
+						<$ } $>
 
-					<tr><td colspan=2><hr></td></tr>
+						<tr>
+							<td class='ZOptionsLabel'><$=ZmMsg.displayMail$></td>
+							<td class='ZOptionsField'><select id='${id}_VIEW_AS_HTML' tabindex='50'></select></td>
+						</tr>
 
-					<tr>
-						<td class='ZOptionsLabel'><$=ZmMsg.messagePreviewLabel$></td>
-						<td class='ZOptionsField'><div id='${id}_SHOW_FRAGMENTS' tabindex='70'></div></td>
-					</tr>
+						<tr><td colspan=2><hr></td></tr>
 
-					<tr>
-						<td class='ZOptionsLabel'></td>
-						<td class='ZOptionsField'><div id='${id}_OPEN_MAIL_IN_NEW_WIN' tabindex='80'></div></td>
-					</tr>
+						<tr>
+							<td class='ZOptionsLabel'><$=ZmMsg.messagePreviewLabel$></td>
+							<td class='ZOptionsField'><div id='${id}_SHOW_FRAGMENTS' tabindex='70'></div></td>
+						</tr>
 
-					<tr>
-						<td class='ZOptionsLabel'><$=ZmMsg.imagesLabel$></td>
-						<td class='ZOptionsField'><div id='${id}_DISPLAY_EXTERNAL_IMAGES' tabindex='90'></div></td>
-					</tr>
+						<tr>
+							<td class='ZOptionsLabel'></td>
+							<td class='ZOptionsField'><div id='${id}_OPEN_MAIL_IN_NEW_WIN' tabindex='80'></div></td>
+						</tr>
 
-					<tr>
-						<td class='ZOptionsLabelTop'><$=ZmMsg.messageReadLabel$></td>
-						<td class='ZOptionsField'><select id='${id}_MARK_MSG_READ' tabindex='95'></select></td>
-					</tr>
+						<tr>
+							<td class='ZOptionsLabel'><$=ZmMsg.imagesLabel$></td>
+							<td class='ZOptionsField'><div id='${id}_DISPLAY_EXTERNAL_IMAGES' tabindex='90'></div></td>
+						</tr>
 
-					<tr><td colspan=2><hr></td></tr>
+						<tr>
+							<td class='ZOptionsLabelTop'><$=ZmMsg.messageReadLabel$></td>
+							<td class='ZOptionsField'><select id='${id}_MARK_MSG_READ' tabindex='95'></select></td>
+						</tr>
 
-					<tr>
-						<td class='ZOptionsLabel'><$=ZmMsg.initialMailSearchLabel$></td>
-						<td class='ZOptionsField'><div id='${id}_INITIAL_SEARCH' tabindex='100'></div></td>
-					</tr>
-				</table>
-			</td>
-		</tr>
-	</table>
+						<tr><td colspan=2><hr></td></tr>
+
+						<tr>
+							<td class='ZOptionsLabel'><$=ZmMsg.initialMailSearchLabel$></td>
+							<td class='ZOptionsField'><div id='${id}_INITIAL_SEARCH' tabindex='100'></div></td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
+	<$ } $>
 	<table border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
@@ -212,28 +217,43 @@ and the container element is replaced with that control.
 		<tr>
 			<td class='ZOptionsSectionMain'>
 				<table width=100%>
-					<tr>
-						<td class='ZOptionsLabel'><$=ZmMsg.messageArrivalLabel$></td>
-						<td class='ZOptionsField'><input id='${id}_MAIL_NOTIFY_SOUNDS' tabindex='105' type=checkbox></td>
-					</tr>
-					<tr>
-						<td class='ZOptionsLabel'>&nbsp;</td>
-						<td class='ZOptionsField'><input id='${id}_MAIL_NOTIFY_APP' tabindex='106' type=checkbox></td>
-					</tr>
-					<tr>
-						<td class='ZOptionsLabel'>&nbsp;</td>
-						<td class='ZOptionsField'><input id='${id}_MAIL_NOTIFY_BROWSER' tabindex='107' type=checkbox></td>
-					</tr>
-					<tr>
-						<td class='ZOptionsLabel'>&nbsp;</td>
-						<td class='ZOptionsField'>
-							<table cellspacing=0 cellpadding=0><tr>
-								<td><div id='${id}_MAIL_NOTIFY_TOASTER' tabindex='108'></div></td>
-								<td><$=ZmDesktopAlert.getInstance().getLinkText() $></td>
-							</tr></table>
-						</td>
-					</tr>
-					<$ if (appCtxt.getActiveAccount().isZimbraAccount) { $>
+
+					<$ if (data.isEnabled(ZmSetting.MAIL_NOTIFY_SOUNDS)) { $>
+						<tr>
+							<td class='ZOptionsLabel'><$=ZmMsg.messageArrivalLabel$></td>
+							<td class='ZOptionsField'><input id='${id}_MAIL_NOTIFY_SOUNDS' tabindex='105' type=checkbox></td>
+						</tr>
+					<$ } $>
+
+					<$ if (data.isEnabled(ZmSetting.MAIL_NOTIFY_APP)) { $>
+						<tr>
+							<td class='ZOptionsLabel'>&nbsp;</td>
+							<td class='ZOptionsField'><input id='${id}_MAIL_NOTIFY_APP' tabindex='106' type=checkbox></td>
+						</tr>
+					<$ } $>
+
+					<$ if (data.isEnabled(ZmSetting.MAIL_NOTIFY_BROWSER)) { $>
+						<tr>
+							<td class='ZOptionsLabel'>&nbsp;</td>
+							<td class='ZOptionsField'><input id='${id}_MAIL_NOTIFY_BROWSER' tabindex='107' type=checkbox></td>
+						</tr>
+					<$ } $>
+
+					<$ if (data.isEnabled(ZmSetting.MAIL_NOTIFY_TOASTER)) { $>
+						<tr>
+							<td class='ZOptionsLabel'>&nbsp;</td>
+							<td class='ZOptionsField'>
+								<table cellspacing=0 cellpadding=0>
+									<tr>
+										<td><div id='${id}_MAIL_NOTIFY_TOASTER' tabindex='108'></div></td>
+										<td><$=ZmDesktopAlert.getInstance().getLinkText() $></td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+					<$ } $>
+
+					<$ if (!appCtxt.multiAccounts || (!data.activeAccount.isMain && data.activeAccount.isZimbraAccount)) { $>
 						<$ if (data.isEnabled(ZmSetting.MAIL_FORWARDING_ENABLED)) { $>
 							<tr>
 								<td class='ZOptionsLabel'>&nbsp;</td>
@@ -265,7 +285,9 @@ and the container element is replaced with that control.
 						</tr>
 						<tr>
 							<td class='ZOptionsLabel'>&nbsp;</td>
-							<td class='ZOptionsField' style='padding-left:2em;'><input id='${id}_NOTIF_ADDRESS' tabindex='140' title='<$= ZmMsg.enterEmailAddress $>'></td>
+							<td class='ZOptionsField' style='padding-left:2em;'>
+								<input id='${id}_NOTIF_ADDRESS' tabindex='140' title='<$= ZmMsg.enterEmailAddress $>'>
+							</td>
 						</tr>
 						<$ } $>
 
@@ -345,32 +367,34 @@ and the container element is replaced with that control.
 			</td>
 		</tr>
 	</table>
-	<table border=0 cellspacing=0 cellpadding=0 width=100%>
-		<tr class='ZOptionsHeaderRow'>
-			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
-			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.junkMailOptions$></td>
-			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
-		</tr>
-	</table>
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
-		<tr>
-			<td class='ZOptionsSectionMain'>
-				<table width=100%>
-					<tr>
-						<td class='ZOptionsLabel' style='text-align:left'><$=ZmMsg.blackListLabel$></td>
-						<td class='ZOptionsLabel' style='text-align:left'><$=ZmMsg.whiteListLabel$></td>
-					</tr>
-					<tr>
-						<td class='ZOptionsField'><div id='${id}_MAIL_BLACKLIST'></div></td>
-						<td class='ZOptionsField'><div id='${id}_MAIL_WHITELIST'></div></td>
-					</tr>
-				</table>
-			</td>
-		</tr>
-	</table>
 
-	<$ if (appCtxt.getActiveAccount().isZimbraAccount) { $>
-		<$ if (data.isEnabled(ZmSetting.POP_ENABLED)) { $>
+	<$ if (!appCtxt.multiAccounts || (!data.activeAccount.isMain && data.activeAccount.isZimbraAccount)) { $>
+		<table border=0 cellspacing=0 cellpadding=0 width=100%>
+			<tr class='ZOptionsHeaderRow'>
+				<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+				<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.junkMailOptions$></td>
+				<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
+			</tr>
+		</table>
+		<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+			<tr>
+				<td class='ZOptionsSectionMain'>
+					<table width=100%>
+						<tr>
+							<td class='ZOptionsLabel' style='text-align:left'><$=ZmMsg.blackListLabel$></td>
+							<td class='ZOptionsLabel' style='text-align:left'><$=ZmMsg.whiteListLabel$></td>
+						</tr>
+						<tr>
+							<td class='ZOptionsField'><div id='${id}_MAIL_BLACKLIST'></div></td>
+							<td class='ZOptionsField'><div id='${id}_MAIL_WHITELIST'></div></td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
+	<$ } $>
+
+	<$ if (data.isEnabled(ZmSetting.POP_ENABLED)) { $>
 		<table border=0 cellspacing=0 cellpadding=0 width=100%>
 			<tr class='ZOptionsHeaderRow'>
 				<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
@@ -394,7 +418,6 @@ and the container element is replaced with that control.
 				</td>
 			</tr>
 		</table>
-		<$ } $>
 	<$ } $>
 </template>
 
@@ -444,140 +467,156 @@ and the container element is replaced with that control.
 	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr>
 			<td class='ZOptionsSectionMain'>
-			<table width=100%>
+				<table width=100%>
 
-			<$ var isHtmlCompose = data.isEnabled(ZmSetting.HTML_COMPOSE_ENABLED); $>
-			<$ if (isHtmlCompose) { $>
-				<tr><td class='ZOptionsLabel'><$=ZmMsg.composeLabel$></td>
-					<td class='ZOptionsNestedTable'>
-					<table>
-						<colgroup>
-							<col width=1>
-							<col width=1>
-							<col> <!-- family -->
-							<col width=1>
-							<col> <!-- size -->
-							<col width=1>
-							<col> <!-- color -->
-						</colgroup>
-						<tr valign=top>
-							<td class='ZOptionsFieldTop'><div id='${id}_COMPOSE_AS_FORMAT' tabindex='20'></div></td>
-							<td class='ZOptionsLabelTop ZOptionsLabelNarrow'><$=ZmMsg.fFamilyLabel$></td>
-							<td class='ZOptionsField'><select id='${id}_COMPOSE_INIT_FONT_FAMILY' tabindex='30'></select></td>
-							<td class='ZOptionsLabelTop ZOptionsLabelNarrow'><$=ZmMsg.fSizeLabel$></td>
-							<td class='ZOptionsField'><select id='${id}_COMPOSE_INIT_FONT_SIZE' tabindex='40'></select></td>
-							<td class='ZOptionsLabelTop ZOptionsLabelNarrow'><$=ZmMsg.fColorLabel$></td>
-							<td class='ZOptionsField'><select id='${id}_COMPOSE_INIT_FONT_COLOR' tabindex='50'></select></td>
-						</tr>
-					</table>
-					</td>
-				</tr>
-				<tr><td></td><td><hr></td></tr>
-			<$ } $>
-			<$ if( data.isEnabled(ZmSetting.HTML_COMPOSE_ENABLED) ) { $>
-			<tr><td>&nbsp;</td>
-				<td class='ZOptionsField'>
-					<input type=checkbox id="${id}_COMPOSE_SAME_FORMAT">
-				</td>
-			</tr>
-			<$ } $>
-			<$ var isNewWindow = data.isEnabled(ZmSetting.NEW_WINDOW_COMPOSE); $>
-			<$ if (isNewWindow) { $>
-				<tr><td>&nbsp;</td>
-					<td class='ZOptionsField'>
-						<div id='${id}_NEW_WINDOW_COMPOSE' tabindex='60'>
-							<input type=checkbox> <$=ZmMsg.composeInNewWin$>
-						</div>
-					</td>
-				</tr>
-			<$ } $>
-
-			<$ if (appCtxt.get(ZmSetting.SPELL_CHECK_ENABLED)) { $>
-			<tr>
-				<td>&nbsp;</td>
-				<td class='ZOptionsField'>
-					<div id='${id}_MAIL_MANDATORY_SPELLCHECK' tabindex='62'>
-						<input type=checkbox> <$=ZmMsg.mandatorySpellcheck$>
-					</div>
-				</td>
-			</tr>
-			<$ } $>
-			<tr>
-				<td>&nbsp;</td>
-				<td class='ZOptionsField'>
-					<div id='${id}_AUTO_SAVE_DRAFT_INTERVAL' tabindex='65'>
-						<input type=checkbox> <$=ZmMsg.autoSaveDrafts$>
-					</div>
-				</td>
-			</tr>
-
-			<$ if (data.isEnabled(ZmSetting.MAIL_ENABLED)) { $>
-				<$ if (isHtmlCompose || isNewWindow ) { $>
-					<tr><td colspan=2><hr></td></tr>
+				<$ var isHtmlCompose = data.isEnabled(ZmSetting.HTML_COMPOSE_ENABLED); $>
+				<$ if (isHtmlCompose) { $>
+					<tr>
+						<td class='ZOptionsLabel'><$=ZmMsg.composeLabel$></td>
+						<td class='ZOptionsNestedTable'>
+							<table>
+								<colgroup>
+									<col width=1>
+									<col width=1>
+									<col> <!-- family -->
+									<col width=1>
+									<col> <!-- size -->
+									<col width=1>
+									<col> <!-- color -->
+								</colgroup>
+								<tr valign=top>
+									<td class='ZOptionsFieldTop'><div id='${id}_COMPOSE_AS_FORMAT' tabindex='20'></div></td>
+									<td class='ZOptionsLabelTop ZOptionsLabelNarrow'><$=ZmMsg.fFamilyLabel$></td>
+									<td class='ZOptionsField'><select id='${id}_COMPOSE_INIT_FONT_FAMILY' tabindex='30'></select></td>
+									<td class='ZOptionsLabelTop ZOptionsLabelNarrow'><$=ZmMsg.fSizeLabel$></td>
+									<td class='ZOptionsField'><select id='${id}_COMPOSE_INIT_FONT_SIZE' tabindex='40'></select></td>
+									<td class='ZOptionsLabelTop ZOptionsLabelNarrow'><$=ZmMsg.fColorLabel$></td>
+									<td class='ZOptionsField'><select id='${id}_COMPOSE_INIT_FONT_COLOR' tabindex='50'></select></td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td></td><td><hr></td>
+					</tr>
+				<$ } $>
+				<$ if (data.isEnabled(ZmSetting.HTML_COMPOSE_ENABLED)) { $>
+					<tr>
+						<td>&nbsp;</td>
+						<td class='ZOptionsField'>
+							<input type=checkbox id="${id}_COMPOSE_SAME_FORMAT">
+						</td>
+					</tr>
+				<$ } $>
+				<$ var isNewWindow = data.isEnabled(ZmSetting.NEW_WINDOW_COMPOSE); $>
+				<$ if (isNewWindow) { $>
+					<tr>
+						<td>&nbsp;</td>
+						<td class='ZOptionsField'>
+							<div id='${id}_NEW_WINDOW_COMPOSE' tabindex='60'>
+								<input type=checkbox> <$=ZmMsg.composeInNewWin$>
+							</div>
+						</td>
+					</tr>
 				<$ } $>
 
-				<tr><td class='ZOptionsLabel'><$=ZmMsg.composeReplyLabel$></td>
-					<td class='ZOptionsField'><$=ZmMsg.composeReplyEmail$></td>
-				<tr><td>&nbsp;</td>
+				<$ if (appCtxt.get(ZmSetting.SPELL_CHECK_ENABLED)) { $>
+				<tr>
+					<td>&nbsp;</td>
 					<td class='ZOptionsField'>
-						<select id='${id}_REPLY_INCLUDE_ORIG' tabindex='70'>
-							<!-- NOTE: values only demonstrative -->
-							<option> Include original message </option>
-							<option> ... </option>
-						</select>
-					</td>
-				</tr>
-
-				<tr><td colspan=2><hr></td></tr>
-
-				<tr><td class='ZOptionsLabel'><$=ZmMsg.forwardingLabel$></td>
-					<td class='ZOptionsField'><$=ZmMsg.forwardingEmail$></td>
-				<tr><td>&nbsp;</td>
-					<td class='ZOptionsField'>
-						<select id='${id}_FORWARD_INCLUDE_ORIG' tabindex='80'>
-							<!-- NOTE: values only demonstrative -->
-							<option> Include original message </option>
-							<option> ... </option>
-						</select>
-					</td>
-				</tr>
-
-				<tr><td colspan=2><hr></td></tr>
-
-				<tr><td class='ZOptionsLabel'><$=ZmMsg.prefixLabel$></td>
-					<td class='ZOptionsField'><$=ZmMsg.prefixTextWith$></td>
-				<tr><td>&nbsp;</td>
-					<td class='ZOptionsField'>
-						<div id='${id}_REPLY_PREFIX' tabindex='90'>
-							<!-- NOTE: values only demonstrative -->
-							<input type=radio> &gt;
-							<input type=radio> |
+						<div id='${id}_MAIL_MANDATORY_SPELLCHECK' tabindex='62'>
+							<input type=checkbox> <$=ZmMsg.mandatorySpellcheck$>
 						</div>
 					</td>
 				</tr>
-			<$ } $>
-
-			<$ if (data.isEnabled(ZmSetting.SAVE_TO_SENT)) { $>
-				<tr><td colspan=2><hr></td></tr>
-
-				<!-- SAVE_TO_SENT { radio: save | no-save } -->
-				<tr><td class='ZOptionsLabelTop'><$=ZmMsg.messagesSentLabel$></td>
+				<$ } $>
+				<tr>
+					<td>&nbsp;</td>
 					<td class='ZOptionsField'>
-						<div id='${id}_SAVE_TO_SENT' tabindex='100'>
-							<!-- NOTE: values only demonstrative -->
-							<input type=radio> <$=ZmMsg.saveToSent$>
-							<br>
-							<input type=radio> <$=ZmMsg.saveToSentNOT$>
+						<div id='${id}_AUTO_SAVE_DRAFT_INTERVAL' tabindex='65'>
+							<input type=checkbox> <$=ZmMsg.autoSaveDrafts$>
 						</div>
 					</td>
 				</tr>
-			<$ } $>
 
-				<tr><td colspan=2><hr></td></tr>
+				<$ if (data.isEnabled(ZmSetting.MAIL_ENABLED)) { $>
+					<$ if (isHtmlCompose || isNewWindow ) { $>
+						<tr><td colspan=2><hr></td></tr>
+					<$ } $>
 
-				<tr><td colspan=2><b><$=ZmMsg.composeMoreOptions$></b></td>
-				</tr>
-			</table>
+					<tr>
+						<td class='ZOptionsLabel'><$=ZmMsg.composeReplyLabel$></td>
+						<td class='ZOptionsField'><$=ZmMsg.composeReplyEmail$></td>
+					</tr>
+					<tr>
+						<td>&nbsp;</td>
+						<td class='ZOptionsField'>
+							<select id='${id}_REPLY_INCLUDE_ORIG' tabindex='70'>
+								<!-- NOTE: values only demonstrative -->
+								<option> Include original message </option>
+								<option> ... </option>
+							</select>
+						</td>
+					</tr>
+
+					<tr><td colspan=2><hr></td></tr>
+
+					<tr>
+						<td class='ZOptionsLabel'><$=ZmMsg.forwardingLabel$></td>
+						<td class='ZOptionsField'><$=ZmMsg.forwardingEmail$></td>
+					</tr>
+					<tr>
+						<td>&nbsp;</td>
+						<td class='ZOptionsField'>
+							<select id='${id}_FORWARD_INCLUDE_ORIG' tabindex='80'>
+								<!-- NOTE: values only demonstrative -->
+								<option> Include original message </option>
+								<option> ... </option>
+							</select>
+						</td>
+					</tr>
+
+					<tr><td colspan=2><hr></td></tr>
+
+					<tr>
+						<td class='ZOptionsLabel'><$=ZmMsg.prefixLabel$></td>
+						<td class='ZOptionsField'><$=ZmMsg.prefixTextWith$></td>
+					</tr>
+					<tr>
+						<td>&nbsp;</td>
+						<td class='ZOptionsField'>
+							<div id='${id}_REPLY_PREFIX' tabindex='90'>
+								<!-- NOTE: values only demonstrative -->
+								<input type=radio> &gt;
+								<input type=radio> |
+							</div>
+						</td>
+					</tr>
+				<$ } $>
+
+				<$ if (data.isEnabled(ZmSetting.SAVE_TO_SENT)) { $>
+					<tr><td colspan=2><hr></td></tr>
+
+					<!-- SAVE_TO_SENT { radio: save | no-save } -->
+					<tr>
+						<td class='ZOptionsLabelTop'><$=ZmMsg.messagesSentLabel$></td>
+						<td class='ZOptionsField'>
+							<div id='${id}_SAVE_TO_SENT' tabindex='100'>
+								<!-- NOTE: values only demonstrative -->
+								<input type=radio> <$=ZmMsg.saveToSent$>
+								<br>
+								<input type=radio> <$=ZmMsg.saveToSentNOT$>
+							</div>
+						</td>
+					</tr>
+				<$ } $>
+
+					<tr><td colspan=2><hr></td></tr>
+
+					<tr>
+						<td colspan=2><b><$=ZmMsg.composeMoreOptions$></b></td>
+					</tr>
+				</table>
 			</td>
 		</tr>
 	</table>
@@ -695,6 +734,8 @@ and the container element is replaced with that control.
 		<tr>
 			<td class='ZOptionsSectionMain'>
 				<table width=100%>
+
+				<$ if (!appCtxt.multiAccounts || data.activeAccount.isMain) { $>
 					<tr>
 						<td class='ZOptionsLabel'><$=ZmMsg.displayContactsLabel$></td>
 						<td class='ZOptionsField'><select id='${id}_CONTACTS_PER_PAGE' tabindex='20'></select></td>
@@ -706,47 +747,53 @@ and the container element is replaced with that control.
 					</tr>
 
 					<tr><td colspan=2><hr></td></tr>
+				<$ } $>
 
+				<$ if (!appCtxt.multiAccounts || data.activeAccount.isMain) { $>
 					<tr>
 						<td class='ZOptionsLabel'><$=ZmMsg.settingsLabel$></td>
 						<td class='ZOptionsField'><input id='${id}_AUTO_ADD_ADDRESS' tabindex='40' type=checkbox></td>
 					</tr>
+				<$ } $>
+
+				<$ if (!appCtxt.multiAccounts || (!data.activeAccount.isMain && data.activeAccount.isZimbraAccount)) { $>
 					<$ if (data.isEnabled(ZmSetting.INITIALLY_SEARCH_GAL)) { $>
 						<tr>
 							<td class='ZOptionsLabel'>&nbsp;</td>
 							<td class='ZOptionsField'><input id='${id}_INITIALLY_SEARCH_GAL' tabindex='50' type=checkbox></td>
 						</tr>
 					<$ } $>
+				<$ } $>
 				</table>
 			</td>
 		</tr>
 	</table>
 
-	<table border=0 cellspacing=0 cellpadding=0 width=100%>
-		<tr class='ZOptionsHeaderRow'>
-			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
-			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.autocomplete$></td>
-			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
-		</tr>
-	</table>
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
-		<tr>
-			<td class='ZOptionsSectionMain'>
-				<table width=100%>
-					<tr>
-						<td class='ZOptionsLabel'>&nbsp;</td>
-						<td class='ZOptionsField'><input id='${id}_GAL_AUTOCOMPLETE' tabindex='60' type=checkbox></td>
-					</tr>
-					<tr>
-						<td class='ZOptionsLabel'>&nbsp;</td>
-						<td class='ZOptionsField'><div id='${id}_AUTOCOMPLETE_SHARED_ADDR_BOOKS' tabindex='70'></div></td>
-					</tr>
-				</table>
-			</td>
-		</tr>
-	</table>
-
-
+	<$ if (!appCtxt.multiAccounts || (!data.activeAccount.isMain && data.activeAccount.isZimbraAccount)) { $>
+		<table border=0 cellspacing=0 cellpadding=0 width=100%>
+			<tr class='ZOptionsHeaderRow'>
+				<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+				<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.autocomplete$></td>
+				<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
+			</tr>
+		</table>
+		<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+			<tr>
+				<td class='ZOptionsSectionMain'>
+					<table width=100%>
+						<tr>
+							<td class='ZOptionsLabel'>&nbsp;</td>
+							<td class='ZOptionsField'><input id='${id}_GAL_AUTOCOMPLETE' tabindex='60' type=checkbox></td>
+						</tr>
+						<tr>
+							<td class='ZOptionsLabel'>&nbsp;</td>
+							<td class='ZOptionsField'><div id='${id}_AUTOCOMPLETE_SHARED_ADDR_BOOKS' tabindex='70'></div></td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
+	<$ } $>
 </template>
 
 <template id='prefs.Pages#Accounts'>
@@ -810,9 +857,11 @@ and the container element is replaced with that control.
 		<div id="${id}_EXTERNAL" class='ZAccountSettings' style='display:none;'>
 			<$= AjxTemplate.expand("#ExternalAccount", data) $>
 		</div>
-		<$ var providers = ZmDataSource.getProviders();
-		   for (var pid in providers) { $>
-			<$ if (!AjxTemplate.getTemplate("prefs.Pages#ExternalAccount-"+pid)) { continue; } $>
+		<$
+			var providers = ZmDataSource.getProviders();
+			for (var pid in providers) {
+				if (!AjxTemplate.getTemplate("prefs.Pages#ExternalAccount-"+pid)) { continue; }
+		$>
 			<div id="${id}_<$=pid$>" class='ZAccountSettings' style='display:none;'>
 				<$= AjxTemplate.expand("#ExternalAccount-"+pid, data) $>
 			</div>
@@ -858,7 +907,7 @@ and the container element is replaced with that control.
 						<td class='ZOptionsLabel'><$=ZmMsg.accountNameLabel$></td>
 						<td class='ZOptionsField'><input id='${id}_PRIMARY_NAME' tabindex='1020'></td>
 					</tr>
-					<$ if (data.isMultiAccount && !appCtxt.isOffline) { $>
+					<$ if (!appCtxt.isOffline) { $>
 						<tr>
 							<td class='ZOptionsLabel'><$=ZmMsg.isVisible$>:</td>
 							<td class='ZOptionsField'><span id='${id}_PRIMARY_VISIBLE' tabindex='1021'></span></td>
@@ -927,130 +976,161 @@ and the container element is replaced with that control.
 	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr>
 			<td class='ZOptionsSectionMain'>
-			<table width=100%>
-				<tr><td colspan=2><div id='${id}_EXTERNAL_ALERT'></div></td></tr>
-
-				<!--
-				<tr id="${id}_EXTERNAL_PROVIDER_row">
-					<td class='ZOptionsLabel'>[Provider:]</td>
-					<td class='ZOptionsField'>
-						<select id="${id}_EXTERNAL_PROVIDER"></select>
-					</td>
-				</tr>
-				-->
-
-				<tr><td class='ZOptionsLabel'><$=ZmMsg.emailAddrLabel$></td>
-					<td class='ZOptionsField'>
-						<input id='${id}_EXTERNAL_EMAIL' tabindex='2010' title='<$=ZmMsg.exampleEmailAddr$>' size=30>
-					</td>
-				</tr>
-
-				<tr><td class='ZOptionsLabel'><$=ZmMsg.accountNameLabel$></td>
-					<td class='ZOptionsField'><div id='${id}_EXTERNAL_NAME' tabindex='2020' size=30></div></td>
-				</tr>
-
-				<tr><td colspan=2><hr></td></tr>
-
-				<tr><td class='ZOptionsLabel'><$=ZmMsg.accountTypeLabel$></td>
-					<$ if (data.isEnabled(ZmSetting.POP_ACCOUNTS_ENABLED) && data.isEnabled(ZmSetting.IMAP_ACCOUNTS_ENABLED)) { $>
-						<td class='ZOptionsField'><div id='${id}_EXTERNAL_ACCOUNT_TYPE' tabindex='2030'></div></td>
-					<$ } else if (data.isEnabled(ZmSetting.POP_ACCOUNTS_ENABLED)) { $>
-						<td class='ZOptionsField'>POP3</td>
-					<$ } else { $>
-						<td class='ZOptionsField'>IMAP</td>
-					<$ } $>
-				</tr>
-
-				<tr><td class='ZOptionsLabel'><$=ZmMsg.accountUsernameLabel$></td>
-					<td class='ZOptionsField'><input id='${id}_EXTERNAL_USERNAME' tabindex='2040' size=30></td>
-				</tr>
-
-				<tr><td class='ZOptionsLabel'><$=ZmMsg.accountServerLabel$></td>
-					<td class='ZOptionsField'>
-						<input id='${id}_EXTERNAL_HOST' tabindex='2050' title='<$=ZmMsg.exampleMailServer$>' size=30>
-					</td>
-				</tr>
-
-				<tr><td class='ZOptionsLabel'><$=ZmMsg.passwordLabel$></td>
-					<td class='ZOptionsField'>
-						<!-- NOTE: impossible to set a hint because it will just be turned into ****** -->
-						<input id='${id}_EXTERNAL_PASSWORD' tabindex='2060' type=password>
-					</td>
-				</tr>
-
-				<tr><td class='ZOptionsLabel'><$=ZmMsg.advancedSettingsLabel$></td>
-					<td class='ZOptionsField'>
-						<table cellpadding='0' cellspacing='0' border='0'><tr>
-						<td><input id='${id}_EXTERNAL_CHANGE_PORT' tabindex='2070' type=checkbox></td>
-						<td><input id='${id}_EXTERNAL_PORT' tabindex='2080' size=4></td>
-						<td class='ZOptionsInfo'><span id='${id}_EXTERNAL_PORT_DEFAULT'></span></td>
-						</tr></table>
-					</td>
-				</tr>
-				<tr><td class='ZOptionsLabel'>&nbsp;</td>
-					<td class='ZOptionsField'><input id='${id}_EXTERNAL_SSL' tabindex='2090' type=checkbox></td>
-				</tr>
-
-				<tr><td class='ZOptionsLabel'>&nbsp;</td>
-					<td class='ZOptionsField'>
-						<table><tr><td><div id='${id}_EXTERNAL_TEST' tabindex='2100'></div></td></tr></table>
-					</td>
-				</tr>
-
-				<tr><td colspan=2><hr></td></tr>
-
-				<tr><td class='ZOptionsLabelTop'><$=ZmMsg.accountDownloadToLabel$></td>
-					<td class='ZOptionsField'><div id='${id}_EXTERNAL_DOWNLOAD_TO' tabindex='2110'></div></td>
-				</tr>
-				<tr><td class='ZOptionsLabel'>&nbsp;</td>
-					<td class='ZOptionsField'><hr></td>
-				</tr>
-				<tr><td class='ZOptionsLabel'>&nbsp;</td>
-					<td class='ZOptionsField'><input id='${id}_EXTERNAL_DELETE_AFTER_DOWNLOAD' tabindex='2120' type=checkbox></td>
-				</tr>
-
-				<tr><td colspan=2><hr></td></tr>
-
-				<tr><td class='ZOptionsLabel' style='text-align:left' colspan=2><$=ZmMsg.accountFromPrompt$></td></tr>
-				<tr><td class='ZOptionsLabel'><$=ZmMsg.fromLabel$></td>
-					<td class='ZOptionsField'><$=ZmMsg.fromDetail$></td>
-				</tr>
-				<tr><td class='ZOptionsLabel'>&nbsp;</td>
-					<td class='ZOptionsField'>
-						<table><tr>
-							<td style='padding-right:.5em;'>
-								<input id='${id}_EXTERNAL_FROM_NAME' tabindex='2130' size=30 title='e.g. Bob Smith'>
-							</td>
-							<td><select id='${id}_EXTERNAL_FROM_EMAIL' tabindex='2135' size=40 title='<$=ZmMsg.emailAddr$>'></select></td>
-						</tr></table>
-					</td>
-				</tr>
-
-				<tr><td class='ZOptionsLabel'><$=ZmMsg.setReplyTo$></td>
-					<td class='ZOptionsField'><input id='${id}_EXTERNAL_REPLY_TO' tabindex='2140' type=checkbox></td>
-				</tr>
-				<tr><td class='ZOptionsLabel'>&nbsp;</td>
-					<td class='ZOptionsField'>
-						<table cellpadding='0' cellspacing='0' border='0'><tr>
-							<td style='padding-right:.5em;'>
-								<input id='${id}_EXTERNAL_REPLY_TO_NAME' tabindex='2150' size=30 title='e.g. Bob Smith'>
-							</td>
-							<td><select id='${id}_EXTERNAL_REPLY_TO_EMAIL' tabindex='2160' title='<$=ZmMsg.emailAddr$>'></select></td>
-						</tr></table>
-					</td>
-				</tr>
-				<$ if (data.isEnabled(ZmSetting.MAIL_READ_RECEIPT_ENABLED)) { $>
+				<table width=100%>
 					<tr>
-						<td class='ZOptionsLabel'><$=ZmMsg.readReceiptAddress$></td>
-						<td class='ZOptionsField'><input id='${id}_EXTERNAL_READ_RECEIPT_TO_ADDR' tabindex='1070' size=30></td>
+						<td colspan=2><div id='${id}_EXTERNAL_ALERT'></div></td>
 					</tr>
-				<$ } $>
 
-				<tr>
-					<td class='ZOptionsLabel'><$=ZmMsg.signatureLabel$></td>
-					<td class='ZOptionsField'><select id='${id}_EXTERNAL_SIGNATURE' tabindex='2170'></select></td>
-				</tr>
-			</table>
+					<tr>
+						<td class='ZOptionsLabel'><$=ZmMsg.emailAddrLabel$></td>
+						<td class='ZOptionsField'>
+							<input id='${id}_EXTERNAL_EMAIL' tabindex='2010' title='<$=ZmMsg.exampleEmailAddr$>' size=30>
+						</td>
+					</tr>
+
+					<tr>
+						<td class='ZOptionsLabel'><$=ZmMsg.accountNameLabel$></td>
+						<td class='ZOptionsField'><div id='${id}_EXTERNAL_NAME' tabindex='2020' size=30></div></td>
+					</tr>
+
+					<tr><td colspan=2><hr></td></tr>
+
+					<tr>
+						<td class='ZOptionsLabel'><$=ZmMsg.accountTypeLabel$></td>
+						<$ if (data.isEnabled(ZmSetting.POP_ACCOUNTS_ENABLED) && data.isEnabled(ZmSetting.IMAP_ACCOUNTS_ENABLED)) { $>
+							<td class='ZOptionsField'><div id='${id}_EXTERNAL_ACCOUNT_TYPE' tabindex='2030'></div></td>
+						<$ } else if (data.isEnabled(ZmSetting.POP_ACCOUNTS_ENABLED)) { $>
+							<td class='ZOptionsField'>POP3</td>
+						<$ } else { $>
+							<td class='ZOptionsField'>IMAP</td>
+						<$ } $>
+					</tr>
+
+					<tr>
+						<td class='ZOptionsLabel'><$=ZmMsg.accountUsernameLabel$></td>
+						<td class='ZOptionsField'><input id='${id}_EXTERNAL_USERNAME' tabindex='2040' size=30></td>
+					</tr>
+
+					<tr>
+						<td class='ZOptionsLabel'><$=ZmMsg.accountServerLabel$></td>
+						<td class='ZOptionsField'>
+							<input id='${id}_EXTERNAL_HOST' tabindex='2050' title='<$=ZmMsg.exampleMailServer$>' size=30>
+						</td>
+					</tr>
+
+					<tr>
+						<td class='ZOptionsLabel'><$=ZmMsg.passwordLabel$></td>
+						<td class='ZOptionsField'>
+							<!-- NOTE: impossible to set a hint because it will just be turned into ****** -->
+							<input id='${id}_EXTERNAL_PASSWORD' tabindex='2060' type=password>
+						</td>
+					</tr>
+
+					<tr>
+						<td class='ZOptionsLabel'><$=ZmMsg.advancedSettingsLabel$></td>
+						<td class='ZOptionsField'>
+							<table cellpadding='0' cellspacing='0' border='0'>
+								<tr>
+									<td><input id='${id}_EXTERNAL_CHANGE_PORT' tabindex='2070' type=checkbox></td>
+									<td><input id='${id}_EXTERNAL_PORT' tabindex='2080' size=4></td>
+									<td class='ZOptionsInfo'><span id='${id}_EXTERNAL_PORT_DEFAULT'></span></td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+
+					<tr>
+						<td class='ZOptionsLabel'>&nbsp;</td>
+						<td class='ZOptionsField'><input id='${id}_EXTERNAL_SSL' tabindex='2090' type=checkbox></td>
+					</tr>
+
+					<tr>
+						<td class='ZOptionsLabel'>&nbsp;</td>
+						<td class='ZOptionsField'>
+							<table>
+								<tr>
+									<td><div id='${id}_EXTERNAL_TEST' tabindex='2100'></div></td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+
+					<tr><td colspan=2><hr></td></tr>
+
+					<tr>
+						<td class='ZOptionsLabelTop'><$=ZmMsg.accountDownloadToLabel$></td>
+						<td class='ZOptionsField'><div id='${id}_EXTERNAL_DOWNLOAD_TO' tabindex='2110'></div></td>
+					</tr>
+
+					<tr>
+						<td class='ZOptionsLabel'>&nbsp;</td>
+						<td class='ZOptionsField'><hr></td>
+					</tr>
+
+					<tr>
+						<td class='ZOptionsLabel'>&nbsp;</td>
+						<td class='ZOptionsField'><input id='${id}_EXTERNAL_DELETE_AFTER_DOWNLOAD' tabindex='2120' type=checkbox></td>
+					</tr>
+
+					<tr><td colspan=2><hr></td></tr>
+
+					<tr>
+						<td class='ZOptionsLabel' style='text-align:left' colspan=2><$=ZmMsg.accountFromPrompt$></td>
+					</tr>
+
+					<tr>
+						<td class='ZOptionsLabel'><$=ZmMsg.fromLabel$></td>
+						<td class='ZOptionsField'><$=ZmMsg.fromDetail$></td>
+					</tr>
+
+					<tr>
+						<td class='ZOptionsLabel'>&nbsp;</td>
+						<td class='ZOptionsField'>
+							<table>
+								<tr>
+									<td style='padding-right:.5em;'>
+										<input id='${id}_EXTERNAL_FROM_NAME' tabindex='2130' size=30 title='e.g. Bob Smith'>
+									</td>
+									<td>
+										<select id='${id}_EXTERNAL_FROM_EMAIL' tabindex='2135' size=40 title='<$=ZmMsg.emailAddr$>'></select>
+									</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+
+					<tr>
+						<td class='ZOptionsLabel'><$=ZmMsg.setReplyTo$></td>
+						<td class='ZOptionsField'><input id='${id}_EXTERNAL_REPLY_TO' tabindex='2140' type=checkbox></td>
+					</tr>
+
+					<tr>
+						<td class='ZOptionsLabel'>&nbsp;</td>
+						<td class='ZOptionsField'>
+							<table cellpadding='0' cellspacing='0' border='0'>
+								<tr>
+									<td style='padding-right:.5em;'>
+										<input id='${id}_EXTERNAL_REPLY_TO_NAME' tabindex='2150' size=30 title='e.g. Bob Smith'>
+									</td>
+									<td>
+										<select id='${id}_EXTERNAL_REPLY_TO_EMAIL' tabindex='2160' title='<$=ZmMsg.emailAddr$>'></select>
+									</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<$ if (data.isEnabled(ZmSetting.MAIL_READ_RECEIPT_ENABLED)) { $>
+						<tr>
+							<td class='ZOptionsLabel'><$=ZmMsg.readReceiptAddress$></td>
+							<td class='ZOptionsField'><input id='${id}_EXTERNAL_READ_RECEIPT_TO_ADDR' tabindex='1070' size=30></td>
+						</tr>
+					<$ } $>
+
+					<tr>
+						<td class='ZOptionsLabel'><$=ZmMsg.signatureLabel$></td>
+						<td class='ZOptionsField'><select id='${id}_EXTERNAL_SIGNATURE' tabindex='2170'></select></td>
+					</tr>
+				</table>
 			</td>
 		</tr>
 	</table>
@@ -1067,85 +1147,118 @@ and the container element is replaced with that control.
 	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr>
 			<td class='ZOptionsSectionMain'>
-			<table width=100%>
-			<tr><td class='ZOptionsLabel'>&nbsp;</td>
-				<td class='ZOptionsField'><$=ZmMsg.accountPersonaInstructions$></td>
-			</tr>
-			<tr><td class='ZOptionsLabel'><$=ZmMsg.accountPersonaLabel$></td>
-				<td class='ZOptionsField'><div id='${id}_PERSONA_NAME' tabindex='3010'></div></td>
-			</tr>
+				<table width=100%>
+					<tr>
+						<td class='ZOptionsLabel'>&nbsp;</td>
+						<td class='ZOptionsField'><$=ZmMsg.accountPersonaInstructions$></td>
+					</tr>
 
-			<tr><td colspan=2><hr></td></tr>
+					<tr>
+						<td class='ZOptionsLabel'><$=ZmMsg.accountPersonaLabel$></td>
+						<td class='ZOptionsField'><div id='${id}_PERSONA_NAME' tabindex='3010'></div></td>
+					</tr>
 
-			<tr><td class='ZOptionsLabel' style='text-align:left' colspan=2><$=ZmMsg.accountFromPrompt$></td></tr>
-			<tr><td class='ZOptionsLabel'><$=ZmMsg.fromLabel$></td>
-				<td class='ZOptionsField'><$=ZmMsg.fromDetail$></td>
-			</tr>
-			<tr><td class='ZOptionsLabel'>&nbsp;</td>
-				<td class='ZOptionsField' style='padding-left:2em;'>
-					<table><tr>
-						<td style='padding-right:.5em;'>
-							<input id='${id}_PERSONA_FROM_NAME' tabindex='3020' size=30 title='<$=ZmMsg.exampleEmailName$>'>
+					<tr><td colspan=2><hr></td></tr>
+
+					<tr>
+						<td class='ZOptionsLabel' style='text-align:left' colspan=2><$=ZmMsg.accountFromPrompt$></td>
+					</tr>
+
+					<tr>
+						<td class='ZOptionsLabel'><$=ZmMsg.fromLabel$></td>
+						<td class='ZOptionsField'><$=ZmMsg.fromDetail$></td>
+					</tr>
+
+					<tr>
+						<td class='ZOptionsLabel'>&nbsp;</td>
+						<td class='ZOptionsField' style='padding-left:2em;'>
+							<table>
+								<tr>
+									<td style='padding-right:.5em;'>
+										<input id='${id}_PERSONA_FROM_NAME' tabindex='3020' size=30 title='<$=ZmMsg.exampleEmailName$>'>
+									</td>
+									<td>
+										<select id='${id}_PERSONA_FROM_EMAIL' tabindex='3030' size=40 title='<$=ZmMsg.emailAddr$>'></select>
+									</td>
+								</tr>
+							</table>
 						</td>
-						<td><select id='${id}_PERSONA_FROM_EMAIL' tabindex='3030' size=40 title='<$=ZmMsg.emailAddr$>'></select></td>
-					</tr></table>
-				</td>
-			</tr>
+					</tr>
 
-			<tr><td class='ZOptionsLabel'><$=ZmMsg.setReplyTo$></td>
-				<td class='ZOptionsField'><input id='${id}_PERSONA_REPLY_TO' tabindex='3040' type=checkbox></td>
-			</tr>
-			<tr><td class='ZOptionsLabel'>&nbsp;</td>
-				<td class='ZOptionsField' style='padding-left:2em;'>
-					<table><tr>
-						<td style='padding-right:.5em;'>
-							<input id='${id}_PERSONA_REPLY_TO_NAME' tabindex='3050' size=30 title='<$=ZmMsg.exampleEmailName$>'>
+					<tr>
+						<td class='ZOptionsLabel'><$=ZmMsg.setReplyTo$></td>
+						<td class='ZOptionsField'><input id='${id}_PERSONA_REPLY_TO' tabindex='3040' type=checkbox></td>
+					</tr>
+
+					<tr>
+						<td class='ZOptionsLabel'>&nbsp;</td>
+						<td class='ZOptionsField' style='padding-left:2em;'>
+							<table>
+								<tr>
+									<td style='padding-right:.5em;'>
+										<input id='${id}_PERSONA_REPLY_TO_NAME' tabindex='3050' size=30 title='<$=ZmMsg.exampleEmailName$>'>
+									</td>
+									<td>
+										<select id='${id}_PERSONA_REPLY_TO_EMAIL' tabindex='3060' size=40 title='<$=ZmMsg.emailAddr$>'></select>
+									</td>
+								</tr>
+							</table>
 						</td>
-						<td><select id='${id}_PERSONA_REPLY_TO_EMAIL' tabindex='3060' size=40 title='<$=ZmMsg.emailAddr$>'></select></td>
-					</tr></table>
-				</td>
-			</tr>
-			<$ if (data.isEnabled(ZmSetting.MAIL_READ_RECEIPT_ENABLED)) { $>
-				<tr>
-					<td class='ZOptionsLabel'><$=ZmMsg.readReceiptAddress$></td>
-					<td class='ZOptionsField'><input id='${id}_PERSONA_READ_RECEIPT_TO_ADDR' tabindex='1070' size=30></td>
-				</tr>
-			<$ } $>
+					</tr>
 
-			<tr valign=top>
-				<td class='ZOptionsLabel'><$=ZmMsg.signatureLabel$></td>
-				<td class='ZOptionsField'><select id='${id}_PERSONA_SIGNATURE' tabindex='3070'></select></td>
-			</tr>
+					<$ if (data.isEnabled(ZmSetting.MAIL_READ_RECEIPT_ENABLED)) { $>
+						<tr>
+							<td class='ZOptionsLabel'><$=ZmMsg.readReceiptAddress$></td>
+							<td class='ZOptionsField'><input id='${id}_PERSONA_READ_RECEIPT_TO_ADDR' tabindex='1070' size=30></td>
+						</tr>
+					<$ } $>
 
-			<tr><td colspan=2><hr></td></tr>
+					<tr valign=top>
+						<td class='ZOptionsLabel'><$=ZmMsg.signatureLabel$></td>
+						<td class='ZOptionsField'><select id='${id}_PERSONA_SIGNATURE' tabindex='3070'></select></td>
+					</tr>
 
-			<tr><td class='ZOptionsLabel'><$=ZmMsg.accountPersonaUseLabel$></td>
-				<td class='ZOptionsField'><input id='${id}_PERSONA_WHEN_SENT_TO' tabindex='3080' type=checkbox></td>
-			</tr>
-			<tr><td class='ZOptionsLabel'>&nbsp;</td>
-				<td class='ZOptionsInfo' style='padding-left:2em;'>
-					<input id='${id}_PERSONA_WHEN_SENT_TO_LIST' tabindex='3085' size=80>
-				</td>
-			</tr>
-			<tr><td class='ZOptionsLabel'>&nbsp;</td>
-				<td class='ZOptionsInfo' style='padding-left:2em;'><$=ZmMsg.whenSentToHint$></td>
-			</tr>
-			<tr><td class='ZOptionsLabel'>&nbsp;</td>
-				<td class='ZOptionsField'><input id='${id}_PERSONA_WHEN_IN_FOLDER' tabindex='3090' type=checkbox></td>
-			</tr>
-			<tr><td class='ZOptionsLabel'>&nbsp;</td>
-				<td class='ZOptionsField' style='padding-left:2em;'>
-					<table><tr>
-					<td><input id='${id}_PERSONA_WHEN_IN_FOLDER_LIST' tabindex='3100' size=60 title="<$=ZmMsg.exampleFolderNames$>"></td>
-					<td><div id='${id}_PERSONA_WHEN_IN_FOLDER_BUTTON' tabindex='3110'></div></td>
-					</tr></table>
-				</td>
-			</tr>
-			<tr><td class='ZOptionsLabel'>&nbsp;</td>
-				<td class='ZOptionsInfo' style='padding-left:2em;'><$=ZmMsg.whenInFolderHint$></td>
-			</tr>
+					<tr><td colspan=2><hr></td></tr>
 
-			</table>
+					<tr>
+						<td class='ZOptionsLabel'><$=ZmMsg.accountPersonaUseLabel$></td>
+						<td class='ZOptionsField'><input id='${id}_PERSONA_WHEN_SENT_TO' tabindex='3080' type=checkbox></td>
+					</tr>
+
+					<tr>
+						<td class='ZOptionsLabel'>&nbsp;</td>
+						<td class='ZOptionsInfo' style='padding-left:2em;'>
+							<input id='${id}_PERSONA_WHEN_SENT_TO_LIST' tabindex='3085' size=80>
+						</td>
+					</tr>
+
+					<tr>
+						<td class='ZOptionsLabel'>&nbsp;</td>
+						<td class='ZOptionsInfo' style='padding-left:2em;'><$=ZmMsg.whenSentToHint$></td>
+					</tr>
+
+					<tr>
+						<td class='ZOptionsLabel'>&nbsp;</td>
+						<td class='ZOptionsField'><input id='${id}_PERSONA_WHEN_IN_FOLDER' tabindex='3090' type=checkbox></td>
+					</tr>
+
+					<tr>
+						<td class='ZOptionsLabel'>&nbsp;</td>
+						<td class='ZOptionsField' style='padding-left:2em;'>
+							<table>
+								<tr>
+									<td><input id='${id}_PERSONA_WHEN_IN_FOLDER_LIST' tabindex='3100' size=60 title="<$=ZmMsg.exampleFolderNames$>"></td>
+									<td><div id='${id}_PERSONA_WHEN_IN_FOLDER_BUTTON' tabindex='3110'></div></td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+
+					<tr>
+						<td class='ZOptionsLabel'>&nbsp;</td>
+						<td class='ZOptionsInfo' style='padding-left:2em;'><$=ZmMsg.whenInFolderHint$></td>
+					</tr>
+				</table>
 			</td>
 		</tr>
 	</table>
@@ -1162,10 +1275,14 @@ and the container element is replaced with that control.
 	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr>
 			<td class='ZOptionsSectionMain'>
-			<table width=100%>
-				<tr><td><div id='${id}_toolbar' tabindex='20'></div></td></tr>
-				<tr><td><div id='${id}_list' tabindex='30'></div></td></tr>
-			</table>
+				<table width=100%>
+					<tr>
+						<td><div id='${id}_toolbar' tabindex='20'></div></td>
+					</tr>
+					<tr>
+						<td><div id='${id}_list' tabindex='30'></div></td>
+					</tr>
+				</table>
 			</td>
 		</tr>
 	</table>
@@ -1225,165 +1342,171 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 			</tr>
 		</table>
 	</div>
-	<table border=0 cellspacing=0 cellpadding=0 width=100%>
-		<tr class='ZOptionsHeaderRow'>
-			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
-			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.general$></td>
-			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
-		</tr>
-	</table>
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
-		<tr>
-			<td class='ZOptionsSectionMain'>
-				<table width=100%>
-					<tr>
-						<td class='ZOptionsLabel'><$=ZmMsg.defaultViewLabel$></td>
-						<td class='ZOptionsField'><select id='${id}_CALENDAR_INITIAL_VIEW' tabindex='20'></select></td>
-					</tr>
+	<$ if (data.activeAccount.isMain) { $>
+		<table border=0 cellspacing=0 cellpadding=0 width=100%>
+			<tr class='ZOptionsHeaderRow'>
+				<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+				<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.general$></td>
+				<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
+			</tr>
+		</table>
+		<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+			<tr>
+				<td class='ZOptionsSectionMain'>
+					<table width=100%>
+						<tr>
+							<td class='ZOptionsLabel'><$=ZmMsg.defaultViewLabel$></td>
+							<td class='ZOptionsField'><select id='${id}_CALENDAR_INITIAL_VIEW' tabindex='20'></select></td>
+						</tr>
 
-					<tr>
-						<td class='ZOptionsLabel'><$=ZmMsg.calendarStartWeekLabel$></td>
-						<td class='ZOptionsField'><select id='${id}_CAL_FIRST_DAY_OF_WEEK' tabindex='30'></select></td>
-					</tr>
+						<tr>
+							<td class='ZOptionsLabel'><$=ZmMsg.calendarStartWeekLabel$></td>
+							<td class='ZOptionsField'><select id='${id}_CAL_FIRST_DAY_OF_WEEK' tabindex='30'></select></td>
+						</tr>
 
-					<tr>
-						<td class='ZOptionsLabel'><$=ZmMsg.calendarInitialApptVisibility $></td>
-						<td class='ZOptionsField'><select id='${id}_CAL_APPT_VISIBILITY' tabindex='35'></select></td>
-					</tr>
+						<tr>
+							<td class='ZOptionsLabel'><$=ZmMsg.calendarInitialApptVisibility $></td>
+							<td class='ZOptionsField'><select id='${id}_CAL_APPT_VISIBILITY' tabindex='35'></select></td>
+						</tr>
 
-					<tr>
-						<td class='ZOptionsLabel'>&nbsp;</td>
-						<td class='ZOptionsField'><input id='${id}_CAL_ALWAYS_SHOW_MINI_CAL' tabindex='40' type=checkbox></td>
-					</tr>
+						<tr>
+							<td class='ZOptionsLabel'>&nbsp;</td>
+							<td class='ZOptionsField'><input id='${id}_CAL_ALWAYS_SHOW_MINI_CAL' tabindex='40' type=checkbox></td>
+						</tr>
 
-					<tr>
-						<td class='ZOptionsLabel'>&nbsp;</td>
-						<td class='ZOptionsField'><input id='${id}_CAL_AUTO_ADD_INVITES' tabindex='40' type=checkbox></td>
-					</tr>
+						<tr>
+							<td class='ZOptionsLabel'>&nbsp;</td>
+							<td class='ZOptionsField'><input id='${id}_CAL_AUTO_ADD_INVITES' tabindex='40' type=checkbox></td>
+						</tr>
 
-                    <tr><td colspan=2><hr></td></tr>
+						<tr><td colspan=2><hr></td></tr>
 
-					<tr>
-						<td class='ZOptionsLabel'>&nbsp;</td>
-						<td class='ZOptionsField'><input id='${id}_ENABLE_APPL_ICAL_DELEGATION' tabindex='50' type=checkbox></td>
-					</tr>                    
-					<tr><td colspan=2><hr></td></tr>
+						<tr>
+							<td class='ZOptionsLabel'>&nbsp;</td>
+							<td class='ZOptionsField'><input id='${id}_ENABLE_APPL_ICAL_DELEGATION' tabindex='50' type=checkbox></td>
+						</tr>
+						<tr><td colspan=2><hr></td></tr>
 
-					<tr>
-						<td class='ZOptionsLabel'><$=ZmMsg.deleteInviteOnReplyLabel$></td>
-						<td class='ZOptionsField'><input id='${id}_DELETE_INVITE_ON_REPLY' tabindex='50' type=checkbox></td>
-					</tr>
-                    <tr>
-                        <td class='ZOptionsLabel'>&nbsp;</td>
-                        <td class='ZOptionsField'><$=ZmMsg.forwardInvitesTo$></td>
-                    </tr>
-                    <tr>
-                        <td class='ZOptionsLabel'>&nbsp;</td>
-                        <td class='ZOptionsField' style='padding-left:2em;'><input id='${id}_CAL_INV_FORWARDING_ADDRESS' tabindex='110' title='<$= ZmMsg.enterEmailAddress $>'></td>
-                    </tr>
+						<tr>
+							<td class='ZOptionsLabel'><$=ZmMsg.deleteInviteOnReplyLabel$></td>
+							<td class='ZOptionsField'><input id='${id}_DELETE_INVITE_ON_REPLY' tabindex='50' type=checkbox></td>
+						</tr>
+						<tr>
+							<td class='ZOptionsLabel'>&nbsp;</td>
+							<td class='ZOptionsField'><$=ZmMsg.forwardInvitesTo$></td>
+						</tr>
+						<tr>
+							<td class='ZOptionsLabel'>&nbsp;</td>
+							<td class='ZOptionsField' style='padding-left:2em;'><input id='${id}_CAL_INV_FORWARDING_ADDRESS' tabindex='110' title='<$= ZmMsg.enterEmailAddress $>'></td>
+						</tr>
 
-					<tr><td colspan=2><hr></td></tr>
+						<tr><td colspan=2><hr></td></tr>
 
-					<tr>
-						<td class='ZOptionsLabel'><$=ZmMsg.apptReminderLabel$></td>
-						<td class='ZOptionsField'><select id='${id}_CAL_REMINDER_WARNING_TIME' tabindex='60'></select></td>
-					</tr>
+						<tr>
+							<td class='ZOptionsLabel'><$=ZmMsg.apptReminderLabel$></td>
+							<td class='ZOptionsField'><select id='${id}_CAL_REMINDER_WARNING_TIME' tabindex='60'></select></td>
+						</tr>
 
-					<tr>
-						<td class='ZOptionsLabel'>&nbsp;</td>
-						<td class='ZOptionsField'><input id='${id}_CAL_SHOW_PAST_DUE_REMINDERS' tabindex='59' type=checkbox></td>
-					</tr>
+						<tr>
+							<td class='ZOptionsLabel'>&nbsp;</td>
+							<td class='ZOptionsField'><input id='${id}_CAL_SHOW_PAST_DUE_REMINDERS' tabindex='59' type=checkbox></td>
+						</tr>
 
-					<tr>
-						<td class='ZOptionsLabel'>&nbsp;</td>
-						<td class='ZOptionsField'><input id='${id}_CAL_REMINDER_NOTIFY_SOUNDS' tabindex='65' type=checkbox></td>
-					</tr>
+						<tr>
+							<td class='ZOptionsLabel'>&nbsp;</td>
+							<td class='ZOptionsField'><input id='${id}_CAL_REMINDER_NOTIFY_SOUNDS' tabindex='65' type=checkbox></td>
+						</tr>
 
-					<tr>
-						<td class='ZOptionsLabel'>&nbsp;</td>
-						<td class='ZOptionsField'><input id='${id}_CAL_REMINDER_NOTIFY_BROWSER' tabindex='68' type=checkbox></td>
-					</tr>
+						<tr>
+							<td class='ZOptionsLabel'>&nbsp;</td>
+							<td class='ZOptionsField'><input id='${id}_CAL_REMINDER_NOTIFY_BROWSER' tabindex='68' type=checkbox></td>
+						</tr>
 
-					<tr>
-						<td class='ZOptionsLabel'>&nbsp;</td>
-						<td class='ZOptionsField'>
-							<table cellspacing=0 cellpadding=0><tr>
-								<td><div id='${id}_CAL_REMINDER_NOTIFY_TOASTER' tabindex='69'></div></td>
-								<td><$=ZmDesktopAlert.getInstance().getLinkText() $></td>
-							</tr></table>
-						</td>
-					</tr>
-				</table>
-			</td>
-		</tr>
-	</table>
-	<table border=0 cellspacing=0 cellpadding=0 width=100%>
-		<tr class='ZOptionsHeaderRow'>
-			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
-			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.apptCreating$></td>
-			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
-		</tr>
-	</table>
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
-		<tr>
-			<td class='ZOptionsSectionMain'>
-				<table width=100%>
-					<tr>
-						<td class='ZOptionsLabel'>&nbsp;</td>
-						<td class='ZOptionsField'><input id='${id}_CAL_USE_QUICK_ADD' tabindex='70' type=checkbox></td>
-					</tr>
+						<tr>
+							<td class='ZOptionsLabel'>&nbsp;</td>
+							<td class='ZOptionsField'>
+								<table cellspacing=0 cellpadding=0><tr>
+									<td><div id='${id}_CAL_REMINDER_NOTIFY_TOASTER' tabindex='69'></div></td>
+									<td><$=ZmDesktopAlert.getInstance().getLinkText() $></td>
+								</tr></table>
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
+		<table border=0 cellspacing=0 cellpadding=0 width=100%>
+			<tr class='ZOptionsHeaderRow'>
+				<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+				<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.apptCreating$></td>
+				<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
+			</tr>
+		</table>
 
-					<tr><td colspan=2><hr></td></tr>
+		<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+			<tr>
+				<td class='ZOptionsSectionMain'>
+					<table width=100%>
+						<tr>
+							<td class='ZOptionsLabel'>&nbsp;</td>
+							<td class='ZOptionsField'><input id='${id}_CAL_USE_QUICK_ADD' tabindex='70' type=checkbox></td>
+						</tr>
 
-					<tr>
-						<td class='ZOptionsLabel'>&nbsp;</td>
-						<td class='ZOptionsField'><input id='${id}_CAL_SHOW_TIMEZONE' tabindex='80' type=checkbox></td>
-					</tr>
-				</table>
-			</td>
-		</tr>
-	</table>
-	<table border=0 cellspacing=0 cellpadding=0 width=100%>
-		<tr class='ZOptionsHeaderRow'>
-			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
-			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.calPerms$></td>
-			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
-		</tr>
-	</table>
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
-		<tr>
-			<td class='ZOptionsSectionMain'>
-				<table width=100%>
-					<tr>
-						<td colspan=2><$= AjxMessageFormat.format(ZmMsg.calPermsNote, data.domain) $></td>
-					</tr>
+						<tr><td colspan=2><hr></td></tr>
 
-					<tr><td colspan=2>&nbsp;</td></tr>
+						<tr>
+							<td class='ZOptionsLabel'>&nbsp;</td>
+							<td class='ZOptionsField'><input id='${id}_CAL_SHOW_TIMEZONE' tabindex='80' type=checkbox></td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
+	<$ } $>
 
-					<tr>
-						<td class='ZOptionsLabelTop'><$=ZmMsg.freeBusyLabel$></td>
-						<td class='ZOptionsField'><div id='${id}_CAL_FREE_BUSY_ACL' tabindex='82'></div></td>
-					</tr>
-					<tr>
-						<td>&nbsp;</td>
-						<td><textarea id='${id}_CAL_FREE_BUSY_ACL_USERS' tabindex='84' rows=3 cols=70></textarea></td>
-					</tr>
-					<tr>
-						<td class='ZOptionsLabelTop'><$=ZmMsg.invitesLabel$></td>
-						<td class='ZOptionsField'><div id='${id}_CAL_INVITE_ACL' tabindex='86'></div></td>
-					</tr>
-					<tr>
-						<td>&nbsp;</td>
-						<td><textarea id='${id}_CAL_INVITE_ACL_USERS' tabindex='88' rows=3 cols=70></textarea></td>
-					</tr>
-					<tr>
-						<td class='ZOptionsLabel'>&nbsp;</td>
-						<td class='ZOptionsField'><input id='${id}_CAL_SEND_INV_DENIED_REPLY' tabindex='40' type=checkbox></td>
-					</tr>					
-				</table>
-			</td>
-		</tr>
-	</table>
+	<$ if (!appCtxt.multiAccounts || (!data.activeAccount.isMain && data.activeAccount.isZimbraAccount)) { $>
+		<table border=0 cellspacing=0 cellpadding=0 width=100%>
+			<tr class='ZOptionsHeaderRow'>
+				<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+				<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.calPerms$></td>
+				<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
+			</tr>
+		</table>
+		<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+			<tr>
+				<td class='ZOptionsSectionMain'>
+					<table width=100%>
+						<tr>
+							<td colspan=2><$= AjxMessageFormat.format(ZmMsg.calPermsNote, data.domain) $></td>
+						</tr>
+
+						<tr><td colspan=2>&nbsp;</td></tr>
+
+						<tr>
+							<td class='ZOptionsLabelTop'><$=ZmMsg.freeBusyLabel$></td>
+							<td class='ZOptionsField'><div id='${id}_CAL_FREE_BUSY_ACL' tabindex='82'></div></td>
+						</tr>
+						<tr>
+							<td>&nbsp;</td>
+							<td><textarea id='${id}_CAL_FREE_BUSY_ACL_USERS' tabindex='84' rows=3 cols=70></textarea></td>
+						</tr>
+						<tr>
+							<td class='ZOptionsLabelTop'><$=ZmMsg.invitesLabel$></td>
+							<td class='ZOptionsField'><div id='${id}_CAL_INVITE_ACL' tabindex='86'></div></td>
+						</tr>
+						<tr>
+							<td>&nbsp;</td>
+							<td><textarea id='${id}_CAL_INVITE_ACL_USERS' tabindex='88' rows=3 cols=70></textarea></td>
+						</tr>
+						<tr>
+							<td class='ZOptionsLabel'>&nbsp;</td>
+							<td class='ZOptionsField'><input id='${id}_CAL_SEND_INV_DENIED_REPLY' tabindex='40' type=checkbox></td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
+	<$ } $>
 </template>
 
 <template id='prefs.Pages#IM'>

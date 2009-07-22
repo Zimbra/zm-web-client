@@ -196,11 +196,13 @@ function(callback, accountName, result) {
 	// Create the main account. In the normal case, that is the only account,
 	// and represents the user who logged in. If family mailbox is enabled, that
 	// account is a parent account with dominion over child accounts.
+	var mainAcct;
 	if (!accountName) {
-		var mainAcct = appCtxt.getMainAccount();
+		mainAcct = appCtxt.getMainAccount();
 		mainAcct.id = obj.id;
 		mainAcct.name = obj.name;
 		mainAcct.isMain = true;
+		mainAcct.isZimbraAccount = true;
 		mainAcct.loaded = true;
 		mainAcct.visible = true;
 		mainAcct.settings = this;
@@ -291,6 +293,7 @@ function(callback, accountName, result) {
 	}
 
 	// HACK: for offline, general prefs come from the "local" account
+	/*
 	if (appCtxt.isOffline) {
 		var main = appCtxt.getMainAccount();
 		for (var i in ZmSetting.IS_GLOBAL) {
@@ -301,29 +304,32 @@ function(callback, accountName, result) {
 			}
 		}
 	}
+	*/
 
-	// load Zimlets..  NOTE: only load zimlets if main account
-	if (!accountName && obj.zimlets && obj.zimlets.zimlet) {
-		// bug #28897 -
-		// look for usage tracker zimlet before waiting for it to get parsed
-		var zimlets = obj.zimlets.zimlet;
-		for (var i = 0; i < zimlets.length; i++) {
-			var z = zimlets[i];
-			if (z.zimlet[0].name == "com_zimbra_usagetracker") {
-				// if found, set the global selection listener (for DwtButtons)
-				DwtControl.globalSelectionListener = new AjxListener(null, ZmZimbraMail.globalButtonListener);
-				break;
+	// load zimlets *only* for the main account
+	if (mainAcct) {
+		if (obj.zimlets && obj.zimlets.zimlet) {
+			// bug #28897 -
+			// look for usage tracker zimlet before waiting for it to get parsed
+			var zimlets = obj.zimlets.zimlet;
+			for (var i = 0; i < zimlets.length; i++) {
+				var z = zimlets[i];
+				if (z.zimlet[0].name == "com_zimbra_usagetracker") {
+					// if found, set the global selection listener (for DwtButtons)
+					DwtControl.globalSelectionListener = new AjxListener(null, ZmZimbraMail.globalButtonListener);
+					break;
+				}
 			}
-		}
 
-		var listener = new AjxListener(this,
-			function() {
-				var zimletsCallback = new AjxCallback(this, this._loadZimlets, [obj.zimlets.zimlet, obj.props.prop]);
-				AjxDispatcher.require("Zimlet", false, zimletsCallback);
-			});
-		appCtxt.getAppController().addListener(ZmAppEvent.POST_STARTUP, listener);
-	} else {
-		appCtxt.allZimletsLoaded();
+			var listener = new AjxListener(this,
+				function() {
+					var zimletsCallback = new AjxCallback(this, this._loadZimlets, [obj.zimlets.zimlet, obj.props.prop]);
+					AjxDispatcher.require("Zimlet", false, zimletsCallback);
+				});
+			appCtxt.getAppController().addListener(ZmAppEvent.POST_STARTUP, listener);
+		} else {
+			appCtxt.allZimletsLoaded();
+		}
 	}
 
 	// DONE

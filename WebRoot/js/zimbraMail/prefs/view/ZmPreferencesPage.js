@@ -136,10 +136,13 @@ function() {
 	Dwt.setTitle(this._title);
 	this._controller._resetOperations(this._controller._toolbar, this._section.id);
 	var dirty = this._controller.isDirty(this._section.id);
-	var activeAcct = appCtxt.getActiveAccount().name;
-	if (this._hasRendered == activeAcct && !dirty) { return; }
+	this._activeAcct = appCtxt.getActiveAccount();
 
-	if (this._hasRendered == activeAcct) {
+	if (this._hasRendered == this._activeAcct.name && !dirty) {
+		return;
+	}
+
+	if (this._hasRendered == this._activeAcct.name) {
 		this._controller.setDirty(this._section.id, false);
 		return;
 	}
@@ -162,11 +165,11 @@ ZmPreferencesPage.prototype._getTemplateData =
 function() {
 	var data = {
 		id: this._htmlElId,
-		isMultiAccount: (appCtxt.numVisibleAccounts > 1)
+		isEnabled: AjxCallback.simpleClosure(this._isEnabled, this),
+		activeAccount: appCtxt.getActiveAccount()
 	};
-	data.isEnabled = AjxCallback.simpleClosure(this._isEnabled, this, data);
 	data.expandField = AjxCallback.simpleClosure(this._expandField, this, data);
-	
+
 	return data;
 };
 
@@ -1164,10 +1167,17 @@ function(ev) {
  * preconditions).
  */
 ZmPreferencesPage.prototype._isEnabled =
-function(data, prefId1 /* ..., prefIdN */) {
-	for (var i = 1; i < arguments.length; i++) {
+function(prefId1 /* ..., prefIdN */) {
+	for (var i = 0; i < arguments.length; i++) {
 		var prefId = arguments[i];
-		if (!prefId) { return false; }	// setting not created (its app is disabled)
+
+		// setting not created (its app is disabled)
+		if (!prefId) { return false; }
+
+		if (!this._activeAcct.isMain && ZmSetting.IS_GLOBAL[prefId]) {
+			return false;
+		}
+
 		if (this._controller.checkPreCondition(ZmPref.SETUP[prefId], prefId)) {
 			return true;
 		}

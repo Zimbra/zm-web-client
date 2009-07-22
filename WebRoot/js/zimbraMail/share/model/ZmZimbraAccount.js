@@ -358,9 +358,6 @@ function(result) {
 	appCtxt.getDataSourceCollection(this).initialize(obj.dataSources);
 	appCtxt.getSignatureCollection(this).initialize(obj.signatures);
 
-	// HACK: data sources are disabled for Zimbra accounts so check if we got any
-	this.isZimbraAccount = (!obj.dataSources.pop3 && !obj.dataSources.imap);
-
 	// read receipts are not currently allowed for non zimbra accounts
 	if (!this.isZimbraAccount) {
 		appCtxt.set(ZmSetting.MAIL_READ_RECEIPT_ENABLED, false);

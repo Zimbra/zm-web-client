@@ -42,7 +42,7 @@ ZmAppCtxt = function() {
 	this._evtMgr = new AjxEventMgr();
 };
 
-ZmAppCtxt._ZIMLETS_EVENT = 'ZIMLETS'
+ZmAppCtxt._ZIMLETS_EVENT = 'ZIMLETS';
 
 ZmAppCtxt.prototype.toString =
 function() {
@@ -106,12 +106,10 @@ function(settings, account) {
  */
 ZmAppCtxt.prototype.get =
 function(id, key, account) {
-	// for offline / multi-account, global settings should always come from the
-	// invisible parent account
-	if (this.isOffline && this.multiAccounts && ZmSetting.IS_GLOBAL[id]) {
-		return this.getSettings(this.getMainAccount()).get(id, key);
-	}
-	return this.getSettings(account).get(id, key);
+	// for offline, global settings always come from the "local" parent account
+	var acct = (this.isOffline && ZmSetting.IS_GLOBAL[id])
+		? this.getMainAccount() : account;
+	return this.getSettings(acct).get(id, key);
 };
 
 /**
@@ -869,10 +867,6 @@ function() {
 		}
 	}
 
-	if (this.isOffline && !this.multiAccounts) {
-		this.getAppController().setInstantNotify(true);
-	}
-	
 	if (this._evtMgr.isListenerRegistered(ZmAppCtxt._ZIMLETS_EVENT)) {
 		this._evtMgr.notifyListeners(ZmAppCtxt._ZIMLETS_EVENT, new ZmEvent());
 		this._evtMgr.removeAll(ZmAppCtxt._ZIMLETS_EVENT);

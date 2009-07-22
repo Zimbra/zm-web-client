@@ -2163,7 +2163,7 @@ function(templateId, data) {
 		this._setIdentityVisible();
 	}
 
-	if (ac.get(ZmSetting.MAIL_PRIORITY_ENABLED)) {
+	if (appCtxt.get(ZmSetting.MAIL_PRIORITY_ENABLED)) {
 		var buttonId = ZmId.getButtonId(this._view, ZmId.CMP_PRIORITY);
 		this._priorityButton = new DwtButton({parent:this, id:buttonId});
 		this._priorityButton.setMenu(new AjxCallback(this, this._priorityButtonMenuCallback));
