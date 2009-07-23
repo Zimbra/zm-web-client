@@ -184,6 +184,8 @@ ZmKeyMap.TODAY					= "Today";
 ZmKeyMap.UNTAG					= "Untag";
 ZmKeyMap.VIEW_BY_CONV			= "ViewByConversation";
 ZmKeyMap.VIEW_BY_MSG			= "ViewByMessage";
+ZmKeyMap.VISIT					= "Visit";
+ZmKeyMap.VISIT_TAG				= "VisitTag";
 
 // HTML entities (used to display keys)
 ZmKeyMap.ENTITY = {};

@@ -111,7 +111,7 @@ function(overviewId) {
  * Returns the given tree controller.
  *
  * @param treeId		[constant]		organizer type
- * @param noCreate		[boolean]*		if true, only returned an already created controller
+ * @param noCreate		[boolean]*		if true, only return an already created controller
  */
 ZmOverviewController.prototype.getTreeController =
 function(treeId, noCreate) {
