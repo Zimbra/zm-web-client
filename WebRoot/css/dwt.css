@@ -1211,6 +1211,9 @@ input.xform_field {
 	overflow-y:auto;
 }
 
+.xform_override_btn_contaier {
+	float:right;	
+}
 .XFormCase {
 	position:absolute;
 }
