@@ -40,10 +40,11 @@ ZmNewOrganizerDialog.prototype.popup =
 function(folder, account) {
 	if (this._folderTreeCellId) {
 		var params = {
-			treeIds: this._treeIds,
-			omit: this._omit,
-			fieldId: this._folderTreeCellId,
-			overviewTrees: [this._organizerType]
+			overviewId:		this.toString(),
+			treeIds:		this._treeIds,
+			omit:			this._omit,
+			fieldId:		this._folderTreeCellId,
+			overviewTrees:	[this._organizerType]
 		};
 		this._setOverview(params);
 

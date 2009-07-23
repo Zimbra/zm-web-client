@@ -39,7 +39,7 @@ ZmChooseFolderDialog.prototype.constructor = ZmChooseFolderDialog;
 
 ZmChooseFolderDialog.NEW_BUTTON = ++DwtDialog.LAST_BUTTON;
 
-ZmChooseFolderDialog.prototype.toString = 
+ZmChooseFolderDialog.prototype.toString =
 function() {
 	return "ZmChooseFolderDialog";
 };
@@ -52,7 +52,7 @@ function() {
  * @param params				[hash]*			hash of params:
  *        data					[object]		array of items, a folder, an item, or null
  *        treeIds				[array]			list of trees to show
- *        overviewId			[string]*		ID to use as base for overview ID
+ *        overviewId			[string]*		overview ID
  *        omit					[hash]*			IDs to not show
  *        title					[string]*		dialog title
  *        description			[string]*		description of what the user is selecting
@@ -131,16 +131,14 @@ function(params) {
 		omitParam = omitPerAcct[appCtxt.getMainAccount().id];
 	}
 	
-	// use an overview ID that comprises calling class, this class, and current account
-	this._currentOverviewId = [this.toString(), params.overviewId].join("-");
 	var popupParams = {
-		treeIds: treeIds,
-		omit: omitParam,
-		omitPerAcct: omitPerAcct,
-		fieldId: this._folderTreeDivId,
-		overviewId: this._currentOverviewId,
-		noRootSelect: params.noRootSelect,
-		treeStyle: params.treeStyle || DwtTree.SINGLE_STYLE	// we don't want checkboxes!
+		treeIds:		treeIds,
+		omit:			omitParam,
+		omitPerAcct:	omitPerAcct,
+		fieldId:		this._folderTreeDivId,
+		overviewId:		params.overviewId,
+		noRootSelect:	params.noRootSelect,
+		treeStyle:		params.treeStyle || DwtTree.SINGLE_STYLE	// we don't want checkboxes!
 	};
 
 	// make sure the requisite packages are loaded
@@ -163,16 +161,12 @@ function(params) {
 	AjxDispatcher.require(pkg, true, new AjxCallback(this, this._doPopup, [popupParams]));
 };
 
-ZmChooseFolderDialog.prototype.getOverviewId =
-function() {
-	return this._currentOverviewId;
-};
-
 ZmChooseFolderDialog.prototype._doPopup =
 function(params) {
 	var ov = this._setOverview(params);
 
 	if (appCtxt.multiAccounts) {
+		// ov is an overview container, and overviewId is the containerId
 		this._multiAcctOverviews[params.overviewId] = ov;
 		for (var i in this._multiAcctOverviews) {
 			this._multiAcctOverviews[i].setVisible(i == params.overviewId);
@@ -183,14 +177,18 @@ function(params) {
 			var overview = overviews[i];
 			this._resetTree(params.treeIds, overview);
 		}
-	}
-	else {
+	} else {
 		this._resetTree(params.treeIds, ov);
 	}
 
 	this._focusElement = this._inputField;
 	this._inputField.setValue("");
 	ZmDialog.prototype.popup.call(this);
+};
+
+ZmChooseFolderDialog.prototype.getOverviewId =
+function(part) {
+	return appCtxt.getOverviewId([this.toString(), part], null);
 };
 
 ZmChooseFolderDialog.prototype._resetTree =
@@ -403,7 +401,7 @@ function(visible) {
 ZmChooseFolderDialog.prototype._getOverview =
 function() {
 	if (appCtxt.multiAccounts) {
-		return this._opc.getOverviewContainer(this._currentOverviewId);
+		return this._opc.getOverviewContainer(this._curOverviewId);
 	}
 
 	return ZmDialog.prototype._getOverview.call(this);

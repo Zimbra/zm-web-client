@@ -162,8 +162,9 @@ function(searchFolder) {
 };
 
 ZmSearchTreeController.prototype._getMoveParams =
-function() {
-	var params = ZmTreeController.prototype._getMoveParams.call(this);
+function(dlg) {
+	var params = ZmTreeController.prototype._getMoveParams.apply(this, arguments);
+	params.overviewId = dlg.getOverviewId(this.type);
 	params.treeIds = [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH];
 	return params;
 };

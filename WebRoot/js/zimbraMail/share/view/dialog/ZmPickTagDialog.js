@@ -51,12 +51,20 @@ ZmPickTagDialog.prototype.popup =
 function(params) {
 
 	// all this is done here instead of in the constructor due to multi-account issues
-	this._setOverview({treeIds:[ZmOrganizer.TAG], fieldId:this._tagTreeDivId}, true);
+	var ovParams = {
+		overviewId:	this.toString(),
+		treeIds:	[ZmOrganizer.TAG],
+		fieldId:	this._tagTreeDivId
+	}
+	this._setOverview(ovParams, true);
 	this._tagTreeView = this._getOverview().getTreeView(ZmOrganizer.TAG);
 	this._tagTreeView.removeSelectionListener(this._treeViewListener);
 	this._tagTreeView.addSelectionListener(this._treeViewListener);
-	var root = this._tagTreeView.getTreeItemById(ZmOrganizer.ID_ROOT);
-	root.enableSelection(false);
+	var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
+	var root = this._tagTreeView.getTreeItemById(rootId);
+	if (root) {
+		root.enableSelection(false);
+	}
 
 	this._loadTags();	// item list for this account's tree view will be cached after the first time
 	this._resetTreeView();

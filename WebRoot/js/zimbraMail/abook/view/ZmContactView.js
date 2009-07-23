@@ -876,8 +876,9 @@ function(ev) {
 	var account = folder && appCtxt.getAccount(folder.accountId);
 
 	var params = {
-		data: (folder || appCtxt.getById(ZmOrganizer.ID_ADDRBOOK)),
-		treeIds: [ZmOrganizer.ADDRBOOK]
+		overviewId:	dlg.getOverviewId(ZmApp.CONTACTS),
+		data:		(folder || appCtxt.getById(ZmOrganizer.ID_ADDRBOOK)),
+		treeIds:	[ZmOrganizer.ADDRBOOK]
 	};
 	params.omit = {};
 	params.omit[ZmFolder.ID_TRASH] = true;

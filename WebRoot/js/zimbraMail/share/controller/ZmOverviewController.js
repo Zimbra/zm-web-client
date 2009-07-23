@@ -61,10 +61,10 @@ ZmOverviewController.prototype.createOverviewContainer =
 function(containerParams, overviewParams) {
 	containerParams.parent = containerParams.parent || this._shell;
 	containerParams.controller = this;
-	var id = containerParams.id = ZmId.getOverviewContainerId(containerParams.appName);
+	containerParams.id = ZmId.getOverviewContainerId(containerParams.containerId);
 
 	// the overview container will create overviews for each account
-	var container = this._overviewContainer[id] = new ZmOverviewContainer(containerParams);
+	var container = this._overviewContainer[containerParams.containerId] = new ZmOverviewContainer(containerParams);
 
 	// we call initialize *after* creating new object since it references
 	// this._overviewContainer hash
@@ -81,7 +81,6 @@ function(containerParams, overviewParams) {
 ZmOverviewController.prototype.createOverview =
 function(params) {
 	params.parent = params.parent || this._shell;
-	params.id = ZmId.getOverviewId(params.overviewId); // used as the HTML element Id
 
 	var ov = this._overview[params.overviewId] = new ZmOverview(params, this);
 	return ov;
@@ -90,11 +89,11 @@ function(params) {
 /**
  * Returns the overview container for the given appName.
  *
- * @param appName			[String]*	When mbox has multiple accounts, specify optional appName.
+ * @param containerId		[String]*	container ID (defaults to current app name)
  */
 ZmOverviewController.prototype.getOverviewContainer =
-function(appName) {
-	var containerId = ZmId.getOverviewContainerId(appName || appCtxt.getCurrentAppName());
+function(containerId) {
+	var containerId = containerId || appCtxt.getCurrentAppName();
 	return this._overviewContainer[containerId];
 };
 

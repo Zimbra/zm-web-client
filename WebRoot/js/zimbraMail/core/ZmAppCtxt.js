@@ -1015,3 +1015,22 @@ function(addr, allowLocal) {
 
 	return false;
 };
+
+/**
+ * Returns an overview ID, prepending account name if we're multi-account.
+ *
+ * @param parts		[list]			ID components
+ * @param account	[ZmAccount]*	account
+ */
+ZmAppCtxt.prototype.getOverviewId =
+function(parts, account) {
+
+	var id = (parts instanceof Array) ? parts.join("_") : parts;
+
+	if (appCtxt.multiAccounts && (account !== null)) {
+		account = account || appCtxt.getActiveAccount();
+		id = [account.name, id].join(":");
+	}
+
+	return id;
+}

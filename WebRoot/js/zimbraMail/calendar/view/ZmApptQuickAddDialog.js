@@ -361,7 +361,12 @@ function(ev) {
 	var folder = this._calItem && appCtxt.getById(this._calItem.folderId);
 	var account = folder && appCtxt.getAccount(folder.accountId);
 
-	var params = { data:this._calItem, treeIds:[ZmOrganizer.CALENDAR], omit:{} };
+	var params = {
+		overviewId:	dlg.getOverviewId(ZmApp.CALENDAR),
+		data:		this._calItem,
+		treeIds:	[ZmOrganizer.CALENDAR],
+		omit:		{}
+	};
 	params.omit[ZmFolder.ID_TRASH] = true;
 	params.omit[ZmOrganizer.ID_AUTO_ADDED] = true;
 

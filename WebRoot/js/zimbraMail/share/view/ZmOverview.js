@@ -22,7 +22,8 @@
  * @author Conrad Damon
  *
  * @param params 				[hash]					hash of params:
- *        overviewId			[constant]				overview ID
+ *        id					[string]*				ID for the HTML element
+ *        overviewId			[string]				overview ID
  *        treeIds				[array]					array of organizer types that may be displayed in this overview
  *        account				[ZmZimbraAccount]		account this overview belongs to
  *        parent				[DwtControl]*			containing widget
@@ -42,13 +43,14 @@
 ZmOverview = function(params, controller) {
 
 	var overviewClass = params.overviewClass ? params.overviewClass : "ZmOverview";
+	params.id = params.id || ZmId.getOverviewId(params.overviewId);
 	DwtComposite.call(this, {parent:params.parent, className:overviewClass, posStyle:params.posStyle, id:params.id});
 
-	this.id = params.overviewId;
 	this._controller = controller;
 
 	this.setScrollStyle(params.scroll || Dwt.SCROLL);
 
+	this.overviewId			= params.overviewId;
 	this.account			= params.account;
 	this.selectionSupported	= params.selectionSupported;
 	this.actionSupported	= params.actionSupported;
@@ -71,13 +73,13 @@ ZmOverview = function(params, controller) {
 		for (var i = 0, count = params.treeIds.length; i < count; i++) {
 			var div = doc.createElement("DIV");
 			var treeId = params.treeIds[i];
-			this._treeParents[treeId] = div.id = [this.id, treeId].join("-parent-");
+			this._treeParents[treeId] = div.id = [this.overviewId, treeId].join("-parent-");
 			element.appendChild(div);
 		}
 	}
 
 	if (this.dndSupported) {
-		var params = {container:this.getHtmlElement(), threshold:15, amount:5, interval:10, id:this.id};
+		var params = {container:this.getHtmlElement(), threshold:15, amount:5, interval:10, id:this.overviewId};
 		this._dndScrollCallback = new AjxCallback(null, DwtControl._dndScrollCallback, [params]);
 	}
 };
@@ -130,12 +132,12 @@ function(treeId, omit) {
 	AjxDispatcher.require(ZmOrganizer.ORG_PACKAGE[treeId]);
 	var treeController = this._controller.getTreeController(treeId);
 	if (this._treeHash[treeId]) {
-		treeController.clearTreeView(this.id);
+		treeController.clearTreeView(this.overviewId);
 	} else {
 		this._treeIds.push(treeId);
 	}
 	var params = {
-		overviewId: this.id,
+		overviewId: this.overviewId,
 		omit: omit,
 		showUnread: this.showUnread,
 		account: this.account
@@ -228,7 +230,7 @@ function(id, type) {
 ZmOverview.prototype.itemSelected =
 function(treeItem) {
 	if (appCtxt.multiAccounts && treeItem) {
-		var name = this.id.substring(0, this.id.indexOf(":"));
+		var name = this.overviewId.substring(0, this.overviewId.indexOf(":"));
 		var container = this._controller.getOverviewContainer(name);
 		if (container) {
 			container.deselectAll(this);
@@ -251,7 +253,7 @@ function() {
 		var treeId = this._treeIds[i];
 		if (this._treeHash[treeId]) {
 			var treeController = this._controller.getTreeController(treeId);
-			treeController.clearTreeView(this.id);
+			treeController.clearTreeView(this.overviewId);
 			delete this._treeHash[treeId];
 		}
 	}

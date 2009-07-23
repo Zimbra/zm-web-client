@@ -222,20 +222,20 @@ ZmImportExportController.prototype._doImportSelectFolder = function(params, type
 	dialog.setTitle(ZmMsg._import);
 	dialog.registerCallback(DwtDialog.OK_BUTTON, this._doImportUpload, this, [params, type]);
 
-	var overviewId = [this.toString(), type].join("-");
+	var overviewId = dialog.getOverviewId(ZmSetting.IMPORT);
 	var omit = {};
 	omit[ZmFolder.ID_TRASH] = true;
 	if (type == ZmImportExportController.TYPE_CSV) {
 		AjxDispatcher.require(["ContactsCore", "Contacts"]);
 		var noNew = !appCtxt.get(ZmSetting.NEW_ADDR_BOOK_ENABLED);
 		dialog.popup({
-			treeIds: [ZmOrganizer.ADDRBOOK],
-			title: ZmMsg.chooseAddrBook,
-			overviewId: overviewId,
-			description: ZmMsg.chooseAddrBookToImport,
-			skipReadOnly: true,
-			hideNewButton: noNew,
-			omit:omit
+			treeIds:		[ZmOrganizer.ADDRBOOK],
+			title:			ZmMsg.chooseAddrBook,
+			overviewId:		overviewId,
+			description:	ZmMsg.chooseAddrBookToImport,
+			skipReadOnly:	true,
+			hideNewButton:	noNew,
+			omit:			omit
 		});
 		return;
 	}

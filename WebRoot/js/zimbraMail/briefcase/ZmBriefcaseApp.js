@@ -483,20 +483,20 @@ function(msgId, partId, name) {
 	if (this._deferredFolders.length != 0) {
 		this._createDeferredFolders(ZmApp.BRIEFCASE);
 	}
-	var copyToDialog = this._copyToDialog = appCtxt.getChooseFolderDialog();
-	var chooseCb = new AjxCallback(this, this._chooserCallback,[msgId,partId,name]);
-	ZmController.showDialog(copyToDialog, chooseCb, this._getCopyParams(msgId, partId));
+	var dlg = this._copyToDialog = appCtxt.getChooseFolderDialog();
+	var chooseCb = new AjxCallback(this, this._chooserCallback, [msgId, partId, name]);
+	ZmController.showDialog(dlg, chooseCb, this._getCopyParams(dlg, msgId, partId));
 };
 
 
 ZmBriefcaseApp.prototype._getCopyParams =
-function(msgId, partId) {
+function(dlg, msgId, partId) {
 	return {
-		data: {msgId:msgId,partId:partId},
-		treeIds: [ZmOrganizer.BRIEFCASE],
-		overviewId: "ZmBriefcaseApp",
-		title: ZmMsg.addToBriefcaseTitle,
-		description: ZmMsg.targetFolder
+		data:			{msgId:msgId,partId:partId},
+		treeIds:		[ZmOrganizer.BRIEFCASE],
+		overviewId:		dlg.getOverviewId(this._name),
+		title:			ZmMsg.addToBriefcaseTitle,
+		description:	ZmMsg.targetFolder
 	};
 };
 

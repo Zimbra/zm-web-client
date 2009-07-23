@@ -692,10 +692,10 @@ function(ev) {
 	}
 
 	var params = {
-		data: this._calItem,
-		treeIds: this._getFolderPickerTreeIds(),
-		overviewId: this.toString(),
-		omit:{}
+		data:		this._calItem,
+		treeIds:	this._getFolderPickerTreeIds(),
+		overviewId:	dlg.getOverviewId(ZmApp.CALENDAR),
+		omit:		{}
 	};
 	params.omit[ZmFolder.ID_TRASH] = true;
 	params.omit[ZmOrganizer.ID_AUTO_ADDED] = true;

@@ -19,11 +19,11 @@ ZmController = function(container, app) {
 
 	this._container = container;
 	this._app = app;
-
+	
 	this._shell = appCtxt.getShell();
 	this._appViews = {};
 	this._currentView = null;
-
+	
 	this._authenticating = false;
 };
 
@@ -40,8 +40,7 @@ function() {
 	return "ZmController";
 };
 
-ZmController.prototype.getApp =
-function() {
+ZmController.prototype.getApp = function() {
 	return this._app;
 };
 
@@ -142,8 +141,9 @@ function(actionCode) {
 		case ZmKeyMap.SAVED_SEARCH:
 			if (appCtxt.get(ZmSetting.SEARCH_ENABLED)) {
 				var dlg = appCtxt.getChooseFolderDialog();
-				var params = {treeIds:	[ZmOrganizer.SEARCH],
-							  title:	ZmMsg.selectSearch};
+				var params = {treeIds:		[ZmOrganizer.SEARCH],
+							  overviewId:	dlg.getOverviewId(ZmOrganizer.SEARCH),
+							  title:		ZmMsg.selectSearch};
 				ZmController.showDialog(dlg, new AjxCallback(null, ZmController._searchSelectionCallback, [dlg]), params);
 			}
 			break;

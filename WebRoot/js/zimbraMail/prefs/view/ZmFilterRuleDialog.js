@@ -822,13 +822,13 @@ function(ev) {
 	var dialog;
 	var button = ev.item;
 	var type = button.getData(ZmFilterRuleDialog.BROWSE_TYPE);
-	var dialog = (type == ZmFilterRule.TYPE_FOLDER_PICKER)
-		? appCtxt.getChooseFolderDialog()
-		: appCtxt.getPickTagDialog();
+	var isFolder = (type == ZmFilterRule.TYPE_FOLDER_PICKER);
+	var dialog = isFolder ? appCtxt.getChooseFolderDialog()	: appCtxt.getPickTagDialog();
+	var overviewId = isFolder ? dialog.getOverviewId(ZmApp.MAIL) : null;
 	dialog.reset();
 	dialog.setTitle((type == ZmFilterRule.TYPE_FOLDER_PICKER) ? ZmMsg.chooseFolder : ZmMsg.chooseTag);
 	dialog.registerCallback(DwtDialog.OK_BUTTON, this._browseSelectionCallback, this, ev.item);
-	dialog.popup({overviewId:this.toString()});
+	dialog.popup({overviewId: overviewId}); 
 };
 
 /**

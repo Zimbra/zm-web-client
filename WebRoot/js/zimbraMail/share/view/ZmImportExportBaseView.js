@@ -156,7 +156,7 @@ ZmImportExportBaseView.prototype._folderButton_onclick = function() {
 	var type = this.getValue("TYPE") || ZmImportExportController.TYPE_TGZ;
 	var params = {
 		treeIds:		this._TREES[type],
-		overviewId:		[this.toString(), type].join("-"),
+		overviewId:		dialog.getOverviewId([this.toString(), type].join("_")),
 		skipReadOnly:	true,
 		omit:			{}
 	};

@@ -253,13 +253,13 @@ function(ev) {
 	dialog.reset();
 	dialog.registerCallback(DwtDialog.OK_BUTTON, this._runFilterOkCallback, this, dialog);
 	var params = {
-		treeIds: [ZmOrganizer.FOLDER],
-		title: ZmMsg.chooseFolder,
-		overviewId: this.toString(),
-		description: ZmMsg.chooseFolderToFilter,
-		skipReadOnly: true,
-		hideNewButton: true,
-		treeStyle: DwtTree.CHECKEDITEM_STYLE
+		treeIds:		[ZmOrganizer.FOLDER],
+		title:			ZmMsg.chooseFolder,
+		overviewId:		dialog.getOverviewId(ZmApp.MAIL),
+		description:	ZmMsg.chooseFolderToFilter,
+		skipReadOnly:	true,
+		hideNewButton:	true,
+		treeStyle:		DwtTree.CHECKEDITEM_STYLE
 	};
 	dialog.popup(params);
 };

@@ -114,6 +114,8 @@ ZmApp.ENABLED_APPS			= {};	// hash for quick detection if app is enabled
 ZmApp.APPS					= [];	// ordered list
 ZmApp.DEFAULT_APPS			= [];	// ordered list
 
+ZmApp.OVERVIEW_ID			= "main";	// ID for main overview
+
 ZmApp.initialize =
 function() {
 	if (appCtxt.get(ZmSetting.USE_KEYBOARD_SHORTCUTS)) {
@@ -340,6 +342,7 @@ ZmApp.prototype.getOverviewPanelContent =
 function() {
 	if (!this._overviewPanelContent) {
 		var params = this._getOverviewParams();
+		params.overviewId = this.getOverviewId();
 		var ov = this._overviewPanelContent = this._opc.createOverview(params);
 		ov.set(this._getOverviewTrees());
 	}
@@ -350,7 +353,8 @@ function() {
 ZmApp.prototype.getOverviewContainer =
 function() {
 	if (!this._overviewContainer) {
-		var containerParams = {appName:this._name, posStyle:Dwt.ABSOLUTE_STYLE};
+		var containerId = [ZmApp.OVERVIEW_ID, this._name].join("_");	// omit account
+		var containerParams = {containerId:containerId, posStyle:Dwt.ABSOLUTE_STYLE};
 		var overviewParams = this._getOverviewParams();
 		overviewParams.overviewTrees = this._getOverviewTrees();
 
@@ -409,14 +413,7 @@ function(overviewId) {
  */
 ZmApp.prototype.getOverviewId =
 function(account) {
-	if (appCtxt.multiAccounts) {
-		if (!account) {
-			account = appCtxt.getActiveAccount();
-		}
-		return ([this._name, account.name].join(":"));
-	}
-
-	return this._name;
+	return appCtxt.getOverviewId([ZmApp.OVERVIEW_ID, this._name], account);
 };
 
 /**
@@ -435,7 +432,6 @@ function() {
 	treeIds.sort(sortFunc);
 
 	return {
-		overviewId:			this.getOverviewId(),
 		posStyle:			Dwt.ABSOLUTE_STYLE,
 		selectionSupported:	true,
 		actionSupported:	true,

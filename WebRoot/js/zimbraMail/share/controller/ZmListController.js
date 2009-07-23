@@ -588,20 +588,20 @@ function(ev, list) {
 	if (!this._moveCb) {
 		this._moveCb = new AjxCallback(this, this._moveCallback);
 	}
-	ZmController.showDialog(moveToDialog, this._moveCb, this._getMoveParams());
+	ZmController.showDialog(moveToDialog, this._moveCb, this._getMoveParams(moveToDialog));
 	moveToDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._clearDialog, this, moveToDialog);
 };
 
 ZmListController.prototype._getMoveParams =
-function() {
+function(dlg) {
 	var org = ZmApp.ORGANIZER[this._app._name] || ZmOrganizer.FOLDER;
 	return {
-		data:this._pendingActionData,
-		treeIds:[org],
-		overviewId:"ZmListController",
-		title:this._getMoveDialogTitle(this._pendingActionData.length),
-		description:ZmMsg.targetFolder,
-		treeStyle: DwtTree.SINGLE_STYLE
+		overviewId:		dlg.getOverviewId(this._app._name),
+		data:			this._pendingActionData,
+		treeIds:		[org],
+		title:			this._getMoveDialogTitle(this._pendingActionData.length),
+		description:	ZmMsg.targetFolder,
+		treeStyle:		DwtTree.SINGLE_STYLE
 	};
 };
 
@@ -620,8 +620,7 @@ function(ev) {
 ZmListController.prototype._navBarListener =
 function(ev) {
 	// skip listener for non-current views
-	if (appCtxt.getAppViewMgr().getCurrentViewId() != this._getViewType())
-		return;
+	if (appCtxt.getAppViewMgr().getCurrentViewId() != this._getViewType()) { return; }
 
 	var op = ev.item.getData(ZmOperation.KEY_ID);
 

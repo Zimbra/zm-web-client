@@ -17,7 +17,8 @@
  * Creates an empty ZmDialog.
  * @constructor
  * @class
- * This class is a base class for miscellaneous organizer-related dialogs.
+ * This class is a base class for miscellaneous organizer-related dialogs. An instance
+ * of this class can be re-used to show different overviews.
  *
  * @author Conrad Damon
  *
@@ -102,16 +103,6 @@ function(fieldId) {
 };
 
 /**
- * Returns a unique ID for this dialog's overview.
- */
-ZmDialog.prototype.getOverviewId =
-function() {
-	return (appCtxt.multiAccounts)
-		? ([appCtxt.getActiveAccount().name, this.toString()].join(":"))
-		: (this.toString());
-};
-
-/**
  * Displays the given list of tree views in an overview, creating it if
  * necessary, and appends the overview to an element in the dialog. Since
  * dialogs may be reused, it is possible that it will display different
@@ -132,21 +123,21 @@ function(params, forceSingle) {
 
 	// multi-account uses overview container
 	if (appCtxt.multiAccounts && !forceSingle) {
-		var appName = this.getOverviewId();
-		var ovContainer = this._opc.getOverviewContainer(appName);
+		// use overviewId as the containerId; container will assign overviewId's
+		var containerId = params.overviewId;
+		var ovContainer = this._opc.getOverviewContainer(containerId);
 		if (!ovContainer) {
 			var ovParams = {
-				appName: appName,
-				overviewClass: "dialogOverviewContainer",
-				headerClass: "DwtTreeItem",
-				noTooltips: true,
-				treeStyle: params.treeStyle,
-				treeIds: params.treeIds,
-				overviewTrees: params.overviewTrees,
-				omit: params.omit,
-				omitPerAcct: params.omitPerAcct
+				overviewClass:	"dialogOverviewContainer",
+				headerClass:	"DwtTreeItem",
+				noTooltips:		true,
+				treeStyle:		params.treeStyle,
+				treeIds:		params.treeIds,
+				overviewTrees:	params.overviewTrees,
+				omit:			params.omit,
+				omitPerAcct:	params.omitPerAcct
 			};
-			ovContainer = this._opc.createOverviewContainer({appName:appName}, ovParams);
+			ovContainer = this._opc.createOverviewContainer({containerId:containerId}, ovParams);
 			ovContainer.setSize(Dwt.DEFAULT, "200");
 			document.getElementById(params.fieldId).appendChild(ovContainer.getHtmlElement());
 		}
@@ -154,16 +145,16 @@ function(params, forceSingle) {
 	}
 
 	// single-account overview handling
-	var overviewId = this.getOverviewId();
+	var overviewId = params.overviewId;
 	var overview = this._opc.getOverview(overviewId);
 	if (!overview) {
 		var ovParams = {
-			overviewId: overviewId,
-			overviewClass: "dialogOverview",
-			headerClass: "DwtTreeItem",
-			noTooltips: true,
-			treeStyle: params.treeStyle,
-			treeIds: params.treeIds
+			overviewId:		overviewId,
+			overviewClass:	"dialogOverview",
+			headerClass:	"DwtTreeItem",
+			noTooltips:		true,
+			treeStyle:		params.treeStyle,
+			treeIds:		params.treeIds
 		};
 		overview = this._overview[overviewId] = this._opc.createOverview(ovParams);
 		this._renderOverview(overview, params.treeIds, params.omit, params.noRootSelect);

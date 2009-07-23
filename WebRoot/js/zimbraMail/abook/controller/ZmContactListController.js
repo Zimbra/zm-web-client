@@ -313,8 +313,8 @@ function(num) {
 };
 
 ZmContactListController.prototype._getMoveParams =
-function() {
-	var params = ZmListController.prototype._getMoveParams.call(this);
+function(dlg) {
+	var params = ZmListController.prototype._getMoveParams.apply(this, arguments);
     params.hideNewButton = !appCtxt.get(ZmSetting.NEW_ADDR_BOOK_ENABLED);
     var omit = {};
 	var folderTree = appCtxt.getFolderTree();
@@ -327,7 +327,6 @@ function() {
 		}
 	}
 	params.omit = omit;
-	params.overviewId = "ZmContactListController";
 	params.description = ZmMsg.targetAddressBook;
 
 	return params;

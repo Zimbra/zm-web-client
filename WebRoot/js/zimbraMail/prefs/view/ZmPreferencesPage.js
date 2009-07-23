@@ -976,24 +976,24 @@ function(format, formatSelectObj, ev) {
 
 	var omit = {};
 	omit[ZmFolder.ID_TRASH] = true;
+	var overviewId = dialog.getOverviewId(settingId);
 
-	var overviewId = [this.toString(), settingId].join("-");
 	if (settingId == ZmSetting.EXPORT) {
 		AjxDispatcher.require(["ContactsCore", "Contacts"]);
-		dialog.popup({treeIds:[ZmOrganizer.ADDRBOOK],
-					  overviewId:overviewId,
-					  omit:omit,
-					  title:ZmMsg.chooseAddrBook,
-					  hideNewButton:true,
-					  description:ZmMsg.chooseAddrBookToExport});
+		dialog.popup({treeIds:			[ZmOrganizer.ADDRBOOK],
+					  overviewId:		overviewId,
+					  omit:				omit,
+					  title:			ZmMsg.chooseAddrBook,
+					  hideNewButton:	true,
+					  description:		ZmMsg.chooseAddrBookToExport});
 	} else {
 		AjxDispatcher.require(["CalendarCore", "Calendar", "CalendarAppt"]);
-		dialog.popup({treeIds:[ZmOrganizer.CALENDAR],
-					  overviewId:overviewId,
-					  omit:omit,
-					  title:ZmMsg.chooseCalendar,
-					  hideNewButton:true,
-					  description:ZmMsg.chooseCalendarToExport});
+		dialog.popup({treeIds:			[ZmOrganizer.CALENDAR],
+					  overviewId:		overviewId,
+					  omit:				omit,
+					  title:			ZmMsg.chooseCalendar,
+					  hideNewButton:	true,
+					  description:		ZmMsg.chooseCalendarToExport});
 	}
 };
 

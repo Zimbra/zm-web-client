@@ -1430,8 +1430,8 @@ function(list) {
 };
 
 ZmCalViewController.prototype._getMoveParams =
-function() {
-	var params = ZmListController.prototype._getMoveParams.call(this);
+function(dlg) {
+	var params = ZmListController.prototype._getMoveParams.apply(this, arguments);
     var omit = {};
 	var folderTree = appCtxt.getFolderTree();
 	if (!folderTree) { return params; }
@@ -1444,7 +1444,6 @@ function() {
 		}
 	}
 	params.omit = omit;
-	params.overviewId = "ZmCalViewController";
 	params.description = ZmMsg.targetCalendar;
 
 	return params;

@@ -909,21 +909,21 @@ function(ev) {
 	if (!this._moveCb) {
 		this._moveCb = new AjxCallback(this, this._moveCallback);
 	}
-	ZmController.showDialog(moveToDialog, this._moveCb, this._getMoveParams());
+	ZmController.showDialog(moveToDialog, this._moveCb, this._getMoveParams(moveToDialog));
 	moveToDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._clearDialog, this, moveToDialog);
 };
 
 ZmTreeController.prototype._getMoveParams =
-function() {
+function(dlg) {
 	var omit = {};
 	omit[ZmFolder.ID_SPAM] = true;
 	return {
-		data: this._pendingActionData,
-		treeIds: [this.type],
-		overviewId: "ZmTreeController",
-		omit:omit,
-		title: this._getMoveDialogTitle(),
-		description: ZmMsg.targetFolder
+		data:			this._pendingActionData,
+		treeIds:		[this.type],
+		overviewId:		dlg.getOverviewId(ZmOrganizer.APP[this.type]),
+		omit:			omit,
+		title:			this._getMoveDialogTitle(),
+		description:	ZmMsg.targetFolder
 	};
 };
 

@@ -466,7 +466,7 @@ function(orgType) {
 
 	var dialog = appCtxt.getChooseFolderDialog();
 	var params = {treeIds: 			[orgType],
-				  overviewId:		["ZmSharingView", orgType].join("_"),
+				  overviewId:		dialog.getOverviewId(ZmOrganizer.APP[orgType]),
 				  title:			ZmMsg.chooseFolder,
 				  skipReadOnly:		true,
 				  skipRemote:		true,
