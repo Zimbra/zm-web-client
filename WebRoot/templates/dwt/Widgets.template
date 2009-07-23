@@ -1,4 +1,4 @@
-<template id='dwt.Widgets#DwtAlert'>
+Z<template id='dwt.Widgets#DwtAlert'>
 	<table width=100% border=0 cellpadding=0 cellspacing=0>
 		<tr>
 			<td width=1%>
@@ -525,6 +525,22 @@ NOTE: The outer table/tr is a necessary hack. It is NOT inserted in the
 		<tr>
 			<td><div id='${id}_input'></div></td>
 			<td><div id='${id}_show_password'></div></td>
+		</tr>
+	</table>
+</template>
+
+<template id="dwt.Widgets#DwtFormRows">
+	<table border=0 cellspacing=3 cellpadding=0>
+		<tbody id="${id}_rows"></tbody>
+	</table>
+</template>
+
+<template id="dwt.Widgets#DwtFormRow">
+	<table>
+		<tr id="${id}_row" class="DwtFormRow">
+			<td><div id="${id}"></div></td>
+			<td><div id="${id}_add" class="DwtFormRowAdd"></div></td>
+			<td><div id="${id}_remove" class="DwtFormRowRemove"></div></td>
 		</tr>
 	</table>
 </template>

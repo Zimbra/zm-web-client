@@ -161,7 +161,12 @@ ZmUploadDialog.prototype._uploadSaveDocs = function(files, status, guids) {
 			DBG.println("guids["+i+"]: "+guids[i]+", files["+i+"]: "+files[i]);
 			files[i].guid = guids[i];
 		}
-		this._uploadSaveDocs2(files, status, guids);
+		if (this._uploadFolder) {
+			this._uploadSaveDocs2(files, status, guids);
+		}
+		else {
+			this._finishUpload(files, status, guids);
+		}
 	}
 };
 
@@ -266,12 +271,16 @@ function(files, status, guids, response) {
 
 	// perform callback
 	else if (this._uploadCallback) {
-		var filenames = [];
-		for (var i = 0; i < files.length; i++) {
-			filenames.push(files[i].name);
-		}
-		this._uploadCallback.run(this._uploadFolder, filenames, files);
+		this._finishUpload(files, status, guids);
 	}
+};
+
+ZmUploadDialog.prototype._finishUpload = function(files, status, guids) {
+	var filenames = [];
+	for (var i = 0; i < files.length; i++) {
+		filenames.push(files[i].name);
+	}
+	this._uploadCallback.run(this._uploadFolder, filenames, files);
 };
 
 ZmUploadDialog.prototype._addFileInputRow = function(oneInputOnly) {

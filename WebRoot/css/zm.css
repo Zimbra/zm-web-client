@@ -837,7 +837,8 @@ line-height:normal;
 
 .ZmContactInfoView .contactHeader,
 .ZmContactView .contactHeader,
-.ZmTaskEditView .contactHeader {
+.ZmTaskEditView .contactHeader,
+.ZmEditContactView .contactHeader {
 	@FontSize-biggest@
 	@Text@
 	@NoWrap@
@@ -3771,4 +3772,17 @@ HTML>BODY .appt-selected .appt_allday_body
 
 .InviteSelectLabel {
  text-align: right;   
+}
+
+.ZmEditContactViewDetailsButton {
+	border: solid @darken(AppC,40)@ 1px;
+	background-color: @WidgetBgColor@;
+	cursor: pointer;
+}
+.ZmEditContactViewDetailsButton .ZButtonBorder {
+	border: none;
+}
+
+.ZmEditContactViewImage {
+	border: solid @darken(AppC,40)@ 1px;
 }

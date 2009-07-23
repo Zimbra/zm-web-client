@@ -59,6 +59,12 @@
 	<tr><td>onreset</td><td>function</td><td></td>
 		<td>Handle form reset.</td>
 	</tr>
+	<tr><td>ondirty</td><td>function</td><td></td>
+		<td>Handle form dirty state change. The function is passed the
+			changed form item id or "*" if the entire form dirty state
+			has changed.
+		</td>
+	</tr>
 	</tbody>
 </table>
 
@@ -69,7 +75,7 @@
 	<tr><th>Type</th><th>Name</th><th>Value</th><th>R</th><th>Notes</th></tr>
 	</thead>
 	<tbody>
-	<tr><th rowspan="6">FormItem</th><td>id</td><td>string</td><td>Y</td>
+	<tr><th rowspan="7">FormItem</th><td>id</td><td>string</td><td>Y</td>
 		<td>Can be accessed in the form by this id. Optionally, maps to
 			an element in the template with id "{formId}_{itemId}". For
 			example, if the <code>DwtForm</code> control has id "DWT42" and
@@ -107,6 +113,18 @@
 		<td>A function that sets the value for this form item.
 			If specified, you should also specify the <i>getter</i>
 			property. Ignored if <i>ref</i> is specified.
+		</td>
+	</tr>
+	<tr><td>ignore</td><td>boolean, function</td><td></td>
+		<td>Determines whether this item can be considered dirty. If set
+			to <code>true</code>, this item will not be considered when
+			calling <code>isDirty()</code> and will not be included in
+			the items returned by <code>getDirtyItems()</code>.
+			<br>
+			<strong>Note:</strong>
+			This is useful for pseudo-items used to hold temporary
+			state that should not make the form appear "dirty" when
+			the value changes.
 		</td>
 	</tr>
 	<tr><th rowspan="3">SelectOption</th><td>value</td><td>string</td><td>Y</td>
@@ -242,7 +260,75 @@
 	<tr><td>onclick</td><td>function</td><td></td>
 		<td>Handle checkbox click.</td>
 	</tr>
-	<tr><th rowspan="5">InputField</th><td>type</td><td>"DwtInputField"</td><td>Y</td>
+	<tr><th rowspan="11">FormRows</th><td>type</td><td>"DwtFormRows"</td><td>Y</td>
+		<td>Form item that supports an arbitrary number of rows containing
+			the same <i>FormItem</i>. This control also allows the user to
+			add and remove rows.
+			<br>
+			<strong>Note:</strong>
+			The <i>type</i> property must have the value
+			of "DwtFormRows" or another JavaScript type name that is a
+			sub-class of <code>DwtFormRows</code>.
+		</td>
+	</tr>
+	<tr><td>template</td><td>string</td><td></td>
+		<td>The name of the template expanded for the <i>FormRows</i> control.
+			<br>
+			<strong>Note:</strong>
+			The container element for the row items <i>must</i>
+			have the id set to "${id}_rows".
+		</td>
+	</tr>
+	<tr><td>rowtemplate</td><td>string</td><td></td>
+		<td>The name of the template to expand for each row.
+			<br>
+			<strong>Note:</strong>
+			The container element for the row item <i>must</i> have
+			the id set to "${id}" and the row element <i>must</i>
+			have the id set to "${id}_row". To support the add and
+			remove buttons, include container elements with their
+			ids set to "${id}_add" and "${id}_remove", respectively.
+		</td>
+	</tr>
+	<tr><td>rowitem</td><td><i>FormItem</i></td><td>Y</td>
+		<td>Form item for each added row.</td>
+	</tr>
+	<tr><td>additem</td><td><i>Button</i></td><td></td>
+		<td>Add row button item.
+			The default type for this item is "DwtButton" but may be
+			any JavaScript type name that is a subclass of
+			<code>DwtButton</code>.
+			<br>
+			<strong>Note:</strong>
+			If the <i>onclick</i> property is specified, it overrides the
+			default behavior and the user is responsible for inserting the
+			new row.
+		</td>
+	</tr>
+	<tr><td>removeitem</td><td><i>Button</i></td><td></td>
+		<td>Remove row button item.
+			The default type for this item is "DwtButton" but may be
+			any JavaScript type name that is a subclass of
+			<code>DwtButton</code>.
+			<br>
+			<strong>Note:</strong>
+			If the <i>onclick</i> property is specified, it overrides the
+			default behavior and the user is responsible for removing the
+			old row.
+		</td>
+	</tr>
+	<tr><td>items</td><td>array</td><td>*</td>
+		<td>Default row items. Each item is a <i>FormItem</i>.
+			<br>
+			<strong>Note:</strong>
+			Ignored if the <i>ref</i> property is specified.
+			</td>
+	</tr>
+	<tr><td>minrows</td><td>number</td><td></td><td>Minimum number of rows.</td></tr>
+	<tr><td>maxrows</td><td>number</td><td></td><td>Maximum number of rows.</td></tr>
+	<tr class="todo"><td>onaddrow</td><td>function</td><td></td><td>Handle add row click.</td></tr>
+	<tr class="todo"><td>onremoverow</td><td>function</td><td></td><td>Handle remove row click.</td></tr>
+	<tr><th rowspan="6">InputField</th><td>type</td><td>"DwtInputField"</td><td>Y</td>
 		<td>Input field. This form item can be used for either single-line input
 			fields or multi-line textareas.
 			<br>
@@ -261,6 +347,9 @@
 	</tr>
 	<tr><td>password</td><td>boolean</td><td></td>
 		<td>Specify this input field as a password field.</td>
+	</tr>
+	<tr><td>onchange</td><td>string, function</td><td></td>
+		<td>Handle value change.</td>
 	</tr>
 	<tr class="todo"><th>List</th><td>type</td><td>"DwtListView"</td><td>Y</td>
 		<td>A list object.

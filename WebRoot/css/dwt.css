@@ -2155,3 +2155,8 @@ input.xform_field {
 	height: 12px;
 #ENDIF
 }
+
+.DwtFormRowAdd .ZButtonTable, .DwtFormRowRemove .ZButtonTable {
+	border: none;
+	background-color: inherit;
+}
