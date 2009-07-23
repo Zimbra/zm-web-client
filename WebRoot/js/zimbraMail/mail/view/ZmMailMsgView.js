@@ -1197,7 +1197,10 @@ function(msg, container, callback) {
 					});
 				}
 				this._makeIframeProxy(el, c, false, bodyPart.truncated);
-			} else {
+			} else if(ZmMimeTable.isRenderableImage(bodyPart.ct)){
+                var html = ["<img zmforced='1' class='InlineImage' src='", appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI), "&id=", msg.id, "&part=", bodyPart.part, "'>"].join("");
+                this._makeIframeProxy(el, html, false);
+			}else {
 				// otherwise, get the text part if necessary
 				if (bodyPart.ct != ZmMimeTable.TEXT_PLAIN) {
 					// try to go retrieve the text part
@@ -1360,7 +1363,8 @@ function(msg) {
 
 ZmMailMsgView.prototype._setAttachmentLinks =
 function() {
-	var attLinks = this._msg.getAttachmentLinks(true);
+	var isTextView = !appCtxt.get(ZmSetting.VIEW_AS_HTML);
+	var attLinks = this._msg.getAttachmentLinks(true, isTextView);
 	var el = document.getElementById(this._attLinksId + "_tr");
 	if (el) {
 		el.style.display = attLinks.length == 0 ? "none" : "";
