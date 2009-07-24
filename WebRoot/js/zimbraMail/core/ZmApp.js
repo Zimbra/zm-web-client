@@ -353,8 +353,11 @@ function() {
 ZmApp.prototype.getOverviewContainer =
 function() {
 	if (!this._overviewContainer) {
-		var containerId = [ZmApp.OVERVIEW_ID, this._name].join("_");	// omit account
-		var containerParams = {containerId:containerId, posStyle:Dwt.ABSOLUTE_STYLE};
+		var containerParams = {
+			appName: this._name,
+			containerId: ([ZmApp.OVERVIEW_ID, this._name].join("_")),
+			posStyle: Dwt.ABSOLUTE_STYLE
+		};
 		var overviewParams = this._getOverviewParams();
 		overviewParams.overviewTrees = this._getOverviewTrees();
 

@@ -292,20 +292,6 @@ function(callback, accountName, result) {
 		}
 	}
 
-	// HACK: for offline, general prefs come from the "local" account
-	/*
-	if (appCtxt.isOffline) {
-		var main = appCtxt.getMainAccount();
-		for (var i in ZmSetting.IS_GLOBAL) {
-			var global = ZmSetting.IS_GLOBAL[i];
-			var setting = this._settings[global];
-			if (setting) {
-				setting.setValue(main.settings.get(global));
-			}
-		}
-	}
-	*/
-
 	// load zimlets *only* for the main account
 	if (mainAcct) {
 		if (obj.zimlets && obj.zimlets.zimlet) {
@@ -366,8 +352,9 @@ function(allzimlets, props) {
 		if (activeApp) {
 			var overview;
 			if (appCtxt.multiAccounts) {
+				var containerId = activeApp.getOverviewContainer().containerId;
 				var zimletLabel = ZmOrganizer.LABEL[ZmOrganizer.ZIMLET];
-				var overviewId = [activeApp.getName(), zimletLabel].join(":");
+				var overviewId = [containerId, zimletLabel].join("_");
 				overview = appCtxt.getOverviewController().getOverview(overviewId);
 			} else {
 				overview = activeApp.getOverview();

@@ -2119,13 +2119,14 @@ function(templateId, data) {
 
 	if (appCtxt.isOffline) {
 		if (!this._fromSelect) {
+			var ac = window.parentAppCtxt || window.appCtxt;
 			this._fromSelect = new DwtSelect({parent:this, parentElement:data.fromSelectId});
 			this._fromSelect.addChangeListener(new AjxListener(this, this._handleFromListener));
-			var active = appCtxt.getActiveAccount();
+			var active = ac.getActiveAccount();
 			if (active.isMain) {
-				active = appCtxt.getMainAccount(true);
+				active = ac.getMainAccount(true);
 			}
-			var accounts = appCtxt.getZimbraAccounts();
+			var accounts = ac.getZimbraAccounts();
 			for (var i in accounts) {
 				var acct = accounts[i];
 				if (!acct.visible || acct.isMain) { continue; }
@@ -2134,7 +2135,7 @@ function(templateId, data) {
 				if (isSelected) {
 					this._controller._accountName = acct.name;
 				}
-				var identities = appCtxt.getIdentityCollection(acct).getIdentities();
+				var identities = ac.getIdentityCollection(acct).getIdentities();
 				for (var j = 0; j < identities.length; j++) {
 					var identity = identities[j];
 					var addr = new AjxEmailAddress(identity.sendFromAddress, AjxEmailAddress.FROM, identity.sendFromDisplay);

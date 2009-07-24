@@ -34,6 +34,7 @@ ZmOverviewContainer = function(params) {
 	this.setScrollStyle(params.scroll || Dwt.SCROLL);
 
 	this.containerId = params.containerId;
+	this._appName = params.appName;
 	this._controller = params.controller;
 	this._headerItems = {};
 	this._overview = {};
@@ -106,13 +107,13 @@ function(params) {
 	for (var i in accounts) {
 		var acct = accounts[i];
 		// skip the main account in offline mode since we'll add it at the end
-		if (!acct.visible || (appCtxt.isOffline && acct.isMain && this.containerId != ZmApp.PREFERENCES)) { continue; }
+		if (!acct.visible || (appCtxt.isOffline && acct.isMain && this._appName != ZmApp.PREFERENCES)) { continue; }
 
 		this._addAccount(params, acct);
 	}
 
 	// add the "local" account last
-	if (appCtxt.isOffline && this.containerId != ZmApp.PREFERENCES) {
+	if (appCtxt.isOffline && this._appName != ZmApp.PREFERENCES) {
 		var main = appCtxt.getMainAccount();
 
 		// hide Junk folder for "local" account
@@ -127,8 +128,8 @@ function(params) {
 	var skip = params.omit && params.omit[ZmOrganizer.ID_ZIMLET];
 	if (!skip && window[ZmOverviewController.CONTROLLER[ZmOrganizer.ZIMLET]]) {
 		var headerLabel = ZmOrganizer.LABEL[ZmOrganizer.ZIMLET];
-		var headerDataId = params.overviewId = appCtxt.getOverviewId([this.containerId, headerLabel], null);
 		params.overviewTrees = [ZmOrganizer.ZIMLET];
+		var headerDataId = params.overviewId = appCtxt.getOverviewId([this.containerId, headerLabel], null);
 		this._addSection(ZmMsg[headerLabel], "Resource", headerDataId, null, params);
 	}
 };
@@ -150,14 +151,14 @@ function(params, account) {
 	params.account = account;	// tree controller might need reference to account
 
 	// only show sections for apps that are supported unless this is prefs app
-	var app = appCtxt.getApp(this.containerId);
-	var isSupported = (!app || (app && appCtxt.get(ZmApp.SETTING[this.containerId], null, account)));
+	var app = appCtxt.getApp(this._appName);
+	var isSupported = (!app || (app && appCtxt.get(ZmApp.SETTING[this._appName], null, account)));
 
-	if (this.containerId == ZmApp.PREFERENCES || isSupported) {
+	if (this._appName == ZmApp.PREFERENCES || isSupported) {
 		var omit = params.omitPerAcct
 			? params.omitPerAcct[account.id] : params.omit;
 
-		var headerLabel = (this.containerId == ZmApp.PREFERENCES && account.isMain)
+		var headerLabel = (this._appName == ZmApp.PREFERENCES && account.isMain)
 			? ZmMsg.allAccounts : account.getDisplayName();
 
 		this._addSection(headerLabel, null, account.id, omit, params);
@@ -212,7 +213,7 @@ function(ev) {
 	var item = this._actionedHeaderItem = ev.item;
 	var acctId = item && item.getData(Dwt.KEY_ID);
 
-	if (ev.detail == DwtTree.ITEM_ACTIONED && appCtxt.getApp(this.containerId)) {	// right click
+	if (ev.detail == DwtTree.ITEM_ACTIONED && appCtxt.getApp(this._appName)) {	// right click
 		var actionMenu = this._getActionMenu(ev);
 		if (actionMenu) {
 			this.resetOperations(actionMenu, acctId);
@@ -221,8 +222,8 @@ function(ev) {
 	}
 	else if ((ev.detail == DwtTree.ITEM_SELECTED) && item) {					// left click
 		// if calendar/prefs app, do nothing
-		if (this.containerId == ZmApp.CALENDAR ||
-			this.containerId == ZmApp.PREFERENCES)
+		if (this._appName == ZmApp.CALENDAR ||
+			this._appName == ZmApp.PREFERENCES)
 		{
 			return;
 		}
@@ -230,20 +231,20 @@ function(ev) {
 		this._deselectAllTreeViews();
 
 		// this avoids processing clicks in dialogs etc.
-		if (!ZmApp.NAME[this.containerId]) { return; }
+		if (!ZmApp.NAME[this._appName]) { return; }
 
 		// if an account header item was clicked, run the default search for it
 		if (acctId) {
 			var account = appCtxt.getAccount(acctId);
 			appCtxt.setActiveAccount(account);
 
-			var fid = ZmOrganizer.DEFAULT_FOLDER[ZmApp.ORGANIZER[this.containerId]];
+			var fid = ZmOrganizer.DEFAULT_FOLDER[ZmApp.ORGANIZER[this._appName]];
 			var folder = appCtxt.getById(ZmOrganizer.getSystemId(fid, account));
 			var sc = appCtxt.getSearchController();
 			var params = {
 				query: folder.createQuery(),
 				getHtml: appCtxt.get(ZmSetting.VIEW_AS_HTML),
-				searchFor: (ZmApp.DEFAULT_SEARCH[this.containerId]),
+				searchFor: (ZmApp.DEFAULT_SEARCH[this._appName]),
 				sortBy: ((sc.currentSearch && folder.nId == sc.currentSearch.folderId) ? null : ZmSearch.DATE_DESC),
 				accountName: (account && account.name),
 				callback: new AjxCallback(this, this._handleSearchCallback)
@@ -302,7 +303,7 @@ function(ev) {
 	var opId = ev.item.getData(ZmOperation.KEY_ID);
 
 	if (opId == ZmOperation.NEW_FOLDER) {
-		var treeId = ZmApp.ORGANIZER[this.containerId];
+		var treeId = ZmApp.ORGANIZER[this._appName];
 		var tc = this._controller.getTreeController(treeId, true);
 		if (tc) {
 			tc._newListener(ev);
