@@ -1075,8 +1075,8 @@ function(msg, container, callback) {
 			participants.push({ prefix: prefix, partStr: partStr });
 		}
 	}
-
-	var attachmentsCount = msg.getAttachmentLinks(true).length;
+    var isTextView = !appCtxt.get(ZmSetting.VIEW_AS_HTML);
+	var attachmentsCount = msg.getAttachmentLinks(true, isTextView).length;
 	var hasAttachments = attachmentsCount != 0;
 
 	// do we add a close button in the header section?
