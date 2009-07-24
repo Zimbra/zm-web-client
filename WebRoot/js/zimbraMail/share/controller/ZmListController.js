@@ -1061,8 +1061,9 @@ function(view, forward, loadIndex) {
 		// figure out how many items we need to fetch
 		var delta = (offset + limit) - this._list.size();
 		var max = delta < limit && delta > 0 ? delta : limit;
-		if (max < limit)
+		if (max < limit) {
 			offset = ((offset + limit) - max) + 1;
+		}
 
 		// figure out if this requires cursor-based paging
 		var list = lv.getList();
@@ -1116,6 +1117,8 @@ function(view, saveSelection, loadIndex, offset, result, ignoreResetSelection) {
 	if (!ignoreResetSelection) {
 		this._resetSelection(selectedIdx);
 	}
+
+	appCtxt.getAppController().focusContentPane();
 };
 
 ZmListController.prototype._getMoreSearchParams =
