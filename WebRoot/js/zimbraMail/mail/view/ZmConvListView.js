@@ -440,8 +440,10 @@ function(conv, msg) {
 	var item = msg || conv;
 	var isConv = (item.type == ZmItem.CONV);
 	var rowIds = this._msgRowIdList[item.id];
+	var lastRow;
 	if (rowIds && rowIds.length && this._rowsArePresent(item)) {
 		this._showMsgs(rowIds, true);
+		lastRow = document.getElementById(rowIds[rowIds.length - 1]);
 	} else {
 		this._msgRowIdList[item.id] = [];
 		var msgList = conv.msgs;
@@ -466,6 +468,9 @@ function(conv, msg) {
 			if (list) {
 				list.push(div.id);
 			}
+			if (i == a.length - 1) {
+				lastRow = div;
+			}
 		}
 	}
 
@@ -479,6 +484,7 @@ function(conv, msg) {
 	this._expandedItems[cid].push(item);
 
 	this._resetColWidth();
+	this._scrollList(lastRow);
 };
 
 ZmConvListView.prototype._collapse =
