@@ -318,7 +318,7 @@ function() {
 	// make sure a parent was selected
 	var ov = appCtxt.multiAccounts 
 		? this._opc.getOverviewContainer(this.toString())
-		: this._opc.getOverview(this.getOverviewId());
+		: this._opc.getOverview(this._curOverviewId);
 
 	var parentFolder = ov ? ov.getSelected() : appCtxt.getFolderTree().root;
 
