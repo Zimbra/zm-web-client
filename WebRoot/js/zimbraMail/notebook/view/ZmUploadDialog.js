@@ -19,6 +19,8 @@ ZmUploadDialog = function(shell, className) {
 	DwtDialog.call(this, {parent:shell, className:className, title:title});
 	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._upload));
 	this._createUploadHtml();
+    this._showLinkTitleText = false;
+    this._linkText = {};
 }
 
 ZmUploadDialog.prototype = new DwtDialog;
@@ -31,6 +33,7 @@ ZmUploadDialog.ACTION_KEEP_THEIRS = "theirs";
 ZmUploadDialog.ACTION_ASK = "ask";
 
 ZmUploadDialog.UPLOAD_FIELD_NAME = "uploadFile";
+ZmUploadDialog.UPLOAD_TITLE_FIELD_NAME = "uploadFileTitle";
 
 // Data
 
@@ -43,6 +46,11 @@ ZmUploadDialog.prototype._uploadFolder;
 ZmUploadDialog.prototype._uploadCallback;
 
 // Public methods
+
+ZmUploadDialog.prototype.enableLinkTitleOption =
+function(enabled) {
+    this._showLinkTitleText = enabled;    
+};
 
 ZmUploadDialog.prototype.popup = function(folder, callback, title, loc, oneFileOnly) {
 	this._uploadFolder = folder;
@@ -104,7 +112,7 @@ ZmUploadDialog.prototype.uploadFiles = function(files,uploadForm,folder) {
 ZmUploadDialog.prototype._upload = function(){
 	var form = document.getElementById(this._formId);
 	var files = [];
-
+    this._linkText = {};
 	var elements = form.elements;
 	for (var i = 0; i < elements.length; i++) {
 		var element = form.elements[i];
@@ -115,11 +123,20 @@ ZmUploadDialog.prototype._upload = function(){
 			name: element.value.replace(/^.*[\\\/:]/, "")
 		};
 		files.push(file);
+        if(this._showLinkTitleText) {
+            var id = element.id;
+            id = id.replace("_input", "") + "_titleinput";
+            var txtElement = document.getElementById(id);
+            if(txtElement) {
+                this._linkText[file.name] = txtElement.value;
+            }
+        }
+
 	}
 	if (files.length == 0) {
 		return;
 	}
-
+    
 	this.setButtonEnabled(DwtDialog.OK_BUTTON, false);
 	this.setButtonEnabled(DwtDialog.CANCEL_BUTTON, false);
 
@@ -277,8 +294,12 @@ function(files, status, guids, response) {
 
 ZmUploadDialog.prototype._finishUpload = function(files, status, guids) {
 	var filenames = [];
-	for (var i = 0; i < files.length; i++) {
-		filenames.push(files[i].name);
+	for (var i in files) {
+        var name = files[i].name;
+        if(this._linkText[name]) {
+            files[i].linkText = this._linkText[name]; 
+        }
+		filenames.push(name);
 	}
 	this._uploadCallback.run(this._uploadFolder, filenames, files);
 };
@@ -291,6 +312,11 @@ ZmUploadDialog.prototype._addFileInputRow = function(oneInputOnly) {
 
 	var table = document.getElementById(this._tableId);
 	var row = table.insertRow(-1);
+
+    var cellLabel = row.insertCell(-1);
+    cellLabel.innerHTML = [
+        ZmMsg.attach, ":"
+    ].join("");
 
 	var cell = row.insertCell(-1);
 	cell.innerHTML = [
@@ -328,16 +354,51 @@ ZmUploadDialog.prototype._addFileInputRow = function(oneInputOnly) {
         var addSpan = document.getElementById(addId);
         Dwt.setHandler(addSpan, DwtEvent.ONCLICK, ZmUploadDialog._addHandler);
     }
+
+
+    if(this._showLinkTitleText) {
+        var txtInputId = id + "_titleinput";
+        var txtRow = table.insertRow(-1);
+        var txtCell = txtRow.insertCell(-1);
+        txtCell.innerHTML = [
+    		ZmMsg.linkTitleOptionalLabel
+    	].join("");
+
+        txtCell = txtRow.insertCell(-1);
+	    txtCell.innerHTML = [
+    		"<input id='",txtInputId,"' type='text' name='",ZmUploadDialog.UPLOAD_TITLE_FIELD_NAME,"' size=40>",
+    	].join("");
+        txtCell.colSpan = 3;
+    }
 };
 
 ZmUploadDialog._removeHandler = function(event) {
 	var span = DwtUiEvent.getTarget(event || window.event);
 	var cell = span.parentNode;
 	var row = cell.parentNode;
-	if (row.prevSibling == null && row.nextSibling == null) {
+
+    var endRow = row;
+
+    if(span.id) {
+       var id = span.id;
+       id = id.replace("_remove", "") + "_titleinput";
+       var txtInput = document.getElementById(id);
+       if(txtInput) {
+           var txtCell = txtInput.parentNode;
+           var txtRow = txtCell.parentNode;
+           endRow = txtRow;
+       }
+    }
+    
+	if (row.previousSibling == null && endRow.nextSibling == null) {
 		var comp = DwtControl.findControl(span);
 		comp._addFileInputRow();
 	}
+
+    if(endRow != row) {
+        endRow.parentNode.removeChild(endRow);
+    }
+
 	row.parentNode.removeChild(row);
 };
 
@@ -372,7 +433,7 @@ ZmUploadDialog.prototype._createUploadHtml = function() {
 	var uri = appCtxt.get(ZmSetting.CSFE_UPLOAD_URI);
 	container.innerHTML = [
 		"<form id='",this._formId,"' method='POST' action='",uri,"' enctype='multipart/form-data'>",
-			"<table id='",this._tableId,"' cellspacing=4 cellpadding=0 border=0>",
+			"<table id='",this._tableId,"' cellspacing=4 cellpadding=3 border=0>",
 			"</table>",
 		"</form>"
 	].join("");

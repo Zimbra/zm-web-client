@@ -559,17 +559,15 @@ ZmDocsEditor.prototype._popupLinkPropsDialog = function(target, url, text) {
 	dialog.popup(linkInfo, this._insertLinkCallback);
 };
 
-ZmDocsEditor.prototype.insertLinks = function(filenames) {
-	if (!(filenames instanceof Array)) {
-		filenames = [filenames];
+ZmDocsEditor.prototype.insertLinks = function(filenames, files) {
+	if (!(files instanceof Array)) {
+		files = [files];
 	}
 
-	if (!filenames.length)
-		return;
-
 	var insertTarget = null;
-	for (var i = 0; i < filenames.length; i++) {
-		if (i > 0) {
+    var noOfLinks = 0;
+	for (var i in files) {
+		if (noOfLinks > 0) {
 			// Put spaces between each link.
 			var space = this._getIframeDoc().createTextNode(" ");
 			insertTarget.parentNode.insertBefore(space, insertTarget.nextSibling);
@@ -579,12 +577,14 @@ ZmDocsEditor.prototype.insertLinks = function(filenames) {
         var wAppCtxt = window.opener.appCtxt;        
         var folder = wAppCtxt.getById(ZmDocsEditApp.fileInfo.folderId);
         var url = [
-            folder.getRestUrl(), "/", AjxStringUtil.urlComponentEncode(filenames[i])
+            folder.getRestUrl(), "/", AjxStringUtil.urlComponentEncode(files[i].name)
         ].join("");
 		link.href = url;
-		link.innerHTML = decodeURI(filenames[i]);
+        var filename = decodeURI(files[i].name);
+		link.innerHTML = (files[i].linkText)? files[i].linkText : filename;
 		this._insertLink(link, insertTarget, true);
 		insertTarget = link;
+        noOfLinks++;
 	}
 };
 
@@ -607,28 +607,29 @@ ZmDocsEditor.prototype._insertImages = function(filenames) {
 	}
 };
 
-ZmDocsEditor.prototype._insertObjects = function(func, folder, filenames) {
-	func.call(this, filenames);
+ZmDocsEditor.prototype._insertObjects = function(func, folder, filenames, files) {
+	func.call(this, filenames, files);
 };
 
 ZmDocsEditor.prototype._insertImagesListener = function(event) {
-	this._insertObjectsListener(event, this._insertImages, ZmMsg.insertImage);
+	this._insertObjectsListener(event, this._insertImages, ZmMsg.insertImage, false);
 };
 
 ZmDocsEditor.prototype._insertAttachmentsListener = function(event) {
-	this._insertObjectsListener(event, this.insertLinks, ZmMsg.insertAttachment);
+	this._insertObjectsListener(event, this.insertLinks, ZmMsg.insertAttachment, true);
 };
 
-ZmDocsEditor.prototype._insertObjectsListener = function(event, func, title) {
+ZmDocsEditor.prototype._insertObjectsListener = function(event, func, title, enableLinkTitle) {
 	if (!this._insertObjectsCallback) {
 		this._insertObjectsCallback = new AjxCallback(this, this._insertObjects);
 	}
 	this._insertObjectsCallback.args = [ func ];
-	this.__popupUploadDialog(this._insertObjectsCallback);
+	this.__popupUploadDialog(this._insertObjectsCallback, null, enableLinkTitle);
 };
 
-ZmDocsEditor.prototype.__popupUploadDialog = function(callback, title) {
+ZmDocsEditor.prototype.__popupUploadDialog = function(callback, title, enableLinkTitle) {
 	var dialog = appCtxt.getUploadDialog();
+    dialog.enableLinkTitleOption(enableLinkTitle);
     dialog.addPopdownListener(new AjxListener(this, this.focus));
 	dialog.popup({id:ZmOrganizer.ID_BRIEFCASE}, callback, title);
 };
