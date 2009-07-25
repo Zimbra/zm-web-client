@@ -59,5 +59,5 @@ ZmAuthenticate.prototype._setAuthToken =
 function(resp) {
 	var lifetime = appCtxt.rememberMe ? resp.lifetime : 0;
 	// ignore sessionId so we get a <refresh> block
-	ZmCsfeCommand.setAuthToken(resp.authToken, lifetime);
+	ZmCsfeCommand.setAuthToken(resp.authToken[0]._content, lifetime);
 };
