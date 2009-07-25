@@ -1007,6 +1007,20 @@ function() {
 
 ZmBriefcaseController.prototype._createSlideShow =
 function() {
+    var importSlidesQueue = [];
+    var view = this._listView[this._currentView];
+	var items = view.getSelection();
+	if (!items) { return; }
+
+	items = items instanceof Array ? items : [ items ];
+    for (var i in items) {
+        var item = items[i];
+        var restUrl = item.getRestUrl();
+        if(item && !item.isFolder && restUrl != null) {
+            importSlidesQueue.push(restUrl);
+        }
+    }
     window.importSlides = true;
-    this._app.handleOp(ZmOperation.NEW_PRESENTATION);      
+    window.importSlidesQueue = importSlidesQueue;    
+    this._app.handleOp(ZmOperation.NEW_PRESENTATION);
 };

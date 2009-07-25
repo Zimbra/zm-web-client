@@ -290,6 +290,11 @@ function() {
     div.style.zIndex = Dwt.Z_VIEW;
     bgDiv.style.zIndex = Dwt.Z_VIEW-10;
 
+    var newFontSize = div.offsetWidth*32/1600;
+    if(newFontSize < 3) {
+        newFontSize = 3;
+    }
+    div.style.fontSize = newFontSize + 'px'; 
 }
 
 ZmSlideEditView.prototype._initializeSlideEditView =
@@ -1068,45 +1073,29 @@ function(filenames) {
     if(window.restPage || !window.opener) return;
 
     var wAppCtxt = window.opener.appCtxt;
-    var folder = wAppCtxt.getById(window.fileInfo.folderId);
-    url = folder.getRestUrl();
 
-    var app = wAppCtxt.getApp(ZmApp.BRIEFCASE);
-    var controller = app ? app.getBriefcaseController() : null;
-    var view = controller ?  controller.getCurrentView() : null;
-    if(view) {
-        var items = view.getSelection();
-        if (!items) { return; }
+    this._pendingSlides = window.opener.importSlidesQueue || [];
 
-        var pendingSlides = this._pendingSlides = [];
-        for (var i in items) {
-            var item = items[i];
-            var restUrl = item.getRestUrl();
-            if(item && !item.isFolder && restUrl != null) {
-                pendingSlides.push(restUrl);
-            }
-        }
-        if(pendingSlides.length > 0) {
-            this._importPendingImages();
-        }else {
-            this.createNewSlide();
-        }
-
+    if(this._pendingSlides.length > 0) {
+        this._importPendingImages();
+    }else {
+        this.createNewSlide();
     }
 
 };
 
 ZmSlideEditView.prototype.isImage  =
 function(url) {
-    return url.toLowerCase().match(/\.jpg$|\.gif$|\.jpeg$|\.png$|\.bmp$$/);    
+    var parts = AjxStringUtil.parseURL(url);
+    return (parts && parts.fileName) ? parts.fileName.toLowerCase().match(/\.jpg$|\.gif$|\.jpeg$|\.png$|\.bmp$$/) : false;    
 };
 
 ZmSlideEditView.prototype._importPendingImages =
 function() {
     if(this._pendingSlides && this._pendingSlides.length > 0) {
         var restUrl = this._pendingSlides.pop();
-        var fileName = unescape(restUrl.replace(/^.*\//,""));
-        fileName = fileName.replace("?fmt=html", "");
+        var parts = AjxStringUtil.parseURL(restUrl);
+        var fileName = (parts && parts.fileName) ? parts.fileName : '';
         this.createSlide(null, true, fileName);
         if(this.isImage(restUrl)) {
             this._insertImage(restUrl);
