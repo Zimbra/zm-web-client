@@ -36,10 +36,10 @@ function() {
 	return "ZmVoicemailListView";
 };
 
-ZmVoicemailListView.FROM_WIDTH		= 190;
+ZmVoicemailListView.FROM_WIDTH		= 250;
 ZmVoicemailListView.PLAYING_WIDTH	= null; // Auto
 ZmVoicemailListView.PRIORITY_WIDTH	= ZmListView.COL_WIDTH_ICON;
-ZmVoicemailListView.DATE_WIDTH		= 180;
+ZmVoicemailListView.DATE_WIDTH		= 170;
 
 ZmVoicemailListView.F_PRIORITY		= "py";
 
@@ -91,7 +91,7 @@ function() {
 	for(var i = 0, count = this._list.size(); i < count; i++) {
 		var item = this._list.get(i);
 		rowArgs.flagImage = item.isHighPriority ? "tasks/ImgTaskHigh.gif" : "startup/ImgBlank_16.gif";
-		rowArgs.caller = this._getCallerHtml(item);
+		rowArgs.caller = this._getCallerNameHtml(item);
 		rowArgs.duration = AjxDateUtil.computeDuration(item.duration);
 		rowArgs.date = AjxDateUtil.simpleComputeDateStr(item.date);
 		AjxTemplate.expand("voicemail.Voicemail#ZmVoicemailListPrintViewRow", rowArgs, buffer);

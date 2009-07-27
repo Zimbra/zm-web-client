@@ -28,9 +28,9 @@ ZmCallListView.prototype.toString = function() {
 	return "ZmCallListView";
 };
 
-ZmCallListView.FROM_WIDTH = 190;
+ZmCallListView.FROM_WIDTH = 300;
 ZmCallListView.DURATION_WIDTH = null; // Auto
-ZmCallListView.DATE_WIDTH = 180;
+ZmCallListView.DATE_WIDTH = 170;
 
 ZmCallListView.prototype.createHeaderHtml = 
 function(defaultColumnSort) {
@@ -67,7 +67,7 @@ function() {
 	var rowArgs = {};
 	for(var i = 0, count = this._list.size(); i < count; i++) {
 		var item = this._list.get(i);
-		rowArgs.caller = this._getCallerHtml(item);
+		rowArgs.caller = this._getCallerNameHtml(item);
 		rowArgs.duration = AjxDateUtil.computeDuration(item.duration);
 		rowArgs.date = AjxDateUtil.simpleComputeDateStr(item.date);
 		AjxTemplate.expand("voicemail.Voicemail#ZmCallListPrintViewRow", rowArgs, buffer);
