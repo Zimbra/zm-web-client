@@ -68,6 +68,8 @@ ZmSlideEditView.EDITABLE_OBJECTS = {
     "slide_object_title" : true
 };
 
+ZmSlideEditView.LIMIT_HEIGHT_PERCENTAGE = 90;
+
 ZmSlideEditView.prototype.isEditable =
 function(div) {
     if(!div) {
@@ -127,12 +129,33 @@ function() {
     }
     slideDiv1.style.height = (size.y) + "px";
     slideDiv1.style.width = (0.2 * size.x) + "px";
+
+    if(this._slideParent) {
+        this.resizeSlide(this._slideParent);
+    }
 };
 
 ZmSlideEditView.prototype.createNewSlide =
 function() {
     this._controller.setFileName(window.fileInfo ? window.fileInfo.name : "Untitled");
     this.createSlide();
+};
+
+ZmSlideEditView.prototype.resizeSlide =
+function (slideDiv) {
+    var bounds = Dwt.getBounds(this._slideContainer);
+
+    Dwt.setPosition(slideDiv, Dwt.ABSOLUTE_STYLE);
+	var wdPercent = 80;
+	var htPercent = (100/bounds.height)*((3/4)*0.8*bounds.width);
+
+    if(htPercent > ZmSlideEditView.LIMIT_HEIGHT_PERCENTAGE) {
+        wdPercent = (wdPercent*ZmSlideEditView.LIMIT_HEIGHT_PERCENTAGE)/htPercent;
+        htPercent = ZmSlideEditView.LIMIT_HEIGHT_PERCENTAGE;
+    }
+
+    var tpPercent = (100-htPercent)/2;
+   	Dwt.setBounds(slideDiv, "10%", tpPercent +"%", wdPercent+"%", htPercent+"%");
 };
 
 ZmSlideEditView.prototype.createSlide =
@@ -159,10 +182,7 @@ function(ignorePreview, titleOnly, titleContent) {
     var slideDiv = this._slideParent = document.createElement("div");
     slideDiv.className = "slideparent";
 
-	Dwt.setPosition(slideDiv, Dwt.ABSOLUTE_STYLE);
-	var wdPercent = 80;
-	var htPercent = (100/bounds.height)*((3/4)*0.8*bounds.width);
-   	Dwt.setBounds(slideDiv, "10%", (100-htPercent)/2+"%", wdPercent+"%", htPercent+"%");
+    this.resizeSlide(slideDiv);
 
     this._slideContainer.appendChild(slideDiv);
     slideDiv.style.opacity = 0;
