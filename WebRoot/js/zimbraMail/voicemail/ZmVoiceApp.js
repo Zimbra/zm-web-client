@@ -352,6 +352,16 @@ function(folder, callback, response) {
 		folder.notifyModify(folderInfo[0]);
 	}
 
+    if(this._paramId){
+        var voiceList = voiceController.getList();
+        var vItem = voiceList.getById(this._paramId);
+        if(vItem){
+            var vView = voiceController.getCurrentView();
+            vView.setSelection(vItem, true);
+            vView.setPlaying(vItem);
+        }
+    }
+
 	if (callback) {
 		callback.run(searchResult);
 	}
@@ -395,6 +405,7 @@ function(items, op, attributes, callback, errorCallback) {
 
 ZmVoiceApp.prototype.launch =
 function(params, callback) {
+    this._paramId = (params.qsParams ? params.qsParams.id : null);
 	var loadCallback = new AjxCallback(this, this._handleLoadLaunch, [callback]);
 	AjxDispatcher.require("Voicemail", true, loadCallback, null, true);
 };
