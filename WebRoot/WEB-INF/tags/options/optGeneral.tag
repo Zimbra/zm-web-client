@@ -73,8 +73,17 @@
         <td>
             <select name="zimbraPrefTimeZoneId" id="timeZone">
                 <c:set var="tzpref" value="${mailbox.prefs.timeZoneWindowsId}"/>
+                <c:set var="added" value=""/>
                 <zm:forEachTimeZone var="tz">
+                    <c:set var="count" value="1"/>
                     <fmt:message var="displayName" bundle='${AjxMsg}' key="${tz.javaId}"/>
+                    <c:set var="toBeAdded" value="${tz.javaId}:${count}"/>
+                    <c:if test="${fn:contains(added,toBeAdded)}">
+                        <c:set var="count" value="${count+1}"/>
+                        <c:set var="key" value="${tz.javaId}_${count}"/>
+                        <fmt:message var="displayName" bundle='${AjxMsg}' key="${key}"/>
+                    </c:if>
+                    <c:set var="added" value="${added},${tz.javaId}:${count}"/>
                     <option
                             <c:if test="${tzpref eq tz.id}">selected</c:if>
                             value="${fn:escapeXml(tz.id)}">${fn:escapeXml(displayName)}</option>
