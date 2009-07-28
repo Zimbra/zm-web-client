@@ -145,8 +145,13 @@ function(voicemail) {
 		if (!ZmVoiceListView._callerFormat) {
 			ZmVoiceListView._callerFormat = new AjxMessageFormat(ZmMsg.callingPartyFormat);
 		}
-		var text = ZmVoiceListView._callerFormat.format([data.contact.getFullName(), ZmVoiceListView.PHONE_FIELDS_LABEL[data.field]]);
-		return AjxStringUtil.htmlEncode(text);
+		var args = [
+			AjxStringUtil.htmlEncode(data.contact.getFullName()),
+			ZmVoiceListView.PHONE_FIELDS_LABEL[data.field],
+			this._getCallerHtml(voicemail)
+		];
+		var text = ZmVoiceListView._callerFormat.format(args);
+		return text;
 	} else {
 		return this._getCallerHtml(voicemail);
 	}
