@@ -3,9 +3,13 @@
 	<table valign=top width='100%' cellspacing=0>
 		<tr valign=top>
 			<td style='border-bottom:solid 1px black;padding:.25em .5em'>
-				<div id="${id}_IMAGE"></div>
-				<div id="${id}_REMOVE_IMAGE_row" style='text-align:center'>
-					<a id="${id}_REMOVE_IMAGE" href="#remove">[Remove]</a>
+				<div id="${id}_IMAGE" tabindex="100"></div>
+				<div id="${id}_REMOVE_IMAGE_row" style='text-align:center;font-size:.8em'>
+					<nobr>
+						<a id="${id}_VIEW_IMAGE" href="#view" tabindex="101"><$=ZmMsg.view$></a>
+						|
+						<a id="${id}_REMOVE_IMAGE" href="#remove" tabindex="102"><$=ZmMsg.remove$></a>
+					</nobr>
 				</div>
 			</td>
 			<td valign=bottom style='border-bottom:solid 1px black;padding-bottom:.25em'>
@@ -14,69 +18,69 @@
 				</div>
 				<div id="${id}_NAME_row">
 					<table><tr>
-						<td id="${id}_PREFIX_row"><div id="${id}_PREFIX"></div></td>
-						<td><div id="${id}_FIRST"></div></td>
-						<td id="${id}_MIDDLE_row"><div id="${id}_MIDDLE"></div></td>
-						<td id="${id}_MAIDEN_row"><div id="${id}_MAIDEN"></div></td>
-						<td><div id="${id}_LAST"></div></td>
-						<td id="${id}_SUFFIX_row"><div id="${id}_SUFFIX"></div></td>
-						<td><div id="${id}_DETAILS"></div></td>
+						<td id="${id}_PREFIX_row"><div id="${id}_PREFIX" tabindex="200"></div></td>
+						<td><div id="${id}_FIRST" tabindex="201"></div></td>
+						<td id="${id}_MIDDLE_row"><div id="${id}_MIDDLE" tabindex="202"></div></td>
+						<td id="${id}_MAIDEN_row"><div id="${id}_MAIDEN" tabindex="203"></div></td>
+						<td><div id="${id}_LAST" tabindex="204"></div></td>
+						<td id="${id}_SUFFIX_row"><div id="${id}_SUFFIX" tabindex="205"></div></td>
+						<td><div id="${id}_DETAILS" tabindex="206"></div></td>
 					</tr></table>
 				</div>
 				<div id="${id}_NICKNAME_row">
 					<table><tr>
 						<td>&ldquo;</td>
-						<td><div id="${id}_NICKNAME"></div></td>
+						<td><div id="${id}_NICKNAME" tabindex="250"></div></td>
 						<td>&rdquo;</td>
 					</tr></table>
 				</div>
 				<div id="${id}_COMPANY_row">
 					<table><tr>
-						<td><div id="${id}_COMPANY"></div></td>
+						<td><div id="${id}_COMPANY" tabindex="300"></div></td>
 					</tr></table>
 				</div>
 				<div id="${id}_JOB_row">
 					<table><tr>
-						<td id="${id}_TITLE_row"><div id="${id}_TITLE"></div></td>
+						<td id="${id}_TITLE_row"><div id="${id}_TITLE" tabindex="301"></div></td>
 						<td id="${id}_TITLE_DEPARTMENT_SEP">&nbsp;-&nbsp;</td>
-						<td id="${id}_DEPARTMENT_row"><div id="${id}_DEPARTMENT"></div></td>
+						<td id="${id}_DEPARTMENT_row"><div id="${id}_DEPARTMENT" tabindex="302"></div></td>
 					</tr></table>
 				</div>
 			</td>
 			<td style='border-bottom:solid 1px black;padding-bottom:.25em'>
 				<table>
-				<tr><td>[File as:]</td><td><div id="${id}_FILE_AS"></div></td></tr>
-				<tr><td>[Location:]</td><td><div id="${id}_FOLDER"></div></td></tr>
+				<tr><td><$=ZmMsg.fileAsLabel$></td><td><div id="${id}_FILE_AS" tabindex="400"></div></td></tr>
+				<tr><td><$=ZmMsg.locationLabel$></td><td><div id="${id}_FOLDER" tabindex="401"></div></td></tr>
 				</table>
 			</td>
 		</tr>
 		<tr valign=top>
-			<td style='padding:.25em .5em'>[Email:]</td>
-			<td><div id="${id}_EMAIL"></div></td>
+			<td style='padding:.25em .5em'><$=ZmMsg.emailLabel$></td>
+			<td><div id="${id}_EMAIL" tabindex="500"></div></td>
 		</tr>
 		<tr valign=top>
-			<td style='padding:.25em .5em'>[Phone:]</td>
-			<td><div id="${id}_PHONE"></div></td>
+			<td style='padding:.25em .5em'><$=ZmMsg.phoneLabel$></td>
+			<td><div id="${id}_PHONE" tabindex="600"></div></td>
 		</tr>
 		<tr valign=top>
-			<td style='padding:.25em .5em'>[IM:]</td>
-			<td><div id="${id}_IM"></div></td>
+			<td style='padding:.25em .5em'><$=ZmMsg.imLabel$></td>
+			<td><div id="${id}_IM" tabindex="700"></div></td>
 		</tr>
 		<tr valign=top>
-			<td style='padding:.25em .5em'>[Address:]</td>
-			<td><div id="${id}_ADDRESS"></div></td>
+			<td style='padding:.25em .5em'><$=ZmMsg.addressLabel$></td>
+			<td><div id="${id}_ADDRESS" tabindex="800"></div></td>
 		</tr>
 		<tr valign=top>
-			<td style='padding:.25em .5em'>[URL:]</td>
-			<td><div id="${id}_URL"></div></td>
+			<td style='padding:.25em .5em'><$=ZmMsg.urlLabel$></td>
+			<td><div id="${id}_URL" tabindex="900"></div></td>
 		</tr>
 		<tr valign=top>
-			<td style='padding:.25em .5em'>[Other:]</td>
-			<td><div id="${id}_OTHER"></div></td>
+			<td style='padding:.25em .5em'><$=ZmMsg.otherLabel$></td>
+			<td><div id="${id}_OTHER" tabindex="1000"></div></td>
 		</tr>
 		<tr valign=top>
-			<td style='padding:.25em .5em'>[Notes:]</td>
-			<td><div id="${id}_NOTES"></div></td>
+			<td style='padding:.25em .5em'><$=ZmMsg.notesLabel$></td>
+			<td style='padding-left:3'><div id="${id}_NOTES" tabindex="1100"></div></td>
 		</tr>
 	</table>
 	</div>
@@ -88,17 +92,17 @@
 
 <template id="abook.Contacts#ZmEditContactViewInputSelect">
 	<table border=0 cellpadding=0 cellspacing=0>
-		<tr><td style='padding-right:3'><div id='${id}_input'></div></td>
-			<td><div id='${id}_select'></div></td>
+		<tr><td style='padding-right:3'><div id='${id}_input' tabindex="100"></div></td>
+			<td><div id='${id}_select' tabindex="200"></div></td>
 		</tr>
 	</table>
 </template>
 
 <template id="abook.Contacts#ZmEditContactViewOther">
 	<table border=0 cellpadding=0 cellspacing=0>
-		<tr><td style='padding-right:3'><div id='${id}_input'></div></td>
-			<td style='padding-right:3'><div id='${id}_picker'></div></td>
-			<td style='padding-right:3'><div id='${id}_select'></div></td>
+		<tr><td style='padding-right:3'><div id='${id}_input' tabindex="100"></div></td>
+			<td style='padding-right:3'><div id='${id}_picker' tabindex="200"></div></td>
+			<td style='padding-right:3'><div id='${id}_select' tabindex="300"></div></td>
 		</tr>
 	</table>
 </template>
@@ -106,9 +110,9 @@
 <template id="abook.Contacts#ZmEditContactViewAddressRow">
 	<table>
 		<tr id="${id}_row" class="DwtFormRow" valign=top>
-			<td><div id="${id}"></div></td>
-			<td><div id="${id}_add" class="DwtFormRowAdd"></div></td>
-			<td><div id="${id}_remove" class="DwtFormRowRemove"></div></td>
+			<td><div id="${id}" tabindex="100"></div></td>
+			<td><div id="${id}_add" class="DwtFormRowAdd" tabindex="200"></div></td>
+			<td><div id="${id}_remove" class="DwtFormRowRemove" tabindex="300"></div></td>
 		</tr>
 	</table>
 </template>
@@ -116,26 +120,26 @@
 <template id="abook.Contacts#ZmEditContactViewAddressSelect">
 	<table border=0 cellpadding=0 cellspacing=0>
 		<tr valign=top>
-			<td style='padding-right:3'><div id='${id}_input'></div></td>
-			<td><div id='${id}_select'></div></td>
+			<td style='padding-right:3'><div id='${id}_input' tabindex="100"></div></td>
+			<td><div id='${id}_select' tabindex="200"></div></td>
 		</tr>
 	</table>
 </template>
 
-<template id="abook.Contacts#ZmEditContactViewAddress">
+<template id="abook.Contacts#ZmEditContactViewAddress" class="DwtForm ZmEditContactViewAddress">
 	<table style='position:relative;left:-3'>
-		<tr><td><div id="${id}_STREET"></div></td></tr>
+		<tr><td><div id="${id}_STREET" tabindex="100"></div></td></tr>
 	</table>
 	<table style='position:relative;left:-3'>
-		<tr><td><div id="${id}_CITY"></div></td>
+		<tr><td><div id="${id}_CITY" tabindex="200"></div></td>
 			<td>,&nbsp;</td>
-			<td><div id="${id}_STATE"></div></td>
+			<td><div id="${id}_STATE" tabindex="300"></div></td>
 			<td>&nbsp;&nbsp;</td>
-			<td><div id="${id}_ZIP"></div></td>
+			<td><div id="${id}_ZIP" tabindex="400"></div></td>
 		</tr>
 	</table>
 	<table style='position:relative;left:-3'>
-		<tr><td><div id="${id}_COUNTRY"></div></td></tr>
+		<tr><td><div id="${id}_COUNTRY" tabindex="500"></div></td></tr>
 	</table>
 </template>
 

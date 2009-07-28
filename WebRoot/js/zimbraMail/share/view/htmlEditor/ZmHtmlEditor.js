@@ -1152,7 +1152,7 @@ function(tb) {
 		{ label:ZmMsg.heading4, 	id:DwtHtmlEditor.H4},
 		{ label:ZmMsg.heading5, 	id:DwtHtmlEditor.H5},
 		{ label:ZmMsg.heading6, 	id:DwtHtmlEditor.H6},
-		{ label:ZmMsg.addressLabel,	id:DwtHtmlEditor.ADDRESS},
+		{ label:ZmMsg.address,		id:DwtHtmlEditor.ADDRESS},
 		{ label:ZmMsg.preformatted,	id:DwtHtmlEditor.PREFORMATTED} ];
 
 	for (var i = 0; i < menuItems.length; i++) {

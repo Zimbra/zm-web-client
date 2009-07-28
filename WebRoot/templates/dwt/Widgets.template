@@ -531,16 +531,16 @@ NOTE: The outer table/tr is a necessary hack. It is NOT inserted in the
 
 <template id="dwt.Widgets#DwtFormRows">
 	<table border=0 cellspacing=3 cellpadding=0>
-		<tbody id="${id}_rows"></tbody>
+		<tbody id="${id}_rows" tabindex="100"></tbody>
 	</table>
 </template>
 
 <template id="dwt.Widgets#DwtFormRow">
 	<table>
 		<tr id="${id}_row" class="DwtFormRow">
-			<td><div id="${id}"></div></td>
-			<td><div id="${id}_add" class="DwtFormRowAdd"></div></td>
-			<td><div id="${id}_remove" class="DwtFormRowRemove"></div></td>
+			<td><div id="${id}" tabindex="100"></div></td>
+			<td><div id="${id}_add" class="DwtFormRowAdd" tabindex="200"></div></td>
+			<td><div id="${id}_remove" class="DwtFormRowRemove" tabindex="300"></div></td>
 		</tr>
 	</table>
 </template>
