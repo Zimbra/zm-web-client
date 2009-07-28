@@ -342,7 +342,7 @@ function() {
 	ZmPref.registerPref("MAIL_FORWARDING_ADDRESS", {
 		displayName:		ZmMsg.mailForwardingAddress,
 		displayContainer:	ZmPref.TYPE_INPUT,
-		validationFunction: ZmPref.validateEmail,
+		validationFunction: ZmMailApp.validateForwardEmail,
 		errorMessage:       ZmMsg.invalidEmail,
 		precondition:		ZmSetting.MAIL_FORWARDING_ENABLED
 	});
@@ -564,7 +564,19 @@ function() {
 		displayContainer:	ZmPref.TYPE_CHECKBOX
 	});
 };
-
+ZmMailApp.validateForwardEmail =
+function(emailStr) {
+    if(!emailStr || emailStr == ""){
+        var section = ZmPref.getPrefSectionWithPref(ZmSetting.MAIL_FORWARDING_ADDRESS);
+        if (!section) { return false; }
+        var view = appCtxt.getApp(ZmApp.PREFERENCES).getPrefController().getPrefsView();
+        var checkbox = view.getView(section.id).getFormObject(ZmSetting.MAIL_LOCAL_DELIVERY_DISABLED);
+        if(checkbox && checkbox.isSelected()){
+            checkbox.setSelected(false);            
+        }
+    }
+    return ZmPref.validateEmail(emailStr);
+};
 ZmMailApp.validateMailLocalDeliveryDisabled =
 function(checked) {
 	if (!checked) { return true; }
