@@ -566,6 +566,29 @@ function(ev) {
 	}
 };
 
+// Compose message to participant
+ZmContactListController.prototype._participantComposeListener =
+function(ev) {
+
+    var selection = this._listView[this._currentView].getSelection();
+    if(selection.length == 0){
+        selection.push(this._actionEv.contact);
+    }
+    var name = '', contact, email;
+    for(var i=0; i<selection.length; i++){
+        contact = selection[i];
+        email   = contact.isGroup() ? contact.getGroupMembers().good : contact.getEmail();
+        if(email){
+            email   = contact.isGroup() ? email : new AjxEmailAddress(email);
+            email   = email.toString(AjxEmailAddress.SEPARATOR) + AjxEmailAddress.SEPARATOR;
+            name   += email;
+        }
+    }
+
+	AjxDispatcher.run("Compose", {action: ZmOperation.NEW_MESSAGE, inNewWindow: this._app._inNewWindow(ev),
+								  toOverride: name});
+};
+
 // Get info on selected contact to provide context for action menu.
 ZmContactListController.prototype._listActionListener =
 function(ev) {
@@ -578,7 +601,7 @@ function(ev) {
 	// enable/disable New Email menu item per valid email found for this contact
 	var enableNewEmail = email != null && this._listView[this._currentView].getSelectionCount() == 1;
 	var actionMenu = this.getActionMenu();
-	actionMenu.enable([ZmOperation.SEARCH, ZmOperation.BROWSE, ZmOperation.NEW_MESSAGE], enableNewEmail);
+	actionMenu.enable([ZmOperation.SEARCH, ZmOperation.BROWSE], enableNewEmail);
 
 	if (contact.isGroup()) {
 		actionMenu.enable([ZmOperation.SEARCH, ZmOperation.BROWSE], false);
