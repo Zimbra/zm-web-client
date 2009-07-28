@@ -99,7 +99,7 @@
                     </c:choose>
                     <c:if test="${empty selectedRow and convHit.id == context.currentItem.id}"><c:set var="selectedRow" value="${status.index}"/></c:if>
                     <c:set var="aid" value="A${status.index}"/>
-                    <tr onclick='zSelectRow(event,"${aid}")' id="R${status.index}" class='${status.index mod 2 eq 1 ? 'ZhRowOdd' :'ZhRow'} ${convHit.isUnread ? ' Unread':''}${selectedRow eq status.index ? ' RowSelected' : ''}'>
+                    <tr onclick='zSelectRow(event,"${aid}","C${status.index}")' id="R${status.index}" class='${status.index mod 2 eq 1 ? 'ZhRowOdd' :'ZhRow'} ${convHit.isUnread ? ' Unread':''}${selectedRow eq status.index ? ' RowSelected' : ''}'>
                         <td class='CB' nowrap><input  id="C${status.index}" type="checkbox" name="id" value="${convHit.id}"></td>
                         <td><%-- allow this column to wrap --%>
                             <c:set var="dispRec" value="${zm:truncate(convHit.displayRecipients,20,true)}"/>${fn:escapeXml(empty dispRec ? unknownRecipient : dispRec)} &nbsp;&nbsp; <c:if test="${convHit.messageCount > 1}">(${convHit.messageCount})&nbsp;</c:if>
@@ -257,7 +257,19 @@
     var zread = function() { zaction("OPREAD"); }
     var zunread = function() { zaction("OPUNREAD"); }
     var zjunk = function() { zclick("SOPSPAM"); }
-    function zSelectRow(ev,id) {var t = ev.target || ev.srcElement;if (t&&t.nodeName != 'INPUT'){var a = document.getElementById(id); if (a) window.location = a.href;} }
+    function zSelectRow(ev,id,cid) {
+		var t = ev.target || ev.srcElement;
+		if (t&&t.className=="CB") {
+			var cb = document.getElementById(cid);
+			if (cb) {
+				cb.checked = !cb.checked;
+			}
+		} else if (t&&t.nodeName != 'INPUT'){
+			var a = document.getElementById(id);
+			if (a)
+				window.location = a.href;
+		}
+	}
 
     var zprint = function(){
         try{

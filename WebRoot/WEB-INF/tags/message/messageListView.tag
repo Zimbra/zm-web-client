@@ -106,7 +106,7 @@
                 </c:choose>
                 <c:if test="${empty selectedRow and hit.messageHit.id == context.currentItem.id}"><c:set var="selectedRow" value="${status.index}"/></c:if>
 
-                <tr onclick='zSelectRow(event,"A${status.index}")' id="R${status.index}" class='${status.index mod 2 eq 1 ? 'ZhRowOdd' :'ZhRow'} ${hit.messageHit.isUnread ? ' Unread':''}${ selectedRow eq status.index ? ' RowSelected' : ''}'>
+                <tr onclick='zSelectRow(event,"A${status.index}","C${status.index}")' id="R${status.index}" class='${status.index mod 2 eq 1 ? 'ZhRowOdd' :'ZhRow'} ${hit.messageHit.isUnread ? ' Unread':''}${ selectedRow eq status.index ? ' RowSelected' : ''}'>
                     <td class='CB' nowrap><input id="C${status.index}" type=checkbox name="id" value="${hit.messageHit.id}"></td>
                     <c:if test="${mailbox.features.flagging}">
                         <td class='Img'><app:flagImage flagged="${hit.messageHit.isFlagged}"/></td>
@@ -210,7 +210,18 @@
     var zread = function() { zaction("OPREAD"); }
     var zunread = function() { zaction("OPUNREAD"); }
     var zjunk = function() { zclick("SOPSPAM"); }
-    function zSelectRow(ev,id) {var t = ev.target || ev.srcElement;if (t&&t.nodeName != 'INPUT'){var a = document.getElementById(id); if (a) window.location = a.href;} }
+    function zSelectRow(ev,id, cid) {
+		var t = ev.target || ev.srcElement;
+		if (t&&t.className=="CB") {
+			var cb = document.getElementById(cid);
+			if (cb) {
+				cb.checked = !cb.checked;
+			}
+		} else if (t&&t.nodeName != 'INPUT'){
+			var a = document.getElementById(id);
+			if (a) window.location = a.href;
+		}
+	}
     var zprint = function(){
         try{
             var idex = 0;

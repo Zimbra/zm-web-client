@@ -80,7 +80,7 @@
                            </tr>
                            <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
                                <c:set var="isCurr" value="${hit.contactHit.id == context.currentItem.id}"/>
-                               <tr onclick='zSelectRow(event,"A${status.index}")'
+                               <tr onclick='zSelectRow(event,"A${status.index}", "C${status.index}")'
                                        class='${status.index mod 2 eq 1 ? 'ZhRowOdd' :'ZhRow'}${hit.contactHit.id == context.currentItem.id ? ' RowSelected': ''}'>
                                    <td class='CB' nowrap><input id="C${status.index}" type=checkbox  name="id" value="${hit.contactHit.id}"></td>
                                    <c:if test="${mailbox.features.tagging}">
@@ -163,7 +163,19 @@
     }
     var zcheck = function() {var e = document.getElementById("CURRCHECK"); if (e) e.checked = !e.checked;}
     var zclick = function(id) { var e2 = document.getElementById(id); if (e2) e2.click(); }
-    function zSelectRow(ev,id) {var t = ev.target || ev.srcElement;if (t&&t.nodeName != 'INPUT'){var a = document.getElementById(id); if (a) window.location = a.href;} }
+    function zSelectRow(ev,id,cid) {
+		var t = ev.target || ev.srcElement;
+		if (t&&t.className=="CB") {
+			var cb = document.getElementById(cid);
+			if (cb) {
+				cb.checked = !cb.checked;
+			}
+		} else if (t&&t.nodeName != 'INPUT'){
+			var a = document.getElementById(id);
+			if (a)
+				window.location = a.href;
+		}
+	}
     function handleEnter (ev) {
 		var keyCode = ev.keyCode ? ev.keyCode : ev.which ? ev.which : ev.charCode;
 		if (keyCode == 13) {
