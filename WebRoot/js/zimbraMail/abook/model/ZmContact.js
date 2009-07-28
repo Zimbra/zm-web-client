@@ -740,10 +740,10 @@ function(phone, field) {
 ZmContact.prototype.getEmail =
 function() {
 	return (this.getAttr(ZmContact.F_email) ||
+            this.getAttr(ZmContact.F_workEmail1) ||
 			this.getAttr(ZmContact.F_email2) ||
+            this.getAttr(ZmContact.F_workEmail2) ||
 			this.getAttr(ZmContact.F_email3) ||
-			this.getAttr(ZmContact.F_workEmail1) ||
-			this.getAttr(ZmContact.F_workEmail2) ||
 			this.getAttr(ZmContact.F_workEmail3));
 };
 
