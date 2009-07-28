@@ -66,7 +66,7 @@
             </td>
             <td class='TabSpacerR'/>
         </c:if>
-        <c:if test="${mailbox.features.calendar}">
+        <c:if test="${mailbox.features.calendar or mailbox.features.calendarUpsell}">
             <td class='TabSpacer'/>
             <td class='Tab ${selected=='calendar' ? 'TabSelected' :'TabNormal'}'>
                 <a id='TAB_CALENDAR' href="<c:url value="/h/calendar"/>">
