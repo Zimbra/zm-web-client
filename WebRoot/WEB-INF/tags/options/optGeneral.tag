@@ -115,7 +115,7 @@
                         <c:set var="changePassUrl" value="${mailbox.accountInfo.publicURL}/h/changepass" />
                     </c:otherwise>
                 </c:choose>
-                <a href="${changePassUrl}${fn:contains(changePassUrl, "?") ? "&" : "?"}${pageContext.request.scheme eq "https"? "?secure=1": "secure=0"}" target="_blank"><fmt:message key="changePassword"/></a>
+                <a href="${changePassUrl}" target="_blank"><fmt:message key="changePassword"/></a>
             </td>
         </tr>
     </c:if>

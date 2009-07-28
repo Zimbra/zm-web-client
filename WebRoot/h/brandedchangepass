@@ -32,8 +32,7 @@
             <c:catch var="loginException">
                 <zm:changePassword username="${param.username}" password="${param.password}"
                                    newpassword="${param.loginNewPassword}"
-                                   rememberme="${param.zrememberme == '1'}"
-                                   secure="${param.secure == '1'}"/>
+                                   rememberme="${param.zrememberme == '1'}"/>
                 <c:set var="successfullLogin" value="true"/>
                 <fmt:message var="errorMessage" key="passwordChangeSucceededCloseWindow"/>
             </c:catch>
