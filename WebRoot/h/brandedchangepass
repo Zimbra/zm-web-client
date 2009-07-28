@@ -1,7 +1,6 @@
 <%@ page buffer="8kb" autoFlush="true" %>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
-<%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
@@ -32,7 +31,9 @@
         <c:when test="${(not empty param.username) && (not empty param.loginNewPassword) && (not empty param.password)}">
             <c:catch var="loginException">
                 <zm:changePassword username="${param.username}" password="${param.password}"
-                                   newpassword="${param.loginNewPassword}" />
+                                   newpassword="${param.loginNewPassword}"
+                                   rememberme="${param.zrememberme == '1'}"
+                                   secure="${param.secure == '1'}"/>
                 <c:set var="successfullLogin" value="true"/>
                 <fmt:message var="errorMessage" key="passwordChangeSucceededCloseWindow"/>
             </c:catch>
