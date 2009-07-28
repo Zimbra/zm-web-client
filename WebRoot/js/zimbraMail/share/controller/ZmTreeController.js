@@ -632,38 +632,55 @@ function(ev) {
 			}
 		}
 	} else if ((ev.detail == DwtTree.ITEM_SELECTED) && item) {
-		// left click or selection via shortcut
-		overview.itemSelected(treeItem);
-		if (ev.kbNavEvent) {
-			DwtControl._scrollIntoView(treeItem._itemDiv, overview.getHtmlElement());
-			ZmController.noFocus = true;
-		}
-		if (overview._treeSelectionShortcutDelayActionId) {
-			AjxTimedAction.cancelAction(overview._treeSelectionShortcutDelayActionId);
-		}
-		if ((overview.selectionSupported || item._showFoldersCallback) && !treeItem._isHeader) {
-			if (ev.kbNavEvent && ZmTreeController.TREE_SELECTION_SHORTCUT_DELAY) {
-				var action = new AjxTimedAction(this, ZmTreeController.prototype._treeSelectionTimedAction, [item, overview]);
-				overview._treeSelectionShortcutDelayActionId =
-					AjxTimedAction.scheduleAction(action, ZmTreeController.TREE_SELECTION_SHORTCUT_DELAY);
-			} else {
-				if (appCtxt.multiAccounts && (item instanceof ZmOrganizer)) {
-
-					appCtxt.getCurrentApp().getOverviewContainer().deselectAll(overview);
-
-					// set the active account based on the item clicked
-					var account = item.accountId
-						? appCtxt.getAccount(item.accountId)
-						: appCtxt.getMainAccount();
-					appCtxt.setActiveAccount(account);
-				}
-
-				this._itemClicked(item);
-			}
+		if (appCtxt.multiAccounts && (item instanceof ZmOrganizer)) {
+			this._handleMultiAccountItemSelection(ev, overview, treeItem, item);
+		} else {
+			this._handleItemSelection(ev, overview, treeItem, item);
 		}
 	} else if ((ev.detail == DwtTree.ITEM_DBL_CLICKED) && item) {
 		this._itemDblClicked(item);
 	}
+};
+
+ZmTreeController.prototype._handleItemSelection =
+function(ev, overview, treeItem, item) {
+	// left click or selection via shortcut
+	overview.itemSelected(treeItem);
+
+	if (ev.kbNavEvent) {
+		DwtControl._scrollIntoView(treeItem._itemDiv, overview.getHtmlElement());
+		ZmController.noFocus = true;
+	}
+
+	if (overview._treeSelectionShortcutDelayActionId) {
+		AjxTimedAction.cancelAction(overview._treeSelectionShortcutDelayActionId);
+	}
+
+	if ((overview.selectionSupported || item._showFoldersCallback) && !treeItem._isHeader) {
+		if (ev.kbNavEvent && ZmTreeController.TREE_SELECTION_SHORTCUT_DELAY) {
+			var action = new AjxTimedAction(this, ZmTreeController.prototype._treeSelectionTimedAction, [item, overview]);
+			overview._treeSelectionShortcutDelayActionId =
+				AjxTimedAction.scheduleAction(action, ZmTreeController.TREE_SELECTION_SHORTCUT_DELAY);
+		} else {
+			if (appCtxt.multiAccounts && (item instanceof ZmOrganizer)) {
+
+				appCtxt.getCurrentApp().getOverviewContainer().deselectAll(overview);
+
+				// set the active account based on the item clicked
+				var account = item.accountId
+					? appCtxt.getAccount(item.accountId)
+					: appCtxt.getMainAccount();
+				appCtxt.setActiveAccount(account);
+			}
+
+			this._itemClicked(item);
+		}
+	}
+};
+
+ZmTreeController.prototype._handleMultiAccountItemSelection =
+function(ev, overview, treeItem, item) {
+	// overload me
 };
 
 ZmTreeController.prototype._treeSelectionTimedAction =

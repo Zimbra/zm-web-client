@@ -183,7 +183,29 @@ function(view) {
 	return this._dirty[view];
 };
 
-/*
+/**
+ * Public method called to save prefs - does not check for dirty flag.
+ *
+ * @param callback	[AjxCallback]	async callback
+ * @param noPop		[boolean]		if true, don't pop view after save
+ *
+ * TODO: shouldn't have to call getChangedPrefs() twice
+ */
+ZmPrefController.prototype.save =
+function(callback, noPop) {
+	// perform pre-save ops, if needed
+	var preSaveCallbacks = this._prefsView.getPreSaveCallbacks();
+	if (preSaveCallbacks && preSaveCallbacks.length > 0) {
+		var continueCallback = new AjxCallback(this, this._doPreSave);
+		continueCallback.args = [continueCallback, preSaveCallbacks, callback, noPop];
+		this._doPreSave.apply(this, continueCallback.args);
+	}
+	else { // do basic save
+		this._doSave(callback, noPop);
+	}
+};
+
+/**
 * Enables/disables toolbar buttons.
 *
 * @param parent		[ZmButtonToolBar]	the toolbar
@@ -197,7 +219,7 @@ function(parent, view) {
 	parent.enable(ZmOperation.CANCEL, appCtxt.getAppViewMgr()._hidden.length > 0);
 };
 
-/*
+/**
 * Creates the prefs view, with a tab for each preferences page.
 */
 ZmPrefController.prototype._setView = 
@@ -266,19 +288,7 @@ function(ev, callback, noPop) {
 		return;
 	}
 
-	// perform pre-save ops, if needed
-	var preSaveCallbacks = this._prefsView.getPreSaveCallbacks();
-	if (preSaveCallbacks && preSaveCallbacks.length > 0) {
-		var continueCallback = new AjxCallback(this, this._doPreSave);
-		continueCallback.args = [continueCallback, preSaveCallbacks, callback, noPop];
-		this._doPreSave.apply(this, continueCallback.args);
-	}
-
-	// do basic save
-	else {
-		this._doSave(callback, noPop);
-	}
-
+	this.save(callback, noPop);
 };
 
 ZmPrefController.prototype._doPreSave =
@@ -415,7 +425,7 @@ function() {
 
 ZmPrefController.prototype.popShield =
 function() {
-	if (!this._prefsView.isDirty()) return true;
+	if (!this._prefsView.isDirty()) { return true; }
 
 	var ps = this._popShield = appCtxt.getYesNoCancelMsgDialog();
 	ps.reset();

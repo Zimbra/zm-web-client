@@ -43,8 +43,7 @@ function() {
 	Dwt.setTitle(this._title);
 	var section = ZmPref.getPrefSectionWithPref(ZmSetting.FILTERS);
 	this._prefsController._resetOperations(this._prefsController._toolbar, section && section.id);
-	var activeAcct = appCtxt.getActiveAccount().name;
-	if (this._hasRendered == activeAcct) { return; }
+	if (this.hasRendered) { return; }
 
 	// create the html
 	var data = {id:this._htmlElId};
@@ -71,13 +70,7 @@ function() {
 	// initialize controller
 	this._controller.initialize(this._toolbar, this._listView);
 
-	this._hasRendered = activeAcct;
-};
-
-ZmFilterRulesView.prototype.hasRendered =
-function(account) {
-	var acct = account || appCtxt.getActiveAccount();
-	return (this._hasRendered == acct.name);
+	this.hasRendered = true;
 };
 
 ZmFilterRulesView.prototype.getTitle =

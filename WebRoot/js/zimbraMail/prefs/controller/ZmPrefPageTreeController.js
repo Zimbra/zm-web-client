@@ -14,7 +14,7 @@
  */
 
 ZmPrefPageTreeController = function() {
-	ZmFolderTreeController.apply(this, arguments);
+	ZmTreeController.apply(this, arguments);
 };
 ZmPrefPageTreeController.prototype = new ZmTreeController;
 ZmPrefPageTreeController.prototype.constructor = ZmPrefPageTreeController;
@@ -34,6 +34,11 @@ function(params) {
 	var app = appCtxt.getApp(ZmApp.PREFERENCES);
 	var view = app.getPrefController().getPrefsView();
 	var account = params.account;
+
+	if (appCtxt.multiAccounts && !this._currentAccount) {
+		this._currentAccount = account;
+	}
+
 	var tree = new ZmTree(ZmOrganizer.PREF_PAGE);
 	var root = tree.root = new ZmPrefPage({id:ZmId.getPrefPageId(0), name:"", tree:tree});
 	appCtxt.cacheSet(root.id, root);
@@ -93,7 +98,7 @@ function(params) {
 			hi.setExpanded(true, true);
 		}
 	}
-	treeView.addSelectionListener(new AjxListener(this, this._handleTreeItemSelection, [view, treeView]));
+	treeView.addSelectionListener(new AjxListener(this, this._handleTreeItemSelection, view));
 
 	return treeView;
 };
@@ -157,12 +162,74 @@ function(ev) {
 // handlers
 
 ZmPrefPageTreeController.prototype._handleTreeItemSelection =
-function(tabView, treeView, evt) {
-	if (evt.detail != DwtTree.ITEM_SELECTED) { return; }
+function(tabView, ev) {
+	if (ev.detail != DwtTree.ITEM_SELECTED || ev.handled) { return; }
 
-	var organizer = evt.item.getData(Dwt.KEY_OBJECT);
-	var pageId = organizer && organizer.pageId;
-	if (pageId) {
-		tabView.switchToTab(pageId);
+	var organizer = ev.item.getData(Dwt.KEY_OBJECT);
+	tabView.switchToTab(organizer && organizer.pageId);
+};
+
+ZmPrefPageTreeController.prototype._handleMultiAccountItemSelection =
+function(ev, overview, treeItem, item) {
+	var accountId = item && item.accountId;
+
+	if (this._currentAccount.id != accountId) {
+		this._currentAccount = appCtxt.getAccount(accountId);
+
+		var prefsController = appCtxt.getApp(ZmApp.PREFERENCES).getPrefController();
+		var prefsView = prefsController.getPrefsView();
+
+		if (prefsView.getChangedPrefs(true, true)) {
+			ev.handled = true;
+
+			var dialog = appCtxt.getYesNoCancelMsgDialog();
+			var args = [ev, overview, treeItem, item, prefsController, dialog];
+			var yesCallback = new AjxCallback(this, this._savePrefsYes, args);
+			var noCallback = new AjxCallback(this, this._savePrefsNo, args);
+			var cancelCallback = new AjxCallback(this, this._savePrefsCancel, dialog);
+
+			dialog.reset();
+			dialog.setMessage(ZmMsg.confirmExitPreferencesChangeAcct, DwtMessageDialog.WARNING_STYLE);
+			dialog.registerCallback(DwtDialog.YES_BUTTON, yesCallback, this);
+			dialog.registerCallback(DwtDialog.NO_BUTTON, noCallback, this);
+			dialog.registerCallback(DwtDialog.CANCEL_BUTTON, cancelCallback, this);
+			dialog.popup();
+			return;
+		}
+		else {
+			prefsView.resetOnAccountChange();
+		}
 	}
+
+	ev.handled = false;
+	this._handleItemSelection(ev, overview, treeItem, item);
+};
+
+ZmPrefPageTreeController.prototype._savePrefsYes =
+function(ev, overview, treeItem, item, prefsController, dialog) {
+	dialog.popdown();
+
+	var callback = new AjxCallback(this, this._continueTreeItemSelection, [ev, overview, treeItem, item, prefsController]);
+	prefsController.save(callback, true);
+};
+
+ZmPrefPageTreeController.prototype._savePrefsNo =
+function(ev, overview, treeItem, item, prefsController, dialog) {
+	dialog.popdown();
+
+	prefsController.getPrefsView().reset();
+	this._continueTreeItemSelection(ev, overview, treeItem, item, prefsController);
+};
+
+ZmPrefPageTreeController.prototype._savePrefsCancel =
+function(dialog) {
+	dialog.popdown();
+};
+
+ZmPrefPageTreeController.prototype._continueTreeItemSelection =
+function(ev, overview, treeItem, item, prefsController) {
+	prefsController.getPrefsView().resetOnAccountChange();
+
+	this._handleItemSelection(ev, overview, treeItem, item);
+	prefsController.getPrefsView().switchToTab(item.pageId);
 };

@@ -32,8 +32,8 @@ ZmPrefSection = function(parent, section, controller) {
 	this._controller = controller;
 	this._title = [ZmMsg.zimbraTitle, controller.getApp().getDisplayName(), section.title].join(": ");
 
-	this._rendered = false;
-	this._hasRendered = false;
+	this._rendered = false; // for DwtTabViewPage
+	this.hasRendered = false;
 };
 
 ZmPrefSection.prototype = new DwtTabViewPage;
@@ -53,7 +53,7 @@ function () {
 ZmPrefSection.prototype.showMe =
 function() {
 	Dwt.setTitle(this._title);
-    if (this._hasRendered) { return; }
+    if (this.hasRendered) { return; }
 
     // expand section template
     var templateId = this._section.templateId;

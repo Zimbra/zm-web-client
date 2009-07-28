@@ -37,7 +37,7 @@ ZmPreferencesPage = function(parent, section, controller) {
 
 	this._dwtObjects = {};
 	this._tabGroup = new DwtTabGroup(section.id);
-	this._rendered = false;
+	this._rendered = false; // used by DwtTabViewPage
 };
 
 ZmPreferencesPage.prototype = new DwtTabViewPage;
@@ -58,12 +58,6 @@ ZmPreferencesPage.IMPORT_TIMEOUT = 300;
 //
 // Public methods
 //
-
-ZmPreferencesPage.prototype.hasRendered =
-function(account) {
-	var acct = account || appCtxt.getActiveAccount();
-	return (this._hasRendered == acct.name);
-};
 
 ZmPreferencesPage.prototype._replaceControlElement =
 function(elemOrId, control) {
@@ -135,15 +129,11 @@ ZmPreferencesPage.prototype.showMe =
 function() {
 	Dwt.setTitle(this._title);
 	this._controller._resetOperations(this._controller._toolbar, this._section.id);
-	var dirty = this._controller.isDirty(this._section.id);
-	this._activeAcct = appCtxt.getActiveAccount();
 
-	if (this._hasRendered == this._activeAcct.name && !dirty) {
-		return;
-	}
-
-	if (this._hasRendered == this._activeAcct.name) {
-		this._controller.setDirty(this._section.id, false);
+	if (this.hasRendered) {
+		if (this._controller.isDirty(this._section.id)) {
+			this._controller.setDirty(this._section.id, false);
+		}
 		return;
 	}
 
@@ -184,9 +174,7 @@ function() {
 
 		// add preference controls
 		var prefs = this._section.prefs || [];
-		var settings = (appCtxt.isOffline && this._section.id == "GENERAL")
-			? appCtxt.getMainAccount().settings
-			: appCtxt.getSettings();
+		var settings = appCtxt.getSettings();
 
 		for (var i = 0; i < prefs.length; i++) {
 			var id = prefs[i];
@@ -290,7 +278,7 @@ function() {
 
 	// finish setup
 	this.setVisible(true);
-	this._hasRendered = appCtxt.getActiveAccount().name;
+	this.hasRendered = true;
 };
 
 ZmPreferencesPage.prototype._addControlsToTabGroup =
@@ -480,61 +468,6 @@ ZmPreferencesPage.prototype.isDirty = function() { return false; };
 ZmPreferencesPage.prototype.validate = function() {	return true; };
 ZmPreferencesPage.prototype.addCommand = function(batchCmd) {};
 
-ZmPreferencesPage.prototype.getPostSaveCallback =
-function() {
-	if (this._section.id == "GENERAL" &&
-		appCtxt.get(ZmSetting.OFFLINE_SUPPORTS_MAILTO) &&
-		appCtxt.get(ZmSetting.OFFLINE_IS_MAILTO_HANDLER))
-	{
-		if (this._origDirtyList && this._origDirtyList.length) {
-			return (new AjxCallback(this, this._postSave, [this._origDirtyList]));
-		}
-	}
-    return null;
-};
-
-ZmPreferencesPage.prototype._postSave =
-function(list) {
-	for (var i = 0; i < list.length; i++) {
-		var setting = list[i];
-		if (setting.id == ZmSetting.OFFLINE_IS_MAILTO_HANDLER) {
-			if (setting.value === true) {
-				appCtxt.getAppController().registerMailtoHandler();
-				var cbox = this.getFormObject(ZmSetting.OFFLINE_IS_MAILTO_HANDLER);
-				if (cbox) {
-					cbox.setEnabled(false);
-				}
-			}
-			break;
-		}
-	}
-	this._origDirtyList = null;
-};
-
-ZmPreferencesPage.prototype.getPreSaveCallback =
-function() {
-	// in offline mode, general (aka global) prefs apply to the *parent* account
-	if (appCtxt.isOffline && this._section.id == "GENERAL") {
-		// just get changed prefs for general/global tab only
-		var prefView = {"GENERAL": this.parent.prefView["GENERAL"]};
-		this._origDirtyList = this.parent.getChangedPrefs(false, false, null, prefView);
-
-		if (this._origDirtyList && this._origDirtyList.length) {
-			return (new AjxCallback(this, this._preSave, [this._origDirtyList]));
-		}
-	}
-	return null;
-};
-
-ZmPreferencesPage.prototype._preSave =
-function(list, continueCallback) {
-	// if we're here, that means we're in offline mode and user changed something in Global tab
-	var accountName = appCtxt.getMainAccount().name;
-	var batchCommand = new ZmBatchCommand(false, accountName);
-	appCtxt.getSettings().save(list, null, batchCommand);
-
-	batchCommand.run(continueCallback);
-};
 
 //
 // Protected methods
@@ -547,7 +480,7 @@ function(templateId, data) {
 	}
 };
 
-/*
+/**
 * Returns the value of the specified pref, massaging it if necessary.
 *
 * @param id			[constant]		pref ID
@@ -555,9 +488,7 @@ function(templateId, data) {
 */
 ZmPreferencesPage.prototype._getPrefValue =
 function(id, useDefault) {
-	var pref = (appCtxt.isOffline && this._section.id == "GENERAL")
-		? appCtxt.getMainAccount().settings.getSetting(id)
-		: appCtxt.getSettings().getSetting(id);
+	var pref = appCtxt.getSettings().getSetting(id);
 	return useDefault ? pref.getDefaultValue() : pref.getValue();
 };
 
@@ -583,7 +514,8 @@ function(id, setup, value) {
 	return value;
 };
 
-ZmPreferencesPage.prototype._initControl = function(id, setup, value) {
+ZmPreferencesPage.prototype._initControl =
+function(id, setup, value) {
 	// sub-classes can override this to provide initialization
 	// code *before* the actual control is constructed.
 };
@@ -1174,7 +1106,7 @@ function(prefId1 /* ..., prefIdN */) {
 		// setting not created (its app is disabled)
 		if (!prefId) { return false; }
 
-		if (!this._activeAcct.isMain && ZmSetting.IS_GLOBAL[prefId]) {
+		if (!appCtxt.getActiveAccount().isMain && ZmSetting.IS_GLOBAL[prefId]) {
 			return false;
 		}
 

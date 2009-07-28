@@ -376,7 +376,7 @@ function() {
 
 ZmAccountsPage.prototype.showMe =
 function() {
-	var hasRendered = this.hasRendered(); // cache before calling base
+	var hasRendered = this.hasRendered; // cache before calling base
 
 	ZmPreferencesPage.prototype.showMe.apply(this, arguments);
 

@@ -38,7 +38,7 @@ ZmPrefView = function(params) {
 	this.prefView = {};
 	this._tabId = {};
 	this._sectionId = {};
-	this._hasRendered = false;
+	this.hasRendered = false;
 
 	this.setVisible(false);
 	this.getTabBar().setVisible(false);
@@ -80,7 +80,7 @@ function(sectionOrId) {
 */
 ZmPrefView.prototype.show =
 function() {
-	if (this._hasRendered) { return; }
+	if (this.hasRendered) { return; }
 
 	// add sections that have been registered so far
 	var sections = ZmPref.getPrefSectionArray();
@@ -96,7 +96,7 @@ function() {
 
 	// display
 	this.resetKeyBindings();
-	this._hasRendered = true;
+	this.hasRendered = true;
 	this.setVisible(true);
 };
 
@@ -191,14 +191,22 @@ function() {
 		var viewPage = this.prefView[id];
 		// if feature is disabled, may not have a view page
 		// or if page hasn't rendered, nothing has changed
-		if (!viewPage || (viewPage && !viewPage.hasRendered())) { continue; }
+		if (!viewPage || (viewPage && !viewPage.hasRendered)) { continue; }
 		viewPage.reset();
+	}
+};
+
+ZmPrefView.prototype.resetOnAccountChange =
+function() {
+	for (var id in this.prefView) {
+		var viewPage = this.prefView[id];
+		viewPage.hasRendered = false;
 	}
 };
 
 ZmPrefView.prototype.getTitle =
 function() {
-	return this._hasRendered ? this.getActiveView().getTitle() : null;
+	return (this.hasRendered && this.getActiveView().getTitle());
 };
 
 ZmPrefView.prototype.getView =
@@ -241,7 +249,7 @@ function() {
 	var callbacks = [];
 	for (var id in this.prefView) {
 		var viewPage = this.prefView[id];
-		if (viewPage && viewPage.getPreSaveCallback && viewPage.hasRendered()) {
+		if (viewPage && viewPage.getPreSaveCallback && viewPage.hasRendered) {
 			var callback = viewPage.getPreSaveCallback();
 			if (callback) {
 				callbacks.push(callback);
@@ -263,7 +271,7 @@ function() {
 	var callbacks = [];
 	for (var id in this.prefView) {
 		var viewPage = this.prefView[id];
-		var callback = viewPage && viewPage.hasRendered() &&
+		var callback = viewPage && viewPage.hasRendered &&
 					   viewPage.getPostSaveCallback && viewPage.getPostSaveCallback();
 		if (callback) {
 			callbacks.push(callback);
@@ -273,28 +281,27 @@ function() {
 };
 
 /**
-* Returns a list of prefs whose values have changed due to user form input.
-* Each prefs page is checked in turn. This method can also be used to check 
-* simply whether _any_ prefs have changed, in which case it short-circuits as
-* soon as it finds one that has changed.
-*
-* @param dirtyCheck		[boolean]* 			if true, only check if any prefs have changed
-* @param noValidation	[boolean]*			if true, don't perform any validation
-* @param batchCommand	[ZmBatchCommand]*	if not null, add soap docs to this batch command
-* @param prefView		[Object]*			if not null, specific prefView to check instead of all
+ *
+ * Each prefs page is checked in turn. This method can also be used to check
+ * simply whether _any_ prefs have changed, in which case it short-circuits as
+ * soon as it finds one that has changed.
+ *
+ * @param dirtyCheck		[boolean]* 			if true, only check if any prefs have changed
+ * @param noValidation		[boolean]*			if true, don't perform any validation
+ * @param batchCommand		[ZmBatchCommand]*	if not null, add soap docs to this batch command
 */
 ZmPrefView.prototype.getChangedPrefs =
-function(dirtyCheck, noValidation, batchCommand, prefView) {
+function(dirtyCheck, noValidation, batchCommand) {
 	var list = [];
 	var errors= [];
 	var sections = ZmPref.getPrefSectionMap();
-	var pv = prefView || this.prefView;
+	var pv = this.prefView;
 	for (var view in pv) {
 		var section = sections[view];
 		if (section.manageChanges) { continue; }
 
 		var viewPage = pv[view];
-		if (!viewPage || (viewPage && !viewPage.hasRendered())) { continue; }
+		if (!viewPage || (viewPage && !viewPage.hasRendered)) { continue; }
 
 		if (section.manageDirty) {
 			var isDirty = viewPage.isDirty(section, list, errors);
@@ -356,9 +363,7 @@ function(section, viewPage, dirtyCheck, noValidation, list, errors, view) {
 				throw e;
 			}
 		}
-		var pref = (appCtxt.isOffline && section.id == "GENERAL")
-			? appCtxt.getMainAccount().settings.getSetting(id)
-			: settings.getSetting(id);
+		var pref = settings.getSetting(id);
 		var origValue = pref.origValue;
 		if (setup.approximateFunction) {
 			if (setup.displayFunction) {
