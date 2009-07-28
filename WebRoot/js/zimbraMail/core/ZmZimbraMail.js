@@ -939,9 +939,18 @@ function(callback) {
 
 ZmZimbraMail.prototype.sendClientEventNotify =
 function(loadBegin) {
-	var jsonObj = {ClientEventNotifyRequest:{_jsns:"urn:zimbraOffline"}};
-	jsonObj.ClientEventNotifyRequest.e = loadBegin ? "ui_load_begin" : "ui_load_end";
-	this.sendRequest({jsonObj:jsonObj, asyncMode:true, noBusyOverlay:true});
+	var params = {
+		jsonObj: {
+			ClientEventNotifyRequest: {
+				_jsns:"urn:zimbraOffline",
+				e: loadBegin ? "ui_load_begin" : "ui_load_end"
+			}
+		},
+		callback: (new AjxCallback(this, this.setInstantNotify, true)),
+		asyncMode:true,
+		noBusyOverlay:true
+	};
+	this.sendRequest(params);
 };
 
 /**

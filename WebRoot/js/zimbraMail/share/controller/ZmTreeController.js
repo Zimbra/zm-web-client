@@ -678,9 +678,14 @@ function(ev, overview, treeItem, item) {
 	}
 };
 
+/**
+ * Allows subclass to overload in case something needs to be done before
+ * processing tree item selection in a multi-account environment. Otherwise,
+ * do the normal tree item selection.
+ */
 ZmTreeController.prototype._handleMultiAccountItemSelection =
 function(ev, overview, treeItem, item) {
-	// overload me
+	this._handleItemSelection(ev, overview, treeItem, item);
 };
 
 ZmTreeController.prototype._treeSelectionTimedAction =
