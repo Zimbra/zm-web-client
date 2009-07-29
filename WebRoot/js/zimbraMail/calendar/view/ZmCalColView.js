@@ -244,7 +244,7 @@ function(list, numAppts) {
 
 		for (var i = 0; i < resp.length; i++) {
 			var msgNode = resp[i].m[0];
-			var msg = needToLoad[msgNode.requestId];
+			var msg = needToLoad[msgNode.id];
 			if (msg) {
 				msg._loadFromDom(msgNode);
 				// parse ZmMailMsg into ZmAppt
@@ -2449,7 +2449,7 @@ function(list, skipMiniCalUpdate) {
 	var timeRange = this.getTimeRange();	
 	if (list) {
 		var size = list.size();
-		DBG.println(AjxDebug.DBG2,"list.size:"+size);
+		DBG.println(AjxDebug.DBG2,"list.size:"+size + "," + timeRange.start + "," + timeRange.end);
 		if (size != 0) {
 			this._computeApptLayout();
 			for (var i=0; i < size; i++) {
