@@ -124,6 +124,13 @@ function(params) {
 		this._addAccount(params, main);
 	}
 
+	// HACK: move Global Searches folder so it looks like it own account section
+	var treeView = this._overview[params.overviewId].getTreeView(ZmOrganizer.FOLDER);
+	var treeItem = treeView.getTreeItemById(ZmOrganizer.ID_GLOBAL_SEARCHES);
+	if (treeItem) {
+		treeItem.reparentHtmlElement(this.getHtmlElement());
+	}
+
 	// add zimlets at the end of all overviews
 	var skip = params.omit && params.omit[ZmOrganizer.ID_ZIMLET];
 	if (!skip && window[ZmOverviewController.CONTROLLER[ZmOrganizer.ZIMLET]]) {
@@ -161,7 +168,7 @@ function(params, account) {
 		var headerLabel = (this._appName == ZmApp.PREFERENCES && account.isMain)
 			? ZmMsg.allAccounts : account.getDisplayName();
 
-		this._addSection(headerLabel, null, account.id, omit, params);
+		this._addSection(headerLabel, account.getIcon(), account.id, omit, params);
 
 		this._initializeActionMenu(account);
 	}
@@ -172,8 +179,8 @@ function(headerLabel, headerIcon, headerDataId, omit, overviewParams) {
 	// create a top-level section header
 	var params = {
 		parent: this,
-		text: headerLabel
-		/*imageInfo: headerIcon*/
+		text: headerLabel,
+		imageInfo: headerIcon
 		/*className:"overviewHeader"*/
 	};
 	var header = this._headerItems[headerDataId] = new DwtTreeItem(params);

@@ -144,13 +144,7 @@ function(acctInfo) {
 	if (this.status != acctInfo.status) {
 		this.status = acctInfo.status;
 		if (this.isMain || this.visible) {
-			// todo - need server to give app-specific status updates per account
-			// temporary:
-			var app = appCtxt.getCurrentApp();
-			var hdr = app && app._overviewContainer && app._overviewContainer.getHeaderItem(this);
-			if (hdr) {
-				hdr.setImage(this.getStatusIcon());
-			}
+			// todo
 		}
 	}
 
@@ -182,12 +176,17 @@ function() {
 	switch (this.status) {
 		case ZmZimbraAccount.STATUS_UNKNOWN:	return "ImgOffline";
 		case ZmZimbraAccount.STATUS_OFFLINE:	return "ImgImAway";
-		case ZmZimbraAccount.STATUS_ONLINE:		return "Globe";/*"ImgImAvailable";*/
+		case ZmZimbraAccount.STATUS_ONLINE:		return "ImgImAvailable";
 		case ZmZimbraAccount.STATUS_RUNNING:	return "DwtWait16Icon";
 		case ZmZimbraAccount.STATUS_AUTHFAIL:	return "ImgImDnd";
 		case ZmZimbraAccount.STATUS_ERROR:		return "ImgCritical";
 	}
 	return "";
+};
+
+ZmZimbraAccount.prototype.getIcon =
+function() {
+	return this.isMain ? "LocalFolders" : this.icon;
 };
 
 ZmZimbraAccount.prototype.getZdMsg =
@@ -424,4 +423,16 @@ function(node) {
 	this.type = data ? data.offlineAccountFlavor : ZmZimbraAccount.TYPE_ZIMBRA;
 
 	this.isZimbraAccount = this.type == ZmAccount.TYPE_ZIMBRA;
+
+	// set icon now that we know the type
+	switch (this.type) {
+		case ZmAccount.TYPE_AOL:	this.icon = "AccountAOL"; break;
+		case ZmAccount.TYPE_GMAIL:	this.icon = "AccountGmail"; break;
+		case ZmAccount.TYPE_IMAP:	this.icon = "AccountIMAP"; break;
+		case ZmAccount.TYPE_LIVE:	this.icon = "AccountMSN"; break;
+		case ZmAccount.TYPE_MSE:	this.icon = "AccountExchange"; break;
+		case ZmAccount.TYPE_POP:	this.icon = "AccountPOP"; break;
+		case ZmAccount.TYPE_YMP:	this.icon = "AccountYahoo"; break;
+		case ZmAccount.TYPE_ZIMBRA:	this.icon = "AccountZimbra"; break;
+	}
 };

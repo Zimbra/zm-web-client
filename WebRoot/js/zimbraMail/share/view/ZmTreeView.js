@@ -283,8 +283,11 @@ function(params) {
 			}
 		}
 
-		// bug fix #29342 - hide sync failures folder if there are no messages in it
-		if (child.nId == ZmFolder.ID_SYNC_FAILURES && child.numTotal == 0) {
+		// hide sync-failures / global-searches folder if empty
+		if (child.numTotal == 0 &&
+			(child.nId == ZmFolder.ID_SYNC_FAILURES ||
+			 child.nId == ZmOrganizer.ID_GLOBAL_SEARCHES))
+		{
 			continue;
 		}
 
@@ -362,8 +365,6 @@ function(parentNode, organizer, index, noTooltips, omit) {
 					dndScrollCallback: this._overview._dndScrollCallback,
 					dndScrollId: this._overview.id,
 					id: ZmId.getTreeItemId(this.overviewId, parentOrganizer.id)
-//					expandNodeImage: (appCtxt.multiAccounts ? "NodeMinus" : null),
-//					collapseNodeImage: (appCtxt.multiAccounts ? "NodePlus" : null)
 				});
 				parentNode.setData(Dwt.KEY_ID, parentOrganizer.id);
 				parentNode.setData(Dwt.KEY_OBJECT, parentOrganizer);
@@ -381,8 +382,6 @@ function(parentNode, organizer, index, noTooltips, omit) {
 			imageInfo:organizer.getIcon(),
 			extraInfo: ((appCtxt.isOffline && organizer.isOfflineSyncable && organizer.isOfflineSyncing) ? "SyncStatusOn" : null),
 			id:ZmId.getTreeItemId(this.overviewId, organizer.id)
-//			expandNodeImage: (appCtxt.multiAccounts ? "NodeMinus" : null),
-//			collapseNodeImage: (appCtxt.multiAccounts ? "NodePlus" : null)
 		};
 		// now add item
 		ti = new DwtTreeItem(params);

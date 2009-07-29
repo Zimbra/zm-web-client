@@ -472,12 +472,13 @@ function(showUnread, maxLength, noMarkup, useSystemName) {
 
 ZmFolder.prototype.getIcon =
 function() {
-	if (this.nId == ZmOrganizer.ID_ROOT)		{ return null; }
-	if (this.isOfflineArchive)					{ return "ArchiveFolder"; }
-	if (ZmFolder.ICON[this.nId])				{ return ZmFolder.ICON[this.nId]; }
-	if (this.isFeed())							{ return "RSS"; }
-	if (this.isRemote())						{ return "SharedMailFolder"; }
-	if (this.isDataSource(ZmAccount.TYPE_POP))	{ return "POPAccount"; }
+	if (this.nId == ZmOrganizer.ID_ROOT)			{ return null; }
+	if (this.nId == ZmOrganizer.ID_GLOBAL_SEARCHES)	{ return "SearchFolder"; }
+	if (this.isOfflineArchive)						{ return "ArchiveFolder"; }
+	if (ZmFolder.ICON[this.nId])					{ return ZmFolder.ICON[this.nId]; }
+	if (this.isFeed())								{ return "RSS"; }
+	if (this.isRemote())							{ return "SharedMailFolder"; }
+	if (this.isDataSource(ZmAccount.TYPE_POP))		{ return "POPAccount"; }
 
 	// make a "best-effort" to map imap folders to a well-known icon
 	// (parent will be the root imap folder)
