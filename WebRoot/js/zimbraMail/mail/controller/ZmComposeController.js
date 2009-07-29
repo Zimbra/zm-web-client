@@ -979,7 +979,7 @@ function(draftType, msg, resp) {
 							if (folder) break;
 						}
 					}
-					if (folder) {
+					if (folder && resp.m[0].id) { //id is not present if prefs save sent mails is off for external a/c.
 						var jsonObj = {
 							ItemActionRequest: {
 								_jsns:  "urn:zimbraMail",
