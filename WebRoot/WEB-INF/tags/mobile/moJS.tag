@@ -43,31 +43,82 @@ var $iO = function(s1,s2){
     return s1.indexOf(s2);
 };
 var AjxCache = function(expiry){
-    this.expiry  = expiry || 5000;  // cache will expire after this many milis
-    this._cache = []; //new Array();
+    this._exp  = expiry || 5000;  // cache will expire after this many milis
+    this._cc = []; //new Array();
 
     this.expire = function(){
-      delete this._cache;
-      this._cache = []; //new Array();
+      delete this._cc;
+      this._cc = []; //new Array();
     };
     this.get = function(url){
-        if(this.expiry ===0) { return null;}
-        if((data = this._cache[url])){
-            if(data.noExpiry || (new Date().getTime() - data.addedOn) < this.expiry){
-                return data.request;
+        if(this._exp ===0) { return null;}
+        if((data = this._cc[url])){
+            if(data.ne || (new Date().getTime() - data.on) < this._exp){
+                return data.req;
             }else{
                 delete data;
             }
         }
         return null;
     };
-
     this.set = function(url, request, noExpiry){
-        if(this.expiry ===0) {return;}
+        if(this._exp === 0) {return;}
         noExpiry = noExpiry || false;
-        var data = { request: request, addedOn: new Date().getTime(), noExpiry: noExpiry };
-        this._cache[url] = data;
+        var data = { req: request, on: new Date().getTime(), ne: noExpiry };
+        this._cc[url] = data;
     };
+};
+var toHash = function(url){  //convert to hash based URL eg. ?st=contact will be converted to #contact
+  if(url.match(/[\\?\\&]st=/g)){
+        var r  = new RegExp("([\\?\\&]st=([a-z]+))", "gi");
+        var z  = r.exec(url);
+        if(z && z.length > 1){
+            var y  = url;//.replace(z[1],"");
+            if($iO(z[1],'?') === 0){
+                y = y.replace(z[1],'#'+z[2]);
+            }else{
+                y  = url.replace(z[1],"");
+                y = y.replace('?','#'+z[2]+'&');
+            }
+            url = y;
+        }
+    }
+    return url;
+};
+var trim = function(str){ return str.replace(/^\s+|\s+$/g, ''); };
+var XHR = function(justTest) { //get the ajx
+    if(justTest && window._ajxAv !== undefined) return window._ajxAv; 
+    var xhr = false;
+    if (window.XMLHttpRequest) {
+        xhr = new XMLHttpRequest();
+    } else if (window.ActiveXObject) {
+        try {
+            xhr = new ActiveXObject("Msxml2.XMLHTTP");
+        } catch(e) {
+            try {
+                xhr = new ActiveXObject("Microsoft.XMLHTTP");
+            } catch(e1) {
+                xhr = false;
+            }
+        }
+    }
+    window._ajxAv = xhr ? true : false;  
+    return xhr;
+};
+var sAT = function(tabId){ //set active tab
+    tabId = tabId.replace('#','').replace(/(notebooks|wiki|briefcases|briefcase|task|tasks)/ig,'docs').replace(/(cals)/ig,'cal').replace(/(message|conversation|folders)/,'mail');
+    var targ = $(tabId);
+    if(targ && targ.id.match(/(mail|contact|cal|docs|search)/ig)){
+        var ids = ['mail','contact','cal','docs','search'];
+        for(var i=0, len = ids.length; i < len;i++){
+            var eid = ids[i];
+            var  e = $(eid);
+            if(e){
+                e.className=e.className.replace(e.id+'-active',e.id).replace('appTab-active','appTab');
+            }
+        }
+        targ.className=targ.className.replace(targ.id,targ.id+'-active').replace('appTab','appTab-active').replace('-active-active','-active');//.replace(targ.id+'-active','') + ' '+targ.id + '-active';
+    }
 };
 <c:choose>
     <c:when test="${mailbox.features.mail}">
@@ -91,12 +142,13 @@ var checkHash = function(url,method, force){
     var hash = null;
     if(!url) {url=window.location.href;hash=window.location.hash;}
     if(url.match(/st=[a-zA-Z0-9]+/)){
-        window.location = convertToHashUrl(url);
+        window.location = toHash(url);
         return;
     }
     hash = hash || $iO(url,'#') > 0 ?  url.substring($iO(url,'#')) : false;
     if(hash && ((currHash != hash  /*&& hash != defHash*/) || force)){
             currHash = hash;
+            var query = '';
             if(!currHash || hash == '#'){
                 query = "st=${mailbox.prefs.groupMailBy}";
             }
@@ -106,14 +158,14 @@ var checkHash = function(url,method, force){
                 var app = splits[0];
                 delete splits[0];
                 var params = splits.join('&');
-                var query = "st=" + app + params;
+                query = "st=" + app + params;
                 window.location.hash = currHash;   //!FIXME iphone address bar remains open and always shows loading....
             }
             url = '<c:url value='/m/zmain'/>?' + query;
             fetchIt(url,GC(),method);
 	}
 };
-var sAC = function(inp,id,v,c,si){
+var sAC = function(inp,id,v,c,si){ //select Auto complete contact, when we presse enter on click on it.
   var e = $(id);
   if(trim(e.value) != ''){
     var iv = trim(e.value).substring(0,si);
@@ -123,7 +175,7 @@ var sAC = function(inp,id,v,c,si){
   e.focus();  
   return false;  
 };
-var kU = function(e,f,c){
+var kU = function(e,f,c){ // On key up, do this operations
     if (!e) e = event ? event : window.event;
     if (!f && e.srcElement) f = e.srcElement;
     var k = e.keyCode?  e.keyCode : e.which;
@@ -141,7 +193,7 @@ var kU = function(e,f,c){
     }
     if(val==null || val  == ''){c.style.display="none";return false;}
     if(val==null || val  == ''){c.style.display="none";return false;}
-    if(typeof(window.ktmId) != 'undefined' && window.ktmId != -1){
+    if((window.ktmId) !== undefined && window.ktmId != -1){
         clearTimeout(ktmId);
     }
     if(k == 27){
@@ -169,7 +221,7 @@ var kU = function(e,f,c){
     }else{
         stopEvent(e);
         window.ktmId = setTimeout(function(){
-            var xhr = getXHR();
+            var xhr = XHR();
             if(xhr){
                 xhr.onreadystatechange = function() {
                     if(xhr.readyState == 4){
@@ -180,7 +232,7 @@ var kU = function(e,f,c){
                             r = r.replace(/("([a-zA-Z0-9]+)"):/ig,"$2:");
                             eval(r);
                             var htm = "";
-                            for(var i=0;i < acR.length;i++){
+                            for(var i=0, len = (acR !== undefined) ? acR.length : 0; i < len; i++){
                                 var t = acR[i].type;
                                 var e = acR[i].email.replace(/[']/g,"\"").replace(/&/g, "&amp;").replace(/[<]/g, "&lt;").replace(/>/g, "&gt;");
                                 var imgsrc = t == 'gal' ? "<app:imgurl value='startup/ImgGALContact.gif' />" : t == 'group' ? "<app:imgurl value='contacts/ImgGroup.gif' />" : "<app:imgurl value='contacts/ImgContact.gif' />";
@@ -204,7 +256,7 @@ var kU = function(e,f,c){
         },500);
     }
 };
-var AC = function(f,c){
+var AC = function(f,c){ //Register auto complete on field f and populate container c
     f = (typeof(f) == 'string')? $(f) : f;
     c = (typeof(c) == 'string')? $(c) : c;
     if (document.attachEvent) {
@@ -215,96 +267,43 @@ var AC = function(f,c){
         f.addEventListener("keydown", function(e){if (!e) e = event ? event : window.event;var k = e.keyCode?  e.keyCode : e.which; if((k==13 || k == 38 || k==40) && c.style.display=="block"){ window.acon = true;stopEvent(e);return false;}},true);
     }
 };
-var getXHR = function() {
-    var xhr = false;
-    if (window.XMLHttpRequest) {
-        xhr = new XMLHttpRequest();
-    } else if (window.ActiveXObject) {
-        try {
-            xhr = new ActiveXObject("Msxml2.XMLHTTP");
-        } catch(e) {
-            try {
-                xhr = new ActiveXObject("Microsoft.XMLHTTP");
-            } catch(e) {
-                xhr = false;
-            }
-        }
-    }
-    return xhr;
-};
-var zClickLink = function(id, t) {
-    if((typeof(window.evHandled) != 'undefined' && window.evHandled)) { return false; }
+var zClickLink = function(id, t) { //Click on href and make ajx req if available
+    if((window.evHandled) !== undefined && window.evHandled) { return false; }
     var targ = id ? $(id) : t ;
     if(!targ) {return false;}
     if (targ.onclick) {var r=false;<c:if test="${!ua.isIE && !ua.isOpera}">r = targ.onclick();</c:if> if(!r)return false;}
     var href = targ.href;
     if (!href || loading) {return false;}
     if (targ.target) {return true;}
-    var xhr = getXHR();
+    var xhr = XHR(true);
     if($iO(href,"_replaceDate") > -1){
         href = href.replace(/date=......../, "date=" + currentDate);
     }
-    if (targ.attributes['noajax'] || !xhr) {
+    if (targ.attributes.noajax || !xhr) {
         window.location = href;
         return false;
     }
-    href = convertToHashUrl(href);
+    href = toHash(href);
     var containerId = targ.targetId ? targ.targetId : containerId;
     var container = GC(containerId);
     ajxReq(href, null, container);
     delete xhr;
     return false;
 };
-var setActiveTab = function(tabId){
-    tabId = tabId.replace('#','').replace(/(notebooks|wiki|briefcases|briefcase|task|tasks)/ig,'docs').replace(/(cals)/ig,'cal').replace(/(message|conversation|folders)/,'mail');
-    var targ = $(tabId);
-    if(targ && targ.id.match(/(mail|contact|cal|docs|search)/ig)){
-        var ids = ['mail','contact','cal','docs','search'];
-        for(var i=0;i<ids.length;i++){
-            var eid = ids[i];
-            var  e = $(eid);
-            if(e){
-                e.className=e.className.replace(e.id+'-active',e.id).replace('appTab-active','appTab');
-            }
-        }
-
-        targ.className=targ.className.replace(targ.id,targ.id+'-active').replace('appTab','appTab-active').replace('-active-active','-active');//.replace(targ.id+'-active','') + ' '+targ.id + '-active';
-    }
-};
-var loadThisFrameResponse = function(response,frameId){
+var lfr = function(response,frameId){ //Load frame response
     var req = {responseText: response,status: 200, readyState: 4};
     parseResponse(req,GC(),$(frameId).src);
 };
 
-var convertToHashUrl = function(url){
-  if(url.match(/[\\?\\&]st=/g)){
-        var r  = new RegExp("([\\?\\&]st=([a-z]+))", "gi");
-        var z  = r.exec(url);
-        if(z && z.length > 1){
-            var y  = url;//.replace(z[1],"");
-            if($iO(z[1],'?') === 0){
-                y = y.replace(z[1],'#'+z[2]);
-            }else{
-                y  = url.replace(z[1],"");
-                y = y.replace('?','#'+z[2]+'&');
-            }
-            url = y;
-        }
-    }
-    return url;
-};
-
-var convertToParamUrl = function(url){
-
+var toParams = function(url){
     url = url.replace(/#([a-zA-Z0-9]+)/,'?st=$1');
     return url;
-
 };
 
 var getFormValues = function(obj) {
     var getstr = "ajax=true&";
-    for (var i = 0; i < obj.getElementsByTagName("input").length; i++) {
-        var control = obj.getElementsByTagName("input")[i];
+    for (var i = 0, inp = obj.getElementsByTagName("input"), len = inp !== undefined ? inp.length : 0; i < len; i++) {
+        var control = inp[i];//obj.getElementsByTagName("input")[i];
         var type = control.type ;
         if (type == "text" || type == "button" || (type == "submit" && control._wasClicked) || type == "hidden" || type == "password") {
             getstr += control.name + "=" + escape(control.value) + "&";
@@ -312,8 +311,6 @@ var getFormValues = function(obj) {
         if (type == "checkbox" || type == "radio") {
             if (control.checked) {
                 getstr += control.name + "=" + control.value + "&";
-            } else {
-                //getstr += obj.getElementsByTagName("input")[i].name + "=&";
             }
         }
         if (control.tagName == "SELECT") {
@@ -321,8 +318,8 @@ var getFormValues = function(obj) {
         }
 
     }
-    for (i = 0; i < obj.getElementsByTagName("SELECT").length; i++) {
-        control = obj.getElementsByTagName("SELECT")[i];
+    for (i = 0, sel = obj.getElementsByTagName("SELECT"), len = sel.length; i < len; i++) {
+        control = sel[i];//obj.getElementsByTagName("SELECT")[i];
         getstr += control.name + "=" + control.options[control.selectedIndex].value + "&";
     }
     for (i = 0; i < obj.getElementsByTagName("TEXTAREA").length; i++) {
@@ -342,7 +339,7 @@ var createUploaderFrame = function(iframeId){
 };
 
 var submitForm = function(fobj, target, val) {
-    if(typeof(window.acon) != 'undefined' && window.acon){window.acon=false;return false;}
+    if(window.acon !== undefined && window.acon){window.acon=false;return false;}
     if(val && (val == "selectAll" || val == "selectNone")){
         var cbs = (fobj.cid ? fobj.cid : (fobj.mid ? fobj.mid : (fobj.id ? fobj.id : null)));
         if(cbs){
@@ -351,7 +348,7 @@ var submitForm = function(fobj, target, val) {
         }
     }
     if (!fobj) {return false;}
-    var xhr = getXHR();
+    var xhr = XHR(true);
     if (!xhr) {
         fobj.submit();
         return false;
@@ -416,17 +413,14 @@ var customClick = function (e) {
 };
 
 var fetchIt = function(url, container, method) {
-    var xhr = getXHR();
+    var xhr = XHR(true);
     if (!xhr) {
-        url = convertToParamUrl(url);
+        url = toParams(url);
         window.location = url;
         return;
     }
     ajxReq(url, null, container, method);
     delete xhr;
-};
-var trim = function(str){
-    return str.replace(/^\s+|\s+$/g, '');
 };
 var ajxReq = function(url, query, container, method, justPrefetch) {
     justPrefetch = justPrefetch || false;
@@ -461,23 +455,21 @@ var ajxReq = function(url, query, container, method, justPrefetch) {
             window.currentUrl = (query ? addParam(url,query) : url);
         }
     }
-
-
+    var xhr = false;
     if(((method == "GET" || method == "get")) && $iO(url,"_ajxnoca=1") < 0 && MAX_CACHE_REQUEST > 0){
-           var xhr = ajxCache.get([url,query].join("?"));
+           xhr = ajxCache.get([url,query].join("?"));
            if(xhr){
                 parseResponse(xhr, container,[url,query].join("?"));
                 return;
            }
     }
 
-
     if(!justPrefetch){
         loading = true;
         container = container ? container : $('maincontainer');
         showLoadingMsg('<fmt:message key="MO_loadingMsg"/>', true);
     }
-    var xhr = getXHR();
+    xhr = XHR();
     if (xhr) {
         window._xhr = xhr;
         xhr.onreadystatechange = function() {
@@ -500,7 +492,7 @@ var ajxReq = function(url, query, container, method, justPrefetch) {
         }
         xhr.send(query);
         reqCount++;
-        reqTimer  = setTimeout(function(){ requestTimeout(xhr); },15000); //Try till 15 seconds, give up otherwise
+        reqTimer  = setTimeout(function(){ rqT(xhr); },15000); //Try till 15 seconds, give up otherwise
     } else {
         return false;
     }
@@ -509,16 +501,17 @@ var ajxReq = function(url, query, container, method, justPrefetch) {
 var slideElem = function(elem,dir){
     elem = (typeof(elem) == 'string')? $(elem) : elem;
     if(dir == -1){
-        if($('card').className.match(/flipped/)){
-            $('card').className = "card";
-            setTimeout(function(){$('card').className = "";$('maincontainer').className = $('maincontainer').className.replace(/ persp/ig,"");},1200);
-            $('front').className = $('front').className.replace("back","front");
+        var crd = $('card'),frnt=$('front'),cntr=$('maincontainer');
+        if(crd.className.match(/flipped/)){
+            crd.className = "card";
+            setTimeout(function(){crd.className = "";cntr.className = cntr.className.replace(/ persp/ig,"");},1200);
+            frnt.className = frnt.className.replace("back","front");
             //$('back').className = $('back').className.replace("front","back");
         }else{
             setTimeout(function(){
-                $('maincontainer').className += " persp";
-                $('card').className = "card flipped";
-                $('front').className = $('front').className.replace("front","back");
+                cntr.className += " persp";
+                crd.className = "card flipped";
+                frnt.className = frnt.className.replace("front","back");
                 //$('back').className = $('back').className.replace("back","front");
             },10);
         }
@@ -546,7 +539,7 @@ var parseResponse = function (request, container,url) {
             match = url.match(/st=([a-zA-Z0-9]+)/);
         }
         if(match){
-            setActiveTab(match[1]);
+            sAT(match[1]);
         }
         if (request.status == 200) {
             showLoadingMsg(null, false);
@@ -638,7 +631,7 @@ var openURL = function(url) {
 };
 <c:if test="${ua.isiPhone or ua.isiPod}">
 var startX,startY,iH=[],xD=0,yD=0,dV=[],dId=0;
-var registerSwipeHandler = function(frm){
+var rSH = function(frm){ //Register swipe handler
     if(frm){
         frm.addEventListener('touchstart', function(e) {
             if (e.targetTouches.length != 1){
@@ -714,7 +707,7 @@ var hideDelete = function(id){
 };
 var updateChecked = function(disabled,doItAll){
    var cCount = 0,cbs=$('zForm').getElementsByClassName('chk');
-   for(var i=0;cbs && i < cbs.length; i++){
+   for(var i=0, len = (cbs !== undefined) ? cbs.length : 0; i < len; i++){
        if(cbs[i].checked){ cCount++;cbs[i].disabled = disabled;}
    }
    if(doItAll)
@@ -771,8 +764,9 @@ var addParam = function(url, param) {
 };
 
 var checkAll = function(cb, checked) {
+    if(cb === undefined) return;
     if (cb.length)
-        for (i = 0; i < cb.length; i++)
+        for (var i = 0, len = cb.length; i < len; i++)
             cb[i].checked = checked;
     else
         cb.checked = checked;
@@ -786,7 +780,7 @@ var updateOrientation = function() {
     document.body.setAttribute("orient", orient);
 };
 </c:if>
-var requestTimeout = function (xhr,msg,status){
+var rqT = function (xhr,msg,status){ // request timeout
    xhr = xhr ? xhr : window._xhr; 
    xhr.abort();
    loading = false;
@@ -797,7 +791,10 @@ var requestTimeout = function (xhr,msg,status){
 };
 var GC = function(id) {
     id = id ? id : 'front';
-    return $(id);
+    if(window.__container === undefined){
+        window.__container = $(id);
+    }
+    return window.__container;
 };
 
 //Init vals
@@ -810,12 +807,8 @@ var reqCount = 0;
 var reqTimer = null;
 var lastRendered = new Date().getTime();
 var ajxCache = new AjxCache(CACHE_DATA_LIFE);
-
 if(window.location.hash){
-    var match = window.location.hash.match(/(#[a-zA-Z0-9]+)/ig);
-    if(match){
-        setActiveTab(match[0]);
-    }
+    sAT(window.location.hash);
 };
 <c:if test="${ua.isiPhone || ua.isiPod}">
     window.addEventListener("load", function() {
@@ -824,7 +817,7 @@ if(window.location.hash){
             window.scrollTo(0,1);
         }, 300);
     }, false);
-    registerSwipeHandler(document);
+    rSH(document);
 </c:if>
 <c:if test="${scriptTag}">
 //-->
