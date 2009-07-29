@@ -16,6 +16,7 @@
 --%>
 <%@ tag body-content="empty" %>
 <%@ attribute name="date" rtexprvalue="true" required="true" type="java.util.Calendar" %>
+<%@ attribute name="rangeDate" rtexprvalue="true" required="false" type="java.util.Calendar"%>
 <%@ attribute name="print" rtexprvalue="true" required="false" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -36,7 +37,7 @@
     <fmt:message var="dayFormat" key="CAL_MINICAL_DAY_FORMAT"/>
     <fmt:formatDate var="title" value="${date.time}" pattern="${titleFormat}"/>
     <c:set var="today" value="${zm:getToday(timezone)}"/>
-    <c:set var="rangeStart" value="${zm:getFirstDayOfMultiDayView(date, mailbox.prefs.calendarFirstDayOfWeek, view)}"/>
+    <c:set var="rangeStart" value="${zm:getFirstDayOfMultiDayView((not empty rangeDate) ? rangeDate : date, mailbox.prefs.calendarFirstDayOfWeek, view)}"/>
     <c:choose>
         <c:when test="${view eq 'week' or view eq 'workWeek'}">
             <c:set var="rangeEnd" value="${zm:addDay(rangeStart, view eq 'week' ? 7 : 5)}"/>

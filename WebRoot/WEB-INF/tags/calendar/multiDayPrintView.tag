@@ -80,7 +80,7 @@
             &nbsp;
         </td>
         <td width="180">
-            <app:miniCal print="${true}" date="${not empty nextMonthDate ? nextMonthDate : zm:getToday(mailbox.prefs.timeZone)}"/>            
+            <app:miniCal print="${true}" date="${not empty nextMonthDate ? nextMonthDate : zm:getToday(mailbox.prefs.timeZone)}" rangeDate="${not empty date ? date : zm:getToday(mailbox.prefs.timeZone)}"/>            
         </td>
         <td>
            &nbsp;
