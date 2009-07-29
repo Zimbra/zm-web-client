@@ -48,7 +48,6 @@
 			<c:set var="heard" value="${true}"/>
 		</c:otherwise>
 	</c:choose>
-	<zm:computeNextPrevItem var="cursor" searchResult="${context.searchResult}" index="${context.currentItemIndex}"/>
 	<fmt:message key="voiceMailMessage" var="title"/>
 
 </app:handleError>
@@ -63,7 +62,7 @@
 		<table width="100%" cellpadding="0" cellspacing="0">
 			<tr>
 				<td class='TbTop'>
-					<app:voiceMailViewToolbar context="${context}" cursor="${cursor}" keys="true" heard="${heard}" isPrivate="${message.isPrivate}" saveAsUrl="/service/extension/velodrome/voice/~/voicemail?phone=${param.phone}&id=${message.id}&disp=a"/>
+					<app:voiceMailViewToolbar context="${context}" keys="true" heard="${heard}" isPrivate="${message.isPrivate}" saveAsUrl="/service/extension/velodrome/voice/~/voicemail?phone=${param.phone}&id=${message.id}&disp=a"/>
 				</td>
 			</tr>
 			<tr>

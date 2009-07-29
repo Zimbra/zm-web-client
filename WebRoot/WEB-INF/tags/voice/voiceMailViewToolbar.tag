@@ -16,7 +16,6 @@
 --%>
 <%@ tag body-content="empty" %>
 <%@ attribute name="context" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.tag.SearchContext"%>
-<%@ attribute name="cursor" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.NextPrevItemBean"%>
 <%@ attribute name="heard" rtexprvalue="true" required="true" type="java.lang.Boolean"%>
 <%@ attribute name="isPrivate" rtexprvalue="true" required="true" type="java.lang.Boolean"%>
 <%@ attribute name="saveAsUrl" rtexprvalue="true" required="true" type="java.lang.String"%>
