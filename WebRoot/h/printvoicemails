@@ -53,7 +53,7 @@
 						</c:otherwise>
 					</c:choose>
 				</td>
-                <td nowrap>${hit.voiceMailItemHit.displayCaller}</td>
+				<td nowrap>${zm:getDisplayCaller(pageContext, hit.voiceMailItemHit.caller)}</td>
                 <td nowrap>${fn:escapeXml(zm:displayDuration(pageContext, hit.voiceMailItemHit.duration))}</td>
                 <td nowrap>${fn:escapeXml(zm:displayMsgDate(pageContext, hit.voiceMailItemHit.date))}</td>
             </tr>
