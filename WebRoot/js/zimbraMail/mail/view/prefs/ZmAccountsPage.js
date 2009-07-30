@@ -538,6 +538,7 @@ function(batchCmd) {
 	//this._setAccountFields(this._currentAccount, this._currentSection);
 
 	// delete accounts
+    var foldersToBeDeleted = [];
 	for (var i = 0; i < this._deletedAccounts.length; i++) {
 		var callback = null;
 		var account = this._deletedAccounts[i];
@@ -547,11 +548,14 @@ function(batchCmd) {
 			var name = account.getName();
 			var folder = root.getByName(name);
 			if (folder && !folder.isSystem()) {
-				callback = new AjxCallback(this, this._promptToDeleteFolder, [folder]);
+                foldersToBeDeleted.push(folder);
 			}
 		}
-		this._deletedAccounts[i].doDelete(callback, null, batchCmd);
 	}
+    callback = new AjxCallback(this, this._promptToDeleteFolder, [foldersToBeDeleted]);
+    for (var i = 0, len = this._deletedAccounts.length; i < len; i++) {
+       this._deletedAccounts[i].doDelete(callback, null, batchCmd);
+    }
 
 	// for multi-account mbox, check if user changed visible flag on subaccounts
 	if (appCtxt.numAccounts > 1) {
@@ -1857,16 +1861,32 @@ function(account, resp) {
 	account._needsSync = true;
 };
 
-ZmAccountsPage.prototype._promptToDeleteFolder = function(organizer) {
+ZmAccountsPage.prototype._promptToDeleteFolder = function(organizers) {
+    if(!organizers instanceof Array){
+        organizers = [organizers];
+    }
+    var names = [];
+    for(var i=0, len = organizers.length; i < len-1; i++){
+        names.push(organizers[i].getName());
+    }
+    var last = organizers[i].getName();
 	var dialog = appCtxt.getConfirmationDialog();
-	var prompt = AjxMessageFormat.format(ZmMsg.accountDeleteFolder, [organizer.getName()]);
-	var callback = new AjxCallback(this, this._handleDeleteFolder, [organizer]);
-	dialog.popup(prompt, callback);
+    var callback = new AjxCallback(this, this._handleDeleteFolder, [organizers]);
+    var prompt = AjxMessageFormat.format(ZmMsg.accountDeleteFolder, [last]);
+    if(names.length > 0){
+        prompt = AjxMessageFormat.format(ZmMsg.accountDeleteFolders, [names.join("\", \""),last]);
+    }
+    dialog.popup(prompt, callback);
 };
 
-ZmAccountsPage.prototype._handleDeleteFolder = function(organizer) {
+ZmAccountsPage.prototype._handleDeleteFolder = function(organizers) {
 	var trash = appCtxt.getById(ZmOrganizer.ID_TRASH);
-	organizer.move(trash);
+    if(!organizers instanceof Array){
+        organizers = [organizers];
+    }
+    for(var i=0, len = organizers.length; i <  len; i++){
+	    organizers[i].move(trash);
+    }
 };
 
 
