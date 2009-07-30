@@ -59,6 +59,7 @@
     <c:set target="${sessionScope.expanded}" property="${param.collapse}" value="collapse"/>
 </c:if>
 <c:set var="toolbar">
+<%--
     <table width=100% cellspacing=0>
         <tr valign='middle'>
             <td class='TbBt'>
@@ -73,6 +74,7 @@
             </td>
         </tr>
     </table>
+--%>
 </c:set>
 </app:handleError>
 
