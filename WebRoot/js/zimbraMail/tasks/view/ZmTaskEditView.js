@@ -211,8 +211,9 @@ function(width) {
 
 	// add percent complete DwtSelect
 	this._pCompleteSelect = new DwtSelect({parent:this});
+    var formatter = new AjxMessageFormat(AjxMsg.percentageString);
 	for (var i = 0; i <= 100; i += ZmTask.PCOMPLETE_INT) {
-		this._pCompleteSelect.addOption((i+"%"), i==0, i);
+		this._pCompleteSelect.addOption((formatter.format(i)), i==0, i);
 	}
 	this._pCompleteSelect.addChangeListener(listener);
 	this._pCompleteSelect.reparentHtmlElement(this._htmlElId + "_complete");

@@ -178,9 +178,8 @@ function(htmlArr, idx, task, field, colIdx, params) {
 		htmlArr[idx++] = ZmCalItem.getLabelForStatus(task.status);
 
 	} else if (field == ZmItem.F_PCOMPLETE) {	// percent complete
-		htmlArr[idx++] = task.pComplete || 0;
-		htmlArr[idx++] = "%";
-
+        var formatter = new AjxMessageFormat(AjxMsg.percentageString);
+		htmlArr[idx++] = formatter.format(task.pComplete || 0);
 	} else if (field == ZmItem.F_DATE) {
 		// due date - dont call base class since we *always* want to show date (not time)
 		htmlArr[idx++] = task.endDate != null
