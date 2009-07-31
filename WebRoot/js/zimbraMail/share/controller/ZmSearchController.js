@@ -301,6 +301,24 @@ function(search, noRender, changes, callback, errorCallback) {
 	this._doSearch(params, noRender, callback, errorCallback);
 };
 
+ZmSearchController.prototype.resetSearchAllAccounts =
+function() {
+	var button = this._searchAllAccounts && this._searchToolBar.getButton(ZmSearchToolBar.SEARCH_MENU_BUTTON);
+	var menu = button && button.getMenu();
+	var allAccountsMI = menu && menu.getItemById(ZmSearchToolBar.MENUITEM_ID, ZmId.SEARCH_ALL_ACCOUNTS);
+
+	if (allAccountsMI) {
+		allAccountsMI.setChecked(false, true);
+
+		var selItem = menu.getSelectedItem();
+		var icon = this._inclSharedItems
+			? this._getSharedImage(selItem) : selItem.getImage();
+		button.setImage(icon);
+
+		this._searchAllAccounts = false;
+	}
+};
+
 /**
  * This is used by the offline client to "reset" the toolbar whenever user
  * switches between accounts.
@@ -413,11 +431,15 @@ function(params, noRender, callback, errorCallback) {
 	// if the user explicitly searched for all types, force mixed view
 	var isMixed = (params.searchFor == ZmId.SEARCH_ANY);
 
-	// a query hint is part of the query that the user does not see
-	if (this._inclSharedItems) {
+	if (this._searchAllAccounts) {
+		params.queryHint = this._generateQueryForAllAccounts(isMixed, types.getArray());
+		params.accountName = appCtxt.getMainAccount().name;
+	}
+	else if (this._inclSharedItems) {
+		// a query hint is part of the query that the user does not see
 		params.queryHint = isMixed
 			? ZmSearchController.QUERY_ISREMOTE
-			: ZmSearchController.generateQueryHint(types.getArray());
+			: ZmSearchController.generateQueryForShares(types.getArray());
 	}
 
 	// only set contact source if we are searching for contacts
@@ -542,20 +564,19 @@ function(search, isMixed, ex) {
 };
 
 /**
- * Provides a string to add to the query when the search includes
- * shared items.
+ * Provides a string to add to the query when the search includes shared items.
  * 
  * @param types		[array]		list of item types
  */
-ZmSearchController.generateQueryHint =
-function(types) {
+ZmSearchController.generateQueryForShares =
+function(types, account) {
 	var ac = window.parentAppCtxt || window.appCtxt;
 	var list = [];
 	for (var j = 0; j < types.length; j++) {
 		var type = types[j];
 		var app = ac.getApp(ZmItem.APP[type]);
 		if (app) {
-			var ids = app.getRemoteFolderIds();
+			var ids = app.getRemoteFolderIds(account);
 			for (var i = 0; i < ids.length; i++) {
 				var id = ids[i];
 				var idText = AjxUtil.isNumeric(id) ? id : ['"', id, '"'].join("");
@@ -570,6 +591,44 @@ function(types) {
 	}
 
 	return null;
+};
+
+ZmSearchController.prototype._generateQueryForAllAccounts =
+function(isMixed, types) {
+	var query = [];
+	var accounts = appCtxt.getZimbraAccounts();
+	for (var i in accounts) {
+		var acct = accounts[i];
+		if (!acct.visible) { continue; }
+
+		var part = [
+			'(underid:"',
+			ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT, acct, true),
+			'"',
+		];
+/*
+		THIS PART DOES NOT SEEM TO BE NECESSARY SINCE "underid" SYNTAX IS
+		RETURNING SHARED ITEMS - TIM TO VERIFY WITH JJ
+
+		if (this._inclSharedItems) {
+			part.push(" OR ");
+			if (isMixed) {
+				part.push(ZmSearchController.QUERY_ISREMOTE);
+			} else {
+				var shares = ZmSearchController.generateQueryForShares(types, acct);
+				if (shares) {
+					part.push("("+ shares + ")");
+				}
+			}
+		}
+*/
+		part.push(")");
+
+		query.push(part.join(""));
+	}
+
+	DBG.println("query = " + query.join(" OR "));
+	return (query.join(" OR "));
 };
 
 /*********** Search Field Callback */
@@ -630,16 +689,12 @@ function(ev, id) {
 	if (!btn) { return; }
 
 	var menu = btn.getMenu();
+	var item = ev ? ev.item : (menu.getItemById(ZmSearchToolBar.MENUITEM_ID, id));
 
-	var item;
-	if (ev) {
-		item = ev.item;
-	} else {
-		item = menu.getItemById(ZmSearchToolBar.MENUITEM_ID, id);
-	}
 	if (!item || (!!(item._style & DwtMenuItem.SEPARATOR_STYLE))) { return; }
 	id = item.getData(ZmSearchToolBar.MENUITEM_ID);
 
+	var selItem = menu.getSelectedItem();
 	var sharedMI = menu.getItemById(ZmSearchToolBar.MENUITEM_ID, ZmId.SEARCH_SHARED);
 
 	// enable shared menu item if not a gal search
@@ -662,31 +717,43 @@ function(ev, id) {
 		}
 		this._contactSource = ZmItem.CONTACT;
 	}
+	this._inclSharedItems = sharedMI && sharedMI.getChecked();
 
-	this._inclSharedItems = sharedMI ? sharedMI.getChecked() : false;
+	// search all accounts? Only applies to multi-account mbox
+	var allAccountsMI = menu.getItemById(ZmSearchToolBar.MENUITEM_ID, ZmId.SEARCH_ALL_ACCOUNTS);
+	this._searchAllAccounts = allAccountsMI && allAccountsMI.getChecked();
 
 	if (id == ZmId.SEARCH_SHARED) {
-		var icon = menu.getSelectedItem().getImage();
+		var icon = this._searchAllAccounts
+			? allAccountsMI.getImage() : selItem.getImage();
+
 		if (this._inclSharedItems) {
-			var selItem = menu.getSelectedItem();
-			var selItemId = selItem ? selItem.getData(ZmSearchToolBar.MENUITEM_ID) : null;
+			var selItemId = selItem && selItem.getData(ZmSearchToolBar.MENUITEM_ID);
 			icon = selItemId
 				? ((ZmSearchToolBar.SHARE_ICON[selItemId]) || item.getImage())
 				: item.getImage();
 		}
 
 		btn.setImage(icon);
-	} else {
+	}
+	else if (id == ZmId.SEARCH_ALL_ACCOUNTS) {
+		var icon = (this._searchAllAccounts && !this._inclSharedItems)
+			? item.getImage()
+			: (this._inclSharedItems) ? this._getSharedImage(selItem) : selItem.getImage();
+		btn.setImage(icon);
+	}
+	else {
 		// only set search for if a "real" search-type menu item was clicked
 		this._searchFor = id;
 		var icon = item.getImage();
+
 		if (this._inclSharedItems) {
-			var selItem = menu.getSelectedItem();
-			var selItemId = selItem ? selItem.getData(ZmSearchToolBar.MENUITEM_ID) : null;
-			icon = (selItemId && ZmSearchToolBar.SHARE_ICON[selItemId])
-				? ZmSearchToolBar.SHARE_ICON[selItemId]
-				: ZmSearchToolBar.ICON[ZmId.SEARCH_SHARED];
+			icon = this._getSharedImage(selItem);
 		}
+		else if (this._searchAllAccounts) {
+			icon = allAccountsMI.getImage();
+		}
+
 		btn.setImage(icon);
 		btn.setText(item.getText());
 	}
@@ -698,6 +765,14 @@ function(ev, id) {
 		tooltip = ZmMsg[ZmSearchToolBar.TT_MSG_KEY[groupBy]];
 	}
 	btn.setToolTipContent(tooltip);
+};
+
+ZmSearchController.prototype._getSharedImage =
+function(selItem) {
+	var selItemId = selItem && selItem.getData(ZmSearchToolBar.MENUITEM_ID);
+	return (selItemId && ZmSearchToolBar.SHARE_ICON[selItemId])
+		? ZmSearchToolBar.SHARE_ICON[selItemId]
+		: ZmSearchToolBar.ICON[ZmId.SEARCH_SHARED];
 };
 
 /**

@@ -309,7 +309,7 @@ function(params) {
 };
 
 ZmApp.prototype.getRemoteFolderIds =
-function() {
+function(account) {
 	// XXX: optimize by caching this list? It would have to be cleared anytime
 	// folder structure changes
 	var list = [];
@@ -318,10 +318,10 @@ function() {
 
 		// first, make sure there aren't any deferred folders that need to be created
 		if (this._deferredFolders.length) {
-			this._createDeferredFolders(type);
+			this._createDeferredFolders(type, (account && account.id));
 		}
 
-		var tree = appCtxt.getFolderTree();
+		var tree = appCtxt.getFolderTree(account);
 		var folders = tree ? tree.getByType(type) : [];
 		for (var i = 0; i < folders.length; i++) {
 			var folder = folders[i];
@@ -599,7 +599,8 @@ function(type, accountId) {
 	this._clearDeferredFolders();
 
 	// XXX: this may no longer be necessary per fixes to bug 6082 and 4434
-	var folderTree = appCtxt.getFolderTree();
+	var account = accountId && appCtxt.getAccount(accountId);
+	var folderTree = appCtxt.getFolderTree(account);
 	if (folderTree) {
 		folderTree.getPermissions({type:type, noBusyOverlay:true});
 	}

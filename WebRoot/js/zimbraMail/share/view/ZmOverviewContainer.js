@@ -126,7 +126,7 @@ function(params) {
 
 	// HACK: move Global Searches folder so it looks like it own account section
 	var treeView = this._overview[params.overviewId].getTreeView(ZmOrganizer.FOLDER);
-	var treeItem = treeView.getTreeItemById(ZmOrganizer.ID_GLOBAL_SEARCHES);
+	var treeItem = treeView && treeView.getTreeItemById(ZmOrganizer.ID_GLOBAL_SEARCHES);
 	if (treeItem) {
 		treeItem.reparentHtmlElement(this.getHtmlElement());
 	}

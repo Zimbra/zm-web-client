@@ -17,7 +17,7 @@ ZmSearchToolBar = function(parent, id) {
 
 	DwtComposite.call(this, {parent:parent, className:"ZmSearchToolbar", id:id});
 
-	// set up "search all" menu item
+	// setup "search all" menu item
 	var params = {
 		msgKey: "searchAll",
 		tooltipKey: "searchForAny",
@@ -28,6 +28,7 @@ ZmSearchToolBar = function(parent, id) {
 	};
 	ZmSearchToolBar.addMenuItem(ZmId.SEARCH_ANY, params);
 
+	// setup "include shared" menu item
 	params = {
 		msgKey: "searchShared",
 		tooltipKey: "searchShared",
@@ -36,6 +37,16 @@ ZmSearchToolBar = function(parent, id) {
 		id: ZmId.getMenuItemId(ZmId.SEARCH, ZmId.SEARCH_SHARED)
 	};
 	ZmSearchToolBar.addMenuItem(ZmId.SEARCH_SHARED, params);
+
+	// setup "all accounts" menu item for multi account
+	if (appCtxt.multiAccounts) {
+		params = {
+			msgKey: "searchAllAccounts",
+			icon: "Globe",
+			id: ZmId.getMenuItemId(ZmId.SEARCH, ZmId.SEARCH_ALL_ACCOUNTS)
+		};
+		ZmSearchToolBar.addMenuItem(ZmId.SEARCH_ALL_ACCOUNTS, params);
+	}
 
 	this._createHtml();
 };
@@ -408,7 +419,8 @@ function() {
 		var setting = ZmSearchToolBar.SETTING[id];
 		if (setting && !appCtxt.get(setting)) { continue; }
 
-		params.style = (id == ZmId.SEARCH_SHARED) ? DwtMenuItem.CHECK_STYLE : DwtMenuItem.RADIO_STYLE;
+		params.style = (id == ZmId.SEARCH_SHARED || id == ZmId.SEARCH_ALL_ACCOUNTS)
+			? DwtMenuItem.CHECK_STYLE : DwtMenuItem.RADIO_STYLE;
 		params.imageInfo = ZmSearchToolBar.ICON[id];
 		params.text = ZmMsg[ZmSearchToolBar.MSG_KEY[id]];
 		params.id = ZmSearchToolBar.ID[id];

@@ -314,6 +314,10 @@ function(folder) {
 			}
 		}
 		var sc = appCtxt.getSearchController();
+
+		if (appCtxt.multiAccounts) {
+			sc.resetSearchAllAccounts();
+		}
 		var account = folder.accountId && appCtxt.getAccount(folder.accountId);
 		var params = {
 			query: folder.createQuery(),
