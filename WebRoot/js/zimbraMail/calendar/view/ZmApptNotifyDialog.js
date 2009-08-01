@@ -85,7 +85,7 @@ function() {
 	var html = new Array();
 	var i = 0;
 
-	html[i++] = "<div style='width:275px'>";
+	html[i++] = "<div style='width:275px; height: 300px; overflow: auto;'>";
 	html[i++] = ZmMsg.attendeeListChanged;
 	html[i++] = "<br><div id='";
 	html[i++] = this._addedListId;
