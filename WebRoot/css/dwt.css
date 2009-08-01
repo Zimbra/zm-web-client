@@ -823,7 +823,14 @@
 	@MiniCalDOWText@
 }
 
+.DwtCalendarWeekNo {
+    @Text-anchor@
+}
 
+.DwtCalendarWeekNoTitle {
+	@MiniCalDOWBg@
+    @Text-anchor@
+}
 
 /* Actual day of the month in the calendar in various states */
 .DwtCalendarDay {
