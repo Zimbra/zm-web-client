@@ -1,14 +1,9 @@
 <template id='data.ImportExport#ImportExportPrefPage'>
 	<!-- revert not used -- just to keep spacing consistent -->
-	<div align=right>
-	<table class='ZOptionsDefaultsTable'>
-		<tr><td class='ZOptionsDefaultsField'>
-			<div style='visibility:hidden'>
-				<!--<div id='${id}_REVERT_PAGE' tabindex='10'></div>-->
-			</div>
-		</td></tr>
-	</table>
+	<div align=right style='margin-right: 20px; margin-bottom: 10px;'>
+			<!-- div id='${id}_REVERT_PAGE' tabindex='10' style='margin-right: 25px;'></div -->
 	</div>
+
 
 	<table border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr class='ZOptionsHeaderRow'>
