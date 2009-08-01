@@ -340,6 +340,7 @@ function(html, loc, week, dow) {
 
 ZmCalMonthView.prototype._createHtml =
 function() {
+    this._showWeekNumber = false;    
 	this._days = new Object();	
 	this._rowIds = new Object();		
 	this._weeks = new Array();
@@ -349,14 +350,23 @@ function() {
 	this._titleId = Dwt.getNextId();	
 	this._daysId = Dwt.getNextId();	
 	this._bodyId = Dwt.getNextId();
+	this._weekNumBodyId = Dwt.getNextId();
 	this._headerColId = [];
 	this._dayNameId = [];
 	this._bodyColId = [];
 
 	var html = new AjxBuffer();
 			
-	html.append("<table class=calendar_view_table>");
-	html.append("<tr><td>");
+	html.append("<table class=calendar_view_table cellpadding=0 cellspacing=0>");
+	html.append("<tr>");
+
+    if(this._showWeekNumber) {
+        html.append("<td width=10 valign='bottom' class='calendar_month_header_cells_text'>");
+	    html.append(AjxMsg.calendarWeekTitle);
+	    html.append("</td>");
+    }
+
+	html.append("<td>");
 	html.append("<div id='", this._headerId, "' style='position:relative;'>");
 	html.append("<table id=calendar_month_header_table class=calendar_month_header_table>");
 	html.append("<colgroup>");
@@ -379,7 +389,27 @@ function() {
 	html.append("</table>");
 	html.append("</div>");
 	html.append("</td></tr>");
-	html.append("<tr><td>");
+	html.append("<tr>");
+
+    if(this._showWeekNumber) {
+        html.append("<td width=10>");
+
+        //generate cells for showing week numbers on the side
+        this._weekNumberIds = {};
+        html.append("<table id='", this._weekNumBodyId, "' class='calendar_month_table'>");
+        for (var i=0; i < 6; i++)	 {
+            var weekNumberId = Dwt.getNextId();
+            html.append("<tr>");
+            html.append("<td id='" +  weekNumberId + "' class='calendar_month_weekno_td'>");
+            html.append("</td>");
+            html.append("</tr>");
+            this._weekNumberIds[i] = weekNumberId;
+        }
+        html.append("</table>");
+        html.append("</td>");
+    }
+
+	html.append("<td>");
 	html.append("<div id='", this._daysId, "' class=calendar_month_body>");
 	
 	html.append("<table id='", this._bodyId, "' class=calendar_month_table>");
@@ -406,6 +436,21 @@ function() {
 	html.append("</td></tr>");
 	html.append("</table>");
 	this.getHtmlElement().innerHTML = html.toString();
+};
+
+ZmCalMonthView.prototype._updateWeekNumber =
+function(i) {
+    if(!this._showWeekNumber) return;
+
+    var day = this._days[i*7 + 0];
+	if(day && day.date) {
+        var weekNumber = AjxDateUtil.getWeekNumber(day.date);
+        var wkId = this._weekNumberIds[i];
+        var wkCell = wkId ? document.getElementById(wkId) : null;
+        if(wkCell) {
+            wkCell.innerHTML = weekNumber;   
+        }
+    }
 };
 
 ZmCalMonthView.prototype._updateDays =
@@ -452,6 +497,7 @@ function() {
                 d.setTime(d.getTime() + AjxDateUtil.MSEC_PER_DAY);
             }
         }
+        this._updateWeekNumber(i);
 	}
 	
 	var formatter = DwtCalendar.getMonthFormatter();
@@ -515,7 +561,7 @@ function() {
 	var he = document.getElementById(this._headerId);
 	var headingHeight = Dwt.getSize(he).y;
 
-	var w = width - 5;
+	var w = width - (this._showWeekNumber ? 15 : 5);
 	var h = height - headingHeight - 10;
 	
 	var de = document.getElementById(this._daysId);
@@ -523,6 +569,11 @@ function() {
 
 	var be = document.getElementById(this._bodyId);
 	Dwt.setSize(be, w, h);
+
+    if(this._showWeekNumber) {
+        var wk = document.getElementById(this._weekNumBodyId);
+        Dwt.setSize(wk, Dwt.DEFAULT, h);
+    }
 
 	var colWidth = Math.floor(w/7) - 1;
 
@@ -540,6 +591,7 @@ function() {
 	for (var i=0; i < 6; i++) {
 		var row = document.getElementById(this._rowIds[i]);
 		Dwt.setSize(row, Dwt.DEFAULT, Math.floor(100/6) + '%');
+        if(this._showWeekNumber) this.resizeWeekNumberCell(i, Math.floor(100/6) + '%');
 	}
 
 	this._layoutAllDay(h);
@@ -754,6 +806,17 @@ function(markApptDays) {
     }
 };
 
+ZmCalMonthView.prototype.resizeWeekNumberCell =
+function(row, height) {
+
+    if(!this._showWeekNumber) return;
+    
+    var weekNumCell = document.getElementById(this._weekNumberIds[row]);
+    if(weekNumCell) {
+        Dwt.setSize(weekNumCell, Dwt.DEFAULT, height);
+    }
+};
+
 ZmCalMonthView.prototype.resizeCalendarGrid =
 function() {
     var grid = document.getElementById(this._daysId)
@@ -772,6 +835,8 @@ function() {
         if(AjxEnv.isSafari) {
             Dwt.setSize(this.getCell(i, 0), Dwt.DEFAULT, avgHeight);            
         }
+
+        this.resizeWeekNumberCell(i, avgHeight);
     }
 
     for (var j=0; j < 7; j++) {
@@ -860,12 +925,14 @@ function(rowIdx, params) {
         Dwt.setSize(day, Dwt.DEFAULT, height);
     }
 
+    this.resizeWeekNumberCell(rowIdx, height);
 };
 
 ZmCalMonthView.prototype.resizeCell =
 function(dayInfo, height) {
     var day = this.getCell(dayInfo.week, dayInfo.dow);
     Dwt.setSize(day, Dwt.DEFAULT, height);
+    this.resizeWeekNumberCell(dayInfo.week, height);
 };
 
 ZmCalMonthView.prototype.clearCellHeight =
@@ -873,6 +940,7 @@ function(dayInfo) {
     if(!dayInfo) return;
     var day = this.getCell(dayInfo.week, dayInfo.dow);
     Dwt.setSize(day, Dwt.DEFAULT, Dwt.CLEAR);
+    this.resizeWeekNumberCell(dayInfo.week, Dwt.CLEAR);
 };
 
 ZmCalMonthView.prototype.getCell =

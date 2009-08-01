@@ -1279,6 +1279,16 @@ line-height:normal;
 	vertical-align:top;
 }
 
+.calendar_month_weekno_td {
+	@LeftSeparator@
+	@TopSeparator@
+	@BottomSeparator@
+	@NoWrap@
+    @Text-anchor@    
+	vertical-align:top;
+    text-align: center;
+}
+
 /* ??? -Selected -> -selected */
 .calendar_month_cells_td-Selected {
 	@SelectedBg@
