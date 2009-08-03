@@ -94,7 +94,7 @@ function() {
 
     this._initIframe();
 
-    var editor = this._editor = new ZmSlideComponentEditor({parent:shell, iframe: this._iframe, controller: this._controller});
+    var editor = this._editor = new ZmSlideComponentEditor({parent:appCtxt.getShell(), iframe: this._iframe, controller: this._controller});
     editor._enableDesignMode(editor._getIframeDoc());
     this._toolbar = editor._createToolBar(this);
 
@@ -1328,11 +1328,34 @@ function() {
     var content = [];
     var idx = 0;
     idx = this.getSlideHTML(content, idx);
-    window.fileInfo.name = this._controller.getFileName();
+
+    var fileName = this._controller.getFileName();
+
+    if (fileName == "") {
+        message = ZmMsg.emptyDocName;
+    }else {
+        message = this._docMgr.checkInvalidDocName(fileName);
+    }
+
+    if (message) {
+		var style = DwtMessageDialog.WARNING_STYLE;
+		var dialog = this.warngDlg = appCtxt.getMsgDialog();
+		dialog.setMessage(message, style);
+		dialog.popup();
+	    dialog.registerCallback(DwtDialog.OK_BUTTON, new AjxCallback(this, this._okListener, [dialog]));
+		return false;
+	}
+
+    window.fileInfo.name = fileName;
     window.fileInfo.content = content.join("");
     window.fileInfo.contentType = ZmSlideEditView.APP_ZIMBRA_PPT;
     this._docMgr.setSaveCallback(new AjxCallback(this, this._saveHandler));
     this._docMgr.saveDocument(window.fileInfo);
+};
+
+ZmSlideEditView.prototype._okListener =
+function(dialog){
+    dialog.popdown();
 };
 
 ZmSlideEditView.prototype._saveHandler =

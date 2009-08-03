@@ -132,7 +132,7 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
         <jsp:include page="/js/ajax/util/AjxTimezoneData.js" />
     </script>
     <%
-        String packages = "Ajax,Startup1_1,Startup1_2,Slides";
+        String packages = "Ajax,Startup1_1,Startup1_2,Startup2,Slides";
         //String packages = "DocsStartup,Slides";
 
         String extraPackages = request.getParameter("packages");
@@ -196,20 +196,6 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
     <% }else { %>
         createDummyDBG();
     <% } %>
-        //   	        create();
-        /*var prodMode = ${isProdMode};
-            var debugLevel = "<%= (debug != null) ? debug : "" %>";
-            //if (!prodMode || debugLevel) {
-                AjxDispatcher.require("Debug");
-                DBG = new AjxDebug(AjxDebug.NONE, null, false);
-			// figure out the debug level
-                if (debugLevel == 't') {
-                    DBG.showTiming(true);
-                } else {
-                    DBG.setDebugLevel(debugLevel);
-                }
-            //}
-            */
 
         window.appCtxt = new ZmAppCtxt();
         appCtxt.rememberMe = false;
