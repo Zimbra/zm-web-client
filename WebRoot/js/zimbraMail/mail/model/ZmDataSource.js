@@ -103,8 +103,9 @@ function() {
 	var email = this.email != null ? this.email : this.identity.getField(ZmIdentity.SEND_FROM_ADDRESS); // bug: 23042
 	if (!email) { // bug: 38175
 		var provider = ZmDataSource.getProviderForAccount(this);
+		var userName = this.userName && this.userName.match(/@/) ? this.userName.replace(/@.*/,"") : this.userName; 
 		var host = (provider && provider._host) || this.mailServer;
-		email = this.userName && host ? [ this.userName, host].join("@") : "";
+		email = userName && host ? [ userName, host].join("@") : "";
 	}
 	return email;
 };

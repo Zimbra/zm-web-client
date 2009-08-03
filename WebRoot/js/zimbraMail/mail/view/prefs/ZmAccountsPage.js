@@ -1577,12 +1577,13 @@ function(evt) {
 
 ZmAccountsPage.prototype._handleUserNameChange =
 function(evt) {
-	var userName = this._getControlValue("USERNAME", this._currentSection);
+	var userName = AjxStringUtil.trim(this._getControlValue("USERNAME", this._currentSection));
 	this._currentAccount.userName = userName;
 	if (!this._getControlValue("EMAIL", this._currentSection)) {
 		var provider = ZmDataSource.getProviderForAccount(this._currentAccount);
+		userName = userName && userName.match(/@/) ? userName.replace(/@.*/,"") : userName;
 		var host = provider && provider._host;
-		var email = userName && !userName.match(/@/) && host ? [userName,host].join("@") : userName;
+		var email = userName && host ? [userName,host].join("@") : userName;
 		this._updateEmailCell(email);
 	}
 };
