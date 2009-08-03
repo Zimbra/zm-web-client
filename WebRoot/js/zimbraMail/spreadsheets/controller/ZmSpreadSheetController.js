@@ -35,14 +35,25 @@ ZmSpreadSheetController.prototype.save = function(){
 
     var fileInfo = ZmSpreadSheetApp.fileInfo;
     var fileName = this._toolbar.get("fileName").getValue();
+    var message;
 
     if(!fileInfo.id){
-        if(fileName == ""){
-            appCtxt.setStatusMsg(ZmMsg.emptyDocName, ZmStatusView.LEVEL_WARNING);
-            return;
+        if (fileName == "") {
+            message = ZmMsg.emptyDocName;
+        }else {
+            message = this._docMgr.checkInvalidDocName(fileName);
         }
     }
 
+    if (message) {
+		var style = DwtMessageDialog.WARNING_STYLE;
+		var dialog = this.warngDlg = appCtxt.getMsgDialog();
+		dialog.setMessage(message, style);
+		dialog.popup();
+	    dialog.registerCallback(DwtDialog.OK_BUTTON, new AjxCallback(this, this._okListener, [dialog]));
+		return false;
+	}
+    
     ZmSpreadSheetApp.fileInfo.name    = fileName;
     ZmSpreadSheetApp.fileInfo.content = this._spreadSheet.getXML();
     ZmSpreadSheetApp.fileInfo.contentType = ZmSpreadSheetApp.APP_ZIMBRA_XLS;
@@ -50,6 +61,11 @@ ZmSpreadSheetController.prototype.save = function(){
     this._docMgr.setSaveCallback(new AjxCallback(this, this._postSaveHandler));
     this._docMgr.saveDocument(ZmSpreadSheetApp.fileInfo);
 
+};
+
+ZmSpreadSheetController.prototype._okListener =
+function(dialog){
+    dialog.popdown();
 };
 
 ZmSpreadSheetController.prototype._postSaveHandler =
@@ -154,6 +170,16 @@ ZmSpreadSheetController.prototype.resize = function(ev){
 	spreadSheet.setDisplay("block");
 	spreadSheet.setBounds(0, 0, w, h);
 };
+
+ZmSpreadSheetController.prototype.setStatusMsg = function(){
+    if(!this.statusView){
+        this.statusView = new ZmStatusView(appCtxt.getShell(), "ZmStatus", Dwt.ABSOLUTE_STYLE, ZmId.STATUS_VIEW);
+    }
+    params = Dwt.getParams(arguments, ZmStatusView.MSG_PARAMS);
+    params.transitions = ZmToast.DEFAULT_TRANSITIONS;
+	this.statusView.setStatusMsg(params);
+};
+
 
 ZmSpreadSheetController.prototype.toString =
 function() {
