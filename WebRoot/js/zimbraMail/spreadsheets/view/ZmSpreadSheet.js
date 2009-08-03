@@ -659,7 +659,12 @@ ZmSpreadSheet.prototype._cellClicked = function(td, ev) {
             if(this._editingCell){
                 this._input_blur();
             }
-            this._selectCell(td);			
+            if(ev.shiftKey && this._selectedCell && ( this._selectedCell != td )){
+                this._selectRange(ZmSpreadSheet.getCellName(this._selectedCell),
+					  ZmSpreadSheet.getCellName(td), true);
+            }else{
+                this._selectCell(td);
+            }
         }
 		if (stopEvent) {
 			ev._stopPropagation = true;
