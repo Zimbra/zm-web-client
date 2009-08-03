@@ -690,7 +690,7 @@ function(ev) {
 };
 
 ZmHtmlEditor.prototype._createToolbars =
-function() {
+function(dontCreateButtons) {
 	// NOTE: overload this method to place toolbars differently.
 	if (!this._toolbar1) {
 		var tb = this._toolbar1 = new DwtToolBar({parent:this, className:"ZToolbar",
@@ -698,13 +698,16 @@ function() {
 		tb.setVisible(this._mode == DwtHtmlEditor.HTML);
 
 		// Default is to have ONE toolbar now
-		this._createToolBar1(tb);
-		new DwtControl({parent:tb, className:"vertSep"});
-		this._createToolBar2(tb);
+        if(!dontCreateButtons){
+            this._createToolBar1(tb);
+            new DwtControl({parent:tb, className:"vertSep"});
+            this._createToolBar2(tb);
+            this._resetFormatControls();
+        }
 
 		this._toolbars.push(tb);
 
-		this._resetFormatControls();
+
 	}
 };
 
@@ -723,87 +726,26 @@ function(tb) {
 
 	new DwtControl({parent:tb, className:"vertSep"});
 
-    var params = {parent:tb, style:DwtButton.TOGGLE_STYLE};
-	var listener = new AjxListener(this, this._fontStyleListener);
-	this._boldButton = new DwtToolBarButton(params);
-	this._boldButton.setImage("Bold");
-	this._boldButton.setToolTipContent(appCtxt.getShortcutHint("editor", DwtKeyMap.TEXT_BOLD));
-	this._boldButton.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.BOLD_STYLE);
-	this._boldButton.addSelectionListener(listener);
-
-	this._italicButton = new DwtToolBarButton(params);
-	this._italicButton.setImage("Italics");
-	this._italicButton.setToolTipContent(appCtxt.getShortcutHint("editor", DwtKeyMap.TEXT_ITALIC));
-	this._italicButton.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.ITALIC_STYLE);
-	this._italicButton.addSelectionListener(listener);
-
-	this._underlineButton = new DwtToolBarButton(params);
-	this._underlineButton.setImage("Underline");
-	this._underlineButton.setToolTipContent(appCtxt.getShortcutHint("editor", DwtKeyMap.TEXT_UNDERLINE));
-	this._underlineButton.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.UNDERLINE_STYLE);
-	this._underlineButton.addSelectionListener(listener);
+    this._createBUIButtons(tb);
 
 	appCtxt.notifyZimlets("on_htmlEditor_createToolbar1", [this, tb]);
 };
 
 ZmHtmlEditor.prototype._createToolBar2 =
 function(tb) {
-	this._fontColorButton = new ZmHtmlEditorColorPicker(tb,null,"ZToolbarButton");
-	this._fontColorButton.dontStealFocus();
-	this._fontColorButton.setImage("FontColor");
-	this._fontColorButton.showColorDisplay(true);
-	this._fontColorButton.setToolTipContent(ZmMsg.fontColor);
-	this._fontColorButton.addSelectionListener(new AjxListener(this, this._fontColorListener));
 
-	this._fontBackgroundButton = new ZmHtmlEditorColorPicker(tb, null, "ZToolbarButton");
-	this._fontBackgroundButton.dontStealFocus();
-	this._fontBackgroundButton.setImage("FontBackground");
-	this._fontBackgroundButton.showColorDisplay(true);
-	this._fontBackgroundButton.setToolTipContent(ZmMsg.fontBackground);
-	this._fontBackgroundButton.addSelectionListener(new AjxListener(this, this._fontHiliteListener));
+    this._createFontColorButtons(tb);
 
 	new DwtControl({parent:tb, className:"vertSep"});
 
-	var params = {parent:tb};
-	this._horizRuleButton = new DwtToolBarButton(params);
-	this._horizRuleButton.setImage("HorizRule");
-	this._horizRuleButton.setToolTipContent(ZmMsg.horizRule);
-	this._horizRuleButton.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.HORIZ_RULE);
-	this._horizRuleButton.addSelectionListener(new AjxListener(this, this._insElementListener));
+    this._createHorizRuleButton(tb);
 
-	this._insertLinkButton = new DwtToolBarButton(params);
-	this._insertLinkButton.setImage("URL");
-	this._insertLinkButton.setToolTipContent(ZmMsg.insertLink);
-	this._insertLinkButton.addSelectionListener(new AjxListener(this, this._insertLinkListener));
+    this._createUrlButton(tb);
 
-// BEGIN: Table operations
-	var b = new DwtToolBarButton(params);
-	b.setToolTipContent(ZmMsg.insertTable);
-	b.dontStealFocus();
-	b.setImage("Table");
-	var menu = new DwtMenu({parent:b});
-	b.setMenu(menu);
-
-	var item = new DwtMenuItem({parent:menu});
-	item.setText(ZmMsg.insertTable);
-	var grid_menu = new DwtMenu({parent:item, style:DwtMenu.GENERIC_WIDGET_STYLE});
-	var grid = new DwtGridSizePicker(grid_menu, ZmMsg.tableSize);
-	grid.addSelectionListener(new AjxListener(this, this._createTableListener));
-	item.setMenu(grid_menu);
-	item.setImage("InsertTable");
-
-	new DwtMenuItem({parent:menu, style:DwtMenuItem.SEPARATOR_STYLE});
-	this.__createTableOperationItems(menu);
-// END: table operations
+    this._createTableMenu(tb);
 
 	if (this.ACE_ENABLED) {
-		new DwtControl({parent:tb, className:"vertSep"});
-		params.style = 0;
-		var b = new DwtToolBarButton(params);
-		b.setImage("SpreadSheet");
-		b.setData("ACE", "ZmSpreadSheet");
-		b.setToolTipContent(ZmMsg.insertSpreadsheet);
-		b.addSelectionListener(new AjxListener(this, this._menu_insertObject));
+        this._createSpreadSheetButton();
 	}
 
 	appCtxt.notifyZimlets("on_htmlEditor_createToolbar2", [this, tb]);
@@ -1134,6 +1076,111 @@ function() {
 	}
 };
 
+//Editor Buttons
+
+ZmHtmlEditor.prototype._createBUIButtons =
+function(tb){
+
+    var params = {parent:tb, style:DwtButton.TOGGLE_STYLE};
+	var listener = new AjxListener(this, this._fontStyleListener);
+	this._boldButton = new DwtToolBarButton(params);
+	this._boldButton.setImage("Bold");
+	this._boldButton.setToolTipContent(appCtxt.getShortcutHint("editor", DwtKeyMap.TEXT_BOLD));
+	this._boldButton.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.BOLD_STYLE);
+	this._boldButton.addSelectionListener(listener);
+
+	this._italicButton = new DwtToolBarButton(params);
+	this._italicButton.setImage("Italics");
+	this._italicButton.setToolTipContent(appCtxt.getShortcutHint("editor", DwtKeyMap.TEXT_ITALIC));
+	this._italicButton.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.ITALIC_STYLE);
+	this._italicButton.addSelectionListener(listener);
+
+	this._underlineButton = new DwtToolBarButton(params);
+	this._underlineButton.setImage("Underline");
+	this._underlineButton.setToolTipContent(appCtxt.getShortcutHint("editor", DwtKeyMap.TEXT_UNDERLINE));
+	this._underlineButton.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.UNDERLINE_STYLE);
+	this._underlineButton.addSelectionListener(listener);
+
+};
+
+ZmHtmlEditor.prototype._createFontColorButtons =
+function(tb){
+
+    this._fontColorButton = new ZmHtmlEditorColorPicker(tb,null,"ZToolbarButton");
+    this._fontColorButton.dontStealFocus();
+    this._fontColorButton.setImage("FontColor");
+    this._fontColorButton.showColorDisplay(true);
+    this._fontColorButton.setToolTipContent(ZmMsg.fontColor);
+    this._fontColorButton.addSelectionListener(new AjxListener(this, this._fontColorListener));
+
+    this._fontBackgroundButton = new ZmHtmlEditorColorPicker(tb, null, "ZToolbarButton");
+    this._fontBackgroundButton.dontStealFocus();
+    this._fontBackgroundButton.setImage("FontBackground");
+    this._fontBackgroundButton.showColorDisplay(true);
+    this._fontBackgroundButton.setToolTipContent(ZmMsg.fontBackground);
+    this._fontBackgroundButton.addSelectionListener(new AjxListener(this, this._fontHiliteListener));
+
+};
+
+ZmHtmlEditor.prototype._createHorizRuleButton =
+function(tb){
+
+    var params = {parent:tb};
+    this._horizRuleButton = new DwtToolBarButton(params);
+    this._horizRuleButton.setImage("HorizRule");
+    this._horizRuleButton.setToolTipContent(ZmMsg.horizRule);
+    this._horizRuleButton.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.HORIZ_RULE);
+    this._horizRuleButton.addSelectionListener(new AjxListener(this, this._insElementListener));
+
+};
+
+ZmHtmlEditor.prototype._createUrlButton =
+function(tb){
+    var params = {parent:tb};
+    this._insertLinkButton = new DwtToolBarButton(params);
+	this._insertLinkButton.setImage("URL");
+	this._insertLinkButton.setToolTipContent(ZmMsg.insertLink);
+	this._insertLinkButton.addSelectionListener(new AjxListener(this, this._insertLinkListener));
+};
+
+ZmHtmlEditor.prototype._createTableMenu =
+function(tb){
+
+    var params = {parent:tb};
+    // BEGIN: Table operations
+    var b = this._tableMenu = new DwtToolBarButton(params);
+    b.setToolTipContent(ZmMsg.insertTable);
+    b.dontStealFocus();
+    b.setImage("Table");
+    var menu = new DwtMenu({parent:b});
+    b.setMenu(menu);
+
+    var item = new DwtMenuItem({parent:menu});
+    item.setText(ZmMsg.insertTable);
+    var grid_menu = new DwtMenu({parent:item, style:DwtMenu.GENERIC_WIDGET_STYLE});
+    var grid = new DwtGridSizePicker(grid_menu, ZmMsg.tableSize);
+    grid.addSelectionListener(new AjxListener(this, this._createTableListener));
+    item.setMenu(grid_menu);
+    item.setImage("InsertTable");
+
+    new DwtMenuItem({parent:menu, style:DwtMenuItem.SEPARATOR_STYLE});
+    this.__createTableOperationItems(menu);
+    // END: table operations
+};
+
+ZmHtmlEditor.prototype._createSpreadSheetButton =
+function(tb){
+
+    new DwtControl({parent:tb, className:"vertSep"});
+
+    var params = {parent:tb, style:0};
+    var b = new DwtToolBarButton(params);
+    b.setImage("SpreadSheet");
+    b.setData("ACE", "ZmSpreadSheet");
+    b.setToolTipContent(ZmMsg.insertSpreadsheet);
+    b.addSelectionListener(new AjxListener(this, this._menu_insertObject));
+};
+
 ZmHtmlEditor.prototype._createStyleMenu =
 function(tb) {
 	var s = new DwtToolBarButton({parent:tb});
@@ -1169,7 +1216,7 @@ function(tb) {
 
 ZmHtmlEditor.prototype._createListMenu =
 function(tb) {
-	var b = new DwtToolBarButton({parent:tb});
+	var b = this._listMenuButton = new DwtToolBarButton({parent:tb});
 	b.dontStealFocus();
 	b.setImage("BulletedList");
 	b.setToolTipContent(ZmMsg.bulletedList);
@@ -1189,7 +1236,7 @@ function(tb) {
 
 ZmHtmlEditor.prototype._createIndentMenu =
 function(tb) {
-	var b = new DwtToolBarButton({parent:tb});
+	var b = this._indentMenuButton = new DwtToolBarButton({parent:tb});
 	b.dontStealFocus();
 	b.setImage("Outdent");
 	b.setToolTipContent(ZmMsg.indentTooltip);

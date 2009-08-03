@@ -757,9 +757,25 @@ ZmSignatureEditor.prototype.TEXTAREA_CLASSNAME = "ZmSignatureEditorTextArea";
 
 ZmSignatureEditor.prototype._createToolbars = function(){
     if (!this._toolbar1) {
-        ZmHtmlEditor.prototype._createToolbars.call(this);
-        this._createUrlImageButton(this._toolbar1);
-        this._createImageButton(this._toolbar1);
+        ZmHtmlEditor.prototype._createToolbars.call(this, true);
+
+        //TODO: Need to clean up the code to follow ZCS Toolbar/Opertation model
+        var tb = this._toolbar1;
+        this._createFontFamilyMenu(tb);
+        this._createFontSizeMenu(tb);
+        this._createStyleMenu(tb);
+        this._createJustifyMenu(tb);
+        new DwtControl({parent:tb, className:"vertSep"});
+        this._createBUIButtons(tb);
+        new DwtControl({parent:tb, className:"vertSep"});
+        this._createFontColorButtons(tb);
+	    new DwtControl({parent:tb, className:"vertSep"});
+        this._createHorizRuleButton(tb);
+        this._createUrlButton(tb);
+        this._createUrlImageButton(tb);
+        this._createImageButton(tb);
+
+        this._resetFormatControls();
     }
 };
 
