@@ -673,9 +673,19 @@ function(ev, overview, treeItem, item) {
 				appCtxt.setActiveAccount(account);
 			}
 
-			this._itemClicked(item);
+			this._itemSelected(item);
 		}
 	}
+};
+
+ZmTreeController.prototype._itemSelected =
+function(item) {
+	if (item && item._showFoldersCallback) {
+		item._showFoldersCallback.run();
+	} else {
+		this._itemClicked(item);
+	}
+
 };
 
 /**
@@ -693,7 +703,7 @@ function(item, overview) {
 	if (overview._treeSelectionShortcutDelayActionId) {
 		AjxTimedAction.cancelAction(overview._treeSelectionShortcutDelayActionId);
 	}
-	this._itemClicked(item);
+	this._itemSelected(item);
 };
 
 /**

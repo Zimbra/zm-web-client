@@ -301,10 +301,6 @@ function(folder) {
 		// do nothing if Global Searches folder clicked
 		if (folder.nId == ZmOrganizer.ID_GLOBAL_SEARCHES) { return; }
 
-		if (folder._showFoldersCallback) {
-			folder._showFoldersCallback.run();
-			return;
-		}
 		var searchFor = ZmId.SEARCH_MAIL;
 		if (folder.isInTrash()) {
 			var app = appCtxt.getCurrentAppName();
