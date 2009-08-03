@@ -77,6 +77,7 @@ function(params, callback) {
 ZmPreferencesApp.prototype.getPrefController =
 function() {
 	if (!this._prefController) {
+		AjxDispatcher.require(["PreferencesCore", "Preferences"]);
 		this._prefController = new ZmPrefController(this._container, this);
 	}
 	return this._prefController;
