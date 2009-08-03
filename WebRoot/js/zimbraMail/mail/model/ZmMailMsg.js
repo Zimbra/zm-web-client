@@ -1576,20 +1576,23 @@ function(addrNodes, parentNode, isDraft, accountName) {
 		if (identity && identity.isFromDataSource && ac.get(ZmSetting.SEND_ON_BEHALF_OF)) {
 			var dataSource = ac.getDataSourceCollection().getById(identity.id);
 			if (dataSource) {
-				// main account is "sender"
-				addrNode.t = "s";
-				addrNode.p = addrNode.p || ac.get(ZmSetting.DISPLAY_NAME);
 				var provider = ZmDataSource.getProviderForAccount(dataSource);
-				if (provider && provider._nosender) {
-					addrNodes.pop();
+				var doNotAddSender = provider && provider._nosender;
+				// main account is "sender"
+				if (!doNotAddSender) {
+					addrNode.t = "s";
+					addrNode.p = addrNode.p || ac.get(ZmSetting.DISPLAY_NAME);
+
+					addrNode = {};
+					addrNodes.push(addrNode);
 				}
 				// mail is "from" external account
-				addrNode = {
-					t:"f",
-					a:dataSource.getEmail(),
-					p:name||dataSource.getName()
-				};
-				addrNodes.push(addrNode);
+				addrNode.t = "f";
+				addrNode.a = dataSource.getEmail();
+				addrNode.p = name || dataSource.getName();
+				if (provider && provider._nodisplayname) {
+					delete addrNode.p;
+				}
 			}
 		}
 	}
