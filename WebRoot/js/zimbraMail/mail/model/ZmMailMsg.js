@@ -67,6 +67,17 @@ ZmMailMsg.HDR_KEY[ZmMailMsg.HDR_SENDER]		= ZmMsg.sender;
 ZmMailMsg.HDR_KEY[ZmMailMsg.HDR_DATE]		= ZmMsg.sentAt;
 ZmMailMsg.HDR_KEY[ZmMailMsg.HDR_SUBJECT]	= ZmMsg.subject;
 
+ZmMailMsg.STATUS_ICON = {};
+ZmMailMsg.STATUS_ICON["isDraft"]		= "MsgStatusDraft";
+ZmMailMsg.STATUS_ICON["isReplied"]		= "MsgStatusReply";
+ZmMailMsg.STATUS_ICON["isForwarded"]	= "MsgStatusForward";
+ZmMailMsg.STATUS_ICON["isSent"]			= "MsgStatusSent";
+ZmMailMsg.STATUS_ICON["isUnread"]		= "MsgStatusUnread";
+
+ZmMailMsg.STATUS_ICON[ZmCalendarApp.STATUS_CANC] = "CalInviteDeclined";
+ZmMailMsg.STATUS_ICON[ZmCalendarApp.STATUS_CONF] = "CalInviteAccepted";
+ZmMailMsg.STATUS_ICON[ZmCalendarApp.STATUS_TENT] = "CalInviteTentative";
+
 ZmMailMsg.URL_RE = /((telnet:)|((https?|ftp|gopher|news|file):\/\/)|(www\.[\w\.\_\-]+))[^\s\xA0\(\)\<\>\[\]\{\}\'\"]*/i;
 
 ZmMailMsg.CONTENT_PART_ID = "ci";
@@ -1627,15 +1638,19 @@ function(what, a, b, c) {
 
 ZmMailMsg.prototype.getStatusIcon =
 function() {
-	var imageInfo;
-	if (this.isInvite() && appCtxt.get(ZmSetting.CALENDAR_ENABLED))		{ imageInfo = "Appointment"; }
-	else if (this.isDraft)		{ imageInfo = "MsgStatusDraft"; }
-	else if (this.isReplied)	{ imageInfo = "MsgStatusReply"; }
-	else if (this.isForwarded)	{ imageInfo = "MsgStatusForward"; }
-	else if (this.isSent)		{ imageInfo = "MsgStatusSent"; }
-	else						{ imageInfo = this.isUnread ? "MsgStatusUnread" : "MsgStatusRead"; }
 
-	return imageInfo;
+	if (this.isInvite() && appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
+		var status = this.invite.getStatus();
+		return ZmMailMsg.STATUS_ICON[status] || "Appointment";
+	}
+
+	for (var status in ZmMailMsg.STATUS_ICON) {
+		if (this[status]) {
+			return ZmMailMsg.STATUS_ICON[status];
+		}
+	}
+
+	return "MsgStatusRead";
 };
 
 ZmMailMsg.prototype.notifyModify =
