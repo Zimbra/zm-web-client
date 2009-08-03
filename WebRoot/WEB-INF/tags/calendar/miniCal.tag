@@ -1,23 +1,5 @@
-<%--
- * ***** BEGIN LICENSE BLOCK *****
- * 
- * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008 Zimbra, Inc.
- * 
- * The contents of this file are subject to the Yahoo! Public License
- * Version 1.0 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
- * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
- * ***** END LICENSE BLOCK *****
---%>
 <%@ tag body-content="empty" %>
 <%@ attribute name="date" rtexprvalue="true" required="true" type="java.util.Calendar" %>
-<%@ attribute name="rangeDate" rtexprvalue="true" required="false" type="java.util.Calendar"%>
-<%@ attribute name="print" rtexprvalue="true" required="false" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
@@ -37,7 +19,7 @@
     <fmt:message var="dayFormat" key="CAL_MINICAL_DAY_FORMAT"/>
     <fmt:formatDate var="title" value="${date.time}" pattern="${titleFormat}"/>
     <c:set var="today" value="${zm:getToday(timezone)}"/>
-    <c:set var="rangeStart" value="${zm:getFirstDayOfMultiDayView((not empty rangeDate) ? rangeDate : date, mailbox.prefs.calendarFirstDayOfWeek, view)}"/>
+    <c:set var="rangeStart" value="${zm:getFirstDayOfMultiDayView(date, mailbox.prefs.calendarFirstDayOfWeek, view)}"/>
     <c:choose>
         <c:when test="${view eq 'week' or view eq 'workWeek'}">
             <c:set var="rangeEnd" value="${zm:addDay(rangeStart, view eq 'week' ? 7 : 5)}"/>
@@ -57,32 +39,26 @@
 <table width="100%" style='height:100%;' border="0" cellspacing='0' cellpadding='0'>
     <tr class='ZhCalMiniTitlebar'>
         <td align=center>
-            <c:if test="${not print}">
             <app:calendarUrl var="prevYear" timezone="${timezone}" rawdate="${zm:addYear(date,-1)}"/>
-            <a href="${fn:escapeXml(prevYear)}"><app:img altkey="ALT_CAL_MINI_PREV_YEAR" src="startup/ImgFastRevArrowSmall.gif" border="0"/></a>
-            </c:if>
+            <a href="${fn:escapeXml(prevYear)}"><app:img altkey="ALT_CAL_MINI_PREV_YEAR" src="dwt/ImgFastRevArrowSmall.gif" border="0"/></a>
         </td>
         <td align=center>
-            <c:if test="${not print}">
             <app:calendarUrl var="prevMonth" timezone="${timezone}" rawdate="${zm:addMonth(date,-1)}"/>
-            <a href="${fn:escapeXml(prevMonth)}"><app:img altkey="ALT_CAL_MINI_PREV_MONTH" src="startup/ImgRevArrowSmall.gif" border="0"/></a>
-             </c:if>
+            <a href="${fn:escapeXml(prevMonth)}"><app:img altkey="ALT_CAL_MINI_PREV_MONTH" src="dwt/ImgRevArrowSmall.gif" border="0"/></a>
         </td>
         <app:calendarUrl var="todayUrl" nodate="true"/>
         <td align=center nowrap colspan=3 class='ZhCalMiniTitleCell'>
-            <c:if test="${not print}"><a href="${fn:escapeXml(todayUrl)}"></c:if>${fn:replace(fn:escapeXml(title),' ','&nbsp;')} <c:if test="${not print}"></a></c:if>
+            <a href="${fn:escapeXml(todayUrl)}">${fn:replace(fn:escapeXml(title),' ','&nbsp;')}</a>
         </td>
         <td align=center>
-            <c:if test="${not print}">
             <app:calendarUrl var="nextMonth" timezone="${timezone}" rawdate="${zm:addMonth(date,1)}"/>
-             <a href="${fn:escapeXml(nextMonth)}"><app:img altkey="ALT_CAL_MINI_NEXT_MONTH" src="startup/ImgFwdArrowSmall.gif" border="0"/></a>
-            </c:if>
+             <a href="${fn:escapeXml(nextMonth)}"><app:img altkey="ALT_CAL_MINI_NEXT_MONTH" src="dwt/ImgFwdArrowSmall.gif" border="0"/></a>
+
         </td>
         <td align=center>
-            <c:if test="${not print}">
             <app:calendarUrl var="nextYear" timezone="${timezone}" rawdate="${zm:addYear(date,1)}"/>
-             <a href="${fn:escapeXml(nextYear)}"><app:img altkey="ALT_CAL_MINI_NEXT_YEAR" src="startup/ImgFastFwdArrowSmall.gif" border="0"/></a>
-            </c:if>
+             <a href="${fn:escapeXml(nextYear)}"><app:img altkey="ALT_CAL_MINI_NEXT_YEAR" src="dwt/ImgFastFwdArrowSmall.gif" border="0"/></a>
+
         </td>
     </tr>
     <tr>
@@ -117,9 +93,9 @@
             <c:set var="hasappt" value="${appts.days[dayKey]}"/>
             <td align=center class='${clazz}${hasappt ? " ZhCalMDHA" : ""}${(currentDay.timeInMillis ge rangeStart.timeInMillis and currentDay.timeInMillis lt rangeEnd.timeInMillis) ? ' ZhCalMDS':''}'>
                 <app:calendarUrl var="dayUrl" timezone="${timezone}" rawdate="${currentDay}"/>
-                <c:if test="${not print}"><a href="${fn:escapeXml(dayUrl)}"></c:if>
+                <a href="${fn:escapeXml(dayUrl)}">
                 <fmt:formatDate value="${currentDay.time}" pattern="${dayFormat}"/>
-                <c:if test="${not print}"></a></c:if>
+                </a>
             </td>
             ${zm:getNextDay(currentDay)}
         </c:forEach>

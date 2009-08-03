@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -23,11 +25,6 @@ ZmRosterItemList.prototype.constructor = ZmRosterItemList;
 ZmRosterItemList.prototype.toString =
 function() {
 	return "ZmRosterItemList";
-};
-
-ZmRosterItemList.prototype.setLoaded =
-function() {
-	this._notify(ZmEvent.E_LOAD);
 };
 
 ZmRosterItemList.prototype.addItem = function(item, skipNotify, index) {
@@ -55,7 +52,7 @@ ZmRosterItemList.prototype.removeItem = function(item, skipNotify) {
 
 ZmRosterItemList.prototype.getByAddr =
 function(addr) {
-    return this.getById(addr.toLowerCase());
+    return this.getById(addr);
 };
 
 /**

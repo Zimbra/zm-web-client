@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -138,10 +140,10 @@ ZmDataSourceCollection.prototype.getByFolderId = function(folderId, type) {
 
 ZmDataSourceCollection.prototype.add = function(item) {
 	this._itemMap[item.id] = item;
-	if (item.type == ZmAccount.TYPE_POP) {
+	if (item.type == ZmAccount.POP) {
 		this._pop3Map[item.id] = item;
 	}
-	else if (item.type == ZmAccount.TYPE_IMAP) {
+	else if (item.type == ZmAccount.IMAP) {
 		this._imapMap[item.id] = item;
 	}
 	appCtxt.getIdentityCollection().add(item.getIdentity());
@@ -204,11 +206,14 @@ ZmDataSourceCollection.prototype.initialize = function(dataSources) {
 			var dataSource = errors[i];
 			var timestamp = Number(dataSource.failingSince);
 			var lastError = dataSource.lastError;
-			var params = [
-				AjxStringUtil.htmlEncode(dataSource.getName()), new Date(timestamp * 1000),
-				AjxStringUtil.htmlEncode(lastError)
-			];
-			array.push(AjxMessageFormat.format(ZmMsg.dataSourceFailureItem, params));
+			if (isNaN(timestamp)) {
+				var pattern = ZmMsg.dataSourceFailureItem_noDate;
+				var params = [AjxStringUtil.htmlEncode(dataSource.getName()), AjxStringUtil.htmlEncode(lastError)];
+			} else {
+				var pattern = ZmMsg.dataSourceFailureItem;
+				var params = [AjxStringUtil.htmlEncode(dataSource.getName()), new Date(timestamp * 1000), AjxStringUtil.htmlEncode(lastError)];
+			}
+			array.push(AjxMessageFormat.format(pattern, params));
 		}
 		array.push(ZmMsg.dataSourceFailureInstructions);
 		var message = array.join("");

@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -17,8 +19,7 @@
  * Creates an empty ZmDialog.
  * @constructor
  * @class
- * This class is a base class for miscellaneous organizer-related dialogs. An instance
- * of this class can be re-used to show different overviews.
+ * This class is a base class for miscellaneous organizer-related dialogs.
  *
  * @author Conrad Damon
  *
@@ -45,8 +46,7 @@ ZmDialog = function(params) {
 
 	this._overview = {};
 	this._opc = appCtxt.getOverviewController();
-
-	this._baseTabGroupSize = this._tabGroup.size();
+	this._tabGroupComplete = false;
 };
 
 ZmDialog.prototype = new DwtDialog;
@@ -70,15 +70,16 @@ function(newView, noReset) {
 
 ZmDialog.prototype.popup =
 function() {
-	// Bug 38281: for multiuse dialogs, we need to re-add the discretionary
-	// tab stops to the base list (the dialog buttons)
-	this._tabGroup.__members._array.splice(this._baseTabGroupSize);
-	this._tabGroup.addMember(this._getTabGroupMembers());
-
-	DwtDialog.prototype.popup.call(this);
-	if (this._focusElement) {
-		appCtxt.getKeyboardMgr().grabFocus(this._focusElement);
+	if (!this._tabGroupComplete) {
+		// tab group filled in here rather than in the constructor b/c we need
+		// all the content fields to have been created
+		var members = this._getTabGroupMembers();
+		for (var i = 0; i < members.length; i++) {
+			this._tabGroup.addMember(members[i], i);
+		}
+		this._tabGroupComplete = true;
 	}
+	DwtDialog.prototype.popup.call(this);
 };
 
 ZmDialog.prototype.reset =
@@ -96,10 +97,20 @@ function() {
 
 ZmDialog.prototype._setNameField =
 function(fieldId) {
-	this._nameField = this._focusElement = document.getElementById(fieldId);
-	if (this._enterListener) {
-		this.addEnterListener(new AjxListener(this, this._enterListener));
+	this._nameField = document.getElementById(fieldId);
+	if (this._nameField) {
+		this._focusElementId = fieldId;
 	}
+	this.addEnterListener(new AjxListener(this, this._enterListener));
+};
+
+/**
+ * Returns a unique ID for this dialog's overview.
+ */
+ZmDialog.prototype.getOverviewId =
+function() {
+	var base = this.toString();
+	return appCtxt.multiAccounts ? [base, appCtxt.getActiveAccount().name].join(":") : base;
 };
 
 /**
@@ -115,52 +126,25 @@ function(fieldId) {
  *        fieldId		[string]			DOM ID of element that contains overview
  *        overviewId	[string]*			ID for the overview
  *        noRootSelect	[boolean]*			if true, don't make root tree item(s) selectable
- * @param forceSingle	[boolean]*			if true, don't make multi-account overviews
+ *        account		[ZmZimbraAccount]*	account this overview belongs to
  */
 ZmDialog.prototype._setOverview =
-function(params, forceSingle) {
-	// todo - refactor repetitive code(?)
-
-	// multi-account uses overview container
-	if (appCtxt.multiAccounts && !forceSingle) {
-		// use overviewId as the containerId; container will assign overviewId's
-		var containerId = params.overviewId;
-		var ovContainer = this._opc.getOverviewContainer(containerId);
-		if (!ovContainer) {
-			var ovParams = {
-				overviewClass:	"dialogOverviewContainer",
-				headerClass:	"DwtTreeItem",
-				noTooltips:		true,
-				treeStyle:		params.treeStyle,
-				treeIds:		params.treeIds,
-				overviewTrees:	params.overviewTrees,
-				omit:			params.omit,
-				omitPerAcct:	params.omitPerAcct
-			};
-			ovContainer = this._opc.createOverviewContainer({containerId:containerId}, ovParams);
-			ovContainer.setSize(Dwt.DEFAULT, "200");
-			document.getElementById(params.fieldId).appendChild(ovContainer.getHtmlElement());
-		}
-		return ovContainer;
-	}
-
-	// single-account overview handling
-	var overviewId = params.overviewId;
+function(params) {
+	var overviewId = params.overviewId || this.getOverviewId();
 	var overview = this._opc.getOverview(overviewId);
 	if (!overview) {
 		var ovParams = {
-			overviewId:		overviewId,
-			overviewClass:	"dialogOverview",
-			headerClass:	"DwtTreeItem",
-			noTooltips:		true,
-			treeStyle:		params.treeStyle,
-			treeIds:		params.treeIds
+			overviewId: overviewId,
+			overviewClass: "dialogOverview",
+			headerClass: "DwtTreeItem",
+			noTooltips: true
 		};
 		overview = this._overview[overviewId] = this._opc.createOverview(ovParams);
-		this._renderOverview(overview, params.treeIds, params.omit, params.noRootSelect);
+		this._renderOverview(overview, params.treeIds, params.omit, params.noRootSelect, params.account);
 		document.getElementById(params.fieldId).appendChild(overview.getHtmlElement());
+	} else if (params.account) {
+		overview.account = params.account;
 	}
-
 	// make the current overview the only visible one
 	if (overviewId != this._curOverviewId) {
 		for (var id in this._overview) {
@@ -168,8 +152,6 @@ function(params, forceSingle) {
 		}
 		this._curOverviewId = overviewId;
 	}
-
-	return overview;
 };
 
 /**
@@ -181,10 +163,11 @@ function(params, forceSingle) {
  * @param treeIds		[array]				list of tree views to show
  * @param omit			[hash]*				IDs of organizers to exclude
  * @param noRootSelect	[boolean]*			if true, don't make root tree item(s) selectable
+ * @param account		[ZmZimbraAccount]*	account this overview belongs to
  */
 ZmDialog.prototype._renderOverview =
-function(overview, treeIds, omit, noRootSelect) {
-	overview.set(treeIds, omit, true);
+function(overview, treeIds, omit, noRootSelect, account) {
+	overview.set(treeIds, omit, account);
 	if (!noRootSelect) {
 		for (var i = 0; i < treeIds.length; i++) {
 			var treeView = overview.getTreeView(treeIds[i]);

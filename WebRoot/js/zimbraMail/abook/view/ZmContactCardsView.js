@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -175,7 +177,7 @@ function() {
 			if (el) {
 				el.innerHTML = this._createItemHtml(contact);
 				var div = document.getElementById(this._getItemId(contact));
-				this.associateItemWithElement(contact, div);
+				this.associateItemWithElement(contact, div, DwtListView.TYPE_LIST_ITEM);
 			}
 		}
 	} else {
@@ -321,6 +323,46 @@ function(ev, treeView) {
 
 // Static methods
 
+ZmContactCardsView.getPrintHtml =
+function(list) {
+
+	var html = [];
+	var idx = 0;
+	var list = list.getArray();
+
+	html[idx++] = "<table border=0 style='width:6.5in'>";
+
+	for (var i = 0; i < list.length; i++) {
+		var contact = list[i];
+
+		// dont include contacts in trash folder
+		if (contact.addrbook && contact.addrbook.isInTrash())
+			continue;
+
+		// add a new row every 3 columns
+		if ((i % 3) == 0)
+			html[idx++] = "<tr>";
+		html[idx++] = "<td valign=top height=100%>";
+
+		html[idx++] = "<div style='width:2.2in; border:1px solid #CCCCCC;overflow-x:hidden;'>";
+		html[idx++] = contact.isGroup()
+			? ZmGroupView.getPrintHtml(contact, true)
+			: ZmContactView.getPrintHtml(contact, true);
+		html[idx++] = "</div>";
+
+		html[idx++] = "</td>";
+		if (((i+1) % 3) == 0)
+			html[idx++] = "</tr>";
+	}
+
+	if ((i % 3) != 0)
+		html[idx++] = "</tr>";
+
+	html[idx++] = "</table>";
+
+	return html.join("");
+};
+
 ZmContactCardsView._loadContact =
 function(cell, contactId) {
 	var contact = appCtxt.cacheGet(contactId);
@@ -337,8 +379,6 @@ function(cell, contactId) {
 
 ZmContactCardsView._moreDetailsCallback =
 function(contactId) {
-	var contact = appCtxt.getById(contactId);
-	if (contact) {
-		AjxDispatcher.run("GetContactController").show(contact);
-	}
+	var contact = AjxDispatcher.run("GetContacts").getById(contactId);
+	AjxDispatcher.run("GetContactController").show(contact);
 };

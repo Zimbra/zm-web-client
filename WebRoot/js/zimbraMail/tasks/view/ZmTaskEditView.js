@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008 Zimbra, Inc.
+ * Copyright (C) 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -136,12 +138,10 @@ function() {
 	var subj = AjxStringUtil.trim(this._subjectField.getValue());
 
 	if (subj && subj.length) {
-		var endDate = this._endDateField.value;
-		if (endDate.length > 0 &&
-			(!ZmTimeSelect.validStartEnd(this._startDateField, this._endDateField)))
-		{
-			errorMsg = ZmMsg.errorInvalidDates;
+        if (!ZmTimeSelect.validStartEnd(this._startDateField, this._endDateField) ) {
+				errorMsg = ZmMsg.errorInvalidDates;
 		}
+
     } else {
 		errorMsg = ZmMsg.errorMissingSubject;
 	}
@@ -211,17 +211,11 @@ function(width) {
 
 	// add percent complete DwtSelect
 	this._pCompleteSelect = new DwtSelect({parent:this});
-    var formatter = new AjxMessageFormat(AjxMsg.percentageString);
 	for (var i = 0; i <= 100; i += ZmTask.PCOMPLETE_INT) {
-		this._pCompleteSelect.addOption((formatter.format(i)), i==0, i);
+		this._pCompleteSelect.addOption((i+"%"), i==0, i);
 	}
 	this._pCompleteSelect.addChangeListener(listener);
 	this._pCompleteSelect.reparentHtmlElement(this._htmlElId + "_complete");
-};
-
-ZmTaskEditView.prototype._getFolderPickerTreeIds =
-function() {
-	return [ZmOrganizer.TASKS];
 };
 
 ZmTaskEditView.prototype._addEventHandlers =
@@ -258,11 +252,7 @@ function(excludeAttendees) {
 	vals.push(this._subjectField.getValue());
 	vals.push(this._location.getValue());
 	vals.push(this._prioritySelect.getValue());
-	if (this._folderSelect) {
-		vals.push(this._folderSelect.getValue());
-	} else if (this._folderPickedId) {
-		vals.push(this._folderPickedId);
-	}
+	vals.push(this._folderSelect.getValue());
 	vals.push("" + this._statusCheckbox.checked);
 	vals.push(this._pCompleteSelect.getValue());
 	vals.push(this._statusSelect.getValue());

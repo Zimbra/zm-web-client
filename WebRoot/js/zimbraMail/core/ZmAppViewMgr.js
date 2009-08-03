@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,78 +11,73 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
 /**
- * Creates a layout manager from the given components.
- * @constructor
- * @class
- * <p>This class performs view and layout management. It expects there to be an HTML "skin" with
- * containers for various components. A container is an empty DIV with a known ID, so that we
- * can use it to place the corresponding component's content. A component is a widget; it is
- * the widget's HTML element that is positioned and sized based on the container's location and
- * size. The containers are part of the flow (they are positioned relatively), so their location
- * and size should be adjusted when necessary by the browser. The components are not children of
- * their containers within the DOM tree; they are children of the shell, and are positioned
- * absolutely. There appears to be a performance gain in keeping our HTML elements closer to the
- * top of the DOM tree, possibly because events do not propagate as far.
- *</p>
- *
- * <p>The following containers/components are supported:</p>
- *
- * <p><ul>
- *  <li>banner: displays logo</li>
- *  <li>user info: shows user name and quota info</li>
- *  <li>search bar: a text input and a few buttons</li>
- *  <li>search builder: a tool that helps the user construct a search query (initially hidden)</li>
- *  <li>search builder toolbar: toolbar for the search builder (initially hidden)</li>
- *  <li>current app: displays the name of the current app and its custom View menu (if any)</li>
- *  <li>app chooser: a vertical toolbar with buttons for changing apps, as well as Help etc.</li>
- *  <li>tree: displays folders, saved searches, and tags</li>
- *  <li>tree footer: displays mini-calendar (initially hidden)</li>
- *  <li>status: displays status messages</li>
- *  <li>sash: a thin moveable vertical bar for resizing the surrounding elements; it sits
- *            between the tree and the app content</li>
- *  <li>top toolbar: a view-specific toolbar</li>
- *  <li>app content: used to present data to the user</li>
- *  <li>bottom toolbar: not currently used</li>
- * </ul></p>
- *
- * <p>In general, the app view manager responds to changes in the skin by having each of the
- * affected components adapt to its container's new location and/or size. That means that
- * we are dependent on the browser to relocate and resize the containers within the skin
- * appropriately.</p>
- *
- * <p>The top and bottom toolbars and the app content are treated somewhat differently: they
- * come under the purview of "app view management". In general, an application represents a
- * view with a toolbar and a content area (which is often a list view). App view management
- * allows these views to be pushed and popped as if they were in a stack. That way, the views
- * only need be constructed once each.</p>
- *
- * <p>The app view components are hidden and shown using two methods: z-index and
- * relocation. Since every component hangs off the shell, it must have a z-index of at least Z_VIEW
- * (300) to be visible. It can be hidden by setting its z-index to Z_HIDDEN (100). Since
- * both IE and Firefox have display bugs related to the use of z-index, we use relocation as
- * well: a hidden component is positioned way off the screen. (In IE, SELECT fields don't
- * obey z-index, and in Firefox, the cursor bleeds through.)</p>
- *
- * <p>In the current model of view management, each type of view (see ZmController) has only one
- * instance at a given time. For example, we only ever track a single conv view. If we decide to do
- * view caching, the model would have to change so that we can have multiple instances of views.</p>
- *
- * <p>Views can open in a tab (in the row of app buttons) rather than replacing the current view. Those
- * are handled in essentially the same way (view push and pop), but they also manage the app button.
- * We currently manage only a single view in a tab. Stacking views within tabs is possible, but adds a
- * lot of complexity.
- *
- * @author Conrad Damon
- * 
- * @param shell			the outermost containing element
- * @param controller		the app controller
- * @param isNewWindow	true if we are a child window of the main app
- * @param hasSkin		true if the app has provided containing HTML
- */
+* Creates a layout manager from the given components.
+* @constructor
+* @class
+* <p>This class performs view and layout management. It expects there to be an HTML "skin" with
+* containers for various components. A container is an empty DIV with a known ID, so that we
+* can use it to place the corresponding component's content. A component is a widget; it is
+* the widget's HTML element that is positioned and sized based on the container's location and
+* size. The containers are part of the flow (they are positioned relatively), so their location
+* and size should be adjusted when necessary by the browser. The components are not children of
+* their containers within the DOM tree; they are children of the shell, and are positioned 
+* absolutely. There appears to be a performance gain in keeping our HTML elements closer to the
+* top of the DOM tree, possibly because events do not propagate as far.
+</p>
+* 
+* <p>The following containers/components are supported:</p>
+*
+* <p><ul>
+*  <li>banner: displays logo</li>
+*  <li>user info: shows user name and quota info</li>
+*  <li>search bar: a text input and a few buttons</li>
+*  <li>search builder: a tool that helps the user construct a search query (initially hidden)</li>
+*  <li>search builder toolbar: toolbar for the search builder (initially hidden)</li>
+*  <li>current app: displays the name of the current app and its custom View menu (if any)</li>
+*  <li>app chooser: a vertical toolbar with buttons for changing apps, as well as Help etc.</li>
+*  <li>tree: displays folders, saved searches, and tags</li>
+*  <li>tree footer: displays mini-calendar (initially hidden)</li>
+*  <li>status: displays status messages</li>
+*  <li>sash: a thin moveable vertical bar for resizing the surrounding elements; it sits
+*            between the tree and the app content</li>
+*  <li>top toolbar: a view-specific toolbar</li>
+*  <li>app content: used to present data to the user</li>
+*  <li>bottom toolbar: not currently used</li>
+* </ul></p>
+*
+* <p>In general, the app view manager responds to changes in the skin by having each of the
+* affected components adapt to its container's new location and/or size. That means that
+* we are dependent on the browser to relocate and resize the containers within the skin
+* appropriately.</p>
+*
+* <p>The top and bottom toolbars and the app content are treated somewhat differently: they
+* come under the purview of "app view management". In general, an application represents a
+* view with a toolbar and a content area (which is often a list view). App view management
+* allows these views to be pushed and popped as if they were in a stack. That way, the views
+* only need be constructed once each.</p>
+*
+* <p>The app view components are hidden and shown using two methods: z-index and 
+* relocation. Since every component hangs off the shell, it must have a z-index of at least Z_VIEW
+* (300) to be visible. It can be hidden by setting its z-index to Z_HIDDEN (100). Since
+* both IE and Firefox have display bugs related to the use of z-index, we use relocation as
+* well: a hidden component is positioned way off the screen. (In IE, SELECT fields don't 
+* obey z-index, and in Firefox, the cursor bleeds through.)</p>
+*
+* <p>In the current model of view management, each type of view (see ZmController) has only one
+* instance at a given time. For example, we only ever track a single conv view. If we decide to do
+* view caching, the model would have to change so that we can have multiple instances of views.</p>
+*
+* @author Conrad Damon
+* @param shell			the outermost containing element
+* @param controller		the app controller
+* @param isNewWindow	true if we are a child window of the main app
+* @param hasSkin		true if the app has provided containing HTML
+*/
 ZmAppViewMgr = function(shell, controller, isNewWindow, hasSkin) {
 
 	ZmAppViewMgr._setContainerIds();
@@ -100,32 +96,27 @@ ZmAppViewMgr = function(shell, controller, isNewWindow, hasSkin) {
 		this._historyMgr = appCtxt.getHistoryMgr();
 		this._historyMgr.addListener(new AjxListener(this, this._historyChangeListener));
 	}
-	this._hashView				= {};		// matches numeric hash to its view
-	this._nextHashIndex			= 0;		// index for adding to browser history stack
-	this._curHashIndex			= 0;		// index of current location in browser history stack
-	this._noHistory				= false;	// flag to prevent history ops as result of programmatic push/pop view
-	this._ignoreHistoryChange	= false;	// don't push/pop view as result of history.back() or history.forward()
+	this._hashView = {};				// matches numeric hash to its view
+	this._nextHashIndex = 0;			// index for adding to browser history stack
+	this._curHashIndex = 0;				// index of current location in browser history stack
+	this._noHistory = false;			// flag to prevent history ops as result of programmatic push/pop view
+	this._ignoreHistoryChange = false;	// don't push/pop view as result of history.back() or history.forward()
 
-	this._lastView		= null;	// ID of previously visible view
-	this._currentView	= null;	// ID of currently visible view
+	this._lastView = null;		// ID of previously visible view
+	this._currentView = null;	// ID of currently visible view
+	this._views = {};			// hash that gives names to app views
+	this._hidden = [];			// stack of views that aren't visible
+	
+	this._appView = {};			// hash matching an app name to its current main view
+	this._callbacks = {};		// view callbacks for when its state changes between hidden and shown
+	this._viewApp = {};			// hash matching view names to their owning apps
+	this._isAppView = {};		// names of top-level app views
+	this._isTransient = {};		// views we don't put on hidden stack
+	this._toRemove = [];		// views to remove from hidden on next view push
 
-	this._views			= {};	// hash that gives names to app views
-	this._hidden		= [];	// stack of views that aren't visible
-
-	this._appView		= {};	// hash matching an app name to its current main view
-	this._callbacks		= {};	// view callbacks for when its state changes between hidden and shown
-	this._viewApp		= {};	// hash matching view names to their owning apps
-	this._isAppView		= {};	// names of top-level app views
-	this._isTransient	= {};	// views we don't put on hidden stack
-	this._toRemove		= [];	// views to remove from hidden on next view push
-
-	this._isTabView		= {};	// views that open in tabs, rather than stacking
-	this._tabParams		= {};	// params for app tab button
-	this._viewByTabId	= {};	// view for the given tab
-
-	this._components	= {};	// component objects (widgets)
-	this._containers	= {};	// containers within the skin
-	this._contBounds	= {};	// bounds for the containers
+	this._components = {};		// component objects (widgets)
+	this._containers = {};		// containers within the skin
+	this._contBounds = {};		// bounds for the containers
 
 	// view pre-emption
 	this._pushCallback = new AjxCallback(this, this.pushView);
@@ -138,9 +129,12 @@ ZmAppViewMgr = function(shell, controller, isNewWindow, hasSkin) {
 ZmAppViewMgr.C_BANNER					= "banner";
 ZmAppViewMgr.C_USER_INFO				= "userInfo";
 ZmAppViewMgr.C_QUOTA_INFO				= "quota";
+ZmAppViewMgr.C_OFFLINE_STATUS			= "offlineStatus";
+ZmAppViewMgr.C_PRESENCE					= "presence";
 ZmAppViewMgr.C_SEARCH					= "search";
 ZmAppViewMgr.C_SEARCH_BUILDER			= "searchBuilder";
 ZmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR	= "searchBuilderToolbar";
+ZmAppViewMgr.C_CURRENT_APP				= "appView";
 ZmAppViewMgr.C_APP_CHOOSER				= "appChooser";
 ZmAppViewMgr.C_TREE						= "tree";
 ZmAppViewMgr.C_TREE_FOOTER				= "treeFooter";
@@ -150,29 +144,27 @@ ZmAppViewMgr.C_APP_CONTENT				= "main";
 ZmAppViewMgr.C_APP_CONTENT_FULL			= "fullScreen";
 ZmAppViewMgr.C_STATUS					= "status";
 ZmAppViewMgr.C_SASH						= "sash";
-ZmAppViewMgr.C_TASKBAR					= "taskbar";
 ZmAppViewMgr.C_FOOTER					= "footer";
 ZmAppViewMgr.C_AD						= "adsrvc";
 
-ZmAppViewMgr.ALL_COMPONENTS = [
-	ZmAppViewMgr.C_BANNER, ZmAppViewMgr.C_USER_INFO, ZmAppViewMgr.C_QUOTA_INFO,
-	ZmAppViewMgr.C_SEARCH, ZmAppViewMgr.C_SEARCH_BUILDER,
-	ZmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR,
-	ZmAppViewMgr.C_APP_CHOOSER, ZmAppViewMgr.C_TREE, ZmAppViewMgr.C_TREE_FOOTER,
-	ZmAppViewMgr.C_TOOLBAR_TOP, ZmAppViewMgr.C_TOOLBAR_BOTTOM,
-	ZmAppViewMgr.C_APP_CONTENT, ZmAppViewMgr.C_APP_CONTENT_FULL,
-	ZmAppViewMgr.C_STATUS, ZmAppViewMgr.C_SASH, ZmAppViewMgr.C_TASKBAR, ZmAppViewMgr.C_FOOTER, ZmAppViewMgr.C_AD
-];
+ZmAppViewMgr.ALL_COMPONENTS = [ZmAppViewMgr.C_BANNER, ZmAppViewMgr.C_USER_INFO, ZmAppViewMgr.C_QUOTA_INFO,
+							   ZmAppViewMgr.C_OFFLINE_STATUS, ZmAppViewMgr.C_PRESENCE,
+							   ZmAppViewMgr.C_SEARCH, ZmAppViewMgr.C_SEARCH_BUILDER,
+							   ZmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR, ZmAppViewMgr.C_CURRENT_APP,
+							   ZmAppViewMgr.C_APP_CHOOSER, ZmAppViewMgr.C_TREE, ZmAppViewMgr.C_TREE_FOOTER,
+							   ZmAppViewMgr.C_TOOLBAR_TOP, ZmAppViewMgr.C_TOOLBAR_BOTTOM,
+							   ZmAppViewMgr.C_APP_CONTENT, ZmAppViewMgr.C_APP_CONTENT_FULL,
+                               ZmAppViewMgr.C_STATUS, ZmAppViewMgr.C_SASH, ZmAppViewMgr.C_FOOTER, ZmAppViewMgr.C_AD];
 
 /**
- * These components are the ones that are NOT part of the app display when
+ * These components are the ones that are part of the app display when NOT
  * in full screen mode.
  */
 ZmAppViewMgr.APP_COMPONENTS = [
-	ZmAppViewMgr.C_TREE,
-	ZmAppViewMgr.C_TREE_FOOTER,
-	ZmAppViewMgr.C_STATUS,
-	ZmAppViewMgr.C_SASH
+    ZmAppViewMgr.C_CURRENT_APP,
+    ZmAppViewMgr.C_TREE, ZmAppViewMgr.C_TREE_FOOTER,
+    ZmAppViewMgr.C_OFFLINE_STATUS, ZmAppViewMgr.C_STATUS,
+	ZmAppViewMgr.C_SASH, ZmAppViewMgr.C_PRESENCE
 ];
 
 // keys for getting container IDs
@@ -191,16 +183,17 @@ ZmAppViewMgr.PENDING_VIEW = "ZmAppViewMgr.PENDING_VIEW";
 ZmAppViewMgr.BROWSER_BACK		= "BACK";
 ZmAppViewMgr.BROWSER_FORWARD	= "FORWARD";
 
-ZmAppViewMgr.TAB_BUTTON_MAX_TEXT = 15;
-
 ZmAppViewMgr._setContainerIds =
 function() {
 	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_BANNER]					= ZmId.SKIN_LOGO;
 	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_USER_INFO]				= ZmId.SKIN_USER_INFO;
 	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_QUOTA_INFO]				= ZmId.SKIN_QUOTA_INFO;
+	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_OFFLINE_STATUS]			= ZmId.SKIN_OFFLINE_STATUS;
+	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_PRESENCE]				= ZmId.SKIN_PRESENCE;
 	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_SEARCH]					= ZmId.SKIN_SEARCH;
 	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_SEARCH_BUILDER]			= ZmId.SKIN_SEARCH_BUILDER;
 	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR]	= ZmId.SKIN_SEARCH_BUILDER_TOOLBAR;
+	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_CURRENT_APP]			= ZmId.SKIN_CURRENT_APP;
 	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_APP_CHOOSER]			= ZmId.SKIN_APP_CHOOSER;
 	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_TREE]					= ZmId.SKIN_TREE;
 	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_TREE_FOOTER]			= ZmId.SKIN_TREE_FOOTER;
@@ -210,9 +203,8 @@ function() {
 	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_APP_CONTENT_FULL]		= ZmId.SKIN_APP_MAIN_FULL;
 	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_STATUS]					= ZmId.SKIN_STATUS;
 	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_SASH]					= ZmId.SKIN_SASH;
-	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_TASKBAR]				= ZmId.SKIN_TASKBAR;
-    ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_FOOTER]					= ZmId.SKIN_FOOTER;
-    ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_AD]						= ZmId.SKIN_AD;	    
+	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_FOOTER]					= ZmId.SKIN_FOOTER;	
+	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_AD]						= ZmId.SKIN_AD;	
 };
 
 // Public methods
@@ -224,8 +216,8 @@ function() {
 
 ZmAppViewMgr.prototype.isFullScreen =
 function(viewId) {
-	viewId = viewId || this._currentView;
-	return Boolean(viewId && this._views[viewId] && this._views[viewId][ZmAppViewMgr.C_APP_CONTENT_FULL]);
+    viewId = viewId || this._currentView;
+    return Boolean(viewId && this._views[viewId] && this._views[viewId][ZmAppViewMgr.C_APP_CONTENT_FULL]);
 };
 
 /**
@@ -257,7 +249,7 @@ function(components, doFit, noSetZ) {
 					// XXX: we no longer throw an exception b/c some skins want
 					// to omit certain containers (i.e. quota).
 					//throw new AjxException("Skin container '" + contId + "' not found.");
-					DBG.println(AjxDebug.DBG1, "Skin container '" + contId + "' not found.");
+					DBG.println("Skin container '" + contId + "' not found.");
 					continue;
 				}
 				this._containers[cid] = contEl;
@@ -319,12 +311,10 @@ function(visible) {
 	skin.show("searchBuilder", visible);
 	this._components[ZmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR].zShow(visible);
 	this._components[ZmAppViewMgr.C_SEARCH_BUILDER].zShow(visible);
-	var list = [
-		ZmAppViewMgr.C_SEARCH_BUILDER, ZmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR,
-		ZmAppViewMgr.C_APP_CHOOSER, ZmAppViewMgr.C_TREE,
-		ZmAppViewMgr.C_TREE_FOOTER, ZmAppViewMgr.C_TOOLBAR_TOP,
-		ZmAppViewMgr.C_APP_CONTENT, ZmAppViewMgr.C_APP_CONTENT_FULL
-	];
+	var list = [ZmAppViewMgr.C_SEARCH_BUILDER, ZmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR,
+				ZmAppViewMgr.C_CURRENT_APP, ZmAppViewMgr.C_APP_CHOOSER, ZmAppViewMgr.C_TREE,
+				ZmAppViewMgr.C_TREE_FOOTER, ZmAppViewMgr.C_TOOLBAR_TOP,
+                ZmAppViewMgr.C_APP_CONTENT, ZmAppViewMgr.C_APP_CONTENT_FULL];
 	this._fitToContainer(list);
 	// search builder contains forms, and browsers have quirks around form fields and z-index
 	if (!visible) {
@@ -407,7 +397,7 @@ function(app) {
 * changes the top-level view of the app.
 *
 * @param app		the name of an app
-* @param viewId		the ID of a view
+* @param viewID		the ID of a view
 */
 ZmAppViewMgr.prototype.setAppView =
 function(app, viewId) {
@@ -415,70 +405,55 @@ function(app, viewId) {
 };
 
 /**
- * Registers a set of elements comprising an app view.
- *
- * @param params		[hash]			hash of params:
- *        viewId		the ID of the view
- *        appName		the name of the owning app
- *        elements		a hash of elements
- *        callbacks 	functions to call before/after this view is shown/hidden
- *        isAppView 	if true, this view is an app-level view
- *        isTransient	if true, this view does not go on the hidden stack
- *        tabParams		button params; view is opened in app tab instead of being stacked
- */
+* Registers a set of elements comprising an app view.
+*
+* @param viewId			the ID of the view
+* @param appName		the name of the owning app
+* @param elements		a hash of elements
+* @param callbacks 		functions to call before/after this view is shown/hidden
+* @param isAppView 		if true, this view is an app-level view
+* @param isTransient	if true, this view does not go on the hidden stack
+*/
 ZmAppViewMgr.prototype.createView =
-function(params) {
-
-	var viewId = params.viewId;
+function(viewId, appName, elements, callbacks, isAppView, isTransient) {
 	DBG.println(AjxDebug.DBG1, "createView: " + viewId);
 
-	this._views[viewId]			= params.elements;
-	this._callbacks[viewId]		= params.callbacks || {};
-	this._viewApp[viewId]		= params.appName;
-	this._isAppView[viewId]		= params.isAppView;
-	this._isTransient[viewId]	= params.isTransient;
-	if (!this._isNewWindow && params.tabParams) {
-		this._tabParams[viewId]	= params.tabParams;
-		this._isTabView[viewId]	= Boolean(params.tabParams != null);
-		this._viewByTabId[params.tabParams.id] = viewId;
-	}
+	this._views[viewId] = elements;
+	this._callbacks[viewId] = callbacks ? callbacks : {};
+	this._viewApp[viewId] = appName;
+	this._isAppView[viewId] = isAppView;
+	this._isTransient[viewId] = isTransient;
 };
 
 // XXX: should we have a destroyView() ?
 
 /**
- * Makes the given view visible, pushing the previously visible one to the top of the
- * hidden stack.
- *
- * @param viewId		the ID of the app view to push
- * @param force			don't run callbacks
- * @param switchTab		if true, don't add tab button
- * @returns			true if the view was pushed (is now visible)
- */
+* Makes the given view visible, pushing the previously visible one to the top of the
+* hidden stack.
+*
+* @param viewId		the ID of the app view to push
+* @param force		don't run callbacks
+* @returns			true if the view was pushed (is now visible)
+*/
 ZmAppViewMgr.prototype.pushView =
-function(viewId, force, switchTab) {
+function(viewId, force) {
 
-	if (switchTab) {
-		viewId = this._viewByTabId[viewId];
-	}
-	
 	var isPendingView = (viewId == ZmAppViewMgr.PENDING_VIEW);
 	if (!isPendingView && !this._views[viewId]) {
 		// view has not been created, bail
 		return false;
 	}
-
-	var viewController;
+	
+	var viewController = null;
 	if (isPendingView) {
 		viewId = this._pendingView;
+		var view = this._views[viewId];
+		if (view) {
+			var appContent = view[ZmAppViewMgr.C_APP_CONTENT] || view[ZmAppViewMgr.C_APP_CONTENT_FULL];
+			viewController = appContent.getController && appContent.getController();
+		}
 	}
 	DBG.println(AjxDebug.DBG1, "pushView: " + viewId);
-
-	var view = this._views[viewId];
-	if (view) {
-		var appContent = view[ZmAppViewMgr.C_APP_CONTENT] || view[ZmAppViewMgr.C_APP_CONTENT_FULL];
-		viewController = appContent && appContent.getController && appContent.getController();
-	}
 
 	// if same view, no need to hide previous view or check for callbacks
 	if (viewId == this._currentView) {
@@ -491,24 +466,16 @@ function(viewId, force, switchTab) {
 	}
 
 	DBG.println(AjxDebug.DBG2, "hidden (before): " + this._hidden);
-
-	if (this._isTabView[viewId]) {
-		var tp = this._tabParams[viewId];
-		if (tp && !switchTab) {
-			var button = appCtxt.getAppController().getAppChooser().addButton(tp.id, tp);
-			button.setHoverImage("Close");
-		}
-	}
-
+	
 	if (isPendingView) {
 		DBG.println(AjxDebug.DBG1, "push of pending view: " + this._pendingView);
 		force = true;
 	}
 
-	if (!this._hideView(this._currentView, force || this._isTabView[this._currentView])) {
+	if (!this._hideView(this._currentView, force)) {
 		this._pendingAction = this._pushCallback;
 		this._pendingView = viewId;
-		return false;
+	 	return false;
 	}
 	this.addComponents(this._views[viewId]);
 	if (this._currentView && (this._currentView != viewId) && !this._isTransient[this._currentView]) {
@@ -549,7 +516,6 @@ function(viewId, force, switchTab) {
 
 	this._layout(this._currentView);
 
-
 	if (viewController && viewController.setCurrentView) {
 		viewController.setCurrentView(viewId);
 	}
@@ -563,16 +529,16 @@ function(viewId, force, switchTab) {
 		}
 		this._toRemove = [];
 	}
-
+	
 	return true;
 };
 
 /**
 * Hides the currently visible view, and makes the view on top of the hidden stack visible.
 *
-* @param	force	[Boolean]		don't run callbacks (which check if popping is OK)
-* @param	viewId	[Integer]		only pop if this is current view
-* @returns			[Boolean]		true if the view was popped
+* @param force		don't run callbacks (which check if popping is OK)
+* @param viewId		only pop if this is current view
+* @returns			true if the view was popped
 */
 ZmAppViewMgr.prototype.popView =
 function(force, viewId) {
@@ -588,7 +554,7 @@ function(force, viewId) {
 	}
 
 	// check if trying to pop non-current view
-	if (viewId && !isPendingView && (this.getCurrentViewId() != viewId)) { return false; }
+	if (viewId && !isPendingView && (this.getCurrentViewId() != viewId)) { return; }
 
 	if (!this._hidden.length && !this._isNewWindow) {
 		DBG.println(AjxDebug.DBG1, "ERROR: no view to replace popped view");
@@ -596,7 +562,7 @@ function(force, viewId) {
 		if (location && (location.search.match(/\bview=compose\b/))) {
 			this._controller.activateApp(ZmApp.MAIL);
 		}
-		return false;
+		return;
 	}
 
 	DBG.println(AjxDebug.DBG1, "popView: " + this._currentView);
@@ -607,28 +573,19 @@ function(force, viewId) {
 		return false;
 	}
 	this._deactivateView(this._views[this._currentView]);
-
-	if (this._isTabView[this._currentView]) {
-		var buttonId = this._tabParams[this._currentView].id;
-		var button = appCtxt.getAppController().getAppChooser().getButton(buttonId);
-		if (button) {
-			button.dispose();
-		}
-	}
-
 	this._lastView = this._currentView;
 	this._currentView = this._hidden.pop();
 
 	// close this window if no more views exist and it's a child window
 	if (!this._currentView && this._isNewWindow) {
 		window.close();
-		return false;
+		return;
 	}
-
+	
 	DBG.println(AjxDebug.DBG2, "app view mgr: current view is now " + this._currentView);
 	if (!this._showView(this._currentView, this._popCallback, null, force, true)) {
 		DBG.println(AjxDebug.DBG1, "ERROR: pop with no view to show");
-		return false;
+		return;
 	}
 	this._removeFromHidden(this._currentView);
 	DBG.println(AjxDebug.DBG2, "hidden (after): " + this._hidden);
@@ -647,7 +604,11 @@ function(force, viewId) {
 	}
 
 	this.addComponents(this._views[this._currentView]);
-	this._layout(this._currentView);
+	this._layout(this._currentView);	
+	
+	if (this._viewApp[this._currentView]) {
+//		this._controller.setActiveApp(this._viewApp[this._currentView], this._currentView);
+	}
 
 	return true;
 };
@@ -655,9 +616,9 @@ function(force, viewId) {
 /**
  * Makes the given view visible, and clears the hidden stack.
  *
- * @param 		viewId		the ID of the view
- * @param 		force		ignore pre-emption callbacks
- * @returns					true if the view was set
+ * @param viewId		the ID of the view
+ * @param force		ignore pre-emption callbacks
+ * @returns			true if the view was set
  */
 ZmAppViewMgr.prototype.setView =
 function(viewId, force) {
@@ -686,29 +647,6 @@ function(viewId) {
 	this._hidden.push(viewId);
 };
 
-/**
- * Swaps in one view's components for another. Intended for use by a tab that shows more
- * than one view (eg going from compose to mail confirm view), so that we don't have to
- * manage stacking within a tab.
- * 
- * @param oldViewId
- * @param newViewId
- */
-ZmAppViewMgr.prototype.replaceView =
-function(oldViewId, newViewId) {
-	var oldView = this._views[oldViewId];
-	var newView = this._views[newViewId];
-	this._hideView(oldViewId, true);
-	for (var cid in newView) {
-		oldView[cid] = newView[cid];
-	}
-	if (this._currentView == oldViewId) {
-		this._currentView = newViewId;
-		this._showView(newViewId);
-		this._layout(this._currentView);
-	}
-};
-
 ZmAppViewMgr.prototype.isAppView = 
 function(viewId) {
 	return this._isAppView[viewId];
@@ -726,10 +664,10 @@ function(show) {
 	if (show && this._pendingAction) {
 		this._pendingAction.run(ZmAppViewMgr.PENDING_VIEW);
 	}
-
-	// If a pop shield has been dismissed and we're not going to show the
-	// pending view, and we got here via press of browser Back/Forward button,
-	// then undo that button press so that the browser history is correct.
+	
+	// If a pop shield has been dismissed and we're not going to show the pending view, and we
+	// got here via press of browser Back/Forward button, then undo that button press so that the
+	// browser history is correct.
 	if (!show) {
 		if (this._browserAction == ZmAppViewMgr.BROWSER_BACK) {
 			this._ignoreHistoryChange = true;
@@ -744,8 +682,8 @@ function(show) {
 };
 
 ZmAppViewMgr.prototype.fitAll =
-function() {
-	this._fitToContainer(ZmAppViewMgr.ALL_COMPONENTS);
+function(resetToolbar) {
+	this._fitToContainer(ZmAppViewMgr.ALL_COMPONENTS, resetToolbar);
 };
 
 /**
@@ -783,25 +721,35 @@ function() {
 };
 
 /**
-* Checks if it is ok to unload the app (user logs out, navigates away, closes browser, etc.)
+* Checks if it is ok to log off.
+* 
+* @param action		action to perform if the user allows logout
+*/
+ZmAppViewMgr.prototype.isOkToLogOff =
+function(pendingAction) {
+	var okToContinue = true;
+	var callback = this._callbacks[this._currentView] ? this._callbacks[this._currentView][ZmAppViewMgr.CB_PRE_HIDE] : null;
+	if (callback) {
+		DBG.println(AjxDebug.DBG2, "checking if ok to log off " + this._currentView);
+		this._pendingAction = pendingAction;
+		this._pendingView = null;
+		okToContinue = callback.run(this._currentView, false);
+	}
+	return okToContinue;
+};
+
+/**
+* Checks if it is ok to unload the app (user navigtates away, closes browser, etc.)
 */
 ZmAppViewMgr.prototype.isOkToUnload =
 function() {
-
-	var views = AjxUtil.getHashKeys(this._isTabView);
-	if (!this._isTabView[this._currentView]) {
-		views.push(this._currentView);
+	var okToContinue = true;
+	var callback = this._callbacks[this._currentView] ? this._callbacks[this._currentView][ZmAppViewMgr.CB_PRE_UNLOAD] : null;
+	if (callback) {
+		DBG.println(AjxDebug.DBG2, "checking if ok to unload " + this._currentView);
+		okToContinue = callback.run(this._currentView);
 	}
-	for (var i = 0; i < views.length; i++) {
-		var view = views[i];
-		var callback = this._callbacks[view] && this._callbacks[view][ZmAppViewMgr.CB_PRE_UNLOAD];
-		if (callback) {
-			DBG.println(AjxDebug.DBG2, "checking if ok to unload " + view);
-			var okToContinue = callback.run(view);
-			if (!okToContinue) { return false; }
-		}
-	}
-	return true;
+	return okToContinue;
 };
 
 // Private methods
@@ -814,22 +762,14 @@ function() {
 	el.innerHTML = AjxTemplate.expand("share.App#Loading", this._htmlElId);
 	var elements = {};
 	elements[ZmAppViewMgr.C_APP_CONTENT] = loadingView;
-	this.createView({viewId:ZmId.VIEW_LOADING, elements:elements});
+	this.createView(ZmId.VIEW_LOADING, null, elements);
 };
 
 // Locates and sizes the given list of components to fit within their containers.
 ZmAppViewMgr.prototype._fitToContainer =
-function(components, isIeTimerHack) {
-	for (var i = 0; i < components.length; i++) {
+function(components, resetToolbar) {
+    for (var i = 0; i < components.length; i++) {
 		var cid = components[i];
-		if (!isIeTimerHack && AjxEnv.isIE && (cid == ZmAppViewMgr.C_TASKBAR)) {
-			// Hack for bug 36924: ie bar is in the middle of the screen when resizing ie.
-			if (!this._ieHackAction) {
-				this._ieHackAction = new AjxTimedAction(this, this._fitToContainer, [[ZmAppViewMgr.C_TASKBAR], true]);
-			}
-			AjxTimedAction.scheduleAction(this._ieHackAction, 1);
-		}
-
 		DBG.println(AjxDebug.DBG3, "fitting to container: " + cid);
 		var cont = this._containers[cid];
 		if (cont) {
@@ -848,9 +788,6 @@ function(components, isIeTimerHack) {
 					if (compEl.parentNode != cont) {
 						cont.appendChild(compEl);
 					}
-					if (comp._checkSize) {
-						comp._checkSize();
-					}
 				} else {
 					var contBds = Dwt.getBounds(cont);
 					// take insets (border + padding) into account
@@ -860,8 +797,15 @@ function(components, isIeTimerHack) {
 					// save bounds
 					this._contBounds[cid] = contBds;
 					comp.setBounds(contBds.x, contBds.y, contBds.width, contBds.height);
+                }
+
+				if (cid == ZmAppViewMgr.C_TOOLBAR_TOP ||
+					cid == ZmAppViewMgr.C_APP_CHOOSER)
+				{
+					// fit toolbars according to resolution
+					this.fitAppToolbar(resetToolbar);
 				}
-			}
+            }
 		}
 	}
 
@@ -872,8 +816,8 @@ function(components, isIeTimerHack) {
 
 ZmAppViewMgr.prototype._getComponentPosition =
 function(cid) {
-	return appCtxt.getSkinHint(cid, "position");
-};
+	return appCtxt.get(ZmSetting.SKIN_HINTS, [cid, "position"].join("."));
+}
 
 ZmAppViewMgr.prototype._getContainerBounds =
 function(cid) {
@@ -890,7 +834,7 @@ function(cid) {
 		return bounds;
 	}
 	return null;
-};
+}
 
 // Performs manual layout of the components, absent a containing skin. Currently assumes
 // that there will be a top toolbar and app content.
@@ -911,7 +855,7 @@ function(view) {
 // for when it is hidden. The callback must return true for the view to be hidden.
 ZmAppViewMgr.prototype._hideView =
 function(view, force) {
-	if (!view) { return true; }
+	if (!view) return true;
 	var okToContinue = true;
 	var callback = this._callbacks[view] ? this._callbacks[view][ZmAppViewMgr.CB_PRE_HIDE] : null;
 	if (callback) {
@@ -920,7 +864,6 @@ function(view, force) {
 	}
 	if (okToContinue) {
 		this._setViewVisible(view, false);
-		appCtxt.getKeyboardMgr().clearKeySeq();
 		DBG.println(AjxDebug.DBG2, view + " hidden");
 		callback = this._callbacks[view] ? this._callbacks[view][ZmAppViewMgr.CB_POST_HIDE] : null;
 		if (callback) {
@@ -949,7 +892,9 @@ function(view, force, isNewView) {
 		}
 	}
 
-	appCtxt.notifyZimlets("onShowView", [view, isNewView], {noChildWindow:true});
+	if (!this._isNewWindow && appCtxt.zimletsPresent()) {
+		appCtxt.getZimletMgr().notifyZimlets("onShowView", view, isNewView);
+	}
 
 	return okToContinue;
 };
@@ -995,12 +940,8 @@ function(view, show) {
 			this._fitToContainer(list);
 		}
 		this._setTitle(view);
-		if (this._isTabView[view]) {
-			var tabId = this._tabParams[view].id;
-			this._controller.setActiveTabId(tabId);
-		}
 		if (this._viewApp[view]) {
-			this._controller.setActiveApp(this._viewApp[view], view, this._isTabView[view]);
+			this._controller.setActiveApp(this._viewApp[view], view);
 		}
 	} else {
 		for (var cid in elements) {
@@ -1027,7 +968,7 @@ function(view) {
 ZmAppViewMgr.prototype._deactivateView =
 function(view) {
 	for (var cid in view) {
-		var comp = view[cid];
+		var comp = this._components[cid];
 		if (comp.deactivate) {
 			comp.deactivate();
 		}
@@ -1053,8 +994,9 @@ function(view) {
 // Handles shell resizing event.
 ZmAppViewMgr.prototype._shellControlListener =
 function(ev) {
+	
 	if (ev.oldWidth != ev.newWidth || ev.oldHeight != ev.newHeight) {
-
+		
 		this._shellSz.x = ev.newWidth;
 		this._shellSz.y = ev.newHeight;
 		var deltaWidth = ev.newWidth - ev.oldWidth;
@@ -1067,8 +1009,8 @@ function(ev) {
 				topToolbar.setSize(ev.newWidth, Dwt.DEFAULT);
 			}
 			// make sure to remove height of top toolbar for height of app content
-			var view = this._views[this._currentView];
-			var appContent = view[ZmAppViewMgr.C_APP_CONTENT] || view[ZmAppViewMgr.C_APP_CONTENT_FULL];
+            var view = this._views[this._currentView];
+            var appContent = view[ZmAppViewMgr.C_APP_CONTENT] || view[ZmAppViewMgr.C_APP_CONTENT_FULL];
 			if (appContent) {
 				appContent.setSize(ev.newWidth, ev.newHeight - topToolbar.getH());
 			}
@@ -1076,22 +1018,34 @@ function(ev) {
 			if (deltaHeight && deltaWidth) {
 				this.fitAll(true);
 			} else if (deltaHeight) {
-				var list = [
-					ZmAppViewMgr.C_APP_CHOOSER, ZmAppViewMgr.C_TREE, ZmAppViewMgr.C_TREE_FOOTER,
-					ZmAppViewMgr.C_SASH, ZmAppViewMgr.C_APP_CONTENT, ZmAppViewMgr.C_APP_CONTENT_FULL,
-					ZmAppViewMgr.C_STATUS, ZmAppViewMgr.C_TASKBAR, ZmAppViewMgr.C_AD, ZmAppViewMgr.C_FOOTER 
-				];
+				var list = [ZmAppViewMgr.C_APP_CHOOSER, ZmAppViewMgr.C_TREE, ZmAppViewMgr.C_TREE_FOOTER,
+							ZmAppViewMgr.C_SASH, ZmAppViewMgr.C_APP_CONTENT, ZmAppViewMgr.C_APP_CONTENT_FULL, 
+                            ZmAppViewMgr.C_STATUS];
 				this._fitToContainer(list, true);
 			} else if (deltaWidth) {
-				var list = [
-					ZmAppViewMgr.C_BANNER, ZmAppViewMgr.C_SEARCH, ZmAppViewMgr.C_USER_INFO, ZmAppViewMgr.C_QUOTA_INFO,
-					ZmAppViewMgr.C_SEARCH_BUILDER, ZmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR,
-					ZmAppViewMgr.C_TOOLBAR_TOP, ZmAppViewMgr.C_APP_CONTENT, ZmAppViewMgr.C_APP_CONTENT_FULL,
-					ZmAppViewMgr.C_TOOLBAR_BOTTOM, ZmAppViewMgr.C_TASKBAR, ZmAppViewMgr.C_AD, ZmAppViewMgr.C_FOOTER
-				];
+				var list = [ZmAppViewMgr.C_BANNER, ZmAppViewMgr.C_SEARCH, ZmAppViewMgr.C_USER_INFO, ZmAppViewMgr.C_QUOTA_INFO,
+							ZmAppViewMgr.C_OFFLINE_STATUS, ZmAppViewMgr.C_PRESENCE, 
+							ZmAppViewMgr.C_SEARCH_BUILDER, ZmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR,
+							ZmAppViewMgr.C_TOOLBAR_TOP, ZmAppViewMgr.C_APP_CONTENT, ZmAppViewMgr.C_APP_CONTENT_FULL, 
+                            ZmAppViewMgr.C_TOOLBAR_BOTTOM];
 				this._fitToContainer(list, true);
 			}
 		}
+	}
+};
+
+ZmAppViewMgr.prototype.fitAppToolbar =
+function(resetToolbar) {
+	// Assuming every view has a toolbar.
+	var toolbar = this._views[this._currentView] && this._views[this._currentView][ZmAppViewMgr.C_TOOLBAR_TOP];
+
+	if (toolbar && toolbar.autoAdjustWidth) {
+		toolbar.autoAdjustWidth(this._containers[ZmAppViewMgr.C_TOOLBAR_TOP], resetToolbar);
+	}
+
+	var appChooser = appCtxt.getAppController().getAppChooser();
+	if (appChooser && AjxEnv.is800x600orLower) {
+		appChooser.autoAdjustWidth(this._containers[ZmAppViewMgr.C_TOOLBAR_TOP]);
 	}
 };
 
@@ -1144,31 +1098,33 @@ function(ev) {
 		this.pushView(viewId);
 	}
 	this._curHashIndex = hashIndex;
-
+	
 	DBG.println(AjxDebug.DBG2, "History change to " + hashIndex + ", new view: " + viewId);
 };
 
-// Handles app/tree movement. If you move the sash beyond the max or min width,
-// pins to the respective width.
+// Handles app/tree movement. 
+//	If you move the sash beyond the max or min width, pins to the respective width.
 ZmAppViewMgr.prototype._appTreeSashCallback =
 function(delta) {
-	if (!window.skin) { return; }
-
-	// ask skin for width of tree, rather than hard-coding name of tree div here
-	var currentWidth = skin.getTreeWidth();
-	if (!currentWidth) { return 0; }
-
+	if (!window.skin) return;
+	
 	DBG.println(AjxDebug.DBG3, "************ sash callback **************");
 	DBG.println(AjxDebug.DBG3, "delta = " + delta);
-	DBG.println(AjxDebug.DBG3, "shell width = " + this._shellSz.x);
-	DBG.println(AjxDebug.DBG3, "current width = " + currentWidth);
+
+	DBG.println(AjxDebug.DBG3,"shell width = " + this._shellSz.x);
+
+	// ask the skin for the width of the tree, rather than hard-coding the name of the tree div here
+	var currentWidth = skin.getTreeWidth();
+	if(!currentWidth) return 0;
+
+	DBG.println(AjxDebug.DBG3, "current width = " + currentWidth);	
 
 	// MOW: get the min/max sizes from the skin.hints
-	if (!this.treeMinSize) {
+	if (!this.treeMinSize){	
 		this.treeMinSize = window.skin.hints.tree.minWidth || 150;
 		this.treeMaxSize = window.skin.hints.tree.maxWidth || 300;
 	}
-
+	
 	// pin the resize to the minimum and maximum allowable
 	if (currentWidth + delta > this.treeMaxSize) {
 		delta = Math.max(0, this.treeMaxSize - currentWidth);
@@ -1176,14 +1132,14 @@ function(delta) {
 	if (currentWidth + delta < this.treeMinSize) {
 		delta = Math.min(0, this.treeMinSize - currentWidth);
 	}
-
-	// tell skin to resize the tree to keep the separation of tree/skin clean
-	var newTreeWidth = currentWidth + delta;
+	
+	// tell the skin to resize the tree to keep the separation of tree/skin clean
+	var newTreeWidth = currentWidth + delta;	
 
 	skin.setTreeWidth(newTreeWidth);
 
-	// call fitAll() on timeout, so we dont get into a problem w/ sash movement code
+	// call fitAll() on a timeout, so we don't get into a problem with the sash movement code
 	var me = this;
-	setTimeout(function(){me.fitAll(true)},0);
+	setTimeout(function(){me.fitAll()},0);
 	return delta;
 };

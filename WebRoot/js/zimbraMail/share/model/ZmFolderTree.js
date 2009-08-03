@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -47,10 +49,10 @@ function() {
  * Loads the folder or the zimlet tree.
  */
 ZmFolderTree.prototype.loadFromJs =
-function(rootObj, elementType, accountId) {
+function(rootObj, elementType) {
 	this.root = (elementType == "zimlet")
 		? ZmZimlet.createFromJs(null, rootObj, this)
-		: ZmFolderTree.createFromJs(null, rootObj, this, elementType, null, accountId);
+		: ZmFolderTree.createFromJs(null, rootObj, this, elementType);
 };
 
 /**
@@ -62,10 +64,9 @@ function(rootObj, elementType, accountId) {
  * @param tree			[ZmFolderTree]	containing tree
  * @param elementType	[string]		type of containing JSON element
  * @param path			[array]			list of path elements
- * @param accountId		[string]*		account ID this folder belongs to
  */
 ZmFolderTree.createFromJs =
-function(parent, obj, tree, elementType, path, accountId) {
+function(parent, obj, tree, elementType, path) {
 	if (!(obj && obj.id)) { return; }
 
 	var folder;
@@ -87,42 +88,27 @@ function(parent, obj, tree, elementType, path, accountId) {
 			numUnread: obj.u,
 			query: obj.query,
 			types: types,
-			sortBy: obj.sortBy,
-			accountId: accountId
+			sortBy: (obj.sortBy ? ZmSearch.SORT_BY_MAP[obj.sortBy] : null)
 		};
 		folder = new ZmSearchFolder(params);
 		ZmFolderTree._fillInFolder(folder, obj, path);
-		ZmFolderTree._traverse(folder, obj, tree, (path || []), elementType, accountId);
+		ZmFolderTree._traverse(folder, obj, tree, (path || []), elementType);
 	} else {
-		var type;
-		if (obj.id == ZmOrganizer.ID_GLOBAL_SEARCHES) {
-			type = ZmOrganizer.FOLDER;
-		} else {
-			type = obj.view ? ZmOrganizer.TYPE[obj.view] : parent ? parent.type : ZmOrganizer.FOLDER;
-		}
+		var type = obj.view ? ZmOrganizer.TYPE[obj.view] : parent ? parent.type : ZmOrganizer.FOLDER;
 		if (!type) {
 			DBG.println(AjxDebug.DBG1, "No known type for view " + obj.view);
 			return;
 		}
 		if (appCtxt.inStartup && ZmOrganizer.DEFERRABLE[type]) {
 			var app = appCtxt.getApp(ZmOrganizer.APP[type]);
-			var defParams = {
-				type: type,
-				parent: parent,
-				obj: obj,
-				tree: tree,
-				path: path,
-				elementType: elementType,
-				accountId:accountId
-			};
-			app.addDeferredFolder(defParams);
+			app.addDeferredFolder({type:type, parent:parent, obj:obj, tree:tree, path:path, elementType:elementType});
 		} else {
 			var pkg = ZmOrganizer.ORG_PACKAGE[type];
 			if (pkg) {
 				AjxDispatcher.require(pkg);
 			}
-			folder = ZmFolderTree.createFolder(type, parent, obj, tree, path, elementType, accountId);
-			ZmFolderTree._traverse(folder, obj, tree, (path || []), elementType, accountId);
+			folder = ZmFolderTree.createFolder(type, parent, obj, tree, path, elementType);
+			ZmFolderTree._traverse(folder, obj, tree, (path || []), elementType);
 		}
 	}
 
@@ -130,7 +116,7 @@ function(parent, obj, tree, elementType, path, accountId) {
 };
 
 ZmFolderTree._traverse =
-function(folder, obj, tree, path, elementType, accountId) {
+function(folder, obj, tree, path, elementType) {
 
 	var isRoot = (folder.nId == ZmOrganizer.ID_ROOT);
 	if (obj.folder && obj.folder.length) {
@@ -139,7 +125,7 @@ function(folder, obj, tree, path, elementType, accountId) {
 		}
 		for (var i = 0; i < obj.folder.length; i++) {
 			var folderObj = obj.folder[i];
-			var childFolder = ZmFolderTree.createFromJs(folder, folderObj, tree, (elementType || "folder"), path, accountId);
+			var childFolder = ZmFolderTree.createFromJs(folder, folderObj, tree, (elementType || "folder"), path);
 			if (folder && childFolder) {
 				folder.children.add(childFolder);
 			}
@@ -155,7 +141,7 @@ function(folder, obj, tree, path, elementType, accountId) {
 		}
 		for (var i = 0; i < obj.search.length; i++) {
 			var searchObj = obj.search[i];
-			var childSearch = ZmFolderTree.createFromJs(folder, searchObj, tree, "search", path, accountId);
+			var childSearch = ZmFolderTree.createFromJs(folder, searchObj, tree, "search", path);
 			if (childSearch) {
 				folder.children.add(childSearch);
 			}
@@ -168,7 +154,7 @@ function(folder, obj, tree, path, elementType, accountId) {
 	if (obj.link && obj.link.length) {
 		for (var i = 0; i < obj.link.length; i++) {
 			var link = obj.link[i];
-			var childFolder = ZmFolderTree.createFromJs(folder, link, tree, "link", path, accountId);
+			var childFolder = ZmFolderTree.createFromJs(folder, link, tree, "link", path);
 			if (childFolder) {
 				folder.children.add(childFolder);
 			}
@@ -177,7 +163,7 @@ function(folder, obj, tree, path, elementType, accountId) {
 };
 
 ZmFolderTree.createFolder =
-function(type, parent, obj, tree, path, elementType, accountId) {
+function(type, parent, obj, tree, path, elementType) {
 	var orgClass = eval(ZmOrganizer.ORG_CLASS[type]);
 	if (!orgClass) { return null; }
 
@@ -198,8 +184,7 @@ function(type, parent, obj, tree, path, elementType, accountId) {
 		numTotal: 	obj.n,
 		sizeTotal: 	obj.s,
 		perm: 		obj.perm,
-		link: 		elementType == "link",
-		accountId:	accountId
+		link: 		elementType == "link"
 	};
 
 	var folder = new orgClass(params);
@@ -370,6 +355,7 @@ function(callback, skipNotify, result) {
 							mtpt.addShare(ZmShare.createFromJs(mtpt, acl.grant[j]));
 						}
 					}
+					mtpt.setPermissions(link.perm);
 				}
 
 				if (link.folder && link.folder.length > 0) {

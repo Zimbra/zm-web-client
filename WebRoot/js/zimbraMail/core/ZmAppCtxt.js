@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -38,11 +40,7 @@ ZmAppCtxt = function() {
 	this.numAccounts = 1;				// init to 1 b/c there is always a main account
 	this.numVisibleAccounts = 0;
 	this.userDomain = "";
-
-	this._evtMgr = new AjxEventMgr();
 };
-
-ZmAppCtxt._ZIMLETS_EVENT = 'ZIMLETS';
 
 ZmAppCtxt.prototype.toString =
 function() {
@@ -106,28 +104,30 @@ function(settings, account) {
  */
 ZmAppCtxt.prototype.get =
 function(id, key, account) {
-	// for offline, global settings always come from the "local" parent account
-	var acct = (this.isOffline && ZmSetting.IS_GLOBAL[id])
-		? this.getMainAccount() : account;
-	return this.getSettings(acct).get(id, key);
+	// for offline / multi-account, global settings should always come from the
+	// invisible parent account
+	if (this.isOffline && this.multiAccounts && ZmSetting.IS_GLOBAL[id]) {
+		return this.getSettings(this.getMainAccount()).get(id, key);
+	}
+	return this.getSettings(account).get(id, key);
 };
 
 /**
- * Sets the value of a setting.
+ * Returns the value of a setting.
  *
- * @param id			[constant]			setting ID
- * @param value			[any]				setting value
- * @param key			[string]*			setting key (for settings that are of the hash type)
- * @param setDefault	[boolean]*			if true, also replace setting's default value
- * @param skipNotify	[boolean]*			if true, do not notify setting listeners
- * @param account		[ZmZimbraAccount]*	if set, use this account's setting instead of the currently active account
+ * @param id			[constant]		setting ID
+ * @param value			[any]			setting value
+ * @param key			[string]*		setting key (for settings that are of the hash type)
+ * @param setDefault	[boolean]*		if true, also replace setting's default value
+ * @param skipNotify	[boolean]*		if true, do not notify setting listeners
  */
 ZmAppCtxt.prototype.set =
-function(id, value, key, setDefault, skipNotify, account) {
-	// for offline, global settings always come from "parent" account
-	var acct = (this.isOffline && ZmSetting.IS_GLOBAL[id])
-		? this.getMainAccount() : account;
-	var setting = this.getSettings(acct).getSetting(id);
+function(id, value, key, setDefault, skipNotify) {
+	// for offline / multi-account, global settings should always come from the
+	// invisible parent account
+	var setting = (this.isOffline && this.multiAccounts && ZmSetting.IS_GLOBAL[id])
+		? this.getSettings(this.getMainAccount()).getSetting(id)
+		: this.getSettings().getSetting(id);
 
 	if (setting) {
 		setting.setValue(value, key, setDefault, skipNotify);
@@ -141,8 +141,7 @@ function(appName) {
 
 ZmAppCtxt.prototype.getCurrentAppName =
 function() {
-	var context = this.isChildWindow ? parentAppCtxt : this;
-	return context._appController.getActiveApp();
+	return this._appController.getActiveApp();
 };
 
 ZmAppCtxt.prototype.getCurrentApp =
@@ -313,12 +312,39 @@ function() {
 	return this._pageConflictDialog;
 };
 
+ZmAppCtxt.prototype.getNewImDialog =
+function() {
+	if (!this._newImDialog) {
+		AjxDispatcher.require("IM");
+		this._newImDialog = new ZmNewImDialog(this._shell);
+	}
+	return this._newImDialog;
+};
+
+ZmAppCtxt.prototype.getNewRosterItemDialog =
+function() {
+	if (!this._newRosterItemDialog) {
+		AjxDispatcher.require("IM");
+		this._newRosterItemDialog = new ZmNewRosterItemDialog(this._shell);
+	}
+	return this._newRosterItemDialog;
+};
+
 ZmAppCtxt.prototype.getDialog =
 function(){
 	if(!this._dialog){
 		this._dialog = new DwtDialog({parent:this._shell});
 	}
 	return this._dialog;
+};
+
+ZmAppCtxt.prototype.getIMGatewayLoginDialog =
+function() {
+	if (!this._imGatewayLoginDialog) {
+		AjxDispatcher.require("IM");
+		this._imGatewayLoginDialog = new ZmExternalGatewayDlg(this._shell);
+	}
+	return this._imGatewayLoginDialog;
 };
 
 ZmAppCtxt.prototype.getNewSearchDialog =
@@ -354,14 +380,6 @@ function() {
 		this._pickTagDialog = new ZmPickTagDialog(this._shell);
 	}
 	return this._pickTagDialog;
-};
-
-ZmAppCtxt.prototype.getFolderNotifyDialog =
-function() {
-	if (!this._folderNotifyDialog) {
-		this._folderNotifyDialog = new ZmFolderNotifyDialog(this._shell);
-	}
-	return this._folderNotifyDialog;
 };
 
 ZmAppCtxt.prototype.getFolderPropsDialog =
@@ -531,7 +549,7 @@ function() {
 		}
 	}
 	return this.isChildWindow ? this._childWinTabGrp : this._rootTabGrp;
-};
+}
 
 ZmAppCtxt.prototype.getShell =
 function() {
@@ -562,16 +580,6 @@ function(id) {
 	return this._accounts[id];
 };
 
-ZmAppCtxt.prototype.getAccountByName =
-function(name) {
-	for (var i in this._accounts) {
-		if (this._accounts[i].name == name) {
-			return this._accounts[i];
-		}
-	}
-	return null;
-};
-
 /**
  * Returns the main account for a multi-mbox login
  *
@@ -584,7 +592,7 @@ function(checkOfflineMode) {
 	for (var id in this._accounts) {
 		var account = this._accounts[id];
 		// if checking for offline mode, return the first non-main account
-		if (checkOfflineMode && appCtxt.isOffline) {
+		if (checkOfflineMode && appCtxt.isOffline && appCtxt.multiAccounts) {
 			if (!account.isMain) { return account; }
 			continue;
 		}
@@ -598,17 +606,16 @@ function(checkOfflineMode) {
  * when fetching any account-specific data such as settings or folder
  * tree. The account goes and fetches its data if necessary.
  *
- * @param account		[ZmZimbraAccount]	account to make active
- * @param skipNotify	[Boolean]*			skip notify if true
+ * @param account	[ZmZimbraAccount]		account to make active
+ * @param callback	[AjxCallback]*	client callback
  */
 ZmAppCtxt.prototype.setActiveAccount =
-function(account, skipNotify) {
+function(account, callback) {
 	this._activeAccount = account;
-
-	this._evt = this._evt || new ZmEvent();
-	this._evt.account = account;
-
-	if (!skipNotify) {
+	this._activeAccount.load(callback);
+	if (this._evtMgr) {
+		this._evt = this._evt || new ZmEvent();
+		this._evt.account = account;
 		this._evtMgr.notifyListeners("ACCOUNT", this._evt);
 	}
 };
@@ -620,6 +627,7 @@ function() {
 
 ZmAppCtxt.prototype.addActiveAcountListener =
 function(listener, index) {
+	this._evtMgr = this._evtMgr || new AjxEventMgr();
 	return this._evtMgr.addListener("ACCOUNT", listener, index);
 };
 
@@ -661,7 +669,7 @@ function(type, tree, account) {
 
 ZmAppCtxt.prototype.getFolderTree =
 function(account) {
-    return this.getTree(ZmOrganizer.FOLDER, account);
+	return this.getTree(ZmOrganizer.FOLDER, account);
 };
 
 ZmAppCtxt.prototype.getTagTree =
@@ -716,6 +724,16 @@ function() {
 	return this._uploadManager;
 };
 
+ZmAppCtxt.prototype.getCurrentAppToolbar =
+function() { 
+	return this._currentAppToolbar;
+};
+
+ZmAppCtxt.prototype.setCurrentAppToolbar =
+function(toolbar) {
+	this._currentAppToolbar = toolbar;
+};
+
 ZmAppCtxt.prototype.getCurrentSearch =
 function() { 
 	return this.getCurrentApp().currentSearch;
@@ -749,7 +767,7 @@ function() {
 };
 
 ZmAppCtxt.prototype.getNewWindow = 
-function(fullVersion, width, height) {
+function(fullVersion) {
 	// build url
 	var url = [];
 	var i = 0;
@@ -762,16 +780,13 @@ function(fullVersion, width, height) {
 	url[i++] = appCurrentSkin;
 	url[i++] = "&localeId=";
 	url[i++] = AjxEnv.DEFAULT_LOCALE || "";
-	if (fullVersion) {
+	if (fullVersion)
 		url[i++] = "&full=1";
-	}
 	if (appDevMode) {
 		url[i++] = "&dev=1";
 	}
 
-	width = width || 705;
-	height = height || 465;
-	var args = ["height=", height, ",width=", width, ",location=no,menubar=no,resizable=yes,scrollbars=no,status=yes,toolbar=no"].join("");
+	var args = "height=465,width=705,location=no,menubar=no,resizable=yes,scrollbars=no,status=yes,toolbar=no";
 	var newWin = window.open(url.join(""), "_blank", args);
 
 	if (!newWin) {
@@ -845,21 +860,8 @@ function() {
 	return this._zimletMgr;
 };
 
-ZmAppCtxt.prototype.areZimletsLoaded =
-function() {
-	return this._zimletsLoaded;
-};
-
-ZmAppCtxt.prototype.addZimletsLoadedListener =
-function(listener, index) {
-	if (!this._zimletsLoaded) {
-		return this._evtMgr.addListener(ZmAppCtxt._ZIMLETS_EVENT, listener, index);
-	}
-};
-
 ZmAppCtxt.prototype.allZimletsLoaded =
 function() {
-	this._zimletsLoaded = true;
 	if (this._zimletMgr && !this.isChildWindow && appCtxt.get(ZmSetting.PORTAL_ENABLED)) {
 		var portletMgr = this.getApp(ZmApp.PORTAL).getPortletMgr();
 		if (portletMgr) {
@@ -867,37 +869,18 @@ function() {
 		}
 	}
 
-	if (this._evtMgr.isListenerRegistered(ZmAppCtxt._ZIMLETS_EVENT)) {
-		this._evtMgr.notifyListeners(ZmAppCtxt._ZIMLETS_EVENT, new ZmEvent());
-		this._evtMgr.removeAll(ZmAppCtxt._ZIMLETS_EVENT);
+	if (this.isOffline && !this.multiAccounts) {
+		this.getAppController().setInstantNotify(true);
 	}
 };
 
-/**
- * Notifies zimlets if they are present and loaded.
- *
- * @param event				[string]	zimlet event (called as a zimlet function)
- * @param args				[array]		list of args to the function
- * @param options			[hash]*		hash of options:
- *        noChildWindow		[boolean]	if true, skip notify if we are in a child window
- *        waitUntilLoaded	[boolean]	if true and zimlets aren't yet loaded, add a listener
- * 										so that notify happens on load
- */
-ZmAppCtxt.prototype.notifyZimlets =
-function(event, args, options) {
-
-	var context = this.isChildWindow ? parentAppCtxt : this;
-
-	if (options && options.noChildWindow && this.isChildWindow) { return; }
-
-	if (!context.areZimletsLoaded()) {
-		if (options && options.waitUntilLoaded) {
-			context.addZimletsLoadedListener(new AjxListener(this, this.notifyZimlets, [event, args]));
-		}
-		return;
+ZmAppCtxt.prototype.getPrintView =
+function() {
+	if (!this._printView) {
+		AjxDispatcher.require("Extras");
+		this._printView = new ZmPrintView();
 	}
-
-	this.getZimletMgr().notifyZimlets(event, args);
+	return this._printView;
 };
 
 ZmAppCtxt.prototype.getCalManager =
@@ -913,124 +896,3 @@ function(account, callback) {
 	var id = account ? account.id : this._activeAccount ? this._activeAccount.id : ZmZimbraAccount.DEFAULT_ID;
 	return this._accounts[id] && this._accounts[id].acl;
 };
-
-/**
- * Returns brief display version of the given shortcut
- *
- * @param keyMap	[string]	key map
- * @param shortcut	[string]	shortcut action
- */
-ZmAppCtxt.prototype.getShortcutHint =
-function(keyMap, shortcut) {
-	
-	var text = null;
-	keyMap = keyMap || "global";
-	while (!text && keyMap) {
-		var scKey = [keyMap, shortcut, "display"].join(".");
-		var text = AjxKeys[scKey] || ZmKeys[scKey];
-		if (text) {
-			// try to pick first single-character shortcut
-			var list = text.split(/;\s*/);
-			var sc = list[0];
-			for (var i = 0; i < list.length; i++) {
-				var s = list[i];
-				if (s.indexOf(",") == -1) {
-					sc = list[i];
-					break;
-				}
-			}
-			if (!sc) { return null; }
-			sc = sc.replace(/\b[A-Z]\b/g, function(let) { return let.toLowerCase(); });
-			text = [" [", sc.replace(",", ""), "]"].join("");
-		} else {
-			var key = [keyMap, "INHERIT"].join(".");
-			keyMap = AjxKeys[key] || ZmKeys[key];
-		}
-	}
-
-	return text;
-};
-
-ZmAppCtxt.prototype.getShortcutsPanel =
-function() {
-	if (!this._shortcutsPanel) {
-		AjxDispatcher.require(["PreferencesCore", "Preferences"]);
-		var style = this.isChildWindow ? ZmShortcutList.WINDOW_STYLE : ZmShortcutList.PANEL_STYLE;
-		this._shortcutsPanel = new ZmShortcutsPanel(style);
-	}
-	return this._shortcutsPanel;
-};
-
-/**
- * Returns the skin hint for the given argument(s), which will be used to look
- * successively down the properties chain. For example, getSkinHint("a", "b")
- * will return the value of skin.hints.a.b
- */
-ZmAppCtxt.prototype.getSkinHint =
-function() {
-	if (arguments.length == 0) return "";
-	
-	var cur = skin && skin.hints;
-	if (!cur) { return ""; }
-	for (var i = 0; i < arguments.length; i++) {
-		var arg = arguments[i];
-		if (!cur[arg]) { return ""; }
-		cur = cur[arg];
-	}
-	return cur;
-};
-
-ZmAppCtxt.prototype.getAutocompleter =
-function() {
-	if (!this._autocompleter) {
-		this._autocompleter = new ZmAutocomplete();
-	}
-	return this._autocompleter;
-};
-
-/**
- * Returns true if the given address belongs to the current user, including aliases.
- *
- * @param addr			[string]		address
- * @param allowLocal	[boolean]*		if true, domain is not required
- */
-ZmAppCtxt.prototype.isMyAddress =
-function(addr, allowLocal) {
-
-	if (allowLocal && (addr.indexOf('@') == -1)) {
-		addr = [addr, this.getUserDomain()].join("@");
-	}
-	
-	if (addr == this.get(ZmSetting.USERNAME)) {
-		return true;
-	}
-
-	var aliases = this.get(ZmSetting.MAIL_ALIASES);
-	if (aliases && aliases.length) {
-		for (var i = 0; i < aliases.length; i++) {
-			if (addr == aliases[i])
-				return true;
-		}
-	}
-
-	return false;
-};
-
-/**
- * Returns an overview ID, prepending account name if we're multi-account.
- *
- * @param parts		[list]			ID components
- * @param account	[ZmAccount]*	account
- */
-ZmAppCtxt.prototype.getOverviewId =
-function(parts, account) {
-
-	var id = (parts instanceof Array) ? parts.join("_") : parts;
-
-	if (appCtxt.multiAccounts && (account !== null)) {
-		account = account || appCtxt.getActiveAccount();
-		id = [account.name, id].join(":");
-	}
-
-	return id;
-}

@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -26,23 +28,18 @@
  * @param container	containing shell
  * @param mailApp	containing app 
  */
-ZmMsgController = function(container, mailApp, sessionId) {
+ZmMsgController = function(container, mailApp) {
 
 	ZmMailListController.call(this, container, mailApp);
-
-	this.sessionId = sessionId;
-	this.viewId = [ZmId.VIEW_MSG, this.sessionId].join("");
 };
-
-ZmMsgController.prototype = new ZmMailListController;
-ZmMsgController.prototype.constructor = ZmMsgController;
 
 ZmMsgController.MODE_TO_CONTROLLER = {};
 ZmMsgController.MODE_TO_CONTROLLER[ZmId.VIEW_TRAD]		= "GetTradController";
 ZmMsgController.MODE_TO_CONTROLLER[ZmId.VIEW_CONV]		= "GetConvController";
 ZmMsgController.MODE_TO_CONTROLLER[ZmId.VIEW_CONVLIST]	= "GetConvListController";
 
-ZmMsgController.DEFAULT_TAB_TEXT = ZmMsg.message;
+ZmMsgController.prototype = new ZmMailListController;
+ZmMsgController.prototype.constructor = ZmMsgController;
 
 // Public methods
 
@@ -106,12 +103,7 @@ function() {
 	var elements = {};
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
 	elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[this._currentView];
-	var buttonText = (this._msg && this._msg.subject) ? this._msg.subject.substr(0, ZmAppViewMgr.TAB_BUTTON_MAX_TEXT) :
-					 									ZmMsgController.DEFAULT_TAB_TEXT;
-	this._setView({view:this._currentView, elements:elements, clear:appCtxt.isChildWindow,
-				   tabParams:{id:this.viewId, text:buttonText, image:"MessageView",
-							  textPrecedence:85, tooltip:ZmMsgController.DEFAULT_TAB_TEXT}});
-
+	this._setView(this._currentView, elements, false, appCtxt.isChildWindow);
 };
 
 ZmMsgController.prototype.getKeyMapName =
@@ -135,24 +127,14 @@ function(actionCode) {
 	return true;
 };
 
-ZmMsgController.prototype.mapSupported =
-function(map) {
-	return false;
-};
-
 // Private methods (mostly overrides of ZmListController protected methods)
 
 ZmMsgController.prototype._getToolBarOps = 
 function() {
-	var list;
 	if (appCtxt.isChildWindow) {
-		list = [ZmOperation.CLOSE, ZmOperation.SEP, ZmOperation.PRINT, ZmOperation.DELETE];
-		list.push(ZmOperation.SEP);
-		list = list.concat(this._msgOps());
-		list.push(ZmOperation.SEP, ZmOperation.SPAM, ZmOperation.SEP, ZmOperation.TAG_MENU);
-	}
-	else {
-		list = this._standardToolBarOps();
+		return [ZmOperation.PRINT, ZmOperation.CLOSE];
+	} else {
+		var list = this._standardToolBarOps();
 		list.push(ZmOperation.SEP);
 		list = list.concat(this._msgOps());
 		list.push(ZmOperation.SEP,
@@ -160,11 +142,9 @@ function() {
 					ZmOperation.SEP,
 					ZmOperation.TAG_MENU,
 					ZmOperation.SEP);
-		if (appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED)) {
-			list.push(ZmOperation.DETACH);
-		}
+        if(appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED))  list.push(ZmOperation.DETACH);
+        return list;
 	}
-	return list;
 };
 
 ZmMsgController.prototype._initializeToolBar =
@@ -174,28 +154,15 @@ function(view, arrowStyle) {
 	} else {
 		var buttons = this._getToolBarOps();
 		if (!buttons) return;
-		var params = {
-			parent:this._container,
-			buttons:buttons,
-			className:"ZmMsgViewToolBar_cw",
-			context:this._getViewType(),
-			controller:this
-		};
-		var tb = this._toolbar[view] = new ZmButtonToolBar(params);
+		this._toolbar[view] = new ZmButtonToolBar({parent:this._container, buttons:buttons, className:"ZmMsgViewToolBar_cw",
+												   context:this._getViewType()});
 
-		buttons = tb.opList;
+		buttons = this._toolbar[view].opList;
 		for (var i = 0; i < buttons.length; i++) {
 			var button = buttons[i];
 			if (this._listeners[button]) {
-				tb.addSelectionListener(button, this._listeners[button]);
+				this._toolbar[view].addSelectionListener(button, this._listeners[button]);
 			}
-		}
-
-		this._setupSpamButton(tb);
-		button = tb.getButton(ZmOperation.TAG_MENU);
-		if (button) {
-			button.noMenuBar = true;
-			this._setupTagMenu(tb);
 		}
 	}
 };
@@ -210,7 +177,17 @@ function() {
 
 ZmMsgController.prototype._getViewType =
 function() {
-	return this.viewId;
+	return ZmId.VIEW_MSG;
+};
+
+ZmMsgController.prototype._postHideCallback =
+function() {
+	// bug fix #31601 - Prism only hack to restore keypress
+	if (AjxEnv.isPrism) {
+		var km = appCtxt.getShell().getKeyboardMgr();
+		km.__killKeySeqTimedActionId = -1;
+		km.__keySequence.length = 0;
+	}
 };
 
 ZmMsgController.prototype._initializeListView =
@@ -288,7 +265,7 @@ function(ev) {
 
 // Miscellaneous
 
-ZmMsgController.prototype.getMsg =
+ZmMsgController.prototype._getMsg =
 function(params) {
 	return this._msg;
 };
@@ -323,6 +300,6 @@ function() {
 ZmMsgController.prototype._backListener =
 function(ev) {
 	if (!this._app.popView()) {
-		this._app.mailSearch();
+		this._app._mailSearch();
 	}
 };

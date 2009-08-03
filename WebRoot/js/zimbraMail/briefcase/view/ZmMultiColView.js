@@ -1,15 +1,17 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ *
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008 Zimbra, Inc.
- * 
+ * Copyright (C) 2007 Zimbra, Inc.
+ *
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -246,39 +248,23 @@ function(item) {
 		name = name.substring(0,20) + "..";
 	}
 
-	var restURL = item.getRestUrl();
-	var originalRestURL = item.getRestUrl(false, true);
-
-	// commented for bug 32457 :: restURL = this._controller.getApp().fixCrossDomainReference(restUrl);
-	var fileLink = [ '<a href="', restURL, '" target="_blank">', name, '</a>' ].join("");
+	var restUrl = item.getRestUrl();
+	restUrl = this._controller.getApp().fixCrossDomainReference(restUrl);
+	var fileLink = [ '<a href="', restUrl, '" target="_blank">', name, '</a>' ].join("");
 
 	var dateFormatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.FULL, AjxDateFormat.MEDIUM);
 
 	var prop = [
 		{name:ZmMsg.name, value:fileLink},
-	];
-
-
-    if(item.isRealFile() || item.isSlideDoc()){
-        var actionLink;
-        if(item.isSlideDoc()) {
-            actionLink = [ '<a href="', originalRestURL, "?fmt=html&run=1", '" target="_blank">', ZmMsg.slides_launchSlideShow, '</a>' ].join("");
-        }else{
-            actionLink = [ '<a href="', originalRestURL, "?disp=a", '" target="_blank">', ZmMsg.saveFile, '</a>' ].join("");
-        }
-        prop.push({name:ZmMsg.actionLabel, value: actionLink});
-    }
-
-    prop = prop.concat([
-        {name:ZmMsg.path, value:path},
+		{name:ZmMsg.path, value:path},
 		{name:ZmMsg.size, value:AjxUtil.formatSize(item.size)},
 		{name:ZmMsg.created, value:dateFormatter.format(item.createDate)},
 		{name:ZmMsg.creator, value:item.creator},
 		{name:ZmMsg.modified, value:dateFormatter.format(item.modifyDate)},
 		{name:ZmMsg.modifier, value:item.modifier}
-    ]);
+	];
 
-	var imgSrc = restURL.toLowerCase().match(/\.jpg$|\.gif$|\.jpeg$|\.bmp$$/) ? restURL : null;
+	var imgSrc = restUrl.toLowerCase().match(/\.jpg$|\.gif$|\.jpeg$|\.bmp$$/) ? restUrl : null;
 
 	var subs = {
 		imgSrc: imgSrc,

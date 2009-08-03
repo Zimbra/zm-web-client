@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -104,10 +106,7 @@ SUBMIT,
 /* ------- tree --------------- */
 
 .Overview { 
-	width: 170px; 
-	#IFDEF MSIE
-	width: 189px !important;
-	#ENDIF
+	width: 162px; 
 	padding:0px 6px 0px 6px; 
 }
 
@@ -275,11 +274,6 @@ A:visited { color: blue; }
 	@SkinBorderApp@
 }
 
-.ZhAppColContent {
-	@SkinBorderApp@
-    border-width: 1px;
-}
-
 .ZhAppViewContent {
 	@AppBg@
 	@NormalOutsetBorder@
@@ -300,15 +294,6 @@ A:visited { color: blue; }
 	@FontSize-normal@
 	@Text@
 	@ToolbarBg@
-}
-
-
-/* IE Hack to prevent buttons creating spaces around the text */
-.IEbutton input{
-#IFDEF MSIE
-	width: 10px;
-	overflow: visible;
-#ENDIF
 }
 
 /* ---- Top Toolbar Container ----- */
@@ -333,7 +318,7 @@ A:visited { color: blue; }
 }
 
 .TbBt {
-	padding:2px;
+	padding:5px;
 }
 
 .TbBt A {
@@ -536,53 +521,7 @@ A:visited { color: blue; }
 .ZhFolderHeader {
 	white-space:nowrap;
 }
-.ZhSchedularTbl{
-        margin: 0 10 10 10;
-}
-.ZhSchedularTbl .allAttShDiv{
-    border-bottom: 1px solid gray !important;
-}
-.ZhSchedularTbl .attName{
-    border:1px solid #CDCDCD;
-    padding:0 10px;
-    white-space:nowrap;
-}
-.ZhSchedularTbl .hourLblDiv{
-     width:22px;height:22px;
-}
-.ZhSchedularTbl .gridDiv{
-    width:11px;
-    height:22px;
-}
-.ZhSchedularTbl .halfHour{
-    width:11px;
-    height:22px;
-    border:1px solid silver;
-    border-left:0;
-}
-.ZhSchedularTbl .anHour{
-    border-right:1px solid #aaaaaa;
-}
 
-.ZhSchedularTbl .firstDiv{
-    border-left:1px solid silver;
-}
-.ZhSchedularTbl .start{
-    border-left:3px solid green;
-}
-.ZhSchedularTbl .end{
-    border-left:3px solid darkred;
-}
-.ZmScheduler-F 		{	background-color: #FFFFFF;	}
-.ZmScheduler-B 		{	background-color: #990000;	}
-.ZmScheduler-T 	    {	background-color: #FF3300;	}
-.ZmScheduler-O      {	background-color: #FFCC00;	}
-.ZmScheduler-U 	    {	background-color: #FFF5CC;	}
-.keyDiv{
-    width:13px;
-    height:13px;
-    border:2px inset #77736a;
-}
 .searchField {
 	@FixBoxModel@
 	@InputField@
@@ -623,11 +562,6 @@ A:visited { color: blue; }
 .AttachmentImage {
   width: 120px;
   height: 80px;
-}
-
-.ShowAllImageName{
-    font-weight: bold;
-    font-size: 16px;
 }
 
 .Status  {
@@ -773,7 +707,6 @@ A:visited { color: blue; }
 	@SeparatorBorder@
 	@NoWrap@
 	vertical-align:top;
-    cursor: pointer;
 }
 
 .ZhCalMonthDaySelected { @SelectedBg@ }
@@ -1288,46 +1221,5 @@ padding: 0 @BoxPaddingSize@ 0 @BoxPaddingSize@;
 	text-decoration:none;
 }
 
-.ZhContainingBox {
-float:left;
-background-color:#ffffff;
-}
-
-.ZhThumbnailItem {
-background-color:transparent;
-background-repeat:no-repeat;
-cursor:pointer;
-float:left;
-height:120px;
-margin:8px;
-vertical-align:middle;
-width:100px;
-}
-
-.ZhThumbnailItem .ZhThumbnailIcon{
-background-color:transparent;
-border:2px solid #CCCCCC;
-font-size:1px;
-height:100px;
-line-height:100px;
-text-align:center;
-width:96px;    
-}
-
- .ZhThumbnailItem .ZhThumbnailName {
-display:block;
-@FontSize-normal@
-@FontFamily-html@
-margin:3px 0pt 0pt 0px;
-text-align:center;
-height: 14px;
-overflow: hidden;
-}
-
-.ZhThumbnailImg {
-margin:26px 24px;
-}
-
 /* Fix for YUI editor Toolbar Wrap Issue */
-.yui-skin-sam .yui-toolbar-container .yui-toolbar-subcont{padding:0 1.5em 0.5em 1em !important;border-bottom:1px solid #808080;}
-.yui-toolbar-group-indentlist,.yui-toolbar-group-alignment {width: 125px !important;}
+.yui-skin-sam .yui-toolbar-container .yui-toolbar-subcont{padding:0 1em 0.5em 1em !important;border-bottom:1px solid #808080;}

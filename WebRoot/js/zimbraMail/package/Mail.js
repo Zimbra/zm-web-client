@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 /*
@@ -27,11 +29,7 @@ AjxPackage.require("ajax.dwt.events.DwtIdleTimer");
 AjxPackage.require("zimbraMail.mail.view.ZmComposeView");
 AjxPackage.require("zimbraMail.mail.view.ZmConvView");
 AjxPackage.require("zimbraMail.mail.view.ZmMailAssistant");
-AjxPackage.require("zimbraMail.mail.view.ZmAttachmentsView");
-AjxPackage.require("zimbraMail.mail.view.ZmMailConfirmView");
 
 AjxPackage.require("zimbraMail.mail.controller.ZmComposeController");
 AjxPackage.require("zimbraMail.mail.controller.ZmMsgController");
 AjxPackage.require("zimbraMail.mail.controller.ZmConvController");
-AjxPackage.require("zimbraMail.mail.controller.ZmAttachmentsController");
-AjxPackage.require("zimbraMail.mail.controller.ZmMailConfirmController");

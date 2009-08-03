@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008 Zimbra, Inc.
+ * Copyright (C) 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -32,52 +34,54 @@ function() {
 // Public methods
 
 /**
- * Popup the dialog.
+ * Popup the dialog. Note that if family mailbox is enabled, we may have
+ * changed accounts since the last time we were popped up. In that case,
+ * we need to show the overview for the current account's folders.
  * 
  * @param folder	[ZmFolder]*		folder to select initially
  */
 ZmNewOrganizerDialog.prototype.popup =
-function(folder, account) {
+function(folder) {
 	if (this._folderTreeCellId) {
 		var params = {
-			overviewId:		this.toString(),
-			treeIds:		this._treeIds,
-			omit:			this._omit,
-			fieldId:		this._folderTreeCellId,
-			overviewTrees:	[this._organizerType]
+			treeIds: this._treeIds,
+			omit: this._omit,
+			fieldId: this._folderTreeCellId,
+			account: appCtxt.getActiveAccount()
 		};
 		this._setOverview(params);
+
+		// reset folder tree view if user has multiple accounts set up
+		if (appCtxt.multiAccounts) {
+			var overview = this._opc.getOverview(this.getOverviewId());
+			this._folderTreeView = overview ? overview.getTreeView(this._organizerType) : null;
+		}
 
 		if (this._folderTreeView) {
 			// bug #18533 - always make sure header item is visible in "New" dialog
 			this._folderTreeView.getHeaderItem().setVisible(true, true);
 
 			if (folder) {
-				if (folder.nId == ZmOrganizer.ID_ROOT) {
+				if (folder.nId == ZmOrganizer.ID_ROOT)
 					folder = appCtxt.getFolderTree().root;
-				}
 			} else {
 				folder = appCtxt.getFolderTree().root;
 			}
-			var ti = this._folderTreeView.getTreeItemById(folder.id);
-			if (ti) {
-				this._folderTreeView.setSelection(ti);
-			}
+			this._folderTreeView.setSelected(folder);
 			if (folder.nId == ZmOrganizer.ID_ROOT) {
 				var sid = ZmOrganizer.getSystemId(folder.id);
 				var ti = this._folderTreeView.getTreeItemById(sid);
-				if (ti) {
-					ti.setExpanded(true);
-				}
+				if (ti) ti.setExpanded(true);
 			}
 		}
+		DBG.timePt("selected folder", true);
 	}
 
 	// dont allow "None" option in color picker
     // bug 22490 removed None option when not in use
     if (folder && (folder.type != ZmOrganizer.FOLDER) && this._colorSelect) {
         var noneOption = this._colorSelect.getMenu().getItem(0);
-        if (noneOption.getText() == ZmOrganizer.COLOR_TEXT[0]) {
+        if(noneOption.getText() == ZmOrganizer.COLOR_TEXT[0]) {
             this._colorSelect.getMenu().removeChild(noneOption);
         }
     } 
@@ -292,7 +296,6 @@ function() {
 		this._omit[syncIssuesFolder.id] = true;
 	}
 	this._omit[ZmOrganizer.ID_MY_CARD] = true;
-	this._omit[ZmOrganizer.ID_ZIMLET] = true;
 };
 
 // other
@@ -316,11 +319,16 @@ function(overview, treeIds, omit, noRootSelect) {
 ZmNewOrganizerDialog.prototype._getFolderData =
 function() {
 	// make sure a parent was selected
-	var ov = appCtxt.multiAccounts 
-		? this._opc.getOverviewContainer(this.toString())
-		: this._opc.getOverview(this._curOverviewId);
-
-	var parentFolder = ov ? ov.getSelected() : appCtxt.getFolderTree().root;
+	var parentFolder;
+	if (this._folderTreeView) {
+		// default to the root if no folder is selected
+		parentFolder = this._folderTreeView.getSelected() || appCtxt.getFolderTree().root;
+	} else {
+		var folderTree = appCtxt.getFolderTree();
+		if (folderTree) {
+			parentFolder = folderTree.root;
+		}
+	}
 
 	// check name for presence and validity
 	var name = AjxStringUtil.trim(this._nameField.value);
@@ -357,9 +365,6 @@ function() {
 	if (this._colorSelect) {
 		list.push(this._colorSelect);
 	}
-	if (this._overview[this._curOverviewId]) {
-		list.push(this._overview[this._curOverviewId]);
-	}
 	return list;
 };
 
@@ -368,17 +373,15 @@ function() {
 ZmNewOrganizerDialog.prototype._okButtonListener =
 function(ev) {
 	var results = this._getFolderData();
-	if (results) {
+	if (results)
 		DwtDialog.prototype._buttonListener.call(this, ev, results);
-	}
 };
 
 ZmNewOrganizerDialog.prototype._enterListener =
 function(ev) {
 	var results = this._getFolderData();
-	if (results) {
+	if (results)
 		this._runEnterCallback(results);
-	}
 };
 
 

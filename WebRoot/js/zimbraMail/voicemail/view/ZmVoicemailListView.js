@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -34,10 +36,10 @@ function() {
 	return "ZmVoicemailListView";
 };
 
-ZmVoicemailListView.FROM_WIDTH		= ZmMsg.COLUMN_WIDTH_FROM_CALL;
+ZmVoicemailListView.FROM_WIDTH		= 250;
 ZmVoicemailListView.PLAYING_WIDTH	= null; // Auto
 ZmVoicemailListView.PRIORITY_WIDTH	= ZmListView.COL_WIDTH_ICON;
-ZmVoicemailListView.DATE_WIDTH		= ZmMsg.COLUMN_WIDTH_DATE_CALL;
+ZmVoicemailListView.DATE_WIDTH		= 170;
 
 ZmVoicemailListView.F_PRIORITY		= "py";
 
@@ -82,13 +84,34 @@ function(compact) {
 	}
 };
 
+ZmVoicemailListView.prototype.getPrintHtml =
+function() {
+	var buffer = [];
+	var rowArgs = { appContextPath: appContextPath };
+	for(var i = 0, count = this._list.size(); i < count; i++) {
+		var item = this._list.get(i);
+		rowArgs.flagImage = item.isHighPriority ? "tasks/ImgTaskHigh.gif" : "startup/ImgBlank_16.gif";
+		rowArgs.caller = this._getCallerNameHtml(item);
+		rowArgs.duration = AjxDateUtil.computeDuration(item.duration);
+		rowArgs.date = AjxDateUtil.simpleComputeDateStr(item.date);
+		AjxTemplate.expand("voicemail.Voicemail#ZmVoicemailListPrintViewRow", rowArgs, buffer);
+	}
+
+	var args = {
+		name: this._folder.getName(false, 0, true),
+        appContextPath: appContextPath,
+        rows: buffer.join("")
+	}
+	return  AjxTemplate.expand("voicemail.Voicemail#ZmVoicemailListPrintView", args);
+};
+
 ZmVoicemailListView.prototype._getHeaderList =
 function(parent) {
 
 	var headerList = [];
 
 	if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
-		headerList.push(new DwtListHeaderItem({field:ZmItem.F_SELECTION, icon:"CheckboxUnchecked", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.selection}));
+		headerList.push(new DwtListHeaderItem({field:ZmItem.F_SELECTION, icon:"TaskCheckbox", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.selection}));
 	}
 	headerList.push(new DwtListHeaderItem({field:ZmVoicemailListView.F_PRIORITY, icon:"TaskHigh", width:ZmVoicemailListView.PRIORITY_WIDTH}));
 	headerList.push(new DwtListHeaderItem({field:ZmVoiceListView.F_CALLER, text:ZmMsg.from, width:ZmVoicemailListView.FROM_WIDTH, resizeable:true}));

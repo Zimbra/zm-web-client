@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -59,7 +61,7 @@ ZmSetting = function(id, params) {
 	} else {
 		this.value = null;
 	}
-};
+}
 
 ZmSetting.prototype = new ZmModel;
 ZmSetting.prototype.constructor = ZmSetting;
@@ -80,25 +82,21 @@ ZmSetting.D_LIST		= "list";
 ZmSetting.D_NONE		= "NONE";	// placeholder setting
 
 // constants used as setting values
-// TODO: these should be defined in their respective apps
 ZmSetting.ACL_AUTH				= "all";
 ZmSetting.ACL_GROUP				= "grp";
 ZmSetting.ACL_NONE				= "none";
 ZmSetting.ACL_PUBLIC			= "pub";
 ZmSetting.ACL_USER				= "usr";
 ZmSetting.CAL_DAY				= "day";
-ZmSetting.CAL_LIST				= "list";
 ZmSetting.CAL_MONTH				= "month";
 ZmSetting.CAL_WEEK				= "week";
 ZmSetting.CAL_WORK_WEEK			= "workWeek";
 ZmSetting.CAL_SCHEDULE			= "schedule";
-ZmSetting.CAL_VISIBILITY_PRIV	= "private";
-ZmSetting.CAL_VISIBILITY_PUB	= "public";
 ZmSetting.CLIENT_ADVANCED		= "advanced";				// zimbraPrefClientType
 ZmSetting.CLIENT_STANDARD		= "standard";
 ZmSetting.COMPOSE_FONT_COLOR	= "#000000";	 			// zimbraPrefHtmlEditorDefaultFontColor
 ZmSetting.COMPOSE_FONT_FAM 		= "Times New Roman";		// zimbraPrefHtmlEditorDefaultFontFamily
-ZmSetting.COMPOSE_FONT_SIZE 	= AjxMessageFormat.format(ZmMsg.pt,"12"); 			// zimbraPrefHtmlEditorDefaultFontSize
+ZmSetting.COMPOSE_FONT_SIZE 	= "12pt"; 					// zimbraPrefHtmlEditorDefaultFontSize
 ZmSetting.COMPOSE_TEXT 			= "text";					// zimbraPrefComposeFormat
 ZmSetting.COMPOSE_HTML 			= "html";
 ZmSetting.CV_CARDS				= "cards"; 					// zimbraPrefContactsInitialView
@@ -128,9 +126,6 @@ ZmSetting.PROTO_HTTPS			= "https:";
 ZmSetting.PROTO_MIXED			= "mixed:";
 ZmSetting.RIGHT_VIEW_FREE_BUSY	= "viewFreeBusy";
 ZmSetting.RIGHT_INVITE			= "invite";
-ZmSetting.RP_BOTTOM				= "bottom";					// zimbraPrefReadingPaneLocation / zimbraPrefConvReadingPaneLocation
-ZmSetting.RP_OFF				= "off";
-ZmSetting.RP_RIGHT				= "right";
 ZmSetting.SIG_INTERNET			= "internet";				// zimbraPrefMailSignatureStyle
 ZmSetting.SIG_OUTLOOK			= "outlook";
 
@@ -237,12 +232,12 @@ function(key) {
 /**
  * Sets the current value of this setting, performing any necessary data type conversion.
  *
- * @param value			the new value for the setting
- * @param key 			optional key for use by hash table data type
+ * @param value				the new value for the setting
+ * @param key 				optional key for use by hash table data type
  * @param setDefault		if true, also set the default value
  * @param skipNotify		if true, don't notify listeners
- * @param skipImplicit		if true, don't check for change to implicit pref
- */
+ * @param skipImplicit      if true, don't check for change to implicit pref
+*/
 ZmSetting.prototype.setValue =
 function(value, key, setDefault, skipNotify, skipImplicit) {
 
@@ -274,7 +269,7 @@ function(value, key, setDefault, skipNotify, skipImplicit) {
 		} else if (lastChar == 'm') {
 			newValue = num * 60;
 		} else {
-			newValue = num;	// default
+			newValue = num; // default
 		}
 		changed = Boolean(newValue != this.value);
 		this.value = newValue;
@@ -305,14 +300,14 @@ function(value, key, setDefault, skipNotify, skipImplicit) {
 			this.defaultValue = this.value;
 		}
 	}
-	
+
 	if (ZmSetting.IS_IMPLICIT[this.id] && changed && !skipImplicit) {
 		ZmSetting.CHANGED_IMPLICIT[this.id] = true;
 	}
 
 	// Setting an internal pref is equivalent to saving it, so we should notify
 	if (!this.name && !skipNotify) {
-		this._notify(ZmEvent.E_MODIFY, key);
+		this._notify(ZmEvent.E_MODIFY);
 	}
 };
 

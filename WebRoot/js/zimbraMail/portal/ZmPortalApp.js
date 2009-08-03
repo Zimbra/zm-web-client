@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008 Zimbra, Inc.
+ * Copyright (C) 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -34,7 +36,7 @@ ZmPortalApp.prototype._registerApp = function() {
         button: ZmAppChooser.B_PORTAL,
         chooserSort: 1,
         defaultSort: 1
-	});
+    });
 };
 
 //
@@ -166,41 +168,27 @@ ZmPortalApp.prototype.getPortletMgr = function() {
     return this._portletMgr;
 };
 
-//
-// Protected functions
-//
-
-ZmPortalApp.prototype._getOverviewTrees =
+ZmPortalApp.prototype.getOverviewPanelContent =
 function() {
-	return this._getOverviewApp()._getOverviewTrees();
-};
-
-//ZmPortalApp.prototype.getAccordionController =
-//function() {
-//	return this._getOverviewApp().getAccordionController();
-//};
-
-ZmPortalApp.prototype._getOverviewApp =
-function() {
-	if (!this._overviewApp) {
-		var apps = [];
-		for (var name in ZmApp.CHOOSER_SORT) {
-			apps.push({ name: name, sort: ZmApp.CHOOSER_SORT[name] });
-		}
-		apps.sort(ZmPortalApp.__BY_SORT);
-
-		var appName = null;
-		for (var i = 0; i < apps.length; i++) {
-			var app = apps[i];
-			if (app.name == this._name) { continue; }
-			if (appCtxt.getApp(app.name).isUpsell) { continue; }
-
-			appName = app.name;
-			break;
-		}
-		this._overviewApp = appCtxt.getApp(appName);
+	var apps = [];
+	for (var name in ZmApp.CHOOSER_SORT) {
+		apps.push({ name: name, sort: ZmApp.CHOOSER_SORT[name] });
 	}
-	return this._overviewApp;
+	apps.sort(ZmPortalApp.__BY_SORT);
+
+	var appName = null;
+	for (var i = 0; i < apps.length; i++) {
+		var app = apps[i];
+		if (app.name == this._name) { continue; }
+		if (appCtxt.getApp(app.name).isUpsell) { continue; }
+
+		appName = app.name;
+		break;
+	}
+	if (appName) {
+		return appCtxt.getApp(appName).getOverviewPanelContent();
+	}
+	return null;
 };
 
 //

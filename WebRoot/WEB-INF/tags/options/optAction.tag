@@ -1,19 +1,3 @@
-<%--
- * ***** BEGIN LICENSE BLOCK *****
- * 
- * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008 Zimbra, Inc.
- * 
- * The contents of this file are subject to the Yahoo! Public License
- * Version 1.0 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
- * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
- * ***** END LICENSE BLOCK *****
---%>
 <%@ tag body-content="empty" %>
 <%@ attribute name="selected" rtexprvalue="true" required="true" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -45,7 +29,6 @@
             </c:if>
             <zm:pref name="zimbraPrefMailItemsPerPage" value="${param.zimbraPrefMailItemsPerPage}"/>
             <zm:pref name="zimbraPrefShowFragments" value="${param.zimbraPrefShowFragments eq 'TRUE' ? 'TRUE' : 'FALSE'}"/>
-            <zm:pref name="zimbraPrefReadingPaneEnabled" value="${param.zimbraPrefReadingPaneEnabled eq 'TRUE' ? 'TRUE' : 'FALSE'}"/>
             <c:if test="${mailbox.features.initialSearchPreference}">
                 <zm:pref name="zimbraPrefMailInitialSearch" value="${param.zimbraPrefMailInitialSearch}"/>
             </c:if>
@@ -53,14 +36,13 @@
             <c:if test="${mailbox.features.outOfOfficeReply}">
                 <zm:pref name="zimbraPrefOutOfOfficeReplyEnabled" value="${param.zimbraPrefOutOfOfficeReplyEnabled eq 'TRUE' ? 'TRUE' : 'FALSE'}"/>
                 <zm:pref name="zimbraPrefOutOfOfficeReply" value="${param.zimbraPrefOutOfOfficeReply}"/>
-	            <fmt:message key="CAL_APPT_EDIT_DATE_FORMAT" var="editDateFmt"/>
-                <c:choose>
+	            <c:choose>
 		            <c:when test="${param.zimbraPrefOutOfOfficeReplyEnabled eq 'TRUE'}">
 			            <c:set var="fromDate" value="${param.zimbraPrefOutOfOfficeFromDate}" />
 			            <c:set var="untilDate" value="${param.zimbraPrefOutOfOfficeUntilDate}" />
 			            <c:if test="${not empty fromDate}">
 				            <c:catch var="parseError">
-					            <fmt:parseDate pattern="${editDateFmt}" value="${fromDate}" var="parsedDate"  />
+					            <fmt:parseDate pattern="MM/dd/yyyy" value="${fromDate}" var="parsedDate"  />
 					            <fmt:formatDate value="${parsedDate}" pattern="yyyyMMddHHmmss'Z'" var="fmtDate" />
 				            </c:catch>
 				            <c:if test="${not empty parseError}">
@@ -70,7 +52,7 @@
 			            </c:if>
 			            <c:if test="${not empty untilDate}">
 				            <c:catch var="parseError">
-					            <fmt:parseDate pattern="${editDateFmt}" value="${untilDate}" var="parsedDate"  />
+					            <fmt:parseDate pattern="MM/dd/yyyy" value="${untilDate}" var="parsedDate"  />
 					            <fmt:formatDate value="${parsedDate}" pattern="yyyyMMddHHmmss'Z'" var="fmtDate" />
 				            </c:catch>
 				            <c:if test="${not empty parseError}">
@@ -147,7 +129,6 @@
             <zm:pref name="zimbraPrefCalendarFirstdayOfWeek" value="${param.zimbraPrefCalendarFirstdayOfWeek}"/>
             <zm:pref name="zimbraPrefCalendarDayHourStart" value="${param.zimbraPrefCalendarDayHourStart}"/>
             <zm:pref name="zimbraPrefCalendarDayHourEnd" value="${param.zimbraPrefCalendarDayHourEnd}"/>
-            <zm:pref name="zimbraPrefAppleIcalDelegationEnabled" value="${param.zimbraPrefAppleIcalDelegationEnabled eq 'TRUE' ? 'TRUE' : 'FALSE'}"/>
         </c:when>
     </c:choose>
 </zm:modifyPrefs>
@@ -197,9 +178,7 @@
         </c:otherwise>
     </c:choose>
 </c:if>
-<c:if test="${mailbox.features.skinChange and updated}">
-    <c:remove var="skin" scope="session"/> <%-- remove old var so that new skin gets applied using skin.tag --%>    
-</c:if>
+
 <c:choose>
     <c:when test="${newSignatureWarning or modSignatureWarning}">
         <%-- do nothing --%>

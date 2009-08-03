@@ -1,15 +1,17 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ *
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
- * 
+ * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
+ *
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -26,19 +28,11 @@
  */
 ZmComposeView = function(parent, controller, composeMode) {
 
-	this.TEMPLATE = "mail.Message#Compose";
-	this._view = ZmId.VIEW_COMPOSE + controller.sessionId;
-	this._sessionId = controller.sessionId;
-
+	this._view = ZmId.VIEW_COMPOSE;
 	DwtComposite.call(this, {parent:parent, className:"ZmComposeView", posStyle:Dwt.ABSOLUTE_STYLE,
 							 id:ZmId.getViewId(this._view)});
 
 	ZmComposeView.ADDR_SETTING[AjxEmailAddress.BCC]	= ZmSetting.SHOW_BCC;
-
-	ZmComposeView.NOTIFY_ACTION_MAP = {};
-	ZmComposeView.NOTIFY_ACTION_MAP[ZmOperation.REPLY_ACCEPT]		= ZmOperation.REPLY_ACCEPT_NOTIFY;
-	ZmComposeView.NOTIFY_ACTION_MAP[ZmOperation.REPLY_DECLINE]		= ZmOperation.REPLY_DECLINE_NOTIFY;
-	ZmComposeView.NOTIFY_ACTION_MAP[ZmOperation.REPLY_TENTATIVE]	= ZmOperation.REPLY_TENTATIVE_NOTIFY;
 
 	this._onMsgDataChange = new AjxCallback(this, this._onMsgDataChange);
 
@@ -54,8 +48,7 @@ ZmComposeView = function(parent, controller, composeMode) {
 ZmComposeView.prototype = new DwtComposite;
 ZmComposeView.prototype.constructor = ZmComposeView;
 
-ZmComposeView.prototype.toString =
-function() {
+ZmComposeView.prototype.toString = function() {
 	return "ZmComposeView";
 };
 
@@ -72,50 +65,54 @@ ZmComposeView.QUOTED_HDRS = [
 		ZmMailMsg.HDR_SUBJECT
 ];
 
-ZmComposeView.BAD						= "_bad_addrs_";
+ZmComposeView.BAD					= "_bad_addrs_";
 
 // Message dialog placement
-ZmComposeView.DIALOG_X 					= 50;
-ZmComposeView.DIALOG_Y 					= 100;
+ZmComposeView.DIALOG_X 				= 50;
+ZmComposeView.DIALOG_Y 				= 100;
 
 // Attachment related
-ZmComposeView.UPLOAD_FIELD_NAME			= "attUpload";
-ZmComposeView.FORWARD_ATT_NAME			= "ZmComposeView_forAttName";
-ZmComposeView.FORWARD_MSG_NAME			= "ZmComposeView_forMsgName";
+ZmComposeView.UPLOAD_FIELD_NAME		= "attUpload";
+ZmComposeView.FORWARD_ATT_NAME		= "ZmComposeView_forAttName";
+ZmComposeView.FORWARD_MSG_NAME		= "ZmComposeView_forMsgName";
 
 // max # of attachments to show
-ZmComposeView.SHOW_MAX_ATTACHMENTS		= AjxEnv.is800x600orLower ? 2 : 3;
-ZmComposeView.MAX_ATTACHMENT_HEIGHT 	= (ZmComposeView.SHOW_MAX_ATTACHMENTS * 23) + "px";
+ZmComposeView.SHOW_MAX_ATTACHMENTS	= AjxEnv.is800x600orLower ? 2 : 3;
+ZmComposeView.MAX_ATTACHMENT_HEIGHT = (ZmComposeView.SHOW_MAX_ATTACHMENTS * 23) + "px";
 
 // Reply/forward stuff
-ZmComposeView.EMPTY_FORM_RE				= /^[\s\|]*$/;
-ZmComposeView.SUBJ_PREFIX_RE			= new RegExp("^\\s*(Re|Fw|Fwd|" + ZmMsg.re + "|" + ZmMsg.fwd + "|" + ZmMsg.fw + "):" + "\\s*", "i");
-ZmComposeView.QUOTED_CONTENT_RE			= new RegExp("^----- ", "m");
-ZmComposeView.HTML_QUOTED_CONTENT_RE	= new RegExp("<br>----- ", "i");
-ZmComposeView.ADDR_SETTING				= {}; // XXX: may not be necessary anymore?
-ZmComposeView.WRAP_LENGTH				= 72;
+ZmComposeView.EMPTY_FORM_RE			= /^[\s\|]*$/;
+ZmComposeView.SUBJ_PREFIX_RE		= new RegExp("^\\s*(Re|Fw|Fwd|" + ZmMsg.re + "|" + ZmMsg.fwd + "|" + ZmMsg.fw + "):" + "\\s*", "i");
+ZmComposeView.QUOTED_CONTENT_RE		= new RegExp("^----- ", "m");
+ZmComposeView.HTML_QUOTED_CONTENT_RE= new RegExp("<br>----- ", "i");
+ZmComposeView.ADDR_SETTING			= {}; // XXX: may not be necessary anymore?
+ZmComposeView.WRAP_LENGTH			= 72;
 
 ZmComposeView.OP = {};
 ZmComposeView.OP[AjxEmailAddress.TO]	= ZmId.CMP_TO;
 ZmComposeView.OP[AjxEmailAddress.CC]	= ZmId.CMP_CC;
 ZmComposeView.OP[AjxEmailAddress.BCC]	= ZmId.CMP_BCC;
 
+//
+// Data
+//
 
+ZmComposeView.prototype.TEMPLATE = "mail.Message#Compose";
+
+//
 // Public methods
+//
 
 /**
 * Sets the current view, based on the given action. The compose form is
 * created and laid out and everything is set up for interaction with the user.
 *
-* @param action				[constant]		new message, reply, forward, or an invite action
-* @param identity			[ZmIdentity]	the identity sending the message
-* @param msg				[ZmMailMsg]*	the original message (reply/forward), or address (new message)
-* @param toOverride			[string]*		initial value for To: field
-* @param subjOverride		[string]*		initial value for Subject: field
-* @param extraBodyText		[string]*		canned text to prepend to body (invites)
-* @param msgIds				[Array]*		list of msg Id's to be added as attachments
-* @param identity			[ZmIdentity]*	identity to use for this compose
-* @param accountName		[string]*		on-behalf-of From address
+* @param action			[constant]		new message, reply, forward, or an invite action
+* @param identity		[ZmIdentity]	the identity sending the message
+* @param msg			[ZmMailMsg]*	the original message (reply/forward), or address (new message)
+* @param toOverride 	[string]*		initial value for To: field
+* @param subjOverride 	[string]*		initial value for Subject: field
+* @param extraBodyText 	[string]*		canned text to prepend to body (invites)
 */
 ZmComposeView.prototype.set =
 function(params) {
@@ -123,24 +120,9 @@ function(params) {
 	if (this._msg) {
 		this._msg.onChange = null;
 	}
-    this._acceptFolderId = params.acceptFolderId;
-	var obo = params.accountName;
 	var msg = this._msg = this._addressesMsg = params.msg;
 	if (msg) {
 		msg.onChange = this._onMsgDataChange;
-		var folder = (!obo) ? appCtxt.getById(msg.folderId) : null;
-		obo = (folder && folder.isRemote()) ? folder.getOwner() : null;
-
-		// check if this is a draft that was originally composed obo
-		if (!obo && msg.isDraft && !appCtxt.isFamilyMbox) {
-			var ac = window.parentAppCtxt || window.appCtxt;
-			var mainAcct = (ac.isOffline)
-				? ac.getActiveAccount().name : ac.getMainAccount().getEmail();
-			var from = msg.getAddresses(AjxEmailAddress.FROM).get(0);
-			if (from && from.address != mainAcct) {
-				obo = from.address;
-			}
-		}
 	}
 
 	// list of msg Id's to add as attachments
@@ -148,7 +130,7 @@ function(params) {
 
 	this.reset(true);
 
-	if (params.identity && this.identitySelect) {
+	if (params.identity) {
 		this.identitySelect.setSelectedValue(params.identity.id);
 		if (appCtxt.get(ZmSetting.SIGNATURES_ENABLED)) {
 			this._controller.setSelectedSignature(params.identity.signature || "");
@@ -158,32 +140,27 @@ function(params) {
 	// reset To/Cc/Bcc fields
 	this._showAddressField(AjxEmailAddress.TO, true, true, true);
 	this._showAddressField(AjxEmailAddress.CC, true, true, true);
-	//Set BCC Field to Default
-	this._toggleBccField(null, appCtxt.get(ZmSetting.SHOW_BCC));
+    //Set BCC Field to Default
+    this._toggleBccField(null, appCtxt.get(ZmSetting.SHOW_BCC));
 
 	// populate fields based on the action and user prefs
-	this._setAddresses(action, AjxEmailAddress.TO, params.toOverride);
-	if (params.ccOverride) this._setAddresses(action, AjxEmailAddress.CC, params.ccOverride);
-	if (params.bccOverride) this._setAddresses(action, AjxEmailAddress.BCC, params.bccOverride);
-	if (obo) {
-		this._setObo(obo);
-	}
+	this._setAddresses(action, params.toOverride);
 	this._setSubject(action, msg, params.subjOverride);
 	this._setBody(action, msg, params.extraBodyText);
 
-	if (appCtxt.get(ZmSetting.MAIL_PRIORITY_ENABLED)) {
-		var priority = "";
-		if (msg && (action == ZmOperation.DRAFT)) {
-			if (msg.isHighPriority) {
-				priority = ZmItem.FLAG_HIGH_PRIORITY;
-			} else if (msg.isLowPriority) {
-				priority = ZmItem.FLAG_LOW_PRIORITY;
-			}
-		}
-		this._setPriority(priority);
-	}
+    if (appCtxt.get(ZmSetting.MAIL_PRIORITY_ENABLED)) {
+        var priority = "";
+        if (msg && (action == ZmOperation.DRAFT)) {
+            if (msg.isHighPriority) {
+                priority = ZmItem.FLAG_HIGH_PRIORITY;
+            } else if (msg.isLowPriority) {
+                priority = ZmItem.FLAG_LOW_PRIORITY;
+            }
+        }
+        this._setPriority(priority);
+    }
 
-	this.getHtmlEditor().moveCaretToTop();
+    this.getHtmlEditor().moveCaretToTop();
 
 	if (action != ZmOperation.FORWARD_ATT) {
 		// save extra mime parts
@@ -221,7 +198,6 @@ ZmComposeView.prototype._onMsgDataChange =
 function(what, val) {
 	if (what == "subject") {
 		this._subjectField.value = val;
-		this.updateTabTitle();
 	}
 };
 
@@ -313,8 +289,8 @@ function() {
 	}
 
 	// keep track of "uploaded" attachments as well :/
-	val += this._getForwardAttIds(ZmComposeView.FORWARD_ATT_NAME+this._sessionId).join("");
-	val += this._getForwardAttIds(ZmComposeView.FORWARD_MSG_NAME+this._sessionId).join("");
+	val += this._getForwardAttIds(ZmComposeView.FORWARD_ATT_NAME).join("");
+	val += this._getForwardAttIds(ZmComposeView.FORWARD_MSG_NAME).join("");
 
 	return val;
 };
@@ -322,8 +298,8 @@ function() {
 ZmComposeView.prototype._isInline =
 function() {
 	if (this._attachDialog) {
-		return this._attachDialog.isInline();
-	}
+        return this._attachDialog.isInline();
+    }
 
 	if (this._msg && this._msgAttId && this._msg.id == this._msgAttId) {
 		return false;
@@ -336,68 +312,33 @@ function() {
 				return true;
 			}
 		}
-	}    
+	}
 
 	return false;
 };
 
-ZmComposeView.prototype._handleInlineAtts =
-function(msg, handleInlineDocs){
-
-	var handled = false, ci, cid, dfsrc, inlineAtt;
-
-	var idoc = this._htmlEditor._getIframeDoc();
-	var images = idoc.getElementsByTagName("img");
-	for (var i = 0; i < images.length; i++) {
-		dfsrc = images[i].getAttribute("dfsrc") || images[i].src;
-		if (dfsrc) {
-            if (dfsrc.substring(0,4) == "cid:") {
-                cid = dfsrc.substring(4);
-                var docpath = images[i].getAttribute("doc");
-                if(docpath){
-                    msg.addInlineDocAttachment(cid, null, docpath);                    
-                    handled = true;
-                }else{
-                    ci = "<" + cid + ">";
-                    inlineAtt = msg.findInlineAtt(ci);
-                    if (!inlineAtt && this._msg) {
-                        inlineAtt = this._msg.findInlineAtt(ci);
-                    }
-                    if (inlineAtt) {
-                        msg.addInlineAttachmentId(cid, null, inlineAtt.part);
-                        handled = true;
-                    }
-                }
-            }
-		}
-	}
-
-	return handled;
-};
-
-ZmComposeView.prototype._mergeInlineAndForwardAtts =
-function(msg, forwardAttIds) {
-
-	var newFwdAttIds = [];
-	var atts = this._msg.attachments;
-
-	function checkFwdAttExists(part) {
-		for (var j = 0; j < forwardAttIds.length; j++) {
-			if(forwardAttIds[j] == part){
-				return true;
+ZmComposeView.prototype._filterInlineAmongForwardAttIds =
+function(msg, atts, forwardAttIds) {
+	var fwdAttIds = [];
+	for (var i=0; i < forwardAttIds.length; i++) {
+		var fwdAtt = forwardAttIds[i];
+		var matched = false;
+		for (var j=0; j < atts.length; j++) {
+			if (atts[j].part == fwdAtt) {
+				var cid = atts[j].ci;
+				if (cid) {
+					cid = cid.substring(1, cid.length-1);
+					msg.addInlineAttachmentId(cid, null, atts[j].part);
+					matched = true;
+				}
+				break;
 			}
 		}
-		return false;
-	}
-
-	for (var i = 0; i < atts.length; i++) {
-		var att = atts[i];
-		if (att.ci && !checkFwdAttExists(att.part)) {
-			newFwdAttIds.push(att.part);
+		if (!matched) {
+			fwdAttIds.push(fwdAtt);
 		}
 	}
-
-	return [].concat(forwardAttIds, newFwdAttIds);
+	return fwdAttIds;
 };
 
 /**
@@ -416,7 +357,7 @@ function(attId, isDraft) {
 		msgDialog.popup(this._getDialogXY());
 		msgDialog.registerCallback(DwtDialog.OK_BUTTON, this._okCallback, this);
 		this.enableInputs(true);
-		return;
+	    return;
 	}
 
 	var cd = appCtxt.getOkCancelMsgDialog();
@@ -426,19 +367,19 @@ function(attId, isDraft) {
 	var subject = AjxStringUtil.trim(this._subjectField.value);
 	if (!isDraft && subject.length == 0 && !this._noSubjectOkay) {
 		this.enableInputs(false);
-		cd.setMessage(ZmMsg.compSubjectMissing, DwtMessageDialog.WARNING_STYLE);
+    	cd.setMessage(ZmMsg.compSubjectMissing, DwtMessageDialog.WARNING_STYLE);
 		cd.registerCallback(DwtDialog.OK_BUTTON, this._noSubjectOkCallback, this, cd);
 		cd.registerCallback(DwtDialog.CANCEL_BUTTON, this._noSubjectCancelCallback, this, cd);
-		cd.popup(this._getDialogXY());
+	    cd.popup(this._getDialogXY());
 		return;
 	}
 
 	// Any bad addresses?  If there are bad ones, ask the user if they want to send anyway.
 	if (!isDraft && addrs[ZmComposeView.BAD].size() && !this._badAddrsOkay) {
 		this.enableInputs(false);
-		var bad = AjxStringUtil.htmlEncode(addrs[ZmComposeView.BAD].toString(AjxEmailAddress.SEPARATOR));
-		var msg = AjxMessageFormat.format(ZmMsg.compBadAddresses, bad);
-		cd.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
+	    var bad = AjxStringUtil.htmlEncode(addrs[ZmComposeView.BAD].toString(AjxEmailAddress.SEPARATOR));
+	    var msg = AjxMessageFormat.format(ZmMsg.compBadAddresses, bad);
+    	cd.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
 		cd.registerCallback(DwtDialog.OK_BUTTON, this._badAddrsOkCallback, this, cd);
 		cd.registerCallback(DwtDialog.CANCEL_BUTTON, this._badAddrsCancelCallback, this, [addrs.badType, cd]);
 		cd.setVisible(true); // per fix for bug 3209
@@ -448,22 +389,13 @@ function(attId, isDraft) {
 		this._badAddrsOkay = false;
 	}
 
-	// Mandatory Spell Check
-	if (!isDraft && appCtxt.get(ZmSetting.SPELL_CHECK_ENABLED) && 
-	    appCtxt.get(ZmSetting.MAIL_MANDATORY_SPELLCHECK) && !this._spellCheckOkay) {
-		if (this._htmlEditor.checkMisspelledWords(new AjxCallback(this, this._spellCheckShield))) {
-			return;
-		}
-	} else {
-		this._spellCheckOkay = false;
-	}
-
 	// Create Msg Object
 	var msg = new ZmMailMsg();
 	msg.setSubject(subject);
 
-	var zeroSizedAttachments = false;
+    var zeroSizedAttachments = false;
 	// handle Inline Attachments
+	//var inline = this._isInline(); // XXX: not necessarily accurate for fwd/reply
 	if (this._attachDialog && this._attachDialog.isInline() && attId) {
 		for (var i = 0; i < attId.length; i++) {
 			var att = attId[i];
@@ -482,19 +414,19 @@ function(attId, isDraft) {
 		}
 	} else if (attId && typeof attId != "string") {
 		for (var i = 0; i < attId.length; i++) {
-			if (attId[i].s == 0) {
-				zeroSizedAttachments = true;
-				continue;
-			}
+            if (attId[i].s == 0) {
+                zeroSizedAttachments = true;
+                continue;
+            }
 			msg.addAttachmentId(attId[i].aid);
 		}
 	} else if (attId) {
 		msg.addAttachmentId(attId);
 	}
 
-	if (zeroSizedAttachments){
-		appCtxt.setStatusMsg(ZmMsg.zeroSizedAtts);
-	}
+    if (zeroSizedAttachments){
+        appCtxt.setStatusMsg(ZmMsg.zeroSizedAtts);
+    }
 
 	// check if this is a resend
 	if (this.sendUID && this.backupForm) {
@@ -507,8 +439,15 @@ function(attId, isDraft) {
 	}
 
 	// get list of message part id's for any forwarded attachements
-	var forwardAttIds = this._getForwardAttIds(ZmComposeView.FORWARD_ATT_NAME+this._sessionId);
-	var forwardMsgIds = this._getForwardAttIds(ZmComposeView.FORWARD_MSG_NAME+this._sessionId);
+	var forwardAttIds = this._getForwardAttIds(ZmComposeView.FORWARD_ATT_NAME);
+	var forwardMsgIds = this._getForwardAttIds(ZmComposeView.FORWARD_MSG_NAME);
+
+	// Handle Inline Attachments as a part of forwardAttIds
+	if (this._msg && this._msg.attachments) {
+		var atts = this._msg.attachments;
+		var filteredForwardAttIds = this._filterInlineAmongForwardAttIds(msg,atts,forwardAttIds);
+		msg._setFilteredForwardAttIds(filteredForwardAttIds);
+	}
 
 	// --------------------------------------------
 	// Passed validation checks, message ok to send
@@ -527,38 +466,44 @@ function(attId, isDraft) {
 		top.children.add(textPart);
 
 		var htmlPart = new ZmMimePart();
-		htmlPart.setContentType(ZmMimeTable.TEXT_HTML);        
+		htmlPart.setContentType(ZmMimeTable.TEXT_HTML);
 
-		var idoc = this._htmlEditor._getIframeDoc();
-		this._restoreMultipartRelatedImages(idoc);
-		if (!isDraft) {
-			this._cleanupSignatureIds(idoc);
-		}
+		//if (!(isDraft && attId)) {
+			var idoc = this._htmlEditor._getIframeDoc();
+			this._restoreMultipartRelatedImages(idoc);
+		//}
+
 		var defangedContent = this._htmlEditor.getContent(true);
-
-		// Bug 27422 - Firefox and Safari implementation of execCommand("bold")
-		// etc use styles, and some email clients (Entourage) don't process the
-		// styles and the text remains plain. So we post-process and convert
-		// those to the tags (which are what the IE version of execCommand() does).
-		if (AjxEnv.isFirefox) {
-			defangedContent = defangedContent.replace(/<span style="font-weight: bold;">(.+?)<\/span>/, "<strong>$1</strong>");
-			defangedContent = defangedContent.replace(/<span style="font-style: italic;">(.+?)<\/span>/, "<em>$1</em>");
-			defangedContent = defangedContent.replace(/<span style="text-decoration: underline;">(.+?)<\/span>/, "<u>$1</u>");
-			defangedContent = defangedContent.replace(/<span style="text-decoration: line-through;">(.+?)<\/span>/, "<strike>$1</strike>");
-		} else if (AjxEnv.isSafari) {
-			defangedContent = defangedContent.replace(/<span class="Apple-style-span" style="font-weight: bold;">(.+?)<\/span>/, "<strong>$1</strong>");
-			defangedContent = defangedContent.replace(/<span class="Apple-style-span" style="font-style: italic;">(.+?)<\/span>/, "<em>$1</em>");
-			defangedContent = defangedContent.replace(/<span class="Apple-style-span" style="text-decoration: underline;">(.+?)<\/span>/, "<u>$1</u>");
-			defangedContent = defangedContent.replace(/<span class="Apple-style-span" style="text-decoration: line-through;">(.+?)<\/span>/, "<strike>$1</strike>");
-		}
-
 		htmlPart.setContent(defangedContent);
 
-		this._handleInlineAtts(msg, true); // Better Code
+		
+
+		// Bug 31535 - inline img atts not preserved on reply/forward
+		// Try to find inline imgs in the composer that were brought into it from the orig msg,
+		// and add them to the new msg's inline atts so that the server sends them.
+		if (( !isDraft && this._action == ZmOperation.DRAFT /*Editing Draft and Sending*/) || this._action == ZmOperation.REPLY || this._action == ZmOperation.FORWARD_INLINE) {		
+			var idoc = this._htmlEditor._getIframeDoc();
+			var images = idoc.getElementsByTagName("img");
+			for (var i = 0; i < images.length; i++) {
+				var dfsrc = images[i].getAttribute("dfsrc") || images[i].src;
+				if (dfsrc) {
+					if (dfsrc.substring(0,4) == "cid:") {
+						var cid = dfsrc.substring(4);
+						var ci = "<" + cid + ">";
+						var inlineAtt = msg.findInlineAtt(ci);
+						if (!inlineAtt) {
+							inlineAtt = this._msg.findInlineAtt(ci);
+							if (inlineAtt) {
+								msg.addInlineAttachmentId(cid, null, inlineAtt.part);
+							}
+						}
+					}
+				}
+			}
+		}
+		
 		var inlineAtts = msg.getInlineAttachments();
-		var inlineDocAtts = msg.getInlineDocAttachments();
-		var iAtts = [].concat(inlineAtts, inlineDocAtts);
-		if ( iAtts &&  iAtts.length > 0 ) {
+		if ( inlineAtts &&  inlineAtts.length > 0 ) {
 			var relatedPart = new ZmMimePart();
 			relatedPart.setContentType(ZmMimeTable.MULTI_RELATED);
 			relatedPart.children.add(htmlPart);
@@ -566,22 +511,22 @@ function(attId, isDraft) {
 		} else {
 			top.children.add(htmlPart);
 		}
-	}
-	else {
+		
+	} else {
+		
 		var inline = this._isInline();
-
+		
 		var textPart = (this._extraParts || inline) ? new ZmMimePart() : top;
 		textPart.setContentType(ZmMimeTable.TEXT_PLAIN);
 		textPart.setContent(this._htmlEditor.getContent());
 
 		if (inline) {
 			top.setContentType(ZmMimeTable.MULTI_ALT);
+
 			var relatedPart = new ZmMimePart();
 			relatedPart.setContentType(ZmMimeTable.MULTI_RELATED);
 			relatedPart.children.add(textPart);
 			top.children.add(relatedPart);
-
-			forwardAttIds = this._mergeInlineAndForwardAtts(msg, forwardAttIds);
 		} else {
 			if (this._extraParts) {
 				top.setContentType(ZmMimeTable.MULTI_ALT);
@@ -598,13 +543,7 @@ function(attId, isDraft) {
 		}
 	}
 
-	//store text-content of the current email
-	if(this._composeMode == DwtHtmlEditor.HTML){
-		msg.textBodyContent = this._htmlEditor.getTextVersion();
-	} else {
-		msg.textBodyContent = this._htmlEditor.getContent();
-	}
-
+	//var msg = new ZmMailMsg();
 	msg.setTopPart(top);
 	msg.setSubject(subject);
 	msg.setForwardAttIds(forwardAttIds);
@@ -635,16 +574,16 @@ function(attId, isDraft) {
 				msg.origId = msg.isReplied || msg.isForwarded ? this._msg.origId : null;
 				msg.id = this._msg.id;
 				msg.nId = this._msg.nId;
-			}
+			}else{
+                msg.origId = this._msg.origId || this._msg.id;
+            }
 		} else {
 			msg.isReplied = (this._action == ZmOperation.REPLY || this._action == ZmOperation.REPLY_ALL || isInviteReply);
 			msg.isForwarded = (this._action == ZmOperation.FORWARD_INLINE || this._action == ZmOperation.FORWARD_ATT);
-			msg.origId = this._msg.id;
-		}
+            msg.origId = this._msg.id;
+        }
 		msg.isInviteReply = isInviteReply;
-		msg.acceptFolderId = this._acceptFolderId;
-        var inviteMode = ZmComposeView.NOTIFY_ACTION_MAP[this._action] ? ZmComposeView.NOTIFY_ACTION_MAP[this._action] : this._action;
-		msg.inviteMode = isInviteReply ? inviteMode : null;
+		msg.inviteMode = isInviteReply ? this._action : null;
 		msg.irtMessageId = this._msg.messageId;
 		msg.folderId = this._msg.folderId;
 	}
@@ -656,7 +595,7 @@ function(attId, isDraft) {
 
 	if (this._msgAttId) {
 		if (forwardMsgIds.length > 0) {
-			// Check if the MsgId is already present in the fwdMsgIds list.
+			//Check if the MsgId is already present in the fwdMsgIds list.
 			var i = 0;
 			while (forwardMsgIds[i] && forwardMsgIds[i] != this._msgAttId) {
 				i++;
@@ -672,91 +611,12 @@ function(attId, isDraft) {
 
 	msg.setMessageAttachmentId(forwardMsgIds);
 
-	var priority = this._getPriority();
-	if (priority) {
-		msg.flagLocal(priority, true);
-	}
+    var priority = this._getPriority();
+    if (priority) {
+        msg.flagLocal(priority, true);
+    }
 
-	if (this._fromSelect) {
-		msg.offlineFromValue = this._fromSelect.getValue();
-	}
-
-	/**
-	* finally, check for any errors via zimlets..
-	* A Zimlet can listen to emailErrorCheck action to perform further check and
-	* alert user about the error just before sending email. We will be showing
-	* yes/no dialog. This zimlet must return an object {hasError:<true or false>,
-	* errorMsg:<Some Error msg>, zimletName:<zimletName>} e.g: {hasError:true,
-	* errorMsg:"you might have forgotten attaching an attachment, do you want to
-	* continue?", zimletName:"com_zimbra_attachmentAlert"}
-	**/
-	if (!isDraft && appCtxt.areZimletsLoaded()) {
-		var boolAndErrorMsgArray = [];
-		var showErrorDlg = false;
-		var errorMsg = "";
-		var zimletName = "";
-		appCtxt.notifyZimlets("emailErrorCheck", [msg, boolAndErrorMsgArray]);
-		var blen =  boolAndErrorMsgArray.length;
-		for (var k = 0; k < blen; k++) {
-			var obj = boolAndErrorMsgArray[k];
-			if (obj == null || obj == undefined) { continue; }
-
-			var hasError =obj.hasError;
-			zimletName = obj.zimletName;
-			if (Boolean(hasError)) {
-				if (this._ignoredZimlets) {
-					if (this._ignoredZimlets[zimletName]) { // if we should ignore this zimlet
-						delete this._ignoredZimlets[zimletName];
-						continue; // skip
-					}
-				}
-				showErrorDlg = true;
-				errorMsg = obj.errorMsg;
-				break;
-			}
-		}
-		if (showErrorDlg) {
-			this.enableInputs(false);
-			cd.setMessage(errorMsg, DwtMessageDialog.WARNING_STYLE);
-			var params = {errDialog:cd, zimletName:zimletName};
-			cd.registerCallback(DwtDialog.OK_BUTTON, this._errViaZimletOkCallback, this, params);
-			cd.registerCallback(DwtDialog.CANCEL_BUTTON, this._errViaZimletCancelCallback, this, params);
-			cd.popup(this._getDialogXY());
-			return;
-		}
-	}
-
-	return msg;
-};
-
-ZmComposeView.prototype.setDocAttachments =
-function(msg, docIds) {
-	if (!docIds) { return; }
-
-	var zeroSizedAttachments = false;
-	var inline = this._isInline();
-	for (var i = 0; i < docIds.length; i++) {
-		var docAtt = docIds[i];
-		var contentType = docAtt.ct;
-		if (docAtt.s == 0) {
-			zeroSizedAttachments = true;
-			continue;
-		}
-		if (this._attachDialog && inline) {
-			if (contentType && contentType.indexOf("image") != -1) {
-				var cid = Dwt.getNextId();
-				this._htmlEditor.insertImage("cid:" + cid, AjxEnv.isIE);
-				msg.addInlineDocAttachment(cid, docAtt.id);
-			} else {
-				msg.addDocumentAttachmentId(docAtt.id);
-			}
-		}else {
-			msg.addDocumentAttachmentId(docAtt.id);
-		}
-	}
-	if (zeroSizedAttachments){
-		appCtxt.setStatusMsg(ZmMsg.zeroSizedAtts);
-	}
+    return msg;
 };
 
 /**
@@ -818,10 +678,6 @@ function(composeMode) {
 			}
 		}
 	}
-
-	if (this._msg && this._isInline() && composeMode == DwtHtmlEditor.TEXT) {
-		this._showForwardField(this._msg, this._action, null, true);
-	}
 };
 
 ZmComposeView.prototype._retryHtmlEditorFocus =
@@ -844,7 +700,6 @@ function(params) {
 	}
 
 	this._subjectField.value = params.subj || "";
-	this.updateTabTitle();
 
 	var content = params.body || "";
 	if((content == "") && (this._htmlEditor.getMode() == DwtHtmlEditor.HTML)) {
@@ -856,7 +711,7 @@ function(params) {
 	if (params.forwardHtml) {
 		this._attcDiv.innerHTML = params.forwardHtml;
 	}
-	if (params.identityId && this.identitySelect) {
+	if (params.identityId) {
 		this.identitySelect.setSelectedValue(params.identityId);
 	}
 
@@ -888,9 +743,10 @@ function(msgDraft) {
 	this._action = ZmOperation.DRAFT;
 	this._msg = msgDraft;
 	this._msgAttId = null;
+    var showInlineImages = true;
 	// always redo att links since user couldve removed att before saving draft
 	this.cleanupAttachments(true);
-	this._showForwardField(msgDraft, ZmOperation.DRAFT);
+	this._showForwardField(msgDraft, ZmOperation.DRAFT, null, showInlineImages);
 	this._resetBodySize();
 	// save form state (to check for change later)
 	this._origFormValue = this._formValue();
@@ -903,15 +759,18 @@ function(msgObj) {
 	return (this._fixMultipartRelatedImages(msg,iDoc));
 };
 
-ZmComposeView.prototype._fixMultipartRelatedImages_onTimer =
-function(msg) {
-	// first time the editor is initialized, idoc.getElementsByTagName("img") is empty
-	// Instead of waiting for 500ms, trying to add this callback. Risky but works.
-	if (!this._firstTimeFixImages) {
-		this._htmlEditor.addOnContentIntializedListener(new AjxCallback(this, this._fixMultipartRelatedImages, [msg, this._htmlEditor._getIframeDoc()]));
-	} else {
-		this._fixMultipartRelatedImages(msg, this._htmlEditor._getIframeDoc());
-	}
+ZmComposeView.prototype._fixMultipartRelatedImages_onTimer = function(msg) {
+        // first time the editor is initialized, idoc.getElementsByTagName("img") is empty
+        // trial and error suggests 500ms is a safe bet.
+        if (!this._firstTimeFixImages) {
+                var self = this;
+                setTimeout(function() {
+                        self._fixMultipartRelatedImages(msg, self._htmlEditor._getIframeDoc());
+                }, 500);
+                this._firstTimeFixImages = true;
+        } else {
+                this._fixMultipartRelatedImages(msg, this._htmlEditor._getIframeDoc());
+        }
 };
 
 /**
@@ -920,11 +779,6 @@ function(msg) {
  */
 ZmComposeView.prototype._fixMultipartRelatedImages =
 function(msg, idoc) {
-	if (!this._firstTimeFixImages) {
-		this._firstTimeFixImages = true;
-		this._htmlEditor.removeOnContentIntializedListener();
-	}
-
 	if (!idoc) { return; }
 
 	var images = idoc.getElementsByTagName("img");
@@ -942,13 +796,11 @@ function(msg, idoc) {
 					images[i].src = src;
 					images[i].setAttribute("dfsrc", dfsrc);
 				}
-            } else if (dfsrc.substring(0,4) == "doc:") {
-                images[i].src = [appCtxt.get(ZmSetting.REST_URL), ZmFolder.SEP, dfsrc.substring(4)].join('');
-			} else if (msg && dfsrc.indexOf("//") == -1) { // check for content-location verison
+			} else if (dfsrc.indexOf("//") == -1) { // check for content-location verison
 				var src = msg.getContentPartAttachUrl(ZmMailMsg.CONTENT_PART_LOCATION, dfsrc);
 				//Cache cleared, becoz part id's may change.
+				src = src + "&t=" + (new Date()).getTime();
 				if (src) {
-					src = src + "&t=" + (new Date()).getTime();
 					num++;
 					images[i].src = src;
 					images[i].setAttribute("dfsrc", dfsrc);
@@ -977,28 +829,15 @@ function(idoc) {
 				img.removeAttribute("dfsrc");
 			} else if (img.src && img.src.indexOf("cid:") == 0) {
 				cid = img.src;
-			} else if ( dfsrc && dfsrc.substring(0,4) == "doc:"){
-                cid = "cid:"+Dwt.getNextId();
-                img.removeAttribute("dfsrc");
-                img.setAttribute("doc", dfsrc.substring(4, dfsrc.length));
-            }else {
-				// If "Display External Images" is false then handle Reply/Forward
-				if (dfsrc) img.src = dfsrc;
-			}
+			} else {
+                //If "Display External Images" is false then handle Reply/Forward
+                if(dfsrc) img.src = dfsrc;
+            }
 			if (cid) {
 				img.src = cid;
 			}
 		}
 	}
-};
-
-ZmComposeView.prototype._cleanupSignatureIds =
-function(idoc){
-    var signatureId = this._controller._currentSignatureId;
-    var signatureEl = idoc.getElementById(signatureId);
-    if(signatureEl){
-        signatureEl.removeAttribute("id");   
-    }
 };
 
 ZmComposeView.prototype.showAttachmentDialog =
@@ -1033,7 +872,6 @@ function(bEnableInputs) {
 
 	// reset subject / body fields
 	this._subjectField.value = "";
-	this.updateTabTitle();
 	this._htmlEditor.clear();
 
 	// the div that holds the attc.table and null out innerHTML
@@ -1045,9 +883,7 @@ function(bEnableInputs) {
 	this._origFormValue = "";
 
 	// reset dirty shields
-	this._noSubjectOkay = this._badAddrsOkay = this._spellCheckOkay = false;
-
-	Dwt.setVisible(this._oboRow, false);
+	this._noSubjectOkay = this._badAddrsOkay = false;
 
 	// remove extra mime parts
 	this._extraParts = null;
@@ -1058,7 +894,6 @@ function(bEnableInputs) {
 	// reset state of the spell check button
 	this._controller.toggleSpellCheckButton(false);
 
-	/*
 	if (this._accountChanged) {
 		this.identitySelect.clearOptions();
 		var identityOptions = this._getIdentityOptions();
@@ -1072,11 +907,10 @@ function(bEnableInputs) {
 		// account changed.. so reset the signatures
 		this._controller._signatureChangeListener();
 	}
-	*/
 
-	//reset state of previous Signature cache variable.
-	this._previousSignature = null;
-	this._previousSignatureMode = null;
+    //reset state of previous Signature cache variable.
+    this._previousSignature = null;
+    this._previousSignatureMode = null;
 };
 
 ZmComposeView.prototype.enableInputs =
@@ -1101,129 +935,62 @@ function(mimePart) {
 	this._extraParts.push(mimePart);
 };
 
-ZmComposeView.prototype.getSignatureContentSpan = function(signature, sigContent){
-    signature = signature || this.getSignatureById( this._controller.getSelectedSignature() );
-    if(!signature){
-        return "";
-    }
-    var signatureId = signature.id;
-    sigContent = sigContent || this.getSignatureContent(signatureId);
-    if (this.getHtmlEditor().getMode() == DwtHtmlEditor.HTML) {
-         sigContent = [
-                "<span id='"+signatureId+"'>",
-                    sigContent,
-                "</span>"
-         ].join('');
-	}
-    
-    return sigContent;
-};
-
 /**
  * Called when the user selects something from the Signature menu.
  */
 ZmComposeView.prototype.applySignature =
 function(content, replaceSignatureId){
-
-    content = content || "";
-    var signature = this.getSignatureById( this._controller.getSelectedSignature());
-    var isHtml = this.getHtmlEditor().getMode() == DwtHtmlEditor.HTML;
-    var newLine = this._getSignatureNewLine();
+	content = content || "";
+    var signature = this.getSignatureContent();
+	var newLine = this._getSignatureNewLine();
 	var isAbove = appCtxt.get(ZmSetting.SIGNATURE_STYLE) == ZmSetting.SIG_OUTLOOK;
-    var done = false;
-    var donotsetcontent = false;
-    var noSignature = !signature;
-    
-
-    var sigContent, replaceSignature;
-
-
-    if(replaceSignatureId){
-        //replaceSignature = this.getSignatureById(replaceSignatureId);
-        if(isHtml){
-            var idoc = this.getHtmlEditor()._getIframeDoc();
-            var sigEl = idoc.getElementById(replaceSignatureId);
-                             
-            if(sigEl){
-
-                if(!noSignature){
-                    replaceSignature = sigEl.innerHTML;                    
-                    sigContent = this.getSignatureContent(replaceSignatureId);
-
-                    //Replace img tags to handle inline images
-                    replaceSignature = replaceSignature.replace(/<img[^>]*>/ig,'<img/>');
-                    sigContent = sigContent.replace(/<img[^>]*>/ig, "<img/>");
-
-                    //Remove spaces to make sure IE doesnt screw
-                    replaceSignature = replaceSignature.replace(/\s/g,'');
-                    sigContent = sigContent.replace(/\s/g,'');
-
-                    //IE style semicolons are messed up
-                    if (AjxEnv.isIE) {
-                                                
-                        replaceSignature = replaceSignature.replace(/;/g,'');
-                        sigContent = sigContent.replace(/;/g,'');
-
-                        //innerHTML in IE gives back capital tag names
-                        replaceSignature = replaceSignature.toLowerCase();
-                        sigContent = sigContent.toLowerCase();
-                    }
-                    
-                    if( sigContent == replaceSignature){
-                        sigEl.id = signature.id;
-                        sigEl.innerHTML = this.getSignatureContent(signature.id);
-                        done = true;
-                        donotsetcontent = true;
-                    }else{
-                        var sigId = "id=\""+replaceSignatureId+"\"";
-                        var regexid = new RegExp(sigId, "i");
-                        content = content.replace(regexid, '');
-                    }
-
-                }else{
-                    sigEl.id = "";
-                    sigEl.innerHTML = "";
-                    done = true;
-                    donotsetcontent = true;
-                }
-
-            }
+    var replaceSignature;
+    if (replaceSignatureId) {
+        //Check if there is change if mode of editor
+        if(replaceSignatureId && this._previousSignatureMode && this._previousSignatureMode != this._htmlEditor.getMode()){
+            replaceSignature = ( this.getHtmlEditor().getMode() == DwtHtmlEditor.HTML )
+                    ? AjxStringUtil.convertToHtml(this._previousSignature)
+                    : AjxStringUtil.convertHtml2Text(this._previousSignature);
         }else{
-            //Construct Regex
-            replaceSignature = this.getSignatureContent(replaceSignatureId);            
-            var replaceRe = "(" + AjxStringUtil.regExEscape(newLine) + ")*" + AjxStringUtil.regExEscape(replaceSignature);
-            replaceRe = replaceRe.replace(/(\\n|\\r)/g, "\\s*");
-            if (!isAbove) {
-                replaceRe += "\\s*(" + AjxStringUtil.regExEscape(newLine) + ")*";
-                replaceRe += "$";
-            }
-            
-            replaceRe = new RegExp(replaceRe, "i");
-
-            //Replace Signature
-            sigContent = noSignature ? "" : this.getSignatureContent(signature.id);
-            content = content.replace(replaceRe, sigContent);
-            done = true;
-
+            replaceSignature = replaceSignatureId ? this.getSignatureContent(replaceSignatureId) : "";
         }
+        var replaceRe = "(" + AjxStringUtil.regExEscape(newLine) + ")*" + AjxStringUtil.regExEscape(replaceSignature);
+        if (!isAbove) {
+            replaceRe += "\\s*(" + AjxStringUtil.regExEscape(newLine) + ")*";
+            if (this.getHtmlEditor().getMode() == DwtHtmlEditor.HTML) {
+                replaceRe += "</body></html>";
+            }
+            replaceRe += "$";
+        } else {
+            signature = signature || newLine;
+        }
+        if (AjxEnv.isIE) {
+            if(this._htmlEditor.getMode() == DwtHtmlEditor.HTML) {
+                //Need to do all the crap to clean up HTML in both signature as well as Content.
+                //TODO: Simplify this with a better logic.
+                replaceRe = replaceRe.replace(/\\n/g, " ");
+                replaceRe = replaceRe.replace(/\;/g,"\;?");  //style attrib. does not return semi-colon at the end
+                replaceRe = replaceRe.replace(/\\\>\s*\\\</g,"\\>\\<"); //Remove white spaces between html tags.
+                content = content.replace(/\r\n/g," ");
+                content = content.replace(/\\n/g, " ");
+                content = content.replace(/\>\s*\</g,"><"); //IE has white-space chars between the html elements.
+            }else{                
+                replaceRe = replaceRe.replace(/(\\n|\\r)/g, "\\s*");
+            }
+        }
+        replaceRe = new RegExp(replaceRe, "i");
+        content = content.replace(replaceRe, signature);
+    } else {
+        content = this._insertSignature(content, appCtxt.get(ZmSetting.SIGNATURE_STYLE), signature, newLine);
     }
-    if(!done) {
-       sigContent = this.getSignatureContentSpan(signature);
-       content = this._insertSignature(content, appCtxt.get(ZmSetting.SIGNATURE_STYLE), sigContent, newLine);
-    }    
+    this._htmlEditor.setContent(content);
 
-    if(!donotsetcontent){
-	    this._htmlEditor.setContent(content);
-    }
-    this._fixMultipartRelatedImages_onTimer(this._msg, this.getHtmlEditor()._getIframeDoc());
-
-	//Caching previous Signature state.
-	this._previousSignature = signature;
-	this._previousSignatureMode = this._htmlEditor.getMode();
+    //Caching previous Signature state.
+    this._previousSignature = signature;
+    this._previousSignatureMode = this._htmlEditor.getMode();
 };
 
-ZmComposeView.prototype.getSignatureContent =
-function(signatureId) {
+ZmComposeView.prototype.getSignatureContent = function(signatureId) {
 	var sig = this._getSignature(signatureId);
 	if (!sig) { return ""; }
 
@@ -1249,32 +1016,32 @@ function(content) {
 	// since HTML composing in new window doesnt guarantee the html editor
 	// widget will be initialized when this code is running.
 	content = content || "";
-    var sigContent = this.getSignatureContentSpan();
+	var identity = this.getIdentity();
 	content = this._insertSignature(content, appCtxt.get(ZmSetting.SIGNATURE_STYLE),
-									sigContent,
-									this._getSignatureNewLine());
+                                        this.getSignatureContent(),
+                                        this._getSignatureNewLine());
 
 	this._htmlEditor.setContent(content);
-
-    this._previousSignature = sigContent;
-	this._previousSignatureMode = this._htmlEditor.getMode();
 };
 
 ZmComposeView.prototype._insertSignature =
 function(content, sigStyle, sig, newLine) {
-	var re_newlines = "(" + AjxStringUtil.regExEscape(newLine) + ")+";
-	// get rid of all trailing newlines
-	var re = re_newlines;
-	if (this.getHtmlEditor().getMode() == DwtHtmlEditor.HTML) {
-		re += "</body></html>";
-	}
-	re += "$";
-	re = new RegExp(re, "i");
-	content = content.replace(re, '');
 
-	if (sigStyle == ZmSetting.SIG_OUTLOOK) {
-		var repl = "----- ";
-		var regexp = new RegExp(re_newlines + repl, "i");
+        var re_newlines = "(" + AjxStringUtil.regExEscape(newLine) + ")+";
+        {
+                // get rid of all trailing newlines
+                var re = re_newlines;
+                if (this.getHtmlEditor().getMode() == DwtHtmlEditor.HTML) {
+                        re += "</body></html>";
+                }
+                re += "$";
+                re = new RegExp(re, "i");
+                content = content.replace(re, '');
+        }
+
+        if (sigStyle == ZmSetting.SIG_OUTLOOK) {
+                var repl = "----- ";
+                var regexp = new RegExp(re_newlines + repl, "i");
 
 		if (content.match(regexp)) {
 			content = content.replace(regexp, [sig, newLine, repl].join(""));
@@ -1294,12 +1061,6 @@ function() {
 		var collection = appCtxt.getIdentityCollection();
 		collection.removeChangeListener(this._identityChangeListenerObj);
 	}
-};
-
-ZmComposeView.prototype.getSignatureById =
-function(signatureId){
-    signatureId = signatureId || this._controller.getSelectedSignature();
-    return appCtxt.getSignatureCollection().getById(signatureId)
 };
 
 ZmComposeView.prototype._getSignature =
@@ -1331,8 +1092,11 @@ ZmComposeView.prototype._getExtraSignature =
 function() {
 	var extraSignature = "";
 	if (appCtxt.zimletsPresent()) {
+		if (!this._zimletMgr) {
+			this._zimletMgr = appCtxt.getZimletMgr();//cache zimletMgr
+		}
 		var buffer = [];
-		appCtxt.notifyZimlets("appendExtraSignature", [buffer]);
+		this._zimletMgr.notifyZimlets("appendExtraSignature", buffer);
 		extraSignature = buffer.join(this._getSignatureNewLine());
 		if (extraSignature != "") {
 			extraSignature = this._getSignatureNewLine() + extraSignature;
@@ -1343,7 +1107,7 @@ function() {
 
 ZmComposeView.prototype._getSignatureSeparator =
 function() {
-	var newLine = this._getSignatureNewLine();
+        var newLine = this._getSignatureNewLine();
 	var sep = newLine + newLine;
 	if (appCtxt.get(ZmSetting.SIGNATURE_STYLE) == ZmSetting.SIG_INTERNET) {
 		sep += "-- " + newLine;
@@ -1402,22 +1166,6 @@ function(all) {
 	// make sure att IDs don't get reused
 	if (this._msg) {
 		this._msg.attId = null;
-	}
-};
-
-ZmComposeView.prototype.sendMsgOboIsOK =
-function() {
-	return (Dwt.getVisible(this._oboRow)) ? this._oboCheckbox.checked : false;
-};
-
-ZmComposeView.prototype.updateTabTitle =
-function() {
-	var button = this._controller._tabButton;
-	if (!button) { return; }
-	var buttonText = this._subjectField.value ? this._subjectField.value.substr(0, ZmAppViewMgr.TAB_BUTTON_MAX_TEXT) :
-												ZmComposeController.DEFAULT_TAB_TEXT;
-	if (buttonText != button.getText()) {
-		button.setText(buttonText);
 	}
 };
 
@@ -1501,6 +1249,16 @@ function(name) {
 	return forAttIds;
 };
 
+// Returns the location where the autocomplete list should be positioned. Run as a callback.
+ZmComposeView.prototype._getAcListLoc =
+function(cv, ev) {
+	var element = ev.element;
+	var field = document.getElementById(cv._divId[element.addrType]);
+	var offset = Dwt.getLocation(field).y - this.getLocation().y
+
+	return (new DwtPoint(75, offset + Dwt.getSize(element).y + 6));
+};
+
 ZmComposeView.prototype._acCompHandler =
 function(text, el, match) {
 	this._adjustAddrHeight(el);
@@ -1563,13 +1321,13 @@ function(textarea, skipResetBodySize) {
 * Make sure not to duplicate any addresses, even across fields.
 */
 ZmComposeView.prototype._setAddresses =
-function(action, type, override) {
+function(action, toOverride) {
 	this._action = action;
 
 	if (action == ZmOperation.NEW_MESSAGE &&
-		override)
+		toOverride)
 	{
-		this.setAddress(type, override);
+		this.setAddress(AjxEmailAddress.TO, toOverride);
 	}
 	else if (action == ZmOperation.REPLY ||
 			 action == ZmOperation.REPLY_ALL ||
@@ -1584,14 +1342,6 @@ function(action, type, override) {
 		var aliases = appCtxt.get(ZmSetting.MAIL_ALIASES);
 		for (var i = 0, count = aliases.length; i < count; i++) {
 			used[aliases[i].toLowerCase()] = true;
-		}
-
-		// Check for Canonical Address's
-		var defaultIdentity = appCtxt.getIdentityCollection().defaultIdentity;
-		if (defaultIdentity && defaultIdentity.sendFromAddress) {
-			// Note: sendFromAddress is same as appCtxt.get(ZmSetting.USERNAME)
-			// if the account does not have any Canonical Address assigned.
-			used[defaultIdentity.sendFromAddress.toLowerCase()] = true;
 		}
 
 		// When updating address lists, use this._addressesMsg instead of this._msg, because
@@ -1634,13 +1384,6 @@ function(action, type, override) {
 	}
 };
 
-ZmComposeView.prototype._setObo =
-function(obo) {
-	Dwt.setVisible(this._oboRow, true);
-	this._oboCheckbox.checked = true;
-	this._oboLabel.innerHTML = AjxMessageFormat.format(ZmMsg.sendObo, obo);
-};
-
 ZmComposeView.prototype._setSubject =
 function(action, msg, subjOverride) {
 	if ((action == ZmOperation.NEW_MESSAGE && subjOverride == null)) {
@@ -1648,13 +1391,6 @@ function(action, msg, subjOverride) {
 	}
 
 	var subj = subjOverride || ( (msg) ? msg.subject : "" );
-
-    if (action == ZmOperation.REPLY_CANCEL && !subj) {
-        var inv = (msg) ? msg.invite : null;
-        if (inv) {
-            subj = inv.getName();
-        }
-    }
 
 	if (action != ZmOperation.DRAFT && subj) {
 		var regex = ZmComposeView.SUBJ_PREFIX_RE;
@@ -1675,13 +1411,12 @@ function(action, msg, subjOverride) {
 		case ZmOperation.REPLY_NEW_TIME:	prefix = ZmMsg.subjectNewTime + ": "; break;
 	}
 	this._subjectField.value = prefix + (subj || "");
-	this.updateTabTitle();
 };
 
 ZmComposeView.prototype._setBody =
 function(action, msg, extraBodyText, incOption, nosig) {
 	var composingHtml = this._composeMode == DwtHtmlEditor.HTML;
-
+    var showInlineImages = true;
 	// XXX: consolidate this code later.
 	var isDraft = action == ZmOperation.DRAFT;
 	var isShare = action == ZmOperation.SHARE;
@@ -1710,8 +1445,7 @@ function(action, msg, extraBodyText, incOption, nosig) {
 		this._htmlEditor.setContent(body);
 
 		if (!isInviteReply) {
-			var showInlineAtts = !appCtxt.get(ZmSetting.VIEW_AS_HTML);
-			this._showForwardField(msg, action, null, showInlineAtts);
+			this._showForwardField(msg, action, null, showInlineImages);
 			this._fixMultipartRelatedImages_onTimer(msg);
 			return;
 		}
@@ -1720,8 +1454,7 @@ function(action, msg, extraBodyText, incOption, nosig) {
 	var sigStyle;
 	var sig;
 	if (!nosig && appCtxt.get(ZmSetting.SIGNATURES_ENABLED)) {
-		//sig = this._getSignature();
-        sig = this.getSignatureContentSpan();
+		sig = this._getSignature();
 		sigStyle = sig ? appCtxt.get(ZmSetting.SIGNATURE_STYLE) : null;
 	}
 	var value = (sigStyle == ZmSetting.SIG_OUTLOOK) ? (this._getSignatureSeparator() + sig) : "";
@@ -1742,7 +1475,6 @@ function(action, msg, extraBodyText, incOption, nosig) {
 	}
 
 	var hasInlineImages = false;
-	var hasInlineAtts   = false;
 	this._msgAttId = null;
 	if (incOption == ZmSetting.INCLUDE_NONE || action == ZmOperation.NEW_MESSAGE) {
 		value = extraBodyText ? extraBodyText + value : value;
@@ -1766,21 +1498,13 @@ function(action, msg, extraBodyText, incOption, nosig) {
 				if (ZmMimeTable.isRenderableImage(part.ct)) {
 					bodyArr.push([crlf,"[",part.ct,":",(part.filename||"..."),"]",crlf].join(""));
 					hasInlineImages = true;
-				} else if(part.filename && part.cd == "inline") {   //Inline attachments
-					var attInfo = ZmMimeTable.getInfo(part.ct);
-					attInfo = attInfo ? attInfo.desc : part.ct;
-					bodyArr.push([crlf,"[",attInfo,":",(part.filename||"..."),"]",crlf].join(""));
-					hasInlineAtts = true;
-				} else if(part.ct == ZmMimeTable.TEXT_PLAIN) {
-					bodyArr.push( composingHtml ? AjxStringUtil.convertToHtml(part.content) : part.content );
-				} else if(part.ct == ZmMimeTable.TEXT_HTML) {
-					if(composingHtml){
-						bodyArr.push(part.content);
-					} else {
-						var div = document.createElement("div");
-						div.innerHTML = part.content;
-						bodyArr.push(AjxStringUtil.convertHtml2Text(div));
-					}
+				}
+				else if (part.ct == ZmMimeTable.TEXT_PLAIN || composingHtml) {
+					bodyArr.push(part.content);
+				} else if (part.ct == ZmMimeTable.TEXT_HTML) {
+					var div = document.createElement("div");
+					div.innerHTML = part.content;
+					bodyArr.push(AjxStringUtil.convertHtml2Text(div));
 				}
 			}
 			body = bodyArr.join(crlf);
@@ -1857,11 +1581,9 @@ function(action, msg, extraBodyText, incOption, nosig) {
 			}
 			var sep = composingHtml ? '<br>' : '\n';
 			var wrapParams = {text:body, len:ZmComposeView.WRAP_LENGTH, pre:prefix + " ", eol:sep, htmlMode:composingHtml};
-
 			if (incOption == ZmSetting.INCLUDE_PREFIX) {
 				value += leadingText + preface + AjxStringUtil.wordWrap(wrapParams);
-			}
-			else if (incOption == ZmSetting.INCLUDE_PREFIX_FULL) {
+			} else if (incOption == ZmSetting.INCLUDE_PREFIX_FULL) {
 				var headers = [];
 				for (var i = 0; i < ZmComposeView.QUOTED_HDRS.length; i++) {
 					var h = msg.getHeaderStr(ZmComposeView.QUOTED_HDRS[i]);
@@ -1879,8 +1601,7 @@ function(action, msg, extraBodyText, incOption, nosig) {
 				wrapParams.text = body;
 				wrapParams.len = ZmComposeView.WRAP_LENGTH;
 				value += leadingText + preface + headers + (composingHtml ? sep : '') + prefix + sep + AjxStringUtil.wordWrap(wrapParams);
-			}
-			else if (incOption == ZmSetting.INCLUDE_SMART) {
+			} else if (incOption == ZmSetting.INCLUDE_SMART) {
 				var chunks = AjxStringUtil.getTopLevel(body);
 				for (var i = 0; i < chunks.length; i++) {
 					wrapParams.text = chunks[i];
@@ -1888,29 +1609,27 @@ function(action, msg, extraBodyText, incOption, nosig) {
 				}
 				var text = chunks.length ? chunks.join(sep + sep) : body;
 				value += leadingText + preface + text;
-			}
-			else if (action == ZmOperation.REPLY_ACCEPT ||
+			} else if (action == ZmOperation.REPLY_ACCEPT ||
 					 action == ZmOperation.REPLY_DECLINE ||
-					 action == ZmOperation.REPLY_TENTATIVE)
-			{
-				// bug 5122: always show original meeting details
+					 action == ZmOperation.REPLY_TENTATIVE) {
+
 				var bp = msg.getBodyPart(ZmMimeTable.TEXT_PLAIN);
-				wrapParams.text = bp ? (bp.content.replace(/\r\n/g, "\n")) : "";
+				var bodyStr = bp ? (bp.content.replace(/\r\n/g, "\n")) : "";
+
+				// bug 5122: always show original meeting details
+				wrapParams.text = bodyStr;
 				value = preface + AjxStringUtil.wordWrap(wrapParams);
-			}
-			else if (action == ZmOperation.REPLY_CANCEL) {
+			} else if (action == ZmOperation.REPLY_CANCEL) {
 				cancelledParts = [ leadingText ];
 				cancelledParts.push(crlf);
 				var inv = (msg) ? msg.invite : null;
 				if (inv) {
-					cancelledParts.push(ZmMsg.subjectLabel+" "+ (msg.subject || inv.getName()) +crlf);
-					cancelledParts.push(ZmMsg.organizer + ": " + inv.getOrganizerName() + crlf);
-					var sd = inv.getServerStartDate();
-					if(msg._instanceDate) {
-						sd = msg._instanceDate;
+					cancelledParts.push(ZmMsg.subjectLabel+" "+ (msg.subject || inv.getName()) +crlf);					
+					var organizer = "";
+					if (inv)
+						cancelledParts.push(ZmMsg.organizer + ": " + inv.getOrganizerName() + crlf);
+						cancelledParts.push(ZmMsg.time + ": " + inv.getServerStartDate() + crlf);
 					}
-					cancelledParts.push(ZmMsg.time + ": " + sd + crlf);
-				}
 				cancelledParts.push(ZmItem.NOTES_SEPARATOR);
 				value = cancelledParts.join("");
 			}
@@ -1924,8 +1643,7 @@ function(action, msg, extraBodyText, incOption, nosig) {
 		this._htmlEditor.setContent(value);
 	}
 
-	hasInlineImages = hasInlineImages || !appCtxt.get(ZmSetting.VIEW_AS_HTML);
-	this._showForwardField(msg, action, incOption, hasInlineImages, hasInlineAtts);
+	this._showForwardField(msg, action, incOption, hasInlineImages || showInlineImages);
 	this._fixMultipartRelatedImages_onTimer(msg);
 };
 
@@ -1943,16 +1661,17 @@ ZmComposeView.prototype._setEventHandler =
 function(id, event, addrType) {
 	var field = document.getElementById(id);
 	field._composeView = this._internalId;
-	if (addrType) {
+	if (addrType)
 		field._addrType = addrType;
-	}
 	var lcEvent = event.toLowerCase();
 	field[lcEvent] = ZmComposeView["_" + event];
 };
 
 ZmComposeView.prototype._setBodyFieldCursor =
 function(extraBodyText) {
-	if (this._composeMode == DwtHtmlEditor.HTML) { return; }
+	if (this._composeMode == DwtHtmlEditor.HTML) {
+		return;
+	}
 
 	// this code moves the cursor to the beginning of the body
 	if (AjxEnv.isIE) {
@@ -1981,8 +1700,8 @@ function(composeMode) {
 	this._using = {};
 	this._button = {};
 	this._field = {};
-	this._divEl = {};
-	this._internalId = AjxCore.assignId(this);
+    this._divEl = {};
+    this._internalId = AjxCore.assignId(this);
 
 	// init html
 	this._createHtml();
@@ -1996,6 +1715,7 @@ function(composeMode) {
 
 	// init html editor
 	this._htmlEditor = new ZmHtmlEditor(this, DwtControl.RELATIVE_STYLE, null, this._composeMode);
+//	this._htmlEditor.addEventCallback(new AjxCallback(this, this._htmlEditorEventCallback));
 	this._bodyFieldId = this._htmlEditor.getBodyFieldId();
 	this._bodyField = document.getElementById(this._bodyFieldId);
 	this._includedPreface = "";
@@ -2007,39 +1727,34 @@ function(composeMode) {
 	// init listeners
 	this.addControlListener(new AjxListener(this, this._controlListener));
 
-//	if (!appCtxt.isChildWindow && appCtxt.multiAccounts) {
-//		var opc = this._controller._app.getOverviewPanelContent();
-//		opc.addSelectionListener(new AjxListener(this, this._accountChangeListener));
-//	}
+	if (!appCtxt.isChildWindow && appCtxt.multiAccounts) {
+		var opc = this._controller._app.getOverviewPanelContent();
+		opc.addSelectionListener(new AjxListener(this, this._accountChangeListener));
+	}
 };
 
 ZmComposeView.prototype._createHtml =
 function(templateId) {
-	var data = {
-		id:					this._htmlElId,
-		headerId:			ZmId.getViewId(this._view, ZmId.CMP_HEADER),
-		fromSelectId:		ZmId.getViewId(this._view, ZmId.CMP_FROM_SELECT),
-		toRowId:			ZmId.getViewId(this._view, ZmId.CMP_TO_ROW),
-		toPickerId:			ZmId.getViewId(this._view, ZmId.CMP_TO_PICKER),
-		toInputId:			ZmId.getViewId(this._view, ZmId.CMP_TO_INPUT),
-		ccRowId:			ZmId.getViewId(this._view, ZmId.CMP_CC_ROW),
-		ccPickerId:			ZmId.getViewId(this._view, ZmId.CMP_CC_PICKER),
-		ccInputId:			ZmId.getViewId(this._view, ZmId.CMP_CC_INPUT),
-		bccRowId:			ZmId.getViewId(this._view, ZmId.CMP_BCC_ROW),
-		bccPickerId:		ZmId.getViewId(this._view, ZmId.CMP_BCC_PICKER),
-		bccInputId:			ZmId.getViewId(this._view, ZmId.CMP_BCC_INPUT),
-		bccToggleId:		ZmId.getViewId(this._view, ZmId.CMP_BCC_TOGGLE),
-		subjectRowId:		ZmId.getViewId(this._view, ZmId.CMP_SUBJECT_ROW),
-		subjectInputId:		ZmId.getViewId(this._view, ZmId.CMP_SUBJECT_INPUT),
-		oboRowId:			ZmId.getViewId(this._view, ZmId.CMP_OBO_ROW),
-		oboCheckboxId:		ZmId.getViewId(this._view, ZmId.CMP_OBO_CHECKBOX),
-		oboLabelId:			ZmId.getViewId(this._view, ZmId.CMP_OBO_LABEL),
-		identityRowId:		ZmId.getViewId(this._view, ZmId.CMP_IDENTITY_ROW),
-		identitySelectId:	ZmId.getViewId(this._view, ZmId.CMP_IDENTITY_SELECT),
-		priorityId:			ZmId.getViewId(this._view, ZmId.CMP_PRIORITY),
-		attRowId:			ZmId.getViewId(this._view, ZmId.CMP_ATT_ROW),
-		attDivId:			ZmId.getViewId(this._view, ZmId.CMP_ATT_DIV)
-	};
+	var data = { id:				this._htmlElId,
+				 headerId:			ZmId.getViewId(this._view, ZmId.CMP_HEADER),
+				 toRowId:			ZmId.getViewId(this._view, ZmId.CMP_TO_ROW),
+				 toPickerId:		ZmId.getViewId(this._view, ZmId.CMP_TO_PICKER),
+				 toInputId:			ZmId.getViewId(this._view, ZmId.CMP_TO_INPUT),
+				 ccRowId:			ZmId.getViewId(this._view, ZmId.CMP_CC_ROW),
+				 ccPickerId:		ZmId.getViewId(this._view, ZmId.CMP_CC_PICKER),
+				 ccInputId:			ZmId.getViewId(this._view, ZmId.CMP_CC_INPUT),
+				 bccRowId:			ZmId.getViewId(this._view, ZmId.CMP_BCC_ROW),
+				 bccPickerId:		ZmId.getViewId(this._view, ZmId.CMP_BCC_PICKER),
+				 bccInputId:		ZmId.getViewId(this._view, ZmId.CMP_BCC_INPUT),
+				 bccToggleId:		ZmId.getViewId(this._view, ZmId.CMP_BCC_TOGGLE),
+				 subjectRowId:		ZmId.getViewId(this._view, ZmId.CMP_SUBJECT_ROW),
+				 subjectInputId:	ZmId.getViewId(this._view, ZmId.CMP_SUBJECT_INPUT),
+				 identityRowId:		ZmId.getViewId(this._view, ZmId.CMP_IDENTITY_ROW),
+                 identitySelectId:  ZmId.getViewId(this._view, ZmId.CMP_IDENTITY_SELECT),
+				 priorityId:		ZmId.getViewId(this._view, ZmId.CMP_PRIORITY),
+				 attRowId:			ZmId.getViewId(this._view, ZmId.CMP_ATT_ROW),
+				 attDivId:			ZmId.getViewId(this._view, ZmId.CMP_ATT_DIV)
+				};
 
 	this._createHtmlFromTemplate(templateId || this.TEMPLATE, data);
 };
@@ -2052,11 +1767,14 @@ function(templateId, data) {
 	this._identityDivId = data.identityRowId;
 
 	// init autocomplete list
-	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) || appCtxt.get(ZmSetting.GAL_ENABLED)) {
+	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+		var contactsClass = appCtxt.getApp(ZmApp.CONTACTS);
 		var params = {
-			parent: appCtxt.getShell(),
-			dataClass: appCtxt.getAutocompleter(),
-			matchValue: ZmAutocomplete.AC_VALUE_FULL,
+			parent: this,
+			dataClass: contactsClass,
+			dataLoader: contactsClass.getContactList,
+			matchValue: ZmContactsApp.AC_VALUE_FULL,
+			locCallback: (new AjxCallback(this, this._getAcListLoc, [this])),
 			compCallback: (new AjxCallback(this, this._acCompHandler)),
 			keyUpCallback: (new AjxCallback(this, this._acKeyupHandler))
 		};
@@ -2072,10 +1790,10 @@ function(templateId, data) {
 		this._divId[type] = [data.id, typeStr, "row"].join("_");
 		this._buttonTdId[type] = [data.id, typeStr, "picker"].join("_");
 		this._fieldId[type] = [data.id, typeStr, "control"].join("_");
-		// save field elements
-		this._divEl[type] = document.getElementById(this._divId[type]);
+        // save field elements
+        this._divEl[type]   = document.getElementById(this._divId[type]);
 
-		// save field control
+        // save field control
 		this._field[type] = document.getElementById(this._fieldId[type]);
 		if (this._field[type]) {
 			this._field[type].addrType = type;
@@ -2109,60 +1827,24 @@ function(templateId, data) {
 	// save reference to DOM objects per ID's
 	this._headerEl = document.getElementById(data.headerId);
 	this._subjectField = document.getElementById(data.subjectInputId);
-	this._oboRow = document.getElementById(data.oboRowId);
-	this._oboCheckbox = document.getElementById(data.oboCheckboxId);
-	this._oboLabel = document.getElementById(data.oboLabelId);
 	this._attcDiv = document.getElementById(data.attDivId);
 
-	this._setEventHandler(data.subjectInputId, "onKeyUp");
-	this._setEventHandler(data.subjectInputId, "onBlur");
+	// initialize identity select
+	var identityOptions = this._getIdentityOptions();
+	this.identitySelect = new DwtSelect({parent:this, options:identityOptions});
+	this.identitySelect.setToolTipContent(ZmMsg.chooseIdentity);
 
-	if (appCtxt.isOffline) {
-		if (!this._fromSelect) {
-			var ac = window.parentAppCtxt || window.appCtxt;
-			this._fromSelect = new DwtSelect({parent:this, parentElement:data.fromSelectId});
-			this._fromSelect.addChangeListener(new AjxListener(this, this._handleFromListener));
-			var active = ac.getActiveAccount();
-			if (active.isMain) {
-				active = ac.getMainAccount(true);
-			}
-			var accounts = ac.getZimbraAccounts();
-			for (var i in accounts) {
-				var acct = accounts[i];
-				if (!acct.visible || acct.isMain) { continue; }
-
-				var isSelected = acct == active;
-				if (isSelected) {
-					this._controller._accountName = acct.name;
-				}
-				var identities = ac.getIdentityCollection(acct).getIdentities();
-				for (var j = 0; j < identities.length; j++) {
-					var identity = identities[j];
-					var addr = new AjxEmailAddress(identity.sendFromAddress, AjxEmailAddress.FROM, identity.sendFromDisplay);
-					addr.accountId = acct.id;
-					this._fromSelect.addOption(addr.toString(), isSelected, addr);
-				}
-			}
-		}
-	} else {
-		// initialize identity select
-		var identityOptions = this._getIdentityOptions();
-		this.identitySelect = new DwtSelect({parent:this, options:identityOptions});
-		this.identitySelect.setToolTipContent(ZmMsg.chooseIdentity);
-
-		if (!this._identityChangeListenerObj) {
-			this._identityChangeListenerObj = new AjxListener(this, this._identityChangeListener);
-		}
-		var ac = window.parentAppCtxt || window.appCtxt;
-		var accounts = ac.getZimbraAccounts();
-		for (var id in accounts) {
-			var identityCollection = ac.getIdentityCollection(accounts[id]);
-			identityCollection.addChangeListener(this._identityChangeListenerObj);
-		}
-
-		this.identitySelect.replaceElement(data.identitySelectId);
-		this._setIdentityVisible();
+	if (!this._identityChangeListenerObj) {
+		this._identityChangeListenerObj = new AjxListener(this, this._identityChangeListener);
 	}
+	var accounts = appCtxt.getZimbraAccounts();
+	for (var id in accounts) {
+		var identityCollection = appCtxt.getIdentityCollection(accounts[id]);
+		identityCollection.addChangeListener(this._identityChangeListenerObj);
+	}
+
+	this.identitySelect.replaceElement(data.identitySelectId);
+	this._setIdentityVisible();
 
 	if (appCtxt.get(ZmSetting.MAIL_PRIORITY_ENABLED)) {
 		var buttonId = ZmId.getButtonId(this._view, ZmId.CMP_PRIORITY);
@@ -2172,60 +1854,50 @@ function(templateId, data) {
 		this._priorityButton.setToolTipContent(ZmMsg.setPriority);
 	}
 
-	// Toggle BCC
+	//Toggle BCC
 	this._toggleBccEl = document.getElementById(data.bccToggleId);
 	if (this._toggleBccEl) {
-		Dwt.setHandler(this._toggleBccEl, DwtEvent.ONCLICK, AjxCallback.simpleClosure(this._toggleBccField, this));
+		Dwt.setHandler(this._toggleBccEl,DwtEvent.ONCLICK, AjxCallback.simpleClosure(this._toggleBccField, this));
 	}
-};
-
-ZmComposeView.prototype._handleFromListener =
-function(ev) {
-	if (ev._args.oldValue == ev._args.newValue) { return; }
-
-	var val = ev._args.newValue;
-	this._controller._accountName = appCtxt.getAccount(val.accountId).name;
-
-	// todo:
-	// 1. reset signature based on newly selected value
-	// 2. if draft is saved, check whether it needs to be moved based on
-	//    newly selected value
 };
 
 ZmComposeView.prototype._toggleBccField =
 function(ev, force){
-	var isBccFieldVisible = Dwt.getVisible(this._divEl[AjxEmailAddress.BCC]);
-	if (typeof force != "undefined") isBccFieldVisible = !force;
-	this._showAddressField(AjxEmailAddress.BCC, !isBccFieldVisible);
+    var isBccFieldVisible = Dwt.getVisible(this._divEl[AjxEmailAddress.BCC]);
+    if (typeof force != "undefined") isBccFieldVisible = !force;
+    this._showAddressField(AjxEmailAddress.BCC, !isBccFieldVisible);
 };
 
 ZmComposeView.prototype._createPrioityMenuItem =
 function(menu, text, flag) {
-	var item = DwtMenuItem.create({parent:menu, imageInfo:this._getPriorityImage(flag), text:text});
-	item._priorityFlag = flag;
-	item.addSelectionListener(this._priorityMenuListnerObj);
+    var item = DwtMenuItem.create({parent:menu, imageInfo:this._getPriorityImage(flag), text:text});
+    item._priorityFlag = flag;
+    item.addSelectionListener(this._priorityMenuListnerObj);
 };
 
 ZmComposeView.prototype._priorityButtonMenuCallback =
 function() {
-	var menu = new DwtMenu({parent:this._priorityButton});
-	this._priorityMenuListnerObj = new AjxListener(this, this._priorityMenuListner);
-	this._createPrioityMenuItem(menu, ZmMsg.high, ZmItem.FLAG_HIGH_PRIORITY);
-	this._createPrioityMenuItem(menu, ZmMsg.normal, "");
-	this._createPrioityMenuItem(menu, ZmMsg.low, ZmItem.FLAG_LOW_PRIORITY);
-	return menu;
+    var menu = new DwtMenu({parent:this._priorityButton});
+    this._priorityMenuListnerObj = new AjxListener(this, this._priorityMenuListner);
+    this._createPrioityMenuItem(menu, ZmMsg.high, ZmItem.FLAG_HIGH_PRIORITY);
+    this._createPrioityMenuItem(menu, ZmMsg.normal, "");
+    this._createPrioityMenuItem(menu, ZmMsg.low, ZmItem.FLAG_LOW_PRIORITY);
+    return menu;
 };
 
 ZmComposeView.prototype._getPriorityImage =
 function(flag) {
-	if (flag == ZmItem.FLAG_HIGH_PRIORITY)	{ return "PriorityHigh"; }
-	if (flag == ZmItem.FLAG_LOW_PRIORITY)	{ return "PriorityLow"; }
-	return "PriorityNormal";
+    if (flag == ZmItem.FLAG_HIGH_PRIORITY) {
+        return "PriorityHigh";
+    } else if (flag == ZmItem.FLAG_LOW_PRIORITY) {
+        return "PriorityLow";
+    }
+    return "PriorityNormal";
 };
 
 ZmComposeView.prototype._priorityMenuListner =
 function(ev) {
-	this._setPriority(ev.dwtObj._priorityFlag);
+    this._setPriority(ev.dwtObj._priorityFlag);
 };
 
 ZmComposeView.prototype._getPriority =
@@ -2236,11 +1908,11 @@ function() {
 
 ZmComposeView.prototype._setPriority =
 function(flag) {
-	if (this._priorityButton) {
-		flag = flag || "";
-		this._priorityButton.setImage(this._getPriorityImage(flag));
-		this._priorityButton._priorityFlag = flag;
-	}
+    if (this._priorityButton) {
+        flag = flag || "";
+        this._priorityButton.setImage(this._getPriorityImage(flag));
+        this._priorityButton._priorityFlag = flag;
+    }
 };
 
 ZmComposeView.prototype._getIdentityOptions =
@@ -2252,23 +1924,21 @@ function() {
 		var identity = identities[i];
 
 		// bug fix #21497 - skip the *fake* local account if offline and is main
-		var acct = appCtxt.isOffline && appCtxt.getAccount(identity.id);
+		var acct = (appCtxt.isOffline && appCtxt.multiAccounts)
+			? appCtxt.getAccount(identity.id) : null;
 		if (acct && acct.isMain) { continue; }
 
 		var text = this._getIdentityText(identity);
-		options.push(new DwtSelectOptionData(identity.id, text,null,this._getIdentityText(identity,true)));
+		options.push(new DwtSelectOptionData(identity.id, text));
 	}
 	return options;
 };
 
 ZmComposeView.prototype._getIdentityText =
-function(identity, justName) {
+function(identity) {
 	var name = identity.name;
 	if (identity.isDefault && name == ZmIdentity.DEFAULT_NAME) {
 		name = ZmMsg.accountDefault;
-	}
-	if (justName) {
-		return name;
 	}
 
 	// default replacement parameters
@@ -2305,25 +1975,19 @@ function(ev) {
 		var identity = ev.getDetail("item");
 		var text = this._getIdentityText(identity);
 		var option = new DwtSelectOptionData(identity.id, text);
-		if (this.identitySelect) {
-			this.identitySelect.addOption(option);
-		}
+		this.identitySelect.addOption(option);
 	} else if (ev.event == ZmEvent.E_DELETE) {
 		// DwtSelect doesn't support removing an option, so recreate the whole thing.
-		if (this.identitySelect) {
-			this.identitySelect.clearOptions();
-			var options = this._getIdentityOptions();
-			for (var i = 0, count = options.length; i < count; i++)	 {
-				this.identitySelect.addOption(options[i]);
-			}
-			this._setIdentityVisible();
+		this.identitySelect.clearOptions();
+		var options = this._getIdentityOptions();
+		for (var i = 0, count = options.length; i < count; i++)	 {
+			this.identitySelect.addOption(options[i]);
 		}
+		this._setIdentityVisible();
 	} else if (ev.event == ZmEvent.E_MODIFY) {
-		if (this.identitySelect) {
-			var identity = ev.getDetail("item");
-			var text = this._getIdentityText(identity);
-			this.identitySelect.rename(identity.id, text);
-		}
+		var identity = ev.getDetail("item");
+		var text = this._getIdentityText(identity);
+		this.identitySelect.rename(identity.id, text);
 	}
 };
 
@@ -2340,16 +2004,14 @@ function() {
 
 ZmComposeView.prototype.getIdentity =
 function() {
-	if (this.identitySelect) {
-		var identityCollection = appCtxt.getIdentityCollection();
-		var id = this.identitySelect.getValue();
-		var result = identityCollection.getById(id);
-		return result ? result : identityCollection.defaultIdentity;
-	}
+	var identityCollection = appCtxt.getIdentityCollection();
+	var id = this.identitySelect.getValue();
+	var result = identityCollection.getById(id);
+	return result ? result : identityCollection.defaultIdentity;
 };
 
 ZmComposeView.prototype._showForwardField =
-function(msg, action, replyPref, includeInlineImages, includeInlineAtts) {
+function(msg, action, replyPref, includeInlineImages) {
 
 	var html = "";
 	if (!(this._msgIds && this._msgIds.length) &&
@@ -2358,17 +2020,16 @@ function(msg, action, replyPref, includeInlineImages, includeInlineAtts) {
 		html = AjxTemplate.expand("mail.Message#ForwardOneMessage", {message:msg});
 		this._attachCount = 1;
 	}
-	else if (msg && (msg.hasAttach || includeInlineImages || includeInlineAtts))
+	else if (msg && (msg.hasAttach || includeInlineImages))
 	{
-		var attLinks = msg.getAttachmentLinks(false, includeInlineImages, includeInlineAtts);
+		var attLinks = msg.getAttachmentLinks(false, includeInlineImages);
 		if (attLinks.length > 0) {
 			var data = {
 				attachments: attLinks,
 				isNew: action == ZmOperation.NEW_MESSAGE,
 				isForward: action == ZmOperation.FORWARD,
 				isForwardInline: action == ZmOperation.FORWARD_INLINE,
-				isDraft: action == ZmOperation.DRAFT,
-				fwdFieldName:(ZmComposeView.FORWARD_ATT_NAME+this._sessionId)
+				isDraft: action == ZmOperation.DRAFT
 			};
 			html = AjxTemplate.expand("mail.Message#ForwardAttachments", data);
 
@@ -2387,10 +2048,7 @@ function(msg, action, replyPref, includeInlineImages, includeInlineAtts) {
 			if (!message) continue;
 			messages.push(message);
 		}
-		var data = {
-			messages: messages,
-			fwdFieldName: (ZmComposeView.FORWARD_MSG_NAME+this._sessionId)
-		};
+		var data = { messages: messages };
 		html = AjxTemplate.expand("mail.Message#ForwardMessages", data);
 		if (messages.length >= ZmComposeView.SHOW_MAX_ATTACHMENTS) {
 			this._attcDiv.style.height = ZmComposeView.MAX_ATTACHMENT_HEIGHT;
@@ -2427,14 +2085,14 @@ function(type, show, skipNotify, skipFocus) {
 		appCtxt.set(setting, show, null, false, skipNotify);
 	}
 	if (type == AjxEmailAddress.BCC) {
-		Dwt.setInnerHtml(this._toggleBccEl, show ? ZmMsg.hideBCC : ZmMsg.showBCC );
+	   Dwt.setInnerHtml(this._toggleBccEl, show ? ZmMsg.hideBCC : ZmMsg.showBCC );
 	}
 	this._resetBodySize();
 };
 
-// Grab the addresses out of the form. Optionally, they can be returned broken
-// out into good and bad addresses, with an aggregate list of the bad ones also
-// returned. If the field is hidden, its contents are ignored.
+// Grab the addresses out of the form. Optionally, they can be returned broken out into good and
+// bad addresses, with an aggregate list of the bad ones also returned. If the field is hidden,
+// its contents are ignored.
 ZmComposeView.prototype._collectAddrs =
 function() {
 	var addrs = {};
@@ -2468,9 +2126,8 @@ function(incAddrs, incSubject) {
 				vals.push(this._field[type].value);
 		}
 	}
-	if (incSubject) {
+	if (incSubject)
 		vals.push(this._subjectField.value);
-	}
 	vals.push(this._htmlEditor.getContent());
 	var str = vals.join("|");
 	str = str.replace(/\|+/, "|");
@@ -2515,10 +2172,10 @@ function() {
 	this._resetBodySize();
 };
 
-//ZmComposeView.prototype._accountChangeListener =
-//function(ev) {
-//	this._accountChanged = true;
-//};
+ZmComposeView.prototype._accountChangeListener =
+function(ev) {
+	this._accountChanged = true;
+};
 
 
 // Callbacks
@@ -2574,20 +2231,14 @@ function() {
 ZmComposeView.prototype._noSubjectOkCallback =
 function(dialog) {
 	this._noSubjectOkay = true;
-	this._popDownAlertAndSendMsg(dialog);
-};
-
-//this is used by several kinds of alert dialogs
-ZmComposeView.prototype._popDownAlertAndSendMsg =
-function(dialog) {
 	// not sure why: popdown (in FF) seems to create a race condition,
 	// we can't get the attachments from the document anymore.
 	// W/in debugger, it looks fine, but remove the debugger and any
 	// alerts, and gotAttachments will return false after the popdown call.
 
-	if (AjxEnv.isIE) {
+ 	if (AjxEnv.isIE) {
 		dialog.popdown();
-	}
+ 	}
 	// bug fix# 3209
 	// - hide the dialog instead of popdown (since window will go away anyway)
 	if (AjxEnv.isNav && appCtxt.isChildWindow) {
@@ -2610,26 +2261,6 @@ function(dialog) {
 	this.enableInputs(true);
 	dialog.popdown();
 	appCtxt.getKeyboardMgr().grabFocus(this._subjectField);
-	this._controller.resetToolbarOperations();
-	this.reEnableDesignMode();
-};
-
-ZmComposeView.prototype._errViaZimletOkCallback =
-function(params) {
-	var dialog = params.errDialog; 
-	var zimletName = params.zimletName;
-	//add this zimlet to ignoreZimlet string
-	this._ignoredZimlets = this._ignoredZimlets || {};
-	this._ignoredZimlets[zimletName] = true;
-	this._popDownAlertAndSendMsg(dialog);
-};
-
-ZmComposeView.prototype._errViaZimletCancelCallback =
-function(params) {
-	var dialog = params.errDialog; 
-	var zimletName = params.zimletName;
-	this.enableInputs(true);
-	dialog.popdown();
 	this._controller.resetToolbarOperations();
 	this.reEnableDesignMode();
 };
@@ -2658,10 +2289,10 @@ function(type, dialog) {
 
 // Files have been uploaded, re-initiate the send with an attachment ID.
 ZmComposeView.prototype._attsDoneCallback =
-function(isDraft, status, attId, docIds) {
+function(isDraft, status, attId) {
 	DBG.println(AjxDebug.DBG1, "Attachments: isDraft = " + isDraft + ", status = " + status + ", attId = " + attId);
 	if (status == AjxPost.SC_OK) {
-		this._controller._saveDraft(ZmComposeController.DRAFT_TYPE_AUTO, attId, docIds);
+		this._controller._saveDraft(ZmComposeController.DRAFT_TYPE_AUTO, attId);
 	} else if (status == AjxPost.SC_UNAUTHORIZED) {
 		// auth failed during att upload - let user relogin, continue with compose action
 		var ex = new AjxException("401 response during attachment upload", ZmCsfeException.SVC_AUTH_EXPIRED);
@@ -2677,47 +2308,8 @@ function(isDraft, status, attId, docIds) {
 		}
 
 		this._controller.popupErrorDialog(msg + ZmMsg.errorTryAgain, null, null, true);
-		this._controller.resetToolbarOperations();
+		this._controller.resetToolbarOperations()
 	}
-};
-
-
-//Mandatory Spellcheck Callback
-ZmComposeView.prototype._spellCheckShield =
-function(words){
-	if (words && words.available && words.misspelled != null && words.misspelled.length != 0) {
-		var msgDialog = appCtxt.getYesNoMsgDialog();
-		msgDialog.setMessage(AjxMessageFormat.format(ZmMsg.misspellingsMessage, [words.misspelled.length]));
-		msgDialog.registerCallback(DwtDialog.YES_BUTTON, this._spellCheckShieldOkListener, this, [ msgDialog, words ] );
-		msgDialog.registerCallback(DwtDialog.NO_BUTTON, this._spellCheckShieldCancelListener, this, msgDialog);
-		msgDialog.associateEnterWithButton(DwtDialog.NO_BUTTON);
-		msgDialog.popup(null, DwtDialog.NO_BUTTON);
-	} else {
-		this._spellCheckOkay = true;
-		this._controller.sendMsg();
-	}
-};
-
-ZmComposeView.prototype._spellCheckShieldOkListener =
-function(msgDialog, words, ev){
-
-	this._controller._toolbar.enableAll(true);
-
-	this._controller.toggleSpellCheckButton(true);
-	this._htmlEditor.discardMisspelledWords();
-
-	this._spellCheckOkay = false;
-	msgDialog.popdown();
-
-	this._htmlEditor.onExitSpellChecker = new AjxCallback(this._controller, this._controller.toggleSpellCheckButton, true)
-	this._htmlEditor._spellCheckCallback(words);
-};
-
-ZmComposeView.prototype._spellCheckShieldCancelListener =
-function(msgDialog, ev){
-	this._spellCheckOkay = true;
-	msgDialog.popdown();
-	this._controller.sendMsg();
 };
 
 ZmComposeView.prototype._setFormValue =
@@ -2733,49 +2325,66 @@ function() {
 
 // Static methods
 
+ZmComposeView._onClick =
+function(ev) {
+	ev || (ev = window.event);
+
+	var element = DwtUiEvent.getTargetWithProp(ev, "id");
+	var id = element ? element.id : null;
+
+	// if clicked on remove attachment link
+	if (id && id.indexOf("_att_") == 0) {
+		var cv = AjxCore.objectWithId(element._composeView);
+		var attId = id.slice(0, -2);
+		var row = document.getElementById(attId);
+
+		cv._attachmentTable.deleteRow(row.rowIndex);
+		if (--cv._attachCount < ZmComposeView.SHOW_MAX_ATTACHMENTS) {
+			cv._attcDiv.style.overflow = "";
+			cv._attcDiv.style.height = "";
+			if (cv._attachCount == 0) {
+				cv._attachmentTable = null;
+				cv._attcDiv.innerHTML = "";
+			}
+		}
+		cv._resetBodySize();
+		return false; // disables following of link
+	}
+
+	return true;
+};
+
+ZmComposeView._onKeyDown =
+function(ev) {
+	ev || (ev = window.event);
+
+	var element = DwtUiEvent.getTargetWithProp(ev, "id");
+	if (!element) return true;
+
+	var id = element.id;
+	var key = DwtKeyEvent.getCharCode(ev);
+	// ignore return in attachment input field (bug 961)
+	if (id.indexOf("_att_") == 0)
+		return (key != DwtKeyEvent.KEY_ENTER && key != DwtKeyEvent.KEY_END_OF_TEXT);
+};
+
 // NOTE: this handler should only get triggered if/when contacts are DISABLED!
 ZmComposeView._onKeyUp =
 function(ev) {
-
-	ev = DwtUiEvent.getEvent(ev);
-	var element = DwtUiEvent.getTargetWithProp(ev, "id");
-	if (!element) { return true; }
-	var cv = AjxCore.objectWithId(element._composeView);
-
-	if (element == cv._subjectField) {
-		var key = DwtKeyEvent.getCharCode(ev);
-		if (key == 3 || key == 13) {
-			cv._focusHtmlEditor();
-		}
-	} else {
-		cv._adjustAddrHeight(element);
-	}
-	return true;
-};
-
-ZmComposeView._onBlur =
-function(ev) {
+	ev || (ev = window.event);
 
 	var element = DwtUiEvent.getTargetWithProp(ev, "id");
-	if (!element) { return true; }
+	if (!element) return true;
+
 	var cv = AjxCore.objectWithId(element._composeView);
-
-	cv.updateTabTitle();
-
-	return true;
+	cv._adjustAddrHeight(element);
 };
 
-// for com.zimbra.dnd zimlet
-ZmComposeView.prototype.uploadFiles =
-function() {
-	var attachDialog = appCtxt.getAttachDialog();
-	this._controller = AjxDispatcher.run("GetComposeController");
-	var callback = new AjxCallback(this, this._attsDoneCallback, [true]);
+//for ZimbraDnD
+ZmComposeView.prototype.uploadFiles = function(){
+    var attachDialog = appCtxt.getAttachDialog();
+    this._controller = AjxDispatcher.run("GetComposeController");
+    var callback = new AjxCallback(this, this._attsDoneCallback, [true]);
 	attachDialog.setUploadCallback(callback);
-	attachDialog.upload(callback, document.getElementById("zdnd_form"));
-};
-
-ZmComposeView.prototype.deactivate =
-function() {
-	this._controller.inactive = true;
+    attachDialog.upload(callback, document.getElementById("zdnd_form"));
 };

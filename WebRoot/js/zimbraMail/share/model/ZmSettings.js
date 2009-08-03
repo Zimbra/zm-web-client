@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -196,15 +198,12 @@ function(callback, accountName, result) {
 	// Create the main account. In the normal case, that is the only account,
 	// and represents the user who logged in. If family mailbox is enabled, that
 	// account is a parent account with dominion over child accounts.
-	var mainAcct;
 	if (!accountName) {
-		mainAcct = appCtxt.getMainAccount();
+		var mainAcct = appCtxt.getMainAccount();
 		mainAcct.id = obj.id;
 		mainAcct.name = obj.name;
 		mainAcct.isMain = true;
-		mainAcct.isZimbraAccount = true;
 		mainAcct.loaded = true;
-		mainAcct.visible = true;
 		mainAcct.settings = this;
 		// replace dummy account with this one
 		if (appCtxt._accounts[ZmZimbraAccount.DEFAULT_ID]) {
@@ -213,9 +212,8 @@ function(callback, accountName, result) {
 		}
 		appCtxt.setActiveAccount(mainAcct);
 
-		if (appCtxt.isOffline) {
-			mainAcct.displayName = ZmMsg.localFolders;
-		}
+		// set visibility last - based on offline-mode flag
+		mainAcct.visible = !appCtxt.isOffline;
 
 		// for offline, find out whether this client supports prism-specific features
 		if (appCtxt.isOffline && AjxEnv.isPrism && window.platform &&
@@ -242,20 +240,21 @@ function(callback, accountName, result) {
 		}
 	}
 
-	appCtxt.numVisibleAccounts = 1;
-
-	var accounts = obj.childAccounts && obj.childAccounts.childAccount;
+	var accounts = obj.childAccounts ? obj.childAccounts.childAccount : null;
 	if (accounts) {
+		// init visible account count - for offline, main account is always invisible
+		var count = appCtxt.isOffline ? 0 : 1;
+
 		// create a ZmZimbraAccount for each child account
 		for (var i = 0; i < accounts.length; i++) {
 			var acct = ZmZimbraAccount.createFromDom(accounts[i]);
 			appCtxt.setAccount(acct);
 			if (acct.visible) {
-				appCtxt.numVisibleAccounts++;
+				count++;
+				appCtxt.multiAccounts = true;
 			}
 		}
-		appCtxt.multiAccounts = appCtxt.numVisibleAccounts > 1;
-		appCtxt.isFamilyMbox = appCtxt.multiAccounts && !appCtxt.isOffline;
+		appCtxt.numVisibleAccounts = count;
 	}
 
 	if (obj.changePasswordURL) {
@@ -292,31 +291,34 @@ function(callback, accountName, result) {
 		}
 	}
 
-	// load zimlets *only* for the main account
-	if (mainAcct) {
-		if (obj.zimlets && obj.zimlets.zimlet) {
-			// bug #28897 -
-			// look for usage tracker zimlet before waiting for it to get parsed
-			var zimlets = obj.zimlets.zimlet;
-			for (var i = 0; i < zimlets.length; i++) {
-				var z = zimlets[i];
-				if (z.zimlet[0].name == "com_zimbra_usagetracker") {
-					// if found, set the global selection listener (for DwtButtons)
-					DwtControl.globalSelectionListener = new AjxListener(null, ZmZimbraMail.globalButtonListener);
-					break;
-				}
+	// HACK HACK HACK: for offline/multi-account, general prefs come from the
+	// invisible parent account
+	if (appCtxt.isOffline && appCtxt.multiAccounts) {
+		var main = appCtxt.getMainAccount();
+		for (var i in ZmSetting.IS_GLOBAL) {
+			var global = ZmSetting.IS_GLOBAL[i];
+			var setting = this._settings[global];
+			if (setting) {
+				setting.setValue(main.settings.get(global));
 			}
-
-			var listener = new AjxListener(this,
-				function() {
-					var zimletsCallback = new AjxCallback(this, this._loadZimlets, [obj.zimlets.zimlet, obj.props.prop]);
-					AjxDispatcher.require("Zimlet", false, zimletsCallback);
-				});
-			appCtxt.getAppController().addListener(ZmAppEvent.POST_STARTUP, listener);
-		} else {
-			appCtxt.allZimletsLoaded();
 		}
 	}
+
+	// load Zimlets..  NOTE: only load zimlets if main account
+	if (!accountName && obj.zimlets && obj.zimlets.zimlet) {
+		DBG.println(AjxDebug.DBG1, "Zimlets - Loading " + obj.zimlets.zimlet.length + " Zimlets");
+		var prCallback = new AjxCallback(this,
+			function() {
+				var zimletsCallback = new AjxCallback(this, this._loadZimlets, [obj.zimlets.zimlet, obj.props.prop]);
+				AjxDispatcher.require("Zimlet", false, zimletsCallback);
+			});
+		appCtxt.getAppController().addPostRenderCallback(prCallback, 4, 500, true);
+	} else {
+		appCtxt.allZimletsLoaded();
+	}
+
+	// load shortcuts
+	this.loadShortcuts();
 
 	// DONE
 	this.userSettingsLoaded = true;
@@ -326,42 +328,16 @@ function(callback, accountName, result) {
 };
 
 ZmSettings.prototype._loadZimlets =
-function(allzimlets, props) {
-	allzimlets = allzimlets || [];
-	this.registerSetting("ZIMLETS",		{type:ZmSetting.T_CONFIG, defaultValue:allzimlets, isGlobal:true});
+function(zimlets, props) {
+	this.registerSetting("ZIMLETS",		{type:ZmSetting.T_CONFIG, defaultValue:zimlets, isGlobal:true});
 	this.registerSetting("USER_PROPS",	{type:ZmSetting.T_CONFIG, defaultValue:props});
 
-	var zimlets = []; // Filter zimlets from getinforesponse and load only user checked
-	var checkedZimlets = appCtxt.get(ZmSetting.CHECKED_ZIMLETS) || [];
-	for (var i = 0; i < allzimlets.length; i++) {
-		var zimletObj = allzimlets[i];
-		var zimlet0 = zimletObj.zimlet[0];
-		if (!checkedZimlets ||
-			checkedZimlets.length <= 0 ||
-			(","+checkedZimlets.join(",") + ",").indexOf("," + zimlet0.name + ",") >= 0) // YUCK
-		{
-			zimlets.push(zimletObj);
-		}
-	}
-
-	DBG.println(AjxDebug.DBG1, "Zimlets - Loading " + zimlets.length + " Zimlets");
 	appCtxt.getZimletMgr().loadZimlets(zimlets, props);
 
 	if (zimlets && zimlets.length) {
-		var activeApp = appCtxt.getCurrentApp();
-		if (activeApp) {
-			var overview;
-			if (appCtxt.multiAccounts) {
-				var containerId = activeApp.getOverviewContainer().containerId;
-				var zimletLabel = ZmOrganizer.LABEL[ZmOrganizer.ZIMLET];
-				var overviewId = [containerId, zimletLabel].join("_");
-				overview = appCtxt.getOverviewController().getOverview(overviewId);
-			} else {
-				overview = activeApp.getOverview();
-			}
-		}
-
 		// update overview tree
+		var activeApp = appCtxt.getCurrentApp();
+		var overview = activeApp ? activeApp.getOverview() : null;
 		if (overview) {
 			overview.setTreeView(ZmOrganizer.ZIMLET);
 		}
@@ -374,7 +350,7 @@ function(allzimlets, props) {
 	}
 };
 
-ZmSettings.prototype.loadPreferenceData =
+ZmSettings.prototype.loadSkinsAndLocales =
 function(callback) {
 	// force main account (in case multi-account) since locale/skins are global
 	var command = new ZmBatchCommand(null, appCtxt.getMainAccount().name);
@@ -392,6 +368,18 @@ function(callback) {
 	command.addNewRequestParams(csvFormatsDoc, csvFormatsCallback);
 
 	command.run(callback);
+};
+
+ZmSettings.prototype._handleResponseGetAvailableCsvFormats =
+function(result){
+	var formats = result.getResponse().GetAvailableCsvFormatsResponse.csv;
+	var setting = appCtxt.getMainAccount().settings.getSetting(ZmSetting.AVAILABLE_CSVFORMATS);
+	if(formats && formats.length){
+		var csvformat;
+		for(var i=0; i<formats.length; i++){
+			setting.setValue(formats[i].name);
+		}
+	};
 };
 
 ZmSettings.prototype._handleResponseLoadAvailableSkins =
@@ -416,21 +404,9 @@ function(response) {
 			// bug: 38038
 			locale.id = locale.id.replace(/^in/,"id");
 			ZmLocale.create(locale.id, locale.name);
-		}
+		}		
 		this.getSetting(ZmSetting.LOCALE_CHANGE_ENABLED).setValue(ZmLocale.hasChoices());
 	}
-};
-
-ZmSettings.prototype._handleResponseGetAvailableCsvFormats =
-function(result){
-	var formats = result.getResponse().GetAvailableCsvFormatsResponse.csv;
-	var setting = appCtxt.getMainAccount().settings.getSetting(ZmSetting.AVAILABLE_CSVFORMATS);
-	if (formats && formats.length) {
-		var csvformat;
-		for (var i=0; i<formats.length; i++) {
-			setting.setValue(formats[i].name);
-		}
-	};
 };
 
 /**
@@ -460,13 +436,8 @@ function(list, callback, batchCommand, acctName) {
 		if (setting.dataType == ZmSetting.D_LIST) {
 			// LDAP supports multi-valued attrs, so don't serialize list
 			var value = setting.getValue();
-			if (value && value.length) {
-				for (var j = 0; j < value.length; j++) {
-					var node = soapDoc.set("pref", value[j]);
-					node.setAttribute("name", setting.name);
-				}
-			} else {
-				var node = soapDoc.set("pref", "");
+			for (var j = 0; j < value.length; j++) {
+				var node = soapDoc.set("pref", value[j]);
 				node.setAttribute("name", setting.name);
 			}
 		} else {
@@ -474,7 +445,7 @@ function(list, callback, batchCommand, acctName) {
 			var node = soapDoc.set("pref", value);
 			node.setAttribute("name", setting.name);
 		}
-
+			
 		gotOne = true;
 	}
 
@@ -506,7 +477,7 @@ function(list, callback, result) {
 		// notify any listeners on the settings as a whole
 		this._notify(ZmEvent.E_MODIFY, {settings:list});
 	}
-
+	
 	if (callback) {
 		callback.run(result);
 	}
@@ -521,7 +492,7 @@ function() {
 	// CSFE_MSG_FETCHER_URI
 	value = AjxUtil.formatUrl({host:document.domain, path:"/service/home/~/", qsReset:true, qsArgs:{auth:"co"}});
 	this._settings[ZmSetting.CSFE_MSG_FETCHER_URI].setValue(value, null, false, true);
-
+	
 	// CSFE_UPLOAD_URI
 	value = AjxUtil.formatUrl({host:document.domain, path:"/service/upload", qsReset:true, qsArgs:{lbfums:""}});
 	this._settings[ZmSetting.CSFE_UPLOAD_URI].setValue(value, null, false, true);
@@ -533,7 +504,7 @@ function() {
 	// CSFE EXPORT URI
 	value = AjxUtil.formatUrl({host:document.domain, path:"/service/home/~/", qsReset:true, qsArgs:{auth:"co", id:"{0}", fmt:"csv"}});
 	this._settings[ZmSetting.CSFE_EXPORT_URI].setValue(value, null, false, true);
-
+	
 	// default sorting preferences
 	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.DATE_DESC, ZmId.VIEW_CONVLIST, true, true);
 	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.DATE_DESC, ZmId.VIEW_CONV, true, true);
@@ -547,6 +518,37 @@ function() {
 };
 
 /**
+ * Loads the user's custom shortcuts, which consist of key bindings for organizers
+ * that have aliases.
+ *
+ * @param unload	[Boolean]*		If set, removes user-defined shortcuts from global kmm
+ */
+ZmSettings.prototype.loadShortcuts =
+function(unload) {
+	// NOTE: the key map mgr is *global* (i.e. singleton object)
+	var kmm = appCtxt.getAppController().getKeyMapMgr();
+	var scString = this.get(ZmSetting.SHORTCUTS);
+	if (!scString || !kmm) { return; }
+	var shortcuts = ZmShortcut.parse(scString, kmm);
+	var maps = {};
+	for (var i = 0, count = shortcuts.length; i < count; i++) {
+		var sc = shortcuts[i];
+		if (unload) {
+			kmm.removeMapping(sc.mapName, sc.keySequence);
+			kmm.removeArg(sc.mapName, sc.action);
+		} else {
+			kmm.setMapping(sc.mapName, sc.keySequence, sc.action);
+			kmm.setArg(sc.mapName, sc.action, sc.arg);
+		}
+		maps[sc.mapName] = true;
+	}
+
+	for (var map in maps) {
+		kmm.reloadMap(map);
+	}
+};
+
+/**
  * Loads the standard settings and their default values.
  */
 ZmSettings.prototype._initialize =
@@ -554,7 +556,7 @@ function() {
 	// CONFIG SETTINGS
 	this.registerSetting("AC_TIMER_INTERVAL",				{type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_INT, defaultValue:300});
 	this.registerSetting("ASYNC_MODE",						{type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
-	this.registerSetting("BRANCH",							{type:ZmSetting.T_CONFIG, defaultValue:"main"});
+	this.registerSetting("BRANCH",							{type:ZmSetting.T_CONFIG, defaultValue:"FRANKLIN"});
 
 	// next 3 are replaced during deployment
 	this.registerSetting("CLIENT_DATETIME",					{type:ZmSetting.T_CONFIG, defaultValue:"@buildDateTime@"});
@@ -565,8 +567,8 @@ function() {
 	this.registerSetting("CSFE_MSG_FETCHER_URI",			{type:ZmSetting.T_CONFIG});
 	this.registerSetting("CSFE_SERVER_URI",					{type:ZmSetting.T_CONFIG});
 	this.registerSetting("CSFE_UPLOAD_URI",					{type:ZmSetting.T_CONFIG});
-	this.registerSetting("CSFE_ATTACHMENT_UPLOAD_URI",		{type:ZmSetting.T_CONFIG});
-	this.registerSetting("DEV",								{type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
+    this.registerSetting("CSFE_ATTACHMENT_UPLOAD_URI",		{type:ZmSetting.T_CONFIG});
+    this.registerSetting("DEV",								{type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("FORCE_CAL_OFF",					{type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("HELP_URI",						{type:ZmSetting.T_CONFIG, defaultValue:appContextPath + ZmMsg.helpURI});
 	this.registerSetting("HTTP_PORT",						{type:ZmSetting.T_CONFIG, defaultValue:ZmSetting.HTTP_DEFAULT_PORT});
@@ -602,7 +604,7 @@ function() {
 	this.registerSetting("OPTIONS_ENABLED",					{name:"zimbraFeatureOptionsEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	this.registerSetting("PORTAL_ENABLED",					{name:"zimbraFeaturePortalEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("TASKS_ENABLED",					{name:"zimbraFeatureTasksEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
-	this.registerSetting("VOICE_ENABLED",					{name:"zimbraFeatureVoiceEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
+	this.registerSetting("VOICE_ENABLED",					{name:"zimbraFeatureVoiceEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});	
 	this.registerSetting("VOICE_UPSELL_ENABLED",			{name:"zimbraFeatureVoiceUpsellEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("VOICE_UPSELL_URL",				{name:"zimbraFeatureVoiceUpsellURL", type:ZmSetting.T_COS});
 
@@ -627,8 +629,6 @@ function() {
 	this.registerSetting("LOGIN_URL",						{name:"zimbraWebClientLoginURL", type:ZmSetting.T_COS});
 	this.registerSetting("LOGOUT_URL",						{name:"zimbraWebClientLogoutURL", type:ZmSetting.T_COS});
 	this.registerSetting("MIN_POLLING_INTERVAL",			{name:"zimbraMailMinPollingInterval", type:ZmSetting.T_COS, dataType:ZmSetting.D_LDAP_TIME, defaultValue:120});
-	this.registerSetting("MOBILE_SYNC_ENABLED",				{name:"zimbraFeatureMobileSyncEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
-	this.registerSetting("MOBILE_POLICY_ENABLED",			{name:"zimbraFeatureMobilePolicyEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("POP_ACCOUNTS_ENABLED",			{name:"zimbraFeaturePop3DataSourceEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("PORTAL_NAME",						{name:"zimbraPortalName", type:ZmSetting.T_COS, defaultValue:"example"});
 	this.registerSetting("PWD_MAX_LENGTH",					{name:"zimbraPasswordMaxLength", type:ZmSetting.T_COS, dataType:ZmSetting.D_INT, defaultValue:64});
@@ -673,10 +673,10 @@ function() {
 	this.registerSetting("SEARCH_ENABLED",					{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	this.registerSetting("SHORTCUT_LIST_ENABLED",			{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	this.registerSetting("OFFLINE_ENABLED",					{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:appCtxt.isOffline});
-	this.registerSetting("SPELL_CHECK_ENABLED",				{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:!AjxEnv.isSafari || AjxEnv.isSafari3up || AjxEnv.isChrome});
+	this.registerSetting("SPELL_CHECK_ENABLED",				{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:!AjxEnv.isSafari});
 
 	// USER PREFERENCES (mutable)
-
+	
 	// general preferences
 	this.registerSetting("ACCOUNTS",						{type: ZmSetting.T_PREF, dataType: ZmSetting.D_HASH});
 	this.registerSetting("CHILD_ACCTS_VISIBLE",				{name:"zimbraPrefChildVisibleAccount", type:ZmSetting.T_PREF, dataType:ZmSetting.D_LIST});
@@ -692,8 +692,6 @@ function() {
 	this.registerSetting("LIST_VIEW_COLUMNS",				{name:"zimbraPrefListViewColumns", type:ZmSetting.T_PREF, dataType:ZmSetting.D_HASH, isImplicit:true});
 	this.registerSetting("LOCALE_NAME",						{name:"zimbraPrefLocale", type:ZmSetting.T_PREF, defaultValue:"en_US", isGlobal:true});
 	this.registerSetting("SHOW_SELECTION_CHECKBOX",			{name:"zimbraPrefShowSelectionCheckbox", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true, isGlobal:true});
-	this.registerSetting("PAGE_SIZE",						{name:"zimbraPrefMailItemsPerPage", type:ZmSetting.T_PREF, dataType:ZmSetting.D_INT, defaultValue:25, isGlobal:true});
-	this.registerSetting("PAGE_SIZE_MAX",					{name:"zimbraMaxMailItemsPerPage", type:ZmSetting.T_COS, dataType:ZmSetting.D_INT, defaultValue:100});
 	this.registerSetting("PASSWORD",						{type:ZmSetting.T_PREF, dataType:ZmSetting.D_NONE});
 	this.registerSetting("POLLING_INTERVAL",				{name:"zimbraPrefMailPollingInterval", type:ZmSetting.T_PREF, dataType:ZmSetting.D_LDAP_TIME, defaultValue:300});
 	this.registerSetting("POLLING_INTERVAL_ENABLED",		{name:"zimbraFeatureMailPollingIntervalPreferenceEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
@@ -707,22 +705,15 @@ function() {
 	this.registerSetting("SKIN_NAME",						{name:"zimbraPrefSkin", type:ZmSetting.T_PREF, defaultValue:"skin", isGlobal:true});
 	this.registerSetting("SORTING_PREF",					{type:ZmSetting.T_PREF, dataType:ZmSetting.D_HASH});
 	this.registerSetting("USE_KEYBOARD_SHORTCUTS",			{name:"zimbraPrefUseKeyboardShortcuts", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
-	this.registerSetting("VIEW_AS_HTML",					{name:"zimbraPrefMessageViewHtmlPreferred", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, isGlobal:true});
+	this.registerSetting("VIEW_AS_HTML",					{name:"zimbraPrefMessageViewHtmlPreferred", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("VOICE_ACCOUNTS",					{type: ZmSetting.T_PREF, dataType: ZmSetting.D_HASH});
 	this.registerSetting("WARN_ON_EXIT",					{name:"zimbraPrefWarnOnExit", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 
 	this._registerOfflineSettings();
-	this._registerZimletsSettings();
+	this._registerSkinHints();
 
 	// need to do this before loadUserSettings(), and zimlet settings are not tied to an app where it would normally be done
 	this.registerSetting("ZIMLET_TREE_OPEN",				{name:"zimbraPrefZimletTreeOpen", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, isImplicit:true});
-};
-
-ZmSettings.prototype._registerZimletsSettings =
-function() {
-	// zimlet-specific
-	this.registerSetting("CHECKED_ZIMLETS",			{name:"zimbraPrefZimlets", type:ZmSetting.T_PREF, dataType:ZmSetting.D_LIST, isGlobal:true});
-
 };
 
 ZmSettings.prototype._registerOfflineSettings =
@@ -730,6 +721,8 @@ function() {
 	if (!appCtxt.isOffline) { return; }
 
 	// offline-specific
+	this.registerSetting("OFFLINE_CALENDAR_TOASTER_ENABELD",{name:"zimbraPrefCalendarToasterEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
+	this.registerSetting("OFFLINE_MAIL_TOASTER_ENABLED",	{name:"zimbraPrefMailToasterEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("OFFLINE_SUPPORTS_MAILTO",			{type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, isGlobal:true});
 	this.registerSetting("OFFLINE_SUPPORTS_DOCK_UPDATE",	{type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, isGlobal:true});
 	this.registerSetting("OFFLINE_IS_MAILTO_HANDLER",		{name:"zimbraPrefMailtoHandlerEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, isGlobal:true});
@@ -740,6 +733,60 @@ function() {
 
 	// reset the help URI to zimbra.com for offline
 	this.registerSetting("HELP_URI",						{type:ZmSetting.T_CONFIG, defaultValue:"http://www.zimbra.com/desktop/"});
+};
+
+/**
+ * Provide a settings interface to the global skin.hints.* values. The hints are
+ * folded into a hash-type setting. The key is the part that comes after
+ * "skin.hints.". For example, to get the value of
+ * 
+ *     skin.hints.appChooser.style
+ * 
+ * just ask for
+ * 
+ *     appCtxt.get(ZmSetting.SKIN_HINTS, "appChooser.style")
+ * 
+ * The main reason for doing this is to centralize the knowledge of the various
+ * skin hints.
+ */
+ZmSettings.prototype._registerSkinHints =
+function() {
+
+	if (!(window.skin && skin.hints)) { return; }
+	
+	var shSetting = this.registerSetting("SKIN_HINTS", {type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_HASH});
+	var hints = [["appChooser", "fullWidth"],
+				 ["helpButton", "hideIcon"],
+				 ["helpButton", "style"],
+				 ["banner", "url"],
+				 ["logoutButton", "hideIcon"],
+				 ["logoutButton", "style"],
+				 ["presence", "width"],
+				 ["presence", "height"],
+				 ["noOverviewHeaders"],
+				 ["toast", "location"],
+				 ["toast", "transitions"]];
+	for (var i = 0, count = hints.length; i < count; i++) {
+		var hint = hints[i];
+		var obj = skin.hints;
+		for (var propIndex = 0, propCount = hint.length; obj && (propIndex < propCount); propIndex++) {
+			var propName = hint[propIndex];
+			obj = obj[propName];
+		}
+		if (obj) {
+			shSetting.setValue(obj, hint.join("."), true, true);
+		}
+	}
+	
+	// skin.hints.[container ID].position
+	for (var i = 0, count = ZmAppViewMgr.ALL_COMPONENTS.length; i < count; i++) {
+		var cid = ZmAppViewMgr.ALL_COMPONENTS[i];
+		var test = skin.hints[cid];
+		if (test && test.position) {
+			var key = [cid, "position"].join(".");
+			shSetting.setValue(test.position, key, true, true);
+		}
+	}
 };
 
 ZmSettings.prototype._changeListener =
@@ -765,6 +812,9 @@ function(ev) {
 		cd.registerCallback(DwtDialog.YES_BUTTON, this._refreshBrowserCallback, this, [cd]);
 		cd.setMessage(ZmMsg.localeChangeRestart, DwtMessageDialog.WARNING_STYLE);
 		cd.popup();
+	} else if (id == ZmSetting.SHORTCUTS) {
+		appCtxt.getKeyboardMgr().registerKeyMap(new ZmKeyMap());
+		this.loadShortcuts();
 	} else if (id == ZmSetting.CHILD_ACCTS_VISIBLE) {
 		var cd = appCtxt.getYesNoMsgDialog();
 		cd.reset();
@@ -788,5 +838,5 @@ function(dialog) {
 	dialog.popdown();
 	window.onbeforeunload = null;
 	var url = AjxUtil.formatUrl({});
-	window.location.replace(url);
+	ZmZimbraMail.sendRedirect(url); // redirect to self to force reload
 };

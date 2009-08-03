@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -28,13 +30,14 @@
  */
 ZmZimbraAccount = function(id, name, visible, list) {
 
-	ZmAccount.call(this, null, id, name, list);
-
+	ZmAccount.call(this, ZmAccount.ZIMBRA, id, name, list);
 	this.visible = (visible !== false);
+
 	this.settings = null;
 	this.trees = {};
 	this.loaded = false;
 	this.acl = new ZmAccessControlList();
+	this.isZimbraAccount = true; // false if non-zimbra, i.e. gmail, yahoo, etc.
 };
 
 ZmZimbraAccount.prototype = new ZmAccount;
@@ -50,6 +53,7 @@ function() {
 // Constants
 //
 
+ZmAccount.ZIMBRA				= "Zimbra";
 ZmZimbraAccount.DEFAULT_ID		= "main";
 ZmZimbraAccount.STATUS_UNKNOWN	= "unknown";
 ZmZimbraAccount.STATUS_OFFLINE	= "offline";
@@ -144,7 +148,8 @@ function(acctInfo) {
 	if (this.status != acctInfo.status) {
 		this.status = acctInfo.status;
 		if (this.isMain || this.visible) {
-			// todo
+			appCtxt.getOverviewController().updateAccountIcon(this, this.getStatusIcon());
+			appCtxt.getAppController().setOfflineStatus();
 		}
 	}
 
@@ -159,7 +164,7 @@ function(acctInfo) {
 	if (this.visible && acctInfo.unread != this.unread) {
 		this.unread = acctInfo.unread;
 		if (appCtxt.multiAccounts && appCtxt.getActiveAccount() != this) {
-			// todo?
+			appCtxt.getOverviewController().updateAccountTitle(this.itemId, this.getTitle());
 		}
 	}
 };
@@ -182,11 +187,6 @@ function() {
 		case ZmZimbraAccount.STATUS_ERROR:		return "ImgCritical";
 	}
 	return "";
-};
-
-ZmZimbraAccount.prototype.getIcon =
-function() {
-	return this.isMain ? "LocalFolders" : this.icon;
 };
 
 ZmZimbraAccount.prototype.getZdMsg =
@@ -286,23 +286,27 @@ function(callback) {
 		var loadCallback = new AjxCallback(this, this._handleLoadSettings);
 		this.settings.loadUserSettings(loadCallback, null, this.name, null, command);
 
-		// get tag info for this account *FIRST* - otherwise, root ID get overridden
+		// get folder info for this account
+		var folderDoc = AjxSoapDoc.create("GetFolderRequest", "urn:zimbraMail");
+		var method = folderDoc.getMethod();
+		method.setAttribute("visible", "1");
+
+		var folderCallback = new AjxCallback(this, this._handleLoadFolders);
+		command.addNewRequestParams(folderDoc, folderCallback);
+
+		// get tag info for this account
 		var tagDoc = AjxSoapDoc.create("GetTagRequest", "urn:zimbraMail");
 		var tagCallback = new AjxCallback(this, this._handleLoadTags);
 		command.addNewRequestParams(tagDoc, tagCallback);
 
-		// get folder info for this account
-		var folderDoc = AjxSoapDoc.create("GetFolderRequest", "urn:zimbraMail");
-		folderDoc.getMethod().setAttribute("visible", "1");
-		var folderCallback = new AjxCallback(this, this._handleLoadFolders);
-		command.addNewRequestParams(folderDoc, folderCallback);
-
 		var respCallback = new AjxCallback(this, this._handleLoadUserInfo, callback);
 		var errCallback = new AjxCallback(this, this._handleErrorLoad);
 		command.run(respCallback, errCallback);
-	}
-	else if (callback) {
-		callback.run();
+	} else {
+		// always reload account-specific shortcuts
+		this.settings.loadShortcuts();
+
+		if (callback) {	callback.run(); }
 	}
 };
 
@@ -357,10 +361,8 @@ function(result) {
 	appCtxt.getDataSourceCollection(this).initialize(obj.dataSources);
 	appCtxt.getSignatureCollection(this).initialize(obj.signatures);
 
-	// read receipts are not currently allowed for non zimbra accounts
-	if (!this.isZimbraAccount) {
-		appCtxt.set(ZmSetting.MAIL_READ_RECEIPT_ENABLED, false);
-	}
+	// HACK: data sources are disabled for Zimbra accounts so check if we got any
+	this.isZimbraAccount = (!obj.dataSources.pop3 && !obj.dataSources.imap);
 };
 
 ZmZimbraAccount.prototype._handleLoadFolders =
@@ -375,6 +377,7 @@ function(result) {
 ZmZimbraAccount.prototype._handleLoadTags =
 function(result) {
 	var resp = result.getResponse().GetTagResponse;
+	var tags = (resp && resp.tag) ? resp.tag[0] : null;
 	appCtxt.getRequestMgr()._loadTree(ZmOrganizer.TAG, null, resp, null, this);
 };
 
@@ -396,7 +399,7 @@ function(callback) {
 			var app = appCtxt.getApp(i);
 			var org = ZmOrganizer.APP2ORGANIZER[i];
 			if (app && org && org.length) {
-				app._createDeferredFolders(org[0], this.id);
+				app._createDeferredFolders(org[0]);
 			}
 		}
 	}
@@ -417,22 +420,7 @@ function(node) {
 	this.name = node.name;
 	this.visible = node.visible;
 
-	var data = node.attrs && node.attrs._attrs;
+	var data = (node.attrs && node.attrs._attrs) ? node.attrs._attrs : null;
 	this._displayName = data ? data.displayName : this.email;
-	this._accountName = data && data.zimbraPrefLabel;
-	this.type = data ? data.offlineAccountFlavor : ZmZimbraAccount.TYPE_ZIMBRA;
-
-	this.isZimbraAccount = this.type == ZmAccount.TYPE_ZIMBRA;
-
-	// set icon now that we know the type
-	switch (this.type) {
-		case ZmAccount.TYPE_AOL:	this.icon = "AccountAOL"; break;
-		case ZmAccount.TYPE_GMAIL:	this.icon = "AccountGmail"; break;
-		case ZmAccount.TYPE_IMAP:	this.icon = "AccountIMAP"; break;
-		case ZmAccount.TYPE_LIVE:	this.icon = "AccountMSN"; break;
-		case ZmAccount.TYPE_MSE:	this.icon = "AccountExchange"; break;
-		case ZmAccount.TYPE_POP:	this.icon = "AccountPOP"; break;
-		case ZmAccount.TYPE_YMP:	this.icon = "AccountYahoo"; break;
-		case ZmAccount.TYPE_ZIMBRA:	this.icon = "AccountZimbra"; break;
-	}
+	this._accountName = data ? data.zimbraPrefLabel : null;
 };

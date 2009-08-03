@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -24,9 +26,10 @@ ZmTaskListView.prototype.constructor = ZmTaskListView;
 
 
 // Consts
-ZmTaskListView.COL_WIDTH_STATUS		= ZmMsg.COLUMN_WIDTH_STATUS_TLV;
-ZmTaskListView.COL_WIDTH_PCOMPLETE	= ZmMsg.COLUMN_WIDTH_PCOMPLETE_TLV;
-ZmTaskListView.COL_WIDTH_DATE_DUE	= ZmMsg.COLUMN_WIDTH_DATE_DUE_TLV;
+ZmTaskListView.KEY_ID				= "_keyId";
+ZmTaskListView.COL_WIDTH_STATUS		= 110;
+ZmTaskListView.COL_WIDTH_PCOMPLETE	= 75;
+ZmTaskListView.COL_WIDTH_DATE_DUE	= 110;
 
 
 // Public Methods
@@ -38,6 +41,12 @@ function() {
 ZmTaskListView.prototype.setSize =
 function(width, height) {
 	ZmListView.prototype.setSize.call(this, width, height);
+	this._resetColWidth();
+};
+
+ZmTaskListView.prototype.setBounds =
+function(x, y, width, height) {
+	ZmListView.prototype.setBounds.call(this, x, y, width, height);
 	this._resetColWidth();
 };
 
@@ -156,7 +165,7 @@ ZmTaskListView.prototype._getCellContents =
 function(htmlArr, idx, task, field, colIdx, params) {
 
 	if (field == ZmItem.F_SELECTION) {
-		var icon = params.bContained ? "CheckboxChecked" : "CheckboxUnchecked";
+		var icon = params.bContained ? "TaskCheckboxCompleted" : "TaskCheckbox";
 		idx = this._getImageHtml(htmlArr, idx, icon, this._getFieldId(task, field));
 
 	} else if (field == ZmItem.F_PRIORITY) {
@@ -178,8 +187,9 @@ function(htmlArr, idx, task, field, colIdx, params) {
 		htmlArr[idx++] = ZmCalItem.getLabelForStatus(task.status);
 
 	} else if (field == ZmItem.F_PCOMPLETE) {	// percent complete
-        var formatter = new AjxMessageFormat(AjxMsg.percentageString);
-		htmlArr[idx++] = formatter.format(task.pComplete || 0);
+		htmlArr[idx++] = task.pComplete || 0;
+		htmlArr[idx++] = "%";
+
 	} else if (field == ZmItem.F_DATE) {
 		// due date - dont call base class since we *always* want to show date (not time)
 		htmlArr[idx++] = task.endDate != null
@@ -190,6 +200,26 @@ function(htmlArr, idx, task, field, colIdx, params) {
 	}
 	
 	return idx;
+};
+
+ZmTaskListView.prototype._getActionMenuForColHeader =
+function() {
+	if (!this._colHeaderActionMenu) {
+		// create a action menu for the header list
+		this._colHeaderActionMenu = new ZmPopupMenu(this);
+		var actionListener = new AjxListener(this, this._colHeaderActionListener);
+		for (var i = 0; i < this._headerList.length; i++) {
+			var hCol = this._headerList[i];
+			var mi = this._colHeaderActionMenu.createMenuItem(hCol._id, {text:hCol._name, style:DwtMenuItem.CHECK_STYLE});
+			mi.setData(ZmTaskListView.KEY_ID, hCol._id);
+			mi.setChecked(true, true);
+			if (hCol._noRemove) {
+				mi.setEnabled(false);
+			}
+			this._colHeaderActionMenu.addSelectionListener(hCol._id, actionListener);
+		}
+	}
+	return this._colHeaderActionMenu;
 };
 
 ZmTaskListView.prototype._getHeaderToolTip =
@@ -262,7 +292,7 @@ function(parent) {
 	var hList = [];
 
 	if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
-		hList.push(new DwtListHeaderItem({field:ZmItem.F_SELECTION, icon:"CheckboxUnchecked", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.selection}));
+		hList.push(new DwtListHeaderItem({field:ZmItem.F_SELECTION, icon:"TaskCheckbox", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.selection}));
 	}
 	if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
 		hList.push(new DwtListHeaderItem({field:ZmItem.F_TAG, icon:"Tag", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.tag}));
@@ -299,7 +329,7 @@ function(ev) {
 				folderId = appCtxt.getById(folderId)._remoteId; //getRemoteId();
 			}
 
-			if (appCtxt.isOffline) {
+			if (appCtxt.isOffline && appCtxt.multiAccounts) {
 				folderId = ZmOrganizer.getSystemId(folderId);
 			}
 
@@ -308,7 +338,7 @@ function(ev) {
 
 			// add new item at the beg. of list view's internal list
 			var idx = this._list && this._list.size() > 0 ? 1 : null;
-			this.addItem(item, idx, false, 0);
+			this.addItem(item, idx);
 		}
 	} else if (ev.event == ZmEvent.E_MODIFY) {
 		var task = items[0];
@@ -316,7 +346,7 @@ function(ev) {
 		if (div) {
 			var bContained = this._selectedItems.contains(div);
 			this._createItemHtml(task, {div:div, bContained:bContained});
-			this.associateItemWithElement(task, div);
+			this.associateItemWithElement(task, div, DwtListView.TYPE_LIST_ITEM);
 		}
 	} else if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE) {
 		for (var i = 0; i < items.length; i++) {
@@ -334,6 +364,21 @@ function(ev) {
 	{
 		this._resetColWidth();
 	}
+};
+
+ZmTaskListView.prototype._colHeaderActionListener =
+function(ev) {
+	var menuItemId = ev.item.getData(ZmTaskListView.KEY_ID);
+
+	for (var i = 0; i < this._headerList.length; i++) {
+		var col = this._headerList[i];
+		if (col._id == menuItemId) {
+			col._visible = !col._visible;
+			break;
+		}
+	}
+
+	this._relayout();
 };
 
 

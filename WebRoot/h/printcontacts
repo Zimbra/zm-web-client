@@ -5,91 +5,141 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
+<% pageContext.setAttribute("newLineChar", "\n"); %>
 <app:handleError>
     <zm:getMailbox var="mailbox"/>
     <c:choose>
-        <c:when test="${not empty mailbox.prefs.locale}">
-            <fmt:setLocale value='${mailbox.prefs.locale}' scope='request' />
-        </c:when>
-        <c:otherwise>
-            <fmt:setLocale value='${pageContext.request.locale}' scope='request' />
-        </c:otherwise>
+    <c:when test="${not empty mailbox.prefs.locale}">
+        <fmt:setLocale value='${mailbox.prefs.locale}' scope='request' />
+    </c:when>
+    <c:otherwise>
+        <fmt:setLocale value='${pageContext.request.locale}' scope='request' />
+    </c:otherwise>
     </c:choose>
     <fmt:setBundle basename="/messages/ZhMsg" scope="request"/>
     <c:set var="contactIds" value="${fn:join(paramValues.id, ',')}"/>
-    <c:if test="${param.st eq 'gal'}">                  <%-- gal contact id contains , so will replace the id's , with | to avoid the conflict with delimiter , used for forEach--%>
-        <c:set var="paraids" value="${fn:join(paramValues.id, '#')}"/>
-        <c:set var="paraids" value="${fn:replace(paraids, ',','|')}"/>
-        <c:set var="contactIds" value="${fn:replace(paraids, '#',',')}"/>
-    </c:if>
 </app:handleError>
+
 <html>
 <app:head mailbox="${mailbox}"/>
 <body style='background-color:white;'>
-<style>
-    .contactHeader, .ZhFolderHeader {
-        font-size: small !important;
-    }
-    .companyName{
-        font-size: small !important;
-        color: #555555 !important;
-    }
-    .sectionLabel{
-        font-size: small !important;
-        color: gray !important;
-    }
-</style>
-<div class='ZhCallListPrintView'>
-<table><tr>
-    <td class='ZhZimbraTitle'><fmt:message key="zimbraTitle"/></td>
-    <td nowrap width='1%'><b>${fn:escapeXml(mailbox.name)}</b></td>
-</tr></table>
-<hr/>
-<table cellpadding="0" cellspacing="5" width="99%" align="center">
-<tr>
-<td>
-<c:if test="${not empty contactIds}">
-    <c:forEach items="${contactIds}" var="contactId" varStatus="status">
-        <c:choose>
-            <c:when test="${param.st ne 'gal'}"><zm:getContact id="${contactId}" var="contact"/></c:when>
-            <c:when test="${param.st eq 'gal'}">
-                <zm:searchGal var="result" query="${empty param.email ? '*' : param.email}"/>      <%--!TODO optiomizartion needed--%>
-                <c:forEach items="${result.contacts}" var="acontact">
-                    <c:if test="${fn:replace(acontact.id,',','|') eq contactId}">
-                        <c:set var="contact" value="${acontact}"/>
-                    </c:if>
-                </c:forEach>
-            </c:when>
-        </c:choose>
-        <div  style="border:1px solid rgb(204, 204, 204); padding:1px;margin:10px;float:left;min-width:45%;">
-          <app:displayContact contact="${contact}"/>
-        </div>
-    </c:forEach>
-</c:if>
+    <div class='ZhCallListPrintView'>
+        <table><tr>
+            <td class='ZhZimbraTitle'><fmt:message key="zimbraTitle"/></td>
+            <td nowrap width='1%'><b>${fn:escapeXml(mailbox.name)}</b></td>
+        </tr></table>
+        <hr/>
 
-<c:if test="${empty contactIds}">
-    <c:if test="${param. st ne 'gal'}">
-    <zm:computeSearchContext var="context" types="contact" limit="1000" usecache="true"/>
-    <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
-        <zm:getContact id="${hit.contactHit.id}" var="contact"/>
-        <div  style="border:1px solid rgb(204, 204, 204); padding:1px;margin:10px;float:left;min-width:45%;">
-            <app:displayContact contact="${contact}"/>
+    <table cellpadding="0" cellspacing="5" >
+    <c:forEach items="${contactIds}" var="contactId" varStatus="status">
+        <zm:getContact id="${contactId}" var="contact"/>
+        <tr>
+        <td>
+            <div  style="border: 1px solid rgb(204, 204, 204); padding-bottom:4px;overflow-x:hidden;  width: 2.2in;">
+        <table  cellpadding=2 cellspacing=0 width="100%" >
+            <tr>
+                <td nowrap colspan="2" style="font-family: Arial; white-space: nowrap; font-weight: bold; background-color: rgb(221, 221, 221);"><c:if test="${contact.isGroup}"><fmt:message key="AB_GROUP_NAME"/> : </c:if>${fn:escapeXml(contact.displayFileAs)}</td>
+            </tr>
+        <c:if test="${not contact.isGroup}">
+	        <c:if test="${not empty contact.email}">
+	            <tr>
+	                <td nowrap><fmt:message key="email"/> </td>
+	                <td nowrap style='vertical-align:top;'>:</td>
+	                <td nowrap>${fn:escapeXml(contact.email)}</td>
+	            </tr>
+	        </c:if>
+	        <c:if test="${not empty contact.workEmail1}">
+	            <tr>
+	                <td nowrap><fmt:message key="email"/> </td>
+	                <td nowrap style='vertical-align:top;'>:</td>
+	                <td nowrap>${fn:escapeXml(contact.workEmail1)}</td>
+	            </tr>
+	        </c:if>
+	        <c:if test="${not empty contact.displayFileAs}">
+	        <tr>
+	                <td nowrap><fmt:message key="name"/> </td>
+	                <td nowrap style='vertical-align:top;'>:</td>
+	                <td nowrap>${fn:escapeXml(contact.displayFileAs)}</td>
+	        </tr>
+	        </c:if>
+	        <c:if test="${not empty contact.jobTitle}">
+	        <tr>
+	                <td nowrap><fmt:message key="AB_FIELD_jobTitle"/> </td> 
+	                <td nowrap style='vertical-align:top;'>:</td>
+	                <td nowrap>${fn:escapeXml(contact.jobTitle)}</td>
+	            </tr>
+	        </c:if>
+	        <c:if test="${not empty contact.company}">
+	        <tr>
+	                <td nowrap><fmt:message key="company"/> </td>
+	                <td nowrap style='vertical-align:top;'>:</td>
+	                <td nowrap>${fn:escapeXml(contact.company)}</td>
+	        </tr>
+	        </c:if>
+	        <c:if test="${not empty contact.homePhone}">
+	        <tr>
+	                <td nowrap><fmt:message key="AB_FIELD_homePhone"/> </td>
+	                <td nowrap style='vertical-align:top;'>:</td>
+	                <td nowrap>${fn:escapeXml(contact.homePhone)}</td>
+	        </tr>
+	        </c:if>
+	        <c:if test="${not empty contact.workPhone}">
+	        <tr>
+	                <td nowrap><fmt:message key="AB_FIELD_workPhone"/> </td>
+	                <td nowrap style='vertical-align:top;'>:</td>
+	                <td nowrap>${fn:escapeXml(contact.workPhone)}</td>
+	        </tr>
+	        </c:if>
+	        <c:if test="${not empty contact.mobilePhone}">
+	        <tr>
+	                <td nowrap><fmt:message key="mobile"/> </td>
+	                <td nowrap style='vertical-align:top;'>:</td>
+	                <td nowrap>${fn:escapeXml(contact.mobilePhone)}</td>
+	        </tr>
+	        </c:if>
+	        <c:if test="${not empty contact.workMobile}">
+	        <tr>
+	                <td nowrap><fmt:message key="mobile"/> </td>
+	                <td nowrap style='vertical-align:top;'>:</td>
+	                <td nowrap>${fn:escapeXml(contact.workMobile)}</td>
+	        </tr>
+	        </c:if>
+	        <c:if test="${not empty contact.homeAddress}">
+	        <tr>
+	                <td nowrap style='vertical-align:top;'><fmt:message key="AB_ADDR_HOME"/> </td>
+	                <td nowrap style='vertical-align:top;'>:</td>
+	                <td nowrap>${fn:replace(fn:escapeXml(contact.homeAddress), newLineChar, "<br/>")}</td>
+	        </tr>
+	        </c:if>
+	        <c:if test="${not empty contact.workAddress}">
+	        <tr>
+	                <td nowrap style='vertical-align:top;'><fmt:message key="AB_ADDR_WORK"/> </td>
+	                <td nowrap style='vertical-align:top;'>:</td>
+					<td nowrap>${fn:replace(fn:escapeXml(contact.workAddress), newLineChar, "<br/>")}</td>
+	        </tr>
+	        </c:if>
+        </c:if>
+        <c:if test="${contact.isGroup}">
+        <tr>
+        	<td nowrap><fmt:message key="AB_GROUP_MEMBERS"/> : </td>
+        </tr>
+    	<c:forEach var="member" items="${contact.groupMembers}">
+        	<tr>
+            	<td><nobr>${fn:escapeXml(member)}</nobr></td>            
+        	</tr>
+    	</c:forEach>
+		</c:if>
+        </table>
         </div>
+        </td>
+        </tr>
     </c:forEach>
+    </table>
+
+    <c:if test="${empty paramValues.id}">
+        <div class='NoResults'><fmt:message key="noResultsFound"/></div>
     </c:if>
-    <c:if test="${param. st eq 'gal'}">
-    <zm:searchGal var="result" query="*"/>
-    <c:forEach items="${result.contacts}" var="contact" varStatus="status">
-        <div  style="border:1px solid rgb(204, 204, 204); padding:1px;margin:10px;float:left;min-width:45%;">
-            <app:displayContact contact="${contact}"/>
-        </div>
-    </c:forEach>
-    </c:if>
-</c:if>
-</td>
-</tr>
-</table>
-</div>
+    </div>
 <script type="text/javascript">
     <!--
     setTimeout('window.print()', 2000);

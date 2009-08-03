@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -32,23 +34,17 @@ ZmFilterRulesController = function(container, prefsApp, prefsView) {
 
 	this._prefsView = prefsView;
 	this._filterRulesView = new ZmFilterRulesView(this._prefsView._parent, this);
-
+	
 	this._buttonListeners = {};
 	this._buttonListeners[ZmOperation.ADD_FILTER_RULE] = new AjxListener(this, this._addListener);
 	this._buttonListeners[ZmOperation.EDIT_FILTER_RULE] = new AjxListener(this, this._editListener);
 	this._buttonListeners[ZmOperation.REMOVE_FILTER_RULE] = new AjxListener(this, this._removeListener);
-	this._buttonListeners[ZmOperation.RUN_FILTER_RULE] = new AjxListener(this, this._runListener);
 	this._buttonListeners[ZmOperation.MOVE_UP_FILTER_RULE] = new AjxListener(this, this._moveUpListener);
 	this._buttonListeners[ZmOperation.MOVE_DOWN_FILTER_RULE] = new AjxListener(this, this._moveDownListener);
 };
 
 ZmFilterRulesController.prototype = new ZmController();
 ZmFilterRulesController.prototype.constructor = ZmFilterRulesController;
-
-ZmFilterRulesController.prototype.toString =
-function() {
-	return "ZmFilterRulesController";
-};
 
 /**
 * Returns the filter rules view, which comprises a toolbar and a list view.
@@ -75,9 +71,7 @@ function(toolbar, listView) {
 	}
 
 	if (listView) {
-		this._listView = listView;
 		listView.addSelectionListener(new AjxListener(this, this._listSelectionListener));
-		listView.addActionListener(new AjxListener(this, this._listActionListener));
 		this.resetListView();
 	}
 };
@@ -90,8 +84,6 @@ function() {
 		ZmOperation.EDIT_FILTER_RULE,
 		ZmOperation.SEP,
 		ZmOperation.REMOVE_FILTER_RULE,
-		ZmOperation.SEP,
-		ZmOperation.RUN_FILTER_RULE,
 		ZmOperation.FILLER, ZmOperation.MOVE_UP_FILTER_RULE,
 		ZmOperation.SEP,
 		ZmOperation.MOVE_DOWN_FILTER_RULE
@@ -99,252 +91,138 @@ function() {
 };
 
 ZmFilterRulesController.prototype.resetListView =
-function(selectedIndex) {
-	if (!this._listView) { return; }
+function(callback, selectedIndex) {
+	var listView = this._filterRulesView.getListView();
+	if (!listView) { return; }
 
-	var respCallback = new AjxCallback(this, this._handleResponseSetListView, [selectedIndex]);
+	var respCallback = new AjxCallback(this, this._handleResponseSetListView, [listView, callback, selectedIndex]);
 	this._rules.loadRules(appCtxt.isOffline, respCallback);		// bug #15044 - force loading rules in offline mode
 };
 
 ZmFilterRulesController.prototype._handleResponseSetListView =
-function(selectedIndex, result) {
-	this._listView.set(result.getResponse().clone());
+function(listView, callback, selectedIndex, result) {
+	listView.set(result.getResponse().clone());
 
 	var rule = this._rules.getRuleByIndex(selectedIndex || 0);
 	if (rule) {
-		this._listView.setSelection(rule);
+		listView.setSelection(rule);
+	}
+
+	if (callback) {
+		callback.run();
 	}
 };
 
-/**
+/*
 * Handles left-clicking on a rule. Double click opens up a rule for editing.
 *
-* @ev		[DwtEvent]		the click event
+* @param	[DwtEvent]		the click event
 */
 ZmFilterRulesController.prototype._listSelectionListener =
 function(ev) {
 	if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
 		this._editListener(ev);
 	} else {
-		var tb = this._filterRulesView.getToolbar();
-		this._resetOperations(tb, this._listView.getSelectionCount(), this._listView.getSelection());
+		var toolbar = this._filterRulesView.getToolbar();
+		var listView = this._filterRulesView.getListView();
+		this._resetOperations(toolbar, listView.getSelectionCount(), listView.getSelection());
 	}
 };
 
-ZmFilterRulesController.prototype._listActionListener =
-function(ev) {
-	var actionMenu = this.getActionMenu();
-	this._resetOperations(actionMenu, this._listView.getSelectionCount(), this._listView.getSelection());
-	actionMenu.popup(0, ev.docX, ev.docY);
-};
-
-ZmFilterRulesController.prototype.getActionMenu =
-function() {
-	if (!this._actionMenu) {
-		this._initializeActionMenu();
-		this._resetOperations(this._actionMenu, 0, this._listView.getSelection());
-	}
-	return this._actionMenu;
-};
-
-// action menu: menu items and listeners
-ZmFilterRulesController.prototype._initializeActionMenu =
-function() {
-	if (this._actionMenu) { return; }
-
-	var menuItems = this._getActionMenuOps();
-	if (menuItems) {
-		var params = {
-			parent:this._shell,
-			menuItems:menuItems,
-			context:this._getMenuContext(),
-			controller:this
-		};
-		this._actionMenu = new ZmActionMenu(params);
-		this._addMenuListeners(this._actionMenu);
-	}
-};
-
-ZmFilterRulesController.prototype._getActionMenuOps =
-function() {
-	return [
-		ZmOperation.EDIT_FILTER_RULE,
-		ZmOperation.REMOVE_FILTER_RULE,
-		ZmOperation.RUN_FILTER_RULE,
-		ZmOperation.SEP,
-		ZmOperation.MOVE_UP_FILTER_RULE,
-		ZmOperation.MOVE_DOWN_FILTER_RULE
-	];
-};
-
-/**
- * Returns the context for the action menu created by this controller (used to create
- * an ID for the menu).
- */
-ZmFilterRulesController.prototype._getMenuContext =
-function() {
-	return this._app && this._app._name;
-};
-
-ZmFilterRulesController.prototype._addMenuListeners =
-function(menu) {
-	var menuItems = menu.opList;
-	for (var i = 0; i < menuItems.length; i++) {
-		var menuItem = menuItems[i];
-		if (this._buttonListeners[menuItem]) {
-			menu.addSelectionListener(menuItem, this._buttonListeners[menuItem], 0);
-		}
-	}
-	menu.addPopdownListener(this._menuPopdownListener);
-};
-
-/**
+/*
 * The "Add Filter" button has been pressed.
 *
-* @ev		[DwtEvent]		the click event
+* @param	[DwtEvent]		the click event
 */
 ZmFilterRulesController.prototype._addListener =
 function(ev) {
-	if (!this._listView) { return; }
+	var listView = this._filterRulesView.getListView();
+	if (!listView) return;
 
-	var sel = this._listView.getSelection();
+	var sel = listView.getSelection();
 	var refRule = sel.length ? sel[sel.length - 1] : null;
 	appCtxt.getFilterRuleDialog().popup(null, false, refRule);
 };
 
-/**
+/*
 * The "Edit Filter" button has been pressed.
 *
-* @ev		[DwtEvent]		the click event
+* @param	[DwtEvent]		the click event
 */
 ZmFilterRulesController.prototype._editListener =
 function(ev) {
-	if (!this._listView) { return; }
+	var listView = this._filterRulesView.getListView();
+	if (!listView) return;
 
-	var sel = this._listView.getSelection();
+	var sel = listView.getSelection();
 	appCtxt.getFilterRuleDialog().popup(sel[0], true);
 };
 
-/**
+/*
 * The "Delete Filter" button has been pressed.
 *
-* @ev			[DwtEvent]		the click event
+* @param	[DwtEvent]		the click event
 */
 ZmFilterRulesController.prototype._removeListener =
 function(ev) {
-	if (!this._listView) { return; }
+	var listView = this._filterRulesView.getListView();
+	if (!listView) return;
 
-	var sel = this._listView.getSelection();
-
-	var rule = sel[0];
+	var sel = listView.getSelection();
+	
+	var filter = sel[0];
 	//bug:16053 changed getYesNoCancelMsgDialog to getYesNoMsgDialog
 	var ds = this._deleteShield = appCtxt.getYesNoMsgDialog();
 	ds.reset();
 	ds.registerCallback(DwtDialog.NO_BUTTON, this._clearDialog, this, this._deleteShield);
-	ds.registerCallback(DwtDialog.YES_BUTTON, this._deleteShieldYesCallback, this, rule);
-	var msg = AjxMessageFormat.format(ZmMsg.askDeleteFilter, rule.name);
+	ds.registerCallback(DwtDialog.YES_BUTTON, this._deleteShieldYesCallback, this, filter);
+	var msg = AjxMessageFormat.format(ZmMsg.askDeleteFilter, filter.getName());
 	ds.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
 	ds.popup();
 };
 
-ZmFilterRulesController.prototype._runListener =
-function(ev) {
-	var dialog = appCtxt.getChooseFolderDialog();
-	dialog.reset();
-	dialog.registerCallback(DwtDialog.OK_BUTTON, this._runFilterOkCallback, this, dialog);
-	var params = {
-		treeIds:		[ZmOrganizer.FOLDER],
-		title:			ZmMsg.chooseFolder,
-		overviewId:		dialog.getOverviewId(ZmApp.MAIL),
-		description:	ZmMsg.chooseFolderToFilter,
-		skipReadOnly:	true,
-		hideNewButton:	true,
-		treeStyle:		DwtTree.CHECKEDITEM_STYLE
-	};
-	dialog.popup(params);
-};
-
-ZmFilterRulesController.prototype._runFilterOkCallback =
-function(dialog, folderList) {
-	dialog.popdown();
-
-	var sel = (this._listView) ? this._listView.getSelection() : null;
-	if (sel && sel.length) {
-		var soapDoc = AjxSoapDoc.create("ApplyFilterRulesRequest", "urn:zimbraMail");
-		var filterRules = soapDoc.set("filterRules", null);
-		for (var i = 0; i < sel.length; i++) {
-			var rule = soapDoc.set("filterRule", null, filterRules);
-			rule.setAttribute("name", sel[i].name);
-		}
-
-		if (!(folderList instanceof Array)) {
-			folderList = [folderList];
-		}
-		var query = [];
-		for (var j = 0; j < folderList.length; j++) {
-			query.push(folderList[j].createQuery());
-		}
-		soapDoc.set("query", query.join(" OR "));
-
-		var params = {
-			soapDoc: soapDoc,
-			asyncMode: true,
-			callback: (new AjxCallback(this, this._handleRunFilter))
-		};
-		appCtxt.getAppController().sendRequest(params);
-	}
-};
-
-ZmFilterRulesController.prototype._handleRunFilter =
-function(result) {
-	var resp = result.getResponse().ApplyFilterRulesResponse;
-	var num = (resp && resp.m && resp.m.length)
-		? (resp.m[0].id.split(",").length) : 0;
-	var msg = AjxMessageFormat.format(ZmMsg.filterRuleApplied, num);
-	var dlg = appCtxt.getMsgDialog();
-	dlg.setMessage(msg);
-	dlg.popup();
-};
-
-/**
+/*
 * The user has agreed to delete a filter rule.
 *
 * @param rule	[ZmFilterRule]		rule to delete
 */
 ZmFilterRulesController.prototype._deleteShieldYesCallback =
 function(rule) {
+	var toolbar = this._filterRulesView.getToolbar();
 	this._rules.removeRule(rule);
 	this._clearDialog(this._deleteShield);
-	this._resetOperations(this._filterRulesView.getToolbar(), 0);
+	this._resetOperations(toolbar, 0);
 };
 
-/**
+/*
 * The "Move Up" button has been pressed.
 *
-* @param	ev		[DwtEvent]		the click event
+* @param	[DwtEvent]		the click event
 */
 ZmFilterRulesController.prototype._moveUpListener =
 function(ev) {
-	if (!this._listView) { return; }
+	var listView = this._filterRulesView.getListView();
+	if (!listView) return;
 
-	var sel = this._listView.getSelection();
+	var sel = listView.getSelection();
 	this._rules.moveUp(sel[0]);
 };
 
-/**
+/*
 * The "Move Down" button has been pressed.
 *
-* @ev		[DwtEvent]		the click event
+* @param	[DwtEvent]		the click event
 */
 ZmFilterRulesController.prototype._moveDownListener =
 function(ev) {
-	if (!this._listView) { return; }
+	var listView = this._filterRulesView.getListView();
+	if (!listView) return;
 
-	var sel = this._listView.getSelection();
+	var sel = listView.getSelection();
 	this._rules.moveDown(sel[0]);
 };
 
-/**
+/*
 * Resets the toolbar button states, depending on which rule is selected.
 * The list view enforces single selection only. If the first rule is selected,
 * "Move Up" is disabled. Same for last rule and "Move Down". They're both
@@ -360,20 +238,13 @@ function(parent, numSel, sel) {
 	if (numSel == 1) {
 		parent.enableAll(true);
 		var index = this._rules.getIndexOfRule(sel[0]);
-		if (index == 0) {
+		if (index == 0)
 			parent.enable(ZmOperation.MOVE_UP_FILTER_RULE, false);
-		}
-		if (index == (numRules - 1)) {
+		if (index == (numRules - 1))
 			parent.enable(ZmOperation.MOVE_DOWN_FILTER_RULE, false);
-		}
 	} else {
-		parent.enableAll(false);
 		parent.enable(ZmOperation.ADD_FILTER_RULE, true);
-		if (numSel > 1) {
-			parent.enable(ZmOperation.RUN_FILTER_RULE, true);
-		}
 	}
-
 	if (numRules <= 1) {
 		parent.enable(ZmOperation.MOVE_UP_FILTER_RULE, false);
 		parent.enable(ZmOperation.MOVE_DOWN_FILTER_RULE, false);

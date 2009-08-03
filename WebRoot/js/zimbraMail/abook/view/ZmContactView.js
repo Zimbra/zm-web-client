@@ -1,15 +1,17 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ *
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
- * 
+ * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
+ *
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -160,8 +162,9 @@ function() {
 		}
 
 		// only set the folder Id if changed
-		var folder = this._contact.getAddressBook();
-		if (folder.id != this._folderId) {
+		var folder = appCtxt.getById(this._contact.folderId);
+		var folderId = folder ? (appCtxt.getActiveAccount().isMain ? folder.nId : folder.id) : null;
+		if (folderId != this._folderId) {
 			mods[ZmContact.F_folderId] = this._folderId;
 			foundOne = true;
 		}
@@ -242,6 +245,12 @@ function(width, height) {
 	this._sizeChildren(width, height);
 };
 
+ZmContactView.prototype.setBounds =
+function(x, y, width, height) {
+	DwtComposite.prototype.setBounds.call(this, x, y, width, height);
+	this._sizeChildren(width, height);
+};
+
 ZmContactView.prototype.getTitle =
 function() {
 	return [ZmMsg.zimbraTitle, ZmMsg.contact].join(": ");
@@ -295,15 +304,10 @@ function() {
 	// always test for DOM Id in case it non-existent in template
 	var folderCell = document.getElementById(this._folderCellId);
 	if (folderCell) {
-		if (appCtxt.multiAccounts) {
-			this._folderPickerButton = new DwtButton({parent:this, parentElement:this._folderCellId});
-			this._folderPickerButton.addSelectionListener(new AjxListener(this, this._folderPickerListener));
-			this._folderPickedId = ZmFolder.ID_CONTACTS;
-		} else {
-			// add select widget for user to choose folder
-			this._folderSelect = new DwtSelect({parent:this, parentElement:this._folderCellId});
-			this._folderSelect.addChangeListener(scl);
-		}
+		// add select widget for user to choose folder
+		this._folderSelect = new DwtSelect({parent:this});
+		this._folderSelect.reparentHtmlElement(this._folderCellId);
+		this._folderSelect.addChangeListener(scl);
 	}
 };
 
@@ -448,43 +452,31 @@ function() {
 
 ZmContactView.prototype._setFolder =
 function() {
-	if (this._folderSelect) {
-		var match;
-		if (this._contact.id == null) {
-			var clc = AjxDispatcher.run("GetContactListController");
-			match = clc._folderId;
+	if (!this._folderSelect) { return; }
+
+	var match;
+	if (this._contact.id == null) {
+		var clc = AjxDispatcher.run("GetContactListController");
+		match = clc._folderId;
+	} else {
+		match = this._contact.addrbook ? this._contact.addrbook.id : ZmFolder.ID_CONTACTS;
+	}
+
+	var folderTree = appCtxt.getFolderTree();
+	var folders = folderTree ? folderTree.getByType(ZmOrganizer.ADDRBOOK) : [];
+	folders.sort(ZmAddrBook.sortCompare);
+
+	// for now, always re-populate folders DwtSelect
+	this._folderSelect.clearOptions();
+
+	for (var i = 0; i < folders.length; i++) {
+		var folder = folders[i];
+		if (folder.nId == ZmFolder.ID_ROOT || folder.nId == ZmOrganizer.ID_MY_CARD ||
+			folder.isInTrash() || folder.isReadOnly()) {
+			continue;
 		}
 
-		if (this._contact.id != null || !match) {
-			match = this._contact.addrbook ? this._contact.addrbook.id : ZmFolder.ID_CONTACTS;
-		}
-
-		var folderTree = appCtxt.getFolderTree();
-		var folders = folderTree ? folderTree.getByType(ZmOrganizer.ADDRBOOK) : [];
-		folders.sort(ZmAddrBook.sortCompare);
-
-		// for now, always re-populate folders DwtSelect
-		this._folderSelect.clearOptions();
-
-		for (var i = 0; i < folders.length; i++) {
-			var folder = folders[i];
-			if (folder.nId == ZmFolder.ID_ROOT || folder.nId == ZmOrganizer.ID_MY_CARD ||
-				folder.isInTrash() || folder.isReadOnly()) {
-				continue;
-			}
-
-			this._folderSelect.addOption(folder.name, folder.id == match, folder.id);
-		}
-	} else if (this._folderPickerButton) {
-		var folder = this._contact.getAddressBook();
-		if (folder) {
-			this._folderPickerButton.setText(folder.name);
-			this._folderPickedId = folder.id;
-		} else {
-			var name = ZmMsg[ZmFolder.MSG_KEY[ZmOrganizer.ID_ADDRBOOK]];
-			this._folderPickerButton.setText(name);
-			this._folderPickedId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ADDRBOOK, appCtxt.getActiveAccount());
-		}
+		this._folderSelect.addOption(folder.name, folder.id == match, folder.id);
 	}
 };
 
@@ -541,17 +533,16 @@ function() {
 	this._setValues();
 
 	// notify zimlets that a new contact is being shown.
-	appCtxt.notifyZimlets("onContactEdit", [this, this._contact, this._htmlElId]);
+	if (appCtxt.zimletsPresent()) {
+		appCtxt.getZimletMgr().notifyZimlets("onContactEdit", this, this._contact, this._htmlElId);
+	}
 };
 
 ZmContactView.prototype._getFields =
 function() {
-	this._folderId = ZmFolder.ID_CONTACTS;
-	if (this._folderSelect) {
-		this._folderId = this._folderSelect.getValue();
-	} else if (this._folderPickerButton) {
-		this._folderId = this._folderPickedId;
-	}
+	this._folderId = this._folderSelect
+		? this._folderSelect.getValue()
+		: ZmFolder.ID_CONTACTS;
 
 	for (var i = 0; i < this._fields.length; i++) {
 		var fields = this._fields[i];
@@ -868,34 +859,6 @@ function(ev) {
 	}
 };
 
-ZmContactView.prototype._folderPickerListener =
-function(ev) {
-	var dlg = appCtxt.getChooseFolderDialog();
-	var callback = new AjxCallback(this, this._folderPickerCallback, [dlg]);
-	var folder = this._contact && this._contact.getAddressBook();
-	var account = folder && appCtxt.getAccount(folder.accountId);
-
-	var params = {
-		overviewId:	dlg.getOverviewId(ZmApp.CONTACTS),
-		data:		(folder || appCtxt.getById(ZmOrganizer.ID_ADDRBOOK)),
-		treeIds:	[ZmOrganizer.ADDRBOOK]
-	};
-	params.omit = {};
-	params.omit[ZmFolder.ID_TRASH] = true;
-	params.omit[ZmOrganizer.ID_AUTO_ADDED] = true;
-
-	ZmController.showDialog(dlg, callback, params, account);
-};
-
-ZmContactView.prototype._folderPickerCallback =
-function(dlg, folder) {
-	dlg.popdown();
-
-	this._folderPickerButton.setText(folder.name);
-	this._folderPickedId = folder.id;
-	this._isDirty = true;
-};
-
 ZmContactView.prototype._dateButtonListener =
 function(ev) {
 	var buttonId = ev.item.getData(Dwt.KEY_ID);
@@ -956,4 +919,15 @@ function(ev) {
 		}
 	}
 	return true;
+};
+
+ZmContactView.getPrintHtml =
+function(contact, abridged) {
+	// make sure it's a real ZmContact
+	var real = contact.list._realizeContact(contact);
+	var subs = {
+		contact: real,
+		abridged: abridged
+	};
+	return (AjxTemplate.expand("abook.Contacts#PrintContact", subs));
 };

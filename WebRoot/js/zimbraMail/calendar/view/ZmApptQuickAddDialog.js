@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 /**
@@ -37,13 +39,10 @@ ZmApptQuickAddDialog = function(parent) {
 	ZmQuickAddDialog.call(this, parent, null, null, [moreDetailsButton]);
 	DBG.timePt("ZmQuickAddDialog constructor", true);
 
-	AjxDispatcher.run("GetResources");
-
 	var html = AjxTemplate.expand("calendar.Appointment#ZmApptQuickAddDialog", {id: this._htmlElId});
 	this.setContent(html);
 	this.setTitle(ZmMsg.quickAddAppt);
 	DBG.timePt("create content");
-	this._locations = [];
 
 	this._createDwtObjects();
 	this._cacheFields();
@@ -89,7 +88,6 @@ function(appt) {
 	this._repeatSelect.setSelectedValue("NON");
 	this._repeatDescField.innerHTML = "";
 	this._origFormValue = this._formValue();
-	this._locations = [];
 };
 
 ZmApptQuickAddDialog.prototype.getAppt = 
@@ -102,8 +100,7 @@ function() {
 	appt.setName(this._subjectField.getValue());
 	appt.freeBusy = this._showAsSelect.getValue();
 	appt.privacy = this._privacySelect.getValue();
-	var calId = this._calendarSelect 
-		? this._calendarSelect.getValue() : this._folderPickedId;
+	var calId = this._calendarSelect.getValue();
 	appt.setFolderId(calId);
 	appt.setOrganizer(this._calendarOrgs[calId]);
 
@@ -121,7 +118,6 @@ function() {
 	appt.setEndDate(endDate);
 	appt.setRecurType(this._repeatSelect.getValue());
 	appt.location = this._locationField.getValue();
-	appt.setAttendees(this._locations, ZmCalBaseItem.LOCATION);
 
 	//set alarm for reminders
 	appt.setReminderMinutes(this._reminderSelect.getValue());
@@ -160,10 +156,8 @@ function(loc) {
 		// tab group filled in here rather than in the constructor b/c we need
 		// all the content fields to have been created
 		var members = [this._subjectField, this._locationField, this._showAsSelect, this._privacySelect];
-		if (this._calendarSelect && this._calendarSelect.size() > 1) {
+		if (this._calendarSelect.size() > 1) {
 			members.push(this._calendarSelect);
-		} else if (this._folderPickerButton) {
-			members.push(this._folderPickerButton);
 		}
 		// XXX: ZmTimeSelect doesn't handle focus yet
 		members = members.concat([this._startDateField, this._startDateButton,
@@ -178,19 +172,10 @@ function(loc) {
 
 	var defaultWarningTime = appCtxt.get(ZmSetting.CAL_REMINDER_WARNING_TIME);
 	this._reminderSelect.setSelectedValue(defaultWarningTime);
-
-	var defaultPrivacyOption = appCtxt.get(ZmSetting.CAL_APPT_VISIBILITY);
-	this._privacySelect.setSelectedValue((defaultPrivacyOption == ZmSetting.CAL_VISIBILITY_PRIV) ?  "PRI" : "PUB");
-
+	
 	DBG.timePt("ZmQuickAddDialog#popup", true);
 };
 
-ZmApptQuickAddDialog.prototype._autoCompCallback =
-function(text, el, match) {
-	if (match.item) {
-		this._locationField.setValue(match.item.getFullName());
-	}
-};
 
 // Private / protected methods
 
@@ -206,15 +191,14 @@ function() {
 	this._subjectField.setRequired();
 	Dwt.setSize(this._subjectField.getInputElement(), "100%", "22px");
 
-
-    this._locationField = new DwtInputField({parent:this, type:DwtInputField.STRING,
+	this._locationField = new DwtInputField({parent:this, type:DwtInputField.STRING,
 											initialValue:null, size:null, maxLen:null,
 											errorIconStyle:DwtInputField.ERROR_ICON_NONE,
 											validationStyle:DwtInputField.ONEXIT_VALIDATION,
 											parentElement:(this._htmlElId + "_location")});
 	Dwt.setSize(this._locationField.getInputElement(), "100%", "22px");
 
-    // create DwtSelects
+	// create DwtSelects
 	this._showAsSelect = new DwtSelect({parent:this, parentElement:(this._htmlElId + "_showAs")});
 	for (var i = 0; i < ZmApptEditView.SHOWAS_OPTIONS.length; i++) {
 		var option = ZmApptEditView.SHOWAS_OPTIONS[i];
@@ -228,14 +212,8 @@ function() {
 	}
 	this._privacySelect.addChangeListener(new AjxListener(this, this._privacyListener));
 
-	if (appCtxt.multiAccounts) {
-		this._folderPickerButton = new DwtButton({parent:this, parentElement:(this._htmlElId + "_calendar")});
-		this._folderPickerButton.addSelectionListener(new AjxListener(this, this._folderPickerListener));
-	}
-	else {
-		this._calendarSelect = new DwtSelect({parent:this, parentElement:(this._htmlElId + "_calendar")});
-		this._calendarSelect.addChangeListener(new AjxListener(this, this._privacyListener));
-	}
+	this._calendarSelect = new DwtSelect({parent:this, parentElement:(this._htmlElId + "_calendar")});
+	this._calendarSelect.addChangeListener(new AjxListener(this, this._privacyListener));
 	
 	var dateButtonListener = new AjxListener(this, this._dateButtonListener);
 	var dateCalSelectionListener = new AjxListener(this, this._dateCalSelectionListener);
@@ -256,33 +234,23 @@ function() {
 	this._endTimeSelect.addChangeListener(timeSelectListener);
 	this._endTimeSelect.reparentHtmlElement(this._htmlElId + "_endTime");
 
-	this._repeatSelect = new DwtSelect({parent:this, parentElement:(this._htmlElId + "_repeat")});
+	this._repeatSelect = new DwtSelect({parent:this});
 	this._repeatSelect.addChangeListener(new AjxListener(this, this._repeatChangeListener));
 	for (var i = 0; i < ZmApptViewHelper.REPEAT_OPTIONS.length-1; i++) {
 		var option = ZmApptViewHelper.REPEAT_OPTIONS[i];
 		this._repeatSelect.addOption(option.label, option.selected, option.value);
 	}
-
+	var repeatCell = document.getElementById(this._htmlElId + "_repeat");
+	if (repeatCell) {
+		repeatCell.appendChild(this._repeatSelect.getHtmlElement());
+	}
+	
 	//reminder DwtSelect
-	var	displayOptions = [
-		ZmMsg.apptRemindNever,
-		ZmMsg.apptRemindNMinutesBefore,
-		ZmMsg.apptRemindNMinutesBefore,
-		ZmMsg.apptRemindNMinutesBefore,
-		ZmMsg.apptRemindNMinutesBefore,
-		ZmMsg.apptRemindNMinutesBefore,
-		ZmMsg.apptRemindNMinutesBefore,
-		ZmMsg.apptRemindNMinutesBefore,
-		ZmMsg.apptRemindNHoursBefore,
-		ZmMsg.apptRemindNHoursBefore,
-		ZmMsg.apptRemindNHoursBefore,
-		ZmMsg.apptRemindNHoursBefore,
-		ZmMsg.apptRemindNHoursBefore
-	];
+	var	displayOptions = [ZmMsg.apptRemindNever, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNHoursBefore, ZmMsg.apptRemindNHoursBefore, ZmMsg.apptRemindNHoursBefore, ZmMsg.apptRemindNHoursBefore, ZmMsg.apptRemindNHoursBefore ];
 	var	options = this._reminderOptions = [0, 1, 5, 10, 15, 30, 45, 60, 120, 180, 240, 300, 1080];
 	var	labels = [0, 1, 5, 10, 15, 30, 45, 60, 2, 3, 4, 5, 18];
 	var defaultWarningTime = appCtxt.get(ZmSetting.CAL_REMINDER_WARNING_TIME);
-
+	
 	this._reminderSelect = new DwtSelect({parent:this});
 	this._reminderSelect.addChangeListener(new AjxListener(this, this._reminderChangeListener));
 	for (var j = 0; j < options.length; j++) {
@@ -290,100 +258,26 @@ function() {
 		this._reminderSelect.addOption(optLabel, (defaultWarningTime == options[j]), options[j]);
 	}
 	this._reminderSelect.reparentHtmlElement(this._htmlElId + "_reminderSelect");
-
-	// init auto-complete widget if contacts app enabled
-	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-		this._initAutocomplete();
-	}
-};
-
-ZmApptQuickAddDialog.prototype._initAutocomplete =
-function() {
-	var acCallback = new AjxCallback(this, this._autocompleteCallback);
-	this._acList = null;
-
-	if (appCtxt.get(ZmSetting.GAL_ENABLED) || appCtxt.get(ZmSetting.GAL_ENABLED)) {
-		// autocomplete for locations
-		var app = appCtxt.getApp(ZmApp.CALENDAR);
-		var params = {
-			dataClass: appCtxt.getAutocompleter(),
-			matchValue: ZmAutocomplete.AC_VALUE_NAME,
-			compCallback: acCallback,
-			options: {type:ZmAutocomplete.AC_TYPE_LOCATION}
-		};
-		this._acLocationsList = new ZmAutocompleteListView(params);
-		this._acLocationsList.handle(this._locationField.getInputElement());
-		this._acList = this._acLocationsList;
-	}
-};
-
-ZmApptQuickAddDialog.prototype._autocompleteCallback =
-function(text, el, match) {
-	if (!match) {
-		DBG.println(AjxDebug.DBG1, "ZmApptQuickAddDialog: match empty in autocomplete callback; text: " + text);
-		return;
-	}
-	var attendee = match.item;
-	if (attendee) {
-		var type = el._attType;
-		this._isKnownLocation = true;
-		attendee = (attendee instanceof AjxVector) ? attendee.getArray() :
-				   (attendee instanceof Array) ? attendee : [attendee];
-		for (var i = 0; i < attendee.length; i++) {
-			this._locations.push(attendee[i]);
-		}
-	}
 };
 
 ZmApptQuickAddDialog.prototype._privacyListener =
 function() {
-	if (!this._privacySelect) { return; }
+	if(!this._privacySelect || !this._calendarSelect){ return; }
 
 	var value = this._privacySelect.getValue();
-	var calId = this._calendarSelect ? this._calendarSelect.getValue() : this._folderPickedId;
-	var cal = calId && appCtxt.getById(calId);
-
-	if (cal) {
-		var isRemote = (calId.match(/:/));
-		if (value == "PRI" && isRemote && !cal.hasPrivateAccess()) {
-			this._privacySelect.setSelectedValue("PUB");
-			this._privacySelect.disable();
-		} else {
-			this._privacySelect.enable();
-		}
+	var calId = this._calendarSelect.getValue();	
+	var cal = appCtxt.getById(calId);
+	
+	var isRemote = (calId.match(/:/));
+	if(value == "PRI" && isRemote && !cal.hasPrivateAccess()) {
+		this._privacySelect.setSelectedValue("PUB");
+		this._privacySelect.disable();
+	}else{
+		this._privacySelect.enable();
 	}
 };
 
-ZmApptQuickAddDialog.prototype._folderPickerListener =
-function(ev) {
-	var dlg = appCtxt.getChooseFolderDialog();
-	var callback = new AjxCallback(this, this._folderPickerCallback, [dlg]);
-	var folder = this._calItem && appCtxt.getById(this._calItem.folderId);
-	var account = folder && appCtxt.getAccount(folder.accountId);
-
-	var params = {
-		overviewId:	dlg.getOverviewId(ZmApp.CALENDAR),
-		data:		this._calItem,
-		treeIds:	[ZmOrganizer.CALENDAR],
-		omit:		{}
-	};
-	params.omit[ZmFolder.ID_TRASH] = true;
-	params.omit[ZmOrganizer.ID_AUTO_ADDED] = true;
-
-	ZmController.showDialog(dlg, callback, params, account);
-};
-
-ZmApptQuickAddDialog.prototype._folderPickerCallback =
-function(dlg, folder) {
-	dlg.popdown();
-
-	this._folderPickerButton.setText(folder.name);
-	this._folderPickedId = folder.id;
-
-	this._privacyListener();
-};
-
-ZmApptQuickAddDialog.prototype._cacheFields =
+ZmApptQuickAddDialog.prototype._cacheFields = 
 function() {
 	this._calLabelField 	= document.getElementById(this._htmlElId + "_calendarLabel");
 	this._calendarRow		= document.getElementById(this._htmlElId + "_calendarRow");
@@ -409,37 +303,28 @@ function(appt) {
 	var folderTree = appCtxt.getFolderTree();
 	var data = folderTree ? folderTree.getByType(org) : [];
 
-	if (this._calendarSelect) {
-		this._calendarSelect.clearOptions();
-	}
+	this._calendarSelect.clearOptions();
 	this._calendarOrgs = [];
 	for (var i = 0; i < data.length; i++) {
 		var cal = data[i];
 		var id = cal.link ? cal.getRemoteId() : cal.id;
 		this._calendarOrgs[id] = cal.owner;
 
-		// bug: 28363 owner attribute is not available for shared sub folder for mountpoints
-		if (cal.isRemote() && !cal.owner && cal.parent && cal.parent.isRemote()) {
-			this._calendarOrgs[id] = cal.parent.getOwner();
-		}
+        //bug: 28363 owner attribute is not available for shared sub folder for mountpoints
+        if(cal.isRemote() && !cal.owner && cal.parent && cal.parent.isRemote()) {
+            this._calendarOrgs[id] = cal.parent.getOwner();
+        }
 
-		if (this._calendarSelect) {
-			// don't show calendar if remote or don't have write perms
-			if (cal.url) { continue; }
-			var share = cal.getMainShare();
-			if (cal.link && share && !share.isWrite()) { continue; }
+        // don't show calendar if remote or don't have write perms
+		if (cal.url) { continue; }
+		var share = cal.getMainShare();
+		if (cal.link && share && !share.isWrite()) { continue; }
 
-			this._calendarSelect.addOption(cal.getName(), (appt.folderId == cal.id) || (appt.folderId == cal.nId), id);
-		}
+		this._calendarSelect.addOption(cal.getName(), (appt.folderId == cal.id) || (appt.folderId == cal.nId), id);
 	}
 
-	if (this._calendarSelect) {
-		var len = this._calendarSelect.size();
-		Dwt.setVisible(this._calendarRow, len > 1);
-	} else if (this._folderPickerButton) {
-		var calendar = appCtxt.getById(appt.folderId);
-		this._folderPickerButton.setText(calendar.name);
-	}
+	var len = this._calendarSelect.size();
+	Dwt.setVisible(this._calendarRow, len > 1);
 };
 
 ZmApptQuickAddDialog.prototype._showTimeFields = 
@@ -461,8 +346,8 @@ function() {
 	vals.push(this._locationField.getValue());
 	vals.push(this._startDateField.value);
 	vals.push(this._endDateField.value);
-	vals.push(this._reminderSelect.getValue());
-	if (!this._appt.isAllDayEvent()) {
+    vals.push(this._reminderSelect.getValue());
+    if (!this._appt.isAllDayEvent()) {
 		vals.push(
 			AjxDateUtil.getServerDateTime(this._startTimeSelect.getValue()),
 			AjxDateUtil.getServerDateTime(this._endTimeSelect.getValue())

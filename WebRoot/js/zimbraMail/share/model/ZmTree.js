@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2009 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -61,9 +63,9 @@ function() {
 };
 
 ZmTree.prototype.asList =
-function(options) {
+function() {
 	var list = [];
-	return this.root ? this._addToList(this.root, list, options) : list;
+	return this.root ? this._addToList(this.root, list) : list;
 };
 
 ZmTree.prototype.getUnreadHash =
@@ -75,16 +77,13 @@ function(unread) {
 };
 
 ZmTree.prototype._addToList =
-function(organizer, list, options) {
-	var incRemote = options && options.includeRemote;
-	var remoteOnly = options && options.remoteOnly;
-	var isRemote = organizer.isRemote();
-	if ((!isRemote && !remoteOnly) || (isRemote && (remoteOnly || incRemote))) {
+function(organizer, list) {
+	if (!organizer.isRemote()) {
 		list.push(organizer);
 	}
 	var children = organizer.children.getArray();
     for (var i = 0; i < children.length; i++) {
-        this._addToList(children[i], list, options);
+        this._addToList(children[i], list);
     }
 	return list;
 };

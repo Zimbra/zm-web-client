@@ -1,5 +1,6 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2006, 2007 Zimbra, Inc.
  * 
@@ -10,26 +11,25 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
 ZmPopAccount = function(id, list) {
-	ZmDataSource.call(this, ZmAccount.TYPE_POP, id, list);
-
-	// advanced settings
-	this.ELEMENT_NAME = "pop3";
-	this.port = ZmPopAccount.PORT_DEFAULT;
-
+	ZmDataSource.call(this, ZmAccount.POP, id, list);
 };
-
 ZmPopAccount.prototype = new ZmDataSource;
 ZmPopAccount.prototype.constructor = ZmPopAccount;
 
 // Constants
-
+ZmAccount.POP 				= "POP";
 ZmPopAccount.PORT_CLEAR 	= 110;
 ZmPopAccount.PORT_SSL 		= 995;
 ZmPopAccount.PORT_DEFAULT	= ZmPopAccount.PORT_CLEAR;
+
+// advanced settings
+ZmPopAccount.prototype.ELEMENT_NAME = "pop3";
+ZmPopAccount.prototype.port = ZmPopAccount.PORT_DEFAULT;
 
 
 // Public methods

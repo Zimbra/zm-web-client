@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008 Zimbra, Inc.
+ * Copyright (C) 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -30,8 +32,6 @@ ZmContactsHelper = function() {};
  * @param query			[String]		query string to search on
  * @param queryHint		[String]*		query hint (i.e. searching shared folders)
  * @param ascending		[boolean]*		if true, sort in ascending order
- * @param lastId		[int]*			ID of last item displayed (for pagination)
- * @param lastSortVal	[string]*		value of sort field for above item
  * @param respCallback	[AjxCallback]*	callback to call once response comes back from server
  * @param errorCallback	[AjxCallback]*	callback to call if error returned from server
  */

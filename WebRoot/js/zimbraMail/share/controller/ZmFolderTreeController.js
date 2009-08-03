@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -67,15 +69,7 @@ function(params) {
 				omit[folder.id] = true;
 			}
 		}
-
-		// for offline, hide all system folders except Inbox and Trash
-		if (appCtxt.isOffline && params.account.type == ZmAccount.TYPE_POP) {
-			omit[ZmFolder.ID_SPAM] = true;
-			omit[ZmFolder.ID_SENT] = true;
-			omit[ZmFolder.ID_DRAFTS] = true;
-			omit[ZmFolder.ID_OUTBOX] = true;
-		}
-	}
+    }
 	params.omit = omit;
 	return ZmTreeController.prototype.show.call(this, params);
 };
@@ -121,16 +115,11 @@ function(parent, type, id) {
 		{
 			parent.enable(ZmOperation.NEW_FOLDER, true);
 		}
-		// "Empty" for Chats, Junk and Trash
+		// "Empty" for Junk and Trash
 		if (nId == ZmFolder.ID_SPAM ||
-			nId == ZmFolder.ID_TRASH ||
-			nId == ZmFolder.ID_CHATS)
+			nId == ZmFolder.ID_TRASH)
 		{
-			if (nId == ZmFolder.ID_SPAM) {
-				emptyText = ZmMsg.emptyJunk;
-			} else if (nId == ZmFolder.ID_TRASH) {
-				 emptyText = ZmMsg.emptyTrash;
-			}
+			emptyText = (nId == ZmFolder.ID_SPAM) ? ZmMsg.emptyJunk : ZmMsg.emptyTrash;
 			parent.enable(ZmOperation.EMPTY_FOLDER, hasContent);
 		}
 		// only allow Inbox and Sent system folders to be share-able for now
@@ -218,7 +207,6 @@ function(parent, type, id) {
 	this._resetButtonPerSetting(parent, ZmOperation.MOUNT_FOLDER, appCtxt.get(ZmSetting.SHARING_ENABLED));
 };
 
-
 // Private methods
 
 /*
@@ -294,13 +282,11 @@ function(folder) {
 		// it off to the search tree controller
 		var stc = this._opc.getTreeController(ZmOrganizer.SEARCH);
 		stc._itemClicked(folder);
-	} else if (folder.id == ZmFolder.ID_ATTACHMENTS) {
-		var attController = AjxDispatcher.run("GetAttachmentsController");
-		attController.show();
 	} else {
-		// do nothing if Global Searches folder clicked
-		if (folder.nId == ZmOrganizer.ID_GLOBAL_SEARCHES) { return; }
-
+		if (folder._showFoldersCallback) {
+			folder._showFoldersCallback.run();
+			return;
+		}
 		var searchFor = ZmId.SEARCH_MAIL;
 		if (folder.isInTrash()) {
 			var app = appCtxt.getCurrentAppName();
@@ -309,19 +295,12 @@ function(folder) {
 				searchFor = ZmItem.CONTACT;
 			}
 		}
-		var sc = appCtxt.getSearchController();
-
-		if (appCtxt.multiAccounts) {
-			sc.resetSearchAllAccounts();
-		}
-		var account = folder.accountId && appCtxt.getAccount(folder.accountId);
 		var params = {
 			query: folder.createQuery(),
 			searchFor: searchFor,
-			getHtml: (folder.nId == ZmFolder.ID_DRAFTS) || appCtxt.get(ZmSetting.VIEW_AS_HTML),
-			types: ((folder.nId == ZmOrganizer.ID_SYNC_FAILURES) ? [ZmItem.MSG] : null), // for Sync Failures folder, always show in traditional view
-			sortBy: ((sc.currentSearch && folder.nId == sc.currentSearch.folderId) ? null : ZmSearch.DATE_DESC),
-			accountName: (account && account.name)
+			getHtml: (folder.nId == ZmFolder.ID_DRAFTS) || appCtxt.get(ZmSetting.VIEW_AS_HTML), //bug: 
+			types: ((folder.nId == ZmOrganizer.ID_SYNC_FAILURES) ? [ZmItem.MSG] : null)	// for Sync Failures folder, always show in traditional view
+
 		};
 
 		// make sure we have permissions for this folder (in case an "external"
@@ -333,7 +312,7 @@ function(folder) {
 				folderTree.getPermissions({callback:callback, folderIds:[folder.id]});
 			}
 		} else {
-			sc.search(params);
+			appCtxt.getSearchController().search(params);
 		}
 	}
 };
@@ -457,10 +436,7 @@ function(ev) {
 		? (AjxMessageFormat.format(ZmMsg.confirmEmptyFolder, organizer.getName()))
 		: ZmMsg.confirmEmptyTrashFolder;
 	ds.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
-
-	var focusButtonId = (organizer.nId == ZmFolder.ID_TRASH || organizer.nId == ZmFolder.ID_SPAM) ?  DwtDialog.OK_BUTTON : DwtDialog.CANCEL_BUTTON;
-	ds.associateEnterWithButton(focusButtonId);
-	ds.popup(null, focusButtonId);
+	ds.popup();
 
 	if (!(organizer.nId == ZmFolder.ID_SPAM || organizer.isInTrash())) {
 		var cancelButton = ds.getButton(DwtDialog.CANCEL_BUTTON);
@@ -559,7 +535,7 @@ function(ev) {
 		} else {
 			var ctlr = ev.srcData.controller;
 			var items = (data instanceof Array) ? data : [data];
-			ctlr._doMove(items, dropFolder, null, isShiftKey);
+			ctlr._doMove(items, dropFolder, null, !isShiftKey);
 		}
 	}
 };

@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -103,8 +103,9 @@ function() {
 	var email = this.email != null ? this.email : this.identity.getField(ZmIdentity.SEND_FROM_ADDRESS); // bug: 23042
 	if (!email) { // bug: 38175
 		var provider = ZmDataSource.getProviderForAccount(this);
+		var userName = this.userName && this.userName.match(/@/) ? this.userName.replace(/@.*/,"") : this.userName; 
 		var host = (provider && provider._host) || this.mailServer;
-		email = this.userName && host ? [ this.userName, host].join("@") : "";
+		email = userName && host ? [ userName, host].join("@") : "";
 	}
 	return email;
 };
@@ -377,10 +378,10 @@ ZmDataSource.addProvider = function(provider) {
 	providers[provider.id] = provider;
 	// normalize values -- defensive programming
 	if (provider.type) {
-		provider.type = provider.type.toLowerCase() == "pop" ? ZmAccount.TYPE_POP : ZmAccount.TYPE_IMAP;
+		provider.type = provider.type.toLowerCase() == "pop" ? ZmAccount.POP : ZmAccount.IMAP;
 	}
 	else {
-		provider.type = ZmAccount.TYPE_POP;
+		provider.type = ZmAccount.POP;
 	}
 	if (provider.connectionType) {
 		var isSsl = provider.connectionType.toLowerCase() == "ssl";
@@ -390,7 +391,7 @@ ZmDataSource.addProvider = function(provider) {
 		provider.connectionType = ZmDataSource.CONNECT_CLEAR;
 	}
 	if (!provider.port) {
-		var isPop = provider.type == ZmAccount.TYPE_POP;
+		var isPop = provider.type == ZmAccount.POP;
 		if (isSsl) {
 			provider.port = isPop ? ZmPopAccount.PORT_SSL : ZmImapAccount.PORT_SSL;
 		}
@@ -461,10 +462,10 @@ function(callback, result) {
 	if (treeItem) {
 		// reset the icon in the tree view if POP account since the first time it
 		// was created, we didnt know it was a data source
-		if (this.type == ZmAccount.TYPE_POP && this.folderId != ZmFolder.ID_INBOX) {
+		if (this.type == ZmAccount.POP && this.folderId != ZmFolder.ID_INBOX) {
 			treeItem.setImage("POPAccount");
 		}
-		else if (this.type == ZmAccount.TYPE_IMAP) {
+		else if (this.type == ZmAccount.IMAP) {
 			// change imap folder to a tree header since folder is first created
 			// without knowing its a datasource
 			treeItem.dispose();
@@ -504,13 +505,13 @@ function(callback, result) {
 	var fid = appCtxt.getActiveAccount().isMain ? this.folderId : ZmOrganizer.getSystemId(this.folderId);
 	if(this.folderId == ZmAccountsPage.DOWNLOAD_TO_FOLDER && this._object_ && this._object_.folderId) {
 		fid = this._object_.folderId;
-	}	
-	var treeItem = treeView ? treeView.getTreeItemById(fid) : null;
+	}
+	var treeItem = treeView ? treeView.getTreeItemById(fid) : null;	
 	if (treeItem) {
-		if (this.type == ZmAccount.TYPE_POP && this.folderId != ZmFolder.ID_INBOX) {
+		if (this.type == ZmAccount.POP && this.folderId != ZmFolder.ID_INBOX) {
 			// reset icon since POP folder is no longer hooked up to a datasource
 			treeItem.setImage("Folder");
-		} else if (this.type == ZmAccount.TYPE_IMAP) {
+		} else if (this.type == ZmAccount.IMAP) {
 			// reset the icon in the tree view if POP account since the first time it
 			// was created, we didnt know it was a data source
 			treeItem.dispose();

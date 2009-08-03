@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008 Zimbra, Inc.
+ * Copyright (C) 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -140,21 +142,23 @@ function(voicemail) {
 		data = contactList.getContactByPhone(callingParty.name);
 	}
 	if (data) {
-		this._addToContactMap(data.contact, voicemail);
-		voicemail.participants.getArray()[0] = data.contact;
-		if (!ZmVoiceListView._callerFormat) {
-			ZmVoiceListView._callerFormat = new AjxMessageFormat(ZmMsg.callingPartyFormat);
+		var fileAs = data.contact.getFileAs();
+		if (fileAs) {
+			this._addToContactMap(data.contact, voicemail);
+			voicemail.participants.getArray()[0] = data.contact;
+			if (!ZmVoiceListView._callerFormat) {
+				ZmVoiceListView._callerFormat = new AjxMessageFormat(ZmMsg.callingPartyFormat);
+			}
+			var args = [
+				AjxStringUtil.htmlEncode(fileAs),
+				ZmVoiceListView.PHONE_FIELDS_LABEL[data.field],
+				this._getCallerHtml(voicemail)
+			];
+			var text = ZmVoiceListView._callerFormat.format(args);
+			return text;
 		}
-		var args = [
-			AjxStringUtil.htmlEncode(data.contact.getFullName()),
-			ZmVoiceListView.PHONE_FIELDS_LABEL[data.field],
-			this._getCallerHtml(voicemail)
-		];
-		var text = ZmVoiceListView._callerFormat.format(args);
-		return text;
-	} else {
-		return this._getCallerHtml(voicemail);
 	}
+	return this._getCallerHtml(voicemail);
 };
 
 ZmVoiceListView.prototype._addToContactMap =
@@ -202,8 +206,8 @@ function(ev, div) {
 	} else if (type == DwtListView.TYPE_LIST_ITEM) {
 		var match = this._parseId(id);
 		if (match && match.field && match.field == ZmItem.F_SELECTION) {
-			if (ev.target.className != "ImgCheckboxChecked")
-				ev.target.className = "ImgCheckboxChecked";
+			if (ev.target.className != "ImgTaskCheckboxCompleted")
+				ev.target.className = "ImgTaskCheckboxCompleted";
 			return;
 		}
 
@@ -231,8 +235,8 @@ function(ev, div) {
 		if (m && m.field) {
 			if (m.field == ZmItem.F_SELECTION) {
 				ev.target.className = (this.getSelectedItems().contains(div))
-					? "ImgCheckboxChecked"
-					: "ImgCheckboxUnchecked";
+					? "ImgTaskCheckboxCompleted"
+					: "ImgTaskCheckbox";
 			}
 		}
 	}

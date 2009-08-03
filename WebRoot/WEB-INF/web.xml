@@ -225,7 +225,7 @@
 
     <error-page>
 		<error-code>404</error-code>
-		<location>/public/error.jsp</location>
+		<location>/public/404.html</location>
 	</error-page>
 
     <servlet>
@@ -304,9 +304,8 @@
 				WEB-INF/classes/messages/${name},
 				WEB-INF/classes/keys/${name},
 				WEB-INF/classes/${dir}/${name},
-				/opt/zimbra/zimlets-properties/${name}/${name},
-                /opt/zimbra/zimlets-deployed/${name}/${name},
-				/opt/zimbra/zimlets-deployed/_dev/${name}/${name}
+				../service/zimlet/${name}/${name},
+				../service/zimlet/_dev/${name}/${name}
 			</param-value>
 		</init-param>
 	</servlet>
@@ -408,19 +407,12 @@
         <env-entry-value>%%zimbraAdminURL%%</env-entry-value>
 	</env-entry>
 
-	<env-entry>
-		<env-entry-name>trustedIPs</env-entry-name>
-        <env-entry-type>java.lang.String</env-entry-type>
-        <env-entry-value>%%zimbraMailTrustedIP%%</env-entry-value>
-	</env-entry>
-
     <jsp-config>
       <jsp-property-group>
           <url-pattern>/h/ac</url-pattern>
           <url-pattern>/h/addattendees</url-pattern>
           <url-pattern>/h/addcontacts</url-pattern>
-          <url-pattern>/h/addcontactconfirmation</url-pattern>
-          <url-pattern>/h/addgroupcontact</url-pattern>
+		  <url-pattern>/h/addgroupcontact</url-pattern>
           <url-pattern>/h/ads</url-pattern>
           <url-pattern>/h/attachments</url-pattern>
           <url-pattern>/h/calendar</url-pattern>
@@ -445,9 +437,7 @@
           <url-pattern>/h/mtasks</url-pattern>
           <url-pattern>/h/options</url-pattern>
           <url-pattern>/h/printcalls</url-pattern>
-          <url-pattern>/h/printcalendar</url-pattern>
           <url-pattern>/h/printvoicemails</url-pattern>
-          <url-pattern>/h/printappointments</url-pattern>          
           <url-pattern>/h/repeat</url-pattern>
           <url-pattern>/h/rest</url-pattern>
           <url-pattern>/h/search</url-pattern>
@@ -456,20 +446,11 @@
           <url-pattern>/h/voicemail</url-pattern>
           <url-pattern>/m/login</url-pattern>
           <url-pattern>/m/main</url-pattern>
-          <url-pattern>/m/mojs</url-pattern>
-          <url-pattern>/m/mobriefcases</url-pattern>
-          <url-pattern>/m/mocals</url-pattern>
-          <url-pattern>/m/moversions</url-pattern>
-          <url-pattern>/m/mainx</url-pattern>
-          <url-pattern>/m/zmain</url-pattern>
-          <url-pattern>/m/zmview</url-pattern>
+          <url-pattern>/m/mainx</url-pattern>          
           <url-pattern>/m/mosearch</url-pattern>
           <url-pattern>/m/mocalendar</url-pattern>
-          <url-pattern>/m/motasks</url-pattern>
-          <url-pattern>/m/moapptcompose</url-pattern>
           <url-pattern>/m/mofolders</url-pattern>
           <url-pattern>/m/moaddrbooks</url-pattern>
-          <url-pattern>/m/moprefs</url-pattern>
           <url-pattern>/m/moquery</url-pattern>
           <url-pattern>/m/mocompose</url-pattern>
           <url-pattern>/h/overviewAds</url-pattern>
@@ -477,7 +458,6 @@
           <url-pattern>/h/printcontacts</url-pattern>
           <url-pattern>/h/printconversations</url-pattern>
           <url-pattern>/h/printmessage</url-pattern>
-		  <url-pattern>/h/printtasks</url-pattern>
           <url-pattern>/y/calendar</url-pattern>
           <url-pattern>/y/eappt</url-pattern>
           <url-pattern>/y/mcalendars</url-pattern>
@@ -485,9 +465,6 @@
           <url-pattern>/y/repeat</url-pattern>
           <url-pattern>/y/search</url-pattern>
           <url-pattern>/y/todo</url-pattern>
-          <url-pattern>/h/briefcaseupload</url-pattern>
-          <url-pattern>/h/mbriefcases</url-pattern>
-          <url-pattern>/h/viewimages</url-pattern>
       </jsp-property-group>
     </jsp-config>
 

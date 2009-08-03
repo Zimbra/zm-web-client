@@ -1,5 +1,6 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2007 Zimbra, Inc.
  * 
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -22,25 +24,24 @@
  * aren't added until the page becomes visible.
  *
  * @param parent			[DwtControl]				the containing widget
- * @param section			[constant]					which preferences page we are
+ * @param view				[constant]					which page we are
  * @param controller		[ZmPrefController]			prefs controller
  */
 ZmPrefSection = function(parent, section, controller) {
 	DwtTabViewPage.call(this, parent, "ZmPreferencesPage");
 
-	this._section = section;
+	this._section = section; // which preferences page we are
 	this._controller = controller;
 	this._title = [ZmMsg.zimbraTitle, controller.getApp().getDisplayName(), section.title].join(": ");
 
-	this._rendered = false; // for DwtTabViewPage
-	this.hasRendered = false;
+	this._rendered = false;
+	this._hasRendered = false;
 };
 
 ZmPrefSection.prototype = new DwtTabViewPage;
 ZmPrefSection.prototype.constructor = ZmPrefSection;
 
-ZmPrefSection.prototype.toString =
-function () {
+ZmPrefSection.prototype.toString = function () {
     return "ZmPrefSection";
 };
 
@@ -50,15 +51,14 @@ function () {
 
 // DwtTabViewPage methods
 
-ZmPrefSection.prototype.showMe =
-function() {
+ZmPrefSection.prototype.showMe = function() {
 	Dwt.setTitle(this._title);
-    if (this.hasRendered) { return; }
+    if (this._hasRendered) return;
 
     // expand section template
     var templateId = this._section.templateId;
     var data = { id: this._htmlElId };
-    data.isEnabled = AjxCallback.simpleClosure(this._isEnabled, this);
+    data.isEnabled = AjxCallback.simpleClosure(this._isEnabled, this, data);
     data.expandField = AjxCallback.simpleClosure(this._expandField, this, data);
 
     this._contentEl.innerHTML = AjxTemplate.expand(templateId, data);
@@ -83,7 +83,7 @@ function() {
 //
 
 ZmPrefSection.prototype._isEnabled =
-function(prefId) {
+function(data, prefId) {
     return this._controller.checkPreCondition(ZmPref.SETUP[prefId]);
 };
 

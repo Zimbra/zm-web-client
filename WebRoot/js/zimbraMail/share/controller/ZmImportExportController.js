@@ -1,15 +1,17 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ *
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009 Zimbra, Inc.
- * 
+ * Copyright (C) 2008 Zimbra, Inc.
+ *
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -68,18 +70,6 @@ ZmImportExportController.SUBTYPE_DEFAULT[ZmImportExportController.TYPE_TGZ] = Zm
 ZmImportExportController.SUBTYPE_DEFAULT[ZmImportExportController.TYPE_CSV] = ZmImportExportController.SUBTYPE_ZIMBRA_CSV;
 ZmImportExportController.SUBTYPE_DEFAULT[ZmImportExportController.TYPE_ICS] = ZmImportExportController.SUBTYPE_ZIMBRA_ICS;
 
-ZmImportExportController.__FAULT_ARGS_MAPPING = {
-	"formatter.INVALID_FORMAT": [ "filename" ],
-	"formatter.INVALID_TYPE": [ "view", "path" ],
-	"formatter.MISMATCHED_META": [ "path" ],
-	"formatter.MISMATCHED_SIZE": [ "path" ],
-	"formatter.MISMATCHED_TYPE": [ "path" ],
-	"formatter.MISSING_BLOB": [ "path" ],
-	"formatter.MISSING_META": [ "path" ],
-	"formatter.MISSING_VCARD_FIELDS": [ "path" ],
-	"formatter.UNKNOWN_ERROR": [ "path", "message" ]
-};
-
 //
 // Public methods
 //
@@ -92,7 +82,7 @@ ZmImportExportController.__FAULT_ARGS_MAPPING = {
  * 									assumes import to root folder.
  *        type			[string]*	Type. Defaults to <code>TYPE_TGZ</code>.
  *        subType		[string]*	Sub-type. Defaults to <code>SUBTYPE_DEFAULT[type]</code>.
- *        resolve		[string]*	Resolve duplicates: "ignore", "modify", "replace", "reset".
+ *        resolve		[string]*	Resolve duplicates: "ignore", "replace", "reset".
  * 									Defaults to <code>"ignore"</code>.
  *        views			[string]*	Comma-separated list of views.
  *        callback		[AjxCallback]*	Callback for success.
@@ -101,7 +91,7 @@ ZmImportExportController.__FAULT_ARGS_MAPPING = {
 ZmImportExportController.prototype.importData = function(params) {
 	// error checking
 	params = params || {};
-	var folderId = params.folderId || -1;
+	var folderId = params.folderId || -1; 
 	if (folderId == -1) {
 		var params = {
 			msg:	ZmMsg.importErrorMissingFolder,
@@ -222,20 +212,20 @@ ZmImportExportController.prototype._doImportSelectFolder = function(params, type
 	dialog.setTitle(ZmMsg._import);
 	dialog.registerCallback(DwtDialog.OK_BUTTON, this._doImportUpload, this, [params, type]);
 
-	var overviewId = dialog.getOverviewId(ZmSetting.IMPORT);
+	var overviewId = [this.toString(), type].join("-");
 	var omit = {};
 	omit[ZmFolder.ID_TRASH] = true;
 	if (type == ZmImportExportController.TYPE_CSV) {
 		AjxDispatcher.require(["ContactsCore", "Contacts"]);
 		var noNew = !appCtxt.get(ZmSetting.NEW_ADDR_BOOK_ENABLED);
 		dialog.popup({
-			treeIds:		[ZmOrganizer.ADDRBOOK],
-			title:			ZmMsg.chooseAddrBook,
-			overviewId:		overviewId,
-			description:	ZmMsg.chooseAddrBookToImport,
-			skipReadOnly:	true,
-			hideNewButton:	noNew,
-			omit:			omit
+			treeIds: [ZmOrganizer.ADDRBOOK],
+			title: ZmMsg.chooseAddrBook,
+			overviewId: overviewId,
+			description: ZmMsg.chooseAddrBookToImport,
+			skipReadOnly: true,
+			hideNewButton: noNew,
+			omit:omit
 		});
 		return;
 	}
@@ -380,33 +370,10 @@ ZmImportExportController.prototype._doImportTGZ = function(params) {
 };
 
 ZmImportExportController.prototype._handleImportTGZResponse =
-function(funcName, params, type, fault1 /* , ... , faultN */) {
-	// gather error/warning messages
-	var messages = [];
-	if (fault1) {
-		for (var j = 3; j < arguments.length; j++) {
-			var fault = arguments[j];
-			var code = fault.Detail.Error.Code;
-			var message = fault.Reason.Text;
-			var args = ZmImportExportController.__faultArgs(fault.Detail.Error.a);
-			if (code == "formatter.UNKNOWN_ERROR") {
-				args.path = args.path || ["(",ZmMsg.unknown,")"].join("");
-				args.message = message;
-			}
-			var mappings = ZmImportExportController.__FAULT_ARGS_MAPPING[code];
-			var formatArgs = new Array(mappings ? mappings.length : 0);
-			for (var i = 0; i < formatArgs.length; i++) {
-				formatArgs[i] = args[mappings[i]];
-			}
-			messages.push(ZMsg[code] ? AjxMessageFormat.format(ZMsg[code], formatArgs) : message);
-		}
-	}
+function(funcName, params, el, message, exName, code) {
 	// show success or failure
-	if (type == "fail") {
-		this._importError(params.errorCallback, messages[0]);
-	}
-	else if (type == "warn") {
-		this._importWarnings(params.callback, messages);
+	if (message) {
+		this._importError(params.errorCallback, ZMsg[code] || message);
 	}
 	else {
 		this._importSuccess(params.callback);
@@ -414,16 +381,10 @@ function(funcName, params, type, fault1 /* , ... , faultN */) {
 
 	// cleanup
 	delete window[funcName];
+	var form = params.form;
+	form.parentNode.removeChild(form);
 	var iframe = params.iframe;
 	iframe.parentNode.removeChild(iframe);
-};
-
-ZmImportExportController.__faultArgs = function(array) {
-	var args = {};
-	for (var i = 0; array && i < array.length; i++) {
-		args[array[i].n] = array[i]._content;
-	}
-	return args;
 };
 
 ZmImportExportController.prototype._confirmImportReset = function(params) {
@@ -480,35 +441,11 @@ ZmImportExportController.prototype._importSuccess = function(callback) {
 	return true;
 };
 
-ZmImportExportController.prototype._importWarnings = function(callback, messages) {
-	if (callback) {
-		callback.run(false);
-	}
-	// remove duplicates
-	var msgmap = {};
-	for (var i = 0; i < messages.length; i++) {
-		msgmap[messages[i]] = true;
-	}
-	messages = AjxUtil.map(AjxUtil.keys(msgmap), AjxStringUtil.htmlEncode);
-	if (messages.length > 5) {
-		var count = messages.length - 5;
-		messages.splice(5, count, AjxMessageFormat.format(ZmMsg.importAdditionalWarnings, [count]));
-	}
-	// show warnings
-	var msglist = [];
-	for (var i = 0; i < messages.length; i++) {
-		msglist.push("<li>", messages[i]);
-	}
-	var msg = AjxMessageFormat.format(ZmMsg.importSuccessWithWarnings, [ messages.length, msglist.join("") ]);
-	ZmImportExportController.__showMessage(msg, DwtMessageDialog.WARNING_STYLE);
-	return true;
-};
-
 ZmImportExportController.prototype._importError = function(errorCallback, message) {
 	if (errorCallback) {
 		errorCallback.run(false);
 	}
-	var msg = AjxStringUtil.htmlEncode(message) || ZmMsg.importFailed; 
+	var msg = message || ZmMsg.importFailed; 
 	ZmImportExportController.__showMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
 	return true;
 };

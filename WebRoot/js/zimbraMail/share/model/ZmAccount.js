@@ -1,5 +1,6 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2007 Zimbra, Inc.
  * 
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -18,54 +20,17 @@ ZmAccount = function(type, id, name, list) {
 
 	this.id = id;
 	this.name = name;
-	this.type = type || ZmAccount.TYPE_ZIMBRA;
+	this.type = type;
 };
-
-
-//
-// Consts
-//
-
-ZmAccount.TYPE_AOL		= "AOL";
-ZmAccount.TYPE_GMAIL	= "Gmail";
-ZmAccount.TYPE_IMAP		= "Imap";
-ZmAccount.TYPE_LIVE		= "Live";   // MS Live / hotmail
-ZmAccount.TYPE_MSE		= "MSE";    // exchange IMAP
-ZmAccount.TYPE_PERSONA	= "PERSONA";
-ZmAccount.TYPE_POP		= "Pop";
-ZmAccount.TYPE_YMP		= "YMP";    // Y! mail
-ZmAccount.TYPE_ZIMBRA	= "Zimbra";
-
-
-//
-// Public static methods
-//
-
-ZmAccount.getTypeName =
-function(type) {
-	switch (type) {
-		case ZmAccount.TYPE_AOL:		return "AOL";
-		case ZmAccount.TYPE_GMAIL:		return "Gmail";
-		case ZmAccount.TYPE_IMAP:		return ZmMsg.accountTypeImap;
-		case ZmAccount.TYPE_LIVE:		return "Microsoft Live";
-		case ZmAccount.TYPE_MSE:		return "Microsoft Exchange";
-		case ZmAccount.TYPE_PERSONA:	return ZmMsg.accountTypePersona;
-		case ZmAccount.TYPE_POP:		return ZmMsg.accountTypePop;
-		case ZmAccount.TYPE_YMP:		return "Yahoo! Mail";
-		case ZmAccount.TYPE_ZIMBRA:		return "Zimbra";
-	}
-	return ZmMsg.unknown;
-};
-
-
-//
-// Public methods
-//
 
 ZmAccount.prototype.toString =
 function() {
 	return "ZmAccount";
 };
+
+//
+// Public methods
+//
 
 ZmAccount.prototype.setName =
 function(name) {

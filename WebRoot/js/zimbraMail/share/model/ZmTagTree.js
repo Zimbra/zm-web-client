@@ -1,5 +1,6 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
  * 
@@ -10,15 +11,13 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
-ZmTagTree = function(account) {
+ZmTagTree = function() {
 	ZmTree.call(this, ZmOrganizer.TAG);
-	var id = (account)
-		? ([account.id, ZmTag.ID_ROOT].join(":"))
-		: ZmTag.ID_ROOT;
-	this.root = new ZmTag({ id:id, tree:this });
+	this.root = new ZmTag({id: ZmTag.ID_ROOT, tree: this});
 };
 
 ZmTagTree.prototype = new ZmTree;
@@ -34,11 +33,11 @@ function() {
 };
 
 ZmTagTree.prototype.loadFromJs =
-function(tagsObj, type, accountId) {
+function(tagsObj) {
 	if (!tagsObj || !tagsObj.tag || !tagsObj.tag.length) return;
 
 	for (var i = 0; i < tagsObj.tag.length; i++) {
-		ZmTag.createFromJs(this.root, tagsObj.tag[i], this, null, accountId);
+		ZmTag.createFromJs(this.root, tagsObj.tag[i], this);
 	}
 	var children = this.root.children.getArray();
 	if (children.length)

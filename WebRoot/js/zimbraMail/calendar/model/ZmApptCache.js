@@ -1,7 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
+ * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -10,6 +11,7 @@
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -63,7 +65,7 @@ ZmApptCache.prototype._getCachedMergedKey =
 function(params) {
 	var sortedFolderIds = [];
 	sortedFolderIds = sortedFolderIds.concat(params.folderIds);
-	sortedFolderIds.sort();
+	sortedFolderIds.sort(ZmApptCache._sortFolderId);
 
 	// add query to cache key since user searches should not be cached
 	var query = params.query && params.query.length > 0
@@ -183,13 +185,13 @@ function(apptList) {
 */
 ZmApptCache.prototype.getApptSummaries =
 function(params) {
-
+	
 	var apptVec = this.setSearchParams(params);
-
-	if (apptVec != null && (apptVec instanceof AjxVector)) {
-		return apptVec;
+	
+	if(apptVec != null && (apptVec instanceof AjxVector)) {
+        return apptVec;
 	}
-
+	
 	// this array will hold a list of appts as we collect them from the server
 	this._rawAppts = [];
 
@@ -276,11 +278,10 @@ function(params) {
 	var request = jsonObj.SearchRequest;
 
 	this._setSoapParams(request, params);
-
+		
 	if (params.callback) {
 		var respCallback = new AjxCallback(this, this._getApptSummariesResponse, [params]);
-		var errorCallback = new AjxCallback(this, this._getApptSummariesError);
-		appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback, errorCallback:errorCallback, noBusyOverlay:params.noBusyOverlay});
+		appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback, noBusyOverlay:params.noBusyOverlay});
 	} else {
 		var response = appCtxt.getAppController().sendRequest({jsonObj: jsonObj});
 		var result = new ZmCsfeResult(response, false);
@@ -293,63 +294,65 @@ function(searchParams, miniCalParams, reminderSearchParams) {
 	var jsonObj = {BatchRequest:{_jsns:"urn:zimbra", onerror:"continue"}};
 	var request = jsonObj.BatchRequest;
 
-	if (searchParams) {
-		if (!searchParams.folderIds) {
-			searchParams.folderIds = this._calViewController.getCheckedCalendarFolderIds();
-		}
-		searchParams.query = this._calViewController._userQuery;
-		var apptVec = this.setSearchParams(searchParams);
-
+    if (searchParams) {
+        if (!searchParams.folderIds) {
+		    searchParams.folderIds = this._calViewController.getCheckedCalendarFolderIds();
+	    }
+	    searchParams.query = this._calViewController._userQuery;
+	    var apptVec = this.setSearchParams(searchParams);
+	
 		//search data in cache
-		if (apptVec != null && (apptVec instanceof AjxVector)) {
-			this._cachedVec = apptVec;
-		} else {
-			var searchRequest = request.SearchRequest = {_jsns:"urn:zimbraMail"};
-			this._setSoapParams(searchRequest, searchParams);
+		if(apptVec != null && (apptVec instanceof AjxVector)) {
+	        this._cachedVec = apptVec;
+		}else {	
+	    	var searchRequest = request.SearchRequest = {_jsns:"urn:zimbraMail"};
+	    	this._setSoapParams(searchRequest, searchParams);
 		}
-	}
+    }
 
-	if (reminderSearchParams) {
-		if (!reminderSearchParams.folderIds) {
-			reminderSearchParams.folderIds = this._calViewController.getCheckedCalendarFolderIds();
-		}
+    if (reminderSearchParams) {
+        if (!reminderSearchParams.folderIds) {
+		    reminderSearchParams.folderIds = this._calViewController.getCheckedCalendarFolderIds();
+	    }
 
 		//reminder search params is only for grouping reminder related srch
-		var apptVec = this.setSearchParams(reminderSearchParams);
-
-		if (!apptVec) {
-			var searchRequest ={_jsns:"urn:zimbraMail"};
-			request.SearchRequest = request.SearchRequest ? [request.SearchRequest, searchRequest] : searchRequest;
-			this._setSoapParams(searchRequest, reminderSearchParams);
+	    var apptVec = this.setSearchParams(reminderSearchParams);
+	
+		if(!apptVec) {
+	    	var searchRequest ={_jsns:"urn:zimbraMail"};
+	 		request.SearchRequest = request.SearchRequest ? [request.SearchRequest, searchRequest] : searchRequest; 
+	    	this._setSoapParams(searchRequest, reminderSearchParams);
 		}
-	}
+    }
 
-	var miniCalCache = this._calViewController.getMiniCalCache();
+
+    var miniCalCache = this._calViewController.getMiniCalCache();
 	cacheData = miniCalCache.getCacheData(miniCalParams);
-
-	// mini cal data in cache
-	if (cacheData && cacheData.length > 0) {
+	
+	//mini cal data in cache
+	if(cacheData && cacheData.length > 0) {
 		miniCalCache.highlightMiniCal(cacheData);
-		if (miniCalParams.callback) {
+		if(miniCalParams.callback) {
 			miniCalParams.callback.run(cacheData);
 		}
-	} else {
+	}else {
 		var miniCalRequest = request.GetMiniCalRequest = {_jsns:"urn:zimbraMail"};
 		miniCalCache._setSoapParams(miniCalRequest, miniCalParams);
 	}
 
-	// both mini cal and search data is in cache : no need to send request
-	if (searchParams && !request.SearchRequest && !request.GetMiniCalRequest) {
-		// setSoapParams would have invoked callback when this condition occurs
+	
+	//both mini cal and search data is in cache : no need to send request
+	if(searchParams && !request.SearchRequest && !request.GetMiniCalRequest) {
+		//setSoapParams would have invoked callback when this condition occurs
 		return;
 	}
 
 	if ((searchParams && searchParams.callback) || miniCalParams.callback) {
 		var respCallback = new AjxCallback(this, this.handleBatchResponse,[searchParams, miniCalParams, reminderSearchParams]);
-		var errorCallback = new AjxCallback(this, this.handleBatchResponseError,[searchParams, miniCalParams, reminderSearchParams]);
+		var errorCallback = new AjxCallback(this, this.handleBatchResponseError,[searchParams, miniCalParams, reminderSearchParams]);		
 		appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback, errorCallback: errorCallback, noBusyOverlay:true});
-	} else {
-		var response = appCtxt.getAppController().sendRequest({jsonObj:jsonObj});
+	} else {		
+		var response = appCtxt.getAppController().sendRequest({jsonObj:jsonObj});	
 		var batchResp = (response && response.BatchResponse) ? response.BatchResponse : null;
 		return this.processBatchResponse(batchResp, searchParams, miniCalParams);
 	}
@@ -357,36 +360,38 @@ function(searchParams, miniCalParams, reminderSearchParams) {
 
 ZmApptCache.prototype.processBatchResponse =
 function(batchResp, searchParams, miniCalParams, reminderSearchParams) {
-
+	
 	var miniCalCache = this._calViewController.getMiniCalCache();
-	var miniCalResp = batchResp && batchResp.GetMiniCalResponse;
-	var searchResp = batchResp && batchResp.SearchResponse;
+	
+	var miniCalResp = (batchResp && batchResp.GetMiniCalResponse) ? batchResp.GetMiniCalResponse :  null;
+	var searchResp = (batchResp && batchResp.SearchResponse) ? batchResp.SearchResponse :  null;
 
 	if (batchResp && batchResp.Fault) {
-		if (this._processErrorCode(batchResp)) {
+		if(this._processErrorCode(batchResp)) {
 			return;
 		}
 	}
 
-	if (miniCalResp) {
-		var data = [];
-		miniCalCache.processBatchResponse(miniCalResp, data);
+	if(miniCalResp) {
+		var data = [];	
+		miniCalCache.processBatchResponse(miniCalResp, data);	
 		miniCalCache.highlightMiniCal(data);
-		miniCalCache.updateCache(miniCalParams, data);
-
-		if (miniCalParams.callback) {
-			miniCalParams.callback.run(data);
+		miniCalCache.updateCache(miniCalParams, data);	
+	
+		if(miniCalParams.callback) {
+			miniCalParams.callback.run(data)
 		}
 	}
 
-	if (!searchResp || !searchParams) { return; }
-
-	// currently we send only one search request in batch
-	if (!(searchResp instanceof Array)) {
+    if(!searchResp || !searchParams) { return; }
+    
+	var remResp = null;
+    //currently we send only one search request in batch
+	if(!(searchResp instanceof Array)){
 		searchResp = [searchResp];
 	};
-
-	if (searchResp.length > 1) {
+	
+	if(searchResp.length > 1) {
 		//process reminder list
 		this.processSearchResponse(searchResp[1], reminderSearchParams);
 	}
@@ -406,8 +411,8 @@ function(searchParams, newList) {
 
 ZmApptCache.prototype.handleBatchResponseError =
 function(searchParams, miniCalParams, reminderSearchParams, response) {
-	var resp = response && response._data && response._data.BatchResponse;
-	this._calViewController.setSearchInProgress(false);
+	var resp = response && response._data && response._data.BatchResponse;	
+    this._calViewController.setSearchInProgress(false);	
 	this._processErrorCode(resp);
 };
 
@@ -415,7 +420,7 @@ ZmApptCache.prototype._processErrorCode =
 function(resp) {
 	if (resp && resp.Fault && (resp.Fault.length > 0)) {
 		var errors = [];
-		var id;
+		var id = null;
 		for (var i = 0; i < resp.Fault.length; i++) {
 			var fault = resp.Fault[i];
 			var error = (fault && fault.Detail) ? fault.Detail.Error : null;
@@ -429,21 +434,22 @@ function(resp) {
 					}
 				}
 				
-			} else {
+			}else {
 				DBG.println("Unknown error occurred: "+code);
 				errors[fault.requestId] = fault;
 			}
 		}
-
-		if (id && appCtxt.getById(id)) {
+		
+		if(id && appCtxt.getById(id)) {
 			var folder = appCtxt.getById(id);
 			folder.isInvalidFolder = true;
 			this.handleDeleteMountpoint(folder);
 			return true;
+		}else {
+			return false;
 		}
-		return false;
 	}
-
+	
 	return false;
 };
 
@@ -461,10 +467,10 @@ function(organizer) {
 // Handles the "Yes" button in the delete organizer dialog.
 ZmApptCache.prototype._deleteMountpointYesCallback =
 function(organizer, dialog) {
-	if (organizer && !organizer.isSystem()) {
+	if(organizer && !organizer.isSystem()) {
 		var callback = new AjxCallback(this, this.runErrorRecovery);
 		organizer._organizerAction({action: "delete", callback: callback});
-	} else {
+	}else {
 		this.runErrorRecovery();
 	}
 	appCtxt.getAppController()._clearDialog(dialog);
@@ -480,9 +486,9 @@ function(organizer, dialog) {
 
 ZmApptCache.prototype.runErrorRecovery =
 function() {
-	if (this._calViewController) {
+	if(this._calViewController) {
 		this._calViewController._updateCheckedCalendars();
-		if (this._calViewController.onErrorRecovery) {
+		if(this._calViewController.onErrorRecovery) {
 			this._calViewController.onErrorRecovery.run();
 		}
 	}
@@ -490,21 +496,21 @@ function() {
 
 ZmApptCache.prototype.handleBatchResponse =
 function(searchParams, miniCalParams, reminderSearchParams, response) {
-	var batchResp = response && response._data && response._data.BatchResponse;
+	var batchResp = response && response._data && response._data.BatchResponse;	
 	return this.processBatchResponse(batchResp, searchParams, miniCalParams, reminderSearchParams);
 };
 
 ZmApptCache.prototype._setSoapParams =
-function(request, params) {
+function(request, params) {	
 	request.sortBy = "none";
 	request.limit = "500";
-	//AjxEnv.DEFAULT_LOCALE is set to the browser's locale setting in the case when
-	//the user's (or their COS) locale is not set.
-	request.locale = { _content: AjxEnv.DEFAULT_LOCALE };
-	request.calExpandInstStart = params.start;
+    //AjxEnv.DEFAULT_LOCALE is set to the browser's locale setting in the case when
+    //the user's (or their COS) locale is not set.
+    request.locale = { _content: AjxEnv.DEFAULT_LOCALE };    
+    request.calExpandInstStart = params.start;
 	request.calExpandInstEnd = params.end;
 	request.types = ZmSearch.TYPE[ZmItem.APPT];
-	request.offset = params.offset;
+    request.offset = params.offset;
 
 	var query = params.query;
 	if (params.queryHint) {
@@ -525,9 +531,8 @@ function(params, result) {
 	try {
 		resp = result.getResponse();
 	} catch (ex) {
-		if (callback) {
-			callback.run(result);
-		}
+		if (callback)
+			callback.run(resp);
 		return;
 	}
 
@@ -536,34 +541,25 @@ function(params, result) {
 	if(newList == null) { return; }
 
 	if (callback) {
-		callback.run(newList, params.query, result);
+		callback.run(newList, params.query);
 	} else {
 		return newList;
 	}
 };
 
-ZmApptCache.prototype._getApptSummariesError =
-function(ex) {
-	if (ex.code == ZmCsfeException.MAIL_QUERY_PARSE_ERROR) {
-		var d = appCtxt.getMsgDialog();
-		d.setMessage(ZmMsg.errorCalendarParse);
-		d.popup();
-		return true;
-	}
-};
-
 ZmApptCache.prototype.processSearchResponse = 
 function(searchResp, params) {
-
-	if (!searchResp) {
-		if (this._cachedVec) {
+	
+	if(!searchResp) {
+		if(this._cachedVec) {
 			var resultList = this._cachedVec.clone();
 			this._cachedVec = null;
 			return resultList;
+		}else {
+			return;
 		}
-		return null;
-	}
-
+	}	
+	
 	if (searchResp && searchResp.appt && searchResp.appt.length) {
 		this._rawAppts = this._rawAppts != null 
 			? this._rawAppts.concat(searchResp.appt)
@@ -573,7 +569,7 @@ function(searchResp, params) {
 		if (searchResp.more) {
 			var lastAppt = searchResp.appt[searchResp.appt.length-1];
 			if (lastAppt) {
-				params.offset += 500;
+                params.offset += 500;
 				this._search(params);
 				return;
 			}
@@ -591,32 +587,29 @@ function(searchResp, params) {
 		var folder2List = {};
 		for (var j = 0; j < this._rawAppts.length; j++) {
 			var fid = params.folderIdMapper && params.folderIdMapper[this._rawAppts[j].l];
-			if (!folder2List[fid]) {
+			if (!folder2List[fid])
 				folder2List[fid] = [];
-			}
 			folder2List[fid].push(this._rawAppts[j]);
 		}
 
-		if (folderIds && folderIds.length) {
-			for (var i = 0; i < folderIds.length; i++) {
-				var folderId = folderIds[i];
-				var systemFolderId = appCtxt.getActiveAccount().isMain
-					? folderId
-					: ZmOrganizer.getSystemId(folderId);
+		for (var i = 0; i < folderIds.length; i++) {
+			var folderId = folderIds[i];
+			var systemFolderId = appCtxt.getActiveAccount().isMain
+				? folderId
+				: ZmOrganizer.getSystemId(folderId);
 
-				var apptList = new ZmApptList();
-				apptList.loadFromSummaryJs(folder2List[systemFolderId]);
+			var apptList = new ZmApptList();
+			apptList.loadFromSummaryJs(folder2List[systemFolderId]);
 
-				// cache it
-				this._updateCachedIds(apptList);
-				this._cacheApptSummaries(apptList, start, end, systemFolderId, query);
+			// cache it
+			this._updateCachedIds(apptList);
+			this._cacheApptSummaries(apptList, start, end, systemFolderId, query);
 
-				// convert to sorted vector
-				var list = ZmApptList.toVector(apptList, start, end, fanoutAllDay, params.includeReminders);
-				this._cacheVector(list, start, end, fanoutAllDay, systemFolderId, query); // id in response tied back to folder id
+			// convert to sorted vector
+			var list = ZmApptList.toVector(apptList, start, end, fanoutAllDay, params.includeReminders);
+			this._cacheVector(list, start, end, fanoutAllDay, systemFolderId, query); // id in response tied back to folder id
 
-				params.resultList.push(list);
-			}
+			params.resultList.push(list);
 		}
 	}
 
@@ -625,7 +618,8 @@ function(searchResp, params) {
 	this._cacheMergedVector(newList, params.mergeKey);
 
 	this._rawAppts = null;
-	return newList;
+	return newList;	
+	
 };
 
 // return true if the cache contains the specified id(s)

@@ -1,19 +1,3 @@
-<%--
- * ***** BEGIN LICENSE BLOCK *****
- * 
- * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008 Zimbra, Inc.
- * 
- * The contents of this file are subject to the Yahoo! Public License
- * Version 1.0 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
- * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
- * ***** END LICENSE BLOCK *****
---%>
 <%@ tag body-content="empty" %>
 <%@ attribute name="context" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.tag.SearchContext"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -41,8 +25,8 @@
 				<td class='List'>
 						<table width=100% cellpadding=2 cellspacing=0>
 							<tr class='Header'>
-								<th width=20% nowrap><fmt:message key="${useTo ? 'to' : 'from'}"/>
-								<th width=20% nowrap>
+								<th width=50% nowrap><fmt:message key="${useTo ? 'to' : 'from'}"/>
+								<th width=25% nowrap>
 									<zm:newSortUrl var="durSortUrl" value="/h/search" context="${context}" sort="${(context.ss eq 'durDesc' or empty context.ss) ? 'durAsc' : 'durDesc'}"/>
 									<a href="${durSortUrl}">
 										<fmt:message key="duration"/>
@@ -58,7 +42,7 @@
 
 							<c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
 							<tr>
-								<td nowrap>${useTo ? hit.callHit.displayRecipient : hit.callHit.displayCaller}</td>
+								<td nowrap>${zm:getDisplayCaller(pageContext, useTo ? hit.callHit.recipient : hit.callHit.caller)}</td>
 								<td nowrap>${fn:escapeXml(zm:displayDuration(pageContext, hit.callHit.duration))}</td>
 								<td nowrap>${fn:escapeXml(zm:displayVoiceDate(pageContext, hit.callHit.date))}</td>
 							</tr>
