@@ -683,17 +683,17 @@ and the container element is replaced with that control.
                     </tr>
                 </table>
             </td>
-            <td valign=top width="450">
-                <table border=0 cellpadding=4 cellspacing=0>
+            <td valign=top>
+                <table border=0 cellpadding='4' cellspacing='0' width='100%'>
                     <tr>
                         <td class='ZOptionsField' nowrap="nowrap" width="10%"><$=ZmMsg.signatureNameLabel$></td>
                         <td class='ZOptionsField'><input id='${id}_SIG_NAME' tabindex='50' size=30></td>
                         <td class='ZOptionsField'>&nbsp;</td>
                         <td class="ZOptionsField" align='right'><div id='${id}_SIG_FORMAT' tabIndex='60'></div></td>
-                        <td class='ZOptionsField' width='8%'><div id='${id}_SIG_BUTTON' tabindex='70'></div></td>
+                        <td class='ZOptionsField' width='80'><div id='${id}_SIG_BUTTON' tabindex='70'></div></td>
                     </tr>
                     <tr>                       
-                        <td class='ZOptionsField' width="450" valign='top' style='border:1px solid #CCCCCC; padding: 0px;' height='150px' colspan=6>
+                        <td class='ZOptionsField' width="100%" valign='top' style='border:1px solid #CCCCCC; padding: 0px;' height='150px' colspan=6>
                             <div id='${id}_SIG_EDITOR' tabindex='80'></div>
                         </td>
                     </tr>

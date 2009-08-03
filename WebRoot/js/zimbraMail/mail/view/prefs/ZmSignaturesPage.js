@@ -268,17 +268,20 @@ ZmSignaturesPage.prototype._initialize = function(container){
 
 ZmSignaturesPage.prototype._resetSize = function(){
 
-    //Adjust Size of Signature List
-    var size = Dwt.getSize(this._sigList.getHtmlElement().parentNode)
-    this._sigList.setSize(size.x, size.y);
-
     this._resetEditorSize();
+
+    //Adjust Size of Signature List
+    
+    //Make sure they are on the the same level
+    var sigSize = Dwt.getSize(this._sigEditor.getHtmlElement().parentNode);
+    this._sigList.setSize(Dwt.CLEAR, sigSize.y);
+
     
 };
 
 ZmSignaturesPage.prototype._resetEditorSize = function(){
     // Adjust Size of the HTML Editor
-    size = Dwt.getSize(this._sigEditor.getHtmlElement().parentNode);
+    var size = Dwt.getSize(this._sigEditor.getHtmlElement().parentNode);
     this._sigEditor.setSize(size.x, size.y);
 };
 
@@ -553,9 +556,11 @@ ZmSignaturesPage.prototype._handleFormatSelect = function(ev){
 
     var isText = this._sigFormat ? this._sigFormat.getValue() : true;
     this._sigEditor.setMode( isText ? DwtHtmlEditor.TEXT : DwtHtmlEditor.HTML, true);
-    this._resetEditorSize();
+    //this._resetEditorSize();
 
-    signature.setContentType(isText ? ZmMimeTable.TEXT_HTML : ZmMimeTable.TEXT_PLAIN);   
+    signature.setContentType(isText ? ZmMimeTable.TEXT_HTML : ZmMimeTable.TEXT_PLAIN);
+
+    this._resetSize();
 
 };
 
