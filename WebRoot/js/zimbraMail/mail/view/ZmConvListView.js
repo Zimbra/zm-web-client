@@ -678,7 +678,9 @@ function(ev) {
 				} else {
 					// normal case: just change folder name for msg
 					this._changeFolderName(item, ev.getDetail("oldFolderId"));
-					this._setNextSelection();
+					if (ev.event == ZmEvent.E_MOVE && (item.folderId == ZmFolder.ID_TRASH)) {
+						this._setNextSelection();
+					}
 				}
 			}
 		}
