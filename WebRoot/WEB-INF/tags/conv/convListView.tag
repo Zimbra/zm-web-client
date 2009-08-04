@@ -69,7 +69,7 @@
                     <a href="${fn:escapeXml(subjectSortUrl)}">
                         <fmt:message key="subject"/>
                     </a></th>
-                <th width="2%" nowrap><app:img src="mail/ImgConversation.gif" altkey="ALT_CONVERSATION"/></th>
+                <th width="2%" nowrap><app:img src="startup/ImgConversation.gif" altkey="ALT_CONVERSATION"/></th>
                 <th nowrap width="2%">
                     <zm:newSortUrl var="dateSortUrl" value="/h/search" context="${context}" sort="${(context.ss eq 'dateDesc' or empty context.ss) ? 'dateAsc' : 'dateDesc'}"/>
                     <a href="${fn:escapeXml(dateSortUrl)}">

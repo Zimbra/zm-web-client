@@ -286,7 +286,7 @@
                                             <c:param name="sq" value='conv:"${message.conversationId}"'/>
                                         </c:url>
                                         <a id="OPSHOWCONV" href="${fn:escapeXml(convUrl)}">
-                                            <app:img src="mail/ImgConversation.gif" altkey="showConversation" title="showConversation"/>
+                                            <app:img src="startup/ImgConversation.gif" altkey="showConversation" title="showConversation"/>
                                         </a>
                                     </td>
                                 </c:if>

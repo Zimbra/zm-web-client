@@ -115,7 +115,7 @@
                                             <table width=100% cellpadding=1 cellspacing=0>
                                                 <tr>
                                                     <td>
-                                                        <app:img src="mail/ImgConversation.gif"/> <span class='MsgHdrSub'>${fn:escapeXml(empty message.subject ? emptySubject : message.subject)}</span>
+                                                        <app:img src="startup/ImgConversation.gif"/> <span class='MsgHdrSub'>${fn:escapeXml(empty message.subject ? emptySubject : message.subject)}</span>
                                                     </td>
                                                     <td align="right">
                                                         <span class='Tags'>
