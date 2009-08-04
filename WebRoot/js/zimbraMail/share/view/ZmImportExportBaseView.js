@@ -157,6 +157,7 @@ ZmImportExportBaseView.prototype._folderButton_onclick = function() {
 	var params = {
 		treeIds:		this._TREES[type],
 		overviewId:		dialog.getOverviewId([this.toString(), type].join("_")),
+		description:	"",
 		skipReadOnly:	true,
 		omit:			{}
 	};

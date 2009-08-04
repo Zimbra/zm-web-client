@@ -394,6 +394,7 @@ function(visible) {
 		var ti = tv.getTreeItemById(folderInfo.id);
 		if (ti) {
 			ti.setVisible(visible);
+			ti.setChecked(false, true);
 		}
 	}
 };
