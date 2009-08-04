@@ -139,4 +139,6 @@ AjxPackage.require("zimbraMail.mail.controller.ZmMailListController");
 AjxPackage.require("zimbraMail.mail.controller.ZmMsgController");
 AjxPackage.require("zimbraMail.mail.controller.ZmMailConfirmController");
 
+AjxPackage.require("zimbraMail.mail.view.object.ZmImageAttachmentObjectHandler");
+
 AjxPackage.require("zimbra.common.ZmErrorDialog");
