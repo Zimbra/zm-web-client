@@ -14,24 +14,23 @@
  */
 
 ZmBriefcaseTreeController = function(type) {
-	
-	type = type ? type : ZmOrganizer.BRIEFCASE;
 
-	ZmTreeController.call(this, type);
+	ZmTreeController.call(this, (type || ZmOrganizer.BRIEFCASE));
 
 	this._listeners[ZmOperation.NEW_BRIEFCASEITEM] = new AjxListener(this, this._newListener);
 	this._listeners[ZmOperation.SHARE_BRIEFCASE] = new AjxListener(this, this._shareBriefcaseListener);
 	this._listeners[ZmOperation.MOUNT_BRIEFCASE] = new AjxListener(this, this._mountBriefcaseListener);
-   	this._listeners[ZmOperation.REFRESH] = new AjxListener(this, this._refreshListener);
-    this._listeners[ZmOperation.BROWSE] = new AjxListener(this, function(){ appCtxt.getSearchController().fromBrowse(""); });
-    this._eventMgrs = {};
-	
+	this._listeners[ZmOperation.REFRESH] = new AjxListener(this, this._refreshListener);
+	this._listeners[ZmOperation.BROWSE] = new AjxListener(this, function(){ appCtxt.getSearchController().fromBrowse(""); });
+
+	this._eventMgrs = {};
 };
 
 ZmBriefcaseTreeController.prototype = new ZmTreeController;
 ZmBriefcaseTreeController.prototype.constructor = ZmBriefcaseTreeController;
 
-ZmBriefcaseTreeController.prototype.toString = function() {
+ZmBriefcaseTreeController.prototype.toString =
+function() {
 	return "ZmBriefcaseTreeController";
 };
 
@@ -70,8 +69,8 @@ function(actionMenu, type, id) {
 			menuItem.setImage(isBriefcase ? "SharedMailFolder" : "Section");
 			menuItem.setEnabled(!isLinkOrRemote || briefcase.isAdmin());
 		}
-    }
-    if (actionMenu) {
+	}
+	if (actionMenu) {
 		var menuItem = actionMenu.getMenuItem(ZmOperation.REFRESH);
 		menuItem.setImage("Refresh");
 
@@ -81,11 +80,12 @@ function(actionMenu, type, id) {
 	}
 };
 
-ZmBriefcaseTreeController.__isAllowed = function(organizer, perm) {
+ZmBriefcaseTreeController.__isAllowed =
+function(organizer, perm) {
 	var allowed = true;
 	if (organizer.link || organizer.isRemote()) {
-		// change assumption to not allowed
-		allowed = false;
+		allowed = false; // change assumption to not allowed
+
 		// REVISIT: bug 10801
 		var share = organizer.getMainShare();
 		if (share && !share.isPermRestricted(perm)) {
@@ -98,7 +98,7 @@ ZmBriefcaseTreeController.__isAllowed = function(organizer, perm) {
 // Returns a list of desired header action menu operations
 ZmBriefcaseTreeController.prototype._getHeaderActionMenuOps =
 function() {
-	var ops = [ ZmOperation.NEW_BRIEFCASEITEM ];
+	var ops = [ZmOperation.NEW_BRIEFCASEITEM];
 	if (appCtxt.get(ZmSetting.SHARING_ENABLED)) {
 		ops.push(ZmOperation.MOUNT_BRIEFCASE);
 	}
@@ -106,16 +106,7 @@ function() {
 		ZmOperation.EXPAND_ALL,
 		ZmOperation.SEP,
 		ZmOperation.REFRESH,
-        ZmOperation.BROWSE            
-        /***
-		ZmOperation.SEP,
-		ZmOperation.EDIT_NOTEBOOK_INDEX
-		ZmOperation.SEP,
-		ZmOperation.EDIT_NOTEBOOK_HEADER, ZmOperation.EDIT_NOTEBOOK_FOOTER,
-		ZmOperation.EDIT_NOTEBOOK_SIDE_BAR,
-		ZmOperation.SEP,
-		ZmOperation.EDIT_NOTEBOOK_CHROME, ZmOperation.EDIT_NOTEBOOK_STYLES
-		***/
+		ZmOperation.BROWSE
 	);
 	return ops;
 };
@@ -183,7 +174,7 @@ function(ev) {
 	} else if (ev.action == DwtDropEvent.DRAG_DROP) {
 		if (briefcaseItems && briefcaseItems.length > 0) {
 			var ctlr = ev.srcData.controller;
-			ctlr._doMove(briefcaseItems, dropFolder, null, true);
+			ctlr._doMove(briefcaseItems, dropFolder);
 			ctlr._pendingActionData = null;
 			ctlr.reloadFolder();
 		}
@@ -196,11 +187,12 @@ ZmBriefcaseTreeController.prototype._changeListener =
 function(ev, treeView, overviewId) {
 	ZmTreeController.prototype._changeListener.call(this, ev, treeView, overviewId);
 
-	if (ev.type != this.type) return;
+	if (ev.type != this.type) { return; }
 
 	var organizers = ev.getDetail("organizers");
-	if (!organizers && ev.source)
+	if (!organizers && ev.source) {
 		organizers = [ev.source];
+	}
 
 	if(overviewId == this._actionedOverviewId){
 		var bController = AjxDispatcher.run("GetBriefcaseController");
@@ -235,16 +227,18 @@ function(ev) {
 	controller.reloadFolder();
 };
 
-ZmBriefcaseTreeController.prototype._deleteListener = function(ev) {
+ZmBriefcaseTreeController.prototype._deleteListener =
+function(ev) {
 	var organizer = this._getActionedOrganizer(ev);
-	var callback = new AjxCallback(this, this._deleteListener2, [ organizer ]);
+	var callback = new AjxCallback(this, this._deleteListener2, [organizer]);
 	var message = AjxMessageFormat.format(ZmMsg.confirmDeleteFolder, organizer.name);
 
 	var dialog = appCtxt.getConfirmationDialog();
 	dialog.popup(message, callback);
 };
 
-ZmBriefcaseTreeController.prototype._deleteListener2 = function(organizer) {
+ZmBriefcaseTreeController.prototype._deleteListener2 =
+function(organizer) {
 	this._doDelete(organizer);
 };
 
