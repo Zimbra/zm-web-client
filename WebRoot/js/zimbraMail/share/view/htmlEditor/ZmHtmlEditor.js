@@ -966,8 +966,9 @@ function(html, insertFontStyle, onlyInnerContent) {
 
 	if (onlyInnerContent) {
 		var cont = [], idx=0;
-		cont[idx++] = "<div";
+
 		if (insertFontStyle) {
+            cont[idx++] = "<div";
 			cont[idx++] = " style='font-family:";
 			cont[idx++] = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY);
 			cont[idx++] = "; font-size: ";
@@ -975,10 +976,13 @@ function(html, insertFontStyle, onlyInnerContent) {
 			cont[idx++] = "; color: ";
 			cont[idx++] = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR);
 			cont[idx++] = ";'";
-		}
-		cont[idx++] = ">";
-		cont[idx++] = html;
-		cont[idx++] = "</div>";
+            cont[idx++] = ">";
+            cont[idx++] = html;
+		    cont[idx++] = "</div>";
+		}else{
+            cont[idx++] = html;
+        }
+        
 		return cont.join("");
 	}
 
