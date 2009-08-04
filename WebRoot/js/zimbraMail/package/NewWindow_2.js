@@ -79,6 +79,7 @@ AjxPackage.require("zimbraMail.share.view.ZmSearchToolBar");
 AjxPackage.require("zimbraMail.share.view.ZmStatusView");
 
 AjxPackage.require("zimbraMail.share.view.dialog.ZmAttachDialog");
+AjxPackage.require("zimbraMail.share.view.dialog.ZmDialog");
 
 AjxPackage.require("zimbraMail.share.view.htmlEditor.ZmHtmlEditor");
 
