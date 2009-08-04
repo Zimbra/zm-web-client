@@ -745,7 +745,7 @@ function(tb) {
     this._createTableMenu(tb);
 
 	if (this.ACE_ENABLED) {
-        this._createSpreadSheetButton();
+        this._createSpreadSheetButton(tb);
 	}
 
 	appCtxt.notifyZimlets("on_htmlEditor_createToolbar2", [this, tb]);
