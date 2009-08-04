@@ -1041,6 +1041,7 @@ function(draftType, msg, resp) {
 		if (appCtxt.get(ZmSetting.SHOW_MAIL_CONFIRM)) {
 			var confirmController = AjxDispatcher.run("GetMailConfirmController");
 			confirmController.showConfirmation(msg, this.viewId, this.tabId);
+			popped = true;	// don't pop confirm page
 		} else {
 			if (appCtxt.isChildWindow && window.parentController) {
 				window.onbeforeunload = null;
