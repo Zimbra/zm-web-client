@@ -300,11 +300,11 @@ function(sourceMap, delayMs, result) {
 			if (sourceMap[dsrc.id]) {
 				delete sourceMap[dsrc.id];
 				if (dsrc.success) {
-					var message = AjxMessageFormat.format(ZmMsg.dataSourceLoadSuccess, source.name);
+					var message = AjxMessageFormat.format(ZmMsg.dataSourceLoadSuccess, AjxStringUtil.htmlEncode(source.name));
 					appCtxt.setStatusMsg(message);
 				}
 				else {
-					var message = AjxMessageFormat.format(ZmMsg.dataSourceLoadFailure, source.name);
+					var message = AjxMessageFormat.format(ZmMsg.dataSourceLoadFailure, AjxStringUtil.htmlEncode(source.name));
 					appCtxt.setStatusMsg(message, ZmStatusView.LEVEL_CRITICAL);
 					var dialog = appCtxt.getErrorDialog();
 					dialog.setMessage(message, dsrc.error, DwtMessageDialog.CRITICAL_STYLE);

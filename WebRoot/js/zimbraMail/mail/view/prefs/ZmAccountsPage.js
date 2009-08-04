@@ -1476,7 +1476,7 @@ ZmAccountsPage.prototype._updateList = function(account) {
 ZmAccountsPage.prototype._handleNameChange =
 function(evt) {
 	var inputEl = DwtUiEvent.getTarget(evt);
-	this._accountListView.setCellContents(this._currentAccount, ZmItem.F_NAME, inputEl.value);
+	this._accountListView.setCellContents(this._currentAccount, ZmItem.F_NAME, AjxStringUtil.htmlEncode(inputEl.value));
 	this._setControlValue("HEADER", this._currentSection, inputEl.value);
 
 	var type = this._currentAccount.type;
