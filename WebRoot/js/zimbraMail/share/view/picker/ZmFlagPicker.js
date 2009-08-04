@@ -31,37 +31,31 @@ ZmFlagPicker.prototype._setupPicker =
 function(picker) {
 	var tree = this._tree = new DwtTree({parent:picker, style:DwtTree.CHECKEDITEM_STYLE});
 	tree.addSelectionListener(new AjxListener(this, ZmFlagPicker.prototype._treeListener));
-	
-	var ti = this._flagged = new DwtTreeItem({parent:tree});
-	ti.setText(ZmMsg.flagged);
-	ti.setImage("FlagRed");
-	
-	ti = this._unflagged = new DwtTreeItem({parent:tree});
-	ti.setText(ZmMsg.unflagged);
-	ti.setImage("FlagRedDis");
-	
-	tree.addSeparator();
 
-	ti = this._read = new DwtTreeItem({parent:tree});
-	ti.setText(ZmMsg.read);
-	ti.setImage("ReadMessage");
-	
-	ti = this._unread = new DwtTreeItem({parent:tree});
-	ti.setText(ZmMsg.unread);
-	ti.setImage("UnreadMessage");	
+	var ti = this._flagged = new DwtTreeItem({parent:tree, text:ZmMsg.flagged, imageInfo:"FlagRed"});
+	ti.setChecked(false, true);
+
+	ti = this._unflagged = new DwtTreeItem({parent:tree, text:ZmMsg.unflagged, imageInfo:"FlagDis"});
+	ti.setChecked(false, true);
 
 	tree.addSeparator();
 
-	ti = this._replied = new DwtTreeItem({parent:tree});
-	ti.setText(ZmMsg.replied);
-	ti.setImage("Reply");
-	
-	ti = this._forwarded = new DwtTreeItem({parent:tree});
-	ti.setText(ZmMsg.forwarded);
-	ti.setImage("Forward");	
+	ti = this._read = new DwtTreeItem({parent:tree, text:ZmMsg.read, imageInfo:"ReadMessage"});
+	ti.setChecked(false, true);
+
+	ti = this._unread = new DwtTreeItem({parent:tree, text:ZmMsg.unread, imageInfo:"UnreadMessage"});
+	ti.setChecked(false, true);
+
+	tree.addSeparator();
+
+	ti = this._replied = new DwtTreeItem({parent:tree, text:ZmMsg.replied, imageInfo:"Reply"});
+	ti.setChecked(false, true);
+
+	ti = this._forwarded = new DwtTreeItem({parent:tree, text:ZmMsg.forwarded, imageInfo:"Forward"});
+	ti.setChecked(false, true);
 };
 
-ZmFlagPicker.prototype._updateQuery = 
+ZmFlagPicker.prototype._updateQuery =
 function() {
 	var query = [];
 
@@ -85,11 +79,8 @@ function() {
 		query.push("is:forwarded");
 	}
 
-	if (query.length) {
-		this.setQuery(query.join(" "));
-	} else {
-		this.setQuery("");
-	}
+	this.setQuery(query.length ? (query.join(" ")) :  "");
+
 	this.execute();
 };
 
