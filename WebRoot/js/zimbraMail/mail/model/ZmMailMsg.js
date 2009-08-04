@@ -830,15 +830,17 @@ function(request, contactList, isDraft, accountName) {
 		msgNode.f = ZmItem.FLAG_LOW_PRIORITY;
 	}
 
-	if(ZmMailMsg.COMPOSE_ADDRS.length > 0){ //If no addrs, no element 'e'
-		var addrNodes = msgNode.e = [];
-		for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
-			var type = ZmMailMsg.COMPOSE_ADDRS[i];
-			this._addAddressNodes(addrNodes, type, contactList, isDraft);
-		}
-		this._addFrom(addrNodes, msgNode, isDraft, accountName);
-		this._addReplyTo(addrNodes);
-	}
+	var addrNodes = msgNode.e = [];
+    for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
+        var type = ZmMailMsg.COMPOSE_ADDRS[i];
+        this._addAddressNodes(addrNodes, type, contactList, isDraft);
+    }
+    this._addFrom(addrNodes, msgNode, isDraft, accountName);
+    this._addReplyTo(addrNodes);
+
+    if(msgNode.e.length <= 0){ // if node is empty, remove it 
+        delete msgNode.e;
+    }
 	msgNode.su = {_content:this.subject};
 
 	var topNode = {ct:this._topPart.getContentType()};
