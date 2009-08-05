@@ -76,12 +76,17 @@ ZmOrganizer = function(params) {
 				 ZmOrganizer.C_NONE;
 	this.rgb = params.rgb || (this.parent && this.parent.rgb);
 
-	// for offline, POP accounts are not allowed to create subfolders
 	if (appCtxt.isOffline) {
-		var account = appCtxt.getAccount(this.accountId);
-		if (account && account.type == ZmAccount.TYPE_POP) {
-			this.disallowSubFolder = true;
+		var account;
+		if (!this.accountId) {
+			account = ZmOrganizer.parseId(this.id).account;
+			this.accountId = account && account.id;
+		} else {
+			account = appCtxt.getAccount(this.accountId);
 		}
+
+		// for offline, POP accounts are not allowed to create subfolders
+		this.disallowSubFolder = (account && account.type == ZmAccount.TYPE_POP);
 	}
 
 	if (id && params.tree) {

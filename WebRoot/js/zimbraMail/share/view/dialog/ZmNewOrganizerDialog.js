@@ -80,7 +80,25 @@ function(folder, account) {
         if (noneOption.getText() == ZmOrganizer.COLOR_TEXT[0]) {
             this._colorSelect.getMenu().removeChild(noneOption);
         }
-    } 
+    }
+
+	var ovContainer = appCtxt.multiAccounts && this._opc.getOverviewContainer(this.toString());
+	if (ovContainer) {
+		if (folder.nId == ZmOrganizer.ID_ROOT) {
+			ovContainer.setSelection(ovContainer.getHeaderItem(account));
+		} else {
+			var overviewId = appCtxt.getOverviewId(this.toString(), account);
+			var overview = ovContainer.getOverview(overviewId);
+			var treeView = overview && overview.getTreeView(this._organizerType);
+			if (treeView) {
+				ovContainer.deselectAll();
+				var ti = treeView.getTreeItemById(folder.id);
+				treeView.setSelection(ti);
+			}
+		}
+
+		ovContainer.expandAccountOnly(account);
+	}
 
 	ZmDialog.prototype.popup.call(this);
 };

@@ -870,22 +870,22 @@ function(treeView, parentNode, organizer, idx) {
 /**
  * Pops up the appropriate "New ..." dialog.
  *
- * @param ev		[DwtUiEvent]	the UI event
+ * @param ev		[DwtUiEvent]			the UI event
+ * @param account	[ZmZimbraAccount]*		Optional. Used by multi-account mbox
  */
 ZmTreeController.prototype._newListener =
-function(ev) {
+function(ev, account) {
 	this._pendingActionData = this._getActionedOrganizer(ev);
 	var newDialog = this._getNewDialog();
 	if (!this._newCb) {
 		this._newCb = new AjxCallback(this, this._newCallback);
 	}
 	if (this._pendingActionData && !appCtxt.getById(this._pendingActionData.id)) {
-		this._pendingActionData = appCtxt.getFolderTree().root;
+		this._pendingActionData = appCtxt.getFolderTree(account).root;
 	}
 
-	var account;
-	if (appCtxt.multiAccounts) {
-		var ov = this._opc.getOverviewContainer().getOverview(this._actionedOverviewId);
+	if (!account && appCtxt.multiAccounts) {
+		var ov = this._opc.getOverview(this._actionedOverviewId);
 		account = ov && ov.account;
 	}
 

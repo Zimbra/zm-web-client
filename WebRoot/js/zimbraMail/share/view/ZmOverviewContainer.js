@@ -66,6 +66,22 @@ function(account) {
 	return account ? this._headerItems[account.id] : null;
 };
 
+/**
+ * Expands the given account only (collapses all other accounts)
+ *
+ * @param account
+ */
+ZmOverviewContainer.prototype.expandAccountOnly =
+function(account) {
+	if (!account) {
+		account = appCtxt.getActiveAccount();
+	}
+
+	for (var i in this._headerItems) {
+		this._headerItems[i].setExpanded((i == account.id), false, false);
+	}
+};
+
 ZmOverviewContainer.prototype.getSelected =
 function() {
 	var selected;
@@ -313,7 +329,9 @@ function(ev) {
 		var treeId = ZmApp.ORGANIZER[this._appName];
 		var tc = this._controller.getTreeController(treeId, true);
 		if (tc) {
-			tc._newListener(ev);
+			tc._actionedOrganizer = null;
+			var account = appCtxt.getAccount(this._actionedHeaderItem.getData(Dwt.KEY_ID));
+			tc._newListener(ev, account);
 		}
 	}
 	else if (opId == ZmOperation.EXPAND_ALL) {

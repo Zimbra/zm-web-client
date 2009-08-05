@@ -32,11 +32,12 @@ function() {
 
 ZmNewTagDialog.prototype.popup =
 function(org, account) {
-	if (this._accountSelect && account) {
-		this._accountSelect.setSelectedValue(account.id);
+	if (this._accountSelect) {
+		var acct = account || appCtxt.getActiveAccount();
+		this._accountSelect.setSelectedValue(acct.id);
 	}
 
-	ZmDialog.prototype.popup.call(this, org, account);
+	ZmDialog.prototype.popup.call(this);
 };
 
 ZmNewTagDialog.prototype.cleanup =
@@ -83,7 +84,7 @@ function() {
 
 		var acct = accounts[i];
 		if (appCtxt.get(ZmSetting.TAGGING_ENABLED, null, acct)) {
-			this._accountSelect.addOption(acct.getDisplayName(), this._account == acct, acct.id);
+			this._accountSelect.addOption(acct.getDisplayName(), null, acct.id);
 		}
 	}
 };
