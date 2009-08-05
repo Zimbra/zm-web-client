@@ -269,7 +269,10 @@ function(view) {
 
 ZmComposeController.prototype._postShowCallback =
 function() {
-	ZmController.prototype._postShowCallback.call(this);
+	if (!appCtxt.isChildWindow) {
+		// no need to "restore" focus between windows
+		ZmController.prototype._postShowCallback.call(this);
+	}
 	var composeMode = this._composeView.getComposeMode();
 	if (this._action != ZmOperation.NEW_MESSAGE &&
 		this._action != ZmOperation.FORWARD_INLINE &&
