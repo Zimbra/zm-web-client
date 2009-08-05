@@ -1966,7 +1966,7 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .ZmTaskbarContentParent .ZmImOverview .DwtTree{
-	height: 400px;
+	height: 300px;
 }
 #ENDIF
 
@@ -2061,6 +2061,15 @@ HTML>BODY .appt-selected .appt_allday_body
 	@AppBorder@
 	overflow: auto;
 }
+
+#IFDEF MSIE
+.ZmChatWindowChat {
+	@AppBg@
+	@AppBorder@
+	overflow: auto;
+	height: 200px !important;
+}
+#ENDIF
 
 /* list of chat members for multi-person chat */
 .ZmChatMemberList {
