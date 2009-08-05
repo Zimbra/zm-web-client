@@ -580,8 +580,10 @@ function(callback) {
 };
 
 ZmPreferencesApp.prototype._getSharingView =
-function(refresh) {
-	AjxDispatcher.require(["PreferencesCore", "Preferences"]);
+function() {
+	if (!this._prefController) {
+		return null;
+	}
 	var prefCtlr = this.getPrefController();
 	var prefsView = prefCtlr && prefCtlr.getPrefsView();
 	var sharingSection = prefsView && prefsView.getView("SHARING");
