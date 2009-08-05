@@ -38,7 +38,7 @@ ZmPrefController = function(container, prefsApp) {
 	this._dirty = {};
 };
 
-ZmPrefController.prototype = new ZmController();
+ZmPrefController.prototype = new ZmController;
 ZmPrefController.prototype.constructor = ZmPrefController;
 
 ZmPrefController.prototype.toString = 
