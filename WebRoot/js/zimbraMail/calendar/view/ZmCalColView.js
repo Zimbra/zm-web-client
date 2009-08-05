@@ -1051,9 +1051,11 @@ function(apptDiv, w, h) {
 
 	// get the inner div that should be sized and set its width/height
 	var apptBodyDiv = document.getElementById(apptDiv.id + "_body");
-	fw = w + ZmCalColView._APPT_WIDTH_FUDGE;
-	fh = h + ZmCalColView._APPT_HEIGHT_FUDGE;
-	Dwt.setSize(	apptBodyDiv, fw >= 0 ? fw : 0, fh >= 0 ? fh : 0);
+    if(apptBodyDiv != null) {
+	    fw = w + ZmCalColView._APPT_WIDTH_FUDGE;
+	    fh = h + ZmCalColView._APPT_HEIGHT_FUDGE;
+	    Dwt.setSize(	apptBodyDiv, fw >= 0 ? fw : 0, fh >= 0 ? fh : 0);
+    }
 };
 
 ZmCalColView.prototype._layoutAppt =
