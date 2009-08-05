@@ -177,7 +177,8 @@
 
 /* text style for name of a selected tree item */
 .DwtTreeItem-selected {
-	@SelectedBg-blurred@
+    @TreeItemHeight@
+    @TreeItemSelectedBg@
 	@Text@
 	@TreeItemSpacing@
 }
@@ -187,6 +188,7 @@
 	@SelectedBg@
 	@Text@
 	@TreeItemSpacing@
+    @TreeItemHeight@
 }
 
 /* text style for a right-clicked tree item */
@@ -210,7 +212,9 @@
 	text-decoration: underline;
 }
 
-.DwtTreeItem .imageCell {
+.DwtTreeItem .imageCell,
+.DwtTreeItem-selected .imageCell,
+.DwtTreeItem-selected-focused .imageCell {
 	@ImagePadding@
 	white-space: nowrap;	/* ??? */
 }
