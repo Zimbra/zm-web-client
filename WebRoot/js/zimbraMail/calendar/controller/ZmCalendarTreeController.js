@@ -443,21 +443,6 @@ function(ev, checked) {
 	}
 };
 
-/**
- * Sets the background color of the tree item.
- *
- * @param treeItem	[DwtTreeItem]		tree item
- * @param organizer	[ZmOrganizer]		organizer it represents
- */
-ZmCalendarTreeController.prototype._setTreeItemColor =
-function(treeItem, organizer) {
-	var className = this._getTreeItemColorClassName(treeItem, organizer);
-
-	if (className && treeItem.getHtmlElement()) {
-		treeItem.setCheckboxBgcolor(className);
-	}
-};
-
 ZmCalendarTreeController.prototype._createTreeView =
 function(params) {
 	if (params.treeStyle == null) {

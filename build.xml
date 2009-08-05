@@ -673,7 +673,8 @@
 			<then>
 				<!-- default locale images -->
 				<imagemerge destdir='${destdir}' disable='true'
-							cssfile='${build.css.filename}' csspath='${csspath}'>
+							cssfile='${build.css.filename}' csspath='${csspath}'
+							jsfile='${build.css.filename}.js'>
 					<dirset dir='${srcdir}' includes='*' excludes='?*_??,?*_??_??' />
 				</imagemerge>
 				<replace token="@jsVersion@" value="${build.simpleDate}" file='${destdir}/${build.css.filename}'/>
@@ -689,7 +690,8 @@
 							<then>
 								<imagemerge destdir='${destdir}' disable='true'
 											cssfile='${build.css.file}_@{locale}${build.css.ext}'
-											csspath='${csspath}'>
+											csspath='${csspath}'
+											jsfile='${build.css.filename}.js'>
 									<dirset dir='${srcdir}' includes='?*_@{locale}' />
 								</imagemerge>
 								<replace token="@jsVersion@" value="${build.simpleDate}"
@@ -725,7 +727,8 @@
         <echo message='Merging images for skin ${skindir}'/>
         <echo/>
         <imagemerge destdir='${build.this.skin.dir}'
-                    cssfile='${build.css.filename}' csspath='/${deploy.app}/skins/${skindir}/img/'>
+                    cssfile='${build.css.filename}' csspath='/${deploy.app}/skins/${skindir}/img/'
+					jsfile='${build.css.filename}.js'>
             <dirset dir='${skinbasedir}/skins/${skindir}' includes='img/**'/>
         </imagemerge>
 

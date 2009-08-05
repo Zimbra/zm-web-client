@@ -347,11 +347,7 @@ function(treeItem, organizer, treeView) {
  */
 ZmTreeController.prototype._setTreeItemColor =
 function(treeItem, organizer) {
-	var className = this._getTreeItemColorClassName(treeItem, organizer);
-
-	if (className && treeItem.getHtmlElement()) {
-		treeItem.setTreeItemColor(className);
-	}
+	treeItem.setImage(organizer.getIconWithColor());
 };
 
 ZmTreeController.prototype._getTreeItemColorClassName =

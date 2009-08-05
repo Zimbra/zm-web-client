@@ -30,6 +30,7 @@
 * @param parent		[ZmOrganizer]	parent organizer
 * @param tree		[ZmTree]		tree model that contains this organizer
 * @param color		[constant]		color for this organizer
+* @param rgb		[string]		color for this organizer, as HTML RGB value
 * @param link		[boolean]*		whether this organizer is shared
 * @param numUnread	[int]*			number of unread items for this organizer
 * @param numTotal	[int]*			number of items for this organizer
@@ -73,6 +74,7 @@ ZmOrganizer = function(params) {
 				 ZmOrganizer.ORG_COLOR[this.nId] ||
 				 ZmOrganizer.DEFAULT_COLOR[this.type] ||
 				 ZmOrganizer.C_NONE;
+	this.rgb = params.rgb || (this.parent && this.parent.rgb);
 
 	// for offline, POP accounts are not allowed to create subfolders
 	if (appCtxt.isOffline) {
@@ -127,6 +129,7 @@ ZmOrganizer.F_UNREAD			= "unread";
 ZmOrganizer.F_TOTAL				= "total";
 ZmOrganizer.F_SIZE				= "size";
 ZmOrganizer.F_COLOR				= "color";
+ZmOrganizer.F_RGB				= "rgb";
 ZmOrganizer.F_QUERY				= "query";
 ZmOrganizer.F_SHARES			= "shares";
 ZmOrganizer.F_FLAGS				= "flags";
@@ -183,6 +186,19 @@ ZmOrganizer.C_GRAY				= 8;
 ZmOrganizer.C_ORANGE			= 9;
 ZmOrganizer.MAX_COLOR			= ZmOrganizer.C_ORANGE;
 ZmOrganizer.ORG_DEFAULT_COLOR 	= ZmOrganizer.C_ORANGE;
+
+ZmOrganizer.COLOR_VALUES = [
+	null,
+	"#9EB6F5", // blue
+	"#A4E6E6", // cyan
+	"#97C8B1", // green
+	"#BA86E5", // purple
+	"#FC9696", // red
+	"#FFF6B3", // yellow
+	"#FE9BD3", // pink
+	"#D3D3D3", // gray
+	"#FDBC55"  // orange
+];
 
 // color names
 ZmOrganizer.COLOR_TEXT = {};
@@ -696,6 +712,12 @@ function() {
 
 ZmOrganizer.prototype.getIcon = function() {};
 
+ZmOrganizer.prototype.getIconWithColor = function() {
+	var icon = this.getIcon() || "";
+	var color = this.rgb || this.color;
+	return color ? [icon,color].join(",color=") : icon;
+};
+
 // Actions
 
 /**
@@ -720,6 +742,11 @@ function(color, callback, errorCallback) {
 	if (this.color == color) { return; }
 
 	this._organizerAction({action: "color", attrs: {color: color}, callback: callback, errorCallback: errorCallback});
+};
+
+ZmOrganizer.prototype.setRGB = function(rgb, callback, errorCallback) {
+	if (this.rgb == rgb) { return; }
+	this._organizerAction({action: "color", attrs: {rgb: rgb}, callback: callback, errorCallback: errorCallback});
 };
 
 /**
@@ -883,10 +910,16 @@ function(obj, details) {
 		fields[ZmOrganizer.F_SIZE] = true;
 		doNotify = true;
 	}
-	if (obj.color != null && !obj._isRemote) {
+	if ((obj.rgb != null || obj.color != null) && !obj._isRemote) {
 		var color = ZmOrganizer.checkColor(obj.color);
 		if (this.color != color) {
 			this.color = color;
+			fields[ZmOrganizer.F_COLOR] = true;
+		}
+		if (obj.rgb != this.rgb) {
+			this.rgb = obj.rgb;
+			fields[ZmOrganizer.F_RBG] = true;
+			// NOTE: Denote color change for code looking at "color" property.
 			fields[ZmOrganizer.F_COLOR] = true;
 		}
 		doNotify = true;

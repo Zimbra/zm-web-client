@@ -360,7 +360,7 @@ function(parentNode, organizer, index, noTooltips, omit) {
 				parentNode = new DwtTreeItem({
 					parent: parentNode,
 					text: parentOrganizer.getName(),
-					imageInfo: parentOrganizer.getIcon(),
+					imageInfo: parentOrganizer.getIconWithColor(),
 					forceNotifySelection: true,
 					dndScrollCallback: this._overview._dndScrollCallback,
 					dndScrollId: this._overview.id,
@@ -379,7 +379,7 @@ function(parentNode, organizer, index, noTooltips, omit) {
 			text:organizer.getName(this._showUnread),
 			dndScrollCallback: this._overview._dndScrollCallback,
 			dndScrollId: this._overview.id,
-			imageInfo:organizer.getIcon(),
+			imageInfo:organizer.getIconWithColor(),
 			extraInfo: ((appCtxt.isOffline && organizer.isOfflineSyncable && organizer.isOfflineSyncing) ? "SyncStatusOn" : null),
 			id:ZmId.getTreeItemId(this.overviewId, organizer.id)
 		};
