@@ -38,7 +38,6 @@ ZmComposeController = function(container, mailApp, sessionId) {
 
 	this._listeners = {};
 	this._listeners[ZmOperation.SEND] = new AjxListener(this, this._sendListener);
-	this._listeners[ZmOperation.IM] = new AjxListener(this, this._imListener);
 	this._listeners[ZmOperation.CANCEL] = new AjxListener(this, this._cancelListener);
 	this._listeners[ZmOperation.ATTACHMENT] = new AjxListener(this, this._attachmentListener);
 	this._listeners[ZmOperation.DETACH_COMPOSE] = new AjxListener(this, this._detachListener);
@@ -779,10 +778,6 @@ function() {
 
 	buttons.push(ZmOperation.CANCEL);
 
-	if (!appCtxt.isChildWindow && appCtxt.get(ZmSetting.IM_ENABLED)) {
-		buttons.push(ZmOperation.IM);
-	}
-
 	buttons.push(ZmOperation.SEP, ZmOperation.SAVE_DRAFT);
 
 	if (appCtxt.get(ZmSetting.ATTACHMENT_ENABLED)) {
@@ -1152,15 +1147,6 @@ function(draftType, msg, resp) {
 ZmComposeController.prototype._sendListener =
 function(ev) {
 	this._send();
-};
-
-ZmComposeController.prototype._imListener =
-function(ev) {
-	var msg = this._composeView.getMsg();
-	if (msg) {
-		var contacts = msg.getAddresses(AjxEmailAddress.TO, {}, true);
-		ZmTaskbarController.INSTANCE.chatWithContacts(contacts, msg, this._getBodyContent());
-	}
 };
 
 ZmComposeController.prototype._send =
