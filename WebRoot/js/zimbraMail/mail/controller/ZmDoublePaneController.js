@@ -71,7 +71,7 @@ function(search, item, callback, markRead) {
 	this._setup(this._currentView);
 
 	var listView = this._listView[this._currentView];
-	listView._itemToSelect = (listView.getSelectionCount() == 1) ? listView.getSelection()[0] : null;
+	listView._selectedItem = (listView.getSelectionCount() == 1) ? listView.getSelection()[0] : null;
 
 	// see if we have it cached? Check if conv loaded?
 	var respCallback = new AjxCallback(this, this._handleResponseShow, [item, callback]);
@@ -113,6 +113,9 @@ ZmDoublePaneController.prototype.reset =
 function() {
 	if (this._doublePaneView) {
 		this._doublePaneView.reset();
+	}
+	if (this.listView) {
+		this.listView._itemToSelect = this.listView._selectedItem = null;
 	}
 };
 
@@ -669,7 +672,7 @@ function() {
 ZmDoublePaneController.prototype._resetSelection =
 function() {
 	var listView = this._listView[this._currentView];
-	var item = listView && listView._getItemToSelect();
+	var item = listView && listView._selectedItem;
 	if (item && (listView.getItemIndex(item) != null)) {
 		listView.setSelection(item);
 	}
