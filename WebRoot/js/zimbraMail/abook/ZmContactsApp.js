@@ -75,6 +75,7 @@ function() {
 	AjxDispatcher.setPackageLoadFunction("ContactsCore", new AjxCallback(this, this._postLoadCore));
 	AjxDispatcher.setPackageLoadFunction("Contacts", new AjxCallback(this, this._postLoad, ZmOrganizer.ADDRBOOK));
 	AjxDispatcher.registerMethod("GetContacts", "ContactsCore", new AjxCallback(this, this.getContactList));
+	AjxDispatcher.registerMethod("GetContactsForAllAccounts", "ContactsCore", new AjxCallback(this, this.getContactListForAllAccounts));
 	AjxDispatcher.registerMethod("GetContactListController", ["ContactsCore", "Contacts"], new AjxCallback(this, this.getContactListController));
 	AjxDispatcher.registerMethod("GetContactController", ["ContactsCore", "Contacts"], new AjxCallback(this, this.getContactController));
 };
@@ -729,7 +730,7 @@ function(contact) {
 	var acctId = appCtxt.getActiveAccount().id;
 	var cl = this._contactList[acctId];
 	return cl ? cl._realizeContact(contact) : contact;
-}
+};
 
 ZmContactsApp.prototype.updateCache =
 function(contact, doAdd) {
@@ -761,15 +762,44 @@ function(contact, doAdd, fields, hash, includeField, isNumeric) {
 };
 
 /**
- * Returns a ZmContactList with all of the user's local contacts. If that's a large
- * number, performance may be slow.
+ * Used in multi-account to load contacts for all of user's accounts
+ */
+ZmContactsApp.prototype.getContactListForAllAccounts =
+function() {
+	var accounts = appCtxt.getZimbraAccounts();
+	var visible = [];
+	for (var i in accounts) {
+		var acct = accounts[i];
+		if (acct.visible && appCtxt.get(ZmSetting.CONTACTS_ENABLED, null, acct)) {
+			visible.push(acct);
+		}
+	}
+
+	if (visible.length > 0) {
+		this._loadContactsForAccount(visible);
+	}
+};
+
+ZmContactsApp.prototype._loadContactsForAccount =
+function(accounts) {
+	var acct = accounts.shift();
+	if (acct) {
+		var callback = new AjxCallback(this, this._loadContactsForAccount, [accounts]);
+		this.getContactList(callback, null, acct);
+	}
+};
+
+/**
+ * Returns a ZmContactList with all of the user's local contacts. If that's a
+ * large number, performance may be slow.
  * 
- * @param callback
- * @param errorCallback
+ * @param callback			[AjxCallback]*		callback to trigger after contact list loaded
+ * @param errorCallback		[AjxCallback]*		callback to trigger in the event of an error
+ * @param account			[ZmZimbraAccount]*	account to fetch contacts for
  */
 ZmContactsApp.prototype.getContactList =
-function(callback, errorCallback) {
-	var acctId = appCtxt.getActiveAccount().id;
+function(callback, errorCallback, account) {
+	var acctId = (account && account.id) || appCtxt.getActiveAccount().id;
 	if (!this._contactList[acctId]) {
 		try {
 			// check if a parent controller exists and ask it for the contact list
@@ -778,7 +808,8 @@ function(callback, errorCallback) {
 			} else {
 				this._contactList[acctId] = new ZmContactList(null);
 				var respCallback = new AjxCallback(this, this._handleResponseGetContactList, [callback]);
-				this._contactList[acctId].load(respCallback, errorCallback);
+				var accountName = (account && account.getEmail());
+				this._contactList[acctId].load(respCallback, errorCallback, accountName);
 			}
 			return this._contactList[acctId];
 		} catch (ex) {

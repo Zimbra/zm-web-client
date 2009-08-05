@@ -101,14 +101,14 @@ function() {
 * Loading a minimal set of attributes did not result in a significant performance gain.</p>
 */
 ZmContactList.prototype.load =
-function(callback, errorCallback) {
+function(callback, errorCallback, accountName) {
 	// only the canonical list gets loaded
 	this.isCanonical = true;
 	var respCallback = new AjxCallback(this, this._handleResponseLoad, [callback]);
 	DBG.timePt("requesting contact list", true);
 
 	var params = {asyncMode:true, noBusyOverlay:true, callback:respCallback, errorCallback:errorCallback};
-	params.restUri = AjxUtil.formatUrl({path:["/home/", appCtxt.getUsername(), ZmContactList.URL].join(""), qsReset:true});
+	params.restUri = AjxUtil.formatUrl({path:["/home/", (accountName || appCtxt.getUsername()), ZmContactList.URL].join(""), qsReset:true});
 	DBG.println(AjxDebug.DBG1, "loading contacts from " + params.restUri);
 	appCtxt.getAppController().sendRequest(params);
 };

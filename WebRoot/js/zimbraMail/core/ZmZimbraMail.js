@@ -560,7 +560,9 @@ function(params, result) {
 			if (appCtxt.isOffline) {
 				appCtxt.getSearchController().resetSearchToolbar();
 			}
-			AjxDispatcher.run("GetContacts");
+
+			var contactListPkg = appCtxt.multiAccounts ? "GetContactsForAllAccounts" : "GetContacts";
+			AjxDispatcher.run(contactListPkg);
 		});
 	this.addPostRenderCallback(callback, 5, 100);
 
