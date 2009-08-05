@@ -374,7 +374,7 @@ function(id, html, i, addButton, addMultLocsCheckbox) {
 			html[i++] = ZmMsg[ZmApptChooserTabViewPage.SF_LABEL[id]];
 			html[i++] = ":&nbsp;</td><td id='";
 			html[i++] = this._listSelectId;
-			html[i++] = "'></td>";
+			html[i++] = "' width='130'></td>";
 		}
 	} else {
 		html[i++] = "<td align='right'>";
