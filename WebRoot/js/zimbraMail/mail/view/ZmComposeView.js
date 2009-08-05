@@ -983,8 +983,10 @@ function(idoc) {
                 img.setAttribute("doc", dfsrc.substring(4, dfsrc.length));
             }else {
 				// If "Display External Images" is false then handle Reply/Forward
-				if (dfsrc) img.src = dfsrc;
-			}
+				if (dfsrc)
+                    //IE: Over HTTPS, http src urls for images might cause an issue.
+                    try{ img.src = dfsrc; }catch(ex){};
+                }
 			if (cid) {
 				img.src = cid;
 			}

@@ -1718,13 +1718,16 @@ ZmMailMsgView.prototype._blur =
 function() {
 	if (this._settingFocus) { return; }
 	this.getHtmlElement().blur();
-};
+};                                                                                           
 
 // Static methods
 
 ZmMailMsgView._swapIdAndSrc =
 function (image, i, len, msg, idoc, iframe, view) {
-	image.src = image.getAttribute("dfsrc");
+
+    //Fix for IE: Over HTTPS, http src urls for images might cause an issue.
+    try{ image.src = image.getAttribute("dfsrc"); }catch(ex){};
+    
 	if (i == len - 1) {
 		if (msg) {
 			msg.setHtmlContent(idoc.documentElement.innerHTML);
