@@ -155,6 +155,8 @@ function(params) {
 		}
 	}
 
+	this._setFromSelect();
+
 	// reset To/Cc/Bcc fields
 	this._showAddressField(AjxEmailAddress.TO, true, true, true);
 	this._showAddressField(AjxEmailAddress.CC, true, true, true);
@@ -1059,22 +1061,6 @@ function(bEnableInputs) {
 
 	// reset state of the spell check button
 	this._controller.toggleSpellCheckButton(false);
-
-	/*
-	if (this._accountChanged) {
-		this.identitySelect.clearOptions();
-		var identityOptions = this._getIdentityOptions();
-		for (var i = 0; i < identityOptions.length; i++) {
-			this.identitySelect.addOption(identityOptions[i]);
-		}
-
-		this._setIdentityVisible();
-		this._accountChanged = false;
-
-		// account changed.. so reset the signatures
-		this._controller._signatureChangeListener();
-	}
-	*/
 
 	//reset state of previous Signature cache variable.
 	this._previousSignature = null;
@@ -2008,11 +1994,6 @@ function(composeMode) {
 
 	// init listeners
 	this.addControlListener(new AjxListener(this, this._controlListener));
-
-//	if (!appCtxt.isChildWindow && appCtxt.multiAccounts) {
-//		var opc = this._controller._app.getOverviewPanelContent();
-//		opc.addSelectionListener(new AjxListener(this, this._accountChangeListener));
-//	}
 };
 
 ZmComposeView.prototype._createHtml =
@@ -2121,30 +2102,8 @@ function(templateId, data) {
 
 	if (appCtxt.isOffline) {
 		if (!this._fromSelect) {
-			var ac = window.parentAppCtxt || window.appCtxt;
 			this._fromSelect = new DwtSelect({parent:this, parentElement:data.fromSelectId});
 			this._fromSelect.addChangeListener(new AjxListener(this, this._handleFromListener));
-			var active = ac.getActiveAccount();
-			if (active.isMain) {
-				active = ac.getMainAccount(true);
-			}
-			var accounts = ac.getZimbraAccounts();
-			for (var i in accounts) {
-				var acct = accounts[i];
-				if (!acct.visible || acct.isMain) { continue; }
-
-				var isSelected = acct == active;
-				if (isSelected) {
-					this._controller._accountName = acct.name;
-				}
-				var identities = ac.getIdentityCollection(acct).getIdentities();
-				for (var j = 0; j < identities.length; j++) {
-					var identity = identities[j];
-					var addr = new AjxEmailAddress(identity.sendFromAddress, AjxEmailAddress.FROM, identity.sendFromDisplay);
-					addr.accountId = acct.id;
-					this._fromSelect.addOption(addr.toString(), isSelected, addr);
-				}
-			}
 		}
 	} else {
 		// initialize identity select
@@ -2417,6 +2376,35 @@ function() {
 	}
 };
 
+ZmComposeView.prototype._setFromSelect =
+function() {
+	if (!this._fromSelect) { return; }
+
+	this._fromSelect.clearOptions();
+
+	var ac = window.parentAppCtxt || window.appCtxt;
+	var active = ac.getActiveAccount();
+	var accounts = ac.getZimbraAccounts();
+
+	for (var i in accounts) {
+		var acct = accounts[i];
+
+		if (!acct.visible || acct.isMain) { continue; }
+		if (this._action != ZmOperation.NEW_MESSAGE && acct != active) { continue; }
+
+		var isSelected = acct == active;
+		var identities = ac.getIdentityCollection(acct).getIdentities();
+		// todo - filter based on SMTP support - waiting on server support
+		for (var j = 0; j < identities.length; j++) {
+			var identity = identities[j];
+			var addr = new AjxEmailAddress(identity.sendFromAddress, AjxEmailAddress.FROM, identity.sendFromDisplay);
+			addr.accountId = acct.id;
+			var option = new DwtSelectOption(addr, isSelected, addr.toString(), null, null, acct.getIcon());
+			this._fromSelect.addOption(option);
+		}
+	}
+};
+
 // Show address field
 ZmComposeView.prototype._showAddressField =
 function(type, show, skipNotify, skipFocus) {
@@ -2516,11 +2504,6 @@ ZmComposeView.prototype._controlListener =
 function() {
 	this._resetBodySize();
 };
-
-//ZmComposeView.prototype._accountChangeListener =
-//function(ev) {
-//	this._accountChanged = true;
-//};
 
 
 // Callbacks
