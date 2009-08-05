@@ -367,6 +367,7 @@ function(maps) {
 ZmShortcutsPanel.prototype.handleKeyEvent =
 function() {
 	ZmShortcutsPanel.closeCallback();
+	return false;
 };
 
 ZmShortcutsPanel.prototype._createHtml =

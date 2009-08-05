@@ -59,14 +59,14 @@ function(ev) {
 	switch (ev.charCode) {
 		case 27: { // ESC
 			this._doPopdown();
-			break;
+			return true;
 		}
 		case 13: { // ENTER
 			this._onEnter();
-			break;
+			return true;
 		}
 		default: {
-			break;
+			return false;
 		}
 	}
 };
