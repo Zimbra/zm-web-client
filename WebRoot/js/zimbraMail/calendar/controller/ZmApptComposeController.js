@@ -226,12 +226,15 @@ function(appt, result) {
     var inst = conflictResponse.inst;
 
     if(inst && inst.length > 0) {
+		//TODO: need to handle resource conflict
+		/*
         DBG.println("conflict instances :" + inst.length);
         if(!this._resConflictDialog) {
             this._resConflictDialog = new ZmResourceConflictDialog(this._shell);
         }
         this._resConflictDialog.initialize(inst, appt);
         this._resConflictDialog.popup();
+		*/
     }
     
 };
