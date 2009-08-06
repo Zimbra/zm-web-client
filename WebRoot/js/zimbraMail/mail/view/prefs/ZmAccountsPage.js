@@ -1912,6 +1912,10 @@ function() {
 			var account = needsSync[i];
 			dsCollection.importMailFor(account.folderId);
 			delete account._needsSync;
+            var origObjFromProxy = account._object_;
+            if(origObjFromProxy){
+                delete origObjFromProxy._needsSync;
+            }
 		}
 	}
 };
