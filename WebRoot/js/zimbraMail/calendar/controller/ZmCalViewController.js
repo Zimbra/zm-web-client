@@ -158,7 +158,7 @@ function(viewId, startDate, skipMaintenance) {
 	this._setView({view:ZmId.VIEW_CAL, elements:elements, isAppView:true});
 	this._currentView = this._viewMgr.getCurrentViewName();
 	this._listView[this._currentView] = this._viewMgr.getCurrentView();
-	this._resetToolbarOperations();
+	this._resetToolbarOperations(viewId);
 
 	switch(viewId) {
 		case ZmId.VIEW_CAL_DAY:
@@ -632,15 +632,9 @@ function(viewId) {
 	var viewButton = toolbar.getButton(ZmOperation.VIEW_MENU);
 	if (viewButton) {
 		viewButton.setMenu(new AjxCallback(this, this._setupViewMenuItems, [toolbar]));
-		var icon;
-		switch (this._defaultView()) {
-			case ZmId.VIEW_CAL_DAY: 		icon = ZmOperation.getProp(ZmOperation.DAY_VIEW, "image"); break;
-			case ZmId.VIEW_CAL_WORK_WEEK:	icon = ZmOperation.getProp(ZmOperation.WORK_WEEK_VIEW, "image"); break;
-			case ZmId.VIEW_CAL_WEEK:		icon = ZmOperation.getProp(ZmOperation.WEEK_VIEW, "image"); break;
-			case ZmId.VIEW_CAL_MONTH:		icon = ZmOperation.getProp(ZmOperation.MONTH_VIEW, "image"); break;
-			case ZmId.VIEW_CAL_LIST:		icon = ZmOperation.getProp(ZmOperation.CAL_LIST_VIEW, "image"); break;
-			case ZmId.VIEW_CAL_SCHEDULE:	icon = ZmOperation.getProp(ZmOperation.SCHEDULE_VIEW, "image"); break;
-		}
+
+		var op = ZmCalViewController.VIEW_TO_OP[this._defaultView()];
+		var icon = ZmOperation.getProp(op, "image");
 		viewButton.setImage(icon);
 	}
 };
@@ -1924,6 +1918,19 @@ function(view) {
 ZmCalViewController.prototype._resetNavToolBarButtons =
 function(view) {
 	this._navToolBar[ZmId.VIEW_CAL].enable([ZmOperation.PAGE_BACK, ZmOperation.PAGE_FORWARD], true);
+};
+
+ZmCalViewController.prototype._resetToolbarOperations =
+function(viewId) {
+	ZmListController.prototype._resetToolbarOperations.call(this);
+
+	var viewBtn = viewId && this._toolbar[ZmId.VIEW_CAL].getButton(ZmOperation.VIEW_MENU);
+	if (viewBtn) {
+		var op = ZmCalViewController.VIEW_TO_OP[viewId];
+		var icon = ZmOperation.getProp(op, "image");
+		viewBtn.setImage(icon);
+		viewBtn.getMenu().checkItem(ZmOperation.MENUITEM_ID, op);
+	}
 };
 
 ZmCalViewController.prototype._resetOperations =
