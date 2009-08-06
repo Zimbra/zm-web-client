@@ -124,13 +124,13 @@ function(view) {
 	if (!this._listView[view]) {
 		switch (view) {
 			case ZmId.VIEW_CONTACT:
-		    	this._listView[view] = new ZmContactView(this._container, this, false);
+		    	this._listView[view] = new ZmEditContactView(this._container, this, false);
 				break;
 			case ZmId.VIEW_GROUP:
 		    	this._listView[view] = new ZmGroupView(this._container, this);
 				break;
 			case ZmId.VIEW_MY_CARD:
-		    	this._listView[view] = new ZmContactView(this._container, this, true);
+		    	this._listView[view] = new ZmEditContactView(this._container, this, true);
 				break;
 		}
 	}
@@ -174,13 +174,7 @@ function(view) {
 		delete this._contactDirty;
 	}
 
-	if (cv._contactTabView) {
-		// create a tab group for the first tab
-		var tabIdx = cv._contactTabView.getCurrentTab();
-		if (!this._tabGroups[view][tabIdx]) {
-			this._tabGroup = this._createTabGroup(tabIdx);
-		}
-	}
+	this._tabGroup = cv.getTabGroupMember();
 };
 
 ZmContactController.prototype._createTabGroup =

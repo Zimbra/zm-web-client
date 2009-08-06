@@ -48,6 +48,7 @@ ZmContact.prototype = new ZmItem;
 ZmContact.prototype.constructor = ZmContact;
 
 // fields
+ZmContact.F_anniversary				= "anniversary";
 ZmContact.F_assistantPhone			= "assistantPhone";
 ZmContact.F_attachment				= "attachment";
 ZmContact.F_birthday				= "birthday";
@@ -56,6 +57,7 @@ ZmContact.F_carPhone				= "carPhone";
 ZmContact.F_company					= "company";
 ZmContact.F_companyPhone			= "companyPhone";
 ZmContact.F_description				= "description";
+ZmContact.F_department				= "department";
 ZmContact.F_dlist					= "dlist";				// Group fields
 ZmContact.F_email					= "email";
 ZmContact.F_email2					= "email2";
@@ -78,6 +80,7 @@ ZmContact.F_imAddress2 				= "imAddress2";
 ZmContact.F_imAddress3				= "imAddress3";
 ZmContact.F_jobTitle				= "jobTitle";
 ZmContact.F_lastName				= "lastName";
+ZmContact.F_maidenName				= "maidenName";
 ZmContact.F_middleName				= "middleName";
 ZmContact.F_mobilePhone				= "mobilePhone";
 ZmContact.F_namePrefix				= "namePrefix";

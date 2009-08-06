@@ -1,8 +1,8 @@
 <template id="abook.Contacts#ZmEditContactView">
-	<!--<div id="${id}_DEBUG"></div>-->
+	<div id="${id}_DEBUG"></div>
 	<table valign=top width='100%' cellspacing=0>
-		<tr valign=top>
-			<td style='border-bottom:solid 1px black;padding:.25em .5em'>
+		<tr valign=top class=contactHeaderTable>
+			<td class=contactHeaderCell>
 				<div id="${id}_IMAGE" tabindex="100"></div>
 				<div id="${id}_REMOVE_IMAGE_row" style='text-align:center;font-size:.8em'>
 					<nobr>
@@ -12,7 +12,7 @@
 					</nobr>
 				</div>
 			</td>
-			<td valign=bottom style='border-bottom:solid 1px black;padding-bottom:.25em'>
+			<td class=contactHeaderCell valign=bottom>
 				<div style='padding:.125em'>
 					<div id="${id}_FULLNAME"></div>
 				</div>
@@ -47,7 +47,7 @@
 					</tr></table>
 				</div>
 			</td>
-			<td style='border-bottom:solid 1px black;padding-bottom:.25em'>
+			<td class=contactHeaderCell>
 				<table>
 				<tr><td><$=ZmMsg.fileAsLabel$></td><td><div id="${id}_FILE_AS" tabindex="400"></div></td></tr>
 				<tr><td><$=ZmMsg.locationLabel$></td><td><div id="${id}_FOLDER" tabindex="401"></div></td></tr>
@@ -55,35 +55,34 @@
 			</td>
 		</tr>
 		<tr valign=top>
-			<td style='padding:.25em .5em'><$=ZmMsg.emailLabel$></td>
+			<td class=rowLabel><$=ZmMsg.emailLabel$></td>
 			<td><div id="${id}_EMAIL" tabindex="500"></div></td>
 		</tr>
 		<tr valign=top>
-			<td style='padding:.25em .5em'><$=ZmMsg.phoneLabel$></td>
+			<td class=rowLabel><$=ZmMsg.phoneLabel$></td>
 			<td><div id="${id}_PHONE" tabindex="600"></div></td>
 		</tr>
 		<tr valign=top>
-			<td style='padding:.25em .5em'><$=ZmMsg.imLabel$></td>
+			<td class=rowLabel><$=ZmMsg.imLabel$></td>
 			<td><div id="${id}_IM" tabindex="700"></div></td>
 		</tr>
 		<tr valign=top>
-			<td style='padding:.25em .5em'><$=ZmMsg.addressLabel$></td>
+			<td class=rowLabel><$=ZmMsg.addressLabel$></td>
 			<td><div id="${id}_ADDRESS" tabindex="800"></div></td>
 		</tr>
 		<tr valign=top>
-			<td style='padding:.25em .5em'><$=ZmMsg.urlLabel$></td>
+			<td class=rowLabel><$=ZmMsg.urlLabel$></td>
 			<td><div id="${id}_URL" tabindex="900"></div></td>
 		</tr>
 		<tr valign=top>
-			<td style='padding:.25em .5em'><$=ZmMsg.otherLabel$></td>
+			<td class=rowLabel><$=ZmMsg.otherLabel$></td>
 			<td><div id="${id}_OTHER" tabindex="1000"></div></td>
 		</tr>
 		<tr valign=top>
-			<td style='padding:.25em .5em'><$=ZmMsg.notesLabel$></td>
+			<td class=rowLabel><$=ZmMsg.notesLabel$></td>
 			<td style='padding-left:3'><div id="${id}_NOTES" tabindex="1100"></div></td>
 		</tr>
 	</table>
-	</div>
 </template>
 
 <template id="abook.Contacts#ZmEditContactViewDetailsButton">

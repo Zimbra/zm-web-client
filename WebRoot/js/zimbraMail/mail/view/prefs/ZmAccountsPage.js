@@ -314,6 +314,12 @@ function(account, skipUpdate, ignoreProvider) {
 		Dwt.setVisible(this._sectionDivs[type], false);
 	}
 
+	// HACK: Attempt to get around an IE update issue.
+	setTimeout(AjxCallback.simpleClosure(this._setAccount2, this, account, skipUpdate, ignoreProvider),0);
+};
+
+ZmAccountsPage.prototype._setAccount2 =
+function(account, skipUpdate, ignoreProvider) {
 	// NOTE: I hide all of the sections first and then show the
 	//       specific section because some of the sections use
 	//       the same div. This avoids double inititalization

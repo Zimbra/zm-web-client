@@ -819,6 +819,7 @@ line-height:normal;
 
 .ZmContactInfoView .contactHeaderTable {
 	border-bottom: 1px solid #777777;
+	background-color: @lighten(AltC,40)@;
 }
 
 
@@ -3807,6 +3808,7 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .ZmEditContactViewAddress {
+	/* TODO: mimic input border on other browsers/platforms */
 	border-left: solid 1px #3b3935;
 	border-top: solid 1px #3b3935;
 	border-right: solid 1px #d7cfbe;
@@ -3817,4 +3819,19 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmEditContactViewAddress .DwtInputField-hint TEXTAREA,
 .ZmEditContactViewAddress .DwtInputField-hint INPUT[type=text] {
 	border: none;
+}
+
+.ZmEditContactView .contactHeaderTable {
+	background-color: @lighten(AltC,40)@;
+}
+
+.ZmEditContactView .contactHeaderCell {
+	padding: .25em .5em;
+	border-bottom: solid 1px @darken(AppC,40)@;
+}
+
+.ZmEditContactView .rowLabel {
+	padding:.25em .5em;
+	text-align: right;
+	font-weight: bold;
 }
