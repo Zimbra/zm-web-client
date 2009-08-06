@@ -65,6 +65,7 @@ ZmOrganizer = function(params) {
 	this.rid = params.rid;
 	this.restUrl = params.restUrl;
 	this.accountId = params.accountId;
+    this.perm = params.perm;
 	this.noSuchFolder = false; // Is this a link to some folder that ain't there.
 	this._isAdmin = this._isReadOnly = this._hasPrivateAccess = null;
 
@@ -260,6 +261,15 @@ ZmOrganizer.DISPLAY_ORDER	= {};		// sort number to determine order of tree view 
 ZmOrganizer.HIDE_EMPTY		= {};		// if true, hide tree header if tree is empty
 
 ZmOrganizer.APP2ORGANIZER	= {};		// organizer types, keyed by app name
+
+// allowed permission bits
+ZmOrganizer.PERM_READ		= "r";
+ZmOrganizer.PERM_WRITE		= "w";
+ZmOrganizer.PERM_INSERT		= "i";
+ZmOrganizer.PERM_DELETE		= "d";
+ZmOrganizer.PERM_ADMIN		= "a";
+ZmOrganizer.PERM_WORKFLOW	= "x";
+ZmOrganizer.PERM_PRIVATE	= "p";
 
 // Abstract methods
 
@@ -1229,11 +1239,24 @@ function() {
 	return this.isUnder(ZmOrganizer.ID_TRASH);
 };
 
+ZmOrganizer.prototype.isPermAllowed =
+function(perm) {
+	if (this.perm) {
+		var positivePerms = this.perm.replace(/-./g, "");
+		return (positivePerms.indexOf(perm) != -1);
+	}
+	return false;
+};
+
 ZmOrganizer.prototype.isReadOnly =
 function() {
 	if (this._isReadOnly == null) {
 		var share = this.getMainShare();
-		this._isReadOnly = (this.isRemote() && share && !share.isWrite());
+        if(share != null){
+            this._isReadOnly = (this.isRemote() && share && !share.isWrite());
+        }else{
+            this._isReadOnly = (this.isRemote() && this.isPermAllowed(ZmOrganizer.PERM_READ) && !this.isPermAllowed(ZmOrganizer.PERM_WRITE));
+        }
 	}
 	return this._isReadOnly;
 };
@@ -1242,7 +1265,11 @@ ZmOrganizer.prototype.isAdmin =
 function() {
 	if (this._isAdmin == null) {
 		var share = this.getMainShare();
-		this._isAdmin = (this.isRemote() && share && share.isAdmin());
+        if(share != null){
+            this._isAdmin = (this.isRemote() && share && share.isAdmin());
+        }else{
+            this._isAdmin = (this.isRemote() && this.isPermAllowed(ZmOrganizer.PERM_ADMIN));
+        }
 	}
 	return this._isAdmin;
 };
@@ -1251,7 +1278,11 @@ ZmOrganizer.prototype.hasPrivateAccess =
 function() {
 	if (this._hasPrivateAccess == null) {
 		var share = this.getMainShare();
-		this._hasPrivateAccess = (this.isRemote() && share && share.hasPrivateAccess());
+        if(share != null){
+		    this._hasPrivateAccess = (this.isRemote() && share && share.hasPrivateAccess());
+        }else {
+            this._hasPrivateAccess = (this.isRemote() && this.isPermAllowed(ZmOrganizer.PERM_PRIVATE));
+        }
 	}
 	return this._hasPrivateAccess;
 };
