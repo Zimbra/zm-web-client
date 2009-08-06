@@ -209,10 +209,12 @@ ZmApptEditView.prototype._finishReset =
 function() {
 	ZmCalItemEditView.prototype._finishReset.call(this);
 
+    var newMode = (this._mode == ZmCalItem.MODE_NEW);
+
 	// save the original form data in its initialized state
-	this._origFormValueMinusAttendees = this._formValue(true);
+	this._origFormValueMinusAttendees = newMode ? "" : this._formValue(true);
 	if (this._hasReminderSupport) {
-		this._origFormValueMinusReminder = this._formValue(false, true);
+		this._origFormValueMinusReminder = newMode ? "" : this._formValue(false, true);
 		this._origReminderValue = this._reminderSelect.getValue();
 	}
 };
