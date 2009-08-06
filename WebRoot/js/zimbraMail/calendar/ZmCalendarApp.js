@@ -80,8 +80,10 @@ ZmCalendarApp.STATUS_NEED				= "NEED";		// vtodo
 ZmCalendarApp.STATUS_TENT				= "TENT";		// vevent
 ZmCalendarApp.STATUS_WAIT				= "WAITING";	// vtodo					[outlook]
 
-ZmCalendarApp.METHOD_REQUEST            = "REQUEST";
+ZmCalendarApp.METHOD_CANCEL				= "CANCEL";
 ZmCalendarApp.METHOD_PUBLISH            = "PUBLISH";
+ZmCalendarApp.METHOD_REPLY				= "REPLY";
+ZmCalendarApp.METHOD_REQUEST            = "REQUEST";
 
 ZmCalendarApp.prototype = new ZmApp;
 ZmCalendarApp.prototype.constructor = ZmCalendarApp;

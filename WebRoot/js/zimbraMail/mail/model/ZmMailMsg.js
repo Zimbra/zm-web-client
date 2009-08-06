@@ -74,9 +74,13 @@ ZmMailMsg.STATUS_ICON["isForwarded"]	= "MsgStatusForward";
 ZmMailMsg.STATUS_ICON["isSent"]			= "MsgStatusSent";
 ZmMailMsg.STATUS_ICON["isUnread"]		= "MsgStatusUnread";
 
-ZmMailMsg.STATUS_ICON[ZmCalendarApp.STATUS_CANC] = "CalInviteDeclined";
-ZmMailMsg.STATUS_ICON[ZmCalendarApp.STATUS_CONF] = "CalInviteAccepted";
-ZmMailMsg.STATUS_ICON[ZmCalendarApp.STATUS_TENT] = "CalInviteTentative";
+ZmMailMsg.PSTATUS_ACCEPT		= "AC";
+ZmMailMsg.PSTATUS_DECLINED		= "DE";
+ZmMailMsg.PSTATUS_TENTATIVE		= "TE";
+
+ZmMailMsg.STATUS_ICON[ZmMailMsg.PSTATUS_ACCEPT]		= "CalInviteAccepted";
+ZmMailMsg.STATUS_ICON[ZmMailMsg.PSTATUS_DECLINED]	= "CalInviteDeclined";
+ZmMailMsg.STATUS_ICON[ZmMailMsg.PSTATUS_TENTATIVE]	= "CalInviteTentative";
 
 ZmMailMsg.URL_RE = /((telnet:)|((https?|ftp|gopher|news|file):\/\/)|(www\.[\w\.\_\-]+))[^\s\xA0\(\)\<\>\[\]\{\}\'\"]*/i;
 
@@ -1643,7 +1647,14 @@ ZmMailMsg.prototype.getStatusIcon =
 function() {
 
 	if (this.isInvite() && appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
-		var status = this.invite.getStatus();
+		var method = this.invite.getInviteMethod();
+		var status;
+		if (method == ZmCalendarApp.METHOD_REPLY) {
+			var attendees = this.invite.getAttendees();
+			status = attendees && attendees[0] && attendees[0].ptst;
+		} else if (method == ZmCalendarApp.METHOD_CANCEL) {
+			status = ZmMailMsg.PSTATUS_DECLINED;
+		}
 		return ZmMailMsg.STATUS_ICON[status] || "Appointment";
 	}
 
