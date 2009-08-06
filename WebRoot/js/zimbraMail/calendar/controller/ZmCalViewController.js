@@ -722,6 +722,24 @@ function(date) {
     this._miniCalDropTarget = calMgr._miniCalDropTarget;
 };
 
+ZmCalViewController.prototype.recreateMiniCalendar =
+function() {
+    var calMgr = appCtxt.getCalManager();
+    if (calMgr._miniCalendar != null) {
+        var mc = calMgr.getMiniCalendar();
+        var el = mc.getHtmlElement();
+        var date = mc.getDate();
+        if(el) {
+            el.parentNode.removeChild(el);
+        }
+        this._miniCalendar = null;
+        calMgr._miniCalendar = null;
+        calMgr._createMiniCalendar(date);
+        this._miniCalendar = calMgr.getMiniCalendar();
+        this._createMiniCalendar();
+    }
+};
+
 ZmCalViewController.prototype._miniCalDropTargetListener =
 function(ev) {
 	var data = ((ev.srcData.data instanceof Array) && ev.srcData.data.length == 1)

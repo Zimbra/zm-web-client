@@ -128,6 +128,7 @@ function(settings) {
 	settings.registerSetting("CAL_SEND_INV_DENIED_REPLY",   {name: "zimbraPrefCalendarSendInviteDeniedAutoReply",type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
     settings.registerSetting("CAL_INV_FORWARDING_ADDRESS",  {name: "zimbraPrefCalendarForwardInvitesTo", type:ZmSetting.T_PREF});    
     settings.registerSetting("CAL_SHOW_PAST_DUE_REMINDERS", {name: "zimbraPrefCalendarShowPastDueReminders", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue: true});    
+    settings.registerSetting("CAL_SHOW_CALENDAR_WEEK",      {name: "zimbraPrefShowCalendarWeek", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue: false});    
 };
 
 ZmCalendarApp.prototype._registerPrefs =
@@ -161,7 +162,8 @@ function() {
 				ZmSetting.CAL_INVITE_ACL_USERS,
 				ZmSetting.CAL_REMINDER_NOTIFY_TOASTER,
                 ZmSetting.CAL_INV_FORWARDING_ADDRESS,
-                ZmSetting.CAL_SHOW_PAST_DUE_REMINDERS                    
+                ZmSetting.CAL_SHOW_PAST_DUE_REMINDERS,
+                ZmSetting.CAL_SHOW_CALENDAR_WEEK                    
 			],
 			manageDirty: true,
 			createView: function(parent, section, controller) {
@@ -294,6 +296,11 @@ function() {
         displayName: ZmMsg.apptPastDueReminderLabel,
         displayContainer:	ZmPref.TYPE_CHECKBOX
     });    
+
+    ZmPref.registerPref("CAL_SHOW_CALENDAR_WEEK", {
+        displayName: ZmMsg.showWeekNumber,
+        displayContainer:	ZmPref.TYPE_CHECKBOX
+    });
 };
 
 ZmCalendarApp.prototype._registerOperations =
@@ -859,4 +866,37 @@ function(resource) {
 	if (email) {
 		this._resByEmail[email.toLowerCase()] = resource;
 	}
+};
+
+ZmCalendarApp.prototype._addSettingsChangeListeners =
+function() {
+	ZmApp.prototype._addSettingsChangeListeners.call(this);
+
+	if (!this._settingsListener) {
+		this._settingsListener = new AjxListener(this, this._settingsChangeListener);
+	}
+
+	var settings = appCtxt.getSettings();
+	settings.getSetting(ZmSetting.CAL_SHOW_CALENDAR_WEEK).addChangeListener(this._settingListener);
+	settings.addChangeListener(this._settingsListener);
+};
+
+/**
+ * Settings listener to process changed settings.
+ */
+ZmCalendarApp.prototype._settingsChangeListener =
+function(ev) {
+    if (ev.type != ZmEvent.S_SETTINGS) { return; }
+
+    var list = ev.getDetail("settings");
+    if (!(list && list.length)) { return; }
+
+    for (var i = 0; i < list.length; i++) {
+        var setting = list[i];
+        if (setting.id == ZmSetting.CAL_SHOW_CALENDAR_WEEK) {
+            var controller = AjxDispatcher.run("GetCalController").recreateMiniCalendar();
+            var calMgr = appCtxt.getCalManager();
+            calMgr.highlightMiniCal();
+        }
+    }
 };

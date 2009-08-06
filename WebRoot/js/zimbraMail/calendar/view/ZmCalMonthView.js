@@ -340,7 +340,7 @@ function(html, loc, week, dow) {
 
 ZmCalMonthView.prototype._createHtml =
 function() {
-    this._showWeekNumber = false;    
+    this._showWeekNumber = appCtxt.get(ZmSetting.CAL_SHOW_CALENDAR_WEEK);    
 	this._days = new Object();	
 	this._rowIds = new Object();		
 	this._weeks = new Array();

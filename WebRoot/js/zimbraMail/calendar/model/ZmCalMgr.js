@@ -42,7 +42,7 @@ function(date) {
 	var firstDayOfWeek = appCtxt.get(ZmSetting.CAL_FIRST_DAY_OF_WEEK) || 0;
 
 	this._miniCalendar = new DwtCalendar({parent: this._container, posStyle:DwtControl.ABSOLUTE_STYLE,
-										  firstDayOfWeek: firstDayOfWeek});
+										  firstDayOfWeek: firstDayOfWeek, showWeekNumber: appCtxt.get(ZmSetting.CAL_SHOW_CALENDAR_WEEK)});
 	this._miniCalendar.setDate(date);
 	this._miniCalendar.setScrollStyle(Dwt.CLIP);
 	this._miniCalendar.addSelectionListener(new AjxListener(this, this._miniCalSelectionListener));
