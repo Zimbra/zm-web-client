@@ -669,9 +669,10 @@ function(toolbar) {
 	for (var i = 0; i < calViews.length; i++) {
 		var id = calViews[i];
 		var params = {
-			image:ZmOperation.getProp(id, "image"),
-			text:ZmMsg[ZmOperation.getProp(id, "textKey")],
-			style:DwtMenuItem.RADIO_STYLE
+			image:		ZmOperation.getProp(id, "image"),
+			text:		ZmMsg[ZmOperation.getProp(id, "textKey")],
+			style:		DwtMenuItem.RADIO_STYLE,
+			shortcut:	ZmOperation.getProp(id, "shortcut")
 		};
 		var mi = menu.createMenuItem(id, params);
 		mi.setData(ZmOperation.MENUITEM_ID, id);

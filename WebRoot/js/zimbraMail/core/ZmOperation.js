@@ -447,6 +447,6 @@ ZmOperation.getToolTip =
 function(id, keyMap, tooltip) {
 	var opDesc = ZmOperation._operationDesc[id] || ZmOperation.defineOperation({id:id});
 	tooltip = tooltip || opDesc.tooltip;
-	var sc = tooltip && appCtxt.getShortcutHint(keyMap, opDesc.shortcut);
+	var sc = tooltip && opDesc.shortcut && appCtxt.getShortcutHint(keyMap, opDesc.shortcut);
 	return sc ? [tooltip, sc].join("") : tooltip;
 };

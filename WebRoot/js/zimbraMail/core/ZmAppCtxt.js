@@ -929,16 +929,8 @@ function(keyMap, shortcut) {
 		var scKey = [keyMap, shortcut, "display"].join(".");
 		var text = AjxKeys[scKey] || ZmKeys[scKey];
 		if (text) {
-			// try to pick first single-character shortcut
 			var list = text.split(/;\s*/);
-			var sc = list[0];
-			for (var i = 0; i < list.length; i++) {
-				var s = list[i];
-				if (s.indexOf(",") == -1) {
-					sc = list[i];
-					break;
-				}
-			}
+			var sc = list[0];	// use first shortcut in list
 			if (!sc) { return null; }
 			sc = sc.replace(/\b[A-Z]\b/g, function(let) { return let.toLowerCase(); });
 			text = [" [", sc.replace(",", ""), "]"].join("");
