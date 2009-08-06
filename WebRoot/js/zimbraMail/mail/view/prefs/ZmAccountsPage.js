@@ -1468,7 +1468,7 @@ ZmAccountsPage.prototype._updateList = function(account) {
 	this._accountListView.setCellContents(account, ZmItem.F_EMAIL, AjxStringUtil.htmlEncode(account.getEmail()));
 	var provider = ZmDataSource.getProviderForAccount(account);
 	var type = provider ? provider.name : ZmAccountsListView.TYPES[account.type]; 
-	this._accountListView.setCellContents(account, ZmItem.F_TYPE, type);
+	this._accountListView.setCellContents(account, ZmItem.F_TYPE, AjxStringUtil.htmlEncode(type));
 };
 
 // generic listeners
@@ -1507,7 +1507,7 @@ function(evt) {
 
 ZmAccountsPage.prototype._updateEmailCell =
 function(email) {
-	this._accountListView.setCellContents(this._currentAccount, ZmItem.F_EMAIL, email);
+	this._accountListView.setCellContents(this._currentAccount, ZmItem.F_EMAIL, AjxStringUtil.htmlEncode(email));
 };
 
 // data source listeners
@@ -1515,7 +1515,7 @@ function(email) {
 ZmAccountsPage.prototype._handleTypeChange =
 function(evt) {
 	var type = ZmAccountsListView.TYPES[this._getControlValue("ACCOUNT_TYPE", this._currentSection)] || "???";
-	this._accountListView.setCellContents(this._currentAccount, ZmItem.F_TYPE, type);
+	this._accountListView.setCellContents(this._currentAccount, ZmItem.F_TYPE, AjxStringUtil.htmlEncode(type));
 	this._handleTypeOrSslChange(evt);
 };
 
@@ -2005,7 +2005,7 @@ function(buffer, i, item, field, col, params) {
 		buffer[i++] = "<div id='";
 		buffer[i++] = cellId+"_name";
 		buffer[i++] = "'>";
-		buffer[i++] = item.getName();
+		buffer[i++] = AjxStringUtil.htmlEncode(item.getName());
 		buffer[i++] = "</div>";
 		return i;
 	}
