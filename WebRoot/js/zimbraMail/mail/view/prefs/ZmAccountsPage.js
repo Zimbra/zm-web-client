@@ -1184,10 +1184,16 @@ ZmAccountsPage.__BY_PROVIDER_NAME = function(a, b) {
 
 ZmAccountsPage.prototype._setupComboBox =
 function(id, setup, value) {
-	if (id == "REPLY_TO_EMAIL") {
-		setup.displayOptions = this._getAllAddresses();
-	}
-	return ZmPreferencesPage.prototype._setupComboBox.apply(this, arguments);
+    if (id == "REPLY_TO_EMAIL") {
+        var addresses = this._getAllAddresses(); // Get the addresses we can from _getAllAddresses()
+	
+	// Apparently not all (any?) external account addresses are retrieved from _getAllAddresses(), so we dig them out from DataSource and add them ourselves
+	// this._accounts is not ready at this point
+        var accounts = [].concat(appCtxt.getDataSourceCollection().getImapAccounts(), appCtxt.getDataSourceCollection().getPopAccounts());
+	addresses = this._getAddressesFromAccounts(accounts, true, true, addresses);
+	setup.displayOptions = addresses; // Put 'em in the options list
+    }
+    return ZmPreferencesPage.prototype._setupComboBox.apply(this, arguments);
 };
 
 ZmAccountsPage.prototype._setupCustom =
@@ -1230,12 +1236,52 @@ function(id, setup, value) {
 	return ZmPreferencesPage.prototype._setupCustom.apply(this, arguments);
 };
 
+ZmAccountsPage.prototype._updateComboBox =
+function(id) {
+    var dwtElement = this.getFormObject(id);
+    if (dwtElement) {
+		if (id == "REPLY_TO_EMAIL") {
+			var addresses = this._getAllAddresses(); // Get the addresses we can from _getAllAddresses()
+	
+			// Apparently not all (any?) external account addresses are retrieved from _getAllAddresses(), so we dig them out from this._accounts
+			// this._accounts is ready when the interface has been drawn
+			var accounts = this._accounts.getArray();
+			addresses = this._getAddressesFromAccounts(accounts, addresses, true, true);
+				    
+			dwtElement.removeAll();
+			for (var i=0; i<addresses.length; i++) {
+				dwtElement.add(addresses[i], addresses[i], false);
+			}
+		}
+    }
+};
+
 ZmAccountsPage.prototype._getAllAddresses =
 function() {
 	var username = appCtxt.get(ZmSetting.USERNAME); 
 	var addresses = appCtxt.get(ZmSetting.ALLOW_FROM_ADDRESSES);
 	var aliases = appCtxt.get(ZmSetting.MAIL_ALIASES);
 	return [].concat(username, addresses, aliases);
+};
+
+/*
+ * Takes a list of accounts and extracts their email addresses
+ * @param accounts	array of account objects
+ * @param unique	boolean: if true, addresses will be included in output only if they are not already present. Defaults to true
+ * @param valid		boolean: if true, performs a validation check on the address and only includes it if it passes. Defaults to true
+ * @param addresses	optional array of addresses (as strings) to append to. Defaults to an empty array
+*/
+ZmAccountsPage.prototype._getAddressesFromAccounts = function(accounts, addresses, unique, valid) {
+    if (!AjxUtil.isArray(addresses)) addresses = [];
+    for (var i=0; i<accounts.length; i++) {
+		var account = accounts[i];
+		if (account.isMain || account.enabled) {
+			var address = account.getEmail();
+			if (!AjxUtil.isEmpty(address) && (!valid || AjxUtil.isEmailAddress(address)) && (!unique || AjxUtil.indexOf(addresses, address, false) == -1)) // Make sure we are not adding an empty address and that we are not adding the address twice
+				addresses.push(address);
+		}
+    }
+    return addresses;
 };
 
 ZmAccountsPage.prototype._resetAccountListView =
@@ -1469,6 +1515,7 @@ ZmAccountsPage.prototype._updateList = function(account) {
 	var provider = ZmDataSource.getProviderForAccount(account);
 	var type = provider ? provider.name : ZmAccountsListView.TYPES[account.type]; 
 	this._accountListView.setCellContents(account, ZmItem.F_TYPE, AjxStringUtil.htmlEncode(type));
+	this._updateComboBox("REPLY_TO_EMAIL");
 };
 
 // generic listeners
