@@ -357,7 +357,7 @@ ZmEditContactView.prototype.getModifiedAttrs = function() {
 					var a = onlyvalue ? list.attrs[0] : item.type;
 					if (!counts[a]) counts[a] = 0;
 					var count = ++counts[a];
-					a = (count > 1 || (list.addone && list.addone[id])) ? a+count : a;
+					a = (count > 1 || (list.addone && list.addone[a])) ? a+count : a;
 					attributes[a] = v;
 				}
 			}
@@ -989,10 +989,14 @@ ZmEditContactViewIM.prototype.toString = function() {
 	return "ZmEditContactViewIM";
 };
 
+// constants
+
+ZmEditContactViewIM.RE_VALUE = /^(.*?):\/\/(.*)$/;
+
 // Public methods
 
 ZmEditContactViewIM.prototype.setValue = function(value) {
-	var m = ZmEditContactViewIM.exec(value);
+	var m = ZmEditContactViewIM.RE_VALUE.exec(value);
 	value = m ? { type:m[1],value:m[2] } : { type:"zimbra",value:"" };
 	ZmEditContactViewInputSelect.prototype.setValue.call(this, value);
 };
