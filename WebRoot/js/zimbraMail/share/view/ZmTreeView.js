@@ -21,26 +21,33 @@
  *
  * @author Conrad Damon
  * 
- * @param params			[hash]				hash of params:
- *        parent			[DwtControl]		the tree's parent widget
- *        type				[constant]			organizer type
- *        className			[string]*			CSS class
- *        posStyle			[constant]*			positioning style
- *        overviewId		[constant]*			overview ID
- *        headerClass		[string]*			CSS class for header item
- *        dragSrc			[DwtDragSource]*	drag source
- *        dropTgt			[DwtDropTarget]*	drop target
- *        treeStyle			[constant]*			tree style (see DwtTree)
- *        allowedTypes		[hash]*				org types this tree may display
- *        allowedSubTypes	[hash]*				org types this tree may display below top level
+ * @param params				[hash]				hash of params:
+ *        parent				[DwtControl]		the tree's parent widget
+ *        type					[constant]			organizer type
+ *        className				[string]*			CSS class
+ *        posStyle				[constant]*			positioning style
+ *        overviewId			[constant]*			overview ID
+ *        headerClass			[string]*			CSS class for header item
+ *        dragSrc				[DwtDragSource]*	drag source
+ *        dropTgt				[DwtDropTarget]*	drop target
+ *        treeStyle				[constant]*			tree style (see DwtTree)
+ *        isCheckedByDefault	[boolean]*			default state of "checked" tree style
+ *        allowedTypes			[hash]*				org types this tree may display
+ *        allowedSubTypes		[hash]*				org types this tree may display below top level
  */
 ZmTreeView = function(params) {
 
 	if (arguments.length == 0) { return; }
 
-	var className = params.className || "OverviewTree";
-	DwtTree.call(this, {parent:params.parent, parentElement: params.parentElement, style:params.treeStyle, 
-						className:className, posStyle:params.posStyle, id:params.id});
+	DwtTree.call(this, {
+		parent: params.parent,
+		parentElement: params.parentElement,
+		style: params.treeStyle,
+		isCheckedByDefault: params.isCheckedByDefault,
+		className: (params.className || "OverviewTree"),
+		posStyle: params.posStyle,
+		id: params.id
+	});
 
 	this._headerClass = params.headerClass ? params.headerClass : "overviewHeader";
 	this.overviewId = params.overviewId;

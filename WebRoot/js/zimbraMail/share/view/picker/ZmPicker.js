@@ -170,7 +170,7 @@ ZmPicker_Descriptor = function(id, label, image, toolTip, ctor) {
 	this.image = image || ZmPicker.IMAGE[id];
 	this.toolTip = toolTip || ZmMsg[ZmPicker.TT_MSG_KEY[id]] || this.label;
 	this.ctor = ctor;
-}
+};
 
 ZmPicker.prototype.toString = 
 function() {
@@ -247,10 +247,11 @@ function(overviewId, parent, types) {
 		parent: parent,
 		headerClass: "DwtTreeItem",
 		treeStyle: DwtTree.CHECKEDITEM_STYLE,
+		isCheckedByDefault: false,
 		treeIds: types
 	};
 	var overview = this._overview = appCtxt.getOverviewController().createOverview(params);
-	overview.set(types, null, null, true);
+	overview.set(types);
 	this._treeView = {};
 	for (var i = 0; i < types.length; i++) {
 		var treeView = this._treeView[types[i]] = overview.getTreeView(types[i]);
@@ -265,7 +266,7 @@ ZmPicker.prototype._hideRoot =
 function(type) {
 	var ti = this._treeView[type].getTreeItemById(ZmOrganizer.ID_ROOT);
 	if (!ti) {
-		var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT)
+		var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
 		ti = this._treeView[type].getTreeItemById(rootId);
 	}
 	ti.showCheckBox(false);

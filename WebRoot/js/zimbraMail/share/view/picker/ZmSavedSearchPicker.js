@@ -18,7 +18,7 @@ ZmSavedSearchPicker = function(parent) {
 	ZmPicker.call(this, parent, ZmPicker.SEARCH);
 
     this._checkedItems = new AjxVector();
-}
+};
 
 ZmSavedSearchPicker._OVERVIEW_ID = "ZmSavedSearchPicker";
 
@@ -30,14 +30,14 @@ ZmPicker.CTOR[ZmPicker.SEARCH] = ZmSavedSearchPicker;
 ZmSavedSearchPicker.prototype.toString = 
 function() {
 	return "ZmSavedSearchPicker";
-}
+};
 
 ZmSavedSearchPicker.prototype._setupPicker =
 function(parent) {
 	var overviewId = ZmSavedSearchPicker._OVERVIEW_ID + "_" + Dwt.getNextId();
 	this._setOverview(overviewId, parent, [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH]);
 	this._twiddle();
-}
+};
 
 ZmSavedSearchPicker.prototype._updateQuery = 
 function() {
@@ -60,7 +60,7 @@ function() {
 		this._searchId = this._checkedItems.get(0).searchId;
 	this.setQuery(query);
 	this.execute();
-}
+};
 
 ZmSavedSearchPicker.prototype._treeListener =
 function(ev) {
@@ -75,7 +75,7 @@ function(ev) {
  		}
 		this._updateQuery();
  	}
-}
+};
 
 // Take the checkboxes away from folders, and make sure saved searches are visible
 ZmSavedSearchPicker.prototype._twiddle =
@@ -103,4 +103,4 @@ function() {
 			}
 		}
 	}
-}
+};

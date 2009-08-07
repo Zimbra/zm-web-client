@@ -149,6 +149,9 @@ function(params) {
 
 	// add zimlets at the end of all overviews
 	var skip = params.omit && params.omit[ZmOrganizer.ID_ZIMLET];
+	if (!skip && !appCtxt.inStartup) {
+		skip = (appCtxt.getZimletMgr().getPanelZimlets().length == 0);
+	}
 	if (!skip && window[ZmOverviewController.CONTROLLER[ZmOrganizer.ZIMLET]]) {
 		var headerLabel = ZmOrganizer.LABEL[ZmOrganizer.ZIMLET];
 		params.overviewTrees = [ZmOrganizer.ZIMLET];
@@ -165,6 +168,19 @@ function(parent, acctId) {
 	var acct = appCtxt.getAccount(acctId);
 	if (acct.type == ZmAccount.TYPE_POP) {
 		parent.enable(ZmOperation.NEW_FOLDER, false);
+	}
+};
+
+// HACK - when the overview container for mail is initially created, zimlet
+// data has yet to be parsed so we remove the zimlet section after zimlet load
+// if there are no panel zimlets.
+ZmOverviewContainer.prototype.removeZimletSection =
+function() {
+	var headerLabel = ZmOrganizer.LABEL[ZmOrganizer.ZIMLET];
+	var headerDataId = appCtxt.getOverviewId([this.containerId, headerLabel], null);
+	var header = this._headerItems[headerDataId];
+	if (header) {
+		this.removeChild(header);
 	}
 };
 

@@ -69,7 +69,7 @@ function(params) {
 		}
 
 		// for offline, hide all system folders except Inbox and Trash
-		if (appCtxt.isOffline && params.account.type == ZmAccount.TYPE_POP) {
+		if (appCtxt.isOffline && params.account && params.account.type == ZmAccount.TYPE_POP) {
 			omit[ZmFolder.ID_SPAM] = true;
 			omit[ZmFolder.ID_SENT] = true;
 			omit[ZmFolder.ID_DRAFTS] = true;

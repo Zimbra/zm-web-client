@@ -2151,15 +2151,12 @@ input.xform_field {
 	margin-right: 2px;
 	width: 12px;
 	height: 12px;
+	background-color: #FFFFFF;
 
 #IFDEF MSIE
 	width: 14px;
 	height: 14px;
 #ENDIF
-}
-
-.ZTreeItemCheckboxDefaultBkgd {
-	background-color: #FFFFFF;
 }
 
 .ZTreeItemCheckboxImg {

@@ -345,7 +345,8 @@ function(allzimlets, props) {
 	}
 
 	DBG.println(AjxDebug.DBG1, "Zimlets - Loading " + zimlets.length + " Zimlets");
-	appCtxt.getZimletMgr().loadZimlets(zimlets, props);
+	var zimletMgr = appCtxt.getZimletMgr();
+	zimletMgr.loadZimlets(zimlets, props);
 
 	if (zimlets && zimlets.length) {
 		var activeApp = appCtxt.getCurrentApp();
@@ -364,6 +365,11 @@ function(allzimlets, props) {
 		// update overview tree
 		if (overview) {
 			overview.setTreeView(ZmOrganizer.ZIMLET);
+
+			// HACK: for multi-account, hide the zimlet section if no panel zimlets
+			if (appCtxt.multiAccounts && zimletMgr.getPanelZimlets().length == 0) {
+				activeApp.getOverviewContainer().removeZimletSection();
+			}
 		}
 
 		// create global portlets

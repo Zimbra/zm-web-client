@@ -37,6 +37,7 @@
  *        showUnread			[boolean]*				if true, unread counts will be shown
  *        showNewButtons		[boolean]*				if true, tree headers may have buttons for creating new organizers
  *        treeStyle				[constant]*				default display style for tree views
+ *        isCheckedByDefault	[boolean]*				default state for "checked" deiplay style
  *        noTooltips			[boolean]*				if true, don't show tooltips for tree items
  * @param controller			[ZmOverviewController]	the overview controller
  */
@@ -59,6 +60,7 @@ ZmOverview = function(params, controller) {
 	this.showUnread			= params.showUnread;
 	this.showNewButtons		= params.showNewButtons;
 	this.treeStyle			= params.treeStyle;
+	this.isCheckedByDefault = params.isCheckedByDefault;
 	this.noTooltips			= params.noTooltips;
 	this.isAppOverview		= params.isAppOverview;
 

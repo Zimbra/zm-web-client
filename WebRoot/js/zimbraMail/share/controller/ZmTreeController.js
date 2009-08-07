@@ -381,6 +381,7 @@ function(overviewId) {
 		dragSrc: (overview.dndSupported ? this._dragSrc : null),
 		dropTgt: (overview.dndSupported ? this._dropTgt : null),
 		treeStyle: overview.treeStyle,
+		isCheckedByDefault: overview.isCheckedByDefault,
 		allowedTypes: this._getAllowedTypes(),
 		allowedSubTypes: this._getAllowedSubTypes()
 	};

@@ -44,11 +44,10 @@ function() {
 
 ZmAttachmentPicker.prototype._newType =
 function(tree, atts) {
-	var ti = new DwtTreeItem({parent:tree});
-	ti.setImage(atts[0].image);
+	var ti = new DwtTreeItem({parent:tree, text:atts[0].desc, imageInfo:atts[0].image});
+	ti.setChecked(false, true);
 	ti.setData(ZmAttachmentPicker.ATT_KEY, atts[0].desc);
-	ti.setText(atts[0].desc);
-	var types = new Array();
+	var types = [];
 	for (var i = 0; i < atts.length; i++) {
 		types.push(atts[i].type);
 	}
@@ -146,11 +145,11 @@ function(attachTypeList, tree, treeId) {
 	var attachments = attachTypeList.getAttachments();
 	this._attsByDesc = {};
 	var attDesc = [];
-	var curDesc = null;
+	var curDesc;
 	for (var i = 0; i < attachments.length; i++) {
 		var desc = attachments[i].desc;
 		if (desc != curDesc) {
-			this._attsByDesc[desc] = new Array();
+			this._attsByDesc[desc] = [];
 			attDesc.push(desc);
 		}
 		this._attsByDesc[desc].push(attachments[i]);

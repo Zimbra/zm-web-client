@@ -29,30 +29,21 @@ function() {
 
 ZmFlagPicker.prototype._setupPicker =
 function(picker) {
-	var tree = this._tree = new DwtTree({parent:picker, style:DwtTree.CHECKEDITEM_STYLE});
+	var tree = this._tree = new DwtTree({parent:picker, style:DwtTree.CHECKEDITEM_STYLE, isCheckedByDefault:false});
 	tree.addSelectionListener(new AjxListener(this, ZmFlagPicker.prototype._treeListener));
 
 	var ti = this._flagged = new DwtTreeItem({parent:tree, text:ZmMsg.flagged, imageInfo:"FlagRed"});
-	ti.setChecked(false, true);
-
 	ti = this._unflagged = new DwtTreeItem({parent:tree, text:ZmMsg.unflagged, imageInfo:"FlagDis"});
-	ti.setChecked(false, true);
 
 	tree.addSeparator();
 
 	ti = this._read = new DwtTreeItem({parent:tree, text:ZmMsg.read, imageInfo:"ReadMessage"});
-	ti.setChecked(false, true);
-
 	ti = this._unread = new DwtTreeItem({parent:tree, text:ZmMsg.unread, imageInfo:"UnreadMessage"});
-	ti.setChecked(false, true);
 
 	tree.addSeparator();
 
 	ti = this._replied = new DwtTreeItem({parent:tree, text:ZmMsg.replied, imageInfo:"Reply"});
-	ti.setChecked(false, true);
-
 	ti = this._forwarded = new DwtTreeItem({parent:tree, text:ZmMsg.forwarded, imageInfo:"Forward"});
-	ti.setChecked(false, true);
 };
 
 ZmFlagPicker.prototype._updateQuery =

@@ -18,7 +18,7 @@ ZmFolderPicker = function(parent) {
 	ZmPicker.call(this, parent, ZmPicker.FOLDER);
 
     this._checkedItems = new AjxVector();
-}
+};
 
 ZmFolderPicker._OVERVIEW_ID = "ZmFolderPicker";
 
@@ -30,14 +30,14 @@ ZmPicker.CTOR[ZmPicker.FOLDER] = ZmFolderPicker;
 ZmFolderPicker.prototype.toString = 
 function() {
 	return "ZmFolderPicker";
-}
+};
 
 ZmFolderPicker.prototype._setupPicker =
 function(parent) {
 	var overviewId = ZmFolderPicker._OVERVIEW_ID + "_" + Dwt.getNextId();
 	this._setOverview(overviewId, parent, [ZmOrganizer.FOLDER]);
 	this._twiddle();
-}
+};
 
 ZmFolderPicker.prototype._updateQuery = 
 function() {
@@ -57,7 +57,7 @@ function() {
 	}
 	this.setQuery(query);
 	this.execute();
-}
+};
 
 ZmFolderPicker.prototype._treeListener =
 function(ev) {
@@ -72,7 +72,7 @@ function(ev) {
  		}
 		this._updateQuery();
  	}
-}
+};
 
 // Hide saved searches
 ZmFolderPicker.prototype._twiddle =
