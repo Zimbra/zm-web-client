@@ -244,6 +244,10 @@ function(event) {
 				for (var i = 0; i < addrs.length; i++) {
 					// bug fix #26428 - exclude me from list of addresses
 					var addr = addrs[i];
+                    var email = AjxEmailAddress.parse(addr);
+                    if(email) {
+                        addr = email.getAddress();
+                    }
 					if (appCtxt.isMyAddress(addr)) { continue; }
 
 					var share = this._setUpShare();
