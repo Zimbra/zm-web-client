@@ -1190,7 +1190,7 @@ function(id, setup, value) {
 	// Apparently not all (any?) external account addresses are retrieved from _getAllAddresses(), so we dig them out from DataSource and add them ourselves
 	// this._accounts is not ready at this point
         var accounts = [].concat(appCtxt.getDataSourceCollection().getImapAccounts(), appCtxt.getDataSourceCollection().getPopAccounts());
-	addresses = this._getAddressesFromAccounts(accounts, true, true, addresses);
+	addresses = this._getAddressesFromAccounts(accounts, addresses, true, true);
 	setup.displayOptions = addresses; // Put 'em in the options list
     }
     return ZmPreferencesPage.prototype._setupComboBox.apply(this, arguments);
@@ -1239,7 +1239,7 @@ function(id, setup, value) {
 ZmAccountsPage.prototype._updateComboBox =
 function(id) {
     var dwtElement = this.getFormObject(id);
-    if (dwtElement) {
+	if (dwtElement && AjxUtil.isFunction(dwtElement.removeAll) && AjxUtil.isFunction(dwtElement.add)) {
 		if (id == "REPLY_TO_EMAIL") {
 			var addresses = this._getAllAddresses(); // Get the addresses we can from _getAllAddresses()
 	
