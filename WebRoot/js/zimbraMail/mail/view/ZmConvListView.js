@@ -467,9 +467,9 @@ function(conv, msg) {
 			var msg = a[i];
 			var div = this._createItemHtml(msg);
 			this._addRow(div, index + i + 1);
-			var list = this._msgRowIdList[item.id];
-			if (list) {
-				list.push(div.id);
+			rowIds = this._msgRowIdList[item.id];
+			if (rowIds) {
+				rowIds.push(div.id);
 			}
 			if (i == a.length - 1) {
 				lastRow = div;
@@ -488,6 +488,10 @@ function(conv, msg) {
 
 	this._resetColWidth();
 	this._scrollList(lastRow);
+	var convHeight = rowIds.length * Dwt.getSize(lastRow).y;
+	if (convHeight > Dwt.getSize(lastRow.parentNode).y) {
+		this._scrollList(this._getElFromItem(item));
+	}
 };
 
 ZmConvListView.prototype._collapse =
