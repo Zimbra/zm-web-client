@@ -67,9 +67,9 @@ ZmApptComposeView = function(parent, className, calApp, controller) {
 		this._tabIds.push(ZmApptComposeView.TAB_SCHEDULE);
 		if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
 			this._tabIds.push(ZmApptComposeView.TAB_ATTENDEES);
+			this._tabIds.push(ZmApptComposeView.TAB_LOCATIONS);
+			this._tabIds.push(ZmApptComposeView.TAB_EQUIPMENT);
 		}
-		this._tabIds.push(ZmApptComposeView.TAB_LOCATIONS);
-		this._tabIds.push(ZmApptComposeView.TAB_EQUIPMENT);
 	}
 
 	this._initialize();
@@ -120,7 +120,7 @@ function() {
 ZmApptComposeView.prototype.getController =
 function() {
 	return this._controller;
-}
+};
 
 ZmApptComposeView.prototype.set =
 function(appt, mode, isDirty) {

@@ -417,7 +417,10 @@ function(field, itemIdx) {
 ZmConvListView.prototype._getToolTip =
 function(params) {
 	if (!params.item) { return; }
-	if (params.field == ZmItem.F_PARTICIPANT || params.field == ZmItem.F_FROM) {
+
+	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) &&
+		(params.field == ZmItem.F_PARTICIPANT || params.field == ZmItem.F_FROM))
+	{
 		var addr = params.item.participants && params.item.participants.get(params.match.participant || 0);
 		if (!addr) { return ""; }
 		var contact = appCtxt.getApp(ZmApp.CONTACTS).getContactByEmail(addr.getAddress());

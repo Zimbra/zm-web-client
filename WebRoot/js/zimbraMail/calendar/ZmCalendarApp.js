@@ -589,7 +589,9 @@ function(params, callback) {
 		}
 	}
 
-	this.initResources();
+	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+		this.initResources();
+	}
 
 	cc.show(view, sd);
 	if (callback) {
@@ -669,7 +671,7 @@ function() {
 		this._equipment = new ZmResourceList(ZmCalBaseItem.EQUIPMENT);
 		this._equipment.isCanonical = true;
 	}
-}
+};
 
 ZmCalendarApp.prototype.loadResources =
 function() {

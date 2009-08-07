@@ -906,14 +906,16 @@
 	<table cellpadding=0 cellspacing=0 border=0 width=250>
 		<tr>
 			<td valign=top>
-				<div style='border-bottom: 1px solid black;'>
-					<table cellpadding=0 cellspacing=0 border=0 width=100%>
-						<tr valign='bottom'>
-							<td style='font-weight:bold'><$= ZmMsg.newContact $></td>
-							<td align='right'><$= AjxImg.getImageHtml("NewContact"); $></td>
-						</tr>
-					</table>
-				</div>
+				<$ if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) { $>
+					<div style='border-bottom: 1px solid black;'>
+						<table cellpadding=0 cellspacing=0 border=0 width=100%>
+							<tr valign='bottom'>
+								<td style='font-weight:bold'><$= ZmMsg.newContact $></td>
+								<td align='right'><$= AjxImg.getImageHtml("NewContact"); $></td>
+							</tr>
+						</table>
+					</div>
+				<$ } $>
 				<div class="TooltipNotInAddrBook">
 					<$= AjxStringUtil.htmlEncode(data.addrstr) $>
 				</div>

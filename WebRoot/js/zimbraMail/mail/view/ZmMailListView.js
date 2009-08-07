@@ -317,6 +317,7 @@ ZmMailListView.prototype._getToolTip =
 function(params) {
 	var tooltip, field = params.field, item = params.item;
 	if (!item) { return; }
+
 	if (field == ZmItem.F_STATUS) {
 		if (item.isDraft)			{ tooltip = ZmMsg.draft; }
 		else if (item.isUnread)		{ tooltip = ZmMsg.unread; }
@@ -325,9 +326,13 @@ function(params) {
 		else if (item.isSent)		{ tooltip = ZmMsg.sentAt; }
 		else if (item.isInvite())	{ tooltip = ZmMsg.appointment; }
 		else						{ tooltip = ZmMsg.read; }
-	} else if (field == ZmItem.F_FROM || field == ZmItem.F_PARTICIPANT) {
+	}
+	else if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) &&
+			(field == ZmItem.F_FROM || field == ZmItem.F_PARTICIPANT))
+	{
 		tooltip = {callback:new AjxCallback(this, this._getParticipantToolTip, [item.getAddress(AjxEmailAddress.FROM)]), loading:true};
-	} else if (field == ZmItem.F_SUBJECT) {
+	}
+	else if (field == ZmItem.F_SUBJECT) {
 		if ((item.type == ZmItem.MSG) && item.isInvite() && item.needsRsvp()) {
 			tooltip = item.invite.getToolTip();
 		} else if (appCtxt.get(ZmSetting.SHOW_FRAGMENTS)) {
@@ -336,7 +341,8 @@ function(params) {
 				tooltip = null;
 			}
         }
-	} else if (field == ZmItem.F_FOLDER) {
+	}
+	else if (field == ZmItem.F_FOLDER) {
 		var folder = appCtxt.getById(item.folderId);
 		if (folder && folder.parent) {
 			var name = folder.getName();
@@ -345,7 +351,8 @@ function(params) {
 				tooltip = path;
 			}
 		}
-	} else {
+	}
+	else {
 		tooltip = ZmListView.prototype._getToolTip.apply(this, arguments);
 	}
 	

@@ -618,8 +618,9 @@ function(ev) {
 	}
 
 	// bug fix #3602
-	var address = (ev.field == ZmItem.F_PARTICIPANT) ? ev.detail :
-		((ev.item instanceof ZmMailMsg) ? ev.item.getAddress(AjxEmailAddress.FROM) : null);
+	var address = (appCtxt.get(ZmSetting.CONTACTS_ENABLED) && ev.field == ZmItem.F_PARTICIPANT)
+		? ev.detail
+		: ((ev.item instanceof ZmMailMsg) ? ev.item.getAddress(AjxEmailAddress.FROM) : null);
 
 	var item = (items && items.length == 1) ? items[0] : null;
 	if ((this._getSearchFolderId() == ZmFolder.ID_DRAFTS) || (item && item.isDraft)) {
@@ -627,7 +628,10 @@ function(ev) {
 		this._initializeDraftsActionMenu();
 		this._setTagMenu(this._draftsActionMenu);
 		this._draftsActionMenu.popup(0, ev.docX, ev.docY);
-	} else if (address && items.length == 1 &&	(ev.field == ZmItem.F_PARTICIPANT || ev.field == ZmItem.F_FROM)) {
+	}
+	else if (address && items.length == 1 &&
+			(appCtxt.get(ZmSetting.CONTACTS_ENABLED) && (ev.field == ZmItem.F_PARTICIPANT || ev.field == ZmItem.F_FROM)))
+	{
 		// show participant menu
 		this._initializeParticipantActionMenu();
 		this._setTagMenu(this._participantActionMenu);
