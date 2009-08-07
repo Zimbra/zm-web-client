@@ -86,9 +86,11 @@ ZmNotebook.prototype.getSearchPath = function() {
 ZmNotebook.prototype.notifyCreate =
 function(obj) {
 	var notebook = ZmFolderTree.createFromJs(this, obj, this.tree);
-	var index = ZmOrganizer.getSortIndex(notebook, ZmNotebook.sortCompare);
-	this.children.add(notebook, index);
-	notebook._notify(ZmEvent.E_CREATE);
+	if (notebook) {
+		var index = ZmOrganizer.getSortIndex(notebook, ZmNotebook.sortCompare);
+		this.children.add(notebook, index);
+		notebook._notify(ZmEvent.E_CREATE);
+	}
 };
 
 ZmNotebook.prototype.notifyModify =

@@ -1151,7 +1151,9 @@ function(type, list) {
 	}
 	var a = this.children.getArray();
 	for (var i = 0; i < a.length; i++) {
-		a[i]._getByType(type, list);
+		if (a[i]) {
+			a[i]._getByType(type, list);
+		}
 	}
 };
 
