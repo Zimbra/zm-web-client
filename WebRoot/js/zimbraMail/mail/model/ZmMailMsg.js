@@ -1425,10 +1425,6 @@ function(msgNode) {
             if(descHtml) {
                 this.setHtmlContent(descHtml);
             }
-            if (desc && this._bodyParts.length == 0) {
-                var textPart = { ct:ZmMimeTable.TEXT_PLAIN, s:desc.length, content:desc };
-                this._bodyParts.push(textPart);
-            }
 			if (!appCtxt.get(ZmSetting.CALENDAR_ENABLED) &&
 				this.invite.type == "appt")
 			{
