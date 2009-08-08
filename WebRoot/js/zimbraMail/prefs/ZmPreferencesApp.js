@@ -271,6 +271,7 @@ function() {
 		},
 		SHORTCUTS: {
 			title: ZmMsg.shortcuts,
+			icon: "Shortcut",
 			templateId: "prefs.Pages#Shortcuts",
 			priority: 120,
 			precondition: ZmSetting.USE_KEYBOARD_SHORTCUTS,
