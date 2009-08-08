@@ -3830,7 +3830,7 @@ HTML>BODY .appt-selected .appt_allday_body
 	border-bottom: solid 1px @darken(AppC,40)@;
 }
 
-.ZmEditContactView .rowLabel {
+.ZmEditContactView .rowLabel, .ZmContactSplitView .rowLabel {
 	padding:.25em .5em;
 	text-align: right;
 	font-weight: bold;

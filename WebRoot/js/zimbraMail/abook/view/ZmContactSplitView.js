@@ -98,15 +98,6 @@ function(contact, isGal) {
 
 	var oldContact = this._contact;
 	this._contact = contact;
-	if (this._contactTabView) {
-		this._tabViewHtml = {};
-		this._contactTabView.enable(true);
-		// prevent listview from scrolling back up :/
-		var doHack = Dwt.CARET_HACK_ENABLED;
-		Dwt.CARET_HACK_ENABLED = false;
-		this._contactTabView.switchToTab(1);
-		Dwt.CARET_HACK_ENABLED = doHack;
-	}
 
 	if (this._contact.isLoaded) {
 		this._setContact(contact, isGal, oldContact);
@@ -132,17 +123,6 @@ function(ex) {
 
 ZmContactSplitView.prototype.clear =
 function() {
-	// clear the right pane
-	if (this._contactTabView) {
-		this._tabViewHtml = {};
-		var tabIdx = this._contactTabView.getCurrentTab();
-		var view = this._contactTabView.getTabView(tabIdx);
-		if (view) {
-			view.getHtmlElement().innerHTML = "";
-		}
-		this._contactTabView.enable(false);
-	}
-
 	var groupDiv = document.getElementById(this._contactBodyId);
 	if (groupDiv) {
 		groupDiv.innerHTML = "";
@@ -195,40 +175,13 @@ function(controller, dropTgt) {
 	var tabStr = params ? params["tabs"] : null;
 	this._tabs = tabStr ? tabStr.split(",") : null;
 
-	// create DwtTabGroup for contacts if in template
-	if (this._tabs && this._tabs.length) {
-		this._contactTabHeader = new DwtComposite(this);
-		this._contactTabHeader.reparentHtmlElement(this._htmlElId + "_content");
-		this._contactTabHeader.getHtmlElement().innerHTML = AjxTemplate.expand("abook.Contacts#SplitView_header", {id:this._htmlElId});
+	// create an empty slate
+	this._contactView = new DwtComposite(this);
+	this._contactView.reparentHtmlElement(this._htmlElId + "_content");
 
-		this._contactTabView = new DwtTabView(this._contactTabHeader, null, Dwt.STATIC_STYLE);
-		this._contactTabView.addStateChangeListener(new AjxListener(this, this._tabStateChangeListener));
-
-		for (var i = 0; i < this._tabs.length; i++) {
-			var tab = this._tabs[i] = AjxStringUtil.trim(this._tabs[i]);
-			var tabButtonId = ZmId.getTabId(this._controller._currentView, tab);
-			var idx = this._contactTabView.addTab(ZmMsg[tab], null, tabButtonId);
-			var view = new DwtTabViewPage(this._contactTabView, "ZmContactTabViewPage");
-			view._setAllowSelection();
-			view.setScrollStyle(Dwt.SCROLL);
-
-			// reset event handlers for each view so object manager can process
-			view._setMouseEventHdlrs();
-			this._objectManager.setView(view);
-
-			this._contactTabView.setTabView(idx, view);
-		}
-
-		this._tabViewHtml = {};
-	} else {
-		// otherwise, create an empty slate
-		this._contactView = new DwtComposite(this);
-		this._contactView.reparentHtmlElement(this._htmlElId + "_content");
-
-		// reset event handlers so object manager can process
-		this._contactView._setMouseEventHdlrs();
-		this._objectManager.setView(this._contactView);
-	}
+	// reset event handlers so object manager can process
+	this._contactView._setMouseEventHdlrs();
+	this._objectManager.setView(this._contactView);
 };
 
 ZmContactSplitView.prototype._tabStateChangeListener =
@@ -242,24 +195,14 @@ function(width, height) {
 	var listviewCell = document.getElementById(this._htmlElId + "_listview");
 	var size = Dwt.getSize(listviewCell);
 
-	if (this._contactTabView) {
-		var currTab = this._contactTabView.getTabView(this._contactTabView.getCurrentTab());
-		currTab.setSize(Dwt.DEFAULT, height-40);
-		this._listPart.setSize(size.x, height-20);
-		if (this._contact && this._contact.isGroup()) {
-			var fudge = AjxEnv.isIE ? 27 : 20;
-			this._contactGroupView.setSize(Dwt.DEFAULT, height-fudge);
-		}
-	} else {
-		this._listPart.setSize(size.x, height-38);
+	this._listPart.setSize(size.x, height-38);
 
-		var fudge = AjxEnv.isIE ? 45 : 38;
-		var view = (this._contact && this._contact.isGroup())
-			? this._contactGroupView : this._contactView;
+	var fudge = AjxEnv.isIE ? 45 : 38;
+	var view = (this._contact && this._contact.isGroup())
+		? this._contactGroupView : this._contactView;
 
-		if (view) {
-			view.setSize(Dwt.DEFAULT, height-fudge);
-		}
+	if (view) {
+		view.setSize(Dwt.DEFAULT, height-fudge);
 	}
 };
 
@@ -272,10 +215,6 @@ function(ev) {
 		return;
 	}
 
-	if (this._contactTabView) {
-		var tabIdx = this._contactTabView.getCurrentTab();
-		this._tabViewHtml[tabIdx] = false;
-	}
 	this._setContact(ev.source);
 };
 
@@ -337,6 +276,7 @@ function(contact, isGal, oldContact) {
 	} else {
 		subs.view = this;
 		subs.isGal = isGal;
+		subs.findObjects = AjxCallback.simpleClosure(this._generateObject, this);
 
 		this._resetVisibility(false);
 
