@@ -1712,7 +1712,7 @@ function(action, msg, extraBodyText, incOption, nosig) {
         sig = this.getSignatureContentSpan();
 		sigStyle = sig ? appCtxt.get(ZmSetting.SIGNATURE_STYLE) : null;
 	}
-	var value = (sigStyle == ZmSetting.SIG_OUTLOOK) ? (this._getSignatureSeparator() + sig) : "";
+	var value = (sigStyle == ZmSetting.SIG_OUTLOOK) ? (sig) : "";
 
 	// get reply/forward prefs as necessary
 	if (!incOption) {
