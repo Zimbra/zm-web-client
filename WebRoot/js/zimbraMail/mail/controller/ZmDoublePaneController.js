@@ -692,7 +692,9 @@ function() {
 		for (var i = 0; i < selection.length; i++) {
 			selIds[selection[i].id] = true;
 		}
-		var goingUp = (this.lastListAction == DwtKeyMap.SELECT_PREV || this.lastListAction == ZmKeyMap.PREV_UNREAD);
+		var setting = appCtxt.get(ZmSetting.SELECT_AFTER_DELETE);
+		var goingUp = (setting == ZmSetting.DELETE_SELECT_PREV || (setting == ZmSetting.DELETE_SELECT_ADAPT &&
+						(this.lastListAction == DwtKeyMap.SELECT_PREV || this.lastListAction == ZmKeyMap.PREV_UNREAD)));
 		if (goingUp && (numSelected == 1)) {
 			var idx = listView._getRowIndex(selection[selection.length - 1]);
 			var childNodes = listView._parentEl.childNodes;

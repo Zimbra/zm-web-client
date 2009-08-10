@@ -174,6 +174,7 @@ function(settings) {
 	settings.registerSetting("REPLY_TO_ENABLED",				{name:"zimbraPrefReplyToEnabled", type:ZmSetting.T_PREF /*, dataType:ZmSetting.D_LIST*/ }); // TODO:Is this a list or single?
 	settings.registerSetting("SAVE_DRAFT_ENABLED",				{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	settings.registerSetting("SAVE_TO_SENT",					{name:"zimbraPrefSaveToSent", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
+	settings.registerSetting("SELECT_AFTER_DELETE",				{name:"zimbraPrefMailSelectAfterDelete", type:ZmSetting.T_PREF, defaultValue:ZmSetting.DELETE_SELECT_NEXT});
 	settings.registerSetting("SEND_ON_BEHALF_OF",				{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("SENT_FOLDER_NAME",				{name:"zimbraPrefSentMailFolder", type:ZmSetting.T_PREF, defaultValue:"sent"});
 	settings.registerSetting("SHOW_BCC",						{type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
@@ -233,6 +234,7 @@ function() {
 				ZmSetting.SHOW_FRAGMENTS,
 				ZmSetting.VACATION_MSG_ENABLED,
 				ZmSetting.VACATION_MSG,
+				ZmSetting.SELECT_AFTER_DELETE,
 				ZmSetting.START_DATE_ENABLED,
 				ZmSetting.END_DATE_ENABLED,
 				ZmSetting.VACATION_FROM,
@@ -496,6 +498,14 @@ function() {
 		errorMessage:       ZmMsg.invalidEmail
 	});
 
+	ZmPref.registerPref("SELECT_AFTER_DELETE", {
+		displayName:		ZmMsg.clientType,
+		displayContainer:	ZmPref.TYPE_RADIO_GROUP,
+		orientation:		ZmPref.ORIENT_VERTICAL,
+		displayOptions: 	[ZmMsg.selectNext, ZmMsg.selectPrevious, ZmMsg.selectAdapt],
+		options: 			[ZmSetting.DELETE_SELECT_NEXT, ZmSetting.DELETE_SELECT_PREV, ZmSetting.DELETE_SELECT_ADAPT]
+	});
+
 	ZmPref.registerPref("SIGNATURE", {
 		displayName:		ZmMsg.signature,
 		displayContainer:	ZmPref.TYPE_TEXTAREA,
@@ -534,7 +544,7 @@ function() {
 		valueFunction:		ZmPref.dateLocal2GMT
 	});
 
-        ZmPref.registerPref("VACATION_UNTIL", {
+    ZmPref.registerPref("VACATION_UNTIL", {
 		displayName:		ZmMsg.endDate,
 		displayContainer:	ZmPref.TYPE_INPUT,
 		precondition:		ZmSetting.VACATION_MSG_FEATURE_ENABLED,
