@@ -58,6 +58,7 @@
 </c:if>
 <c:choose>
 <c:when test="${skin eq 'yahoo'}">
+<fmt:setBundle basename="/messages/ZhMsg" scope="request"/>    
 <table width="100%" cellpadding="6" cellspacing='0' border="0"><tr><td>
 <table width="100%" cellpadding="0" cellspacing="0" border="0">
     <tr><td colspan="${empty editmode ? 4 : 3}" style="padding-bottom:6px;">
@@ -84,9 +85,9 @@
             <app:appTop mailbox="${mailbox}" keys="${keys}" query="${empty context.query ? param.sq : context.query}" calendars="${calendars}" voice="${voice}" tasks="${tasks}" briefcases="${briefcases}"/>
         </td>
         <td align="right" style="white-space:nowrap;padding-right:0.5em;">
-	        <form action="<fmt:message key='yahooWebSearchURL'/>" method="GET" target="_new">
-		        <input name="<fmt:message key='yahooWebSearchParamName'/>">
-		        <input type="submit" value="<fmt:message key='yahooWebSearchButton'/>"
+	        <form action="<fmt:message key="yahooWebSearchURL"/>" method="GET" target="_new">
+		        <input name="<fmt:message key="yahooWebSearchParamName"/>" maxlength="2048" value="">
+                <input type="submit" value="<fmt:message key="yahooWebSearchButton"/>"
 			           class='skin_yahoo_websearch_button' style='font-size:11px'>
 	        </form>
         </td>
