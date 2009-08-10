@@ -84,8 +84,9 @@ function(folder, account) {
 
 	var ovContainer = appCtxt.multiAccounts && this._opc.getOverviewContainer(this.toString());
 	if (ovContainer) {
-		if (folder.nId == ZmOrganizer.ID_ROOT) {
-			ovContainer.setSelection(ovContainer.getHeaderItem(account));
+		if (!folder || (folder && folder.nId == ZmOrganizer.ID_ROOT)) {
+			var acct = account || appCtxt.getActiveAccount();
+			ovContainer.setSelection(ovContainer.getHeaderItem(acct));
 		} else {
 			var overviewId = appCtxt.getOverviewId(this.toString(), account);
 			var overview = ovContainer.getOverview(overviewId);
