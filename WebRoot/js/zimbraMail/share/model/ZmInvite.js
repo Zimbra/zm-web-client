@@ -394,7 +394,7 @@ function(compNum) {
 };
 
 ZmInvite.prototype.getDurationText =
-function(compNum, emptyAllDay,startOnly) {
+function(compNum, emptyAllDay, startOnly, isText) {
 	var component = this.components[compNum];
 	if (this.isAllDayEvent(compNum)) {
 		if (emptyAllDay) {
@@ -426,7 +426,7 @@ function(compNum, emptyAllDay,startOnly) {
 
 		var sd = this.getServerStartDate(compNum);
 
-		var a = [ dateFormatter.format(sd), "<br>" ];
+		var a = [ dateFormatter.format(sd), isText ? " " : "<br>" ];
 		if (startOnly) {
 			a.push(timeFormatter.format(sd));
 		} 
@@ -540,6 +540,75 @@ function() {
 	this._toolTip = html.join("");
 
 	return this._toolTip;
+};
+
+ZmInvite.prototype.getSummary =
+function(isHtml) {
+	var compNum = 0;
+
+    var orgName = this.getOrganizerName(compNum);
+	var whenSummary = this.getDurationText(compNum, false, false, true);
+    var locationSummary = this.getLocation(compNum);
+
+	if (this.isRecurring(compNum)) {
+		if (!this._recurBlurb) {
+			AjxDispatcher.require("CalendarCore");
+			var recur = new ZmRecurrence();
+			recur.parse(this.getRecurrenceRules(compNum));
+			this._recurBlurb = recur.getBlurb();
+		}
+	}
+    var recurSummary =  this._recurBlurb;
+
+	var buf = [];
+	var i = 0;
+
+	if (!this._summaryHtmlLineFormatter) {
+		this._summaryHtmlLineFormatter = new AjxMessageFormat("<tr><th align='left'>{0}</th><td>{1} {2}</td></tr>");
+		this._summaryTextLineFormatter = new AjxMessageFormat("{0} {1} {2}");
+	}
+	var formatter = isHtml ? this._summaryHtmlLineFormatter : this._summaryTextLineFormatter;
+
+    var params = [];
+    
+	if (isHtml) {
+		buf[i++] = "<p>\n<table border='0'>\n";
+	}
+
+
+	if (orgName) {
+		params = [ZmMsg.organizerLabel, orgName, ""];
+		buf[i++] = formatter.format(params);
+		buf[i++] = "\n";
+	}
+
+	if (whenSummary) {
+		params = [ZmMsg.whenLabel, whenSummary, ""];
+		buf[i++] = formatter.format(params);
+		buf[i++] = "\n";
+	}
+
+    if (locationSummary) {
+        params = [ZmMsg.locationLabel, locationSummary, ""];
+        buf[i++] = formatter.format(params);
+        buf[i++] = "\n";
+    }
+
+    if (recurSummary) {
+        params = [ZmMsg.repeatLabel, recurSummary, ""];
+        buf[i++] = formatter.format(params);
+        buf[i++] = "\n";
+    }
+
+	if (isHtml) {
+		buf[i++] = "</table>\n";
+	}
+	buf[i++] = isHtml ? "<div>" : "\n\n";
+	buf[i++] = ZmItem.NOTES_SEPARATOR;
+	// bug fix #7835 - add <br> after DIV otherwise Outlook lops off 1st char
+	buf[i++] = isHtml ? "</div><br>" : "\n\n";
+
+	return buf.join("");
 };
 
 /** Adds a row to the tool tip. */

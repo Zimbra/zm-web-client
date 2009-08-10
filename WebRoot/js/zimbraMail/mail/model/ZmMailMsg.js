@@ -31,6 +31,7 @@ ZmMailMsg = function(id, list, noCache) {
 	this._attHitList = [];
 	this.attachments = [];
 	this._bodyParts = [];
+    this._inviteDescBody = {};
 	this._addrs = {};
 
 	for (var i = 0; i < ZmMailMsg.ADDRS.length; i++) {
@@ -630,6 +631,10 @@ function(contentType, useOriginal) {
 				return this._bodyParts[i];
 			}
 		}
+
+        if(this.isInvite()) {
+            return this.getInviteDescriptionContent(contentType);
+        }
 	}
 };
 
@@ -676,6 +681,48 @@ ZmMailMsg.prototype.setHtmlContent =
 function(content) {
 	this._onChange("htmlContent", content);
 	this._htmlBody = content;
+};
+
+ZmMailMsg.prototype.setInviteDescriptionContent =
+function(contentType, content) {
+	this._inviteDescBody[contentType] = content;
+};
+
+ZmMailMsg.prototype.getInviteDescriptionContent =
+function(contentType) {
+
+    if(!contentType) {
+        contentType = ZmMimeTable.TEXT_HTML;
+    }
+
+	var desc = this._inviteDescBody[contentType];
+
+    if(!desc) {
+
+        var htmlContent =  this._inviteDescBody[ZmMimeTable.TEXT_HTML];
+        var textContent =  this._inviteDescBody[ZmMimeTable.TEXT_PLAIN];
+
+        if(!htmlContent && textContent) {
+            htmlContent = AjxStringUtil.convertToHtml(textContent);
+        }
+
+        if(!textContent && htmlContent) {
+            textContent = AjxStringUtil.convertHtml2Text(htmlContent);
+        }
+
+        desc = (contentType == ZmMimeTable.TEXT_HTML) ? htmlContent : textContent;
+    }
+
+    var idx = desc.indexOf(ZmItem.NOTES_SEPARATOR);
+
+    if(idx == -1 && this.isInvite()) {
+        var inviteSummary = this.invite.getSummary((contentType == ZmMimeTable.TEXT_HTML));
+        desc = inviteSummary + desc;
+    }
+    
+    if(desc != null) {
+        return { ct:contentType, s: desc.length, content: desc };
+    }
 };
 
 ZmMailMsg.prototype.sendInviteReply =
@@ -1424,7 +1471,13 @@ function(msgNode) {
 			var descHtml = this.invite.getComponentDescriptionHtml();
             if(descHtml) {
                 this.setHtmlContent(descHtml);
+                this.setInviteDescriptionContent(ZmMimeTable.TEXT_HTML, desc);
             }
+
+            if(desc) {
+                this.setInviteDescriptionContent(ZmMimeTable.TEXT_PLAIN, desc);                
+            }
+
 			if (!appCtxt.get(ZmSetting.CALENDAR_ENABLED) &&
 				this.invite.type == "appt")
 			{
