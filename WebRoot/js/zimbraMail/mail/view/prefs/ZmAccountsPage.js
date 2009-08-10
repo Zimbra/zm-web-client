@@ -1788,8 +1788,14 @@ function(continueCallback) {
 						continueCallback.run(false);
 						return;
 					}
-					account.folderId = folder.id;
-					continue;
+					// if there already is a folder by this name in Trash, rename the trashed folder
+					else if (folder.isInTrash()) {
+						folder.rename(folder.name+"_");
+					}
+					else {
+						account.folderId = folder.id;
+						continue;
+					}
 				}
 
 				// this means user modified name of the folder, so let's rename it
