@@ -1845,7 +1845,7 @@ function(start, end, noheader, email) {
 		}		
 		
 		if ((calIds.length == 0) || !email) {
-			return "<b>" + ZmMsg.meetingStatusUnknown + "</b>";
+			return "<b>" + ZmMsg.statusFree + "</b>";
 		}
 
 		var startTime = start.getTime();
