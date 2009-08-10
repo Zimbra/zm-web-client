@@ -259,8 +259,8 @@ ZmEditContactView.prototype.set = function(contact, isDirty) {
 	for (var id in ZmEditContactView.ATTRS) {
 		var value = contact.getAttr(ZmEditContactView.ATTRS[id]);
 		if (id == "FOLDER") {
-			var folderId = (contact && contact.getFolderId()) || ZmOrganizer.ID_ADDRBOOK;
-			this._setFolder(folderId);
+			var folderOrId = (contact && contact.getAddressBook()) || ZmOrganizer.ID_ADDRBOOK;
+			this._setFolder(folderOrId);
 			continue;
 		}
 		if (id == "FILE_AS") {
@@ -445,7 +445,7 @@ ZmEditContactView.prototype._getDefaultFocusItem = function() {
 ZmEditContactView.prototype._setFolder = function(organizerOrId) {
 	var organizer = organizerOrId instanceof ZmOrganizer ? organizerOrId : appCtxt.getById(organizerOrId);
 	this.setLabel("FOLDER", organizer.getName());
-	this.setValue("FOLDER", organizer.id);
+	this.setValue("FOLDER", organizer.nId);
 };
 
 ZmEditContactView.prototype._getDialogXY =
