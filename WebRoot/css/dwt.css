@@ -181,6 +181,7 @@
     @TreeItemSelectedBg@
 	@Text@
 	@TreeItemSpacing@
+	@ActiveCursor@
 }
 
 /* text style for name of a selected and focused tree item */
@@ -189,6 +190,7 @@
 	@Text@
 	@TreeItemSpacing@
     @TreeItemHeight@
+	@ActiveCursor@
 }
 
 /* text style for a right-clicked tree item */
@@ -196,6 +198,7 @@
 	@RightClickBg@
 	@Text@
 	@TreeItemSpacing@
+	@ActiveCursor@
 }
 
 /* text style for a tree item when dragged over */
