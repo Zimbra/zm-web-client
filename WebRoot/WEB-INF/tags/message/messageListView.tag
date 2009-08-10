@@ -23,11 +23,11 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 
 <!-- Dependencies -->
-<script type="text/javascript" src="../yui/2.5.1/yahoo-dom-event/yahoo-dom-event.js"></script>
-<script type="text/javascript" src="../yui/2.5.1/animation/animation-debug.js"></script>
+<script type="text/javascript" src="../yui/2.7.0/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../yui/2.7.0/animation/animation-debug.js"></script>
 
 <!-- Drag and Drop source file -->
-<script type="text/javascript" src="../yui/2.5.1/dragdrop/dragdrop-debug.js"></script>
+<script type="text/javascript" src="../yui/2.7.0/dragdrop/dragdrop-debug.js"></script>
 
 <app:handleError>
     <zm:getMailbox var="mailbox"/>

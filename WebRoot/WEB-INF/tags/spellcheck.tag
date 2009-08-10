@@ -118,11 +118,14 @@ function enableSpellCheck(myEditor) {
     /* }}} */
 
     myEditor.checking = false;
+
+    /* Commented the hardcoded config buttons[10].buttons[2] and added the spellcheck button on toolbarLoaded function below.
     myEditor._defaultToolbar.buttons[10].buttons[2] = {
       type: 'push',
       label: 'Check Spelling',
       value: 'spellcheck'
-    };
+    };*/
+    
     myEditor._checkSpelling = function(o) {
         //Change this code to suit your backend checker
         var data = eval('(' + o.responseText + ')');
@@ -193,6 +196,15 @@ function enableSpellCheck(myEditor) {
 		}
 	}
 	myEditor.on('toolbarLoaded', function() {
+
+        var spellCheckButton = {
+            type: 'push',
+            label: 'Check Spelling',
+            value: 'spellcheck'
+	    };
+
+	    this.toolbar.addButtonToGroup(spellCheckButton,'insertitem');
+
         this.toolbar.on('spellcheckClick', function() {
 			if (!this.checking) {
 				this.startSpellCheck();

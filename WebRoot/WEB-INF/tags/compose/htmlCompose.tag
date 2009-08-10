@@ -79,7 +79,7 @@ var myEditor;
 
     /* insert span when no selection*/
     myEditor.on('toolbarLoaded', function() {
-        this.toolbar.on('fontnameClick', function(o) {
+       this.toolbar.on('fontnameClick', function(o) {
             if (!this._hasSelection()) {
                 var button = o.button;
                 this._createCurrentElement('span', {
@@ -137,7 +137,7 @@ var myEditor;
         //to set fontname from preferrence
         var fnObj = this.toolbar.getButtonByValue('fontname');
         fnObj.checkValue('<c:out value="${mailbox.prefs.htmlEditorDefaultFontFamily}"/>');
-        
+
     });
     enableSpellCheck(myEditor);
     myEditor.render();

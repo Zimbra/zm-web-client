@@ -22,9 +22,10 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 
 <c:set var="yahooDomEvent" value="true" scope="request"/>
-<script type="text/javascript" src="<c:url value='/yui/2.5.1/yahoo-dom-event/yahoo-dom-event.js'/>"></script>
-<script type="text/javascript" src="<c:url value='/yui/2.5.1/connection/connection-min.js'/>"></script>
-<script type="text/javascript" src="<c:url value='/yui/2.5.1/autocomplete/autocomplete-min.js'/>"></script>
+<script type="text/javascript" src="<c:url value='/yui/2.7.0/yahoo-dom-event/yahoo-dom-event.js'/>"></script>
+<script type="text/javascript" src="<c:url value='/yui/2.7.0/datasource/datasource-min.js'/>"></script>
+<script type="text/javascript" src="<c:url value='/yui/2.7.0/connection/connection-min.js'/>"></script>
+<script type="text/javascript" src="<c:url value='/yui/2.7.0/autocomplete/autocomplete-min.js'/>"></script>
 
 <script type="text/javascript">
     <!--
@@ -44,7 +45,7 @@
                         zhFmt(str.substring(index), query, true)].join("");
             }
         }
-        var myacformat = function(aResultItem, query) {
+        var myacformat = function(aResultItem, query, sResultMatch) {
             var i = 0;
             var e = aResultItem[i++];
             var r = aResultItem[i++];
@@ -72,6 +73,7 @@
             ac.delimChar = [",",";"];
             ac.queryDelay = 0.25;
             //ac.useShadow = true;
+            ac.resultTypeList = false; 
             ac.formatResult = myacformat;
             ac.queryMatchContains = true;
             ac.maxResultsDisplayed = 20;
