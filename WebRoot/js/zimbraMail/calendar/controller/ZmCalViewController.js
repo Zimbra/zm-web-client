@@ -1845,7 +1845,7 @@ function(start, end, noheader, email) {
 		}		
 		
 		if ((calIds.length == 0) || !email) {
-			return "<b>" + ZmMsg.unknown + "</b>";
+			return "<b>" + ZmMsg.meetingStatusUnknown + "</b>";
 		}
 
 		var startTime = start.getTime();
@@ -1865,7 +1865,7 @@ function(start, end, noheader, email) {
 		return ZmApptViewHelper.getDayToolTipText(start, result, this, noheader, ZmMsg.unknown);
 	} catch (ex) {
 		DBG.println(ex);
-		return "<b>" + ZmMsg.unknown + "</b>";
+		return "<b>" + ZmMsg.meetingStatusUnknown + "</b>";
 	}
 };
 
