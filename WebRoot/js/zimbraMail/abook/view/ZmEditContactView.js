@@ -445,7 +445,7 @@ ZmEditContactView.prototype._getDefaultFocusItem = function() {
 ZmEditContactView.prototype._setFolder = function(organizerOrId) {
 	var organizer = organizerOrId instanceof ZmOrganizer ? organizerOrId : appCtxt.getById(organizerOrId);
 	this.setLabel("FOLDER", organizer.getName());
-	this.setValue("FOLDER", organizer.nId);
+	this.setValue("FOLDER", organizer.id);
 };
 
 ZmEditContactView.prototype._getDialogXY =
