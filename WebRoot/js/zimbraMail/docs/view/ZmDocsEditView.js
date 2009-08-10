@@ -224,10 +224,14 @@ ZmDocsEditView.prototype._tbActionListener = function(ev) {
    var action = ev.item.getData(ZmDocsEditView.ZD_VALUE);
 
    if(action == "NewDocument") {
-      this._buttons.fileName.setValue("");
-      ZmDocsEditApp.setFile();
-      this._pushIframeContent(this._iframe);
-      this._editor._enableDesignMode(this._editor._getIframeDoc());
+
+      if(confirm(ZmMsg.exitDocUnSavedChanges)) {
+          this._buttons.fileName.setValue("");
+          ZmDocsEditApp.setFile();
+          this._pushIframeContent(this._iframe);
+          this._editor._enableDesignMode(this._editor._getIframeDoc());
+      }
+
    } else if(action = "OpenDocument") {
        /*if(!this._openDocDlg) {
             this._openDocDlg = new ZmOpenDocDialog(appCtxt.getShell());
