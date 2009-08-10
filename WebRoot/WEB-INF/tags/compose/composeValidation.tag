@@ -82,11 +82,21 @@
             }
         }
     <c:if test="${(isHtml)}" >
-        setTimeout(function() { myEditor.saveHTML() }, 4000);  // Saves to content text area
+        setTimeout(function() {
+            try{
+                myEditor.saveHTML();
+            }catch(ex){// we may come here if editor is not yet loaded
+                setTimeout(function() {
+                    try{
+                        myEditor.saveHTML();
+                    }catch(ex1){}
+                },4000);//wait for 4 more seconds
+            }
+        }, 4000);  // Saves to content text area
         _fields["body"] = trim(document.getElementById("body").value);
     </c:if>
     }
-    grabFieldValues();
+    grabFieldValues(); <%-- !TODO Why do we need to call this immeditely? --%>
 
     var checkForChanges;
     checkForChanges = function(){
