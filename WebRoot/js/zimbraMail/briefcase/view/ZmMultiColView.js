@@ -266,7 +266,7 @@ function(item) {
         }else{
             actionLink = [ '<a href="', originalRestURL, "?disp=a", '" target="_blank">', ZmMsg.saveFile, '</a>' ].join("");
         }
-        prop.push({name:ZmMsg.actionLabel, value: actionLink});
+        prop.push({name:ZmMsg.action, value: actionLink});
     }
 
     prop = prop.concat([
