@@ -1098,10 +1098,11 @@ function(id) {
 };
 
 /**
-* Returns the first organizer found with the given name, starting from the root.
-*
-* @param name		the name to search for
-*/
+ * Returns the first organizer found with the given name, starting from the root.
+ *
+ * @param name		[String]		the name to search for
+ * @param skipImap	[Boolean]*		If true, skips imap datasources during name lookup
+ */
 ZmOrganizer.prototype.getByName =
 function(name, skipImap) {
 	return this._getByName(name.toLowerCase(), skipImap);
@@ -1375,7 +1376,7 @@ function(name, skipImap) {
 	var sz = this.children.size();
 	for (var i = 0; i < sz; i++) {
 		if (organizer = a[i]._getByName(name, skipImap)) {
-			if (skipImap && organizer.isDataSource(ZmAccount.TYPE_IMAP, true)) {
+			if (skipImap && organizer.isDataSource(ZmAccount.IMAP, true)) {
 				continue;
 			}
 			return organizer;
