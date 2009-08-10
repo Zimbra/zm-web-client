@@ -1128,8 +1128,8 @@ function(id) {
 * @param name		the name to search for
 */
 ZmOrganizer.prototype.getByName =
-function(name) {
-	return this._getByName(name.toLowerCase());
+function(name, skipImap) {
+	return this._getByName(name.toLowerCase(), skipImap);
 };
 
 /**
@@ -1426,7 +1426,7 @@ function(params, result) {
 
 // Test the name of this organizer and then descendants against the given name, case insensitively
 ZmOrganizer.prototype._getByName =
-function(name) {
+function(name, skipImap) {
 	if (this.name && name == this.name.toLowerCase()) {
 		return this;
 	}
@@ -1435,7 +1435,10 @@ function(name) {
 	var a = this.children.getArray();
 	var sz = this.children.size();
 	for (var i = 0; i < sz; i++) {
-		if (organizer = a[i]._getByName(name)) {
+		if (organizer = a[i]._getByName(name, skipImap)) {
+			if (skipImap && organizer.isDataSource(ZmAccount.TYPE_IMAP, true)) {
+				continue;
+			}
 			return organizer;
 		}
 	}

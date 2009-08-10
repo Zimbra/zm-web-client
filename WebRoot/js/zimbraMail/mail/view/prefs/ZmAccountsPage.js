@@ -1776,7 +1776,7 @@ function(continueCallback) {
 				if (!batchCmd) { batchCmd = new ZmBatchCommand(false); }
 
 				// avoid folder create if it already exists
-				var folder = root.getByName(name);
+				var folder = root.getByName(name, true);
 				if (folder) {
 					var folderId = folder.id;
 					if (folderId != ZmOrganizer.ID_INBOX && Number(folderId) < 256) {
