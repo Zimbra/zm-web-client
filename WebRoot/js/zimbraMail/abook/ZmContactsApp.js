@@ -885,6 +885,8 @@ function() {
 
 ZmContactsApp.prototype.getContactController =
 function() {
+	AjxDispatcher.require(["ContactsCore", "Contacts"]);
+
 	if (this._contactController == null) {
 		this._contactController = new ZmContactController(this._container, this);
 	}

@@ -269,7 +269,7 @@ ZmEditContactView.prototype.set = function(contact, isDirty) {
 	var folderOrId = contact && contact.getAddressBook();
 	if (!folderOrId) {
 		var overview = appCtxt.getApp(ZmApp.CONTACTS).getOverview();
-		folderOrId = overview.getSelected();
+		folderOrId = overview && overview.getSelected();
 	}
 	this._setFolder(folderOrId || ZmOrganizer.ID_ADDRBOOK);
 	this.setValue("IMAGE", (contact && contact.getImageUrl()) || "");
