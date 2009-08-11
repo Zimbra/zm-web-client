@@ -56,6 +56,8 @@ ZmSpreadSheetModel = function(rows, cols) {
 // Note that debug and profile code might require Firebug (FF extension)
 ZmSpreadSheetModel.DEBUG = false;
 
+ZmSpreadSheetModel.DATE_FORMATS = ["MM/dd/yy", "MM/dd/yyyy", "MM-dd-yy","MM-dd-yyyy", "MMM dd", "MMMM dd", "M/d", "MMM yyyy", "MMMM yyyy", "MMMM dd,yyyy", "dd-MMM-yyyy", "dd-MM"];
+
 ZmSpreadSheetModel.getDefaultColProp = function() {
 	var prop = {
 		width: 100
@@ -1237,7 +1239,18 @@ ZmSpreadSheetCellModel.prototype.getDisplayValue = function() {
 
         case "date":
         this._formatter = new AjxDateFormat("MM/dd/yy");
-        val = this._formatter.format(new Date(val));        
+        //try to pick first matching pattern        
+        var date = null;
+        for(var i in ZmSpreadSheetModel.DATE_FORMATS) {
+            var pattern = ZmSpreadSheetModel.DATE_FORMATS[i];
+            var nDate = (new AjxDateFormat(pattern)).parse(val);
+            if(nDate) {
+                date = nDate;
+                break;
+            }
+
+        }
+        val = date ? this._formatter.format(date) : val;
         break;
 	}
 	return val;
