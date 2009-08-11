@@ -904,3 +904,19 @@ function(ev) {
         }
     }
 };
+
+ZmCalendarApp.prototype.showDayView =
+function(date) {
+    var calController = AjxDispatcher.run("GetCalController");
+    var miniCalendar = calController.getMiniCalendar();
+    calController.setDate(date, 0, miniCalendar.getForceRollOver());
+    if (!calController._viewVisible) {
+        calController.show(ZmId.VIEW_CAL_DAY);
+    }
+};
+
+ZmCalendarApp.prototype.getDateToolTip =
+function(date) {
+    var cc = AjxDispatcher.run("GetCalController");
+    return cc.getDayToolTipText(date);
+};
