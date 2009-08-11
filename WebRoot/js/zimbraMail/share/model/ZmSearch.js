@@ -653,17 +653,18 @@ function() {
 	this.isAnywhere = ZmSearch.IS_ANYWHERE_QUERY_RE.test(this.query);
 
 	function skipSpace(str, pos) {
-		while (pos < str.length && str[pos] == " ") {
+		while (pos < str.length && str.charAt(pos) == " ") {
 			pos++;
 		}
 		return pos;
 	}
 
 	function getQuotedStr(str, pos) {
-		var q = str[pos++];
+		var q = str.charAt(pos);
+		pos++;
 		var done = false, ch, quoted = "";
 		while (pos < str.length && !done) {
-			ch = str[pos];
+			ch = str.charAt(pos);
 			if (ch == q) {
 				done = true;
 			} else {
