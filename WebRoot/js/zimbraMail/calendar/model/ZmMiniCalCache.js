@@ -60,15 +60,9 @@ function(params) {
 
 	this._setSoapParams(request, params);
 
-	if (params.callback) {
-		var respCallback = new AjxCallback(this, this._getMiniCalResponse, [params]);
-		var errorCallback = new AjxCallback(this, this._handleMiniCalResponseError, [params]);
-		appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback, errorCallback: errorCallback, noBusyOverlay:params.noBusyOverlay});
-	} else {
-		var response = appCtxt.getAppController().sendRequest({jsonObj:jsonObj});
-		var result = new ZmCsfeResult(response, false);
-		return this._getMiniCalResponse(params, result);
-	}
+    var respCallback = new AjxCallback(this, this._getMiniCalResponse, [params]);
+    var errorCallback = new AjxCallback(this, this._handleMiniCalResponseError, [params]);
+    appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback, errorCallback: errorCallback, noBusyOverlay:params.noBusyOverlay});
 };
 
 ZmMiniCalCache.prototype.getCacheData =
