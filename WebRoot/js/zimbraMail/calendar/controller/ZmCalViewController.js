@@ -319,7 +319,7 @@ function() {
 	this._checkedLocalCalendarFolderIds = [];
 	for (var i = 0; i < cc.length; i++) {
 		var cal = cc[i];
-		if (cal.isInvalidFolder) { continue; }
+		if (cal.noSuchFolder) { continue; }
 
 		this._checkedCalendarFolderIds.push(cal.id);
 		if (cal.isRemote && !cal.isRemote()) {

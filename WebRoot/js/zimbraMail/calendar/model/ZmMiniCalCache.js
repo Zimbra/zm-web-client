@@ -90,7 +90,7 @@ function(params, result) {
 		var id = (data && data.itemId && (data.itemId.length>0)) ? data.itemId[0] : null;
 		if (id && appCtxt.getById(id) && this._faultHandler) {
 			var folder = appCtxt.getById(id);
-			folder.isInvalidFolder = true;
+			folder.noSuchFolder = true;
 			this._faultHandler.run(folder);
 			return true;
 		}

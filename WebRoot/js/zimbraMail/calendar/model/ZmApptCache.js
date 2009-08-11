@@ -411,7 +411,7 @@ function(searchParams, miniCalParams, reminderSearchParams, response) {
 	this._processErrorCode(resp);
 };
 
-ZmApptCache.prototype._processErrorCode = 
+ZmApptCache.prototype._processErrorCode =
 function(resp) {
 	if (resp && resp.Fault && (resp.Fault.length > 0)) {
 		var errors = [];
@@ -437,7 +437,7 @@ function(resp) {
 
 		if (id && appCtxt.getById(id)) {
 			var folder = appCtxt.getById(id);
-			folder.isInvalidFolder = true;
+            folder.noSuchFolder = true;
 			this.handleDeleteMountpoint(folder);
 			return true;
 		}
@@ -449,39 +449,25 @@ function(resp) {
 
 ZmApptCache.prototype.handleDeleteMountpoint =
 function(organizer) {
-	var ds = appCtxt.getYesNoMsgDialog();
-	ds.reset();
-	ds.registerCallback(DwtDialog.YES_BUTTON, this._deleteMountpointYesCallback, this, [organizer, ds]);
-	ds.registerCallback(DwtDialog.NO_BUTTON, this._deleteMountpointNoCallback, this, [organizer, ds]);
-	var msg = AjxMessageFormat.format(ZmMsg.confirmDeleteMissingFolder, organizer.getName(false, 0, true));
-	ds.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
-	ds.popup();
-};
-
-// Handles the "Yes" button in the delete organizer dialog.
-ZmApptCache.prototype._deleteMountpointYesCallback =
-function(organizer, dialog) {
-	if (organizer && !organizer.isSystem()) {
-		var callback = new AjxCallback(this, this.runErrorRecovery);
-		organizer._organizerAction({action: "delete", callback: callback});
-	} else {
-		this.runErrorRecovery();
-	}
-	appCtxt.getAppController()._clearDialog(dialog);
-};
-
-// Handles the "No" button in the delete organizer dialog.
-ZmApptCache.prototype._deleteMountpointNoCallback =
-function(organizer, dialog) {
-	appCtxt.getAppController()._clearDialog(dialog);
-	//calendar is already marked for delete and will not be included next time
-	this.runErrorRecovery();
+    // Change its appearance in the tree.
+    var overviewController = appCtxt.getOverviewController();
+    var treeController = overviewController.getTreeController(ZmOrganizer.CALENDAR);
+    var overviewId = appCtxt.getCurrentApp().getOverviewId();
+    var treeView = treeController.getTreeView(overviewId);
+    var node = treeView ? treeView.getTreeItemById(organizer.id) : null;
+    if(organizer && node) {
+        node.setText(organizer.getName(true));
+    }
+    this.runErrorRecovery();
 };
 
 ZmApptCache.prototype.runErrorRecovery =
 function() {
 	if (this._calViewController) {
 		this._calViewController._updateCheckedCalendars();
+        if(this._calViewController.refreshHandler){
+            this._calViewController.refreshHandler();
+        }
 		if (this._calViewController.onErrorRecovery) {
 			this._calViewController.onErrorRecovery.run();
 		}
