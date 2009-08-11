@@ -145,7 +145,7 @@ function(what) {
 // Callbacks
 
 ZmAddrBook.prototype.notifyCreate =
-function(obj) {
+function(obj, isSearch, skipNotify) {
 	// ignore creates of system folders
 	var nId = ZmOrganizer.normalizeId(obj.id);
 	if (nId < ZmOrganizer.FIRST_USER_ID[ZmOrganizer.ADDRBOOK]) { return; }
@@ -153,5 +153,7 @@ function(obj) {
 	var ab = ZmFolderTree.createFromJs(this, obj, this.tree);
 	var index = ZmOrganizer.getSortIndex(ab, ZmAddrBook.sortCompare);
 	this.children.add(ab, index);
-	ab._notify(ZmEvent.E_CREATE);
+	if (!skipNotify) {
+		ab._notify(ZmEvent.E_CREATE);
+	}
 };

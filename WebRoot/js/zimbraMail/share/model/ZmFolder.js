@@ -112,11 +112,11 @@ ZmFolder.QUERY_NAME[ZmFolder.ID_OUTBOX]			= "outbox";
 ZmFolder.QUERY_NAME[ZmFolder.ID_DRAFTS]			= "drafts";
 ZmFolder.QUERY_NAME[ZmFolder.ID_CONTACTS]		= "contacts";
 ZmFolder.QUERY_NAME[ZmFolder.ID_TASKS]			= "tasks";
-ZmFolder.QUERY_NAME[ZmFolder.ID_AUTO_ADDED]		= '"Emailed Contacts"';
+ZmFolder.QUERY_NAME[ZmFolder.ID_AUTO_ADDED]		= "Emailed Contacts";
 ZmFolder.QUERY_NAME[ZmOrganizer.ID_NOTEBOOK]	= "notebook";
 ZmFolder.QUERY_NAME[ZmOrganizer.ID_BRIEFCASE]	= "briefcase";
 ZmFolder.QUERY_NAME[ZmFolder.ID_CHATS]			= "chats";
-ZmFolder.QUERY_NAME[ZmFolder.ID_SYNC_FAILURES]	= '"Error Reports"';
+ZmFolder.QUERY_NAME[ZmFolder.ID_SYNC_FAILURES]	= "Error Reports";
 
 // order within the overview panel
 ZmFolder.SORT_ORDER = {};
@@ -404,12 +404,10 @@ function(obj) {
 ZmFolder.prototype.createQuery =
 function(pathOnly) {
 	if (!this.isRemote() && this.isSystem()) {
-		var qName = this.nId == ZmOrganizer.ID_ARCHIVE
-			? ('"' + ZmFolder.QUERY_NAME[this.nId] + '"')
-			: ZmFolder.QUERY_NAME[this.nId];
+		var qName = ZmFolder.QUERY_NAME[this.nId];
 		return pathOnly
 			? qName
-			: ("in:" + (qName || ('"'+this.name+'"')));
+			: ("in:\"" + (qName || this.name)+'"');
 	}
 
 	var path = this.name;
