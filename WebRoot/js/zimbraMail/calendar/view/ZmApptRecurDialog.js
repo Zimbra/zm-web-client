@@ -769,12 +769,12 @@ function() {
 		var index = segment instanceof AjxMessageFormat.MessageSegment
 				  ? segment.getIndex() : -1;
 		if (index == 0) {
-			html[i++] = "<td id='";
+			html[i++] = "<td width=50 id='";
 			html[i++] = this._monthlyDaySelectId;
 			html[i++] = "'>";
 		}
 		else if (index == 1) {
-			html[i++] = "<td id='";
+			html[i++] = "<td width=90 id='";
 			html[i++] = this._monthlyWeekdaySelectId;
 			html[i++] = "'>";
 		}
@@ -858,17 +858,17 @@ function() {
 		var index = segment instanceof AjxMessageFormat.MessageSegment
 				  ? segment.getIndex() : -1;
 		if (index == 0) {
-			html[i++] = "<td id='";
+			html[i++] = "<td width=50 id='";
 			html[i++] = this._yearlyDaySelectId;
 			html[i++] = "'>";
 		}
 		else if (index == 1) {
-			html[i++] = "<td id='";
+			html[i++] = "<td width=90 id='";
 			html[i++] = this._yearlyWeekdaySelectId;
 			html[i++] = "'>";
 		}
 		else if (index == 2) {
-			html[i++] = "<td id='";
+			html[i++] = "<td width=50 id='";
 			html[i++] = this._yearlyMonthSelectExId;
 			html[i++] = "'>";
 		}
