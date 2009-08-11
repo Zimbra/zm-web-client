@@ -259,8 +259,6 @@ ZmEditContactView.prototype.set = function(contact, isDirty) {
 	for (var id in ZmEditContactView.ATTRS) {
 		var value = contact.getAttr(ZmEditContactView.ATTRS[id]);
 		if (id == "FOLDER") {
-			var folderOrId = (contact && contact.getAddressBook()) || ZmOrganizer.ID_ADDRBOOK;
-			this._setFolder(folderOrId);
 			continue;
 		}
 		if (id == "FILE_AS") {
@@ -268,6 +266,12 @@ ZmEditContactView.prototype.set = function(contact, isDirty) {
 		}
 		this.setValue(id, value);
 	}
+	var folderOrId = contact && contact.getAddressBook();
+	if (!folderOrId) {
+		var overview = appCtxt.getApp(ZmApp.CONTACTS).getOverview();
+		folderOrId = overview.getSelected();
+	}
+	this._setFolder(folderOrId || ZmOrganizer.ID_ADDRBOOK);
 	this.setValue("IMAGE", (contact && contact.getImageUrl()) || "");
 
 	// check show detail items for fields with values
@@ -380,6 +384,11 @@ ZmEditContactView.prototype.getModifiedAttrs = function() {
 				attributes[aname] = "";
 			}
 		}
+	}
+
+	// make sure we set the folder (when new)
+	if (!attributes[ZmContact.F_folderId]) {
+		attributes[ZmContact.F_folderId] = this.getValue("FOLDER");
 	}
 
 	return attributes;
