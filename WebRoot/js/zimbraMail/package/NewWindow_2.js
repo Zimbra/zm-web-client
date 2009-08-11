@@ -110,6 +110,7 @@ AjxPackage.require("zimbraMail.core.ZmNewWindow");
 AjxPackage.require("zimbraMail.prefs.ZmPreferencesApp");
 AjxPackage.require("zimbraMail.mail.ZmMailApp");
 AjxPackage.require("zimbraMail.calendar.ZmCalendarApp");
+AjxPackage.require("zimbraMail.tasks.ZmTasksApp");
 AjxPackage.require("zimbraMail.abook.ZmContactsApp");
 AjxPackage.require("zimbraMail.briefcase.ZmBriefcaseApp");
 

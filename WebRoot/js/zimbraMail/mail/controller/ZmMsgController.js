@@ -322,7 +322,8 @@ function() {
 
 ZmMsgController.prototype._backListener =
 function(ev) {
-	if (!this._app.popView()) {
+	var isChildWindow = appCtxt.isChildWindow;
+	if (!this._app.popView() && !isChildWindow) {
 		this._app.mailSearch();
 	}
 };
