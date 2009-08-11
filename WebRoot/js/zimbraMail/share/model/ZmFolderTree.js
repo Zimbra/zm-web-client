@@ -375,8 +375,10 @@ function(callback, skipNotify, result) {
 				if (link.folder && link.folder.length > 0) {
 					var parent = appCtxt.getById(link.id);
 					if (parent) {
-						for (var j = 0; j < link.folder.length; j++)
+						for (var j = 0; j < link.folder.length; j++) {
+							if (appCtxt.getById(link.folder[j].id)) continue;
 							parent.notifyCreate(link.folder[j], false, skipNotify);
+						}
 					}
 				}
 			}
