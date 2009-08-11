@@ -160,10 +160,12 @@ ZmDocsEditView.prototype._initialize = function() {
     var toolbar = this._toolbar = new DwtToolBar({parent:this, className:"ZDToolBar", cellSpacing:2, posStyle:DwtControl.RELATIVE_STYLE});
     this._createToolbar(toolbar);
 
+    /* commented for bug:40022
     var toolbar2 = this._toolbar2 = new DwtToolBar({parent:this, className:"ZDUtilToolBar",cellSpacing:0,posStyle:DwtControl.RELATIVE_STYLE});
     toolbar2.getHtmlElement().setAttribute("align","center");
     this._createToolbar2(toolbar2);
-    
+    */
+
     var iFrame = this._iframe = document.createElement("iframe");
     iFrame.id = Dwt.getNextId();
     iFrame.className = "ZDEditor";
