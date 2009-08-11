@@ -75,7 +75,7 @@ function(params, ex) {
 ZmCalendar.prototype.getIcon = 
 function() {
 	if (this.nId == ZmOrganizer.ID_ROOT)	{ return null; }
-	if (this.link)							{ return "GroupSchedule"; }
+	if (this.link)							{ return "SharedCalendarFolder"; }
 	return "CalendarFolder";
 };
 
