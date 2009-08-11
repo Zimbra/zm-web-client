@@ -93,7 +93,13 @@
             }
         };
         setTimeout(function() {
-            var myDataSource = new YAHOO.widget.DS_XHR("<c:url value='/h/ac' />", ["Result","email","ranking","display","type","id","l"]);
+            var myDataSource = new YAHOO.util.XHRDataSource("<c:url value='/h/ac' />");
+            myDataSource.responseType = YAHOO.util.XHRDataSource.TYPE_JSON;
+            myDataSource.responseSchema = {
+                resultsList : "Result", // String pointer to result data
+                fields : ["email","ranking","display","type","id","l"]
+            };
+
             var initAuto = function(field, container) {
                 var ac = new YAHOO.widget.AutoComplete(field, container, myDataSource);
                 ac.delimChar = [",",";"];
