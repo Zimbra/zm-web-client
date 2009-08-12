@@ -76,8 +76,6 @@ BODY						{	margin:0px; 				}
 #skin_spacing_current_app				{}
 #skin_container_current_app				{	@SkinBorderCurrentApp@		}
 
-#skin_container_switch					{ padding-right: 8px;			}
-#skin_container_switch,
 #skin_td_switch_offline,
 #skin_container_help,
 #skin_container_logoff					{

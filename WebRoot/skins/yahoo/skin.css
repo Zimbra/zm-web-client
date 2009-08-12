@@ -31,10 +31,9 @@
 	margin-bottom:6px;
 }
 #skin_container_links			{
-	padding-right:10px;
+	padding:0 10px;
 	white-space:nowrap;
 	overflow:hidden;
-	border-bottom:1px solid @darken(AppC,50)@;
 }
 #skin_container_username {
 }
