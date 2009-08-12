@@ -36,23 +36,6 @@
 						<td id='skin_spacing_search'>
 							<div id='skin_container_search' class='skin_container'></div>
 						</td>
-						<td align="right" style="padding-right:4px;">
-							<div id='skin_container_web_search' class='skin_container'>
-								<table cellspacing=0 cellpadding=0>
-									<tr>
-										<td width='100%' class='DwtInputField-hint'>
-											<input id='skin_search_web_input' value='[Search the Web...]' style='width:110px;' onfocus='skin.searchWebFocus(event,this)' onblur='skin.searchWebBlur(event, this);' onkeypress='return skin.searchWebKey(event, this);'>
-										</td>
-										<td>
-											<input id='skin_search_web_button' type='button' class='skin_yahoo_websearch_button' value='[Web Search]' onclick='this.blur();skin.searchWeb(skin._getEl("skin_search_web_input").value);'>
-										</td>
-										<td>
-											<input id='skin_search_local_button' type='button' class='skin_yahoo_websearch_button' value='[Local Search]' onclick='this.blur();skin.searchLocal(skin._getEl("skin_search_web_input").value);'>
-										</td>
-									</tr>
-								</table>
-							</div>
-						</td>
 					</tr>
 				</table>
 			</td>
@@ -147,19 +130,7 @@
 	</table>
 </div>
 <script>
-	var el = document.getElementById('skin_search_web_input');
-	if (el) { el.value = ZmMsg.searchWebPrompt; }
-
-	el = document.getElementById("skin_search_web_button");
-	if (el) { el.value = ZmMsg.yahooWebSearchButton; }
-
-	el = document.getElementById("skin_search_local_button");
-	if (el) { el.value = ZmMsg.yahooLocalSearchButton; }
-
 	el = document.getElementById("skin_sign_out_link");
 	if (el) { el.innerHTML = ZmMsg.yahooSignOutLink; }
-
-	el = document.getElementById("skin_standard_client_link");
-	if (el) { el.innerHTML = ZmMsg.yahooStandardClientLink; }
 </script>
 <!-- END SKIN -->

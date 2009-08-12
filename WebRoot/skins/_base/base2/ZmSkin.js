@@ -30,7 +30,6 @@ ZmSkin.hints = {
 	banner:			{ position:"static", url: "@LogoURL@"},		// == "logo"
 	userInfo:		{ position:"static"},
 	search:		  	{ position:"static" },
-	webSearch:	  	{ position:"static", containers: "skin_spacing_web_search" },
 	quota:		  	{ position:"static" },
 	presence:	  	{ width:"40px", height: "24px" },
 	appView:		{ position:"static" },
@@ -179,41 +178,6 @@ ZmSkin.prototype = {
 	},
 	getSidebarAdContainer : function() {
 		return this._getEl("skin_container_sidebar_ad");
-	},
-	
-	searchWeb : function(what) {
-        var searchUrl = ZmMsg["ysearchURL"];
-        if(!searchUrl || searchUrl == "" || searchUrl == undefined){
-            searchUrl = "http://search.yahoo.com";
-        }
-        if(what != "Search the Web..."){ searchUrl += '/search?p='+what+'&fr=zim-maila', '_blank';}
-        window.open(searchUrl);
-	},
-	
-	searchWebKey : function(event, field) {
-		event = event || window.event;
-		var code = event.keyCode;		// TODO: cross-platform me!
-		if (code == 13) {
-			skin.searchWeb(field.value);
-		}
-		return true;
-	},
-	
-	searchWebFocus : function(event, field) {
-		event = event || window.event;	
-		if (!skin._searchWebInitialValue) skin._searchWebInitialValue = field.value;
-		if (field.value == skin._searchWebInitialValue) {
-			field.value = "";
-			field.parentNode.className = "DwtInputField";
-		}
-	},
-	
-	searchWebBlur : function(event, field) {
-		event = event || window.event;	
-		if (field.value == "") {
-			field.value = skin._searchWebInitialValue;
-			field.parentNode.className = "DwtInputField-hint";
-		}
 	},
 	
 	//

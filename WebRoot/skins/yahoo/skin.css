@@ -19,7 +19,6 @@
 #skin_container_tree			{	border-width:1px;				}
 #skin_container_tree_footer		{	border-width:1px;				}
 #skin_spacing_search			{	width:100%;						}
-#skin_container_web_search		{	/*width:95%;*/ height:20px;			}
 
 #skin_container_app_top_toolbar	{
 	border-left-width:1px;
@@ -49,12 +48,6 @@
     background-color: @Lighten(AppC,20)@;
 }
 
-#skin_search_web_input			{
-	border:1px solid @SelC@;
-	padding: 2px 4px;
-	height:20px;
-	width: 11em;
-}
 #skin_search_local_button {
 	/* this needs to be made visible by com_zimbra_local zimlet! */
 	display: none;

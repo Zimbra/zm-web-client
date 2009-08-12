@@ -614,7 +614,6 @@ function(params) {
 
 	this.setSessionTimer(true);
 	ZmZimbraMail.killSplash();
-	this._appViewMgr.tweakSkin();
 
 	// Give apps a chance to add their own ui components.
 	this.runAppFunction("addComponents", false, this._components);
@@ -1972,14 +1971,6 @@ function(actionCode, ev) {
 			break;
 		}
 
-        case ZmKeyMap.FOCUS_WEB_SEARCH_BOX: {
-            var input = document.getElementById(ZmId.SKIN_WEB_SEARCH_INPUT);
-            if (input) {
-                appCtxt.getKeyboardMgr().grabFocus(input);
-            }
-            break;
-        }
-    
 		case ZmKeyMap.FOCUS_CONTENT_PANE: {
 			this.focusContentPane();
 			break;
