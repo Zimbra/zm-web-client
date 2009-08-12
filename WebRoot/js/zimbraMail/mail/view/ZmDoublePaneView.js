@@ -78,12 +78,20 @@ function() {
  */
 ZmDoublePaneView.prototype.setReadingPane =
 function() {
+
 	var readingPaneEnabled = this._controller.isReadingPaneOn();
 	if (!readingPaneEnabled) {
 		this._msgView.setVisible(false);
 		this._vertMsgSash.setVisible(false);
 		this._horizMsgSash.setVisible(false);
 	} else {
+		if (!this._msgView.getVisible()) {
+			if (this._mailListView.getSelectionCount() == 1) {
+				this._controller._setSelectedItem();
+			} else {
+				this._msgView.reset();
+			}
+		}
 		this._msgView.setVisible(true);
 		var readingPaneOnRight = this._controller.isReadingPaneOnRight();
 		var newSash = readingPaneOnRight ? this._vertMsgSash : this._horizMsgSash;
