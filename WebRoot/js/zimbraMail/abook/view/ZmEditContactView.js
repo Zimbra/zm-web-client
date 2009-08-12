@@ -305,7 +305,9 @@ ZmEditContactView.prototype.set = function(contact, isDirty) {
 	}
 
 	// mark form as clean and update display
-	this.reset(true);
+	if (!isDirty) {
+		this.reset(true);
+	}
 
 	// listen to changes in the contact
 	if (contact) {
@@ -384,6 +386,11 @@ ZmEditContactView.prototype.getModifiedAttrs = function() {
 				attributes[aname] = "";
 			}
 		}
+	}
+
+	// was anything modified?
+	if (AjxUtil.keys(attributes).length == 0) {
+		return null;
 	}
 
 	// make sure we set the folder (when new)

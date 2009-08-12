@@ -84,10 +84,6 @@ function() {
 ZmContactSplitView.prototype.setContact =
 function(contact, isGal) {
 
-	if (this._objectManager) {
-		this._objectManager.reset();
-	}
-
 	if (!isGal) {
 		// Remove and re-add listeners for current contact if exists
 		if (this._contact) {
@@ -181,7 +177,6 @@ function(controller, dropTgt) {
 
 	// reset event handlers so object manager can process
 	this._contactView._setMouseEventHdlrs();
-	this._objectManager.setView(this._contactView);
 };
 
 ZmContactSplitView.prototype._tabStateChangeListener =
@@ -249,7 +244,9 @@ function(data, type) {
 
 ZmContactSplitView.prototype._setContact =
 function(contact, isGal, oldContact) {
-	if (this._contactTabView && !this._tabViewHtml) { return; }
+	if (this._objectManager) {
+		this._objectManager.reset();
+	}
 
 	var folderId = contact.folderId;
 	var folder = folderId ? appCtxt.getById(folderId) : null;
@@ -264,6 +261,8 @@ function(contact, isGal, oldContact) {
 	};
 
 	if (contact.isGroup()) {
+		this._objectManager.setView(this._contactGroupView);
+
 		subs.folderIcon = contact.addrbook.getIcon();
 		subs.folderName = contact.addrbook.getName();
 		subs.groupMembers = contact.getGroupMembers().good.getArray();
@@ -274,6 +273,8 @@ function(contact, isGal, oldContact) {
 		var size = this.getSize();
 		this._sizeChildren(size.x, size.y);
 	} else {
+		this._objectManager.setView(this._contactView);
+
 		subs.view = this;
 		subs.isGal = isGal;
 		subs.findObjects = AjxCallback.simpleClosure(this._generateObject, this);
@@ -281,26 +282,10 @@ function(contact, isGal, oldContact) {
 		this._resetVisibility(false);
 
 		// render the appropriate view
-		if (this._contactTabView) {
-			// only render HTML for tab if we haven't already
-			var tabIdx = this._contactTabView.getCurrentTab();
-			if (!this._tabViewHtml[tabIdx]) {
-				subs.tabIdx = tabIdx;
-				var tabName = this._tabs[tabIdx-1];
-				var template = "abook.Contacts#SplitView_" + tabName;
-				var view = this._contactTabView.getTabView(tabIdx);
-				view.getHtmlElement().innerHTML = AjxTemplate.expand(template, subs);
-
-				this._tabViewHtml[tabIdx] = true;
-			}
-			var size = this.getSize();
-			this._sizeChildren(size.x, size.y);
-		} else {
-			this._contactView.getHtmlElement().innerHTML = AjxTemplate.expand("abook.Contacts#SplitView_content", subs);
-		}
+		this._contactView.getHtmlElement().innerHTML = AjxTemplate.expand("abook.Contacts#SplitView_content", subs);
 
 		// notify zimlets that a new contact is being shown.
-		appCtxt.notifyZimlets("onContactView", [contact, this._htmlElId, tabIdx]);
+		appCtxt.notifyZimlets("onContactView", [contact, this._htmlElId]);
 	}
 
 	this._setHeaderInfo();
@@ -308,12 +293,7 @@ function(contact, isGal, oldContact) {
 
 ZmContactSplitView.prototype._resetVisibility =
 function(isGroup) {
-	if (this._contactTabView) {
-		this._contactTabView.setVisible(!isGroup);
-		this._contactTabHeader.setVisible(!isGroup);
-	} else {
-		this._contactView.setVisible(!isGroup);
-	}
+	this._contactView.setVisible(!isGroup);
 	this._contactGroupView.setVisible(isGroup);
 };
 
