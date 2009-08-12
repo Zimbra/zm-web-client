@@ -487,7 +487,9 @@ function(conv, msg) {
 	this._expandedItems[cid].push(item);
 
 	this._resetColWidth();
-	this._scrollList(lastRow);
+	if (lastRow) {
+		this._scrollList(lastRow);
+	}
 	var convHeight = rowIds.length * Dwt.getSize(lastRow).y;
 	if (convHeight > Dwt.getSize(lastRow.parentNode).y) {
 		this._scrollList(this._getElFromItem(item));

@@ -43,6 +43,11 @@ ZmMailListController.GROUP_BY_MSG_KEY[ZmId.VIEW_CONVLIST]		= "byConversation";
 ZmMailListController.GROUP_BY_SHORTCUT[ZmId.VIEW_CONVLIST]		= ZmKeyMap.VIEW_BY_CONV;
 ZmMailListController.GROUP_BY_VIEWS.push(ZmId.VIEW_CONVLIST);
 
+ZmMailListController.ACTION_CODE_WHICH[ZmKeyMap.FIRST_UNREAD_MSG]	= DwtKeyMap.SELECT_FIRST;
+ZmMailListController.ACTION_CODE_WHICH[ZmKeyMap.LAST_UNREAD_MSG]	= DwtKeyMap.SELECT_LAST;
+ZmMailListController.ACTION_CODE_WHICH[ZmKeyMap.NEXT_UNREAD_MSG]	= DwtKeyMap.SELECT_NEXT;
+ZmMailListController.ACTION_CODE_WHICH[ZmKeyMap.PREV_UNREAD_MSG]	= DwtKeyMap.SELECT_PREV;
+
 // Public methods
 
 ZmConvListController.prototype.toString = 
@@ -116,6 +121,34 @@ function(actionCode) {
 			mlv._expandAll(false);
 			break;
 
+		case ZmKeyMap.NEXT_UNREAD_MSG:
+		case ZmKeyMap.PREV_UNREAD_MSG:
+			this.lastListAction = actionCode;
+			var selItem, noBump = false;
+			if (mlv.getSelectionCount() == 1) {
+				var sel = mlv.getSelection();
+				selItem = sel[0];
+				if (selItem && mlv._isExpandable(selItem)) {
+					noBump = true;
+				}
+			}
+
+		case ZmKeyMap.FIRST_UNREAD_MSG:
+		case ZmKeyMap.LAST_UNREAD_MSG:
+			var item = (selItem && selItem.type == ZmItem.MSG && noBump) ? selItem :
+					   this._getUnreadItem(ZmMailListController.ACTION_CODE_WHICH[actionCode], null, noBump);
+			if (!mlv._expanded[item.id] && mlv._isExpandable(item)) {
+				var callback = new AjxCallback(this, this._handleResponseExpand, [actionCode]);
+				if (item.type == ZmItem.MSG) {
+					this._expand({conv:appCtxt.getById(item.cid), msg:item, offset:mlv._msgOffset[item.id], callback:callback});
+				} else {
+					this._expand({conv:item, callback:callback});
+				}
+			} else if (item) {
+				this._selectItem(mlv, item);
+			}
+			break;
+
 		// need to invoke DwtListView method directly since our list view no-ops DBLCLICK
 		case DwtKeyMap.DBLCLICK:
 			return DwtListView.prototype.handleKeyAction.apply(mlv, arguments);
@@ -124,6 +157,14 @@ function(actionCode) {
 			return ZmMailListController.prototype.handleKeyAction.call(this, actionCode);
 	}
 	return true;
+};
+
+ZmConvListController.prototype._handleResponseExpand =
+function(actionCode) {
+	var unreadItem = this._getUnreadItem(ZmMailListController.ACTION_CODE_WHICH[actionCode], ZmItem.MSG);
+	if (unreadItem) {
+		this._selectItem(this._mailListView, unreadItem);
+	}
 };
 
 /**
@@ -321,34 +362,50 @@ function(item, getFirstMsg) {
 			msg = item;
 			offset = this._mailListView._msgOffset[item.id];
 		}
-		this._expand(conv, msg, offset, getFirstMsg);
+		this._expand({conv:conv, msg:msg, offset:offset, getFirstMsg:getFirstMsg});
 	}
 };
 
+/**
+ * Expands the given conv or msg, performing a search to get items if necessary.
+ *
+ * @param params		[hash]			hash of params:
+ *        conv			[ZmConv]		conv to expand
+ *        msg			[ZmMailMsg]		msg to expand (get next page of msgs for conv)
+ *        offset		[int]			index of msg in conv
+ *        getFirstMsg	[boolean]		if true, fetch body of first msg
+ *        callback		[AjxCallback]	callback to run when done
+ */
 ZmConvListController.prototype._expand =
-function(conv, msg, offset, getFirstMsg) {
-	offset = offset || 0;
-	var respCallback = new AjxCallback(this, this._handleResponseLoadItem, [conv, msg]);
+function(params) {
+
+	var conv = params.conv;
+	var offset = params.offset || 0;
+	var respCallback = new AjxCallback(this, this._handleResponseLoadItem, [params]);
 	var pageWasCached = false;
 	if (offset) {
 		if (this._paginateConv(conv, offset, respCallback)) {
 			// page was cached, callback won't be run
-			this._handleResponseLoadItem(conv, msg, new ZmCsfeResult(conv.msgs));
+			this._handleResponseLoadItem(params, new ZmCsfeResult(conv.msgs));
 		}
 	} else if (!conv._loaded) {
 		// no msgs have been loaded yet
-		var getFirstMsg = (getFirstMsg === false) ? false : this.isReadingPaneOn();
+		var getFirstMsg = (params.getFirstMsg === false) ? false : this.isReadingPaneOn();
 		conv.load({getFirstMsg:getFirstMsg}, respCallback);
 	} else {
 		// re-expanding first page of msgs
-		this._handleResponseLoadItem(conv, msg, new ZmCsfeResult(conv.msgs));
+		this._handleResponseLoadItem(params, new ZmCsfeResult(conv.msgs));
 	}
 };
 
 ZmConvListController.prototype._handleResponseLoadItem =
-function(conv, msg, result) {
-	if (!result) { return; }
-	this._mailListView._expand(conv, msg);
+function(params, result) {
+	if (result) {
+		this._mailListView._expand(params.conv, params.msg);
+	}
+	if (params.callback) {
+		params.callback.run();
+	}
 };
 
 /**

@@ -127,6 +127,12 @@ ZmMailListController.ACTION_CODE_TO_MENU_ID[ZmKeyMap.READING_PANE_OFF]		= ZmSett
 ZmMailListController.ACTION_CODE_TO_MENU_ID[ZmKeyMap.READING_PANE_BOTTOM]	= ZmSetting.RP_BOTTOM;
 ZmMailListController.ACTION_CODE_TO_MENU_ID[ZmKeyMap.READING_PANE_RIGHT]	= ZmSetting.RP_RIGHT;
 
+ZmMailListController.ACTION_CODE_WHICH = {};
+ZmMailListController.ACTION_CODE_WHICH[ZmKeyMap.FIRST_UNREAD]	= DwtKeyMap.SELECT_FIRST;
+ZmMailListController.ACTION_CODE_WHICH[ZmKeyMap.LAST_UNREAD]	= DwtKeyMap.SELECT_LAST;
+ZmMailListController.ACTION_CODE_WHICH[ZmKeyMap.NEXT_UNREAD]	= DwtKeyMap.SELECT_NEXT;
+ZmMailListController.ACTION_CODE_WHICH[ZmKeyMap.PREV_UNREAD]	= DwtKeyMap.SELECT_PREV;
+
 // Public methods
 
 ZmMailListController.prototype.toString =
@@ -304,54 +310,11 @@ function(actionCode) {
 
 		case ZmKeyMap.NEXT_UNREAD:
 		case ZmKeyMap.PREV_UNREAD:
-			var list = lv.getList(true).getArray();
-			var size = list.length;
-			if (size) {
-				var sel = lv.getSelection();
-				var start, index;
-				if (sel && sel.length) {
-					start = (actionCode == ZmKeyMap.NEXT_UNREAD) ? sel[sel.length - 1] : sel[0];
-				} else {
-					start = (actionCode == ZmKeyMap.NEXT_UNREAD) ? list[0] : list[list.length - 1];
-				}
-				if (start) {
-					if (sel && sel.length) {
-						index = (actionCode == ZmKeyMap.NEXT_UNREAD)
-							? (lv.getItemIndex(start, true) + 1)
-							: (lv.getItemIndex(start, true) - 1);
-					} else {
-						index = lv.getItemIndex(start, true);
-					}
-					var unreadItem = null;
-					while ((index >= 0 && index < size) && !unreadItem) {
-						var item = list[index];
-						if (item.isUnread) {
-							unreadItem = item;
-						} else {
-							index = (actionCode == ZmKeyMap.NEXT_UNREAD) ? index + 1 : index - 1;
-						}
-					}
-					if (unreadItem) {
-						this._selectItem(lv, unreadItem);
-					}
-				}
-			}
 			this.lastListAction = actionCode;
-			break;
 
 		case ZmKeyMap.FIRST_UNREAD:
 		case ZmKeyMap.LAST_UNREAD:
-			var list = lv.getList(true).getArray();
-			var index = (actionCode == ZmKeyMap.FIRST_UNREAD) ? 0 : list.length - 1;
-			var unreadItem = null;
-			while ((index >= 0 && index < list.length) && !unreadItem) {
-				var item = list[index];
-				if (item.isUnread) {
-					unreadItem = item;
-				} else {
-					index = (actionCode == ZmKeyMap.FIRST_UNREAD) ? index + 1 : index - 1;
-				}
-			}
+			var unreadItem = this._getUnreadItem(ZmMailListController.ACTION_CODE_WHICH[actionCode]);
 			if (unreadItem) {
 				this._selectItem(lv, unreadItem);
 			}
@@ -1501,4 +1464,56 @@ ZmMailListController.prototype._doTag =
 function(items, tag, doTag) {
 	ZmListController.prototype._doTag.call(this, items, tag, doTag);
 	appCtxt.notifyZimlets("onTagAction", [items, tag, doTag]);
+};
+
+/**
+ * Returns the next/previous/first/last unread item in the list, based on what's
+ * currently selected.
+ *
+ * @param which		[constant]		DwtKeyMap constant for selecting next/previous/first/last
+ * @param type		[constant]*		if present, only return this type of item
+ * @param noBump	[boolean]*		if true, start with currently selected item
+ */
+ZmMailListController.prototype._getUnreadItem =
+function(which, type, noBump) {
+
+	var lv = this._listView[this._currentView];
+	var list = lv.getList(true).getArray();
+	var size = list.length;
+	if (!size) { return; }
+
+	var start, index;
+	if (which == DwtKeyMap.SELECT_FIRST) {
+		index = 0;
+	} else if (which == DwtKeyMap.SELECT_LAST) {
+		index = list.length - 1;
+	} else {
+		var sel = lv.getSelection();
+		var start, index;
+		if (sel && sel.length) {
+			start = (which == DwtKeyMap.SELECT_NEXT) ? sel[sel.length - 1] : sel[0];
+		} else {
+			start = (which == DwtKeyMap.SELECT_NEXT) ? list[0] : list[list.length - 1];
+		}
+		if (start) {
+			var startIndex = lv.getItemIndex(start, true);
+			if (sel && sel.length && !noBump) {
+				index = (which == DwtKeyMap.SELECT_NEXT) ? startIndex + 1 : startIndex - 1;
+			} else {
+				index = startIndex;
+			}
+		}
+	}
+
+	var unreadItem = null;
+	while ((index >= 0 && index < size) && !unreadItem) {
+		var item = list[index];
+		if (item.isUnread && (!type || item.type == type)) {
+			unreadItem = item;
+		} else {
+			index = (which == DwtKeyMap.SELECT_NEXT || which == DwtKeyMap.SELECT_FIRST) ? index + 1 : index - 1;
+		}
+	}
+
+	return unreadItem;
 };
