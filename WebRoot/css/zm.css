@@ -2728,6 +2728,26 @@ HTML>BODY .appt-selected .appt_allday_body
 	overflow:auto;
 }
 
+.ZmAttachDialog-container {
+	overflow: hidden;
+	width: 500px;
+	height: 310px;
+}
+
+.ZmAttachDialog-footer {
+	height: 10px;
+	text-align: center;
+}
+
+.ZmAttachDialog-inline {
+	height: 20px;
+}
+
+.ZmAttachDialog-removeLink {
+	color: blue;
+	text-decoration: underline;
+}
+
 /*
  *  Notes application
  */

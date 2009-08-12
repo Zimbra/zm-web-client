@@ -423,3 +423,29 @@
 		</tr>
 	</table>
 </template>
+
+<template id="share.Dialogs#ZmAttachDialog-MyComputerTab">
+	<div style='overflow:auto'>
+		<form accept-charset='utf-8' method='POST' action='<$= data.uri $>' id='${id}_uploadForm' enctype='multipart/form-data'>
+			<input type='hidden' name='_charset_' />
+			<table id='${id}_attachmentTable' cellspacing=0 cellpadding=0 border=0 class='iframeTable'></table>
+		</form>
+	</div>
+	<div>
+		<table id='${id}_attachmentButtonTable'></table>
+	</div>
+</template>
+
+<template id="share.Dialogs#ZmAttachDialog-MyComputerTab-AddAttachment">
+	<table cellspacing=2 cellpadding=0 border=0>
+		<tr>
+			<td>
+				<div class='attachText'><$= ZmMsg.attach $>:</div>
+			</td>
+			<td class='nobreak'>
+				<input id='${id}_input' type='file' name='<$= data.uploadName $>' size=40>
+				<span id='<$= data.removeLinkId $>' onmouseover='this.style.cursor="pointer"' onmouseout='this.style.cursor="default"' class="ZmAttachDialog-removeLink"><$= ZmMsg.remove $></span>
+			</td>
+		</tr>
+	</table>
+</template>
