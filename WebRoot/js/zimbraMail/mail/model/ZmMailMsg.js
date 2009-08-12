@@ -713,11 +713,11 @@ function(contentType) {
         desc = (contentType == ZmMimeTable.TEXT_HTML) ? htmlContent : textContent;
     }
 
-    var idx = desc.indexOf(ZmItem.NOTES_SEPARATOR);
+    var idx = desc ? desc.indexOf(ZmItem.NOTES_SEPARATOR) : -1;
 
     if(idx == -1 && this.isInvite()) {
         var inviteSummary = this.invite.getSummary((contentType == ZmMimeTable.TEXT_HTML));
-        desc = inviteSummary + desc;
+        desc = desc ? (inviteSummary + desc) : null;
     }
     
     if(desc != null) {
