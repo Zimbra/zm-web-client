@@ -344,10 +344,15 @@ function(attId, docIds, draftType, callback) {
 	draftType = draftType || ZmComposeController.DRAFT_TYPE_NONE;
 	var isDraft = draftType != ZmComposeController.DRAFT_TYPE_NONE;
 
-	var msg = this._composeView.getMsg(attId, isDraft);
+	// bug fix #38408 - briefcase attachments need to be set *before* calling
+	// getMsg() but we cannot do that without having a ZmMailMsg to store it in.
+	// File this one under WTF.
+	var msg;
 	if (docIds) {
+		msg = new ZmMailMsg();
 		this._composeView.setDocAttachments(msg, docIds);
 	}
+	msg = this._composeView.getMsg(attId, isDraft, msg);
 
 	if (!msg) { return; }
 

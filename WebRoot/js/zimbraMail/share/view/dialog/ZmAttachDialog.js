@@ -223,9 +223,6 @@ function() {
 
 ZmAttachDialog.prototype.setUploadCallback =
 function(callback) {
-	if (!callback) {
-		callback = false;
-	}
 	this._uploadCallback = callback;
 };
 
@@ -304,7 +301,7 @@ function() {
 
 ZmAttachDialog.prototype._addBriefcaseViewTab =
 function(){
-	var briefcaseTabViewCallback =  new AjxCallback(this, this.getBriefcaseTabView);
+	var briefcaseTabViewCallback = new AjxCallback(this, this.getBriefcaseTabView);
 	var tabKey = this.addTab(ZmAttachDialog.TABKEY_BRIEFCASE, ZmMsg.briefcase, briefcaseTabViewCallback);
 };
 
@@ -333,42 +330,35 @@ function(view){
 
 ZmAttachDialog.prototype.enableInlineOption =
 function(enable) {
-	this._inlineOption.innerHTML = "";
-	this._inline = false;
-
-	if (!!enable) {
+	if (enable) {
+		var inlineCheckboxId = this._htmlElId + "_inlineCheckbox";
 		this._inlineOption.setAttribute("option", "inline");
 		this._inlineOption.innerHTML = [
-			"<input type='checkbox' name='inlineimages' id='inline'> ",
-			ZmMsg.inlineAttachmentOption
+			"<input type='checkbox' name='inlineimages' id='",
+			inlineCheckboxId,
+			"'> <label for='",
+			inlineCheckboxId,
+			"'>",
+			ZmMsg.inlineAttachmentOption,
+			"</label>"
 		].join("");
-
-		var inlineOption = document.getElementById("inline");
-		inlineOption.onclick = AjxCallback.simpleClosure(this._handleInline, this, inlineOption);
+	} else {
+		this._inlineOption.innerHTML = "";
 	}
 };
 
 ZmAttachDialog.prototype._resetInlineOption =
 function() {
-	var inlineOption = document.getElementById("inline");
+	var inlineOption = document.getElementById(this._htmlElId+"_inlineCheckbox");
 	if (inlineOption) {
 		inlineOption.checked = false;
-	}
-	this._inline = false;
-};
-
-ZmAttachDialog.prototype._handleInline =
-function(checkbox) {
-	this._inline = (checkbox && checkbox.checked);
-	var currentTabPageView = this._tabView.getTabView(this._tabView.getCurrentTab());
-	if (currentTabPageView._handleInline) {
-		currentTabPageView._handleInline(this._inline);
 	}
 };
 
 ZmAttachDialog.prototype.isInline =
 function() {
-	return (!!this._inline);
+	var inlineOption = document.getElementById(this._htmlElId+"_inlineCheckbox");
+	return (inlineOption && inlineOption.checked);
 };
 
 
@@ -386,7 +376,7 @@ ZmAttachTabView = function(parent, className, position) {
 	DwtTabView.call(this, parent, className, position);
 };
 
-ZmAttachTabView.prototype =  new DwtTabView;
+ZmAttachTabView.prototype = new DwtTabView;
 ZmAttachTabView.prototype.constructor = new ZmAttachTabView;
 
 ZmAttachTabView.prototype.addTabChangeListener =
@@ -395,7 +385,7 @@ function(listener) {
 };
 
 ZmAttachTabView.prototype.switchToTab =
-function(tabKey,skipTabChangeListener){
+function(tabKey, skipTabChangeListener){
 	if (!skipTabChangeListener &&
 		this._addTabChangeListener &&
 		!this._addTabChangeListener.run())
@@ -473,7 +463,7 @@ function() {
 };
 
 // Attachments
-ZmMyComputerTabViewPage.prototype.addAttachmentField =
+ZmMyComputerTabViewPage.prototype._addAttachmentField =
 function() {
 	if (this._attachCount >= ZmMyComputerTabViewPage.MAX_NO_ATTACHMENTS) { return; }
 
@@ -511,7 +501,7 @@ function(row) {
 	this._attachCount--;
 
 	if (this._attachCount == 0) {
-		this.addAttachmentField();
+		this._addAttachmentField();
 	}
 };
 
@@ -522,7 +512,7 @@ function() {
 
 	var button = new DwtButton({parent:this, parentElement:cell});
 	button.setText(ZmMsg.addMoreAttachments);
-	button.addSelectionListener(new AjxListener(this, this.addAttachmentField));
+	button.addSelectionListener(new AjxListener(this, this._addAttachmentField));
 };
 
 ZmMyComputerTabViewPage.prototype.gotAttachments =
@@ -553,7 +543,7 @@ function() {
 	cell.appendChild(document.createElement("br"));
 
 	for (var i = 0; i < ZmMyComputerTabViewPage.SHOW_NO_ATTACHMENTS; i++) {
-		this.addAttachmentField();
+		this._addAttachmentField();
 	}
 	delete i;
 };

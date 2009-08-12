@@ -3703,6 +3703,10 @@ HTML>BODY .appt-selected .appt_allday_body
 	color:#FFFFFF;
 }
 
+.ZmAttachDialog-container .ZmBriefcaseItemSmall {
+	border-style:solid; border-width:1px 0px; border-color:@lighten(AppC,60)@
+}
+
 .ZmBriefcaseItemSelected .ZmThumbnailItem {
 	border-color: #316AC5;
 }

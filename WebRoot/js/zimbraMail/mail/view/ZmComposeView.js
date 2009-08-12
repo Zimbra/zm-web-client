@@ -406,7 +406,7 @@ function(msg, forwardAttIds) {
 * Returns the message from the form, after some basic input validation.
 */
 ZmComposeView.prototype.getMsg =
-function(attId, isDraft) {
+function(attId, isDraft, dummyMsg) {
 	// Check destination addresses.
 	var addrs = this._collectAddrs();
 
@@ -460,8 +460,8 @@ function(attId, isDraft) {
 		this._spellCheckOkay = false;
 	}
 
-	// Create Msg Object
-	var msg = new ZmMailMsg();
+	// Create Msg Object - use dummy if provided
+	var msg = dummyMsg || (new ZmMailMsg());
 	msg.setSubject(subject);
 
 	var zeroSizedAttachments = false;
