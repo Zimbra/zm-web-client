@@ -465,9 +465,6 @@ ZmApptCache.prototype.runErrorRecovery =
 function() {
 	if (this._calViewController) {
 		this._calViewController._updateCheckedCalendars();
-        if(this._calViewController.refreshHandler){
-            this._calViewController.refreshHandler();
-        }
 		if (this._calViewController.onErrorRecovery) {
 			this._calViewController.onErrorRecovery.run();
 		}
