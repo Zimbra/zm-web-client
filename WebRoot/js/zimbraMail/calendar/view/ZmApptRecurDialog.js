@@ -769,12 +769,12 @@ function() {
 		var index = segment instanceof AjxMessageFormat.MessageSegment
 				  ? segment.getIndex() : -1;
 		if (index == 0) {
-			html[i++] = "<td width=50 id='";
+			html[i++] = "<td id='";
 			html[i++] = this._monthlyDaySelectId;
 			html[i++] = "'>";
 		}
 		else if (index == 1) {
-			html[i++] = "<td width=90 id='";
+			html[i++] = "<td id='";
 			html[i++] = this._monthlyWeekdaySelectId;
 			html[i++] = "'>";
 		}
@@ -858,17 +858,17 @@ function() {
 		var index = segment instanceof AjxMessageFormat.MessageSegment
 				  ? segment.getIndex() : -1;
 		if (index == 0) {
-			html[i++] = "<td width=50 id='";
+			html[i++] = "<td id='";
 			html[i++] = this._yearlyDaySelectId;
 			html[i++] = "'>";
 		}
 		else if (index == 1) {
-			html[i++] = "<td width=90 id='";
+			html[i++] = "<td id='";
 			html[i++] = this._yearlyWeekdaySelectId;
 			html[i++] = "'>";
 		}
 		else if (index == 2) {
-			html[i++] = "<td width=50 id='";
+			html[i++] = "<td id='";
 			html[i++] = this._yearlyMonthSelectExId;
 			html[i++] = "'>";
 		}
@@ -1333,10 +1333,35 @@ function(repeatType) {
 
 		this._controlsTabGroup.addMember(this._repeatTabGroup);
 		this._controlsTabGroup.addMember(this._endTabGroup);
+
+        this.resizeSelect(repeatType);
 	}
 };
 
-ZmApptRecurDialog.prototype._cleanup = 
+ZmApptRecurDialog.prototype.resizeSelect =
+function(repeatType) {
+
+    if(repeatType = ZmRecurrence.MONTHLY) {
+        this._resizeSelect(this._monthlyDaySelect);
+        this._resizeSelect(this._monthlyWeekdaySelect);
+    }
+
+    if(repeatType = ZmRecurrence.YEARLY) {
+        this._resizeSelect(this._yearlyMonthSelect);
+        this._resizeSelect(this._yearlyDaySelect);
+        this._resizeSelect(this._yearlyWeekdaySelect);
+        this._resizeSelect(this._yearlyMonthSelectEx);
+    }
+};
+
+ZmApptRecurDialog.prototype._resizeSelect =
+function(selectObj) {
+    if(!selectObj) return;
+    selectObj.autoResize();
+};
+
+
+ZmApptRecurDialog.prototype._cleanup =
 function() {
 	// dont bother cleaning up if user is still mucking around
 	if (this._saveState) return;
