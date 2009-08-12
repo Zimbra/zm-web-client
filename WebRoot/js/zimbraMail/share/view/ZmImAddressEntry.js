@@ -82,8 +82,11 @@ ZmImAddressEntry.prototype.getValue = function() {
 ZmImAddressEntry.prototype._on_selectService_change = function() {
         var enabled = this._selectService.getValue() != "_NONE";
         this._inputScreenName.setEnabled(enabled);
-        if (enabled)
+        if (enabled){
                 this._inputScreenName.focus();
+        }else{
+                this._inputScreenName.setValue("");            
+        }
 };
 
 ZmImAddressEntry.prototype._dropListener = function(ev) {

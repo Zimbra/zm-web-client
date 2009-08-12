@@ -574,15 +574,15 @@ function() {
 	var imValue;
 	if (this._imAddress1Entry) {
 		imValue = this._imAddress1Entry.getValue();
-		if (imValue != "") this._attr[ZmContact.F_imAddress1] = imValue;
+		this._attr[ZmContact.F_imAddress1] = imValue;
 	}
 	if (this._imAddress2Entry) {
 		imValue = this._imAddress2Entry.getValue();
-		if (imValue != "") this._attr[ZmContact.F_imAddress2] = imValue;
+		this._attr[ZmContact.F_imAddress2] = imValue;
 	}
 	if (this._imAddress3Entry) {
 		imValue = this._imAddress3Entry.getValue();
-		if (imValue != "") this._attr[ZmContact.F_imAddress3] = imValue;
+		this._attr[ZmContact.F_imAddress3] = imValue;
 	}
 };
 
