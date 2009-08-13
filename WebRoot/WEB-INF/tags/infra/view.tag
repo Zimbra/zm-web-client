@@ -1,17 +1,17 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
- * 
+ *
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2006, 2007, 2008, 2009 Zimbra, Inc.
- * 
+ *
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
+ *
  * ***** END LICENSE BLOCK *****
 --%>
 <%@ tag body-content="scriptless" %>
@@ -58,7 +58,7 @@
 </c:if>
 <c:choose>
 <c:when test="${skin eq 'yahoo'}">
-<fmt:setBundle basename="/messages/ZhMsg" scope="request"/>    
+<fmt:setBundle basename="/messages/ZhMsg" scope="request"/>
 <table width="100%" cellpadding="6" cellspacing='0' border="0"><tr><td>
 <table width="100%" cellpadding="0" cellspacing="0" border="0">
     <tr><td colspan="${empty editmode ? 4 : 3}" style="padding-bottom:6px;">
@@ -76,21 +76,21 @@
         <td style="padding: 4px 8px 4px 0px; white-space:nowrap;">
 			<%--<b>${fn:escapeXml(empty mailbox.defaultIdentity.fromDisplay ? mailbox.name : mailbox.defaultIdentity.fromDisplay)}</b>--%>
 			<%--<br>--%>
-			<a class='skin_yahoo_link' href="<c:url value="/?loginOp=logout"/>"><fmt:message key="logOut"/></a>,
-			<a class='skin_yahoo_link' href='<c:url value="/?client=advanced"/>'><fmt:message key="switchToAdvancedClient" /></a>
+			<a class='skin_yahoo_link' href="<c:url value="/?loginOp=logout"/>"><fmt:message key="logOut"/></a>
+			<!--a class='skin_yahoo_link' href='<c:url value="/?client=advanced"/>'><fmt:message key="switchToAdvancedClient" /></a-->
 			<!--<a class='skin_yahoo_link' target="_new" href="http://www.zimbra.com/products/desktop.html">Offline version</a>-->
         </td>
 
         <td valign="top" class="TopContent" align="center">
             <app:appTop mailbox="${mailbox}" keys="${keys}" query="${empty context.query ? param.sq : context.query}" calendars="${calendars}" voice="${voice}" tasks="${tasks}" briefcases="${briefcases}"/>
         </td>
-        <td align="right" style="white-space:nowrap;padding-right:0.5em;">
+        <!--td align="right" style="white-space:nowrap;padding-right:0.5em;">
 	        <form action="<fmt:message key="yahooWebSearchURL"/>" method="GET" target="_new">
 		        <input name="<fmt:message key="yahooWebSearchParamName"/>" maxlength="2048" value="">
                 <input type="submit" value="<fmt:message key="yahooWebSearchButton"/>"
 			           class='skin_yahoo_websearch_button' style='font-size:11px'>
 	        </form>
-        </td>
+        </td-->
 	    </tr></table>
 	    <app:appStatus/>
 	    </td>
@@ -275,12 +275,12 @@
 				</td>
 				<td><div class='ImgSkin_Chrome_R3_R'></div></td>
 			</tr>
-	
+
 			<tr id='skin_tr_main' style="background-color:fff;">
-			
+
 			<c:if test="${empty editmode}">
-	
-	
+
+
 				<td id='skin_td_tree_outer' colspan=2 style="background-color: white;">
 					<table id='skin_tree_table' class='skin_table fullSize' cellspacing=0 cellpadding=0 border="0">
 						<c:if test="${selected ne 'voice'}">
@@ -344,7 +344,7 @@
 						</tr>
 					</table>
 				</td>
-				
+
 				<td id='skin_td_tree_app_sash'><div class='ZVerticalSash'></div></td>
 				</c:if>
 				<td id='skin_td_app_outer'  colspan='${empty editmode ? 2 : 5}' style='padding-left:${editmode ? 5 : 0}px;width:100%; background-color: white;'>
@@ -357,7 +357,7 @@
 					</table>
 				</td>
 			</tr>
-	
+
 			<tr id='skin_tr_main_full' style='display:none'>
 				<td id='skin_td_app_full_outer'  class='full_height' colspan='4' height='100%' style="background-color: white;">
 					<table id='skin_app_full_table' class='skin_table fullSize' cellspacing=0 cellpadding=0>
@@ -378,12 +378,12 @@
 			</td>
 			<c:forEach var="zimlets" items="${mailbox.attrs.zimbraZimletAvailableZimlets}">
 			    <c:if test="${zimlets eq 'comcast_adsrvc'}">
-			        <c:set var="comcast_adsrvc" value="true"/>    
+			        <c:set var="comcast_adsrvc" value="true"/>
 			    </c:if>
 			</c:forEach>
 
 			<c:if test="${(selected eq 'mail') and mailbox.features.portalEnabled and comcast_adsrvc}">
-			
+
 				<td id="_sidebarAd" colspan="1" width="160" valign="top" bgcolor="#f5f5f5" align="center">
 		  			  <iframe src="http://pn2.adserver.yahoo.com/a?f=2022363871&pn=comcast&p=com-mail&l=SKY&c=sh&bg=f5f5f5&no_expandable=1"
 		              marginwidth="0"
@@ -397,12 +397,12 @@
 		           <a style="color:black;text-decoration:none;" target="_blank" href="<fmt:message key="adSlugLink" />" ><fmt:message key="advertisement" /></a>
 				</td>
 			</c:if>
-	
+
 			</tr>
 
 
 
-	
+
 			<tr id='skin_R4'>
 				<td id='skin_td_R4' class='ImgSkin_Chrome_R4' colspan="2">
 					<table width=100% id='skin_table_R4' class='skin_table fullSize' cellspacing=0 cellpadding=0>
@@ -427,8 +427,8 @@
     }
     </script>
     </c:when>
-    
-    
+
+
 <c:when test="${skin eq 'zmail'}">
 	<table cellpadding="0" cellspacing="0" border="0" style="border-bottom: 1px solid #C9D7F1;">
 		<tr>
@@ -439,8 +439,8 @@
 			<td nowrap="nowrap" class="Tab">
 			<b>${fn:escapeXml(empty mailbox.defaultIdentity.fromDisplay ? mailbox.name : mailbox.defaultIdentity.fromDisplay)}</b> |
 			</td>
-			<td nowrap="nowrap" class="Tab">	<a href='<c:url value="/?client=advanced"/>'><fmt:message key="switchToAdvancedClient" /></a>  |
-			</td>
+			<!--td nowrap="nowrap" class="Tab">	<a href='<c:url value="/?client=advanced"/>'><fmt:message key="switchToAdvancedClient" /></a>  |
+			</td-->
 			<c:if test="${mailbox.attrs.zimbraIsDomainAdminAccount[0] eq 'TRUE' and not empty adminReference }">
 							<td align="left" nowrap="nowrap" class="Tab">
 								<a target="_new" href="${adminReference}"><fmt:message key="adminLinkLabel"/></a> |
@@ -449,14 +449,14 @@
 						<td align="right" nowrap="nowrap" class="Tab">
 							<a target="_new" href="<c:url value="${helpUrl}"><c:param name='locid'><fmt:getLocale /></c:param></c:url>"><fmt:message key="help"/></a> |
 						</td>
-						
+
 						<td align="right" nowrap="nowrap" class="Tab">
 							<a href="<c:url value="/?loginOp=logout"/>"><fmt:message key="logOut"/></a>
 						</td>
 			</tr>
 			</table>
 	<table cellpadding="0" cellspacing="0" border="0">
-	
+
 		<tr>
 			<td valign="top" align="center" class="Overview">
              <c:choose>
@@ -474,19 +474,19 @@
                         <td>
                             <app:appTop mailbox="${mailbox}" keys="${keys}" query="${empty context.query ? param.sq : context.query}" calendars="${calendars}" voice="${voice}" tasks="${tasks}" briefcases="${briefcases}"/>
                         </td>
-						
+
                     </tr>
                 </table>
 			</td>
-			<td align="center" style="padding-right:5px;">	
+			<td align="center" style="padding-right:5px;">
 			</td>
 		</tr>
 		</table>
 	    <table width="100%" cellpadding="0" cellspacing="0" height="27">
-		
+
 		<tr>
 			<td class="Overview">
-			
+
 			</td>
 			<td align="center" colspan="3">
 				<app:appStatus/>
@@ -494,7 +494,7 @@
 		</tr>
 		</table>
 		<table cellpadding="0" cellspacing="0" border="0" width="100%">
-		
+
 		<tr>
 			<c:if test="${empty editmode}">
 				<td valign="top" class="Overview">
@@ -514,7 +514,7 @@
 							<td valign="top" style="border-top: 1px solid #98adbe; width: 180px;">
 							   <app:ads content="${ads}"/>
 							</td>
-	
+
 						</tr>
 					</table>
 				</td>
@@ -527,14 +527,14 @@
 	 <td colspan="4">&nbsp;</td>
 	</tr>
 	</table>
-	
+
  </c:when>
 <c:otherwise>
 	<table width="100%" cellpadding="0" cellspacing="0">
 		<tr>
 			<td class='TopContent' colspan="3"  align="right" valign="top"><div style='height:6px'></div></td>
 		</tr>
-	
+
 		<tr>
 			<td valign="top" align="center" class="Overview">
              <c:choose>
@@ -552,10 +552,10 @@
                         <td width="66%">
                             <app:appTop mailbox="${mailbox}" keys="${keys}" query="${empty context.query ? param.sq : context.query}" calendars="${calendars}" voice="${voice}" tasks="${tasks}" briefcases="${briefcases}"/>
                         </td>
-						<c:if test="${mailbox.features.webSearchEnabled}">
+						<c:if test="${mailbox.features.webSearchEnabled and false}">
                             <td>
                                     <app:appTopYSearch keys="${keys}" />
-                            </td>	                     
+                            </td>
 	                    </c:if>
                     </tr>
                 </table>
@@ -563,11 +563,11 @@
 			<td align="center" style="padding-right:5px;">
 				<table cellpadding="2" cellspacing="0" >
 					<tr>
-						<td align='center' class='ZhAppSwitchLink'>
+						<!--td align='center' class='ZhAppSwitchLink'>
 							<a href='<c:url value="/?client=advanced"/>'><fmt:message key="switchToAdvancedClient" /></a>
-						</td>
+						</td-->
 						<td>
-							
+							&nbsp;
 						</td>
 						<td  align='center' class='ZhAppSwitchLink'>
 							<span id="switch_to_offline"><a href="<fmt:message key="switchToOfflineURL"/>" target="_new" ><fmt:message key="switchToOfflineClient" /></a></span>
@@ -643,7 +643,7 @@
 							<td valign="top" style="border-top: 1px solid #98adbe; width: 180px;">
 							   <app:ads content="${ads}"/>
 							</td>
-	
+
 						</tr>
 					</table>
 				</td>
@@ -656,7 +656,7 @@
 	 <td colspan="4">&nbsp;</td>
 	</tr>
 	</table>
-	
+
 </c:otherwise>
 </c:choose>
 </app:handleViewError>
