@@ -76,7 +76,7 @@ function(items, folder, attrs, callback) {
 	var action = (folder.id == ZmFolder.ID_TRASH) ? "trash" : "move";
 	var respCallback = new AjxCallback(this, this._handleResponseMoveItems, [folder, callback]);
 
-	// for account name for multi-account to always be main "local" account
+	// set accountName for multi-account to always be the main "local" account
 	// since we assume actioned ID's will always be fully qualified
 	var accountName = appCtxt.multiAccounts && appCtxt.getMainAccount().name;
 

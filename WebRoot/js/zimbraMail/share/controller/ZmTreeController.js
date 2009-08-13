@@ -816,32 +816,41 @@ function(ev, treeView, overviewId) {
 			}
 			var parentNode = this._getParentNode(organizer, ev, overviewId);
 			if (!parentNode) { return; }
-			if (fields[ZmOrganizer.F_NAME] || fields[ZmOrganizer.F_UNREAD] || fields[ZmOrganizer.F_FLAGS] || fields[ZmOrganizer.F_COLOR] ||
-				((organizer.nId == ZmFolder.ID_DRAFTS || organizer.nId == ZmOrganizer.ID_OUTBOX) && fields[ZmOrganizer.F_TOTAL])) {
 
-				node.setText(organizer.getName(treeView._showUnread));
-				if (fields && fields[ZmOrganizer.F_NAME]) {
-					if (parentNode && (parentNode.getNumChildren() > 1)) {
-						// remove and re-insert the node (if parent has more than one child)
-						node.dispose();
-						var idx = ZmTreeView.getSortIndex(parentNode, organizer, eval(ZmTreeView.COMPARE_FUNC[organizer.type]));
-						node = treeView._addNew(parentNode, organizer, idx);
-					} else {
-						node.setDndText(organizer.getName());
-					}
-					appCtxt.getAppViewMgr().updateTitle();
-				}
-
-				this._fixupTreeNode(node, organizer, treeView);
-
-				if (appCtxt.isOffline && fields[ZmOrganizer.F_FLAGS] && node._extraCell) {
-					var nodeImg = (organizer.isOfflineSyncing) ? "SyncStatusOn" : "Blank_16";
-					AjxImg.setImage(node._extraCell, nodeImg);
-				}
-
+			if (fields[ZmOrganizer.F_NAME] ||
+				fields[ZmOrganizer.F_UNREAD] ||
+				fields[ZmOrganizer.F_FLAGS] ||
+				fields[ZmOrganizer.F_COLOR] ||
+				((organizer.nId == ZmFolder.ID_DRAFTS ||
+				  organizer.nId == ZmOrganizer.ID_OUTBOX) && fields[ZmOrganizer.F_TOTAL]))
+			{
+				this._updateOverview(parentNode, node, fields, organizer, treeView);
 				this._evHandled[overviewId] = true;
 			}
 		}
+	}
+};
+
+ZmTreeController.prototype._updateOverview =
+function(parentNode, node, fields, organizer, treeView) {
+	node.setText(organizer.getName(treeView._showUnread));
+	if (fields && fields[ZmOrganizer.F_NAME]) {
+		if (parentNode && (parentNode.getNumChildren() > 1)) {
+			// remove and re-insert the node (if parent has more than one child)
+			node.dispose();
+			var idx = ZmTreeView.getSortIndex(parentNode, organizer, eval(ZmTreeView.COMPARE_FUNC[organizer.type]));
+			node = treeView._addNew(parentNode, organizer, idx);
+		} else {
+			node.setDndText(organizer.getName());
+		}
+		appCtxt.getAppViewMgr().updateTitle();
+	}
+
+	this._fixupTreeNode(node, organizer, treeView);
+
+	if (appCtxt.isOffline && fields[ZmOrganizer.F_FLAGS] && node._extraCell) {
+		var nodeImg = (organizer.isOfflineSyncing) ? "SyncStatusOn" : "Blank_16";
+		AjxImg.setImage(node._extraCell, nodeImg);
 	}
 };
 

@@ -19,7 +19,8 @@ ZmMailFolderTreeController = function() {
 ZmMailFolderTreeController.prototype = new ZmFolderTreeController;
 ZmMailFolderTreeController.prototype.constructor = ZmMailFolderTreeController;
 
-ZmMailFolderTreeController.prototype.toString = function() {
+ZmMailFolderTreeController.prototype.toString =
+function() {
 	return "ZmMailFolderTreeController";
 };
 
@@ -27,7 +28,23 @@ ZmMailFolderTreeController.prototype.toString = function() {
 // ZmFolderTreeController methods
 //
 
-ZmMailFolderTreeController.prototype._deleteListener = function(ev) {
+ZmMailFolderTreeController.prototype._updateOverview =
+function(parentNode, node, fields, organizer, treeView) {
+	ZmTreeController.prototype._updateOverview.call(this, parentNode, node, fields, organizer, treeView);
+
+	// for multi-account allow account header to update based on Inbox's unread count
+	if (appCtxt.multiAccounts &&
+		fields[ZmOrganizer.F_UNREAD] &&
+		organizer.nId == ZmOrganizer.ID_INBOX)
+	{
+		var ovc = appCtxt.getApp(ZmApp.MAIL).getOverviewContainer();
+		var account = appCtxt.getAccount(organizer.accountId);
+		ovc.updateAccountHeaderLabel(account);
+	}
+};
+
+ZmMailFolderTreeController.prototype._deleteListener =
+function(ev) {
 	// check for associated data source
 	if (appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED)) {
 		var organizer = this._getActionedOrganizer(ev);
@@ -47,7 +64,8 @@ ZmMailFolderTreeController.prototype._deleteListener = function(ev) {
 	ZmFolderTreeController.prototype._deleteListener.apply(this, arguments);
 };
 
-ZmMailFolderTreeController.prototype._dropListener = function(ev) {
+ZmMailFolderTreeController.prototype._dropListener =
+function(ev) {
 	// check for associated data source
 	if (appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED) && ev.action == DwtDropEvent.DRAG_DROP) {
 		var item = ev.srcData.data;

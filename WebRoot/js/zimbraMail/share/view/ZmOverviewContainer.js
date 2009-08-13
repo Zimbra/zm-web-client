@@ -41,6 +41,8 @@ ZmOverviewContainer = function(params) {
 
 	// add listeners
 	this.addSelectionListener(new AjxListener(this, this._treeViewListener));
+	this.addTreeListener(new AjxListener(this, this._treeListener));
+	
 };
 
 ZmOverviewContainer.prototype = new DwtTree;
@@ -293,6 +295,38 @@ function(ev) {
 	} else {																	// double click
 		// handle double click?
 	}
+};
+
+ZmOverviewContainer.prototype._treeListener =
+function(ev) {
+	var header = ev.item;
+	var acct = header && appCtxt.getAccount(header.getData(Dwt.KEY_ID));
+	if (!acct) { return; }
+
+	if (ev.detail == DwtTree.ITEM_COLLAPSED) {
+		this._setAccountHeaderLabel(acct, header);
+	}
+	else if (ev.detail == DwtTree.ITEM_EXPANDED) {
+		header.setText(acct.getDisplayName());
+	}
+};
+
+ZmOverviewContainer.prototype.updateAccountHeaderLabel =
+function(acct) {
+	var header = this.getHeaderItem(acct);
+	if (header && !header.getExpanded()) {
+		this._setAccountHeaderLabel(acct, header);
+	}
+};
+
+ZmOverviewContainer.prototype._setAccountHeaderLabel =
+function(acct, header) {
+	var inboxId = ZmOrganizer.getSystemId(ZmOrganizer.ID_INBOX, acct, true);
+	var inbox = appCtxt.getById(inboxId);
+	var label = (inbox && inbox.numUnread > 0)
+		? (["<span style='font-weight:bold;'>",acct.getDisplayName()," (", inbox.numUnread, ")","</span>"].join(""))
+		: acct.getDisplayName();
+	header.setText(label);
 };
 
 ZmOverviewContainer.prototype._handleSearchCallback =
