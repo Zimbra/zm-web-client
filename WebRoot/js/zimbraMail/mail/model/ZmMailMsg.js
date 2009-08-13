@@ -1402,15 +1402,18 @@ function(addrNodes, parentNode, isDraft, accountName) {
 		}
 		addrNodes.push(addrNode);
 
-		if (identity && identity.isFromDataSource && ac.get(ZmSetting.SEND_ON_BEHALF_OF)) {
+		if (identity && identity.isFromDataSource) {
 			var dataSource = ac.getDataSourceCollection().getById(identity.id);
-			if (dataSource) {
-				var provider = ZmDataSource.getProviderForAccount(dataSource);
+			var provider = dataSource && ZmDataSource.getProviderForAccount(dataSource);
+			if (dataSource && ac.get(ZmSetting.SEND_ON_BEHALF_OF)) {
 				var doNotAddSender = provider && provider._nosender;
 				// main account is "sender"
 				if (!doNotAddSender) {
 					addrNode.t = "s";
 					addrNode.p = addrNode.p || ac.get(ZmSetting.DISPLAY_NAME);
+					if (provider && provider._nodisplayname) {
+						delete addrNode.p;
+					}
 
 					addrNode = {};
 					addrNodes.push(addrNode);
@@ -1422,6 +1425,9 @@ function(addrNodes, parentNode, isDraft, accountName) {
 				if (provider && provider._nodisplayname) {
 					delete addrNode.p;
 				}
+			}
+			else if (provider && provider._nodisplayname) {
+				delete addrNode.p;
 			}
 		}
 	}
