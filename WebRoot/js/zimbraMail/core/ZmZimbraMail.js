@@ -1510,7 +1510,7 @@ function() {
 	var el = document.getElementById("skin_container_links");
 	if (el) {
 		var data = {
-			showOfflineLink: (!appCtxt.isOffline),
+			showOfflineLink: (!appCtxt.isOffline && appCtxt.get(ZmSetting.SHOW_OFFLINE_LINK)),
 			helpIcon: (appCtxt.getSkinHint("helpButton", "hideIcon") ? null : "Help"),
 			logoutIcon: (appCtxt.getSkinHint("logoutButton", "hideIcon") ? null : "Logoff"),
 			logoutText: (appCtxt.isOffline ? ZmMsg.setup : ZmMsg.logOff)
