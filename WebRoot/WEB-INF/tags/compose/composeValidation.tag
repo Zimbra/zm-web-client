@@ -51,7 +51,7 @@
     };
 
     /* List of IDs for which onbeforeunload has to be cancelled */
-    var expElemts = new Array("SOPADDRECIP","SOPCANCEL","Stobutton","Sccbutton","Sbccbutton","SOPDRAFT","IOPDRAFT","SOPATTACH","SDOPCANCEL","SDOPADDRECIP","SDOPDRAFT","SDOPATTACH","a_shbcc","a_hdbcc");
+    var expElemts = new Array("SOPADDRECIP","Stobutton","Sccbutton","Sbccbutton","SOPDRAFT","IOPDRAFT","SOPATTACH","SDOPCANCEL","SDOPADDRECIP","SDOPDRAFT","SDOPATTACH","a_shbcc","a_hdbcc");
     var x;
     for (x in expElemts){
         var _elem = document.getElementById(expElemts[x]);
@@ -96,7 +96,8 @@
         _fields["body"] = trim(document.getElementById("body").value);
     </c:if>
     }
-    grabFieldValues(); <%-- !TODO Why do we need to call this immeditely? --%>
+
+    grabFieldValues(); 
 
     var checkForChanges;
     checkForChanges = function(){
@@ -118,9 +119,11 @@
 
         }
     </c:if>
-
+        <c:if test="${not empty sessionScope.temp_draftid}">
+            _checkFail = true;        
+        </c:if>
         if(_checkFail){
-            //return "<fmt:message key="composeExitConfirmation"/>"; disabling this for new way of save/cancel handling
+            return "<fmt:message key="composeExitConfirmation"/>"; //disabling this for new way of save/cancel handling
         }
     }
 

@@ -24,10 +24,10 @@
 <app:handleError>
 <zm:composeUploader var="uploader"/>
 <c:set var="needComposeView" value="${param.action eq 'compose'}"/>
-<c:if test="${param.cancelConfirmed}">
+<c:if test="${param.cancelConfirmed }">
     <c:set var="needComposeView" value="${false}"/>
     <c:if test="${not empty sessionScope.temp_draftid}">
-        <zm:deleteMessage var="result" id="${param.temp_draftid}"/>
+        <zm:deleteMessage var="result" id="${sessionScope.temp_draftid}"/>
         <c:remove var="temp_draftid" scope="session"/>
     </c:if>
 </c:if>
@@ -47,10 +47,16 @@
 
     <c:choose>
         <c:when test="${uploader.isContactAdd or uploader.isContactSearch}">
-            <%--
-            <zm:saveDraft var="draftResult" compose="${uploader.compose}" draftid="${uploader.compose.draftId}"/>
-            <c:set scope="request" var="draftid" value="${draftResult.id}"/>
-            --%>
+           <c:choose>
+                <c:when test="${not empty uploader.compose.draftId}">
+                    <c:set scope="request" var="draftid" value="${uploader.compose.draftId}"/>
+                </c:when>
+                <c:otherwise>
+                    <zm:saveDraft var="draftResult" compose="${uploader.compose}" draftid="${uploader.compose.draftId}"/>
+                    <c:set scope="request" var="draftid" value="${draftResult.id}"/>
+                    <c:set var="temp_draftid" scope="session" value="${draftResult.id}"/>
+                </c:otherwise>
+            </c:choose>
             <jsp:forward page="/h/addcontacts"/>
         </c:when>
         <c:when test="${uploader.isAttachAdd}">
@@ -93,6 +99,10 @@
         </c:when>
         <c:when test="${uploader.isCancel}">
             <c:set var="needComposeView" value="${false}"/>
+            <c:if test="${not empty sessionScope.temp_draftid}">
+                <zm:deleteMessage var="result" id="${sessionScope.temp_draftid}"/>
+                <c:remove var="temp_draftid" scope="session"/>
+            </c:if>
         </c:when>
         <c:when test="${uploader.isCancelConfirm}">
             <c:set var="needComposeView" value="${false}"/>

@@ -19,7 +19,11 @@
     <fmt:setBundle basename="/messages/ZhMsg" scope='request' />
     <c:set var="action" value="${empty param.paction ? param.action : param.paction}" scope="request"/>
     <jsp:useBean id="expanded" scope="session" class="java.util.HashMap" />
-
+    <%-- Compose, temp draft cleanup--%>
+    <c:if test="${param.action ne 'compose' and not empty sessionScope.temp_draftid}">
+        <zm:deleteMessage var="result" id="${sessionScope.temp_draftid}"/>
+        <c:remove var="temp_draftid" scope="session"/>
+    </c:if>
 <%-- Deep linking  --%>
   <c:if test="${not empty param.app}">
 	  <c:choose>

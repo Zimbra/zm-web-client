@@ -75,7 +75,7 @@
 <app:view mailbox="${mailbox}" title="${not empty compose.subject ? compose.subject : title}" selected='compose' folders="true" tags="true" searches="true" context="${null}" keys="false"
           onload="var e=document.getElementById('${focusField}'); if (e) {e.focus(); if (e.setSelectionRange) e.setSelectionRange(0,0);}" >
 <body class="yui-skin-sam">
-<form action="" method="post" name="composeForm" enctype="multipart/form-data" accept-charset="utf-8"  >
+<form action="" method="post" name="composeForm" enctype="multipart/form-data" accept-charset="utf-8">
 <table width="100%" cellpadding="0" cellspacing="0">
 <tr>
     <td class='TbTop'>
@@ -86,7 +86,7 @@
                         <tr>
                             <app:button id="OPSEND" name="actionSend" src="mail/ImgSend.gif" tooltip="send" text="send"/>
                             <td><div class='vertSep'></div></td>
-                            <app:button id="OPCANCEL" name="actionCancelConfirm" src="common/ImgCancel.gif" tooltip="cancel" text="cancel"/>
+                            <app:button id="OPCANCEL" name="actionCancel" src="common/ImgCancel.gif" tooltip="cancel" text="cancel"/>
                             <td><div class='vertSep'></div></td>
                             <app:button id="OPDRAFT" name="actionDraft" src="startup/ImgDraftFolder.gif" tooltip="saveDraft" text="saveDraft"/>
                             <td><div class='vertSep'></div></td>
