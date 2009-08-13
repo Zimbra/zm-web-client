@@ -139,7 +139,8 @@ function(actionCode) {
 			break;
 
 		case ZmKeyMap.SAVED_SEARCH:
-			if (appCtxt.get(ZmSetting.SEARCH_ENABLED)) {
+			var searches = appCtxt.getFolderTree().getByType(ZmOrganizer.SEARCH);
+			if (searches && searches.length > 0) {
 				var dlg = appCtxt.getChooseFolderDialog();
 				var params = {treeIds:		[ZmOrganizer.SEARCH],
 							  overviewId:	dlg.getOverviewId(ZmOrganizer.SEARCH),
@@ -158,8 +159,10 @@ function(actionCode) {
 			break;
 
 		case ZmKeyMap.VISIT_TAG:
-			var dlg = appCtxt.getPickTagDialog();
-			ZmController.showDialog(dlg, new AjxCallback(null, ZmController._visitOrgCallback, [dlg, ZmOrganizer.TAG]));
+			if (appCtxt.getTagTree().size() > 0) {
+				var dlg = appCtxt.getPickTagDialog();
+				ZmController.showDialog(dlg, new AjxCallback(null, ZmController._visitOrgCallback, [dlg, ZmOrganizer.TAG]));
+			}
 			break;
 
 		default:

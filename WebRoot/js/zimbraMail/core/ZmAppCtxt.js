@@ -641,6 +641,10 @@ function(account) {
 	return context.AjxDispatcher.run("GetSignatureCollection", account);
 };
 
+/**
+ * Returns one of the main organizer trees: folders, tags, or zimlets.
+ * Use ZmFolderTree::getByType() to get a particular type of folder.
+ */
 ZmAppCtxt.prototype.getTree =
 function(type, account) {
 	if (this.isChildWindow) {
