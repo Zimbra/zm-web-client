@@ -388,14 +388,8 @@ function() {
 
 ZmMailListController.prototype._sendReadReceiptNotified =
 function(msg, dlg) {
-	var ac = window.parentAppCtxt || window.appCtxt;
 	var callback = dlg ? (new AjxCallback(dlg, dlg.popdown)) : null;
-	var soapDoc = AjxSoapDoc.create("MsgActionRequest", "urn:zimbraMail");
-	var actionNode = soapDoc.set("action");
-	actionNode.setAttribute("id", msg.id);
-	actionNode.setAttribute("op", "update");
-	actionNode.setAttribute("f", (msg.flags ? (msg.flags+"n") : "n"));
-	ac.getRequestMgr().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:callback});
+	msg.list.flagItems(msg, "update", msg.setFlag(ZmItem.FLAG_READ_RECEIPT_SENT, true), callback);
 };
 
 ZmMailListController.prototype._updateViewMenu =

@@ -528,12 +528,7 @@ function(msg, oldMsg) {
 	// notify zimlets that a new message has been opened
 	appCtxt.notifyZimlets("onMsgView", [msg, oldMsg, this]);
 
-	// for CV, the first hot message is automatically marked as read via SearchConvRequest
-	if (!msg.isDraft && msg.readReceiptRequested &&
-		((this._mode == ZmId.VIEW_CONV && this._controller._conv.getFirstHotMsg() == msg) ||
-		appCtxt.get(ZmSetting.MARK_MSG_READ) == ZmSetting.MARK_READ_NOW ||
-		this._mode == ZmId.VIEW_MSG))
-	{
+	if (!msg.isDraft && msg.readReceiptRequested) {
 		this._controller.sendReadReceipt(msg);
 	}
 };

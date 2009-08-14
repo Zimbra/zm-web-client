@@ -405,14 +405,37 @@ function(obj) {
 // Local change handling
 
 /**
-* Applies the given flag change to this item.
-*
-* @param flag		the flag that changed
-* @param on			true if the flag is now set
-*/
+ * Applies the given flag change to this item by setting a boolean property.
+ *
+ * @param flag	[constant]		the flag that changed
+ * @param on	[boolean]		true if the flag is now set
+ */
 ZmItem.prototype.flagLocal =
 function(flag, on) {
 	this[ZmItem.FLAG_PROP[flag]] = on;
+};
+
+/**
+ * Applies the given flag change to this item. Both the flags string and the
+ * flag properties are affected.
+ *
+ * @param flag	[constant]		the flag that changed
+ * @param on	[boolean]		true if the flag is now set
+ *
+ * @return		the new flags string
+ */
+ZmItem.prototype.setFlag =
+function(flag, on) {
+	this.flagLocal(flag, on);
+	var flags = this.flags || "";
+	if (on && flags.indexOf(flag) == -1) {
+		flags = flags + flag;
+	} else if (!on && flags.indexOf(flag) != -1) {
+		flags = flags.replace(flag, "");
+	}
+	this.flags = flags;
+
+	return flags;
 };
 
 /**

@@ -84,8 +84,9 @@ function(index) {
 ZmList.prototype.add = 
 function(item, index) {
 	this._vector.add(item, index);
-	if (item.id)
+	if (item.id) {
 		this._idHash[item.id] = item;
+	}
 };
 
 /**
@@ -191,13 +192,15 @@ ZmList.prototype.clear =
 function() {
 	// First, let each item run its clear() method
 	var a = this.getArray();
-	for (var i = 0; i < a.length; i++)
+	for (var i = 0; i < a.length; i++) {
 		a[i].clear();
+	}
 
 	this._evtMgr.removeAll(ZmEvent.L_MODIFY);
 	this._vector.removeAll();
-	for (var id in this._idHash)
+	for (var id in this._idHash) {
 		this._idHash[id] = null;
+	}
 	this._idHash = new Object();
 };
 
@@ -217,8 +220,7 @@ function(respNode) {
 		var node = nodes[i];
 		if (node.nodeName == ZmList.NODE[this.type]) {
 			/// TODO: take this out, let view decide whether to show items in Trash
-			if (parseInt(node.getAttribute("l")) == ZmFolder.ID_TRASH && (this.type != ZmItem.CONTACT))
-				continue;
+			if (parseInt(node.getAttribute("l")) == ZmFolder.ID_TRASH && (this.type != ZmItem.CONTACT))	{ continue; }
 			var obj = eval(ZmList.ITEM_CLASS[this.type]);
 			if (obj) {
 				this.add(obj.createFromDom(node, args));
@@ -256,8 +258,9 @@ function(offset, limit) {
 	var subVector = null;
 	var end = (offset + limit > this.size()) ? this.size() : offset + limit;
 	var subList = this.getArray();
-	if (offset < end)
+	if (offset < end) {
 		subVector = AjxVector.fromArray(subList.slice(offset, end));
+	}
 	return subVector;
 };
 
@@ -269,8 +272,9 @@ function(offset, newList) {
 	for (var i = 0; i < list.length; i++) {
 		var item = list[i];
 		item.list = this;
-		if (item.id)
+		if (item.id) {
 			this._idHash[item.id] = item;
+		}
 	}
 };
 
@@ -279,20 +283,21 @@ function(offset, newList) {
 /**
  * Sets/unsets a flag for each of a list of items.
  *
- * @param items		[Array]			a list of items to set/unset a flag for
- * @param flagOp	[String]		the name of the flag operation ("flag" or "read")
- * @param on		[Boolean]*		whether to set the flag
- * @param callback	[AjxCallback]*	callback to run after action. Does not apply to mixed action.
+ * @param items		[Array]					a list of items to set/unset a flag for
+ * @param flagOp	[String]				the name of the flag operation ("flag" or "read")
+ * @param value		[Boolean|string]*		whether to set the flag, or for "update" the flags string
+ * @param callback	[AjxCallback]*			callback to run after action. Does not apply to mixed action.
  */
 ZmList.prototype.flagItems =
-function(items, flagOp, on, callback) {
+function(items, flagOp, value, callback) {
 	if (this.type == ZmItem.MIXED && !this._mixedType) {
-		this._mixedAction("flagItems", [items, flagOp, on]);
+		this._mixedAction("flagItems", [items, flagOp, value]);
 		return;
 	}
 
-	var action = on ? flagOp : "!" + flagOp;
-	this._itemAction({items: items, action: action, callback: callback});
+	var action = value ? flagOp : "!" + flagOp;
+	var attrs = (action == "update") ? {f:value} : null;
+	this._itemAction({items: items, action: action, attrs:attrs, callback: callback});
 };
 
 /**
@@ -324,8 +329,9 @@ function(items, tagId, doTag) {
 	// always tag a conv, because we don't know if all items in the conv have the tag yet
 	var items1 = [];
 	for (var i = 0; i < items.length; i++) {
-		if ((doTag && (!items[i].hasTag(tagId) || items[i].type == ZmItem.CONV)) || (!doTag && items[i].hasTag(tagId)))
+		if ((doTag && (!items[i].hasTag(tagId) || items[i].type == ZmItem.CONV)) || (!doTag && items[i].hasTag(tagId))) {
 			items1.push(items[i]);
+		}
 	}
 	
 	if (items1.length) {
@@ -380,8 +386,9 @@ function(folder, callback, result) {
 	var movedItems = result.getResponse();	
 	if (movedItems && movedItems.length) {
 		this.moveLocal(movedItems, folder.id);
-		for (var i = 0; i < movedItems.length; i++)
+		for (var i = 0; i < movedItems.length; i++) {
 			movedItems[i].moveLocal(folder.id);
+		}
 		this._notify(ZmEvent.E_MOVE, {items: movedItems});
 	}
 
@@ -399,7 +406,9 @@ function(folder, callback, result) {
  */
 ZmList.prototype.copyItems =
 function(items, folder, attrs) {
-	if (!(items instanceof Array)) items = [items];
+	if (!(items instanceof Array)) {
+		items = [items];
+	}
 
 	attrs = attrs || {};
 	attrs.l = folder.id;
@@ -541,10 +550,11 @@ function(params, batchCmd) {
 	var idHash = this._getIds(params.items);
 	var idStr = idHash.list.join(",");
 	if (!(idStr && idStr.length)) {
-		if (params.callback)
+		if (params.callback) {
 			params.callback.run(new ZmCsfeResult(actionedItems));
-		else
+		} else {
 			return actionedItems;
+		}
 	}
 
 	var type;
@@ -604,8 +614,9 @@ function(type, idHash, callback, result) {
 			if (ids) {
 				for (var i = 0; i < ids.length; i++) {
 					var item = idHash[ids[i]];
-					if (item)
+					if (item) {
 						actionedItems.push(item);
+					}
 				}
 			}
 		}
@@ -647,8 +658,9 @@ function(items) {
 	var typedItems = new Object();
 	for (var i = 0; i < items.length; i++) {
 		var type = items[i].type;
-		if (!typedItems[type])
-			typedItems[type] = new Array();
+		if (!typedItems[type]) {
+			typedItems[type] = [];
+		}
 		typedItems[type].push(items[i]);
 	}
 	return typedItems;
@@ -658,9 +670,13 @@ function(items) {
 ZmList.prototype._getIds =
 function(list) {
 	var idHash = new Object();
-	if (list instanceof ZmItem) list = [list];
+	if (list instanceof ZmItem) {
+		list = [list];
+	}
 	
-	if (!(list && list.length))	return idHash;
+	if (!(list && list.length)) {
+		return idHash;
+	}
 	
 	var ids = new Array();
 	var extra = new Array();
@@ -672,8 +688,9 @@ function(list) {
 			idHash[id] = item;
 		}
 		// so we ignore related conv notifs (except virtual convs)
-		if ((item.type == ZmItem.MSG) && item.cid && (item.cid > 0))
+		if ((item.type == ZmItem.MSG) && item.cid && (item.cid > 0)) {
 			extra.push(item.cid);
+		}
 	}
 	idHash.list = ids;
 	idHash.extra = extra;
@@ -736,9 +753,7 @@ function(ev) {
 	var tag = ev.getDetail("organizers")[0];
 	var fields = ev.getDetail("fields");
 	var ctlr = appCtxt.getCurrentController();
-	if (!ctlr || (appCtxt.getCurrentList() != this)) {
-		return;
-	}
+	if (!ctlr || (appCtxt.getCurrentList() != this)) { return; }
 	
 	if ((ev.event == ZmEvent.E_MODIFY) && fields && fields[ZmOrganizer.F_NAME]) {
 		// on tag rename, update current query if tag is part of query
@@ -768,10 +783,12 @@ function(ev) {
 			var viewId = appCtxt.getCurrentViewId();
 			ctlr.enablePagination(false, viewId);
 			var view = ctlr.getCurrentView();
-			if (view && view.sortingEnabled)
+			if (view && view.sortingEnabled) {
 				view.sortingEnabled = false;
-			if (viewId == ZmId.VIEW_CONVLIST)
+			}
+			if (viewId == ZmId.VIEW_CONVLIST) {
 				ctlr._currentSearch.query = "is:read is:unread";
+			}
 			ctlr._currentSearch.tagId = null;
 			appCtxt.getSearchController().setSearchField("");
 		}

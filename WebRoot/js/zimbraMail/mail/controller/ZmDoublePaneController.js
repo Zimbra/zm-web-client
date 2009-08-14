@@ -281,7 +281,6 @@ function(msg) {
 ZmDoublePaneController.prototype._markReadAction =
 function(msg) {
 	this._doMarkRead([msg], true);
-	this.sendReadReceipt(msg);
 };
 
 ZmDoublePaneController.prototype._preHideCallback =
