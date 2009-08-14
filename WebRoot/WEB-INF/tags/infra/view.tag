@@ -569,9 +569,11 @@
 						<td>
 							&nbsp;
 						</td>
-						<td  align='center' class='ZhAppSwitchLink'>
-							<span id="switch_to_offline"><a href="<fmt:message key="switchToOfflineURL"/>" target="_new" ><fmt:message key="switchToOfflineClient" /></a></span>
-						</td>
+                        <c:if test="${mailbox.features.webClientShowOfflineLink}">
+                            <td  align='center' class='ZhAppSwitchLink'>
+                                <span id="switch_to_offline"><a href="<fmt:message key="switchToOfflineURL"/>" target="_new" ><fmt:message key="switchToOfflineClient" /></a></span>
+                            </td>
+                        </c:if>
 					</tr>
 				</table>
 				<table cellpadding="2" cellspacing="0" >
