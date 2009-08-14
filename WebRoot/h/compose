@@ -219,6 +219,10 @@
                </c:if>
             </c:forEach>
         </c:if>
+        <c:if test="${isHtml}">
+            <c:set var="find" value="&gt;([\s\n\t ])+&lt;"/>
+            <c:set var="theBody" value="${zm:replaceAll(theBody, find,'&gt;&lt;' )}"/>
+        </c:if>            
         <textarea class='MsgCompose' name="body" id="body" rows="20" cols="80" style='<c:if test="${isHtml}">visibility:hidden;</c:if>width:100%'>${theBody}</textarea>
         <!--<textarea class='MsgCompose' rows="30" cols="80" style='width:100%'>${isHtml ? (empty compose.htmlContent ?  fn:escapeXml(compose.content) : fn:escapeXml(compose.htmlContent)) : compose.content}</textarea>-->
         <input type="hidden" id="bodyText" class='MsgCompose' name="bodyText" value="" style='width:100%' />
