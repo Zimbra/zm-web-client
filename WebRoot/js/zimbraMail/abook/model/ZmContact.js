@@ -348,12 +348,12 @@ function(contact) {
 				}
 				return attr.email;
 			}
-			fa = ZmContact.fileAsLastFirst(attr.firstName, attr.lastName);
+			fa = ZmContact.fileAsLastFirst(attr.firstName, attr.lastName, attr.fullName, attr.nickname);
 		}
 		break;
 
 		case ZmContact.FA_FIRST_LAST: { 										// First Last
-			fa = ZmContact.fileAsFirstLast(attr.firstName, attr.lastName);
+			fa = ZmContact.fileAsFirstLast(attr.firstName, attr.lastName, attr.fullName, attr.nickname);
 		}
 		break;
 
@@ -363,13 +363,13 @@ function(contact) {
 		break;
 
 		case ZmContact.FA_LAST_C_FIRST_COMPANY: {								// Last, First (Company)
-			var name = ZmContact.fileAsLastFirst(attr.firstName, attr.lastName);
+			var name = ZmContact.fileAsLastFirst(attr.firstName, attr.lastName, attr.fullName, attr.nickname);
 			fa = ZmContact.fileAsNameCompany(name, attr.company);
 		}
 		break;
 
 		case ZmContact.FA_FIRST_LAST_COMPANY: {									// First Last (Company)
-			var name = ZmContact.fileAsFirstLast(attr.firstName, attr.lastName);
+			var name = ZmContact.fileAsFirstLast(attr.firstName, attr.lastName, attr.fullName, attr.nickname);
 			fa = ZmContact.fileAsNameCompany(name, attr.company);
 		}
 		break;
@@ -398,20 +398,20 @@ function(contact) {
 * Name printing helper.  e.g. First Last
 */
 ZmContact.fileAsFirstLast =
-function(first, last) {
+function(first, last, fullname, nickname) {
 	if (first && last)
 		return AjxMessageFormat.format(ZmMsg.fileAsFirstLast, [first, last]);
-	return first || last || "";
-}
+	return first || last || fullname || nickname || "";
+};
 
 /**
 * Name printing helper.  e.g. Last, First
 */
 ZmContact.fileAsLastFirst =
-function(first, last) {
+function(first, last, fullname, nickname) {
 	if (first && last)
 		return AjxMessageFormat.format(ZmMsg.fileAsLastFirst, [first, last]);
-	return first || last || "";
+	return first || last || fullname || nickname || "";
 }
 
 /**

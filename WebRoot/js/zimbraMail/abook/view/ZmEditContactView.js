@@ -1004,7 +1004,7 @@ ZmEditContactViewIM.RE_VALUE = /^(.*?):\/\/(.*)$/;
 
 ZmEditContactViewIM.prototype.setValue = function(value) {
 	var m = ZmEditContactViewIM.RE_VALUE.exec(value);
-	value = m ? { type:m[1],value:m[2] } : { type:"zimbra",value:"" };
+	value = m ? { type:m[1],value:m[2] } : { type:"other",value:value };
 	ZmEditContactViewInputSelect.prototype.setValue.call(this, value);
 };
 ZmEditContactViewIM.prototype.getValue = function() {
