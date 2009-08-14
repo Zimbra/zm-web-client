@@ -507,29 +507,34 @@ function(contact, doAdd) {
 	this._app.updateCache(contact, doAdd);
 
     // Update email hash.
-	for (var i = 0; i < ZmContact.F_EMAIL_FIELDS.length; i++) {
-		var email = ZmContact.getAttr(contact, ZmContact.F_EMAIL_FIELDS[i]);
-		if (email) {
+	for (var index = 0; index < ZmContact.EMAIL_FIELDS.length; index++) {
+		var field = ZmContact.EMAIL_FIELDS[index];
+		for (var i = 1; true; i++) {
+			var aname = ZmContact.getAttributeName(field, i);
+			var avalue = ZmContact.getAttr(contact, aname);
+			if (!avalue) break;
 			if (doAdd) {
-				this._emailToContact[email.toLowerCase()] = contact;
+				this._emailToContact[avalue.toLowerCase()] = contact;
 			} else {
-				delete this._emailToContact[email.toLowerCase()];
+				delete this._emailToContact[avalue.toLowerCase()];
 			}
 		}
 	}
 
 	// Update phone hash.
 	if (appCtxt.get(ZmSetting.VOICE_ENABLED)) {
-		for (var i = 0; i < ZmContact.F_PHONE_FIELDS.length; i++) {
-			var field = ZmContact.F_PHONE_FIELDS[i];
-			var phone = ZmContact.getAttr(contact, field);
-			if (phone) {
-				var digits = this._getPhoneDigits(phone);
+		for (var index = 0; index < ZmContact.PHONE_FIELDS.length; index++) {
+			var field = ZmContact.PHONE_FIELDS[index];
+			for (var i = 1; true; i++) {
+				var aname = ZmContact.getAttributeName(field, i);
+				var avalue = ZmContact.getAttr(contact, aname);
+				if (!avalue) break;
+				var digits = this._getPhoneDigits(avalue);
 				if (digits) {
 					if (doAdd) {
-						this._phoneToContact[digits] = {contact: contact, field: field};
+						this._phoneToContact[avalue] = {contact: contact, field: aname};
 					} else {
-						delete this._phoneToContact[digits];
+						delete this._phoneToContact[avalue];
 					}
 				}
 			}
@@ -538,14 +543,16 @@ function(contact, doAdd) {
 
 	// Update IM hash.
 	if (appCtxt.get(ZmSetting.IM_ENABLED)) {
-		for (var i = 0; i < ZmContact.F_IM_FIELDS.length; i++) {
-			var imaddr = ZmContact.getAttr(contact, ZmContact.F_IM_FIELDS[i]);
-			if (imaddr) {
-				imaddr = imaddr.toLowerCase();
+		for (var index = 0; index < ZmContact.IM_FIELDS.length; index++) {
+			var field = ZmContact.IM_FIELDS[index];
+			for (var i = 1; true; i++) {
+				var aname = ZmContact.getAttributeName(field, i);
+				var avalue = ZmContact.getAttr(contact, aname);
+				if (!avalue) break;
 				if (doAdd) {
-					this._imAddressToContact[imaddr] = contact;
+					this._imAddressToContact[avalue.toLowerCase()] = contact;
 				} else {
-					delete this._imAddressToContact[imaddr];
+					delete this._imAddressToContact[avalue.toLowerCase()];
 				}
 			}
 		}

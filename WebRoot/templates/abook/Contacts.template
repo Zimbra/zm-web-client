@@ -412,9 +412,18 @@
 		id: data.id,
 		attrs: data.contact.getAttrs(), seenone: false,
 		findObjects: data.findObjects, objectType: ZmObjectManager.EMAIL,
-		label: ZmMsg.emailLabel, name: ZmContact.F_email
-	}; $>
-	<$= AjxTemplate.expand("#SplitView_item_list", itemlistdata) $>
+		label: ZmMsg.emailLabel
+	};
+	var types = {};
+	types[ZmContact.F_email] = ZmMsg.home;
+	types[ZmContact.F_workEmail] = ZmMsg.work;
+	var names = ZmEditContactView.LISTS.EMAIL.attrs;
+	for (var i = 0; i < names.length; i++) {
+		var name= names[i];
+		itemlistdata.name = name;
+		itemlistdata.type = types[name] || ZmMsg["AB_FIELD_"+name]; $>
+		<$= AjxTemplate.expand("#SplitView_item_list", itemlistdata) $>
+	<$ } $>
 </template>
 
 <template id="abook.Contacts#SplitView_phones">
@@ -548,7 +557,9 @@
 	// find unknown attributes
 	var attrs = {};
 	for (var a in itemlistdata.attrs) {
-		attrs[a.replace(/\d+$/,"")] = true;
+		var aname = a.replace(/\d+$/,"");
+		if (aname in ZmContact.IS_IGNORE) continue;
+		attrs[aname] = true;
 	}
 	for (var id in ZmEditContactView.ATTRS) {
 		delete attrs[ZmEditContactView.ATTRS[id]];

@@ -39,7 +39,13 @@ ZmEditContactView = function(parent, controller, isMyCardView) {
 			{ id: "NOTES", type: "DwtInputField", cols: 60, rows:4 },
 			// contact list fields
 			{ id: "EMAIL", type: "ZmEditContactViewRows", rowitem: {
-				type: "DwtInputField", cols: 40, hint: ZmMsg.emailAddrHint 
+				type: "ZmEditContactViewInputSelect", equals:ZmEditContactViewInputSelect.equals, params: {
+					hint: ZmMsg.emailAddrHint, cols: 40,
+					options: [
+						{ value: ZmContact.F_email, label: ZmMsg.home },
+						{ value: ZmContact.F_workEmail, label: ZmMsg.work }
+					]
+				}
 			} },
 			{ id: "PHONE", type: "ZmEditContactViewRows", rowitem: {
 				type: "ZmEditContactViewInputSelect", equals:ZmEditContactViewInputSelect.equals, params: {
@@ -209,28 +215,12 @@ ZmEditContactView.ATTRS = {
 };
 
 ZmEditContactView.LISTS = {
-	ADDRESS: {}, // NOTE: placeholder for custom handling
-	EMAIL: {attrs:[ZmContact.F_email], onlyvalue:true},
-	PHONE: {attrs:[
-//		"office",
-		ZmContact.F_homePhone,
-		ZmContact.F_mobilePhone,
-		ZmContact.F_workPhone,
-		ZmContact.F_homeFax,
-		ZmContact.F_workFax,
-		ZmContact.F_otherFax,
-		ZmContact.F_pager,
-		ZmContact.F_callbackPhone,
-		ZmContact.F_carPhone,
-		ZmContact.F_companyPhone,
-		ZmContact.F_assistantPhone,
-		ZmContact.F_otherPhone
-	]},
-	IM: {attrs:["imAddress"], addone:{"imAddress":1}, onlyvalue:true},
-	URL: {attrs:[ZmContact.F_homeURL,ZmContact.F_workURL,ZmContact.F_otherURL]},
-	OTHER: {attrs: [
-		ZmContact.F_birthday, ZmContact.F_anniversary, "custom"
-	], addone:{"custom":1}}
+	ADDRESS: {attrs:ZmContact.ADDRESS_FIELDS}, // NOTE: placeholder for custom handling
+	EMAIL: {attrs:ZmContact.EMAIL_FIELDS },
+	PHONE: {attrs:ZmContact.PHONE_FIELDS},
+	IM: {attrs:ZmContact.IM_FIELDS, addone:ZmContact.IS_ADDONE, onlyvalue:true},
+	URL: {attrs:ZmContact.URL_FIELDS},
+	OTHER: {attrs:ZmContact.OTHER_FIELDS, addone:ZmContact.IS_ADDONE}
 };
 
 ZmEditContactView.ADDR_PREFIXES = ["work","home","other"];
@@ -595,6 +585,7 @@ function(contact,id,prefixes,addone,onlyvalue,listAttrs) {
 	var attrs = contact.getAttrs();
 	for (var aname in attrs) {
 		aname = aname.replace(/\d+$/,"");
+		if (ZmContact.IS_IGNORE[aname]) continue;
 		if (!(aname in attributes)) {
 			array.push({type:aname,value:attrs[aname]});
 			if (!listAttrs[id]) listAttrs[id] = [];

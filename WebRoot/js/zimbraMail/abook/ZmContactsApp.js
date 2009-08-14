@@ -594,18 +594,19 @@ function(addresses, callback) {
 
 ZmContactsApp.prototype._handleResponseSearchByEmails =
 function(addresses, resultArray, callback, result) {
-	// Add the search results to our cache.
+	// get contact list
 	var resp = result.getResponse();
-	var contactList = resp && resp.getResults(ZmItem.CONTACT);
-	if (contactList) {
-		for (var contactIndex = 0, contactCount = contactList.size(); contactIndex < contactCount; contactIndex++) {
-			var contact = contactList.get(contactIndex);
-			for (var fieldIndex = 0, fieldCount = ZmContact.F_EMAIL_FIELDS.length; fieldIndex < fieldCount; fieldIndex++) {
-				var addr = contact.getAttr(ZmContact.F_EMAIL_FIELDS[fieldIndex]);
-				if (addr) {
-					this._byEmail[addr] = contact;
-				}
-			}
+	var list = resp && resp.getResults(ZmItem.CONTACT);
+	if (!list) callback.run(resultArray);
+
+	// get contact emails
+	for (var index = 0, count= contactList.size(); index < count; index++) {
+		var contact = contactList.get(index);
+		for (var i = 1; true; i++) {
+			var aname = ZmContact.getAttributeName(ZmContact.F_email, i);
+			var avalue = contact.getAttr(aname);
+			if (!avalue) break;
+			this._byEmail[avalue] = contact;
 		}
 	}
 
@@ -691,11 +692,11 @@ function(contact, addr) {
 		this._byEmail[addr] = contact;
 	}
 	if (contact) {
-		for (var i = 0; i < ZmContact.F_EMAIL_FIELDS.length; i++) {
-			var attr = contact.getAttr(ZmContact.F_EMAIL_FIELDS[i]);
-			if (attr) {
-				this._byEmail[attr.toLowerCase()] = contact;
-			}
+		for (var i = 1; true; i++) {
+			var aname = ZmContact.getAttributeName(ZmContact.F_email, i);
+			var avalue = contact.getAttr(aname);
+			if (!avalue) break;
+			this._byEmail[avalue.toLowerCase()] = contact;
 		}
 	}
 };
@@ -735,27 +736,29 @@ function(contact) {
 ZmContactsApp.prototype.updateCache =
 function(contact, doAdd) {
 
-	this._updateHash(contact, doAdd, ZmContact.F_EMAIL_FIELDS, this._byEmail);
+	this._updateHash(contact, doAdd, ZmContact.EMAIL_FIELDS, this._byEmail);
 	if (appCtxt.get(ZmSetting.VOICE_ENABLED)) {
-		this._updateHash(contact, doAdd, ZmContact.F_PHONE_FIELDS, this._byPhone, true, true);
+		this._updateHash(contact, doAdd, ZmContact.PHONE_FIELDS, this._byPhone, true, true);
 	}
 	if (appCtxt.get(ZmSetting.IM_ENABLED)) {
-		this._updateHash(contact, doAdd, ZmContact.F_IM_FIELDS, this._byIM);
+		this._updateHash(contact, doAdd, ZmContact.IM_FIELDS, this._byIM);
 	}
 };
 
 ZmContactsApp.prototype._updateHash =
 function(contact, doAdd, fields, hash, includeField, isNumeric) {
 
-	for (var i = 0; i < fields.length; i++) {
-		var field = fields[i];
-		var value = ZmContact.getAttr(contact, fields[i]);
-		if (value) {
-			value = isNumeric ? value.replace(/[^\d]/g, '') : value.toLowerCase();
+	for (var index = 0; index < fields.length; index++) {
+		var field = fields[index];
+		for (var i = 1; true; i++) {
+			var aname = ZmContact.getAttributeName(field, i);
+			var avalue = ZmContact.getAttr(contact, aname);
+			if (!avalue) break;
+			avalue = isNumeric ? avalue.replace(/[^\d]/g, '') : avalue.toLowerCase();
 			if (doAdd) {
-				hash[value] = includeField ? contact : {contact:contact, field:field};
+				hash[avalue] = includeField ? contact : {contact:contact, field:aname};
 			} else {
-				delete hash[value];
+				delete hash[avalue];
 			}
 		}
 	}

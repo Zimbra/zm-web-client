@@ -56,6 +56,7 @@ ZmContact.F_callbackPhone			= "callbackPhone";
 ZmContact.F_carPhone				= "carPhone";
 ZmContact.F_company					= "company";
 ZmContact.F_companyPhone			= "companyPhone";
+ZmContact.F_custom					= "custom";
 ZmContact.F_description				= "description";
 ZmContact.F_department				= "department";
 ZmContact.F_dlist					= "dlist";				// Group fields
@@ -75,6 +76,7 @@ ZmContact.F_homeState				= "homeState";
 ZmContact.F_homeStreet				= "homeStreet";
 ZmContact.F_homeURL					= "homeURL";
 ZmContact.F_image					= "image";				// contact photo
+ZmContact.F_imAddress 				= "imAddress";			// IM addresses
 ZmContact.F_imAddress1 				= "imAddress1";			// IM addresses
 ZmContact.F_imAddress2 				= "imAddress2";
 ZmContact.F_imAddress3				= "imAddress3";
@@ -99,6 +101,7 @@ ZmContact.F_pager					= "pager";
 ZmContact.F_type					= "type";
 ZmContact.F_workCity				= "workCity";
 ZmContact.F_workCountry				= "workCountry";
+ZmContact.F_workEmail				= "workEmail";
 ZmContact.F_workEmail1				= "workEmail1";
 ZmContact.F_workEmail2				= "workEmail2";
 ZmContact.F_workEmail3				= "workEmail3";
@@ -119,6 +122,11 @@ ZmContact.MC_homePhotoURL			= "homePhotoURL";
 ZmContact.MC_workPhotoURL			= "workPhotoURL";
 ZmContact.GAL_MODIFY_TIMESTAMP		= "modifyTimeStamp";	// GAL fields
 ZmContact.GAL_CREATE_TIMESTAMP		= "createTimeStamp";
+ZmContact.GAL_ZIMBRA_ID				= "zimbraId";
+ZmContact.GAL_OBJECT_CLASS			= "objectClass";
+ZmContact.GAL_MAIL_FORWARD_ADDRESS	= "zimbraMailForwardingAddress";
+ZmContact.GAL_CAL_RES_TYPE			= "zimbraCalResType";
+ZmContact.GAL_CAL_RES_LOC_NAME		= "zimbraCalResLocationDisplayName";
 
 // file as
 var i = 1;
@@ -131,30 +139,144 @@ ZmContact.FA_COMPANY_LAST_C_FIRST	= i++;
 ZmContact.FA_COMPANY_FIRST_LAST		= i++;
 ZmContact.FA_CUSTOM					= i++;
 
-ZmContact.F_EMAIL_FIELDS = [
-	ZmContact.F_email,
-	ZmContact.F_email2,
-	ZmContact.F_email3,
-	ZmContact.F_workEmail1,
-	ZmContact.F_workEmail2,
-	ZmContact.F_workEmail3
-];
+// Field information
 
-ZmContact.F_PHONE_FIELDS = [
+ZmContact.ADDRESS_FIELDS = [
+	ZmContact.F_homeCity,
+	ZmContact.F_homeCountry,
+	ZmContact.F_homePostalCode,
+	ZmContact.F_homeState,
+	ZmContact.F_homeStreet,
+	ZmContact.F_otherCity,
+	ZmContact.F_otherCountry,
+	ZmContact.F_otherPostalCode,
+	ZmContact.F_otherState,
+	ZmContact.F_otherStreet,
+	ZmContact.F_workCity,
+	ZmContact.F_workCountry,
+	ZmContact.F_workPostalCode,
+	ZmContact.F_workState,
+	ZmContact.F_workStreet
+];
+ZmContact.EMAIL_FIELDS = [
+	ZmContact.F_email,
+	ZmContact.F_workEmail
+];
+ZmContact.IM_FIELDS = [
+	ZmContact.F_imAddress
+];
+ZmContact.OTHER_FIELDS = [
+	ZmContact.F_anniversary,
+	ZmContact.F_birthday,
+	ZmContact.F_custom
+];
+ZmContact.PHONE_FIELDS = [
 	ZmContact.F_assistantPhone,
 	ZmContact.F_callbackPhone,
 	ZmContact.F_carPhone,
 	ZmContact.F_companyPhone,
 	ZmContact.F_homeFax,
 	ZmContact.F_homePhone,
-	ZmContact.F_homePhone2,
 	ZmContact.F_mobilePhone,
+	ZmContact.F_otherFax,
 	ZmContact.F_otherPhone,
-	ZmContact.F_workPhone,
-	ZmContact.F_workPhone2
+	ZmContact.F_pager,
+	ZmContact.F_workFax,
+	ZmContact.F_workPhone
 ];
-ZmContact.F_IM_FIELDS = [ ZmContact.F_imAddress1, ZmContact.F_imAddress2, ZmContact.F_imAddress3 ];
-ZmContact.F_ATT_FIELDS = [ZmContact.F_image];	// Attachment Fields
+ZmContact.PRIMARY_FIELDS = [
+	ZmContact.F_company,
+	ZmContact.F_department,
+	ZmContact.F_fileAs,
+	ZmContact.F_firstName,
+	ZmContact.F_folderId,
+	ZmContact.F_image,
+	ZmContact.F_jobTitle,
+	ZmContact.F_lastName,
+	ZmContact.F_maidenName,
+	ZmContact.F_middleName,
+	ZmContact.F_namePrefix,
+	ZmContact.F_nameSuffix,
+	ZmContact.F_nickname,
+	ZmContact.F_notes
+];
+ZmContact.URL_FIELDS = [
+	ZmContact.F_homeURL,
+	ZmContact.F_workURL,
+	ZmContact.F_otherURL
+];
+
+ZmContact.DISPLAY_FIELDS = [].concat(
+	ZmContact.ADDRESS_FIELDS,
+	ZmContact.EMAIL_FIELDS,
+	ZmContact.IM_FIELDS,
+	ZmContact.OTHER_FIELDS,
+	ZmContact.PHONE_FIELDS,
+	ZmContact.PRIMARY_FIELDS,
+	ZmContact.URL_FIELDS
+);
+
+ZmContact.GAL_FIELDS = [
+	ZmContact.GAL_MODIFY_TIMESTAMP,
+	ZmContact.GAL_CREATE_TIMESTAMP,
+	ZmContact.GAL_ZIMBRA_ID,
+	ZmContact.GAL_OBJECT_CLASS,
+	ZmContact.GAL_MAIL_FORWARD_ADDRESS,
+	ZmContact.GAL_CAL_RES_TYPE,
+	ZmContact.GAL_CAL_RES_LOC_NAME
+];
+ZmContact.MYCARD_FIELDS = [
+	ZmContact.MC_cardOwner,
+	ZmContact.MC_homeCardMessage,
+	ZmContact.MC_homePhotoURL,
+	ZmContact.MC_workCardMessage,
+	ZmContact.MC_workPhotoURL
+];
+ZmContact.X_FIELDS = [
+	ZmContact.X_firstLast,
+	ZmContact.X_fullName
+];
+
+ZmContact.IGNORE_FIELDS = [].concat(
+	ZmContact.GAL_FIELDS,
+	ZmContact.MYCARD_FIELDS,
+	ZmContact.X_FIELDS
+);
+
+ZmContact.ALL_FIELDS = [].concat(
+	ZmContact.DISPLAY_FIELDS, ZmContact.IGNORE_FIELDS
+);
+
+ZmContact.IS_IGNORE = {};
+for (var i = 0; i < ZmContact.IGNORE_FIELDS.length; i++) {
+	ZmContact.IS_IGNORE[ZmContact.IGNORE_FIELDS[i]] = true;
+}
+delete i;
+
+/**
+ * This structure can be queried to determine if the first
+ * entry in a multi-value entry is suffixed with "1". Most
+ * attributes add a numerical suffix to all but the first
+ * entry.
+ * <p>
+ * <strong>Note:</strong>
+ * In most cases, ZmContact.getAttributeName(field,index)
+ * is a better choice.
+ */
+ZmContact.IS_ADDONE = {};
+ZmContact.IS_ADDONE[ZmContact.F_custom] = true;
+ZmContact.IS_ADDONE[ZmContact.F_imAddress] = true;
+ZmContact.IS_ADDONE[ZmContact.F_workEmail] = true;
+
+/**
+ * Returns an indexed attribute name taking into account if the field
+ * with index 1 should append the "1" or not. Code should call this
+ * function in lieu of accessing ZmContact.IS_ADDONE directly.
+ */
+ZmContact.getAttributeName = function(name, index) {
+	index = index || 1;
+	return index > 1 || ZmContact.IS_ADDONE[name] ? name+index : name;
+};
 
 ZmContact.prototype.toString =
 function() {
@@ -743,10 +865,14 @@ function() {
 ZmContact.prototype.getEmails =
 function() {
 	var emails = [];
-	for (var i = 0; i < ZmContact.F_EMAIL_FIELDS.length; i++) {
-		var value = this.getAttr(ZmContact.F_EMAIL_FIELDS[i]);
-		if (value)
-			emails.push(value);
+	var attrs = this.getAttrs();
+	for (var index = 0; index < ZmContact.EMAIL_FIELDS.length; index++) {
+		var field = ZmContact.EMAIL_FIELDS[index];
+		for (var i = 1; true; i++) {
+			var aname = ZmContact.getAttributeName(field, i);
+			if (!attrs[aname]) break;
+			emails.push(attrs[aname]);
+		}
 	}
 	return emails;
 };
@@ -1067,6 +1193,49 @@ function(type, shortForm) {
 	}
 
 	return text;
+};
+
+ZmContact.prototype.getUnknownFields = function(sortByNameFunc) {
+	var map = ZmContact.__FIELD_MAP;
+	if (!map) {
+		map = ZmContact.__FIELD_MAP = {};
+		for (var i = 0; i < ZmContact.DISPLAY_FIELDS; i++) {
+			map[ZmContact.DISPLAY_FIELDS[i]] = true;
+		}
+	}
+	var fields = [];
+	var attrs = this.getAttrs();
+	for (var aname in attrs) {
+		var field = aname.replace(/\d+$/,"");
+		if (map[aname]) continue;
+		fields.push(field);
+	}
+	return this.getFields(fields, sortByNameFunc);
+};
+
+ZmContact.prototype.getFields = function(fields, sortByNameFunc) {
+	// TODO: [Q] Should sort function handle just the field names or the attribute names?
+	var selection;
+	var attrs = this.getAttrs();
+	for (var index = 0; index < fields.length; index++) {
+		for (var i = 1; true; i++) {
+			var aname = ZmContact.getAttributeName(fields[index], i);
+			if (!attrs[aname]) break;
+			if (!selection) selection = {};
+			selection[aname] = attrs[aname];
+		}
+	}
+	if (sortByNameFunc && selection) {
+		var keys = AjxUtil.keys(selection);
+		keys.sort(sortByNameFunc);
+		var nfields = {};
+		for (var i = 0; i < keys; i++) {
+			var key = keys[i];
+			nfields[key] = fields[key];
+		}
+		selection = nfields;
+	}
+	return selection;
 };
 
 // these need to be kept in sync with ZmContact.F_*
