@@ -109,10 +109,8 @@ function(params) {
 
 	this.setTitle(params.title || ZmMsg.chooseFolder);
 
-	if (params.description) {
-		var descCell = document.getElementById(this._folderDescDivId);
-		descCell.innerHTML = params.description;
-	}
+	var descCell = document.getElementById(this._folderDescDivId);
+	descCell.innerHTML = params.description || "";
 
 	var treeIds = this._treeIds = (params.treeIds && params.treeIds.length)
 		? params.treeIds : [ZmOrganizer.FOLDER];
@@ -335,7 +333,7 @@ function() {
 				var ti = items[i];
 				if (ti.getData) {
 					var folder = items[i].getData(Dwt.KEY_OBJECT);
-					if (folder && (folder.id != ZmOrganizer.ID_ROOT)) {
+					if (folder && (folder.nId != ZmOrganizer.ID_ROOT)) {
 						var name = folder.getName(false, null, true, true).toLowerCase();
 						var path = "/" + folder.getPath(false, false, null, true).toLowerCase();
 						this._folders.push({id:folder.id, type:type, name:name, path:path, accountId:accountId});

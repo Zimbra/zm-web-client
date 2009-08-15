@@ -475,9 +475,12 @@ ZmEditContactView.prototype._handleFolderButton = function(ev) {
 	var dialog = appCtxt.getChooseFolderDialog();
 	dialog.registerCallback(DwtDialog.OK_BUTTON, new AjxCallback(this, this._handleChooseFolder));
 	var params = {
-		title: ZmMsg.chooseAddrBook,
-		treeIds: [ZmOrganizer.ADDRBOOK], 
-		skipReadOnly: true, skipRemote: true, noRootSelect: true
+		overviewId:		dialog.getOverviewId(ZmApp.CONTACTS),
+		title:			ZmMsg.chooseAddrBook,
+		treeIds:		[ZmOrganizer.ADDRBOOK],
+		skipReadOnly:	true,
+		skipRemote:		true,
+		noRootSelect:	true
 	};
 	params.omit = {};
 	params.omit[ZmFolder.ID_TRASH] = true;
