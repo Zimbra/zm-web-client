@@ -326,7 +326,7 @@ function(account, skipUpdate, ignoreProvider) {
 	//       in that case.
 	var isExternal = account instanceof ZmDataSource;
 	var provider = !ignoreProvider && isExternal && account.getProvider();
-	var div = (provider && this._sectionDivs[provider.id]) || this._sectionDivs[account.type];
+	var div = (provider && this._sectionDivs[provider.id]) || this._getSectionDiv(account);
 	if (div) {
 		this._currentAccount = account;
 		Dwt.setVisible(div, true);
@@ -615,8 +615,7 @@ function(batchCmd) {
 
 ZmAccountsPage.prototype._testAccounts =
 function(accounts, okCallback, cancelCallback) {
-	var dialog = this._controller.getTestDialog();
-	dialog.popup(accounts, okCallback, cancelCallback);
+	this._controller.getTestDialog().popup(accounts, okCallback, cancelCallback);
 };
 
 // set controls based on account
@@ -624,12 +623,7 @@ function(accounts, okCallback, cancelCallback) {
 ZmAccountsPage.prototype._setZimbraAccount =
 function(account, section) {
 	this._setGenericFields(account, section);
-	if (account.isMain || appCtxt.isOffline) {
-		this._enableZimbraAccountFields(account, section, true);
-		this._setIdentityFields(account, section);
-	} else {
-		this._enableZimbraAccountFields(account, section, false);
-	}
+	this._setIdentityFields(account, section);
 };
 
 ZmAccountsPage.prototype._setExternalAccount =
@@ -786,24 +780,6 @@ function(batchCmd) {
 		}
 		var callback = new AjxCallback(this, this._handleSaveVisibleAccount);
 		batchCmd.addNewRequestParams(soapDoc, callback);
-	}
-};
-
-ZmAccountsPage.prototype._enableZimbraAccountFields =
-function(account, section, enable) {
-	this._setControlEnabled("NAME", section, enable);
-	this._setControlEnabled("VISIBLE", section, !enable);
-
-	for (var i in ZmAccountsPage.IDENTITY_PROPS) {
-		if (i == "FROM_EMAIL") continue;
-		var control = section.controls[i];
-		var setup = ZmAccountsPage.PREFS[i];
-		if (!control || !setup) continue;
-
-		if (!enable) {
-			this._setControlValue(i, section, "");
-		}
-		control.setEnabled(enable);
 	}
 };
 
@@ -1329,6 +1305,22 @@ function() {
 };
 
 // account sections
+
+
+ZmAccountsPage.prototype._getSectionDiv =
+function(account) {
+	if (account.type == ZmAccount.TYPE_AOL ||
+		account.type == ZmAccount.TYPE_GMAIL ||
+		account.type == ZmAccount.TYPE_LIVE ||
+		account.type == ZmAccount.TYPE_MSE ||
+		account.type == ZmAccount.TYPE_YMP ||
+		account.type == ZmAccount.TYPE_ZIMBRA)
+	{
+		return this._sectionDivs[ZmAccount.TYPE_ZIMBRA];
+	}
+
+	return this._sectionDivs[account.type];
+};
 
 ZmAccountsPage.prototype._setupPrimaryDiv =
 function() {

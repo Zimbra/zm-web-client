@@ -104,10 +104,11 @@ function() {
 
 ZmZimbraAccount.prototype.getIdentity =
 function() {
-	if (this.isMain || appCtxt.isOffline) {
-		return appCtxt.getIdentityCollection().defaultIdentity;
+	if (!appCtxt.isFamilyMbox || this.isMain) {
+		return appCtxt.getIdentityCollection(this).defaultIdentity;
 	}
 
+	// for family mbox, create dummy identities for child accounts
 	if (!this.dummyIdentity) {
 		this.dummyIdentity = new ZmIdentity(this.name);
 	}

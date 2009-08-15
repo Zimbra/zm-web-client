@@ -324,7 +324,7 @@ function(params) {
 */
 ZmComposeController.prototype.sendMsg =
 function(attId, draftType, callback) {
-    return this._sendMsg(attId,null,draftType, callback);
+	return this._sendMsg(attId,null,draftType, callback);
 };
 
 /**
@@ -332,7 +332,7 @@ function(attId, draftType, callback) {
 */
 ZmComposeController.prototype.sendDocs =
 function(docIds, draftType, callback) {
-    return this._sendMsg(null, docIds, draftType, callback);
+	return this._sendMsg(null, docIds, draftType, callback);
 };
 
 /**
@@ -444,7 +444,7 @@ function() {
 ZmComposeController.prototype._handleErrorSendMsg =
 function(ex) {
 	this.resetToolbarOperations();
-    this._composeView.enableInputs(true);
+	this._composeView.enableInputs(true);
 
 	if (!(ex && ex.code)) { return false; }
 
@@ -505,9 +505,9 @@ function(initHide, composeMode) {
 	this._app.createView({viewId:this.viewId, elements:elements, callbacks:callbacks,
 						 tabParams:{id:this.tabId, text:ZmComposeController.DEFAULT_TAB_TEXT, image:"NewMessage",
 						 textPrecedence:75, tooltip:ZmComposeController.DEFAULT_TAB_TEXT}});
-    if (initHide) {
-	    this._composeView.setLocation(Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
-	    this._composeView.enableInputs(false);
+	if (initHide) {
+		this._composeView.setLocation(Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
+		this._composeView.enableInputs(false);
 	}
 
 	if (this._composeView.identitySelect) {
@@ -529,7 +529,7 @@ function(setSignature, event) {
 };
 
 ZmComposeController.prototype._applyIdentityToBody =
-function(setSignature,resetBody) {
+function(setSignature, resetBody) {
 	var identity = this._composeView.getIdentity();
 	if (setSignature) {
 		this.setSelectedSignature(identity.signature);
@@ -543,12 +543,10 @@ function(setSignature,resetBody) {
 };
 
 ZmComposeController.prototype._handleSelectSignature =
-function(evt) {
-	var signatureId = evt.item.getData(ZmComposeController.SIGNATURE_KEY);
-	this.setSelectedSignature(signatureId);
-
-	this._composeView.applySignature(this._getBodyContent(), this._currentSignatureId);
-	this._currentSignatureId = signatureId;
+function(ev) {
+	var sigId = ev.item.getData(ZmComposeController.SIGNATURE_KEY);
+	this.setSelectedSignature(sigId);
+	this.resetSignature(sigId);
 };
 
 /**
@@ -655,6 +653,12 @@ function(value) {
 	}
 };
 
+ZmComposeController.prototype.resetSignature =
+function(sigId, account) {
+	this._composeView.applySignature(this._getBodyContent(), this._currentSignatureId, account);
+	this._currentSignatureId = sigId;
+};
+
 //
 // Protected methods
 //
@@ -731,7 +735,7 @@ function(params) {
 		this._composeView.setComposeMode(this._composeMode);
 	}
 
-    this._initializeToolBar();
+	this._initializeToolBar();
 	this.resetToolbarOperations(this._toolbar);
 
 	this._setOptionsMenu(this._composeMode, identity);
@@ -801,9 +805,12 @@ function() {
 		buttons.push(ZmOperation.DETACH_COMPOSE);
 	}
 
-	var className = appCtxt.isChildWindow ? "ZmAppToolBar_cw" : "ZmAppToolBar";
-	var tb = this._toolbar = new ZmButtonToolBar({parent:this._container, buttons:buttons, className:className + " ImgSkin_Toolbar",
-												  context:this.viewId});
+	var tb = this._toolbar = new ZmButtonToolBar({
+		parent: this._container,
+		buttons: buttons,
+		className: (appCtxt.isChildWindow ? "ZmAppToolBar_cw" : "ZmAppToolBar") + " ImgSkin_Toolbar",
+		context: this.viewId
+	});
 
 	for (var i = 0; i < tb.opList.length; i++) {
 		var button = tb.opList[i];
@@ -1190,7 +1197,6 @@ function(ev) {
 		this._detachOkCancel.registerCallback(DwtDialog.OK_BUTTON, this._detachCallback, this);
 	}
 	this._composeView.showAttachmentDialog();
-	//this._composeView.addAttachmentField();
 };
 
 ZmComposeController.prototype._optionsListener =
@@ -1289,11 +1295,11 @@ ZmComposeController.prototype._saveDraft =
 function(draftType, attId, docIds) {
 	draftType = draftType || ZmComposeController.DRAFT_TYPE_MANUAL;
 	var respCallback = new AjxCallback(this, this._handleResponseSaveDraftListener, [draftType]);
-    if(!docIds) {
-	    this.sendMsg(attId, draftType, respCallback);
-    }else {
-        this.sendDocs(docIds, draftType, respCallback);
-    }
+	if (!docIds) {
+		this.sendMsg(attId, draftType, respCallback);
+	} else {
+		this.sendDocs(docIds, draftType, respCallback);
+	}
 };
 
 ZmComposeController.prototype._handleResponseSaveDraftListener =
@@ -1482,12 +1488,12 @@ function() {
 };
 
 ZmComposeController.prototype._createSignatureMenu =
-function() {
+function(account) {
 	if (!this._composeView) { return null; }
 	var button = this._toolbar.getButton(ZmOperation.ADD_SIGNATURE);
 	if (!button) { return null; }
 	var menu = new DwtMenu({parent:button});
-	var options = appCtxt.getSignatureCollection().getSignatureOptions();
+	var options = appCtxt.getSignatureCollection(account).getSignatureOptions();
 	if (options.length > 0) {
 		var listener = new AjxListener(this, this._handleSelectSignature);
 		var radioId = this._composeView._htmlElId + "_sig";
@@ -1501,17 +1507,27 @@ function() {
 		}
 	}
 	return menu;
-}
+};
 
 ZmComposeController.prototype._signatureChangeListener =
 function(ev) {
-	var selected = this.getSelectedSignature();
+	this.resetSignatureToolbar(this.getSelectedSignature());
+};
 
+/**
+ * Resets the signature dropdown based on the given account and selects the
+ * given signature if provided.
+ *
+ * @param selected	[String]*			ID of the signature to select
+ * @param account	[ZmZimbraAccount]*	account for which to load signatures
+ */
+ZmComposeController.prototype.resetSignatureToolbar =
+function(selected, account) {
 	var button = this._toolbar.getButton(ZmOperation.ADD_SIGNATURE);
-	var menu = button ? this._createSignatureMenu() : null;
+	var menu = button && this._createSignatureMenu(account);
 	if (menu) {
 		button.setMenu(menu);
-		this.setSelectedSignature(selected);
+		this.setSelectedSignature(selected || "");
 	}
 };
 
@@ -1525,9 +1541,8 @@ function() {
 		}
 		this._toolbar.enable(ops, false);
 	}
-    var op = this._toolbar.getOp(ZmOperation.COMPOSE_OPTIONS);
-    if(op){
-        op.setVisible(appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED));
-    }
-
+	var op = this._toolbar.getOp(ZmOperation.COMPOSE_OPTIONS);
+	if (op) {
+		op.setVisible(appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED));
+	}
 };
