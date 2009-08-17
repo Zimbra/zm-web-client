@@ -25,7 +25,6 @@ AjxPackage.require("ajax.util.AjxPluginDetector");
  
 AjxPackage.require("zimbraMail.im.model.ZmImService");
 AjxPackage.require("zimbraMail.im.model.ZmZimbraImService");
-AjxPackage.require("zimbraMail.im.model.ZmYahooImService");
 AjxPackage.require("zimbraMail.im.model.ZmImGateway");
 AjxPackage.require("zimbraMail.im.model.ZmRoster");
 AjxPackage.require("zimbraMail.im.model.ZmRosterItem");
@@ -38,4 +37,3 @@ AjxPackage.require("zimbraMail.im.model.ZmImPrivacyList");
 
 AjxPackage.require("zimbraMail.im.controller.ZmImServiceController");
 AjxPackage.require("zimbraMail.im.controller.ZmZimbraImServiceController");
-AjxPackage.require("zimbraMail.im.controller.ZmYahooImServiceController");
