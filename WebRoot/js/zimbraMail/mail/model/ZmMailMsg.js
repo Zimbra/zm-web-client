@@ -1410,24 +1410,16 @@ function(addrNodes, parentNode, isDraft, accountName) {
 				// main account is "sender"
 				if (!doNotAddSender) {
 					addrNode.t = "s";
-					addrNode.p = addrNode.p || ac.get(ZmSetting.DISPLAY_NAME);
-					if (provider && provider._nodisplayname) {
-						delete addrNode.p;
-					}
-
+					addrNode.p = name || ac.get(ZmSetting.DISPLAY_NAME);
 					addrNode = {};
 					addrNodes.push(addrNode);
 				}
 				// mail is "from" external account
 				addrNode.t = "f";
 				addrNode.a = dataSource.getEmail();
-				addrNode.p = name || dataSource.getName();
-				if (provider && provider._nodisplayname) {
-					delete addrNode.p;
+				if (ac.get(ZmSetting.DEFAULT_DISPLAY_NAME)) {
+					addrNode.p = name || dataSource.getName();
 				}
-			}
-			else if (provider && provider._nodisplayname) {
-				delete addrNode.p;
 			}
 		}
 	}
