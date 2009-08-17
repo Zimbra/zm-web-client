@@ -52,9 +52,9 @@ function(params) {
 
 	// all this is done here instead of in the constructor due to multi-account issues
 	var ovParams = {
-		overviewId:	this.toString(),
-		treeIds:	[ZmOrganizer.TAG],
-		fieldId:	this._tagTreeDivId
+		overviewId:			this.toString(),
+		treeIds:			[ZmOrganizer.TAG],
+		fieldId:			this._tagTreeDivId,
 	}
 	this._setOverview(ovParams, true);
 	this._tagTreeView = this._getOverview().getTreeView(ZmOrganizer.TAG);
@@ -176,12 +176,15 @@ function() {
 ZmPickTagDialog.prototype._treeViewSelectionListener =
 function(ev) {
 
-	if (ev.detail != DwtTree.ITEM_SELECTED)	{ return; }
+	if (ev.detail != DwtTree.ITEM_SELECTED && ev.detail != DwtTree.ITEM_DBL_CLICKED)	{ return; }
 
 	var tag = ev.item.getData(Dwt.KEY_OBJECT);
 	if (tag) {
 		var value = this._lastVal = tag.getName(false, null, true, true);
 		this._inputField.setValue(value);
+		if (ev.detail == DwtTree.ITEM_DBL_CLICKED) {
+			this._okButtonListener();
+		}
 	}
 };
 

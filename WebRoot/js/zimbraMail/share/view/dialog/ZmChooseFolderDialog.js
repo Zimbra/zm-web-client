@@ -409,10 +409,13 @@ function() {
 ZmChooseFolderDialog.prototype._treeViewSelectionListener =
 function(ev) {
 
-	if (ev.detail != DwtTree.ITEM_SELECTED)	{ return; }
+	if (ev.detail != DwtTree.ITEM_SELECTED && ev.detail != DwtTree.ITEM_DBL_CLICKED)	{ return; }
 
 	var value = this._lastVal = ev.item.getText();
 	this._inputField.setValue(value);
+	if (ev.detail == DwtTree.ITEM_DBL_CLICKED) {
+		this._okButtonListener();
+	}
 };
 
 ZmChooseFolderDialog.prototype._enterListener =
