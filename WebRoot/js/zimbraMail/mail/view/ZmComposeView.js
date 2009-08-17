@@ -153,11 +153,8 @@ function(params) {
 			this.identitySelect.setSelectedValue(params.identity.id);
 		}
 		if (appCtxt.get(ZmSetting.SIGNATURES_ENABLED)) {
-			// for multi-account, reset signature list per the active account
-			if (appCtxt.multiAccounts) {
-				var selected = params.identity.signature || "";
-				this._controller.resetSignatureToolbar(selected);
-			}
+			var selected = params.identity.signature || "";
+			this._controller.resetSignatureToolbar(selected);
 		}
 	}
 

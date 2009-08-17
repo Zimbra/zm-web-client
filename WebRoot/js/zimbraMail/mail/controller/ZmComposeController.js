@@ -1488,7 +1488,7 @@ function() {
 };
 
 ZmComposeController.prototype._createSignatureMenu =
-function(account) {
+function(button, account) {
 	if (!this._composeView) { return null; }
 	var button = this._toolbar.getButton(ZmOperation.ADD_SIGNATURE);
 	if (!button) { return null; }
@@ -1524,7 +1524,7 @@ function(ev) {
 ZmComposeController.prototype.resetSignatureToolbar =
 function(selected, account) {
 	var button = this._toolbar.getButton(ZmOperation.ADD_SIGNATURE);
-	var menu = button && this._createSignatureMenu(account);
+	var menu = button && this._createSignatureMenu(null, account);
 	if (menu) {
 		button.setMenu(menu);
 		this.setSelectedSignature(selected || "");
