@@ -38,15 +38,12 @@ function () {
     return "ZmSharingPage";
 };
 
-//
-// ZmPreferencesPage methods
-//
-
 ZmSharingPage.prototype.showMe =
 function() {
 	ZmPreferencesPage.prototype.showMe.apply(this, arguments);
 	if (!this._rendered) {
 		this.view = new ZmSharingView({parent:this, pageId:this._htmlElId});
+		this.view.showMounts();
 		this.view.findShares();
 		this.view.showGrants();
 		this._rendered = true;
@@ -161,9 +158,62 @@ function(owner, userButtonClicked) {
 	}
 
 	var respCallback = new AjxCallback(this, this.showShares);
-	var type = owner ? ZmShare.TYPE_USER : ZmShare.TYPE_GROUP;
+	var type = owner ? null : ZmShare.TYPE_GROUP;
 	this._curOwner = owner;
 	var shares = this.parent.getShares(type, owner, respCallback);
+};
+/**
+ * Displays a list of shares that have been accepted/mounted by the user.
+ */
+ZmSharingView.prototype.showMounts =
+function() {
+
+	var folderTree = appCtxt.getFolderTree();
+	var folders = folderTree && folderTree.asList({remoteOnly:true});
+	if (!folders) { return; }
+
+	var ownerHash = {};
+	for (var i = 0; i < folders.length; i++) {
+		var folder = folders[i];
+		if (folder.isMountpoint || folder.link) {
+			ownerHash[folder.owner] = true;
+		}
+	}
+
+	var owners = AjxUtil.keys(ownerHash);
+	if (owners.length > 0) {
+		var jsonObj = {BatchRequest:{_jsns:"urn:zimbra", onerror:"continue"}};
+		var br = jsonObj.BatchRequest;
+		var requests = br.GetShareInfoRequest = [];
+		for (var i = 0; i < owners.length; i++) {
+			var req = {_jsns: "urn:zimbraAccount"};
+			req.owner = {by:"name", _content:owners[i]};
+			requests.push(req);
+		}
+
+		var respCallback = new AjxCallback(this, this._handleResponseGetShares);
+		appCtxt.getRequestMgr().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback});
+	}
+};
+
+ZmSharingView.prototype._handleResponseGetShares =
+function(result) {
+
+	var mounts = [];
+	var resp = result.getResponse().BatchResponse.GetShareInfoResponse;
+	for (var i = 0; i < resp.length; i++) {
+		var shares = resp[i].share;
+		for (var j = 0; j < shares.length; j++) {
+			var share = ZmSharingView.getShareFromShareInfo(shares[j]);
+			if (share.mounted) {
+				mounts.push(share);
+			}
+		}
+	}
+
+	mounts.sort(ZmSharingView.sortCompareShare);
+	this._mountedShareListView.set(AjxVector.fromArray(mounts));
+
 };
 
 /**
@@ -190,7 +240,6 @@ function(shares) {
 	pending.sort(ZmSharingView.sortCompareShare);
 	mounted.sort(ZmSharingView.sortCompareShare);
 	this._pendingShareListView.set(AjxVector.fromArray(pending));
-	this._mountedShareListView.set(AjxVector.fromArray(mounted));
 };
 
 /**
@@ -312,10 +361,8 @@ function(link, share) {
 	if (link.rid)	{ share.link.id = link.rid; }
 
 	var linkShare = link.getMainShare();
-	if (linkShare) {
-		if (linkShare.link.name) { share.link.name = linkShare.link.name; }
-		if (linkShare.link.perm) { share.setPermissions(linkShare.link.perm); }
-	}
+	share.link.name = linkShare ? linkShare.link.name : link.name;
+	share.setPermissions(linkShare ? linkShare.link.perm : link.perm);
 
 	// mountpoint is the local folder
 	share.mounted = true;
@@ -691,9 +738,16 @@ ZmSharingListView.prototype._getCellContents =
 function(html, idx, item, field, colIdx, params) {
 
 	if (field == ZmSharingView.F_OWNER) {
-		html[idx++] = item.grantor.name;
+		html[idx++] = item.grantor.name || item.grantor.email;
 	} else if (field == ZmSharingView.F_WITH) {
-		html[idx++] = item.grantee.name || item.grantee.id;
+		var type = item.grantee.type;
+		if (type == ZmShare.TYPE_PUBLIC) {
+			html[idx++] = ZmMsg.shareWithPublic;
+		} else if (type == ZmShare.TYPE_ALL) {
+			html[idx++] = ZmMsg.shareWithAll;
+		} else {
+			html[idx++] = item.grantee.name || item.grantee.id;
+		}
 	} else if (field == ZmSharingView.F_ITEM) {
 		html[idx++] = item.link.path;
 	} else if (field == ZmSharingView.F_TYPE) {
@@ -738,7 +792,7 @@ function(ev) {
 			if (this.status == ZmSharingView.PENDING) {
 				this.removeItem(share);
 			} else if (this.status == ZmSharingView.MOUNTED) {
-				var index = this._getIndex(share, this._list.getArray(), ZmSharingView.sortCompareShare);
+				var index = this._list && this._getIndex(share, this._list.getArray(), ZmSharingView.sortCompareShare);
 				this.addItem(share, index, true);
 			}
 		} else if (ev.event == ZmEvent.E_MODIFY) {
@@ -787,11 +841,12 @@ ZmSharingListView.prototype._addActionLinks =
 function(share, html, idx) {
 
 	var type = share.grantee.type;
+	var actions = ["edit", "revoke", "resend"];
 	if (type == ZmShare.TYPE_ALL || type == ZmShare.TYPE_DOMAIN || !share.link.role) {
-		return ZmMsg.configureWithAdmin;
+		html[idx++] = ZmMsg.configureWithAdmin;
+		actions = [];
 	}
 
-	var actions = ["edit", "revoke", "resend"];
 	var handlers = ["_handleEditShare", "_handleRevokeShare", "_handleResendShare"]; // handlers in ZmFolderPropsDialog
 
 	for (var i = 0; i < actions.length; i++) {
