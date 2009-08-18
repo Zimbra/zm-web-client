@@ -924,7 +924,8 @@ function(app, type, listener) {
 ZmZimbraMail.prototype.sendNoOp =
 function() {
 	var soapDoc = AjxSoapDoc.create("NoOpRequest", "urn:zimbraMail");
-	this.sendRequest({soapDoc:soapDoc, asyncMode:true, noBusyOverlay:true});
+	var accountName = appCtxt.isOffline && appCtxt.getMainAccount().name;
+	this.sendRequest({soapDoc:soapDoc, asyncMode:true, noBusyOverlay:true, accountName:accountName})
 };
 
 ZmZimbraMail.prototype.sendSync =
@@ -1116,7 +1117,8 @@ function() {
 			callback: new AjxCallback(this, this._handleResponseDoPoll),
 			errorCallback: new AjxCallback(this, this._handleErrorDoPoll),
 			noBusyOverlay: true,
-			timeout: appCtxt.get(ZmSetting.INSTANT_NOTIFY_TIMEOUT)
+			timeout: appCtxt.get(ZmSetting.INSTANT_NOTIFY_TIMEOUT),
+			accountName: appCtxt.isOffline && appCtxt.getMainAccount().name
 		};
 		this._pollRequest = this.sendRequest(params);
 	} catch (ex) {
