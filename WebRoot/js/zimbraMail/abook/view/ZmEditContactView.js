@@ -62,7 +62,8 @@ ZmEditContactView = function(parent, controller, isMyCardView) {
 						{ value: ZmContact.F_callbackPhone, label: ZmMsg.phoneLabelCallback },
 						{ value: ZmContact.F_assistantPhone, label: ZmMsg.phoneLabelAssistant },
 						{ value: ZmContact.F_carPhone, label: ZmMsg.phoneLabelCar },
-						{ value: ZmContact.F_otherPhone, label: ZmMsg.phoneLabelOther }
+						{ value: ZmContact.F_otherPhone, label: ZmMsg.phoneLabelOther },
+						{ value: ZmContact.F_otherFax, label: ZmMsg.phoneLabelOtherFax }
 					]
 				}
 			} },
