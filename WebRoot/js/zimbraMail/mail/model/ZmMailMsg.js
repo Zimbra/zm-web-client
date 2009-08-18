@@ -949,7 +949,7 @@ function(request, isDraft, accountName, requestReadReceipt) {
 	}
 
 	// if id is given, means we are re-saving a draft
-	var oboDraftMsgId = null;   //On Behalf of Draft MsgId
+	var oboDraftMsgId = null; // On Behalf of Draft MsgId
 	if ((isDraft || this.isDraft) && this.id) {
 		var ac = window.parentAppCtxt || window.appCtxt;
 		// bug fix #26508 - check whether previously saved draft was moved to Trash
@@ -1103,14 +1103,21 @@ function(request, isDraft, accountName, requestReadReceipt) {
 			if (attIds && attIds.length) {
 				var parts = attachNode.mp = [];
 	            for (var i = 0; i < attIds.length; i++) {
-					// XXX: this looks hacky but we cant send a null ID to the server!
-					var id = (isDraft || this.isDraft) ? (oboDraftMsgId || this.id || this.origId) : (this.origId || this.id);
+					// YUCKY YUCK YUCK: find an ID to send 
+					var id = (isDraft || this.isDraft)
+						? (oboDraftMsgId || this.id || this.origId)
+						: (this.origId || this.id);
+
 					if (!id && this._origMsg) {
 						id = this._origMsg.id;
 					}
 
+					if (!id && (isDraft || this.isDraft) && appCtxt.multiAccounts) {
+						id = this.origAcctMsgId;
+					}
+
 					// bug fix #33312 - should be reverted(?) once bug #33691 is fixed. 
-					if (appCtxt.multiAccounts && !appCtxt.getActiveAccount().isMain &&
+					if (id && appCtxt.multiAccounts && !appCtxt.getActiveAccount().isMain &&
 						(isDraft || this.isDraft))
 					{
 						id = ZmOrganizer.getSystemId(id, appCtxt.getMainAccount(), true);

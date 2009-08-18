@@ -34,6 +34,7 @@ ZmAppCtxt = function() {
 	this.rememberMe = null;
 
 	// account-specific
+	this.isFamilyMbox = false;
 	this.multiAccounts = false;
 	this.numAccounts = 1;				// init to 1 b/c there is always a main account
 	this.numVisibleAccounts = 0;
@@ -566,6 +567,16 @@ ZmAppCtxt.prototype.getAccountByName =
 function(name) {
 	for (var i in this._accounts) {
 		if (this._accounts[i].name == name) {
+			return this._accounts[i];
+		}
+	}
+	return null;
+};
+
+ZmAppCtxt.prototype.getAccountByEmail =
+function(email) {
+	for (var i in this._accounts) {
+		if (this._accounts[i].getEmail() == email) {
 			return this._accounts[i];
 		}
 	}

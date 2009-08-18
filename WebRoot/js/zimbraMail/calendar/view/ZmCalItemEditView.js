@@ -1096,7 +1096,7 @@ function(status, attId) {
 	} else if (status == AjxPost.SC_UNAUTHORIZED) {
 		// auth failed during att upload - let user relogin, continue with compose action
 		var ex = new AjxException("401 response during attachment upload", ZmCsfeException.SVC_AUTH_EXPIRED);
-		var callback = new AjxCallback(this._controller, isDraft ? this._controller._saveDraft : this._controller._send);
+		var callback = new AjxCallback(this._controller, isDraft ? this._controller.saveDraft : this._controller._send);
 		this._controller._handleException(ex, {continueCallback:callback});
 	} else {
 		// bug fix #2131 - handle errors during attachment upload.

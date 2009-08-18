@@ -205,7 +205,8 @@ function(item, allItems) {
 	if (list) {
 		var len = list.size();
 		for (var i = 0; i < len; ++i) {
-			if (list.get(i).id == item.id) {
+			var item = list.get(i);
+			if (item && item.id == item.id) {
 				return i;
 			}
 		}
@@ -803,7 +804,7 @@ function(conv, sortBy) {
 	var a = this.getList(true).getArray();
 	for (var i = 0; i < a.length; i++) {
 		var item = a[i];
-		if (item.type == ZmItem.MSG) { continue; }
+		if (!item || (item && item.type == ZmItem.MSG)) { continue; }
 		var date = parseInt(item.date);
 		if ((sortBy == ZmSearch.DATE_DESC && (itemDate >= date)) ||
 			(sortBy == ZmSearch.DATE_ASC && (itemDate <= date))) {

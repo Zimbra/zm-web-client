@@ -324,7 +324,7 @@ function(params) {
 */
 ZmComposeController.prototype.sendMsg =
 function(attId, draftType, callback) {
-	return this._sendMsg(attId,null,draftType, callback);
+	return this._sendMsg(attId, null, draftType, callback);
 };
 
 /**
@@ -347,12 +347,12 @@ function(attId, docIds, draftType, callback) {
 	// bug fix #38408 - briefcase attachments need to be set *before* calling
 	// getMsg() but we cannot do that without having a ZmMailMsg to store it in.
 	// File this one under WTF.
-	var msg;
+	var tempMsg;
 	if (docIds) {
-		msg = new ZmMailMsg();
-		this._composeView.setDocAttachments(msg, docIds);
+		tempMsg = new ZmMailMsg();
+		this._composeView.setDocAttachments(tempMsg, docIds);
 	}
-	msg = this._composeView.getMsg(attId, isDraft, msg);
+	var msg = this._composeView.getMsg(attId, isDraft, tempMsg);
 
 	if (!msg) { return; }
 
@@ -584,7 +584,7 @@ function(actionCode) {
 		case ZmKeyMap.SAVE: // Save to draft
 			if (appCtxt.get(ZmSetting.SAVE_DRAFT_ENABLED) &&
 				!this._composeView._isInviteReply(this._action)) {
-				this._saveDraft();
+				this.saveDraft();
 			}
 			break;
 
@@ -1281,20 +1281,20 @@ function(ev) {
 // Save Draft button was pressed
 ZmComposeController.prototype._saveDraftListener =
 function(ev) {
-	this._saveDraft();
+	this.saveDraft();
 };
 
 ZmComposeController.prototype._autoSaveCallback =
 function(idle) {
 	if (idle && !DwtBaseDialog.getActiveDialog() && this._composeView.isDirty()) {
-		this._saveDraft(ZmComposeController.DRAFT_TYPE_AUTO);
+		this.saveDraft(ZmComposeController.DRAFT_TYPE_AUTO);
 	}
 };
 
-ZmComposeController.prototype._saveDraft =
-function(draftType, attId, docIds) {
+ZmComposeController.prototype.saveDraft =
+function(draftType, attId, docIds, callback) {
 	draftType = draftType || ZmComposeController.DRAFT_TYPE_MANUAL;
-	var respCallback = new AjxCallback(this, this._handleResponseSaveDraftListener, [draftType]);
+	var respCallback = new AjxCallback(this, this._handleResponseSaveDraftListener, [draftType, callback]);
 	if (!docIds) {
 		this.sendMsg(attId, draftType, respCallback);
 	} else {
@@ -1303,7 +1303,7 @@ function(draftType, attId, docIds) {
 };
 
 ZmComposeController.prototype._handleResponseSaveDraftListener =
-function(draftType) {
+function(draftType, callback) {
 	if (draftType == ZmComposeController.DRAFT_TYPE_AUTO &&
 		this._draftType == ZmComposeController.DRAFT_TYPE_NONE) {
 		this._draftType = ZmComposeController.DRAFT_TYPE_AUTO;
@@ -1311,6 +1311,10 @@ function(draftType) {
 		this._draftType = ZmComposeController.DRAFT_TYPE_MANUAL;
 	}
 	this._action = ZmOperation.DRAFT;
+
+	if (callback) {
+		callback.run();
+	}
 };
 
 ZmComposeController.prototype._spellCheckListener =

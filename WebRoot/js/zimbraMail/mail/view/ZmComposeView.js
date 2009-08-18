@@ -132,12 +132,10 @@ function(params) {
 		obo = (folder && folder.isRemote()) ? folder.getOwner() : null;
 
 		// check if this is a draft that was originally composed obo
-		if (!obo && msg.isDraft && !appCtxt.isFamilyMbox) {
+		if (!obo && msg.isDraft && !appCtxt.multiAccounts) {
 			var ac = window.parentAppCtxt || window.appCtxt;
-			var mainAcct = (ac.isOffline)
-				? ac.getActiveAccount().name : ac.getMainAccount().getEmail();
 			var from = msg.getAddresses(AjxEmailAddress.FROM).get(0);
-			if (from && from.address != mainAcct) {
+			if (from && from.address != ac.getMainAccount().getEmail()) {
 				obo = from.address;
 			}
 		}
@@ -158,7 +156,7 @@ function(params) {
 		}
 	}
 
-	this._setFromSelect();
+	this._setFromSelect(msg);
 
 	// reset To/Cc/Bcc fields
 	this._showAddressField(AjxEmailAddress.TO, true, true, true);
@@ -603,12 +601,10 @@ function(attId, isDraft, dummyMsg) {
 		}
 	}
 
-	//store text-content of the current email
-	if(this._composeMode == DwtHtmlEditor.HTML){
-		msg.textBodyContent = this._htmlEditor.getTextVersion();
-	} else {
-		msg.textBodyContent = this._htmlEditor.getContent();
-	}
+	// store text-content of the current email
+	msg.textBodyContent = (this._composeMode == DwtHtmlEditor.HTML)
+		? this._htmlEditor.getTextVersion()
+		: this._htmlEditor.getContent();
 
 	msg.setTopPart(top);
 	msg.setSubject(subject);
@@ -652,6 +648,10 @@ function(attId, isDraft, dummyMsg) {
 		msg.inviteMode = isInviteReply ? inviteMode : null;
 		msg.irtMessageId = this._msg.messageId;
 		msg.folderId = this._msg.folderId;
+	}
+
+	if (this._action == ZmOperation.DRAFT && this._origAcctMsgId) {
+		msg.origAcctMsgId = this._origAcctMsgId;
 	}
 
 	// replied/forw msg or draft shouldn't have att ID (a repl/forw voicemail mail msg may)
@@ -706,7 +706,7 @@ function(attId, isDraft, dummyMsg) {
 			var obj = boolAndErrorMsgArray[k];
 			if (obj == null || obj == undefined) { continue; }
 
-			var hasError =obj.hasError;
+			var hasError = obj.hasError;
 			zimletName = obj.zimletName;
 			if (Boolean(hasError)) {
 				if (this._ignoredZimlets) {
@@ -1068,6 +1068,9 @@ function(bEnableInputs) {
 	//reset state of previous Signature cache variable.
 	this._previousSignature = null;
 	this._previousSignatureMode = null;
+
+	// used by drafts handling in multi-account
+	this._origAcctMsgId = null;
 };
 
 ZmComposeView.prototype.enableInputs =
@@ -2148,24 +2151,56 @@ function(templateId, data) {
 ZmComposeView.prototype._handleFromListener =
 function(ev) {
 	var newVal = ev._args.newValue;
-	if (ev._args.oldValue == newVal) { return; }
+	var oldVal = ev._args.oldValue;
+	if (oldVal == newVal) { return; }
 
-	var account = appCtxt.getAccount(newVal.accountId);
-	var sigId = account.getIdentity().signature;
-	this._controller._accountName = account.name;
-	this._controller.resetSignatureToolbar(sigId, account);
-	this._controller.resetSignature(sigId, account);
+	var newAccount = appCtxt.getAccount(newVal.accountId);
+	var sigId = newAccount.getIdentity().signature;
+	this._controller._accountName = newAccount.name;
+	this._controller.resetSignatureToolbar(sigId, newAccount);
+	this._controller.resetSignature(sigId, newAccount);
 
-	// todo:
-	// 1. reset signature based on newly selected value
-	// 2. if draft is saved, check whether it needs to be moved based on
-	//    newly selected value
+	// if this message is a saved draft, check whether it needs to be moved
+	// based on newly selected value.
+	if (this._msg && this._msg.isDraft) {
+		var oldAccount = appCtxt.getAccount(oldVal.accountId);
+
+		// only re-save draft if both new account and old account are *not* zimbra accounts.
+		if (!(!newAccount.isZimbraAccount && !oldAccount.isZimbraAccount)) {
+			// cache old info so we know what to delete after new save
+			var msgId = this._origAcctMsgId = this._msg.id;
+
+			this._msg = this._addressesMsg = null;
+			var accountName = oldAccount.isZimbraAccount
+				? oldAccount.name : appCtxt.getMainAccount().name;
+			var callback = new AjxCallback(this, this._handleMoveDraft, [accountName, msgId]);
+			this._controller.saveDraft(this._controller._draftType, null, null, callback);
+		}
+	}
+};
+
+ZmComposeView.prototype._handleMoveDraft =
+function(accountName, msgId) {
+	var jsonObj = {
+		ItemActionRequest: {
+			_jsns:  "urn:zimbraMail",
+			action: { id:msgId, op:"delete" }
+		}
+	};
+	var params = {
+		jsonObj: jsonObj,
+		asyncMode: true,
+		accountName: accountName
+	};
+	appCtxt.getAppController().sendRequest(params);
 };
 
 ZmComposeView.prototype._toggleBccField =
-function(ev, force){
+function(ev, force) {
 	var isBccFieldVisible = Dwt.getVisible(this._divEl[AjxEmailAddress.BCC]);
-	if (typeof force != "undefined") isBccFieldVisible = !force;
+	if (typeof force != "undefined") {
+		isBccFieldVisible = !force;
+	}
 	this._showAddressField(AjxEmailAddress.BCC, !isBccFieldVisible);
 };
 
@@ -2386,13 +2421,20 @@ function() {
 };
 
 ZmComposeView.prototype._setFromSelect =
-function() {
+function(msg) {
 	if (!this._fromSelect) { return; }
 
 	this._fromSelect.clearOptions();
 
 	var ac = window.parentAppCtxt || window.appCtxt;
+
+	// figure out what the "active" account should be
 	var active = ac.getActiveAccount();
+	if (msg && msg.isDraft) {
+		var from = msg.getAddresses(AjxEmailAddress.FROM).get(0);
+		active = ac.getAccountByEmail(from.address);
+	}
+
 	var accounts = ac.getZimbraAccounts();
 
 	for (var i in accounts) {
@@ -2654,11 +2696,11 @@ ZmComposeView.prototype._attsDoneCallback =
 function(isDraft, status, attId, docIds) {
 	DBG.println(AjxDebug.DBG1, "Attachments: isDraft = " + isDraft + ", status = " + status + ", attId = " + attId);
 	if (status == AjxPost.SC_OK) {
-		this._controller._saveDraft(ZmComposeController.DRAFT_TYPE_AUTO, attId, docIds);
+		this._controller.saveDraft(ZmComposeController.DRAFT_TYPE_AUTO, attId, docIds);
 	} else if (status == AjxPost.SC_UNAUTHORIZED) {
 		// auth failed during att upload - let user relogin, continue with compose action
 		var ex = new AjxException("401 response during attachment upload", ZmCsfeException.SVC_AUTH_EXPIRED);
-		var callback = new AjxCallback(this._controller, isDraft ? this._controller._saveDraft : this._controller._send);
+		var callback = new AjxCallback(this._controller, isDraft ? this._controller.saveDraft : this._controller._send);
 		this._controller._handleException(ex, {continueCallback:callback});
 	} else {
 		// bug fix #2131 - handle errors during attachment upload.
