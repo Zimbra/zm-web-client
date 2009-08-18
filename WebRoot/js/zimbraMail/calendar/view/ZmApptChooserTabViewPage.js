@@ -817,6 +817,9 @@ function(itemsById, result) {
 		} else if (el.u) {
 			status = "<b style='color: red'>" + ZmMsg.outOfOffice + "</b>";
 			item.__fbStatus.status = 2;
+		} else if (el.t) {
+			status = "<b style='color: orange'>" + ZmMsg.tentative + "</b>";
+			item.__fbStatus.status = 3;
 		}
 		item.__fbStatus.txt = status;
 		this._updateStatus(item, this._chooser.sourceListView);
