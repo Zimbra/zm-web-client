@@ -123,7 +123,10 @@ ZmEditContactView = function(parent, controller, isMyCardView) {
 				{ value: ZmContact.FA_COMPANY_FIRST_LAST, label: ZmMsg.AB_FILE_AS_companyFirstLast }
 				// TODO: [Q] ZmContact.FA_CUSTOM ???
 			] },
-			{ id: "FOLDER", type: "DwtButton", image: "ContactsFolder", onclick: this._handleFolderButton },
+			{ id: "FOLDER", type: "DwtButton", image: "ContactsFolder",
+				enabled: "this._contact && !this._contact.isShared()", 
+				onclick: this._handleFolderButton
+			},
 			// NOTE: Return false onclick to prevent default action
 			{ id: "VIEW_IMAGE", ignore: true, onclick: "open(get('IMAGE')) && false" },
 			{ id: "REMOVE_IMAGE", ignore: true, onclick: "set('IMAGE','') && false",
@@ -384,7 +387,7 @@ ZmEditContactView.prototype.getModifiedAttrs = function() {
 	}
 
 	// make sure we set the folder (when new)
-	if (!attributes[ZmContact.F_folderId]) {
+	if (!attributes[ZmContact.F_folderId] && !this._contact.isShared()) {
 		attributes[ZmContact.F_folderId] = this.getValue("FOLDER");
 	}
 
