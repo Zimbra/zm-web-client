@@ -346,7 +346,7 @@ ZmEditContactView.prototype.getModifiedAttrs = function() {
 					}
 				}
 				else {
-					var onlyvalue = id == "EMAIL" || id == "IM";
+					var onlyvalue = id == "IM";
 					var v = onlyvalue ? item : item.value;
 					if (!v) continue;
 					var list = ZmEditContactView.LISTS[id];

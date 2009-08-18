@@ -165,17 +165,11 @@ function(controller, dropTgt) {
 	this._contactGroupView = new DwtComposite(this);
 	this._contactGroupView.setVisible(false);
 	this._contactGroupView.reparentHtmlElement(this._htmlElId + "_content");
-
-	// add tabs to DwtTabGroup based on template
-	var params = AjxTemplate.getParams("abook.Contacts#SplitView_tabs");
-	var tabStr = params ? params["tabs"] : null;
-	this._tabs = tabStr ? tabStr.split(",") : null;
+	this._contactGroupView._setMouseEventHdlrs();
 
 	// create an empty slate
 	this._contactView = new DwtComposite(this);
 	this._contactView.reparentHtmlElement(this._htmlElId + "_content");
-
-	// reset event handlers so object manager can process
 	this._contactView._setMouseEventHdlrs();
 };
 
@@ -257,7 +251,8 @@ function(contact, isGal, oldContact) {
 		contact: contact,
 		addrbook: contact.getAddressBook(),
 		contactHdrClass: (ZmOrganizer.COLOR_TEXT[color] + "Bg"),
-		isInTrash: (folder && folder.isInTrash())
+		isInTrash: (folder && folder.isInTrash()),
+		findObjects: AjxCallback.simpleClosure(this._generateObject, this)
 	};
 
 	if (contact.isGroup()) {
@@ -265,7 +260,7 @@ function(contact, isGal, oldContact) {
 
 		subs.folderIcon = contact.addrbook.getIcon();
 		subs.folderName = contact.addrbook.getName();
-		subs.groupMembers = contact.getGroupMembers().good.getArray();
+		subs.groupMembers = contact.getGroupMembers().all.getArray();
 
 		this._resetVisibility(true);
 
@@ -277,7 +272,6 @@ function(contact, isGal, oldContact) {
 
 		subs.view = this;
 		subs.isGal = isGal;
-		subs.findObjects = AjxCallback.simpleClosure(this._generateObject, this);
 
 		this._resetVisibility(false);
 

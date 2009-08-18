@@ -652,17 +652,21 @@
 
 <template id="abook.Contacts#SplitViewGroup">
 	<$= AjxTemplate.expand("abook.Contacts#SplitView_header", data) $>
-
-	<div id='${id}_body' class='groupBody'>
-		<table border=0 cellpadding=1 cellspacing=1 width=100%>
-			<$ for (var i = 0; i < data.groupMembers.length; i++) { $>
-				<tr>
-					<td width=1%><$= AjxImg.getImageHtml("Message") $></td>
-					<td><nobr><$= AjxStringUtil.htmlEncode(data.groupMembers[i].toString()) $></nobr></td>
-				</tr>
-			<$ } $>
-		</table>
-	</div>
+	<table>
+	<$
+	var itemlistdata = {
+		id: data.id, name: "email",
+		attrs: {}, addone: false, seenone: false,
+		findObjects: data.findObjects, objectType: ZmObjectManager.EMAIL,
+		label: ZmMsg.emailLabel
+	};
+	for (var i = 0; i < data.groupMembers.length; i++) {
+		var address = data.groupMembers[i];
+		itemlistdata.attrs.email = address.getAddress();
+		itemlistdata.type = address.getName() || address.getDispName(); $>
+		<$= AjxTemplate.expand("#SplitView_item_list", itemlistdata) $>
+	<$ } $>
+	</table>
 </template>
 
 

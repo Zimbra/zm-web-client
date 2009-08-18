@@ -14,9 +14,13 @@
  */
 
 ZmGroupView = function(parent, controller) {
-	ZmContactView.call(this, parent, controller);
+	if (arguments.length == 0) return;
+	DwtComposite.call(this, {parent:parent, className:"ZmContactView", posStyle:DwtControl.ABSOLUTE_STYLE});
+	this.setScrollStyle(Dwt.SCROLL);
 
 	this._searchRespCallback = new AjxCallback(this, this._handleResponseSearch);
+
+	this._controller = controller;
 
 	this.setScrollStyle(Dwt.CLIP);
 	this._offset = 0;
@@ -24,14 +28,29 @@ ZmGroupView = function(parent, controller) {
 	this._view = ZmId.VIEW_GROUP;
 };
 
-ZmGroupView.prototype = new ZmContactView;
+ZmGroupView.prototype = new DwtComposite;
 ZmGroupView.prototype.constructor = ZmGroupView;
-
-// Public Methods
 
 ZmGroupView.prototype.toString =
 function() {
 	return "ZmGroupView";
+};
+
+//
+// Public methods
+//
+
+// need this since contact view now derives from list controller
+ZmGroupView.prototype.getList = function() { return null; }
+
+ZmGroupView.prototype.getContact =
+function() {
+	return this._contact;
+};
+
+ZmGroupView.prototype.getController =
+function() {
+	return this._controller;
 };
 
 ZmGroupView.prototype.set =
@@ -421,7 +440,7 @@ function() {
 
 ZmGroupView.prototype._setGroupMembers =
 function() {
-	var members = this._contact.getGroupMembers().good.getArray();
+	var members = this._contact.getGroupMembers().all.getArray();
 	var membersList = [];
 	for (var i = 0; i < members.length; i++) {
 		membersList[i] = members[i].toString();
@@ -449,6 +468,104 @@ function() {
 	}
 };
 
+ZmGroupView.prototype._setFolder =
+function() {
+	if (this._folderSelect) {
+		var match;
+		if (this._contact.id == null) {
+			var clc = AjxDispatcher.run("GetContactListController");
+			match = clc._folderId;
+		}
+
+		if (this._contact.id != null || !match) {
+			match = this._contact.addrbook ? this._contact.addrbook.id : ZmFolder.ID_CONTACTS;
+		}
+
+		var folderTree = appCtxt.getFolderTree();
+		var folders = folderTree ? folderTree.getByType(ZmOrganizer.ADDRBOOK) : [];
+		folders.sort(ZmAddrBook.sortCompare);
+
+		// for now, always re-populate folders DwtSelect
+		this._folderSelect.clearOptions();
+
+		for (var i = 0; i < folders.length; i++) {
+			var folder = folders[i];
+			if (folder.nId == ZmFolder.ID_ROOT || folder.nId == ZmOrganizer.ID_MY_CARD ||
+				folder.isInTrash() || folder.isReadOnly()) {
+				continue;
+			}
+
+			this._folderSelect.addOption(folder.name, folder.id == match, folder.id);
+		}
+	} else if (this._folderPickerButton) {
+		var folder = this._contact.getAddressBook();
+		if (folder) {
+			this._folderPickerButton.setText(folder.name);
+			this._folderPickedId = folder.id;
+		} else {
+			var name = ZmMsg[ZmFolder.MSG_KEY[ZmOrganizer.ID_ADDRBOOK]];
+			this._folderPickerButton.setText(name);
+			this._folderPickedId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ADDRBOOK, appCtxt.getActiveAccount());
+		}
+	}
+};
+
+ZmGroupView.prototype._setHeaderInfo =
+function() {
+	// set the appropriate header color
+	var folderId = this._contact.folderId;
+	var folder = folderId ? appCtxt.getById(folderId) : null;
+	var color = folder ? folder.color : ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.ADDRBOOK];
+	var bkgdColor = ZmOrganizer.COLOR_TEXT[color] + "Bg";
+
+	// set the header color for all tabs
+	var contactHdrRow = document.getElementById(this._headerRowId);
+	if (contactHdrRow) {
+		contactHdrRow.className = "contactHeaderRow " + bkgdColor;
+	}
+
+	// set appropriate icon
+	var iconCell = document.getElementById(this._iconCellId);
+	if (iconCell) {
+		iconCell.innerHTML = AjxImg.getImageHtml(this._contact.getIcon());
+	}
+};
+
+ZmGroupView.prototype._setTags =
+function() {
+	var tagCell = this._getTagCell();
+	if (!tagCell) { return; }
+
+	// get sorted list of tags for this msg
+	var ta = [];
+	for (var i = 0; i < this._contact.tags.length; i++)
+		ta.push(this._tagList.getById(this._contact.tags[i]));
+	ta.sort(ZmTag.sortCompare);
+
+	var html = [];
+	var i = 0;
+	for (var j = 0; j < ta.length; j++) {
+		var tag = ta[j];
+		if (!tag) continue;
+		var icon = ZmTag.COLOR_ICON[tag.color];
+		html[i++] = AjxImg.getImageSpanHtml(icon, null, null, tag.name);
+		html[i++] = "&nbsp;";
+	}
+
+	tagCell.innerHTML = html.join("");
+};
+
+ZmGroupView.prototype._getTagCell =
+function() {
+	return document.getElementById(this._tagCellId);
+};
+
+// Consistent spot to locate various dialogs
+ZmGroupView.prototype._getDialogXY =
+function() {
+	var loc = Dwt.toWindow(this.getHtmlElement(), 0, 0);
+	return new DwtPoint(loc.x + ZmContactView.DIALOG_X, loc.y + ZmContactView.DIALOG_Y);
+};
 
 // Listeners
 
@@ -533,8 +650,8 @@ function(ev){
 	if (!emailStr || emailStr == '') { return; }
 
 	var addrs = AjxEmailAddress.parseEmailString(emailStr);
-	if (addrs && addrs.good) {
-		var goodArry = addrs.good.getArray();
+	if (addrs && addrs.all) {
+		var goodArry = addrs.all.getArray();
 		var goodAddr = [];
 		for (var i = 0; i < goodArry.length; i++) {
 			goodAddr[i] = goodArry[i].toString();
