@@ -129,7 +129,7 @@ ZmEditContactView = function(parent, controller, isMyCardView) {
 			},
 			// NOTE: Return false onclick to prevent default action
 			{ id: "VIEW_IMAGE", ignore: true, onclick: "open(get('IMAGE')) && false" },
-			{ id: "REMOVE_IMAGE", ignore: true, onclick: "set('IMAGE','') && false",
+			{ id: "REMOVE_IMAGE", ignore: true, onclick: "this.setValue('IMAGE','',true) && false",
 				visible: "get('IMAGE')" },
 			// pseudo-items
 			{ id: "JOB", notab: true, ignore:true, visible: "get('SHOW_TITLE') && get('SHOW_DEPARTMENT')" },
@@ -265,7 +265,7 @@ ZmEditContactView.prototype.set = function(contact, isDirty) {
 		folderOrId = overview && overview.getSelected();
 	}
 	this._setFolder(folderOrId || ZmOrganizer.ID_ADDRBOOK);
-	this.setValue("IMAGE", (contact && contact.getImageUrl()) || "");
+	this.setValue("IMAGE", (contact && contact.getImageUrl()) || "", true);
 
 	// check show detail items for fields with values
 	for (var id in ZmEditContactView.ATTRS) {
@@ -389,6 +389,18 @@ ZmEditContactView.prototype.getModifiedAttrs = function() {
 	// make sure we set the folder (when new)
 	if (!attributes[ZmContact.F_folderId] && !this._contact.isShared()) {
 		attributes[ZmContact.F_folderId] = this.getValue("FOLDER");
+	}
+
+	// set the value for IMAGE to just the attachment id
+	if (attributes[ZmContact.F_image]) {
+		var value = this.getValue("IMAGE");
+		console.log("image was modified: value=",value);
+		var m = /aid=(.*)/.exec(value);
+		if (m) {
+			console.log("setting attachment id to ",m[1]);
+			// NOTE: ZmContact.modify expects the "aid_" prefix.
+			attributes[ZmContact.F_image] = "aid_"+m[1];
+		}
 	}
 
 	return attributes;
@@ -651,8 +663,10 @@ ZmEditContactViewImage = function(params) {
 
 	var el = this.getHtmlElement();
 	el.innerHTML = [
-		"<img id='",this._htmlElId,"_img'>",
-		"<div id='",this._htmlElId,"_badge' style='position:absolute;bottom:0;right:0'>"
+		"<div style='width:48;height:48'>",
+			"<img id='",this._htmlElId,"_img' width=48 height=48>",
+		"</div>",
+		"<div id='",this._htmlElId,"_badge' style='position:absolute;bottom:0;right:8'>"
 	].join("");
 //	el.style.width = 52;
 //	el.style.height = 52;
@@ -693,6 +707,7 @@ ZmEditContactViewImage.prototype.setValue = function(value) {
 		this._imgEl.src = value;
 		this._badgeEl.className = "ImgEdit";
 	}
+	this.parent.setDirty("IMAGE", true);
 };
 
 ZmEditContactViewImage.prototype.getValue = function() {
@@ -702,6 +717,8 @@ ZmEditContactViewImage.prototype.getValue = function() {
 // Protected methods
 
 ZmEditContactViewImage.prototype._imageLoaded = function() {
+	this._imgEl.setAttribute("width", "");
+	this._imgEl.setAttribute("height", "");
 	var w = this._imgEl.width;
 	var h = this._imgEl.height;
 	this._imgEl.setAttribute("width", w > h ? 48 : "");
@@ -715,7 +732,8 @@ ZmEditContactViewImage.prototype._chooseImage = function() {
 	var title = ZmMsg.uploadImage;
 	var location = null;
 	var oneFileOnly = true;
-	dialog.popup(folder, callback, title, location, oneFileOnly);
+	var noResolveAction = true;
+	dialog.popup(folder, callback, title, location, oneFileOnly, noResolveAction);
 };
 
 ZmEditContactViewImage.prototype._handleImageSaved = function(folder, filenames, files) {

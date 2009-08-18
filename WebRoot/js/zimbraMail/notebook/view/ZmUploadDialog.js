@@ -52,7 +52,7 @@ function(enabled) {
     this._showLinkTitleText = enabled;    
 };
 
-ZmUploadDialog.prototype.popup = function(folder, callback, title, loc, oneFileOnly) {
+ZmUploadDialog.prototype.popup = function(folder, callback, title, loc, oneFileOnly, noResolveAction) {
 	this._uploadFolder = folder;
 	this._uploadCallback = callback;
 
@@ -69,6 +69,17 @@ ZmUploadDialog.prototype.popup = function(folder, callback, title, loc, oneFileO
 	// enable buttons
 	this.setButtonEnabled(DwtDialog.OK_BUTTON, true);
 	this.setButtonEnabled(DwtDialog.CANCEL_BUTTON, true);
+
+	// hide/show elements
+	var id = this._htmlElId;
+	var labelEl = document.getElementById(id+"_label");
+	if (labelEl) {
+		Dwt.setVisible(labelEl, !oneFileOnly);
+	}
+	var actionRowEl = document.getElementById(id+"_actionRow");
+	if (actionRowEl) {
+		Dwt.setVisible(actionRowEl, !noResolveAction);
+	}
 
 	// show
 	DwtDialog.prototype.popup.call(this, loc);
@@ -314,9 +325,7 @@ ZmUploadDialog.prototype._addFileInputRow = function(oneInputOnly) {
 	var row = table.insertRow(-1);
 
     var cellLabel = row.insertCell(-1);
-    cellLabel.innerHTML = [
-        ZmMsg.attach, ":"
-    ].join("");
+    cellLabel.innerHTML = ZmMsg.fileLabel;
 
 	var cell = row.insertCell(-1);
 	cell.innerHTML = [
@@ -409,8 +418,9 @@ ZmUploadDialog._addHandler = function(event) {
 };
 
 ZmUploadDialog.prototype._createUploadHtml = function() {
-	this._formId = Dwt.getNextId();
-	this._tableId = Dwt.getNextId();
+	var id = this._htmlElId;
+	this._formId = id+"_form";
+	this._tableId = id+"_table";
 
 	this._selector = new DwtSelect({parent:this});
 	this._selector.addOption(ZmMsg.uploadActionKeepMine, false, ZmUploadDialog.ACTION_KEEP_MINE);
@@ -418,6 +428,7 @@ ZmUploadDialog.prototype._createUploadHtml = function() {
 	this._selector.addOption(ZmMsg.uploadActionAsk, true, ZmUploadDialog.ACTION_ASK);
 
 	var label = document.createElement("DIV");
+	label.id = id+"_label";
 	label.style.marginBottom = "0.5em";
 	label.innerHTML = ZmMsg.uploadChoose;
 
@@ -444,6 +455,7 @@ ZmUploadDialog.prototype._createUploadHtml = function() {
 	table.cellSpacing = 4;
 
 	var row = table.insertRow(-1);
+	row.id = id+"_actionRow";
 	var cell = row.insertCell(-1);
 	cell.innerHTML = ZmMsg.uploadAction;
 
