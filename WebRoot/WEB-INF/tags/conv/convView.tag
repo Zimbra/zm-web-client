@@ -7,6 +7,7 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <app:handleError>
     <zm:getMailbox var="mailbox"/>
+    <app:certifiedMessage var="reqHdr"/>
     <fmt:message var="emptyFragment" key="fragmentIsEmpty"/>
     <fmt:message var="emptySubject" key="noSubject"/>
     <c:set var="csi" value="${param.csi}"/>
@@ -18,14 +19,14 @@
     <c:if test="${empty csi}">
         <c:set var="csi" value="${convSearchResult.fetchedMessageIndex}"/>
         <c:if test="${csi ge 0}">
-            <zm:getMessage var="message" id="${convSearchResult.hits[csi].id}" markread="${(context.folder.isMountPoint and context.folder.effectivePerm eq 'r') ? 'false' : 'true'}" neuterimages="${mailbox.prefs.displayExternalImages ? '1' : param.xim}"/>
+            <zm:getMessage var="message" id="${convSearchResult.hits[csi].id}" markread="${(context.folder.isMountPoint and context.folder.effectivePerm eq 'r') ? 'false' : 'true'}" neuterimages="${mailbox.prefs.displayExternalImages ? '1' : param.xim}" requestHeaders="${reqHdr}"/>
         </c:if>
     </c:if>
     <c:if test="${message eq null}">
         <c:if test="${csi lt 0 or csi ge convSearchResult.size}">
             <c:set var="csi" value="0"/>
         </c:if>
-        <zm:getMessage var="message" id="${not empty param.id ? param.id : convSearchResult.hits[csi].id}" markread="${(context.folder.isMountPoint and context.folder.effectivePerm eq 'r') ? 'false' : 'true'}" neuterimages="${mailbox.prefs.displayExternalImages ? '1' : param.xim}"/>
+        <zm:getMessage var="message" id="${not empty param.id ? param.id : convSearchResult.hits[csi].id}" markread="${(context.folder.isMountPoint and context.folder.effectivePerm eq 'r') ? 'false' : 'true'}" neuterimages="${mailbox.prefs.displayExternalImages ? '1' : param.xim}" requestHeaders="${reqHdr}"/>
     </c:if>
 
     <%-- blah, optimize this later --%>
