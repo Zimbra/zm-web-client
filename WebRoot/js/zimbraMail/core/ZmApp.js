@@ -54,10 +54,6 @@ ZmApp = function(name, container, parentController) {
 	}
 	this._registerApp();
 
-	for (var org in ZmOrganizer.VIEWS) {
-		ZmOrganizer.VIEW_HASH[org] = AjxUtil.arrayAsHash(ZmOrganizer.VIEWS[org]);
-	}
-
 	if (!appCtxt.isChildWindow) {
 		this._opc = appCtxt.getOverviewController();
 	}
@@ -669,15 +665,8 @@ ZmApp.prototype._handleCreateLink =
 function(create, org) {
 	var parent = appCtxt.getById(create.l);
 	var view = create.view || "message";
-	if (parent && parent.supportsSharing() &&
-		(ZmOrganizer.VIEW_HASH[org][view]))
-	{
+	if (parent && parent.supportsSharing() && (ZmOrganizer.VIEW_HASH[org][view])) {
 		parent.notifyCreate(create);
-		// XXX: once bug #4434 is fixed, check if this call is still needed
-		var folderTree = appCtxt.getFolderTree();
-		if (folderTree) {
-			folderTree.getPermissions({type:org, noBusyOverlay:true});
-		}
 		create._handled = true;
 	}
 };

@@ -341,7 +341,9 @@ function(org, params) {
 	ZmOrganizer.TREE_TYPE[org] = params.treeType || org; // default to own type
 	ZmOrganizer.CREATE_FUNC[org] = params.createFunc || "ZmOrganizer.create";
 
-	ZmOrganizer.VIEW_HASH[org] = {};
+	if (params.views) {
+		ZmOrganizer.VIEW_HASH[org] = AjxUtil.arrayAsHash(ZmOrganizer.VIEWS[org]);
+	}
 
 	if (params.hasColor) {
 		ZmOrganizer.DEFAULT_COLOR[org] = (params.defaultColor != null)
@@ -423,6 +425,40 @@ function(msg) {
 	msgDialog.reset();
 	msgDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
 	msgDialog.popup();
+};
+
+ZmOrganizer.getFolder =
+function(id, callback) {
+	var jsonObj = {GetFolderRequest:{_jsns:"urn:zimbraMail"}};
+	var request = jsonObj.GetFolderRequest;
+	request.folder = {l:id};
+	var respCallback = new AjxCallback(null, ZmOrganizer._handleResponseGetFolder, [callback]);
+	appCtxt.getRequestMgr().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback});
+};
+
+ZmOrganizer._handleResponseGetFolder =
+function(callback, result) {
+	var resp = result.getResponse().GetFolderResponse;
+	var folderObj = resp && resp.folder && resp.folder[0];
+	var folder;
+	if (folderObj) {
+		folder = appCtxt.getById(folderObj.id);
+		if (folder) {
+			folder.clearShares();
+			folder._setSharesFromJs(folderObj);
+		} else {
+			var parent = appCtxt.getById(folderObj.l);
+			folder = ZmFolderTree.createFromJs(parent, folderObj, appCtxt.getFolderTree(), "folder");
+		}
+	}
+	if (callback) {
+		callback.run(folder);
+	}
+};
+
+ZmOrganizer.prototype.getFolder =
+function(callback) {
+	ZmOrganizer.getFolder(this.id, callback);
 };
 
 

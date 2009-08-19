@@ -295,9 +295,8 @@ function(organizer, dialog) {
 	appCtxt.getAppController()._clearDialog(dialog);
 };
 
-// This method is used to retrieve permissions on folders that can be *shared*
 /**
- * Issues a BatchRequest of GetFolderRequest's for mountpoints that dont have 
+ * Issues a BatchRequest of GetFolderRequest's for existing mountpoints that don't have
  * permissions set.
  *
  * @param type				[Integer]		ZmItem type constant
@@ -326,7 +325,9 @@ function(params) {
 		var respCallback = new AjxCallback(this, this._handleResponseGetShares, [params.callback, params.skipNotify]);
 		appCtxt.getRequestMgr().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback, noBusyOverlay:params.noBusyOverlay});
 	} else {
-		if (params.callback) { params.callback.run(); }
+		if (params.callback) {
+			params.callback.run();
+		}
 	}
 };
 
@@ -337,8 +338,7 @@ function(type) {
 
 	for (var j = 0; j < orgs.length; j++) {
 		var org = orgs[j];
-		if (!ZmFolderTree.IS_PARSED[org])
-			continue;
+		if (!ZmFolderTree.IS_PARSED[org]) { continue; }
 
 		var items = this.getByType(org);
 
@@ -364,19 +364,15 @@ function(callback, skipNotify, result) {
 			if (link) {
 				var mtpt = appCtxt.getById(link.id);
 				if (mtpt) {
-					var acl = link.acl && link.acl.length && link.acl[0];
-					if (acl && acl.grant && acl.grant.length) {
-						for (var j = 0; j < acl.grant.length; j++) {
-							mtpt.addShare(ZmShare.createFromJs(mtpt, acl.grant[j]));
-						}
-					}
+					mtpt._setSharesFromJs(link);
 				}
 
 				if (link.folder && link.folder.length > 0) {
 					var parent = appCtxt.getById(link.id);
 					if (parent) {
+						// TODO: only goes one level deep - should we recurse?
 						for (var j = 0; j < link.folder.length; j++) {
-							if (appCtxt.getById(link.folder[j].id)) continue;
+							if (appCtxt.getById(link.folder[j].id)) { continue; }
 							parent.notifyCreate(link.folder[j], false, skipNotify);
 						}
 					}
@@ -385,7 +381,9 @@ function(callback, skipNotify, result) {
 		}
 	}
 
-	if (callback) { callback.run(); }
+	if (callback) {
+		callback.run();
+	}
 };
 
 /*

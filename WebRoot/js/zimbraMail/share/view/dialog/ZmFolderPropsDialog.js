@@ -320,13 +320,38 @@ function(organizer) {
 
 	this._sharesGroup.setContent("");
 
-	var link = organizer.link;
+	var displayShares = this._getDisplayShares(organizer);
+
+	var getFolder = false;
+	if (displayShares.length) {
+		for (var i = 0; i < displayShares.length; i++) {
+			var share = displayShares[i];
+			if (!(share.grantee && share.grantee.name)) {
+				getFolder = true;
+			}
+		}
+	}
+
+	if (getFolder) {
+		var respCallback = new AjxCallback(this, this._handleResponseGetFolder, [displayShares]);
+		organizer.getFolder(respCallback);
+	} else {
+		this._handleResponseGetFolder(displayShares);
+	}
+
+
+	this._sharesGroup.setVisible(displayShares.length > 0);
+};
+
+ZmFolderPropsDialog.prototype._getDisplayShares =
+function(organizer) {
+
 	var shares = organizer.shares;
 	var displayShares = [];
-	if ((!link || organizer.isAdmin()) && shares && shares.length > 0) {
+	if ((!organizer.link || organizer.isAdmin()) && shares && shares.length > 0) {
 		AjxDispatcher.require("Share");
 		var userZid = appCtxt.getMainAccount().id;
-		// if a folder was shared with us with admin, a share is created since we could share it;
+		// if a folder was shared with us with admin rights, a share is created since we could share it;
 		// don't show any share that's for us in the list
 		for (var i = 0; i < shares.length; i++) {
 			var share = shares[i];
@@ -337,6 +362,16 @@ function(organizer) {
 		}
 	}
 
+	return displayShares;
+};
+
+ZmFolderPropsDialog.prototype._handleResponseGetFolder =
+function(displayShares, organizer) {
+
+	if (organizer) {
+		displayShares = this._getDisplayShares(organizer);
+	}
+	
 	if (displayShares.length) {
 		var table = document.createElement("TABLE");
 		table.border = 0;
@@ -347,7 +382,7 @@ function(organizer) {
 			var row = table.insertRow(-1);
 			var nameEl = row.insertCell(-1);
 			nameEl.style.paddingRight = "15px";
-			var nameText = share.grantee.name || share.grantee.id;
+			var nameText = share.grantee && share.grantee.name;
 			if (share.isAll()) {
 				nameText = ZmMsg.shareWithAll;
 			} else if (share.isPublic()) {
@@ -364,14 +399,14 @@ function(organizer) {
 		this._sharesGroup.setElement(table);
 
 		var width = Dwt.DEFAULT;
-		var height = shares.length > 5 ? ZmFolderPropsDialog.SHARES_HEIGHT : Dwt.CLEAR;
+		var height = displayShares.length > 5 ? ZmFolderPropsDialog.SHARES_HEIGHT : Dwt.CLEAR;
 
 		var insetElement = this._sharesGroup.getInsetHtmlElement();
 		Dwt.setScrollStyle(insetElement, Dwt.SCROLL);
 		Dwt.setSize(insetElement, width, height);
 	}
 
-	this._sharesGroup.setVisible(!!(displayShares.length > 0));
+	this._sharesGroup.setVisible(displayShares.length > 0);
 };
 
 ZmFolderPropsDialog.prototype.__createCmdCells =
