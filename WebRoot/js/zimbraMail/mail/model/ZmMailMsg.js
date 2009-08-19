@@ -68,6 +68,9 @@ ZmMailMsg.HDR_KEY[ZmMailMsg.HDR_SENDER]		= ZmMsg.sender;
 ZmMailMsg.HDR_KEY[ZmMailMsg.HDR_DATE]		= ZmMsg.sentAt;
 ZmMailMsg.HDR_KEY[ZmMailMsg.HDR_SUBJECT]	= ZmMsg.subject;
 
+// Ordered list - first matching status wins
+ZmMailMsg.STATUS_LIST = ["isDraft", "isReplied", "isForwarded", "isSent", "isUnread"];
+
 ZmMailMsg.STATUS_ICON = {};
 ZmMailMsg.STATUS_ICON["isDraft"]		= "MsgStatusDraft";
 ZmMailMsg.STATUS_ICON["isReplied"]		= "MsgStatusReply";
@@ -82,6 +85,14 @@ ZmMailMsg.PSTATUS_TENTATIVE		= "TE";
 ZmMailMsg.STATUS_ICON[ZmMailMsg.PSTATUS_ACCEPT]		= "CalInviteAccepted";
 ZmMailMsg.STATUS_ICON[ZmMailMsg.PSTATUS_DECLINED]	= "CalInviteDeclined";
 ZmMailMsg.STATUS_ICON[ZmMailMsg.PSTATUS_TENTATIVE]	= "CalInviteTentative";
+
+// tooltips for invite status icons
+ZmMailMsg.TOOLTIP = {};
+ZmMailMsg.TOOLTIP["Appointment"]		= ZmMsg.appointment;
+ZmMailMsg.TOOLTIP["CalInviteAccepted"]	= ZmMsg.ptstAccept;
+ZmMailMsg.TOOLTIP["CalInviteDeclined"]	= ZmMsg.ptstDeclined;
+ZmMailMsg.TOOLTIP["CalInviteTentative"]	= ZmMsg.ptstTentative;
+
 
 ZmMailMsg.URL_RE = /((telnet:)|((https?|ftp|gopher|news|file):\/\/)|(www\.[\w\.\_\-]+))[^\s\xA0\(\)\<\>\[\]\{\}\'\"]*/i;
 
@@ -1712,13 +1723,33 @@ function() {
 		return ZmMailMsg.STATUS_ICON[status] || "Appointment";
 	}
 
-	for (var status in ZmMailMsg.STATUS_ICON) {
+	for (var i = 0; i < ZmMailMsg.STATUS_LIST.length; i++) {
+		var status = ZmMailMsg.STATUS_LIST[i];
 		if (this[status]) {
 			return ZmMailMsg.STATUS_ICON[status];
 		}
 	}
 
 	return "MsgStatusRead";
+};
+
+ZmMailMsg.prototype.getStatusTooltip =
+function() {
+
+	var status = [];
+	if (this.isInvite()) {
+		var icon = this.getStatusIcon();
+		status.push(ZmMailMsg.TOOLTIP[icon]);
+	}
+	if (this.isUnread)		{ status.push(ZmMsg.unread); }
+	if (this.isReplied)		{ status.push(ZmMsg.replied); }
+	if (this.isForwarded)	{ status.push(ZmMsg.forwarded); }
+	if (this.isSent)		{ status.push(ZmMsg.sentAt); }
+	if (status.length == 0) {
+		status = [ZmMsg.read];
+	}
+
+	return status.join(", ");
 };
 
 ZmMailMsg.prototype.notifyModify =

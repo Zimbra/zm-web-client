@@ -319,13 +319,7 @@ function(params) {
 	if (!item) { return; }
 
 	if (field == ZmItem.F_STATUS) {
-		if (item.isDraft)			{ tooltip = ZmMsg.draft; }
-		else if (item.isUnread)		{ tooltip = ZmMsg.unread; }
-		else if (item.isReplied)	{ tooltip = ZmMsg.replied; }
-		else if (item.isForwarded)	{ tooltip = ZmMsg.forwarded; }
-		else if (item.isSent)		{ tooltip = ZmMsg.sentAt; }
-		else if (item.isInvite())	{ tooltip = ZmMsg.appointment; }
-		else						{ tooltip = ZmMsg.read; }
+		tooltip = item.getStatusTooltip();
 	}
 	else if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) &&
 			(field == ZmItem.F_FROM || field == ZmItem.F_PARTICIPANT))
