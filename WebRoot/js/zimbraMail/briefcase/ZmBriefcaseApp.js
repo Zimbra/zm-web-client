@@ -496,7 +496,8 @@ function(dlg, msgId, partId) {
 		treeIds:		[ZmOrganizer.BRIEFCASE],
 		overviewId:		dlg.getOverviewId(this._name),
 		title:			ZmMsg.addToBriefcaseTitle,
-		description:	ZmMsg.targetFolder
+		description:	ZmMsg.targetFolder,
+		appName:		ZmApp.BRIEFCASE
 	};
 };
 

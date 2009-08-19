@@ -154,6 +154,7 @@ function(actionCode) {
 			var orgType = ZmApp.ORGANIZER[this._app._name] || ZmOrganizer.FOLDER;
 			var params = {treeIds:		[orgType],
 						  overviewId:	dlg.getOverviewId(ZmOrganizer.APP[orgType]),
+						  appName:		this._app._name,
 						  title:		AjxMessageFormat.format(ZmMsg.goToFolder, ZmMsg[ZmOrganizer.MSG_KEY[orgType]])};
 			ZmController.showDialog(dlg, new AjxCallback(null, ZmController._visitOrgCallback, [dlg, orgType]), params);
 			break;

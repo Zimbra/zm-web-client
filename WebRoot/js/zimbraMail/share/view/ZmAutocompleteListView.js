@@ -312,6 +312,11 @@ function() {
 	return "ZmAutocompleteListView";
 };
 
+ZmAutocompleteListView.prototype.setActiveAccount =
+function(account) {
+	this._activeAccount = account;
+};
+
 /**
 * Adds autocompletion to the given field by setting key event handlers.
 *
@@ -534,7 +539,7 @@ function(chunk, callback) {
 	this._removeAll();
 
 	var respCallback = new AjxCallback(this, this._handleResponseAutocomplete, [str, chunk, text, start, callback]);
-	this._dataAPI.autocompleteMatch(str, respCallback, this, this._options);
+	this._dataAPI.autocompleteMatch(str, respCallback, this, this._options, this._activeAccount);
 };
 
 ZmAutocompleteListView.prototype._handleResponseAutocomplete =

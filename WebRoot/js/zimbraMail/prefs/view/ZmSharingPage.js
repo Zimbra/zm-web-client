@@ -518,6 +518,7 @@ function(orgType) {
 				  skipReadOnly:		true,
 				  skipRemote:		true,
 				  hideNewButton:	true,
+				  appName:			ZmOrganizer.APP[orgType],
 				  noRootSelect:		true};
 	dialog.reset();
 	dialog.registerCallback(DwtDialog.OK_BUTTON, this._folderSelectionCallback, this, [dialog]);

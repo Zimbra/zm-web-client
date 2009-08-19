@@ -24,25 +24,33 @@
  */
 ZmAutocomplete = function() {
 	this._acRequests = {};		// request mgmt (timeout, cancel)
-	this._acCache = {};			// results cache, grouped by type
-	this._acCache[ZmAutocomplete.AC_TYPE_CONTACT]	=	{};
-	this._acCache[ZmAutocomplete.AC_TYPE_LOCATION]	=	{};
-	this._acCache[ZmAutocomplete.AC_TYPE_EQUIPMENT]	=	{};
+	this._acCache = {};			// results cache, grouped by account > type
 
-	var settings = appCtxt.getSettings();
-	var galSetting = settings.getSetting(ZmSetting.GAL_AUTOCOMPLETE);
-    if(galSetting){ //AddrBook might be disabled
-        galSetting.addChangeListener(new AjxListener(this, this._settingChangeListener));
-    }
+	// make autocomplete more multi-account friendly
+	var accounts = appCtxt.getZimbraAccounts();
+	for (var i in accounts) {
+		var acct = accounts[i];
+		if (!acct.visible) { continue; }
+
+		this._acCache[acct.id] = {};
+		this._acCache[acct.id][ZmAutocomplete.AC_TYPE_CONTACT]		=	{};
+		this._acCache[acct.id][ZmAutocomplete.AC_TYPE_LOCATION]		=	{};
+		this._acCache[acct.id][ZmAutocomplete.AC_TYPE_EQUIPMENT]	=	{};
+	}
+
+	var galSetting = appCtxt.getSettings().getSetting(ZmSetting.GAL_AUTOCOMPLETE);
+	if (galSetting) { // AddrBook might be disabled
+		galSetting.addChangeListener(new AjxListener(this, this._settingChangeListener));
+	}
 };
 
 // choices for text in the returned match object
-ZmAutocomplete.AC_VALUE_FULL 	= "fullAddress";
-ZmAutocomplete.AC_VALUE_EMAIL	= "email";
-ZmAutocomplete.AC_VALUE_NAME	= "name";
+ZmAutocomplete.AC_VALUE_FULL 		= "fullAddress";
+ZmAutocomplete.AC_VALUE_EMAIL		= "email";
+ZmAutocomplete.AC_VALUE_NAME		= "name";
 
 // request control
-ZmAutocomplete.AC_TIMEOUT		= 20;	// autocomplete timeout (in seconds)
+ZmAutocomplete.AC_TIMEOUT			= 20;	// autocomplete timeout (in seconds)
 
 // result types
 ZmAutocomplete.AC_TYPE_CONTACT		= "contact";
@@ -59,7 +67,7 @@ ZmAutocomplete.AC_ICON[ZmAutocomplete.AC_TYPE_GAL]		= "GALContact";
 ZmAutocomplete.AC_ICON[ZmAutocomplete.AC_TYPE_GROUP]	= "Group";
 
 // cache control
-ZmAutocomplete.GAL_RESULTS_TTL	= 900000;	// time-to-live for cached GAL autocomplete results
+ZmAutocomplete.GAL_RESULTS_TTL		= 900000;	// time-to-live for cached GAL autocomplete results
 
 ZmAutocomplete.prototype.toString =
 function() {
@@ -74,13 +82,10 @@ function() {
  * @param callback	[AjxCallback]				callback to run with results
  * @param aclv		[ZmAutocompleteListView]*	needed to show wait msg
  * @param options	[hash]*						additional options:
- *        type		[constant]*					type of result to match; default is
- * 												ZmAutocomplete.AC_TYPE_CONTACT; other valid values
- * 												are for location or equipment
- *        needItem	[boolean]*					if true, return a ZmItem as part of match result
+ * @param account	[ZmZimbraAccount]*			account to fetch cached items from
  */
 ZmAutocomplete.prototype.autocompleteMatch =
-function(str, callback, aclv, options) {
+function(str, callback, aclv, options, account) {
 
 	str = str.toLowerCase().replace(/"/g, '');
 	this._curAcStr = str;
@@ -88,7 +93,7 @@ function(str, callback, aclv, options) {
 
 	var acType = (options && options.type) || ZmAutocomplete.AC_TYPE_CONTACT;
 
-	var list = this._checkCache(str, acType);
+	var list = this._checkCache(str, acType, account);
 	if (list !== null) {
 		this._handleResponseAutocompleteMatch(str, callback, list);
 		return;
@@ -96,7 +101,7 @@ function(str, callback, aclv, options) {
 
 	aclv.setWaiting(true);
 	var respCallback = new AjxCallback(this, this._handleResponseAutocompleteMatch, [str, callback]);
-	this._doAutocomplete(str, aclv, options, acType, respCallback);
+	this._doAutocomplete(str, aclv, options, acType, respCallback, account);
 };
 
 ZmAutocomplete.prototype._handleResponseAutocompleteMatch =
@@ -116,9 +121,10 @@ function(str, callback, list) {
  * @param options	[hash]						additional options
  * @param acType	[constant]					type of result to match
  * @param callback	[AjxCallback]				callback to run with results
+ * @param account	[ZmZimbraAccount]*			accout to fetch from
  */
 ZmAutocomplete.prototype._doAutocomplete =
-function(str, aclv, options, acType, callback) {
+function(str, aclv, options, acType, callback, account) {
 	// cancel any outstanding requests for strings that are substrings of this one
 	for (var substr in this._acRequests) {
 		if (str != substr && str.indexOf(substr) === 0) {
@@ -139,16 +145,20 @@ function(str, aclv, options, acType, callback) {
 	} else {
 		DBG.println("ac", "AutoCompleteRequest: " + str);
 	}
+	params.accountName = account && account.name;
 
 	var search = new ZmSearch(params);
-	var respCallback = new AjxCallback(this, this._handleResponseDoAutocomplete, [str, aclv, options, acType, callback]);
-	var errorCallback = new AjxCallback(this, this._handleErrorDoAutocomplete, [str, aclv]);
-	this._acRequests[str] = search.execute({callback:respCallback, errorCallback:errorCallback,
-											timeout:ZmAutocomplete.AC_TIMEOUT, noBusyOverlay:true});
+	var searchParams = {
+		callback: (new AjxCallback(this, this._handleResponseDoAutocomplete, [str, aclv, options, acType, callback, account])),
+		errorCallback: (new AjxCallback(this, this._handleErrorDoAutocomplete, [str, aclv])),
+		timeout: ZmAutocomplete.AC_TIMEOUT,
+		noBusyOverlay: true
+	};
+	this._acRequests[str] = search.execute(searchParams);
 };
 
 ZmAutocomplete.prototype._handleResponseDoAutocomplete =
-function(str, aclv, options, acType, callback, result) {
+function(str, aclv, options, acType, callback, account, result) {
 
 	DBG.println("ac", "got response for " + str);
 
@@ -185,7 +195,7 @@ function(str, aclv, options, acType, callback, result) {
 	// we assume the results from the server are sorted by ranking
 	callback.run(list);
 
-	this._cacheResults(str, acType, list, hasGal, resp._respEl.canBeCached);
+	this._cacheResults(str, acType, list, hasGal, resp._respEl.canBeCached, null, account);
 };
 
 /**
@@ -254,28 +264,32 @@ function(str) {
 };
 
 ZmAutocomplete.prototype.clearCache =
-function(type) {
+function(type, account) {
+	var acct = account || appCtxt.getActiveAccount();
+
 	if (type) {
-		this._acCache[type] = {};
+		this._acCache[acct.id][type] = {};
 	} else {
-		this._acCache[ZmAutocomplete.AC_TYPE_CONTACT]	=	{};
-		this._acCache[ZmAutocomplete.AC_TYPE_LOCATION]	=	{};
-		this._acCache[ZmAutocomplete.AC_TYPE_EQUIPMENT]	=	{};
+		this._acCache[acct.id][ZmAutocomplete.AC_TYPE_CONTACT]		=	{};
+		this._acCache[acct.id][ZmAutocomplete.AC_TYPE_LOCATION]		=	{};
+		this._acCache[acct.id][ZmAutocomplete.AC_TYPE_EQUIPMENT]	=	{};
 	}
 };
 
 /**
- * @param str			[string]		string to match against
- * @param acType		[constant]		type of result to match
- * @param list			[array]			list of matches
- * @param hasGal		[boolean]*		if true, list includes GAL results
- * @param cacheable		[boolean]*		server indication of cacheability
- * @param baesCache		[hash]*			cache that is superset of this one
+ * @param str			[string]			string to match against
+ * @param acType		[constant]			type of result to match
+ * @param list			[array]				list of matches
+ * @param hasGal		[boolean]*			if true, list includes GAL results
+ * @param cacheable		[boolean]*			server indication of cacheability
+ * @param baseCache		[hash]*				cache that is superset of this one
+ * @param account		[ZmZimbraAccount]*	account to check cache against
  */
 ZmAutocomplete.prototype._cacheResults =
-function(str, acType, list, hasGal, cacheable, baseCache) {
+function(str, acType, list, hasGal, cacheable, baseCache, account) {
 
-	var cache = this._acCache[acType][str] = this._acCache[acType][str] || {};
+	var acct = account || appCtxt.getActiveAccount();
+	var cache = this._acCache[acct.id][acType][str] = this._acCache[acct.id][acType][str] || {};
 	cache.list = list;
 	// we always cache; flag below indicates whether we can do forward matching
 	cache.cacheable = (baseCache && baseCache.cacheable) || cacheable;
@@ -285,10 +299,10 @@ function(str, acType, list, hasGal, cacheable, baseCache) {
 };
 
 ZmAutocomplete.prototype._checkCache =
-function(str, acType) {
+function(str, acType, account) {
 
 	// check cache for results for this exact string
-	var cache = this._getCachedResults(str, acType);
+	var cache = this._getCachedResults(str, acType, null, account);
 	var list = cache && cache.list;
 	if (list !== null) { return list; }
 	if (str.length <= 1) { return null; }
@@ -299,7 +313,7 @@ function(str, acType) {
 	while (tmp && !list) {
 		tmp = tmp.slice(0, -1); // remove last character
 		DBG.println("ac", "checking cache for " + tmp);
-		cache = this._getCachedResults(tmp, acType, true);
+		cache = this._getCachedResults(tmp, acType, true, account);
 		list = cache && cache.list;
 		if (list && list.length == 0) {
 			// substring had no matches, so this string has none
@@ -324,7 +338,7 @@ function(str, acType) {
 		return null;
 	}
 
-	this._cacheResults(str, acType, list1, false, false, cache);
+	this._cacheResults(str, acType, list1, false, false, cache, account);
 
 	return list1;
 };
@@ -333,14 +347,16 @@ function(str, acType) {
  * See if we have cached results for the given string. If the cached results have a
  * timestamp, we make sure they haven't expired.
  *
- * @param str				[string]		string to match against
- * @param acType			[constant]		type of result to match
- * @param checkCacheable	[boolean]		if true, make sure results are cacheable
+ * @param str				[string]			string to match against
+ * @param acType			[constant]			type of result to match
+ * @param checkCacheable	[boolean]			if true, make sure results are cacheable
+ * @param account			[ZmZimbraAccount]*	account to fetch cached results from
  */
 ZmAutocomplete.prototype._getCachedResults =
-function(str, acType, checkCacheable) {
+function(str, acType, checkCacheable, account) {
 
-	var cache = this._acCache[acType][str];
+	var acct = account || appCtxt.getActiveAccount();
+	var cache = this._acCache[acct.id][acType][str];
 	if (cache) {
 		if (checkCacheable && (cache.cacheable === false)) { return null; }
 		if (cache.ts) {
@@ -360,7 +376,9 @@ ZmAutocomplete.prototype._settingChangeListener =
 function(ev) {
 	if (ev.type != ZmEvent.S_SETTING) { return; }
 	if (ev.source.id == ZmSetting.GAL_AUTOCOMPLETE) {
-		this._acCache[ZmAutocomplete.AC_TYPE_CONTACT] = {};
+		for (var i in this._acCache) {
+			this._acCache[i][ZmAutocomplete.AC_TYPE_CONTACT] = {};
+		}
 	}
 };
 
@@ -383,38 +401,38 @@ ZmAutocompleteMatch = function(match, options, isContact) {
 		this.item = match;
 		this.type = ZmContact.getAttr(match, ZmResource.F_type) || ZmAutocomplete.AC_TYPE_GAL;
 	} else {
-        if (this.type == ZmAutocomplete.AC_TYPE_GROUP) {
-            this.fullAddress = match.email;
-            this.name        = match.display;
-            //Find all the emails
-            var emails = [];
-            var eIds = match.email.split(',');
-            for (var i = 0; i < eIds.length; i++) {
-                var email = AjxEmailAddress.parse(eIds[i]);
-                if (email && email.getAddress()) {
-                    emails.push(email.getAddress());
-                }
-            }
-            this.email       = emails.join(";");
-            this.text        = match.display;
-        } else {
-            var email = AjxEmailAddress.parse(match.email);
+		if (this.type == ZmAutocomplete.AC_TYPE_GROUP) {
+			this.fullAddress = match.email;
+			this.name        = match.display;
+			//Find all the emails
+			var emails = [];
+			var eIds = match.email.split(',');
+			for (var i = 0; i < eIds.length; i++) {
+				var email = AjxEmailAddress.parse(eIds[i]);
+				if (email && email.getAddress()) {
+					emails.push(email.getAddress());
+				}
+			}
+			this.email = emails.join(";");
+			this.text = match.display;
+		} else {
+			var email = AjxEmailAddress.parse(match.email);
 			if (email) {
 				this.fullAddress = email.toString();
 				this.name = email.getName();
 				this.email = email.getAddress();
 			}
-            this.text = AjxStringUtil.htmlEncode(match.email);
+			this.text = AjxStringUtil.htmlEncode(match.email);
 			if (options && options.needItem && window.ZmContact) {
 				this.item = new ZmContact(null);
 				this.item.initFromEmail(email || match.email);
 			}
-        }
+		}
 		this.icon = ZmAutocomplete.AC_ICON[match.type];
 		this.score = match.ranking;
 	}
-	this.acType = (this.type == ZmAutocomplete.AC_TYPE_LOCATION || this.type == ZmAutocomplete.AC_TYPE_EQUIPMENT) ?
-					this.type : ZmAutocomplete.AC_TYPE_CONTACT;
+	this.acType = (this.type == ZmAutocomplete.AC_TYPE_LOCATION || this.type == ZmAutocomplete.AC_TYPE_EQUIPMENT)
+		? this.type : ZmAutocomplete.AC_TYPE_CONTACT;
 };
 
 ZmAutocompleteMatch.prototype.toString =
@@ -647,7 +665,7 @@ function(listType, callback) {
 							"invite",
 							"solo",
 							"tome", "fromme", "ccme", "tofromme", "fromccme", "tofromccme",
-       						"local", "remote"].sort();
+							"local", "remote"].sort();
 	if (callback) { callback.run(); }
 };
 

@@ -961,7 +961,8 @@ function(dlg) {
 		overviewId:		dlg.getOverviewId(ZmOrganizer.APP[this.type]),
 		omit:			omit,
 		title:			this._getMoveDialogTitle(),
-		description:	ZmMsg.targetFolder
+		description:	ZmMsg.targetFolder,
+		appName:		ZmOrganizer.APP[this.type]
 	};
 };
 

@@ -344,12 +344,8 @@ function(items, folder, attrs, outOfTrash) {
 			if (contact.isLoaded) {
 				moveBatchCmd.add(this._getCopyCmd(contact, folder));
 			} else {
-				//var loadCallback = new AjxCallback(this, this._handleResponseBatchLoad, [moveBatchCmd, folder]);
-				//var cmd = new AjxCallback(contact, contact.load, [loadCallback, null]);
-				//loadBatchCmd.add(cmd);
                 contact.load(null,null);
                 moveBatchCmd.add(this._getCopyCmd(contact, folder));
-
             }
 		} else {
 			softMove.push(contact);
@@ -357,7 +353,7 @@ function(items, folder, attrs, outOfTrash) {
 	}
 
 	if (hardMove.length > 0) {
-		if (loadBatchCmd.size()/*loadBatchCmd._cmds.length*/) {
+		if (loadBatchCmd.size()) {
 			var respCallback = new AjxCallback(this, this._handleResponseLoadMove, [moveBatchCmd, hardMove]);
 			loadBatchCmd.run(respCallback);
 		} else {
@@ -374,10 +370,15 @@ function(items, folder, attrs, outOfTrash) {
 		attrs = attrs || {};
 		attrs.l = folder.id;
 
-		var respCallback = (outOfTrash)
-			? (new AjxCallback(this, this._handleResponseMoveItems, folder))
-			: null;
-		this._itemAction({items: items, action: "move", attrs: attrs, callback: respCallback});
+		var params = {
+			items: items,
+			action: "move",
+			attrs: attrs,
+			callback: ((outOfTrash) ? (new AjxCallback(this, this._handleResponseMoveItems, folder)) : null),
+			accountName: (appCtxt.multiAccounts && appCtxt.getMainAccount().name)
+		};
+
+		this._itemAction(params);
 	}
 };
 
@@ -506,7 +507,7 @@ function(contact, doAdd) {
 
 	this._app.updateCache(contact, doAdd);
 
-    // Update email hash.
+	// Update email hash.
 	for (var index = 0; index < ZmContact.EMAIL_FIELDS.length; index++) {
 		var field = ZmContact.EMAIL_FIELDS[index];
 		for (var i = 1; true; i++) {

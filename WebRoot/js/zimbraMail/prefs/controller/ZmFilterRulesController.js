@@ -259,7 +259,8 @@ function(ev) {
 		description:	ZmMsg.chooseFolderToFilter,
 		skipReadOnly:	true,
 		hideNewButton:	true,
-		treeStyle:		DwtTree.CHECKEDITEM_STYLE
+		treeStyle:		DwtTree.CHECKEDITEM_STYLE,
+		appName:		ZmApp.MAIL
 	};
 	dialog.popup(params);
 };

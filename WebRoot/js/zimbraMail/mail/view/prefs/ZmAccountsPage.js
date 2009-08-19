@@ -1670,7 +1670,7 @@ function(evt) {
 		this._folderAddCallback = new AjxCallback(this, this._handleFolderAdd);
 	}
 	var dialog = appCtxt.getChooseFolderDialog();
-	var params = {overviewId: dialog.getOverviewId(ZmApp.MAIL)};
+	var params = {overviewId: dialog.getOverviewId(ZmApp.MAIL), appName:ZmApp.MAIL};
 	ZmController.showDialog(dialog, this._folderAddCallback, params);
 };
 

@@ -2160,6 +2160,11 @@ function(ev) {
 	this._controller.resetSignatureToolbar(sigId, newAccount);
 	this._controller.resetSignature(sigId, newAccount);
 
+	// reset account for autocomplete to use
+	if (this._acAddrSelectList) {
+		this._acAddrSelectList.setActiveAccount(newAccount);
+	}
+
 	// if this message is a saved draft, check whether it needs to be moved
 	// based on newly selected value.
 	if (this._msg && this._msg.isDraft) {
@@ -2452,6 +2457,10 @@ function(msg) {
 			var option = new DwtSelectOption(addr, isSelected, addr.toString(), null, null, acct.getIcon());
 			this._fromSelect.addOption(option);
 		}
+	}
+
+	if (this._acAddrSelectList) {
+		this._acAddrSelectList.setActiveAccount(active);
 	}
 };
 

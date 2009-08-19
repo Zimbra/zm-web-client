@@ -136,7 +136,8 @@ function(params) {
 		fieldId:		this._folderTreeDivId,
 		overviewId:		params.overviewId,
 		noRootSelect:	params.noRootSelect,
-		treeStyle:		params.treeStyle || DwtTree.SINGLE_STYLE	// we don't want checkboxes!
+		treeStyle:		params.treeStyle || DwtTree.SINGLE_STYLE,	// we don't want checkboxes!
+		appName:		params.appName
 	};
 
 	// make sure the requisite packages are loaded

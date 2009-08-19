@@ -496,7 +496,8 @@ ZmEditContactView.prototype._handleFolderButton = function(ev) {
 		treeIds:		[ZmOrganizer.ADDRBOOK],
 		skipReadOnly:	true,
 		skipRemote:		true,
-		noRootSelect:	true
+		noRootSelect:	true,
+		appName:		ZmApp.CONTACTS
 	};
 	params.omit = {};
 	params.omit[ZmFolder.ID_TRASH] = true;

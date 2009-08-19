@@ -927,6 +927,7 @@ function(format, formatSelectObj, ev) {
 					  omit:				omit,
 					  title:			ZmMsg.chooseAddrBook,
 					  hideNewButton:	true,
+					  appName:			ZmApp.CONTACTS,
 					  description:		ZmMsg.chooseAddrBookToExport});
 	} else {
 		AjxDispatcher.require(["CalendarCore", "Calendar", "CalendarAppt"]);
@@ -935,6 +936,7 @@ function(format, formatSelectObj, ev) {
 					  omit:				omit,
 					  title:			ZmMsg.chooseCalendar,
 					  hideNewButton:	true,
+					  appName:			ZmApp.CALENDAR,
 					  description:		ZmMsg.chooseCalendarToExport});
 	}
 };

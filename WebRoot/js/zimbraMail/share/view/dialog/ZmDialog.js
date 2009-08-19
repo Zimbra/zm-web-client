@@ -124,10 +124,10 @@ function(params, forceSingle) {
 	// multi-account uses overview container
 	if (appCtxt.multiAccounts && !forceSingle) {
 		// use overviewId as the containerId; container will assign overviewId's
-		var containerId = params.overviewId;
+		var containerId = this._curOverviewId = params.overviewId;
 		var ovContainer = this._opc.getOverviewContainer(containerId);
 		if (!ovContainer) {
-			var ovParams = {
+			var overviewParams = {
 				overviewClass:	"dialogOverviewContainer",
 				headerClass:	"DwtTreeItem",
 				noTooltips:		true,
@@ -137,7 +137,11 @@ function(params, forceSingle) {
 				omit:			params.omit,
 				omitPerAcct:	params.omitPerAcct
 			};
-			ovContainer = this._opc.createOverviewContainer({containerId:containerId}, ovParams);
+			var containerParams = {
+				appName: params.appName,
+				containerId: containerId
+			};
+			ovContainer = this._opc.createOverviewContainer(containerParams, overviewParams);
 			ovContainer.setSize(Dwt.DEFAULT, "200");
 			document.getElementById(params.fieldId).appendChild(ovContainer.getHtmlElement());
 		}

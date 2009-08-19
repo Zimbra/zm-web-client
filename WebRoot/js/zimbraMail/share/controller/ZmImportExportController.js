@@ -235,7 +235,8 @@ ZmImportExportController.prototype._doImportSelectFolder = function(params, type
 			description:	ZmMsg.chooseAddrBookToImport,
 			skipReadOnly:	true,
 			hideNewButton:	noNew,
-			omit:			omit
+			omit:			omit,
+			appName:		ZmApp.CONTACTS
 		});
 		return;
 	}
@@ -248,9 +249,9 @@ ZmImportExportController.prototype._doImportSelectFolder = function(params, type
 			overviewId: overviewId,
 			description: ZmMsg.chooseCalendarToImport,
 			skipReadOnly: true,
-			omit:omit
+			omit:omit,
+			appName:ZmApp.CALENDAR
 		});
-		return;
 	}
 };
 

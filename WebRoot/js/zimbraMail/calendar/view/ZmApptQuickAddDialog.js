@@ -365,7 +365,8 @@ function(ev) {
 		overviewId:	dlg.getOverviewId(ZmApp.CALENDAR),
 		data:		this._calItem,
 		treeIds:	[ZmOrganizer.CALENDAR],
-		omit:		{}
+		omit:		{},
+		appName:	ZmApp.CALENDAR
 	};
 	params.omit[ZmFolder.ID_TRASH] = true;
 	params.omit[ZmOrganizer.ID_AUTO_ADDED] = true;

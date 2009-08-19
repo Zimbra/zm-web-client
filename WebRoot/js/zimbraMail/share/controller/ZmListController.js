@@ -601,7 +601,8 @@ function(dlg) {
 		treeIds:		[org],
 		title:			this._getMoveDialogTitle(this._pendingActionData.length),
 		description:	ZmMsg.targetFolder,
-		treeStyle:		DwtTree.SINGLE_STYLE
+		treeStyle:		DwtTree.SINGLE_STYLE,
+		appName:		this._app._name
 	};
 };
 
