@@ -189,6 +189,7 @@ function(uid) {
 */
 ZmReminderController.prototype._housekeepingAction =
 function() {
+    DBG.println(AjxDebug.DBG2, "reminder house keeping action...");
 	var rd = this.getReminderDialog();
 	if (!ZmCsfeCommand.getAuthToken()) {
 		DBG.println(AjxDebug.DBG1, "reminder check: no auth token, bailing");
@@ -200,7 +201,11 @@ function() {
 
 	var cachedSize = this._cachedAppts.size();
 	var activeSize = this._activeAppts.size();
-	if (cachedSize == 0 && activeSize == 0) return;
+	if (cachedSize == 0 && activeSize == 0) {
+        DBG.println(AjxDebug.DBG2, "no appts - empty cached and active list");        
+        this._housekeepingActionId = AjxTimedAction.scheduleAction(this._housekeepingTimedAction, 60*1000);
+        return;
+    };
 
 	var numNotify = 0;
 
@@ -209,6 +214,8 @@ function() {
 	var endTime = startTime + (this._warningTime * 60 * 1000);
 
 	var toRemove = [];
+
+    DBG.println(AjxDebug.DBG2, "no of appts cached:" + cachedSize);
 
 	for (var i=0; i < cachedSize; i++) {
 		var appt = this._cachedAppts.get(i);
@@ -263,6 +270,8 @@ function() {
 			if (!rd.isPoppedUp()) rd.popup();
 		}
 	}
+
+    DBG.println(AjxDebug.DBG2, "no of appts active:" + this._activeAppts.size());
 
 	// need to schedule housekeeping callback, ideally right before next _cachedAppt start time - lead,
 	// for now just check once a minute...
