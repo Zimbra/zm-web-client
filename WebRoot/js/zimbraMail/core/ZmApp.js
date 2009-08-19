@@ -593,13 +593,6 @@ function(type, accountId) {
 		ZmFolderTree._traverse(folder, params.obj, params.tree, params.path || []);
 	}
 	this._clearDeferredFolders();
-
-	// XXX: this may no longer be necessary per fixes to bug 6082 and 4434
-	var account = accountId && appCtxt.getAccount(accountId);
-	var folderTree = appCtxt.getFolderTree(account);
-	if (folderTree) {
-		folderTree.getPermissions({type:type, noBusyOverlay:true});
-	}
 };
 
 ZmApp.prototype._clearDeferredFolders =
