@@ -142,6 +142,13 @@ function(mode, object, share) {
 		this._userRadioEl.checked = true;
 		this._granteeInput.focus();
 	}
+
+	if (appCtxt.multiAccounts) {
+		var acct = object.accountId
+			? appCtxt.getAccount(object.accountId)
+			: appCtxt.getMainAccount();
+		this._acAddrSelectList.setActiveAccount(acct);
+	}
 };
 
 ZmSharePropsDialog.prototype._populateUrls =

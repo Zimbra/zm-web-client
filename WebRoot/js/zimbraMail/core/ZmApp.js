@@ -314,7 +314,7 @@ function(account) {
 
 		// first, make sure there aren't any deferred folders that need to be created
 		if (this._deferredFolders.length) {
-			this._createDeferredFolders(type, (account && account.id));
+			this._createDeferredFolders(type);
 		}
 
 		var tree = appCtxt.getFolderTree(account);
@@ -584,10 +584,10 @@ function() {
  * Lazily create folders received in the initial <refresh> block.
  */
 ZmApp.prototype._createDeferredFolders =
-function(type, accountId) {
+function(type) {
 	for (var i = 0; i < this._deferredFolders.length; i++) {
 		var params = this._deferredFolders[i];
-		var folder = ZmFolderTree.createFolder(params.type, params.parent, params.obj, params.tree, params.path, params.elementType, accountId);
+		var folder = ZmFolderTree.createFolder(params.type, params.parent, params.obj, params.tree, params.path, params.elementType);
 		params.parent.children.add(folder); // necessary?
 		folder.parent = params.parent;
 		ZmFolderTree._traverse(folder, params.obj, params.tree, params.path || []);

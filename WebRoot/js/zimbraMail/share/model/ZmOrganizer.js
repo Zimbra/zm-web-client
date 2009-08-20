@@ -79,9 +79,11 @@ ZmOrganizer = function(params) {
 
 	if (appCtxt.isOffline) {
 		var account;
-		if (!this.accountId && !appCtxt.inStartup) {
-			account = ZmOrganizer.parseId(this.id).account;
-			this.accountId = account && account.id;
+		if (!this.accountId) {
+			if (this.id != this.nId) {
+				account = ZmOrganizer.parseId(this.id).account;
+				this.accountId = account && account.id;
+			}
 		} else {
 			account = appCtxt.getAccount(this.accountId);
 		}

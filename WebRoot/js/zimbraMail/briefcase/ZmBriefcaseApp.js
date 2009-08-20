@@ -560,7 +560,7 @@ function(url, restUrlAuthority) {
 
 //Make sure we load BriefcaseCore before calling _creatDeferredFolders() from child window.
 ZmBriefcaseApp.prototype._createDeferredFolders =
-function(type, accountId) {
+function(type) {
     AjxPackage.require("BriefcaseCore");
-    ZmApp.prototype._createDeferredFolders.call(this, type, accountId);
+    ZmApp.prototype._createDeferredFolders.call(this, type);
 };

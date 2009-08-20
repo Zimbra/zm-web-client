@@ -521,6 +521,31 @@ function() {
 	return [ZmOrganizer.CALENDAR];
 };
 
+ZmApptEditView.prototype._resetFolderSelect =
+function(calItem, mode) {
+	ZmCalItemEditView.prototype._resetFolderSelect.call(this, calItem, mode);
+
+	if (appCtxt.multiAccounts) {
+		var folder = appCtxt.getById(calItem.folderId);
+		var acct = folder.accountId
+			? appCtxt.getAccount(folder.accountId)
+			: appCtxt.getMainAccount();
+		this._acContactsList.setActiveAccount(acct);
+	}
+};
+
+ZmApptEditView.prototype._folderPickerCallback =
+function(dlg, folder) {
+	ZmCalItemEditView.prototype._folderPickerCallback.call(this, dlg, folder);
+
+	if (appCtxt.multiAccounts) {
+		var acct = folder.accountId
+			? appCtxt.getAccount(folder.accountId)
+			: appCtxt.getMainAccount();
+		this._acContactsList.setActiveAccount(acct);
+	}
+};
+
 ZmApptEditView.prototype._initAutocomplete =
 function() {
 	var acCallback = new AjxCallback(this, this._autocompleteCallback);
