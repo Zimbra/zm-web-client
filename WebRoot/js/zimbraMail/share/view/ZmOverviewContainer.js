@@ -214,7 +214,8 @@ function(headerLabel, headerIcon, headerDataId, omit, overviewParams) {
 	var params = {
 		parent: this,
 		text: headerLabel,
-		imageInfo: headerIcon
+		imageInfo: headerIcon,
+		selectable: overviewParams.selectable
 		/*className:"overviewHeader"*/
 	};
 	var header = this._headerItems[headerDataId] = new DwtTreeItem(params);

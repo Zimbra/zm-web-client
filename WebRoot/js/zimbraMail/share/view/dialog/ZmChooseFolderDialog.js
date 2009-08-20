@@ -137,7 +137,8 @@ function(params) {
 		overviewId:		params.overviewId,
 		noRootSelect:	params.noRootSelect,
 		treeStyle:		params.treeStyle || DwtTree.SINGLE_STYLE,	// we don't want checkboxes!
-		appName:		params.appName
+		appName:		params.appName,
+		selectable:		false
 	};
 
 	// make sure the requisite packages are loaded
@@ -409,8 +410,23 @@ function() {
 
 ZmChooseFolderDialog.prototype._treeViewSelectionListener =
 function(ev) {
+	if (ev.detail != DwtTree.ITEM_SELECTED &&
+		ev.detail != DwtTree.ITEM_DBL_CLICKED)
+	{
+		return;
+	}
 
-	if (ev.detail != DwtTree.ITEM_SELECTED && ev.detail != DwtTree.ITEM_DBL_CLICKED)	{ return; }
+	if (appCtxt.multiAccounts) {
+		if (ev.detail == DwtTree.ITEM_DBL_CLICKED &&
+			ev.item instanceof DwtHeaderTreeItem)
+		{
+			return;
+		}
+
+		var oc = this._opc.getOverviewContainer(this._curOverviewId);
+		var overview = oc.getOverview(ev.item.getData(ZmTreeView.KEY_ID));
+		oc.deselectAll(overview);
+	}
 
 	var value = this._lastVal = ev.item.getText();
 	this._inputField.setValue(value);

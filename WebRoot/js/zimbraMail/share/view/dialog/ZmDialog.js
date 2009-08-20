@@ -135,7 +135,8 @@ function(params, forceSingle) {
 				treeIds:		params.treeIds,
 				overviewTrees:	params.overviewTrees,
 				omit:			params.omit,
-				omitPerAcct:	params.omitPerAcct
+				omitPerAcct:	params.omitPerAcct,
+				selectable:		params.selectable
 			};
 			var containerParams = {
 				appName: params.appName,
