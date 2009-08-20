@@ -560,7 +560,7 @@ function() {
 
 ZmAppCtxt.prototype.getAccount =
 function(id) {
-	return this._accounts[id];
+	return id ? this._accounts[id] : appCtxt.getMainAccount();
 };
 
 ZmAppCtxt.prototype.getAccountByName =

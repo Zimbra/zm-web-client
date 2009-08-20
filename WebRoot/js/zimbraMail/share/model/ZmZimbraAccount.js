@@ -384,22 +384,9 @@ function(callback) {
 	this.loaded = true;
 
 	// bug fix #33168 - get perms for all mountpoints in account
-	var folderTree = appCtxt.getFolderTree();
+	var folderTree = appCtxt.getFolderTree(this);
 	if (folderTree) {
 		folderTree.getPermissions({noBusyOverlay:true});
-	}
-
-	// in dev mode, force create deferred folders b/c postLoad gets called w/
-	// invisible parent (deferred folders for child accounts are never loaded)
-	var apps = appCtxt.getAppController()._apps;
-	for (var i in apps) {
-		if (AjxDispatcher.loaded(i)) {
-			var app = appCtxt.getApp(i);
-			var org = ZmOrganizer.APP2ORGANIZER[i];
-			if (app && org && org.length) {
-				app._createDeferredFolders(org[0], this.id);
-			}
-		}
 	}
 
 	if (callback) {

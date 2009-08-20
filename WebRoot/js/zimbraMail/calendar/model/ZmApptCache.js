@@ -247,22 +247,19 @@ function(params) {
 
 	var folderIdMapper = {};
 	var query = "";
-	for (var i=0; i < params.needToFetch.length; i++) {
+	for (var i = 0; i < params.needToFetch.length; i++) {
 		var fid = params.needToFetch[i];
-		var systemFolderId = appCtxt.getActiveAccount().isMain
-			? fid : ZmOrganizer.getSystemId(fid);
 
 		// map remote folder ids into local ones while processing search since
 		// server wont do it for us (see bug 7083)
-		var folder = appCtxt.getById(systemFolderId);
-		var rid = folder ? folder.getRemoteId() : systemFolderId;
-		folderIdMapper[rid] = systemFolderId;
+		var folder = appCtxt.getById(fid);
+		var rid = folder ? folder.getRemoteId() : fid;
+		folderIdMapper[rid] = fid;
 
 		if (query.length) {
 			query += " OR ";
 		}
-		var idText = AjxUtil.isNumeric(fid) ? fid : ['"', fid, '"'].join("");
-		query += "inid:" + idText;
+		query += "inid:" + (AjxUtil.isNumeric(fid) ? fid : ['"', fid, '"'].join(""));
 		
 	}
 	params.queryHint = query;
@@ -345,9 +342,15 @@ function(searchParams, miniCalParams, reminderSearchParams) {
 	}
 
 	if ((searchParams && searchParams.callback) || miniCalParams.callback) {
-		var respCallback = new AjxCallback(this, this.handleBatchResponse,[searchParams, miniCalParams, reminderSearchParams]);
-		var errorCallback = new AjxCallback(this, this.handleBatchResponseError,[searchParams, miniCalParams, reminderSearchParams]);
-		appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback, errorCallback: errorCallback, noBusyOverlay:true});
+		var params = {
+			jsonObj: jsonObj,
+			asyncMode: true,
+			callback: (new AjxCallback(this, this.handleBatchResponse, [searchParams, miniCalParams, reminderSearchParams])),
+			errorCallback: (new AjxCallback(this, this.handleBatchResponseError, [searchParams, miniCalParams, reminderSearchParams])),
+			noBusyOverlay: true,
+			accountName: appCtxt.isOffline && appCtxt.getMainAccount().name
+		};
+		appCtxt.getAppController().sendRequest(params);
 	} else {
 		var response = appCtxt.getAppController().sendRequest({jsonObj:jsonObj});
 		var batchResp = (response && response.BatchResponse) ? response.BatchResponse : null;
@@ -449,16 +452,14 @@ function(resp) {
 
 ZmApptCache.prototype.handleDeleteMountpoint =
 function(organizer) {
-    // Change its appearance in the tree.
-    var overviewController = appCtxt.getOverviewController();
-    var treeController = overviewController.getTreeController(ZmOrganizer.CALENDAR);
-    var overviewId = appCtxt.getCurrentApp().getOverviewId();
-    var treeView = treeController.getTreeView(overviewId);
-    var node = treeView ? treeView.getTreeItemById(organizer.id) : null;
-    if(organizer && node) {
-        node.setText(organizer.getName(true));
-    }
-    this.runErrorRecovery();
+	// Change its appearance in the tree.
+	var tc = appCtxt.getOverviewController().getTreeController(ZmOrganizer.CALENDAR);
+	var treeView = tc.getTreeView(appCtxt.getCurrentApp().getOverviewId());
+	var node = treeView && treeView.getTreeItemById(organizer.id);
+	if (organizer && node) {
+		node.setText(organizer.getName(true));
+	}
+	this.runErrorRecovery();
 };
 
 ZmApptCache.prototype.runErrorRecovery =
@@ -583,20 +584,16 @@ function(searchResp, params) {
 		if (folderIds && folderIds.length) {
 			for (var i = 0; i < folderIds.length; i++) {
 				var folderId = folderIds[i];
-				var systemFolderId = appCtxt.getActiveAccount().isMain
-					? folderId
-					: ZmOrganizer.getSystemId(folderId);
-
 				var apptList = new ZmApptList();
-				apptList.loadFromSummaryJs(folder2List[systemFolderId]);
+				apptList.loadFromSummaryJs(folder2List[folderId]);
 
 				// cache it
 				this._updateCachedIds(apptList);
-				this._cacheApptSummaries(apptList, start, end, systemFolderId, query);
+				this._cacheApptSummaries(apptList, start, end, folderId, query);
 
 				// convert to sorted vector
 				var list = ZmApptList.toVector(apptList, start, end, fanoutAllDay, params.includeReminders);
-				this._cacheVector(list, start, end, fanoutAllDay, systemFolderId, query); // id in response tied back to folder id
+				this._cacheVector(list, start, end, fanoutAllDay, folderId, query); // id in response tied back to folder id
 
 				params.resultList.push(list);
 			}

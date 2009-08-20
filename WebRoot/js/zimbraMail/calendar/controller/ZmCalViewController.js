@@ -304,7 +304,8 @@ function() {
 		for (var j in accounts) {
 			var acct = accounts[j];
 			if (!acct.visible) { continue; }
-			
+			if (!appCtxt.get(ZmSetting.CALENDAR_ENABLED, null, acct)) { continue; }
+
 			var calendars = appCtxt.getFolderTree(acct).getByType(ZmOrganizer.CALENDAR);
 			for (var i = 0; i < calendars.length; i++) {
 				if (calendars[i].isChecked) {
@@ -375,7 +376,8 @@ ZmCalViewController.prototype._updateCalItemState =
 function() {
 	if (!this._calItemStatus) { return; }
 
-	var batchCmd = new ZmBatchCommand();
+	var accountName = appCtxt.isOffline && appCtxt.getMainAccount().name;
+	var batchCmd = new ZmBatchCommand(null, accountName);
 	var itemCount = 0;
 	for (var i in this._calItemStatus) {
 		var info = this._calItemStatus[i];

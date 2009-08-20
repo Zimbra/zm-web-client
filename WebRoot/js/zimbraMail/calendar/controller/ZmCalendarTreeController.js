@@ -397,6 +397,8 @@ function(overviewId) {
 	var treeView = this.getTreeView(overviewId);
 	if (treeView) {
 		var account = appCtxt.multiAccounts ? treeView._overview.account : null;
+		if (!appCtxt.get(ZmSetting.CALENDAR_ENABLED, null, account)) { return []; }
+
 		var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT, account);
 		var root = treeView.getTreeItemById(rootId);
 		if (root) {

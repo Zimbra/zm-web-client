@@ -233,20 +233,13 @@ function(calItem, attach) {
 	if (attach) {
 		div.innerHTML = calItem.getAttachListHtml(attach, true);
 	} else {
-		var html = [];
-		var i = 0;
-
-		html[i++] = "<nobr>&nbsp;<input type='file' size=40 name='";
-		html[i++] = ZmCalItemEditView.UPLOAD_FIELD_NAME;
-		html[i++] = "' id='";
-		html[i++] = attachInputId;
-		html[i++] = "'>&nbsp;<span style='cursor:pointer;color:blue;text-decoration:underline;' id='";
-		html[i++] = attachRemoveId;
-		html[i++] = "'>";
-		html[i++] = ZmMsg.remove;
-		html[i++] = "</span></nobr>";
-
-		div.innerHTML = html.join("");
+		var subs = {
+			id: this._htmlElId,
+			attachInputId: attachInputId,
+			attachRemoveId: attachRemoveId,
+			uploadFieldName: ZmCalItemEditView.UPLOAD_FIELD_NAME
+		};
+		div.innerHTML = AjxTemplate.expand("calendar.Appointment#AttachAdd", subs);
 	}
 
 	if (this._attachDiv == null) {
@@ -547,6 +540,7 @@ function(width) {
 	// CalItem folder DwtSelect
 	if (appCtxt.multiAccounts) {
 		this._folderPickerButton = new DwtButton({parent:this, parentElement:(this._htmlElId + "_folderSelect")});
+		this._folderAcctName = document.getElementById(this._htmlElId + "_folderAcctName");
 	} else {
 		this._folderSelect = new DwtSelect({parent:this, parentElement:(this._htmlElId + "_folderSelect")});
 	}
@@ -673,6 +667,7 @@ function(calItem, mode) {
 		var folder = appCtxt.getById(calItem.folderId);
 		this._folderPickerButton.setText(folder.name);
 		this._folderPickedId = folder.id;
+		this._folderAcctName.innerHTML = appCtxt.getAccount(folder.accountId).getDisplayName();
 	}
 };
 
@@ -707,6 +702,7 @@ function(dlg, folder) {
 
 	this._folderPickerButton.setText(folder.name);
 	this._folderPickedId = folder.id;
+	this._folderAcctName.innerHTML = appCtxt.getAccount(folder.accountId).getDisplayName();
 };
 
 ZmCalItemEditView.prototype._initAttachContainer =
@@ -718,26 +714,16 @@ function() {
 	var cell = this._attachmentRow.insertCell(-1);
 	cell.colSpan = 2;
 
-	// create fieldset and append to given table cell
-	var html = [];
-	var i = 0;
-	html[i++] = "<fieldset class='ZmFieldset'><legend class='ZmLegend'>";
-	html[i++] = ZmMsg.attachments;
-	html[i++] = "</legend>";
-
 	this._uploadFormId = Dwt.getNextId();
 	this._attachDivId = Dwt.getNextId();
 
-	html[i++] = "<form style='margin:0;padding:0' method='POST' action='";
-	html[i++] = appCtxt.get(ZmSetting.CSFE_UPLOAD_URI)+"&fmt=extended";
-	html[i++] = "' id='";
-	html[i++] = this._uploadFormId;
-	html[i++] = "' enctype='multipart/form-data'><div id='";
-	html[i++] = this._attachDivId;
-	html[i++] = "' style='overflow:auto'></div></form>";
+	var subs = {
+		uploadFormId: this._uploadFormId,
+		attachDivId: this._attachDivId,
+		url: appCtxt.get(ZmSetting.CSFE_UPLOAD_URI)+"&fmt=extended"
+	};
 
-	html[i++] = "</fieldset>";
-	cell.innerHTML = html.join("");
+	cell.innerHTML = AjxTemplate.expand("calendar.Appointment#AttachContainer", subs);
 };
 
 // Returns true if any of the attachment fields are populated

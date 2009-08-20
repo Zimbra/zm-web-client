@@ -1448,8 +1448,19 @@ function(params) {
 	if (params.batchCmd) {
 		params.batchCmd.addRequestParams(soapDoc, respCallback, params.errorCallback);
 	} else {
-		appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true,
-											    callback:respCallback, errorCallback:params.errorCallback});
+		var accountName;
+		if (appCtxt.multiAccounts) {
+			accountName = (this.accountId)
+				? appCtxt.getAccount(this.accountId).name
+				: appCtxt.getMainAccount().name;
+		}
+		appCtxt.getAppController().sendRequest({
+			soapDoc: soapDoc,
+			asyncMode: true,
+			accountName: accountName,
+			callback: respCallback,
+			errorCallback: params.errorCallback
+		});
 	}
 };
 

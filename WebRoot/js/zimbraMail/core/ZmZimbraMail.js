@@ -465,8 +465,31 @@ function(accounts, callback) {
 		ZmOrganizer.HIDE_EMPTY[ZmOrganizer.TAG] = true;
 		ZmOrganizer.HIDE_EMPTY[ZmOrganizer.SEARCH] = true;
 
+		// in dev mode, force create deferred folders b/c postLoad gets called w/
+		// invisible parent (deferred folders for child accounts are never loaded)
+		this._loadDeferredFolders();
+
 		if (callback) {
 			callback.run();
+		}
+	}
+};
+
+ZmZimbraMail.prototype._loadDeferredFolders =
+function() {
+	var accounts = appCtxt.getZimbraAccounts();
+	for (var j in accounts) {
+		var acct = accounts[j];
+		if (!acct.visible) { continue; }
+
+		for (var i in this._apps) {
+			if (AjxDispatcher.loaded(i)) { // should only be true if in dev mode
+				var app = appCtxt.getApp(i);
+				var org = ZmOrganizer.APP2ORGANIZER[i];
+				if (app && org && org.length) {
+					app._createDeferredFolders(org[0], acct.id);
+				}
+			}
 		}
 	}
 };
