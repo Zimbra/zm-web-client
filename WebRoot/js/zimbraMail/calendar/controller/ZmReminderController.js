@@ -25,6 +25,7 @@
 ZmReminderController = function(calController) {
 	this._calController = calController;
 	this._apptState = {};	// keyed on appt.getUniqueId(true)
+    this._cacheMap = {};    
 	this._cachedAppts = new AjxVector(); // set of appts in cache from refresh
 	this._activeAppts = new AjxVector(); // set of appts we are actively reminding on
 	this._oldAppts = new AjxVector(); // set of appts which are olde and needs silent dismiss    
@@ -83,6 +84,10 @@ function(ev) {
 ZmReminderController.prototype.refresh =
 function() {
 	if (this._warningTime == 0) { return; }
+
+    this._searchTimeRange = this.getSearchTimeRange();
+    DBG.println("reminder search time range: " + this._searchTimeRange.start + " to " + this._searchTimeRange.end);
+
 	var params = this.getRefreshParams();
 	this._calController.getApptSummaries(params);
 	
@@ -90,24 +95,32 @@ function() {
 	if (this._refreshActionId) {
 		AjxTimedAction.cancelAction(this._refreshActionId);
 	}
+    DBG.println(AjxDebug.DBG2, "reminder refresh");
 	this._refreshActionId = AjxTimedAction.scheduleAction(this._refreshTimedAction, (AjxDateUtil.MSEC_PER_HOUR * ZmReminderController._CACHE_REFRESH));
 };
 
-ZmReminderController.prototype.getRefreshParams =
+ZmReminderController.prototype.getSearchTimeRange =
 function() {
-	
     var endOfDay = new Date();
     endOfDay.setHours(23,59,59,999);
 
     //grab a week's appt backwards
     var end = new Date(endOfDay.getTime());
     endOfDay.setDate(endOfDay.getDate()-7);
+
     var start = endOfDay;
     start.setHours(0,0,0, 0);
 
+    return { start: start.getTime(), end: end.getTime() };
+};
+
+ZmReminderController.prototype.getRefreshParams =
+function() {
+	
+    var timeRange = this.getSearchTimeRange();
 	var params = {
-		start: start.getTime(),
-		end: end.getTime(),
+		start: timeRange.start,
+		end: timeRange.end,
 		fanoutAllDay: false,
 		folderIds: this._calController.getCheckedCalendarFolderIds(true),
 		callback: (new AjxCallback(this, this._refreshCallback)),
@@ -150,7 +163,7 @@ function(list) {
 	}
 
 	var newList = new AjxVector();
-	var alarmMap = {};
+    this._cacheMap = {};
 
 	// filter recurring appt instances, the alarmData is common for all the instances
 	var size = list.size();
@@ -159,8 +172,8 @@ function(list) {
 		var id = appt.id;
 
 		if (appt.hasAlarmData()) {
-			if (!alarmMap[id]) {
-				alarmMap[id] = appt;
+            if(!this._cacheMap[id]) {
+                this._cacheMap[id] = true;
 				newList.add(appt);
 			}
 		}
@@ -173,6 +186,33 @@ function(list) {
 	// cancel outstanding timed action and update now...
     this._cancelHousekeepingAction();
     this._housekeepingAction();
+};
+
+ZmReminderController.prototype.updateCache =
+function(list) {
+    if(!list) return;
+
+    if(!this._cachedAppts) {
+        this._cachedAppts = new AjxVector();
+    }
+
+    DBG.println(AjxDebug.DBG2, "updating reminder cache...");
+    var srchRange = this.getSearchTimeRange();
+    var count = 0;
+
+    //filter recurring appt instances, the alarmData is common for all the instances
+    var size = list.size();
+    for(var i=0;i<size;i++) {
+        var appt = list.get(i);
+        var id = appt.id;
+        if(appt.hasAlarmData() && !this._cacheMap[id] && appt.isStartInRange(srchRange.start, srchRange.end)) {
+            this._cacheMap[id] = true;
+            this._cachedAppts.add(appt);
+            count++;
+        }
+    }
+
+    DBG.println(AjxDebug.DBG2, "new appts added to reminder cache :" + count);
 };
 
 ZmReminderController.prototype.isApptSnoozed =
@@ -196,6 +236,17 @@ function() {
 		return;
 	}
 
+    if(this._searchTimeRange) {
+        var newTimeRange = this.getSearchTimeRange();
+        var diff = newTimeRange.end - this._searchTimeRange.end;
+        if(diff > AjxDateUtil.MSEC_PER_HOUR) {
+            DBG.println(AjxDebug.DBG2, "time elapsed - refreshing reminder cache");
+            this._searchTimeRange = null;
+            this.refresh();
+            return;
+        }
+    }
+    
 	var cachedSize = this._cachedAppts.size();
 	var activeSize = this._activeAppts.size();
     if (cachedSize == 0 && activeSize == 0) {
@@ -211,8 +262,6 @@ function() {
 	var endTime = startTime + (this._warningTime * 60 * 1000);
 
 	var toRemove = [];
-
-    DBG.println(AjxDebug.DBG2, "no of appts cached:" + cachedSize);
 
 	for (var i=0; i < cachedSize; i++) {
 		var appt = this._cachedAppts.get(i);
@@ -273,7 +322,7 @@ function() {
 		}
 	}
 
-    DBG.println(AjxDebug.DBG2, "no of appts active:" + this._activeAppts.size());
+    DBG.println(AjxDebug.DBG2, "no of appts active:" + this._activeAppts.size() + ", no of appts cached:" + cachedSize);
     
     if(this._oldAppts.size() > 0) {
         this.dismissAppt(this._oldAppts, new AjxCallback(this, this._silentDismissCallback));
