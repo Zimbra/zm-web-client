@@ -497,6 +497,7 @@ function(ev) {
 		appCtxt.notifyZimlets("onKeyPressSearchField", [queryString]);
 		this._callback.run(queryString);
 	}
+	return false;
 };
 
 ZmSearchToolBar.prototype.initAutocomplete =
@@ -507,28 +508,8 @@ function(id) {
 		matchValue:			"matchText",
 		delims:				[" "],
 		separator:			" ",
-		keyPressCallback:	new AjxCallback(this, this._keyPressHdlr)
+		enterCallback:		new AjxCallback(this, this._handleEnterKeyPress)
 	};
 	this._acList = new ZmAutocompleteListView(params);
 	this._acList.handle(this.getSearchField());
-};
-
-ZmSearchToolBar.prototype._keyPressHdlr =
-function(ev) {
-	var charCode = DwtKeyEvent.getCharCode(ev);
-
-	if ((charCode == 13 || charCode == 3) &&
-		(!this._acList.getVisible() || this._acList.size() == 1))
-	{
-		if (this._acList.size() == 1) {
-			// a bit ugly, but keypress happens before the field is updated, and
-			// we can't use keyup because by that time the acList has been
-			// popped down and cleared
-			this._acList._update(true);
-		}
-		this._handleEnterKeyPress(ev);
-		return false;
-	}
-
-	return true;
 };

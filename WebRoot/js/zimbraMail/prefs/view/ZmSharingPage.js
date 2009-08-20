@@ -126,7 +126,6 @@ ZmSharingView.MOUNTED	= "MOUNTED";
 
 ZmSharingView.F_ACTIONS	= "ac";
 ZmSharingView.F_FOLDER	= "fo";
-ZmSharingView.F_GROUP	= "gp";
 ZmSharingView.F_ITEM	= "it";
 ZmSharingView.F_OWNER	= "ow";
 ZmSharingView.F_ROLE	= "ro"
@@ -459,10 +458,11 @@ function() {
 	// autocomplete
 	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) || appCtxt.get(ZmSetting.GAL_ENABLED)) {
 		var params = {
-			parent: appCtxt.getShell(),
+			parent:			appCtxt.getShell(),
 			dataClass:		appCtxt.getAutocompleter(),
 			matchValue:		ZmAutocomplete.AC_VALUE_EMAIL,
-			separator:		""
+			separator:		"",
+			enterCallback:	new AjxCallback(this, this._enterCallback)
 		};
 		this._acAddrSelectList = new ZmAutocompleteListView(params);
 		var inputCtrl = this._shareForm.getControl(ZmSharingView.ID_OWNER);
@@ -506,6 +506,12 @@ function(id) {
 		var orgType = this.getValue(ZmSharingView.ID_FOLDER_TYPE);
 		this.parent._showChooser(orgType);
 	}
+};
+
+ZmSharingView.prototype._enterCallback =
+function(ev) {
+	this._onClick.call(this._shareForm, ZmSharingView.ID_FIND_BUTTON);
+	return false;
 };
 
 ZmSharingView.prototype._showChooser =
@@ -699,7 +705,7 @@ function() {
 		} else {
 			headerList.push(new DwtListHeaderItem({field:ZmSharingView.F_FOLDER, text:ZmMsg.sharingFolder, width:ZmMsg.COLUMN_WIDTH_FOLDER_SH}));
 		}
-		headerList.push(new DwtListHeaderItem({field:ZmSharingView.F_GROUP, text:ZmMsg.sharingGroup, width:ZmMsg.COLUMN_WIDTH_GROUP_SH}));
+		headerList.push(new DwtListHeaderItem({field:ZmSharingView.F_WITH, text:ZmMsg.sharingWith, width:ZmMsg.COLUMN_WIDTH_WITH_SH}));
 	} else {
 		headerList.push(new DwtListHeaderItem({field:ZmSharingView.F_ACTIONS, text:ZmMsg.actions, width:ZmMsg.COLUMN_WIDTH_ACTIONS_SH}));
 	}
@@ -759,8 +765,6 @@ function(html, idx, item, field, colIdx, params) {
 		html[idx++] = ZmShare.getRoleName(role);
 	} else if (field == ZmSharingView.F_FOLDER) {
 		html[idx++] = (item.mountpoint && item.mountpoint.path) || "&nbsp;";
-	} else if (field == ZmSharingView.F_GROUP && (item.grantee.type == ZmShare.TYPE_GROUP)) {
-		html[idx++] = item.grantee.name;
 	} else if (field == ZmSharingView.F_ACTIONS) {
 		if (this.type == ZmSharingView.SHARE) {
 			var id = this._getItemId(item);

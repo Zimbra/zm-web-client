@@ -55,9 +55,10 @@
  *        delims			[array]*			list of delimiters (which separate tokens such as addresses)
  *        separator			[string]*			separator (gets added to the end of a match)
  *        compCallback		[AjxCallback]*		callback into client to notify it that completion happened
- *        keyDownCallback	[AjxCallback]*		additional ONKEYDOWN handler
- *        keyPressCallback	[AjxCallback]*		additional ONKEYPRESS handler
- *        keyUpCallback		[AjxCallback]*		additional ONKEYUP handler
+ *        keyDownCallback	[AjxCallback]*		additional client ONKEYDOWN handler
+ *        keyPressCallback	[AjxCallback]*		additional client ONKEYPRESS handler
+ *        keyUpCallback		[AjxCallback]*		additional client ONKEYUP handler
+ *        enterCallback		[AjxCallback]*		client handler for Enter key
  *        options			[hash]*				additional options for autocompleteMatch() in data class
  */
 ZmAutocompleteListView = function(params) {
@@ -76,6 +77,7 @@ ZmAutocompleteListView = function(params) {
 	this._keyDownCallback = params.keyDownCallback;
 	this._keyPressCallback = params.keyPressCallback;
 	this._keyUpCallback = params.keyUpCallback;
+	this._enterCallback = params.enterCallback;
     this._options = params.options;
 
     // mouse event handling
@@ -135,6 +137,21 @@ function(ev) {
 		var cbResult = aclv._keyPressCallback.run(ev, aclv);
 		result = (cbResult === true || cbResult === false) ? cbResult : result;
 	}
+
+	var charCode = DwtKeyEvent.getCharCode(ev);
+	if (aclv._enterCallback && (charCode == 13 || charCode == 3) &&
+		(!aclv.getVisible() || aclv.size() == 1)) {
+
+		if (aclv.size() == 1) {
+			// a bit ugly, but keypress happens before the field is updated, and
+			// we can't use keyup because by that time the acList has been
+			// popped down and cleared
+			aclv._update(true);
+		}
+		var cbResult = aclv._enterCallback.run(ev, aclv);
+		result = (cbResult === true || cbResult === false) ? cbResult : result;
+	}
+
 	return (result != null) ? result : ZmAutocompleteListView._echoKey(true, ev);
 };
 
