@@ -54,7 +54,7 @@ function(params) {
 	var ovParams = {
 		overviewId:			this.toString(),
 		treeIds:			[ZmOrganizer.TAG],
-		fieldId:			this._tagTreeDivId,
+		fieldId:			this._tagTreeDivId
 	}
 	this._setOverview(ovParams, true);
 	this._tagTreeView = this._getOverview().getTreeView(ZmOrganizer.TAG);
