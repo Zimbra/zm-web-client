@@ -48,6 +48,10 @@ function() {
 		this.view.showGrants();
 		this._rendered = true;
 	}
+
+	if (appCtxt.multiAccounts) {
+		this._acAddrSelectList.setActiveAccount(appCtxt.getActiveAccount());
+	}
 };
 
 ZmSharingPage.prototype.getShares =

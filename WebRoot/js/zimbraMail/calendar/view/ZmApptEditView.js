@@ -524,20 +524,17 @@ function() {
 ZmApptEditView.prototype._resetFolderSelect =
 function(calItem, mode) {
 	ZmCalItemEditView.prototype._resetFolderSelect.call(this, calItem, mode);
-
-	if (appCtxt.multiAccounts) {
-		var folder = appCtxt.getById(calItem.folderId);
-		var acct = folder.accountId
-			? appCtxt.getAccount(folder.accountId)
-			: appCtxt.getMainAccount();
-		this._acContactsList.setActiveAccount(acct);
-	}
+	this._resetAutocompleteListView(appCtxt.getById(calItem.folderId));
 };
 
 ZmApptEditView.prototype._folderPickerCallback =
 function(dlg, folder) {
 	ZmCalItemEditView.prototype._folderPickerCallback.call(this, dlg, folder);
+	this._resetAutocompleteListView(folder);
+};
 
+ZmApptEditView.prototype._resetAutocompleteListView =
+function(folder) {
 	if (appCtxt.multiAccounts) {
 		var acct = folder.accountId
 			? appCtxt.getAccount(folder.accountId)
