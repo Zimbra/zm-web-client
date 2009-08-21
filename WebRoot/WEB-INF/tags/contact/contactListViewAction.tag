@@ -107,6 +107,44 @@
     <c:otherwise>
         <zm:checkCrumb crumb="${param.crumb}"/>
         <c:choose>
+			<c:when test="${zm:actionSet(param, 'actionCompose')}">
+			                <c:set var="toEmail" value=""/>
+			                <c:forEach items="${paramValues.id}" var="cid">
+			                    <c:if test="${not empty cid}">
+			                        <zm:getContact id="${cid}" var="contact"/>
+			                        <c:set var="homeEmail" value=""/>
+			                        <c:set var="workEmail" value=""/>
+			                        <c:if test="${not empty contact.email}">
+			                            <c:set var="homeEmail" value="${contact.email}"/>
+			                        </c:if>
+			                        <c:if test="${not empty contact.workEmail1}">
+			                            <c:set var="workEmail" value="${contact.workEmail1}"/>
+			                        </c:if>
+			                        <c:if test="${not empty contact.email2 and empty homeEmail}">
+			                            <c:set var="homeEmail" value="${contact.email2}"/>
+			                        </c:if>
+			                        <c:if test="${not empty contact.workEmail2 and empty workEmail}">
+			                            <c:set var="workEmail" value="${contact.workEmail1}"/>
+			                        </c:if>
+			                        <c:if test="${not empty contact.email3 and empty homeEmail}">
+			                            <c:set var="homeEmail" value="${contact.email3}"/>
+			                        </c:if>
+			                        <c:if test="${not empty contact.workEmail3 and empty workEmail}">
+			                            <c:set var="workEmail" value="${contact.workEmail3}"/>
+			                        </c:if>
+			                        <c:if test="${not empty homeEmail}">
+			                             <c:set var="toEmail" value="${homeEmail}${not empty toEmail ? ',' : ''}${not empty toEmail ? toEmail : ''}"/>
+			                        </c:if>
+			                        <c:if test="${empty homeEmail and not empty workEmail}">
+			                             <c:set var="toEmail" value="${workEmail}${not empty toEmail ? ',' : ''}${not empty toEmail ? toEmail : ''}"/>
+			                        </c:if>
+			                    </c:if>
+			                </c:forEach>
+			                <c:redirect url="/h/search">
+			                    <c:param name="action" value="compose"/>
+			                    <c:param name="to" value="${toEmail}"/>
+			                </c:redirect>    
+			            </c:when>
             <c:when test="${zm:actionSet(param, 'actionDelete')}">
                 <zm:requirePost/>
 				<c:choose>
