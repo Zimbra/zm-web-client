@@ -696,7 +696,7 @@ function(contact, abridged) {
 		: Math.min(members.length, 5);
 
 	var subs = {
-		fileAs: real.getFileAs(),
+		fileAs: AjxStringUtil.htmlEncode(real.getFileAs()),
 		members: members,
 		size: size,
 		hasMore: (abridged && size < members.length)

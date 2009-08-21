@@ -417,7 +417,7 @@ function(title) {
 	var div = document.getElementById(this._titleCellId);
 	if (div) {
 		var fileAs = title || this._contact.getFileAs();
-		div.innerHTML = fileAs || (this._contact.id ? "&nbsp;" : ZmMsg.newContact);
+		div.innerHTML = AjxStringUtil.htmlEncode(fileAs || (this._contact.id ? " " : ZmMsg.newContact));
 	}
 };
 

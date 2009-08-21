@@ -41,7 +41,7 @@
 					<$= AjxImg.getImageHtml(data.contact.getIcon(), "width:16") $>
 				</td>
 				<td width=100% valign=top>
-					<div class='contactHeader'><$= data.contact.getFileAs() $></div>
+					<div class='contactHeader'><$= AjxStringUtil.htmlEncode(data.contact.getFileAs()) $></div>
 				</td>
 				<$ if (data.tagCellId) { $>
 					<td width=16 id='${tagCellId}'>${tagIcon}</td>
@@ -100,7 +100,7 @@
 
 	<tr>
 		<td colspan=2 valign=top width=100% style='font-weight:bold; padding-left:2px'>
-			<$= contact.getCompanyField() || "&nbsp;" $>
+			<$= AjxStringUtil.htmlEncode(contact.getCompanyField() || " ") $>
 		</td>
 	</tr>
 	<tr height=100%>
@@ -213,8 +213,8 @@
 	<$
 		var contact		= data.contact;
 		var imageUrl	= contact.getImageUrl();
-		var companyStr	= contact.getCompanyField();
-		var fileAs		= contact.getFileAs();
+		var companyStr	= AjxStringUtil.htmlEncode(contact.getCompanyField());
+		var fileAs		= AjxStringUtil.htmlEncode(contact.getFileAs());
 	$>
 	<table border=0 cellspacing=2 cellpadding=2 width=100% class='contactHeaderTable <$= data.contactHdrClass $>'>
 		<tr>
@@ -294,7 +294,7 @@
 	<$
 		var contact		= data.contact;
 
-		var workName	= contact.getAttr(ZmContact.F_company);
+		var workName	= AjxStringUtil.htmlEncode(contact.getAttr(ZmContact.F_company));
 		var workField	= contact.getWorkAddrField();
 		var workPhone	= contact.getAttr(ZmContact.F_workPhone);
 		var workPhone2	= contact.getAttr(ZmContact.F_workPhone2);
@@ -1049,7 +1049,7 @@
 	<table border=0 cellpadding=2 cellspacing=2 width=100%>
 	<tr>
 		<td colspan=2 style='font-family:Arial; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-weight:bold; background-color:#DDDDDD'>
-			<$= data.contact.getFileAs() $>
+			<$= AjxStringUtil.htmlEncode(data.contact.getFileAs()) $>
 		</td>
 	</tr>
 	<tr>
@@ -1057,7 +1057,7 @@
 			<$= ZmMsg.AB_FIELD_fullNameLabel $>
 		</td>
 		<td style='font-family:Arial; font-size:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;'>
-			<$= data.contact.getFullName() $>
+			<$= AjxStringUtil.htmlEncode(data.contact.getFullName()) $>
 		</td>
 	</tr>
 
@@ -1086,7 +1086,7 @@
 		var birthday 	= contact.getAttr(ZmContact.F_birthday);
 		var parsedBday 	= birthday ? (new AjxDateFormat("yyyy-MM-dd")).parse(birthday) : null;
 		var birthdayStr = parsedBday ? AjxDateUtil.simpleComputeDateStr(parsedBday) : null;
-		var notes 		= contact.getAttr(ZmContact.F_notes);
+		var notes 		= AjxStringUtil.htmlEncode(contact.getAttr(ZmContact.F_notes));
 
 		var fields = [
 			{ lbl: ZmMsg.AB_FIELD_jobTitle,			val: contact.getAttr(ZmContact.F_jobTitle) },
@@ -1120,7 +1120,7 @@
 	<table border=0 cellpadding=2 cellspacing=2>
 	<tr>
 		<td colspan=2 style='font-family:Arial; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-weight:bold;'>
-			<$= data.contact.getFileAs() $>
+			<$= AjxStringUtil.htmlEncode(data.contact.getFileAs()) $>
 		</td>
 	</tr>
 	<tr>
@@ -1128,7 +1128,7 @@
 			<$= ZmMsg.AB_FIELD_fullNameLabel $>
 		</td>
 		<td style='font-family:Arial; font-size:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;'>
-			<$= contact.getFullName() $>
+			<$= AjxStringUtil.htmlEncode(contact.getFullName()) $>
 		</td>
 	</tr>
 
@@ -1143,7 +1143,7 @@
 													AjxStringUtil.htmlEncode(fields[i].lbl)) $>
 					</td>
 					<td valign=top style='font-family:Arial; font-size:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;'>
-						<$= v $>
+						<$= AjxStringUtil.htmlEncode(v) $>
 					</td>
 				</tr>
 			<$ } $>
