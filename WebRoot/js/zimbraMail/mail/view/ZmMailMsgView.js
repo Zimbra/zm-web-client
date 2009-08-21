@@ -192,13 +192,13 @@ function(msg) {
 			topToolbar.reparentHtmlElement(contentDiv);
 			topToolbar.setVisible(Dwt.DISPLAY_BLOCK);
 
-			var calendars = appCtxt.getApp(ZmApp.CALENDAR).getCalController().getCalendars(true);
+			var calendars = appCtxt.getApp(ZmApp.CALENDAR).getCalController().getCalendars(true, msg.account);
 			var visible = calendars.length > 1;
 			if (visible) {
 				this._inviteMoveSelect.clearOptions();
 				for (var i = 0; i < calendars.length; i++) {
 					var calendar = calendars[i];
-					this._inviteMoveSelect.addOption(calendar.name, calendar.id == ZmOrganizer.ID_CALENDAR, calendar.id);
+					this._inviteMoveSelect.addOption(calendar.name, calendar.nId == ZmOrganizer.ID_CALENDAR, calendar.id);
 				}
 			}
 			this._inviteMoveSelect.setVisible(visible);
@@ -410,9 +410,7 @@ function() {
 
 	this._inviteToolbar.addSpacer();
 
-	var select = new DwtSelect({parent: this._inviteToolbar});
-	//select.addChangeListener(new AjxListener(this, this._moveAppt));
-	this._inviteMoveSelect = select;
+	this._inviteMoveSelect = new DwtSelect({parent: this._inviteToolbar});
 
 	return this._inviteToolbar;
 };

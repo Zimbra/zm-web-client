@@ -38,22 +38,6 @@ function () {
     return "ZmSharingPage";
 };
 
-ZmSharingPage.prototype.showMe =
-function() {
-	ZmPreferencesPage.prototype.showMe.apply(this, arguments);
-	if (!this._rendered) {
-		this.view = new ZmSharingView({parent:this, pageId:this._htmlElId});
-		this.view.showMounts();
-		this.view.findShares();
-		this.view.showGrants();
-		this._rendered = true;
-	}
-
-	if (appCtxt.multiAccounts) {
-		this._acAddrSelectList.setActiveAccount(appCtxt.getActiveAccount());
-	}
-};
-
 ZmSharingPage.prototype.getShares =
 function(type, owner, callback) {
 
@@ -77,6 +61,20 @@ function(callback, result) {
 	var resp = result.getResponse().GetShareInfoResponse;
 	if (callback) {
 		callback.run(resp.share);
+	}
+};
+
+ZmSharingPage.prototype._createControls =
+function() {
+	ZmPreferencesPage.prototype._createControls.call(this);
+
+	this.view = new ZmSharingView({parent:this, pageId:this._htmlElId});
+	this.view.showMounts();
+	this.view.findShares();
+	this.view.showGrants();
+
+	if (appCtxt.multiAccounts && this._acAddrSelectList) {
+		this._acAddrSelectList.setActiveAccount(appCtxt.getActiveAccount());
 	}
 };
 
@@ -132,7 +130,7 @@ ZmSharingView.F_ACTIONS	= "ac";
 ZmSharingView.F_FOLDER	= "fo";
 ZmSharingView.F_ITEM	= "it";
 ZmSharingView.F_OWNER	= "ow";
-ZmSharingView.F_ROLE	= "ro"
+ZmSharingView.F_ROLE	= "ro";
 ZmSharingView.F_TYPE	= "ty";
 ZmSharingView.F_WITH	= "wi";
 

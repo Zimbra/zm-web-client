@@ -121,6 +121,7 @@ ZmOrganizer.ID_AUTO_ADDED 		= 13;
 ZmOrganizer.ID_CHATS			= 14;
 ZmOrganizer.ID_TASKS			= 15;
 ZmOrganizer.ID_BRIEFCASE		= 16;
+ZmOrganizer.ID_NOTIFICATION_MP	= 250;
 ZmOrganizer.ID_GLOBAL_SEARCHES	= 251;
 ZmOrganizer.ID_SYNC_FAILURES	= 252;		// offline only
 ZmOrganizer.ID_ARCHIVE    		= 253;		// offline only

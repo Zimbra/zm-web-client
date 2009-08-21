@@ -471,19 +471,6 @@ function(accounts, callback) {
 	}
 };
 
-ZmZimbraMail.prototype._loadDeferredFolders =
-function() {
-	for (var i in this._apps) {
-		if (AjxDispatcher.loaded(i)) { // should only be true if in dev mode
-			var app = appCtxt.getApp(i);
-			var org = ZmOrganizer.APP2ORGANIZER[i];
-			if (app && org && org.length) {
-				app._createDeferredFolders(org[0]);
-			}
-		}
-	}
-};
-
 /**
  * Startup: part 2
  * 	- create app toolbar component
@@ -573,10 +560,6 @@ function(params, result) {
 			if (appCtxt.isOffline) {
 				appCtxt.getSearchController().resetSearchToolbar();
 			}
-
-			// in dev mode, force create deferred folders b/c postLoad gets called w/
-			// invisible parent (deferred folders for child accounts are never loaded)
-			this._loadDeferredFolders();
 
 			var contactListPkg = appCtxt.multiAccounts ? "GetContactsForAllAccounts" : "GetContacts";
 			AjxDispatcher.run(contactListPkg);

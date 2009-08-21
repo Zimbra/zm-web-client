@@ -398,11 +398,9 @@ function() {
 
 ZmCalViewController.prototype._calTreeChangeListener =
 function(ev) {
-	// TODO: check only for color/name changes?
 	if (ev.event == ZmEvent.E_DELETE) {
 		this._updateCheckedCalendars();
 	}
-	//this._refreshAction(true);
 };
 
 ZmCalViewController.prototype.getCalendar =
@@ -411,13 +409,13 @@ function(folderId) {
 };
 
 ZmCalViewController.prototype.getCalendars =
-function(includeLinks) {
+function(includeLinks, account) {
 	this._updateCheckedCalendars();
 	var calendars = [];
-	var organizers = appCtxt.getFolderTree().getByType(ZmOrganizer.CALENDAR);
+	var organizers = appCtxt.getFolderTree(account).getByType(ZmOrganizer.CALENDAR);
 	for (var i = 0; i < organizers.length; i++) {
 		var organizer = organizers[i];
-		if (organizer.zid && !includeLinks) continue;
+		if (organizer.zid && !includeLinks) { continue; }
 		calendars.push(organizer);
 	}
 	calendars.sort(ZmCalViewController.__BY_NAME);

@@ -104,7 +104,8 @@ function(parent, obj, tree, elementType, path, accountId) {
 			DBG.println(AjxDebug.DBG1, "No known type for view " + obj.view);
 			return;
 		}
-		if (appCtxt.inStartup && ZmOrganizer.DEFERRABLE[type]) {
+		// let's avoid deferring folders for offline since multi-account folder deferring is hairy
+		if (appCtxt.inStartup && ZmOrganizer.DEFERRABLE[type] && !appCtxt.isOffline) {
 			var app = appCtxt.getApp(ZmOrganizer.APP[type]);
 			var defParams = {
 				type: type,
