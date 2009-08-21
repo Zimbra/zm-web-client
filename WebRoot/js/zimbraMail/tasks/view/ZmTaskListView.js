@@ -252,7 +252,7 @@ function(el) {
 
 ZmTaskListView.prototype._handleColHeaderResize =
 function(ev) {
-	ZmListView.prototype._handleColHeaderResize(this, ev);
+	ZmListView.prototype._handleColHeaderResize.call(this, ev);
 	this._newTaskInputEl = null;
 };
 
@@ -269,8 +269,8 @@ function(parent) {
 	}
 	hList.push(new DwtListHeaderItem({field:ZmItem.F_PRIORITY, icon:"TaskHigh", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.priority}));
 	hList.push(new DwtListHeaderItem({field:ZmItem.F_ATTACHMENT, icon:"Attachment", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.attachment}));
-	hList.push(new DwtListHeaderItem({field:ZmItem.F_SUBJECT, text:ZmMsg.subject, sortable:ZmItem.F_SUBJECT, noRemove:true}));
-	hList.push(new DwtListHeaderItem({field:ZmItem.F_STATUS, text:ZmMsg.status, width:ZmTaskListView.COL_WIDTH_STATUS, sortable:ZmItem.F_STATUS}));
+	hList.push(new DwtListHeaderItem({field:ZmItem.F_SUBJECT, text:ZmMsg.subject, sortable:ZmItem.F_SUBJECT, resizeable:true, noRemove:true}));
+	hList.push(new DwtListHeaderItem({field:ZmItem.F_STATUS, text:ZmMsg.status, width:ZmTaskListView.COL_WIDTH_STATUS, resizeable:true, sortable:ZmItem.F_STATUS}));
 	hList.push(new DwtListHeaderItem({field:ZmItem.F_PCOMPLETE, text:ZmMsg.pComplete, width:ZmTaskListView.COL_WIDTH_PCOMPLETE, sortable:ZmItem.F_PCOMPLETE}));
 	hList.push(new DwtListHeaderItem({field:ZmItem.F_DATE, text:ZmMsg.dateDue, width:ZmTaskListView.COL_WIDTH_DATE_DUE, sortable:ZmItem.F_DATE}));
 
