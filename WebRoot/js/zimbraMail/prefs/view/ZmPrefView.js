@@ -304,7 +304,7 @@ function(section, viewPage, dirtyCheck, noValidation, list, errors, view) {
 					list.push(pref);
 				}
 			} else {
-				errors.push(AjxMessageFormat.format(setup.errorMessage, value));
+				errors.push(AjxMessageFormat.format(setup.errorMessage, AjxStringUtil.htmlEncode(value)));
 			}
 			this._controller.setDirty(view, true);
 		}

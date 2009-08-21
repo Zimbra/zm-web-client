@@ -330,7 +330,7 @@ function(exception1/*, ..., exceptionN*/) {
 			// should keep us from getting here
 			message = ZmMsg.invalidPrefValue;
 		}
-		appCtxt.setStatusMsg(message, ZmStatusView.LEVEL_CRITICAL);
+		appCtxt.setStatusMsg(AjxStringUtil.htmlEncode(message,true,true), ZmStatusView.LEVEL_CRITICAL);
 	}
 };
 
