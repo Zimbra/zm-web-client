@@ -43,8 +43,6 @@ ZmComposeView = function(parent, controller, composeMode) {
 	this._onMsgDataChange = new AjxCallback(this, this._onMsgDataChange);
 
 	this._controller = controller;
-	this._contactPickerEnabled = appCtxt.get(ZmSetting.CONTACTS_ENABLED) ||
-								 appCtxt.get(ZmSetting.GAL_ENABLED);
 	this._initialize(composeMode);
 
 	// make sure no unnecessary scrollbars show up
@@ -2054,6 +2052,11 @@ function(templateId, data) {
 		this._acAddrSelectList = new ZmAutocompleteListView(params);
 	}
 
+	var isPickerEnabled = (appCtxt.get(ZmSetting.CONTACTS_ENABLED) ||
+						   appCtxt.get(ZmSetting.GAL_ENABLED) ||
+						   appCtxt.multiAccounts);
+	this._pickerButton = {};
+
 	// process compose fields
 	for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
 		var type = ZmMailMsg.COMPOSE_ADDRS[i];
@@ -2073,12 +2076,12 @@ function(templateId, data) {
 		}
 
 		// create picker
-		if (this._contactPickerEnabled) {
+		if (isPickerEnabled) {
 			var pickerId = this._buttonTdId[type];
 			var pickerEl = document.getElementById(pickerId);
 			if (pickerEl) {
 				var buttonId = ZmId.getButtonId(this._view, ZmComposeView.OP[type]);
-				var button = new DwtButton({parent:this, id:buttonId});
+				var button = this._pickerButton[type] = new DwtButton({parent:this, id:buttonId});
 				button.setText(pickerEl.innerHTML);
 				button.replaceElement(pickerEl);
 
@@ -2182,6 +2185,8 @@ function(ev) {
 			this._controller.saveDraft(this._controller._draftType, null, null, callback);
 		}
 	}
+
+	this._resetPickerButtons(newAccount);
 };
 
 ZmComposeView.prototype._handleMoveDraft =
@@ -2425,6 +2430,17 @@ function() {
 	}
 };
 
+ZmComposeView.prototype._resetPickerButtons =
+function(account) {
+	var isEnabled = appCtxt.get(ZmSetting.CONTACTS_ENABLED, null, account) ||
+					appCtxt.get(ZmSetting.GAL_ENABLED, null, account);
+
+	for (var i in this._pickerButton) {
+		var button = this._pickerButton[i];
+		button.setEnabled(isEnabled);
+	}
+};
+
 ZmComposeView.prototype._setFromSelect =
 function(msg) {
 	if (!this._fromSelect) { return; }
@@ -2462,6 +2478,8 @@ function(msg) {
 	if (this._acAddrSelectList) {
 		this._acAddrSelectList.setActiveAccount(active);
 	}
+
+	this._resetPickerButtons(active);
 };
 
 // Show address field
@@ -2539,7 +2557,8 @@ function(ev, addrType) {
 		var buttonInfo = [
 			{ id: AjxEmailAddress.TO,	label: ZmMsg[AjxEmailAddress.TYPE_STRING[AjxEmailAddress.TO]] },
 			{ id: AjxEmailAddress.CC,	label: ZmMsg[AjxEmailAddress.TYPE_STRING[AjxEmailAddress.CC]] },
-			{ id: AjxEmailAddress.BCC,	label: ZmMsg[AjxEmailAddress.TYPE_STRING[AjxEmailAddress.BCC]] }];
+			{ id: AjxEmailAddress.BCC,	label: ZmMsg[AjxEmailAddress.TYPE_STRING[AjxEmailAddress.BCC]] }
+		];
 		this._contactPicker = new ZmContactPicker(buttonInfo);
 		this._contactPicker.registerCallback(DwtDialog.OK_BUTTON, this._contactPickerOkCallback, this);
 		this._contactPicker.registerCallback(DwtDialog.CANCEL_BUTTON, this._contactPickerCancelCallback, this);
@@ -2555,8 +2574,11 @@ function(ev, addrType) {
 		}
 	}
 	this._contactPicker.addPopdownListener(this._controller._dialogPopdownListener);
-	var str = (this._field[curType].value && !(a[curType] && a[curType].length)) ? this._field[curType].value : "";
-	this._contactPicker.popup(curType, a, str);
+	var str = (this._field[curType].value && !(a[curType] && a[curType].length))
+		? this._field[curType].value : "";
+
+	var account = appCtxt.multiAccounts && appCtxt.getAccount(this._fromSelect.getValue().accountId);
+	this._contactPicker.popup(curType, a, str, account);
 };
 
 ZmComposeView.prototype._controlListener =

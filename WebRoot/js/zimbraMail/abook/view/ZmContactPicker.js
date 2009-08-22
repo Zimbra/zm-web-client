@@ -64,12 +64,15 @@ function() {
 * @param str		[string]*	initial search string
 */
 ZmContactPicker.prototype.popup =
-function(buttonId, addrs, str) {
+function(buttonId, addrs, str, account) {
 	if (!this._initialized) {
-		this._initialize();
+		this._initialize(account);
 		this._initialized = true;
 	}
-
+	else if (appCtxt.multiAccounts && this._account != account) {
+		this._account = account;
+		this._resetSelectDiv();
+	}
 	this._offset = 0;
 
 	var searchFor = this._selectDiv ? this._selectDiv.getValue() : ZmContactsApp.SEARCHFOR_CONTACTS;
@@ -151,7 +154,7 @@ function(colItem, ascending, firstTime, lastId, lastSortVal) {
             ascending = true;
         }
 	} else {
-		this._contactSource = appCtxt.get(ZmSetting.CONTACTS_ENABLED)
+		this._contactSource = appCtxt.get(ZmSetting.CONTACTS_ENABLED, null, this._account)
 			? ZmItem.CONTACT
 			: ZmId.SEARCH_GAL;
 
@@ -164,6 +167,7 @@ function(colItem, ascending, firstTime, lastId, lastSortVal) {
 
 	// XXX: line below doesn't have intended effect (turn off column sorting for GAL search)
 	this._chooser.sourceListView.sortingEnabled = (this._contactSource == ZmItem.CONTACT);
+
 	var params = {
 		obj: this,
 		ascending: ascending,
@@ -173,15 +177,33 @@ function(colItem, ascending, firstTime, lastId, lastSortVal) {
 		lastId: lastId,
 		lastSortVal: lastSortVal,
 		respCallback: (new AjxCallback(this, this._handleResponseSearch, [firstTime])),
-		errorCallback: this._searchErrorCallback
+		errorCallback: this._searchErrorCallback,
+		accountName: (this._account && this._account.name)
 	};
 	ZmContactsHelper.search(params);
 };
 
 ZmContactPicker.prototype._contentHtml =
-function() {
-	var showSelect = (appCtxt.get(ZmSetting.CONTACTS_ENABLED) &&
+function(account) {
+	var showSelect;
+	if (appCtxt.multiAccounts) {
+		var accounts = appCtxt.getZimbraAccounts();
+		for (var i in accounts) {
+			var acct = accounts[i];
+			if (!acct.visible) { continue; }
+
+			if (appCtxt.get(ZmSetting.CONTACTS_ENABLED, null, account) &&
+				(appCtxt.get(ZmSetting.GAL_ENABLED, null, account) || appCtxt.get(ZmSetting.SHARING_ENABLED, null, account)))
+			{
+				showSelect = true;
+				break;
+			}
+		}
+	} else {
+		showSelect = (appCtxt.get(ZmSetting.CONTACTS_ENABLED) &&
 					  (appCtxt.get(ZmSetting.GAL_ENABLED) || appCtxt.get(ZmSetting.SHARING_ENABLED)));
+	}
+
 	var subs = {
 		id: this._htmlElId,
 		showSelect: showSelect
@@ -190,42 +212,48 @@ function() {
 	return (AjxTemplate.expand("abook.Contacts#ZmContactPicker", subs));
 };
 
+ZmContactPicker.prototype._resetSelectDiv =
+function() {
+	this._selectDiv.clearOptions();
+
+	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED, null, this._account)) {
+		this._selectDiv.addOption(ZmMsg.contacts, false, ZmContactsApp.SEARCHFOR_CONTACTS);
+
+		if (appCtxt.get(ZmSetting.SHARING_ENABLED, null, this._account))
+			this._selectDiv.addOption(ZmMsg.searchPersonalSharedContacts, false, ZmContactsApp.SEARCHFOR_PAS);
+	}
+
+	if (appCtxt.get(ZmSetting.GAL_ENABLED, null, this._account)) {
+		this._selectDiv.addOption(ZmMsg.GAL, true, ZmContactsApp.SEARCHFOR_GAL);
+	}
+
+	if (!appCtxt.get(ZmSetting.INITIALLY_SEARCH_GAL, null, this._account) ||
+		!appCtxt.get(ZmSetting.GAL_ENABLED, null, this._account))
+	{
+		this._selectDiv.setSelectedValue(ZmContactsApp.SEARCHFOR_CONTACTS);
+	}
+};
+
 // called only when ZmContactPicker is first created. Sets up initial layout.
 ZmContactPicker.prototype._initialize =
-function() {
+function(account) {
 
 	// create static content and append to dialog parent
-	this.setContent(this._contentHtml());
+	this.setContent(this._contentHtml(account));
 
 	this._searchIcon = document.getElementById(this._htmlElId + "_searchIcon");
 
 	// add search button
-	var searchCellId = this._htmlElId + "_searchButton";
-	this._searchButton = new DwtButton({parent:this});
+	this._searchButton = new DwtButton({parent:this, parentElement:(this._htmlElId+"_searchButton")});
 	this._searchButton.setText(ZmMsg.search);
 	this._searchButton.addSelectionListener(new AjxListener(this, this._searchButtonListener));
-	this._searchButton.reparentHtmlElement(searchCellId);
 
 	// add select menu
 	var selectCellId = this._htmlElId + "_listSelect";
 	var selectCell = document.getElementById(selectCellId);
 	if (selectCell) {
-		this._selectDiv = new DwtSelect({parent:this});
-		if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-			this._selectDiv.addOption(ZmMsg.contacts, false, ZmContactsApp.SEARCHFOR_CONTACTS);
-
-			if (appCtxt.get(ZmSetting.SHARING_ENABLED))
-				this._selectDiv.addOption(ZmMsg.searchPersonalSharedContacts, false, ZmContactsApp.SEARCHFOR_PAS);
-		}
-		if (appCtxt.get(ZmSetting.GAL_ENABLED)) {
-			this._selectDiv.addOption(ZmMsg.GAL, true, ZmContactsApp.SEARCHFOR_GAL);
-		}
-
-		if (!appCtxt.get(ZmSetting.INITIALLY_SEARCH_GAL) || !appCtxt.get(ZmSetting.GAL_ENABLED)) {
-			this._selectDiv.setSelectedValue(ZmContactsApp.SEARCHFOR_CONTACTS);
-		}
-
-		this._selectDiv.reparentHtmlElement(selectCellId);
+		this._selectDiv = new DwtSelect({parent:this, parentElement:selectCellId});
+		this._resetSelectDiv();
 		this._selectDiv.addChangeListener(new AjxListener(this, this._searchTypeListener));
 	} else {
 		this.setSize("600");
@@ -238,17 +266,15 @@ function() {
 
 	// add paging buttons
 	var pageListener = new AjxListener(this, this._pageListener);
-	this._prevButton = new DwtButton({parent:this});
+	this._prevButton = new DwtButton({parent:this, parentElement:(this._htmlElId+"_pageLeft")});
 	this._prevButton.setText(ZmMsg.previous);
 	this._prevButton.setImage("LeftArrow");
 	this._prevButton.addSelectionListener(pageListener);
-	this._prevButton.reparentHtmlElement(this._htmlElId + "_pageLeft");
 
-	this._nextButton = new DwtButton({parent:this, style:DwtLabel.IMAGE_RIGHT});
+	this._nextButton = new DwtButton({parent:this, style:DwtLabel.IMAGE_RIGHT, parentElement:(this._htmlElId+"_pageRight")});
 	this._nextButton.setText(ZmMsg.next);
 	this._nextButton.setImage("RightArrow");
 	this._nextButton.addSelectionListener(pageListener);
-	this._nextButton.reparentHtmlElement(this._htmlElId + "_pageRight");
 
 	var pageContainer = document.getElementById(this._htmlElId + "_paging");
 	if (pageContainer) {

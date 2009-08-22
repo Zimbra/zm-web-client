@@ -34,6 +34,7 @@ ZmContactsHelper = function() {};
  * @param lastSortVal	[string]*		value of sort field for above item
  * @param respCallback	[AjxCallback]*	callback to call once response comes back from server
  * @param errorCallback	[AjxCallback]*	callback to call if error returned from server
+ * @param accountName	[String]*		account to make search request on behalf of
  */
 ZmContactsHelper.search =
 function(params) {
