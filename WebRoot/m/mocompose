@@ -77,7 +77,7 @@
 <form action="?${nmail}&bt=${bt}" method="post" enctype="multipart/form-data" accept-charset="utf-8" onsubmit="return submitForm(this,'aniframe');">
 <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/><%-- TOP TOOLBAR --%>
 <div class="tbl tb"><div class="tr"><div class="td">
-    <span class='zo_tb_submit'><a href="${caction}" class="zo_button"><fmt:message key="cancel"/></a></span>
+    <span class='zo_tb_submit'><a href="${zm:cook(caction)}" class="zo_button"><fmt:message key="cancel"/></a></span>
     <span>
        <span class="zo_tb_submit"><input class='zo_button' name="actionDraft" type="submit" value="<fmt:message key="save"/>"></span>
        <span class="zo_tb_submit"><input class='zo_button' name="actionSend" type="submit" value="<fmt:message key="send"/>"></span>
@@ -206,7 +206,7 @@
 </div>
 <%-- BOTTOM TOOLBAR --%>
 <div class="tbl tb"><div class="tr"><div class="td">
-    <span class='zo_tb_submit'><a href="${caction}" class="zo_button"><fmt:message key="cancel"/></a></span>
+    <span class='zo_tb_submit'><a href="${zm:cook(caction)}" class="zo_button"><fmt:message key="cancel"/></a></span>
     <span>
        <span class="zo_tb_submit"><input class='zo_button' name="actionDraft" type="submit" value="<fmt:message key="save"/>"></span>
        <span class="zo_tb_submit"><input class='zo_button' name="actionSend" type="submit" value="<fmt:message key="send"/>"></span>

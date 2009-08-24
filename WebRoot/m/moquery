@@ -32,12 +32,12 @@
 <c:set var="action_url" value="${context_url}"/>
 <form action="<c:url value="${action_url}"/>" method="post" accept-charset="UTF-8" onsubmit="if(!this.sq.value){showLoadingMsg('<fmt:message key="actionNoSearchQuerySpecified"/>',true,'Warning',1000);return false;}else{return submitForm(this);}">
 <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
-<input type="hidden" name="bt" value="${bt}"/>
+<input type="hidden" name="bt" value="${zm:cook(bt)}"/>
 <div class="tbl tb">
     <div class="tr">
         <div class="td">
         <span class='zo_tb_submit'>
-                <a href="${caction}" class="zo_button"><fmt:message key="cancel"/></a>
+                <a href="${zm:cook(caction)}" class="zo_button"><fmt:message key="cancel"/></a>
         </span>
         <span>
            <span class="zo_tb_submit">
@@ -200,7 +200,7 @@
     <div class="tr">
         <div class="td">
         <span class='zo_tb_submit'>
-                <a href="${caction}" class="zo_button"><fmt:message key="cancel"/></a>
+                <a href="${zm:cook(caction)}" class="zo_button"><fmt:message key="cancel"/></a>
         </span>
         <span>
            <span class="zo_tb_submit">
