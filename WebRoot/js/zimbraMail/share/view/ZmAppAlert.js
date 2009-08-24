@@ -20,12 +20,8 @@
  * @param app ZmApp
  */
 ZmAppAlert = function(app) {
-	ZmAlert.call(this);
 	this.app = app;
 };
-
-ZmAppAlert.prototype = new ZmAlert;
-ZmAppAlert.prototype.constructor = ZmAppAlert;
 
 ZmAppAlert.prototype.toString =
 function() {
@@ -34,23 +30,14 @@ function() {
 
 ZmAppAlert.prototype.start =
 function() {
-	if (!this._isLooping && !this.app.isActive()) {
-		var button = this._getAppButton();
-		this._origImage = button.getImage();
-		button.showAlert(true);
-		this._startLoop();
+	if (!this.app.isActive()) {
+		this._getAppButton().showAlert(true);
 	}
 };
 
 ZmAppAlert.prototype.stop =
 function() {
-	this._stopLoop();
 	this._getAppButton().showAlert(false);
-};
-
-ZmAppAlert.prototype._update =
-function(status) {
-	this._getAppButton().setImage(status ? "Blank_16" : this._origImage);
 };
 
 ZmAppAlert.prototype._getAppButton =
