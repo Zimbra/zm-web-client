@@ -1911,6 +1911,9 @@ function(action, msg, extraBodyText, incOption, nosig) {
 		}
 	}
 
+    var isHtmlEditorInitd = this._htmlEditor.isHtmlModeInited();
+    if(!isHtmlEditorInitd) this._fixMultipartRelatedImages_onTimer(msg);
+
 	if (!nosig && sigStyle == ZmSetting.SIG_INTERNET) {
 		this.addSignature(value);
 	} else {
@@ -1918,9 +1921,11 @@ function(action, msg, extraBodyText, incOption, nosig) {
 		this._htmlEditor.setContent(value);
 	}
 
+    if(isHtmlEditorInitd) this._fixMultipartRelatedImages_onTimer(msg);
+    
 	hasInlineImages = hasInlineImages || !appCtxt.get(ZmSetting.VIEW_AS_HTML);
 	this._showForwardField(msg, action, incOption, hasInlineImages, hasInlineAtts);
-	this._fixMultipartRelatedImages_onTimer(msg);
+
 };
 
 ZmComposeView.prototype.resetBody =
