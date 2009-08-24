@@ -777,7 +777,7 @@ function() {
 
 ZmZimbraMail.prototype.cancelRequest =
 function(reqId, errorCallback, noBusyOverlay) {
-	this._requestMgr.cancelRequest(reqId, errorCallback, noBusyOverlay)
+	this._requestMgr.cancelRequest(reqId, errorCallback, noBusyOverlay);
 };
 
 ZmZimbraMail.prototype.sendRequest =
@@ -925,18 +925,40 @@ ZmZimbraMail.prototype.sendNoOp =
 function() {
 	var soapDoc = AjxSoapDoc.create("NoOpRequest", "urn:zimbraMail");
 	var accountName = appCtxt.isOffline && appCtxt.getMainAccount().name;
-	this.sendRequest({soapDoc:soapDoc, asyncMode:true, noBusyOverlay:true, accountName:accountName})
+	this.sendRequest({soapDoc:soapDoc, asyncMode:true, noBusyOverlay:true, accountName:accountName});
 };
 
-ZmZimbraMail.prototype.sendSync =
+ZmZimbraMail.prototype.syncAllAccounts =
 function(callback) {
-    var soapDoc = AjxSoapDoc.create("SyncRequest", "urn:zimbraOffline");
-	if (appCtxt.get(ZmSetting.OFFLINE_DEBUG_TRACE)) {
-		var method = soapDoc.getMethod();
-		method.setAttribute("debug", 1);
+	var list = [];
+	var accounts = appCtxt.getZimbraAccounts();
+	for (var i in accounts) {
+		var acct = accounts[i];
+		if (!acct.visible || acct.isMain) { continue; }
+
+		list.push(acct);
 	}
 
-    this.sendRequest({soapDoc:soapDoc, asyncMode:true, noBusyOverlay:true, callback:callback});
+	if (list.length) {
+		this._sendSync(list, callback);
+	} else {
+		if (callback) {
+			callback.run();
+		}
+	}
+};
+
+ZmZimbraMail.prototype._sendSync =
+function(accounts, callback) {
+	var acct = accounts.shift();
+	if (acct) {
+		acct.sync();
+		AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._sendSync, [accounts, callback]), 500);
+	} else {
+		if (callback) {
+			callback.run();
+		}
+	}
 };
 
 ZmZimbraMail.prototype.sendClientEventNotify =

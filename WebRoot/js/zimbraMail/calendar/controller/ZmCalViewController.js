@@ -444,7 +444,7 @@ ZmCalViewController.prototype._refreshButtonListener =
 function(ev) {
 	// bug fix #33830 - force sync for calendar refresh
 	if (appCtxt.isOffline) {
-		appCtxt.getAppController().sendSync();
+		appCtxt.getAppController().syncAllAccounts();
 	}
 
 	// reset possibly set user query

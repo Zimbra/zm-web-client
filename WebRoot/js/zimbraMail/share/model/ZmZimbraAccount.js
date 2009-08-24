@@ -318,6 +318,22 @@ function() {
 	}
 };
 
+ZmZimbraAccount.prototype.sync =
+function(callback) {
+	var soapDoc = AjxSoapDoc.create("SyncRequest", "urn:zimbraOffline");
+	if (appCtxt.get(ZmSetting.OFFLINE_DEBUG_TRACE)) {
+		var method = soapDoc.getMethod();
+		method.setAttribute("debug", 1);
+	}
+	appCtxt.getAppController().sendRequest({
+		soapDoc:soapDoc,
+		asyncMode:true,
+		noBusyOverlay:true,
+		callback:callback,
+		accountName:this.name
+	});
+};
+
 ZmZimbraAccount.prototype.save =
 function(callback, errorCallback, batchCmd) {
 	return (this.getIdentity().save(callback, errorCallback, batchCmd));

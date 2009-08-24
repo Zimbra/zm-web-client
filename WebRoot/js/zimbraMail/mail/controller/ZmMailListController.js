@@ -456,6 +456,9 @@ function(view, arrowStyle) {
 	if (!this._toolbar[view]) {
 		ZmListController.prototype._initializeToolBar.call(this, view);
 		this._createViewMenu(view);
+		if (appCtxt.isOffline && appCtxt.numAccounts > 2) {
+			this._createSendReceiveMenu(this._toolbar[view]);
+		}
 		this._setReplyText(this._toolbar[view]);
 		this._toolbar[view].addOp(ZmOperation.FILLER);
 		var tb = new ZmNavToolBar({parent:this._toolbar[view], arrowStyle:arrowStyle, context:view});
@@ -903,6 +906,14 @@ function(view) {
 	btn.noMenuBar = true;
 };
 
+ZmMailListController.prototype._createSendReceiveMenu =
+function(toolbar) {
+	var btn = toolbar.getButton(ZmOperation.CHECK_MAIL);
+	if (!btn) { return; }
+
+	btn.setMenu(new AjxCallback(this, this._setupSendReceiveMenuItems, [toolbar, btn]));
+};
+
 ZmMailListController.prototype._setupViewMenu =
 function(view) {
 
@@ -929,6 +940,26 @@ function(view, btn) {
 	this._setupReadingPaneMenuItems(view, menu, this.isReadingPaneOn());
 	if (appCtxt.get(ZmSetting.CONVERSATIONS_ENABLED)) {
 		this._setupConvOrderMenuItems(view, menu);
+	}
+
+	return menu;
+};
+
+ZmMailListController.prototype._setupSendReceiveMenuItems =
+function(toolbar, btn) {
+	var menu = new ZmPopupMenu(btn, null, null, this);
+	btn.setMenu(menu);
+
+	var listener = new AjxListener(this, this._sendReceiveListener);
+	var accounts = appCtxt.getZimbraAccounts();
+	for (var i in accounts) {
+		var acct = accounts[i];
+		if (!acct.visible || acct.isMain) { continue; }
+
+		var id = [ZmOperation.CHECK_MAIL, acct.id].join("-");
+		var mi = menu.createMenuItem(id, {image:acct.getIcon(), text:acct.getDisplayName()});
+		mi.setData(ZmOperation.MENUITEM_ID, acct.id);
+		mi.addSelectionListener(listener);
 	}
 
 	return menu;
@@ -1221,7 +1252,7 @@ function(ev) {
 ZmMailListController.prototype._checkMailListener =
 function() {
 	if (appCtxt.isOffline) {
-		appCtxt.getAppController().sendSync();
+		appCtxt.getAppController().syncAllAccounts();
 	}
 
 	var folderId = this._getSearchFolderId();
@@ -1248,6 +1279,14 @@ function() {
 			// call explicitly from mail app (this may be mixed ctlr) - bug 23268
 			appCtxt.getApp(ZmApp.MAIL).mailSearch();
 		}
+	}
+};
+
+ZmMailListController.prototype._sendReceiveListener =
+function(ev) {
+	var account = appCtxt.getAccount(ev.item.getData(ZmOperation.MENUITEM_ID));
+	if (account) {
+		account.sync();
 	}
 };
 
