@@ -69,10 +69,9 @@ function(params) {
 	// create an omit list for each account
 	// XXX: does this need to happen more then once???
 	var omitPerAcct = {};
-	var accounts = appCtxt.getZimbraAccounts();
-	for (var i in accounts) {
+	var accounts = appCtxt.accountList.visibleAccounts;
+	for (var i = 0; i < accounts.length; i++) {
 		var acct = accounts[i];
-		if (!acct.visible) { continue; }
 
 		var omit = omitPerAcct[acct.id] = params.omit || {};
 		omit[ZmFolder.ID_DRAFTS] = true;
@@ -126,7 +125,7 @@ function(params) {
 	if (appCtxt.multiAccounts) {
 		omitParam[ZmOrganizer.ID_ZIMLET] = true;
 	} else {
-		omitParam = omitPerAcct[appCtxt.getMainAccount().id];
+		omitParam = omitPerAcct[appCtxt.accountList.mainAccount.id];
 	}
 	
 	var popupParams = {
@@ -194,7 +193,7 @@ function(part) {
 ZmChooseFolderDialog.prototype._resetTree =
 function(treeIds, overview) {
 
-	var account = overview.account || appCtxt.getMainAccount();
+	var account = overview.account || appCtxt.accountList.mainAccount;
 	var acctTreeView = this._treeView[account.id] = {};
 	var folderTree = appCtxt.getFolderTree(account);
 

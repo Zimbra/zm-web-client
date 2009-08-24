@@ -350,7 +350,7 @@ function(organizer) {
 	var displayShares = [];
 	if ((!organizer.link || organizer.isAdmin()) && shares && shares.length > 0) {
 		AjxDispatcher.require("Share");
-		var userZid = appCtxt.getMainAccount().id;
+		var userZid = appCtxt.accountList.mainAccount.id;
 		// if a folder was shared with us with admin rights, a share is created since we could share it;
 		// don't show any share that's for us in the list
 		for (var i = 0; i < shares.length; i++) {

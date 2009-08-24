@@ -90,7 +90,7 @@ function() {
 	}
 
 	// add listener for sections added/removed later...
-	var account = appCtxt.isOffline && appCtxt.getMainAccount();
+	var account = appCtxt.isOffline && appCtxt.accountList.mainAccount;
 	var setting = appCtxt.getSettings(account).getSetting(ZmSetting.PREF_SECTIONS);
 	setting.addChangeListener(new AjxListener(this, this._prefSectionsModified));
 

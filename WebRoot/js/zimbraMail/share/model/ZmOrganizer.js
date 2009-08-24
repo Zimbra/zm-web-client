@@ -85,7 +85,7 @@ ZmOrganizer = function(params) {
 				this.accountId = account && account.id;
 			}
 		} else {
-			account = appCtxt.getAccount(this.accountId);
+			account = appCtxt.accountList.getAccount(this.accountId);
 		}
 
 		// for offline, POP accounts are not allowed to create subfolders
@@ -571,10 +571,10 @@ function(id, result) {
 	if (id == null) { return result; }
 	var idx = (typeof id == "string") ? id.indexOf(":") : -1;
 	if (idx == -1) {
-		result.account = appCtxt.getMainAccount();
+		result.account = appCtxt.accountList.mainAccount;
 		result.id = id;
 	} else {
-		result.account = appCtxt.getAccount(id.substring(0, idx));
+		result.account = appCtxt.accountList.getAccount(id.substring(0, idx));
 		result.id = id.substr(idx + 1);
 	}
 	return result;
@@ -1454,8 +1454,8 @@ function(params) {
 		var accountName;
 		if (appCtxt.multiAccounts) {
 			accountName = (this.accountId)
-				? appCtxt.getAccount(this.accountId).name
-				: appCtxt.getMainAccount().name;
+				? appCtxt.accountList.getAccount(this.accountId).name
+				: appCtxt.accountList.mainAccount.name;
 		}
 		appCtxt.getAppController().sendRequest({
 			soapDoc: soapDoc,

@@ -433,7 +433,7 @@ function(params, noRender, callback, errorCallback) {
 
 	if (this._searchAllAccounts) {
 		params.queryHint = this._generateQueryForAllAccounts(isMixed, types.getArray());
-		params.accountName = appCtxt.getMainAccount().name;
+		params.accountName = appCtxt.accountList.mainAccount.name;
 	}
 	else if (this._inclSharedItems) {
 		// a query hint is part of the query that the user does not see
@@ -596,10 +596,9 @@ function(types, account) {
 ZmSearchController.prototype._generateQueryForAllAccounts =
 function(isMixed, types) {
 	var query = [];
-	var accounts = appCtxt.getZimbraAccounts();
-	for (var i in accounts) {
-		var acct = accounts[i];
-		if (!acct.visible) { continue; }
+	var list = appCtxt.accountList.visibleAccounts;
+	for (var i = 0; i < list.length; i++) {
+		var acct = list[i];
 
 		var part = [
 			'(underid:"',

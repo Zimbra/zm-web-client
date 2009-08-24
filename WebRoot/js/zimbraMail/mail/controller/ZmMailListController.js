@@ -456,7 +456,7 @@ function(view, arrowStyle) {
 	if (!this._toolbar[view]) {
 		ZmListController.prototype._initializeToolBar.call(this, view);
 		this._createViewMenu(view);
-		if (appCtxt.isOffline && appCtxt.numAccounts > 2) {
+		if (appCtxt.isOffline && appCtxt.accountList.size() > 2) {
 			this._createSendReceiveMenu(this._toolbar[view]);
 		}
 		this._setReplyText(this._toolbar[view]);
@@ -951,10 +951,10 @@ function(toolbar, btn) {
 	btn.setMenu(menu);
 
 	var listener = new AjxListener(this, this._sendReceiveListener);
-	var accounts = appCtxt.getZimbraAccounts();
-	for (var i in accounts) {
-		var acct = accounts[i];
-		if (!acct.visible || acct.isMain) { continue; }
+	var list = appCtxt.accountList.visibleAccounts;
+	for (var i = 0; i < list.length; i++) {
+		var acct = list[i];
+		if (acct.isMain) { continue; }
 
 		var id = [ZmOperation.CHECK_MAIL, acct.id].join("-");
 		var mi = menu.createMenuItem(id, {image:acct.getIcon(), text:acct.getDisplayName()});
@@ -1252,7 +1252,7 @@ function(ev) {
 ZmMailListController.prototype._checkMailListener =
 function() {
 	if (appCtxt.isOffline) {
-		appCtxt.getAppController().syncAllAccounts();
+		appCtxt.accountList.syncAll();
 	}
 
 	var folderId = this._getSearchFolderId();
@@ -1284,7 +1284,7 @@ function() {
 
 ZmMailListController.prototype._sendReceiveListener =
 function(ev) {
-	var account = appCtxt.getAccount(ev.item.getData(ZmOperation.MENUITEM_ID));
+	var account = appCtxt.accountList.getAccount(ev.item.getData(ZmOperation.MENUITEM_ID));
 	if (account) {
 		account.sync();
 	}

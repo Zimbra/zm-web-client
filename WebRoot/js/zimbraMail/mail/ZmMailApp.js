@@ -986,7 +986,7 @@ function(creates) {
 			if (!acct || (acct && acct.isOfflineInitialSync())) { continue; }
 
 			// for multi-account, highlite the non-active accordion item
-			if (appCtxt.numVisibleAccounts > 1) {
+			if (appCtxt.accountList.size(true) > 1) {
 				ZmAccountAlert.get(acct).start(this);
 			}
 
@@ -1021,7 +1021,7 @@ function(creates) {
 
 				var from = msg.getAddress(AjxEmailAddress.FROM);
 				var email = from.getName() || from.getAddress();
-				var title = (appCtxt.numVisibleAccounts > 1)
+				var title = (appCtxt.accountList.size(true) > 1)
 					? AjxMessageFormat.format(ZmMsg.newMailWithAccount, [email, acct.getDisplayName()])
 					: AjxMessageFormat.format(ZmMsg.newMail, email);
 				ZmDesktopAlert.getInstance().start(title, text);
@@ -1312,9 +1312,9 @@ function(msg, callback) {
 
 ZmMailApp.prototype.mailSearch =
 function(query, callback, response, type) {
-	var account = appCtxt.isOffline && appCtxt.inStartup && appCtxt.getMainAccount(true);
+	var account = appCtxt.isOffline && appCtxt.inStartup && appCtxt.accountList.defaultAccount;
 	if (account) {
-		appCtxt.setActiveAccount(account);
+		appCtxt.accountList.setActiveAccount(account);
 	}
 	query = query || appCtxt.get(ZmSetting.INITIAL_SEARCH, null, account);
 	var types = new AjxVector();
@@ -1576,13 +1576,10 @@ function(organizer) {
 
 	// if offline, always update *inbox* unread count for all accounts
 	if (appCtxt.isOffline && appCtxt.get(ZmSetting.OFFLINE_SUPPORTS_DOCK_UPDATE)) {
-		var accounts = appCtxt.getZimbraAccounts();
 		var unreadCount = 0;
-		for (var i in accounts) {
-			var acct = accounts[i];
-			if (acct.visible) {
-				unreadCount += (acct.unread || 0);
-			}
+		var list = appCtxt.accountList.visibleAccounts;
+		for (var i = 0; i < list.length; i++) {
+			unreadCount += (list[i].unread || 0);
 		}
 		if (AjxEnv.isMac && window.platform) {
 			window.platform.icon().badgeText = (unreadCount > 0)

@@ -432,42 +432,9 @@ ZmZimbraMail.prototype._handleResponseLoadUserSettings =
 function(params, result) {
 	if (appCtxt.multiAccounts) {
 		var callback = new AjxCallback(this, this._handleResponseStartup, [params, result]);
-		this._loadChildAccounts(callback);
+		appCtxt.accountList.loadAccounts(callback);
 	} else {
 		this._handleResponseStartup(params, result);
-	}
-};
-
-ZmZimbraMail.prototype._loadChildAccounts =
-function(callback) {
-	var accounts = appCtxt.getZimbraAccounts();
-	var visible = [];
-	for (var i in accounts) {
-		var acct = accounts[i];
-		if (acct.visible) {
-			visible.push(acct);
-		}
-	}
-
-	if (visible.length > 0) {
-		this._loadAccount(visible, callback);
-	}
-};
-
-ZmZimbraMail.prototype._loadAccount =
-function(accounts, callback) {
-	var acct = accounts.shift();
-	if (acct) {
-		var callback = new AjxCallback(this, this._loadAccount, [accounts, callback]);
-		acct.load(callback);
-	} else {
-		// do any post account load initialization
-		ZmOrganizer.HIDE_EMPTY[ZmOrganizer.TAG] = true;
-		ZmOrganizer.HIDE_EMPTY[ZmOrganizer.SEARCH] = true;
-
-		if (callback) {
-			callback.run();
-		}
 	}
 };
 
@@ -754,16 +721,7 @@ function() {
 	ZmCsfeCommand.setSessionId(null);	// so we get a refresh block
 	this._highestNotifySeen = 0; 		// we have a new session
 
-	var accts = appCtxt.getZimbraAccounts();
-	for (var id in accts) {
-		var trees = accts[id].trees;
-		for (var type in trees) {
-			var tree = trees[type];
-			if (tree && tree.reset) {
-				tree.reset();
-			}
-		}
-	}
+	appCtxt.accountList.resetTrees();
 
 	if (!appCtxt.rememberMe()) {
 		appCtxt.getLoginDialog().clearAll();
@@ -924,41 +882,8 @@ function(app, type, listener) {
 ZmZimbraMail.prototype.sendNoOp =
 function() {
 	var soapDoc = AjxSoapDoc.create("NoOpRequest", "urn:zimbraMail");
-	var accountName = appCtxt.isOffline && appCtxt.getMainAccount().name;
+	var accountName = appCtxt.isOffline && appCtxt.accountList.mainAccount.name;
 	this.sendRequest({soapDoc:soapDoc, asyncMode:true, noBusyOverlay:true, accountName:accountName});
-};
-
-ZmZimbraMail.prototype.syncAllAccounts =
-function(callback) {
-	var list = [];
-	var accounts = appCtxt.getZimbraAccounts();
-	for (var i in accounts) {
-		var acct = accounts[i];
-		if (!acct.visible || acct.isMain) { continue; }
-
-		list.push(acct);
-	}
-
-	if (list.length) {
-		this._sendSync(list, callback);
-	} else {
-		if (callback) {
-			callback.run();
-		}
-	}
-};
-
-ZmZimbraMail.prototype._sendSync =
-function(accounts, callback) {
-	var acct = accounts.shift();
-	if (acct) {
-		acct.sync();
-		AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._sendSync, [accounts, callback]), 500);
-	} else {
-		if (callback) {
-			callback.run();
-		}
-	}
 };
 
 ZmZimbraMail.prototype.sendClientEventNotify =
@@ -1013,7 +938,7 @@ function() {
 			// register mailto: handler
 			if (AjxEnv.isMac || !window.platform.isRegisteredProtocolHandler("mailto")) {
 				var callback = AjxCallback.simpleClosure(this.handleOfflineMailTo, this);
-				var url = appCtxt.get(ZmSetting.OFFLINE_WEBAPP_URI, null, appCtxt.getMainAccount());
+				var url = appCtxt.get(ZmSetting.OFFLINE_WEBAPP_URI, null, appCtxt.accountList.mainAccount);
 				window.platform.registerProtocolHandler("mailto", url+"&mailto=%s", callback);
 			}
 		} catch(ex) {
@@ -1140,7 +1065,7 @@ function() {
 			errorCallback: new AjxCallback(this, this._handleErrorDoPoll),
 			noBusyOverlay: true,
 			timeout: appCtxt.get(ZmSetting.INSTANT_NOTIFY_TIMEOUT),
-			accountName: appCtxt.isOffline && appCtxt.getMainAccount().name
+			accountName: appCtxt.isOffline && appCtxt.accountList.mainAccount.name
 		};
 		this._pollRequest = this.sendRequest(params);
 	} catch (ex) {
@@ -1766,8 +1691,8 @@ function(ex, continuation) {
 ZmZimbraMail._confirmExitMethod =
 function() {
 
-	ZmZimbraMail.saveImplicitPrefs();
-	
+	appCtxt.accountList.saveImplicitPrefs();
+
 	if (!ZmZimbraMail._isOkToExit()) {
 		ZmZimbraMail._isLogOff = false;
 		return ZmMsg.appExitWarning;
@@ -2197,19 +2122,6 @@ function() {
 		errorCallback: errorCallback
 	};
 	appCtxt.getAppController().sendRequest(args);
-};
-
-ZmZimbraMail.saveImplicitPrefs =
-function() {
-
-	// save implicit prefs for all accounts
-	var accounts = appCtxt.getZimbraAccounts();
-	for (var i in accounts) {
-		var acct = accounts[i];
-		if (acct.visible) {
-			acct.saveImplicitPrefs();
-		}
-	}
 };
 
 // YUCK:

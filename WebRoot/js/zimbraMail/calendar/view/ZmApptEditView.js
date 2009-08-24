@@ -537,8 +537,8 @@ ZmApptEditView.prototype._resetAutocompleteListView =
 function(folder) {
 	if (appCtxt.multiAccounts) {
 		var acct = folder.accountId
-			? appCtxt.getAccount(folder.accountId)
-			: appCtxt.getMainAccount();
+			? appCtxt.accountList.getAccount(folder.accountId)
+			: appCtxt.accountList.mainAccount;
 		this._acContactsList.setActiveAccount(acct);
 	}
 };

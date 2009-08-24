@@ -793,7 +793,7 @@ function(path) {
 	var folderId = ZmFolder.QUERY_ID[path];
 	// now check all folders by name
 	if (!folderId) {
-		var account = this.accountName && appCtxt.getAccountByName(this.accountName);
+		var account = this.accountName && appCtxt.accountList.getAccountByName(this.accountName);
 		var folders = appCtxt.getFolderTree(account);
 		var folder = folders ? folders.getByPath(path, true) : null;
 		if (folder) {
@@ -802,7 +802,7 @@ function(path) {
 	}
 
 	if (this.accountName) {
-		folderId = ZmOrganizer.getSystemId(folderId, appCtxt.getAccountByName(this.accountName));
+		folderId = ZmOrganizer.getSystemId(folderId, appCtxt.accountList.getAccountByName(this.accountName));
 	}
 
 	return folderId;

@@ -403,7 +403,7 @@ function(callback,folderId,results) {
 ZmBriefcaseController.prototype.searchFolder =
 function(folderId, callback) {
 	var folder = appCtxt.getById(folderId);
-	var account = folder && folder.accountId && appCtxt.getAccount(folder.accountId);
+	var account = folder && folder.accountId && appCtxt.accountList.getAccount(folder.accountId);
 	var soapDoc = AjxSoapDoc.create("SearchRequest", "urn:zimbraMail");
 	soapDoc.setMethodAttribute("types", ZmSearch.TYPE[ZmItem.BRIEFCASE]);
 	soapDoc.setMethodAttribute("limit", "250");

@@ -212,7 +212,7 @@ function(folder) {
 		var capp = appCtxt.getApp(ZmApp.CONTACTS);
 		capp.currentSearch = null;
 		var query = capp.currentQuery = folder.createQuery();
-		var account = folder.accountId && appCtxt.getAccount(folder.accountId);
+		var account = folder.accountId && appCtxt.accountList.getAccount(folder.accountId);
 		var sc = appCtxt.getSearchController();
 		sc.setDefaultSearchType(ZmItem.CONTACT);
 		var params = {

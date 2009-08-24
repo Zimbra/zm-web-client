@@ -13,7 +13,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmAccount = function(type, id, name, list) {
+ZmAccount = function(type, id, name) {
 	if (arguments.length == 0) { return; }
 
 	this.id = id;

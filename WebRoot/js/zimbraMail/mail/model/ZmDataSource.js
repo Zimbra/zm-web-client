@@ -13,9 +13,9 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmDataSource = function(type, id, list) {
-	if (arguments.length == 0) return;
-	ZmAccount.call(this, type, id, null, list);
+ZmDataSource = function(type, id) {
+	if (arguments.length == 0) { return; }
+	ZmAccount.call(this, type, id);
 	this.reset();
 };
 

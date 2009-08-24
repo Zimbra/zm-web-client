@@ -402,7 +402,7 @@ function(useDefaults) {
 	this._currentSection = null;
 
 	// add zimbra accounts (i.e. family mboxes)
-	var mboxes = appCtxt.getZimbraAccounts();
+	var mboxes = appCtxt.accountList.getAccounts();
 	var active = appCtxt.getActiveAccount();
 	for (var j in mboxes) {
 		var acct = mboxes[j];
@@ -576,7 +576,7 @@ function(batchCmd) {
 	}
 
 	// for multi-account mbox, check if user changed visible flag on subaccounts
-	if (appCtxt.numAccounts > 1) {
+	if (appCtxt.accountList.size() > 1) {
 		this._saveVisibleAccounts(batchCmd);
 	}
 
@@ -1257,7 +1257,7 @@ function(accountOrIndex) {
 		}
 		account = list.get(index);
 	}
-	this._accountListView.setSelection(account || appCtxt.getMainAccount());
+	this._accountListView.setSelection(account || appCtxt.accountList.mainAccount);
 };
 
 ZmAccountsPage.prototype._resetSignatureSelect =

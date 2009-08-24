@@ -13,8 +13,8 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmImapAccount = function(id, list) {
-	ZmDataSource.call(this, ZmAccount.TYPE_IMAP, id, list);
+ZmImapAccount = function(id) {
+	ZmDataSource.call(this, ZmAccount.TYPE_IMAP, id);
 };
 
 ZmImapAccount.prototype = new ZmDataSource;

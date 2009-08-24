@@ -133,7 +133,7 @@ function(params) {
 		if (!obo && msg.isDraft && !appCtxt.multiAccounts) {
 			var ac = window.parentAppCtxt || window.appCtxt;
 			var from = msg.getAddresses(AjxEmailAddress.FROM).get(0);
-			if (from && from.address != ac.getMainAccount().getEmail()) {
+			if (from && from.address != ac.accountList.mainAccount.getEmail()) {
 				obo = from.address;
 			}
 		}
@@ -1292,12 +1292,9 @@ function(signatureId) {
 
 	// for multi-account, search all accounts for this signature ID
 	if (appCtxt.multiAccounts) {
-		var accounts = appCtxt.getZimbraAccounts();
-		for (var i in accounts) {
-			var acct = accounts[i];
-			if (!acct.visible) { return; }
-
-			signature = appCtxt.getSignatureCollection(acct).getById(signatureId);
+		var list = appCtxt.accountList.visibleAccounts;
+		for (var i = 0; i < list.length; i++) {
+			signature = appCtxt.getSignatureCollection(list[i]).getById(signatureId);
 			if (signature) {
 				break;
 			}
@@ -2131,7 +2128,7 @@ function(templateId, data) {
 			this._identityChangeListenerObj = new AjxListener(this, this._identityChangeListener);
 		}
 		var ac = window.parentAppCtxt || window.appCtxt;
-		var accounts = ac.getZimbraAccounts();
+		var accounts = ac.accountList.getAccounts();
 		for (var id in accounts) {
 			var identityCollection = ac.getIdentityCollection(accounts[id]);
 			identityCollection.addChangeListener(this._identityChangeListenerObj);
@@ -2162,7 +2159,7 @@ function(ev) {
 	var oldVal = ev._args.oldValue;
 	if (oldVal == newVal) { return; }
 
-	var newAccount = appCtxt.getAccount(newVal.accountId);
+	var newAccount = appCtxt.accountList.getAccount(newVal.accountId);
 	var sigId = newAccount.getIdentity().signature;
 	this._controller._accountName = newAccount.name;
 	this._controller.resetSignatureToolbar(sigId, newAccount);
@@ -2176,7 +2173,7 @@ function(ev) {
 	// if this message is a saved draft, check whether it needs to be moved
 	// based on newly selected value.
 	if (this._msg && this._msg.isDraft) {
-		var oldAccount = appCtxt.getAccount(oldVal.accountId);
+		var oldAccount = appCtxt.accountList.getAccount(oldVal.accountId);
 
 		// only re-save draft if both new account and old account are *not* zimbra accounts.
 		if (!(!newAccount.isZimbraAccount && !oldAccount.isZimbraAccount)) {
@@ -2185,7 +2182,7 @@ function(ev) {
 
 			this._msg = this._addressesMsg = null;
 			var accountName = oldAccount.isZimbraAccount
-				? oldAccount.name : appCtxt.getMainAccount().name;
+				? oldAccount.name : appCtxt.accountList.mainAccount.name;
 			var callback = new AjxCallback(this, this._handleMoveDraft, [accountName, msgId]);
 			this._controller.saveDraft(this._controller._draftType, null, null, callback);
 		}
@@ -2272,7 +2269,7 @@ function() {
 		var identity = identities[i];
 
 		// bug fix #21497 - skip the *fake* local account if offline and is main
-		var acct = appCtxt.isOffline && appCtxt.getAccount(identity.id);
+		var acct = appCtxt.isOffline && appCtxt.accountList.getAccount(identity.id);
 		if (acct && acct.isMain) { continue; }
 
 		var text = this._getIdentityText(identity);
@@ -2458,15 +2455,13 @@ function(msg) {
 	var active = ac.getActiveAccount();
 	if (msg && msg.isDraft) {
 		var from = msg.getAddresses(AjxEmailAddress.FROM).get(0);
-		active = ac.getAccountByEmail(from.address);
+		active = ac.accountList.getAccountByEmail(from.address);
 	}
 
-	var accounts = ac.getZimbraAccounts();
-
-	for (var i in accounts) {
+	var accounts = ac.accountList.visibleAccounts;
+	for (var i = 0; i < accounts.length; i++) {
 		var acct = accounts[i];
-
-		if (!acct.visible || acct.isMain) { continue; }
+		if (acct.isMain) { continue; }
 
 		var isSelected = acct == active;
 		var identities = ac.getIdentityCollection(acct).getIdentities();
@@ -2582,7 +2577,7 @@ function(ev, addrType) {
 	var str = (this._field[curType].value && !(a[curType] && a[curType].length))
 		? this._field[curType].value : "";
 
-	var account = appCtxt.multiAccounts && appCtxt.getAccount(this._fromSelect.getValue().accountId);
+	var account = appCtxt.multiAccounts && appCtxt.accountList.getAccount(this._fromSelect.getValue().accountId);
 	this._contactPicker.popup(curType, a, str, account);
 };
 

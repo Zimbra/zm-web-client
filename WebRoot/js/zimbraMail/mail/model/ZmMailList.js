@@ -78,7 +78,7 @@ function(items, folder, attrs, callback) {
 
 	// set accountName for multi-account to always be the main "local" account
 	// since we assume actioned ID's will always be fully qualified
-	var accountName = appCtxt.multiAccounts && appCtxt.getMainAccount().name;
+	var accountName = appCtxt.multiAccounts && appCtxt.accountList.mainAccount.name;
 
 	this._itemAction({items: items, action: action, attrs: attrs, callback: respCallback, accountName: accountName});
 };

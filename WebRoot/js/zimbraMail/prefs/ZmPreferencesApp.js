@@ -66,7 +66,7 @@ ZmPreferencesApp.prototype.launch =
 function(params, callback) {
 	// first time launch of prefs app should reset active app to "local" account
 	if (appCtxt.isOffline) {
-		appCtxt.setActiveAccount(appCtxt.getMainAccount());
+		appCtxt.accountList.setActiveAccount(appCtxt.accountList.mainAccount);
 	}
 	var loadCallback = new AjxCallback(this, this._handleLoadLaunch, [callback]);
 	AjxDispatcher.require(["PreferencesCore", "Preferences"], true, loadCallback, null, true);

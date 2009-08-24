@@ -78,10 +78,8 @@ function() {
 	var fieldId = this._htmlElId + "_account";
 	this._accountSelect = new DwtSelect({parent:this, parentElement:fieldId});
 
-	var accounts = appCtxt.getZimbraAccounts();
-	for (var i in accounts) {
-		if (!accounts[i].visible) { continue; }
-
+	var accounts = appCtxt.accountList.visibleAccounts;
+	for (var i = 0; i < accounts.length; i++) {
 		var acct = accounts[i];
 		if (appCtxt.get(ZmSetting.TAGGING_ENABLED, null, acct)) {
 			this._accountSelect.addOption(acct.getDisplayName(), null, acct.id);
@@ -112,7 +110,7 @@ function(ev) {
 ZmNewTagDialog.prototype._getTagData =
 function() {
 	var acctId = this._accountSelect && this._accountSelect.getValue();
-	var account = acctId && appCtxt.getAccount(acctId);
+	var account = acctId && appCtxt.accountList.getAccount(acctId);
 
 	// check name for presence and validity
 	var name = AjxStringUtil.trim(this._nameField.value);

@@ -769,17 +769,16 @@ function(contact, doAdd, fields, hash, includeField, isNumeric) {
  */
 ZmContactsApp.prototype.getContactListForAllAccounts =
 function() {
-	var accounts = appCtxt.getZimbraAccounts();
-	var visible = [];
-	for (var i in accounts) {
-		var acct = accounts[i];
-		if (acct.visible && appCtxt.get(ZmSetting.CONTACTS_ENABLED, null, acct)) {
-			visible.push(acct);
+	var enabled = [];
+	var list = appCtxt.accountList.visibleAccounts;
+	for (var i = 0; i < list.length; i++) {
+		if (appCtxt.get(ZmSetting.CONTACTS_ENABLED, null, list[i])) {
+			enabled.push(list[i]);
 		}
 	}
 
-	if (visible.length > 0) {
-		this._loadContactsForAccount(visible);
+	if (enabled.length > 0) {
+		this._loadContactsForAccount(enabled);
 	}
 };
 

@@ -197,7 +197,7 @@ function() {
 	var owner = folder && folder.link && folder.owner;
 
 	if (!owner && appCtxt.multiAccounts) {
-		var acct = appCtxt.getAccount(folder.accountId);
+		var acct = appCtxt.accountList.getAccount(folder.accountId);
 		owner = acct && acct.name;
 	}
 
@@ -1161,7 +1161,7 @@ function(soapDoc, attachmentId, notifyList, accountName) {
 
 	var calendar = this.getFolder();
 
-	var acct = calendar.accountId && appCtxt.getAccount(calendar.accountId);
+	var acct = calendar.accountId && appCtxt.accountList.getAccount(calendar.accountId);
 	var isOnBehalfOf = accountName && acct && acct.name && (acct.name != accountName);
 	m.setAttribute("l", (isOnBehalfOf ? this.getFolder().rid : this.folderId));
 

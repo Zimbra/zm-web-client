@@ -193,29 +193,9 @@ function(callback, accountName, result) {
 		this.createFromJs(obj.attrs._attrs);
 	}
 
-	// Create the main account. In the normal case, that is the only account,
-	// and represents the user who logged in. If family mailbox is enabled, that
-	// account is a parent account with dominion over child accounts.
-	var mainAcct;
 	if (!accountName) {
-		mainAcct = appCtxt.getMainAccount();
-		mainAcct.id = obj.id;
-		mainAcct.name = obj.name;
-		mainAcct.isMain = true;
-		mainAcct.isZimbraAccount = true;
-		mainAcct.loaded = true;
-		mainAcct.visible = true;
-		mainAcct.settings = this;
-		// replace dummy account with this one
-		if (appCtxt._accounts[ZmZimbraAccount.DEFAULT_ID]) {
-			appCtxt._accounts[mainAcct.id] = mainAcct;
-			delete appCtxt._accounts[ZmZimbraAccount.DEFAULT_ID];
-		}
-		appCtxt.setActiveAccount(mainAcct);
-
-		if (appCtxt.isOffline) {
-			mainAcct.displayName = ZmMsg.localFolders;
-		}
+		// NOTE: only the main account can have children
+		appCtxt.accountList.createAccounts(this, obj);
 
 		// for offline, find out whether this client supports prism-specific features
 		if (appCtxt.isOffline && AjxEnv.isPrism && window.platform &&
@@ -240,22 +220,6 @@ function(callback, accountName, result) {
 				setting.setValue(false);
 			}
 		}
-	}
-
-	appCtxt.numVisibleAccounts = 1;
-
-	var accounts = obj.childAccounts && obj.childAccounts.childAccount;
-	if (accounts) {
-		// create a ZmZimbraAccount for each child account
-		for (var i = 0; i < accounts.length; i++) {
-			var acct = ZmZimbraAccount.createFromDom(accounts[i]);
-			appCtxt.setAccount(acct);
-			if (acct.visible) {
-				appCtxt.numVisibleAccounts++;
-			}
-		}
-		appCtxt.multiAccounts = appCtxt.numVisibleAccounts > 1;
-		appCtxt.isFamilyMbox = appCtxt.multiAccounts && !appCtxt.isOffline;
 	}
 
 	if (obj.changePasswordURL) {
@@ -293,7 +257,7 @@ function(callback, accountName, result) {
 	}
 
 	// load zimlets *only* for the main account
-	if (mainAcct) {
+	if (!accountName) {
 		if (obj.zimlets && obj.zimlets.zimlet) {
 			// bug #28897 -
 			// look for usage tracker zimlet before waiting for it to get parsed
@@ -383,7 +347,7 @@ function(allzimlets, props) {
 ZmSettings.prototype.loadPreferenceData =
 function(callback) {
 	// force main account (in case multi-account) since locale/skins are global
-	var command = new ZmBatchCommand(null, appCtxt.getMainAccount().name);
+	var command = new ZmBatchCommand(null, appCtxt.accountList.mainAccount.name);
 
 	var skinDoc = AjxSoapDoc.create("GetAvailableSkinsRequest", "urn:zimbraAccount");
 	var skinCallback = new AjxCallback(this, this._handleResponseLoadAvailableSkins);
@@ -405,7 +369,7 @@ function(result) {
 	var resp = result.getResponse().GetAvailableSkinsResponse;
 	var skins = resp.skin;
 	if (skins && skins.length) {
-		var setting = appCtxt.getMainAccount().settings.getSetting(ZmSetting.AVAILABLE_SKINS);
+		var setting = appCtxt.accountList.mainAccount.settings.getSetting(ZmSetting.AVAILABLE_SKINS);
 		for (var i = 0; i < skins.length; i++) {
 			// always save available skins on the main account (in case multi-account)
 			setting.setValue(skins[i].name);
@@ -430,7 +394,7 @@ function(response) {
 ZmSettings.prototype._handleResponseGetAvailableCsvFormats =
 function(result){
 	var formats = result.getResponse().GetAvailableCsvFormatsResponse.csv;
-	var setting = appCtxt.getMainAccount().settings.getSetting(ZmSetting.AVAILABLE_CSVFORMATS);
+	var setting = appCtxt.accountList.mainAccount.settings.getSetting(ZmSetting.AVAILABLE_CSVFORMATS);
 	if (formats && formats.length) {
 		var csvformat;
 		for (var i=0; i<formats.length; i++) {

@@ -23,7 +23,7 @@ ZmAccountAlert = function(account) {
 	ZmAlert.call(this);
 	this.account = account;
 	this._alertApps = {};
-	appCtxt.addActiveAcountListener(new AjxListener(this, this._accountListener));
+	appCtxt.accountList.addActiveAcountListener(new AjxListener(this, this._accountListener));
 };
 
 ZmAccountAlert.prototype = new ZmAlert;

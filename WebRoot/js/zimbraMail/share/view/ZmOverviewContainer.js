@@ -95,7 +95,7 @@ function() {
 	}
 
 	selected = this.getSelection()[0];
-	var account = selected && appCtxt.getAccount(selected.getData(Dwt.KEY_ID));
+	var account = selected && appCtxt.accountList.getAccount(selected.getData(Dwt.KEY_ID));
 	var tree = account && appCtxt.getFolderTree(account);
 	return tree && tree.root;
 };
@@ -121,25 +121,23 @@ function(treeIds) {
 ZmOverviewContainer.prototype.initialize =
 function(params) {
 
-	var accounts = appCtxt.getZimbraAccounts();
-	for (var i in accounts) {
+	var accounts = appCtxt.accountList.visibleAccounts;
+	for (var i = 0; i < accounts.length; i++) {
 		var acct = accounts[i];
 		// skip the main account in offline mode since we'll add it at the end
-		if (!acct.visible || (appCtxt.isOffline && acct.isMain && this._appName != ZmApp.PREFERENCES)) { continue; }
+		if (appCtxt.isOffline && acct.isMain && this._appName != ZmApp.PREFERENCES) { continue; }
 
 		this._addAccount(params, acct);
 	}
 
 	// add the "local" account last
 	if (appCtxt.isOffline && this._appName != ZmApp.PREFERENCES) {
-		var main = appCtxt.getMainAccount();
-
 		// hide Junk folder for "local" account
 		var omit = params.omit;
 		if (!omit) { omit = {}; }
 		omit[ZmFolder.ID_SPAM] = true;
 
-		this._addAccount(params, main);
+		this._addAccount(params, appCtxt.accountList.mainAccount);
 	}
 
 	// HACK: move Global Searches folder so it looks like it own account section
@@ -167,7 +165,7 @@ function(parent, acctId) {
 
 	parent.enableAll(true);
 
-	var acct = appCtxt.getAccount(acctId);
+	var acct = appCtxt.accountList.getAccount(acctId);
 	if (acct.type == ZmAccount.TYPE_POP) {
 		parent.enable(ZmOperation.NEW_FOLDER, false);
 	}
@@ -277,8 +275,8 @@ function(ev) {
 
 		// if an account header item was clicked, run the default search for it
 		if (acctId) {
-			var account = appCtxt.getAccount(acctId);
-			appCtxt.setActiveAccount(account);
+			var account = appCtxt.accountList.getAccount(acctId);
+			appCtxt.accountList.setActiveAccount(account);
 
 			var fid = ZmOrganizer.DEFAULT_FOLDER[ZmApp.ORGANIZER[this._appName]];
 			var folder = appCtxt.getById(ZmOrganizer.getSystemId(fid, account));
@@ -301,7 +299,7 @@ function(ev) {
 ZmOverviewContainer.prototype._treeListener =
 function(ev) {
 	var header = ev.item;
-	var acct = header && appCtxt.getAccount(header.getData(Dwt.KEY_ID));
+	var acct = header && appCtxt.accountList.getAccount(header.getData(Dwt.KEY_ID));
 	if (!acct) { return; }
 
 	if (ev.detail == DwtTree.ITEM_COLLAPSED) {
@@ -381,7 +379,7 @@ function(ev) {
 		var tc = this._controller.getTreeController(treeId, true);
 		if (tc) {
 			tc._actionedOrganizer = null;
-			var account = appCtxt.getAccount(this._actionedHeaderItem.getData(Dwt.KEY_ID));
+			var account = appCtxt.accountList.getAccount(this._actionedHeaderItem.getData(Dwt.KEY_ID));
 			tc._newListener(ev, account);
 		}
 	}

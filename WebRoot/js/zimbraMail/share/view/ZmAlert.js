@@ -54,7 +54,7 @@ ZmAlertLoop = function() {
 	this._alerts = new AjxVector();
 	this._flashOn = false;
 	if (appCtxt.multiAccounts) {
-		appCtxt.addActiveAcountListener(new AjxListener(this, this._accountChangeListener), 0);
+		appCtxt.accountList.addActiveAcountListener(new AjxListener(this, this._accountChangeListener), 0);
 	}
 };
 

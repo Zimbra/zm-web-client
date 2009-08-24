@@ -27,8 +27,8 @@ ZmAutocomplete = function() {
 	this._acCache = {};			// results cache, grouped by account > type
 
 	// make autocomplete more multi-account friendly
-	var accounts = appCtxt.getZimbraAccounts();
-	for (var i in accounts) {
+	var accounts = appCtxt.accountList.visibleAccounts;
+	for (var i = 0; i < accounts.length; i++) {
 		var acct = accounts[i];
 		if (!acct.visible) { continue; }
 

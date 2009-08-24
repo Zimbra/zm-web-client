@@ -174,7 +174,7 @@ function(ev, overview, treeItem, item) {
 	var accountId = item && item.accountId;
 
 	if (this._currentAccount.id != accountId) {
-		this._currentAccount = appCtxt.getAccount(accountId);
+		this._currentAccount = appCtxt.accountList.getAccount(accountId);
 
 		var prefsController = appCtxt.getApp(ZmApp.PREFERENCES).getPrefController();
 		var prefsView = prefsController.getPrefsView();

@@ -187,13 +187,12 @@ ZmContactPicker.prototype._contentHtml =
 function(account) {
 	var showSelect;
 	if (appCtxt.multiAccounts) {
-		var accounts = appCtxt.getZimbraAccounts();
-		for (var i in accounts) {
-			var acct = accounts[i];
-			if (!acct.visible) { continue; }
-
+		var list = appCtxt.accountList.visibleAccounts;
+		for (var i = 0; i < list.length; i++) {
+			var account = list[i];
 			if (appCtxt.get(ZmSetting.CONTACTS_ENABLED, null, account) &&
-				(appCtxt.get(ZmSetting.GAL_ENABLED, null, account) || appCtxt.get(ZmSetting.SHARING_ENABLED, null, account)))
+				(appCtxt.get(ZmSetting.GAL_ENABLED, null, account) ||
+				 appCtxt.get(ZmSetting.SHARING_ENABLED, null, account)))
 			{
 				showSelect = true;
 				break;
@@ -201,7 +200,8 @@ function(account) {
 		}
 	} else {
 		showSelect = (appCtxt.get(ZmSetting.CONTACTS_ENABLED) &&
-					  (appCtxt.get(ZmSetting.GAL_ENABLED) || appCtxt.get(ZmSetting.SHARING_ENABLED)));
+					  (appCtxt.get(ZmSetting.GAL_ENABLED) ||
+					   appCtxt.get(ZmSetting.SHARING_ENABLED)));
 	}
 
 	var subs = {

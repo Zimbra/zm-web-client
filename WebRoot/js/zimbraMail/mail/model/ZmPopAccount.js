@@ -13,8 +13,8 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmPopAccount = function(id, list) {
-	ZmDataSource.call(this, ZmAccount.TYPE_POP, id, list);
+ZmPopAccount = function(id) {
+	ZmDataSource.call(this, ZmAccount.TYPE_POP, id);
 };
 
 ZmPopAccount.prototype = new ZmDataSource;

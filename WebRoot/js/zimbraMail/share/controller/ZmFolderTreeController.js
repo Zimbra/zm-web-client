@@ -314,7 +314,7 @@ function(folder) {
 		if (appCtxt.multiAccounts) {
 			sc.resetSearchAllAccounts();
 		}
-		var account = folder.accountId && appCtxt.getAccount(folder.accountId);
+		var account = folder.accountId && appCtxt.accountList.getAccount(folder.accountId);
 		var params = {
 			query: folder.createQuery(),
 			searchFor: searchFor,

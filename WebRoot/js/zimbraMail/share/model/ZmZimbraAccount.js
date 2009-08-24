@@ -26,12 +26,13 @@
  * @param name			[string]*		email address
  * @param visible		[boolean]*		if true, make this account available in the overview (child accounts)
  */
-ZmZimbraAccount = function(id, name, visible, list) {
+ZmZimbraAccount = function(id, name, visible) {
 
-	ZmAccount.call(this, null, id, name, list);
+	ZmAccount.call(this, null, id, name);
 
 	this.visible = (visible !== false);
 	this.settings = null;
+	this.unread = 0;
 	this.trees = {};
 	this.loaded = false;
 	this.acl = new ZmAccessControlList();
@@ -50,7 +51,6 @@ function() {
 // Constants
 //
 
-ZmZimbraAccount.DEFAULT_ID		= "main";
 ZmZimbraAccount.STATUS_UNKNOWN	= "unknown";
 ZmZimbraAccount.STATUS_OFFLINE	= "offline";
 ZmZimbraAccount.STATUS_ONLINE	= "online";
@@ -267,7 +267,7 @@ function(callback) {
 		this.settings = new ZmSettings();
 
 		// check "{APP}_ENABLED" state against main account's settings
-		var mainAcct = appCtxt.getMainAccount();
+		var mainAcct = appCtxt.accountList.mainAccount;
 
 		// for all *loaded* apps, add their app-specific settings
 		for (var i = 0; i < ZmApp.APPS.length; i++) {

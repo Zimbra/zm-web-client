@@ -177,7 +177,7 @@ function(params) {
 	var accountName = params.accountName;
 	if (!accountName) {
 		var acct = appCtxt.getActiveAccount();
-		accountName = (acct && acct.id != ZmZimbraAccount.DEFAULT_ID) ? acct.name : null;
+		accountName = (acct && acct.id != ZmAccountList.DEFAULT_ID) ? acct.name : null;
 	}
 	var cmdParams, methodName;
 
@@ -378,7 +378,7 @@ function(hdr) {
 	if (hdr && hdr.context.zdsync && hdr.context.zdsync.account) {
 		var acctList = hdr.context.zdsync.account;
 		for (var i = 0; i < acctList.length; i++) {
-			var acct = appCtxt.getAccount(acctList[i].id);
+			var acct = appCtxt.accountList.getAccount(acctList[i].id);
 			if (acct) {
 				acct.updateState(acctList[i]);
 			}

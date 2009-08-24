@@ -24,21 +24,20 @@
  */
 ZmAppCtxt = function() {
 	this._trees = {};
-	this._accounts = {};
+
+	this.accountList = new ZmAccountList();
 	// create dummy account for startup
-	this._accounts[ZmZimbraAccount.DEFAULT_ID] = new ZmZimbraAccount(ZmZimbraAccount.DEFAULT_ID, null, false);
+	this.accountList.add(new ZmZimbraAccount(ZmAccountList.DEFAULT_ID, null, false));
 
 	// public properties
 	this.inStartup = false;				// true if we are starting app (set in ZmZimbraMail)
 	this.currentRequestParams = null;	// params of current SOAP request (set in ZmRequestMgr)
 	this.rememberMe = null;
+	this.userDomain = "";
 
 	// account-specific
 	this.isFamilyMbox = false;
 	this.multiAccounts = false;
-	this.numAccounts = 1;				// init to 1 b/c there is always a main account
-	this.numVisibleAccounts = 0;
-	this.userDomain = "";
 
 	this._evtMgr = new AjxEventMgr();
 };
@@ -86,15 +85,25 @@ function(params) {
 
 ZmAppCtxt.prototype.getSettings =
 function(account) {
-	var id = account ? account.id : this._activeAccount ? this._activeAccount.id : ZmZimbraAccount.DEFAULT_ID;
-	return this._accounts[id] ? this._accounts[id].settings : null;
+	var al = this.accountList;
+	var id = account
+		? account.id
+		: al.activeAccount ? al.activeAccount.id : ZmAccountList.DEFAULT_ID;
+
+	var acct = al.getAccount(id);
+	return acct && acct.settings;
 };
 
 ZmAppCtxt.prototype.setSettings = 
 function(settings, account) {
-	var id = account ? account.id : this._activeAccount ? this._activeAccount.id : ZmZimbraAccount.DEFAULT_ID;
-	if (this._accounts[id]) {
-		this._accounts[id].settings = settings;
+	var al = this.accountList;
+	var id = account
+		? account.id
+		: al.activeAccount ? al.activeAccount.id : ZmAccountList.DEFAULT_ID;
+
+	var acct = al.getAccount(id);
+	if (acct) {
+		acct.settings = settings;
 	}
 };
 
@@ -109,7 +118,7 @@ ZmAppCtxt.prototype.get =
 function(id, key, account) {
 	// for offline, global settings always come from the "local" parent account
 	var acct = (this.isOffline && ZmSetting.IS_GLOBAL[id])
-		? this.getMainAccount() : account;
+		? this.accountList.mainAccount : account;
 	return this.getSettings(acct).get(id, key);
 };
 
@@ -127,7 +136,7 @@ ZmAppCtxt.prototype.set =
 function(id, value, key, setDefault, skipNotify, account) {
 	// for offline, global settings always come from "parent" account
 	var acct = (this.isOffline && ZmSetting.IS_GLOBAL[id])
-		? this.getMainAccount() : account;
+		? this.accountList.mainAccount : account;
 	var setting = this.getSettings(acct).getSetting(id);
 
 	if (setting) {
@@ -276,7 +285,7 @@ function() {
 		this._newAddrBookDialog = new ZmNewAddrBookDialog(this._shell);
 	}
 	return this._newAddrBookDialog;
-}
+};
 
 ZmAppCtxt.prototype.getNewCalendarDialog =
 function() {
@@ -544,94 +553,11 @@ function(shell) {
 	this._shell = shell;
 };
 
-ZmAppCtxt.prototype.setAccount =
-function(account) {
-	this._accounts[account.id] = account;
-	if (account.isMain) {
-		this._mainAccountId = account.id;
-	}
-	this.numAccounts++;
-};
-
-ZmAppCtxt.prototype.getZimbraAccounts =
-function() {
-	return this._accounts;
-};
-
-ZmAppCtxt.prototype.getAccount =
-function(id) {
-	return id ? this._accounts[id] : appCtxt.getMainAccount();
-};
-
-ZmAppCtxt.prototype.getAccountByName =
-function(name) {
-	for (var i in this._accounts) {
-		if (this._accounts[i].name == name) {
-			return this._accounts[i];
-		}
-	}
-	return null;
-};
-
-ZmAppCtxt.prototype.getAccountByEmail =
-function(email) {
-	for (var i in this._accounts) {
-		if (this._accounts[i].getEmail() == email) {
-			return this._accounts[i];
-		}
-	}
-	return null;
-};
-
-/**
- * Returns the main account for a multi-mbox login
- *
- * @param checkOfflineMode		[Boolean]	set to true if we want the first
- * non-main account. Applies to only when in offline mode since offline hides
- * the main account in a multi mbox scenario.
- */
-ZmAppCtxt.prototype.getMainAccount =
-function(checkOfflineMode) {
-	for (var id in this._accounts) {
-		var account = this._accounts[id];
-		// if checking for offline mode, return the first non-main account
-		if (checkOfflineMode && appCtxt.isOffline) {
-			if (!account.isMain) { return account; }
-			continue;
-		}
-		if (account.isMain) { return account; }
-	}
-	return this._accounts[ZmZimbraAccount.DEFAULT_ID];
-};
-
-/**
- * Makes the given account the active one, which will then be used
- * when fetching any account-specific data such as settings or folder
- * tree. The account goes and fetches its data if necessary.
- *
- * @param account		[ZmZimbraAccount]	account to make active
- * @param skipNotify	[Boolean]*			skip notify if true
- */
-ZmAppCtxt.prototype.setActiveAccount =
-function(account, skipNotify) {
-	this._activeAccount = account;
-
-	this._evt = this._evt || new ZmEvent();
-	this._evt.account = account;
-
-	if (!skipNotify) {
-		this._evtMgr.notifyListeners("ACCOUNT", this._evt);
-	}
-};
-
 ZmAppCtxt.prototype.getActiveAccount =
 function() {
-	return this.isChildWindow ? parentAppCtxt._activeAccount : this._activeAccount;
-};
-
-ZmAppCtxt.prototype.addActiveAcountListener =
-function(listener, index) {
-	return this._evtMgr.addListener("ACCOUNT", listener, index);
+	return this.isChildWindow
+		? parentAppCtxt.accountList.activeAccount
+		: this.accountList.activeAccount;
 };
 
 ZmAppCtxt.prototype.getIdentityCollection =
@@ -661,16 +587,27 @@ function(type, account) {
 	if (this.isChildWindow) {
 		return parentAppCtxt.getTree(type, account);
 	}
-	var id = account ? account.id : this._activeAccount ? this._activeAccount.id : ZmZimbraAccount.DEFAULT_ID;
-	var acct = this._accounts[id];
-	return acct ? acct.trees[ZmOrganizer.TREE_TYPE[type]] : null;
+
+	var al = this.accountList;
+	var id = account
+		? account.id
+		: al.activeAccount ? al.activeAccount.id : ZmAccountList.DEFAULT_ID;
+
+	var acct = al.getAccount(id);
+	return acct && acct.trees[ZmOrganizer.TREE_TYPE[type]];
 };
 
 ZmAppCtxt.prototype.setTree =
 function(type, tree, account) {
-	var id = account ? account.id : this._activeAccount ? this._activeAccount.id : ZmZimbraAccount.DEFAULT_ID;
-	if (this._accounts[id]) {
-		this._accounts[id].trees[type] = tree;
+	var al = this.accountList;
+	var id = account
+		? account.id
+		: al.activeAccount ? al.activeAccount.id : ZmAccountList.DEFAULT_ID;
+
+
+	var acct = this.accountList.getAccount(id);
+	if (acct) {
+		acct.trees[type] = tree;
 	}
 };
 
@@ -925,8 +862,13 @@ function() {
 
 ZmAppCtxt.prototype.getACL =
 function(account, callback) {
-	var id = account ? account.id : this._activeAccount ? this._activeAccount.id : ZmZimbraAccount.DEFAULT_ID;
-	return this._accounts[id] && this._accounts[id].acl;
+	var al = this.accountList;
+	var id = account
+		? account.id
+		: al.activeAccount ? al.activeAccount.id : ZmAccountList.DEFAULT_ID;
+
+	var acct = al.getAccount(id);
+	return acct && acct.acl;
 };
 
 /**
@@ -1040,4 +982,4 @@ function(parts, account) {
 	}
 
 	return id;
-}
+};

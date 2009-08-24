@@ -348,7 +348,7 @@ function(searchParams, miniCalParams, reminderSearchParams) {
 			callback: (new AjxCallback(this, this.handleBatchResponse, [searchParams, miniCalParams, reminderSearchParams])),
 			errorCallback: (new AjxCallback(this, this.handleBatchResponseError, [searchParams, miniCalParams, reminderSearchParams])),
 			noBusyOverlay: true,
-			accountName: appCtxt.isOffline && appCtxt.getMainAccount().name
+			accountName: appCtxt.isOffline && appCtxt.accountList.mainAccount.name
 		};
 		appCtxt.getAppController().sendRequest(params);
 	} else {

@@ -300,10 +300,9 @@ function() {
 		}
 	} else {
 		this._app._createDeferredFolders(ZmOrganizer.ID_CALENDAR);
-		var accounts = appCtxt.getZimbraAccounts();
-		for (var j in accounts) {
-			var acct = accounts[j];
-			if (!acct.visible) { continue; }
+		var list = appCtxt.accountList.visibleAccounts;
+		for (var i = 0; i < list.length; i++) {
+			var acct = list[i];
 			if (!appCtxt.get(ZmSetting.CALENDAR_ENABLED, null, acct)) { continue; }
 
 			var calendars = appCtxt.getFolderTree(acct).getByType(ZmOrganizer.CALENDAR);
@@ -376,7 +375,7 @@ ZmCalViewController.prototype._updateCalItemState =
 function() {
 	if (!this._calItemStatus) { return; }
 
-	var accountName = appCtxt.isOffline && appCtxt.getMainAccount().name;
+	var accountName = appCtxt.isOffline && appCtxt.accountList.mainAccount.name;
 	var batchCmd = new ZmBatchCommand(null, accountName);
 	var itemCount = 0;
 	for (var i in this._calItemStatus) {
@@ -444,7 +443,7 @@ ZmCalViewController.prototype._refreshButtonListener =
 function(ev) {
 	// bug fix #33830 - force sync for calendar refresh
 	if (appCtxt.isOffline) {
-		appCtxt.getAppController().syncAllAccounts();
+		appCtxt.accountList.syncAll();
 	}
 
 	// reset possibly set user query

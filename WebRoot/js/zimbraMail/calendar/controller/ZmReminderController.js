@@ -425,7 +425,7 @@ function(list, callback) {
 
 	// always specify account name when in multi-account mode to avoid confusion
 	//     NOTE: we assume all items in list are from the same account.
-	var acct = (appCtxt.numVisibleAccounts > 0) 
+	var acct = (appCtxt.accountList.size(true) > 0) 
 		? (ZmOrganizer.parseId(list.get(0).id).account) : null;
 	var params = {
 		soapDoc: soapDoc,

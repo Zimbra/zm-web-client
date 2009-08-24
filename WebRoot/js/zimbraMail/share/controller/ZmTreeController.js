@@ -165,7 +165,7 @@ function(params) {
 
 	// bug fix #24241 - for offline, zimlet tree is re-used across accounts
 	var isMultiAccountZimlet = (appCtxt.multiAccounts && this.type == ZmOrganizer.ZIMLET);
-	var account = isMultiAccountZimlet ? appCtxt.getMainAccount() : params.account;
+	var account = isMultiAccountZimlet ? appCtxt.accountList.mainAccount : params.account;
 	var dataTree = this.getDataTree(account);
 
 	if (dataTree) {
@@ -665,9 +665,9 @@ function(ev, overview, treeItem, item) {
 
 				// set the active account based on the item clicked
 				var account = item.accountId
-					? appCtxt.getAccount(item.accountId)
-					: appCtxt.getMainAccount();
-				appCtxt.setActiveAccount(account);
+					? appCtxt.accountList.getAccount(item.accountId)
+					: appCtxt.accountList.mainAccount;
+				appCtxt.accountList.setActiveAccount(account);
 			}
 
 			this._itemSelected(item);
@@ -784,8 +784,8 @@ function(ev, treeView, overviewId) {
 			if (appCtxt.multiAccounts) {
 				var idx = organizer.id.indexOf(":");
 				var acctId = (idx > 0) ? organizer.id.substring(0, idx) : null;
-				var account = acctId ? appCtxt.getAccount(acctId) : null;
-				var overview = account ? this._opc.getOverview(overviewId) : null;
+				var account = acctId && appCtxt.accountList.getAccount(acctId);
+				var overview = account && this._opc.getOverview(overviewId);
 				if (overview && overview.account != account) {
 					continue;
 				}

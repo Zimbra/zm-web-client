@@ -145,8 +145,8 @@ function(mode, object, share) {
 
 	if (appCtxt.multiAccounts) {
 		var acct = object.accountId
-			? appCtxt.getAccount(object.accountId)
-			: appCtxt.getMainAccount();
+			? appCtxt.accountList.getAccount(object.accountId)
+			: appCtxt.accountList.mainAccount;
 		this._acAddrSelectList.setActiveAccount(acct);
 	}
 };

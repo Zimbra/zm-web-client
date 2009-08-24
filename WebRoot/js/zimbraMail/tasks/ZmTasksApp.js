@@ -293,7 +293,7 @@ function(mailItem, date, subject) {
 
 ZmTasksApp.prototype.search =
 function(folder, startDate, endDate, callback) {
-	var account = folder && folder.accountId && appCtxt.getAccount(folder.accountId);
+	var account = folder && folder.accountId && appCtxt.accountList.getAccount(folder.accountId);
 	var params = {
 		query: (folder ? folder.createQuery() : "in:tasks"),
 		types: [ZmItem.TASK],

@@ -138,7 +138,7 @@ function(tag) {
 		default:                searchFor = ZmId.SEARCH_MAIL; break;
 	}
 
-	var account = tag.accountId && appCtxt.getAccount(tag.accountId);
+	var account = tag.accountId && appCtxt.accountList.getAccount(tag.accountId);
 	var params = {
 		query: tag.createQuery(),
 		searchFor: searchFor,

@@ -378,8 +378,8 @@ function(attId, docIds, draftType, callback) {
 		if (appCtxt.isOffline) {
 			// for offline, always save drafts under Local Folders account
 			// unless active account is a Zimbra account
-			var acct = appCtxt.getAccount(msg.offlineFromValue.accountId);
-			acctName = acct.isZimbraAccount ? acct.name : ac.getMainAccount().name;
+			var acct = appCtxt.accountList.getAccount(msg.offlineFromValue.accountId);
+			acctName = acct.isZimbraAccount ? acct.name : ac.accountList.mainAccount.name;
 		} else {
 			acctName = ac.getActiveAccount().name;
 		}

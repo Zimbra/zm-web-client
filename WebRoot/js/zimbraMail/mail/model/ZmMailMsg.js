@@ -776,7 +776,7 @@ function(edited, componentId, callback, errorCallback, instanceDate, accountName
 		var to = inv.getSentBy() || inv.getOrganizerEmail();
         if(to == null) {
             var ac = window.parentAppCtxt || window.appCtxt;
-            var mainAcct = ac.getMainAccount().getEmail();
+            var mainAcct = ac.accountList.mainAccount.getEmail();
             var from = this._origMsg.getAddresses(AjxEmailAddress.FROM).get(0);
             //bug: 33639 when organizer component is missing from invitation
             if (from && from.address != mainAcct) {
@@ -968,11 +968,11 @@ function(request, isDraft, accountName, requestReadReceipt) {
 		var folder = msg ? ac.getById(msg.folderId) : null;
 		if (!folder || (folder && !folder.isInTrash())) {
 			if (!ac.isOffline && !isDraft && this._origMsg && this._origMsg.isDraft) {
-				var mainAcct = ac.getMainAccount(true);
+				var defaultAcct = ac.accountList.defaultAccount;
 				var from = this._origMsg.getAddresses(AjxEmailAddress.FROM).get(0);
 				// this means we're sending a draft msg obo
-				if (from && from.address != mainAcct.getEmail()) {
-					oboDraftMsgId = [mainAcct.id, ":", this.id].join("");
+				if (from && from.address != defaultAcct.getEmail()) {
+					oboDraftMsgId = [defaultAcct.id, ":", this.id].join("");
 					msgNode.id = oboDraftMsgId;
 				} else {
 					msgNode.id = this.nId;
@@ -1131,7 +1131,7 @@ function(request, isDraft, accountName, requestReadReceipt) {
 					if (id && appCtxt.multiAccounts && !appCtxt.getActiveAccount().isMain &&
 						(isDraft || this.isDraft))
 					{
-						id = ZmOrganizer.getSystemId(id, appCtxt.getMainAccount(), true);
+						id = ZmOrganizer.getSystemId(id, appCtxt.accountList.mainAccount, true);
 					}
 
 					parts.push({mid:id, part:attIds[i]});
@@ -1573,7 +1573,7 @@ function(addrNodes, parentNode, isDraft, accountName) {
 	var isPrimary = identity == null || identity.isDefault;
 	if (accountName && isPrimary) {
 
-		var mainAcct = ac.getMainAccount().getEmail();
+		var mainAcct = ac.accountList.mainAccount.getEmail();
 		var onBehalfOf = false;
 
 		// when saving a draft, even if obo, we do it on the main account so reset the from
@@ -1622,7 +1622,7 @@ function(addrNodes, parentNode, isDraft, accountName) {
 
 		// bug fix #20630 - handling sending drafts obo
 		if (this._origMsg && this._origMsg.isDraft && !this._origMsg.sendAsMe) {
-			var mainAcct = ac.getMainAccount().getEmail();
+			var mainAcct = ac.accountList.mainAccount.getEmail();
 			var from = this._origMsg.getAddresses(AjxEmailAddress.FROM).get(0);
 			// this means we're sending a draft msg obo
 			if (from && from.address != mainAcct) {
@@ -1637,7 +1637,7 @@ function(addrNodes, parentNode, isDraft, accountName) {
 			}
 		}
 
-		addrNode.a = identity.sendFromAddress || ac.getMainAccount().getEmail();
+		addrNode.a = identity.sendFromAddress || ac.accountList.mainAccount.getEmail();
 		var name = identity.sendFromDisplay;
 		if (name) {
 			addrNode.p = name;
