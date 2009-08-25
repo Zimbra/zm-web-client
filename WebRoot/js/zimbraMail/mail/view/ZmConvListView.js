@@ -79,11 +79,7 @@ ZmConvListView.prototype.constructor = ZmConvListView;
 
 ZmListView.FIELD_CLASS[ZmItem.F_EXPAND] = "Expand";
 
-ZmConvListView.HEADERS_SHORT = [
-	ZmItem.F_SELECTION,
-	ZmItem.F_SORTED_BY
-];
-ZmConvListView.HEADERS_LONG = [
+ZmConvListView.HEADERS = [
 	ZmItem.F_SELECTION,
 	ZmItem.F_EXPAND,
 	ZmItem.F_FLAG,
@@ -97,21 +93,6 @@ ZmConvListView.HEADERS_LONG = [
 	ZmItem.F_SIZE,
 	ZmItem.F_DATE
 ];
-
-ZmConvListView.HEADER = {};
-ZmConvListView.HEADER[ZmItem.F_SELECTION]	= {icon:"CheckboxUnchecked", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.selection, precondition:ZmSetting.SHOW_SELECTION_CHECKBOX};
-ZmConvListView.HEADER[ZmItem.F_EXPAND]		= {icon:"NodeCollapsed", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.expand};
-ZmConvListView.HEADER[ZmItem.F_FLAG]		= {icon:"FlagRed", width:ZmListView.COL_WIDTH_ICON, sortable:ZmItem.F_FLAG, name:ZmMsg.flag, noSortArrow:true, precondition:ZmSetting.FLAGGING_ENABLED};
-ZmConvListView.HEADER[ZmItem.F_PRIORITY]	= {icon:"PriorityHigh_list", width:ZmListView.COL_WIDTH_NARROW_ICON, name:ZmMsg.priority, precondition:ZmSetting.MAIL_PRIORITY_ENABLED};
-ZmConvListView.HEADER[ZmItem.F_TAG]			= {icon:"Tag", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.tag, precondition:ZmSetting.TAGGING_ENABLED};
-ZmConvListView.HEADER[ZmItem.F_STATUS]		= {icon:"MsgStatus", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.status};
-ZmConvListView.HEADER[ZmItem.F_FROM]		= {text:ZmMsg.from, width:ZmMsg.COLUMN_WIDTH_FROM_CLV, resizeable:true};
-ZmConvListView.HEADER[ZmItem.F_ATTACHMENT]	= {icon:"Attachment", width:ZmListView.COL_WIDTH_ICON, sortable:ZmItem.F_ATTACHMENT, noSortArrow:true, name:ZmMsg.attachment};
-ZmConvListView.HEADER[ZmItem.F_SUBJECT]		= {text:ZmMsg.subject, sortable:ZmItem.F_SUBJECT, noRemove:true, resizeable:true};
-ZmConvListView.HEADER[ZmItem.F_FOLDER]		= {text:ZmMsg.folder, width:ZmMsg.COLUMN_WIDTH_FOLDER, resizeable:true};
-ZmConvListView.HEADER[ZmItem.F_SIZE]		= {text:ZmMsg.size, width:ZmMsg.COLUMN_WIDTH_SIZE, sortable:ZmItem.F_SIZE, resizeable:true};
-ZmConvListView.HEADER[ZmItem.F_DATE]		= {text:ZmMsg.received, width:ZmMsg.COLUMN_WIDTH_DATE, sortable:ZmItem.F_DATE, resizeable:true};
-ZmConvListView.HEADER[ZmItem.F_SORTED_BY]	= {text:AjxMessageFormat.format(ZmMsg.arrangedBy, ZmMsg.date), sortable:ZmItem.F_SORTED_BY};
 
 // Copy some functions from ZmMailMsgListView, for handling message rows
 ZmConvListView.prototype._changeFolderName = ZmMailMsgListView.prototype._changeFolderName;
@@ -214,10 +195,19 @@ function(item, allItems) {
 	return null;
 };
 
+ZmConvListView.prototype._initHeaders =
+function() {
+	if (!this._headerInit) {
+		ZmMailListView.prototype._initHeaders.call(this);
+		this._headerInit[ZmItem.F_EXPAND] = {icon:"NodeCollapsed", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.expand};
+	}
+};
+
 ZmConvListView.prototype._getHeaderList =
 function(parent, controller) {
-	var headers = this.isMultiColumn(controller) ? ZmConvListView.HEADERS_LONG : ZmConvListView.HEADERS_SHORT;
-	return this._getHeaders(ZmId.VIEW_CONVLIST, headers, ZmConvListView.HEADER);
+	var headers = this.isMultiColumn(controller) ? ZmConvListView.HEADERS :
+				  [ZmItem.F_SELECTION, ZmItem.F_SORTED_BY];
+	return this._getHeaders(ZmId.VIEW_CONVLIST, headers);
 };
 
 ZmConvListView.prototype._getDiv =
@@ -244,6 +234,16 @@ function(item, params) {
 	}
 };
 
+ZmConvListView.prototype._getCell =
+function(htmlArr, idx, item, field, colIdx, params) {
+	if (field == ZmItem.F_SORTED_BY && item.type == ZmItem.MSG) {
+		htmlArr[idx++] = "<td width=28>";
+		idx = this._getCellContents(htmlArr, idx, item, ZmItem.F_EXPAND, colIdx, params);
+		htmlArr[idx++] = "</td>";
+	}
+	return ZmMailListView.prototype._getCell.apply(this, arguments);
+};
+
 ZmConvListView.prototype._getCellId =
 function(item, field) {
 	return (field == ZmItem.F_FROM)
@@ -260,13 +260,9 @@ function(item, field, params) {
 
 ZmConvListView.prototype._getCellContents =
 function(htmlArr, idx, item, field, colIdx, params) {
+
 	if (field == ZmItem.F_SELECTION) {
 		idx = ZmMailListView.prototype._getCellContents.apply(this, arguments);
-		if (item.type == ZmItem.MSG && !this._isMultiColumn) {
-			htmlArr[idx++] = "<td width=28>";
-			idx = this._getImageHtml(htmlArr, idx, this._isExpandable(item) ? "NodeCollapsed" : null, this._getFieldId(item, ZmItem.F_EXPAND));
-			htmlArr[idx++] = "</td>";
-		}
 	} else if (field == ZmItem.F_EXPAND) {
 		idx = this._getImageHtml(htmlArr, idx, this._isExpandable(item) ? "NodeCollapsed" : null, this._getFieldId(item, field));
 	} else if (item.type == ZmItem.MSG) {

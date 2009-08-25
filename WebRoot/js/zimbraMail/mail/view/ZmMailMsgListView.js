@@ -30,11 +30,7 @@ ZmMailMsgListView.prototype.constructor = ZmMailMsgListView;
 
 ZmMailMsgListView.INDENT		= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 
-ZmMailMsgListView.HEADERS_SHORT = [
-	ZmItem.F_SELECTION,
-	ZmItem.F_SORTED_BY
-];
-ZmMailMsgListView.HEADERS_LONG = [
+ZmMailMsgListView.HEADERS = [
 	ZmItem.F_SELECTION,
 	ZmItem.F_FLAG,
 	ZmItem.F_PRIORITY,
@@ -47,19 +43,6 @@ ZmMailMsgListView.HEADERS_LONG = [
 	ZmItem.F_SIZE,
 	ZmItem.F_DATE
 ];
-ZmMailMsgListView.HEADER = {};
-ZmMailMsgListView.HEADER[ZmItem.F_SELECTION]	= {icon:"CheckboxUnchecked", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.selection, precondition:ZmSetting.SHOW_SELECTION_CHECKBOX};
-ZmMailMsgListView.HEADER[ZmItem.F_FLAG]			= {icon:"FlagRed", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.flag, sortable:ZmItem.F_FLAG, noSortArrow:true, precondition:ZmSetting.FLAGGING_ENABLED};
-ZmMailMsgListView.HEADER[ZmItem.F_PRIORITY]		= {icon:"PriorityHigh_list", width:ZmListView.COL_WIDTH_NARROW_ICON, name:ZmMsg.priority, precondition:ZmSetting.MAIL_PRIORITY_ENABLED};
-ZmMailMsgListView.HEADER[ZmItem.F_TAG]			= {icon:"Tag", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.tag, precondition:ZmSetting.TAGGING_ENABLED};
-ZmMailMsgListView.HEADER[ZmItem.F_STATUS]		= {icon:"MsgStatus", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.status};
-ZmMailMsgListView.HEADER[ZmItem.F_FROM]			= {text:ZmMsg.from, width:ZmMsg.COLUMN_WIDTH_FROM_MLV, resizeable:true, sortable:ZmItem.F_FROM};
-ZmMailMsgListView.HEADER[ZmItem.F_ATTACHMENT]	= {icon:"Attachment", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.attachment, sortable:ZmItem.F_ATTACHMENT, noSortArrow:true};
-ZmMailMsgListView.HEADER[ZmItem.F_SUBJECT]		= {text:ZmMsg.subject, sortable:ZmItem.F_SUBJECT, noRemove:true, resizeable:true};
-ZmMailMsgListView.HEADER[ZmItem.F_FOLDER]		= {text:ZmMsg.folder, width:ZmMsg.COLUMN_WIDTH_FOLDER, resizeable:true};
-ZmMailMsgListView.HEADER[ZmItem.F_SIZE]			= {text:ZmMsg.size, width:ZmMsg.COLUMN_WIDTH_SIZE, sortable:ZmItem.F_SIZE, resizeable:true};
-ZmMailMsgListView.HEADER[ZmItem.F_DATE]			= {text:ZmMsg.received, width:ZmMsg.COLUMN_WIDTH_DATE, sortable:ZmItem.F_DATE, resizeable:true};
-ZmMailMsgListView.HEADER[ZmItem.F_SORTED_BY]	= {text:AjxMessageFormat.format(ZmMsg.arrangedBy, ZmMsg.date), sortable:ZmItem.F_SORTED_BY};
 
 // Public methods
 
@@ -385,8 +368,9 @@ function(msg) {
 
 ZmMailMsgListView.prototype._getHeaderList =
 function(parent, controller) {
-	var headers = this.isMultiColumn(controller) ? ZmMailMsgListView.HEADERS_LONG : ZmMailMsgListView.HEADERS_SHORT;
-	return this._getHeaders(this.view, headers, ZmMailMsgListView.HEADER);
+	var headers = this.isMultiColumn(controller) ? ZmMailMsgListView.HEADERS :
+				  [ZmItem.F_SELECTION, ZmItem.F_SORTED_BY];
+	return this._getHeaders(this.view, headers);
 };
 
 ZmMailMsgListView.prototype._sortColumn = 
