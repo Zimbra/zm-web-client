@@ -687,6 +687,8 @@ ZmEditContactViewImage = function(params) {
 	this.addListener(DwtEvent.ONMOUSEOVER, new AjxListener(Dwt.addClass, [el,DwtControl.HOVER]));
 	this.addListener(DwtEvent.ONMOUSEOUT, new AjxListener(Dwt.delClass, [el,DwtControl.HOVER]));
 	this.addListener(DwtEvent.ONMOUSEUP, new AjxListener(this, this._chooseImage));
+
+	this.setToolTipContent(ZmMsg.addImg);
 };
 ZmEditContactViewImage.prototype = new DwtControl;
 ZmEditContactViewImage.prototype.constructor = ZmEditContactViewImage;
