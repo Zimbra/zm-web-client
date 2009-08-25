@@ -114,7 +114,7 @@ ZmEditContactView = function(parent, controller, isMyCardView) {
 				className: "ZmEditContactViewDetailsButton",
 				template: "abook.Contacts#ZmEditContactViewDetailsButton"
 			},
-			{ id: "FILE_AS", type: "DwtSelect", items: [
+			{ id: "FILE_AS", type: "DwtSelect", onchange: this._handleFileAsChange, items: [
 				{ value: ZmContact.FA_LAST_C_FIRST, label: ZmMsg.AB_FILE_AS_lastFirst },
 				{ value: ZmContact.FA_FIRST_LAST, label: ZmMsg.AB_FILE_AS_firstLast },
 				{ value: ZmContact.FA_COMPANY, label: ZmMsg.AB_FILE_AS_company },
@@ -487,6 +487,26 @@ ZmEditContactView.prototype._handleDetailCheck = function(itemId, id) {
 	var control = this.getControl(id);
 	if (control) {
 		control.focus();
+	}
+};
+
+ZmEditContactView.prototype._handleFileAsChange = function() {
+	var fa = this.getValue("FILE_AS");
+	var showCompany =
+		fa == ZmContact.FA_COMPANY ||
+		fa == ZmContact.FA_LAST_C_FIRST_COMPANY ||
+		fa == ZmContact.FA_FIRST_LAST_COMPANY ||
+		fa == ZmContact.FA_COMPANY_LAST_C_FIRST ||
+		fa == ZmContact.FA_COMPANY_FIRST_LAST
+	;
+	var company = this.getValue("COMPANY");
+	if (showCompany) {
+		this.setValue("SHOW_COMPANY", true);
+		this.setVisible("COMPANY", true);
+	}
+	else if (!company) {
+		this.setValue("SHOW_COMPANY", false);
+		this.setVisible("COMPANY", false);
 	}
 };
 
