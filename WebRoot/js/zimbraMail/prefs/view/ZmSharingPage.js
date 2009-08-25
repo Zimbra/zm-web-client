@@ -158,7 +158,7 @@ function(owner, userButtonClicked) {
 		return;
 	}
 
-	var respCallback = new AjxCallback(this, this.showShares);
+	var respCallback = new AjxCallback(this, this.showPendingShares);
 	var type = owner ? null : ZmShare.TYPE_GROUP;
 	this._curOwner = owner;
 	var shares = this.parent.getShares(type, owner, respCallback);
@@ -177,7 +177,9 @@ function() {
 	for (var i = 0; i < folders.length; i++) {
 		var folder = folders[i];
 		if (folder.isMountpoint || folder.link) {
-			ownerHash[folder.owner] = true;
+			if (folder.owner) {
+				ownerHash[folder.owner] = true;
+			}
 		}
 	}
 
@@ -204,6 +206,7 @@ function(result) {
 	var resp = result.getResponse().BatchResponse.GetShareInfoResponse;
 	for (var i = 0; i < resp.length; i++) {
 		var shares = resp[i].share;
+		if (!(shares && shares.length)) { continue; }
 		for (var j = 0; j < shares.length; j++) {
 			var share = ZmSharingView.getShareFromShareInfo(shares[j]);
 			if (share.mounted) {
@@ -218,28 +221,24 @@ function(result) {
 };
 
 /**
- * Displays shares in two list views. One shows shares that are pending (have not yet been
- * mounted), and the other shows accepted (mounted) shares.
+ * Displays shares that are pending (have not yet been mounted).
  *
  * @param shares	[array]		list of JSON share info objects from GetShareInfoResponse	
  */
-ZmSharingView.prototype.showShares =
+ZmSharingView.prototype.showPendingShares =
 function(shares) {
 
-	var pending = [], mounted = [];
+	var pending = [];
 	if (shares && shares.length) {
 		for (var i = 0; i < shares.length; i++) {
 			// convert share info to ZmShare
 			var share = ZmSharingView.getShareFromShareInfo(shares[i]);
-			if (share.mounted) {
-				mounted.push(share);
-			} else {
+			if (!share.mounted) {
 				pending.push(share);
 			}
 		}
 	}
 	pending.sort(ZmSharingView.sortCompareShare);
-	mounted.sort(ZmSharingView.sortCompareShare);
 	this._pendingShareListView.set(AjxVector.fromArray(pending));
 };
 
