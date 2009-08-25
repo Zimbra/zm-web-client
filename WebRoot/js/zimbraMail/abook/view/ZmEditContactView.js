@@ -264,6 +264,9 @@ ZmEditContactView.prototype.set = function(contact, isDirty) {
 	if (!folderOrId) {
 		var overview = appCtxt.getApp(ZmApp.CONTACTS).getOverview();
 		folderOrId = overview && overview.getSelected();
+		if (folderOrId.type != ZmOrganizer.ADDRBOOK) {
+			folderOrId = null;
+		}
 	}
 	this._setFolder(folderOrId || ZmOrganizer.ID_ADDRBOOK);
 	this.setValue("IMAGE", (contact && contact.getImageUrl()) || "", true);
