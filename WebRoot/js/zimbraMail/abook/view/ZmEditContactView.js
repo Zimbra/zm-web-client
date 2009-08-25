@@ -1141,7 +1141,7 @@ ZmEditContactViewAddress.prototype._createInput = function() {
 				hint: ZmMsg.AB_FIELD_street, params: { forceMultiRow: true }
 			},
 			{ id: "CITY", type: "DwtInputField", cols: 20, hint: ZmMsg.AB_FIELD_city },
-			{ id: "STATE", type: "DwtInputField", cols: 10, hint: ZmMsg.AB_FIELD_state },
+			{ id: "STATE", type: "DwtInputField", cols: 12, hint: ZmMsg.AB_FIELD_state },
 			{ id: "ZIP", type: "DwtInputField", cols: 10, hint: ZmMsg.AB_FIELD_postalCode },
 			{ id: "COUNTRY", type: "DwtInputField", cols: 20, hint: ZmMsg.AB_FIELD_country }
 		]
