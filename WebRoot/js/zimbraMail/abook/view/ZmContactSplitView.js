@@ -29,7 +29,6 @@ ZmContactSplitView = function(params) {
 	this.setScrollStyle(Dwt.CLIP);
 
 	this._changeListener = new AjxListener(this, this._contactChangeListener);
-	this._objectManager = new ZmObjectManager();
 
 	this._initialize(params.controller, params.dropTgt);
 
@@ -166,11 +165,13 @@ function(controller, dropTgt) {
 	this._contactGroupView.setVisible(false);
 	this._contactGroupView.reparentHtmlElement(this._htmlElId + "_content");
 	this._contactGroupView._setMouseEventHdlrs();
+	this._groupObjectManager = new ZmObjectManager(this._contactGroupView);
 
 	// create an empty slate
 	this._contactView = new DwtComposite(this);
 	this._contactView.reparentHtmlElement(this._htmlElId + "_content");
 	this._contactView._setMouseEventHdlrs();
+	this._objectManager = new ZmObjectManager(this._contactView);
 };
 
 ZmContactSplitView.prototype._tabStateChangeListener =
@@ -231,17 +232,13 @@ function(ev, treeView) {
 	}
 };
 
-ZmContactSplitView.prototype._generateObject =
-function(data, type) {
-	return this._objectManager.findObjects(data, true, type);
+ZmContactSplitView.prototype.__findObjects =
+function(objectManager, data, type) {
+	return objectManager.findObjects(data, true, type);
 };
 
 ZmContactSplitView.prototype._setContact =
 function(contact, isGal, oldContact) {
-	if (this._objectManager) {
-		this._objectManager.reset();
-	}
-
 	var folderId = contact.folderId;
 	var folder = folderId ? appCtxt.getById(folderId) : null;
 	var color = folder ? folder.color : ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.ADDRBOOK];
@@ -251,16 +248,16 @@ function(contact, isGal, oldContact) {
 		contact: contact,
 		addrbook: contact.getAddressBook(),
 		contactHdrClass: (ZmOrganizer.COLOR_TEXT[color] + "Bg"),
-		isInTrash: (folder && folder.isInTrash()),
-		findObjects: AjxCallback.simpleClosure(this._generateObject, this)
+		isInTrash: (folder && folder.isInTrash())
 	};
 
 	if (contact.isGroup()) {
-		this._objectManager.setView(this._contactGroupView);
+		this._groupObjectManager.reset();
 
 		subs.folderIcon = contact.addrbook.getIcon();
 		subs.folderName = contact.addrbook.getName();
 		subs.groupMembers = contact.getGroupMembers().all.getArray();
+		subs.findObjects = AjxCallback.simpleClosure(this.__findObjects, this, this._groupObjectManager);
 
 		this._resetVisibility(true);
 
@@ -268,10 +265,11 @@ function(contact, isGal, oldContact) {
 		var size = this.getSize();
 		this._sizeChildren(size.x, size.y);
 	} else {
-		this._objectManager.setView(this._contactView);
+		this._objectManager.reset();
 
 		subs.view = this;
 		subs.isGal = isGal;
+		subs.findObjects = AjxCallback.simpleClosure(this.__findObjects, this, this._objectManager);
 
 		this._resetVisibility(false);
 
