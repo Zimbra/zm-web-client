@@ -218,6 +218,10 @@ function() {
 ZmCalendarTreeController.prototype._itemClicked =
 function(organizer) {
 	if (organizer.type != ZmOrganizer.CALENDAR) {
+        if (organizer._showFoldersCallback) {
+            organizer._showFoldersCallback.run();
+            return;
+        }        
 		var appId = ZmOrganizer.APP[organizer.type];
 		var app = appId && appCtxt.getApp(appId);
 		if (app) {
