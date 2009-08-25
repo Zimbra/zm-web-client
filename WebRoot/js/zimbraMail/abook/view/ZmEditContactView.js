@@ -17,7 +17,7 @@ ZmEditContactView = function(parent, controller, isMyCardView) {
 	if (arguments.length == 0) return;
 
 	var form = {
-		ondirty: "this.setValue('DEBUG',this.getDirtyItems().join(', '))",
+		ondirty: this._handleDirty,
 		items: [
 			// debug
 //			{ id: "DEBUG", type: "DwtText", ignore:true },
@@ -480,6 +480,16 @@ function() {
 };
 
 // listeners
+
+ZmEditContactView.prototype._handleDirty = function() {
+	// toggle save
+	var toolbar = this._controller && this._controller.getCurrentToolbar();
+	if (toolbar) {
+		toolbar.enable(ZmOperation.SAVE, this.isDirty());
+	}
+	// debug information
+	this.setValue('DEBUG', this.getDirtyItems().join(', '));
+};
 
 ZmEditContactView.prototype._handleDetailCheck = function(itemId, id) {
 	this.setValue(itemId, !this.getValue(itemId));
