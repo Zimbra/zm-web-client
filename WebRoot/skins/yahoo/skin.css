@@ -143,3 +143,6 @@ A.skin_yahoo_link, A.skin_yahoo_link:link A.skin_yahoo_link:visited
     border-color : @darken(AppC,50)@;
 
 }
+.DwtTreeItem-selected .DwtTreeItem-Text{
+    color : white;
+}

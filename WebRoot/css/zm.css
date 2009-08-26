@@ -3829,6 +3829,8 @@ HTML>BODY .appt-selected .appt_allday_body
 
 .ZmEditContactViewImage {
 	border: solid @darken(AppC,40)@ 1px;
+    width : 48px;
+    @PanelBg@;
 }
 
 .ZmEditContactViewAddress {
@@ -3837,6 +3839,7 @@ HTML>BODY .appt-selected .appt_allday_body
 	border-top: solid 1px #3b3935;
 	border-right: solid 1px #d7cfbe;
 	border-bottom: solid 1px #d7cfbe;
+    @ZFieldBg-normal@	
 }
 .ZmEditContactViewAddress .DwtInputField TEXTAREA,
 .ZmEditContactViewAddress .DwtInputField INPUT[type=text],

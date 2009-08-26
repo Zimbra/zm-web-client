@@ -36,11 +36,11 @@ ZmEditContactView = function(parent, controller, isMyCardView) {
 			{ id: "COMPANY", type: "DwtInputField", cols: 35, hint: ZmMsg.AB_FIELD_company, visible: "get('SHOW_COMPANY')" },
 			{ id: "TITLE", type: "DwtInputField", cols: 35, hint: ZmMsg.AB_FIELD_jobTitle, visible: "get('SHOW_TITLE')" },
 			{ id: "DEPARTMENT", type: "DwtInputField", cols: 35, hint: ZmMsg.AB_FIELD_department, visible: "get('SHOW_DEPARTMENT')" },
-			{ id: "NOTES", type: "DwtInputField", cols: 60, rows:4 },
+			{ id: "NOTES", type: "DwtInputField", cols: 58, rows:4 },
 			// contact list fields
 			{ id: "EMAIL", type: "ZmEditContactViewRows", rowitem: {
 				type: "ZmEditContactViewInputSelect", equals:ZmEditContactViewInputSelect.equals, params: {
-					hint: ZmMsg.emailAddrHint, cols: 40,
+					hint: ZmMsg.emailAddrHint, cols: 60,
 					options: [
 						{ value: ZmContact.F_email, label: ZmMsg.home },
 						{ value: ZmContact.F_workEmail, label: ZmMsg.work }
@@ -50,6 +50,7 @@ ZmEditContactView = function(parent, controller, isMyCardView) {
 			{ id: "PHONE", type: "ZmEditContactViewRows", rowitem: {
 				type: "ZmEditContactViewInputSelect", equals:ZmEditContactViewInputSelect.equals, params: {
 					hint: ZmMsg.phoneNumberHint,
+                    cols : 60,
 					options: [
 						{ value: ZmContact.F_mobilePhone, label: ZmMsg.phoneLabelMobile },
 						{ value: ZmContact.F_workPhone, label: ZmMsg.phoneLabelWork },
@@ -69,7 +70,7 @@ ZmEditContactView = function(parent, controller, isMyCardView) {
 			} },
 			{ id: "IM", type: "ZmEditContactViewRows", rowitem: {
 				type: "ZmEditContactViewIM", params: {
-					hint: ZmMsg.imScreenNameHint,
+					hint: ZmMsg.imScreenNameHint,  cols: 60,
 					options: [
 						{ value: "local", label: ZmMsg.imGateway_xmpp },
 						{ value: "yahoo", label: ZmMsg.imGateway_yahoo },
@@ -130,7 +131,7 @@ ZmEditContactView = function(parent, controller, isMyCardView) {
 			},
 			// NOTE: Return false onclick to prevent default action
 			{ id: "VIEW_IMAGE", ignore: true, onclick: "open(get('IMAGE')) && false" },
-			{ id: "REMOVE_IMAGE", ignore: true, onclick: "this.setValue('IMAGE','',true) && false",
+			{ id: "REMOVE_IMAGE", ignore: true, onclick: "set('IMAGE','') && false",
 				visible: "get('IMAGE')" },
 			// pseudo-items
 			{ id: "JOB", notab: true, ignore:true, visible: "get('SHOW_TITLE') && get('SHOW_DEPARTMENT')" },
@@ -700,7 +701,7 @@ ZmEditContactViewImage = function(params) {
 		"<div style='width:48;height:48'>",
 			"<img id='",this._htmlElId,"_img' width=48 height=48>",
 		"</div>",
-		"<div id='",this._htmlElId,"_badge' style='position:absolute;bottom:0;right:8'>"
+		"<div id='",this._htmlElId,"_badge' style='position:absolute;bottom:-4px;right:3px'>"
 	].join("");
 //	el.style.width = 52;
 //	el.style.height = 52;
@@ -738,10 +739,12 @@ ZmEditContactViewImage.prototype.setValue = function(value) {
 	if (!value) {
 		this._imgEl.src = ZmEditContactViewImage.NO_IMAGE_URL;
 		this._badgeEl.className = "ImgAdd";
+        
 	}
 	else {
 		this._imgEl.src = value;
-		this._badgeEl.className = "ImgEdit";
+		this._badgeEl.className = "ImgEditBadge";
+        this.setToolTipContent(ZmMsg.editImg);
 	}
 	this.parent.setDirty("IMAGE", true);
 };
@@ -1002,7 +1005,7 @@ ZmEditContactViewOther.prototype._createHtmlFromTemplate = function(templateId, 
 			tabindex: pickerEl.getAttribute("tabindex") || Number.MAX_VALUE,
 			control: this._picker
 		});
-	}
+	}                                                        
 };
 
 ZmEditContactViewOther.prototype._createSelect = function() {
@@ -1084,7 +1087,7 @@ ZmEditContactViewAddress.prototype = new ZmEditContactViewInputSelect;
 ZmEditContactViewAddress.prototype.constructor = ZmEditContactViewAddress;
 
 ZmEditContactViewAddress.prototype.toString = function() {
-	return "ZmEditContactViewAddress";
+	return "ZmEditContactViewAddress";  
 };
 
 // Data
@@ -1136,7 +1139,7 @@ ZmEditContactViewAddress.prototype._createInput = function() {
 		// NOTE: form appropriately.
 		ondirty: "this.parent._handleDirty()",
 		items: [
-			{ id: "STREET", type: "DwtInputField", cols: 40, rows: 1,
+			{ id: "STREET", type: "DwtInputField", cols: 56, rows: 1,
 				hint: ZmMsg.AB_FIELD_street, params: { forceMultiRow: true }
 			},
 			{ id: "CITY", type: "DwtInputField", cols: 20, hint: ZmMsg.AB_FIELD_city },

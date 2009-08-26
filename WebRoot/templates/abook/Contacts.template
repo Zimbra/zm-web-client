@@ -4,7 +4,7 @@
 		<tr valign=top class=contactHeaderTable>
 			<td class=contactHeaderCell>
 				<div id="${id}_IMAGE" tabindex="100"></div>
-				<div id="${id}_REMOVE_IMAGE_row" style='text-align:center;font-size:.8em'>
+				<div id="${id}_REMOVE_IMAGE_row" style='padding-left:7px;font-size:.8em'>
 					<nobr>
 						<a id="${id}_VIEW_IMAGE" href="#view" tabindex="101"><$=ZmMsg.view$></a>
 						|
@@ -101,7 +101,7 @@
 	<table border=0 cellpadding=0 cellspacing=0>
 		<tr><td style='padding-right:3'><div id='${id}_input' tabindex="100"></div></td>
 			<td style='padding-right:3'><div id='${id}_picker' tabindex="200"></div></td>
-			<td style='padding-right:3'><div id='${id}_select' tabindex="300"></div></td>
+			<td style='padding-left:14px'><div id='${id}_select' tabindex="300"></div></td>
 		</tr>
 	</table>
 </template>
