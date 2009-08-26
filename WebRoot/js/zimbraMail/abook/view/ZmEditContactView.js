@@ -398,10 +398,8 @@ ZmEditContactView.prototype.getModifiedAttrs = function() {
 	// set the value for IMAGE to just the attachment id
 	if (attributes[ZmContact.F_image]) {
 		var value = this.getValue("IMAGE");
-		console.log("image was modified: value=",value);
 		var m = /aid=(.*)/.exec(value);
 		if (m) {
-			console.log("setting attachment id to ",m[1]);
 			// NOTE: ZmContact.modify expects the "aid_" prefix.
 			attributes[ZmContact.F_image] = "aid_"+m[1];
 		}
