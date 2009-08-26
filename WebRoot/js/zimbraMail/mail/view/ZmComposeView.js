@@ -1122,50 +1122,47 @@ function(content, replaceSignatureId, account) {
 	var noSignature = !signature;
 
 	var sigContent, replaceSignature;
+	var newSigContent = signature ? this.getSignatureContent(signature.id) : "";
 
 	if (replaceSignatureId) {
 		if (isHtml) {
 			var idoc = this.getHtmlEditor()._getIframeDoc();
 			var sigEl = idoc.getElementById(replaceSignatureId);
 			if (sigEl) {
-				if (!noSignature) {
-					replaceSignature = sigEl.innerHTML;
-					sigContent = this.getSignatureContent(replaceSignatureId);
+				replaceSignature = sigEl.innerHTML;
+				sigContent = this.getSignatureContent(replaceSignatureId);
 
-					// Replace img tags to handle inline images
-					replaceSignature = replaceSignature.replace(/<img[^>]*>/ig,'<img/>');
-					sigContent = sigContent.replace(/<img[^>]*>/ig, "<img/>");
+				// Replace img tags to handle inline images
+				replaceSignature = replaceSignature.replace(/<img[^>]*>/ig,'<img/>');
+				sigContent = sigContent.replace(/<img[^>]*>/ig, "<img/>");
 
-					// Remove spaces to make sure IE doesnt screw
-					replaceSignature = replaceSignature.replace(/\s/g,'');
-					sigContent = sigContent.replace(/\s/g,'');
+				// Remove spaces to make sure IE doesnt screw
+				replaceSignature = replaceSignature.replace(/\s/g,'');
+				sigContent = sigContent.replace(/\s/g,'');
 
-					// IE style semicolons are messed up
-					if (AjxEnv.isIE) {
-						replaceSignature = replaceSignature.replace(/;/g,'');
-						sigContent = sigContent.replace(/;/g,'');
+				// IE style semicolons are messed up
+				if (AjxEnv.isIE) {
+					replaceSignature = replaceSignature.replace(/;/g,'');
+					sigContent = sigContent.replace(/;/g,'');
 
-						// innerHTML in IE gives back capital tag names
-						replaceSignature = replaceSignature.toLowerCase();
-						sigContent = sigContent.toLowerCase();
-					}
-
-					if (sigContent == replaceSignature) {
-						sigEl.id = signature.id;
-						sigEl.innerHTML = this.getSignatureContent(signature.id);
-						done = true;
-						donotsetcontent = true;
-					} else {
-						var sigId = "id=\""+replaceSignatureId+"\"";
-						var regexid = new RegExp(sigId, "i");
-						content = content.replace(regexid, '');
-					}
-				} else {
-					sigEl.id = "";
-					sigEl.innerHTML = "";
-					done = true;
-					donotsetcontent = true;
+					// innerHTML in IE gives back capital tag names
+					replaceSignature = replaceSignature.toLowerCase();
+					sigContent = sigContent.toLowerCase();
 				}
+
+				if (sigContent == replaceSignature) {
+					if (signature) {
+						sigEl.id = signature.id;
+					} else {
+						sigEl.removeAttribute("id");
+					}
+					sigEl.innerHTML = newSigContent;
+				} else {
+					sigEl.innerHTML = replaceSignature.replace(sigContent, newSigContent);
+					sigEl.removeAttribute("id");
+				}
+				done = true;
+				donotsetcontent = true;
 			}
 		} else {
 			//Construct Regex
@@ -1180,8 +1177,7 @@ function(content, replaceSignatureId, account) {
 			replaceRe = new RegExp(replaceRe, "i");
 
 			//Replace Signature
-			sigContent = noSignature ? "" : this.getSignatureContent(signature.id);
-			content = content.replace(replaceRe, sigContent);
+			content = content.replace(replaceRe, newSigContent);
 			done = true;
 
 		}
