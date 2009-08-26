@@ -305,6 +305,7 @@ ZmEditContactView.prototype.set = function(contact, isDirty) {
 	if (!isDirty) {
 		this.reset(true);
 	}
+	this._handleDirty();
 
 	// listen to changes in the contact
 	if (contact) {
