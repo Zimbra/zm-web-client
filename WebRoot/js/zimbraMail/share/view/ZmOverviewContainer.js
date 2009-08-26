@@ -121,13 +121,16 @@ function(treeIds) {
 ZmOverviewContainer.prototype.initialize =
 function(params) {
 
+	var showBackgroundColor = false;
 	var accounts = appCtxt.accountList.visibleAccounts;
 	for (var i = 0; i < accounts.length; i++) {
 		var acct = accounts[i];
 		// skip the main account in offline mode since we'll add it at the end
 		if (appCtxt.isOffline && acct.isMain && this._appName != ZmApp.PREFERENCES) { continue; }
 
-		this._addAccount(params, acct);
+		this._addAccount(params, acct, showBackgroundColor);
+
+		showBackgroundColor = !showBackgroundColor;
 	}
 
 	// add the "local" account last
@@ -137,7 +140,7 @@ function(params) {
 		if (!omit) { omit = {}; }
 		omit[ZmFolder.ID_SPAM] = true;
 
-		this._addAccount(params, appCtxt.accountList.mainAccount);
+		this._addAccount(params, appCtxt.accountList.mainAccount, showBackgroundColor, "ZmOverviewLocalHeader");
 	}
 
 	// HACK: move Global Searches folder so it looks like it own account section
@@ -154,9 +157,16 @@ function(params) {
 	}
 	if (!skip && window[ZmOverviewController.CONTROLLER[ZmOrganizer.ZIMLET]]) {
 		var headerLabel = ZmOrganizer.LABEL[ZmOrganizer.ZIMLET];
-		params.overviewTrees = [ZmOrganizer.ZIMLET];
 		var headerDataId = params.overviewId = appCtxt.getOverviewId([this.containerId, headerLabel], null);
-		this._addSection(ZmMsg[headerLabel], "Resource", headerDataId, null, params);
+		var headerParams = {
+			label: ZmMsg[headerLabel],
+			icon: "Resource",
+			dataId: headerDataId,
+			className: "ZmOverviewZimletHeader"
+		};
+		params.overviewTrees = [ZmOrganizer.ZIMLET];
+
+		this._addSection(headerParams, null, params);
 	}
 };
 
@@ -185,7 +195,7 @@ function() {
 };
 
 ZmOverviewContainer.prototype._addAccount =
-function(params, account) {
+function(params, account, showBackgroundColor, headerClassName) {
 	params.overviewId = appCtxt.getOverviewId(this.containerId, account);
 	params.account = account;	// tree controller might need reference to account
 
@@ -200,26 +210,34 @@ function(params, account) {
 		var headerLabel = (this._appName == ZmApp.PREFERENCES && account.isMain)
 			? ZmMsg.allAccounts : account.getDisplayName();
 
-		this._addSection(headerLabel, account.getIcon(), account.id, omit, params);
+		var headerParams = {
+			label: headerLabel,
+			icon: account.getIcon(),
+			dataId: account.id,
+			className: headerClassName
+		};
+
+		this._addSection(headerParams, omit, params, showBackgroundColor);
 
 		this._initializeActionMenu(account);
 	}
 };
 
 ZmOverviewContainer.prototype._addSection =
-function(headerLabel, headerIcon, headerDataId, omit, overviewParams) {
+function(headerParams, omit, overviewParams, showBackgroundColor) {
 	// create a top-level section header
 	var params = {
 		parent: this,
-		text: headerLabel,
-		imageInfo: headerIcon,
-		selectable: overviewParams.selectable
-		/*className:"overviewHeader"*/
+		text: headerParams.label,
+		imageInfo: headerParams.icon,
+		selectable: overviewParams.selectable,
+		className: headerParams.className
 	};
-	var header = this._headerItems[headerDataId] = new DwtTreeItem(params);
-	header.setData(Dwt.KEY_ID, headerDataId);
+	var header = this._headerItems[headerParams.dataId] = new DwtTreeItem(params);
+	header.setData(Dwt.KEY_ID, headerParams.dataId);
 	header.setScrollStyle(Dwt.CLIP);
 	header._initialize(null, true);
+	header.addClassName(showBackgroundColor ? "ZmOverviewSectionHilite" : "ZmOverviewSection");
 
 	// reset some params for child overviews
 	overviewParams.id = ZmId.getOverviewId(overviewParams.overviewId);
