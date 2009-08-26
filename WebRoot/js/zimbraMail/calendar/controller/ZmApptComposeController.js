@@ -112,8 +112,10 @@ function(attId) {
 		    // otherwise, just save the appointment
 		    this._saveCalItemFoRealz(appt, attId);
         }
+        return true;
 	}
-	return true;
+    
+    return false;
 };
 
 ZmApptComposeController.prototype.checkResourceConflicts =
