@@ -1797,6 +1797,9 @@ function(ev) {
 			ZmZimbraMail.logOff();
 		} else if (id && ZmApp.ENABLED_APPS[id] && (id != this._activeTabId)) {
 			this.activateApp(id);
+			if (appCtxt.zimletsPresent()) {
+				appCtxt.getZimletMgr().notifyZimlets("onSelectApp", id);
+			}
 		} else {
 			if (id != this._activeTabId) {
 				this._appViewMgr.pushView(id, false, true);
