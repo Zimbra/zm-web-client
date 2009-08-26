@@ -291,7 +291,7 @@ function(ev) {
 ZmCalendarTreeController.prototype._changeOrgCallback =
 function(controller, dialog, appts, dropFolder) {
 	dialog.popdown();
-	controller._doMove(appts, dropFolder, null, true);
+	controller._doMove(appts, dropFolder, null, false);
 };
 
 /*

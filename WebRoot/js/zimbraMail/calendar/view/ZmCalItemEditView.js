@@ -651,7 +651,7 @@ function(calItem, mode) {
 		if (this._folderSelect) {
 			// don't show calendar if feed, or remote and don't have write perms
 			var share = cal.getMainShare();
-			if (cal.isFeed() || (cal.link && share && !share.isWrite())) { continue; }
+			if (cal.isFeed() || (cal.link && cal.isReadOnly())) { continue; }
 
 			var selected = ((calItem.folderId == cal.id) || (calItem.folderId == id ) || (calItem.folderId == cal.nId));
 			this._folderSelect.addOption(cal.getName(), selected, id);

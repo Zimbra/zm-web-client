@@ -484,7 +484,7 @@ function(ev) {
 
 ZmCalViewController.prototype._isItemMovable =
 function(item, isShiftKey, folder) {
-	return (!isShiftKey && !item.isShared() && !folder.isRemote());
+	return (!isShiftKey && !item.isShared() && !folder.isReadOnly());
 };
 
 ZmCalViewController.prototype._moveCallback =
