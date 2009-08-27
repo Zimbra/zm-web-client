@@ -138,20 +138,6 @@ function(ev) {
 		result = (cbResult === true || cbResult === false) ? cbResult : result;
 	}
 
-	var charCode = DwtKeyEvent.getCharCode(ev);
-	if (aclv._enterCallback && (charCode == 13 || charCode == 3) &&
-		(!aclv.getVisible() || aclv.size() == 1)) {
-
-		if (aclv.size() == 1) {
-			// a bit ugly, but keypress happens before the field is updated, and
-			// we can't use keyup because by that time the acList has been
-			// popped down and cleared
-			aclv._update(true);
-		}
-		var cbResult = aclv._enterCallback.run(ev, aclv);
-		result = (cbResult === true || cbResult === false) ? cbResult : result;
-	}
-
 	return (result != null) ? result : ZmAutocompleteListView._echoKey(true, ev);
 };
 
@@ -275,12 +261,22 @@ function(ev) {
 			aclv._focusAction.args = [ element ];
 			AjxTimedAction.scheduleAction(aclv._focusAction, 0);
 		}
+		if (key == 13 || key == 3 && aclv._enterCallback) {
+			var result = aclv._enterCallback.run(ev);
+			return (result != null) ? result : ZmAutocompleteListView._echoKey(true, ev);
+		}
 		return ZmAutocompleteListView._echoKey(false, ev);
 	}
 
 	// skip if it's some weird character
 	if (!AjxStringUtil.isPrintKey(key) && (key != 3 && key != 13 && key != 9 && key != 8 && key != 46)) {
 		return ZmAutocompleteListView._echoKey(true, ev);
+	}
+
+	if (key == 13 || key == 3 && aclv._enterCallback) {
+		aclv.reset();
+		var result = aclv._enterCallback.run(ev);
+		return (result != null) ? result : ZmAutocompleteListView._echoKey(true, ev);
 	}
 
 	// regular input, schedule autocomplete
@@ -547,8 +543,8 @@ function(chunk, callback) {
 	}
 
 	this._start = chunk.start;
-	this._end = chunk.end;	
-	
+	this._end = chunk.end;
+
 	var text = chunk.text;
 	var start = chunk.end; // move beyond the current chunk
 
