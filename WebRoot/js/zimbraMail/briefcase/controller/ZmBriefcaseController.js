@@ -969,14 +969,17 @@ function(ids){
 ZmBriefcaseController.prototype.getItemTooltip =
 function(item, listView) {
 
-    var dateFormatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.FULL, AjxDateFormat.MEDIUM);
-	var dateStr = dateFormatter.format(item.modifyDate);
-
-	var prop = [
-		{name:ZmMsg.briefcasePropName, value:item.name},
-		{name:ZmMsg.briefcasePropSize, value:AjxUtil.formatSize(item.size)},
-		{name:ZmMsg.briefcasePropModified, value:(item.modifyDate ? dateStr+"" : "")}
-	];
+	if (item.isFolder) { return null; }
+	
+	var prop = [{name:ZmMsg.briefcasePropName, value:item.name}];
+	if (item.size) {
+		prop.push({name:ZmMsg.briefcasePropSize, value:AjxUtil.formatSize(item.size)});
+	}
+	if (item.modifyDate) {
+		var dateFormatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.FULL, AjxDateFormat.MEDIUM);
+		var dateStr = dateFormatter.format(item.modifyDate);
+		prop.push({name:ZmMsg.briefcasePropModified, value:dateStr});
+	}
 
 	var subs = {
 		fileProperties: prop,
