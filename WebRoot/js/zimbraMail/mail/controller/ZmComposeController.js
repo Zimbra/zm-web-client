@@ -257,6 +257,7 @@ ZmComposeController.prototype._preHideCallback =
 function(view, force) {
 	if (force && this._autoSaveTimer) {
 		this._autoSaveTimer.kill();
+		this._autoSaveCallback(true);	// auto-save any time we leave this compose tab
 	}
 	return force ? true : this.popShield();
 };
@@ -432,7 +433,9 @@ function(draftType, msg, callback, result) {
 	var resp = result.getResponse();
 	this._processSendMsg(draftType, msg, resp);
 
-	if (callback) callback.run(result);
+	if (callback) {
+		callback.run(result);
+	}
 };
 
 ZmComposeController.prototype._handleResponseCancelOrModifyAppt =
@@ -1382,7 +1385,8 @@ function(mailtoParams) {
 	this._composeView.enableInputs(true);
 	if (appCtxt.get(ZmSetting.SAVE_DRAFT_ENABLED)) {
 		// save as draft
-		var callback = mailtoParams ? (new AjxCallback(this, this.doAction, mailtoParams)) : null;
+		var callback = mailtoParams ? new AjxCallback(this, this.doAction, mailtoParams) :
+					   				  new AjxCallback(this, this._popShieldYesDraftSaved);
 		this.sendMsg(null, ZmComposeController.DRAFT_TYPE_MANUAL, callback);
 	} else {
 		// cancel
@@ -1395,10 +1399,11 @@ function(mailtoParams) {
 			this.doAction(mailtoParams);
 		}
 	}
+};
 
-	if (!mailtoParams) {
-		appCtxt.getAppViewMgr().showPendingView(true);
-	}
+ZmComposeController.prototype._popShieldYesDraftSaved =
+function() {
+	appCtxt.getAppViewMgr().showPendingView(true);
 };
 
 // Called as: No, don't save as draft
