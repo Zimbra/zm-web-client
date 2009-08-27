@@ -121,14 +121,18 @@ function(treeIds) {
 ZmOverviewContainer.prototype.initialize =
 function(params) {
 
+	var header, acct;
 	var showBackgroundColor = false;
 	var accounts = appCtxt.accountList.visibleAccounts;
 	for (var i = 0; i < accounts.length; i++) {
-		var acct = accounts[i];
+		acct = accounts[i];
 		// skip the main account in offline mode since we'll add it at the end
 		if (appCtxt.isOffline && acct.isMain && this._appName != ZmApp.PREFERENCES) { continue; }
 
 		this._addAccount(params, acct, showBackgroundColor);
+
+		header = this.getHeaderItem(acct);
+		header.setExpanded(appCtxt.get(ZmSetting.ACCOUNT_TREE_OPEN, null, acct));
 
 		showBackgroundColor = !showBackgroundColor;
 	}
@@ -140,7 +144,11 @@ function(params) {
 		if (!omit) { omit = {}; }
 		omit[ZmFolder.ID_SPAM] = true;
 
-		this._addAccount(params, appCtxt.accountList.mainAccount, showBackgroundColor, "ZmOverviewLocalHeader");
+		acct = appCtxt.accountList.mainAccount;
+		this._addAccount(params, acct, showBackgroundColor, "ZmOverviewLocalHeader");
+
+		header = this.getHeaderItem(acct);
+		header.setExpanded(appCtxt.get(ZmSetting.ACCOUNT_TREE_OPEN, null, acct));
 	}
 
 	// HACK: move Global Searches folder so it looks like it own account section
@@ -320,11 +328,19 @@ function(ev) {
 	var acct = header && appCtxt.accountList.getAccount(header.getData(Dwt.KEY_ID));
 	if (!acct) { return; }
 
-	if (ev.detail == DwtTree.ITEM_COLLAPSED) {
-		this._setAccountHeaderLabel(acct, header);
-	}
-	else if (ev.detail == DwtTree.ITEM_EXPANDED) {
-		header.setText(acct.getDisplayName());
+	if (ev.detail == DwtTree.ITEM_COLLAPSED ||
+		ev.detail == DwtTree.ITEM_EXPANDED)
+	{
+		var expanded = ev.detail == DwtTree.ITEM_EXPANDED;
+		if (!appCtxt.inStartup) {
+			appCtxt.set(ZmSetting.ACCOUNT_TREE_OPEN, expanded, null, null, null, acct);
+		}
+
+		if (expanded) {
+			header.setText(acct.getDisplayName());
+		} else {
+			this._setAccountHeaderLabel(acct, header);
+		}
 	}
 };
 
