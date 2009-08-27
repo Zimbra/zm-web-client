@@ -392,7 +392,7 @@ function(addr, name, presence, groups, notifications) {
 	if (notifications) {
 		this._newRosterItemtoastFormatter = this._newRosterItemtoastFormatter || new AjxMessageFormat(ZmMsg.imNewRosterItemToast);
 		var toast = this._newRosterItemtoastFormatter.format([item.getDisplayName()]);
-		appCtxt.setStatusMsg(toast);
+		ZmTaskbarController.INSTANCE.setMessage(toast);
 	}
 };
 
@@ -405,7 +405,7 @@ function(addr, notifications) {
 		list.removeItem(item);
 		if (notifications) {
 			this._removeRosterItemToastFormatter = this._removeRosterItemToastFormatter || new AjxMessageFormat(ZmMsg.imRemoveRosterItemToast);
-			appCtxt.setStatusMsg(this._removeRosterItemToastFormatter.format([displayName]));
+			ZmTaskbarController.INSTANCE.setMessage(this._removeRosterItemToastFormatter.format([displayName]));
 		}
 	}
 };
@@ -427,7 +427,7 @@ function(rosterItem, jsonObj, doNotifications) {
 			var is_status = old_pres == rosterItem.getPresence().getShow();
 			if (doNotifications && ( (!is_status && appCtxt.get(ZmSetting.IM_PREF_NOTIFY_PRESENCE)) ||
 								   (is_status && appCtxt.get(ZmSetting.IM_PREF_NOTIFY_STATUS)) ) ) {
-				appCtxt.setStatusMsg(toast);
+				ZmTaskbarController.INSTANCE.setMessage(toast);
 				var chat = this.getChatList().getChatByRosterAddr(jsonObj.from);
 				if (chat)
 					chat.addMessage(ZmChatMessage.system(toast));

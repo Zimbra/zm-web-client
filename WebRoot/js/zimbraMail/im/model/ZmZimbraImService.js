@@ -410,7 +410,7 @@ function(im) {
                         list.addItem(item);
 						if (notifications) {
 							this._watingFormatter = this._watingFormatter || new AjxMessageFormat(ZmMsg.imSubscribeAuthRequest_waiting);
-							appCtxt.setStatusMsg(this._watingFormatter.format(not.to));
+							ZmTaskbarController.INSTANCE.setMessage(this._watingFormatter.format(not.to));
 						}
 					}
 				} else if (not.ask == "unsubscribe" && not.to) {

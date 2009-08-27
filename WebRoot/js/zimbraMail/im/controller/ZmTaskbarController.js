@@ -59,9 +59,9 @@ ZmTaskbarController = function(components) {
 	this._toolbar.addFiller(null);
 	this._chatButtonIndex = this._toolbar.getNumChildren() + 1;
 
-    this._betaButton = new DwtToolBarButton({parent: this._toolbar});
-    this._betaButton.setText(ZmMsg.betaIM);
-    this._betaButton.setEnabled(false);
+    this._messageButton = new DwtToolBarButton({parent: this._toolbar});
+    this._messageButton.setText(ZmMsg.betaIM);
+    this._messageButton.setEnabled(false);
 
 	var height = appCtxt.getSkinHint("presence", "height") || 24;
 	Dwt.setSize(parentEl, Dwt.DEFAULT, height);
@@ -81,6 +81,24 @@ ZmTaskbarController.prototype.constructor = ZmTaskbarController;
 ZmTaskbarController.prototype.toString =
 function() {
 	return "ZmTaskbarController";
+};
+
+/** Shows a message on the taskbar for a brief time. */
+ZmTaskbarController.prototype.setMessage =
+function(message) {
+	this._messageButton.setText(message);
+	if (this._resetMessageActionId) {
+		AjxTimedAction.cancelAction(this._resetMessageActionId);
+		this._resetMessageActionId = 0;
+	}
+	this._resetMessageAction = this._resetMessageAction || new AjxTimedAction(this, this._resetMessage);
+	this._resetMessageActionId = AjxTimedAction.scheduleAction(this._resetMessageAction, 3000);
+};
+
+ZmTaskbarController.prototype._resetMessage =
+function(message) {
+	this._messageButton.setText(ZmMsg.betaIM);
+	this._resetMessageActionId = 0;
 };
 
 ZmTaskbarController.prototype.createChatItem =
