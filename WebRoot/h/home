@@ -133,10 +133,37 @@
                         ${mailbox.accountInfo.recent}&nbsp;<fmt:message key="new"/>
 						|
 --%>
-						<fmt:message key="inbox"/>&nbsp;(${folder.unreadCount})&nbsp;<fmt:message key="unread"/>
+						<fmt:message key="inbox"/>&nbsp;(${folder.unreadCount})
                     </a>
 				</td>
             </tr>
+			<c:forEach var="dataSource" items="${mailbox.mailbox.allDataSources}">
+				<c:set var="dataSourceFolder" value="${zm:getFolder(pageContext, dataSource.folderId)}"/>
+				<c:url var="url" value="/h/${empty base ? 'search' : base}">
+					<c:param name="sfi" value="${dataSourceFolder.id}"/>
+				</c:url>
+					<tr class="ZhHomeRow">
+						<td class="ZhHomeCell">
+							<span style="font-weight:bold; font-size:12px;">${fn:escapeXml(dataSource.name)}<br></span>
+							<c:set var="dataSourceUnread" value="${dataSourceFolder.unreadCount}"/>
+							<c:if test="${dataSourceFolder.hasChildren}">
+								<c:set var="dataSourceSubFolders" value="${dataSourceFolder.subFolders}"/>
+								<c:forEach var="dataSourceSubFolder" items="${dataSourceSubFolders}">
+									<c:if test="${(dataSourceSubFolder.name eq 'INBOX') or (dataSourceSubFolder.name eq 'Inbox') or (dataSourceSubFolder.name eq 'inbox')}">
+										<c:set var="dataSourceUnread" value="${dataSourceSubFolder.unreadCount}"/>
+										<c:url var="url" value="/h/${empty base ? 'search' : base}">
+											<c:param name="expand" value="${dataSourceFolder.id}"/>
+											<c:param name="sfi" value="${dataSourceSubFolder.id}"/>
+										</c:url>
+									</c:if>
+								</c:forEach>
+							</c:if>
+							<a style="text-decoration:none;" href='${url}'>
+								<fmt:message key="inbox"/>&nbsp;(${dataSourceUnread})
+							</a>
+						</td>
+					</tr>
+			</c:forEach>
         </table>
     </td>
     </c:if>
