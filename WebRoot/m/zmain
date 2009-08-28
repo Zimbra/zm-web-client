@@ -1,3 +1,5 @@
+<%@ page import="com.zimbra.common.mime.MimeCompoundHeader" %>
+<%@ page import="com.zimbra.cs.httpclient.URLUtil" %>
 <%@ page buffer="8kb" autoFlush="true" %>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
@@ -11,16 +13,17 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <c:if test="${(!empty param.debug || !empty param.dev)}"><c:set var="dbg" value="${true}"/></c:if>
 <c:remove var="prevUrl" scope="session"/><c:remove var="currentUrl" scope="session"/></c:if>
-<c:set var="baseURL" scope="request" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/>
+<c:url var="baseURL" scope="request" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/>
 <c:set var="context_url" value="${requestScope.baseURL}"/>
 <c:if test="${param.loginOp=='logout'}">
     <c:redirect url="/?loginOp=logout&amp;client=mobile"/>
 </c:if>
-<c:if test="${not empty param.ajax}">
-    <c:set var="prevUrl" scope="session" value="${sessionScope.currentUrl}"/>
-    <c:set var="currentUrl" scope="session"
-           value="${pageContext.request.requestURL}?${pageContext.request.queryString}"/>
-</c:if>
+<%--<c:if test="${not empty param.ajax}">--%>
+    <c:url var="prevUrl" scope="session" value="${sessionScope.currentUrl}"/>
+    <c:url var="currentUrl" scope="session" value="${pageContext.request.requestURL}">
+        <c:forEach items="${param}" var="p"><c:param name="${p.key}" value="${p.value}"/></c:forEach>
+    </c:url>
+<%--</c:if>--%>
 <c:if test="${not empty param.djs}"><c:set var="djs" value="${fn:escapeXml(param.djs)}" scope="session" /></c:if>
 <c:set var="version" value="${initParam.zimbraCacheBusterVersion}"/>
 <c:set var="uiv" value="1" scope="session"/>
@@ -110,7 +113,7 @@
 <title><fmt:message key="zimbraTitle"/></title>
 <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0;"/>
 <script type="text/javascript">window.onerror=function(m,u,l){if(window.console){window.console.log("An error occured in: "+u+"\n{\n\tmsg: "+m+",\n\tline: "+l+"\n}");}return false;};</script>
-<c:if test="${empty djs or not djs}"><script type="text/javascript">window.currentUrl='${pageContext.request.requestURL}?ajax=true&amp;${pageContext.request.queryString}';<c:import url="/m/mojs${dbg ? '?dev=1':''}"/></script></c:if>
+<c:if test="${empty djs or not djs}"><script type="text/javascript">window.currentUrl='<c:url value="${currentUrl}"><c:param name="ajax" value="true"/></c:url>';<c:import url="/m/mojs${dbg ? '?dev=1':''}"/></script></c:if>
 <c:set var="calcss" value=",${sessionScope.zms}-cal"/>
 <link href="<c:url value='/css/${sessionScope.zms}${calcss}.css'/>" type="text/css" rel="stylesheet"/>
 </head>
@@ -140,8 +143,8 @@
         <a style='width: ${98/appcount}%;'  accesskey="${requestScope.fldrapp_accesskey}" id="docs" class="folders${active} docs${active} appTab${active} td" href="${aurl}?st=${mailbox.features.briefcases ? 'briefcases' : 'notebooks'}">
             <span class="nstd" onclick="return zClickLink('docs')"><fmt:message key="folders"/></span>
         </a></c:if>
-        <c:set var="active" value="${param.search eq '1' ? '' : ''}"/>
-        <a style='width: ${95/appcount}%;'  accesskey="${requestScope.search_accesskey}" id="search" class="search${active} appTab${active} td" href="<c:url value="${aurl}?search=${param.search eq '1' ? '0' : '1'}&amp;${fn:replace(pageContext.request.queryString,'search=1&amp;','')}"/>" onclick='return toggleElem("searchbar",this);'>
+        <c:set var="active" value="${param.search eq '1' ? '' : ''}"/><c:set var="spara" value="search=${param.search eq '1' ? '0' : '1'}"/>
+        <a style='width: ${95/appcount}%;'  accesskey="${requestScope.search_accesskey}" id="search" class="search${active} appTab${active} td" href="${zm:replaceAll(currentUrl,"search=[01]",spara)}" onclick='return toggleElem("searchbar",this);'>
             <span class="nstd"><fmt:message key="search"/></span>
         </a></div></div>
 <div class="loadingDiv hidden" id="loadingDiv" onclick="function(){return requestTimeout(false,'Aborted by user.');}"></div></c:if>
@@ -196,7 +199,7 @@
                                 <c:if test="${mailbox.features.briefcases}"><option value="briefcase" ${st eq 'briefcase' ? 'selected=selected' : ''}><fmt:message key="files"/></option></c:if>    
                             </select>
                      </span>
-                     <span class="td aright"><a href="<c:url value="${context_url}?st=query&amp;s=${st}"/>"><fmt:message key="advancedSearch"/></a></span>
+                     <span class="td aright"><a href="<c:url value="${context_url}?st=query"><c:param name="s" value="${st}"/></c:url>"><fmt:message key="advancedSearch"/></a></span>
                 </div></div>
             </form>
     </div>
@@ -239,7 +242,7 @@ document.title = "<fmt:message key="zimbraTitleLabel"/>"+" "+"${fn:escapeXml(req
 </c:set>${dbg ? js : zm:yuiCompress(js, 'js')}</script><c:if test="${empty param.ajax}">
     <div class="tbl"><div class="tr">
         <div class="container td" id="userinfo"><c:url var="logoutUrl" value="${context_url}?loginOp=logout&amp;client=mobile"/>
-            <span class="logout-span"><a href="${fn:escapeXml(logoutUrl)}" id="_logout" noajax='true'><fmt:message key="logOut"/></a>(${mailbox.accountInfo.attrs["uid"][0]})</span>
+            <span class="logout-span"><a href="${logoutUrl}" id="_logout" noajax='true'><fmt:message key="logOut"/></a>(${mailbox.accountInfo.attrs["uid"][0]})</span>
             <span class="quota-span"><fmt:message key="MO_quotaLabel"/>&nbsp;<c:set var="max" value="${mailbox.attrs.zimbraMailQuota[0]}"/><fmt:message var="unlimited" key="unlimited"/><fmt:message key="MO_quotaUsage"><fmt:param value="${zm:displaySizeFractions(pageContext, mailbox.size,2)}"/><fmt:param value="${max==0 ? unlimited : zm:displaySizeFractions(pageContext, max,2)}"/></fmt:message></span>
         </div>
     </div></div>
@@ -264,4 +267,3 @@ document.title = "<fmt:message key="zimbraTitleLabel"/>"+" "+"${fn:escapeXml(req
     }}</c:set>
     ${dbg ? js : zm:yuiCompress(js, 'js')}</script></c:if>
 </body></html></c:if>
-
