@@ -65,7 +65,7 @@ function() {
 
 ZmOverviewContainer.prototype.getHeaderItem =
 function(account) {
-	return account ? this._headerItems[account.id] : null;
+	return account && this._headerItems[account.id];
 };
 
 /**
@@ -132,7 +132,11 @@ function(params) {
 		this._addAccount(params, acct, showBackgroundColor);
 
 		header = this.getHeaderItem(acct);
-		header.setExpanded(appCtxt.get(ZmSetting.ACCOUNT_TREE_OPEN, null, acct));
+		if (header) {
+			header.setExpanded(appCtxt.get(ZmSetting.ACCOUNT_TREE_OPEN, null, acct));
+		}
+
+		this.updateAccountInfo(acct, true, true);
 
 		showBackgroundColor = !showBackgroundColor;
 	}
@@ -175,6 +179,40 @@ function(params) {
 		params.overviewTrees = [ZmOrganizer.ZIMLET];
 
 		this._addSection(headerParams, null, params);
+
+		var header = this._headerItems[headerDataId];
+		if (header) {
+			header.__isZimlet = true;
+		}
+	}
+};
+
+/**
+ * Sets/updates the account-level status icon next to account name tree header.
+ * This only applies to app-based overview containers (i.e. not dialogs)
+ *
+ * Also resets the tooltip for the account header tree item.
+ *
+ * @param account	[ZmZimbraAccount]*		account to update status icon for
+ */
+ZmOverviewContainer.prototype.updateAccountInfo =
+function(account, updateStatus, updateTooltip) {
+	// check if appName is a real app (and not a dialog) before setting the account status
+	var hi = appCtxt.getApp(this._appName) && this.getHeaderItem(account);
+	if (hi) {
+		if (updateStatus) {
+			var html = "";
+			if (account.status != ZmZimbraAccount.STATUS_ONLINE) {
+				html = (account.status == ZmZimbraAccount.STATUS_RUNNING)
+					? ("<img src='/img/animated/ImgSpinner.gif' width=16 height=16 border=0>")
+					: (AjxImg.getImageHtml(account.getStatusIcon()));
+			}
+			hi._extraCell.innerHTML = html;
+		}
+
+		if (updateTooltip) {
+			hi.setToolTipContent(account.getToolTip());
+		}
 	}
 };
 
@@ -184,8 +222,9 @@ function(parent, acctId) {
 	parent.enableAll(true);
 
 	var acct = appCtxt.accountList.getAccount(acctId);
-	if (acct.type == ZmAccount.TYPE_POP) {
-		parent.enable(ZmOperation.NEW_FOLDER, false);
+	if (acct) {
+		parent.enable(ZmOperation.NEW_FOLDER, acct.type != ZmAccount.TYPE_POP);
+		parent.enable(ZmOperation.SYNC, !acct.isMain);
 	}
 };
 
@@ -280,6 +319,8 @@ function(ev) {
 	var acctId = item && item.getData(Dwt.KEY_ID);
 
 	if (ev.detail == DwtTree.ITEM_ACTIONED && appCtxt.getApp(this._appName)) {	// right click
+		if (item.__isZimlet) { return; } // do nothing if zimlet is right-clicked
+
 		var actionMenu = this._getActionMenu(ev);
 		if (actionMenu) {
 			this.resetOperations(actionMenu, acctId);
@@ -372,8 +413,8 @@ function(account) {
 	if (!this._actionMenu) {
 		var ops = [
 			ZmOperation.NEW_FOLDER,
-			ZmOperation.EXPAND_ALL
-			/*ZmOperation.SYNC*/
+			ZmOperation.EXPAND_ALL,
+			ZmOperation.SYNC
 		];
 		var args = [appCtxt.getShell(), ops, account];
 		this._actionMenu = new AjxCallback(this, this._createActionMenu, args);
@@ -397,8 +438,13 @@ function(parent, menuItems, account) {
 	var actionMenu = new ZmActionMenu({parent:parent, menuItems:menuItems});
 	menuItems = actionMenu.opList;
 	for (var i = 0; i < menuItems.length; i++) {
-		actionMenu.getItem(i).setData(Dwt.KEY_OBJECT, appCtxt.getFolderTree(account).root);
-		actionMenu.addSelectionListener(menuItems[i], listener);
+		var mi = actionMenu.getItem(i);
+		var op = menuItems[i];
+		if (op == ZmOperation.SYNC) {
+			mi.setText(ZmMsg.sendReceive);
+		}
+		mi.setData(Dwt.KEY_OBJECT, appCtxt.getFolderTree(account).root);
+		actionMenu.addSelectionListener(op, listener);
 	}
 
 	return actionMenu;
@@ -419,6 +465,12 @@ function(ev) {
 	}
 	else if (opId == ZmOperation.EXPAND_ALL) {
 		this._actionedHeaderItem.setExpanded(true, true);
+	}
+	else if (opId == ZmOperation.SYNC) {
+		var account = appCtxt.accountList.getAccount(this._actionedHeaderItem.getData(Dwt.KEY_ID));
+		if (account) {
+			account.sync();
+		}
 	}
 };
 

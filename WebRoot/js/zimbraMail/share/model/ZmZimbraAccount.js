@@ -138,14 +138,32 @@ function() {
 
 ZmZimbraAccount.prototype.updateState =
 function(acctInfo) {
-	// update last sync timestamp
-	this.lastSync = acctInfo.lastsync;
+	if (this.isMain) { return; } // main account doesn't sync
 
-	// update offline status if changed
+	// update last sync timestamp
+	var updateTooltip = false;
+	if (this.lastSync != acctInfo.lastsync) {
+		this.lastSync = acctInfo.lastsync;
+		if (this.visible) {
+			updateTooltip = true;
+		}
+	}
+
+	// set to update account (offline) status if changed
+	var updateStatus = false;
 	if (this.status != acctInfo.status) {
 		this.status = acctInfo.status;
-		if (this.isMain || this.visible) {
-			// todo
+		if (this.visible) {
+			updateStatus = true;
+		}
+	}
+
+	// for all overview containers, update status/tooltip
+	var container = appCtxt.getOverviewController()._overviewContainer;
+	for (var i in container) {
+		var c = container[i];
+		if (updateStatus || updateTooltip) {
+			c.updateAccountInfo(this, updateStatus, updateTooltip);
 		}
 	}
 
@@ -155,34 +173,19 @@ function(acctInfo) {
 		this.errorDetail = error.exception[0]._content;
 		this.errorMessage = error.message;
 	}
-
-	// update accordion title per unread count if changed
-	if (this.visible && acctInfo.unread != this.unread) {
-		this.unread = acctInfo.unread;
-		if (appCtxt.multiAccounts && appCtxt.getActiveAccount() != this) {
-			// todo?
-		}
-	}
-};
-
-ZmZimbraAccount.prototype.getTitle =
-function() {
-	return (appCtxt.getActiveAccount() != this && this.unread && this.unread != 0)
-		? (["<b>", this.getDisplayName(), " (", this.unread, ")</b>"].join(""))
-		: this.getDisplayName();
 };
 
 ZmZimbraAccount.prototype.getStatusIcon =
 function() {
 	switch (this.status) {
-		case ZmZimbraAccount.STATUS_UNKNOWN:	return "ImgOffline";
-		case ZmZimbraAccount.STATUS_OFFLINE:	return "ImgImAway";
-		case ZmZimbraAccount.STATUS_ONLINE:		return "ImgImAvailable";
-		case ZmZimbraAccount.STATUS_RUNNING:	return "DwtWait16Icon";
-		case ZmZimbraAccount.STATUS_AUTHFAIL:	return "ImgImDnd";
-		case ZmZimbraAccount.STATUS_ERROR:		return "ImgCritical";
+		case ZmZimbraAccount.STATUS_UNKNOWN:	return "Offline";
+		case ZmZimbraAccount.STATUS_OFFLINE:	return "ImAway";
+		case ZmZimbraAccount.STATUS_ONLINE:		return ""; // no icon for "online"
+//		case ZmZimbraAccount.STATUS_RUNNING:	// animated, so cannot be set using AjxImg
+		case ZmZimbraAccount.STATUS_AUTHFAIL:	return "ImDnd";
+		case ZmZimbraAccount.STATUS_ERROR:		return "Critical";
 	}
-	return "";
+	return null;
 };
 
 ZmZimbraAccount.prototype.getIcon =
