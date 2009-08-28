@@ -421,6 +421,8 @@ ZmAutocompleteMatch = function(match, options, isContact) {
 				this.fullAddress = email.toString();
 				this.name = email.getName();
 				this.email = email.getAddress();
+			} else {
+				this.email = match.email;
 			}
 			this.text = AjxStringUtil.htmlEncode(match.email);
 			if (options && options.needItem && window.ZmContact) {
