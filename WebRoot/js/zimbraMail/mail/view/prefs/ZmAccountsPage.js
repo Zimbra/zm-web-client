@@ -1803,6 +1803,9 @@ function(continueCallback) {
 						var callback = new AjxCallback(this, this._handleRenameFolderResponse, [account, folder]);
 						batchCmd.addNewRequestParams(soapDoc, callback, callback);
 					}
+					else {
+						account.folderId = folder.id;
+					}
 				} else {
 					var soapDoc = AjxSoapDoc.create("CreateFolderRequest", "urn:zimbraMail");
 					var folderEl = soapDoc.set("folder");
