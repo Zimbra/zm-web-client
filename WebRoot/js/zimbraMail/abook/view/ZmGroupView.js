@@ -53,6 +53,15 @@ function() {
 	return this._controller;
 };
 
+// Following two overrides are a hack to allow this view to pretend it's a list view
+ZmGroupView.prototype.getSelection = function() {
+	return this.getContact();
+};
+
+ZmGroupView.prototype.getSelectionCount = function() {
+	return 1;
+};
+
 ZmGroupView.prototype.set =
 function(contact, isDirty) {
 	this._attr = {};
