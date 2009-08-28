@@ -321,17 +321,20 @@ function() {
 };
 
 ZmComposeView.prototype._isInline =
-function() {
+function(msg) {
+
 	if (this._attachDialog) {
 		return this._attachDialog.isInline();
 	}
 
-	if (this._msg && this._msgAttId && this._msg.id == this._msgAttId) {
+    msg = msg || this._msg;
+
+	if (msg && this._msgAttId && msg.id == this._msgAttId) {
 		return false;
 	}
 
-	if (this._msg && this._msg.attachments) {
-		var atts = this._msg.attachments;
+	if (msg && msg.attachments) {
+		var atts = msg.attachments;
 		for (var i = 0; i < atts.length; i++) {
 			if (atts[i].ci) {
 				return true;
@@ -884,7 +887,7 @@ function() {
 // user just saved draft, update compose view as necessary
 ZmComposeView.prototype.processMsgDraft =
 function(msgDraft) {
-	if (this._isInline()) {
+	if (this._isInline(msgDraft)) {
 		this._handleInline(msgDraft);
 	}
 	this.reEnableDesignMode();
@@ -910,11 +913,11 @@ ZmComposeView.prototype._fixMultipartRelatedImages_onTimer =
 function(msg) {
 	// first time the editor is initialized, idoc.getElementsByTagName("img") is empty
 	// Instead of waiting for 500ms, trying to add this callback. Risky but works.
-	if (!this._firstTimeFixImages) {
-		this._htmlEditor.addOnContentIntializedListener(new AjxCallback(this, this._fixMultipartRelatedImages, [msg, this._htmlEditor._getIframeDoc()]));
-	} else {
-		this._fixMultipartRelatedImages(msg, this._htmlEditor._getIframeDoc());
-	}
+    if (!this._firstTimeFixImages) {
+        this._htmlEditor.addOnContentIntializedListener(new AjxCallback(this, this._fixMultipartRelatedImages, [msg, this._htmlEditor._getIframeDoc()]));
+    } else {
+        this._fixMultipartRelatedImages(msg, this._htmlEditor._getIframeDoc());
+    }
 };
 
 /**
@@ -924,10 +927,16 @@ function(msg) {
 ZmComposeView.prototype._fixMultipartRelatedImages =
 function(msg, idoc) {
 	if (!this._firstTimeFixImages) {
+        this._htmlEditor.removeOnContentIntializedListener();
+        var self = this;      //Fix possible hiccups during compose  in new window
+        setTimeout(function() {
+                self._fixMultipartRelatedImages(msg, self._htmlEditor._getIframeDoc());
+        }, 10);
 		this._firstTimeFixImages = true;
-		this._htmlEditor.removeOnContentIntializedListener();
+        return;
 	}
 
+    idoc = idoc || this._htmlEditor._getIframeDoc();
 	if (!idoc) { return; }
 
 	var images = idoc.getElementsByTagName("img");
