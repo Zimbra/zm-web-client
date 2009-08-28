@@ -38,8 +38,13 @@
 			</c:when>
 			<c:when test="${param.app eq 'voice' and mailbox.features.voice and not empty param.id}">
 				<c:catch var="ex">
-					<c:set var="firstPhoneAcc" value="${zm:getFirstPhoneAccount(pageContext)}"/>
-					<c:redirect url="/h/search?st=voicemail&action=listen&phone=${firstPhoneAcc.phone.name}&voiceId=${param.id}"/> 
+					<c:if test="${not empty param.phone}">
+					      <c:redirect url="/h/search?st=voicemail&action=listen&phone=${param.phone}&voiceId=${param.id}"/>                   
+					</c:if>
+					<c:if test="${empty param.phone}">
+					      <c:set var="firstPhoneAcc" value="${zm:getFirstPhoneAccount(pageContext)}"/>
+					      <c:redirect url="/h/search?st=voicemail&action=listen&phone=${firstPhoneAcc.phone.name}&voiceId=${param.id}"/>
+					 </c:if> 
 				</c:catch>
 				<c:if test="${!empty ex}">
 					<c:redirect url="/h/search?st=voicemail" />
