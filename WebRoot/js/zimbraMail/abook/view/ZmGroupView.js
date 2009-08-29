@@ -36,6 +36,9 @@ function() {
 	return "ZmGroupView";
 };
 
+ZmGroupView.DIALOG_X = 50;
+ZmGroupView.DIALOG_Y = 100;
+
 //
 // Public methods
 //
@@ -573,7 +576,7 @@ function() {
 ZmGroupView.prototype._getDialogXY =
 function() {
 	var loc = Dwt.toWindow(this.getHtmlElement(), 0, 0);
-	return new DwtPoint(loc.x + ZmContactView.DIALOG_X, loc.y + ZmContactView.DIALOG_Y);
+	return new DwtPoint(loc.x + ZmGroupView.DIALOG_X, loc.y + ZmGroupView.DIALOG_Y);
 };
 
 // Listeners
