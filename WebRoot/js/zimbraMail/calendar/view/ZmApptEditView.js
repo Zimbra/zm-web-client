@@ -363,6 +363,11 @@ function(calItem, mode) {
 		this._sendNotificationMailCheckbox.checked = true;
 		this._isOrganizer = calItem.isOrganizer();
 		this._attInputField[ZmCalBaseItem.PERSON].setEnabled(calItem.isOrganizer());
+        Dwt.setVisible(this._notificationOptions, calItem.isOrganizer());
+        Dwt.setVisible(this._organizerOptions, !calItem.isOrganizer());
+        if(this._organizerData) {
+            this._organizerData.innerHTML = calItem.getOrganizer() || "";
+        }
 	}
 };
 
@@ -499,6 +504,10 @@ function(width) {
 	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
 		this._initAutocomplete();
 	}
+
+    this._notificationOptions = document.getElementById(this._htmlElId + "_notification_options");
+    this._organizerOptions = document.getElementById(this._htmlElId + "_organizer_options");
+    this._organizerData = document.getElementById(this._htmlElId + "_organizer");
 };
 
 ZmApptEditView.prototype._folderListener =
