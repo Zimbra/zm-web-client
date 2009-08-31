@@ -277,7 +277,7 @@ function(obj) {
 	// errors
 	if (obj.failingSince) {
 		this.failingSince = obj.failingSince;
-		this.lastError = obj.lastError[0]._content;
+		this.lastError = (obj.lastError && obj.lastError[0]._content) || ZmMsg.unknownError;
 	}
 	else {
 		delete this.failingSince;
