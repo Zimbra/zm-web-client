@@ -26,8 +26,8 @@ function(isTitleSlide){
     if( this._currentNotesSlideContent != null) {
         return this._currentNotesSlideContent;
     }
-    return '<img src="/public/slides/themes/green/img/slide.jpg" width="100%" height="100%">';
-    //return '<div style="background-color:purple; position:absolute; left: 0%; top:15%; width:100%; height:1%;"></div>';
+    //return '<img src="/public/slides/themes/green/img/slide.jpg" width="100%" height="100%">';
+    return '<div style="background-color:purple; position:absolute; left: 0%; top:15%; width:100%; height:1%;"></div>';
 };
 
 ZmSlideThemeManager.prototype.setNotesSlideContent =

@@ -230,41 +230,56 @@ function(previewSlideParent) {
     return nextPreviewSlideParent;
 };
 
+ZmSlideEditView.prototype.getPreviousPreviewSlideParent =
+function(previewSlideParent) {
+    var previousPreviewSlideParent =  previewSlideParent.previousSibling;
+
+    while(previousPreviewSlideParent && (previousPreviewSlideParent.className != "previewslideparent")) {
+        previousPreviewSlideParent = previousPreviewSlideParent.previousSibling;
+    }
+
+    return previousPreviewSlideParent;
+};
+
 ZmSlideEditView.prototype.deleteSlide =
 function() {
-    //this._promptDeleteSlide();
-    this._continueDeleteSlide();
+    this._promptDeleteSlide();
+    //this._continueDeleteSlide();
 }
 
 ZmSlideEditView.prototype._promptDeleteSlide =
 function() {
     var deleteSlideCallback = new AjxCallback(this, this._continueDeleteSlide);
 
-    var confirmDialog = new DwtConfirmDialog(this);
-    confirmDialog.popup(ZmMsg.confirmDeleteSlide, deleteSlideCallback);
+    var confirmDialog = new DwtConfirmDialog(appCtxt.getShell());
+    confirmDialog.popup(ZmMsg.slides_confirmDeleteSlide, deleteSlideCallback);
 };
 
 ZmSlideEditView.prototype._continueDeleteSlide =
 function() {
     this._syncPreview();
 
+    //decide next slide to be loaded from preview after deleting current slide
+    var previewSlide = this.getNextPreviewSlideParent(this._previewSlideParent);
 
-    var nextPreviewSlideParent = this.getNextPreviewSlideParent(this._previewSlideParent);
+    if(!previewSlide) {
+        previewSlide = this.getPreviousPreviewSlideParent(this._previewSlideParent);
+    }
 
     if(this._previewSlideParent && this._previewSlideParent.parentNode) {
         this._previewSlideParent.parentNode.removeChild(this._previewSlideParent);
     }
 
-    if(nextPreviewSlideParent) {
-        var div = nextPreviewSlideParent.firstChild;
+    if(previewSlide) {
+        var div = previewSlide.firstChild;
         this.clearCurrentSelection();
         this._currentSlideDiv.innerHTML = div.innerHTML;
         this._currentPreviewSlideDiv = div;
-        this._previewSlideParent = nextPreviewSlideParent;
+        this._previewSlideParent = previewSlide;
     }
 
 
-    if(!nextPreviewSlideParent) {
+    if(!previewSlide) {
         this.createSlide();
     }
 
