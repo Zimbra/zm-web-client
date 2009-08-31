@@ -1065,18 +1065,7 @@ function(imgSrc) {
 ZmSlideEditView.prototype.insertFile =
 function(filenames) {
 
-    var url = "";
-
-    if(window.restPage) {
-        url = location.href;
-        url = url.split("/");
-        url.pop();
-        url = url.join("/");
-    }else {
-        var wAppCtxt = window.opener.appCtxt;
-        var folder = wAppCtxt.getById(window.fileInfo.folderId);
-        url = folder.getRestUrl();
-    }
+    var url = this._controller.getRestUrl();
 
     for(var i in filenames) {
         if(!filenames[i]) return;

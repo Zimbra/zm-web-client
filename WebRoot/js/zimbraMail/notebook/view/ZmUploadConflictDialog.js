@@ -128,8 +128,9 @@ ZmUploadConflictDialog._handleViewTheirs = function(event) {
 	var dialog = object.dialog;
 	var file = object.file;
 
+    //module shared by docs edited in new window - use restUrl directly
 	var winurl = [
-		dialog._uploadFolder.getRestUrl(),
+		dialog._uploadFolder.restUrl || dialog._uploadFolder.getRestUrl(),
 		"/",
 		AjxStringUtil.urlComponentEncode(file.name)
 	].join("");

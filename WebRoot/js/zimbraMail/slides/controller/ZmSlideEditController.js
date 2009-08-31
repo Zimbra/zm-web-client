@@ -205,12 +205,33 @@ function(ev) {
 	}
 };
 
+ZmSlideEditController.prototype.getRestUrl =
+function() {
+    var url = "";
+    if(window.restPage) {
+        url = location.href;
+        url = url.split("/");
+        url.pop();
+        url = url.join("/");
+    }else {
+        var wAppCtxt = window.opener.appCtxt;
+        var folder = wAppCtxt.getById(window.fileInfo.folderId);
+        url = folder.getRestUrl();
+    }
+    return url;
+};
+
 ZmSlideEditController.prototype.__popupUploadDialog =
 function(callback) {
-    //AjxDispatcher.require(["NotebookCore", "Notebook"]);    
+    //AjxDispatcher.require(["NotebookCore", "Notebook"]);
+    var restUrl = this.getRestUrl();
+    var uploadFolder = {
+        id: window.fileInfo.folderId,
+        restUrl: restUrl
+    };
 	var dialog = appCtxt.getUploadDialog();
     dialog.addPopdownListener(new AjxListener(this, this.focus));
-	dialog.popup({id: window.fileInfo.folderId}, callback, ZmMsg.insertAttachment);
+	dialog.popup(uploadFolder, callback, ZmMsg.insertAttachment);
 };
 
 ZmSlideEditController.prototype._insertObjects =
