@@ -374,7 +374,7 @@ function(items, folder, attrs, outOfTrash) {
 			items: items,
 			action: "move",
 			attrs: attrs,
-			callback: ((outOfTrash) ? (new AjxCallback(this, this._handleResponseMoveItems, folder)) : null),
+			callback: ((outOfTrash) ? (new AjxCallback(this, this._handleResponseMoveItems, [folder, null])) : null),
 			accountName: (appCtxt.multiAccounts && appCtxt.accountList.mainAccount.name)
 		};
 
