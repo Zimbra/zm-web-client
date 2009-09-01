@@ -1052,7 +1052,7 @@ function(view, forward, loadIndex) {
 	var lv = this._listView[view];
 	var offset = lv.getNewOffset(forward);
 	var limit = lv.getLimit();
-	forward ? this.currentPage++ : this.currentPage--;
+	this.currentPage = this.currentPage + (forward ? 1 : -1);
 	this.maxPage = Math.max(this.maxPage, this.currentPage);
 
 	lv.offset = offset; // cache new offset

@@ -86,7 +86,7 @@ function() {
 	if (this._warningTime == 0) { return; }
 
     this._searchTimeRange = this.getSearchTimeRange();
-    DBG.println("reminder search time range: " + this._searchTimeRange.start + " to " + this._searchTimeRange.end);
+    DBG.println(AjxDebug.DBG1, "reminder search time range: " + this._searchTimeRange.start + " to " + this._searchTimeRange.end);
 
 	var params = this.getRefreshParams();
 	this._calController.getApptSummaries(params);
