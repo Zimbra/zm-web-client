@@ -38,6 +38,8 @@ ZmConvController = function(container, mailApp) {
 ZmConvController.prototype = new ZmDoublePaneController;
 ZmConvController.prototype.constructor = ZmConvController;
 
+ZmMailListController.GROUP_BY_ICON[ZmId.VIEW_CONV]			= "ConversationView";
+
 // Public methods
 
 ZmConvController.prototype.toString = 
