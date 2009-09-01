@@ -349,7 +349,6 @@ function(msg) {
 
 	var rrPref = appCtxt.get(ZmSetting.MAIL_SEND_READ_RECEIPTS);
 
-	// prompt
 	if (rrPref == ZmMailApp.SEND_RECEIPT_PROMPT) {
 		var callback = new AjxCallback(this, this._sendReadReceipt, msg);
 		var dlg = appCtxt.getYesNoMsgDialog();
@@ -357,14 +356,8 @@ function(msg) {
 		dlg.registerCallback(DwtDialog.NO_BUTTON, this._sendReadReceiptNotified, this, [msg, dlg]);
 		dlg.setMessage(ZmMsg.readReceiptSend, DwtMessageDialog.WARNING_STYLE);
 		dlg.popup();
-	}
-	// always
-	else if (rrPref == ZmMailApp.SEND_RECEIPT_ALWAYS) {
+	} else if (rrPref == ZmMailApp.SEND_RECEIPT_ALWAYS) {
 		this._sendReadReceipt(msg);
-	}
-	// never
-	else {
-		this._sendReadReceiptNotified(msg);
 	}
 };
 
@@ -663,6 +656,7 @@ function(ev) {
  * Per bug #7257, read receipt must be sent if user explicitly marks a message
  * read under the following conditions:
  *
+ * 0. read receipt is requested, user agrees to send it
  * 1. reading pane is on
  * 2. mark as read preference is set to "never"
  * 3. the message currently being read in the reading pane is in the list of
