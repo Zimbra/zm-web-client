@@ -45,11 +45,22 @@ ZmUploadDialog.prototype._selector;
 ZmUploadDialog.prototype._uploadFolder;
 ZmUploadDialog.prototype._uploadCallback;
 
+ZmUploadDialog.prototype._extensions;
+
 // Public methods
 
 ZmUploadDialog.prototype.enableLinkTitleOption =
 function(enabled) {
     this._showLinkTitleText = enabled;    
+};
+
+ZmUploadDialog.prototype.setAllowedExtensions = function(array) {
+	this._extensions = array;
+	if (array) {
+		for (var i = 0; i < array.length; i++) {
+			array[i] = array[i].toUpperCase();
+		}
+	}
 };
 
 ZmUploadDialog.prototype.popup = function(folder, callback, title, loc, oneFileOnly, noResolveAction) {
@@ -93,6 +104,7 @@ ZmUploadDialog.prototype.popdown = function() {
 	this._uploadFolder = null;
 	this._uploadCallback = null;
 	/***/
+	this._extensions = null;
 	DwtDialog.prototype.popdown.call(this);
 };
 
@@ -129,6 +141,12 @@ ZmUploadDialog.prototype._upload = function(){
 		var element = form.elements[i];
 		if (element.name != ZmUploadDialog.UPLOAD_FIELD_NAME) continue;
 		if (!element.value) continue;
+		if (!this._checkExtension(element.value)) {
+			var params = [ this._extensions.join(", ") ];
+			var message = AjxMessageFormat.format(ZmMsg.errorNotAllowedFile, params);
+			this._popupErrorDialog(message);
+			return;
+		}
 		var file = {
 			fullname: element.value,
 			name: element.value.replace(/^.*[\\\/:]/, "")
@@ -165,6 +183,17 @@ ZmUploadDialog.prototype._upload = function(){
 			this._popupErrorDialog(ZmMsg.unknownError);
 		}
 	}
+};
+
+ZmUploadDialog.prototype._checkExtension = function(filename) {
+	if (!this._extensions) return true;
+	var ext = filename.replace(/^.*\./,"").toUpperCase();
+	for (var i = 0; i < this._extensions.length; i++) {
+		if (this._extensions[i] == ext) {
+			return true;
+		}
+	}
+	return false;
 };
 
 ZmUploadDialog.prototype._popupErrorDialog = function(message) {

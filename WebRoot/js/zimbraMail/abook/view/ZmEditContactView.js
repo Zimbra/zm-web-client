@@ -766,6 +766,7 @@ ZmEditContactViewImage.prototype._imageLoaded = function() {
 
 ZmEditContactViewImage.prototype._chooseImage = function() {
 	var dialog = appCtxt.getUploadDialog();
+	dialog.setAllowedExtensions(["png","jpg","jpeg","gif"]);
 	var folder = null;
 	var callback = new AjxCallback(this, this._handleImageSaved);
 	var title = ZmMsg.uploadImage;
