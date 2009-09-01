@@ -482,13 +482,15 @@ function() {
 // listeners
 
 ZmEditContactView.prototype._handleDirty = function() {
+	var items = this.getDirtyItems();
 	// toggle save
 	var toolbar = this._controller && this._controller.getCurrentToolbar();
 	if (toolbar) {
-		toolbar.enable(ZmOperation.SAVE, this.isDirty());
+		var dirty = items.length > 0 ? items.length > 1 || items[0] != "IMAGE" || this._contact.id : false;
+		toolbar.enable(ZmOperation.SAVE, dirty);
 	}
 	// debug information
-	this.setValue('DEBUG', this.getDirtyItems().join(', '));
+	this.setValue('DEBUG', items.join(', '));
 };
 
 ZmEditContactView.prototype._handleDetailCheck = function(itemId, id) {
