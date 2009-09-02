@@ -303,6 +303,7 @@ BODY						{	margin:0px; 				}
 .DwtInputField-hint TEXTAREA {
 	@TextArea@
 	@InputField-hint@
+
 }
 
 .DwtInputField-errorhint INPUT[type="text"],

@@ -3831,7 +3831,7 @@ HTML>BODY .appt-selected .appt_allday_body
 
 
 .InviteSelectLabel {
- text-align: right;   
+    text-align: right;   
 }
 
 .ZmEditContactViewDetailsButton {
@@ -3858,11 +3858,16 @@ HTML>BODY .appt-selected .appt_allday_body
     @ZFieldBg-normal@	
 }
 .ZmEditContactViewAddress .DwtInputField TEXTAREA,
-.ZmEditContactViewAddress .DwtInputField INPUT[type=text],
+.ZmEditContactViewAddress .DwtInputField INPUT,
 .ZmEditContactViewAddress .DwtInputField-hint TEXTAREA,
-.ZmEditContactViewAddress .DwtInputField-hint INPUT[type=text] {
-	border: none;
+.ZmEditContactViewAddress .DwtInputField-hint INPUT{
+	border: none !important;
 }
+.ZmEditContactViewAddress .DwtInputField-hint TEXTAREA,
+.ZmEditContactViewAddress .DwtInputField TEXTAREA {
+    overflow-y : auto;
+}
+
 
 .ZmEditContactView .contactHeaderTable {
 	background-color: @lighten(AltC,40)@;

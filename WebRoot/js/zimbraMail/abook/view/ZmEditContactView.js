@@ -701,12 +701,11 @@ ZmEditContactViewImage = function(params) {
 	var el = this.getHtmlElement();
 	el.innerHTML = [
 		"<div style='width:48;height:48'>",
-			"<img id='",this._htmlElId,"_img' width=48 height=48>",
+			"<img id='",this._htmlElId,"_img' width='48' height='48'>",
 		"</div>",
-		"<div id='",this._htmlElId,"_badge' style='position:absolute;bottom:-4px;right:3px'>"
+		"<div id='",this._htmlElId,"_badge' style='position:absolute;"
+        ,"bottom:",(AjxEnv.isMozilla ? -4 : 0), ";right:", (AjxEnv.isMozilla ? 3 : 0),"px'>"
 	].join("");
-//	el.style.width = 52;
-//	el.style.height = 52;
 	el.style.cursor = "pointer";
 
 	this._src = "";
@@ -758,12 +757,11 @@ ZmEditContactViewImage.prototype.getValue = function() {
 // Protected methods
 
 ZmEditContactViewImage.prototype._imageLoaded = function() {
-	this._imgEl.setAttribute("width", "");
-	this._imgEl.setAttribute("height", "");
+	this._imgEl.removeAttribute("width");
+	this._imgEl.removeAttribute("height");
 	var w = this._imgEl.width;
 	var h = this._imgEl.height;
-	this._imgEl.setAttribute("width", w > h ? 48 : "");
-	this._imgEl.setAttribute("height", w > h ? "" : 48);
+    this._imgEl.setAttribute(w>h ? 'width' : 'height', 48);
 };
 
 ZmEditContactViewImage.prototype._chooseImage = function() {
@@ -1142,7 +1140,7 @@ ZmEditContactViewAddress.prototype._createInput = function() {
 		// NOTE: form appropriately.
 		ondirty: "this.parent._handleDirty()",
 		items: [
-			{ id: "STREET", type: "DwtInputField", cols: 56, rows: 1,
+			{ id: "STREET", type: "DwtInputField", cols: 56, rows: 2,
 				hint: ZmMsg.AB_FIELD_street, params: { forceMultiRow: true }
 			},
 			{ id: "CITY", type: "DwtInputField", cols: 20, hint: ZmMsg.AB_FIELD_city },

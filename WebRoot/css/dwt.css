@@ -887,8 +887,10 @@
  */
 .DwtInputField input[type="text"],
 .DwtInputField input[type="password"],
+.DwtInputField input,
 .DwtSimpleInput {
 	@InputField@
+	@InputField-normal@
 }
 .DwtInputField textarea {
 	@TextArea@
@@ -2176,5 +2178,5 @@ input.xform_field {
 
 .DwtFormRowAdd .ZButtonTable, .DwtFormRowRemove .ZButtonTable {
 	border: none;
-	background-color: inherit;
+	background-color: transparent;
 }
