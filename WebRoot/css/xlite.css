@@ -751,3 +751,9 @@ table {
 .zo_cal_dhhb {
     border-bottom-style: dashed;
 }
+
+#nfldrfrm .td{
+	width: 100% !important;
+	text-align: center;
+	display: table-cell;
+}
