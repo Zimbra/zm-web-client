@@ -153,6 +153,7 @@ function() {
  */
 ZmComposeController.prototype.doAction =
 function(params) {
+	this._msgSent = false;
 	if (params.inNewWindow) {
 		var newWinObj = appCtxt.getNewWindow();
 
@@ -255,7 +256,7 @@ function() {
 // the current focus member, and we want to start over each time
 ZmComposeController.prototype._preHideCallback =
 function(view, force) {
-	if (force && this._autoSaveTimer) {
+	if (force && !this._msgSent && this._autoSaveTimer) {
 		this._autoSaveTimer.kill();
 		this._autoSaveCallback(true);	// auto-save any time we leave this compose tab
 	}
@@ -1042,6 +1043,8 @@ function(mode) {
 
 ZmComposeController.prototype._processSendMsg =
 function(draftType, msg, resp) {
+
+	this._msgSent = true;
 	var isDraft = (draftType != ZmComposeController.DRAFT_TYPE_NONE);
 	if (!isDraft) {
 		var popped = false;
