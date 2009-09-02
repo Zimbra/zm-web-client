@@ -350,6 +350,19 @@ hr{
 }
 
 /*CALENDAAR**/
+
+.cal_prev{
+    width:25px;
+    background:url("/img/arrows/ImgPreviousPage.gif") 50% 50% no-repeat;
+    display:inline-block;
+}
+
+.cal_next{
+    width:25px;
+    background:url("/img/arrows/ImgNextPage.gif") 50% 50% no-repeat;
+    display:inline-block;
+}
+
 .zo_cal_mpage {
     background: #D6D6D6; /*#D0D0F0;*/
     padding: 2px;
