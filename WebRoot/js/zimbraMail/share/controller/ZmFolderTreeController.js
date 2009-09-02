@@ -28,8 +28,7 @@ ZmFolderTreeController = function(type, dropTgt) {
 
 	if (arguments.length == 0) { return; }
 
-	type = type ? type : ZmOrganizer.FOLDER;
-	ZmTreeController.call(this, type);
+	ZmTreeController.call(this, (type || ZmOrganizer.FOLDER));
 
 	this._listeners[ZmOperation.NEW_FOLDER] = new AjxListener(this, this._newListener);
 	this._listeners[ZmOperation.RENAME_FOLDER] = new AjxListener(this, this._renameListener);
@@ -96,7 +95,7 @@ function(parent, type, id) {
 	// user folder or Folders header
 	var nId = ZmOrganizer.normalizeId(id, this.type);
 	if (nId == ZmOrganizer.ID_ROOT || ((!folder.isSystem()) && !folder.isSyncIssuesFolder())) {
-		var isShareVisible = (!folder.link || folder.isAdmin()) && !folder.isUnder(ZmFolder.ID_ARCHIVE);
+		var isShareVisible = (!folder.link || folder.isAdmin());
 		parent.enableAll(true);
 		parent.enable(ZmOperation.SYNC, folder.isFeed()/* || folder.hasFeeds()*/);
 		parent.enable(ZmOperation.SYNC_ALL, folder.isFeed() || folder.hasFeeds());
@@ -116,8 +115,7 @@ function(parent, type, id) {
 		if (!folder.disallowSubFolder &&
 			(nId == ZmFolder.ID_INBOX ||
 			 nId == ZmFolder.ID_SENT  ||
-			 nId == ZmFolder.ID_TRASH ||
-			 nId == ZmFolder.ID_ARCHIVE))
+			 nId == ZmFolder.ID_TRASH))
 		{
 			parent.enable(ZmOperation.NEW_FOLDER, true);
 		}

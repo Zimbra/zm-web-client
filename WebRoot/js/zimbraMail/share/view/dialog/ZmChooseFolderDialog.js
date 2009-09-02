@@ -95,12 +95,6 @@ function(params) {
 				// if skipping remote folders,
 				if (params.skipRemote && folder.isRemote()) {
 					omit[folders[i].id] = true;
-					continue;
-				}
-
-				// if skipping folders under "Local Folders",
-				if (appCtxt.isOffline && folder.isUnder(ZmOrganizer.ID_ARCHIVE)) {
-					omit[folder.nId] = true;
 				}
 			}
 		}

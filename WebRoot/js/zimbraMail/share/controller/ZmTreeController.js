@@ -177,7 +177,7 @@ function(params) {
 			this._setupNewOp(params);
 		}
 		this._treeView[id].set(params);
-		this._checkTreeView(id, params.account);
+		this._checkTreeView(id);
 	}
 
 	if (!this._treeViewCreated) {
@@ -780,12 +780,10 @@ function(ev, treeView, overviewId) {
             this._checkTreeView(overviewId);
 			this._evHandled[overviewId] = true;
 		} else if (ev.event == ZmEvent.E_CREATE || ev.event == ZmEvent.E_MOVE) {
-			// YUCK: for multi-account, make sure this organizer applies to the given overview
+			// for multi-account, make sure this organizer applies to the given overview
 			if (appCtxt.multiAccounts) {
-				var idx = organizer.id.indexOf(":");
-				var acctId = (idx > 0) ? organizer.id.substring(0, idx) : null;
-				var account = acctId && appCtxt.accountList.getAccount(acctId);
-				var overview = account && this._opc.getOverview(overviewId);
+				var account = appCtxt.accountList.getAccount(organizer.accountId);
+				var overview = this._opc.getOverview(overviewId);
 				if (overview && overview.account != account) {
 					continue;
 				}
@@ -1169,8 +1167,10 @@ function(ev) {
  * @param overviewId		[constant]		overview ID
  */
 ZmTreeController.prototype._checkTreeView =
-function(overviewId, account) {
+function(overviewId) {
 	if (!overviewId || !this._treeView[overviewId]) { return; }
+
+	var account = this._opc.getOverview(overviewId).account;
 	var dataTree = this.getDataTree(account);
 	var hide = (ZmOrganizer.HIDE_EMPTY[this.type] && dataTree && (dataTree.size() == 0));
 	this._treeView[overviewId].setVisible(!hide);

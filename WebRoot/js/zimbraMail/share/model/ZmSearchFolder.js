@@ -51,11 +51,18 @@ function(params) {
 	if (params.search.sortBy) {
 		searchNode.setAttribute("sortBy", params.search.sortBy);
 	}
+
+	var accountName;
+	if (params.isGlobal) {
+		searchNode.setAttribute("f", "g");
+		accountName = appCtxt.accountList.mainAccount.name;
+	}
+
 	searchNode.setAttribute("l", params.parent.id);
 	appCtxt.getAppController().sendRequest({
 		soapDoc: soapDoc,
 		asyncMode: true,
-		accountName: params.accountName,
+		accountName: accountName,
 		errorCallback: (new AjxCallback(null, ZmOrganizer._handleErrorCreate, params))
 	});
 };
@@ -70,7 +77,9 @@ function() {
 
 ZmSearchFolder.prototype.getIcon = 
 function() {
-	return (this.nId == ZmOrganizer.ID_ROOT) ? null : "SearchFolder";
+	return (this.nId == ZmOrganizer.ID_ROOT)
+		? null
+		: (this.isOfflineGlobalSearch ? "GlobalSearchFolder" : "SearchFolder");
 };
 
 ZmSearchFolder.prototype.getToolTip = function() {};
@@ -91,4 +100,3 @@ function(parentId) {
 	
 	return appCtxt.getById(parentId);
 };
-

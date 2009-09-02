@@ -434,7 +434,7 @@ function(params, noRender, callback, errorCallback) {
 	var isMixed = (params.searchFor == ZmId.SEARCH_ANY);
 
 	if (params.searchAllAccounts) {
-		params.queryHint = this._generateQueryForAllAccounts(isMixed, types.getArray());
+		params.queryHint = appCtxt.accountList.generateQuery();
 		params.accountName = appCtxt.accountList.mainAccount.name;
 	}
 	else if (this._inclSharedItems) {
@@ -593,43 +593,6 @@ function(types, account) {
 	}
 
 	return null;
-};
-
-ZmSearchController.prototype._generateQueryForAllAccounts =
-function(isMixed, types) {
-	var query = [];
-	var list = appCtxt.accountList.visibleAccounts;
-	for (var i = 0; i < list.length; i++) {
-		var acct = list[i];
-
-		var part = [
-			'(underid:"',
-			ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT, acct, true),
-			'"',
-		];
-/*
-		THIS PART DOES NOT SEEM TO BE NECESSARY SINCE "underid" SYNTAX IS
-		RETURNING SHARED ITEMS - TIM TO VERIFY WITH JJ
-
-		if (this._inclSharedItems) {
-			part.push(" OR ");
-			if (isMixed) {
-				part.push(ZmSearchController.QUERY_ISREMOTE);
-			} else {
-				var shares = ZmSearchController.generateQueryForShares(types, acct);
-				if (shares) {
-					part.push("("+ shares + ")");
-				}
-			}
-		}
-*/
-		part.push(")");
-
-		query.push(part.join(""));
-	}
-
-	DBG.println("query = " + query.join(" OR "));
-	return (query.join(" OR "));
 };
 
 /*********** Search Field Callback */

@@ -371,6 +371,22 @@ ZmZimbraAccount.prototype._handleLoadSettings =
 function(result) {
 	DBG.println(AjxDebug.DBG1, "Account settings successfully loaded for " + this.name);
 
+	// set account type
+	this.type = appCtxt.get(ZmSetting.OFFLINE_ACCOUNT_FLAVOR, null, this);
+	this.isZimbraAccount = this.type == ZmAccount.TYPE_ZIMBRA;
+
+	// set icon now that we know the type
+	switch (this.type) {
+		case ZmAccount.TYPE_AOL:	this.icon = "AccountAOL"; break;
+		case ZmAccount.TYPE_GMAIL:	this.icon = "AccountGmail"; break;
+		case ZmAccount.TYPE_IMAP:	this.icon = "AccountIMAP"; break;
+		case ZmAccount.TYPE_LIVE:	this.icon = "AccountMSN"; break;
+		case ZmAccount.TYPE_MSE:	this.icon = "AccountExchange"; break;
+		case ZmAccount.TYPE_POP:	this.icon = "AccountPOP"; break;
+		case ZmAccount.TYPE_YMP:	this.icon = "AccountYahoo"; break;
+		case ZmAccount.TYPE_ZIMBRA:	this.icon = "AccountZimbra"; break;
+	}
+
 	// initialize identities/data-sources/signatures for this account
 	var obj = result.getResponse().GetInfoResponse;
 	appCtxt.getIdentityCollection(this).initialize(obj.identities);
@@ -427,19 +443,4 @@ function(node) {
 	var data = node.attrs && node.attrs._attrs;
 	this._displayName = data ? data.displayName : this.email;
 	this._accountName = data && data.zimbraPrefLabel;
-	this.type = data ? data.offlineAccountFlavor : ZmZimbraAccount.TYPE_ZIMBRA;
-
-	this.isZimbraAccount = this.type == ZmAccount.TYPE_ZIMBRA;
-
-	// set icon now that we know the type
-	switch (this.type) {
-		case ZmAccount.TYPE_AOL:	this.icon = "AccountAOL"; break;
-		case ZmAccount.TYPE_GMAIL:	this.icon = "AccountGmail"; break;
-		case ZmAccount.TYPE_IMAP:	this.icon = "AccountIMAP"; break;
-		case ZmAccount.TYPE_LIVE:	this.icon = "AccountMSN"; break;
-		case ZmAccount.TYPE_MSE:	this.icon = "AccountExchange"; break;
-		case ZmAccount.TYPE_POP:	this.icon = "AccountPOP"; break;
-		case ZmAccount.TYPE_YMP:	this.icon = "AccountYahoo"; break;
-		case ZmAccount.TYPE_ZIMBRA:	this.icon = "AccountZimbra"; break;
-	}
 };

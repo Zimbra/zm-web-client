@@ -103,6 +103,28 @@ function(email) {
 	return null;
 };
 
+ZmAccountList.prototype.generateQuery =
+function(folderId) {
+	var query = [];
+	var list = this.visibleAccounts;
+	var fid = folderId || ZmOrganizer.ID_ROOT;
+	for (var i = 0; i < list.length; i++) {
+		var acct = list[i];
+
+		var part = [
+			'(underid:"',
+			ZmOrganizer.getSystemId(fid, acct, true),
+			'"',
+		];
+		part.push(")");
+
+		query.push(part.join(""));
+	}
+
+	DBG.println(AjxDebug.DBG2, "query = " + query.join(" OR "));
+	return (query.join(" OR "));
+};
+
 /**
  * Loads each visible account serially by requesting the following requests from
  * the server in a batch request:
@@ -201,6 +223,7 @@ function(settings, obj) {
 	account.loaded = true;
 	account.visible = true;
 	account.settings = settings;
+	account.type = ZmAccount.TYPE_ZIMBRA;
 
 	this._accounts[account.id] = account;
 	delete this._accounts[ZmAccountList.DEFAULT_ID];

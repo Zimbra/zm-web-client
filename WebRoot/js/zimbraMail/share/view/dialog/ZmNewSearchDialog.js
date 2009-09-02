@@ -34,24 +34,29 @@ function() {
 ZmNewSearchDialog.prototype.popup =
 function(params) {
 	var account = appCtxt.multiAccounts ? appCtxt.getActiveAccount() : null;
+	var overviewId = this._curOverviewId = (account ? ([this.toString(),account.name].join("-")) : this.toString());
 	var overviewParams = {
 		account: account,
 		treeIds: [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH],
 		fieldId: this._folderTreeCellId,
 		omit: this._omit,
-		overviewId: (account ? ([this.toString(),account.name].join("-")) : null),
-		forceShowRoot: true
+		overviewId: overviewId
 	};
 	var ov = this._setOverview(overviewParams, true);
 	this._folderTreeView = ov.getTreeView(ZmOrganizer.FOLDER);
 	this._searchTreeView = ov.getTreeView(ZmOrganizer.SEARCH);
 	this._search = params.search;
 	this._searchTreeView.setSelected(appCtxt.getFolderTree(account).root, true);
+	this._isGlobalSearch = appCtxt.multiAccounts && appCtxt.getSearchController().searchAllAccounts;
+
+	if (appCtxt.multiAccounts) {
+		this._searchTreeView.setVisible(true);
+		this._makeOverviewVisible(overviewId);
+	}
 
 	var overviewDiv = document.getElementById(this._overviewDivId);
 	if (overviewDiv) {
-		var saveGlobal = appCtxt.multiAccounts && appCtxt.getSearchController().searchAllAccounts;
-		Dwt.setVisible(overviewDiv, (params.showOverview && !saveGlobal));
+		Dwt.setVisible(overviewDiv, (params.showOverview && !this._isGlobalSearch));
 	}
 
 	ZmDialog.prototype.popup.call(this);
@@ -59,9 +64,9 @@ function(params) {
 
 ZmNewSearchDialog.prototype._contentHtml = 
 function() {
-	this._nameFieldId = this._htmlElId + "_nameField";
-	this._folderTreeCellId = this._htmlElId + "_folderTreeCell";
-	this._overviewDivId = this._htmlElId + "_overviewDiv";
+	this._nameFieldId 		= this._htmlElId + "_nameField";
+	this._folderTreeCellId 	= this._htmlElId + "_folderTreeCell";
+	this._overviewDivId 	= this._htmlElId + "_overviewDiv";
 
 	return (AjxTemplate.expand("share.Dialogs#NewSearch", {id: this._htmlElId}));
 };
@@ -78,7 +83,9 @@ ZmNewSearchDialog.prototype._getSearchData =
 function() {
 
 	// make sure a parent was selected
-	var parentFolder = this._getOverview().getSelected();
+	var parentFolder = this._isGlobalSearch
+		? appCtxt.getById(ZmOrganizer.ID_ROOT)
+		: this._overview[this._curOverviewId].getSelected();
 
 	// check name for presence and validity
 	var name = AjxStringUtil.trim(this._nameField.value);
@@ -97,10 +104,9 @@ function() {
 	if (msg) {
 		return this._showError(msg);
 	} else {
-		var saveGlobal = appCtxt.multiAccounts && appCtxt.getSearchController().searchAllAccounts;
 		return {
-			parent: (saveGlobal ? appCtxt.getById(ZmOrganizer.ID_GLOBAL_SEARCHES) : parentFolder),
-			accountName: (saveGlobal ? appCtxt.accountList.mainAccount.name : null),
+			parent: parentFolder,
+			isGlobal: this._isGlobalSearch,
 			name: name,
 			search: this._search
 		};

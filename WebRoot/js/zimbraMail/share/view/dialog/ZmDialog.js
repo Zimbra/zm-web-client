@@ -119,8 +119,6 @@ function(fieldId) {
  */
 ZmDialog.prototype._setOverview =
 function(params, forceSingle) {
-	// todo - refactor repetitive code(?)
-
 	// multi-account uses overview container
 	if (appCtxt.multiAccounts && !forceSingle) {
 		// use overviewId as the containerId; container will assign overviewId's
@@ -163,19 +161,20 @@ function(params, forceSingle) {
 			account:		params.account
 		};
 		overview = this._overview[overviewId] = this._opc.createOverview(ovParams);
-		this._renderOverview(overview, params.treeIds, params.omit, params.noRootSelect, params.forceShowRoot);
+		this._renderOverview(overview, params.treeIds, params.omit, params.noRootSelect);
 		document.getElementById(params.fieldId).appendChild(overview.getHtmlElement());
 	}
 
-	// make the current overview the only visible one
-	if (overviewId != this._curOverviewId) {
-		for (var id in this._overview) {
-			this._overview[id].setVisible(id == overviewId);
-		}
-		this._curOverviewId = overviewId;
-	}
+	this._makeOverviewVisible(overviewId);
 
 	return overview;
+};
+
+ZmDialog.prototype._makeOverviewVisible =
+function(overviewId) {
+	for (var id in this._overview) {
+		this._overview[id].setVisible(id == overviewId);
+	}
 };
 
 /**
@@ -187,11 +186,10 @@ function(params, forceSingle) {
  * @param treeIds		[array]				list of tree views to show
  * @param omit			[hash]*				IDs of organizers to exclude
  * @param noRootSelect	[boolean]*			if true, don't make root tree item(s) selectable
- * @param forceShowRoot	[boolean]*			if true, show root tree item regardless of item count
  */
 ZmDialog.prototype._renderOverview =
-function(overview, treeIds, omit, noRootSelect, forceShowRoot) {
-	overview.set(treeIds, omit, forceShowRoot);
+function(overview, treeIds, omit, noRootSelect) {
+	overview.set(treeIds, omit);
 	if (!noRootSelect) {
 		for (var i = 0; i < treeIds.length; i++) {
 			var treeView = overview.getTreeView(treeIds[i]);

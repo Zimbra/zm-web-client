@@ -154,16 +154,7 @@ function(params) {
 		header = this.getHeaderItem(acct);
 		header.setExpanded(appCtxt.get(ZmSetting.ACCOUNT_TREE_OPEN, null, acct));
 	}
-/*
-	// HACK: move Global Searches folder so it looks like it own account section
-	var treeView = this._overview[params.overviewId].getTreeView(ZmOrganizer.FOLDER);
-	var treeItem = treeView && treeView.getTreeItemById(ZmOrganizer.ID_GLOBAL_SEARCHES);
-	if (treeItem) {
-		treeItem.reparentHtmlElement(this.getHtmlElement());
-		treeItem.setVisible(treeItem.getNumChildren() > 0);
-		treeItem.enableSelection(false);
-	}
-*/
+
 	// add zimlets at the end of all overviews
 	var skip = params.omit && params.omit[ZmOrganizer.ID_ZIMLET];
 	if (!skip && !appCtxt.inStartup) {

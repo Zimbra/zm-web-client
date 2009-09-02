@@ -49,7 +49,6 @@ function() {
  * @param omit				[Object]*			hash of organizer IDs to ignore
  * @param forceCreate		[boolean]*			if true, tree view will be created
  * @param account			[ZmZimbraAccount]*	account we're showing tree for (if not currently active account)
- * @param forceShowRoot		[boolean]*			if true, show root tree item regardless of item count
  */
 ZmSearchTreeController.prototype.show =
 function(params) {
@@ -69,9 +68,7 @@ function(params) {
         params.collapsed = !(!setting || (appCtxt.get(setting, null, params.account) !== false));
 		this._setupNewOp(params);
 		this._treeView[id].set(params);
-		if (!params.forceShowRoot) {
-			this._checkTreeView(id, params.account);
-		}
+		this._checkTreeView(id);
 	}
 	
 	return this._treeView[id];
@@ -162,7 +159,7 @@ function(searchFolder) {
 	}
 	var params = {
 		getHtml: appCtxt.get(ZmSetting.VIEW_AS_HTML),
-		searchAllAccounts: (appCtxt.multiAccounts && searchFolder.isUnder(ZmOrganizer.ID_GLOBAL_SEARCHES))
+		searchAllAccounts: searchFolder.isOfflineGlobalSearch
 	};
 	appCtxt.getSearchController().redoSearch(searchFolder.search, false, params);
 };
@@ -191,14 +188,14 @@ function() {
  * tree views of this type.
  * 
  * @param overviewId		[constant]			overview ID
- * @param account			[ZmZimbraAccount]*	account to check tree view against
  */
 ZmSearchTreeController.prototype._checkTreeView =
-function(overviewId, account) {
+function(overviewId) {
 	var treeView = this._treeView[overviewId];
-	if (!overviewId || !treeView) { return;	}
+	if (!overviewId || !treeView) { return; }
 
-	var rootId = (account != null || appCtxt.multiAccounts)
+	var account = this._opc.getOverview(overviewId).account;
+	var rootId = (appCtxt.multiAccounts && !account.isMain)
 		? (ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT, account))
 		: ZmOrganizer.ID_ROOT;
 	var hide = ZmOrganizer.HIDE_EMPTY[this.type] && !treeView.getTreeItemById(rootId).getItemCount();

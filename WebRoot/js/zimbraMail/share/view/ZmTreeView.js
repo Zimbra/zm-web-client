@@ -260,7 +260,25 @@ function(params) {
 	if (org.isDataSource(ZmAccount.TYPE_IMAP)) {
 		children.sort(ZmImapAccount.sortCompare);
 	} else if (ZmTreeView.COMPARE_FUNC[this.type]) {
-		children.sort(eval(ZmTreeView.COMPARE_FUNC[this.type]));
+		if (appCtxt.isOffline && this.type == ZmOrganizer.SEARCH) {
+			var local = [];
+			var global = [];
+			for (var j = 0; j < children.length; j++) {
+				var child = children[j];
+				if (child && child.type == ZmOrganizer.SEARCH) {
+					if (child.isOfflineGlobalSearch) {
+						global.push(child);
+					} else {
+						local.push(child);
+					}
+				}
+			}
+			local.sort(eval(ZmTreeView.COMPARE_FUNC[this.type]));
+			global.sort(eval(ZmTreeView.COMPARE_FUNC[this.type]));
+			children = (new Array()).concat(local, global);
+		} else {
+			children.sort(eval(ZmTreeView.COMPARE_FUNC[this.type]));
+		}
 	}
 	DBG.println(AjxDebug.DBG3, "Render: " + org.name + ": " + children.length);
 	var addSep = true;
@@ -394,14 +412,7 @@ function(parentNode, organizer, index, noTooltips, omit) {
 		(organizer.type == ZmOrganizer.SEARCH ||
 		 organizer.type == ZmOrganizer.TAG))
 	{
-		var className = "DwtTreeItemChildDiv";
-		if (organizer.type == ZmOrganizer.SEARCH &&
-			!organizer.accountId &&
-			organizer.isUnder(ZmOrganizer.ID_GLOBAL_SEARCHES))
-		{
-			className = "";
-		}
-		ti.addClassName(className);
+		ti.addClassName("DwtTreeItemChildDiv");
 	}
 
 	ti.setDndText(organizer.getName());

@@ -188,9 +188,7 @@ function(callback, name, response) {
 ZmNotebook.prototype.createQuery =
 function(pathOnly) {
     if (!this.isRemote() && this.isSystem()) {
-		var qName = this.nId == ZmOrganizer.ID_ARCHIVE
-			? ('"' + ZmFolder.QUERY_NAME[this.nId] + '"')
-			: ZmFolder.QUERY_NAME[this.nId];
+		var qName = ZmFolder.QUERY_NAME[this.nId];
 		return pathOnly
 			? qName
 			: ("in:" + (qName || ('"'+this.name+'"')));

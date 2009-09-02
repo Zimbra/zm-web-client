@@ -64,7 +64,6 @@ ZmFolder.ID_AUTO_ADDED							= ZmOrganizer.ID_AUTO_ADDED;
 ZmFolder.ID_TAGS	 							= 8;
 ZmFolder.ID_TASKS								= ZmOrganizer.ID_TASKS;
 ZmFolder.ID_SYNC_FAILURES						= ZmOrganizer.ID_SYNC_FAILURES;
-ZmFolder.ID_ARCHIVE	 							= ZmOrganizer.ID_ARCHIVE;
 ZmFolder.ID_OUTBOX	 							= ZmOrganizer.ID_OUTBOX;
 ZmFolder.ID_CHATS	 							= ZmOrganizer.ID_CHATS;
 ZmFolder.ID_ATTACHMENTS                         = ZmOrganizer.ID_ATTACHMENTS;
@@ -85,7 +84,6 @@ ZmFolder.MSG_KEY[ZmOrganizer.ID_NOTEBOOK]		= "notebook";
 ZmFolder.MSG_KEY[ZmOrganizer.ID_BRIEFCASE]		= "briefcase";
 ZmFolder.MSG_KEY[ZmOrganizer.ID_CHATS]			= "chats";
 ZmFolder.MSG_KEY[ZmFolder.ID_OUTBOX]			= "outbox";
-ZmFolder.MSG_KEY[ZmFolder.ID_ARCHIVE]			= "localFolders";
 ZmFolder.MSG_KEY[ZmFolder.ID_SYNC_FAILURES]		= "errorReports";
 ZmFolder.MSG_KEY[ZmFolder.ID_ATTACHMENTS]       = "attachments";
 
@@ -95,12 +93,12 @@ ZmFolder.ICON[ZmFolder.ID_INBOX]				= "Inbox";
 ZmFolder.ICON[ZmFolder.ID_TRASH]				= "Trash";
 ZmFolder.ICON[ZmFolder.ID_SPAM]					= "SpamFolder";
 ZmFolder.ICON[ZmFolder.ID_SENT]					= "SentFolder";
-ZmFolder.ICON[ZmFolder.ID_SYNC_FAILURES]		= "SendReceive"; // XXX: need a new icon
+ZmFolder.ICON[ZmFolder.ID_SYNC_FAILURES]		= "SendReceive";
 ZmFolder.ICON[ZmFolder.ID_OUTBOX]				= "Outbox";
 ZmFolder.ICON[ZmFolder.ID_DRAFTS]				= "DraftFolder";
 ZmFolder.ICON[ZmFolder.ID_CHATS]				= "ChatFolder";
 ZmFolder.ICON[ZmFolder.ID_LOAD_FOLDERS]			= "Plus";
-ZmFolder.ICON[ZmFolder.ID_ATTACHMENTS]          = "Attachment"
+ZmFolder.ICON[ZmFolder.ID_ATTACHMENTS]          = "Attachment";
 
 // name to use within the query language
 ZmFolder.QUERY_NAME = {};
@@ -108,7 +106,6 @@ ZmFolder.QUERY_NAME[ZmFolder.ID_INBOX]			= "inbox";
 ZmFolder.QUERY_NAME[ZmFolder.ID_TRASH]			= "trash";
 ZmFolder.QUERY_NAME[ZmFolder.ID_SPAM]			= "junk";
 ZmFolder.QUERY_NAME[ZmFolder.ID_SENT]			= "sent";
-ZmFolder.QUERY_NAME[ZmFolder.ID_ARCHIVE]		= "Local Folders";
 ZmFolder.QUERY_NAME[ZmFolder.ID_OUTBOX]			= "outbox";
 ZmFolder.QUERY_NAME[ZmFolder.ID_DRAFTS]			= "drafts";
 ZmFolder.QUERY_NAME[ZmFolder.ID_CONTACTS]		= "contacts";
@@ -132,10 +129,9 @@ ZmFolder.SORT_ORDER[ZmFolder.ID_SENT]			= 3;
 ZmFolder.SORT_ORDER[ZmFolder.ID_DRAFTS]			= 4;
 ZmFolder.SORT_ORDER[ZmFolder.ID_SPAM]			= 5;
 ZmFolder.SORT_ORDER[ZmFolder.ID_TRASH]			= 6;
-ZmFolder.SORT_ORDER[ZmFolder.ID_ARCHIVE]		= 7;
-ZmFolder.SORT_ORDER[ZmFolder.ID_OUTBOX]			= 8;
-ZmFolder.SORT_ORDER[ZmFolder.ID_SYNC_FAILURES]	= 9;
-ZmFolder.SORT_ORDER[ZmFolder.ID_SEP]			= 10;
+ZmFolder.SORT_ORDER[ZmFolder.ID_OUTBOX]			= 7;
+ZmFolder.SORT_ORDER[ZmFolder.ID_SYNC_FAILURES]	= 8;
+ZmFolder.SORT_ORDER[ZmFolder.ID_SEP]			= 9;
 ZmFolder.SORT_ORDER[ZmFolder.ID_ATTACHMENTS]    = 99;      //Last on the list
 
 // character codes for "tcon" attribute in conv action request, which controls
@@ -313,7 +309,7 @@ function(callback, errorCallback) {
 		asyncMode: true,
 		callback: callback,
 		errorCallback: errorCallback
-	}
+	};
 	appCtxt.getAppController().sendRequest(params);
 };
 /**
@@ -413,15 +409,8 @@ function(obj) {
 	if (obj.l != null && (!this.parent || (obj.l != this.parent.id))) {
 		var newParent = this._getNewParent(obj.l);
 		if (newParent) {
-			if (newParent.nId == ZmOrganizer.ID_ARCHIVE) {
-				this.isOfflineSyncable = false;
-			} else if (this.parent.nId == ZmOrganizer.ID_ARCHIVE) {
-				this.isOfflineSyncable = true;
-				this.isOfflineSyncing = false;
-			}
 			details.oldPath = this.getPath();
 			this.reparent(newParent);
-			this.isOfflineArchive = this.isUnder(ZmOrganizer.ID_ARCHIVE);
 			this._notify(ZmEvent.E_MOVE, details);
 			obj.l = null;
 		}
@@ -472,8 +461,6 @@ function(showUnread, maxLength, noMarkup, useSystemName) {
 ZmFolder.prototype.getIcon =
 function() {
 	if (this.nId == ZmOrganizer.ID_ROOT)			{ return null; }
-	if (this.nId == ZmOrganizer.ID_GLOBAL_SEARCHES)	{ return "SearchFolder"; }
-	if (this.isOfflineArchive)						{ return "ArchiveFolder"; }
 	if (ZmFolder.ICON[this.nId])					{ return ZmFolder.ICON[this.nId]; }
 	if (this.isFeed())								{ return "RSS"; }
 	if (this.isRemote())							{ return "SharedMailFolder"; }
@@ -527,7 +514,6 @@ function(what, folderType) {
 				   (what.type == ZmOrganizer.SEARCH && thisType == ZmOrganizer.FOLDER && this.nId == ZmOrganizer.ID_ROOT) ||
 				   (what.id == this.id) ||
 				   (what.disallowSubFolder) ||
-				   (what.nId == ZmFolder.ID_ARCHIVE) ||
 				   (what.accountId != this.accountId) ||						// cannot move folders across accounts
 				   (what.isRemote() && !this._remoteMoveOk(what)));				// a remote folder can be DnD but not its children
 	} else {
@@ -536,9 +522,8 @@ function(what, folderType) {
 		var item = items[0];
 
 		if (this.nId == ZmOrganizer.ID_ROOT ||									// container can only have folders/searches
-			this.nId == ZmOrganizer.ID_OUTBOX ||								// nothing can be moved to outbox/sync failures/archive folders
-			this.nId == ZmOrganizer.ID_SYNC_FAILURES ||
-			this.nId == ZmOrganizer.ID_ARCHIVE)
+			this.nId == ZmOrganizer.ID_OUTBOX ||								// nothing can be moved to outbox/sync failures folders
+			this.nId == ZmOrganizer.ID_SYNC_FAILURES)
 		{
 			invalid = true;
 		} else if (thisType == ZmOrganizer.SEARCH) {
