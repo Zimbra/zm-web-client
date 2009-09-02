@@ -195,21 +195,6 @@
 	cursor: pointer;
 }
 
-.ZmTreeHeaderItemMultiAccount .imageCell {
-	padding-right: 5px;
-}
-
-.ZmTreeHeaderItemMultiAccount {
-	@TreeItem@
-}
-
-.ZmTreeHeaderItemMultiAccount-Text,
-.ZmTreeHeaderItemMultiAccount-selected,
-.ZmTreeHeaderItemMultiAccount-actioned,
-.ZmTreeHeaderItemMultiAccount-selected-focused {
-	@TreeItemText@
-}
-
 /*
  * Tool Bars
  */

@@ -161,7 +161,7 @@ ZmAttachmentsView.prototype._createOverviewTree = function(type, treeType, selec
         overviewClass: "DwtTree ZmFilterTree"
     };
     var overview = appCtxt.getOverviewController().createOverview(params);
-	overview.set(treeIds, omit, null, true);
+	overview.set(treeIds, omit);
 
     var treeView = this._tree[type] = overview.getTreeView(treeType);
 

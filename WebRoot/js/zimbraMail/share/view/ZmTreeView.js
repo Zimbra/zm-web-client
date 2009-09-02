@@ -139,7 +139,7 @@ function(params) {
 	var imageInfo = this._getHeaderTreeItemImage();
 	var ti = this._headerItem = new DwtHeaderTreeItem({
 		parent:				this,
-		className:			isMultiAcctSubHeader ? "ZmTreeHeaderItemMultiAccount" : this._headerClass,
+		className:			isMultiAcctSubHeader ? "DwtTreeItem" : this._headerClass,
 		imageInfo:			imageInfo,
 		id:					ZmId.getTreeItemId(this.overviewId, null, this.type),
 		button:				isMultiAcctSubHeader ? null : params.newButton,
@@ -290,11 +290,8 @@ function(params) {
 			}
 		}
 
-		// hide sync-failures / global-searches folder if empty
-		if (child.numTotal == 0 &&
-			(child.nId == ZmFolder.ID_SYNC_FAILURES ||
-			 child.nId == ZmOrganizer.ID_GLOBAL_SEARCHES))
-		{
+		// hide sync-failures folder if empty
+		if (child.numTotal == 0 && (child.nId == ZmFolder.ID_SYNC_FAILURES)) {
 			continue;
 		}
 
@@ -387,7 +384,6 @@ function(parentNode, organizer, index, noTooltips, omit) {
 			dndScrollCallback: this._overview._dndScrollCallback,
 			dndScrollId: this._overview.id,
 			imageInfo:organizer.getIconWithColor(),
-			extraInfo: ((appCtxt.isOffline && organizer.isOfflineSyncable && organizer.isOfflineSyncing) ? "SyncStatusOn" : null),
 			id:ZmId.getTreeItemId(this.overviewId, organizer.id)
 		};
 		// now add item
@@ -398,7 +394,14 @@ function(parentNode, organizer, index, noTooltips, omit) {
 		(organizer.type == ZmOrganizer.SEARCH ||
 		 organizer.type == ZmOrganizer.TAG))
 	{
-		ti.addClassName("DwtTreeItemChildDiv");
+		var className = "DwtTreeItemChildDiv";
+		if (organizer.type == ZmOrganizer.SEARCH &&
+			!organizer.accountId &&
+			organizer.isUnder(ZmOrganizer.ID_GLOBAL_SEARCHES))
+		{
+			className = "";
+		}
+		ti.addClassName(className);
 	}
 
 	ti.setDndText(organizer.getName());

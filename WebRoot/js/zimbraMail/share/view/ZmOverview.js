@@ -105,14 +105,15 @@ function(treeId) {
 /**
  * Displays the given list of tree views in this overview.
  *
- * @param treeIds	[array]				list of organizer types
- * @param omit		[hash]*				hash of organizer IDs to ignore
+ * @param treeIds		[array]				list of organizer types
+ * @param omit			[hash]*				hash of organizer IDs to ignore
+ * @param forceShowRoot	[boolean]*		if true, show root tree item regardless of item count
  */
 ZmOverview.prototype.set =
-function(treeIds, omit) {
+function(treeIds, omit, forceShowRoot) {
 	if (treeIds && treeIds.length) {
 		for (var i = 0; i < treeIds.length; i++) {
-			this.setTreeView(treeIds[i], omit);
+			this.setTreeView(treeIds[i], omit, forceShowRoot);
 		}
 	}
 };
@@ -127,7 +128,7 @@ function(treeIds, omit) {
  * @param omit		[hash]*				hash of organizer IDs to ignore
  */
 ZmOverview.prototype.setTreeView =
-function(treeId, omit) {
+function(treeId, omit, forceShowRoot) {
 	// check for false since setting precondition is optional (can be null)
 	if (appCtxt.get(ZmOrganizer.PRECONDITION[treeId]) === false) { return; }
 
@@ -142,7 +143,8 @@ function(treeId, omit) {
 		overviewId: this.overviewId,
 		omit: omit,
 		showUnread: this.showUnread,
-		account: this.account
+		account: this.account,
+		forceShowRoot: forceShowRoot
 	};
 	this._treeHash[treeId] = treeController.show(params); // render tree view
 };

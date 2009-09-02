@@ -847,11 +847,6 @@ function(parentNode, node, fields, organizer, treeView) {
 	}
 
 	this._fixupTreeNode(node, organizer, treeView);
-
-	if (appCtxt.isOffline && fields[ZmOrganizer.F_FLAGS] && node._extraCell) {
-		var nodeImg = (organizer.isOfflineSyncing) ? "SyncStatusOn" : "Blank_16";
-		AjxImg.setImage(node._extraCell, nodeImg);
-	}
 };
 
 ZmTreeController.prototype._getParentNode =

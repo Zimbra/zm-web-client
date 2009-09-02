@@ -52,9 +52,12 @@ function(params) {
 		searchNode.setAttribute("sortBy", params.search.sortBy);
 	}
 	searchNode.setAttribute("l", params.parent.id);
-	var errorCallback = new AjxCallback(null, ZmOrganizer._handleErrorCreate, params);
-	var appController = appCtxt.getAppController();
-	appController.sendRequest({soapDoc:soapDoc, asyncMode:true, errorCallback:errorCallback});
+	appCtxt.getAppController().sendRequest({
+		soapDoc: soapDoc,
+		asyncMode: true,
+		accountName: params.accountName,
+		errorCallback: (new AjxCallback(null, ZmOrganizer._handleErrorCreate, params))
+	});
 };
 
 ZmSearchFolder.prototype = new ZmFolder;
@@ -86,7 +89,6 @@ function(parentId) {
 		return parent;
 	}
 	
-	var type = (this.parent.type == ZmOrganizer.SEARCH) ? ZmOrganizer.FOLDER : ZmOrganizer.SEARCH;
-	return appCtxt.getById(parentId); 
+	return appCtxt.getById(parentId);
 };
 

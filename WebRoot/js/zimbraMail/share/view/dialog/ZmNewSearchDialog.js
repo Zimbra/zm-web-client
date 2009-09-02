@@ -33,19 +33,25 @@ function() {
 
 ZmNewSearchDialog.prototype.popup =
 function(params) {
-	if (!params && params.search) {
-		this._showError(ZmMsg.errorGeneric);
-		return;
-	}
-	this._setOverview({treeIds:[ZmOrganizer.FOLDER, ZmOrganizer.SEARCH], fieldId:this._folderTreeCellId, omit:this._omit});
-	this._folderTreeView = this._getOverview().getTreeView(ZmOrganizer.FOLDER);
-	this._searchTreeView = this._getOverview().getTreeView(ZmOrganizer.SEARCH);
+	var account = appCtxt.multiAccounts ? appCtxt.getActiveAccount() : null;
+	var overviewParams = {
+		account: account,
+		treeIds: [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH],
+		fieldId: this._folderTreeCellId,
+		omit: this._omit,
+		overviewId: (account ? ([this.toString(),account.name].join("-")) : null),
+		forceShowRoot: true
+	};
+	var ov = this._setOverview(overviewParams, true);
+	this._folderTreeView = ov.getTreeView(ZmOrganizer.FOLDER);
+	this._searchTreeView = ov.getTreeView(ZmOrganizer.SEARCH);
 	this._search = params.search;
-	this._searchTreeView.setSelected(appCtxt.getFolderTree().root, true);
+	this._searchTreeView.setSelected(appCtxt.getFolderTree(account).root, true);
 
 	var overviewDiv = document.getElementById(this._overviewDivId);
 	if (overviewDiv) {
-		Dwt.setVisible(overviewDiv, params.showOverview)
+		var saveGlobal = appCtxt.multiAccounts && appCtxt.getSearchController().searchAllAccounts;
+		Dwt.setVisible(overviewDiv, (params.showOverview && !saveGlobal));
 	}
 
 	ZmDialog.prototype.popup.call(this);
@@ -63,20 +69,16 @@ function() {
 ZmNewSearchDialog.prototype._okButtonListener =
 function(ev) {
 	var results = this._getSearchData();
-	if (results)
+	if (results) {
 		DwtDialog.prototype._buttonListener.call(this, ev, results);
+	}
 };
 
 ZmNewSearchDialog.prototype._getSearchData =
 function() {
 
-	var msg = null;
-	
 	// make sure a parent was selected
 	var parentFolder = this._getOverview().getSelected();
-	if (!msg && !parentFolder) {
-		msg = ZmMsg.searchNameNoLocation;
-	}
 
 	// check name for presence and validity
 	var name = AjxStringUtil.trim(this._nameField.value);
@@ -92,7 +94,17 @@ function() {
 		msg = ZmMsg.folderOrSearchNameExists;
 	}
 
-	return (msg ? this._showError(msg) : {parent:parentFolder, name:name, search:this._search});
+	if (msg) {
+		return this._showError(msg);
+	} else {
+		var saveGlobal = appCtxt.multiAccounts && appCtxt.getSearchController().searchAllAccounts;
+		return {
+			parent: (saveGlobal ? appCtxt.getById(ZmOrganizer.ID_GLOBAL_SEARCHES) : parentFolder),
+			accountName: (saveGlobal ? appCtxt.accountList.mainAccount.name : null),
+			name: name,
+			search: this._search
+		};
+	}
 };
 
 ZmNewSearchDialog.prototype._enterListener =

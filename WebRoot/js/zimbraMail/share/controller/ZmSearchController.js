@@ -253,6 +253,8 @@ function(params) {
 		return;
 	}
 
+	params.searchAllAccounts = this.searchAllAccounts;
+
 	var respCallback = new AjxCallback(this, this._handleResponseSearch, [params.callback]);
 	this._doSearch(params, params.noRender, respCallback, params.errorCallback);
 };
@@ -303,7 +305,7 @@ function(search, noRender, changes, callback, errorCallback) {
 
 ZmSearchController.prototype.resetSearchAllAccounts =
 function() {
-	var button = this._searchAllAccounts && this._searchToolBar.getButton(ZmSearchToolBar.SEARCH_MENU_BUTTON);
+	var button = this.searchAllAccounts && this._searchToolBar.getButton(ZmSearchToolBar.SEARCH_MENU_BUTTON);
 	var menu = button && button.getMenu();
 	var allAccountsMI = menu && menu.getItemById(ZmSearchToolBar.MENUITEM_ID, ZmId.SEARCH_ALL_ACCOUNTS);
 
@@ -315,7 +317,7 @@ function() {
 			? this._getSharedImage(selItem) : selItem.getImage();
 		button.setImage(icon);
 
-		this._searchAllAccounts = false;
+		this.searchAllAccounts = false;
 	}
 };
 
@@ -431,7 +433,7 @@ function(params, noRender, callback, errorCallback) {
 	// if the user explicitly searched for all types, force mixed view
 	var isMixed = (params.searchFor == ZmId.SEARCH_ANY);
 
-	if (this._searchAllAccounts) {
+	if (params.searchAllAccounts) {
 		params.queryHint = this._generateQueryForAllAccounts(isMixed, types.getArray());
 		params.accountName = appCtxt.accountList.mainAccount.name;
 	}
@@ -676,7 +678,7 @@ function(ev) {
 	}
 
 	var params = {
-		search: this._results ? this._results.search : null,
+		search: this._results && this._results.search,
 		showOverview: (this._searchFor == ZmId.SEARCH_MAIL)
 	};
 	ZmController.showDialog(stc._getNewDialog(), stc._newCb, params);
@@ -720,10 +722,10 @@ function(ev, id) {
 
 	// search all accounts? Only applies to multi-account mbox
 	var allAccountsMI = menu.getItemById(ZmSearchToolBar.MENUITEM_ID, ZmId.SEARCH_ALL_ACCOUNTS);
-	this._searchAllAccounts = allAccountsMI && allAccountsMI.getChecked();
+	this.searchAllAccounts = allAccountsMI && allAccountsMI.getChecked();
 
 	if (id == ZmId.SEARCH_SHARED) {
-		var icon = this._searchAllAccounts
+		var icon = this.searchAllAccounts
 			? allAccountsMI.getImage() : selItem.getImage();
 
 		if (this._inclSharedItems) {
@@ -736,7 +738,7 @@ function(ev, id) {
 		btn.setImage(icon);
 	}
 	else if (id == ZmId.SEARCH_ALL_ACCOUNTS) {
-		var icon = (this._searchAllAccounts && !this._inclSharedItems)
+		var icon = (this.searchAllAccounts && !this._inclSharedItems)
 			? item.getImage()
 			: (this._inclSharedItems) ? this._getSharedImage(selItem) : selItem.getImage();
 		btn.setImage(icon);
@@ -749,7 +751,7 @@ function(ev, id) {
 		if (this._inclSharedItems) {
 			icon = this._getSharedImage(selItem);
 		}
-		else if (this._searchAllAccounts) {
+		else if (this.searchAllAccounts) {
 			icon = allAccountsMI.getImage();
 		}
 

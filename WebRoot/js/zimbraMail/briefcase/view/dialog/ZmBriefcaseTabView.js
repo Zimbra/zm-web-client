@@ -182,7 +182,7 @@ function(params) {
             treeIds: params.treeIds
         };
         overview = this._overview = opc.createOverview(ovParams);
-        overview.set(params.treeIds, {}, params.account, true)
+        overview.set(params.treeIds);
         document.getElementById(params.fieldId).appendChild(overview.getHtmlElement());
         var treeView = overview.getTreeView(ZmOrganizer.BRIEFCASE);
         treeView.addSelectionListener(new AjxListener(this, this._treeListener));

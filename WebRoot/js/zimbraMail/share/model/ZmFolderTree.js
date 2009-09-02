@@ -94,12 +94,10 @@ function(parent, obj, tree, elementType, path, accountId) {
 		ZmFolderTree._fillInFolder(folder, obj, path);
 		ZmFolderTree._traverse(folder, obj, tree, (path || []), elementType, accountId);
 	} else {
-		var type;
-		if (obj.id == ZmOrganizer.ID_GLOBAL_SEARCHES) {
-			type = ZmOrganizer.FOLDER;
-		} else {
-			type = obj.view ? ZmOrganizer.TYPE[obj.view] : parent ? parent.type : ZmOrganizer.FOLDER;
-		}
+		var type = obj.view
+			? (ZmOrganizer.TYPE[obj.view])
+			: (parent ? parent.type : ZmOrganizer.FOLDER);
+
 		if (!type) {
 			DBG.println(AjxDebug.DBG1, "No known type for view " + obj.view);
 			return;
@@ -114,7 +112,7 @@ function(parent, obj, tree, elementType, path, accountId) {
 				tree: tree,
 				path: path,
 				elementType: elementType,
-				accountId:accountId
+				accountId: accountId
 			};
 			app.addDeferredFolder(defParams);
 		} else {

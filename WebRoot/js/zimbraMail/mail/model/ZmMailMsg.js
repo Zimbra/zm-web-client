@@ -1596,8 +1596,8 @@ function(addrNodes, parentNode, isDraft, accountName) {
 
 		var addr, displayName = null;
 		if (this.offlineFromValue) {
-			addr = this.offlineFromValue.address;
-			displayName = this.offlineFromValue.name;
+			addr = this.offlineFromValue.addr.address;
+			displayName = this.offlineFromValue.addr.name;
 		} else {
 			if (onBehalfOf) {
 				addr = accountName;

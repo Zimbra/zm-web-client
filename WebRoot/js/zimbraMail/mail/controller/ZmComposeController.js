@@ -718,12 +718,6 @@ function(params) {
 	this._msgIds = params.msgIds;
 	this._accountName = params.accountName;
 
-	// bug fix #25708 - for multiaccount, cache the active account in case user
-	// switches while composing
-	if (!this._accountName && appCtxt.multiAccounts) {
-		this._accountName = appCtxt.getActiveAccount().name;
-	}
-
 	var identityCollection = appCtxt.getIdentityCollection();
 	var identity = (msg && msg.identity) ? msg.identity : identityCollection.selectIdentity(msg);
 	params.identity = identity;

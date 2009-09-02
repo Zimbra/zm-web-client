@@ -684,7 +684,7 @@ function(attId, isDraft, dummyMsg) {
 	}
 
 	if (this._fromSelect) {
-		msg.offlineFromValue = this._fromSelect.getValue();
+		msg.offlineFromValue = this._fromSelect.getSelectedOption();
 	}
 
 	/**
@@ -2164,7 +2164,9 @@ function(ev) {
 	var oldVal = ev._args.oldValue;
 	if (oldVal == newVal) { return; }
 
-	var newAccount = appCtxt.accountList.getAccount(newVal.accountId);
+	var newOption = this._fromSelect.getOptionWithValue(newVal);
+	var oldOption = this._fromSelect.getOptionWithValue(oldVal);
+	var newAccount = appCtxt.accountList.getAccount(newOption.accountId);
 	var sigId = newAccount.getIdentity().signature;
 	this._controller._accountName = newAccount.name;
 	this._controller.resetSignatureToolbar(sigId, newAccount);
@@ -2178,7 +2180,7 @@ function(ev) {
 	// if this message is a saved draft, check whether it needs to be moved
 	// based on newly selected value.
 	if (this._msg && this._msg.isDraft) {
-		var oldAccount = appCtxt.accountList.getAccount(oldVal.accountId);
+		var oldAccount = appCtxt.accountList.getAccount(oldOption.accountId);
 
 		// only re-save draft if both new account and old account are *not* zimbra accounts.
 		if (!(!newAccount.isZimbraAccount && !oldAccount.isZimbraAccount)) {
@@ -2455,30 +2457,46 @@ function(msg) {
 	this._fromSelect.clearOptions();
 
 	var ac = window.parentAppCtxt || window.appCtxt;
-
-	// figure out what the "active" account should be
-	var active = ac.getActiveAccount();
-	if (msg && msg.isDraft) {
-		var from = msg.getAddresses(AjxEmailAddress.FROM).get(0);
-		active = ac.accountList.getAccountByEmail(from.address);
-	}
-
+	var identity;
+	var active = appCtxt.getActiveAccount();
 	var accounts = ac.accountList.visibleAccounts;
+
 	for (var i = 0; i < accounts.length; i++) {
 		var acct = accounts[i];
 		if (acct.isMain) { continue; }
 
-		var isSelected = acct == active;
 		var identities = ac.getIdentityCollection(acct).getIdentities();
 		// todo - filter based on SMTP support - waiting on server support
 		for (var j = 0; j < identities.length; j++) {
-			var identity = identities[j];
+			identity = identities[j];
+
 			var addr = new AjxEmailAddress(identity.sendFromAddress, AjxEmailAddress.FROM, identity.sendFromDisplay);
-			addr.accountId = acct.id;
-			var option = new DwtSelectOption(addr, isSelected, addr.toString(), null, null, acct.getIcon());
+			var option = new DwtSelectOption(identity.id, false, addr.toString(), null, null, acct.getIcon());
+			option.addr = addr;
+			option.accountId = acct.id;
+
 			this._fromSelect.addOption(option);
 		}
 	}
+
+	var selectedIdentity;
+	if (msg) {
+		if (msg.isDraft) {
+			var email = msg.getAddress(AjxEmailAddress.FROM);
+			var account = ac.accountList.getAccountByEmail(email.address);
+			if (account) {
+				selectedIdentity = ac.getIdentityCollection(account).selectIdentity(msg, AjxEmailAddress.FROM);
+			}
+		} else {
+			selectedIdentity = ac.getIdentityCollection(account).selectIdentity(msg);
+		}
+	}
+
+	if (!selectedIdentity) {
+		selectedIdentity = ac.getIdentityCollection(active).defaultIdentity;
+	}
+
+	this._fromSelect.setSelectedValue(selectedIdentity.id);
 
 	if (this._acAddrSelectList) {
 		this._acAddrSelectList.setActiveAccount(active);
@@ -2582,7 +2600,11 @@ function(ev, addrType) {
 	var str = (this._field[curType].value && !(a[curType] && a[curType].length))
 		? this._field[curType].value : "";
 
-	var account = appCtxt.multiAccounts && appCtxt.accountList.getAccount(this._fromSelect.getValue().accountId);
+	var account;
+	if (appCtxt.multiAccounts) {
+		var addr = this._fromSelect.getSelectedOption().addr;
+		account = appCtxt.accountList.getAccountByEmail(addr.address);
+	}
 	this._contactPicker.popup(curType, a, str, account);
 };
 

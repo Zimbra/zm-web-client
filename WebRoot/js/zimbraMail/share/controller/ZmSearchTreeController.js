@@ -42,14 +42,15 @@ function() {
 };
 
 /**
-* Displays the tree of this type.
-*
-* @param overviewId		[constant]			overview ID
-* @param showUnread		[boolean]*			if true, unread counts will be shown
-* @param omit			[Object]*			hash of organizer IDs to ignore
-* @param forceCreate	[boolean]*			if true, tree view will be created
-* @param account		[ZmZimbraAccount]*	account we're showing tree for (if not currently active account)
-*/
+ * Displays the tree of this type.
+ *
+ * @param overviewId		[constant]			overview ID
+ * @param showUnread		[boolean]*			if true, unread counts will be shown
+ * @param omit				[Object]*			hash of organizer IDs to ignore
+ * @param forceCreate		[boolean]*			if true, tree view will be created
+ * @param account			[ZmZimbraAccount]*	account we're showing tree for (if not currently active account)
+ * @param forceShowRoot		[boolean]*			if true, show root tree item regardless of item count
+ */
 ZmSearchTreeController.prototype.show =
 function(params) {
 	var id = params.overviewId;
@@ -68,7 +69,9 @@ function(params) {
         params.collapsed = !(!setting || (appCtxt.get(setting, null, params.account) !== false));
 		this._setupNewOp(params);
 		this._treeView[id].set(params);
-		this._checkTreeView(id, params.account);
+		if (!params.forceShowRoot) {
+			this._checkTreeView(id, params.account);
+		}
 	}
 	
 	return this._treeView[id];
@@ -111,18 +114,18 @@ function(ev){
 
 // Private methods
 
-/*
-* Returns ops available for "Searches" container.
-*/
+/**
+ * Returns ops available for "Searches" container.
+ */
 ZmSearchTreeController.prototype._getHeaderActionMenuOps =
 function() {
 	return [ZmOperation.EXPAND_ALL,
             ZmOperation.BROWSE];
 };
 
-/*
-* Returns ops available for saved searches.
-*/
+/**
+ * Returns ops available for saved searches.
+ */
 ZmSearchTreeController.prototype._getActionMenuOps =
 function() {
 	return [ZmOperation.DELETE,
@@ -137,28 +140,31 @@ function() {
 	return ZmTreeController.prototype._getAllowedSubTypes.call(this);
 };
 
-/*
-* Returns a "New Saved Search" dialog.
-*/
+/**
+ * Returns a "New Saved Search" dialog.
+ */
 ZmSearchTreeController.prototype._getNewDialog =
 function() {
 	return appCtxt.getNewSearchDialog();
 };
 
-/*
-* Called when a left click occurs (by the tree view listener). The saved
-* search will be run.
-*
-* @param search		ZmSearchFolder		search that was clicked
-*/
+/**
+ * Called when a left click occurs (by the tree view listener). The saved
+ * search will be run.
+ *
+ * @param searchFolder		ZmSearchFolder		search that was clicked
+ */
 ZmSearchTreeController.prototype._itemClicked =
 function(searchFolder) {
 	if (searchFolder._showFoldersCallback) {
 		searchFolder._showFoldersCallback.run();
 		return;
 	}
-	var searchController = appCtxt.getSearchController();
-	searchController.redoSearch(searchFolder.search, false, {getHtml:appCtxt.get(ZmSetting.VIEW_AS_HTML)});
+	var params = {
+		getHtml: appCtxt.get(ZmSetting.VIEW_AS_HTML),
+		searchAllAccounts: (appCtxt.multiAccounts && searchFolder.isUnder(ZmOrganizer.ID_GLOBAL_SEARCHES))
+	};
+	appCtxt.getSearchController().redoSearch(searchFolder.search, false, params);
 };
 
 ZmSearchTreeController.prototype._getMoveParams =
@@ -171,19 +177,21 @@ function(dlg) {
 
 // Miscellaneous
 
-/*
-* Returns a title for moving a saved search.
-*/
+/**
+ * Returns a title for moving a saved search.
+ */
 ZmSearchTreeController.prototype._getMoveDialogTitle =
 function() {
 	return AjxMessageFormat.format(ZmMsg.moveSearch, this._pendingActionData.name);
 };
 
-/*
- * Shows or hides the tree view. It is hidden only if there are no saved searches that
- * belong to the owning app, and we have been told to hide empty tree views of this type.
+/**
+ * Shows or hides the tree view. It is hidden only if there are no saved
+ * searches that belong to the owning app, and we have been told to hide empty
+ * tree views of this type.
  * 
- * @param overviewId		[constant]		overview ID
+ * @param overviewId		[constant]			overview ID
+ * @param account			[ZmZimbraAccount]*	account to check tree view against
  */
 ZmSearchTreeController.prototype._checkTreeView =
 function(overviewId, account) {

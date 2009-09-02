@@ -159,10 +159,11 @@ function(params, forceSingle) {
 			headerClass:	"DwtTreeItem",
 			noTooltips:		true,
 			treeStyle:		params.treeStyle,
-			treeIds:		params.treeIds
+			treeIds:		params.treeIds,
+			account:		params.account
 		};
 		overview = this._overview[overviewId] = this._opc.createOverview(ovParams);
-		this._renderOverview(overview, params.treeIds, params.omit, params.noRootSelect);
+		this._renderOverview(overview, params.treeIds, params.omit, params.noRootSelect, params.forceShowRoot);
 		document.getElementById(params.fieldId).appendChild(overview.getHtmlElement());
 	}
 
@@ -186,10 +187,11 @@ function(params, forceSingle) {
  * @param treeIds		[array]				list of tree views to show
  * @param omit			[hash]*				IDs of organizers to exclude
  * @param noRootSelect	[boolean]*			if true, don't make root tree item(s) selectable
+ * @param forceShowRoot	[boolean]*			if true, show root tree item regardless of item count
  */
 ZmDialog.prototype._renderOverview =
-function(overview, treeIds, omit, noRootSelect) {
-	overview.set(treeIds, omit, true);
+function(overview, treeIds, omit, noRootSelect, forceShowRoot) {
+	overview.set(treeIds, omit, forceShowRoot);
 	if (!noRootSelect) {
 		for (var i = 0; i < treeIds.length; i++) {
 			var treeView = overview.getTreeView(treeIds[i]);

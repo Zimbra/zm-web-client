@@ -98,9 +98,14 @@ function(identity) {
 };
 
 ZmIdentityCollection.prototype.selectIdentity =
-function(mailMsg) {
+function(mailMsg, type) {
 	if (!appCtxt.get(ZmSetting.IDENTITIES_ENABLED) || !mailMsg) {
 		return this.defaultIdentity;
+	}
+
+	// Check if the a identity's address was in the given type field.
+	if (type) {
+		return this._selectIdentityFromAddresses(mailMsg, type);
 	}
 
 	// Check if the a identity's address was in the to field.
