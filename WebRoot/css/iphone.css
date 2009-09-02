@@ -487,8 +487,9 @@ form {
 select {
     height: 28px;
     vertical-align: middle !important;
-    padding: 0 5px;
+    padding: 0 0 0 5px;
 }
+
 .zo_select_button {
     max-width: 90px;
     white-space: nowrap;
