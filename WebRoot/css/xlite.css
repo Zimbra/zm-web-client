@@ -25,7 +25,9 @@ a{
 }
 .td{
     display:table-cell;
+	width: 50%;
 }
+
 #appbar{
     height:18px;
     line-height:18px;
