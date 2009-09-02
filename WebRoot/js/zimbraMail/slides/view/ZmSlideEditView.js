@@ -159,7 +159,7 @@ function (slideDiv) {
 };
 
 ZmSlideEditView.prototype.createSlide =
-function(ignorePreview, titleOnly, titleContent) {
+function(ignorePreview, titleOnly, titleContent, isPhotoAlbum) {
 
     var cdiv = this._currentSlideDiv;
 
@@ -180,7 +180,7 @@ function(ignorePreview, titleOnly, titleContent) {
     var bounds = Dwt.getBounds(this._slideContainer);
 
     var slideDiv = this._slideParent = document.createElement("div");
-    slideDiv.className = "slideparent";
+    slideDiv.className = (isPhotoAlbum ? "photoalbum" : "slideparent");
 
     this.resizeSlide(slideDiv);
 
@@ -191,7 +191,7 @@ function(ignorePreview, titleOnly, titleContent) {
 
     var bgDiv = this._currentSlideThemeDiv = document.createElement("div");
     bgDiv.className = "slidemaster";
-    bgDiv.innerHTML = this._themeManager.getMasterSlideContent();
+    bgDiv.innerHTML = isPhotoAlbum ? "" : this._themeManager.getMasterSlideContent();
     Dwt.setPosition(bgDiv, Dwt.ABSOLUTE_STYLE);
 
     slideDiv.appendChild(bgDiv);
@@ -204,7 +204,7 @@ function(ignorePreview, titleOnly, titleContent) {
 
     this._currentSlideDiv = div;
 
-    div.innerHTML = this._layoutManager.getSlideLayout(null, titleOnly, titleContent);
+    div.innerHTML = isPhotoAlbum ? "" : this._layoutManager.getSlideLayout(null, titleOnly, titleContent);
 
     if(!ignorePreview) {
         this.createPreviewSlide();
@@ -259,32 +259,58 @@ ZmSlideEditView.prototype._continueDeleteSlide =
 function() {
     this._syncPreview();
 
-    //decide next slide to be loaded from preview after deleting current slide
+
     var previewSlide = this.getNextPreviewSlideParent(this._previewSlideParent);
 
     if(!previewSlide) {
-        previewSlide = this.getPreviousPreviewSlideParent(this._previewSlideParent);
+        nextPreviewSlideParent = this.getPreviousPreviewSlideParent(this._previewSlideParent);
     }
 
     if(this._previewSlideParent && this._previewSlideParent.parentNode) {
         this._previewSlideParent.parentNode.removeChild(this._previewSlideParent);
     }
 
-    if(previewSlide) {
-        var div = previewSlide.firstChild;
+    if(nextPreviewSlideParent) {
+        var div = nextPreviewSlideParent.firstChild;
         this.clearCurrentSelection();
         this._currentSlideDiv.innerHTML = div.innerHTML;
         this._currentPreviewSlideDiv = div;
-        this._previewSlideParent = previewSlide;
+        this._previewSlideParent = nextPreviewSlideParent;
     }
 
 
-    if(!previewSlide) {
+    if(!nextPreviewSlideParent) {
         this.createSlide();
     }
 
 }
 
+/**
+ * This method is used to resize a slide div
+ * @param {DOMElement} slideDiv - slide node on left panel
+ */
+
+ZmSlideEditView.prototype.resizePreviewSlide =
+function(slideDiv) {
+    var bounds = Dwt.getBounds(this._previewContainer);
+    var wdPercent = 90;
+    var htPercent = (100/bounds.height)*((3/4)*0.9*bounds.width);
+    Dwt.setSize(slideDiv, wdPercent+"%", htPercent+"%");
+};
+
+/**
+ * This method is used to resize all preview slides on left panel
+ */
+ZmSlideEditView.prototype.resizeAllPreviewSlides =
+function() {
+    var node = this._previewContainer.firstChild;
+    while(node) {
+        if(node.className == "previewslideparent") {
+            this.resizePreviewSlide(node);
+        }
+        node = this.getNextPreviewSlideParent(node);
+    }
+};
 
 ZmSlideEditView.prototype.createPreviewSlide =
 function() {
@@ -293,17 +319,11 @@ function() {
     var div = this._currentPreviewSlideDiv = document.createElement("div");
     div.className = "preview";
 
-    var bounds = Dwt.getBounds(this._previewContainer);
-    var slideBounds = Dwt.getBounds(this._slideParent);
-
     var slideDiv = this._previewSlideParent = document.createElement("div");
     slideDiv.className = "previewslideparent";
     
-	var wdPercent = 90;
-	var htPercent = (100/bounds.height)*((3/4)*0.9*bounds.width);
+    this.resizePreviewSlide(slideDiv);
 
-	Dwt.setSize(slideDiv, wdPercent+"%", htPercent+"%");
-    
 	this._previewContainer.appendChild(slideDiv);
 
     this.associateItemWithElement(null, div, ZmSlideEditView.TYPE_PREVIEW);
@@ -400,6 +420,7 @@ ZmSlideEditView.prototype.setBounds =
 function(x, y, width, height) {
     DwtComposite.prototype.setBounds.call(this, x, y, width, height);
     this.initSlideContainer();
+    this.resizeAllPreviewSlides();
 };
 
 
@@ -545,10 +566,8 @@ function(ev, div) {
         if(div.parentNode && div.parentNode.className == "preview") {
             div = div.parentNode;
         }
-        this.clearCurrentSelection();
-        this._currentSlideDiv.innerHTML = div.innerHTML;
-        this._currentPreviewSlideDiv = div;
-        this._previewSlideParent = div.parentNode;
+
+        this.animateExpansion(div, this._currentSlideDiv);
         return true;
     }
 
@@ -568,6 +587,59 @@ function(ev, div) {
     this.clearCurrentSelection();
 
     return false;
+};
+
+ZmSlideEditView.prototype.animateExpansion =
+function(previewDiv, div2) {
+
+    if(this._currentPreviewSlideDiv == previewDiv) {
+        this._animateCallback(previewDiv);
+        return;
+    }
+
+    var previewSlide = previewDiv.parentNode;
+    var bounds1 = Dwt.toWindow(previewSlide, 0, 0, this.getHtmlElement(), true);
+    var size1 = Dwt.getSize(previewSlide);
+
+    //scroll bar into account
+    bounds1.y = bounds1.y - this._previewContainer.scrollTop;
+
+    var bounds2 = Dwt.toWindow(div2.parentNode, 0, 0, this.getHtmlElement(), true);
+    var size2 = Dwt.getSize(div2.parentNode);
+
+    var proxy = this.createSlideProxy(previewDiv.parentNode, bounds1, size1);
+    this.getHtmlElement().appendChild(proxy);
+
+    var beginParams = {x: bounds1.x, y: bounds1.y,  width: size1.x, height: size1.y};
+    var endParams = {x: bounds2.x, y: bounds2.y,  width: size2.x, height: size2.y};
+
+    var animate = this._animationMgr1;
+    if(!this._animationMgr1) {
+        animate = this._animationMgr1 = new DwtAnimate();
+    }
+    animate.setFramesPerSecond(25);
+    animate.setDuration(400);
+    animate.animateExpansion(proxy, beginParams, endParams, new AjxCallback(this, this._animateCallback, [previewDiv]));
+
+};
+
+ZmSlideEditView.prototype.createSlideProxy =
+function(previewSlide, bounds, size) {
+    var proxy = document.createElement("div");
+    Dwt.setPosition(proxy, Dwt.ABSOLUTE_STYLE);
+    Dwt.setBounds(proxy, bounds.x, bounds.y, size.x, size.y);
+    proxy.className = previewSlide.className;
+    proxy.innerHTML = previewSlide.innerHTML;
+    proxy.style.zIndex = 4000;    
+    return proxy;
+};
+
+ZmSlideEditView.prototype._animateCallback =
+function(div) {
+    this.clearCurrentSelection();
+    this._currentSlideDiv.innerHTML = div.innerHTML;
+    this._currentPreviewSlideDiv = div;
+    this._previewSlideParent = div.parentNode;
 };
 
 ZmSlideEditView.prototype.clearCurrentSelection =
@@ -1117,10 +1189,12 @@ function(url) {
 ZmSlideEditView.prototype._importPendingImages =
 function() {
     if(this._pendingSlides && this._pendingSlides.length > 0) {
+        //this.changeCSS('album');//cdebug
         var restUrl = this._pendingSlides.pop();
         var parts = AjxStringUtil.parseURL(restUrl);
         var fileName = (parts && parts.fileName) ? parts.fileName : '';
-        this.createSlide(null, true, fileName);
+        //todo: file name can be used if title slide is needed
+        this.createSlide(null, true, null, true);
         if(this.isImage(restUrl)) {
             this._insertImage(restUrl);
         }else {

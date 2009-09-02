@@ -53,6 +53,7 @@
 
 .preview {
  /*   border: 1px solid #999FA8;*/
+    cursor: pointer;
 	float: left;
     font-size: 6.3px;
 	margin: 5px 10px;

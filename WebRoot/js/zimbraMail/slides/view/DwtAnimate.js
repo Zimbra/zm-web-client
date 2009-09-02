@@ -16,7 +16,7 @@
 DwtAnimate = function() {
 	this._framesPerSecond = 22;
 	this._duration = 1000;
-	this._interval = 1000/this._framesPerSecond;	
+	this._interval = this._duration/this._framesPerSecond;	
 };
 
 DwtAnimate.prototype.setFramesPerSecond =
@@ -69,6 +69,53 @@ function(obj, elm, begin, end){
 
 }
 
+DwtAnimate.prototype.animateExpansion = 
+function(obj, beginParams, endParams, callback){
 
+  this._callback = callback;
+    
+  var x1      = parseFloat(beginParams.x);
+  var y1      = parseFloat(beginParams.y);
+  var width1  = parseFloat(beginParams.width);
+  var height1 = parseFloat(beginParams.height);
+
+  var x2      = parseFloat(endParams.x);
+  var y2      = parseFloat(endParams.y);
+  var width2  = parseFloat(endParams.width);
+  var height2 = parseFloat(endParams.height);
+
+  this.calculateInterval();
+
+  var referenceObj = this;
+
+
+  var diff  =  {left: (x2-x1), top: (y2-y1), width: (width2-width1), height: (height2-height1)};
+  var begin =  {left: x1, top: y1, width: width1, height: height1};
+  var styleProps = ["left", "top", "width", "height"];
+
+  AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._animateExpansion, [obj, diff, begin, styleProps, 1]), this._interval);
+};
+
+DwtAnimate.prototype._animateExpansion =
+function(obj, diff, begin, styleProps, frame){
+    if(frame > this._noOfFrames) {
+        if(this._callback) {
+            this._callback.run();
+        }        
+        obj.parentNode.removeChild(obj);
+        return;
+    }
+
+    var unit = 'px';
+    var noOfFrames = this._noOfFrames;
+    for(var j in styleProps) {
+        var elm = styleProps[j];
+        var increase= (diff[elm]*frame/noOfFrames)*(frame/noOfFrames)+begin[elm];
+        obj.style[elm]  = increase+unit;
+        //DBG.println("elm:" + elm + ",increase+unit:" + (increase+unit) + ", style:" +   obj.style[elm]);
+    }
+
+    AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._animateExpansion, [obj, diff, begin, styleProps, frame+1]), this._interval);
+};
 
 
