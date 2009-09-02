@@ -200,7 +200,7 @@
     <td colspan="3"  width="100%" >
         <%--<c:set var="isHtmlCont" value="${compose.contentType eq 'text/html' or not empty compose.htmlContent}" />--%>
         <c:set var="isHtmlCont" value="${not empty compose.htmlContent}" />
-		<c:set var="theBody" value="${isHtml ? (empty compose.htmlContent ?  fn:escapeXml(compose.content) : fn:escapeXml(compose.htmlContent)) : compose.content}"/>
+		<c:set var="theBody" value="${isHtml ? (empty compose.htmlContent ?  fn:escapeXml(compose.content) : fn:escapeXml(compose.htmlContent)) : fn:escapeXml(compose.content)}"/>
 		<c:if test="${isHtml}">
 			<c:set var="find" value="&gt;([\s\n\t ])+&lt;"/>
 			<c:set var="theBody" value="${zm:replaceAll(theBody, find,'&gt;&lt;' )}"/>
