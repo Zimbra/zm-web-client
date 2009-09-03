@@ -80,11 +80,6 @@ function() {
 	return ZmId.VIEW_TRAD;
 };
 
-ZmTradController.prototype._getItemType =
-function() {
-	return ZmItem.MSG;
-};
-
 ZmTradController.prototype._paginate = 
 function(view, bPageForward, convIdx) {
 	view = view ? view : this._currentView;
@@ -93,6 +88,8 @@ function(view, bPageForward, convIdx) {
 
 ZmTradController.prototype._resetNavToolBarButtons = 
 function(view) {
+	if (!this._navToolBar[view]) { return; }
+
 	ZmDoublePaneController.prototype._resetNavToolBarButtons.call(this, view);
 	this._navToolBar[view].setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previousPage);
 	this._navToolBar[view].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.nextPage);

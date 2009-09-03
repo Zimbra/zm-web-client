@@ -205,11 +205,6 @@ function() {
 	return ZmId.VIEW_TASKLIST;
 };
 
-ZmTaskListController.prototype._getItemType =
-function() {
-	return ZmItem.TASK;
-};
-
 ZmTaskListController.prototype._getViewType =
 function() {
 	return this._currentView;

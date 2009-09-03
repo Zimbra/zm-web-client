@@ -257,6 +257,7 @@ function(view) {
 
 ZmMsgController.prototype._resetNavToolBarButtons =
 function(view) {
+	if (!this._navToolBar[view]) { return; }
 	// NOTE: we purposely do not call base class here!
 	if (!appCtxt.isChildWindow) {
 		var list = this._msg.list && this._msg.list.getVector();

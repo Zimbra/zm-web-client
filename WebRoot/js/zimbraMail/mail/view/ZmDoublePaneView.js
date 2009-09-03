@@ -40,9 +40,7 @@ ZmDoublePaneView = function(params) {
 	params.id = ZmId.getViewId(ZmId.VIEW_MSG, null, view);
 	this._msgView = new ZmMailMsgView(params);
 
-	if (view == ZmId.VIEW_CONVLIST ||
-		view == ZmId.VIEW_TRAD)
-	{
+	if (view == ZmId.VIEW_CONVLIST || view == ZmId.VIEW_TRAD) {
 		this.setReadingPane();
 	}
 };
@@ -181,7 +179,9 @@ function(items) {
 	if (!this._controller.isReadingPaneOn()) {
 		this._selectFirstItem();
 	} else {
-		this._mailListView.scrollToTop();
+		if (!this._mailListView._isPageless) {
+			this._mailListView.scrollToTop();
+		}
 		if (this._controller._list && this._controller._list.size() > 0) {
 			this._msgView.set();
 		}

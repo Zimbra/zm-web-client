@@ -47,6 +47,11 @@ ZmListView = function(params) {
 		this._dndScrollCallback = new AjxCallback(null, DwtControl._dndScrollCallback, [params]);
 		this._dndScrollId = params.id;
 	}
+
+	this._isPageless = ZmApp.PAGELESS[this._controller._app._name];
+	if (this._isPageless) {
+		Dwt.setHandler(this._parentEl, DwtEvent.ONSCROLL, ZmListView.handleScroll);
+	}
 };
 
 ZmListView.prototype = new DwtListView;
@@ -97,14 +102,39 @@ function(list, sortField) {
 		}
 	}
 
-	var subList;
-	if (list instanceof ZmList) {
-		list.addChangeListener(this._listChangeListener);
-		subList = list.getSubList(this.offset, this.getLimit());
+	if (this._isPageless) {
+		if (this.offset > 0 && this._controller._searchResult) {
+			var search = this._controller._searchResult;
+			var items = search && search.getResults().getArray();
+			this.addItems(items);
+		} else {
+			list = (list instanceof ZmList) ? list.getVector() : list;
+			DwtListView.prototype.set.call(this, list, sortField);
+		}
+		var itemCountText = this._controller._itemCountText;
+		if (itemCountText) {
+			list = this._controller._list;
+			var sizeText = list.size() + (list.hasMore() ? "+" : "");
+			var typeKey = (list.size() == 1) ? ZmItem.MSG_KEY[this.type] : ZmItem.PLURAL_MSG_KEY[this.type];
+			var text = AjxMessageFormat.format(ZmMsg.itemCount, [sizeText, ZmMsg[typeKey]]);
+			itemCountText.setText(text);
+		}
+		if (!this._rowHeight) {
+			var item = list.get(0);
+			var row = item && this._getElFromItem(item);
+			this._rowHeight = (row && Dwt.getSize(row).y) || 20;
+		}
+		this._controller._searchResult = null;
 	} else {
-		subList = list;
+		var subList;
+		if (list instanceof ZmList) {
+			list.addChangeListener(this._listChangeListener);
+			subList = list.getSubList(this.offset, this.getLimit());
+		} else {
+			subList = list;
+		}
+		DwtListView.prototype.set.call(this, subList, sortField);
 	}
-	DwtListView.prototype.set.call(this, subList, sortField);
 };
 
 ZmListView.prototype.setUI =
@@ -114,8 +144,17 @@ function(defaultColumnSort) {
 };
 
 ZmListView.prototype.getLimit =
+function(newSearch) {
+	if (this._isPageless) {
+		return this._controller._app.getPagelessLimit(newSearch);
+	} else {
+		return appCtxt.get(ZmSetting.PAGE_SIZE);
+	}
+};
+
+ZmListView.prototype.getPagelessThreshold =
 function() {
-	return appCtxt.get(ZmSetting.PAGE_SIZE);
+	return Math.ceil(this.getLimit(true) / 5);
 };
 
 ZmListView.prototype.getReplenishThreshold =
@@ -828,7 +867,6 @@ ZmListView.prototype._relayout =
 function() {
 	DwtListView.prototype._relayout.call(this);
 	this._checkColumns();
-	
 };
 
 ZmListView.prototype._checkColumns =
@@ -846,4 +884,23 @@ function() {
 	appCtxt.set(ZmSetting.LIST_VIEW_COLUMNS, value, this.view);
 
 	this._getActionMenuForColHeader(true); // re-create action menu so order is correct
+};
+
+/**
+ * Scroll-based paging. Make sure we have at least one page of items below the visible list.
+ * 
+ * @param ev
+ */
+ZmListView.handleScroll =
+function(ev) {
+
+	var target = DwtUiEvent.getTarget(ev);
+	var lv = DwtControl.findControl(target);
+	if (!lv) { return; }
+	var h = Dwt.getSize(target).y;
+	var itemsVisible = Math.ceil(h / lv._rowHeight);
+	var itemsLeft = Math.floor((target.scrollHeight - (target.scrollTop + h)) / lv._rowHeight);
+	if (itemsLeft < lv.getPagelessThreshold()) {
+		lv._controller._paginate(lv._view, true);
+	}
 };

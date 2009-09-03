@@ -57,11 +57,6 @@ function() {
 	return ZmId.VIEW_VOICEMAIL;
 };
 
-ZmVoicemailListController.prototype._getItemType =
-function() {
-	return ZmItem.VOICEMAIL;
-};
-
 ZmVoicemailListController.prototype._createNewView = 
 function(view) {
 	var result = new ZmVoicemailListView(this._container, this, this._dropTgt);

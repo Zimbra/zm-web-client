@@ -213,11 +213,6 @@ function() {
 	return ZmId.VIEW_CONVLIST;
 };
 
-ZmConvListController.prototype._getItemType =
-function() {
-	return ZmItem.CONV;
-};
-
 ZmConvListController.prototype._setViewContents =
 function(view) {
 	this._mailListView._resetExpansion();
@@ -232,6 +227,7 @@ function(view, bPageForward, convIdx) {
 
 ZmConvListController.prototype._resetNavToolBarButtons = 
 function(view) {
+	if (!this._navToolBar[view]) { return; }
 	ZmDoublePaneController.prototype._resetNavToolBarButtons.call(this, view);
 	this._navToolBar[view].setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previousPage);
 	this._navToolBar[view].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.nextPage);

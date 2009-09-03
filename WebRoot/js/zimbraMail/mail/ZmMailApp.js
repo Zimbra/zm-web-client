@@ -700,6 +700,7 @@ function() {
 	ZmItem.registerItem(ZmItem.CONV,
 						{app:			ZmApp.MAIL,
 						 nameKey:		"conversation",
+						 pluralNameKey:	"conversations",
 						 icon:			"Conversation",
 						 soapCmd:		"ConvAction",
 						 itemClass:		"ZmConv",
@@ -717,6 +718,7 @@ function() {
 	ZmItem.registerItem(ZmItem.MSG,
 						{app:			ZmApp.MAIL,
 						 nameKey:		"message",
+						 pluralNameKey:	"messages",
 						 icon:			"Message",
 						 soapCmd:		"MsgAction",
 						 itemClass:		"ZmMailMsg",
@@ -786,7 +788,8 @@ function() {
 							  trashViewOp:			ZmOperation.SHOW_ONLY_MAIL,
 							  chooserSort:			10,
 							  defaultSort:			10,
-							  upsellUrl:			ZmSetting.MAIL_UPSELL_URL
+							  upsellUrl:			ZmSetting.MAIL_UPSELL_URL,
+							  pageless:				true
 							  });
 };
 
@@ -1321,13 +1324,13 @@ function(query, callback, response, type) {
 	types.add(type || this.getGroupMailBy());
 
 	var params = {
-		searchFor: ZmId.SEARCH_MAIL,
-		query: query,
-		types: types,
-		getHtml: appCtxt.get(ZmSetting.VIEW_AS_HTML, null, account),
-		accountName: (account && account.name),
-		callback: callback,
-		response: response
+		searchFor:		ZmId.SEARCH_MAIL,
+		query:			query,
+		types:			types,
+		getHtml:		appCtxt.get(ZmSetting.VIEW_AS_HTML, null, account),
+		accountName:	(account && account.name),
+		callback:		callback,
+		response:		response
 	};
 	params.errorCallback = new AjxCallback(this, this._handleErrorLaunch, params);
 	appCtxt.getSearchController().search(params);

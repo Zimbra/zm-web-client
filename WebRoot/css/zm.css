@@ -3842,7 +3842,7 @@ HTML>BODY .appt-selected .appt_allday_body
 
 
 .InviteSelectLabel {
-    text-align: right;   
+    text-align: right;
 }
 
 .ZmEditContactViewDetailsButton {
@@ -3893,4 +3893,8 @@ HTML>BODY .appt-selected .appt_allday_body
 	padding:.25em .5em;
 	text-align: right;
 	font-weight: bold;
+}
+
+.itemCountText {
+	padding-right: 15px;
 }

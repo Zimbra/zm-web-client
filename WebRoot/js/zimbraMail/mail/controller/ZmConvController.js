@@ -171,11 +171,6 @@ function() {
 	return ZmId.VIEW_CONV;
 };
 
-ZmConvController.prototype._getItemType =
-function() {
-	return ZmItem.MSG;
-};
-
 ZmConvController.prototype._setActiveSearch =
 function(view) {
 	// bug fix #7389 - do nothing!
@@ -348,6 +343,7 @@ function(parent, num) {
 
 ZmConvController.prototype._resetNavToolBarButtons =
 function(view) {
+	if (!this._navToolBar[view]) { return; }
 	ZmDoublePaneController.prototype._resetNavToolBarButtons.call(this, view);
 
 	var list = this._conv.list.getVector();

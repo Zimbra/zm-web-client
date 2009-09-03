@@ -60,6 +60,7 @@ ZmItem.prototype.constructor = ZmItem;
 
 ZmItem.APP 				= {};	// App responsible for item
 ZmItem.MSG_KEY 			= {};	// Type names
+ZmItem.PLURAL_MSG_KEY 	= {};	// msg key for plural of item name
 ZmItem.ICON 			= {};	// Representative icons
 ZmItem.RESULTS_LIST 	= {};	// Function for creating search results list
 
@@ -156,6 +157,7 @@ ZmItem.NOTES_SEPARATOR			= "*~*~*~*~*~*~*~*~*~*";
  * @param item			[constant]	item type
  * @param app			[constant]	app that handles this item type
  * @param nameKey		[string]	msg key for item name
+ * @param pluralameKey	[string]	msg key for plural of item name
  * @param icon			[string]	name of item's icon class
  * @param soapCmd		[string]	SOAP command for acting on this item
  * @param itemClass		[string]	name of class that represents this item
@@ -169,6 +171,7 @@ ZmItem.registerItem =
 function(item, params) {
 	if (params.app)				{ ZmItem.APP[item]					= params.app; }
 	if (params.nameKey)			{ ZmItem.MSG_KEY[item]				= params.nameKey; }
+	if (params.pluralNameKey)	{ ZmItem.PLURAL_MSG_KEY[item]		= params.pluralNameKey; }
 	if (params.icon)			{ ZmItem.ICON[item]					= params.icon; }
 	if (params.soapCmd)			{ ZmItem.SOAP_CMD[item]				= params.soapCmd; }
 	if (params.itemClass)		{ ZmList.ITEM_CLASS[item]			= params.itemClass; }

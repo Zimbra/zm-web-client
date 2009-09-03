@@ -678,12 +678,6 @@ function(ev) {
 	window.open(appContextPath+url, "_blank");
 };
 
-// Returns the type of item in the underlying list
-ZmContactListController.prototype._getItemType =
-function() {
-	return ZmItem.CONTACT;
-};
-
 
 // Callbacks
 

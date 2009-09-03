@@ -37,6 +37,8 @@ function() {
 
 ZmSearchResult.prototype.getResults =
 function(type) {
+
+	type = type || this.type;
 	if (!this._results) {
 		// probably got an exception - return an empty list
 		return ZmItem.RESULTS_LIST[type](this.search);

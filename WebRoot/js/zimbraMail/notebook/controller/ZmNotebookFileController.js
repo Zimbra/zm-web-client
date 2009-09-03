@@ -170,11 +170,6 @@ function() {
 	return ZmId.VIEW_NOTEBOOK_FILE;
 };
 
-ZmNotebookFileController.prototype._getItemType =
-function() {
-	return ZmItem.PAGE;
-};
-
 ZmNotebookFileController.prototype._createNewView =
 function(viewType) {
 	var result = new ZmFileListView({parent:this._container, posStyle:Dwt.ABSOLUTE_STYLE,

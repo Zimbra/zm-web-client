@@ -157,7 +157,7 @@ function(view, force) {
 			return;
 		}
 		var sortBy = appCtxt.get(ZmSetting.SORTING_PREF, view);
-		var limit = appCtxt.get(ZmSetting.PAGE_SIZE); // bug fix #3365
+		var limit = this._listView[this._currentView].getLimit(true);
 		var getHtml = appCtxt.get(ZmSetting.VIEW_AS_HTML);
 		var groupByItem = this._app.getGroupMailBy();
 		var params = {types:[groupByItem], offset:0, limit:limit, sortBy:sortBy, getHtml:getHtml};
@@ -454,8 +454,14 @@ function(view, arrowStyle) {
 		}
 		this._setReplyText(this._toolbar[view]);
 		this._toolbar[view].addOp(ZmOperation.FILLER);
-		var tb = new ZmNavToolBar({parent:this._toolbar[view], arrowStyle:arrowStyle, context:view});
-		this._setNavToolBar(tb, view);
+		if (ZmApp.PAGELESS[this._app._name]) {
+			this._toolbar[view].addOp(ZmOperation.TEXT);
+			this._itemCountText = this._toolbar[view].getButton(ZmOperation.TEXT);
+			this._itemCountText.addClassName("itemCountText");
+		} else {
+			var tb = new ZmNavToolBar({parent:this._toolbar[view], arrowStyle:arrowStyle, context:view});
+			this._setNavToolBar(tb, view);
+		}
 	}
 
 	this._setupViewMenu(view);

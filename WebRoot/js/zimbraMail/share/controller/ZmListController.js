@@ -105,7 +105,6 @@ function(searchResults, view) {
 	}
 	this.currentPage = 1;
 	this.maxPage = 1;
-	this.pageIsDirty = {};
 };
 
 ZmListController.prototype.getSearchString =
@@ -251,8 +250,6 @@ ZmListController.prototype._getActionMenuOps 	= function() {};
 // Attempts to process a nav toolbar up/down button click
 ZmListController.prototype._paginateDouble 		= function(bDoubleForward) {};
 
-// Returns the type of item in the underlying list
-ZmListController.prototype._getItemType			= function() {};
 
 // private and protected methods
 
@@ -1001,9 +998,9 @@ function() {
 
 ZmListController.prototype._cacheList =
 function(search, offset) {
-	var type = this._getItemType();
+
 	if (this._list) {
-		var newList = search.getResults(type).getVector();
+		var newList = search.getResults().getVector();
 		offset = offset ? offset : parseInt(search.getAttribute("offset"));
 		this._list.cache(offset, newList);
 	} else {
@@ -1049,22 +1046,40 @@ function(view, offset, limit, callback, isCurrent, lastId, lastSortVal) {
 */
 ZmListController.prototype._paginate =
 function(view, forward, loadIndex) {
+
+	this._searchResult = null;
+	var needMore = false;
 	var lv = this._listView[view];
-	var offset = lv.getNewOffset(forward);
+	var offset, max;
 	var limit = lv.getLimit();
+	if (lv._isPageless) {
+		offset = this._list.size();
+		needMore = true;
+	} else {
+		offset = lv.getNewOffset(forward);
+		needMore = (offset + limit > this._list.size());
+	}
 	this.currentPage = this.currentPage + (forward ? 1 : -1);
 	this.maxPage = Math.max(this.maxPage, this.currentPage);
 
 	lv.offset = offset; // cache new offset
 
 	// see if we're out of items and the server has more
-	if ((offset + limit > this._list.size() && this._list.hasMore()) || this.pageIsDirty[this.currentPage]) {
-		// figure out how many items we need to fetch
-		var delta = (offset + limit) - this._list.size();
-		var max = delta < limit && delta > 0 ? delta : limit;
-		if (max < limit) {
-			offset = ((offset + limit) - max) + 1;
+	if (needMore && this._list.hasMore()) {
+		if (lv._isPageless) {
+			max = limit;
+		} else {
+			// figure out how many items we need to fetch
+			var delta = (offset + limit) - this._list.size();
+			max = delta < limit && delta > 0 ? delta : limit;
+			if (max < limit) {
+				offset = ((offset + limit) - max) + 1;
+			}
 		}
+
+		// handle race condition - user has paged quickly and we don't want
+		// to do second fetch while one is pending
+		if (offset == this._lastOffset) { return false;	}
 
 		// figure out if this requires cursor-based paging
 		var list = lv.getList();
@@ -1075,8 +1090,9 @@ function(view, forward, loadIndex) {
 		// get next page of items from server; note that callback may be overridden
 		var respCallback = new AjxCallback(this, this._handleResponsePaginate, [view, false, loadIndex, offset]);
 		this._search(view, offset, max, respCallback, true, lastId, lastSortVal);
+		this._lastOffset = offset;
 		return false;
-	} else {
+	} else if (!lv._isPageless) {
 		this._resetOperations(this._toolbar[view], 0);
 		this._resetNavToolBarButtons(view);
 		this._setViewContents(view);
@@ -1096,23 +1112,26 @@ function(view, forward, loadIndex) {
 */
 ZmListController.prototype._handleResponsePaginate =
 function(view, saveSelection, loadIndex, offset, result, ignoreResetSelection) {
-	var searchResult = result.getResponse();
+
+	var searchResult = this._searchResult = result.getResponse();
 
 	// update "more" flag
 	this._list.setHasMore(searchResult.getAttribute("more"));
 
-	// cache search results into internal list
-	this._cacheList(searchResult, offset);
+	if (!this._listView[view]._isPageless) {
+		// cache search results into internal list
+		this._cacheList(searchResult, offset);
+	}
 
 	this._resetOperations(this._toolbar[view], 0);
 	this._resetNavToolBarButtons(view);
 
 	// remember selected index if told to
-	var selItem = saveSelection ? this._listView[this._currentView].getSelection()[0] : null;
-	var selectedIdx = selItem ? this._listView[this._currentView].getItemIndex(selItem) : -1;
+	var lv = this._listView[this._currentView];
+	var selItem = saveSelection ? lv.getSelection()[0] : null;
+	var selectedIdx = selItem ? lv.getItemIndex(selItem) : -1;
 
 	this._setViewContents(view);
-	this.pageIsDirty[this.currentPage] = false;
 
 	// bug fix #5134 - some views may not want to reset the current selection
 	if (!ignoreResetSelection) {
@@ -1223,7 +1242,7 @@ function(view, callback, result) {
 	this._cacheList(searchResult);
 
 	// update view w/ replenished items
-	var list = searchResult.getResults(this._getItemType()).getVector();
+	var list = searchResult.getResults().getVector();
 	this._listView[view].replenish(list);
 
 	// reset forward pagination button only
@@ -1251,7 +1270,7 @@ function(toolbar, view) {
 
 ZmListController.prototype._resetNavToolBarButtons =
 function(view) {
-	if (!this._navToolBar[view]) return;
+	if (!this._navToolBar[view]) { return; }
 
 	if (this._navToolBar[view].hasDoubleArrows) {
 		this._navToolBar[view].enable([ZmOperation.PAGE_DBL_BACK, ZmOperation.PAGE_DBL_FORW], false);
@@ -1278,15 +1297,17 @@ function(view) {
 
 ZmListController.prototype.enablePagination =
 function(enabled, view) {
-	if (!this._navToolBar[view]) return;
+	if (!this._navToolBar[view]) { return; }
 
 	if (enabled) {
 		this._resetNavToolBarButtons(view);
 	} else {
-		if (this._navToolBar[view].hasDoubleArrows)
+		if (this._navToolBar[view].hasDoubleArrows) {
 			this._navToolBar[view].enable([ZmOperation.PAGE_DBL_BACK, ZmOperation.PAGE_DBL_FORW], false);
-		if (this._navToolBar[view].hasSingleArrows)
+		}
+		if (this._navToolBar[view].hasSingleArrows) {
 			this._navToolBar[view].enable([ZmOperation.PAGE_BACK, ZmOperation.PAGE_FORWARD], false);
+		}
 	}
 };
 
