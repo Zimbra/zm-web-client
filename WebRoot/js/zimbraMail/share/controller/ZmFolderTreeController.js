@@ -67,12 +67,19 @@ function(params) {
 			}
 		}
 
-		// for offline, hide all system folders except Inbox and Trash
-		if (appCtxt.isOffline && params.account && params.account.type == ZmAccount.TYPE_POP) {
-			omit[ZmFolder.ID_SPAM] = true;
-			omit[ZmFolder.ID_SENT] = true;
-			omit[ZmFolder.ID_DRAFTS] = true;
-			omit[ZmFolder.ID_OUTBOX] = true;
+		if (appCtxt.isOffline && params.account) {
+			// for offline, hide drafts/outbox for all accounts except the Local one
+			if (!params.account.isMain) {
+				omit[ZmFolder.ID_DRAFTS] = true;
+				omit[ZmFolder.ID_OUTBOX] = true;
+			}
+			// for offline, hide all system folders except Inbox and Trash
+			else if (params.account.type == ZmAccount.TYPE_POP) {
+				omit[ZmFolder.ID_SPAM]   = true;
+				omit[ZmFolder.ID_SENT]   = true;
+				omit[ZmFolder.ID_DRAFTS] = true;
+				omit[ZmFolder.ID_OUTBOX] = true;
+			}
 		}
 	}
 	params.omit = omit;
@@ -270,21 +277,21 @@ function() {
 	return appCtxt.getNewFolderDialog();
 };
 
-/*
-* Returns a "Rename Folder" dialog.
-*/
+/**
+ * Returns a "Rename Folder" dialog.
+ */
 ZmFolderTreeController.prototype._getRenameDialog =
 function() {
 	return appCtxt.getRenameFolderDialog();
 };
 
-/*
-* Called when a left click occurs (by the tree view listener). The folder that
-* was clicked may be a search, since those can appear in the folder tree. The
-* appropriate search will be performed.
-*
-* @param folder		ZmOrganizer		folder or search that was clicked
-*/
+/**
+ * Called when a left click occurs (by the tree view listener). The folder that
+ * was clicked may be a search, since those can appear in the folder tree. The
+ * appropriate search will be performed.
+ *
+ * @param folder		[ZmOrganizer]		folder or search that was clicked
+ */
 ZmFolderTreeController.prototype._itemClicked =
 function(folder) {
 	if (folder.type == ZmOrganizer.SEARCH) {
@@ -306,9 +313,6 @@ function(folder) {
 		}
 		var sc = appCtxt.getSearchController();
 
-		if (appCtxt.multiAccounts) {
-			sc.resetSearchAllAccounts();
-		}
 		var account = folder.accountId && appCtxt.accountList.getAccount(folder.accountId);
 		var params = {
 			query: folder.createQuery(),
@@ -319,18 +323,37 @@ function(folder) {
 			accountName: (account && account.name)
 		};
 
-		// make sure we have permissions for this folder (in case an "external"
-		// server was down during account load)
-		if (appCtxt.multiAccounts && folder.link && folder.shares == null) {
-			var folderTree = appCtxt.getFolderTree();
-			if (folderTree) {
-				var callback = new AjxCallback(this, this._getPermissionsResponse, [params]);
-				folderTree.getPermissions({callback:callback, folderIds:[folder.id]});
+		if (appCtxt.multiAccounts) {
+			// make sure we have permissions for this folder (in case an "external"
+			// server was down during account load)
+			if (folder.link && folder.shares == null) {
+				var folderTree = appCtxt.getFolderTree();
+				if (folderTree) {
+					var callback = new AjxCallback(this, this._getPermissionsResponse, [params]);
+					folderTree.getPermissions({callback:callback, folderIds:[folder.id]});
+				}
+				return;
 			}
-		} else {
-			sc.search(params);
+
+			sc.resetSearchAllAccounts();
+
+			if (folder.id == ZmFolder.ID_DRAFTS ||
+				folder.id == ZmFolder.ID_OUTBOX)
+			{
+				params.callback = new AjxCallback(this, this._handleSearch, [sc, params.query]);
+				params.query = " ";
+				params.queryHint = appCtxt.accountList.generateQuery(folder.id);
+			}
 		}
+
+		sc.search(params);
 	}
+};
+
+ZmFolderTreeController.prototype._handleSearch =
+function(sc, query) {
+	sc.currentSearch.query = query;
+	sc.getSearchToolbar().setSearchFieldValue(query);
 };
 
 ZmFolderTreeController.prototype._getPermissionsResponse =
@@ -371,13 +394,13 @@ function(folder) {
 	ZmTreeController.prototype._syncFeeds.call(this, folder);
 };
 
-/*
-* Makes a request to add a new item to the tree.
-*
-* @param treeView	[ZmTreeView]	a tree view
-* @param parentNode	[DwtTreeItem]	node under which to add the new one
-* @param organizer	[ZmOrganizer]	organizer for the new node
-* @param index		[int]*			position at which to add the new node
+/**
+ * Makes a request to add a new item to the tree.
+ *
+ * @param treeView		[ZmTreeView]	a tree view
+ * @param parentNode	[DwtTreeItem]	node under which to add the new one
+ * @param organizer		[ZmOrganizer]	organizer for the new node
+ * @param idx			[int]*			position at which to add the new node
  */
 ZmFolderTreeController.prototype._addNew =
 function(treeView, parentNode, organizer, idx) {

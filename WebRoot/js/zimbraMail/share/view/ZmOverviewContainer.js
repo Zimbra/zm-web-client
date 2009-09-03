@@ -176,6 +176,8 @@ function(params) {
 		var header = this._headerItems[headerDataId];
 		if (header) {
 			header.__isZimlet = true;
+			acct = appCtxt.accountList.mainAccount;
+			header.setExpanded(appCtxt.get(ZmSetting.ACCOUNT_TREE_OPEN, null, acct));
 		}
 	}
 };
@@ -358,8 +360,13 @@ function(ev) {
 
 ZmOverviewContainer.prototype._treeListener =
 function(ev) {
+	var acct;
 	var header = ev.item;
-	var acct = header && appCtxt.accountList.getAccount(header.getData(Dwt.KEY_ID));
+	if (header) {
+		acct = header.__isZimlet
+			? appCtxt.accountList.mainAccount
+			: appCtxt.accountList.getAccount(header.getData(Dwt.KEY_ID));
+	}
 	if (!acct) { return; }
 
 	if (appCtxt.getCurrentAppName() != ZmApp.PREFERENCES &&
@@ -371,10 +378,12 @@ function(ev) {
 			appCtxt.set(ZmSetting.ACCOUNT_TREE_OPEN, expanded, null, null, null, acct);
 		}
 
-		if (expanded) {
-			header.setText(acct.getDisplayName());
-		} else {
-			this._setAccountHeaderLabel(acct, header);
+		if (!header.__isZimlet) {
+			if (expanded) {
+				header.setText(acct.getDisplayName());
+			} else {
+				this._setAccountHeaderLabel(acct, header);
+			}
 		}
 	}
 };

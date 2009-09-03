@@ -245,7 +245,9 @@ function(menu) {
  */
 ZmSearchController.prototype.search =
 function(params) {
-	if (params.searchFor != ZmItem.APPT && (!(params.query && params.query.length))) { return; }
+	if (params.searchFor != ZmItem.APPT && (!params.query && !params.queryHint)) {
+		return;
+	}
 
 	// if the search string starts with "$set:" then it is a command to the client
 	if (params.query.indexOf("$set:") == 0 || params.query.indexOf("$cmd:") == 0) {
@@ -462,7 +464,7 @@ function(params, noRender, callback, errorCallback) {
 		var controller = AjxDispatcher.run("GetCalController");
 		if (controller && types.contains(ZmItem.APPT)) {
 			controller.handleUserSearch(params, respCallback);
-		}else {
+		} else {
             search.execute({callback:respCallback, errorCallback:errorCallback});            
         }
 	} else {

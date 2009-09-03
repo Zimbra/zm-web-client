@@ -184,6 +184,11 @@
 	cursor: pointer;
 }
 
+.ZmOverviewLocalHeader .imageCell,
+.ZmOverviewZimletHeader .imageCell {
+	@ImagePadding@
+}
+
 .ZmOverviewZimletHeader,
 .ZmOverviewZimletHeader-actioned,
 .ZmOverviewZimletHeader-selected,
