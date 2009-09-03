@@ -185,7 +185,13 @@
 }
 
 .ZmOverviewLocalHeader .imageCell,
-.ZmOverviewZimletHeader .imageCell {
+.ZmOverviewLocalHeader-actioned .imageCell,
+.ZmOverviewLocalHeader-selected .imageCell,
+.ZmOverviewLocalHeader-selected-focused .imageCell,
+.ZmOverviewZimletHeader .imageCell,
+.ZmOverviewZimletHeader-actioned .imageCell,
+.ZmOverviewZimletHeader-selected .imageCell,
+.ZmOverviewZimletHeader-selected-focused .imageCell {
 	@ImagePadding@
 }
 

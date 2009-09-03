@@ -128,11 +128,11 @@ ZmFolder.SORT_ORDER[ZmFolder.ID_CHATS]			= 2;
 ZmFolder.SORT_ORDER[ZmFolder.ID_SENT]			= 3;
 ZmFolder.SORT_ORDER[ZmFolder.ID_DRAFTS]			= 4;
 ZmFolder.SORT_ORDER[ZmFolder.ID_SPAM]			= 5;
-ZmFolder.SORT_ORDER[ZmFolder.ID_TRASH]			= 6;
-ZmFolder.SORT_ORDER[ZmFolder.ID_OUTBOX]			= 7;
+ZmFolder.SORT_ORDER[ZmFolder.ID_OUTBOX]			= 6;
+ZmFolder.SORT_ORDER[ZmFolder.ID_TRASH]			= 7;
 ZmFolder.SORT_ORDER[ZmFolder.ID_SYNC_FAILURES]	= 8;
 ZmFolder.SORT_ORDER[ZmFolder.ID_SEP]			= 9;
-ZmFolder.SORT_ORDER[ZmFolder.ID_ATTACHMENTS]    = 99;      //Last on the list
+ZmFolder.SORT_ORDER[ZmFolder.ID_ATTACHMENTS]    = 99; // Last
 
 // character codes for "tcon" attribute in conv action request, which controls
 // which folders are affected
@@ -150,7 +150,7 @@ ZmFolder.HIDE_ID[ZmOrganizer.ID_NOTIFICATION_MP]= true;
 
 // Hide folders migrated from Outlook mailbox
 ZmFolder.HIDE_NAME = {};
-//ZmFolder.HIDE_NAME["Journal"]	= true;
+//ZmFolder.HIDE_NAME["Journal"]		= true;
 //ZmFolder.HIDE_NAME["Notes"]		= true;
 //ZmFolder.HIDE_NAME["Outbox"]		= true;
 //ZmFolder.HIDE_NAME["Tasks"]		= true;

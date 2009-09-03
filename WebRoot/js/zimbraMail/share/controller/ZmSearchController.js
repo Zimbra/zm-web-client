@@ -454,7 +454,8 @@ function(params, noRender, callback, errorCallback) {
 	params.sortBy = params.sortBy || this._getSuitableSortBy(types);
 	params.types = types;
 	var search = new ZmSearch(params);
-	var respCallback = new AjxCallback(this, this._handleResponseDoSearch, [search, noRender, isMixed, callback]);
+	var args = [search, noRender, isMixed, callback, params.noUpdateOverview];
+	var respCallback = new AjxCallback(this, this._handleResponseDoSearch, args);
 	if (!errorCallback) {
 		errorCallback = new AjxCallback(this, this._handleErrorDoSearch, [search, isMixed]);
 	}
@@ -472,16 +473,18 @@ function(params, noRender, callback, errorCallback) {
 	}
 };
 
-/*
-* Takes the search result and hands it to the appropriate controller for display.
-*
-* @param search			[ZmSearch]
-* @param noRender		[boolean]
-* @param callback		[AjxCallback]*
-* @param result			[ZmCsfeResult]
-*/
+/**
+ * Takes the search result and hands it to the appropriate controller for display.
+ *
+ * @param search			[ZmSearch]		contains search info used to run search against server
+ * @param noRender			[boolean]		skip rendering results
+ * @param isMixed			[boolean]*		in mixed mode?
+ * @param callback			[AjxCallback]*	callback to run after processing search response
+ * @param noUpdateOverview	[boolean]*		skip updating the overview
+ * @param result			[ZmCsfeResult]	search results
+ */
 ZmSearchController.prototype._handleResponseDoSearch =
-function(search, noRender, isMixed, callback, result) {
+function(search, noRender, isMixed, callback, noUpdateOverview, result) {
 	if (this._searchFor == ZmItem.APPT) {
 		this._results = new ZmSearchResult(search);
 		return;
@@ -498,7 +501,7 @@ function(search, noRender, isMixed, callback, result) {
 
 	// bug fix #34776 - don't show search results if user is in the composer
 	if (!noRender) {
-		this._showResults(results, search, isMixed);
+		this._showResults(results, search, isMixed, noUpdateOverview);
 	}
 
 	if (callback) {
@@ -507,7 +510,7 @@ function(search, noRender, isMixed, callback, result) {
 };
 
 ZmSearchController.prototype._showResults =
-function(results, search, isMixed) {
+function(results, search, isMixed, noUpdateOverview) {
 	// allow old results to dtor itself
 	if (this._results && (this._results.type == results.type) && this._results.dtor) {
 		this._results.dtor();
@@ -527,7 +530,7 @@ function(results, search, isMixed) {
 
 	// show results based on type - may invoke package load
 	var resultsType = isMixed ? ZmItem.MIXED : results.type;
-	var loadCallback = new AjxCallback(this, this._handleLoadShowResults, [results, search]);
+	var loadCallback = new AjxCallback(this, this._handleLoadShowResults, [results, search, noUpdateOverview]);
 	var app = appCtxt.getApp(ZmItem.APP[resultsType]);
 	app.currentSearch = search;
 	app.currentQuery = search.query;
@@ -535,9 +538,11 @@ function(results, search, isMixed) {
 };
 
 ZmSearchController.prototype._handleLoadShowResults =
-function(results, search) {
+function(results, search, noUpdateOverview) {
 	appCtxt.setCurrentList(results.getResults(results.type));
-	this._updateOverview(search);
+	if (!noUpdateOverview) {
+		this._updateOverview(search);
+	}
 	DBG.timePt("render search results");
 };
 
