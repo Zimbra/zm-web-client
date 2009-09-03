@@ -82,7 +82,7 @@ ZmSearch.JOIN_OR	= 2;
 
 ZmSearch.TYPE_MAP = {};
 
-ZmSearch.DEFAULT_LIMIT = 25;
+ZmSearch.DEFAULT_LIMIT = DwtListView.DEFAULT_LIMIT;
 
 // Sort By
 ZmSearch.DATE_DESC 		= "dateDesc";
@@ -523,15 +523,7 @@ function(soapDoc) {
 
 	// always set limit (init to user pref for page size if not provided)
 	if (!this.limit) {
-		if (this.contactSource && this.types.size() == 1) {
-			this.limit = appCtxt.get(ZmSetting.CONTACTS_PER_PAGE);
-		} else if (appCtxt.get(ZmSetting.MAIL_ENABLED)) {
-			this.limit = appCtxt.get(ZmSetting.PAGE_SIZE);
-		} else if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-			this.limit = appCtxt.get(ZmSetting.CONTACTS_PER_PAGE);
-		} else {
-			this.limit = ZmSearch.DEFAULT_LIMIT;
-		}
+		this.limit = this._getLimit();
 	}
 	method.setAttribute("limit", this.limit);
 
@@ -588,15 +580,7 @@ function(req) {
 
 	// always set limit (init to user pref for page size if not provided)
 	if (!this.limit) {
-		if (this.contactSource && this.types.size() == 1) {
-			this.limit = appCtxt.get(ZmSetting.CONTACTS_PER_PAGE);
-		} else if (appCtxt.get(ZmSetting.MAIL_ENABLED)) {
-			this.limit = appCtxt.get(ZmSetting.PAGE_SIZE);
-		} else if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-			this.limit = appCtxt.get(ZmSetting.CONTACTS_PER_PAGE);
-		} else {
-			this.limit = ZmSearch.DEFAULT_LIMIT;
-		}
+		this.limit = this._getLimit();
 	}
 	req.limit = this.limit;
 
@@ -610,6 +594,27 @@ function(req) {
 	if (this.field) {
 		req.field = this.field;
 	}
+};
+
+ZmSearch.prototype._getLimit =
+function() {
+
+	var app, setting;
+	if (this.contactSource && this.types.size() == 1) {
+		app = ZmApp.CONTACTS;
+		setting = ZmSetting.CONTACTS_PER_PAGE;
+	} else if (appCtxt.get(ZmSetting.MAIL_ENABLED)) {
+		app = ZmApp.MAIL;
+		setting = ZmSetting.PAGE_SIZE;
+	} else if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+		app = ZmApp.CONTACTS;
+		setting = ZmSetting.CONTACTS_PER_PAGE;
+	} else {
+		return ZmSearch.DEFAULT_LIMIT;
+	}
+
+	return ZmApp.PAGELESS[app] ? appCtxt.getApp(app).getPagelessLimit(true) :
+		   						 appCtxt.get(setting);
 };
 
 ZmSearch.IS_OP	= {"in":true, "inid":true, "is":true, "tag":true};
