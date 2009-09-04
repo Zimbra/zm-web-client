@@ -687,3 +687,46 @@ div.ZaSearchBuilderOptionRemoveAll table  {
 .licenseWillExpire {
 	background-color: #FFBB20 ;
 }
+
+/* container (div) for each item in the tree */
+.AdminTreeItem {
+	@TreeItem@
+	@ImagePadding@
+	white-space: nowrap;	/* ??? */
+}
+
+/* text style for name of a normal tree item */
+.AdminTreeItem-Text {
+	@TreeItemText@
+}
+.AdminTreeItem-selected {
+	@TreeItem@
+	@ImagePadding@	
+	@TreeItemSpacing-selected@
+	@SelectedBg-blurred@
+}
+
+/* text style for name of a selected and focused tree item */
+.AdminTreeItem-selected-focused {
+	@SelectedBg@
+	@ImagePadding@
+}
+
+/* text style for a right-clicked tree item */
+.AdminTreeItem-actioned {
+	@RightClickBg@
+	@ImagePadding@
+}
+
+/* text style for a tree item when dragged over */
+.AdminTreeItem-dragOver {
+	@DropBg@
+	@DropText@
+	@ImagePadding@
+}
+
+/* text style for tree item that performs action on single click */
+.AdminTreeItem-hover {
+	@ImagePadding@
+	text-decoration: underline;
+}
