@@ -108,11 +108,12 @@ function(list, sortField) {
 			var items = search && search.getResults().getArray();
 			this.addItems(items);
 		} else {
+			var lvList = list;
 			if (list instanceof ZmList) {
 				list.addChangeListener(this._listChangeListener);
-				list = list.getVector();
+				lvList = list.getSubList(0, list.size());
 			}
-			DwtListView.prototype.set.call(this, list, sortField);
+			DwtListView.prototype.set.call(this, lvList, sortField);
 		}
 		var itemCountText = this._controller._itemCountText;
 		if (itemCountText) {

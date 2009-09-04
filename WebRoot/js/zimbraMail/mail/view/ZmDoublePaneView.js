@@ -178,10 +178,8 @@ function(items) {
 	this._mailListView.set(items, ZmItem.F_DATE);
 	if (!this._controller.isReadingPaneOn()) {
 		this._selectFirstItem();
-	} else {
-		if (!this._mailListView._isPageless) {
-			this._mailListView.scrollToTop();
-		}
+	} else if (!this._mailListView._isPageless) {
+		this._mailListView.scrollToTop();
 		if (this._controller._list && this._controller._list.size() > 0) {
 			this._msgView.set();
 		}

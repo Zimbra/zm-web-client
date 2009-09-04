@@ -1088,6 +1088,9 @@ function(view, forward, loadIndex) {
 		var lastId = lastSortVal ? lastItem.id : null;
 
 		// get next page of items from server; note that callback may be overridden
+		if (this._itemCountText) {
+			this._itemCountText.setText(ZmMsg.loading);
+		}
 		var respCallback = new AjxCallback(this, this._handleResponsePaginate, [view, false, loadIndex, offset]);
 		this._search(view, offset, max, respCallback, true, lastId, lastSortVal);
 		this._lastOffset = offset;
@@ -1118,10 +1121,7 @@ function(view, saveSelection, loadIndex, offset, result, ignoreResetSelection) {
 	// update "more" flag
 	this._list.setHasMore(searchResult.getAttribute("more"));
 
-	if (!this._listView[view]._isPageless) {
-		// cache search results into internal list
-		this._cacheList(searchResult, offset);
-	}
+	this._cacheList(searchResult, offset);
 
 	this._resetOperations(this._toolbar[view], 0);
 	this._resetNavToolBarButtons(view);
