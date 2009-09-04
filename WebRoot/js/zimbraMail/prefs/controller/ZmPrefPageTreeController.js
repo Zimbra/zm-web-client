@@ -55,7 +55,7 @@ function(params) {
 			// for multi-account mbox, child accounts only show a select few pref options
 			var organizer = ZmPrefPage.createFromSection(section);
 			organizer.pageId = tabKey;
-			organizer.accountId = account && account.id;
+			organizer.account = account;
 			organizers.push(organizer);
 		}
 	}
@@ -171,10 +171,8 @@ function(tabView, ev) {
 
 ZmPrefPageTreeController.prototype._handleMultiAccountItemSelection =
 function(ev, overview, treeItem, item) {
-	var accountId = item && item.accountId;
-
-	if (this._currentAccount.id != accountId) {
-		this._currentAccount = appCtxt.accountList.getAccount(accountId);
+	if (this._currentAccount != item.account) {
+		this._currentAccount = item.account;
 
 		var prefsController = appCtxt.getApp(ZmApp.PREFERENCES).getPrefController();
 		var prefsView = prefsController.getPrefsView();

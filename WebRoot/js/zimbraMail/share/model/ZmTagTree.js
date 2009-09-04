@@ -34,11 +34,11 @@ function() {
 };
 
 ZmTagTree.prototype.loadFromJs =
-function(tagsObj, type, accountId) {
+function(tagsObj, type, account) {
 	if (!tagsObj || !tagsObj.tag || !tagsObj.tag.length) return;
 
 	for (var i = 0; i < tagsObj.tag.length; i++) {
-		ZmTag.createFromJs(this.root, tagsObj.tag[i], this, null, accountId);
+		ZmTag.createFromJs(this.root, tagsObj.tag[i], this, null, account);
 	}
 	var children = this.root.children.getArray();
 	if (children.length)

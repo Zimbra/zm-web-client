@@ -402,14 +402,13 @@ function(callback,folderId,results) {
 
 ZmBriefcaseController.prototype.searchFolder =
 function(folderId, callback) {
-	var folder = appCtxt.getById(folderId);
-	var account = folder && folder.accountId && appCtxt.accountList.getAccount(folder.accountId);
 	var soapDoc = AjxSoapDoc.create("SearchRequest", "urn:zimbraMail");
 	soapDoc.setMethodAttribute("types", ZmSearch.TYPE[ZmItem.BRIEFCASE]);
 	soapDoc.setMethodAttribute("limit", "250");
 	soapDoc.set("query", ('inid:"'+folderId+'"'));
 
-	var params = { soapDoc:soapDoc, noBusyOverlay:false, accountName: (account && account.name) };
+	var folder = appCtxt.getById(folderId);
+	var params = { soapDoc:soapDoc, noBusyOverlay:false, accountName: (folder && folder.account && folder.account.name) };
 	var response = appCtxt.getAppController().sendRequest(params);
 	this.handleSearchResponse(folderId, response, callback);
 };

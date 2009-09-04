@@ -411,7 +411,6 @@ function(account) {
 	if (!this._actionMenu) {
 		var ops = [
 			ZmOperation.NEW_FOLDER,
-			ZmOperation.EXPAND_ALL,
 			ZmOperation.SYNC
 		];
 		var args = [appCtxt.getShell(), ops, account];
@@ -458,11 +457,9 @@ function(ev) {
 		if (tc) {
 			tc._actionedOrganizer = null;
 			var account = appCtxt.accountList.getAccount(this._actionedHeaderItem.getData(Dwt.KEY_ID));
+			tc._actionedOrganizer = appCtxt.getFolderTree(account).root;
 			tc._newListener(ev, account);
 		}
-	}
-	else if (opId == ZmOperation.EXPAND_ALL) {
-		this._actionedHeaderItem.setExpanded(true, true);
 	}
 	else if (opId == ZmOperation.SYNC) {
 		var account = appCtxt.accountList.getAccount(this._actionedHeaderItem.getData(Dwt.KEY_ID));

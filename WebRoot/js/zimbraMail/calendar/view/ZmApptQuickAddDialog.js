@@ -359,7 +359,6 @@ function(ev) {
 	var dlg = appCtxt.getChooseFolderDialog();
 	var callback = new AjxCallback(this, this._folderPickerCallback, [dlg]);
 	var folder = this._calItem && appCtxt.getById(this._calItem.folderId);
-	var account = folder && appCtxt.accountList.getAccount(folder.accountId);
 
 	var params = {
 		overviewId:	dlg.getOverviewId(ZmApp.CALENDAR),
@@ -371,7 +370,7 @@ function(ev) {
 	params.omit[ZmFolder.ID_TRASH] = true;
 	params.omit[ZmOrganizer.ID_AUTO_ADDED] = true;
 
-	ZmController.showDialog(dlg, callback, params, account);
+	ZmController.showDialog(dlg, callback, params, folder.account);
 };
 
 ZmApptQuickAddDialog.prototype._folderPickerCallback =

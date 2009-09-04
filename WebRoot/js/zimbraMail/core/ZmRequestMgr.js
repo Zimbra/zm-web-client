@@ -511,7 +511,7 @@ function(type, unread, obj, objType, account) {
 	appCtxt.setTree(type, tree, account);
 	tree.addChangeListener(this._unreadListener);
 	tree.getUnreadHash(unread);
-	tree.loadFromJs(obj, objType, (account && account.id));
+	tree.loadFromJs(obj, objType, account);
 };
 
 // To handle notifications, we keep track of all the models in use. A model could

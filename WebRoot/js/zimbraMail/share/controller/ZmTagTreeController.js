@@ -138,12 +138,11 @@ function(tag) {
 		default:                searchFor = ZmId.SEARCH_MAIL; break;
 	}
 
-	var account = tag.accountId && appCtxt.accountList.getAccount(tag.accountId);
 	var params = {
 		query: tag.createQuery(),
 		searchFor: searchFor,
 		getHtml: appCtxt.get(ZmSetting.VIEW_AS_HTML),
-		accountName: (account && account.name)
+		accountName: (tag.account && tag.account.name)
 	};
 	appCtxt.getSearchController().search(params);
 };

@@ -38,8 +38,7 @@ function(parentNode, node, fields, organizer, treeView) {
 		organizer.nId == ZmOrganizer.ID_INBOX)
 	{
 		var ovc = appCtxt.getApp(ZmApp.MAIL).getOverviewContainer();
-		var account = appCtxt.accountList.getAccount(organizer.accountId);
-		ovc.updateAccountHeaderLabel(account);
+		ovc.updateAccountHeaderLabel(organizer.account);
 	}
 };
 

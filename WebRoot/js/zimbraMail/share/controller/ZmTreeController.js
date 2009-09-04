@@ -664,9 +664,7 @@ function(ev, overview, treeItem, item) {
 				appCtxt.getCurrentApp().getOverviewContainer().deselectAll(overview);
 
 				// set the active account based on the item clicked
-				var account = item.accountId
-					? appCtxt.accountList.getAccount(item.accountId)
-					: appCtxt.accountList.mainAccount;
+				var account = item.account || appCtxt.accountList.mainAccount;
 				appCtxt.accountList.setActiveAccount(account);
 			}
 
@@ -782,9 +780,8 @@ function(ev, treeView, overviewId) {
 		} else if (ev.event == ZmEvent.E_CREATE || ev.event == ZmEvent.E_MOVE) {
 			// for multi-account, make sure this organizer applies to the given overview
 			if (appCtxt.multiAccounts) {
-				var account = appCtxt.accountList.getAccount(organizer.accountId);
 				var overview = this._opc.getOverview(overviewId);
-				if (overview && overview.account != account) {
+				if (overview && overview.account != organizer.account) {
 					continue;
 				}
 			}

@@ -117,9 +117,7 @@ function() {
 	if (appCtxt.multiAccounts) {
 		var folder = appCtxt.getById(this._editView._folderPickedId);
 		if (folder) {
-			var acct = folder.accountId
-				? appCtxt.accountList.getAccount(folder.accountId)
-				: appCtxt.accountList.mainAccount;
+			var acct = folder.account || appCtxt.accountList.mainAccount;
 			this._acContactsList.setActiveAccount(acct);
 		}
 	}

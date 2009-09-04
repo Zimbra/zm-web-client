@@ -24,24 +24,24 @@
 *
 * @author Conrad Damon
 *
-* @param type		[constant]		organizer type
-* @param id			[int]			numeric ID
-* @param name		[string]		name
-* @param parent		[ZmOrganizer]	parent organizer
-* @param tree		[ZmTree]		tree model that contains this organizer
-* @param color		[constant]		color for this organizer
-* @param rgb		[string]		color for this organizer, as HTML RGB value
-* @param link		[boolean]*		whether this organizer is shared
-* @param numUnread	[int]*			number of unread items for this organizer
-* @param numTotal	[int]*			number of items for this organizer
-* @param sizeTotal	[int]*			total size of organizer's items
-* @param url		[string]*		URL for this organizer's feed
-* @param owner		[string]* 		Owner for this organizer
-* @param zid		[string]*		Zimbra ID of owner, if remote folder
-* @param rid		[string]*		Remote ID of organizer, if remote folder
-* @param restUrl	[string]*		REST URL of this organizer.
-* @param newOp		[string]*		Name of operation run by button in overview header
-* @param accountId	[string]*		Account ID this organizer belongs to
+* @param type		[constant]			organizer type
+* @param id			[int]				numeric ID
+* @param name		[string]			name
+* @param parent		[ZmOrganizer]		parent organizer
+* @param tree		[ZmTree]			tree model that contains this organizer
+* @param color		[constant]			color for this organizer
+* @param rgb		[string]			color for this organizer, as HTML RGB value
+* @param link		[boolean]*			whether this organizer is shared
+* @param numUnread	[int]*				number of unread items for this organizer
+* @param numTotal	[int]*				number of items for this organizer
+* @param sizeTotal	[int]*				total size of organizer's items
+* @param url		[string]*			URL for this organizer's feed
+* @param owner		[string]* 			Owner for this organizer
+* @param zid		[string]*			Zimbra ID of owner, if remote folder
+* @param rid		[string]*			Remote ID of organizer, if remote folder
+* @param restUrl	[string]*			REST URL of this organizer.
+* @param newOp		[string]*			Name of operation run by button in overview header
+* @param account	[ZmZimbraAccount]*	Account this organizer belongs to
 */
 ZmOrganizer = function(params) {
 
@@ -64,7 +64,7 @@ ZmOrganizer = function(params) {
 	this.zid = params.zid;
 	this.rid = params.rid;
 	this.restUrl = params.restUrl;
-	this.accountId = params.accountId;
+	this.account = params.account;
     this.perm = params.perm;
 	this.noSuchFolder = false; // Is this a link to some folder that ain't there.
 	this._isAdmin = this._isReadOnly = this._hasPrivateAccess = null;
@@ -77,20 +77,8 @@ ZmOrganizer = function(params) {
 				 ZmOrganizer.C_NONE;
 	this.rgb = params.rgb || (this.parent && this.parent.rgb);
 
-	if (appCtxt.isOffline) {
-		var account;
-		if (!this.accountId) {
-			if (this.id != this.nId) {
-				account = ZmOrganizer.parseId(this.id).account;
-				this.accountId = account && account.id;
-			}
-		} else {
-			account = appCtxt.accountList.getAccount(this.accountId);
-		}
-
-		// for offline, POP accounts are not allowed to create subfolders
-		this.disallowSubFolder = (account && account.type == ZmAccount.TYPE_POP);
-	}
+	// for offline, POP accounts are not allowed to create subfolders
+	this.disallowSubFolder = appCtxt.isOffline && this.account && this.account.type == ZmAccount.TYPE_POP;
 
 	if (id && params.tree) {
 		appCtxt.cacheSet(id, this);
@@ -384,7 +372,8 @@ function(params) {
 	// set attributes
 	params.view = params.view || ZmOrganizer.VIEWS[type] ? ZmOrganizer.VIEWS[type][0] : null;
 	for (var i in params) {
-		if (i == "type" || i == "errorCallback") { continue; }
+		if (i == "type" || i == "errorCallback" || i == "account") { continue; }
+
 		var value = params[i];
 		if (i == "color") {
 			// no need to save color if missing or default
@@ -397,7 +386,12 @@ function(params) {
 		}
 	}
 
-	return appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, errorCallback:errorCallback});
+	return appCtxt.getAppController().sendRequest({
+		jsonObj: jsonObj,
+		asyncMode: true,
+		accountName: (params.account && params.account.name),
+		errorCallback: errorCallback
+	});
 };
 
 ZmOrganizer._handleErrorCreate =
@@ -1336,18 +1330,18 @@ function() {
 		if (this.zid != null) {
 			this._isRemote = true;
 		} else {
-			var accountId = this.accountId;
+			var account = this.account;
 			var parsed = ZmOrganizer.parseId(this.id);
 
-			if (!accountId) {
+			if (!account) {
 				if (appCtxt.multiAccounts && parsed.account && parsed.account.isMain) {
 					this._isRemote = false;
 					return this._isRemote;
 				}
-				accountId = appCtxt.getActiveAccount().id;
+				account = appCtxt.getActiveAccount();
 			}
 
-			this._isRemote = (parsed.account && (parsed.account.id != accountId));
+			this._isRemote = (parsed.account && (parsed.account != account));
 		}
 	}
 	return this._isRemote;
@@ -1451,9 +1445,8 @@ function(params) {
 	} else {
 		var accountName;
 		if (appCtxt.multiAccounts) {
-			accountName = (this.accountId)
-				? appCtxt.accountList.getAccount(this.accountId).name
-				: appCtxt.accountList.mainAccount.name;
+			accountName = (this.account) 
+				? this.account.name : appCtxt.accountList.mainAccount.name;
 		}
 		appCtxt.getAppController().sendRequest({
 			soapDoc: soapDoc,

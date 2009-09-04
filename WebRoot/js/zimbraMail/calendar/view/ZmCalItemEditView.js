@@ -667,7 +667,7 @@ function(calItem, mode) {
 		var folder = appCtxt.getById(calItem.folderId);
 		this._folderPickerButton.setText(folder.name);
 		this._folderPickedId = folder.id;
-		this._folderAcctName.innerHTML = appCtxt.accountList.getAccount(folder.accountId).getDisplayName();
+		this._folderAcctName.innerHTML = folder.account.getDisplayName();
 	}
 };
 
@@ -681,7 +681,6 @@ function(ev) {
 	var dlg = appCtxt.getChooseFolderDialog();
 	var callback = new AjxCallback(this, this._folderPickerCallback, [dlg]);
 	var folder = this._calItem && appCtxt.getById(this._calItem.folderId);
-	var account = folder && appCtxt.accountList.getAccount(folder.accountId);
 
 	var params = {
 		data:		this._calItem,
@@ -693,7 +692,7 @@ function(ev) {
 	params.omit[ZmFolder.ID_TRASH] = true;
 	params.omit[ZmOrganizer.ID_AUTO_ADDED] = true;
 
-	ZmController.showDialog(dlg, callback, params, account);
+	ZmController.showDialog(dlg, callback, params, folder.account);
 };
 
 ZmCalItemEditView.prototype._folderPickerCallback =
@@ -702,7 +701,7 @@ function(dlg, folder) {
 
 	this._folderPickerButton.setText(folder.name);
 	this._folderPickedId = folder.id;
-	this._folderAcctName.innerHTML = appCtxt.accountList.getAccount(folder.accountId).getDisplayName();
+	this._folderAcctName.innerHTML = folder.account.getDisplayName();
 };
 
 ZmCalItemEditView.prototype._initAttachContainer =

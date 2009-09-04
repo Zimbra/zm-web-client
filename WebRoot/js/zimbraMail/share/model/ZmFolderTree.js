@@ -47,25 +47,25 @@ function() {
  * Loads the folder or the zimlet tree.
  */
 ZmFolderTree.prototype.loadFromJs =
-function(rootObj, elementType, accountId) {
+function(rootObj, elementType, account) {
 	this.root = (elementType == "zimlet")
 		? ZmZimlet.createFromJs(null, rootObj, this)
-		: ZmFolderTree.createFromJs(null, rootObj, this, elementType, null, accountId);
+		: ZmFolderTree.createFromJs(null, rootObj, this, elementType, null, account);
 };
 
 /**
  * Generic function for creating a folder. Handles any organizer type that comes
  * in the folder list.
  * 
- * @param parent		[ZmFolder]		parent folder
- * @param obj			[object]		JSON with folder data
- * @param tree			[ZmFolderTree]	containing tree
- * @param elementType	[string]		type of containing JSON element
- * @param path			[array]			list of path elements
- * @param accountId		[string]*		account ID this folder belongs to
+ * @param parent		[ZmFolder]			parent folder
+ * @param obj			[object]			JSON with folder data
+ * @param tree			[ZmFolderTree]		containing tree
+ * @param elementType	[string]			type of containing JSON element
+ * @param path			[array]				list of path elements
+ * @param account		[ZmZimbraAccount]*	account this folder belongs to
  */
 ZmFolderTree.createFromJs =
-function(parent, obj, tree, elementType, path, accountId) {
+function(parent, obj, tree, elementType, path, account) {
 	if (!(obj && obj.id)) { return; }
 
 	var folder;
@@ -88,11 +88,11 @@ function(parent, obj, tree, elementType, path, accountId) {
 			query: obj.query,
 			types: types,
 			sortBy: obj.sortBy,
-			accountId: accountId
+			account: account
 		};
 		folder = new ZmSearchFolder(params);
 		ZmFolderTree._fillInFolder(folder, obj, path);
-		ZmFolderTree._traverse(folder, obj, tree, (path || []), elementType, accountId);
+		ZmFolderTree._traverse(folder, obj, tree, (path || []), elementType, account);
 	} else {
 		var type = obj.view
 			? (ZmOrganizer.TYPE[obj.view])
@@ -112,7 +112,7 @@ function(parent, obj, tree, elementType, path, accountId) {
 				tree: tree,
 				path: path,
 				elementType: elementType,
-				accountId: accountId
+				account: account
 			};
 			app.addDeferredFolder(defParams);
 		} else {
@@ -120,8 +120,8 @@ function(parent, obj, tree, elementType, path, accountId) {
 			if (pkg) {
 				AjxDispatcher.require(pkg);
 			}
-			folder = ZmFolderTree.createFolder(type, parent, obj, tree, path, elementType, accountId);
-			ZmFolderTree._traverse(folder, obj, tree, (path || []), elementType, accountId);
+			folder = ZmFolderTree.createFolder(type, parent, obj, tree, path, elementType, account);
+			ZmFolderTree._traverse(folder, obj, tree, (path || []), elementType, account);
 		}
 	}
 
@@ -129,7 +129,7 @@ function(parent, obj, tree, elementType, path, accountId) {
 };
 
 ZmFolderTree._traverse =
-function(folder, obj, tree, path, elementType, accountId) {
+function(folder, obj, tree, path, elementType, account) {
 
 	var isRoot = (folder.nId == ZmOrganizer.ID_ROOT);
 	if (obj.folder && obj.folder.length) {
@@ -138,7 +138,7 @@ function(folder, obj, tree, path, elementType, accountId) {
 		}
 		for (var i = 0; i < obj.folder.length; i++) {
 			var folderObj = obj.folder[i];
-			var childFolder = ZmFolderTree.createFromJs(folder, folderObj, tree, (elementType || "folder"), path, accountId);
+			var childFolder = ZmFolderTree.createFromJs(folder, folderObj, tree, (elementType || "folder"), path, account);
 			if (folder && childFolder) {
 				folder.children.add(childFolder);
 			}
@@ -154,7 +154,7 @@ function(folder, obj, tree, path, elementType, accountId) {
 		}
 		for (var i = 0; i < obj.search.length; i++) {
 			var searchObj = obj.search[i];
-			var childSearch = ZmFolderTree.createFromJs(folder, searchObj, tree, "search", path, accountId);
+			var childSearch = ZmFolderTree.createFromJs(folder, searchObj, tree, "search", path, account);
 			if (childSearch) {
 				folder.children.add(childSearch);
 			}
@@ -167,7 +167,7 @@ function(folder, obj, tree, path, elementType, accountId) {
 	if (obj.link && obj.link.length) {
 		for (var i = 0; i < obj.link.length; i++) {
 			var link = obj.link[i];
-			var childFolder = ZmFolderTree.createFromJs(folder, link, tree, "link", path, accountId);
+			var childFolder = ZmFolderTree.createFromJs(folder, link, tree, "link", path, account);
 			if (childFolder) {
 				folder.children.add(childFolder);
 			}
@@ -176,7 +176,7 @@ function(folder, obj, tree, path, elementType, accountId) {
 };
 
 ZmFolderTree.createFolder =
-function(type, parent, obj, tree, path, elementType, accountId) {
+function(type, parent, obj, tree, path, elementType, account) {
 	var orgClass = eval(ZmOrganizer.ORG_CLASS[type]);
 	if (!orgClass) { return null; }
 
@@ -198,7 +198,7 @@ function(type, parent, obj, tree, path, elementType, accountId) {
 		sizeTotal: 	obj.s,
 		perm: 		obj.perm,
 		link: 		elementType == "link",
-		accountId:	accountId
+		account:	account
 	};
 
 	var folder = new orgClass(params);
