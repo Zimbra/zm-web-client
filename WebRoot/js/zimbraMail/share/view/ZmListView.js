@@ -108,7 +108,10 @@ function(list, sortField) {
 			var items = search && search.getResults().getArray();
 			this.addItems(items);
 		} else {
-			list = (list instanceof ZmList) ? list.getVector() : list;
+			if (list instanceof ZmList) {
+				list.addChangeListener(this._listChangeListener);
+				list = list.getVector();
+			}
 			DwtListView.prototype.set.call(this, list, sortField);
 		}
 		var itemCountText = this._controller._itemCountText;
