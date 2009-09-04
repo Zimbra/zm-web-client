@@ -326,7 +326,7 @@ function(folder) {
 			// make sure we have permissions for this folder (in case an "external"
 			// server was down during account load)
 			if (folder.link && folder.shares == null) {
-				var folderTree = appCtxt.getFolderTree();
+				var folderTree = appCtxt.getFolderTree(folder.account);
 				if (folderTree) {
 					var callback = new AjxCallback(this, this._getPermissionsResponse, [params]);
 					folderTree.getPermissions({callback:callback, folderIds:[folder.id]});
@@ -336,11 +336,12 @@ function(folder) {
 
 			sc.resetSearchAllAccounts();
 
+			// HACK to make single Drafts/Outbox work in multi-account
 			if (folder.id == ZmFolder.ID_DRAFTS ||
 				folder.id == ZmFolder.ID_OUTBOX)
 			{
-				params.callback = new AjxCallback(this, this._handleSearch, [sc, params.query]);
-				params.query = " ";
+				params.callback = new AjxCallback(this, this._handleSearch, [sc, params.query, folder]);
+				params.query = ".";
 				params.queryHint = appCtxt.accountList.generateQuery(folder.id);
 			}
 		}
@@ -350,9 +351,12 @@ function(folder) {
 };
 
 ZmFolderTreeController.prototype._handleSearch =
-function(sc, query) {
+function(sc, query, folder) {
 	sc.currentSearch.query = query;
 	sc.getSearchToolbar().setSearchFieldValue(query);
+
+	var ov = this._opc.getOverview(appCtxt.getApp(ZmApp.MAIL).getOverviewId());
+	ov.setSelected(folder.id);
 };
 
 ZmFolderTreeController.prototype._getPermissionsResponse =

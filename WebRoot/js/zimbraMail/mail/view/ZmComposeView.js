@@ -2182,17 +2182,12 @@ function(ev) {
 	if (this._msg && this._msg.isDraft) {
 		var oldAccount = appCtxt.accountList.getAccount(oldOption.accountId);
 
-		// only re-save draft if both new account and old account are *not* zimbra accounts.
-		if (!(!newAccount.isZimbraAccount && !oldAccount.isZimbraAccount)) {
-			// cache old info so we know what to delete after new save
-			var msgId = this._origAcctMsgId = this._msg.id;
+		// cache old info so we know what to delete after new save
+		var msgId = this._origAcctMsgId = this._msg.id;
 
-			this._msg = this._addressesMsg = null;
-			var accountName = oldAccount.isZimbraAccount
-				? oldAccount.name : appCtxt.accountList.mainAccount.name;
-			var callback = new AjxCallback(this, this._handleMoveDraft, [accountName, msgId]);
-			this._controller.saveDraft(this._controller._draftType, null, null, callback);
-		}
+		this._msg = this._addressesMsg = null;
+		var callback = new AjxCallback(this, this._handleMoveDraft, [oldAccount.name, msgId]);
+		this._controller.saveDraft(this._controller._draftType, null, null, callback);
 	}
 
 	this._resetPickerButtons(newAccount);
@@ -2481,14 +2476,16 @@ function(msg) {
 
 	var selectedIdentity;
 	if (msg) {
-		if (msg.isDraft) {
-			var email = msg.getAddress(AjxEmailAddress.FROM);
-			var account = ac.accountList.getAccountByEmail(email.address);
-			if (account) {
-				selectedIdentity = ac.getIdentityCollection(account).selectIdentity(msg, AjxEmailAddress.FROM);
+		var folder = appCtxt.getById(msg.folderId);
+		var account = folder && folder.account;
+		if (account) {
+			var coll = ac.getIdentityCollection(account);
+			selectedIdentity = (msg.isDraft)
+				? coll.selectIdentity(msg, AjxEmailAddress.FROM)
+				: coll.selectIdentity(msg);
+			if (!selectedIdentity) {
+				selectedIdentity = coll.defaultIdentity;
 			}
-		} else {
-			selectedIdentity = ac.getIdentityCollection(account).selectIdentity(msg);
 		}
 	}
 

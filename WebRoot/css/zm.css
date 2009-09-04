@@ -178,9 +178,9 @@
 .ZmOverviewLocalHeader-selected,
 .ZmOverviewLocalHeader-selected-focused {
 	background-color: @AltC@;
-	padding: 3px 0px;
-	border-top: 1px solid @darken(AltC, 70)@;
-	border-bottom: 1px solid @darken(AltC, 70)@;
+	padding: 1px 0px;
+	border-top: 1px solid @darken(AltC, 30)@;
+	border-bottom: 1px solid @darken(AltC, 30)@;
 	cursor: pointer;
 }
 
@@ -202,7 +202,7 @@
 	@OverviewZimletSection@
 	border-top: 1px solid @AltC@;
 	border-bottom: 1px solid @AltC@;
-	padding-bottom: 3px;
+	padding-bottom: 2px;
 	cursor: pointer;
 }
 

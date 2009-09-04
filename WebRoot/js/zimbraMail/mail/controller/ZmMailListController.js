@@ -787,6 +787,10 @@ function(params, msg) {
 			}
 			return;
 		}
+	} else if (appCtxt.isOffline && action == ZmOperation.DRAFT) {
+		var folder = appCtxt.getById(msg.folderId);
+		var account = folder && folder.account;
+		params.accountName = account && account.name;
 	}
 
 	params.msg = msg;
