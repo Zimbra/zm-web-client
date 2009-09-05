@@ -111,11 +111,9 @@ function(parent) {
 	html[idx++] = "'><hr /><table border=0><tr><td width=1%>";
 	html[idx++] = ZmMsg.filename;
 	html[idx++] = "</td><td>";
-	html[idx++] = Dwt.CARET_HACK_BEGIN;
 	html[idx++] = "<input type='text' autocomplete='off' nowrap style='width:90%' id='";
 	html[idx++] = fileInputId;
 	html[idx++] = "'>";
-	html[idx++] = Dwt.CARET_HACK_END;
 	html[idx++] = "</td></tr></table></div>";
 	html[idx++] = "<div id='";
 	html[idx++] = treeId;

@@ -530,8 +530,7 @@ function(width) {
 		parentElement: (this._htmlElId + "_subject"),
 		type: DwtInputField.STRING,
 		errorIconStyle: DwtInputField.ERROR_ICON_NONE,
-		validationStyle: DwtInputField.CONTINUAL_VALIDATION,
-		skipCaretHack:true
+		validationStyle: DwtInputField.CONTINUAL_VALIDATION
 	};
 	this._subjectField = new DwtInputField(params);
 	this._subjectField.setRequired();

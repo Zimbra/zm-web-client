@@ -250,13 +250,13 @@
 
 <template id='im.Chat#ZmCustomStatusDlg'>
 	<div width='320px'>
-		<$= Dwt.CARET_HACK_BEGIN $><input type='text' id='${id}' size='30'/><$= Dwt.CARET_HACK_END $>
+		<input type='text' id='${id}' size='30'/>
 	</div>
 </template>
 
 <template id='im.Chat#ZmConferenceDialog'>
 	<div width='320px'>
-		<$= Dwt.CARET_HACK_BEGIN $><input type='text' id='${id}_input' size='30'/><$= Dwt.CARET_HACK_END $>
+		<input type='text' id='${id}_input' size='30'/>
 	</div>
 	<div width='320px' id='${id}_overview'/>
 </template>
@@ -324,11 +324,11 @@
 			<table cellpadding=0 cellspacing=2>
 				<tr>
 					<td class="ImYahooLoginLabel"><$=ZmMsg.imScreenNameYahoo $></td>
-					<td class="ImYahooLoginValue"><$= Dwt.CARET_HACK_BEGIN $><input type="text" id="${id}_nameField" size="25"/><$= Dwt.CARET_HACK_END $>
+					<td class="ImYahooLoginValue"><input type="text" id="${id}_nameField" size="25"/>
 				</tr>
 				<tr>
 					<td class="ImYahooLoginLabel"><$=ZmMsg.passwordLabel$></td>
-					<td class="ImYahooLoginValue"><$= Dwt.CARET_HACK_BEGIN $><input type="password" id="${id}_passwordField" size="25"/><$= Dwt.CARET_HACK_END $>
+					<td class="ImYahooLoginValue"><input type="password" id="${id}_passwordField" size="25"/>
 				</tr>
 				<tr>
 					<td colspan=2 align="right" style="padding-top:3px"><div id="${id}_loginButton" value="Login"/></td>

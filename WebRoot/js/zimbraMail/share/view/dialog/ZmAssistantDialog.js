@@ -96,10 +96,8 @@ function() {
 	html.append("<tr><td colspan=3>", ZmMsg.enterCommand, "&nbsp;<span class='ZmAsstField' id='", this._commandTitleId, "'></span></td></tr>");	
 	//html.append("<tr><td colspan=3 id='", this._commandTitleId, "'>", ZmMsg.enterCommand, "</td></tr>");		
 	html.append("<tr><td colspan=3><div>");
-	html.append(Dwt.CARET_HACK_BEGIN);
 	html.append("<textarea rows=", AjxEnv.isIE ? "3" : "2", " style='width:100%' id='",this._commandId,"'>");
 	html.append("</textarea>");
-	html.append(Dwt.CARET_HACK_END);
 	html.append("</div></td></tr>");
 	html.append("<tr><td colspan=3><div class=horizSep></div></td></tr>");
 	html.append("<tr><td colspan=3><div id='", this._contentId, "'></div></td></tr>");

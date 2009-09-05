@@ -123,11 +123,6 @@ function() {
 	this._nameEl = document.createElement("INPUT");
 	this._nameEl.style.width = "20em";
 	var nameElement = this._nameEl;
-	if (Dwt.CARET_HACK_ENABLED) {
-		nameElement = document.createElement("DIV");
-		nameElement.style.overflow = "auto";
-		nameElement.appendChild(this._nameEl);
-	}
 
 	this._color = new DwtSelect({parent:view});
 	for (var i = 0; i < ZmOrganizer.COLOR_CHOICES.length; i++) {

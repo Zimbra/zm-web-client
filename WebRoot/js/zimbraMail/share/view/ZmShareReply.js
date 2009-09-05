@@ -113,9 +113,6 @@ function(options) {
 	this._replyStandardMailNoteEl.innerHTML = ZmMsg.sendMailAboutShareNote;
 	
 	var div = doc.createElement("DIV");
-	if (Dwt.CARET_HACK_ENABLED) {
-		div.style.overflowY="auto";
-	}
 	this._replyNoteEl = doc.createElement("TEXTAREA");
 	this._replyNoteEl.cols = 50;
 	this._replyNoteEl.rows = 4;

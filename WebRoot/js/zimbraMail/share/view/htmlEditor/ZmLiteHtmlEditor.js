@@ -264,11 +264,9 @@ ZmLiteHtmlEditor.prototype._initEditor = function(){
 
 	this._textAreaId = "textarea_" + Dwt.getNextId();
 	var html = [
-			Dwt.CARET_HACK_BEGIN,
 			"<textarea id='",
 			this._textAreaId,
-			"' class='DwtHtmlEditorTextArea' style='width:100%;'></textarea>",
-			Dwt.CARET_HACK_END
+			"' class='DwtHtmlEditorTextArea' style='width:100%;'></textarea>"
 	].join("");
 	htmlEl.innerHTML = html; 
 	return Dwt.byId(this._textAreaId);

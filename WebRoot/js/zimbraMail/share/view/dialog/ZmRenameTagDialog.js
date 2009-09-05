@@ -44,9 +44,7 @@ function() {
 	html[idx++] = "<table cellpadding='0' cellspacing='0' border='0'>";
 	html[idx++] = "<tr><td class='Label' colspan=2 style='padding: 0px 0px 5px 0px;'>" + ZmMsg.newTagName + ": </td></tr>";
 	html[idx++] = "<tr><td>";
-    html[idx++] = Dwt.CARET_HACK_BEGIN;
 	html[idx++] = "<input type='text' autocomplete='off' class='Field' id='" + this._nameFieldId + "' />"
-    html[idx++] = Dwt.CARET_HACK_END;
 	html[idx++] = "</td></tr>";
 	html[idx++] = "</table>";
 	

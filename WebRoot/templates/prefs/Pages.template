@@ -1279,9 +1279,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 		<tr>
             <td width='1%' nowrap><$=ZmMsg.filterNameLabel$></td>
 			<td>
-                <$=Dwt.CARET_HACK_BEGIN$>
 				<input id='${id}_name' type='text' width=100 tabindex='10'>
-				<$=Dwt.CARET_HACK_END$>
 			</td>
 			<td width='1%' style='text-align:right; white-space:nowrap;'>
 				<input id='${id}_active' type='checkbox' name='cbActive' checked tabindex='20'>

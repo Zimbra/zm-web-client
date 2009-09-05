@@ -63,16 +63,6 @@ function() {
 	return this._controller;
 };
 
-ZmTaskEditView.prototype.applyCaretHack =
-function() {
-	// Bug #10992: Disable the caret hack when in html mode.
-	// The caret hack removes the html editor from the dom which
-	// causes horrible problems.
-	if (this.getComposeMode() != DwtHtmlEditor.HTML) {
-		DwtControl.prototype.applyCaretHack.call(this);
-	}
-};
-
 ZmTaskEditView.prototype._getClone =
 function() {
 	return ZmTask.quickClone(this._calItem);
@@ -186,7 +176,7 @@ function(width) {
 	ZmCalItemEditView.prototype._createWidgets.call(this, width);
 
 	// add location
-	var params = {parent: this, type: DwtInputField.STRING, skipCaretHack:true};
+	var params = {parent: this, type: DwtInputField.STRING};
 	this._location = new DwtInputField(params);
 	Dwt.setSize(this._location.getInputElement(), width, "22px");
 	this._location.reparentHtmlElement(this._htmlElId + "_location");

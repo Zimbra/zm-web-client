@@ -454,11 +454,6 @@ function() {
 	this._nameInputEl.style.width = "20em";
 	this._nameInputEl._dialog = this;
 	var nameElement = this._nameInputEl;
-	if (Dwt.CARET_HACK_ENABLED) {
-		nameElement = document.createElement("DIV");
-		nameElement.style.overflow = "auto";
-		nameElement.appendChild(this._nameInputEl);
-	}
 
 	this._ownerEl = document.createElement("DIV");
 	this._typeEl = document.createElement("DIV");

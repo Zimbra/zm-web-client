@@ -343,9 +343,7 @@
 		</tr>
 		<tr>
 			<td>
-				<$= Dwt.CARET_HACK_BEGIN $>
 				<input autocomplete=OFF type='text' class='Field' id='${id}_nameField' />
-				<$= Dwt.CARET_HACK_END $>
 			</td>
 		</tr>
 		<tr><td>&nbsp;</td></tr>
@@ -395,9 +393,7 @@
 		</tr>
 		<tr>
 			<td>
-				<$= Dwt.CARET_HACK_BEGIN $>
 				<input type=${type} autocomplete=OFF class='Field' id='${id}_name' />
-				<$= Dwt.CARET_HACK_END $>
 			</td>
 		</tr>
 	</table>
@@ -414,9 +410,7 @@
 		</tr>
 		<tr>
 			<td>
-				<$= Dwt.CARET_HACK_BEGIN $>
 				<input type=text autocomplete=OFF id='${id}_name' />
-				<$= Dwt.CARET_HACK_END $>
 			</td>
 			<td id='${id}_tagColor'></td>
 			<td id='${id}_account'></td>

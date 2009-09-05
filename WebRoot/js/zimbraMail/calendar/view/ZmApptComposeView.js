@@ -341,16 +341,6 @@ function() {
 	return [ZmMsg.zimbraTitle, ZmMsg.appointment].join(": ");
 };
 
-ZmApptComposeView.prototype.applyCaretHack =
-function() {
-	// Bug #10992: Disable the caret hack when in html mode.
-	// The caret hack removes the html editor from the dom which
-	// causes horrible problems.
-	if (this.getComposeMode() != DwtHtmlEditor.HTML) {
-		DwtTabView.prototype.applyCaretHack.call(this);
-	}
-};
-
 ZmApptComposeView.prototype._getAttendeeKey =
 function(attendee) {
 	var email = attendee.getEmail();

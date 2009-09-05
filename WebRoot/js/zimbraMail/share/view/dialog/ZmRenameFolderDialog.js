@@ -46,11 +46,9 @@ function() {
 	html[idx++] = "<tr><td class='Label' colspan=2 style='padding: 0px 0px 5px 0px;'>";
 	html[idx++] = ZmMsg.newName;
 	html[idx++] = ": </td></tr><tr><td>";
-    html[idx++] = Dwt.CARET_HACK_BEGIN;
 	html[idx++] = "<input type='text' autocomplete='off' class='Field' id='";
 	html[idx++] = this._nameFieldId;
 	html[idx++] = "' />"
-    html[idx++] = Dwt.CARET_HACK_END;
 	html[idx++] = "</td></tr></table>";
 	
 	return html.join("");

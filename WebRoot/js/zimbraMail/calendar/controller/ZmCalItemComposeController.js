@@ -48,7 +48,6 @@ function(calItem, mode, isDirty) {
 	this._app.pushView(this._getViewType());
 	this._composeView.set(calItem, mode, isDirty);
 	this._composeView.reEnableDesignMode();
-	this._composeView.applyCaretHack();
 
 	if (initial) {
 		this._setComposeTabGroup();

@@ -436,7 +436,6 @@ function(width) {
 		var params = {
 			parent: this,
 			type: DwtInputField.STRING,
-			skipCaretHack: true,
 			rows: 3,
 			parentElement: (this._htmlElId + "_person")
 		};
@@ -450,7 +449,6 @@ function(width) {
 	params = {
 		parent: this,
 		type: DwtInputField.STRING,
-		skipCaretHack: true,
 		parentElement: (this._htmlElId + "_location")
 	};
 	var input = this._attInputField[ZmCalBaseItem.LOCATION] = new DwtInputField(params);
