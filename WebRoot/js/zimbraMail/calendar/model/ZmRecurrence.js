@@ -384,3 +384,20 @@ function(startTime) {
 		this.repeatYearlyMonthsList = this._startDate.getMonth() + 1;	
 	}
 };
+
+ZmRecurrence.prototype.setRecurrenceRules =
+function(recurRules, startDate) {
+
+    if (recurRules)
+        this.parse(recurRules);    
+
+    if(!startDate) return;
+
+    if (this.repeatWeeklyDays == null) {
+        this.repeatWeeklyDays = [ZmCalItem.SERVER_WEEK_DAYS[startDate.getDay()]];
+    }
+    if (this.repeatMonthlyDayList == null) {
+        this.repeatMonthlyDayList = [startDate.getDate()];
+    }
+
+};

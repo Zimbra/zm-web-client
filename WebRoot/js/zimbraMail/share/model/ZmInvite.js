@@ -554,7 +554,7 @@ function(isHtml) {
 		if (!this._recurBlurb) {
 			AjxDispatcher.require("CalendarCore");
 			var recur = new ZmRecurrence();
-			recur.parse(this.getRecurrenceRules(compNum));
+			recur.setRecurrenceRules(this.getRecurrenceRules(compNum), this.getServerStartDate(compNum));
 			this._recurBlurb = recur.getBlurb();
 		}
 	}
