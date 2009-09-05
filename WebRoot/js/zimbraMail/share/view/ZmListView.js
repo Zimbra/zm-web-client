@@ -897,14 +897,29 @@ function() {
  */
 ZmListView.handleScroll =
 function(ev) {
-
 	var target = DwtUiEvent.getTarget(ev);
 	var lv = DwtControl.findControl(target);
-	if (!lv) { return; }
-	var h = Dwt.getSize(target).y;
-	var itemsVisible = Math.ceil(h / lv._rowHeight);
-	var itemsLeft = Math.floor((target.scrollHeight - (target.scrollTop + h)) / lv._rowHeight);
-	if (itemsLeft < lv.getPagelessThreshold()) {
-		lv._controller._paginate(lv._view, true);
+	if (lv) {
+		lv._checkItemCount();
 	}
 };
+
+ZmListView.prototype._checkItemCount =
+function() {
+	DBG.println(AjxDebug.DBG2, "List view: checking item count");
+	var scrollDiv = this._parentEl;
+	var h = Dwt.getSize(scrollDiv).y;
+	var itemsVisible = Math.ceil(h / this._rowHeight);
+	var itemsLeft = Math.floor((scrollDiv.scrollHeight - (scrollDiv.scrollTop + h)) / this._rowHeight);
+	if (itemsLeft < this.getPagelessThreshold()) {
+		this._controller._paginate(this._view, true);
+	}
+};
+
+ZmListView.prototype._sizeChildren =
+function(height) {
+	DwtListView.prototype._sizeChildren.apply(this, arguments);
+	this._checkItemCount();
+};
+
+
