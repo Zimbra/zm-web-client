@@ -8,7 +8,7 @@
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <c:set var="iconPath" value="/img" scope="request"/>
 <c:if test="${not empty param.ui}">
-    <c:set var="uiv" value="${param.ui}" scope="session"/>
+    <c:set var="uiv" value="${zm:cook(param.ui)}" scope="session"/>
 </c:if>
 <c:set scope="session" var="uiv"
        value="${sessionScope.uiv != null || not empty sessionScope.uiv  ? sessionScope.uiv : '0'}"/>
