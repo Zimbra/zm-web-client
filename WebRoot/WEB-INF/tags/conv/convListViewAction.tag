@@ -124,7 +124,6 @@
                         <c:param name="search" value="${fn:escapeXml(param.search)}"/>
                     </c:if>
                 </c:url>
-                <c:redirect url="${redirectUrl}"/>
             </c:when>
             <c:when test="${actionOp eq 'byMsg'}">
                 <zm:modifyPrefs var="updated">
@@ -141,9 +140,12 @@
                         <c:param name="search" value="${fn:escapeXml(param.search)}"/>
                     </c:if>
                 </c:url>
-                <c:redirect url="${redirectUrl}"/>
             </c:when>
     </c:choose>
+     <c:if test="${updated and not empty redirectUrl}">
+            <zm:getMailbox var="mailbox" refreshaccount="${true}"/>
+            <c:redirect url="${redirectUrl}"/>
+    </c:if>
 </c:when>
 <c:when test="${empty ids}">
     <app:status style="Warning"><fmt:message key="actionNoConvSelected"/>
