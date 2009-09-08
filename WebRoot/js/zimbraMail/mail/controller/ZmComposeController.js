@@ -153,6 +153,14 @@ function() {
  */
 ZmComposeController.prototype.doAction =
 function(params) {
+	// is zdesktop, its possible there are no accounts that support smtp
+	if (appCtxt.isOffline && !appCtxt.get(ZmSetting.OFFLINE_COMPOSE_ENABLED)) {
+		var d = appCtxt.getMsgDialog();
+		d.setMessage(ZmMsg.composeDisabled, DwtMessageDialog.CRITICAL_STYLE);
+		d.popup();
+		return;
+	}
+
 	this._msgSent = false;
 	if (params.inNewWindow) {
 		var newWinObj = appCtxt.getNewWindow();

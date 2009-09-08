@@ -151,6 +151,14 @@ function(accounts, callback) {
 		ZmOrganizer.HIDE_EMPTY[ZmOrganizer.TAG] = true;
 		ZmOrganizer.HIDE_EMPTY[ZmOrganizer.SEARCH] = true;
 
+		// enable compose based on whether at least one account supports smtp
+		for (var i = 0; i < this.visibleAccounts.length; i++) {
+			if (appCtxt.get(ZmSetting.OFFLINE_SMTP_ENABLED, null, this.visibleAccounts[i])) {
+				appCtxt.set(ZmSetting.OFFLINE_COMPOSE_ENABLED, true, null, null, true);
+				break;
+			}
+		}
+
 		if (callback) {
 			callback.run();
 		}

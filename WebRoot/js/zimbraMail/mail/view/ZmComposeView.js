@@ -2461,16 +2461,17 @@ function(msg) {
 		if (acct.isMain) { continue; }
 
 		var identities = ac.getIdentityCollection(acct).getIdentities();
-		// todo - filter based on SMTP support - waiting on server support
-		for (var j = 0; j < identities.length; j++) {
-			identity = identities[j];
+		if (appCtxt.get(ZmSetting.OFFLINE_SMTP_ENABLED, null, acct)) {
+			for (var j = 0; j < identities.length; j++) {
+				identity = identities[j];
 
-			var addr = new AjxEmailAddress(identity.sendFromAddress, AjxEmailAddress.FROM, identity.sendFromDisplay);
-			var option = new DwtSelectOption(identity.id, false, addr.toString(), null, null, acct.getIcon());
-			option.addr = addr;
-			option.accountId = acct.id;
+				var addr = new AjxEmailAddress(identity.sendFromAddress, AjxEmailAddress.FROM, identity.sendFromDisplay);
+				var option = new DwtSelectOption(identity.id, false, addr.toString(), null, null, acct.getIcon());
+				option.addr = addr;
+				option.accountId = acct.id;
 
-			this._fromSelect.addOption(option);
+				this._fromSelect.addOption(option);
+			}
 		}
 	}
 
