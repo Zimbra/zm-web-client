@@ -120,16 +120,16 @@
 			                        <c:if test="${not empty contact.workEmail1}">
 			                            <c:set var="workEmail" value="${contact.workEmail1}"/>
 			                        </c:if>
-			                        <c:if test="${not empty contact.email2 and empty homeEmail}">
+			                        <c:if test="${not empty contact.email2 and empty homeEmail and empty workEmail}">
 			                            <c:set var="homeEmail" value="${contact.email2}"/>
 			                        </c:if>
-			                        <c:if test="${not empty contact.workEmail2 and empty workEmail}">
+			                        <c:if test="${not empty contact.workEmail2 and empty homeEmail and empty workEmail}">
 			                            <c:set var="workEmail" value="${contact.workEmail1}"/>
 			                        </c:if>
-			                        <c:if test="${not empty contact.email3 and empty homeEmail}">
+			                        <c:if test="${not empty contact.email3 and empty homeEmail and empty workEmail}">
 			                            <c:set var="homeEmail" value="${contact.email3}"/>
 			                        </c:if>
-			                        <c:if test="${not empty contact.workEmail3 and empty workEmail}">
+			                        <c:if test="${not empty contact.workEmail3 and empty homeEmail and empty workEmail}">
 			                            <c:set var="workEmail" value="${contact.workEmail3}"/>
 			                        </c:if>
 			                        <c:if test="${not empty homeEmail}">
