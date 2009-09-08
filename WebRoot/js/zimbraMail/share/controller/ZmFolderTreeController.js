@@ -337,13 +337,8 @@ function(folder) {
 			sc.resetSearchAllAccounts();
 
 			// HACK to make single Drafts/Outbox work in multi-account
-			if (folder.id == ZmFolder.ID_DRAFTS ||
-				folder.id == ZmFolder.ID_OUTBOX)
-			{
-				params.callback = new AjxCallback(this, this._handleSearch, [sc, params.query, folder]);
-				params.query = ".";
-				params.queryHint = appCtxt.accountList.generateQuery(folder.id);
-			}
+			params.callback = (folder.id == ZmFolder.ID_DRAFTS || folder.id == ZmFolder.ID_OUTBOX)
+				? (new AjxCallback(this, this._handleSearch, [sc, params.query, folder])) : null;
 		}
 
 		sc.search(params);
