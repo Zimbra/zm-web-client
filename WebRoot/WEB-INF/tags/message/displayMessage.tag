@@ -172,7 +172,7 @@
                                     </td>
                                 </tr>
                             </c:if>
-                            ?<c:if test="${not empty message.requestHeader}">
+                            <c:if test="${not empty message.requestHeader}">
                                 <tr>
                                     <td nowrap align="right" class='MsgHdrAttAnchor'>
                                         <app:certifiedMessage var="reqHdr" msg="${message}" display="${true}"/>
