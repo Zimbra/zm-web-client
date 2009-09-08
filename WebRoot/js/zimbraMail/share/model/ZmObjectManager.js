@@ -842,18 +842,19 @@ function(ev) {
 
 ZmObjectManager.prototype._mouseDownListener =
 function(ev) {
-        ev._dontCallPreventDefault = true;
-        ev._returnValue = true;
-        ev._stopPropagation = false;
+
+	ev._dontCallPreventDefault = true;
+	ev._returnValue = true;
+	ev._stopPropagation = false;
 
 	var span = this._findObjectSpan(ev.target);
 	if (!span) {
-                return true;
-        }
+		return true;
+	}
 	var object = this._objects[span.id];
 	if (!object) {
-                return true;
-        }
+		return true;
+	}
 
 	ev._stopPropagation = true;
 
@@ -872,8 +873,12 @@ function(ev) {
 		var menu = object.handler.getActionMenu(object.object, span, object.context, isDialog);
 		if (menu) {
 			menu.popup(0, ev.docX, ev.docY);
-                        return true;
-                }
+			// if we have an action menu, don't let the browser show its context menu too
+			ev._dontCallPreventDefault = false;
+			ev._returnValue = false;
+			ev._stopPropagation = true;
+			return true;
+		}
 	} else if (ev.button == DwtMouseEvent.LEFT) {
 		if (this._selectCallback) {
 			this._selectCallback.run();
