@@ -99,6 +99,9 @@ function() {
 	}
 
 	this._mailListView.reRenderListView();
+	if (!this._mailListView._isPageless || this._mailListView.offset == 0) {
+		this._mailListView.scrollToTop();
+	}
 	this._msgView.noTab = !readingPaneEnabled || AjxEnv.isIE;
 	var sz = this.getSize();
 	this._resetSize(sz.x, sz.y, true);
@@ -179,7 +182,6 @@ function(items) {
 	if (!this._controller.isReadingPaneOn()) {
 		this._selectFirstItem();
 	} else if (!this._mailListView._isPageless) {
-		this._mailListView.scrollToTop();
 		if (this._controller._list && this._controller._list.size() > 0) {
 			this._msgView.set();
 		}
