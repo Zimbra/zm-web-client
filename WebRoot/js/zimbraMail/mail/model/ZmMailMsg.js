@@ -1588,7 +1588,7 @@ function(addrNodes, parentNode, isDraft, accountName) {
 		if (this._origMsg && this._origMsg.isDraft) {
 			var from = this._origMsg.getAddresses(AjxEmailAddress.FROM).get(0);
 			// this means we're sending a draft msg obo so reset account name
-			if (from && from.address != mainAcct) {
+			if (from && from.address.toLowerCase() != mainAcct.toLowerCase()) {
 				accountName = from.address;
 				onBehalfOf = true;
 			}
@@ -1625,7 +1625,7 @@ function(addrNodes, parentNode, isDraft, accountName) {
 			var mainAcct = ac.accountList.mainAccount.getEmail();
 			var from = this._origMsg.getAddresses(AjxEmailAddress.FROM).get(0);
 			// this means we're sending a draft msg obo
-			if (from && from.address != mainAcct) {
+			if (from && from.address.toLowerCase() != mainAcct.toLowerCase()) {
 				addrNode.a = from.address;
 				addrNodes.push(addrNode);
 				// if sending obo, always set sender as main account
