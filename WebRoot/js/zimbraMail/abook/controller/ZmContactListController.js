@@ -566,6 +566,17 @@ function(ev) {
 	}
 };
 
+ZmContactListController.prototype._newListener =
+function(ev, op, params) {
+	if (!ev && !op) { return; }
+	op = op || ev.item.getData(ZmOperation.KEY_ID);
+	if (op == ZmOperation.NEW_MESSAGE) {
+		this._participantComposeListener(ev);
+	}else{
+        ZmListController.prototype._newListener.call(this, ev, op, params);
+    }
+};
+
 // Compose message to participant
 ZmContactListController.prototype._participantComposeListener =
 function(ev) {
