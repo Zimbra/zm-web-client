@@ -902,7 +902,9 @@ function(view, force) {
 	}
 	if (okToContinue) {
 		this._setViewVisible(view, false);
-		appCtxt.getKeyboardMgr().clearKeySeq();
+        if (appCtxt.get(ZmSetting.USE_KEYBOARD_SHORTCUTS)) {
+		    appCtxt.getKeyboardMgr().clearKeySeq();
+        }
 		DBG.println(AjxDebug.DBG2, view + " hidden");
 		callback = this._callbacks[view] ? this._callbacks[view][ZmAppViewMgr.CB_POST_HIDE] : null;
 		if (callback) {
