@@ -16,7 +16,7 @@
 /**
 * Creates a calling party.
 * @constructor
-* @class
+* @class  ZmCallingParty
 * This class represents a calling party. Should be treated as immutable.
 *
 */
@@ -46,7 +46,7 @@ function() {
 ZmCallingParty.prototype._loadFromDom =
 function(node) {
 	if (node.n) this.name = node.n;
-	if (node.p) this.callerId = node.p;
+	if (node.p) this.callerId = (node.p == node.n) || (node.p == "Unavailable") ? null : node.p;
 	if (node.t) this.type = node.t == "f" ? ZmVoiceItem.FROM : ZmVoiceItem.TO;
 	if (node.ci) this.city = node.ci == "Unavailable" ? null : node.ci;
 	if (node.st) this.state = node.st  == "Unavailable" ? null : node.st;

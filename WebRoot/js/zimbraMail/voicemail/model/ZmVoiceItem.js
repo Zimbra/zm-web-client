@@ -16,7 +16,7 @@
 /**
  * Creates a voice item.
  * @constructor
- * @class
+ * @class ZmVoiceItem
  * This abstract class represents a voicemail or phone call.
  *
  * @param id		[int]			unique ID
@@ -32,7 +32,7 @@ ZmVoiceItem = function(type, id, list) {
 	this.duration = 0;
 	this._callingParties = {};
 	this.participants = new AjxVector();
-}
+};
 
 ZmVoiceItem.prototype = new ZmItem;
 ZmVoiceItem.prototype.constructor = ZmVoiceItem;
@@ -40,7 +40,7 @@ ZmVoiceItem.prototype.constructor = ZmVoiceItem;
 ZmVoiceItem.prototype.toString = 
 function() {
 	return "ZmVoiceItem";
-}
+};
 
 ZmVoiceItem.FROM		= 1;
 ZmVoiceItem.TO			= 2;
@@ -52,7 +52,7 @@ function() {
 
 ZmVoiceItem.prototype.getPhone = 
 function() {
-	return this.list && this.list.folder ? this.list.folder.phone : null;;
+	return this.list && this.list.folder ? this.list.folder.phone : null;
 };
 
 ZmVoiceItem.prototype.isInTrash = 
@@ -74,8 +74,6 @@ function(node) {
 	if (node.id) this.id = node.id;
 	if (node.cp) {
 		for(var i = 0, count = node.cp.length; i < count; i++) {
-			var party = node.cp[i];
-// Consider keeping a cache of calling parties. There's going to be a lot of repetition here....			
 			var callingParty = new ZmCallingParty();
 			callingParty._loadFromDom(node.cp[i]);
 			this._callingParties[callingParty.type] = callingParty;
