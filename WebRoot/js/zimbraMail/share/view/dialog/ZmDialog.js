@@ -148,7 +148,7 @@ function(params, forceSingle) {
 	}
 
 	// single-account overview handling
-	var overviewId = params.overviewId;
+	var overviewId = this._curOverviewId = params.overviewId;
 	var overview = this._opc.getOverview(overviewId);
 	if (!overview) {
 		var ovParams = {

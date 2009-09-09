@@ -249,20 +249,24 @@ function(ev) {
 
 ZmFilterRulesController.prototype._runListener =
 function(ev) {
-	var dialog = appCtxt.getChooseFolderDialog();
-	dialog.reset();
-	dialog.registerCallback(DwtDialog.OK_BUTTON, this._runFilterOkCallback, this, dialog);
+	// !!! do *NOT* get choose folder dialog from appCtxt since this one has checkboxes!
+	if (!this._chooseFolderDialog) {
+		AjxDispatcher.require("Extras");
+		this._chooseFolderDialog = new ZmChooseFolderDialog(appCtxt.getShell());
+	}
+	this._chooseFolderDialog.reset();
+	this._chooseFolderDialog.registerCallback(DwtDialog.OK_BUTTON, this._runFilterOkCallback, this, this._chooseFolderDialog);
 	var params = {
 		treeIds:		[ZmOrganizer.FOLDER],
 		title:			ZmMsg.chooseFolder,
-		overviewId:		dialog.getOverviewId(ZmApp.MAIL),
+		overviewId:		this.toString(),
 		description:	ZmMsg.chooseFolderToFilter,
 		skipReadOnly:	true,
 		hideNewButton:	true,
 		treeStyle:		DwtTree.CHECKEDITEM_STYLE,
 		appName:		ZmApp.MAIL
 	};
-	dialog.popup(params);
+	this._chooseFolderDialog.popup(params);
 };
 
 ZmFilterRulesController.prototype._runFilterOkCallback =
