@@ -198,8 +198,8 @@ ZmSkin.prototype = {
 		}
 		else {
 			var tagName = el.tagName;
-			if (tagName == "TD" && document.all == null)		value = "table-cell";
-			else if (tagName == "TR" && document.all == null) 	value = "table-row";
+			if (tagName == "TD" && !document.all)		value = "table-cell";
+			else if (tagName == "TR" && !document.all) 	value = "table-row";
 			else value = "block";
 		}
 		el.style.display = value;
