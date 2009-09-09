@@ -29,7 +29,7 @@
     <table width="100%" height="100%"cellpadding="0" cellspacing="0">
         <tr>
             <td class="list">
-                <iframe onload="resizeIframe();" id="upsellIframe" style="width:100%; height:600px" marginWidth="0" marginHeight="0" frameBorder="0" src="${fn:escapeXml(iframeUrl)}"></iframe>
+                <iframe onload="resizeIframe();" id="upsellIframe" style="width:100%; height:400px;" marginWidth="0" marginHeight="0" frameBorder="0" src="${fn:escapeXml(iframeUrl)}"></iframe>
             </td>
         </tr>
     </table>
@@ -40,7 +40,7 @@
         var isIE = ( /MSIE/.test(navigator.userAgent) && !/(Opera|Gecko|KHTML)/.test(navigator.userAgent) );
         var iframe = document.getElementById("upsellIframe");
         iframe.style.width = "100%";
-        iframe.style.height = "100%";
+        iframe.style.height = "400px";
         iframe.marginWidth = 0;
         iframe.marginHeight = 0;
         iframe.border = 0;
@@ -48,20 +48,16 @@
         iframe.style.border = "none";
 
         var resizeIframe = function() {
-            if (iframe !=null && iframe.parentNode) {
-                iframe.style.height = iframe.parentNode.offsetHeight + 'px';
-            }
-        }
-
-        var iframeResizeListener = function() {
-            if (iframe !=null && iframe.parentNode) {
-                var n = iframe.parentNode;
+            if (iframe !=null) {
                 iframe.style.display = 'none';
-                iframe.style.height = n.offsetHeight + 'px';
+                var height = document.getElementById("skin_app_table").offsetHeight-5;
+                iframe.style.height = height + 'px';
                 iframe.style.display = '';
             }
         }
 
-        window.onresize = iframeResizeListener;
+        window.onresize = resizeIframe;
+
+        setTimeout(resizeIframe, 1000);
     </script>
 </app:view>
