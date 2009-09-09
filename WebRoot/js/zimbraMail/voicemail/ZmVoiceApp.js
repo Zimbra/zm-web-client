@@ -514,7 +514,6 @@ function(params, callback) {
 ZmVoiceApp.prototype._showApp =
 function(params, callback) {
     this._paramId = (params.qsParams ? params.qsParams.id : null);
-    this._paramPh = (params.qsParams ? params.qsParams.phone : null );
 	var loadCallback = new AjxCallback(this, this._handleLoadLaunch, [callback]);
 	AjxDispatcher.require("Voicemail", true, loadCallback, null, true);
 };
@@ -533,7 +532,7 @@ function(ex) {
 			this._showingSecondaryMessage = true;
 
 			var view = new DwtControl({parent:appCtxt.getShell(), posStyle:Dwt.ABSOLUTE_STYLE});
-			view.getHtmlElement().innerHTML = ZMsg[ex.code];
+			view.getHtmlElement().innerHTML = ZMsg["voice.SECONDARY_NOT_ALLOWED_VOICE"];
 			var elements = {};
 			elements[ZmAppViewMgr.C_APP_CONTENT_FULL] = view;
 			var viewName = "VoiceMessage";
@@ -547,9 +546,6 @@ function(ex) {
 
 ZmVoiceApp.prototype._handleResponseLoadLaunchGotInfo =
 function(callback, response) {
-    if(this._isPhone(this._paramPh)){
-        this.setStartPhone(this._paramPh);
-    }
 	var startFolder = this.getStartFolder();
 	if (startFolder) {
 		this.search(startFolder, callback);
@@ -577,16 +573,6 @@ function(phone) {
 		}
 	}
 	return this.phones[index].folderTree.getByName(ZmVoiceFolder.VOICEMAIL);
-};
-
-ZmVoiceApp.prototype._isPhone =
-function(phone) {
-    for (var i = 0; i < this.phones.length; i++) {
-        if(this.phones[i].name  == phone){
-            return true;
-        }
-    }
-    return false;
 };
 
 ZmVoiceApp.prototype.getVoiceController =

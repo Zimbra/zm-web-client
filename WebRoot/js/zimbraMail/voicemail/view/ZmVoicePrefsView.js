@@ -130,7 +130,7 @@ function(ex) {
 	if (ex.code == "voice.SECONDARY_NOT_ALLOWED") {
 		if (!this._showingErrorMessage) {
 			this._showingErrorMessage = true;
-			this.getHtmlElement().innerHTML = ZMsg[ex.code];
+			this.getHtmlElement().innerHTML = ZMsg["voice.SECONDARY_NOT_ALLOWED_PREFS"];
 		}
 		return true;
 	}
