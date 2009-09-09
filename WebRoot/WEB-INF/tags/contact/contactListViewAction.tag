@@ -101,7 +101,7 @@
                             <c:set var="homeEmail" value="${contact.email2}"/>
                         </c:if>
                         <c:if test="${not empty contact.workEmail2 and empty workEmail and empty homeEmail}">
-                            <c:set var="workEmail" value="${contact.workEmail1}"/>
+                            <c:set var="workEmail" value="${contact.workEmail2}"/>
                         </c:if>
                         <c:if test="${not empty contact.email3 and empty workEmail and empty homeEmail}">
                             <c:set var="homeEmail" value="${contact.email3}"/>
