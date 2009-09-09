@@ -47,7 +47,7 @@
 								<tr class='Header'>
 									<th nowrap><input id="CHALL" onClick="checkAll(document.zform.voiceId,this)" type=checkbox name="allids"/></th>
 									<th nowrap><app:img src="tasks/ImgTaskHigh.gif" altkey="ALT_PRIORITY"/></th>
-									<th width='250px' nowrap><fmt:message key="from"/></th>
+									<th width='40%' nowrap><fmt:message key="from"/></th>
 									<th nowrap><fmt:message key="message"/></th>
 									<th nowrap>
 										<zm:newSortUrl var="durSortUrl" value="/h/search" context="${context}" sort="${(context.ss eq 'durDesc' or empty context.ss) ? 'durAsc' : 'durDesc'}"/>
@@ -74,7 +74,7 @@
 											<c:otherwise>&nbsp;</c:otherwise>
 										</c:choose>
 									</td>
-									<td nowrap>${hit.voiceMailItemHit.displayCaller}</td>
+									<td nowrap>${zm:getDisplayCaller(pageContext, hit.voiceMailItemHit.caller)}</td>
 									<c:choose>
 										<c:when test="${!empty hit.voiceMailItemHit.soundUrl}">
 											<c:url var="url" value="/h/search">

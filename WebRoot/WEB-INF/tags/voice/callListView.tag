@@ -41,8 +41,8 @@
 				<td class='List'>
 						<table width=100% cellpadding=2 cellspacing=0>
 							<tr class='Header'>
-								<th width=20% nowrap><fmt:message key="${useTo ? 'to' : 'from'}"/>
-								<th width=20% nowrap>
+								<th width=50% nowrap><fmt:message key="${useTo ? 'to' : 'from'}"/>
+								<th width=25% nowrap>
 									<zm:newSortUrl var="durSortUrl" value="/h/search" context="${context}" sort="${(context.ss eq 'durDesc' or empty context.ss) ? 'durAsc' : 'durDesc'}"/>
 									<a href="${durSortUrl}">
 										<fmt:message key="duration"/>
@@ -58,7 +58,7 @@
 
 							<c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
 							<tr>
-								<td nowrap>${useTo ? hit.callHit.displayRecipient : hit.callHit.displayCaller}</td>
+								<td nowrap>${zm:getDisplayCaller(pageContext, useTo ? hit.callHit.recipient : hit.callHit.caller)}</td>
 								<td nowrap>${fn:escapeXml(zm:displayDuration(pageContext, hit.callHit.duration))}</td>
 								<td nowrap>${fn:escapeXml(zm:displayVoiceDate(pageContext, hit.callHit.date))}</td>
 							</tr>
