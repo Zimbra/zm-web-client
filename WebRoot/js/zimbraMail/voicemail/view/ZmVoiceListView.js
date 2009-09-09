@@ -140,21 +140,23 @@ function(voicemail) {
 		data = contactList.getContactByPhone(callingParty.name);
 	}
 	if (data) {
-		this._addToContactMap(data.contact, voicemail);
-		voicemail.participants.getArray()[0] = data.contact;
-		if (!ZmVoiceListView._callerFormat) {
-			ZmVoiceListView._callerFormat = new AjxMessageFormat(ZmMsg.callingPartyFormat);
+		var fileAs = data.contact.getFileAs();
+		if (fileAs) {
+			this._addToContactMap(data.contact, voicemail);
+			voicemail.participants.getArray()[0] = data.contact;
+			if (!ZmVoiceListView._callerFormat) {
+				ZmVoiceListView._callerFormat = new AjxMessageFormat(ZmMsg.callingPartyFormat);
+			}
+			var args = [
+				AjxStringUtil.htmlEncode(fileAs),
+				ZmVoiceListView.PHONE_FIELDS_LABEL[data.field],
+				this._getCallerHtml(voicemail)
+			];
+			var text = ZmVoiceListView._callerFormat.format(args);
+			return text;
 		}
-		var args = [
-			AjxStringUtil.htmlEncode(data.contact.getFullName()),
-			ZmVoiceListView.PHONE_FIELDS_LABEL[data.field],
-			this._getCallerHtml(voicemail)
-		];
-		var text = ZmVoiceListView._callerFormat.format(args);
-		return text;
-	} else {
-		return this._getCallerHtml(voicemail);
 	}
+	return this._getCallerHtml(voicemail);
 };
 
 ZmVoiceListView.prototype._addToContactMap =
