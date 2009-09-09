@@ -27,7 +27,8 @@ ZmCallingParty = function() {
 	this.city = null;
 	this.state = null;
 	this.country = null;
-}
+	this.callerId = null;
+};
 
 ZmCallingParty.prototype = new ZmPhone;
 ZmCallingParty.prototype.constructor = ZmCallingParty;
@@ -35,7 +36,7 @@ ZmCallingParty.prototype.constructor = ZmCallingParty;
 ZmCallingParty.prototype.toString = 
 function() {
 	return "ZmCallingParty";
-}
+};
 
 ZmCallingParty.prototype.getPhoneNumber = 
 function() {
@@ -44,7 +45,8 @@ function() {
 
 ZmCallingParty.prototype._loadFromDom =
 function(node) {
-	if (node.n) this.name = node.n
+	if (node.n) this.name = node.n;
+	if (node.p) this.callerId = node.p;
 	if (node.t) this.type = node.t == "f" ? ZmVoiceItem.FROM : ZmVoiceItem.TO;
 	if (node.ci) this.city = node.ci == "Unavailable" ? null : node.ci;
 	if (node.st) this.state = node.st  == "Unavailable" ? null : node.st;

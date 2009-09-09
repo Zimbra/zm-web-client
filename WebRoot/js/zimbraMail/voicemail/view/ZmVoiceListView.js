@@ -133,28 +133,32 @@ function(htmlArr, idx, voicemail, field, colIdx, params) {
 
 ZmVoiceListView.prototype._getCallerNameHtml =
 function(voicemail) {
-	var contactList = AjxDispatcher.run("GetContacts");
 	var callingParty = this.getCallingParty(voicemail);
-	var data = null;
-	if (contactList) {
-		data = contactList.getContactByPhone(callingParty.name);
+
+	// Check if the calling party's number is in the contact list.
+	var contactList = AjxDispatcher.run("GetContacts");
+	var data = contactList ? contactList.getContactByPhone(callingParty.name) : null;
+	var fileAs = data ? data.contact.getFileAs() : null;
+	if (fileAs) {
+		this._addToContactMap(data.contact, voicemail);
+		voicemail.participants.getArray()[0] = data.contact;
+		ZmVoiceListView._callerFormat = ZmVoiceListView._callerFormat || new AjxMessageFormat(ZmMsg.callingPartyFormat);
+		var args = [
+			AjxStringUtil.htmlEncode(fileAs),
+			ZmVoiceListView.PHONE_FIELDS_LABEL[data.field],
+			this._getCallerHtml(voicemail)
+		];
+		return ZmVoiceListView._callerFormat.format(args);
 	}
-	if (data) {
-		var fileAs = data.contact.getFileAs();
-		if (fileAs) {
-			this._addToContactMap(data.contact, voicemail);
-			voicemail.participants.getArray()[0] = data.contact;
-			if (!ZmVoiceListView._callerFormat) {
-				ZmVoiceListView._callerFormat = new AjxMessageFormat(ZmMsg.callingPartyFormat);
-			}
-			var args = [
-				AjxStringUtil.htmlEncode(fileAs),
-				ZmVoiceListView.PHONE_FIELDS_LABEL[data.field],
-				this._getCallerHtml(voicemail)
-			];
-			var text = ZmVoiceListView._callerFormat.format(args);
-			return text;
-		}
+
+	// Check if the calling party has callerId info.
+	if (callingParty.callerId) {
+		ZmVoiceListView._callerIdFormat = ZmVoiceListView._callerIdFormat || new AjxMessageFormat(ZmMsg.callingPartyCallerIdFormat);
+		var args = [
+			AjxStringUtil.htmlEncode(callingParty.callerId),
+			this._getCallerHtml(voicemail)
+		];
+		return ZmVoiceListView._callerIdFormat.format(args);
 	}
 	return this._getCallerHtml(voicemail);
 };
