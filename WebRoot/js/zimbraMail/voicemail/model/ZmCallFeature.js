@@ -42,16 +42,38 @@ function() {
 }
 
 // Calling preferences
-ZmCallFeature.ANONYNOUS_REJECTION = "anoncallrejection";
+ZmCallFeature.ANONYMOUS_REJECTION = "anoncallrejection";
 ZmCallFeature.CALL_FORWARDING = "callforward";
+ZmCallFeature.CALL_FORWARD_NO_ANSWER = "callforwardnoanswer";
 ZmCallFeature.SELECTIVE_CALL_FORWARDING = "selectivecallforward";
-ZmCallFeature.VOICEMAIL_PREFS = "voicemailprefs"
-ZmCallFeature.CALL_FEATURES = [ZmCallFeature.ANONYNOUS_REJECTION, ZmCallFeature.CALL_FORWARDING, ZmCallFeature.VOICEMAIL_PREFS];
+ZmCallFeature.SELECTIVE_CALL_REJECTION = "selectivecallrejection";
+ZmCallFeature.VOICEMAIL_PREFS = "voicemailprefs";
+
+ZmCallFeature.CALL_FEATURES = [ZmCallFeature.ANONYMOUS_REJECTION, ZmCallFeature.CALL_FORWARDING, ZmCallFeature.VOICEMAIL_PREFS, ZmCallFeature.CALL_FORWARD_NO_ANSWER, ZmCallFeature.SELECTIVE_CALL_FORWARDING, ZmCallFeature.SELECTIVE_CALL_REJECTION];
 
 // Voicemail preferences.
 ZmCallFeature.EMAIL_NOTIFICATION = "vmPrefEmailNotifAddress";
-ZmCallFeature.VOICE_FEATURES = [ZmCallFeature.EMAIL_NOTIFICATION];
+ZmCallFeature.ANSWERING_LOCALE   = "vmPrefAnsweringLocale";
+ZmCallFeature.USER_LOCALE        = "vmPrefUserLocale";
+ZmCallFeature.AUTOPLAY           = "vmPrefAutoPlayNewMsgs";
+ZmCallFeature.PROMPT_LEVEL       = "vmPrefPromptLevel";
+ZmCallFeature.ANNOUNCE_DATETIME  = "vmPrefPlayDateAndTimeInMsgEnv";
+ZmCallFeature.SKIP_PIN_ENTRY     = "vmPrefSkipPinEntry";
 
+ZmCallFeature.VOICE_FEATURES = [ZmCallFeature.EMAIL_NOTIFICATION, ZmCallFeature.ANSWERING_LOCALE, ZmCallFeature.USER_LOCALE, ZmCallFeature.AUTOPLAY, ZmCallFeature.PROMPT_LEVEL, ZmCallFeature.ANNOUNCE_DATETIME, ZmCallFeature.SKIP_PIN_ENTRY];
+
+
+ZmCallFeature.LOCALE_ENGLISH = "ENGLISH";
+ZmCallFeature.LOCALE_SPANISH = "SPANISH";
+
+ZmCallFeature.LOCALE_VALUES = [ZmCallFeature.LOCALE_ENGLISH, ZmCallFeature.LOCALE_SPANISH];
+
+
+ZmCallFeature.PROMPT_LEVEL_SHORT = "RAPID";
+ZmCallFeature.PROMPT_LEVEL_MEDIUM = "STANDARD";
+ZmCallFeature.PROMPT_LEVEL_LONG = "EXTENDED";
+
+ZmCallFeature.PROMPT_LEVEL_VALUES = [ZmCallFeature.PROMPT_LEVEL_SHORT, ZmCallFeature.PROMPT_LEVEL_MEDIUM, ZmCallFeature.PROMPT_LEVEL_LONG];
 
 ZmCallFeature.prototype.createProxy = 
 function() {
