@@ -467,7 +467,7 @@ function(view, arrowStyle) {
 };
 
 ZmMailListController.prototype._initializeNavToolBar =
-function(view) {
+function(view, arrowStyle) {
 	var tb = new ZmNavToolBar({parent:this._toolbar[view], arrowStyle:arrowStyle, context:view});
 	this._setNavToolBar(tb, view);
 };

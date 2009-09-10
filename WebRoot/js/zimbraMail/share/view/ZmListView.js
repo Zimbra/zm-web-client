@@ -902,7 +902,6 @@ function() {
 	DBG.println(AjxDebug.DBG2, "List view: checking item count");
 	var scrollDiv = this._parentEl;
 	var h = Dwt.getSize(scrollDiv).y;
-	var itemsVisible = Math.ceil(h / this._rowHeight);
 	var itemsLeft = Math.floor((scrollDiv.scrollHeight - (scrollDiv.scrollTop + h)) / this._rowHeight);
 	if (itemsLeft < this.getPagelessThreshold()) {
 		this._controller._paginate(this._view, true);
