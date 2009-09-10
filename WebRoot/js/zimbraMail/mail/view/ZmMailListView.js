@@ -105,6 +105,11 @@ ZmMailListView.prototype.handleKeyAction =
 function(actionCode, ev) {
 	if (actionCode == DwtKeyMap.SELECT_NEXT || actionCode == DwtKeyMap.SELECT_PREV) {
 		this._controller.lastListAction = actionCode;
+	} else if (actionCode == DwtKeyMap.SELECT_ALL) {
+		DwtListView.prototype.handleKeyAction.apply(this, arguments);
+		var ctlr = this._controller;
+		ctlr._resetOperations(ctlr._toolbar[ctlr._currentView], this.getSelectionCount());
+		return true;
 	}
 	return DwtListView.prototype.handleKeyAction.apply(this, arguments);
 };
