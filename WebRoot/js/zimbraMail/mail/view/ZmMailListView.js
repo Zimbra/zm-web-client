@@ -56,7 +56,6 @@ function(item) {
 
 		var row2 = this._getElement(item, ZmItem.F_ITEM_ROW_3PANE);
 		if (row2) { row2.className = rowClass; }
-
 	}
 };
 
@@ -237,7 +236,7 @@ function() {
 		this._headerInit[ZmItem.F_FOLDER]		= {text:ZmMsg.folder, width:ZmMsg.COLUMN_WIDTH_FOLDER, resizeable:true};
 		this._headerInit[ZmItem.F_SIZE]			= {text:ZmMsg.size, width:ZmMsg.COLUMN_WIDTH_SIZE, sortable:ZmItem.F_SIZE, resizeable:true};
 		this._headerInit[ZmItem.F_DATE]			= {text:ZmMsg.received, width:ZmMsg.COLUMN_WIDTH_DATE, sortable:ZmItem.F_DATE, resizeable:true};
-		this._headerInit[ZmItem.F_SORTED_BY]	= {text:AjxMessageFormat.format(ZmMsg.arrangedBy, ZmMsg.date), sortable:ZmItem.F_SORTED_BY};
+		this._headerInit[ZmItem.F_SORTED_BY]	= {text:AjxMessageFormat.format(ZmMsg.arrangedBy, ZmMsg.date), sortable:ZmItem.F_SORTED_BY, resizeable:false};
 	}
 };
 
@@ -265,6 +264,63 @@ function(viewId, headerList) {
 	}
 
 	return hList;
+};
+
+ZmMailListView.prototype.createHeaderHtml =
+function(defaultColumnSort) {
+	DwtListView.prototype.createHeaderHtml.apply(this, arguments);
+	var rpLoc = appCtxt.get(ZmSetting.READING_PANE_LOCATION);
+	if (rpLoc == ZmSetting.RP_RIGHT) {
+		var td = document.getElementById(this._itemCountTextTdId);
+		if (td) {
+			var text = this._controller._itemCountText[rpLoc] =
+					   new DwtText({parent:this, className:"itemCountText", id:"itemCountTextDiv"});
+			td.appendChild(text.getHtmlElement());
+		}
+	}
+};
+
+ZmMailListView.prototype._createHeader =
+function(htmlArr, idx, headerCol, i, numCols, id, defaultColumnSort) {
+
+	if (headerCol._field == ZmItem.F_SORTED_BY) {
+		var field = headerCol._field;
+		var textTdId = this._itemCountTextTdId = DwtId._makeId(this._view, ZmSetting.RP_RIGHT, "td");
+		htmlArr[idx++] = "<td id='";
+		htmlArr[idx++] = id;
+		htmlArr[idx++] = "' class='";
+		htmlArr[idx++] = (id == this._currentColId)	? "DwtListView-Column DwtListView-ColumnActive'" :
+													  "DwtListView-Column'";
+		htmlArr[idx++] = " width='auto'>";
+		htmlArr[idx++] = "<table border=0 cellpadding=0 cellspacing=0 width='100%'><tr>";
+		htmlArr[idx++] = "<td id='";
+		htmlArr[idx++] = DwtId.getListViewHdrId(DwtId.WIDGET_HDR_LABEL, this._view, field);
+		htmlArr[idx++] = "' class='DwtListHeaderItem-label'>";
+		htmlArr[idx++] = headerCol._label;
+		htmlArr[idx++] = "</td>";
+		htmlArr[idx++] = "<td align=right class='itemCountText' style='padding-right:2px' width=105 id='";
+		htmlArr[idx++] = textTdId;
+		htmlArr[idx++] = "'>";
+		htmlArr[idx++] = "</td>";
+		htmlArr[idx++] = "</tr></table>";
+		htmlArr[idx++] = "</div></td>";
+	} else {
+		return DwtListView.prototype._createHeader.apply(this, arguments);
+	}
+};
+
+ZmMailListView.prototype._resetColWidth =
+function() {
+
+	if (!this.headerColCreated) { return; }
+
+	var lastColIdx = this._getLastColumnIndex();
+    if (lastColIdx) {
+        var lastCol = this._headerList[lastColIdx];
+		if (lastCol._field != ZmItem.F_SORTED_BY) {
+			DwtListView.prototype._resetColWidth.apply(this, arguments);
+		}
+	}
 };
 
 ZmMailListView.prototype._resetFromColumnLabel =

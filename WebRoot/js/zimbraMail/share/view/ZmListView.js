@@ -115,14 +115,7 @@ function(list, sortField) {
 			}
 			DwtListView.prototype.set.call(this, lvList, sortField);
 		}
-		var itemCountText = this._controller._itemCountText;
-		if (itemCountText) {
-			list = this._controller._list;
-			var sizeText = list.size() + (list.hasMore() ? "+" : "");
-			var typeKey = (list.size() == 1) ? ZmItem.MSG_KEY[this.type] : ZmItem.PLURAL_MSG_KEY[this.type];
-			var text = AjxMessageFormat.format(ZmMsg.itemCount, [sizeText, ZmMsg[typeKey]]);
-			itemCountText.setText(text);
-		}
+		this._controller._setItemCountText();
 		if (!this._rowHeight) {
 			var item = list.get(0);
 			var row = item && this._getElFromItem(item);

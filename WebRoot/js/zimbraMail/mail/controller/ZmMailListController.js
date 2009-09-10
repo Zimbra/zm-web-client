@@ -454,14 +454,7 @@ function(view, arrowStyle) {
 		}
 		this._setReplyText(this._toolbar[view]);
 		this._toolbar[view].addOp(ZmOperation.FILLER);
-		if (ZmApp.PAGELESS[this._app._name]) {
-			this._toolbar[view].addOp(ZmOperation.TEXT);
-			this._itemCountText = this._toolbar[view].getButton(ZmOperation.TEXT);
-			this._itemCountText.addClassName("itemCountText");
-		} else {
-			var tb = new ZmNavToolBar({parent:this._toolbar[view], arrowStyle:arrowStyle, context:view});
-			this._setNavToolBar(tb, view);
-		}
+		this._initializeNavToolBar(view, arrowStyle);
 	}
 
 	this._setupViewMenu(view);
@@ -471,6 +464,12 @@ function(view, arrowStyle) {
 
 	// reset new button properties
 	this._setNewButtonProps(view, ZmMsg.compose, "NewMessage", "NewMessageDis", ZmOperation.NEW_MESSAGE);
+};
+
+ZmMailListController.prototype._initializeNavToolBar =
+function(view) {
+	var tb = new ZmNavToolBar({parent:this._toolbar[view], arrowStyle:arrowStyle, context:view});
+	this._setNavToolBar(tb, view);
 };
 
 ZmMailListController.prototype._getNumTotal =

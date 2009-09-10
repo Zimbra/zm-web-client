@@ -76,6 +76,8 @@ ZmListController = function(container, app) {
 	this._dropTgt = new DwtDropTarget("ZmTag");
 	this._dropTgt.markAsMultiple();
 	this._dropTgt.addDropListener(new AjxListener(this, this._dropListener));
+
+	this._itemCountText = {};
 };
 
 ZmListController.prototype = new ZmController;
@@ -1087,10 +1089,9 @@ function(view, forward, loadIndex) {
 		var lastSortVal = (lastItem && lastItem.id) ? lastItem.sf : null;
 		var lastId = lastSortVal ? lastItem.id : null;
 
+		this._setItemCountText(ZmMsg.loading);
+
 		// get next page of items from server; note that callback may be overridden
-		if (this._itemCountText) {
-			this._itemCountText.setText(ZmMsg.loading);
-		}
 		var respCallback = new AjxCallback(this, this._handleResponsePaginate, [view, false, loadIndex, offset]);
 		this._search(view, offset, max, respCallback, true, lastId, lastSortVal);
 		this._lastOffset = offset;
@@ -1400,3 +1401,6 @@ ZmListController.prototype._getMenuContext =
 function() {
 	return this._app && this._app._name;
 };
+
+// sets the text that shows the number of items, if we are pageless
+ZmListController.prototype._setItemCountText = function(text) {};

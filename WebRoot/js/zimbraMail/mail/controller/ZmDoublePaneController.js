@@ -46,6 +46,8 @@ ZmDoublePaneController.prototype.constructor = ZmDoublePaneController;
 
 ZmDoublePaneController.LIST_SELECTION_SHORTCUT_DELAY = 300;
 
+ZmDoublePaneController.RP_IDS = [ZmSetting.RP_BOTTOM, ZmSetting.RP_RIGHT, ZmSetting.RP_OFF];
+
 // Public methods
 
 ZmDoublePaneController.prototype.toString = 
@@ -161,6 +163,17 @@ function(view) {
 	}
 
 	ZmMailListController.prototype._initialize.call(this, view);
+};
+
+ZmDoublePaneController.prototype._initializeNavToolBar =
+function(view, arrowStyle) {
+	if (ZmApp.PAGELESS[this._app._name]) {
+		this._toolbar[view].addOp(ZmOperation.TEXT);
+		var text = this._itemCountText[ZmSetting.RP_BOTTOM] = this._toolbar[view].getButton(ZmOperation.TEXT);
+		text.addClassName("itemCountText");
+	} else {
+		ZmMailListController.prototype._initializeNavToolBar.apply(this, arguments);
+	}
 };
 
 ZmDoublePaneController.prototype._getToolBarOps =
@@ -302,7 +315,7 @@ function(view, menu, checked) {
 	}
 
 	var miParams = {text:ZmMsg.readingPaneAtBottom, style:DwtMenuItem.RADIO_STYLE, radioGroupId:"RP"};
-	var ids = [ZmSetting.RP_BOTTOM, ZmSetting.RP_RIGHT, ZmSetting.RP_OFF];
+	var ids = ZmDoublePaneController.RP_IDS;
 	var pref = this._getReadingPanePref();
 	for (var i = 0; i < ids.length; i++) {
 		var id = ids[i];
@@ -717,4 +730,23 @@ function() {
 		}
 	}
 	return ZmMailListView.FIRST_ITEM;	
+};
+
+ZmDoublePaneController.prototype._setItemCountText =
+function(text) {
+
+	if (!text) {
+		var list = this._list, type = this._mailListView.type;
+		var sizeText = list.size() + (list.hasMore() ? "+" : "");
+		var typeKey = (list.size() == 1) ? ZmItem.MSG_KEY[type] : ZmItem.PLURAL_MSG_KEY[type];
+		var text = AjxMessageFormat.format(ZmMsg.itemCount, [sizeText, ZmMsg[typeKey]]);
+	}
+
+	var rpr = (this._getReadingPanePref() == ZmSetting.RP_RIGHT);
+	if (this._itemCountText[ZmSetting.RP_RIGHT]) {
+		this._itemCountText[ZmSetting.RP_RIGHT].setText(rpr ? text : "");
+	}
+	if (this._itemCountText[ZmSetting.RP_BOTTOM]) {
+		this._itemCountText[ZmSetting.RP_BOTTOM].setText(rpr ? "" : text);
+	}
 };
