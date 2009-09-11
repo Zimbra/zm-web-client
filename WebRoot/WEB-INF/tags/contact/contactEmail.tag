@@ -25,5 +25,6 @@
 
 <c:if test="${!empty email}">
         <fmt:message key="${label}" var="elabel"/>
-        <tr><c:if test="${!empty label}"><td class="contactLabel">${fn:escapeXml(elabel)}:</td></c:if><td class="contactOutput"><a href="/h/search?action=compose&to=${email}">${fn:escapeXml(email)}</a></td></tr>
+		<c:set var="escapedEmail">${fn:escapeXml(email)}</c:set>
+        <tr><c:if test="${!empty label}"><td class="contactLabel">${fn:escapeXml(elabel)}:</td></c:if><td class="contactOutput"><a href="/h/search?action=compose&to=${escapedEmail}">${escapedEmail}</a></td></tr>
 </c:if>
