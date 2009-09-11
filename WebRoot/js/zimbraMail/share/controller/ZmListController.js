@@ -1064,10 +1064,9 @@ function(view, forward, loadIndex) {
 	this.currentPage = this.currentPage + (forward ? 1 : -1);
 	this.maxPage = Math.max(this.maxPage, this.currentPage);
 
-	lv.offset = offset; // cache new offset
-
 	// see if we're out of items and the server has more
 	if (needMore && this._list.hasMore()) {
+		lv.offset = offset; // cache new offset
 		if (lv._isPageless) {
 			max = limit;
 		} else {
@@ -1097,6 +1096,7 @@ function(view, forward, loadIndex) {
 		this._lastOffset = offset;
 		return false;
 	} else if (!lv._isPageless) {
+		lv.offset = offset; // cache new offset
 		this._resetOperations(this._toolbar[view], 0);
 		this._resetNavToolBarButtons(view);
 		this._setViewContents(view);

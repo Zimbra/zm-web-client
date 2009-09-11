@@ -903,7 +903,7 @@ function() {
 	var scrollDiv = this._parentEl;
 	var h = Dwt.getSize(scrollDiv).y;
 	var itemsLeft = Math.floor((scrollDiv.scrollHeight - (scrollDiv.scrollTop + h)) / this._rowHeight);
-	if (itemsLeft < this.getPagelessThreshold()) {
+	if (itemsLeft < this.getPagelessThreshold() && (scrollDiv.scrollTop > 0) && (scrollDiv.scrollHeight > h)) {
 		this._controller._paginate(this._view, true);
 	}
 };

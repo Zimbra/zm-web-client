@@ -303,7 +303,9 @@ function(htmlArr, idx, headerCol, i, numCols, id, defaultColumnSort) {
 		htmlArr[idx++] = "' class='DwtListHeaderItem-label'>";
 		htmlArr[idx++] = headerCol._label;
 		htmlArr[idx++] = "</td>";
-		htmlArr[idx++] = "<td align=right class='itemCountText' style='padding-right:2px' width=105 id='";
+		htmlArr[idx++] = "<td align=right class='itemCountText' style='padding-right:2px' width='";
+		htmlArr[idx++] = ZmMsg.COLUMN_WIDTH_ITEM_COUNT;
+		htmlArr[idx++] = "' id='";
 		htmlArr[idx++] = textTdId;
 		htmlArr[idx++] = "'>";
 		htmlArr[idx++] = "</td>";

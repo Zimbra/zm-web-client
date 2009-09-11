@@ -746,7 +746,9 @@ function(ev) {
 		// if we're not on first page, leave conv row alone - don't make conv row disappear or move to top
 		var sortIndex = this._getSortIndex(item, sortBy);
 		var curIndex = this.getItemIndex(item, true);
-		if ((sortIndex != null) && (sortIndex != curIndex) && !this._expanded[item.id] && (this.offset == 0)) {
+		if ((sortIndex != null) && (curIndex != null) && (sortIndex != curIndex) &&
+			!this._expanded[item.id] && (this.offset == 0)) {
+
             this._removeMsgRows(item.id);
             this.removeItem(item);
 			this.addItem(item, sortIndex);
