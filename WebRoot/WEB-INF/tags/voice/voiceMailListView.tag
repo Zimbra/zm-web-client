@@ -16,7 +16,9 @@
 </app:handleError>
 <app:view editmode="${voiceStatus eq 'false' ? 'true' : ''}" mailbox="${mailbox}" title="${title}" selected='voice' voice="true" folders="false" tags="false" searches="false" context="${context}" keys="true">
 	<c:if test="${lastErrorCode eq 'voice.SECONDARY_NOT_ALLOWED'}">
-		<fmt:message key="voice.SECONDARY_NOT_ALLOWED_VOICE"/>
+		<div style="padding-left:22px">
+			<fmt:message key="voice.SECONDARY_NOT_ALLOWED_VOICE"/>
+		</div>
 	</c:if>
 	<c:if test="${voiceStatus}">
 		<zm:currentResultUrl var="currentUrl" value="/h/search" context="${context}"/>
