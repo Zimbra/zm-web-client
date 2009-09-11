@@ -67,7 +67,7 @@
     <property name="ffext.jarfile" value="zimbradnd.jar"/>
     <property name="ffext.xpifile" value="ZimbraDnD.xpi"/>
     <property name="ffext.build.dir" location="ffext/build"/>
-    <property name="ffext.src.dir" value="ffext/src"/>
+    <property name="ffext.src.dir" value="ffext/src/zimbradnd"/>
 
     <!-- Tasks -->
 
