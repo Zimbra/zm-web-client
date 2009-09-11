@@ -58,7 +58,7 @@
 <c:set var="caction" value="${context_url}"/>
 <c:if test="${uiv=='1'}">
     <c:if test="${not empty header['referer']}">
-        <c:set var="caction" value='${header["referer"]}'/>    
+        <c:set var="caction" value='${zm:cook(header["referer"])}'/>    
     </c:if>
     <c:if test="${empty header['referer']}">
         <c:set var="caction" value='${context_url}'/>        
