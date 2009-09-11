@@ -97,7 +97,7 @@ function(html, idx, item, field, colIdx) {
 		html[idx++] = item.name;
 		html[idx++] = "</nobr>";
 	} else if (field == ZmItem.F_EMAIL) {
-		html[idx++] = item.address;
+		html[idx++] = AjxStringUtil.htmlEncode(item.address);
 	}
 	return idx;
 };
