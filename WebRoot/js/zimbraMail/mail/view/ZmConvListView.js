@@ -173,7 +173,10 @@ function(allItems) {
 		for (var i = 0; i < childNodes.length; i++) {
 			var el = childNodes[i];
 			if (Dwt.getVisible(el)) {
-				list.push(this.getItemFromElement(el));
+				var item = this.getItemFromElement(el);
+				if (item) {
+					list.push(item);
+				}
 			}
 		}
 		return AjxVector.fromArray(list);
