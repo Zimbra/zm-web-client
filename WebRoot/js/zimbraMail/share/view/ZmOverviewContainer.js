@@ -133,7 +133,12 @@ function(params) {
 
 		header = this.getHeaderItem(acct);
 		if (header) {
-			header.setExpanded(appCtxt.get(ZmSetting.ACCOUNT_TREE_OPEN, null, acct));
+			if (this._appName == ZmApp.PREFERENCES) {
+				header.setExpanded(true, false, true);
+				header.enableSelection(false);
+			} else {
+				header.setExpanded(appCtxt.get(ZmSetting.ACCOUNT_TREE_OPEN, null, acct));
+			}
 		}
 
 		this.updateAccountInfo(acct, true, true);
@@ -176,8 +181,7 @@ function(params) {
 		var header = this._headerItems[headerDataId];
 		if (header) {
 			header.__isZimlet = true;
-			acct = appCtxt.accountList.mainAccount;
-			header.setExpanded(appCtxt.get(ZmSetting.ACCOUNT_TREE_OPEN, null, acct));
+			header.setExpanded(appCtxt.get(ZmSetting.ZIMLET_TREE_OPEN, null, appCtxt.accountList.mainAccount));
 		}
 	}
 };
@@ -294,7 +298,6 @@ function(headerParams, omit, overviewParams, showBackgroundColor) {
 
 	header._addItem(ov, null, true);
 	header.addNodeIconListeners();
-	header.setExpanded(true, false, false);
 
 	// finally set treeviews for this overview
 	var treeIds = overviewParams.overviewTrees || overviewParams.treeIds;
