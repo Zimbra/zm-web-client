@@ -108,7 +108,8 @@
                 <app:contactLine line="${contact.workCountry}"/>
                 <c:if test="${!empty contact.workURL}">
                     <c:set var="prefix" value="${fn:contains(contact.workURL,'//') ? '' : 'http://'}"/>
-                    <a target=_new href="<c:url value="${prefix}${contact.workURL}"/>">${fn:escapeXml(contact.workURL)}</a>
+					<c:set var="escapedURL">${fn:escapeXml(contact.workURL)}</c:set>
+					<a target=_new href="<c:url value="${prefix}${escapedURL}"/>">${escapedURL}</a>
                 </c:if>
         </td>
         <td valign="top" width="100%">
@@ -144,7 +145,8 @@
                 <app:contactLine line="${contact.homeCountry}"/>
                 <c:if test="${!empty contact.homeURL}">
                     <c:set var="prefix" value="${fn:contains(contact.homeURL,'//') ? '' : 'http://'}"/>
-                    <a target=_new href="<c:url value="${prefix}${contact.homeURL}"/>">${fn:escapeXml(contact.homeURL)}</a>
+					<c:set var="escapedURL">${fn:escapeXml(contact.homeURL)}</c:set>
+					<a target=_new href="<c:url value="${prefix}${escapedURL}"/>">${escapedURL}</a>
                 </c:if>
         </td>
         <td valign="top">
@@ -180,7 +182,8 @@
                 <app:contactLine line="${contact.otherCountry}"/>
                 <c:if test="${!empty contact.otherURL}">
                     <c:set var="prefix" value="${fn:contains(contact.otherURL,'//') ? '' : 'http://'}"/>
-                    <a target=_new href="<c:url value="${prefix}${contact.otherURL}"/>">${fn:escapeXml(contact.otherURL)}</a>
+					<c:set var="escapedURL">${fn:escapeXml(contact.otherURL)}</c:set>
+					<a target=_new href="<c:url value="${prefix}${escapedURL}"/>">${escapedURL}</a>
                 </c:if>
         </td>
         <td valign="top" width="100%">
