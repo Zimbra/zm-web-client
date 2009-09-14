@@ -91,17 +91,7 @@ function(organizer) {
 
 	DwtDialog.prototype.popup.call(this);
 
-	if (organizer.id != ZmOrganizer.ID_CALENDAR &&
-		organizer.id != ZmOrganizer.ID_NOTEBOOK &&
-		organizer.id != ZmOrganizer.ID_ADDRBOOK &&
-		organizer.id != ZmOrganizer.ID_TASKS &&
-		organizer.id != ZmOrganizer.ID_AUTO_ADDED &&
-		organizer.id != ZmOrganizer.ID_INBOX && 
-		organizer.id != ZmOrganizer.ID_OUTBOX &&
-		organizer.id != ZmOrganizer.ID_CHATS &&
-		organizer.id != ZmOrganizer.ID_TASKS && 
-		organizer.id != ZmOrganizer.ID_BRIEFCASE )
-	{
+	if (this._nameInputEl.style.display != "none") {
 		this._nameInputEl.focus();
 	}
 };
