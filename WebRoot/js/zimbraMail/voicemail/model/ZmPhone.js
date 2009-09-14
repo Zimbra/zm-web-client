@@ -34,6 +34,13 @@ function() {
 	return "ZmPhone";
 }
 
+ZmPhone.CHECK_INTERNATIONAL = /^0\d*/;
+ZmPhone.CHECK_EXTENSION = /^1?\d{3}555\d*/;
+ZmPhone.CHECK_EXTENSION_GOOD = /^1?\d{3}5551212$/;
+ZmPhone.CHECK_911 = /^1?911\d*/;
+ZmPhone.CHECK_411 = /^1?411\d*/;
+ZmPhone.CHECK_VALID = /^1?[2-9]\d{9}$/;
+
 ZmPhone.calculateDisplay =
 function(name) {
 	if (!name) {
@@ -49,6 +56,7 @@ function(name) {
 	}
 	if (doIt) {
 		var array = [
+			(offset>0)? (name.substring(0, offset)+"-") : "",
 			"(",
 			name.substring(offset, offset + 3),
 			") ",
@@ -73,6 +81,61 @@ function(str) {
 	var nameLength = ZmPhone.calculateName(str).length;
 	return (7 <= nameLength) && (nameLength <= 20) && !/[^0-9()\-\s\+]/.exec(str);
 };
+
+ZmPhone.prototype.validate =
+function(number, errors) {
+	if (AjxUtil.isNumber(number))
+		number = ""+number;
+	if (!AjxUtil.isString(number)) {
+		errors.push("Not a number or string");
+		return false;
+	}
+	
+	number = ZmPhone.calculateName(number);
+	
+	if (number == this.name) {
+		errors.push(ZmMsg.errorPhoneIsOwn + ZmMsg.errorPhoneFAQURL);
+		return false;
+	}
+	
+	if (number.charAt(0) == '1')
+		number = number.substring(1);
+	
+	if (ZmPhone.CHECK_INTERNATIONAL.test(number)) {
+		errors.push(ZmMsg.errorPhoneIsInternational);
+		return false;
+	}
+	
+	if (number.length >= 3) {
+		//var areacode = (number.length==11)? number.substring(1, 4) : number.substring(0, 3);
+		var areacode = number.substring(0, 3);
+		if (areacode == "900" || areacode == "500" || areacode == "700" || areacode == "976") {
+			errors.push(ZmMsg.errorPhoneInvalidAreaCode);
+			return false;
+		}
+	}
+	
+	if (ZmPhone.CHECK_EXTENSION.test(number) && !ZmPhone.CHECK_EXTENSION_GOOD.test(number)) {
+		errors.push(ZmMsg.errorPhoneInvalidExtension);
+		return false;
+	}
+	
+	if (ZmPhone.CHECK_911.test(number)) {
+		errors.push(ZmMsg.errorPhoneIs911);
+		return false;
+	}
+	
+	if (ZmPhone.CHECK_411.test(number)) {
+		errors.push(ZmMsg.errorPhoneIs411);
+		return false;
+	}
+		
+	if (!ZmPhone.CHECK_VALID.test(number)) {
+		errors.push(ZmMsg.errorPhoneInvalid);
+		return false;
+	}
+	return true;
+}
 
 ZmPhone.prototype.getDisplay =
 function() {

@@ -47,9 +47,10 @@ ZmCallFeature.CALL_FORWARDING = "callforward";
 ZmCallFeature.CALL_FORWARD_NO_ANSWER = "callforwardnoanswer";
 ZmCallFeature.SELECTIVE_CALL_FORWARDING = "selectivecallforward";
 ZmCallFeature.SELECTIVE_CALL_REJECTION = "selectivecallrejection";
+ZmCallFeature.SELECTIVE_CALL_ACCEPTANCE = "selectivecallacceptance";
 ZmCallFeature.VOICEMAIL_PREFS = "voicemailprefs";
 
-ZmCallFeature.CALL_FEATURES = [ZmCallFeature.ANONYMOUS_REJECTION, ZmCallFeature.CALL_FORWARDING, ZmCallFeature.VOICEMAIL_PREFS, ZmCallFeature.CALL_FORWARD_NO_ANSWER, ZmCallFeature.SELECTIVE_CALL_FORWARDING, ZmCallFeature.SELECTIVE_CALL_REJECTION];
+ZmCallFeature.CALL_FEATURES = [ZmCallFeature.ANONYMOUS_REJECTION, ZmCallFeature.CALL_FORWARDING, ZmCallFeature.VOICEMAIL_PREFS, ZmCallFeature.CALL_FORWARD_NO_ANSWER, ZmCallFeature.SELECTIVE_CALL_FORWARDING, ZmCallFeature.SELECTIVE_CALL_REJECTION, ZmCallFeature.SELECTIVE_CALL_ACCEPTANCE];
 
 // Voicemail preferences.
 ZmCallFeature.EMAIL_NOTIFICATION = "vmPrefEmailNotifAddress";
@@ -74,6 +75,13 @@ ZmCallFeature.PROMPT_LEVEL_MEDIUM = "STANDARD";
 ZmCallFeature.PROMPT_LEVEL_LONG = "EXTENDED";
 
 ZmCallFeature.PROMPT_LEVEL_VALUES = [ZmCallFeature.PROMPT_LEVEL_SHORT, ZmCallFeature.PROMPT_LEVEL_MEDIUM, ZmCallFeature.PROMPT_LEVEL_LONG];
+
+ZmCallFeature.CALL_FORWARD_NO_ANSWER_RINGS_VALUES = [2,3,4,5,6,7,8,9];
+
+ZmCallFeature.EMAIL_NOTIFICATION_MAX_ENTRIES = 25;
+ZmCallFeature.SELECTIVE_CALL_REJECTION_MAX_ENTRIES = 12;
+ZmCallFeature.SELECTIVE_CALL_ACCEPTANCE_MAX_ENTRIES = 12;
+ZmCallFeature.EMAIL_MAX_LENGTH = 100;
 
 ZmCallFeature.prototype.createProxy = 
 function() {

@@ -35,7 +35,7 @@ ZmVoicePrefsView = function(parent, controller) {
 		new ZmVoiceAnnounceDateTimeUI(this),
 		new ZmVoiceRequirePinUI(this),
 		new ZmCallSendToVoicemailAfterRingsUI(this),
-		new ZmSelectiveCallForwardingUI(this),
+		//new ZmSelectiveCallForwardingUI(this),
 		new ZmAnonymousCallRejectionUI(this),
 		new ZmSelectiveCallRejectionUI(this),
 		new ZmEmailNotificationUI(this),
@@ -327,7 +327,7 @@ function(ev) {
         }
 	}
 };
-
+/*
 ZmVoicePrefsView._validatePhoneNumber =
 function(value) {
 	if (AjxStringUtil.trim(value) == "") {
@@ -337,12 +337,35 @@ function(value) {
 		throw ZmMsg.errorInvalidPhone;
 	}
 	return value;
+};*/
+
+ZmVoicePrefsView.prototype._validatePhoneNumber =
+function(value) {
+	if (AjxStringUtil.trim(value) == "") {
+		throw AjxMsg.valueIsRequired;
+	}
+	var errors = [];
+	if (!this._phone.validate(value, errors)) {
+		throw errors[0];
+	}
+	return value;
 };
+
+ZmVoicePrefsView.prototype._validatePhoneNumberFct =
+function(value) {
+	try {
+		this._validatePhoneNumber(value);
+	} catch (e) {
+		return e;
+	}
+	return null;
+};
+
 ZmVoicePrefsView._validateEmailAddress =
 function(value) {
 	if (value == "") {
 		throw AjxMsg.valueIsRequired;
-	} else if (!AjxEmailAddress.isValid(value)) {
+	} else if (!AjxEmailAddress.isValid(value) || value.length > ZmCallFeature.EMAIL_MAX_LENGTH) {
 		throw ZmMsg.errorInvalidEmail;
 	}
 	return value;
@@ -1008,10 +1031,12 @@ function(id) {
 	
 	var inputParams = {
 		size: 25,
-		validator: ZmVoicePrefsView._validatePhoneNumber,
+		//validator: ZmVoicePrefsView._validatePhoneNumber,
+		validator: AjxCallback.simpleClosure(this._view._validatePhoneNumber, this._view),
 		validationStyle: DwtInputField.CONTINUAL_VALIDATION
 	};
 	this._comboBox = new DwtComboBox({parent:this._view, inputParams:inputParams});
+	this._populatePhoneComboBox(this._comboBox);
 	this._comboBox.replaceElement(id + "_callForwardingComboBox");
 };
 
@@ -1058,18 +1083,6 @@ function() {
 	return result;
 };
 
-ZmEmailNotificationUI.prototype.setFeature =
-function(feature) {
-	this._feature = feature;
-	this.show(feature);
-	if (this._checkbox) {
-		this._checkbox.setSelected(feature.isActive);
-		this._checkbox.setEnabled(feature.isSubscribed);
-	}
-	this.setEnabled(feature.isActive);	
-};
-
-
 ZmEmailNotificationUI.prototype.updateMyCard =
 function() {
     this._populateEmailComboBox(this._comboBox);
@@ -1078,17 +1091,19 @@ function() {
 ZmEmailNotificationUI.prototype.validate =
 function(errors) {
    //this._validateEmailAddress(this._comboBox,errors);
+    var values = this._getAddresses();
+    for (var i=0; i<values.length; i++)
+	this._validateEmailAddress(values[i], errors);
 };
-/*
+
 ZmEmailNotificationUI.prototype._validateEmailAddress =
-function(comboBox,errors){
-    var value  =  comboBox.input.getValue();
-    if (value == "") {
-       errors.push(ZmMsg.missingEmailAddress);
-	} else if (!AjxEmailAddress.isValid(value)) {
+function(value, errors) {
+    if (!AjxUtil.isString(value) || value == "") {
+	errors.push(ZmMsg.missingEmailAddress);
+    } else if (!AjxEmailAddress.isValid(value)) {
         errors.push(ZmMsg.invalidEmailAddress);
 	}
-}*/
+}
 
 ZmEmailNotificationUI.prototype._getAddresses =
 function() {
@@ -1104,14 +1119,19 @@ function() {
 ZmEmailNotificationUI.prototype._handleAddFromNumber =
 function(event) {
 	var addValue = this._comboBox.getText();
-	if (!addValue || AjxStringUtil.trim(addValue) == "") {
-		appCtxt.setStatusMsg(AjxMsg.missingEmailAddress);
+	if (this._list.getList().size() >= ZmCallFeature.EMAIL_NOTIFICATION_MAX_ENTRIES) {
+		appCtxt.setStatusMsg(ZmMsg.voicemailNotificationErrorMax);
+	} else if (!AjxUtil.isString(addValue) || AjxStringUtil.trim(addValue) == "") {
+		appCtxt.setStatusMsg(ZmMsg.missingEmailAddress);
+		this._comboBox.focus();
 	} else if (!AjxEmailAddress.isValid(addValue)) {
-		appCtxt.setStatusMsg(ZmMsg.emailNotificationError);
+		appCtxt.setStatusMsg(ZmMsg.voicemailNotificationErrorInvalid);
+		this._comboBox.focus();
 	} else {
 		var addObject = {a: true, text: addValue.toLowerCase()};
 		if (this._list.containsItem(addObject)) {
 			appCtxt.setStatusMsg(ZmMsg.errorEmailNotUnique);
+			this._comboBox.focus();
 		} else {
 			this._list.addItem(addObject, null, false);
 			this._comboBox.setText("", true);
@@ -1125,7 +1145,6 @@ function(enabled) {
 	this._comboBox.setEnabled(enabled);
 	this._addButton.setEnabled(enabled);
 };
-
 
 ZmEmailNotificationUI.prototype._initialize =
 function(id) {
@@ -1165,8 +1184,7 @@ function() {
 
 ZmSelectiveCallForwardingUI.prototype.show =
 function(feature) {
-	
-	this._list.set(AjxVector.fromArray([].concat(feature.data.phone)), 1); // setting directly from feature.data.phone would cause the array to be cleared on save, so we clone it using concat
+	this._list.set(AjxVector.fromArray((feature.data.phone)? [].concat(feature.data.phone) : []), 1); // setting directly from feature.data.phone would cause the array to be cleared on save, so we clone it using concat
 	this._comboBox.setText(ZmPhone.calculateDisplay(feature.data.ft));
 };
 
@@ -1188,11 +1206,23 @@ ZmSelectiveCallForwardingUI.prototype.validate =
 function(errors) {
 	this._validateComboBox(this._comboBox, errors, ZmMsg.callForwardingError);
 	
-	if (this._getFrom().length < 1) {
-		errors.push(ZmMsg.selectiveCallForwardingFromError);
+	var from = this._getFrom();
+	if (from.length < 1) {
+		errors.push(ZmMsg.selectiveCallForwardingFromErrorMin);
+	} else if (from.length > ZmCallFeature.SELECTIVE_CALL_FORWARDING_MAX_ENTRIES) {
+		errors.push(ZmMsg.selectiveCallForwardingFromErrorMax);
+	} else {
+		for (var i=0; i<from.length; i++) {
+			var phone = from[i].pn;
+			if (phone) {
+				var error = this._view._validatePhoneNumberFct(phone);
+				if (error != null) {
+					errors.push(error);
+				}
+			}
+		}
 	}
 };
-
 
 ZmSelectiveCallForwardingUI.prototype.getFeature =
 function() {
@@ -1200,17 +1230,6 @@ function() {
 	result.data.phone = this._getFrom();
 	result.data.ft = this._getTo();
 	return result;
-};
-
-ZmSelectiveCallForwardingUI.prototype.setFeature =
-function(feature) {
-	this._feature = feature;
-	this.show(feature);	
-	if (this._checkbox) {
-		this._checkbox.setSelected(feature.isActive);
-		this._checkbox.setEnabled(feature.isSubscribed);
-	}
-	this.setEnabled(feature.isActive);
 };
 
 ZmSelectiveCallForwardingUI.prototype._getFrom =
@@ -1221,7 +1240,6 @@ function() {
 		from.push({a: items[i].a, pn: items[i].pn}); // Filter all other attributes
 	return from;
 }
-
 
 ZmSelectiveCallForwardingUI.prototype._getTo =
 function() {
@@ -1238,19 +1256,36 @@ function(event) {
 	var addValue = this._addField.getValue();
 	if (!addValue || AjxStringUtil.trim(addValue) == "") {
 		appCtxt.setStatusMsg(AjxMsg.valueIsRequired);
-	} else if (!ZmPhone.isValid(addValue)) {
-		appCtxt.setStatusMsg(ZmMsg.selectiveCallForwardingError);
+		this._addField.focus();
 	} else {
-		var addObject = {a: true, pn: ZmPhone.calculateName(addValue)};
-		if (this._list.containsItem(addObject)) {
-			appCtxt.setStatusMsg(ZmMsg.errorPhoneNotUnique);
+		var error = this._view._validatePhoneNumberFct(addValue);
+		if (error!=null) {
+			appCtxt.setStatusMsg(error);
+			this._addField.focus();
 		} else {
-			this._list.addItem(addObject, null, false);
-			this._addField.setValue(null, true);
-			this._setAddFromNumberVisibility(false);
+			if (!ZmPhone.isValid(addValue)) { // Possibly obsolete, but doesn't do any harm
+				appCtxt.setStatusMsg(ZmMsg.selectiveCallForwardingError);
+				this._addField.focus();
+			} else {
+				var addObject = {a: true, pn: ZmPhone.calculateName(addValue)};
+				if (this._list.containsItem(addObject)) {
+					appCtxt.setStatusMsg(ZmMsg.errorPhoneNotUnique);
+					this._addField.focus();
+				} else {
+					this._list.addItem(addObject, null, false);
+					this._addField.setValue(null, true);
+					this._setAddFromNumberVisibility(false);
+				}
+			}
 		}
 	}
 };
+
+ZmSelectiveCallForwardingUI.prototype._handleExposeButtonClick =
+function() {
+	this._setAddFromNumberVisibility(true);
+	this._addField.focus();
+}
 
 ZmSelectiveCallForwardingUI.prototype._setAddFromNumberVisibility =
 function(visible) {
@@ -1290,14 +1325,14 @@ function(id) {
 	
 	this._exposeAddField = new DwtButton({parent:this._view, size: 75});
 	this._exposeAddField.setText(ZmMsg.add);
-	this._exposeAddField.addSelectionListener(new AjxListener(this, this._setAddFromNumberVisibility, true));
+	this._exposeAddField.addSelectionListener(new AjxListener(this, this._handleExposeButtonClick));
 	this._exposeAddField.replaceElement(id + "_selectiveCallForwardingExposeAddBox");
 	
 	this._addLabel = new DwtLabel({parent:this._view});
 	this._addLabel.setText(ZmMsg.selectiveCallForwardingAddFrom);
 	this._addLabel.replaceElement(id + "_selectiveCallForwardingAddLabel");
 	
-	this._addField = new DwtInputField({parent:this._view, size: 25, validator: ZmVoicePrefsView._validatePhoneNumber, validationStyle: DwtInputField.CONTINUAL_VALIDATION});
+	this._addField = new DwtInputField({parent:this._view, size: 25, /*validator: ZmVoicePrefsView._validatePhoneNumber,*/ validator: AjxCallback.simpleClosure(this._view._validatePhoneNumber, this._view), validationStyle: DwtInputField.CONTINUAL_VALIDATION});
 	this._addField.replaceElement(id + "_selectiveCallForwardingAddBox");
 	
 	this._addRules = new DwtLabel({parent:this._view});
@@ -1313,7 +1348,7 @@ function(id) {
 	this._toLabel.setText(ZmMsg.selectiveCallForwardingToDescription);
 	this._toLabel.replaceElement(id + "_selectiveCallForwardingToLabel");
 	
-	this._comboBox = new DwtComboBox({parent:this._view, inputParams:{size: 25, validator: ZmVoicePrefsView._validatePhoneNumber, validationStyle: DwtInputField.CONTINUAL_VALIDATION}});
+	this._comboBox = new DwtComboBox({parent:this._view, inputParams:{size: 25, /*validator: ZmVoicePrefsView._validatePhoneNumber,*/validator: AjxCallback.simpleClosure(this._view._validatePhoneNumber, this._view), validationStyle: DwtInputField.CONTINUAL_VALIDATION}});
 	this._populatePhoneComboBox(this._comboBox);
 	this._comboBox.replaceElement(id + "_callSelectiveForwardingComboBox");
 	
@@ -1383,7 +1418,7 @@ function() {
 
 ZmSelectiveCallRejectionUI.prototype.show =
 function(feature) {
-	this._list.set(AjxVector.fromArray([].concat(feature.data.phone)), 1);
+	this._list.set(AjxVector.fromArray((feature.data.phone)? [].concat(feature.data.phone) : []), 1);
 };
 
 ZmSelectiveCallRejectionUI.prototype._isValueDirty =
@@ -1391,6 +1426,7 @@ function() {
 	var newPhones = this._list.getList().getArray();
 	var oldPhones = this._feature.data.phone;
 	
+	if (!newPhones || !oldPhones) return true;
 	if (newPhones.length != oldPhones.length) return true;
 	for (var i=0; i<newPhones.length; i++) {
 		if (newPhones[i].pn != oldPhones[i].pn || newPhones[i].a != oldPhones[i].a)
@@ -1400,32 +1436,32 @@ function() {
 };
 
 ZmSelectiveCallRejectionUI.prototype.validate =
-function(errors) {
-	/*if (this._getFrom().length < 1) {
-		errors.push(ZmMsg.selectiveCallForwardingFromError);
-	}*/
+function(errors) {	
+	var from = this._getFrom();
+	if (from.length < 1) {
+		errors.push(ZmMsg.selectiveCallRejectionFromErrorMin);
+	} else if (from.length > ZmCallFeature.SELECTIVE_CALL_REJECTION_MAX_ENTRIES) {
+		errors.push(ZmMsg.selectiveCallRejectionFromErrorMax);
+	} else {
+		for (var i=0; i<from.length; i++) {
+			var phone = from[i].pn;
+			if (phone) {
+				var error = this._view._validatePhoneNumberFct(phone);
+				if (error != null) {
+					errors.push(error);
+				}
+			}
+		}
+	}
 };
-
 
 ZmSelectiveCallRejectionUI.prototype.getFeature =
 function() {
 	var result = ZmCallFeatureUI.prototype.getFeature.call(this);
 	result.data.phone = this._getFrom();
-	result.data.ft = this._getTo();
 	if (this._getFrom().length < 1)
 		result.isActive = false;
 	return result;
-};
-
-ZmSelectiveCallRejectionUI.prototype.setFeature =
-function(feature) {
-	this._feature = feature;
-	this.show(feature);	
-	if (this._checkbox) {
-		this._checkbox.setSelected(feature.isActive);
-		this._checkbox.setEnabled(feature.isSubscribed);
-	}
-	this.setEnabled(feature.isActive);
 };
 
 ZmSelectiveCallRejectionUI.prototype._getFrom =
@@ -1438,34 +1474,45 @@ function() {
 }
 
 
-ZmSelectiveCallRejectionUI.prototype._getTo =
-function() {
-	var value = this._comboBox.getValue();
-	if (value) {
-		return value;
-	} else {
-		return ZmPhone.calculateName(this._comboBox.getText());
-	}
-};
-
 ZmSelectiveCallRejectionUI.prototype._handleAddFromNumber =
 function(event) {
 	var addValue = this._addField.getValue();
 	if (!addValue || AjxStringUtil.trim(addValue) == "") {
 		appCtxt.setStatusMsg(AjxMsg.valueIsRequired);
-	} else if (!ZmPhone.isValid(addValue)) {
-		appCtxt.setStatusMsg(ZmMsg.selectiveCallForwardingError);
+		this._addField.focus();
 	} else {
-		var addObject = {a: true, pn: ZmPhone.calculateName(addValue)};
-		if (this._list.containsItem(addObject)) {
-			appCtxt.setStatusMsg(ZmMsg.errorPhoneNotUnique);
+		var error = this._view._validatePhoneNumberFct(addValue);
+		if (error!=null) {
+			appCtxt.setStatusMsg(error);
+			this._addField.focus();
 		} else {
-			this._list.addItem(addObject, null, false);
-			this._addField.setValue(null, true);
-			this._setAddFromNumberVisibility(false);
+			if (!ZmPhone.isValid(addValue)) { // Possibly obsolete, but doesn't do any harm
+				appCtxt.setStatusMsg(ZmMsg.selectiveCallRejectionError);
+				this._addField.focus();
+			} else {
+				var addObject = {a: true, pn: ZmPhone.calculateName(addValue)};
+				if (this._list.containsItem(addObject)) {
+					appCtxt.setStatusMsg(ZmMsg.errorPhoneNotUnique);
+					this._addField.focus();
+				} else {
+					this._list.addItem(addObject, null, false);
+					this._addField.setValue(null, true);
+					this._setAddFromNumberVisibility(false);
+				}
+			}
 		}
 	}
 };
+
+ZmSelectiveCallRejectionUI.prototype._handleExposeButtonClick =
+function() {
+	if (this._list.getList().size() >= ZmCallFeature.SELECTIVE_CALL_REJECTION_MAX_ENTRIES)
+		appCtxt.setStatusMsg(ZmMsg.selectiveCallRejectionFromErrorMax);
+	else {
+		this._setAddFromNumberVisibility(true);
+		this._addField.focus();
+	}
+}
 
 ZmSelectiveCallRejectionUI.prototype._setAddFromNumberVisibility =
 function(visible) {
@@ -1502,14 +1549,14 @@ function(id) {
 	
 	this._exposeAddField = new DwtButton({parent:this._view, size: 75});
 	this._exposeAddField.setText(ZmMsg.add);
-	this._exposeAddField.addSelectionListener(new AjxListener(this, this._setAddFromNumberVisibility, true));
+	this._exposeAddField.addSelectionListener(new AjxListener(this, this._handleExposeButtonClick));
 	this._exposeAddField.replaceElement(id + "_selectiveCallRejectionExposeAddBox");
 	
 	this._addLabel = new DwtLabel({parent:this._view});
 	this._addLabel.setText(ZmMsg.selectiveCallRejectionAddFrom);
 	this._addLabel.replaceElement(id + "_selectiveCallRejectionAddLabel");
 	
-	this._addField = new DwtInputField({parent:this._view, size: 25, validator: ZmVoicePrefsView._validatePhoneNumber, validationStyle: DwtInputField.CONTINUAL_VALIDATION});
+	this._addField = new DwtInputField({parent:this._view, size: 25, /*validator: ZmVoicePrefsView._validatePhoneNumber,*/validator: AjxCallback.simpleClosure(this._view._validatePhoneNumber, this._view), validationStyle: DwtInputField.CONTINUAL_VALIDATION});
 	this._addField.replaceElement(id + "_selectiveCallRejectionAddBox");
 	
 	this._addRules = new DwtLabel({parent:this._view});
@@ -1524,6 +1571,177 @@ function(id) {
 	this._setAddFromNumberVisibility(false);
 };
 
+///////////////////////////////////////////////////////////////////////
+
+ZmSelectiveCallAcceptanceUI = function(view) {
+	ZmCallFeatureUI.call(this, view);
+}
+
+ZmSelectiveCallAcceptanceUI.prototype = new ZmCallFeatureUI;
+ZmSelectiveCallAcceptanceUI.prototype.constructor = ZmSelectiveCallAcceptanceUI;
+ZmSelectiveCallAcceptanceUI.prototype.toString =
+function() {
+	return "ZmSelectiveCallAcceptanceUI";
+}
+
+ZmSelectiveCallAcceptanceUI.prototype.getName =
+function() {
+	return ZmCallFeature.SELECTIVE_CALL_ACCEPTANCE;
+};
+
+ZmSelectiveCallAcceptanceUI.prototype.show =
+function(feature) {
+	this._list.set(AjxVector.fromArray((feature.data.phone)? [].concat(feature.data.phone) : []), 1);
+};
+
+ZmSelectiveCallAcceptanceUI.prototype._isValueDirty =
+function() {
+	var newPhones = this._list.getList().getArray();
+	var oldPhones = this._feature.data.phone;
+	
+	if (!newPhones || !oldPhones) return true;
+	if (newPhones.length != oldPhones.length) return true;
+	for (var i=0; i<newPhones.length; i++) {
+		if (newPhones[i].pn != oldPhones[i].pn || newPhones[i].a != oldPhones[i].a)
+			return true;
+	}
+	return false;
+};
+
+ZmSelectiveCallAcceptanceUI.prototype.validate =
+function(errors) {	
+	var from = this._getFrom();
+	if (from.length < 1) {
+		errors.push(ZmMsg.selectiveCallAcceptanceFromErrorMin);
+	} else if (from.length > ZmCallFeature.SELECTIVE_CALL_ACCEPTANCE_MAX_ENTRIES) {
+		errors.push(ZmMsg.selectiveCallAcceptanceFromErrorMax);
+	} else {
+		for (var i=0; i<from.length; i++) {
+			var phone = from[i].pn;
+			if (phone) {
+				var error = this._view._validatePhoneNumberFct(phone);
+				if (error != null) {
+					errors.push(error);
+				}
+			}
+		}
+	}
+};
+
+ZmSelectiveCallAcceptanceUI.prototype.getFeature =
+function() {
+	var result = ZmCallFeatureUI.prototype.getFeature.call(this);
+	result.data.phone = this._getFrom();
+	if (this._getFrom().length < 1)
+		result.isActive = false;
+	return result;
+};
+
+ZmSelectiveCallAcceptanceUI.prototype._getFrom =
+function() {
+	var items = this._list.getList().getArray();
+	var from = [];
+	for (var i=0; i<items.length; i++)
+		from.push({a: items[i].a, pn: items[i].pn}); // Filter all other attributes
+	return from;
+}
+
+ZmSelectiveCallAcceptanceUI.prototype._handleAddFromNumber =
+function(event) {
+	var addValue = this._addField.getValue();
+	if (!addValue || AjxStringUtil.trim(addValue) == "") {
+		appCtxt.setStatusMsg(AjxMsg.valueIsRequired);
+		this._addField.focus();
+	} else {
+		var error = this._view._validatePhoneNumberFct(addValue);
+		if (error!=null) {
+			appCtxt.setStatusMsg(error);
+			this._addField.focus();
+		} else {
+			if (!ZmPhone.isValid(addValue)) { // Possibly obsolete, but doesn't do any harm
+				appCtxt.setStatusMsg(ZmMsg.selectiveCallAcceptanceError);
+				this._addField.focus();
+			} else {
+				var addObject = {a: true, pn: ZmPhone.calculateName(addValue)};
+				if (this._list.containsItem(addObject)) {
+					appCtxt.setStatusMsg(ZmMsg.errorPhoneNotUnique);
+					this._addField.focus();
+				} else {
+					this._list.addItem(addObject, null, false);
+					this._addField.setValue(null, true);
+					this._setAddFromNumberVisibility(false);
+				}
+			}
+		}
+	}
+};
+
+ZmSelectiveCallAcceptanceUI.prototype._handleExposeButtonClick =
+function() {
+	if (this._list.getList().size() >= ZmCallFeature.SELECTIVE_CALL_REJECTION_MAX_ENTRIES)
+		appCtxt.setStatusMsg(ZmMsg.selectiveCallAcceptanceFromErrorMax);
+	else {
+		this._setAddFromNumberVisibility(true);
+		this._addField.focus();
+	}
+}
+
+ZmSelectiveCallAcceptanceUI.prototype._setAddFromNumberVisibility =
+function(visible) {
+	visible = Boolean(visible);
+	this._addLabel.setVisible(visible);
+	this._addField.setVisible(visible);
+	this._addButton.setVisible(visible);
+	this._addRules.setVisible(visible);
+	this._exposeAddField.setEnabled(!visible);
+	this.addVisible = visible;
+}
+
+ZmSelectiveCallAcceptanceUI.prototype.setEnabled =
+function(enabled) {
+	this._list.setEnabled(enabled);
+	this._exposeAddField.setEnabled(enabled && !this.addVisible);
+	
+	this._addLabel.setEnabled(enabled);
+	
+	DwtControl.prototype.setEnabled.call(this._addField, enabled); // We don't want to validate the input field when we enable it, so do everything that DwtInputField.prototype.setEnabled() does except validation
+	this._addField.getInputElement().disabled = !enabled;
+	
+	this._addButton.setEnabled(enabled);
+	this._addRules.setEnabled(enabled);
+};
+
+ZmSelectiveCallAcceptanceUI.prototype._initialize =
+function(id) {
+	this._createCheckbox(ZmMsg.selectiveCallAcceptanceFromDescription, id + "_selectiveCallAcceptanceCheckbox");
+	
+	this._list = new ZmPhoneBufferList(this._view);
+	this._list.sortingEnabled = false;
+	this._list.replaceElement(id + "_selectiveCallAcceptanceList");
+	
+	this._exposeAddField = new DwtButton({parent:this._view, size: 75});
+	this._exposeAddField.setText(ZmMsg.add);
+	this._exposeAddField.addSelectionListener(new AjxListener(this, this._handleExposeButtonClick));
+	this._exposeAddField.replaceElement(id + "_selectiveCallAcceptanceExposeAddBox");
+	
+	this._addLabel = new DwtLabel({parent:this._view});
+	this._addLabel.setText(ZmMsg.selectiveCallRejectionAddFrom);
+	this._addLabel.replaceElement(id + "_selectiveCallAcceptanceAddLabel");
+	
+	this._addField = new DwtInputField({parent:this._view, size: 25, validator: AjxCallback.simpleClosure(this._view._validatePhoneNumber, this._view), validationStyle: DwtInputField.CONTINUAL_VALIDATION});
+	this._addField.replaceElement(id + "_selectiveCallAcceptanceAddBox");
+	
+	this._addRules = new DwtLabel({parent:this._view});
+	this._addRules.setText(ZmMsg.selectiveCallRejectionRules);
+	this._addRules.replaceElement(id + "_selectiveCallAcceptanceAddRules");
+	
+	this._addButton = new DwtButton({parent:this._view, size: 75});
+	this._addButton.setText(ZmMsg.add);
+	this._addButton.addSelectionListener(new AjxListener(this, this._handleAddFromNumber));
+	this._addButton.replaceElement(id + "_selectiveCallAcceptanceAddButton");
+
+	this._setAddFromNumberVisibility(false);
+};
 
 ///////////////////////////////////////////////////////////////////////
 
@@ -1623,6 +1841,8 @@ function(list, noResultsOk) {
 				item.id = Dwt.getNextId();
 		}
 	}
+
+	noResultsOk = true;
 	
 	DwtListView.prototype._renderList.apply(this, arguments);
 	
@@ -1690,7 +1910,7 @@ function(item) {
 
 ZmPhoneBufferList.getItemNumber =
 function() {
-	return ZmPhone.calculateName(this.pn);
+	return (this.pn) ? ZmPhone.calculateName(this.pn) : null;
 }
 
 ZmPhoneBufferList.prototype.getItemNumbers =
