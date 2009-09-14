@@ -306,9 +306,9 @@ function() {
 			if (!appCtxt.get(ZmSetting.CALENDAR_ENABLED, null, acct)) { continue; }
 
 			var calendars = appCtxt.getFolderTree(acct).getByType(ZmOrganizer.CALENDAR);
-			for (var i = 0; i < calendars.length; i++) {
-				if (calendars[i].isChecked) {
-					cc.push(calendars[i]);
+			for (var j = 0; j < calendars.length; j++) {
+				if (calendars[j].isChecked) {
+					cc.push(calendars[j]);
 				}
 			}
 		}

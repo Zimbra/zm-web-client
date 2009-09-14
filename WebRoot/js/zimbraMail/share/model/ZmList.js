@@ -51,7 +51,7 @@ ZmList = function(type, search) {
 		this._tagChangeListener = new AjxListener(this, this._tagTreeChangeListener);
 		tagList.addChangeListener(this._tagChangeListener);
 	}
-}
+};
 
 ZmList.prototype = new ZmModel;
 ZmList.prototype.constructor = ZmList;
@@ -413,8 +413,12 @@ function(items, folder, attrs) {
 	attrs = attrs || {};
 	attrs.l = folder.id;
 
+	// set accountName for multi-account to always be the main "local" account
+	// since we assume actioned ID's will always be fully qualified
+	var accountName = appCtxt.multiAccounts && appCtxt.accountList.mainAccount.name;
+
 	var respCallback = new AjxCallback(this, this._handleResponseCopyItems);
-	this._itemAction({items: items, action: "copy", attrs: attrs, callback: respCallback});
+	this._itemAction({items: items, action: "copy", attrs: attrs, callback: respCallback, accountName: accountName});
 };
 
 ZmList.prototype._handleResponseCopyItems =
@@ -465,7 +469,9 @@ function(items, hardDelete, attrs, childWin) {
 
 	// soft delete - items moved to Trash
 	if (toMove.length) {
-		this.moveItems(toMove, appCtxt.getById(ZmFolder.ID_TRASH), attrs, callback);
+		var folderId = (appCtxt.multiAccounts)
+			? ZmOrganizer.getSystemId(ZmFolder.ID_TRASH) : ZmFolder.ID_TRASH;
+		this.moveItems(toMove, appCtxt.getById(folderId), attrs, callback);
 	}
 
 	// hard delete - items actually deleted from data store
@@ -568,38 +574,38 @@ function(params, batchCmd) {
 	if (!type) { return; }
 
 	var soapCmd = ZmItem.SOAP_CMD[type] + "Request";
-    var useJson = batchCmd ? batchCmd._useJson : true ;
-    var itemActionRequest = null;
-    if (useJson) {
-        itemActionRequest = {};
-        var urn = this._getActionNamespace();
-        itemActionRequest[soapCmd] = {_jsns:urn};
-        var request = itemActionRequest[soapCmd];
-        var action = request.action = {};
-        action.id = idStr;
-        action.op = params.action;
-        for (var attr in params.attrs) {
-            action[attr] = params.attrs[attr];
+	var useJson = batchCmd ? batchCmd._useJson : true ;
+	var itemActionRequest = null;
+	if (useJson) {
+		itemActionRequest = {};
+		var urn = this._getActionNamespace();
+		itemActionRequest[soapCmd] = {_jsns:urn};
+		var request = itemActionRequest[soapCmd];
+		var action = request.action = {};
+		action.id = idStr;
+		action.op = params.action;
+		for (var attr in params.attrs) {
+			action[attr] = params.attrs[attr];
 		}
-    } else {
-        itemActionRequest = AjxSoapDoc.create(soapCmd, this._getActionNamespace());
-        var actionNode = itemActionRequest.set("action");
-        actionNode.setAttribute("id", idStr);
-        actionNode.setAttribute("op", params.action);
-        for (var attr in params.attrs) {
-            actionNode.setAttribute(attr, params.attrs[attr]);
-        }
-    }
+	} else {
+		itemActionRequest = AjxSoapDoc.create(soapCmd, this._getActionNamespace());
+		var actionNode = itemActionRequest.set("action");
+		actionNode.setAttribute("id", idStr);
+		actionNode.setAttribute("op", params.action);
+		for (var attr in params.attrs) {
+			actionNode.setAttribute(attr, params.attrs[attr]);
+		}
+	}
 
-    var respCallback = params.callback
+	var respCallback = params.callback
 		? (new AjxCallback(this, this._handleResponseItemAction, [type, idHash, params.callback])) : null;
 
 	if (batchCmd) {
 		batchCmd.addRequestParams(itemActionRequest, respCallback, params.errorCallback);
 	} else {
-        var reqParams = { asyncMode:true, callback:respCallback, accountName:params.accountName };
-        useJson ? reqParams.jsonObj = itemActionRequest : reqParams.soapDoc = itemActionRequest;
-        appCtxt.getAppController().sendRequest(reqParams);
+		var reqParams = { asyncMode:true, callback:respCallback, accountName:params.accountName };
+		useJson ? reqParams.jsonObj = itemActionRequest : reqParams.soapDoc = itemActionRequest;
+		appCtxt.getAppController().sendRequest(reqParams);
 	}
 };
 
@@ -745,8 +751,8 @@ function(ev) {
 		}
 	}
 };
-	
-ZmList.prototype._tagTreeChangeListener = 
+
+ZmList.prototype._tagTreeChangeListener =
 function(ev) {
 	if (ev.type != ZmEvent.S_TAG) { return; }
 
@@ -754,7 +760,7 @@ function(ev) {
 	var fields = ev.getDetail("fields");
 	var ctlr = appCtxt.getCurrentController();
 	if (!ctlr || (appCtxt.getCurrentList() != this)) { return; }
-	
+
 	if ((ev.event == ZmEvent.E_MODIFY) && fields && fields[ZmOrganizer.F_NAME]) {
 		// on tag rename, update current query if tag is part of query
 		var oldName = ev.getDetail("oldName");
