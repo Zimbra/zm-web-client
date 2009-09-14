@@ -117,9 +117,7 @@ function() {
 	if (this._contact.id == null || this._contact.isGal) {
 		for (var a in this._attr) {
 			// always convert to String since some values may be Int's
-			var val = (a == ZmContact.F_fileAs)
-				? ("" + this._attr[a])
-				: (AjxStringUtil.trim(this._attr[a]));
+			var val = String(this._attr[a]);
 
 			if (val && val.length > 0) {
 				mods[a] = val;
@@ -139,7 +137,6 @@ function() {
 			var val = this._contact.getAttr(a);
 			// do some normalizing
 			if (val && AjxUtil.isString(val)) {
-				val = AjxStringUtil.trim(val);
 				if (a == ZmContact.F_fileAs) {
 					var parsed = parseInt(val);
 					// only set val to parsed if not custom fileAs
@@ -172,6 +169,12 @@ function() {
 		// only set the full name if changed
 		if (this._contact.getFullName() != fullName) {
 			mods[ZmContact.X_fullName] = fullName;
+		}
+	}
+
+	if (foundOne) {
+		for (var a in mods) {
+			mods[a] = AjxStringUtil.trim(mods[a]);
 		}
 	}
 
