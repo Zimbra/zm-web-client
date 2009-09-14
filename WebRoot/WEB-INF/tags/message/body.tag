@@ -4,6 +4,7 @@
 <%@ attribute name="theBody" rtexprvalue="true" required="true" type="java.lang.String" %>
 <%@ attribute name="mailbox" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZMailboxBean" %>
 <%@ attribute name="counter" rtexprvalue="true" required="false" %>
+<%@ attribute name="noiframe" rtexprvalue="true" required="false" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
@@ -26,7 +27,7 @@
            <c:set var="theBody" value="${fn:replace(theBody,cid,imageUrl)}"/>
         </c:forEach>
         
-        <app:messageIframe theBody="${theBody}" parentId="iframeBody${counter}" iframeUrl="${iframeUrl}"/>
+        <app:messageIframe noiframe="${noiframe}" theBody="${theBody}" parentId="iframeBody${counter}" iframeUrl="${iframeUrl}"/>
     </c:when>
     <c:otherwise>
         ${theBody}

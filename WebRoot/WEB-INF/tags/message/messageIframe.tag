@@ -2,6 +2,7 @@
 <%@ attribute name="theBody" rtexprvalue="true" required="true" type="java.lang.String" %>
 <%@ attribute name="parentId" rtexprvalue="true" required="true" type="java.lang.String" %>
 <%@ attribute name="iframeUrl" rtexprvalue="true" required="true" type="java.lang.String" %>
+<%@ attribute name="noiframe" rtexprvalue="true" required="false"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
@@ -17,6 +18,19 @@
 </c:when>
     <c:otherwise>
 <script type="text/javascript">
+    <c:if test="${not empty noiframe}">
+    (function() {
+		var divElem = document.createElement("div");
+        divElem.style.width = "100%";
+        divElem.scrolling = "no";
+		divElem.marginWidth = 0;
+		divElem.marginHeight = 0;
+		divElem.border = 0;
+        divElem.innerHTML = "${zm:jsEncode(theBody)}";
+        document.getElementById("${parentId}").appendChild(divElem);
+	})();
+    </c:if>
+    <c:if test="${empty noiframe}">
 	(function() {
 		var isKonqueror = /KHTML/.test(navigator.userAgent);
 		var isIE = ( /MSIE/.test(navigator.userAgent) && !/(Opera|Gecko|KHTML)/.test(navigator.userAgent) );
@@ -66,6 +80,7 @@
 		function onIframeLoad() { if (isKonqueror) setTimeout(resizeAndNullIframe, 100); else if (!isIE || iframe.readyState == "complete") resizeAndNullIframe();};
 		if (isIE) iframe.onreadystatechange = onIframeLoad; else iframe.onload = onIframeLoad;
 	})();
+    </c:if>
 </script>
 </c:otherwise>
 </c:choose>
