@@ -45,7 +45,7 @@ var myEditor;
         var stripNBSP  = /&nbsp;/g
         document.getElementById("bodyText").value = _htmlval.replace(stripNBSP, ' ').replace(/<br>/gi, '\n').replace(stripHTML, '').replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
 
-        document.getElementById("body").value = "<html><head><style> body {height: 100%; color:${mailbox.prefs.htmlEditorDefaultFontColor}; font-size:${mailbox.prefs.htmlEditorDefaultFontSize}; font-family:${mailbox.prefs.htmlEditorDefaultFontFamily},helvetica,clean,sans-serif;}</style></head><body>"+_htmlval+"</body></html>";       
+        document.getElementById("body").value = "<html><head><style> body {height: 100%; color:${mailbox.prefs.htmlEditorDefaultFontColor}; font-size:${mailbox.prefs.htmlEditorDefaultFontSize}; font-family:${mailbox.prefs.htmlEditorDefaultFontFamily};}</style></head><body>"+_htmlval+"</body></html>";
     }
 
     myEditor = new YAHOO.widget.Editor('body', {
@@ -61,7 +61,7 @@ var myEditor;
         <c:if test="${param.op eq 'reply' or param.op eq 'replyAll'}" >
         focusAtStart: true,
         </c:if>
-        css: 'html {height: 95%;}body {height: 100%;padding: 7px; background-color: #fff; color:<c:out value="${mailbox.prefs.htmlEditorDefaultFontColor}"/>; font-size:${mailbox.prefs.htmlEditorDefaultFontSize}; font-family: <c:out value="${mailbox.prefs.htmlEditorDefaultFontFamily}"/>,helvetica,clean,sans-serif;}a {color: blue;text-decoration: underline;cursor: pointer;}.warning-localfile {border-bottom: 1px dashed red !important;}.yui-busy {cursor: wait !important;}img.selected { border: 2px dotted #808080;}img {cursor: pointer !important;border: none;}',
+        css: 'html {height: 95%;}body {height: 100%;padding: 7px; background-color: #fff; color:${mailbox.prefs.htmlEditorDefaultFontColor}; font-size: ${mailbox.prefs.htmlEditorDefaultFontSize}; font-family: ${mailbox.prefs.htmlEditorDefaultFontFamily};} a {color: blue;text-decoration: underline;cursor: pointer;}.warning-localfile {border-bottom: 1px dashed red !important;}.yui-busy {cursor: wait !important;}img.selected { border: 2px dotted #808080;}img {cursor: pointer !important;border: none;}',
         extracss: '.yui-spellcheck { background-color: yellow; }',
         collapse: true,
         draggable: false,
