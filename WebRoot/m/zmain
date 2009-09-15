@@ -242,7 +242,7 @@ document.title = "<fmt:message key="zimbraTitleLabel"/>"+" "+"${fn:escapeXml(req
 </c:set>${dbg ? js : zm:yuiCompress(js, 'js')}</script><c:if test="${empty param.ajax}">
     <div class="tbl"><div class="tr">
         <div class="container td" id="userinfo"><c:url var="logoutUrl" value="${context_url}?loginOp=logout&amp;client=mobile"/>
-            <span class="logout-span"><a href="${logoutUrl}" id="_logout" noajax='true'><fmt:message key="logOut"/></a>(${mailbox.accountInfo.attrs["uid"][0]})</span>
+            <span class="logout-span"><a href="${logoutUrl}" id="_logout" noajax='true'><fmt:message key="logOut"/> </a> (${mailbox.accountInfo.attrs["uid"][0]}) </span>
             <span class="quota-span"><fmt:message key="MO_quotaLabel"/>&nbsp;<c:set var="max" value="${mailbox.attrs.zimbraMailQuota[0]}"/><fmt:message var="unlimited" key="unlimited"/><fmt:message key="MO_quotaUsage"><fmt:param value="${zm:displaySizeFractions(pageContext, mailbox.size,2)}"/><fmt:param value="${max==0 ? unlimited : zm:displaySizeFractions(pageContext, max,2)}"/></fmt:message></span>
         </div>
     </div></div>
