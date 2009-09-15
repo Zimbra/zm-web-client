@@ -1334,18 +1334,23 @@ function() {
 		if (this.zid != null) {
 			this._isRemote = true;
 		} else {
-			var account = this.account;
-			var parsed = ZmOrganizer.parseId(this.id);
+			if (appCtxt.multiAccounts) {
+				var account = this.account;
+				var parsed = ZmOrganizer.parseId(this.id);
 
-			if (!account) {
-				if (appCtxt.multiAccounts && parsed.account && parsed.account.isMain) {
-					this._isRemote = false;
-					return this._isRemote;
+				if (!account) {
+					if (parsed.account && parsed.account.isMain) {
+						this._isRemote = false;
+						return this._isRemote;
+					} else {
+						account = appCtxt.getActiveAccount();
+					}
 				}
-				account = appCtxt.getActiveAccount();
+				this._isRemote = (parsed.account && (parsed.account != account));
+			} else {
+				var id = String(this.id);
+				this._isRemote = ((id.indexOf(":") != -1) && (id.indexOf(appCtxt.getActiveAccount().id) != 0));
 			}
-
-			this._isRemote = (parsed.account && (parsed.account != account));
 		}
 	}
 	return this._isRemote;
