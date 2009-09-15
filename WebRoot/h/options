@@ -83,6 +83,17 @@
                 </c:when>
             </c:choose>
         </c:when>
+        <c:when test="${zm:actionSet(param, 'actionVoiceAddNotification') || zm:actionSet(param, 'actionVoiceRemoveNotification') || zm:actionSet(param, 'actionVoiceAddSelectiveForwarding') || zm:actionSet(param, 'actionVoiceRemoveSelectiveForwarding')  || zm:actionSet(param, 'actionVoiceAddSelectiveRejection') || zm:actionSet(param, 'actionVoiceRemoveSelectiveRejection')}">
+            <zm:checkCrumb crumb="${param.crumb}"/>
+            <c:choose>
+               <c:when test="${selected eq 'voice'}">
+                   <app:optVoiceAction accountindex="0" />
+               </c:when>
+               <c:otherwise>
+                   <app:optAction selected="${selected}"/>
+               </c:otherwise>
+            </c:choose>
+        </c:when>
         <c:when test="${selected eq 'signatures'}">
             <c:forEach var="p" items="${paramValues}">
                 <c:if test="${fn:startsWith(p.key,'actionDeleteSig:')}">
