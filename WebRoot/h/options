@@ -35,7 +35,7 @@
     </c:choose>
     <fmt:setBundle basename="/messages/ZhMsg" scope='request' />
     
-    <c:set var="selected" value="${empty param.selected ? 'general' : param.selected}"/>
+    <c:set var="selected" value="${empty param.selected ? 'general' : zm:cook(param.selected)}"/>
 
     <c:set var="voiceStatus" value="false"/>
 	<c:if test="${selected eq 'voice' and mailbox.features.voice}">
