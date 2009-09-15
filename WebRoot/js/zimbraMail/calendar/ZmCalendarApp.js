@@ -611,8 +611,10 @@ ZmCalendarApp.prototype.activate =
 function(active) {
 	ZmApp.prototype.activate.apply(this, arguments);
 
-	var show = active || appCtxt.get(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL);
-	AjxDispatcher.run("ShowMiniCalendar", show);
+    if(appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
+	    var show = active || appCtxt.get(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL);
+	    AjxDispatcher.run("ShowMiniCalendar", show);
+    }
 };
 
 ZmCalendarApp.prototype.showMiniCalendar =
