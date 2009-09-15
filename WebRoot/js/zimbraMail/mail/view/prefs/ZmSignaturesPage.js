@@ -18,7 +18,7 @@ ZmSignaturesPage = function(parent, section, controller) {
 	ZmPreferencesPage.call(this, parent, section, controller);
 
 	this._minEntries = appCtxt.get(ZmSetting.SIGNATURES_MIN);
-	this._maxEntries = 5; //appCtxt.get(ZmSetting.SIGNATURES_MAX);
+	this._maxEntries = appCtxt.get(ZmSetting.SIGNATURES_MAX);
 };
 ZmSignaturesPage.prototype = new ZmPreferencesPage;
 ZmSignaturesPage.prototype.constructor = ZmSignaturesPage;
