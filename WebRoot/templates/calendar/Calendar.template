@@ -173,6 +173,10 @@
 				<$= ZmMsg.calendarLabel $> ${calName}<br>
 			<$ } $>
 
+			<$ if (data.accountName) { $>
+				<$= ZmMsg.accountLabel $> ${accountName}<br>
+			<$ } $>
+
 			<$ if (data.location) { $>
 				<$= ZmMsg.locationLabel $> ${location}<br>
 			<$ } $>

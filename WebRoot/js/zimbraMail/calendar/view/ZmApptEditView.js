@@ -122,6 +122,11 @@ function(bEnableInputs) {
 	if (this.GROUP_CALENDAR_ENABLED) {
 		//only organizer can edit the attendees
 		var bEnableAttendees = (this._isOrganizer != null) ? this._isOrganizer : bEnableInputs;
+		if (appCtxt.isOffline && bEnableAttendees &&
+			this._calItem && this._calItem.getFolder().account.isMain)
+		{
+			bEnableAttendees = false;
+		}
 		this._attInputField[ZmCalBaseItem.PERSON].setEnabled(bEnableAttendees);
 	}
 	this._attInputField[ZmCalBaseItem.LOCATION].setEnabled(bEnableInputs);
@@ -534,10 +539,21 @@ function(calItem, mode) {
 	this._resetAutocompleteListView(appCtxt.getById(calItem.folderId));
 };
 
+ZmApptEditView.prototype._resetAttendeesField =
+function(enabled) {
+	var attField = this._attInputField[ZmCalBaseItem.PERSON];
+	if (attField) {
+		attField.setEnabled(enabled);
+	}
+};
+
 ZmApptEditView.prototype._folderPickerCallback =
 function(dlg, folder) {
 	ZmCalItemEditView.prototype._folderPickerCallback.call(this, dlg, folder);
 	this._resetAutocompleteListView(folder);
+	if (appCtxt.isOffline) {
+		this._resetAttendeesField(!folder.account.isMain);
+	}
 };
 
 ZmApptEditView.prototype._resetAutocompleteListView =

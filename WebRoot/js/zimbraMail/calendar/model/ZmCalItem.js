@@ -1202,7 +1202,10 @@ function(soapDoc, attachmentId, notifyList, accountName) {
 
 	// set organizer - but not for local account
 	if (!(appCtxt.isOffline && calendar.account.isMain)) {
-		var user = mailFromAddress || appCtxt.get(ZmSetting.USERNAME);
+		var me = (appCtxt.multiAccounts)
+			? calendar.account.getEmail()
+			: appCtxt.get(ZmSetting.USERNAME);
+		var user = mailFromAddress || me;
 		var organizer = this.organizer || user;
 		var org = soapDoc.set("or", null, comp);
 		org.setAttribute("a", organizer);

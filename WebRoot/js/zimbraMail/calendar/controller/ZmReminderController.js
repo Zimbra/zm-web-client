@@ -423,10 +423,8 @@ function(list, callback) {
 		apptNode.setAttribute("dismissedAt", dismissedAt);
 	}
 
-	// always specify account name when in multi-account mode to avoid confusion
-	//     NOTE: we assume all items in list are from the same account.
-	var acct = (appCtxt.accountList.size(true) > 0) 
-		? (ZmOrganizer.parseId(list.get(0).id).account) : null;
+	// for multi-account, always set account name to be the local account
+	var acct = appCtxt.multiAccounts && appCtxt.accountList.mainAccount;
 	var params = {
 		soapDoc: soapDoc,
 		asyncMode: true,
@@ -441,7 +439,7 @@ function(list, callback) {
 ZmReminderController.prototype.setAlarmData =
 function (soapDoc, request, params) {
 	var alarmData = soapDoc.set("alarmData", null, request);
-	alarmData.setAttribute("")
+	alarmData.setAttribute("");
 };
 
 ZmReminderController.prototype._handleDismissAppt =

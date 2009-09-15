@@ -203,10 +203,13 @@ function(html, idx, appt, data, needSep) {
 	var calName = (appt.folderId != ZmOrganizer.ID_CALENDAR && this._calController)
 		? this._calController.getCalendarName(appt.folderId) : null;
 
+	var calendar = appCtxt.getById(appt.folderId);
+
 	var params = {
 		needSep: needSep,
 		rowId: data.rowId,
 		calName: calName,
+		accountName: (appCtxt.multiAccounts && calendar && calendar.account.getDisplayName()),
 		location: appt.getReminderLocation(),
 		apptIconHtml: (AjxImg.getImageHtml(appt.otherAttendees ? "ApptMeeting" : "Appointment")),
 		organizer: appt.otherAtt ? appt.organizer : null,
