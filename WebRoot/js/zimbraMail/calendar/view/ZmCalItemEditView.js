@@ -679,7 +679,6 @@ ZmCalItemEditView.prototype._folderPickerListener =
 function(ev) {
 	var dlg = appCtxt.getChooseFolderDialog();
 	var callback = new AjxCallback(this, this._folderPickerCallback, [dlg]);
-	var folder = this._calItem && appCtxt.getById(this._calItem.folderId);
 
 	var params = {
 		data:		this._calItem,
@@ -691,7 +690,7 @@ function(ev) {
 	params.omit[ZmFolder.ID_TRASH] = true;
 	params.omit[ZmOrganizer.ID_AUTO_ADDED] = true;
 
-	ZmController.showDialog(dlg, callback, params, folder.account);
+	ZmController.showDialog(dlg, callback, params);
 };
 
 ZmCalItemEditView.prototype._folderPickerCallback =

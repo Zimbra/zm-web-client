@@ -77,6 +77,10 @@ ZmOrganizer = function(params) {
 				 ZmOrganizer.C_NONE;
 	this.rgb = params.rgb || (this.parent && this.parent.rgb);
 
+	if (appCtxt.isOffline && !this.account && this.id == this.nId) {
+		this.account = appCtxt.accountList.mainAccount;
+	}
+
 	// for offline, POP accounts are not allowed to create subfolders
 	this.disallowSubFolder = appCtxt.isOffline && this.account && this.account.type == ZmAccount.TYPE_POP;
 

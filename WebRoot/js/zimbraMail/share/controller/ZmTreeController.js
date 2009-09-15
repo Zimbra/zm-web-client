@@ -889,7 +889,7 @@ function(ev, account) {
 		account = ov && ov.account;
 	}
 
-	ZmController.showDialog(newDialog, this._newCb, this._pendingActionData, account);
+	ZmController.showDialog(newDialog, this._newCb, this._pendingActionData);
 	newDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._clearDialog, this, newDialog);
 };
 

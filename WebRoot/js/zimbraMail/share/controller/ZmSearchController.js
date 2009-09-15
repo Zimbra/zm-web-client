@@ -436,7 +436,7 @@ function(params, noRender, callback, errorCallback) {
 	var isMixed = (params.searchFor == ZmId.SEARCH_ANY);
 
 	if (params.searchAllAccounts) {
-		params.queryHint = appCtxt.accountList.generateQuery();
+		params.queryHint = appCtxt.accountList.generateQuery(null, types);
 		params.accountName = appCtxt.accountList.mainAccount.name;
 	}
 	else if (this._inclSharedItems) {
@@ -705,7 +705,15 @@ function(ev, id) {
 
 	// search all accounts? Only applies to multi-account mbox
 	var allAccountsMI = menu.getItemById(ZmSearchToolBar.MENUITEM_ID, ZmId.SEARCH_ALL_ACCOUNTS);
-	this.searchAllAccounts = allAccountsMI && allAccountsMI.getChecked();
+	if (allAccountsMI) {
+		if (id == ZmItem.APPT) {
+			this.resetSearchAllAccounts();
+			allAccountsMI.setEnabled(false);
+		} else {
+			allAccountsMI.setEnabled(true);
+			this.searchAllAccounts = allAccountsMI && allAccountsMI.getChecked();
+		}
+	}
 
 	if (id == ZmId.SEARCH_SHARED) {
 		var icon = this.searchAllAccounts

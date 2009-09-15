@@ -182,6 +182,12 @@ function(loc) {
 	var defaultPrivacyOption = appCtxt.get(ZmSetting.CAL_APPT_VISIBILITY);
 	this._privacySelect.setSelectedValue((defaultPrivacyOption == ZmSetting.CAL_VISIBILITY_PRIV) ?  "PRI" : "PUB");
 
+	this._folderPickedId = this._appt.getFolder().id;
+	var accountEl = document.getElementById(this._htmlElId+"_account");
+	if (accountEl) {
+		accountEl.innerHTML = this._appt.getFolder().account.getDisplayName();
+	}
+
 	DBG.timePt("ZmQuickAddDialog#popup", true);
 };
 
@@ -358,7 +364,6 @@ ZmApptQuickAddDialog.prototype._folderPickerListener =
 function(ev) {
 	var dlg = appCtxt.getChooseFolderDialog();
 	var callback = new AjxCallback(this, this._folderPickerCallback, [dlg]);
-	var folder = this._calItem && appCtxt.getById(this._calItem.folderId);
 
 	var params = {
 		overviewId:	dlg.getOverviewId(ZmApp.CALENDAR),
@@ -370,7 +375,7 @@ function(ev) {
 	params.omit[ZmFolder.ID_TRASH] = true;
 	params.omit[ZmOrganizer.ID_AUTO_ADDED] = true;
 
-	ZmController.showDialog(dlg, callback, params, folder.account);
+	ZmController.showDialog(dlg, callback, params);
 };
 
 ZmApptQuickAddDialog.prototype._folderPickerCallback =
@@ -379,6 +384,11 @@ function(dlg, folder) {
 
 	this._folderPickerButton.setText(folder.name);
 	this._folderPickedId = folder.id;
+
+	var accountEl = document.getElementById(this._htmlElId+"_account");
+	if (accountEl) {
+		accountEl.innerHTML = folder.account.getDisplayName();
+	}
 
 	this._privacyListener();
 };

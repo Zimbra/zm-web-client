@@ -104,12 +104,17 @@ function(email) {
 };
 
 ZmAccountList.prototype.generateQuery =
-function(folderId) {
+function(folderId, types) {
+	// XXX: for now, let's just search for *one* type at a time
+	var type = types && types.get(0);
 	var query = [];
 	var list = this.visibleAccounts;
 	var fid = folderId || ZmOrganizer.ID_ROOT;
 	for (var i = 0; i < list.length; i++) {
 		var acct = list[i];
+
+		// dont add any apps not supported by this account
+		if (type && !acct.isAppEnabled(ZmItem.APP[type])) { continue; }
 
 		var part = [
 			'(underid:"',

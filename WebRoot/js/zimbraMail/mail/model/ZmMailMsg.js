@@ -117,6 +117,7 @@ ZmMailMsg.requestHeaders = {};
  *        noBusyOverlay	[boolean]*			don't put up busy overlay during request
  *        noTruncate	[boolean]*			don't truncate message body
  *        batchCmd		[ZmBatchCommand]*	if set, request gets added to this batch command
+ *        accountName	[String]*			name of the account to send request on behalf of
  */
 ZmMailMsg.fetchMsg =
 function(params) {
@@ -155,7 +156,8 @@ function(params) {
 			asyncMode: true,
 			callback: (new AjxCallback(null, ZmMailMsg._handleResponseFetchMsg, [params.callback])),
 			errorCallback: params.errorCallback,
-			noBusyOverlay: params.noBusyOverlay
+			noBusyOverlay: params.noBusyOverlay,
+			accountName: params.accountName
 		};
 		params.sender.sendRequest(newParams);
 	}
@@ -564,6 +566,7 @@ function(node, args) {
  *        noBusyOverlay	[boolean]*			don't put up busy overlay during request
  *        noTruncate	[boolean]*			don't set max limit on size of msg body
  *        batchCmd		[ZmBatchCommand]*	if set, request gets added to this batch command
+ *        accountName	[String]*			name of the account to send request on behalf of
  */
 ZmMailMsg.prototype.load =
 function(params) {

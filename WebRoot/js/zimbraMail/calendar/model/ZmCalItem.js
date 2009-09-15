@@ -62,7 +62,7 @@ ZmCalItem.ATTACHMENT_CHECKBOX_NAME	= "__calAttCbox__";
 
 // Getters
 
-ZmCalItem.prototype.getCompNum			= function() { return this.compNum || "0"; }
+ZmCalItem.prototype.getCompNum			= function() { return this.compNum || "0"; };
 ZmCalItem.prototype.getFolder			= function() { };						// override if necessary
 ZmCalItem.prototype.getOrganizer 		= function() { return this.organizer || ""; };
 ZmCalItem.prototype.getSentBy           = function() { return this.sentBy || ""; };
@@ -79,8 +79,8 @@ ZmCalItem.prototype.isCustomRecurrence 	= function() { return this._recurrence.r
 ZmCalItem.prototype.isOrganizer 		= function() { return (typeof(this.isOrg) === 'undefined') || (this.isOrg == true); };
 ZmCalItem.prototype.isRecurring 		= function() { return (this.recurring || (this._rawRecurrences != null)); };
 ZmCalItem.prototype.hasAttachments 		= function() { return this.getAttachments() != null; };
-ZmCalItem.prototype.hasAttendeeForType	= function(type) { return false; }		// override if necessary
-ZmCalItem.prototype.hasPersonAttendees	= function() { return false; }			// override if necessary
+ZmCalItem.prototype.hasAttendeeForType	= function(type) { return false; };		// override if necessary
+ZmCalItem.prototype.hasPersonAttendees	= function() { return false; };			// override if necessary
 
 // Setters
 ZmCalItem.prototype.setAllDayEvent 		= function(isAllDay) 	{ this.allDayEvent = isAllDay ? "1" : "0"; };
@@ -205,15 +205,20 @@ function() {
 
 ZmCalItem.prototype.isReadOnly =
 function() {
-	var isLinkAndReadOnly = false;
 	var folder = this.getFolder();
-	// if we're dealing w/ a shared cal, find out if we have any write access
-	if (folder.link) {
-		var share = folder.getMainShare();
-		isLinkAndReadOnly = share && !share.isWrite();
+
+	if (appCtxt.multiAccounts) {
+		var orgAcct = appCtxt.accountList.getAccountByEmail(this.organizer);
+		var calAcct = appCtxt.accountList.getAccountByEmail(folder.account.getEmail());
+		if (orgAcct == calAcct) {
+			return false;
+		}
 	}
 
-	return (!this.isOrganizer() || isLinkAndReadOnly);
+	// if dealing w/ a shared cal, check for write access
+	var share = folder.link && folder.getMainShare();
+
+	return (!this.isOrganizer() || (share && !share.isWrite()));
 };
 
 ZmCalItem.prototype.resetRepeatWeeklyDays =
@@ -412,13 +417,16 @@ function(viewMode, callback, errorCallback, ignoreOutOfDate, noBusyOverlay, batc
 		var respErrorCallback = (!ignoreOutOfDate)
 			? (new AjxCallback(this, this._handleErrorGetDetails, [mode, callback, errorCallback]))
 			: errorCallback;
+
+		var acct = appCtxt.isOffline && this.getFolder().account;
 		var params = {
 			callback: respCallback,
 			errorCallback: respErrorCallback,
 			noBusyOverlay: noBusyOverlay,
 			ridZ: (seriesMode ? null : this.ridZ),
-			batchCmd: batchCmd
-		}
+			batchCmd: batchCmd,
+			accountName: (acct && acct.name)
+		};
 		this.message.load(params);
 	} else {
 		this.setFromMessage(this.message, mode);
@@ -1173,13 +1181,11 @@ function(soapDoc, attachmentId, notifyList, accountName) {
 	// attendees
 	this._addAttendeesToSoap(soapDoc, comp, m, notifyList, accountName);
 
-	if (this.isOrganizer() && !accountName) {
-		var mailFromAddress = this.getMailFromAddress();
-		if (mailFromAddress) {
-			var e = soapDoc.set("e", null, m);
-			e.setAttribute("a", mailFromAddress);
-			e.setAttribute("t", AjxEmailAddress.toSoapType[AjxEmailAddress.FROM]);
-		}
+	var mailFromAddress = this.getMailFromAddress();
+	if (this.isOrganizer() && !accountName && mailFromAddress) {
+		var e = soapDoc.set("e", null, m);
+		e.setAttribute("a", mailFromAddress);
+		e.setAttribute("t", AjxEmailAddress.toSoapType[AjxEmailAddress.FROM]);
 	}
 
 	this._addExtrasToSoap(soapDoc, inv, comp);
@@ -1194,21 +1200,19 @@ function(soapDoc, attachmentId, notifyList, accountName) {
 	// notes
 	this._addNotesToSoap(soapDoc, m);
 
-	// set organizer
-	var user = appCtxt.get(ZmSetting.USERNAME);
-    var mailFromAddress = this.getMailFromAddress();
-    if(mailFromAddress) {
-        user = mailFromAddress;   
-    }
-	var organizer = this.organizer || user;
-	var org = soapDoc.set("or", null, comp);
-	org.setAttribute("a", organizer);
-	if (calendar.isRemote()) {
-		org.setAttribute("sentBy", user); // if on-behalf of, set sentBy
+	// set organizer - but not for local account
+	if (!(appCtxt.isOffline && calendar.account.isMain)) {
+		var user = mailFromAddress || appCtxt.get(ZmSetting.USERNAME);
+		var organizer = this.organizer || user;
+		var org = soapDoc.set("or", null, comp);
+		org.setAttribute("a", organizer);
+		if (calendar.isRemote()) {
+			org.setAttribute("sentBy", user); // if on-behalf of, set sentBy
+		}
+		var orgEmail = ZmApptViewHelper.getOrganizerEmail(this.organizer);
+		var orgName = orgEmail.getName();
+		if (orgName) org.setAttribute("d", orgName);
 	}
-	var orgEmail = ZmApptViewHelper.getOrganizerEmail(this.organizer);
-	var orgName = orgEmail.getName();
-	if (orgName) org.setAttribute("d", orgName);
 
 	// handle attachments
 	this.flagLocal(ZmItem.FLAG_ATTACH, false);
@@ -1277,7 +1281,7 @@ ZmCalItem.prototype._addXParamToSoap =
 function(soapDoc, xprop, xparams) {
 	if (!xparams) { return; }
 
-	xparams = (xparams instanceof Array) ? xparams : [xparams]
+	xparams = (xparams instanceof Array) ? xparams : [xparams];
 
 	for (var j in xparams) {
 		var xparam = xparams[j];
