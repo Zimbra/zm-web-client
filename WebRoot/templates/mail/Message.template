@@ -13,7 +13,7 @@
 								<$= AjxStringUtil.htmlEncode(ZmMsg.subjectLabel); $>
 							</td>
 							<td class='SubjectCol LabelColValue' valign=top width=100%>
-								<$= AjxStringUtil.htmlEncode(data.subject) $>
+								<$= data.subject $>
 							</td>
 							<$ if (data.isSyncFailureMsg) { $>
 								<td id='${reportBtnCellId}'></td>

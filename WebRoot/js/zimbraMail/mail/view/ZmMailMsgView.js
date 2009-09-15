@@ -1041,6 +1041,7 @@ function(msg, container, callback) {
 			obo		= this._objectManager.findObjects(addr, true, ZmObjectManager.EMAIL);
 		}
 	} else {
+		subject = AjxStringUtil.htmlEncode(subject);
 		sentBy = AjxStringUtil.htmlEncode(sentBy.toString());
 		if (obo) {
 			obo = AjxStringUtil.htmlEncode(obo.toString());
