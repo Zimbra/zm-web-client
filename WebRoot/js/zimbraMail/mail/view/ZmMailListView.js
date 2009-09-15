@@ -16,7 +16,8 @@
 ZmMailListView = function(params) {
 
 	if (arguments.length == 0) { return; }
-	
+
+	params.pageless = true;
 	ZmListView.call(this, params);
 
 	this._folderId = null;
@@ -303,7 +304,7 @@ function(htmlArr, idx, headerCol, i, numCols, id, defaultColumnSort) {
 		htmlArr[idx++] = "' class='DwtListHeaderItem-label'>";
 		htmlArr[idx++] = headerCol._label;
 		htmlArr[idx++] = "</td>";
-		htmlArr[idx++] = "<td align=right class='itemCountText' style='padding-right:2px' width='";
+		htmlArr[idx++] = "<td align=right class='itemCountText' nowrap style='padding-right:2px' width='";
 		htmlArr[idx++] = ZmMsg.COLUMN_WIDTH_ITEM_COUNT;
 		htmlArr[idx++] = "' id='";
 		htmlArr[idx++] = textTdId;
@@ -669,7 +670,7 @@ function(ev) {
 		// we handle is where the user is on the first page.
 		//
 		// TODO: handle other sort orders, arbitrary insertion points
-		if ((this.offset == 0) && (!this._sortByString || this._sortByString == ZmSearch.DATE_DESC)) {
+		if ((this._isPageless || this.offset == 0) && (!this._sortByString || this._sortByString == ZmSearch.DATE_DESC)) {
 			this.addItem(item, ev.getDetail("sortIndex") || 0);
 		}
 		ev.handled = true;

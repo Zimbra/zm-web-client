@@ -343,8 +343,9 @@ function(parent, num) {
 
 ZmConvController.prototype._resetNavToolBarButtons =
 function(view) {
-	if (!this._navToolBar[view]) { return; }
+
 	ZmDoublePaneController.prototype._resetNavToolBarButtons.call(this, view);
+	if (!this._navToolBar[view]) { return; }
 
 	var list = this._conv.list.getVector();
 

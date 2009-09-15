@@ -1058,7 +1058,7 @@ function(creates, list, controller) {
 	var sortBy = list.search.sortBy;
 	var a = list.getArray();
 	var listView = controller.getCurrentView();
-	var limit = listView ? listView.getLimit() : appCtxt.get(ZmSetting.PAGE_SIZE);
+	var limit = listView ? listView.size() : appCtxt.get(ZmSetting.PAGE_SIZE);
 
 	var last = (a && a.length >= limit) ? a[a.length - 1] : null;
 	var cutoff = last ? last.date : null;

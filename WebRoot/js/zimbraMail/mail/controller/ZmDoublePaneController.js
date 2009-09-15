@@ -105,6 +105,7 @@ function(view, force) {
 	} else {
 		ZmMailListController.prototype.switchView.apply(this, arguments);
 	}
+	this._resetNavToolBarButtons(this._currentView);
 };
 
 
@@ -165,15 +166,12 @@ function(view) {
 	ZmMailListController.prototype._initialize.call(this, view);
 };
 
+// all double-pane views are pageless
 ZmDoublePaneController.prototype._initializeNavToolBar =
 function(view, arrowStyle) {
-	if (ZmApp.PAGELESS[this._app._name]) {
-		this._toolbar[view].addOp(ZmOperation.TEXT);
-		var text = this._itemCountText[ZmSetting.RP_BOTTOM] = this._toolbar[view].getButton(ZmOperation.TEXT);
-		text.addClassName("itemCountText");
-	} else {
-		ZmMailListController.prototype._initializeNavToolBar.apply(this, arguments);
-	}
+	this._toolbar[view].addOp(ZmOperation.TEXT);
+	var text = this._itemCountText[ZmSetting.RP_BOTTOM] = this._toolbar[view].getButton(ZmOperation.TEXT);
+	text.addClassName("itemCountText");
 };
 
 ZmDoublePaneController.prototype._getToolBarOps =

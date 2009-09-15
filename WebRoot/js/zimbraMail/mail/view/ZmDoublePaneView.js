@@ -312,3 +312,8 @@ function() {
 	var readingPaneOnRight = this._controller.isReadingPaneOnRight();
 	return readingPaneOnRight ? this._vertMsgSash : this._horizMsgSash;
 };
+
+ZmDoublePaneView.prototype.getLimit =
+function(offset) {
+	return this._mailListView.getLimit(offset);
+};

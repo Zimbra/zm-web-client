@@ -599,6 +599,11 @@ function(req) {
 ZmSearch.prototype._getLimit =
 function() {
 
+	var curView = appCtxt.getCurrentView();
+	if (curView && curView.getLimit) {
+		return curView.getLimit(this.offset);
+	}
+
 	var app, setting;
 	if (this.contactSource && this.types.size() == 1) {
 		app = ZmApp.CONTACTS;
@@ -613,8 +618,7 @@ function() {
 		return ZmSearch.DEFAULT_LIMIT;
 	}
 
-	return ZmApp.PAGELESS[app] ? appCtxt.getApp(app).getPagelessLimit(true) :
-		   						 appCtxt.get(setting);
+	return appCtxt.get(setting);
 };
 
 ZmSearch.IS_OP	= {"in":true, "inid":true, "is":true, "tag":true};

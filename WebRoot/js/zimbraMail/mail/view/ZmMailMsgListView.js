@@ -445,7 +445,7 @@ function(conv, columnItem, controller, result) {
 	controller.setList(list); // set the new list returned
 	this.offset = 0;
 	this.set(conv.msgs, columnItem);
-	this.setSelection(conv.getFirstHotMsg({offset:this.offset, limit:this.getLimit()}));
+	this.setSelection(conv.getFirstHotMsg({offset:this.offset, limit:this.getLimit(this.offset)}));
 };
 
 ZmMailMsgListView.prototype._getDefaultSortbyForCol = 

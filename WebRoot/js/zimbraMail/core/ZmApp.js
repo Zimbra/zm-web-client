@@ -95,7 +95,6 @@ ZmApp.QS_VIEWS				= {};	// list of views to handle in query string
 ZmApp.TRASH_VIEW_OP			= {};	// menu choice for "Show Only ..." in Trash view
 ZmApp.UPSELL_URL			= {};	// URL for content of upsell
 ZmApp.DROP_TARGETS			= {};	// drop targets (organizers) by item/organizer type
-ZmApp.PAGELESS				= {};	// enlarge page via scroll rather than pagination
 
 // assistants for each app; each value is a hash where key is the name of the
 // assistant class and value is the required package
@@ -150,7 +149,6 @@ function() {
  *        defaultSort		[int]		controls order in which app is chosen as default start app
  *        trashViewOp		[constant]	menu choice for "Show Only ..." in Trash view
  *        upsellUrl			[string]	URL for content of upsell
- *        pageless			[boolean]	if ture, enlarge page via scroll rather than pagination
  */
 ZmApp.registerApp =
 function(app, params) {
@@ -175,7 +173,6 @@ function(app, params) {
 	if (params.defaultSort)			{ ZmApp.DEFAULT_SORT[app]		= params.defaultSort; }
 	if (params.trashViewOp)			{ ZmApp.TRASH_VIEW_OP[app]		= params.trashViewOp; }
 	if (params.upsellUrl)			{ ZmApp.UPSELL_URL[app]			= params.upsellUrl; }
-	if (params.pageless)			{ ZmApp.PAGELESS[app]			= params.pageless; }
 
 	if (params.searchTypes) {
 		ZmApp.SEARCH_TYPES_R[app] = {};
@@ -732,9 +729,4 @@ function() {
 		appCtxt.getAppController().appRendered(this._name);
 		this._hasRendered = true;
 	}
-};
-
-ZmApp.prototype.getPagelessLimit =
-function(newSearch) {
-	return newSearch ? 2 * DwtListView.DEFAULT_LIMIT : DwtListView.DEFAULT_LIMIT;
 };

@@ -73,7 +73,8 @@ function(conv) {
 	this._setTags(conv);
 	
 	// display "hot" message (or newest if no search performed)
-	var hot = this._conv.getFirstHotMsg({offset:this._mailListView.offset, limit:this._mailListView.getLimit()});
+	var offset = this._mailListView.offset;
+	var hot = this._conv.getFirstHotMsg({offset:offset, limit:this._mailListView.getLimit(offset)});
 	this._mailListView.setSelection(hot);
 };
 

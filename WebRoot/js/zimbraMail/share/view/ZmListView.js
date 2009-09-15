@@ -13,6 +13,28 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * @constructor
+ * @class
+ * A list view presents a list of items as rows with fields (columns).
+ *
+ * @author Parag Shah
+ * @author Conrad Damon
+ *
+ * @param params		[hash]				hash of params:
+ *        parent		[DwtComposite] 		parent widget
+ *        className		[string]*			CSS class
+ *        posStyle		[constant]*			positioning style
+ *        id			[string]			HTML ID for element
+ *        headerList	[array]*			list of IDs for columns
+ *        noMaximize	[boolean]*			if true, all columns are fixed-width (otherwise, one will
+ * 											expand to fill available space)
+ *        view			[constant]*			ID of view
+ *        type			[constant]*			type of item displayed
+ *        controller	[ZmListController]	owning controller
+ *        dropTgt		[DwtDropTarget]*	drop target
+ *        pageless		[boolean]*			if true, enlarge page via scroll rather than pagination
+ */
 ZmListView = function(params) {
 
 	if (arguments.length == 0) { return; }
@@ -43,12 +65,12 @@ ZmListView = function(params) {
 	this._disallowSelection[ZmItem.F_FLAG] = true;
 
 	if (params.dropTgt) {
-		var params = {container:this._parentEl, threshold:15, amount:5, interval:10, id:params.id};
-		this._dndScrollCallback = new AjxCallback(null, DwtControl._dndScrollCallback, [params]);
+		var args = {container:this._parentEl, threshold:15, amount:5, interval:10, id:params.id};
+		this._dndScrollCallback = new AjxCallback(null, DwtControl._dndScrollCallback, [args]);
 		this._dndScrollId = params.id;
 	}
 
-	this._isPageless = ZmApp.PAGELESS[this._controller._app._name];
+	this._isPageless = params.pageless;
 	if (this._isPageless) {
 		Dwt.setHandler(this._parentEl, DwtEvent.ONSCROLL, ZmListView.handleScroll);
 	}
@@ -115,7 +137,7 @@ function(list, sortField) {
 			}
 			DwtListView.prototype.set.call(this, lvList, sortField);
 		}
-		this._controller._setItemCountText();
+
 		if (!this._rowHeight) {
 			var item = list.get(0);
 			var row = item && this._getElFromItem(item);
@@ -141,9 +163,10 @@ function(defaultColumnSort) {
 };
 
 ZmListView.prototype.getLimit =
-function(newSearch) {
+function(offset) {
 	if (this._isPageless) {
-		return this._controller._app.getPagelessLimit(newSearch);
+		var limit = appCtxt.get(ZmSetting.PAGE_SIZE);
+		return offset ? limit : 2 * limit;
 	} else {
 		return appCtxt.get(ZmSetting.PAGE_SIZE);
 	}
@@ -151,7 +174,7 @@ function(newSearch) {
 
 ZmListView.prototype.getPagelessThreshold =
 function() {
-	return Math.ceil(this.getLimit(true) / 5);
+	return Math.ceil(this.getLimit() / 5);
 };
 
 ZmListView.prototype.getReplenishThreshold =

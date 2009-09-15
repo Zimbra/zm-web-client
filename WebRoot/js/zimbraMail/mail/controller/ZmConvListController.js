@@ -225,10 +225,10 @@ function(view, bPageForward, convIdx) {
 	return ZmDoublePaneController.prototype._paginate.call(this, view, bPageForward, convIdx);
 };
 
-ZmConvListController.prototype._resetNavToolBarButtons = 
+ZmConvListController.prototype._resetNavToolBarButtons =
 function(view) {
-	if (!this._navToolBar[view]) { return; }
 	ZmDoublePaneController.prototype._resetNavToolBarButtons.call(this, view);
+	if (!this._navToolBar[view]) { return; }
 	this._navToolBar[view].setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previousPage);
 	this._navToolBar[view].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.nextPage);
 };

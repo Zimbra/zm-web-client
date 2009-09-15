@@ -1053,7 +1053,6 @@ function(view, forward, loadIndex) {
 	var needMore = false;
 	var lv = this._listView[view];
 	var offset, max;
-	var limit = lv.getLimit();
 	if (lv._isPageless) {
 		offset = this._list.size();
 		needMore = true;
@@ -1061,6 +1060,7 @@ function(view, forward, loadIndex) {
 		offset = lv.getNewOffset(forward);
 		needMore = (offset + limit > this._list.size());
 	}
+	var limit = lv.getLimit(offset);
 	this.currentPage = this.currentPage + (forward ? 1 : -1);
 	this.maxPage = Math.max(this.maxPage, this.currentPage);
 
@@ -1271,6 +1271,12 @@ function(toolbar, view) {
 
 ZmListController.prototype._resetNavToolBarButtons =
 function(view) {
+
+	var lv = this._listView[view];
+	if (lv._isPageless) {
+		this._setItemCountText();
+	}
+
 	if (!this._navToolBar[view]) { return; }
 
 	if (this._navToolBar[view].hasDoubleArrows) {
@@ -1278,7 +1284,6 @@ function(view) {
 	}
 
 	if (this._navToolBar[view].hasSingleArrows) {
-		var lv = this._listView[view];
 		this._navToolBar[view].enable(ZmOperation.PAGE_BACK, lv.offset > 0);
 
 		// determine if we have more cached items to show (in case hasMore is wrong)

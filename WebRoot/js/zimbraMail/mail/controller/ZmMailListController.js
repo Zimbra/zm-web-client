@@ -157,7 +157,7 @@ function(view, force) {
 			return;
 		}
 		var sortBy = appCtxt.get(ZmSetting.SORTING_PREF, view);
-		var limit = this._listView[this._currentView].getLimit(true);
+		var limit = this._listView[this._currentView].getLimit();
 		var getHtml = appCtxt.get(ZmSetting.VIEW_AS_HTML);
 		var groupByItem = this._app.getGroupMailBy();
 		var params = {types:[groupByItem], offset:0, limit:limit, sortBy:sortBy, getHtml:getHtml};
@@ -1448,7 +1448,7 @@ function(currentItem, forward) {
 		}
 	} else {
 		// this means the conv must be cached. Find out if we need to page back/forward.
-		if (itemIdx >= lv.offset + lv.getLimit()) {
+		if (itemIdx >= lv.offset + lv.getLimit(lv.offset)) {
 			pageWasCached = this._paginate(this._currentView, true);
 		} else if (itemIdx < lv.offset) {
 			pageWasCached = this._paginate(this._currentView, false);
