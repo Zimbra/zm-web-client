@@ -133,9 +133,11 @@
 	font-weight: bold;
 }
 
-.OfflineStatusField {
-	width:16px;
-	height:16px;
+.OfflineTreeTop {
+	height: auto !important;
+	text-align: left !important;
+	padding:2px 2px 2px 4px;
+	font-weight: bold;
 }
 
 

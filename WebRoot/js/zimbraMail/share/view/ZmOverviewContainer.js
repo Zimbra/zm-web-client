@@ -206,7 +206,9 @@ function(account, updateStatus, updateTooltip) {
 					? ("<img src='/img/animated/ImgSpinner.gif' width=16 height=16 border=0>")
 					: (AjxImg.getImageHtml(account.getStatusIcon()));
 			}
-			hi._extraCell.innerHTML = html;
+			if (hi._extraCell) {
+				hi._extraCell.innerHTML = html;
+			}
 		}
 
 		if (updateTooltip) {

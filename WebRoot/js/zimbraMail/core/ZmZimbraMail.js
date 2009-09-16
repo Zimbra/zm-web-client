@@ -320,10 +320,12 @@ function(params) {
 		this._components[ZmAppViewMgr.C_SASH] = new DwtSash({parent:this._shell, style:DwtSash.HORIZONTAL_STYLE,
 															 className:"console_inset_app_l", threshold:20, id:ZmId.MAIN_SASH});
 		this._components[ZmAppViewMgr.C_BANNER] = this._createBanner();
-		this._components[ZmAppViewMgr.C_USER_INFO] = this._userNameField =
-			this._createUserInfo("BannerTextUser", ZmAppViewMgr.C_USER_INFO, ZmId.USER_NAME);
-		this._components[ZmAppViewMgr.C_QUOTA_INFO] = this._usedQuotaField =
-			this._createUserInfo("BannerTextQuota", ZmAppViewMgr.C_QUOTA_INFO, ZmId.USER_QUOTA);
+		if (!appCtxt.multiAccounts) {
+			this._components[ZmAppViewMgr.C_USER_INFO] = this._userNameField =
+				this._createUserInfo("BannerTextUser", ZmAppViewMgr.C_USER_INFO, ZmId.USER_NAME);
+			this._components[ZmAppViewMgr.C_QUOTA_INFO] = this._usedQuotaField =
+				this._createUserInfo("BannerTextQuota", ZmAppViewMgr.C_QUOTA_INFO, ZmId.USER_QUOTA);
+		}
 		this._components[ZmAppViewMgr.C_STATUS] = this.statusView =
 			new ZmStatusView(this._shell, "ZmStatus", Dwt.ABSOLUTE_STYLE, ZmId.STATUS_VIEW);
 	}
@@ -635,6 +637,9 @@ function() {
 	} else {
 		if (appCtxt.isOffline) {
 			this.sendClientEventNotify(false);
+		}
+		if (appCtxt.multiAccounts) {
+			this._resetUserInfo();
 		}
 	}
 };
@@ -1470,6 +1475,8 @@ function() {
 
 ZmZimbraMail.prototype.setUserInfo =
 function() {
+	if (appCtxt.multiAccounts || appCtxt.isOffline) { return; }
+
 	// username
 	var login = appCtxt.get(ZmSetting.USERNAME);
 	var username = (appCtxt.get(ZmSetting.DISPLAY_NAME)) || login;
@@ -1500,9 +1507,7 @@ function() {
 		data.desc = AjxMessageFormat.format(ZmMsg.quotaDescLimited, [data.percent+'%', data.limit]);
 	}
 	else {
-		data.desc = appCtxt.isOffline
-			? AjxMessageFormat.format(ZmMsg.offlineQuota, [data.size])
-			: AjxMessageFormat.format(ZmMsg.quotaDescUnlimited, [data.size]);
+		data.desc = AjxMessageFormat.format(ZmMsg.quotaDescUnlimited, [data.size]);
 		quotaTemplateId = 'UsedUnlimited';
 	}
 	this._usedQuotaField.getHtmlElement().innerHTML = AjxTemplate.expand('share.Quota#'+quotaTemplateId, data);
@@ -1512,12 +1517,35 @@ function() {
 		? AjxTemplate.expand('share.Quota#Tooltip', data) : null;
 	this._components[ZmAppViewMgr.C_USER_INFO].setToolTipContent(html);
 	this._components[ZmAppViewMgr.C_QUOTA_INFO].setToolTipContent(html);
+};
 
-	// multi-account doesn't care to show username so bump up the quota info
-	if (appCtxt.multiAccounts) {
-		this._userNameField.setDisplay(Dwt.DISPLAY_NONE);
-		this._usedQuotaField.addClassName("BannerTextQuota-MultiAccount");
+/**
+ * A bit of a hack to remove user/quota info for zdesktop
+ */
+ZmZimbraMail.prototype._resetUserInfo =
+function() {
+	var usernameEl = document.getElementById("skin_container_username");
+	if (usernameEl) {
+		Dwt.setDisplay(usernameEl, Dwt.DISPLAY_NONE);
 	}
+
+	var quotaEl = document.getElementById("skin_container_quota");
+	if (quotaEl) {
+		Dwt.setDisplay(quotaEl, Dwt.DISPLAY_NONE);
+	}
+
+	var accountEl = document.getElementById("skin_container_account");
+	if (accountEl) {
+		accountEl.innerHTML = ZmMsg.accounts;
+		Dwt.setDisplay(accountEl, Dwt.DISPLAY_BLOCK);
+	}
+
+	var topTreeEl = document.getElementById("skin_container_tree_top");
+	if (topTreeEl) {
+		topTreeEl.className = "OfflineTreeTop";
+	}
+
+	this._appViewMgr._fitToContainer([ZmAppViewMgr.C_TREE, ZmAppViewMgr.C_TREE_FOOTER]);
 };
 
 

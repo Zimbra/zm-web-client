@@ -28,7 +28,6 @@
 }
 #skin_container_tree_top		{
 	background:@AltC@ url('/zimbra/skins/_base/base2/img/gradient/10x32,v,15-0,2,0_16-31,2,0.png') left top repeat-x;
-	margin-bottom:6px;
 }
 #skin_container_links			{
 	padding:0 10px;
