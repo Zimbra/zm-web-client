@@ -189,7 +189,8 @@ function(app, params) {
 		}
 	}
 	
-	if (params.newItemOps) {
+	var appEnabled = appCtxt.get(ZmApp.SETTING[app]);
+	if (params.newItemOps && appEnabled) {
 		for (var op in params.newItemOps) {
 			if (!op) { continue; }
 			ZmApp.OPS_R[op] = app;
@@ -197,7 +198,7 @@ function(app, params) {
 			ZmOperation.NEW_ITEM_KEY[op] = params.newItemOps[op];
 		}
 	}
-	if (params.newOrgOps) {
+	if (params.newOrgOps && appEnabled) {
 		for (var op in params.newOrgOps) {
 			if (!op) { continue; }
 			ZmApp.OPS_R[op] = app;
