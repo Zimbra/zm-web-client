@@ -1059,7 +1059,7 @@ function(startDate, duration, folderId) {
 	if (folderId) {
 		newAppt.setFolderId(folderId);
 	} else {
-		//bug: 27646 case where only one calendar is checked
+		// bug: 27646 case where only one calendar is checked
 		var checkedFolderIds = this.getCheckedCalendarFolderIds();
 		if (checkedFolderIds && checkedFolderIds.length == 1) {
 			var calId = checkedFolderIds[0];
@@ -1071,6 +1071,11 @@ function(startDate, duration, folderId) {
 				if (cal && !skipCal) {
 					newAppt.setFolderId(calId);
 				}
+			}
+		} else if (appCtxt.multiAccounts) {
+			var active = appCtxt.getActiveAccount();
+			if (!active.isMain) {
+				newAppt.setFolderId(ZmOrganizer.getSystemId(ZmOrganizer.ID_CALENDAR, active));  
 			}
 		}
 	}
