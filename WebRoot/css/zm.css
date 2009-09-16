@@ -2229,6 +2229,15 @@ HTML>BODY .appt-selected .appt_allday_body
 	width:99%;
 }
 
+.ZmVoicePreferencesPage {
+	padding: 0;
+	width:100% !important;
+}
+
+.ZmVoicePrefsTabView {
+	width: 100%;
+}
+
 /* table that holds the 'restore defaults' button */
 .ZOptionsDefaultsTable {
 	margin-bottom: 0.5em;

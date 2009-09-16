@@ -27,10 +27,9 @@
  * @param prefsApp		[ZmPreferencesApp]	the preferences app
  * @param prefsView		[ZmPreferencesView]	the preferences view
  */
-ZmVoicePrefsController = function(container, prefsApp, prefsView) {
-	ZmController.call(this, container, prefsApp);
-
+ZmVoicePrefsController = function(container, prefsApp, prefsView) {	
 	this._prefsView = prefsView;
+	ZmController.call(this, container, prefsApp);
 	this._listView = new ZmVoicePrefsView(prefsView._parent, this);
     this._count = 0;
 };
@@ -52,9 +51,9 @@ function() {
 };
 
 ZmVoicePrefsController.prototype._setup =
-function() {
-	var listControl = this._listView.getList();
-	listControl.addSelectionListener(new AjxListener(this, this._listSelectionListener));
+function(view) {
+	var listControl = view.getList();
+	listControl.addSelectionListener(new AjxListener(this, this._listSelectionListener, view));
 	var listData = this._getListData();
 	listControl.set(listData);
 	if (listData.size()) {
@@ -62,22 +61,29 @@ function() {
 	}
 };
 
+ZmVoicePrefsController.prototype.checkPreCondition =
+function(obj, precondition) {
+	return ZmPrefController.prototype.checkPreCondition.call(this, obj, precondition);
+}
+
 /*
 * Handles left-clicking on an item.
 *
 * @param	[DwtEvent]		the click event
 */
 ZmVoicePrefsController.prototype._listSelectionListener =
-function(ev) {
+function(listView, ev) {
 	if (ev.detail == DwtListView.ITEM_SELECTED) {
-		var listView = this._listView.getList();
-		var selection = listView.getSelection()[0];
-		if (!this._listView.validate()) {
-			var message = this._listView.getErrorMessage(true);
+		var list = listView.getList();
+		
+		var selection = list.getSelection()[0];
+		if (!listView.validate()) {
+			var message = listView.getErrorMessage(true);
 			appCtxt.setStatusMsg(message, ZmStatusView.LEVEL_CRITICAL);
-			listView.setSelectedItems([this._listView._item]);
+			
+			list.setSelectedItems([listView._item]);
 		} else {
-			this._listView.setItem(selection);
+			listView.setItem(selection);
 		}
 	}
 };
