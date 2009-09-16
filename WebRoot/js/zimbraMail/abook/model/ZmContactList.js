@@ -79,8 +79,9 @@ ZmContactList.AC_PREMATCH		= 2;	// # of characters to do pre-matching for
 ZmContactList.AC_GAL_TIMEOUT	= 15;	// GAL autocomplete timeout (in seconds)
 ZmContactList.AC_GAL_FAILURES	= 5;	// # of GAL autocomplete timeouts before disabling it
 
-ZmContactList.AC_LOCAL	= 1;
-ZmContactList.AC_GAL	= 2;
+ZmContactList.AC_LOCAL		= "LOCAL";
+ZmContactList.AC_GAL		= "GAL";
+ZmContactList.AC_RESOURCE	= "RESOURCE";
 
 // Load contacts in chunks so browser remains reasonably responsive.
 // To increase browser responsiveness, lower the chunk size and increase the
@@ -685,6 +686,8 @@ ZmContactList.prototype.autocompleteMatch =
 function(str, callback, aclv, options) {
 
 	var galOnly = options && options.galOnly;
+	var galType = options && options.galType;
+	var galMode = (galType == ZmSearch.GAL_RESOURCE) ? ZmContactList.AC_RESOURCE : ZmContactList.AC_GAL;
 
 	DBG.println(AjxDebug.DBG3, "begin contact matching");
 	str = str.toLowerCase();
@@ -721,7 +724,7 @@ function(str, callback, aclv, options) {
 
 	if (this._galAutocompleteEnabled || galOnly) {
 		// check for cached GAL results, and do forward matching
-		gotGal = this._checkExistingResults(str, ZmContactList.AC_GAL);
+		gotGal = this._checkExistingResults(str, galMode);
 	}
 	
 	var results = this._matchList(str, galOnly);
@@ -852,14 +855,13 @@ function(str) {
  *
  * @param str		[string]		string to match against
  * @param which		[constant]		LOCAL or GAL
- * @param checkMore	[boolean]*		if true, check if results are complete (GAL only)
  */
 ZmContactList.prototype._matchingDone =
-function(str, which, checkMore) {
+function(str, which) {
 	if (which == ZmContactList.AC_LOCAL) {
 		return (this._acAddrList[str] && this._acAddrList[str].localMatchingDone);
-	} else if (which == ZmContactList.AC_GAL) {
-		if (!this._galAutocompleteEnabled) { return true; }
+	} else {
+		if (which == ZmContactList.AC_GAL && !this._galAutocompleteEnabled) { return true; }
 		var old = (new Date()).getTime() - ZmContactList.GAL_RESULTS_TTL;
 		// GAL results must be fresh and complete
 		return (this._acAddrList[str] && this._acAddrList[str].galMatchingDone &&
@@ -959,7 +961,7 @@ function(contact, str, doMarkup) {
 
 	if (contact.isGal && doMarkup) {
 		// if GAL match doesn't also match manually, assume full name matched
-		return {savedMatch: ZmContact.getAttr(ZmContact.X_fullName, contact), matchField: ZmContact.X_fullName};
+		return {savedMatch: ZmContact.getAttr(contact, ZmContact.X_fullName), matchField: ZmContact.X_fullName};
 	} else {
 		return null;
 	}
@@ -1175,7 +1177,8 @@ function(str, aclv, callback) {
 	}
 	var sortBy = ZmSearch.NAME_DESC;
 	var types = AjxVector.fromArray([ZmItem.CONTACT]);
-	var params = {query:str, types:types, sortBy:sortBy, offset:0, limit:ZmContactList.AC_MAX, isGalAutocompleteSearch:true};
+	var params = {query:str, types:types, sortBy:sortBy, offset:0, limit:ZmContactList.AC_MAX,
+				  isGalAutocompleteSearch:true};
 	var search = new ZmSearch(params);
 	var respCallback = new AjxCallback(this, this._handleResponseGetGalMatches, [str, aclv, callback]);
 	var errorCallback = new AjxCallback(this, this._handleErrorGetGalMatches, [str, aclv, callback]);
@@ -1240,33 +1243,6 @@ function(str, aclv, callback, result) {
 		}
 		this._acAddrList[str].length = i;
 	}
-};
-
-ZmContactList.prototype._addGalResults =
-function(str, list, substr) {
-	if (list && list.length) {
-		this._acAddrList[str] = this._acAddrList[str] ? this._acAddrList[str] : [];
-		for (var i = 0; i < lis.length; i++) {
-			this._acAddrList[str].push(list[i]);
-		}
-	} else if (substr) {
-		this._acAddrList[substr] = this._acAddrList[substr] ? this._acAddrList[substr] : [];
-		var superList = this._acAddrList[str];
-		for (var i = 0; i < superList.length; i++) {
-			var contact = superList[i];
-			if (this._testAcMatch(contact, substr)) {
-				this._acAddrList[substr].push(contact);
-			}
-		}
-		str = substr;
-	}
-
-	this._acAddrList[str].hasGalMatches = (a.length > 0);
-	this._acAddrList[str].galMatchingDone = true;
-
-	this._galResults[str] = {};
-	this._galResults[str].ts = (new Date()).getTime();
-	this._galResults[str].more = resp._respEl.more;
 };
 
 /**

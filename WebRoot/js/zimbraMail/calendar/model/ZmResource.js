@@ -22,6 +22,8 @@ ZmResource = function(id, list, resType) {
 	this.resType = resType;
 };
 
+ZmItem.RESOURCE = ZmId.ITEM_RESOURCE;
+
 ZmResource.F_capacity			= "zimbraCalResCapacity";
 ZmResource.F_contactMail		= "zimbraCalResContactEmail";
 ZmResource.F_locationName		= "zimbraCalResLocationDisplayName";

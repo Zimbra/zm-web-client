@@ -144,6 +144,62 @@ function(str) {
 };
 
 /*
+ * Fetches GAL matches for the given string from the server.
+ *
+ * @param str		[string]	string to match against
+ */
+ZmResourceList.prototype._getGalMatches =
+function(str, aclv, callback) {
+
+	var conds = [];
+	conds.push({attr:ZmResource.F_name, op:"startswith", value:str});
+	var resType = (this.resType == ZmCalBaseItem.LOCATION) ? ZmResource.ATTR_LOCATION : ZmResource.ATTR_EQUIPMENT;
+	conds.push({attr:ZmResource.F_type, op:"eq", value:resType});
+	var attrs = [ZmResource.F_name, ZmResource.F_mail];
+	var params = {conds:conds, attrs:attrs, limit:ZmContactList.AC_MAX};
+	var search = new ZmSearch(params);
+	var respCallback = new AjxCallback(this, this._handleResponseGetGalMatches, [str, aclv, callback]);
+	var errorCallback = new AjxCallback(this, this._handleErrorGetGalMatches, [str, aclv, callback]);
+	search.execute({callback: respCallback, errorCallback: errorCallback, timeout: ZmContactList.AC_GAL_TIMEOUT,
+					noBusyOverlay: true});
+};
+
+ZmResourceList.prototype._handleResponseGetGalMatches =
+function(str, aclv, callback, result) {
+	aclv.setWaiting(false);
+
+	var resp = result.getResponse();
+
+	this._galResults[str] = {};
+
+	var list = resp.getResults(ZmItem.RESOURCE);
+	var a = list ? list.getArray() : [];
+	var hasMore = false;
+	if (a.length > ZmContactList.AC_MAX) {
+		a = a.slice(0, ZmContactList.AC_MAX);
+		hasMore = true;
+	}
+
+	this._acAddrList[str] = this._acAddrList[str] || [];
+	for (var i = 0; i < a.length; i++) {
+		var contact = a[i];
+		this._acAddrList[str].push(contact);
+		var email = contact.getAttr(ZmResource.F_mail);
+		if (email) {
+			this._emailToContact[email] = contact;
+		}
+	}
+
+	this._acAddrList[str].hasGalMatches = (a.length > 0);
+	this._acAddrList[str].galMatchingDone = true;
+
+	this._galResults[str].ts = (new Date()).getTime();
+	this._galResults[str].more = hasMore;
+
+	callback.run();
+};
+
+/*
 * Creates the matching object(s) for a particular matched contact. If a contact has multiple
 * email addresses and didn't match on one of them (it matched on a name), then a matching
 * object will be created for each email address.
@@ -153,13 +209,13 @@ function(str) {
 */
 ZmResourceList.prototype._getMatches =
 function(id, str) {
-	var match = this._testAcMatch(this.getById(id), str, true);
+	var resource = (id instanceof ZmContact) ? id : this.getById(id);
+	var match = this._testAcMatch(resource, str, true);
 	if (!match) {
-		DBG.println(AjxDebug.DBG1, "Matched resource with ID " + id + " no longer matches '" + str);
+		DBG.println(AjxDebug.DBG1, "Matched resource with ID " + resource.id + " no longer matches '" + str);
 		return null;
 	}
 
-	var resource = this.getById(id);
 	var matchObj = this._createMatch(match, resource);
 
 	return [matchObj];	

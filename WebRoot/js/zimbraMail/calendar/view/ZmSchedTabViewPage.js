@@ -278,7 +278,8 @@ function() {
 	if (appCtxt.get(ZmSetting.GAL_ENABLED)) {
 		var resourcesClass = appCtxt.getApp(ZmApp.CALENDAR);
 		var params = {parent: shell, dataClass: resourcesClass, dataLoader: resourcesClass.getLocations, separator: "",
-					  matchValue: ZmContactsApp.AC_VALUE_NAME, compCallback: acCallback, smartPos: true};
+					  matchValue: ZmContactsApp.AC_VALUE_NAME, compCallback: acCallback, smartPos: true,
+					  options:{galOnly:true, galType:ZmSearch.GAL_RESOURCE}};
 		this._acLocationsList = new ZmAutocompleteListView(params);
 		this._acList[ZmCalBaseItem.LOCATION] = this._acLocationsList;
 		params.dataLoader = resourcesClass.getEquipment;
