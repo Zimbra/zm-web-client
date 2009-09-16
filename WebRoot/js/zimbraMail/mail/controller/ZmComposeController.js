@@ -154,8 +154,9 @@ function() {
 ZmComposeController.prototype.doAction =
 function(params) {
 	// is zdesktop, its possible there are no accounts that support smtp
-	if (appCtxt.isOffline && !appCtxt.get(ZmSetting.OFFLINE_COMPOSE_ENABLED)) {
-		var d = appCtxt.getMsgDialog();
+	var ac = window.parentAppCtxt || window.appCtxt;
+	if (ac.isOffline && !ac.get(ZmSetting.OFFLINE_COMPOSE_ENABLED)) {
+		var d = ac.getMsgDialog();
 		d.setMessage(ZmMsg.composeDisabled, DwtMessageDialog.CRITICAL_STYLE);
 		d.popup();
 		return;
@@ -163,7 +164,7 @@ function(params) {
 
 	this._msgSent = false;
 	if (params.inNewWindow) {
-		var newWinObj = appCtxt.getNewWindow();
+		var newWinObj = ac.getNewWindow();
 
 		// this is how child window knows what to do once loading:
 		newWinObj.command = "compose";

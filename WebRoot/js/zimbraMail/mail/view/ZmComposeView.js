@@ -2441,8 +2441,9 @@ function() {
 
 ZmComposeView.prototype._resetPickerButtons =
 function(account) {
-	var isEnabled = appCtxt.get(ZmSetting.CONTACTS_ENABLED, null, account) ||
-					appCtxt.get(ZmSetting.GAL_ENABLED, null, account);
+	var ac = window.parentAppCtxt || window.appCtxt;
+	var isEnabled = ac.get(ZmSetting.CONTACTS_ENABLED, null, account) ||
+					ac.get(ZmSetting.GAL_ENABLED, null, account);
 
 	for (var i in this._pickerButton) {
 		var button = this._pickerButton[i];
@@ -2458,7 +2459,7 @@ function(msg) {
 
 	var ac = window.parentAppCtxt || window.appCtxt;
 	var identity;
-	var active = appCtxt.getActiveAccount();
+	var active = ac.getActiveAccount();
 	var accounts = ac.accountList.visibleAccounts;
 
 	for (var i = 0; i < accounts.length; i++) {
@@ -2466,7 +2467,7 @@ function(msg) {
 		if (acct.isMain) { continue; }
 
 		var identities = ac.getIdentityCollection(acct).getIdentities();
-		if (appCtxt.get(ZmSetting.OFFLINE_SMTP_ENABLED, null, acct)) {
+		if (ac.get(ZmSetting.OFFLINE_SMTP_ENABLED, null, acct)) {
 			for (var j = 0; j < identities.length; j++) {
 				identity = identities[j];
 
