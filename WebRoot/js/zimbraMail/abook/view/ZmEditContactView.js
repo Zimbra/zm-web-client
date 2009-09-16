@@ -36,7 +36,7 @@ ZmEditContactView = function(parent, controller, isMyCardView) {
 			{ id: "COMPANY", type: "DwtInputField", cols: 35, hint: ZmMsg.AB_FIELD_company, visible: "get('SHOW_COMPANY')" },
 			{ id: "TITLE", type: "DwtInputField", cols: 35, hint: ZmMsg.AB_FIELD_jobTitle, visible: "get('SHOW_TITLE')" },
 			{ id: "DEPARTMENT", type: "DwtInputField", cols: 35, hint: ZmMsg.AB_FIELD_department, visible: "get('SHOW_DEPARTMENT')" },
-			{ id: "NOTES", type: "DwtInputField", cols: 58, rows:4 },
+			{ id: "NOTES", type: "DwtInputField", cols: (AjxEnv.isMozilla ? 58 : 60), rows:4 },
 			// contact list fields
 			{ id: "EMAIL", type: "ZmEditContactViewRows", rowitem: {
 				type: "ZmEditContactViewInputSelect", equals:ZmEditContactViewInputSelect.equals, params: {
@@ -1145,7 +1145,7 @@ ZmEditContactViewAddress.prototype._createInput = function() {
 		// NOTE: form appropriately.
 		ondirty: "this.parent._handleDirty()",
 		items: [
-			{ id: "STREET", type: "DwtInputField", cols: 56, rows: 2,
+			{ id: "STREET", type: "DwtInputField", cols: (AjxEnv.isMozilla ? 56 : 58), rows: 2,
 				hint: ZmMsg.AB_FIELD_street, params: { forceMultiRow: true }
 			},
 			{ id: "CITY", type: "DwtInputField", cols: 20, hint: ZmMsg.AB_FIELD_city },
