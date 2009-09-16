@@ -28,10 +28,11 @@
 		<link rel="stylesheet" type="text/css" href="${cssurl}">
     </c:if>
 
+    <script type="text/javascript" src="../yui/2.5.1/yahoo-dom-event/yahoo-dom-event.js"></script>
+
     <c:if test="${(param.action eq 'compose' and (mailbox.prefs.composeFormat eq 'html' or mailbox.prefs.forwardReplyInOriginalFormat)) or (param.selected eq 'signatures')}">
         
         <link rel="stylesheet" type="text/css" href="../yui/2.5.1/assets/skins/sam/skin.css" />
-        <script type="text/javascript" src="../yui/2.5.1/yahoo-dom-event/yahoo-dom-event.js"></script>
         <script type="text/javascript" src="../yui/2.5.1/element/element-beta-min.js"></script>
         <!-- Needed for Menus, Buttons and Overlays used in the Toolbar -->
         <script src="../yui/2.5.1/container/container_core-min.js"></script>
@@ -80,5 +81,53 @@
                 cb.checked = allbox.checked;
         }
 
+        var mailIdleSessionTimeOut = "<c:out value="${mailbox.attrs.zimbraMailIdleSessionTimeout[0]}"/>";
+        var logouturl = "<c:url value="/?loginOp=logout"/>";
+        var logouttimeout = null;
+
+        var getIdleSessionTimoutInMillsec = function() {
+            if(mailIdleSessionTimeOut != "") {
+                var idletimedur = mailIdleSessionTimeOut.charAt(mailIdleSessionTimeOut.length -1);
+                var idletimeout = parseInt(mailIdleSessionTimeOut.substring(0, mailIdleSessionTimeOut.length -1));
+                var timemillisec = null;
+                if(idletimeout == 0 || idletimeout == -1) { return null; }
+                if(idletimedur == "s") {
+                    timemillisec = idletimeout * 1000;
+                } else if(idletimedur == "m") {
+                    timemillisec = idletimeout * 60 * 1000;
+                } else if(idletimedur == "h") {
+                    timemillisec = idletimeout * 3600 * 1000;
+                } else if(idletimedur == "d") {
+                    timemillisec = idletimeout * 24 * 3600 * 1000;
+                }
+                if(timemillisec != null) {
+                    return timemillisec;
+                }
+            }
+        }
+
+        var initIdleSessionTimeOut = function() {
+            clearIdleSessionTimeOut();
+            setIdleSessionTimeOut();
+        }
+
+        var setIdleSessionTimeOut = function() {
+            var timeoutinmillisec = getIdleSessionTimoutInMillsec();
+            if(timeoutinmillisec != null) {
+                logouttimeout = setTimeout(function() {
+                    window.location.href = logouturl;
+                }, timeoutinmillisec);
+            }
+        }
+
+        var clearIdleSessionTimeOut = function() {
+            if(logouttimeout != null) clearTimeout(logouttimeout);
+        }
+
+        YAHOO.util.Event.addListener(document, "click", initIdleSessionTimeOut);
+        YAHOO.util.Event.addListener(document, "keypress", initIdleSessionTimeOut);
+
+        initIdleSessionTimeOut();
+        
     </script>
 </head>
