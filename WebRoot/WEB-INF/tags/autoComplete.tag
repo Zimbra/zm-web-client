@@ -57,7 +57,9 @@
                 return "";
             }
         };
+        window.JSON = null;
         var myDataSource = new YAHOO.widget.DS_XHR("<c:url value='/h/ac' />", ["Result","m","e","f","l","t"]);
+
         var initAuto = function(field,container) {
             var ac = new YAHOO.widget.AutoComplete(field, container, myDataSource);
             ac.delimChar = [",",";"];
