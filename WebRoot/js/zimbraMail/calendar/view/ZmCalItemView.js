@@ -337,11 +337,11 @@ function(calItem) {
 	var attachStr = ZmCalItemView._getAttachString(calItem);
 
 	if (attendees) {
-		var organizer = calItem.getOrganizer();
+		var organizer = org = calItem.getOrganizer();
 		var sender = calItem.message.getAddress(AjxEmailAddress.SENDER);
 		var from = calItem.message.getAddress(AjxEmailAddress.FROM);
 		var address = sender || from;
-		org = address ? address.toString() : organizer;
+        if(!org && address)	org = address.toString();
 		if (sender && organizer)
 			obo = from ? from.toString() : organizer;
 	}
