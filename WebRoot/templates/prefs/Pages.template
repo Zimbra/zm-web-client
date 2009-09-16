@@ -1441,7 +1441,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 		</table>
 	<$ } $>
 
-	<$ if (!appCtxt.multiAccounts || (!data.activeAccount.isMain && data.activeAccount.isZimbraAccount)) { $>
+	<$ if (data.isAclSupported) { $>
 		<table border=0 cellspacing=0 cellpadding=0 width=100%>
 			<tr class='ZOptionsHeaderRow'>
 				<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>

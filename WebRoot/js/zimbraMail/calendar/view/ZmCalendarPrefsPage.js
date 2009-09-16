@@ -43,7 +43,8 @@ ZmCalendarPrefsPage = function(parent, section, controller) {
 ZmCalendarPrefsPage.prototype = new ZmPreferencesPage;
 ZmCalendarPrefsPage.prototype.constructor = ZmCalendarPrefsPage;
 
-ZmCalendarPrefsPage.prototype.toString = function() {
+ZmCalendarPrefsPage.prototype.toString =
+function() {
 	return "ZmCalendarPrefsPage";
 };
 
@@ -56,10 +57,20 @@ function(useDefaults) {
 	}
 };
 
+ZmCalendarPrefsPage.prototype.showMe =
+function() {
+	var active = appCtxt.getActiveAccount();
+	this._isAclSupported = !appCtxt.multiAccounts || (!active.isMain && active.isZimbraAccount);
+
+	ZmPreferencesPage.prototype.showMe.call(this);
+};
+
 ZmCalendarPrefsPage.prototype._getTemplateData =
 function() {
 	var data = ZmPreferencesPage.prototype._getTemplateData.call(this);
 	data.domain = appCtxt.getUserDomain();
+	data.isAclSupported = this._isAclSupported;
+
 	return data;
 };
 
@@ -102,7 +113,7 @@ function(setting, right) {
 	var list = this._acl.getGrantees(right);
 	appCtxt.set(ZmCalendarPrefsPage.TEXTAREA[setting], list.join("\n"));
 
-	this._acl.getGranteeType(right)
+	this._acl.getGranteeType(right);
 };
 
 /**
@@ -113,7 +124,7 @@ function(setting, right) {
 ZmCalendarPrefsPage.prototype.isDirty =
 function(section, list, errors) {
 	var dirty = this._controller.getPrefsView()._checkSection(section, this, true, true, list, errors);
-	if (!dirty) {
+	if (!dirty && this._isAclSupported) {
 		this._findACLChanges();
 		dirty = (this._grants.length || this._revokes.length);
 	}
@@ -147,7 +158,9 @@ function() {
 
 ZmCalendarPrefsPage.prototype._preSave =
 function(callback) {
-	this._findACLChanges();
+	if (this._isAclSupported) {
+		this._findACLChanges();
+	}
 	if (callback) {
 		callback.run();
 	}
@@ -172,16 +185,16 @@ function(setting, right) {
 	var curType = appCtxt.get(setting);
 	var curUsers = (curType == ZmSetting.ACL_USER) ? this._acl.getGrantees(right) : [];
 	var curUsersInfo = (curType == ZmSetting.ACL_USER) ? this._acl.getGranteesInfo(right) : [];
-    var zidHash = {};
-    for (var i = 0; i < curUsersInfo.length; i++) {
-          zidHash[curUsersInfo[i].grantee] = curUsersInfo[i].zid;
-    }
+	var zidHash = {};
+	for (var i = 0; i < curUsersInfo.length; i++) {
+		zidHash[curUsersInfo[i].grantee] = curUsersInfo[i].zid;
+	}
 	var curHash = AjxUtil.arrayAsHash(curUsers);
-	
+
 	var radioGroup = this.getFormObject(setting);
-	var newType = radioGroup.getValue();
+		var newType = radioGroup.getValue();
 	var radioGroupChanged = (newType != this._currentSelection[setting]);
-		
+
 	var newUsers = [];
 	if (newType == ZmSetting.ACL_USER) {
 		var textarea = this.getFormObject(ZmCalendarPrefsPage.TEXTAREA[setting]);
@@ -190,9 +203,9 @@ function(setting, right) {
 		for (var i = 0; i < users.length; i++) {
 			var user = users[i];
 			if (!user) { continue; }
-            if(zidHash[user] != user) {
-			    user = (user.indexOf('@') == -1) ? [user, appCtxt.getUserDomain()].join('@') : user;
-            }
+			if (zidHash[user] != user) {
+				user = (user.indexOf('@') == -1) ? [user, appCtxt.getUserDomain()].join('@') : user;
+			}
 			newUsers.push(user);
 		}
 		newUsers.sort();
@@ -225,69 +238,71 @@ function(setting, right) {
 			}
 		}
 	}
-	
+
 	var userAdded = (grants.length > 0);
 	var userRemoved = (revokes.length > 0);
-	
+
 	var denyAll = (radioGroupChanged && (newType == ZmSetting.ACL_NONE));
-	
-	if((newType == ZmSetting.ACL_USER) && (userAdded || userRemoved || radioGroupChanged)) {
+
+	if ((newType == ZmSetting.ACL_USER) && (userAdded || userRemoved || radioGroupChanged)) {
 		revokes = revokes.concat(this._acl.getACLByGranteeType(right, ZmSetting.ACL_AUTH));
 		revokes = revokes.concat(this._acl.getACLByGranteeType(right, ZmSetting.ACL_PUBLIC));
 		
-		if(newUsers.length == 0) {
+		if (newUsers.length == 0) {
 			denyAll = true;
 		}
 	}
-	
-	//deny all
-	if(denyAll) {
+
+	// deny all
+	if (denyAll) {
 		revokes = [];
 		grants = [];
-		
+
 		revokes = revokes.concat(this._acl.getACLByGranteeType(right, ZmSetting.ACL_USER));
-		revokes = revokes.concat(this._acl.getACLByGranteeType(right, ZmSetting.ACL_GROUP));		
-		revokes = revokes.concat(this._acl.getACLByGranteeType(right, ZmSetting.ACL_PUBLIC));		
-		
+		revokes = revokes.concat(this._acl.getACLByGranteeType(right, ZmSetting.ACL_GROUP));
+		revokes = revokes.concat(this._acl.getACLByGranteeType(right, ZmSetting.ACL_PUBLIC));
+
 		//deny all
 		var ace = new ZmAccessControlEntry({granteeType: ZmSetting.ACL_AUTH, right:right, negative: true});
-		grants.push(ace);		
+		grants.push(ace);
 	}
-		
+
 	//allow all users
 	if (radioGroupChanged && (newType == ZmSetting.ACL_PUBLIC)) {
 		grants = [];
 		revokes = [];
-		
+
 		//grant all
 		var ace = new ZmAccessControlEntry({granteeType: ZmSetting.ACL_PUBLIC, right:right});
 		grants.push(ace);
-		
+
 		//revoke all other aces
- 		revokes = this._acl.getACLByGranteeType(right, ZmSetting.ACL_USER);
+		revokes = this._acl.getACLByGranteeType(right, ZmSetting.ACL_USER);
 		revokes = revokes.concat(this._acl.getACLByGranteeType(right, ZmSetting.ACL_GROUP));
-		revokes = revokes.concat(this._acl.getACLByGranteeType(right, ZmSetting.ACL_AUTH));		
+		revokes = revokes.concat(this._acl.getACLByGranteeType(right, ZmSetting.ACL_AUTH));
 	}
 
 	if (radioGroupChanged && (newType == ZmSetting.ACL_AUTH)) {
 		grants = [];
 		revokes = [];
-		
+
 		//grant all
 		var ace = new ZmAccessControlEntry({granteeType: ZmSetting.ACL_AUTH, right:right});
 		grants.push(ace);
-		
+
 		//revoke all other aces
- 		revokes = this._acl.getACLByGranteeType(right, ZmSetting.ACL_USER);
+		revokes = this._acl.getACLByGranteeType(right, ZmSetting.ACL_USER);
 		revokes = revokes.concat(this._acl.getACLByGranteeType(right, ZmSetting.ACL_GROUP));
-		revokes = revokes.concat(this._acl.getACLByGranteeType(right, ZmSetting.ACL_PUBLIC));		
+		revokes = revokes.concat(this._acl.getACLByGranteeType(right, ZmSetting.ACL_PUBLIC));
 	}
-	
+
 	return {grants:grants, revokes:revokes};
 };
 
 ZmCalendarPrefsPage.prototype.addCommand =
 function(batchCmd) {
+	if (!this._isAclSupported) { return; }
+
 	var respCallback = new AjxCallback(this, this._handleResponseACLChange);
 	if (this._revokes.length) {
 		this._acl.revoke(this._revokes, respCallback, batchCmd);
@@ -299,11 +314,8 @@ function(batchCmd) {
 
 ZmCalendarPrefsPage.prototype._handleResponseACLChange =
 function(aces) {
+	if (aces && !(aces instanceof Array)) { aces = [aces]; }
 
-	if(aces && !(aces instanceof Array)) {
-		aces = [aces];
-	}
-	
 	if (aces && aces.length) {
 		for (var i = 0; i < aces.length; i++) {
 			var ace = aces[i];
