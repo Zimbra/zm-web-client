@@ -1721,6 +1721,7 @@ function(action, msg, extraBodyText, incOption, nosig) {
 		sigStyle = sig ? appCtxt.get(ZmSetting.SIGNATURE_STYLE) : null;
 	}
 	var value = (sigStyle == ZmSetting.SIG_OUTLOOK) ? (sig) : "";
+    var isInviteForward = false;
 
 	// get reply/forward prefs as necessary
 	if (!incOption) {
@@ -1734,6 +1735,7 @@ function(action, msg, extraBodyText, incOption, nosig) {
 			}
 		} else if (action == ZmOperation.FORWARD_ATT) {
 			incOption = ZmSetting.INCLUDE_ATTACH;
+            isInviteForward = (msg && msg.isInvite());
 		}
 	}
 
@@ -1742,10 +1744,13 @@ function(action, msg, extraBodyText, incOption, nosig) {
 	this._msgAttId = null;
 	if (incOption == ZmSetting.INCLUDE_NONE || action == ZmOperation.NEW_MESSAGE) {
 		value = extraBodyText ? extraBodyText + value : value;
-	} else if (incOption == ZmSetting.INCLUDE_ATTACH && this._msg) {
+	} else if (!isInviteForward && (incOption == ZmSetting.INCLUDE_ATTACH) && this._msg) {
 		value = extraBodyText ? extraBodyText + value : value;
 		this._msgAttId = this._msg.id;
 	} else if (!this._msgIds) {
+        if(isInviteForward) {
+            this._msgAttId = this._msg.id;
+        }
 		var crlf = composingHtml ? "<br>" : ZmMsg.CRLF;
 		var crlf2 = composingHtml ? "<br><br>" : ZmMsg.CRLF2;
 		var leadingText = extraBodyText ? extraBodyText + crlf : crlf;
@@ -1814,8 +1819,8 @@ function(action, msg, extraBodyText, incOption, nosig) {
 			body = body.replace(ZmItem.NOTES_SEPARATOR, "");
 		}
 
-		if (incOption == ZmSetting.INCLUDE) {
-			var msgText = (action == ZmOperation.FORWARD_INLINE) ? ZmMsg.forwardedMessage : ZmMsg.origMsg;
+		if (isInviteForward || (incOption == ZmSetting.INCLUDE)) {
+			var msgText = ((action == ZmOperation.FORWARD_INLINE) || isInviteForward) ? ZmMsg.forwardedMessage : ZmMsg.origMsg;
 			var preface = this._includedPreface = [ZmMsg.DASHES, " ", msgText, " ", ZmMsg.DASHES].join("");
 			var text = [preface, crlf].join("");
 			for (var i = 0; i < ZmComposeView.QUOTED_HDRS.length; i++) {

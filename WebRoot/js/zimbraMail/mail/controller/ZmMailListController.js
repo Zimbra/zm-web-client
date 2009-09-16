@@ -727,6 +727,10 @@ function(params) {
 	if (!action || action == ZmOperation.FORWARD_MENU || action == ZmOperation.FORWARD)	{
 		action = params.action = (appCtxt.get(ZmSetting.FORWARD_INCLUDE_ORIG) == ZmSetting.INCLUDE_ATTACH)
 			? ZmOperation.FORWARD_ATT : ZmOperation.FORWARD_INLINE;
+        //bug 40908 - invitation should be forwarded as attachment 
+        if(msg.isInvite()) {
+            action = params.action = ZmOperation.FORWARD_ATT;             
+        }
 	}
 
 	// if html compose is allowed and if opening draft always request html
