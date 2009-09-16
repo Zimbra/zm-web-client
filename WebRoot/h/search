@@ -36,7 +36,17 @@
           <c:when test="${param.app eq 'voice' and mailbox.features.voice and not empty param.id}">
             <c:catch var="ex">
                <c:if test="${not empty param.phone}">
-                   <c:redirect url="/h/search?st=voicemail&action=listen&phone=${param.phone}&voiceId=${param.id}"/>                   
+                   <zm:computeSearchContext var="voicesearch" usecache="true" types="voicemail" query="phone:${param.phone}"/>
+                   <c:set var="matches" value="${false}"/>
+                   <c:forEach items="${voicesearch.searchResult.hits}" var="hit" varStatus="status">
+                       <c:if test="${hit.voiceMailItemHit.id eq param.id}">
+                           <c:set var="matches" value="${true}"/>
+                           <c:redirect url="/h/search?st=voicemail&action=listen&phone=${param.phone}&voiceId=${hit.voiceMailItemHit.serialize}"/>
+                       </c:if>    
+                   </c:forEach>
+                   <c:if test="${empty voicesearch.searchResult.hits or matches eq false}">
+                        <c:redirect url="/h/search?st=voicemail&sq=phone:${param.phone}"/>
+                   </c:if>
                </c:if>
                <c:if test="${empty param.phone}">
                     <c:set var="firstPhoneAcc" value="${zm:getFirstPhoneAccount(pageContext)}"/>
