@@ -1666,12 +1666,12 @@ function(msg, ev) {
 
 	var respCallback = new AjxCallback(this, this._sendReportCallback, msg);
 	var errorCallback = new AjxCallback(this, this._sendReportError);
-	proxy.send(null, null, respCallback, errorCallback, null, true);
+	proxy.send(false, respCallback, errorCallback, null, true);
 };
 
 ZmMailMsgView.prototype._sendReportCallback =
 function(msg) {
-	this._controller._doDelete(msg, true);
+	this._controller._doDelete([msg], true);
 };
 
 ZmMailMsgView.prototype._sendReportError =
