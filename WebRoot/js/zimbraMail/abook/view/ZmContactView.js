@@ -117,7 +117,7 @@ function() {
 	if (this._contact.id == null || this._contact.isGal) {
 		for (var a in this._attr) {
 			// always convert to String since some values may be Int's
-			var val = String(this._attr[a]);
+			var val = this._attr[a] && String(this._attr[a]);
 
 			if (val && val.length > 0) {
 				mods[a] = val;
