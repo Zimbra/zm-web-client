@@ -27,29 +27,39 @@
 <%-- Deep linking  --%>
   <c:if test="${not empty param.app}">
 	  <c:choose>
-			<c:when test="${param.app eq 'calendar' and mailbox.features.calendar}">
-				<c:redirect url="/h/calendar" />
-			</c:when>
-			<c:when test="${param.app eq 'mail' and mailbox.features.mail and not empty param.id}">
-				<c:redirect url="/h/search?st=message&id=${param.id}&action=view" />
-			</c:when>
-			<c:when test="${param.app eq 'mail' and mailbox.features.mail}">
-				<c:redirect url="/h/search" />
-			</c:when>
-			<c:when test="${param.app eq 'voice' and mailbox.features.voice and not empty param.id}">
-				<c:catch var="ex">
-					<c:if test="${not empty param.phone}">
-					      <c:redirect url="/h/search?st=voicemail&action=listen&phone=${param.phone}&voiceId=${param.id}"/>                   
-					</c:if>
-					<c:if test="${empty param.phone}">
-					      <c:set var="firstPhoneAcc" value="${zm:getFirstPhoneAccount(pageContext)}"/>
-					      <c:redirect url="/h/search?st=voicemail&action=listen&phone=${firstPhoneAcc.phone.name}&voiceId=${param.id}"/>
-					 </c:if> 
-				</c:catch>
-				<c:if test="${!empty ex}">
-					<c:redirect url="/h/search?st=voicemail" />
-				</c:if>
+		  <c:when test="${param.app eq 'calendar' and mailbox.features.calendar}">
+			<c:redirect url="/h/calendar" />
 		  </c:when>
+		  <c:when test="${param.app eq 'mail' and mailbox.features.mail and not empty param.id}">
+			<c:redirect url="/h/search?st=message&id=${param.id}&action=view" />
+		  </c:when>
+		  <c:when test="${param.app eq 'mail' and mailbox.features.mail}">
+			<c:redirect url="/h/search" />
+		  </c:when>
+		  <c:when test="${param.app eq 'voice' and mailbox.features.voice and not empty param.id}">
+		            <c:catch var="ex">
+		               <c:if test="${not empty param.phone}">
+		                   <zm:computeSearchContext var="voicesearch" usecache="true" types="voicemail" query="phone:${param.phone}"/>
+		                   <c:set var="matches" value="${false}"/>
+		                   <c:forEach items="${voicesearch.searchResult.hits}" var="hit" varStatus="status">
+		                       <c:if test="${hit.voiceMailItemHit.id eq param.id}">
+		                           <c:set var="matches" value="${true}"/>
+		                           <c:redirect url="/h/search?st=voicemail&action=listen&phone=${param.phone}&voiceId=${hit.voiceMailItemHit.serialize}"/>
+		                       </c:if>    
+		                   </c:forEach>
+		                   <c:if test="${empty voicesearch.searchResult.hits or matches eq false}">
+		                        <c:redirect url="/h/search?st=voicemail&sq=phone:${param.phone}"/>
+		                   </c:if>
+		               </c:if>
+		               <c:if test="${empty param.phone}">
+		                    <c:set var="firstPhoneAcc" value="${zm:getFirstPhoneAccount(pageContext)}"/>
+		                    <c:redirect url="/h/search?st=voicemail&action=listen&phone=${firstPhoneAcc.phone.name}&voiceId=${param.id}"/>
+		               </c:if>
+		            </c:catch>
+		            <c:if test="${!empty ex}">
+		               <c:redirect url="/h/search?st=voicemail" />
+		            </c:if>
+		  </c:when>	
 		  <c:when test="${param.app eq 'voice' and mailbox.features.voice}">
 			<c:redirect url="/h/search?st=voicemail" />
 		  </c:when>
