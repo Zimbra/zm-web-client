@@ -76,9 +76,60 @@
         }
 
     </script>
-
+	<script type="text/javascript" src="../yui/2.7.0/yahoo-dom-event/yahoo-dom-event.js"></script>
     <c:if test="${param.selected eq 'signatures'}">
         <app:yuiInclude/>
     </c:if>
     
+	<script type="text/javascript">
+
+	        var mailIdleSessionTimeOut = "<c:out value="${mailbox.attrs.zimbraMailIdleSessionTimeout[0]}"/>";
+	        var logouturl = "<c:url value="/?loginOp=logout"/>";
+	        var logouttimeout = null;
+
+	        var getIdleSessionTimoutInMillsec = function() {
+	            if(mailIdleSessionTimeOut != "") {
+	                var idletimedur = mailIdleSessionTimeOut.charAt(mailIdleSessionTimeOut.length -1);
+	                var idletimeout = parseInt(mailIdleSessionTimeOut.substring(0, mailIdleSessionTimeOut.length -1));
+	                var timemillisec = null;
+	                if(idletimeout == 0 || idletimeout == -1) { return null; }
+	                if(idletimedur == "s") {
+	                    timemillisec = idletimeout * 1000;
+	                } else if(idletimedur == "m") {
+	                    timemillisec = idletimeout * 60 * 1000;
+	                } else if(idletimedur == "h") {
+	                    timemillisec = idletimeout * 3600 * 1000;
+	                } else if(idletimedur == "d") {
+	                    timemillisec = idletimeout * 24 * 3600 * 1000;
+	                }
+	                if(timemillisec != null) {
+	                    return timemillisec;
+	                }
+	            }
+	        }
+
+	        var initIdleSessionTimeOut = function() {
+	            clearIdleSessionTimeOut();
+	            setIdleSessionTimeOut();
+	        }
+
+	        var setIdleSessionTimeOut = function() {
+	            var timeoutinmillisec = getIdleSessionTimoutInMillsec();
+	            if(timeoutinmillisec != null) {
+	                logouttimeout = setTimeout(function() {
+	                    window.location.href = logouturl;
+	                }, timeoutinmillisec);
+	            }
+	        }
+
+	        var clearIdleSessionTimeOut = function() {
+	            if(logouttimeout != null) clearTimeout(logouttimeout);
+	        }
+
+	        YAHOO.util.Event.addListener(document, "click", initIdleSessionTimeOut);
+	        YAHOO.util.Event.addListener(document, "keypress", initIdleSessionTimeOut);
+
+	        initIdleSessionTimeOut();
+
+	</script>
 </head>
