@@ -70,6 +70,7 @@
             }
         };
 
+		window.JSON = null;
         var myDataSource = new YAHOO.util.XHRDataSource("<c:url value='/h/ac' />");
         myDataSource.responseType = YAHOO.util.XHRDataSource.TYPE_JSON;
         myDataSource.responseSchema = {
