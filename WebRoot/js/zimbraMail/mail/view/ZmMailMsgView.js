@@ -192,7 +192,8 @@ function(msg) {
 			topToolbar.reparentHtmlElement(contentDiv);
 			topToolbar.setVisible(Dwt.DISPLAY_BLOCK);
 
-			var calendars = appCtxt.getApp(ZmApp.CALENDAR).getCalController().getCalendars(true, msg.account);
+            var calendarAccessAppCtxt = window.parentAppCtxt || window.appCtxt;
+			var calendars = calendarAccessAppCtxt.getApp(ZmApp.CALENDAR).getCalController().getCalendars(true, msg.account);
 			var visible = calendars.length > 1;
 			if (visible) {
 				this._inviteMoveSelect.clearOptions();
