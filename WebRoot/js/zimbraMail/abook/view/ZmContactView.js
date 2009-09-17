@@ -136,13 +136,11 @@ function() {
 		for (var a in this._attr) {
 			var val = this._contact.getAttr(a);
 			// do some normalizing
-			if (val && AjxUtil.isString(val)) {
-				if (a == ZmContact.F_fileAs) {
-					var parsed = parseInt(val);
-					// only set val to parsed if not custom fileAs
-					if (parsed != ZmContact.FA_CUSTOM) {
-						val = parsed;
-					}
+			if (a == ZmContact.F_fileAs) {
+				var parsed = parseInt(val || ZmContact.FA_LAST_C_FIRST, 10);
+				// only set val to parsed if not custom fileAs
+				if (parsed != ZmContact.FA_CUSTOM) {
+					val = parsed;
 				}
 			}
 			if (a == ZmContact.F_image) {
@@ -174,7 +172,7 @@ function() {
 
 	if (foundOne) {
 		for (var a in mods) {
-			mods[a] = AjxStringUtil.trim(mods[a]);
+			mods[a] = AjxStringUtil.trim(mods[a] ? String(mods[a]) : "");
 		}
 	}
 
