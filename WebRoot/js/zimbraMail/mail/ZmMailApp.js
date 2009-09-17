@@ -69,6 +69,8 @@ ZmMailApp.SEND_RECEIPT_NEVER	= "never";
 ZmMailApp.SEND_RECEIPT_ALWAYS	= "always";
 ZmMailApp.SEND_RECEIPT_PROMPT	= "prompt";
 
+ZmMailApp.INITIAL_SYNC_LIMIT = 200;	// how many creates to process
+
 ZmMailApp.prototype = new ZmApp;
 ZmMailApp.prototype.constructor = ZmMailApp;
 
@@ -1037,7 +1039,7 @@ function(creates) {
 /**
  * We can only handle new mail notifications if:
  *  	- we are currently in a mail view
- *		- the view is the result of a simple folder search (except for CV)
+ *		- the view is the result of a matchable search
  *
  * @param creates		[hash]					JSON create objects
  * @param list			[ZmMailList]			mail list to notify
@@ -1056,16 +1058,8 @@ function(creates, list, controller) {
 	if (!(list.search && list.search.matches) && (controller != this._convController)) { return; }
 
 	var sortBy = list.search.sortBy;
-	var a = list.getArray();
-	var listView = controller.getCurrentView();
-	var limit = listView ? listView.size() : appCtxt.get(ZmSetting.PAGE_SIZE);
-
-	var last = (a && a.length >= limit) ? a[a.length - 1] : null;
-	var cutoff = last ? last.date : null;
-	DBG.println(AjxDebug.DBG2, "cutoff = " + cutoff + ", list size = " + a.length);
-
-	var convResults = this._checkType(creates, ZmItem.CONV, convs, list, sortBy, cutoff);
-	var msgResults  = this._checkType(creates, ZmItem.MSG, msgs, list, sortBy, cutoff, convs);
+	var convResults = this._checkType(creates, ZmItem.CONV, convs, list, sortBy);
+	var msgResults  = this._checkType(creates, ZmItem.MSG, msgs, list, sortBy, convs);
 
 	if (convResults.gotMail || msgResults.gotMail) {
 		list.notifyCreate(convs, msgs);
@@ -1095,13 +1089,12 @@ function(creates, list, controller) {
  * @param items		[hash]			hash of created mail items
  * @param currList	[ZmMailList]	list currently being displayed to user
  * @param sortBy	[constant]		sort order
- * @param cutoff	[int]			timestamp of last item in list
  * @param convs		[hash]			convs, so we can update folders from msgs
  *
  * @return	a hash with booleans gotItem and gotAlertMessage
  */
 ZmMailApp.prototype._checkType =
-function(creates, type, items, currList, sortBy, cutoff, convs) {
+function(creates, type, items, currList, sortBy, convs) {
 	var result = { gotMail:false, hasMore:false};
 	var nodeName = ZmList.NODE[type];
 	var list = creates[nodeName];
@@ -1121,12 +1114,16 @@ function(creates, type, items, currList, sortBy, cutoff, convs) {
 		// perform stricter checking if we're in offline mode
 		if (appCtxt.isOffline) {
 			if ((ZmList.ITEM_TYPE[nodeName] != currList.type) && (currList.type != ZmItem.CONV)) {
-				DBG.println(AjxDebug.DBG2, "new " + type + " not of current type");
 				continue;
 			}
-			if (!this._checkCreate(create, sortBy, cutoff)) {
-				result.hasMore = true; // bug: 30546
-				continue;
+			if (create && create.f && (create.f.indexOf(ZmItem.FLAG_UNREAD) != -1)) {
+				var parsedId = ZmOrganizer.parseId(create.l);
+				if (parsedId && parsedId.id == ZmOrganizer.ID_INBOX) {
+					var acct = parsedId.account;
+					if (!acct || (acct.isOfflineInitialSync() && currList.size() >= ZmMailApp.INITIAL_SYNC_LIMIT)) {
+						continue;
+					}
+				}
 			}
 		}
 
@@ -1137,28 +1134,6 @@ function(creates, type, items, currList, sortBy, cutoff, convs) {
 		result.gotMail = true;
 	}
 	return result;
-};
-
-/**
- * Checks a mail create to make sure it will result in a UI change, so that we don't
- * process it unnecessarily. The major motivation for doing this is handling a large
- * sync for the offline client, where we get a flood of mail creates.
- *
- * @param create	[object]		the JSON node for the create
- * @param sortBy	[constant]		sort order
- * @param cutoff	[int]			timestamp of last item in list
- */
-ZmMailApp.prototype._checkCreate =
-function(create, sortBy, cutoff) {
-	// ignore mail that falls outside our range
-	if (sortBy == ZmSearch.DATE_DESC && (create.d < cutoff)) {
-		return false;
-	}
-	if (sortBy == ZmSearch.DATE_ASC && (create.d > cutoff)) {
-		return false;
-	}
-
-	return true;
 };
 
 ZmMailApp.prototype.postNotify =
