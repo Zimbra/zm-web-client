@@ -207,7 +207,7 @@
     <td colspan="3"  width="100%" >
         <%--<c:set var="isHtmlCont" value="${compose.contentType eq 'text/html' or not empty compose.htmlContent}" />--%>
         <c:set var="isHtmlCont" value="${not empty compose.htmlContent}" />
-        <c:set var="theBody" value="${isHtml ? (empty compose.htmlContent ?  fn:escapeXml(compose.content) : fn:escapeXml(compose.htmlContent)) : compose.content}"/>
+        <c:set var="theBody" value="${fn:escapeXml(isHtml ? (empty compose.htmlContent ? compose.content : compose.htmlContent) : compose.content)}"/>
         <c:if test="${not empty message}">
             <c:forEach var="part" items="${message.attachments}">
                <c:if test="${part.isImage}"> <%-- SWAP the inline images dfsrc and src from the attached parts to display the images. --%>
@@ -222,9 +222,10 @@
         <c:if test="${isHtml}">
             <c:set var="find" value="&gt;([\s\n\t ])+&lt;"/>
             <c:set var="theBody" value="${zm:replaceAll(theBody, find,'&gt;&lt;' )}"/>
-        </c:if>            
+            <c:set var="find" value="\r\n"/>
+            <c:set var="theBody" value="${zm:replaceAll(theBody, find,'<br>')}"/>  <%--  Needed otherwise YUI rich text editor in IE has two <br>'s for \r\n --%>
+        </c:if>
         <textarea class='MsgCompose' name="body" id="body" rows="20" cols="80" style='<c:if test="${isHtml}">visibility:hidden;</c:if>width:100%'>${theBody}</textarea>
-        <!--<textarea class='MsgCompose' rows="30" cols="80" style='width:100%'>${isHtml ? (empty compose.htmlContent ?  fn:escapeXml(compose.content) : fn:escapeXml(compose.htmlContent)) : compose.content}</textarea>-->
         <input type="hidden" id="bodyText" class='MsgCompose' name="bodyText" value="" style='width:100%' />
 
     </td>
