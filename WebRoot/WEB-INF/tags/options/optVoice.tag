@@ -6,6 +6,8 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 
+<c:set var="voiceselected" value="${empty param.voiceselected ? 'general' : param.voiceselected}"/>
+
 <app:handleError>
 	<zm:checkVoiceStatus var="voiceStatus"/>
 </app:handleError>
@@ -27,10 +29,27 @@
 <table width="100%" cellspacing="10" cellpadding="10"><tr><td>
 
 	<%----------------- General Section --------------%>
+	
+	<a name="${voiceselected}"></a>
 	<table width="100%" cellspacing="0" cellpadding="0" border="0" class="ZOptionsSectionTable">
 		<tr class="ZOptionsHeaderRow">
 		        <td class="ImgPrefsHeader_L"></td>
-			<td class="ZOptionsHeader ImgPrefsHeader"><fmt:message key="optionsGeneral"/></td>
+			<td class="ZOptionsHeader ImgPrefsHeader">
+			<c:choose>
+			    <c:when test="${voiceselected=='general'}">
+				<fmt:message key="optionsGeneral"/>
+			    </c:when>
+			    <c:when test="${voiceselected=='notification'}">
+				<fmt:message key="optionsVoiceNotifications"/>
+			    </c:when>
+			    <c:when test="${voiceselected=='forwarding'}">
+				<fmt:message key="optionsCallForwarding"/>
+			    </c:when>
+			    <c:when test="${voiceselected=='screening'}">
+				<fmt:message key="optionsCallRejection"/>
+			    </c:when>
+			</c:choose>
+			</td>
 			<td class="ImgPrefsHeader_R"></td>
 		</tr>
 	</table>
@@ -54,6 +73,7 @@
 									<c:set var="firstAccount" value="false"/>
 									<c:url var="phoneUrl" value="/h/options?selected=voice">
 										<c:param name="phone" value="${account.phone.name}"/>
+										<c:param name="voiceselected" value="${voiceselected}"/>
 									</c:url>
 									<tr <c:if test="${selected}">class='RowSelected'</c:if> >
 										<td><a href="${phoneUrl}">${account.phone.display}</a></td>
@@ -86,7 +106,13 @@
 	</zm:forEachPhoneAccount>
 	
 	<input type="hidden" name="phone" value="${account.phone.name}">
-			
+		
+	
+	
+		
+<c:choose>
+<c:when test="${voiceselected=='general'}">
+	
 			<%------------------- Number of rings ------------------%>
 			<tr>
 				<td class="ZOptionsTableLabel" style="vertical-align:top;">
@@ -291,6 +317,9 @@
 			</tr>			
 	</table>
 	
+</c:when>
+	
+<c:when test="${voiceselected == 'calllog'}">
 	<br/>
 	
 	<%------------------- Call log section ------------------%>
@@ -323,16 +352,13 @@
 	
 	<br/>			
 	--%>
-	<%----------------- Notifications Section --------------%>
-	<a name="notification"></a>
-	<table width="100%" cellspacing="0" cellpadding="0" border="0" class="ZOptionsSectionTable">
-		<tr class="ZOptionsHeaderRow">
-		        <td class="ImgPrefsHeader_L"></td>
-			<td class="ZOptionsHeader ImgPrefsHeader"><fmt:message key="optionsVoiceNotifications"/></td>
-			<td class="ImgPrefsHeader_R"></td>
-		</tr>
-	</table>
+</c:when>
 	
+	
+	
+<c:when test="${voiceselected=='notification'}">
+
+	<%----------------- Notifications Section --------------%>
 	<table class="ZOptionsSectionMain ZhOptVoice" border="0" cellspacing="10" width="100%">
 		<tr>
 			<td class="ZOptionsTableLabel" style="vertical-align:top;"><fmt:message key="optionsVoiceNotificationsEmail"/>:</td>
@@ -404,17 +430,13 @@
 		</tr>
 	</table>
 	
-	<br/>
+</c:when>
+
+
+<c:when test="${voiceselected=='forwarding'}">
 	
 	<%----------------- Call Forwarding Section --------------%>
-	<a name="forwarding"></a>
-	<table width="100%" cellspacing="0" cellpadding="0" border="0" class="ZOptionsSectionTable">
-		<tr class="ZOptionsHeaderRow">
-		        <td class="ImgPrefsHeader_L"></td>
-			<td class="ZOptionsHeader ImgPrefsHeader"><fmt:message key="optionsCallForwarding"/></td>
-			<td class="ImgPrefsHeader_R"></td>
-		</tr>
-	</table>
+
 
 	<table class="ZOptionsSectionMain ZhOptVoice" border="0" cellspacing="10" width="100%">
 		<tr>
@@ -530,18 +552,13 @@
 		</tr>
 	</table>
 	
-	<br/>
+</c:when>
+
+
+
+<c:when test="${voiceselected=='screening'}">
 	
 	<%----------------- Call Screening Section --------------%>
-	<a name="rejection"></a>
-	<table width="100%" cellspacing="0" cellpadding="0" border="0" class="ZOptionsSectionTable">
-		<tr class="ZOptionsHeaderRow">
-		        <td class="ImgPrefsHeader_L"></td>
-			<td class="ZOptionsHeader ImgPrefsHeader"><fmt:message key="optionsCallRejection"/></td>
-			<td class="ImgPrefsHeader_R"></td>
-		</tr>
-	</table>
-
 	<table class="ZOptionsSectionMain ZhOptVoice" border="0" cellspacing="10" width="100%">
 		<tr>
 			<td class="ZOptionsTableLabel" style="vertical-align:top;"><fmt:message key="optionsCallRejectionAll"/>:</td>
@@ -560,7 +577,7 @@
 
 					<tr>
 						<td class="ZhOptVoiceCBCell" style="vertical-align:top;">
-							<input id="callRejectionSelective" type="checkbox" name="selectiveCallRejectionActive" <c:if test="${features.selectiveCallRejection.isActive}">checked</c:if>/>
+							<input id="callRejectionSelective" type="checkbox" name="selectiveCallRejectionActive" value="TRUE" <c:if test="${features.selectiveCallRejection.isActive}">checked</c:if>/>
 						</td>
 						
 						<td style="vertical-align:top;padding-top:3px">
@@ -642,6 +659,9 @@
 			</td>
 		</tr>
 	</table>
-	
+</c:when>
+
+</c:choose>
+
 	</td></tr></table>
 </c:if>

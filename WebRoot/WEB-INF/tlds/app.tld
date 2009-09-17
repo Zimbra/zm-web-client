@@ -708,6 +708,11 @@
     </tag-file>
 
     <tag-file>
+        <name>optVoiceTabs</name>
+        <path>/WEB-INF/tags/options/optVoiceTabs.tag</path>
+    </tag-file>
+
+    <tag-file>
         <name>optVoiceAction</name>
         <path>/WEB-INF/tags/options/optVoiceAction.tag</path>
     </tag-file>
