@@ -279,9 +279,13 @@ function(defaultColumnSort) {
 	if (rpLoc == ZmSetting.RP_RIGHT) {
 		var td = document.getElementById(this._itemCountTextTdId);
 		if (td) {
-			var text = this._controller._itemCountText[rpLoc] =
-					   new DwtText({parent:this, className:"itemCountText", id:"itemCountTextDiv"});
-			td.appendChild(text.getHtmlElement());
+			var textId = DwtId._makeId(this.view, rpLoc, "text");
+			var textDiv = document.getElementById(textId);
+			if (!textDiv) {
+				var text = this._controller._itemCountText[rpLoc] =
+						   new DwtText({parent:this, className:"itemCountText", id:textId});
+				td.appendChild(text.getHtmlElement());
+			}
 		}
 	}
 };
