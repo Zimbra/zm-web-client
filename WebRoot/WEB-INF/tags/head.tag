@@ -81,55 +81,54 @@
         <app:yuiInclude/>
     </c:if>
     
-	<script type="text/javascript">
+	<c:set var="mailidlesessiontimeout" value="${mailbox.attrs.zimbraMailIdleSessionTimeout[0]}"/>
+    <c:set var="timeinmillisec" value=""/>
+    <c:if test="${not empty mailidlesessiontimeout}">
+        <c:set var="timeoutduration" value="${fn:substring(mailidlesessiontimeout,fn:length(mailidlesessiontimeout)-1, -1)}"/>
+        <c:set var="timeoutvalue" value="${fn:substring(mailidlesessiontimeout,0, fn:length(mailidlesessiontimeout)-1)}"/>
+        <c:if test="${((not empty timeoutvalue) and not (timeoutvalue eq 0)) and (not empty timeoutduration)}">
+           <c:if test="${timeoutduration eq 's'}">
+                <c:set var="timeinmillisec" value="${(timeoutvalue * 1000)}"/>
+           </c:if>
+            <c:if test="${timeoutduration eq 'm'}">
+                <c:set var="timeinmillisec" value="${(timeoutvalue * 60 * 1000)}"/>
+           </c:if>
+            <c:if test="${timeoutduration eq 'h'}">
+                <c:set var="timeinmillisec" value="${(timeoutvalue * 3600 * 1000)}"/>
+           </c:if>
+            <c:if test="${timeoutduration eq 'd'}">
+                <c:set var="timeinmillisec" value="${(timeoutvalue * 24 * 3600 * 1000)}"/>
+           </c:if>
+            <script type="text/javascript">
 
-	        var mailIdleSessionTimeOut = "<c:out value="${mailbox.attrs.zimbraMailIdleSessionTimeout[0]}"/>";
-	        var logouturl = "<c:url value="/?loginOp=logout"/>";
-	        var logouttimeout = null;
+                var logouturl = "<c:url value="/?loginOp=logout"/>";
+                var timeoutinmillisec = "<c:out value="${timeinmillisec}"/>";
+                var logouttimeout = null;
 
-	        var getIdleSessionTimoutInMillsec = function() {
-	            if(mailIdleSessionTimeOut != "") {
-	                var idletimedur = mailIdleSessionTimeOut.charAt(mailIdleSessionTimeOut.length -1);
-	                var idletimeout = parseInt(mailIdleSessionTimeOut.substring(0, mailIdleSessionTimeOut.length -1));
-	                var timemillisec = null;
-	                if(idletimeout == 0 || idletimeout == -1) { return null; }
-	                if(idletimedur == "s") {
-	                    timemillisec = idletimeout * 1000;
-	                } else if(idletimedur == "m") {
-	                    timemillisec = idletimeout * 60 * 1000;
-	                } else if(idletimedur == "h") {
-	                    timemillisec = idletimeout * 3600 * 1000;
-	                } else if(idletimedur == "d") {
-	                    timemillisec = idletimeout * 24 * 3600 * 1000;
-	                }
-	                if(timemillisec != null) {
-	                    return timemillisec;
-	                }
-	            }
-	        }
+                var initIdleSessionTimeOut = function() {
+                    clearIdleSessionTimeOut();
+                    setIdleSessionTimeOut();
+                }
 
-	        var initIdleSessionTimeOut = function() {
-	            clearIdleSessionTimeOut();
-	            setIdleSessionTimeOut();
-	        }
+                var setIdleSessionTimeOut = function() {
+                    if(timeoutinmillisec != null) {
+                        logouttimeout = setTimeout(function() {
+                            window.location.href = logouturl;
+                        }, timeoutinmillisec);
+                    }
+                }
 
-	        var setIdleSessionTimeOut = function() {
-	            var timeoutinmillisec = getIdleSessionTimoutInMillsec();
-	            if(timeoutinmillisec != null) {
-	                logouttimeout = setTimeout(function() {
-	                    window.location.href = logouturl;
-	                }, timeoutinmillisec);
-	            }
-	        }
+                var clearIdleSessionTimeOut = function() {
+                    if(logouttimeout != null) clearTimeout(logouttimeout);
+                }
 
-	        var clearIdleSessionTimeOut = function() {
-	            if(logouttimeout != null) clearTimeout(logouttimeout);
-	        }
+                YAHOO.util.Event.addListener(document, "click", initIdleSessionTimeOut);
+                YAHOO.util.Event.addListener(document, "keypress", initIdleSessionTimeOut);
 
-	        YAHOO.util.Event.addListener(document, "click", initIdleSessionTimeOut);
-	        YAHOO.util.Event.addListener(document, "keypress", initIdleSessionTimeOut);
-
-	        initIdleSessionTimeOut();
-
-	</script>
+                initIdleSessionTimeOut();
+                
+            </script>
+        </c:if>
+    </c:if>
+    
 </head>
