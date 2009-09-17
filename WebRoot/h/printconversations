@@ -41,7 +41,11 @@
         <td>
             <c:forEach items="${convSearchResult.hits}" var="hit" varStatus="status">
                          <zm:getMessage var="message" id="${hit.id}" markread="false" neuterimages="${empty param.xim}" />
-                          <app:messagePrintView mailbox="${mailbox}" message="${message}" />
+                          <c:url var="extImageUrl" value="printconversations">
+                            <c:param name="xim" value="1"/>
+                            <c:param name="id" value="${convIds}"/>                              
+                          </c:url>
+                          <app:messagePrintView mailbox="${mailbox}" message="${message}" externalImageUrl="${extImageUrl}"/>
             </c:forEach>
         </td>
     </tr>
