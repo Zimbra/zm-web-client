@@ -6,14 +6,14 @@
 				<div class='ImgPrefsHeader_L'></div>
 			</td>
 			<td class='ZOptionsHeader ImgPrefsHeader'>
-				<%= ZmMsg.general %>
+				<$= ZmMsg.general $>
 			</td>
 			<td class='ZOptionsHeaderR'>
 				<div class='ImgPrefsHeader_R'></div>
 			</td>
 		</tr>
 		<tr>
-			<td class='ZOptionsSectionMain' colspan=3>
+			<td class='ZOptionsSectionMain' colspan='3'>
 				<table cellspacing='4' cellpadding='4' width='100%'>
 					<!-- Number selector -->
 					<tr>
@@ -21,7 +21,7 @@
 						<td class='ZOptionsField'>
 							<div style='margin-left:28;width:260;'>
 								<div>
-									<%= ZmMsg.voicePrefsInstruction %>
+									<$= ZmMsg.voicePrefsInstruction $>
 								</div>
 								<div class='ZSmallSpacer'></div>
 								<div id='${id}_list'>
@@ -39,7 +39,7 @@
 
 					<tr valign='top'>
 						<td class='ZOptionsLabel'>
-							<%= ZmMsg.voicemailSendToVoicemailAfterRings %>:
+							<$= ZmMsg.voicemailSendToVoicemailAfterRings $>:
 						</td>
 						<td class='ZOptionsField'>
 							<table cellspacing='1' cellpadding='1'>
@@ -49,7 +49,7 @@
 										</div>
 									</td>
 									<td>&nbsp;
-										<%= ZmMsg.voicemailSendToVoicemailAfterRingsDescription %>
+										<$= ZmMsg.voicemailSendToVoicemailAfterRingsDescription $>
 									</td>
 								</tr>
 							</table>
@@ -58,13 +58,13 @@
 
 					<tr>
 						<td class='ZOptionsLabelTop'>
-							<%= ZmMsg.voicemailAnsweringLocale %>:
+							<$= ZmMsg.voicemailAnsweringLocale $>
 						</td>
 						<td class='ZOptionsField'>
 							<table cellpadding='0' cellspacing='0'>
 								<tr>
 									<td>
-										<%= ZmMsg.voicemailAnsweringLocalePrompt %>
+										<$= ZmMsg.voicemailAnsweringLocalePrompt $>
 									</td>
 								</tr>
 								<tr>
@@ -79,13 +79,13 @@
 					<!-- User language
 					<tr>
 						<td class='ZOptionsLabelTop'>
-							<%= ZmMsg.voicemailUserLocale %>:
+							<$= ZmMsg.voicemailUserLocale $>
 						</td>
 						<td class='ZOptionsField'>
 							<table cellpadding='0' cellspacing='0'>
 								<tr>
 									<td>
-										<%= ZmMsg.voicemailUserLocalePrompt %>
+										<$= ZmMsg.voicemailUserLocalePrompt $>
 									</td>
 								</tr>
 								<tr>
@@ -106,7 +106,7 @@
 
 					<tr>
 						<td class='ZOptionsLabel'>
-							<%= ZmMsg.voicemailMessagePlayback %>:
+							<$= ZmMsg.voicemailMessagePlayback $>
 						</td>
 						<td class='ZOptionsField'>
 							<table cellspacing='0' cellpadding='0'>
@@ -120,7 +120,7 @@
 										<table cellspacing='0' cellpadding='0' style='padding-left:10px'>
 											<tr>
 												<td>
-													<%= ZmMsg.voicemailPromptLevel %>
+													<$= ZmMsg.voicemailPromptLevel $>
 												</td>
 											</tr>
 											<tr>
@@ -148,7 +148,7 @@
 
 					<tr valign='top'>
 						<td class='ZOptionsLabel'>
-							<%= ZmMsg.voicePageSizeLabel %>:
+							<$= ZmMsg.voicePageSizeLabel $>
 						</td>
 						<td class='ZOptionsField'>
 							<table cellspacing='1' cellpadding='1'>
@@ -157,7 +157,7 @@
 										<div id='${id}_itemsPerPageSelect' style='padding-left:11px;'></div>
 									</td>
 									<td>
-										&nbsp;<%= ZmMsg.voicePageSizeDescription %>
+										&nbsp;<$= ZmMsg.voicePageSizeDescription $>
 									</td>
 								</tr>
 							</table>
@@ -166,17 +166,17 @@
 
 					<tr>
 						<td class='ZOptionsLabel'>
-							<%= ZmMsg.voicemailChangePassword %>:
+							<$= ZmMsg.voicemailChangePassword $>
 						</td>
 						<td class='ZOptionsField'>
-							<a href='<%=ZmMsg.voicemailChangePasswordURL %>'>
-								<%= ZmMsg.voicemailChangePasswordLink %>
+							<a href='<$=ZmMsg.voicemailChangePasswordURL $>'>
+								<$= ZmMsg.voicemailChangePasswordLink $>
 							</a>
 						</td>
 					</tr>
 					<tr>
 						<td class='ZOptionsLabel'>
-							<%= ZmMsg.voicemailLogin %>
+							<$= ZmMsg.voicemailLogin $>
 						</td>
 						<td class='ZOptionsField'>
 							<div id='${id}_voiceRequirePinCheckbox'></div>
@@ -197,7 +197,7 @@
 				<div class='ImgPrefsHeader_L'></div>
 			</td>
 			<td class='ZOptionsHeader ImgPrefsHeader'>
-				<%= ZmMsg.emailNotifications %>
+				<$= ZmMsg.emailNotifications $>
 			</td>
 			<td class='ZOptionsHeaderR'>
 				<div class='ImgPrefsHeader_R'></div>
@@ -205,7 +205,7 @@
 		</tr>
 
 		<tr>
-			<td class='ZOptionsSectionMain' colspan=3>
+			<td class='ZOptionsSectionMain' colspan='3'>
 				<table cellspacing='4' cellpadding='4' width='100%'>
 					<!-- Number selector -->
 					<tr>
@@ -213,7 +213,7 @@
 						<td class='ZOptionsField'>
 							<div style='margin-left:28;width:260;'>
 								<div>
-									<%= ZmMsg.voicePrefsInstruction %>
+									<$= ZmMsg.voicePrefsInstruction $>
 								</div>
 								<div class='ZSmallSpacer'></div>
 								<div id='${id}_list'>
@@ -231,7 +231,7 @@
 
 					<tr id='${id}_emailNotification' valign='top'>
 						<td class='ZOptionsLabelTop'>
-							<%= ZmMsg.emailNotificationLabel %>
+							<$= ZmMsg.emailNotificationLabel $>
 						</td>
 						<td class='ZOptionsField'>
 							<table cellspacing='1' cellpadding='1' width='600'>
@@ -271,7 +271,7 @@
 				<div class='ImgPrefsHeader_L'></div>
 			</td>
 			<td class='ZOptionsHeader ImgPrefsHeader'>
-				<%= ZmMsg.callForwardingHeader %>
+				<$= ZmMsg.callForwardingHeader $>
 			</td>
 			<td class='ZOptionsHeaderR'>
 				<div class='ImgPrefsHeader_R'></div>
@@ -279,7 +279,7 @@
 		</tr>
 
 		<tr>
-			<td class='ZOptionsSectionMain' colspan=3>
+			<td class='ZOptionsSectionMain' colspan='3'>
 				<table cellspacing='4' cellpadding='4' width='100%'>
 					<!-- Number selector -->
 					<tr>
@@ -287,7 +287,7 @@
 						<td class='ZOptionsField'>
 							<div style='margin-left:28;width:260;'>
 								<div>
-									<%= ZmMsg.voicePrefsInstruction %>
+									<$= ZmMsg.voicePrefsInstruction $>
 								</div>
 								<div class='ZSmallSpacer'></div>
 								<div id='${id}_list'>
@@ -298,14 +298,14 @@
 					</tr>
 
 					<tr>
-						<td colspan=2>
+						<td colspan='2'>
 							<div class='bottomSeparator'/>
 						</td>
 					</tr>
 
 					<tr>
 						<td class='ZOptionsLabel'>
-							<%= ZmMsg.callForwardingLabel %>
+							<$= ZmMsg.callForwardingLabel $>
 						</td>
 						<td class='ZOptionsField'>
 							<table cellpadding='0' cellspacing='0'>
@@ -323,7 +323,7 @@
 
 					<tr>
 						<td class='ZOptionsLabelTop'>
-							<%= ZmMsg.selectiveCallForwardingLabel %>
+							<$= ZmMsg.selectiveCallForwardingLabel $>
 						</td>
 						<td class='ZOptionsField'>
 							<table cellpadding='0' cellspacing='0' width='600'>
@@ -395,14 +395,14 @@
 				<div class='ImgPrefsHeader_L'></div>
 			</td>
 			<td class='ZOptionsHeader ImgPrefsHeader'>
-				<%= ZmMsg.callRejectionHeader %>
+				<$= ZmMsg.callRejectionHeader $>
 			</td>
 			<td class='ZOptionsHeaderR'>
 				<div class='ImgPrefsHeader_R'></div>
 			</td>
 		</tr>
 		<tr>
-			<td class='ZOptionsSectionMain' colspan=3>
+			<td class='ZOptionsSectionMain' colspan='3'>
 				<table cellspacing='4' cellpadding='4' width='100%'>
 					<!-- Number selector -->
 					<tr>
@@ -410,7 +410,7 @@
 						<td class='ZOptionsField'>
 							<div style='margin-left:28;width:260;'>
 								<div>
-									<%= ZmMsg.voicePrefsInstruction %>
+									<$= ZmMsg.voicePrefsInstruction $>
 								</div>
 								<div class='ZSmallSpacer'></div>
 								<div id='${id}_list'>
@@ -428,7 +428,7 @@
 
 					<tr>
 						<td class='ZOptionsLabel'>
-							<%= ZmMsg.anonymousCallRejectionLabel %>
+							<$= ZmMsg.anonymousCallRejectionLabel $>
 						</td>
 						<td class='ZOptionsField'>
 							<table cellpadding='0' cellspacing='0'>
@@ -443,7 +443,7 @@
 
 					<tr>
 						<td class='ZOptionsLabelTop'>
-							<%= ZmMsg.selectiveCallRejectionLabel %>
+							<$= ZmMsg.selectiveCallRejectionLabel $>
 						</td>
 						<td class='ZOptionsField'>
 							<table cellpadding='0' cellspacing='0' width='600'>
@@ -497,10 +497,10 @@
 </template>
 
 <template id="voicemail.Voicemail#VoicemailTooltip">
-<table border=0 cellpadding=0 cellspacing=0>
+<table border='0' cellpadding='0' cellspacing='0'>
 	<tr><td>
 		<div style='border-bottom:solid black 1px;margin-bottom:0.25em'>
-		<table width=100% border=0 cellpadding=0 cellspacing=0>
+		<table width='100%' border='0' cellpadding='0' cellspacing='0'>
 			<tr valign=top>
 				<td><b><$= ZmMsg.voiceMail $></b></td>
 				<td align=right style='padding-left:0.5em'><div class='ImgVoicemail'></div></td>
@@ -509,7 +509,7 @@
 		</div>
 	</td></tr>
 	<tr><td>
-	    <table border=0 cellpadding=0 cellspacing=0>
+	    <table border='0' cellpadding='0' cellspacing='0'>
 			<tr valign=top>
 				<td class='ZmTooltipLabel'><b><$= ZmMsg.fromLabel $></b></td>
 				<td>${caller}</td>
@@ -528,10 +528,10 @@
 </template>
 
 <template id="voicemail.Voicemail#CallTooltip">
-<table border=0 cellpadding=0 cellspacing=0>
+<table border='0' cellpadding='0' cellspacing='0'>
 	<tr><td>
 		<div style='border-bottom:solid black 1px;margin-bottom:0.25em'>
-		<table width=100% border=0 cellpadding=0 cellspacing=0>
+		<table width='100%' border='0' cellpadding='0' cellspacing='0'>
 			<tr valign=top>
 				<td><b><$= ZmMsg.call $></b></td>
 				<td align=right style='padding-left:0.5em'><div class='${image}'></div></td>
@@ -540,7 +540,7 @@
 		</div>
 	</td></tr>
 	<tr><td>
-	    <table border=0 cellpadding=0 cellspacing=0>
+	    <table border='0' cellpadding='0' cellspacing='0'>
 			<tr valign=top>
 				<td class='ZmTooltipLabel'><b>${callerLabel}</b></td>
 				<td>${caller}</td>
@@ -563,7 +563,7 @@
 </template>
 
 <template id='voicemail.Voicemail#ZmSoundPlayer' class='ZmSoundPlayer ZWidget'>
-    <table style='table-layout:auto;' cellspacing=0 cellpadding=0><tr>
+    <table style='table-layout:auto;' cellspacing='0' cellpadding='0'><tr>
     	<td><div id='${id}_play' class='ZmPlayButton'>Play</div></td>
     	<td><div id='${id}_pause' class='ZmPauseButton'>Pause</div></td>
     	<td><div id='${id}_status' class='ZmSoundStatus'>Time</div></td>
@@ -572,7 +572,7 @@
 </template>
 
 <template id='voicemail.Voicemail#ZmSoundPlayerNoScript' class='ZmSoundPlayer ZWidget'>
-    <table cellspacing=0 cellpadding=0><tr>
+    <table cellspacing='0' cellpadding='0'><tr>
     	<td><div id='${id}_play' class='ZmPlayButton'>Play</div></td>
     	<td><div id='${id}_status' class='ZmSoundStatus'>Time</div></td>
     	<td id='${id}_player' style='padding-left:6px'></td>
@@ -580,19 +580,19 @@
 </template>
 
 <template id='voicemail.Voicemail#ZmVoicePrefsView'>
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+	<table class='ZOptionsSectionTable' border='0' cellspacing='0' cellpadding='0' width='100%'>
 		<!-- General -->
 		<tr class='ZOptionsHeaderRow'>
 			  <td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
 			  <td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.general$></td>
 			  <td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
-		<tr><td class='ZOptionsSectionMain' colspan=3>
-			<table cellspacing=4 cellpadding=4>
+		<tr><td class='ZOptionsSectionMain' colspan='3'>
+			<table cellspacing='4' cellpadding='4'>
 				<tr valign='top'>
 					<td class='ZOptionsLabel'><$= ZmMsg.voicePageSizeLabel $></td>
 					<td class='ZOptionsField'>
-						<table cellspacing="1" cellpadding="1"><tr>
+						<table cellspacing='1' cellpadding='1'><tr>
 							<td><div id='${id}_itemsPerPageSelect' style='padding-left:11px;'></div></td>
 							<td>&nbsp;<$= ZmMsg.voicePageSizeDescription $></td>
 						</tr></table>
@@ -602,15 +602,15 @@
 		</td></tr>
 	</table>
 
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+	<table class='ZOptionsSectionTable' border='0' cellspacing='0' cellpadding='0' width='100%'>
 		<!-- Call Manager -->
 		<tr class='ZOptionsHeaderRow'>
 			  <td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
 			  <td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.callManager $></td>
 			  <td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
-		<tr><td class='ZOptionsSectionMain' colspan=3>
-			<table cellspacing=4 cellpadding=4>
+		<tr><td class='ZOptionsSectionMain' colspan='3'>
+			<table cellspacing='4' cellpadding='4'>
 				<tr>
 					<td class='ZOptionsLabel'></td>
 					<td class='ZOptionsField'>
@@ -624,13 +624,13 @@
 				<tr id='${id}_emailNotification' valign='top'>
 					<td class='ZOptionsLabel'><$= ZmMsg.emailNotificationLabel $></td>
 					<td class='ZOptionsField'>
-						<table cellspacing="1" cellpadding="1"><tr>
+						<table cellspacing='1' cellpadding='1'><tr>
 							<td><div id='${id}_emailNotificationCheckbox'></div></td>
 							<td><div id='${id}_emailNotificationComboBox'></div></td>
 						</tr></table>
 					</td>
 				</tr>
-				<tr><td colspan=2 class='ZSmallSpacer'></td></tr>
+				<tr><td colspan='2' class='ZSmallSpacer'></td></tr>
 
 				<tr id='${id}_callForwarding' valign='top'>
 					<td class='ZOptionsLabel'><$= ZmMsg.callForwardingLabel $></td>
@@ -642,7 +642,7 @@
 					</td>
 				</tr>
 
-				<tr><td colspan=2><hr></td></tr>
+				<tr><td colspan='2'><hr></td></tr>
 
 				<tr valign='top'>
 					<td>&nbsp;</td>
@@ -659,7 +659,7 @@
 </template>
 
 <template id='voicemail.Voicemail#ZmVoiceSelectiveCallForwardingTable'>
-	<table id='${id}_selectiveCallForwardingTable' cellspacing=0 cellpadding=0 width=260>
+	<table id='${id}_selectiveCallForwardingTable' cellspacing='0' cellpadding='0' width='260'>
 		<tr><td class='DwtListView-Column' style='padding-left:6'><b><$= ZmMsg.selectiveCallForwardingHeader $></b></td></tr>
 		<$ for (var i = 0, count = data.phones.length; i < count; i++) { $>
 			<tr class='Row <$= (i % 2) ? "RowEven" : "RowOdd" $>'><td>
@@ -675,16 +675,16 @@
 </template>
 
 <template id='voicemail.Voicemail#ZmVoiceSelectiveCallForwardingTableRow'>
-	<table cellspacing=0 cellpadding=0 width='100%'><tr>
+	<table cellspacing='0' cellpadding='0' width='100%'><tr>
 		<td style='padding-left:6'><$= data.text $><input type='hidden' name='${id}_forwardToNumber' value='<$= data.text $>'/></td>
-		<td width=80><a id='${linkId}' class='Object'><$= ZmMsg.remove $></a></td>
+		<td width='80'><a id='${linkId}' class='Object'><$= ZmMsg.remove $></a></td>
 	</tr></table>
 </template>
 
 <template id='voicemail.Voicemail#ZmCallListPrintView'>
 	<div class='ZmHead'><b>${name}</b></div>
 	<div class='ZSmallSpacer'></div>
-	<table class="ZmCallListPrintView" cellspacing=0>
+	<table class="ZmCallListPrintView" cellspacing='0'>
 		<tr style='font-weight:bold'>
 			<td> ${callerHeader} </td>
 			<td> <$= ZmMsg.duration $> </td>
@@ -705,7 +705,7 @@
 <template id='voicemail.Voicemail#ZmVoicemailListPrintView'>
 	<div class='ZmHead'><b>${name}</b></div>
 	<div class='ZSmallSpacer'></div>
-	<table class="ZmCallListPrintView" cellspacing=0>
+	<table class="ZmCallListPrintView" cellspacing='0'>
 		<tr style='font-weight:bold'>
             <td><img src='<$= data.appContextPath $>/img/tasks/ImgTaskHigh.gif'/></td>
 			<td> <$= ZmMsg.from $> </td>

@@ -114,9 +114,10 @@ function() {
 ZmVoicePrefsTabView.prototype.show =
 function() {
     if (this._hasRendered) return;
+    this._hasRendered = true;
     
     var sections = [
-	{title: ZmMsg.general, manageDirty:false, precondition:"VOICE_ENABLED", prefs:["VOICE_ACCOUNTS"], page: new ZmVoiceGeneralPage(this, this._controller)},
+	{title: ZmMsg.voiceMail, manageDirty:false, precondition:"VOICE_ENABLED", prefs:["VOICE_ACCOUNTS"], page: new ZmVoiceGeneralPage(this, this._controller)},
 	{title: ZmMsg.emailNotifications, manageDirty:false, precondition:"VOICE_ENABLED", prefs:["VOICE_ACCOUNTS"], page: new ZmVoiceNotificationPage(this, this._controller)},
 	{title: ZmMsg.callForwardingHeader, manageDirty:false, precondition:"VOICE_ENABLED", prefs:["VOICE_ACCOUNTS"], page: new ZmVoiceForwardingPage(this, this._controller)},
 	{title: ZmMsg.callScreeningHeader, manageDirty:false, precondition:"VOICE_ENABLED", prefs:["VOICE_ACCOUNTS"], page: new ZmVoiceRejectionPage(this, this._controller)}
@@ -133,7 +134,6 @@ function() {
 //	    console.log(e);
 	}
     }
-    this._hasRendered = true;
     this.setVisible(true);
 };
 
@@ -1617,8 +1617,8 @@ function(id) {
 	this._addButton.setText(ZmMsg.add);
 	this._addButton.addSelectionListener(new AjxListener(this, this._handleAddFromNumber));
 	this._addButton.replaceElement(id + "_selectiveCallForwardingAddButton");
-	
-	this._toLabel = new DwtLabel({parent:this._view});
+
+	this._toLabel = new DwtLabel({parent:this._view, style: (DwtLabel.IMAGE_LEFT | DwtLabel.ALIGN_RIGHT) });
 	this._toLabel.setText(ZmMsg.selectiveCallForwardingToDescription);
 	this._toLabel.replaceElement(id + "_selectiveCallForwardingToLabel");
 	
@@ -2052,6 +2052,7 @@ function(htmlArr, idx, phone, field, colIdx, params) {
 ZmBufferList = function(params) {
 	if (arguments.length == 0) { return; }
 	if (!params.headerList) params.headerList = [new DwtListHeaderItem({field:1, text:params.headerText, sortable:false}), new DwtListHeaderItem({field:2, sortable:false, text:"&nbsp;"})];
+	if (!params.className) params.className = "ZmBufferList";
 	DwtListView.call(this, params);
 	this.multiSelectEnabled = false;
 	this.displayProperty = params.displayProperty || "text";
