@@ -21,9 +21,20 @@
 						<td id="${id}_PREFIX_row"><div id="${id}_PREFIX" tabindex="200"></div></td>
 						<td><div id="${id}_FIRST" tabindex="201"></div></td>
 						<td id="${id}_MIDDLE_row"><div id="${id}_MIDDLE" tabindex="202"></div></td>
-						<td id="${id}_MAIDEN_row"><div id="${id}_MAIDEN" tabindex="203"></div></td>
+						<td id="${id}_MAIDEN_row">
+							<table border=0 cellspacing=0 cellpadding=0>
+								<td style='padding:0 2;'>(</td>
+								<td><div id="${id}_MAIDEN" tabindex="203"></div></td>
+								<td style='padding:0 2;'>)</td>
+							</table>
+						</td>
 						<td><div id="${id}_LAST" tabindex="204"></div></td>
-						<td id="${id}_SUFFIX_row"><div id="${id}_SUFFIX" tabindex="205"></div></td>
+						<td id="${id}_SUFFIX_row">
+							<table border=0 cellspacing=0 cellpadding=0>
+								<td style='padding-right:4;'>,</td>
+								<td><div id="${id}_SUFFIX" tabindex="205"></div></td>
+							</table>
+						</td>
 						<td><div id="${id}_DETAILS" tabindex="206"></div></td>
 					</tr></table>
 				</div>
@@ -360,8 +371,11 @@
 	<$
 		var contact		= data.contact;
 		var imageUrl	= contact.getImageUrl();
-		var companyStr	= contact.getCompanyField();
-		var fileAs		= contact.getFileAs();
+		var nickname	= contact.getAttr(ZmContact.F_nickname); 
+		var company		= contact.getAttr(ZmContact.F_company);
+		var title		= contact.getAttr(ZmContact.F_jobTitle);
+		var department	= contact.getAttr(ZmContact.F_department);
+		var fullname	= contact.getFullName();
 		var accountName = appCtxt.multiAccounts && contact.account && contact.account.getDisplayName();
 	$>
 	<table border=0 cellspacing=2 cellpadding=2 width=100% class='contactHeaderTable <$= data.contactHdrClass $>'>
@@ -375,9 +389,25 @@
 		</tr>
 		<tr>
 			<td valign=bottom>
-				<div class='contactHeader <$= data.isInTrash ? "Trash" : "" $>'><$= AjxStringUtil.htmlEncode(fileAs) $></div>
-				<$ if (companyStr != "") { $>
-					<div class='companyName'><$= AjxStringUtil.htmlEncode(companyStr) $></div>
+				<div class='contactHeader <$= data.isInTrash ? "Trash" : "" $>'><$= AjxStringUtil.htmlEncode(fullname) $></div>
+				<$ if (nickname) { $>
+					<div class='companyName'>&ldquo;<$= AjxStringUtil.htmlEncode(nickname) $>&rdquo;</div>
+				<$ } $>
+				<$ if (company) { $>
+					<div class='companyName'><$= AjxStringUtil.htmlEncode(company) $></div>
+				<$ } $>
+				<$ if (title || department) { $>
+					<div class='companyName'>
+					<$ if (title) { $>
+						<span><$= AjxStringUtil.htmlEncode(title) $></span>
+					<$ } $>
+					<$ if (department) { $>
+						<$ if (title) { $>
+							&nbsp;-&nbsp;
+						<$ } $>
+						<span><$= AjxStringUtil.htmlEncode(department) $></span>
+					<$ } $>
+					</div>
 				<$ } $>
 			</td>
 			<td valign=bottom align='right'>

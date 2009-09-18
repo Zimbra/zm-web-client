@@ -963,13 +963,21 @@ function() {
 		} else {
 			var fn = [];
 			var idx = 0;
+			var prefix = this.getAttr(ZmContact.F_namePrefix);
 			var first = this.getAttr(ZmContact.F_firstName);
 			var middle = this.getAttr(ZmContact.F_middleName);
+			var maiden = this.getAttr(ZmContact.F_maidenName);
 			var last = this.getAttr(ZmContact.F_lastName);
-			if (first) fn[idx++] = first;
-			if (middle) fn[idx++] = middle;
-			if (last) fn[idx++] = last;
-			this._fullName = fn.join(" ");
+			var suffix = this.getAttr(ZmContact.F_nameSuffix);
+			var pattern = ZmMsg.fullname;
+			if (suffix) {
+				pattern = maiden ? ZmMsg.fullnameMaidenSuffix : ZmMsg.fullnameSuffix;
+			}
+			else if (maiden) {
+				pattern = ZmMsg.fullnameMaiden;
+			}
+			var args = [prefix,first,middle,maiden,last,suffix];
+			this._fullName = AjxStringUtil.trim(AjxMessageFormat.format(pattern, args), true);
 		}
 	}
 
