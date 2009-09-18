@@ -137,7 +137,11 @@ function(params) {
 				header.setExpanded(true, false, true);
 				header.enableSelection(false);
 			} else {
-				header.setExpanded(appCtxt.get(ZmSetting.ACCOUNT_TREE_OPEN, null, acct));
+				var isExpanded = appCtxt.get(ZmSetting.ACCOUNT_TREE_OPEN, null, acct);
+				header.setExpanded(isExpanded);
+				if (!isExpanded) {
+					this._setAccountHeaderLabel(acct, header);
+				}
 			}
 		}
 
