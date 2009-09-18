@@ -103,6 +103,28 @@ function(email) {
 	return null;
 };
 
+/**
+ * Returns the cumulative unread count of all accounts for the given folder ID
+ *
+ * @param folderId		[String]	folder ID
+ */
+ZmAccountList.prototype.getUnreadCount =
+function(folderId) {
+	var unread = 0;
+	for (var i = 0; i < this.visibleAccounts.length; i++) {
+		var acct = this.visibleAccounts[i];
+		if (acct.isMain) { continue; } // local account should never have drafts
+
+		var fid = ZmOrganizer.getSystemId(folderId, acct);
+		var folder = appCtxt.getById(fid);
+		if (folder) {
+			unread += folder.numTotal;
+		}
+	}
+
+	return unread;
+};
+
 ZmAccountList.prototype.generateQuery =
 function(folderId, types) {
 	// XXX: for now, let's just search for *one* type at a time

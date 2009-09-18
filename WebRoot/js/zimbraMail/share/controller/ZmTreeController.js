@@ -756,6 +756,17 @@ function(ev, treeView, overviewId) {
 	// handle one organizer at a time
 	for (var i = 0; i < organizers.length; i++) {
 		var organizer = organizers[i];
+
+		// HACK - offline has a virtual Drafts/Outbox folder under the Local
+		// account so always force it to look under the Local account
+		if (appCtxt.isOffline &&
+			(organizer.nId == ZmFolder.ID_DRAFTS || organizer.nId == ZmFolder.ID_OUTBOX))
+		{
+			organizer = appCtxt.getById(organizer.nId);
+			overviewId = appCtxt.getApp(ZmApp.MAIL).getOverviewId(appCtxt.accountList.mainAccount);
+			treeView = this._treeView[overviewId];
+		}
+
 		var node = treeView.getTreeItemById(organizer.id);
 		// Note: source tree handles moves - it will have node
 		if (!node && (ev.event != ZmEvent.E_CREATE)) { continue; }

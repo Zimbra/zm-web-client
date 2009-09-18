@@ -443,9 +443,12 @@ function(showUnread, maxLength, noMarkup, useSystemName) {
 	if (this.nId == ZmFolder.ID_DRAFTS ||
 		this.nId == ZmFolder.ID_OUTBOX)
 	{
+		var numTotal = (appCtxt.isOffline && this.account.isMain)
+			? appCtxt.accountList.getUnreadCount(this.nId) : this.numTotal;
+
 		var name = (useSystemName && this._systemName) ? this._systemName : this.name;
-		if (showUnread && this.numTotal > 0) {
-			name = [name, " (", this.numTotal, ")"].join("");
+		if (showUnread && numTotal > 0) {
+			name = [name, " (", numTotal, ")"].join("");
 			if (!noMarkup) {
 				name = ["<span style='font-weight:bold'>", name, "</span>"].join("");
 			}
