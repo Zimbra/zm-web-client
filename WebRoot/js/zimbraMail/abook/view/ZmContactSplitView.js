@@ -270,6 +270,7 @@ function(contact, isGal, oldContact) {
 		subs.view = this;
 		subs.isGal = isGal;
 		subs.findObjects = AjxCallback.simpleClosure(this.__findObjects, this, this._objectManager);
+		subs.attrs = contact.getNormalizedAttrs();
 
 		this._resetVisibility(false);
 

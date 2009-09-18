@@ -284,20 +284,21 @@ ZmEditContactView.prototype.set = function(contact, isDirty) {
 
 	// populate lists
 	this._listAttrs = {};
+	var nattrs = contact.getNormalizedAttrs();
 	for (var id in ZmEditContactView.LISTS) {
 		switch (id) {
 			case "ADDRESS": {
-				this.__initRowsAddress(contact, id, this._listAttrs);
+				this.__initRowsAddress(nattrs, id, this._listAttrs);
 				break;
 			}
 			case "OTHER": {
 				var list = ZmEditContactView.LISTS[id];
-				this.__initRowsOther(contact, id, list.attrs, list.addone, list.onlyvalue, this._listAttrs);
+				this.__initRowsOther(nattrs, id, list.attrs, list.addone, list.onlyvalue, this._listAttrs);
 				break;
 			}
 			default: {
 				var list = ZmEditContactView.LISTS[id];
-				this.__initRowsControl(contact, id, list.attrs, list.addone, list.onlyvalue, this._listAttrs);
+				this.__initRowsControl(nattrs, id, list.attrs, list.addone, list.onlyvalue, this._listAttrs);
 			}
 		}
 	}
@@ -374,15 +375,17 @@ ZmEditContactView.prototype.getModifiedAttrs = function() {
 	}
 
 	// compare against existing fields
+	var anames = AjxUtil.keys(attributes);
 	var listAttrs = this._listAttrs;
 	for (var id in listAttrs) {
 		if (!this.isDirty(id)) continue;
-		var attrs = listAttrs[id];
-		for (var i = 0; i < attrs.length; i++) {
-			var aname = attrs[i];
-			// clear attribute if no longer has a value
-			if (!(aname in attributes)) {
-				attributes[aname] = "";
+		var prefixes = AjxUtil.uniq(AjxUtil.map(listAttrs[id], ZmEditContactView.__trimNumber));
+		for (var i = 0; i < prefixes.length; i++) {
+			// clear fields from original contact from normalized attr names
+			var attrs = AjxUtil.keys(this._contact.getAttrs(prefixes[i]));
+			var complement = AjxUtil.complement(anames, attrs);
+			for (var j = 0; j < complement.length; j++) {
+				attributes[complement[j]] = "";
 			}
 		}
 	}
@@ -413,6 +416,10 @@ ZmEditContactView.prototype.getModifiedAttrs = function() {
 	}
 
 	return attributes;
+};
+
+ZmEditContactView.__trimNumber = function(s) {
+	return s.replace(/\d+$/,"");
 };
 
 ZmEditContactView.prototype.isEmpty = function() {
@@ -598,13 +605,13 @@ ZmEditContactView.prototype.__getDetailsMenu = function() {
 };
 
 ZmEditContactView.prototype.__initRowsControl =
-function(contact,id,prefixes,addone,onlyvalue,listAttrs,skipSetValue) {
+function(nattrs,id,prefixes,addone,onlyvalue,listAttrs,skipSetValue) {
 	var array = [];
 	for (var j = 0; j < prefixes.length; j++) {
 		var prefix = prefixes[j];
 		for (var i = 1; true; i++) {
 			var a = (i > 1 || (addone && addone[prefix])) ? prefix+i : prefix;
-			var value = contact.getAttr(a);
+			var value = nattrs[a];
 			if (!value) break;
 			array.push(onlyvalue ? value : { type:prefix,value:value });
 			if (!listAttrs[id]) listAttrs[id] = [];
@@ -618,8 +625,8 @@ function(contact,id,prefixes,addone,onlyvalue,listAttrs,skipSetValue) {
 };
 
 ZmEditContactView.prototype.__initRowsOther =
-function(contact,id,prefixes,addone,onlyvalue,listAttrs) {
-	var array = this.__initRowsControl.call(this,contact,id,prefixes,addone,onlyvalue,listAttrs,true);
+function(nattrs,id,prefixes,addone,onlyvalue,listAttrs) {
+	var array = this.__initRowsControl.call(this,nattrs,id,prefixes,addone,onlyvalue,listAttrs,true);
 
 	// gather attributes we know about
 	var attributes = {};
@@ -642,12 +649,11 @@ function(contact,id,prefixes,addone,onlyvalue,listAttrs) {
 	}
 
 	// add attributes on contact that we don't know about
-	var attrs = contact.getAttrs();
-	for (var aname in attrs) {
+	for (var aname in nattrs) {
 		aname = aname.replace(/\d+$/,"");
 		if (ZmContact.IS_IGNORE[aname]) continue;
 		if (!(aname in attributes)) {
-			array.push({type:aname,value:attrs[aname]});
+			array.push({type:aname,value:nattrs[aname]});
 			if (!listAttrs[id]) listAttrs[id] = [];
 			listAttrs[id].push(aname);
 		}
@@ -656,7 +662,7 @@ function(contact,id,prefixes,addone,onlyvalue,listAttrs) {
 	this.setValue(id, array);
 };
 
-ZmEditContactView.prototype.__initRowsAddress = function(contact,id,listAttrs) {
+ZmEditContactView.prototype.__initRowsAddress = function(nattrs,id,listAttrs) {
 	var array = [];
 	var prefixes = ZmEditContactView.ADDR_PREFIXES;
 	var suffixes = ZmEditContactView.ADDR_SUFFIXES;
@@ -666,8 +672,8 @@ ZmEditContactView.prototype.__initRowsAddress = function(contact,id,listAttrs) {
 			var address = null;
 			for (var i = 0; i < suffixes.length; i++) {
 				var suffix = suffixes[i];
-				var a = [prefix,suffix,j>1?j:""].join("");
-				var value = contact.getAttr(a);
+				var a = ZmContact.getAttributeName(prefix+suffix, j);
+				var value = nattrs[a];
 				if (!value) continue;
 				if (!address) address = {};
 				address[suffix] = value;

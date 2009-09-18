@@ -458,6 +458,46 @@ function(contact, attr) {
 		: (contact && contact._attrs) ? contact._attrs[attr] : null;
 };
 
+/**
+ * Normalizes the numbering of the given attribute names and
+ * returns a new object with the re-numbered attributes. For
+ * example, if the attributes contains a "foo2" but no "foo",
+ * then the "foo2" attribute will be renamed to "foo" in the
+ * returned object.
+ *
+ * @param attrs  [object] The attributes to normalize.
+ * @param prefix [string] (Optional) If specified, only the
+ *                        the attributes that match the given
+ *                        prefix will be returned.
+ */
+ZmContact.getNormalizedAttrs = function(attrs, prefix) {
+	var nattrs = {};
+	if (attrs) {
+		// normalize attribute numbering
+		var names = AjxUtil.keys(attrs);
+		names.sort(ZmContact.__BY_ATTRIBUTE);
+		var a = {};
+		for (var i = 0; i < names.length; i++) {
+			var name = names[i];
+			// get current count
+			var nprefix = name.replace(/\d+$/,"");
+			if (prefix && prefix != nprefix) continue;
+			if (!a[nprefix]) a[nprefix] = 0;
+			// normalize, if needed
+			var nname = ZmContact.getAttributeName(nprefix, ++a[nprefix]);
+			nattrs[nname] = attrs[name];
+		}
+	}
+	return nattrs;
+};
+
+ZmContact.__RE_ATTRIBUTE = /^(.*?)(\d+)$/;
+ZmContact.__BY_ATTRIBUTE = function(a, b) {
+	var aa = a.match(ZmContact.__RE_ATTRIBUTE) || [a,a,1];
+	var bb = b.match(ZmContact.__RE_ATTRIBUTE) || [b,b,1];
+	return aa[1] == bb[1] ? Number(aa[2]) - Number(bb[2]) : aa[1].localeCompare(bb[1]);
+};
+
 ZmContact.setAttr =
 function(contact, attr, value) {
 	if (contact instanceof ZmContact)
@@ -574,9 +614,43 @@ function(name) {
 	delete this.attr[name];
 };
 
-ZmContact.prototype.getAttrs =
-function() {
-	return this.attr;
+/**
+ * Returns the contact's attributes.
+ *
+ * @param prefix [string] (Optional) If specified, only the
+ *                        the attributes that match the given
+ *                        prefix will be returned.
+ */
+ZmContact.prototype.getAttrs = function(prefix) {
+	var attrs = this.attr;
+	if (prefix) {
+		attrs = {};
+		for (var aname in this.attr) {
+			if (aname.replace(/\d+$/,"") == prefix) {
+				attrs[aname] = this.attr[aname];
+			}
+		}
+	}
+	return attrs;
+};
+
+/**
+ * Returns a normalized set of attributes where the attribute
+ * names have been re-numbered as needed. For example, if the
+ * attributes contains a "foo2" but no "foo", then the "foo2"
+ * attribute will be renamed to "foo" in the returned object.
+ * <p>
+ * <strong>Note:</strong>
+ * This method is expensive so should be called once and
+ * cached temporarily as needed instead of being called
+ * for each normalized attribute that is needed.
+ * 
+ * @param prefix [string] (Optional) If specified, only the
+ *                        the attributes that match the given
+ *                        prefix will be returned.
+ */
+ZmContact.prototype.getNormalizedAttrs = function(prefix) {
+	return ZmContact.getNormalizedAttrs(this.attr, prefix);
 };
 
 /**

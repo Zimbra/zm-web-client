@@ -412,7 +412,7 @@
 	<$
 	var itemlistdata = {
 		id: data.id,
-		attrs: data.contact.getAttrs(), seenone: false,
+		attrs: data.attrs, seenone: false,
 		findObjects: data.findObjects, objectType: ZmObjectManager.EMAIL,
 		label: ZmMsg.emailLabel
 	};
@@ -432,7 +432,7 @@
 	<$
 	var itemlistdata = {
 		id: data.id,
-		attrs: data.contact.getAttrs(), seenone: false,
+		attrs: data.attrs, seenone: false,
 		findObjects: data.findObjects, objectType: ZmObjectManager.PHONE,
 		label: ZmMsg.phoneLabel
 	};
@@ -448,7 +448,7 @@
 	<$
 	var itemlistdata = {
 		id: data.id,
-		attrs: data.contact.getAttrs(), addone: true, seenone: false,
+		attrs: data.attrs, addone: true, seenone: false,
 		label: ZmMsg.imLabel, name: "imAddress"
 	}; $>
 	<$= AjxTemplate.expand("#SplitView_item_list", itemlistdata) $>
@@ -456,7 +456,7 @@
 
 <template id="abook.Contacts#SplitView_addresses">
 	<$
-	var attrs = data.contact.getAttrs(); 
+	var attrs = data.attrs;
 	var itemdata = {
 		id: data.id,
 		attrs: attrs, seenone: false,
@@ -520,7 +520,7 @@
 	<$
 	var itemlistdata = {
 		id: data.id,
-		attrs: data.contact.getAttrs(), seenone: false,
+		attrs: data.attrs, seenone: false,
 		findObjects: data.findObjects, objectType: ZmObjectManager.URL,
 		label: ZmMsg.urlLabel
 	};
@@ -541,7 +541,7 @@
 	<$
 	var itemlistdata = {
 		id: data.id,
-		attrs: data.contact.getAttrs(), seenone: false,
+		attrs: data.attrs, seenone: false,
 		findObjects: data.findObjects,
 		label: ZmMsg.otherLabel
 	};
