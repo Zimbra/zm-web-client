@@ -800,9 +800,12 @@ ZmSearch.prototype._getFolderId =
 function(path) {
 	// first check if it's a system folder (name in query string may not match actual name)
 	var folderId = ZmFolder.QUERY_ID[path];
+
+	var accountName = this.accountName || appCtxt.getActiveAccount().name;
+
 	// now check all folders by name
 	if (!folderId) {
-		var account = this.accountName && appCtxt.accountList.getAccountByName(this.accountName);
+		var account = accountName && appCtxt.accountList.getAccountByName(accountName);
 		var folders = appCtxt.getFolderTree(account);
 		var folder = folders ? folders.getByPath(path, true) : null;
 		if (folder) {
@@ -810,8 +813,8 @@ function(path) {
 		}
 	}
 
-	if (this.accountName) {
-		folderId = ZmOrganizer.getSystemId(folderId, appCtxt.accountList.getAccountByName(this.accountName));
+	if (accountName) {
+		folderId = ZmOrganizer.getSystemId(folderId, appCtxt.accountList.getAccountByName(accountName));
 	}
 
 	return folderId;
