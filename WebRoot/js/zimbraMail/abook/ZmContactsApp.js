@@ -84,6 +84,7 @@ ZmContactsApp.prototype._registerSettings =
 function(settings) {
 	var settings = settings || appCtxt.getSettings();
 	settings.registerSetting("AUTO_ADD_ADDRESS",				{name: "zimbraPrefAutoAddAddressEnabled", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
+	settings.registerSetting("OFFLINE_AUTOCOMPLETE_ALL",		{name: "offlineShareContactsInAutoComplete", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, isGlobal:true});
 	settings.registerSetting("AUTOCOMPLETE_SHARED_ADDR_BOOKS",	{name: "zimbraPrefSharedAddrBookAutoCompleteEnabled", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
 	settings.registerSetting("CONTACTS_PER_PAGE",				{name: "zimbraPrefContactsPerPage", type: ZmSetting.T_PREF, dataType: ZmSetting.D_INT, defaultValue: 25, isGlobal:true});
 	settings.registerSetting("CONTACTS_PER_PAGE_MAX",			{name: "zimbraMaxContactsPerPage", type: ZmSetting.T_COS, dataType: ZmSetting.D_INT, defaultValue: 100});
@@ -106,6 +107,7 @@ function() {
 			precondition: ZmSetting.CONTACTS_ENABLED,
 			prefs: [
 				ZmSetting.AUTO_ADD_ADDRESS,
+				ZmSetting.OFFLINE_AUTOCOMPLETE_ALL,
 				ZmSetting.AUTOCOMPLETE_SHARED_ADDR_BOOKS,
 				ZmSetting.CONTACTS_PER_PAGE,
 				ZmSetting.CONTACTS_VIEW,
@@ -122,6 +124,11 @@ function() {
 
 	ZmPref.registerPref("AUTO_ADD_ADDRESS", {
 		displayName:		ZmMsg.autoAddContacts,
+		displayContainer:	ZmPref.TYPE_CHECKBOX
+	});
+
+	ZmPref.registerPref("OFFLINE_AUTOCOMPLETE_ALL", {
+		displayName:		ZmMsg.offlineAutocompleteAll,
 		displayContainer:	ZmPref.TYPE_CHECKBOX
 	});
 
