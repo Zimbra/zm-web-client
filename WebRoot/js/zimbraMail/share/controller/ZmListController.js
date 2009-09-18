@@ -1045,9 +1045,10 @@ function(view, offset, limit, callback, isCurrent, lastId, lastSortVal) {
 * @param view		[constant]		current view
 * @param forward	[boolean]		if true, get next page rather than previous
 * @param loadIndex	[int]			index of item to show
+* @param limit		[int]*			number of items to fetch
 */
 ZmListController.prototype._paginate =
-function(view, forward, loadIndex) {
+function(view, forward, loadIndex, limit) {
 
 	this._searchResult = null;
 	var needMore = false;
@@ -1060,7 +1061,7 @@ function(view, forward, loadIndex) {
 		offset = lv.getNewOffset(forward);
 		needMore = (offset + limit > this._list.size());
 	}
-	var limit = lv.getLimit(offset);
+	limit = limit || lv.getLimit(offset);
 	this.currentPage = this.currentPage + (forward ? 1 : -1);
 	this.maxPage = Math.max(this.maxPage, this.currentPage);
 

@@ -81,9 +81,9 @@ function() {
 };
 
 ZmTradController.prototype._paginate = 
-function(view, bPageForward, convIdx) {
+function(view, bPageForward, convIdx, limit) {
 	view = view ? view : this._currentView;
-	return ZmDoublePaneController.prototype._paginate.call(this, view, bPageForward, convIdx);
+	return ZmDoublePaneController.prototype._paginate.call(this, view, bPageForward, convIdx, limit);
 };
 
 ZmTradController.prototype._resetNavToolBarButtons = 

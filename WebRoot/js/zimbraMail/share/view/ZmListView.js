@@ -922,12 +922,25 @@ function(ev) {
 
 ZmListView.prototype._checkItemCount =
 function() {
+
 	DBG.println(AjxDebug.DBG2, "List view: checking item count");
 	var scrollDiv = this._parentEl;
 	var h = Dwt.getSize(scrollDiv).y;
 	var itemsLeft = Math.floor((scrollDiv.scrollHeight - (scrollDiv.scrollTop + h)) / this._rowHeight);
-	if (itemsLeft < this.getPagelessThreshold() && (scrollDiv.scrollTop > 0) && (scrollDiv.scrollHeight > h)) {
-		this._controller._paginate(this._view, true);
+	var nearBottom = (itemsLeft < this.getPagelessThreshold() && (scrollDiv.scrollTop > 0) && (scrollDiv.scrollHeight > h));
+	var notEnoughFetched = ((itemsLeft == 0) && (scrollDiv.scrollTop == 0) && this._controller._list.hasMore());
+	if (nearBottom || notEnoughFetched) {
+		var limit;
+		if (notEnoughFetched) {
+			var numItems = this._list.size();
+			limit = Math.floor((h - (numItems * this._rowHeight)) / this._rowHeight) + this.getLimit(numItems);
+			DBG.println(AjxDebug.DBG2, "List view: need more items to get scrollbar, fetching " + limit + " more");
+		}
+		this._controller._paginate(this._view, true, null, limit);
+		if (limit) {
+			// fix width since we just gained a scrollbar
+			AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._resetColWidth), 100);
+		}
 	}
 };
 
