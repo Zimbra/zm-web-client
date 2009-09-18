@@ -779,7 +779,7 @@ function(ev) {
 	if (!span) {return false;}
 	var object = this._objects[span.id];
 	if (!object) {return false;}
-
+    object.target = span;
 	span.className = object.handler.getHoveredClassName(object.object, object.context);
 	if (object.handler.hasToolTipText()) {
 		var shell = DwtShell.getShell(window);
