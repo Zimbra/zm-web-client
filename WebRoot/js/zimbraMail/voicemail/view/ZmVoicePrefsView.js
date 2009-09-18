@@ -1557,8 +1557,12 @@ function(event) {
 
 ZmSelectiveCallForwardingUI.prototype._handleExposeButtonClick =
 function() {
-	this._setAddFromNumberVisibility(true);
-	this._addField.focus();
+	if (this._list.getList().size() >= ZmCallFeature.SELECTIVE_CALL_FORWARDING_MAX_ENTRIES)
+		appCtxt.setStatusMsg(ZmMsg.selectiveCallForwardingFromErrorMax);
+	else {
+		this._setAddFromNumberVisibility(true);
+		this._addField.focus();
+	}
 }
 
 ZmSelectiveCallForwardingUI.prototype._setAddFromNumberVisibility =
