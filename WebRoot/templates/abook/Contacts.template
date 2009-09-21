@@ -627,12 +627,11 @@
 	<$
 	var itemlistdata = {
 		id: data.id,
-		attrs: {},
+		attrs: data.attrs,
+		encode: AjxStringUtil.nl2br,
 		seenone: false,
 		label: ZmMsg.notesLabel, name: ZmContact.F_notes
 	};
-	itemlistdata.attrs[ZmContact.F_notes] = AjxStringUtil.htmlEncode(data.contact.getAttrs()[ZmContact.F_notes]);
-	itemlistdata.encode = AjxStringUtil.nl2br;
 	$>
 	<$= AjxTemplate.expand("#SplitView_item_list", itemlistdata) $>
 </template>
@@ -640,14 +639,20 @@
 <!-- NOTE: This template is used internally and should NOT be called in code! -->
 <template id="abook.Contacts#SplitView_item_list">
 	<$
+	var isEmail = data.objectType == ZmObjectManager.EMAIL;
 	var i = 0;
 	while (true) {
 		var name = (++i > 1 || data.addone) ? data.name+i : data.name;
 		var value = data.attrs[name];
 		if (!value) break;
-		value = data.encode ? data.encode(value) : AjxStringUtil.htmlEncode(value);
+		if (!isEmail) {
+			value = AjxStringUtil.htmlEncode(value);
+		}
 		if (data.findObjects) {
 			value = data.findObjects(value, data.objectType);
+		}
+		if (data.encode) {
+			value = data.encode(value);
 		}
 		$>
 

@@ -233,8 +233,8 @@ function(ev, treeView) {
 };
 
 ZmContactSplitView.prototype.__findObjects =
-function(objectManager, data, type) {
-	return objectManager.findObjects(data, true, type);
+function(objectManager, data, type, encodeHTML) {
+	return objectManager.findObjects(data, encodeHTML, type);
 };
 
 ZmContactSplitView.prototype._setContact =
