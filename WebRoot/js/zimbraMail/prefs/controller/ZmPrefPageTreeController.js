@@ -127,8 +127,7 @@ function(account, sectionId) {
 			if (!account.isZimbraAccount &&
 				(sectionId == "MAIL" ||
 				 sectionId == "SHARING" ||
-				 sectionId == "CALENDAR" ||
-				 sectionId == "CONTACTS"))
+				 sectionId == "CALENDAR"))
 			{
 				return false;
 			}
