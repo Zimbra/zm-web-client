@@ -39,7 +39,7 @@
 
 					<tr valign='top'>
 						<td class='ZOptionsLabel'>
-							<$= ZmMsg.voicemailSendToVoicemailAfterRings $>:
+							<$= ZmMsg.voicemailSendToVoicemailAfterRings $>
 						</td>
 						<td class='ZOptionsField'>
 							<table cellspacing='1' cellpadding='1'>
@@ -112,7 +112,7 @@
 							<table cellspacing='0' cellpadding='0'>
 								<tr>
 									<td>
-										<div id='"${id}_voiceAutoplayCheckbox'></div>
+										<div id='${id}_voiceAutoplayCheckbox'></div>
 									</td>
 								</tr>
 								<tr>
