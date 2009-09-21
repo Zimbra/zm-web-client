@@ -2055,9 +2055,15 @@ function(htmlArr, idx, phone, field, colIdx, params) {
 */
 ZmBufferList = function(params) {
 	if (arguments.length == 0) { return; }
+ZmBufferList.DEBUG("This message should appear right before any errors");
+	params = Dwt.getParams(arguments, DwtListView.PARAMS);
+ZmBufferList.DEBUG("This message may appear before or after any errors");
 	if (!params.headerList) params.headerList = [new DwtListHeaderItem({field:1, text:params.headerText, sortable:false}), new DwtListHeaderItem({field:2, sortable:false, text:"&nbsp;"})];
 	if (!params.className) params.className = "ZmBufferList";
+ZmBufferList.DEBUG("The following entry contains interesting data that should be reported in case of any errors");
+ZmBufferList.DEBUG(params);
 	DwtListView.call(this, params);
+ZmBufferList.DEBUG("This message should appear right after any errors");
 	this.multiSelectEnabled = false;
 	this.displayProperty = params.displayProperty || "text";
 };
@@ -2069,6 +2075,19 @@ ZmBufferList.prototype.toString =
 function() {
 	return "ZmBufferList";
 };
+
+ZmBufferList.DEBUG =
+function(obj) {
+	if (console && console.log)
+		console.log(obj);
+}
+
+ZmBufferList.prototype.set =
+function() {
+	ZmBufferList.DEBUG("The following entry contains interesting data that should be reported if the list initially appears to contain an empty row");
+	ZmBufferList.DEBUG(arguments);
+	DwtListView.prototype.set.apply(this, arguments);
+}
 
 ZmBufferList.prototype._getCellContents =
 function(htmlArr, idx, item, field, colIdx, params) {
