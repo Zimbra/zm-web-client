@@ -801,7 +801,11 @@ function(path) {
 	// first check if it's a system folder (name in query string may not match actual name)
 	var folderId = ZmFolder.QUERY_ID[path];
 
-	var accountName = this.accountName || appCtxt.getActiveAccount().name;
+	var accountName = this.accountName;
+	if (!accountName) {
+		var active = appCtxt.getActiveAccount();
+		accountName = active ? active.name : appCtxt.accountList.mainAccount;
+	}
 
 	// now check all folders by name
 	if (!folderId) {
