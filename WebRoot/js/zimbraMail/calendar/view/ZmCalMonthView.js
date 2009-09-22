@@ -43,8 +43,8 @@ function() {
 };
 
 ZmCalMonthView.prototype.getRollField =
-function(isDouble) {
-	return isDouble? AjxDateUtil.YEAR : AjxDateUtil.MONTH;
+function() {
+	return AjxDateUtil.MONTH;
 };
 
 ZmCalMonthView.prototype._dateUpdate =

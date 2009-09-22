@@ -923,6 +923,8 @@ function(ev) {
 ZmListView.prototype._checkItemCount =
 function() {
 
+	if (!this._list || (this._list.size() == 0)) { return; }
+	
 	DBG.println(AjxDebug.DBG2, "List view: checking item count");
 	var scrollDiv = this._parentEl;
 	var h = Dwt.getSize(scrollDiv).y;

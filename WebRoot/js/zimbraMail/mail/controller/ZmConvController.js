@@ -110,14 +110,26 @@ function(view) {
 ZmConvController.prototype._initializeToolBar = 
 function(view) {
 	if (!this._toolbar[view]) {
-		// nuke the double arrows for lower resolutions
-		var navArrows = AjxEnv.is1024x768orLower ? ZmNavToolBar.SINGLE_ARROWS : ZmNavToolBar.ALL_ARROWS;
-
-		ZmDoublePaneController.prototype._initializeToolBar.call(this, view, navArrows);
+		ZmDoublePaneController.prototype._initializeToolBar.call(this, view);
 	}
 	this._setupDeleteMenu(view);	// ALWAYS call setup to turn delete menu on/off
 	this._setupSpamButton(this._toolbar[view]);
 	this._setupCheckMailButton(this._toolbar[view]);
+};
+
+// conv view has arrows to go to prev/next conv, so needs regular nav toolbar
+ZmConvController.prototype._initializeNavToolBar =
+function(view) {
+	ZmMailListController.prototype._initializeNavToolBar.apply(this, arguments);
+	this._itemCountText[ZmSetting.RP_BOTTOM] = this._navToolBar[view]._textButton;
+};
+
+ZmConvController.prototype._navBarListener =
+function(ev) {
+	var op = ev.item.getData(ZmOperation.KEY_ID);
+	if (op == ZmOperation.PAGE_BACK || op == ZmOperation.PAGE_FORWARD) {
+		this._goToConv(op == ZmOperation.PAGE_FORWARD);
+	}
 };
 
 ZmConvController.prototype._setupViewMenuItems =
@@ -295,14 +307,14 @@ function(actionCode) {
 			break;
 
 		case ZmKeyMap.NEXT_CONV:
-			if (this._navToolBar[this._currentView].getButton(ZmOperation.PAGE_DBL_FORW).getEnabled()) {
-				this._paginateDouble(true);
+			if (this._navToolBar[this._currentView].getButton(ZmOperation.PAGE_FORWARD).getEnabled()) {
+				this._goToConv(true);
 			}
 			break;
 
 		case ZmKeyMap.PREV_CONV:
-			if (this._navToolBar[this._currentView].getButton(ZmOperation.PAGE_DBL_BACK).getEnabled()) {
-				this._paginateDouble(false);
+			if (this._navToolBar[this._currentView].getButton(ZmOperation.PAGE_BACK).getEnabled()) {
+				this._goToConv(false);
 			}
 			break;
 
@@ -349,16 +361,14 @@ function(view) {
 
 	var list = this._conv.list.getVector();
 
-	// enable/disable up/down buttons per conversation index
+	// enable/disable arrows per conversation index
 	var first = list.get(0);
-	this._navToolBar[view].enable(ZmOperation.PAGE_DBL_BACK, (first && first != this._conv));
+	this._navToolBar[view].enable(ZmOperation.PAGE_BACK, (first && first != this._conv));
 	var enablePgDn = this._conv.list.hasMore() || (list.getLast() != this._conv);
-	this._navToolBar[view].enable(ZmOperation.PAGE_DBL_FORW, enablePgDn);
+	this._navToolBar[view].enable(ZmOperation.PAGE_FORWARD, enablePgDn);
 
-	this._navToolBar[view].setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previousPage);
-	this._navToolBar[view].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.nextPage);
-	this._navToolBar[view].setToolTip(ZmOperation.PAGE_DBL_BACK, ZmMsg.previousConversation);
-	this._navToolBar[view].setToolTip(ZmOperation.PAGE_DBL_FORW, ZmMsg.nextConversation);
+	this._navToolBar[view].setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previousConversation);
+	this._navToolBar[view].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.nextConversation);
 };
 
 ZmConvController.prototype._getNumTotal =
@@ -378,11 +388,11 @@ function(view, offset, limit, callback) {
 	this._conv.load(params, callback);
 };
 
-ZmConvController.prototype._paginateDouble = 
-function(bDoubleForward) {
+ZmConvController.prototype._goToConv =
+function(next) {
 	var ctlr = this._parentController || AjxDispatcher.run("GetConvListController");
 	if (ctlr) {
-		ctlr.pageItemSilently(this._conv, bDoubleForward);
+		ctlr.pageItemSilently(this._conv, next);
 	}
 };
 

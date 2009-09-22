@@ -430,7 +430,7 @@ function(listener) {
 };
 
 ZmCalBaseView.prototype.getRollField =
-function(isDouble) {
+function() {
 	// override.
 	return 0;
 };

@@ -474,7 +474,7 @@ function() {
 };
 
 ZmMailListController.prototype._initializeToolBar =
-function(view, arrowStyle) {
+function(view) {
 
 	if (!this._toolbar[view]) {
 		ZmListController.prototype._initializeToolBar.call(this, view);
@@ -484,7 +484,7 @@ function(view, arrowStyle) {
 		}
 		this._setReplyText(this._toolbar[view]);
 		this._toolbar[view].addOp(ZmOperation.FILLER);
-		this._initializeNavToolBar(view, arrowStyle);
+		this._initializeNavToolBar(view);
 	}
 
 	this._setupViewMenu(view);
@@ -497,8 +497,8 @@ function(view, arrowStyle) {
 };
 
 ZmMailListController.prototype._initializeNavToolBar =
-function(view, arrowStyle) {
-	var tb = new ZmNavToolBar({parent:this._toolbar[view], arrowStyle:arrowStyle, context:view});
+function(view) {
+	var tb = new ZmNavToolBar({parent:this._toolbar[view], context:view});
 	this._setNavToolBar(tb, view);
 };
 
@@ -522,7 +522,7 @@ function() {
 			this._setupEditButton(this._actionMenu);
 		}
 	}
-	//notify Zimlet before showing 
+	//notify Zimlet before showing
 	appCtxt.notifyZimlets("onActionMenuInitialized", [this, this._actionMenu]);
 };
 
@@ -637,7 +637,7 @@ function(ev) {
 				this._participantActionMenu.getOp(ZmOperation.CONTACT).setText(ZmMsg.loading);
 				if (imItem) {
 					if (ZmImApp.updateImMenuItemByAddress(imItem, address, false)) {
-						imItem.setText(ZmMsg.loading);						
+						imItem.setText(ZmMsg.loading);
 					} else {
 						imItem = null;	// done updating item, didn't need server call
 					}
@@ -748,7 +748,7 @@ function(params) {
 	// get msg w/ addrs to select identity from - don't load it yet (no callback)
 	var msg = this.getMsg(params);
 	if (!msg) { return; }
-	
+
 	// use resolved msg to figure out identity/persona to use for compose
 	var collection = appCtxt.getIdentityCollection();
 	var identity = collection.selectIdentity(msg);
@@ -757,9 +757,9 @@ function(params) {
 	if (!action || action == ZmOperation.FORWARD_MENU || action == ZmOperation.FORWARD)	{
 		action = params.action = (appCtxt.get(ZmSetting.FORWARD_INCLUDE_ORIG) == ZmSetting.INCLUDE_ATTACH)
 			? ZmOperation.FORWARD_ATT : ZmOperation.FORWARD_INLINE;
-        //bug 40908 - invitation should be forwarded as attachment 
+        //bug 40908 - invitation should be forwarded as attachment
         if(msg.isInvite()) {
-            action = params.action = ZmOperation.FORWARD_ATT;             
+            action = params.action = ZmOperation.FORWARD_ATT;
         }
 	}
 
@@ -1028,7 +1028,7 @@ function(parent) {
 		item.setText(inSpamFolder ? ZmMsg.notJunk : ZmMsg.junk);
 		item.setImage(inSpamFolder ? 'Inbox' : 'JunkMail');
 		if (item.setToolTipContent) {
-			var tooltip = inSpamFolder ? ZmMsg.notJunkTooltip : ZmMsg.junkTooltip; 
+			var tooltip = inSpamFolder ? ZmMsg.notJunkTooltip : ZmMsg.junkTooltip;
 			item.setToolTipContent(ZmOperation.getToolTip(ZmOperation.SPAM, ZmKeyMap.MAP_NAME_R[this.getKeyMapName()], tooltip));
 		}
 	}
@@ -1134,7 +1134,7 @@ function(type, instanceDate, isResourceInvite) {
                 case ZmOperation.REPLY_TENTATIVE: 	replyBody = ZmMsg.defaultInviteReplyResourceTentativeInstanceMessage; break;
             }
         }
-        
+
 		if (replyBody) {
 			return AjxMessageFormat.format(replyBody, instanceDate);
 		}
@@ -1465,33 +1465,16 @@ function(currentItem, forward) {
 			break;
 		}
 	}
-	if (!bFound) return;
+	if (!bFound) { return; }
 
 	var itemIdx = forward ? i + 1 : i - 1;
-	if (itemIdx < 0)
+	if (itemIdx < 0) {
 		throw new DwtException("Bad index!", DwtException.INTERNAL_ERROR, "ZmMailListController.pageItemSilently");
+	}
 
-	var pageWasCached = true;
+	var newItem = list[itemIdx];
 	var lv = this._listView[this._currentView];
-	if (itemIdx >= list.length) {
-		if (this._list.hasMore()) {
-			pageWasCached = this._paginate(this._currentView, true, itemIdx);
-		} else {
-			// ERROR: no more conv's to retrieve!
-			throw new DwtException("Index has exceeded number of items in list!", DwtException.INTERNAL_ERROR, "ZmMailListController.pageItemSilently");
-		}
-	} else {
-		// this means the conv must be cached. Find out if we need to page back/forward.
-		if (itemIdx >= lv.offset + lv.getLimit(lv.offset)) {
-			pageWasCached = this._paginate(this._currentView, true);
-		} else if (itemIdx < lv.offset) {
-			pageWasCached = this._paginate(this._currentView, false);
-		}
-	}
-	if (pageWasCached) {
-		var newItem = list[itemIdx];
-		lv.emulateDblClick(newItem);
-	}
+	lv.emulateDblClick(newItem);
 };
 
 /*

@@ -981,16 +981,6 @@ function(viewId, forward) {
 	this.setDate(d, 0, true);
 };
 
-// attempts to process a nav toolbar up/down button click
-ZmCalViewController.prototype._paginateDouble =
-function(forward) {
-	var view = 	this._viewMgr.getCurrentView();
-	var field = view.getRollField(true);
-	var d = new Date(this._viewMgr.getDate());
-	d = AjxDateUtil.roll(d, field, forward ? 1 : -1);
-	this.setDate(d, 0, true);
-};
-
 ZmCalViewController.prototype.setDate =
 function(date, duration, roll) {
 	AjxDispatcher.require(["CalendarCore", "Calendar"]);

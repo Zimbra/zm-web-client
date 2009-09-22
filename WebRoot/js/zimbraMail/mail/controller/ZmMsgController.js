@@ -168,9 +168,9 @@ function() {
 };
 
 ZmMsgController.prototype._initializeToolBar =
-function(view, arrowStyle) {
+function(view) {
 	if (!appCtxt.isChildWindow) {
-		ZmMailListController.prototype._initializeToolBar.call(this, view, arrowStyle);
+		ZmMailListController.prototype._initializeToolBar.call(this, view);
 	} else {
 		var buttons = this._getToolBarOps();
 		if (!buttons) return;
@@ -197,6 +197,14 @@ function(view, arrowStyle) {
 			button.noMenuBar = true;
 			this._setupTagMenu(tb);
 		}
+	}
+};
+
+ZmMsgController.prototype._navBarListener =
+function(ev) {
+	var op = ev.item.getData(ZmOperation.KEY_ID);
+	if (op == ZmOperation.PAGE_BACK || op == ZmOperation.PAGE_FORWARD) {
+		this._goToMsg(this._currentView, (op == ZmOperation.PAGE_FORWARD));
 	}
 };
 
@@ -272,12 +280,11 @@ function(view) {
 	}
 };
 
-ZmMsgController.prototype._paginate =
-function(view, bPageForward) {
-	// NOTE: do not call base class
+ZmMsgController.prototype._goToMsg =
+function(view, next) {
 	var controller = AjxDispatcher.run(ZmMsgController.MODE_TO_CONTROLLER[this._mode]);
 	if (controller) {
-		controller.pageItemSilently(this._msg, bPageForward);
+		controller.pageItemSilently(this._msg, next);
 		this._resetNavToolBarButtons(view);
 	}
 };

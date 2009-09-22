@@ -166,9 +166,8 @@ function(view) {
 	ZmMailListController.prototype._initialize.call(this, view);
 };
 
-// all double-pane views are pageless
 ZmDoublePaneController.prototype._initializeNavToolBar =
-function(view, arrowStyle) {
+function(view) {
 	this._toolbar[view].addOp(ZmOperation.TEXT);
 	var text = this._itemCountText[ZmSetting.RP_BOTTOM] = this._toolbar[view].getButton(ZmOperation.TEXT);
 	text.addClassName("itemCountText");
@@ -730,15 +729,18 @@ function() {
 	return ZmMailListView.FIRST_ITEM;	
 };
 
+ZmDoublePaneController.prototype._getItemCountText =
+function() {
+	var list = this._list, type = this._mailListView.type;
+	var sizeText = list.size() + (list.hasMore() ? "+" : "");
+	var typeKey = (list.size() == 1) ? ZmItem.MSG_KEY[type] : ZmItem.PLURAL_MSG_KEY[type];
+	return AjxMessageFormat.format(ZmMsg.itemCount, [sizeText, ZmMsg[typeKey]]);
+};
+
 ZmDoublePaneController.prototype._setItemCountText =
 function(text) {
 
-	if (!text) {
-		var list = this._list, type = this._mailListView.type;
-		var sizeText = list.size() + (list.hasMore() ? "+" : "");
-		var typeKey = (list.size() == 1) ? ZmItem.MSG_KEY[type] : ZmItem.PLURAL_MSG_KEY[type];
-		var text = AjxMessageFormat.format(ZmMsg.itemCount, [sizeText, ZmMsg[typeKey]]);
-	}
+	text = text || this._getItemCountText();
 
 	var rpr = (this._getReadingPanePref() == ZmSetting.RP_RIGHT);
 	if (this._itemCountText[ZmSetting.RP_RIGHT]) {

@@ -77,16 +77,16 @@ function() {
 };
 
 ZmCalColView.prototype.getRollField =
-function(isDouble) {
+function() {
 	switch(this.view) {
 		case ZmId.VIEW_CAL_WORK_WEEK:
 		case ZmId.VIEW_CAL_WEEK:
-			return isDouble ? AjxDateUtil.MONTH : AjxDateUtil.WEEK;
+			return AjxDateUtil.WEEK;
 			break;
 		case ZmId.VIEW_CAL_DAY:
 		case ZmId.VIEW_CAL_SCHEDULE:
 		default:
-			return isDouble ? AjxDateUtil.WEEK : AjxDateUtil.DAY;
+			return AjxDateUtil.DAY;
 			break;
 	}
 };

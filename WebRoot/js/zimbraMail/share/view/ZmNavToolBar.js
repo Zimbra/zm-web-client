@@ -23,7 +23,6 @@
  *        parent			[DwtComposite]		the containing widget
  *        posStyle			[constant]*			positioning style
  *        className			[string]*			CSS class name
- *        arrowStyle		[const]				single arrows (default), double arrows, or both
  *        hasText			[boolean]*			true (default) if this toolbar includes text in the middle
  *        context			[const]*			view ID (used to generate button IDs)
  */
@@ -31,9 +30,8 @@
 ZmNavToolBar = function(params) {
 
 	params.className = params.className || "ZmNavToolBar";
-	params.arrowStyle = params.arrowStyle || ZmNavToolBar.SINGLE_ARROWS;
 	var hasText = (params.hasText !== false);
-	params.buttons = this._getButtons(params.arrowStyle, hasText);
+	params.buttons = this._getButtons(hasText);
 	params.toolbarType = ZmId.TB_NAV;
 	params.posStyle = params.posStyle || DwtControl.STATIC_STYLE;
 	ZmButtonToolBar.call(this, params);
@@ -41,10 +39,6 @@ ZmNavToolBar = function(params) {
 		this._textButton = this.getButton(ZmOperation.TEXT);
 	}
 };
-
-ZmNavToolBar.SINGLE_ARROWS	= 1;
-ZmNavToolBar.DOUBLE_ARROWS	= 2;
-ZmNavToolBar.ALL_ARROWS		= 3;
 
 ZmNavToolBar.prototype = new ZmButtonToolBar;
 ZmNavToolBar.prototype.constructor = ZmNavToolBar;
@@ -90,15 +84,14 @@ function(text) {
 };
 
 ZmNavToolBar.prototype._getButtons = 
-function(arrowStyle, hasText) {
-	var buttons = new Array();
-	this.hasSingleArrows = (arrowStyle == ZmNavToolBar.SINGLE_ARROWS || arrowStyle == ZmNavToolBar.ALL_ARROWS);
-	this.hasDoubleArrows = (arrowStyle == ZmNavToolBar.DOUBLE_ARROWS || arrowStyle == ZmNavToolBar.ALL_ARROWS);
-	if (this.hasDoubleArrows) buttons.push(ZmOperation.PAGE_DBL_BACK);
-	if (this.hasSingleArrows) buttons.push(ZmOperation.PAGE_BACK);
-	if (hasText) buttons.push(ZmOperation.TEXT);
-	if (this.hasSingleArrows) buttons.push(ZmOperation.PAGE_FORWARD);
-	if (this.hasDoubleArrows) buttons.push(ZmOperation.PAGE_DBL_FORW);
+function(hasText) {
+
+	var buttons = [];
+	buttons.push(ZmOperation.PAGE_BACK);
+	if (hasText) {
+		buttons.push(ZmOperation.TEXT);
+	}
+	buttons.push(ZmOperation.PAGE_FORWARD);
 
 	return buttons;
 };
