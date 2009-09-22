@@ -128,8 +128,18 @@
 	</div>
 </template>
 
-<template id='mail.Message#DownloadAll'>
-	<table border=0 cellpadding=0 cellspacing=0 style='margin-right:1em; margin-bottom:1px'>
+<template id='mail.Message#AllAttachments'>
+	<table border=0 cellspacing=0 style='margin:5px 0px 1px 0px'>
+		<$ if (data.viewAllUrl) { $>
+			<tr>
+				<td style='width:18px'>
+					<$= AjxImg.getImageHtml("ViewAll", "position:relative;") $>
+				</td>
+				<td style='white-space:nowrap'>
+					<a style='text-decoration:underline' class='AttLink' href='${viewAllUrl}' target="_blank"><$= ZmMsg.viewAllImages $></a>
+				</td>
+			</tr>
+		<$}$>
 		<tr>
 			<td style='width:18px'>
 				<$= AjxImg.getImageHtml(ZmMimeTable.getInfo(ZmMimeTable.APP_ZIP).image, "position:relative;") $>
@@ -137,11 +147,6 @@
 			<td style='white-space:nowrap'>
 				<a style='text-decoration:underline' class='AttLink' onclick='ZmZimbraMail.unloadHackCallback();' href='${url}&disp=a&fmt=zip'><$= ZmMsg.downloadAll $></a>
 			</td>
-			<$ if(data.viewAllUrl) { $>
-				<td style='white-space:nowrap'>
-					&nbsp;&nbsp;<a style='text-decoration:underline' class='AttLink' href='${viewAllUrl}' target="_blank"><$= ZmMsg.viewAllImages $></a>
-				</td>
-			<$}$>
 		</tr>
 	</table>
 </template>

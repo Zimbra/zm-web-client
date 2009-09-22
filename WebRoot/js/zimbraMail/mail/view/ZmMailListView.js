@@ -666,6 +666,14 @@ function(ev) {
 	
 	if (ev.event == ZmEvent.E_CREATE) {
 		DBG.println(AjxDebug.DBG2, "ZmMailListView: CREATE");
+
+		if (this._controller.actionedMsgId) {
+			var newMsg = appCtxt.getById(this._controller.actionedMsgId);
+			this._itemToSelect = (this._controller._app.getGroupMailBy() == ZmId.ITEM_CONV)
+				? appCtxt.getById(newMsg.cid) : newMsg;
+			this._controller.actionedMsgId = null;
+		}
+
 		if (this._list && this._list.contains(item)) { return; } // skip if we already have it
 		if (!this._handleEventType[item.type]) { return; }
 

@@ -1328,9 +1328,9 @@ function(findHits, includeInlineImages, includeInlineAtts) {
 				props.link = "<a target='_blank' class='AttLink' href='" + url + "'>";
 				if (!useCL) {
 					props.download = [
-							"<a style='text-decoration:underline' class='AttLink' href='",
-							url,
-							appCtxt.get(ZmSetting.ATTACHMENTS_BLOCKED)
+						"<a style='text-decoration:underline' class='AttLink' href='",
+						url,
+						appCtxt.get(ZmSetting.ATTACHMENTS_BLOCKED)
 							? "' target='_blank'>"
 							: "&disp=a' onclick='ZmZimbraMail.unloadHackCallback();'>"
 					].join("");
@@ -1369,6 +1369,10 @@ function(findHits, includeInlineImages, includeInlineAtts) {
 				} else {
 					props.url = url;
 				}
+
+				// bug: 233 - remove attachment
+				var onclickStr = "ZmMailMsgView.removeAttachmentCallback(" + "\"" + this.id + "\"" +  ",\"" + attach.part + "\");";
+				props.removeLink = "<a style='text-decoration:underline' class='AttLink' href='javascript:;' onclick='" + onclickStr + "'>";
 			}
 
 			// set the link icon
@@ -1379,10 +1383,15 @@ function(findHits, includeInlineImages, includeInlineAtts) {
 			// set other meta info
 			props.isHit = findHits && this._isAttInHitList(attach);
 			props.part = attach.part;
-			if (!useCL)
-				props.url = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI) + "&loc=" + AjxEnv.DEFAULT_LOCALE + "&id=" + this.id + "&part=" + attach.part;
-
-			if(attach.ci || (includeInlineImages && attach.cd == "inline")){ // bug: 28741
+			if (!useCL) {
+				props.url = [
+					appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI),
+					"&loc=", AjxEnv.DEFAULT_LOCALE,
+					"&id=", this.id,
+					"&part=", attach.part
+				].join("");
+			}
+			if (attach.ci || (includeInlineImages && attach.cd == "inline")) {  // bug: 28741
 				props.ci = true;
 			}
 

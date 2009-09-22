@@ -952,7 +952,7 @@ function(attach, hasCheckbox) {
 	var mimeInfo = ZmMimeTable.getInfo(attach.ct);
 	var icon = mimeInfo ? mimeInfo.image : "GenericDoc";
 	var size = attach.s;
-	var sizeText = null;
+	var sizeText;
 	if (size != null) {
 		if (size < 1024)		sizeText = size + " B";
 		else if (size < 1024^2)	sizeText = Math.round((size/1024) * 10) / 10 + " KB";
@@ -972,14 +972,13 @@ function(attach, hasCheckbox) {
 		html[i++] = "'></td>";
 	}
 
-	var hrefRoot = "href='" + msgFetchUrl + "&id=" + this.invId + "&amp;part=";
+	var hrefRoot = ["href='", msgFetchUrl, "&id=", this.invId, "&amp;part="].join("");
 	html[i++] = "<td width=20><a target='_blank' class='AttLink' ";
 	html[i++] = hrefRoot;
 	html[i++] = attach.part;
 	html[i++] = "'>";
 	html[i++] = AjxImg.getImageHtml(icon);
-	html[i++] = "</a></td>";
-	html[i++] = "<td><a target='_blank' class='AttLink' ";
+	html[i++] = "</a></td><td><a target='_blank' class='AttLink' ";
 	if (appCtxt.get(ZmSetting.MAIL_ENABLED) && attach.ct == ZmMimeTable.MSG_RFC822) {
 		html[i++] = " href='javascript:;' onclick='ZmCalItemView.rfc822Callback(";
 		html[i++] = '"';
@@ -989,7 +988,9 @@ function(attach, hasCheckbox) {
 		html[i++] = attach.part;
 		html[i++] = "\"); return false;'";
 	} else {
-		html[i++] = hrefRoot + attach.part + "'";
+		html[i++] = hrefRoot;
+		html[i++] = attach.part;
+		html[i++] = "'";
 	}
 	html[i++] = ">";
 	html[i++] = attach.filename;
@@ -1002,20 +1003,17 @@ function(attach, hasCheckbox) {
 		html[i++] = "&nbsp;(";
 		if (sizeText) {
 			html[i++] = sizeText;
-			if (addHtmlLink)
-				html[i++] = ", ";
+			html[i++] = ") ";
 		}
 		if (addHtmlLink) {
 			html[i++] = "<a style='text-decoration:underline' target='_blank' class='AttLink' ";
 			html[i++] = hrefRoot;
 			html[i++] = attach.part;
-			html[i++] = "&view=html";
-			html[i++] = "'>";
-			html[i++] = ZmMsg.viewAsHtml;
+			html[i++] = "&view=html'>";
+			html[i++] = ZmMsg.preview;
 			html[i++] = "</a>";
 		}
 		if (attach.ct != ZmMimeTable.MSG_RFC822) {
-			html[i++] = ", ";
 			html[i++] = "<a style='text-decoration:underline' class='AttLink' onclick='ZmZimbraMail.unloadHackCallback();' ";
 			html[i++] = hrefRoot;
 			html[i++] = attach.part;
@@ -1023,11 +1021,9 @@ function(attach, hasCheckbox) {
 			html[i++] = ZmMsg.download;
 			html[i++] = "</a>";
 		}
-		html[i++] = ")";
 	}
 
-	html[i++] = "</td></tr>";
-	html[i++] = "</table>";
+	html[i++] = "</td></tr></table>";
 
 	return html.join("");
 };

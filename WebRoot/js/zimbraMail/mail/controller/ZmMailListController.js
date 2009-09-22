@@ -341,6 +341,36 @@ function(map) {
 	return (map == "list");
 };
 
+ZmMailListController.prototype.removeAttachment =
+function(msgId, partIds) {
+	if (!(partIds instanceof Array)) partIds = [partIds];
+
+	var jsonObj = {RemoveAttachmentsRequest: {_jsns:"urn:zimbraMail"}};
+	var request = jsonObj.RemoveAttachmentsRequest;
+	request.m = {
+		id: msgId,
+		part: partIds.join(",")
+	};
+
+	var lv = this._listView[this._currentView];
+	var item = lv.getSelection()[0];
+
+	var searchParams = {
+		jsonObj: jsonObj,
+		asyncMode: true,
+		callback: (new AjxCallback(this, this._handleRemoveAttachment)),
+		noBusyOverlay: true
+	};
+	return appCtxt.getAppController().sendRequest(searchParams);
+};
+
+ZmMailListController.prototype._handleRemoveAttachment =
+function(result) {
+	// cache this actioned ID so we can reset selection to it once the CREATE
+	// notifications have been processed.
+	this.actionedMsgId = result.getResponse().RemoveAttachmentsResponse.m[0].id;
+};
+
 ZmMailListController.prototype.sendReadReceipt =
 function(msg) {
 	if (!appCtxt.get(ZmSetting.MAIL_READ_RECEIPT_ENABLED) || msg.readReceiptSent || msg.isSent) {
