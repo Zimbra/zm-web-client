@@ -2238,6 +2238,26 @@ HTML>BODY .appt-selected .appt_allday_body
 	width: 100%;
 }
 
+.ZmBufferList a:link,
+.ZmBufferList a:visited,
+.ZmPhoneBufferList a:link,
+.ZmPhoneBufferList a:visited {
+	color:#3459F5;
+	cursor:pointer;
+	text-decoration:none;
+}
+
+.ZmBufferList a:hover,
+.ZmBufferList a:active,
+.ZmBufferList .FakeAnchor,
+.ZmPhoneBufferList a:hover,
+.ZmPhoneBufferList a:active,
+.ZmPhoneBufferList .FakeAnchor {
+	color:#3459F5;
+	cursor:pointer;
+	text-decoration:underline;
+}
+
 /* table that holds the 'restore defaults' button */
 .ZOptionsDefaultsTable {
 	margin-bottom: 0.5em;

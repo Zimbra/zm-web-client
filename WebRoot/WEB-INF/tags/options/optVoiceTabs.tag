@@ -18,7 +18,7 @@
             <td class='TabSpacer'/>
             <td class='Tab ${voiceselected=='general' ? 'TabSelected' :'TabNormal'}'>
                 <a href="<c:url value="/h/options?selected=voice&voiceselected=general&prev=${prev}"/>">
-                    <span><fmt:message key="general"/></span></a>
+                    <span><fmt:message key="voiceMail"/></span></a>
             </td>
 	    
 	    <td class='TabSpacer'/>
