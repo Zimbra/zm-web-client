@@ -85,7 +85,7 @@ function(rule, editMode, referenceRule) {
 	this.setTitle(rule ? ZmMsg.editFilter : ZmMsg.addFilter);
 
 	var nameField = document.getElementById(this._nameInputId);
-	var name = rule ? AjxStringUtil.stripTags(rule.name, true) : null;
+	var name = rule ? rule.name : null;
 	nameField.value = name || "";
 
 	var activeField = document.getElementById(this._activeCheckboxId);
@@ -914,9 +914,8 @@ function(ev) {
 	name = name.replace (/^\s*/,'');
 	if (!name) {
 		msg = ZmMsg.filterErrorNoName;
-	} else {
-		name = AjxStringUtil.stripTags(name, true);
 	}
+
 	var rule1 = this._rules.getRuleByName(name);
 	if (rule1 && (rule1 != rule)) {
 		msg = ZmMsg.filterErrorNameExists;

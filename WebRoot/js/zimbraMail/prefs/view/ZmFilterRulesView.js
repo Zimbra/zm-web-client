@@ -165,7 +165,7 @@ function(html, idx, item, field, colIdx, params) {
 		html[idx++] = this._internalId;
 		html[idx++] = "' onchange='ZmFilterListView._activeStateChange'>";
 	} else if (field == ZmFilterListView.COL_NAME) {
-		html[idx++] = AjxStringUtil.stripTags(item.name, true);
+		html[idx++] = AjxStringUtil.htmlEncode(item.name);
 	}
 
 	return idx;
