@@ -971,7 +971,7 @@ function(request, isDraft, accountName, requestReadReceipt) {
 		var folder = msg ? ac.getById(msg.folderId) : null;
 		if (!folder || (folder && !folder.isInTrash())) {
 			if (!ac.isOffline && !isDraft && this._origMsg && this._origMsg.isDraft) {
-				var defaultAcct = ac.accountList.defaultAccount;
+				var defaultAcct = ac.accountList.defaultAccount || ac.accountList.mainAccount;
 				var from = this._origMsg.getAddresses(AjxEmailAddress.FROM).get(0);
 				// this means we're sending a draft msg obo
 				if (from && from.address != defaultAcct.getEmail()) {
