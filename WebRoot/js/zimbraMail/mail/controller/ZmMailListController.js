@@ -343,17 +343,25 @@ function(map) {
 
 ZmMailListController.prototype.removeAttachment =
 function(msgId, partIds) {
-	if (!(partIds instanceof Array)) partIds = [partIds];
+	var msg = (partIds.length > 1)
+		? ZmMsg.attachmentConfirmRemoveAll
+		: ZmMsg.attachmentConfirmRemove;
+
+	if (!(partIds instanceof Array)) { partIds = [partIds]; }
+
+	var dlg = appCtxt.getYesNoMsgDialog();
+	dlg.registerCallback(DwtDialog.YES_BUTTON, this._removeAttachmentCallback, this, [msgId, partIds, dlg]);
+	dlg.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
+	dlg.popup();
+};
+
+ZmMailListController.prototype._removeAttachmentCallback =
+function(msgId, partIds, dlg) {
+	dlg.popdown();
 
 	var jsonObj = {RemoveAttachmentsRequest: {_jsns:"urn:zimbraMail"}};
 	var request = jsonObj.RemoveAttachmentsRequest;
-	request.m = {
-		id: msgId,
-		part: partIds.join(",")
-	};
-
-	var lv = this._listView[this._currentView];
-	var item = lv.getSelection()[0];
+	request.m = { id: msgId, part: partIds.join(",") };
 
 	var searchParams = {
 		jsonObj: jsonObj,

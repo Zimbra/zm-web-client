@@ -148,6 +148,14 @@
 				<a style='text-decoration:underline' class='AttLink' onclick='ZmZimbraMail.unloadHackCallback();' href='${url}&disp=a&fmt=zip'><$= ZmMsg.downloadAll $></a>
 			</td>
 		</tr>
+		<tr>
+			<td style='width:18px'>
+				<$= AjxImg.getImageHtml("AttachmentRemove", "position:relative;") $>
+			</td>
+			<td style='white-space:nowrap'>
+				<a style='text-decoration:underline' class='AttLink' onclick='ZmMailMsgView.removeAttachmentCallback("${itemId}", "${partIds}");' href='javascript:;'><$= ZmMsg.removeAllAttachments $></a>
+			</td>
+		</tr>
 	</table>
 </template>
 

@@ -1927,24 +1927,22 @@ function(msgId, partId) {
 };
 
 ZmMailMsgView.removeAttachmentCallback =
-function(msgId, partId) {
+function(msgId, partIds) {
 	ZmZimbraMail.unloadHackCallback();
 
 	var ac = window.parentAppCtxt || window.appCtxt;
-	ac.getApp(ZmApp.MAIL).getMailListController().removeAttachment(msgId, partId);
+	ac.getApp(ZmApp.MAIL).getMailListController().removeAttachment(msgId, partIds);
 };
 
 ZmMailMsgView._buildZipUrl =
 function(itemId, attachments, viewAllImages) {
-	var csfeUrl = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI);
-	var url = csfeUrl + "&id=" + itemId + "&part=";
+	var url = [appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI), "&id=", itemId, "&part="].join("");
+	var parts = [];
 	for (var j = 0; j < attachments.length; j++) {
-		url += attachments[j].part;
-		if (j <= attachments.length) {
-			url += ",";
-		}
+		parts.push(attachments[j].part);
 	}
-	var params = {url:url};
+	var partsStr = parts.join(",");
+	var params = { url:(url+partsStr), partIds:partsStr, itemId:itemId };
 	if (viewAllImages) {
 		params.viewAllUrl = "/h/viewimages?id="+itemId;
 	}
