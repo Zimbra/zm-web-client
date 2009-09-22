@@ -131,7 +131,6 @@ function() {
 	    var id = this.addTab(section.title, section.page, tabButtonId);
 	    this._pages[id] = section.page;
 	} catch (e) {
-//	    console.log(e);
 	}
     }
     this.setVisible(true);
@@ -1335,10 +1334,12 @@ ZmEmailNotificationUI.prototype.show =
 function(feature) {
 	this._comboBox.setText("");
 	var arr = feature.data.value.split(",");
-	for (var i=0; i<arr.length; i++) {
-		arr[i] = {text:AjxStringUtil.trim(arr[i])};
+	if (arr.length>0) {
+		for (var i=0; i<arr.length; i++) {
+			arr[i] = {text:AjxStringUtil.trim(arr[i])};
+		}
+		this._list.set(AjxVector.fromArray(arr), 1);
 	}
-	this._list.set(AjxVector.fromArray(arr), 1);
 };
 
 ZmEmailNotificationUI.prototype._isValueDirty =
@@ -1352,7 +1353,12 @@ function() {
 ZmEmailNotificationUI.prototype.getFeature =
 function() {
 	var result = ZmCallFeatureUI.prototype.getFeature.call(this);
-	result.data.value = this._getAddresses().join(",");
+	var addresses = this._getAddresses();	
+	if (!addresses || addresses.length==0) {
+		result.isActive = false;
+	} else {
+		result.data.value = this._getAddresses().join(",");
+	}
 	return result;
 };
 
@@ -1393,17 +1399,17 @@ ZmEmailNotificationUI.prototype._handleAddFromNumber =
 function(event) {
 	var addValue = this._comboBox.getText();
 	if (this._list.getList().size() >= ZmCallFeature.EMAIL_NOTIFICATION_MAX_ENTRIES) {
-		appCtxt.setStatusMsg(ZmMsg.voicemailNotificationErrorMax);
+		appCtxt.setStatusMsg(ZmMsg.voicemailNotificationErrorMax || "");
 	} else if (!AjxUtil.isString(addValue) || AjxStringUtil.trim(addValue) == "") {
-		appCtxt.setStatusMsg(ZmMsg.missingEmailAddress);
+		appCtxt.setStatusMsg(ZmMsg.missingEmailAddress || "");
 		this._comboBox.focus();
 	} else if (!AjxEmailAddress.isValid(addValue)) {
-		appCtxt.setStatusMsg(ZmMsg.voicemailNotificationErrorInvalid);
+		appCtxt.setStatusMsg(ZmMsg.voicemailNotificationErrorInvalid || "");
 		this._comboBox.focus();
 	} else {
 		var addObject = {a: true, text: addValue.toLowerCase()};
 		if (this._list.containsItem(addObject)) {
-			appCtxt.setStatusMsg(ZmMsg.errorEmailNotUnique);
+			appCtxt.setStatusMsg(ZmMsg.errorEmailNotUnique || "");
 			this._comboBox.focus();
 		} else {
 			this._list.addItem(addObject, null, false);
@@ -1501,18 +1507,32 @@ function(errors) {
 ZmSelectiveCallForwardingUI.prototype.getFeature =
 function() {
 	var result = ZmCallFeatureUI.prototype.getFeature.call(this);
-	result.data.phone = this._getFrom();
-	result.data.ft = this._getTo();
+	
+	var from = this._getFrom();
+	if (!from || from.length==0) {
+		result.isActive = false;
+	} else {
+		result.data.phone = from;
+	}
+
+	var to = this._getTo();
+	if (!to || to=="") {
+		result.isActive = false;
+	} else {
+		result.data.ft = to;
+	}
 	return result;
 };
 
 ZmSelectiveCallForwardingUI.prototype._getFrom =
 function() {
-	var items = this._list.getList().getArray();
-	var from = [];
-	for (var i=0; i<items.length; i++)
-		from.push({a: items[i].a, pn: items[i].pn}); // Filter all other attributes
-	return from;
+	if (this._list) {
+		var items = this._list.getList().getArray();
+		var from = [];
+		for (var i=0; i<items.length; i++)
+			from.push({a: items[i].a, pn: items[i].pn}); // Filter all other attributes
+		return from;
+	}
 }
 
 ZmSelectiveCallForwardingUI.prototype._getTo =
@@ -1529,21 +1549,21 @@ ZmSelectiveCallForwardingUI.prototype._handleAddFromNumber =
 function(event) {
 	var addValue = this._addField.getValue();
 	if (!addValue || AjxStringUtil.trim(addValue) == "") {
-		appCtxt.setStatusMsg(AjxMsg.valueIsRequired);
+		appCtxt.setStatusMsg(AjxMsg.valueIsRequired || "");
 		this._addField.focus();
 	} else {
 		var error = this._view._validatePhoneNumberFct(addValue);
 		if (error!=null) {
-			appCtxt.setStatusMsg(error);
+			appCtxt.setStatusMsg(error || "");
 			this._addField.focus();
 		} else {
 			if (!ZmPhone.isValid(addValue)) { // Possibly obsolete, but doesn't do any harm
-				appCtxt.setStatusMsg(ZmMsg.selectiveCallForwardingError);
+				appCtxt.setStatusMsg(ZmMsg.selectiveCallForwardingError || "");
 				this._addField.focus();
 			} else {
 				var addObject = {a: true, pn: ZmPhone.calculateName(addValue)};
 				if (this._list.containsItem(addObject)) {
-					appCtxt.setStatusMsg(ZmMsg.errorPhoneNotUnique);
+					appCtxt.setStatusMsg(ZmMsg.errorPhoneNotUnique || "");
 					this._addField.focus();
 				} else {
 					this._list.addItem(addObject, null, false);
@@ -1735,19 +1755,24 @@ function(errors) {
 ZmSelectiveCallRejectionUI.prototype.getFeature =
 function() {
 	var result = ZmCallFeatureUI.prototype.getFeature.call(this);
-	result.data.phone = this._getFrom();
-	if (this._getFrom().length < 1)
+	var from = this._getFrom();
+	if (!from || from.length==0) {
 		result.isActive = false;
+	} else {
+		result.data.phone = from;
+	}
 	return result;
 };
 
 ZmSelectiveCallRejectionUI.prototype._getFrom =
 function() {
-	var items = this._list.getList().getArray();
-	var from = [];
-	for (var i=0; i<items.length; i++)
-		from.push({a: items[i].a, pn: items[i].pn}); // Filter all other attributes
-	return from;
+	if (this._list) {
+		var items = this._list.getList().getArray();
+		var from = [];
+		for (var i=0; i<items.length; i++)
+			from.push({a: items[i].a, pn: items[i].pn}); // Filter all other attributes
+		return from;
+	}
 }
 
 ZmSelectiveCallRejectionUI.prototype._handleAddFromNumber =
@@ -1907,19 +1932,24 @@ function(errors) {
 ZmSelectiveCallAcceptanceUI.prototype.getFeature =
 function() {
 	var result = ZmCallFeatureUI.prototype.getFeature.call(this);
-	result.data.phone = this._getFrom();
-	if (this._getFrom().length < 1)
+	var from = this._getFrom();
+	if (!from || from.length==0) {
 		result.isActive = false;
+	} else {
+		result.data.phone = from;
+	}
 	return result;
 };
 
 ZmSelectiveCallAcceptanceUI.prototype._getFrom =
 function() {
-	var items = this._list.getList().getArray();
-	var from = [];
-	for (var i=0; i<items.length; i++)
-		from.push({a: items[i].a, pn: items[i].pn}); // Filter all other attributes
-	return from;
+	if (this._list) {
+		var items = this._list.getList().getArray();
+		var from = [];
+		for (var i=0; i<items.length; i++)
+			from.push({a: items[i].a, pn: items[i].pn}); // Filter all other attributes
+		return from;
+	}
 }
 
 ZmSelectiveCallAcceptanceUI.prototype._handleAddFromNumber =
