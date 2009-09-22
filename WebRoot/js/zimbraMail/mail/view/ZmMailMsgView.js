@@ -1829,11 +1829,19 @@ function(msg, preferHtml, callback) {
 
 	html[idx++] = "</div>";
 
+    html = html.join("");
+
+    //Fix Inline Images
+    html = ZmMailMsgView._fixMultipartRelatedImagesInContent(msg, html);
+
+    //Fix External Images
+    html = ZmMailMsgView._fixExternalImagesInContent(html);
+    
 	if (callback) {
-		var result = new ZmCsfeResult(html.join(""));
+		var result = new ZmCsfeResult(html);
 		callback.run(result);
 	} else {
-		return html.join("");
+		return html;
 	}
 };
 
@@ -1841,6 +1849,12 @@ ZmMailMsgView._fixMultipartRelatedImagesInContent = function(msg, content) {
 	return content.replace(/dfsrc=([\x27\x22])cid:([^\x27\x22]+)\1/ig, function(s, q, cid) {
 		return "src=" + q + msg.getContentPartAttachUrl(ZmMailMsg.CONTENT_PART_ID, ("<" + cid + ">")) + q;
 	});
+};
+
+ZmMailMsgView._fixExternalImagesInContent = function(content){
+    return content.replace(/(<img\s+.*)(dfsrc)(\s*=\s*[^>]*>)/ig, function(match, beforeDfsrc, dfsrc, afterDfsrc){
+        return beforeDfsrc+"src"+afterDfsrc;
+    });
 };
 
 ZmMailMsgView._swapIdAndSrc =
