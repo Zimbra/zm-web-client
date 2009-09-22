@@ -245,6 +245,10 @@
                 collapse: true,
                 draggable: false
             });
+            /*enable buttons that are disabled by default */
+            myEdit[i].on('afterNodeChange', function() {
+                    this.toolbar.enableAllButtons();
+            });
             myEdit[i]._defaultToolbar.titlebar = false;
             myEdit[i].render();
         } else if(sigType == 'text/plain') {
@@ -263,6 +267,11 @@
         draggable: false
     });
 
+	/*enable buttons that are disabled by default */
+    myEditor.on('afterNodeChange', function() {
+         this.toolbar.enableAllButtons();
+    });
+            
     /*hide titlebar*/
     myEditor._defaultToolbar.titlebar = false;
     myEditor.render();
