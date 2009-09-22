@@ -84,11 +84,19 @@ function() {
 			ZmOperation.TAG_MENU,
 			ZmOperation.SEP,
 			ZmOperation.VIEW_MENU,
-            ZmOperation.SEP,
-            ZmOperation.NEW_DOC,
-            ZmOperation.NEW_SPREADSHEET,
-            ZmOperation.NEW_PRESENTATION,
-            ZmOperation.FILLER];
+            ZmOperation.SEP];
+
+    if(appCtxt.get(ZmSetting.DOCS_ENABLED)){
+           ops.push(ZmOperation.NEW_DOC);
+    }
+    if(appCtxt.get(ZmSetting.SPREADSHEET_ENABLED)){
+           ops.push(ZmOperation.NEW_SPREADSHEET);
+    }
+    if(appCtxt.get(ZmSetting.SLIDES_ENABLED)){
+           ops.push(ZmOperation.NEW_PRESENTATION);
+    }
+        
+    ops.push(ZmOperation.FILLER);
     
     if(appCtxt.get(ZmSetting.MAIL_ENABLED)){
         ops.push(ZmOperation.SEND_FILE_MENU);
