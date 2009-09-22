@@ -64,6 +64,7 @@ ZmFilterRule.C_DATE		= i++;
 ZmFilterRule.C_BODY		= i++;
 ZmFilterRule.C_ATT		= i++;
 ZmFilterRule.C_ADDRBOOK	= i++;
+ZmFilterRule.C_INVITE	= i++;
 
 ZmFilterRule.C_HEADER_VALUE = {};
 ZmFilterRule.C_HEADER_VALUE[ZmFilterRule.C_FROM]	= "from";
@@ -88,6 +89,7 @@ ZmFilterRule.C_LABEL[ZmFilterRule.C_DATE]		= ZmMsg.date;
 ZmFilterRule.C_LABEL[ZmFilterRule.C_BODY]		= ZmMsg.body;
 ZmFilterRule.C_LABEL[ZmFilterRule.C_ATT]		= ZmMsg.attachment;
 ZmFilterRule.C_LABEL[ZmFilterRule.C_ADDRBOOK]	= ZmMsg.addressIn;
+ZmFilterRule.C_LABEL[ZmFilterRule.C_INVITE]		= ZmMsg.calendarInvite;
 
 // Tests
 ZmFilterRule.TEST_ADDRESS						= "addressTest"; // not currently support
@@ -98,6 +100,7 @@ ZmFilterRule.TEST_DATE							= "dateTest";
 ZmFilterRule.TEST_BODY							= "bodyTest";
 ZmFilterRule.TEST_ATTACHMENT					= "attachmentTest";
 ZmFilterRule.TEST_ADDRBOOK						= "addressBookTest";
+ZmFilterRule.TEST_INVITE						= "inviteTest";
 
 // Conditions map to Tests
 ZmFilterRule.C_TEST_MAP = {};
@@ -111,6 +114,7 @@ ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_DATE]	= ZmFilterRule.TEST_DATE;
 ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_BODY]	= ZmFilterRule.TEST_BODY;
 ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_ATT]		= ZmFilterRule.TEST_ATTACHMENT;
 ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_ADDRBOOK]= ZmFilterRule.TEST_ADDRBOOK;
+ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_INVITE]	= ZmFilterRule.TEST_INVITE;
 
 // Operations (verbs)
 var i = 1;
@@ -264,6 +268,10 @@ ZmFilterRule.CONDITIONS[ZmFilterRule.C_ADDRBOOK] = {
 		value:		ZmFilterRule.TYPE_SELECT,
 		vOptions:	[{label: ZmMsg.myContacts, value: "contacts"}]
 };
+ZmFilterRule.CONDITIONS[ZmFilterRule.C_INVITE] = {
+		ops:		ZmFilterRule.TYPE_SELECT,
+		opsOptions:	[ZmFilterRule.OP_EXISTS, ZmFilterRule.OP_NOT_EXISTS]
+};
 
 // listed in order we want to display them in the SELECT
 ZmFilterRule.CONDITIONS_LIST = [
@@ -276,7 +284,8 @@ ZmFilterRule.CONDITIONS_LIST = [
 	ZmFilterRule.C_DATE,
 	ZmFilterRule.C_BODY,
 	ZmFilterRule.C_ATT,
-	ZmFilterRule.C_ADDRBOOK
+	ZmFilterRule.C_ADDRBOOK,
+	ZmFilterRule.C_INVITE
 ];
 
 // mark certain conditions as headers

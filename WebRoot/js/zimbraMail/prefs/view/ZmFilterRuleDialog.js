@@ -330,6 +330,7 @@ function(test, data) {
 		case ZmFilterRule.TEST_BODY:			condition = ZmFilterRule.C_BODY; break;
 		case ZmFilterRule.TEST_ATTACHMENT:		condition = ZmFilterRule.C_ATT; break;
 		case ZmFilterRule.TEST_ADDRBOOK:		condition = ZmFilterRule.C_ADDRBOOK; break;
+		case ZmFilterRule.TEST_INVITE:			condition = ZmFilterRule.C_INVITE; break;
 	}
 
 	return (condition ? ZmFilterRule.CONDITIONS[condition] : null);
@@ -557,6 +558,7 @@ function(isMainSelect, testType, field, rowData) {
 			case ZmFilterRule.TEST_BODY:			dataValue = ZmFilterRule.C_BODY; break;
 			case ZmFilterRule.TEST_ATTACHMENT:		dataValue = ZmFilterRule.C_ATT; break;
 			case ZmFilterRule.TEST_ADDRBOOK:		dataValue = ZmFilterRule.C_ADDRBOOK; break;
+			case ZmFilterRule.TEST_INVITE:			dataValue = ZmFilterRule.C_INVITE; break;
 			// default returns action type
 			default:								return ZmFilterRule.A_VALUE_MAP[testType];
 		}
@@ -610,7 +612,9 @@ function(isMainSelect, testType, field, rowData) {
 				dataValue = rowData.value;
 			}
 		}
-		else if (testType == ZmFilterRule.TEST_ATTACHMENT) {
+		else if (testType == ZmFilterRule.TEST_ATTACHMENT ||
+				 testType == ZmFilterRule.TEST_INVITE)
+		{
 			if (field == "ops") {
 				dataValue = (rowData.negative == "1")
 					? ZmFilterRule.OP_NOT_EXISTS
