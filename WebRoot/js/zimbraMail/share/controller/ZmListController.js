@@ -1044,7 +1044,6 @@ function(view, offset, limit, callback, isCurrent, lastId, lastSortVal) {
 ZmListController.prototype._paginate =
 function(view, forward, loadIndex, limit) {
 
-	this._searchResult = null;
 	var needMore = false;
 	var lv = this._listView[view];
 	var offset, max;
@@ -1075,7 +1074,7 @@ function(view, forward, loadIndex, limit) {
 
 		// handle race condition - user has paged quickly and we don't want
 		// to do second fetch while one is pending
-		if (offset == this._lastOffset) { return false;	}
+		if (this._searchPending) { return false;	}
 
 		// figure out if this requires cursor-based paging
 		var list = lv.getList();
@@ -1086,9 +1085,9 @@ function(view, forward, loadIndex, limit) {
 		this._setItemCountText(ZmMsg.loading);
 
 		// get next page of items from server; note that callback may be overridden
+		this._searchPending = true;
 		var respCallback = new AjxCallback(this, this._handleResponsePaginate, [view, false, loadIndex, offset]);
 		this._search(view, offset, max, respCallback, true, lastId, lastSortVal);
-		this._lastOffset = offset;
 		return false;
 	} else if (!lv._isPageless) {
 		lv.offset = offset; // cache new offset
@@ -1112,7 +1111,7 @@ function(view, forward, loadIndex, limit) {
 ZmListController.prototype._handleResponsePaginate =
 function(view, saveSelection, loadIndex, offset, result, ignoreResetSelection) {
 
-	var searchResult = this._searchResult = result.getResponse();
+	var searchResult = result.getResponse();
 
 	// update "more" flag
 	this._list.setHasMore(searchResult.getAttribute("more"));
@@ -1135,6 +1134,7 @@ function(view, saveSelection, loadIndex, offset, result, ignoreResetSelection) {
 	}
 
 	appCtxt.getAppController().focusContentPane();
+	this._searchPending = false;
 };
 
 ZmListController.prototype._getMoreSearchParams =
