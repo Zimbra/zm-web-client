@@ -1078,7 +1078,7 @@ function(dialog, format, subFormat, folder) {
 		var folderName = folder._systemName || AjxStringUtil.urlEncode(folder.getPath());
 		var username = appCtxt.multiAccounts ? (AjxStringUtil.urlComponentEncode(appCtxt.get(ZmSetting.USERNAME))) : "~";
 		var uri = [
-			location.protocol, "//", document.domain, portPrefix, "/service/home/",
+			location.protocol, "//", location.hostname, portPrefix, "/service/home/",
 			username, "/", folderName,
 			"?auth=co&fmt=", format,
 			subFormat ? "&"+format+"fmt="+subFormat : "" // e.g. csvfmt=zimbra-csv

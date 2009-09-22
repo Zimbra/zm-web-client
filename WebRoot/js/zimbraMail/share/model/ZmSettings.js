@@ -485,23 +485,23 @@ function(list, callback, result) {
 // Set defaults which are determined dynamically (which can't be set in static code).
 ZmSettings.prototype._setDefaults =
 function() {
-	var value = AjxUtil.formatUrl({host:document.domain, path:"/service/soap/", qsReset:true});
+	var value = AjxUtil.formatUrl({host:location.hostname, path:"/service/soap/", qsReset:true});
 	this._settings[ZmSetting.CSFE_SERVER_URI].setValue(value, null, false, true);
 
 	// CSFE_MSG_FETCHER_URI
-	value = AjxUtil.formatUrl({host:document.domain, path:"/service/home/~/", qsReset:true, qsArgs:{auth:"co"}});
+	value = AjxUtil.formatUrl({host:location.hostname, path:"/service/home/~/", qsReset:true, qsArgs:{auth:"co"}});
 	this._settings[ZmSetting.CSFE_MSG_FETCHER_URI].setValue(value, null, false, true);
 
 	// CSFE_UPLOAD_URI
-	value = AjxUtil.formatUrl({host:document.domain, path:"/service/upload", qsReset:true, qsArgs:{lbfums:""}});
+	value = AjxUtil.formatUrl({host:location.hostname, path:"/service/upload", qsReset:true, qsArgs:{lbfums:""}});
 	this._settings[ZmSetting.CSFE_UPLOAD_URI].setValue(value, null, false, true);
 
 	// CSFE_ATTACHMENT_UPLOAD_URI
-	value = AjxUtil.formatUrl({host:document.domain, path:"/service/upload", qsReset:true});
+	value = AjxUtil.formatUrl({host:location.hostname, path:"/service/upload", qsReset:true});
 	this._settings[ZmSetting.CSFE_ATTACHMENT_UPLOAD_URI].setValue(value, null, false, true);
 
 	// CSFE EXPORT URI
-	value = AjxUtil.formatUrl({host:document.domain, path:"/service/home/~/", qsReset:true, qsArgs:{auth:"co", id:"{0}", fmt:"csv"}});
+	value = AjxUtil.formatUrl({host:location.hostname, path:"/service/home/~/", qsReset:true, qsArgs:{auth:"co", id:"{0}", fmt:"csv"}});
 	this._settings[ZmSetting.CSFE_EXPORT_URI].setValue(value, null, false, true);
 
 	// default sorting preferences

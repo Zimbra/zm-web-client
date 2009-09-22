@@ -707,7 +707,7 @@ function(fullVersion, width, height) {
 	var i = 0;
 	url[i++] = document.location.protocol;
 	url[i++] = "//";
-	url[i++] = document.domain;
+	url[i++] = location.hostname;
 	url[i++] = (!location.port || location.port == "80") ? "" : (":" + location.port);
 	url[i++] = appContextPath;
 	url[i++] = "/public/launchNewWindow.jsp?skin=";
