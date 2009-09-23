@@ -154,8 +154,15 @@ and the container element is replaced with that control.
 							</tr>
 						<$ } $>
 
+						<$ if (!appCtxt.isOffline) { $>
+							<tr>
+								<td class='ZOptionsLabelTop'><$=ZmMsg.checkMailPrefLabel$></td>
+								<td class='ZOptionsField'><select id='${id}_GET_MAIL_ACTION' tabindex='45'></select></td>
+							</tr>
+						<$ } $>
+
 						<tr>
-							<td class='ZOptionsLabel'><$=ZmMsg.displayMail$></td>
+							<td class='ZOptionsLabelTop'><$=ZmMsg.displayMail$></td>
 							<td class='ZOptionsField'><select id='${id}_VIEW_AS_HTML' tabindex='50'></select></td>
 						</tr>
 

@@ -558,7 +558,7 @@ function() {
 	ZmPref.registerPref("VIEW_AS_HTML", {
 		displayName:		ZmMsg.displayMail,
 		displayContainer:	ZmPref.TYPE_RADIO_GROUP,
-		orientation:		ZmPref.ORIENT_HORIZONTAL,
+		orientation:		ZmPref.ORIENT_VERTICAL,
 		displayOptions:		[ZmMsg.displayAsHTML, ZmMsg.displayAsText],
 		options:			[true, false]
 	});
