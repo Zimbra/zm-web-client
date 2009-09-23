@@ -243,12 +243,7 @@ ZmZimletBase.prototype.clicked =
 function(spanElement, contentObjText, matchContext, event) {
 	var c = this.xmlObj("contentObject.onClick");
 	if (c && c.actionUrl) {
-		var obj = { objectContent: contentObjText };
-		if (matchContext && (matchContext instanceof Array)) {
-			for (var i = 0; i < matchContext.length; ++i) {
-				obj["$"+i] = matchContext[i];
-			}
-		}
+		var obj = this._createContentObj(contentObjText, matchContext);
         var x = event.docX;
         var y = event.docY;
         this.xmlObj().handleActionUrl(c.actionUrl, c.canvas, obj, null, x, y);
@@ -266,12 +261,7 @@ ZmZimletBase.prototype.toolTipPoppedUp =
 function(spanElement, contentObjText, matchContext, canvas) {
 	var c = this.xmlObj("contentObject");
 	if (c && c.toolTip) {
-		var obj = { objectContent: contentObjText };
-		if (matchContext) {
-			for (var i = 0; i < matchContext.length; ++i) {
-				obj["$"+i] = matchContext[i];
-			}
-		}
+		var obj = this._createContentObj(contentObjText, matchContext);
 		var txt;
 		if (c.toolTip instanceof Object &&
 		    c.toolTip.actionUrl) {
@@ -734,6 +724,18 @@ function(label, image, tooltip) {
 };
 
 /* Internal functions -- overriding is not recommended */
+
+/** Creates the object that describes the match, and is passed around to url generation routines */
+ZmZimletBase.prototype._createContentObj =
+function(contentObjText, matchContext) {
+	var obj = { objectContent: contentObjText };
+	if (matchContext && (matchContext instanceof Array)) {
+		for (var i = 0; i < matchContext.length; ++i) {
+			obj["$"+i] = matchContext[i];
+		}
+	}
+	return obj;
+};
 
 ZmZimletBase.prototype._createDialog =
 function(params) {
