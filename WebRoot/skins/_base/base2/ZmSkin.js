@@ -58,9 +58,9 @@ ZmSkin.hints = {
 	appChooser:		{ position:"static", direction: "LR" },
 	toast:		 	{ location: "N", 
 					  transitions: [
-							{ type: "fade-in", step: 10, duration: 200 },
-							{ type: "pause", duration: 1000 },
-							{ type: "fade-out", step: -10, duration: 500 }
+							{ type: "slide-in", step: 1, duration: 10 },
+							{ type: "pause", duration: 2500 },
+							{ type: "slide-out", step: -1, duration: 25 }
 						] 
 					},
 	fullScreen:     { containers : ["!skin_td_tree", "!skin_td_tree_app_sash"] },

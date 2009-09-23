@@ -3665,16 +3665,16 @@ HTML>BODY .appt-selected .appt_allday_body
 	top: -10000; left: -10000;
 	overflow: visible;
 
-	/* change the following to set the top of the toaster */
-	margin-top: 10px;
+	/* change the following to set the top of the toaster
+	margin-top: 10px;  */
 }
 .ZToastContent {
-	padding: 1.5em;
+	padding: 0.75em 1.4em;
 }
 
 .ZToastIcon {
   float: left;
-  display: none;
+  position : relative;
 }
 
 .ZToastText {
@@ -3682,14 +3682,6 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .ZToastBG 				{	@ToastContainer@		}
-
-
-
-.ZToastInfo .ZToastBG 	{	@ToastContainer-info@		}
-.ZToastWarn .ZToastBG 	{	@ToastContainer-warning@	}
-.ZToastCrit .ZToastBG 	{	@ToastContainer-critical@	}
-
-
 
 /*briefcase app*/
 
