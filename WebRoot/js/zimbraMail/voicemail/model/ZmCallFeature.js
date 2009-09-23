@@ -93,8 +93,7 @@ function() {
 
 ZmCallFeature.prototype.addVoicemailChangeNode = 
 function(soapDoc, parentNode) {
-	var value = this.isActive ? this.data.value : "";
-	var child = soapDoc.set("pref", value, parentNode);
+	var child = soapDoc.set("pref", this.data.value, parentNode);
 	child.setAttribute("name", this.name);
 };
 
