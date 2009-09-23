@@ -441,7 +441,8 @@ function() {
 		isAppOverview:		true,
 		treeIds:			treeIds,
 		appName:			this._name,
-		account:			appCtxt.getActiveAccount()
+		account:			appCtxt.getActiveAccount(),
+        scroll:             Dwt.SCROLL_Y
 	};
 };
 
