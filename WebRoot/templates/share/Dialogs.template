@@ -387,7 +387,7 @@
 </template>
 
 <template id="share.Dialogs#ZmPromptDialog">
-	<table cellpadding=2 cellspacing=2 border=0>
+	<table cellpadding=2 cellspacing=0 border=0>
 		<tr>
 			<td class='Label' id='${id}_label'/>
 		</tr>
@@ -400,7 +400,7 @@
 </template>
 
 <template id="share.Dialogs#ZmPromptDialog">
-	<table cellpadding=2 cellspacing=2 border=0>
+	<table cellpadding=2 cellspacing=0 border=0>
 		<tr>
 			<td class='Label'><$= ZmMsg.tagName $>:</td>
 			<$ if (appCtxt.multiAccounts) { $>
@@ -412,7 +412,7 @@
 			<td>
 				<input type=text autocomplete=OFF id='${id}_name' />
 			</td>
-			<td id='${id}_tagColor'></td>
+			<td id='${id}_tagColor' style="padding-right: 16px;"></td>
 			<td id='${id}_account'></td>
 		</tr>
 	</table>
