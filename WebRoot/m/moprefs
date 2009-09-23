@@ -61,7 +61,7 @@
                 <c:if test="${mailbox.features.conversations}">
                     <div class="tr nr">
                         <span class="label aleft td"><fmt:message key="groupMailBy"/></span>
-        <span class="value aright td"><select style="width:150px" name="zimbraPrefGroupMailBy"
+        <span class="value aright td"><select name="zimbraPrefGroupMailBy"
                                                                id="groupMailBy">
             <c:set var="groupMailBy" value="${mailbox.prefs.groupMailBy}"/>
             <option
