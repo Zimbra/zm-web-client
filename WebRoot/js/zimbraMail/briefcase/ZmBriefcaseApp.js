@@ -75,9 +75,9 @@ function() {
 ZmBriefcaseApp.prototype._registerSettings =
 function(settings) {
 	settings = settings || appCtxt.getSettings();
-	settings.registerSetting("SPREADSHEET_ENABLED", {name:"zimbraFeatureSpreadsheetEnabled", type:ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue:true});
-	settings.registerSetting("SLIDES_ENABLED",      {name:"zimbraFeatureSlidesEnabled", type:ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue:true});
-    settings.registerSetting("DOCS_ENABLED",        {name:"zimbraFeatureDocsEnabled", type:ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue:true});
+	settings.registerSetting("SPREADSHEET_ENABLED", {name:"zimbraFeatureBriefcaseSpreadsheetEnabled", type:ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue:true});
+	settings.registerSetting("SLIDES_ENABLED",      {name:"zimbraFeatureBriefcaseSlidesEnabled", type:ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue:true});
+    settings.registerSetting("DOCS_ENABLED",        {name:"zimbraFeatureBriefcaseDocsEnabled", type:ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue:true});
 };
 
 ZmBriefcaseApp.prototype._registerItems =
