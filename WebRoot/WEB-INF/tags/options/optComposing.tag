@@ -102,7 +102,7 @@
             <td class='ZOptionsTableLabel'>
                 <fmt:message key="optionsReplyReplyAll"/> :
             </td>
-            <td>
+            <td style="width:100%;">
                 <fmt:message key="optionsWhenReplying"/>:
             </td>
         </tr>
