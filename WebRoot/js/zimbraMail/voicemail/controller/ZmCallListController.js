@@ -19,8 +19,9 @@ ZmCallListController = function(container, app) {
 	if (arguments.length == 0) { return; }
 	
 	ZmVoiceListController.call(this, container, app);
-    this._listeners[ZmOperation.CHECK_CALLS] = new AjxListener(this, this._refreshListener);
-
+    	this._listeners[ZmOperation.CHECK_CALLS] = new AjxListener(this, this._refreshListener);
+	this._listeners[ZmOperation.ADD_CALLER_FORWARD] = new AjxListener(this, this._addToForwardListener);
+	this._listeners[ZmOperation.ADD_CALLER_REJECT] = new AjxListener(this, this._addToRejectListener);
 }
 
 ZmCallListController.prototype = new ZmVoiceListController;
@@ -64,10 +65,14 @@ function() {
 
 ZmCallListController.prototype._getActionMenuOps =
 function() {
+	var list = [];
 	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-		return [ZmOperation.CONTACT];
+		list.push(ZmOperation.CONTACT);
+		list.push(ZmOperation.SEP);
 	}
-	return null;
+	list.push(ZmOperation.ADD_CALLER_FORWARD);
+	list.push(ZmOperation.ADD_CALLER_REJECT);
+	return list;
 };
 
 ZmCallListController.prototype._initializeToolBar =
@@ -81,11 +86,16 @@ function(parent, num) {
 	ZmVoiceListController.prototype._resetOperations.call(this, parent, num);
 	if (parent) {
 		parent.enableAll(true);
-	}
-	var list = this.getList();
-	parent.enable(ZmOperation.PRINT, list && list.size());
-	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-		parent.enable(ZmOperation.CONTACT, num == 1);
+	
+		var list = this.getList();
+		parent.enable(ZmOperation.PRINT, list && list.size());
+		if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+			parent.enable(ZmOperation.CONTACT, num == 1);
+		}
+		var items = this._listView[this._currentView].getSelection();
+		var canAdd = (items && items.length>0) && this._checkCanAddToList();
+		parent.enable(ZmOperation.ADD_CALLER_FORWARD, canAdd);
+		parent.enable(ZmOperation.ADD_CALLER_REJECT, canAdd);
 	}
 };
 
@@ -109,4 +119,26 @@ function(actionCode) {
 	return true;
 };
 
-
+ZmVoiceListController.prototype._getPhoneFromCombination = 
+function(selection, errors) {
+	var phoneFromCombination = {};
+	
+	var compareFunction = function() {
+		return this.name;
+	}
+	
+	for (var i=0; i<selection.length; i++) {
+		var call = selection[i];	
+		var phone = call.getPhone();
+		var from = call.getCallingParty(this._getView()._getCallType() == ZmVoiceFolder.PLACED_CALL ? ZmVoiceItem.TO : ZmVoiceItem.FROM);
+	
+		if (phone.validate(from.name, errors)) {
+			if (!phoneFromCombination[phone.name])
+				phoneFromCombination[phone.name] = {phone: phone, addFrom: new AjxVector()};
+			
+			if (!phoneFromCombination[phone.name].addFrom.containsLike(from, compareFunction))
+				phoneFromCombination[phone.name].addFrom.add(from);
+		}
+	}
+	return phoneFromCombination;
+}

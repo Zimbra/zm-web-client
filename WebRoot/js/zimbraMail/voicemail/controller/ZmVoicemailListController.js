@@ -26,6 +26,8 @@ ZmVoicemailListController = function(container, app) {
 	this._listeners[ZmOperation.FORWARD_BY_EMAIL] = new AjxListener(this, this._forwardListener);
 	this._listeners[ZmOperation.MARK_HEARD] = new AjxListener(this, this._markHeardListener);
 	this._listeners[ZmOperation.MARK_UNHEARD] = new AjxListener(this, this._markUnheardListener);
+	this._listeners[ZmOperation.ADD_CALLER_FORWARD] = new AjxListener(this, this._addToForwardListener);
+	this._listeners[ZmOperation.ADD_CALLER_REJECT] = new AjxListener(this, this._addToRejectListener);
 
 	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
 	this._dragSrc.addDragListener(new AjxListener(this, this._dragListener));
@@ -106,6 +108,9 @@ function() {
 	list.push(ZmOperation.SEP);
 	list.push(ZmOperation.DOWNLOAD_VOICEMAIL);
 	list.push(ZmOperation.DELETE);
+	list.push(ZmOperation.SEP);
+	list.push(ZmOperation.ADD_CALLER_FORWARD);
+	list.push(ZmOperation.ADD_CALLER_REJECT);
 	return list;
 };
 
@@ -160,6 +165,11 @@ function(parent, num) {
 			ZmOperation.setOperation(parent, ZmOperation.DELETE, ZmOperation.DELETE, ZmMsg.del, "Delete");
 		}
 	}
+
+	var items = this._listView[this._currentView].getSelection();
+	var canAdd = (items && items.length>0) && this._checkCanAddToList();
+	parent.enable(ZmOperation.ADD_CALLER_FORWARD, canAdd);
+	parent.enable(ZmOperation.ADD_CALLER_REJECT, canAdd);
 };
 
 ZmVoicemailListController.prototype.getKeyMapName =
@@ -433,3 +443,27 @@ function(event) {
 		appCtxt.setStatusMsg(event.errorDetail, ZmStatusView.LEVEL_CRITICAL);
 	}
 };
+
+ZmVoiceListController.prototype._getPhoneFromCombination = 
+function(selection, errors) {
+	var phoneFromCombination = {};
+	
+	var compareFunction = function() {
+		return this.name;
+	}
+	
+	for (var i=0; i<selection.length; i++) {
+		var voicemail = selection[i];	
+		var phone = voicemail.getPhone();
+		var from = voicemail.getCallingParty(ZmVoiceItem.FROM);
+	
+		if (phone.validate(from.name, errors)) {
+			if (!phoneFromCombination[phone.name])
+				phoneFromCombination[phone.name] = {phone: phone, addFrom: new AjxVector()};
+			
+			if (!phoneFromCombination[phone.name].addFrom.containsLike(from, compareFunction))
+				phoneFromCombination[phone.name].addFrom.add(from);
+		}
+	}
+	return phoneFromCombination;
+}

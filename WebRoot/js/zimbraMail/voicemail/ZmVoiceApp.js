@@ -108,6 +108,8 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_REPLY_BY_EMAIL, {textKey:"replyByEmail", tooltipKey:"replyByEmailTooltip", image:"Reply"});
 	ZmOperation.registerOp(ZmId.OP_FORWARD_BY_EMAIL, {textKey:"forwardByEmail", tooltipKey:"forwardByEmailTooltip", image:"Forward"});
 	ZmOperation.registerOp(ZmId.OP_DOWNLOAD_VOICEMAIL, {textKey: "downloadVoicemail", tooltipKey:"downloadVoicemailTooltip", image:"Save"});
+	ZmOperation.registerOp(ZmId.OP_ADD_CALLER_FORWARD, {textKey:"addCallerToForward"});
+	ZmOperation.registerOp(ZmId.OP_ADD_CALLER_REJECT, {textKey:"addCallerToReject"});
 };
 
 ZmVoiceApp.prototype._registerOrganizers =

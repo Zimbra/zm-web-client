@@ -155,3 +155,133 @@ function(ev) {
 
 	actionMenu.popup(0, ev.docX, ev.docY);
 };
+
+ZmVoiceListController.prototype._addToForwardListener = 
+function(ev) {
+	var selection = this._getView().getSelection();
+	var errors = [];
+	var combination = this._getPhoneFromCombination(selection, errors);
+	
+	if (errors.length>0 && AjxUtil.isString(errors[0])) {
+		appCtxt.setStatusMsg(errors[0]);
+	} else if (selection.length>0) {
+		for (var name in combination) {
+			var phone = combination[name].phone;
+			var from = combination[name].addFrom;
+			var callback = new AjxCallback(this, this._modifyCallFeatures, {featureName: ZmCallFeature.SELECTIVE_CALL_FORWARDING, addFrom: from, maxEntries: ZmCallFeature.SELECTIVE_CALL_FORWARDING_MAX_ENTRIES, maxMsg: ZmMsg.selectiveCallForwardingFromErrorMax});
+			phone.getCallFeatures(callback);
+		}
+	}
+};
+
+ZmVoiceListController.prototype._addToRejectListener = 
+function(ev) {
+	var selection = this._getView().getSelection();
+	var errors = [];
+	var combination = this._getPhoneFromCombination(selection, errors);
+	
+	if (errors.length>0 && AjxUtil.isString(errors[0])) {
+		appCtxt.setStatusMsg(errors[0]);
+	} else if (selection.length>0) {
+		for (var name in combination) {
+			var phone = combination[name].phone;
+			var from = combination[name].addFrom;
+			var callback = new AjxCallback(this, this._modifyCallFeatures, {featureName: ZmCallFeature.SELECTIVE_CALL_REJECTION, addFrom: from, maxEntries: ZmCallFeature.SELECTIVE_CALL_REJECTION_MAX_ENTRIES, maxMsg: ZmMsg.selectiveCallRejectionFromErrorMax});
+			var errorCallback = new AjxCallback(this, this._getCallFeaturesHandleError);
+			phone.getCallFeatures(callback, errorCallback);
+		}
+	}
+};
+
+ZmVoiceListController.prototype._getPhoneFromCombination = 
+function(selection, errors) {
+	alert("ZmVoiceListController.prototype._getPhoneFromCombination should be overridden by subclasses");
+	return {};
+}
+
+ZmVoiceListController.prototype._getCallFeaturesHandleError = 
+function(exception1/*, ..., exceptionN*/) {
+	for (var i = 0; i < arguments.length; i++) {
+		var exception = arguments[i];
+		var message = exception instanceof AjxException ?
+			  (exception.msg || exception.code) : String(exception);
+		if (exception.code == ZmCsfeException.ACCT_INVALID_ATTR_VALUE || exception.code == ZmCsfeException.INVALID_REQUEST) {
+			// above faults come with technical/cryptic LDAP error msg; input validation
+			// should keep us from getting here
+			message = ZmMsg.invalidPrefValue;
+		}
+		appCtxt.setStatusMsg(message, ZmStatusView.LEVEL_CRITICAL);
+	}
+};    
+
+
+ZmVoiceListController.prototype._modifyCallFeatures = 
+function(obj, features, phone) {
+	var addPhones = (obj.addFrom instanceof AjxVector) ? obj.addFrom.getArray() : [];
+	var maxEntries = obj.maxEntries;
+	var maxMsg = obj.maxMsg || "";
+	var feature = features[obj.featureName];
+	
+	if (feature instanceof ZmCallFeature && phone instanceof ZmPhone && addPhones.length > 0) {
+		var result = feature.createProxy();
+		result.data.phone = result.data.phone || [];
+		
+		if (maxEntries && result.data.phone.length + addPhones.length > maxEntries) {
+			appCtxt.setStatusMsg(maxMsg);
+			addPhones.length = (maxEntries > result.data.phone.length)? maxEntries - result.data.phone.length : 0; // Truncate the array
+		}
+		
+		if (addPhones.length > 0) {
+			for (var i=0; i<addPhones.length; i++) {
+				var from = addPhones[i];
+				result.data.phone.push({a:true, pn: from.name});
+			}
+			this._saveFeatures(phone, [result]);
+		}
+	}
+}
+
+ZmVoiceListController.prototype._saveFeatures =
+function(phone, features) {
+	var batchCommand = new ZmBatchCommand(false);
+	phone.modifyCallFeatures(batchCommand, features);			
+	appCtxt.getSettings().save(false, null, batchCommand);
+	if (batchCommand.size()) {
+		var respCallback = new AjxCallback(this, this._handleResponseSaveListener);
+		var errorCallback = new AjxCallback(this, this._handleResponseSaveError);
+		batchCommand.run(respCallback, errorCallback);
+	}
+}
+
+ZmVoiceListController.prototype._handleResponseSaveListener =
+function(optionsSaved, callback, result) {
+	if (optionsSaved) {
+		appCtxt.setStatusMsg(ZmMsg.optionsSaved);
+	}
+	if (callback) {
+		callback.run(result);
+	}
+}
+
+ZmVoiceListController.prototype._handleResponseSaveError =
+function(exception1/*, ..., exceptionN*/) {
+	for (var i = 0; i < arguments.length; i++) {
+		var exception = arguments[i];
+		var message = exception instanceof AjxException ?
+			  (exception.msg || exception.code) : String(exception);
+		if (exception.code == ZmCsfeException.ACCT_INVALID_ATTR_VALUE || exception.code == ZmCsfeException.INVALID_REQUEST) {
+			// above faults come with technical/cryptic LDAP error msg; input validation
+			// should keep us from getting here
+			message = ZmMsg.invalidPrefValue;
+		}
+		appCtxt.setStatusMsg(message, ZmStatusView.LEVEL_CRITICAL);
+	}
+};
+
+ZmVoiceListController.prototype._checkCanAddToList = 
+function() {
+	var voicemail = this._getView().getSelection()[0];
+	var phone = voicemail.getPhone(); // ZmPhone
+	var from = voicemail.getCallingParty(ZmVoiceItem.FROM); // ZmCallingParty
+	return phone.validate(from.name, []);
+}
