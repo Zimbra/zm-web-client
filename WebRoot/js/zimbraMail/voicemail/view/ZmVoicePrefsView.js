@@ -1334,11 +1334,14 @@ ZmEmailNotificationUI.prototype.show =
 function(feature) {
 	this._comboBox.setText("");
 	var arr = feature.data.value.split(",");
+	var items = [];
 	if (arr.length>0) {
 		for (var i=0; i<arr.length; i++) {
-			arr[i] = {text:AjxStringUtil.trim(arr[i])};
+			var text = AjxStringUtil.trim(arr[i]);
+			if (text.length > 0)
+				items.push({text: text});
 		}
-		this._list.set(AjxVector.fromArray(arr), 1);
+		this._list.set(AjxVector.fromArray(items), 1);
 	}
 };
 
