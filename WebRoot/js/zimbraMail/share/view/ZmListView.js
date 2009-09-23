@@ -154,6 +154,12 @@ function(list, sortField) {
 		}
 		DwtListView.prototype.set.call(this, subList, sortField);
 	}
+	this._rendered = true;
+};
+
+ZmListView.prototype.reset =
+function() {
+	this._rendered = false;
 };
 
 ZmListView.prototype.setUI =
@@ -920,29 +926,44 @@ function(ev) {
 	}
 };
 
+/**
+ * Figure out if we should fetch some more items, based on where the scroll is. Our goal is to have
+ * a certain number available below the bottom of the visible view.
+ */
 ZmListView.prototype._checkItemCount =
 function() {
 
-	if (!this._list || (this._list.size() == 0)) { return; }
-	
+	if (!(this._controller._list && this._controller._list.hasMore()) || !this._list) { return; }
+	if (!this._rendered) { return; }
+
 	DBG.println(AjxDebug.DBG2, "List view: checking item count");
 	var scrollDiv = this._parentEl;
+	var sh = scrollDiv.scrollHeight, st = scrollDiv.scrollTop, rh = this._rowHeight;
+
+	// view (porthole) height - everything measured relative to its top
 	var h = Dwt.getSize(scrollDiv).y;
-	var itemsLeft = Math.floor((scrollDiv.scrollHeight - (scrollDiv.scrollTop + h)) / this._rowHeight);
-	var nearBottom = (itemsLeft < this.getPagelessThreshold() && (scrollDiv.scrollTop > 0) && (scrollDiv.scrollHeight > h));
-	var notEnoughFetched = ((itemsLeft == 0) && (scrollDiv.scrollTop == 0) && this._controller._list.hasMore());
-	if (nearBottom || notEnoughFetched) {
-		var limit;
-		if (notEnoughFetched) {
-			var numItems = this._list.size();
-			limit = Math.floor((h - (numItems * this._rowHeight)) / this._rowHeight) + this.getLimit(numItems);
-			DBG.println(AjxDebug.DBG2, "List view: need more items to get scrollbar, fetching " + limit + " more");
-		}
-		this._controller._paginate(this._view, true, null, limit);
-		if (limit) {
-			// fix width since we just gained a scrollbar
+
+	// where we'd like bottom of list view to be (with extra hidden items at bottom)
+	var target = h + (this.getPagelessThreshold() * this._rowHeight);
+
+	// where bottom of list view is (including hidden items)
+	var bottom = sh - st;
+
+	if (bottom == h) {
+		// handle cases where list view isn't full, but we have more items (eg tall browser, or replenishment)
+		bottom = (this._list.size() * rh) - st;
+		if (st == 0) {
+			// fix list view width since we are getting a scrollbar
 			AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._resetColWidth), 100);
 		}
+	}
+	var itemsNeeded = 0;
+	if (bottom < target) {
+		// buffer below visible bottom of list view is not full
+		itemsNeeded = Math.max(Math.floor((target - bottom) / rh), this.getLimit(1));
+	}
+	if (itemsNeeded) {
+		this._controller._paginate(this._view, true, null, itemsNeeded);
 	}
 };
 

@@ -1044,6 +1044,7 @@ function(view, offset, limit, callback, isCurrent, lastId, lastSortVal) {
 ZmListController.prototype._paginate =
 function(view, forward, loadIndex, limit) {
 
+	this._searchResult = null;
 	var needMore = false;
 	var lv = this._listView[view];
 	var offset, max;
@@ -1053,10 +1054,10 @@ function(view, forward, loadIndex, limit) {
 	} else {
 		offset = lv.getNewOffset(forward);
 		needMore = (offset + limit > this._list.size());
+		this.currentPage = this.currentPage + (forward ? 1 : -1);
+		this.maxPage = Math.max(this.maxPage, this.currentPage);
 	}
 	limit = limit || lv.getLimit(offset);
-	this.currentPage = this.currentPage + (forward ? 1 : -1);
-	this.maxPage = Math.max(this.maxPage, this.currentPage);
 
 	// see if we're out of items and the server has more
 	if (needMore && this._list.hasMore()) {
@@ -1111,7 +1112,7 @@ function(view, forward, loadIndex, limit) {
 ZmListController.prototype._handleResponsePaginate =
 function(view, saveSelection, loadIndex, offset, result, ignoreResetSelection) {
 
-	var searchResult = result.getResponse();
+	var searchResult = this._searchResult = result.getResponse();
 
 	// update "more" flag
 	this._list.setHasMore(searchResult.getAttribute("more"));

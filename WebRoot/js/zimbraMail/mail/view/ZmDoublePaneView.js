@@ -137,6 +137,7 @@ function() {
 
 ZmDoublePaneView.prototype.reset =
 function() {
+	this._mailListView.reset();
 	this._msgView.reset();
 };
 

@@ -1138,8 +1138,14 @@ function(creates, type, items, currList, sortBy, convs) {
 
 ZmMailApp.prototype.postNotify =
 function(notify) {
-	if (this._checkReplenishListView) {
-		this._checkReplenishListView._checkReplenish();
+	var lv = this._checkReplenishListView;
+	if (lv) {
+		if (lv._isPageless) {
+			lv._checkItemCount();
+			lv._handleResponseCheckReplenish();
+		} else {
+			lv._checkReplenish();
+		}
 		this._checkReplenishListView = null;
 	}
 };
