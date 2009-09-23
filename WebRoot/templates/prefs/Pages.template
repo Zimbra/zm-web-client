@@ -636,7 +636,7 @@ and the container element is replaced with that control.
 	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr>
 			<td class='ZOptionsSectionMain'>
-				<table width=100%>
+				<table width=100% cellspacing=0>
 					<tr>
 						<td><div id='${id}_SIGNATURES' tabindex='20'></div></td>
 					</tr>
@@ -655,7 +655,7 @@ and the container element is replaced with that control.
 		<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr>
 			<td class='ZOptionsSectionMain'>
-				<table width=100%>
+				<table width=100% cellspacing=0>
 					<tr>
 						<td class='ZOptionsLabel'><$=ZmMsg.placeSignature$></td>
 						<td class='ZOptionsInfo'><div id='${id}_SIGNATURE_STYLE' tabindex='40'></div></td>
