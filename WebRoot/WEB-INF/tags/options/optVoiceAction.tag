@@ -60,8 +60,8 @@
             	    callforwardingactive="${param.callForwardingActive}" callforwardingforwardto="${param.callForwardingTo}"
 		    selectivecallforwardingactive="${param.selectiveCallForwardingActive}" selectivecallforwardingforwardto="${param.selectiveCallForwardingTo}" selectivecallforwardingforwardfrom="${fn:split(sessionScope.selectiveCallForwardingFrom, ',')}"
         	    />
-		<c:set var="selectiveCallForwardingFrom" scope="session" value="${null}"/>
-		<c:set var="selectiveCallForwardingFetched" scope="session" value="${false}"/>
+		    <c:set var="selectiveCallForwardingFrom" scope="session" value="${null}"/>
+		    <c:set var="selectiveCallForwardingFetched" scope="session" value="${false}"/>
 		</c:when>
 		
 		<c:when test="${voiceselected=='screening'}">	

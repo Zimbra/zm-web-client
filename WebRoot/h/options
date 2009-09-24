@@ -229,6 +229,13 @@
                                 <app:optTabs mailbox="${mailbox}" selected="${selected}" prev="${prevApp}"/>
                             </td>
                         </tr>
+			<c:if test="${selected=='voice'}">
+			 <tr>
+                            <td class='ZhSubTabs'>
+                                <app:optVoiceTabs mailbox="${mailbox}" selected="${selected}" prev="${prevApp}"/>
+                            </td>
+                        </tr>
+			</c:if>
                         <tr>
                             <td class='TbBottom'>
                                 <app:optSubToolbar selected="${selected}"/>
@@ -259,12 +266,12 @@
                                     </c:when>
                                     <%------------------- Voice ------------------%>
                                     <c:when test="${(selected eq 'voice') and mailbox.features.voice}">
-										<c:if test="${voiceStatus ne 'false'}">
+					<c:if test="${voiceStatus ne 'false'}">
                                         	<app:optVoice mailbox="${mailbox}"/>
-										</c:if>
-										<c:if test="${(voiceStatus eq 'false') and (lastErrorCode eq 'voice.SECONDARY_NOT_ALLOWED')}">
-											<fmt:message key="voice.SECONDARY_NOT_ALLOWED_PREFS"/>
-										</c:if>
+					</c:if>
+					<c:if test="${(voiceStatus eq 'false') and (lastErrorCode eq 'voice.SECONDARY_NOT_ALLOWED')}">
+						<fmt:message key="voice.SECONDARY_NOT_ALLOWED_PREFS"/>
+					</c:if>
                                     </c:when>
                                     <%------------------- ADDRESS BOOK ------------------%>
                                     <c:when test="${selected eq 'addressbook'}">

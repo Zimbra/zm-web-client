@@ -91,7 +91,7 @@
                 <fmt:param value="${result.idCount}"/>
             </fmt:message>
         </app:status>
-	</c:when>
+    </c:when>
     <c:when test="${zm:actionSet(param, 'actionMarkUnheard')}">
         <zm:markVoiceMailHeard var="result" phone="${phone}" id="${ids}" heard="false"/>
         <app:status>
@@ -100,6 +100,54 @@
             </fmt:message>
         </app:status>
     </c:when>
+
+    <c:when test="${zm:actionSet(param, 'actionAddToForward')}">
+	<zm:addToForwardFeature var="result" phone="${phone}" voiceId="${paramValues.voiceId}" error="error" max="12"/>
+	<c:set var="selectiveCallForwardingFrom" scope="session" value="${null}"/>
+	<c:set var="selectiveCallForwardingFetched" scope="session" value="${false}"/>
+	<c:choose>
+	    <c:when test="${result==1}">
+	        <app:status><fmt:message key="actionCallerAddedToForwardSi"/></app:status>
+	    </c:when>
+	    <c:when test="${result>1}">
+	        <app:status><fmt:message key="actionCallerAddedToForwardPl">
+		    <fmt:param value="${result}"/>
+		</fmt:message></app:status>
+	    </c:when>
+	    <c:when test="${result==0 && empty error}">
+	        <app:status><fmt:message key="actionCallerAlreadyInForward"/></app:status>
+	    </c:when>
+	    <c:otherwise>
+		<app:status style="Error">
+		<%-- ${error} --%>
+		<fmt:message key="actionCallerAddForwardError"/>
+		</app:status>
+	    </c:otherwise>
+	</c:choose>
+    </c:when>
+																										    
+    <c:when test="${zm:actionSet(param, 'actionAddToReject')}">
+	<zm:addToRejectFeature var="result" phone="${phone}" voiceId="${paramValues.voiceId}" error="error"/>
+        <c:choose>
+	    <c:when test="${result==1}">
+	        <app:status><fmt:message key="actionCallerAddedToRejectSi"/></app:status>
+	    </c:when>
+	<c:when test="${result>1}">
+	    <app:status><fmt:message key="actionCallerAddedToRejectPl">
+	        <fmt:param value="${result}"/>
+	    </fmt:message></app:status>
+	</c:when>
+	<c:when test="${result==0 && empty error}">
+	    <app:status><fmt:message key="actionCallerAlreadyInReject"/></app:status>
+	</c:when>
+	<c:otherwise>
+	    <app:status style="Error">
+	        <%-- ${error} --%>
+	        <fmt:message key="actionCallerAddRejectError"/>
+	    </app:status>
+	</c:otherwise>
+    </c:when>
+
 	<c:otherwise>
 		<app:status style="Warning"><fmt:message key="actionNoActionSelected"/></app:status>
 	</c:otherwise>
