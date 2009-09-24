@@ -132,20 +132,21 @@
 	    <c:when test="${result==1}">
 	        <app:status><fmt:message key="actionCallerAddedToRejectSi"/></app:status>
 	    </c:when>
-	<c:when test="${result>1}">
-	    <app:status><fmt:message key="actionCallerAddedToRejectPl">
-	        <fmt:param value="${result}"/>
-	    </fmt:message></app:status>
-	</c:when>
-	<c:when test="${result==0 && empty error}">
-	    <app:status><fmt:message key="actionCallerAlreadyInReject"/></app:status>
-	</c:when>
-	<c:otherwise>
-	    <app:status style="Error">
-	        <%-- ${error} --%>
-	        <fmt:message key="actionCallerAddRejectError"/>
-	    </app:status>
-	</c:otherwise>
+	    <c:when test="${result>1}">
+	        <app:status><fmt:message key="actionCallerAddedToRejectPl">
+	            <fmt:param value="${result}"/>
+	        </fmt:message></app:status>
+	    </c:when>
+	    <c:when test="${result==0 && empty error}">
+	        <app:status><fmt:message key="actionCallerAlreadyInReject"/></app:status>
+	    </c:when>
+	    <c:otherwise>
+	        <app:status style="Error">
+	            <%-- ${error} --%>
+	            <fmt:message key="actionCallerAddRejectError"/>
+	        </app:status>
+	    </c:otherwise>
+        </c:choose>
     </c:when>
 
 	<c:otherwise>
