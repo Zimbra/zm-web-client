@@ -66,7 +66,9 @@
     </c:when>
 
     <c:when test="${zm:actionSet(param, 'actionAddToForward')}">
-	<zm:addToForwardFeature var="result" phone="${phone}" voiceId="${paramValues.voiceId}" error="error"/>
+	<zm:addToForwardFeature var="result" phone="${phone}" voiceId="${paramValues.voiceId}" error="error" max="12"/>
+	<c:set var="selectiveCallForwardingFrom" scope="session" value="${null}"/>
+	<c:set var="selectiveCallForwardingFetched" scope="session" value="${false}"/>
 	<c:choose>
 		<c:when test="${result==1}">
 		    <app:status><fmt:message key="actionCallerAddedToForwardSi"/></app:status>
@@ -85,7 +87,7 @@
 		    <fmt:message key="actionCallerAddForwardError"/>
 		    </app:status>
 		</c:otherwise>
-	    </c:choose>
+	</c:choose>
     </c:when>
     
     <c:when test="${zm:actionSet(param, 'actionAddToReject')}">

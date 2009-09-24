@@ -406,7 +406,7 @@
 					<c:if test="${!empty sessionScope.emailNotificationAddress}">
 					<tr>
 						<td colspan="4" style="vertical-align:top;text-align:right">
-							<table class="List" border="0" cellpadding="0" cellspacing="0" width="400px">
+							<table class="ZmBufferList" border="0" cellpadding="0" cellspacing="0" width="400px">
 								<tr><th colspan="2"><fmt:message key="optionsVoiceNotificationsAddresses"/></th></tr>
 								<c:set var="i" value="0"/>
 								<c:forEach items="${fn:split(sessionScope.emailNotificationAddress, ',')}" var="notificationAddress">
@@ -482,6 +482,7 @@
 						<td class="ZhOptVoiceCBCell">&nbsp;</td>
 						
 						<c:if test="${empty sessionScope.selectiveCallForwardingFrom && !sessionScope.selectiveCallForwardingFetched}">
+						<%-- PUT FORWARDING LIST INTO SESSION VAR --%>
 						<c:set var="selectiveCallForwardingFrom" scope="session" value=""/>
 						<c:set var="selectiveCallForwardingFetched" scope="session" value="${true}"/>
 						<c:forEach items="${features.selectiveCallForwarding.forwardFrom}" var="number">
@@ -494,7 +495,7 @@
 						
 						<c:if test="${!empty sessionScope.selectiveCallForwardingFrom}">
 						<td style="vertical-align:top;">
-							<table class="List" border="0" cellpadding="0" cellspacing="0" width="300px">
+							<table class="ZmPhoneBufferList" border="0" cellpadding="0" cellspacing="0" width="300px">
 								<c:set var="i" value="0"/>
 								<c:forEach items="${sessionScope.selectiveCallForwardingFrom}" var="number">
 									<c:if test="${!empty number}">
@@ -600,7 +601,7 @@
 						
 						<td style="vertical-align:top;">
 						<c:if test="${!empty sessionScope.selectiveRejectionNumber}">
-							<table class="List" border="0" cellpadding="0" cellspacing="0" width="300px">
+							<table class="ZmPhoneBufferList" border="0" cellpadding="0" cellspacing="0" width="300px">
 								<c:forEach items="${sessionScope.selectiveRejectionNumber}" var="number">
 									<c:if test="${!empty number}">
 									<tr>
