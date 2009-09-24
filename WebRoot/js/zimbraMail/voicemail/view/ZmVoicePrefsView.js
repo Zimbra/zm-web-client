@@ -1651,7 +1651,7 @@ function(id) {
 	
 	this._comboBox = new DwtComboBox({parent:this._view, inputParams:{size: 25, validator: AjxCallback.simpleClosure(this._view._validatePhoneNumber, this._view), validationStyle: DwtInputField.CONTINUAL_VALIDATION}});
 	this._populatePhoneComboBox(this._comboBox);
-	this._comboBox.replaceElement(id + "_callSelectiveForwardingComboBox");
+	this._comboBox.replaceElement(id + "_selectiveCallForwardingComboBox");
 	
 	this._setAddFromNumberVisibility(false);
 };

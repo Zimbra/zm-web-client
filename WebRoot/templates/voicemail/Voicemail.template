@@ -379,7 +379,7 @@
 										<div id='${id}_selectiveCallForwardingToLabel'></div>
 									</td>
 									<td>
-										<div id='${id}_callSelectiveForwardingComboBox'></div>
+										<div id='${id}_selectiveCallForwardingComboBox'></div>
 									</td>
 								</tr>
 							</table>
