@@ -402,7 +402,7 @@ ZmSignaturesPage.prototype._calcAutoSignatureNames = function(signatures){
 };
 
 ZmSignaturesPage.prototype._getNewSignatureName = function(){
-    return [ZmMsg.signature, " #", this._newNames.shift()].join("");
+    return AjxMessageFormat.format(ZmMsg.signatureNewName, this._newNames.shift());
 };
 
 ZmSignaturesPage.prototype._getNewSignature = function(){
