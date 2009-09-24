@@ -18,12 +18,12 @@
     <fmt:setBundle basename="/messages/ZhMsg" scope="request"/>
     <fmt:message var="title" key="addressBooks"/>
 </mo:handleError>
-<c:set var="currentUrl" value="?st=${param.st}"/>
 <c:if test="${not empty param.sq && empty param.actionSaveAddrFolder && empty param.actionSaveSearch && empty param.actionSaveTag}">
     <c:set var="query" value="${param.sq}"/>
 </c:if>
 <c:set value="${title}" var="title" scope="request"/>
 <c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/>
+<c:url var="currentUrl" value="${context_url}"><c:param name="st" value="${param.st}"/></c:url>
 <div class="tb tbl">
     <div class="tr">
         <div class="td">

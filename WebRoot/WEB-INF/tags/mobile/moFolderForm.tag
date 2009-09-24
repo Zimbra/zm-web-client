@@ -32,32 +32,16 @@
     <div class="tbl View" id="nfldrfrm" style="${hide ? 'display:none':''};">
         <div class="tr">
             <div class="td">
-                <form action="${url}" method="post"
-                      onsubmit="return submitForm(this);">
-                    <c:if test="${not empty id}">
-                        <c:set var="efolder" value="${zm:getFolder(pageContext, fn:escapeXml(id))}"/>
-                        <input type="hidden" name="efolderid" value="${efolder.id}">
-                    </c:if>
+                <form action="${url}" method="post" onsubmit="return submitForm(this);">
+                    <c:if test="${not empty id}"><c:set var="efolder" value="${zm:getFolder(pageContext, fn:escapeXml(id))}"/><input type="hidden" name="efolderid" value="${efolder.id}"></c:if>
                     <input type="hidden" name="doFolderAction" value="1">
                     <input name="crumb" type="hidden" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
                     <input name="st" type="hidden" value="${fn:escapeXml(st)}"/>
-
-                    <div class="tbl">
-                        <div class="tr">
-                                <span class="label td"><fmt:message key="nameLabel"/> <input type="text"
-                                                                                                 name="folder_name"
-                                                                                                 style=""
-                                                                                                 class="Textarea"
-                                                                                                 value="${efolder.name}">
-                                    <input
-                                            class="zo_button" type="submit"
-                                            name="action${not empty efolder ? 'Modify':'Save'}Folder"
-                                            value="<fmt:message key='save'/>"></span>
-                        </div>
-                    </div>
-                    <div class="tbl">
-                        <div class="tr">
-                            <div class="td">
+                    <div class="tbl" width="100%"><div class="tr">
+                        <span class="label td"><fmt:message key="nameLabel"/> <input type="text" name="folder_name" style="" class="Textarea" value="${efolder.name}">
+                        <input class="zo_button" type="submit" name="action${not empty efolder ? 'Modify':'Save'}Folder" value="<fmt:message key='save'/>"></span>
+                    </div></div>
+                    <div class="tbl"><div class="tr"><div class="td">
                                 <c:choose>
                                     <c:when test="${empty st || st eq 'folders' || st eq mailbox.prefs.groupMailBy}">
                                         <hr size="1"/>
@@ -139,15 +123,9 @@
                                         <input type="hidden" name="parentid" value="${not empty efolder ? efolder.parentId : mailbox.tasks.parentId}">
                                     </c:when>
                                 </c:choose>
-
-                            </div>
-                        </div>
-                    </div>
+                    </div></div></div>
                     <c:if test="${not empty efolder}">
-                        <hr size="1"/>
-                        <div align="center"><input type="submit" class="zo_button delete_button"
-                                                   name="action${efolder.parentId eq mailbox.trash.id ? 'Hard' : ''}DeleteFolder"
-                                                   value="<fmt:message key="delete"/>"></div>
+                        <hr size="1"/><div align="center"><input type="submit" class="zo_button delete_button" name="action${efolder.parentId eq mailbox.trash.id ? 'Hard' : ''}DeleteFolder" value="<fmt:message key="delete"/>"></div>
                     </c:if>
                 </form>
             </div>
@@ -159,8 +137,7 @@
     <div class="tbl View" id="nsrchfrm" style="${hide ?'display:none':''};">
         <div class="tr">
             <div class="td">
-                <form action="${url}" method="post"
-                      onsubmit="return submitForm(this);">
+                <form action="${url}" method="post" onsubmit="return submitForm(this);">
                     <input type="hidden" name="doFolderAction" value="1">
                     <input name="crumb" type="hidden" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
                     <input name="st" type="hidden" value="${fn:escapeXml(st)}"/>
@@ -169,44 +146,23 @@
                         <input type="hidden" name="esearchid" value="${efolder.id}">
                         <input type="hidden" name="parentid" value="${efolder.parentId}">
                     </c:if>
-                    <c:if test="${empty id}">
-                        <input type="hidden" name="parentid" value="${mailbox.inbox.parentId}">
-                    </c:if>
-
-                    <div class="tbl">
+                    <c:if test="${empty id}"><input type="hidden" name="parentid" value="${mailbox.inbox.parentId}"></c:if>
+                    <div class="tbl" width="100%">
                         <div class="tr">
-                        <span class="label td"> <fmt:message key="nameLabel"/>  <input type="text" name="sname"
-                                                                                           style="width:100px;"
-                                                                                           class="Textarea"
-                                                                                           value="${efolder.name}">
-                        <input class="zo_button" type="submit" name="action${empty efolder ? 'Save' : 'Modify'}Search"
-                               value="<fmt:message key='save'/>">
+                        <span class="label td"> <fmt:message key="nameLabel"/>  <input type="text" name="sname" style="width:100px;" class="Textarea" value="${efolder.name}">
+                            <input class="zo_button" type="submit" name="action${empty efolder ? 'Save' : 'Modify'}Search" value="<fmt:message key='save'/>">
                         </span>
                         </div>
-                    </div>
-                    <hr size="1"/>
-
-                    <div class="tbl">
-                        <div class="tr">
-                                <span class="label td"> <fmt:message key="searchQueryLabel"/> <input type="text"
-                                                                                                         name="query"
-                                                                                                         style="width:100px;"
-                                                                                                         class="Textarea"
-                                                                                                         value="${efolder.query}"> </span>
-                        </div>
-                    </div>
-                    <c:if test="${not empty efolder}">
-                        <hr size="1"/>
-                        <div align="center"><input type="submit" class="zo_button delete_button"
-                                                   name="action${efolder.parentId eq mailbox.trash.id ? 'Hard' : ''}DeleteSearch"
-                                                   value="<fmt:message key="delete"/>"></div>
+                    </div><hr size="1"/>
+                    <div class="tbl" width="100%"><div class="tr"><span class="label td"> <fmt:message key="searchQueryLabel"/> <input type="text" name="query" style="width:100px;" class="Textarea" value="${efolder.query}"> </span></div></div>
+                    <c:if test="${not empty efolder}"><hr size="1"/>
+                        <div align="center"><input type="submit" class="zo_button delete_button" name="action${efolder.parentId eq mailbox.trash.id ? 'Hard' : ''}DeleteSearch" value="<fmt:message key="delete"/>"></div>
                     </c:if>
                 </form>
             </div>
             <a name="searches" style="padding:0px;margin:0px;"></a>
         </div>
     </div>
-
 </c:when>
 <c:when test="${type eq 'tag'}">
     <div class="tbl View" id="ntagfrm" style="${hide ? 'display:none' : ''};">
@@ -220,22 +176,15 @@
                         <c:set var="etag" value="${zm:getTag(pageContext, fn:escapeXml(id))}"/>
                         <input type="hidden" name="etagid" value="${etag.id}">
                     </c:if>
-                    <div class="tbl">
-                        <div class="tr">
-                            <c:if test="${not empty etag}">
-                                <span class="SmlIcnHldr Tag${etag.color}">&nbsp;</span>
-                            </c:if>
-                    <span class="label td"><fmt:message key="nameLabel"/>
+                    <div class="tbl"><div class="tr">
+                        <c:if test="${not empty etag}"><span class="SmlIcnHldr Tag${etag.color}">&nbsp;</span></c:if>
+                        <span class="label td"><fmt:message key="nameLabel"/>
                         <input type="text" style="width:100px;" class="Textarea" name="tag_name" value="${etag.name}">
-                        <input type="submit" class="zo_button" name="action${empty etag ? 'Save':'Modify'}Tag"
-                               value="<fmt:message key='save'/>">
-                    </span>
-                        </div>
-                    </div>
+                        <input type="submit" class="zo_button" name="action${empty etag ? 'Save':'Modify'}Tag" value="<fmt:message key='save'/>">
+                        </span>
+                    </div></div>
                     <hr size="1"/>
-                    <div class="tbl">
-                        <div class="tr">
-                            <div class="td">
+                    <div class="tbl"><div class="tr"><div class="td">
                                 <select name="tag_color">
                                     <optgroup label="<fmt:message key='color'/>">
                                         <option value="cyan" ${etag.color eq 'cyan' ? 'selected=selected' : ''}>
@@ -254,15 +203,8 @@
                                             <fmt:message key="green"/></option>
                                     </optgroup>
                                 </select>
-                            </div>
-                        </div>
-                    </div>
-                    <c:if test="${not empty etag}">
-                        <hr size="1"/>
-                        <div align="center"><input type="submit" class="zo_button delete_button"
-                                                   name="actionDeleteTag"
-                                                   value="<fmt:message key="delete"/>"></div>
-                    </c:if>
+                    </div></div></div>
+                    <c:if test="${not empty etag}"><hr size="1"/><div align="center"><input type="submit" class="zo_button delete_button" name="actionDeleteTag" value="<fmt:message key="delete"/>"></div></c:if>
                 </form>
             </div>
             <a name="tags" style="padding:0px;margin:0px;"></a>

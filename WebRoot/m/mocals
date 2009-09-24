@@ -25,9 +25,9 @@
         <zm:checkFolder checked="false" id="${fn:escapeXml(param.uncheck)}"/>
     </c:if>
 </mo:handleError>
-<c:set var="currentUrl" value="?st=${param.st}"/>
 <c:set var="title" value="${title}" scope="request"/>
 <c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/>
+<c:url var="currentUrl" value="${context_url}"><c:param name="st" value="${param.st}"/></c:url>
 <input type="hidden" name="st" value="cals"/>
 <div class="tb tbl">
     <div class="tr">

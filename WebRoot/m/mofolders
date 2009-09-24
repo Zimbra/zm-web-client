@@ -20,26 +20,18 @@
 
     <fmt:message var="title" key="MO_mailFoldersTags"/>
 </mo:handleError>
-<c:set var="currentUrl" value="?st=${param.st}"/>
 <c:if test="${not empty param.sq && empty param.actionSaveFolder && empty param.actionSaveSearch && empty param.actionSaveTag}">
     <c:set var="query" value="${param.sq}"/>
 </c:if>
 <c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/>
+<c:url var="currentUrl" value="${context_url}"><c:param name="st" value="${param.st}"/></c:url>
 <c:set value="${title}" var="title" scope="request"/>
 <%--<c:import url="mobriefcases"/>--%>
-<div class="tb tbl">
-    <div class="tr">
-        <div class="td">
-            <span class="Title left">
-                    <fmt:message key="folders"/>
-                </span>
-                 <span class="right">
-                    <a onclick="return toggleElem('nfldrfrm',this,'<fmt:message key="close"/>','<fmt:message key="create"/>');" class="zo_button1"
-                       href="?st=folders${empty param.showFolderCreate?'&showFolderCreate=1':''}${empty param.ajax ? '#folders' : ''}"><fmt:message key="${empty param.showFolderCreate ? 'create' : 'close'}"/></a>
-                </span>
-        </div>
-    </div>
-</div>
+<div class="tb tbl"><div class="tr"><div class="td">
+    <span class="Title left"><fmt:message key="folders"/></span>
+    <span class="right"><a onclick="return toggleElem('nfldrfrm',this,'<fmt:message key="close"/>','<fmt:message key="create"/>');" class="zo_button1"href="?st=folders${empty param.showFolderCreate?'&showFolderCreate=1':''}${empty param.ajax ? '#folders' : ''}"><fmt:message key="${empty param.showFolderCreate ? 'create' : 'close'}"/></a>
+    </span>
+</div></div></div>
 <mo:folderForm type="folder" id="${param.id}" hide="${empty param.showFolderCreate}" url="${currentUrl}" st="${param.st}"/>
 <c:if test="${empty query || fn:containsIgnoreCase(mailbox.inbox.name,query)}">
     <mo:overviewFolder base="${context_url}" folder="${mailbox.inbox}" types="${mailbox.prefs.groupMailBy}"/>
@@ -62,20 +54,12 @@
     <mo:doFolderTree skiproot="${true}" parentid="${mailbox.trash.id}" skipsystem="false"/>
 </c:if>
 <mo:doFolderTree skiproot="${true}" skipsystem="${true}" skiptopsearch="${true}"/>
-
-<div class="tb tbl">
-    <div class="tr">
-        <div class="td">
-            <span class="Title left">
-                <fmt:message key="searches"/>
-            </span>
-            <span class="right">
-                <a onclick="return toggleElem('nsrchfrm',this,'<fmt:message key="close"/>','<fmt:message key="create"/>');" class="zo_button1"
-                   href="?st=folders${empty param.showSearchCreate?'&showSearchCreate=1':''}${empty param.ajax ? '#searches' : ''}"><fmt:message key="${empty param.showSearchCreate ? 'create' : 'close'}"/></a>
-            </span>
-        </div>
-    </div>
-</div>
+<div class="tb tbl"><div class="tr"><div class="td">
+    <span class="Title left"><fmt:message key="searches"/></span>
+    <span class="right">
+        <a onclick="return toggleElem('nsrchfrm',this,'<fmt:message key="close"/>','<fmt:message key="create"/>');" class="zo_button1" href="?st=folders${empty param.showSearchCreate?'&showSearchCreate=1':''}${empty param.ajax ? '#searches' : ''}"><fmt:message key="${empty param.showSearchCreate ? 'create' : 'close'}"/></a>
+    </span>
+</div></div></div>
 <mo:folderForm type="search" id="${param.sid}" hide="${empty param.showSearchCreate}" url="${currentUrl}" st="${param.st}"/>
 <zm:forEachFolder var="folder" skipsystem="${true}" skiptopsearch="${false}">
     <c:if test="${(folder.isSearchFolder && (empty query || fn:containsIgnoreCase(folder.name,query)))}">
@@ -85,19 +69,11 @@
         <c:set var="count" value="${count+1}"/>
     </c:if>
 </zm:forEachFolder>
-<div class="tb tbl">
-    <div class="tr">
-        <div class="td">
-            <span class="Title left">
-                        <fmt:message key="tags"/>
-            </span>
-            <c:if test="${mailbox.features.tagging}"><span class="right">
-                <a onclick="return toggleElem('ntagfrm',this,'<fmt:message key="close"/>','<fmt:message key="create"/>');" class="zo_button1" 
-                   href="?st=folders${empty param.showTagCreate?'&showTagCreate=1':''}${empty param.ajax ? '#tags' : ''}"><fmt:message key="${empty param.showTagCreate ? 'create' : 'close'}"/></a>
-            </span></c:if>
-        </div>
-    </div>
-</div>
+<div class="tb tbl"><div class="tr"><div class="td">
+    <span class="Title left"><fmt:message key="tags"/></span>
+    <c:if test="${mailbox.features.tagging}"><span class="right"><a onclick="return toggleElem('ntagfrm',this,'<fmt:message key="close"/>','<fmt:message key="create"/>');" class="zo_button1" href="?st=folders${empty param.showTagCreate?'&showTagCreate=1':''}${empty param.ajax ? '#tags' : ''}"><fmt:message key="${empty param.showTagCreate ? 'create' : 'close'}"/></a>
+    </span></c:if>
+</div></div></div>
 <c:if test="${mailbox.features.tagging}">
     <mo:folderForm type="tag" id="${param.tid}" hide="${empty param.showTagCreate}" url="${currentUrl}" st="${param.st}"/>
 </c:if>

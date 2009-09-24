@@ -20,19 +20,16 @@
 
     <fmt:message var="title" key="${fn:escapeXml(param.st)}"/>
 </mo:handleError>
-<c:set var="currentUrl" value="?st=${param.st}"/>
 <c:if test="${(param.st eq 'briefcases' && mailbox.features.briefcases) || (param.st eq 'notebooks' && mailbox.features.notebook)}">
-
-
 <c:if test="${not empty param.sq && empty param.actionSaveFolder && empty param.actionSaveSearch && empty param.actionSaveTag}">
     <c:set var="query" value="${param.sq}"/>
 </c:if>
 <c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/>
+<c:url var="currentUrl" value="${context_url}"><c:param name="st" value="${param.st}"/></c:url>
 <c:set value="${title}" var="title" scope="request"/>
 <div class="stb tbl">
     <div class="tr">
-            <span class="td" >
-               &laquo;
+            <span class="td" >&laquo;
                 <c:if test="${mailbox.features.tasks}">
                     <c:if test="${param.st ne 'tasks'}">
                         <a href='${context_url}?st=tasks'>
@@ -40,10 +37,8 @@
                         <fmt:message key="taskList"/>
                     <c:if test="${param.st ne 'tasks'}">
                         </a>
-                    </c:if>
-                ::
+                    </c:if> ::
                 </c:if>
-
                 <c:if test="${mailbox.features.notebook}">
                   
                     <c:if test="${param.st ne 'notebooks'}">
@@ -53,19 +48,17 @@
                     <c:if test="${param.st ne 'notebooks'}">
                         </a>    
                     </c:if>
-                 ::
-                </c:if>
+                 :: </c:if>
                 <c:if test="${mailbox.features.briefcases}">
-                                <c:if test="${param.st ne 'briefcases'}">
-                                    <a href='${context_url}?st=briefcases'>
-                                </c:if>
-                                    <fmt:message key="briefcases"/>
-                                <c:if test="${param.st ne 'briefcases'}">
-                                    </a>
-                                </c:if>
+                    <c:if test="${param.st ne 'briefcases'}">
+                        <a href='${context_url}?st=briefcases'>
+                    </c:if>
+                        <fmt:message key="briefcases"/>
+                    <c:if test="${param.st ne 'briefcases'}">
+                        </a>
+                    </c:if>
                                             
-                            </c:if>  &raquo; </span>
-
+                </c:if>  &raquo; </span>
     </div>
 </div>
 <div class="tb tbl">

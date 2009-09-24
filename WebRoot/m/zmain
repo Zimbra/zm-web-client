@@ -29,7 +29,7 @@
 <c:set var="uiv" value="1" scope="session"/>
 <mo:handleError>
     <zm:getMailbox var="mailbox"/>
-    <zm:getUserAgent var="ua" session="false"/>
+    <zm:getUserAgent var="ua" session="true"/>
     <c:choose>
         <c:when test="${not empty mailbox.prefs.locale}">
             <fmt:setLocale value='${mailbox.prefs.locale}' scope='request'/>
