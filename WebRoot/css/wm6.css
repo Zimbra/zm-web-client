@@ -316,6 +316,7 @@ form {
     padding-right: 5px;
     position: relative;
     top:10%;
+    width:98%;
 }
 
 .tb {
@@ -796,7 +797,6 @@ h1, h2, h3, h4, h5, h6 {
 .TagdefaultColor,.Tag {
     background-position: 0 -146px !important;
 }
-
 #nfldrfrm .td,#nsrchfrm .td,#ntagfrm .td{
 	width: 100%;
 	text-align: center;
