@@ -423,7 +423,10 @@
     <script type="text/javascript">
     if (screen.width<=800) {
         /*remove sidebar ad when resolution is less than eq 800 x 600*/
-        document.getElementById("_sidebarAd").style.display='none';
+        var ad = document.getElementById("_sidebarAd");
+		if (ad) {
+			ad.style.display='none';
+		}
     }
     </script>
     </c:when>
