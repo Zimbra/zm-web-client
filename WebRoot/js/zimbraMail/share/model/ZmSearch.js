@@ -140,22 +140,27 @@ function(params) {
 	var soapDoc;
 	if (!this.response) {
 		if (this.isGalSearch) {
-			// XXX: DEPRACATED. Use JSON version
+			// DEPRECATED: Use JSON version
 			soapDoc = AjxSoapDoc.create("SearchGalRequest", "urn:zimbraAccount");
 			var method = soapDoc.getMethod();
-			if (this.galType) {	method.setAttribute("type", this.galType); }
+			if (this.galType) {
+				method.setAttribute("type", this.galType);
+			}
 			soapDoc.set("name", this.query);
 		} else if (this.isAutocompleteSearch) {
 			soapDoc = AjxSoapDoc.create("AutoCompleteRequest", "urn:zimbraMail");
 			var method = soapDoc.getMethod();
-			if (this.limit) { method.setAttribute("limit", this.limit); }
+			if (this.limit) {
+				method.setAttribute("limit", this.limit);
+			}
 			soapDoc.set("name", this.query);
 		} else if (this.isGalAutocompleteSearch) {
 			soapDoc = AjxSoapDoc.create("AutoCompleteGalRequest", "urn:zimbraAccount");
 			var method = soapDoc.getMethod();
-			//if (this.limit) { method.setAttribute("limit", this.limit); }
-			method.setAttribute("limit", this.limit || 20);
-			if (this.galType) { method.setAttribute("type", this.galType); }
+			method.setAttribute("limit", this._getLimit());
+			if (this.galType) {
+				method.setAttribute("type", this.galType);
+			}
 			soapDoc.set("name", this.query);
 		} else if (this.isCalResSearch) {
 			soapDoc = AjxSoapDoc.create("SearchCalendarResourcesRequest", "urn:zimbraAccount");
@@ -263,7 +268,7 @@ function(params) {
 
 			// bug #36188 - add offset/limit for paging support
 			request.offset = this.offset = (this.offset || 0);
-			request.limit = this.limit = (this.limit || appCtxt.get(ZmSetting.CONTACTS_PER_PAGE));
+			request.limit = this._getLimit();
 
 			if (this.lastId) { // add lastSortVal and lastId for cursor-based paging
 				request.cursor = {id:this.lastId, sortVal:(this.lastSortVal || "")};
@@ -274,12 +279,14 @@ function(params) {
 		} else if (this.isAutocompleteSearch) {
 			jsonObj = {AutoCompleteRequest:{_jsns:"urn:zimbraMail"}};
 			request = jsonObj.AutoCompleteRequest;
-			if (this.limit) { request.limit = this.limit; }
+			if (this.limit) {
+				request.limit = this.limit;
+			}
 			request.name = {_content:this.query};
 		} else if (this.isGalAutocompleteSearch) {
 			jsonObj = {AutoCompleteGalRequest:{_jsns:"urn:zimbraAccount"}};
 			request = jsonObj.AutoCompleteGalRequest;
-			request.limit = this.limit || 20;
+			request.limit = this._getLimit();
 			request.name = this.query;
 			if (this.galType) { request.type = this.galType; }
 		} else if (this.isCalResSearch) {
@@ -521,11 +528,8 @@ function(soapDoc) {
 	this.offset = this.offset || 0;
 	method.setAttribute("offset", this.offset);
 
-	// always set limit (init to user pref for page size if not provided)
-	if (!this.limit) {
-		this.limit = this._getLimit();
-	}
-	method.setAttribute("limit", this.limit);
+	// always set limit
+	method.setAttribute("limit", this._getLimit());
 
 	// and of course, always set the query and append the query hint if applicable
 	// only use query hint if this is not a "simple" search
@@ -578,11 +582,8 @@ function(req) {
 
 	req.offset = this.offset = this.offset || 0;
 
-	// always set limit (init to user pref for page size if not provided)
-	if (!this.limit) {
-		this.limit = this._getLimit();
-	}
-	req.limit = this.limit;
+	// always set limit
+	req.limit = this._getLimit();
 
 	// and of course, always set the query and append the query hint if
 	// applicable only use query hint if this is not a "simple" search
@@ -599,26 +600,22 @@ function(req) {
 ZmSearch.prototype._getLimit =
 function() {
 
-	var curView = appCtxt.getCurrentView();
-	if (curView && curView.getLimit) {
-		return curView.getLimit(this.offset);
-	}
+	if (this.limit) { return this.limit; }
 
-	var app, setting;
-	if (this.contactSource && this.types.size() == 1) {
-		app = ZmApp.CONTACTS;
-		setting = ZmSetting.CONTACTS_PER_PAGE;
-	} else if (appCtxt.get(ZmSetting.MAIL_ENABLED)) {
-		app = ZmApp.MAIL;
-		setting = ZmSetting.PAGE_SIZE;
-	} else if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-		app = ZmApp.CONTACTS;
-		setting = ZmSetting.CONTACTS_PER_PAGE;
+	var limit;
+	if (this.isGalAutocompleteSearch) {
+		limit = appCtxt.get(ZmSetting.AUTOCOMPLETE_LIMIT);
 	} else {
-		return ZmSearch.DEFAULT_LIMIT;
+		var curView = appCtxt.getCurrentView();
+		if (curView && curView.getLimit) {
+			limit = curView.getLimit(this.offset);
+		} else {
+			limit = appCtxt.get(ZmSetting.PAGE_SIZE) || ZmSearch.DEFAULT_LIMIT;
+		}
 	}
 
-	return appCtxt.get(setting);
+	this.limit = limit;
+	return limit;
 };
 
 ZmSearch.IS_OP	= {"in":true, "inid":true, "is":true, "tag":true};

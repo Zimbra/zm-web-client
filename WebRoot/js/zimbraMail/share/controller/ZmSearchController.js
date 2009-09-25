@@ -291,6 +291,7 @@ function(search, noRender, changes, callback, errorCallback) {
 	params.fetch		= search.fetch;
 	params.searchId		= search.searchId;
 	params.lastSortVal	= search.lastSortVal;
+	params.endSortVal	= search.endSortVal;
 	params.lastId		= search.lastId;
 	params.soapInfo		= search.soapInfo;
 	params.accountName	= search.accountName;

@@ -213,6 +213,11 @@ function(letter, endLetter) {
 	}
 };
 
+ZmContactListController.prototype._getMoreSearchParams =
+function(params) {
+	params.endSortVal = this._activeSearch && this._activeSearch.search && this._activeSearch.search.endSortVal; 
+};
+
 ZmContactListController.prototype.getKeyMapName =
 function() {
 	return "ZmContactListController";
@@ -345,11 +350,17 @@ function(view) {
 		this._setNewButtonProps(view, ZmMsg.createNewContact, "NewContact", "NewContactDis", ZmOperation.NEW_CONTACT);
 		this._setupPrintMenu(view);
 		this._toolbar[view].addFiller();
-		var tb = new ZmNavToolBar({parent:this._toolbar[view], context:view});
-		this._setNavToolBar(tb, view);
+		this._initializeNavToolBar(view);
 	} else {
 		this._setupViewMenu(view, false);
 	}
+};
+
+ZmContactListController.prototype._initializeNavToolBar =
+function(view) {
+	this._toolbar[view].addOp(ZmOperation.TEXT);
+	var text = this._itemCountText[view] = this._toolbar[view].getButton(ZmOperation.TEXT);
+	text.addClassName("itemCountText");
 };
 
 ZmContactListController.prototype._initializeActionMenu =
@@ -490,54 +501,6 @@ function(parent, num) {
 		parent.enable([ZmOperation.NEW_MESSAGE, printOp], num > 0);
 		parent.enable(ZmOperation.CONTACT, num == 1);
 	}
-};
-
-ZmContactListController.prototype._resetNavToolBarButtons =
-function(view) {
-	ZmListController.prototype._resetNavToolBarButtons.call(this, view);
-
-	if (this._list.isGal && !this._list.isGalPagingSupported) {
-		this._navToolBar[view].enable([ZmOperation.PAGE_BACK, ZmOperation.PAGE_FORWARD], false);
-	} else {
-		var lv = this._listView[view];
-
-		// determine if we have more cached items to show (in case hasMore is wrong)
-		var hasMore = false;
-		if (this._list) {
-			hasMore = this._list.hasMore();
-			if (!hasMore && ((lv.offset + lv.getLimit()) < this._list.size())) {
-				hasMore = true;
-			}
-		}
-
-		this._navToolBar[view].enable(ZmOperation.PAGE_BACK, lv.offset > 0);
-		this._navToolBar[view].enable(ZmOperation.PAGE_FORWARD, hasMore);
-	}
-
-	this._navToolBar[view].setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previousPage);
-	this._navToolBar[view].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.nextPage);
-};
-
-ZmContactListController.prototype._getNavStartEnd =
-function(view) {
-	var lv = this._listView[view];
-	var list = lv.getList();
-	var size = list ? list.size() : null;
-
-	var start, end;
-	if (size && size > 0) {
-		start = lv.offset + 1;
-		end = lv.offset + size;
-	}
-
-	return (start && end) ? {start:start, end:end} : null;
-};
-
-ZmContactListController.prototype._getNumTotal =
-function() {
-	return (this._list && this._list.isCanonical)
-		? (ZmListController.prototype._getNumTotal.call(this)) 
-		: null;
 };
 
 
@@ -703,16 +666,6 @@ function(view) {
 	return true;
 };
 
-ZmContactListController.prototype._paginate =
-function(view, bPageForward) {
-	if (this._list.isCanonical) {
-		this._listView[view].paginate(this._list, bPageForward);
-		this._resetNavToolBarButtons(view);
-	} else {
-		ZmListController.prototype._paginate.call(this, view, bPageForward);
-	}
-};
-
 ZmContactListController.prototype._doMove =
 function(items, folder, attrs, isShiftKey) {
 	if (!(items instanceof Array)) items = [items];
@@ -810,3 +763,15 @@ function() {
 	lv._setNextSelection();
 };
 
+ZmContactListController.prototype._getItemCountText =
+function() {
+	if (this._list.isCanonical) {
+		var lv = this._listView[this._currentView];
+		var list = lv._list;
+		var type = lv && lv.type;
+		var typeKey = !type ? "items" : (list.size() == 1) ? ZmItem.MSG_KEY[type] : ZmItem.PLURAL_MSG_KEY[type];
+		return AjxMessageFormat.format(ZmMsg.itemCount1, [list.size(), this._list.size(), ZmMsg[typeKey]]);
+	} else {
+		return ZmListController.prototype._getItemCountText.call(this);
+	}
+};

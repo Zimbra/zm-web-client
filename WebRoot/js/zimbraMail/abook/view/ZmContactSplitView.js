@@ -80,6 +80,11 @@ function() {
 	return [ZmMsg.zimbraTitle, this._controller.getApp().getDisplayName()].join(": ");
 };
 
+ZmContactSplitView.prototype.getLimit =
+function(offset) {
+	return this._listPart.getLimit(offset);
+};
+
 ZmContactSplitView.prototype.setContact =
 function(contact, isGal) {
 
@@ -384,11 +389,9 @@ function(list, defaultColumnSort, folderId) {
 
 	if (!(this._list instanceof AjxVector) || this._list.size() == 0) {
 		this.parent.clear();
-		var view = this._controller._getViewType();
-		this._controller._navToolBar[view].setText("");
 	}
 
-	this.parent.enableAlphabetBar(!list.isGal);
+	this.parent.enableAlphabetBar(!(list && list.isGal));
 };
 
 ZmContactSimpleView.prototype.setSelection =

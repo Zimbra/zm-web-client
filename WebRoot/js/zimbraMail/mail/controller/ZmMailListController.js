@@ -504,12 +504,6 @@ function(view) {
 	this._setNewButtonProps(view, ZmMsg.compose, "NewMessage", "NewMessageDis", ZmOperation.NEW_MESSAGE);
 };
 
-ZmMailListController.prototype._initializeNavToolBar =
-function(view) {
-	var tb = new ZmNavToolBar({parent:this._toolbar[view], context:view});
-	this._setNavToolBar(tb, view);
-};
-
 ZmMailListController.prototype._getNumTotal =
 function(){
 	// Yuck, remove "of Total" from Nav toolbar at lower resolutions

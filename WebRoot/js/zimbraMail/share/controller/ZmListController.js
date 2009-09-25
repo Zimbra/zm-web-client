@@ -1044,7 +1044,6 @@ function(view, offset, limit, callback, isCurrent, lastId, lastSortVal) {
 ZmListController.prototype._paginate =
 function(view, forward, loadIndex, limit) {
 
-	this._searchResult = null;
 	var needMore = false;
 	var lv = this._listView[view];
 	var offset, max;
@@ -1079,7 +1078,7 @@ function(view, forward, loadIndex, limit) {
 
 		// figure out if this requires cursor-based paging
 		var list = lv.getList();
-		var lastItem = list ? list.getLast() : null;
+		var lastItem = list && list.getLast();
 		var lastSortVal = (lastItem && lastItem.id) ? lastItem.sf : null;
 		var lastId = lastSortVal ? lastItem.id : null;
 
@@ -1112,7 +1111,7 @@ function(view, forward, loadIndex, limit) {
 ZmListController.prototype._handleResponsePaginate =
 function(view, saveSelection, loadIndex, offset, result, ignoreResetSelection) {
 
-	var searchResult = this._searchResult = result.getResponse();
+	var searchResult = result.getResponse();
 
 	// update "more" flag
 	this._list.setHasMore(searchResult.getAttribute("more"));
@@ -1120,17 +1119,21 @@ function(view, saveSelection, loadIndex, offset, result, ignoreResetSelection) {
 	this._cacheList(searchResult, offset);
 
 	this._resetOperations(this._toolbar[view], 0);
-	this._resetNavToolBarButtons(view);
 
 	// remember selected index if told to
 	var lv = this._listView[this._currentView];
 	var selItem = saveSelection ? lv.getSelection()[0] : null;
 	var selectedIdx = selItem ? lv.getItemIndex(selItem) : -1;
 
+	if (lv._isPageless) {
+		lv._itemsToAdd = searchResult && searchResult.getResults().getArray();
+	}
+
 	this._setViewContents(view);
+	this._resetNavToolBarButtons(view);
 
 	// bug fix #5134 - some views may not want to reset the current selection
-	if (!ignoreResetSelection) {
+	if (!ignoreResetSelection && !lv._isPageless) {
 		this._resetSelection(selectedIdx);
 	}
 
@@ -1249,6 +1252,12 @@ function(view, callback, result) {
 		callback.run(result);
 };
 
+ZmListController.prototype._initializeNavToolBar =
+function(view) {
+	var tb = new ZmNavToolBar({parent:this._toolbar[view], context:view});
+	this._setNavToolBar(tb, view);
+};
+
 ZmListController.prototype._setNavToolBar =
 function(toolbar, view) {
 	this._navToolBar[view] = toolbar;
@@ -1333,13 +1342,6 @@ function() {
 	return null;
 };
 
-// default callback before a view is shown - enable/disable nav buttons
-ZmListController.prototype._preShowCallback =
-function(view, viewPushed) {
-	this._resetNavToolBarButtons(view);
-	return true;
-};
-
 /*
 * Creates the New menu's drop down menu the first time the drop down arrow is used,
 * then removes itself as a listener.
@@ -1386,5 +1388,25 @@ function() {
 	return this._app && this._app._name;
 };
 
+ZmListController.prototype._getItemCountText =
+function() {
+
+	var lv = this._listView[this._currentView];
+	var list = lv && lv._list;
+	var type = lv && lv.type;
+	if (!list || !type) { return ""; }
+	var sizeText = list.size() + (this._list.hasMore() ? "+" : "");
+	var typeKey = !type ? "items" : (list.size() == 1) ? ZmItem.MSG_KEY[type] : ZmItem.PLURAL_MSG_KEY[type];
+	return AjxMessageFormat.format(ZmMsg.itemCount, [sizeText, ZmMsg[typeKey]]);
+};
+
 // sets the text that shows the number of items, if we are pageless
-ZmListController.prototype._setItemCountText = function(text) {};
+ZmListController.prototype._setItemCountText =
+function(text) {
+
+	text = text || this._getItemCountText();
+	var field = this._itemCountText[this._currentView];
+	if (field) {
+		field.setText(text);
+	}
+};

@@ -84,10 +84,9 @@ ZmContactsApp.prototype._registerSettings =
 function(settings) {
 	var settings = settings || appCtxt.getSettings();
 	settings.registerSetting("AUTO_ADD_ADDRESS",				{name: "zimbraPrefAutoAddAddressEnabled", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
+	settings.registerSetting("AUTOCOMPLETE_LIMIT",				{name: "zimbraContactAutoCompleteMaxResults", type:ZmSetting.T_COS, dataType:ZmSetting.D_INT, defaultValue:20});
 	settings.registerSetting("AUTOCOMPLETE_SHARE",				{name: "zimbraPrefShareContactsInAutoComplete", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("AUTOCOMPLETE_SHARED_ADDR_BOOKS",	{name: "zimbraPrefSharedAddrBookAutoCompleteEnabled", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
-	settings.registerSetting("CONTACTS_PER_PAGE",				{name: "zimbraPrefContactsPerPage", type: ZmSetting.T_PREF, dataType: ZmSetting.D_INT, defaultValue: 25, isGlobal:true});
-	settings.registerSetting("CONTACTS_PER_PAGE_MAX",			{name: "zimbraMaxContactsPerPage", type: ZmSetting.T_COS, dataType: ZmSetting.D_INT, defaultValue: 100});
 	settings.registerSetting("CONTACTS_VIEW",					{name: "zimbraPrefContactsInitialView", type: ZmSetting.T_PREF, defaultValue: ZmSetting.CV_LIST, isGlobal:true});
 	settings.registerSetting("EXPORT",							{type: ZmSetting.T_PREF, dataType: ZmSetting.D_NONE});
 	settings.registerSetting("GAL_AUTOCOMPLETE",				{name: "zimbraPrefGalAutoCompleteEnabled", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
@@ -109,7 +108,6 @@ function() {
 				ZmSetting.AUTO_ADD_ADDRESS,
 				ZmSetting.AUTOCOMPLETE_SHARE,
 				ZmSetting.AUTOCOMPLETE_SHARED_ADDR_BOOKS,
-				ZmSetting.CONTACTS_PER_PAGE,
 				ZmSetting.CONTACTS_VIEW,
 				ZmSetting.EXPORT,
 				ZmSetting.GAL_AUTOCOMPLETE,
@@ -135,13 +133,6 @@ function() {
 	ZmPref.registerPref("AUTOCOMPLETE_SHARED_ADDR_BOOKS", {
 		displayName:		ZmMsg.autocompleteSharedAddrBooks,
 		displayContainer:	ZmPref.TYPE_CHECKBOX
-	});
-
-	ZmPref.registerPref("CONTACTS_PER_PAGE", {
-		loadFunction:		ZmPref.loadPageSizes,
-		maxSetting:			ZmSetting.CONTACTS_PER_PAGE_MAX,
-		displayName:		ZmMsg.contactsPerPage,
-	 	displayContainer:	ZmPref.TYPE_SELECT
 	});
 
 	ZmPref.registerPref("CONTACTS_VIEW", {
@@ -201,6 +192,7 @@ function() {
 	ZmItem.registerItem(ZmItem.CONTACT,
 						{app:			ZmApp.CONTACTS,
 						 nameKey:		"contact",
+						 pluralNameKey:	"contacts",
 						 icon:			"Contact",
 						 soapCmd:		"ContactAction",
 						 itemClass:		"ZmContact",
@@ -926,14 +918,11 @@ function(ev) {
 	var list = ev.getDetail("settings");
 	if (!(list && list.length)) { return; }
 
-	var force = ((list.length == 1) && (list[0].id == ZmSetting.CONTACTS_PER_PAGE));
 	var view = clc._getViewType();
-	if (!force) {
-		for (var i = 0; i < list.length; i++) {
-			var setting = list[i];
-			if (setting.id == ZmSetting.CONTACTS_VIEW) {
-				view = clc._defaultView();
-			}
+	for (var i = 0; i < list.length; i++) {
+		var setting = list[i];
+		if (setting.id == ZmSetting.CONTACTS_VIEW) {
+			view = clc._defaultView();
 		}
 	}
 

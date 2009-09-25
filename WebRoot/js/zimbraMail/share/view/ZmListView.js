@@ -125,10 +125,9 @@ function(list, sortField) {
 	}
 
 	if (this._isPageless) {
-		if (this.offset > 0 && this._controller._searchResult) {
-			var search = this._controller._searchResult;
-			var items = search && search.getResults().getArray();
-			this.addItems(items);
+		if (this._itemsToAdd) {
+			this.addItems(this._itemsToAdd);
+			this._itemsToAdd = null;
 		} else {
 			var lvList = list;
 			if (list instanceof ZmList) {
@@ -137,13 +136,7 @@ function(list, sortField) {
 			}
 			DwtListView.prototype.set.call(this, lvList, sortField);
 		}
-
-		if (!this._rowHeight) {
-			var item = list.get(0);
-			var row = item && this._getElFromItem(item);
-			this._rowHeight = (row && Dwt.getSize(row).y) || 20;
-		}
-		this._controller._searchResult = null;
+		this._setRowHeight(list);
 	} else {
 		var subList;
 		if (list instanceof ZmList) {
@@ -155,6 +148,15 @@ function(list, sortField) {
 		DwtListView.prototype.set.call(this, subList, sortField);
 	}
 	this._rendered = true;
+};
+
+ZmListView.prototype._setRowHeight =
+function() {
+	if (!this._rowHeight) {
+		var item = this._list && this._list.get(0);
+		var row = item && this._getElFromItem(item);
+		this._rowHeight = row && Dwt.getSize(row).y;
+	}
 };
 
 ZmListView.prototype.reset =
@@ -941,7 +943,8 @@ function() {
 	var sh = scrollDiv.scrollHeight, st = scrollDiv.scrollTop, rh = this._rowHeight;
 
 	// view (porthole) height - everything measured relative to its top
-	var h = Dwt.getSize(scrollDiv).y;
+	// prefer clientHeight since (like scrollHeight) it doesn't include borders
+	var h = scrollDiv.clientHeight || Dwt.getSize(scrollDiv).y;
 
 	// where we'd like bottom of list view to be (with extra hidden items at bottom)
 	var target = h + (this.getPagelessThreshold() * this._rowHeight);
@@ -969,8 +972,9 @@ function() {
 
 ZmListView.prototype._sizeChildren =
 function(height) {
-	DwtListView.prototype._sizeChildren.apply(this, arguments);
-	this._checkItemCount();
+	if (DwtListView.prototype._sizeChildren.apply(this, arguments)) {
+		this._checkItemCount();
+	}
 };
 
 

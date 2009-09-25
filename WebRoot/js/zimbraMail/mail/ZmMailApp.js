@@ -801,8 +801,7 @@ function() {
 							  trashViewOp:			ZmOperation.SHOW_ONLY_MAIL,
 							  chooserSort:			10,
 							  defaultSort:			10,
-							  upsellUrl:			ZmSetting.MAIL_UPSELL_URL,
-							  pageless:				true
+							  upsellUrl:			ZmSetting.MAIL_UPSELL_URL
 							  });
 };
 

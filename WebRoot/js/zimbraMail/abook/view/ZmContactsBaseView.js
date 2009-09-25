@@ -19,6 +19,7 @@ ZmContactsBaseView = function(params) {
 
 	params.posStyle = params.posStyle || Dwt.ABSOLUTE_STYLE;
 	params.type = ZmItem.CONTACT;
+	params.pageless = true;
 	ZmListView.call(this, params);
 
 	this._handleEventType[ZmItem.GROUP] = true;
@@ -34,40 +35,33 @@ function() {
 
 ZmContactsBaseView.prototype.set =
 function(list, sortField, folderId) {
-	var subList;
-	if (list instanceof ZmContactList) {
-		// compute the sublist based on the folderId if applicable
-		list.addChangeListener(this._listChangeListener);
-		// for accounts where gal paging is not supported, show *all* results
-		subList = (list.isGal && !list.isGalPagingSupported)
-			? list.getVector().clone()
-			: list.getSubList(this.offset, this.getLimit(), folderId);
+
+	if (this._itemsToAdd) {
+		this.addItems(this._itemsToAdd);
+		this._itemsToAdd = null;
 	} else {
-		subList = list;
+		var subList;
+		if (list instanceof ZmContactList) {
+			// compute the sublist based on the folderId if applicable
+			list.addChangeListener(this._listChangeListener);
+			// for accounts where gal paging is not supported, show *all* results
+			subList = (list.isGal && !list.isGalPagingSupported)
+				? list.getVector().clone()
+				: list.getSubList(this.offset, this.getLimit(this.offset), folderId);
+		} else {
+			subList = list;
+		}
+		this._folderId = folderId;
+		DwtListView.prototype.set.call(this, subList, sortField);
 	}
-    this._folderId = folderId;
-	DwtListView.prototype.set.call(this, subList, sortField);
-};
-
-
-ZmContactsBaseView.prototype.paginate =
-function(contacts, bPageForward) {
-	var offset = this.getNewOffset(bPageForward);
-	var subVector = contacts.getSubList(offset, this.getLimit(), this._controller.getFolderId());
-	ZmListView.prototype.set.call(this, subVector);
-	this.offset = offset;
-	this.setSelection(this.getList().get(0));
+	this._setRowHeight();
+	this._rendered = true;
 };
 
 ZmContactsBaseView.prototype._setParticipantToolTip =
 function(address) {
 	// XXX: OVERLOADED TO SUPPRESS JS ERRORS..
 	// XXX: REMOVE WHEN IMPLEMENTED - SEE BASE CLASS ZmListView
-};
-
-ZmContactsBaseView.prototype.getLimit =
-function() {
-	return appCtxt.get(ZmSetting.CONTACTS_PER_PAGE);
 };
 
 ZmContactsBaseView.prototype.getListView =

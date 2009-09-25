@@ -729,14 +729,6 @@ function() {
 	return ZmMailListView.FIRST_ITEM;	
 };
 
-ZmDoublePaneController.prototype._getItemCountText =
-function() {
-	var list = this._list, type = this._mailListView.type;
-	var sizeText = list.size() + (list.hasMore() ? "+" : "");
-	var typeKey = (list.size() == 1) ? ZmItem.MSG_KEY[type] : ZmItem.PLURAL_MSG_KEY[type];
-	return AjxMessageFormat.format(ZmMsg.itemCount, [sizeText, ZmMsg[typeKey]]);
-};
-
 ZmDoublePaneController.prototype._setItemCountText =
 function(text) {
 

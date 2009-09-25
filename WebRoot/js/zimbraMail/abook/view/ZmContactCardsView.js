@@ -60,13 +60,6 @@ function() {
 	return "ZmContactCardsView";
 };
 
-ZmContactCardsView.prototype.paginate = 
-function(contacts, bPageForward) {
-	ZmContactsBaseView.prototype.paginate.call(this, contacts, bPageForward);
-	this._layout();
-	this.setSelection(contacts.getVector().get(this.offset));
-};
-
 ZmContactCardsView.prototype.replenish = 
 function(list) {
 	ZmContactsBaseView.prototype.replenish.call(this, list);
@@ -81,12 +74,18 @@ function(defaultColumnSort) {
 
 ZmContactCardsView.prototype.set = 
 function(contacts, sortField, folderId) {
+
 	if (this._objectManager) {
 		this._objectManager.reset();
 	}
 
-	// XXX: optimize later - switch view always forces layout unnecessarily
-	ZmContactsBaseView.prototype.set.call(this, contacts, sortField, this._controller.getFolderId());
+	if (this._itemsToAdd) {
+		this._list.addList(this._itemsToAdd);
+		this._itemsToAdd = null;
+	} else {
+		// XXX: optimize later - switch view always forces layout unnecessarily
+		ZmContactsBaseView.prototype.set.call(this, contacts, sortField, this._controller.getFolderId());
+	}
 
 	if (this._initialResized) {
 		this._layout();
@@ -94,6 +93,15 @@ function(contacts, sortField, folderId) {
 
 	// disable alphabet bar for gal searches
 	this._alphabetBar.enable(!contacts.isGal);
+};
+
+// Pretend row height is half since we have two cards to a row.
+ZmContactCardsView.prototype._setRowHeight =
+function() {
+	if (!this._rowHeight) {
+		ZmContactsBaseView.prototype._setRowHeight.call(this);
+		this._rowHeight = this._rowHeight && Math.floor(this._rowHeight / 2);
+	}
 };
 
 ZmContactCardsView.prototype.getAlphabetBar =
@@ -185,6 +193,8 @@ function() {
 		var html = AjxTemplate.expand("abook.Contacts#CardsView-NoResults", subs);
 		this.getHtmlElement().appendChild(Dwt.parseHtmlFragment(html));
 	}
+
+	this._setRowHeight();
 };
 
 ZmContactCardsView.prototype._setNoResultsHtml =
