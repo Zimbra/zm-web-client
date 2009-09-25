@@ -740,7 +740,8 @@ function(names, urls, inNewWindow) {
 	var msg = new ZmMailMsg();
 	var toOverride = null;
 	var subjOverride = new AjxListFormat().format(names);
-	var extraBodyText = urls.join("\n");
+	var htmlCompose = appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT) == ZmSetting.COMPOSE_HTML;
+	var extraBodyText = urls.join(htmlCompose ? "<br>" : "\n");
 	AjxDispatcher.run("Compose", {action: action, inNewWindow: inNewWindow, msg: msg,
 								  toOverride: toOverride, subjOverride: subjOverride,
 								  extraBodyText: extraBodyText});
