@@ -288,8 +288,10 @@ function(type, account) {
 ZmAutocomplete.prototype._cacheResults =
 function(str, acType, list, hasGal, cacheable, baseCache, account) {
 
-	var acct = account || appCtxt.getActiveAccount();
-	var cache = this._acCache[acct.id][acType][str] = this._acCache[acct.id][acType][str] || {};
+	var context = window.parentAppCtxt || window.appCtxt;
+	var acct = account || context.getActiveAccount();
+	var ac = appCtxt.isChildWindow ? context.getAutocompleter() : this;
+	var cache = ac._acCache[acct.id][acType][str] = ac._acCache[acct.id][acType][str] || {};
 	cache.list = list;
 	// we always cache; flag below indicates whether we can do forward matching
 	cache.cacheable = (baseCache && baseCache.cacheable) || cacheable;
@@ -355,8 +357,10 @@ function(str, acType, account) {
 ZmAutocomplete.prototype._getCachedResults =
 function(str, acType, checkCacheable, account) {
 
-	var acct = account || appCtxt.getActiveAccount();
-	var cache = this._acCache[acct.id][acType][str];
+	var context = window.parentAppCtxt || window.appCtxt;
+	var acct = account || context.getActiveAccount();
+	var ac = appCtxt.isChildWindow ? context.getAutocompleter() : this;
+	var cache = ac._acCache[acct.id][acType][str];
 	if (cache) {
 		if (checkCacheable && (cache.cacheable === false)) { return null; }
 		if (cache.ts) {
