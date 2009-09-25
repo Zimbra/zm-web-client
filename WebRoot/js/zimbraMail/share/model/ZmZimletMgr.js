@@ -293,7 +293,11 @@ function(zimletNames, callback) {
 	var zimlets = this.getZimletsHash();
 	for (var i = 0; i < zimletNames.length; i++) {
 		var name = zimletNames[i];
-		zimlets[name]._finished_loadIncludes();
+		try {
+			zimlets[name]._finished_loadIncludes();
+		} catch (e) {
+			DBG.println(AjxDebug.DBG1, "Error initializing zimlet '" + name + "': " + e);
+		}
 	}
 	if (appCtxt.get(ZmSetting.PORTAL_ENABLED) && !appCtxt.isChildWindow) {
 		var params = {
