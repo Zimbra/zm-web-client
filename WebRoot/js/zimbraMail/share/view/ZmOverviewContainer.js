@@ -194,7 +194,7 @@ function(params) {
 		var params = {
 			parent: this,
 			text: (ZmMsg[ZmFolder.MSG_KEY[ZmOrganizer.ID_GLOBAL_INBOX]]),
-			imageInfo: "GlobalSearchFolder"
+			imageInfo: "GlobalInbox"
 		};
 		var ti = new DwtTreeItem(params);
 		ti.setData(Dwt.KEY_ID, appCtxt.getById(ZmOrganizer.ID_GLOBAL_INBOX));
