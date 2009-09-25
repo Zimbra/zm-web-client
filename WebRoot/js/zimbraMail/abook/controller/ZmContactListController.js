@@ -762,16 +762,3 @@ function() {
 	lv.set(this._list);
 	lv._setNextSelection();
 };
-
-ZmContactListController.prototype._getItemCountText =
-function() {
-	if (this._list.isCanonical) {
-		var lv = this._listView[this._currentView];
-		var list = lv._list;
-		var type = lv && lv.type;
-		var typeKey = !type ? "items" : (list.size() == 1) ? ZmItem.MSG_KEY[type] : ZmItem.PLURAL_MSG_KEY[type];
-		return AjxMessageFormat.format(ZmMsg.itemCount1, [list.size(), this._list.size(), ZmMsg[typeKey]]);
-	} else {
-		return ZmListController.prototype._getItemCountText.call(this);
-	}
-};

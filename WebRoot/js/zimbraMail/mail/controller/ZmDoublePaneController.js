@@ -440,6 +440,7 @@ function(parent, num) {
 		parent.enable(ZmOperation.ADD_FILTER_RULE, isMsg && !isSyncFailuresFolder);
 	}
 	parent.enable(ZmOperation.DETACH, (appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED) && isMsg && !isDraft));
+	parent.enable(ZmOperation.TEXT, true);
 };
 
 // top level view means this view is allowed to get shown when user clicks on 

@@ -1393,11 +1393,18 @@ function() {
 
 	var lv = this._listView[this._currentView];
 	var list = lv && lv._list;
+	if (!list) { return ""; }
 	var type = lv && lv.type;
-	if (!list || !type) { return ""; }
-	var sizeText = list.size() + (this._list.hasMore() ? "+" : "");
-	var typeKey = !type ? "items" : (list.size() == 1) ? ZmItem.MSG_KEY[type] : ZmItem.PLURAL_MSG_KEY[type];
-	return AjxMessageFormat.format(ZmMsg.itemCount, [sizeText, ZmMsg[typeKey]]);
+	var size = list.size();
+	var total = this._getNumTotal();
+	var num = total || size;
+	var typeKey = !type ? "items" : (num == 1) ? ZmItem.MSG_KEY[type] : ZmItem.PLURAL_MSG_KEY[type];
+	if (total) {
+		return AjxMessageFormat.format(ZmMsg.itemCount1, [size, total, ZmMsg[typeKey]]);
+	} else {
+		var sizeText = list.size() + (this._list.hasMore() ? "+" : "");
+		return AjxMessageFormat.format(ZmMsg.itemCount, [sizeText, ZmMsg[typeKey]]);
+	}
 };
 
 // sets the text that shows the number of items, if we are pageless
