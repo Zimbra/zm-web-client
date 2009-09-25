@@ -188,6 +188,20 @@ function(params) {
 			header.setExpanded(appCtxt.get(ZmSetting.ZIMLET_TREE_OPEN, null, appCtxt.accountList.mainAccount));
 		}
 	}
+
+	// add Global Inbox tree item
+	if (appCtxt.isOffline && this._appName == ZmApp.MAIL) {
+		var params = {
+			parent: this,
+			text: (ZmMsg[ZmFolder.MSG_KEY[ZmOrganizer.ID_GLOBAL_INBOX]]),
+			imageInfo: "GlobalSearchFolder"
+		};
+		var ti = new DwtTreeItem(params);
+		ti.setData(Dwt.KEY_ID, appCtxt.getById(ZmOrganizer.ID_GLOBAL_INBOX));
+		ti.setScrollStyle(Dwt.CLIP);
+		ti.addClassName("ZmOverviewGlobalInbox");
+		ti._initialize(0, true);
+	}
 };
 
 /**
@@ -224,7 +238,7 @@ function(account, updateStatus, updateTooltip) {
 ZmOverviewContainer.prototype.resetOperations =
 function(parent, acctId) {
 
-	parent.enableAll(true);
+	parent.enableAll(!(acctId instanceof ZmFolder));
 
 	var acct = appCtxt.accountList.getAccount(acctId);
 	if (acct) {
@@ -320,14 +334,14 @@ function(ev) {
 	}
 
 	var item = this._actionedHeaderItem = ev.item;
-	var acctId = item && item.getData(Dwt.KEY_ID);
+	var data = item && item.getData(Dwt.KEY_ID);
 
 	if (ev.detail == DwtTree.ITEM_ACTIONED && appCtxt.getApp(this._appName)) {	// right click
 		if (item.__isZimlet) { return; } // do nothing if zimlet is right-clicked
 
 		var actionMenu = this._getActionMenu(ev);
 		if (actionMenu) {
-			this.resetOperations(actionMenu, acctId);
+			this.resetOperations(actionMenu, data);
 			actionMenu.popup(0, ev.docX, ev.docY);
 		}
 	}
@@ -345,21 +359,38 @@ function(ev) {
 		if (!ZmApp.NAME[this._appName]) { return; }
 
 		// if an account header item was clicked, run the default search for it
-		if (acctId) {
-			var account = appCtxt.accountList.getAccount(acctId);
-			appCtxt.accountList.setActiveAccount(account);
-
-			var fid = ZmOrganizer.DEFAULT_FOLDER[ZmApp.ORGANIZER[this._appName]];
-			var folder = appCtxt.getById(ZmOrganizer.getSystemId(fid, account));
+		if (data) {
 			var sc = appCtxt.getSearchController();
-			var params = {
-				query: folder.createQuery(),
-				getHtml: appCtxt.get(ZmSetting.VIEW_AS_HTML),
-				searchFor: (ZmApp.DEFAULT_SEARCH[this._appName]),
-				sortBy: ((sc.currentSearch && folder.nId == sc.currentSearch.folderId) ? null : ZmSearch.DATE_DESC),
-				accountName: (account && account.name),
-				noUpdateOverview: true
-			};
+			var params;
+
+			if (data instanceof ZmFolder) {
+				var main = appCtxt.accountList.mainAccount;
+				params = {
+					query: ".",
+					queryHint: appCtxt.accountList.generateQuery(ZmOrganizer.ID_INBOX),
+					folderId: null,
+					getHtml: appCtxt.get(ZmSetting.VIEW_AS_HTML, null, main),
+					searchFor: (ZmApp.DEFAULT_SEARCH[this._appName]),
+					sortBy: ZmSearch.DATE_DESC,
+					accountName: main.name,
+					noUpdateOverview: true
+				};
+			}
+			else {
+				var account = appCtxt.accountList.getAccount(data);
+				appCtxt.accountList.setActiveAccount(account);
+
+				var fid = ZmOrganizer.DEFAULT_FOLDER[ZmApp.ORGANIZER[this._appName]];
+				var folder = appCtxt.getById(ZmOrganizer.getSystemId(fid, account));
+				params = {
+					query: folder.createQuery(),
+					getHtml: appCtxt.get(ZmSetting.VIEW_AS_HTML),
+					searchFor: (ZmApp.DEFAULT_SEARCH[this._appName]),
+					sortBy: ((sc.currentSearch && folder.nId == sc.currentSearch.folderId) ? null : ZmSearch.DATE_DESC),
+					accountName: (account && account.name),
+					noUpdateOverview: true
+				};
+			}
 			sc.search(params);
 		}
 	} else {																	// double click

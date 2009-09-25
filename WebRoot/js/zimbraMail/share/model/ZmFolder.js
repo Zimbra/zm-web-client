@@ -83,6 +83,7 @@ ZmFolder.MSG_KEY[ZmOrganizer.ID_CALENDAR]		= "calendar";
 ZmFolder.MSG_KEY[ZmOrganizer.ID_NOTEBOOK]		= "notebook";
 ZmFolder.MSG_KEY[ZmOrganizer.ID_BRIEFCASE]		= "briefcase";
 ZmFolder.MSG_KEY[ZmOrganizer.ID_CHATS]			= "chats";
+ZmFolder.MSG_KEY[ZmOrganizer.ID_GLOBAL_INBOX]	= "globalInbox";
 ZmFolder.MSG_KEY[ZmFolder.ID_OUTBOX]			= "outbox";
 ZmFolder.MSG_KEY[ZmFolder.ID_SYNC_FAILURES]		= "errorReports";
 ZmFolder.MSG_KEY[ZmFolder.ID_ATTACHMENTS]       = "attachments";

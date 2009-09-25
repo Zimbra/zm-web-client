@@ -175,6 +175,11 @@
 	margin-bottom: 5px;
 }
 
+.ZmOverviewGlobalInbox {
+	margin: 1px 0px 2px 0px;
+	padding: 1px 0px 2px 0px;
+}
+
 .ZmOverviewLocalHeader,
 .ZmOverviewLocalHeader-actioned,
 .ZmOverviewLocalHeader-selected,

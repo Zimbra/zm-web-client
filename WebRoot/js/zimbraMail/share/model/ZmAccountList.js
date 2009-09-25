@@ -136,20 +136,19 @@ function(folderId, types) {
 		var acct = list[i];
 
 		// dont add any apps not supported by this account
-		if (type && !acct.isAppEnabled(ZmItem.APP[type])) { continue; }
+		if ((type && !acct.isAppEnabled(ZmItem.APP[type])) || acct.isMain) { continue; }
 
 		var part = [
 			'(underid:"',
 			ZmOrganizer.getSystemId(fid, acct, true),
-			'"',
+			'")',
 		];
-		part.push(")");
 
 		query.push(part.join(""));
 	}
 
 	DBG.println(AjxDebug.DBG2, "query = " + query.join(" OR "));
-	return (query.join(" OR "));
+	return (". " + query.join(" OR "));
 };
 
 /**

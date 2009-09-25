@@ -303,8 +303,9 @@ function(params) {
 			}
 		}
 
-		// hide sync-failures folder if empty
-		if (child.numTotal == 0 && (child.nId == ZmFolder.ID_SYNC_FAILURES)) {
+		if ((child.numTotal == 0 && (child.nId == ZmFolder.ID_SYNC_FAILURES)) ||
+			(appCtxt.isOffline && child.nId == ZmOrganizer.ID_GLOBAL_INBOX))
+		{
 			continue;
 		}
 
