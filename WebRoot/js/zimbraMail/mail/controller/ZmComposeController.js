@@ -327,9 +327,14 @@ function(attId, draftType, callback) {
 
 		// If this message had been saved from draft and it has a sender (meaning it's a reply from someone
 		// else's account) then get the account name from the from field.
-		if (!acctName && !isDraft && origMsg && origMsg.isDraft && origMsg._addrs[ZmMailMsg.HDR_FROM] &&
-			origMsg._addrs[ZmMailMsg.HDR_SENDER] && origMsg._addrs[ZmMailMsg.HDR_SENDER].size())
-		{
+		var isOrigMsgDraft = !acctName && !isDraft && origMsg && origMsg.isDraft;
+		var hasFromAndSender = isOrigMsgDraft &&
+							   origMsg._addrs[ZmMailMsg.HDR_FROM] &&
+							   origMsg._addrs[ZmMailMsg.HDR_SENDER] &&
+							   origMsg._addrs[ZmMailMsg.HDR_SENDER].size() > 0;
+		var origMsgFolder = hasFromAndSender && msg.origId && ac.getById(origMsg.folderId);
+		var isOrigMsgRemote = origMsgFolder && origMsgFolder.isRemote();
+		if (isOrigMsgRemote) {
 			acctName =  origMsg._addrs[ZmMailMsg.HDR_FROM].get(0).address;
 		}	
 		
