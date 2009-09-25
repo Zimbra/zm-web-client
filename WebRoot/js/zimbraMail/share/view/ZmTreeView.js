@@ -204,13 +204,8 @@ ZmTreeView.prototype.getSelected =
 function() {
 	if (this.isCheckedStyle) {
 		var selected = [];
-		var items = this.getHeaderItem().getItems();
-		for (var i = 0; i < items.length; i++) {
-			var item = items[i];
-			if (item && (item instanceof DwtTreeItem) && item.getChecked()) {
-				selected.push(item.getData(Dwt.KEY_OBJECT));
-			}
-		}
+		var header = this.getHeaderItem();
+		this._getCheckedItems(header, selected);
 		return selected;
 	} else {
 		return (this.getSelectionCount() != 1)
@@ -557,3 +552,18 @@ function() {
 	}
 	return null;
 };
+
+/** Recursively checks if item and children are checked */
+ZmTreeView.prototype._getCheckedItems =
+function(item, selected) {
+	if (item && (item instanceof DwtTreeItem)) {
+		if (item.getChecked()) {
+			selected.push(item.getData(Dwt.KEY_OBJECT));
+		}
+		var items = item.getItems();
+		for (var i = 0; i < items.length; i++) {
+			this._getCheckedItems(items[i], selected);
+		}
+	}
+};
+
