@@ -515,7 +515,7 @@ function(ev, op, params) {
 ZmListController.prototype._tagButtonListener =
 function(ev) {
 	var toolbar = this._toolbar[this._currentView];
-	if (ev.dwtObj.parent == toolbar) {
+	if (ev.item.parent == toolbar) {
 		this._setTagMenu(toolbar);
 	}
 };
