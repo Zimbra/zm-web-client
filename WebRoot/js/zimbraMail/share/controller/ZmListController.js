@@ -440,6 +440,8 @@ function(params) {
 	}
 };
 
+ZmListController.prototype._preShowCallback = function() {};
+
 // List listeners
 
 // List selection event - handle flagging if a flag icon was clicked, otherwise
