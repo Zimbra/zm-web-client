@@ -1521,17 +1521,32 @@ function(appt, shiftKey) {
 	// find out if we really should display the quick add dialog
 	var useQuickAdd = appCtxt.get(ZmSetting.CAL_USE_QUICK_ADD);
 	if ((useQuickAdd && !shiftKey) || (!useQuickAdd && shiftKey)) {
-		if (this._quickAddDialog == null) {
-			AjxDispatcher.require(["CalendarCore", "Calendar", "CalendarAppt"]);
-			this._quickAddDialog = new ZmApptQuickAddDialog(this._shell);
-			this._quickAddDialog.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._quickAddOkListener));
-			this._quickAddDialog.addSelectionListener(ZmApptQuickAddDialog.MORE_DETAILS_BUTTON, new AjxListener(this, this._quickAddMoreListener));
-		}
-		this._quickAddDialog.initialize(appt);
-		this._quickAddDialog.popup();
+
+        if(AjxTimezone.TIMEZONE_CONFLICT || AjxTimezone.DEFAULT_RULE.autoDetected) {
+            var timezonePicker = this.getTimezonePicker();
+            var callback = new AjxCallback(this, this.handleTimezoneSelectionQuickAdd, [appt, shiftKey])
+            timezonePicker.setCallback(callback);
+            timezonePicker.popup();
+        }else {
+            this._showQuickAddDialogContinue(appt, shiftKey);
+        }
+
 	} else {
 		this.newAppointment(appt);
 	}
+};
+
+
+ZmCalViewController.prototype._showQuickAddDialogContinue =
+function(appt, shiftKey) {
+    if (this._quickAddDialog == null) {
+        AjxDispatcher.require(["CalendarCore", "Calendar", "CalendarAppt"]);
+        this._quickAddDialog = new ZmApptQuickAddDialog(this._shell);
+        this._quickAddDialog.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._quickAddOkListener));
+        this._quickAddDialog.addSelectionListener(ZmApptQuickAddDialog.MORE_DETAILS_BUTTON, new AjxListener(this, this._quickAddMoreListener));
+    }
+    this._quickAddDialog.initialize(appt);
+    this._quickAddDialog.popup();
 };
 
 ZmCalViewController.prototype.newAppointmentHelper =
@@ -1555,7 +1570,61 @@ function(newAppt, mode, isDirty, startDate) {
 	AjxDispatcher.require(["CalendarCore", "Calendar"]);
 	var sd = startDate || (this._viewVisible ? this._viewMgr.getDate() : new Date());
 	var appt = newAppt || this._newApptObject(sd, AjxDateUtil.MSEC_PER_HALF_HOUR);
-	this._app.getApptComposeController().show(appt, mode, isDirty);
+    if(AjxTimezone.TIMEZONE_CONFLICT || AjxTimezone.DEFAULT_RULE.autoDetected) {
+        var timezonePicker = this.getTimezonePicker();
+        var callback = new AjxCallback(this, this.handleTimezoneSelection, [appt, mode, isDirty])        
+        timezonePicker.setCallback(callback);
+        timezonePicker.popup();
+    }else {
+	    this._app.getApptComposeController().show(appt, mode, isDirty);
+    }
+};
+
+ZmCalViewController.prototype.handleTimezoneSelection =
+function(appt, mode, isDirty, serverId) {
+    this.updateTimezoneInfo(appt, serverId);
+    this._app.getApptComposeController().show(appt, mode, isDirty);
+};
+
+ZmCalViewController.prototype.handleTimezoneSelectionQuickAdd =
+function(appt, shiftKey, serverId) {
+    this.updateTimezoneInfo(appt, serverId);    
+    this._showQuickAddDialogContinue(appt, shiftKey);
+};
+
+ZmCalViewController.prototype.updateTimezoneInfo =
+function(appt, serverId) {
+    appt.setTimezone(serverId);
+    appCtxt.set(ZmSetting.DEFAULT_TIMEZONE, serverId);
+    AjxTimezone.TIMEZONE_CONFLICT = false;
+    this.updateDefaultTimezone(serverId);
+    var settings = appCtxt.getSettings();
+    var tzSetting = settings.getSetting(ZmSetting.DEFAULT_TIMEZONE);
+    settings.save([tzSetting], new AjxCallback(this, this._timezoneSaveCallback));
+};
+
+ZmCalViewController.prototype.updateDefaultTimezone =
+function(serverId) {
+    for(var i in AjxTimezone.MATCHING_RULES) {
+        if(AjxTimezone.MATCHING_RULES[i].serverId == serverId) {
+             AjxTimezone.DEFAULT_RULE = AjxTimezone.MATCHING_RULES[i];
+             AjxTimezone.DEFAULT = AjxTimezone.getClientId(AjxTimezone.DEFAULT_RULE.serverId);
+             break;
+        }
+    }
+};
+
+ZmCalViewController.prototype._timezoneSaveCallback =
+function() {
+   appCtxt.setStatusMsg(ZmMsg.timezonePrefSaved); 
+};
+
+ZmCalViewController.prototype.getTimezonePicker =
+function() {
+    if(!this._timezonePicker) {
+        this._timezonePicker = new ZmTimezonePicker(this._shell);
+    }
+    return this._timezonePicker;
 };
 
 ZmCalViewController.prototype.editAppointment =
