@@ -792,7 +792,7 @@ function(search) {
 		type = ZmOrganizer.SEARCH;
 	}
 	var app = appCtxt.getCurrentApp();
-	var overview = app.getOverview();
+	var overview = app && app.getOverview();
 	if (overview) {
 		overview.setSelected(id, type);
 	}

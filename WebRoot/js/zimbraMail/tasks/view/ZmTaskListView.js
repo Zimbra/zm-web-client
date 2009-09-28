@@ -15,8 +15,9 @@
 
 ZmTaskListView = function(parent, controller, dropTgt) {
 	var headerList = this._getHeaderList(parent);
-	ZmListView.call(this, {parent:parent, posStyle:Dwt.ABSOLUTE_STYLE, view:ZmId.VIEW_TASKLIST,
-						   type:ZmItem.TASK, controller:controller, headerList:headerList, dropTgt:dropTgt});
+	var params = {parent:parent, posStyle:Dwt.ABSOLUTE_STYLE, view:ZmId.VIEW_TASKLIST, pageless:true,
+				  type:ZmItem.TASK, controller:controller, headerList:headerList, dropTgt:dropTgt}
+	ZmListView.call(this, params);
 };
 
 ZmTaskListView.prototype = new ZmListView;
@@ -39,13 +40,6 @@ ZmTaskListView.prototype.setSize =
 function(width, height) {
 	ZmListView.prototype.setSize.call(this, width, height);
 	this._resetColWidth();
-};
-
-ZmTaskListView.prototype.getLimit =
-function() {
-	// dont rely on page size being set (in case mail app is disabled)
-	// at least until tasks app gets its own prefs page
-	return (appCtxt.get(ZmSetting.PAGE_SIZE) || 25);
 };
 
 ZmTaskListView.prototype.saveNewTask =
@@ -100,9 +94,10 @@ function() {
 // Private Methods
 
 ZmTaskListView.prototype._renderList =
-function(list, noResultsOk) {
+function(list, noResultsOk, doAdd) {
 	// call base class first
-	ZmListView.prototype._renderList.call(this, list, noResultsOk);
+	ZmListView.prototype._renderList.apply(this, arguments);
+	if (doAdd) { return; }
 
 	// add custom row to allow user to quickly enter tasks from w/in listview
 	var div = document.createElement("DIV");

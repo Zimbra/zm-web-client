@@ -74,14 +74,6 @@ function() {
 	return [ZmMsg.zimbraTitle, this._controller.getApp().getDisplayName()].join(": ");
 };
 
-
-ZmContactsBaseView.prototype.setSelection =
-function(item, skipNotify) {
-	if (!item) { return; }
-
-	ZmListView.prototype.setSelection.call(this, item, skipNotify);
-};
-
 ZmContactsBaseView.prototype._changeListener =
 function(ev) {
 	var folderId = this._controller.getFolderId();

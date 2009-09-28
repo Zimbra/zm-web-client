@@ -191,15 +191,6 @@ function(name, callback) {
 	task.save(null, callback);
 };
 
-// default callback before a view is shown - enable/disable nav buttons
-ZmTaskListController.prototype._preShowCallback =
-function(view, viewPushed) {
-	if (view == ZmId.VIEW_TASKLIST) {
-		return ZmListController.prototype._preShowCallback.call(this, view, viewPushed);
-	}
-	return true;
-};
-
 ZmTaskListController.prototype._defaultView =
 function() {
 	return ZmId.VIEW_TASKLIST;
@@ -249,8 +240,14 @@ function(view) {
 	this._toolbar[view].getButton(ZmOperation.DELETE).setToolTipContent(ZmMsg.hardDeleteTooltip);
 
 	this._toolbar[view].addFiller();
-	var tb = new ZmNavToolBar({parent:this._toolbar[view], context:view});
-	this._setNavToolBar(tb, view);
+	this._initializeNavToolBar(view);
+};
+
+ZmTaskListController.prototype._initializeNavToolBar =
+function(view) {
+	this._toolbar[view].addOp(ZmOperation.TEXT);
+	var text = this._itemCountText[view] = this._toolbar[view].getButton(ZmOperation.TEXT);
+	text.addClassName("itemCountText");
 };
 
 ZmTaskListController.prototype._setupPrintMenu =
@@ -347,6 +344,7 @@ function(parent, num) {
 	parent.enable(printOp, num > 0);
 
 	parent.enable(ZmOperation.VIEW_MENU, true);
+	parent.enable(ZmOperation.TEXT, true);
 };
 
 ZmTaskListController.prototype._doDelete =
@@ -414,7 +412,6 @@ function(task) {
 
 	calItemView.set(task, ZmId.VIEW_TASKLIST);
 	this._resetOperations(this._toolbar[viewId], 1); // enable all buttons
-	this._navToolBar[viewId].enable([ZmOperation.PAGE_BACK, ZmOperation.PAGE_FORWARD], false);
 
 	var elements = {};
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[viewId];
@@ -536,10 +533,13 @@ function(ev) {
 ZmTaskListController.prototype._setViewContents =
 function(view) {
 	// load tasks into the given view and perform layout.
-	this._listView[view].set(this._list, ZmItem.F_DATE);
+	var lv = this._listView[view];
+	lv.set(this._list, ZmItem.F_DATE);
 
-	var list = this._list.getVector();
-	if (list.size()) this._listView[view].setSelection(list.get(0));
+	if (lv.offset == 0) {
+		var list = this._list.getVector();
+		if (list.size()) this._listView[view].setSelection(list.get(0));
+	}
 };
 
 ZmTaskListController.prototype._getMoveDialogTitle =

@@ -417,10 +417,11 @@ function(params, callback) {
 ZmContactsApp.prototype._contactsSearch =
 function(query, callback) {
 	var params = {
-		searchFor: ZmId.ITEM_CONTACT,
-		query: query,
-		types: [ZmId.ITEM_CONTACT],
-		callback: callback
+		searchFor:	ZmId.ITEM_CONTACT,
+		query:		query,
+		limit:		this.getLimit(),
+		types:		[ZmId.ITEM_CONTACT],
+		callback:	callback
 	};
 	appCtxt.getSearchController().search(params);
 };

@@ -62,6 +62,7 @@ function() {
 	ZmItem.registerItem(ZmItem.TASK,
 						{app:			ZmApp.TASKS,
 						 nameKey:		"task",
+						 pluralNameKey:	"tasks",
 						 icon:			"TaskList",
 						 soapCmd:		"ItemAction",
 						 itemClass:		"ZmTask",
@@ -294,11 +295,12 @@ function(mailItem, date, subject) {
 ZmTasksApp.prototype.search =
 function(folder, startDate, endDate, callback) {
 	var params = {
-		query: (folder ? folder.createQuery() : "in:tasks"),
-		types: [ZmItem.TASK],
-		searchFor: ZmItem.TASK,
-		callback: callback,
-		accountName: (folder && folder.account && folder.account.name)
+		query:			(folder ? folder.createQuery() : "in:tasks"),
+		types:			[ZmItem.TASK],
+		limit:			this.getLimit(),
+		searchFor:		ZmItem.TASK,
+		callback:		callback,
+		accountName:	(folder && folder.account && folder.account.name)
 	};
 	appCtxt.getSearchController().search(params);
 };

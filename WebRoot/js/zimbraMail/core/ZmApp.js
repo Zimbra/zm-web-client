@@ -264,6 +264,12 @@ function() {
 	return null;
 };
 
+// limit for search triggered by app launch; assumes virtual paging
+ZmApp.prototype.getLimit =
+function() {
+	return 2 * appCtxt.get(ZmSetting.PAGE_SIZE);
+};
+
 // Convenience functions that call through to app view manager. See ZmAppViewMgr for details.
 
 ZmApp.prototype.setAppView =

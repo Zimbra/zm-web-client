@@ -1318,6 +1318,7 @@ function(query, callback, response, type) {
 		searchFor:		ZmId.SEARCH_MAIL,
 		query:			query,
 		types:			types,
+		limit:			this.getLimit(),
 		getHtml:		appCtxt.get(ZmSetting.VIEW_AS_HTML, null, account),
 		accountName:	(account && account.name),
 		callback:		callback,
