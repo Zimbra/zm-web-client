@@ -1,0 +1,217 @@
+<template id='dwt.Widgets#ZButton' class='ZWidget'>
+	<$ var buttonClass = data.buttonClass || "Button"; $>
+	<table class='ZWidgetBorder Z<$=buttonClass$>Border ZWidgetTable Z<$=buttonClass$>Table' cellspacing=0 cellpadding=0><tr>
+		<td class='Img<$=buttonClass$>_L'><div></div></td>
+		<td id='${id}_left_icon'  	class='Img<$=buttonClass$> ZLeftIcon ZWidgetIcon'></td>
+		<td id='${id}_title'		class='Img<$=buttonClass$> ZWidgetTitle'></td>
+		<td id='${id}_right_icon' 	class='Img<$=buttonClass$> ZRightIcon ZWidgetIcon'></td>
+		<td id='${id}_dropdown' 	class='Img<$=buttonClass$> ZDropDown'></td>
+		<td class='Img<$=buttonClass$>_R'><div></div></td>				
+	</tr></table>
+</template>
+
+
+<template id='dwt.Widgets#ZSelect' class='ZWidget'>
+	<table class='ZSelectBorder ZSelectTable ZWidgetTable' cellspacing=0 cellpadding=0><tr>
+		<td><div class='ImgSelect_L'></div></td>
+		<td id='${id}_left_icon'	class='ImgSelect ZLeftIcon ZWidgetIcon'></td>
+		<td id='${id}_title'		class='ImgSelect ZWidgetTitle'></td>
+		<td id='${id}_right_icon'	class='ImgSelect ZRightIcon ZWidgetIcon'></td>
+		<td><div class='ImgSelect_R'></div></td>				
+	</tr></table>
+</template>
+
+<template id='dwt.Widgets#DwtComboBoxButton' class='ZWidget'>
+	<$ var buttonClass = data.buttonClass || "Button"; $>
+	<table class='ZWidgetBorder Z<$=buttonClass$>Border ZWidgetTable Z<$=buttonClass$>Table' cellspacing=0 cellpadding=0><tr>
+		<td><div class='Img<$=buttonClass$>_L'></div></td>
+		<td id='${id}_dropdown' 	class='Img<$=buttonClass$> ZDropDown'></td>
+		<td><div class='Img<$=buttonClass$>_R'></div></td>
+	</tr></table>
+</template>
+
+<template id='dwt.Widgets#ZTab' class='ZWidget'>
+	<table class='ZWidgetBorder ZTabTable ZWidgetTable' cellspacing=0 cellpadding=0><tr>
+		<td><div class='ImgTab_L'></div></td>
+		<td id='${id}_left_icon'	class='ImgTab ZLeftIcon ZWidgetIcon'></td>
+		<td id='${id}_title'		class='ImgTab ZWidgetTitle'></td>
+		<td id='${id}_right_icon'	class='ImgTab ZRightIcon ZWidgetIcon'></td>
+		<td><div class='ImgTab_R'></div></td>				
+	</tr></table>	
+</template>
+
+<template id='dwt.Widgets#ZTabBarPrefix'>
+  <td id='${id}_prefix' class='ZTabBarPrefix ImgTab'>&nbsp;</td>
+</template>
+
+<template id='dwt.Widgets#ZTabBarSuffix'>
+  <td id='${id}_suffix' class='ZTabBarSuffix ImgTab'>&nbsp;</td>
+</template>
+
+
+<template id='dwt.Widgets#ZAccordionItem'>
+	<div id='${id}_header_${itemNum}' class='ZAccordionHeader'>
+		<table class='ZWidgetBorder ZWidgetTable' cellspacing=0 cellpadding=0><tr>
+			<td class='ImgAccordion_L'><div></div></td>
+			<td class='ImgAccordion'><div id='${id}_status_${itemNum}' class='ImgAccordionClosed'></div></td>
+			<td class='ImgAccordion'><div class='ZAccordionTitle' id='${id}_title_${itemNum}'>${title}</div></td>
+			<td class='ImgAccordion_R'><div></div></td>				
+		</tr></table>
+	</div>
+	<div class='ZAccordionBody' id='${id}_body_${itemNum}'>
+	</div>
+</template>
+
+
+
+<template id='dwt.Widgets#ZField' class='ZWidget'>
+	<table class='ZWidgetBorder' cellspacing=0 cellpadding=0><tr>
+		<td><div class='ImgField_L'></div></td>
+		<td width=100% class='ImgField'><input id='${id}_field' class='ZFieldInput'></td>
+		<td><div class='ImgField_R'></div></td>				
+	</tr></table>
+</template>
+
+<template id='dwt.Widgets#ZTreeItem'>
+	<div class='${divClassName}' id='${id}_div'>
+		<table id='${id}_table' border=0 cellpadding=0 cellspacing=0 width=100%>
+			<tr>
+				<td align=center nowrap id='${id}_nodeCell'></td>
+				<$ if (data.isCheckedStyle) { $>
+					<td nowrap id='${id}_checkboxCell'>
+						<input type='checkbox' id='${id}_checkbox'>
+					</td>
+				<$ } $>
+				<td nowrap class='imageCell' id='${id}_imageCell'></td>
+				<td nowrap class='${textClassName}' id='${id}_textCell'></td>
+			</tr>
+		</table>
+	</div>
+</template>
+
+<template id='share.Widgets#ZmAppChooser' class='ZWidget'>
+  <table class='ZmAppChooserTable' cellpadding=0 cellspacing=0>
+    <tr id='${id}_items'>
+    </tr>
+  </table>
+</template>
+
+<template id='share.Widgets#ZmAppChooserItem'>
+  <$= AjxTemplate.expand("dwt.Widgets#ZToolbarItem", data) $>
+</template>
+
+<template id='share.Widgets#ZmAppChooserButton'>
+  <table id='${id}_select' class='ZWidgetTable  ZWidgetBorder' cellspacing=0 cellpadding=0><tr>
+    <td class='ImgAppTab_L'></td>
+    <td class='ImgAppTab'><nobr><div id='${id}_title'></div></nobr></td>
+    <td class='ImgAppTab_R'></td>
+  </tr></table>
+</template>
+
+<template id='share.Widgets#ZmSearchToolBar'>
+	<table border=0 cellpadding=0 cellspacing=0 height=20>
+		<tr>
+			<td class='ImgField_L searchwidth'></td>
+			<td id='${id}_inputField' class='ImgField'></td>
+			<td class='ImgField_R searchwidth'></td>
+			<td id='${id}_searchMenuButton' style='padding-left: 2px;'></td>
+			<td id='${id}_searchButton' hint='text' style='padding-left: 2px;'></td>
+		</tr>
+	</table>
+</template>
+
+<template id='dwt.Widgets#DwtBaseDialog' width='20' height='32'>
+	<div class='DwtDialog'>
+		<table cellspacing=0 cellpadding=0 style='cursor:move;' border='0'>
+			<tr id='${dragId}'>
+				<td class='ImgDialog_NW' width='6'></td>
+				<td>
+					<table border='0' cellpadding='0' cellspacing='0' width='100%'>
+						<tr>
+							<td class='ImgDialog_N minWidth' width='1%'>${icon}</td>
+							<td id='${id}_title' class='ImgDialog_N DwtDialogTitle' nowrap='nowrap'>${title}</td>
+							<td class='ImgDialog_N minWidth' width='1%'><div class='${closeIcon2}'></div></td>
+							<td class='ImgDialog_N minWidth width='1%'><div class='${closeIcon1}'></div></td>
+						</tr>
+					</table>
+				</td>
+				<td class='ImgDialog_NE' width='6'></td>
+			</tr>
+			<tr>
+				<td class='ImgDialog_W' width='6'></td>
+				<td class='DwtDialogBody' id='${id}_content'></td>
+				<td class='ImgDialog_E' width='6'></td>
+			</tr>
+			<tr>
+				<td valign='bottom' class='ImgDialog_SW' width='6'></td>
+				<td class='ImgDialog_S'>
+					<$ if (data.controlsTemplateId) { $>
+			            <$= AjxTemplate.expand(data.controlsTemplateId, data) $>
+		        	<$ } $>
+				</td>
+				<td valign='bottom' class='ImgDialog_SE' width='6'></td>
+			</tr>
+		</table>
+	</div>
+</template>
+
+<template id='dwt.Widgets#DwtDialogControls'>
+  <div id='${id}_buttons' class='DwtDialogButtonBar'>
+    <$ if (AjxEnv.isNav) { $>
+      <input type='button' id='${id}_focus' style='height:0px;width:0px;display:none;'>
+    <$ } $>
+  </div>
+</template>
+
+<!-- THIS IS BREAKING: SEE 'QUICK-ADD APPOINTMENT' (drag in the calendar app)
+<template id='XXXdwt.Widgets#DwtSemiModalDialog' width='20' height='32'>
+  <$= AjxTemplate.expand("dwt.Widgets#DwtDialog", data) $>
+</template>
+-->
+
+<template id='dwt.Widgets#DwtHorizontalSlider' class='DwtSlider DwtHorizontalSlider'>
+	<table class='ZWidgetBorder ZVolumeSliderBorder' cellspacing=0 cellpadding=0 width="100%"><tr>
+		<td width=7><div class='ImgSoundPlayer_Full_L'></div></td>
+		<td width='100%'><div class='ImgSoundPlayer_Full'></div></td>
+		<td width=7><div class='ImgSoundPlayer_Full_R'></div></td>				
+	</tr></table>
+	<div id='${id}_button' class='ImgSoundPlayer_Thumb' style='position:relative;'></div>
+</template>
+
+
+<template id='dwt.Widgets#DwtVerticalSlider' class='DwtSlider DwtVerticalSlider'>
+	<table class='ZWidgetBorder' cellspacing=0 cellpadding=0>
+		<tr><td><div class='ImgVolumeSlider_Full_T'></div></td></tr>
+		<tr><td height=100%><div class='ImgVolumeSlider_Full'></div></td></tr>
+		<tr><td><div class='ImgVolumeSlider_Full_B'></div></td></tr>
+	</tr></table>
+	<div id='${id}_button' class='ImgVolumeSlider_Thumb' style='position:relative;'></div>
+</template>
+
+
+<template id='dwt.Widgets#ZMenuItemSeparator' class='ZWidget'>
+	<table class='ZWidgetTable ZMenuItemTable ZMenuItemBorder ZMenuItemSeparatorBorder' cellspacing=0 cellpadding=0><tr>
+	    <td id='${id}_check'	 	class='ZCheckIcon'><div></div></td>
+    	<td id='${id}_left_icon'	class='ZLeftIcon ZWidgetIcon'><div></div></td>
+		<td id='${id}_title'		class='ZWidgetTitle'><div class='ZMenuItem-Separator'></div></td>
+	</tr></table>
+</template>
+
+<template id='dwt.Widgets#DwtVerticalSash' class='ZWidget' width='0' height='0'>
+	<div class='DwtVerticalSash ImgVSash'>
+        <center>
+            <div class='ImgVSash_thumb'></div>
+        </center>
+    </div>
+</template>
+
+<template id='dwt.Widgets#DwtListView-NoResults'>
+	<table width='100%' cellspacing=0 cellpadding=1>
+		<tr>
+			<td class='NoResults' valign='top' >
+				<br/><br/>${message}
+			</td>
+		</tr>
+	</table>
+</template>
+

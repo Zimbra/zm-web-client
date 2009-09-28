@@ -1,0 +1,84 @@
+<template id='mail.Message#MessageHeader'>
+	<div><!-- empty container DIV here so Dwt.parseHtmlFragment returns the infoBar div below -->
+		<table class='MsgHeaderTable' cellspacing=0 cellpadding=0 border=0 width=100%>
+			<tr>
+				<td align="center">
+					<table id='${id}_hdrTable' cellspacing=2 cellpadding=0 border=0 width=100%>
+						<tr>
+							<$ if (data.hasHeaderCloseBtn) { $>
+								<td id='${id}_closeBtnCell' style='padding-right: 5px;'></td>
+
+							<$ } $>
+							<!-- td class='SubjectCol LabelColName' valign=top>
+								<$= AjxStringUtil.htmlEncode(ZmMsg.subjectLabel); $>
+							</td -->
+							<td class='SubjectCol' valign=top width=100% colspan="2">
+								<$= data.subject $>
+							</td>
+						</tr>
+
+						<tr id='${id}_expandRow'>
+							<td width="1%" nowrap="nowrap">
+								<table align=right border=0 cellpadding=0 cellspacing=0>
+									<tr>
+										<td valign=top id='${id}_expandHeader' class='arrowbtn'></td>
+										<td class='LabelColName' style='vertical-align:middle'><strong><$= ZmMsg.sentByLabel $></strong></td>
+									</tr>
+								</table>
+							</td>
+							<td class='LabelColValue' style="padding-top: 6px;">
+								<table border=0 cellpadding=0 cellspacing=0>
+									<tr>
+										<$ if (data.sentByIcon) { $>
+											<!-- td valign=top>
+												<a href="javascript:;" onclick="ZmMailMsgView.contactIconCallback('${sentByNormal}', '${sentByIcon}'); return false;">
+													<$= AjxImg.getImageHtml(data.sentByIcon, "cursor:pointer") $>
+												</a>
+											</td -->
+											<!-- td>&nbsp;</td -->
+										<$ } $>
+										<td><strong>${sentBy}</strong>&nbsp;&nbsp;</td>
+										<td class='LabelColName' nowrap='nowrap'><strong><$= ZmMsg.onLabel $></strong></td>
+										<td class='LabelColValue' nowrap='nowrap'>${dateString}</td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+                        
+                        <$ if ( data.obo && ( AjxStringUtil.stripTags(data.obo) != AjxStringUtil.stripTags(data.sentBy) ) ) { //If Email zimlet is deployed. $>
+							<tr>
+								<td width='110' valign='top' class='LabelColName'><strong><$= ZmMsg.onBehalfOfLabel $></strong></td>
+								<td class='LabelColValue' colspan=10><$= data.obo $></td>
+							</tr>
+						<$ } $>
+                        
+                        <$ for (var i = 0; i < data.participants.length; i++) { $>
+							<tr>
+								<td width=110 valign='top' class='LabelColName'><$= data.participants[i].prefix $>:</td>
+								<td class='LabelColValue' colspan=10><$= data.participants[i].partStr $></td>
+							</tr>
+						<$ } $>
+                        <$ if(data.hasAttachments) {
+                           var c = (data.attachmentsCount/2+data.attachmentsCount%2);
+                           if(c < 2){ c = 2;}
+                           if(c > 4){ c = 4;} 
+
+                        $>
+                            <tr>
+                                <td width="100" class="LabelColName"></td>
+                                <td colspan="3">
+                                    <div id="${attachId}" style='overflow: auto; height:<$= c*28 $>;width: <$= Math.round(screen.width*0.3) $>'></div>
+                                </td>
+                            </tr>
+                        <$ } $>
+                    </table>
+				</td>
+				<td id='${id}_contactArea' class='ContactArea'>
+					<!-- Area reserved zimlets to add to message views. -->
+				</td>
+			</tr>                                                                                               
+		</table>
+		<div id='${infoBarId}'></div>
+	</div>
+</template>
+

@@ -1,0 +1,1634 @@
+/*
+ * ***** BEGIN LICENSE BLOCK *****
+ * Zimbra Collaboration Suite, Network Edition.
+ * Copyright (C) 2007, 2008, 2009 Zimbra, Inc.  All Rights Reserved.
+ * ***** END LICENSE BLOCK *****
+ */
+*	 {
+	font-family:	Arial;
+}
+
+
+/* GENERICS */
+
+.skin_container {
+	position:relative;
+	width:100%;
+	height:100%;
+}
+
+.skin_table {
+	width:100%;
+	height:100%;
+	border-collapse:collapse;
+}
+
+.fixed_table {
+	table-layout:fixed;
+}
+
+.skin_abs_left {
+	position:absolute;
+	left:0px;
+}
+
+.skin_abs_right {
+	position:absolute;
+	right:0px;
+}
+
+.offscreen {
+	position:absolute;
+	left:-1000;
+	top:-1000;
+	width:100;
+	height:100;
+}
+
+/* splash screen outer container */
+#skin_container_splash_screen {
+	position:absolute;
+	left:0;
+	top:0;
+	width:100%;
+	height:100%;
+	z-index:90000000;
+	display:block;
+	background-color:#fbf9f5;
+}
+
+#skin_container_splash_logo {
+	width:100%;
+	height:100%;
+	background-position:center;
+}
+
+
+.skin_container_splash_footer{
+	position:absolute;
+	bottom: 5px;
+	left: 25px;
+	color: #cbe2ff;
+}
+
+
+/* SKIN SPECIFIC */
+
+/*********************************
+	Outer skin and background
+*********************************/
+
+#skin_outer {
+	display:none;
+	position:absolute;
+	left:0px;
+	top:0px;
+	width:100%;
+	height:100%;
+	overflow:hidden;
+	background-color:white;
+}
+
+
+
+#skin_outer,
+#skin_outer * {
+	@FixBoxModel@
+}
+
+#skin_table_outer {}
+#skin_col_L 	{	width:8px;	}
+#skin_col_tree 	{	width:180px;	}
+#skin_col_sash	{	width:6px;	}
+#skin_col_main 	{	width:100%;		}
+#skin_col_R 	{	width:8px;	}
+
+
+/*********************************
+	Row 1:  username, links
+*********************************/
+#skin_R1 {}
+
+#skin_td_logo {}
+#skin_container_logo {}
+
+#skin_td_search {	
+	text-align:right;
+	width:100%; 
+}
+
+#skin_container_username {
+	font-weight:bold;
+	padding-right:10px;
+	width: 100px;
+	overflow: hidden;
+}
+
+.R1Text,
+.R1Sep,
+.R1Link {
+	color:#c1c1c1;
+	font-weight:normal;
+}
+.R1Link A,
+.R1Link A:link,
+.R1Link A:visited {
+	color:#c1c1c1;
+	text-decoration:underline;
+}
+.R1Link A:hover{
+	color:#c1c1c1;
+	text-decoration:none;
+}
+
+.R1Sep {
+	padding-left:6px;
+	padding-right:6px;
+}
+
+/*********************************
+	Row 2: user panel, app chooser, toolbar
+*********************************/
+
+#skin_container_search {
+	/*position:absolute;
+	width:550px;*/
+	height:25px;
+	right:20px;
+	top:0px;
+#IFDEF MSIE
+	top:0px;
+#ELSE
+	top:0px;
+#ENDIF
+}
+
+#skin_td_quota {
+	vertical-align:top;
+	width:100px;
+}
+
+
+#skin_container_quota	{
+	font-size:11px;
+	line-height:11px;
+	width:250px;
+	padding:8px 10px 0px 10px;
+}
+
+
+#skin_container_app_name {
+	font-size:18px;
+	font-weight:bold;
+	padding-left:5px;
+	padding-top:10px;
+	color:#999999;
+}
+
+#skin_td_app_chooser		{	width:100%; 	}
+#skin_container_app_chooser	{	
+	height:28px;	
+
+}
+
+.skin_tab_L		{	width:6px;	}
+.skin_tab_R		{	width:6px;	}
+.skin_tab_sep	{	width:5px;	}
+
+#skin_td_toolbar {	
+	vertical-align:top;
+	width:100%;	
+}
+
+#skin_container_toolbar TD,
+#skin_container_toolbar DIV {
+	font-size:10px;
+}
+
+.ImgSkin_Tab_Selected .skin_tab_text {
+	padding-top:4px;	
+}
+
+.ImgSkin_Tab_Normal .skin_tab_text {
+	padding-top:4px;
+	color:white;
+}
+
+
+
+/*********************************
+	Row 3: status and app chooser
+*********************************/
+#skin_R3 {}
+
+#skin_td_R3	{	width:100%; }
+
+#skin_table_R3 {}
+#skin_table_R3 TD {
+	font-size:10px;
+	font-weight:bold;
+	text-align:center;
+}
+
+
+/******
+	Search builder row
+ ******/
+
+#skin_tr_search_builder_toolbar,
+#skin_tr_search_builder {
+	display:none;
+}
+
+#skin_td_search_builder_L,
+#skin_td_search_builder_toolbar,
+#skin_td_search_builder,
+#skin_td_search_builder_R {
+	display:none;
+}
+
+#search_builder_outer {
+	display:none;
+}
+ 
+#skin_container_search_builder_toolbar	{	
+	height:29;
+}
+
+#skin_container_search_builder {	
+	height:225;
+}
+
+
+/*********************************
+	Main row:  tree and app 
+*********************************/
+
+
+#skin_tr_main, #skin_tr_main_full {
+	height:100%;
+}
+#skin_td_app_outer,
+#skin_td_app_full {
+	height:100%;
+}
+
+#skin_tr_main {
+}
+
+#skin_tr_main_full {
+	display: none;
+}
+
+#skin_td_tree_outer {
+	vertical-align:top;
+	padding-left:5px;
+	padding-bottom:5px;
+    width : 170px;
+}
+
+#skin_tree_table 	{}
+
+#skin_td_tree_header {
+	border-left:1px solid #c6c6c6;
+}
+#skin_tree_header_container {
+	height:28px;
+}
+
+#skin_td_tree {
+	background-color:white;
+	border:1px solid #c6c6c6;
+	border-right-width:0px;
+	border-top-width:0px;
+	padding:5px;
+}
+
+#skin_tr_tree_footer {
+	display:none;
+}
+
+#skin_td_tree_footer {
+	display:none;
+	border:1px solid #c6c6c6;
+	border-right-width:0px;
+	vertical-align:top;
+}
+
+#skin_container_tree_footer {
+	display:none;
+	height:135;
+}
+
+
+#skin_td_tree_bottom_ad {
+	background-color:#f3f3f3;
+	border:1px solid #c6c6c6;
+	border-right-width:0px;
+	color:#3459f5;
+	line-height:14px;
+}
+#skin_td_tree_bottom_ad A:link,
+#skin_td_tree_bottom_ad A:active,
+#skin_td_tree_bottom_ad A:visited {
+	color:#3459f5;
+	text-decoration:none;
+}
+
+
+#skin_td_tree_bottom_ad A:hover {
+	color:#3459f5;
+	text-decoration:underline;
+}
+
+
+#skin_tree_tab_text {
+	font-size:10px;
+	font-weight:bold;
+	text-align:center;
+}
+
+
+
+#skin_td_tree_app_sash {
+	padding-bottom:5px;
+}
+
+
+#skin_td_app_outer {
+	vertical-align:top;
+	padding-bottom:5px;
+	padding-right:4px;
+}
+#skin_app_table {}
+
+#skin_td_app {
+	padding-bottom:1px;
+	border-bottom:1px solid #bfbfbf;
+	border-right:1px solid #bfbfbf;
+	background:white;
+}
+
+#skin_col_current_app	{ width:100%;	}
+#skin_col_view_menu_L	{ width:8px;	}
+#skin_col_view_menu		{ width:200px;	}
+#skin_col_view_menu_R	{ width:8px;	}
+
+#skin_container_current_app {}
+
+#skin_container_status {
+	position:relative;
+	z-index:20;
+}
+
+.skin_td_app_toolbar {
+	border-right:1px solid #bfbfbf;
+}
+
+#skin_container_app_main {
+	
+
+}
+
+#skin_container_app_top_toolbar {}
+
+#skin_td_app_full_outer {
+	padding:5px;
+	padding-right:4px;
+	padding-top:0px;
+}
+
+#skin_container_app_main_full {
+}
+
+#skin_app_full_table {
+	border:1px solid #bfbfbf;
+	border-top-width:0px;
+}
+
+
+
+/*********************************
+	Row 4: links on grey bg
+*********************************/
+#skin_R4 {}
+#skin_R4 TD {
+	height: 20px;
+}
+
+#skin_td_R4	{	width:100%; }
+
+#skin_table_R4 {}
+#skin_table_R4 TD {
+	font-size:11;
+	color:#666666;
+}
+
+
+/****
+	Turn off status icons and clock
+ ****/
+.ZmStatus .ImgInbox, 
+.ZmStatus .ImgImStartChat,
+.ZmStatus .ZmStatusMainText {
+  background: none;
+}
+
+
+
+
+/***************
+ *
+ *	BUTTONS
+ *
+ ***************/
+
+.ZButtonTable .ZWidgetTitle {
+	padding:0px;	
+}
+
+.ZHasText .ZButtonTable .ZWidgetTitle {
+	padding:0px 6px;
+	color:#333333;
+	font-weight:bold;
+}
+
+.ZButtonTable .dropDownCell {
+	padding-right:4px;
+}
+
+
+.ZButton						{	cursor:pointer; position:relative; 	}
+
+/*
+.ZToolbarButton .ZWidgetTable,
+.ZButton .ZWidgetTable			{	width:100%;	}
+
+.ZToolbarButton .ZWidgetTitle,
+.ZButton .ZWidgetTitle			{	width:100%; padding:0 6 0 6; }
+*/
+
+/*.ZButtonBorder,
+.ZToolbarButtonBorder,
+.ZWidgetBorder,
+*/
+.ZTabBorder,
+.ZSelectBorder					{	position:absolute;	border:0px !important; padding:0px !important;}
+
+
+.ZWidgetTable					{	position:relative;	z-index:100;		}
+
+.ZWidget .ZWidgetTable			{	top:0px;	}
+
+
+.ZButton .ZLeftIcon  DIV		{	margin:1px 6px;}
+.ZButton .ZRightIcon DIV		{	margin-left:2px; margin-right:6px;}
+
+.ZWidgetTable .ZDropDown DIV	{	margin-right:6px;	}
+
+
+.ZToolbarButton	{
+	height:27px;
+	cursor: pointer;
+	font-weight: bold;
+	color: #444444;
+}
+.ZHasText .ZToolbarButtonTable .ZWidgetTitle		{	padding:1px 3px; font-weight: bold;	color: #444444;}
+
+.ZToolbarButtonBorder,
+.ZHover .ZToolbarButtonBorder,
+.ZActive .ZToolbarButtonBorder {
+	border-width:0px !important;
+}
+
+.ZHover .ZToolbarButtonTable .ZWidgetTitle,
+.ZFocused .ZToolbarButtonTable .ZWidgetTitle {
+	text-decoration:underline;
+}
+
+
+/***************
+ *
+ *	SELECTS
+ *
+ ***************/
+
+.ZSelect						{	position:relative; 	}
+.ZSelectAutoSizingContainer 	{ 	height: 24px; }
+
+.ZSelect .ZWidgetTable			{
+  padding-right: 34px;
+  width: 100%;
+  position:relative; top:0px; 
+  
+#IFDEF MSIE
+  padding-left: 0px;
+  padding-right: 10px;
+  margin-left: 0px;
+  text-align: left;
+#ENDIF
+}
+
+.ZSelect .ZWidgetTitle			{	
+	padding:0 6 0 6;
+#IFDEF MSIE
+	padding:0 28px 0 0;
+	margin-left: 0px;
+#ENDIF
+}
+
+.ZSelect .ZLeftIcon  DIV		{	position:relative; left:5px;}
+
+.ZSelectBorder {
+	background-color:transparent;
+}
+
+/***************
+ *
+ *	COMBO BOX
+ *
+ ***************/
+
+.DwtComboBox {
+	background-color:#FFFFFF; /* opaque calendar */
+	border:0pt none;
+	color:black;
+	cursor:pointer;
+	padding:2px;
+	text-align:center;
+}
+
+.DwtComboBox {
+	background-color:transparent;
+	border:none;
+	height:24px;				/* TODO: Size assumption */
+}
+
+.DwtComboBox .DwtInputField input {
+	@InputBorder@
+}
+
+.DwtComboBox .ZWidgetTable .dropDownCell DIV {
+	margin:1px 3px;	
+}
+
+.DwtComboBox .ZButton {
+	height:16px;
+	width:20px;
+	margin-left:2px;
+}
+
+.DwtComboBox .ZButtonBorder {
+	padding-right:0px;
+
+}
+
+
+/***************
+ *
+ *	Tree
+ *
+ ***************/
+
+.DwtTreeItem-selected {
+	background-color:#E5E5E5;
+	border:1px solid #cccccc;
+	color:#333333;
+	font-weight:bold;
+	padding-left:2px;
+	padding-right:2px;
+	padding-top:1px;
+	font-size: 12px;
+	width: 100%;
+}
+
+.DwtTreeItem-Text {
+	border:1px solid white;
+	color:#333333;
+	padding-left:2px;
+	padding-right:2px;
+	padding-top:1px;
+	font-size: 12px;
+	width: 100%;
+}
+
+.DwtTreeItem-actioned {
+	@RightClickBg@
+	@Text@
+	@TreeItemSpacing@
+	border:1px solid #868678;
+	padding-left:2px;
+	padding-right:2px;
+	padding-top:1px;
+	font-size: 12px;
+	width: 100%;
+}
+
+.DwtTreeItem-dragOver {
+	@DropBg@
+	@DropText@
+	@TreeItemSpacing@
+	border:1px solid #868678;
+	padding-left:2px;
+	padding-right:2px;
+	padding-top:1px;
+	font-size: 12px;
+	width: 100%;
+}
+
+/***************
+ *
+ *	TABS
+ *
+ ***************/
+
+.ZTab							{	position:relative; 	}
+
+.ZTab .ZWidgetTable				{	width:100%;	position:relative;}
+.ZTab .ZWidgetTitle				{	width:100%; padding:0 6 0 6; text-align:center; }
+
+
+.ZTab .ZLeftIcon  DIV			{	margin-left:5px;}
+.ZTab .ZRightIcon DIV			{	margin-left:2px; margin-right:6px;}
+
+
+
+
+.ZTabBarPrefix             		{ border-width:0px !important;}
+.ZTabBarSuffix             		{ border-width:0px !important; width: 100%; }
+
+.ZHover .ZTabTable .ZWidgetTitle,
+.ZFocused .ZTabTable .ZWidgetTitle {
+	text-decoration:underline;
+}
+
+.ZTabTable .ZWidgetTitle  {
+	padding-left:10px;
+	padding-right:10px;
+	font-weight:bold;
+	color:#666666;
+}
+
+.ZSelected .ZTabTable td.ZWidgetTitle  {
+	color:#333333;
+}
+
+
+/***************
+ *
+ *	FIELDS
+ *
+ ***************/
+
+.ZField							{	position:relative;	}
+
+.ZFieldInput					{	
+									position:absolute;	
+									left:0px; top:3px; height:17px; width:100%;
+									padding-left:6px; padding-right:6px;
+									overflow:hidden; 
+									border-width:0px; 
+									background-color:transparent;
+								}
+
+.ZBrowserSafari .ZFieldInput	{	top:0px; height:20px;	}
+
+
+/* special styles for fields in safari, which always show a border and can't be transparent */
+
+/* we will have a class  .ZBrowserSafari on the BODY tag to make these show up for Safari only */
+
+	/* turn off all bg images */
+.ZBrowserSafari .ZField DIV					{ background-image:none;}
+.ZBrowserSafari 			.ZFieldInput	{ background-color:white;	}
+.ZBrowserSafari .ZHint		.ZFieldInput	{ background-color:white;	}
+.ZBrowserSafari .ZFocused	.ZFieldInput	{ background-color:#cadbe3;	}
+.ZBrowserSafari .ZError		.ZFieldInput	{ background-color:#f3f1bf;	}
+.ZBrowserSafari .ZDisabled	.ZFieldInput	{ background-color:#eaf1f4;	}
+
+
+
+
+/****
+	Sashes
+ ****/
+
+/*  SUPPRESSING HORIZONTAL SASH (between tree and app) */
+.DwtHorizontalSash {
+	cursor:default !important;
+}
+.ImgHSash {
+	position:relative;
+	border-bottom:1px solid #c6c6c6;
+}
+
+.ImgHSash_thumb {
+	display:none;
+	position:absolute;
+	top:50%;
+	left:1px;
+}
+
+
+
+.ZVerticalSash {
+	width:100%;
+	height:100%;
+	border:1px solid #929292;
+	border-top-width:0px;
+	background-color:#e8e8e8;
+	border-bottom-color:#bfbfbf;
+}
+
+.DwtVerticalSash div {
+	margin-top:0px;
+}
+
+
+/****
+	Accordion
+ ****/
+.ImgAccordionClosed,
+.ImgAccordionOpened {
+	margin-left:5px;
+}
+
+.ZSelected .ZAccordionTitle {
+	font-weight:bold;
+}
+
+/*****
+	App tabs
+ *****/
+
+
+.ImgAppTab {
+	padding-left:6px;
+	padding-right:6px;	/* NOTE: to look right with icons, should be 10px.  6px is right for CC */
+	font-weight:bold;
+	color:#666666;
+	text-align:center;
+	font-size:12px;
+}
+
+.ZHover .ImgAppTab {
+	color:white;
+	text-decoration:underline;
+}
+
+.ZSelected .ImgAppTab {
+	color:#666666 !important;
+}
+
+
+.ZmAppChooser {
+	height:18px;
+	margin-left:0px;
+	margin-top:0px;
+}
+
+
+
+
+/****
+	Dialog
+ ****/
+.DwtDialogBody {
+	background-color:white;
+	padding:1em;
+	cursor:default;
+}
+.DwtDialogTitle {
+	color:black;
+	padding-top:4px;
+}
+
+
+
+/****
+	Quota, Username, etc
+ ****/
+
+.quotaBar {
+	height:6px !important;
+}
+.quotaBar DIV {
+	height:4px !important;
+}
+
+.BannerTextQuota {
+	@SkinTextQuota@
+}
+
+.BannerTextUser {
+	@SkinTextUsername@
+	padding-top:0px;
+	padding-left:2px;
+	vertical-align:top;
+	text-align:left;
+}
+
+
+
+
+/****
+ 	Preferences
+ ****/
+.ZmPrefView  {
+	background-color:white;
+}
+
+.ZOptionsFormList {
+	background-color:white;
+}
+
+.ZOptionsInfo {
+	color: #333333 !important;
+}
+
+.ZOptionsSectionMain A {
+	text-decoration: underline;
+}
+
+/****
+	Addressbook
+ ****/
+.ZmContactSimpleView {
+	background-color:white;
+}
+
+.ZmContactInfoView, .ZmContactView {
+	background-color:white;
+}
+
+/******
+  If you change these two selectors, sync it with contactactions.css too
+*******/
+.ZmContactInfoView a.contactSharingLink {
+	color: #3459F5;
+	font-weight: bold;
+	text-decoration: underline;
+	
+}
+.ZmContactInfoView .contactSharingHint {
+	color: #818181;
+}
+
+.contactHeader {
+	background-color: #ECECEA;
+}
+
+.ZmContactView .contactHeader {
+	font-weight: bold;
+	font-size: 11px;
+}
+
+.contactHeaderText {
+	font-weight: bold;
+	font-size: 12px;
+}
+
+.contactHeaderLabel {
+	font-weight: bold;
+	font-size: 11px;
+	width: 5em;
+}
+
+.contactHeaderOutput {
+	font-weight: bold;
+	@FontSize-normal@
+}
+
+.ZmContactInfoView .contactLabel {
+	@Label@
+	@FontSize-normal@
+	color: #444;
+	width: 10em;
+	vertical-align: top;
+	text-align: left;
+}
+
+.ZmContactEditTabViewPage .contactLabel {
+	@Label@
+	width: 10em;
+	text-align: right;
+}
+
+.ZmContactInfoView .contactOutputBold {
+	font-weight: bold;
+}
+
+.ZmContactInfoView .contactOutputBold,
+.ZmContactInfoView .contactOutput {
+	@Text@
+	@FontSize-normal@
+	vertical-align: top;
+}
+
+.ZmContactCardsView {
+	@FullSize@
+	background-color: #FFFFFF;
+}
+
+.ZmContactCardsView .contactHeader {
+	padding: 6px;
+	font-size: 13px;
+	font-weight: bold;
+}
+
+.ZmContactCard,
+.ZmContactCard-selected,
+.ZmContactCard-selected-right,
+.ZmContactCard-drag,
+.ZmContactCard-selected-drag,
+.ZmContactCard-dragProxy {
+	@DisableSelection@
+/*	height: auto;
+	overflow: hidden;
+	width:320px; */
+}
+/*
+.ZmContactCard {
+	border: 0px;
+}
+*/
+.AlphabetBarBorder {
+	width:100%;
+	margin-top:-1px;
+	margin-bottom:-2px;
+}
+
+.AlphabetBarTable {}
+
+.AlphabetBarTable .DwtButton,
+.AlphabetBarTable .DwtButton-hover {
+	background-color:transparent;
+	border-right:1px solid #cccccc;
+	font-weight:bold;
+	color:#444444;
+}
+
+.AlphabetBarTable .DwtButton-active {
+	background-color:white;
+	border-right:1px solid #cccccc;
+	font-weight:bold;
+	color:#333333;
+}
+
+.AlphabetBarTable .DwtButton-hover {
+	text-decoration:underline;
+}
+
+/** odd/even lines in list view rows */
+.Line1 {  background-color:white;	border-bottom-color:white !important;	}
+.Line2 {  background-color:#f3f3f3;	border-bottom-color:#f3f3f3 !important;	}
+
+
+.ZmContactView .contactImageArea {
+	background-color: #ECECEA;
+	padding:25px;
+}
+
+.ZmContactView .contactImage {
+	width: 90px;
+	height: 90px;
+}
+
+/*****
+ * App chooser
+ *****/
+
+.ZmAppChooser .ZWidgetBorder {}
+.ZmAppChooser .ZSelected .ZWidgetBorder {}
+.ZmAppChooser .ZSelectedNext .ZWidgetBorder {}
+
+.ZmAppChooser .ZHasText {
+	min-width:0px;
+}
+
+
+
+
+
+
+.overviewHeader {
+	margin-bottom:1px;
+	padding: 0px;
+}
+
+.DwtListView-Column {
+	background-image:url(@SkinImgDir@/widgets/ImgListHeader.repeatx.gif);
+	background-repeat:repeat-x;
+	background-color:white;
+	background-position:left bottom;
+}
+
+.DwtListView {
+	background-color:white;
+}
+
+
+/***** PORTAL ******/
+
+#portal {
+
+}
+
+#portlet_hello,
+#portlet_mail_accts, #portlet_voice_accts,
+#portlet_news1, #portlet_news2 {
+  padding-right: 1em;
+}
+
+#portlet_hello {
+  padding: 1.5em 1em
+}
+
+#portlet_news_sep {
+  margin-right: 1em;
+  padding: 0.5em 0.25em 0.25em 0.25em;
+  font-weight: bold;
+  border-top: solid 1px silver;
+}
+
+
+/*** VOICE ***/
+
+.ZmSoundPlayer .DwtHorizontalSlider {
+	border-width:0px;
+}
+
+.ZmSoundPlayer .ZButton,
+.ZmSoundPlayer .DwtHorizontalSlider {
+	height:18px;
+}
+
+.ZmSoundPlayer .ZButton .ZLeftIcon DIV {
+	margin:0px 7px 0px 7px;
+
+}
+
+.ZmSoundPlayer .DwtButton,
+.ZmSoundPlayer .ZButton 	{
+	width:26px;	
+}
+.tdwidth{width: 100%;}
+#IFDEF MSIE
+.ZmSoundPlayer .tdwidth{width: 20px !important;}
+#ENDIF
+
+.ZmSoundPlayer .ZButton .ZButtonBorder {
+	background-color:inherit !important;
+}
+
+.ZmSoundStatus {
+	padding-left:6px;
+	padding-right:3px;
+}
+
+.DwtVolumeMenu {
+	border-width:0px;
+	background-color:inherit;
+	margin-top:-2px;
+	margin-left:1px;
+}
+
+.DwtVolumeSlider {
+	border-width:0px;
+	background-color:inherit;
+	width:18px;
+}
+
+.DwtVolumeSlider .ZWidgetBorder {
+	height:80px;
+}
+
+.ImgVolumeSlider_Full {
+	height:100%;
+}
+
+.ImgSoundPlayer_Thumb,
+.ImgVolumeSlider_Thumb {
+	cursor:move;
+/* NOTE: IE6 NEEDS THIS, BUT IT BREAKS IE7 */
+	top:0px;
+}
+
+#portal_sidebar {
+  background-color: #eee;
+  padding: 0.5em;
+  height: 105px;
+	
+}
+#portal_sidebar H3 {
+  margin-bottom: 0.25em;
+}
+
+
+
+
+		   
+
+/***************
+ *
+ *	ZMenu	-- outer class for menus
+ *
+ ***************/
+
+.DwtMenu,
+.DwtSelectMenu,
+.ZMenu,
+.ActionMenu {
+	border:1px solid #535353;
+	@lColor@:#535353; @tColor@:#535353; @rColor@:#535353; @bColor@:#535353;
+	background-color:white;
+	-moz-border-radius:0px;
+	padding:0px;
+}
+		   
+/*  MOW NOTE:
+	This makes a nice inner 2px border, but has "issues"
+	rendering the first time the menu shows up.
+	
+.DwtMenu > TABLE,
+.DwtSelectMenu > TABLE,
+.ZMenu > TABLE,
+.ActionMenu > TABLE {
+	border:1px solid;
+	border-color:white #BEBEBE #BEBEBE white;
+}
+*/
+
+/***************
+ *
+ *	ZMenuItem
+ *
+ ***************/
+
+.ZMenuItem,
+.ZMenuItemSeparator {	
+	@ActiveCursor@
+	overflow:visible;
+	padding:0px !important;
+}
+.ZMenuItem {	
+	height:22px; 
+}
+
+.ZMenuItemTable .ZWidgetTitle {
+	width:100%;
+}
+
+
+.ZMenuItemTable	TD.ZLeftIcon DIV {
+	margin:0px !important;
+}
+
+.ZMenuItemBorder TD {
+	padding-top:1px;
+	padding-bottom:1px;
+}
+
+.ZHover .ZMenuItemBorder TD {
+	background-color:#cae8f2 !important; 
+	padding-top:0px;
+	padding-bottom:0px;
+	border-top:1px solid #a8cbde !important;
+	border-bottom:1px solid #a8cbde !important;
+}
+
+.ZMenuItemBorder .ZCheckIcon,
+.ZMenuItemBorder .ZWidgetIcon {	
+	background-color:#f3f3f3; 
+}
+
+
+.ZMenuItemBorder .ZCheckIcon DIV {	
+	margin-left:2px;
+	margin-right:2px;
+}
+
+.ZMenuItemBorder .ZLeftIcon		{	
+	padding-left:6px;
+	padding-right:5px;
+}
+
+.ZMenuItemBorder		.ZWidgetTitle {	
+	padding-left: 8px; 
+	padding-right:10px;
+	border-left:1px solid #cccccc !important;
+}
+
+.ZHover .ZMenuItemBorder .ZWidgetTitle {
+	border-left-color:#cae8f2 !important;
+}
+
+
+
+/****
+	Tooltips
+ ****/
+ .DwtToolTip,
+ .DwtToolTipPointerRow {
+ 	background-color:#eee9a6;
+ }
+
+
+/****
+	Sashes
+ ****/
+.ImgHSash_thumb {
+	position:relative;
+	left:0px;
+}
+
+.ImgVSash_thumb {
+	margin-top:0px;
+}
+
+
+/*****
+ *		Toolbars and such
+ *****/
+
+.ZmHtmlEditor .ZToolbar {
+	background:url('@SkinImgDir@/widgets/Toolbar.gif') repeat-x;
+	height:27px;
+	position:relative;
+	top:1px;
+}
+
+.ZmMailMsgView .ZToolbar {
+	background:url('@SkinImgDir@/widgets/Toolbar.gif') repeat-x;
+	background-position:bottom;
+	height:31px;
+}
+
+.ZmFilterRulesView .ZToolbar {
+	background:url('@SkinImgDir@/widgets/Toolbar.gif') repeat-x;
+	height:27px;
+	position:relative;
+}
+
+
+.ZmNavToolbar .ZWidgetTitle {
+	padding-top:3px;
+}
+
+/******
+ *
+ * APP SKIN OVERRIDES
+ *
+ ******/
+ 
+
+
+/****
+	Message view
+ ****/
+.ZmMailMsgView .MsgHeaderTable {
+	background-color:#f3f3f3;
+	padding:5px;
+}
+
+.ZmMailMsgView .LabelColName {
+	@MailMsgHeaderLabel@
+	vertical-align: top;
+	text-align: right;
+	padding: 0px;
+}
+
+.ZmMailMsgView .LabelColValue {
+	@MailMsgHeaderText@
+	white-space: normal;
+	vertical-align: top;
+	padding: 0px;
+}
+
+
+.MsgHeaderTable .ContactArea {
+	vertical-align:top;
+	width:1%;
+}
+
+.ZmMailMsgView .SubjectCol {
+	font-family:Tahoma, Arial, Helvetica, sans-serif;
+	font-size:13px;
+	font-weight:bold;
+	color:#333333;
+}
+
+  /** TODO:  move this into zimlet CSS **/
+#portal_sidebar {
+	position:relative;
+}
+
+.portlet_news_sep {
+	margin-right:1em;
+	padding:1em;
+}
+
+.ImgHome_Sidebar_Top {
+	position:absolute;
+	right:0px;
+	top:0px;
+}
+.ImgHome_Sidebar_Bottom {
+	position:absolute;
+	right:0px;
+	bottom:0px;
+}
+
+#portlet_support .ZmPortlet,
+#portlet_general .ZmPortlet{
+	height:auto;
+}
+
+.RowDouble {
+	@ListItemHeightDouble@
+	height: auto;
+	@DisableSelection@
+	border-bottom-color: #CCCCCC;
+	padding-top: 3px;
+}
+
+/****
+	Options
+ ****/
+.ZOptionsSectionMain {
+	background-color:#f3f1e6;
+}
+
+.ZmPreferencesPage .bottomSeparator {
+	margin:8px 0px;
+}
+
+
+/** TODO:  port this into beach! **/
+.ZOptionsNestedForm {
+	width:80%;
+	position:relative;
+	left:10%;
+	border:1px solid #fbf9f4;
+	background-color:white;
+	padding:10px;
+	margin-bottom:20px;
+}
+
+.ZOptionsNestedFormHeader {
+	width:80%;
+	position:relative;
+	left:10%;
+	@FontSize-big@
+	font-weight:bold;
+	background-color: #e4dfd0;
+	border:1px solid #a6a6a6;
+	border-bottom-width:0px;
+	padding:5px;
+}
+
+
+.NoResults {
+	min-height:100px;
+}
+
+
+/****
+	Home
+ ****/
+.AccountsHeader {
+	font-family: Tahoma, Arial, Helvetica,sans-serif;
+	font-weight:bold;
+	font-size:18px;
+}
+
+.HelloGreeting {
+	font-family: Tahoma, Arial, Helvetica,sans-serif;
+	font-weight:bold;
+	font-size:18px;
+	color:#333333;
+}
+
+.HelloLastLogin {
+	line-height:1.7em;
+	font-family: Tahoma, Arial, Helvetica,sans-serif;
+	font-weight:bold;
+	font-size:12px;
+	color:#333333;
+}
+
+
+
+/****
+	Attachment dialog
+ ****/
+.ZmAttachDialog .DwtDialogBody {
+	padding:0px;
+}
+
+.ZmAttachDialog .ZTabBar {
+	margin-top:-1px;
+}
+
+.ZmAttachDialog .ZTabPage {
+	padding:0px 10px 10px 10px;
+}
+
+
+/****
+	Random
+ ****/
+.vertSep {
+	border-left-color:#c6c6c6 !important;
+}
+
+
+
+/****  I THINK THE FOLLOWING IS UNUSED ??? ****/
+.skin_current_app_label .ZWidgetTitle 	{	color:white; 	}
+
+
+TD.skin_tree_bg	{	padding:5px 2px 2px 0px;	}
+
+.skin_tab_sep {
+	width:auto;
+}
+/****  END UNUSED ****/
+
+
+
+
+
+/****
+	SEARCH
+****/
+
+.search_input {
+
+	background:url('@SkinImgDir@/widgets/ImgField.repeatx.gif') repeat-x !important;
+	height:24px !important;
+	border: 0px !important;
+	width:120px;
+}
+
+
+
+/*Nasty Hack for IE*/
+#IFDEF GECKO
+.searchwidth{padding-left: 0px;}
+#ENDIF
+
+#IFDEF MSIE
+.search_input{	width:120px; }
+
+.searchwidth{
+	padding-left: 0px;
+	border-top: 1px solid transparent;
+	border-bottom: 1px solid transparent;
+}
+#ENDIF
+
+
+
+
+
+
+
+/*
+ * 
+ * 
+ * FROM EVO SKIN --- INTEGRATE THIS WITH THE ABOVE
+ * 
+ * 
+ * 
+ */
+
+.ImgAppTab {
+	color:#ffffff;
+}
+
+#skin_container_splash_screen {
+	background-color:#315c85;
+	background-position:top left;
+	background-repeat:repeat-x;
+}
+
+#skin_container_splash_logo_td {
+	text-align:center;
+	vertical-align:top;
+}
+
+#skin_container_splash_logo {
+	position:relative;
+	top:100px;
+	height:144px;
+	width:100%;
+	background-position:center top;
+	
+}
+
+#skin_td_tree_outer,
+#skin_td_app_outer,
+#skin_td_app_full_outer {
+	background:url(/skins/velodrome2/img/skin/ImgSkin_Toolbar_L.gif) repeat-x top;
+}
+
+
+.DwtTreeItem-Text {
+	border-color:transparent !important;
+	#IFDEF MSIE
+		border-width:0px;
+		margin:1px;
+	#ENDIF
+}
+
+.DwtTreeItem-dragOver {
+	border-width:1px;
+	margin:0px;
+}
+
+.DwtComboBox .ZButton {
+	position:relative !important;
+	left:-11px;
+	top:-2px;
+#IFDEF GECKO
+	-moz-border-radius:0px 0px 0px 0px !important;
+#ENDIF
+}
+
+
+#IFDEF MSIE
+	.ZToolbarButton {
+		margin-top:1px;
+	}
+#ENDIF
+
+
+.ImgButton_L DIV,
+.ImgButton_R DIV,
+.ImgToolbarButton_R DIV {
+	width:6px;
+}
+
+/* don't ask me why... */
+.ImgToolbarButton_L DIV {
+	width:4px;
+}
+
+.ImgAccordion_L DIV,
+.ImgAccordion_R DIV {
+	width:3px;
+}
+
+.ZVolumeSliderBorder {
+	position:absolute;
+}
+
+.ZToolbarTable .ImgToolbarButton_L {
+	padding: 0px; 
+	
+}
+.ZToolbarTable .ImgToolbarButton_R {
+	padding:0px; 
+	
+}
+.ZToolbarTable .ImgToolbarButton_L div {
+	padding: 0px; 
+	
+
+}
+.ZToolbarTable .ImgToolbarButton_R div {
+	padding:0px; 
+	
+
+}
+
+#IFDEF MSIE
+.ZToolbarButtonBorder .ImgToolbarButton_L *{
+	padding: 0px; 
+
+}
+.ZToolbarButtonBorder .ImgToolbarButton_R *{
+	padding:0px; 
+
+}
+.ZToolbarButtonBorder .ZRightIcon{display: none;}
+#ENDIF
+
+.ZmHtmlEditor .ZToolbar{background: transparent url(/zimbra/skins/velodrome2/img/skin.repeatx.gif?v=080118192652) repeat-x scroll 0px -141px;}
+.arrowbtn .ImgToolbarButton_L,.arrowbtn .ImgToolbarButton_R,.arrowbtn .ImgToolbarButton,.ZmHtmlEditor .ImgToolbarButton_L,.ZmHtmlEditor .ImgToolbarButton_R,.ZmHtmlEditor .ImgToolbarButton{background: none;}
+.arrowbtn .ImgToolbarButton_L,.arrowbtn .ImgToolbarButton_R, .arrowbtn .ZRightIcon, .arrowbtn .ZDropDown, .arrowbtn .ZWidgetTitle{display: none;}
+.arrowbtn .ZHover .ImgToolbarButton,.arrowbtn .ZActive .ImgToolbarButton{background: none;}
+
+.DwtInputField input,.DwtInputField-hint input{padding-top: 4px !important;}
+
+
+.ZmAppToolBar_cw {
+	border: none;
+	@FullWidth@
+}
+
+.ZWidgetTable .ZLeftIcon div {
+    margin: 1px 1px !important;
+
+}

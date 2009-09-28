@@ -1,0 +1,241 @@
+<!-- BEGIN SKIN HTML -->
+<div id='skin_outer'>
+	<table cellspacing="0" cellpadding="0" width="100%" border="0" height="100%">
+		<tr id='skin_R1' class='ImgSkin_Chrome_R1_R'>
+			<td class='ImgSkin_Chrome_R1' colspan="3">
+				<table width=98% cellspacing=0 cellpadding=0 border="0" align="center">
+					<tr>
+						<td class='ImgSkin_Chrome_R1_L'></td>
+						<td class='R1Text'>hi,</td>
+						<td><div id='skin_container_username'></div></td>
+						<td class='R1Link'><nobr><a href='javascript:;' onclick='ZmZimbraMail._onClickLogOff();'>Sign Out</a></nobr></td>
+						<td class='R1Sep'>|</td>
+						<td class='R1Link'><nobr><a target=_new href='@AccountURL@'>My Account</a></nobr></td>
+						<td width=100%>&nbsp;</td>
+						<td class='R1Link'><nobr><a href='@ComcastURL@'>@ComcastURLText@</a></nobr></td>
+						<td class='R1Sep'>|</td>
+						<td><div class=ImgSkin_Help></div></td>
+						<td>&nbsp;</td>
+						<td class='R1Link'><a href='javascript:;' onclick='ZmZimbraMail.helpLinkCallback();'>Help</a></td>
+						<td>&nbsp;&nbsp;</td>
+						<td><div class=ImgSkin_Security></div></td>
+						<td class='R1Link'><nobr>&nbsp;<a target=_new href='@SecurityURL@'>Security</a></nobr></td>
+						<td>&nbsp;&nbsp;</td>
+						<td><div class=ImgSkin_Info></div></td>
+						<td class='R1Link'><nobr>&nbsp;<a target=_new href='@AskURL@' onclick='window.open(this.href,"AskComcast","width=640,height=480,dependent,resizable");return false;'>Ask Comcast</a></nobr></td>
+						<td class='ImgSkin_Chrome_R1_R'></td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+		<tr>
+			<td width="100%">
+				<table id='skin_table_outer' class='skin_table fixed_table' cellspacing=0 cellpadding=0 border=0>
+					<colgroup>
+						<col id='skin_col_L'>
+						<col id='skin_col_tree'>
+						<col id='skin_col_sash'>
+						<col id='skin_col_main'>
+						<col id='skin_col_R'>
+					</colgroup>
+					<tr id='skin_R2'>
+						<td>
+							<div class='ImgSkin_Chrome_R2_L'></div>
+						</td>
+						<td class='ImgSkin_Chrome_R2' colspan=3>
+							<table width=100% cellspacing=0 cellpadding=0>
+								<tr>
+									<td>
+										<div class='ImgSkin_Chrome_Logo' onclick='skin.gotoApp(ZmApp.PORTAL);return false;' style='cursor:pointer;'></div>
+									</td>
+									<td id='skin_td_search' valign='middle'>
+										<div style='position:relative;' align='right'>
+											<!-- search box -->
+											<div id='skin_container_search' class='skin_container'></div>
+										</div>
+									</td>
+								</tr>
+							</table>
+						</td>
+						<td>
+							<div class='ImgSkin_Chrome_R2_R'></div>
+						</td>
+					</tr>
+
+					<!-- search builder -->
+					<tr id='skin_tr_search_builder_toolbar'>
+						<td>
+							<div class='ImgSkin_Chrome_SB_Toolbar_L'></div>
+						</td>
+						<td id='skin_td_search_builder_toolbar' class='ImgSkin_Chrome_SB_Toolbar' colspan=3>
+							<div id='skin_container_search_builder_toolbar' class='skin_container'>
+								<!-- search builder toolbar -->
+							</div>
+						</td>
+						<td>
+							<div class='ImgSkin_Chrome_SB_Toolbar_R'></div>
+						</td>
+					</tr>
+
+					<tr id='skin_tr_search_builder'>
+						<td class='ImgSkin_Chrome_SB_L'>
+							<div></div>
+						</td>
+						<td id='skin_td_search_builder' class='ImgSkin_Chrome_SB' colspan=3>
+							<div id='skin_container_search_builder' class='skin_container'>
+								<!-- search builder -->
+							</div>
+						</td>
+						<td class='ImgSkin_Chrome_SB_R'>
+							<div></div>
+						</td>
+					</tr>
+					<!-- end search builder -->
+
+					<tr id='skin_R3'>
+						<td>
+							<div class='ImgSkin_Chrome_R3_L'></div>
+						</td>
+						<td class='ImgSkin_Chrome_R3'>
+							<div style='position:relative;width:100%;height:100%;'>
+								<div id='Xskin_container_current_app' class='skin_container'></div>
+							</div>
+						</td>
+						<td class='ImgSkin_Chrome_R3'>&nbsp;</td>
+						<td class='ImgSkin_Chrome_R3' style='padding:0px;'>
+							<table width='100%' cellspacing=0 cellpadding=0>
+							<tr>
+								<td id='skin_td_app_chooser'>
+									<div id='skin_container_app_chooser' class='skin_container'></div>
+								</td>
+								<td id='skin_td_quota'>
+									<div id='skin_container_quota' class='skin_container'><!-- quota --></div>
+								</td>
+							</tr>
+							</table>
+						</td>
+						<td>
+							<div class='ImgSkin_Chrome_R3_R'></div>
+						</td>
+					</tr>
+
+					<tr id='skin_tr_main'>
+						<td id='skin_td_tree_outer' colspan=2>
+							<table id='skin_tree_table' class='skin_table fullSize' cellspacing=0 cellpadding=0>
+								<tr>
+									<td height='100%' id='skin_td_tree'>
+										<div id='skin_container_tree' class='skin_container'></div>
+									</td>
+								</tr>
+								<tr id='skin_tr_tree_footer'>
+									<td id='skin_td_tree_footer'>
+										<div id='skin_container_tree_footer' class='skin_container'></div>
+									</td>
+								</tr>
+								<tr>
+									<td id='skin_td_tree_bottom_ad' height=150>
+										<div id='portlet_text'>Loading...</div>
+									</td>
+								</tr>
+							</table>
+						</td>
+						<td id='skin_td_tree_app_sash'>
+							<div class='DwtHorizontalSash ImgHSash' style='height:100%;'>
+								<div class='ImgHSash_thumb' style='position:relative;top:50%;'></div>
+							</div>
+						</td>
+						<td id='skin_td_app_outer' colspan=2>
+							<table id='skin_app_table' class='skin_table fullSize' cellspacing=0 cellpadding=0>
+								<tr>
+									<td id='skin_main_toolbar_container' class='skin_td_app_toolbar ImgSkin_Toolbar'>
+										<div id='skin_container_app_top_toolbar' class='skin_container'></div>
+									</td>
+								</tr>
+								<tr>
+									<td id='skin_td_app'>
+										<div id='skin_container_app_main' class='skin_container'></div>
+									</td>
+								</tr>
+							</table>
+						</td>
+						<td></td>
+					</tr>
+
+					<tr id='skin_tr_main_full' style='display:none'>
+						<td id='skin_td_app_full_outer' class='full_height' colspan='5' height='100%'>
+							<table id='skin_app_full_table' class='skin_table fullSize' cellspacing=0 cellpadding=0>
+								<tr>
+									<td id='skin_full_toolbar_container' class='skin_td_app_toolbar ImgSkin_Toolbar'>
+									  <!--div id='skin_container_app_top_toolbar' class='skin_container'></div-->
+									</td>
+								</tr>
+								<tr>
+									<td id='skin_td_app_full'>
+										<div id='skin_container_app_main_full' class='skin_container' height='100%'>
+											<!--Full screen app-->
+											&nbsp;
+										</div>
+									</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+				</table>
+			</td>
+			<td valign="top" id="comcast-adsrvc" style="display:none;overflow:hidden;">
+				<div class='skin_container' id="skin_adsrvc" >
+					<table cellpadding="0" cellspacing="0" border="0" height="100%" width="171">
+						<tr height=100%>
+							<td valign="middle" align="center" height=100%>
+								<div id='comcast-adshowhide' class='AdSrvcLeftArrow'></div>
+							</td>
+							<td valign="middle" id="comcast-skyscrapperad" align="center">
+								<div id='skin_container_sidebar_ad' style="height:95%;"></div>
+                                <div id="comcast-adinfo" style="text-align:center;cursor:pointer;font-size:10px;">ADVERTISEMENT</div>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</td>
+		</tr>
+
+		<tr id='skin_R4'>
+			<td id='skin_td_R4' class='ImgSkin_Chrome_R4' colspan="3">
+				<div id='skin_footer' class='skin_container'>				
+				<table width=100% id='skin_table_R4' class='skin_table fullSize' cellspacing=0 cellpadding=0>
+					<tr>
+						<td style='text-align:left;padding-left:20px;'>&copy; 2008 Comcast Cable Communications</td>
+						<td><a target='blank' href='@PrivaryURL@'>Privacy Statement</a></td>
+						<td><a target='blank' href='@ServiceTermsURL@'>Terms of Service</a></td>
+						<td><a target='blank' href='@ContactUsURL@'>Contact Us</a></td>
+						<td><a target='blank' href='@AddServicesURL@'>Add Comcast Services</a></td>
+						<td><a target='blank' href='@FeedbackURL@'>Tell Us What You Think</a></td>
+						<td width=1 align=right><a target='blank' href='@ComcastURL@'><div class='ImgSkin_Customer_Logo_Bottom'></div></a></td>
+					</tr>
+				</table>
+				</div>				
+			</td>
+		</tr>
+	</table>
+
+	<!-- misc containers that haven't been placed yet -->
+	<div id='skin_container_logo' class='skin_container offscreen'></div>
+	<div id='skin_container_top_ad' class='skin_container offscreen'></div>
+	<div id='skin_container_app_toolbar_sep' class='skin_container offscreen'></div>
+	<div id='skin_container_tree_app_sash' class='skin_container offscreen'></div>
+	<div id='skin_tr_status' class='offscreen'></div>
+	<div id='skin_container_status' class='skin_container offscreen'></div>
+</div>
+<!-- END SKIN HTML -->
+
+<!-- BEGIN SPLASH SCREEN -->
+<div id='skin_container_splash_screen' class='skin_container_splash_screen' align="center">
+	<script language='javascript'>
+		function showCompanyUrl() {
+			window.open('<fmt:message key="splashScreenCompanyURL/>', '_blank');
+		}
+	</script>
+	<div id='skin_container_splash_logo'  class='skin_container_splash_logo'></div>
+	<div class="skin_container_splash_footer">Copyright &copy; Comcast Interactive Media 2008. All rights reserved.</div>
+</div>
+<!-- END SPLASH SCREEN -->
