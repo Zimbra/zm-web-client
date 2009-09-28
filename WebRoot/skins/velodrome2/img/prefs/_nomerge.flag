@@ -1,3 +1,0 @@
-Presence of this file in a directory means that the imagemerge program
-will not attempt to merge images in the directory into a single image,
-but the images WILL be added to the images.css file.
