@@ -440,7 +440,7 @@ function(params) {
 	}
 };
 
-ZmListController.prototype._preShowCallback = function() {};
+ZmListController.prototype._preShowCallback = function() { return true; };
 
 // List listeners
 
