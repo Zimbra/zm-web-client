@@ -1723,9 +1723,10 @@ function(feature) {
 
 ZmSelectiveCallRejectionUI.prototype._isValueDirty =
 function() {
-	var newPhones = this._list.getList().getArray();
+	var newPhones = (this._list.getList()) ? this._list.getList().getArray() : null;
 	var oldPhones = this._feature.data.phone;
 	
+	if (!newPhones && !oldPhones) return false;
 	if (!newPhones || !oldPhones) return true;
 	if (newPhones.length != oldPhones.length) return true;
 	for (var i=0; i<newPhones.length; i++) {
@@ -1903,6 +1904,7 @@ function() {
 	var newPhones = this._list.getList().getArray();
 	var oldPhones = this._feature.data.phone;
 	
+	if (!newPhones && !oldPhones) return false;
 	if (!newPhones || !oldPhones) return true;
 	if (newPhones.length != oldPhones.length) return true;
 	for (var i=0; i<newPhones.length; i++) {
@@ -2106,8 +2108,6 @@ function() {
 
 ZmBufferList.prototype.set =
 function() {
-	ZmBufferList.DEBUG("The following entry contains interesting data that should be reported if the list initially appears to contain an empty row");
-	ZmBufferList.DEBUG(arguments);
 	DwtListView.prototype.set.apply(this, arguments);
 }
 
