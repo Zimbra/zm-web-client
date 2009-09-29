@@ -1733,11 +1733,7 @@ function(ev) {
 
 	for (var i = 0; i < list.length; i++) {
 		var setting = list[i];
-		if (setting.id == ZmSetting.PAGE_SIZE) {
-			if (curView != ZmId.VIEW_MSG) {
-				newView = groupByView || curView;
-			}
-		} else if (setting.id == ZmSetting.SHOW_FRAGMENTS) {
+		if (setting.id == ZmSetting.SHOW_FRAGMENTS) {
 			if (curView != ZmId.VIEW_MSG) {
 				newView = groupByView || curView;
 			}

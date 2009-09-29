@@ -411,13 +411,6 @@ function() {
 		displayContainer:	ZmPref.TYPE_CHECKBOX		
 	});
 
-	ZmPref.registerPref("PAGE_SIZE", {
-		loadFunction:		ZmPref.loadPageSizes,
-		maxSetting:			ZmSetting.PAGE_SIZE_MAX,
-		displayName:		ZmMsg.itemsPerPage,
-		displayContainer:	ZmPref.TYPE_SELECT
-	});
-
 	ZmPref.registerPref("PASSWORD", {
 		displayName:		ZmMsg.changePassword,
 		displayContainer:	ZmPref.TYPE_PASSWORD,

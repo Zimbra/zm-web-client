@@ -704,7 +704,7 @@ function() {
 		AjxStringUtil.urlEncode(this.getSearchPath())
 	].join("");
 
-	DBG.println(AjxDebug.DBG1, "NO REST URL FROM SERVER. GENERATED URL: " + url);
+	DBG.println(AjxDebug.DBG3, "NO REST URL FROM SERVER. GENERATED URL: " + url);
 
 	return url;
 };

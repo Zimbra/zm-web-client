@@ -345,12 +345,7 @@ function(ev) {
 			}
 		}
 		
-		// reset navigation buttons if necessary
-		var pageSize = appCtxt.get(ZmSetting.PAGE_SIZE);
-		this._conv.numMsgs = this._conv.msgs.size();
-		if (len > pageSize && this._conv.numMsgs < pageSize) {
-			this._controller._resetNavToolBarButtons(this._controller._getViewType());
-		}
+		this._controller._resetNavToolBarButtons(this._controller._getViewType());
 		
 		if (len != this._conv.numMsgs) {
 			// allow CLV to update its msg count if its been changed
