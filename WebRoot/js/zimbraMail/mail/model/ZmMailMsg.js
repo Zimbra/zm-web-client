@@ -1637,7 +1637,7 @@ function(addrNodes, parentNode, isDraft, accountName) {
 			var mainAcct = ac.accountList.mainAccount.getEmail();
 			var from = this._origMsg.getAddresses(AjxEmailAddress.FROM).get(0);
 			// this means we're sending a draft msg obo
-			if (from && from.address.toLowerCase() != mainAcct.toLowerCase()) {
+			if (from && from.address.toLowerCase() != mainAcct.toLowerCase() && !appCtxt.isMyAddress(from.address.toLowerCase())) {
 				addrNode.a = from.address;
 				addrNodes.push(addrNode);
 				// if sending obo, always set sender as main account
