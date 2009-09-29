@@ -741,7 +741,7 @@ function(params) {
 	}
 
 	this._initializeToolBar();
-	this.resetToolbarOperations(this._toolbar);
+	this.resetToolbarOperations();
 
 	this._setOptionsMenu(this._composeMode, identity);
 	this._setAddSignatureVisibility(identity);
@@ -787,12 +787,12 @@ ZmComposeController.prototype._initializeToolBar =
 function() {
 	if (this._toolbar) { return; }
 
-	var buttons = [];
-	buttons.push(ZmOperation.SEND);
-
-	buttons.push(ZmOperation.CANCEL);
-
-	buttons.push(ZmOperation.SEP, ZmOperation.SAVE_DRAFT);
+	var buttons = [
+		ZmOperation.SEND,
+		ZmOperation.CANCEL,
+		ZmOperation.SEP,
+		ZmOperation.SAVE_DRAFT
+	];
 
 	if (appCtxt.get(ZmSetting.ATTACHMENT_ENABLED)) {
 		buttons.push(ZmOperation.ATTACHMENT);
@@ -949,27 +949,34 @@ function(composeMode, identity) {
 	var button = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS);
 	button.setToolTipContent(ZmMsg[ZmComposeController.OPTIONS_TT[this._action]]);
 	var menu = this._optionsMenu[this._action];
-	if (!menu) return;
+	if (!menu) { return; }
 
 	if (appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
 		menu.checkItem(ZmHtmlEditor._VALUE, composeMode, true);
 	}
+
+	if (appCtxt.get(ZmSetting.MAIL_READ_RECEIPT_ENABLED)) {
+		var mi = menu.getOp(ZmOperation.REQUEST_READ_RECEIPT);
+
+		// did this draft have "request read receipt" option set?
+		if (this._msg && this._msg.isDraft) {
+			mi.setChecked(this._msg.readReceiptRequested);
+		} else {
+			// bug: 41329 - always re-init read-receipt option to be off
+			mi.setChecked(false, true);
+		}
+	}
+
 	var isReply = (this._action == ZmOperation.REPLY || this._action == ZmOperation.REPLY_ALL);
 	var isForward = (this._action == ZmOperation.FORWARD_ATT || this._action == ZmOperation.FORWARD_INLINE);
 	if (identity && (isReply || isForward)) {
-		var includePref = isReply ? appCtxt.get(ZmSetting.REPLY_INCLUDE_ORIG) : appCtxt.get(ZmSetting.FORWARD_INCLUDE_ORIG);
+		var includePref = isReply
+			? appCtxt.get(ZmSetting.REPLY_INCLUDE_ORIG)
+			: appCtxt.get(ZmSetting.FORWARD_INCLUDE_ORIG);
 		this._curIncOption = ZmComposeController.INC_OP[includePref];
 		menu.checkItem(ZmOperation.KEY_ID, this._curIncOption, true);
 		if (isReply) {
 			menu.checkItem(ZmOperation.KEY_ID, this._action, true);
-		}
-	}
-
-	// did this draft have "request read receipt" option set?
-	if (this._msg && this._msg.isDraft) {
-		var mi = menu.getItemById(ZmOperation.KEY_ID, ZmOperation.REQUEST_READ_RECEIPT);
-		if (mi) {
-			mi.setChecked(this._msg.readReceiptRequested);
 		}
 	}
 
