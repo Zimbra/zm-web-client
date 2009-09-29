@@ -150,7 +150,7 @@
 					</table>
 				</td>
 			</tr>
-			
+			<%--
 			<tr>
 				<td class="ZOptionsTableLabel" style="vertical-align:top;"><fmt:message key="optionsLanguageChecking"/>:</td>
 				<td>
@@ -174,7 +174,7 @@
 					</table>
 				</td>
 			</tr>
-			
+			--%>
 			<tr><td colspan="2"><hr/></td></tr>
 			
 			<%------------------- Prompts -------------------%>
