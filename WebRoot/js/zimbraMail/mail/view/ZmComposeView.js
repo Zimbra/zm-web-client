@@ -133,7 +133,7 @@ function(params) {
 		if (!obo && msg.isDraft && !appCtxt.multiAccounts) {
 			var ac = window.parentAppCtxt || window.appCtxt;
 			var from = msg.getAddresses(AjxEmailAddress.FROM).get(0);
-			if (from && from.address != ac.accountList.mainAccount.getEmail()) {
+			if (from && from.address.toLowerCase() != ac.accountList.mainAccount.getEmail().toLowerCase() && !appCtxt.isMyAddress(from.address.toLowerCase())) {
 				obo = from.address;
 			}
 		}
