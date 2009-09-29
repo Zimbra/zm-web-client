@@ -172,17 +172,32 @@ function(modifies) {
 	this._handleModifies(modifies);
 };
 
-//ZmVoiceApp.prototype.getAccordionController =
-//function() {
-//	AjxDispatcher.require("Voicemail");
-//	this._accordionController = this._accordionController || new ZmVoiceAccordionController(this, this._name);
-//	return this._accordionController;
-//};
-
 ZmVoiceApp.prototype.getOverviewId =
 function() {
 	var name = this.accordionItem ? this.accordionItem.data.phone.name : "";
 	return [this._name, name].join(":");
+};
+
+ZmVoiceApp.prototype.getOverviewContainer =
+function() {
+	if (!this._overviewContainer) {
+		var containerId = [ZmApp.OVERVIEW_ID, this._name].join("_");
+		var containerParams = {
+			appName: this._name,
+			containerId: containerId,
+			posStyle: Dwt.ABSOLUTE_STYLE,
+			parent: appCtxt.getShell(),
+			controller: this._opc
+		};
+
+		containerParams.id = ZmId.getOverviewContainerId(containerId);
+
+		// the overview container will create overviews for each account
+		this._overviewContainer = this._opc._overviewContainer[containerId] =
+			new ZmVoiceOverviewContainer(containerParams);
+	}
+
+	return this._overviewContainer;
 };
 
 ZmVoiceApp.prototype.getVoiceInfo =
@@ -338,13 +353,18 @@ function(folder, callback, response) {
 	var searchResult = response._data;
 	var list = searchResult.getResults(folder.getSearchType());
 	list.folder = folder;
-	var voiceController;
-	if (folder.getSearchType() == ZmItem.VOICEMAIL) {
-		voiceController = AjxDispatcher.run("GetVoiceController");
-	} else {
-		voiceController = AjxDispatcher.run("GetCallListController");
+	var vc = (folder.getSearchType() == ZmItem.VOICEMAIL)
+		? AjxDispatcher.run("GetVoiceController")
+		: AjxDispatcher.run("GetCallListController");
+	vc.show(searchResult, folder);
+
+	// setup the overview container now that the app has been activated
+	if (!this._overviewContainer.initialized) {
+		var overviewParams = this._getOverviewParams();
+		overviewParams.overviewTrees = this._getOverviewTrees();
+		overviewParams.phones = this.phones;
+		this._overviewContainer.initialize(overviewParams);
 	}
-	voiceController.show(searchResult, folder);
 
 	// Update numUnread & numUnheard in folder.
 	var folderInfo = searchResult.getAttribute("vfi");
@@ -352,15 +372,15 @@ function(folder, callback, response) {
 		folder.notifyModify(folderInfo[0]);
 	}
 
-    if(this._paramId){
-        var voiceList = voiceController.getList();
-        var vItem = voiceList.getById(this._paramId);
-        if(vItem){
-            var vView = voiceController.getCurrentView();
-            vView.setSelection(vItem, true);
-            vView.setPlaying(vItem);
-        }
-    }
+	if (this._paramId) {
+		var voiceList = vc.getList();
+		var item = voiceList.getById(this._paramId);
+		if (item) {
+			var view = vc.getCurrentView();
+			view.setSelection(item, true);
+			view.setPlaying(item);
+		}
+	}
 
 	if (callback) {
 		callback.run(searchResult);

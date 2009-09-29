@@ -32,7 +32,6 @@ ZmZimbraAccount = function(id, name, visible) {
 
 	this.visible = (visible !== false);
 	this.settings = null;
-	this.unread = 0;
 	this.trees = {};
 	this.loaded = false;
 	this.acl = new ZmAccessControlList();

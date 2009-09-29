@@ -58,7 +58,7 @@ function(params) {
 	for (var id in ZmFolder.HIDE_ID) {
 		omit[id] = true;
 	}
-	var dataTree = this.getDataTree(params.account);
+	var dataTree = this.type != ZmOrganizer.VOICE && this.getDataTree(params.account);
 	if (dataTree) {
 	    for (var name in ZmFolder.HIDE_NAME) {
 			var folder = dataTree.getByName(name);

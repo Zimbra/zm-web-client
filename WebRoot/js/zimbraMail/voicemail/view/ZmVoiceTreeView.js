@@ -61,10 +61,6 @@ function(organizer) {
 	item.setData(ZmTreeView.KEY_ID, this.overviewId);
 	item.setData(ZmTreeView.KEY_TYPE, this.type);
 
-	// DwtAccordion voodoo
-	var overview = appCtxt.getOverviewController().getOverview(ZmZimbraMail._OVERVIEW_ID);
-	item.reparentHtmlElement(overview.getBody(organizer.accordionItemId));
-
 	this._treeItemHash[organizer.id] = item;
 	return item;
 };

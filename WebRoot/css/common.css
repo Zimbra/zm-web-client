@@ -528,6 +528,7 @@ DIV.vSpace {
 	@TreeContainer@
 }
 
+.ZmVoiceOverviewContainer .ZmOverview,
 .ZmOverviewContainer .ZmOverview,
 .dialogOverviewContainer .OverviewTree {
 	height: auto;

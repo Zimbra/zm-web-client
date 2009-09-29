@@ -25,12 +25,12 @@ ZmPhone = function() {
 	this.used = null;				// Amount of quota used.
 	this.limit = null;				// Quota size.
 	this.folderTree = null;			// Folders
-}
+};
 
 ZmPhone.prototype.toString = 
 function() {
 	return "ZmPhone";
-}
+};
 
 ZmPhone.calculateDisplay =
 function(name) {
@@ -56,7 +56,6 @@ function(name) {
 		];
 		return array.join("");
 	} else {
-// TODO: How to handle other numbers????	
 		return name;
 	}
 };
@@ -118,20 +117,20 @@ function(callback, errorCallback) {
 			callback.run(this._features, this);
 		}
 	} else {
-	    var soapDoc = AjxSoapDoc.create("GetVoiceFeaturesRequest", "urn:zimbraVoice");
+		var soapDoc = AjxSoapDoc.create("GetVoiceFeaturesRequest", "urn:zimbraVoice");
 		appCtxt.getApp(ZmApp.VOICE).setStorePrincipal(soapDoc);
 		var node = soapDoc.set("phone");
-	    node.setAttribute("name", this.name);
-	    for (var i in this._features) {
-	    	var feature = this._features[i];
-	    	if (feature.isSubscribed && !feature.isVoicemailPref) {
-		    	soapDoc.set(feature.name, null, node);
-	    	}
-	    }
-	    var respCallback = new AjxCallback(this, this._handleResponseGetVoiceFeatures, callback);
-	    var params = {
-	    	soapDoc: soapDoc, 
-	    	asyncMode: true,
+		node.setAttribute("name", this.name);
+		for (var i in this._features) {
+			var feature = this._features[i];
+			if (feature.isSubscribed && !feature.isVoicemailPref) {
+				soapDoc.set(feature.name, null, node);
+			}
+		}
+		var respCallback = new AjxCallback(this, this._handleResponseGetVoiceFeatures, callback);
+		var params = {
+			soapDoc: soapDoc,
+			asyncMode: true,
 			callback: respCallback,
 			errorCallback: errorCallback
 		};
@@ -142,7 +141,7 @@ function(callback, errorCallback) {
 ZmPhone.prototype._handleResponseGetVoiceFeatures = 
 function(callback, response) {
 	var features = response._data.GetVoiceFeaturesResponse.phone[0];
-	for(var i in features) {
+	for (var i in features) {
 		if (i == ZmCallFeature.VOICEMAIL_PREFS) {
 			var voicemailPrefs = features[i][0].pref;
 			this._loadVoicemailPrefs(voicemailPrefs);
@@ -161,7 +160,7 @@ function(callback, response) {
 
 ZmPhone.prototype._loadVoicemailPrefs = 
 function(voicemailPrefs) {
-	for(var i = 0, count = voicemailPrefs.length; i < count; i++) {
+	for (var i = 0, count = voicemailPrefs.length; i < count; i++) {
 		var obj = voicemailPrefs[i];
 		var feature = this._features[obj.name];
 		if (feature) {
@@ -185,10 +184,10 @@ function() {
 
 ZmPhone.prototype.modifyCallFeatures = 
 function(batchCommand, newFeatures, callback) {
-    var soapDoc = AjxSoapDoc.create("ModifyVoiceFeaturesRequest", "urn:zimbraVoice");
+	var soapDoc = AjxSoapDoc.create("ModifyVoiceFeaturesRequest", "urn:zimbraVoice");
 	appCtxt.getApp(ZmApp.VOICE).setStorePrincipal(soapDoc);
-    var node = soapDoc.set("phone");
-    node.setAttribute("name", this.name);
+	var node = soapDoc.set("phone");
+	node.setAttribute("name", this.name);
 	var voicemailPrefsNode = null;
 	for (var i = 0, count = newFeatures.length; i < count; i++) {
 		if (newFeatures[i].isVoicemailPref) {

@@ -165,7 +165,9 @@ function(params) {
 
 	// bug fix #24241 - for offline, zimlet tree is re-used across accounts
 	var isMultiAccountZimlet = (appCtxt.multiAccounts && this.type == ZmOrganizer.ZIMLET);
-	var account = isMultiAccountZimlet ? appCtxt.accountList.mainAccount : params.account;
+	var account = isMultiAccountZimlet
+		? appCtxt.accountList.mainAccount
+		: (this.type == ZmOrganizer.VOICE ? id : params.account); // HACK for voice app
 	var dataTree = this.getDataTree(account);
 
 	if (dataTree) {
@@ -244,7 +246,7 @@ function(account) {
 /**
  * Sets up the params for the new button in the header item
  *
- * @param overviewId		[constant]	overview ID
+ * @param params		[Object]	param hash
  */
 ZmTreeController.prototype._setupNewOp =
 function(params) {
@@ -252,7 +254,7 @@ function(params) {
 	if (newOp) {
 		var newSetting = ZmOperation.SETTING[newOp];
 		if (!newSetting || appCtxt.get(newSetting)) {
-			var tooltipKey = ZmOperation.getProp(newOp, "tooltipKey")
+			var tooltipKey = ZmOperation.getProp(newOp, "tooltipKey");
 			params.newButton = {
 				image: ZmOperation.getProp(newOp, "image"),
 				tooltip: tooltipKey ? ZmMsg[tooltipKey] : null,
@@ -659,8 +661,9 @@ function(ev, overview, treeItem, item) {
 			overview._treeSelectionShortcutDelayActionId =
 				AjxTimedAction.scheduleAction(action, ZmTreeController.TREE_SELECTION_SHORTCUT_DELAY);
 		} else {
-			if (appCtxt.multiAccounts && (item instanceof ZmOrganizer)) {
-
+			if ((appCtxt.multiAccounts && (item instanceof ZmOrganizer)) ||
+				(item instanceof ZmVoiceFolder))
+			{
 				appCtxt.getCurrentApp().getOverviewContainer().deselectAll(overview);
 
 				// set the active account based on the item clicked
