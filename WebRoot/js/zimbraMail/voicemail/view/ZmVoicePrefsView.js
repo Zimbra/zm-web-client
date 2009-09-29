@@ -1813,7 +1813,7 @@ function(event) {
 
 ZmSelectiveCallRejectionUI.prototype._handleExposeButtonClick =
 function() {
-	if (this._list.getList().size() >= ZmCallFeature.SELECTIVE_CALL_REJECTION_MAX_ENTRIES)
+	if (this._list.getList() && this._list.getList().size() >= ZmCallFeature.SELECTIVE_CALL_REJECTION_MAX_ENTRIES)
 		appCtxt.setStatusMsg(ZmMsg.selectiveCallRejectionFromErrorMax);
 	else {
 		this._setAddFromNumberVisibility(true);
@@ -1903,7 +1903,7 @@ function(feature) {
 
 ZmSelectiveCallAcceptanceUI.prototype._isValueDirty =
 function() {
-	var newPhones = this._list.getList().getArray();
+	var newPhones = (this._list.getList()) ? this._list.getList().getArray() : null;
 	var oldPhones = this._feature.data.phone;
 	
 	if (!newPhones && !oldPhones) return false;
@@ -2193,9 +2193,11 @@ function(item) {
 ZmBufferList.prototype.getItemStrings =
 function() {
 	var strings = [];
-	var arr = this._list.getArray();
-	for (var i=0; i<arr.length; i++) {
-		strings.push(arr[i][this.displayProperty]);
+	if (this._list) {
+		var arr = this._list.getArray();
+		for (var i=0; i<arr.length; i++) {
+			strings.push(arr[i][this.displayProperty]);
+		}
 	}
 	return strings;
 }
@@ -2239,9 +2241,11 @@ function() {
 ZmPhoneBufferList.prototype.getItemNumbers =
 function() {
 	var numbers = [];
-	var arr = this._list.getArray();
-	for (var i=0; i<arr.length; i++) {
-		numbers.push(ZmPhoneBufferList.getItemNumber.call(arr[i]));
+	if (this._list) {
+		var arr = this._list.getArray();
+		for (var i=0; i<arr.length; i++) {
+			numbers.push(ZmPhoneBufferList.getItemNumber.call(arr[i]));
+		}
 	}
 	return numbers;
 }
