@@ -1463,11 +1463,23 @@ ZmZimbraMail.prototype._setExternalLinks =
 function() {
 	var el = document.getElementById("skin_container_links");
 	if (el) {
+		// bug: 41313 - admin console link
+		var adminUrl;
+		if (appCtxt.get(ZmSetting.IS_ADMIN) ||
+			appCtxt.get(ZmSetting.IS_DELEGATED_ADMIN))
+		{
+			adminUrl = appCtxt.get(ZmSetting.ADMIN_REFERENCE);
+			if (!adminUrl) {
+				adminUrl = ["https://", location.hostname, ":7071"].join("");
+			}
+		}
+
 		var data = {
 			showOfflineLink: (!appCtxt.isOffline && appCtxt.get(ZmSetting.SHOW_OFFLINE_LINK)),
 			helpIcon: (appCtxt.getSkinHint("helpButton", "hideIcon") ? null : "Help"),
 			logoutIcon: (appCtxt.getSkinHint("logoutButton", "hideIcon") ? null : "Logoff"),
-			logoutText: (appCtxt.isOffline ? ZmMsg.setup : ZmMsg.logOff)
+			logoutText: (appCtxt.isOffline ? ZmMsg.setup : ZmMsg.logOff),
+			adminUrl: adminUrl
 		};
 		el.innerHTML = AjxTemplate.expand("share.App#UserInfo", data);
 	}

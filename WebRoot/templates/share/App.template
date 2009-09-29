@@ -25,22 +25,25 @@
 	<table class='skin_table' cellpadding=0 cellspacing=0 border=0>
 	<$ if (data.showOfflineLink) { $>
 		<tr>
-			<td id='skin_td_switch_offline' colspan=2>
+			<td id='skin_td_switch_offline' colspan=3>
 				<a href="http://www.zimbra.com/products/desktop.html" target="_blank"><$= ZmMsg.switchToOfflineClientEx $></a>
 			</td>
 		</tr>
 	<$ } $>
 		<tr>
-			<$ if (appCtxt.get(ZmSetting.IS_DOMAIN_ADMIN) && appCtxt.get(ZmSetting.ADMIN_REFERENCE)) { $>
-			<td id="skin_container_adminlink">
-				<table border=0 cellpadding=0 cellspacing=0>
-					<tr>
-						<td style='white-space:nowrap; font-weight:bold'>
-							<a target="_new" href="<$=appCtxt.get(ZmSetting.ADMIN_REFERENCE)$>"><$= ZmMsg.adminLinkLabel $></a>
-						</td>
-					</tr>
-				</table>
-			</td>
+			<$ if (data.adminUrl) { $>
+				<td id="skin_container_adminlink">
+					<table border=0 cellpadding=0 cellspacing=0>
+						<tr>
+							<td>
+								<a target="_blank" href="${adminUrl}"><$= AjxImg.getImageHtml("Status", null, "border=0") $></a>
+							</td>
+							<td style='white-space:nowrap; font-weight:bold'>
+								<a target="_blank" href="${adminUrl}"><$= ZmMsg.adminLinkLabel $></a>
+							</td>
+						</tr>
+					</table>
+				</td>
 			<$ } $>
             <td id='skin_container_help'>
 				<table border=0 cellpadding=0 cellspacing=0>

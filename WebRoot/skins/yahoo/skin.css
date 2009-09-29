@@ -125,6 +125,10 @@ A.skin_yahoo_link, A.skin_yahoo_link:link A.skin_yahoo_link:visited
 	text-decoration: underline !important;
 }
 
+.skin_yahoo_admin_link {
+	padding-left: 5px;
+}
+
 .Overview {
 	padding:0px 6px 0px 0px !important; 
 }
