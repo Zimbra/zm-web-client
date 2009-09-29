@@ -418,6 +418,18 @@
 	</table>
 </template>
 
+<template id="share.Dialogs#ZmTimezonePicker">
+	<table cellpadding=4 cellspacing=0 border=0>
+	    <tr>
+			<td colspan='2' class='Label'><$= ZmMsg.selectTimezoneInfo $></td>
+		</tr>
+		<tr>
+			<td width=50 align=right><$= ZmMsg.selectTimezoneLabel $></td>
+            <td id='${id}_tzSelect'></td>
+		</tr>
+	</table>
+</template>
+
 <template id="share.Dialogs#ZmAttachDialog-MyComputerTab">
 	<div style='overflow:auto'>
 		<form accept-charset='utf-8' method='POST' action='<$= data.uri $>' id='${id}_uploadForm' enctype='multipart/form-data'>
