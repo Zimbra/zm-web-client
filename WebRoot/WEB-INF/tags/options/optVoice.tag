@@ -13,19 +13,6 @@
 </app:handleError>
 <c:if test="${voiceStatus ne 'false'}">
 
-<script type="text/javascript">
-    <!--
-    function addAnchor(anchorname, form) {
-	if (typeof(form) === "object") {
-	    if (typeof(form.action)==="string")
-		form.action += "#"+anchorname;
-	    else
-		form.action = "#"+anchorname;
-	}
-    }
-    //-->
-</script>
-
 <table width="100%" cellspacing="10" cellpadding="10"><tr><td>
 
 	<%----------------- General Section --------------%>
@@ -387,7 +374,7 @@
 						</td>
 						
 						<td>
-							<input type="submit" name="actionVoiceAddNotification" value="<fmt:message key='add'/>" onclick="addAnchor('notification', this.form)"/>
+							<input type="submit" name="actionVoiceAddNotification" value="<fmt:message key='add'/>"/>
 						</td>
 					</tr>
 					
@@ -406,7 +393,7 @@
 					<c:if test="${!empty sessionScope.emailNotificationAddress}">
 					<tr>
 						<td colspan="4" style="vertical-align:top;text-align:right">
-							<table class="ZmBufferList" border="0" cellpadding="0" cellspacing="0" width="400px">
+							<table class="ZmBufferList List" border="0" cellpadding="0" cellspacing="0" width="400px">
 								<tr><th colspan="2"><fmt:message key="optionsVoiceNotificationsAddresses"/></th></tr>
 								<c:set var="i" value="0"/>
 								<c:forEach items="${fn:split(sessionScope.emailNotificationAddress, ',')}" var="notificationAddress">
@@ -414,7 +401,7 @@
 									<tr>
 										<td style="width:50%">${notificationAddress}</td>
 										<td style="width:50%;text-align:left">
-										    <input type="submit" id="actionVoiceRemoveNotification_${i}" name="actionVoiceRemoveNotification" value="${notificationAddress}" style="display:none;" onclick="addAnchor('notification', this.form)"/>
+										    <input type="submit" id="actionVoiceRemoveNotification_${i}" name="actionVoiceRemoveNotification" value="${notificationAddress}" style="display:none;"/>
 										    <label for="actionVoiceRemoveNotification_${i}" style="cursor:pointer"><a href="#notification"><fmt:message key='remove'/></a></label>
 										</td>
 									</tr>
@@ -495,14 +482,14 @@
 						
 						<c:if test="${!empty sessionScope.selectiveCallForwardingFrom}">
 						<td style="vertical-align:top;">
-							<table class="ZmPhoneBufferList" border="0" cellpadding="0" cellspacing="0" width="300px">
+							<table class="ZmPhoneBufferList List" border="0" cellpadding="0" cellspacing="0" width="300px">
 								<c:set var="i" value="0"/>
 								<c:forEach items="${sessionScope.selectiveCallForwardingFrom}" var="number">
 									<c:if test="${!empty number}">
 									<tr>
 										<td style="width:50%">${number}</td>
 										<td style="width:50%;text-align:left">
-										    <input type="submit" id="actionVoiceRemoveForwarding_${i}" name="actionVoiceRemoveSelectiveForwarding" value="${number}" style="display:none;" onclick="addAnchor('forwarding', this.form)"/>
+										    <input type="submit" id="actionVoiceRemoveForwarding_${i}" name="actionVoiceRemoveSelectiveForwarding" value="${number}" style="display:none;"/>
 										    <label for="actionVoiceRemoveForwarding_${i}" style="cursor:pointer"><a href="#forwarding"><fmt:message key='remove'/></a></label>
 										</td>
 									</tr>
@@ -514,7 +501,7 @@
 						</c:if>
 						
 						<td style="vertical-align:top;padding-left:10px">
-							<input type="submit" name="addSelectiveForwarding" value="<fmt:message key='add'/>" <c:if test="${!empty param.addSelectiveForwarding}">disabled</c:if> onclick="addAnchor('forwarding', this.form)"/>
+							<input type="submit" name="addSelectiveForwarding" value="<fmt:message key='add'/>" <c:if test="${!empty param.addSelectiveForwarding}">disabled</c:if>/>
 						</td>
 					</tr>
 					
@@ -530,7 +517,7 @@
 							<input id="addForwardingNumber" type="text" name="addForwardingNumber"/>
 						</td>
 						<td style="padding-left:10px">
-							<input type="submit" name="actionVoiceAddSelectiveForwarding" value="<fmt:message key='add'/>" onclick="addAnchor('forwarding', this.form)"/>
+							<input type="submit" name="actionVoiceAddSelectiveForwarding" value="<fmt:message key='add'/>"/>
 						</td>
 					</tr>
 					</c:if>
@@ -601,13 +588,13 @@
 						
 						<td style="vertical-align:top;">
 						<c:if test="${!empty sessionScope.selectiveRejectionNumber}">
-							<table class="ZmPhoneBufferList" border="0" cellpadding="0" cellspacing="0" width="300px">
+							<table class="ZmPhoneBufferList List" border="0" cellpadding="0" cellspacing="0" width="300px">
 								<c:forEach items="${sessionScope.selectiveRejectionNumber}" var="number">
 									<c:if test="${!empty number}">
 									<tr>
 										<td style="width:50%">${number}</td>
 										<td style="width:50%;text-align:left">
-										    <input type="submit" id="actionVoiceRemoveRejection_${i}" name="actionVoiceRemoveSelectiveRejection" value="${number}" style="display:none;" onclick="addAnchor('rejection', this.form)"/>
+										    <input type="submit" id="actionVoiceRemoveRejection_${i}" name="actionVoiceRemoveSelectiveRejection" value="${number}" style="display:none;"/>
 										    <label for="actionVoiceRemoveRejection_${i}" style="cursor:pointer"><a href="#rejection"><fmt:message key='remove'/></a></label>
 										</td>
 									</tr>
@@ -619,7 +606,7 @@
 						
 						
 						<td style="vertical-align:top;padding-left:10px">
-							<input type="submit" name="addSelectiveRejection" value="<fmt:message key='add'/>" <c:if test="${!empty param.addSelectiveRejection || (!empty sessionScope.selectiveRejectionNumber && fn:length(fn:split(sessionScope.selectiveRejectionNumber, ','))>=12)}">disabled</c:if> onclick="addAnchor('rejection', this.form)"/>
+							<input type="submit" name="addSelectiveRejection" value="<fmt:message key='add'/>" <c:if test="${!empty param.addSelectiveRejection || (!empty sessionScope.selectiveRejectionNumber && fn:length(fn:split(sessionScope.selectiveRejectionNumber, ','))>=12)}">disabled</c:if>/>
 						</td>
 					</tr>
 					
@@ -635,7 +622,7 @@
 							<input id="addRejectionNumber" type="text" name="addRejectionNumber"/>
 						</td>
 						<td style="padding-left:10px">
-							<input type="submit" name="actionVoiceAddSelectiveRejection" value="<fmt:message key='add'/>" onclick="addAnchor('rejection', this.form)"/>
+							<input type="submit" name="actionVoiceAddSelectiveRejection" value="<fmt:message key='add'/>"/>
 						</td>
 					</tr>
 					</c:if>
