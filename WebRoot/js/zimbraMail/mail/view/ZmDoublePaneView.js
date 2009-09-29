@@ -260,9 +260,23 @@ function(delta) {
 
 		if (readingPaneOnRight) {
 			// moving sash left
-			this._mailListView.resetSize(this._mailListView.getSize().x - absDelta, Dwt.DEFAULT);
-			this._msgView.setBounds(this._msgView.getLocation().x - absDelta, Dwt.DEFAULT,
-									this._msgView.getSize().x + absDelta, Dwt.DEFAULT);
+			if (!this._minMLVWidth) {
+				var firstHdr = this._mailListView._headerList[0];
+				var hdrWidth = firstHdr._width;
+				if (hdrWidth == "auto") {
+					var header = document.getById(firstHdr._id);
+					hdrWidth = header && Dwt.getSize(header).x;
+				}
+				this._minMLVWidth = hdrWidth;
+			}
+			var newWidth = this._mailListView.getSize().x - absDelta;
+			if (newWidth > this._minMLVWidth) {
+				this._mailListView.resetSize(newWidth, Dwt.DEFAULT);
+				this._msgView.setBounds(this._msgView.getLocation().x - absDelta, Dwt.DEFAULT,
+										this._msgView.getSize().x + absDelta, Dwt.DEFAULT);
+			} else {
+				delta = 0;
+			}
 		} else {
 			// moving sash up
 			if (!this._minMLVHeight) {

@@ -274,8 +274,15 @@ function(viewId, headerList) {
 
 ZmMailListView.prototype.createHeaderHtml =
 function(defaultColumnSort) {
-	DwtListView.prototype.createHeaderHtml.apply(this, arguments);
+
+	if (!this._headerList || this.headerColCreated) { return; }
+
 	var rpLoc = appCtxt.get(ZmSetting.READING_PANE_LOCATION);
+	if (rpLoc == ZmSetting.RP_RIGHT && this._controller._itemCountText[rpLoc]) {
+		this._controller._itemCountText[rpLoc].dispose();
+	}
+
+	DwtListView.prototype.createHeaderHtml.apply(this, arguments);
 	if (rpLoc == ZmSetting.RP_RIGHT) {
 		var td = document.getElementById(this._itemCountTextTdId);
 		if (td) {
