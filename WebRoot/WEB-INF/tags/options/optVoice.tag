@@ -88,7 +88,9 @@
 		<c:set var="selected" value="${(empty param.phone and firstAccount) or (param.phone eq account.phone.name)}"/>
 		<c:set var="firstAccount" value="false"/>
 		<c:if test="${selected}">
-			<app:getCallFeatures account="${account}" var="features"/>
+			<app:handleError>
+				<app:getCallFeatures account="${account}" var="features"/>
+			</app:handleError>
 		</c:if>
 	</zm:forEachPhoneAccount>
 	
