@@ -742,6 +742,8 @@ function() {
 	// only need to check for term at end - cannot end with conditional
 	if ((pos == query.length) && op && word) {
 		tokens.push({isTerm:true, op:op, arg:word});
+	} else {
+		return;
 	}
 
 	var numTerms = 0, id;
