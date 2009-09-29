@@ -761,3 +761,9 @@ function(sortField, controller) {
 	}
 	return query;
 };
+
+ZmMailListView.prototype._getDefaultSortbyForCol =
+function(colHeader) {
+	// if not date field, sort asc by default
+	return (colHeader._sortable != ZmItem.F_DATE);
+};

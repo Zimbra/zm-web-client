@@ -448,12 +448,6 @@ function(conv, columnItem, controller, result) {
 	this.setSelection(conv.getFirstHotMsg({offset:this.offset, limit:this.getLimit(this.offset)}));
 };
 
-ZmMailMsgListView.prototype._getDefaultSortbyForCol = 
-function(colHeader) {
-	// if not date field, sort asc by default
-	return colHeader._sortable != ZmItem.F_DATE;
-};
-
 ZmMailMsgListView.prototype._getParentForColResize = 
 function() {
 	return this.parent;
