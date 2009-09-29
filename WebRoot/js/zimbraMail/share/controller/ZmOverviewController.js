@@ -64,7 +64,8 @@ function(containerParams, overviewParams) {
 	containerParams.id = ZmId.getOverviewContainerId(containerParams.containerId);
 
 	// the overview container will create overviews for each account
-	var container = this._overviewContainer[containerParams.containerId] = new ZmOverviewContainer(containerParams);
+	var container = this._overviewContainer[containerParams.containerId] =
+		new ZmAccountOverviewContainer(containerParams);
 
 	// we call initialize *after* creating new object since it references
 	// this._overviewContainer hash
