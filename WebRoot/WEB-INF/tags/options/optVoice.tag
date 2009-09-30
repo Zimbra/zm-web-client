@@ -267,7 +267,7 @@
 			<%------------------- Count per page ------------------%>
 			<tr>
 				<td class="ZOptionsTableLabel" style="vertical-align:top;">
-					<label for="numberPerPage"><fmt:message key="optionsDisplay"/> :</label>
+					<label for="numberPerPage"><fmt:message key="optionsDisplay"/>:</label>
 				</td>
 				<td>
 					<select id="numberPerPage" name="numberPerPage">
@@ -286,12 +286,12 @@
 			<%------------------ Security ------------------------%>
 			<c:set var="requirePinEntry" value="${!features.voiceMailPrefs.skipPinEntry}"/>
 			<tr>
-				<td class="ZOptionsTableLabel" style="vertical-align:top;"><fmt:message key="optionsVoiceSecurityChPwd"/></td>
+				<td class="ZOptionsTableLabel" style="vertical-align:top;"><fmt:message key="optionsVoiceSecurityChPwd"/>:</td>
 				<td><a href="<fmt:message key='optionsVoiceSecurityChPwdUrl'/>" target="_blank"><fmt:message key="optionsVoiceSecurityChPwdLink"/></a></td>
 			</tr>
 			
 			<tr>
-				<td class="ZOptionsTableLabel" style="vertical-align:top;"><fmt:message key="optionsVoiceSecurityLogin"/></td>
+				<td class="ZOptionsTableLabel" style="vertical-align:top;"><fmt:message key="optionsVoiceSecurityLogin"/>:</td>
 				<td>
 					<table border="0" cellpadding="0" cellspacing="0">
 						<tr>
