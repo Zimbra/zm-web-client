@@ -1704,6 +1704,9 @@ function(tagId) {
 
 ZmMailMsgView.prototype._handleMsgTruncated =
 function() {
+	// remember that the user clicked this link
+	this._msg.viewEntireMessage = true;
+
 	var url = ("/h/message?id=" + this._msg.id);
 	window.open(appContextPath+url, "_blank");
 };

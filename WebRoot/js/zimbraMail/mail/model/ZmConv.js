@@ -94,10 +94,9 @@ function(params, callback) {
 	var sortBy = params.sortBy || ZmSearch.DATE_DESC;
 	var offset = params.offset || 0;
 	var limit = params.limit || appCtxt.get(ZmSetting.PAGE_SIZE);
-	var getHtml = params.getHtml || this.isDraft || appCtxt.get(ZmSetting.VIEW_AS_HTML);
 
 	var doSearch = true;
-	if (this._loaded && this.msgs && this.msgs.size()) {
+	if (this._loaded && this.msgs && this.msgs.size() && !params.forceLoad) {
 		var size = this.msgs.size();
 		if (this._sortBy != sortBy || this._query != query || (size != this.numMsgs && !offset)) {
 			this.msgs.clear();
@@ -114,13 +113,26 @@ function(params, callback) {
 		this._query = query;
 		this._offset = offset;
 		this._limit = limit;
-		var fetchId = (params.getFirstMsg && this.msgIds && this.msgIds.length) ? this.msgIds[0] : null;
-		var types = AjxVector.fromArray([ZmItem.MSG]);
-		var acctName = this.account && this.account.name;
-		var searchParams = {query:query, types:types, sortBy:sortBy, offset:offset, limit:limit, getHtml:getHtml, accountName:acctName};
+
+		var searchParams = {
+			query: query,
+			types: (AjxVector.fromArray([ZmItem.MSG])),
+			sortBy: sortBy,
+			offset: offset,
+			limit: limit,
+			getHtml: (params.getHtml || this.isDraft || appCtxt.get(ZmSetting.VIEW_AS_HTML)),
+			accountName: (this.account && this.account.name)
+		};
 		var search = this.search = new ZmSearch(searchParams);
-		var respCallback = new AjxCallback(this, this._handleResponseLoad, [params, callback]);
-		search.getConv({cid:this.id, callback:respCallback, fetchId:fetchId, markRead:params.markRead});
+
+		var convParams = {
+			cid: this.id,
+			callback: (new AjxCallback(this, this._handleResponseLoad, [params, callback])), 
+			fetchId: ((params.getFirstMsg && this.msgIds && this.msgIds.length) ? this.msgIds[0] : null),
+			markRead: params.markRead,
+			noTruncate: params.noTruncate
+		};
+		search.getConv(convParams);
 	}
 };
 
@@ -345,7 +357,7 @@ function(flags) {
 		msgsOn[flag] = this.hasFlag(flag, true);
 	}			
 	var doNotify = false;
-	var flags = new Array();
+	var flags = [];
 	for (var flag in convOn) {
 		if (convOn[flag] != msgsOn[flag]) {
 			this[ZmItem.FLAG_PROP[flag]] = msgsOn[flag];
@@ -443,14 +455,13 @@ function(params, callback) {
 	}
 
 	if (callback) {
-		if (msg && msg._loaded) {
+		if (msg && msg._loaded && !params.forceLoad) {
 			callback.run(msg);
 		} else {
 			var respCallback = new AjxCallback(this, this._handleResponseGetFirstHotMsg, [params, callback]);
 			params.getFirstMsg = true;
 			this.load(params, respCallback);
 		}
-		return;
 	} else {
 		// do our best to return a "realized" message by checking cache
 		if (!msg && this.msgIds && this.msgIds.length) {
@@ -458,7 +469,7 @@ function(params, callback) {
 			msg = appCtxt.getById(id) || new ZmMailMsg(id);
 		}
 		return msg;
-	}		
+	}
 };
 
 ZmConv.prototype._handleResponseGetFirstHotMsg =
@@ -543,7 +554,7 @@ function(ev) {
 		this._checkTags();
 	} else if (ev.event == ZmEvent.E_FLAGS) {
 		this._checkFlags(ev.getDetail("flags"));
-	} else 	if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE) {
+	} else if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE) {
 		// a msg was moved or deleted, see if this conv's row should remain
 		if (this.list && this.list.search && !this.hasMatchingMsg(this.list.search, true)) {
 			this._notify(ZmEvent.E_MOVE);

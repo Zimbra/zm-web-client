@@ -759,10 +759,10 @@ function(params) {
 	if (!action || action == ZmOperation.FORWARD_MENU || action == ZmOperation.FORWARD)	{
 		action = params.action = (appCtxt.get(ZmSetting.FORWARD_INCLUDE_ORIG) == ZmSetting.INCLUDE_ATTACH)
 			? ZmOperation.FORWARD_ATT : ZmOperation.FORWARD_INLINE;
-        //bug 40908 - invitation should be forwarded as attachment
-        if(msg.isInvite()) {
-            action = params.action = ZmOperation.FORWARD_ATT;
-        }
+		// bug 40908 - invitation should be forwarded as attachment
+		if (msg.isInvite()) {
+			action = params.action = ZmOperation.FORWARD_ATT;
+		}
 	}
 
 	// if html compose is allowed and if opening draft always request html
@@ -774,6 +774,17 @@ function(params) {
 	params.getHtml = (htmlEnabled && (action == ZmOperation.DRAFT || (prefersHtml || (!msg._loaded && sameFormat))));
 	if (action == ZmOperation.DRAFT) {
 		params.listController = this;
+	}
+
+	// bug: 38928 - if user viewed entire truncated message, fetch the whole
+	// thing when replying/forwarding
+	if (action != ZmOperation.NEW_MESSAGE ||
+		action != ZmOperation.DRAFT)
+	{
+		if (msg.viewEntireMessage) {
+			params.noTruncate = true;
+			params.forceLoad = true;
+		}
 	}
 
 	var respCallback = new AjxCallback(this, this._handleResponseDoAction, params);
