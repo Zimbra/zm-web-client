@@ -935,7 +935,7 @@ function(enabled) {
 	// Hook to Prompt Level selection
 	var ui = this._view.getUIByName(ZmCallFeature.PROMPT_LEVEL);
 	if (ui) {
-		ui.setEnableddFromAutoplay(enabled);
+		ui.setEnabledFromAutoplay(enabled);
 	}
 }
 
@@ -1013,7 +1013,8 @@ function(feature) {
 };
 
 ZmVoicePromptUI.prototype.setEnabled =
-function(enabled) {	// No-op: hook from autoplay enables/disables this
+function(enabled) {
+	// No-op: hook from autoplay enables/disables this
 };
 
 ZmVoicePromptUI.prototype.setEnabledFromAutoplay =
@@ -1364,7 +1365,7 @@ function() {
 	if (!addresses || addresses.length==0) {
 		result.isActive = false;
 	} else {
-		result.data.value = this._getAddresses().join(",");
+		result.data.value = this._checkbox.isSelected() ? this._getAddresses().join(",") : "";
 	}
 	return result;
 };
