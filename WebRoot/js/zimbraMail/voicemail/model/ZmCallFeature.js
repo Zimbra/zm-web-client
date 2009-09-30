@@ -93,6 +93,11 @@ function() {
 
 ZmCallFeature.prototype.addVoicemailChangeNode = 
 function(soapDoc, parentNode) {
+	
+	if (this.data.value==="true" || this.data.value==="false") // For voice preferences, this.data.value from the server also represents what we at the client percieve as "isActive". The GUI strictly uses
+		this.data.value = this.isActive ? "true" : "false";// isActive to determine whether checkboxes are on or off, and rather than messing that up, we use this.data.value to set this.isActive 
+								   // (see _loadVoicemailPref(), and set this.data.value on return to the server in this function
+
 	var child = soapDoc.set("pref", this.data.value, parentNode);
 	child.setAttribute("name", this.name);
 };
@@ -100,12 +105,12 @@ function(soapDoc, parentNode) {
 ZmCallFeature.prototype.addChangeNode = 
 function(soapDoc, phoneNode) {
 	var child = soapDoc.set(this.name, null, phoneNode);
-	this._setBooleanAttrubute(child, "s", this.isSubscribed);
-	this._setBooleanAttrubute(child, "a", this.isActive);
+	this._setBooleanAttribute(child, "s", this.isSubscribed);
+	this._setBooleanAttribute(child, "a", this.isActive);
 	this._addNode(soapDoc, child, this.data);
 };
 
-ZmCallFeature.prototype._setBooleanAttrubute =
+ZmCallFeature.prototype._setBooleanAttribute =
 function(node, name, value) {
 	node.setAttribute(name, value ? "true" : "false");
 };
@@ -122,7 +127,7 @@ function(soapDoc, parentNode, data) {
 				this._addNode(soapDoc, child, obj);
 			} else {
 				if ((typeof obj) == 'boolean') {
-					this._setBooleanAttrubute(parentNode, i, obj)
+					this._setBooleanAttribute(parentNode, i, obj)
 				} else {
 					parentNode.setAttribute(i, obj);
 				}
@@ -169,6 +174,6 @@ function(node) {
 	this.isVoicemailPref = true;
 	this.data.value = node._content;
 	this.isSubscribed = true;
-	this.isActive = Boolean(this.data.value);
+	this.isActive = Boolean(this.data.value) && this.data.value !== "false";
 };
 

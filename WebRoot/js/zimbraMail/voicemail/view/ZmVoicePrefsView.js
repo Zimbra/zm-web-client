@@ -654,7 +654,7 @@ ZmCallFeatureUI.prototype.setFeature =
 function(feature) {
 	this._feature = feature;
 	this.show(feature);
-		if (this._checkbox) {
+	if (this._checkbox) {
 		this._checkbox.setSelected(feature.isActive);
 		this._checkbox.setEnabled(feature.isSubscribed);
 	}
@@ -935,7 +935,7 @@ function(enabled) {
 	// Hook to Prompt Level selection
 	var ui = this._view.getUIByName(ZmCallFeature.PROMPT_LEVEL);
 	if (ui) {
-		ui.setEnabled(enabled);
+		ui.setEnableddFromAutoplay(enabled);
 	}
 }
 
@@ -1013,6 +1013,10 @@ function(feature) {
 };
 
 ZmVoicePromptUI.prototype.setEnabled =
+function(enabled) {	// No-op: hook from autoplay enables/disables this
+};
+
+ZmVoicePromptUI.prototype.setEnabledFromAutoplay =
 function(enabled) {
 	//this._buttonGroup.setEnabled(enabled); // Doesn't work as it should
 	for (var v in this._buttons) { // So we do this instead
