@@ -662,7 +662,7 @@ function(ev, overview, treeItem, item) {
 				AjxTimedAction.scheduleAction(action, ZmTreeController.TREE_SELECTION_SHORTCUT_DELAY);
 		} else {
 			if ((appCtxt.multiAccounts && (item instanceof ZmOrganizer)) ||
-				(item instanceof ZmVoiceFolder))
+				(item.type == ZmOrganizer.VOICE))
 			{
 				appCtxt.getCurrentApp().getOverviewContainer().deselectAll(overview);
 
