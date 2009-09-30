@@ -787,7 +787,7 @@ function(callback, errorCallback) {
     var soapDoc = AjxSoapDoc.create(this._getSoapForMode(mode, this.isException), "urn:zimbraMail");
 
     if (this.uid != null && this.uid != -1) {
-        soapDoc.setMethodAttribute("id", this.uid);
+        soapDoc.setMethodAttribute("id", this.id);
     }
 
     if (needsExceptionId) {
