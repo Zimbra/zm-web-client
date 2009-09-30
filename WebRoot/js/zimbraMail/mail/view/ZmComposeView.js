@@ -1145,12 +1145,11 @@ function(content, replaceSignatureId, account) {
 				replaceSignature = replaceSignature.replace(/<img[^>]*>/ig,'<img/>');
 				sigContent = sigContent.replace(/<img[^>]*>/ig, "<img/>");
 
-				// Remove spaces to make sure IE doesnt screw
-				replaceSignature = replaceSignature.replace(/\s/g,'');
-				sigContent = sigContent.replace(/\s/g,'');
-
-				// IE style semicolons are messed up
 				if (AjxEnv.isIE) {
+					replaceSignature = replaceSignature.replace(/\s/g,'');
+					sigContent = sigContent.replace(/\s/g,'');
+
+					// IE style semicolons are messed up
 					replaceSignature = replaceSignature.replace(/;/g,'');
 					sigContent = sigContent.replace(/;/g,'');
 
