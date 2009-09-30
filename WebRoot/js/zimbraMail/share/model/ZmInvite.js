@@ -240,6 +240,12 @@ function(compNum) {
 	return list;
 };
 
+ZmInvite.prototype.getExceptId =
+function(compNum) {
+	var cn = compNum || 0;
+	return (this.components[cn] && this.components[cn].exceptId) ? this.components[cn].exceptId[0] : null;
+};
+
 ZmInvite.prototype.getStatus =
 function(compNum) {
 	var cn = compNum || 0;

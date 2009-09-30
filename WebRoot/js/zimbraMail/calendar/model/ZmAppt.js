@@ -792,18 +792,28 @@ function(callback, errorCallback) {
 
     if (needsExceptionId) {
         var exceptId = soapDoc.set("exceptId");
-        var allDay = this._orig ? this._orig.allDayEvent : this.allDayEvent;
-        if (allDay != "1") {
-            var sd = AjxDateUtil.getServerDateTime(this.getOrigStartDate(), this.startsInUTC);
-            // bug fix #4697 (part 2)
-            var timezone = this.getOrigTimezone();
-            if (!this.startsInUTC && timezone) {
-                exceptId.setAttribute("tz", timezone);
+        if(this.isException) {
+            var message = this.message ? this.message : null;
+            var invite = (message && message.invite) ? message.invite : null;
+            var exceptIdInfo = invite.getExceptId();
+            exceptId.setAttribute("d", exceptIdInfo.d);
+            if(exceptIdInfo.tz) {
+                exceptId.setAttribute("tz", exceptIdInfo.tz);
             }
-            exceptId.setAttribute("d", sd);
-        } else {
-            var sd = AjxDateUtil.getServerDate(this.getOrigStartDate());
-            exceptId.setAttribute("d", sd);
+        }else {
+            var allDay = this._orig ? this._orig.allDayEvent : this.allDayEvent;
+            if (allDay != "1") {
+                var sd = AjxDateUtil.getServerDateTime(this.getOrigStartDate(), this.startsInUTC);
+                // bug fix #4697 (part 2)
+                var timezone = this.getOrigTimezone();
+                if (!this.startsInUTC && timezone) {
+                    exceptId.setAttribute("tz", timezone);
+                }
+                exceptId.setAttribute("d", sd);
+            } else {
+                var sd = AjxDateUtil.getServerDate(this.getOrigStartDate());
+                exceptId.setAttribute("d", sd);
+            }
         }
     }
 
