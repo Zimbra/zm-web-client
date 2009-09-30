@@ -636,7 +636,7 @@
 		<antcall target='images-merge'>
 			<param name='srcdir' value='${build.img.dir}' />
 			<param name='destdir' value='${build.img.dir}' />
-			<param name='csspath' value='/${deploy.app}/img/' />
+			<param name='csspath' value='@AppContextPath@/img/' />
 		</antcall>
 		<!-- merge skin images -->
 		<dirset id='this.build.skins.dirset' dir='${build.skin.dir}' includes='*' />
@@ -648,7 +648,7 @@
 				<antcall target="images-merge">
 					<param name='srcdir' value='${build.skin.dir}/@{skinname}/img' />
 					<param name='destdir' value='${build.skin.dir}/@{skinname}/img' />
-					<param name='csspath' value='/${deploy.app}/skins/@{skinname}/img/' />
+					<param name='csspath' value='@AppContextPath@/skins/@{skinname}/img/' />
 				</antcall>
 			</sequential>
 		</for>
@@ -727,7 +727,7 @@
         <echo message='Merging images for skin ${skindir}'/>
         <echo/>
         <imagemerge destdir='${build.this.skin.dir}'
-                    cssfile='${build.css.filename}' csspath='/${deploy.app}/skins/${skindir}/img/'
+                    cssfile='${build.css.filename}' csspath='@AppContextPath@/skins/${skindir}/img/'
 					jsfile='${build.css.filename}.js'>
             <dirset dir='${skinbasedir}/skins/${skindir}' includes='img/**'/>
         </imagemerge>
