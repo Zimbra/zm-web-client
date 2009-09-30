@@ -104,7 +104,7 @@
 	
 			<%------------------- Number of rings ------------------%>
 			<tr>
-				<td class="ZOptionsTableLabel" style="vertical-align:top;">
+				<td class="ZOptionsTableLabel">
 					<label for="numberOfRings"><fmt:message key="optionsRingsSend"/>:</label>
 				</td>
 				<td>
