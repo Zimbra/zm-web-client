@@ -522,6 +522,10 @@
 							<input type="submit" name="actionVoiceAddSelectiveForwarding" value="<fmt:message key='add'/>"/>
 						</td>
 					</tr>
+					<tr>
+						<td colspan="3"></td>
+						<td colspan="2"><fmt:message key="optionsCallForwardingRules"/></td>
+					</tr>
 					</c:if>
 					
 					<tr><td>&nbsp;</td></tr>
@@ -626,6 +630,10 @@
 						<td style="padding-left:10px">
 							<input type="submit" name="actionVoiceAddSelectiveRejection" value="<fmt:message key='add'/>"/>
 						</td>
+					</tr>
+					<tr>
+						<td colspan="3"></td>
+						<td colspan="2"><fmt:message key="optionsCallRejectionRules"/></td>
 					</tr>
 					</c:if>
 										
