@@ -3894,8 +3894,15 @@ HTML>BODY .appt-selected .appt_allday_body
 	font-weight: bold;
 }
 
+.itemSortIcon {
+	padding-left: 7px;
+	width: 100%;
+}
+
 .itemCountText {
-	padding-right: 15px;
+	padding-right: 2px;
+	white-space: nowrap;
+	cursor: default;
 }
 
 .ZmApptComposeView .addresses {

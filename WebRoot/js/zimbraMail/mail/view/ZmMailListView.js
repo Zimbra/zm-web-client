@@ -308,21 +308,23 @@ function(htmlArr, idx, headerCol, i, numCols, id, defaultColumnSort) {
 		htmlArr[idx++] = "' class='";
 		htmlArr[idx++] = (id == this._currentColId)	? "DwtListView-Column DwtListView-ColumnActive'" :
 													  "DwtListView-Column'";
-		htmlArr[idx++] = " width='auto'>";
-		htmlArr[idx++] = "<table border=0 cellpadding=0 cellspacing=0 width='100%'><tr>";
-		htmlArr[idx++] = "<td id='";
+		htmlArr[idx++] = " width='auto'><table border=0 cellpadding=0 cellspacing=0 width='100%'><tr><td id='";
 		htmlArr[idx++] = DwtId.getListViewHdrId(DwtId.WIDGET_HDR_LABEL, this._view, field);
 		htmlArr[idx++] = "' class='DwtListHeaderItem-label'>";
 		htmlArr[idx++] = headerCol._label;
 		htmlArr[idx++] = "</td>";
-		htmlArr[idx++] = "<td align=right class='itemCountText' nowrap='' style='padding-right:2px'";
-		//htmlArr[idx++] = ZmMsg.COLUMN_WIDTH_ITEM_COUNT;
-		htmlArr[idx++] = " id='";
-		htmlArr[idx++] = textTdId;
+
+		// sort icon
+		htmlArr[idx++] = "<td class='itemSortIcon' id='";
+		htmlArr[idx++] = DwtId.getListViewHdrId(DwtId.WIDGET_HDR_ARROW, this._view, field);
 		htmlArr[idx++] = "'>";
+		htmlArr[idx++] = AjxImg.getImageHtml(this._bSortAsc ? "ColumnUpArrow" : "ColumnDownArrow");
 		htmlArr[idx++] = "</td>";
-		htmlArr[idx++] = "</tr></table>";
-		htmlArr[idx++] = "</div></td>";
+
+		// item count text
+		htmlArr[idx++] = "<td align=right class='itemCountText' id='";
+		htmlArr[idx++] = textTdId;
+		htmlArr[idx++] = "'></td></tr></table></div></td>";
 	} else {
 		return DwtListView.prototype._createHeader.apply(this, arguments);
 	}
