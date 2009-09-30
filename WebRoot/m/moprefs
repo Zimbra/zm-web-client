@@ -31,7 +31,7 @@
             <div class="tbl">
                 <div class="tr">
                     <span class="label aleft  td" style='white-space:nowrap;'><fmt:message key="timeZonePref"/></span>
-        <span class="value aright td"><select name="zimbraPrefTimeZoneId" id="timeZone" style="width:100%;">
+        <span class="value aright td"><select name="zimbraPrefTimeZoneId" id="timeZone" style="width:50%;">
             <c:set var="tzpref" value="${mailbox.prefs.timeZoneCanonicalId}"/>
             <zm:forEachTimeZone var="tz">
                 <fmt:message var="displayName" bundle='${AjxMsg}' key="${tz.id}"/>

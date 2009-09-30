@@ -57,6 +57,7 @@ a {
 
 .label {
     color: #4d8dc3;width:20%;float:left;
+    white-space:nowrap;
 }
 .value {width:78%;text-align:right;}
 .list-row-1, .list-row-2, .list-row-3 {
