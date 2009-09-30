@@ -503,11 +503,11 @@
 						</c:if>
 						
 						<td style="vertical-align:top;padding-left:10px">
-							<input type="submit" name="addSelectiveForwarding" value="<fmt:message key='add'/>" <c:if test="${!empty param.addSelectiveForwarding}">disabled</c:if>/>
+							<input type="submit" name="addSelectiveForwarding" value="<fmt:message key='add'/>" <c:if test="${!empty requestScope.addSelectiveForwarding || (!empty sessionScope.selectiveCallForwardingFrom && fn:length(fn:split(sessionScope.selectiveCallForwardingFrom, ',')) >= 12)}">disabled</c:if>/>
 						</td>
 					</tr>
 					
-					<c:if test="${!empty param.addSelectiveForwarding}">
+					<c:if test="${!empty requestScope.addSelectiveForwarding && (empty sessionScope.selectiveForwardingFrom || fn:length(fn:split(sessionScope.selectiveCallForwardingFrom, ',')) < 12)}">
 					<tr>
 						<td colspan="2">
 							<label for="addForwardingNumber"><fmt:message key="optionsCallForwardingSelectiveAdd"/>:</label>
@@ -608,11 +608,11 @@
 						
 						
 						<td style="vertical-align:top;padding-left:10px">
-							<input type="submit" name="addSelectiveRejection" value="<fmt:message key='add'/>" <c:if test="${!empty param.addSelectiveRejection || (!empty sessionScope.selectiveRejectionNumber && fn:length(fn:split(sessionScope.selectiveRejectionNumber, ','))>=12)}">disabled</c:if>/>
+							<input type="submit" name="addSelectiveRejection" value="<fmt:message key='add'/>" <c:if test="${!empty requestScope.addSelectiveRejection || (!empty sessionScope.selectiveRejectionNumber && fn:length(fn:split(sessionScope.selectiveRejectionNumber, ',')) >= 12)}">disabled</c:if>/>
 						</td>
 					</tr>
 					
-					<c:if test="${!empty param.addSelectiveRejection && (empty sessionScope.selectiveRejectionNumber || fn:length(fn:split(sessionScope.selectiveRejectionNumber, ','))<12)}">
+					<c:if test="${!empty requestScope.addSelectiveRejection && (empty sessionScope.selectiveRejectionNumber || fn:length(fn:split(sessionScope.selectiveRejectionNumber, ',')) < 12)}">
 					<tr>
 						<td colspan="2">
 							<label for="addRejectionNumber"><fmt:message key="optionsCallRejectionSelectiveAdd"/>:</label>

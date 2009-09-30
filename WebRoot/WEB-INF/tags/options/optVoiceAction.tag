@@ -119,6 +119,12 @@
     <c:set var="emailNotificationAddress" scope="session" value="${tmp}"/>
 </c:if>
 
+<c:set var="addSelectiveForwarding" scope="request" value="${param.addSelectiveForwarding}"/>
+<c:if test="${voiceselected=='forwarding' && zm:actionSet(param, 'addSelectiveForwarding') && !empty sessionScope.selectiveCallForwardingFrom && fn:length(fn:split(sessionScope.selectiveCallForwardingFrom, ',')) >= 12}">
+	<app:status style="Critical"><fmt:message key="optionsCallForwardingErrorMax"/></app:status>
+	<c:set var="addSelectiveForwarding" scope="request" value="${null}"/>
+</c:if>
+
 <c:if test="${voiceselected=='forwarding' && (zm:actionSet(param, 'actionVoiceAddSelectiveForwarding') || zm:actionSet(param, 'actionSave'))}">
     <c:set var="collTest" value=",${fn:replace(sessionScope.selectiveCallForwardingFrom, '1-(', '(')},"/>
     <c:set var="entryTest" value=",${fn:replace(param.addForwardingNumber, '1-(', '(')},"/>
@@ -187,8 +193,10 @@
     <c:set var="selectiveCallForwardingFrom" scope="session" value="${tmp}"/>
 </c:if>
 
-<c:if test="${voiceselected=='screening' && param.addSelectiveRejection && (!empty sessionScope.selectiveRejectionNumber) && fn:length(fn:split(sessionScope.selectiveRejectionNumber,','))>=12}">
+<c:set var="addSelectiveRejection" scope="request" value="${param.addSelectiveRejection}"/>
+<c:if test="${voiceselected=='screening' && zm:actionSet(param, 'addSelectiveRejection') && (!empty sessionScope.selectiveRejectionNumber) && fn:length(fn:split(sessionScope.selectiveRejectionNumber,',')) >= 12}">
     <app:status style="Critical"><fmt:message key="optionsCallRejectionErrorMax"/></app:status>
+    <c:set var="addSelectiveRejection" scope="request" value="${null}"/>
 </c:if>
 
 <c:if test="${voiceselected=='screening' && zm:actionSet(param, 'actionVoiceAddSelectiveRejection')}">

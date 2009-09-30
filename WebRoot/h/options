@@ -83,7 +83,7 @@
                 </c:when>
             </c:choose>
         </c:when>
-        <c:when test="${zm:actionSet(param, 'actionVoiceAddNotification') || zm:actionSet(param, 'actionVoiceRemoveNotification') || zm:actionSet(param, 'actionVoiceAddSelectiveForwarding') || zm:actionSet(param, 'actionVoiceRemoveSelectiveForwarding')  || zm:actionSet(param, 'actionVoiceAddSelectiveRejection') || zm:actionSet(param, 'actionVoiceRemoveSelectiveRejection')}">
+        <c:when test="${zm:actionSet(param, 'actionVoiceAddNotification') || zm:actionSet(param, 'actionVoiceRemoveNotification') || zm:actionSet(param, 'addSelectiveForwarding') || zm:actionSet(param, 'actionVoiceAddSelectiveForwarding') || zm:actionSet(param, 'actionVoiceRemoveSelectiveForwarding') || zm:actionSet(param, 'addSelectiveRejection') || zm:actionSet(param, 'actionVoiceAddSelectiveRejection') || zm:actionSet(param, 'actionVoiceRemoveSelectiveRejection')}">
             <zm:checkCrumb crumb="${param.crumb}"/>
             <c:choose>
                <c:when test="${selected eq 'voice'}">
