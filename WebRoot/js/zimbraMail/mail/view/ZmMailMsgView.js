@@ -188,9 +188,8 @@ function(msg) {
 		(invite && invite.type != "task"))
 	{
 		if (!invite.isEmpty() && invite.hasAcceptableComponents() && invite.hasInviteReplyMethod() &&
-			msg.folderId != ZmFolder.ID_TRASH &&
-			appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED))
-		{
+			msg.folderId != ZmFolder.ID_TRASH) {
+
 			var topToolbar = this._getInviteToolbar();
 			topToolbar.reparentHtmlElement(contentDiv);
 			topToolbar.setVisible(Dwt.DISPLAY_BLOCK);

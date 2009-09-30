@@ -16,9 +16,7 @@
 ZmFolderPropsDialog = function(parent, className) {
 	className = className || "ZmFolderPropsDialog";
 	var extraButtons;
-	if (appCtxt.get(ZmSetting.SHARING_ENABLED) &&
-		appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED))
-	{
+	if (appCtxt.get(ZmSetting.SHARING_ENABLED))	{
 		extraButtons = [
 			new DwtDialog_ButtonDescriptor(ZmFolderPropsDialog.ADD_SHARE_BUTTON, ZmMsg.addShare, DwtDialog.ALIGN_LEFT)
 		];
@@ -26,9 +24,7 @@ ZmFolderPropsDialog = function(parent, className) {
 
 	DwtDialog.call(this, {parent:parent, className:className, title:ZmMsg.folderProperties, extraButtons:extraButtons});
 
-	if (appCtxt.get(ZmSetting.SHARING_ENABLED) &&
-		appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED))
-	{
+	if (appCtxt.get(ZmSetting.SHARING_ENABLED))	{
 		this.registerCallback(ZmFolderPropsDialog.ADD_SHARE_BUTTON, this._handleAddShareButton, this);
 	}
 	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._handleOkButton));
@@ -82,9 +78,7 @@ function(organizer) {
 	}
 
 	this._handleFolderChange();
-	if (appCtxt.get(ZmSetting.SHARING_ENABLED) &&
-		appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED))
-	{
+	if (appCtxt.get(ZmSetting.SHARING_ENABLED))	{
 		var isVisible = (!organizer.link || organizer.isAdmin());
 		this.setButtonVisible(ZmFolderPropsDialog.ADD_SHARE_BUTTON, isVisible);
 	}
@@ -292,9 +286,7 @@ function(event) {
 		this._permEl.innerHTML = ZmShare.getRoleActions(role);
 	}
 
-	if (appCtxt.get(ZmSetting.SHARING_ENABLED) &&
-		appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED))
-	{
+	if (appCtxt.get(ZmSetting.SHARING_ENABLED))	{
 		this._populateShares(organizer);
 	}
 
@@ -488,9 +480,7 @@ function() {
 	propsGroup.setElement(propsContainer);
 
 	// setup shares group
-	if (appCtxt.get(ZmSetting.SHARING_ENABLED) &&
-		appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED))
-	{
+	if (appCtxt.get(ZmSetting.SHARING_ENABLED))	{
 		this._sharesGroup = new DwtGrouper(view);
 		this._sharesGroup.setLabel(ZmMsg.folderSharing);
 		this._sharesGroup.setVisible(false);
@@ -500,9 +490,7 @@ function() {
 	// add everything to view and return
 	var element = view.getHtmlElement();
 	element.appendChild(propsGroup.getHtmlElement());
-	if (appCtxt.get(ZmSetting.SHARING_ENABLED) &&
-		appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED))
-	{
+	if (appCtxt.get(ZmSetting.SHARING_ENABLED))	{
 		element.appendChild(this._sharesGroup.getHtmlElement());
 	}
 

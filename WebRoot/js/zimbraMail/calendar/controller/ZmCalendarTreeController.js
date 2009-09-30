@@ -23,10 +23,8 @@ ZmCalendarTreeController = function() {
 	this._listeners[ZmOperation.BROWSE] = new AjxListener(this, this._browseListener);
 	this._listeners[ZmOperation.DETACH_WIN] = new AjxListener(this, this._detachListener);
 	this._listeners[ZmOperation.FREE_BUSY_LINK] = new AjxListener(this, this._freeBusyLinkListener);
-	if (appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED)) {
-		this._listeners[ZmOperation.SHARE_CALENDAR] = new AjxListener(this, this._shareCalListener);
-		this._listeners[ZmOperation.MOUNT_CALENDAR] = new AjxListener(this, this._mountCalListener);
-	}
+	this._listeners[ZmOperation.SHARE_CALENDAR] = new AjxListener(this, this._shareCalListener);
+	this._listeners[ZmOperation.MOUNT_CALENDAR] = new AjxListener(this, this._mountCalListener);
 
 	this._eventMgrs = {};
 };
@@ -170,9 +168,7 @@ function(ev){
 ZmCalendarTreeController.prototype._getHeaderActionMenuOps =
 function() {
 	var ops = [ZmOperation.NEW_CALENDAR];
-	if (appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED)) {
-		ops.push(ZmOperation.MOUNT_CALENDAR);
-	}
+	ops.push(ZmOperation.MOUNT_CALENDAR);
 	ops.push(ZmOperation.CHECK_ALL,
 			ZmOperation.CLEAR_ALL,
 			ZmOperation.BROWSE,
@@ -186,9 +182,7 @@ function() {
 ZmCalendarTreeController.prototype._getActionMenuOps =
 function() {
 	var ops = [];
-	if (appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED)) {
-		ops.push(ZmOperation.SHARE_CALENDAR);
-	}
+	ops.push(ZmOperation.SHARE_CALENDAR);
 	ops.push(ZmOperation.DELETE,
 			ZmOperation.EDIT_PROPS,
 			ZmOperation.SYNC,
