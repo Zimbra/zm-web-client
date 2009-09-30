@@ -1250,6 +1250,27 @@ function(contentPartType, contentPart) {
 	return null;
 };
 
+ZmMailMsg.prototype.findAttsFoundInMsgBody =
+function(){
+
+    if(this.findAttsFoundInMsgBodyDone) return;
+    
+    var content ="", cid;
+    var bodyParts = this.getBodyParts();
+    for (var i = 0; i < bodyParts.length; i++) {
+        var bodyPart = bodyParts[i];
+        if (bodyPart.ct == ZmMimeTable.TEXT_HTML) {
+            content = bodyPart.content;
+            var msgRef = this;
+            content.replace(/dfsrc=([\x27\x22])cid:([^\x27\x22]+)\1/ig, function(s, q, cid){
+                var attach = msgRef.findInlineAtt("<" + cid + ">");
+                attach.foundInMsgBody = true;
+            });
+        }
+    }
+    this.findAttsFoundInMsgBodyDone = true;
+};
+
 /**
  * Returns an array of objects containing meta info about attachments to be used
  * to build href's by the caller
@@ -1277,11 +1298,12 @@ function(findHits, includeInlineImages, includeInlineAtts) {
 	if (attachments && attachments.length > 0) {
 
 		var hrefRoot = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI) + "&loc=" + AjxEnv.DEFAULT_LOCALE + "&id=" + this.id + "&part=";
+        this.findAttsFoundInMsgBody();
 
 		for (var i = 0; i < attachments.length; i++) {
 			var attach = attachments[i];
 
-			if (!this.isRealAttachment(attach) || (attach.ct.match(/^image/) && attach.ci && !includeInlineImages) || (attach.cd == "inline" && attach.filename && ZmMimeTable.isRenderable(attach.ct) && !includeInlineAtts)) {
+			if (!this.isRealAttachment(attach) || (attach.ct.match(/^image/) && attach.ci && attach.foundInMsgBody && !includeInlineImages) || (attach.cd == "inline" && attach.filename && ZmMimeTable.isRenderable(attach.ct) && !includeInlineAtts)) {
 				continue;
 			}
 
