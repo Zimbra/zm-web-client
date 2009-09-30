@@ -957,13 +957,14 @@ function(composeMode, identity) {
 
 	if (appCtxt.get(ZmSetting.MAIL_READ_RECEIPT_ENABLED)) {
 		var mi = menu.getOp(ZmOperation.REQUEST_READ_RECEIPT);
-
-		// did this draft have "request read receipt" option set?
-		if (this._msg && this._msg.isDraft) {
-			mi.setChecked(this._msg.readReceiptRequested);
-		} else {
-			// bug: 41329 - always re-init read-receipt option to be off
-			mi.setChecked(false, true);
+		if (mi) {
+			// did this draft have "request read receipt" option set?
+			if (this._msg && this._msg.isDraft) {
+				mi.setChecked(this._msg.readReceiptRequested);
+			} else {
+				// bug: 41329 - always re-init read-receipt option to be off
+				mi.setChecked(false, true);
+			}
 		}
 	}
 
