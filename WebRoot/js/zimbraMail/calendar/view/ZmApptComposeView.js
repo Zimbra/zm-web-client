@@ -124,6 +124,16 @@ function() {
 
 ZmApptComposeView.prototype.set =
 function(appt, mode, isDirty) {
+
+    var isForward = false;
+    if(ZmCalItem.FORWARD_MAPPING[mode]) {
+        isForward = true;
+        this._forwardMode = mode;
+        mode = ZmCalItem.FORWARD_MAPPING[mode];
+    }else {
+        this._forwardMode = undefined;        
+    }
+
 	this._setData = [appt, mode, isDirty];
 	var button = this.getTabButton(this._apptTabKey);
 	if (mode == ZmCalItem.MODE_EDIT_SERIES || appt.getRecurType() != "NON") {
@@ -137,7 +147,7 @@ function(appt, mode, isDirty) {
 		var id = this._tabIds[i];
 		var tabPage = this._tabPages[id];
 		if (!(tabPage instanceof AjxCallback)) {
-			tabPage.initialize(appt, mode, isDirty);
+			tabPage.initialize(appt, mode, isDirty, isForward);
 		}
 	}
 
@@ -240,7 +250,8 @@ function(tabKey) {
 	toolbar.enableAll(true);
 	// based on the current tab selected, enable/disable appropriate buttons in toolbar
 	if (tabKey == this._tabKeys[ZmApptComposeView.TAB_APPOINTMENT]) {
-		this._apptEditView.enableInputs(true);
+        //disable inputs for appt forwarding
+		this._apptEditView.enableInputs(!this._forwardMode);
 		this._apptEditView.reEnableDesignMode();
 	} else {
 		var buttons = [ZmOperation.ATTACHMENT];

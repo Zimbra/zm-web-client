@@ -91,10 +91,11 @@ function(attId) {
 };
 
 ZmCalItemEditView.prototype.initialize =
-function(calItem, mode, isDirty) {
+function(calItem, mode, isDirty, isForward) {
 	this._calItem = calItem;
 	this._isDirty = isDirty;
-
+    this._isForward = isForward;
+    
 	var firstTime = !this._rendered;
 	this.createHtml();
 
@@ -318,6 +319,10 @@ function(calItem, mode, firstTime) {
 
 	// disable the recurrence select object for editing single instance
 	this._enableRepeat(mode != ZmCalItem.MODE_EDIT_SINGLE_INSTANCE);
+
+    //show 'to' fields for forward action
+    var forwardOptions = document.getElementById(this._htmlElId + "_forward_options");
+    if(forwardOptions) Dwt.setVisible(forwardOptions, this._isForward);
 
 	// if first time reset'ing, delay saving form value since all widgets
 	// (i.e. html editor) may not have finished initializing yet.

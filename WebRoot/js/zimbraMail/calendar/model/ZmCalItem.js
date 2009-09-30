@@ -35,16 +35,24 @@ function() {
 
 // Consts
 
-ZmCalItem.MODE_NEW					= 1;
-ZmCalItem.MODE_EDIT					= 2;
-ZmCalItem.MODE_EDIT_SINGLE_INSTANCE	= 3;
-ZmCalItem.MODE_EDIT_SERIES			= 4;
-ZmCalItem.MODE_DELETE				= 5;
-ZmCalItem.MODE_DELETE_INSTANCE		= 6;
-ZmCalItem.MODE_DELETE_SERIES		= 7;
-ZmCalItem.MODE_NEW_FROM_QUICKADD 	= 8;
-ZmCalItem.MODE_GET					= 9;
-ZmCalItem.MODE_LAST					= 9;
+ZmCalItem.MODE_NEW					    = 1;
+ZmCalItem.MODE_EDIT					    = 2;
+ZmCalItem.MODE_EDIT_SINGLE_INSTANCE	    = 3;
+ZmCalItem.MODE_EDIT_SERIES			    = 4;
+ZmCalItem.MODE_DELETE				    = 5;
+ZmCalItem.MODE_DELETE_INSTANCE		    = 6;
+ZmCalItem.MODE_DELETE_SERIES		    = 7;
+ZmCalItem.MODE_NEW_FROM_QUICKADD 	    = 8;
+ZmCalItem.MODE_GET					    = 9;
+ZmCalItem.MODE_FORWARD				    = 10;
+ZmCalItem.MODE_FORWARD_SINGLE_INSTANCE	= 11;
+ZmCalItem.MODE_FORWARD_SERIES			= 12;
+ZmCalItem.MODE_LAST					    = 12;
+
+ZmCalItem.FORWARD_MAPPING = {};
+ZmCalItem.FORWARD_MAPPING[ZmCalItem.MODE_FORWARD]                   = ZmCalItem.MODE_EDIT;
+ZmCalItem.FORWARD_MAPPING[ZmCalItem.MODE_FORWARD_SINGLE_INSTANCE]   = ZmCalItem.MODE_EDIT_SINGLE_INSTANCE;
+ZmCalItem.FORWARD_MAPPING[ZmCalItem.MODE_FORWARD_SERIES]            = ZmCalItem.MODE_EDIT_SERIES;
 
 ZmCalItem.PRIORITY_LOW				= 9;
 ZmCalItem.PRIORITY_NORMAL			= 5;

@@ -66,8 +66,8 @@ function() {
 };
 
 ZmApptTabViewPage.prototype.initialize =
-function(appt, mode, isDirty) {
-	this._editView.initialize(appt, mode, isDirty);
+function(appt, mode, isDirty, isForward) {
+	this._editView.initialize(appt, mode, isDirty, isForward);
 };
 
 ZmApptTabViewPage.prototype.isDirty =

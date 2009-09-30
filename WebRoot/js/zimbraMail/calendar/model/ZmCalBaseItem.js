@@ -51,6 +51,7 @@ function() {
 ZmCalBaseItem.PERSON				= "PERSON";
 ZmCalBaseItem.LOCATION				= "LOCATION";
 ZmCalBaseItem.EQUIPMENT				= "EQUIPMENT";
+ZmCalBaseItem.FORWARD				= "FORWARD";
 
 ZmCalBaseItem.PSTATUS_ACCEPT		= "AC";			// vevent, vtodo
 ZmCalBaseItem.PSTATUS_DECLINED		= "DE";			// vevent, vtodo

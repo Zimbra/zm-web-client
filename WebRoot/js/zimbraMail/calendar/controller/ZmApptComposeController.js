@@ -54,11 +54,22 @@ function(calItem, mode, isDirty) {
 	this._setComposeTabGroup();
 };
 
+ZmApptComposeController.prototype.forwardCalItem =
+function(appt) {
+    //todo: to address input validation    
+    appt.forward();
+    return true;
+};
+
 ZmApptComposeController.prototype.saveCalItem =
 function(attId) {
 	var appt = this._composeView.getAppt(attId);
 	if (appt) {
-		
+
+        if(appt.isForward) {
+            return this.forwardCalItem(appt);
+        }
+
 		if (this._invalidAttendees && this._invalidAttendees.length > 0) {
 			var dlg = appCtxt.getYesNoMsgDialog();
 			dlg.registerCallback(DwtDialog.YES_BUTTON, this._clearInvalidAttendeesCallback, this, [appt, attId, dlg]);

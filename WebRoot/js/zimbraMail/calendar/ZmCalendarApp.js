@@ -355,6 +355,9 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_VIEW_APPT_SERIES, {textKey:"apptSeries", image:"Appointment"});
 	ZmOperation.registerOp(ZmId.OP_WEEK_VIEW, {textKey:"viewWeek", tooltipKey:"viewWeekTooltip", image:"WeekView", shortcut:ZmKeyMap.CAL_WEEK_VIEW});
 	ZmOperation.registerOp(ZmId.OP_WORK_WEEK_VIEW, {textKey:"viewWorkWeek", tooltipKey:"viewWorkWeekTooltip", image:"WorkWeekView", shortcut:ZmKeyMap.CAL_WORK_WEEK_VIEW});
+	ZmOperation.registerOp(ZmId.OP_FORWARD_APPT, {textKey:"forward", tooltipKey:"forward", image:"Forward"});	
+	ZmOperation.registerOp(ZmId.OP_FORWARD_APPT_INSTANCE, {textKey:"forwardInstance", tooltipKey:"forwardInstance", image:"Forward"});
+	ZmOperation.registerOp(ZmId.OP_FORWARD_APPT_SERIES, {textKey:"forwardSeries", tooltipKey:"forwardSeries", image:"Forward"});	
 };
 
 ZmCalendarApp.prototype._registerItems =

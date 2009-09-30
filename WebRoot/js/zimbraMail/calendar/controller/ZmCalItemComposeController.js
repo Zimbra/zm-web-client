@@ -242,6 +242,16 @@ function(mode) {
 		cancelButton.setImage("Close");
 	}
 
+    var saveButton = this._toolbar.getButton(ZmOperation.SAVE);
+    //use send button for forward appt view
+    if(ZmCalItem.FORWARD_MAPPING[mode]) {
+        saveButton.setText(ZmMsg.send);
+        saveButton.setImage("Send");
+    }else {
+        saveButton.setText(ZmMsg.save);
+        saveButton.setImage("Save");
+    }
+
 	var printButton = this._toolbar.getButton(ZmOperation.PRINT);
 	if (printButton) {
 		printButton.setEnabled(!isNew);

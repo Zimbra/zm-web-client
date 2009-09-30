@@ -64,6 +64,9 @@ ZmCalViewController = function(container, calApp) {
 	this._listeners[ZmOperation.MOVE]  = new AjxListener(this, this._apptMoveListener);
 	this._listeners[ZmOperation.DELETE_INSTANCE]  = new AjxListener(this, this._deleteListener);
 	this._listeners[ZmOperation.DELETE_SERIES]  = new AjxListener(this, this._deleteListener);
+	this._listeners[ZmOperation.FORWARD_APPT]  = new AjxListener(this, this._forwardListener);
+	this._listeners[ZmOperation.FORWARD_APPT_INSTANCE]  = new AjxListener(this, this._forwardListener);
+	this._listeners[ZmOperation.FORWARD_APPT_SERIES]  = new AjxListener(this, this._forwardListener);
 
 	this._treeSelectionListener = new AjxListener(this, this._calTreeSelectionListener);
 	this._maintTimedAction = new AjxTimedAction(this, this._maintenanceAction);
@@ -1145,6 +1148,32 @@ function(ev) {
 	this._doDelete(this._listView[this._currentView].getSelection(), null, null, op);
 };
 
+ZmCalViewController.prototype._forwardListener =
+function(ev) {
+	var op = (ev && ev.item instanceof DwtMenuItem)
+		? ev.item.parent.getData(ZmOperation.KEY_ID) : null;
+	this._doForward(this._listView[this._currentView].getSelection(), op);
+};
+
+ZmCalViewController.prototype._doForward =
+function(items, op) {
+	// listview cannot handle forwarding multiple items at once
+	if (this._viewMgr.getCurrentViewName() == ZmId.VIEW_CAL_LIST && items.length > 1) {
+        return;
+	}
+	else {
+		// since base view has multiple selection turned off, always select first item
+		var appt = items[0];
+        var mode = ZmCalItem.MODE_FORWARD;
+        if (op == ZmOperation.VIEW_APPT_INSTANCE || op == ZmOperation.VIEW_APPT_SERIES) {
+            mode = (op == ZmOperation.VIEW_APPT_INSTANCE)
+                ? ZmCalItem.MODE_FORWARD_SINGLE_INSTANCE
+                : ZmCalItem.MODE_FORWARD_SERIES;
+        }        
+        this._forwardAppointment(appt, mode);
+	}
+};
+
 /**
  * Override the ZmListController method.
  */
@@ -1638,6 +1667,17 @@ function(appt, mode) {
 	}
 };
 
+ZmCalViewController.prototype._forwardAppointment =
+function(appt, mode) {
+	AjxDispatcher.require(["CalendarCore", "Calendar"]);
+	if (mode != ZmCalItem.MODE_NEW) {
+		var clone = ZmAppt.quickClone(appt);
+		clone.getDetails(mode, new AjxCallback(this, this._showApptForwardComposeView, [clone, mode]));
+	} else {
+		this._showApptForwardComposeView(appt, mode);
+	}
+};
+
 ZmCalViewController.prototype._showAppointmentDetails =
 function(appt) {
 	// if we have an appointment, go get all the details.
@@ -1751,6 +1791,11 @@ function(ev) {
 };
 
 ZmCalViewController.prototype._showApptComposeView =
+function(appt, mode) {
+	this._app.getApptComposeController().show(appt, mode);
+};
+
+ZmCalViewController.prototype._showApptForwardComposeView =
 function(appt, mode) {
 	this._app.getApptComposeController().show(appt, mode);
 };
@@ -2246,13 +2291,16 @@ function(recurrenceMode) {
 
 	var deleteOp = ZmOperation.DELETE;
 	var viewOp = ZmOperation.VIEW_APPOINTMENT;
+    var forwardOp = ZmOperation.FORWARD_APPT;
 
 	if (recurrenceMode == ZmOperation.VIEW_APPT_INSTANCE) {
 		deleteOp = ZmOperation.DELETE_INSTANCE;
 		viewOp = ZmOperation.OPEN_APPT_INSTANCE;
+		forwardOp = ZmOperation.FORWARD_APPT_INSTANCE;
 	} else if (recurrenceMode == ZmOperation.VIEW_APPT_SERIES) {
 		deleteOp = ZmOperation.DELETE_SERIES;
 		viewOp = ZmOperation.OPEN_APPT_SERIES;
+		forwardOp = ZmOperation.FORWARD_APPT_SERIES;
 	}
 
 	return [
@@ -2260,6 +2308,7 @@ function(recurrenceMode) {
 		ZmOperation.SEP,
 		ZmOperation.REPLY_ACCEPT, ZmOperation.REPLY_TENTATIVE, ZmOperation.REPLY_DECLINE, ZmOperation.INVITE_REPLY_MENU,
 		ZmOperation.SEP,
+        forwardOp,    
 		deleteOp, ZmOperation.MOVE, ZmOperation.TAG_MENU
 	];
 };

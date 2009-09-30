@@ -3897,3 +3897,7 @@ HTML>BODY .appt-selected .appt_allday_body
 .itemCountText {
 	padding-right: 15px;
 }
+
+.ZmApptComposeView .addresses {
+    width:100%;
+}

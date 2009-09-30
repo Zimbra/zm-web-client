@@ -266,6 +266,13 @@ function(calItem) {
 		calItem.setMailNotificationOption(this._sendNotificationMailCheckbox.checked);
 	}
 
+    calItem.isForward = this._isForward;
+
+    if(this._isForward)  {
+        var addrs = this._collectForwardAddrs();
+        calItem.setForwardAddress(addrs);
+    }
+
 	return calItem;
 };
 
@@ -374,6 +381,8 @@ function(calItem, mode) {
             this._organizerData.innerHTML = calItem.getOrganizer() || "";
         }
 	}
+
+    this._forwardToField.value = "";    
 };
 
 ZmApptEditView.prototype._addResourcesDiv =
@@ -496,6 +505,10 @@ function(width) {
 		Dwt.setHandler(this._sendNotificationMailCheckbox, DwtEvent.ONCLICK, ZmApptEditView._showNotificationWarning);
 	}
 
+    this._forwardToField = document.getElementById(this._htmlElId + "_to_control");
+    this._forwardToField._attType = ZmCalBaseItem.FORWARD;
+
+
 	// timezone DwtSelect
 	var timezoneListener = new AjxListener(this, this._timezoneListener);
 
@@ -511,7 +524,81 @@ function(width) {
     this._notificationOptions = document.getElementById(this._htmlElId + "_notification_options");
     this._organizerOptions = document.getElementById(this._htmlElId + "_organizer_options");
     this._organizerData = document.getElementById(this._htmlElId + "_organizer");
+
+    var isPickerEnabled = (appCtxt.get(ZmSetting.CONTACTS_ENABLED) ||
+						   appCtxt.get(ZmSetting.GAL_ENABLED) ||
+						   appCtxt.multiAccounts);
+    if (isPickerEnabled) {
+        var pickerId = this._htmlElId + "_picker";
+        var pickerEl = document.getElementById(pickerId);
+        if (pickerEl) {
+            var buttonId = Dwt.getNextId();
+            var button = this._pickerButton = new DwtButton({parent:this, id:buttonId});
+            button.setText(pickerEl.innerHTML);
+            button.replaceElement(pickerEl);
+
+            button.addSelectionListener(new AjxListener(this, this._addressButtonListener));
+            button.addrType = ZmCalBaseItem.FORWARD;
+        }
+    }
 };
+
+ZmApptEditView.prototype._addressButtonListener =
+function(ev, addrType) {
+	var obj = ev ? DwtControl.getTargetControl(ev) : null;
+    this._forwardToField.disabled = true;
+	if (!this._contactPicker) {
+		AjxDispatcher.require("ContactsCore");
+		var buttonInfo = [
+			{ id: AjxEmailAddress.TO,	label: ZmMsg.toLabel }
+		];
+		this._contactPicker = new ZmContactPicker(buttonInfo);
+		this._contactPicker.registerCallback(DwtDialog.OK_BUTTON, this._contactPickerOkCallback, this);
+		this._contactPicker.registerCallback(DwtDialog.CANCEL_BUTTON, this._contactPickerCancelCallback, this);
+	}
+
+    var str = this._forwardToField.value;
+    var addrs = this._collectForwardAddrs();
+    var a = {};
+    if (addrs[AjxEmailAddress.TO] && addrs[AjxEmailAddress.TO].good) {
+        a[AjxEmailAddress.TO] = addrs[AjxEmailAddress.TO].good.getArray();
+    }
+    var str = (this._forwardToField.value && !(a[AjxEmailAddress.TO] && a[AjxEmailAddress.TO].length))
+        ? this._forwardToField.value : "";    
+	var account;
+	this._contactPicker.popup(AjxEmailAddress.TO, a, str, account);
+};
+
+// Transfers addresses from the contact picker to the appt compose view.
+ZmApptEditView.prototype._contactPickerOkCallback =
+function(addrs) {
+    this._forwardToField.disabled = false;
+    var vec = (addrs instanceof AjxVector) ? addrs : addrs[AjxEmailAddress.TO];
+    var addr = (vec.size() > 0) ? vec.toString(AjxEmailAddress.SEPARATOR) + AjxEmailAddress.SEPARATOR : "";
+    addr = addr ? addr : "";
+    this._forwardToField.value = addr;
+	//this._contactPicker.removePopdownListener(this._controller._dialogPopdownListener);
+	this._contactPicker.popdown();
+};
+
+ZmApptEditView.prototype._contactPickerCancelCallback =
+function() {
+    this._forwardToField.disabled = false;
+};
+
+// Grab the good addresses out of the forward to field
+ZmApptEditView.prototype._collectForwardAddrs =
+function() {
+    var addrs = {};
+    var val = AjxStringUtil.trim(this._forwardToField.value);
+    if (val.length == 0) return addrs;
+    var result = AjxEmailAddress.parseEmailString(val, AjxEmailAddress.TO, false);
+    if (result.all.size() == 0) return addrs;
+    addrs.gotAddress = true;
+    addrs[AjxEmailAddress.TO] = result;
+    return addrs;
+};
+
 
 ZmApptEditView.prototype._folderListener =
 function() {
@@ -580,6 +667,9 @@ function() {
 		};
 		this._acContactsList = new ZmAutocompleteListView(params);
 		this._acContactsList.handle(this._attInputField[ZmCalBaseItem.PERSON].getInputElement());
+        if(this._forwardToField) {
+            this._acContactsList.handle(this._forwardToField);            
+        }
 		this._acList[ZmCalBaseItem.PERSON] = this._acContactsList;
 	}
 
@@ -619,6 +709,11 @@ function(text, el, match) {
 	var attendee = match.item;
 	if (attendee) {
 		var type = el._attType;
+
+		if (type == ZmCalBaseItem.FORWARD) {
+            DBG.println("forward auto complete match : " + match)
+            return;
+        }
 		if (type == ZmCalBaseItem.LOCATION) {
 			var name = attendee.getFullName();
 			if(name) {
