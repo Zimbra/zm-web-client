@@ -46,10 +46,14 @@ function() {
 ZmCallingParty.prototype._loadFromDom =
 function(node) {
 	if (node.n) this.name = node.n;
-	if (node.p) this.callerId = (node.p == node.n) || (node.p == "Unavailable") ? null : node.p;
+	if (node.p) this.callerId = node.p == node.n ? null : this._getDisplayString(node.p);
 	if (node.t) this.type = node.t == "f" ? ZmVoiceItem.FROM : ZmVoiceItem.TO;
-	if (node.ci) this.city = node.ci == "Unavailable" ? null : node.ci;
-	if (node.st) this.state = node.st  == "Unavailable" ? null : node.st;
+	if (node.ci) this.city = this._getDisplayString(node.ci);
+	if (node.st) this.state = this._getDisplayString(node.st);
 	if (node.co) this.country = node.co == "null" ? null : node.co;
 };
 
+ZmCallingParty.prototype._getDisplayString =
+function(str) {
+	return (str.toUpperCase() != "UNAVAILABLE") ? str : null;
+};
