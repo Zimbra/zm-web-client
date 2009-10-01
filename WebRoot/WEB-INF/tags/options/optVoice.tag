@@ -8,6 +8,11 @@
 
 <c:set var="voiceselected" value="${empty param.voiceselected ? 'general' : param.voiceselected}"/>
 
+<%
+String ua = request.getHeader( "User-Agent" );
+boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
+%>
+
 <app:handleError>
 	<zm:checkVoiceStatus var="voiceStatus"/>
 </app:handleError>
@@ -141,12 +146,19 @@
 						<c:forEach var="language" items="${languages}">
 							<c:set var="id" value="voiceIncoming_${language.key}"/>
 							<tr>
-								<td class="ZhOptVoiceCBCell">
+							<% if (IE) { %>
+								<td>
 									<input id="${id}" type="radio" name="answeringLocale" value="${language.key}" <c:if test="${language.key == answeringLocale}">checked</c:if>/>
+									<label for="${id}"><fmt:message key="language_${language.key}"/></label>
+								</td>
+							<% } else { %>
+								<td class="ZhOptVoiceCBCell">
+									<input id="${id}" type="radio" name="answeringLocale" value="${language.key}" <c:if test="${language.key ==answeringLocale}">checked</c:if>/>
 								</td>
 								<td>
 									<label for="${id}"><fmt:message key="language_${language.key}"/></label>
 								</td>
+							<% } %>
 							</tr>
 						</c:forEach>
 					</table>
@@ -165,12 +177,19 @@
 						<c:forEach var="language" items="${languages}">
 							<c:set var="id" value="voiceChecking_${language.key}"/>
 							<tr>
+							<% if (IE) { %>
+								<td>
+									<input id="${id}" type="radio" name="userLocale" value="${language.key}" <c:if test="${language.key == userLocale}">checked</c:if>/>
+									<label for="${id}"><fmt:message key="language_${language.key}"/></label>
+								</td>
+							<% } else { %>
 								<td class="ZhOptVoiceCBCell">
 									<input id="${id}" type="radio" name="userLocale" value="${language.key}" <c:if test="${language.key == userLocale}">checked</c:if>/>
 								</td>
 								<td>
 									<label for="${id}"><fmt:message key="language_${language.key}"/></label>
 								</td>
+							<% } %>
 							</tr>
 						</c:forEach>
 					</table>
@@ -190,6 +209,7 @@
 					document.getElementById("promptLevelShort").disabled = !enabled;
 					document.getElementById("promptLevelMedium").disabled = !enabled;
 					document.getElementById("promptLevelLong").disabled = !enabled;
+					return true;
 				}
 			//-->
 			</script>
@@ -200,7 +220,7 @@
 					<table border="0" cellpadding="0" cellspacing="0">
 						<tr>
 							<td class="ZhOptVoiceCBCell">
-								<input id="autoPlayNewMsgs" type="checkbox" name="autoPlayNewMsgs" onchange="setLengthOptionsEnabled(this.checked)" <c:if test="${autoPlayNewMsgs}">checked</c:if> />
+								<input id="autoPlayNewMsgs" type="checkbox" name="autoPlayNewMsgs" onchange="return setLengthOptionsEnabled(this.checked)" onclick="return setLengthOptionsEnabled(this.checked)" <c:if test="${autoPlayNewMsgs}">checked</c:if> />
 							</td>
 							<td>
 								<label for="autoPlayNewMsgs"><fmt:message key="optionsPromptsAutoplay"/></label>
