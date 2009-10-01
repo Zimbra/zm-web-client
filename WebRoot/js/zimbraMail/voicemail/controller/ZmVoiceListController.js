@@ -232,17 +232,30 @@ function(obj, features, phone) {
 		var result = feature.createProxy();
 		result.data.phone = result.data.phone || [];
 		
-		if (maxEntries && result.data.phone.length + addPhones.length > maxEntries) {
-			appCtxt.setStatusMsg(maxMsg);
-			addPhones.length = (maxEntries > result.data.phone.length)? maxEntries - result.data.phone.length : 0; // Truncate the array
-		}
-		
 		if (addPhones.length > 0) {
+			var added = 0;
 			for (var i=0; i<addPhones.length; i++) {
 				var from = addPhones[i];
-				result.data.phone.push({a:true, pn: from.name});
+				var number = ZmPhone.calculateName(from.getDisplay());
+				var exists = false;
+				for (var j=0; j<result.data.phone.length; j++) {
+					if (result.data.phone[j].pn == number) {
+						exists += true;
+						break;
+					}
+				}
+				if (!exists) {
+					if (maxEntries && result.data.phone.length == maxEntries) {
+						appCtxt.setStatusMsg(maxMsg);
+						break;
+					} else {
+						result.data.phone.push({a:true, pn: number});
+						added++;
+					}
+				}
 			}
-			this._saveFeatures(phone, [result]);
+			if (added > 0)
+				this._saveFeatures(phone, [result]);
 		}
 	}
 }
