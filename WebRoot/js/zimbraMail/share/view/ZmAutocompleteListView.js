@@ -261,7 +261,7 @@ function(ev) {
 			aclv._focusAction.args = [ element ];
 			AjxTimedAction.scheduleAction(aclv._focusAction, 0);
 		}
-		if (key == 13 || key == 3 && aclv._enterCallback) {
+		if ((key == 13 || key == 3) && aclv._enterCallback) {
 			var result = aclv._enterCallback.run(ev);
 			return (result != null) ? result : ZmAutocompleteListView._echoKey(true, ev);
 		}
@@ -273,7 +273,7 @@ function(ev) {
 		return ZmAutocompleteListView._echoKey(true, ev);
 	}
 
-	if (key == 13 || key == 3 && aclv._enterCallback) {
+	if ((key == 13 || key == 3) && aclv._enterCallback) {
 		aclv.reset();
 		var result = aclv._enterCallback.run(ev);
 		return (result != null) ? result : ZmAutocompleteListView._echoKey(true, ev);
