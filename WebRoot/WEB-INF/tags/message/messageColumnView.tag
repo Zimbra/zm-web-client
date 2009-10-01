@@ -67,9 +67,14 @@
                     <table width="100%" cellpadding="2" cellspacing="0">
                         <tr>
                             <th class='CB' nowrap><input id="OPCHALL" onClick="checkAll(document.zform.id,this);" type=checkbox name="allids"/>
-                            <th><fmt:message key="arrangedBy"/>: <select name="actionSort"  onchange="zclick('SOPGO')">
-                                                                    <option value="" selected/><fmt:message key="subject"/>
-                                                                 </select>   
+                            <th><fmt:message key="arrangedBy"/>:
+                                <span><select name="actionSort">
+                                        <option value="${empty param.ss ? 'dateAsc' : (param.ss eq 'dateAsc' ? 'dateDesc' : 'dateAsc')}" <c:if test="${(empty param.ss) or (param.ss eq 'dateAsc') or (param.ss eq 'dateDesc')}">selected</c:if>/><fmt:message key="date"/>
+                                        <option value="${empty param.ss ? 'nameAsc' : (param.ss eq 'nameAsc' ? 'nameDesc' : 'nameAsc')}" <c:if test="${(param.ss eq 'nameAsc') or (param.ss eq 'nameDesc')}">selected</c:if>/> <fmt:message key="from"/>
+                                        <option value="${empty param.ss ? 'subjAsc' : (param.ss eq 'subjAsc' ? 'subjDesc' : 'subjAsc')}" <c:if test="${(param.ss eq 'subjAsc') or (param.ss eq 'subjDesc')}">selected</c:if>/> <fmt:message key="subject"/>
+                                      </select>
+                                      <input type="submit" value="<fmt:message key='actionGo'/>" name="sortAction"/>
+                                </span>
                             </th>
                             <th width="1%" nowrap><app:img src="startup/ImgAttachment.gif" altkey="ALT_ATTACHMENT"/>
                         </tr>

@@ -28,7 +28,7 @@
 <c:set var="ids" value="${fn:join(paramValues.id, ',')}"/>
 <c:set var="folderId" value="${not empty paramValues.folderId[0] ? paramValues.folderId[0] : paramValues.folderId[1]}"/>
 <c:set var="actionOp" value="${not empty paramValues.actionOp[0] ? paramValues.actionOp[0] :  paramValues.actionOp[1]}"/>
-
+<c:set var="actionSort" value="${not empty paramValues.actionSort[0] ? paramValues.actionSort[0] :  paramValues.actionSort[1]}"/>
 <c:set var="dragMsgId" value="${not empty paramValues.dragMsgId[0] ? paramValues.dragMsgId[0] : paramValues.dragMsgId[1]}"/>
 <c:set var="dragTargetFolder" value="${not empty paramValues.dragTargetFolder[0] ? paramValues.dragTargetFolder[0] : paramValues.dragTargetFolder[1]}"/>
 <c:if test="${not empty dragMsgId}">
@@ -116,6 +116,42 @@
             </c:otherwise>
         </c:choose>
     </c:when>
+    <c:when test="${zm:actionSet(param, 'sortAction')}">
+        <c:url var="redirectUrl" value="search">
+            <c:if test="${not empty param.st}">
+                <c:param name="st" value="${fn:escapeXml(param.st)}"/>
+            </c:if>
+            <c:if test="${not empty param.sfi}">
+                <c:param name="sfi" value="${fn:escapeXml(param.sfi)}"/>
+            </c:if>
+            <c:if test="${not empty param.sq}">
+                <c:param name="sq" value="${fn:escapeXml(param.sq)}"/>
+            </c:if>
+            <c:if test="${not empty param.search}">
+                <c:param name="search" value="${fn:escapeXml(param.search)}"/>
+            </c:if>
+        </c:url>
+        <c:choose>
+            <c:when test="${actionSort eq 'subjAsc'}">
+                <c:redirect url="${redirectUrl}&ss=subjAsc"/>
+            </c:when>
+            <c:when test="${actionSort eq 'subjDesc'}">
+                <c:redirect url="${redirectUrl}&ss=subjDesc"/>
+            </c:when>
+            <c:when test="${actionSort eq 'dateAsc'}">
+                <c:redirect url="${redirectUrl}&ss=dateAsc"/>
+            </c:when>
+            <c:when test="${actionSort eq 'dateDesc'}">
+                <c:redirect url="${redirectUrl}&ss=dateDesc"/>
+            </c:when>
+            <c:when test="${actionSort eq 'nameAsc'}">
+                <c:redirect url="${redirectUrl}&ss=nameAsc"/>
+            </c:when>
+            <c:when test="${actionSort eq 'nameDesc'}">
+                <c:redirect url="${redirectUrl}&ss=nameDesc"/>
+            </c:when>
+        </c:choose>
+    </c:when>
     <c:when test="${zm:actionSet(param, 'viewAction')}">
         <c:choose>
             <c:when test="${actionOp eq 'byConv'}">
@@ -149,6 +185,23 @@
                         <c:param name="search" value="${fn:escapeXml(param.search)}"/>
                     </c:if>
                 </c:url>
+            </c:when>
+            <c:when test="${actionOp eq 'byMsg'}">
+                <zm:modifyPrefs var="updated">
+                    <zm:pref name="zimbraPrefGroupMailBy" value="message"/>
+                </zm:modifyPrefs>
+                <c:url var="redirectUrl" value="search?st=message">
+                    <c:if test="${not empty param.sfi}">
+                        <c:param name="sfi" value="${fn:escapeXml(param.sfi)}"/>
+                    </c:if>
+                    <c:if test="${not empty param.sq}">
+                        <c:param name="sq" value="${fn:escapeXml(param.sq)}"/>
+                    </c:if>
+                    <c:if test="${not empty param.search}">
+                        <c:param name="search" value="${fn:escapeXml(param.search)}"/>
+                    </c:if>
+                </c:url>
+                <c:redirect url="${redirectUrl}"/>
             </c:when>
         </c:choose>
         <c:if test="${updated and not empty redirectUrl}">
