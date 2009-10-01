@@ -240,7 +240,7 @@ function(obj, features, phone) {
 				var exists = false;
 				for (var j=0; j<result.data.phone.length; j++) {
 					if (result.data.phone[j].pn == number) {
-						exists += true;
+						exists = true;
 						break;
 					}
 				}
