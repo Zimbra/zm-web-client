@@ -1651,7 +1651,7 @@ function() {
 ZmCalViewController.prototype.getTimezonePicker =
 function() {
     if(!this._timezonePicker) {
-        this._timezonePicker = new ZmTimezonePicker(this._shell);
+        this._timezonePicker = appCtxt.getTimezonePickerDialog();
     }
     return this._timezonePicker;
 };

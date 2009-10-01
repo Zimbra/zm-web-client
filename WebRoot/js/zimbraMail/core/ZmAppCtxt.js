@@ -436,6 +436,15 @@ function() {
 	return this._mountFolderDialog;
 };
 
+ZmAppCtxt.prototype.getTimezonePickerDialog =
+function() {
+	if (!this._timezonePickerDialog) {
+		AjxDispatcher.require("Share");
+		this._timezonePickerDialog = new ZmTimezonePicker(this._shell);
+	}
+	return this._timezonePickerDialog;
+};
+
 /**
 * Returns the dialog used to add or edit a filter rule.
 */
