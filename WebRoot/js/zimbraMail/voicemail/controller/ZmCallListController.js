@@ -119,26 +119,50 @@ function(actionCode) {
 	return true;
 };
 
-ZmVoiceListController.prototype._getPhoneFromCombination = 
+ZmCallListController.prototype._getPhoneFromCombination = 
 function(selection, errors) {
 	var phoneFromCombination = {};
 	
 	var compareFunction = function() {
-		return this.name;
+		return ZmPhone.calculateName(this.getDisplay());
 	}
 	
 	for (var i=0; i<selection.length; i++) {
 		var call = selection[i];	
 		var phone = call.getPhone();
-		var from = call.getCallingParty(this._getView()._getCallType() == ZmVoiceFolder.PLACED_CALL ? ZmVoiceItem.TO : ZmVoiceItem.FROM);
-	
-		if (phone.validate(from.name, errors)) {
-			if (!phoneFromCombination[phone.name])
-				phoneFromCombination[phone.name] = {phone: phone, addFrom: new AjxVector()};
+		var contact = call.getCallingParty(this._getView()._getCallType() == ZmVoiceFolder.PLACED_CALL ? ZmVoiceItem.TO : ZmVoiceItem.FROM);
+		var number = ZmPhone.calculateName(contact.getDisplay());
+
+		if (phone.validate(number, errors)) {
+			if (!phoneFromCombination[number])
+				phoneFromCombination[number] = {phone: phone, addFrom: new AjxVector()};
 			
-			if (!phoneFromCombination[phone.name].addFrom.containsLike(from, compareFunction))
-				phoneFromCombination[phone.name].addFrom.add(from);
+			if (!phoneFromCombination[number].addFrom.containsLike(contact, compareFunction))
+				phoneFromCombination[number].addFrom.add(contact);
 		}
 	}
 	return phoneFromCombination;
 }
+
+ZmCallListController.prototype._checkCanAddToList = 
+function() {
+	var selection = this._getView().getSelection();
+	if (AjxUtil.isArray(selection)) {
+		for (var i=0; i<selection.length; i++) {
+			var voicemail = this._getView().getSelection()[i];
+			if (voicemail) {
+				var phone = voicemail.getPhone(); // ZmPhone
+				if (phone) {
+					var contact = voicemail.getCallingParty(this._getView()._getCallType() == ZmVoiceFolder.PLACED_CALL ? ZmVoiceItem.TO : ZmVoiceItem.FROM);
+					if (contact) {
+						var number = ZmPhone.calculateName(contact.getDisplay());
+						if (phone.validate(number, []))
+							return true;
+					}
+				}
+			}
+		}
+	}
+	return false;
+}
+

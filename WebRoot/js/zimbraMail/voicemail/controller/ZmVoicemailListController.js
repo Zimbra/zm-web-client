@@ -444,7 +444,7 @@ function(event) {
 	}
 };
 
-ZmVoiceListController.prototype._getPhoneFromCombination = 
+ZmVoicemailListController.prototype._getPhoneFromCombination = 
 function(selection, errors) {
 	var phoneFromCombination = {};
 	
@@ -466,4 +466,26 @@ function(selection, errors) {
 		}
 	}
 	return phoneFromCombination;
+}
+
+ZmVoicemailListController.prototype._checkCanAddToList = 
+function() {
+	var selection = this._getView().getSelection();
+	if (AjxUtil.isArray(selection)) {
+		for (var i=0; i<selection.length; i++) {
+			var voicemail = this._getView().getSelection()[i];
+			if (voicemail) {
+				var phone = voicemail.getPhone(); // ZmPhone
+				if (phone) {
+					var from = voicemail.getCallingParty(ZmVoiceItem.FROM); // ZmCallingParty
+					if (from) {
+						var number = ZmPhone.calculateName(from.getDisplay());
+						if (phone.validate(number, []))
+							return true;
+					}
+				}
+			}
+		}
+	}
+	return false;
 }

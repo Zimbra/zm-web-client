@@ -199,6 +199,12 @@ function(selection, errors) {
 	return {};
 }
 
+ZmVoiceListController.prototype._checkCanAddToList = 
+function() {
+	alert("ZmVoiceListController.prototype._checkCanAddToList should be overridden by subclasses");
+	return {};
+}
+
 ZmVoiceListController.prototype._getCallFeaturesHandleError = 
 function(exception1/*, ..., exceptionN*/) {
 	for (var i = 0; i < arguments.length; i++) {
@@ -277,11 +283,3 @@ function(exception1/*, ..., exceptionN*/) {
 		appCtxt.setStatusMsg(message, ZmStatusView.LEVEL_CRITICAL);
 	}
 };
-
-ZmVoiceListController.prototype._checkCanAddToList = 
-function() {
-	var voicemail = this._getView().getSelection()[0];
-	var phone = voicemail.getPhone(); // ZmPhone
-	var from = voicemail.getCallingParty(ZmVoiceItem.FROM); // ZmCallingParty
-	return phone.validate(from.name, []);
-}
