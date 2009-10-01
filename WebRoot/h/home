@@ -159,7 +159,7 @@
 								</c:forEach>
 							</c:if>
 							<a style="text-decoration:none;" href='${url}'>
-								<fmt:message key="inbox"/>&nbsp;(${dataSourceUnread})
+								<fmt:message key="inbox"/>&nbsp;(${dataSourceUnread})&nbsp;<fmt:message key="unread"/>
 							</a>
 						</td>
 					</tr>
