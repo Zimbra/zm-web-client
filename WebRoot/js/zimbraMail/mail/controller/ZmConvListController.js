@@ -215,7 +215,9 @@ function() {
 
 ZmConvListController.prototype._setViewContents =
 function(view) {
-	this._mailListView._resetExpansion();
+	if (this._mailListView.offset == 0) {
+		this._mailListView._resetExpansion();
+	}
 	ZmDoublePaneController.prototype._setViewContents.apply(this, arguments);
 };
 
