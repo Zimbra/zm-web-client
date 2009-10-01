@@ -137,6 +137,7 @@ function(actionCode) {
 		case ZmKeyMap.LAST_UNREAD_MSG:
 			var item = (selItem && selItem.type == ZmItem.MSG && noBump) ? selItem :
 					   this._getUnreadItem(ZmMailListController.ACTION_CODE_WHICH[actionCode], null, noBump);
+			if (!item) { return; }
 			if (!mlv._expanded[item.id] && mlv._isExpandable(item)) {
 				var callback = new AjxCallback(this, this._handleResponseExpand, [actionCode]);
 				if (item.type == ZmItem.MSG) {

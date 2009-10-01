@@ -1480,25 +1480,27 @@ function(menu, hasUnread, hasRead) {
 ZmMailListController.prototype.pageItemSilently =
 function(currentItem, forward) {
 
-	// find the current item w/in its list - optimize?
-	var bFound = false;
+	var newItem = this._getNextItem(currentItem, forward);
+	if (newItem) {
+		var lv = this._listView[this._currentView];
+		lv.emulateDblClick(newItem);
+	}
+};
+
+ZmMailListController.prototype._getNextItem =
+function(currentItem, forward) {
+
 	var list = this._list.getArray();
-	for (var i = 0; i < list.length; i++) {
+	var len = list.length;
+	for (var i = 0; i < len; i++) {
 		if (currentItem == list[i]) {
-			bFound = true;
 			break;
 		}
 	}
-	if (!bFound) { return; }
+	if (i == len) { return; }
 
 	var itemIdx = forward ? i + 1 : i - 1;
-	if (itemIdx < 0) {
-		throw new DwtException("Bad index!", DwtException.INTERNAL_ERROR, "ZmMailListController.pageItemSilently");
-	}
-
-	var newItem = list[itemIdx];
-	var lv = this._listView[this._currentView];
-	lv.emulateDblClick(newItem);
+	return list[itemIdx];
 };
 
 /*

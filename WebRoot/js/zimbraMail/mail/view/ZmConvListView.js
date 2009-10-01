@@ -186,11 +186,11 @@ function(allItems) {
 ZmConvListView.prototype.getItemIndex =
 function(item, allItems) {
 	var list = this.getList(allItems);
-	if (list) {
+	if (item && list) {
 		var len = list.size();
 		for (var i = 0; i < len; ++i) {
-			var item = list.get(i);
-			if (item && item.id == item.id) {
+			var test = list.get(i);
+			if (test && test.id == item.id) {
 				return i;
 			}
 		}
