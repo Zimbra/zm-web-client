@@ -401,7 +401,7 @@ function() {
 };
 
 /**
- * Resets the current ZmOverview, if any.
+ * Resets the current overview, preserving expansion.
  * 
  * @param overviewId	[string]*		ID of overview to reset
  */
@@ -409,8 +409,29 @@ ZmApp.prototype.resetOverview =
 function(overviewId) {
 	var overview = overviewId ? this._opc.getOverview(overviewId) : this.getOverview();
 	if (overview) {
+		var expIds = [];
+		var treeIds = overview.getTreeViews(), len = treeIds.length;
+		for (var i = 0; i < len; i++) {
+			var treeId = treeIds[i];
+			var treeView = overview.getTreeView(treeId);
+			var items = treeView.getTreeItemList();
+			var len1 = items.length;
+			for (var j = 0; j < len1; j++) {
+				var treeItem = items[j];
+				if (treeItem._expanded) {
+					expIds.push(treeItem._htmlElId);
+				}
+			}
+		}
 		overview.clear();
 		overview.set(this._getOverviewTrees());
+		len = expIds.length;
+		for (var i = 0; i < len; i++) {
+			var treeItem = DwtControl.fromElementId(expIds[i]);
+			if (treeItem && !treeItem._expanded) {
+				treeItem.setExpanded(true);
+			}
+		}
 	}
 };
 
