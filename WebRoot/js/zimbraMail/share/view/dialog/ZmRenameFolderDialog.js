@@ -39,26 +39,17 @@ function(folder, source) {
 
 ZmRenameFolderDialog.prototype._contentHtml = 
 function() {
-	this._nameFieldId = Dwt.getNextId();
-	var html = [];
-	var idx = 0;
-	html[idx++] = "<table cellpadding='0' cellspacing='0' border='0'>";
-	html[idx++] = "<tr><td class='Label' colspan=2 style='padding: 0px 0px 5px 0px;'>";
-	html[idx++] = ZmMsg.newName;
-	html[idx++] = ": </td></tr><tr><td>";
-	html[idx++] = "<input type='text' autocomplete='off' class='Field' id='";
-	html[idx++] = this._nameFieldId;
-	html[idx++] = "' />"
-	html[idx++] = "</td></tr></table>";
-	
-	return html.join("");
+	this._nameFieldId = this._htmlElId + "_name";
+	var subs = {id:this._htmlElId, newLabel:ZmMsg.newName};
+	return AjxTemplate.expand("share.Dialogs#ZmRenameDialog", subs);
 };
 
 ZmRenameFolderDialog.prototype._okButtonListener =
 function(ev) {
 	var results = this._getFolderData();
-	if (results)
+	if (results) {
 		DwtDialog.prototype._buttonListener.call(this, ev, results);
+	}
 };
 
 ZmRenameFolderDialog.prototype._getFolderData =
@@ -79,7 +70,7 @@ function() {
 };
 
 ZmRenameFolderDialog.prototype._enterListener =
-function (ev){
+function(ev) {
 	var results = this._getFolderData();
 	if (results) {
 		this._runEnterCallback(results);

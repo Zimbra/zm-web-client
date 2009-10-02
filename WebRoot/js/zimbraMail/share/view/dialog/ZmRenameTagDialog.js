@@ -18,7 +18,7 @@ ZmRenameTagDialog = function(parent, className) {
 	ZmDialog.call(this, {parent:parent, className:className, title:ZmMsg.renameTag});
 
 	this._setNameField(this._nameFieldId);
-}
+};
 
 ZmRenameTagDialog.prototype = new ZmDialog;
 ZmRenameTagDialog.prototype.constructor = ZmRenameTagDialog;
@@ -26,7 +26,7 @@ ZmRenameTagDialog.prototype.constructor = ZmRenameTagDialog;
 ZmRenameTagDialog.prototype.toString = 
 function() {
 	return "ZmRenameTagDialog";
-}
+};
 
 ZmRenameTagDialog.prototype.popup =
 function(tag, source) {
@@ -34,29 +34,22 @@ function(tag, source) {
 	this.setTitle(ZmMsg.renameTag + ': ' + tag.getName(false, ZmOrganizer.MAX_DISPLAY_NAME_LENGTH));
 	this._nameField.value = tag.getName(false, null, true);
 	this._tag = tag;
-}
+};
 
 ZmRenameTagDialog.prototype._contentHtml = 
 function() {
-	this._nameFieldId = Dwt.getNextId();
-	var html = new Array();
-	var idx = 0;
-	html[idx++] = "<table cellpadding='0' cellspacing='0' border='0'>";
-	html[idx++] = "<tr><td class='Label' colspan=2 style='padding: 0px 0px 5px 0px;'>" + ZmMsg.newTagName + ": </td></tr>";
-	html[idx++] = "<tr><td>";
-	html[idx++] = "<input type='text' autocomplete='off' class='Field' id='" + this._nameFieldId + "' />"
-	html[idx++] = "</td></tr>";
-	html[idx++] = "</table>";
-	
-	return html.join("");
-}
+	this._nameFieldId = this._htmlElId + "_name";
+	var subs = {id:this._htmlElId, newLabel:ZmMsg.newTagName};
+	return AjxTemplate.expand("share.Dialogs#ZmRenameDialog", subs);
+};
 
 ZmRenameTagDialog.prototype._okButtonListener =
 function(ev) {
 	var results = this._getTagData();
-	if (results)
+	if (results) {
 		DwtDialog.prototype._buttonListener.call(this, ev, results);
-}
+	}
+};
 
 ZmRenameTagDialog.prototype._getTagData =
 function() {
@@ -76,11 +69,12 @@ function() {
 	}
 
 	return (msg ? this._showError(msg) : [this._tag, name]);
-}
+};
 
 ZmRenameTagDialog.prototype._enterListener =
 function(ev) {
 	var results = this._getTagData();
-	if (results)
+	if (results) {
 		this._runEnterCallback(results);
-}
+	}
+};

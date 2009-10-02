@@ -39,8 +39,7 @@ function(share) {
 	var isPubShare = share.isPublic();
 
 	var params = isPubShare ? ZmMsg.shareWithPublic : (share.grantee.name || share.grantee.id);
-	var message = this._formatter.format(params);
-	this._confirmMsgEl.innerHTML = message;
+	this._confirmMsgEl.innerHTML = this._formatter.format(params);
 
 	this._reply.setReplyType(ZmShareReply.STANDARD);
 	this._reply.setReplyNote("");

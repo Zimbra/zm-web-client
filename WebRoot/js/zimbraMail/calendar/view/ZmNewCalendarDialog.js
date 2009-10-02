@@ -50,19 +50,8 @@ function(html, idx) {
 
 ZmNewCalendarDialog.prototype._createFreeBusyContentHtml =
 function(html, idx) {
-	this._excludeFbCheckboxId	= Dwt.getNextId();
-
-	html[idx++] = "<tr><td colspan=2>";
-	html[idx++] = "<table cellpadding=0 cellspacing=5 border=0>";
-	html[idx++] = "<tr valign='center'><td class='Label'>";
-	html[idx++] = "<input type='checkbox' id='";
-	html[idx++] = this._excludeFbCheckboxId;
-	html[idx++] = "'/></td><td>";
-	html[idx++] = ZmMsg.excludeFromFreeBusy;
-	html[idx++] = "</td></tr>";
-	html[idx++] = "</table>";	
-	html[idx++] = "</td></tr>";
-
+	this._excludeFbCheckboxId = this._htmlElId + "_excludeFbCheckbox";
+	html[idx++] = AjxTemplate.expand("share.Dialogs#ZmNewCalDialogFreeBusy", {id:this._htmlElId});
 	return idx;
 };
 

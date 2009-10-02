@@ -164,29 +164,15 @@ function(html, idx) {
 
 ZmNewOrganizerDialog.prototype._createNameContentHtml =
 function(html, idx) {
-	this._nameFieldId = Dwt.getNextId();
-
-	html[idx++] = "<tr valign='center'><td class='Label'>";
-	html[idx++] = ZmMsg.nameLabel;
-	html[idx++] = "</td><td>";
-	html[idx++] = "<input autocomplete='off' type='text' class='Field' id='";
-	html[idx++] = this._nameFieldId;
-	html[idx++] = "' />";
-	html[idx++] = "</td></tr>";
-
+	this._nameFieldId = this._htmlElId + "_name";
+	html[idx++] = AjxTemplate.expand("share.Dialogs#ZmNewOrgDialogName", {id:this._htmlElId});
 	return idx;
 };
 
 ZmNewOrganizerDialog.prototype._createColorContentHtml =
 function(html, idx) {
-	this._colorSelectId = Dwt.getNextId();
-
-	html[idx++] = "<tr><td class='Label'>";
-	html[idx++] = ZmMsg.colorLabel;
-	html[idx++] = "</td><td id='";
-	html[idx++] = this._colorSelectId;
-	html[idx++] = "'></td></tr>";
-
+	this._colorSelectId = this._htmlElId + "_colorSelect";
+	html[idx++] = AjxTemplate.expand("share.Dialogs#ZmNewOrgDialogColor", {id:this._htmlElId});
 	return idx;
 };
 
@@ -199,45 +185,21 @@ function(html, idx) {
 
 ZmNewOrganizerDialog.prototype._createRemoteContentHtml =
 function(html, idx) {
-	this._remoteCheckboxFieldId = Dwt.getNextId();	
-	this._urlFieldId = Dwt.getNextId();		
+	this._remoteCheckboxFieldId = this._htmlElId + "_remote";
+	this._urlFieldId = this._htmlElId + "_url";
 
-	html[idx++] = "<tr><td colspan=2>";
-	html[idx++] = "<table cellpadding=0 cellspacing=5 border=0>";
-	html[idx++] = "<tr valign='center'><td class='Label'>";
-	html[idx++] = "<input type='checkbox' id='";
-	html[idx++] = this._remoteCheckboxFieldId;
-	html[idx++] = "'/></td><td>";
-	html[idx++] = this._getRemoteLabel();
-	html[idx++] = "</td></tr>";
-	html[idx++] = "</table>";	
-	html[idx++] = "</td></tr>";
-	
-	html[idx++] = "<tr style='display:none;' id='";
-	html[idx++] = this._remoteCheckboxFieldId;
-	html[idx++] = "URLrow' valign='center'><td class='Label'>";
-	html[idx++] = ZmMsg.urlLabel;
-	html[idx++] = "</td>";
-	html[idx++] = "<td>";
-	html[idx++] = "<input autocomplete='off' type='text' class='Field' id='";
-	html[idx++] = this._remoteCheckboxFieldId;
-	html[idx++] = "URLfield'/>";
-	html[idx++] = "</td></tr>";
-
+	var subs = {
+		id: this._htmlElId,
+		remoteLabel: this._getRemoteLabel()
+	};
+	html[idx++] = AjxTemplate.expand("share.Dialogs#ZmNewOrgDialogRemote", subs);
 	return idx;
 };
 
 ZmNewOrganizerDialog.prototype._createFolderContentHtml = 
 function(html, idx) {
-	this._folderTreeCellId = Dwt.getNextId();
-
-	html[idx++] = "<tr><td class='Label' colspan=2>";
-	html[idx++] = ZmMsg.newFolderParent;
-	html[idx++] = "</td></tr>";
-	html[idx++] = "<tr><td colspan=2 id='";
-	html[idx++] = this._folderTreeCellId;
-	html[idx++] = "'/></tr>";
-
+	this._folderTreeCellId = this._htmlElId + "_folderTree";
+	html[idx++] = AjxTemplate.expand("share.Dialogs#ZmNewOrgDialogFolder", {id:this._htmlElId});
 	return idx;
 };
 

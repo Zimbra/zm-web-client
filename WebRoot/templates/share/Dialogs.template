@@ -455,3 +455,82 @@
 		</tr>
 	</table>
 </template>
+
+<!-- ------------------------------ -->
+<!-- ZmNewOrganizerDialog templates -->
+<!-- ------------------------------ -->
+<template id="share.Dialogs#ZmNewOrgDialogRemote">
+	<tr>
+		<td colspan=2>
+			<table cellpadding=0 cellspacing=5 border=0>
+				<tr valign='center'>
+					<td class='Label'>
+						<input type='checkbox' id='${id}_remote' />
+					</td>
+					<td>
+						${remoteLabel}
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr style='display:none;' id='${id}_remoteURLrow' valign='center'>
+		<td class='Label'>
+			<$= ZmMsg.urlLabel $>
+		</td>
+		<td>
+			<input autocomplete='off' type='text' class='Field' id='${id}_remoteURLfield' />
+		</td>
+	</tr>
+</template>
+
+<template id="share.Dialogs#ZmNewOrgDialogName">
+	<tr valign='center'>
+		<td class='Label'><$= ZmMsg.nameLabel $></td>
+		<td><input autocomplete='off' type='text' class='Field' id='${id}_name' /></td>
+	</tr>
+</template>
+
+<template id="share.Dialogs#ZmNewOrgDialogColor">
+	<tr>
+		<td class='Label'><$= ZmMsg.colorLabel $></td>
+		<td id='${id}_colorSelect'></td>
+	</tr>
+</template>
+
+<template id="share.Dialogs#ZmNewOrgDialogFolder">
+	<tr>
+		<td class='Label' colspan=2><$= ZmMsg.newFolderParent $></td>
+	</tr>
+	<tr>
+		<td colspan=2 id='${id}_folderTree'></td>
+	</tr>
+</template>
+
+
+<!-- calendar dialog template -->
+<template id="share.Dialogs#ZmNewCalDialogFreeBusy">
+	<tr>
+		<td colspan=2>
+			<table cellpadding=0 cellspacing=5 border=0>
+				<tr valign='center'>
+					<td class='Label'><input type='checkbox' id='${id}_excludeFbCheckbox' /></td>
+					<td><$= ZmMsg.excludeFromFreeBusy $></td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</template>
+
+
+<!-- rename folder/tag dialog template -->
+<template id="share.Dialogs#ZmRenameDialog">
+	<table cellpadding='0' cellspacing='0' border='0'>
+		<tr>
+			<td class='Label' colspan=2 style='padding: 0px 0px 5px 0px;'>${newLabel}: </td>
+		</tr>
+		<tr>
+			<td><input type='text' autocomplete='off' class='Field' id='${id}_name' /></td>
+		</tr>
+	</table>
+</template>
