@@ -257,7 +257,7 @@ function(headerParams, omit, overviewParams, showBackgroundColor) {
 	var header = this._headerItems[headerParams.dataId] = new DwtTreeItem(params);
 	header.setData(Dwt.KEY_ID, headerParams.dataId);
 	header.setScrollStyle(Dwt.CLIP);
-	header._initialize(null, true);
+	header._initialize(null, true, true);
 	header.addClassName(showBackgroundColor ? "ZmOverviewSectionHilite" : "ZmOverviewSection");
 
 	// reset some params for child overviews
@@ -272,7 +272,6 @@ function(headerParams, omit, overviewParams, showBackgroundColor) {
 			 new ZmOverview(overviewParams, this._controller);
 
 	header._addItem(ov, null, true);
-	header.addNodeIconListeners();
 
 	// finally set treeviews for this overview
 	var treeIds = overviewParams.overviewTrees || overviewParams.treeIds;
