@@ -111,6 +111,7 @@
     </c:if>
 
     <c:set var="stopAdded" value="${false}"/>
+    <c:set var="stopChecked" value="${false}" scope="request"/>
 
     <c:forEach var="i" begin="0" end="${empty param.action_count ? 0 : param.action_count - 1}">
        <c:set var="key_acti" value="action${i}"/>
@@ -147,6 +148,12 @@
     </c:forEach>
 
     <c:if test="${not stopAdded and param.action_stop eq 'true'}">
+        <c:set var="stopChecked" value="${true}" scope="request"/>
+    </c:if>
+    <c:if test="${not stopAdded and param.action_stop eq 'true' and (param.action_count > 0)}">
+        <zm:stopAction/>
+    </c:if>
+    <c:if test="${not stopAdded and param.action_stop eq 'true' and param.actionNewAction}">
         <zm:stopAction/>
     </c:if>
 

@@ -442,7 +442,7 @@ action_stop                         stop checkbox (true)
 <tr>
     <td colspan="1">
             <input type=checkbox name="action_stop" value="true"
-                <c:if test="${hasStop}"> CHECKED </c:if>>
+                <c:if test="${hasStop or requestScope.stopChecked}"> CHECKED </c:if>>
     </td>
     <td colspan="3">
     <fmt:message key="EFILT_ACTION_STOP"/>
