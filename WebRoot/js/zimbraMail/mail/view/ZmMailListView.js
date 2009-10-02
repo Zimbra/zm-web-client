@@ -37,6 +37,15 @@ ZmMailListView.ROW_DOUBLE_CLASS	= "RowDouble";
 ZmMailListView.FIRST_ITEM	= -1;
 ZmMailListView.LAST_ITEM	= -2;
 
+ZmMailListView.SINGLE_COLUMN_SORT = [
+	{field:ZmItem.F_FLAG,	msg:"flagged"	},
+	{field:ZmItem.F_FROM,	msg:"from"		},
+	{field:ZmItem.F_SUBJECT,msg:"subject"	},
+	{field:ZmItem.F_SIZE,	msg:"size"		},
+	{field:ZmItem.F_DATE,	msg:"date"		}
+];
+
+
 // Public methods
 
 ZmMailListView.prototype.toString = 
@@ -605,6 +614,26 @@ function(participants, participantsElided, width) {
 
 ZmMailListView.prototype._getActionMenuForColHeader =
 function(force) {
+	if (!this.isMultiColumn()) {
+		if (!this._colHeaderActionMenu || force) {
+			// create a action menu for the header list
+			var menu = this._colHeaderActionMenu = new ZmPopupMenu(this);
+			var actionListener = new AjxListener(this, this._colHeaderActionListener);
+
+			for (var i = 0; i < ZmMailListView.SINGLE_COLUMN_SORT.length; i++) {
+				var column = ZmMailListView.SINGLE_COLUMN_SORT[i];
+				var label = AjxMessageFormat.format(ZmMsg.arrangedBy, ZmMsg[column.msg]);
+				var mi = menu.createMenuItem(column.field, {text:label, style:DwtMenuItem.RADIO_STYLE});
+				if (column.field == ZmItem.F_DATE) {
+					mi.setChecked(true, true);
+				}
+				mi.setData(ZmListView.KEY_ID, column.field);
+				menu.addSelectionListener(column.field, actionListener);
+			}
+		}
+		return this._colHeaderActionMenu;
+	}
+
 	var doReset = (!this._colHeaderActionMenu || force);
 
 	var menu = ZmListView.prototype._getActionMenuForColHeader.call(this, force);
@@ -614,6 +643,22 @@ function(force) {
 	}
 
 	return menu;
+};
+
+ZmMailListView.prototype._colHeaderActionListener =
+function(ev) {
+	if (!this.isMultiColumn()) {
+		var column = this._headerHash[ZmItem.F_SORTED_BY];
+		var cell = document.getElementById(DwtId.getListViewHdrId(DwtId.WIDGET_HDR_LABEL, this._view, column._field));
+		if (cell) {
+			cell.innerHTML = ev.item.getText();
+		}
+		column._sortable = ev.item.getData(ZmListView.KEY_ID);
+		this._sortColumn(column, this._bSortAsc);
+	}
+	else {
+		ZmListView.prototype._colHeaderActionListener.apply(this, arguments);
+	}
 };
 
 ZmMailListView.prototype._getNoResultsMessage =

@@ -101,7 +101,11 @@ function(item, callback, results) {
 ZmDoublePaneController.prototype.switchView =
 function(view, force) {
 	if (view == ZmSetting.RP_OFF ||	view == ZmSetting.RP_BOTTOM || view == ZmSetting.RP_RIGHT) {
-		this._setReadingPane(view);
+		this._mailListView._colHeaderActionMenu = null;
+		if (view != this._getReadingPanePref()) {
+			this._setReadingPanePref(view);
+			this._doublePaneView.setReadingPane();
+		}
 	} else {
 		ZmMailListController.prototype.switchView.apply(this, arguments);
 	}
@@ -122,16 +126,7 @@ function() {
 	}
 };
 
-ZmDoublePaneController.prototype._setReadingPane =
-function(view) {
-
-	if (view != this._getReadingPanePref()) {
-		this._setReadingPanePref(view);
-		this._doublePaneView.setReadingPane();
-	}
-};
-
-ZmDoublePaneController.prototype._handleResponseSwitchView = 
+ZmDoublePaneController.prototype._handleResponseSwitchView =
 function(currentMsg) {
 	this._doublePaneView.setMsg(currentMsg);
 };
