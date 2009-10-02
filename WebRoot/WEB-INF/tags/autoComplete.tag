@@ -22,10 +22,11 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 
 <c:set var="yahooDomEvent" value="true" scope="request"/>
+
 <script type="text/javascript" src="<c:url value='/yui/2.7.0/yahoo-dom-event/yahoo-dom-event.js'/>"></script>
-<script type="text/javascript" src="<c:url value='/yui/2.7.0/datasource/datasource-min.js'/>"></script>
 <script type="text/javascript" src="<c:url value='/yui/2.7.0/connection/connection-min.js'/>"></script>
-<script type="text/javascript" src="<c:url value='/yui/2.7.0/autocomplete/autocomplete-min.js'/>"></script>
+<script type="text/javascript" src="<c:url value='/yui/2.7.0/datasource/datasource-min.js'/>"></script>
+<script type="text/javascript" src="<c:url value='/yui/2.7.0/autocomplete/autocomplete-debug.js'/>"></script>
 
 <script type="text/javascript">
     <!--
@@ -61,9 +62,9 @@
 				   t == 'gal' ? "<app:imgurl value='startup/ImgGALContact.gif' />" 
 	             : t == 'group' ? "<app:imgurl value='contacts/ImgGroup.gif' />" 
 				                : "<app:imgurl value='contacts/ImgContact.gif' />" ;
-				return ["<table><tr><td><img src='",imgsrc,"'><"+"/td><td>",
+				return ["<div style='padding:3px;'><span><img src='",imgsrc,"'><"+"/span><span>",
                         zhDisplay(d ? d : e, query),
-                        "</td></tr></table>"].join("");
+                        "</span></div>"].join("");
             }
             else {
                 return "";
