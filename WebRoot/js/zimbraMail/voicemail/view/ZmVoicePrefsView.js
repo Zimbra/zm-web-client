@@ -1587,7 +1587,7 @@ function(event) {
 			} else {
 				var addObject = {a: true, pn: ZmPhone.calculateName(addValue)};
 				if (this._list.containsItem(addObject)) {
-					this.showDialog(AjxMessageFormat.format(ZmMsg.errorPhoneNotUnique || ""), [this.getFaqLink()]);
+					this.showDialog(AjxMessageFormat.format(ZmMsg.errorPhoneForwardNotUnique || ""), [this.getFaqLink()]);
 					this._addField.focus();
 				} else {
 					this._list.addItem(addObject, null, false);
@@ -1814,12 +1814,12 @@ function(event) {
 			this._addField.focus();
 		} else {
 			if (!ZmPhone.isValid(addValue)) { // Possibly obsolete, but doesn't do any harm
-				this.showDialog(AjxMessageFormat.format(selectiveCallRejectionError || ""), [this.getFaqLink()]);
+				this.showDialog(AjxMessageFormat.format(ZmMsg.selectiveCallRejectionError || ""), [this.getFaqLink()]);
 				this._addField.focus();
 			} else {
 				var addObject = {a: true, pn: ZmPhone.calculateName(addValue)};
 				if (this._list.containsItem(addObject)) {
-					this.showDialog(AjxMessageFormat.format(errorPhoneNotUnique || ""), [this.getFaqLink()]);
+					this.showDialog(AjxMessageFormat.format(ZmMsg.errorPhoneRejectNotUnique || ""), [this.getFaqLink()]);
 					this._addField.focus();
 				} else {
 					this._list.addItem(addObject, null, false);
@@ -1834,7 +1834,7 @@ function(event) {
 ZmSelectiveCallRejectionUI.prototype._handleExposeButtonClick =
 function() {
 	if (this._list.getList() && this._list.getList().size() >= ZmCallFeature.SELECTIVE_CALL_REJECTION_MAX_ENTRIES)
-		this.showDialog(AjxMessageFormat.format(selectiveCallRejectionFromErrorMax || ""), [this.getFaqLink()]);
+		this.showDialog(AjxMessageFormat.format(ZmMsg.selectiveCallRejectionFromErrorMax || ""), [this.getFaqLink()]);
 	else {
 		this._setAddFromNumberVisibility(true);
 		this._addField.focus();
@@ -1998,7 +1998,7 @@ function(event) {
 			} else {
 				var addObject = {a: true, pn: ZmPhone.calculateName(addValue)};
 				if (this._list.containsItem(addObject)) {
-					this.showDialog(AjxMessageFormat.format(ZmMsg.errorPhoneNotUnique || ""), [this.getFaqLink()]);
+					this.showDialog(AjxMessageFormat.format(ZmMsg.errorPhoneAcceptNotUnique || ""), [this.getFaqLink()]);
 					this._addField.focus();
 				} else {
 					this._list.addItem(addObject, null, false);

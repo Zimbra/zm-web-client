@@ -168,7 +168,7 @@ function(ev) {
 		for (var name in combination) {
 			var phone = combination[name].phone;
 			var from = combination[name].addFrom;
-			var callback = new AjxCallback(this, this._modifyCallFeatures, {featureName: ZmCallFeature.SELECTIVE_CALL_FORWARDING, addFrom: from, maxEntries: ZmCallFeature.SELECTIVE_CALL_FORWARDING_MAX_ENTRIES, maxMsg: ZmMsg.selectiveCallForwardingFromErrorMax});
+			var callback = new AjxCallback(this, this._modifyCallFeatures, {featureName: ZmCallFeature.SELECTIVE_CALL_FORWARDING, addFrom: from, maxEntries: ZmCallFeature.SELECTIVE_CALL_FORWARDING_MAX_ENTRIES, maxMsg: ZmMsg.selectiveCallForwardingFromErrorMax, alreadyMsg: ZmMsg.errorPhoneForwardNotUnique});
 			phone.getCallFeatures(callback);
 		}
 	}
@@ -186,7 +186,7 @@ function(ev) {
 		for (var name in combination) {
 			var phone = combination[name].phone;
 			var from = combination[name].addFrom;
-			var callback = new AjxCallback(this, this._modifyCallFeatures, {featureName: ZmCallFeature.SELECTIVE_CALL_REJECTION, addFrom: from, maxEntries: ZmCallFeature.SELECTIVE_CALL_REJECTION_MAX_ENTRIES, maxMsg: ZmMsg.selectiveCallRejectionFromErrorMax});
+			var callback = new AjxCallback(this, this._modifyCallFeatures, {featureName: ZmCallFeature.SELECTIVE_CALL_REJECTION, addFrom: from, maxEntries: ZmCallFeature.SELECTIVE_CALL_REJECTION_MAX_ENTRIES, maxMsg: ZmMsg.selectiveCallRejectionFromErrorMax, alreadyMsg: ZmMsg.errorPhoneRejectNotUnique});
 			var errorCallback = new AjxCallback(this, this._getCallFeaturesHandleError);
 			phone.getCallFeatures(callback, errorCallback);
 		}
@@ -226,6 +226,7 @@ function(obj, features, phone) {
 	var addPhones = (obj.addFrom instanceof AjxVector) ? obj.addFrom.getArray() : [];
 	var maxEntries = obj.maxEntries;
 	var maxMsg = obj.maxMsg || "";
+	var alreadyMsg = obj.alreadyMsg || "";
 	var feature = features[obj.featureName];
 	
 	if (feature instanceof ZmCallFeature && phone instanceof ZmPhone && addPhones.length > 0) {
@@ -234,10 +235,11 @@ function(obj, features, phone) {
 		
 		if (addPhones.length > 0) {
 			var added = 0;
+			var exists;
 			for (var i=0; i<addPhones.length; i++) {
 				var from = addPhones[i];
 				var number = ZmPhone.calculateName(from.getDisplay());
-				var exists = false;
+				exists = false;
 				for (var j=0; j<result.data.phone.length; j++) {
 					if (result.data.phone[j].pn == number) {
 						exists = true;
@@ -256,6 +258,8 @@ function(obj, features, phone) {
 			}
 			if (added > 0)
 				this._saveFeatures(phone, [result]);
+			else if (exists)
+				appCtxt.setStatusMsg(alreadyMsg);
 		}
 	}
 }
