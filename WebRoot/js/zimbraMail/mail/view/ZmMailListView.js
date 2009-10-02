@@ -38,7 +38,6 @@ ZmMailListView.FIRST_ITEM	= -1;
 ZmMailListView.LAST_ITEM	= -2;
 
 ZmMailListView.SINGLE_COLUMN_SORT = [
-	{field:ZmItem.F_FLAG,	msg:"flagged"	},
 	{field:ZmItem.F_FROM,	msg:"from"		},
 	{field:ZmItem.F_SUBJECT,msg:"subject"	},
 	{field:ZmItem.F_SIZE,	msg:"size"		},
