@@ -114,7 +114,7 @@
             <zm:pref name="zimbraPrefHtmlEditorDefaultFontSize" value="${param.zimbraPrefHtmlEditorDefaultFontSize}"/>
             <zm:pref name="zimbraPrefHtmlEditorDefaultFontColor" value="${param.zimbraPrefHtmlEditorDefaultFontColor}"/>
             <zm:pref name="zimbraPrefComposeFormat" value="${param.zimbraPrefComposeFormat}"/>
-            <zm:pref name="zimbraPrefForwardReplyInOriginalFormat" value="${param.zimbraPrefForwardReplyInOriginalFormat}"/>
+            <zm:pref name="zimbraPrefForwardReplyInOriginalFormat" value="${param.zimbraPrefForwardReplyInOriginalFormat eq 'TRUE' ? 'TRUE' : 'FALSE'}"/>
             <zm:pref name="zimbraPrefReplyIncludeOriginalText" value="${param.zimbraPrefReplyIncludeOriginalText}"/>
             <zm:pref name="zimbraPrefForwardIncludeOriginalText" value="${param.zimbraPrefForwardIncludeOriginalText}"/>
             <zm:pref name="zimbraPrefForwardReplyPrefixChar" value="${param.zimbraPrefForwardReplyPrefixChar}"/>
