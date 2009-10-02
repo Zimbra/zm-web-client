@@ -1497,6 +1497,7 @@ function() {
 	if (!newPhones && !oldPhones) return false;
 	if (!newPhones || !oldPhones) return true;
 	if (newPhones.length != oldPhones.length) return true;
+	if (this._list.getChanged()) return true;
 	for (var i=0; i<newPhones.length; i++) {
 		if (newPhones[i].pn != oldPhones[i].pn || newPhones[i].a != oldPhones[i].a)
 			return true;
@@ -1749,6 +1750,7 @@ function() {
 	if (!newPhones && !oldPhones) return false;
 	if (!newPhones || !oldPhones) return true;
 	if (newPhones.length != oldPhones.length) return true;
+	if (this._list.getChanged()) return true;
 	for (var i=0; i<newPhones.length; i++) {
 		if (newPhones[i].pn != oldPhones[i].pn || newPhones[i].a != oldPhones[i].a)
 			return true;
@@ -1927,6 +1929,7 @@ function() {
 	if (!newPhones && !oldPhones) return false;
 	if (!newPhones || !oldPhones) return true;
 	if (newPhones.length != oldPhones.length) return true;
+	if (this._list.getChanged()) return true;
 	for (var i=0; i<newPhones.length; i++) {
 		if (newPhones[i].pn != oldPhones[i].pn || newPhones[i].a != oldPhones[i].a)
 			return true;
@@ -2116,6 +2119,7 @@ ZmBufferList = function(params) {
 	DwtListView.call(this, params);
 	this.multiSelectEnabled = false;
 	this.displayProperty = params.displayProperty || "text";
+	this._changed = false;
 };
 
 ZmBufferList.prototype = new DwtListView;
@@ -2125,6 +2129,11 @@ ZmBufferList.prototype.toString =
 function() {
 	return "ZmBufferList";
 };
+
+ZmBufferList.prototype.getChanged =
+function() {
+	return this._changed;
+}
 
 ZmBufferList.prototype._getCellContents =
 function(htmlArr, idx, item, field, colIdx, params) {
@@ -2163,6 +2172,7 @@ function(item, index, skipNotify) {
 	if (link && item) {
 		link.onclick = AjxCallback.simpleClosure(this.preRemoveItem, this, item);
 	}
+	this._changed = true;
 }
 
 ZmBufferList.prototype._renderList =
@@ -2193,8 +2203,10 @@ function(list, noResultsOk) {
 
 ZmBufferList.prototype.preRemoveItem =
 function(item) {
-	if (item && this.getEnabled())
+	if (item && this.getEnabled()) {
 		this.removeItem.call(this, item);
+		this._changed = true;
+	}
 }
 	
 ZmBufferList.prototype.containsItem =
