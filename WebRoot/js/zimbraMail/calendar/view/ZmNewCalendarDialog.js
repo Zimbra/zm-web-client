@@ -30,12 +30,24 @@ function() {
 // Public methods
 
 ZmNewCalendarDialog.prototype.reset =
-function() {
-	ZmNewOrganizerDialog.prototype.reset.call(this);
+function(account) {
+	ZmNewOrganizerDialog.prototype.reset.apply(this, arguments);
 	this._excludeFbCheckbox.checked = false;
 };
 
 // Protected methods
+
+ZmNewCalendarDialog.prototype._initColorSelect =
+function(account) {
+	var defaultColor = account && account.getDefaultColor();
+	if (!defaultColor) {
+		// call base class if no default color for this account type
+		ZmNewOrganizerDialog.prototype._initColorSelect.apply(this, arguments);
+	} else {
+		var option = this._colorSelect.getOptionWithValue(defaultColor);
+		this._colorSelect.setSelectedOption(option);
+	}
+};
 
 ZmNewCalendarDialog.prototype._getRemoteLabel =
 function() {

@@ -130,6 +130,21 @@ function() {
 	return "";
 };
 
+ZmZimbraAccount.prototype.getDefaultColor =
+function() {
+	if (this.isMain) {
+		return ZmOrganizer.C_GRAY;
+	}
+
+	switch (this.type) {
+		case ZmAccount.TYPE_GMAIL:	return ZmOrganizer.C_RED;
+		case ZmAccount.TYPE_MSE:	return ZmOrganizer.C_GREEN;
+		case ZmAccount.TYPE_YMP:	return ZmOrganizer.C_PURPLE;
+	}
+
+	return null;
+};
+
 ZmZimbraAccount.prototype.isOfflineInitialSync =
 function() {
 	return (appCtxt.isOffline && (!this.lastSync || (this.lastSync && this.lastSync == 0)));

@@ -105,11 +105,11 @@ function(folder, account) {
 };
 
 ZmNewOrganizerDialog.prototype.reset =
-function() {
-	ZmDialog.prototype.reset.call(this);
+function(account) {
+	ZmDialog.prototype.reset.apply(this, arguments);
 
 	if (this._colorSelect) {
-		this._initColorSelect();
+		this._initColorSelect(account);
 	}
 
 	if (this._remoteCheckboxField) {
@@ -120,6 +120,12 @@ function() {
 
 	if (this._urlField) {
 		this._urlField.value = "";
+	}
+
+	if (appCtxt.multiAccounts) {
+		this._account = account;
+	} else {
+		this._account = null;
 	}
 };
 
@@ -134,7 +140,7 @@ function() {
 };
 
 ZmNewOrganizerDialog.prototype._initColorSelect =
-function() {
+function(account) {
 	var color = (this._colorSelect.getValue() + 1) % ZmOrganizer.COLOR_CHOICES.length;
 	var option = this._colorSelect.getOptionWithValue(color);
 	this._colorSelect.setSelectedOption(option);
@@ -297,7 +303,7 @@ function() {
 		? this._opc.getOverviewContainer(this.toString())
 		: this._opc.getOverview(this._curOverviewId);
 
-	var parentFolder = ov ? ov.getSelected() : appCtxt.getFolderTree().root;
+	var parentFolder = ov ? ov.getSelected() : appCtxt.getFolderTree(this._account).root;
 
 	// check name for presence and validity
 	var name = AjxStringUtil.trim(this._nameField.value);

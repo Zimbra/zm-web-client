@@ -560,7 +560,7 @@ function() {
 // Pop up a dialog. Since it's a shared resource, we need to reset first.
 ZmController.showDialog = 
 function(dialog, callback, params, account) {
-	dialog.reset();
+	dialog.reset(account);
 	dialog.registerCallback(DwtDialog.OK_BUTTON, callback);
 	dialog.popup(params, account);
 };
