@@ -439,7 +439,8 @@ function(id, callback) {
 ZmOrganizer._handleResponseGetFolder =
 function(callback, result) {
 	var resp = result.getResponse().GetFolderResponse;
-	var folderObj = resp && resp.folder && resp.folder[0];
+	var folderObj = (resp && resp.folder && resp.folder[0]) ||
+					(resp && resp.link && resp.link[0]);
 	var folder;
 	if (folderObj) {
 		folder = appCtxt.getById(folderObj.id);
