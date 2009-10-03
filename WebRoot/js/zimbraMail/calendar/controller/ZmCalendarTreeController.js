@@ -277,7 +277,7 @@ function(ev) {
 			dlg.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
 			dlg.popup();
 		} else {
-			ctlr._doMove(appts, dropFolder, null, !isShiftKey);
+			ctlr._doMove(appts, dropFolder, null, isShiftKey);
 		}
 	}
 };

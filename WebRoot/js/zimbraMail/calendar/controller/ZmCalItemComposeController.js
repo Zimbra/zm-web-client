@@ -348,7 +348,7 @@ function(calItem) {
 	if (calItem.__newFolderId) {
 		var folder = appCtxt.getById(calItem.__newFolderId);
 		calItem.__newFolderId = null;
-		this._app.getListController()._doMove(calItem, folder, null, true);
+		this._app.getListController()._doMove(calItem, folder, null, false);
 	}
 
 	this._composeView.cleanup();
