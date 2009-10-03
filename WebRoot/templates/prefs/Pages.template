@@ -326,12 +326,12 @@ and the container element is replaced with that control.
 											<table>
 												<tr>
 													<td><input type="checkbox" id="${id}_START_DATE_ENABLED"></td>
-													<td><input style='height:22px;' type='text' autocomplete='off' size=11 maxlength=10 id='${id}_VACATION_FROM1'></td>
+													<td><input style='height:22px;' type='text' autocomplete='off' size=14 maxlength=10 id='${id}_VACATION_FROM1'></td>
 													<td id='${id}_startMiniCal'></td>
 												</tr>
 												<tr>
 													<td><input type="checkbox" id="${id}_END_DATE_ENABLED"></td>
-													<td><input style='height:22px;' type='text' autocomplete='off' size=11 maxlength=10 id='${id}_VACATION_UNTIL1'></td>
+													<td><input style='height:22px;' type='text' autocomplete='off' size=14 maxlength=10 id='${id}_VACATION_UNTIL1'></td>
 													<td id='${id}_endMiniCal'></td>
 												</tr>
 											</table>
