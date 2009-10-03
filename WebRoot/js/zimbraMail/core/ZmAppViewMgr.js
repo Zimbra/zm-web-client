@@ -764,6 +764,15 @@ function() {
 	this._setTitle(this._currentView);
 };
 
+ZmAppViewMgr.prototype.setTabTitle =
+function(viewId, text) {
+	var tp = this._tabParams[viewId];
+	var button = appCtxt.getAppController().getAppChooser().getButton(tp.id);
+	if (button) {
+		button.setText(text);
+	}
+};
+
 /**
 * Checks if it is ok to unload the app (user logs out, navigates away, closes browser, etc.)
 */

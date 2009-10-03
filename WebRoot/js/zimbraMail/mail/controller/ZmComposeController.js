@@ -514,7 +514,7 @@ function(initHide, composeMode) {
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
 	elements[ZmAppViewMgr.C_APP_CONTENT] = this._composeView;
 	this._app.createView({viewId:this.viewId, elements:elements, callbacks:callbacks,
-						 tabParams:{id:this.tabId, text:ZmComposeController.DEFAULT_TAB_TEXT, image:"NewMessage",
+						 tabParams:{id:this.tabId, image:"NewMessage",
 						 textPrecedence:75, tooltip:ZmComposeController.DEFAULT_TAB_TEXT}});
 	if (initHide) {
 		this._composeView.setLocation(Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
@@ -713,6 +713,7 @@ function(delMsg) {
  */
 ZmComposeController.prototype._setView =
 function(params) {
+
 	if (this._autoSaveTimer) {
 		this._autoSaveTimer.kill();
 	}
@@ -734,10 +735,13 @@ function(params) {
 	}
 
 	this._composeMode = params.composeMode || this._getComposeMode(msg, identity);
-	if (!this._composeView) {
+
+	var cv = this._composeView;
+	if (!cv) {
 		this.initComposeView(null, this._composeMode);
+		cv = this._composeView;
 	} else {
-		this._composeView.setComposeMode(this._composeMode);
+		cv.setComposeMode(this._composeMode);
 	}
 
 	this._initializeToolBar();
@@ -746,14 +750,13 @@ function(params) {
 	this._setOptionsMenu(this._composeMode, identity);
 	this._setAddSignatureVisibility(identity);
 
-	this._composeView.set(params);
+	cv.set(params);
 	this._setComposeTabGroup();
 	this._app.pushView(this.viewId);
 	if (!appCtxt.isChildWindow) {
-		this._tabButton = appCtxt.getAppController().getAppChooser().getButton(this.tabId);
-		this._composeView.updateTabTitle();
+		cv.updateTabTitle();
 	}
-	this._composeView.reEnableDesignMode();
+	cv.reEnableDesignMode();
 
 	if (appCtxt.get(ZmSetting.SAVE_DRAFT_ENABLED) &&
 		(action != ZmOperation.REPLY_ACCEPT) &&

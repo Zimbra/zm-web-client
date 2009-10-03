@@ -1407,13 +1407,9 @@ function() {
 
 ZmComposeView.prototype.updateTabTitle =
 function() {
-	var button = this._controller._tabButton;
-	if (!button) { return; }
 	var buttonText = this._subjectField.value ? this._subjectField.value.substr(0, ZmAppViewMgr.TAB_BUTTON_MAX_TEXT) :
 												ZmComposeController.DEFAULT_TAB_TEXT;
-	if (buttonText != button.getText()) {
-		button.setText(buttonText);
-	}
+	appCtxt.getAppViewMgr().setTabTitle(this._controller.viewId, buttonText);
 };
 
 // Private / protected methods

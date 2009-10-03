@@ -106,12 +106,12 @@ function() {
 	var elements = {};
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
 	elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[this._currentView];
+	this._setView({view:this._currentView, elements:elements, clear:appCtxt.isChildWindow,
+				   tabParams:{id:this.viewId, image:"MessageView",
+							  textPrecedence:85, tooltip:ZmMsgController.DEFAULT_TAB_TEXT}});
 	var buttonText = (this._msg && this._msg.subject) ? this._msg.subject.substr(0, ZmAppViewMgr.TAB_BUTTON_MAX_TEXT) :
 					 									ZmMsgController.DEFAULT_TAB_TEXT;
-	this._setView({view:this._currentView, elements:elements, clear:appCtxt.isChildWindow,
-				   tabParams:{id:this.viewId, text:buttonText, image:"MessageView",
-							  textPrecedence:85, tooltip:ZmMsgController.DEFAULT_TAB_TEXT}});
-
+	appCtxt.getAppViewMgr().setTabTitle(this._currentView, buttonText);
 };
 
 ZmMsgController.prototype.getKeyMapName =
