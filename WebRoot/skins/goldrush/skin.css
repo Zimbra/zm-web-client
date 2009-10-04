@@ -75,9 +75,22 @@
 .Row-selected-dragProxy, 
 .Row-selected-disabled 		{	background-color: #cae5c3; border-color: #eeeeee; border-top-color: #cae5c3;}
 
-.ZToolbarButtonTable .ZWidgetTitle,.ZHover .ZToolbarButtonTable .ZWidgetTitle,.ZDisabled .ZToolbarButtonTable .ZWidgetTitle{ color: white;}
+.ZToolbarButtonTable .ZWidgetTitle,
+.ZHover .ZToolbarButtonTable .ZWidgetTitle,
+.ZOptionsSectionMain .ZHover .ZToolbarButtonTable .ZWidgetTitle{
+ color: white;
+ }
+
+.ZDisabled .ZToolbarButtonTable .ZWidgetTitle{
+ color: #e5e5e5;
+}
 
 .ZmHtmlEditor .ZToolbarButtonTable .ZWidgetTitle,.ZmHtmlEditor .ZHover .ZToolbarButtonTable .ZWidgetTitle,.ZmHtmlEditor .ZDisabled .ZToolbarButtonTable .ZWidgetTitle{ color: black;}
+
+.ZOptionsSectionMain .ZToolbarButtonTable .ZWidgetTitle,
+.ZOptionsSectionMain .ZDisabled .ZToolbarButtonTable .ZWidgetTitle{ 
+	color: black;
+}
 
 .ZmOverview{background-color: #F5F5F5;} 
 
@@ -87,4 +100,12 @@
 	background-color: white;
 	color:black;
 	padding: 1px;
+}
+
+#skin_border_app_chooser {
+	background-color: transparent;
+}
+
+.ZButtonBorder, .ZHover .ZButtonBorder,.ZActive	.ZButtonBorder,.ZSelected .ZButtonBorder {
+  border: 1px solid;
 }
