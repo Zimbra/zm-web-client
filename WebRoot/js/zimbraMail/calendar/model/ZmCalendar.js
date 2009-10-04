@@ -124,6 +124,9 @@ function(what) {
 	if (!(what instanceof ZmCalendar)) {
 		var invalid = false;
 
+        //exclude the deleted folders
+        if(this.noSuchFolder) return invalid;
+
 		if (this.nId == ZmOrganizer.ID_ROOT) {
 			// cannot drag anything onto root folder
 			invalid = true;

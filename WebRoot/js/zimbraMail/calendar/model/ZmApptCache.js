@@ -417,8 +417,12 @@ function(searchParams, miniCalParams, reminderSearchParams, response) {
 ZmApptCache.prototype._processErrorCode =
 function(resp) {
 	if (resp && resp.Fault && (resp.Fault.length > 0)) {
+
+        if(this._calViewController) this._calViewController.setSearchInProgress(false);
+
 		var errors = [];
-		var id;
+		var ids = {};
+        var invalidAccountMarker = {};
 		for (var i = 0; i < resp.Fault.length; i++) {
 			var fault = resp.Fault[i];
 			var error = (fault && fault.Detail) ? fault.Detail.Error : null;
@@ -428,7 +432,11 @@ function(resp) {
 				for(var j in attrs) {
 					var attr = attrs[j];
 					if(attr && (attr.t == "IID") && (attr.n == "itemId")) {
-						id = attr._content;
+                        var id = attr._content;
+						ids[id] = true;
+                        if (code == ZmCsfeException.ACCT_NO_SUCH_ACCOUNT) {
+                            invalidAccountMarker[id] = true;
+                        }
 					}
 				}
 				
@@ -438,16 +446,47 @@ function(resp) {
 			}
 		}
 
-		if (id && appCtxt.getById(id)) {
-			var folder = appCtxt.getById(id);
-            folder.noSuchFolder = true;
-			this.handleDeleteMountpoint(folder);
-			return true;
-		}
-		return false;
+        var deleteHandled = false;
+        var zidsMap = {};
+        for(var id in ids) {
+            if (id && appCtxt.getById(id)) {
+                var folder = appCtxt.getById(id);
+                folder.noSuchFolder = true;
+                this.handleDeleteMountpoint(folder);
+                deleteHandled = true;
+                if(invalidAccountMarker[id] && folder.zid) {
+                    zidsMap[folder.zid] = true;
+                }
+            }
+        }
+
+        //no such mount point error - mark all folders owned by same account as invalid
+        this.markAllInvalidAccounts(zidsMap);
+
+        if(deleteHandled) this.runErrorRecovery();
+
+		return deleteHandled;
 	}
 
 	return false;
+};
+
+
+//remove this after server sends fault for all removed accounts instead of no such mount point
+ZmApptCache.prototype.markAllInvalidAccounts =
+function(zidsMap) {
+    if (this._calViewController) {
+        var folderIds = this._calViewController.getCheckedCalendarFolderIds();
+        for(var i in folderIds) {
+            var folder = appCtxt.getById(folderIds[i]);            
+            if (folder) {
+                 if(folder.zid && zidsMap[folder.zid]) {
+                    folder.noSuchFolder = true;
+                    this.handleDeleteMountpoint(folder); 
+                 }
+            }
+        }
+    }
 };
 
 ZmApptCache.prototype.handleDeleteMountpoint =
@@ -459,12 +498,12 @@ function(organizer) {
 	if (organizer && node) {
 		node.setText(organizer.getName(true));
 	}
-	this.runErrorRecovery();
 };
 
 ZmApptCache.prototype.runErrorRecovery =
 function() {
 	if (this._calViewController) {
+        this._calViewController.setSearchInProgress(false);        
 		this._calViewController._updateCheckedCalendars();
 		if (this._calViewController.onErrorRecovery) {
 			this._calViewController.onErrorRecovery.run();

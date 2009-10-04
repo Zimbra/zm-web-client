@@ -425,6 +425,10 @@ function(appt) {
 	this._calendarOrgs = [];
 	for (var i = 0; i < data.length; i++) {
 		var cal = data[i];
+
+        //exclude the stale mount points
+        if(cal.noSuchFolder) continue;
+        
 		var id = cal.link ? cal.getRemoteId() : cal.id;
 		this._calendarOrgs[id] = cal.owner;
 

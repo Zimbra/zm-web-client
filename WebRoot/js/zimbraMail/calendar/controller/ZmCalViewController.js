@@ -2689,7 +2689,10 @@ function(work, view, list, skipMiniCalUpdate, query) {
 
 ZmCalViewController.prototype._scheduleMaintenance =
 function(work, forceMaintenance) {
-	// schedule timed action
+
+    this.onErrorRecovery = new AjxCallback(this, this._errorRecovery, [work, forceMaintenance]);
+
+    // schedule timed action
 	if ((!this._searchInProgress || forceMaintenance) &&
 		(this._pendingWork == ZmCalViewController.MAINT_NONE))
 	{
@@ -2700,6 +2703,18 @@ function(work, forceMaintenance) {
 	{
 		this._pendingWork |= work;
 	}
+};
+
+ZmCalViewController.prototype._errorRecovery =
+function(work, forceMaintenance) {
+    var maintainMiniCal = (work & ZmCalViewController.MAINT_MINICAL);
+    var maintainView = (work & ZmCalViewController.MAINT_VIEW);
+    var maintainRemainder = (work & ZmCalViewController.MAINT_REMINDER);
+    if (maintainMiniCal || maintainView || maintainRemainder) {
+		var view = this.getCurrentView();
+        view.setNeedsRefresh(true);
+    }
+    this._scheduleMaintenance(work, forceMaintenance);
 };
 
 ZmCalViewController.prototype._maintenanceAction =
