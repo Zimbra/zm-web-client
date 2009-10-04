@@ -384,7 +384,6 @@ form {
     font-size:small !important;
 }
 .zo_button_disabled, .zo_button {
-    font-weight: bold;
     color: white;
     background: none;
     border: 0px;
