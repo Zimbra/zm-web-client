@@ -209,6 +209,8 @@ function(ev) {
 			ev.doIt = false;
 		} else if (sample && (sample instanceof ZmItem) && sample.isShared()) {
 			ev.doIt = false;
+		} else if (appCtxt.multiAccounts && tag.getAccount() != sample.account) {
+			ev.doIt = false;
 		} else {
 			ev.doIt = this._dropTgt.isValidTarget(data);
 		}

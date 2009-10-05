@@ -710,6 +710,18 @@ function() {
 	return url;
 };
 
+ZmOrganizer.prototype.getAccount =
+function() {
+	if (appCtxt.multiAccounts) {
+		if (!this.account) {
+			this.account = ZmOrganizer.parseId(this.id).account;
+		}
+		return this.account;
+	}
+
+	return (this.account || appCtxt.accountList.mainAccount);
+};
+
 ZmOrganizer.prototype.getShares =
 function() {
 	return this.shares;
