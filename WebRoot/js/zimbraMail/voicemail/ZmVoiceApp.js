@@ -534,6 +534,7 @@ function(ex) {
 			this._showingSecondaryMessage = true;
 
 			var view = new DwtControl({parent:appCtxt.getShell(), posStyle:Dwt.ABSOLUTE_STYLE});
+			view.setScrollStyle(DwtControl.SCROLL);
 			view.getHtmlElement().innerHTML = ZMsg["voice.SECONDARY_NOT_ALLOWED_VOICE"];
 			var elements = {};
 			elements[ZmAppViewMgr.C_APP_CONTENT_FULL] = view;
