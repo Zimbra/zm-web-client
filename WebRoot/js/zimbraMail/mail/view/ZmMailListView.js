@@ -261,8 +261,8 @@ function(viewId, headerList) {
 	var hList = [];
 
 	this._defaultCols = headerList.join(ZmListView.COL_JOIN);
-	var userHeaders = appCtxt.get(ZmSetting.LIST_VIEW_COLUMNS, viewId);
 	var isMultiColumn = appCtxt.get(ZmSetting.READING_PANE_LOCATION) != ZmSetting.RP_RIGHT;
+	var userHeaders = isMultiColumn && appCtxt.get(ZmSetting.LIST_VIEW_COLUMNS, viewId);
 	var headers = (userHeaders && isMultiColumn) ? userHeaders.split(ZmListView.COL_JOIN) : headerList;
 	for (var i = 0, len = headers.length; i < len; i++) {
 		var header = headers[i];
