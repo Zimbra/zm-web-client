@@ -600,8 +600,8 @@ function(addresses, resultArray, callback, result) {
 	if (!list) callback.run(resultArray);
 
 	// get contact emails
-	for (var index = 0, count= contactList.size(); index < count; index++) {
-		var contact = contactList.get(index);
+	for (var index = 0, count = list.size(); index < count; index++) {
+		var contact = list.get(index);
 		for (var i = 1; true; i++) {
 			var aname = ZmContact.getAttributeName(ZmContact.F_email, i);
 			var avalue = contact.getAttr(aname);

@@ -37,6 +37,10 @@ AjxPackage.require("ajax.dwt.events.DwtDisposeEvent");
 AjxPackage.require("ajax.dwt.widgets.DwtTreeItem");
 AjxPackage.require("ajax.dwt.widgets.DwtHeaderTreeItem");
 AjxPackage.require("ajax.dwt.widgets.DwtTree");
+AjxPackage.require("ajax.dwt.widgets.DwtCheckbox");
+AjxPackage.require("ajax.dwt.widgets.DwtRadioButton");
+AjxPackage.require("ajax.dwt.widgets.DwtRadioButtonGroup");
+AjxPackage.require("ajax.dwt.widgets.DwtForm");
 
 AjxPackage.require("ajax.util.AjxDateUtil");
 

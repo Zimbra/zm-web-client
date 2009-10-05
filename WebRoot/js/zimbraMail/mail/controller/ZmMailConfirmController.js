@@ -53,6 +53,11 @@ function(msg, composeViewId, composeTabId) {
     this._initializeToolBar();
 	this.resetToolbarOperations(this._toolbar);
 	this._view.showConfirmation(msg);
+
+	if (appCtxt.isChildWindow) {
+		appCtxt.getAppViewMgr()._setViewVisible(ZmId.VIEW_LOADING, false);
+	}
+
 	appCtxt.getAppViewMgr().replaceView(this._composeViewId, this.viewId);
 };
 

@@ -313,28 +313,30 @@
 <template id='mail.Message#ZmMailConfirmView'>
 	<table cellspacing=3 cellpadding=0 border=0 width=100%>
 		<tr>
-			<td id='${id}_confirm' style="vertical-align:top;width:300px">
+			<td valign=top id='${id}_confirm'>
 				<div id='${id}_loading'><$= ZmMsg.loading $></div>
 				<div id='${id}_notLoading'>
 					<div id='${id}_summary' class="Summary"></div>
-					<div>&nbsp;</div>
-					<div id='${id}_displayAddresses' class="displayAddresses">
-						<div><$= ZmMsg.confirmDisplayAddresss $></div>
-						<div id='${id}_displayAddressBox' class="Box DisplayAddressBox"></div>
-					</div>
-					<div id='${id}_newAddresses' class="NewAddresses">
-						 <div><$= ZmMsg.confirmNewAddresses $></div>
-						 <div id='${id}_newAddressBox' class="Box NewAddressBox"></div>
-					</div>
-					<div style="margin:3px" id='${id}_addButton'></div>
-					<br>
-					<div id='${id}_existingContacts' class="ExistingContacts">
-						<div><$= ZmMsg.confirmExistingContacts $></div>
-						<div id='${id}_existingContactBox' class="Box ExistingContactBox"></div>
-					</div>
+					<p>
+						<div id='${id}_displayAddresses' class="displayAddresses">
+							<div><$= ZmMsg.confirmDisplayAddresss $></div>
+							<div id='${id}_displayAddressBox' class="Box DisplayAddressBox"></div>
+						</div>
+						<div id='${id}_newAddresses' class="NewAddresses">
+							<div><$= ZmMsg.confirmNewAddresses $></div>
+							<div><$= ZmMsg.confirmNewAddressesCheck $></div>
+							<div id='${id}_newAddressBox' class="Box NewAddressBox"></div>
+						</div>
+						<div style="margin:3px" id='${id}_addButton'></div>
+						<br>
+						<div id='${id}_existingContacts' class="ExistingContacts">
+							<div><$= ZmMsg.confirmExistingContacts $></div>
+							<div id='${id}_existingContactBox' class="Box ExistingContactBox"></div>
+						</div>
+					</p>
 				</div>
 			</td>
-			<td id='${id}_ad' style="vertical-align:top;">&nbsp;</td>
+			<td valign=top id='${id}_ad'>&nbsp;</td>
 		</tr>
 	</table>
 </template>

@@ -761,9 +761,8 @@ line-height:normal;
 }
 
 .ZmMailConfirmView .Box {
-	border: 1px solid @DarkSeparatorColor@;
-	margin-top: 2px;
-	padding: 3px;
+	margin: 2px 0px 5px 0px;
+	padding: 5px;
 }
 
 /*
