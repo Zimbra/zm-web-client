@@ -77,8 +77,14 @@ function(items, folder, attrs, callback) {
 	var respCallback = new AjxCallback(this, this._handleResponseMoveItems, [folder, callback]);
 
 	// set accountName for multi-account to always be the main "local" account
-	// since we assume actioned ID's will always be fully qualified
-	var accountName = appCtxt.multiAccounts && appCtxt.accountList.mainAccount.name;
+	// since we assume actioned ID's will always be fully qualified *unless*
+	// we're moving a draft out of Trash
+	var accountName;
+	if (appCtxt.multiAccounts) {
+		accountName = (items[0].isDraft && folder.id == ZmFolder.ID_DRAFTS)
+			? items[0].account.name
+			: appCtxt.accountList.mainAccount.name;
+	}
 
 	this._itemAction({items: items, action: action, attrs: attrs, callback: respCallback, accountName: accountName});
 };
