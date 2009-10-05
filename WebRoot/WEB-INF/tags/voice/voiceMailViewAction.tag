@@ -114,7 +114,7 @@
 		    <fmt:param value="${result}"/>
 		</fmt:message></app:status>
 	    </c:when>
-	    <c:when test="${result==0 && empty error}">
+	    <c:when test="${error=='voice.SELECTIVE_CALL_FORWARD_ALREADY_IN_LIST'}">
 	        <app:status><fmt:message key="actionCallerAlreadyInForward"/></app:status>
 	    </c:when>
 	    <c:otherwise>
@@ -127,7 +127,7 @@
     </c:when>
 																										    
     <c:when test="${zm:actionSet(param, 'actionAddToReject')}">
-	<zm:addToRejectFeature var="result" phone="${phone}" voiceId="${paramValues.voiceId}" error="error"/>
+	<zm:addToRejectFeature var="result" phone="${phone}" voiceId="${paramValues.voiceId}" error="error" max="12"/>
         <c:choose>
 	    <c:when test="${result==1}">
 	        <app:status><fmt:message key="actionCallerAddedToRejectSi"/></app:status>
@@ -137,7 +137,7 @@
 	            <fmt:param value="${result}"/>
 	        </fmt:message></app:status>
 	    </c:when>
-	    <c:when test="${result==0 && empty error}">
+	    <c:when test="${error=='voice.SELECTIVE_CALL_REJECT_ALREADY_IN_LIST'}">
 	        <app:status><fmt:message key="actionCallerAlreadyInReject"/></app:status>
 	    </c:when>
 	    <c:otherwise>
