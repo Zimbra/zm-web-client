@@ -145,6 +145,7 @@ function() {
 		setTimeout(AjxCallback.simpleClosure(this._deserializeAceObjects, this), 100);
 	}
 	if(this._onContentInitializeCallback){
+        //console.log("this._onContentIntitializedCallback.run()");
 		this._onContentInitializeCallback.run();
 	}
 };
@@ -215,6 +216,12 @@ function(callback) {
 	}
 
 	return false;
+};
+
+ZmHtmlEditor.prototype.resetSpellCheck =
+function(){
+    this.discardMisspelledWords(); 
+    this._spellCheckHideModeDiv();
 };
 
 ZmHtmlEditor.prototype.discardMisspelledWords =

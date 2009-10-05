@@ -1048,6 +1048,8 @@ function(bEnableInputs) {
 	// reset subject / body fields
 	this._subjectField.value = "";
 	this.updateTabTitle();
+
+    this._htmlEditor.resetSpellCheck();
 	this._htmlEditor.clear();
 
 	// the div that holds the attc.table and null out innerHTML
