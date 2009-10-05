@@ -1448,6 +1448,9 @@ function(params) {
 	actionNode.setAttribute("op", params.action);
 	actionNode.setAttribute("id", params.id || this.id);
 	for (var attr in params.attrs) {
+        if(AjxEnv.isIE){
+            params.attrs[attr] += ""; //To string
+        }
 		actionNode.setAttribute(attr, params.attrs[attr]);
 	}
 	var respCallback = new AjxCallback(this, this._handleResponseOrganizerAction, params);
