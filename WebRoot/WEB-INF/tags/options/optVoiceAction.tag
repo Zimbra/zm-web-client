@@ -119,6 +119,11 @@
     <c:set var="emailNotificationAddress" scope="session" value="${tmp}"/>
 </c:if>
 
+
+<c:set var="callForwardingActive" scope="request" value="${param.callForwardingActive=='TRUE' ? 'TRUE':'FALSE'}"/>
+<c:set var="selectiveCallForwardingActive" scope="request" value="${param.selectiveCallForwardingActive=='TRUE' ? 'TRUE':'FALSE'}"/>
+
+
 <c:set var="addSelectiveForwarding" scope="request" value="${param.addSelectiveForwarding}"/>
 <c:if test="${voiceselected=='forwarding' && zm:actionSet(param, 'addSelectiveForwarding') && !empty sessionScope.selectiveCallForwardingFrom && fn:length(fn:split(sessionScope.selectiveCallForwardingFrom, ',')) >= 12}">
 	<app:status style="Critical"><fmt:message key="optionsCallForwardingErrorMax"/></app:status>
@@ -197,6 +202,9 @@
     <app:status style="Critical"><fmt:message key="optionsCallRejectionErrorMax"/></app:status>
     <c:set var="addSelectiveRejection" scope="request" value="${null}"/>
 </c:if>
+
+<c:set var="anonymousCallRejectionActive" scope="request" value="${param.anonymousCallRejectionActive=='TRUE' ? 'TRUE':'FALSE'}"/>
+<c:set var="selectiveCallRejectionActive" scope="request" value="${param.selectiveCallRejectionActive=='TRUE' ? 'TRUE':'FALSE'}"/>
 
 <c:if test="${voiceselected=='screening' && zm:actionSet(param, 'actionVoiceAddSelectiveRejection')}">
     <c:set var="collTest" value=",${fn:replace(sessionScope.selectiveRejectionNumber, '1-(', '(')},"/>

@@ -454,8 +454,7 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 				<table border="0" cellpadding="0" cellspacing="0">
 					<tr>
 						<td class="ZhOptVoiceCBCell">
-						
-							<input id="callForwardingActive" type="checkbox" name="callForwardingActive" <c:if test="${features.callForwardingAll.isActive}">checked</c:if>/>
+							<input id="callForwardingActive" type="checkbox" name="callForwardingActive" value="TRUE" <c:if test="${(features.callForwardingAll.isActive || param.callForwardingActive) && requestScope.callForwardingActive!='FALSE'}">checked</c:if>/>
 						</td>
 						<td>
 							<label for="callForwardingActive"><fmt:message key="optionsCallForwardingAllLabel"/>:</label>
@@ -464,7 +463,7 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 						<td class="ZhOptVoiceCBCell">&nbsp;</td>
 						
 						<td>
-							<input type="text" name="callForwardingTo" value="${features.callForwardingAll.forwardTo}"/>
+							<input type="text" name="callForwardingTo" value="${!empty param.callForwardingTo ? param.callForwardingTo : features.callForwardingAll.forwardTo}"/>
 						</td>
 					</tr>
 					
@@ -474,10 +473,10 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 						<td class="ZhOptVoiceCBCell" style="vertical-align:top;">
 							<input id="selectiveCallForwardingActive" type="checkbox" name="selectiveCallForwardingActive" value="TRUE" 
 							<c:choose>
-								<c:when test="${features.selectiveCallForwarding.isActive && !empty features.selectiveCallForwarding.forwardFrom && !empty features.selectiveCallForwarding.forwardTo}">
+								<c:when test="${requestScope.selectiveCallForwardingActive != 'FALSE' && (features.selectiveCallForwarding.isActive && !empty features.selectiveCallForwarding.forwardFrom && !empty features.selectiveCallForwarding.forwardTo)}">
 								checked
 								</c:when>
-								<c:when test="${requestScope.selectiveCallForwardingActive eq 'TRUE'}">
+								<c:when test="${requestScope.selectiveCallForwardingActive == 'TRUE'}">
 								checked
 								</c:when>
 							</c:choose>
@@ -558,7 +557,7 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 						<td class="ZhOptVoiceCBCell">&nbsp;</td>
 						
 						<td>
-							<input id="selectiveDest" type="text" name="selectiveCallForwardingTo" value="${features.selectiveCallForwarding.forwardTo}"/>
+							<input id="selectiveDest" type="text" name="selectiveCallForwardingTo" value="${!empty param.selectiveCallForwardingTo ? param.selectiveCallForwardingTo : features.selectiveCallForwarding.forwardTo}"/>
 						</td>
 					</tr>
 				</table>
@@ -580,7 +579,7 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 				<table border="0" cellpadding="0" cellspacing="0">
 					<tr>
 						<td class="ZhOptVoiceCBCell">
-							<input id="anonymousCallRejectionActive" type="checkbox" name="anonymousCallRejectionActive" value="TRUE" <c:if test="${features.anonymousCallRejection.isActive}">checked</c:if>/>
+							<input id="anonymousCallRejectionActive" type="checkbox" name="anonymousCallRejectionActive" value="TRUE" <c:if test="${requestScope.anonymousCallRejectionActive!='FALSE' && (features.anonymousCallRejection.isActive || requestScope.anonymousCallRejectionActive=='TRUE')}">checked</c:if>/>
 						</td>
 						<td colspan="4">
 							<label for="anonymousCallRejectionActive"><fmt:message key="optionsCallRejectionAllLabel"/></label>
@@ -591,7 +590,7 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 
 					<tr>
 						<td class="ZhOptVoiceCBCell" style="vertical-align:top;">
-							<input id="callRejectionSelective" type="checkbox" name="selectiveCallRejectionActive" value="TRUE" <c:if test="${features.selectiveCallRejection.isActive}">checked</c:if>/>
+							<input id="callRejectionSelective" type="checkbox" name="selectiveCallRejectionActive" value="TRUE" <c:if test="${requestScope.selectiveCallRejectionActive!='FALSE' && (features.selectiveCallRejection.isActive || requestScope.selectiveCallRejectionActive=='TRUE')}">checked</c:if>/>
 						</td>
 						
 						<td style="vertical-align:top;padding-top:3px">
