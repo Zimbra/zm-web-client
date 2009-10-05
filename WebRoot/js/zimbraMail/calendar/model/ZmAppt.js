@@ -676,6 +676,31 @@ function(soapDoc, inv) {
     }
 };
 
+ZmAppt.prototype.addAttendeesToChckConflictsJSONRequest =
+function(inv) {
+    for (var type in this._attendees) {
+        if (this._attendees[type] && this._attendees[type].length) {
+            var usr = inv.usr = [];
+            for (var i = 0; i < this._attendees[type].length; i++) {
+                var attendee = this._attendees[type][i];
+                var address;
+                if (attendee._inviteAddress) {
+                    address = attendee._inviteAddress;
+                    delete attendee._inviteAddress;
+                } else {
+                    address = attendee.getEmail();
+                }
+                if (!address) continue;
+
+                if (address instanceof Array) {
+                    address = address[0];
+                }
+                usr.push({name:address});
+            }
+        }
+    }
+};
+
 ZmAppt.prototype._addAttendeesToSoap =
 function(soapDoc, inv, m, notifyList, onBehalfOf) {
 	for (var type in this._attendees) {

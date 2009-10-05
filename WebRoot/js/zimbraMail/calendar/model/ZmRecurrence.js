@@ -31,6 +31,8 @@ ZmRecurrence = function(calItem) {
 	this.repeatWeekday			= false; 										// set to true if freq = "DAI" and custom repeats every weekday
 	this.repeatWeeklyDays		= [];	 										// SU|MO|TU|WE|TH|FR|SA
 	this.repeatYearlyMonthsList	= 1; 											// list of numbers representing months (usually, just one month)
+
+    this._cancelRecurIds        = [];                                           //list of recurIds to be excluded
 };
 
 ZmRecurrence.prototype.toString =
@@ -69,8 +71,10 @@ function(soapDoc, inv) {
 		c.setAttribute("num", this.repeatEndCount);
 	}
 
-	if (this.repeatCustom != "1")
+	if (this.repeatCustom != "1") {
+        this.setExcludes(soapDoc, recur);
 		return;
+    }
 
 	if (this.repeatType == ZmRecurrence.DAILY) {
 		if (this.repeatWeekday) {
@@ -143,7 +147,24 @@ function(soapDoc, inv) {
 			var bmd = soapDoc.set("bymonthday", null, rule);
 			bmd.setAttribute("modaylist", this.repeatCustomMonthDay);
 		}
+
 	}
+
+    this.setExcludes(soapDoc, recur);
+};
+
+ZmRecurrence.prototype.setExcludes =
+function(soapDoc, recur) {
+    if(this._cancelRecurIds.length > 0) {
+        var exclude = soapDoc.set("exclude", null, recur);
+        var dates = soapDoc.set("dates", null, exclude);
+        for(var i in this._cancelRecurIds) {
+            var ridZ = this._cancelRecurIds[i];
+            var dtval = soapDoc.set("dtval", null, dates);
+            var s = soapDoc.set("s", null, dtval);
+            s.setAttribute("d", ridZ);
+        }
+    }
 };
 
 ZmRecurrence.prototype.getBlurb =
@@ -400,4 +421,9 @@ function(recurRules, startDate) {
         this.repeatMonthlyDayList = [startDate.getDate()];
     }
 
+};
+
+ZmRecurrence.prototype.addCancelRecurId =
+function(ridZ) {
+    this._cancelRecurIds.push(ridZ);        
 };

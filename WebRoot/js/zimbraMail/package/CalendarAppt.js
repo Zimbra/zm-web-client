@@ -33,6 +33,7 @@ AjxPackage.require("zimbraMail.calendar.view.ZmCalItemTypeDialog");
 AjxPackage.require("zimbraMail.calendar.view.ZmApptComposeView");
 AjxPackage.require("zimbraMail.calendar.view.ZmApptEditView");
 AjxPackage.require("zimbraMail.calendar.view.ZmApptNotifyDialog");
+AjxPackage.require("zimbraMail.calendar.view.ZmResourceConflictDialog");
 
 AjxPackage.require("zimbraMail.calendar.view.ZmApptQuickAddDialog");
 AjxPackage.require("zimbraMail.calendar.view.ZmApptTabViewPage");
