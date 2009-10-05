@@ -767,7 +767,7 @@ function() {
 ZmAppViewMgr.prototype.setTabTitle =
 function(viewId, text) {
 	var tp = this._tabParams[viewId];
-	var button = appCtxt.getAppController().getAppChooser().getButton(tp.id);
+	var button = !appCtxt.isChildWindow && appCtxt.getAppController().getAppChooser().getButton(tp.id);
 	if (button) {
 		button.setText(text);
 	}
