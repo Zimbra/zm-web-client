@@ -491,7 +491,7 @@ select {
 }
 
 .zo_select_button {
-    width: 85px;
+    width: 90px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
