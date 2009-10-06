@@ -384,7 +384,7 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 								checked
 								</c:when>
 							</c:choose>
-							<c:if test="${!account.hasVoiceMail}"> disabled</c:if>
+							<%-- <c:if test="${!account.hasVoiceMail}"> disabled</c:if> --%>
 							/>
 						</td>
 						<td>
