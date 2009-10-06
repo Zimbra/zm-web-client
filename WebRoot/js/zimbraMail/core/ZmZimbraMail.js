@@ -1842,7 +1842,7 @@ function(ev) {
 			}
 		} else {
 			if (id != this._activeTabId) {
-				this._appViewMgr.pushView(id, false, true);
+				this._appViewMgr.pushView(id);
 			}
 			if (ev.target && (ev.target.className == "ImgClose")) {
 				this._appViewMgr.popView();

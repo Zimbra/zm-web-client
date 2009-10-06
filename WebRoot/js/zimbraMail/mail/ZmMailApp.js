@@ -27,6 +27,7 @@ ZmMailApp = function(container, parentController) {
 
 	this._sessionController		= {};
 	this._sessionId				= {};
+	this._curSessionId			= {};
 
 	this._dataSourceCollection	= {};
 	this._identityCollection	= {};
@@ -1508,9 +1509,7 @@ function(sessionId) {
 
 ZmMailApp.prototype.getCurrentSessionId =
 function(type) {
-    var sid = this._sessionId[type]; //this value points to the next available value
-    if(sid) --sid;
-    return sid;
+    return this._curSessionId[type];
 };
 
 ZmMailApp.prototype.getSessionController =
@@ -1521,7 +1520,7 @@ function(type, controllerClass, sessionId) {
 		this._sessionId[type] = 1;
 	}
 
-	if (sessionId) {
+	if (sessionId && this._sessionController[type][sessionId]) {
 		return this._sessionController[type][sessionId];
 	}
 
@@ -1534,12 +1533,13 @@ function(type, controllerClass, sessionId) {
 		}
 	}
 
+	sessionId = sessionId || this._sessionId[type]++;
+
 	if (!controller) {
-		var sessionId = this._sessionId[type]++;
 		var ctlrClass = eval(controllerClass);
 		controller = this._sessionController[type][sessionId] = new ctlrClass(this._container, this, sessionId);
-		controller.sessionId = sessionId;
 	}
+	controller.sessionId = this._curSessionId[type] = sessionId;
 	controller.inactive = false;
 
 	return controller;

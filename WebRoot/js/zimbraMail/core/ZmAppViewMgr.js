@@ -434,15 +434,13 @@ function(params) {
  *
  * @param viewId		the ID of the app view to push
  * @param force			don't run callbacks
- * @param switchTab		if true, don't add tab button
+ *
  * @returns			true if the view was pushed (is now visible)
  */
 ZmAppViewMgr.prototype.pushView =
-function(viewId, force, switchTab) {
+function(viewId, force) {
 
-	if (switchTab) {
-		viewId = this._viewByTabId[viewId];
-	}
+	viewId = this._viewByTabId[viewId] || viewId;
 	
 	var isPendingView = (viewId == ZmAppViewMgr.PENDING_VIEW);
 	if (!isPendingView && !this._views[viewId]) {
@@ -476,8 +474,9 @@ function(viewId, force, switchTab) {
 
 	if (this._isTabView[viewId]) {
 		var tp = this._tabParams[viewId];
-		if (tp && !switchTab) {
-			var button = appCtxt.getAppController().getAppChooser().addButton(tp.id, tp);
+		var button = appCtxt.getAppController().getAppChooser().getButton(tp.id);
+		if (tp && !button) {
+			button = appCtxt.getAppController().getAppChooser().addButton(tp.id, tp);
 			button.setHoverImage("Close");
 		}
 	}
