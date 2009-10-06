@@ -81,19 +81,19 @@
     <c:set var="view" value="${param.view}"  />
     <c:choose>
         <c:when test="${view eq 'day'}">
-            <app:multiDayPrintView timezone="${tz}" date="${dateContext}" view='${view}' numdays="${not empty param.numdays ? param.numdays : 1}"/>
+            <app:multiDayPrintView timezone="${tz}" date="${dateContext}" view='${view}' checkedCalendars="${checkedCalendars}" numdays="${not empty param.numdays ? param.numdays : 1}"/>
         </c:when>
         <c:when test="${view eq 'workWeek'}">
-            <app:multiDayPrintView timezone="${tz}" date="${dateContext}" view='${view}' numdays="5"/>
+            <app:multiDayPrintView timezone="${tz}" date="${dateContext}" view='${view}' checkedCalendars="${checkedCalendars}" numdays="5"/>
         </c:when>
         <c:when test="${view eq 'week'}">
-            <app:multiDayPrintView timezone="${tz}" date="${dateContext}" view='${view}' numdays="7"/>
+            <app:multiDayPrintView timezone="${tz}" date="${dateContext}" view='${view}' checkedCalendars="${checkedCalendars}" numdays="7"/>
         </c:when>
         <c:when test="${view eq 'schedule'}">
-            <app:multiDayPrintView timezone="${tz}" date="${dateContext}" numdays="1" view="${view}"/>
+            <app:multiDayPrintView timezone="${tz}" date="${dateContext}" numdays="1" checkedCalendars="${checkedCalendars}" view="${view}"/>
         </c:when>
         <c:otherwise>
-            <app:monthPrintView timezone="${tz}" date="${dateContext}"/>
+            <app:monthPrintView timezone="${tz}" checkedCalendars="${checkedCalendars}" date="${dateContext}"/>
         </c:otherwise>
     </c:choose>
 </app:handleError>
