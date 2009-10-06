@@ -39,13 +39,7 @@ ZmEditContactView = function(parent, controller, isMyCardView) {
 			{ id: "NOTES", type: "DwtInputField", cols: (AjxEnv.isMozilla ? 58 : 60), rows:4 },
 			// contact list fields
 			{ id: "EMAIL", type: "ZmEditContactViewRows", rowitem: {
-				type: "ZmEditContactViewInputSelect", equals:ZmEditContactViewInputSelect.equals, params: {
-					hint: ZmMsg.emailAddrHint, cols: 60,
-					options: [
-						{ value: ZmContact.F_email, label: ZmMsg.home },
-						{ value: ZmContact.F_workEmail, label: ZmMsg.work }
-					]
-				}
+				type: "DwtInputField", cols: 40, hint: ZmMsg.emailAddrHint
 			} },
 			{ id: "PHONE", type: "ZmEditContactViewRows", rowitem: {
 				type: "ZmEditContactViewInputSelect", equals:ZmEditContactViewInputSelect.equals, params: {
@@ -221,7 +215,7 @@ ZmEditContactView.ATTRS = {
 
 ZmEditContactView.LISTS = {
 	ADDRESS: {attrs:ZmContact.ADDRESS_FIELDS}, // NOTE: placeholder for custom handling
-	EMAIL: {attrs:ZmContact.EMAIL_FIELDS },
+	EMAIL: {attrs:ZmContact.EMAIL_FIELDS, onlyvalue:true},
 	PHONE: {attrs:ZmContact.PHONE_FIELDS},
 	IM: {attrs:ZmContact.IM_FIELDS, addone:ZmContact.IS_ADDONE, onlyvalue:true},
 	URL: {attrs:ZmContact.URL_FIELDS},
@@ -356,7 +350,7 @@ ZmEditContactView.prototype.getModifiedAttrs = function() {
 					}
 				}
 				else {
-					var onlyvalue = id == "IM";
+					var onlyvalue = id == "IM" || id == "EMAIL";
 					var v = onlyvalue ? item : item.value;
 					if (!v) continue;
 					var list = ZmEditContactView.LISTS[id];

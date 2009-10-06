@@ -446,14 +446,10 @@
 		findObjects: data.findObjects, objectType: ZmObjectManager.EMAIL,
 		label: ZmMsg.emailLabel
 	};
-	var types = {};
-	types[ZmContact.F_email] = ZmMsg.home;
-	types[ZmContact.F_workEmail] = ZmMsg.work;
 	var names = ZmEditContactView.LISTS.EMAIL.attrs;
 	for (var i = 0; i < names.length; i++) {
 		var name= names[i];
-		itemlistdata.name = name;
-		itemlistdata.type = types[name] || ZmMsg["AB_FIELD_"+name]; $>
+		itemlistdata.name = name; $>
 		<$= AjxTemplate.expand("#SplitView_item_list", itemlistdata) $>
 	<$ } $>
 </template>

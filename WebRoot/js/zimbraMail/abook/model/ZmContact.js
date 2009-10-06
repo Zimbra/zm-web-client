@@ -101,7 +101,6 @@ ZmContact.F_pager					= "pager";
 ZmContact.F_type					= "type";
 ZmContact.F_workCity				= "workCity";
 ZmContact.F_workCountry				= "workCountry";
-ZmContact.F_workEmail				= "workEmail";
 ZmContact.F_workEmail1				= "workEmail1";
 ZmContact.F_workEmail2				= "workEmail2";
 ZmContact.F_workEmail3				= "workEmail3";
@@ -159,8 +158,7 @@ ZmContact.ADDRESS_FIELDS = [
 	ZmContact.F_workStreet
 ];
 ZmContact.EMAIL_FIELDS = [
-	ZmContact.F_email,
-	ZmContact.F_workEmail
+	ZmContact.F_email
 ];
 ZmContact.IM_FIELDS = [
 	ZmContact.F_imAddress
@@ -266,7 +264,8 @@ delete i;
 ZmContact.IS_ADDONE = {};
 ZmContact.IS_ADDONE[ZmContact.F_custom] = true;
 ZmContact.IS_ADDONE[ZmContact.F_imAddress] = true;
-ZmContact.IS_ADDONE[ZmContact.F_workEmail] = true;
+// NOTE: Only add 1 to workEmail if Comcast
+//ZmContact.IS_ADDONE[ZmContact.F_workEmail] = true;
 
 /**
  * Returns an indexed attribute name taking into account if the field
