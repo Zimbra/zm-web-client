@@ -370,7 +370,7 @@ function(items, folder, attrs, callback) {
 		this._mixedAction("moveItems", [items, folder, attrs]);
 		return;
 	}
-	if (!(items instanceof Array)) items = [items];
+	if (!(items instanceof Array)) { items = [items]; }
 
 	attrs = attrs || (new Object());
 	attrs.l = folder.id;
@@ -378,7 +378,10 @@ function(items, folder, attrs, callback) {
 	var respCallback = (this.type == ZmItem.MIXED)
 		? (new AjxCallback(this, this._handleResponseMoveItems, [folder, callback]))
 		: callback;
-	this._itemAction({items: items, action: "move", attrs: attrs, callback: respCallback});
+
+	var accountName = appCtxt.multiAccounts && appCtxt.accountList.mainAccount.name;
+
+	this._itemAction({items: items, action: "move", attrs: attrs, callback: respCallback, accountName: accountName});
 };
 
 ZmList.prototype._handleResponseMoveItems =

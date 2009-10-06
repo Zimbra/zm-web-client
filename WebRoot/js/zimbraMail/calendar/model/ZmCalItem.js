@@ -1115,7 +1115,17 @@ function(soapDoc) {
 		}
 	} else {
 		if (this.invId != null && this.invId != -1) {
-			soapDoc.setMethodAttribute("id", this.invId);
+			var id =  this.invId;
+
+			// bug: 41530 - for offline, make sure id is fully qualified if moving across accounts
+			if (appCtxt.multiAccounts &&
+				this._orig &&
+				this._orig.getFolder().account != this.getFolder().account)
+			{
+				id = ZmOrganizer.getSystemId(this.invId, this._orig.getFolder().account, true);
+			}
+
+			soapDoc.setMethodAttribute("id", id);
 			soapDoc.setMethodAttribute("comp", this.getCompNum());
 		}
 	}
