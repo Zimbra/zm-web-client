@@ -390,6 +390,7 @@ form {
 }
 
 .zo_select_button {
+    width: 85px;	
     border: 0px;
     position: relative;
     top: 0px;
