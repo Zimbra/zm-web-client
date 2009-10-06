@@ -17,6 +17,10 @@
 		<c:set var="actionOp" value="${not empty paramValues.actionOp[0] ? paramValues.actionOp[0] :  paramValues.actionOp[1]}"/>
 	</c:if>
 
+	<fmt:message var="faqlink" key="errorPhoneFAQLink"/>
+	<fmt:message var="faqurl" key="errorPhoneFAQURL"/>
+	<c:set var="faqlink" value="&nbsp;${fn:replace(faqlink, '{1}', faqurl)}"/>
+
 <c:choose>
 	<c:when test="${showMovedTrash}">
 		<app:status>	
@@ -78,13 +82,13 @@
         		<fmt:param value="${result}"/>
     		    </fmt:message></app:status>
 		</c:when>
-		<c:when test="${result==0 && empty error}">
+		<c:when test="${error=='voice.SELECTIVE_CALL_FORWARD_ALREADY_IN_LIST'}">
 		    <app:status><fmt:message key="actionCallerAlreadyInForward"/></app:status>
 		</c:when>
 		<c:otherwise>
-		    <app:status style="Error">
-		    <%-- ${error} --%>
-		    <fmt:message key="actionCallerAddForwardError"/>
+		    <app:status style="Error" html="true">
+		    <fmt:message key="${error}"/>&nbsp;${faqlink}
+		    <%--<fmt:message key="actionCallerAddForwardError"/>--%>
 		    </app:status>
 		</c:otherwise>
 	</c:choose>
@@ -101,13 +105,13 @@
         		<fmt:param value="${result}"/>
     		    </fmt:message></app:status>
 		</c:when>
-		<c:when test="${result==0 && empty error}">
+		<c:when test="${error=='voice.SELECTIVE_CALL_REJECT_ALREADY_IN_LIST'}">
 		    <app:status><fmt:message key="actionCallerAlreadyInReject"/></app:status>
 		</c:when>
 		<c:otherwise>
-		    <app:status style="Error">
-		    <%-- ${error} --%>
-		    <fmt:message key="actionCallerAddRejectError"/>
+		    <app:status style="Error" html="true">
+		    <fmt:message key="${error}"/>&nbsp;${faqlink}
+		    <%--<fmt:message key="actionCallerAddRejectError"/>--%>
 		    </app:status>
 		</c:otherwise>
 	</c:choose>

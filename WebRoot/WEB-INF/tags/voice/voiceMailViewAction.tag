@@ -119,7 +119,6 @@
 	    </c:when>
 	    <c:otherwise>
 		<app:status style="Error">
-		<%-- ${error} --%>
 		<fmt:message key="actionCallerAddForwardError"/>
 		</app:status>
 	    </c:otherwise>
