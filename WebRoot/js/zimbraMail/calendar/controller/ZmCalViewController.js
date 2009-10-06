@@ -1132,8 +1132,13 @@ function(ev) {
 			case ZmId.VIEW_CAL_WEEK:		view = "week"; break;
 			default:						view = "month"; break;					// default is month
 		}
+
+        var folderIds = this.getCheckedCalendarFolderIds();
+        var l = folderIds.join(",");
+
 		url = [
 			"/h/printcalendar?view=", view,
+            "&l=", l,    
 			"&date=", date.getFullYear(), month, day
 		].join("");
 	}

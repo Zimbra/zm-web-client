@@ -38,7 +38,7 @@
         </c:otherwise>
     </c:choose>
 
-    <c:set var="checkedCalendars" value="${zm:getCheckedCalendarFolderIds(mailbox)}"/>
+    <c:set var="checkedCalendars" value="${param.l}"/>
     
 </app:handleError>
 

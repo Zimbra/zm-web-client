@@ -153,6 +153,7 @@
     </c:if>
 
     <c:set var="view" value="${not empty param.view ? param.view : mailbox.prefs.calendarInitialView}"/>
+    <c:set var="checkedCalendars" value="${zm:getCheckedCalendarFolderIds(mailbox)}"/>
 </app:handleError>
 
 <app:handleError>
@@ -179,6 +180,6 @@
 </app:handleError>
 <script type="text/javascript">
     <!--
-    var zprint = function(){ try{ var idex = 0; var c =""; while (idex <= zrc ) { if(document.getElementById("C"+idex).checked) { cid = document.getElementById("C"+idex).value; c += cid + ","; } idex++ ; } }catch(ex){ } window.open("/h/printcalendar?view=${view}&date=${param.date}&action=print"); }
+    var zprint = function(){ try{ var idex = 0; var c =""; while (idex <= zrc ) { if(document.getElementById("C"+idex).checked) { cid = document.getElementById("C"+idex).value; c += cid + ","; } idex++ ; } }catch(ex){ } window.open("/h/printcalendar?view=${view}&l=${checkedCalendars}&date=${param.date}&action=print"); }
         //-->
 </script>
