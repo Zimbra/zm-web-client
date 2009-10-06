@@ -284,14 +284,17 @@ function() {
 
 ZmApptEditView.prototype._populateForEdit =
 function(calItem, mode) {
+
 	ZmCalItemEditView.prototype._populateForEdit.call(this, calItem, mode);
 
 	this._showAsSelect.setSelectedValue(calItem.freeBusy);
+    this._showAsSelect.setEnabled(!this._isForward);
 	this._privacySelect.setSelectedValue(calItem.privacy);
 
 	// reset the date/time values based on current time
 	var sd = new Date(calItem.startDate.getTime());
 	var ed = new Date(calItem.endDate.getTime());
+
 	var isAllDayAppt = calItem.isAllDayEvent();
 	if (isAllDayAppt) {
 		this._allDayCheckbox.checked = true;
@@ -351,7 +354,7 @@ function(calItem, mode) {
 	if (this._privacySelect) {
 		var isRemote = calItem.isShared();
 		var cal = isRemote ? appCtxt.getById(calItem.folderId) : null;
-		var isEnabled = !isRemote || (cal && cal.hasPrivateAccess());
+		var isEnabled = ((!isRemote || (cal && cal.hasPrivateAccess())) && !this._isForward);
 		var defaultPrivacyOption = (appCtxt.get(ZmSetting.CAL_APPT_VISIBILITY) == ZmSetting.CAL_VISIBILITY_PRIV)?"PRI":"PUB";
 		this._privacySelect.setSelectedValue(isEnabled ? (calItem.privacy || defaultPrivacyOption) : "PUB");
 		this._privacySelect.setEnabled(isEnabled);
@@ -382,7 +385,11 @@ function(calItem, mode) {
         }
 	}
 
-    this._forwardToField.value = "";    
+    this._forwardToField.value = "";
+
+    if (this._folderSelect) this._folderSelect.setEnabled(!this._isForward);
+    if (this._reminderSelect) this._reminderSelect.setEnabled(!this._isForward);
+    this._allDayCheckbox.disabled = this._isForward;    
 };
 
 ZmApptEditView.prototype._addResourcesDiv =

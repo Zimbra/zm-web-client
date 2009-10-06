@@ -94,7 +94,7 @@ ZmCalItemEditView.prototype.initialize =
 function(calItem, mode, isDirty, isForward) {
 	this._calItem = calItem;
 	this._isDirty = isDirty;
-    this._isForward = isForward;
+    this._isForward = Boolean(isForward);
     
 	var firstTime = !this._rendered;
 	this.createHtml();
@@ -318,7 +318,8 @@ function(calItem, mode, firstTime) {
 	this._populateForEdit(calItem, mode);
 
 	// disable the recurrence select object for editing single instance
-	this._enableRepeat(mode != ZmCalItem.MODE_EDIT_SINGLE_INSTANCE);
+    var enableRepeat = ((mode != ZmCalItem.MODE_EDIT_SINGLE_INSTANCE) && !this._isForward);
+	this._enableRepeat(enableRepeat);
 
     //show 'to' fields for forward action
     var forwardOptions = document.getElementById(this._htmlElId + "_forward_options");
@@ -475,13 +476,41 @@ function(calItem, mode) {
 	{
 		this._controller.setFormatBtnItem(true, DwtHtmlEditor.HTML);
 		this.setComposeMode(DwtHtmlEditor.HTML);
-		this._notesHtmlEditor.setContent(calItem.getNotesPart(ZmMimeTable.TEXT_HTML));
+        var notesPart = calItem.getNotesPart(ZmMimeTable.TEXT_HTML)
+        if(this._isForward) {
+            notesPart = this.formatContent(notesPart, true);
+        }
+		this._notesHtmlEditor.setContent(notesPart);
 	}
 	else {
 		this._controller.setFormatBtnItem(true, ZmMimeTable.TEXT_PLAIN);
 		this.setComposeMode(DwtHtmlEditor.TEXT);
-		this._notesHtmlEditor.setContent(calItem.getNotesPart(ZmMimeTable.TEXT_PLAIN));
+        var notesPart = calItem.getNotesPart(ZmMimeTable.TEXT_PLAIN);
+        if(this._isForward) {
+            notesPart = this.formatContent(notesPart, false);
+        }
+		this._notesHtmlEditor.setContent(notesPart);
 	}
+};
+
+ZmCalItemEditView.WRAP_LENGTH = 72;
+
+ZmCalItemEditView.prototype.formatContent =
+function(body, composingHtml) {
+
+    var includePref = appCtxt.get(ZmSetting.FORWARD_INCLUDE_ORIG);
+    var prefix = appCtxt.get(ZmSetting.REPLY_PREFIX);
+    if (includePref == ZmSetting.INCLUDE_PREFIX || includePref == ZmSetting.INCLUDE_PREFIX_FULL) {
+
+        var preface = (composingHtml ? '<br>' : '\n');
+        if (composingHtml) {
+            prefix = AjxStringUtil.htmlEncode(prefix);
+        }
+        var sep = composingHtml ? '<br>' : '\n';
+        var wrapParams = {text:body, len:ZmCalItemEditView.WRAP_LENGTH, pre:prefix + " ", eol:sep, htmlMode:composingHtml};        
+        body = preface + AjxStringUtil.wordWrap(wrapParams);
+    }
+    return body;
 };
 
 /**
