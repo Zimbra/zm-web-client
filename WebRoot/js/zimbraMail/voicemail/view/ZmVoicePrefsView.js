@@ -763,6 +763,23 @@ function(text) {
 	dialog.popup();
 }
 
+ZmCallFeatureUI.prototype.showDialogWithFAQ =
+function(text) {
+	if (AjxUtil.isString(text)) {
+		var msg = AjxStringUtil.trim(text);
+		if (text.length > 0) {
+			if (msg.indexOf("{0}") == -1) {
+				if (!msg.match("\.$"))
+					msg += ". ";
+				msg += this.getFaqLink();
+			} else {
+				msg = AjxMessageFormat.format(msg, [this.getFaqLink()]);
+			}
+			this.showDialog(msg);
+		}
+	}
+}
+
 // "Abstract" methods:
 ZmCallFeatureUI.prototype.getName =
 function() {
@@ -1420,17 +1437,17 @@ ZmEmailNotificationUI.prototype._handleAddFromNumber =
 function(event) {
 	var addValue = this._comboBox.getText();
 	if (this._list.getList() && this._list.getList().size() >= ZmCallFeature.EMAIL_NOTIFICATION_MAX_ENTRIES) {
-		this.showDialog(AjxMessageFormat.format(ZmMsg.voicemailNotificationErrorMax || ""), [this.getFaqLink()]);
+		this.showDialogWithFAQ(ZmMsg.voicemailNotificationErrorMax);
 	} else if (!AjxUtil.isString(addValue) || AjxStringUtil.trim(addValue) == "") {
-		this.showDialog([ZmMsg.missingEmailAddress, ". ", this.getFaqLink()].join(""));
+		this.showDialogWithFAQ(ZmMsg.missingEmailAddress);
 		this._comboBox.focus();
 	} else if (!AjxEmailAddress.isValid(addValue)) {
-		this.showDialog(AjxMessageFormat.format(ZmMsg.voicemailNotificationErrorInvalid || ""), [this.getFaqLink()]);
+		this.showDialogWithFAQ(ZmMsg.voicemailNotificationErrorInvalid);
 		this._comboBox.focus();
 	} else {
 		var addObject = {a: true, text: addValue.toLowerCase()};
 		if (this._list.containsItem(addObject)) {
-			this.showDialog(AjxMessageFormat.format(ZmMsg.errorEmailNotUnique || ""), [this.getFaqLink()]);
+			this.showDialogWithFAQ(ZmMsg.errorEmailNotUnique);
 			this._comboBox.focus();
 		} else {
 			this._list.addItem(addObject, null, false);
@@ -1575,21 +1592,21 @@ ZmSelectiveCallForwardingUI.prototype._handleAddFromNumber =
 function(event) {
 	var addValue = this._addField.getValue();
 	if (!addValue || AjxStringUtil.trim(addValue) == "") {
-		this.showDialog([AjxMsg.valueIsRequired, ". ", this.getFaqLink()].join(""));
+		this.showDialogWithFAQ(AjxMsg.valueIsRequired);
 		this._addField.focus();
 	} else {
 		var error = this._view._validatePhoneNumberFct(addValue);
 		if (error!=null) {
-			this.showDialog(AjxMessageFormat.format(error || ""), [this.getFaqLink()]);
+			this.showDialogWithFAQ(error);
 			this._addField.focus();
 		} else {
 			if (!ZmPhone.isValid(addValue)) { // Possibly obsolete, but doesn't do any harm
-				this.showDialog(AjxMessageFormat.format(ZmMsg.selectiveCallForwardingError || ""), [this.getFaqLink()]);
+				this.showDialogWithFAQ(ZmMsg.selectiveCallForwardingError);
 				this._addField.focus();
 			} else {
 				var addObject = {a: true, pn: ZmPhone.calculateName(addValue)};
 				if (this._list.containsItem(addObject)) {
-					this.showDialog(AjxMessageFormat.format(ZmMsg.errorPhoneForwardNotUnique || ""), [this.getFaqLink()]);
+					this.showDialogWithFAQ(ZmMsg.errorPhoneForwardNotUnique);
 					this._addField.focus();
 				} else {
 					this._list.addItem(addObject, null, false);
@@ -1604,7 +1621,7 @@ function(event) {
 ZmSelectiveCallForwardingUI.prototype._handleExposeButtonClick =
 function() {
 	if (this._list.getList() && this._list.getList().size() >= ZmCallFeature.SELECTIVE_CALL_FORWARDING_MAX_ENTRIES) {
-		this.showDialog(AjxMessageFormat.format(ZmMsg.selectiveCallForwardingFromErrorMax || ""), [this.getFaqLink()]);
+		this.showDialogWithFAQ(ZmMsg.selectiveCallForwardingFromErrorMax);
 	} else {
 		this._setAddFromNumberVisibility(true);
 		this._addField.focus();
@@ -1807,21 +1824,21 @@ ZmSelectiveCallRejectionUI.prototype._handleAddFromNumber =
 function(event) {
 	var addValue = this._addField.getValue();
 	if (!addValue || AjxStringUtil.trim(addValue) == "") {
-		this.showDialog([AjxMsg.valueIsRequired, ". ", this.getFaqLink()].join(""));
+		this.showDialogWithFAQ(AjxMsg.valueIsRequired);
 		this._addField.focus();
 	} else {
 		var error = this._view._validatePhoneNumberFct(addValue);
 		if (error!=null) {
-			this.showDialog(AjxMessageFormat.format(error || ""), [this.getFaqLink()]);
+			this.showDialogWithFAQ(error);
 			this._addField.focus();
 		} else {
 			if (!ZmPhone.isValid(addValue)) { // Possibly obsolete, but doesn't do any harm
-				this.showDialog(AjxMessageFormat.format(ZmMsg.selectiveCallRejectionError || ""), [this.getFaqLink()]);
+				this.showDialogWithFAQ(ZmMsg.selectiveCallRejectionError);
 				this._addField.focus();
 			} else {
 				var addObject = {a: true, pn: ZmPhone.calculateName(addValue)};
 				if (this._list.containsItem(addObject)) {
-					this.showDialog(AjxMessageFormat.format(ZmMsg.errorPhoneRejectNotUnique || ""), [this.getFaqLink()]);
+					this.showDialogWithFAQ(ZmMsg.errorPhoneRejectNotUnique);
 					this._addField.focus();
 				} else {
 					this._list.addItem(addObject, null, false);
@@ -1836,7 +1853,7 @@ function(event) {
 ZmSelectiveCallRejectionUI.prototype._handleExposeButtonClick =
 function() {
 	if (this._list.getList() && this._list.getList().size() >= ZmCallFeature.SELECTIVE_CALL_REJECTION_MAX_ENTRIES)
-		this.showDialog(AjxMessageFormat.format(ZmMsg.selectiveCallRejectionFromErrorMax || ""), [this.getFaqLink()]);
+		this.showDialogWithFAQ(ZmMsg.selectiveCallRejectionFromErrorMax);
 	else {
 		this._setAddFromNumberVisibility(true);
 		this._addField.focus();
@@ -1986,21 +2003,21 @@ ZmSelectiveCallAcceptanceUI.prototype._handleAddFromNumber =
 function(event) {
 	var addValue = this._addField.getValue();
 	if (!addValue || AjxStringUtil.trim(addValue) == "") {
-		this.showDialog([AjxMsg.valueIsRequired, ". ", this.getFaqLink()].join(""));
+		this.showDialogwithFAQ(AjxMsg.valueIsRequired);
 		this._addField.focus();
 	} else {
 		var error = this._view._validatePhoneNumberFct(addValue);
 		if (error!=null) {
-			this.showDialog(AjxMessageFormat.format(error || ""), [this.getFaqLink()]);
+			this.showDialogwithFAQ(error);
 			this._addField.focus();
 		} else {
 			if (!ZmPhone.isValid(addValue)) { // Possibly obsolete, but doesn't do any harm
-				this.showDialog(AjxMessageFormat.format(ZmMsg.selectiveCallAcceptanceError || ""), [this.getFaqLink()]);
+				this.showDialogwithFAQ(ZmMsg.selectiveCallAcceptanceError);
 				this._addField.focus();
 			} else {
 				var addObject = {a: true, pn: ZmPhone.calculateName(addValue)};
 				if (this._list.containsItem(addObject)) {
-					this.showDialog(AjxMessageFormat.format(ZmMsg.errorPhoneAcceptNotUnique || ""), [this.getFaqLink()]);
+					this.showDialogwithFAQ(ZmMsg.errorPhoneNotUnique);
 					this._addField.focus();
 				} else {
 					this._list.addItem(addObject, null, false);
@@ -2015,7 +2032,7 @@ function(event) {
 ZmSelectiveCallAcceptanceUI.prototype._handleExposeButtonClick =
 function() {
 	if (this._list.getList() && this._list.getList().size() >= ZmCallFeature.SELECTIVE_CALL_REJECTION_MAX_ENTRIES)
-		this.showDialog(AjxMessageFormat.format(ZmMsg.selectiveCallRejectionFromErrorMax || ""), [this.getFaqLink()]);
+		this.showDialogWithFAQ(ZmMsg.selectiveCallRejectionFromErrorMax);
 	else {
 		this._setAddFromNumberVisibility(true);
 		this._addField.focus();
