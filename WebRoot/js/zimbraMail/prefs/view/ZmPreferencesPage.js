@@ -888,7 +888,7 @@ function(ev) {
 		var isHttp	= appCtxt.get(ZmSetting.PROTOCOL_MODE) == ZmSetting.PROTO_HTTP;
 		var proto	= isHttp ? ZmSetting.PROTO_HTTP : ZmSetting.PROTO_HTTPS;
 		var port	= appCtxt.get(isHttp ? ZmSetting.HTTP_PORT : ZmSetting.HTTPS_PORT);
-		var path	= "/zimbra/h/changepass";
+		var path	= appContextPath+"/h/changepass";
 
 		var publicUrl = appCtxt.get(ZmSetting.PUBLIC_URL);
 		if (publicUrl) {

@@ -177,7 +177,7 @@ function enableSpellCheck(myEditor) {
 			var body = myEditor._getDoc().body;
 			document.getElementById("SpellCheckData").value = body.textContent || body.innerText; // FF uses textContent, IE uses innerText
 			YAHOO.util.Connect.setForm('SpellCheckForm', false, null);
-			this._conn = YAHOO.util.Connect.asyncRequest('POST', '/zimbra/h/checkspelling', {
+			this._conn = YAHOO.util.Connect.asyncRequest('POST', '<c:url value="/h/checkspelling" />', {
 				success: this._checkSpelling,
 				failure: function() {},
 				scope: this

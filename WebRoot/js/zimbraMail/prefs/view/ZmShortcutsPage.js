@@ -83,7 +83,7 @@ function() {
 
 	var html = [], i = 0;
 	html[i++] = "<html><head>";
-	html[i++] = "<link href='/zimbra/css/zm.css' rel='stylesheet' type='text/css' />";
+	html[i++] = "<link href='"+appContextPath+"/css/zm.css' rel='stylesheet' type='text/css' />";
 	html[i++] = "</head><body>";
 	html[i++] = "<div class='ShortcutsPrintHeader'>" + ZmMsg.keyboardShortcuts + "</div>";
 

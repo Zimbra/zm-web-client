@@ -395,7 +395,7 @@ ZmNotebookPageView.prototype.addIconStyles = function(doc)
 	var el = doc.createElement("link");	
 	el.rel = "stylesheet";
 	el.type = "text/css";
-	el.href = "/zimbra/css/images.css";
+	el.href = appContextPath+"/css/images.css";
 	headTags[0].appendChild(el);	
 	
 };

@@ -24,10 +24,10 @@
 	border-left-width:1px;
 	border-left-color:@darken(AppC,50)@;
 	border-right-color:@darken(AppC,50)@;
-	background:@AppC@ url('/zimbra/skins/_base/base2/img/gradient/10x32,v,15-0,1,0_16-31,1,0.png') left top repeat-x !important;
+	background:@AppC@ url('@AppContextPath@/skins/_base/base2/img/gradient/10x32,v,15-0,1,0_16-31,1,0.png') left top repeat-x !important;
 }
 #skin_container_tree_top		{
-	background:@AltC@ url('/zimbra/skins/_base/base2/img/gradient/10x32,v,15-0,2,0_16-31,2,0.png') left top repeat-x;
+	background:@AltC@ url('@AppContextPath@/skins/_base/base2/img/gradient/10x32,v,15-0,2,0_16-31,2,0.png') left top repeat-x;
 }
 #skin_container_links			{
 	padding:0 10px;
@@ -70,14 +70,14 @@
 	@AppTabRoundCorners@
 	border-width:1px !important;
 	border-color:@darken(AppC,50)@;
-	background:@AltC@ url('/zimbra/skins/_base/base2/img/gradient/10x32,v,15-0,2,0_16-31,2,0.png') left top repeat-x;
+	background:@AltC@ url('@AppContextPath@/skins/_base/base2/img/gradient/10x32,v,15-0,2,0_16-31,2,0.png') left top repeat-x;
 }
 .ZAppTab .ImgClose {
     width : 19px !important;
 }
 .ZSelected .ZAppTabBorder		{
 	border-bottom-width:0px !important;
-	background:@AppC@ url('/zimbra/skins/_base/base2/img/gradient/10x32,v,0-15,3,0.png') left top repeat-x;
+	background:@AppC@ url('@AppContextPath@/skins/_base/base2/img/gradient/10x32,v,0-15,3,0.png') left top repeat-x;
 }
 .ZAppTabBorder .ZLeftIcon DIV	{	margin-top:4px;					}
 .BannerTextUser					{	text-align: left;				}
@@ -107,7 +107,7 @@
 	border:1px solid #7f7f7f;
 	margin-left: 4px;
 	height:20px;
-	background: #ffdc8a url('/zimbra/skins/_base/base2/img/gradient/10x32,v,16-31,3,0.png') repeat-x left -7px;
+	background: #ffdc8a url('@AppContextPath@/skins/_base/base2/img/gradient/10x32,v,16-31,3,0.png') repeat-x left -7px;
 	cursor: pointer;
 }
 .skin_yahoo_websearch_button:hover {

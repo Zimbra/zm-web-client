@@ -342,7 +342,7 @@
             var dragEl = this.getDragEl();
             var clickEl = document.getElementById(rowId);
             var msglen = mesgId.split(",").length;
-            dragEl.innerHTML = (msglen > 1) ? '<td><img id="zldragdrop" src="/zimbra/img/large/ImgDndMultiNo_48.gif"/><div style="position:absolute;top:27;left:23;color:white;width:20px;text-align:center;font-weight:bold;">'+msglen+'</div></td>' : clickEl.innerHTML;
+            dragEl.innerHTML = (msglen > 1) ? '<td><img id="zldragdrop" src="<c:url value='/img/large/ImgDndMultiNo_48.gif' />"/><div style="position:absolute;top:27;left:23;color:white;width:20px;text-align:center;font-weight:bold;">'+msglen+'</div></td>' : clickEl.innerHTML;
             document.getElementById("C"+rowNo).checked = true;
             if(msglen == 1) {
                 dragEl.style.border = "2px solid #aaa";
@@ -390,13 +390,13 @@
             if (lastTarget) {
                 $D.removeClass(lastTarget,'dragoverclass');
                 if(msglen > 1) {
-                    document.getElementById("zldragdrop").src = "/zimbra/img/large/ImgDndMultiNo_48.gif"
+                    document.getElementById("zldragdrop").src = "<c:url value='/img/large/ImgDndMultiNo_48.gif' />";
                 }
             }
             lastTarget = id[0].id;
             $D.addClass(lastTarget,'dragoverclass');
             if(msglen > 1) {
-                document.getElementById("zldragdrop").src = "/zimbra/img/large/ImgDndMultiYes_48.gif";
+                document.getElementById("zldragdrop").src = "<c:url value='/img/large/ImgDndMultiYes_48.gif' />";
             }
         };
 
@@ -405,7 +405,7 @@
             $D.removeClass(id,'dragoverclass');
             var msglen = mesgId.split(",").length;
             if(msglen > 1) {
-                document.getElementById("zldragdrop").src = "/zimbra/img/large/ImgDndMultiNo_48.gif"
+                document.getElementById("zldragdrop").src = "<c:url value='/img/large/ImgDndMultiNo_48.gif' />";
             }
         };
 
