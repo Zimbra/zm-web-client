@@ -204,7 +204,7 @@ function() {
 
 ZmZimbraAccount.prototype.getIcon =
 function() {
-	return this.isMain ? "LocalFolders" : this.icon;
+	return (this.isMain && appCtxt.isOffline) ? "LocalFolders" : this.icon;
 };
 
 ZmZimbraAccount.prototype.getZdMsg =

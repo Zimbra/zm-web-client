@@ -2135,9 +2135,9 @@ function(templateId, data) {
 			this._identityChangeListenerObj = new AjxListener(this, this._identityChangeListener);
 		}
 		var ac = window.parentAppCtxt || window.appCtxt;
-		var accounts = ac.accountList.getAccounts();
-		for (var id in accounts) {
-			var identityCollection = ac.getIdentityCollection(accounts[id]);
+		var accounts = ac.accountList.visibleAccounts;
+		for (var i = 0; i < accounts.length; i++) {
+			var identityCollection = ac.getIdentityCollection(accounts[i]);
 			identityCollection.addChangeListener(this._identityChangeListenerObj);
 		}
 

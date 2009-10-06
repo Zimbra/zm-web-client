@@ -65,11 +65,6 @@ function(account) {
 
 	if (account.id == ZmAccountList.DEFAULT_ID) {
 		this.mainAccount = account;
-	} else {
-		// set the default account if the account is not the "main" account
-		if (!this.defaultAccount) {
-			this.defaultAccount = account;
-		}
 	}
 };
 
@@ -278,6 +273,8 @@ function(settings, obj) {
 		// set global vars per number of child accounts
 		appCtxt.multiAccounts = this.size() > 1;
 		appCtxt.isFamilyMbox = appCtxt.multiAccounts && !appCtxt.isOffline;
+
+		this.defaultAccount = appCtxt.isFamilyMbox ? this.mainAccount : this.visibleAccounts[1];
 	}
 };
 

@@ -975,7 +975,8 @@ function(request, isDraft, accountName, requestReadReceipt) {
 				var from = this._origMsg.getAddresses(AjxEmailAddress.FROM).get(0);
 				// this means we're sending a draft msg obo
 				if (from && from.address != defaultAcct.getEmail()) {
-					oboDraftMsgId = [defaultAcct.id, ":", this.id].join("");
+					oboDraftMsgId = (this.id.indexOf(":") == -1)
+						? ([defaultAcct.id, ":", this.id].join("")) : this.id;
 					msgNode.id = oboDraftMsgId;
 				} else {
 					msgNode.id = this.nId;
@@ -1064,7 +1065,7 @@ function(request, isDraft, accountName, requestReadReceipt) {
 							var attachNode = inlineDocAttNode.attach = {};
 							if (inlineDocAtts[j].docpath) {
 								attachNode.doc = [{path: inlineDocAtts[j].docpath, optional:1 }];
-							}else if (inlineDocAtts[j].docid) {
+							} else if (inlineDocAtts[j].docid) {
 								attachNode.doc = [{id: inlineDocAtts[j].docid}];
 							} 
 							subPartNodes.push(inlineDocAttNode);
