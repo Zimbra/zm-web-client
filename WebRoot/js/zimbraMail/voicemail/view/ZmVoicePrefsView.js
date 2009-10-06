@@ -538,7 +538,7 @@ function() {
 
 ZmVoiceGeneralPage.prototype.isPageSizeDirty =
 function() {
-	return this._pageSizeSelect.getValue() != appCtxt.get(ZmSetting.VOICE_PAGE_SIZE);
+	return this._pageSizeSelect && this._pageSizeSelect.getValue() != appCtxt.get(ZmSetting.VOICE_PAGE_SIZE);
 };
 
 
@@ -740,7 +740,7 @@ function(comboBox) {
 
 ZmCallFeatureUI.prototype._isComboBoxValid =
 function(comboBox) {
-	return comboBox.input.isValid() !== null;
+	return comboBox && comboBox.input && comboBox.input.isValid() !== null;
 };
 
 ZmCallFeatureUI.prototype._validateComboBox =
@@ -1235,7 +1235,7 @@ function(feature) {
 
 ZmCallSendToVoicemailAfterRingsUI.prototype._isValueDirty =
 function() {
-	return this._select.getValue() != this._feature.data.nr;
+	return this._select && this._select.getValue() != this._feature.data.nr;
 }
 
 
@@ -1407,7 +1407,7 @@ function(value, errors) {
 
 ZmEmailNotificationUI.prototype._getAddresses =
 function() {
-	return this._list.getItemStrings();
+	return (this._list)? this._list.getItemStrings() : [];
 }
 
 
@@ -1491,7 +1491,7 @@ function(feature) {
 ZmSelectiveCallForwardingUI.prototype._isValueDirty =
 function() {
 	if (!this._isComboBoxValid(this._comboBox) || (this._getTo() != this._feature.data.ft)) return true;
-	var newPhones = (this._list.getList())? this._list.getList().getArray() : null;
+	var newPhones = (this._list && this._list.getList())? this._list.getList().getArray() : null;
 	var oldPhones = this._feature.data.phone || null;
 	
 	if (!newPhones && !oldPhones) return false;
@@ -1561,12 +1561,14 @@ function() {
 
 ZmSelectiveCallForwardingUI.prototype._getTo =
 function() {
-	var value = this._comboBox.getValue();
-	if (value) {
-		return value;
-	} else {
-		return ZmPhone.calculateName(this._comboBox.getText());
-	}
+	if (this._comboBox) {
+		var value = this._comboBox.getValue();
+		if (value) {
+			return value;
+		} else {
+			return ZmPhone.calculateName(this._comboBox.getText());
+		}
+	} else return null;
 };
 
 ZmSelectiveCallForwardingUI.prototype._handleAddFromNumber =
@@ -1744,7 +1746,7 @@ function(feature) {
 
 ZmSelectiveCallRejectionUI.prototype._isValueDirty =
 function() {
-	var newPhones = (this._list.getList()) ? this._list.getList().getArray() : null;
+	var newPhones = (this._list && this._list.getList()) ? this._list.getList().getArray() : null;
 	var oldPhones = this._feature.data.phone;
 	
 	if (!newPhones && !oldPhones) return false;
@@ -1798,7 +1800,7 @@ function() {
 		for (var i=0; i<items.length; i++)
 			from.push({a: items[i].a, pn: items[i].pn}); // Filter all other attributes
 	}
-	return from;	
+	return from;
 }
 
 ZmSelectiveCallRejectionUI.prototype._handleAddFromNumber =
@@ -1923,7 +1925,7 @@ function(feature) {
 
 ZmSelectiveCallAcceptanceUI.prototype._isValueDirty =
 function() {
-	var newPhones = (this._list.getList()) ? this._list.getList().getArray() : null;
+	var newPhones = (this._list && this._list.getList()) ? this._list.getList().getArray() : null;
 	var oldPhones = this._feature.data.phone;
 	
 	if (!newPhones && !oldPhones) return false;
