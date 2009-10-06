@@ -22,8 +22,9 @@ ZmResourceConflictDialog = function(parent) {
 
     var saveButton = new DwtDialog_ButtonDescriptor(ZmResourceConflictDialog.SAVE_BUTTON, ZmMsg.save, DwtDialog.ALIGN_RIGHT, null);
     var cancelButton = new DwtDialog_ButtonDescriptor(ZmResourceConflictDialog.CANCEL_BUTTON, ZmMsg.cancel, DwtDialog.ALIGN_RIGHT, null);
+    var ignoreSaveButton = new DwtDialog_ButtonDescriptor(ZmResourceConflictDialog.IGNORE_SAVE_BUTTON, ZmMsg.resourceConflictIgnore, DwtDialog.ALIGN_LEFT, null);
 
-	DwtDialog.call(this, {parent:parent, standardButtons: DwtDialog.NO_BUTTONS, extraButtons: [saveButton, cancelButton]});
+	DwtDialog.call(this, {parent:parent, standardButtons: DwtDialog.NO_BUTTONS, extraButtons: [ignoreSaveButton, saveButton, cancelButton]});
 
 	this.setContent(this._contentHtml(selectId));
 	this.setTitle(ZmMsg.resourceConflictLabel);
@@ -38,17 +39,19 @@ ZmResourceConflictDialog = function(parent) {
 
     this.registerCallback(ZmResourceConflictDialog.SAVE_BUTTON, this._handleSaveButton, this);
     this.registerCallback(ZmResourceConflictDialog.CANCEL_BUTTON, this.popdown, this);
+    this.registerCallback(ZmResourceConflictDialog.IGNORE_SAVE_BUTTON, this._handleIgnoreAllAndSaveButton, this);
 };
 
 ZmResourceConflictDialog.prototype = new DwtDialog;
 ZmResourceConflictDialog.prototype.constructor = ZmResourceConflictDialog;
 
-ZmResourceConflictDialog.HEIGHT = 100;
+ZmResourceConflictDialog.HEIGHT = 150;
 ZmResourceConflictDialog.MAX_HEIGHT = 300;
 
 
 ZmResourceConflictDialog.SAVE_BUTTON = ++DwtDialog.LAST_BUTTON;
 ZmResourceConflictDialog.CANCEL_BUTTON = ++DwtDialog.LAST_BUTTON;
+ZmResourceConflictDialog.IGNORE_SAVE_BUTTON = ++DwtDialog.LAST_BUTTON;
 
 // Public methods
 
@@ -60,7 +63,7 @@ function() {
 ZmResourceConflictDialog.prototype._contentHtml =
 function(selectId) {
 	this._listId = Dwt.getNextId();
-	return [ ZmMsg.resourceConflictMessage, "<br><br>", 
+	return [ "<span class='ResourceConflictMsg'>", ZmMsg.resourceConflictInfo, "</span><br><br>", 
 	"<div class='ZmResourceConflictDialog' id='", this._listId, "' style='overflow:auto;height:", ZmResourceConflictDialog.HEIGHT ,"px;'></div>"].join("");
 };
 
@@ -217,6 +220,7 @@ function(list, appt, callback) {
         dismissBtn.addSelectionListener(cancelInstListener);
         if(data.inst) {
             dismissBtn.ridZ = data.inst.ridZ;
+            dismissBtn.deltaId = data.deltaId;
         }
     }
 };
@@ -225,13 +229,21 @@ ZmResourceConflictDialog.prototype._cancelInstanceListener =
 function(ev) {
 	var obj = DwtControl.getTargetControl(ev);
     var instEl = document.getElementById(obj.ridZ + "_conflictInstTxt");
+    var deltaEl = document.getElementById(obj.deltaId);
     if(instEl) {
         var isCanceled = (!instEl.className);
         instEl.className = isCanceled ? "CanceledInstText" : "";
         obj.setImage(isCanceled ? "Check" : "Cancel");
         var appt = this._appt;
         if(appt._recurrence) {
-            appt._recurrence.addCancelRecurId(obj.ridZ);
+            if(isCanceled) {
+                appt._recurrence.addCancelRecurId(obj.ridZ);
+            }else {
+                appt._recurrence.removeCancelRecurId(obj.ridZ);                
+            }
+        }
+        if(deltaEl) {
+            deltaEl.innerHTML =  isCanceled ? ZmMsg.cancelled : "";
         }
     }
 };
@@ -247,3 +259,15 @@ function() {
   this.popdown();  
 };
 
+ZmResourceConflictDialog.prototype._handleIgnoreAllAndSaveButton =
+function() {
+    var size = this._list ? this._list.length : 0;
+    var appt = this._appt;
+    for (var i = 0; i < size; i++) {
+        var data = this._instData[i];
+        if(appt && data.inst) {
+            appt._recurrence.addCancelRecurId(data.inst.ridZ);
+        }
+    }
+    this._handleSaveButton();
+};

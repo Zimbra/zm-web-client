@@ -427,3 +427,13 @@ ZmRecurrence.prototype.addCancelRecurId =
 function(ridZ) {
     this._cancelRecurIds.push(ridZ);        
 };
+
+ZmRecurrence.prototype.removeCancelRecurId =
+function(ridZ) {
+    for(var i in this._cancelRecurIds) {
+        if(this._cancelRecurIds[i] == ridZ) {
+            this._cancelRecurIds.splice(i, 1);
+            return;
+        }
+    }
+};
