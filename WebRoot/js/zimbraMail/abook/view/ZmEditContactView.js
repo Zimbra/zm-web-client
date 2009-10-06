@@ -1050,6 +1050,7 @@ ZmEditContactViewOther.prototype._handleDateSelection = function(calendar) {
 	}
 	value.value = this._formatter.format(calendar.getDate());
 	this.setValue(value);
+	this.parent.setDirty(true);
 };
 
 //
