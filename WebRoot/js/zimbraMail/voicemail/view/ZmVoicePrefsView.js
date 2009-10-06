@@ -767,11 +767,11 @@ ZmCallFeatureUI.prototype.showDialogWithFAQ =
 function(text) {
 	if (AjxUtil.isString(text)) {
 		var msg = AjxStringUtil.trim(text);
-		if (text.length > 0) {
+		if (msg.length > 0) {
 			if (msg.indexOf("{0}") == -1) {
 				if (!msg.match("\.$"))
-					msg += ". ";
-				msg += this.getFaqLink();
+					msg += ".";
+				msg += " " + this.getFaqLink();
 			} else {
 				msg = AjxMessageFormat.format(msg, [this.getFaqLink()]);
 			}
