@@ -144,7 +144,7 @@ function(params) {
 		id:					ZmId.getTreeItemId(this.overviewId, null, this.type),
 		button:				isMultiAcctSubHeader ? null : params.newButton,
 		dndScrollCallback:	this._overview._dndScrollCallback,
-		dndScrollId:		this._overview.id,
+		dndScrollId:		this.overviewId,
 		selectable:			false
 	});
 	ti._isHeader = true;
@@ -381,7 +381,7 @@ function(parentNode, organizer, index, noTooltips, omit) {
 					imageInfo: parentOrganizer.getIconWithColor(),
 					forceNotifySelection: true,
 					dndScrollCallback: this._overview._dndScrollCallback,
-					dndScrollId: this._overview.id,
+					dndScrollId: this.overviewId,
 					id: ZmId.getTreeItemId(this.overviewId, parentOrganizer.id)
 				});
 				parentNode.setData(Dwt.KEY_ID, parentOrganizer.id);
@@ -396,7 +396,7 @@ function(parentNode, organizer, index, noTooltips, omit) {
 			index:index,
 			text:organizer.getName(this._showUnread),
 			dndScrollCallback: this._overview._dndScrollCallback,
-			dndScrollId: this._overview.id,
+			dndScrollId: this.overviewId,
 			imageInfo:organizer.getIconWithColor(),
 			id:ZmId.getTreeItemId(this.overviewId, organizer.id)
 		};
