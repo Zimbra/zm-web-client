@@ -108,7 +108,7 @@ ZmImportExportController.prototype.importData = function(params) {
 
 	params.ext = params.filename.replace(/^.*\./,"");
 	params.defaultType = params.type || ZmImportExportController.EXTS_TYPE[params.ext] || ZmImportExportController.TYPE_DEFAULT;
-	var isZimbra = params.defaultType == ZmImportExportController.TYPE_TGZ;
+	var isZimbra = ZmImportExportController.EXTS_TYPE[params.defaultType] == ZmImportExportController.TYPE_TGZ;
 	var folder = appCtxt.getById(folderId);
 	if (!isZimbra && folder && folder.nId == ZmOrganizer.ID_ROOT) {
 		var params = {
@@ -163,7 +163,7 @@ ZmImportExportController.prototype.exportData = function(params) {
 	}
 
 	var type = params.type = params.type || ZmImportExportController.TYPE_DEFAULT;
-	var isZimbra = type == ZmImportExportController.TYPE_TGZ;
+	var isZimbra = ZmImportExportController.EXTS_TYPE[type] == ZmImportExportController.TYPE_TGZ;
 	var folder = appCtxt.getById(folderId);
 	if (!isZimbra && folder && folder.nId == ZmOrganizer.ID_ROOT) {
 		var params = {
