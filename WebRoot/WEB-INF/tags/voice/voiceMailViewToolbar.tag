@@ -34,9 +34,11 @@
 					<td><div class='vertSep'/></td>
 					<app:button id="OPHEARD" name="actionMarkHeard" text="actionMarkHeard" src="voicemail/ImgMarkAsHeard.gif" tooltip="actionMarkHeardTT" disabled="${isTrash or heard}"/>
 					<app:button id="OPUNHEARD" name="actionMarkUnheard" text="actionMarkUnheard" src="voicemail/ImgMarkAsUnheard.gif" tooltip="actionMarkUnheardTT" disabled="${isTrash or not heard}"/>
+					<%--
 					<td><div class='vertSep'/></td>
 					<app:button id="OPADDFORWARD" name="actionAddToForward" text="actionAddCallerToForward" tooltip="actionAddCallerToForwardTT"/>
 					<app:button id="OPADDREJECT" name="actionAddToReject" text="actionAddCallerToReject" tooltip="actionAddCallerToRejectTT"/>
+					--%>
 				</tr>
 			</table>
 		</td>

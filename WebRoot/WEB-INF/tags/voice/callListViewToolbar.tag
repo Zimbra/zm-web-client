@@ -36,9 +36,11 @@
                     </c:url>
                     <a id="OPCALLMANAGER" href="${optionsUrl}"><app:img src="voicemail/ImgCallManager.gif" altkey="callManager"/><span><fmt:message key="actionCallManager"/></span></a>
                 </td>
+		<%--
                 <td><div class='vertSep'></div></td>
                 <app:button id="OPADDFORWARD" name="actionAddToForward" text="actionAddCallerToForward" tooltip="actionAddCallerToForwardTT"/>
                 <app:button id="OPADDREJECT" name="actionAddToReject" text="actionAddCallerToReject" tooltip="actionAddCallerToRejectTT"/>
+		--%>
             </table>
         </td>
         <td nowrap align=right>

@@ -48,9 +48,11 @@
 			<td><div class='vertSep'></div><input type="hidden" name="folderId" value="${context.folder.id}"></td>
 			<app:button name="actionHardDelete" src="startup/ImgDelete.gif" tooltip="emptyTrash" text="emptyTrash"/>
 		</c:if>
+<%--
 	<td><div class='vertSep'></div></td>
         <app:button id="OPADDFORWARD" name="actionAddToForward" text="actionAddCallerToForward" tooltip="actionAddCallerToForwardTT"/>
 	<app:button id="OPADDREJECT" name="actionAddToReject" text="actionAddCallerToReject" tooltip="actionAddCallerToRejectTT"/>
+--%>
     </c:set>
 </c:if>
 
