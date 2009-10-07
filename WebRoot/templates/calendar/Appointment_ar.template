@@ -1,0 +1,3 @@
+<template id='calendar.Appointment#DateField'>
+	<input autocomplete='off' style='height:22px;' type='text' size=14 id='${id}' value='${value}' dir="rtl">
+</template>
