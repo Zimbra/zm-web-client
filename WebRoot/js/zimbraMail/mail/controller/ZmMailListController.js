@@ -575,6 +575,22 @@ function(view) {
 
 // List listeners
 
+ZmMailListController.prototype._listSelectionListener =
+function(ev) {
+	// offline: when opening a message in Outbox, move it to the appropriate
+	// account's Drafts folder first
+	if (appCtxt.isOffline &&
+		ev.detail == DwtListView.ITEM_DBL_CLICKED &&
+		ev.item && ev.item.isDraft)
+	{
+		var account = ev.item.account || ZmOrganizer.parseId(ev.item.id).account;
+		var folder = appCtxt.getById(ZmOrganizer.getSystemId(ZmFolder.ID_DRAFTS, account));
+		this._list.moveItems([ev.item], folder);
+	}
+
+	ZmListController.prototype._listSelectionListener.apply(this, arguments);
+};
+
 // Based on context, enable read/unread operation, add/edit contact.
 ZmMailListController.prototype._listActionListener =
 function(ev) {
