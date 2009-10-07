@@ -35,38 +35,23 @@ ZmImportExportController.TYPE_TGZ = "tgz";
 
 ZmImportExportController.TYPE_DEFAULT = ZmImportExportController.TYPE_TGZ;
 
-ZmImportExportController.SUBTYPE_OUTLOOK_CSV = "outlook-unknown-csv";
-ZmImportExportController.SUBTYPE_OUTLOOK_2000_CSV = "outlook-2000-csv";
-ZmImportExportController.SUBTYPE_OUTLOOK_2003_CSV = "outlook-2003-csv";
-ZmImportExportController.SUBTYPE_THUNDERBIRD_CSV = "thunderbird-csv";
-ZmImportExportController.SUBTYPE_YAHOO_CSV = "yahoo-csv";
-ZmImportExportController.SUBTYPE_ZIMBRA_CSV = "zimbra-csv";
-ZmImportExportController.SUBTYPE_ZIMBRA_ICS = "zimbra-ics"; // for completeness
-ZmImportExportController.SUBTYPE_ZIMBRA_TGZ = "zimbra-tgz"; // for completeness
-
-ZmImportExportController.SUBTYPES_TGZ = [
-	ZmImportExportController.SUBTYPE_ZIMBRA_TGZ
-];
-ZmImportExportController.SUBTYPES_ICS = [
-	ZmImportExportController.SUBTYPE_ZIMBRA_ICS
-];
-ZmImportExportController.SUBTYPES_CSV = [
-	ZmImportExportController.SUBTYPE_ZIMBRA_CSV,
-	ZmImportExportController.SUBTYPE_YAHOO_CSV,
-	ZmImportExportController.SUBTYPE_OUTLOOK_CSV,
-	ZmImportExportController.SUBTYPE_OUTLOOK_2000_CSV,
-	ZmImportExportController.SUBTYPE_OUTLOOK_2003_CSV,
-	ZmImportExportController.SUBTYPE_THUNDERBIRD_CSV
-];
-
-ZmImportExportController.SUBTYPE_DEFAULT_TGZ = ZmImportExportController.SUBTYPE_ZIMBRA_TGZ;
-ZmImportExportController.SUBTYPE_DEFAULT_CSV = ZmImportExportController.SUBTYPE_ZIMBRA_CSV;
-ZmImportExportController.SUBTYPE_DEFAULT_ICS = ZmImportExportController.SUBTYPE_ZIMBRA_ICS;
-
 ZmImportExportController.SUBTYPE_DEFAULT = {};
 ZmImportExportController.SUBTYPE_DEFAULT[ZmImportExportController.TYPE_TGZ] = ZmImportExportController.SUBTYPE_ZIMBRA_TGZ;
 ZmImportExportController.SUBTYPE_DEFAULT[ZmImportExportController.TYPE_CSV] = ZmImportExportController.SUBTYPE_ZIMBRA_CSV;
 ZmImportExportController.SUBTYPE_DEFAULT[ZmImportExportController.TYPE_ICS] = ZmImportExportController.SUBTYPE_ZIMBRA_ICS;
+
+ZmImportExportController.TYPE_EXTS = {};
+ZmImportExportController.TYPE_EXTS[ZmImportExportController.TYPE_CSV] = [ "csv", "vcf" ];
+ZmImportExportController.TYPE_EXTS[ZmImportExportController.TYPE_ICS] = [ "ics" ];
+ZmImportExportController.TYPE_EXTS[ZmImportExportController.TYPE_TGZ] = [ "tgz", "zip" ];
+
+ZmImportExportController.EXTS_TYPE = {};
+for (var p in ZmImportExportController.TYPE_EXTS) {
+	for (var i = 0; i < ZmImportExportController.TYPE_EXTS[p].length; i++) {
+		ZmImportExportController.EXTS_TYPE[ZmImportExportController.TYPE_EXTS[p][i]] = p;
+	}
+}
+delete p; delete i;
 
 ZmImportExportController.__FAULT_ARGS_MAPPING = {
 	"formatter.INVALID_FORMAT": [ "filename" ],
@@ -92,8 +77,8 @@ ZmImportExportController.__FAULT_ARGS_MAPPING = {
  * 									assumes import to root folder.
  *        type			[string]*	Type. Defaults to <code>TYPE_TGZ</code>.
  *        subType		[string]*	Sub-type. Defaults to <code>SUBTYPE_DEFAULT[type]</code>.
- *        resolve		[string]*	Resolve duplicates: "ignore", "modify", "replace", "reset".
- * 									Defaults to <code>"ignore"</code>.
+ *        resolve		[string]*	Resolve duplicates: "" (ignore), "modify", "replace", "reset".
+ * 									Defaults to ignore.
  *        views			[string]*	Comma-separated list of views.
  *        callback		[AjxCallback]*	Callback for success.
  *        errorCallback	[AjxCallback]*	Callback for errors.
@@ -111,21 +96,23 @@ ZmImportExportController.prototype.importData = function(params) {
 		return false;
 	}
 
-	var type = params.type;
-	var isZimbra = type == ZmImportExportController.TYPE_TGZ;
-	var folder = appCtxt.getById(folderId);
-	if (!isZimbra && folder && folder.nId == ZmOrganizer.ID_ROOT) {
+	params.filename = params.form && params.form.elements["file"].value;
+	if (!params.filename) {
 		var params = {
-			msg:	ZmMsg.importErrorRootNotAllowed,
+			msg:	ZmMsg.importErrorMissingFile,
 			level:	ZmStatusView.LEVEL_CRITICAL
 		};
 		appCtxt.setStatusMsg(params);
 		return false;
 	}
 
-	if (params.form && !params.form.elements["file"].value) {
+	params.ext = params.filename.replace(/^.*\./,"");
+	params.defaultType = params.type || ZmImportExportController.EXTS_TYPE[params.ext] || ZmImportExportController.TYPE_DEFAULT;
+	var isZimbra = params.defaultType == ZmImportExportController.TYPE_TGZ;
+	var folder = appCtxt.getById(folderId);
+	if (!isZimbra && folder && folder.nId == ZmOrganizer.ID_ROOT) {
 		var params = {
-			msg:	ZmMsg.importErrorMissingFile,
+			msg:	ZmMsg.importErrorRootNotAllowed,
 			level:	ZmStatusView.LEVEL_CRITICAL
 		};
 		appCtxt.setStatusMsg(params);
@@ -175,7 +162,7 @@ ZmImportExportController.prototype.exportData = function(params) {
 		return false;
 	}
 
-	var type = params.type;
+	var type = params.type = params.type || ZmImportExportController.TYPE_DEFAULT;
 	var isZimbra = type == ZmImportExportController.TYPE_TGZ;
 	var folder = appCtxt.getById(folderId);
 	if (!isZimbra && folder && folder.nId == ZmOrganizer.ID_ROOT) {
@@ -196,35 +183,22 @@ ZmImportExportController.prototype.exportData = function(params) {
 //
 
 ZmImportExportController.prototype._doImportData = function(params) {
-	var type = params.type || ZmImportExportController.TYPE_DEFAULT;
-	var isContacts = type == ZmImportExportController.TYPE_CSV;
-	var isCalendar = type == ZmImportExportController.TYPE_ICS;
-	if (params.folderId != -1) {
-		if (isContacts || isCalendar) {
-			var folder = appCtxt.getById(params.folderId);
-			return this._doImportUpload(params, type, folder);
-		}
+	if (params.folderId == -1 && params.defaultType != ZmImportExportController.TYPE_TGZ) {
+		return this._doImportSelectFolder(params);
 	}
-	else {
-		if (type == ZmImportExportController.TYPE_CSV) {
-			return this._doImportSelectFolder(params, ZmImportExportController.TYPE_CSV);
-		}
-		if (type == ZmImportExportController.TYPE_ICS) {
-			return this._doImportSelectFolder(params, ZmImportExportController.TYPE_ICS);
-		}
-	}
-	return this._doImportTGZ(params);
+	return this._doImport(params);
 };
 
-ZmImportExportController.prototype._doImportSelectFolder = function(params, type) {
+ZmImportExportController.prototype._doImportSelectFolder = function(params) {
 	var dialog = appCtxt.getChooseFolderDialog();
 	dialog.reset();
 	dialog.setTitle(ZmMsg._import);
-	dialog.registerCallback(DwtDialog.OK_BUTTON, this._doImportUpload, this, [params, type]);
+	dialog.registerCallback(DwtDialog.OK_BUTTON, this._doImportSelectFolderDone, this, [params]);
 
 	var overviewId = dialog.getOverviewId(ZmSetting.IMPORT);
 	var omit = {};
 	omit[ZmFolder.ID_TRASH] = true;
+	var type = params.defaultType;
 	if (type == ZmImportExportController.TYPE_CSV) {
 		AjxDispatcher.require(["ContactsCore", "Contacts"]);
 		var noNew = !appCtxt.get(ZmSetting.NEW_ADDR_BOOK_ENABLED);
@@ -238,10 +212,8 @@ ZmImportExportController.prototype._doImportSelectFolder = function(params, type
 			omit:			omit,
 			appName:		ZmApp.CONTACTS
 		});
-		return;
 	}
-
-	if (type == ZmImportExportController.TYPE_ICS) {
+	else if (type == ZmImportExportController.TYPE_ICS) {
 		AjxDispatcher.require(["CalendarCore", "Calendar"]);
 		dialog.popup({
 			treeIds: [ZmOrganizer.CALENDAR],
@@ -255,102 +227,21 @@ ZmImportExportController.prototype._doImportSelectFolder = function(params, type
 	}
 };
 
-ZmImportExportController.prototype._doImportUpload = function(params, type, folder) {
-	if (folder && folder.nId != ZmOrganizer.ID_ROOT) {
-		var dialog = appCtxt.getChooseFolderDialog();
-		dialog.popdown();
-
-		params.folderId = folder.id;
-
-		var form = params.form;
-		form.action = appCtxt.get(ZmSetting.CSFE_UPLOAD_URI);
-		form.method = "POST";
-		form.enctype = "multipart/form-data";
-
-		var callback = new AjxCallback(this, this._doImportUploadDone, [params, type]);
-		var um = appCtxt.getUploadManager();
-		window._uploadManager = um;
-		try {
-			um.execute(callback, params.form);
-			return true;
-		}
-		catch (ex) {
-			appCtxt.setStatusMsg({
-				msg:	ex.msg || ZmMsg.importErrorUpload,
-				level:	ZmStatusView.LEVEL_CRITICAL
-			});
-			return false;
-		}
-	}
-	return false;
+ZmImportExportController.prototype._doImportSelectFolderDone = function(params, organizer) {
+	params.folderId = organizer.id;
+	this._doImport(params);
 };
 
-ZmImportExportController.prototype._doImportUploadDone =
-function(params, type, status, aid) {
-	if (status == 200) {
-		if (type == ZmImportExportController.TYPE_CSV) {
-			this._doImportCSV(params, aid);
-			return;
-		}
-		if (type == ZmImportExportController.TYPE_ICS) {
-			this._doImportICS(params, aid);
-			return;
-		}
-	}
-	else {
-		var msg = (status == AjxPost.SC_NO_CONTENT)
-			? ZmMsg.errorImportNoContent
-			: (AjxMessageFormat.format(ZmMsg.errorImportStatus, status));
-		appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_CRITICAL);
-	}
-};
-
-ZmImportExportController.prototype._doImportCSV = function(params, aid) {
-	var soapDoc = AjxSoapDoc.create("ImportContactsRequest", "urn:zimbraMail");
-	var method = soapDoc.getMethod();
-	method.setAttribute("ct", params.type);
-	if (params.subType) {
-		method.setAttribute(params.type+"fmt", params.subType);
-	}
-	method.setAttribute("l", params.folderId);
-	var content = soapDoc.set("content", "");
-	content.setAttribute("aid", aid);
-
-	this._doImportRequest(soapDoc, params, ZmImportExportController.TYPE_CSV);
-};
-
-ZmImportExportController.prototype._doImportICS = function(params, aid) {
-	var soapDoc = AjxSoapDoc.create("ImportAppointmentsRequest", "urn:zimbraMail");
-	var method = soapDoc.getMethod();
-	method.setAttribute("ct", "ics");
-	method.setAttribute("l", params.folderId);
-	var content = soapDoc.set("content", "");
-	content.setAttribute("aid", aid);
-
-	this._doImportRequest(soapDoc, params, ZmImportExportController.TYPE_ICS);
-};
-
-ZmImportExportController.prototype._doImportRequest = function(soapDoc, params, type) {
-	var respCallback = new AjxCallback(this, this._importSuccess, [params.callback]);
-	var errorCallback = new AjxCallback(this, this._importError, [params.errorCallback]);
-	appCtxt.getAppController().sendRequest({
-		soapDoc: soapDoc,
-		asyncMode: true,
-		callback: respCallback,
-		errorCallback: errorCallback,
-		timeout: ZmImportExportController.IMPORT_TIMEOUT
-	});
-};
-
-ZmImportExportController.prototype._doImportTGZ = function(params) {
+ZmImportExportController.prototype._doImport = function(params) {
 	// create custom callback function for this import request
 	var funcName = "ZmImportExportController__callback__"+Dwt.getNextId("import");
-	window[funcName] = AjxCallback.simpleClosure(this._handleImportTGZResponse, this, funcName, params);
+	window[funcName] = AjxCallback.simpleClosure(this._handleImportResponse, this, funcName, params);
 
 	// generate request url
 	var folder = params.folderId && appCtxt.getById(params.folderId);
 	if (folder && folder.nId == ZmOrganizer.ID_ROOT) folder = null;
 	var path = folder ? folder.getPath(null, null, null, null, true) : "";
+	var ext = params.ext;
 
 	var url = [
 		"/home/",
@@ -358,7 +249,7 @@ ZmImportExportController.prototype._doImportTGZ = function(params) {
 		"/",
 		path,
 		"?",
-		"fmt=",encodeURIComponent(params.type),
+		params.type ? "fmt="+encodeURIComponent(params.type) : "",
 		params.views ? "&types="+encodeURIComponent(params.views) : "",
 		params.resolve ? "&resolve="+encodeURIComponent(params.resolve) : "",
 		"&callback="+funcName
@@ -380,7 +271,7 @@ ZmImportExportController.prototype._doImportTGZ = function(params) {
 	return true;
 };
 
-ZmImportExportController.prototype._handleImportTGZResponse =
+ZmImportExportController.prototype._handleImportResponse =
 function(funcName, params, type, fault1 /* , ... , faultN */) {
 	// gather error/warning messages
 	var messages = [];
@@ -439,7 +330,7 @@ ZmImportExportController.prototype._cancelImportReset = function() {
 };
 
 ZmImportExportController.prototype._doExportData = function(params) {
-	var type = params.type || ZmImportExportController.TYPE_DEFAULT;
+	var type = params.type;
 	var isTGZ = type == ZmImportExportController.TYPE_TGZ;
 	var isCSV = type == ZmImportExportController.TYPE_CSV;
 	var subType = params.subType || ZmImportExportController.SUBTYPE_DEFAULT[type];

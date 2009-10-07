@@ -93,7 +93,7 @@ ZmImportView.prototype.getParams = function() {
 		// required
 		form:		this.getControl("FORM"),
 		// optional -- ignore if not relevant
-		type:		this.isRelevant("TYPE") ? type : null,
+//		type:		this.isRelevant("TYPE") ? type : null,
 		subType:	this.isRelevant("SUBTYPE") ? this.getValue("SUBTYPE") : null,
 		views:		this.isRelevant("DATA_TYPES") ? this.getValue("DATA_TYPES") : null,
 		resolve:	this.isRelevant("RESOLVE") && isTGZ ? this.getValue("RESOLVE") : null,
