@@ -37,12 +37,12 @@ function() {
 };
 
 ZmSpellChecker.prototype.check =
-function(text, callback) {
+function(text, callback, errCallback) {
 	var soapDoc = AjxSoapDoc.create("CheckSpellingRequest", "urn:zimbraMail");
 	soapDoc.getMethod().appendChild(soapDoc.getDoc().createTextNode(text));
 
 	var callback = new AjxCallback(this, this._checkCallback, callback);
-	appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: callback});
+	appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: callback, errorCallback: errCallback});
 };
 
 ZmSpellChecker.prototype._checkCallback =

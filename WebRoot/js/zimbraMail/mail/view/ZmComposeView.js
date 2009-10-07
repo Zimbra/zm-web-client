@@ -455,7 +455,7 @@ function(attId, isDraft, dummyMsg) {
 	// Mandatory Spell Check
 	if (!isDraft && appCtxt.get(ZmSetting.SPELL_CHECK_ENABLED) && 
 		appCtxt.get(ZmSetting.MAIL_MANDATORY_SPELLCHECK) && !this._spellCheckOkay) {
-		if (this._htmlEditor.checkMisspelledWords(new AjxCallback(this, this._spellCheckShield))) {
+		if (this._htmlEditor.checkMisspelledWords(new AjxCallback(this, this._spellCheckShield), null, new AjxCallback(this, this._spellCheckErrorShield))) {
 			return;
 		}
 	} else {
@@ -2812,6 +2812,41 @@ function(msgDialog, ev){
 	this._spellCheckOkay = true;
 	msgDialog.popdown();
 	this._controller.sendMsg();
+};
+
+ZmComposeView.prototype._spellCheckErrorShield =
+function(ex){
+
+    var msgDialog = appCtxt.getYesNoMsgDialog();
+    msgDialog.setMessage(ZmMsg.spellCheckFailed);
+    msgDialog.registerCallback(DwtDialog.YES_BUTTON, this._spellCheckErrorShieldOkListener, this, msgDialog );
+    msgDialog.registerCallback(DwtDialog.NO_BUTTON, this._spellCheckErrorShieldCancelListener, this, msgDialog);
+    msgDialog.associateEnterWithButton(DwtDialog.NO_BUTTON);
+    msgDialog.popup(null, DwtDialog.NO_BUTTON);
+
+    return true;
+
+};
+
+ZmComposeView.prototype._spellCheckErrorShieldOkListener =
+function(msgDialog, ev){
+
+	this._controller._toolbar.enableAll(true);
+	this._controller.toggleSpellCheckButton(false);
+	this._htmlEditor.discardMisspelledWords();
+	msgDialog.popdown();
+
+    this._spellCheckOkay = true;
+	this._controller.sendMsg();
+	
+};
+
+ZmComposeView.prototype._spellCheckErrorShieldCancelListener =
+function(msgDialog, ev){
+    this._controller._toolbar.enableAll(true);
+    this._controller.toggleSpellCheckButton(false);
+    this._htmlEditor.discardMisspelledWords();
+	msgDialog.popdown();
 };
 
 ZmComposeView.prototype._setFormValue =

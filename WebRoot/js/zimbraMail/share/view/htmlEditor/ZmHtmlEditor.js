@@ -182,7 +182,7 @@ function(insertFontStyle, onlyInnerContent ) {
 };
 
 ZmHtmlEditor.prototype.checkMisspelledWords =
-function(callback, onExitCallback){
+function(callback, onExitCallback, errCallback){
 	var text = this.getTextVersion();
 	if (/\S/.test(text)) {
 		AjxDispatcher.require("Extras");
@@ -192,7 +192,7 @@ function(callback, onExitCallback){
 		if (!this.onExitSpellChecker) {
 			this.onExitSpellChecker = onExitCallback;
 		}
-		this._spellChecker.check(text, callback);
+		this._spellChecker.check(text, callback, errCallback);
 		return true;
 	}
 
