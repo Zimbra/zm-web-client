@@ -167,8 +167,8 @@ ZmToast.DEFAULT_STATE = {};
 ZmToast.DEFAULT_STATE["position"] = { location: "C" }; // center
 ZmToast.DEFAULT_STATE["pause"] = { duration: 1200 };
 ZmToast.DEFAULT_STATE["fade"] = { duration: 100, multiplier: 1 };
-ZmToast.DEFAULT_STATE["fade-in"] = { start: 0, end: 99, step: 10, duration: 100, multiplier: 1 };
-ZmToast.DEFAULT_STATE["fade-out"] = { start: 99, end: 0, step: -10, duration: 100, multiplier: 1 };
+ZmToast.DEFAULT_STATE["fade-in"] = { start: 0, end: 99, step: 10, duration: 200, multiplier: 1 };
+ZmToast.DEFAULT_STATE["fade-out"] = { start: 99, end: 0, step: -10, duration: 200, multiplier: 1 };
 ZmToast.DEFAULT_STATE["slide"] = { duration: 100, multiplier: 1 };
 ZmToast.DEFAULT_STATE["slide-in"] = { start: -40, end: 0, step: 1, duration: 100, multiplier: 1 };
 ZmToast.DEFAULT_STATE["slide-out"] = { start: 0, end: -40, step: -1, duration: 100, multiplier: 1 };
@@ -276,14 +276,24 @@ function(transition) {
             state[name] = defaults[name];
         }
     }
-
+    var el = this.getHtmlElement();
+    
 	switch (state.type) {
         case "fade-in":
+            Dwt.setOpacity(el, 0);
+            Dwt.setLocation(el, null, 0);
+            state.value = state.start;
+            break;
 		case "fade-out":
 		case "fade":
+            Dwt.setLocation(el, null, 0);
+            state.value = state.start;
+            break;
         case "slide-in":
 		case "slide-out":
 		case "slide":{
+            Dwt.setLocation(el, null, -36);
+            Dwt.setOpacity(el, 100);
             state.value = state.start;
             break;
         }
