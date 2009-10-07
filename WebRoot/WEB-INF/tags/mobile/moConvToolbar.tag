@@ -132,9 +132,9 @@
             <c:if test="${not message.isFlagged}"><option value="actionFlag"><fmt:message key="add"/></option></c:if>
             <c:if test="${message.isFlagged}"><option value="actionUnflag"><fmt:message key="remove"/></option></c:if>
         </optgroup>
-        <optgroup label="<fmt:message key="moveAction"/>">
+        <optgroup label="<fmt:message key="moveAction"/>"><c:set var="count" value="${0}"/>
             <zm:forEachFolder var="folder">
-                <c:if test="${folder.id != context.folder.id and folder.isMessageMoveTarget and !folder.isTrash and !folder.isSpam}"><option value="moveTo_${folder.id}">${zm:getFolderPath(pageContext, folder.id)}</option></c:if>
+                <c:if test="${count lt sessionScope.F_LIMIT and folder.id != context.folder.id and folder.isMessageMoveTarget and !folder.isTrash and !folder.isSpam}"><option value="moveTo_${folder.id}">${zm:getFolderPath(pageContext, folder.id)}</option><c:set var="count" value="${count+1}"/></c:if>
             </zm:forEachFolder>
         </optgroup>
         <c:if test="${mailbox.features.tagging and mailbox.hasTags}">
@@ -172,9 +172,9 @@
             <option value="actionFlag"><fmt:message key="add"/></option>
             <option value="actionUnflag"><fmt:message key="remove"/></option>
         </optgroup>
-        <optgroup label="<fmt:message key="moveAction"/>">
+        <optgroup label="<fmt:message key="moveAction"/>"><c:set var="count" value="${0}"/>
         <zm:forEachFolder var="folder">
-        <c:if test="${folder.id != context.folder.id and folder.isMessageMoveTarget and !folder.isTrash and !folder.isSpam}"><option value="moveTo_${folder.id}">${fn:escapeXml(folder.rootRelativePath)}</option></c:if></zm:forEachFolder>
+        <c:if test="${count lt sessionScope.F_LIMIT and folder.id != context.folder.id and folder.isMessageMoveTarget and !folder.isTrash and !folder.isSpam}"><option value="moveTo_${folder.id}">${fn:escapeXml(folder.rootRelativePath)}</option><c:set var="count" value="${count+1}"/></c:if></zm:forEachFolder>
         </optgroup>
         <c:if test="${mailbox.features.tagging and mailbox.hasTags}">
             <c:set var="allTags" value="${mailbox.mailbox.allTags}"/>

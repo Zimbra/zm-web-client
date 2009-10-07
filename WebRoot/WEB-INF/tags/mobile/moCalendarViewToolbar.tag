@@ -61,10 +61,10 @@
         </c:if>
         <c:if test="${top_fldr_select eq '1'}">
         <select name="sfi" onchange="fetchIt('?sfi='+this.value+'&st=cal');">
-        <option value="null">${checkedInUI}</option>
+        <option value="null">${checkedInUI}</option><c:set var="count" value="${0}"/>
         <zm:forEachFolder var="fldr" skiproot="true">
-            <c:if test="${fldr.isCalendar || fldr.isAppointmentView}">
-                <option ${param.sfi eq fldr.id || sessionScope.calendar.id eq fldr.id ? 'selected=selected' : ''} value="${fldr.id}">${fn:escapeXml(zm:truncateFixed(zm:getFolderName(pageContext,fldr.id),12,true))}</option>
+            <c:if test="${count lt sessionScope.F_LIMIT and fldr.isCalendar || fldr.isAppointmentView}">
+                <option ${param.sfi eq fldr.id || sessionScope.calendar.id eq fldr.id ? 'selected=selected' : ''} value="${fldr.id}">${fn:escapeXml(zm:truncateFixed(zm:getFolderName(pageContext,fldr.id),12,true))}</option><c:set var="count" value="${count+1}"/>
             </c:if>
         </zm:forEachFolder>
         </select>
@@ -103,10 +103,10 @@
         </c:if>
         <c:if test="${btm_fldr_select eq '1'}">
         <select name="sfi" onchange="fetchIt('?sfi='+this.value+'&st=cal');">
-        <option value="null">${checkedInUI}</option>
+        <option value="null">${checkedInUI}</option><c:set var="count" value="${0}"/>
         <zm:forEachFolder var="fldr" skiproot="true">
-            <c:if test="${fldr.isCalendar || fldr.isAppointmentView}">
-                <option ${param.sfi eq fldr.id || sessionScope.calendar.id eq fldr.id ? 'selected=selected' : ''} value="${fldr.id}">${fn:escapeXml(zm:truncateFixed(zm:getFolderName(pageContext,fldr.id),12,true))}</option>
+            <c:if test="${count lt sessionScope.F_LIMIT and fldr.isCalendar || fldr.isAppointmentView}">
+                <option ${param.sfi eq fldr.id || sessionScope.calendar.id eq fldr.id ? 'selected=selected' : ''} value="${fldr.id}">${fn:escapeXml(zm:truncateFixed(zm:getFolderName(pageContext,fldr.id),12,true))}</option><c:set var="count" value="${count+1}"/>
             </c:if>
         </zm:forEachFolder>
         </select>

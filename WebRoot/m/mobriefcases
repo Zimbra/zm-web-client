@@ -86,31 +86,31 @@
     </div>
 </div>
 <c:if test="${param.st eq 'briefcases'}">
-    <mo:folderForm type="folder" id="${param.id}" hide="${empty param.showBCCreate}" url="${currentUrl}" st="${param.st}"/>
+    <mo:folderForm type="folder" id="${param.id}" hide="${empty param.showBCCreate}" url="${currentUrl}" st="${param.st}"/><c:set var="count" value="${0}"/>
     <zm:forEachFolder var="folder" skiproot="${false}" skipsystem="${false}" skiptrash="${true}">
-        <c:if test="${folder.isDocumentView}">
+        <c:if test="${count lt sessionScope.F_LIMIT and folder.isDocumentView}">
             <mo:overviewFolder folder="${folder}" types="briefcase"/>
             <mo:doFolderTree skiproot="${true}" parentid="${folder.id}" skipsystem="false"/>
-        </c:if>
+        <c:set var="count" value="${count+1}"/></c:if>
     </zm:forEachFolder>
 </c:if>
 <c:if test="${param.st eq 'notebooks'}">
-    <mo:folderForm type="folder" id="${param.id}" hide="${empty param.showNBCreate}" url="${currentUrl}" st="${param.st}"/>
+    <mo:folderForm type="folder" id="${param.id}" hide="${empty param.showNBCreate}" url="${currentUrl}" st="${param.st}"/><c:set var="count" value="${0}"/>
     <zm:forEachFolder var="folder" skiproot="${false}" skipsystem="${false}" skiptrash="${true}">
-        <c:if test="${folder.isWikiView}">
+        <c:if test="${count lt sessionScope.F_LIMIT and folder.isWikiView}">
             <mo:overviewFolder folder="${folder}" types="wiki"/>
             <mo:doFolderTree skiproot="${true}" parentid="${folder.id}" skipsystem="false"/>
-        </c:if>
+        <c:set var="count" value="${count+1}"/></c:if>
     </zm:forEachFolder>
 </c:if>
-<mo:overviewFolder types="${param.st eq 'briefcases' ? 'briefcase' : 'wiki' }" folder="${mailbox.trash}"/>    
+<mo:overviewFolder types="${param.st eq 'briefcases' ? 'briefcase' : 'wiki' }" folder="${mailbox.trash}"/><c:set var="count" value="${0}"/>
 <zm:forEachFolder var="folder" skiproot="${true}" parentid="${mailbox.trash.id}" skipsystem="${false}">
-    <c:if test="${(param.st eq 'briefcases' and folder.isDocumentView )}">
+    <c:if test="${count lt sessionScope.F_LIMIT and (param.st eq 'briefcases' and folder.isDocumentView )}">
         <mo:overviewFolder folder="${folder}" types="briefcase"/>
-    </c:if>
-    <c:if test="${(param.st eq 'notebooks' and folder.isWikiView )}">
+    <c:set var="count" value="${count+1}"/></c:if>
+    <c:if test="${count lt sessionScope.F_LIMIT and (param.st eq 'notebooks' and folder.isWikiView )}">
         <mo:overviewFolder folder="${folder}" types="wiki"/>
-    </c:if>
+    <c:set var="count" value="${count+1}"/></c:if>
 </zm:forEachFolder>
 <div class="tb tbl">
     <div class="tr">
@@ -124,15 +124,15 @@
         </div>
     </div>
 </div>
-<mo:folderForm type="search" id="${param.sid}" hide="${empty param.showSearchCreate}" url="${currentUrl}" st="${param.st}"/>
+<mo:folderForm type="search" id="${param.sid}" hide="${empty param.showSearchCreate}" url="${currentUrl}" st="${param.st}"/><c:set var="count" value="${0}"/>
 <zm:forEachFolder var="folder" skipsystem="${true}" skiptopsearch="${false}">
-    <c:if test="${(folder.isSearchFolder && (empty query || fn:containsIgnoreCase(folder.name,query)))}">
+    <c:if test="${count lt sessionScope.F_LIMIT and (folder.isSearchFolder && (empty query || fn:containsIgnoreCase(folder.name,query)))}">
         <c:if test="${param.st eq 'briefcases' && (folder.types eq 'document' || folder.types eq 'briefcase')}">
             <mo:overviewSearchFolder folder="${folder}" types="briefcase"/>
-        </c:if>
-        <c:if test="${param.st eq 'notebooks' && (folder.types eq 'wiki' || folder.types eq 'notebook')}">
+        <c:set var="count" value="${count+1}"/></c:if>
+        <c:if test="${count lt sessionScope.F_LIMIT and param.st eq 'notebooks' && (folder.types eq 'wiki' || folder.types eq 'notebook')}">
             <mo:overviewSearchFolder folder="${folder}" types="wiki"/>
-        </c:if>
+        <c:set var="count" value="${count+1}"/></c:if>
     </c:if>
 </zm:forEachFolder>
 <div class="tb tbl">

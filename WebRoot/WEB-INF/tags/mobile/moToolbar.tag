@@ -35,15 +35,15 @@
     <c:choose>
     <c:when test="${context.isContactSearch || context.isGALSearch}">
     <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=ab&_pv=1"><fmt:message key="addressBooks"/></a> &laquo;<c:if test="${top_fldr_select ne '1'}">${fn:escapeXml(zm:truncateFixed(context.shortBackTo,12,true))}</c:if>
-    <c:if test="${top_fldr_select eq '1'}"><select class="_zo_select_button" name="sfi" onchange="document.location.href='?sfi='+this.value+'&amp;st=contact';">
-        <zm:forEachFolder var="fldr" skiproot="true"><c:if test="${fldr.isContactView}"><option ${param.sfi eq fldr.id || context.folder.id eq fldr.id ? 'selected="selected"' : ''} value="${fldr.id}">${fn:escapeXml(zm:truncateFixed(zm:getFolderName(pageContext,fldr.id),15,true))}</option></c:if></zm:forEachFolder>
+    <c:if test="${top_fldr_select eq '1'}"><select class="_zo_select_button" name="sfi" onchange="document.location.href='?sfi='+this.value+'&amp;st=contact';"><c:set var="count" value="${0}"/>
+        <zm:forEachFolder var="fldr" skiproot="true"><c:if test="${count lt sessionScope.F_LIMIT and fldr.isContactView}"><option ${param.sfi eq fldr.id || context.folder.id eq fldr.id ? 'selected="selected"' : ''} value="${fldr.id}">${fn:escapeXml(zm:truncateFixed(zm:getFolderName(pageContext,fldr.id),15,true))}</option><c:set var="count" value="${count+1}"/></c:if></zm:forEachFolder>
         </select></c:if>
     </c:when>
     <c:otherwise>
         <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=folders&_pv=1"><fmt:message key="folders"/></a> &laquo;
             <c:if test="${top_fldr_select ne '1'}">${fn:escapeXml(zm:truncateFixed(context.shortBackTo,12,true))}</c:if><c:if test="${top_fldr_select eq '1'}">
-            <select class="_zo_select_button" name="sfi" onchange="document.location.href='?sfi='+this.value;">
-                <zm:forEachFolder var="fldr" skiproot="true"><c:if test="${fldr.isMailView and (not fldr.isChats or mailbox.features.IM)}"><option ${param.sfi eq fldr.id || context.folder.id eq fldr.id ? 'selected="selected"' : ''} value="${fldr.id}">${fn:escapeXml(zm:truncateFixed(zm:getFolderName(pageContext,fldr.id),15,true))}</option></c:if></zm:forEachFolder>
+            <select class="_zo_select_button" name="sfi" onchange="document.location.href='?sfi='+this.value;"><c:set var="count" value="${0}"/>
+                <zm:forEachFolder var="fldr" skiproot="true"><c:if test="${count lt sessionScope.F_LIMIT and fldr.isMailView and (not fldr.isChats or mailbox.features.IM)}"><option ${param.sfi eq fldr.id || context.folder.id eq fldr.id ? 'selected="selected"' : ''} value="${fldr.id}">${fn:escapeXml(zm:truncateFixed(zm:getFolderName(pageContext,fldr.id),15,true))}</option><c:set var="count" value="${count+1}"/></c:if></zm:forEachFolder>
             </select></c:if>
         </c:otherwise>
     </c:choose>
@@ -88,14 +88,14 @@
         </optgroup>
         <optgroup label="<fmt:message key="moveAction"/>">
             <c:choose>
-                <c:when test="${context.isContactSearch}">
+                <c:when test="${context.isContactSearch}"><c:set var="count" value="${0}"/>
                     <zm:forEachFolder var="folder">                     
-                        <c:if test="${folder.id != context.folder.id and folder.isContactMoveTarget and !folder.isTrash and !folder.isSpam}"><option value="moveTo_${folder.id}">${zm:getFolderPath(pageContext, folder.id)}</option></c:if>
+                        <c:if test="${count lt sessionScope.F_LIMIT and folder.id != context.folder.id and folder.isContactMoveTarget and !folder.isTrash and !folder.isSpam}"><option value="moveTo_${folder.id}">${zm:getFolderPath(pageContext, folder.id)}</option><c:set var="count" value="${count+1}"/></c:if>
                     </zm:forEachFolder>
                 </c:when>
-                <c:otherwise>
+                <c:otherwise><c:set var="count" value="${0}"/>
                     <zm:forEachFolder var="folder">
-                        <c:if test="${folder.id != context.folder.id and folder.isMessageMoveTarget and !folder.isTrash and !folder.isSpam}"><option value="moveTo_${folder.id}">${zm:getFolderPath(pageContext, folder.id)}</option></c:if>
+                        <c:if test="${count lt sessionScope.F_LIMIT and folder.id != context.folder.id and folder.isMessageMoveTarget and !folder.isTrash and !folder.isSpam}"><option value="moveTo_${folder.id}">${zm:getFolderPath(pageContext, folder.id)}</option><c:set var="count" value="${count+1}"/></c:if>
                     </zm:forEachFolder>
                 </c:otherwise>
             </c:choose>
@@ -121,15 +121,15 @@
 <c:if test="${!isTop && '1' eq  btm_stb }"> <%-- no_btm_stb => no bottom sub toolbar, set this param to disable bottom subtoolbar --%>
     <div class="stb tbl btm_${context.isContactSearch ? 'cont' : (context.isMessageSearch ? 'mesg' : 'conv') }_lv_subtoolbar"><div class="tr"><div class="td"><c:choose><c:when test="${context.isContactSearch}">
                         <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=ab&_pv=1"><fmt:message key="addressBooksLabel"/></a><c:if test="${btm_fldr_select eq '0'}">${fn:escapeXml(zm:truncateFixed(context.shortBackTo,12,true))}</c:if><c:if test="${btm_fldr_select ne '0'}">
-                        <select class="_zo_select_button" name="sfi" onchange="fetchIt('?sfi='+this.value+'&amp;st=${context.st}');">
-                            <zm:forEachFolder var="fldr" skiproot="true"><c:if test="${fldr.isContactView}"><option ${param.sfi eq fldr.id || context.folder.id eq fldr.id ? 'selected="selected"' : ''} value="${fldr.id}">${fn:escapeXml(zm:truncateFixed(zm:getFolderName(pageContext,fldr.id),15,true))}</option></c:if></zm:forEachFolder>
+                        <select class="_zo_select_button" name="sfi" onchange="fetchIt('?sfi='+this.value+'&amp;st=${context.st}');"><c:set var="count" value="${0}"/>
+                            <zm:forEachFolder var="fldr" skiproot="true"><c:if test="${count lt sessionScope.F_LIMIT and fldr.isContactView}"><option ${param.sfi eq fldr.id || context.folder.id eq fldr.id ? 'selected="selected"' : ''} value="${fldr.id}">${fn:escapeXml(zm:truncateFixed(zm:getFolderName(pageContext,fldr.id),15,true))}</option><c:set var="count" value="${count+1}"/></c:if></zm:forEachFolder>
                         </select></c:if>
                     </c:when>
                     <c:otherwise>                           
                         <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=folders&_pv=1"><fmt:message key="foldersLabel"/></a>
                         <c:if test="${btm_fldr_select eq '0'}"> ${fn:escapeXml(zm:truncateFixed(context.shortBackTo,12,true))}</c:if>
-                        <c:if test="${btm_fldr_select ne '0'}"><select class="_zo_select_button" name="sfi" onchange="fetchIt('?sfi='+this.value+'&amp;st=${context.st}');">
-                            <zm:forEachFolder var="fldr" skiproot="true"><c:if test="${fldr.isMailView and (not fldr.isChats or mailbox.features.IM)}"><option ${param.sfi eq fldr.id || context.folder.id eq fldr.id ? 'selected="selected"' : ''} value="${fldr.id}">${fn:escapeXml(zm:truncateFixed(zm:getFolderName(pageContext,fldr.id),15,true))}</option></c:if></zm:forEachFolder>
+                        <c:if test="${btm_fldr_select ne '0'}"><select class="_zo_select_button" name="sfi" onchange="fetchIt('?sfi='+this.value+'&amp;st=${context.st}');"><c:set var="count" value="${0}"/>
+                            <zm:forEachFolder var="fldr" skiproot="true"><c:if test="${count lt sessionScope.F_LIMIT and fldr.isMailView and (not fldr.isChats or mailbox.features.IM)}"><option ${param.sfi eq fldr.id || context.folder.id eq fldr.id ? 'selected="selected"' : ''} value="${fldr.id}">${fn:escapeXml(zm:truncateFixed(zm:getFolderName(pageContext,fldr.id),15,true))}</option><c:set var="count" value="${count+1}"/></c:if></zm:forEachFolder>
                         </select></c:if>
                     </c:otherwise>
                 </c:choose>

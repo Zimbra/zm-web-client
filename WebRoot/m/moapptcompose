@@ -262,14 +262,14 @@
 <c:if test="${numCalendars gt 1}">
     <div class="View"><div class="tbl"><div class="tr">
         <span class="td label"><c:if test="${param.st eq 'newtask'}"><fmt:message key="taskList"/></c:if><c:if test="${param.st ne 'newtask'}"><fmt:message key="calendarLabel"/></c:if></span>
-         <span class="td value"><select name='apptFolderId' id="apptFolderId">
+         <span class="td value"><select name='apptFolderId' id="apptFolderId"><c:set var="count" value="${0}"/>
              <zm:forEachFolder var="folder">
-                 <c:if test="${param.st ne 'newtask' and folder.isAppointmentView and folder.isAppointmentMoveTarget }">
+                 <c:if test="${count lt sessionScope.F_LIMIT and param.st ne 'newtask' and folder.isAppointmentView and folder.isAppointmentMoveTarget }">
                      <option value="${folder.id}" <c:if test="${(param.invId ne '' && compose.apptFolderId eq folder.id) || (not empty sessionScope.calendar && sessionScope.calendar.id eq folder.id) || (empty sessionScope.calendar && folder.isCheckedInUI) }">selected='selected'</c:if>>
                      ${fn:escapeXml(zm:getFolderName(pageContext, folder.id))}</option>
-                 </c:if><c:if test="${param.st eq 'newtask' and folder.isTaskView and folder.isTaskMoveTarget }">
+                 <c:set var="count" value="${count+1}"/></c:if><c:if test="${count lt sessionScope.F_LIMIT and param.st eq 'newtask' and folder.isTaskView and folder.isTaskMoveTarget }">
                      <option value="${folder.id}" <c:if test="${compose.apptFolderId eq folder.id }">selected='selected'</c:if>>${fn:escapeXml(zm:getFolderName(pageContext, folder.id))}</option>
-                 </c:if>
+                 <c:set var="count" value="${count+1}"/></c:if>
              </zm:forEachFolder>
          </select></span>
     </div>

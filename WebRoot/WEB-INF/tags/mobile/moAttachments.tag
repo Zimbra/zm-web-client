@@ -52,7 +52,7 @@
                             <c:if test="${mailbox.features.briefcases}"><input type="checkbox" name="attachIds" value="${fn:escapeXml(partId)}"/></c:if> <mo:img src="${part.image}" alt="${fn:escapeXml(part.displayName)}"/>
                         </span>
                         <span>
-                            <a href="${fn:escapeXml(url)}&amp;disp=a"><b>${fn:escapeXml(pname)}</b></a> (${part.displaySize})
+                            <a href="${fn:escapeXml(url)}&amp;disp=a"><b>${fn:escapeXml(pname)}</b></a> (${zm:displaySize(pageContext,part.size)})
                         </span>
                         <c:if test="${mailbox.features.viewInHtml and part.isViewAsHtmlTarget}">
                             <span>
@@ -74,9 +74,10 @@
     <span class="aright td">
         <select name="briefcase" style="width:65%;">
                 <option value="">Select briefcase</option>
+                <c:set var="count" value="0"/>
                 <zm:forEachFolder var="folder" skiproot="${false}" skipsystem="${false}" skiptrash="${true}">
-                        <c:if test="${folder.isDocumentView}">
-                <option value="${folder.id}">${fn:escapeXml(zm:getFolderPath(pageContext,folder.id))}</option>
+                        <c:if test="${folder.isDocumentView and count lt sessionScope.F_LIMIT}">
+                <option value="${folder.id}">${fn:escapeXml(zm:getFolderPath(pageContext,folder.id))}</option><c:set var="count" value="${count+1}"/>
                         </c:if>
                 </zm:forEachFolder>
             </select>

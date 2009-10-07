@@ -134,8 +134,25 @@
                    checked="checked</c:if>"></span>
                 </div>
             </div>
+        </div><%--
+    <div class="sectionLbl"><fmt:message key="MO_SessionPrefs"/></div>
+    <div class='View'>
+        <div class="tbl small-gray-text">
+                <div class="tr"><div class="td aleft"><fmt:message key="MO_SessionPrefsNote"/></div></div>
+         </div>    
+        <div class="tbl">
+            <div class="tr nr">
+                <span class="label aleft td"><fmt:message key="MO_MaxFolders"/></span>
+                <span class="value aright td"> <input type="text" name="F_LIMIT" value="${sessionScope.F_LIMIT}">
+                </span>
+            </div>
         </div>
+        <div class="tbl small-gray-text">
+            <div class="tr nr"><div class="td aleft"><fmt:message key="MO_MaxFoldersAllowedNote"/></div></div>
+        </div>
+
     </div>
+    --%></div>
     <div class="tb tbl">
         <div class="tr">
             <div class="td">

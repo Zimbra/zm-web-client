@@ -48,30 +48,30 @@
                                         <select name="parentid" style="width:100px;height:100%;">
                                             <option value="${mailbox.inbox.parentId}">--<fmt:message key="in"/>--
                                             </option>
-
+                                            <c:set var="count" value="${0}"/>
                                             <zm:forEachFolder parentid="${mailbox.inbox.id}" var="fldr"
                                                               skiproot="false">
-                                                <c:if test="${(fldr.isContactMoveTarget || fldr.isMessageMoveTarget) && (empty efolder || efolder.id != fldr.id)}">
+                                                <c:if test="${count lt sessionScope.F_LIMIT and (fldr.isContactMoveTarget || fldr.isMessageMoveTarget) && (empty efolder || efolder.id != fldr.id)}">
                                                     <option value="${fldr.id}" ${fldr.id eq efolder.parentId? 'selected=selected' : ''}>${zm:getFolderPath(pageContext, fldr.id)}</option>
-                                                </c:if>
-                                            </zm:forEachFolder>
+                                                <c:set var="count" value="${count+1}"/></c:if>
+                                            </zm:forEachFolder><c:set var="count" value="${0}"/>
                                             <zm:forEachFolder parentid="${mailbox.sent.id}" var="fldr"
                                                               skiproot="false">
-                                                <c:if test="${(fldr.isContactMoveTarget || fldr.isMessageMoveTarget) && (empty efolder || efolder.id != fldr.id)}">
+                                                <c:if test="${count lt sessionScope.F_LIMIT and (fldr.isContactMoveTarget || fldr.isMessageMoveTarget) && (empty efolder || efolder.id != fldr.id)}">
                                                     <option value="${fldr.id}" ${fldr.id eq efolder.parentId? 'selected=selected' : ''}>${zm:getFolderPath(pageContext, fldr.id)}</option>
-                                                </c:if>
-                                            </zm:forEachFolder>
+                                                <c:set var="count" value="${count+1}"/></c:if>
+                                            </zm:forEachFolder><c:set var="count" value="${0}"/>
                                             <zm:forEachFolder parentid="${mailbox.drafts.id}" var="fldr"
                                                               skiproot="false">
-                                                <c:if test="${(fldr.isContactMoveTarget || fldr.isMessageMoveTarget) && (empty efolder || efolder.id != fldr.id)}">
+                                                <c:if test="${count lt sessionScope.F_LIMIT and (fldr.isContactMoveTarget || fldr.isMessageMoveTarget) && (empty efolder || efolder.id != fldr.id)}">
                                                     <option value="${fldr.id}" ${fldr.id eq efolder.parentId? 'selected=selected' : ''}>${zm:getFolderPath(pageContext, fldr.id)}</option>
-                                                </c:if>
-                                            </zm:forEachFolder>
+                                                <c:set var="count" value="${count+1}"/></c:if>
+                                            </zm:forEachFolder><c:set var="count" value="${0}"/>
                                             <zm:forEachFolder var="fldr" skiproot="${true}" skipsystem="${true}"
                                                               skiptopsearch="${true}">
-                                                <c:if test="${(fldr.isContactMoveTarget || fldr.isMessageMoveTarget) && (empty efolder || efolder.id != fldr.id)}">
+                                                <c:if test="${count lt sessionScope.F_LIMIT and (fldr.isContactMoveTarget || fldr.isMessageMoveTarget) && (empty efolder || efolder.id != fldr.id)}">
                                                     <option value="${fldr.id}" ${fldr.id eq efolder.parentId? 'selected=selected' : ''}>${zm:getFolderPath(pageContext, fldr.id)}</option>
-                                                </c:if>
+                                                <c:set var="count" value="${count+1}"/></c:if>
                                             </zm:forEachFolder>
                                         </select>
                                     </c:when>
@@ -79,12 +79,12 @@
                                                             <hr size="1"/>
                                         <select name="parentid" style="width:100px;">
                                             <option value="${mailbox.contacts.parentId}">--<fmt:message key="in"/>--
-                                            </option>
+                                            </option><c:set var="count" value="${0}"/>
                                             <zm:forEachFolder var="fldr" parentid="${mailbox.contacts.parentId}"
                                                               skiproot="false" skiptrash="true">
-                                                <c:if test="${fldr.isContactMoveTarget && (empty efolder || efolder.id ne fldr.id)}">
+                                                <c:if test="${count lt sessionScope.F_LIMIT and fldr.isContactMoveTarget && (empty efolder || efolder.id ne fldr.id)}">
                                                     <option value="${fldr.id}" ${efolder.parentId eq fldr.id ? 'selected=selected' : ''}>${zm:getFolderPath(pageContext, fldr.id)}</option>
-                                                </c:if>
+                                                <c:set var="count" value="${count+1}"/></c:if>
                                             </zm:forEachFolder>
                                         </select>
                                     </c:when>
@@ -95,12 +95,12 @@
                                                             <hr size="1"/>
                                         <select name="parentid" style="width:100px;">
                                             <option value="${mailbox.inbox.parentId}">--<fmt:message key="in"/>--
-                                            </option>
+                                            </option><c:set var="count" value="${0}"/>
                                             <zm:forEachFolder var="fldr" skiproot="${false}" skipsystem="${false}"
                                                               skiptrash="${true}">
-                                                <c:if test="${fldr.isWikiMoveTarget && (empty efolder || efolder.id ne fldr.id)}">
+                                                <c:if test="${count lt sessionScope.F_LIMIT and fldr.isWikiMoveTarget && (empty efolder || efolder.id ne fldr.id)}">
                                                     <option value="${fldr.id}" ${efolder.parentId eq fldr.id ? 'selected=selected' : ''}>${zm:getFolderPath(pageContext, fldr.id)}</option>
-                                                </c:if>
+                                                <c:set var="count" value="${count+1}"/></c:if>
                                             </zm:forEachFolder>
 
                                         </select>
@@ -109,12 +109,12 @@
                                                             <hr size="1"/>
                                         <select name="parentid" style="width:100px;">
                                             <option value="${mailbox.inbox.parentId}">--<fmt:message key="in"/>--
-                                            </option>
+                                            </option><c:set var="count" value="${0}"/>
                                             <zm:forEachFolder var="fldr" skiproot="${false}" skipsystem="${false}"
                                                               skiptrash="${true}">
-                                                <c:if test="${fldr.isDocumentMoveTarget && (empty efolder || efolder.id ne fldr.id)}">
+                                                <c:if test="${count lt sessionScope.F_LIMIT and fldr.isDocumentMoveTarget && (empty efolder || efolder.id ne fldr.id)}">
                                                     <option value="${fldr.id}" ${fldr.id eq efolder.parentId ? 'selected=selected' : ''}>${zm:getFolderPath(pageContext, fldr.id)}</option>
-                                                </c:if>
+                                                <c:set var="count" value="${count+1}"/></c:if>
                                             </zm:forEachFolder>
 
                                         </select>

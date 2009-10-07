@@ -75,9 +75,9 @@
             <c:if test="${not msg.isFlagged}"><option value="actionFlag"><fmt:message key="add"/></option></c:if>
             <c:if test="${msg.isFlagged}"><option value="actionUnflag"><fmt:message key="remove"/></option></c:if>
         </optgroup>
-        <optgroup label="<fmt:message key="moveAction"/>">
-            <zm:forEachFolder var="folder"><c:if test="${folder.id != context.folder.id and folder.isMessageMoveTarget and !folder.isTrash and !folder.isSpam}">
-            <option value="moveTo_${folder.id}">${zm:getFolderPath(pageContext, folder.id)}</option></c:if></zm:forEachFolder>
+        <optgroup label="<fmt:message key="moveAction"/>"><c:set var="count" value="${0}"/>
+            <zm:forEachFolder var="folder"><c:if test="${count lt sessionScope.F_LIMIT and folder.id != context.folder.id and folder.isMessageMoveTarget and !folder.isTrash and !folder.isSpam}">
+            <option value="moveTo_${folder.id}">${zm:getFolderPath(pageContext, folder.id)}</option><c:set var="count" value="${count+1}"/></c:if></zm:forEachFolder>
         </optgroup>
         <c:if test="${mailbox.features.tagging and mailbox.hasTags}">
             <c:set var="tagsToAdd" value="${zm:getAvailableTags(pageContext,msg.tagIds,true)}"/>

@@ -128,11 +128,11 @@
             <span class="td label"><label for="folderSelect"><fmt:message key="addressBookLabel"/></label></span>
             <span class="td value">
                 <input type="hidden" name="origFolderId" value="${empty contact ? '': contact.folderId}"/>
-                <select name="folderid" id="folderSelect">
+                <select name="folderid" id="folderSelect"><c:set var="count" value="${0}"/>
                     <zm:forEachFolder var="folder">
-                        <c:if test="${folder.isContactCreateTarget}">
+                        <c:if test="${count lt sessionScope.F_LIMIT and folder.isContactCreateTarget}">
                             <option <c:if test="${(empty contact and ((context.selectedId eq folder.id) or param.folderid eq folder.id or (empty context.selectedId and folder.isContacts))) or (!empty contact and contact.folderId eq folder.id)}">selected="selected"</c:if> value="${folder.id}" />
-                            ${fn:escapeXml(folder.rootRelativePath)}
+                            ${fn:escapeXml(folder.rootRelativePath)}<c:set var="count" value="${count+1}"/>
                         </c:if>
                     </zm:forEachFolder>
                 </select>

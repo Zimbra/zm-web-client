@@ -73,18 +73,18 @@
         </div>
     </div>
 </div>
-<mo:folderForm type="folder" id="${param.id}" hide="${empty param.showTaskCreate}" url="${currentUrl}" st="${param.st}"/>
+<mo:folderForm type="folder" id="${param.id}" hide="${empty param.showTaskCreate}" url="${currentUrl}" st="${param.st}"/><c:set var="count" value="${0}"/>
 <zm:forEachFolder var="folder" skiproot="${false}" skipsystem="${false}" skiptrash="${true}">
-    <c:if test="${folder.isTaskView}">
+    <c:if test="${count lt sessionScope.F_LIMIT and folder.isTaskView}">
         <mo:overviewFolder folder="${folder}" types="task"/>
         <mo:doFolderTree skiproot="${true}" parentid="${folder.id}" skipsystem="false"/>
-    </c:if>
+    <c:set var="count" value="${count+1}"/></c:if>
 </zm:forEachFolder>
-<mo:overviewFolder types="task" folder="${mailbox.trash}"/>
+<mo:overviewFolder types="task" folder="${mailbox.trash}"/><c:set var="count" value="${0}"/>
 <zm:forEachFolder var="folder" skiproot="${true}" parentid="${mailbox.trash.id}" skipsystem="${false}">
-    <c:if test="${folder.isTaskView}">
+    <c:if test="${count lt sessionScope.F_LIMIT and folder.isTaskView}">
         <mo:overviewFolder folder="${folder}" types="task"/>
-    </c:if>
+    <c:set var="count" value="${count+1}"/></c:if>
 </zm:forEachFolder>
 
 <div class="tb tbl">
@@ -99,11 +99,12 @@
         </div>
     </div>
 </div>
-<mo:folderForm type="search" id="${param.sid}" hide="${empty param.showSearchCreate}" url="${currentUrl}" st="${param.st}"/>
+<mo:folderForm type="search" id="${param.sid}" hide="${empty param.showSearchCreate}" url="${currentUrl}" st="${param.st}"/><c:set var="count" value="${0}"/>
 <zm:forEachFolder var="folder" skipsystem="${true}" skiptopsearch="${false}">
     <c:if test="${(folder.isSearchFolder && (empty query || fn:containsIgnoreCase(folder.name,query)))}">
-        <c:if test="${folder.types eq 'task'}">
+        <c:if test="${count lt sessionScope.F_LIMIT and folder.types eq 'task'}">
         <mo:overviewSearchFolder folder="${folder}" types="${folder.types}"/>
+        <c:set var="count" value="${count+1}"/>            
         </c:if>
     </c:if>
 </zm:forEachFolder>
