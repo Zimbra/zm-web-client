@@ -55,6 +55,13 @@ ZmImportView = function(params) {
 		]
 	};
 	ZmImportExportBaseView.call(this, params);
+
+	// add change listener to file input
+	var form = this.getControl("FORM");
+	var file = form && form.elements["file"];
+	if (file) {
+		file.onchange = AjxCallback.simpleClosure(this._handleFileChange, this, file);
+	}
 };
 ZmImportView.prototype = new ZmImportExportBaseView;
 ZmImportView.prototype.constructor = ZmImportView;
@@ -87,13 +94,16 @@ ZmImportView.prototype.TEMPLATE = "data.ImportExport#ImportView";
  * ZmImportExportController#exportData.
  */
 ZmImportView.prototype.getParams = function() {
-	var type = this.getValue("TYPE") || ZmImportExportController.TYPE_TGZ;
+	var form = this.getControl("FORM");
+	var filename = form && form.elements["file"].value;
+	var ext = filename && filename.replace(/^.*\./,"");
+	var type = ext || this.getValue("TYPE") || ZmImportExportController.TYPE_TGZ;
 	var isTGZ = type == ZmImportExportController.TYPE_TGZ;
 	var params = {
 		// required
-		form:		this.getControl("FORM"),
+		form:		form,
 		// optional -- ignore if not relevant
-//		type:		this.isRelevant("TYPE") ? type : null,
+		type:		type,
 		subType:	this.isRelevant("SUBTYPE") ? this.getValue("SUBTYPE") : null,
 		views:		this.isRelevant("DATA_TYPES") ? this.getValue("DATA_TYPES") : null,
 		resolve:	this.isRelevant("RESOLVE") && isTGZ ? this.getValue("RESOLVE") : null,
@@ -113,4 +123,13 @@ ZmImportView.prototype._getSubTypeOptions = function(type) {
 		options = [].concat({ displayValue: ZmMsg.importAutoDetect, value: "" }, options);
 	}
 	return options;
+};
+
+ZmImportView.prototype._handleFileChange = function(file) {
+	var filename = file.value;
+	var ext = filename.replace(/^.*\./,"");
+	var type = ZmImportExportController.EXTS_TYPE[ext];
+	if (type) {
+		this.set("TYPE", type);
+	}
 };

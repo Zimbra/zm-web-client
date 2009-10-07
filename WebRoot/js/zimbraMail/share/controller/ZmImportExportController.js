@@ -241,7 +241,7 @@ ZmImportExportController.prototype._doImport = function(params) {
 	var folder = params.folderId && appCtxt.getById(params.folderId);
 	if (folder && folder.nId == ZmOrganizer.ID_ROOT) folder = null;
 	var path = folder ? folder.getPath(null, null, null, null, true) : "";
-	var ext = params.ext;
+	var type = params.type || params.ext;
 
 	var url = [
 		"/home/",
@@ -249,7 +249,7 @@ ZmImportExportController.prototype._doImport = function(params) {
 		"/",
 		path,
 		"?",
-		params.type ? "fmt="+encodeURIComponent(params.type) : "",
+		type ? "fmt="+encodeURIComponent(type) : "",
 		params.views ? "&types="+encodeURIComponent(params.views) : "",
 		params.resolve ? "&resolve="+encodeURIComponent(params.resolve) : "",
 		"&callback="+funcName

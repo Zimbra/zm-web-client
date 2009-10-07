@@ -50,6 +50,37 @@ ZmImportExportBaseView.prototype.update = function() {
 	this.setValue("TYPE_HINT", this.TYPE_HINTS[type]);
 };
 
+ZmImportExportBaseView.prototype.setValue = function(name, value) {
+	DwtForm.prototype.setValue.apply(this, arguments);
+	if (name == "TYPE") {
+		var type = value;
+		this._initSubType(type);
+		var isTgz = type == ZmImportExportController.TYPE_TGZ;
+		this.setEnabled("ADVANCED", isTgz);
+		if (this.getValue("ADVANCED") && !isTgz) {
+			this.setValue("ADVANCED", false);
+			this.update();
+		}
+		var folder;
+		switch (type) {
+			case ZmImportExportController.TYPE_CSV: {
+				// TODO: Does this work for child accounts w/ fully-qualified ids?
+				folder = appCtxt.getById(ZmOrganizer.ID_ADDRBOOK);
+				break;
+			}
+			case ZmImportExportController.TYPE_ICS: {
+				folder = appCtxt.getById(ZmOrganizer.ID_CALENDAR);
+				break;
+			}
+			case ZmImportExportController.TYPE_TGZ: {
+				folder = appCtxt.getById(ZmOrganizer.ID_ROOT);
+				break;
+			}
+		}
+		this._setFolderButton(folder);
+	}
+};
+
 //
 // Protected methods
 //
@@ -111,30 +142,7 @@ ZmImportExportBaseView.prototype._getSubTypeOptions = function(type) {
 ZmImportExportBaseView.prototype._type_onclick = function(radioId, groupId) {
 	// enable advanced options
 	var type = this.getValue("TYPE");
-	this._initSubType(type);
-	var isTgz = type == ZmImportExportController.TYPE_TGZ;
-	this.setEnabled("ADVANCED", isTgz);
-	if (this.getValue("ADVANCED") && !isTgz) {
-		this.setValue("ADVANCED", false);
-		this.update();
-	}
-	var folder;
-	switch (type) {
-		case ZmImportExportController.TYPE_CSV: {
-			// TODO: Does this work for child accounts w/ fully-qualified ids?
-			folder = appCtxt.getById(ZmOrganizer.ID_ADDRBOOK);
-			break;
-		}
-		case ZmImportExportController.TYPE_ICS: {
-			folder = appCtxt.getById(ZmOrganizer.ID_CALENDAR);
-			break;
-		}
-		case ZmImportExportController.TYPE_TGZ: {
-			folder = appCtxt.getById(ZmOrganizer.ID_ROOT);
-			break;
-		}
-	}
-	this._setFolderButton(folder);
+	this.setValue("TYPE", type);
 };
 
 ZmImportExportBaseView.prototype._folderButton_onclick = function() {
