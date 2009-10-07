@@ -2863,7 +2863,6 @@ function(ev) {
 ZmComposeView.prototype.uploadFiles =
 function() {
 	var attachDialog = appCtxt.getAttachDialog();
-	this._controller = AjxDispatcher.run("GetComposeController");
 	var callback = new AjxCallback(this, this._attsDoneCallback, [true]);
 	attachDialog.setUploadCallback(callback);
 	attachDialog.upload(callback, document.getElementById("zdnd_form"));
