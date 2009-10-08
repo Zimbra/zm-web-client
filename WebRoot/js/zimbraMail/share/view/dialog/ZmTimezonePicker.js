@@ -17,15 +17,16 @@ ZmTimezonePicker = function(parent, className) {
 
     var buttons = [ ZmTimezonePicker.SAVE_BUTTON ];
     var saveButton = new DwtDialog_ButtonDescriptor(ZmTimezonePicker.SAVE_BUTTON, ZmMsg.save, DwtDialog.ALIGN_RIGHT);
-	ZmDialog.call(this, {parent:parent, className:className, 
+	DwtDialog.call(this, {parent:parent, className:className,
         title:ZmMsg.selectTimezoneTitle, standardButtons:DwtDialog.NO_BUTTONS,
         extraButtons: [saveButton]});
 
     this.setButtonListener(ZmTimezonePicker.SAVE_BUTTON, new AjxListener(this, this._handleSaveButton));
+    this.setContent(this._contentHtml());
 	this._setTimezoneMenu();
 };
 
-ZmTimezonePicker.prototype = new ZmDialog;
+ZmTimezonePicker.prototype = new DwtDialog;
 ZmTimezonePicker.prototype.constructor = ZmTimezonePicker;
 
 ZmTimezonePicker.SAVE_BUTTON = ++DwtDialog.LAST_BUTTON;
@@ -39,7 +40,7 @@ ZmTimezonePicker.prototype.popup =
 function() {
 	this._initTzSelect();
     this.autoSelectTimezone();
-	ZmDialog.prototype.popup.call(this);
+	DwtDialog.prototype.popup.call(this);
 };
 
 ZmTimezonePicker.prototype.cleanup =
@@ -50,7 +51,6 @@ function(bPoppedUp) {
 ZmTimezonePicker.prototype._setTimezoneMenu =
 function() {
 	var timezoneListener = new AjxListener(this, this._timezoneListener);
-	
 	this._tzoneSelect = new DwtSelect({parent:this, parentElement: (this._htmlElId + "_tzSelect"), cascade:false});
 	this._tzoneSelect.addChangeListener(timezoneListener);
 };
