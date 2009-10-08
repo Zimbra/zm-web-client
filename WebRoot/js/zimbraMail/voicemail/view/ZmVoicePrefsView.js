@@ -561,7 +561,8 @@ function(batchCommand) {
 ZmVoiceGeneralPage.prototype.reset =
 function() {
 	ZmVoicePrefsPage.prototype.reset.call(this);
-	this._pageSizeSelect.setSelectedValue(appCtxt.get(ZmSetting.VOICE_PAGE_SIZE));
+	if (this._pageSizeSelect)
+		this._pageSizeSelect.setSelectedValue(appCtxt.get(ZmSetting.VOICE_PAGE_SIZE));
 };
 
 ////////////////////////////////////////////////////////
