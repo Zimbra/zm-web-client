@@ -43,7 +43,7 @@
 <html>
 <app:skin mailbox="${mailbox}" />
 <app:head mailbox="${mailbox}" title="${title}"/>
-<!-- skin is ${skin} -->
+<!-- skin is ${zm:cook(skin)} -->
 <body <c:if test="${not empty onload}">onload="${onload}"</c:if>>
 <app:handleViewError>
 <zm:getDomainInfo var="domainInfo" by="virtualHostname" value="${zm:getServerName(pageContext)}" />

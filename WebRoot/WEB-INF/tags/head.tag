@@ -33,7 +33,7 @@
         <c:if test="${!empty title}"><fmt:message key="zimbraTitle"/>: ${fn:escapeXml(title)}</c:if>
     </title>
     <c:set var="version" value="${initParam.zimbraCacheBusterVersion}"/>
-    <!-- skin is ${skin} -->
+    <!-- skin is ${zm:cook(skin)} -->
     <c:if test="${empty param.print}" >
 		<c:url var='cssurl' value='/css/common,login,images,skin.css'>
 			<c:param name="client"	value="standard" />
