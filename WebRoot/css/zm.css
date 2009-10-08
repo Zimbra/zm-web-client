@@ -2258,6 +2258,14 @@ HTML>BODY .appt-selected .appt_allday_body
 	text-decoration:underline;
 }
 
+.DwtLabel.AlignRight .ZWidgetTitle {
+	text-align:right;
+}
+
+.DwtComboBox.ValidatorFix .ZButton {
+	left: 0px;
+}
+
 /* table that holds the 'restore defaults' button */
 .ZOptionsDefaultsTable {
 	margin-bottom: 0.5em;

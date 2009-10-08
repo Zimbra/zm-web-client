@@ -437,7 +437,7 @@ function(value) {
 	}
 	var errors = [];
 	if (!this._phone.validate(value, errors)) {
-		throw errors[0];
+		throw AjxMessageFormat.format(errors[0], [""]);
 	}
 	return value;
 };
@@ -751,6 +751,14 @@ function(comboBox, errorList, message) {
 	}
 };
 
+ZmCallFeatureUI.prototype._clearField =
+function(field) {
+	if (field instanceof DwtComboBox || field instanceof DwtInputField) {
+		field.setValue(null, true);
+		field.focus();
+	}
+}
+
 ZmCallFeatureUI.prototype.getFaqLink =
 function() {
 	return AjxMessageFormat.format(ZmMsg.errorPhoneFAQLink, [ZmMsg.errorPhoneFAQURL]);
@@ -770,7 +778,7 @@ function(text) {
 		var msg = AjxStringUtil.trim(text);
 		if (msg.length > 0) {
 			if (msg.indexOf("{0}") == -1) {
-				if (!msg.match("\.$"))
+				if (!msg.match(/\.$/))
 					msg += ".";
 				msg += " " + this.getFaqLink();
 			} else {
@@ -1441,15 +1449,15 @@ function(event) {
 		this.showDialogWithFAQ(ZmMsg.voicemailNotificationErrorMax);
 	} else if (!AjxUtil.isString(addValue) || AjxStringUtil.trim(addValue) == "") {
 		this.showDialogWithFAQ(ZmMsg.missingEmailAddress);
-		this._comboBox.focus();
+		this._clearField(this._comboBox);
 	} else if (!AjxEmailAddress.isValid(addValue)) {
 		this.showDialogWithFAQ(ZmMsg.voicemailNotificationErrorInvalid);
-		this._comboBox.focus();
+		this._clearField(this._comboBox);
 	} else {
 		var addObject = {a: true, text: addValue.toLowerCase()};
 		if (this._list.containsItem(addObject)) {
 			this.showDialogWithFAQ(ZmMsg.errorEmailNotUnique);
-			this._comboBox.focus();
+			this._clearField(this._comboBox);
 		} else {
 			this._list.addItem(addObject, null, false);
 			this._comboBox.setText("", true);
@@ -1468,7 +1476,7 @@ ZmEmailNotificationUI.prototype._initialize =
 function(id) {
 	this._createCheckbox(ZmMsg.voicemailNotificationDescription, id + "_emailNotificationCheckbox");
 
-	this._comboBox = new DwtComboBox({parent:this._view, inputParams: {size: 25, validator: ZmVoicePrefsPage._validateEmailAddress, validationStyle: DwtInputField.CONTINUAL_VALIDATION}});
+	this._comboBox = new DwtComboBox({parent:this._view, inputParams: {size: 20, validator: ZmVoicePrefsPage._validateEmailAddress, validationStyle: DwtInputField.CONTINUAL_VALIDATION}, className:"DwtComboBox ValidatorFix"});
 	this._comboBox.replaceElement(id + "_emailNotificationComboBox");
 	
 	this._addButton = new DwtButton({parent:this._view, size: 75});
@@ -1594,21 +1602,21 @@ function(event) {
 	var addValue = this._addField.getValue();
 	if (!addValue || AjxStringUtil.trim(addValue) == "") {
 		this.showDialogWithFAQ(AjxMsg.valueIsRequired);
-		this._addField.focus();
+		this._clearField(this._addField);
 	} else {
 		var error = this._view._validatePhoneNumberFct(addValue);
 		if (error!=null) {
 			this.showDialogWithFAQ(error);
-			this._addField.focus();
+			this._clearField(this._addField);
 		} else {
 			if (!ZmPhone.isValid(addValue)) { // Possibly obsolete, but doesn't do any harm
 				this.showDialogWithFAQ(ZmMsg.selectiveCallForwardingError);
-				this._addField.focus();
+				this._clearField(this._addField);
 			} else {
 				var addObject = {a: true, pn: ZmPhone.calculateName(addValue)};
 				if (this._list.containsItem(addObject)) {
 					this.showDialogWithFAQ(ZmMsg.errorPhoneForwardNotUnique);
-					this._addField.focus();
+					this._clearField(this._addField);
 				} else {
 					this._list.addItem(addObject, null, false);
 					this._addField.setValue(null, true);
@@ -1636,7 +1644,7 @@ function(visible) {
 	this._addField.setVisible(visible);
 	this._addButton.setVisible(visible);
 	this._addRules.setVisible(visible);
-	this._exposeAddField.setEnabled(!visible);
+	this._exposeAddField.setVisible(!visible);
 	this.addVisible = visible;
 }
 
@@ -1670,7 +1678,7 @@ function(id) {
 	this._exposeAddField.addSelectionListener(new AjxListener(this, this._handleExposeButtonClick));
 	this._exposeAddField.replaceElement(id + "_selectiveCallForwardingExposeAddBox");
 	
-	this._addLabel = new DwtLabel({parent:this._view});
+	this._addLabel = new DwtLabel({parent:this._view, className:"DwtLabel AlignRight"});
 	this._addLabel.setText(ZmMsg.selectiveCallForwardingAddFrom);
 	this._addLabel.replaceElement(id + "_selectiveCallForwardingAddLabel");
 	
@@ -1686,7 +1694,7 @@ function(id) {
 	this._addButton.addSelectionListener(new AjxListener(this, this._handleAddFromNumber));
 	this._addButton.replaceElement(id + "_selectiveCallForwardingAddButton");
 
-	this._toLabel = new DwtLabel({parent:this._view, style: (DwtLabel.IMAGE_LEFT | DwtLabel.ALIGN_RIGHT) });
+	this._toLabel = new DwtLabel({parent:this._view, style: (DwtLabel.IMAGE_LEFT | DwtLabel.ALIGN_RIGHT), className:"DwtLabel AlignRight"});
 	this._toLabel.setText(ZmMsg.selectiveCallForwardingToDescription);
 	this._toLabel.replaceElement(id + "_selectiveCallForwardingToLabel");
 	
@@ -1826,21 +1834,21 @@ function(event) {
 	var addValue = this._addField.getValue();
 	if (!addValue || AjxStringUtil.trim(addValue) == "") {
 		this.showDialogWithFAQ(AjxMsg.valueIsRequired);
-		this._addField.focus();
+		this._clearField(this._addField);
 	} else {
 		var error = this._view._validatePhoneNumberFct(addValue);
 		if (error!=null) {
 			this.showDialogWithFAQ(error);
-			this._addField.focus();
+			this._clearField(this._addField);
 		} else {
 			if (!ZmPhone.isValid(addValue)) { // Possibly obsolete, but doesn't do any harm
 				this.showDialogWithFAQ(ZmMsg.selectiveCallRejectionError);
-				this._addField.focus();
+				this._clearField(this._addField);
 			} else {
 				var addObject = {a: true, pn: ZmPhone.calculateName(addValue)};
 				if (this._list.containsItem(addObject)) {
 					this.showDialogWithFAQ(ZmMsg.errorPhoneRejectNotUnique);
-					this._addField.focus();
+					this._clearField(this._addField);
 				} else {
 					this._list.addItem(addObject, null, false);
 					this._addField.setValue(null, true);
@@ -1868,7 +1876,7 @@ function(visible) {
 	this._addField.setVisible(visible);
 	this._addButton.setVisible(visible);
 	this._addRules.setVisible(visible);
-	this._exposeAddField.setEnabled(!visible);
+	this._exposeAddField.setVisible(!visible);
 	this.addVisible = visible;
 }
 
@@ -1899,7 +1907,7 @@ function(id) {
 	this._exposeAddField.addSelectionListener(new AjxListener(this, this._handleExposeButtonClick));
 	this._exposeAddField.replaceElement(id + "_selectiveCallRejectionExposeAddBox");
 	
-	this._addLabel = new DwtLabel({parent:this._view});
+	this._addLabel = new DwtLabel({parent:this._view, className:"DwtLabel AlignRight"});
 	this._addLabel.setText(ZmMsg.selectiveCallRejectionAddFrom);
 	this._addLabel.replaceElement(id + "_selectiveCallRejectionAddLabel");
 	
@@ -2005,21 +2013,21 @@ function(event) {
 	var addValue = this._addField.getValue();
 	if (!addValue || AjxStringUtil.trim(addValue) == "") {
 		this.showDialogwithFAQ(AjxMsg.valueIsRequired);
-		this._addField.focus();
+		this._clearField(this._addField);
 	} else {
 		var error = this._view._validatePhoneNumberFct(addValue);
 		if (error!=null) {
 			this.showDialogwithFAQ(error);
-			this._addField.focus();
+			this._clearField(this._addField);
 		} else {
 			if (!ZmPhone.isValid(addValue)) { // Possibly obsolete, but doesn't do any harm
 				this.showDialogwithFAQ(ZmMsg.selectiveCallAcceptanceError);
-				this._addField.focus();
+				this._clearField(this._addField);
 			} else {
 				var addObject = {a: true, pn: ZmPhone.calculateName(addValue)};
 				if (this._list.containsItem(addObject)) {
 					this.showDialogwithFAQ(ZmMsg.errorPhoneNotUnique);
-					this._addField.focus();
+					this._clearField(this._addField);
 				} else {
 					this._list.addItem(addObject, null, false);
 					this._addField.setValue(null, true);
@@ -2134,7 +2142,7 @@ function(htmlArr, idx, phone, field, colIdx, params) {
 ZmBufferList = function(params) {
 	if (arguments.length == 0) { return; }
 	params = Dwt.getParams(arguments, DwtListView.PARAMS);
-	if (!params.headerList) params.headerList = [new DwtListHeaderItem({field:1, text:params.headerText, sortable:false}), new DwtListHeaderItem({field:2, sortable:false, text:"&nbsp;"})];
+	if (!params.headerList) params.headerList = [new DwtListHeaderItem({field:1, text:params.headerText, sortable:false, resizeable:false, noRemove:true, width:"200%"}), new DwtListHeaderItem({field:2, sortable:false, text:"&nbsp;", resizeable:false, noRemove:true, width: "0%"})];
 	if (!params.className) params.className = "ZmBufferList";
 	DwtListView.call(this, params);
 	this.multiSelectEnabled = false;
@@ -2254,7 +2262,7 @@ function() {
 * phone number specific version of ZmBufferList
 */
 ZmPhoneBufferList = function(parent) {
-	var headerList = [new DwtListHeaderItem({field:1, text:ZmMsg.voicemailPhoneNumber, sortable:false}), new DwtListHeaderItem({field:2, sortable:false, text:"&nbsp;"})];
+	var headerList = [new DwtListHeaderItem({field:1, text:ZmMsg.voicemailPhoneNumber, sortable:false, resizeable:false, noRemove:true, width:"150%"}), new DwtListHeaderItem({field:2, sortable:false, text:"&nbsp;", resizeable:false, noRemove:true, width: "0%"})];
 	ZmBufferList.call(this, {parent:parent, className:"ZmPhoneBufferList", headerList:headerList, displayProperty:"pn"});
 	this.multiSelectEnabled = false;
 };
