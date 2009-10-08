@@ -41,6 +41,10 @@
 	display:none;
 }
 
+#skin_container_quota{
+	margin-top: 5px;
+}
+
 .ZmComposeView {
 	background-color: #CBE0F1 !important;
 	@FullWidth@
@@ -108,4 +112,8 @@
 
 .ZButtonBorder, .ZHover .ZButtonBorder,.ZActive	.ZButtonBorder,.ZSelected .ZButtonBorder {
   border: 1px solid;
+}
+
+.itemCountText{
+	color: white !important;
 }
