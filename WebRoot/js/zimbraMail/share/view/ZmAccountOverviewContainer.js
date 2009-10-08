@@ -320,7 +320,6 @@ function(ev) {
 			if (data instanceof ZmFolder) {
 				var main = appCtxt.accountList.mainAccount;
 				params = {
-					query: ".",
 					queryHint: appCtxt.accountList.generateQuery(ZmOrganizer.ID_INBOX),
 					folderId: null,
 					getHtml: appCtxt.get(ZmSetting.VIEW_AS_HTML, null, main),

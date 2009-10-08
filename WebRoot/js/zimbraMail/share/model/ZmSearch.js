@@ -256,7 +256,7 @@ function(params) {
 
 	this.isGalSearch = (this.contactSource && (this.contactSource == ZmId.SEARCH_GAL));
 	this.isCalResSearch = (this.conds != null);
-	if (!this.query && !this.isCalResSearch) { return; }
+	if (!this.query && !this.queryHint && !this.isCalResSearch) { return; }
 
 	var jsonObj, request, soapDoc;
 	if (!this.response) {
@@ -533,7 +533,7 @@ function(soapDoc) {
 
 	// and of course, always set the query and append the query hint if applicable
 	// only use query hint if this is not a "simple" search
-	var query = (!this.folderId && this.queryHint)
+	var query = (this.queryHint)
 		? ([this.query, " (", this.queryHint, ")"].join(""))
 		: this.query;
 	soapDoc.set("query", query);
@@ -587,7 +587,7 @@ function(req) {
 
 	// and of course, always set the query and append the query hint if
 	// applicable only use query hint if this is not a "simple" search
-	req.query = (!this.folderId && this.queryHint)
+	req.query = (this.queryHint)
 		? ([this.query, " (", this.queryHint, ")"].join(""))
 		: this.query;
 

@@ -347,9 +347,6 @@ function(folder) {
 
 ZmFolderTreeController.prototype._handleSearch =
 function(sc, query, folder) {
-	sc.currentSearch.query = query;
-	sc.getSearchToolbar().setSearchFieldValue(query);
-
 	var ov = this._opc.getOverview(appCtxt.getApp(ZmApp.MAIL).getOverviewId());
 	ov.setSelected(folder.id);
 };

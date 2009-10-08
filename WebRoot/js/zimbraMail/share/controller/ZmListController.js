@@ -111,7 +111,8 @@ function(searchResults, view) {
 
 ZmListController.prototype.getSearchString =
 function() {
-	return this._currentSearch ? this._currentSearch.query : "";
+	return this._currentSearch
+		? (this._currentSearch.query || this._currentSearch.queryHint) : "";
 };
 
 ZmListController.prototype.getCurrentView =

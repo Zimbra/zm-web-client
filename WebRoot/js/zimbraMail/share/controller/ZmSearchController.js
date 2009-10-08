@@ -250,7 +250,7 @@ function(params) {
 	}
 
 	// if the search string starts with "$set:" then it is a command to the client
-	if (params.query.indexOf("$set:") == 0 || params.query.indexOf("$cmd:") == 0) {
+	if (params.query && (params.query.indexOf("$set:") == 0 || params.query.indexOf("$cmd:") == 0)) {
 		appCtxt.getClientCmdHandler().execute((params.query.substr(5)), this);
 		return;
 	}
@@ -463,8 +463,8 @@ function(params, noRender, callback, errorCallback) {
 		 folder.nId == ZmFolder.ID_OUTBOX))
 	{
 		search.accountName = appCtxt.accountList.mainAccount.name;
-		search.query = ".";
-		search.folderId = null;
+		search.query = "";
+		search.folderId = folder.nId;
 		search.queryHint = appCtxt.accountList.generateQuery(folder.nId);
 	}
 

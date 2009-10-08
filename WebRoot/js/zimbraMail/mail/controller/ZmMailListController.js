@@ -581,7 +581,8 @@ function(ev) {
 	// account's Drafts folder first
 	if (appCtxt.isOffline &&
 		ev.detail == DwtListView.ITEM_DBL_CLICKED &&
-		ev.item && ev.item.isDraft)
+		ev.item && ev.item.isDraft &&
+		appCtxt.getCurrentSearch().folderId == ZmFolder.ID_OUTBOX)
 	{
 		var account = ev.item.account || ZmOrganizer.parseId(ev.item.id).account;
 		var folder = appCtxt.getById(ZmOrganizer.getSystemId(ZmFolder.ID_DRAFTS, account));

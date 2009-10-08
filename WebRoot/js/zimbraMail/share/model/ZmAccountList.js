@@ -133,17 +133,12 @@ function(folderId, types) {
 		// dont add any apps not supported by this account
 		if ((type && !acct.isAppEnabled(ZmItem.APP[type])) || acct.isMain) { continue; }
 
-		var part = [
-			'(underid:"',
-			ZmOrganizer.getSystemId(fid, acct, true),
-			'")',
-		];
-
+		var part = ['underid:"', ZmOrganizer.getSystemId(fid, acct, true), '"'];
 		query.push(part.join(""));
 	}
 
 	DBG.println(AjxDebug.DBG2, "query = " + query.join(" OR "));
-	return (". " + query.join(" OR "));
+	return (query.join(" OR "));
 };
 
 /**
