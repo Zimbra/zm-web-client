@@ -292,10 +292,18 @@ function(zimletNames, callback) {
 	this.loaded = true;
 	var zimlets = this.getZimletsHash();
 	for (var i = 0; i < zimletNames.length; i++) {
+		var showedDialog = false;
 		var name = zimletNames[i];
 		try {
 			zimlets[name]._finished_loadIncludes();
 		} catch (e) {
+			if (!showedDialog) {
+				var dialog = appCtxt.getErrorDialog();
+				var message = AjxMessageFormat.format(ZmMsg.zimletInitError, name);
+				dialog.setMessage(message, e.toString(), DwtMessageDialog.CRITICAL_STYLE);
+				dialog.popup();
+				showedDialog = true;
+			}
 			DBG.println(AjxDebug.DBG1, "Error initializing zimlet '" + name + "': " + e);
 		}
 	}
