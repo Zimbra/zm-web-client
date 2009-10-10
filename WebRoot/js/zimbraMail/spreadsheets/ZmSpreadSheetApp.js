@@ -66,6 +66,11 @@ ZmSpreadSheetApp.launch = function(){
 
 };
 
+ZmSpreadSheetApp.setItemInfo = function(item){
+    ZmSpreadSheetApp.fileInfo = item;
+    ZmSpreadSheetApp.fileInfo.loaded = true;
+};
+
 ZmSpreadSheetApp.setFile = function(fileId, fileName, folderId){
 
     if(!fileId || fileId == ""){

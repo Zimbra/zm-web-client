@@ -88,7 +88,7 @@ ZmDocsEditController.prototype.loadDocument = function(item) {
 ZmDocsEditController.prototype._initModel = function(){
 
     if(ZmDocsEditApp.fileInfo && ZmDocsEditApp.fileInfo.id) {
-        var item = this.loadData(ZmDocsEditApp.fileInfo.id);
+        var item = ZmDocsEditApp.fileInfo.loaded ? ZmDocsEditApp.fileInfo : this.loadData(ZmDocsEditApp.fileInfo.id);
         if(!item.rest){    //TODO: Change this code to construct a rest url
             item.rest = ZmDocsEditApp.restUrl;
         }

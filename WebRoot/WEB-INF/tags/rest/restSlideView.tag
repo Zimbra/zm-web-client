@@ -22,6 +22,8 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 
+<rest:handleError>
+    <zm:getItemInfoJSON var="fileInfoJSON" box="${mailbox}" id="${requestScope.zimbra_target_account_id}:${requestScope.zimbra_target_item_id}"/>
 <c:if test="${not empty param.dev and param.dev eq '1'}">
     <c:set var="mode" value="mjsf" scope="request"/>
     <c:set var="gzip" value="false" scope="request"/>
@@ -60,6 +62,7 @@
         <c:set var="psufix" value="_all.js" scope="request"/>    
     </c:otherwise>
 </c:choose>
+</rest:handleError>
 <head>
 <c:set value="/img" var="iconPath" scope="request"/>
 <c:url var='cssurl' value='/css/images,common,dwt,msgview,login,zm,spellcheck,skin,presentation,slides.css'>
@@ -199,11 +202,12 @@
 
         window.onresize = _resize;
 
-        window.fileInfo = {name: 'Untitled', folderId: ZmOrganizer.ID_BRIEFCASE, contentType: 'application/x-zimbra-ppt'};
+        window.fileInfo = {name: 'Untitled', folderId: ZmOrganizer.ID_BRIEFCASE, contentType: 'application/x-zimbra-slides'};
 
-        var item = null;
-        item = slideEditView.loadData('${requestScope.zimbra_target_account_id}:${requestScope.zimbra_target_item_id}');
-        if(item) {
+        var itemInfo = ${fileInfoJSON};
+
+        if(itemInfo && itemInfo.doc && (itemInfo.doc.length==1)) {
+            var item = ZmDocletMgr.createItem(itemInfo);
             //REST URL will not be generated on server side
             item.rest = location.href;
             window.fileInfo = item;

@@ -68,6 +68,11 @@ ZmDocsEditApp.launch = function(){
 
 };
 
+ZmDocsEditApp.setItemInfo = function(item){
+    ZmDocsEditApp.fileInfo = item;
+    ZmDocsEditApp.fileInfo.loaded = true;
+};
+
 ZmDocsEditApp.setFile = function(fileId, fileName, folderId){
 
     if(!fileId || fileId == ""){

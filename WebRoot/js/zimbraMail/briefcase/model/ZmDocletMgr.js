@@ -286,6 +286,10 @@ function(params,response)
     return item;
 };
 
+ZmDocletMgr.createItem = function(response) {
+    var docletMgr = new ZmDocletMgr();
+    return docletMgr.handleGetItemResponse({}, response);
+};
 
 ZmDocletMgr.prototype.getThemeContent =
 function(themePath)
