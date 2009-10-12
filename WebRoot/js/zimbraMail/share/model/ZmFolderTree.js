@@ -188,6 +188,7 @@ function(type, parent, obj, tree, path, elementType, account) {
 		parent: 	parent,
 		tree: 		tree,
 		color: 		obj.color,
+		rgb:		obj.rgb,
 		owner: 		obj.owner,
 		zid: 		obj.zid,
 		rid: 		obj.rid,

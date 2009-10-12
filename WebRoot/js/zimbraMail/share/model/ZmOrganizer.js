@@ -75,7 +75,12 @@ ZmOrganizer = function(params) {
 				 ZmOrganizer.ORG_COLOR[this.nId] ||
 				 ZmOrganizer.DEFAULT_COLOR[this.type] ||
 				 ZmOrganizer.C_NONE;
-	this.rgb = params.rgb || (this.parent && this.parent.rgb);
+	this.rgb = params.rgb || (this.color == ZmOrganizer.C_NONE && this.parent && this.parent.rgb);
+	// bug 41411: If server reports rgb "#000000", ignore.
+	// TODO: What if user sets the color to black?
+	if (params.rgb == "#000000") {
+		delete this.rgb;
+	}
 
 	if (appCtxt.isOffline && !this.account && this.id == this.nId) {
 		this.account = appCtxt.accountList.mainAccount;
