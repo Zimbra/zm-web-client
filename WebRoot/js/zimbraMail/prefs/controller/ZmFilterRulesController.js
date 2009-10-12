@@ -304,7 +304,7 @@ ZmFilterRulesController.prototype._handleRunFilter =
 function(result) {
 	var resp = result.getResponse().ApplyFilterRulesResponse;
 	var num = (resp && resp.m && resp.m.length)
-		? (resp.m[0].id.split(",").length) : 0;
+		? (resp.m[0].ids.split(",").length) : 0;
 	var msg = AjxMessageFormat.format(ZmMsg.filterRuleApplied, num);
 	var dlg = appCtxt.getMsgDialog();
 	dlg.setMessage(msg);
