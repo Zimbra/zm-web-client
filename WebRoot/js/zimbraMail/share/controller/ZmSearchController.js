@@ -282,6 +282,7 @@ ZmSearchController.prototype.redoSearch =
 function(search, noRender, changes, callback, errorCallback) {
 	var params = {};
 	params.query		= search.query;
+	params.queryHint	= search.queryHint;
 	params.types		= search.types;
 	params.sortBy		= search.sortBy;
 	params.offset		= search.offset;

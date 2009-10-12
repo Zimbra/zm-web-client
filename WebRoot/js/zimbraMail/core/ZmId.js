@@ -701,6 +701,7 @@ ZmId.ORG_ZIMLET				= "ZIMLET";
 ZmId.ORG_PREF_PAGE			= "PREF_PAGE";
 
 // fields of an item
+ZmId.FLD_ACCOUNT		= "ac";
 ZmId.FLD_ATTACHMENT		= "at";
 ZmId.FLD_CAPACITY		= "cp";
 ZmId.FLD_COMPANY		= "co";

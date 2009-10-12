@@ -65,6 +65,7 @@ ZmItem.ICON 			= {};	// Representative icons
 ZmItem.RESULTS_LIST 	= {};	// Function for creating search results list
 
 // fields that can be part of a displayed item
+ZmItem.F_ACCOUNT		= ZmId.FLD_ACCOUNT;
 ZmItem.F_ATTACHMENT		= ZmId.FLD_ATTACHMENT;
 ZmItem.F_CAPACITY		= ZmId.FLD_CAPACITY;
 ZmItem.F_COMPANY		= ZmId.FLD_COMPANY;

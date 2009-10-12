@@ -15,8 +15,7 @@
 
 ZmMailMsgListView = function(params) {
 	this._mode = params.mode;
-	params.view = params.view || params.mode;
-	this.view = params.view;
+	this.view = params.view = (params.view || params.mode);
 	params.type = ZmItem.MSG;
 	params.headerList = this._getHeaderList(params.parent, params.controller);
 	ZmMailListView.call(this, params);
@@ -29,20 +28,6 @@ ZmMailMsgListView.prototype.constructor = ZmMailMsgListView;
 // Consts
 
 ZmMailMsgListView.INDENT		= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-
-ZmMailMsgListView.HEADERS = [
-	ZmItem.F_SELECTION,
-	ZmItem.F_FLAG,
-	ZmItem.F_PRIORITY,
-	ZmItem.F_TAG,
-	ZmItem.F_STATUS,
-	ZmItem.F_FROM,
-	ZmItem.F_ATTACHMENT,
-	ZmItem.F_SUBJECT,
-	ZmItem.F_FOLDER,
-	ZmItem.F_SIZE,
-	ZmItem.F_DATE
-];
 
 // Public methods
 
@@ -368,8 +353,32 @@ function(msg) {
 
 ZmMailMsgListView.prototype._getHeaderList =
 function(parent, controller) {
-	var headers = this.isMultiColumn(controller) ? ZmMailMsgListView.HEADERS :
-				  [ZmItem.F_SELECTION, ZmItem.F_SORTED_BY];
+	var headers;
+	if (this.isMultiColumn(controller)) {
+		headers = [
+			ZmItem.F_SELECTION,
+			ZmItem.F_FLAG,
+			ZmItem.F_PRIORITY,
+			ZmItem.F_TAG,
+			ZmItem.F_STATUS,
+			ZmItem.F_FROM,
+			ZmItem.F_ATTACHMENT,
+			ZmItem.F_SUBJECT,
+			ZmItem.F_FOLDER,
+			ZmItem.F_SIZE,
+		];
+		if (appCtxt.multiAccounts) {
+			headers.push(ZmItem.F_ACCOUNT);
+		}
+		headers.push(ZmItem.F_DATE);
+	}
+	else {
+		headers = [
+			ZmItem.F_SELECTION,
+			ZmItem.F_SORTED_BY
+		];
+	}
+
 	return this._getHeaders(this.view, headers);
 };
 

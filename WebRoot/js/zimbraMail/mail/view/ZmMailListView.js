@@ -44,6 +44,8 @@ ZmMailListView.SINGLE_COLUMN_SORT = [
 	{field:ZmItem.F_DATE,	msg:"date"		}
 ];
 
+ZmMailListView.COL_WIDTH_ACCT = 105;
+
 
 // Public methods
 
@@ -213,6 +215,25 @@ function(htmlArr, idx, item, field, colIdx, width, attr) {
 	return idx;
 };
 
+ZmMailListView.prototype._getCellContents =
+function(htmlArr, idx, item, field, colIdx, params) {
+	if (field == ZmItem.F_ACCOUNT) {
+		if (item.account) {
+			htmlArr[idx++] = "<table border=0 cellpadding=0 cellspacing=0 width='";
+			htmlArr[idx++] = ZmMailListView.COL_WIDTH_ACCT;
+			htmlArr[idx++] = "'><tr><td width=16>";
+			htmlArr[idx++] = AjxImg.getImageHtml(item.account.getIcon());
+			htmlArr[idx++] = "</td><td>";
+			htmlArr[idx++] = item.account.getDisplayName();
+			htmlArr[idx++] = "</td><td width=3>&nbsp;</td></tr></table>";
+		}
+	} else {
+		idx = ZmListView.prototype._getCellContents.apply(this, arguments);
+	}
+
+	return idx;
+};
+
 /**
  * Called by the controller whenever the reading pane preference changes
  */
@@ -247,6 +268,7 @@ function() {
 		this._headerInit[ZmItem.F_FROM]			= {text:ZmMsg.from, width:ZmMsg.COLUMN_WIDTH_FROM_MLV, resizeable:true, sortable:ZmItem.F_FROM};
 		this._headerInit[ZmItem.F_ATTACHMENT]	= {icon:"Attachment", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.attachment, sortable:ZmItem.F_ATTACHMENT, noSortArrow:true};
 		this._headerInit[ZmItem.F_SUBJECT]		= {text:ZmMsg.subject, sortable:ZmItem.F_SUBJECT, noRemove:true, resizeable:true};
+		this._headerInit[ZmItem.F_ACCOUNT]		= {text:ZmMsg.account, width:ZmMailListView.COL_WIDTH_ACCT, noRemove:true, resizeable:true};
 		this._headerInit[ZmItem.F_FOLDER]		= {text:ZmMsg.folder, width:ZmMsg.COLUMN_WIDTH_FOLDER, resizeable:true};
 		this._headerInit[ZmItem.F_SIZE]			= {text:ZmMsg.size, width:ZmMsg.COLUMN_WIDTH_SIZE, sortable:ZmItem.F_SIZE, resizeable:true};
 		this._headerInit[ZmItem.F_DATE]			= {text:ZmMsg.received, width:ZmMsg.COLUMN_WIDTH_DATE, sortable:ZmItem.F_DATE, resizeable:true};
@@ -263,7 +285,14 @@ function(viewId, headerList) {
 	this._defaultCols = headerList.join(ZmListView.COL_JOIN);
 	var isMultiColumn = appCtxt.get(ZmSetting.READING_PANE_LOCATION) != ZmSetting.RP_RIGHT;
 	var userHeaders = isMultiColumn && appCtxt.get(ZmSetting.LIST_VIEW_COLUMNS, viewId);
-	var headers = (userHeaders && isMultiColumn) ? userHeaders.split(ZmListView.COL_JOIN) : headerList;
+	var headers = headerList;
+	if (userHeaders && isMultiColumn) {
+		headers = userHeaders.split(ZmListView.COL_JOIN);
+		if (headers.length != headerList.length) {
+			// this means a new column was added the user does not know about yet
+			this._normalizeHeaders(headers, headerList);
+		}
+	}
 	for (var i = 0, len = headers.length; i < len; i++) {
 		var header = headers[i];
 		var field = header.substr(0, 2);
@@ -272,7 +301,9 @@ function(viewId, headerList) {
 		var pre = hdrParams.precondition;
 		if (!pre || appCtxt.get(pre)) {
 			hdrParams.field = field;
-			hdrParams.visible = (header.indexOf("*") == -1);
+			// multi-account, account header is always initially invisible
+			hdrParams.visible = (appCtxt.multiAccounts && header == ZmItem.F_ACCOUNT && !userHeaders)
+				? false : (header.indexOf("*") == -1);
 			hList.push(new DwtListHeaderItem(hdrParams));
 		}
 	}
@@ -280,8 +311,54 @@ function(viewId, headerList) {
 	return hList;
 };
 
+/**
+ * Inserts new columns into the second to last position of userHeaders so user
+ * still sees their preferred column format but also sees newly added columns
+ *
+ * @param userHeaders	[Array]		user-defined set of column headers
+ * @param headerList	[Array]		default set of column headers
+ */
+ZmMailListView.prototype._normalizeHeaders =
+function(userHeaders, headerList) {
+	var headers = {};
+	for (var i = 0; i < userHeaders.length; i++) {
+		headers[userHeaders[i]] = true;
+	}
+
+	for (var j = 0; j < headerList.length; j++) {
+		var field = headerList[j];
+		if (!headers[field]) {
+			// if account field, add it but initially invisible
+			if (field == ZmId.FLD_ACCOUNT) {
+				field += "*";
+			}
+			userHeaders.splice(userHeaders.length-1, 0, field);
+		}
+	}
+
+	// save implicit pref with newly added column
+	var value = userHeaders.join(ZmListView.COL_JOIN);
+	appCtxt.set(ZmSetting.LIST_VIEW_COLUMNS, value, this.view);
+};
+
 ZmMailListView.prototype.createHeaderHtml =
 function(defaultColumnSort) {
+
+	// for multi-account, hide/show Account column header depending on whether
+	// user is search across all accounts or not.
+	if (appCtxt.multiAccounts) {
+		var searchAllAccounts = appCtxt.getSearchController().searchAllAccounts;
+		if (this._headerHash &&
+			((this._showingAccountColumn && !searchAllAccounts) ||
+			(!this._showingAccountColumn && searchAllAccounts)))
+		{
+			var accountHeader = this._headerHash[ZmItem.F_ACCOUNT];
+			if (accountHeader) {
+				accountHeader._visible = this._showingAccountColumn = searchAllAccounts;
+				this.headerColCreated = false;
+			}
+		}
+	}
 
 	if (!this._headerList || this.headerColCreated) { return; }
 
@@ -291,6 +368,7 @@ function(defaultColumnSort) {
 	}
 
 	DwtListView.prototype.createHeaderHtml.apply(this, arguments);
+
 	if (rpLoc == ZmSetting.RP_RIGHT) {
 		var td = document.getElementById(this._itemCountTextTdId);
 		if (td) {

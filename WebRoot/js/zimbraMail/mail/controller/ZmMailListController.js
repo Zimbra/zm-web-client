@@ -149,6 +149,10 @@ function() {
 ZmMailListController.prototype.switchView =
 function(view, force) {
 	if (view == ZmId.VIEW_TRAD || view == ZmId.VIEW_CONVLIST) {
+		if (appCtxt.multiAccounts) {
+			delete this._showingAccountColumn;
+		}
+
 		var localGroupBy = ZmMailListController.GROUP_BY_SETTING[view];
 		var appGroupBy = this._app._groupBy[appCtxt.getActiveAccount().name];
 		if (localGroupBy && (localGroupBy != appGroupBy)) {

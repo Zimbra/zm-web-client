@@ -58,9 +58,9 @@ function(params) {
  */
 ZmConvListView = function(params) {
 
-	params.headerList = this._getHeaderList(parent, params.controller);
-	params.view = ZmId.VIEW_CONVLIST;
+	this.view = params.view = ZmId.VIEW_CONVLIST;
 	params.type = ZmItem.CONV;
+	params.headerList = this._getHeaderList(parent, params.controller);
 	ZmMailListView.call(this, params);
 
 	// change listener needs to handle both types of events
@@ -78,21 +78,6 @@ ZmConvListView.prototype.constructor = ZmConvListView;
 // Constants
 
 ZmListView.FIELD_CLASS[ZmItem.F_EXPAND] = "Expand";
-
-ZmConvListView.HEADERS = [
-	ZmItem.F_SELECTION,
-	ZmItem.F_EXPAND,
-	ZmItem.F_FLAG,
-	ZmItem.F_PRIORITY,
-	ZmItem.F_TAG,
-	ZmItem.F_STATUS,
-	ZmItem.F_FROM,
-	ZmItem.F_ATTACHMENT,
-	ZmItem.F_SUBJECT,
-	ZmItem.F_FOLDER,
-	ZmItem.F_SIZE,
-	ZmItem.F_DATE
-];
 
 // Copy some functions from ZmMailMsgListView, for handling message rows
 ZmConvListView.prototype._changeFolderName = ZmMailMsgListView.prototype._changeFolderName;
@@ -208,8 +193,33 @@ function() {
 
 ZmConvListView.prototype._getHeaderList =
 function(parent, controller) {
-	var headers = this.isMultiColumn(controller) ? ZmConvListView.HEADERS :
-				  [ZmItem.F_SELECTION, ZmItem.F_SORTED_BY];
+	var headers;
+	if (this.isMultiColumn(controller)) {
+		headers = [
+			ZmItem.F_SELECTION,
+			ZmItem.F_EXPAND,
+			ZmItem.F_FLAG,
+			ZmItem.F_PRIORITY,
+			ZmItem.F_TAG,
+			ZmItem.F_STATUS,
+			ZmItem.F_FROM,
+			ZmItem.F_ATTACHMENT,
+			ZmItem.F_SUBJECT,
+			ZmItem.F_FOLDER,
+			ZmItem.F_SIZE,
+		];
+		if (appCtxt.multiAccounts) {
+			headers.push(ZmItem.F_ACCOUNT);
+		}
+		headers.push(ZmItem.F_DATE);
+	}
+	else {
+		headers = [
+			ZmItem.F_SELECTION,
+			ZmItem.F_SORTED_BY
+		];
+	}
+
 	return this._getHeaders(ZmId.VIEW_CONVLIST, headers);
 };
 
