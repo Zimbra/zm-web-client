@@ -58,16 +58,8 @@
                         </c:otherwise>
                     </c:choose>
                 </td>
-                <fmt:message var="_b" key="b"/>
-                <fmt:message var="_kb" key="kb"/>
-                <fmt:message var="_mb" key="mb"/>
-                <fmt:message var="_gb" key="gb"/>
-                <c:set value="${fn:replace(part.displaySize,' B',_b)}" var="dsize"/>
-                <c:set value="${fn:replace(dsize,' KB',_kb)}" var="dsize"/>
-                <c:set value="${fn:replace(dsize,' MB',_mb)}" var="dsize"/>
-                <c:set value="${fn:replace(dsize,' GB',_gb)}" var="dsize"/>
                 <td><b>${fn:escapeXml(pname)}</b><br />
-                        ${dsize}&nbsp;
+                        ${zm:displaySize(pageContext,part.size)}&nbsp;
                     <c:if test="${not print}">
                     <a target="_blank" href="${url}&amp;disp=i"><fmt:message key="view"/></a>&nbsp;
                     <c:if test="${mailbox.features.viewInHtml and part.isViewAsHtmlTarget}">
