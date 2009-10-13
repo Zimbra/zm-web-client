@@ -1537,9 +1537,10 @@ function(type, controllerClass, sessionId) {
 
 	if (!controller) {
 		var ctlrClass = eval(controllerClass);
-		controller = this._sessionController[type][sessionId] = new ctlrClass(this._container, this, sessionId);
+		controller = this._sessionController[type][sessionId] = new ctlrClass(this._container, this);
 	}
-	controller.sessionId = this._curSessionId[type] = sessionId;
+	controller.setSessionId(type, sessionId);
+	this._curSessionId[type] = sessionId;
 	controller.inactive = false;
 
 	return controller;
@@ -1558,7 +1559,7 @@ function() {
 };
 
 ZmMailApp.prototype.getAttachmentsController =
-function(){
+function() {
     if (!this._attachmentsController) {
 		this._attachmentsController = new ZmAttachmentsController(this._container, this);
 	}
@@ -1584,7 +1585,7 @@ function(params) {
 
 ZmMailApp.prototype.setNewMailNotice =
 function(organizer) {
-	var appChooser = appCtxt.getAppController().getAppChooser();
+	var appChooser = appCtxt.getAppChooser();
 	if (appChooser) {
 		var mb = appChooser.getButton(ZmApp.MAIL);
 		var icon = (organizer.numUnread > 0) ? "EnvelopeOpen" : "MailApp";

@@ -23,15 +23,11 @@
  * 
  * @param container		the containing element
  * @param mailApp		a handle to the mail application
- * @param sessionId		ID for this compose session
  */
-ZmComposeController = function(container, mailApp, sessionId) {
+ZmComposeController = function(container, mailApp) {
 
 	ZmController.call(this, container, mailApp);
 
-	this.sessionId = sessionId;
-	this.viewId = [ZmId.VIEW_COMPOSE, this.sessionId].join("");
-	this.tabId = ["tab", this.viewId].join("_");
 	this._action = null;
 
 	ZmComposeController._setStatics();
@@ -1569,4 +1565,10 @@ function() {
 	if (op) {
 		op.setVisible(appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED));
 	}
+};
+
+ZmComposeController.prototype.setSessionId =
+function(type, sessionId) {
+	ZmController.prototype.setSessionId.apply(this, arguments);
+	this.tabId = ["tab", this.viewId].join("_");
 };

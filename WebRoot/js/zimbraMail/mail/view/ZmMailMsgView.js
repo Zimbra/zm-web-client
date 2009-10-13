@@ -1656,7 +1656,7 @@ function(expand) {
 ZmMailMsgView.prototype._closeButtonListener =
 function(ev) {
 	// bug fix #30835 - prism triggers this listener twice for some reason :/
-	if (this._viewId == appCtxt.getCurrentViewId()) {
+	if (!appCtxt.isOffline || (this._viewId == appCtxt.getCurrentViewId())) {
 		this._controller._backListener();
 	}
 };

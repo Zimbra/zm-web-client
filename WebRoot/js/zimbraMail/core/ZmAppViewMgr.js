@@ -473,10 +473,19 @@ function(viewId, force) {
 	DBG.println(AjxDebug.DBG2, "hidden (before): " + this._hidden);
 
 	if (this._isTabView[viewId]) {
+		var ac = appCtxt.getAppChooser();
 		var tp = this._tabParams[viewId];
-		var button = appCtxt.getAppController().getAppChooser().getButton(tp.id);
-		if (tp && !button) {
-			button = appCtxt.getAppController().getAppChooser().addButton(tp.id, tp);
+		var button;
+		if (tp.oldId) {
+			button = ac.replaceButton(tp.oldId, tp.id, tp);
+			tp.oldId = tp.index = null;
+		} else {
+			button = ac.getButton(tp.id);
+			if (tp && !button) {
+				button = ac.addButton(tp.id, tp);
+			}
+		}
+		if (button) {
 			button.setHoverImage("Close");
 		}
 	}
@@ -590,11 +599,7 @@ function(force, viewId) {
 	this._deactivateView(this._views[this._currentView]);
 
 	if (this._isTabView[this._currentView]) {
-		var buttonId = this._tabParams[this._currentView].id;
-		var button = appCtxt.getAppController().getAppChooser().getButton(buttonId);
-		if (button) {
-			button.dispose();
-		}
+		appCtxt.getAppChooser().removeButton(this._tabParams[this._currentView].id);
 	}
 
 	this._lastView = this._currentView;
@@ -677,6 +682,8 @@ function(viewId) {
  */
 ZmAppViewMgr.prototype.replaceView =
 function(oldViewId, newViewId) {
+
+	oldViewId = oldViewId || this._currentView;
 	var oldView = this._views[oldViewId];
 	var newView = this._views[newViewId];
 	this._hideView(oldViewId, true);
@@ -690,7 +697,7 @@ function(oldViewId, newViewId) {
 	}
 };
 
-ZmAppViewMgr.prototype.isAppView = 
+ZmAppViewMgr.prototype.isAppView =
 function(viewId) {
 	return this._isAppView[viewId];
 };
@@ -766,7 +773,7 @@ function() {
 ZmAppViewMgr.prototype.setTabTitle =
 function(viewId, text) {
 	var tp = this._tabParams[viewId];
-	var button = !appCtxt.isChildWindow && appCtxt.getAppController().getAppChooser().getButton(tp.id);
+	var button = !appCtxt.isChildWindow && tp && appCtxt.getAppChooser().getButton(tp.id);
 	if (button) {
 		button.setText(text);
 	}

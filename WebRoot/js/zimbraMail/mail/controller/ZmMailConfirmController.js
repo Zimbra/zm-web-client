@@ -21,11 +21,9 @@
  * @param container		the containing element
  * @param mailApp		a handle to the mail application
  */
-ZmMailConfirmController = function(container, mailApp, sessionId) {
+ZmMailConfirmController = function(container, mailApp) {
 
 	ZmController.call(this, container, mailApp);
-	this.sessionId = sessionId;
-	this.viewId = [ZmId.VIEW_MAIL_CONFIRM, this.sessionId].join("");
 };
 
 ZmMailConfirmController.prototype = new ZmController();

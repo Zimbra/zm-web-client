@@ -59,6 +59,11 @@ function() {
 	return this._appController;
 };
 
+ZmAppCtxt.prototype.getAppChooser =
+function() {
+	return this._appController.getAppChooser();
+};
+
 ZmAppCtxt.prototype.setRequestMgr =
 function(requestMgr) {
 	this._requestMgr = requestMgr;

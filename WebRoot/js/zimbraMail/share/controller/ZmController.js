@@ -573,3 +573,16 @@ function(dialog) {
 };
 
 ZmController.prototype._menuPopdownActionListener = function() {};
+
+/**
+ * Controller for a view that shows up in a tab within the app chooser bar. So far, only
+ * mail has those (compose, send confirmation, and msg view).
+ *
+ * @param type
+ * @param sessionId
+ */
+ZmController.prototype.setSessionId =
+function(type, sessionId) {
+	this.sessionId = sessionId;
+	this.viewId = [type, this.sessionId].join("");
+};

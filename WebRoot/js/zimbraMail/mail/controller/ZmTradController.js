@@ -110,8 +110,10 @@ function(ev) {
 	var handled = ZmDoublePaneController.prototype._listSelectionListener.apply(this, arguments);
 	if (!handled && ev.detail == DwtListView.ITEM_DBL_CLICKED) {
 		var respCallback = new AjxCallback(this, this._handleResponseListSelectionListener, item);
-		AjxDispatcher.run("GetMsgController", item.id).show(item, this._msgControllerMode, respCallback, true);
-		}
+		var ctlr = AjxDispatcher.run("GetMsgController", item.nId);
+		// ersatz means user is going to next/prev msg from within MV using arrows
+		ctlr.show(item, this._msgControllerMode, respCallback, true, ev.ersatz);
+	}
 };
 
 // Callbacks

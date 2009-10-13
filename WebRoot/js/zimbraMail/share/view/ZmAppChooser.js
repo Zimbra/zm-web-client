@@ -88,7 +88,8 @@ function(listener) {
 ZmAppChooser.prototype.addButton =
 function(id, params) {
 
-	var buttonParams = {parent:this, id:ZmId.getButtonId(ZmId.APP, id), text:params.text, image:params.image};
+	var buttonParams = {parent:this, id:ZmId.getButtonId(ZmId.APP, id), text:params.text,
+						image:params.image, index:params.index};
     var button = new ZmAppButton(buttonParams);
 	button.setToolTipContent(params.tooltip);
 	button.textPrecedence = params.textPrecedence;
@@ -103,6 +104,23 @@ function(id, params) {
 	this._checkSize();
 
 	return button;
+};
+
+ZmAppChooser.prototype.removeButton =
+function(id) {
+	var button = this._buttons[id];
+	if (button) {
+		button.dispose();
+		delete this._buttons[id];
+	}
+};
+
+ZmAppChooser.prototype.replaceButton =
+function(oldId, newId, params) {
+	if (!this._buttons[oldId]) { return; }
+	params.index = this.__getButtonIndex(oldId);
+	this.removeButton(oldId);
+	return this.addButton(newId, params);
 };
 
 ZmAppChooser.prototype.getButton =
