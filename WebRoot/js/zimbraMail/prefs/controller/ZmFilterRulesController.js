@@ -267,13 +267,29 @@ function(ev) {
 		appName:		ZmApp.MAIL
 	};
 	this._chooseFolderDialog.popup(params);
+
+	var foundForwardAction;
+	var sel = this._listView && this._listView.getSelection();
+	for (var i = 0; i < sel.length; i++) {
+		if (sel[i].actions[ZmFilterRule.A_NAME_FORWARD]) {
+			foundForwardAction = true;
+			break;
+		}
+	}
+
+	if (foundForwardAction) {
+		var dialog = appCtxt.getMsgDialog();
+		dialog.setMessage(ZmMsg.filterForwardActionWarning);
+		dialog.popup();
+	}
+
 };
 
 ZmFilterRulesController.prototype._runFilterOkCallback =
 function(dialog, folderList) {
 	dialog.popdown();
 
-	var sel = (this._listView) ? this._listView.getSelection() : null;
+	var sel = this._listView && this._listView.getSelection();
 	if (sel && sel.length) {
 		var soapDoc = AjxSoapDoc.create("ApplyFilterRulesRequest", "urn:zimbraMail");
 		var filterRules = soapDoc.set("filterRules", null);
