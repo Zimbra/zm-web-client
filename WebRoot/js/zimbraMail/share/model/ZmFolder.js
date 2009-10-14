@@ -559,10 +559,16 @@ function(what, folderType) {
 			}
 			// items in the "Sync Failures" folder cannot be dragged out
 			if (appCtxt.isOffline && !invalid) {
-				var cs = appCtxt.getCurrentSearch();
-				var folder = cs && appCtxt.getById(cs.folderId);
-				if (folder && folder.nId == ZmOrganizer.ID_SYNC_FAILURES) {
+				// bug: 41531 - don't allow items to be moved into exchange
+				// account when moving across accounts
+				if (item.account != this.account && this.account.type == ZmAccount.TYPE_MSE) {
 					invalid = true;
+				} else {
+					var cs = appCtxt.getCurrentSearch();
+					var folder = cs && appCtxt.getById(cs.folderId);
+					if (folder && folder.nId == ZmOrganizer.ID_SYNC_FAILURES) {
+						invalid = true;
+					}
 				}
 			}
 			// can't move items to folder they're already in; we're okay if we
