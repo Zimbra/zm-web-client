@@ -231,7 +231,7 @@
                         </tr>
 			<c:if test="${selected=='voice'}">
 			 <tr>
-                            <td class='ZhSubTabs'>
+                            <td class='ZhVoiceSubTabs'>
                                 <app:optVoiceTabs mailbox="${mailbox}" selected="${selected}" prev="${prevApp}"/>
                             </td>
                         </tr>
