@@ -474,9 +474,13 @@ function() {
 ZmMailListController.prototype._initializeDraftsActionMenu =
 function() {
 	if (!this._draftsActionMenu) {
-		var menuItems = [ZmOperation.EDIT];
-		menuItems.push(ZmOperation.SEP);
-		menuItems.push(ZmOperation.TAG_MENU, ZmOperation.DELETE, ZmOperation.PRINT);
+		var menuItems = [
+			ZmOperation.EDIT,
+			ZmOperation.SEP,
+			ZmOperation.TAG_MENU, ZmOperation.DELETE, ZmOperation.PRINT,
+			ZmOperation.SEP,
+			ZmOperation.SHOW_ORIG
+		];
 		this._draftsActionMenu = new ZmActionMenu({parent:this._shell, menuItems:menuItems,
 												   context:this._currentView, menuType:ZmId.MENU_DRAFTS});
 		this._addMenuListeners(this._draftsActionMenu);
