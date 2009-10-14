@@ -126,7 +126,12 @@ function() {
 	if (this._startDateField && this._endDateField) {
 		this._startDateVal = document.getElementById(this._htmlElId + "_VACATION_FROM");
 		this._endDateVal = document.getElementById(this._htmlElId + "_VACATION_UNTIL");
-
+        if(this._startDateVal.value.length < 15){
+            this._startDateVal.value = appCtxt.get(ZmSetting.VACATION_FROM);
+        }
+        if(this._endDateVal.value.length < 15){
+            this._endDateVal.value = appCtxt.get(ZmSetting.VACATION_UNTIL);            
+        }
 		this._formatter = new AjxDateFormat("yyyyMMddHHmmss'Z'");
 
 		this._startDateField.value = (this._startDateVal.value != null && this._startDateVal.value != "")
