@@ -208,13 +208,13 @@ BODY						{	margin:0px; 				}
 
 .ZmAppChooser					{	margin:0px !important; 		}
 
+.ZAppTabBorder                  {   @AppTabRoundCorners@        }
 .ZAppTabBorder .ZLeftIcon 		{	padding-left:5px;			}
 .ZAppTabBorder .ZWidgetTitle 	{	padding-right:10px;			}
 
 .ZSelectedPrev .ZAppTabBorder 	{	@AppTabBorder-selectedPrev@	}
 .ZSelectedNext .ZAppTabBorder	{	@AppTabBorder-selectedNext@	}
 .ZFirstItem .ZAppTabBorder 		{	@AppTabBorder-first@		}
-.ZLastItem .ZAppTabBorder 		{	@AppTabBorder-last@			}
 .ZAppTabSpacer 					{	@AppTab@ @AppTabSpacer@		}
 
 
@@ -360,5 +360,3 @@ SELECT						{	@FieldBorder@	}
 
 .ZhRow TD,
 .ZhRowOdd TD				{	border-width:0 0 1 0 !important; padding-left:3px !important;	}
-
-

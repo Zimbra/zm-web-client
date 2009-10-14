@@ -3640,7 +3640,7 @@ HTML>BODY .appt-selected .appt_allday_body
 
 .ZAppTab 									{	@AppTab@	@AppTabSpacing@				}
 
-.ZAppTabBorder								{	@AppTabBorder@	@AppTabBorder-normal@	}
+.ZAppTabBorder								{	@AppTabBorder@	@AppTabBorder-normal@	@AppTabRoundCorners@  }
 .ZHover		.ZAppTabBorder					{					@AppTabBorder-hover@	}
 .ZDisabled	.ZAppTabBorder					{					@AppTabBorder-disabled@	}
 .ZFocused	.ZAppTabBorder					{					@AppTabBorder-focused@	}
