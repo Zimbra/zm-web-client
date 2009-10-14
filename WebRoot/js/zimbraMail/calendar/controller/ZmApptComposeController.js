@@ -554,3 +554,7 @@ function(appt, attId, dlg) {
 	delete this._invalidAttendees;
 	this._saveListener();
 };
+
+ZmApptComposeController.prototype.closeView = function() {
+   this._closeView();    
+};
