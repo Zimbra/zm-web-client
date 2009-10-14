@@ -780,14 +780,18 @@ and the container element is replaced with that control.
 							</tr>
 						<$ } $>
 						<$ if (data.activeAccount.isZimbraAccount) { $>
-							<tr>
-								<td class='ZOptionsLabel'>&nbsp;</td>
-								<td class='ZOptionsField'><input id='${id}_GAL_AUTOCOMPLETE' tabindex='60' type=checkbox></td>
-							</tr>
-							<tr>
-								<td class='ZOptionsLabel'>&nbsp;</td>
-								<td class='ZOptionsField'><div id='${id}_AUTOCOMPLETE_SHARED_ADDR_BOOKS' tabindex='70'></div></td>
-							</tr>
+							<$ if (data.isEnabled(ZmSetting.GAL_ENABLED) && data.isEnabled(ZmSetting.GAL_AUTOCOMPLETE_ENABLED)) { $>
+								<tr>
+									<td class='ZOptionsLabel'>&nbsp;</td>
+									<td class='ZOptionsField'><input id='${id}_GAL_AUTOCOMPLETE' tabindex='60' type=checkbox></td>
+								</tr>
+							<$ } $>
+							<$ if (data.isEnabled(ZmSetting.SHARING_ENABLED)) { $>
+								<tr>
+									<td class='ZOptionsLabel'>&nbsp;</td>
+									<td class='ZOptionsField'><div id='${id}_AUTOCOMPLETE_SHARED_ADDR_BOOKS' tabindex='70'></div></td>
+								</tr>
+							<$ } $>
 						<$ } $>
 					</table>
 				</td>
