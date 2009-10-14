@@ -813,7 +813,7 @@ function(newFolderId) {
 	if (fId == newFolderId) { return; }
 
 	// moving out of a share or into one is handled differently (create then hard delete)
-	var newFolder = appCtxt.getById(newFolderId)
+	var newFolder = appCtxt.getById(newFolderId);
 	if (this.isShared() || (newFolder && newFolder.link)) {
 		if (this.list) {
 			this.list.moveItems(this, newFolder);
@@ -822,7 +822,8 @@ function(newFolderId) {
 		var jsonObj = {ContactActionRequest:{_jsns:"urn:zimbraMail"}};
 		jsonObj.ContactActionRequest.action = {id:this.id, op:"move", l:newFolderId};
 		var respCallback = new AjxCallback(this, this._handleResponseMove);
-		appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback});
+		var accountName = appCtxt.multiAccounts && appCtxt.accountList.mainAccount.name;
+		appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback, accountName:accountName});
 	}
 };
 

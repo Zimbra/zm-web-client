@@ -62,6 +62,9 @@
 				<table>
 				<tr><td><$=ZmMsg.fileAsLabel$></td><td><div id="${id}_FILE_AS" tabindex="400"></div></td></tr>
 				<tr><td><$=ZmMsg.locationLabel$></td><td><div id="${id}_FOLDER" tabindex="401"></div></td></tr>
+				<$ if (appCtxt.multiAccounts) { $>
+					<tr><td><$=ZmMsg.accountLabel$></td><td><div id="${id}_ACCOUNT"></div></td></tr>
+				<$ } $>
 				</table>
 			</td>
 		</tr>

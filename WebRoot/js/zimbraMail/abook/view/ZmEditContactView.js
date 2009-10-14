@@ -123,6 +123,9 @@ ZmEditContactView = function(parent, controller, isMyCardView) {
 				enabled: "this._contact && !this._contact.isShared()", 
 				onclick: this._handleFolderButton
 			},
+			{ id: "ACCOUNT", type: "DwtLabel",
+				visible: "appCtxt.multiAccounts"
+			},
 			// NOTE: Return false onclick to prevent default action
 			{ id: "VIEW_IMAGE", ignore: true, onclick: "open(get('IMAGE')) && false" },
 			{ id: "REMOVE_IMAGE", ignore: true, onclick: "set('IMAGE','') && false",
@@ -325,6 +328,7 @@ ZmEditContactView.prototype.getModifiedAttrs = function() {
 	// get list of modified attributes
 	for (var i = 0; i < itemIds.length; i++) {
 		var id = itemIds[i];
+		if (id == "ACCOUNT") { continue; }
 		var value = this.getValue(id);
 		if (id in ZmEditContactView.LISTS) {
 			var items = value;
@@ -479,6 +483,9 @@ ZmEditContactView.prototype._setFolder = function(organizerOrId) {
 	var organizer = organizerOrId instanceof ZmOrganizer ? organizerOrId : appCtxt.getById(organizerOrId);
 	this.setLabel("FOLDER", organizer.getName());
 	this.setValue("FOLDER", organizer.id);
+	if (appCtxt.multiAccounts) {
+		this.setValue("ACCOUNT", organizer.account.getDisplayName());
+	}
 };
 
 ZmEditContactView.prototype._getDialogXY =
