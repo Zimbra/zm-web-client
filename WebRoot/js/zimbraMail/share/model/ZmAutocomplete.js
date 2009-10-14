@@ -206,7 +206,7 @@ function(str, aclv, ex) {
 	DBG.println("ac", "error on request for " + str + ", canceling");
 	aclv.setWaiting(false);
 	appCtxt.getAppController().cancelRequest(this._acRequests[str], null, true);
-	appCtxt.setStatusMsg(ZmMsg.autocompleteFailed);
+	appCtxt.setStatusMsg({msg:ZmMsg.autocompleteFailed, level:ZmStatusView.LEVEL_WARNING});
 	delete this._acRequests[str];
 
 	return true;
