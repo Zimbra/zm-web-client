@@ -187,12 +187,8 @@
                                                 <fmt:message var="_kb" key="kb"/>
                                                 <fmt:message var="_mb" key="mb"/>
                                                 <fmt:message var="_gb" key="gb"/>
-                                                <c:set value="${fn:replace(part.displaySize,' B',_b)}" var="dsize"/>
-                                                <c:set value="${fn:replace(dsize,' KB',_kb)}" var="dsize"/>
-                                                <c:set value="${fn:replace(dsize,' MB',_mb)}" var="dsize"/>
-                                                <c:set value="${fn:replace(dsize,' GB',_gb)}" var="dsize"/>
                                                 ${fn:escapeXml(pname)}&nbsp;
-                                                (${dsize})&nbsp;
+                                                (${zm:displaySize(pageContext, part.size)})&nbsp;
                                                 <a href="${url}&amp;disp=a"><fmt:message key="download"/></a>
                                                 <br><p style="margin: 3px"></p>
                                             </c:if>

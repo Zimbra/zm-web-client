@@ -511,7 +511,7 @@
                                                     </td>
                                                     <td>&nbsp;</td>
                                                     <td>
-                                                        <a target="_blank" href="${url}&disp=i">${fn:escapeXml(pname)}</a>&nbsp;(${part.displaySize})
+                                                        <a target="_blank" href="${url}&disp=i">${fn:escapeXml(pname)}</a>&nbsp;(${zm:displaySize(pageContext,part.size)})
                                                     </td>
                                                 </tr>
                                             </table>

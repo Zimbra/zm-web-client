@@ -187,7 +187,7 @@
         displayName="${part.displayName}"
         contentType="${part.contentType}"
         checked="${compose.checkedAttachmentNames[part.partName]}"
-        displaySize="${part.displaySize}"
+        displaySize="${zm:displaySize(pageContext,part.size)}"
         value="${part.partName}" name="originalAttachment"/>
     <c:set var="firstAttachment" value="${false}"/>
 </c:forEach>
