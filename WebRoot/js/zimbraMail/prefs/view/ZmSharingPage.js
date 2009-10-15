@@ -249,6 +249,34 @@ function(shares) {
 ZmSharingView.prototype.showGrants =
 function() {
 
+	// the grant objects we get in the refresh block don't have grantee names,
+	// so use GetFolder in a BatchRequest to get them
+	var batchCmd = new ZmBatchCommand(true, null, true);
+	var list = appCtxt.getFolderTree().asList();
+	for (var i = 0; i < list.length; i++) {
+		var folder = list[i];
+		if (folder.shares && folder.shares.length) {
+			for (var j = 0; j < folder.shares.length; j++) {
+				var share = folder.shares[j];
+				if (!(share.grantee && share.grantee.name)) {
+					batchCmd.add(new AjxCallback(folder, folder.getFolder, [null, batchCmd]));
+					break;
+				}
+			}
+		}
+	}
+
+	if (batchCmd._cmds.length) {
+		var respCallback = new AjxCallback(this, this._handleResponseGetFolder);
+		batchCmd.run(respCallback);
+	} else {
+		this._handleResponseGetFolder();
+	}
+};
+
+ZmSharingView.prototype._handleResponseGetFolder =
+function() {
+
 	var shares = [];
 	var list = appCtxt.getFolderTree().asList();
 	for (var i = 0; i < list.length; i++) {

@@ -433,12 +433,16 @@ function(msg) {
 };
 
 ZmOrganizer.getFolder =
-function(id, callback) {
+function(id, callback, batchCmd) {
 	var jsonObj = {GetFolderRequest:{_jsns:"urn:zimbraMail"}};
 	var request = jsonObj.GetFolderRequest;
 	request.folder = {l:id};
 	var respCallback = new AjxCallback(null, ZmOrganizer._handleResponseGetFolder, [callback]);
-	appCtxt.getRequestMgr().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback});
+	if (batchCmd) {
+		batchCmd.addRequestParams(jsonObj, respCallback);
+	} else {
+		appCtxt.getRequestMgr().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback});
+	}
 };
 
 ZmOrganizer._handleResponseGetFolder =
@@ -463,8 +467,8 @@ function(callback, result) {
 };
 
 ZmOrganizer.prototype.getFolder =
-function(callback) {
-	ZmOrganizer.getFolder(this.id, callback);
+function(callback, batchCmd) {
+	ZmOrganizer.getFolder(this.id, callback, batchCmd);
 };
 
 
