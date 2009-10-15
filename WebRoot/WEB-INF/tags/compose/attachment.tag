@@ -51,7 +51,7 @@
                 </td>
                 <td>&nbsp;</td>
                 <td>
-                    <a target="_blank" title="${fn:escapeXml(displayName)}" href="${fn:escapeXml(url)}&amp;disp=i">${zm:truncate(fn:escapeXml(displayName),80,true)}</a>&nbsp;<c:if test="${displaySize}">(${displaySize})</c:if>
+                    <a target="_blank" title="${fn:escapeXml(displayName)}" href="${fn:escapeXml(url)}&amp;disp=i">${zm:truncate(fn:escapeXml(displayName),80,true)}</a>&nbsp;<c:if test="${not empty displaySize}">(${fn:trim(displaySize)})</c:if>
                 </td>
             </tr>
         </table>

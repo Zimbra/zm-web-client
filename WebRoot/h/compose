@@ -188,7 +188,7 @@
         <c:if test="${not (part.isImage and not empty part.contentId and fn:contains(cid,'DWT'))}">
             <app:attachment firstAttachment="${firstAttachment}" url="/service/home/~/?id=${message.id}&part=${part.partName}&auth=co"
                             displayName="${part.displayName}" contentType="${part.contentType}"
-                            checked="${compose.checkedAttachmentNames[part.partName] != null or (part.isMssage and not empty compose.messageAttachments)}" displaySize="${part.displaySize}"
+                            checked="${compose.checkedAttachmentNames[part.partName] != null or (part.isMssage and not empty compose.messageAttachments)}" displaySize="${zm:displaySize(pageContext,part.size)}"
                             value="${part.partName},${empty cid ? compose.checkedAttachmentNames[part.partName] : cid }" name="originalAttachment"/>
             <c:set var="firstAttachment" value="${false}"/>
         </c:if>
