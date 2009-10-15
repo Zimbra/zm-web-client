@@ -489,20 +489,22 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 						
 						<td class="ZhOptVoiceCBCell">&nbsp;</td>
 						
-						<c:if test="${empty sessionScope.selectiveCallForwardingFrom && !sessionScope.selectiveCallForwardingFetched}">
-						<%-- PUT FORWARDING LIST INTO SESSION VAR --%>
-						<c:set var="selectiveCallForwardingFrom" scope="session" value=""/>
-						<c:set var="selectiveCallForwardingFetched" scope="session" value="${true}"/>
-						<c:forEach items="${features.selectiveCallForwarding.forwardFrom}" var="number">
-						    <c:if test="${!empty sessionScope.selectiveCallForwardingFrom}">
-						    <c:set var="selectiveCallForwardingFrom" scope="session" value="${sessionScope.selectiveCallForwardingFrom},"/>
-						    </c:if>
-						    <c:set var="selectiveCallForwardingFrom" scope="session" value="${sessionScope.selectiveCallForwardingFrom}${number}"/>
-						</c:forEach>
+						<td style="vertical-align:top;">
+						
+						<c:if test="${(empty sessionScope.selectiveCallForwardingFetched || !sessionScope.selectiveCallForwardingFetched) && (empty sessionScope.selectiveCallForwardingFrom)}">
+						
+						    <%-- PUT FORWARDING LIST INTO SESSION VAR --%>
+						    <c:set var="selectiveCallForwardingFrom" scope="session" value=""/>
+						    <c:set var="selectiveCallForwardingFetched" scope="session" value="${true}"/>
+						    <c:forEach items="${features.selectiveCallForwarding.forwardFrom}" var="number">
+							<c:if test="${!empty sessionScope.selectiveCallForwardingFrom}">
+						    	    <c:set var="selectiveCallForwardingFrom" scope="session" value="${sessionScope.selectiveCallForwardingFrom},"/>
+							</c:if>
+							<c:set var="selectiveCallForwardingFrom" scope="session" value="${sessionScope.selectiveCallForwardingFrom}${number}"/>
+						    </c:forEach>
 						</c:if>
 						
 						<c:if test="${!empty sessionScope.selectiveCallForwardingFrom}">
-						<td style="vertical-align:top;">
 							<table class="ZmPhoneBufferList List" border="0" cellpadding="0" cellspacing="0" width="300px">
 								<c:set var="i" value="0"/>
 								<c:forEach items="${sessionScope.selectiveCallForwardingFrom}" var="number">
@@ -518,8 +520,8 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 									</c:if>
 								</c:forEach>
 							</table>
-						</td>
 						</c:if>
+						</td>
 						
 						<td style="vertical-align:top;padding-left:10px">
 							<input type="submit" name="addSelectiveForwarding" value="<fmt:message key='add'/>" <c:if test="${!empty requestScope.addSelectiveForwarding || (!empty sessionScope.selectiveCallForwardingFrom && fn:length(fn:split(sessionScope.selectiveCallForwardingFrom, ',')) >= 12)}">disabled</c:if>/>
@@ -557,7 +559,7 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 						<td class="ZhOptVoiceCBCell">&nbsp;</td>
 						
 						<td>
-							<input id="selectiveDest" type="text" name="selectiveCallForwardingTo" value="${!empty param.selectiveCallForwardingTo ? param.selectiveCallForwardingTo : features.selectiveCallForwarding.forwardTo}"/>
+							<input id="selectiveDest" type="text" name="selectiveCallForwardingTo" value="${(!empty param.selectiveCallForwardingTo || requestScope.badSelectiveCallForwardingTo) ? param.selectiveCallForwardingTo : features.selectiveCallForwarding.forwardTo}"/>
 						</td>
 					</tr>
 				</table>

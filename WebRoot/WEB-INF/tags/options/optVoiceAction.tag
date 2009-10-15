@@ -11,80 +11,98 @@
 
 <c:set var="voiceselected" value="${empty param.voiceselected ? 'general' : param.voiceselected}"/>
 
+<c:set var="selectiveCallForwardingActive" scope="request" value="${param.selectiveCallForwardingActive=='TRUE' ? 'TRUE':'FALSE'}"/>
+<c:set var="callForwardingActive" scope="request" value="${param.callForwardingActive=='TRUE' ? 'TRUE':'FALSE'}"/>
+<c:set var="addSelectiveForwarding" scope="request" value="${param.addSelectiveForwarding}"/>
+
+<c:set var="anonymousCallRejectionActive" scope="request" value="${param.anonymousCallRejectionActive=='TRUE' ? 'TRUE':'FALSE'}"/>
+<c:set var="selectiveCallRejectionActive" scope="request" value="${param.selectiveCallRejectionActive=='TRUE' ? 'TRUE':'FALSE'}"/>
+<c:set var="addSelectiveRejection" scope="request" value="${param.addSelectiveRejection}"/>
+
+
 <c:if test="${zm:actionSet(param, 'actionSave')}">
     <c:choose>
+
         <c:when test="${voiceselected=='notification' && param.emailNotificationActive && empty sessionScope.emailNotificationAddress}">
             <app:status style="Critical"><fmt:message key="missingEmailAddress"/></app:status>
-			<c:set var="emailNotificationAddress" scope="request" value=""></c:set>
-            <c:set var="emailNotificationActive" scope="request" value="TRUE"></c:set>
+            <c:set var="emailNotificationAddress" scope="request" value=""/>
+            <c:set var="emailNotificationActive" scope="request" value="FALSE"/>
         </c:when>
-        <c:when test="${voiceselected=='notification' && param.emailNotificationActive && !empty sessionScope.emailNotificationAddress && !zm:isValidEmailAddress(sessionScope.emailNotificationAddress)}">
+
+        <c:when test="${voiceselected=='notification' && param.emailNotificationActive && !zm:isValidEmailAddress(sessionScope.emailNotificationAddress)}">
             <app:status style="Critical"><fmt:message key="invalidEmailAddress"/></app:status>
-			<c:set var="emailNotificationAddress" scope="request" value="${sessionScope.emailNotificationAddress}"></c:set>
-            <c:set var="emailNotificationActive" scope="request" value="TRUE"></c:set>
+            <c:set var="emailNotificationAddress" scope="request" value="${sessionScope.emailNotificationAddress}"/>
+            <c:set var="emailNotificationActive" scope="request" value="FALSE"/>
         </c:when>
-        <c:when test="${voiceselected=='forwarding' && !param.emailNotificationActive && !empty sessionScope.emailNotificationAddress && !zm:isValidEmailAddress(sessionScope.emailNotificationAddress)}">
-            <app:status style="Critical"><fmt:message key="invalidEmailAddress"/></app:status>
-			<c:set var="emailNotificationAddress" scope="request" value="${sessionScope.emailNotificationAddress}"></c:set>
-            <c:set var="emailNotificationActive" scope="request" value="FALSE"></c:set>
-        </c:when>
+
         <c:when test="${voiceselected=='forwarding' && param.callForwardingAllActive && !zm:isValidPhoneNumber(param.callForwardingAllNumber)}">
             <app:status style="Critical"><fmt:message key="invalidForwardNumber"/></app:status>
-            <c:set var="emailNotificationAddress" scope="request" value="${sessionScope.emailNotificationAddress}"></c:set>
-            <c:set var="badCallForwardingAll" scope="request" value="${param.callForwardingAllNumber}"></c:set>
-		</c:when>
+            <c:set var="badCallForwardingAll" scope="request" value="${param.callForwardingAllNumber}"/>
+	</c:when>
+
+	<c:when test="${voiceselected=='forwarding' && param.selectiveCallForwardingActive && !zm:isValidPhoneNumber(param.selectiveCallForwardingTo)}">
+	    <app:status style="Critical"><fmt:message key="invalidForwardNumber"/></app:status>
+	    <c:set var="selectiveCallForwardingActive" scope="request" value="FALSE"/>
+	    <c:set var="badSelectiveCallForwardingTo" scope="request" value="${true}"/>
+	</c:when>
         <c:otherwise>
 	    <c:choose>
-			<c:when test="${voiceselected=='general'}">	
-				<zm:modifyCallFeatures var="result" phone="${param.phone}"
-					numberOfRings="${param.numberOfRings}"
-					autoPlayNewMsgs="${param.autoPlayNewMsgs}"
-					playDateAndTimeInMsgEnv="${param.playDateAndTimeInMsgEnv}"
-					requirePinEntry="${param.requirePinEntry}"
-					playCallerNameInMsgEnv="${param.playCallerNameInMsgEnv}"
-					promptLevel="${param.promptLevel}"
-					answeringLocale="${param.answeringLocale}"
-					numberPerPage="${param.numberPerPage}"
-				/>
-			<%-- userLocale="${param.userLocale}" --%>
-			</c:when>
+                <c:when test="${voiceselected=='general'}">	
+                    <zm:modifyCallFeatures var="result" phone="${param.phone}"
+                        numberOfRings="${param.numberOfRings}"
+                        autoPlayNewMsgs="${param.autoPlayNewMsgs}"
+                        playDateAndTimeInMsgEnv="${param.playDateAndTimeInMsgEnv}"
+                        requirePinEntry="${param.requirePinEntry}"
+                        playCallerNameInMsgEnv="${param.playCallerNameInMsgEnv}"
+                        promptLevel="${param.promptLevel}"
+                        answeringLocale="${param.answeringLocale}"
+                        numberPerPage="${param.numberPerPage}"
+                    />
+                    <%-- userLocale="${param.userLocale}" --%>
+                </c:when>
 		
-			<c:when test="${voiceselected=='notification'}">	
-				<zm:modifyCallFeatures var="result" phone="${param.phone}"
-					emailnotificationactive="${param.emailNotificationActive}" emailnotificationaddress="${sessionScope.emailNotificationAddress}"
-					/>
-			</c:when>
+                <c:when test="${voiceselected=='notification'}">	
+                    <zm:modifyCallFeatures var="result" phone="${param.phone}"
+                        emailnotificationactive="${param.emailNotificationActive}" emailnotificationaddress="${sessionScope.emailNotificationAddress}"
+                    />
+                </c:when>
 		
-			<c:when test="${voiceselected=='forwarding'}">	
-				<zm:modifyCallFeatures var="result" phone="${param.phone}"
-					callforwardingactive="${param.callForwardingActive}" callforwardingforwardto="${param.callForwardingTo}"
-					selectivecallforwardingactive="${param.selectiveCallForwardingActive}" selectivecallforwardingforwardto="${param.selectiveCallForwardingTo}" selectivecallforwardingforwardfrom="${fn:split(sessionScope.selectiveCallForwardingFrom, ',')}"
-					/>
-				<c:set var="selectiveCallForwardingFrom" scope="session" value="${null}"/>
-				<c:set var="selectiveCallForwardingFetched" scope="session" value="${false}"/>
-			</c:when>
+                <c:when test="${voiceselected=='forwarding'}">	
+
+		    <c:if test="${!param.selectiveCallForwardingActive && !zm:isValidPhoneNumber(param.selectiveCallForwardingTo)}">
+			<c:set var="selectiveCallForwardingActive" scope="request" value="FALSE"/>
+			<c:set var="badSelectiveCallForwardingTo" scope="request" value="${true}"/>
+		    </c:if>
+
+                    <zm:modifyCallFeatures var="result" phone="${param.phone}"
+                        callforwardingactive="${param.callForwardingActive}" callforwardingforwardto="${param.callForwardingTo}"
+                        selectivecallforwardingactive="${param.selectiveCallForwardingActive}" selectivecallforwardingforwardto="${param.selectiveCallForwardingTo}" selectivecallforwardingforwardfrom="${fn:split(sessionScope.selectiveCallForwardingFrom, ',')}"
+                    />
+                    <c:set var="selectiveCallForwardingFrom" scope="session" value="${null}"/>
+                    <c:set var="selectiveCallForwardingFetched" scope="session" value="${false}"/>
+                </c:when>
 		
-			<c:when test="${voiceselected=='screening'}">	
-				<zm:modifyCallFeatures var="result" phone="${param.phone}"
-					anonymouscallrejectionactive="${param.anonymousCallRejectionActive}"
-					selectivecallrejectionactive="${param.selectiveCallRejectionActive}" selectivecallrejectionrejectfrom="${fn:split(sessionScope.selectiveCallRejectionFrom, ',')}"
-					/>
-			</c:when>
-			</c:choose>
+                <c:when test="${voiceselected=='screening'}">	
+                    <zm:modifyCallFeatures var="result" phone="${param.phone}"
+                        anonymouscallrejectionactive="${param.anonymousCallRejectionActive}"
+                        selectivecallrejectionactive="${param.selectiveCallRejectionActive}" selectivecallrejectionrejectfrom="${fn:split(sessionScope.selectiveCallRejectionFrom, ',')}"
+                    />
+                </c:when>
+            </c:choose>
 			
-			<c:choose>
-				<c:when test="${voiceselected=='notification' && !param.emailNotificationActive && zm:isValidEmailAddress(sessionScope.emailNotificationAddress)}">
-					<app:status><fmt:message key="lostEmailNotification"/></app:status>
-				</c:when>
+            <c:choose>
+                <c:when test="${voiceselected=='notification' && !param.emailNotificationActive && zm:isValidEmailAddress(sessionScope.emailNotificationAddress)}">
+                    <app:status><fmt:message key="lostEmailNotification"/></app:status>
+                </c:when>
 
-				<c:when test="${result}">
-					<app:status><fmt:message key="optionsSaved"/></app:status>
-				</c:when>
+                <c:when test="${result}">
+                    <app:status><fmt:message key="optionsSaved"/></app:status>
+                </c:when>
 
-				<c:otherwise>
-					<app:status><fmt:message key="noOptionsChanged"/></app:status>
-				</c:otherwise>
-			</c:choose>
+                <c:otherwise>
+                    <app:status><fmt:message key="noOptionsChanged"/></app:status>
+                </c:otherwise>
+            </c:choose>
         </c:otherwise>
     </c:choose>
 </c:if>
@@ -120,11 +138,6 @@
 </c:if>
 
 
-<c:set var="callForwardingActive" scope="request" value="${param.callForwardingActive=='TRUE' ? 'TRUE':'FALSE'}"/>
-<c:set var="selectiveCallForwardingActive" scope="request" value="${param.selectiveCallForwardingActive=='TRUE' ? 'TRUE':'FALSE'}"/>
-
-
-<c:set var="addSelectiveForwarding" scope="request" value="${param.addSelectiveForwarding}"/>
 <c:if test="${voiceselected=='forwarding' && zm:actionSet(param, 'addSelectiveForwarding') && !empty sessionScope.selectiveCallForwardingFrom && fn:length(fn:split(sessionScope.selectiveCallForwardingFrom, ',')) >= 12}">
 	<app:status style="Critical"><fmt:message key="optionsCallForwardingErrorMax"/></app:status>
 	<c:set var="addSelectiveForwarding" scope="request" value="${null}"/>
@@ -197,14 +210,10 @@
     <c:set var="selectiveCallForwardingFrom" scope="session" value="${tmp}"/>
 </c:if>
 
-<c:set var="addSelectiveRejection" scope="request" value="${param.addSelectiveRejection}"/>
 <c:if test="${voiceselected=='screening' && zm:actionSet(param, 'addSelectiveRejection') && (!empty sessionScope.selectiveRejectionNumber) && fn:length(fn:split(sessionScope.selectiveRejectionNumber,',')) >= 12}">
     <app:status style="Critical"><fmt:message key="optionsCallRejectionErrorMax"/></app:status>
     <c:set var="addSelectiveRejection" scope="request" value="${null}"/>
 </c:if>
-
-<c:set var="anonymousCallRejectionActive" scope="request" value="${param.anonymousCallRejectionActive=='TRUE' ? 'TRUE':'FALSE'}"/>
-<c:set var="selectiveCallRejectionActive" scope="request" value="${param.selectiveCallRejectionActive=='TRUE' ? 'TRUE':'FALSE'}"/>
 
 <c:if test="${voiceselected=='screening' && zm:actionSet(param, 'actionVoiceAddSelectiveRejection')}">
     <c:set var="collTest" value=",${fn:replace(sessionScope.selectiveRejectionNumber, '1-(', '(')},"/>
