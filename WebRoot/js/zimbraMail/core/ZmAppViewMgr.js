@@ -473,20 +473,15 @@ function(viewId, force) {
 	DBG.println(AjxDebug.DBG2, "hidden (before): " + this._hidden);
 
 	if (this._isTabView[viewId]) {
-		var ac = appCtxt.getAppChooser();
 		var tp = this._tabParams[viewId];
-		var button;
-		if (tp.oldId) {
-			button = ac.replaceButton(tp.oldId, tp.id, tp);
-			tp.oldId = tp.index = null;
-		} else {
-			button = ac.getButton(tp.id);
-			if (tp && !button) {
+		var handled = tp && tp.tabCallback && tp.tabCallback.run(this._currentView, viewId);
+		if (tp && !handled) {
+			var ac = appCtxt.getAppChooser();
+			var button = ac.getButton(tp.id);
+			if (!button) {
 				button = ac.addButton(tp.id, tp);
+				button.setHoverImage("Close");
 			}
-		}
-		if (button) {
-			button.setHoverImage("Close");
 		}
 	}
 
@@ -501,7 +496,9 @@ function(viewId, force) {
 		return false;
 	}
 	this.addComponents(this._views[viewId]);
-	if (this._currentView && (this._currentView != viewId) && !this._isTransient[this._currentView]) {
+
+	var isTransient = this._isTransient[this._currentView] || (viewController && viewController.isTransient(this._currentView, viewId));
+	if (this._currentView && (this._currentView != viewId) && !isTransient) {
 		this._hidden.push(this._currentView);
 	}
 

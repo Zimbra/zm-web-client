@@ -111,8 +111,7 @@ function(ev) {
 	if (!handled && ev.detail == DwtListView.ITEM_DBL_CLICKED) {
 		var respCallback = new AjxCallback(this, this._handleResponseListSelectionListener, item);
 		var ctlr = AjxDispatcher.run("GetMsgController", item.nId);
-		// ersatz means user is going to next/prev msg from within MV using arrows
-		ctlr.show(item, this._msgControllerMode, respCallback, true, ev.ersatz);
+		ctlr.show(item, this._msgControllerMode, respCallback, true);
 	}
 };
 

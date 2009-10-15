@@ -110,8 +110,13 @@ ZmAppChooser.prototype.removeButton =
 function(id) {
 	var button = this._buttons[id];
 	if (button) {
+		var index = this.__getButtonIndex(id);
 		button.dispose();
+		this._buttons[id] = null;
 		delete this._buttons[id];
+		if (index != null) {
+			this._removeItem(this._items[index]);
+		}
 	}
 };
 

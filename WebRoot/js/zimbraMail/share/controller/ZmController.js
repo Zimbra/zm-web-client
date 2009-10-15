@@ -586,3 +586,8 @@ function(type, sessionId) {
 	this.sessionId = sessionId;
 	this.viewId = [type, this.sessionId].join("");
 };
+
+ZmController.prototype.isTransient =
+function(oldView, newView) {
+	return false;
+};

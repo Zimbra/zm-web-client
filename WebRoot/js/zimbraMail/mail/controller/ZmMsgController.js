@@ -41,6 +41,8 @@ ZmMsgController.MODE_TO_CONTROLLER[ZmId.VIEW_CONVLIST]	= "GetConvListController"
 
 ZmMsgController.DEFAULT_TAB_TEXT = ZmMsg.message;
 
+ZmMsgController.viewToTab = {};
+
 // Public methods
 
 ZmMsgController.prototype.toString = 
@@ -55,17 +57,16 @@ function() {
  * @param mode		[const]			owning view ID
  * @param callback	[AjxCallback]*	client callback
  * @param markRead	[boolean]*		if true, mark msg read
- * @param reuse		[boolean]*		if true, reuse the current tab view rather than adding a new tab
  */
 ZmMsgController.prototype.show = 
-function(msg, mode, callback, markRead, reuse) {
+function(msg, mode, callback, markRead) {
 
 	this.setMsg(msg);
 	this._mode = mode;
 	this._currentView = this._getViewType();
 	this._list = msg.list;
 	if (!msg._loaded) {
-		var respCallback = new AjxCallback(this, this._handleResponseShow,[callback, reuse]);
+		var respCallback = new AjxCallback(this, this._handleResponseShow, callback);
 		if (msg._loadPending) {
 			// override any local callback if we're being launched by double-pane view,
 			// so that multiple GetMsgRequest's aren't made
@@ -75,13 +76,13 @@ function(msg, mode, callback, markRead, reuse) {
 			msg.load({callback:respCallback, markRead:markRead});
 		}
 	} else {
-		this._handleResponseShow(callback, reuse);
+		this._handleResponseShow(callback);
 	}
 };
 
 ZmMsgController.prototype._handleResponseShow = 
-function(callback, reuse, result) {
-	this._showMsg(reuse);
+function(callback, result) {
+	this._showMsg();
 	if (callback) {
 		callback.run();
 	}
@@ -99,25 +100,25 @@ function() {
 };
 
 ZmMsgController.prototype._showMsg = 
-function(reuse) {
+function() {
 
 	var avm = appCtxt.getAppViewMgr();
 	this._setup(this._currentView);
 	var elements = {};
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
 	elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[this._currentView];
-	var oldId = reuse && avm._currentView;
-	var tabParams = {id:this.viewId, image:"MessageView", textPrecedence:85,
-					 tooltip:ZmMsgController.DEFAULT_TAB_TEXT, oldId:oldId};
+	var curView = avm.getCurrentViewId();
+	var tabId = (curView.indexOf(ZmId.VIEW_MSG) == 0) ? ZmMsgController.viewToTab[curView] : Dwt.getNextId();
+	ZmMsgController.viewToTab[this.viewId] = tabId;
+	var tabCallback = new AjxCallback(this, this._tabCallback);
+	var tabParams = {id:tabId, image:"MessageView", textPrecedence:85,
+					 tooltip:ZmMsgController.DEFAULT_TAB_TEXT, tabCallback:tabCallback};
 	var viewParams = {view:this._currentView, elements:elements, clear:appCtxt.isChildWindow,
-					  tabParams:tabParams, isTransient:true};
+					  tabParams:tabParams};
 	var buttonText = (this._msg && this._msg.subject) ? this._msg.subject.substr(0, ZmAppViewMgr.TAB_BUTTON_MAX_TEXT) :
 					 									ZmMsgController.DEFAULT_TAB_TEXT;
-	if (avm._tabParams[viewParams.view]) {
-		avm._tabParams[viewParams.view].oldId = oldId;
-	}
 	this._setView(viewParams);
-	avm.setTabTitle(this._currentView, buttonText);
+	avm.setTabTitle(this.viewId, buttonText);
 	this._resetOperations(this._toolbar[this._currentView], 1); // enable all buttons
 };
 
@@ -341,4 +342,14 @@ function(ev) {
 	if (!this._app.popView() && !isChildWindow) {
 		this._app.mailSearch();
 	}
+};
+
+ZmMsgController.prototype.isTransient =
+function(oldView, newView) {
+	return (newView && newView.indexOf(ZmId.VIEW_COMPOSE) == 0);
+};
+
+ZmMsgController.prototype._tabCallback =
+function(oldView, newView) {
+	return (oldView && oldView.indexOf(ZmId.VIEW_MSG) == 0);
 };
