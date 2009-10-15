@@ -43,15 +43,10 @@
             <jsp:forward page="/h/compose"/>
         </c:when>
         <c:otherwise>
-            <body>
-                <center>
-                    <h4>
-                        <body>
-                <center>
-                    <h4>An Unknown error occured. Please <a href="<c:url value='/?client=standard' />">click here</a> to go back to client home.</h4>
+            <div align="center">
+                <h4><fmt:message key="${error.code}"/></h4>
                     <!-- ${fn:escapeXml(error.id)} -->
-                </center>
-                </body>
+            </div>                
         </c:otherwise>
     </c:choose>
 </c:if>
