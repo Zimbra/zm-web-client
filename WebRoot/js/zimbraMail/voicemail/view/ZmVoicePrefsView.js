@@ -1609,7 +1609,7 @@ function(event) {
 			this.showDialogWithFAQ(error);
 			this._clearField(this._addField);
 		} else {
-			if (!ZmPhone.isValid(addValue)) { // Possibly obsolete, but doesn't do any harm
+			if (!ZmPhone.isValid(addValue)) {
 				this.showDialogWithFAQ(ZmMsg.selectiveCallForwardingError);
 				this._clearField(this._addField);
 			} else {
@@ -1841,7 +1841,7 @@ function(event) {
 			this.showDialogWithFAQ(error);
 			this._clearField(this._addField);
 		} else {
-			if (!ZmPhone.isValid(addValue)) { // Possibly obsolete, but doesn't do any harm
+			if (!ZmPhone.isValid(addValue)) {
 				this.showDialogWithFAQ(ZmMsg.selectiveCallRejectionError);
 				this._clearField(this._addField);
 			} else {
@@ -2020,7 +2020,7 @@ function(event) {
 			this.showDialogwithFAQ(error);
 			this._clearField(this._addField);
 		} else {
-			if (!ZmPhone.isValid(addValue)) { // Possibly obsolete, but doesn't do any harm
+			if (!ZmPhone.isValid(addValue)) {
 				this.showDialogwithFAQ(ZmMsg.selectiveCallAcceptanceError);
 				this._clearField(this._addField);
 			} else {
@@ -2286,10 +2286,15 @@ function(item) {
 	return AjxStringUtil.htmlEncode(ZmPhone.calculateDisplay(item[this.displayProperty]), true);
 }
 
-	
 ZmPhoneBufferList.prototype.containsItem =
 function(item) {
-	return (this._list.indexOfLike(item, ZmPhoneBufferList.getItemNumber) != -1);
+	if (item.pn && this._list) {
+		var pn = ZmPhone.calculateFullName(item.pn);
+		for (var i=0, count=this._list.size(); i<count; i++)
+			if (pn == ZmPhone.calculateFullName(this._list.get(i).pn))
+				return true;
+	}
+	return false;
 }
 
 ZmPhoneBufferList.getItemNumber =

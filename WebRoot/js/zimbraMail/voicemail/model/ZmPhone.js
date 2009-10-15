@@ -76,10 +76,16 @@ function(display) {
 	return display.replace(/[^\d]/g, '');
 };
 
+ZmPhone.calculateFullName =
+function(display) {
+	var name = ZmPhone.calculateName(display);
+	return (/^1/.exec(name)) ? name : "1" + name;
+};
+
 ZmPhone.isValid =
 function(str) {
 	var nameLength = ZmPhone.calculateName(str).length;
-	return (7 <= nameLength) && (nameLength <= 20) && !/[^0-9()\-\s\+]/.exec(str);
+	return (7 <= nameLength) && (nameLength <= 20) && !/[^0-9()\-\s\+\.]/.exec(str);
 };
 
 ZmPhone.prototype.validate =
