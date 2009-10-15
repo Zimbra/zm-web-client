@@ -1,4 +1,4 @@
-/*
+	/*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009 Zimbra, Inc.
@@ -103,16 +103,17 @@ function(parent, obj, tree, elementType, path, account) {
 			return;
 		}
 		// let's avoid deferring folders for offline since multi-account folder deferring is hairy
-		if (appCtxt.inStartup && ZmOrganizer.DEFERRABLE[type] && !appCtxt.isOffline) {
+		var hasGrants = (obj.acl && obj.acl.grant && obj.acl.grant.length > 0);
+		if (appCtxt.inStartup && ZmOrganizer.DEFERRABLE[type] && !appCtxt.isOffline && !hasGrants) {
 			var app = appCtxt.getApp(ZmOrganizer.APP[type]);
 			var defParams = {
-				type: type,
-				parent: parent,
-				obj: obj,
-				tree: tree,
-				path: path,
-				elementType: elementType,
-				account: account
+				type:			type,
+				parent:			parent,
+				obj:			obj,
+				tree:			tree,
+				path:			path,
+				elementType:	elementType,
+				account:		account
 			};
 			app.addDeferredFolder(defParams);
 		} else {
