@@ -144,23 +144,23 @@
 </c:if>
 
 <c:if test="${voiceselected=='forwarding' && (zm:actionSet(param, 'actionVoiceAddSelectiveForwarding') || zm:actionSet(param, 'actionSave'))}">
-    <c:set var="collTest" value=",${fn:replace(sessionScope.selectiveCallForwardingFrom, '1-(', '(')},"/>
-    <c:set var="entryTest" value=",${fn:replace(param.addForwardingNumber, '1-(', '(')},"/>
-	<c:set var="useFrom" value="${zm:actionSet(param, 'actionVoiceAddSelectiveForwarding')}"/>
+    	<c:set var="useFrom" value="${zm:actionSet(param, 'actionVoiceAddSelectiveForwarding')}"/>
 
-    <fmt:message var="faqlink" key="errorPhoneFAQLink"/>
-    <fmt:message var="faqurl" key="errorPhoneFAQURL"/>
-    <c:set var="faqlink" value="&nbsp;${fn:replace(faqlink, '{1}', faqurl)}"/>
-    	
-    <c:choose>
-	<c:when test="${useFrom && fn:indexOf(collTest, entryTest)!=-1}">
-	    <app:status style="Critical"><fmt:message key="errorPhoneNotUnique"/></app:status>
-	</c:when>
-	<c:otherwise>
+	<fmt:message var="faqlink" key="errorPhoneFAQLink"/>
+	<fmt:message var="faqurl" key="errorPhoneFAQURL"/>
+	<c:set var="faqlink" value="&nbsp;${fn:replace(faqlink, '{1}', faqurl)}"/>
 	
-	    <zm:phone var="bogus" displayVar="thisDisplayNumber" name="${param.phone}"/>
-	    <zm:phone var="success" displayVar="displayNumber" errorVar="errorCode" name="${useFrom ? param.addForwardingNumber : param.selectiveCallForwardingTo}"/>
-	    <c:choose>
+	<zm:phone var="bogus" displayVar="thisDisplayNumber" name="${param.phone}"/>
+	<zm:phone var="success" displayVar="displayNumber" errorVar="errorCode" name="${useFrom ? param.addForwardingNumber : param.selectiveCallForwardingTo}"/>
+
+	<c:set var="collTest" value=",${fn:replace(sessionScope.selectiveCallForwardingFrom, '1-(', '(')},"/>
+	<c:set var="entryTest" value=",${fn:replace(displayNumber, '1-(', '(')},"/>
+
+	<c:choose>
+		<c:when test="${useFrom && fn:indexOf(collTest, entryTest)!=-1}">
+		    <app:status style="Critical"><fmt:message key="errorPhoneNotUnique"/></app:status>
+		</c:when>
+	    
 		<c:when test="${fn:replace(thisDisplayNumber, '1-(', '(') == fn:replace(displayNumber, '1-(', '(')}">
 		    <app:status style="Critical" html="true"><fmt:message key="errorPhoneIsOwn"/> ${faqlink}</app:status>
 		</c:when>
@@ -192,9 +192,7 @@
 		<c:when test="${useFrom && success}">
 		    <c:set var="selectiveCallForwardingFrom" scope="session" value="${sessionScope.selectiveCallForwardingFrom},${displayNumber}"/>
 		</c:when>
-	    </c:choose>
-	</c:otherwise>
-    </c:choose>
+	</c:choose>
 </c:if>
 
 <c:if test="${voiceselected=='forwarding' && zm:actionSet(param, 'actionVoiceRemoveSelectiveForwarding')}">
@@ -216,22 +214,22 @@
 </c:if>
 
 <c:if test="${voiceselected=='screening' && zm:actionSet(param, 'actionVoiceAddSelectiveRejection')}">
-    <c:set var="collTest" value=",${fn:replace(sessionScope.selectiveRejectionNumber, '1-(', '(')},"/>
-    <c:set var="entryTest" value=",${fn:replace(param.addRejectionNumber, '1-(', '(')},"/>
-
-    <fmt:message var="faqlink" key="errorPhoneFAQLink"/>
-    <fmt:message var="faqurl" key="errorPhoneFAQURL"/>    
-    <c:set var="faqlink" value="&nbsp;${fn:replace(faqlink, '{1}', faqurl)}"/>
     
-    <c:choose>
-	<c:when test="${fn:indexOf(collTest, entryTest)!=-1}">
-	    <app:status style="Critical"><fmt:message key="errorPhoneNotUnique"/></app:status>
-	</c:when>
-	<c:otherwise>
+        <fmt:message var="faqlink" key="errorPhoneFAQLink"/>
+        <fmt:message var="faqurl" key="errorPhoneFAQURL"/>    
+        <c:set var="faqlink" value="&nbsp;${fn:replace(faqlink, '{1}', faqurl)}"/>
 	
-	    <zm:phone var="bogus" displayVar="thisDisplayNumber" name="${param.phone}"/>
-	    <zm:phone var="success" displayVar="displayNumber" errorVar="errorCode" name="${param.addRejectionNumber}"/>
-	    <c:choose>
+	<zm:phone var="bogus" displayVar="thisDisplayNumber" name="${param.phone}"/>
+	<zm:phone var="success" displayVar="displayNumber" errorVar="errorCode" name="${param.addRejectionNumber}"/>
+
+	<c:set var="collTest" value=",${fn:replace(sessionScope.selectiveRejectionNumber, '1-(', '(')},"/>
+	<c:set var="entryTest" value=",${fn:replace(displayNumber, '1-(', '(')},"/>
+
+	<c:choose>
+		<c:when test="${fn:indexOf(collTest, entryTest)!=-1}">
+		    <app:status style="Critical"><fmt:message key="errorPhoneNotUnique"/></app:status>
+		</c:when>
+	    
 		<c:when test="${fn:replace(thisDisplayNumber, '1-(', '(') == fn:replace(displayNumber, '1-(', '(')}">
 		    <app:status style="Critical" html="true"><fmt:message key="errorPhoneIsOwn"/> ${faqlink}</app:status>
 		</c:when>
@@ -263,9 +261,7 @@
 		<c:when test="${success}">
 		    <c:set var="selectiveRejectionNumber" scope="session" value="${sessionScope.selectiveRejectionNumber},${displayNumber}"/>
 		</c:when>
-	    </c:choose>
-	</c:otherwise>
-    </c:choose>
+	</c:choose>
 </c:if>
 
 <c:if test="${voiceselected=='screening' && zm:actionSet(param, 'actionVoiceRemoveSelectiveRejection')}">

@@ -457,7 +457,7 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 							<input id="callForwardingActive" type="checkbox" name="callForwardingActive" value="TRUE" <c:if test="${(features.callForwardingAll.isActive || param.callForwardingActive) && requestScope.callForwardingActive!='FALSE'}">checked</c:if>/>
 						</td>
 						<td>
-							<label for="callForwardingActive"><fmt:message key="optionsCallForwardingAllLabel"/>:</label>
+							<label for="callForwardingActive"><fmt:message key="optionsCallForwardingAllLabel"/></label>
 						</td>
 						
 						<td class="ZhOptVoiceCBCell">&nbsp;</td>
@@ -561,7 +561,7 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 					
 					<tr>
 						<td colspan="2" style="text-align:right">
-							<label for="selectiveDest"><fmt:message key="optionsCallForwardingSelectiveDestination"/>:</label>
+							<label for="selectiveDest"><fmt:message key="optionsCallForwardingSelectiveDestination"/></label>
 						</td>
 						
 						<td class="ZhOptVoiceCBCell">&nbsp;</td>
@@ -584,7 +584,7 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 	<%----------------- Call Screening Section --------------%>
 	<table class="ZOptionsSectionMain ZhOptVoice" border="0" cellspacing="10" width="100%">
 		<tr>
-			<td class="ZOptionsTableLabel" style="vertical-align:top;"><fmt:message key="optionsCallRejectionAll"/>:</td>
+			<td class="ZOptionsTableLabel"><fmt:message key="optionsCallRejectionAll"/></td>
 			<td>
 				<table border="0" cellpadding="0" cellspacing="0">
 					<tr>
@@ -595,16 +595,22 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 							<label for="anonymousCallRejectionActive"><fmt:message key="optionsCallRejectionAllLabel"/></label>
 						</td>						
 					</tr>
-					
-					<tr><td>&nbsp;</td></tr>
-
+				</table>
+			</td>
+		</tr>
+		
+		<tr>
+			<td class="ZOptionsTableLabel" style="vertical-align:top"><fmt:message key="optionsCallRejectionSelective"/></td>
+			<td>
+				<table border="0" cellpadding="0" cellspacing="0">
+						
 					<tr>
 						<td class="ZhOptVoiceCBCell" style="vertical-align:top;">
 							<input id="callRejectionSelective" type="checkbox" name="selectiveCallRejectionActive" value="TRUE" <c:if test="${requestScope.selectiveCallRejectionActive!='FALSE' && (features.selectiveCallRejection.isActive || requestScope.selectiveCallRejectionActive=='TRUE')}">checked</c:if>/>
 						</td>
 						
 						<td style="vertical-align:top;padding-top:3px">
-							<label for="callRejectionSelective"><fmt:message key="optionsCallRejectionSelectiveLabel"/>:</label>
+							<label for="callRejectionSelective"><fmt:message key="optionsCallRejectionSelectiveLabel"/></label>
 						</td>
 						
 						<td class="ZhOptVoiceCBCell">&nbsp;</td>
@@ -624,6 +630,7 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 						<td style="vertical-align:top;">
 						<c:if test="${!empty sessionScope.selectiveRejectionNumber}">
 							<table class="ZmPhoneBufferList List" border="0" cellpadding="0" cellspacing="0" width="300px">
+								<tr><th colspan="2"><fmt:message key="numbers"/></th></tr>
 								<c:forEach items="${sessionScope.selectiveRejectionNumber}" var="number">
 									<c:if test="${!empty number}">
 									<tr>
@@ -649,7 +656,7 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 					<tr><td>&nbsp;</td></tr>
 					<tr>
 						<td colspan="2" style="text-align:right">
-							<label for="addRejectionNumber"><fmt:message key="optionsCallRejectionSelectiveAdd"/>:</label>
+							<label for="addRejectionNumber"><fmt:message key="optionsCallRejectionSelectiveAdd"/></label>
 						</td>
 						
 						<td class="ZhOptVoiceCBCell">&nbsp;</td>
@@ -666,23 +673,6 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 						<td colspan="2"><fmt:message key="optionsCallRejectionRules"/></td>
 					</tr>
 					</c:if>
-										
-					<%-- Not sure if this is needed --%>
-					<%--
-					<tr><td>&nbsp;</td></tr>
-					
-					<tr>
-						<td colspan="2" style="text-align:right">
-							<label for="selectiveDest"><fmt:message key="optionsCallRejectionSelectiveTo"/>:</label>
-						</td>
-						
-						<td class="ZhOptVoiceCBCell">&nbsp;</td>
-						
-						<td>
-							<input id="selectiveDest" type="text" name="callRejectionSelectiveTo"/>
-						</td>
-					</tr>
-					--%>
 				</table>
 			</td>
 		</tr>
