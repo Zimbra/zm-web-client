@@ -33,6 +33,7 @@ AjxPackage.require("ajax.util.AjxVector");
 AjxPackage.require("ajax.util.AjxStringUtil");
 AjxPackage.require("ajax.xml.AjxXmlDoc");
 AjxPackage.require("ajax.core.AjxImg");
+AjxPackage.require("ajax.core.AjxColor");
 AjxPackage.require("ajax.events.AjxEvent");
 AjxPackage.require("ajax.events.AjxEventMgr");
 AjxPackage.require("ajax.util.AjxTimedAction");

@@ -292,11 +292,17 @@ function(appt) {
 	this._getStyle(ZmCalBaseView.TYPE_APPT);
 	this.associateItemWithElement(appt, result, ZmCalBaseView.TYPE_APPT);
 
+	var needsAction = appt.ptst == ZmCalBaseItem.PSTATUS_NEEDS_ACTION;
+	var calendar = appCtxt.getById(appt.folderId);
+	var colors = ZmCalBaseView._getColors(calendar.rgb || ZmOrganizer.COLOR_VALUES[calendar.color]);
+	var headerStyle = ZmCalBaseView._toColorsCss(needsAction ? colors.deeper.header : colors.standard.header);
+	var bodyStyle = ZmCalBaseView._toColorsCss(needsAction ? colors.deeper.body : colors.standard.body);
+
 	var data = {
 		appt: appt,
 		duration: appt.getShortStartHour(),
-		color: ZmCalendarApp.COLORS[this._controller.getCalendarColor(appt.folderId)] +
-				(appt.ptst == ZmCalBaseItem.PSTATUS_NEEDS_ACTION ? "Dark" : "Bg"),
+		headerStyle: headerStyle,
+		bodyStyle: bodyStyle,
 		multiday: appt._fanoutFirst != null,
 		first: appt._fanoutFirst,
 		last: appt._fanoutLast,

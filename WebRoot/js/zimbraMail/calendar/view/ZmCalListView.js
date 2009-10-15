@@ -224,8 +224,10 @@ function(htmlArr, idx, appt, field, colIdx, params) {
 		}
 
 	} else if (field == ZmItem.F_FOLDER) {
+		var calendar = appt.getFolder();
+		var colors = ZmCalBaseView._getColors(calendar.rgb || ZmOrganizer.COLOR_VALUES[calendar.color]);
 		var subs = {
-			folderColor: ZmTreeController.COLOR_CLASS[appt.getFolder().color],
+			folderColor: colors.standard.header.bgcolor,
 			folderName: appt.getFolder().getName()
 		};
 		htmlArr[idx++] = AjxTemplate.expand("calendar.Calendar#ListViewFolder", subs);

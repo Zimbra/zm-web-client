@@ -469,12 +469,16 @@ function(div, allDay, folderId) {
 	Dwt.setSize(div, 10, 10);// will be resized
 	div.className = this._getStyle(null, true);
 	Dwt.setOpacity(div, ZmCalColView._OPACITY_APPT_DND);
+	var calendar = appCtxt.getById(folderId);
+	var headerColor = calendar.rgb && ZmCalColView.__deepen(AjxColor.darken(calendar.rgb,ZmCalColView.headerColorDelta));
+	var bodyColor = calendar.rgb && ZmCalColView.__deepen(AjxColor.lighten(calendar.rgb,ZmCalColView.bodyColorDelta));
 	var subs = {
 		id: div.id,
 		newState: "",
-		headerColor: color + "Light",
-		bodyColor: color + "Bg",
-		body_style: "",
+		headerColor: calendar.rgb ? "" : (color + "Light"),
+		bodyColor: calendar.rgb ? "" : (color + "Bg"),
+		headerStyle: calendar.rgb ? "background-color: "+headerColor+";" : "",
+		bodyStyle: calendar.rgb ? "background-color: "+bodyColor+";" : "",
 		name: AjxStringUtil.htmlEncode(ZmMsg.newAppt),
 		starttime: "",
 		endtime: "",
@@ -549,12 +553,16 @@ function(appt) {
 		apptName = appt.getDurationText(true, true) + " - " + apptName;
 	}
 
+	var colors = ZmCalBaseView._getColors(calendar.rgb || ZmOrganizer.COLOR_VALUES[calendar.color]);
+	var colors = ZmCalBaseView._getColors(calendar.rgb || ZmOrganizer.COLOR_VALUES[calendar.color]);
+	var headerStyle = ZmCalBaseView._toColorsCss(isNew ? colors.deeper.header : colors.standard.header);
+	var bodyStyle = ZmCalBaseView._toColorsCss(isNew ? colors.deeper.body : colors.standard.body);
+
 	var subs = {
 		id: id,
-		body_style: "",
 		newState: isNew ? "_new" : "",
-		headerColor: color + (isNew ? "Dark" : "Light"),
-		bodyColor: color + (isNew ? "" : "Bg"),
+		headerStyle: headerStyle,
+		bodyStyle: bodyStyle,
 		name: apptName,
 		starttime: appt.getDurationText(true, true),
 		endtime: ((!appt._fanoutLast && (appt._fanoutFirst || (appt._fanoutNum > 0))) ? "" : ZmCalBaseItem._getTTHour(appt.endDate)),
@@ -572,7 +580,7 @@ function(appt) {
 		var bs = "";
 		if (!this.isStartInView(appt._orig)) bs = "border-left:none;";
 		if (!this.isEndInView(appt._orig)) bs += "border-right:none;";
-		if (bs != "") subs.body_style = "style='"+bs+"'";
+		if (bs != "") subs.bodyStyle += bs;
 	} else if (is30) {
 		template = "calendar_appt_30";
 	} else if (appt._fanoutNum > 0) {

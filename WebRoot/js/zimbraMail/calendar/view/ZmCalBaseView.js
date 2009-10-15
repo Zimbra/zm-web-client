@@ -76,6 +76,50 @@ ZmCalBaseView.TYPE_ALL_DAY = 8; // all day div area in day view
 ZmCalBaseView.TYPE_SCHED_FREEBUSY = 9; // free/busy union
 ZmCalBaseView.TYPE_DAY_SEP = 10;//allday separator
 
+ZmCalBaseView.headerColorDelta = 0;
+ZmCalBaseView.bodyColorDelta = .5;
+ZmCalBaseView.deepenColorAdjustment = .9;
+ZmCalBaseView.darkThreshold = (256 * 3) / 2;
+ZmCalBaseView.deepenThreshold = .3;
+
+ZmCalBaseView._getColors = function(color) {
+	// generate header and body colors
+	var hs = { bgcolor: AjxColor.darken(color, ZmCalBaseView.headerColorDelta) };
+	var hd = { bgcolor: AjxColor.deepen(hs.bgcolor, ZmCalBaseView.deepenColorAdjustment) };
+	var bs = { bgcolor: AjxColor.lighten(color, ZmCalBaseView.bodyColorDelta)  };
+	var bd = { bgcolor: AjxColor.deepen(bs.bgcolor, ZmCalBaseView.deepenColorAdjustment) };
+
+	// ensure enough difference between background and deeper colors
+	var cs = AjxColor.components(hs.bgcolor);
+	var cd = AjxColor.components(hd.bgcolor);
+	var ss = cs[0]+cs[1]+cs[2];
+	var sd = cd[0]+cd[1]+cd[2];
+	if (ss/sd > 1 - ZmCalBaseView.deepenThreshold) {
+		hs.bgcolor = AjxColor.lighten(hd.bgcolor, ZmCalBaseView.deepenThreshold);
+		bs.bgcolor = AjxColor.lighten(bd.bgcolor, ZmCalBaseView.deepenThreshold);
+	}
+
+	// use light text color for dark backgrounds
+	hs.color = ZmCalBaseView._isDark(hs.bgcolor) && "#ffffff";
+	hd.color = ZmCalBaseView._isDark(hd.bgcolor) && "#ffffff";
+	bs.color = ZmCalBaseView._isDark(bs.bgcolor) && "#ffffff";
+	bd.color = ZmCalBaseView._isDark(bd.bgcolor) && "#ffffff";
+
+	return { standard: { header: hs, body: bs }, deeper: { header: hd, body: bd } };
+};
+ZmCalBaseView._toColorsCss = function(object) {
+	var a = [ "background-color:",object.bgcolor,";" ];
+	if (object.color) {
+		a.push("color:",object.color,";");
+	}
+	return a.join("");
+};
+
+ZmCalBaseView._isDark = function(color) {
+	var c = AjxColor.components(color);
+	return c[0]+c[1]+c[2] < ZmCalBaseView.darkThreshold;
+};
+
 ZmCalBaseView.prototype.getController =
 function() {
 	return this._controller;

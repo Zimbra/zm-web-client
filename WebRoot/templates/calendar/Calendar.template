@@ -1,7 +1,7 @@
 <template id='calendar.Calendar#calendar_appt' width='10' height='7'>
-	<div id='${id}_body' class='appt_body ${bodyColor}'>
-		<table style='width:100%; height:100%' cellspacing=0 cellpadding=0>
-			<tr class='${headerColor}'>
+	<div id='${id}_body' class='appt_body'>
+		<table cellspacing=0 cellpadding=0 style='width:100%; height:100%;${bodyStyle}'>
+			<tr style='${headerStyle}'>
 				<td width='4x' class='${showAsColor}' ></td>
 				<td class='appt${newState}_time' id='${id}_st'>
 					<$ if (data.icon) { $>
@@ -33,8 +33,8 @@
 </template>
 
 <template id='calendar.Calendar#calendar_appt_bottom_only' width='10' height='7'>
-	<div id='${id}_body' class='appt_body ${bodyColor}'>
-		<table style='width:100%;height:100%' cellspacing=0 cellpadding=2>
+	<div id='${id}_body' class='appt_body'>
+		<table cellspacing=0 cellpadding=2 style='width:100%;height:100%;${bodyStyle}'>
 			<tr valign=top>
 				<td width='4x' class='${showAsColor}' ></td>			
 				<td colspan=2 class=appt${newState}_name style='height:100%'>
@@ -52,14 +52,14 @@
 </template>
 
 <template id='calendar.Calendar#calendar_appt_30' width='4' height='4'>
-	<div id='${id}_body' class='appt_30_body ${headerColor}'>
+	<div id='${id}_body' class='appt_30_body'>
 		<$ if (!AjxEnv.isIE && !AjxEnv.isFirefox3up && data.icon) { $>
 			<div class='appt_icon'><$= AjxImg.getImageHtml(data.icon, "width:16") $></div>
 		<$ } $>
 		<$ if (!AjxEnv.isIE && !AjxEnv.isFirefox3up && data.tagIcon) { $>
 			<div class='appt_icon'><$= AjxImg.getImageHtml(data.tagIcon, "width:16") $></div>
 		<$ } $>
-		<table width=100% cellspacing=0 cellpadding=0>
+		<table width=100% cellspacing=0 cellpadding=0 style='width:100%;height:100%;${headerStyle}'>
 			<tr>
 				<td width='4x' class='${showAsColor}' ></td>
 				<td class=appt_30${newState}_name>${name}</td>
@@ -75,8 +75,8 @@
 </template>
 
 <template id='calendar.Calendar#calendar_appt_allday' width='4' height='4'>
-	<div id='${id}_body' ${body_style} class='appt_allday_body ${headerColor}'>
-		<table width=100% cellspacing=0 cellpadding=0>
+	<div id='${id}_body' class='appt_allday_body'>
+		<table width=100% cellspacing=0 cellpadding=0 style='width:100%;height:100%;${headerStyle}'>
 			<tr>
 				<td width='4x' class='${showAsColor}' ></td>
 				<td class=appt_allday${newState}_name>
@@ -97,11 +97,10 @@
 	<$ var continues = data.multiday && !data.last; $>
 	<$ var continued = data.multiday && !data.first; $>
 	<$ var style = continues ? "padding-right:14x;" : ""; $>
-	<table border=0 width=100% cellspacing=0 cellpadding=2>
+	<table border=0 width=100% cellspacing=0 cellpadding=2 style='${headerStyle}'>
 	<tr>
 		<td width='1x' class='${showAsColor}' ></td>
-		<td  class='${color}'>
-			<div class='${color}' style='overflow:hidden; <$=style$>'>
+		<td><div style='overflow:hidden; <$=style$>'>
 				<$ if (continues) { $>
 					<div class='calendar_month_day_item_continues'>&raquo;</div>
 				<$ } $>
@@ -148,7 +147,7 @@
 <template id='calendar.Calendar#ListViewFolder'>
 	<table cellpadding=0 cellspacing=0 border=0>
 		<tr>
-			<td width=16><div class="calendar_listview_folder ${folderColor}"></div></td>
+			<td width=16><div class="calendar_listview_folder" style="background-color:${folderColor}"></div></td>
 			<td width=100%>${folderName}</td>
 		</tr>
 	</table>

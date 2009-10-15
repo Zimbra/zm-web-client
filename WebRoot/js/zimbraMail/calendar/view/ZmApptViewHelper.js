@@ -313,16 +313,18 @@ function(list, type, includeDisplayName) {
 };
 
 ZmApptViewHelper._allDayItemHtml =
-function(appt, id, body_style, controller) {
+function(appt, id, bodyStyle, controller) {
 	var isNew = appt.ptst == ZmCalBaseItem.PSTATUS_NEEDS_ACTION;
 	var isAccepted = appt.ptst == ZmCalBaseItem.PSTATUS_ACCEPT;
-	var color = ZmCalendarApp.COLORS[controller.getCalendarColor(appt.folderId)];
+	var calendar = appt.getFolder();
+	var colors = ZmCalBaseView._getColors(calendar.rgb || ZmOrganizer.COLOR_VALUES[calendar.color]);
+	var headerStyle = ZmCalBaseView._toColorsCss(isNew ? colors.deeper.header : colors.standard.header);
+	bodyStyle += ZmCalBaseView._toColorsCss(isNew ? colors.deeper.body : colors.standard.body);
 	var subs = {
 		id: id,
-		body_style: body_style,
+		headerStyle: headerStyle,
+		bodyStyle: bodyStyle,
 		newState: isNew ? "_new" : "",
-		headerColor: color + (isNew ? "Dark" : "Light"),
-		bodyColor: color + (isNew ? "" : "Bg"),
 		name: AjxStringUtil.htmlEncode(appt.getName()),
 //		tag: isNew ? "NEW" : "",		//  HACK: i18n
 		starttime: appt.getDurationText(true, true),

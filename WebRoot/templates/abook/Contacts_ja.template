@@ -1,0 +1,44 @@
+<template id="abook.Contacts#ZmEditContactViewAddress" class="DwtForm ZmEditContactViewAddress">
+	<table style='position:relative;left:-3'>
+		<tr><td><div id="${id}_COUNTRY" tabindex="50"></div></td></tr>
+	</table>
+	<table style='position:relative;left:-3'>
+		<tr><td>&#x3012;</td></td><td><div id="${id}_ZIP" tabindex="100"></div></td></tr>
+	</table>
+	<table style='position:relative;left:-3'>
+		<tr><td><div id="${id}_STATE" tabindex="200"></div></td>
+			<td>&nbsp;</td>
+			<td><div id="${id}_CITY" tabindex="300"></div></td>
+			<td>&nbsp;</td>
+			<td><div id="${id}_STREET1" tabindex="400"></div></td>
+		</tr>
+	</table>
+	<table style='position:relative;left:-3'>
+		<tr><td><div id="${id}_STREET2" tabindex="500"></div></td></tr>
+	</table>
+</template>
+
+<template id="abook.Contacts#SplitView_address_value">
+	<tr valign=top>
+		<td class=rowLabel><$= data.seenone ? "" : data.label $></td>
+		<td id='${id}_<$=data.name$>'>
+			<$ var address = data.address; $>
+			<$ if (address.PostalCode) { $>
+				<div>&#x3012;<$=address.PostalCode$></div>
+			<$ } $>
+			<$ if (address.State || address.City || address.Street) { $>
+				<div>
+					<span><$=address.State$></span>
+					<$ if (address.State && address.City) { $>&nbsp;<$ } $>
+					<span><$=address.City$></span>
+					<$ if (address.City && address.Street) { $>&nbsp;<$ } $>
+					<span><$=address.Street$></span>
+				</div>
+			<$ } $>
+			<$ if (address.Country) { $>
+				<div><$=address.Country$></div>
+			<$ } $>
+		</td>
+		<td style='color:gray'>&nbsp;<$= data.type $></td>
+	</tr>
+</template>

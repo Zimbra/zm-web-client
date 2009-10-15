@@ -1456,16 +1456,16 @@ line-height:normal;
 .appt_new_tag					{											font-weight:bold;	color:#FFCC00;							}
 
 .appt_name						{	@SmallBoxPadding@;															}
-.appt_new_name					{	@SmallBoxPadding@;						font-weight:bold;	color:white; 							}
+.appt_new_name					{	@SmallBoxPadding@;	}
 
 .appt_30_name,
 .appt_allday_name				{	@SmallBoxPadding@;	padding-top:1px;										@NoWrap@	}
 .appt_30_new_name,
-.appt_allday_new_name 			{	@SmallBoxPadding@;	padding-top:1px; 	font-weight:bold;	color:white;	@NoWrap@	}
+.appt_allday_new_name 			{	@SmallBoxPadding@;	padding-top:1px; 										@NoWrap@	}
 
 
 .appt_time						{	@SmallBoxPadding@;																}
-.appt_new_time					{	@SmallBoxPadding@;	font-weight:bold;	color:white;							}
+.appt_new_time					{	@SmallBoxPadding@;	}
 .appt_end_time					{	@SmallBoxPadding@;						color:#666666;	@NoWrap@	}
 .appt_location					{	@SmallBoxPadding@;						}
 .appt_icon						{ 	position: relative; float: right;		}
