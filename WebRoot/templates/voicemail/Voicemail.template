@@ -272,7 +272,7 @@
 					<tr>
 						<td/>
 						<td class='ZOptionsField'>
-							<table cellspacing='1' cellpadding='1' width='400'>
+							<table cellspacing='1' cellpadding='1' width='500'>
 								<tr>
 									<td colspan='3' style='padding-left:210px'>
 										<div id='${id}_emailNotificationList'></div>
