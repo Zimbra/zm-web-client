@@ -449,7 +449,7 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 
 	<table class="ZOptionsSectionMain ZhOptVoice" border="0" cellspacing="10" width="100%">
 		<tr>
-			<td class="ZOptionsTableLabel" style="vertical-align:top;"><fmt:message key="optionsCallForwardingAll"/>:</td>
+			<td class="ZOptionsTableLabel"><fmt:message key="optionsCallForwardingAll"/></td>
 			<td>
 				<table border="0" cellpadding="0" cellspacing="0">
 					<tr>
@@ -466,9 +466,14 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 							<input type="text" name="callForwardingTo" value="${!empty param.callForwardingTo ? param.callForwardingTo : features.callForwardingAll.forwardTo}"/>
 						</td>
 					</tr>
-					
-					<tr><td>&nbsp;</td></tr>
-
+				</table>
+			</td>
+		</tr>
+		
+		<tr>
+			<td class="ZOptionsTableLabel" style="vertical-align:top"><fmt:message key="optionsCallForwardingSelective"/></td>
+			<td>
+				<table border="0" cellpadding="0" cellspacing="0">
 					<tr>
 						<td class="ZhOptVoiceCBCell" style="vertical-align:top;">
 							<input id="selectiveCallForwardingActive" type="checkbox" name="selectiveCallForwardingActive" value="TRUE" 
@@ -506,6 +511,7 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 						
 						<c:if test="${!empty sessionScope.selectiveCallForwardingFrom}">
 							<table class="ZmPhoneBufferList List" border="0" cellpadding="0" cellspacing="0" width="300px">
+								<tr><th colspan="2"><fmt:message key="numbers"/></th></tr>
 								<c:set var="i" value="0"/>
 								<c:forEach items="${sessionScope.selectiveCallForwardingFrom}" var="number">
 									<c:if test="${!empty number}">
@@ -524,14 +530,16 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 						</td>
 						
 						<td style="vertical-align:top;padding-left:10px">
-							<input type="submit" name="addSelectiveForwarding" value="<fmt:message key='add'/>" <c:if test="${!empty requestScope.addSelectiveForwarding || (!empty sessionScope.selectiveCallForwardingFrom && fn:length(fn:split(sessionScope.selectiveCallForwardingFrom, ',')) >= 12)}">disabled</c:if>/>
+							<input type="submit" name="addSelectiveForwarding" value="<fmt:message key='addToList'/>" <c:if test="${!empty requestScope.addSelectiveForwarding || (!empty sessionScope.selectiveCallForwardingFrom && fn:length(fn:split(sessionScope.selectiveCallForwardingFrom, ',')) >= 12)}">disabled</c:if>/>
 						</td>
 					</tr>
 					
 					<c:if test="${!empty requestScope.addSelectiveForwarding && (empty sessionScope.selectiveForwardingFrom || fn:length(fn:split(sessionScope.selectiveCallForwardingFrom, ',')) < 12)}">
+					<tr><td>&nbsp;</td></tr>
+
 					<tr>
-						<td colspan="2">
-							<label for="addForwardingNumber"><fmt:message key="optionsCallForwardingSelectiveAdd"/>:</label>
+						<td colspan="2" style="text-align:right">
+							<label for="addForwardingNumber"><fmt:message key="optionsCallForwardingSelectiveAdd"/></label>
 						</td>
 						
 						<td class="ZhOptVoiceCBCell">&nbsp;</td>
@@ -633,13 +641,14 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 						
 						
 						<td style="vertical-align:top;padding-left:10px">
-							<input type="submit" name="addSelectiveRejection" value="<fmt:message key='add'/>" <c:if test="${!empty requestScope.addSelectiveRejection || (!empty sessionScope.selectiveRejectionNumber && fn:length(fn:split(sessionScope.selectiveRejectionNumber, ',')) >= 12)}">disabled</c:if>/>
+							<input type="submit" name="addSelectiveRejection" value="<fmt:message key='addToList'/>" <c:if test="${!empty requestScope.addSelectiveRejection || (!empty sessionScope.selectiveRejectionNumber && fn:length(fn:split(sessionScope.selectiveRejectionNumber, ',')) >= 12)}">disabled</c:if>/>
 						</td>
 					</tr>
 					
 					<c:if test="${!empty requestScope.addSelectiveRejection && (empty sessionScope.selectiveRejectionNumber || fn:length(fn:split(sessionScope.selectiveRejectionNumber, ',')) < 12)}">
+					<tr><td>&nbsp;</td></tr>
 					<tr>
-						<td colspan="2">
+						<td colspan="2" style="text-align:right">
 							<label for="addRejectionNumber"><fmt:message key="optionsCallRejectionSelectiveAdd"/>:</label>
 						</td>
 						
