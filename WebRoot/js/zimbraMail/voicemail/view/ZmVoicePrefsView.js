@@ -2158,6 +2158,12 @@ function() {
 	return "ZmBufferList";
 };
 
+ZmBufferList.prototype.set =
+function(list, defaultColumnSort) {
+	DwtListView.prototype.set.call(this, list, defaultColumnSort);
+	this._changed = false;
+}
+
 ZmBufferList.prototype.getChanged =
 function() {
 	return this._changed;
