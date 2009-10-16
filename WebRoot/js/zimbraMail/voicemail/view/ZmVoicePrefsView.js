@@ -1561,6 +1561,7 @@ function() {
 	var from = this._getFrom();
 	if (!from || from.length==0) {
 		result.isActive = false;
+		result.data.phone = [];
 	} else {
 		result.data.phone = from;
 	}
@@ -1812,6 +1813,7 @@ function() {
 	var from = this._getFrom();
 	if (!from || from.length==0) {
 		result.isActive = false;
+		result.data.phone = [];
 	} else {
 		result.data.phone = from;
 	}
@@ -1991,6 +1993,7 @@ function() {
 	var from = this._getFrom();
 	if (!from || from.length==0) {
 		result.isActive = false;
+		result.data.phone = [];
 	} else {
 		result.data.phone = from;
 	}
