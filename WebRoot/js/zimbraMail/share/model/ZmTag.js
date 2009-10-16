@@ -15,6 +15,11 @@
 
 ZmTag = function(params) {
 	params.type = ZmOrganizer.TAG;
+	// bug 41850
+	var rgb = String(params.rgb).toUpperCase();
+	if (params.color == 9 && rgb != "#FF8000") {
+		params.color = ZmTag.__OLD_COLORS[rgb] || ZmOrganizer.DEFAULT_COLOR[params.type];
+	}
 	ZmOrganizer.call(this, params);
 };
 
@@ -46,6 +51,12 @@ ZmTag.ID_REPLIED	= 35;
 ZmTag.ID_FORWARDED	= 36;
 ZmTag.ID_ATTACHED	= 37;
 
+// bug 41850
+ZmTag.__OLD_COLORS = {
+	"#000000": 0, "#0000FF": 1, "#008284": 2, "#008200": 3, "#840084": 4,
+	"#FF0000": 5, "#848200": 6, "#FF0084": 7, "#848284": 8, "#FF8000": 9
+};
+
 /**
 * Tags come from back end as a flat list, and we manually create a root tag, so all tags
 * have the root as parent. If tags ever have a tree structure, then this should do what
@@ -60,6 +71,7 @@ function(parent, obj, tree, sorted, account) {
 		id: obj.id,
 		name: obj.name,
 		color: ZmTag.checkColor(obj.color),
+		rgb: obj.rgb,
 		parent: parent,
 		tree: tree,
 		numUnread: obj.u,
