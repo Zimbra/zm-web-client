@@ -1376,14 +1376,20 @@ function() {
 
 ZmEmailNotificationUI.prototype.show =
 function(feature) {
-	this._comboBox.setText("");
 	var arr = feature.data.value.split(",");
 	var items = [];
+	feature.isActive = false;
 	if (arr.length>0) {
 		for (var i=0; i<arr.length; i++) {
 			var text = AjxStringUtil.trim(arr[i]);
-			if (text.length > 0)
+			if (text.length > 0) {
+				if (text.indexOf("@") != -1) {
+					feature.isActive = true;
+				} else {
+					text = text.replace("?","@"); // To "disable" an address, we replace @s with ?s in the model. Revert back when we display the list again
+				}
 				items.push({text: text});
+			}
 		}
 		this._list.set(AjxVector.fromArray(items), 1);
 	}
@@ -1391,7 +1397,7 @@ function(feature) {
 
 ZmEmailNotificationUI.prototype._isValueDirty =
 function() {
-	if (this._getSelectedValue() != this._feature.data.value) {
+	if (this._getSelectedValue() != this._feature.data.value.replace("?","@")) { // 
 		return true;
 	}
 	return false;
@@ -1404,7 +1410,8 @@ function() {
 	if (!addresses || addresses.length==0) {
 		result.isActive = false;
 	} else {
-		result.data.value = this._checkbox.isSelected() ? this._getAddresses().join(",") : "";
+		var csep = this._getAddresses().join(",");
+		result.data.value = this._checkbox.isSelected() ? csep : csep.replace("@", "?"); // To "disable" an address, we replace @s with ?s in the model
 	}
 	return result;
 };
