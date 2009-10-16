@@ -56,9 +56,9 @@
                         playCallerNameInMsgEnv="${param.playCallerNameInMsgEnv}"
                         promptLevel="${param.promptLevel}"
                         answeringLocale="${param.answeringLocale}"
+						userLocale="${param.userLocale}"
                         numberPerPage="${param.numberPerPage}"
                     />
-                    <%-- userLocale="${param.userLocale}" --%>
                 </c:when>
 		
                 <c:when test="${voiceselected=='notification'}">	

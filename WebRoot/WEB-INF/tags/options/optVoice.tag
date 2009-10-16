@@ -153,7 +153,7 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 								</td>
 							<% } else { %>
 								<td class="ZhOptVoiceCBCell">
-									<input id="${id}" type="radio" name="answeringLocale" value="${language.key}" <c:if test="${language.key ==answeringLocale}">checked</c:if>/>
+									<input id="${id}" type="radio" name="answeringLocale" value="${language.key}" <c:if test="${language.key == answeringLocale}">checked</c:if>/>
 								</td>
 								<td>
 									<label for="${id}"><fmt:message key="language_${language.key}"/></label>
@@ -164,7 +164,7 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 					</table>
 				</td>
 			</tr>
-			<%--
+			
 			<tr>
 				<td class="ZOptionsTableLabel" style="vertical-align:top;"><fmt:message key="optionsLanguageChecking"/>:</td>
 				<td>
@@ -195,7 +195,7 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 					</table>
 				</td>
 			</tr>
-			--%>
+			
 			<tr><td colspan="2"><hr/></td></tr>
 			
 			<%------------------- Prompts -------------------%>

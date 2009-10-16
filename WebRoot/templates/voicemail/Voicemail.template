@@ -81,7 +81,6 @@
 						</td>
 					</tr>
 
-					<!-- User language
 					<tr>
 						<td class='ZOptionsLabelTop' style='width:200px'>
 							<nobr>
@@ -103,7 +102,7 @@
 							</table>
 						</td>
 					</tr>
-					-->
+					
 
 					<tr>
 						<td colspan='2'>

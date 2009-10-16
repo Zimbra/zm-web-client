@@ -418,18 +418,6 @@ function(ev) {
 	}
 };
 
-/*
-ZmVoicePrefsPage._validatePhoneNumber =
-function(value) {
-	if (AjxStringUtil.trim(value) == "") {
-		throw AjxMsg.valueIsRequired;
-	}
-	if (!ZmPhone.isValid(value)) {
-		throw ZmMsg.errorInvalidPhone;
-	}
-	return value;
-};*/
-
 ZmVoicePrefsPage.prototype._validatePhoneNumber =
 function(value) {
 	if (AjxStringUtil.trim(value) == "") {
@@ -475,7 +463,7 @@ ZmVoiceGeneralPage = function(parent, controller) {
 	this._title = [ZmMsg.zimbraTitle, controller.getApp().getDisplayName(), this._section && this._section.title].join(": ");
 	this._ui = [
 		new ZmVoiceAnsweringLanguageUI(this),
-		//new ZmVoiceUserLanguageUI(this),
+		new ZmVoiceUserLanguageUI(this),
 		new ZmVoiceAutoplayUI(this),
 		new ZmVoicePromptUI(this),
 		new ZmVoiceAnnounceDateTimeUI(this),
