@@ -396,7 +396,7 @@
 								</tr>
 
 								<tr>
-									<td style='width:150px'>
+									<td style='width:150px;text-align:right'>
 										<div id='${id}_selectiveCallForwardingToLabel'></div>
 									</td>
 									<td>
