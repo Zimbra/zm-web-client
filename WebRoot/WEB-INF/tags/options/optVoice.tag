@@ -445,7 +445,23 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 <c:when test="${voiceselected=='forwarding'}">
 	
 	<%----------------- Call Forwarding Section --------------%>
-
+	<script type="text/javascript">
+		<!--
+			var selectiveForwardCheckboxDependers = [];
+			function selectiveForwardCheckboxChanged(value) {
+				for (var i=0; i<selectiveForwardCheckboxDependers.length; i++) {
+					var element = document.getElementById(selectiveForwardCheckboxDependers[i]);
+					if (element)
+						element.disabled = !value;
+				}
+			}
+		//-->
+	</script>
+	
+	<c:set var="selectiveCallForwardingActive" value="${(requestScope.selectiveCallForwardingActive != 'FALSE' && (features.selectiveCallForwarding.isActive && !empty features.selectiveCallForwarding.forwardFrom && !empty features.selectiveCallForwarding.forwardTo)) || (requestScope.selectiveCallForwardingActive == 'TRUE')}"/>
+	<c:set var="canAddSelectiveForwarding" value="${empty sessionScope.selectiveForwardingFrom || fn:length(fn:split(sessionScope.selectiveCallForwardingFrom, ',')) < 12}"/>
+	<c:set var="displayAddSelectiveForwarding" value="${selectiveCallForwardingActive && !empty requestScope.addSelectiveForwarding && canAddSelectiveForwarding}"/>
+	
 
 	<table class="ZOptionsSectionMain ZhOptVoice" border="0" cellspacing="10" width="100%">
 		<tr>
@@ -476,16 +492,7 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 				<table border="0" cellpadding="0" cellspacing="0">
 					<tr>
 						<td class="ZhOptVoiceCBCell" style="vertical-align:top;">
-							<input id="selectiveCallForwardingActive" type="checkbox" name="selectiveCallForwardingActive" value="TRUE" 
-							<c:choose>
-								<c:when test="${requestScope.selectiveCallForwardingActive != 'FALSE' && (features.selectiveCallForwarding.isActive && !empty features.selectiveCallForwarding.forwardFrom && !empty features.selectiveCallForwarding.forwardTo)}">
-								checked
-								</c:when>
-								<c:when test="${requestScope.selectiveCallForwardingActive == 'TRUE'}">
-								checked
-								</c:when>
-							</c:choose>
-							/>
+							<input id="selectiveCallForwardingActive" type="checkbox" name="selectiveCallForwardingActive" value="TRUE"<c:if test="${selectiveCallForwardingActive}"> checked</c:if>/>
 						</td>
 						
 						<td style="vertical-align:top;padding-top:3px">
@@ -520,6 +527,11 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 										<td style="width:50%;text-align:left">
 										    <input type="submit" id="actionVoiceRemoveForwarding_${i}" name="actionVoiceRemoveSelectiveForwarding" value="${number}" style="display:none;"/>
 										    <label for="actionVoiceRemoveForwarding_${i}" style="cursor:pointer"><a href="#forwarding"><fmt:message key='remove'/></a></label>
+										    <script type="text/javascript">
+										    <!--
+											    selectiveForwardCheckboxDependers.push("actionVoiceRemoveForwarding_${i}");
+										    //-->
+										    </script>
 										</td>
 									</tr>
 									<c:set var="i" value="${i+1}"/>
@@ -529,12 +541,18 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 						</c:if>
 						</td>
 						
+
 						<td style="vertical-align:top;padding-left:10px">
-							<input type="submit" name="addSelectiveForwarding" value="<fmt:message key='addToList'/>" <c:if test="${!empty requestScope.addSelectiveForwarding || (!empty sessionScope.selectiveCallForwardingFrom && fn:length(fn:split(sessionScope.selectiveCallForwardingFrom, ',')) >= 12)}">disabled</c:if>/>
+							<input type="submit" name="addSelectiveForwarding" id="addSelectiveForwarding" value="<fmt:message key='addToList'/>" <c:if test="${displayAddSelectiveForwarding || !canAddSelectiveForwarding}">disabled</c:if>/>
+							<script type="text/javascript">
+							<!--
+								selectiveForwardCheckboxDependers.push("addSelectiveForwarding");
+							//-->
+							</script>
 						</td>
 					</tr>
 					
-					<c:if test="${!empty requestScope.addSelectiveForwarding && (empty sessionScope.selectiveForwardingFrom || fn:length(fn:split(sessionScope.selectiveCallForwardingFrom, ',')) < 12)}">
+					<c:if test="${displayAddSelectiveForwarding}">
 					<tr><td>&nbsp;</td></tr>
 
 					<tr>
@@ -548,7 +566,12 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 							<input id="addForwardingNumber" type="text" name="addForwardingNumber"/>
 						</td>
 						<td style="padding-left:10px">
-							<input type="submit" name="actionVoiceAddSelectiveForwarding" value="<fmt:message key='add'/>"/>
+							<input type="submit" id="actionVoiceAddSelectiveForwarding" name="actionVoiceAddSelectiveForwarding" value="<fmt:message key='add'/>"/>
+							<script type="text/javascript">
+							<!--
+								selectiveForwardCheckboxDependers.push("actionVoiceAddSelectiveForwarding");
+							//-->
+							</script>
 						</td>
 					</tr>
 					<tr>
@@ -574,7 +597,13 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 			</td>
 		</tr>
 	</table>
-	
+	<script type="text/javascript">
+		<!--
+			var selectiveForwardingCheckbox = document.getElementById("selectiveCallForwardingActive");
+			selectiveForwardingCheckbox.onchange = function() {selectiveForwardCheckboxChanged(selectiveForwardingCheckbox.checked)};
+			selectiveForwardCheckboxChanged(selectiveForwardingCheckbox.checked);
+		//-->
+	</script>
 </c:when>
 
 
@@ -582,6 +611,24 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 <c:when test="${voiceselected=='screening'}">
 	
 	<%----------------- Call Screening Section --------------%>
+	<script type="text/javascript">
+		<!--
+			var selectiveRejectionCheckboxDependers = [];
+			function selectiveRejectionCheckboxChanged(value) {
+			console.log(value);
+				for (var i=0; i<selectiveRejectionCheckboxDependers.length; i++) {
+					var element = document.getElementById(selectiveRejectionCheckboxDependers[i]);
+					if (element)
+						element.disabled = !value;
+				}
+			}
+		//-->
+		</script>
+		
+		<c:set var="selectiveCallRejectionActive" value="${requestScope.selectiveCallRejectionActive != 'FALSE' && (features.selectiveCallRejection.isActive || requestScope.selectiveCallRejectionActive == 'TRUE')}"/>
+		<c:set var="canAddSelectiveRejection" value="${empty sessionScope.selectiveRejectionNumber || fn:length(fn:split(sessionScope.selectiveRejectionNumber, ',')) < 12}"/>
+		<c:set var="displayAddSelectiveRejection" value="${selectiveCallRejectionActive && !empty requestScope.addSelectiveRejection && canAddSelectiveRejection}"/>
+		
 	<table class="ZOptionsSectionMain ZhOptVoice" border="0" cellspacing="10" width="100%">
 		<tr>
 			<td class="ZOptionsTableLabel"><fmt:message key="optionsCallRejectionAll"/></td>
@@ -606,11 +653,11 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 						
 					<tr>
 						<td class="ZhOptVoiceCBCell" style="vertical-align:top;">
-							<input id="callRejectionSelective" type="checkbox" name="selectiveCallRejectionActive" value="TRUE" <c:if test="${requestScope.selectiveCallRejectionActive!='FALSE' && (features.selectiveCallRejection.isActive || requestScope.selectiveCallRejectionActive=='TRUE')}">checked</c:if>/>
+							<input id="selectiveCallRejectionActive" type="checkbox" name="selectiveCallRejectionActive" value="TRUE" <c:if test="${selectiveCallRejectionActive}">checked</c:if>/>
 						</td>
 						
 						<td style="vertical-align:top;padding-top:3px">
-							<label for="callRejectionSelective"><fmt:message key="optionsCallRejectionSelectiveLabel"/></label>
+							<label for="selectiveCallRejectionActive"><fmt:message key="optionsCallRejectionSelectiveLabel"/></label>
 						</td>
 						
 						<td class="ZhOptVoiceCBCell">&nbsp;</td>
@@ -638,6 +685,11 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 										<td style="width:50%;text-align:left">
 										    <input type="submit" id="actionVoiceRemoveRejection_${i}" name="actionVoiceRemoveSelectiveRejection" value="${number}" style="display:none;"/>
 										    <label for="actionVoiceRemoveRejection_${i}" style="cursor:pointer"><a href="#rejection"><fmt:message key='remove'/></a></label>
+										    <script type="text/javascript">
+										    <!--
+											    selectiveRejectionCheckboxDependers.push("actionVoiceRemoveRejection_${i}");
+										    //-->
+										    </script>
 										</td>
 									</tr>
 									</c:if>
@@ -648,12 +700,18 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 						
 						
 						<td style="vertical-align:top;padding-left:10px">
-							<input type="submit" name="addSelectiveRejection" value="<fmt:message key='addToList'/>" <c:if test="${!empty requestScope.addSelectiveRejection || (!empty sessionScope.selectiveRejectionNumber && fn:length(fn:split(sessionScope.selectiveRejectionNumber, ',')) >= 12)}">disabled</c:if>/>
+							<input type="submit" id="addSelectiveRejection" name="addSelectiveRejection" value="<fmt:message key='addToList'/>" <c:if test="${displayAddSelectiveRejection || !canAddSelectiveRejection}">disabled</c:if>/>
+							<script type="text/javascript">
+							<!--
+								selectiveRejectionCheckboxDependers.push("addSelectiveRejection");
+							//-->
+							</script>
 						</td>
 					</tr>
 					
-					<c:if test="${!empty requestScope.addSelectiveRejection && (empty sessionScope.selectiveRejectionNumber || fn:length(fn:split(sessionScope.selectiveRejectionNumber, ',')) < 12)}">
+					<c:if test="${displayAddSelectiveRejection}">
 					<tr><td>&nbsp;</td></tr>
+
 					<tr>
 						<td colspan="2" style="text-align:right">
 							<label for="addRejectionNumber"><fmt:message key="optionsCallRejectionSelectiveAdd"/></label>
@@ -665,7 +723,12 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 							<input id="addRejectionNumber" type="text" name="addRejectionNumber"/>
 						</td>
 						<td style="padding-left:10px">
-							<input type="submit" name="actionVoiceAddSelectiveRejection" value="<fmt:message key='add'/>"/>
+							<input type="submit" id="actionVoiceAddSelectiveRejection" name="actionVoiceAddSelectiveRejection" value="<fmt:message key='add'/>"/>
+							<script type="text/javascript">
+							<!--
+								selectiveRejectionCheckboxDependers.push("actionVoiceAddSelectiveRejection");
+							//-->
+							</script>
 						</td>
 					</tr>
 					<tr>
@@ -677,6 +740,13 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 			</td>
 		</tr>
 	</table>
+	<script type="text/javascript">
+		<!--
+			var selectiveRejectionCheckbox = document.getElementById("selectiveCallRejectionActive");
+			selectiveRejectionCheckbox.onchange = function() {selectiveRejectionCheckboxChanged(selectiveRejectionCheckbox.checked)};
+			selectiveRejectionCheckboxChanged(selectiveRejectionCheckbox.checked);
+		//-->
+	</script>
 </c:when>
 
 </c:choose>

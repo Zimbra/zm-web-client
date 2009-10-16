@@ -56,7 +56,7 @@
                         playCallerNameInMsgEnv="${param.playCallerNameInMsgEnv}"
                         promptLevel="${param.promptLevel}"
                         answeringLocale="${param.answeringLocale}"
-						userLocale="${param.userLocale}"
+                        userLocale="${param.userLocale}"
                         numberPerPage="${param.numberPerPage}"
                     />
                 </c:when>
@@ -143,7 +143,7 @@
 	<c:set var="addSelectiveForwarding" scope="request" value="${null}"/>
 </c:if>
 
-<c:if test="${voiceselected=='forwarding' && (zm:actionSet(param, 'actionVoiceAddSelectiveForwarding') || zm:actionSet(param, 'actionSave'))}">
+<c:if test="${voiceselected=='forwarding' && (zm:actionSet(param, 'actionVoiceAddSelectiveForwarding') && param.selectiveCallForwardingActive) || zm:actionSet(param, 'actionSave')}">
     	<c:set var="useFrom" value="${zm:actionSet(param, 'actionVoiceAddSelectiveForwarding')}"/>
 
 	<fmt:message var="faqlink" key="errorPhoneFAQLink"/>
@@ -195,7 +195,7 @@
 	</c:choose>
 </c:if>
 
-<c:if test="${voiceselected=='forwarding' && zm:actionSet(param, 'actionVoiceRemoveSelectiveForwarding')}">
+<c:if test="${voiceselected=='forwarding' && zm:actionSet(param, 'actionVoiceRemoveSelectiveForwarding') && param.selectiveCallForwardingActive}">
     <c:set var="tmp" value=""/>
     <c:forEach items="${sessionScope.selectiveCallForwardingFrom}" var="number">
 	<c:if test="${fn:trim(number) != fn:trim(param.actionVoiceRemoveSelectiveForwarding)}">
@@ -213,7 +213,8 @@
     <c:set var="addSelectiveRejection" scope="request" value="${null}"/>
 </c:if>
 
-<c:if test="${voiceselected=='screening' && zm:actionSet(param, 'actionVoiceAddSelectiveRejection')}">
+
+<c:if test="${voiceselected=='screening' && zm:actionSet(param, 'actionVoiceAddSelectiveRejection') && param.selectiveCallRejectionActive}">
     
         <fmt:message var="faqlink" key="errorPhoneFAQLink"/>
         <fmt:message var="faqurl" key="errorPhoneFAQURL"/>    
@@ -264,7 +265,7 @@
 	</c:choose>
 </c:if>
 
-<c:if test="${voiceselected=='screening' && zm:actionSet(param, 'actionVoiceRemoveSelectiveRejection')}">
+<c:if test="${voiceselected=='screening' && zm:actionSet(param, 'actionVoiceRemoveSelectiveRejection') && param.selectiveCallRejectionActive}">
     <c:set var="tmp" value=""/>
     <c:forEach items="${sessionScope.selectiveRejectionNumber}" var="number">
 	<c:if test="${fn:trim(number) != fn:trim(param.actionVoiceRemoveSelectiveRejection)}">
