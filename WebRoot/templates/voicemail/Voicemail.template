@@ -1,6 +1,5 @@
 <template id="voicemail.Voicemail#ZmVoicePrefsGeneralView">
-	<table class='ZOptionsSectionTable' border='0' cellspacing='0' cellpadding='0' width='100%'>
-		<!-- General -->
+	<table border='0' cellspacing='0' cellpadding='0' width='100%'>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'>
 				<div class='ImgPrefsHeader_L'></div>
@@ -12,6 +11,8 @@
 				<div class='ImgPrefsHeader_R'></div>
 			</td>
 		</tr>
+	</table>
+	<table class='ZOptionsSectionTable' border='0' cellspacing='0' cellpadding='0' width='100%'>
 		<tr>
 			<td class='ZOptionsSectionMain' colspan='3'>
 				<table cellspacing='4' cellpadding='4' width='100%'>
@@ -210,8 +211,7 @@
 
 
 <template id="voicemail.Voicemail#ZmVoicePrefsNotificationView">
-	<table class='ZOptionsSectionTable' border='0' cellspacing='0' cellpadding='0' width='100%'>
-		<!-- Notification -->
+	<table border='0' cellspacing='0' cellpadding='0' width='100%'>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'>
 				<div class='ImgPrefsHeader_L'></div>
@@ -223,7 +223,8 @@
 				<div class='ImgPrefsHeader_R'></div>
 			</td>
 		</tr>
-
+	</table>
+	<table class='ZOptionsSectionTable' border='0' cellspacing='0' cellpadding='0' width='100%'>
 		<tr>
 			<td class='ZOptionsSectionMain' colspan='3'>
 				<table cellspacing='4' cellpadding='4' width='100%'>
@@ -262,6 +263,7 @@
 									<td>
 										<div id='${id}_emailNotificationComboBox'></div>
 									</td>
+									<td width='20px'/>
 									<td>
 										<div id='${id}_emailNotificationAddButton'></div>
 									</td>
@@ -289,10 +291,7 @@
 
 
 <template id="voicemail.Voicemail#ZmVoicePrefsForwardingView">
-
-	<table class='ZOptionsSectionTable' border='0' cellspacing='0' cellpadding='0' width='100%'>
-
-		<!-- General -->
+	<table border='0' cellspacing='0' cellpadding='0' width='100%'>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'>
 				<div class='ImgPrefsHeader_L'></div>
@@ -304,7 +303,8 @@
 				<div class='ImgPrefsHeader_R'></div>
 			</td>
 		</tr>
-
+	</table>
+	<table class='ZOptionsSectionTable' border='0' cellspacing='0' cellpadding='0' width='100%'>
 		<tr>
 			<td class='ZOptionsSectionMain' colspan='3'>
 				<table cellspacing='4' cellpadding='4' width='100%'>
@@ -415,8 +415,7 @@
 
 
 <template id="voicemail.Voicemail#ZmVoicePrefsRejectionView">
-	<table class='ZOptionsSectionTable' border='0' cellspacing='0' cellpadding='0' width='100%'>
-		<!-- Rejection -->
+	<table border='0' cellspacing='0' cellpadding='0' width='100%'>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'>
 				<div class='ImgPrefsHeader_L'></div>
@@ -428,6 +427,8 @@
 				<div class='ImgPrefsHeader_R'></div>
 			</td>
 		</tr>
+	</table>
+	<table class='ZOptionsSectionTable' border='0' cellspacing='0' cellpadding='0' width='100%'>
 		<tr>
 			<td class='ZOptionsSectionMain' colspan='3'>
 				<table cellspacing='4' cellpadding='4' width='100%'>
