@@ -1605,6 +1605,24 @@ function() {
 	} else return null;
 };
 
+ZmSelectiveCallForwardingUI.prototype._validateFromPhoneNumber =
+function(number) {
+	number = this._view._validatePhoneNumber(number);
+	if (ZmPhone.calculateFullName(number) == ZmPhone.calculateFullName(this._getTo())) {
+		throw ZmMsg.selectiveCallForwardingFromErrorSameAsTo;
+	}
+	return number;
+}
+
+ZmSelectiveCallForwardingUI.prototype._validateToPhoneNumber =
+function(number) {
+	number = this._view._validatePhoneNumber(number);
+	if (this._list && this._list.containsNumber(number)) {
+		throw ZmMsg.selectiveCallForwardingToErrorInList;
+	}
+	return number;
+}
+
 ZmSelectiveCallForwardingUI.prototype._handleAddFromNumber =
 function(event) {
 	var addValue = this._addField.getValue();
@@ -1616,20 +1634,20 @@ function(event) {
 		if (error!=null) {
 			this.showDialogWithFAQ(error);
 			this._clearField(this._addField);
-		} else {
+		} else if (this._list) {
 			if (!ZmPhone.isValid(addValue)) {
 				this.showDialogWithFAQ(ZmMsg.selectiveCallForwardingError);
 				this._clearField(this._addField);
+			} else if (ZmPhone.calculateFullName(addValue) == ZmPhone.calculateFullName(this._getTo())) {
+				this.showDialogWithFAQ(ZmMsg.selectiveCallForwardingFromErrorSameAsTo);
+				this._clearField(this._addField);
+			} else if (this._list.containsNumber(addValue)) {
+				this.showDialogWithFAQ(ZmMsg.errorPhoneNotUnique);
+				this._clearField(this._addField);
 			} else {
-				var addObject = {a: true, pn: ZmPhone.calculateName(addValue)};
-				if (this._list.containsItem(addObject)) {
-					this.showDialogWithFAQ(ZmMsg.errorPhoneForwardNotUnique);
-					this._clearField(this._addField);
-				} else {
-					this._list.addItem(addObject, null, false);
-					this._addField.setValue(null, true);
-					this._setAddFromNumberVisibility(false);
-				}
+				this._list.addNumber(addValue);
+				this._addField.setValue(null, true);
+				this._setAddFromNumberVisibility(false);
 			}
 		}
 	}
@@ -1690,7 +1708,7 @@ function(id) {
 	this._addLabel.setText(ZmMsg.selectiveCallForwardingAddFrom);
 	this._addLabel.replaceElement(id + "_selectiveCallForwardingAddLabel");
 	
-	this._addField = new DwtInputField({parent:this._view, size: 25, validator: AjxCallback.simpleClosure(this._view._validatePhoneNumber, this._view), validationStyle: DwtInputField.CONTINUAL_VALIDATION});
+	this._addField = new DwtInputField({parent:this._view, size: 25, validator: AjxCallback.simpleClosure(this._validateFromPhoneNumber, this), validationStyle: DwtInputField.CONTINUAL_VALIDATION});
 	this._addField.replaceElement(id + "_selectiveCallForwardingAddBox");
 	
 	this._addRules = new DwtLabel({parent:this._view});
@@ -1706,7 +1724,7 @@ function(id) {
 	this._toLabel.setText(ZmMsg.selectiveCallForwardingToDescription);
 	this._toLabel.replaceElement(id + "_selectiveCallForwardingToLabel");
 	
-	this._comboBox = new DwtComboBox({parent:this._view, inputParams:{size: 25, validator: AjxCallback.simpleClosure(this._view._validatePhoneNumber, this._view), validationStyle: DwtInputField.CONTINUAL_VALIDATION}});
+	this._comboBox = new DwtComboBox({parent:this._view, inputParams:{size: 25, validator: AjxCallback.simpleClosure(this._validateToPhoneNumber, this), validationStyle: DwtInputField.CONTINUAL_VALIDATION}});
 	this._populatePhoneComboBox(this._comboBox);
 	this._comboBox.replaceElement(id + "_selectiveCallForwardingComboBox");
 	
@@ -1849,20 +1867,17 @@ function(event) {
 		if (error!=null) {
 			this.showDialogWithFAQ(error);
 			this._clearField(this._addField);
-		} else {
+		} else if (this._list) {
 			if (!ZmPhone.isValid(addValue)) {
 				this.showDialogWithFAQ(ZmMsg.selectiveCallRejectionError);
 				this._clearField(this._addField);
+			} else if (this._list && this._list.containsNumber(addValue)) {
+				this.showDialogWithFAQ(ZmMsg.errorPhoneNotUnique);
+				this._clearField(this._addField);
 			} else {
-				var addObject = {a: true, pn: ZmPhone.calculateName(addValue)};
-				if (this._list.containsItem(addObject)) {
-					this.showDialogWithFAQ(ZmMsg.errorPhoneRejectNotUnique);
-					this._clearField(this._addField);
-				} else {
-					this._list.addItem(addObject, null, false);
-					this._addField.setValue(null, true);
-					this._setAddFromNumberVisibility(false);
-				}
+				this._list.addNumber(addValue);
+				this._addField.setValue(null, true);
+				this._setAddFromNumberVisibility(false);
 			}
 		}
 	}
@@ -2029,20 +2044,17 @@ function(event) {
 		if (error!=null) {
 			this.showDialogwithFAQ(error);
 			this._clearField(this._addField);
-		} else {
-			if (!ZmPhone.isValid(addValue)) {
+		} else if (this._list) {
+			if (!ZmPhone.isValid(addValue)) { // Possibly obsolete, but doesn't do any harm
 				this.showDialogwithFAQ(ZmMsg.selectiveCallAcceptanceError);
 				this._clearField(this._addField);
+			} else if (this._list.containsNumber(addValue)) {
+				this.showDialogwithFAQ(ZmMsg.errorPhoneNotUnique);
+				this._clearField(this._addField);
 			} else {
-				var addObject = {a: true, pn: ZmPhone.calculateName(addValue)};
-				if (this._list.containsItem(addObject)) {
-					this.showDialogwithFAQ(ZmMsg.errorPhoneNotUnique);
-					this._clearField(this._addField);
-				} else {
-					this._list.addItem(addObject, null, false);
-					this._addField.setValue(null, true);
-					this._setAddFromNumberVisibility(false);
-				}
+				this._list.addNumber(addValue);
+				this._addField.setValue(null, true);
+				this._setAddFromNumberVisibility(false);
 			}
 		}
 	}
@@ -2305,6 +2317,22 @@ function(item) {
 				return true;
 	}
 	return false;
+}
+
+ZmPhoneBufferList.prototype.containsNumber =
+function(number) {
+	number = ZmPhone.calculateFullName(number);
+	if (this._list) {
+		for (var i=0, count=this._list.size(); i<count; i++)
+			if (number == ZmPhone.calculateFullName(this._list.get(i).pn))
+				return true;
+	}
+	return false;
+}
+
+ZmPhoneBufferList.prototype.addNumber =
+function(number) {
+	this.addItem({a: true, pn: ZmPhone.calculateName(number)}, null, false);
 }
 
 ZmPhoneBufferList.getItemNumber =

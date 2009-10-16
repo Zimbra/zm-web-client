@@ -93,7 +93,7 @@ function(number, errors) {
 	if (AjxUtil.isNumber(number))
 		number = ""+number;
 	if (!AjxUtil.isString(number)) {
-		errors.push("Not a number or string");
+		errors.push(ZmMsg.errorPhoneInvalid);
 		return false;
 	}
 	
