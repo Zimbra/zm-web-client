@@ -193,10 +193,10 @@ function() {
 };
 
 ZmVoicemailListView.prototype._renderList =
-function(list, noResultsOk) {
-	ZmVoiceListView.prototype._renderList.call(this, list, noResultsOk);
+function(list, noResultsOk, doAdd) {
+	ZmVoiceListView.prototype._renderList.apply(this, arguments);
 
-	if (list) {
+	if (list && !doAdd) {
 		for (var i = 0, count = list.size(); i < count; i++) {
 			var voicemail = list.get(i);
 			var row = this._getElFromItem(voicemail);

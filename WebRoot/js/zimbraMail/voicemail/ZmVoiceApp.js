@@ -65,6 +65,7 @@ function() {
 	ZmItem.registerItem(ZmItem.VOICEMAIL,
 						{app:			ZmApp.VOICE,
 						 nameKey:		"voicemail",
+						 pluralNameKey:	"voicemails",
 						 icon:			"Voicemail",
 						 soapCmd:		"VoiceMsgAction",
 						 itemClass:		"ZmVoicemail",
@@ -81,6 +82,7 @@ function() {
 	ZmItem.registerItem(ZmItem.CALL,
 						{app:			ZmApp.VOICE,
 						 nameKey:		"call",
+						 pluralNameKey:	"calls",
 						 icon:			"Voicemail",
 						 soapCmd:		"VoiceMsgAction",
 						 itemClass:		"ZmCall",
@@ -336,11 +338,11 @@ function(folder, callback, sortBy) {
 			sortBy = appCtxt.get(ZmSetting.SORTING_PREF, viewType);
 		}
 		var searchParams = {
-			soapInfo: this.soapInfo,
-			types: AjxVector.fromArray([folder.getSearchType()]),
-			sortBy: sortBy,
-			query: folder.getSearchQuery(),
-			limit: appCtxt.get(ZmSetting.VOICE_PAGE_SIZE)
+			soapInfo:	this.soapInfo,
+			types:		AjxVector.fromArray([folder.getSearchType()]),
+			sortBy:		sortBy,
+			query:		folder.getSearchQuery(),
+			limit:		this.getLimit()
 		};
 		var search = new ZmSearch(searchParams);
 		var responseCallback = new AjxCallback(this, this._handleResponseSearch, [folder, callback]);

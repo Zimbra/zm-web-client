@@ -153,8 +153,7 @@ function(list, sortField) {
 ZmListView.prototype._setRowHeight =
 function() {
 	if (!this._rowHeight) {
-		var item = this._list && this._list.get(0);
-		var row = item && this._getElFromItem(item);
+		var row = this._parentEl.firstChild;
 		this._rowHeight = row && Dwt.getSize(row).y;
 	}
 };
@@ -937,7 +936,7 @@ ZmListView.prototype._checkItemCount =
 function() {
 
 	if (!(this._controller._list && this._controller._list.hasMore()) || !this._list) { return; }
-	if (!this._rendered) { return; }
+	if (!this._rendered || !this._rowHeight) { return; }
 
 	DBG.println(AjxDebug.DBG2, "List view: checking item count");
 	var scrollDiv = this._parentEl;

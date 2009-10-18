@@ -14,7 +14,10 @@
  */
 
 ZmVoiceListView = function(params) {
+
 	if (arguments.length == 0) { return; }
+	
+	params.pageless = true;
 	ZmListView.call(this, params);
 
 	this._contactToItem = {}; // Map of contact ids to the items we draw them in.
@@ -67,11 +70,6 @@ function(item) {
 	var type = this._getCallType() == ZmVoiceFolder.PLACED_CALL ? 
 		ZmVoiceItem.TO : ZmVoiceItem.FROM;
 	return item.getCallingParty(type);
-};
-
-ZmVoiceListView.prototype.getLimit =
-function() {
-	return appCtxt.get(ZmSetting.VOICE_PAGE_SIZE);
 };
 
 ZmVoiceListView.prototype._getCallType =
