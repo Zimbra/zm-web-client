@@ -1366,26 +1366,28 @@ ZmEmailNotificationUI.prototype.show =
 function(feature) {
 	var arr = feature.data.value.split(",");
 	var items = [];
-	feature.isActive = false;
 	if (arr.length>0) {
 		for (var i=0; i<arr.length; i++) {
-			var text = AjxStringUtil.trim(arr[i]);
-			if (text.length > 0) {
-				if (text.indexOf("@") != -1) {
-					feature.isActive = true;
-				} else {
-					text = text.replace("?","@"); // To "disable" an address, we replace @s with ?s in the model. Revert back when we display the list again
+			if (arr[i]!=null) {
+				var text = AjxStringUtil.trim(arr[i]);
+				if (text.length > 0) {
+					items.push({text: text});
 				}
-				items.push({text: text});
 			}
 		}
-		this._list.set(AjxVector.fromArray(items), 1);
 	}
+	this._list.set(AjxVector.fromArray(items), 1);
+	if (items.length>0) {
+		feature.isActive = true;
+	} else {
+		feature.isActive = false;
+	}
+	this._list.setEnabled(true);
 };
 
 ZmEmailNotificationUI.prototype._isValueDirty =
 function() {
-	if (this._getSelectedValue() != this._feature.data.value.replace("?","@")) { // 
+	if (this._getSelectedValue() != this._feature.data.value) {
 		return true;
 	}
 	return false;
@@ -1394,12 +1396,13 @@ function() {
 ZmEmailNotificationUI.prototype.getFeature =
 function() {
 	var result = ZmCallFeatureUI.prototype.getFeature.call(this);
-	var addresses = this._getAddresses();	
+	var addresses = this._getAddresses();
 	if (!addresses || addresses.length==0) {
 		result.isActive = false;
+		result.data.value = "";
 	} else {
-		var csep = this._getAddresses().join(",");
-		result.data.value = this._checkbox.isSelected() ? csep : csep.replace("@", "?"); // To "disable" an address, we replace @s with ?s in the model
+		result.data.value = addresses.join(",");
+		result.isActive = true;
 	}
 	return result;
 };
@@ -1460,20 +1463,26 @@ function(event) {
 	}
 };
 
-ZmEmailNotificationUI.prototype.setEnabled =
-function(enabled) {
-	this._list.setEnabled(enabled);
-	this._comboBox.setEnabled(enabled);
-	this._addButton.setEnabled(enabled);
-};
+ZmEmailNotificationUI.prototype._handleRemoveAll =
+function(event) {
+	if (this._list)
+		this._list.removeAll();
+}
 
 ZmEmailNotificationUI.prototype._initialize =
 function(id) {
-	this._createCheckbox(ZmMsg.voicemailNotificationDescription, id + "_emailNotificationCheckbox");
+	this._descriptionLabel = new DwtLabel({parent:this._view});
+	this._descriptionLabel.setText(ZmMsg.voicemailNotificationDescription);
+	this._descriptionLabel.replaceElement(id + "_emailNotificationDescriptionLabel");
 
 	this._comboBox = new DwtComboBox({parent:this._view, inputParams: {size: 20, validator: ZmVoicePrefsPage._validateEmailAddress, validationStyle: DwtInputField.CONTINUAL_VALIDATION}, className:"DwtComboBox ValidatorFix"});
 	this._comboBox.replaceElement(id + "_emailNotificationComboBox");
 	
+	this._clearButton = new DwtButton({parent:this._view, size: 75});
+	this._clearButton.setText(ZmMsg.removeAll);
+	this._clearButton.addSelectionListener(new AjxListener(this, this._handleRemoveAll));
+	this._clearButton.replaceElement(id + "_emailNotificationRemoveAllButton");
+
 	this._addButton = new DwtButton({parent:this._view, size: 75});
 	this._addButton.setText(ZmMsg.add);
 	this._addButton.addSelectionListener(new AjxListener(this, this._handleAddFromNumber));

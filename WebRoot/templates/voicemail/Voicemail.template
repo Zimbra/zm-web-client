@@ -257,7 +257,7 @@
 							<table cellspacing='1' cellpadding='1' width='600'>
 								<tr>
 									<td>
-										<div id='${id}_emailNotificationCheckbox'></div>
+										<div id='${id}_emailNotificationDescriptionLabel'></div>
 									</td>
 									<td>
 										<div id='${id}_emailNotificationComboBox'></div>
@@ -267,16 +267,12 @@
 										<div id='${id}_emailNotificationAddButton'></div>
 									</td>
 								</tr>
-							</table>
-						</td>
-					</tr>
-					<tr>
-						<td/>
-						<td class='ZOptionsField'>
-							<table cellspacing='1' cellpadding='1' width='500'>
 								<tr>
-									<td colspan='3' style='padding-left:210px'>
+									<td class='ZOptionsField' colspan='3' style='width:500px;padding-left:100px'>
 										<div id='${id}_emailNotificationList'></div>
+									</td>
+									<td style='vertical-align:top'>
+										<div id='${id}_emailNotificationRemoveAllButton'></div>
 									</td>
 								</tr>
 							</table>
