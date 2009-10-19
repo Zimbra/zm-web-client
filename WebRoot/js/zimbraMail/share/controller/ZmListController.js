@@ -855,8 +855,7 @@ function(items, folder, attrs, isShiftKey) {
  */
 ZmListController.prototype._isItemMovable =
 function(item, isShiftKey, folder) {
-	// regardless of force flag, read-only items *cannot* be moved
-	return !item.isReadOnly() && (!isShiftKey && (!item.isShared() && !folder.isRemote()));
+	return (!isShiftKey && !item.isReadOnly() && !folder.isReadOnly());
 };
 
 // Modify an item

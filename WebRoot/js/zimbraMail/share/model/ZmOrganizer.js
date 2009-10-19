@@ -126,7 +126,7 @@ ZmOrganizer.ID_ZIMLET			= -1000;	// zimlets need a range.  start from -1000 incr
 ZmOrganizer.ID_ROSTER_LIST		= -11;
 ZmOrganizer.ID_ROSTER_TREE_ITEM	= -13;
 ZmOrganizer.ID_MY_CARD			= -15;
-ZmOrganizer.ID_ATTACHMENTS      = -17;      // Attachments View
+ZmOrganizer.ID_ATTACHMENTS		= -17;		// Attachments View
 
 // fields that can be part of a displayed organizer
 ZmOrganizer.F_NAME				= "name";
@@ -1242,7 +1242,7 @@ function(path, useSystemName) {
 			return organizer;
 		}
 	}
-	return null;	
+	return null;
 };
 
 /**
@@ -1312,11 +1312,9 @@ ZmOrganizer.prototype.isReadOnly =
 function() {
 	if (this._isReadOnly == null) {
 		var share = this.getMainShare();
-        if(share != null){
-            this._isReadOnly = (this.isRemote() && share && !share.isWrite());
-        }else{
-            this._isReadOnly = (this.isRemote() && this.isPermAllowed(ZmOrganizer.PERM_READ) && !this.isPermAllowed(ZmOrganizer.PERM_WRITE));
-        }
+		this._isReadOnly = (share != null)
+			? (this.isRemote() && !share.isWrite())
+			: (this.isRemote() && this.isPermAllowed(ZmOrganizer.PERM_READ) && !this.isPermAllowed(ZmOrganizer.PERM_WRITE));
 	}
 	return this._isReadOnly;
 };
@@ -1325,11 +1323,9 @@ ZmOrganizer.prototype.isAdmin =
 function() {
 	if (this._isAdmin == null) {
 		var share = this.getMainShare();
-        if(share != null){
-            this._isAdmin = (this.isRemote() && share && share.isAdmin());
-        }else{
-            this._isAdmin = (this.isRemote() && this.isPermAllowed(ZmOrganizer.PERM_ADMIN));
-        }
+		this._isAdmin = (share != null)
+			? (this.isRemote() && share.isAdmin())
+			: (this.isRemote() && this.isPermAllowed(ZmOrganizer.PERM_ADMIN));
 	}
 	return this._isAdmin;
 };
@@ -1338,11 +1334,9 @@ ZmOrganizer.prototype.hasPrivateAccess =
 function() {
 	if (this._hasPrivateAccess == null) {
 		var share = this.getMainShare();
-        if(share != null){
-		    this._hasPrivateAccess = (this.isRemote() && share && share.hasPrivateAccess());
-        }else {
-            this._hasPrivateAccess = (this.isRemote() && this.isPermAllowed(ZmOrganizer.PERM_PRIVATE));
-        }
+		this._hasPrivateAccess = (share != null)
+			? (this.isRemote() && share.hasPrivateAccess())
+			: (this.isRemote() && this.isPermAllowed(ZmOrganizer.PERM_PRIVATE));
 	}
 	return this._hasPrivateAccess;
 };
@@ -1469,9 +1463,9 @@ function(params) {
 	actionNode.setAttribute("op", params.action);
 	actionNode.setAttribute("id", params.id || this.id);
 	for (var attr in params.attrs) {
-        if(AjxEnv.isIE){
-            params.attrs[attr] += ""; //To string
-        }
+		if (AjxEnv.isIE) {
+			params.attrs[attr] += ""; //To string
+		}
 		actionNode.setAttribute(attr, params.attrs[attr]);
 	}
 	var respCallback = new AjxCallback(this, this._handleResponseOrganizerAction, params);
