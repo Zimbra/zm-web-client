@@ -411,7 +411,7 @@ function(first, last, fullname, nickname) {
 	if (first && last)
 		return AjxMessageFormat.format(ZmMsg.fileAsLastFirst, [first, last]);
 	return first || last || fullname || nickname || "";
-}
+};
 
 /**
 * Name printing helper.  e.g. Name (Company)
@@ -423,7 +423,7 @@ function(name, company) {
 	if (company)
 		return AjxMessageFormat.format(ZmMsg.fileAsCompanyAsSecondaryOnly, [company]);
 	return name;
-}
+};
 
 /**
 * Name printing helper.  e.g. Company (Name)
@@ -435,12 +435,12 @@ function(name, company) {
 	if (name)
 		return AjxMessageFormat.format(ZmMsg.fileAsNameAsSecondaryOnly, [name]);
 	return company;
-}
+};
 
 /**
 * Basically prepends "8:" to the given custom fileAs str
 *
-* @param contact	[hash]		a set of contact attributes
+* @param customFileAs	[hash]		a set of contact attributes
 */
 ZmContact.computeCustomFileAs =
 function(customFileAs) {
@@ -500,7 +500,7 @@ ZmContact.__BY_ATTRIBUTE = function(a, b) {
 ZmContact.setAttr =
 function(contact, attr, value) {
 	if (contact instanceof ZmContact)
-		contact.setAttr(attr, value)
+		contact.setAttr(attr, value);
 	else
 		contact._attrs[attr] = value;
 };
@@ -544,14 +544,17 @@ function(callback, result) {
 		callback.run(resp.cn[0], this);
 };
 
+ZmContact.prototype.clear =
+function() {
+	// bug fix #41666 - override base class method and do nothing
+};
+
 ZmContact.prototype.isEmpty =
 function() {
-	var isEmpty = true;
 	for (var i in this.attr) {
-		isEmpty = false;
-		break;
+		return false;
 	}
-	return isEmpty;
+	return true;
 };
 
 ZmContact.prototype.isShared =
