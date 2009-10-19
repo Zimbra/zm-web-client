@@ -65,6 +65,8 @@ BODY						{	margin:0px; 				}
 #skin_spacing_tree_top					{	text-align:center;	}
 #skin_container_tree_top				{	@SkinBorderUsername@	}
 
+#skin_container_links					{	padding: 0px 25px 0px 35px; }
+
 /** User Name section **/
 #skin_container_username				{	height:auto; padding-top:2px;	}
 #skin_container_username *				{	@SkinTextUsername@	}

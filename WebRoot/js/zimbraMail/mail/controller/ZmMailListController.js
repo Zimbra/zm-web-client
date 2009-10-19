@@ -696,7 +696,7 @@ function() {
 	if (this.isReadingPaneOn() && appCtxt.get(ZmSetting.MARK_MSG_READ) == -1) {
 		// check if current message being read is the message in the selection list
 		var msg = view.parent.getMsgView ? view.parent.getMsgView().getMsg() : null;
-		if (msg) {
+		if (msg && msg.readReceiptRequested) {
 			for (var i = 0; i < items.length; i++) {
 				var item = items[i];
 				var itemId = (item.id < 0) ? (item.id*(-1)) : item.id;
