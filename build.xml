@@ -424,7 +424,7 @@
 
     <target name='compile' depends='init,external'>
         <mkdir dir='${build.classes.dir}'/>
-        <javac destdir="${build.classes.dir}" classpathref="class.path" debug="true">
+        <javac destdir="${build.classes.dir}" classpathref="class.path" debug="true" target="1.5">
             <src location='${java.dir}'/>
         </javac>
     </target>
@@ -1253,7 +1253,7 @@ if (ext == null) ext = "";
 	</target>
 
      <target name="jspc.compile">
-         <javac destdir="${jspc.build.dir}" optimize="off" debug="on" srcdir="${jspc.build.dir}" classpathref="jspc.class.path">
+         <javac destdir="${jspc.build.dir}" optimize="off" debug="on" srcdir="${jspc.build.dir}" classpathref="jspc.class.path" target="1.5">
              <include name="**" />
          </javac>
      </target>
