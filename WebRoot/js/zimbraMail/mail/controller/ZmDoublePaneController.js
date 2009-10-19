@@ -555,16 +555,16 @@ function(ev) {
 	}
 };
 
-ZmDoublePaneController.prototype._deleteListener =
+ZmDoublePaneController.prototype._doDelete =
 function(ev) {
 	this._listView[this._currentView]._itemToSelect = this._getNextItemToSelect();
-	ZmMailListController.prototype._deleteListener.apply(this, arguments);
+	ZmMailListController.prototype._doDelete.apply(this, arguments);
 };
 
-ZmDoublePaneController.prototype._moveListener =
+ZmDoublePaneController.prototype._doMove =
 function(ev) {
 	this._listView[this._currentView]._itemToSelect = this._getNextItemToSelect();
-	ZmMailListController.prototype._moveListener.apply(this, arguments);
+	ZmMailListController.prototype._doMove.apply(this, arguments);
 };
 
 ZmDoublePaneController.prototype._showOrigListener =
