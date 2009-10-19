@@ -74,18 +74,17 @@
 			<c:set var="badSelectiveCallForwardingTo" scope="request" value="${true}"/>
 		    </c:if>
 
+                    <zm:listObject var="bogus" phone="${param.phone}" strArr="scf" map="${sessionScope.selectiveCallForwardingFrom}"/>
                     <zm:modifyCallFeatures var="result" phone="${param.phone}"
                         callforwardingactive="${param.callForwardingActive}" callforwardingforwardto="${param.callForwardingTo}"
-                        selectivecallforwardingactive="${param.selectiveCallForwardingActive}" selectivecallforwardingforwardto="${param.selectiveCallForwardingTo}" selectivecallforwardingforwardfrom="${fn:split(sessionScope.selectiveCallForwardingFrom, ',')}"
-                    />
-                    <c:set var="selectiveCallForwardingFrom" scope="session" value="${null}"/>
-                    <c:set var="selectiveCallForwardingFetched" scope="session" value="${false}"/>
+                        selectivecallforwardingactive="${param.selectiveCallForwardingActive}" selectivecallforwardingforwardto="${param.selectiveCallForwardingTo}" selectivecallforwardingforwardfrom="${scf}"/>
                 </c:when>
 		
-                <c:when test="${voiceselected=='screening'}">	
+                <c:when test="${voiceselected=='screening'}">
+		    <zm:listObject var="bogus" phone="${param.phone}" strArr="scr" map="${sessionScope.selectiveCallRejectionFrom}"/>
                     <zm:modifyCallFeatures var="result" phone="${param.phone}"
                         anonymouscallrejectionactive="${param.anonymousCallRejectionActive}"
-                        selectivecallrejectionactive="${param.selectiveCallRejectionActive}" selectivecallrejectionrejectfrom="${fn:split(sessionScope.selectiveCallRejectionFrom, ',')}"
+                        selectivecallrejectionactive="${param.selectiveCallRejectionActive}" selectivecallrejectionrejectfrom="${scr}"
                     />
                 </c:when>
             </c:choose>
@@ -138,7 +137,7 @@
 </c:if>
 
 
-<c:if test="${voiceselected=='forwarding' && zm:actionSet(param, 'addSelectiveForwarding') && !empty sessionScope.selectiveCallForwardingFrom && fn:length(fn:split(sessionScope.selectiveCallForwardingFrom, ',')) >= 12}">
+<c:if test="${voiceselected=='forwarding' && zm:actionSet(param, 'addSelectiveForwarding') && !empty sessionScope.selectiveCallForwardingFrom && !empty sessionScope.selectiveCallForwardingFrom[param.phone] && fn:length(sessionScope.selectiveCallForwardingFrom[param.phone]) >= 12}">
 	<app:status style="Critical"><fmt:message key="optionsCallForwardingErrorMax"/></app:status>
 	<c:set var="addSelectiveForwarding" scope="request" value="${null}"/>
 </c:if>
@@ -190,25 +189,16 @@
 		</c:when>
 	    
 		<c:when test="${useFrom && success}">
-		    <c:set var="selectiveCallForwardingFrom" scope="session" value="${sessionScope.selectiveCallForwardingFrom},${displayNumber}"/>
+		    <zm:listObject phone="${param.phone}" var="selectiveCallForwardingFrom" scope="session" map="${sessionScope.selectiveCallForwardingFrom}" add="${displayNumber}"/>
 		</c:when>
 	</c:choose>
 </c:if>
 
 <c:if test="${voiceselected=='forwarding' && zm:actionSet(param, 'actionVoiceRemoveSelectiveForwarding') && param.selectiveCallForwardingActive}">
-    <c:set var="tmp" value=""/>
-    <c:forEach items="${sessionScope.selectiveCallForwardingFrom}" var="number">
-	<c:if test="${fn:trim(number) != fn:trim(param.actionVoiceRemoveSelectiveForwarding)}">
-	    <c:if test="${!empty tmp}">
-	    <c:set var="tmp" value="${tmp},"/>
-	    </c:if>
-	    <c:set var="tmp" value="${tmp}${number}"/>
-	</c:if>
-    </c:forEach>
-    <c:set var="selectiveCallForwardingFrom" scope="session" value="${tmp}"/>
+    <zm:listObject phone="${param.phone}" var="selectiveCallForwardingFrom" scope="session" map="${sessionScope.selectiveCallForwardingFrom}" remove="${param.actionVoiceRemoveSelectiveForwarding}"/>
 </c:if>
 
-<c:if test="${voiceselected=='screening' && zm:actionSet(param, 'addSelectiveRejection') && (!empty sessionScope.selectiveRejectionNumber) && fn:length(fn:split(sessionScope.selectiveRejectionNumber,',')) >= 12}">
+<c:if test="${voiceselected=='screening' && zm:actionSet(param, 'addSelectiveRejection') && !empty sessionScope.selectiveCallRejectionFrom && !empty sessionScope.selectiveCallRejectionFrom[param.phone] && fn:length(sessionScope.selectiveCallRejectionFrom) >= 12}">
     <app:status style="Critical"><fmt:message key="optionsCallRejectionErrorMax"/></app:status>
     <c:set var="addSelectiveRejection" scope="request" value="${null}"/>
 </c:if>
@@ -260,20 +250,11 @@
 		</c:when>
 	    
 		<c:when test="${success}">
-		    <c:set var="selectiveRejectionNumber" scope="session" value="${sessionScope.selectiveRejectionNumber},${displayNumber}"/>
+		    <zm:listObject phone="${param.phone}" var="selectiveCallRejectionFrom" scope="session" map="${sessionScope.selectiveCallRejectionFrom}" add="${displayNumber}"/>
 		</c:when>
 	</c:choose>
 </c:if>
 
 <c:if test="${voiceselected=='screening' && zm:actionSet(param, 'actionVoiceRemoveSelectiveRejection') && param.selectiveCallRejectionActive}">
-    <c:set var="tmp" value=""/>
-    <c:forEach items="${sessionScope.selectiveRejectionNumber}" var="number">
-	<c:if test="${fn:trim(number) != fn:trim(param.actionVoiceRemoveSelectiveRejection)}">
-	    <c:if test="${!empty tmp}">
-	    <c:set var="tmp" value="${tmp},"/>
-	    </c:if>
-	    <c:set var="tmp" value="${tmp}${number}"/>
-	</c:if>
-    </c:forEach>
-    <c:set var="selectiveRejectionNumber" scope="session" value="${tmp}"/>
+    <zm:listObject phone="${param.phone}" var="selectiveCallRejectionFrom" scope="session" map="${sessionScope.selectiveCallRejectionFrom}" remove="${param.actionVoiceRemoveSelectiveRejection}"/>
 </c:if>

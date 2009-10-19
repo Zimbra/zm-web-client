@@ -95,15 +95,13 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 		<c:if test="${selected}">
 			<app:handleError>
 				<app:getCallFeatures account="${account}" var="features"/>
+				<c:set var="phone" value="${account.phone.name}"/>
 			</app:handleError>
 		</c:if>
 	</zm:forEachPhoneAccount>
 	
-	<input type="hidden" name="phone" value="${account.phone.name}">
-		
-	
-	
-		
+	<input type="hidden" name="phone" value="${phone}">
+
 <c:choose>
 <c:when test="${voiceselected=='general'}">
 	
@@ -445,6 +443,18 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 <c:when test="${voiceselected=='forwarding'}">
 	
 	<%----------------- Call Forwarding Section --------------%>
+
+	<c:if test="${empty sessionScope.selectiveCallForwardingFrom}">
+		<zm:forEachPhoneAccount var="_account">
+			<app:handleError>
+				<app:getCallFeatures account="${_account}" var="accountFeatures"/>
+				<c:forEach items="${accountFeatures.selectiveCallForwarding.forwardFrom}" var="number">
+					<zm:listObject phone="${_account.phone.name}" var="selectiveCallForwardingFrom" scope="session" map="${sessionScope.selectiveCallForwardingFrom}" add="${number}"/>
+				</c:forEach>
+			</app:handleError>
+		</zm:forEachPhoneAccount>
+	</c:if>
+
 	<script type="text/javascript">
 		<!--
 			var selectiveForwardCheckboxDependers = [];
@@ -459,7 +469,7 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 	</script>
 	
 	<c:set var="selectiveCallForwardingActive" value="${(requestScope.selectiveCallForwardingActive != 'FALSE' && (features.selectiveCallForwarding.isActive && !empty features.selectiveCallForwarding.forwardFrom && !empty features.selectiveCallForwarding.forwardTo)) || (requestScope.selectiveCallForwardingActive == 'TRUE')}"/>
-	<c:set var="canAddSelectiveForwarding" value="${empty sessionScope.selectiveForwardingFrom || fn:length(fn:split(sessionScope.selectiveCallForwardingFrom, ',')) < 12}"/>
+	<c:set var="canAddSelectiveForwarding" value="${empty sessionScope.selectiveForwardingFrom || empty sessionScope.selectiveForwardingFrom[phone] || fn:length(sessionScope.selectiveCallForwardingFrom[phone]) < 12}"/>
 	<c:set var="displayAddSelectiveForwarding" value="${selectiveCallForwardingActive && !empty requestScope.addSelectiveForwarding && canAddSelectiveForwarding}"/>
 	
 
@@ -503,24 +513,12 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 						
 						<td style="vertical-align:top;">
 						
-						<c:if test="${(empty sessionScope.selectiveCallForwardingFetched || !sessionScope.selectiveCallForwardingFetched) && (empty sessionScope.selectiveCallForwardingFrom)}">
 						
-						    <%-- PUT FORWARDING LIST INTO SESSION VAR --%>
-						    <c:set var="selectiveCallForwardingFrom" scope="session" value=""/>
-						    <c:set var="selectiveCallForwardingFetched" scope="session" value="${true}"/>
-						    <c:forEach items="${features.selectiveCallForwarding.forwardFrom}" var="number">
-							<c:if test="${!empty sessionScope.selectiveCallForwardingFrom}">
-						    	    <c:set var="selectiveCallForwardingFrom" scope="session" value="${sessionScope.selectiveCallForwardingFrom},"/>
-							</c:if>
-							<c:set var="selectiveCallForwardingFrom" scope="session" value="${sessionScope.selectiveCallForwardingFrom}${number}"/>
-						    </c:forEach>
-						</c:if>
-						
-						<c:if test="${!empty sessionScope.selectiveCallForwardingFrom}">
 							<table class="ZmPhoneBufferList List" border="0" cellpadding="0" cellspacing="0" width="300px">
 								<tr><th colspan="2"><fmt:message key="numbers"/></th></tr>
+								<c:if test="${!empty sessionScope.selectiveCallForwardingFrom && !empty sessionScope.selectiveCallForwardingFrom[phone]}">
 								<c:set var="i" value="0"/>
-								<c:forEach items="${sessionScope.selectiveCallForwardingFrom}" var="number">
+								<c:forEach items="${sessionScope.selectiveCallForwardingFrom[phone]}" var="number">
 									<c:if test="${!empty number}">
 									<tr>
 										<td style="width:50%">${number}</td>
@@ -537,8 +535,8 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 									<c:set var="i" value="${i+1}"/>
 									</c:if>
 								</c:forEach>
+								</c:if>
 							</table>
-						</c:if>
 						</td>
 						
 
@@ -611,6 +609,18 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 <c:when test="${voiceselected=='screening'}">
 	
 	<%----------------- Call Screening Section --------------%>
+	
+	<c:if test="${empty sessionScope.selectiveCallRejectionFrom}">
+		<zm:forEachPhoneAccount var="_account">
+			<app:handleError>
+				<app:getCallFeatures account="${_account}" var="accountFeatures"/>
+				<c:forEach items="${accountFeatures.selectiveCallRejection.rejectFrom}" var="number">
+					<zm:listObject phone="${_account.phone.name}" var="selectiveCallRejectionFrom" scope="session" map="${sessionScope.selectiveCallRejectionFrom}" add="${number}"/>
+				</c:forEach>
+			</app:handleError>
+		</zm:forEachPhoneAccount>
+	</c:if>
+
 	<script type="text/javascript">
 		<!--
 			var selectiveRejectionCheckboxDependers = [];
@@ -675,10 +685,11 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 						
 						
 						<td style="vertical-align:top;">
-						<c:if test="${!empty sessionScope.selectiveRejectionNumber}">
+						
 							<table class="ZmPhoneBufferList List" border="0" cellpadding="0" cellspacing="0" width="300px">
 								<tr><th colspan="2"><fmt:message key="numbers"/></th></tr>
-								<c:forEach items="${sessionScope.selectiveRejectionNumber}" var="number">
+								<c:if test="${!empty sessionScope.selectiveCallRejectionFrom && !empty sessionScope.selectiveCallRejectionFrom[phone]}">
+								<c:forEach items="${sessionScope.selectiveCallRejectionFrom[phone]}" var="number">
 									<c:if test="${!empty number}">
 									<tr>
 										<td style="width:50%">${number}</td>
@@ -694,8 +705,9 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 									</tr>
 									</c:if>
 								</c:forEach>
+								</c:if>
 							</table>
-							</c:if>
+						
 						</td>
 						
 						
