@@ -448,17 +448,12 @@ function(viewId, force) {
 		return false;
 	}
 
-	var viewController;
 	if (isPendingView) {
 		viewId = this._pendingView;
 	}
 	DBG.println(AjxDebug.DBG1, "pushView: " + viewId);
 
-	var view = this._views[viewId];
-	if (view) {
-		var appContent = view[ZmAppViewMgr.C_APP_CONTENT] || view[ZmAppViewMgr.C_APP_CONTENT_FULL];
-		viewController = appContent && appContent.getController && appContent.getController();
-	}
+	var viewController = this._getViewController(viewId);
 
 	// if same view, no need to hide previous view or check for callbacks
 	if (viewId == this._currentView) {
@@ -497,7 +492,8 @@ function(viewId, force) {
 	}
 	this.addComponents(this._views[viewId]);
 
-	var isTransient = this._isTransient[this._currentView] || (viewController && viewController.isTransient(this._currentView, viewId));
+	var curViewController = this._getViewController(this._currentView);
+	var isTransient = this._isTransient[this._currentView] || (curViewController && curViewController.isTransient(this._currentView, viewId));
 	if (this._currentView && (this._currentView != viewId) && !isTransient) {
 		this._hidden.push(this._currentView);
 	}
@@ -1182,4 +1178,16 @@ function(delta) {
 	var me = this;
 	setTimeout(function(){me.fitAll(true)},0);
 	return delta;
+};
+
+ZmAppViewMgr.prototype._getViewController =
+function(viewId) {
+
+	var viewController;
+	var view = this._views[viewId];
+	if (view) {
+		var appContent = view[ZmAppViewMgr.C_APP_CONTENT] || view[ZmAppViewMgr.C_APP_CONTENT_FULL];
+		viewController = appContent && appContent.getController && appContent.getController();
+	}
+	return viewController;
 };

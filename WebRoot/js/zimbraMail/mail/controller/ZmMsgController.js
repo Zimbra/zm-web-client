@@ -346,7 +346,7 @@ function(ev) {
 
 ZmMsgController.prototype.isTransient =
 function(oldView, newView) {
-	return (newView && newView.indexOf(ZmId.VIEW_COMPOSE) == 0);
+	return (newView && newView.indexOf(ZmId.VIEW_COMPOSE) != 0);
 };
 
 ZmMsgController.prototype._tabCallback =
