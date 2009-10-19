@@ -1798,7 +1798,7 @@ function(continueCallback) {
 		var account = accounts[i];
 		if (account.type == ZmAccount.POP || account.type == ZmAccount.IMAP) {
 			if (account.folderId != ZmOrganizer.ID_INBOX) {
-				var name = account.getName();
+				var name = AjxStringUtil.trim(account.getName());
 				if (!batchCmd) { batchCmd = new ZmBatchCommand(false); }
 
 				// avoid folder create if it already exists
@@ -1836,9 +1836,6 @@ function(continueCallback) {
 
 						var callback = new AjxCallback(this, this._handleRenameFolderResponse, [account, folder]);
 						batchCmd.addNewRequestParams(soapDoc, callback, callback);
-					}
-					else {
-						account.folderId = folder.id;
 					}
 				} else {
 					var soapDoc = AjxSoapDoc.create("CreateFolderRequest", "urn:zimbraMail");
