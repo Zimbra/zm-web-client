@@ -108,7 +108,7 @@ function() {
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
 	elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[this._currentView];
 	var curView = avm.getCurrentViewId();
-	var tabId = (curView.indexOf(ZmId.VIEW_MSG) == 0) ? ZmMsgController.viewToTab[curView] : Dwt.getNextId();
+	var tabId = (curView && curView.indexOf(ZmId.VIEW_MSG) == 0) ? ZmMsgController.viewToTab[curView] : Dwt.getNextId();
 	ZmMsgController.viewToTab[this.viewId] = tabId;
 	var tabCallback = new AjxCallback(this, this._tabCallback);
 	var tabParams = {id:tabId, image:"MessageView", textPrecedence:85,
