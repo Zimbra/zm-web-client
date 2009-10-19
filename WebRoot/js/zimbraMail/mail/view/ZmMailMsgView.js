@@ -1932,8 +1932,52 @@ ZmMailMsgView.removeAttachmentCallback =
 function(msgId, partIds) {
 	ZmZimbraMail.unloadHackCallback();
 
+	if (!(partIds instanceof Array)) { partIds = [partIds]; }
+
+	var msg = (partIds.length > 1)
+		? ZmMsg.attachmentConfirmRemoveAll
+		: ZmMsg.attachmentConfirmRemove;
+
+	var dlg = appCtxt.getYesNoMsgDialog();
+	dlg.registerCallback(DwtDialog.YES_BUTTON, ZmMailMsgView._removeAttachmentCallback, null, [msgId, partIds]);
+	dlg.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
+	dlg.popup();
+};
+
+ZmMailMsgView._removeAttachmentCallback =
+function(msgId, partIds) {
+	appCtxt.getYesNoMsgDialog().popdown();
+
+	var jsonObj = {RemoveAttachmentsRequest: {_jsns:"urn:zimbraMail"}};
+	var request = jsonObj.RemoveAttachmentsRequest;
+	request.m = { id: msgId, part: partIds.join(",") };
+
+	var searchParams = {
+		jsonObj: jsonObj,
+		asyncMode: true,
+		callback: (new AjxCallback(null, ZmMailMsgView._handleRemoveAttachment)),
+		noBusyOverlay: true
+	};
+	return appCtxt.getAppController().sendRequest(searchParams);
+};
+
+ZmMailMsgView._handleRemoveAttachment =
+function(result) {
 	var ac = window.parentAppCtxt || window.appCtxt;
-	ac.getApp(ZmApp.MAIL).getMailListController().removeAttachment(msgId, partIds);
+
+	// cache this actioned ID so we can reset selection to it once the CREATE
+	// notifications have been processed.
+	var msgNode = result.getResponse().RemoveAttachmentsResponse.m[0];
+	ac.getApp(ZmApp.MAIL).getMailListController().actionedMsgId = msgNode.id;
+
+	if (appCtxt.isChildWindow) {
+		var msgView = appCtxt.getAppController().getAppViewMgr().getCurrentView();
+		var msg = msgView._msg;
+		msg.attachments.length = 0;
+		msg._loadFromDom(msgNode);
+		msgView._msg = null;
+		msgView.set(msg);
+	}
 };
 
 ZmMailMsgView._buildZipUrl =

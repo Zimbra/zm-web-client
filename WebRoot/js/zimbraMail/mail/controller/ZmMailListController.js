@@ -345,44 +345,6 @@ function(map) {
 	return (map == "list");
 };
 
-ZmMailListController.prototype.removeAttachment =
-function(msgId, partIds) {
-	var msg = (partIds.length > 1)
-		? ZmMsg.attachmentConfirmRemoveAll
-		: ZmMsg.attachmentConfirmRemove;
-
-	if (!(partIds instanceof Array)) { partIds = [partIds]; }
-
-	var dlg = appCtxt.getYesNoMsgDialog();
-	dlg.registerCallback(DwtDialog.YES_BUTTON, this._removeAttachmentCallback, this, [msgId, partIds, dlg]);
-	dlg.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
-	dlg.popup();
-};
-
-ZmMailListController.prototype._removeAttachmentCallback =
-function(msgId, partIds, dlg) {
-	dlg.popdown();
-
-	var jsonObj = {RemoveAttachmentsRequest: {_jsns:"urn:zimbraMail"}};
-	var request = jsonObj.RemoveAttachmentsRequest;
-	request.m = { id: msgId, part: partIds.join(",") };
-
-	var searchParams = {
-		jsonObj: jsonObj,
-		asyncMode: true,
-		callback: (new AjxCallback(this, this._handleRemoveAttachment)),
-		noBusyOverlay: true
-	};
-	return appCtxt.getAppController().sendRequest(searchParams);
-};
-
-ZmMailListController.prototype._handleRemoveAttachment =
-function(result) {
-	// cache this actioned ID so we can reset selection to it once the CREATE
-	// notifications have been processed.
-	this.actionedMsgId = result.getResponse().RemoveAttachmentsResponse.m[0].id;
-};
-
 ZmMailListController.prototype.sendReadReceipt =
 function(msg) {
 	if (!appCtxt.get(ZmSetting.MAIL_READ_RECEIPT_ENABLED) || msg.readReceiptSent || msg.isSent) {
