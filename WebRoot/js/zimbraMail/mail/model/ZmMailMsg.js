@@ -675,8 +675,10 @@ function(contactList, edited, componentId, callback, errorCallback, instanceDate
             if (from && from.address != mainAcct) {
                 to = from.address;
             }
-        }		
-		this.setAddress(AjxEmailAddress.TO, (new AjxEmailAddress(to)));
+        }
+        if(to) {
+		    this.setAddress(AjxEmailAddress.TO, (new AjxEmailAddress(to)));
+        }
 	}
 
 	request.updateOrganizer = this._origMsg.needsRsvp() ? "TRUE" : "FALSE";
