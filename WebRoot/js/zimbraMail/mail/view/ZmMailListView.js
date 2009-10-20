@@ -466,7 +466,7 @@ function() {
 		var curSearch = this._controller._app.currentSearch;
 		if (curSearch) {
 			query = curSearch.query;
-			idx = query.indexOf(":");
+			idx = query ? query.indexOf(":") : null;
 		}
 		if (idx) {
 			var prefix = AjxStringUtil.trim(query.substring(0, idx));
