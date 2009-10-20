@@ -61,7 +61,7 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 								<tr><th><fmt:message key="number"/></th></tr>
 								<c:set var="firstAccount" value="true"/>
 								<zm:forEachPhoneAccount var="account">
-									<c:set var="selected" value="${(empty param.phone and firstAccount) or (param.phone eq account.phone.name)}"/>
+									<c:set var="selected" value="${(empty param.phone && firstAccount) || (param.phone == account.phone.name)}"/>
 									<c:set var="firstAccount" value="false"/>
 									<c:url var="phoneUrl" value="/h/options?selected=voice">
 										<c:param name="phone" value="${account.phone.name}"/>
@@ -88,7 +88,6 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 	Stupid: I had to do a second loop that only acts on the selected account......
 	--%>
 	<c:set var="firstAccount" value="true"/>
-
 	<zm:forEachPhoneAccount var="account">
 		<c:set var="selected" value="${(empty param.phone and firstAccount) or (param.phone eq account.phone.name)}"/>
 		<c:set var="firstAccount" value="false"/>
@@ -108,7 +107,7 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 			<%------------------- Number of rings ------------------%>
 			<tr>
 				<td class="ZOptionsTableLabel">
-					<label for="numberOfRings"><fmt:message key="optionsRingsSend"/>:</label>
+					<label for="numberOfRings"><fmt:message key="optionsRingsSend"/></label>
 				</td>
 				<td>
 					<select id="numberOfRings" name="numberOfRings">
@@ -133,12 +132,12 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 			<c:set var="userLocale" value="${features.voiceMailPrefs.userLocale}"/>
 			
 			<tr>
-				<td class="ZOptionsTableLabel" style="vertical-align:top;"><fmt:message key="optionsLanguageIncoming"/>:</td>
+				<td class="ZOptionsTableLabel" style="vertical-align:top;"><fmt:message key="optionsLanguageIncoming"/></td>
 				<td>
 					<table border="0" cellpadding="0" cellspacing="0">
 						<tr>
 							<td colspan="2">
-								<fmt:message key="optionsLanguageIncomingPrompt"/>:
+								<fmt:message key="optionsLanguageIncomingPrompt"/>
 							</td>
 						</tr>
 						<c:forEach var="language" items="${languages}">
@@ -164,12 +163,12 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 			</tr>
 			
 			<tr>
-				<td class="ZOptionsTableLabel" style="vertical-align:top;"><fmt:message key="optionsLanguageChecking"/>:</td>
+				<td class="ZOptionsTableLabel" style="vertical-align:top;"><fmt:message key="optionsLanguageChecking"/></td>
 				<td>
 					<table border="0" cellpadding="0" cellspacing="0">
 						<tr>
 							<td colspan="2">
-								<fmt:message key="optionsLanguageCheckingPrompt"/>:
+								<fmt:message key="optionsLanguageCheckingPrompt"/>
 							</td>
 						</tr>
 						<c:forEach var="language" items="${languages}">
@@ -213,7 +212,7 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 			</script>
 			
 			<tr>
-				<td class="ZOptionsTableLabel" style="vertical-align:top;"><fmt:message key="optionsPromptsPlayback"/>:</td>
+				<td class="ZOptionsTableLabel" style="vertical-align:top;"><fmt:message key="optionsPromptsPlayback"/></td>
 				<td>
 					<table border="0" cellpadding="0" cellspacing="0">
 						<tr>
@@ -285,7 +284,7 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 			<%------------------- Count per page ------------------%>
 			<tr>
 				<td class="ZOptionsTableLabel" style="vertical-align:top;">
-					<label for="numberPerPage"><fmt:message key="optionsDisplay"/>:</label>
+					<label for="numberPerPage"><fmt:message key="optionsDisplay"/></label>
 				</td>
 				<td>
 					<select id="numberPerPage" name="numberPerPage">
@@ -304,12 +303,12 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 			<%------------------ Security ------------------------%>
 			<c:set var="requirePinEntry" value="${!features.voiceMailPrefs.skipPinEntry}"/>
 			<tr>
-				<td class="ZOptionsTableLabel" style="vertical-align:top;"><fmt:message key="optionsVoiceSecurityChPwd"/>:</td>
+				<td class="ZOptionsTableLabel" style="vertical-align:top;"><fmt:message key="optionsVoiceSecurityChPwd"/></td>
 				<td><a href="<fmt:message key='optionsVoiceSecurityChPwdUrl'/>" target="_blank"><fmt:message key="optionsVoiceSecurityChPwdLink"/></a></td>
 			</tr>
 			
 			<tr>
-				<td class="ZOptionsTableLabel" style="vertical-align:top;"><fmt:message key="optionsVoiceSecurityLogin"/>:</td>
+				<td class="ZOptionsTableLabel" style="vertical-align:top;"><fmt:message key="optionsVoiceSecurityLogin"/></td>
 				<td>
 					<table border="0" cellpadding="0" cellspacing="0">
 						<tr>
@@ -327,8 +326,6 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 </c:when>
 	
 <c:when test="${voiceselected == 'calllog'}">
-	<br/>
-	
 	<%------------------- Call log section ------------------%>
 	<%-- Commented out for now ---
 	<table width="100%" cellspacing="0" cellpadding="0" border="0" class="ZOptionsSectionTable">
@@ -342,7 +339,7 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 	<table class="ZOptionsSectionMain ZhOptVoice" border="0" cellspacing="10" width="100%">
 		<tr>
 			<td class="ZOptionsTableLabel" style="vertical-align:top;">
-				<label for="numberPerPage"><fmt:message key="optionsDisplay"/> :</label>
+				<label for="numberPerPage"><fmt:message key="optionsDisplay"/></label>
 			</td>
 			<td>
 				<select id="numberPerPage" name="numberPerPage">
@@ -366,27 +363,25 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 <c:when test="${voiceselected=='notification'}">
 
 	<%----------------- Notifications Section --------------%>
+	<c:if test="${empty sessionScope.emailNotificationAddresses}">
+		<zm:forEachPhoneAccount var="_account">
+			<app:handleError>
+				<app:getCallFeatures account="${_account}" var="accountFeatures"/>
+				<c:forEach items="${accountFeatures.voiceMailPrefs.emailNotificationAddress}" var="address">
+					<zm:listObject phone="${_account.phone.name}" var="emailNotificationAddresses" scope="session" map="${sessionScope.emailNotificationAddresses}" add="${address}"/>
+				</c:forEach>
+			</app:handleError>
+		</zm:forEachPhoneAccount>
+	</c:if>
+
 	<table class="ZOptionsSectionMain ZhOptVoice" border="0" cellspacing="10" width="100%">
 		<tr>
-			<td class="ZOptionsTableLabel" style="vertical-align:top;"><fmt:message key="optionsVoiceNotificationsEmail"/>:</td>
+			<td class="ZOptionsTableLabel" style="vertical-align:top;padding-top:7px"><fmt:message key="optionsVoiceNotificationsEmail"/></td>
 			<td>
 				<table border="0" cellpadding="0" cellspacing="0">
 					<tr>
-						<td class="ZhOptVoiceCBCell">
-							<input id="emailNotificationActive" type="checkbox" name="emailNotificationActive" value="TRUE" 
-							<c:choose>
-								<c:when test="${requestScope.emailNotificationActive eq null and !empty features.voiceMailPrefs.emailNotificationAddress}">
-								checked
-								</c:when>
-								<c:when test="${requestScope.emailNotificationActive eq 'TRUE'}">
-								checked
-								</c:when>
-							</c:choose>
-							<%-- <c:if test="${!account.hasVoiceMail}"> disabled</c:if> --%>
-							/>
-						</td>
 						<td>
-							<label for="emailNotificationActive"><fmt:message key="optionsVoiceNotificationsActive"/>:</label>
+							<fmt:message key="optionsVoiceNotificationsActive"/>
 						</td>
 						
 						<td style="padding: 0px 10px">
@@ -397,26 +392,16 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 							<input type="submit" name="actionVoiceAddNotification" value="<fmt:message key='add'/>"/>
 						</td>
 					</tr>
-					
-					<c:if test="${empty sessionScope.emailNotificationAddress && !sessionScope.emailNotificationFetched}">
-						<c:set var="emailNotificationAddress" scope="session" value=""/>
-						<c:set var="emailNotificationFetched" scope="session" value="${true}"/>
-						<c:forEach items="${features.voiceMailPrefs.emailNotificationAddress}" var="email">
-						    <c:if test="${!empty sessionScope.emailNotificationAddress}">
-						    <c:set var="emailNotificationAddress" scope="session" value="${sessionScope.emailNotificationAddress},"/>
-						    </c:if>
-						    <c:set var="emailNotificationAddress" scope="session" value="${sessionScope.emailNotificationAddress}${email}"/>
-						</c:forEach>
-					</c:if>
 						
 					<tr><td>&nbsp;</td></tr>
-					<c:if test="${!empty sessionScope.emailNotificationAddress}">
+
+					<c:if test="${!empty sessionScope.emailNotificationAddresses && !empty sessionScope.emailNotificationAddresses[phone]}">
 					<tr>
-						<td colspan="4" style="vertical-align:top;text-align:right">
+						<td colspan="2" style="vertical-align:top;" align="right">
 							<table class="ZmBufferList List" border="0" cellpadding="0" cellspacing="0" width="400px">
 								<tr><th colspan="2"><fmt:message key="optionsVoiceNotificationsAddresses"/></th></tr>
 								<c:set var="i" value="0"/>
-								<c:forEach items="${fn:split(sessionScope.emailNotificationAddress, ',')}" var="notificationAddress">
+								<c:forEach items="${sessionScope.emailNotificationAddresses[phone]}" var="notificationAddress">
 									<c:if test="${!empty notificationAddress}">
 									<tr>
 										<td style="width:50%">${notificationAddress}</td>
@@ -430,8 +415,11 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 								</c:forEach>
 							</table>
 						</td>
+						<td style="vertical-align:top">
+							<input type="submit" name="actionVoiceClearNotification" value="<fmt:message key='removeAll'/>"/>
+						</td>
 					</tr>
-					</c:if>	
+					</c:if>
 				</table>
 			</td>
 		</tr>
@@ -455,6 +443,24 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 		</zm:forEachPhoneAccount>
 	</c:if>
 
+	<c:if test="${empty sessionScope.callForwardingTo}">
+		<zm:forEachPhoneAccount var="_account">
+			<app:handleError>
+				<app:getCallFeatures account="${_account}" var="accountFeatures"/>
+				<zm:listObject phone="${_account.phone.name}" var="callForwardingTo" scope="session" map="${sessionScope.callForwardingTo}" add="${accountFeatures.callForwardingAll.forwardTo}"/>
+			</app:handleError>
+		</zm:forEachPhoneAccount>
+	</c:if>
+	
+	<c:if test="${empty sessionScope.selectiveCallForwardingTo}">
+		<zm:forEachPhoneAccount var="_account">
+			<app:handleError>
+				<app:getCallFeatures account="${_account}" var="accountFeatures"/>
+				<zm:listObject phone="${_account.phone.name}" var="selectiveCallForwardingTo" scope="session" map="${sessionScope.selectiveCallForwardingTo}" add="${accountFeatures.selectiveCallForwarding.forwardTo}"/>
+			</app:handleError>
+		</zm:forEachPhoneAccount>
+	</c:if>
+
 	<script type="text/javascript">
 		<!--
 			var selectiveForwardCheckboxDependers = [];
@@ -469,9 +475,8 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 	</script>
 	
 	<c:set var="selectiveCallForwardingActive" value="${(requestScope.selectiveCallForwardingActive != 'FALSE' && (features.selectiveCallForwarding.isActive && !empty features.selectiveCallForwarding.forwardFrom && !empty features.selectiveCallForwarding.forwardTo)) || (requestScope.selectiveCallForwardingActive == 'TRUE')}"/>
-	<c:set var="canAddSelectiveForwarding" value="${empty sessionScope.selectiveForwardingFrom || empty sessionScope.selectiveForwardingFrom[phone] || fn:length(sessionScope.selectiveCallForwardingFrom[phone]) < 12}"/>
+	<c:set var="canAddSelectiveForwarding" value="${empty sessionScope.selectiveCallForwardingFrom || empty sessionScope.selectiveCallForwardingFrom[phone] || fn:length(sessionScope.selectiveCallForwardingFrom[phone]) < 12}"/>
 	<c:set var="displayAddSelectiveForwarding" value="${selectiveCallForwardingActive && !empty requestScope.addSelectiveForwarding && canAddSelectiveForwarding}"/>
-	
 
 	<table class="ZOptionsSectionMain ZhOptVoice" border="0" cellspacing="10" width="100%">
 		<tr>
@@ -489,7 +494,8 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 						<td class="ZhOptVoiceCBCell">&nbsp;</td>
 						
 						<td>
-							<input type="text" name="callForwardingTo" value="${!empty param.callForwardingTo ? param.callForwardingTo : features.callForwardingAll.forwardTo}"/>
+							<zm:listObject var="bogus" csep="forwardTo" map="${sessionScope.callForwardingTo}" phone="${phone}"/>
+							<input type="text" name="callForwardingTo" value="${forwardTo}"/>
 						</td>
 					</tr>
 				</table>
@@ -506,7 +512,7 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 						</td>
 						
 						<td style="vertical-align:top;padding-top:3px">
-							<label for="selectiveCallForwardingActive"><fmt:message key="optionsCallForwardingSelectiveLabel"/>:</label>
+							<label for="selectiveCallForwardingActive"><fmt:message key="optionsCallForwardingSelectiveLabel"/></label>
 						</td>
 						
 						<td class="ZhOptVoiceCBCell">&nbsp;</td>
@@ -588,7 +594,8 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 						<td class="ZhOptVoiceCBCell">&nbsp;</td>
 						
 						<td>
-							<input id="selectiveDest" type="text" name="selectiveCallForwardingTo" value="${(!empty param.selectiveCallForwardingTo || requestScope.badSelectiveCallForwardingTo) ? param.selectiveCallForwardingTo : features.selectiveCallForwarding.forwardTo}"/>
+							<zm:listObject var="bogus" csep="forwardTo" map="${sessionScope.selectiveCallForwardingTo}" phone="${phone}"/>
+							<input type="text" name="selectiveCallForwardingTo" value="${forwardTo}"/>
 						</td>
 					</tr>
 				</table>
@@ -636,7 +643,7 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 		</script>
 		
 		<c:set var="selectiveCallRejectionActive" value="${requestScope.selectiveCallRejectionActive != 'FALSE' && (features.selectiveCallRejection.isActive || requestScope.selectiveCallRejectionActive == 'TRUE')}"/>
-		<c:set var="canAddSelectiveRejection" value="${empty sessionScope.selectiveRejectionNumber || fn:length(fn:split(sessionScope.selectiveRejectionNumber, ',')) < 12}"/>
+		<c:set var="canAddSelectiveRejection" value="${empty sessionScope.selectiveCallRejectionFrom || empty sessionScope.selectiveCallRejectionFrom[phone] || fn:length(sessionScope.selectiveCallRejectionFrom[phone]) < 12}"/>
 		<c:set var="displayAddSelectiveRejection" value="${selectiveCallRejectionActive && !empty requestScope.addSelectiveRejection && canAddSelectiveRejection}"/>
 		
 	<table class="ZOptionsSectionMain ZhOptVoice" border="0" cellspacing="10" width="100%">
@@ -671,18 +678,6 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 						</td>
 						
 						<td class="ZhOptVoiceCBCell">&nbsp;</td>
-						
-						<c:if test="${empty sessionScope.selectiveRejectionNumber && !sessionScope.selectiveRejectionFetched}">
-						<c:set var="selectiveRejectionNumber" scope="session" value=""/>
-						<c:set var="selectiveRejectionFetched" scope="session" value="${true}"/>
-						<c:forEach items="${features.selectiveCallRejection.rejectFrom}" var="number">
-						    <c:if test="${!empty sessionScope.selectiveRejectionNumber}">
-						    <c:set var="selectiveRejectionNumber" scope="session" value="${sessionScope.selectiveRejectionNumber},"/>
-						    </c:if>
-						    <c:set var="selectiveRejectionNumber" scope="session" value="${sessionScope.selectiveRejectionNumber}${number}"/>
-						</c:forEach>
-						</c:if>
-						
 						
 						<td style="vertical-align:top;">
 						
