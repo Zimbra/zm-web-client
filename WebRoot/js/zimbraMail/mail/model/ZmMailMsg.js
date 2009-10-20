@@ -786,7 +786,9 @@ function(edited, componentId, callback, errorCallback, instanceDate, accountName
                 to = from.address;
             }
         }
-		this.setAddress(AjxEmailAddress.TO, (new AjxEmailAddress(to)));
+        if(to) {
+		    this.setAddress(AjxEmailAddress.TO, (new AjxEmailAddress(to)));
+        }
 	}
 
     var replyActionMap = {};
