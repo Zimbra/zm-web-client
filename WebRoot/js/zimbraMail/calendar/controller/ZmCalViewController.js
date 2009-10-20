@@ -919,6 +919,15 @@ function(ev) {
 	this._doDelete(this._listView[this._currentView].getSelection(), null, null, op);
 };
 
+ZmCalViewController.prototype.isDeleteAllowed =
+function(appt) {
+    var calendar = appt && appt.getFolder();
+    var isReadOnly = calendar ? calendar.isReadOnly() : false;
+    var isSynced = Boolean(calendar && calendar.url);
+    var disabled = isSynced || isReadOnly;
+    return !disabled;
+};
+
 /**
  * Override the ZmListController method.
  */
@@ -926,6 +935,12 @@ ZmCalViewController.prototype._doDelete =
 function(items, hardDelete, attrs, op) {
 	// since base view has multiple selection turned off, always select first item
 	var appt = items[0];
+    if(!this.isDeleteAllowed(appt)) {
+        var msgDialog = appCtxt.getMsgDialog();
+        msgDialog.setMessage(ZmMsg.apptIsReadOnly, DwtMessageDialog.INFO_STYLE);
+        msgDialog.popup();
+        return;    
+    }
 	if (op == ZmOperation.VIEW_APPT_INSTANCE || op == ZmOperation.VIEW_APPT_SERIES) {
 		var mode = (op == ZmOperation.VIEW_APPT_INSTANCE)
 			? ZmCalItem.MODE_DELETE_INSTANCE
