@@ -16,18 +16,14 @@
 		<tr>
 			<td class='ZOptionsSectionMain' colspan='3'>
 				<table cellspacing='4' cellpadding='4' width='100%'>
-					<!-- Number selector -->
 					<tr>
-						<td class='ZOptionsLabel' style='width:200px'></td>
-						<td class='ZOptionsField'>
-							<div style='margin-left:28;width:260;'>
+						<td class='ZOptionsField' colspan='2'>
+							<div style='margin-left:28;width:500;'>
 								<div>
 									<$= ZmMsg.voicePrefsInstruction $>
 								</div>
 								<div class='ZSmallSpacer'></div>
-								<div id='${id}_list'>
-									List
-								</div>
+								<div id='${id}_list'></div>
 							</div>
 						</td>
 					</tr>
@@ -35,6 +31,14 @@
 					<tr>
 						<td colspan='2'>
 							<hr/>
+						</td>
+					</tr>
+
+					<tr>
+						<td colspan='2' class='SectionHeader'>
+							<nobr>
+								<$= ZmMsg.voicemailSendToVoicemailAfterRingsHeader $>
+							</nobr>
 						</td>
 					</tr>
 
@@ -56,6 +60,19 @@
 									</td>
 								</tr>
 							</table>
+						</td>
+					</tr>
+
+					<tr>
+						<td colspan='2'>
+							<hr/>
+						</td>
+					</tr>
+					<tr>
+						<td colspan='2' class='SectionHeader'>
+							<nobr>
+								<$= ZmMsg.voicemailLocaleHeader $>
+							</nobr>
 						</td>
 					</tr>
 
@@ -111,7 +128,15 @@
 					</tr>
 
 					<tr>
-						<td class='ZOptionsLabelTop' style='width:200px'>
+						<td colspan='2' class='SectionHeader'>
+							<nobr>
+								<$= ZmMsg.voicemailPlaybackHeader $>
+							</nobr>
+						</td>
+					</tr>
+
+					<tr>
+						<td class='ZOptionsLabel' style='width:200px'>
 							<nobr>
 								<$= ZmMsg.voicemailMessagePlayback $>
 							</nobr>
@@ -123,21 +148,45 @@
 										<div id='${id}_voiceAutoplayCheckbox'></div>
 									</td>
 								</tr>
+							</table>
+						</td>
+					</tr>
+
+					<tr>
+						<td colspan='2'>
+							<hr/>
+						</td>
+					</tr>
+
+					<tr>
+						<td colspan='2' class='SectionHeader'>
+							<nobr>
+								<$= ZmMsg.voicemailPromptHeader $>
+							</nobr>
+						</td>
+					</tr>
+
+					<tr>
+						<td class='ZOptionsLabelTop' style='width:200px'>
+							<nobr>
+								<$= ZmMsg.voicemailPrompts $>
+							</nobr>
+						</td>
+						<td class='ZOptionsField'>
+							<table cellspacing='0' cellpadding='0' style='padding:4px'>
 								<tr>
 									<td>
-										<table cellspacing='0' cellpadding='0' style='padding-left:10px'>
-											<tr>
-												<td>
-													<$= ZmMsg.voicemailPromptLevel $>
-												</td>
-											</tr>
-											<tr>
-												<td>
-													<div id='${id}_voicePromptLevel'></div>
-												</td>
-											</tr>
-											
-										</table>
+										<$= ZmMsg.voicemailPromptLevel $>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<div id='${id}_voicePromptLevel'></div>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<div class='ZSmallSpacer'></div>
 									</td>
 								</tr>
 								<tr>
@@ -148,9 +197,18 @@
 							</table>
 						</td>
 					</tr>
+
 					<tr>
 						<td colspan='2'>
 							<hr/>
+						</td>
+					</tr>
+
+					<tr>
+						<td colspan='2' class='SectionHeader'>
+							<nobr>
+								<$= ZmMsg.voicePageSizeHeader $>
+							</nobr>
 						</td>
 					</tr>
 
@@ -177,6 +235,14 @@
 					<tr>
 						<td colspan='2'>
 							<hr/>
+						</td>
+					</tr>
+
+					<tr>
+						<td colspan='2' class='SectionHeader'>
+							<nobr>
+								<$= ZmMsg.voicemailSecurityHeader $>
+							</nobr>
 						</td>
 					</tr>
 
@@ -227,18 +293,14 @@
 		<tr>
 			<td class='ZOptionsSectionMain' colspan='3'>
 				<table cellspacing='4' cellpadding='4' width='100%'>
-					<!-- Number selector -->
 					<tr>
-						<td class='ZOptionsLabel'></td>
-						<td class='ZOptionsField'>
-							<div style='margin-left:28;width:260;'>
+						<td class='ZOptionsField' colspan='2'>
+							<div style='margin-left:28;width:500;'>
 								<div>
 									<$= ZmMsg.voicePrefsInstruction $>
 								</div>
 								<div class='ZSmallSpacer'></div>
-								<div id='${id}_list'>
-									List
-								</div>
+								<div id='${id}_list'></div>
 							</div>
 						</td>
 					</tr>
@@ -303,18 +365,14 @@
 		<tr>
 			<td class='ZOptionsSectionMain' colspan='3'>
 				<table cellspacing='4' cellpadding='4' width='100%'>
-					<!-- Number selector -->
 					<tr>
-						<td class='ZOptionsLabel'></td>
-						<td class='ZOptionsField'>
-							<div style='margin-left:28;width:260;'>
+						<td class='ZOptionsField' colspan='2'>
+							<div style='margin-left:28;width:500;'>
 								<div>
 									<$= ZmMsg.voicePrefsInstruction $>
 								</div>
 								<div class='ZSmallSpacer'></div>
-								<div id='${id}_list'>
-									List
-								</div>
+								<div id='${id}_list'></div>
 							</div>
 						</td>
 					</tr>
@@ -427,18 +485,14 @@
 		<tr>
 			<td class='ZOptionsSectionMain' colspan='3'>
 				<table cellspacing='4' cellpadding='4' width='100%'>
-					<!-- Number selector -->
 					<tr>
-						<td class='ZOptionsLabel'></td>
-						<td class='ZOptionsField'>
-							<div style='margin-left:28;width:260;'>
+						<td class='ZOptionsField' colspan='2'>
+							<div style='margin-left:28;width:500;'>
 								<div>
 									<$= ZmMsg.voicePrefsInstruction $>
 								</div>
 								<div class='ZSmallSpacer'></div>
-								<div id='${id}_list'>
-									List
-								</div>
+								<div id='${id}_list'></div>
 							</div>
 						</td>
 					</tr>

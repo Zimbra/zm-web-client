@@ -957,15 +957,6 @@ function() {
 	return ZmCallFeature.AUTOPLAY;
 };
 
-ZmVoiceAutoplayUI.prototype.setEnabled =
-function(enabled) {
-	// Hook to Prompt Level selection
-	var ui = this._view.getUIByName(ZmCallFeature.PROMPT_LEVEL);
-	if (ui) {
-		ui.setEnabledFromAutoplay(enabled);
-	}
-}
-
 ZmVoiceAutoplayUI.prototype.show =
 function() {
 	// No-op
@@ -1040,11 +1031,6 @@ function(feature) {
 };
 
 ZmVoicePromptUI.prototype.setEnabled =
-function(enabled) {
-	// No-op: hook from autoplay enables/disables this
-};
-
-ZmVoicePromptUI.prototype.setEnabledFromAutoplay =
 function(enabled) {
 	//this._buttonGroup.setEnabled(enabled); // Doesn't work as it should
 	for (var v in this._buttons) { // So we do this instead
@@ -1478,16 +1464,16 @@ function(id) {
 	this._comboBox = new DwtComboBox({parent:this._view, inputParams: {size: 20, validator: ZmVoicePrefsPage._validateEmailAddress, validationStyle: DwtInputField.CONTINUAL_VALIDATION}, className:"DwtComboBox ValidatorFix"});
 	this._comboBox.replaceElement(id + "_emailNotificationComboBox");
 	
+	this._addButton = new DwtButton({parent:this._view, size: 75});
+	this._addButton.setText(ZmMsg.add);
+	this._addButton.addSelectionListener(new AjxListener(this, this._handleAddFromNumber));
+	this._addButton.replaceElement(id + "_emailNotificationAddButton");
+
 	this._clearButton = new DwtButton({parent:this._view, size: 75});
 	this._clearButton.setText(ZmMsg.removeAll);
 	this._clearButton.addSelectionListener(new AjxListener(this, this._handleRemoveAll));
 	this._clearButton.replaceElement(id + "_emailNotificationRemoveAllButton");
 
-	this._addButton = new DwtButton({parent:this._view, size: 75});
-	this._addButton.setText(ZmMsg.add);
-	this._addButton.addSelectionListener(new AjxListener(this, this._handleAddFromNumber));
-	this._addButton.replaceElement(id + "_emailNotificationAddButton");
-	
 	this._list = new ZmBufferList({parent:this._view, headerText:ZmMsg.voicemailNotificationListHeader, displayProperty:"text"});
 	this._list.sortingEnabled = false;
 	this._list.replaceElement(id + "_emailNotificationList");
