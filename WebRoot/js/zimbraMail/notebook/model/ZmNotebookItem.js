@@ -58,13 +58,8 @@ ZmNotebookItem.prototype.getPath = function(dontIncludeThisName) {
 ZmNotebookItem.prototype.getRestUrl = function(dontIncludeThisName) {
 	var url = ZmItem.prototype.getRestUrl.call(this);
 
-	var notebook = appCtxt.getById(this.folderId);
-	/*if (notebook) {
-		url = url.replace(/^.*\/([^\/]+)$/, notebook.getRestUrl()+"$1");
-	}*/
-
 	if (dontIncludeThisName) {
-		url = url.replace(new RegExp(("/"+this.name+"(/)?$")),"");
+		url = url ? url.replace(new RegExp(("/"+this.name+"(/)?$")),"") : null;
 	}
 	return url;
 };

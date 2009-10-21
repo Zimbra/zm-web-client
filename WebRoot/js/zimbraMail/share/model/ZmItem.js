@@ -280,9 +280,9 @@ function() {
 	// if server doesn't tell us what URL to use, do our best to generate
 	var organizerType = ZmOrganizer.ITEM_ORGANIZER[this.type];
 	var organizer = appCtxt.getById(this.folderId);
-	var url = [
-		organizer.getRestUrl(), "/", AjxStringUtil.urlComponentEncode(this.name)
-	].join("");
+	var url = organizer
+		? ([organizer.getRestUrl(), "/", AjxStringUtil.urlComponentEncode(this.name)].join(""))
+		: null;
 
 	DBG.println(AjxDebug.DBG3, "NO REST URL FROM SERVER. GENERATED URL: " + url);
 

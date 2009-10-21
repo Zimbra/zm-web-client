@@ -144,6 +144,11 @@ function(newWidth, newHeight) {
 	Dwt.setSize(this._parentEl, newWidth, height);
 };
 
+ZmMailListView.prototype.calculateMaxEntries =
+function() {
+	return (Math.floor(this._parentEl.clientHeight / (this._isMultiColumn ? 20 : 40)) + 5);
+};
+
 /**
  * Returns true if the reading pane is turned off or set to bottom. We use this
  * call to tell the UI whether to re-render the listview with multiple columns
@@ -815,6 +820,10 @@ function(ev) {
 		// TODO: handle other sort orders, arbitrary insertion points
 		if ((this._isPageless || this.offset == 0) && (!this._sortByString || this._sortByString == ZmSearch.DATE_DESC)) {
 			this.addItem(item, ev.getDetail("sortIndex") || 0);
+
+			if (appCtxt.isOffline && appCtxt.getActiveAccount().isOfflineInitialSync()) {
+				this._controller._app.numEntries++;
+			}
 		}
 		ev.handled = true;
 	}
