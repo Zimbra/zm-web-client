@@ -61,6 +61,13 @@ function(view) {
 	}
 };
 
+ZmVoicePrefsController.prototype._resetOperations =
+function() {
+	var toolbar = this._prefsView._controller._toolbar;
+	toolbar.enable(ZmOperation.SAVE, true);
+	toolbar.enable(ZmOperation.CANCEL, true);
+};
+
 ZmVoicePrefsController.prototype.checkPreCondition =
 function(obj, precondition) {
 	return ZmPrefController.prototype.checkPreCondition.call(this, obj, precondition);

@@ -44,8 +44,10 @@ function () {
 
 ZmVoicePrefsView.prototype.showMe =
 function() {
+	Dwt.setTitle(this._title);
+	this._controller._resetOperations();
 	if (!this._hasRendered) {
-	    this._tabview.show();	
+	    this._tabview.show();
 	    this._hasRendered = true;
 	}
 }
