@@ -67,6 +67,7 @@ ZmShare = function(params) {
 	this.grantee.name = params.granteeName || "";
 	this.link.inh = params.inherit;
 	this.link.pw = params.granteePwd;
+	this.invalid = params.invalid;
 	this.setPermissions(params.perm);
 };
 
@@ -299,7 +300,8 @@ function(view) {
 ZmShare.createFromJs =
 function(parent, grant) {
 	return new ZmShare({object:parent, granteeType:grant.gt, granteeId:grant.zid,
-						granteeName:grant.d, perm:grant.perm, inherit:grant.inh, granteePwd:grant.pw});
+						granteeName:grant.d, perm:grant.perm, inherit:grant.inh,
+						granteePwd:grant.pw, invalid:grant.invalid});
 };
 
 // Public methods
@@ -689,4 +691,43 @@ function(perm) {
 	}
 
 	return ZmShare.ROLE_NONE;
+};
+
+/**
+ * Revokes all grants for the given zid (one whose account has been
+ * removed).
+ *
+ * @param zid			[string]			zimbra ID
+ * @param granteeType	[constant]			grantee type
+ * @param callback		[AjxCallback]*		client callback
+ * @param batchCmd		[ZmBatchCommand]*	batch command
+ */
+ZmShare.revokeOrphanGrants =
+function(zid, granteeType, callback, batchCmd) {
+
+	var jsonObj = {
+		FolderActionRequest: {
+			_jsns:	"urn:zimbraMail",
+			action:	{
+				op:		"revokeorphangrants",
+				id:		ZmFolder.ID_ROOT,
+				zid:	zid,
+				gt:		granteeType
+			}
+		}
+	};
+
+	if (batchCmd) {
+		var respCallback = new AjxCallback(null, ZmShare._handleResponseRevokeOrphanGrants, [callback]);
+		batchCmd.addRequestParams(jsonObj, respCallback);
+	} else {
+		appCtxt.getRequestMgr().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback});
+	}
+};
+
+ZmShare._handleResponseRevokeOrphanGrants =
+function(callback) {
+	if (callback) {
+		callback.run();
+	}
 };

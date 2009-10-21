@@ -277,19 +277,69 @@ function() {
 ZmSharingView.prototype._handleResponseGetFolder =
 function() {
 
-	var shares = [];
+	var shares = [], invalid = [];
 	var list = appCtxt.getFolderTree().asList();
 	for (var i = 0; i < list.length; i++) {
 		var folder = list[i];
 		if (folder.shares && folder.shares.length) {
 			for (var j = 0; j < folder.shares.length; j++) {
-				shares.push(ZmSharingView.getShareFromGrant(folder.shares[j]));
+				var share = ZmSharingView.getShareFromGrant(folder.shares[j]);
+				if (share.invalid) {
+					invalid.push(share);
+				}
+				shares.push(share);
 			}
 		}
 	}
 
 	shares.sort(ZmSharingView.sortCompareGrant);
 	this._grantListView.set(AjxVector.fromArray(shares));
+
+	// an invalid grant is one whose grantee has been removed from the system
+	// if we have some, ask the user if it's okay to remove them
+	if (invalid.length) {
+		invalid.sort(ZmSharingView.sortCompareGrant);
+		var msgDialog = appCtxt.getOkCancelMsgDialog();
+		var list = [];
+		for (var i = 0; i < invalid.length; i++) {
+			var share = invalid[i];
+			var path = (share.link && share.link.path);
+			if (path) {
+				list.push(["<li>", path, "</li>"].join(""));
+			}
+		}
+		list = AjxUtil.uniq(list);
+		var listText = list.join("");
+		msgDialog.setMessage(AjxMessageFormat.format(ZmMsg.granteeGone, listText));
+		msgDialog.registerCallback(DwtDialog.OK_BUTTON, this._revokeGrantsOk, this, [msgDialog, invalid]);
+		msgDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._revokeGrantsCancel, this, msgDialog);
+		msgDialog.associateEnterWithButton(DwtDialog.OK_BUTTON);
+		msgDialog.popup(null, DwtDialog.OK_BUTTON);
+	}
+};
+
+ZmSharingView.prototype._revokeGrantsOk =
+function(dlg, invalid) {
+
+	var batchCmd = new ZmBatchCommand(true, null, true);
+	var zids = {};
+	for (var i = 0; i < invalid.length; i++) {
+		var share = invalid[i];
+		zids[share.grantee.id] = share.grantee.type;
+	}
+
+	for (var zid in zids) {
+		batchCmd.add(new AjxCallback(null, ZmShare.revokeOrphanGrants, [zid, zids[zid], null, batchCmd]));
+	}
+
+	batchCmd.run();
+
+	dlg.popdown();
+};
+
+ZmSharingView.prototype._revokeGrantsCancel =
+function(dlg) {
+	dlg.popdown();
 };
 
 ZmSharingView._handleAcceptLink =
@@ -418,8 +468,8 @@ function(share, oldShare) {
 
 	share.link = share.link || {};
 	share.link.id	= share.object && (share.object.nId || share.object.id);
-	share.link.path = share.object.getPath();
-	share.link.name = share.object.getName();
+	share.link.path = share.object && share.object.getPath();
+	share.link.name = share.object && share.object.getName();
 
 	share.type = ZmSharingView.GRANT;
 	share.domId = oldShare && oldShare.domId;
@@ -782,7 +832,7 @@ function(html, idx, item, field, colIdx, params) {
 		} else if (type == ZmShare.TYPE_ALL) {
 			html[idx++] = ZmMsg.shareWithAll;
 		} else {
-			html[idx++] = item.grantee.name || item.grantee.id;
+			html[idx++] = item.grantee.name;
 		}
 	} else if (field == ZmSharingView.F_ITEM) {
 		html[idx++] = item.link.path;
@@ -888,7 +938,7 @@ function(share, html, idx) {
 		var action = actions[i];
 
 		// public shares have no editable fields, and sent no mail
-		if (share.isPublic() &&	(action == "edit" || action == "resend")) {	continue; }
+		if ((share.isPublic() || share.invalid) && (action == "edit" || action == "resend")) { continue; }
 
 		html[idx++] = "<a href='javascript:;' onclick='ZmSharingView._handleShareAction(" + '"' + share.domId + '", "' + handlers[i] + '"' + ");'>" + ZmMsg[action] + "</a> ";
 	}

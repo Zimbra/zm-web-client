@@ -161,7 +161,7 @@ function(organizer) {
 
 			var nameEl = row.insertCell(-1);
 			nameEl.style.paddingRight = "15px";
-			var nameText = share.grantee.name || share.grantee.id;
+			var nameText = share.grantee.name || ZmMsg.userUnknown;
 			if (share.isAll()) nameText = ZmMsg.shareWithAll;
 			else if (share.isPublic()) nameText = ZmMsg.shareWithPublic;
 			nameEl.innerHTML = AjxStringUtil.htmlEncode(nameText);

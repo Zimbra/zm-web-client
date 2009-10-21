@@ -75,7 +75,7 @@ function(mode, object, share) {
 	var type = this._getType(isUserShare, isGuestShare, isPublicShare);
 	this._handleShareWith(type);
 
-	this._granteeInput.setValue(share ? (share.grantee.name || share.grantee.id) : "", true);
+	this._granteeInput.setValue(share ? (share.grantee.name || ZmMsg.userUnknown) : "", true);
 	this._granteeInput.setEnabled(isNewShare);
 
 	// Make all the properties visible so that their elements are in the

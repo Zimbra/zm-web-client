@@ -38,7 +38,7 @@ function(share) {
 
 	var isPubShare = share.isPublic();
 
-	var params = isPubShare ? ZmMsg.shareWithPublic : (share.grantee.name || share.grantee.id);
+	var params = isPubShare ? ZmMsg.shareWithPublic : (share.grantee.name || ZmMsg.userUnknown);
 	this._confirmMsgEl.innerHTML = this._formatter.format(params);
 
 	this._reply.setReplyType(ZmShareReply.STANDARD);
@@ -61,7 +61,7 @@ ZmRevokeShareDialog.prototype._yesButtonCallback =
 function() {
 	var share = this._share;
 	var replyType = this._reply.getReplyType();
-	var sendMail = !(share.isAll() || share.isPublic()); 
+	var sendMail = !(share.isAll() || share.isPublic() || share.invalid); 
 	if (replyType != ZmShareReply.NONE && sendMail) {
 		// initialize rest of share information
 		share.grantee.email = share.grantee.name || share.grantee.id;
