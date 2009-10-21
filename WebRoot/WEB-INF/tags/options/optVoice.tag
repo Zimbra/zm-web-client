@@ -49,15 +49,14 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 	<table class="ZOptionsSectionMain ZhOptVoice" border="0" cellspacing="10" width="100%">
 		<%------------------- List of numbers ------------------%>
 		<tr>
-			<td class="ZOptionsTableLabel">&nbsp;</td>
-			<td>
+			<td colspan="2">
 				<table border="0" cellpadding="0" cellspacing="0">
 					<tr>
 						<td class="ZhOptVoiceCBCell">&nbsp;</td>
 						<td>
-							<div width="350px"><fmt:message key="voiceOptInstructions"/></div>
+							<div width="500px"><fmt:message key="voiceOptInstructions"/></div>
 							<br>
-							<table class="List" border="0" cellpadding="0" cellspacing="0" width="350px">
+							<table class="List" border="0" cellpadding="0" cellspacing="0" width="500px">
 								<tr><th><fmt:message key="number"/></th></tr>
 								<c:set var="firstAccount" value="true"/>
 								<zm:forEachPhoneAccount var="account">
@@ -105,6 +104,15 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 <c:when test="${voiceselected=='general'}">
 	
 			<%------------------- Number of rings ------------------%>
+
+			<tr>
+				<td class="SectionHeader">
+					<nobr>
+						<fmt:message key="optionsRings"/>
+					</nobr>
+				</td>
+			</tr>
+
 			<tr>
 				<td class="ZOptionsTableLabel">
 					<label for="numberOfRings"><fmt:message key="optionsRingsSend"/></label>
@@ -131,6 +139,14 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 			<c:set var="answeringLocale" value="${features.voiceMailPrefs.answeringLocale}"/>
 			<c:set var="userLocale" value="${features.voiceMailPrefs.userLocale}"/>
 			
+			<tr>
+				<td class="SectionHeader">
+					<nobr>
+						<fmt:message key="optionsLanguage"/>
+					</nobr>
+				</td>
+			</tr>
+
 			<tr>
 				<td class="ZOptionsTableLabel" style="vertical-align:top;"><fmt:message key="optionsLanguageIncoming"/></td>
 				<td>
@@ -196,33 +212,50 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 			<tr><td colspan="2"><hr/></td></tr>
 			
 			<%------------------- Prompts -------------------%>
-			<c:set var="promptLevel" value="${features.voiceMailPrefs.promptLevel}"/>
 			<c:set var="autoPlayNewMsgs" value="${features.voiceMailPrefs.autoPlayNewMsgs}"/>						
-			<c:set var="playDateAndTimeInMsgEnv" value="${features.voiceMailPrefs.playDateAndTimeInMsgEnv}"/>
-			
-			<script type="text/javascript">
-			<!--
-				function setLengthOptionsEnabled(enabled) {
-					document.getElementById("promptLevelShort").disabled = !enabled;
-					document.getElementById("promptLevelMedium").disabled = !enabled;
-					document.getElementById("promptLevelLong").disabled = !enabled;
-					return true;
-				}
-			//-->
-			</script>
 			
 			<tr>
-				<td class="ZOptionsTableLabel" style="vertical-align:top;"><fmt:message key="optionsPromptsPlayback"/></td>
+				<td class="SectionHeader">
+					<nobr>
+						<fmt:message key="optionsPromptsMessagePlayback"/>
+					</nobr>
+				</td>
+			</tr>
+			
+			<tr>
+				<td class="ZOptionsTableLabel"><fmt:message key="optionsPromptsPlayback"/></td>
 				<td>
 					<table border="0" cellpadding="0" cellspacing="0">
 						<tr>
 							<td class="ZhOptVoiceCBCell">
-								<input id="autoPlayNewMsgs" type="checkbox" name="autoPlayNewMsgs" onchange="return setLengthOptionsEnabled(this.checked)" onclick="return setLengthOptionsEnabled(this.checked)" <c:if test="${autoPlayNewMsgs}">checked</c:if> />
+								<input id="autoPlayNewMsgs" type="checkbox" name="autoPlayNewMsgs" <c:if test="${autoPlayNewMsgs}">checked</c:if> />
 							</td>
 							<td>
 								<label for="autoPlayNewMsgs"><fmt:message key="optionsPromptsAutoplay"/></label>
 							</td>
 						</tr>
+					</table>
+				</td>
+			</tr>
+			
+			<tr><td colspan="2"><hr/></td></tr>
+			
+			<c:set var="promptLevel" value="${features.voiceMailPrefs.promptLevel}"/>
+			<c:set var="playDateAndTimeInMsgEnv" value="${features.voiceMailPrefs.playDateAndTimeInMsgEnv}"/>
+			
+			<tr>
+				<td class="SectionHeader">
+					<nobr>
+						<fmt:message key="optionsVoicemailPrompts"/>
+					</nobr>
+				</td>
+			</tr>
+					
+			<tr>
+				<td class="ZOptionsTableLabel" style="vertical-align:top;"><fmt:message key="optionsPrompts"/></td>
+				<td>
+					<table border="0" cellpadding="0" cellspacing="0">
+					
 						<tr>
 							<td colspan="2"><fmt:message key="optionsPromptsLength"/></td>
 						</tr>
@@ -270,20 +303,18 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 				</td>
 			</tr>
 			
-			<%-- Disable radio buttons if autoplay is unset and javascript is available (just setting each input to "disabled" screws non-javascript users as there's no way to re-enable it) --%>
-			<c:if test="${!autoPlayNewMsgs}">
-				<script type="text/javascript">
-				<!--
-					setLengthOptionsEnabled(false);
-				//-->
-				</script>
-			</c:if>
-			
 			<tr><td colspan="2"><hr/></td></tr>
 			
 			<%------------------- Count per page ------------------%>
 			<tr>
-				<td class="ZOptionsTableLabel" style="vertical-align:top;">
+				<td class="SectionHeader">
+					<nobr>
+						<fmt:message key="optionsVoicemailDisplayPerPage"/>
+					</nobr>
+				</td>
+			</tr>
+			<tr>
+				<td class="ZOptionsTableLabel">
 					<label for="numberPerPage"><fmt:message key="optionsDisplay"/></label>
 				</td>
 				<td>
@@ -302,13 +333,22 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 			
 			<%------------------ Security ------------------------%>
 			<c:set var="requirePinEntry" value="${!features.voiceMailPrefs.skipPinEntry}"/>
+
 			<tr>
-				<td class="ZOptionsTableLabel" style="vertical-align:top;"><fmt:message key="optionsVoiceSecurityChPwd"/></td>
+				<td class="SectionHeader">
+					<nobr>
+						<fmt:message key="optionsVoiceSecurity"/>
+					</nobr>
+				</td>
+			</tr>
+
+			<tr>
+				<td class="ZOptionsTableLabel"><fmt:message key="optionsVoiceSecurityChPwd"/></td>
 				<td><a href="<fmt:message key='optionsVoiceSecurityChPwdUrl'/>" target="_blank"><fmt:message key="optionsVoiceSecurityChPwdLink"/></a></td>
 			</tr>
 			
 			<tr>
-				<td class="ZOptionsTableLabel" style="vertical-align:top;"><fmt:message key="optionsVoiceSecurityLogin"/></td>
+				<td class="ZOptionsTableLabel"><fmt:message key="optionsVoiceSecurityLogin"/></td>
 				<td>
 					<table border="0" cellpadding="0" cellspacing="0">
 						<tr>
