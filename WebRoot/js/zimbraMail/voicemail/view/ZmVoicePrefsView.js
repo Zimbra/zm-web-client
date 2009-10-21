@@ -1530,6 +1530,25 @@ function() {
 	return false;
 };
 
+ZmSelectiveCallForwardingUI.prototype._validateComboBox =
+function(comboBox, errorList, message) {
+	if (!this._isComboBoxValid(comboBox)) {
+		if (AjxUtil.isString(comboBox.input.getValue())) {
+			try {
+				this._validateToPhoneNumber(comboBox.input.getValue());
+			} catch (ex) {
+				if (AjxUtil.isString(ex)) {
+					errorList.push(ex);
+				} else {
+					errorList.push(message);
+				}
+			}
+		} else {
+			errorList.push(message);
+		}
+	}
+};
+
 ZmSelectiveCallForwardingUI.prototype.validate =
 function(errors) {
 	this._validateComboBox(this._comboBox, errors, ZmMsg.callForwardingError);
