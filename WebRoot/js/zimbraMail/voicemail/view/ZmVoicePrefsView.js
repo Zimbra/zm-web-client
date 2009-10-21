@@ -72,6 +72,15 @@ function() {
 	return this._errors.length == 0;
 };
 
+ZmVoicePrefsView.prototype.getErrorMessage =
+function() {
+	if (!this._errors.length) {
+		return null;
+	} else {
+		return this._errors.join("<br/>").replace(/\{\d+\}/g, "");
+	}
+};
+
 ZmVoicePrefsView.prototype.addCommand =
 function(batchCommand) {
 	var pages = this._tabview.getPages();
@@ -197,11 +206,11 @@ function(item) {
 };
 
 ZmVoicePrefsPage.prototype.validate =
-function() {
+function(errors) {
+	errors = errors || [];
 	if (!this._item) {
 		return true;
 	}
-	var errors = [];
 	for(var i = 0, count = this._ui.length; i < count; i++) {
 		var ui = this._ui[i];
 		if (!ui._checkbox || ui._checkbox.isSelected()) {
@@ -217,7 +226,7 @@ function() {
 	if (!this._errors.length) {
 		return null;
 	} else {
-		return this._errors.join("<br>");
+		return this._errors.join("<br/>").replace(/\{\d+\}/g, "");
 	}
 };
 
