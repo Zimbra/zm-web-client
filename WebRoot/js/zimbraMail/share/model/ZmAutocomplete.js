@@ -571,7 +571,7 @@ function(str, callback, aclv, options) {
 		return;
 	}
 
-	str = str.toLowerCase().replace(/"/g, '');
+	str = str.toLowerCase().replace(/"/g, '').replace(/^\-/, '');
 
 	var m = str.match(/\b([a-z]+):/);
 	if (!(m && m.length)) {
