@@ -698,6 +698,7 @@ div.ZaSearchBuilderOptionRemoveAll table  {
 /* text style for name of a normal tree item */
 .AdminTreeItem-Text {
 	@TreeItemText@
+	padding-left:2px;
 }
 .AdminTreeItem-selected {
 	@TreeItem@
