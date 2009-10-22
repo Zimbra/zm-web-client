@@ -332,7 +332,9 @@ function(dlg, invalid) {
 		batchCmd.add(new AjxCallback(null, ZmShare.revokeOrphanGrants, [zid, zids[zid], null, batchCmd]));
 	}
 
-	batchCmd.run();
+	if (batchCmd._cmds.length) {
+		batchCmd.run();
+	}
 
 	dlg.popdown();
 };
