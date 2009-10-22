@@ -446,8 +446,10 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 									<tr>
 										<td style="width:50%">${notificationAddress}</td>
 										<td style="width:50%;text-align:left">
-										    <input type="submit" id="actionVoiceRemoveNotification_${i}" name="actionVoiceRemoveNotification" value="${notificationAddress}" style="display:none;"/>
-										    <label for="actionVoiceRemoveNotification_${i}" style="cursor:pointer"><a href="#notification"><fmt:message key='remove'/></a></label>
+										    <label for="actionVoiceRemoveNotification_${i}" class="FakeLink"><fmt:message key='remove'/></label>
+										</td>
+										<td style="padding: 0px 0px">
+										    <input type="submit" class="HiddenButton" id="actionVoiceRemoveNotification_${i}" name="actionVoiceRemoveNotification" value="${notificationAddress}"/>
 										</td>
 									</tr>
 									</c:if>
@@ -569,13 +571,15 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 									<tr>
 										<td style="width:50%">${number}</td>
 										<td style="width:50%;text-align:left">
-										    <input type="submit" id="actionVoiceRemoveForwarding_${i}" name="actionVoiceRemoveSelectiveForwarding" value="${number}" style="display:none;"/>
-										    <label for="actionVoiceRemoveForwarding_${i}" style="cursor:pointer"><a href="#forwarding"><fmt:message key='remove'/></a></label>
+										    <label for="actionVoiceRemoveForwarding_${i}" class="FakeLink"><fmt:message key='remove'/></label>
 										    <script type="text/javascript">
 										    <!--
 											    selectiveForwardCheckboxDependers.push("actionVoiceRemoveForwarding_${i}");
 										    //-->
 										    </script>
+										</td>
+										<td style="padding: 0px 0px">
+										    <input type="submit" class="HiddenButton" id="actionVoiceRemoveForwarding_${i}" name="actionVoiceRemoveSelectiveForwarding" value="${number}"/>
 										</td>
 									</tr>
 									<c:set var="i" value="${i+1}"/>
@@ -729,13 +733,15 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 									<tr>
 										<td style="width:50%">${number}</td>
 										<td style="width:50%;text-align:left">
-										    <input type="submit" id="actionVoiceRemoveRejection_${i}" name="actionVoiceRemoveSelectiveRejection" value="${number}" style="display:none;"/>
-										    <label for="actionVoiceRemoveRejection_${i}" style="cursor:pointer"><a href="#rejection"><fmt:message key='remove'/></a></label>
+										    <label for="actionVoiceRemoveRejection_${i}" class="FakeLink"><fmt:message key='remove'/></label>
 										    <script type="text/javascript">
 										    <!--
 											    selectiveRejectionCheckboxDependers.push("actionVoiceRemoveRejection_${i}");
 										    //-->
 										    </script>
+										</td>
+										<td style="padding: 0px 0px">
+										    <input type="submit" class="HiddenButton" id="actionVoiceRemoveRejection_${i}" name="actionVoiceRemoveSelectiveRejection" value="${number}"/>
 										</td>
 									</tr>
 									</c:if>
