@@ -18,14 +18,14 @@
 				container.innerHTML = "";
 			}
 		}
-	$>
-	<$
-		<!-- WTF? -->
-		var isAdmin = appCtxt.getSettings().getInfoResponse.attrs._attrs["zimbraIsAdminAccount"];
-		if (!isAdmin) {
-			var container = document.getElementById("admin_link_or");
-			if (container) {
-				container.style.display = "none";
+		else {
+			<!-- WTF? -->
+			var isAdmin = appCtxt.getSettings().getInfoResponse.attrs._attrs["zimbraIsAdminAccount"];
+			if (!isAdmin) {
+				var container = document.getElementById("admin_link_or");
+				if (container) {
+					container.style.display = "none";
+				}
 			}
 		}
 	$>
