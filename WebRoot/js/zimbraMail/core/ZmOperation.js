@@ -216,7 +216,7 @@ function(parent, operations, overrides) {
 */
 ZmOperation.defineOperation =
 function(baseId, overrides) {
-	var id = (overrides && overrides.id) ? overrides.id : baseId ? baseId : Dwt.getNextId();
+	var id = (overrides && overrides.id) || (baseId && baseId.id) || baseId || Dwt.getNextId();
 	var textKey = (overrides && overrides.textKey) || ZmOperation.getProp(baseId, "textKey");
 	var text = textKey && ZmMsg[textKey];
 	var tooltipKey = (overrides && overrides.tooltipKey) || ZmOperation.getProp(baseId, "tooltipKey");
@@ -268,7 +268,7 @@ function(id) {
 ZmOperation.addOperation =
 function(parent, id, opHash, index) {
 
-	var opDesc = ZmOperation._operationDesc[id] || ZmOperation.defineOperation({id:id});
+	var opDesc = ZmOperation._operationDesc[id] || ZmOperation.defineOperation(id);
 
 	if (id == ZmOperation.SEP) {
         if (parent instanceof DwtMenu) {
@@ -443,7 +443,7 @@ function(parent) {
  */
 ZmOperation.getToolTip =
 function(id, keyMap, tooltip) {
-	var opDesc = ZmOperation._operationDesc[id] || ZmOperation.defineOperation({id:id});
+	var opDesc = ZmOperation._operationDesc[id] || ZmOperation.defineOperation(id);
 	tooltip = tooltip || opDesc.tooltip;
 	var sc = tooltip && opDesc.shortcut && appCtxt.getShortcutHint(keyMap, opDesc.shortcut);
 	return sc ? [tooltip, sc].join("") : tooltip;
