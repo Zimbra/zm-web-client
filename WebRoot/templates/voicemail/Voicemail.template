@@ -408,7 +408,7 @@
 						<td class='ZOptionsField'>
 							<table cellpadding='0' cellspacing='0' width='600'>
 								<tr>
-									<td style='width:150px;vertical-align:top;'>
+									<td style='vertical-align:top;'>
 										<div id='${id}_selectiveCallForwardingCheckbox'></div>
 									</td>
 									<td rowspan='5' style='width:8px'>
@@ -449,7 +449,7 @@
 								</tr>
 
 								<tr>
-									<td style='width:150px;text-align:right'>
+									<td style='text-align:right'>
 										<div id='${id}_selectiveCallForwardingToLabel'></div>
 									</td>
 									<td>
