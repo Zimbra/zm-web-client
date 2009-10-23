@@ -63,6 +63,9 @@
                 <c:when test="${flimit gt 0 and flimit le 1000}">
                     <c:set var="F_LIMIT" scope="session" value="${flimit}"/>
                 </c:when>
+                <c:otherwise>
+                    <c:redirect url="zmview?st=prefs&emsg=MO_MaxFoldersInvalidValueMsg"/>                    
+                </c:otherwise>
             </c:choose>
             <c:if test="${updated}">
                 <zm:getMailbox var="mailbox" refreshaccount="${true}"/>
@@ -247,9 +250,9 @@ document.title = "<fmt:message key="zimbraTitleLabel"/>"+" "+"${fn:escapeXml(req
 <c:if test="${not empty requestScope._today}">window._today = '${requestScope._today}';</c:if>
 <c:if test="${ua.isiPhone or ua.isiPod}">if(dId && dV[dId]){hideDelete(dId);}</c:if>
 </c:set>${dbg ? js : zm:yuiCompress(js, 'js')}</script>
-<%--<c:if test="${param.st eq 'folders' or param.st eq 'cals' or param.st eq 'tasks' or param.st eq 'ab' or param.st eq 'notebooks' or param.st eq 'briefcases'}">
-<div class="tbl"><div class="tr"><div class="td StatusWarning small-gray-text"><fmt:message key="MO_MaxFoldersNote"><fmt:param value="${sessionScope.F_LIMIT}"/></fmt:message></div></div></div>
-</c:if>--%>
+<c:if test="${param.st eq 'folders' or param.st eq 'cals' or param.st eq 'tasks' or param.st eq 'ab' or param.st eq 'notebooks' or param.st eq 'briefcases'}">
+<div class="tbl"><div class="tr"><div class="td YellowBg small-gray-text"><fmt:message key="MO_MaxFoldersNote"><fmt:param value="${sessionScope.F_LIMIT}"/></fmt:message></div></div></div>
+</c:if>
 <c:if test="${empty param.ajax}">
     <div class="tbl"><div class="tr">
         <div class="container td" id="userinfo"><c:url var="logoutUrl" value="${context_url}?loginOp=logout&amp;client=mobile"/>

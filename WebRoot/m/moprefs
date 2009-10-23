@@ -19,6 +19,7 @@
     <fmt:setBundle basename='/messages/AjxMsg' var='AjxMsg' scope='request'/>
 </mo:handleError>
 <c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/>
+<c:if test="${not empty param.emsg}"><div class="StatusWarning"><fmt:message key="${param.emsg}"/></div></c:if>
 <form action="" method="post" name="optionsForm" onsubmit="return submitForm(this);" accept-charset="UTF-8">
     <div class="tb tbl">
             <div class="tr">
@@ -134,7 +135,7 @@
                    checked="checked</c:if>"></span>
                 </div>
             </div>
-        </div><%--
+        </div>
     <div class="sectionLbl"><fmt:message key="MO_SessionPrefs"/></div>
     <div class='View'>
         <div class="tbl small-gray-text">
@@ -143,7 +144,7 @@
         <div class="tbl">
             <div class="tr nr">
                 <span class="label aleft td"><fmt:message key="MO_MaxFolders"/></span>
-                <span class="value aright td"> <input type="text" name="F_LIMIT" value="${sessionScope.F_LIMIT}">
+                <span class="value aright td"> <input type="text" maxlength="4" name="F_LIMIT" value="${sessionScope.F_LIMIT}">
                 </span>
             </div>
         </div>
@@ -152,7 +153,7 @@
         </div>
 
     </div>
-    --%></div>
+    </div>
     <div class="tb tbl">
         <div class="tr">
             <div class="td">
