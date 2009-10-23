@@ -35,11 +35,11 @@ function() {
 }
 
 ZmPhone.CHECK_INTERNATIONAL = /^0\d*/;
-ZmPhone.CHECK_EXTENSION = /^1?\d{3}555\d*/;
-ZmPhone.CHECK_EXTENSION_GOOD = /^1?\d{3}5551212$/;
+ZmPhone.CHECK_EXTENSION = /^(1?\d{3})?5551212\d*/;
 ZmPhone.CHECK_911 = /^1?911\d*/;
 ZmPhone.CHECK_411 = /^1?411\d*/;
 ZmPhone.CHECK_VALID = /^1?[2-9]\d{9}$/;
+ZmPhone.CHECK_VALID2 = /^555\d{4}$/;
 
 ZmPhone.calculateDisplay =
 function(name) {
@@ -53,17 +53,15 @@ function(name) {
 	} else if ((name.length == 11) && (name.charAt(0) == '1')) {
 		doIt = true;
 		offset = 1;
+	} else if (name.length == 7) {
+		doIt = true;
+		offset = -3;
 	}
 	if (doIt) {
-		var array = [
-			(offset>0)? (name.substring(0, offset)+"-") : "",
-			"(",
-			name.substring(offset, offset + 3),
-			") ",
-			name.substring(offset + 3, offset + 6),
-			"-",
-			name.substring(offset + 6, offset + 10)
-		];
+		var array = [];
+		if (offset>0) array.push(name.substring(0, offset)+"-");
+		if (offset>-3) array.push("(", name.substring(offset, offset + 3), ") ");
+		array.push(name.substring(offset + 3, offset + 6), "-",	name.substring(offset + 6, offset + 10));
 		return array.join("");
 	} else {
 // TODO: How to handle other numbers????	
@@ -104,24 +102,20 @@ function(number, errors) {
 		return false;
 	}
 	
-	if (number.charAt(0) == '1')
-		number = number.substring(1);
-	
 	if (ZmPhone.CHECK_INTERNATIONAL.test(number)) {
 		errors.push(ZmMsg.errorPhoneIsInternational);
 		return false;
 	}
 	
 	if (number.length >= 3) {
-		//var areacode = (number.length==11)? number.substring(1, 4) : number.substring(0, 3);
-		var areacode = number.substring(0, 3);
+		var areacode = (number.length==11)? number.substring(1, 4) : number.substring(0, 3);
 		if (areacode == "900" || areacode == "500" || areacode == "700" || areacode == "976") {
 			errors.push(ZmMsg.errorPhoneInvalidAreaCode);
 			return false;
 		}
 	}
 	
-	if (ZmPhone.CHECK_EXTENSION.test(number) && !ZmPhone.CHECK_EXTENSION_GOOD.test(number)) {
+	if (ZmPhone.CHECK_EXTENSION.test(number)) {
 		errors.push(ZmMsg.errorPhoneInvalidExtension);
 		return false;
 	}
@@ -136,7 +130,7 @@ function(number, errors) {
 		return false;
 	}
 		
-	if (!ZmPhone.CHECK_VALID.test(number)) {
+	if (!ZmPhone.CHECK_VALID.test(number) && !ZmPhone.CHECK_VALID2.test(number)) {
 		errors.push(ZmMsg.errorPhoneInvalid);
 		return false;
 	}
