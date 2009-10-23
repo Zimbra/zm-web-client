@@ -236,6 +236,9 @@
             }
         }catch(ex){
         }
+        if(c == ""){
+            alert('<fmt:message key="actionNoMessageSelected"/>');return;
+        }
         window.open("/h/printmessage?id="+c);
     }
 

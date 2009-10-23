@@ -293,6 +293,9 @@
             }
         }catch(ex){
         }
+        if(c == ""){
+            alert('<fmt:message key="actionNoConvSelected"/>');return;
+        }
         window.open("/h/printconversations?id="+c);
     }
 
