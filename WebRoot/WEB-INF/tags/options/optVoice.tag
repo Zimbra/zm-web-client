@@ -56,7 +56,7 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 						<td>
 							<div width="500px"><fmt:message key="voiceOptInstructions"/></div>
 							<br>
-							<table class="List" border="0" cellpadding="0" cellspacing="0" width="500px">
+							<table class="List" border="0" cellpadding="0" cellspacing="0" width="500px" style="border:0px none">
 								<tr><th><fmt:message key="number"/></th></tr>
 								<c:set var="firstAccount" value="true"/>
 								<zm:forEachPhoneAccount var="account">
