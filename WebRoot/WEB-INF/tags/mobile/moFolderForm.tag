@@ -89,6 +89,25 @@
                                         </select>
                                     </c:when>
                                     <c:when test="${st eq 'cal' || st eq 'cals' || st eq 'appointment'}">
+                                        <c:if test="${st eq 'cals'}">
+                                        <select name="color">
+                                            <optgroup label="<fmt:message key='color'/>">
+                                                <option value="cyan" ${efolder.color eq 'cyan' ? 'selected=selected' : ''}>
+                                                    <fmt:message key="cyan"/></option>
+                                                <option value="blue" ${efolder.color eq 'blue' ? 'selected=selected' : ''}>
+                                                    <fmt:message key="blue"/></option>
+                                                <option value="purple" ${efolder.color eq 'purple' ? 'selected=selected' : ''}>
+                                                    <fmt:message key="purple"/></option>
+                                                <option value="red" ${efolder.color eq 'red' ? 'selected=selected' : ''}>
+                                                    <fmt:message key="red"/></option>
+                                                <option value="orange" ${efolder.color eq 'orange' ? 'selected=selected' : ''}>
+                                                    <fmt:message key="orange"/></option>
+                                                <option value="yellow ${efolder.color eq 'yellow' ? 'selected=selected' : ''}">
+                                                    <fmt:message key="yellow"/></option>
+                                                <option value="green" ${efolder.color eq 'green' ? 'selected=selected' : ''}>
+                                                    <fmt:message key="green"/></option>
+                                            </optgroup>
+                                        </select></c:if>
                                         <input type="hidden" name="parentid" value="${not empty efolder ? efolder.parentId : mailbox.calendar.parentId}"> 
                                     </c:when>
                                     <c:when test="${st eq 'notebook' || st eq 'notebooks' || st eq 'wiki'}">

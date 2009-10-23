@@ -123,6 +123,7 @@
                     <c:if test="${count eq 0}"><div class='zo_cal_mlist' id="list${datef}" <c:if test="${datef eq curId}"> style='display:block'</c:if>></c:if>
                     <mo:calendarUrl appt="${appt}" var="apptUrl" view="month"/>
                             <div class="zo_cal_listi" onclick='return zClickLink("appt${appt.id}")'>
+                            <span class="${zm:getFolder(pageContext,appt.folderId).styleColor}${appt.partStatusNeedsAction ? '' : 'Bg'}">&nbsp;&nbsp;</span>    
                             <span class='zo_cal_listi_time'>
                             <c:choose>
                                 <c:when test="${appt.allDay}">

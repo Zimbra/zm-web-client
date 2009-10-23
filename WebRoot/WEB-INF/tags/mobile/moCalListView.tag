@@ -97,6 +97,7 @@
                 </div>
             </c:if>
             <div class='zo_cal_listi' onclick='return zClickLink("a${id}")'>
+                <span class="${zm:getFolder(pageContext,appt.folderId).styleColor}${appt.partStatusNeedsAction ? '' : 'Bg'}">&nbsp;&nbsp;</span>
                 <span class='zo_cal_listi_time'>
                     <c:choose>
                         <c:when test="${appt.allDay}">

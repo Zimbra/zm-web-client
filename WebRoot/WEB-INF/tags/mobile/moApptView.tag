@@ -55,7 +55,7 @@
                                 inviteReplyAllDay="${isInstance and invite.component.allDay ? '1' : ''}"/>
                     <%-- <zm:currentResultUrl var="newWindowUrl" value="message" context="${context}" id="${msg.id}"/> --%>
                 <c:if test="${empty sessionScope.calendar}">
-                <div class="View">
+                <div class="View ${apptFolder.styleColor}Bg">
                 <span class="label"><fmt:message
                         key="calendarLabel"/></span> ${fn:escapeXml(zm:getFolderName(pageContext,apptFolder.id))}
                 </div>

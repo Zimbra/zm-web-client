@@ -71,7 +71,7 @@
                 <c:set var="endDateCal" value="${zm:getCalendar(endDate.time, mailbox.prefs.timeZone)}"/>
             </c:otherwise>
         </c:choose>
-        <fmt:formatDate var="date" pattern="yyyyMMdd" value="${appt.start.date}"/>
+        <fmt:formatDate var="date" pattern="yyyyMMdd" value="${appt.start.date}" timeZone="${mailbox.prefs.timeZone}"/>
         <a <c:if test="${mailbox.features.calendar}">href="?st=cal&amp;view=day&amp;date=${date}"</c:if>>${fn:escapeXml(zm:getApptDateBlurb(pageContext, mailbox.prefs.timeZone, startDate.time, endDate.time, appt.allDay))}</a>
         <%--&nbsp;<span class='ZhCalTimeZone'>${mailbox.prefs.timeZoneCanonicalId}</span> --%>
     </p>

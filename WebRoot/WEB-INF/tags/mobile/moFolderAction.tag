@@ -58,6 +58,7 @@
         <c:when test="${zm:actionSet(param, 'actionSaveFolder')}">
             <zm:createFolder var="folder" view="${fn:escapeXml(types)}" name="${fn:escapeXml(param.folder_name)}"
                              parentid="${fn:escapeXml(param.parentid)}"/>
+            <c:if test="${param.st eq 'cals'}"><zm:modifyFolderColor id="${folder.id}" color="${zm:cook(param.color)}"/></c:if>
             <mo:status style="Info">
                 <fmt:message key="action${what}Created"><fmt:param
                         value="${fn:escapeXml(param.folder_name)}"/></fmt:message>
@@ -80,6 +81,7 @@
         <c:when test="${zm:actionSet(param, 'actionModifyFolder')}">
             <zm:renameFolder newname="${fn:escapeXml(param.folder_name)}" id="${fn:escapeXml(param.efolderid)}"/>
             <zm:moveFolder id="${fn:escapeXml(param.efolderid)}" parentid="${fn:escapeXml(param.parentid)}"/>
+            <c:if test="${param.st eq 'cals'}"><zm:modifyFolderColor id="${param.efolderid}" color="${zm:cook(param.color)}"/></c:if>
             <mo:status style="Info">
                 <fmt:message key="action${what}Modified"><fmt:param
                         value="${fn:escapeXml(param.folder_name)}"/></fmt:message>
