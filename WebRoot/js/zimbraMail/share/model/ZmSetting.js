@@ -66,8 +66,9 @@ ZmSetting.prototype.constructor = ZmSetting;
 
 // setting types
 ZmSetting.T_CONFIG		= "config";
-ZmSetting.T_PREF		= "pref";
 ZmSetting.T_COS			= "cos";
+ZmSetting.T_METADATA	= "meta";
+ZmSetting.T_PREF		= "pref";
 ZmSetting.T_PSEUDO		= "pseudo";
 
 // setting data types
