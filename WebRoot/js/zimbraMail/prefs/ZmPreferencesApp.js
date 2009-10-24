@@ -198,6 +198,7 @@ function() {
 				ZmSetting.PASSWORD,
 				ZmSetting.SEARCH_INCLUDES_SPAM,
 				ZmSetting.SEARCH_INCLUDES_TRASH,
+				ZmSetting.OFFLINE_SHOW_GLOBAL_INBOX,
 				ZmSetting.SHOW_SEARCH_STRING,
 				ZmSetting.SHOW_SELECTION_CHECKBOX,
 				ZmSetting.SKIN_NAME,
@@ -526,6 +527,11 @@ function() {
 
 	ZmPref.registerPref("SHOW_FRAGMENTS", {
 		displayName:		ZmMsg.showFragments,
+		displayContainer:	ZmPref.TYPE_CHECKBOX
+	});
+
+	ZmPref.registerPref("OFFLINE_SHOW_GLOBAL_INBOX", {
+		displayName:		ZmMsg.showGlobalInbox,
 		displayContainer:	ZmPref.TYPE_CHECKBOX
 	});
 

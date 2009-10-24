@@ -307,8 +307,18 @@ function(viewId, headerList) {
 		if (!pre || appCtxt.get(pre)) {
 			hdrParams.field = field;
 			// multi-account, account header is always initially invisible
-			hdrParams.visible = (appCtxt.multiAccounts && header == ZmItem.F_ACCOUNT && !userHeaders)
-				? false : (header.indexOf("*") == -1);
+			// unless user is showing global inbox. Ugh.
+			if (appCtxt.multiAccounts && false && // XXX: disable for now
+				appCtxt.inStartup &&
+				appCtxt.get(ZmSetting.OFFLINE_SHOW_GLOBAL_INBOX) &&
+				header.indexOf(ZmItem.F_ACCOUNT) != -1)
+			{
+				hdrParams.visible = true;
+				this._showingAccountColumn = true;
+			} else {
+				hdrParams.visible = (appCtxt.multiAccounts && header == ZmItem.F_ACCOUNT && !userHeaders)
+					? false : (header.indexOf("*") == -1);
+			}
 			hList.push(new DwtListHeaderItem(hdrParams));
 		}
 	}

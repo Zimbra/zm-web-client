@@ -1322,22 +1322,35 @@ function(query, callback, response, type) {
 	if (account) {
 		appCtxt.accountList.setActiveAccount(account);
 	}
-	query = query || appCtxt.get(ZmSetting.INITIAL_SEARCH, null, account);
+
+	var sc = appCtxt.getSearchController();
+	var queryHint, noUpdateOverview;
+	if (appCtxt.get(ZmSetting.OFFLINE_SHOW_GLOBAL_INBOX) && false) { // disable for now
+		query = null;
+		queryHint = appCtxt.accountList.generateQuery(ZmOrganizer.ID_INBOX);
+		noUpdateOverview = true;
+		sc.searchAllAccounts = true;
+	} else {
+		query = query || appCtxt.get(ZmSetting.INITIAL_SEARCH, null, account);
+	}
+
 	var types = new AjxVector();
 	types.add(type || this.getGroupMailBy());
 
 	var params = {
-		searchFor:		ZmId.SEARCH_MAIL,
-		query:			query,
-		types:			types,
-		limit:			this.getLimit(),
-		getHtml:		appCtxt.get(ZmSetting.VIEW_AS_HTML, null, account),
-		accountName:	(account && account.name),
-		callback:		callback,
-		response:		response
+		searchFor:			ZmId.SEARCH_MAIL,
+		query:				query,
+		queryHint:			queryHint,
+		types:				types,
+		limit:				this.getLimit(),
+		getHtml:			appCtxt.get(ZmSetting.VIEW_AS_HTML, null, account),
+		noUpdateOverview:	noUpdateOverview,
+		accountName:		(account && account.name),
+		callback:			callback,
+		response:			response
 	};
 	params.errorCallback = new AjxCallback(this, this._handleErrorLaunch, params);
-	appCtxt.getSearchController().search(params);
+	sc.search(params);
 };
 
 ZmMailApp.prototype._handleOfflineMailSearch =
