@@ -112,6 +112,14 @@ function(settings, account) {
 	}
 };
 
+ZmAppCtxt.prototype.getMetaData =
+function() {
+	if (!this._metaData) {
+		this._metaData = new ZmMetaData();
+	}
+	return this._metaData;
+};
+
 /**
  * Returns the value of a setting.
  *

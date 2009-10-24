@@ -23,6 +23,7 @@
 AjxPackage.require("zimbraMail.share.model.ZmObjectHandler");
 AjxPackage.require("zimbraMail.share.model.ZmObjectManager");
 AjxPackage.require("zimbraMail.share.model.ZmSettings");
+AjxPackage.require("zimbraMail.share.model.ZmMetaData");
 AjxPackage.require("zimbraMail.share.model.ZmKeyMap");
 AjxPackage.require("zimbraMail.share.model.ZmTimezone");
 AjxPackage.require("zimbraMail.share.model.ZmItem");
