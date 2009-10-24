@@ -1465,8 +1465,9 @@ function() {
 	if (el) {
 		// bug: 41313 - admin console link
 		var adminUrl;
-		if (appCtxt.get(ZmSetting.IS_ADMIN) ||
-			appCtxt.get(ZmSetting.IS_DELEGATED_ADMIN))
+		if (!appCtxt.isOffline &&
+			(appCtxt.get(ZmSetting.IS_ADMIN) ||
+			 appCtxt.get(ZmSetting.IS_DELEGATED_ADMIN)))
 		{
 			adminUrl = appCtxt.get(ZmSetting.ADMIN_REFERENCE);
 			if (!adminUrl) {
