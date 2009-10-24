@@ -437,7 +437,7 @@ function(params, noRender, callback, errorCallback) {
 	// if the user explicitly searched for all types, force mixed view
 	var isMixed = (params.searchFor == ZmId.SEARCH_ANY);
 
-	if (params.searchAllAccounts) {
+	if (params.searchAllAccounts && !params.queryHint) {
 		params.queryHint = appCtxt.accountList.generateQuery(null, types);
 		params.accountName = appCtxt.accountList.mainAccount.name;
 	}
@@ -463,6 +463,7 @@ function(params, noRender, callback, errorCallback) {
 		(folder.nId == ZmFolder.ID_DRAFTS ||
 		 folder.nId == ZmFolder.ID_OUTBOX))
 	{
+		this.searchAllAccounts = true;
 		search.accountName = appCtxt.accountList.mainAccount.name;
 		search.query = "";
 		search.folderId = folder.nId;

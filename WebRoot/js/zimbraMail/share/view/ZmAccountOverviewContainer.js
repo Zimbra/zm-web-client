@@ -319,6 +319,7 @@ function(ev) {
 
 			if (data instanceof ZmFolder) {
 				var main = appCtxt.accountList.mainAccount;
+				sc.searchAllAccounts = true;
 				params = {
 					queryHint: appCtxt.accountList.generateQuery(ZmOrganizer.ID_INBOX),
 					folderId: null,
