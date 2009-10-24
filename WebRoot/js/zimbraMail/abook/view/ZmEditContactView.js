@@ -41,7 +41,7 @@ ZmEditContactView = function(parent, controller, isMyCardView) {
 			{ id: "EMAIL", type: "ZmEditContactViewRows", rowitem: {
 				type: "DwtInputField", cols: 40, hint: ZmMsg.emailAddrHint
 			} },
-			{ id: "PHONE", type: "ZmEditContactViewRows", rowitem: {
+			{ id: "PHONE", type: "ZmEditContactViewInputSelectRows", rowitem: {
 				type: "ZmEditContactViewInputSelect", equals:ZmEditContactViewInputSelect.equals, params: {
 					hint: ZmMsg.phoneNumberHint,
                     cols : 60,
@@ -62,7 +62,7 @@ ZmEditContactView = function(parent, controller, isMyCardView) {
 					]
 				}
 			} },
-			{ id: "IM", type: "ZmEditContactViewRows", rowitem: {
+			{ id: "IM", type: "ZmEditContactViewInputSelectRows", rowitem: {
 				type: "ZmEditContactViewIM", params: {
 					hint: ZmMsg.imScreenNameHint,  cols: 60,
 					options: [
@@ -74,7 +74,7 @@ ZmEditContactView = function(parent, controller, isMyCardView) {
 					]
 				}
 			} },
-			{ id: "ADDRESS", type: "ZmEditContactViewRows",
+			{ id: "ADDRESS", type: "ZmEditContactViewInputSelectRows",
 				rowtemplate: "abook.Contacts#ZmEditContactViewAddressRow",
 				rowitem: { type: "ZmEditContactViewAddress", equals: ZmEditContactViewAddress.equals,
 					params: { options: [
@@ -84,7 +84,7 @@ ZmEditContactView = function(parent, controller, isMyCardView) {
 					] }
 				}
 			},
-			{ id: "URL", type: "ZmEditContactViewRows", rowitem: {
+			{ id: "URL", type: "ZmEditContactViewInputSelectRows", rowitem: {
 				type: "ZmEditContactViewInputSelect", equals:ZmEditContactViewInputSelect.equals, params: {
 					cols: 60, hint: ZmMsg.url,  
 					options: [
@@ -94,7 +94,7 @@ ZmEditContactView = function(parent, controller, isMyCardView) {
 					]
 				}
 			} },
-			{ id: "OTHER", type: "ZmEditContactViewRows", rowitem: {
+			{ id: "OTHER", type: "ZmEditContactViewInputSelectRows", rowitem: {
 				type: "ZmEditContactViewOther", equals:ZmEditContactViewInputSelect.equals, params: {
 					cols: 30, hint: ZmMsg.genericTextHint,
 					options: [
@@ -139,6 +139,7 @@ ZmEditContactView = function(parent, controller, isMyCardView) {
 	};
 
 	var params = {
+		id: "editcontactform",
 		parent: parent,
 		className: "ZmEditContactView",
 		posStyle: DwtControl.ABSOLUTE_STYLE,
@@ -710,6 +711,7 @@ ZmEditContactViewImage = function(params) {
 	if (arguments.length == 0) return;
 	params.className = params.className || "ZmEditContactViewImage";
 	params.posStyle = Dwt.RELATIVE_STYLE;
+	params.id = params.parent.getHTMLElId()+"_IMAGE";
 	DwtControl.apply(this, arguments);
 
 	var el = this.getHtmlElement();
@@ -808,8 +810,10 @@ ZmEditContactViewImage.prototype._createElement = function() {
 ZmEditContactViewRows = function(params) {
 	if (arguments.length == 0) return;
 	if (!params.formItemDef) params.formItemDef = {};
+	params.formItemDef.id = params.formItemDef.id || Dwt.getNextId();
 	params.formItemDef.onremoverow = "this.setDirty(true)";
 	params.className = params.className || "ZmEditContactViewRows";
+	params.id = [params.parent.getHTMLElId(),params.formItemDef.id].join("_");
 	DwtFormRows.apply(this, arguments);
 };
 ZmEditContactViewRows.prototype = new DwtFormRows;
@@ -824,6 +828,32 @@ ZmEditContactViewRows.prototype.toString = function() {
 ZmEditContactViewRows.prototype.setDirty = function() {
 	DwtFormRows.prototype.setDirty.apply(this, arguments);
 	this.parent.setDirty(this._itemDef.id, this.isDirty());
+};
+
+//
+// Class: ZmEditContactViewInputSelectRows
+//
+
+ZmEditContactViewInputSelectRows = function(params) {
+	if (arguments.length == 0) return;
+	ZmEditContactViewRows.apply(this, arguments);
+};
+ZmEditContactViewInputSelectRows.prototype = new ZmEditContactViewRows;
+ZmEditContactViewInputSelectRows.prototype.constructor = ZmEditContactViewInputSelectRows;
+
+ZmEditContactViewInputSelectRows.prototype.toString = function() {
+	return "ZmEditContactViewInputSelectRows";
+};
+
+// DwtFormRows methods
+
+ZmEditContactViewInputSelectRows.prototype._setControlIds = function(rowId, index) {
+	DwtFormRows.prototype._setControlIds.call(this, rowId, index);
+	var item = this._items[rowId];
+	var control = item && item.control;
+	if (control && control._setControlIds) {
+		control._setControlIds(rowId, index);
+	}
 };
 
 //
@@ -875,13 +905,21 @@ ZmEditContactViewInputSelect.prototype.setDirty = function(dirty) {
 };
 
 ZmEditContactViewInputSelect.equals = function(a, b) {
-//	console.log("ZmEditContactViewInputSelect.equals[a=",a,"][b=",b,"]");
 	if (a === b) return true;
 	if (!a || !b) return false;
 	return a.type == b.type && a.value == b.value;
 };
 
 // Protected methods
+
+ZmEditContactViewInputSelect.prototype._setControlIds = function(rowId, index) {
+	var id = this.getHTMLElId();
+	this._setControlId(this, id+"_value");
+	this._setControlId(this._input, id);
+	this._setControlId(this._select, id+"_select");
+};
+
+ZmEditContactViewInputSelect.prototype._setControlId = DwtFormRows.prototype._setControlId;
 
 ZmEditContactViewInputSelect.prototype._createHtml = function(templateId) {
 	var tabIndexes = this._tabIndexes = [];
@@ -932,7 +970,8 @@ ZmEditContactViewInputSelect.prototype._createInput = function() {
 };
 
 ZmEditContactViewInputSelect.prototype._createSelect = function(options) {
-	var select = new DwtSelect({parent:this});
+	var id = [this.getHTMLElId(),"select"].join("_");
+	var select = new DwtSelect({parent:this,id:id});
 	for (var i = 0; i < options.length; i++) {
 		var option = options[i];
 		select.addOption(option.label || option.value, i == 0, option.value);
@@ -1001,13 +1040,20 @@ ZmEditContactViewOther.prototype.getValue = function() {
 
 // Protected methods
 
+ZmEditContactViewOther.prototype._setControlIds = function(rowId, index) {
+	var id = this.getHTMLElId();
+	ZmEditContactViewInputSelect.prototype._setControlIds.apply(this, arguments);
+	this._setControlId(this._picker, id+"_picker");
+};
+
 ZmEditContactViewOther.prototype._createHtmlFromTemplate = function(templateId, data) {
 	ZmEditContactViewInputSelect.prototype._createHtmlFromTemplate.apply(this, arguments);
 
 	var tabIndexes = this._tabIndexes;
 	var pickerEl = document.getElementById(data.id+"_picker");
 	if (pickerEl) {
-		this._picker = new DwtButton({parent:this});
+		var id = [this.getHTMLElId(),"picker"].join("_");
+		this._picker = new DwtButton({parent:this,id:id});
 		this._picker.setImage("CalendarApp");
 		var menu = new DwtMenu({parent:this._picker,style:DwtMenu.CALENDAR_PICKER_STYLE});
 		this._picker.setMenu(menu);
@@ -1024,7 +1070,8 @@ ZmEditContactViewOther.prototype._createHtmlFromTemplate = function(templateId, 
 };
 
 ZmEditContactViewOther.prototype._createSelect = function() {
-	var select = new DwtComboBox({parent:this,inputParams:{size:14}});
+	var id = [this.getHTMLElId(),"select"].join("_");
+	var select = new DwtComboBox({parent:this,inputParams:{size:14},id:id});
 	var options = this._options || [];
 	for (var i = 0; i < options.length; i++) {
 		var option = options[i];
@@ -1116,7 +1163,7 @@ ZmEditContactViewAddress.prototype.setValue = function(value) {
 	ZmEditContactViewInputSelect.prototype.setValue.apply(this, arguments);
 	value = value || {};
 	this._select.setSelectedValue(value.type);
-	this._input.setValue("STREET", value.Street);
+	this._setStreet(value.Street);
 	this._input.setValue("CITY", value.City);
 	this._input.setValue("STATE", value.State);
 	this._input.setValue("ZIP", value.PostalCode);
@@ -1128,7 +1175,7 @@ ZmEditContactViewAddress.prototype.setValue = function(value) {
 ZmEditContactViewAddress.prototype.getValue = function() {
 	return {
 		type: this._select.getValue(),
-		Street: this._input.getValue("STREET"),
+		Street: this._getStreet(),
 		City: this._input.getValue("CITY"),
 		State: this._input.getValue("STATE"),
 		PostalCode: this._input.getValue("ZIP"),
@@ -1137,7 +1184,6 @@ ZmEditContactViewAddress.prototype.getValue = function() {
 };
 
 ZmEditContactViewAddress.equals = function(a,b) {
-//	console.log("ZmEditContactViewAddress.equals[a=",a,"][b=",b,"]");
 	if (a === b) return true;
 	if (!a || !b) return false;
 	return a.type == b.type &&
@@ -1146,6 +1192,38 @@ ZmEditContactViewAddress.equals = function(a,b) {
 };
 
 // Protected methods
+
+ZmEditContactViewAddress.prototype._setControlIds = function(rowId, index) {
+	var id = this.getHTMLElId();
+	ZmEditContactViewInputSelect.prototype._setControlIds.apply(this, arguments);
+	var fieldIds = ["STREET", "STREET1", "STREET2", "CITY", "STATE", "ZIP", "COUNTRY"];
+	for (var i = 0; i < fieldIds.length; i++) {
+		var fieldId = fieldIds[i];
+		var form = this._input.getControl(fieldId);
+		this._setControlId.call(form, form, [id,fieldId].join("_"));
+	}
+};
+
+ZmEditContactViewAddress.prototype._setStreet = function(value) {
+	var street1 = this._input.getControl("STREET1");
+	if (street1) {
+		var lines = value.split("\n");
+		this._input.setValue("STREET1", lines[0]);
+		this._input.setValue("STREET2", lines.slice(1).join(" "));
+	}
+	else {
+		this._input.setValue("STREET", value);
+	}
+};
+ZmEditContactViewAddress.prototype._getStreet = function() {
+	var street1 = this._input.getControl("STREET1");
+	if (street1) {
+		var value1 = this._input.getValue("STREET1");
+		var value2 = this._input.getControl("STREET1") ? this._input.getValue("STREET2") : null;
+		return value2 ? [value1,value2].join("\n") : value1;  
+	}
+	return this._input.getValue("STREET");
+};
 
 ZmEditContactViewAddress.prototype._createInput = function() {
 	var form = {
@@ -1158,6 +1236,8 @@ ZmEditContactViewAddress.prototype._createInput = function() {
 			{ id: "STREET", type: "DwtInputField", cols: (AjxEnv.isMozilla ? 56 : 58), rows: 2,
 				hint: ZmMsg.AB_FIELD_street, params: { forceMultiRow: true }
 			},
+			{ id: "STREET1", type: "DwtInputField", cols: (AjxEnv.isMozilla ? 56 : 58), hint: ZmMsg.AB_FIELD_street },
+			{ id: "STREET2", type: "DwtInputField", cols: (AjxEnv.isMozilla ? 56 : 58), hint: ZmMsg.AB_FIELD_street },
 			{ id: "CITY", type: "DwtInputField", cols: 20, hint: ZmMsg.AB_FIELD_city },
 			{ id: "STATE", type: "DwtInputField", cols: 12, hint: ZmMsg.AB_FIELD_state },
 			{ id: "ZIP", type: "DwtInputField", cols: 10, hint: ZmMsg.AB_FIELD_postalCode },
