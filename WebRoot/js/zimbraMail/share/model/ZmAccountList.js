@@ -127,13 +127,14 @@ function(folderId, types) {
 	var query = [];
 	var list = this.visibleAccounts;
 	var fid = folderId || ZmOrganizer.ID_ROOT;
+	var syntax = folderId ? "inid" : "underid";
 	for (var i = 0; i < list.length; i++) {
 		var acct = list[i];
 
 		// dont add any apps not supported by this account
 		if ((type && !acct.isAppEnabled(ZmItem.APP[type])) || acct.isMain) { continue; }
 
-		var part = ['inid:"', ZmOrganizer.getSystemId(fid, acct, true), '"'];
+		var part = [syntax, ':"', ZmOrganizer.getSystemId(fid, acct, true), '"'];
 		query.push(part.join(""));
 	}
 
