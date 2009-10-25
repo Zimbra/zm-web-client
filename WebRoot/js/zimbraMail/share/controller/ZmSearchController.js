@@ -416,8 +416,13 @@ function(params, noRender, callback, errorCallback) {
 	appCtxt.notifyZimlets("onSearch", [params.query]);
 
 	if (this._searchToolBar) {
-		var value = (appCtxt.get(ZmSetting.SHOW_SEARCH_STRING) || params.userText) ? params.query : "";
-		this._searchToolBar.setSearchFieldValue(value);
+		var value;
+		if (!this.searchAllAccounts &&
+			(appCtxt.get(ZmSetting.SHOW_SEARCH_STRING) || params.userText))
+		{
+			value = params.query;
+		}
+		this._searchToolBar.setSearchFieldValue(value || "");
 	}
 
 	// get types from search type if not passed in explicitly
