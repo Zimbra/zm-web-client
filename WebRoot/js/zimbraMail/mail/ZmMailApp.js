@@ -1535,7 +1535,7 @@ function(type, controllerClass, sessionId) {
 		}
 	}
 
-	sessionId = sessionId || this._sessionId[type]++;
+	sessionId = controller ? controller.sessionId : this._sessionId[type]++;
 
 	if (!controller) {
 		var ctlrClass = eval(controllerClass);
