@@ -36,10 +36,10 @@ function() {
 
 ZmPhone.CHECK_INTERNATIONAL = /^0\d*/;
 ZmPhone.CHECK_EXTENSION = /^(1?\d{3})?5551212\d*/;
+ZmPhone.CHECK_VALID2 = /^(1?\d{3})?55501\d{2}$/;
 ZmPhone.CHECK_911 = /^1?911\d*/;
 ZmPhone.CHECK_411 = /^1?411\d*/;
 ZmPhone.CHECK_VALID = /^1?[2-9]\d{9}$/;
-ZmPhone.CHECK_VALID2 = /^555\d{4}$/;
 
 ZmPhone.calculateDisplay =
 function(name) {
@@ -115,7 +115,7 @@ function(number, errors) {
 		}
 	}
 	
-	if (ZmPhone.CHECK_EXTENSION.test(number)) {
+	if (ZmPhone.CHECK_EXTENSION.test(number) || ZmPhone.CHECK_VALID2.test(number)) {
 		errors.push(ZmMsg.errorPhoneInvalidExtension);
 		return false;
 	}
@@ -130,7 +130,7 @@ function(number, errors) {
 		return false;
 	}
 		
-	if (!ZmPhone.CHECK_VALID.test(number) && !ZmPhone.CHECK_VALID2.test(number)) {
+	if (!ZmPhone.CHECK_VALID.test(number)) {
 		errors.push(ZmMsg.errorPhoneInvalid);
 		return false;
 	}
