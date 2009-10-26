@@ -121,6 +121,7 @@ function(partNode, attachments, bodyParts, parentNode) {
 
 		if (this.node.cd == "attachment" || 
 			this.node.ct == ZmMimeTable.MSG_RFC822 ||
+            this.node.ct == ZmMimeTable.TEXT_CAL ||            
 			this.node.filename != null || 
 			this.node.ci != null ||
 			this.node.cl != null)
