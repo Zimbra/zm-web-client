@@ -672,7 +672,6 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 		<!--
 			var selectiveRejectionCheckboxDependers = [];
 			function selectiveRejectionCheckboxChanged(value) {
-			console.log(value);
 				for (var i=0; i<selectiveRejectionCheckboxDependers.length; i++) {
 					var element = document.getElementById(selectiveRejectionCheckboxDependers[i]);
 					if (element)
