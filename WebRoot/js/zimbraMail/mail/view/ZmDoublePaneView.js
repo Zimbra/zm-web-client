@@ -180,11 +180,13 @@ function(x, y, width, height) {
 ZmDoublePaneView.prototype.setItem =
 function(items) {
 	this._mailListView.set(items, ZmItem.F_DATE);
-	if (!this._controller.isReadingPaneOn()) {
-		this._selectFirstItem();
-	} else if (!this._mailListView._isPageless) {
-		if (this._controller._list && this._controller._list.size() > 0) {
-			this._msgView.set();
+	if (!this._mailListView._isPageless) {
+		if (!this._controller.isReadingPaneOn()) {
+			this._selectFirstItem();
+		} else {
+			if (this._controller._list && this._controller._list.size() > 0) {
+				this._msgView.set();
+			}
 		}
 	}
 };
