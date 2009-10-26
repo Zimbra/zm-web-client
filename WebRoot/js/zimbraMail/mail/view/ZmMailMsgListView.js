@@ -365,7 +365,7 @@ function(parent, controller) {
 			ZmItem.F_ATTACHMENT,
 			ZmItem.F_SUBJECT,
 			ZmItem.F_FOLDER,
-			ZmItem.F_SIZE,
+			ZmItem.F_SIZE
 		];
 		if (appCtxt.multiAccounts) {
 			headers.push(ZmItem.F_ACCOUNT);
