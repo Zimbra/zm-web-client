@@ -33,7 +33,7 @@
         <table width=100% cellpadding="5" border="0">
             <tr>
                 <td>
-                    <strong>${fn:escapeXml(empty appt.name ? noSubject : appt.name)}</strong>
+                    <table width="99%"><tr><td style='width:5px;background-color:${zm:getFolder(pageContext,message.folderId).styleColor};'></td><td style="padding-left:5px;"><strong> ${fn:escapeXml(empty appt.name ? noSubject : appt.name)}</strong> </td></tr></table>
                 <br>
             <c:if test="${not empty appt.location}">
                 

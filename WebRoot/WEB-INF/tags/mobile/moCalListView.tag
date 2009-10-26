@@ -76,7 +76,7 @@
                     <zm:forEachAppoinment var="appt" appointments="${appts}" start="${dayStart}" end="${dayEnd}">
                         <c:if test="${count eq 0}">
                             <tr class='zo_cal_listh'>
-                                <td class='zo_cal_listh_dow'>
+                                <td class='zo_cal_listh_dow' colspan="2">
                                     <fmt:formatDate value="${currentDay.time}" pattern="${dayFormat}"/>
                                 </td>
                                 <td class='zo_cal_listh_date'>
@@ -85,6 +85,7 @@
                             </tr>
                         </c:if>
                         <tr class='zo_cal_listi'  onclick='zClickLink("a${id}")'>
+                            <td style='width:5px;background-color:${zm:getFolder(pageContext,appt.folderId).styleColor};'></td>
                             <td class='zo_cal_listi_time'>
                                 <c:choose>
                                     <c:when test="${appt.allDay}">

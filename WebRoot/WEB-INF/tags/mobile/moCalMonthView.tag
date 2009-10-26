@@ -121,6 +121,7 @@
                     </c:if>
                     <mo:calendarUrl appt="${appt}" var="apptUrl"/>
                         <tr  onclick='openURL("${fn:escapeXml(zm:jsEncode(apptUrl))}")'>
+                        <td style='width:5px;background-color:${zm:getFolder(pageContext,appt.folderId).styleColor};'></td>    
                         <td class='zo_cal_listi_time'>
                             <c:choose>
                                 <c:when test="${appt.allDay}">
