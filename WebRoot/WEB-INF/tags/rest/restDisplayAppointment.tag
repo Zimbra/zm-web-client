@@ -25,7 +25,14 @@
 
 <c:set var="appt" value="${invite.component}"/>
 <c:set var="color" value="${zm:getFolderStyleColor(requestScope.itemColor, 'appointment')}"/>
-
+<c:if test="${empty theBody and appt.isNoBlob}">
+    <c:if test="${!empty appt.descriptionHtml}">
+        <c:set var="theBody" value="${appt.descriptionHtml}"/>
+    </c:if>
+    <c:if test="${empty appt.descriptionHtml}">
+        <c:set var="theBody" value="${appt.description}"/>
+    </c:if>
+</c:if>
 <fmt:message var="noSubject" key="noSubject"/>
 
 <fmt:setBundle basename='/messages/AjxMsg' var='AjxMsg' scope='request' />
@@ -45,7 +52,6 @@
                             ${fn:escapeXml(empty appt.name ? noSubject : appt.name)}
                         </tr>
                     </table>
-                </td>
                 </td>
             </tr>
         </table>
