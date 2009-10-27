@@ -436,7 +436,7 @@ function(ev) {
 		var confirm;
 		if (organizer.type == ZmOrganizer.SEARCH) {
 			confirm = ZmMsg.confirmDeleteSavedSearch;
-		} else if (organizer.disallowSubFolder) {
+		} else if (organizer.disallowSubFolder || organizer.isMountpoint) {
 			confirm = ZmMsg.confirmDeleteFolder;
 		} else if (organizer.nId == ZmFolder.ID_TRASH) {
 			confirm = ZmMsg.confirmEmptyTrashFolder;
