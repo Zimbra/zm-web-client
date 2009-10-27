@@ -723,6 +723,7 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 							<table class="ZmPhoneBufferList List" border="0" cellpadding="0" cellspacing="0" width="300px">
 								<tr><th colspan="2"><fmt:message key="numbers"/></th></tr>
 								<c:if test="${!empty sessionScope.selectiveCallRejectionFrom && !empty sessionScope.selectiveCallRejectionFrom[phone]}">
+								<c:set var="i" value="0"/>
 								<c:forEach items="${sessionScope.selectiveCallRejectionFrom[phone]}" var="number">
 									<c:if test="${!empty number}">
 									<tr>
@@ -737,6 +738,7 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 										    <input type="submit" class="HiddenButton" id="actionVoiceRemoveRejection_${i}" name="actionVoiceRemoveSelectiveRejection" value="${number}"/>
 										</td>
 									</tr>
+									<c:set var="i" value="${i+1}"/>
 									</c:if>
 								</c:forEach>
 								</c:if>
