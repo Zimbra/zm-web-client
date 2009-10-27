@@ -97,12 +97,7 @@ ZmNotebookController.prototype._getBasicToolBarOps =
 function() {
 	var list = [ZmOperation.NEW_MENU];
 	list.push(ZmOperation.REFRESH, ZmOperation.EDIT);
-        list.push(ZmOperation.BROWSE_FOLDER);
-    if(appCtxt.get(ZmSetting.VIEW_ATTACHMENT_AS_HTML)) {
-		list.push(ZmOperation.SEP);
-		list.push(ZmOperation.IMPORT_FILE);
-		list.push(ZmOperation.SEP);
-	}
+    list.push(ZmOperation.BROWSE_FOLDER);
     return list;
 };
 
