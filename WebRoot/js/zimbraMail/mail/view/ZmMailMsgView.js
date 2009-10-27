@@ -217,7 +217,7 @@ function(msg) {
 		var action = msg.share.action;
 		var isNew = action == ZmShare.NEW;
 		var isEdit = action == ZmShare.EDIT;
-		var isDataSource = appCtxt.getById(msg.folderId).isDataSource(null, true);
+		var isDataSource = (appCtxt.getById(msg.folderId).isDataSource(null, true) && (msg.folderId != ZmFolder.ID_INBOX));
 
 		if (!isDataSource &&
 			(isNew || (isEdit && !this.__hasMountpoint(msg.share))) &&
