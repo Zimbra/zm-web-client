@@ -187,12 +187,14 @@ ZmEditContactView.DIALOG_X = 50;
 ZmEditContactView.DIALOG_Y = 100;
 
 ZmEditContactView.SHOW_ID_PREFIXES = [
-	"PREFIX","MIDDLE","MAIDEN","SUFFIX","NICKNAME","TITLE","DEPARTMENT","COMPANY"
+	"PREFIX","FIRST","MIDDLE","MAIDEN","LAST","SUFFIX","NICKNAME","TITLE","DEPARTMENT","COMPANY"
 ];
 ZmEditContactView.SHOW_ID_LABELS = [
 	ZmMsg.AB_FIELD_prefix,
+	ZmMsg.AB_FIELD_firstName,
 	ZmMsg.AB_FIELD_middleName,
 	ZmMsg.AB_FIELD_maidenName,
+	ZmMsg.AB_FIELD_lastName,
 	ZmMsg.AB_FIELD_suffix,
 	ZmMsg.AB_FIELD_nickname,
 	ZmMsg.AB_FIELD_jobTitle,
@@ -598,6 +600,11 @@ ZmEditContactView.prototype.__getDetailsMenu = function() {
 		if (this.getControl(id)) {
 			var menuitem = new DwtMenuItem({parent:menu, style:DwtMenuItem.CHECK_STYLE});
 			menuitem.setText(labels[i]);
+			// NOTE: Always show first and last but don't allow to change
+			if (id == "FIRST" || id == "LAST") {
+				menuitem.setChecked(true, true);
+				menuitem.setEnabled(false);
+			}
 			var itemId = "SHOW_"+id;
 			var listener = new AjxListener(this, this._handleDetailCheck, [itemId, id]);
 			menuitem.addSelectionListener(listener);
@@ -605,7 +612,7 @@ ZmEditContactView.prototype.__getDetailsMenu = function() {
 			count++;
 		}
 	}
-	return count > 0 ? menu : null;
+	return count > 2 ? menu : null;
 };
 
 ZmEditContactView.prototype.__initRowsControl =
