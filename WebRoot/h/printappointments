@@ -237,7 +237,7 @@ action="compose" paction="view" id="${msg.id}"/>
 </td>
 </tr>
 <tr>
-    <td id="iframeBody" style="padding:10px;" >
+    <td id="iframeBody_${id}" style="padding:10px;" >
         <c:choose>
             <c:when test="${body.isTextHtml}">
                 <c:url var="iframeUrl" value="/h/imessage">
@@ -245,10 +245,10 @@ action="compose" paction="view" id="${msg.id}"/>
                     <c:param name="part" value="${message.partName}"/>
                     <c:param name="xim" value="${true}"/>
                 </c:url>
-                <app:messageIframe theBody="${theBody}" parentId="iframeBody" iframeUrl="${iframeUrl}"/>
+                <app:body message="${message}" body="${message.body}" theBody="${theBody}" mailbox="${mailbox}" isPrintView="${true}" counter="${status.index}"/>
             </c:when>
             <c:when test="${appt.isNoBlob}">
-                <app:messageIframe theBody="${not empty appt.descriptionHtml ? appt.descriptionHtml : appt.description}" parentId="iframeBody" iframeUrl=""/>
+                <app:body message="${message}" body="${message.body}" theBody="${not empty appt.descriptionHtml ? appt.descriptionHtml : appt.description}" mailbox="${mailbox}" isPrintView="${true}" counter="${status.index}"/>
             </c:when>
             <c:otherwise>
                 ${theBody}
