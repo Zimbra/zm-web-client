@@ -203,7 +203,7 @@ function() {
  * Checks this toolbar's width and compares it to the width of its container to see if it fits.
  * If it does not, we remove text and/or images in the specified order until the toolbar fits.
  */
-ZmToolBar.prototype._checkSize =
+ZmToolBar.prototype.adjustSize =
 function() {
 
 	if (!this._refElementId || !this._inited) { return; }
@@ -276,18 +276,18 @@ function(width, height) {
 	var sz = this.getSize();
 	if (width != sz.x || height != sz.y) {
 		DwtToolBar.prototype.setSize.apply(this, arguments);
-		this._checkSize();
+		this.adjustSize();
 	}
 };
 
 ZmToolBar.prototype._addItem =
 function(type, element, index) {
 	DwtToolBar.prototype._addItem.apply(this, arguments);
-	this._checkSize();
+	this.adjustSize();
 };
 
 ZmToolBar.prototype._removeItem =
 function(type, element, index) {
 	DwtToolBar.prototype._removeItem.apply(this, arguments);
-	this._checkSize();
+	this.adjustSize();
 };

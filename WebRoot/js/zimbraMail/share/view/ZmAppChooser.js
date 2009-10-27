@@ -101,7 +101,7 @@ function(id, params) {
 	if (button.textPrecedence || button.imagePrecedence) {
 		this._createPrecedenceList();
 	}
-	this._checkSize();
+	this.adjustSize();
 
 	return button;
 };

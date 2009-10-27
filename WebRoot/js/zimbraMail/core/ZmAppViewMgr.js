@@ -838,8 +838,8 @@ function(components, isIeTimerHack) {
 					if (compEl.parentNode != cont) {
 						cont.appendChild(compEl);
 					}
-					if (comp._checkSize) {
-						comp._checkSize();
+					if (comp.adjustSize) {
+						comp.adjustSize();
 					}
 				} else {
 					var contBds = Dwt.getBounds(cont);
