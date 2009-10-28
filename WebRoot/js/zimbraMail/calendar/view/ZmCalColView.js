@@ -470,8 +470,9 @@ function(div, allDay, folderId) {
 	div.className = this._getStyle(null, true);
 	Dwt.setOpacity(div, ZmCalColView._OPACITY_APPT_DND);
 	var calendar = appCtxt.getById(folderId);
-	var headerColor = calendar.rgb && ZmCalColView.__deepen(AjxColor.darken(calendar.rgb,ZmCalColView.headerColorDelta));
-	var bodyColor = calendar.rgb && ZmCalColView.__deepen(AjxColor.lighten(calendar.rgb,ZmCalColView.bodyColorDelta));
+	var headerColor = calendar.rgb ? AjxColor.deepen(AjxColor.darken(calendar.rgb,ZmCalBaseView.headerColorDelta)) : "";
+	var bodyColor = calendar.rgb ? AjxColor.deepen(AjxColor.lighten(calendar.rgb,ZmCalBaseView.bodyColorDelta)) : "";
+	var bodyColor = calendar.rgb ? AjxColor.deepen(AjxColor.lighten(calendar.rgb,ZmCalBaseView.bodyColorDelta)) : "";
 	var subs = {
 		id: div.id,
 		newState: "",
