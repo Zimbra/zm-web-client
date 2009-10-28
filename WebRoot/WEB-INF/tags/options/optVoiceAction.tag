@@ -42,17 +42,17 @@
 
     <c:choose>
         <c:when test="${voiceselected=='forwarding' && param.callForwardingActive && !zm:isValidPhoneNumber(param.callForwardingTo)}">
-            <app:status style="Critical" html="true"><fmt:message key="invalidForwardNumber"/></app:status>
+            <app:status style="Critical" html="true"><fmt:message key="invalidForwardNumber"><fmt:param value="${faqlink}"/></fmt:message></app:status>
 	</c:when>
 
 	<c:when test="${voiceselected=='forwarding' && param.selectiveCallForwardingActive && !zm:isValidPhoneNumber(param.selectiveCallForwardingTo)}">
-	    <app:status style="Critical"><fmt:message key="invalidForwardNumber"/></app:status>
+	    <app:status style="Critical" html="true"><fmt:message key="invalidForwardNumber"><fmt:param value="${faqlink}"/></fmt:message></app:status>
 	    <c:set var="selectiveCallForwardingActive" scope="request" value="FALSE"/>
 	    <c:set var="badSelectiveCallForwardingTo" scope="request" value="${true}"/>
 	</c:when>
 
 	<c:when test="${voiceselected=='forwarding' && param.selectiveCallForwardingActive && invalidForwardNumber}">
-	        <app:status style="Critical" html="true"><fmt:message key="errorPhoneIsInList"/> ${faqlink}</app:status>
+	        <app:status style="Critical" html="true"><fmt:message key="errorPhoneIsInList"><fmt:param value="${faqlink}"/></fmt:message></app:status>
 	</c:when>
 
         <c:otherwise>
@@ -132,13 +132,13 @@
 
     <c:choose>
 	    <c:when test="${fn:length(sessionScope.emailNotificationAddresses[param.phone])>=25}">
-		<app:status style="Critical"><fmt:message key="optionsVoiceNotificationsErrorMax"/></app:status>
+		<app:status style="Critical" html="true"><fmt:message key="optionsVoiceNotificationsErrorMax"><fmt:param value="${faqlink}"/></fmt:message></app:status>
 	    </c:when>
 	    <c:when test="${fn:length(param.emailNotificationAddAddress)>100 || fn:indexOf(param.emailNotificationAddAddress, '@')==-1}">
-		<app:status style="Critical"><fmt:message key="optionsVoiceNotificationsErrorInvalid"/></app:status>
+		<app:status style="Critical" html="true"><fmt:message key="optionsVoiceNotificationsErrorInvalid"><fmt:param value="${faqlink}"/></fmt:message></app:status>
 	    </c:when>
 	    <c:when test="${addressIsInList}">
-		<app:status style="Critical"><fmt:message key="optionsVoiceNotificationsErrorNotUnique"/></app:status>
+		<app:status style="Critical" html="true"><fmt:message key="optionsVoiceNotificationsErrorNotUnique"><fmt:param value="${faqlink}"/></fmt:message></app:status>
 	    </c:when>
 	    <c:otherwise>
 		<zm:listObject phone="${param.phone}" var="emailNotificationAddresses" scope="session" map="${sessionScope.emailNotificationAddresses}" add="${param.emailNotificationAddAddress}"/>
@@ -167,55 +167,65 @@
 </c:if>
 
 <c:if test="${voiceselected=='forwarding' && zm:actionSet(param, 'addSelectiveForwarding') && !empty sessionScope.selectiveCallForwardingFrom && !empty sessionScope.selectiveCallForwardingFrom[param.phone] && fn:length(sessionScope.selectiveCallForwardingFrom[param.phone]) >= 12}">
-	<app:status style="Critical"><fmt:message key="optionsCallForwardingErrorMax"/></app:status>
-	<c:set var="addSelectiveForwarding" scope="request" value="${null}"/>
+    <app:status style="Critical" html="true"><fmt:message key="optionsCallForwardingErrorMax"><fmt:param value="${faqlink}"/></fmt:message></app:status>
+    <c:set var="addSelectiveForwarding" scope="request" value="${null}"/>
 </c:if>
 
 <c:if test="${voiceselected=='forwarding' && ((zm:actionSet(param, 'actionVoiceAddSelectiveForwarding') && param.selectiveCallForwardingActive) || (zm:actionSet(param, 'actionSave') && param.selectiveCallforwardingActive))}">
     	<c:set var="useFrom" value="${zm:actionSet(param, 'actionVoiceAddSelectiveForwarding')}"/>
+
+	<c:if test="${!empty sessionScope.selectiveCallForwardingFrom}">
+	    <zm:phone var="success" displayVar="addNumber" errorVar="errorCode" name="${param.addForwardingNumber}"/>
+	    <zm:listObject phone="${param.phone}" map="${sessionScope.selectiveCallForwardingFrom}" strArr="numbers" var="bogus"/>
+	    <c:set var="entryTest" value="${fn:replace(addNumber, '1-(', '(')}"/>
+	    <c:forEach items="${numbers}" var="number">
+		<zm:phone var="success" displayVar="fromNumber" errorVar="errorCode" name="${number}"/>
+		<c:set var="collTest" value="${fn:replace(fromNumber, '1-(', '(')}"/>
+		<c:if test="${entryTest == collTest}">
+		    <c:set var="invalidAddNumber" value="${true}"/>
+		</c:if>
+	    </c:forEach>
+	</c:if>
 	
 	<zm:phone var="bogus" displayVar="thisDisplayNumber" name="${param.phone}"/>
 	<zm:phone var="bogus" displayVar="toDisplayNumber" name="${param.selectiveCallForwardingTo}"/>
 	<zm:phone var="success" displayVar="displayNumber" errorVar="errorCode" name="${useFrom ? param.addForwardingNumber : param.selectiveCallForwardingTo}"/>
 
-	<c:set var="collTest" value=",${fn:replace(sessionScope.selectiveCallForwardingFrom, '1-(', '(')},"/>
-	<c:set var="entryTest" value=",${fn:replace(displayNumber, '1-(', '(')},"/>
-
 	<c:choose>
-		<c:when test="${useFrom && fn:indexOf(collTest, entryTest)!=-1}">
-		    <app:status style="Critical"><fmt:message key="errorPhoneNotUnique"/></app:status>
+		<c:when test="${useFrom && invalidAddNumber}">
+		    <app:status style="Critical" html="true"><fmt:message key="errorPhoneNotUnique"><fmt:param value="${faqlink}"/></fmt:message></app:status>
 		</c:when>
 	    
 		<c:when test="${fn:replace(thisDisplayNumber, '1-(', '(') == fn:replace(displayNumber, '1-(', '(')}">
-		    <app:status style="Critical" html="true"><fmt:message key="errorPhoneIsOwn"/> ${faqlink}</app:status>
+		    <app:status style="Critical" html="true"><fmt:message key="errorPhoneIsOwn"><fmt:param value="${faqlink}"/></fmt:message></app:status>
 		</c:when>
-
+	    
 		<c:when test="${useFrom && fn:replace(toDisplayNumber, '1-(', '(') == fn:replace(displayNumber, '1-(', '(')}">
-		    <app:status style="Critical" html="true"><fmt:message key="errorPhoneIsTo"/> ${faqlink}</app:status>
+		    <app:status style="Critical" html="true"><fmt:message key="errorPhoneIsTo"><fmt:param value="${faqlink}"/></fmt:message></app:status>
 		</c:when>
 	    
 		<c:when test="${errorCode == 'voice.INVALID_PHNUM_INTERNATIONAL_NUMBER'}">
-		    <app:status style="Critical" html="true"><fmt:message key="errorPhoneIsInternational"/> ${faqlink}</app:status>
+		    <app:status style="Critical" html="true"><fmt:message key="errorPhoneIsInternational"><fmt:param value="${faqlink}"/></fmt:message></app:status>
 		</c:when>
 	    
 		<c:when test="${errorCode == 'voice.INVALID_PHNUM_BAD_NPA'}">
-		    <app:status style="Critical" html="true"><fmt:message key="errorPhoneInvalidAreaCode"/> ${faqlink}</app:status>
+		    <app:status style="Critical" html="true"><fmt:message key="errorPhoneInvalidAreaCode"><fmt:param value="${faqlink}"/></fmt:message></app:status>
 		</c:when>
 	    
 		<c:when test="${errorCode == 'voice.INVALID_PHNUM_BAD_LINE'}">
-		    <app:status style="Critical" html="true"><fmt:message key="errorPhoneInvalidExtension"/> ${faqlink}</app:status>
+		    <app:status style="Critical" html="true"><fmt:message key="errorPhoneInvalidExtension"><fmt:param value="${faqlink}"/></fmt:message></app:status>
 		</c:when>
 	    
 		<c:when test="${errorCode == 'voice.INVALID_PHNUM_EMERGENCY_ASSISTANCE'}">
-		    <app:status style="Critical" html="true"><fmt:message key="errorPhoneIs911"/> ${faqlink}</app:status>
+		    <app:status style="Critical" html="true"><fmt:message key="errorPhoneIs911"><fmt:param value="${faqlink}"/></fmt:message></app:status>
 		</c:when>
 	    
 		<c:when test="${errorCode == 'voice.INVALID_PHNUM_DIRECTORY_ASSISTANCE'}">
-		    <app:status style="Critical" html="true"><fmt:message key="errorPhoneIs411"/> ${faqlink}</app:status>
+		    <app:status style="Critical" html="true"><fmt:message key="errorPhoneIs411"><fmt:param value="${faqlink}"/></fmt:message></app:status>
 		</c:when>
 	    
 		<c:when test="${errorCode == 'voice.INVALID_PHNUM_BAD_FORMAT'}">
-		    <app:status style="Critical" html="true"><fmt:message key="errorPhoneInvalid"/> ${faqlink}</app:status>
+		    <app:status style="Critical" html="true"><fmt:message key="errorPhoneInvalid"><fmt:param value="${faqlink}"/></fmt:message></app:status>
 		</c:when>
 	    
 		<c:when test="${useFrom && success}">
@@ -234,7 +244,7 @@
 
 
 <c:if test="${voiceselected=='screening' && zm:actionSet(param, 'addSelectiveRejection') && !empty sessionScope.selectiveCallRejectionFrom && !empty sessionScope.selectiveCallRejectionFrom[param.phone] && fn:length(sessionScope.selectiveCallRejectionFrom) >= 12}">
-    <app:status style="Critical"><fmt:message key="optionsCallRejectionErrorMax"/></app:status>
+    <app:status style="Critical" html="true"><fmt:message key="optionsCallRejectionErrorMax"><fmt:param value="${faqlink}"/></fmt:message></app:status>
     <c:set var="addSelectiveRejection" scope="request" value="${null}"/>
 </c:if>
 
@@ -258,35 +268,35 @@
 	    <zm:phone var="success" displayVar="displayNumber" errorVar="errorCode" name="${param.addRejectionNumber}"/>
 	    <c:choose>
 		<c:when test="${invalidAddNumber}">
-		    <app:status style="Critical"><fmt:message key="errorPhoneNotUniqueReject"/></app:status>
+		    <app:status style="Critical" html="true"><fmt:message key="errorPhoneNotUniqueReject"><fmt:param value="${faqlink}"/></fmt:message></app:status>
 		</c:when>
 	    
 		<c:when test="${fn:replace(thisDisplayNumber, '1-(', '(') == fn:replace(displayNumber, '1-(', '(')}">
-		    <app:status style="Critical" html="true"><fmt:message key="errorPhoneIsOwn"/> ${faqlink}</app:status>
+		    <app:status style="Critical" html="true"><fmt:message key="errorPhoneIsOwn"><fmt:param value="${faqlink}"/></fmt:message></app:status>
 		</c:when>
 	    
 		<c:when test="${errorCode == 'voice.INVALID_PHNUM_INTERNATIONAL_NUMBER'}">
-		    <app:status style="Critical" html="true"><fmt:message key="errorPhoneIsInternational"/> ${faqlink}</app:status>
+		    <app:status style="Critical" html="true"><fmt:message key="errorPhoneIsInternational"><fmt:param value="${faqlink}"/></fmt:message></app:status>
 		</c:when>
 	    
 		<c:when test="${errorCode == 'voice.INVALID_PHNUM_BAD_NPA'}">
-		    <app:status style="Critical" html="true"><fmt:message key="errorPhoneInvalidAreaCode"/> ${faqlink}</app:status>
+		    <app:status style="Critical" html="true"><fmt:message key="errorPhoneInvalidAreaCode"><fmt:param value="${faqlink}"/></fmt:message></app:status>
 		</c:when>
 	    
 		<c:when test="${errorCode == 'voice.INVALID_PHNUM_BAD_LINE'}">
-		    <app:status style="Critical" html="true"><fmt:message key="errorPhoneInvalidExtension"/> ${faqlink}</app:status>
+		    <app:status style="Critical" html="true"><fmt:message key="errorPhoneInvalidExtension"><fmt:param value="${faqlink}"/></fmt:message></app:status>
 		</c:when>
 	    
 		<c:when test="${errorCode == 'voice.INVALID_PHNUM_EMERGENCY_ASSISTANCE'}">
-		    <app:status style="Critical" html="true"><fmt:message key="errorPhoneIs911"/> ${faqlink}</app:status>
+		    <app:status style="Critical" html="true"><fmt:message key="errorPhoneIs911"><fmt:param value="${faqlink}"/></fmt:message></app:status>
 		</c:when>
 	    
 		<c:when test="${errorCode == 'voice.INVALID_PHNUM_DIRECTORY_ASSISTANCE'}">
-		    <app:status style="Critical" html="true"><fmt:message key="errorPhoneIs411"/> ${faqlink}</app:status>
+		    <app:status style="Critical" html="true"><fmt:message key="errorPhoneIs411"><fmt:param value="${faqlink}"/></fmt:message></app:status>
 		</c:when>
 	    
 		<c:when test="${errorCode == 'voice.INVALID_PHNUM_BAD_FORMAT'}">
-		    <app:status style="Critical" html="true"><fmt:message key="errorPhoneInvalid"/> ${faqlink}</app:status>
+		    <app:status style="Critical" html="true"><fmt:message key="errorPhoneInvalid"><fmt:param value="${faqlink}"/></fmt:message></app:status>
 		</c:when>
 	    
 		<c:when test="${success}">
