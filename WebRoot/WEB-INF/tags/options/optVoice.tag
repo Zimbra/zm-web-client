@@ -464,14 +464,14 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 					<c:if test="${!empty sessionScope.emailNotificationAddresses && !empty sessionScope.emailNotificationAddresses[phone]}">
 					<tr>
 						<td colspan="2" style="vertical-align:top;" align="right">
-							<table class="ZmBufferList List" border="0" cellpadding="0" cellspacing="0" width="400px">
+							<table class="ZmBufferList List" border="0" cellpadding="0" cellspacing="0" width="500px">
 								<tr><th colspan="2"><fmt:message key="optionsVoiceNotificationsAddresses"/></th></tr>
 								<c:set var="i" value="0"/>
 								<c:forEach items="${sessionScope.emailNotificationAddresses[phone]}" var="notificationAddress">
 									<c:if test="${!empty notificationAddress}">
 									<tr>
-										<td style="width:50%">${notificationAddress}</td>
-										<td style="width:50%;text-align:left">
+										<td style="width:420px">${notificationAddress}</td>
+										<td style="width:80px;text-align:left">
 										    <label for="actionVoiceRemoveNotification_${i}" class="FakeLink"><fmt:message key='remove'/></label>
 										</td>
 									</tr>
