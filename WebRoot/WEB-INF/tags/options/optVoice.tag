@@ -447,11 +447,10 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 										<td style="width:50%">${notificationAddress}</td>
 										<td style="width:50%;text-align:left">
 										    <label for="actionVoiceRemoveNotification_${i}" class="FakeLink"><fmt:message key='remove'/></label>
-										    <input type="submit" class="HiddenButton" id="actionVoiceRemoveNotification_${i}" name="actionVoiceRemoveNotification" value="${notificationAddress}"/>
 										</td>
 									</tr>
-									</c:if>
 									<c:set var="i" value="${i+1}"/>
+									</c:if>
 								</c:forEach>
 							</table>
 						</td>
@@ -459,6 +458,18 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 							<input type="submit" name="actionVoiceClearNotification" value="<fmt:message key='removeAll'/>"/>
 						</td>
 					</tr>
+					<tr>
+						<td colspan="3">
+							<c:set var="i" value="0"/>
+							<c:forEach items="${sessionScope.emailNotificationAddresses[phone]}" var="notificationAddress">
+								<c:if test="${!empty notificationAddress}">
+									<input type="submit" class="HiddenButton" id="actionVoiceRemoveNotification_${i}" name="actionVoiceRemoveNotification" value="${notificationAddress}"/>
+									<c:set var="i" value="${i+1}"/>
+								</c:if>
+							</c:forEach>
+						</td>
+					</tr>
+
 					</c:if>
 				</table>
 			</td>
@@ -570,12 +581,7 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 										<td style="width:50%">${number}</td>
 										<td style="width:50%;text-align:left">
 										    <label for="actionVoiceRemoveForwarding_${i}" class="FakeLink"><fmt:message key='remove'/></label>
-										    <script type="text/javascript">
-										    <!--
-											    selectiveForwardCheckboxDependers.push("actionVoiceRemoveForwarding_${i}");
-										    //-->
-										    </script>
-										    <input type="submit" class="HiddenButton" id="actionVoiceRemoveForwarding_${i}" name="actionVoiceRemoveSelectiveForwarding" value="${number}"/>
+										    
 										</td>
 									</tr>
 									<c:set var="i" value="${i+1}"/>
@@ -584,7 +590,6 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 								</c:if>
 							</table>
 						</td>
-						
 
 						<td style="vertical-align:top;padding-left:10px">
 							<input type="submit" name="addSelectiveForwarding" id="addSelectiveForwarding" value="<fmt:message key='addToList'/>" <c:if test="${displayAddSelectiveForwarding || !canAddSelectiveForwarding}">disabled</c:if>/>
@@ -593,6 +598,23 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 								selectiveForwardCheckboxDependers.push("addSelectiveForwarding");
 							//-->
 							</script>
+						</td>
+					</tr>
+
+					<tr>
+						<td colspan="3">
+							<c:set var="i" value="0"/>
+							<c:forEach items="${sessionScope.selectiveCallForwardingFrom[phone]}" var="number">
+								<c:if test="${!empty number}">
+									<input type="submit" class="HiddenButton" id="actionVoiceRemoveForwarding_${i}" name="actionVoiceRemoveSelectiveForwarding" value="${number}"/>
+									<script type="text/javascript">
+									<!--
+									        selectiveForwardCheckboxDependers.push("actionVoiceRemoveForwarding_${i}");
+									//-->
+									</script>
+									<c:set var="i" value="${i+1}"/>
+								</c:if>
+							</c:forEach>
 						</td>
 					</tr>
 					
@@ -730,12 +752,7 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 										<td style="width:50%">${number}</td>
 										<td style="width:50%;text-align:left">
 										    <label for="actionVoiceRemoveRejection_${i}" class="FakeLink"><fmt:message key='remove'/></label>
-										    <script type="text/javascript">
-										    <!--
-											    selectiveRejectionCheckboxDependers.push("actionVoiceRemoveRejection_${i}");
-										    //-->
-										    </script>
-										    <input type="submit" class="HiddenButton" id="actionVoiceRemoveRejection_${i}" name="actionVoiceRemoveSelectiveRejection" value="${number}"/>
+										    
 										</td>
 									</tr>
 									<c:set var="i" value="${i+1}"/>
@@ -754,6 +771,23 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 								selectiveRejectionCheckboxDependers.push("addSelectiveRejection");
 							//-->
 							</script>
+						</td>
+					</tr>
+
+					<tr>
+						<td colspan="3">
+							<c:set var="i" value="${0}"/>
+							<c:forEach items="${sessionScope.selectiveCallRejectionFrom[phone]}" var="number">
+								<c:if test="${!empty number}">
+									<input type="submit" class="HiddenButton" id="actionVoiceRemoveRejection_${i}" name="actionVoiceRemoveSelectiveRejection" value="${number}"/>
+									<script type="text/javascript">
+									<!--
+										selectiveRejectionCheckboxDependers.push("actionVoiceRemoveRejection_${i}");
+									//-->
+									</script>
+									<c:set var="i" value="${i+1}"/>
+								</c:if>
+							</c:forEach>
 						</td>
 					</tr>
 					
