@@ -2499,6 +2499,13 @@ function(msg) {
 
 	this._fromSelect.setSelectedValue(selectedIdentity.id);
 
+	// for cross account searches, the active account isn't necessarily the
+	// account of the selected conv/msg so reset it based on the selected option.
+	if (appCtxt.getSearchController().searchAllAccounts) {
+		active = appCtxt.accountList.getAccount(this._fromSelect.getSelectedOption().accountId);
+		this._controller._accountName = active.name;
+	}
+
 	if (this._acAddrSelectList) {
 		this._acAddrSelectList.setActiveAccount(active);
 	}
