@@ -120,7 +120,8 @@ function(params, callback) {
 			sortBy: sortBy,
 			offset: offset,
 			limit: limit,
-			getHtml: (params.getHtml || this.isDraft || appCtxt.get(ZmSetting.VIEW_AS_HTML))
+			getHtml: (params.getHtml || this.isDraft || appCtxt.get(ZmSetting.VIEW_AS_HTML)),
+			accountName: (appCtxt.getSearchController().searchAllAccounts ? appCtxt.accountList.mainAccount.name : null)
 		};
 		var search = this.search = new ZmSearch(searchParams);
 
