@@ -2177,10 +2177,10 @@ function(htmlArr, idx, phone, field, colIdx, params) {
 ZmBufferList = function(params) {
 	if (arguments.length == 0) { return; }
 	params = Dwt.getParams(arguments, DwtListView.PARAMS);
-	if (!params.headerList) params.headerList = [new DwtListHeaderItem({field:1, text:params.headerText, sortable:false, resizeable:false, noRemove:true, width:"200"}), new DwtListHeaderItem({field:2, sortable:false, text:"&nbsp;", resizeable:false, noRemove:true, width: "180"})];
+	if (!params.headerList) params.headerList = [new DwtListHeaderItem({field:1, text:params.headerText, sortable:false, resizeable:false, noRemove:true, width:"400"}), new DwtListHeaderItem({field:2, sortable:false, text:"&nbsp;", resizeable:false, noRemove:true, width: "80"})];
 	if (!params.className) params.className = "ZmBufferList";
 	DwtListView.call(this, params);
-	this.setSize(400, Dwt.DEFAULT);
+	this.setSize(500, Dwt.DEFAULT);
 	this.multiSelectEnabled = false;
 	this.displayProperty = params.displayProperty || "text";
 	this._changed = false;
@@ -2304,7 +2304,7 @@ function() {
 * phone number specific version of ZmBufferList
 */
 ZmPhoneBufferList = function(parent) {
-	var headerList = [new DwtListHeaderItem({field:1, text:ZmMsg.voicemailPhoneNumber, sortable:false, resizeable:false, noRemove:true, width:"150"}), new DwtListHeaderItem({field:2, sortable:false, text:"&nbsp;", resizeable:false, noRemove:true, width: "130"})];
+	var headerList = [new DwtListHeaderItem({field:1, text:ZmMsg.voicemailPhoneNumber, sortable:false, resizeable:false, noRemove:true, width:"200"}), new DwtListHeaderItem({field:2, sortable:false, text:"&nbsp;", resizeable:false, noRemove:true, width: "80"})];
 	ZmBufferList.call(this, {parent:parent, className:"ZmPhoneBufferList", headerList:headerList, displayProperty:"pn"});
 	this.setSize(300, Dwt.DEFAULT);
 	this.multiSelectEnabled = false;

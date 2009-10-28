@@ -330,7 +330,7 @@
 									</td>
 								</tr>
 								<tr>
-									<td class='ZOptionsField' colspan='3' style='width:500px;padding-left:100px'>
+									<td class='ZOptionsField' colspan='3' style='width:500px'>
 										<div id='${id}_emailNotificationList'></div>
 									</td>
 									<td style='vertical-align:top'>
