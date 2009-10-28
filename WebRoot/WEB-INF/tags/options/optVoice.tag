@@ -18,6 +18,32 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 </app:handleError>
 <c:if test="${voiceStatus ne 'false'}">
 
+<%
+	// Logging in doesn't clear the session of objects we'd like removed, so we have to do it ourselves
+	
+	String sessionToken=null;
+	if (session!=null)
+		sessionToken = (String) session.getAttribute("authToken");
+	
+	Cookie[] cookies = request.getCookies();
+	for (int i = 0; i < cookies.length; i++) {
+		Cookie c = cookies[i];
+		if ("ZM_AUTH_TOKEN".equals(c.getName())) {
+			String value = c.getValue();
+			if (sessionToken == null || !sessionToken.equals(value)) { // Session has been renewed (logged out & logged in). Kill our objects from the session
+				if (session != null) {
+					session.setAttribute("emailNotificationAddresses", null);
+					session.setAttribute("callForwardingTo", null);
+					session.setAttribute("selectiveCallForwardingTo", null);
+					session.setAttribute("selectiveCallForwardingFrom", null);
+					session.setAttribute("selectiveCallRejectionFrom", null);
+					session.setAttribute("authToken", value);
+				}    
+			}
+		}
+	}	
+%>
+
 <table width="100%" cellspacing="10" cellpadding="10"><tr><td>
 
 	<%----------------- General Section --------------%>
