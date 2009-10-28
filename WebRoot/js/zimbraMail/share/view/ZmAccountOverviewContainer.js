@@ -145,23 +145,22 @@ function(params) {
 	}
 
 	// add Global Inbox tree item
-	if (appCtxt.isOffline &&
-		appCtxt.get(ZmSetting.OFFLINE_SHOW_GLOBAL_INBOX) &&
-		this._appName == ZmApp.MAIL)
-	{
+	if (appCtxt.isOffline && this._appName == ZmApp.MAIL) {
 		var params = {
 			parent: this,
 			text: (ZmMsg[ZmFolder.MSG_KEY[ZmOrganizer.ID_GLOBAL_INBOX]]),
 			imageInfo: "GlobalInbox"
 		};
-		var ti = this._globalInboxTreeItem = new DwtTreeItem(params);
+		var ti = new DwtTreeItem(params);
 		ti.setData(Dwt.KEY_ID, appCtxt.getById(ZmOrganizer.ID_GLOBAL_INBOX));
 		ti.setScrollStyle(Dwt.CLIP);
 		ti.addClassName("ZmOverviewGlobalInbox");
 		ti._initialize(0, true);
+		ti.setVisible(appCtxt.get(ZmSetting.OFFLINE_SHOW_GLOBAL_INBOX));
 
-		var setting = appCtxt.getSettings().getSetting(ZmSetting.OFFLINE_SHOW_GLOBAL_INBOX);
-		setting.addChangeListener(new AjxListener(this, this._settingChangeListener));
+		var mainAcct = appCtxt.accountList.mainAccount;
+		var setting = appCtxt.getSettings(mainAcct).getSetting(ZmSetting.OFFLINE_SHOW_GLOBAL_INBOX);
+		setting.addChangeListener(new AjxListener(this, this._settingChangeListener, ti));
 	}
 };
 
@@ -391,12 +390,12 @@ function(ev) {
 };
 
 ZmAccountOverviewContainer.prototype._settingChangeListener =
-function(ev) {
+function(ti, ev) {
 	if (ev.type != ZmEvent.S_SETTING) { return; }
 
 	var setting = ev.source;
 	if (setting.id == ZmSetting.OFFLINE_SHOW_GLOBAL_INBOX) {
-		this._globalInboxTreeItem.setVisible(setting.getValue());
+		ti.setVisible(setting.getValue());
 	}
 };
 

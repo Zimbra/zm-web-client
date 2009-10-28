@@ -1325,7 +1325,7 @@ function(query, callback, response, type) {
 
 	var sc = appCtxt.getSearchController();
 	var queryHint, noUpdateOverview;
-	if (appCtxt.get(ZmSetting.OFFLINE_SHOW_GLOBAL_INBOX) && false) { // disable for now
+	if (appCtxt.get(ZmSetting.OFFLINE_SHOW_GLOBAL_INBOX)) {
 		query = null;
 		queryHint = appCtxt.accountList.generateQuery(ZmOrganizer.ID_INBOX);
 		noUpdateOverview = true;

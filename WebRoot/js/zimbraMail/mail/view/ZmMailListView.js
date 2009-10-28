@@ -308,7 +308,7 @@ function(viewId, headerList) {
 			hdrParams.field = field;
 			// multi-account, account header is always initially invisible
 			// unless user is showing global inbox. Ugh.
-			if (appCtxt.multiAccounts && false && // XXX: disable for now
+			if (appCtxt.multiAccounts &&
 				appCtxt.inStartup &&
 				appCtxt.get(ZmSetting.OFFLINE_SHOW_GLOBAL_INBOX) &&
 				header.indexOf(ZmItem.F_ACCOUNT) != -1)

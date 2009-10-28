@@ -43,6 +43,9 @@ ZmSetting = function(id, params) {
 	this.type = params.type;
 	this.dataType = params.dataType || ZmSetting.D_STRING;
 	this.defaultValue = params.defaultValue;
+	if (this.type == ZmSetting.T_METADATA) {
+		this.section = params.section;
+	}
 	if (params.isGlobal) {
 		ZmSetting.IS_GLOBAL[id] = true;
 	}
@@ -70,6 +73,10 @@ ZmSetting.T_COS			= "cos";
 ZmSetting.T_METADATA	= "meta";
 ZmSetting.T_PREF		= "pref";
 ZmSetting.T_PSEUDO		= "pseudo";
+
+// metadata sections
+ZmSetting.M_IMPLICIT	= "implicit";
+ZmSetting.M_OFFLINE		= "offline";
 
 // setting data types
 ZmSetting.D_STRING		= "string"; // default type

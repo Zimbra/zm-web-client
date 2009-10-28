@@ -152,20 +152,23 @@ function(name) {
  * @param errorCallback 	[AjxCallback]*		callback to run error is received
  * @param accountName		[String]*			name of account to load settings for
  * @param response			[object]*			pre-determined JSON response object
+ * @param metaData			[object]*			meta data specific to ZWC
  * @param batchCommand		[ZmBatchCommand]*	set if part of a batch request
  */
 ZmSettings.prototype.loadUserSettings =
-function(callback, errorCallback, accountName, response, batchCommand) {
+function(callback, errorCallback, accountName, response, metaData, batchCommand) {
+	var args = [callback, accountName, metaData];
+
 	if (batchCommand) {
 		var soapDoc = AjxSoapDoc.create("GetInfoRequest", "urn:zimbraAccount");
-		var respCallback = new AjxCallback(this, this._handleResponseLoadUserSettings, [callback, accountName]);
+		var respCallback = new AjxCallback(this, this._handleResponseLoadUserSettings, args);
 		batchCommand.addNewRequestParams(soapDoc, respCallback);
 	} else {
 		var params = {
 			soapDoc: (response ? null : AjxSoapDoc.create("GetInfoRequest", "urn:zimbraAccount")),
 			accountName: accountName,
 			asyncMode: true,
-			callback: (new AjxCallback(this, this._handleResponseLoadUserSettings, [callback, accountName])),
+			callback: (new AjxCallback(this, this._handleResponseLoadUserSettings, args)),
 			errorCallback: errorCallback,
 			response: response
 		};
@@ -174,7 +177,7 @@ function(callback, errorCallback, accountName, response, batchCommand) {
 };
 
 ZmSettings.prototype._handleResponseLoadUserSettings =
-function(callback, accountName, result) {
+function(callback, accountName, metaData, result) {
 	var obj = this.getInfoResponse = result.getResponse().GetInfoResponse;
 
 	if (obj.name) 			{ this._settings[ZmSetting.USERNAME].setValue(obj.name); }
@@ -191,6 +194,11 @@ function(callback, accountName, result) {
 	}
 	if (obj.attrs && obj.attrs._attrs) {
 		this.createFromJs(obj.attrs._attrs);
+	}
+	if (metaData) {
+		for (var i in metaData) {
+			this.createFromJs(metaData[i]);
+		}
 	}
 
 	if (!accountName) {
@@ -417,9 +425,13 @@ function(list, callback, batchCommand, acctName) {
 
 	var soapDoc = AjxSoapDoc.create("ModifyPrefsRequest", "urn:zimbraAccount");
 	var gotOne = false;
+	var metaData = [];
 	for (var i = 0; i < list.length; i++) {
 		var setting = list[i];
-		if (setting.type != ZmSetting.T_PREF) {
+		if (setting.type == ZmSetting.T_METADATA) {
+			metaData.push(setting);
+			continue;
+		} else if (setting.type != ZmSetting.T_PREF) {
 			DBG.println(AjxDebug.DBG1, "*** Attempt to modify non-pref: " + setting.id + " / " + setting.name);
 			continue;
 		}
@@ -448,6 +460,14 @@ function(list, callback, batchCommand, acctName) {
 		gotOne = true;
 	}
 
+	if (metaData.length > 0) {
+		var metaDataCallback = new AjxCallback(this, this._handleResponseSaveMetaData, [metaData]);
+		for (var i = 0; i < metaData.length; i++) {
+			var data = metaData[i];
+			appCtxt.getMetaData().set(data.section, data.name, data.value, batchCommand, metaDataCallback);
+		}
+	}
+
 	if (gotOne) {
 		var respCallback;
 		var asyncMode = false;
@@ -460,6 +480,15 @@ function(list, callback, batchCommand, acctName) {
 		} else {
 			appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:asyncMode, callback:respCallback, accountName:acctName});
 		}
+	}
+};
+
+ZmSettings.prototype._handleResponseSaveMetaData =
+function(list, result) {
+	for (var i = 0; i < list.length; i++) {
+		var setting = list[i];
+		setting.origValue = setting.getValue(null, false);
+		setting._notify(ZmEvent.E_MODIFY);
 	}
 };
 
@@ -707,7 +736,7 @@ function() {
 	this.registerSetting("OFFLINE_IS_MAILTO_HANDLER",		{name:"zimbraPrefMailtoHandlerEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, isGlobal:true});
 	this.registerSetting("OFFLINE_REMOTE_SERVER_URI",		{name:"offlineRemoteServerUri", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING});
 	this.registerSetting("OFFLINE_REPORT_EMAIL",			{type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, defaultValue:"zdesktop-report@zimbra.com", isGlobal:true});
-	this.registerSetting("OFFLINE_SHOW_GLOBAL_INBOX",		{name:"offlineShowGlobalInbox", type:ZmSetting.T_METADATA, dataType:ZmSetting.D_BOOLEAN, defaultValue:true, isGlobal:true});
+	this.registerSetting("OFFLINE_SHOW_GLOBAL_INBOX",		{name:"offlineShowGlobalInbox", type:ZmSetting.T_METADATA, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, section:ZmSetting.M_OFFLINE, isGlobal:true});
 	this.registerSetting("OFFLINE_SMTP_ENABLED",			{name:"zimbraDataSourceSmtpEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	this.registerSetting("OFFLINE_SUPPORTS_MAILTO",			{type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, isGlobal:true});
 	this.registerSetting("OFFLINE_SUPPORTS_DOCK_UPDATE",	{type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, isGlobal:true});

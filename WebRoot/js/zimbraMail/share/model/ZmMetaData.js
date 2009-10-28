@@ -24,7 +24,6 @@
  * @author Parag Shah
  */
 ZmMetaData = function() {
-	this._data = {};
 };
 
 ZmMetaData.prototype.constructor = ZmMetaData;
@@ -46,61 +45,63 @@ function() {
  * Saves the given section and corresponding key/value pair to the server. If no
  * key/value is provided, all data stored within the cached section is saved out.
  *
- * @param section		[String]		Name of the section to save
- * @param key			[String]*		Key
- * @param value			[String]*		Value
- * @param callback		[AjxCallback]*	Callback to trigger on successful save
- * @param errorCallback	[AjxCallback]*	Error callback to trigger on error
+ * @param section		[String]			Name of the section to save
+ * @param key			[String]*			Key
+ * @param value			[String]*			Value
+ * @param batchCommand	[ZmBatchCommand]*	If part of a batch command
+ * @param callback		[AjxCallback]*		Callback to trigger on successful save
+ * @param errorCallback	[AjxCallback]*		Error callback to trigger on error
  */
 ZmMetaData.prototype.set =
-function(section, key, value, callback, errorCallback) {
+function(section, key, value, batchCommand, callback, errorCallback) {
 	var soapDoc = AjxSoapDoc.create("SetMailboxMetadataRequest", "urn:zimbraMail");
 	var metaNode = soapDoc.set("meta");
 	metaNode.setAttribute("section", [ZmMetaData.NAMESPACE, section].join(":"));
 	var a = soapDoc.set("a", value, metaNode);
 	a.setAttribute("n", key);
 
-	var params = {
-		soapDoc: soapDoc,
-		asyncMode: true,
-		callback: callback,
-		errorCallback: errorCallback,
-		accountName: (appCtxt.multiAccounts ? appCtxt.accountList.mainAccount : null)
-	};
+	if (batchCommand) {
+		batchCommand.addNewRequestParams(soapDoc, callback, errorCallback);
+	}
+	else {
+		var params = {
+			soapDoc: soapDoc,
+			asyncMode: true,
+			callback: callback,
+			errorCallback: errorCallback,
+			accountName: (appCtxt.multiAccounts ? appCtxt.accountList.mainAccount : null)
+		};
 
-	appCtxt.getAppController().sendRequest(params);
+		appCtxt.getAppController().sendRequest(params);
+	}
 };
 
 /**
  * Fetches the given section name from the server unless its already been
  * fetched (and therefore cached)
  *
- * @param section		[String]		Name of the section to fetch
- * @param force			[Boolean]*		If true, fetch from the server even if cached
- * @param callback		[AjxCallback]*	Callback to trigger once meta data is fetched
- * @param errorCallback	[AjxCallback]*	Error callback to trigger on error
+ * @param sections		[Array]				A list of sections to fetch
+ * @param batchCommand	[ZmBatchCommand]*	Given if part of a separate batch command
+ * @param callback		[AjxCallback]*		Callback to trigger once meta data is fetched
+ * @param errorCallback	[AjxCallback]*		Error callback to trigger on error
  */
 ZmMetaData.prototype.get =
-function(section, force, callback, errorCallback) {
-	if (!this._data[section]) {
-		var jsonObj = {GetMailboxMetadataRequest:{_jsns:"urn:zimbraMail"}};
-		var request = jsonObj.GetMailboxMetadataRequest;
-		request.meta = {section: [ZmMetaData.NAMESPACE, section].join(":")};
+function(sections, batchCommand, callback, errorCallback) {
+	if (!(sections instanceof Array)) { sections = [sections]; }
 
-		var params = {
-			jsonObj: jsonObj,
-			asyncMode: true,
-			callback: callback,
-			errorCallback: errorCallback,
-			accountName: (appCtxt.multiAccounts ? appCtxt.accountList.mainAccount : null)
-		};
-		appCtxt.getAppController().sendRequest(params);
+	var accountName = appCtxt.multiAccounts ? appCtxt.accountList.mainAccount : null;
+	var command = batchCommand || (new ZmBatchCommand(null, accountName));
+
+	for (var i = 0; i < sections.length; i++) {
+		var section = sections[i];
+		var soapDoc = AjxSoapDoc.create("GetMailboxMetadataRequest", "urn:zimbraMail");
+		var metaNode = soapDoc.set("meta");
+		metaNode.setAttribute("section", [ZmMetaData.NAMESPACE, section].join(":"));
+
+		command.addNewRequestParams(soapDoc);
 	}
-	else {
-		if (callback) {
-			callback.run(this._data[section]);
-		} else {
-			return this._data[section];
-		}
+
+	if (!batchCommand) {
+		command.run(callback, errorCallback);
 	}
 };

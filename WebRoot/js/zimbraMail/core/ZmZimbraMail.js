@@ -387,9 +387,27 @@ function(params) {
 		this.addPostRenderCallback(callback, 0, 0, true);
 	}
 
+	// fetch meta data
+	var respCallback = new AjxCallback(this, this._handleResponseGetMetaData, params);
+	var sections = [ZmSetting.M_IMPLICIT];
+	if (appCtxt.isOffline) {
+		sections.push(ZmSetting.M_OFFLINE);
+	}
+	appCtxt.getMetaData().get(sections, null, respCallback);
+};
+
+ZmZimbraMail.prototype._handleResponseGetMetaData =
+function(params, result) {
+	var metaDataResp = result.getResponse().BatchResponse.GetMailboxMetadataResponse;
+	var metaData = {};
+	for (var i = 0; i < metaDataResp.length; i++) {
+		var data = metaDataResp[i].meta[0];
+		metaData[data.section] = data._attrs;
+	}
+
 	var respCallback = new AjxCallback(this, this._handleResponseLoadUserSettings, params);
 	this._errorCallback = new AjxCallback(this, this._handleErrorStartup, params);
-	this._settings.loadUserSettings(respCallback, this._errorCallback, null, params.getInfoResponse);
+	this._settings.loadUserSettings(respCallback, this._errorCallback, null, params.getInfoResponse, metaData);
 };
 
 ZmZimbraMail.prototype.showMiniCalendar =

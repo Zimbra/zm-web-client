@@ -302,7 +302,7 @@ function(callback) {
 
 		// load user settings retrieved from server now
 		var loadCallback = new AjxCallback(this, this._handleLoadSettings);
-		this.settings.loadUserSettings(loadCallback, null, this.name, null, command);
+		this.settings.loadUserSettings(loadCallback, null, this.name, null, null, command);
 
 		// get tag info for this account *FIRST* - otherwise, root ID get overridden
 		var tagDoc = AjxSoapDoc.create("GetTagRequest", "urn:zimbraMail");
