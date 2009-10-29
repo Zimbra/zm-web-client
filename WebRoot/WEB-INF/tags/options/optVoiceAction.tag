@@ -246,7 +246,7 @@
 
 
 
-<c:if test="${voiceselected=='screening' && zm:actionSet(param, 'addSelectiveRejection') && !empty sessionScope.selectiveCallRejectionFrom && !empty sessionScope.selectiveCallRejectionFrom[param.phone] && fn:length(sessionScope.selectiveCallRejectionFrom) >= 12}">
+<c:if test="${voiceselected=='screening' && zm:actionSet(param, 'addSelectiveRejection') && !empty sessionScope.selectiveCallRejectionFrom && !empty sessionScope.selectiveCallRejectionFrom[param.phone] && fn:length(sessionScope.selectiveCallRejectionFrom[param.phone]) >= 12}">
     <app:status style="Critical" html="true"><fmt:message key="optionsCallRejectionErrorMax"><fmt:param value="${faqlink}"/></fmt:message></app:status>
     <c:set var="addSelectiveRejection" scope="request" value="${null}"/>
 </c:if>
