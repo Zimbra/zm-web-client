@@ -1054,6 +1054,10 @@ function(request, isDraft, accountName, requestReadReceipt) {
 								var id = (isDraft || this.isDraft)
 									? (oboDraftMsgId || this.id || this.origId)
 									: (this.origId || this.id);
+
+                                if(!id && this._origMsg)
+                                    id = this._origMsg.id;
+
 								attachNode.mp = [{mid:id, part:inlineAtts[j].part}];
 							}
 							subPartNodes.push(inlineAttNode);
