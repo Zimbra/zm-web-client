@@ -97,7 +97,7 @@ function(number, errors) {
 	number = ZmPhone.calculateName(number);
 	
 	if (number == this.name) {
-		errors.push(ZmMsg.errorPhoneIsOwn + ZmMsg.errorPhoneFAQURL);
+		errors.push(ZmMsg.errorPhoneIsOwn);
 		return false;
 	}
 	
