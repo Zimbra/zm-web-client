@@ -27,7 +27,7 @@
 
     <%-- See if the forwarding to number is in the forwarding from list --%>
     <c:if test="${voiceselected=='forwarding' && param.selectiveCallForwardingActive}">
-    <zm:phone var="success" displayVar="toNumber" errorVar="errorCode" name="${param.selectiveCallForwardingTo}"/>
+    <zm:phone var="toValid" displayVar="toNumber" errorVar="errorCode" name="${param.selectiveCallForwardingTo}"/>
     <zm:listObject phone="${param.phone}" map="${sessionScope.selectiveCallForwardingFrom}" strArr="numbers" var="bogus"/>
     <c:set var="entryTest" value="${fn:replace(toNumber, '1-(', '(')}"/>
     <c:forEach items="${numbers}" var="number">
@@ -37,22 +37,21 @@
 		<c:set var="invalidForwardNumber" value="${true}"/>
 	    </c:if>
     </c:forEach>
+    <zm:phone var="anonToValid" displayVar="anonToNumber" errorVar="errorCode" name="${param.callForwardingTo}"/>
     </c:if>
 
 
     <c:choose>
-        <c:when test="${voiceselected=='forwarding' && param.callForwardingActive && !zm:isValidPhoneNumber(param.callForwardingTo)}">
+        <c:when test="${voiceselected=='forwarding' && param.callForwardingActive && !empty anonToValid && !anonToValid}">
             <app:status style="Critical" html="true"><fmt:message key="invalidForwardNumber"><fmt:param value="${faqlink}"/></fmt:message></app:status>
-	</c:when>
-
-	<c:when test="${voiceselected=='forwarding' && param.selectiveCallForwardingActive && !zm:isValidPhoneNumber(param.selectiveCallForwardingTo)}">
-	    <app:status style="Critical" html="true"><fmt:message key="invalidForwardNumber"><fmt:param value="${faqlink}"/></fmt:message></app:status>
-	    <c:set var="selectiveCallForwardingActive" scope="request" value="FALSE"/>
-	    <c:set var="badSelectiveCallForwardingTo" scope="request" value="${true}"/>
 	</c:when>
 
 	<c:when test="${voiceselected=='forwarding' && param.selectiveCallForwardingActive && invalidForwardNumber}">
 	        <app:status style="Critical" html="true"><fmt:message key="errorPhoneIsInList"><fmt:param value="${faqlink}"/></fmt:message></app:status>
+	</c:when>
+	
+	<c:when test="${param.selectiveCallForwardingActive && !empty toValid && !toValid}">
+		<app:status style="Critical" html="true"><fmt:message key="errorPhoneInvalid"><fmt:param value="${faqlink}"/></fmt:message></app:status>
 	</c:when>
 
         <c:otherwise>
@@ -80,25 +79,11 @@
 		
                 <c:when test="${voiceselected=='forwarding'}">	
 
-		    <c:if test="${!param.selectiveCallForwardingActive && !zm:isValidPhoneNumber(param.selectiveCallForwardingTo)}">
-			<c:set var="selectiveCallForwardingActive" scope="request" value="FALSE"/>
-			<c:set var="badSelectiveCallForwardingTo" scope="request" value="${true}"/>
-		    </c:if>
-
-                    <zm:phone var="success" displayVar="displayNumber" errorVar="errorCode" name="${param.selectiveCallForwardingTo}"/>
-		    <c:choose>
-			<c:when test="${param.selectiveCallForwardingActive && !success}">
-			    <c:set var="failure" value="${true}"/>
-			</c:when>
-		    
-			<c:otherwise>
 			    <zm:listObject var="bogus" phone="${param.phone}" strArr="scf" map="${sessionScope.selectiveCallForwardingFrom}"/>
                 	    <zm:modifyCallFeatures var="result" phone="${param.phone}"
                     		callforwardingactive="${param.callForwardingActive}" callforwardingforwardto="${param.callForwardingTo}"
                     		selectivecallforwardingactive="${param.selectiveCallForwardingActive=='TRUE'}" selectivecallforwardingforwardto="${param.selectiveCallForwardingTo}" selectivecallforwardingforwardfrom="${scf}"
 			    />
-			</c:otherwise>
-		    </c:choose>
                 </c:when>
 		
                 <c:when test="${voiceselected=='screening'}">
@@ -203,6 +188,10 @@
 	<c:choose>
 		<c:when test="${useFrom && invalidAddNumber}">
 		    <app:status style="Critical" html="true"><fmt:message key="errorPhoneNotUnique"><fmt:param value="${faqlink}"/></fmt:message></app:status>
+		</c:when>
+
+		<c:when test="${!useFrom && empty toDisplayNumber}">
+		    <app:status style="Critical" html="true"><fmt:message key="optionsCallForwardingErrorToEmpty"><fmt:param value="${faqlink}"/></fmt:message></app:status>
 		</c:when>
 	    
 		<c:when test="${fn:replace(thisDisplayNumber, '1-(', '(') == fn:replace(displayNumber, '1-(', '(')}">
