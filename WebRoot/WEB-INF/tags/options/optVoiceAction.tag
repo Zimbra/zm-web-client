@@ -42,6 +42,10 @@
 
 
     <c:choose>
+	<c:when test="${voiceselected=='forwarding' && param.callForwardingActive && empty param.callForwardingTo}">
+	    <app:status style="Critical" html="true"><fmt:message key="optionsCallForwardingErrorToEmpty"><fmt:param value="${faqlink}"/></fmt:message></app:status>
+	</c:when>
+
         <c:when test="${voiceselected=='forwarding' && param.callForwardingActive && !empty anonToValid && !anonToValid}">
             <app:status style="Critical" html="true"><fmt:message key="invalidForwardNumber"><fmt:param value="${faqlink}"/></fmt:message></app:status>
 	</c:when>
@@ -190,8 +194,8 @@
 		    <app:status style="Critical" html="true"><fmt:message key="errorPhoneNotUnique"><fmt:param value="${faqlink}"/></fmt:message></app:status>
 		</c:when>
 
-		<c:when test="${!useFrom && empty toDisplayNumber}">
-		    <app:status style="Critical" html="true"><fmt:message key="optionsCallForwardingErrorToEmpty"><fmt:param value="${faqlink}"/></fmt:message></app:status>
+		<c:when test="${!useFrom && empty param.selectiveCallForwardingTo}">
+		    <app:status style="Critical" html="true"><fmt:message key="optionsCallForwardingSelectiveErrorToEmpty"><fmt:param value="${faqlink}"/></fmt:message></app:status>
 		</c:when>
 	    
 		<c:when test="${fn:replace(thisDisplayNumber, '1-(', '(') == fn:replace(displayNumber, '1-(', '(')}">
