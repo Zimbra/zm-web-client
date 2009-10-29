@@ -253,7 +253,7 @@
 							</nobr>
 						</td>
 						<td class='ZOptionsField'>
-							<a href='<$=ZmMsg.voicemailChangePasswordURL $>'>
+							<a href='<$=ZmMsg.voicemailChangePasswordURL $>' target='_blank'>
 								<$= ZmMsg.voicemailChangePasswordLink $>
 							</a>
 						</td>
@@ -266,6 +266,25 @@
 						</td>
 						<td class='ZOptionsField'>
 							<div id='${id}_voiceRequirePinCheckbox'></div>
+						</td>
+					</tr>
+					<tr>
+						<td colspan='2'>
+							<hr/>
+						</td>
+					</tr>
+					<tr>
+						<td/>
+						<td class='ZOptionsField' style='font-weight:bold'>
+							<$= ZmMsg.voiceCenterHeader $>
+						</td>
+					</tr>
+					<tr>
+						<td/>
+						<td class='ZOptionsField'>
+							<a href='<$= ZmMsg.voiceCenterLinkURL $>' target='_blank'>
+								<$= ZmMsg.voiceCenterLinkText $>
+							</a>
 						</td>
 					</tr>
 				</table>
