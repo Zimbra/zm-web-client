@@ -134,8 +134,11 @@
 	    <c:when test="${fn:length(sessionScope.emailNotificationAddresses[param.phone])>=25}">
 		<app:status style="Critical" html="true"><fmt:message key="optionsVoiceNotificationsErrorMax"><fmt:param value="${faqlink}"/></fmt:message></app:status>
 	    </c:when>
-	    <c:when test="${fn:length(param.emailNotificationAddAddress)>100 || fn:indexOf(param.emailNotificationAddAddress, ',')!=-1 || !zm:isValidEmailAddress(param.emailNotificationAddAddress)}">
+	    <c:when test="${fn:indexOf(param.emailNotificationAddAddress, ',')!=-1 || !zm:isValidEmailAddress(param.emailNotificationAddAddress)}">
 		<app:status style="Critical" html="true"><fmt:message key="optionsVoiceNotificationsErrorInvalid"><fmt:param value="${faqlink}"/></fmt:message></app:status>
+	    </c:when>
+	    <c:when test="${fn:length(param.emailNotificationAddAddress)>100}">
+		<app:status style="Critical" html="true"><fmt:message key="optionsVoiceNotificationsErrorLong"><fmt:param value="${faqlink}"/></fmt:message></app:status>
 	    </c:when>
 	    <c:when test="${addressIsInList}">
 		<app:status style="Critical" html="true"><fmt:message key="optionsVoiceNotificationsErrorNotUnique"><fmt:param value="${faqlink}"/></fmt:message></app:status>
