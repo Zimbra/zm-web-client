@@ -47,7 +47,8 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
         request.setAttribute("packages", "dev");
     }
 
-
+    boolean isTinyMce = getParameter(request, "editor", "").equals("tinymce");
+    
     final String SKIN_COOKIE_NAME = "ZM_SKIN";
     String skin = application.getInitParameter("zimbraDefaultSkin");
     Cookie[] cookies = request.getCookies();
@@ -75,7 +76,7 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
     String offlineMode = getParameter(request, "offline", application.getInitParameter("offlineMode"));
 
     String prodMode = getAttribute(request, "prodMode", "");
-    
+
     Locale locale = request.getLocale();
     String localeId = getAttribute(request, "localeId", null);
     if (localeId != null) {
@@ -140,6 +141,7 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
     <% } %>
     <% }
     %>
+    <script type="text/javascript" src="<%=contextPath%>/tiny_mce/3.2.6/tiny_mce.js"></script>
 </head>
 <c:set var="fileName" value="${empty param.name ? 'Untitled' : zm:cook(param.name)}"/>
 <c:set var="folderId" value="${empty param.l ? '' : zm:cook(param.l)}"/>
@@ -151,6 +153,7 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 
     window.appContextPath = '<%= contextPath %>';
     window.isRestView = false;
+    window.isTinyMCE = <%= isTinyMce %>;
     ZmDocsEditApp._createDBG(${isDevMode});
 
     ZmDocsEditApp.setFile('${fileId}', '${fileName}', '${folderId}');

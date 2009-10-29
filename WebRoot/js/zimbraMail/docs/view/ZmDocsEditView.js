@@ -65,7 +65,12 @@ ZmDocsEditView.prototype.save = function(){
 	}
 
     ZmDocsEditApp.fileInfo.name    = fileName;
-    ZmDocsEditApp.fileInfo.content = this._editor.getContent();
+    if(window.isTinyMCE) { //temp check
+        var ed = tinyMCE.get('tiny_mce_content');
+        ZmDocsEditApp.fileInfo.content = ed.getContent();
+    } else {
+        ZmDocsEditApp.fileInfo.content = this._editor.getContent();
+    }    
     ZmDocsEditApp.fileInfo.contentType = ZmDocsEditApp.APP_ZIMBRA_DOC;
 
     this._docMgr.setSaveCallback(new AjxCallback(this, this._saveHandler));
@@ -175,19 +180,63 @@ ZmDocsEditView.prototype._initialize = function() {
     iFrame.setAttribute("autocomplete", "off", false);
     iFrame.setAttribute("allowtransparency", "true", false);
 
-    var editor = this._editor = new ZmDocsEditor({parent:this, iframe: this._iframe, controller: this._controller, className:"ZDEditDiv"});
-    this._editorTb = editor._createToolbar(this);
+    if(window.isTinyMCE) {  //temp check
+        var htmlEl = this.getHtmlElement();
+        var divEl = document.createElement("div");
+        divEl.setAttribute("style","padding:3px; height:98%");
+        var textEl = document.createElement("textarea");
+        textEl.setAttribute("id", "tiny_mce_content");
+        textEl.setAttribute("name","tiny_mce_content");
+        textEl.setAttribute("rows", "100");
+        //textEl.setAttribute("cols", "99");
+        textEl.setAttribute("style", "width:99.5%; height:97%;");
 
-    editor.getHtmlElement().appendChild(iFrame);
-    editor._initIframe();
+        divEl.appendChild(textEl);
+        htmlEl.appendChild(divEl);
 
-    var iContentWindow = this._iframe.contentWindow;
-    this._doc = iContentWindow ? iContentWindow.document : null;
-    this._pushIframeContent(this._iframe);
+        tinyMCE.init({
+            // General options
+            mode : "exact",
+            elements: "tiny_mce_content",
+            theme : "advanced",
+            relative_urls : false,
+            remove_script_host : false,
+            plugins : "safari,pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template",
 
-    editor._enableDesignMode(editor._getIframeDoc());
+            // Theme options
+            theme_advanced_buttons1 : "bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull,styleselect,formatselect,fontselect,fontsizeselect,|,cut,copy,paste,pastetext,pasteword,|,search,replace,|,bullist,numlist,|,outdent,indent,blockquote,|,undo,redo,|,link,unlink,anchor,image,cleanup,help,code,|,insertdate,inserttime,preview,|,forecolor,backcolor",
+            theme_advanced_buttons2 : "tablecontrols,|,hr,removeformat,visualaid,|,sub,sup,|,charmap,emotions,iespell,media,advhr,|,print,|,ltr,rtl,|,fullscreen,|,insertlayer,moveforward,movebackward,absolute,|,styleprops,|,cite,abbr,acronym,del,ins,attribs,|,visualchars,nonbreaking,template,pagebreak",
+            theme_advanced_buttons3 : "",
+            theme_advanced_toolbar_location : "top",
+            theme_advanced_toolbar_align : "left",
+            theme_advanced_statusbar_location : "none",
+            theme_advanced_resizing : true,
 
-    this.addFooter();
+            // Example content CSS (should be your site CSS)
+            content_css : "css/content.css",
+
+            // Drop lists for link/image/media/template dialogs
+            template_external_list_url : "lists/template_list.js",
+            external_link_list_url : "lists/link_list.js",
+            external_image_list_url : "lists/image_list.js",
+            media_external_list_url : "lists/media_list.js"
+
+        });
+    } else {
+         var editor = this._editor = new ZmDocsEditor({parent:this, iframe: this._iframe, controller: this._controller, className:"ZDEditDiv"});
+         this._editorTb = editor._createToolbar(this);
+
+         editor.getHtmlElement().appendChild(iFrame);
+         editor._initIframe();
+
+         var iContentWindow = this._iframe.contentWindow;
+         this._doc = iContentWindow ? iContentWindow.document : null;
+         this._pushIframeContent(this._iframe);
+
+         editor._enableDesignMode(editor._getIframeDoc());
+
+         this.addFooter();
+    }
 };
 
 ZmDocsEditView.prototype.addFooter = 
