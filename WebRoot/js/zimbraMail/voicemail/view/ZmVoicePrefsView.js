@@ -1463,7 +1463,7 @@ function(event) {
 ZmEmailNotificationUI.prototype._handleRemoveAll =
 function(event) {
 	if (this._list)
-		this._list.removeAll();
+		this._list.clear();
 }
 
 ZmEmailNotificationUI.prototype._initialize =
@@ -2198,6 +2198,13 @@ ZmBufferList.prototype.set =
 function(list, defaultColumnSort) {
 	DwtListView.prototype.set.call(this, list, defaultColumnSort);
 	this._changed = false;
+}
+
+ZmBufferList.prototype.clear =
+function() {
+	this._list.removeAll();
+	this.removeAll();
+	this._changed = true;
 }
 
 ZmBufferList.prototype.getChanged =
