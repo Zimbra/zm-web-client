@@ -386,7 +386,25 @@ boolean IE = ( ua != null && ua.indexOf( "MSIE" ) != -1 );
 							</td>
 					</table>	
 				</td>
-			</tr>			
+			</tr>
+
+			<tr><td colspan="2"><hr/></td></tr>
+			
+			<tr>
+				<td/>
+				<td style="font-weight:bold">
+					<fmt:message key="optionsVoiceCenterHeader"/>
+				</td>
+			</tr>
+			
+			<tr>
+				<td/>
+				<td>
+					<a href="<fmt:message key="optionsVoiceCenterLinkURL"/>" target="_blank">
+						<fmt:message key="optionsVoiceCenterLinkText"/>
+					</a>
+				</td>
+			</tr>
 	</table>
 	
 </c:when>
