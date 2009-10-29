@@ -86,13 +86,19 @@
 		    </c:if>
 
                     <zm:phone var="success" displayVar="displayNumber" errorVar="errorCode" name="${param.selectiveCallForwardingTo}"/>
-		    <c:if test="${!param.selectiveCallForwardingActive || success}">
-			<zm:listObject var="bogus" phone="${param.phone}" strArr="scf" map="${sessionScope.selectiveCallForwardingFrom}"/>
-                	<zm:modifyCallFeatures var="result" phone="${param.phone}"
-                    	    callforwardingactive="${param.callForwardingActive}" callforwardingforwardto="${param.callForwardingTo}"
-                    	    selectivecallforwardingactive="${param.selectiveCallForwardingActive=='TRUE'}" selectivecallforwardingforwardto="${param.selectiveCallForwardingTo}" selectivecallforwardingforwardfrom="${scf}"
-			/>
-		    </c:if>
+		    <c:choose>
+			<c:when test="${param.selectiveCallForwardingActive && !success}">
+			    <c:set var="failure" value="${true}"/>
+			</c:when>
+		    
+			<c:otherwise>
+			    <zm:listObject var="bogus" phone="${param.phone}" strArr="scf" map="${sessionScope.selectiveCallForwardingFrom}"/>
+                	    <zm:modifyCallFeatures var="result" phone="${param.phone}"
+                    		callforwardingactive="${param.callForwardingActive}" callforwardingforwardto="${param.callForwardingTo}"
+                    		selectivecallforwardingactive="${param.selectiveCallForwardingActive=='TRUE'}" selectivecallforwardingforwardto="${param.selectiveCallForwardingTo}" selectivecallforwardingforwardfrom="${scf}"
+			    />
+			</c:otherwise>
+		    </c:choose>
                 </c:when>
 		
                 <c:when test="${voiceselected=='screening'}">
@@ -108,9 +114,9 @@
                 <c:when test="${result}">
                     <app:status><fmt:message key="optionsSaved"/></app:status>
                 </c:when>
-                <c:otherwise>
+                <c:when test="${empty failure || failure==false}">
                     <app:status><fmt:message key="noOptionsChanged"/></app:status>
-                </c:otherwise>
+                </c:when>
             </c:choose>
         </c:otherwise>
     </c:choose>
@@ -174,7 +180,7 @@
     <c:set var="addSelectiveForwarding" scope="request" value="${null}"/>
 </c:if>
 
-<c:if test="${voiceselected=='forwarding' && ((zm:actionSet(param, 'actionVoiceAddSelectiveForwarding') && param.selectiveCallForwardingActive) || (zm:actionSet(param, 'actionSave') && param.selectiveCallforwardingActive))}">
+<c:if test="${voiceselected=='forwarding' && ((zm:actionSet(param, 'actionVoiceAddSelectiveForwarding') && param.selectiveCallForwardingActive) || (zm:actionSet(param, 'actionSave') && param.selectiveCallForwardingActive))}">
     	<c:set var="useFrom" value="${zm:actionSet(param, 'actionVoiceAddSelectiveForwarding')}"/>
 
 	<c:if test="${!empty sessionScope.selectiveCallForwardingFrom}">
