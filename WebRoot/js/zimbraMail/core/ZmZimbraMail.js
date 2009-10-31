@@ -217,8 +217,6 @@ function(params) {
 	var shell = new DwtShell({userShell:userShell, docBodyScrollable:false, id:ZmId.SHELL});
 	appCtxt.setShell(shell);
 
-	appCtxt.setItemCache(new AjxCache());
-
 	// Go!
 	new ZmZimbraMail(params);
 };

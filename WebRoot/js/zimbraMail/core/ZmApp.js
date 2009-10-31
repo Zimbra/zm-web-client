@@ -305,9 +305,11 @@ function(name) {
 
 ZmApp.prototype.addDeferredFolder =
 function(params) {
-	if (params.obj && params.obj.id && !this._deferredFolderHash[params.obj.id]) {
+	var id = params.obj && params.obj.id;
+	if (id && !this._deferredFolderHash[id]) {
 		this._deferredFolders.push(params);
-		this._deferredFolderHash[params.obj.id] = true;
+		this._deferredFolderHash[id] = true;
+		appCtxt.cacheSetDeferred(id, this._name);
 	}
 };
 
@@ -609,6 +611,13 @@ function() {
 	}
 };
 
+ZmApp.prototype.createDeferred = function() {
+	var types = ZmOrganizer.APP2ORGANIZER[this._name] || [];
+	for (var i = 0; i < types.length; i++) {
+		this._createDeferredFolders(types[i]);
+	}
+};
+
 /**
  * Lazily create folders received in the initial <refresh> block.
  */
@@ -700,6 +709,7 @@ function(create, org) {
 */
 ZmApp.prototype.launch =
 function(params, callback) {
+	this.createDeferred();
     if (callback) {
         callback.run();
     }

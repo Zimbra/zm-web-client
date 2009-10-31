@@ -40,6 +40,8 @@ ZmAppCtxt = function() {
 	this.multiAccounts = false;
 
 	this._evtMgr = new AjxEventMgr();
+	this._itemCache = {};
+	this._itemCacheDeferred = {};
 };
 
 ZmAppCtxt._ZIMLETS_EVENT = 'ZIMLETS';
@@ -756,35 +758,38 @@ function(fullVersion, width, height) {
 	}
 };
 
-ZmAppCtxt.prototype.setItemCache =
-function(cache) {
-	this._itemCache = cache;
-};
-
-ZmAppCtxt.prototype.getItemCache =
-function() {
-	return this._itemCache;
-};
-
 ZmAppCtxt.prototype.cacheSet =
 function(key, value) {
-	if (this._itemCache)
-		this._itemCache.set(key, value);
+	this._itemCache[key] = value;
+	delete this._itemCacheDeferred[key];
+};
+
+ZmAppCtxt.prototype.cacheSetDeferred =
+function(key, appName) {
+	this._itemCache[key] = this._itemCacheDeferred;
+	this._itemCacheDeferred[key] = appName;
 };
 
 ZmAppCtxt.prototype.cacheGet =
 function(key) {
-	return this._itemCache ? this._itemCache.get(key) : null;
+	var value = this._itemCache[key];
+	if (value === this._itemCacheDeferred) {
+		var appName = this._itemCacheDeferred[key];
+		this.getApp(appName).createDeferred();
+		value = this._itemCache[key];
+	}
+	return value;
 };
 
 ZmAppCtxt.prototype.cacheRemove =
 function(key) {
-	this._itemCache.clear(key);
+	delete this._itemCache[key];
+	delete this._itemCacheDeferred[key];
 };
 
 ZmAppCtxt.prototype.getById =
 function(id) {
-	return this._itemCache && this._itemCache.get(id) || (this.isChildWindow ? window.opener.appCtxt.getById(id) : null);
+	return this.cacheGet(id) || (this.isChildWindow && window.opener.appCtxt.getById(id));
 };
 
 ZmAppCtxt.prototype.getKeyboardMgr =

@@ -302,7 +302,7 @@ function() {
 			cc = this._calTreeController.getCheckedCalendars(this._app.getOverviewId());
 		}
 	} else {
-		this._app._createDeferredFolders(ZmOrganizer.ID_CALENDAR);
+		this._app._createDeferredFolders(ZmApp.CALENDAR);
 		var list = appCtxt.accountList.visibleAccounts;
 		for (var i = 0; i < list.length; i++) {
 			var acct = list[i];

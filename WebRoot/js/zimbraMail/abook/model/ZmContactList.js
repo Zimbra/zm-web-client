@@ -392,7 +392,7 @@ function(result) {
 		var contact = appCtxt.cacheGet(ids[i]);
 		if (contact && contact.isShared()) {
 			contact.notifyDelete();
-			appCtxt.getItemCache().clear(ids[i]);
+			appCtxt.cacheRemove(ids[i]);
 		}
 	}
 };
