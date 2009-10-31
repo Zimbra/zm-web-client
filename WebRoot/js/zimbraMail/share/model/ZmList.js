@@ -65,6 +65,9 @@ ZmList.NODE = {};
 // item types based on node name (reverse map of above)
 ZmList.ITEM_TYPE = {};
 
+// how many items to act on at a time via a server request
+ZmList.CHUNK_SIZE = 100;
+
 ZmList.prototype.toString = 
 function() {
 	return "ZmList";
@@ -555,14 +558,13 @@ function(items, folderId) {
  */
 ZmList.prototype._itemAction =
 function(params, batchCmd) {
-	var actionedItems = [];
-	var idHash = this._getIds(params.items);
-	var idStr = idHash.list.join(",");
-	if (!(idStr && idStr.length)) {
+
+	var result = this._getIds(params.items);
+	var idHash = result.hash;
+	var idList = result.list;
+	if (!(idList && idList.length)) {
 		if (params.callback) {
-			params.callback.run(new ZmCsfeResult(actionedItems));
-		} else {
-			return actionedItems;
+			params.callback.run(new ZmCsfeResult([]));
 		}
 	}
 
@@ -578,59 +580,141 @@ function(params, batchCmd) {
 
 	var soapCmd = ZmItem.SOAP_CMD[type] + "Request";
 	var useJson = batchCmd ? batchCmd._useJson : true ;
-	var itemActionRequest = null;
+	var request, action;
 	if (useJson) {
-		itemActionRequest = {};
+		request = {};
 		var urn = this._getActionNamespace();
-		itemActionRequest[soapCmd] = {_jsns:urn};
-		var request = itemActionRequest[soapCmd];
-		var action = request.action = {};
-		action.id = idStr;
+		request[soapCmd] = {_jsns:urn};
+		var action = request[soapCmd].action = {};
 		action.op = params.action;
 		for (var attr in params.attrs) {
 			action[attr] = params.attrs[attr];
 		}
 	} else {
-		itemActionRequest = AjxSoapDoc.create(soapCmd, this._getActionNamespace());
-		var actionNode = itemActionRequest.set("action");
-		actionNode.setAttribute("id", idStr);
-		actionNode.setAttribute("op", params.action);
+		request = AjxSoapDoc.create(soapCmd, this._getActionNamespace());
+		action = request.set("action");
+		action.setAttribute("op", params.action);
 		for (var attr in params.attrs) {
-			actionNode.setAttribute(attr, params.attrs[attr]);
+			action.setAttribute(attr, params.attrs[attr]);
 		}
 	}
 
-	var respCallback = params.callback
-		? (new AjxCallback(this, this._handleResponseItemAction, [type, idHash, params.callback])) : null;
-
-	if (batchCmd) {
-		batchCmd.addRequestParams(itemActionRequest, respCallback, params.errorCallback);
-	} else {
-		var reqParams = { asyncMode:true, callback:respCallback, accountName:params.accountName };
-		useJson ? reqParams.jsonObj = itemActionRequest : reqParams.soapDoc = itemActionRequest;
-		appCtxt.getAppController().sendRequest(reqParams);
+	var respCallback = params.callback && (new AjxCallback(this, this._handleResponseItemAction, [params.callback]));
+	var dialog;
+	if (idList.length > 10) {
+		dialog = appCtxt.getCancelMsgDialog();
 	}
+
+	var params1 = {
+		ids:			idList,
+		idHash:			idHash,
+		accountName:	params.accountName,
+		request:		request,
+		action:			action,
+		type:			type,
+		callback:		respCallback,
+		errorCallback:	params.errorCallback,
+		batchCmd:		batchCmd,
+		dialog:			dialog,
+		numItems:		0,
+		totalItems:		idList.length
+	}
+
+	if (dialog) {
+		dialog.registerCallback(DwtDialog.CANCEL_BUTTON, new AjxCallback(this, this._cancelAction, [params1]));
+	}
+
+	this._doAction(params1);
 };
 
 ZmList.prototype._handleResponseItemAction =
-function(type, idHash, callback, result) {
+function(callback, items, result) {
 	if (callback) {
-		var response = result.getResponse();
-		var resp = response[ZmItem.SOAP_CMD[type] + "Response"];
-		var actionedItems = new Array();
-		if (resp && resp.action) {
-			var ids = resp.action.id.split(",");
-			if (ids) {
-				for (var i = 0; i < ids.length; i++) {
-					var item = idHash[ids[i]];
-					if (item) {
-						actionedItems.push(item);
-					}
+		result.set(items);
+		callback.run(result);
+	}
+};
+
+ZmList.prototype._doAction =
+function(params) {
+
+	var list = params.ids.splice(0, ZmList.CHUNK_SIZE);
+	var idStr = list.join(",");
+	var useJson = true;
+	if (params.action.setAttribute) {
+		params.action.setAttribute("id", idStr);
+		useJson = false;
+	} else {
+		params.action.id = idStr;
+	}
+
+	var respCallback = new AjxCallback(this, this._handleResponseDoAction, [params]);
+
+	if (params.batchCmd) {
+		params.batchCmd.addRequestParams(params.request, respCallback, params.errorCallback);
+	} else {
+		var reqParams = {asyncMode:true, callback:respCallback, accountName:params.accountName};
+		if (useJson) {
+			reqParams.jsonObj = params.request;
+		} else {
+			reqParams.soapDoc = params.request;
+		}
+		params.reqId = appCtxt.getAppController().sendRequest(reqParams);
+	}
+};
+
+ZmList.prototype._handleResponseDoAction =
+function(params, result) {
+
+	var response = result.getResponse();
+	var resp = response[ZmItem.SOAP_CMD[params.type] + "Response"];
+	if (resp && resp.action) {
+		var ids = resp.action.id.split(",");
+		if (ids) {
+			var items = [];
+			for (var i = 0; i < ids.length; i++) {
+				var item = params.idHash[ids[i]];
+				if (item) {
+					items.push(item);
 				}
 			}
+			params.numItems += items.length;
+			if (params.callback) {
+				params.callback.run(items, result);
+			}
+			if (params.dialog) {
+				var msgKey = ZmItem.PLURAL_MSG_KEY[params.type] || "items";
+				var text = AjxMessageFormat.format(ZmMsg.itemsProcessed, [params.numItems, params.totalItems, ZmMsg[msgKey]]);
+				params.dialog.setContent(text.toLowerCase());
+				if (!params.dialog.isPoppedUp()) {
+					params.dialog.popup();
+				}
+			}
+			DBG.println(AjxDebug.DBG1, "Batched item action, processed items: " + params.total);
 		}
-		result.set(actionedItems);
-		callback.run(result);
+	}
+
+	if (params.ids.length && !params.cancelled) {
+		AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._doAction, [params]), 100);
+	} else {
+		params.reqId = null;
+		if (params.dialog) {
+			params.dialog.popdown();
+		}
+	}
+};
+
+/**
+ * Cancel current server request if there is one, and set flag to
+ * stop cascade of requests.
+ *
+ * @param params
+ */
+ZmList.prototype._cancelAction =
+function(params) {
+	params.cancelled = true;
+	if (params.reqId) {
+		appCtxt.getRequestMgr().cancelAction(params.reqId);
 	}
 };
 
@@ -678,33 +762,25 @@ function(items) {
 // Grab the IDs out of a list of items, and return them as both a string and a hash.
 ZmList.prototype._getIds =
 function(list) {
-	var idHash = new Object();
+
+	var idHash = {};
 	if (list instanceof ZmItem) {
 		list = [list];
 	}
 	
-	if (!(list && list.length)) {
-		return idHash;
-	}
-	
-	var ids = new Array();
-	var extra = new Array();
-	for (var i = 0; i < list.length; i++) {
-		var item = list[i];
-		var id = item.id;
-		if (id) {
-			ids.push(id);
-			idHash[id] = item;
-		}
-		// so we ignore related conv notifs (except virtual convs)
-		if ((item.type == ZmItem.MSG) && item.cid && (item.cid > 0)) {
-			extra.push(item.cid);
+	var ids = [];
+	if ((list && list.length)) {
+		for (var i = 0; i < list.length; i++) {
+			var item = list[i];
+			var id = item.id;
+			if (id) {
+				ids.push(id);
+				idHash[id] = item;
+			}
 		}
 	}
-	idHash.list = ids;
-	idHash.extra = extra;
 
-	return idHash;
+	return {hash:idHash, list:ids};
 };
 
 // Returns the index at which the given item should be inserted into this list.

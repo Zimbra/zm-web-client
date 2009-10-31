@@ -259,6 +259,14 @@ function() {
 	return this._okCancelMsgDialog;
 };
 
+ZmAppCtxt.prototype.getCancelMsgDialog =
+function() {
+	if (!this._cancelMsgDialog) {
+		this._cancelMsgDialog = new DwtMessageDialog({parent:this._shell, buttons:[DwtDialog.CANCEL_BUTTON]});
+	}
+	return this._cancelMsgDialog;
+};
+
 ZmAppCtxt.prototype.getErrorDialog = 
 function() {
 	if (!this._errorDialog) {
