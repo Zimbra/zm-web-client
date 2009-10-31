@@ -58,10 +58,10 @@ ZmDesktopAlert.prototype.start =
 function(title, message) {
 	if (this.usePrism) {
 		if (AjxEnv.isMac) {
-			window.platform.showNotification(title, text, "resource://webapp/icons/default/launcher.icns");
+			window.platform.showNotification(title, message, "resource://webapp/icons/default/launcher.icns");
 		}
 		else if (AjxEnv.isWindows) {
-			window.platform.icon().showNotification(title, text, 5);
+			window.platform.icon().showNotification(title, message, 5);
 		}
 	} else {
 		AjxDispatcher.require([ "BrowserPlus" ]);
