@@ -795,7 +795,7 @@ function(ev, treeView, overviewId) {
 			// for multi-account, make sure this organizer applies to the given overview
 			if (appCtxt.multiAccounts) {
 				var overview = this._opc.getOverview(overviewId);
-				if (overview && overview.account != organizer.account) {
+				if (overview && overview.account != organizer.getAccount()) {
 					continue;
 				}
 			}
