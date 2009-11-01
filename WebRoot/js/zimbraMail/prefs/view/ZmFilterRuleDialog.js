@@ -569,6 +569,7 @@ function(isMainSelect, testType, field, rowData) {
 				dataValue = rowData.header;
 			} else if (field == "ops") {
 				dataValue = ZmFilterRule.OP_VALUE_MAP[rowData.stringComparison];
+				if (dataValue && rowData.negative == "1") { dataValue++; }
 			} else if (field == "value") {
 				dataValue = rowData.value;
 			}
