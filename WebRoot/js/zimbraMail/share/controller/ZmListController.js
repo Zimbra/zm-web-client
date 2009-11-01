@@ -977,6 +977,13 @@ function(parent, num) {
 		parent.enableAll(false);
 		parent.enable([ZmOperation.NEW_MENU, ZmOperation.TAG_MENU, ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.FORWARD], true);
     }
+
+	// bug: 41758 - don't allow shared items to be tagged
+	var folderId = (num > 0) && this._getSearchFolderId();
+	var folder = folderId && appCtxt.getById(folderId);
+	if (folder && folder.isRemote()) {
+		parent.enable(ZmOperation.TAG_MENU, false);
+	}
 };
 
 // Resets the available options on the toolbar

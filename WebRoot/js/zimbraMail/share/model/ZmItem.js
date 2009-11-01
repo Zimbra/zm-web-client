@@ -296,7 +296,7 @@ ZmItem.prototype.getTagImageInfo =
 function() {
 	var tagImageInfo;
 
-	if (!this.tags.length) {
+	if (!this.tags.length || this.isShared()) {
 		tagImageInfo = "Blank_16";
 	}
 	else if (this.tags.length == 1) {

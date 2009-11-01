@@ -322,6 +322,8 @@ function(folder) {
 			accountName: (folder.account && folder.account.name)
 		};
 
+		sc.resetSearchAllAccounts();
+
 		if (appCtxt.multiAccounts) {
 			// make sure we have permissions for this folder (in case an "external"
 			// server was down during account load)
@@ -333,8 +335,6 @@ function(folder) {
 				}
 				return;
 			}
-
-			sc.resetSearchAllAccounts();
 
 			// HACK to make single Drafts/Outbox work in multi-account
 			params.callback = (folder.id == ZmFolder.ID_DRAFTS || folder.id == ZmFolder.ID_OUTBOX)

@@ -615,6 +615,7 @@ function(ev) {
 		this._actionEv.address = address;
 		this._setupSpamButton(this._participantActionMenu);
 		this._enableFlags(this._participantActionMenu, hasUnread, hasRead);
+		this._resetOperations(this._participantActionMenu, items.length);
 		var imItem = this._participantActionMenu.getOp(ZmOperation.IM);
 		var contactsApp = appCtxt.getApp(ZmApp.CONTACTS);
 		if (contactsApp) {
