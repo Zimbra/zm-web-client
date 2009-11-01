@@ -44,15 +44,15 @@ ZmAccount.TYPE_ZIMBRA	= "Zimbra";
 ZmAccount.getTypeName =
 function(type) {
 	switch (type) {
-		case ZmAccount.TYPE_AOL:		return "AOL";
-		case ZmAccount.TYPE_GMAIL:		return "Gmail";
+		case ZmAccount.TYPE_AOL:		return ZmMsg.aol;
+		case ZmAccount.TYPE_GMAIL:		return ZmMsg.gmail;
 		case ZmAccount.TYPE_IMAP:		return ZmMsg.accountTypeImap;
-		case ZmAccount.TYPE_LIVE:		return "Microsoft Live";
-		case ZmAccount.TYPE_MSE:		return "Microsoft Exchange";
+		case ZmAccount.TYPE_LIVE:		return ZmMsg.msLive;
+		case ZmAccount.TYPE_MSE:		return ZmMsg.msExchange;
 		case ZmAccount.TYPE_PERSONA:	return ZmMsg.accountTypePersona;
 		case ZmAccount.TYPE_POP:		return ZmMsg.accountTypePop;
-		case ZmAccount.TYPE_YMP:		return "Yahoo! Mail";
-		case ZmAccount.TYPE_ZIMBRA:		return "Zimbra";
+		case ZmAccount.TYPE_YMP:		return ZmMsg.yahooMail;
+		case ZmAccount.TYPE_ZIMBRA:		return ZmMsg.zimbraTitle;
 	}
 	return ZmMsg.unknown;
 };
