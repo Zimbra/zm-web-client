@@ -228,9 +228,13 @@ function(htmlArr, idx, item, field, colIdx, params) {
 			htmlArr[idx++] = ZmMailListView.COL_WIDTH_ACCT;
 			htmlArr[idx++] = "'><tr><td width=16>";
 			htmlArr[idx++] = AjxImg.getImageHtml(item.account.getIcon());
-			htmlArr[idx++] = "</td><td>";
-			htmlArr[idx++] = item.account.getDisplayName();
-			htmlArr[idx++] = "</td><td width=3>&nbsp;</td></tr></table>";
+			htmlArr[idx++] = "</td>";
+			if (this._isMultiColumn) {
+				htmlArr[idx++] = "<td>";
+				htmlArr[idx++] = item.account.getDisplayName();
+				htmlArr[idx++] = "</td><td width=3>&nbsp;</td>";
+			}
+			htmlArr[idx++] = "</tr></table>";
 		}
 	} else {
 		idx = ZmListView.prototype._getCellContents.apply(this, arguments);

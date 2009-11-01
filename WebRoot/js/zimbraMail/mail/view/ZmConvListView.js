@@ -352,7 +352,18 @@ function(item, colIdx) {
 	if (item.type != ZmItem.MSG) {
 		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_SIZE, colIdx, ZmMsg.COLUMN_WIDTH_SIZE);
 	}
-	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_DATE, colIdx, ZmMsg.COLUMN_WIDTH_DATE, "align=right");
+
+	var dateWidth = ZmMsg.COLUMN_WIDTH_DATE;
+
+	// for multi-account, show the account icon for cross mbox search results
+	if (appCtxt.multiAccounts && appCtxt.getSearchController().searchAllAccounts) {
+		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_ACCOUNT, colIdx, "16", "align=right");
+		if (!this._isMultiColumn) {
+			dateWidth = (ZmMsg.COLUMN_WIDTH_DATE / 2);
+		}
+	}
+
+	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_DATE, colIdx, dateWidth, "align=right");
 
 	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_TAG, colIdx, "16");
 	htmlArr[idx++] = "</tr></table>";
