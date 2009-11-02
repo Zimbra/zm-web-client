@@ -40,6 +40,7 @@
 </c:if>
 <c:choose>
 <c:when test="${skin eq 'yahoo'}">
+<fmt:setBundle basename="/messages/ZmMsg" scope='request' var="ZmMsg" />    
 <table width="100%" cellpadding="6" cellspacing='0' border="0"><tr><td>
 <table width="100%" cellpadding="0" cellspacing="0" border="0">
     <tr><td colspan="${empty editmode ? 4 : 3}" style="padding-bottom:6px;">
@@ -106,7 +107,7 @@
 				<c:if test="${mailbox.attrs.zimbraIsDomainAdminAccount[0] eq 'TRUE' and not empty adminReference }">
 					<a class='skin_yahoo_link' target="_new" href="${adminReference}"><fmt:message key="adminLinkLabel"/></a>&nbsp;<font color="gray">|</font>&nbsp;
 				</c:if>
-		        <a class='skin_yahoo_link' target="_new" href="<fmt:message key='yahooYahooMailURL'/>"><fmt:message key='yahooYahooMail'/></a>&nbsp;<font color="gray">|</font>&nbsp;
+		        <a class='skin_yahoo_link' target="_new" href="<fmt:message key='yahooYahooMailURL'/>"><fmt:message key='yahooYahooMail' bundle="${ZmMsg}"/></a>&nbsp;<font color="gray">|</font>&nbsp;
 		        <a class='skin_yahoo_link' target="_new" href="<c:url value="${helpUrl}"><c:param name='locid'><fmt:getLocale /></c:param></c:url>"><fmt:message key="help"/></a>
 	        </td>
 		    </tr>
