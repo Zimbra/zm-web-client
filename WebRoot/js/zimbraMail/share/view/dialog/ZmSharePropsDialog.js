@@ -469,7 +469,7 @@ ZmSharePropsDialog.prototype._handleShareWith = function(type) {
  */
 ZmSharePropsDialog.prototype._getPermsFromRole =
 function() {
-	var role = "";
+	var role = ZmShare.ROLE_NONE;
 	if (this._viewerRadioEl.checked) {
 		role = ZmShare.ROLE_VIEWER;
 	}
