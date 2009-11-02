@@ -108,6 +108,10 @@ SUBMIT,
 .Overview { 
 	width: 162px; 
 	padding:0px 6px 0px 6px; 
+	#IFDEF MSIE
+	width: 1% !important;
+	padding:0px 6px 0px 6px; 	
+	#ENDIF
 }
 
 .Tree {

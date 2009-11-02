@@ -43,7 +43,7 @@
 <fmt:setBundle basename="/messages/ZmMsg" scope='request' var="ZmMsg" />    
 <table width="100%" cellpadding="6" cellspacing='0' border="0"><tr><td>
 <table width="100%" cellpadding="0" cellspacing="0" border="0">
-    <tr><td colspan="${empty editmode ? 4 : 3}" style="padding-bottom:6px;">
+    <tr><td colspan="${empty editmode ? 5 : 3}" style="padding-bottom:6px;">
 	    <table width=100% border=0 cellspacing="0" cellpadding="0"><tr>
         <td valign="middle" align="center" width="1%" style="padding: 4px 8px;">
             <c:choose>
