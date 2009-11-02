@@ -88,6 +88,7 @@ ZmCalItem.prototype.isOrganizer 		= function() { return (typeof(this.isOrg) === 
 ZmCalItem.prototype.isRecurring 		= function() { return (this.recurring || (this._rawRecurrences != null)); };
 ZmCalItem.prototype.hasAttachments 		= function() { return this.getAttachments() != null; };
 ZmCalItem.prototype.hasAttendeeForType	= function(type) { return false; };		// override if necessary
+ZmCalItem.prototype.hasAttendees    	= function() { return false; }; 		// override if necessary
 ZmCalItem.prototype.hasPersonAttendees	= function() { return false; };			// override if necessary
 
 // Setters
@@ -1372,7 +1373,7 @@ function(soapDoc, inv, m, notifyList, accountName) {
 ZmCalItem.prototype._addNotesToSoap =
 function(soapDoc, m, cancel) {
 
-	var hasAttendees = this.hasAttendeeForType(ZmCalBaseItem.PERSON);
+	var hasAttendees = this.hasAttendees();
 	var tprefix = hasAttendees ? this._getDefaultBlurb(cancel) : "";
 	var hprefix = hasAttendees ? this._getDefaultBlurb(cancel, true) : "";
 
