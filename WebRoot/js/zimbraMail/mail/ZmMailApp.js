@@ -1325,12 +1325,15 @@ function(query, callback, response, type) {
 
 	var sc = appCtxt.getSearchController();
 	var queryHint, noUpdateOverview;
-	if (appCtxt.get(ZmSetting.OFFLINE_SHOW_GLOBAL_INBOX)) {
+	if (appCtxt.get(ZmSetting.OFFLINE_SHOW_GLOBAL_INBOX) &&
+		appCtxt.accountList.size(true) > 2)
+	{
 		query = null;
 		queryHint = appCtxt.accountList.generateQuery(ZmOrganizer.ID_INBOX);
 		noUpdateOverview = true;
 		sc.searchAllAccounts = true;
-	} else {
+	}
+	else {
 		query = query || appCtxt.get(ZmSetting.INITIAL_SEARCH, null, account);
 	}
 

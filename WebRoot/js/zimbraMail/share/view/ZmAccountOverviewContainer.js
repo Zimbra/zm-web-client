@@ -145,7 +145,9 @@ function(params) {
 	}
 
 	// add Global Inbox tree item
-	if (appCtxt.isOffline && this._appName == ZmApp.MAIL) {
+	if (appCtxt.isOffline && this._appName == ZmApp.MAIL &&
+		appCtxt.accountList.size(true) > 2)
+	{
 		var params = {
 			parent: this,
 			text: (ZmMsg[ZmFolder.MSG_KEY[ZmOrganizer.ID_GLOBAL_INBOX]]),
