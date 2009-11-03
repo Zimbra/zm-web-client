@@ -83,8 +83,7 @@
 
 <template id='share.Widgets#ZmChooseFolderDialog'>
 	<div class='ChooserDialog'>
-		<div id='${id}_folderDescDivId'></div>
-		<p/>
+		<p id='${id}_folderDescDivId' style='margin: 0; margin-bottom: 5px'></p>
 		<div><$= ZmMsg.chooserDescription $></div>
 		<div id='${id}_inputDivId'></div>
 		<div class='overview' id='${id}_folderTreeDivId'></div>
