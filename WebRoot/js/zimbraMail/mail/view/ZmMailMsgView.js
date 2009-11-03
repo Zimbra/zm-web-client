@@ -734,7 +734,10 @@ function(msg, elem, aname) {
 				elem.setAttribute(aname, avalue);
 				//elem.setAttribute(df_aname, avalue)
 				return false;
-			}
+			}else{
+                //Since dfsrc="cid:xxxx", it cannot be external url
+                return false;
+            }
 		} else if (avalue.substring(0,4) == "doc:") {
 			avalue = [appCtxt.get(ZmSetting.REST_URL), ZmFolder.SEP, avalue.substring(4)].join('');
 			if (avalue) {

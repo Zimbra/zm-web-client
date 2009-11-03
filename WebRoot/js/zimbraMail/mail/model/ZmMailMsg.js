@@ -1271,7 +1271,8 @@ function(){
             var msgRef = this;
             content.replace(/dfsrc=([\x27\x22])cid:([^\x27\x22]+)\1/ig, function(s, q, cid){
                 var attach = msgRef.findInlineAtt("<" + cid + ">");
-                attach.foundInMsgBody = true;
+                if(attach)
+                    attach.foundInMsgBody = true;
             });
         }
     }
