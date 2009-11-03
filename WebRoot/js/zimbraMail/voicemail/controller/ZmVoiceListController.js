@@ -168,7 +168,7 @@ function(ev) {
 		for (var name in combination) {
 			var phone = combination[name].phone;
 			var from = combination[name].addFrom;
-			var callback = new AjxCallback(this, this._modifyCallFeatures, {featureName: ZmCallFeature.SELECTIVE_CALL_FORWARDING, addFrom: from, maxEntries: ZmCallFeature.SELECTIVE_CALL_FORWARDING_MAX_ENTRIES, maxMsg: ZmMsg.selectiveCallForwardingFromErrorMax, alreadyMsg: ZmMsg.errorPhoneForwardNotUnique});
+			var callback = new AjxCallback(this, this._modifyCallFeatures, {featureName: ZmCallFeature.SELECTIVE_CALL_FORWARDING, addFrom: from, maxEntries: ZmCallFeature.SELECTIVE_CALL_FORWARDING_MAX_ENTRIES, maxMsg: ZmMsg.selectiveCallForwardingFromErrorMax, mustHaveTo:true, errorMsg:ZmMsg.selectiveCallForwardingErrorCannotAdd});
 			phone.getCallFeatures(callback);
 		}
 	}
@@ -227,6 +227,8 @@ function(obj, features, phone) {
 	var maxEntries = obj.maxEntries;
 	var maxMsg = obj.maxMsg || "";
 	var alreadyMsg = obj.alreadyMsg || "";
+	var errorMsg = obj.errorMsg || null;
+	var mustHaveTo = obj.mustHaveTo;
 	var feature = features[obj.featureName];
 	
 	if (feature instanceof ZmCallFeature && phone instanceof ZmPhone && addPhones.length > 0) {
@@ -256,10 +258,17 @@ function(obj, features, phone) {
 					}
 				}
 			}
-			if (added > 0)
-				this._saveFeatures(phone, [result]);
-			else if (exists)
+			if (added > 0) {
+				if (mustHaveTo && !feature.data.ft) {
+					if (errorMsg)
+						appCtxt.setStatusMsg(errorMsg);
+				} else {
+					result.isActive = true;
+					this._saveFeatures(phone, [result]);
+				}
+			} else if (exists) {
 				appCtxt.setStatusMsg(alreadyMsg);
+			}
 		}
 	}
 }
